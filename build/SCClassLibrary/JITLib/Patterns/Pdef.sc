@@ -3,7 +3,8 @@
 
 PatternProxy : Pattern {
 	var <pattern;
-	var <>clock, <>quant; 	// quant new pattern insertion. quant should be larger than dur for now
+	var <>clock, <>quant; 	// quant new pattern insertion. can be [quant, offset]
+						// in EventPatternProxy it can be [quant, offset, onsetQuant]
 	
 	classvar <>defaultQuant, <>action;
 	
@@ -24,7 +25,11 @@ PatternProxy : Pattern {
 	
 	source_ { arg pat; this.sched { pattern = pat } }
 	source { ^pattern }
+	
 	pattern_ { arg pat; this.source_(pat) }
+	offset_ { arg val; quant = quant.instil(1, val) }
+	offset { arg val; ^quant.obtain(1) }
+
 		
 	embedInStream { arg inval;
 		var pat, stream, outval;
@@ -204,7 +209,7 @@ Tdef : TaskProxy {
 
 EventPatternProxy : TaskProxy {
 	var <>fadeTime;
-	classvar <>defaultQuant=1.0, <>preRoll;
+	classvar <>defaultQuant=1.0;
 	
 	source_ { arg item;
 		if(item.isKindOf(Function)) // allow functions to be passed in
@@ -216,15 +221,21 @@ EventPatternProxy : TaskProxy {
 	*default { ^Pbind(\freq, \rest) }
 		
 	constrainStream { arg str;
-		var delta, tolerance, new;
+		var delta, tolerance, new, quantVal, catchUp, deltaTillCatchUp, forwardTime;
 		^if(quant.notNil) {
-			delta = clock.timeToNextBeat(quant);
-			tolerance = if(quant.isSequenceableCollection) { quant[0] } { quant };
-			tolerance = tolerance % delta % 0.125;
 			
-			if(preRoll.notNil and: { quant > preRoll }) {
+			if(quant.isSequenceableCollection) {
+				quantVal = quant[0];
+				catchUp = quant[2];
+			};
+			
+			delta = clock.timeToNextBeat(quant);
+			tolerance = quantVal % delta % 0.125;
+			if(catchUp.notNil) {
+				deltaTillCatchUp = clock.timeToNextBeat(catchUp);
 				new = pattern.asStream;
-				delta = new.fastForward(quant - delta, tolerance);
+				forwardTime = quantVal - delta + deltaTillCatchUp;
+				delta = new.fastForward(forwardTime, tolerance) + deltaTillCatchUp;
 			} {
 				new = pattern
 			};
@@ -240,6 +251,7 @@ EventPatternProxy : TaskProxy {
 					
 				}
 			}{
+				
 				Ppar([
 					PfadeOut(str, fadeTime, delta, tolerance),
 					PfadeIn(new, fadeTime, delta, tolerance)
@@ -247,6 +259,9 @@ EventPatternProxy : TaskProxy {
 			}
 		} { pattern }.asStream
 	}
+	
+	outset_ { arg val; quant = quant.instill(2, val) }
+	outset { arg val; ^quant.obtain(2) }
 	
 	// playing one instance //
 	
@@ -262,6 +277,7 @@ EventPatternProxy : TaskProxy {
 		isPlaying = true;
 		if(player.isPlaying.not) { player = this.playOnce(argClock, protoEvent, quant) }
 	}
+	
 	
 	storeArgs { ^[source] }
 	
@@ -288,10 +304,12 @@ Pdef : EventPatternProxy {
 		Class.initClassTree(Event);
 		
 		phraseEventFunc = {
-			var pat, event, outerEvent, recursionLevel, instrument, embeddingLevel;
+			var pat, event, outerEvent, recursionLevel, instrument, embeddingLevel, freq, rest;
 			
 				embeddingLevel = ~embeddingLevel ? 0; // infinite recursion catch
-				
+				freq = ~freq.value;
+				rest = freq.isKindOf(Symbol); // check for outer rests
+				if(rest) { ~freq = freq };
 				pat = all.at(~instrument);
 				if(pat.notNil and: { embeddingLevel < 8 })
 				{
