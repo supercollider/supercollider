@@ -117,7 +117,7 @@ int rtf2txt(char* txt);
 
 extern void asRelativePath(char *inPath, char *outPath)
 {
-	int len = strlen(gCompileDir);
+	uint32 len = strlen(gCompileDir);
 	if (strlen(inPath) < len || memcmp(inPath, gCompileDir, len) != 0) {
 		// gCompileDir is not the prefix.
 		strcpy(outPath, inPath);
