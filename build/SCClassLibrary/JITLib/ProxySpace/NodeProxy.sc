@@ -80,6 +80,7 @@ NodeProxy : AbstractFunction {
 			this.sendToServer(false);
 	}
 	
+		
 	load {
 		if(server.serverRunning, {
 			parents.do({ arg item; item.load });
@@ -95,19 +96,18 @@ NodeProxy : AbstractFunction {
 	}
 	
 	isPlaying { 
-		^(group.notNil and: {group.isPlaying}) // and: isPlaying)
+		^(group.notNil and: {group.isPlaying})
 	}
 	
 	asDefName { ^if(synthDef.notNil, { synthDef.name }, { nil }) }
 	
 	
-	// setting the source 
+	// setting the source to anything that returns a valid ugen input
 	
 	
 	source_ { arg argObj; this.setObj(argObj, true) }
 	
-	setObj { arg argObj, send=false, freeLast=true; //anything that returns a valid ugen input
-		
+	setObj { arg argObj, send=false, freeLast=true, completionFunc; 		
 		synthDef = nil;
 		
 		if(argObj.notNil,{
@@ -117,7 +117,7 @@ NodeProxy : AbstractFunction {
 			synthDef.writeDefFile;
 			
 			this.updateSynthDef;
-			if(send, { this.sendToServer(freeLast) });
+			if(send, { this.sendToServer(freeLast, completionFunc) });
 		})
 	}
 	
@@ -149,7 +149,7 @@ NodeProxy : AbstractFunction {
 		var args;
 		if(proxy.rate === 'control', { 
 			args = [key, proxy];
-			nodeMap.performList(\map, args.postln);
+			nodeMap.performList(\map, args);
 			if(this.isPlaying, { nodeMap.send(group) })
 		}, {
 			"can only map to control bus".inform
@@ -174,13 +174,14 @@ NodeProxy : AbstractFunction {
 			
 	// server communications, updating
 	
-	sendToServer { arg freeLast=true;
+	sendToServer { arg freeLast=true, completionFunc;
 		var cmd;
 		if( synthDef.notNil and: { server.serverRunning }, {
 				cmd = List.new;
 				this.sendSynthCommand(cmd, freeLast);
 				Routine({ 0.4.wait; 
 					server.sendCmdList(cmd);
+					completionFunc.value(this)
 				 }).play;
 		});
 	}
@@ -211,9 +212,11 @@ NodeProxy : AbstractFunction {
 					group = Group.newCommand(cmd, server, \addToHead);
 					group.prIsPlaying(true);
 				
+				}, {
+					//release current synth
+					if(freeLast, {group.addCommand(cmd, "/n_set", [\synthGate, 0.0]) });
 				});
-		//release current synth
-		if(freeLast, {group.addCommand(cmd, "/n_set", \synthGate, 0.0) });
+		
 		synth = Synth.newCommand(cmd, synthDef.name, nil, group); 
 		nodeMap.updateCommand(cmd, synth);
 		
@@ -224,12 +227,18 @@ NodeProxy : AbstractFunction {
 	////// private /////
 	
 	initFor { arg obj;
-		var rate, array;
+		var rate, array, numChannels;
 			if(obj.notNil, {
-				
-				array = obj.value.asArray;
-				rate = array.rate ? 'control'; 
-				bus = Bus.perform(rate, server, array.size);
+				//for speed
+				if(obj.isKindOf(NodeProxy), {
+					rate = obj.rate;
+					numChannels = obj.numChannels
+				},{
+					array = obj.value.asArray;
+					rate = array.rate ? 'control'; 
+					numChannels = array.size;
+				});
+				bus = Bus.perform(rate, server, numChannels);
 				nodeMap = ProxyNodeMap.new;
 				this.initParents;
 			});
