@@ -60,7 +60,7 @@ void fatalerror(char*str)
 
 inline int ScanSize(PyrObject *obj) { return obj->obj_format <= obj_slot ? obj->size : 0; }
 
-void GC::ScanSlots(PyrSlot *inSlots, long inNumToScan)
+void PyrGC::ScanSlots(PyrSlot *inSlots, long inNumToScan)
 {
 	PyrObject *obj;
 	int32 rtagHFrame = tagHFrame; 
@@ -126,7 +126,7 @@ void GCSet::MoveWhiteToFree()
 
 PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj);
 
-GC::GC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long poolSize)
+PyrGC::PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long poolSize)
 {
 	mVMGlobals = g;
 	mPool = inPool;
@@ -186,7 +186,7 @@ GC::GC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long poolSiz
 	
 }
 
-PyrObject *GC::NewPermanent(size_t inNumBytes, long inFlags, long inFormat) 
+PyrObject *PyrGC::NewPermanent(size_t inNumBytes, long inFlags, long inFormat) 
 {
 	// obtain size info
 	int32 alignedSize = (inNumBytes + kAlignMask) & ~kAlignMask; // 16 byte align
@@ -210,7 +210,7 @@ PyrObject *GC::NewPermanent(size_t inNumBytes, long inFlags, long inFormat)
 	return obj;
 }
 
-void GC::BecomePermanent(PyrObject *inObject)
+void PyrGC::BecomePermanent(PyrObject *inObject)
 {
 
 	if (mGrey.next == inObject) {
@@ -226,14 +226,14 @@ void GC::BecomePermanent(PyrObject *inObject)
 	inObject->next = inObject->prev = inObject;
 }
 
-void GC::BecomeImmutable(PyrObject *inObject)
+void PyrGC::BecomeImmutable(PyrObject *inObject)
 {
 	inObject->obj_flags |= obj_immutable;
 }
 
 void DumpBackTrace(VMGlobals *g);
 
-PyrObject *GC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect) 
+PyrObject *PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect) 
 {
 	PyrObject *obj = NULL;
 
@@ -304,7 +304,7 @@ PyrObject *GC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCollec
 	return obj;
 }	
 
-PyrObject *GC::NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, bool inCollect) 
+PyrObject *PyrGC::NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, bool inCollect) 
 {
 	PyrObject *obj = NULL;
 	
@@ -365,7 +365,7 @@ PyrObject *GC::NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, bool i
 }	
 
 
-void GC::SweepBigObjects()
+void PyrGC::SweepBigObjects()
 {	
 	if (!mCanSweep) return;
 	
@@ -391,7 +391,7 @@ void GC::SweepBigObjects()
 	mCanSweep = false;
 }
 
-void GC::CompletePartialScan(PyrObject *obj)
+void PyrGC::CompletePartialScan(PyrObject *obj)
 {
 	if (mPartialScanObj == obj) {
 		int32 remain = obj->size - mPartialScanSlot;
@@ -399,7 +399,7 @@ void GC::CompletePartialScan(PyrObject *obj)
 	}
 }
 
-void GC::DoPartialScan(int32 inObjSize)
+void PyrGC::DoPartialScan(int32 inObjSize)
 {
 	int32 remain = inObjSize - mPartialScanSlot;
 
@@ -424,7 +424,7 @@ void GC::DoPartialScan(int32 inObjSize)
 	//post("partial %5d %2d %4d %2d %s\n", mScans, i, mNumToScan, mNumGrey, obj->classptr->name.us->name);
 }
 
-bool GC::ScanOneObj()
+bool PyrGC::ScanOneObj()
 {
 	// Find a set that has a grey object
 	PyrObject* obj;
@@ -465,7 +465,7 @@ bool GC::ScanOneObj()
 	return true;
 }
 
-void GC::ScanStack()
+void PyrGC::ScanStack()
 {
 	// scan the stack
 	PyrObject* obj = mStack;
@@ -485,9 +485,9 @@ void GC::ScanStack()
 	}
 }
 
-void GC::Flip()
+void PyrGC::Flip()
 {
-	//post("GC::Flip %d\n", mProcessID);
+	//post("PyrGC::Flip %d\n", mProcessID);
 		
 #if SANITYCHECK
 	SanityCheck();
@@ -525,19 +525,19 @@ void GC::Flip()
 }
 
 
-void GC::FullCollection()
+void PyrGC::FullCollection()
 {
 	Collect(100000000);	// collect space
 	SweepBigObjects();
 }
 
-void GC::Collect(int32 inNumToScan) 
+void PyrGC::Collect(int32 inNumToScan) 
 {
 	mNumToScan = sc_max(mNumToScan, inNumToScan); 
 	Collect();	// collect space
 }
 
-void GC::Collect() 
+void PyrGC::Collect() 
 {
 	bool stackScanned = false;
 	mCollects++;
@@ -586,7 +586,7 @@ void GC::Collect()
 
 
 
-void GC::Finalize(PyrObject *finalizer)
+void PyrGC::Finalize(PyrObject *finalizer)
 {
 	if (!IsPtr(finalizer->slots+0)) return;
 	if (!IsObj(finalizer->slots+1)) return;
@@ -600,7 +600,7 @@ void GC::Finalize(PyrObject *finalizer)
 	SetNil(obj->slots+1);
 }
 
-void GC::ScanFinalizers()
+void PyrGC::ScanFinalizers()
 {
 	GCSet *gcs = &mSets[kFinalizerSet];
 	PyrObjectHdr *obj = gcs->mWhite.next;
@@ -612,7 +612,7 @@ void GC::ScanFinalizers()
 	}
 }
 
-bool GC::SanityCheck2()
+bool PyrGC::SanityCheck2()
 {
 	int numgrey = 0;
 	PyrObjectHdr *grey = mGrey.next;
@@ -632,12 +632,12 @@ bool GC::SanityCheck2()
 	#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
 #endif
 
-bool GC::SanityCheck()
+bool PyrGC::SanityCheck()
 {
 	if (!mRunning) return true;
 	
 	
-	//postfl("GC::SanityCheck\n");
+	//postfl("PyrGC::SanityCheck\n");
 	bool res = LinkSanity() && ListSanity()
 	//&& SanityMarkObj((PyrObject*)mProcess,NULL,0) && SanityMarkObj(mStack,NULL,0) 
 	//&& SanityClearObj((PyrObject*)mProcess,0) && SanityClearObj(mStack,0)
@@ -647,7 +647,7 @@ bool GC::SanityCheck()
 	return res;
 }
 
-bool GC::ListSanity()
+bool PyrGC::ListSanity()
 {
 	bool found;
 	
@@ -656,7 +656,7 @@ bool GC::ListSanity()
 		return false;
 	}
 
-	//postfl("GC::ListSanity\n");
+	//postfl("PyrGC::ListSanity\n");
 	for (int i=0; i<kNumGCSets; ++i) {
 		PyrObjectHdr *obj;
 		GCSet* set = mSets + i;
@@ -829,9 +829,9 @@ bool GC::ListSanity()
 	return true;
 }
 
-bool GC::LinkSanity()
+bool PyrGC::LinkSanity()
 {
-	//postfl("GC::LinkSanity\n");
+	//postfl("PyrGC::LinkSanity\n");
 	for (int i=0; i<kNumGCSets; ++i) {
 		GCSet* set = mSets + i;
 		
@@ -856,7 +856,7 @@ bool GC::LinkSanity()
 
 #define DUMPINSANITY 1
 
-bool GC::BlackToWhiteCheck(PyrObject *objA)
+bool PyrGC::BlackToWhiteCheck(PyrObject *objA)
 {
 	int j, size, tag;
 	PyrSlot *slot;
@@ -898,7 +898,7 @@ bool GC::BlackToWhiteCheck(PyrObject *objA)
 	return true;
 }
 
-bool GC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
+bool PyrGC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
 {
 	int j, size, tag;
 	PyrSlot *slot;
@@ -962,7 +962,7 @@ bool GC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
 	return true;
 }
 
-bool GC::SanityClearObj(PyrObject *objA, int level)
+bool PyrGC::SanityClearObj(PyrObject *objA, int level)
 {
 	int size;
 	
@@ -999,7 +999,7 @@ bool GC::SanityClearObj(PyrObject *objA, int level)
 	return true;
 }
 
-void GC::DumpInfo()
+void PyrGC::DumpInfo()
 {
 	int i;
 	PyrObjectHdr *obj;
@@ -1072,7 +1072,7 @@ void GC::DumpInfo()
 		totblack, totgrey, totwhite, totfree, totref, total, siztotal);
 }
 
-void GC::DumpEverything()
+void PyrGC::DumpEverything()
 {
 	for (int i=0; i<kNumGCSizeClasses; ++i) {
 		GCSet *set = mSets + i;
@@ -1107,7 +1107,7 @@ void GC::DumpEverything()
 	}
 }
 
-void GC::ClearMarks()
+void PyrGC::ClearMarks()
 {
 	for (int i=0; i<kNumGCSets; ++i) {
 		GCSet *set = mSets + i;
@@ -1143,7 +1143,7 @@ void GC::ClearMarks()
 }
 
 
-void GC::ToGrey(PyrObjectHdr* obj)
+void PyrGC::ToGrey(PyrObjectHdr* obj)
 {	
 	/* move obj from white to grey */
 	/* link around object */
@@ -1158,7 +1158,7 @@ void GC::ToGrey(PyrObjectHdr* obj)
 	mNumToScan += (1L << obj->obj_sizeclass) + 4;
 }
 
-void GC::ToGrey2(PyrObjectHdr* obj)
+void PyrGC::ToGrey2(PyrObjectHdr* obj)
 {	
 	/* move obj from white to grey */
 	/* link around object */

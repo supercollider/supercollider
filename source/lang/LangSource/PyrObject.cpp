@@ -1482,7 +1482,7 @@ void initClasses()
 	*/
 }
 
-PyrObject* instantiateObject(class GC *gc, PyrClass* classobj, int size, 
+PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size, 
 	bool fill, bool collect)
 {
 	PyrObject *newobj, *proto;
@@ -1525,8 +1525,8 @@ PyrObject* instantiateObject(class GC *gc, PyrClass* classobj, int size,
 	return newobj;
 }
 
-PyrObject* instantiateObjectLight(class GC *gc, PyrClass* classobj, int size, bool collect);
-PyrObject* instantiateObjectLight(class GC *gc, PyrClass* classobj, int size, bool collect)
+PyrObject* instantiateObjectLight(class PyrGC *gc, PyrClass* classobj, int size, bool collect);
+PyrObject* instantiateObjectLight(class PyrGC *gc, PyrClass* classobj, int size, bool collect)
 {
 	PyrObject *newobj, *proto;
 	int numbytes, format, flags;
@@ -1553,7 +1553,7 @@ PyrObject* instantiateObjectLight(class GC *gc, PyrClass* classobj, int size, bo
 	return newobj;
 }
 
-PyrObject* copyObject(class GC *gc, PyrObject *inobj, bool collect)
+PyrObject* copyObject(class PyrGC *gc, PyrObject *inobj, bool collect)
 {
 	PyrObject *newobj;
 
@@ -1571,7 +1571,7 @@ PyrObject* copyObject(class GC *gc, PyrObject *inobj, bool collect)
 	return newobj;
 }	
 
-PyrObject* copyObjectRange(class GC *gc, PyrObject *inobj, int start, int end, bool collect)
+PyrObject* copyObjectRange(class PyrGC *gc, PyrObject *inobj, int start, int end, bool collect)
 {
 	PyrObject *newobj;
  
@@ -2148,57 +2148,57 @@ void zeroSlots(PyrSlot* slot, int size)
 	while (p < pend) *++p = 0.;
 }
 
-PyrObject* newPyrObject(class GC *gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect) 
+PyrObject* newPyrObject(class PyrGC *gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect) 
 {
 	return gc->New(inNumBytes, inFlags, inFormat, inCollect);
 }
 
-PyrObject* newPyrArray(class GC *gc, int size, int flags, bool collect) 
+PyrObject* newPyrArray(class PyrGC *gc, int size, int flags, bool collect) 
 {
 	PyrObject* array;
 
-	if (!gc) array = (PyrObject*)GC::NewPermanent(size * sizeof(PyrSlot), flags, obj_slot);
+	if (!gc) array = (PyrObject*)PyrGC::NewPermanent(size * sizeof(PyrSlot), flags, obj_slot);
 	else array = (PyrObject*)gc->New(size * sizeof(PyrSlot), flags, obj_slot, collect);
 	array->classptr = class_array;
 	return array;
 }
 
-PyrSymbolArray* newPyrSymbolArray(class GC *gc, int size, int flags, bool collect) 
+PyrSymbolArray* newPyrSymbolArray(class PyrGC *gc, int size, int flags, bool collect) 
 {
 	PyrSymbolArray* array;
 
-	if (!gc) array = (PyrSymbolArray*)GC::NewPermanent(size * sizeof(PyrSlot), flags, obj_symbol);
+	if (!gc) array = (PyrSymbolArray*)PyrGC::NewPermanent(size * sizeof(PyrSlot), flags, obj_symbol);
 	else array = (PyrSymbolArray*)gc->New(size * sizeof(PyrSymbol*), flags, obj_symbol, collect);
 	array->classptr = class_symbolarray;
 	return array;
 }
 
-PyrInt8Array* newPyrInt8Array(class GC *gc, int size, int flags, bool collect) 
+PyrInt8Array* newPyrInt8Array(class PyrGC *gc, int size, int flags, bool collect) 
 {
 	PyrInt8Array* array;
 
-	if (!gc) array = (PyrInt8Array*)GC::NewPermanent(size, flags, obj_int8);
+	if (!gc) array = (PyrInt8Array*)PyrGC::NewPermanent(size, flags, obj_int8);
 	else array = (PyrInt8Array*)gc->New(size, flags, obj_int8, collect);
 	array->classptr = class_int8array;
 	return array;
 }
 
-PyrInt32Array* newPyrInt32Array(class GC *gc, int size, int flags, bool collect) 
+PyrInt32Array* newPyrInt32Array(class PyrGC *gc, int size, int flags, bool collect) 
 {
 	PyrInt32Array* array;
 
-	if (!gc) array = (PyrInt32Array*)GC::NewPermanent(size, flags, obj_int32);
+	if (!gc) array = (PyrInt32Array*)PyrGC::NewPermanent(size, flags, obj_int32);
 	else array = (PyrInt32Array*)gc->New(size, flags, obj_int32, collect);
 	array->classptr = class_int32array;
 	return array;
 }
 
-PyrString* newPyrString(class GC *gc, const char *s, int flags, bool collect)
+PyrString* newPyrString(class PyrGC *gc, const char *s, int flags, bool collect)
 {
 	PyrString* string;
 	int length = strlen(s);
 	
-	if (!gc) string = (PyrString*)GC::NewPermanent(length, flags, obj_char);
+	if (!gc) string = (PyrString*)PyrGC::NewPermanent(length, flags, obj_char);
 	else string = (PyrString*)gc->New(length, flags, obj_char, collect);
 	string->classptr = class_string;
 	string->size = length;
@@ -2206,11 +2206,11 @@ PyrString* newPyrString(class GC *gc, const char *s, int flags, bool collect)
 	return string;
 }
 
-PyrString* newPyrStringN(class GC *gc, int length, int flags, bool collect)
+PyrString* newPyrStringN(class PyrGC *gc, int length, int flags, bool collect)
 {
 	PyrString* string;
 	
-	if (!gc) string = (PyrString*)GC::NewPermanent(length, flags, obj_char);
+	if (!gc) string = (PyrString*)PyrGC::NewPermanent(length, flags, obj_char);
 	else string = (PyrString*)gc->New(length, flags, obj_char, collect);
 	string->classptr = class_string;
 	string->size = length; // filled with garbage!
@@ -2226,7 +2226,7 @@ PyrBlock* newPyrBlock(int flags)
 	int32 numbytes = sizeof(PyrBlock) - sizeof(PyrObjectHdr);
 	int32 numSlots = numbytes / sizeof(PyrSlot);
 	
-	if (!compilingCmdLine) block = (PyrBlock*)GC::NewPermanent(numbytes, flags, obj_notindexed);
+	if (!compilingCmdLine) block = (PyrBlock*)PyrGC::NewPermanent(numbytes, flags, obj_notindexed);
 	else block = (PyrBlock*)gMainVMGlobals->gc->New(numbytes, flags, obj_notindexed, false);
 	block->classptr = class_fundef;
 	block->size = numSlots;
@@ -2295,7 +2295,7 @@ PyrMethod* initPyrMethod(PyrMethod* method)
 PyrMethod* newPyrMethod() 
 {
 	int32 numbytes = sizeof(PyrMethod) - sizeof(PyrObjectHdr);
-	PyrMethod* method = (PyrMethod*)GC::NewPermanent(numbytes, obj_permanent | obj_immutable, obj_notindexed);
+	PyrMethod* method = (PyrMethod*)PyrGC::NewPermanent(numbytes, obj_permanent | obj_immutable, obj_notindexed);
 	return initPyrMethod(method);
 }
 

@@ -84,8 +84,8 @@ extern bool compilingCmdLine;
 char *nodename[pn_NumTypes] = {
 };
 
-GC* compileGC();
-GC* compileGC()
+PyrGC* compileGC();
+PyrGC* compileGC()
 {
 	return gCompilingVMGlobals ? gCompilingVMGlobals->gc : 0;
 }

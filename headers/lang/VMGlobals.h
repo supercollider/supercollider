@@ -52,7 +52,7 @@ struct VMGlobals {
 	class AllocPool *allocPool;
 	struct PyrProcess *process;
 	class SymbolTable *symbolTable;
-	class GC *gc;		// garbage collector for this process
+	class PyrGC *gc;		// garbage collector for this process
 	PyrSlot *classvars;
 	bool canCallOS;
 

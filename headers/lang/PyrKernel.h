@@ -226,19 +226,19 @@ extern double gSpecialValues[svNumSpecialValues];
 
 extern PyrMethod *gNullMethod; // used to fill row table
 
-PyrObject* instantiateObject(class GC *gc, PyrClass* classobj, int size, 
+PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size, 
 	bool fill, bool collect);
 	
-PyrObject* newPyrObject(class GC *gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect);
-PyrString* newPyrString(class GC *gc, const char *s, int flags, bool collect);
-PyrString* newPyrStringN(class GC *gc, int size, int flags, bool collect);
-PyrObject* newPyrArray(class GC *gc, int size, int flags, bool collect);
-PyrSymbolArray* newPyrSymbolArray(class GC *gc, int size, int flags, bool collect);
-PyrInt8Array* newPyrInt8Array(class GC *gc, int size, int flags, bool collect);
-PyrInt32Array* newPyrInt32Array(class GC *gc, int size, int flags, bool collect);
+PyrObject* newPyrObject(class PyrGC *gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect);
+PyrString* newPyrString(class PyrGC *gc, const char *s, int flags, bool collect);
+PyrString* newPyrStringN(class PyrGC *gc, int size, int flags, bool collect);
+PyrObject* newPyrArray(class PyrGC *gc, int size, int flags, bool collect);
+PyrSymbolArray* newPyrSymbolArray(class PyrGC *gc, int size, int flags, bool collect);
+PyrInt8Array* newPyrInt8Array(class PyrGC *gc, int size, int flags, bool collect);
+PyrInt32Array* newPyrInt32Array(class PyrGC *gc, int size, int flags, bool collect);
 
-PyrObject* copyObject(class GC *gc, PyrObject *inobj, bool collect);
-PyrObject* copyObjectRange(class GC *gc, PyrObject *inobj, int start, int end, bool collect);
+PyrObject* copyObject(class PyrGC *gc, PyrObject *inobj, bool collect);
+PyrObject* copyObjectRange(class PyrGC *gc, PyrObject *inobj, int start, int end, bool collect);
 
 inline void SetFrame(PyrSlot* slot, PyrFrame* frame) 
 {

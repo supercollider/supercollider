@@ -142,7 +142,7 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 	PyrObject *classVarArray;
 	PyrThread *thread;
 	//PyrDSP *dsp;
-        GC* gc = g->gc;
+        PyrGC* gc = g->gc;
 	
 	int classIndex, numClassVars;
 	
@@ -321,8 +321,8 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool, int processID)
 	// create GC environment, process
 	g->allocPool = inPool;
 	g->processID = processID;
-	g->gc = (GC*)g->allocPool->Alloc(sizeof(GC));
-	new (g->gc) GC(g, g->allocPool, class_main, poolSize);
+	g->gc = (PyrGC*)g->allocPool->Alloc(sizeof(PyrGC));
+	new (g->gc) PyrGC(g, g->allocPool, class_main, poolSize);
 	g->thread = g->process->mainThread.uot;
 	SetObject(&g->receiver, g->process);
 

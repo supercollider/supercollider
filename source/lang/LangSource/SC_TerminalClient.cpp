@@ -51,7 +51,7 @@ void initSpeechPrimitives();
 
 long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2);
 
-extern PyrString* newPyrStringN(class GC *gc, long length, long flags, long collect);
+extern PyrString* newPyrStringN(class PyrGC *gc, long length, long flags, long collect);
 
 extern long compiledOK;
 extern pthread_mutex_t gLangMutex;

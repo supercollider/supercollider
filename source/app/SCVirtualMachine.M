@@ -43,7 +43,7 @@ extern pthread_mutex_t gLangMutex;
 extern PyrSymbol *s_closed;
 extern PyrSymbol *s_tick;
 
-PyrString* newPyrStringN(class GC *gc, long length, long flags, bool collect);
+PyrString* newPyrStringN(class PyrGC *gc, long length, long flags, bool collect);
 void dumpByteCodes(PyrBlock *theBlock);
 
 void initPostBuffer();

@@ -2820,7 +2820,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numArgsPushed)
 {
 	PyrThread *oldthread;
-	GC *gc;
+	PyrGC *gc;
 	PyrObject *frameobj;
 	PyrFrame *frame;
 	
@@ -2999,7 +2999,7 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 	double beats, double seconds, PyrSlot* clock, bool collect)
 {
 	PyrObject *array;
-	GC* gc = g->gc;
+	PyrGC* gc = g->gc;
         
 	thread->func.ucopy = func->ucopy;
 	gc->GCWrite(thread, func);

@@ -47,7 +47,7 @@ public:
 	bool HasFree() { return mFree != &mBlack; }
 	
 private:
-	friend class GC;
+	friend class PyrGC;
 	
 	void MoveWhiteToFree();
 	
@@ -63,10 +63,10 @@ struct SlotRef {
 	int32 slotIndex;
 };
 
-class GC
+class PyrGC
 {
 public:
-	GC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long poolSize);
+	PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long poolSize);
 	
 	PyrObject* New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect);
 						
@@ -203,13 +203,13 @@ private:
 	bool mRunning;
 };
 
-inline void GC::DLRemove(PyrObjectHdr *obj) 
+inline void PyrGC::DLRemove(PyrObjectHdr *obj) 
 {
 	obj->next->prev = obj->prev;
 	obj->prev->next = obj->next;
 }
 
-inline void GC::DLInsertAfter(PyrObjectHdr *after, PyrObjectHdr *obj) 
+inline void PyrGC::DLInsertAfter(PyrObjectHdr *after, PyrObjectHdr *obj) 
 {
 	obj->next = after->next;
 	obj->prev = after;
@@ -217,7 +217,7 @@ inline void GC::DLInsertAfter(PyrObjectHdr *after, PyrObjectHdr *obj)
 	after->next = obj;
 }
 
-inline void GC::DLInsertBefore(PyrObjectHdr *before, PyrObjectHdr *obj) 
+inline void PyrGC::DLInsertBefore(PyrObjectHdr *before, PyrObjectHdr *obj) 
 {
 	obj->prev = before->prev;
 	obj->next = before;
@@ -225,12 +225,12 @@ inline void GC::DLInsertBefore(PyrObjectHdr *before, PyrObjectHdr *obj)
 	before->prev = obj;
 }
 
-inline GCSet* GC::GetGCSet(PyrObjectHdr* inObj) 
+inline GCSet* PyrGC::GetGCSet(PyrObjectHdr* inObj) 
 {
 	return mSets + (inObj->classptr == class_finalizer ? kFinalizerSet : inObj->obj_sizeclass);
 }
 
-inline void GC::ToBlack(PyrObjectHdr *obj) 
+inline void PyrGC::ToBlack(PyrObjectHdr *obj) 
 {		
 	if (IsGrey(obj)) {
 		mNumGrey--;
@@ -245,7 +245,7 @@ inline void GC::ToBlack(PyrObjectHdr *obj)
 	obj->gc_color = mBlackColor;
 }
 
-inline void GC::ToWhite(PyrObjectHdr *obj) 
+inline void PyrGC::ToWhite(PyrObjectHdr *obj) 
 {	
 	if (IsGrey(obj)) {
 		mNumGrey--;
