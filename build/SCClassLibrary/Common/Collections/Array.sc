@@ -168,6 +168,7 @@ Array[slot] : ArrayedCollection {
 			Error("source: Not an Array of OutputProxy(s)\n").throw;
 		});
 	}
+	asUGenInput { arg rate; ^this.collect(_.asUGenInput(rate)) }
 	isValidUGenInput { ^true }
 	numChannels { ^this.size }
 	
