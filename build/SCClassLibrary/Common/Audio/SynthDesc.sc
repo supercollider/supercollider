@@ -222,7 +222,7 @@ SynthDescLib {
 
 	*new { arg name, servers;
 		if (name.isNil) { "SynthDescLib must have a name".error; ^nil }
-		^super.new.name_(name).servers_(servers ? Server.default).init;
+		^super.new.name_(name).servers_(servers ? {Server.default}).init;
 	}
 	init {
 		all.put(name.asSymbol, this);
