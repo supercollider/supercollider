@@ -66,7 +66,7 @@ bool docCreatedFromLang = false; //if this is true addDocument is not called
 
 - (NSTextView*)makeTextView
 {
-    NSTextView* aTextView = [[SCTextView alloc] initWithFrame: 
+    SCTextView* aTextView = [[SCTextView alloc] initWithFrame: 
                     NSMakeRect(0,0,612,512)];
     [aTextView setAutoresizingMask: 63];
     [[aTextView textContainer] setWidthTracksTextView: YES];
@@ -76,6 +76,11 @@ bool docCreatedFromLang = false; //if this is true addDocument is not called
     [aTextView setSmartInsertDeleteEnabled: NO];
     [aTextView setImportsGraphics: YES];
     [aTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
+	[aTextView setLangClassToCall:@"Document" 
+			withKeyDownActionIndex:4 withKeyUpActionIndex:5];
+	[aTextView setObjectKeyDownActionIndex:2 setObjectKeyUpActionIndex:1];
+	[aTextView setAcceptsFirstResponder:YES];
+
     isRichText = YES;   
     return aTextView;
 }
@@ -580,19 +585,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 }
 
 
-- (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange
-{
-    NSString* string = [textView string];
-    NSRange selectedRange = [textView selectedRange];
-    if (selectedRange.length <= 0) {
-        unsigned int lineStart, lineEnd;
-        [string getLineStart: &lineStart end: &lineEnd 
-            contentsEnd: nil forRange:selectedRange];
-        selectedRange = NSMakeRange(lineStart, lineEnd - lineStart);
-    }
-	if (outRange) *outRange = selectedRange;
-    return [string substringWithRange: selectedRange];
-}
+
 -(void)selectRangeStart:(int)rangeStart size:(int)rangeSize
 {
     NSTextView *localTextView = [self textView];
@@ -653,7 +646,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 - (IBAction) showHelp: (id) sender;
 {
-	showHelpFor([self currentlySelectedTextOrLine: NULL]);
+	showHelpFor([textView currentlySelectedTextOrLine: NULL]);
 }
 
 #endif
@@ -696,7 +689,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     //	Get the text which will go into the link. 
     // 	Currently this looks for a helpfile with the name of the selection and any of the standard extensions 
 
-    link = [pathOfHelpFileFor([self currentlySelectedTextOrLine: NULL]) lastPathComponent];
+    link = [pathOfHelpFileFor([textView currentlySelectedTextOrLine: NULL]) lastPathComponent];
     if ([link length] ==0)
     {
         return;
@@ -727,7 +720,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     }
 
 	NSRange selectedRange;
-	NSString* selection = [self currentlySelectedTextOrLine: &selectedRange];
+	NSString* selection = [textView currentlySelectedTextOrLine: &selectedRange];
     const char *text = [selection UTF8String];
 	int textlength = strlen(text);
 
@@ -844,7 +837,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     return YES;
 }
 
-- (NSTextView*) textView;
+- (SCTextView*) textView;
 {
     return textView;
 }
@@ -1045,7 +1038,15 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 {
 	promptToSave = flag;
 }
-
+- (void) keyDown: (NSEvent*) event
+{
+}
+- (void) keyUp: (NSEvent*) event
+{
+}
+- (void) MouseDown: (NSEvent*) event
+{
+}
 @end
 
 
