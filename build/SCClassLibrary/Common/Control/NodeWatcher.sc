@@ -1,21 +1,77 @@
-NodeWatcher {
+//watches a server for created nodes and ending nodes.
+
+BasicNodeWatcher {
 	var <nodes, <server, <responders;
-	var <isListening=false;
+	var <isWatching=false;
 	
 	*new { arg server;
 		^super.new.ninit(server)
 	}
+	
 	ninit { arg s;
 		var cmds;
 		server = s;
-		
 		this.clear;
-		cmds = #['/n_go', '/n_end', '/n_off', '/n_on', '/n_move'];		responders = cmds.collect({ arg cmd;
+		responders = this.cmds.collect({ arg cmd;
 				var method;
-				method = cmd.asString.copyToEnd(1).asSymbol;
+				method = cmd.copyToEnd(1).asSymbol;
 				OSCresponder(server.addr, cmd, 
-					{ arg time, resp, msg;
-						//msg.postln;
+					{ arg time, resp, msg; this.respond(method, msg) }
+				)
+		});
+	}
+	cmds {  ^#["/n_go", "/n_end"] }
+	
+	respond { arg method, msg;
+				//msg.postln;
+				msg.removeAt(0);
+				this.performList(method, msg)
+	}
+	
+	start {
+		server.notify(true);
+		if(isWatching.not, {
+			responders.do({ arg item; item.add });
+			isWatching = true;
+		})
+	}
+	stop {
+		if(isWatching, {
+			responders.do({ arg item; item.remove });
+			isWatching = false;
+			this.clear;
+		})
+	}
+	
+	nodeIsPlaying { arg nodeID;
+		^nodes.includes(nodeID);
+	}
+		
+	clear { 
+		nodes = IdentitySet.new;
+		
+	}
+		
+	n_end { arg nodeID;
+		nodes.remove(nodeID);
+	}
+	n_go { arg nodeID;
+		nodes.add(nodeID);
+	}
+	
+
+}
+
+
+///////////////////////////////////
+//watches registered nodes and sets their isPlaying/isRunning flag. 
+//a node needs to be  registered to be linked, other nodes are ignored.
+
+NodeWatcher : BasicNodeWatcher {
+	
+
+	cmds { ^#["/n_go", "/n_end", "/n_off", "/n_on"] }
+	respond { arg method, msg;
 						msg.removeAt(0);
 						if(nodes.at(msg.at(0)).notNil, {//for speed
 							msg = this.lookUp(msg);
@@ -23,11 +79,7 @@ NodeWatcher {
 								this.performList(method, msg)
 							})
 						})
-						
-					})
-				});
 	}
-
 	lookUp { arg msg;
 		var res;
 		res = msg.collect({ arg nodeID; nodes.at(nodeID) });
@@ -35,37 +87,62 @@ NodeWatcher {
 		//todo: remote creation scheme
 	}
 	
-	startListen {
-		server.notify(true);
-		if(isListening.not, {
-			responders.do({ arg item; item.add });
-			isListening = true;
-		})
-	}
-	stopListen {
-		if(isListening, {
-			responders.do({ arg item; item.remove });
-			isListening = false;
-		})
+	clear {
+		nodes = IdentityDictionary.new 
 	}
 	
+	
 	register { arg node;
-		if(isListening, {
+		if(isWatching, {
 			nodes.put(node.nodeID, node);
 		});
 	}
 	
 	unregister { arg node;
 		nodes.removeAt(node.nodeID);
-		node.freeNodeID;
+		//node.freeNodeID;
 	}
 	
-	clear { 
-		nodes = IdentityDictionary.new;
+	
+	//////////////private implementation//////////////
+	
+	n_go { arg node, group, prev, next;
+		
+		node.group = group;
+		node.isPlaying = true;
+		node.isRunning = true;
 		
 	}
 	
-	//////////////private implementation//////////////
+	
+	n_end { arg node;
+		this.unregister(node);
+		node.group = nil;
+		node.isPlaying = false;
+		node.isRunning = false;
+	}
+
+	n_off { arg node, group, prev, next;
+		
+		node.isRunning = false;
+	}	
+
+	n_on { arg node, group, prev, next;
+		
+		node.isRunning = true;
+	}
+	
+	
+
+
+}
+
+
+
+NodeWatcherLinker : NodeWatcher {
+	//if you want nodes to be linked, use this
+
+	cmds { ^#["/n_go", "/n_end", "/n_off", "/n_on", "/n_move"] }
 	
 	n_go { arg node, group, prev, next;
 		//group is set in the prMove calls
@@ -104,8 +181,6 @@ NodeWatcher {
 	
 	n_end { arg node;
 		node.remove;
-		//(node.asString ++ " was freed").postln;
-
 		this.unregister(node);
 		node.group = nil;
 		node.isPlaying = false;
@@ -122,7 +197,5 @@ NodeWatcher {
 		node.isRunning = true;
 	}
 	
-	
-
 
 }
