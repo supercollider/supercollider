@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green115\blue0;\red0\green0\blue0;
+\red0\green0\blue191;\red96\green96\blue96;\red0\green0\blue191;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Server
@@ -237,7 +237,17 @@ A Server object is the client-side representation of a server app and is used to
 \f0\b DiskOut
 \f1\b0  helpfile for more info. For non-realtime recording, see the 
 \f0\b Non-Realtime-Synthesis
-\f1\b0  helpfile.\
+\f1\b0  helpfile. \
+\
+
+\f0\b NOTE:
+\f1\b0  These methods do not take care of order-of-execution issues. 
+\f0\b record
+\f1\b0  creates the recording synth at the tail of the Server's RootNode and uses 
+\f0\b In.ar
+\f1\b0 . Thus if you add nodes after the recording synth their output will not be captured. Solutions to this problem include using \cf3 \\addToHead\cf4 , \cf0 creating a group and adding all synths to that, and using Server.recordNode to get the recording synth for use as a target. For more detail on this subject see 
+\f0\b Order-of-execution
+\f1\b0 .\
 
 \f0\b \
 prepareForRecord(path, headerFormat, sampleFormat, numChannels)\
@@ -276,22 +286,34 @@ prepareForRecord(path, headerFormat, sampleFormat, numChannels)\
 \f1\b0 		Stops recording, closes the file, and frees the associated resources. \
 		You must call this when finished recording or the output file will be unusable.\
 		Cmd-. while recording has the same effect.\
+		\
+
+\f0\b recordNode\
+		
+\f1\b0 Returns the current recording synth so that it can be used as a target. Nodes added or moved after \
+		the recording synth in the order of nodes will not be recorded.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 s.boot; \cf2 // start the server\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // something to record\cf0 \
 (\
-\cf3 SynthDef\cf0 (\cf4 "bubbles"\cf0 , \{\
-	\cf3 var\cf0  f, zout;\
-	f = \cf3 LFSaw\cf0 .kr(0.4, 0, 24, \cf3 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps; \cf2 // glissando function\cf0 \
-	zout = \cf3 CombN\cf0 .ar(\cf3 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4); \cf2 // echoing sine wave\cf0 \
-	\cf3 Out\cf0 .ar(0, zout);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 SynthDef\cf0 (\cf6 "bubbles"\cf0 , \{\
+	\cf5 var\cf0  f, zout;\
+	f = \cf5 LFSaw\cf0 .kr(0.4, 0, 24, \cf5 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps; \cf2 // glissando function\cf0 \
+	zout = \cf5 CombN\cf0 .ar(\cf5 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4); \cf2 // echoing sine wave\cf0 \
+	\cf5 Out\cf0 .ar(0, zout);\
 \}).send(s);\
+\cf5 SynthDef\cf0 (\cf6 "tpulse"\cf0 , \{ \cf5 arg\cf0  out=0,freq=700,sawFreq=440.0; \
+	\cf5 Out\cf0 .ar(out, \cf5 SyncSaw\cf0 .ar(freq,  sawFreq,0.1) ) \
+\}).send(s);\
+\
 )\
 \
-x = \cf3 Synth\cf0 .new(\cf4 "bubbles"\cf0 );\
+x = \cf5 Synth\cf0 .new(\cf6 "bubbles"\cf0 );\
 \
 s.prepareForRecord("testout.aiff"); \cf2 // you have to call this first\
 \cf0 \
@@ -300,7 +322,12 @@ s.record;\
 s.pauseRecording; \cf2 // pausable\
 \cf0 \
 s.record \cf2 // start again\
+\
+// add another synth, making sure the node gets added BEFORE the recording synth\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 y = \cf7 Synth\cf4 .before(s.recordNode, \cf8 "tpulse"\cf4 ); \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 s.stopRecording; \cf2 // this closes the file and deallocates the buffer recording node, etc.\
 \
-\cf0 x.free; \cf2 // stop the bubbles synth}
+\cf0 x.free; y.free; \cf2 // stop the synths}
