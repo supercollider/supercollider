@@ -3,14 +3,15 @@
 ClassNameLabel : ActionButton {
 
 	*new { arg  class,layout,maxx=200;
-		^super.prNew(layout,class.name.asString,{class.gui},maxx)
-			.backColor_(Color( 0.52156862745098, 0.75686274509804, 0.90196078431373 ));
+		^super.new(layout,class.name.asString,{class.gui},maxx,nil,
+			Color.white,
+			Color( 0.52156862745098, 0.75686274509804, 0.90196078431373 )
+		);
 	}
 	*newBig { arg  class,layout,maxx=200;
-		^super.prNew(layout,class.name.asString,{class.gui},maxx,30)
-			.backColor_(Color( 0.52156862745098, 0.75686274509804, 0.90196078431373 ))
-			.font_(Font("Helvetica-Bold",18))
-			.labelColor_(Color.white)
+		^super.new(layout,class.name.asString,{class.gui},maxx,30, Color.white,
+			Color( 0.52156862745098, 0.75686274509804, 0.90196078431373 ),
+			Font("Helvetica-Bold",18))
 	}
 
 }
@@ -19,13 +20,12 @@ ClassNameLabel : ActionButton {
 MethodLabel : ActionButton {
 
 	*new { arg  method,layout,maxx=100;
-		^super.prNew(layout,method.ownerClass.name.asString ++ "-" ++ method.name.asString,
-			{method.gui},maxx,15)
-				.backColor_(Color.new255(245, 222, 179));
+		^super.new(layout,method.ownerClass.name.asString ++ "-" ++ method.name.asString,
+			{method.gui},maxx,15,nil,Color.new255(245, 222, 179));
 	}
 	*withoutClass { arg  method,layout,maxx=100;
-		^super.prNew(layout, "-" ++ method.name.asString,{method.gui},maxx,15)
-			.backColor_(Color.new255(245, 222, 179));
+		^super.new(layout, "-" ++ method.name.asString,{method.gui},maxx,15,nil,
+			Color.new255(245, 222, 179));
 	}
 	
 //	// search by selector link
@@ -39,8 +39,8 @@ MethodLabel : ActionButton {
 SelectorLabel : ActionButton {
 	
 	*new { arg  selector,layout,maxx=100; // can send it to a MethodBrowser
-		^super.prNew(layout,selector.asString,{},maxx)
-			.backColor_(Color( 0.74509803921569, 0.8078431372549, 0.57647058823529 ));
+		^super.new(layout,selector.asString,nil,maxx,nil,
+			nil,Color( 0.74509803921569, 0.8078431372549, 0.57647058823529 ));
 	}
 }
 
@@ -48,31 +48,26 @@ SelectorLabel : ActionButton {
 Tile : ActionButton {
 
 	*new { arg  target,layout,maxx=100; 
-		^super.prNew(layout,target.asString,{ 
+		^super.new(layout,target.asString,{ 
 				Sheet({ arg f; 
 					target.gui(f); 
 				},target.asString)
-			},maxx,15)
-			.backColor_(Color.new255(152, 251, 152))
-			.labelColor_(Color.black)
+			},maxx,15, Color.black,Color.new255(152, 251, 152))
 	}
 
 }
 
 InspectorLink : ActionButton {
 	*new { arg  target,layout,maxx=100; 
-		^super.prNew(layout,target.asString,{target.insp},maxx)
-			.backColor_(Color.white)
-			.labelColor_(Color.new255(70, 130, 200))
-			.font_(Font("Helvetica",12))
-			//.align_(\left)
+		^super.new(layout,target.asString,{target.insp},maxx,nil,
+			Color.new255(70, 130, 200),
+			Color.white,
+			Font("Helvetica",12)
+		)
 	}
 	*big { arg  target,layout,maxx=100; 
-		^super.prNew(layout,target.asString,{target.insp},maxx,30)
-			.backColor_(Color.white)
-			.labelColor_(Color.black)
-			.font_(Font("Helvetica-Bold",18))
-			//.align_(\left)
+		^super.new(layout,target.asString,{target.insp},maxx,30,
+			Color.black,Color.white,Font("Helvetica-Bold",18))
 	}
 }
 

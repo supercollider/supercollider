@@ -78,6 +78,7 @@ Patch : AbstractPlayer  {
 	// has inputs
 	spawnToBundle { arg bundle;
 		var synthArgs;
+		this.asSynthDef;// make sure it exists
 		this.children.do({ arg child;
 			child.spawnToBundle(bundle);
 		});
@@ -124,9 +125,14 @@ Patch : AbstractPlayer  {
 		super.free;
 		// ISSUE: if you change a static, nobody notices to rebuild the synth def
 		// so for now, wipe it out
+		// the Instr should know if it came from a file, check the moddate
 		synthDef = nil;
 		readyForPlay = false;
 		this.setPatchOut(nil);
+	}
+	stop {
+		super.stop;
+		this.children.do({ arg child; child.stop });
 	}
 
 	/*

@@ -45,7 +45,7 @@
 + AbstractPlayer {
 	
 	enpath {
-		//abrev it
+		//document enpath abrev it
 		^path ? this
 	}
 	loadDocument {
@@ -61,9 +61,6 @@
 	}
 	load { arg obj, warnIfNotFound=true;
 		^this.class.load(obj,warnIfNotFound);
-	}
-	enpath { arg obj;
-		^this.class.enpath(obj) // document enpath
 	}
 
 }

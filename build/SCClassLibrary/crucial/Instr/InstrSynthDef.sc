@@ -57,7 +57,7 @@ InstrSynthDef : SynthDef {
 					this.addKr(\outIndex,0);
 					result = outClass.kr(Control.names([\outIndex]).kr([0]) , result);
 				},{
-					("InstrSynthDef: ? result of your function:" + result).error;
+					("InstrSynthDef: scalar rate ? result of your function:" + result).error;
 				})
 			});
 		});

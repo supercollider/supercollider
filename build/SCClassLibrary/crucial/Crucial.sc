@@ -11,7 +11,7 @@ Crucial {
 
 
 		// you can move all of your documents elsewhere
-		Document.dir = ""; // same as SC, or use "~/Documents/SC3";
+		Document.dir = ""; // where the SC app is, or use eg. "~/Documents/SC3/";
 		
 		Instr.instrDirectory = Document.dir ++ "Instr/";
 		Sample.soundsDir = Document.dir ++ "sounds/";
@@ -29,9 +29,6 @@ Crucial {
 		PageLayout.focuscolor = Color.new255(255,25,33);
 		PageLayout.hrcolor = Color.new255(226,230,209);
 		
-		ActionButton.offcolor = Color.new255(112, 128, 144);
-
-
 		CXLabel.bgcolor = Color.new255(250,250,240);
 /*
 		Tile.bgcolor =   Color.new255(231,250,178);
@@ -272,48 +269,61 @@ Crucial {
 //			thisProcess.interpreter.clearAll;
 //		});
 
-//		Library.put(\menuItems,\introspection,\findClassByPartialName,{
-//			GetStringDialog("Classname or partial string","",{
-//				arg ok,string;
-//				var matches,f,classes;
-//				matches = IdentitySet.new;
-//				if(ok,{
-//					classes = Class.allClasses.reject({ arg cl; cl.class === Class });
-//					classes.do({ arg cl;
-//						if(cl.name.asString.containsi(string),{
-//							matches = matches.add(cl);
-//						});
-//					});
-//
-//					Sheet({ arg f;
-//						matches.do({ arg cl;
-//							ActionButton(f.startRow,cl.name,{
-//								cl.gui;
-//							},200);
-//						});
-//					});
-//				})
-//			});
-//		});
-//		Library.put(\menuItems,\tools,\methodfinder,{
+		Library.put(\menuItems,\introspection,'find class...',{
+			GetStringDialog("Classname or partial string","",{
+				arg ok,string;
+				var matches,f,classes;
+				matches = IdentitySet.new;
+				if(ok,{
+					classes = Class.allClasses.reject({ arg cl; cl.class === Class });
+					classes.do({ arg cl;
+						if(cl.name.asString.containsi(string),{
+							matches = matches.add(cl);
+						});
+					});
+
+					Sheet({ arg f;
+						matches.do({ arg cl;
+							ClassNameLabel(cl,f.startRow,200);
+							ActionButton(f,"source",{
+								cl.openCodeFile;
+							},60);
+							ActionButton(f,"help",{
+								cl.openHelpFile;
+							},60);
+						});
+					},"matches" + string);
+				})
+			});
+		});
+//		Library.put(\menuItems,\introspection,\methodfinder,{
 //			GetStringDialog("methodname or partial string","",{
 //				arg ok,string;
 //				var matches,f,classes;
 //				matches = IdentitySet.new;
 //				if(ok,{
-//					classes = Class.allClasses.reject({ arg cl; cl.class === Class });
-//					classes.do({ arg cl;
-//						if(cl.name.asString.containsi(string),{
+//					Class.allClasses.do({ arg cl;
+//						if(cl.isMetaClass.not and: {cl.name.asString.containsi(string)},{
 //							matches = matches.add(cl);
 //						});
 //					});
 //
 //					f = PageLayout.new;
 //					matches.do({ arg cl;
-//						ActionButton(f.startRow,cl.name,{
+//						CXLabel(f.startRow,cl.name,maxx:200);
+//						ActionButton(f.startRow,"source",{
+//							cl.openCodeFile;
+//						},60);
+//						ActionButton(f,"help",{
+//							if(cl.hasHelpFile,{
+//								cl.openHelpFile;
+//							},{
+//								cl.ownerClass.openHelpFile;
+//							});
+//						},60);
+//						ActionButton(f,"browser",{
 //							cl.gui;
-//							//cl.newErrorWindow.name.postln;
-//						},200);
+//						},60);
 //					});
 //					f.resizeWindowToFit;
 //				})
@@ -321,29 +331,30 @@ Crucial {
 //		});
 		
 
-//		
-//		Library.put(\menuItems,\introspection,\findReferencesToClass,{
-//			GetStringDialog("Class name:","",{
-//				arg ok,string;
-//				var fn;
-//				fn = { arg class;
-//						var found;
-//						found = Array(8);
-//						Class.allClasses.do({ arg eachClass;
-//							if(eachClass.explicitClassReferences.any({ arg c; c===class }),{
-//								found = found.add(eachClass);
-//							})
-//						});
-//						found
-//					};
-//				if(ok,{
-//					this.newErrorWindow;
-//					fn.value(string.asSymbol.asClass).do({ arg c;
-//						c.postln;
-//					});
-//				})
-//			});
-//		});
+/*		
+		Library.put(\menuItems,\introspection,\findReferencesToClass,{
+			GetStringDialog("Class name:","",{
+				arg ok,string;
+				var fn;
+				fn = { arg class;
+						var found;
+						found = Array(8);
+						Class.allClasses.do({ arg eachClass;
+							if(eachClass.explicitClassReferences.any({ arg c; c===class }),{
+								found = found.add(eachClass);
+							})
+						});
+						found
+					};
+				if(ok,{
+					this.newErrorWindow;
+					fn.value(string.asSymbol.asClass).do({ arg c;
+						c.postln;
+					});
+				})
+			});
+		});
+*/
 
 		//needs a tree browser
 		Library.put(\menuItems,\introspection,'non-nil class variables',{
@@ -394,6 +405,18 @@ Crucial {
 				})
 			},"Specs")
 		});
+		Library.put(\menuItems,\tools,\audioBusses,{
+			Sheet({ arg f;
+				CXLabel(f.startRow,"address");
+				CXLabel(f,"numChannels");
+				Server.local.audioBusAllocator.blocks.do({ arg block;
+					CXLabel(f.startRow,block.address);
+					CXLabel(f,block.size);
+				});
+			},"AudioBusses on local")
+		});
+		
+		
 		//should be a toggle button
 		/*Library.put(\menuItems,\tools,'Server dump',{
 			Server.local.dumpOSC(1);

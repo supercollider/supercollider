@@ -73,8 +73,8 @@ PlayerEfxFunc : FunctionPlayer {
 XFaderPlayer : AbstractPlayer {
 	var <>one,<>two,<>xfader,<>pre1,<>pre2;
 	*new { arg one,two,xfader,pre1=1.0,pre2=1.0;
-		^super.new.one_(this.load(one)).two_(this.load(two))
-			.xfader_(this.load(xfader) ?? {KrNumberEditor(0,\unipolar)})
+		^super.new.one_(loadDocument(one)).two_(loadDocument(two))
+			.xfader_(loadDocument(xfader) ?? {KrNumberEditor(0,\unipolar)})
 			.pre1_(pre1).pre2_(pre2)
 	}
 	ar {

@@ -50,20 +50,13 @@ AbstractPlayer : AbstractFunction  {
 				if(server.serverRunning.not,{
 					"server failed to start".error;
 				},{
-					// screwy
-					//this.patchOut_(true); // keep it from making one
-					
-					this.prepareToBundle(group,bundle);
-					
-					if(bundle.notEmpty,{
-						server.listSendBundle(nil,bundle);
-					});
+					this.prepareForPlay(group,false,bus);
 					// need some way to track all the preps completion
 					// also in some cases the prepare can have a completion
 					// tacked on and we can combine with the spawn message
 					
 					// need a fully fledged OSCMessage that can figure it out
-					0.3.wait;
+					1.0.wait;
 					
 					this.makePatchOut(group,false,bus);// public
 					
@@ -72,28 +65,29 @@ AbstractPlayer : AbstractFunction  {
 			}).play;
 		});
 	}
-	prepareForPlay { arg group,private = false;
+	prepareForPlay { arg group,private = false,bus;
 		group = group.asGroup;
 		super.prepareForPlay(group); // sends to server
-		this.makePatchOut(group,false);	
+		//this.makePatchOut(group,false,bus);	
 	}
 	prepareToBundle { arg group,bundle;
 		readyForPlay = false;
 		
 		group = group.asGroup;
 		this.loadDefFileToBundle(bundle,group.server);
+		defName.postln;
 		// if made, we have secret controls now
 		// else we already had them
 		
 		// has inputs
 		this.children.do({ arg child;
+			// loads samples
 			child.prepareToBundle(group,bundle);
 		});
 		
 		// not really until the last confirmation comes from server
 		readyForPlay = true;
 	}
-
 
 	makePatchOut { arg group,private = false,bus;
 		this.topMakePatchOut(group,private,bus);
@@ -104,18 +98,18 @@ AbstractPlayer : AbstractFunction  {
 		if(this.rate == \audio,{// out yr speakers
 			if(private,{
 				this.setPatchOut(
-					AudioPatchOut(this,group,bus ? Bus.audio(group.server,this.numChannels))
+					AudioPatchOut(this,group,bus ?? {Bus.audio(group.server,this.numChannels)})
 					)
 			},{			
 				this.setPatchOut(
-					AudioPatchOut(this,group,bus ? Bus(\audio,0,this.numChannels,group.server))
+					AudioPatchOut(this,group,bus ?? {Bus(\audio,0,this.numChannels,group.server)})
 							)
 			})
 		},{
 			if(this.rate == \control,{
 				this.setPatchOut(
 					ControlPatchOut(this,group,
-							bus ? Bus.control(group.server,this.numChannels))
+							bus ?? {Bus.control(group.server,this.numChannels)})
 						)
 			},{
 				(thisMethod.asString + "Wrong output rate: " + this.rate + 
@@ -131,7 +125,7 @@ AbstractPlayer : AbstractFunction  {
 	}
 	setPatchOut { arg po; patchOut = po; }
 
-	
+	spawn { this.spawnAtTime(nil) }
 	spawnAtTime { arg atTime;
 		var bundle;
 		bundle = List.new;
@@ -157,6 +151,15 @@ AbstractPlayer : AbstractFunction  {
 				++ ['out',patchOut.synthArg]
 			)
 		);
+	}
+	spawnOnBus { arg bus,atTime;
+		if(patchOut.isNil,{ 
+			this.makePatchOut(bus.server.asGroup,true,bus);
+		},{
+			if(patchOut.bus != bus,{ patchOut.bus.free });
+			patchOut.bus = bus;
+		});
+		this.spawnAtTime(atTime);
 	}
 	/*
 		when player saves, save defName and secret args (name -> inputIndex)
@@ -235,9 +238,14 @@ AbstractPlayer : AbstractFunction  {
 	/* status */
 	isPlaying { ^synth.isPlaying }
 
-	stop { ^this.free } // for now
-		// do we control all the children ?
-		// they need to keep track of their own connections via PatchOut
+	// do we control all the children ?
+	// they need to keep track of their own connections via PatchOut
+	stop {
+		if(synth.notNil,{
+			synth.free;
+			synth = nil;
+		});
+	}	
 	run { arg flag=true;
 		if(synth.notNil,{
 			synth.run(flag);
@@ -247,7 +255,7 @@ AbstractPlayer : AbstractFunction  {
 		if(synth.notNil,{
 			synth.free;
 			synth = nil;
-		});
+		});		
 		if(patchOut.notNil,{
 			patchOut.free;
 			patchOut = nil;
@@ -455,21 +463,64 @@ MultiplePlayers : AbstractPlayer { // is PlayerMixer ?
 		});
 		super.free;
 	}
+	stop {
+		this.voices.do({ arg pl;
+			pl.stop;
+		});
+		super.stop;
+	}
 }
 
-MultiTrackPlayer : MultiplePlayers {
+MultiTrackPlayer : AbstractPlayer {
 
-	// manages multiple players with individual busses
+	// manages multiple players with individual patchOuts
 	// doesn't make a synth for itself
+	var server;
+	
+	voices { this.subclassResponsiblity(thisMethod) }
 
 	children { ^this.voices }
-	setPatchOut { arg po;
-		patchOut = po;
-		// what do i do with this ?
-		// i'm not supposed to have a single focused out
-
+	topMakePatchOut { arg group;
+		server = group.asGroup.server;
+		// aggregate patchout ?
 	}
-
+			
+	rate { ^this.voices.first.rate }
+	numChannels { ^this.voices.first.numChannels }
+	
+	spawnAtTime { arg atTime;
+		var bundle;
+		bundle = List.new;
+		this.voices.do({ arg pl;
+			pl.spawnToBundle(bundle)
+		});
+		
+		// atTime.asDeltaTime
+		server.listSendBundle( atTime, bundle);
+		//isPlaying = true;
+		this.didSpawn;
+	}
+	spawnToBundle { arg bundle;
+		this.voices.do({ arg pl;
+			pl.spawnToBundle(bundle)
+		})
+	}
+	didSpawn { arg patchIn,synthArgi;
+		// everybody gets connected.
+		this.voices.do({ arg pl;
+			pl.didSpawn(patchIn,synthArgi);
+		})
+	}
+	loadDefFileToBundle { arg bundle,server;
+		this.voices.do({ arg pl;
+			pl.loadDefFileToBundle(bundle,server)
+		})
+	}
+	free {
+		this.voices.do({ arg pl;
+			pl.free
+		});
+	}
 }
 
 
@@ -482,8 +533,6 @@ AbstractPlayerProxy : AbstractPlayer {
 	
 	var source;
 
-
-	
 	asSynthDef { ^source.asSynthDef }
 	rate { ^source.rate }
 	numChannels { ^source.numChannels }

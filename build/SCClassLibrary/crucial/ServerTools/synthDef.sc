@@ -16,12 +16,20 @@
 		bundle = List.new;
 		group = group.asGroup;
 		this.prepareToBundle(group,bundle);
-		group.server.listSendBundle(nil,bundle);
+		//bundle.insp;
+		if(bundle.size < 5,{
+			group.server.listSendBundle(nil,bundle);
+		},{
+			bundle.clump(5).do({ arg bundle;
+				group.server.listSendBundle(nil,bundle);
+			})
+		})				
 	}
 	spawnToBundle {}
 	loadDefFileToBundle {}
 	//writeDefFile {}
 	
+	stop {}
 	free {}
 	didSpawn {}
 
@@ -36,6 +44,10 @@
 		^this
 	}
 	
+}
+
++ Array {
+	rate { ^this.at(0).rate } // no attempt to error check you
 }
 
 + Editor {

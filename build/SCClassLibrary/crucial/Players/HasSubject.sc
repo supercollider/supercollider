@@ -12,6 +12,7 @@ HasSubject : AbstractPlayer {
 	storeParamsOn { arg stream;
 		stream.storeArgs([enpath(subject)]);
 	}
+	stop { super.stop; subject.stop }
 	children { ^[subject] }
 	numChannels { ^subject.tryPerform(\numChannels) ? 1 }
 	guiClass { ^HasSubjectGui }
@@ -185,7 +186,7 @@ StreamKrDur : HasSubject { // Synthless, above player
 	synthArg {
 		^patchOut.synthArg
 	}
-
+	stop { routine.stop }
 	free {
 		routine.stop;
 		//routine.reset;
