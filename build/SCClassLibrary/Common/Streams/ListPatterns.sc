@@ -26,7 +26,12 @@ ListPattern : Pattern {
 	var <>list, <>repeats=1;
 	
 	*new { arg list, repeats=1;
-		^super.new.list_(list).repeats_(repeats)
+		if (list.size > 0) {
+			^super.new.list_(list).repeats_(repeats)
+		}{
+			Error("ListPattern (" ++ this.name ++ ") requires a collection; received "
+				++ list ++ ".").throw;
+		}
 	}
 	copy {
 		^super.copy.list_(list.copy)
