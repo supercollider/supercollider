@@ -1693,12 +1693,14 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 		unit->m_shape = shape_Linear; \
 		unit->m_grow = -level / counter; \
 		unit->m_endLevel = 0.; \
+		nsmps = i; \
 		break; \
 	} else if (prevGate > 0.f && gate <= 0.f \
 			&& unit->m_releaseNode >= 0 && !unit->m_released) { \
 		counter = 0; \
 		unit->m_stage = unit->m_releaseNode - 1; \
 		unit->m_released = true; \
+		nsmps = i; \
 		break; \
 	} \
 	
@@ -1912,12 +1914,6 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 			case shape_Sustain : {
 				for (int i=0; i<nsmps; ++i) {
 					CHECK_GATE
-					if (gate <= 0.) {
-						unit->m_released = true;
-						counter = 0;
-						nsmps = i;
-						break;
-					}
 					ZXP(out) = level;
 				}
 			} break;
