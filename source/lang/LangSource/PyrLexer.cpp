@@ -160,7 +160,7 @@ int stripNonAscii(char *txt)
 	int c = 0;
 	do {
 		c = txt[rdpos++];
-		if (c >= 0) txt[wrpos++] = c;
+		if (isprint(c) || isspace(c) || c == 0) txt[wrpos++] = c;
 	} while(c);
 	return wrpos;
 }
