@@ -360,6 +360,29 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////
 
+#include "SC_GraphDef.h"
+
+class RecvSynthDefCmd : public SC_SequencedCommand
+{
+public:
+	RecvSynthDefCmd(World *inWorld, ReplyAddress *inReplyAddress);
+	virtual ~RecvSynthDefCmd();
+	
+	virtual int Init(char *inData, int inSize);
+	
+	virtual bool Stage2();	// non real time
+	virtual bool Stage3();	//     real time
+	virtual void Stage4();	// non real time
+	
+protected:
+	char *mBuffer;
+	GraphDef *mDefs;
+	
+	virtual void CallDestructor();
+};
+
+///////////////////////////////////////////////////////////////////////////
+
 class LoadSynthDefDirCmd : public SC_SequencedCommand
 {
 public:

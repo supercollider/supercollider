@@ -509,7 +509,7 @@ int prFileGetInt32(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileRead(struct VMGlobals *g, int numArgsPushed)
+int prFileReadRaw(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrFile *pfile;
 	FILE *file;
@@ -987,7 +987,7 @@ void initFilePrimitives()
 
 	definePrimitive(base, index++, "_FilePutString", prFilePutString, 2, 0);	
 	
-	definePrimitive(base, index++, "_FileRead", prFileRead, 2, 0);	
+	definePrimitive(base, index++, "_FileReadRaw", prFileReadRaw, 2, 0);	
 
 #ifdef NOCLASSIC
 	definePrimitive(base, index++, "_Directory_At", prDirectory_At, 3, 0);	

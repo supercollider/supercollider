@@ -77,8 +77,9 @@ void addMsgSlot(scpacket *packet, PyrSlot *slot)
 			if (isKindOf(slot->uo, class_string)) {
 				PyrString *stringObj = slot->uos;
 				packet->adds(stringObj->s, stringObj->size);
-			} else if (isKindOf(slot->uo, class_array)) {
-				PyrObject *arrayObj = slot->uo;
+			} else if (isKindOf(slot->uo, class_int8array)) {
+				PyrInt8Array *arrayObj = slot->uob;
+				packet->addb(arrayObj->b, arrayObj->size);
 			}
 			break;
 		default :
@@ -104,8 +105,11 @@ void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
 				PyrString *stringObj = slot->uos;
 				packet->addtag('s');
 				packet->adds(stringObj->s, stringObj->size);
-			} else if (isKindOf(slot->uo, class_array)) {
-				PyrObject *arrayObj = slot->uo;
+			} else if (isKindOf(slot->uo, class_int8array)) {
+				PyrInt8Array *arrayObj = slot->uob;
+				packet->addtag('b');
+				printf("arrayObj %08X %d\n", arrayObj, arrayObj->size);
+				packet->addb(arrayObj->b, arrayObj->size);
 			}
 			break;
 		default :
@@ -375,6 +379,10 @@ PyrObject* ConvertOSCMessage(int inSize, char *inData)
                     break;
                 case 's' :
                     SetSymbol(slots+i+1, getsym(msg.gets()));
+                    //post("sym '%s'\n", slots[i+1].us->name);
+                    break;
+                case 'b' :
+                    SetObject(slots+i+1, getsym(msg.gets()));
                     //post("sym '%s'\n", slots[i+1].us->name);
                     break;
             }

@@ -61,6 +61,7 @@ struct GraphDef
 };
 typedef struct GraphDef GraphDef;
 
+GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList);
 GraphDef* GraphDef_Load(struct World *inWorld, const char *filename, GraphDef* inList);
 GraphDef* GraphDef_LoadDir(struct World *inWorld, char *dirname, GraphDef* inList);
 void GraphDef_DeleteMsg(struct World *inWorld, GraphDef *inDef);

@@ -47,6 +47,7 @@ struct scpacket {
 	void addf(float f);
 	void adds(char *cstr);
 	void adds(char *src, size_t len);
+	void addb(uint8 *src, size_t len);
 	void addtag(char c);
 	void skip(int n);
 	void maketags(int n);
@@ -133,6 +134,19 @@ inline void scpacket::adds(char *src, size_t len)
 	size_t len4 = (len + 4) >> 2;
 	if (wrpos + len4 > endpos) BUFFEROVERFLOW;
 	wrpos[len4 - 1] = 0;
+	memcpy(wrpos, src, (size_t)len);
+	wrpos += len4;
+}
+
+// support binary objects
+inline void scpacket::addb(uint8 *src, size_t len)
+{
+	size_t len4 = (len + 4) >> 2;
+	if (wrpos + (len4 + 1) > endpos) BUFFEROVERFLOW;
+	wrpos[len4 - 1] = 0;
+	int32 swaplen = len;
+	printf("addb len %d  len4 %d\n", len, len4);
+	*wrpos++ = HTONL(swaplen);	
 	memcpy(wrpos, src, (size_t)len);
 	wrpos += len4;
 }

@@ -23,6 +23,7 @@
 #define _sc_msg_iter_
 
 #include "SC_Types.h"
+#include <string.h>
 
 // return the ptr to the byte after the OSC string.
 inline char* OSCstrskip(char *str)
@@ -64,6 +65,8 @@ struct sc_msg_iter
 	float32 getf(float32 defaultValue = 0.f);
 	char *gets(char* defaultValue = 0);
 	int32 *gets4(char* defaultValue = 0);
+	size_t getbsize();
+	void getb(char* outData, size_t inSize);
 	int remain() { return endpos - rdpos; }
         
     char nextTag(char defaultTag = 'f') { return tags ? tags[count] : defaultTag; }
@@ -140,8 +143,8 @@ inline float32 sc_msg_iter::getf(float32 defaultValue)
 			value = defaultValue;
 		}
 	} else {
-		value = (int)OSCint(rdpos);
-		rdpos += sizeof(int32);
+		value = OSCfloat(rdpos);
+		rdpos += sizeof(float32);
 	}
 	count ++;
 	return value;
@@ -183,6 +186,24 @@ inline int32* sc_msg_iter::gets4(char* defaultValue)
 	}
 	count ++;
 	return value;
+}
+
+inline size_t sc_msg_iter::getbsize()
+{
+	if (remain() <= 0) return 0;
+	if (tags && tags[count] != 'b') return 0;
+	return (size_t)OSCint(rdpos);
+}
+
+inline void sc_msg_iter::getb(char* outArray, size_t size)
+{
+	size_t len = OSCint(rdpos);
+	if (size < len) return;
+	rdpos += sizeof(int32);
+	size_t len4 = (len + 4) & -4;
+	memcpy(outArray, rdpos, size);
+	rdpos += len4;
+	count ++;
 }
 
 #endif

@@ -49,44 +49,44 @@ int32* GetKey(ParamSpec* inParamSpec)
 }
 
 
-void ReadName(FILE *file, int32* name);
-void ReadName(FILE *file, int32* name)
+void ReadName(char*& buffer, int32* name);
+void ReadName(char*& buffer, int32* name)
 {
-	uint32 namelen = readInt8(file);
+	uint32 namelen = readInt8(buffer);
 	if (namelen >= kSCNameByteLen) {
 		throw std::runtime_error("ParamSpec name too long > 31 chars");
 		namelen = 31;
 	}
 	memset(name, 0, kSCNameByteLen);
-	readData(file, (char*)name, namelen);	
+	readData(buffer, (char*)name, namelen);	
 }
 
 
-void ParamSpec_Read(ParamSpec* inParamSpec, FILE *file);
-void ParamSpec_Read(ParamSpec* inParamSpec, FILE *file)
+void ParamSpec_Read(ParamSpec* inParamSpec, char*& buffer);
+void ParamSpec_Read(ParamSpec* inParamSpec, char*& buffer)
 {
-	ReadName(file, inParamSpec->mName);
+	ReadName(buffer, inParamSpec->mName);
 	//printf("param name '%s'\n", (char*)inParamSpec->mName);
-	inParamSpec->mIndex = readInt16_be(file);
+	inParamSpec->mIndex = readInt16_be(buffer);
 	//printf("param index %d\n", inParamSpec->mIndex);
 	inParamSpec->mHash = Hash(inParamSpec->mName);
 	//printf("param hash %d\n", inParamSpec->mHash);
 }
 
-void InputSpec_Read(InputSpec* inInputSpec, FILE *file);
-void InputSpec_Read(InputSpec* inInputSpec, FILE *file)
+void InputSpec_Read(InputSpec* inInputSpec, char*& buffer);
+void InputSpec_Read(InputSpec* inInputSpec, char*& buffer)
 {
-	inInputSpec->mFromUnitIndex = (int16)readInt16_be(file);
-	inInputSpec->mFromOutputIndex = (int16)readInt16_be(file);
+	inInputSpec->mFromUnitIndex = (int16)readInt16_be(buffer);
+	inInputSpec->mFromOutputIndex = (int16)readInt16_be(buffer);
 	//printf("   inp %d %d\n", inInputSpec->mFromUnitIndex, inInputSpec->mFromOutputIndex);
 	
 	inInputSpec->mWireIndex = -1;
 }
 
-void OutputSpec_Read(OutputSpec* inOutputSpec, FILE *file);
-void OutputSpec_Read(OutputSpec* inOutputSpec, FILE *file)
+void OutputSpec_Read(OutputSpec* inOutputSpec, char*& buffer);
+void OutputSpec_Read(OutputSpec* inOutputSpec, char*& buffer)
 {
-	inOutputSpec->mCalcRate = readInt8(file);
+	inOutputSpec->mCalcRate = readInt8(buffer);
 	//printf("   outp %d\n", inOutputSpec->mCalcRate);
 
 	inOutputSpec->mWireIndex = -1;
@@ -94,11 +94,11 @@ void OutputSpec_Read(OutputSpec* inOutputSpec, FILE *file)
 	inOutputSpec->mNumConsumers = 0;
 }
 
-void UnitSpec_Read(UnitSpec* inUnitSpec, FILE *file);
-void UnitSpec_Read(UnitSpec* inUnitSpec, FILE *file)
+void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer);
+void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer)
 {
 	int32 name[kSCNameLen];
-	ReadName(file, name);
+	ReadName(buffer, name);
 	
 	inUnitSpec->mUnitDef = GetUnitDef(name);
 	if (!inUnitSpec->mUnitDef) {
@@ -107,40 +107,40 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, FILE *file)
 		throw std::runtime_error(str);
 		return;
 	}
-	inUnitSpec->mCalcRate = readInt8(file);
+	inUnitSpec->mCalcRate = readInt8(buffer);
 	//printf("unit %s %d\n", name, inUnitSpec->mCalcRate);
 	
-	inUnitSpec->mNumInputs = readInt16_be(file);
-	inUnitSpec->mNumOutputs = readInt16_be(file);
-	inUnitSpec->mSpecialIndex = readInt16_be(file);
+	inUnitSpec->mNumInputs = readInt16_be(buffer);
+	inUnitSpec->mNumOutputs = readInt16_be(buffer);
+	inUnitSpec->mSpecialIndex = readInt16_be(buffer);
 	inUnitSpec->mInputSpec = (InputSpec*)malloc(sizeof(InputSpec) * inUnitSpec->mNumInputs);
 	inUnitSpec->mOutputSpec = (OutputSpec*)malloc(sizeof(OutputSpec) * inUnitSpec->mNumOutputs);
 	for (int i=0; i<inUnitSpec->mNumInputs; ++i) {
-		InputSpec_Read(inUnitSpec->mInputSpec + i, file);
+		InputSpec_Read(inUnitSpec->mInputSpec + i, buffer);
 	}
 	for (int i=0; i<inUnitSpec->mNumOutputs; ++i) {
-		OutputSpec_Read(inUnitSpec->mOutputSpec + i, file);
+		OutputSpec_Read(inUnitSpec->mOutputSpec + i, buffer);
 	}
 	int numPorts = inUnitSpec->mNumInputs + inUnitSpec->mNumOutputs;
 	inUnitSpec->mAllocSize = inUnitSpec->mUnitDef->mAllocSize + numPorts * (sizeof(Wire*) +  sizeof(float*));
 }
 
-GraphDef* GraphDef_Read(World *inWorld, FILE *file, GraphDef* inList);
+GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList);
 
-GraphDef* GraphDefLib_Read(World *inWorld, FILE *file, GraphDef* inList);
-GraphDef* GraphDefLib_Read(World *inWorld, FILE *file, GraphDef* inList)
+GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList);
+GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList)
 {
 	//printf("->GraphDefLib_Read a\n");
-	int32 magic = readInt32_be(file);
+	int32 magic = readInt32_be(buffer);
 	if (magic != 'SCgf') return inList;
 	//printf("GraphDefLib_Read b\n");
 	
-	/*int32 version = */ readInt32_be(file);
+	/*int32 version = */ readInt32_be(buffer);
 		
-	int32 numDefs = readInt16_be(file);
+	int32 numDefs = readInt16_be(buffer);
 		
 	for (int i=0; i<numDefs; ++i) {
-		inList = GraphDef_Read(inWorld, file, inList);
+		inList = GraphDef_Read(inWorld, buffer, inList);
 	}
 	return inList;
 }
@@ -149,12 +149,12 @@ GraphDef* GraphDefLib_Read(World *inWorld, FILE *file, GraphDef* inList)
 void ChooseMulAddFunc(GraphDef *graphDef, UnitSpec* unitSpec);
 void DoBufferColoring(World *inWorld, GraphDef *inGraphDef);
 
-GraphDef* GraphDef_Read(World *inWorld, FILE *file, GraphDef* inList)
+GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 {
 	//printf("->GraphDef_Read\n");
 
 	int32 name[kSCNameLen];
-	ReadName(file, name);
+	ReadName(buffer, name);
 	//printf("\n\nname %s\n", name);
 
 	GraphDef* graphDef = (GraphDef*)malloc(sizeof(GraphDef));
@@ -167,21 +167,21 @@ GraphDef* GraphDef_Read(World *inWorld, FILE *file, GraphDef* inList)
 
 	graphDef->mNodeDef.mHash = Hash(graphDef->mNodeDef.mName);
 	
-	graphDef->mNumConstants = readInt16_be(file);
+	graphDef->mNumConstants = readInt16_be(buffer);
 	//printf("numconstants %d\n", graphDef->mNumConstants);
 	graphDef->mConstants = (float*)malloc(graphDef->mNumConstants * sizeof(float));
 	for (int i=0; i<graphDef->mNumConstants; ++i) {
-		graphDef->mConstants[i] = readFloat_be(file);
+		graphDef->mConstants[i] = readFloat_be(buffer);
 	}
 
-	graphDef->mNumControls = readInt16_be(file);
+	graphDef->mNumControls = readInt16_be(buffer);
 	//printf("numcontrols %d\n", graphDef->mNumControls);
 	graphDef->mInitialControlValues = (float32*)malloc(sizeof(float32) * graphDef->mNumControls);
 	for (int i=0; i<graphDef->mNumControls; ++i) {
-		graphDef->mInitialControlValues[i] = readFloat_be(file);
+		graphDef->mInitialControlValues[i] = readFloat_be(buffer);
 	}
 	
-	graphDef->mNumParamSpecs = readInt16_be(file);
+	graphDef->mNumParamSpecs = readInt16_be(buffer);
 	//printf("numparams %d\n", graphDef->mNumParamSpecs);
 	if (graphDef->mNumParamSpecs) {
 		int hashTableSize = NEXTPOWEROFTWO(graphDef->mNumParamSpecs);
@@ -189,7 +189,7 @@ GraphDef* GraphDef_Read(World *inWorld, FILE *file, GraphDef* inList)
 		graphDef->mParamSpecs = (ParamSpec*)malloc(graphDef->mNumParamSpecs * sizeof(ParamSpec));
 		for (int i=0; i<graphDef->mNumParamSpecs; ++i) {
 			ParamSpec *paramSpec = graphDef->mParamSpecs + i;
-			ParamSpec_Read(paramSpec, file);
+			ParamSpec_Read(paramSpec, buffer);
 			graphDef->mParamSpecTable->Add(paramSpec);
 		}
 	} else {
@@ -198,14 +198,14 @@ GraphDef* GraphDef_Read(World *inWorld, FILE *file, GraphDef* inList)
 	}
 
 	graphDef->mNumWires = graphDef->mNumConstants;
-	graphDef->mNumUnitSpecs = readInt16_be(file);
+	graphDef->mNumUnitSpecs = readInt16_be(buffer);
 	//printf("num units %d\n", graphDef->mNumUnitSpecs);
 	graphDef->mUnitSpecs = (UnitSpec*)malloc(sizeof(UnitSpec) * graphDef->mNumUnitSpecs);
 	graphDef->mTotalAllocSize = 0;
 	graphDef->mNumCalcUnits = 0;
 	for (int i=0; i<graphDef->mNumUnitSpecs; ++i) {
 		UnitSpec *unitSpec = graphDef->mUnitSpecs + i;
-		UnitSpec_Read(unitSpec, file);
+		UnitSpec_Read(unitSpec, buffer);
 		if (unitSpec->mCalcRate != calc_Scalar) graphDef->mNumCalcUnits++;
 		graphDef->mTotalAllocSize += unitSpec->mAllocSize;
 		graphDef->mNumWires += unitSpec->mNumOutputs;
@@ -276,26 +276,53 @@ void GraphDef_DeleteMsg(World *inWorld, GraphDef *inDef)
 	inWorld->hw->mDeleteGraphDefs.Write(msg);
 }
 
+GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList)
+{	
+	//printf("->GraphDef_Recv\n");
+	
+	
+	try {
+		inList = GraphDefLib_Read(inWorld, buffer, inList);
+	} catch (std::exception& exc) {
+		fprintf(stdout, "exception in GrafDef_Load: %s\n", exc.what());
+	} catch (...) {
+		fprintf(stdout, "unknown exception in GrafDef_Load\n");
+	}
+		
+	return inList;
+}
+
 GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 {	
 	//printf("->GraphDef_Load %s\n", filename);
 	FILE *file = fopen(filename, "r");
-	
 	if (!file) {
 		printf("*** ERROR: fopen '%s' err '%s'\n", filename, dlerror());
 		system("pwd");
 		return 0;
 	}
+
+	fseek(file, 0, SEEK_END);
+	int size = ftell(file);
+	char *buffer = (char*)malloc(size);
+	if (!buffer) {
+		printf("*** ERROR: can't malloc buffer size %d\n", size);
+		return 0;
+	}
+	fseek(file, 0, SEEK_SET);
+	fread(buffer, 1, size, file);
+	fclose(file);
+	
 	
 	try {
-		inList = GraphDefLib_Read(inWorld, file, inList);
+		inList = GraphDefLib_Read(inWorld, buffer, inList);
 	} catch (std::exception& exc) {
 		fprintf(stdout, "exception in GrafDef_Load: %s\n", exc.what());
 	} catch (...) {
 		fprintf(stdout, "unknown exception in GrafDef_Load\n");
 	}
 	
-	fclose(file);
+	free(buffer);
 	
 	return inList;
 }

@@ -171,7 +171,7 @@ SCErr meth_nodeMap(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 			Node_MapControl(node, name, 0, bus);
 		} else {
 			int32 index = msg.geti();
-			float32 bus = msg.geti();
+			int32 bus = msg.geti();
 			Node_MapControl(node, index, bus);
 		}
 	}
@@ -268,6 +268,15 @@ SCErr meth_defLoad(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 SCErr meth_defLoad(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	CallSequencedCommand(LoadSynthDefCmd, inWorld, inSize, inData, inReply);
+	
+	return kSCErr_None;
+
+}
+
+SCErr meth_defRecv(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_defRecv(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+{
+	CallSequencedCommand(RecvSynthDefCmd, inWorld, inSize, inData, inReply);
 	
 	return kSCErr_None;
 
@@ -695,6 +704,7 @@ void initMiscCommands()
 	NewCommand("quit", meth_audioQuit);		
 		
 // async
+	NewCommand("d_recv", meth_defRecv);		
 	NewCommand("d_load", meth_defLoad);		
 	NewCommand("d_loadDir", meth_defLoadDir);	
 	NewCommand("d_freeAll", meth_defFreeAll);	

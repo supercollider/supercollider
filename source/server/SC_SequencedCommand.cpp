@@ -725,6 +725,56 @@ bool SendFailureCmd::Stage2()
 
 ///////////////////////////////////////////////////////////////////////////
 
+RecvSynthDefCmd::RecvSynthDefCmd(World *inWorld, ReplyAddress *inReplyAddress)
+	: SC_SequencedCommand(inWorld, inReplyAddress)
+{
+}
+
+int RecvSynthDefCmd::Init(char *inData, int inSize)
+{
+	sc_msg_iter msg(inSize, inData);
+	
+	int size = msg.getbsize();
+	printf("b size %d\n", size);
+	mBuffer = (char*)World_Alloc(mWorld, size);
+	msg.getb(mBuffer, size);
+	
+	mDefs = 0;
+	return kSCErr_None;
+}
+
+RecvSynthDefCmd::~RecvSynthDefCmd()
+{
+	World_Free(mWorld, mBuffer);
+}
+
+void RecvSynthDefCmd::CallDestructor() 
+{
+	this->~RecvSynthDefCmd();
+}
+
+bool RecvSynthDefCmd::Stage2()
+{
+	mDefs = GraphDef_Recv(mWorld, mBuffer, mDefs);
+	printf("2 mDefs %08X\n", mDefs);
+	
+	return true;
+}
+
+bool RecvSynthDefCmd::Stage3()
+{
+	printf("3 mDefs %08X\n", mDefs);
+	GraphDef_Define(mWorld, mDefs);
+	return true;
+}
+
+void RecvSynthDefCmd::Stage4()
+{
+	SendDone("/d_recv");
+}
+
+///////////////////////////////////////////////////////////////////////////
+
 LoadSynthDefCmd::LoadSynthDefCmd(World *inWorld, ReplyAddress *inReplyAddress)
 	: SC_SequencedCommand(inWorld, inReplyAddress)
 {

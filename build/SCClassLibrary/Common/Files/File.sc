@@ -1,4 +1,4 @@
-{\rtf1\mac\ansicpg10000\cocoartf100
+{\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
 }
@@ -76,7 +76,7 @@
 		\cf3 // buffer should be a RawArray.\
 \cf0 		\cf3 // fills the buffer, or as much is available.\
 \cf0 		\cf3 // returns bytes read.\
-\cf0 		\cf2 _FileReadBytes\cf0 ;\
+\cf0 		\cf2 _FileReadRaw\cf0 ;\
 		^\cf2 this\cf0 .primitiveFailed;\
 	\}\
 	\
