@@ -41,7 +41,7 @@ is expanded to\
 \cf4 SynthDef\cf3 (\cf5 "helppoly"\cf3 , \{ \cf4 arg\cf3  freq=440, mod=0, ffreq=1, pan, amp=0.1, out, gate=1;\
 	\cf4 var\cf3  e;\
 	e = \cf4 EnvGen\cf3 .kr(\cf4 Env\cf3 .asr(0.001, 1, 0.001), gate, doneAction:2);\
-	\cf4 Out\cf3 .ar(out,\cf4 SinOsc\cf3 .ar(ffreq*freq, \cf4 SinOsc\cf3 .ar(freq, 0, mod), amp) * e)\
+	\cf4 Out\cf3 .ar(out,Pan2.ar(\cf4 SinOsc\cf3 .ar(ffreq*freq, \cf4 SinOsc\cf3 .ar(freq, 0, mod), amp),pan) * e)\
 \
 \}).send(s)\
 \
@@ -58,5 +58,23 @@ is expanded to\
 	\cf6 \\dur\cf3 , \cf4 Pn\cf3 (\cf4 Pseries\cf3 (1, -1/60, 25), \cf4 inf\cf3 ) * 0.5\
 ).play;\
 )\
+\
+\
+\
+(\
+\cf4 Pbind\cf3 (\
+	\cf6 \\instrument\cf3 , \cf6 \\helppoly\cf3 ,\
+	\cf6 \\freq\cf3 , \cf4 Pseq\cf3 ([[500, 6000], 630, 300, [400, 8000]],\cf4 inf\cf3 ),\
+	\cf6 \\legato\cf3 , \cf4 Pseq\cf3 ([[0.2, 0.04], 0.3, 0.1,[0.4, 2]],\cf4 inf\cf3 ),\
+	\cf6 \\amp\cf3 , \cf4 Pseq\cf3 ([[1, 0.5], 1,1, [1, 0.05]], \cf4 inf\cf3 )*0.1,\
+	\cf6 \\pan\cf3 , \cf4 Pseq\cf3 ([[-1, 1], -1, 1], \cf4 inf\cf3 ),\
+	\cf6 \\player\cf3 , \cf4 PolyPlayer\cf3 .new,\
+	\cf6 \\dur\cf3 , 0.5\
+).play;\
+)\
+\
+\
+\
+\
 \
 }
