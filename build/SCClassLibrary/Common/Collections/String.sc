@@ -203,6 +203,13 @@ String[char] : RawArray {
 	/// unix
 	
 	pathMatch { _StringPathMatch ^this.primitiveFailed }
+	loadPaths {
+		var paths;
+		paths = this.pathMatch;
+		paths.do({ arg path;
+			thisProcess.interpreter.executeFile(path);
+		});
+	}
 	
 	// runs a unix command and returns the result code.
 	//unixCmd { _String_System ^this.primitiveFailed }
