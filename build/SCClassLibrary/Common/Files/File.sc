@@ -63,6 +63,12 @@ File : UnixFILE {
 		this.read(string);
 		^string
 	}
+	readAllSignal {
+		var signal;
+		signal = Signal.newClear(this.length);
+		this.read(signal);
+		^signal
+	}
 	
 	// PRIVATE
 	prOpen { arg pathName, mode;
