@@ -300,7 +300,7 @@ bool gIsFullScreen = false;
 - (void)becomeFullScreen: (NSWindow*)window
 {
     int err = CGDisplayCapture(kCGDirectMainDisplay);
-    if (err) {
+    if (err != kCGErrorSuccess) {
         post("Can't capture screen.\n");
         return;
     }
@@ -311,13 +311,22 @@ bool gIsFullScreen = false;
     
     NSRect bounds = [[NSScreen mainScreen] frame];
     [window setFrame: bounds display: YES];
+    [window setShowsResizeIndicator: NO];
+
+    //can't set NSBorderlessWindowMask after created
+    // but if you create it with that, 
+    //  subclass NSWindow,override canBecomeKeyWindow { return YES; }
+    // or you can't get key events
+    
+    // then you can't move it
 }
 
 - (void)endFullScreen: (NSWindow*)window
 {
     if (gIsFullScreen) {
         CGDisplayRelease(kCGDirectMainDisplay);
-        [window close];
+        [window setShowsResizeIndicator: YES];
+        //[window close];
         gIsFullScreen = false;
     }
 }
@@ -326,6 +335,7 @@ bool gIsFullScreen = false;
 - (void)windowWillClose:(NSNotification *)aNotification
 {
     NSWindow* window = [aNotification object];
+    [self endFullScreen: window];
     [guiWindows removeObject: window];
     SCGraphView* view = (SCGraphView*)[window contentView];
     
