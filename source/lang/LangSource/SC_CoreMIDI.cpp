@@ -55,7 +55,7 @@ void midiNotifyProc(const MIDINotification *msg, void* refCon)
 {
 }
 
-void midiProcessPacket(MIDIPacket *pkt, int srcRefCon)
+void midiProcessPacket(MIDIPacket *pkt, int uid)
 {
  //jt
     if(pkt) {
@@ -63,12 +63,11 @@ void midiProcessPacket(MIDIPacket *pkt, int srcRefCon)
 
       VMGlobals *g = gMainVMGlobals;
       uint8 status = pkt->data[0] & 0xF0;
-       int srcNr = (int) srcRefCon;
         g->canCallOS = true;
         
         ++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the sc-coremidi-object stored in the c++ object
         //set arguments:
-        ++g->sp;SetInt(g->sp,  srcNr); //val2
+        ++g->sp;SetInt(g->sp,  uid); //val2
         ++g->sp;  SetInt(g->sp, status); //status
         ++g->sp;  SetInt(g->sp, pkt->data[0] - (status & 0xF0)); //chan
         ++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
@@ -106,12 +105,9 @@ void midiProcessPacket(MIDIPacket *pkt, int srcRefCon)
 void midiReadProc(const MIDIPacketList *pktlist, void* readProcRefCon, void* srcConnRefCon)
 {
     MIDIPacket *pkt = (MIDIPacket*)pktlist->packet;
-    int src;
-    PyrSlot* port;
-    port = (PyrSlot*) srcConnRefCon;
-   slotIntVal(port, &src);
-    for (int i=0; i<pktlist->numPackets; ++i) {
-        midiProcessPacket(pkt, src);
+    int uid = (int) srcConnRefCon;
+    for (uint32 i=0; i<pktlist->numPackets; ++i) {
+        midiProcessPacket(pkt, uid);
         pkt = MIDIPacketNext(pkt);
     }
     
@@ -256,14 +252,11 @@ MIDIEndpointRef MIDIGetSourceByUID(SInt32 inUID)
 int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed);
 int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp - 2;
+	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
         
-        PyrSlot *o = new PyrSlot;
-        
-        
-        int err, inputIndex, uid;
+	int err, inputIndex, uid;
 	err = slotIntVal(b, &inputIndex);
 	if (err) return err;
 	if (inputIndex < 0 || inputIndex >= gNumMIDIInPorts) return errIndexOutOfRange;
@@ -274,12 +267,11 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 	//gMIDIInPort[inputIndex];
 
 	MIDIEndpointRef src = MIDIGetSourceByUID(uid);
-       	if (!src) return errFailed;
+	if (!src) return errFailed;
        
         //pass the uid to the midiReadProc to identify the src
-        slotCopy(o, c, 1);
        
-        MIDIPortConnectSource(gMIDIInPort[inputIndex], src, o);
+	MIDIPortConnectSource(gMIDIInPort[inputIndex], src, (void*)uid);
 	
 	return errNone;
 }
@@ -287,10 +279,9 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 int prInitMIDI(struct VMGlobals *g, int numArgsPushed);
 int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp - 2;
+	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-	PyrSlot *o = new PyrSlot;
         
 	int err, numIn, numOut;
 	err = slotIntVal(b, &numIn);
