@@ -238,8 +238,13 @@ World* World_New(WorldOptions *inOptions)
 			hw->mAudioDriver->SetPreferredHardwareBufferFrameSize(
 					inOptions->mPreferredHardwareBufferFrameSize
 			);
+			hw->mAudioDriver->SetPreferredSampleRate(
+					inOptions->mPreferredSampleRate
+			);
 			
-			World_LoadGraphDefs(world);
+			if (inOptions->mLoadGraphDefs) {
+				World_LoadGraphDefs(world);
+			}
 
 			if (!hw->mAudioDriver->Setup()) {
 				scprintf("could not initialize audio.\n");
@@ -353,7 +358,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	int numInputChannels = 0;
 	int numOutputChannels;
 	
-	outputFileInfo.samplerate = inOptions->mNonRealTimeSampleRate;
+	outputFileInfo.samplerate = inOptions->mPreferredSampleRate;
 	numOutputChannels = outputFileInfo.channels = world->mNumOutputs;
 	sndfileFormatInfoFromStrings(&outputFileInfo, 
 		inOptions->mNonRealTimeOutputHeaderFormat, inOptions->mNonRealTimeOutputSampleFormat);
@@ -376,7 +381,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 
 		numInputChannels = world->mNumInputs = inputFileInfo.channels; // force it.
 
-		if (inputFileInfo.samplerate != inOptions->mNonRealTimeSampleRate)
+		if (inputFileInfo.samplerate != inOptions->mPreferredSampleRate)
 			scprintf("WARNING: input file sample rate does not equal output sample rate.\n");
 			
 	} else {
@@ -402,12 +407,12 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 		throw std::runtime_error("command file empty.\n");
 	int64 prevTime = schedTime;
 	        
-	World_SetSampleRate(world, inOptions->mNonRealTimeSampleRate);
+	World_SetSampleRate(world, inOptions->mPreferredSampleRate);
 	World_Start(world);
 	
 	int64 oscTime = 0;
         double oscToSeconds = 1. / pow(2.,32.);
-	double oscToSamples = inOptions->mNonRealTimeSampleRate * oscToSeconds;
+	double oscToSamples = inOptions->mPreferredSampleRate * oscToSeconds;
 	int64 oscInc = (int64)((double)bufLength / oscToSamples);
 
         printf("start time %g\n", schedTime * oscToSeconds);

@@ -60,12 +60,14 @@ void Usage()
 		"   -o <number-of-output-bus-channels>  (default %d)\n"
 		"   -z <block-size>                     (default %d)\n"
 		"   -Z <hardware-buffer-size>           (default %d)\n"
+		"   -S <hardware-sample-rate>           (default %d)\n"
 		"   -b <number-of-sample-buffers>       (default %d)\n"
 		"   -n <max-number-of-nodes>            (default %d)\n"
 		"   -d <max-number-of-synth-defs>       (default %d)\n"
 		"   -m <real-time-memory-size>          (default %d)\n"
 		"   -w <number-of-wire-buffers>         (default %d)\n"
 		"   -r <number-of-random-seeds>         (default %d)\n"
+		"   -D <load synthdefs? 1 or 0>         (default %d)\n"
 		"   -l <max-logins>                     (default %d)\n"
 		"          maximum number of named return addresses stored\n"
 		"          also maximum number of tcp connections accepted\n"
@@ -81,12 +83,14 @@ void Usage()
 		kDefaultWorldOptions.mNumOutputBusChannels,
 		kDefaultWorldOptions.mBufLength,
 		kDefaultWorldOptions.mPreferredHardwareBufferFrameSize,
+		kDefaultWorldOptions.mPreferredSampleRate,
 		kDefaultWorldOptions.mNumBuffers,
 		kDefaultWorldOptions.mMaxNodes,
 		kDefaultWorldOptions.mMaxGraphDefs,
 		kDefaultWorldOptions.mRealTimeMemorySize,
 		kDefaultWorldOptions.mMaxWireBufs,
 		kDefaultWorldOptions.mNumRGens,
+		kDefaultWorldOptions.mLoadGraphDefs,
 		kDefaultWorldOptions.mMaxLogins
 	);
 	exit(1);
@@ -127,7 +131,7 @@ int main(int argc, char* argv[])
 	WorldOptions options = kDefaultWorldOptions;
 	
 	for (int i=1; i<argc;) {
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrN", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSD", argv[i][1]) == 0) {
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
@@ -197,6 +201,14 @@ int main(int argc, char* argv[])
 				checkNumArgs(2);
 				options.mNumRGens = atoi(argv[j+1]);
 				break;
+			case 'S' :
+				checkNumArgs(2);
+				options.mPreferredSampleRate = (uint32)atof(argv[j+1]);
+				break;
+			case 'D' :
+				checkNumArgs(2);
+				options.mLoadGraphDefs = atoi(argv[j+1]);
+				break;
 			case 'N' :
 // -N cmd-filename input-filename output-filename sample-rate header-format sample-format
 				checkNumArgs(7);
@@ -204,7 +216,7 @@ int main(int argc, char* argv[])
 				options.mNonRealTimeCmdFilename    = strcmp(argv[j+1], "_") ? argv[j+1] : 0;
 				options.mNonRealTimeInputFilename  = strcmp(argv[j+2], "_") ? argv[j+2] : 0;
 				options.mNonRealTimeOutputFilename = argv[j+3];
-				options.mNonRealTimeSampleRate = (int)atof(argv[j+4]);
+				options.mPreferredSampleRate = (uint32)atof(argv[j+4]);
 				options.mNonRealTimeOutputHeaderFormat = argv[j+5];
 				options.mNonRealTimeOutputSampleFormat = argv[j+6];
 				break;

@@ -264,12 +264,40 @@ GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList)
 	return inList;
 }
 
+#include <glob.h>
+
+GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inList)
+{
+	glob_t pglob;
+
+	int gflags = GLOB_MARK | GLOB_TILDE;
+#ifdef SC_DARWIN
+	gflags |= GLOB_QUOTE;
+#endif
+
+	int gerr = glob(pattern, gflags, NULL, &pglob);
+	if (gerr) return inList;
+	
+	for (int i=0; i<pglob.gl_pathc; ++i) {
+		char *filename = pglob.gl_pathv[i];
+		int len = strlen(filename);
+		if (strncmp(filename+len-9, ".scsyndef", 9)==0) {
+			inList = GraphDef_Load(inWorld, filename, inList);
+		}
+		GraphDef_Load(inWorld, pglob.gl_pathv[i], inList);
+	}
+	
+	globfree(&pglob);
+	
+	return inList;
+}
+
 GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 {	
 	FILE *file = fopen(filename, "r");
 	if (!file) {
 		scprintf("*** ERROR: can't fopen '%s'\n", filename);
-		return 0;
+		return inList;
 	}
 
 	fseek(file, 0, SEEK_END);
@@ -277,7 +305,7 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 	char *buffer = (char*)malloc(size);
 	if (!buffer) {
 		scprintf("*** ERROR: can't malloc buffer size %d\n", size);
-		return 0;
+		return inList;
 	}
 	fseek(file, 0, SEEK_SET);
 	fread(buffer, 1, size, file);
@@ -307,7 +335,7 @@ GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
 	DIR *dir = opendir(dirname);	
 	if (!dir) {
 		scprintf("*** ERROR: open directory failed '%s'\n", dirname); 
-		return 0;
+		return inList;
 	}
 	
 	for (;;) {

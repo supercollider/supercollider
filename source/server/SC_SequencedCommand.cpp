@@ -928,7 +928,7 @@ void LoadSynthDefCmd::CallDestructor()
 
 bool LoadSynthDefCmd::Stage2()
 {
-	mDefs = GraphDef_Load(mWorld, mFilename, mDefs);
+	mDefs = GraphDef_LoadGlob(mWorld, mFilename, mDefs);
 	
 	return true;
 }

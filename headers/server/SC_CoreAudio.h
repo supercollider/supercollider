@@ -92,6 +92,7 @@ protected:
 	SC_Lock *mProcessPacketLock;
 	int mNumSamplesPerCallback;
 	uint32 mPreferredHardwareBufferFrameSize;
+	uint32 mPreferredSampleRate;
 	double mBuffersPerSecond;
 	double mAvgCPU, mPeakCPU;
 	int mPeakCounter, mMaxPeakCounter;
@@ -133,6 +134,10 @@ public:
 	void SetPreferredHardwareBufferFrameSize(int inSize) 
 	{ 
 		mPreferredHardwareBufferFrameSize = inSize;
+	}
+	void SetPreferredSampleRate(int inRate)
+	{
+		mPreferredSampleRate = inRate;
 	}
 
 	bool SendMsgToEngine(FifoMsg& inMsg);
