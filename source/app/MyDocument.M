@@ -636,8 +636,9 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	NSRange selectedRange;
 	NSString* selection = [self currentlySelectedTextOrLine: &selectedRange];
     const char *text = [selection UTF8String];
+	int textlength = strlen(text);
 
-    [[SCVirtualMachine sharedInstance] setCmdLine: text length: selectedRange.length];
+    [[SCVirtualMachine sharedInstance] setCmdLine: text length: textlength];
     
     NSRange newSelectedRange = NSMakeRange(selectedRange.location + selectedRange.length, 0);
     [textView setSelectedRange: newSelectedRange];

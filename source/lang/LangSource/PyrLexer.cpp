@@ -154,6 +154,17 @@ bool getFileText(char* filename, char **text, int *length)
 
 int bugctr = 0;
 
+int stripNonAscii(char *txt)
+{
+    int rdpos=0, wrpos=0; 
+	int c = 0;
+	do {
+		c = txt[rdpos++];
+		if (c >= 0) txt[wrpos++] = c;
+	} while(c);
+	return wrpos;
+}
+
 // strips out all the RichTextFile crap
 int rtf2txt(char* txt)  
 {
@@ -211,6 +222,7 @@ bool startLexer(char* filename)
 {	
         if (!getFileText(filename, &text, &textlen)) return false;
 		
+		textlen = stripNonAscii(text);
 		int rtfresult = rtf2txt(text);
         if (rtfresult) textlen = rtfresult;
        
@@ -245,6 +257,7 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	text[textbuflen+1] = 0;
 	textlen = textbuflen + 1;
 	
+	textlen = stripNonAscii(text);
 	int rtfresult = rtf2txt(text);
 	if (rtfresult) textlen = rtfresult;
 	
@@ -784,6 +797,7 @@ error1:
     asRelativePath(curfilename, extPath);
 	post("illegal input string '%s' \n   at '%s' line %d char %d\n", 
 		yytext, extPath, lineno, charno);
+	post("code %d\n", c);
 	//postfl(" '%c' '%s'\n", c, binopchars);
 	//postfl("%d\n", strchr(binopchars, c));
 	
