@@ -417,6 +417,7 @@ Server : Model {
 		dumpMode = 0;
 		serverBooting = false;
 		this.serverRunning = false;
+		if(scopeWindow.notNil) { scopeWindow.quit };
 		RootNode(this).freeAll;
 		this.newAllocators;
 	}
