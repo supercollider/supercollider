@@ -4,8 +4,7 @@ Document {
 	classvar <>globalKeyDownAction, <>initAction;
 	
 	classvar <>autoRun = true;
-	classvar <>wikiBrowse = false;
-	classvar <>wikiPath = "~/scwork/wiki/";
+	classvar <>wikiBrowse = true;
 
 	//don't change the order of these vars:
 	var <dataptr, <>keyDownAction, <>mouseDownAction, <>toFrontAction, <>endFrontAction;
@@ -240,22 +239,45 @@ Document {
 			doc.selectRange(0,0x7FFFFFFF);
 		};
 	}
-	
-	mouseDown {
-		var filename, doc, wikiWord;
+	openWikiPage {
+		var selectedText, filename;
+		selectedText = this.selectedText;
+		selectedText.asCompileString.postln;
+		case { selectedText[0] == $* }
+		{ 
+			// execute file
+			filename = this.class.standardizePath(selectedText.drop(1) ++ ".rtf");
+			filename.load;
+		}
+		{ selectedText.last == $? }
+		{
+			// open help file
+			selectedText.drop(-1).openHelpFile
+		}
+		{ selectedText.containsStringAt(0, "http://") 
+			or: { selectedText.containsStringAt(0, "file://") } }
+		{
+			// open URL
+			("open " ++ selectedText).unixCmd;
+		}
+		{
+			filename = this.class.standardizePath(selectedText ++ ".rtf");
+			if (File.exists(filename)) {
+				// open existing wiki page
+				this.class.open(filename);
+			}{
+				// make a new wiki page
+				this.makeWikiPage(filename, selectedText);
+			};
+		};
+		this.selectRange(this.selectionStart, 0);
+	}
+		
+	mouseDown {		
 		mouseDownAction.value(this);
 		
-		if (wikiBrowse) {
-			if (this.selectUnderlinedText) {
-				wikiWord = this.selectedText;
-				filename = (wikiPath ++ this.selectedText ++ ".rtf").standardizePath;
-				if (File.exists(filename)) {
-					this.class.open(filename);
-				}{
-					this.makeWikiPage(filename, wikiWord);
-				};
-				^this
-			};
+		if (wikiBrowse and: { this.selectUnderlinedText }) {
+			^this.openWikiPage
 		};		
 	}
 	
