@@ -351,6 +351,7 @@ Server : Model {
 	}
 	freeAll {
 		this.sendMsg("/g_freeAll",0);
+		this.sendMsg("/clearSched");
 		nodeWatcher.clear; //to be sure
 	}
 	*freeAll {

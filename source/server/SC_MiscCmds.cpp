@@ -678,6 +678,13 @@ SCErr meth_quit(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 	return kSCErr_None;
 }
 
+SCErr meth_clearSched(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_clearSched(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+{
+	inWorld->hw->mAudioDriver->ClearSched();
+	return kSCErr_None;
+}
+
 SCErr meth_dumpOSC(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_dumpOSC(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
@@ -1199,6 +1206,7 @@ void initMiscCommands()
 	NEW_COMMAND(notify);		
 	NEW_COMMAND(status);	
 	NEW_COMMAND(quit);		
+	NEW_COMMAND(clearSched);		
 		
 	NEW_COMMAND(d_recv);		
 	NEW_COMMAND(d_load);		

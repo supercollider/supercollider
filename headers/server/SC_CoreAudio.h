@@ -141,6 +141,8 @@ public:
 	bool Setup();
 	bool Start();
 	bool Stop();
+	
+	void ClearSched() { mScheduler.Empty(); }
 
 	void Lock() { mProcessPacketLock->Lock(); }
 	void Unlock() { mProcessPacketLock->Unlock(); }
