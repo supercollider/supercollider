@@ -924,9 +924,9 @@ void RecordBuf_Ctor(RecordBuf *unit)
 	if (INRATE(2) == calc_ScalarRate && INRATE(3) == calc_ScalarRate 
 		&& unit->m_recLevel == 1.0 && unit->m_preLevel == 0.0) 
 	{
-		SETCALC(RecordBuf_next);
-	} else {
 		SETCALC(RecordBuf_next_10);
+	} else {
+		SETCALC(RecordBuf_next);
 	}
 		
 	ClearUnitOutputs(unit, 1);
@@ -958,7 +958,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 			if (bufChannels == 1) {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
-					table0[0] = *++(in[0]);
+					table0[0] = *++(in[0]) * recLevel + table0[0] * preLevel;
 					writepos += 1;
 					if (writepos >= bufSamples) writepos = 0;
 					
@@ -968,7 +968,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 			} else if (bufChannels == 2) {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
-					table0[0] = *++(in[0]);
+					table0[0] = *++(in[0]) * recLevel + table0[0] * preLevel;
 					table0[1] = *++(in[1]) * recLevel + table0[1] * preLevel;
 					writepos += 2;
 					if (writepos >= bufSamples) writepos = 0;
@@ -994,7 +994,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 			if (bufChannels == 1) {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
-					table0[0] = *++(in[0]);
+					table0[0] = *++(in[0]) * recLevel + table0[0] * preLevel;
 					writepos -= 1;
 					if (writepos < 0) writepos = bufSamples - bufChannels;
 					
@@ -1004,7 +1004,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 			} else if (bufChannels == 2) {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
-					table0[0] = *++(in[0]);
+					table0[0] = *++(in[0]) * recLevel + table0[0] * preLevel;
 					table0[1] = *++(in[1]) * recLevel + table0[1] * preLevel;
 					writepos -= 2;
 					if (writepos < 0) writepos = bufSamples - bufChannels;
