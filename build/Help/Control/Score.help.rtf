@@ -5,8 +5,9 @@
 \red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 Score			score of timed OSC commands
-\f1\b0\fs24 \
+\f0\b\fs36 \cf0 Score			
+\fs24 score of timed OSC commands
+\f1\b0 \
 \
 Score encapsulates a list of timed OSC commands and provides some methods for using it, as well as support for the creation of binary OSC files for non-realtime synthesis. See 
 \f0\b Non-Realtime-Synthesis
@@ -27,7 +28,7 @@ For NRT synthesis the final event should a dummy event, after which synthesis wi
 \f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs28 \cf0 \ul Class Methods\
+\fs28 \cf0 \ul \ulc0 Class Methods\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 \ulnone \
@@ -113,7 +114,7 @@ For NRT synthesis the final event should a dummy event, after which synthesis wi
 \f1\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Instance Methods\
+\f0\b\fs28 \cf0 \ul \ulc0 Instance Methods\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -141,6 +142,16 @@ score_(list)
 \f1\b0 - set the list.\
 \
 
+\f0\b sort
+\f1\b0  - sort the score time order. \
+		This is recommended to do 
+\f0\b before
+\f1\b0  
+\f0\b recordNRT or write
+\f1\b0  when \
+		you are not sure about the packet order\
+\
+
 \f0\b recordNRT(oscFilePath, outputFilePath, inputFilePath, sampleRate, headerFormat, sampleFormat, options)
 \f1\b0  - synthesize the score in non-realtime. For details of the arguments see 
 \f0\b *recordNRT
@@ -149,14 +160,13 @@ score_(list)
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 \ul NRT Examples:
+\f0\b\fs30 \cf0 \ul \ulc0 NRT Examples:
 \f1\b0\fs24 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
 // A sample synthDef\cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 "helpscore"\cf0 ,\{ \cf3 arg\cf0  freq = 440;\
 	\cf3 Out\cf0 .ar(0,\
 		 \cf3 SinOsc\cf0 .ar(freq, 0, 0.2) * \cf3 Line\cf0 .kr(1, 0, 0.5, doneAction: 2)\
@@ -165,11 +175,9 @@ score_(list)
 )
 \fs24 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 // write a sample file for testing\cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  f, g;\
 g = [\
 	[0.1, [\cf5 \\s_new\cf0 , \cf5 \\helpscore\cf0 , 1000, 0, 0, \cf5 \\freq\cf0 , 440]],	[0.2, [\cf5 \\s_new\cf0 , \cf5 \\helpscore\cf0 , 1001, 0, 0, \cf5 \\freq\cf0 , 660]],\
@@ -181,9 +189,7 @@ f.write(g.asCompileString);\
 f.close;\
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //convert it to a binary OSC file for use with NRT\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Score\cf0 .writeFromFile(\cf4 "score-test"\cf0 , \cf4 "test.osc"\cf0 );\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -201,7 +207,6 @@ f.close;\
 
 \f2\fs18 \cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  f, o;\
 g = [\
 	[0.1, [\cf5 \\s_new\cf0 , \cf5 \\helpscore\cf0 , 1000, 0, 0, \cf5 \\freq\cf0 , 440]],	[0.2, [\cf5 \\s_new\cf0 , \cf5 \\helpscore\cf0 , 1001, 0, 0, \cf5 \\freq\cf0 , 660], \
@@ -210,17 +215,15 @@ g = [\
 	[1, [\cf5 \\c_set\cf0 , 0, 0]]\
 	];
 \f1\fs24 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 o = \cf3 ServerOptions\cf0 .new.numOutputBusChannels = 1; \cf2 // mono output\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\fs18 o = \cf3 ServerOptions\cf0 .new.numOutputBusChannels = 1; \cf2 // mono output\cf0 \
 \cf3 Score\cf0 .recordNRT(g, \cf4 "help-oscFile"\cf0 , \cf4 "helpNRT.aiff"\cf0 , options: o); \cf2 // synthesize\cf0 \
 )
 \f1\fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Real-time Examples:
+\f0\b\fs28 \cf0 \ul \ulc0 Real-time Examples:
 \f1\b0\fs24 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -231,7 +234,6 @@ g = [\
 \
 // A sample synthDef\cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 "helpscore"\cf0 ,\{ \cf3 arg\cf0  freq = 440;\
 	\cf3 Out\cf0 .ar(0,\
 		 \cf3 SinOsc\cf0 .ar(freq, 0, 0.2) * \cf3 Line\cf0 .kr(1, 0, 0.5, doneAction: 2)\
@@ -240,11 +242,9 @@ g = [\
 )
 \fs24 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf2 // write a sample file for testing\cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  f, g;\
 g = [\
 	[0.1, [\cf5 \\s_new\cf0 , \cf5 \\helpscore\cf0 , 1000, 0, 0, \cf5 \\freq\cf0 , 440]],	[0.2, [\cf5 \\s_new\cf0 , \cf5 \\helpscore\cf0 , 1001, 0, 0, \cf5 \\freq\cf0 , 660], \
@@ -259,12 +259,9 @@ f.close;\
 \
 z = Score.newFromFile(\cf4 "score-test"\cf0 );\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // play it on the default server\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 z\cf0 .play;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // change the list\cf0 \
 (\
 x = [\
@@ -299,14 +296,13 @@ z.play;\
 \cf2 // play and stop after one second\cf0 \
 (\
 z.play;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SystemClock\cf0 .sched(1.0, \{z.stop;\});\
 )\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs26 \cf0 \ul creating Score from a pattern
+\f0\b\fs26 \cf0 \ul \ulc0 creating Score from a pattern
 \f2\b0\fs18 \ulnone \
 \
 \
@@ -314,7 +310,6 @@ z.play;\
 \cf3 SynthDescLib\cf0 .read;\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // new pattern\cf0 \
 (\
 p = \cf3 Pbind\cf0 (\
@@ -333,7 +328,7 @@ z.play;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs26 \cf0 \ul rendering a pattern to sound file directly:
+\f0\b\fs26 \cf0 \ul \ulc0 rendering a pattern to sound file directly:
 \f2\b0\fs18 \ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
