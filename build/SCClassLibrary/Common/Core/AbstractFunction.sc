@@ -136,4 +136,8 @@ AbstractFunction {
 	real { ^this }
 	imag { ^0.0 }
 
+	|| { arg function; ^this.composeBinaryOp('||', function) }
+	&& { arg function; ^this.composeBinaryOp('&&', function) }
+	xor { arg function; ^this.composeBinaryOp('xor', function) }
+	not { ^this.composeUnaryOp('not') }
 }
