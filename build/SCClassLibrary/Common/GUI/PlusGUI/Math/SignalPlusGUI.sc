@@ -66,3 +66,10 @@
 	}
 }
 
++ Buffer {
+	plot { arg name, bounds;
+		this.loadToFloatArray(action: { arg array; {array.plot(name, bounds) }.defer;});
+	}
+}
+
+

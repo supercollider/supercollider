@@ -120,6 +120,8 @@ Server : Model {
 	var <window, <>scopeWindow;
 	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float"; 	var <>recChannels=2;
 	
+	var <bufferArray, <bufInfoResponder, <waitingForBufInfo = false, <waitingBufs = 0;
+	
 	*new { arg name, addr, options, clientID=0;
 		^super.new.init(name, addr, options, clientID)
 	}
@@ -341,6 +343,37 @@ Server : Model {
 				}.defer;
 			}).add;	
 	}
+	// Buffer objects are cached in an Array for easy
+	// auto buffer info updating
+	addBuf { |buffer|
+		bufferArray.put(buffer.bufnum, buffer);
+	}
+	
+	freeBuf { |i|
+		bufferArray.put(i, nil);
+	}
+	
+	// /b_info on the way
+	// keeps a reference count of waiting Buffers so that only one responder is needed
+	waitForBufInfo {
+		waitingForBufInfo.not.if({
+			bufInfoResponder = OSCresponderNode(addr, "/b_info", { arg time, responder, message;
+				var buffer;
+				(buffer = bufferArray.at(message.at(1))).notNil.if({
+					buffer.numFrames = message.at(2);
+					buffer.numChannels = message.at(3);
+					buffer.sampleRate = message.at(4);
+					buffer.queryDone;
+					((waitingBufs = waitingBufs - 1) == 0).if({
+						responder.remove; waitingForBufInfo = false;
+					});
+				});
+			}).add;
+			waitingForBufInfo = true;
+		});
+		waitingBufs = waitingBufs + 1;	
+	}
+	
 	startAliveThread { arg delay=4.0, period=0.7;
 		^aliveThread ?? {
 			this.addStatusWatcher;
@@ -382,7 +415,10 @@ Server : Model {
 		
 		serverBooting = true;
 		if(startAliveThread, { this.startAliveThread });
-		this.newAllocators;	
+		this.newAllocators;
+		// Buffer info support
+		// allow room for protected scope and record buffers
+		bufferArray = Array.newClear(options.numBuffers + 2);
 		this.doWhenBooted({ 
 			if(notified, { 
 				this.notify;
@@ -460,6 +496,10 @@ Server : Model {
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		RootNode(this).freeAll;
 		this.newAllocators;
+		bufferArray = nil;
+		waitingForBufInfo = false;
+		waitingBufs = 0;
+		bufInfoResponder.remove; bufInfoResponder = nil;
 	}
 
 	*quitAll {
