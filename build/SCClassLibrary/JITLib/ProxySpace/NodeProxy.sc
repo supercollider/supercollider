@@ -4,7 +4,7 @@ NodeProxy : AbstractFunction {
 	var <server, <group, <outbus; 		//server access
 	var <objects, <parents; 			//playing templates
 	
-	var <nodeMap, <>lags=#[], <>prepend, <>clock; //lags might go into function annotation later
+	var <nodeMap, <>lags, <>prepend, <>clock; //lags might go into function annotation later
 	var <>freeSelf=true, <loaded=false;		
 	classvar <>buildProxy;
 	
@@ -41,7 +41,7 @@ NodeProxy : AbstractFunction {
 	}
 	
 	allocBus { arg rate=\audio, numChannels=2;
-		//skip the first 32 channels. maybe use special server later. revisit.
+		//skip the first 32 channels. revisit.
 		var alloc, busIndex;
 		alloc = server.audioBusAllocator.alloc(numChannels);
 		if(alloc.isNil,{ "no channels left".error ^nil });
@@ -95,7 +95,7 @@ NodeProxy : AbstractFunction {
 					\i_busOut, busIndex+(i*divider), \i_busIn, outbus.index+(i*divider)]);
 			});
 		
-			this.sendBundle(bundle,0);
+			this.sendBundle(bundle);
 		}, { "server not running".inform });
 		
 		^playGroup
@@ -146,7 +146,17 @@ NodeProxy : AbstractFunction {
 		this.put(obj, 0, true) 
 	}
 	
-	put { arg obj, channelOffset=0, send=false, freeAll=true, onCompletion, latency=0.3; 			var container, bundle;
+	removeLast { 
+		this.removeAt(objects.size - 1); 
+	}
+	
+	removeAt { arg index;
+		if(index < objects.size, { 
+			objects.removeAt(index).stop
+		}, { "index out of range.".inform });
+	}
+	
+	put { arg obj, channelOffset=0, send=false, freeAll=true, onCompletion; 			var container, bundle;
 				bundle = MixedBundle.new;
 				if(freeAll, { 
 					this.freeAllToBundle(bundle);
@@ -165,9 +175,13 @@ NodeProxy : AbstractFunction {
 					if(server.serverRunning, {
 						container.sendDefToBundle(bundle);
 						if(send, { 
-							this.sendToServer(bundle, freeAll, latency, nil, onCompletion);
+							if(freeAll, {
+								this.sendToServer(bundle,  nil, onCompletion)
+							}, {
+								this.sendLastToServer(bundle, nil, onCompletion)
+							})
 						}, { 
-							bundle.sendPrepare(server)
+							bundle.sendPrepare(server, server.latency)
 						});
 						loaded = true;
 				 	}, {
@@ -263,6 +277,8 @@ NodeProxy : AbstractFunction {
 		if(this.isPlaying, { group.run(flag) });
 	}
 	
+	pause { this.run(false) }
+	
 	//xfades, to test
 	
 	xset { arg ... args;
@@ -278,6 +294,7 @@ NodeProxy : AbstractFunction {
 		var bundle;
 		if(this.isPlaying, { 
 			bundle = MixedBundle.new;
+			bundle.preparationTime = 0;
 			this.freeAllToBundle(bundle);
 			if(selector === 'map', {
 				nodeMap.mapToProxy(args);
@@ -285,7 +302,7 @@ NodeProxy : AbstractFunction {
 				nodeMap.performList(selector, args);
 			});
 			this.sendEachToBundle(bundle);
-			this.sendBundle(bundle, 0.0);
+			this.sendBundle(bundle);
 		}, {
 			nodeMap.performList(selector, args);
 		})
@@ -295,45 +312,46 @@ NodeProxy : AbstractFunction {
 	
 	send { arg extraArgs;
 			//latency is 0, def is on server
-			this.sendToServer(MixedBundle.new, false, 0.0, extraArgs);
+			var bundle;
+			bundle = MixedBundle.new.preparationTime_(0);
+			this.sendLastToServer(bundle, extraArgs);
 	}
 	
 	sendAll { arg extraArgs;
 			//latency is 0, def is on server
-			this.sendToServer(MixedBundle.new, true, 0.0, extraArgs);
+			var bundle;
+			bundle = MixedBundle.new.preparationTime_(0);
+			this.sendToServer(bundle, extraArgs);
 	}
 	
 	
 	refresh {
 		var bundle;
 		bundle = MixedBundle.new;
+		bundle.preparationTime = 0;
 		this.freeAllToBundle(bundle);
 		this.sendAllToBundle(bundle);
-		this.sendBundle(bundle,0);
+		this.sendBundle(bundle);
 	}
 	
 
 	
 	// server communications, updating
 	
-	sendToServer { arg bundle, sendAll=true, latency=0.3, extraArgs, onCompletion;
-				
+	sendToServer { arg bundle, extraArgs, onCompletion;
 				if(this.isPlaying.not, { this.prepareForPlayToBundle(bundle) });
-				if(sendAll, {
-					this.sendAllToBundle(bundle, extraArgs)
-				}, {
-					this.sendLastToBundle(bundle, extraArgs)
-				});
-				this.sendBundle(bundle, latency, onCompletion);
-		
+				this.sendAllToBundle(bundle, extraArgs);
+				this.sendBundle(bundle, onCompletion);
 	}
 	
-	sendBundle { arg bundle, latency=0.3, onCompletion;
-				if(latency.isNil, {
-					bundle.schedSendRespond(server, 0, clock, onCompletion)
-				},{
-					bundle.schedSend(server, latency, clock, onCompletion)
-				})
+	sendLastToServer { arg bundle, extraArgs, onCompletion;
+				if(this.isPlaying.not, { this.prepareForPlayToBundle(bundle) });
+				this.sendLastToBundle(bundle, extraArgs);
+				this.sendBundle(bundle, onCompletion);
+	}
+	
+	sendBundle { arg bundle, onCompletion;
+			bundle.schedSend(server, clock, onCompletion)
 	}
 			
 	prepareForPlayToBundle { arg bundle;
@@ -447,9 +465,10 @@ NodeProxy : AbstractFunction {
 	wakeUp { arg latency=0.0; //see for load 
 		var bundle, checkedAlready;
 		bundle = MixedBundle.new;
+		bundle.preparationTime = 0;
 		checkedAlready = Set.new;
 		this.wakeUpToBundle(bundle, checkedAlready);
-		this.sendBundle(bundle,0);
+		this.sendBundle(bundle);
 	}
 			
 	
