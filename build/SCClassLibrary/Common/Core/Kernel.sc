@@ -208,6 +208,9 @@ Process {
 			});
 		});
 	}
+	addDocument {
+		Document.prGetLast;
+	}
 	methodReferences {
 		// this will not find method calls that are compiled with special byte codes such as 'value'.
 		var name, out, references;
