@@ -56,7 +56,12 @@ String[char] : RawArray {
 //		^this.primitiveFailed
 //	}
 	
-	die { "FATAL ERROR:\n".post;  this.postln;  this.halt; }
+	die { arg ... culprits; 
+		"FATAL ERROR:\n".post;  
+		this.postln;  
+		culprits.do({ arg c; c.dump });
+		this.halt; 
+	}
 	error { "ERROR:\n".post; this.postln; }
 	warn { "WARNING:\n".post; this.postln }
 	inform { ^this.postln }
@@ -201,8 +206,8 @@ String[char] : RawArray {
 	inspectorClass { ^StringInspector }
 	
 	/// unix
-	
-	pathMatch { _StringPathMatch ^this.primitiveFailed }
+
+	pathMatch { _StringPathMatch ^this.primitiveFailed } // glob
 	loadPaths {
 		var paths;
 		paths = this.pathMatch;
@@ -238,11 +243,11 @@ String[char] : RawArray {
 		(this.findHelpFile ? "Help/Help.help.rtf").openTextFile
 	}
 	
-	speak{arg voice=0;
+	speak { arg voice=0;
 		if(Speech.initialized.not,{Speech.init});
 		this.prSpeak(voice);
 	}
-	prSpeak{arg voice=0;
+	prSpeak { arg voice=0;
 		_SpeakText
 	}
 }
