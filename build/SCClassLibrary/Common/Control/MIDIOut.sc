@@ -140,7 +140,7 @@ MIDIOut {
 	allNotesOff { arg chan;
 		this.control(chan, 123, 0);
 	}
-	send {arg outport, uid, len, stat, chan, a=0, b=0, latency=5000.0; //in ms
+	send {arg outport, uid, len, stat, chan, a=0, b=0, latency=0.1; //in ms
 		_SendMIDIOut		
 	}
 }
