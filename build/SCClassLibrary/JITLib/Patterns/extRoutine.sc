@@ -2,9 +2,7 @@
 
 
 +Task {
-	embed { arg inval;
-		originalStream.embed(inval)
-	}
+	
 	refresh {
 		stream = originalStream
 	}
