@@ -158,6 +158,9 @@ Document {
 	isEdited {
 		_TextWindow_IsEdited
 	}
+	isFront {
+		^Document.current === this
+	}
 	
 	selectionStart {
 		^this.selectedRangeLocation
@@ -374,5 +377,27 @@ Document {
 	//
 	//hasPath  was loaded
 	
+}
+
+
+EnvirDocument : Document {
+	var <>envir;
+	*new { arg envir, string="", title, pushNow=true;
+		if(pushNow, { envir.push });
+		title = envir.tryPerform(\name) ? "Untitled Environment";
+		^super.new(string, "envir" + title.asString).envir_(envir)
+				.background_(rgb(250, 240, 240));
+	}
+	
+	didBecomeKey {
+		envir.push;
+		toFrontAction.value(this);
+	}
+	
+	didResignKey {
+		envir.pop;
+		endFrontAction.value(this);
+	}
+
 }
 
