@@ -2,7 +2,8 @@
 Buffer {
 
 	var <server, <bufnum, <>numFrames, <>numChannels = 1;
-
+	var <path;
+	
 	*new { arg server,numFrames,numChannels=1;
 		server = server ? Server.local;
 		^super.newCopyArgs(server,
@@ -23,16 +24,18 @@ Buffer {
 			.read(path,startFrame,-1,0,true)
 	}
 	
-	read { arg path, fileStartFrame = 0, numFrames = -1, 
+	read { arg argpath, fileStartFrame = 0, numFrames = -1, 
 					bufStartFrame = 0, leaveOpen = false;
 		this.numFrames = numFrames;
+		path = argpath;
 		server.sendMsg("/b_read", bufnum, path, 
 				fileStartFrame, numFrames, 
 				bufStartFrame, leaveOpen.binaryValue);
-		// check size and channels if don't know
+		// check size and channels if don't know ?
 	}
 	write { arg path,headerFormat="aiff",sampleFormat="int24",numFrames = -1,
 						startFrame = 0,leaveOpen = false;
+		// doesn't change my path 
 		server.sendMsg("/b_write", bufnum, path, 
 				headerFormat,sampleFormat, numFrames, startFrame, 
 				leaveOpen.binaryValue);
@@ -68,8 +71,25 @@ Buffer {
 	alloc {
 		server.sendMsg("/b_alloc", bufnum, numFrames, numChannels);
 	}
-	allocRead { arg path,startFrame;
+	allocRead { arg argpath,startFrame;
+		path = argpath;
 		server.sendMsg("/b_allocRead",bufnum, path,startFrame,numFrames);
 		// check size and channels if don't know
 	}
+	
+	// convienient
+	*loadDialog { arg server,startFrame = 0,numFrames = -1;
+		server = server ? Server.local;
+		^super.newCopyArgs(server,
+						server.bufferAllocator.alloc(1),
+						numFrames).loadDialog(startFrame)
+	}
+
+	loadDialog { arg startFrame;
+		CocoaDialog.getPaths({ arg paths;
+			path = paths.at(0);
+			this.allocRead(path, startFrame);
+		});
+	}	
+
 }
