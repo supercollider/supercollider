@@ -321,8 +321,10 @@ NodeProxy : BusPlug {
 	}
 	
 	removeAt { arg index;
-		objects.removeAt(index).stop //should free also.
+		objects.removeAt(index).stop //should free also. parents are the problem still
 	}
+	
+	removeAll { objects.size.do { |i| this.removeAt(0) } }
 	
 	
 	at { arg index;  ^objects.at(index) }
@@ -331,11 +333,13 @@ NodeProxy : BusPlug {
 	put { arg index=0, obj, channelOffset = 0, extraArgs; 			var container, bundle, grandParents, freeAll;
 			
 			freeAll = index.notNil and: { index < 0 };
-			if(obj.isNil and: { freeAll.not }, { ^this.removeAt(index) });
+			if(obj.isNil) { 
+				^if(freeAll) { this.removeAll  } { this.removeAt(index) }
+			};
 			bundle = MixedBundle.new;
 			if(parents.isEmpty, { grandParents = parents }, {
 				grandParents = parents.copy;
-				if(freeAll, { this.initParents });
+				if(freeAll) { this.initParents };
 			});			
 			
 			container = this.wrapObject(obj, channelOffset, index ? objects.size);
@@ -352,12 +356,7 @@ NodeProxy : BusPlug {
 				loaded = true;
 				if(awake, {
 					this.prepareToBundle(nil, bundle);
-					if(freeAll, {
-							this.sendAllToBundle(bundle, extraArgs);
-					}, {
-							this.sendObjectToBundle(bundle, container, extraArgs);
-					});
-					
+					this.sendObjectToBundle(bundle, container, extraArgs);
 				});
 				bundle.schedSend(server, clock);
 			}, {
@@ -719,13 +718,11 @@ NodeProxy : BusPlug {
 	}
 
 	
-	wakeUp { 
-				var bundle;
-				if(this.isPlaying.not, {
-					bundle = MixedBundle.new;
-					this.wakeUpToBundle(bundle);
-					bundle.schedSend(server, clock)
-				})
+	wakeUp { 		
+			var bundle;
+				bundle = MixedBundle.new;
+				this.wakeUpToBundle(bundle);
+				bundle.schedSend(server, clock)
 	}
 	
 	wakeUpToBundle { arg bundle, checkedAlready;
