@@ -21,7 +21,7 @@
 //Gendyn UGens implemented by Nick Collins (sicklincoln.org)
 
 #include "SC_PlugIn.h"
-    
+
         static InterfaceTable *ft; 
         
         struct Gendy1 : public Unit   // Iannis Xenakis/Marie-Helene Serra GENDYN simulation
@@ -259,7 +259,7 @@
 					//to force mirroring to be sensible
 					if(nextamp<0.0) nextamp=nextamp+4.0;
 					
-					nextamp=fmod(nextamp,4.0); 
+					nextamp=fmod(nextamp,4.0f); 
 					//printf("fmod  %f ", nextamp);
 	
 					if(nextamp>1.0 && nextamp<3.0)
@@ -279,7 +279,7 @@
 					if(rate>1.0 || rate<0.0)
 					{
 					if(rate<0.0) rate=rate+2.0;
-					rate= fmod(rate,2.0);
+					rate= fmod(rate,2.0f);
 					rate= 2.0-rate;
 					}
 				
@@ -418,7 +418,7 @@
 					float a= ZIN0(10); 
 					float c= ZIN0(11);
 					
-					float lehmerxen= fmod(((amp)*a)+c,1.0);  
+					float lehmerxen= fmod(((amp)*a)+c,1.0f);  
 					
 					//printf("lehmer %f \n", lehmerxen);
 
