@@ -15,11 +15,11 @@
 	
 	*allowAutoComp { ^true }		// maybe you want to turn off the IDE features
 
-	*ac {
+	*autoComplete {
 		^Document.new.ac;
 	}
 
-	ac {	// enable ide for this document
+	autoComplete {	// enable ide for this document
 		Document.allowAutoComp.if({
 			keyDownAction = { |doc, char, modifiers, keycode|
 				var	start, size;
@@ -42,16 +42,16 @@
 		});
 	}
 	
-	*openFileAC {	arg path;		// open a file by path
+	*openFileAutoComplete {	arg path;		// open a file by path
 							// can use wildcards
 		path.pathMatch.do({ |p|
 			Document.open(p).ac;
 		});
 	}
 	
-	*openAC {	// open a file by opendialog
+	*openAutoComplete {	// open a file by opendialog
 		File.openDialog("Choose the codefile to open", { |path|
-			this.openFileAC(path);
+			this.openFileAutoComplete(path);
 		});
 	}
 
