@@ -157,7 +157,7 @@ Crucial {
 		
 		
 		if(debugNodeWatcher.isNil,{
-			debugNodeWatcher = DebugNodeWatcher(Server.local.addr);
+			debugNodeWatcher = DebugNodeWatcher(Server.local);
 		});
 		ToggleButton(menu.startRow,"DebugNodeWatcher",{
 			debugNodeWatcher.start;
