@@ -79,23 +79,27 @@ extern bool compiledOK;
 			
 		MyDocument * doc = [self delegate];			
 		PyrObject * pobj = [doc getSCObject];
-		PyrSymbol *method = getsym("keyUp");
 
 		if (pobj) {
 			pthread_mutex_lock (&gLangMutex);
-			if(NotNil(pobj->slots+2)){
-				VMGlobals *g = gMainVMGlobals;
-				g->canCallOS = true;
-				++g->sp;  SetObject(g->sp, pobj); 
-				++g->sp;  SetChar(g->sp, character); 
-				++g->sp;  SetInt(g->sp, modifiers); 
-				++g->sp;  SetInt(g->sp, character); 
-				++g->sp;  SetInt(g->sp, keycode); 
-				runInterpreter(g, method, 5);
-				g->canCallOS = false;
+			PyrSymbol *documentclass = getsym("Document");
+			PyrObject *classobj = (PyrObject*) documentclass->u.classobj;			
+			if(NotNil(pobj->slots+2) || NotNil(classobj->slots+5)){
+				if(compiledOK){
+					PyrSymbol *method = getsym("keyUp");
+					VMGlobals *g = gMainVMGlobals;
+					g->canCallOS = true;
+					++g->sp;  SetObject(g->sp, pobj); 
+					++g->sp;  SetChar(g->sp, character); 
+					++g->sp;  SetInt(g->sp, modifiers); 
+					++g->sp;  SetInt(g->sp, character); 
+					++g->sp;  SetInt(g->sp, keycode); 
+					runInterpreter(g, method, 5);
+					g->canCallOS = false;
+				}	
 			}
 			pthread_mutex_unlock (&gLangMutex);
-		}
+		} 
 	}
     if ([characters isEqual: @"\03"]) {
     } else if (([characters isEqual: @"\n"] || [characters isEqual: @"\r"]) && !([event modifierFlags] & NSAlternateKeyMask)) {
@@ -120,10 +124,11 @@ extern bool compiledOK;
 
 		if (pobj) {
 			pthread_mutex_lock (&gLangMutex);
-			if (compiledOK) { // must test again inside the lock
-				PyrSymbol *method = getsym("keyDown");
-				if(NotNil(pobj->slots+1)){
-					//pthread_mutex_lock (&gLangMutex);
+			PyrSymbol *documentclass = getsym("Document");
+			PyrObject *classobj = (PyrObject*) documentclass->u.classobj;			
+			if(NotNil(pobj->slots+1) || NotNil(classobj->slots+4)){
+				if(compiledOK){
+					PyrSymbol *method = getsym("keyDown");
 					VMGlobals *g = gMainVMGlobals;
 					g->canCallOS = true;
 					++g->sp;  SetObject(g->sp, pobj); 
