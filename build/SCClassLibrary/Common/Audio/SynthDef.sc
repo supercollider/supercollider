@@ -328,7 +328,7 @@ SynthDef {
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
 		)
 	}
-	store { arg libname=\global, path="synthdefs/";
+	store { arg libname=\global, path="synthdefs/", completionMsg;
 		var lib;
 		
 		lib = SynthDescLib.all.at(libname);
@@ -338,7 +338,7 @@ SynthDef {
 		lib.read(path);
 		lib.servers.do { arg server;
 			server.listSendMsg(
-				["/d_load", path ]
+				["/d_load", path, completionMsg ]
 			)
 		}
 	}
