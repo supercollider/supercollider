@@ -1,0 +1,230 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
+\f3\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+}
+\vieww9000\viewh9000\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs44 \cf0 Gendy2
+\f1\b0\fs24 \
+\
+See Gendy1 help file for background. This variant of GENDYN is closer to that presented in \
+\
+Hoffmann, Peter. (2000) The New GENDYN Program. Computer Music Journal 24:2, pp 31-38. \
+\
+Technical notes- random walk is of the amplitude and time delta, not the amp and time directly. The amplitude step random walk uses a lehmer style number generator whose parameters are accessible. \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \ul \ulc0 Class Methods
+\f1\b0 \ulnone \
+\
+
+\f0\b *ar(ampdist=1, durdist=1, adparam=1.0, ddparam=1.0, minfreq=20, maxfreq=1000, ampscale= 0.5, durscale=0.5, initCPs=12, knum=12, a= 1.17, c=0.31, mul=1.0, add=0.0)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+All parameters can be modulated at control rate except for initCPs which is used only at initialisation.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 ampdist
+\f1\b0  - Choice of probability distribution for the next perturbation of the amplitude of a control point. \
+\
+The distributions are (adapted from the GENDYN program in Formalized Music):\
+0- LINEAR\
+1- CAUCHY\
+2- LOGIST\
+3- HYPERBCOS\
+4- ARCSINE\
+5- EXPON\
+6- SINUS\
+Where the sinus (Xenakis' name) is in this implementation taken as sampling from a third party oscillator. See example below.\
+\
+
+\f0\b durdist-
+\f1\b0  Choice of distribution for the perturbation of the current inter control point duration. \
+\
+
+\f0\b adparam-
+\f1\b0  A parameter for the shape of the amplitude probability distribution, requires values in the range 0.0001 to 1 (there are safety checks in the code so don't worry too much if you want to modulate!)\
+\
+
+\f0\b ddparam-
+\f1\b0  A parameter for the shape of the duration probability distribution, requires values in the range 0.0001 to 1\
+\
+
+\f0\b minfreq-
+\f1\b0  Minimum allowed frequency of oscillation for the Gendy1 oscillator, so gives the largest period the duration is allowed to take on. \
+\
+
+\f0\b maxfreq-
+\f1\b0  Maximum allowed frequency of oscillation for the Gendy1 oscillator, so gives the smallest period the duration is allowed to take on. \
+\
+
+\f0\b ampscale-
+\f1\b0  Normally 0.0 to 1.0, multiplier for the distribution's delta value for amplitude. An ampscale of 1.0 allows the full range of  -1 to 1 for a change of amplitude.\
+\
+
+\f0\b durscale-
+\f1\b0  Normally 0.0 to 1.0, multiplier for the distribution's delta value for duration. An ampscale of 1.0 allows the full range of  -1 to 1 for a change of duration.\
+\
+
+\f0\b initCPs-
+\f1\b0  Initialise the number of control points in the memory. Xenakis specifies 12. There would be this number of control points per cycle of the oscillator, though the oscillator's period will constantly change due to the duration distribution. \
+\
+
+\f0\b knum-
+\f1\b0  Current number of utilised control points, allows modulation.  \
+\
+
+\f0\b a-
+\f1\b0  parameter for Lehmer random number generator perturbed by Xenakis as in ((old*a)+c)%1.0\
+\
+
+\f0\b c-
+\f1\b0  parameter for Lehmer random number generator perturbed by Xenakis\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\i \cf0 Examples\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i0\fs18 \cf0 	\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs26 \cf2 //warning- if you have lots of CPs and you have fast frequencies, the CPU cost goes up a lot because a new CP move happens every sample!
+\fs18 	\cf0 \
+\
+	\
+\cf2 //LOUD! defaults\cf0  \cf2 like a rougher Gendy1	\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy2\cf0 .ar)\}.play\
+\
+\cf2 //advantages of messing with the random number generation- causes periodicities\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy2\cf0 .ar(a:\cf3 MouseX\cf0 .kr(0.0,1.0),c:\cf3 MouseY\cf0 .kr(0.0,1.0)))\}.play\
+\
+\
+(\
+\{\cf3 Pan2\cf0 .ar(\
+\cf3 Normalizer\cf0 .ar(\
+\cf3 RLPF\cf0 .ar(\
+\cf3 RLPF\cf0 .ar(\cf3 Gendy2\cf0 .ar(a:\cf3 SinOsc\cf0 .kr(0.4,0,0.05,0.05),c:\cf3 SinOsc\cf0 .kr(0.3,0,0.1,0.5)),\
+\cf3 MouseX\cf0 .kr(10,10000,\cf4 'exponential'\cf0 ),0.05),\
+\cf3 MouseY\cf0 .kr(10,10000,\cf4 'exponential'\cf0 ),0.05)\
+,0.9)\
+,\cf3 Lag\cf0 .kr(\cf3 LFNoise0\cf0 .kr(1),0.5))\}.play\
+)\
+\
+\
+\
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy2\cf0 .ar(3,5,1.0,1.0,50,1000,\cf3 MouseX\cf0 .kr(0.05,1),\cf3 MouseY\cf0 .kr(0.05,1),15, 0.05,0.51,mul:0.5))\}.play\
+\
+\
+\cf2 //play me	\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 RLPF\cf0 .ar(\cf3 Gendy2\cf0 .ar(1,3,minfreq:20, maxfreq:\cf3 MouseX\cf0 .kr(100,1000), durscale:0.0, initCPs:4), 500,0.3, 0.2), 0.0)\}.play\
+\
+\
+\cf2 //1 CP = random noise effect\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy2\cf0 .ar(initCPs:1))\}.play\
+\
+\cf2 //2 CPs = suudenly an oscillator (though a fast modulating one here)\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy2\cf0 .ar(initCPs:2))\}.play\
+\
+\
+\cf2 //used as an LFO	\cf0 \
+(\
+\{\cf3 Pan2\cf0 .ar(\cf3 SinOsc\cf0 .ar(\cf3 Gendy2\cf0 .kr(2,1,\cf3 SinOsc\cf0 .kr(0.1,0,0.49,0.51),\cf3 SinOsc\cf0 .kr(0.13,0,0.49,0.51), 3.4,3.5, \cf3 SinOsc\cf0 .kr(0.17,0,0.49,0.51), \cf3 SinOsc\cf0 .kr(0.19,0,0.49,0.51),10,10,mul:50, add:350), 0, 0.3), 0.0)\}.play\
+)\
+	\
+\cf2 //very angry wasp\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy2\cf0 .ar(0, 0, \cf3 SinOsc\cf0 .kr(0.1, 0, 0.1, 0.9),1.0, 50,1000, 1,0.005, 12, 12, 0.2,0.2,0.2), 0.0)\}.play\
+\
+\
+\cf2 //modulate distributions\cf0 \
+\cf2 //change of pitch as distributions change the duration structure and spectrum\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy2\cf0 .ar(\cf3 MouseX\cf0 .kr(0,7),\cf3 MouseY\cf0 .kr(0,7),mul:0.2), 0.0)\}.play\
+\
+\
+\cf2 //modulate num of CPs\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy2\cf0 .ar(knum:\cf3 MouseX\cf0 .kr(1,13),mul:0.2), 0.0)\}.play\
+\
+\
+\cf2 //Gendy1 into Gendy2...with cartoon side effects\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy2\cf0 .ar(maxfreq:\cf3 Gendy1\cf0 .kr(5,4,0.3, 0.7, 0.1, \cf3 MouseY\cf0 .kr(0.1,10), 1.0, 1.0, 5,5, 500, 600), knum:\cf3 MouseX\cf0 .kr(1,13),mul:0.2), 0.0)\}.play\
+\
+\
+\cf2 //use SINUS to track any oscillator and take CP positions from it, use adparam and ddparam as the inputs to sample \cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy2\cf0 .ar(6,6,\cf3 LFPulse\cf0 .kr(100, 0, 0.4, 1.0), \cf3 SinOsc\cf0 .kr(30, 0, 0.5),mul:0.2), 0.0)\}.play\
+\
+\
+\cf2 //try out near the corners especially\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy2\cf0 .ar(6,6,\cf3 LFPulse\cf0 .kr(\cf3 MouseX\cf0 .kr(0,200), 0, 0.4, 1.0), \cf3 SinOsc\cf0 .kr(\cf3 MouseY\cf0 .kr(0,200), 0, 0.5),mul:0.2), 0.0)\}.play\
+\
+\
+\cf2 //texture- the howling wind?\cf0 \
+(\
+\{\
+\cf3 Mix.fill\cf0 (10,\{\
+\cf3 var\cf0  freq;\
+\
+freq= rrand(130,160.3);\
+\cf3 Pan2\cf0 .ar(\cf3 SinOsc\cf0 .ar(\cf3 Gendy2\cf0 .ar(6.rand,6.rand,\cf3 SinOsc\cf0 .kr(0.1,0,0.49,0.51),\cf3 SinOsc\cf0 .kr(0.13,0,0.49,0.51),freq ,freq, \cf3 SinOsc\cf0 .kr(0.17,0,0.49,0.51), \cf3 SinOsc\cf0 .kr(0.19,0,0.49,0.51), 12, 12, 0.4.rand, 0.4.rand, 200, 400), 0, 0.1), 1.0.rand2)\
+\});\
+\}.play\
+)\
+\
+\cf2 //CAREFUL! mouse to far right causes explosion of sound\cf0 \
+(\
+\{\cf3 Pan2\cf0 .ar(\
+\cf3 CombN\cf0 .ar(\
+\cf3 Resonz\cf0 .ar(\
+\cf3 Gendy2\cf0 .ar(2,3,minfreq:1, maxfreq:\cf3 MouseX\cf0 .kr(10,700), initCPs:100),\
+\cf3 MouseY\cf0 .kr(50,1000), 0.1)\
+,0.1,0.1,5, 0.16\
+)\
+, 0.0)\}.play\
+)\
+\
+\
+\cf2 //storm\cf0 \
+(\
+\{\
+\cf3 var\cf0  n;\
+n=15;\
+\
+0.5*\cf3 Mix.fill\cf0 (n,\{\
+\cf3 var\cf0  freq, numcps;\
+\
+freq= rrand(130,160.3);\
+numcps= rrand(2,20);\
+\cf3 Pan2\cf0 .ar(\cf3 Gendy2\cf0 .ar(6.rand,6.rand,10.0.rand,10.0.rand,freq,freq*exprand(1.0,2.0), 10.0.rand, 10.0.rand, numcps, \cf3 SinOsc\cf0 .kr(exprand(0.02,0.2), 0, numcps/2, numcps/2), 10.0.rand,10.0.rand,0.5/(n.sqrt)), 1.0.rand2)\
+\});\
+\}.play\
+)\
+\
+\
+\
+\cf2 //another traffic moment\cf0 \
+(\
+\{\
+\cf3 var\cf0  n;\
+n=10;\
+\
+\cf3 Resonz\cf0 .ar(\
+\cf3 Mix.fill\cf0 (n,\{\
+\cf3 var\cf0  freq, numcps;\
+\
+freq= rrand(50,560.3);\
+numcps= rrand(2,20);\
+\cf3 Pan2\cf0 .ar(\cf3 Gendy2\cf0 .ar(6.rand,6.rand,1.0.rand,1.0.rand,freq ,freq, 1.0.rand, 1.0.rand, numcps, \cf3 SinOsc\cf0 .kr(exprand(0.02,0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)\
+\})\
+,\cf3 MouseX\cf0 .kr(100,2000), \cf3 MouseY\cf0 .kr(0.01,1.0), 0.3)\
+;\
+\}.play\
+)\
+\
+\
+\cf2 //SuperCollider implementation by Nick Collins (sicklincoln.org)}

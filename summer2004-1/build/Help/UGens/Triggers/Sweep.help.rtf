@@ -1,0 +1,75 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Sweep
+\f1\b0\fs18 			
+\f0\b\fs24 triggered linear ramp
+\f1\b0\fs18 \
+\
+
+\f2\fs24 superclass: UGen
+\f0\b \
+\
+
+\f2\b0 starts a linear raise by rate/sec from zero when trig input crosses from non-positive to positive \
+
+\f0\b \
+	*ar(trig, rate)\
+	*kr(trig, rate)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 	\
+\
+\
+	\
+\cf2 // using sweep to modulate sine frequency\cf3 \
+(\
+\{ \cf4 var\cf3  trig;\
+	trig = \cf4 Impulse\cf3 .kr(\cf4 MouseX\cf3 .kr(0.5, 20, 1));\
+	\cf4 SinOsc\cf3 .ar(\cf4 Sweep\cf3 .kr(trig, 700) + 500, 0, 0.2)\
+\}.play;\
+)\
+\
+\
+\
+\
+\
+\cf2 // using sweep to index into a buffer\cf3 \
+\
+s.sendMsg(\cf5 "/b_allocRead"\cf3 , 0, \cf5 "sounds/a11wlk01.wav"\cf3 );\
+\
+(\
+\{ \cf4 var\cf3  trig;\
+	trig = \cf4 Impulse\cf3 .kr(\cf4 MouseX\cf3 .kr(0.5, 10, 1));\
+	\cf4 BufRd\cf3 .ar(1, 0, \cf4 Sweep\cf3 .ar(trig, \cf4 BufSampleRate\cf3 .ir(0)))\
+\}.play;\
+)\
+\
+\cf2 // backwards, variable offset\cf3 \
+\
+(\
+\{ \cf4 var\cf3  trig, pos, rate;\
+	trig = \cf4 Impulse\cf3 .kr(\cf4 MouseX\cf3 .kr(0.5, 10, 1));\
+	rate = \cf4 BufSampleRate\cf3 .ir(0);\
+	pos = \cf4 Sweep\cf3 .ar(trig, rate.neg) + (\cf4 BufFrames\cf3 .ir(0) * \cf4 LFNoise0\cf3 .kr(0.2));\
+	\cf4 BufRd\cf3 .ar(1, 0, pos)\
+\}.play;\
+)\
+\
+\
+\cf2 // raising rate\cf3 \
+(\
+\{ \cf4 var\cf3  trig, rate;\
+	trig = \cf4 Impulse\cf3 .kr(\cf4 MouseX\cf3 .kr(0.5, 10, 1));\
+	rate = \cf4 Sweep\cf3 .kr(trig, 2) + 0.5;\
+	\cf4 BufRd\cf3 .ar(1, 0, \cf4 Sweep\cf3 .ar(trig, \cf4 BufSampleRate\cf3 .ir(0) * rate))\
+\}.play;\
+)\
+\
+\cf0 \
+}

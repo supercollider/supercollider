@@ -1,0 +1,260 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+\f3\fswiss\fcharset77 Helvetica-Oblique;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green112\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 PageLayout
+\fs32 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs22 \cf0 \
+A PageLayout is a window that manages the layout of views added to it.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 You request a rectangle using 
+\f0\b layout.layRight(x,y)\
+
+\f1\b0 \
+the layout manager moves its internal cursor, wrapping to a new line, then to a new window as necessary.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs22 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 Wraps to the next line
+\f0\b \ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \ulnone (\
+	\cf2 var\cf0  f;\
+	f=\cf2 PageLayout\cf0 .new(\cf3 "flow"\cf0 );\
+	\
+	504.do(\{ \cf2 arg\cf0  i;\
+		\cf2 SCButton\cf0 ( f.window, f.layRight(30,30) )\
+			.states_([[i.asString,\cf2 Color\cf0 .black,\cf2 Color\cf0 .white]])\
+	\});\
+	\
+	f.front;\
+)\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 Exceeding the bottom of the window wraps to a new window\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+	\cf2 var\cf0  f;\
+	f=\cf2 PageLayout\cf0 .new(\cf3 "flow"\cf0 );\
+	\
+	800.do(\{ \cf2 arg\cf0  i;\
+		\cf2 var\cf0  r;\
+		r= f.layRight(30,30); \cf4 // obtain the rectangle first\
+\cf0 	\cf4 					// in case we cascade to the next window\
+\cf0 		\cf2 SCButton\cf0 ( f.window, r )\
+			.states_([[i.asString,Color.black,Color.white]])\
+	\});\
+	f.front;\
+)\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 The windows are treated as a group.  When one closes, they all close.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 .window \
+
+\f1\b0 returns the current window being written to.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 .layRight(x,y) \
+
+\f1\b0 allocates space and returns a \cf2 Rect\cf0  of size (x,y)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 .close\
+
+\f1\b0 close all windows created by the PageLayout\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 .focus( index )\
+
+\f1\b0 focus the view on the current window\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 .toFront\
+
+\f1\b0 cascades all windows owned by PageLayout to front\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 .resizeToFit\
+
+\f1\b0 resizes all windows to fit their contents, brings them all to front\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\
+( \
+\cf2 	var\cf0  f,sliders;\
+	f= \cf2 PageLayout\cf0 .new("a vaguely practical example");\
+	\
+	sliders=\cf2 Array\cf0 .fill(rrand(16,32),\{ \cf2 arg\cf0  i;\
+		SC\cf2 Slider\cf0 ( f.window, f.layRight(10, 150));\
+	\});\
+\
+	f.within( 50,150,\{ \cf2 arg\cf0  subf;\
+		SC\cf2 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
+		SC\cf2 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
+		SC\cf2 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
+		SC\cf2 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
+	\});\
+	\
+	f.resizeToFit;\
+	f.front;\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 //\
+//// layout within a layout\
+//(var f;\
+//	f=PageLayout.new("flow");\
+//	\
+//	30.rand.do(\{ arg i;\
+//		SliderView(f.win, f.layRight(80.rand,80.rand))\
+//	\});\
+//	\
+//	// html joke, but useful\
+//	f.hr;\
+//	\
+//	// allocate space for a small layout within\
+//	// a verticle strip \
+//	f.within( 100,300,\{ arg subLayout;\
+//		5.do(\{ arg i;\
+//			RangeView(subLayout.win, subLayout.layRight(100.rand,100.rand),"",0,1,0,1)\
+//		\})\
+//	\});\
+//	\
+//	// more sliders to the right of the strip\
+//	30.rand.do(\{ arg i;\
+//		SliderView(f.win, f.layRight(80.rand,80.rand))\
+//	\});\
+//	\
+//	// continuing with a new section below\
+//	f.hr;\
+//	30.rand.do(\{ arg i;\
+//		SliderView(f.win, f.layRight(80.rand,80.rand))\
+//	\});\
+//	\
+//)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\
+A nice way to work with \cf2 PageLayout\cf0  is with [
+\f0\b \cf2 Sheet
+\f1\b0 \cf0 ]\
+\
+\
+\
+A \cf2 PageLayout\cf0  closes all of its windows when any of its windows is closed.\
+When a \cf2 PageLayout\cf0  closes, it sends the \cf5 \\didClose\cf0  notification (see NotificationCenter).\
+\
+	You can register to receive that notification:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 	\
+	\cf2 NotificationCenter\cf0 .registerOneShot( f,\cf5 \\didClose\cf0 , yourObject,\{\
+			\cf4 // stop the model from playing, clean house, \
+			// unregister a keydown etc.\
+\cf0 	\});
+\f1\fs24 \
+	\
+	This notification unregisters itself after being called.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 removeOnClose(controller)
+\f1\b0 \
+	this method adds the controller to the PageLayout's autoremove list.  when the window closes, all items on the list will be sent the 
+\f0\b .remove
+\f1\b0  message.  this allows them to release any of their own dependancies, clean the poop out of their cage etc.\
+\
+	eg:	Updater, ObjectGui (and subclasses), and NotificationRegistration\
+\
+	\
+\
+
+\f0\b A Note about MVC/Dependencies\
+
+\f1\b0 \
+this is some under-the-hood stuff that you don't need to know about but might be interested in.\
+\
+When a subclass of ObjectGui is added to a PageLayout it adds itself as a dependant on that layout. (ObjectGui::guify).\
+	\
+When PageLayout creates a SCWindow, it sets the window's onClose function to call PageLayout::release.  this calls .
+\f0\b release 
+\f1\b0 on all of the PageLayout's dependants.\
+\
+The PageLayout calls .
+\f0\b release
+\f1\b0  on all the gui objects when the SCWindow closes.  The gui objects release their dependancy on their models, thus severing the link between the two, allowing garbage collection.\
+	\
+	\
+		\
+in sc all Views must actually be on a window.  when a View is created, it is added to a window, and the SCWindow keeps track of them in its 
+\f0\b view.children
+\f1\b0  array.\
+	\
+this gui system has Gui classes that build and maintain an interface/gui on a specific model.  They are Controllers, and they create actual View objects and control the interface between those and the Model.\
+		\
+these controllers add themselves as dependants on the models.\
+	eg. a PatchGui is a dependant of a Patch\
+\
+when a SCWindow is shut, it calls .
+\f0\b release 
+\f1\b0 on every no
+\f3\i rmal v
+\f1\i0 iew (StringView, RangeView etc.),	to cause each view to sever its dependency relationship with its model.  Otherwise, even though the window is gone and the view is not visible ( and neither the window, the view or the model have any direct reference to each other), it will not get garbage collected because there is still an entry in the dependants dictionary (Object classvar) listing that view as a dependant on the model.  there is still a link between model and view.\
+	\
+The Gui objects (controllers) need to know when the window closes so they can release themselves from the model.\
+	\
+	in Object::guify this happens:\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 	\cf0 	layout.removeOnClose(guiObject)\
+	\
+	\
+	\cf4 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	
+\f2\fs18 \
+	\
+	\
+}

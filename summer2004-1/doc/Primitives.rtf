@@ -1,0 +1,129 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 Monaco;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red118\green15\blue80;\red0\green0\blue255;
+\red137\green19\blue21;\red35\green110\blue37;\red0\green0\blue221;}
+\vieww11920\viewh9920\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs18 \cf0 \
+
+\f1\b\fs36 Writing Primitives\
+
+\f0\b0\fs18 \
+
+\f1\b\fs24 In SuperCollider code:\
+
+\f0\b0\fs18 \
+Cocoa \{\
+	prGetPathsDialog \{ \cf2 arg\cf0  returnSlot;\
+		\cf2 _Cocoa_GetPathsDialog\cf0 \
+		^\cf2 this\cf0 .primitiveFailed\
+	\}\
+\}\
+\
+
+\f1\b\fs24 In your primitive source code define the primitive:\
+
+\f0\b0\fs18 \
+	\cf3 \CocoaLigature0 void\cf0  initCocoaFilePrimitives()\
+\CocoaLigature1 	\CocoaLigature0 \{\
+\CocoaLigature1 	\CocoaLigature0 	\cf3 int\cf0  base, index;\
+\CocoaLigature1 	\CocoaLigature0 	\
+\CocoaLigature1 	\CocoaLigature0 	base = nextPrimitiveIndex();\
+\CocoaLigature1 	\CocoaLigature0 	index = \cf4 0\cf0 ;\
+\CocoaLigature1 	\CocoaLigature0 \
+\CocoaLigature1 	\CocoaLigature0 	definePrimitive(base, index++, \cf5 "_Cocoa_GetPathsDialog"\cf0 , prGetPathsDialog, \cf4 2\cf0 , \cf4 0\cf0 );\CocoaLigature1 		// further primitives can be laid in...\
+		\cf6 \CocoaLigature0 //definePrimitive(base, index++, "_Cocoa_SaveAsPlist", prSaveAsPlist, 3, 0);\cf0 \
+\CocoaLigature1 	\CocoaLigature0 \}\
+	\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\tx10560\tx11520\tx12480\tx13440\tx14400\tx15360\tx16320\tx17280\tx18240\tx19200\tx20160\tx21120\tx22080\tx23040\tx24000\tx24960\tx25920\tx26880\tx27840\tx28800\tx29760\tx30720\tx31680\tx32640\tx33600\tx34560\tx35520\tx36480\tx37440\tx38400\tx39360\tx40320\tx41280\tx42240\tx43200\tx44160\tx45120\tx46080\tx47040\tx48000\tx48960\tx49920\tx50880\tx51840\tx52800\tx53760\tx54720\tx55680\tx56640\tx57600\tx58560\tx59520\tx60480\tx61440\tx62400\tx63360\tx64320\tx65280\tx66240\tx67200\tx68160\tx69120\tx70080\tx71040\tx72000\tx72960\tx73920\tx74880\tx75840\tx76800\tx77760\tx78720\tx79680\tx80640\tx81600\tx82560\tx83520\tx84480\tx85440\tx86400\tx87360\tx88320\tx89280\tx90240\tx91200\tx92160\tx93120\tx94080\tx95040\tx96000\ql\qnatural
+\cf3 \
+
+\f2\fs24 Here is the prototype for definePrimitive:\
+
+\f0\fs18 	\
+	int\cf0  definePrimitive(\cf3 int\cf0  base, \cf3 int\cf0  index, \cf3 char\cf0  *name, PrimitiveHandler handler, \cf3 int\cf0  numArgs, \cf3 int\cf0  varArgs);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+
+\f2\fs24 The numArgs is the number of arguments that were passed into the SuperCollider method that calls the primitive, plus one to include the receiver which is passed in as the first argument.  \
+
+\f0\fs18 \
+
+\f2\fs24 (TODO varArgs ...)\
+
+\f0\fs18  \
+
+\f1\b\fs24 \CocoaLigature1 Write your primitive\
+
+\f0\b0\fs18 \
+g->sp 
+\f2\fs24 is the top of the stack and is the last argument pushed. 
+\f0\fs18 \
+g->sp - inNumArgsPushed + 1 
+\f2\fs24 is the receiver and where the result goes.
+\f0\fs18 \
+\
+
+\f2\fs24 In this example, the numArgsPushed will be 2 (as specified in definePrimitive)\
+
+\f0\fs18 \
+	\cf3 \CocoaLigature0 int\cf0  prGetPathsDialog(\cf3 struct\cf0  VMGlobals *g, \cf3 int\cf0  numArgsPushed);\
+\CocoaLigature1 	\cf3 \CocoaLigature0 int\cf0  prGetPathsDialog(\cf3 struct\cf0  VMGlobals *g, \cf3 int\cf0  numArgsPushed)\
+\CocoaLigature1 	\CocoaLigature0 \{\
+\CocoaLigature1 	\CocoaLigature0         \cf3 if\cf0  (!g->canCallOS) \cf3 return\cf0  errCantCallOS;\cf6 //if its deferred, does this matter ?\cf0 \
+\CocoaLigature1 	\CocoaLigature0 \
+\CocoaLigature1 	\CocoaLigature0         PyrSlot *receiver = g->sp - \cf4 1\cf0 ; \cf6 // an instance of Cocoa\cf0 \
+\CocoaLigature1 	\CocoaLigature0         PyrSlot *array = g->sp; \cf6 // an array\cf0 \
+\CocoaLigature1 	\CocoaLigature0 \
+\CocoaLigature1 	\CocoaLigature0 // ...  the body\
+\CocoaLigature1 	\CocoaLigature0 \
+\CocoaLigature1 	\CocoaLigature0         \cf3 return\cf0  errNone;\
+\CocoaLigature1 	\CocoaLigature0 \}\
+\CocoaLigature1 	\
+
+\f2\fs24 This example does not set the receiver, so the primitive returns the original receiver unchanged (still an instance of Cocoa).\
+
+\f0\fs18 \
+
+\f2\fs24 or set the object at\
+
+\f0\fs18 	\
+		receiver\
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\tx10560\tx11520\tx12480\tx13440\tx14400\tx15360\tx16320\tx17280\tx18240\tx19200\tx20160\tx21120\tx22080\tx23040\tx24000\tx24960\tx25920\tx26880\tx27840\tx28800\tx29760\tx30720\tx31680\tx32640\tx33600\tx34560\tx35520\tx36480\tx37440\tx38400\tx39360\tx40320\tx41280\tx42240\tx43200\tx44160\tx45120\tx46080\tx47040\tx48000\tx48960\tx49920\tx50880\tx51840\tx52800\tx53760\tx54720\tx55680\tx56640\tx57600\tx58560\tx59520\tx60480\tx61440\tx62400\tx63360\tx64320\tx65280\tx66240\tx67200\tx68160\tx69120\tx70080\tx71040\tx72000\tx72960\tx73920\tx74880\tx75840\tx76800\tx77760\tx78720\tx79680\tx80640\tx81600\tx82560\tx83520\tx84480\tx85440\tx86400\tx87360\tx88320\tx89280\tx90240\tx91200\tx92160\tx93120\tx94080\tx95040\tx96000\ql\qnatural
+
+\f2\fs24 \cf0 \
+which again is at
+\f0\fs18  (g->sp - numArgsPushed + 1)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li200\ql\qnatural
+\cf7 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+
+\f1\b\fs24 some guidelines:\
+
+\f2\b0 \
+If possible, you should avoid creating objects in a primitive. Primitives are much simpler to write and debug if you pass in an object that you create in SC code and fill in its slots in the primitive.\
+\
+When you do fill in slots in an object with other objects, you must call g->gc->GCWrite(obj, slot) in order to notify the garbage collector that you have modified a slot that it may have already scanned.\
+\
+Do not store pointers to PyrObjects in C/C++ variables unless you can absolutely guarantee that they cannot be garbage collected. For example the File and SCWindow classes do this by storing the objects in an array in a classvar. The object has to stay in that array until no C object refers to it.\
+\
+Failing to observe the above two points can result in very hard to find bugs.\
+\
+If you create more than one object in a primitive you must make sure that all the previously created objects are reachable before you allocate another. In other words you must store them on the stack or in another object's slots before creating another. Creating objects can call the garbage collector and if you have not made your objects reachable, they can get collected out from under you.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li200\ql\qnatural
+\cf7 Q: now where do i put the thing to return it ?\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+A: into g->sp - inNumArgsPushed + 1.\
+In most primitives this is referred to by the variable 'a'.\
+\
+\
+
+\f0\fs18 \
+\
+}

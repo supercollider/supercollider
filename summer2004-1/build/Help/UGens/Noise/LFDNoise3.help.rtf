@@ -1,0 +1,66 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 LFDNoise3				
+\fs24 dynamic cubic noise
+\f1\b0 \
+\
+
+\f0\b LFDNoise3.ar(freq, mul, add)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Similar to 
+\f0\b LFNoise2
+\f1\b0 , it generates polynomially interpolated random values \
+at a rate given by the 
+\f0\b freq
+\f1\b0  argument, with 3 differences:\
+\
+-no time quantization \
+-fast recovery from low freq values\
+-cubic instead of quadratic interpolation\
+\
+(LFNoise0,1,2 quantize to the nearest integer division of the samplerate,\
+and they poll the freq argument only when scheduled, and thus seem \
+to hang when freqs get very low).\
+If you don't need very high or very low freqs, or use fixed freqs, \
+LFNoise2 is more efficient.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 freq
+\f1\b0  - rate at which to generate random values.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 // try wiggling mouse quickly: \cf0 \
+\cf2 // LFNoise2 overshoots when going from high to low freqs, LFDNoise changes smoothly.\cf0 \
+\
+\{  \cf3 SinOsc\cf0 .ar(\cf3 LFNoise2\cf0 .ar(\cf3 MouseX\cf0 .kr(0.1, 1000, 1), 200, 500), 0, 0.2)  \}.play\
+\
+\{  \cf3 SinOsc\cf0 .ar(\cf3 LFDNoise3\cf0 .ar(\cf3 MouseX\cf0 .kr(0.1, 1000, 1), 200, 500), 0, 0.2)  \}.play\
+\
+\
+\cf2 // LFNoise quantizes time steps at high freqs, LFDNoise does not:\cf0 \
+\
+\{ \cf3 LFNoise2\cf0 .ar(\cf3 XLine\cf0 .kr(2000, 20000, 8), 0.1) \}.scope;\
+\
+\{ \cf3 LFDNoise3\cf0 .ar(\cf3 XLine\cf0 .kr(2000, 20000, 8), 0.1) \}.scope;\
+\
+\cf2 // use as frequency control\cf0 \
+(\
+\{\
+		\cf3 SinOsc\cf0 .ar(\
+			\cf3 LFDNoise3\cf0 .ar(4, 400, 450),\
+			0, 0.2\
+		)\
+\}.play;\
+)\
+\
+\
+\
+}

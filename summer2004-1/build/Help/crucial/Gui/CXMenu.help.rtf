@@ -1,0 +1,69 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red96\green96\blue96;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 CXMenu
+\f1\b0\fs24 \
+\
+\
+A pop up menu that does its action and closes itself after you select an item.\
+\
+The difference between this and PopUp is that here there are separate functions for\
+each menu item, and with PopUp there is one action.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+m = \cf2 CXMenu\cf0 (\
+	\cf3 \\soup\cf0 ->\{ \cf4 "soup"\cf0 .postln; \},\
+	\cf3 \\pork\cf0 ->\{ \cf4 "pork"\cf0 .postln; \},\
+	\cf3 \\duck\cf0 ->\{ \cf4 "duck"\cf0 .postln; \},\
+	\cf3 \\tiramisu\cf0 ->\{ \cf4 "tiramisu"\cf0 .postln; \}\
+);\
+\
+\
+m.gui(nil);\
+\
+)\
+\
+(\
+m = \cf2 CXMenu\cf0 (\
+	\cf3 \\myName\cf0 ->\{ \cf4 "you hit myName"\cf0 .postln; \},\
+	\cf3 \\yourName\cf0 ->\{ \cf4 "you hit yourName"\cf0 .postln; \}\
+);\
+\
+m.closeOnSelect = \cf2 false\cf0 ;\
+\
+m.gui;\
+\
+)	\
+	\
+\
+
+\f0\b\fs24 On another layout\
+
+\f2\b0\fs18 (\
+Sheet(\{ arg f;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	CXLabel(f,"partials:");\
+	f.startRow;\
+	m = \cf2 CXMenu.newWith\cf0 (\
+		Array.fill(15,\{ arg i;\
+			i.asString.asSymbol -> \{ i.postln \}\
+		\})\
+	);\
+	m.closeOnSelect = false;\
+	m.gui(f);\
+\})\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 You can add things to the menu above\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 m.add(\\more->\{ "more".postln; \});\
+}

@@ -1,0 +1,57 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 Monaco;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+
+\f1\b\fs36 <				less than\
+
+\fs24 \
+BinaryOperator\
+\
+a < b\
+
+\f2\b0 \
+Result is 1 if a < b, otherwise it is 0. This can be useful for triggering purposes, among other things:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs18 \cf0 \
+s = \cf2 Server\cf0 .local;\
+s.boot;\
+\
+( \cf3 // trigger an envelope\cf0 \
+\{\
+	var trig;\
+	trig = SinOsc.ar(1) < 0;\
+	\cf2 Out\cf0 .ar(0,\
+		\cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc, trig, doneAction: 0) \
+			* \cf2 SinOsc\cf0 .ar(440,0,0.1)\
+	)\
+\}.play(s);)\
+\
+( \cf3 // trigger a synth\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf4 "help-EnvGen"\cf0 ,\{ \cf2 arg\cf0  out=0;\
+	\cf2 Out\cf0 .ar(out,\
+		\cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc,1.0,doneAction: 2) \
+			* \cf2 SinOsc\cf0 .ar(440,0,0.1)\
+	)\
+\}).send(s);\
+\
+\cf3 // This synth has no output. It only checks amplitude of input and looks for a transition from > 0.2\cf0 \
+\cf3 // to < 0.2\cf0 \
+\
+\cf2 SynthDef\cf0 (\cf4 "help-< trig"\cf0 , \{\
+	\cf2 SendTrig\cf0 .kr(\cf2 Amplitude\cf0 .kr(\cf2 AudioIn\cf0 .ar(1)) <= 0.2);\
+\}).play(s);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf3 // responder to trigger synth\cf0 \
+\cf2 OSCresponderNode\cf0 (s.addr,\cf5 '/tr'\cf0 ,\{ \cf4 "triggered"\cf0 .postln; \cf2 Synth\cf0 .new(\cf4 "help-EnvGen"\cf0 ) \}).add;\
+)}

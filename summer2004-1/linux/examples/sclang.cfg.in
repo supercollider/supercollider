@@ -1,0 +1,24 @@
+# ======================================================================
+# file:		sclang.cfg
+# content:	SuperCollider library configuration file
+# author:	stefan kersten <steve@k-hornz.de>
+# ======================================================================
+# usage:	install as /etc/sclang.cfg or ~/.sclang.cfg
+# ======================================================================
+
+# linux extensions
++@SC_LIB_DIR@/Linux
+
+# default class library
++@SC_LIB_DIR@/Common
++@SC_LIB_DIR@/DefaultLibrary
++@SC_LIB_DIR@/backwards_compatibility
+
+# uncomment if not using SCEL (emacs interface)
+#-@SC_LIB_DIR@/Common/GUI/Document.sc
+
+# add-on libraries, uncomment as necessary
+#+@SC_LIB_DIR@/crucial
+#+@SC_LIB_DIR@/JITLib
+
+# EOF

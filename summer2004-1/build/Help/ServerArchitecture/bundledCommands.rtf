@@ -1,0 +1,157 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs38 \cf0 Bundled Server Messages
+\f1\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 When using the Synth/Node/Group sclang objects there is often a need to construct bundles to send messages together. For example when you want to start a synth that should be mapped instantly to certain buses, or need to ensure that two synths start with precise synchronisation.\
+\
+The simplest way to deal with this is through Server's automated bundling support. This allows you to open a bundle into which all osc messages will be collected until it is sent. Note that once a bundle is opened (by calling 
+\f0\b openBundle
+\f1\b0  or any of the add messages below) all osc messages sent to the server (whether by objects or through methods such as 
+\f0\b sendMsg
+\f1\b0 , above) will be deferred until the bundle is closed or set to nil. See 
+\f0\b Server
+\f1\b0  for more details.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 	s.boot;\
+	(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 	// send a synth def to server\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 	SynthDef\cf0 (\cf4 "tpulse"\cf0 , \{ \cf3 arg\cf0  out=0,freq=700,sawFreq=440.0;\
+		\cf3 Out\cf0 .ar(out, \cf3 SyncSaw\cf0 .ar(freq,  sawFreq,0.1) )\
+	\}).send(s);\
+	)\
+\
+	s.openBundle;\
+	y = \cf3 Synth\cf0 .new(\cf4 "tpulse"\cf0 );\
+	b = Bus.control.set(800);\
+	y.map(\cf5 \\freq\cf0 , b.index); \cf2 // won't send yet\cf0 \
+	s.closeSendBundle;\
+	y.set(\cf5 \\freq\cf0 , 500); \cf2 // sends immediately\cf0 \
+	y.free;\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // start two synths synchronously\cf0 \
+\
+	s.openBundle;\
+	x = \{ \cf3 PinkNoise\cf0 .ar(0.1) * \cf3 In\cf0 .kr(0, 1); \}.play;\
+	y = \{ \cf3 SinOsc\cf0 .kr(0.2).abs \}.play(x, 0, 0, \cf5 \\addBefore\cf0 ); \cf2 // sine envelope\cf0 \
+	s.closeSendBundle;\
+	x.free; y.free;\
+	
+\f1\fs24 \
+In addition to this there are a number of methods which return osc messages or add them to a bundle.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Note
+\f1\b0 : you have to use this with care. Normally the other ways of creating Synths and Groups are more safe.\
+\
+aNode.
+\f0\b msgToBundle
+\f1\b0 (bundle, cmdName, argList) \
+	adds a message to the bundle (a list)\
+aNode.
+\f0\b getMsg
+\f1\b0 (cmdName or number, argList) \
+	returns a message\
+\
+
+\f0\b instance creation and adding to a bundle ( usually a List )
+\f1\b0 \
+\
+Synth.
+\f0\b newToBundle
+\f1\b0 (bundle, defName, argList, target, addAction)\
+	returns a new synth and adds commands to the bundle\
+	all initialisations and registering the node are done\
+\
+Group.
+\f0\b newToBundle
+\f1\b0 (bundle, target, addAction)\
+	returns a new synth and adds commands to the bundle\
+	all initialisations and registring the node are done\
+\
+\
+
+\f0\b creating messages that can be added to a bundle\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+aSynth.
+\f0\b newMsg
+\f1\b0 (target, addAction, argList) \
+	use this with a synth that was created by prNew(defName).\
+	all initialisations and registring the node are done\
+	\
+aGroup.
+\f0\b newMsg
+\f1\b0 (target, addAction) \
+	use this with a group that was created by prNew\
+	all initialisations and registring the node are done\
+\
+aNode.
+\f0\b moveBeforeMsg
+\f1\b0 (aNode)\
+	returns a message that causes the server to move this node before another one\
+\
+analogous messages: \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 moveAfterMsg / moveToHeadMsg / moveToTailMsg / \
+moveNodeToHeadMsg / moveNodeToTailMsg
+\f2\b0\fs20 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf2 //prepare some def\cf0 \
+s = \cf3 Server\cf0 .local;\
+s.boot;
+\f1 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "void"\cf0 , \{ \cf3 arg\cf0  freq=800, out=0;\
+	\cf3 Out\cf0 .ar(out, \cf3 SinOsc\cf0 .ar(\cf3 SinOsc\cf0 .ar(\cf3 SinOsc\cf0 .kr([2,1.1],0,8,12),freq*0.3,freq), 0, 0.2));\
+\}).send(s);\
+)
+\f1 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //create a list to add all messages\cf0 \
+b = \cf3 List\cf0 .new; \
+\cf2 //return an in instance of synth (registered) and adds the message to the list \cf0 \
+y = \cf3 Synth\cf0 .newToBundle(b, \cf4 "void"\cf0 );\
+\
+\cf2 //add a couple of messages\cf0 \
+b.add(y.getMsg(\cf4 "/n_set"\cf0 , [\cf5 \\freq\cf0 , 500]));\
+b.add(y.getMsg(\cf4 "/n_set"\cf0 , [\cf5 \\out\cf0 , 0]));\
+\
+\cf2 //create a second list to add message\cf0 \
+\
+c = [y.getMsg(\cf4 "/n_free"\cf0 )];\
+\
+\cf2 //send the messages (do this only once.)\cf0 \
+(\
+s.listSendBundle(1, b); \cf2 //start after one sec.\cf0 \
+s.listSendBundle(1.1, c);\cf2 //runs for exactly 0.1 sec.\cf0 \
+)
+\fs20 \
+\
+\
+}

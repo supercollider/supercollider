@@ -1,0 +1,31 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 **				exponentiation\
+
+\fs24 \
+BinaryOperator\
+\
+a ** b\
+
+\f1\b0 \
+When the signal is negative this function extends the usual definition of\
+exponentiation and returns neg(neg(a) ** b). This allows exponentiation of\
+negative signal values by noninteger exponents.\
+
+\f0\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 (\
+\{\
+var a;\
+a = FSinOsc.ar(100);\
+[a, a**10]\
+\}.play\
+)
+\fs24  \
+\
+}

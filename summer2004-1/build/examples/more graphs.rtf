@@ -1,0 +1,243 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs18 \cf0 (\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "bubbles"\cf0 , \{\
+	\cf2 var\cf0  f, zout;\
+	f = \cf2 LFSaw\cf0 .kr(0.4, 0, 24, \cf2 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps; \cf4 // glissando function\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	zout = \cf2 CombN\cf0 .ar(\cf2 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4); \cf4 // echoing sine wave\
+\cf0 	\cf2 Out\cf0 .ar(0, zout.postln);\
+\}).writeDefFile;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "moto-rev"\cf0 , \{\
+	\cf2 var\cf0  x;\
+	x = \cf2 RLPF\cf0 .ar(\cf2 LFPulse\cf0 .ar(\cf2 SinOsc\cf0 .kr(0.2, 0, 10, 21), [0,0.1], 0.1), 100, 0.1).clip2(0.4);\
+	\cf2 Out\cf0 .ar(0, x);\
+\}).writeDefFile;\
+\
+\cf2 SynthDef\cf0 (\cf3 "thru"\cf0 , \{ \cf2 arg\cf0  out, gate=1;\
+	\cf2 var\cf0  zin, zout, env;\
+	env = \cf2 Linen\cf0 .kr(gate, 2, 1, 2);\
+	\cf2 XOut\cf0 .ar(out, env, \cf2 ClipNoise\cf0 .ar([0.1,0.1]));\
+	\cf2 FreeSelfWhenDone\cf0 .kr(env);\
+\}).writeDefFile;\
+\
+\cf2 SynthDef\cf0 (\cf3 "wah"\cf0 , \{ \cf2 arg\cf0  out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq=0.1, wet=1, gate=1;\
+	\cf2 var\cf0  zin, zout, env;\
+	zin = \cf2 In\cf0 .ar(out, 2);\
+	cfreq = \cf2 Lag3\cf0 .kr(cfreq, 0.1);\
+	mfreq = \cf2 Lag3\cf0 .kr(mfreq, 0.1);\
+	env = \cf2 Linen\cf0 .kr(gate, 1, 1, 1);\
+	wet  = \cf2 Ramp\cf0 .kr(wet, 0.1);\
+	rq   = \cf2 Ramp\cf0 .kr(rq, 0.1);\
+	zout = \cf2 RLPF\cf0 .ar(zin, \cf2 LFNoise1\cf0 .kr(rate, mfreq, cfreq), rq, 10).distort * 0.15;\
+	\cf2 XOut\cf0 .ar(out, wet * env, zout);\
+	\cf2 FreeSelfWhenDone\cf0 .kr(env);\
+\}).writeDefFile;\
+\
+\cf2 SynthDef\cf0 (\cf3 "combdist"\cf0 , \{ \cf2 arg\cf0  out, freq = 400, decay=2, wet=1, gate=1;\
+	\cf2 var\cf0  zin, zout, env;\
+	zin = \cf2 In\cf0 .ar(out, 2);\
+	freq = \cf2 Lag3\cf0 .kr(freq, 0.1);\
+	env = \cf2 Linen\cf0 .kr(gate, 1, 1, 1);\
+	wet  = \cf2 Ramp\cf0 .kr(wet, 0.1);\
+	zout = \cf2 CombN\cf0 .ar(zin, 24.midicps.reciprocal, freq.reciprocal, decay).distort.reverse; \
+	\cf2 XOut\cf0 .ar(out, wet * env, zout);\
+	\cf2 FreeSelfWhenDone\cf0 .kr(env);\
+\}).writeDefFile;\
+\
+\cf2 SynthDef\cf0 (\cf3 "echo"\cf0 , \{ \cf2 arg\cf0  out, maxdelay = 0.5, delay = 0.4, decay=3, wet=1, gate=1;\
+	\cf2 var\cf0  zin, zout, env;\
+	zin = \cf2 In\cf0 .ar(out, 2);\
+	delay = \cf2 Lag3\cf0 .kr(delay, 0.1);\
+	env = \cf2 Linen\cf0 .kr(gate, 1, 1, 1);\
+	wet  = \cf2 Ramp\cf0 .kr(wet, 0.1);\
+	zout = \cf2 CombN\cf0 .ar(zin * env, maxdelay, delay, decay).reverse; \
+	\cf2 XOut\cf0 .ar(out, wet * env, zout);\
+	\cf2 FreeSelfWhenDone\cf0 .kr(env);\
+\}).load(s);\
+\
+\cf2 SynthDef\cf0 (\cf3 "reverb"\cf0 , \{ \cf2 arg\cf0  out, decay=6, wet=1, gate=1;\
+	\cf2 var\cf0  zin, zout, env;\
+	zout = \cf2 In\cf0 .ar(out, 2);\
+	env = \cf2 Linen\cf0 .kr(gate, 0.1, 1, 0.1);\
+	wet = \cf2 Ramp\cf0 .kr(wet, 0.1);\
+	decay = \cf2 Ramp\cf0 .kr(decay, 0.1);\
+	8.do(\{ \
+		zout = \cf2 AllpassN\cf0 .ar(zout, 0.04, \{\cf2 Rand\cf0 (0.001,0.04)\}.dup, decay) \
+	\});\
+	\cf2 XOut\cf0 .ar(out, wet * env, zout);\
+	\cf2 FreeSelfWhenDone\cf0 .kr(env);\
+\}).load(s);\
+\
+\cf2 SynthDef\cf0 (\cf3 "ring-mod"\cf0 , \{ \cf2 arg\cf0  out, freq=800, wet=1, gate=1;\
+	\cf2 var\cf0  zin, zout, env;\
+	freq = \cf2 Ramp\cf0 .kr(freq, 0.1);\
+	env = \cf2 Linen\cf0 .kr(gate, 1, 1, 1);\
+	wet  = \cf2 Ramp\cf0 .kr(wet, 0.1);\
+	zin = \cf2 In\cf0 .ar(out, 2);\
+	zout = zin * \cf2 SinOsc\cf0 .ar(freq, [0,0.5pi]);\
+	\cf2 XOut\cf0 .ar(out, wet * env, zout);\
+	\cf2 FreeSelfWhenDone\cf0 .kr(env);\
+\}).writeDefFile;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 /*\
+\
+a = sqrt(1 - b.squared);\
+XFadeOut.ar(chan, xfade, outs)\
+\
+fade in an effect, fade out an effect.\
+\
+simple mix architecture:\
+8 stereo inputs with gain & balance.\
+4 insert fx per input with 4 params each.\
+4*4*8\
+\
+groups:\
+	control group\
+	voice group\
+	fx group\
+	mixer\
+\
+*/\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "mixer3"\cf0 , \{\
+	\cf2 var\cf0  channels, faders, master;\
+	channels = \cf2 In\cf0 .ar(4, 16).clump(2);\
+	master = \cf2 Ramp\cf0 .kr(\cf2 In\cf0 .kr(0, 1), 0.05);\
+	faders = \cf2 Ramp\cf0 .kr(\cf2 In\cf0 .kr(1, 8), 0.05);\
+	\cf2 Out\cf0 .ar(0, \cf2 Mix\cf0 (channels * faders) * master);\
+\}).writeDefFile;\
+\
+\cf2 SynthDef\cf0 (\cf3 "line"\cf0 , \{ \cf2 arg\cf0  out, start=1, end=0, dur=3;\
+	\cf2 var\cf0  line;\
+	line = \cf2 Line\cf0 .kr(start, end, dur);\
+	\cf2 ReplaceOut\cf0 .kr(out, line);\
+	\cf2 FreeSelfWhenDone\cf0 .kr(line);\
+\}).writeDefFile;\
+\
+\cf2 SynthDef\cf0 (\cf3 "xline"\cf0 , \{ \cf2 arg\cf0  out, start=1, end=0.0001, dur=3;\
+	\cf2 var\cf0  line;\
+	line = \cf2 XLine\cf0 .kr(start, end, dur);\
+	\cf2 Out\cf0 .kr(out, line);\
+	\cf2 FreeSelfWhenDone\cf0 .kr(line);\
+\}).writeDefFile;\
+\
+	\
+)\
+\
+\cf2 Server\cf0 .local.boot;\
+\
+\cf2 Server\cf0 .local.sendMsg(\cf3 "/d_loadDir"\cf0 , \cf3 "synthdefs/"\cf0 );\
+\
+\
+patch a control to read from a bus.\
+\
+gradually change a parameter over some period.\
+\
+\
+(\
+	\cf2 var\cf0  server;\
+	server = \cf2 Server\cf0 .local;	\
+\
+	d = 0.04;\
+	r = \cf2 Routine\cf0 (\{\
+		\
+		3.do(\{	\
+					\
+		0.5.postln.wait;\
+		\
+		server.sendBundle(d, [\cf3 "/s_new"\cf0 , \cf3 "moto-rev"\cf0 , 1000, 0]);\
+		\
+		3.wait;\
+\
+		\cf4 //server.sendBundle(d, ["nod.free", 1000]);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 		\
+		\
+		server.sendMsg(\cf3 "/n_free"\cf0 , 1000);\
+		1.wait;\
+		\});\
+						\
+	\});\
+	\cf2 SystemClock\cf0 .play(r);\
+)\
+\
+(\
+	d = 0.05;\
+	r = \cf2 Routine\cf0 (\{\
+		\cf2 var\cf0  server;\
+		server = \cf2 Server\cf0 .local;	\
+		\
+		1.do(\{\
+						\
+			0.5.postln.wait;\
+			\
+			server.sendBundle(d, [\cf3 "/s_new"\cf0 , \cf3 "bubbles"\cf0 , 1000, 0].postln);\
+	\
+			\cf4 // add effects, each one (processing order) after the previous one\
+\cf0 			4.wait;\
+			server.sendBundle(d, [\cf3 "/s_new"\cf0 , \cf3 "combdist"\cf0 , 1004, 3,1000, \cf5 \\freq\cf0 , rrand(24,60).midicps].postln);\
+			4.wait;\
+			server.sendBundle(d, [\cf3 "/s_new"\cf0 , \cf3 "wah"\cf0 , 1001, 3,1004].postln);\
+	\
+			4.wait;\
+			server.sendBundle(d, [\cf3 "/s_new"\cf0 , \cf3 "echo"\cf0 , 1002, 3, 1001,\cf5 \\delay\cf0 , 0.2, \cf5 \\decay\cf0 , 4].postln);\
+	\
+			4.wait;\
+			server.sendBundle(d, [\cf3 "/s_new"\cf0 , \cf3 "ring-mod"\cf0 , 1003, 3,1002, \cf5 \\delay\cf0 , 0.2, \cf5 \\decay\cf0 , 4].postln);\
+			\
+			12.wait;\
+\
+			\cf4 // release the gates by setting them to 0, allowing synths to die\
+\cf0 			server.sendBundle(d, [\cf3 "/n_set"\cf0 , 1004, \cf3 "gate"\cf0 , 0].postln);\
+			\
+			4.wait;\
+			server.sendBundle(d, [\cf3 "/n_set"\cf0 , 1001, \cf3 "gate"\cf0 , 0].postln);\
+	\
+			4.wait;\
+			server.sendBundle(d, [\cf3 "/n_set"\cf0 , 1002, \cf3 "gate"\cf0 , 0].postln);\
+	\
+			4.wait;\
+			server.sendBundle(d, [\cf3 "/n_set"\cf0 , 1003, \cf3 "gate"\cf0 , 0].postln);\
+	\
+			4.wait;			\
+			server.sendBundle(d, [\cf3 "/n_free"\cf0 , 1000].postln);\
+			1.wait;			\
+	\
+			server.sendBundle(d, [\cf3 "/g_freeAll"\cf0 , 0].postln);\
+		\});\
+					\
+		1.wait;\
+		\
+	\});\
+	\cf2 SystemClock\cf0 .play(r);\
+)\
+\
+// default node def not written\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 //f = \{ arg o; Pbind(\\note, Pxrand([0,2,3,5,7,9,10,12],inf), \\octave, o, \\dur, 0.25) \};\
+//Ppar([f.value(7),f.value(6), f.value(5)]).play(Event.protoEvent)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Server\cf0 .default.sendMsg(\cf3 "/notify"\cf0 , 1);\
+\
+\cf2 SynthDef\cf0 (\cf3 "default"\cf0 , \{ \cf2 arg\cf0  freq=440, gate=1, amp=0.2;\
+	\cf2 var\cf0  e, s;\
+	e = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .linen(0.004,amp,0.5), gate);\
+	\cf2 FreeSelfWhenDone\cf0 .kr(e);\
+	s = \cf2 SinOsc\cf0 .ar(freq,0, e);\
+	\cf2 Out\cf0 .ar(0, s);\
+\}).writeDefFile;\
+}

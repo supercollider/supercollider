@@ -1,0 +1,1 @@
+PlayerMixerGui : AbstractPlayerGui {	guiBody { arg layout;		this.durationGui(layout);		model.players.do({ arg pl;			pl.gui(layout.startRow);			});	}	}

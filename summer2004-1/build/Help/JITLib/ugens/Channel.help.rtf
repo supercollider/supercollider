@@ -1,0 +1,87 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Channel
+\f1\b0\fs18 \cf2 \
+\
+
+\f2\fs24 \cf0 output a fixed number of channels of a larger input array that can be moved across.\
+In this way it is similar to the In ugen.\
+\
+if wrap is set to true (default) the index wraps across the input array, otherwise it clips.\
+Channel does not multi channel expand. For a  channel mixer see 
+\f0\b NumChannels
+\f2\b0 \
+\
+	*
+\f0\b ar(array, offset, numChannels, wrap)\
+	*kr(array, offset, numChannels, wrap)
+\f2\b0 \
+
+\f1\fs18 \cf2 \
+\
+(\
+\{ \
+	\cf3 var\cf2  a;\
+	a = \cf3 Array\cf2 .fill(8, \{ \cf3 SinOsc\cf2 .ar(\cf3 Rand\cf2 (500, 1800) * [1, 1.5], 0, 0.1) \});\
+	\cf3 Channel\cf2 .ar(a, \cf3 MouseX\cf2 .kr(0, 20), 2);\
+	\
+\}.play;\
+)\
+\
+(\
+\{ \
+	\cf3 var\cf2  a;\
+	a = \cf3 Array\cf2 .fill(8, \{ \cf3 SinOsc\cf2 .kr(\cf3 Rand\cf2 (0.1, 8) * [1, 2], 0, \cf3 Rand\cf2 (0, 80), \cf3 Rand\cf2 (300, 900)) \});\
+	\cf3 SinOsc\cf2 .ar(\cf3 Channel\cf2 .kr(a, \cf3 MouseX\cf2 .kr(0, 20), 2), 0, 0.1);\
+	\
+\}.play;\
+)\
+\
+\cf4 // without wrapping\cf2 \
+(\
+\{ \
+	\cf3 var\cf2  a;\
+	a = \cf3 Array\cf2 .fill(8, \{ \cf3 SinOsc\cf2 .ar(\cf3 Rand\cf2 (500, 1800) * [1, 1.5], 0, 0.1) \});\
+	\cf3 Channel\cf2 .ar(a, \cf3 MouseX\cf2 .kr(0, 20), 2, \cf3 false\cf2 );\
+	\
+\}.play;\
+)\
+\
+\cf4 //  when the offset is fixed, Channel returns a fixed array accordingly.\cf2 \
+\cf4 // the othe ugens keep playing, so this makes sense only in certain cases.\cf2 \
+\cf4 // (similar to Select ugen)\cf2 \
+(\
+\{ \
+	\cf3 var\cf2  a, b;\
+	a = \cf3 Array\cf2 .fill(8, \{ \cf3 SinOsc\cf2 .ar(\cf3 Rand\cf2 (300, 1800) * [1, 1.5] * \cf3 LFNoise1\cf2 .kr(0.01)) \});\
+	b = \cf3 Channel\cf2 .ar(a, 3, 2);\
+	5.do(\{ b = b * \cf3 Channel\cf2 .ar(a, 8.rand, 2) \});\
+	b *  0.1\
+	\
+\}.play;\
+)\
+\
+(\
+\{ \
+	\cf3 var\cf2  a, b, m;\
+	a = \cf3 Array\cf2 .fill(8, \{ \cf3 SinOsc\cf2 .ar(\cf3 Rand\cf2 (300, 1800) * [1, 1.5] * \cf3 LFNoise1\cf2 .kr(0.01)) \});\
+	b = \cf3 Channel\cf2 .ar(a, 3, 2);\
+	m = \cf3 MouseX\cf2 .kr(0, a.size);\
+	5.do(\{ b = b * \cf3 Channel\cf2 .ar(a, 8.rand + m, 2) \});\
+	b * 0.1\
+	\
+\}.play;\
+)\
+\
+\
+\
+\
+\
+	\
+Note: all the input ugens are continously running. \cf3 This\cf2  may not be the most efficient way if each input is  cpu-expensive.\
+}

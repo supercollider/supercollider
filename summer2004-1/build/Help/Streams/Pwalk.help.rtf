@@ -1,0 +1,76 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;\red0\green115\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs40 \cf0 Pwalk : ListPattern
+\f1\b0\fs24 \
+\
+A one-dimensional random walk.\
+\
+
+\f0\b *new(list, stepPattern, directionPattern, startPos)\
+
+\f1\b0 \
+list: The items to be walked over.\
+stepPattern: Returns integers that will be used to increment the index into list.\
+directionPattern: Used to determine the behavior at boundaries. When the index crosses a boundary, the next direction is drawn from this stream: 1 means use stepPattern as is, -1 means go in the reverse direction.\
+\
+Common patterns:	
+\f0\b 1
+\f1\b0  -- always wrap around to the other boundary.\
+				
+\f0\b \cf2 Pseq\cf0 ([1, -1], \cf2 inf\cf0 )
+\f1\b0  -- go forward first, then backward, then forward again\
+\
+startPos: Where to start in the list.\
+\
+
+\f0\b Example:
+\f1\b0 \
+
+\f2\fs18 \
+p = \cf2 Pwalk\cf0 (\
+	\cf2 Array\cf0 .series(20, 0, 1),		\cf3 // integers, 0-19\cf0 \
+		\cf3 // steps up to 2 in either direction, weighted toward positive\cf0 \
+	\cf2 Pwrand\cf0 ([-2, -1, 0, 1, 2], [0.05, 0.1, 0.15, 1, 0.1].normalizeSum, \cf2 inf\cf0 ),\
+		\cf3 // reverse direction at boundaries\cf0 \
+	\cf2 Pseq\cf0 ([1, -1], \cf2 inf\cf0 ),\
+	10);	\cf3 // start in the middle\cf0 \
+a = p.asStream;\
+\
+200.do(\{ a.next.post; \cf4 ", "\cf0 .post \});\
+\
+q = p.copy.directionPattern_(1);		\cf3 // this one will always wrap around\cf0 \
+b = q.asStream;\
+\
+200.do(\{ b.next.post; \cf4 ", "\cf0 .post \});\
+\
+\cf3 // non-random walk: easy way to do up-and-down arpeggiation\cf0 \
+s.boot;\
+(\cf5 \
+p = \cf6 Pwalk\cf5 (\
+	[60, 64, 67, 72, 76, 79, 84].midicps,		\cf7 // C major\cf5 \
+	\cf6 Pseq\cf5 ([1], \cf6 inf\cf5 ),\
+	\cf6 Pseq\cf5 ([1, -1], \cf6 inf\cf5 ),	\cf7 // turn around at either end\cf5 \
+	0);\
+f = p.asStream;\
+\
+\cf6 SynthDef\cf5 (\cf8 "help-Pwalk"\cf5 , \{ \cf6 arg\cf5  freq;\
+	\cf6 Out\cf5 .ar(0, \cf6 Saw\cf5 .ar([freq, freq+1], 0.5) * \cf6 EnvGen\cf5 .kr(\cf6 Env\cf5 .perc(0.01, 0.1), doneAction:2))\
+\}).send(s);\
+)\
+\
+(\
+r = \cf6 Task\cf5 (\{\
+	\{\
+		\cf6 Synth\cf5 .new(\cf8 "help-Pwalk"\cf5 , [\cf9 \\freq\cf5 , f.next]);\
+		0.1.wait;\
+	\}.loop;\
+\}).play(\cf6 SystemClock\cf5 );\
+\cf0 )\
+\
+r.stop;}

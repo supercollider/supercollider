@@ -1,0 +1,132 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Pdefn     
+\fs24 pattern definition that references a numerical (non-event) pattern
+\f1\b0\fs18 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 superclass: Pattern
+\f1\fs18 \
+\
+\
+
+\f2\fs24 access and assignment are done by *new\
+\
+keeps a reference to a task that can be replaced while playing.\
+\
+Tdef(key) returns the instance, Tdef(key, pat) defines the pattern \
+and returns the instance, like Pdef, Tdef and Ndef.\
+\
+it can be used to store numerical Patterns globally.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 	*new(key, function)
+\f2\b0 \
+			store the pattern in a global dictionary under key.\
+	
+\f0\b *new(key)
+\f2\b0 \
+			acess the pattern at that key (if none is there, a default pattern is created)\
+			\
+	
+\f0\b *removeAll
+\f2\b0 \
+			remove all patterns\
+	
+\f0\b *all
+\f2\b0 \
+			dict that stores all Pdefn\
+				\
+	
+\f0\b quant_(beats)
+\f2\b0 \
+			set the quantisation time for beat accurate scheduling\
+	\
+	
+\f0\b defaultQuant_(beats)
+\f2\b0 \
+			set the default quantisation for new instances (default: nil)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul using as stream reference\
+	\
+	
+\f0\b \ulnone pattern_	\
+			
+\f2\b0 set the pattern (internally done by *new(key, pattern).\
+			if quant is not nil, the change is scheduled to the beat\
+			\ul \
+	
+\f0\b \ulnone asStream
+\f2\b0 \
+			returns an instance of RefStream, which updates its stream as soon as the pattern\
+			is changed.\
+	\
+	
+\f0\b embedInStream(inval)\
+			
+\f2\b0 just like any stream, embeds itself in stream.\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // example\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Pdefn\cf0 (\cf4 \\x\cf0 , \cf3 Pseq\cf0 ([1, 2, 3],\cf3 inf\cf0 ));\
+\
+x = \cf3 Pseq\cf0 ([0, 0, \cf3 Pdefn\cf0 (\cf4 \\x\cf0 )], \cf3 inf\cf0 ).asStream;\
+\
+\cf3 t = Task\cf0 (\{ loop(\{ x.next.postln; 0.3.wait \}) \}).play;\
+\
+\
+\cf3 Pdefn\cf0 (\cf4 \\x\cf0 , \cf3 Pseq\cf0 ([55, 66, 77],\cf3 inf\cf0 ));\
+\
+t.stop;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // Pdef, like Pdefn can be accessed in multiple streams\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+SynthDescLib\cf0 .read;\
+s.boot;\
+(\
+\cf3 Pdefn\cf0 (\cf4 \\deg\cf0 , \cf3 Pseq\cf0 ([0, 3, 2],\cf3 inf\cf0 ));\
+\
+\cf3 Ppar\cf0 ([\
+	\cf3 Pbind\cf0 (\cf4 \\degree\cf0 , \cf3 Pdefn\cf0 (\cf4 \\deg\cf0 )),\
+	\cf3 Pbind\cf0 (\cf4 \\degree\cf0 , \cf3 Pdefn\cf0 (\cf4 \\deg\cf0 ), \cf4 \\dur\cf0 , 1/3)\
+]).play;\
+)\
+\
+\cf3 Pdefn\cf0 (\cf4 \\deg\cf0 , \cf3 Prand\cf0 ([0, 3, [1s, 4]],\cf3 inf\cf0 ));\
+\
+\cf3 Pdefn\cf0 (\cf4 \\deg\cf0 , Pn(\cf3 Pshuf\cf0 ([0, 3, 2, 7, 6],\cf3 2\cf0 ),inf));\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // if quant is set, the update is done at the next beat or whatever is specified:\cf6 \
+\
+\cf7 Pdefn\cf6 (\cf8 \\deg\cf6 ).quant = 4;\
+\cf7 Pdefn\cf6 (\cf8 \\deg\cf6 , \cf7 Pn\cf6 (\cf7 Pseries\cf6 (0, 1, 8),\cf7 inf\cf6 ));\
+\
+\cf7 Pdefn\cf6 (\cf8 \\deg\cf6 ).quant = \cf7 nil\cf6 ; \cf5 // activate immediately again\
+\
+\cf6 \
+}

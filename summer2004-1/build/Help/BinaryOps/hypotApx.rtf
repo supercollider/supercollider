@@ -1,0 +1,35 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 hypotApx		hypotenuse approximation\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+BinaryOperator\
+\
+hypotApx(x, y)\
+x hypotApx: y\
+x.hypotApx(y)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Returns an approximation of the square root of the sum of the squares of x and y. \
+\
+The formula used is :\
+\
+abs(x) + abs(y) - ((sqrt(2) - 1) * min(abs(x), abs(y)))\
+\
+hypotApx is used to implement Complex method magnitudeApx.\
+This should not be used for simulating a doppler shift because it is discontinuous. Use hypot.\
+\
+See also 
+\f0\b hypot
+\f1\b0 , 
+\f0\b atan2
+\f1\b0 .\
+
+\f2 \
+}

@@ -1,0 +1,362 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Pbind
+\f1\b0 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+superclass: Pattern\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Pbind(pattern pairs)\
+\
+The class Pbind provides a bridge between value patterns and event patterns. It binds symbols in each event to values obtained from a pattern. Pbind takes arguments in pairs, the first of a pair being a Symbol and the second being a value Pattern. Remember that any object can act as a Pattern, so you can use constants as the pattern.\
+\
+The Pbind stream returns nil whenever the first one of its streams ends.\
+\
+An event stream is created for a Pattern by sending it the asEventStream message. The asEventStream message takes an Event as an argument. This event is copied for each call to next to pass down and back up the tree of patterns so that each pattern can modify the event. What Pbind does is put the values for its symbols into the event, possibly overwriting previous bindings to those symbols.\
+\
+This uses the default event.  in the next example we will supply our own event (synth function).\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+\cf3 //we need to read the synth description library so that event know's what kind of arguments\cf0 \
+\cf3 //there are in each SynthDef.  This must be done AFTER any SynthDefs have been written.\cf0 \
+\cf3 //in this case we aren't using any of our own SynthDefs, but we still need to read the default one.\cf0 \
+\cf2 SynthDescLib\cf0 .global.read;\
+\
+\cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([1,3,5,7], \cf2 inf\cf0 ), \cf4 \\dur\cf0 , 0.125, \cf4 \\octave\cf0 , 4, \cf4 \\root\cf0 , 3).play\
+)\
+\
+\
+\
+Using our own SynthDef:\
+(\
+\cf2 SynthDef\cf0 (\cf4 \\cfstring1\cf0 .postln, \{ \cf2 arg\cf0  i_out, freq = 360, gate = 1, pan, amp=0.1;\
+	\cf2 var\cf0  out, eg, fc, osc, a, b, w;\
+	fc = \cf2 LinExp\cf0 .kr(\cf2 LFNoise1\cf0 .kr(\cf2 Rand\cf0 (0.25,0.4)), -1,1,500,2000);\
+	osc = \cf2 Mix\cf0 .fill(8, \{\cf2 LFSaw\cf0 .ar(freq * [\cf2 Rand\cf0 (0.99,1.01),\cf2 Rand\cf0 (0.99,1.01)], 0, amp) \}).distort * 0.2;\
+	eg = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .asr(1,1,1), gate, doneAction:2);\
+	out = eg * \cf2 RLPF\cf0 .ar(osc, fc, 0.1);\
+	#a, b = out;\
+	\cf2 Out\cf0 .ar(i_out, \cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a, b], [pan, pan+0.3])));\
+\}).load(s);\
+\
+\cf2 SynthDescLib\cf0 .global.read;\
+)\
+\
+e = \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pwhite\cf0 (0,12), \cf4 \\dur\cf0 , 0.2, \cf4 \\instrument\cf0 , \cf4 \\cfstring1\cf0 ).play; \cf3 // returns an EventStream\cf0 \
+\
+e.stream = \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \cf4 \\dur\cf0 , \cf2 Prand\cf0 ([0.2,0.4,0.8],\cf2 inf\cf0 ), \cf4 \\amp\cf0 , 0.05, \cf4 \\octave\cf0 , 5, \cf4 \\instrument\cf0 , \cf4 \\cfstring1\cf0 , \cf4 \\ctranspose\cf0 , 0).asStream;\
+\
+e.stream = \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \cf4 \\dur\cf0 , \cf2 Prand\cf0 ([0.2,0.4,0.8],\cf2 inf\cf0 ), \cf4 \\amp\cf0 , 0.05, \cf4 \\octave\cf0 , 5, \cf4 \\instrument\cf0 , \cf4 \\cfstring1\cf0 , \cf4 \\ctranspose\cf0 , 0).asStream;\
+\
+e.stream = \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pxrand\cf0 ([0,1,2,4,6,3,5,7,8],\cf2 inf\cf0 ), \cf4 \\dur\cf0 , \cf2 Prand\cf0 ([0.2,0.4,0.8],\cf2 inf\cf0 ), \cf4 \\amp\cf0 , 0.05, \cf4 \\octave\cf0 , 5, \cf4 \\instrument\cf0 , \cf4 \\cfstring1\cf0 ).asStream;\
+\
+(\
+e.stream = \cf2 Pbind\cf0 (\
+	[\cf4 \\degree\cf0 , \cf4 \\dur\cf0 ], \cf2 Pseq\cf0 ([\
+			\cf2 Pseq\cf0 ([[0,0.1],[2,0.1],[3,0.1],[4,0.1],[5,0.8]],2),\
+			\cf2 Ptuple\cf0 ([\cf2 Pxrand\cf0 ([6,7,8,9],4), 0.4]),\
+			\cf2 Ptuple\cf0 ([\cf2 Pseq\cf0 ([9,8,7,6,5,4,3,2]), 0.2])\
+		],\cf2 inf\cf0 ),\
+	\cf4 \\amp\cf0 , 0.05, \cf4 \\octave\cf0 , 5, \cf4 \\instrument\cf0 , \cf4 \\cfstring1\cf0 , \cf4 \\mtranspose\cf0 , 0).asStream;\
+)\
+\
+(\
+e.stream = \cf2 Pbind\cf0 (\
+	[\cf4 \\degree\cf0 , \cf4 \\dur\cf0 ], \cf2 Pseq\cf0 ([\
+			\cf2 Pseq\cf0 ([[0,0.1],[2,0.1],[3,0.1],[4,0.1],[5,0.8]],2),\
+			\cf2 Ptuple\cf0 ([\cf2 Pxrand\cf0 ([6,7,8,9],4), 0.4]),\
+			\cf2 Ptuple\cf0 ([\cf2 Pseq\cf0 ([9,8,7,6,5,4,3,2]), 0.2])\
+		],\cf2 inf\cf0 ),\
+	\cf4 \\amp\cf0 , 0.05, \cf4 \\octave\cf0 , 6, \cf4 \\instrument\cf0 , \cf4 \\cfstring1\cf0 , \cf4 \\mtranspose\cf0 , 0).asStream;\
+)\
+e.mute; \cf3 // keeps playing, but replaces notes with rests\cf0 \
+\
+e.unmute;\
+\
+e.reset;  \cf3 // reset the stream.\cf0 \
+e.reset;  \cf3 // reset the stream.\cf0 \
+e.reset;  \cf3 // reset the stream.\cf0 \
+e.reset;  \cf3 // reset the stream.\cf0 \
+\
+e.pause;  \cf3 // will resume where paused.\cf0 \
+\
+e.play;\
+\
+e.stop;  \cf3 // will reset before resume.\cf0 \
+\
+e.play;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\
+\
+Another example with a different SynthDef:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+(\
+\cf2 SynthDef\cf0 (\cf4 \\berlinb\cf0 , \{ \cf2 arg\cf0  out=0, freq = 80, amp = 0.01, pan=0, gate=1;\
+	\cf2 var\cf0  synth, env;\
+	env = \cf2 Decay2\cf0 .kr(gate, 0.05, 8, 0.0003);\
+	synth = \cf2 RLPF\cf0 .ar(\
+		\cf2 LFPulse\cf0 .ar(freq, 0, \cf2 SinOsc\cf0 .kr(0.12,[0,0.5pi],0.48,0.5)),\
+		freq * \cf2 SinOsc\cf0 .kr(0.21,0,18,20),\
+		0.07\
+	);\
+	#a, b = synth*env;\
+	\cf2 DetectSilence\cf0 .ar(a, 0.1, doneAction: 2);\
+	\cf2 Out\cf0 .ar(out, \cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a,b], [pan, pan+1])));\
+\}).load(s);\
+\
+\cf2 SynthDescLib\cf0 .global.read;\
+)\
+\
+f = \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \cf4 \\dur\cf0 , 0.5, \cf4 \\octave\cf0 , 3, \cf4 \\instrument\cf0 , \cf4 \\berlinb\cf0 ).play;\
+\
+f.stream = \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \cf4 \\dur\cf0 , 0.5, \cf4 \\octave\cf0 , [2,1],\
+				\cf4 \\instrument\cf0 , \cf4 \\berlinb\cf0 , \cf4 \\pan\cf0 , \cf2 Pfunc\cf0 (\{1.0.rand2\}) ).asStream;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Additional arguments\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Here is an example with more bindings; Here we have added a filter with cutoff and resonance arguments.\
+You will need to hit command '.' before executing the next few pbind ex. without having them stack up.\
+also, due to the synthdef's and synthdeclib, if the server is shut down you will have to reload the \
+synthdef and re-read the synthdesclib. \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+\cf2 SynthDef\cf0 (\cf5 "acid"\cf0 , \{ \cf2 arg\cf0  out, freq = 1000, gate = 1, pan = 1, cut = 4000, rez = 0.8, amp = 1;\
+	\cf2 Out\cf0 .ar(out,\
+		\cf2 Pan2\cf0 .ar(\
+			\cf2 RLPF\cf0 .ar(\
+				\cf2 Pulse\cf0 .ar(freq,0.05),\
+			cut, rez),\
+		pan) * \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .linen(0.01, 1, 0.3), gate, amp, doneAction:2);\
+	) \
+	\}).send(s);\
+\
+\cf2 SynthDescLib\cf0 .global.read;\
+)\
+\
+(\
+\cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],\cf2 inf\cf0 ), \cf4 \\root\cf0 ,-24,\
+	 \cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0,3,5,7,9,11,5,1],\cf2 inf\cf0 ), \cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),\
+	 \cf4 \\cut\cf0 ,\cf2 Pxrand\cf0 ([1000,500,2000,300],\cf2 inf\cf0 ), \cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}), \cf4 \\amp\cf0 ,0.2).play;\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 The 
+\f0\b ListPatterns
+\f1\b0  can be put around Event Streams to create sequences of Event Streams.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+\cf2 Pseq\cf0 ([\
+	\cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],4), \cf4 \\root\cf0 ,-24,\
+		\cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0,3,5,7,9,11,5,1],\cf2 inf\cf0 ), \cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),\
+		\cf4 \\cut\cf0 ,\cf2 Pxrand\cf0 ([1000,500,2000,300],\cf2 inf\cf0 ),\cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}), \cf4 \\amp\cf0 ,0.2),\
+\
+	\cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25],6), \cf4 \\root\cf0 ,-24, \cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([18,17,11,9],\cf2 inf\cf0 ),\
+		\cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),\cf4 \\cut\cf0 ,1500, \cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}), \cf4 \\amp\cf0 ,0.16)\
+\
+],\cf2 inf\cf0 ).play;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+'
+\f0\b Pseq
+\f1\b0 ' in the above ex. can be any pattern object:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+\cf2 Prand\cf0 ([\
+	\cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],4), \cf4 \\root\cf0 ,-24,\
+		\cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0,3,5,7,9,11,5,1],\cf2 inf\cf0 ),\cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),\
+		\cf4 \\cut\cf0 ,\cf2 Pxrand\cf0 ([1000,500,2000,300],\cf2 inf\cf0 ), \cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}), \
+		\cf4 \\amp\cf0 ,0.2),\
+\
+	\cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25],6), \cf4 \\root\cf0 ,-24, \cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([18,17,11,9],\cf2 inf\cf0 ), 		\cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),\cf4 \\cut\cf0 ,1500, \cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}), \cf4 \\amp\cf0 ,0.16)\
+\
+],\cf2 inf\cf0 ).play;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Multichannel Expansion.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 If we supply an array for any argument, the synth node will \
+automatically replicate to handle the additional arguments.\
+When we give the 'root' argument an array, we should hear a chord....\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+\cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],\cf2 inf\cf0 ), \cf4 \\root\cf0 ,[-24,-17], \
+	\cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0,3,5,7,9,11,5,1],\cf2 inf\cf0 ), \
+	\cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),\cf4 \\cut\cf0 ,\cf2 Pxrand\cf0 ([1000,500,2000,300],\cf2 inf\cf0 ), \cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}),\
+	\cf4 \\amp\cf0 ,0.2).play;\
+\
+)\
+\cf3 //little bit of JiT...\cf0 \
+(\
+\cf2 Pdef\cf0 (\cf4 \\buckyball\cf0 ).play;\
+)\
+(\
+\cf2 Pdef\cf0 (\cf4 \\buckyball\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],\cf2 inf\cf0 ), \cf4 \\root\cf0 ,[-24,-17], \
+	\cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0,3,5,7,9,11,[5,17],1],\cf2 inf\cf0 ), \cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{[1.0.rand2,1.0.rand2]\}),\
+	\cf4 \\cut\cf0 ,\cf2 Pxrand\cf0 ([1000,500,2000,300],\cf2 inf\cf0 ), \cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}), \cf4 \\amp\cf0 ,[0.15,0.22]));\
+)\
+(\
+\cf2 Pdef\cf0 (\cf4 \\buckyball\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],\cf2 inf\cf0 ), \cf4 \\root\cf0 ,[-24,-17], \
+	\cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0b,3b,5b,7b,9b,11b,5b,0b],\cf2 inf\cf0 ), \cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),  \cf3 //notice the flats\cf0 \
+	\cf4 \\cut\cf0 ,\cf2 Pxrand\cf0 ([1000,500,2000,300],\cf2 inf\cf0 ), \cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}), \cf4 \\amp\cf0 ,0.2));\
+)\
+\
+\cf3 //stop the Pdef\cf0 \
+\cf2 Pdef\cf0 (\cf4 \\buckyball\cf0 ).stop;\
+\
+\cf3 //start the Pdef\cf0 \
+\cf2 Pdef\cf0 (\cf4 \\buckyball\cf0 ).resume;\
+\
+\cf3 //removing the Pdef\cf0 \
+\cf2 Pdef\cf0 .remove(\cf4 \\buckyball\cf0 );\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+Sending to effects.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Assignment to effect processors can be achieved by setting the 'out' argument to the desired\
+efx's input bus.  The effect Synth must also be created.  Synth.new is one way of doing this.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+\cf3 //efx synthdef- dig the timing on the delay and the pbind.  :-P\cf0 \
+\cf2 SynthDef\cf0 (\cf5 "pbindefx"\cf0 , \{ \cf2 arg\cf0  out, in, time1=0.25, time2=0.5;  	var audio, efx;\
+	audio = \cf2 In\cf0 .ar([20,21],2);\
+	efx=\cf2 CombN\cf0 .ar(audio, 0.5, [time1,time2], 10, 1, audio);  	\cf2 Out\cf0 .ar(out, \cf2 efx\cf0 );\
+	\}).load(s);\
+\cf3 \
+//create efx synth\cf0 \
+\cf2 a = Synth\cf0 .new(\cf5 "pbindefx"\cf0 );\
+\cf3 \
+//if you don't like the beats change to 0.4,0.24\cf0 \
+\cf3 //a.set(\\time1,0.4, \\time2,0.24);\cf0 \
+\
+\cf2 SynthDef\cf0 (\cf5 "acid"\cf0 , \{ \cf2 arg\cf0  out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1;\
+	\cf2 Out\cf0 .ar(out,\
+		\cf2 Pan2\cf0 .ar(\
+			\cf2 RLPF\cf0 .ar(\
+				\cf2 Pulse\cf0 .ar(freq,0.05),\
+			cut, rez),\
+		pan) * \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .linen(0.02, 1, 0.3), gate, amp, doneAction:2);\
+	) \
+	\}).load(s);\
+\
+\cf2 SynthDescLib\cf0 .global.read;\
+\
+)\
+(\
+\cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\out\cf0 , 20, \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],\cf2 inf\cf0 ), \cf4 \\root\cf0 ,[-24,-17],\
+	\cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0,3,5,7,9,11,5,1],\cf2 inf\cf0 ), \cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),\
+	\cf4 \\cut\cf0 ,\cf2 Pxrand\cf0 ([1000,500,2000,300],\cf2 inf\cf0 ), \cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}), \cf4 \\amp\cf0 ,0.12).play;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\cf3 //
+\f0\b \cf3 UGens as Event values.
+\f1\b0 \cf0 \
+\cf3 //The following example creates unit generators instead of scalar values for\cf0 \
+\cf3 //the values bound to the arguments. This shows that you can use patterns\cf0 \
+\cf3 //to dynamically build your patch. Score data is not limited to scalar values.\cf0 \
+\cf3 //This example can generate 36 different patches: 3 instruments * 3 freqs\cf0 \
+\cf3 //* 2 amps * 2 pans\cf0 \
+\cf3 //\
+//\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf3 //I don't know if this is possible in sc3.  \cf0 \
+\cf3 ////(\cf0 \
+\cf3 //SynthDef(\\cfstring1.postln, \{ arg i_out, freq = 360, gate = 1, pan, amp=0.1;\cf0 \
+\cf3 //	var out, eg, fc, osc, a, b, w;\cf0 \
+\cf3 //	fc = LinExp.kr(LFNoise1.kr(Rand(0.25,0.4)), -1,1,500,2000);\cf0 \
+\cf3 //	osc = Mix.fill(8, \{ LFSaw.ar(freq * [Rand(0.99,1.01),Rand(0.99,1.01)], 0, amp) \}).distort * 0.2;\cf0 \
+\cf3 //	eg = EnvGen.kr(Env.asr(0.1,1,1), gate, doneAction:2);\cf0 \
+\cf3 //	out = eg * RLPF.ar(osc, fc, 0.1);\cf0 \
+\cf3 //	#a, b = out;\cf0 \
+\cf3 //	Out.ar(i_out, Mix.ar(PanAz.ar(4, [a, b], [pan, pan+0.3])));\cf0 \
+\cf3 //\}).load(s);\cf0 \
+\cf3 //\cf0 \
+\cf3 //SynthDef(\\berlinb, \{ arg out=0, freq = 80, amp = 0.01, pan=0, gate=1;\cf0 \
+\cf3 //	var synth, env;\cf0 \
+\cf3 //	env = Decay2.kr(gate, 0.05, 8, 0.0003);\cf0 \
+\cf3 //	synth = RLPF.ar(\cf0 \
+\cf3 //		LFPulse.ar(freq, 0, SinOsc.kr(0.12,[0,0.5pi],0.48,0.5)),\cf0 \
+\cf3 //		freq * SinOsc.kr(0.21,0,18,20),\cf0 \
+\cf3 //		0.07\cf0 \
+\cf3 //	);\cf0 \
+\cf3 //	#a, b = synth*env;\cf0 \
+\cf3 //	DetectSilence.ar(a, 0.1, doneAction: 2);\cf0 \
+\cf3 //	Out.ar(out, Mix.ar(PanAz.ar(4, [a,b], [pan, pan+1])));\cf0 \
+\cf3 //\}).load(s);\cf0 \
+\cf3 //\cf0 \
+\cf3 //SynthDef("acid", \{ arg out, freq = 1000, gate = 1, pan = 0,  amp = 0.3;\cf0 \
+\cf3 //	Out.ar(out,\cf0 \
+\cf3 //		Pan2.ar(\cf0 \
+\cf3 //				Pulse.ar(freq*0.125,0.05),\cf0 \
+\cf3 //		pan) * EnvGen.kr(Env.linen(0.01, 1, 0.3), gate, amp, doneAction:2);\cf0 \
+\cf3 //	) \cf0 \
+\cf3 //	\}).load(s);\cf0 \
+\cf3 //\cf0 \
+\cf3 //SynthDescLib.global.read;\cf0 \
+\cf3 //)\cf0 \
+\cf3 //\cf0 \
+\cf3 //(\cf0 \
+\cf3 //var a, b, c, pattern, stream;\cf0 \
+\cf3 //\cf0 \
+\cf3 //pattern = Pbind(\cf0 \
+\cf3 //	\\freq, Pfunc(\{Line.kr(40, 2000, 0.2)\}),\cf0 \
+\cf3 //		\cf0 \
+\cf3 //	\\amp, Pfunc(\{  \cf0 \
+\cf3 //			[\cf0 \
+\cf3 //				\{ SinOsc.kr(20.0.rand, 0, 0.1, 0.1) \},\cf0 \
+\cf3 //				\{ XLine.kr(exprand(0.002, 0.2), exprand(0.002, 0.2), 2.2) \} \cf0 \
+\cf3 //			].choose.value;\cf0 \
+\cf3 //		\}),\cf0 \
+\cf3 //	\\pan, Pfunc(\{  \cf0 \
+\cf3 //			[\cf0 \
+\cf3 //				\{ Line.kr(1.0.rand2, 1.0.rand2, 2.2)  \},\cf0 \
+\cf3 //				\{ SinOsc.kr(4.0.rand) \}\cf0 \
+\cf3 //			].choose.value;\cf0 \
+\cf3 //		\}),\cf0 \
+\cf3 //	\\instrument, Prand([ \\cfstring1, \\acid, \\berlinb ], inf)\cf0 \
+\cf3 //);\cf0 \
+\cf3 //\cf0 \
+\cf3 //)\cf0 \
+\cf3 //\cf0 \
+}

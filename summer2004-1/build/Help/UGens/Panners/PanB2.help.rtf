@@ -1,0 +1,49 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 PanB2			
+\fs28 2D Ambisonic B-format panner
+\fs36 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 PanB2.kr(in, azimuth, gain)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Encode a mono signal to two dimensional ambisonic B-format.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 in
+\f1\b0  - input signal\
+
+\f0\b azimuth
+\f1\b0  - position around the circle from -1 to +1. \
+-1 is behind, -0.5 is left, 0 is forward, +0.5 is right, +1 is behind.\
+
+\f0\b gain
+\f1\b0  - amplitude control\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
+\{\
+	\cf2 var\cf0  w, x, y, p, a, b, c, d;\
+	\
+	p = \cf2 PinkNoise\cf0 .ar; \cf3 // source\cf0 \
+	\
+	\cf3 // B-format encode\cf0 \
+	#w, x, y = \cf2 PanB2\cf0 .ar(p, \cf2 MouseX\cf0 .kr(-1,1), 0.1); \
+	\
+	\cf3 // B-format decode to quad\cf0 \
+	#a, b, c, d = \cf2 DecodeB2\cf0 .ar(4, w, x, y);\
+	\
+	[a, b, d, c] \cf3 // reorder to my speaker arrangement: Lf Rf Lr Rr\cf0 \
+\}.play;\
+)
+\fs24 \
+}

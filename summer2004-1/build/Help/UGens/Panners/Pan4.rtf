@@ -1,0 +1,57 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green0\blue0;
+\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Pan4			four channel equal power pan\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Pan4.ar(in, xpos, ypos, level)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Four channel equal power panner.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 in
+\f2\b0  - input signal\
+
+\f0\b xpos
+\f2\b0  - x  pan position from -1 to +1(left to right)\
+
+\f0\b ypos
+\f2\b0  - y pan position from -1 to +1 (back to front)\
+
+\f0\b level
+\f2\b0  - a control rate level input.
+\f1\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Outputs are in order LeftFront, RightFront, LeftBack, RightBack.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\cf2 // You'll only hear the front two channels on a stereo setup.\cf0 \
+\cf3 (\
+SynthDef\cf4 ("help-Pan4", \{ \
+\cf3 	Out\cf4 .ar(0, \cf3 Pan4\cf4 .ar(\cf3 PinkNoise\cf4 .ar, \cf3 FSinOsc\cf4 .kr(2), \cf3 FSinOsc\cf4 .kr(1.2), 0.3)) \
+\}).play\cf0 ;\
+)\
+\
+play(\{ \cf5 Pan4\cf0 .ar(\cf5 PinkNoise\cf0 .ar, -1,  0, 0.3) \}); \cf2 // left pair\cf0 \
+play(\{ \cf5 Pan4\cf0 .ar(\cf5 PinkNoise\cf0 .ar,  1,  0, 0.3) \}); \cf2 // right pair\cf0 \
+play(\{ \cf5 Pan4\cf0 .ar(\cf5 PinkNoise\cf0 .ar,  0, -1, 0.3) \}); \cf2 // back pair\cf0 \
+play(\{ \cf5 Pan4\cf0 .ar(\cf5 PinkNoise\cf0 .ar,  0,  1, 0.3) \}); \cf2 // front pair\cf0 \
+\
+play(\{ \cf5 Pan4\cf0 .ar(\cf5 PinkNoise\cf0 .ar,  0,  0, 0.3) \}); \cf2 // center
+\fs24 \cf0 \
+\
+}

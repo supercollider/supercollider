@@ -1,0 +1,115 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+\red0\green0\blue191;\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 MIDIPlayer
+\f1\b0\fs24 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 MIDIGatePlayer.new(spec)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	generates a gate with the level scaled from 0..127 to the requested spec\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 CCPlayer.new(controller,spec)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	controller value is scaled to the requested spec\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 MIDIFreqPlayer.new\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	midi note to freq\
+\
+\
+\
+Any attached midi keyboard should work\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\cf2 \
+\
+\cf3 Instr\cf2 (\cf4 \\monosynth\cf2 ,\{ \cf3 arg\cf2  gate=0.0,freq=440.0,ffreq=500,rq=0.1,width=0.3;\
+	\cf3 var\cf2  amp;\
+	amp = \cf3 Latch\cf2 .kr(gate,gate);\
+\
+	\cf3 RLPF\cf2 .ar(\
+		\cf3 Pulse\cf2 .ar(freq,width),\
+		ffreq,\
+		rq)\
+	\
+	* \cf3 EnvGen\cf2 .kr(\cf3 Env\cf2 .adsr,gate,amp)\
+	\
+\});\
+\
+\cf3 Patch\cf2 (\cf4 \\monosynth\cf2 ,[\
+	\cf3 MIDIGatePlayer\cf2 .new,\
+	\cf3 MIDIFreqPlayer\cf2 .new\
+]).gui\
+\
+\cf0 )\
+\
+\
+(\cf2 \
+\cf3 Patch\cf2 (\cf4 \\monosynth\cf2 ,[\
+	\cf3 BeatClockPlayer\cf2 .new,\
+	\cf3 MIDIFreqPlayer\cf2 .new,\
+	\cf3 CCPlayer\cf2 (50,[100,3000,\cf4 \\exp\cf2 ,0.0,1500.0]),\
+	\cf3 CCPlayer\cf2 (51,[0.1,0.9,\cf4 \\exp\cf2 ,0.0,0.2]),\
+	\cf3 CCPlayer\cf2 (52,[0.05,1.0])\
+]).gui\
+\
+\cf0 )\
+\
+\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 Note the intial values are the spec's defaults, not the Instr defaults.\
+You won't hear anything until you bring the filter up.\
+\
+\
+(
+\f2\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 Instr\cf0 (\cf6 \\fatsynth\cf0 ,\{ \cf5 arg\cf0  gate=0.0,freq=440.0,ffreq=500,rq=0.1;\
+	\cf5 var\cf0  amp;\
+	amp = \cf5 Latch\cf0 .kr(gate,gate);\
+\
+	\cf5 RHPF\cf0 .ar(\
+		Splay.arFill(9,\{ arg i;\
+			\cf5 Pulse\cf0 .ar(freq + rrand(-100,100),LFNoise1.kr(0.01))\
+		\}),\
+		ffreq * amp,\
+		rq)\
+	\
+	* \cf5 EnvGen\cf0 .kr(\cf5 Env\cf0 .adsr,gate,amp)\
+\});\
+\
+\cf5 Patch\cf0 (\cf6 \\fatsynth\cf0 ,[\
+	\cf5 MIDIGatePlayer\cf0 .new,\
+	\cf5 MIDIFreqPlayer\cf0 .new,\
+	\cf5 CCPlayer\cf0 (50,ControlSpec(100,3000,\cf6 \\exp,0.0,500.0\cf0 )),\
+	\cf5 CCPlayer\cf0 (51,ControlSpec(0.1,0.9,\\exp,0.0,0.1))\
+]).gui\
+\
+)\
+\
+(\
+\cf5 Patch\cf0 (\cf6 \\fatsynth\cf0 ,[\
+	\cf5 MIDIGatePlayer\cf0 .new,\
+	\cf5 MIDIFreqPlayer\cf0 .new,\
+	\cf5 CCPlayer\cf0 (1,[100,3000,\cf6 \\exp,0.0,500.0\cf0 ])\
+]).gui\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 )\
+}

@@ -1,0 +1,213 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 SCTabletView
+\f1\b0\fs18 \
+\
+
+\f0\b\fs24 superclass: SCView\
+
+\f1\b0\fs18 \
+An otherwise featureless view that receives extended wacom tablet data.  It can also be used with a normal mouse but with less resolution.\
+\
+
+\f0\b\fs24 action - 
+\f2\b0 dragging the mouse inside the view
+\f1\fs18 \
+
+\f0\b\fs24 mouseDownAction\
+mouseUpAction\
+
+\f2\b0 \
+Each of the three actions are passed the following wacom tablet values:\
+
+\f0\b \
+	view - 
+\f2\b0 the view
+\f0\b \
+	x - 
+\f2\b0 subpixel location in view\
+
+\f0\b 	y - 
+\f2\b0 subpixel location in view\
+
+\f0\b 	pressure - 
+\f2\b0 0..1
+\f0\b \
+	tiltX - 
+\f2\b0 0..1
+\f0\b \
+	tiltY - 
+\f2\b0 0..1
+\f0\b \
+	deviceID - 
+\f2\b0 will be used to look up if the tip or the eraser is used
+\f0\b \
+	buttonNumber - 
+\f2\b0 0 left, 1 right, 2 middle wheel click
+\f0\b \
+	clickCount - 
+\f2\b0 double click, triple click ...\
+		most relevant for the mouseDown, but still valid for the dragged and mouseUp\
+	
+\f0\b absoluteZ
+\f2\b0  - the wheel on the side of some mice\
+	
+\f0\b rotation
+\f2\b0  - in degrees, only on the 4d mice \
+	
+\f1\fs18 \
+\
+\
+
+\f2\fs24 If using a mouse (even a wacom) rather than a pen, the x and y will be integer pixel values, rather than subpixel floats.  Wacom stylus devices have higher resolution than the screen.  Pressure will be 1 for mouse down, 0 for mouse up.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul Properties
+\f2\b0\fs24 \ulnone \
+	
+\f0\b clipToBounds
+\f2\b0  - by default the x y values are clipped to the bounds of the view.\
+		it set to 0, it is possible to drag from inside to outside the view, and the x y values will \
+		exceed the bounds accordingly.\
+\
+\
+	\
+	
+\f1\fs18 \
+(\
+w = \cf2 SCWindow\cf0 .new;\
+t = \cf2 SCTabletView\cf0 (w,\cf2 Rect\cf0 (40,40,300,300));\
+t.background = \cf2 Color\cf0 .white;\
+w.front;\
+\
+t.mouseDownAction = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ,absoluteZ,rotation;\
+	["down",x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ,absoluteZ,rotation].postln;\
+\};\
+\
+t.action = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ,absoluteZ,rotation;\
+	["dragging", x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ,absoluteZ,rotation].postln;\
+	t.background = \cf2 Color\cf0 (x / 300,y / 300,tiltx,pressure);\
+\};\
+\
+t.mouseUpAction = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ,absoluteZ,rotation;\
+	["up",x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ,absoluteZ,rotation].postln;\
+\};\
+\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Assign the same function to each action\
+
+\f1\b0\fs18 (\
+w = \cf2 SCWindow\cf0 .new;\
+t = \cf2 SCTabletView\cf0 (w,\cf2 Rect\cf0 (40,40,300,300));\
+t.background = \cf2 Color\cf0 .white;\
+w.front;\
+\
+f = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ;\
+	[x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ].postln;\
+	t.background = \cf2 Color\cf0 (x / 300,y / 300,tiltx,pressure);\
+\};\
+\
+t.mouseDownAction = f;\
+t.action = f;\
+t.mouseUpAction = f;\
+\
+)\
+\
+\
+\
+
+\f2\fs24 \
+	\
+
+\f0\b An example using crucial library\
+
+\f2\b0 (
+\f1\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Instr\cf0 ([\cf3 \\minimoog\cf0 ,\cf3 \\loose\cf0 ],\{ \cf2 arg\cf0  freq=440,int1=5,int2 = -5,\
+			ffreqInterval=0,rq=0.4,gate=0.0;\
+	\cf2 var\cf0  p,c,d,f;\
+	c=\cf2 LFNoise1\cf0 .kr(0.1,0.45,0.55);\
+	d=\cf2 LFNoise1\cf0 .kr(0.1,0.45,0.55);\
+	f=\cf2 LFNoise1\cf0 .kr(0.1,2);\
+	p=\cf2 Pulse\cf0 .ar([ freq  * int1.midiratio + f , freq, freq * int2.midiratio - f],\
+			[c,d,c],0.2);\
+			\
+	\cf2 RLPF\cf0 .ar(\cf2 Mix\cf0 .ar(p),freq * ffreqInterval.midiratio,rq)\
+		* \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .adsr, gate, \cf2 Latch\cf0 .kr(gate,gate))\
+\
+\},#[\
+	\cf2 nil\cf0 ,\
+	[[-48,48,\cf3 \\linear\cf0 ,1]],\
+	[[-48,48,\cf3 \\linear\cf0 ,1]],\
+	[[-48,48,\cf3 \\linear\cf0 ,1]]\
+]);\
+\
+p = \cf2 Patch\cf0 .new([ \cf3 'minimoog'\cf0 , \cf3 'loose'\cf0  ],[\
+	\cf2 nil\cf0 ,\cf2 nil\cf0 ,\cf2 nil\cf0 ,\cf2 nil\cf0 ,\cf2 nil\cf0 ,\
+	\cf2 KrNumberEditor\cf0 (0.0,\cf3 \\gate\cf0 ) \cf4 // override the default control\cf0 \
+]);\
+\
+\cf2 Sheet\cf0 (\{ \cf2 arg\cf0  f;\
+	\cf2 var\cf0  v,freq,int;\
+	freq = \cf2 ControlSpec\cf0 (100,3000,\cf3 \\exp\cf0 );\
+	int = [-48,48,\cf3 \\linear\cf0 ,1].asSpec;\
+	\
+	p.topGui(f);\
+	v = \cf2 SCTabletView\cf0 (f,\cf2 Rect\cf0 (0,0,200,200));\
+	v.background = \cf2 Color\cf0 .white;\
+	v.action = \{ \cf2 arg\cf0  view,x,y,pressure,tiltx,tilty;\
+		p.args.at(1).value_( int.map( x / 200 ) ).changed;\
+		p.args.at(2).value_( int.map( y / 200 ) ).changed;\
+		p.args.at(3).value_( int.map( pressure ) ).changed;\
+	\};\
+	v.mouseDownAction = \{ \cf2 arg\cf0  view,x,y,pressure;\
+		p.args.at(0).value_( rrand(30,80).midicps ).changed;\
+		p.args.at(5).value_( pressure ).changed;\
+	\};\
+	v.mouseUpAction = \{ \cf2 arg\cf0  view,x,y,pressure;\
+		p.args.at(5).value_( 0.0 ).changed;\
+	\};\
+\});\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 )\
+\
+
+\f1\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 move the box\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 ( buggy )\
+
+\f1\fs18 (\
+w = \cf2 SCWindow\cf0 .new;\
+t = \cf2 SCTabletView\cf0 (w,\cf2 Rect\cf0 (40,40,30,30));\
+t.background = \cf2 Color\cf0 .white;\
+w.front;\
+\
+t.action = \{ \cf2 arg\cf0  view,x,y;\
+	\cf2 var\cf0  b;\
+	b = t.bounds;\
+	b.left = b.left + x;\
+	//b.top = y - b.top;\
+	t.bounds = b;\
+\};\
+\
+)\
+
+\f2\fs24 \
+}

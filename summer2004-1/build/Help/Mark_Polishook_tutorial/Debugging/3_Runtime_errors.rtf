@@ -1,0 +1,386 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green115\blue0;\red0\green0\blue191;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Runtime errors\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+Runtime errors occur while a program is executing.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////
+\f0\b\fs24 \cf0 \
+\
+Common errors 
+\f1\b0\fs18 \
+\
+1. an object receives a message which it doesn't understand\
+2. a binary operation (addition, subtraction, multiplication, etc.) can't be performed\
+3. a value other than true or false appears in a conditional (boolean) test\
+4. a file can't be opened (a primitive fails)\
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Object doesn't understand
+\f1\b0\fs18 \
+\
+Execute the following line\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 3.createRuntimeError\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 Neither the Integer class of which 3 is an instance or any of the superclasses from which Integer inherits knows what to do with a .createRuntimeError message. Obviously, .createRuntimeError isn't defined anywhere in the system. \
+\
+When an object doesn't know how to respond to a message, SuperCollider executes a .doesNotUnderstand message which leads, eventually, to a four-part error notification. The parts of the notification are ERROR, RECEIVER, ARGS, and CALL STACK, as in\
+\
+ERROR: Message 'createRuntimeError' not understood.\
+RECEIVER:\
+   Integer 3\
+ARGS:\
+Instance of Array \{    (057E7560, gc=01, fmt=01, flg=11, set=00)\
+  indexed slots [0]\
+\}\
+CALL STACK:\
+	DoesNotUnderstandError-reportError\
+		arg this = <instance of DoesNotUnderstandError>\
+	Nil-handleError\
+		arg this = nil\
+		arg error = <instance of DoesNotUnderstandError>\
+	Object-throw\
+		arg this = <instance of DoesNotUnderstandError>\
+	Object-doesNotUnderstand\
+		arg this = 3\
+		arg selector = 'createRuntimeError'\
+		arg args = [*0]\
+	< closed FunctionDef >  (no arguments or variables)\
+	Interpreter-interpretPrintCmdLine\
+		arg this = <instance of Interpreter>\
+		var res = nil\
+		var func = <instance of Function>\
+	Process-interpretPrintCmdLine\
+		arg this = <instance of Main>\
+		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+The ERROR section explains what went wrong. \
+\
+The RECEIVER section names the the class of the object to which the message was sent. \
+\
+The ARGS section says how many arguments were included in the message.\
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+Read the CALL STACK from the bottom to the top to see where the error happened. Reading from bottom to top means going from\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 Process\cf0 -interpretPrintCmdLine \
+\
+to \
+\
+\cf4 Interpreter\cf0 -interpretPrintCmdLine \
+\
+to \
+\
+\cf4 Object\cf0 -doesNotUnderstand\
+\
+to\
+\
+\cf4 Object\cf0 -throw\
+\
+to\
+\
+\cf4 Nil\cf0 -handleError\
+\
+to\
+\
+\cf4 DoesNotUnderstandError\cf0 -reportError\
+\
+which is the first line in the stack.\
+\
+\cf4 DoesNotUnderstandError\cf0 -reportError \
+\
+is the mechanism that prints the error notification to the transcript window. Select it and press cmd-j to see how .reportError is defined. It uses the .dumpBackTrace method, defined in class Object, to print the call stack.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 Execute the following example to create another runtime error message. \
+\
+$a * $b\
+\
+The error: Characters can't be multiplied.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+The printout in the transcript window shows headers for ERROR, RECEIVER, ARGS, and CALL STACK (exactly the same as in the previous example).\
+\
+ERROR: Message '*' not understood.\
+RECEIVER:\
+   Character 97 'a'\
+ARGS:\
+Instance of Array \{    (067F5470, gc=C4, fmt=01, flg=00, set=01)\
+  indexed slots [1]\
+      0 : Character 98 'b'\
+\}\
+CALL STACK:\
+	DoesNotUnderstandError-reportError\
+		arg this = <instance of DoesNotUnderstandError>\
+	Nil-handleError\
+		arg this = nil\
+		arg error = <instance of DoesNotUnderstandError>\
+	Object-throw\
+		arg this = <instance of DoesNotUnderstandError>\
+	Object-doesNotUnderstand\
+		arg this = $a\
+		arg selector = '*'\
+		arg args = [*1]\
+	< closed FunctionDef >  (no arguments or variables)\
+	Interpreter-interpretPrintCmdLine\
+		arg this = <instance of Interpreter>\
+		var res = nil\
+		var func = <instance of Function>\
+	Process-interpretPrintCmdLine\
+		arg this = <instance of Main>\
+		\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+The ERROR and RECEIVER parts of the message and the first two lines of the call stack\
+\
+DoesNotUnderstandError-reportError\
+	arg this = <instance of DoesNotUnderstandError>\
+\
+show that instances of class Char do not understand multiplication.\
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+One way to correct the example is to write\
+\
+$a.ascii * $b.ascii;\
+\
+Q: How would you know this?\
+A: Look in the Char.sc document (select the word Char and press cmd-j) to see the messages to which the Char class responds. The .ascii method returns integers; integers can be multiplied.\
+\
+Or evaluate\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 Char\cf0 .dumpInterface\
+\
+to see a list of messages to which Char can answer. \
+\
+Evaluate\
+\
+\cf4 Char\cf0 .dumpClassSubtree\
+\
+to see the classes from which Char inherits. Messages to those classes can also be used and messages defined in Object are valid, as well.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Unitialized variable (binary operation fails)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 The next example shows that the variable 'a' is initialized to an integer and the variable 'b' isn't initialized to anything. When a variable in SuperCollider isn't initialized, it defaults to nil. Which is to say that all variables, once declared, are initialized to nil unless otherwise specified. \
+\
+Multiplying the variable 'a', an integer, by the variable 'b', nil, produces a runtime error.\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 var\cf0  a = 10;	\cf2 // a is declared and initialized\cf0 \
+\cf4 var\cf0  b;		\cf2 // b declared but defaults to nil ... this will cause a runtime error\
+			// in the case of a * b\cf0 \
+t = \cf4 Task\cf0 (\{\
+\
+	4.do(\{ \cf4 arg\cf0  item, i;\
+	\
+		\cf2 // print the value of i if as long as it doesn't equal 3\
+		// when i equals 3, then multiply a * b ... but this is a problem if b is nil\cf0 \
+		if(i != 3) \{ i.postln \} \{ (a * b).postln \};\
+		1.wait;\
+		\
+	\})\
+	\
+\});\
+t.start;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+Here's the printout that shows the program ran until the index, 'i', reached 3, which is when a * b happened.\
+\
+a Task\
+0\
+1\
+2\
+ERROR: binary operator '*' failed.\
+RECEIVER:\
+   nil\
+ARGS:\
+Instance of Array \{    (067D92B0, gc=CC, fmt=01, flg=00, set=01)\
+  indexed slots [2]\
+      0 : Integer 10\
+      1 : nil\
+\}\
+CALL STACK:\
+	DoesNotUnderstandError-reportError\
+		arg this = <instance of BinaryOpFailureError>\
+	Nil-handleError\
+		arg this = nil\
+		arg error = <instance of BinaryOpFailureError>\
+	Object-throw\
+		arg this = <instance of BinaryOpFailureError>\
+	Object-performBinaryOpOnSomething\
+		arg this = nil\
+		arg aSelector = '*'\
+		arg thing = 10\
+		arg adverb = nil\
+	Integer-*\
+		arg this = 10\
+		arg aNumber = nil\
+		arg adverb = nil\
+	< FunctionDef in closed FunctionDef >\
+		arg item = 3\
+		arg i = 3\
+	Integer-do\
+		arg this = 4\
+		arg function = <instance of Function>\
+		var i = 3\
+	< FunctionDef in closed FunctionDef >  (no arguments or variables)\
+	Routine-prStart\
+		arg this = <instance of Routine>\
+		arg inval = 758.000000\
+		\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+The binary operator ('*') failed because nil and an instance of class Integer can't be multiplied. The ERROR and RECEIVER parts of the message show this as do the first two lines of the call stack\
+\
+DoesNotUnderstandError-reportError\
+	arg this = <instance of BinaryOpFailureError>\
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 True, false, or other\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+A runtime error happens when something that tests for a boolean receives a value other than true or false.\
+\
+For example\
+\
+in an if statement has\
+\
+x=4\
+\
+an assignment, as its test, as in\
+\
+if(x=4) \{ \cf5 "this is ok"\cf0 \};\
+\
+the result is\
+\
+ERROR: Non Boolean in test.\
+RECEIVER:\
+   Integer 4\
+CALL STACK:\
+	MethodError-reportError\
+		arg this = <instance of MustBeBooleanError>\
+	Nil-handleError\
+		arg this = nil\
+		arg error = <instance of MustBeBooleanError>\
+	Object-throw\
+		arg this = <instance of MustBeBooleanError>\
+	Object-mustBeBoolean\
+		arg this = 4\
+	< closed FunctionDef >  (no arguments or variables)\
+	Interpreter-interpretPrintCmdLine\
+		arg this = <instance of Interpreter>\
+		var res = nil\
+		var func = <instance of Function>\
+	Process-interpretPrintCmdLine\
+		arg this = <instance of Main>\
+		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+The ERROR part of the message and the first two lines of the call stack\
+\
+MethodError-reportError\
+	arg this = <instance of MustBeBooleanError>\
+	\
+show what went wrong. Correcting the test clause makes the if statement work.\
+\
+if(x==4) \{ \cf5 "this is ok"\cf0 \};\
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Primitive fails\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 Trying to determine the length of a non-existent file creates a runtime error. In this case, _FileLength, a C code primitive, fails.\
+\
+f = \cf4 File\cf0 (\cf5 "i_don't_exist"\cf0 , \cf5 "r"\cf0 );\
+f.length;\
+\
+ERROR: Primitive '_FileLength' failed.\
+Failed.\
+RECEIVER:\
+Instance of File \{    (067D9970, gc=C4, fmt=00, flg=00, set=01)\
+  instance variables [1]\
+    fileptr : nil\
+\}\
+CALL STACK:\
+	MethodError-reportError\
+		arg this = <instance of PrimitiveFailedError>\
+	Nil-handleError\
+		arg this = nil\
+		arg error = <instance of PrimitiveFailedError>\
+	Object-throw\
+		arg this = <instance of PrimitiveFailedError>\
+	Object-primitiveFailed\
+		arg this = <instance of File>\
+	File-length\
+		arg this = <instance of File>\
+	< closed FunctionDef >  (no arguments or variables)\
+	Interpreter-interpretPrintCmdLine\
+		arg this = <instance of Interpreter>\
+		var res = nil\
+		var func = <instance of Function>\
+	Process-interpretPrintCmdLine\
+		arg this = <instance of Main>\
+		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 The ERROR part of the message and the first two lines of the call stack\
+\
+MethodError-reportError\
+	arg this = <instance of PrimitiveFailedError>\
+	\
+show what went wrong.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+}

@@ -1,0 +1,45 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 IsEven
+\fs24 				\
+\
+answers whether the item is even.\
+
+\f1\b0 \
+superclass: AbstractConstraint\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\
+(\
+s = \cf2 IsEven\cf0 .new;\
+\
+100.do(\{ \cf2 arg\cf0  i;\
+	if(s.value(i),\{\
+		i.postln\
+	\})\
+\});\
+\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 The class IsEven itself will respond to *value just as an instance will. So it can be used in place of functions in the same manner.  This is faster than constructing a FunctionDef \{ \}, and probably executes faster.
+\f2\fs18 \
+\
+(\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Array\cf0 .fill(20,\{rand(100)\})\
+	.select(\cf2 IsEven\cf0 )\
+	.postln\
+	\
+[ 12, 76, 76, 8, 18, 26, 30, 44, 24, 84 ]\
+)\
+\
+}

@@ -1,0 +1,67 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 SendTrig
+\f1\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 On receiving a trigger (0 to non-zero transition), send a trigger message from the server back to the client.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 	SendTrig.kr( input, id, value )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 		
+\f0\b input
+\f2\b0  	- the trigger\
+		
+\f0\b id
+\f2\b0  		- an integer that will be passed with the trigger message.\
+					this is useful if you have more than one SendTrig in a SynthDef\
+		
+\f0\b value
+\f2\b0  	- a UGen or float that will be polled at the time of trigger,\
+					and its value passed with the trigger message\
+					\
+The trigger message sent back to the client is this:	
+\f1\fs18 			\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+
+\f0\b\fs24 \cf0 /tr						a trigger message\
+
+\f2\b0 	int - node ID\
+	int - trigger ID\
+	float - trigger value\
+\
+This command is the mechanism that synths can use to trigger events in clients.\
+The node ID is the node that is sending the trigger. The trigger ID and value are determined by inputs to the SendTrig unit generator which is the originator of this message.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+s = \cf2 Server\cf0 .local;\
+s.boot;\
+\
+SynthDef("help-SendTrig",\{\
+	\cf2 SendTrig\cf0 .kr(\cf2 Dust\cf0 .kr(1.0),0,\cf2 0.9\cf0 );\
+\}).send(s);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+// register to receive this message\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 OSCresponder\cf0 (s.addr,\cf4 '/tr'\cf0 ,\{ \cf2 arg\cf0  time,responder,msg;\
+	[time,responder,msg].postln;\
+\}).add;\
+\
+Synth("help-SendTrig");\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+}

@@ -1,0 +1,86 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
+\red96\green96\blue96;\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+
+\f1\b\fs36 Index		index into a table with a signal
+\f0\b0\fs24 \
+\
+
+\f1\b Index.ar(bufnum, in, mul, add)\
+Index.kr(bufnum, in, mul, add)\
+
+\f0\b0 \
+The input signal value is truncated to an integer value and used as an index into the table.\
+Out of range index values are clipped to the valid range.\
+
+\f1\b bufnum
+\f0\b0  - index of the buffer\
+
+\f1\b in
+\f0\b0  - the input signal.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+\
+(
+\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // indexing into a table\
+\cf2 s = \cf4 Server\cf2 .local;\
+t = [ 200, 300, 400, 500, 600, 800 ];\
+b = \cf4 Buffer\cf2 (s,t.size,1);\
+\
+\cf3 // alloc and set the values\
+\cf2 s.listSendMsg( b.allocMsg( b.setnMsg(0, t) ).postln );\
+\
+\cf4 SynthDef\cf2 (\cf5 "help-Index"\cf2 ,\{ \cf4 arg\cf2  out=0,i_bufnum=0; \
+	\cf4 Out\cf2 .ar(0,\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 		\cf4 SinOsc\cf2 .ar(\
+			\cf4 Index\cf2 .kr(	\
+				i_bufnum,\
+				\cf4 LFSaw\cf2 .kr(2.0).range(0.0,7.0)\
+			),\
+			0,\
+			0.5\
+		) \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 	)\
+\}).play(s,[\cf6 \\i_bufnum\cf2 ,b.bufnum]);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 )\
+\
+\
+/*\
+\
+(\
+// indexing into a table\
+var table;\
+table = [ 200, 300, 400, 500, 600, 800 ];\
+b = \
+Synth.play(\{ \
+	SinOsc.ar(\
+		Index.kr(	\
+			table, \
+			MouseX.kr(0, table.size)\
+		),\
+		0,\
+		0.1\
+	) \
+\});\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0 \cf0 \
+\
+*/\
+\
+\
+}

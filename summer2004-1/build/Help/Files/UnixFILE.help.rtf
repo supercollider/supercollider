@@ -1,0 +1,193 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fmodern\fcharset77 Courier;
+}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 UnixFILE
+\fs24 \
+\
+superclass: IOStream\
+\
+An abstract class.  See File and Pipe\
+\
+\
+\
+( docs incomplete )\
+\
+isOpen
+\f1\b0 \
+\
+returns whether the file is open. An open request can fail if a file cannot be found for example. \
+This method lets you test that the open call succeeded.\
+\
+
+\f0\b \
+\
+length
+\f1\b0 \
+\
+Answer the length of the file.\
+\
+
+\f0\b pos
+\f1\b0 \
+\
+Answer the current file position\
+\
+
+\f0\b seek(offset, origin)\
+
+\f1\b0 \
+Seek to an offset from the origin. \
+
+\f0\b offset
+\f1\b0  - an offset in bytes.\
+
+\f0\b origin
+\f1\b0  - one of the following Integers:\
+\
+
+\f2 	0 - seek from beginning of file.\
+	1 - seek from current position in file.\
+	2 - seek from end of file.
+\f1 \
+	\
+
+\f0\b \
+\
+write(item)\
+
+\f1\b0 \
+Writes an item to the file.\
+item - one of the following: \
+	Float \
+	Integer, \
+	Char, \
+	Color, \
+	Symbol - writes the name of the Symbol as a C string.\
+	RawArray - write the bytes from any RawArray in big endian.\
+\
+
+\f0\b \
+\
+\
+\
+getLine
+\f1\b0 \
+\
+Reads and returns a String up to lesser of next newline or 1023 chars.\
+\
+
+\f0\b getChar
+\f1\b0 \
+\
+read one byte and return as a Char\
+\
+
+\f0\b getInt8
+\f1\b0 \
+\
+read one byte and return as a Integer.\
+\
+
+\f0\b getInt16
+\f1\b0 \
+\
+read two bytes and return as an Integer.\
+\
+
+\f0\b getInt32
+\f1\b0 \
+\
+read four bytes and return as an Integer.\
+\
+
+\f0\b getFloat
+\f1\b0 \
+\
+read four bytes and return as a Float.\
+\
+
+\f0\b getDouble
+\f1\b0 \
+\
+read eight bytes and return as a Float.\
+\
+
+\f0\b putChar
+\f1\b0 \
+\
+write a Char as one byte.\
+\
+
+\f0\b putInt8
+\f1\b0 \
+\
+write an Integer as one byte.\
+\
+
+\f0\b putInt16
+\f1\b0 \
+\
+write an Integer as two bytes.\
+\
+
+\f0\b putInt32
+\f1\b0 \
+\
+write an Integer as four bytes.\
+\
+
+\f0\b putFloat
+\f1\b0 \
+\
+write a Float as four bytes.\
+\
+
+\f0\b putDouble
+\f1\b0 \
+\
+write a Float as eight bytes.\
+\
+
+\f0\b putString
+\f1\b0 \
+\
+write a null terminated String.\
+\
+
+\f0\b readAllString
+\f1\b0 \
+\
+Reads the entire file as a String.\
+\
+
+\f0\b readAllInt8
+\f1\b0 \
+\
+Reads the entire file as an Int8Array.\
+\
+
+\f0\b readAllInt16
+\f1\b0 \
+\
+Reads the entire file as an Int16Array.\
+\
+
+\f0\b readAllInt32
+\f1\b0 \
+\
+Reads the entire file as an Int32Array.\
+\
+
+\f0\b readAllFloat
+\f1\b0 \
+\
+Reads the entire file as an FloatArray.\
+\
+
+\f0\b readAllDouble
+\f1\b0 \
+\
+Reads the entire file as an DoubleArray.}

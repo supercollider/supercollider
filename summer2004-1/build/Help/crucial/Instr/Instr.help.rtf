@@ -1,0 +1,336 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+\f3\fmodern\fcharset77 Courier;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs50 \cf0 Instr    		
+\fs32 a named function
+\f1\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+Instr is a way of storing sound functions such that they can be easily reused.\
+It is flexible for many different situations and styles of coding.\
+\
+\
+
+\f0\b Instr(name,function,inputSpecs);
+\f2\b0 \
+\
+
+\f0\b name
+\f2\b0  - a symbol or list of symbols, specifying the Instr's address in the global library\
+	( the Instr is actually stored in Library at [ Instr, \\then,\\your,\\address ] ).\
+	\
+
+\f0\b function
+\f2\b0  - the Instr's ugenFunc\
+	\
+	THERE IS NO NEED TO USE Out.ar\
+	\
+\
+
+\f0\b inputSpecs
+\f2\b0 \
+	Specify what kind of input is required, and the working range of values.
+\f0\b \
+\
+	see [Spec] and  [ControlSpec]\
+	
+\f2\b0 \
+	if no spec is supplied, Instr will use the function's argument name to\
+	lookup a spec in Spec.specs.  if nothing is not found, it will default to a \
+	ControlSpec with a range of 
+\f3\fs28 0 .. 1
+\f1\fs18 \
+	\
+(\
+	\cf2 Instr\cf0 ([\cf3 \\minimoog\cf0 ,\cf3 \\one\cf0 ],\{ \cf2 arg\cf0  freq=440,int1=5,int2 = -5,\
+							width1=0.1,width2=0.1,width3=0.1,\
+							ffreqInterval=0,rq=0.4;\
+		\cf2 var\cf0  p;\
+		p=\cf2 Pulse\cf0 .ar([ freq  * int1.midiratio, freq, freq * int2.midiratio],\
+				[ width1,width2,width3],0.3);\
+		\cf2 RLPF\cf0 .ar(\cf2 Mix\cf0 .ar(p),freq * ffreqInterval.midiratio,rq)\
+	\},#[ \
+		\cf4 // different ways to specify the spec...\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 		\cf2 nil\cf0 , \cf4 // nil, so use function's arg name (\\freq) \
+\cf0 			\cf4 // to look up in Spec.specs\
+\cf0 		[-48,48,\cf3 \\linear\cf0 ,1], \cf4 // as(Spec,[-48,48,\\linear,1]) \
+							//   =>   ControlSpec.new(-48,48,\\linear,1)\
+\cf0 		[-48,48,\cf3 \\linear\cf0 ,1],\
+		\cf3 \\unipolar\cf0 , 		\cf4 // try Spec.specs.at(\\unipolar)\
+\cf0 		\cf2 nil\cf0 ,				\cf4 // try the argname width2, that fails,\
+						//  so the default is ControlSpec(0,1,\\linear)\
+\cf0 		\cf3 \\unipolar\cf0 ,\
+		[-48,48,\cf3 \\linear
+\fs20 \cf0 ,1]\
+	]);\
+)\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 	the default/init value for the Spec is taken from the function
+\f0\b  
+\f2\b0 defaults
+\f0\b .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs28 \cf0 	\
+An Instr is not a SynthDef\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 It is not subject to the same limitations for its inputs.  eg. an Envelope is permissable as an argument.  A Sample is permissable.    A single Instr can produce many SynthDefs\
+\
+Patch is used to specify the inputs to the function.  Some of these inputs will be reduced to fixed values (integers, floats, Envelopes etc.), and the resulting SynthDef will contain those inputs hard-coded.  Using different Patches, it is possible to write many SynthDefs from the same Instr.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 	\cf2 Instr\cf0 (\cf3 \\rlpf\cf0 ,\{ \cf2 arg\cf0  input,ffreq=400,rq=0.1;\
+		\cf2 RLPF\cf0 .ar( input, ffreq, rq )\
+	\});\
+	
+\f2\fs24 \
+	If the input supplied is stereo, the synthDef produced will be stereo.  \
+	\
+
+\f1\fs18 	\cf2 Patch\cf0 (\cf3 \\rlpf\cf0 ,[\
+		\cf2 Patch\cf0 (\{ \cf2 Saw\cf0 .ar([400,440],0.1) \}) // in stereo\
+	]).play\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 	\
+It is possible to play another Instr inside of your Instr:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 	\cf2 Instr\cf0 (\cf3 \\sawfilter\cf0 ,\{ \cf2 arg\cf0  freq,ffreq,rq;\
+		\cf2 Instr\cf0 .ar(\cf3 \\rlpf\cf0 , [ \cf2 Saw\cf0 .ar(freq,0.1) , ffreq, rq ])\
+	\})\
+	
+\f2\fs24 	\
+and thus get further reuse out of your library of functions.  Here the \\rlpf that is used inside doesn't produce a synth def, but is used as a simple function in the ugenGraph of the \\sawfilter Instr which does make a synthDef.\
+\
+\
+It is not generally possible to use the .ar method on a player inside of an Instrument function.  This was possible in sc2.   You cannot use a sound file player in this way:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 	Instr\cf0 (\cf3 'no-can-do'\cf0 ,\{ \cf2 arg\cf0  sfp,amp=1.0;\
+		sfp.ar * amp\
+	\});\
+\
+Because an SFP (soundfile player) will require a buffer, a bus, and various stages of preparation.  It is a complex process that cannot be compiled into a SynthDef.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \
+storing in the Library\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 \
+ When an Instr is instantiated, it stores itself in the global library
+\f1\fs18 .  \
+\
+( \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Instr\cf0 .new([\cf3 \\minimoog\cf0 ,\cf3 \\one\cf0 ],\{ \cf2 arg\cf0  freq=440,int1=5,int2 = -5,\
+						width1=0.1,width2=0.1,width3=0.1,\
+						ffreqInterval=0,rq=0.4;\
+	\cf2 var\cf0  p;\
+	\
+	p=\cf2 Pulse\cf0 .ar([ freq  * int1.midiratio, freq, freq * int2.midiratio],\
+			[ width1,width2,width3],0.3);\
+			\
+	\cf2 RLPF\cf0 .ar(\cf2 Mix\cf0 .ar(p),freq * ffreqInterval.midiratio,rq)\
+			\
+\},#[ \cf4 // specs\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\cf3 \\freq\cf0 ,\
+	[-48,48,\cf3 \\linear\cf0 ,1],\
+	[-48,48,\cf3 \\linear\cf0 ,1],\
+	\cf3 \\unipolar\cf0 ,\
+	\cf3 \\unipolar\cf0 ,\
+	\cf3 \\unipolar\cf0 ,\
+	[-48,48,\cf3 \\linear\cf0 ,1]\
+]);\
+\
+)
+\f0\b\fs28 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 The Instr can now be accessed at any time:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 	\cf2 Instr\cf0 .at([\cf3 \\minimoog\cf0 ,\cf3 \\one\cf0 ]).topGui\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 playing from the Library\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 (\cf4 //It is then accessible by its name as\
+\cf0 \
+	\cf4 // using the default args of the Instr\
+\cf0 	\cf2 Instr\cf0 .at([\cf3 \\minimoog\cf0 ,\cf3 \\one\cf0 ]).play\
+\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 /**\
+(//or\
+	\{\
+		// supplying some args via the instance .ar method\
+		Instr.at([\\minimoog,\\one])\
+			.ar( LFNoise1.kr(0.1,300,700) ); // args\
+	\}.play\
+)\
+(//or\
+	\{\
+		// supplying some args via the class .ar method\
+		Instr.ar(\
+			[\\minimoog,\\one],// name\
+			[ LFNoise1.kr(0.1,300,700) ] // args\
+			);  \
+	\}.play\
+)\
+**/\cf0 \
+\cf4 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 ( \cf4 // or in patterns...\
+\cf0 	\cf4 // (we need an envelope to play inside a pattern)\
+\cf0 \
+\
+	\cf2 Instr\cf0 ([\cf3 \\minimoog\cf0 ,\cf3 \\two\cf0 ],\{ \cf2 arg\cf0  freq=440,int1=5,int2 = -5,width1=0.1,width2=0.1,width3=0.1,\
+			ffreqInterval=0,rq=0.4;\
+		\cf2 var\cf0  p;\
+		\
+		p=\cf2 Pulse\cf0 .ar([ freq  * int1.midiratio, freq, freq * int2.midiratio],\
+				[ width1,width2,width3],0.3);\
+				\
+		\cf2 RLPF\cf0 .ar(\cf2 Mix\cf0 .ar(p),freq * ffreqInterval.midiratio,rq)\
+			* \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc,doneAction: 2)\
+	\
+	\});\
+\
+	
+\f2\fs24 p = \cf2 Patch\cf0 ([\cf3 \\minimoog\cf0 ,\cf3 \\two\cf0 ]); \cf4 // no args, let the automatic create KrNumberEditors\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	d = p.asSynthDef.send(s);\
+	\
+	\cf2 Pbind\cf0 (\
+		\cf3 \\instrument\cf0 , d.name,\
+		\cf3 \\note\cf0 ,\cf2 Prand\cf0 ([10,20,30],\cf2 inf\cf0 )\
+	).play\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+\
+Auto loading the instr from the "Instr/" directory\
+
+\f2\b0 If an Instr is not found in the library, it will attempt to load a super collider code\
+file by the name of the first name of the Instr:\
+\
+	eg. if Instr.at([\\minimoog,\\one]) \
+		returns nil,\
+	\
+	it tries to load the file Instr/minimoog\
+	\
+You will wish to make a folder to store your Instr.\
+By default, this directory is set to be "Instr/" in your document directory (see Document).\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 the best thing to do is :\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 	\
+in Main-startUp\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf5 	\cf6 Instr\cf5 .dir = \cf7 "~/Documents/SuperCollider/Instr"\cf5 ;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+And create a folder by that name.\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 .gui\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 \
+The gui for Instr is a simple display of the arguments a
+\f1\fs18 nd specs.\
+\
+\
+	\cf4 // default gui display for Instr\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\cf2 Instr\cf0 .at([\cf3 \\minimoog\cf0 ,\cf3 \\one\cf0 ]).topGui\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 .test\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0  .test will create a Patch on the Instr.\
+ this is the best way to test your Instr while you are designing it:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+(\
+	\cf2 Instr\cf0 ([\cf3 \\minimoog\cf0 ,\cf3 \\one\cf0 ],\{ \cf2 arg\cf0  freq=440,int1=5,int2 = -5,\
+					width1=0.1,width2=0.1,width3=0.1,\
+				ffreqInterval=0,rq=0.4;\
+		\cf2 var\cf0  p;\
+		\
+		p=\cf2 Pulse\cf0 .ar([ freq  * int1.midiratio, freq, freq * int2.midiratio],\
+				[ width1,width2,width3],0.3);\
+				\
+		\cf2 RLPF\cf0 .ar(\cf2 Mix\cf0 .ar(p),freq * ffreqInterval.midiratio,rq)\
+				\
+	\},#[\
+		\cf2 nil\cf0 ,\
+		[-48,48,\cf3 \\linear\cf0 ,1],\
+		[-48,48,\cf3 \\linear\cf0 ,1],\
+		\cf2 nil\cf0 ,\
+		\cf2 nil\cf0 ,\
+		\cf2 nil\cf0 ,\
+		[-48,48,\cf3 \\linear\cf0 ,1]\
+	])\
+	.test;
+\fs20 \
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 see [Patch]\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\
+	\
+	\
+}

@@ -1,0 +1,101 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 \
+Char		ascii characters\
+
+\f1\b0\fs24 \
+Chars may be written as literals using the $ sign. For example $a, $b, $c.\
+See section [01 Literals]\
+\
+Chars may be created from Integers using the Integer methods asAscii and asDigit.\
+\
+
+\f0\b\fs28 \ul Conversion
+\f1\b0\fs24 \ulnone \
+\
+
+\f0\b ascii
+\f1\b0 \
+\
+answers the integer ascii value of a Char.\
+\
+
+\f0\b digit
+\f1\b0 \
+\
+answers an integer value from 0 to 9 for chars $0 to $9, and values 10 to 35 for chars $a to $z\
+or $A to $Z.\
+\
+
+\f0\b toUpper
+\f1\b0 \
+\
+answers the upper case version of a char. Nonalphabetic chars return themselves.\
+\
+
+\f0\b toLower
+\f1\b0 \
+\
+answers a lower case version of a char. Nonalphabetic chars return themselves.\
+\
+
+\f0\b\fs28 \ul Testing
+\f1\b0\fs24 \ulnone \
+\
+
+\f0\b isAlpha
+\f1\b0 \
+\
+answers whether the char is an alphabetic character.\
+\
+
+\f0\b isAlphaNum
+\f1\b0 \
+\
+answers whether the char is an alphabetic or numeric character.\
+\
+
+\f0\b isPrint
+\f1\b0 \
+\
+answers whether the char is printable.\
+\
+
+\f0\b isPunct
+\f1\b0 \
+\
+answers whether the char is a punctuation character\
+\
+
+\f0\b isSpace
+\f1\b0 \
+\
+answers whether the char is white space.\
+\
+ 
+\f0\b isDecDigit
+\f1\b0 \
+ \
+ answers whether the char is a decimal digit $0 to $9.\
+ \
+ 
+\f0\b isFileSafe
+\f1\b0 \
+ \
+ answers whether the char is safe for use as in a filename.\
+ excludes the path separators / and : \
+ \
+ \
+ 
+\f2\fs18 for(0,255,\{ arg i;\
+	var a;\
+	[i,a = i.asAscii,a.isAlphaNum,a.isPrint,a.isPunct,a.isControl].postln;\
+\});\
+\
+
+\f1\fs24 \
+ }

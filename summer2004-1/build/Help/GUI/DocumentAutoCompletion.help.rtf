@@ -1,0 +1,126 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+}
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f0\b\fs46 \cf0 SuperCollider autocompletion v0.3\
+
+\f1\b0\fs24 \
+
+\f0\b\fs28 Usage: \
+
+\f1\b0\fs24 \
+To open a text window with the auto-complete feature enabled, execute the following in SuperCollider: \
+\
+
+\f2\fs20 \cf2 Document\cf0 .autoComplete
+\f1\fs24 \
+\
+(ac is a shortcut for Auto-complete, to make it easier to type.)\
+\
+To open a file by pathname:\
+\
+
+\f2\fs20 \cf2 Document\cf0 .openFileAutoComplete(\cf3 "myPath.rtf"\cf0 );\
+\cf2 Document\cf0 .openFileAutoComplete(\cf3 "*.sc"\cf0 );	\cf4 // wildcards are supported\cf0 \
+
+\f1\fs24 \
+To bring up an open-file dialog:\
+\
+
+\f2\fs20 \cf2 Document\cf0 .openAutoComplete
+\f1\fs24 \
+\
+Autocompletion will be integrated more tightly into the code editor.\
+\
+
+\f0\b\fs28 Summary: 
+\f1\b0\fs24 \
+\
+While editing code in an auto-complete code window, the following keystrokes initiate special actions: \
+\
+
+\f0\b (
+\f1\b0  -- attempt to match the preceding identifier to method names containing that string, and display a list of methods with their defining classes. Making a selection will insert a method template into your document. \
+\
+( will also match classnames, with the .new method: Rect( will show you a method template for Rect-*new.\
+\
+
+\f0\b .
+\f1\b0  -- attempt to match the preceding identifier to an exact class name, and present a list of class methods (not instance methods). Your selection will insert a method template into the document. \
+\
+
+\f0\b ctrl-.
+\f1\b0  -- attempt to match the preceding identifier to class names containing the identifier, and present a list of those class names. Your selection will open a class browser. You can navigate through the class tree to find the method you want, and press enter in the method list to insert a method template. \
+\
+
+\f0\b Shortcut in the class browser:
+\f1\b0  type ^ in the method list to go to the superclass. This allows speedier location of methods inherited from superclasses.\
+\
+
+\f0\b Special behavior for ctrl-.
+\f1\b0  -- when you choose a method in a class browser, its class will be compared to the class you chose in the opening list. If the initial class responds to the method, the initial class will be put into the document; otherwise, the class from the class browser. \
+\
+
+\f0\b\fs28 Feature description: \
+
+\f1\b0\fs24 \
+When you type a dot, SuperCollider will to check the previous text to see if it refers to a valid class. If so, a window will be presented with all the class methods (not instance methods) of the class. \
+\
+So, for example, if you type: \
+\
+
+\f2\fs20 \cf2 SinOsc\cf0 .
+\f1\fs24 \
+\
+the window will display the options: \
+\
+ar(freq, phase, mul, add)\
+buildSynthDef()\
+buildSynthDef_()\
+.... \
+\
+If you type the first few letters into the text box, the list will reduce itself to the matching entries. If you type 'a', then the list will contain only: \
+\
+ar(freq, phase, mul, add)\
+\
+Press enter or return, and the method name with all its arguments will be added to your document, leaving the text: \
+\
+
+\f2\fs20 \cf2 SinOsc\cf0 .ar(freq, phase, mul, add)\
+
+\f1\fs24 \
+You can also click on the item you want in the list (or move through the list with the up and down arrow keys), and then press return. \
+\
+Pressing escape or closing the window will cancel the auto-complete.\
+\
+Similar behavior for method names: when you type an open parenthesis '(', SuperCollider will display a list of all classes that define this method. Type the first few letters of the class name (don't forget to capitalize) to choose the right one.\
+\
+This treatment is necessary because variables in SuperCollider are not typed. If you enter 'func.value(', the text editor has no way to know what kind of object will be contained in func at the time of execution. So, it presents you with all possible options and allows you to choose. \
+\
+
+\f0\b New: 
+\f1\b0 The autocompleter now supports partial string matching for methods (triggered by typing open-paren) and classes (not by typing dot, but by typing ctrl-dot). In the case of classes, you will be given a list of classes matching the string typed. After you choose from the list, a full class browser will be opened. When you select a method and press enter, a method template will be dropped into the current document.\
+\
+Because the class browser does not show methods defined by superclasses, you may press ^ to go to the superclass.\
+\
+
+\f0\b\fs28 Further configuration: \
+
+\f1\b0\fs24 \
+Place the startup.rtf file in a folder called scwork in your home user directory. You can define class names and method names to be excluded from the browsers. I like to exclude the most common flow of control mechanisms (while, do, if, etc.).\
+\
+
+\f0\b\fs28 Quirks and caveats: \
+
+\f1\b0\fs24 \
+The auto complete features will be lost from all documents when recompiling the class library. \
+\
+Because of the way the document class works, the identifiers will not be extracted correctly if the cursor is at the very end of the document. You should leave a couple of empty lines below what you're typing for the feature to work. \
+\
+The method browser does not handle inheritance. If you're browsing a method like 'add', you won't find Array in the list (but you will find its superclass ArrayedCollection).\
+\
+Comments or questions to jamshark70@yahoo.com, please. No SPAM!\
+}
