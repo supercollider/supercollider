@@ -934,8 +934,17 @@ SCMultiSliderView : SCView {
 		mouseUpAction.value(this);
 	}
 	properties {
-		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \thumbWidth, \absoluteX, \isFilled]
+		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \thumbWidth, \absoluteX, \isFilled, \step]
 	}	
+	
+	step_ { arg stepSize;
+		this.setPropertyWithAction(\step, stepSize);
+	}
+	
+	step {
+		^this.getProperty(\step)
+	}
+	
 	value { //returns array
 		^this.getProperty(\value, Array.newClear(this.size))
 	}
