@@ -157,9 +157,8 @@ void TrigControl_next_k(Unit *unit, int inNumSamples)
 		float *out = OUT(i);
 		// requires a bit of detective work to see what it has been mapped to.
 		if (*mapin == control) {
-			// destructive read of local control.
+			// read local control.
 			*out = *control;
-			*control = 0.f; 
 		} else {
 			// global control bus. look at time stamp.
 			int busindex = *mapin - buses;
@@ -169,6 +168,8 @@ void TrigControl_next_k(Unit *unit, int inNumSamples)
 				*out = 0.f;
 			}
 		}
+		// must zero the control even if mapped - otherwise it triggers on unmap
+		*control = 0.f;  
 	}
 }
 
@@ -181,9 +182,8 @@ void TrigControl_next_1(Unit *unit, int inNumSamples)
 	float *out = OUT(0);
 	// requires a bit of detective work to see what it has been mapped to.
 	if (*mapin == control) {
-		// destructive read of local control.
+		// read local control.
 		*out = *control;
-		*control = 0.f; 
 	} else {
 		// global control bus. look at time stamp.
 		World *world = unit->mWorld;
@@ -194,6 +194,8 @@ void TrigControl_next_1(Unit *unit, int inNumSamples)
 			*out = 0.f;
 		}
 	}
+	// must zero the control even if mapped - otherwise it triggers on unmap
+	*control = 0.f;  
 }
 
 void TrigControl_Ctor(Unit* unit)
