@@ -222,14 +222,14 @@ Object {
 	}
 	nonIntegerIndex { error("non Integer index used.\n") }
 	indexOutOfRange { error("Index out of range.\n") }
-	notYetImplemented { inform("Not yet implemented.\n") }
+	notYetImplemented { inform(this.asString + "Not yet implemented.\n") }
 	dumpBackTrace { _DumpBackTrace }
 	getBackTrace { _GetBackTrace }
 		
 	// conversion
 	species { ^this.class }
 	asSymbol { ^this.asString.asSymbol }
-	asString { arg limit = 100;
+	asString { arg limit = 150;
 		var string;
 		_ObjectString
 		string = String.streamContentsLimit({ arg stream; this.printOn(stream); }, limit);
