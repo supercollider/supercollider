@@ -7,18 +7,21 @@
 
 \f0\b\fs36 \cf0 SynthDef				
 \fs30 definition of a synth architecture \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \
+\f1\b0\fs24 \cf0 \
 \
 \
 Evaluates a UGen function, generating a ugenGraph that describes the exact architecture of a Synth.  \
 All constants, Controls, and UGens that will be used in synthesis are formatted for the Server and written to disk.  \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b *new(synthDefName,ugenGraphFunc, rates, prependArgs)\
+\f0\b \cf0 *new(synthDefName,ugenGraphFunc, rates, prependArgs)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	Create a synthDef instance, evaluate the ugenGraphFunc and build the ugenGraph.\
+\f1\b0 \cf0 	Create a synthDef instance, evaluate the ugenGraphFunc and build the ugenGraph.\
 \
 	
 \f0\b synthDefName\
@@ -107,8 +110,9 @@ All constants, Controls, and UGens that will be used in synthesis are formatted 
 	\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b *writeOnce(synthDefName,ugenGraphFunc, rates, prependArgs, dir)\
+\f0\b \cf0 *writeOnce(synthDefName,ugenGraphFunc, rates, prependArgs, dir)\
 			\
 			
 \f1\b0 Create a new SynthDef and write it to disk, providing a def file with this name does not \
@@ -137,6 +141,15 @@ All constants, Controls, and UGens that will be used in synthesis are formatted 
 			encode the graph into a file called name.scsyndef. Default for dir = synthdefs/
 \f0\b \
 		\
+		store(libname, dir, completionMessage)\
+		
+\f1\b0 	write the defFile and store it in the SynthDescLib.\
+			send a message to the library's server to load this file.\
+			when this asynchronous command is completed, the completionMessage (a valid OSC \
+			message) is immediately executed by the server.\
+			default for libname is \\global, for dir is synthdefs/\
+			
+\f0\b \
 		load(server, completionMessage, dir)\
 		
 \f1\b0 	write the defFile and send a message to the server to load this file.\
@@ -178,9 +191,10 @@ see also basic introductions, like
 
 \f4\fs18 \cf0 \ulnone \
 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // Note that SynthDef(...) is short for SynthDef.new(...).\cf0 \
 \cf3 // Thus the following calls *new to create a SynthDef, and then .play on the resulting instance.\cf0 \
-\cf3 // It is common to use similar constructions for .send, .load, and so on.\cf0 \
+\cf3 // It is common to use similar constructions for .send, .store, and so on.\cf0 \
 \
 (\
 d = \cf4 SynthDef\cf0 (\cf5 "trigTest"\cf0 , \{ \cf4 arg\cf0  t_trig=0, freq=440; \cf3 // t_trig creates a TrigControl\cf0 \
@@ -216,8 +230,9 @@ z.free; \cf3 //free the synth
 
 \f4\fs18 \cf3 //play shortcut syntax: this syntax is used in many helpfiles.
 \f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 z = d.play(s); \cf3 // .play returns a Synth object, assigned here to z. sending the def is done internally.\
+\f4\fs18 \cf0 z = d.play(s); \cf3 // .play returns a Synth object, assigned here to z. sending the def is done internally.\
 \cf0 z.set(\cf2 \\trig\cf0 , 1);
 \f1\fs24 \
 \
@@ -236,6 +251,7 @@ z.free; \cf3 //free the synth
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f4\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 SynthDef\cf0 (\cf2 \\synthDefTest\cf0 , \{ \cf4 arg\cf0  out, gate=1, freq=440; \
 		\cf4 Out\cf0 .ar(out, \cf4 SinOsc\cf0 .ar(freq) * \cf4 EnvGen\cf0 .kr(\cf4 Env\cf0 .asr(0.1, 0.3, 1.3), gate, doneAction:2));\
 \
@@ -245,6 +261,7 @@ z.free; \cf3 //free the synth
 x = \cf4 Synth\cf0 (\cf2 \\synthDefTest\cf0 , [\cf2 \\out\cf0 , 0]); \cf3 //play out through hardware output bus 0 (see Out.help)\cf0 \
 x.release;\cf3 //releases and frees the synth, if and only if doneAction is > 2\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //equivalent:\cf0 \
 \
 x = \cf4 Synth\cf0 (\cf2 \\synthDefTest\cf0 ); \cf3 // out defaults to zero, if no default arg is given.\cf0 \
@@ -265,11 +282,14 @@ x.release(5);\
 \cf3 //if the out arg is used in a standard way, it can always be changed without knowing the synth def\cf0 \
 x = \cf4 Synth\cf0 (\cf2 \\synthDefTest\cf0 , [\cf2 \\out\cf0 , 0]);\
 x.set(\cf2 \\out\cf0 , 1); \cf3 //play through channel 1\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 x.release;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //also it can be used in an event stream:\cf0 \
 \cf3 //if the doneAction is 1 the synths pile up and do not get freed.\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 Pbind\cf0 (\
 	\cf2 \\instrument\cf0 , \cf2 \\synthDefTest\cf0 ,\
 	\cf2 \\freq\cf0 , \cf4 Pseq\cf0 ([500, 600, \cf4 Prand\cf0 ([200, 456, 345],1)], \cf4 inf\cf0 ),\
