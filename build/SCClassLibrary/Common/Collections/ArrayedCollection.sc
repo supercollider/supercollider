@@ -269,8 +269,7 @@ ArrayedCollection : SequenceableCollection {
 	}
 	normalizeSum {
 		_ArrayNormalizeSum
-		^this.primitiveFailed 
-		//	^(this / this.sum)
+		^(this / this.sum)
 	}
 	asciiPlot {
 		// draw the waveform down the page as asterisks
