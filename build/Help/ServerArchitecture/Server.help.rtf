@@ -10,8 +10,9 @@
 \f0\b object representing an sc-server application
 \f1\b0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b superclass: Model
+\f0\b \cf0 superclass: Model
 \f1\b0 \
 \
 A Server object is the client-side representation of a server app and is used to control the app from the SuperCollider language application. (See 
@@ -243,7 +244,22 @@ In general, when working with a single machine one will probably be using one of
 \f1\b0 server sends notifications, for example if a node was created, a 'tr' message from a SendTrig, or a /done action. if flag is set to false, these messages are not sent. The default is true.\
 \
 
-\f0\b dumpOSC(code)\
+\f0\b getSharedControl(num)
+\f1\b0  - get the current value of a shared control bus. 
+\f0\b num
+\f1\b0  is the index of the bus to poll. This command is synchronous and only works with the internal server.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 setSharedControl(num, value)
+\f1\b0  - set the current value of a shared control bus to 
+\f0\b value
+\f1\b0 . 
+\f0\b num
+\f1\b0  is the index of the bus to set. This command is synchronous and only works with the internal server.
+\f0\b \
+\
+dumpOSC(code)\
 	code
 \f1\b0 :\
 		0 - turn dumping OFF.\
@@ -251,8 +267,9 @@ In general, when working with a single machine one will probably be using one of
 		2 - print the contents in hexadecimal.\
 		3 - print both the parsed and hexadecimal representations of the contents.\
 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b queryAllNodes - 
+\f0\b \cf0 queryAllNodes - 
 \f1\b0 Post a representation of this Server's current Node tree to the post window. Very helpful for debugging.
 \f2\fs18 \cf3 \
 	\
