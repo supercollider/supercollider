@@ -1,27 +1,55 @@
-//these need some redesign. maybe crucial players
+
 
 +Object { 
+	
+	proxyControlClass {
+		^SynthDefControl
+	}
+	
+	makeProxyControl { arg channelOffset=0;
+		^this.proxyControlClass.new(this, channelOffset); 
+	}
+	
 	//assumes some GraphBuilder
 	prepareForProxySynthDef {
 		^this
 	}
-	asProxySynthDef { arg proxy, channelOffset=0, makeFadeEnv=true;
+	
+	wrapForNodeProxy { arg proxy, channelOffset=0, index=0;
 		^ProxySynthDef(
-			proxy.generateUniqueName, 
+			proxy.generateUniqueName ++ index, 
 			this.prepareForProxySynthDef(proxy),
-			proxy.lags, 
+			proxy.lags,
 			proxy.prepend, 
-			makeFadeEnv, 
+			true, 
 			channelOffset
 		); 
-	}	
-	wrapForNodeProxy { arg proxy,  channelOffset=0;
-		var synthDef, ok;
-		synthDef = this.asProxySynthDef(proxy, channelOffset);
-		ok = proxy.initBus(synthDef.rate, synthDef.numChannels);
-		^if(ok && synthDef.notNil, {
-			SynthDefControl.new(synthDef)
-		}, nil);
+	}
+	
+	numChannels { ^nil } 
+	
+	//move elsewhere later
+	findKey { 
+		^currentEnvironment.findKeyForValue(this)
+	}
+	
+}
+
++SequenceableCollection {
+	prepareForProxySynthDef { arg proxy;
+		^{ this.collect({ arg item; item.value(proxy) }) }
+	}
+	putExtend { arg index, item;
+		var res;
+		res = this;
+		^if(index.isNil, {
+			this.add(item)
+		}, {
+			if(index >= this.size, {
+				res = this.extend(index + 1);
+			});
+			res.put(index, item)
+		});
 	
 	}
 }
@@ -33,35 +61,40 @@
 }
 
 +SynthDef {
-	wrapForNodeProxy { arg proxy, channelOffset=0;
-		//we don't know how many channels it has, user's responsibility
-		^SynthDefControl.new(this)
+	wrapForNodeProxy {
+		^this
 	}
 	hasGate {
-		^this.controlNames.any({ arg name; name.name == "gate" })
+		^if(controlNames.isNil, { 
+			false 
+		}, {
+			controlNames.any({ arg name; name.name == "gate" })
+		})
 	}
+	
 }
 
 +SoundDef {
-	
-	wrapForNodeProxy { arg proxy, channelOffset=0;
-		^SoundDefControl.new(synthDef) 
+	wrapForNodeProxy {
+		^synthDef
+	}
+	proxyControlClass {
+		^SoundDefControl
 	}
 
 }
 
 
 +AbstractPlayer {
-	 
+	
 	wrapForNodeProxy { arg proxy, channelOffset=0;
-		var synthDef, ok;
 		this.prepareForPlay(proxy.group.asGroup, true, proxy.bus);
-		synthDef = this.asSynthDef;
-		ok = proxy.initBus(this.rate,this.numChannels);
-		^if(ok && synthDef.notNil, {
-				//AbstractPlayerControl.new(synthDef)
-				SynthDefControl(synthDef, false)
-		}, nil);
+		^this.asSynthDef;
+	}
+	
+	proxyControlClass {
+		^SynthDefControl
+		//^CXPlayerControl
 	}
 
 }
@@ -70,18 +103,11 @@
 +SimpleNumber {
 	prepareForProxySynthDef { arg proxy;
 		^if(proxy.rate === 'audio', {
-			{ Array.fill(proxy.numChannels, { Line.ar(this,this,0.001) }) }
+			{ Array.fill(proxy.numChannels, { K2A.ar(this) }) }
 		}, { 
 			{ Array.fill(proxy.numChannels, { Line.kr(this,this,0.001) }) }
 		})
 	}
-//problem here: when there is a fade, the bus is still written to after setting.
-//	wrapForNodeProxy { arg proxy, channelOffset=0;
-//		var ok;
-//		ok = proxy.initBus('control',1);
-//		^if(ok, { NumericalControl(proxy.bus, this) }, nil)
-//	}
-
 }
 
 +Instr {
@@ -100,17 +126,21 @@
 	}
 }
 
-+NodeProxy {
++BusPlug {
 	prepareForProxySynthDef { arg proxy;
 		^{ this.value(proxy) }
 	}
 }
 
 
+
 +Pattern {
+	proxyControlClass {
+		^StreamControl
+	}
 	wrapForNodeProxy { arg proxy, channelOffset=0;
 		//assume audio rate event stream for now.
-		var pat, ok, bus, argNames, msgFunc;
+		var pat, ok, argNames, msgFunc;
 		ok = proxy.initBus('audio', 2);
 		
 		argNames = [\freq,\amp,\sustain,\pan];//more later
@@ -140,7 +170,7 @@
 				});
 				event;
 			});
-			pat.asEventStream.wrapForNodeProxy
+			pat.asEventStream
 		}, nil);
 
 	}
@@ -151,10 +181,12 @@
 // add  Stream .wrapForNodeProxy
 // this assumes initBus is done in Pattern-wrapForNodeProxy.
 
-+EventStream {
-	wrapForNodeProxy { 
-			^EventStreamControl.new(this)
-		
++Stream {
+
+	wrapForNodeProxy {}
+	
+	proxyControlClass {
+		^StreamControl
 	}
 }
 

@@ -1,6 +1,6 @@
 ProxySpace : EnvironmentRedirect {	classvar <>lastEdited;//undo support
 	classvar <>all; //access
-		var <group, <server, <clock;
+		var <server, <clock, <fadeTime, <>awake=true;
 	var <name;
 	
 	*initClass {
@@ -18,6 +18,7 @@
 		this.do({ arg item; item.clock = aClock });
 	}
 	fadeTime_ { arg dt;
+		fadeTime = dt;
 		this.do({ arg item; item.fadeTime = dt });
 	}
 	
@@ -41,6 +42,8 @@
 			var proxy;
 			proxy = NodeProxy(server);
 			proxy.clock = clock;
+			if(fadeTime.notNil, { proxy.fadeTime = fadeTime });
+			proxy.awake_(awake);
 			envir.put(key, proxy);
 			^proxy
 	}
@@ -68,14 +71,30 @@
 		proxy.put(obj, 0, true, true);
 		this.class.lastEdited = proxy;
 	}
-	
+		
 	
 	play { arg key=\out, busIndex=0, nChan=2;
-		this.at(key).play(busIndex, nChan);
+		^this.use({ arg envir;
+			envir.at(key).play(busIndex, nChan);
+		});
 	}
 	
 	record { arg key, path, headerFormat="aiff", sampleFormat="int16";
-		^this.at(key).record(path, headerFormat="aiff", sampleFormat);
+		^this.use({ arg envir;
+			envir.at(key).record(path, headerFormat="aiff", sampleFormat);
+		});
+	}
+	
+	ar { arg key, numChannels;
+		^this.use({ arg envir;
+			envir.at(key).ar(numChannels)
+		})
+	}
+	
+	kr { arg key, numChannels;
+		^this.use({ arg envir;
+			envir.at(key).kr(numChannels)
+		})
 	}
 	
 	free {
@@ -89,6 +108,14 @@
 		this.do({ arg proxy; proxy.release });
 	}
 	remove { all.remove(this) }
+	
+	wakeUp {
+		this.use({ arg envir;
+			this.do({ arg proxy;
+				proxy.wakeUp;
+			});
+		});
+	}
 		*clearAll {
 		all.do({ arg item; item.clear });
 	}	
@@ -108,20 +135,28 @@
 
 SharedProxySpace  : ProxySpace {
 	
-	*new { arg server, name, clock, controlKeys, audioKeys;
-		^super.new(server, name, clock).addSharedKeys(controlKeys, audioKeys)
+	*new { arg router, name, clock, controlKeys, audioKeys, firstAudioKey=$s;
+		^super.new(router, name, clock).addSharedKeys(controlKeys, audioKeys, firstAudioKey)
 	}
 	
 	
-	*push { arg server, name, clock, controlKeys, audioKeys;
-		^this.new(server, name, clock, controlKeys, audioKeys).push
+	*push { arg router, name, clock, controlKeys, audioKeys, firstAudioKey=$s;
+		^this.new(router, name, clock, controlKeys, audioKeys, firstAudioKey).push
 	}
 	
-	addSharedKeys { arg controlKeys, audioKeys;
-		//default:
-		//initialize single letters as shared busses: xyz are audio busses, the rest control
-		controlKeys = controlKeys ?? { Array.fill(25 - 3, { arg i; asSymbol(asAscii(97 + i)) }) };
-		audioKeys = audioKeys ?? { Array.fill(3, { arg i; asSymbol(asAscii(97 + 25 - 3 + i)) }) };
+	addSharedKeys { arg controlKeys, audioKeys, firstAudioKey;
+		//default: initialize single letters as shared busses, 
+		//up to firstAudioKey control, the rest audio
+		
+		var nControl, nAudio;
+		nControl = firstAudioKey.digit - 10;
+		nAudio = 25 - nControl;
+		controlKeys = controlKeys ?? { 
+						Array.fill(nControl, { arg i; asSymbol(asAscii(97 + i)) }) 
+					};
+		audioKeys = audioKeys ?? { 
+						Array.fill(nAudio, { arg i; asSymbol(asAscii(97 + nControl + i)) }) 
+				};
 		
 		controlKeys.do({ arg key; this.makeSharedProxy(key, 'control') });
 		audioKeys.do({ arg key; this.makeSharedProxy(key, 'audio') });
@@ -129,12 +164,12 @@ SharedProxySpace  : ProxySpace {
 	
 	
 	makeSharedProxy { arg key, rate;
-			var proxy, srv;
-			srv = server.broadcast;
+			var proxy, broadcast;
+			broadcast = server.broadcast;
 			proxy = if(rate.isNil, {
-				SharedNodeProxy(srv)
+				SharedNodeProxy(broadcast)
 			},{
-				SharedNodeProxy.perform(rate,srv)
+				SharedNodeProxy.perform(rate, broadcast)
 			});
 			proxy.clock = clock;
 			envir.put(key, proxy);

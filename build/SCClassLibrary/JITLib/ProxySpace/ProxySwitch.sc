@@ -9,12 +9,14 @@ ProxySwitch : NodeProxy {
 	
 	initProxy { arg prx;
 		proxy = prx;
-		this.put(this.outFunc, 0, true, true, { this.input_(prx) });
+		if(this.isPlaying.not, { this.wakeUp });
+		this.put(this.outFunc, 0, true, true);
+		this.input_(prx);
 	}
 	
 	input_ { arg prx;
 		var i;
-		
+		if(prx.isPlaying.not, { prx.wakeUp });
 		if(prx.rate === proxy.rate, { 
 			proxy = prx;
 			i = this.inputIndex;

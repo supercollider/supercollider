@@ -1,5 +1,25 @@
 + Bus {
-
+	
+	
+	free {
+		if(index.isNil,{ (this.asString + " has already been freed").warn; ^this });
+		if(rate == \audio,{
+			server.audioBusAllocator.free(index);
+		},{
+			server.controlBusAllocator.free(index);
+		});
+		index = nil;
+		numChannels = nil;
+	}
+	
+	alloc {
+		if(rate === 'audio', {
+			index = server.audioBusAllocator.alloc(numChannels);
+		}, {
+			index = server.controlBusAllocator.alloc(numChannels);
+		});
+	}
+		
 	gate { arg level=1.0, dur=0, target;
 		^this.toServer(target.asTarget, "system_gate_"++rate, level, dur);
 	}
@@ -12,18 +32,17 @@
 		^this.toServer(target.asTarget, "system_xline_"++rate, level, dur);
 	}
 	
-	//starts/ends to original value in fadeTime
+	
 	env { arg env, fadeTime=0.1, target;
 		var bundle, size;
 		bundle = List.new;
 		size = binaryValue(env.levels.size > 4);
+		env.levels = env.levels.extend(8, env.levels.last);
 		env = env.asArray;
-		
-		numChannels.do({ arg i; //do it within a group later, only when numChannels > 1
+		numChannels.do({ arg i;
 			bundle = bundle.add(
-				[9, "system_env_"++size++"_"++rate, -1, 0, 0, 
+				[9, "system_env_" ++ size ++ "_" ++ rate, -1, 0, target.asNodeID, 
 					\i_bus, index+i 
-					//\i_fadeTime, fadeTime
 				]
 			);
 			bundle = bundle.add([\n_setn, -1, \env, env.size] ++ env);
@@ -33,11 +52,13 @@
 	}
 		
 	toServer { arg target, defName, level, dur;
-			var bundle, args;
-			args = [\i_level, level, \i_dur, dur];
+			var bundle;
+			level = level.asArray;
+			dur = dur.asArray;
 			bundle = List.new;
 			numChannels.do({ arg i;
-				this.gateBusToBundle(bundle, target, defName, args, index+i);
+				this.gateBusToBundle(bundle, target, defName, 
+				[\i_level, level.wrapAt(i), \i_dur, dur.wrapAt(i)], index+i);
 			});
 			server.listSendBundle(nil, bundle);
 						

@@ -2,7 +2,7 @@ RecNodeProxy : NodeProxy {
 	var <buffer, <path, <recGroup;
 	
 	isRecording {
-		^(recGroup.notNil && recGroup.isPlaying)
+		^recGroup.isPlaying
 	}
 	
 	*control { ^this.notYetImplemented(thisMethod) }
@@ -41,14 +41,13 @@ RecNodeProxy : NodeProxy {
 		if(buffer.isNil, { "not prepared. use open to prepare a file.".inform;  ^this });
 		
 		bundle = MixedBundle.new;
-		n = this.numChannels;
 		if(this.isPlaying.not, {
 			this.wakeUpToBundle(bundle);
 		});
 		
 		recGroup = Group.newToBundle(bundle, server);
 		NodeWatcher.register(recGroup);
-		bundle.add([9, "system-diskout-"++n, 
+		bundle.add([9, "system-diskout-" ++ this.numChannels, 
 					server.nextNodeID, 1, recGroup.nodeID,
 					\i_in, bus.index, \i_bufNum, buffer.bufnum
 				]);

@@ -1,16 +1,28 @@
 
 
 //lightweight objects that insulate different ways of playing/stopping.
+//the bundle that is passed in is a MixedBundle
+
 AbstractPlayControl {
+	var <source, <>channelOffset;
+	
+	*new { arg source, channelOffset=0;
+		^super.newCopyArgs(source, channelOffset);
+	}
+	
 	sendDef {}
 	writeDef {}
 	prepareForPlay {}
+	build { ^true }
 	pause { this.stop } 
 	unpause { this.start }
+	
+	readyForPlay { ^true }
+	synthDef { ^nil }
 
 	sendDefToBundle {}
 	
-	playToBundle { arg bundle; //mixedbundle
+	playToBundle { arg bundle; 
 		bundle.addFunction({ 
 			this.play; 
 		}); //no latency (latency is in stream already)
@@ -35,12 +47,8 @@ AbstractPlayControl {
 	}
 }
 
-EventStreamControl : AbstractPlayControl {
-	var <>stream; 
-	
-	*new { arg stream;
-		^super.newCopyArgs(stream)
-	}
+StreamControl : AbstractPlayControl {
+	var <stream;
 		
 	play {
 		stream.stop;
@@ -50,63 +58,114 @@ EventStreamControl : AbstractPlayControl {
 	stop {
 		stream.stop;
 	}
-}
-
-//not used presently
-
-NumericalControl : AbstractPlayControl {
-	var <>bus, <>value; 
-	
-	*new { arg bus, value=0;
-		^super.newCopyArgs(bus, value)
+	mute {
+		stream.mute;
+	}
+	unmute {
+		stream.unmute;
 	}
 	
-	play {
-		bus.set(value);
+	build { arg proxy;
+		stream = source.wrapForNodeProxy(proxy, channelOffset);
+		^stream.notNil;
+	}
+	readyForPlay { ^stream.notNil }
+	clear {
+		stream = nil;
 	}
 	
-	stop {}
-
 }
 
 
 SynthDefControl : AbstractPlayControl {
-	var <synthDef, <hasGate, <synth;
+	var <synthDef, <synth, <>index=0;
+		
+		
+			
+	hasGate { ^synthDef.hasGate }
+	readyForPlay { ^synthDef.notNil }
 	
-	*new { arg synthDef;
-		^super.newCopyArgs(synthDef, synthDef.hasGate);
+	build { arg proxy; 
+		var ok;
+		synthDef = source.wrapForNodeProxy(proxy, channelOffset, index);//channelOffest
+		ok = proxy.initBus(synthDef.rate, synthDef.numChannels);
+		^if(ok && synthDef.notNil, { 
+			//schedule to avoid hd sleep latency. this is only for server reboot
+			AppClock.sched(rrand(0.2, 1), { this.writeDef; nil }); 
+			true 
+		}, { 
+			synthDef = nil; false 
+		})
 	}
 	
-	sendDefToBundle { arg bundle;
-		bundle.addPrepare(["/d_recv", synthDef.asBytes])
-	}	
+	
+	clear {
+		synth = nil;
+		synthDef = nil;
+	}
+	
+	sendDefToBundle { arg bundle, server;
+		bundle.addPrepare(["/d_recv", synthDef.asBytes]);
+		//this.registerDef(server);
+	}
+	
 	sendDef { arg server;
-		synthDef.send(server)
+		synthDef.send(server);
+		//this.registerDef(server);
 	}
+	/*
+	registerDef { arg server;
+		Library.put(synthDef, server, synthDef.name, true);
+	}
+	
+	onServer { arg server;
+		^Library.at(synthDef, server, synthDef.name).notNil;
+	}
+	*/
+
 	writeDef {
-		synthDef.writeDefFile
-	}
-	prepareForPlay {
-		this.writeDef;
+		synthDef.writeDefFile;
 	}
 	
 	playToBundle { arg bundle, extraArgs, group;
-		synth = Synth.prNew(synthDef.name,group.server);
+		var synthMsg, msg;
+		group = group.asGroup;
+		synth = Synth.basicNew(synthDef.name, group.server);
 		synth.isPlaying = true;
-		bundle.add(synth.newMsg(group,\addToTail,extraArgs));
-		^synth 
+		synthMsg = [9, synthDef.name, synth.nodeID, 0, group.nodeID]++extraArgs;
+		/*
+		msg = if(this.onServer, {	
+			synthMsg
+		}, {
+			msg = ["/d_recv", synthDef.asBytes, synthMsg] 
+		});
+		bundle.add(msg);
+		*/
+		bundle.add(synthMsg);
+		^synth
+	}
+	
+	play { arg group, extraArgs;
+		var bundle;
+		group = group.asGroup;
+		bundle = MixedBundle.new;
+		this.playToBundle(bundle, extraArgs, group);
+		bundle.send(group.server)
+		^synth
 	}
 	
 	stopToBundle { arg bundle;
 		if(synth.isPlaying,{
-			if(hasGate, {
+			if(this.hasGate, {
 				bundle.add([15, synth.nodeID, '#gate', 0.0, \gate, 0.0]); //to be sure.
 			}, {
 				bundle.add([11, synth.nodeID]); //"/n_free"
-			})
+			});
+			synth.isPlaying = false;
 		});
 	}
-	stopClientToBundle { } //assumes that caller frees by group.freeAll
+	
+	stopClientToBundle { }
 	
 	stop { arg latency;
 		var bundle;
@@ -122,32 +181,16 @@ SynthDefControl : AbstractPlayControl {
 
 SoundDefControl : SynthDefControl {
 	sendDef { } //assumes that SoundDef does send to the same server 
-
+	writeDef { }
 }
 
-//todo maybe, but better use players directly
-AbstractPlayerControl  {
-	var <player;
-	*new { arg player;
-		^super.newCopyArgs(player)
-	}
-	
-	playToBundle { arg bundle, extraArgs, group; //mixedbundle
-		
-	}
-	
-	stop { 
-		player.free
-	}
-
-	stopToBundle { arg bundle;
-		  //todo?
-	}
-	writeDef {
-		player.asSynthDef.writeDefFile
+//still to do
+CXPlayerControl : AbstractPlayControl {
+	playToBundle { arg bundle, extraArgs, group;
+		source.prepareToBundle(group, bundle);
+		source.spawnToBundle(bundle);
+		^source.synth;
 	}
 
 }
-
-
 

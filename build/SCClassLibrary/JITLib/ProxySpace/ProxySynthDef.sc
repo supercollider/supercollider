@@ -4,13 +4,13 @@ ProxySynthDef : SynthDef {
 	
 	*initClass {
 		//clean up
-		unixCmd("rm synthdefs/temp_proxy_def_*");
+		unixCmd("rm synthdefs/temp__*");
 	}
 		
 	
 	*new { arg name, func, lags, prependArgs, makeFadeEnv=true, channelOffset=0;
 		var def, rate, output;
-		name = "temp_proxy_def_" ++ name;		
+		name = "temp__" ++ name;		
 		def = super.new(name, { 
 			var envgen, synthGate, synthFadeTime, out, outCtl;
 			
@@ -34,8 +34,6 @@ ProxySynthDef : SynthDef {
 					output
 					}, {
 					outCtl = Control.names(\out).ir(0) + channelOffset;
-					//if((rate === 'control') && (proxy.rate === 'audio'), 
-					//{ output = K2A.ar(output) }); //change in NodeProxy-initBus
 					Out.multiNewList([rate, outCtl]++output)
 				})
 		});
@@ -43,8 +41,6 @@ ProxySynthDef : SynthDef {
 		def.numChannels = output.numChannels;
 		^def
 	}
-	
-	
 	
 	
 }

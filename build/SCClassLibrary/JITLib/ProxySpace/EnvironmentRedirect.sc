@@ -16,7 +16,6 @@
 		this.saveTopEnvir = topEnvironment;
 		currentEnvironment = this;
 		topEnvironment = this; //to avoid error loss
-		
 	}
 	
 	pop {
@@ -52,6 +51,9 @@
 	
 	keysValuesArrayDo { arg argArray, function;
 		envir.keysValuesArrayDo(argArray, function);
+	}
+	findKeyForValue { arg val;
+		^envir.findKeyForValue(val)
 	}
 	
 	choose {
