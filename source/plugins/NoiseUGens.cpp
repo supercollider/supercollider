@@ -201,7 +201,6 @@ void ClipNoise_next(ClipNoise *unit, int inNumSamples)
 		ZXP(out) = fcoin(s1, s2, s3);
 	);
 	RPUT
-	
 }
 
 void ClipNoise_Ctor(ClipNoise* unit)

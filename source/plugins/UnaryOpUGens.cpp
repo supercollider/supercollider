@@ -101,6 +101,7 @@ extern "C"
 
 	void UnaryOpUGen_Ctor(UnaryOpUGen *unit);
 	void invert_a(UnaryOpUGen *unit, int inNumSamples);
+	void not_a(UnaryOpUGen *unit, int inNumSamples);
 	void zero_a(UnaryOpUGen *unit, int inNumSamples);
 	void thru_a(UnaryOpUGen *unit, int inNumSamples);
 	void abs_a(UnaryOpUGen *unit, int inNumSamples);
@@ -162,6 +163,16 @@ void invert_a(UnaryOpUGen *unit, int inNumSamples)
 	
 	LOOP(inNumSamples, 
 		ZXP(out) = -ZXP(a);
+	);
+}
+
+void not_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = ZXP(a) > 0.f ? 0.f : 1.f;
 	);
 }
 
@@ -609,6 +620,7 @@ void ChooseOperatorFunc(UnaryOpUGen *unit)
 		case opSilence : func = &zero_a; break;
 		case opThru : func = &thru_a; break;
 		case opNeg : func = &invert_a; break;
+		case opNot : func = &not_a; break;
 		case opAbs : func = &abs_a; break;
 		case opCeil : func = &ceil_a; break;
 		case opFloor : func = &floor_a; break;

@@ -84,6 +84,21 @@ enum {
 };
 
 
+inline float sc_andt(float a, float b)
+{
+	return a > 0.f && b > 0.f ? 1.f : 0.f;
+}
+
+inline float sc_ort(float a, float b)
+{
+	return a > 0.f || b > 0.f ? 1.f : 0.f;
+}
+
+inline float sc_xort(float a, float b)
+{
+	return a > 0.f ? (b > 0.f ? 0.f : 1.f) : (b > 0.f ? 1.f : 0.f);
+}
+
 struct BinaryOpUGen : public Unit
 {
 	float mPrevA, mPrevB;
@@ -145,6 +160,28 @@ extern "C"
 	void min_ka(BinaryOpUGen *unit, int inNumSamples);
 	void min_ai(BinaryOpUGen *unit, int inNumSamples);
 	void min_ia(BinaryOpUGen *unit, int inNumSamples);
+
+	void and_1(BinaryOpUGen *unit, int inNumSamples);
+	void and_aa(BinaryOpUGen *unit, int inNumSamples);
+	void and_ak(BinaryOpUGen *unit, int inNumSamples);
+	void and_ka(BinaryOpUGen *unit, int inNumSamples);
+	void and_ai(BinaryOpUGen *unit, int inNumSamples);
+	void and_ia(BinaryOpUGen *unit, int inNumSamples);
+
+	void or_1(BinaryOpUGen *unit, int inNumSamples);
+	void or_aa(BinaryOpUGen *unit, int inNumSamples);
+	void or_ak(BinaryOpUGen *unit, int inNumSamples);
+	void or_ka(BinaryOpUGen *unit, int inNumSamples);
+	void or_ai(BinaryOpUGen *unit, int inNumSamples);
+	void or_ia(BinaryOpUGen *unit, int inNumSamples);
+
+	void xor_1(BinaryOpUGen *unit, int inNumSamples);
+	void xor_aa(BinaryOpUGen *unit, int inNumSamples);
+	void xor_ak(BinaryOpUGen *unit, int inNumSamples);
+	void xor_ka(BinaryOpUGen *unit, int inNumSamples);
+	void xor_ai(BinaryOpUGen *unit, int inNumSamples);
+	void xor_ia(BinaryOpUGen *unit, int inNumSamples);
+
 	void amclip_1(BinaryOpUGen *unit, int inNumSamples);
 	void amclip_aa(BinaryOpUGen *unit, int inNumSamples);
 	void amclip_ak(BinaryOpUGen *unit, int inNumSamples);
@@ -386,11 +423,32 @@ void min_1(BinaryOpUGen *unit, int inNumSamples)
 	ZOUT0(0) = sc_min(xa, xb);
 }
 
+void and_1(BinaryOpUGen *unit, int inNumSamples)
+{
+	float xa = ZIN0(0);
+	float xb = ZIN0(1);
+	ZOUT0(0) = sc_andt(xa, xb);	
+}
+
+void or_1(BinaryOpUGen *unit, int inNumSamples)
+{
+	float xa = ZIN0(0);
+	float xb = ZIN0(1);
+	ZOUT0(0) = sc_ort(xa, xb);	
+}
+
+void xor_1(BinaryOpUGen *unit, int inNumSamples)
+{
+	float xa = ZIN0(0);
+	float xb = ZIN0(1);
+	ZOUT0(0) = sc_xort(xa, xb);	
+}
+
 void amclip_1(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = ZIN0(0);
 	float xb = ZIN0(1);
-	ZOUT0(0) = xb > 0.f ? xa * xb : 0.f;
+	ZOUT0(0) = sc_amclip(xa, xb);
 }
 
 void scaleneg_1(BinaryOpUGen *unit, int inNumSamples)
@@ -1247,6 +1305,279 @@ void min_ai(BinaryOpUGen *unit, int inNumSamples)
 
 
 
+
+void and_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float *b = ZIN(1);
+	
+	LOOP(inNumSamples, 
+		float xa = ZXP(a);
+		float xb = ZXP(b);
+		ZXP(out) = sc_andt(xa, xb) ;
+	);
+}
+
+void and_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = unit->mPrevB;
+	float next_b = ZIN0(1);
+	
+	if (xb == next_b) {
+		LOOP(inNumSamples, 
+			float xa = ZXP(a);
+			ZXP(out) = sc_andt(xa, xb);
+		);
+	} else {
+		float slope = CALCSLOPE(next_b, xb);
+		LOOP(inNumSamples, 
+			float xa = ZXP(a);
+			ZXP(out) = sc_andt(xa, xb);
+			xb += slope;
+		);
+		unit->mPrevB = xb;
+	}
+}
+
+void and_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = unit->mPrevA;
+	float *b = ZIN(1);
+	float next_a = ZIN0(0);
+	
+	if (xa == next_a) {
+		LOOP(inNumSamples, 
+			float xb = ZXP(b);
+			ZXP(out) = sc_andt(xa, xb);
+		);
+	} else {
+		float slope = CALCSLOPE(next_a, xa);
+		LOOP(inNumSamples, 
+			float xb = ZXP(b);
+			ZXP(out) = sc_andt(xa, xb);
+			xa += slope;
+		);
+		unit->mPrevA = xa;
+	}
+}
+
+void and_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = ZIN0(0);
+	float *b = ZIN(1);
+	
+	LOOP(inNumSamples, 
+		float xb = ZXP(b);
+		ZXP(out) = sc_andt(xa, xb);
+	);
+	unit->mPrevA = xa;
+}
+
+
+void and_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = ZIN0(1);
+	
+	LOOP(inNumSamples, 
+		float xa = ZXP(a);
+		ZXP(out) = sc_andt(xa, xb);
+	);
+	unit->mPrevB = xb;
+}
+
+
+
+
+
+
+
+void or_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float *b = ZIN(1);
+	
+	LOOP(inNumSamples, 
+		float xa = ZXP(a);
+		float xb = ZXP(b);
+		ZXP(out) = sc_ort(xa, xb) ;
+	);
+}
+
+void or_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = unit->mPrevB;
+	float next_b = ZIN0(1);
+	
+	if (xb == next_b) {
+		LOOP(inNumSamples, 
+			float xa = ZXP(a);
+			ZXP(out) = sc_ort(xa, xb);
+		);
+	} else {
+		float slope = CALCSLOPE(next_b, xb);
+		LOOP(inNumSamples, 
+			float xa = ZXP(a);
+			ZXP(out) = sc_ort(xa, xb);
+			xb += slope;
+		);
+		unit->mPrevB = xb;
+	}
+}
+
+void or_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = unit->mPrevA;
+	float *b = ZIN(1);
+	float next_a = ZIN0(0);
+	
+	if (xa == next_a) {
+		LOOP(inNumSamples, 
+			float xb = ZXP(b);
+			ZXP(out) = sc_ort(xa, xb);
+		);
+	} else {
+		float slope = CALCSLOPE(next_a, xa);
+		LOOP(inNumSamples, 
+			float xb = ZXP(b);
+			ZXP(out) = sc_ort(xa, xb);
+			xa += slope;
+		);
+		unit->mPrevA = xa;
+	}
+}
+
+void or_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = ZIN0(0);
+	float *b = ZIN(1);
+	
+	LOOP(inNumSamples, 
+		float xb = ZXP(b);
+		ZXP(out) = sc_ort(xa, xb);
+	);
+	unit->mPrevA = xa;
+}
+
+
+void or_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = ZIN0(1);
+	
+	LOOP(inNumSamples, 
+		float xa = ZXP(a);
+		ZXP(out) = sc_ort(xa, xb);
+	);
+	unit->mPrevB = xb;
+}
+
+
+
+
+
+
+
+void xor_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float *b = ZIN(1);
+	
+	LOOP(inNumSamples, 
+		float xa = ZXP(a);
+		float xb = ZXP(b);
+		ZXP(out) = sc_xort(xa, xb) ;
+	);
+}
+
+void xor_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = unit->mPrevB;
+	float next_b = ZIN0(1);
+	
+	if (xb == next_b) {
+		LOOP(inNumSamples, 
+			float xa = ZXP(a);
+			ZXP(out) = sc_xort(xa, xb);
+		);
+	} else {
+		float slope = CALCSLOPE(next_b, xb);
+		LOOP(inNumSamples, 
+			float xa = ZXP(a);
+			ZXP(out) = sc_xort(xa, xb);
+			xb += slope;
+		);
+		unit->mPrevB = xb;
+	}
+}
+
+void xor_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = unit->mPrevA;
+	float *b = ZIN(1);
+	float next_a = ZIN0(0);
+	
+	if (xa == next_a) {
+		LOOP(inNumSamples, 
+			float xb = ZXP(b);
+			ZXP(out) = sc_ort(xa, xb);
+		);
+	} else {
+		float slope = CALCSLOPE(next_a, xa);
+		LOOP(inNumSamples, 
+			float xb = ZXP(b);
+			ZXP(out) = sc_xort(xa, xb);
+			xa += slope;
+		);
+		unit->mPrevA = xa;
+	}
+}
+
+void xor_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = ZIN0(0);
+	float *b = ZIN(1);
+	
+	LOOP(inNumSamples, 
+		float xb = ZXP(b);
+		ZXP(out) = sc_xort(xa, xb);
+	);
+	unit->mPrevA = xa;
+}
+
+
+void xor_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = ZIN0(1);
+	
+	LOOP(inNumSamples, 
+		float xa = ZXP(a);
+		ZXP(out) = sc_xort(xa, xb);
+	);
+	unit->mPrevB = xb;
+}
+
+
+
 void amclip_aa(BinaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -1256,7 +1587,7 @@ void amclip_aa(BinaryOpUGen *unit, int inNumSamples)
 	LOOP(inNumSamples, 
 		float xa = ZXP(a);
 		float xb = ZXP(b);
-		ZXP(out) = xb > 0.f ? xa * xb : 0.f;
+		ZXP(out) = sc_amclip(xa, xb);
 	);
 }
 
@@ -1279,7 +1610,7 @@ void amclip_ak(BinaryOpUGen *unit, int inNumSamples)
 		float slope = CALCSLOPE(next_b, xb);
 		LOOP(inNumSamples, 
 			float xa = ZXP(a);
-			ZXP(out) = xb > 0.f ? xa * xb : 0.f;
+			ZXP(out) = sc_amclip(xa, xb);
 			xb += slope;
 		);
 		unit->mPrevB = xb;
@@ -1296,13 +1627,13 @@ void amclip_ka(BinaryOpUGen *unit, int inNumSamples)
 	if (xa == next_a) {
 		LOOP(inNumSamples, 
 			float xb = ZXP(b);
-			ZXP(out) = xb > 0.f ? xa * xb : 0.f;
+			ZXP(out) = sc_amclip(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
 		LOOP(inNumSamples, 
 			float xb = ZXP(b);
-			ZXP(out) = xb > 0.f ? xa * xb : 0.f;
+			ZXP(out) = sc_amclip(xa, xb);
 			xa += slope;
 		);
 		unit->mPrevA = xa;
@@ -1317,7 +1648,7 @@ void amclip_ia(BinaryOpUGen *unit, int inNumSamples)
 	
 	LOOP(inNumSamples, 
 		float xb = ZXP(b);
-		ZXP(out) = xb > 0.f ? xa * xb : 0.f;
+		ZXP(out) = sc_amclip(xa, xb);
 	);
 	unit->mPrevA = xa;
 }
@@ -1331,7 +1662,7 @@ void amclip_ai(BinaryOpUGen *unit, int inNumSamples)
 	
 	LOOP(inNumSamples, 
 		float xa = ZXP(a);
-		ZXP(out) = xb > 0.f ? xa * xb : 0.f;
+		ZXP(out) = sc_amclip(xa, xb);
 	);
 	unit->mPrevB = xb;
 }
@@ -3819,6 +4150,9 @@ BinaryOpFunc ChooseOneSampleFunc(BinaryOpUGen *unit)
 		case opGE  : func = &ge_1; break;
 		case opMin : func = &min_1; break;
 		case opMax : func = &max_1; break;
+		case opBitAnd : func = &and_1; break;
+		case opBitOr : func = &or_1; break;
+		case opBitXor : func = &xor_1; break;
 		case opRound : func = &round_1; break;
 		case opTrunc : func = &trunc_1; break;
 		case opAtan2 : func = &atan2_1; break;
@@ -3876,6 +4210,9 @@ void ChooseOperatorFunc(BinaryOpUGen *unit)
 					case opGE  : func = &ge_aa; break;
 					case opMin : func = &min_aa; break;
 					case opMax : func = &max_aa; break;
+					case opBitAnd : func = &and_aa; break;
+					case opBitOr : func = &or_aa; break;
+					case opBitXor : func = &xor_aa; break;
 					case opRound : func = &round_aa; break;
 					case opTrunc : func = &trunc_aa; break;
 					case opAtan2 : func = &atan2_aa; break;
@@ -3918,6 +4255,9 @@ void ChooseOperatorFunc(BinaryOpUGen *unit)
 					case opGE  : func = &ge_ak; break;
 					case opMin : func = &min_ak; break;
 					case opMax : func = &max_ak; break;
+					case opBitAnd : func = &and_ak; break;
+					case opBitOr : func = &or_ak; break;
+					case opBitXor : func = &xor_ak; break;
 					case opRound : func = &round_ak; break;
 					case opTrunc : func = &trunc_ak; break;
 					case opAtan2 : func = &atan2_ak; break;
@@ -3962,6 +4302,9 @@ void ChooseOperatorFunc(BinaryOpUGen *unit)
 					case opGE  : func = &ge_ka; break;
 					case opMin : func = &min_ka; break;
 					case opMax : func = &max_ka; break;
+					case opBitAnd : func = &and_ka; break;
+					case opBitOr : func = &or_ka; break;
+					case opBitXor : func = &xor_ka; break;
 					case opRound : func = &round_ka; break;
 					case opTrunc : func = &trunc_ka; break;
 					case opAtan2 : func = &atan2_ka; break;

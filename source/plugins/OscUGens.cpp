@@ -3133,7 +3133,7 @@ enum {
 	flag_Clear = 4
 };
 
-void SineFill1(struct SndBuf *buf, struct sc_msg_iter *msg)
+void SineFill1(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 {
 	if (buf->channels != 1) return;
 	
@@ -3155,7 +3155,7 @@ void SineFill1(struct SndBuf *buf, struct sc_msg_iter *msg)
 	}
 }
 
-void SineFill2(struct SndBuf *buf, struct sc_msg_iter *msg)
+void SineFill2(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 {
 	if (buf->channels != 1) return;
 	
@@ -3178,7 +3178,7 @@ void SineFill2(struct SndBuf *buf, struct sc_msg_iter *msg)
 	}
 }
 
-void SineFill3(struct SndBuf *buf, struct sc_msg_iter *msg)
+void SineFill3(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 {
 	if (buf->channels != 1) return;
 	
@@ -3200,6 +3200,41 @@ void SineFill3(struct SndBuf *buf, struct sc_msg_iter *msg)
 		if (flags & flag_Wavetable) normalize_wsamples(size, data, 1.);
 		else normalize_samples(size, data, 1.);
 	}
+}
+
+void NormalizeBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
+{		
+	float *data = buf->data;
+	int size = buf->samples;
+	normalize_samples(size, data, 1.);
+}
+
+void NormalizeWaveBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
+{		
+	float *data = buf->data;
+	int size = buf->samples;
+	normalize_wsamples(size, data, 1.);
+}
+
+void CopyBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
+{		
+	float *data1 = buf->data;
+	int frames1 = buf->frames;
+	
+	int toPos = msg->geti();
+	int bufnum2 = msg->geti();
+	int fromPos = msg->geti();
+	int length = msg->geti();
+	
+	if (bufnum2 < 0 || bufnum2 >= world->mNumSndBufs) bufnum2 = 0;
+	SndBuf* buf2 = world->mSndBufs + bufnum2;
+	int frames2 = buf2->frames;
+	
+	length = sc_min(frames2 - fromPos, frames1 - toPos);
+	if (length <= 0) return;
+	
+	
+	
 }
 
 
@@ -3235,6 +3270,9 @@ void load(InterfaceTable *inTable)
 	DefineBufGen("sine1", SineFill1);
 	DefineBufGen("sine2", SineFill2);
 	DefineBufGen("sine3", SineFill3);
+	DefineBufGen("normalize", NormalizeBuf);
+	DefineBufGen("wnormalize", NormalizeWaveBuf);
+	DefineBufGen("copy", CopyBuf);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
