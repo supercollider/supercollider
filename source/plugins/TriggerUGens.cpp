@@ -204,7 +204,8 @@ void SendTrig_next(SendTrig *unit, int inNumSamples);
 void SendTrig_next_aka(SendTrig *unit, int inNumSamples);
 
 void SetResetFF_Ctor(SetResetFF *unit);
-void SetResetFF_next(SetResetFF *unit, int inNumSamples);
+void SetResetFF_next_a(SetResetFF *unit, int inNumSamples);
+void SetResetFF_next_k(SetResetFF *unit, int inNumSamples);
 
 void ToggleFF_Ctor(ToggleFF *unit);
 void ToggleFF_next(ToggleFF *unit, int inNumSamples);
@@ -224,7 +225,9 @@ void PulseDivider_Ctor(PulseDivider *unit);
 void PulseDivider_next(PulseDivider *unit, int inNumSamples);
 
 void PulseCount_Ctor(PulseCount *unit);
-void PulseCount_next(PulseCount *unit, int inNumSamples);
+void PulseCount_next_a(PulseCount *unit, int inNumSamples);
+void PulseCount_next_k(PulseCount *unit, int inNumSamples);
+void PulseCount_next_0(PulseCount *unit, int inNumSamples);
 
 void Stepper_Ctor(Stepper *unit);
 void Stepper_next_aa(Stepper *unit, int inNumSamples);
@@ -503,7 +506,12 @@ void SendTrig_next_aka(SendTrig *unit, int inNumSamples)
 
 void SetResetFF_Ctor(SetResetFF *unit)
 {
-	SETCALC(SetResetFF_next);
+	if (INRATE(1) == calc_FullRate) {
+		SETCALC(SetResetFF_next_a);
+	} else {
+		SETCALC(SetResetFF_next_k);
+	}
+
 	unit->m_prevtrig = 0.f;
 	unit->m_prevreset = 0.f;
 	unit->mLevel = 0.f;
@@ -512,7 +520,7 @@ void SetResetFF_Ctor(SetResetFF *unit)
 }
 
 
-void SetResetFF_next(SetResetFF *unit, int inNumSamples)
+void SetResetFF_next_a(SetResetFF *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *trig = ZIN(0);
@@ -532,6 +540,28 @@ void SetResetFF_next(SetResetFF *unit, int inNumSamples)
 	);
 	unit->m_prevtrig = prevtrig;
 	unit->m_prevreset = prevreset;
+	unit->mLevel = level;
+}
+
+void SetResetFF_next_k(SetResetFF *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *trig = ZIN(0);
+	float curreset = ZIN0(1);
+	float prevtrig = unit->m_prevtrig;
+	float prevreset = unit->m_prevreset;
+	float level = unit->mLevel;
+
+	if (prevreset <= 0.f && curreset > 0.f) level = 0.f;
+	
+	LOOP(inNumSamples, 
+		float curtrig = ZXP(trig);
+		if (prevtrig <= 0.f && curtrig > 0.f) level = 1.f;
+		ZXP(out) = level;
+		prevtrig = curtrig;
+	);
+	unit->m_prevtrig = prevtrig;
+	unit->m_prevreset = curreset;
 	unit->mLevel = level;
 }
 
@@ -759,8 +789,13 @@ void PulseDivider_next(PulseDivider *unit, int inNumSamples)
 
 void PulseCount_Ctor(PulseCount *unit)
 {
-	SETCALC(PulseCount_next);
-
+	if (INRATE(1) == calc_FullRate) {
+		SETCALC(PulseCount_next_a);
+	} else if (INRATE(1) == calc_BufRate) {
+		SETCALC(PulseCount_next_k);
+	} else {
+		SETCALC(PulseCount_next_0);
+	}
 	unit->m_prevtrig = 0.f;
 	unit->m_prevreset = 0.f;
 	unit->mLevel = 0.f;
@@ -769,7 +804,7 @@ void PulseCount_Ctor(PulseCount *unit)
 }
 
 
-void PulseCount_next(PulseCount *unit, int inNumSamples)
+void PulseCount_next_a(PulseCount *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *trig = ZIN(0);
@@ -782,7 +817,9 @@ void PulseCount_next(PulseCount *unit, int inNumSamples)
 		float curtrig = ZXP(trig);
 		float curreset = ZXP(reset);
 		if (prevreset <= 0.f && curreset > 0.f) level = 0.f;
-		else if (prevtrig <= 0.f && curtrig > 0.f) level += 1.f;
+		else if (prevtrig <= 0.f && curtrig > 0.f) {
+			level += 1.f;
+		}
 		ZXP(out) = level;
 		prevtrig = curtrig;
 		prevreset = curreset;
@@ -790,6 +827,49 @@ void PulseCount_next(PulseCount *unit, int inNumSamples)
 	unit->mLevel = level;
 	unit->m_prevtrig = prevtrig;
 	unit->m_prevreset = prevreset;
+}
+
+void PulseCount_next_k(PulseCount *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *trig = ZIN(0);
+	float curreset = ZIN0(1);
+	float prevtrig = unit->m_prevtrig;
+	float prevreset = unit->m_prevreset;
+	float level = unit->mLevel;
+	
+	if (prevreset <= 0.f && curreset > 0.f) level = 0.f;
+
+	LOOP(inNumSamples, 
+		float curtrig = ZXP(trig);
+		if (prevtrig <= 0.f && curtrig > 0.f) {
+			level += 1.f;
+		}
+		ZXP(out) = level;
+		prevtrig = curtrig;
+	);
+	unit->mLevel = level;
+	unit->m_prevtrig = prevtrig;
+	unit->m_prevreset = curreset;
+}
+
+void PulseCount_next_0(PulseCount *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *trig = ZIN(0);
+	float prevtrig = unit->m_prevtrig;
+	float level = unit->mLevel;
+	
+	LOOP(inNumSamples, 
+		float curtrig = ZXP(trig);
+		if (prevtrig <= 0.f && curtrig > 0.f) {
+			level += 1.f;
+		}
+		ZXP(out) = level;
+		prevtrig = curtrig;
+	);
+	unit->mLevel = level;
+	unit->m_prevtrig = prevtrig;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
