@@ -322,28 +322,35 @@ SCErr meth_synthNew(World *inWorld, int inSize, char *inData, ReplyAddress* /*in
 	if (!def) return kSCErr_SynthDefNotFound;
 	
 	//printf("*SynthNew %d %d\n", nodeID, arglen);
-	Graph *graph = (Graph*)Node_New(inWorld, &def->mNodeDef, nodeID, &msg);
-	if (!graph) return kSCErr_NodeNotFound;
 
+	Graph *graph = 0;
 	switch (addAction) {
 		case 0 : {
 			Group *group = World_GetGroup(inWorld, addTargetID);
 			if (!group) return kSCErr_GroupNotFound;
+			graph = (Graph*)Node_New(inWorld, &def->mNodeDef, nodeID, &msg);
+			if (!graph) return kSCErr_NodeNotFound;
 			Group_AddHead(group, &graph->mNode);
 		} break;
 		case 1 : {
 			Group *group = World_GetGroup(inWorld, addTargetID);
 			if (!group) return kSCErr_GroupNotFound;
+			graph = (Graph*)Node_New(inWorld, &def->mNodeDef, nodeID, &msg);
+			if (!graph) return kSCErr_NodeNotFound;
 			Group_AddTail(group, &graph->mNode);
 		} break;
 		case 2 : {
 			Node *beforeThisNode = World_GetNode(inWorld, addTargetID);
 			if (!beforeThisNode) return kSCErr_NodeNotFound;
+			graph = (Graph*)Node_New(inWorld, &def->mNodeDef, nodeID, &msg);
+			if (!graph) return kSCErr_NodeNotFound;
 			Node_AddBefore(&graph->mNode, beforeThisNode);
 		} break;
 		case 3 : {
 			Node *afterThisNode = World_GetNode(inWorld, addTargetID);
 			if (!afterThisNode) return kSCErr_NodeNotFound;
+			graph = (Graph*)Node_New(inWorld, &def->mNodeDef, nodeID, &msg);
+			if (!graph) return kSCErr_NodeNotFound;
 			Node_AddAfter(&graph->mNode, afterThisNode);
 		} break;
 		default: return kSCErr_Failed;
@@ -364,29 +371,34 @@ SCErr meth_groupNew(World *inWorld, int inSize, char *inData, ReplyAddress* /*in
 	int32 addTargetID = msg.geti();
 	//printf("meth_groupNew %d %d\n", newGroupID, addGroupID);
 		
-	Group *newGroup = Group_New(inWorld, newGroupID);
-	if (!newGroup) return kSCErr_Failed;
-	//printf("newGroup %08X\n", newGroup);
-	
+	Group *newGroup = 0;
 	switch (addAction) {
 		case 0 : {
 			Group *group = World_GetGroup(inWorld, addTargetID);
 			if (!group) return kSCErr_GroupNotFound;
+			newGroup = Group_New(inWorld, newGroupID);
+			if (!newGroup) return kSCErr_Failed;
 			Group_AddHead(group, &newGroup->mNode);
 		} break;
 		case 1 : {
 			Group *group = World_GetGroup(inWorld, addTargetID);
 			if (!group) return kSCErr_GroupNotFound;
+			newGroup = Group_New(inWorld, newGroupID);
+			if (!newGroup) return kSCErr_Failed;
 			Group_AddTail(group, &newGroup->mNode);
 		} break;
 		case 2 : {
 			Node *beforeThisNode = World_GetNode(inWorld, addTargetID);
 			if (!beforeThisNode) return kSCErr_NodeNotFound;
+			newGroup = Group_New(inWorld, newGroupID);
+			if (!newGroup) return kSCErr_Failed;
 			Node_AddBefore(&newGroup->mNode, beforeThisNode);
 		} break;
 		case 3 : {
 			Node *afterThisNode = World_GetNode(inWorld, addTargetID);
 			if (!afterThisNode) return kSCErr_NodeNotFound;
+			newGroup = Group_New(inWorld, newGroupID);
+			if (!newGroup) return kSCErr_Failed;
 			Node_AddAfter(&newGroup->mNode, afterThisNode);
 		} break;
 		default: return kSCErr_Failed;
