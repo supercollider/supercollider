@@ -1,21 +1,23 @@
 
 PfadeIn : FilterPattern {
-	var <>fadeTime, <>holdTime=0;
-	*new { arg pattern, fadeTime=1, holdTime=0;
-		^super.new(pattern).fadeTime_(fadeTime).holdTime_(holdTime)
+	var <>fadeTime, <>holdTime=0, <>tolerance;
+	*new { arg pattern, fadeTime=1.0, holdTime=0.0, tolerance=0.0001;
+		^super.new(pattern).fadeTime_(fadeTime).holdTime_(holdTime).tolerance_(tolerance)
 	}
 	asStream {
 		^Routine.new { arg inval;
 			var outval, elapsed=0, stream, c;
 			stream = pattern.asStream;
-			if(holdTime > 0) { Event.silent(holdTime).yield };
+			
+		
+			if(holdTime > 0.0) { Event.silent(holdTime).yield };
 			loop {
 				outval = stream.next(inval);
 				if(outval.isNil) { nil.alwaysYield };
 				
 				elapsed = elapsed + outval.delta;
-				c = elapsed - holdTime / fadeTime;
-				if(c > 1) {
+				c = elapsed / fadeTime;
+				if(c >= 1.0) {
 					stream.embedInStream(inval);
 					nil.alwaysYield;
 				
@@ -33,20 +35,20 @@ PfadeOut : PfadeIn {
 		^Routine.new { arg inval;
 			var outval, elapsed=0, stream, c;
 			stream = pattern.asStream;
-			
 			loop {
 				outval = stream.next(inval);
 				if(outval.isNil) { nil.alwaysYield };
 				
 				elapsed = elapsed + outval.delta;
-				if(elapsed.round(0.0001) < holdTime) {
+				if(elapsed.round(tolerance) <= holdTime) {
 					inval = outval.yield;
 				} {
 					c = elapsed - holdTime / fadeTime;
-					if(c > 1) { 
+					c.debug;
+					if(c >= 1.0) { 
 						nil.alwaysYield 
 					} {
-						outval[\amp] = (1 - c.min(1)) * outval[\amp];
+						outval[\amp] = (1.0 - c) * outval[\amp];
 						inval = outval.yield;
 					}
 				}
