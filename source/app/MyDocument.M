@@ -588,4 +588,10 @@ extern bool compiledOK;
     gPostView = textView;
 }
 
+- (BOOL) isDocumentEdited
+{
+	if (textView == gPostView) return false;
+	return [super isDocumentEdited];
+}
+
 @end

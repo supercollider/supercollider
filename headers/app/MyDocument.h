@@ -40,4 +40,5 @@
 
     - (void) sendSelection: (char*) methodName;
     - (void) insertText: (char*) text length: (int)length;
+	- (BOOL) isDocumentEdited;
 @end
