@@ -37,6 +37,7 @@ TempoClock : Clock {
 	
 	var <beatsPerBar=4.0, barsPerBeat=0.25;
 	var baseBarBeat=0.0, baseBar=0.0;
+	var <>permanent=false;
 
 /*
 You should only change the tempo 'now'. You can't set the tempo at some beat in the future or past, even though you might think so from the methods. 
@@ -57,13 +58,13 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	}
 	
 	*initClass {
-		default = this.new;
+		default = this.new.permanent_(true);
 		CmdPeriod.add(this);
 	}	
 	
 	*cmdPeriod {
 		all.do({ arg item; item.clear });
-		all.do({ arg item; if(item !== default, { item.stop })  })
+		all.do({ arg item; if(item.permanent.not, { item.stop })  })
 	}	
 
 	init { arg tempo, beats, seconds;
