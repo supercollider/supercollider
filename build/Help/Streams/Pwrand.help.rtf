@@ -5,17 +5,18 @@
 \red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 Prand
+\f0\b\fs36 \cf0 Pwrand
 \f1\b0\fs24  \
 \
 \
-returns one item from the list at random for each repeat. \
+returns one item from the list at random for each repeat, the probability\
+for each item is determined by a list of weights which should sum to 1.0.\
 \
 
 \f2\fs18 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  a, b;\
-a = \cf2 Prand\cf0 .new(#[1, 2, 3, 4, 5], 6);	\cf3 // return 6 items\
+a = \cf2 Pwrand\cf0 .new(#[1, 2, 3], #[1, 3, 5].normalizeSum, 6);	\cf3 // return 6 items\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b = a.asStream;\
 7.do(\{ b.next.postln; \});\
@@ -41,11 +42,11 @@ a = \cf2 Prand\cf0 .new(#[1, 2, 3, 4, 5], 6);	\cf3 // return 6 items\
 \
 \
 (\
-a = \cf2 Prand\cf0 (#[60, 61, 63, 65, 72], \cf2 inf\cf0 ).asStream;\
+a = \cf2 Pwrand\cf0 (#[60, 61, 63, 65, 72], #[10, 2, 3, 1, 3].normalizeSum, \cf2 inf\cf0 ).asStream;\
 \cf2 Routine\cf0 (\{\
 	loop(\{\
 	\cf2 Synth\cf0 (\cf4 "help-sinegrain"\cf0 , [\cf5 \\freq\cf0 , a.next.midicps]);\
-	0.2.wait;\
+	0.1.wait;\
 	\})\
 \}).play;\
 )\

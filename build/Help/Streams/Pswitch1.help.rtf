@@ -5,24 +5,36 @@
 }
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 Pser
+\f0\b\fs36 \cf0 Pswitch1
 \f1\b0\fs24  \
 \
 \
-is like Pseq, however the repeats variable gives the number of items returned instead of\
-the number of complete cycles. \
+Pswitch1(list, which)\
+\
+chooses elements from the 
+\f0\b list
+\f1\b0  by a stream of indices (
+\f0\b which
+\f1\b0 ).\
+always one next value of the elements is returned.\
 \
 
 \f2\fs18 (\
-var a, b;\
-a = Pser.new(#[1, 2, 3], 5);	// return 5 items\
-b = a.asStream;\
-6.do(\{ b.next.postln; \});\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  a, b;\
+a = \cf2 Pseq\cf0 (#[1, 2, 3], inf);\
+b = \cf2 Pseq\cf0 (#[65, 76], inf);\
+c = \cf2 Pswitch1\cf0 ([a, b, 800], \cf2 Pseq\cf0 ([2, 2, 0, 1], \cf2 inf\cf0 ));\
+x = c.asStream;\
+24.do(\{ x.next.postln; \});\
 )\
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 Pser used as a sequence of pitches:\
+\f1\fs24 \cf0 \
+
+\f2 \
+
+\f1 Pswitch used as a sequence of pitches:\
 
 \f2 \
 \
@@ -40,11 +52,14 @@ b = a.asStream;\
 \
 \
 (\
-a = Pser([\cf2 Pser\cf0 (#[60, 61, 63, 65, 72], \cf2 3\cf0 )], inf).asStream;\
+a = \cf2 Pseq\cf0 (#[73, 71, 69], inf);\
+b = \cf2 Pseq\cf0 (#[0, 0, 0, 4, 0]+64, inf);\
+c = \cf2 Pswitch1\cf0 ([a, b, 75], \cf2 Pseq\cf0 ([2, 2, 0, 1], \cf2 inf\cf0 ));\
+x = c.asStream;\
 \cf2 Routine\cf0 (\{\
 	loop(\{\
-	\cf2 Synth\cf0 (\cf3 "help-sinegrain"\cf0 , [\cf4 \\freq\cf0 , a.next.midicps]);\
-	0.2.wait;\
+	\cf2 Synth\cf0 (\cf3 "help-sinegrain"\cf0 , [\cf4 \\freq\cf0 , x.next.midicps]);\
+	0.18.wait;\
 	\})\
 \}).play;\
 )\
@@ -52,7 +67,4 @@ a = Pser([\cf2 Pser\cf0 (#[60, 61, 63, 65, 72], \cf2 3\cf0 )], inf).asStream;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs18 \cf0 \
 }
