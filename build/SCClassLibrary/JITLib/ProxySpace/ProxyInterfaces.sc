@@ -107,7 +107,7 @@ SynthControl : AbstractPlayControl {
 	loadToBundle {} //assumes that SynthDef is loaded in the server 
 	name { ^source }
 	clear { nodeID = nil }
-	distributable { ^true }
+	distributable { ^canReleaseSynth } // n_free not implemented in shared nod proxy
 	
 	build { arg proxy; // assumes audio, if proxy is not initialized
 		var rate, desc;
