@@ -193,24 +193,28 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 		
-\f0\b\fs24 \cf0 Synth.newLoad(synthDefName,[ index1,arg1,... indexN,argN  ],target,addAction)\
+\f0\b\fs24 \cf0 Synth.newLoad(synthDefName,[ index1,arg1,... indexN,argN  ], \
+				target,addAction)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 				this works just like Synth.new, just that it loads the synthdef \
-				and as soon it completed it plays it. \
+\f1\b0 \cf0 				loads the synth def to the server and starts it when the load\
+				is completed.\
 				\
 		
-\f0\b Synth.newPaused(synthDefName,[ index1,arg1,... indexN,argN  ],target,addAction)\
+\f0\b Synth.newPaused(synthDefName,[ index1,arg1,... indexN,argN  ],\
+				target,addAction)\
 
-\f1\b0 				this works just like Synth.new, just that it creates the synth paused.\
-				to start it do synth.run.\
+\f1\b0 				creates a Synth with the run flag set to false.\
+				use synth.run to start it.\
 				\
 		
-\f0\b Synth.newUnlinked(synthDefName,[ index1,arg1,... indexN,argN  ],target,addAction)
+\f0\b Synth.newUnlinked(synthDefName,[ index1,arg1,... indexN,argN  ],\
+				target,addAction)
 \f2\b0\fs18 \
 				
-\f1\fs24 creates a synth on the server, not linked in the client model.\
-				more efficient for big amounts of sound grains or such.
+\f1\fs24 creates a synth on the server, without storing it in a Group object.\
+				This is more efficient if the Synth is a quick event and frees itself,\
+				for instance when creating many small sound grains.
 \f2\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
