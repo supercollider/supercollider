@@ -4,6 +4,7 @@ SCWindow {
 	
 	var dataptr, <name, <>onClose, <view, <userCanClose=true;
 	var <alwaysOnTop=false;
+	var <>drawHook;
 	
 	*initClass {
 		UI.registerForShutdown({ this.closeAll });
@@ -138,6 +139,9 @@ SCWindow {
 	*prGetScreenBounds { arg argBounds;
 		_SCWindow_GetScreenBounds
 		^this.primitiveFailed
+	}
+	callDrawHook {
+		drawHook.value(this);
 	}
 	
 	

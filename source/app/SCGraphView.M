@@ -551,6 +551,25 @@ const int circDiam = 20;
 
         //CGContextRestoreGState(cgc);
     }
+    pthread_mutex_lock (&gLangMutex);
+    if (mWindowObj && NotNil(mWindowObj->slots+6)) {
+		static PyrSymbol *s_callDrawHook = 0;
+		if (!s_callDrawHook) s_callDrawHook = getsym("callDrawHook");
+
+        CGRect cgrect = *(CGRect*)&drawBounds;
+        CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+        CGContextSaveGState(cgc);
+        CGContextClipToRect(cgc, cgrect);
+
+        VMGlobals *g = gMainVMGlobals;
+        g->canCallOS = true;
+        ++g->sp;  SetObject(g->sp, mWindowObj); // push window obj
+        runInterpreter(g, s_callDrawHook, 1);
+        g->canCallOS = false;
+
+        CGContextRestoreGState(cgc);
+    }
+    pthread_mutex_unlock (&gLangMutex);
 }
 
 NSDictionary *makeFontAttrDict(char *cFontName, float fontSize, SCColor sccolor)
