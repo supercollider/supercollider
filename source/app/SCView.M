@@ -2261,7 +2261,7 @@ void SCMultiSliderView::draw(SCRect inDamage)
     if(mDrawRectsActive)
     {
         int j = 0;
-        for(int i = xstart; i < xpixels; i++, j++){
+                for(int i = xstart; i < xpixels + xstart; i++, j++){
             yval = vals[i];
             drawRect = SCtoCGRect(calcThumbRect(j, yval, mXOffset));
             CGContextFillRect (cgc, drawRect);
@@ -2269,32 +2269,33 @@ void SCMultiSliderView::draw(SCRect inDamage)
         }
         if (mSecYValues != NULL) {
             j = 0;
-            for(int i = xstart; i < xpixels; i++, j++){
+//            for(int i = xstart; i < xpixels; i++, j++){
+            for(int i = xstart; i < xpixels + xstart; i++, j++){
                 yval = mSecYValues[i];
                 drawRect = SCtoCGRect(calcThumbRect(j, yval, mXOffset));
                 CGContextFillRect (cgc, drawRect);
                 if (mThumbSize > 1)	CGContextStrokeRect(cgc,drawRect);
             }
         }
-
     }
     //draw lines
     if (mDrawLinesActive) {
         float xadd, gcx, gcy;
-        if(mThumbSize > 1) xadd =  mThumbSize * 0.5; 
-            else xadd = 0;  
-        int j = 0; 
-		for(int i = xstart; i < xpixels; i++, j++){
+        if(mThumbSize > 1) xadd =  mThumbSize * 0.5;
+            else xadd = 0;
+        int j = 0;
+//		for(int i = xstart; i < xpixels; i++, j++){
+		for(int i = xstart; i < xpixels + xstart; i++, j++){
             yval = vals[i];
             drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
             gcx =  drawRect.origin.x + xadd;
             gcy =  drawRect.origin.y + xadd;
-			if( i == xstart) 
+			if( i == xstart)
                 CGContextMoveToPoint(cgc,  gcx, gcy);
 			else
-                CGContextAddLineToPoint(cgc, gcx, gcy);            
-        }
-        //these are fixed values: used for the max of soundfiles
+                CGContextAddLineToPoint(cgc, gcx, gcy);
+        }        
+		//these are fixed values: used for the max of soundfiles
         if (mSecYValues != NULL) {
             int j = xpixels - 1 - xstart;
             for(int i = xpixels - 1; i >= xstart; i--, j--){
@@ -2374,9 +2375,9 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
 int SCMultiSliderView::indexFromPoint(SCPoint where)
 {
     if(mIsHorizontal){
-        return (int) ((where.x - mBounds.x -1)/(mThumbSize + mXOffset));
+        return (int) ((where.x - mBounds.x -1)/(mThumbSize + mXOffset)) + mStartIndex;
     } else {
-        return (int) ((where.y - mBounds.y -1)/(mThumbSize + mXOffset));
+        return (int) ((where.y - mBounds.y -1)/(mThumbSize + mXOffset)) + mStartIndex;
     }
 }
 
