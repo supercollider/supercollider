@@ -6,15 +6,17 @@ NodeMapSetting {
 	}
 		
 	updateNodeMap { arg nodeMap;
-		if(bus.notNil, {
+		if(bus.notNil) {
 			this.updateBusToNodeMap(nodeMap);
-		}, {
-			if(value.isSequenceableCollection, {
-				nodeMap.setnArgs = nodeMap.setnArgs.addAll([key, value.size]++value)
-			}, {
-				nodeMap.setArgs = nodeMap.setArgs.addAll([key, value])
-			})
-		})
+		} {
+			if(value.notNil) {
+				if(value.isSequenceableCollection) {
+					nodeMap.setnArgs = nodeMap.setnArgs.addAll([key, value.size]++value)
+				} {
+					nodeMap.setArgs = nodeMap.setArgs.addAll([key, value])
+				}
+			};
+		}
 	}
 	
 	updateBusToNodeMap { arg nodeMap;
@@ -38,7 +40,7 @@ NodeMapSetting {
 ProxyNodeMapSetting : NodeMapSetting {
 	var <>channelOffset=0, <>rate;
 	
-	
+	// bus is a proxy. this method derives the keys
 	updateBusToNodeMap { arg nodeMap;
 		nodeMap.mapArgs = nodeMap.mapArgs.addAll([key, bus.index +  channelOffset]);
 	}

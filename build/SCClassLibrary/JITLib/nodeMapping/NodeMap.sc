@@ -237,8 +237,7 @@ ProxyNodeMap : NodeMap {
 			});
 			upToDate = false;
 		}
-
-	
+			
 }
 
 
