@@ -308,5 +308,23 @@ void Unit_DoneAction(int doneAction, Unit *unit)
 			Node* next = unit->mParent->mNode.mNext;
 			if (next && next->mIsGroup) Group_DeleteAll((Group*)next);
 		} break;
+		case 7 : 
+		{
+			Node* node = &unit->mParent->mNode;
+			while (node) {
+				Node *prev = node->mPrev;
+				Node_End(node);
+				node = prev;
+			}				
+		} break;
+		case 8 : 
+		{
+			Node* node = &unit->mParent->mNode;
+			while (node) {
+				Node *next = node->mNext;
+				Node_End(node);
+				node = next;
+			}
+		} break;
 	}
 }
