@@ -1,68 +1,103 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
+\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf2 SCMultiSlider
 \f1\b0\fs18 \cf0 \
 \
 (\
-\cf3 //use as table\
+//use shift click to select/unselect the points\
+a = \cf2 SCWindow\cf0 (\cf3 "test"\cf0 , \cf2 Rect\cf0 (200 , 450, 450, 150));\
+a.view.decorator =  \cf2 FlowLayout\cf0 (a.view.bounds);\
+b = \cf2 SCEnvelopeView\cf0 (a, \cf2 Rect\cf0 (0, 0, 350, 100));\
+b.setProperty(\cf4 \\thumbWidth\cf0 , 5\cf2 .0\cf0 );\
+\
+\
+b.setProperty(\cf4 \\drawLines\cf0 , \cf2 true\cf0 );\
+//b.setProperty(\cf4 \\strokeColor\cf0 , \cf2 Color\cf0 .blue);\
+b.setProperty(\cf4 \\fillColor\cf0 , \cf2 Color\cf0 .green);\
+b.setProperty(\cf4 \\selectionColor\cf0 , \cf2 Color\cf0 .red);\
+\
+b.setProperty(\cf4 \\drawRects\cf0 , \cf2 true\cf0 );\
+\
+\
+c = Array.newClear(0);\
+d = Array.newClear(0);\
+5.do(\{arg i;\
+	c = c.add(i*0.1);\
+	\});\
+d = Array.with(c,c);\
+\
+b.value_(d);\
+b.setProperty(\cf4 \\selectedIndex\cf0 , \cf2 0\cf0 );\
+b.setProperty(\cf4 \\isStatic\cf0 , \cf2 true\cf0 );\
+b.setProperty(\cf4 \\selectedIndex\cf0 , \cf2 -1\cf0 );\
+\
+a.front;\
+\
+)	\
+c = b.xvalues;\
+\
+(\
+\cf5 //use as table\
 //todo: select different tools for mouse action \
 \cf2 var\cf0  size;\
 size = 350 / 6;\
-a = \cf2 SCWindow\cf0 (\cf4 "test"\cf0 , \cf2 Rect\cf0 (200 , 450, 450, 150));\
+a = \cf2 SCWindow\cf0 (\cf3 "test"\cf0 , \cf2 Rect\cf0 (200 , 450, 450, 150));\
 a.view.decorator =  \cf2 FlowLayout\cf0 (a.view.bounds);\
 b = \cf2 SCMultiSliderView\cf0 (a, \cf2 Rect\cf0 (0, 0, 350, 100));\
 \
 c = \cf2 Array\cf0 .new;\
 size.do(\{\cf2 arg\cf0  i;\
-	c = c.add(i/size);\
+	c = c.add(0.01);\
 	\});\
 c = c.reverse;\
 b.value_(c);\
-b.setProperty(\cf5 \\isFilled\cf0 , \cf2 true\cf0 );\
-b.setProperty(\cf5 \\thumbWidth\cf0 , 1\cf2 .0\cf0 );\
+b.setProperty(\cf4 \\isFilled\cf0 , \cf2 true\cf0 );\
+b.setProperty(\cf4 \\thumbWidth\cf0 , 1\cf2 .0\cf0 );\
+b.setProperty(\cf4 \\xOffset\cf0 , \cf2 1\cf0 );\
 \
-b.thumbSize_(5.0);\
-b.thumbSize_(5.0);\
+b.thumbSize_(1.0);\
+//b.thumbWidth_(1.0);\
+//b.thumbSize_(1.0);\
 a.front;\
 )\
 (\
 //flip by 90 degree\
 b.background_(Color.black);\
-b.setProperty(\cf5 \\strokeColor\cf0 , \cf2 Color\cf0 .white);\
-b.setProperty(\cf5 \\fillColor\cf0 , \cf2 Color\cf0 .white);\
+b.setProperty(\cf4 \\strokeColor\cf0 , \cf2 Color\cf0 .white);\
+b.setProperty(\cf4 \\fillColor\cf0 , \cf2 Color\cf0 .white);\
 a.bounds_(\cf2 Rect\cf0 (200 , 450, 150, 430));\
 b.bounds_( \cf2 Rect\cf0 (10, 0, 100, 390));\
-b.setProperty(\cf5 \\isHorizontal\cf0 , \cf2 false\cf0 );\
+b.setProperty(\cf4 \\isHorizontal\cf0 , \cf2 false\cf0 );\
 a.front;\
 )\
 (\
-\cf3 //use as multislider\
+\cf5 //use as multislider\
 \cf2 var\cf0  size;\
 size = 12;\
-a = \cf2 SCWindow\cf0 (\cf4 "test"\cf0 , \cf2 Rect\cf0 (200 , 450, 10 + (size * 17), 10 + (size * 17)));\
+a = \cf2 SCWindow\cf0 (\cf3 "test"\cf0 , \cf2 Rect\cf0 (200 , 450, 10 + (size * 17), 10 + (size * 17)));\
 a.view.decorator =  \cf2 FlowLayout\cf0 (a.view.bounds);\
 b = \cf2 SCMultiSliderView\cf0 (a, \cf2 Rect\cf0 (0, 0, size * 17, size * 17));\
-//b.action = \{\cf2 arg\cf0  xb; (\cf4 "index: "\cf0  ++ xb.index ++\cf4 " value: "\cf0  ++ xb.currentvalue).postln\};\
+b.action = \{\cf2 arg\cf0  xb; (\cf3 "index: "\cf0  ++ xb.index ++\cf3 " value: "\cf0  ++ xb.currentvalue).postln\};\
 c = \cf2 Array\cf0 .new;\
 size.do(\{\cf2 arg\cf0  i;\
 	c = c.add(i/size);\
 	\});\
 b.value_(c);\
-b.setProperty(\cf5 \\xOffset\cf0 , 5);\
+b.setProperty(\cf4 \\xOffset\cf0 , 5);\
 b.thumbSize_(12.0);\
-b.setProperty(\cf5 \\strokeColor\cf0 , \cf2 Color\cf0 .blue);\
-b.setProperty(\cf5 \\fillColor\cf0 , \cf2 Color\cf0 .blue);\
+b.setProperty(\cf4 \\strokeColor\cf0 , \cf2 Color\cf0 .blue);\
+b.setProperty(\cf4 \\fillColor\cf0 , \cf2 Color\cf0 .blue);\
 \
-b.\cf5 drawLines\cf0 (\cf2 false\cf0 );\
+b.\cf4 drawLines\cf0 (\cf2 false\cf0 );\
 \
 a.front;\
 )\
 (\
-\cf3 // read only mode returns the xIndex and its y value\
+\cf5 // read only mode returns the xIndex and its y value\
 \cf0 b.readOnly_(\cf2 true\cf0 );\
 b.setProperty(\\showIndex, true);\
 b.index_(4);\
@@ -88,10 +123,10 @@ r = \cf2 Routine\cf0 (\{\
 \
 )\
 (\
-\cf3 //use as multislider II with lines\
+\cf5 //use as multislider II with lines\
 \cf2 var\cf0  size;\
 size = 12;\
-a = \cf2 SCWindow\cf0 (\cf4 "test"\cf0 , \cf2 Rect\cf0 (200 , 450, 450, 150));\
+a = \cf2 SCWindow\cf0 (\cf3 "test"\cf0 , \cf2 Rect\cf0 (200 , 450, 450, 150));\
 a.view.decorator =  \cf2 FlowLayout\cf0 (a.view.bounds);\
 b = \cf2 SCMultiSliderView\cf0 (a, \cf2 Rect\cf0 (0, 0, size * 17, 50));\
 a.view.decorator.nextLine;\
@@ -103,28 +138,28 @@ size.do(\{\cf2 arg\cf0  i;\
 	\});\
 b.value_(c);\
 \
-b.setProperty(\cf5 \\xOffset\cf0 , 18);\
+b.setProperty(\cf4 \\xOffset\cf0 , 18);\
 b.thumbSize_(1);\
-b.setProperty(\cf5 \\strokeColor\cf0 , \cf2 Color\cf0 .blue);\
-b.setProperty(\cf5 \\drawLines\cf0 , \cf2 true\cf0 );\
-b.setProperty(\cf5 \\drawRects\cf0 , \cf2 true\cf0 );\
-b.setProperty(\cf5 \\thumbWidth\cf0 , \cf2 1\cf0 );\
+b.setProperty(\cf4 \\strokeColor\cf0 , \cf2 Color\cf0 .blue);\
+b.setProperty(\cf4 \\drawLines\cf0 , \cf2 true\cf0 );\
+b.setProperty(\cf4 \\drawRects\cf0 , \cf2 true\cf0 );\
+b.setProperty(\cf4 \\thumbWidth\cf0 , \cf2 1\cf0 );\
 \
-b.setProperty(\cf5 \\thumbSize\cf0 , \cf2 1\cf0 );\
+b.setProperty(\cf4 \\thumbSize\cf0 , \cf2 1\cf0 );\
 \
 a.front;\
 )\
 c = Array.newClear(12);\
-b.getProperty(\\\cf5 referenceValues, \cf0 Array.newClear(12));\
+b.getProperty(\\\cf4 referenceValues, \cf0 Array.newClear(12));\
 c.size\
 (\
 //press shift to extend the selection\
-\cf3 //use as waveView: scrabbing over the view returns index\
+\cf5 //use as waveView: scrabbing over the view returns index\
 //if \cf0 showIndex(false) the view is not refreshed (faster);\
-\cf3 //otherwise you can make a selection with shift - drag.\
+\cf5 //otherwise you can make a selection with shift - drag.\
 \cf2 var\cf0  size, file, maxval, minval;\
 size = 640;\
-a = \cf2 SCWindow\cf0 (\cf4 "test"\cf0 , \cf2 Rect\cf0 (200 , 140, 650, 150));\
+a = \cf2 SCWindow\cf0 (\cf3 "test"\cf0 , \cf2 Rect\cf0 (200 , 140, 650, 150));\
 a.view.decorator =  \cf2 FlowLayout\cf0 (a.view.bounds);\
 b = \cf2 SCMultiSliderView\cf0 (a, \cf2 Rect\cf0 (0, 0, size, 50));\
 b.readOnly_(\cf2 true\cf0 );\
@@ -136,10 +171,10 @@ d = \cf2 Array\cf0 .new;\
 c = \cf2 FloatArray\cf0 .newClear(65493);\
 \
 e = SCSlider( a, \cf2 Rect\cf0 (0, 0, size, 12));\
-e.action = \{arg ex; b.setProperty(\cf5 \\xOffset\cf0 , (ex.value * 4) + 1 )\};\
+e.action = \{arg ex; b.setProperty(\cf4 \\xOffset\cf0 , (ex.value * 4) + 1 )\};\
 \
-file = \cf2 SoundFile\cf3 .\cf0 new;\
-file.openRead(\cf4 "sounds/a11wlk01.wav"\cf0 );\
+file = \cf2 SoundFile\cf5 .\cf0 new;\
+file.openRead(\cf3 "sounds/a11wlk01.wav"\cf0 );\
 file.numFrames.postln;\
 file.readData(c);\
 file.inspect;\
@@ -166,59 +201,26 @@ if(i % 256 == 0,\{\
 //f = f.add(0.0);\
 //f = f.reverse;\
 //d = d.reverse;\
-b.setProperty(\cf5 \\referenceValues\cf0 , \cf2 d\cf0 ); //this is used to draw the upper part of the table\
+b.setProperty(\cf4 \\referenceValues\cf0 , \cf2 d\cf0 ); //this is used to draw the upper part of the table\
 b.value_(f);\
-\cf3 \
-\cf0 e = SCSlider( a, \cf2 Rect\cf0 (0, 0, size, 12));\
-e.action = \{arg ex; b.setProperty(\cf5 \\startIndex\cf0 , ex.value *f.size )\};\
-\cf3 \
+\cf5 \
+\cf0 //e = SCSlider( a, \cf2 Rect\cf0 (0, 0, size, 12));\
+//e.action = \{arg ex; b.setProperty(\cf4 \\startIndex\cf0 , ex.value *f.size )\};\
+\cf5 \
 //b.enabled_(false);\
-\cf0 b.action = \{\cf2 arg\cf0  xb; (\cf4 "index: "\cf0  ++ xb.index).postln\};\
-b.setProperty(\cf5 \\drawLines\cf0 , \cf2 true\cf0 );\
-b.setProperty(\cf5 \\drawRects\cf0 , \cf2 false\cf0 );\
-b.setProperty(\cf5 \\isFilled\cf0 , \cf2 true\cf0 );\
-b.setProperty(\cf5 \\thumbSize\cf0 , \cf2 1\cf0 );\
-b.setProperty(\cf5 \\selectionSize\cf0 , \cf2 10\cf0 );\
-b.\cf5 index_\cf0 (\cf2 10\cf0 );\
-b.thumbSize_(1); \cf3 \
+\cf0 b.action = \{\cf2 arg\cf0  xb; (\cf3 "index: "\cf0  ++ xb.index).postln\};\
+b.setProperty(\cf4 \\drawLines\cf0 , \cf2 true\cf0 );\
+b.setProperty(\cf4 \\drawRects\cf0 , \cf2 false\cf0 );\
+b.setProperty(\cf4 \\isFilled\cf0 , \cf2 true\cf0 );\
+b.setProperty(\cf4 \\thumbSize\cf0 , \cf2 1\cf0 );\
+b.setProperty(\cf4 \\selectionSize\cf0 , \cf2 10\cf0 );\
+b.\cf4 index_\cf0 (\cf2 10\cf0 );\
+b.thumbSize_(1); \cf5 \
 \cf0 b.gap_(0);\
-b.setProperty(\cf5 \\fillColor\cf0 , \cf2 Color\cf0 .blue(1.0,1.0));\
-b.\cf5 showIndex\cf0 (true);\
-b.setProperty(\cf5 \\strokeColor\cf0 , \cf2 Color\cf0 .black);\
+b.setProperty(\cf4 \\fillColor\cf0 , \cf2 Color\cf0 .blue(1.0,1.0));\
+b.\cf4 showIndex\cf0 (true);\
+b.setProperty(\cf4 \\strokeColor\cf0 , \cf2 Color\cf0 .black);\
 a.front;\
 \
 )\
-(\
-z = \{ arg res;\
-var minval, maxval;\
-minval = 0;\
-maxval = 0;\
-f = Array.new;\
-d = Array.new;\
-c.do(\{\cf2 arg\cf0  fi, i;\
-if(fi < minval, \{minval = fi\});\
-if(fi > maxval, \{maxval = fi\});\
-\
-//f.postln;\
-if(i % res == 0,\{\
-	d = d.add((1 + maxval ) * 0.5 );\
-	f = f.add((1 + minval ) * 0.5 );\
-\
-	minval = 0;\
-	maxval = 0;\
-	\
-	\});\
-	\});\
-\
-//f = f.add(0.0);\
-//f = f.reverse;\
-//d = d.reverse;\
-b.value_(f);\
-\
-b.setProperty(\cf5 \\referenceValues\cf0 , \cf2 d\cf0 ); //this is used to draw the upper part of the table\
-\};\
-e.action = \{arg ex; z.value(((ex.value * 1000) + 50).asInt)\};\
-\
-)\
-b.gap.postln\
 }
