@@ -30,6 +30,7 @@
 
 extern PyrSymbol *s_draw;
 extern PyrSymbol *s_scview;
+extern PyrSymbol *s_closed;
 
 @implementation SCGraphView
 
@@ -237,10 +238,23 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, void* inData)
 }
 
 - (void)willClose
-{
-	//printf("willClose %08X mTopView %08X\n", self, mTopView);
+{    
+    pthread_mutex_lock (&gLangMutex);
+    if (mWindowObj) {
+        SetPtr(mWindowObj->slots + 0, self);
+        VMGlobals *g = gMainVMGlobals;
+        g->canCallOS = true;
+        ++g->sp;  SetObject(g->sp, mWindowObj); // push window obj
+        runInterpreter(g, s_closed, 1);
+        g->canCallOS = false;
+        mWindowObj = 0;
+    }
+    pthread_mutex_unlock (&gLangMutex);
+    
+    //printf("willClose %08X mTopView %08X\n", self, mTopView);
     delete mTopView;
 	mTopView = 0;
+
 }
 
 /*  from command-w, scvm is the delegate */
