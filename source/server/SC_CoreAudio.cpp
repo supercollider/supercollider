@@ -706,12 +706,19 @@ bool SC_CoreAudioDriver::Stop()
 
 	mActive = false;
 
-	err = AudioDeviceStop(mOutputDevice, appIOProc);		// stop playing sound through the device
-	if (err != kAudioHardwareNoError) return false;
-
-	err = AudioDeviceRemoveIOProc(mOutputDevice, appIOProc);	// remove the IO proc from the device
-	if (err != kAudioHardwareNoError) return false;
-		
+	if (UseSeparateIO()) {
+		err = AudioDeviceStop(mOutputDevice, appIOProc2);		
+		if (err != kAudioHardwareNoError) return false;
+	
+		err = AudioDeviceRemoveIOProc(mOutputDevice, appIOProc2);	
+		if (err != kAudioHardwareNoError) return false;
+	} else {
+		err = AudioDeviceStop(mOutputDevice, appIOProc);		
+		if (err != kAudioHardwareNoError) return false;
+	
+		err = AudioDeviceRemoveIOProc(mOutputDevice, appIOProc);	
+		if (err != kAudioHardwareNoError) return false;
+	}
 	return true;
 }
 
