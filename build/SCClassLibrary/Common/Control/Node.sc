@@ -9,13 +9,12 @@ Node {
 		/* might be called by the group doing g_freeAll
 			so then we wouldn't want to send the command, just free the
 			structure */
-		if(isPlaying,{
+		if(isPlaying, {
 			this.remove;
 			this.isPlaying = false;
 			(this.asString ++ " was freed").postln;
-			if(sendCmd,{ 
-				server.sendBundle(server.latency, 
-									["/n_free",nodeID]); 
+			if(sendCmd, { 
+				server.sendBundle(server.latency, ["/n_free", nodeID]); 
 			});
 		});
 	}
@@ -24,7 +23,6 @@ Node {
 		server.sendBundle(server.latency, ["/n_run", nodeID,flag.binaryValue]);
 	}
 	set { arg controlName, value ... args;
-		["setting",nodeID,controlName,value].postln;
 		server.sendBundle(server.latency, 
 			["/n_set", nodeID,controlName, value]++args);
 	}	
@@ -44,24 +42,23 @@ Node {
 		server.sendBundle(server.latency, 
 			["/n_map", nodeID,controlName, busIndex]++args);
 	}
+		
 	moveBefore { arg aNode;
-		this.remove;				// not needed to pluck it if on same group
-		this.prMoveBefore(aNode);
-		server.sendBundle(server.latency,["/n_before",nodeID,aNode.nodeID])
+		aNode.group.moveNodeBefore(this, aNode);
 	}
 	moveAfter { arg aNode;
-		this.remove;
-		this.prMoveAfter(aNode);
-		server.sendBundle(server.latency,["/n_after", nodeID, aNode.nodeID]);
+		aNode.group.moveNodeAfter(this, aNode);
 	}
+	
 	moveToHead { arg aGroup;
-		(aGroup ? group).moveToHead(this);
+		(aGroup ? group).moveNodeToHead(this);
 	}
 	moveToTail { arg aGroup;
-		(aGroup ? group).moveToTail(this);
-		server.sendBundle(server.latency,["/g_tail", aGroup.nodeID, nodeID]);
+		(aGroup ? group).moveNodeToTail(this);
 	}
-		
+	//support for Group::deepDo
+	deepDo { 	}
+	
 	== { arg aNode;
 		^(aNode.server === server) && (aNode.nodeID == nodeID)
 	}
@@ -69,10 +66,12 @@ Node {
 	printOn { arg stream; stream << this.class.name << "(" << nodeID <<")" }
 	
 	/** PRIVATE IMPLEMENTATION  **/
-	*prNew { arg nodeID;
-		^super.new.ninit(nodeID ?? {UniqueID.next})
+	*prNew {
+		^super.new //just return the instance
 	}
-	ninit { arg nid; nodeID = nid; }
+	
+	initNodeID {  nodeID = server.nodeAllocator.alloc  }
+	
 	group_ { arg g;
 		group = g;
 		server = group.server;
@@ -132,6 +131,7 @@ Node {
 		});
 		group = next = prev = nil;
 	}
+	
 }
 
 
@@ -139,24 +139,70 @@ Group : Node {
 
 	var <>head, <>tail;
 	
-	*new { arg target,addAction=\addToHead;
-		^this.prNew.perform(addAction,target.asTarget)
+	*new { arg target,addAction=\addToTail;
+		^super.new.perform(addAction,target.asTarget)
 	}
 	*after { arg aNode;	^this.prNew.addAfter(aNode) }
 	*before {  arg aNode; ^this.prNew.addBefore(aNode) }
 	*head { arg aGroup; ^this.prNew.addToHead(aGroup.asGroup) }
 	*tail { arg aGroup; ^this.prNew.addToTail(aGroup.asGroup) }
 
+	
 	moveNodeToHead { arg aNode;
 		aNode.remove;
 		this.prAddHead(aNode);
 		server.sendBundle(server.latency,["/g_head", nodeID, aNode.nodeID]);
-	}	
+	}
+		
 	moveNodeToTail { arg aNode;
 		aNode.remove;
 		this.prAddTail(aNode);
 		server.sendBundle(server.latency,["/g_tail", nodeID, aNode.nodeID]);
+	}
+	
+	moveNodeBefore { arg  movedNode, aNode;
+		movedNode.remove;
+		movedNode.prMoveBefore(aNode);
+		server.sendBundle(server.latency,
+			["/n_before", movedNode.nodeID, aNode.nodeID]);
+	}
+	
+	moveNodeAfter { arg  movedNode, aNode;
+		movedNode.remove;
+		movedNode.prMoveAfter(aNode);
+		server.sendBundle(server.latency,
+			["/n_after", movedNode.nodeID, aNode.nodeID]);
 	}	
+	
+	nodeToServer { arg addActionNum,targetID;
+		group.sendGroupToServer(this, addActionNum,targetID); 	}
+	
+	sendGroupToServer { arg arggroup, addActionNum,targetID;
+		if(server.serverRunning, {
+			arggroup.initNodeID;
+			server.sendBundle(server.latency,
+				["/g_new", arggroup.nodeID, addActionNum, targetID].postln
+			);
+			
+			arggroup.isPlaying = true;
+			arggroup.isRunning = true;
+		}, { "Server not running".inform });
+	
+	}
+	
+	sendSynthToServer { arg argsynth, addActionNum,targetID,args;
+		if(server.serverRunning, {
+			argsynth.initNodeID;
+			server.sendBundle(server.latency,
+				(["/s_new", argsynth.defName, argsynth.nodeID, 
+					addActionNum, targetID] 
+				++ args).postln);
+			
+			argsynth.isPlaying = true;
+			argsynth.isRunning = true;
+		}, { "Server not running".inform });
+	
+	}
 	
 	freeAll { 	
 		server.sendBundle(server.latency,["/g_freeAll",nodeID]);
@@ -170,6 +216,7 @@ Group : Node {
 		this.do({ arg node;
 			node.free(false);
 		});
+		
 	}
 	
 	do { arg function;
@@ -180,21 +227,18 @@ Group : Node {
 			node = node.next;
 		});			
 	}
-	deepDo { arg function;
-		this.do({ arg node;
-			if(node.isKindOf(Group), { 
-				node.do(function);
-			}, { 
-				function.value(node); 
-			})
-		})
-	}
 	
-	nodeToServer { arg addActionNum,targetID;
-		server.sendBundle(server.latency,
-			["/g_new", nodeID, addActionNum, targetID]);
-		isPlaying = isRunning = true;
+	deepDo { arg function;
+		var node;
+		node = head;
+		while({ node.notNil }, {
+			function.value(node);
+			node.deepDo(function);
+			node = node.next;
+		});
 	}
+		
+	
 
 	//private
 	prAddHead { arg node;
@@ -223,11 +267,11 @@ Synth : Node {
 
 	var <>defName;
 	
-	*new { arg defName,args,target,addAction=\addToHead;
+	*new { arg defName,args,target,addAction=\addToTail;
 		^this.prNew(defName).perform(addAction,target.asTarget,args ?? {[]})
 	}
 	*prNew { arg defName;
-		^super.prNew.defName_(defName.asDefName)
+		^super.new.defName_(defName.asDefName)
 	}
 	
 	*after { arg aNode,defName,args;	
@@ -242,14 +286,9 @@ Synth : Node {
 	*tail { arg aGroup,defName,args; 
 		^this.prNew(defName).addToTail(aGroup.asGroup,args) 
 	}
-
+	
 	nodeToServer { arg addActionNum,targetID,args;
-		// interleave indices in args ?
-		server.sendBundle(server.latency,
-			(["/s_new", defName,nodeID, addActionNum, targetID] 
-				++ args).postln);
-		isPlaying = isRunning = true;
-	}
+		group.sendSynthToServer(this, addActionNum,targetID,args); 	}
 
 	trace {
 		server.sendMsg("/s_trace", nodeID);
@@ -263,18 +302,21 @@ RootNode : Group {
 	*new { arg server;
 		server = server ?? {Server.local};
 		^(roots.at(server.name) ?? {
-			^super.prNew(0).rninit(server)
+			^super.prNew.rninit(server)
 		})
 	}
 	rninit { arg s; 
 		server = s;
 		roots.put(s.name,this);
+		nodeID = 0;
 		isPlaying = isRunning = true;
 		group = this; // self
 	}
 	*initClass {  roots = IdentityDictionary.new; }
 	nodeToServer {} // already running
 
+	
+	
 	remove {
 		if (next.notNil, { 
 			next.prev = prev; 
