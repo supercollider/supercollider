@@ -14,9 +14,11 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs24 \cf0 there is no crossfading or envelopes built into this.  the mix is always 100% wet.\
-use more than one PlayerEffectSocket and control levels to do that.
-\f1\fs18 \
+it is meant as a raw component that a more sophisticated switcher can use.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
 \
 not working yet...\
 \
@@ -25,7 +27,6 @@ not working yet...\
 	s.boot;\
 	\
 	\cf3 // play on a private bus\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	p = \cf2 Patch\cf0 (\{ \cf2 Saw\cf0 .ar * 0.2 \});\
 	b = \cf2 Bus\cf0 .audio(s);\
 	p.play(bus: b);\
@@ -34,7 +35,8 @@ not working yet...\
 \cf0 	e = \cf2 PlayerEffectSocket\cf0 .new;\
 	e.setInputBus(b);\
 	e.play;\
-	\
+	// but no effect is playing yet, so no sound\
+		\
 	\cf3 // prepare some effects\
 \cf0 	f = \cf2 Patch\cf0 (\{ \cf2 arg\cf0  audio,ffreq=300,rq=0.3;\
 			\cf2 RLPF\cf0 .ar(audio,ffreq,rq)\
@@ -57,6 +59,7 @@ not working yet...\
 		\})\
 	);\
 	\
+	e.insp\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
