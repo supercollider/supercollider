@@ -226,12 +226,17 @@ CXPlayerControl : AbstractPlayControl {
 	}
 	
 	playToBundle { arg bundle, extraArgs, proxy, addAction;
-		
-		// we'll need channel offset maybe.
-		source.prepareToBundle(proxy.group, bundle);
-		source.spawnOnToBundle(proxy.group, proxy, bundle);
-		// this.moveToGroupToBundle(bundle, proxy.group);
-		// if(paused) { bundle.addAction(source, \pause) };
+		var bus;
+		if(paused.not) {
+			bus = proxy.asBus;
+			// we'll need channel offset maybe.
+			source.prepareToBundle(nil, bundle); //proxy.group
+			if(source.readyForPlay.not) {
+				source.makePatchOut(nil, true, bus, bundle)
+			};
+			source.spawnOnToBundle(nil, bus, bundle); //proxy.group
+			// this.moveToGroupToBundle(bundle, proxy.group);
+		};
 		^nil
 		
 		
@@ -239,8 +244,10 @@ CXPlayerControl : AbstractPlayControl {
 	 
 	stopToBundle { arg bundle, fadeTime=0.02;
 		source.releaseToBundle(fadeTime, bundle);
+		//bundle.addSchedFunction({ source.free }, 
 	}
-	freeToBundle {}
+	
+	freeToBundle {} // maybe should free after fadeTime
 	
 	stop {
 		source.stop;
@@ -250,11 +257,13 @@ CXPlayerControl : AbstractPlayControl {
 	}
 	
 	free { 
-		source.stop;
+		// source.stop;
 	}
 	pause { source.stop }
 	resume { source.play }
 	// moveToGroupToBundle {}
+	
+	isPlaying { ^false } // ^source.isPlaying }
 	
 }
 
