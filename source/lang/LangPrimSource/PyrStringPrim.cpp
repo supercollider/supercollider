@@ -293,8 +293,9 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 	char bchar0 = bchar[0];
 	int scanlength = alength - blength;
 	if (IsTrue(d)) {
+		bchar0 = toupper(bchar0);
 		for (int i=0; i <= scanlength; ++i, ++achar) {
-			if (*achar == bchar0) {
+			if (toupper(*achar) == bchar0) {
 				cmp = memcmpi(achar+1, bchar+1, blength-1);
 				if (cmp == 0) break;
 			}
