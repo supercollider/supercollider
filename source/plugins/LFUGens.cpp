@@ -1056,6 +1056,19 @@ void LinExp_Ctor(LinExp* unit)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+enum {
+	kEnvGen_gate,
+	kEnvGen_levelScale,
+	kEnvGen_levelBias,
+	kEnvGen_timeScale,
+	kEnvGen_doneAction,
+	kEnvGen_initLevel,
+	kEnvGen_numStages,
+	kEnvGen_releaseNode,
+	kEnvGen_loopNode
+};
+
 void EnvGen_Ctor(EnvGen *unit)
 {
 	//Print("EnvGen_Ctor A\n");
@@ -1073,25 +1086,13 @@ void EnvGen_Ctor(EnvGen *unit)
 	// level0, numstages, releaseNode, loopNode,
 	// [level, dur, shape, curve]
 		
-	unit->m_endLevel = unit->m_level = ZIN0(5);
+	unit->m_endLevel = unit->m_level = ZIN0(kEnvGen_initLevel);
 	unit->m_counter = 0;
 	unit->m_stage = 1000000000;
 	unit->m_prevGate = 0.f;
 	unit->m_released = false;
 	EnvGen_next_k(unit, 1);
 }
-
-enum {
-	kEnvGen_gate,
-	kEnvGen_levelScale,
-	kEnvGen_levelBias,
-	kEnvGen_timeScale,
-	kEnvGen_doneAction,
-	kEnvGen_initLevel,
-	kEnvGen_numStages,
-	kEnvGen_releaseNode,
-	kEnvGen_loopNode
-};
 
 enum {
 	shape_Step,
@@ -1127,11 +1128,12 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 	// [level, dur, shape, curve]
 
 	if (counter <= 0) {
-		//printf("stage %d rel %d\n", unit->m_stage, (int)ZIN0(kEnvGen_releaseNode));
-		int numstages = (unit->mNumInputs - 9) >> 2;
+		//Print("stage %d rel %d\n", unit->m_stage, (int)ZIN0(kEnvGen_releaseNode));
+		int numstages = (int)ZIN0(kEnvGen_numStages);
 		
+		//Print("stage %d   numstages %d\n", unit->m_stage, numstages);
 		if (unit->m_stage+1 >= numstages) { // num stages
-		//Print("stage > num stages\n");
+		//Print("stage+1 > num stages\n");
 			counter = INT_MAX;
 			unit->m_shape = 0;
 			level = unit->m_endLevel;
@@ -1159,7 +1161,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 			
 			if (stageOffset + 4 > unit->mNumInputs) {
 				// oops.
-				//Print("envelope went past end of inputs.\n");
+				Print("envelope went past end of inputs.\n");
 				ClearUnitOutputs(unit, 1);
 				NodeEnd(&unit->mParent->mNode);
 				return;
@@ -1332,7 +1334,7 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 	while (remain)
 	{
 		if (counter == 0) {
-			int numstages = (unit->mNumInputs - 9) >> 2;
+			int numstages = (int)ZIN0(kEnvGen_numStages);
 			
 			if (unit->m_stage+1 >= numstages) { // num stages
 				counter = INT_MAX;
@@ -1563,7 +1565,7 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 	{
 		if (counter == 0) {
 
-			int numstages = (unit->mNumInputs - 9) >> 2;
+			int numstages = (int)ZIN0(kEnvGen_numStages);
 			
 			if (unit->m_stage+1 >= numstages) { // num stages
 				counter = INT_MAX;
