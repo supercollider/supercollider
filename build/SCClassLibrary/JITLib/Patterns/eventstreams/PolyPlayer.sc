@@ -77,7 +77,7 @@ MapNotePlayer : NotePlayer {
 		
 		if (desc.hasGate) {
 			// send note off bundle.
-			~tempoclock.sched(~dur, { 
+			~tempoclock.sched(~sustain, { 
 			server.sendBundle(lag, [15, id, \gate, 0]); //15 == n_set
 			});
 		};

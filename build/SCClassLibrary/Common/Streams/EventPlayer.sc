@@ -20,7 +20,7 @@ NotePlayer : EventPlayer {
 				
 		if (desc.hasGate) {
 			// send note off bundle.
-			~tempoclock.sched(~dur, { 
+			~tempoclock.sched(~sustain, { 
 	//			if (thisThread.seconds <= ttseconds) {
 	//				[\ooo, ttbeats, ttseconds, thisThread.beats, thisThread.seconds, dur].postln;
 	//				TempoClock.default.prDump;
