@@ -18,6 +18,7 @@ Disclaimer: there is no time, really; punctuality is your personal responsibilit
 
 \f1\fs24 \
 \
+\
 
 \f2\i Just in time programming
 \f1\i0  (or: 
@@ -30,69 +31,105 @@ Disclaimer: there is no time, really; punctuality is your personal responsibilit
 \f1\i0  that can be modified and used in calcuations while playing. There is some specific networking classes which are made to simplify the distribution of  live coding activity.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\
+\
+This library consists of a number of 
+\f2\i placeholders
+\f1\i0  (server side and client side) and 
+\f2\i schemes of access
+\f1\i0 .\
+Placeholders are currently provided for Patterns, Tasks and Synth Nodes.\
+\
+\
+\'a5 One way or style of access is the 
+\f2\i 'def' 
+\f1\i0 classes (Pdef, Ndef etc.)\
+	it binds a symbol to an object in a specific way:\
+	Pdef(\\name) returns the proxy\
+	Pdef(\\name, object) sets the source and returns the proxy.\
+	the rest of the behaviour depends on its use.\
+	\
+	client side: 	
+\f0\b Pdef, Pdefn, Tdef, Pbindef
+\f1\b0 \
+	server side: 	
+\f0\b Ndef\
+	
+\f1\b0 \
+\'a5 Another way, for server side NodeProxies, is an 
+\f2\i environment
+\f1\i0  that returns placeholders on demand:\
+	ProxySpace.push\
+	~out = \{ ...\}\
+	helpfile: 		
+\f0\b ProxySpace\
+	
+\f1\b0 \
+\'a5 there is also direct access 
+\f2\i without
+\f1\i0  using the access schemes: NodeProxy, TaskProxy etc. provide it.\
+	internally the former use these as base classes.\
+\
+	client side: 	
+\f0\b PatternProxy, EventPatternProxy
+\f1\b0 , 
+\f0\b TaskProxy
+\f1\b0 , 
+\f0\b PbindProxy, Pdict\
+
+\f1\b0 	server side: 	
+\f0\b NodeProxy, RecNodeProxy
+\f1\b0 \
+\pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
+\cf0 \
+\'a5 in remote and local networks thanks to sc-architecture node proxies can be used on any server, \
+	as long as it notifies the client and has a correctly initialized default node.\
+	note that the client id should be set.\
+	using the network classes, groups of participants can interfere into each other's composition\
+	by sharing a common server, using SharedNodeProxy and exchanging code and comments \
+	in a chat (see Client)\
+	networking classes:		\
+			
+\f0\b Client 
+\f1\b0 simplifies client-to-client networking\
+			BroadcastServer, Router (no help yet)\
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
-\f3\fs18 \cf0 \
-
-\f1\fs24 the main environment for this is 
-\f0\b ProxySpace
-\f1\b0 , which handles processes that play onto a bus on the server and 
-\f0\b Pdef/Pdefn/Tdef
-\f1\b0 , which handle client side streams. \
-\
-There is various classes that are used in this context that\
-can be also useful:\
-\
+\f0\b \cf0 	
+\f1\b0 \
+					
+\f0\b 			\
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
-\f0\b \cf0 \
-\
-placeholders: 		for nodes: 	
-\f1\b0 [
-\f0\b ProxySpace
-\f1\b0 ] 
-\f0\b [NodeProxy]
-\f1\b0 [RecNodeProxy][Ndef]
-\f0\b \
-			for streams: 	[Pdef][Pdefn][Tdef][Pbindef]\
-					[PbindProxy]
-\f1\b0 [PatternProxy][EventPatternProxy]
-\f0\b \
-			\
-other topics:		[jitlib_efficiency][the_lazy_proxy][jitlib_fading][jitlib_asCompileString]\
+\f1\b0 \cf0 tutorials:	
+\f0\b 		[jitlib_efficiency][the_lazy_proxy][jitlib_fading][jitlib_asCompileString]\
 			[recursive_phrasing]\
 \
-\pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
-\f1\b0 \cf0 storing control settings:	[NodeMap]
+\f1\b0 storage:			NodeMap storing control setting\
+			
+\f0\b Order
+\f1\b0  	ordered collection
 \f0\b \
 
 \f1\b0 \
 \
 \
-there is a couple of other classes that are not specifically connected:\
 \
+unconnected other classes:\
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
-\f0\b \cf0 Patterns\
-	Pdict\
-	StreamClutch
+\f0\b \cf0 	
 \f1\b0 \
-\pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
-\f3\fs18 \cf0 \
-\pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
-
-\f0\b\fs24 \cf0 UGens	\
+\f0\b UGens	\
 	
 \f1\b0 TChoose
 \f0\b \
 	
 \f1\b0 TWChoose\
 	\
-
-\f0\b Order
-\f1\b0  	ordered collection\
+\
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
 \f3\fs18 \cf0 \
@@ -118,9 +155,10 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 \f3\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 \cf0 \
-\
 \
 \
 
@@ -128,7 +166,7 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 \
 	\
 2004\
-	september\
+	\ul september\ulnone \
 	refactored Pdef: new subclasses\
 	improvements in NodeMap and NodeProxy\
 	added role scheme (helpfiles to come)\
