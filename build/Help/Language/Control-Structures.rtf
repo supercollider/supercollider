@@ -2,7 +2,8 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fmodern\fcharset77 Courier;
 \f3\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green112\blue0;}
+\red0\green0\blue0;\red96\green96\blue96;\red0\green112\blue0;\red0\green0\blue191;\red0\green115\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Control Structures\
@@ -41,12 +42,13 @@ examples:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3 \cf0 if ( [\cf2 false\cf0 , \cf2 true\cf0 ].choose,				\cf3 // Boolean expression (chooses one at random)\
+\f3\fs18 \cf0 if ( [\cf2 false\cf0 , \cf2 true\cf0 ].choose,				\cf3 // Boolean expression (chooses one at random)\
 \cf0 	\{ \cf4 "expression was true"\cf0 .postln \},	\cf3 // true function\
 \cf0 	\{ \cf4 "expression was false"\cf0 .postln \}	\cf3 // false function\
 \cf0 )\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  a = 1, z;\
 z = if (a < 5, \{ 100 \},\{ 200 \});\
 z.postln;\
@@ -56,7 +58,8 @@ z.postln;\
 \cf2 var\cf0  x;\
 if (x.isNil, \{ x = 99 \});\
 x.postln;\
-)\
+)
+\fs24 \
 \
 '
 \f1 If' expressions are optimized (i.e. inlined) by the compiler if they do not contain variable declarations in the trueFunc and the falseFunc.\
@@ -83,12 +86,14 @@ testFunc.while( bodyFunc );\
 \f1 \cf0 \
 example:\
 \
-(\
+
+\fs18 \cf5 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3 \cf0 i = 0;\
-while ( \{ i < 5 \}, \{ i = i + 1; \cf4 "boing"\cf0 .postln \});\
-)\
+\f3 \cf5 i = 0;\
+while ( \{ i < 5 \}, \{ i = i + 1; \cf6 "boing"\cf5 .postln \});\
+)
+\fs24 \cf0 \
 \
 '
 \f1 While' expressions are optimized by the compiler if they do not contain variable declarations in the testFunc and the bodyFunc.\
@@ -117,7 +122,9 @@ example:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3 \cf0 for (3, 7, \{ \cf2 arg\cf0  i; i.postln \}); \cf3 // prints values 3 through 7\
+\f3\fs18 \cf0 for (3, 7, \{ \cf2 arg\cf0  i; i.postln \}); \cf3 // prints values 3 through 7
+\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -144,7 +151,8 @@ example:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3 \cf0 forBy (0, 8, 2, \{ \cf2 arg\cf0  i; i.postln \}); \cf3 // prints values 0 through 8 by 2's\
+\f3\fs18 \cf0 forBy (0, 8, 2, \{ \cf2 arg\cf0  i; i.postln \}); \cf3 // prints values 0 through 8 by 2's
+\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
@@ -173,14 +181,17 @@ collection.do(function)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3 \cf0 [ 1, 2, \cf4 "abc"\cf0 , (3@4) ].do(\{ \cf2 arg\cf0  item, i; [i, item].postln; \});\
+\f3\fs18 \cf0 [ 1, 2, \cf4 "abc"\cf0 , (3@4) ].do(\{ \cf2 arg\cf0  item, i; [i, item].postln; \});\
 \
 5.do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // iterates from zero to four\
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 "you"\cf0 .do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // a String is a collection of characters\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 'they'\cf0 .do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // a Symbol is a singular item\
+\cf7 'they'\cf0 .do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // a Symbol is a singular item
+\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -199,37 +210,41 @@ Object implements a
 \f0\b\fs36 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\b0\fs20 \cf0 (\
-var x, z;\
+\f3\b0\fs18 \cf5 (\
+\cf8 var\cf5  x, z;\
 z = [0, 1, 1.1, 1.3, 1.5, 2];\
 switch (z.choose.postln,\
-	1,   \{ \\no \},\
-	1.1, \{ \\wrong \},\
-	1.3, \{ \\wrong \},\
-	1.5, \{ \\wrong \},\
-	2,   \{ \\wrong \},\
-	0,   \{ \\true \}\
+	1,   \{ \cf9 \\no\cf5  \},\
+	1.1, \{ \cf9 \\wrong\cf5  \},\
+	1.3, \{ \cf9 \\wrong\cf5  \},\
+	1.5, \{ \cf9 \\wrong\cf5  \},\
+	2,   \{ \cf9 \\wrong\cf5  \},\
+	0,   \{ \cf9 \\true\cf5  \}\
 ).postln;\
-)\
+)
+\fs20 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 or:
 \f3\fs20 \
 		\
-(\
-var x, z;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf5 (\
+\cf8 var\cf5  x, z;\
 z = [0, 1, 1.1, 1.3, 1.5, 2];\
 x = switch (z.choose)\
-	\{1\}   \{ \\no \}\
-	\{1.1\} \{ \\wrong \}\
-	\{1.3\} \{ \\wrong \}\
-	\{1.5\} \{ \\wrong \}\
-	\{2\}   \{ \\wrong \}\
-	\{0\}   \{ \\true \};\
+	\{1\}   \{ \cf9 \\no\cf5  \}\
+	\{1.1\} \{ \cf9 \\wrong\cf5  \}\
+	\{1.3\} \{ \cf9 \\wrong\cf5  \}\
+	\{1.5\} \{ \cf9 \\wrong\cf5  \}\
+	\{2\}   \{ \cf9 \\wrong\cf5  \}\
+	\{0\}   \{ \cf9 \\true\cf5  \};\
 x.postln;\
 )\
-\
+
+\fs20 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Case
@@ -245,19 +260,21 @@ x.postln;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs20 \cf0 \
-(\
-var i, x, z;\
+
+\fs18 \cf5 (\
+\cf8 var\cf5  i, x, z;\
 z = [0, 1, 1.1, 1.3, 1.5, 2];\
 i = z.choose;\
 x = case\
-	\{ i == 1 \}   \{ \\no \}\
-	\{ i == 1.1 \} \{ \\wrong \}\
-	\{ i == 1.3 \} \{ \\wrong \}\
-	\{ i == 1.5 \} \{ \\wrong \}\
-	\{ i == 2 \}   \{ \\wrong \}\
-	\{ i == 0 \}   \{ \\true \};\
+	\{ i == 1 \}   \{ \cf9 \\no\cf5  \}\
+	\{ i == 1.1 \} \{ \cf9 \\wrong\cf5  \}\
+	\{ i == 1.3 \} \{ \cf9 \\wrong\cf5  \}\
+	\{ i == 1.5 \} \{ \cf9 \\wrong\cf5  \}\
+	\{ i == 2 \}   \{ \cf9 \\wrong\cf5  \}\
+	\{ i == 0 \}   \{ \cf9 \\true\cf5  \};\
 x.postln;\
-)\
+)
+\fs20 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 \
