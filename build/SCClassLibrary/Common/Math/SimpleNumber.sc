@@ -226,9 +226,10 @@ SimpleNumber : Number {
 	}
 	
 	roundToScale { arg scale, stepsPerOctave=12, octave=5;
-		var key;
-		key = this - (stepsPerOctave * octave) % stepsPerOctave;
-		^key.roundToList(scale)
+		var key, root;
+		root = (stepsPerOctave * octave);
+		key = this - root % stepsPerOctave;
+		^key.roundToList(scale) + root
 	}
 	
 	
