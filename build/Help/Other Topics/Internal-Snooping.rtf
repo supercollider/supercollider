@@ -26,7 +26,7 @@ Selecting the name of any method (e.g.
 \f0\b play
 \f1\b0 ) and typing cmd-y will open a window showing all implementations of that method and their arguments. Selecting one of those classes and methods (e.g. 
 \f0\b Sample-play
-\f1\b0 ) and typing cmd-j will open the class defintion at that method. (Note that cmd-y only shows implementations, and does not indicate inheritance).\
+\f1\b0 ) and typing cmd-j will open the class definition at that method. (Note that cmd-y only shows implementations, and does not indicate inheritance).\
 \
 Selecting any text (e.g. 
 \f0\b SCWindow 
@@ -47,37 +47,57 @@ into them, you may break something.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
-\cf2 Collection\cf0 .dumpInterface;	\cf3 // print all instance methods defined for this class\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf2 Collection\cf0 .dumpInterface;	\cf3 // print all instance methods defined for this class\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Collection\cf0 .class.dumpInterface;	\cf3 // print all class methods defined for this class\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Collection\cf0 .dumpClassSubtree;	\cf3 // dump all subclasses of this class\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SCWindow\cf0 .instVarNames.dump;	\cf3 // dump all instance variable names of this class\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SCWindow\cf0 .classVarNames.dump;	\cf3 // dump all class variable names of this class\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SCWindow\cf0 .filenameSymbol.postln;	\cf3 // the path to the file that defined this class\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // print all classes whose names start with 'F'\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Class\cf0 .allClasses.do(\{ \cf2 arg\cf0  class;\
 	if (class.name.asString.at(0) == $F, \{ class.name.postln; \});\
 \})\
 )\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // find and print all class variable names defined in the system\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Class\cf0 .allClasses.do(\{ \cf2 arg\cf0  class;\
     if (class.classVarNames.notNil, \{\
 		\cf3 // classVarNames is an Array of Symbols\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0         class.classVarNames.do(\{ \cf2 arg\cf0  varname;\
             (class.name.asString ++ \cf4 " "\cf0  ++ varname.asString).postln;\
         \})\
     \});\
 \});\
 )\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 Snooping in Methods
@@ -89,16 +109,26 @@ into them, you may break something.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
-\cf2 Collection\cf0 .findMethod(\cf5 'select'\cf0 ).dump; \cf3 // find a method object\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf2 Collection\cf0 .findMethod(\cf5 'select'\cf0 ).dump; \cf3 // find a method object\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Collection\cf0 .findMethod(\cf5 'select'\cf0 ).argNames.dump; \cf3 // dump its argument names\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Collection\cf0 .findMethod(\cf5 'select'\cf0 ).varNames.dump; \cf3 // dump its local variable names\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // dump its code. mostly for debugging the compiler.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Collection\cf0 .findMethod(\cf5 'select'\cf0 ).dumpByteCodes;	\
 \
 \cf2 Collection\cf0 .dumpByteCodes(\cf5 'select'\cf0 );	\cf3 // a shorter version of the above\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \{ 1 + 2 \}.dump; \cf3 // this is a Function\
 \cf0 \
@@ -106,14 +136,17 @@ into them, you may break something.\
 \cf0 \
 \{ 1 + 2 \}.def.dumpByteCodes;	\cf3 // dump its code.\
 \cf0 \
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 Snooping in Windows\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs24 \cf0 (\
+\f2\b0\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // create some windows to snoop in\cf0 \
 5.do(\{ \cf2 arg\cf0  i;\
 	\cf2 var\cf0  w, b;\
@@ -124,18 +157,25 @@ into them, you may break something.\
 	b.states = [[\cf4 "BLAM-O"\cf0 , \cf2 Color\cf0 .red]];\
 \}))\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SCWindow\cf0 .allWindows.dump;	\cf3 // dump a list of all open SCWindows\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // a little more helpful, dump their names\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SCWindow\cf0 .allWindows.collect(\{ \cf2 arg\cf0  w; w.name \}).postln;	\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // change background colors of all open windows\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SCWindow\cf0 .allWindows.do(\{ \cf2 arg\cf0  window;\
 	window.view.background = \cf2 Color\cf0 .new(0.5 + 0.5.rand, 0.5 + 0.5.rand, 0.5 + 0.5.rand);\
 \}))\
 \
 \cf2 SCWindow\cf0 .closeAll; \cf3 // close all the windows (This will close the server windows)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -143,22 +183,20 @@ into them, you may break something.\
 \f2\b0\fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // First execute this:\
+
+\fs18 \cf3 // First execute this:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs22 \cf0 (
-\f1\fs28 \
-
-\f2\fs22 f = \cf2 SynthDef\cf0 (\cf4 "Help-SnoopSynthDef"\cf0 , \
+\cf0 (\
+f = \cf2 SynthDef\cf0 (\cf4 "Help-SnoopSynthDef"\cf0 , \
 	\{ \cf2 arg\cf0  out=0;\
 		 \cf2 Out\cf0 .ar(out, \cf2 PinkNoise\cf0 .ar(0.1))\
 	\});\
-)
-\fs24 \
+)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 f.dumpUGens;\cf0 	\cf3 // get the ugens, listed in order of execution, with rate, index and\
 				// inputs\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -169,9 +207,14 @@ When evaluating text in the interpreter, the variable 'this' always refers to th
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
-\cf2 this\cf0 .dump;	\cf3 // display the values of all the interpreter variables a-z\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf2 this\cf0 .dump;	\cf3 // display the values of all the interpreter variables a-z\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 this\cf0 .clearAll;	\cf3 // set all variables a-z to nil\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 g = \cf2 this\cf0 .compile(\cf4 "(1 + 2).postln"\cf0 );	\cf3 // compile some text into a Function\
 \cf0 \
@@ -179,10 +222,16 @@ g.postln;		\cf3 // see, g is a Function\
 \cf0 \
 g.value;	\cf3 // evaluate g\
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 this\cf0 .interpret(\cf4 "(1 + 2).postln"\cf0 );	\cf3 // interpret some text\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 this\cf0 .interpretPrint(\cf4 "1 + 2"\cf0 );	\cf3 // interpret some text and print the result\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
 }

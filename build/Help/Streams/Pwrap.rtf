@@ -5,42 +5,19 @@
 }
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 Pstutter
-\f1\b0\fs24  \
+\f0\b\fs36 \cf0 Pwrap
+\f1\b0\fs24 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 superclass: FilterPatterns
+\f0\b superclass: FilterPattern\
+
 \f1\b0 \
-\
-
-\f0\b Pstutter(n, pattern)
-\f1\b0 \
-\
-repeat each element n times\
-\
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 (\
-\cf2 var\cf0  a, b;\
-a = \cf2 Pstutter\cf0 (2, Pseq(#[1, 2, 3],inf));\
-x = a.asStream;\
-13.do(\{ x.next.postln; \});\
-)\
+\f0\b\fs28 \cf0 Pwrap(pattern,lo,hi)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1 \cf0 Pstutter used as a sequence of pitches\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2 \cf0 \
-\
+\f2\b0\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf0 (\
@@ -52,19 +29,33 @@ x = a.asStream;\
 	\}).load(s);\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 \
+a = Pn(\
+	Pwrap(\
+		Pgeom(200,1.07,96),\
+		200,\
+		1000.0\
+	),\
+	inf\
+);\
+x = a.asStream;\
 \
-(\
-c = \cf2 Pstutter\cf0 (3, Prand([1, 2, 3],inf)*4+65);\
-x = c.asStream;\
 \cf2 Routine\cf0 (\{\
 	loop(\{\
-			\cf2 Synth\cf0 (\cf3 "help-sinegrain"\cf0 , [\cf4 \\freq\cf0 , x.next.midicps]);\
+			\cf2 Synth\cf0 (\cf3 "help-sinegrain"\cf0 , [\cf4 \\freq\cf0 , x.next.debug,\\dur,0.3]);\
 			0.12.wait;\
 	\})\
 \}).play;\
-)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 \
-}
+\fs24 \cf0 )\
+\
+\
+\
+-felix}

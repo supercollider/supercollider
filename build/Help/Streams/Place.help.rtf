@@ -17,20 +17,31 @@
 \f0\b Place(list, repeats)
 \f1\b0 \
 \
-returns elements in the list, if an element is an array itself, \
-it embeds the first element when it comes by first time, the nth \
-when it comes by the nth time.\
-\
+returns elements in the list :\
+	if an element is an array itself, \
+	it embeds the first element when it comes by first time, \
+		the second element when it comes by the second time\
+		...\
+		the nth when it comes by the nth time.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  a, b;\
-a = \cf2 Place\cf0 (#[1, [2,55], [3, 89]], inf);\
+a = \cf2 Place\cf0 (#[1, [2,5], [3, 6]], inf);\
 x = a.asStream;\
 8.do(\{ x.next.postln; \});\
 )\
+\
+1\
+2\
+3\
+1\
+5\
+6\
+1\
+2\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
@@ -47,7 +58,6 @@ x = a.asStream;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "help-sinegrain"\cf0 , \
 	\{ \cf2 arg\cf0  out=0, freq=440, dur=0.05;\
 		\cf2 var\cf0  env;\

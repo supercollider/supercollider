@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red0\green0\blue191;
-\red96\green96\blue96;\red191\green0\blue0;\red96\green96\blue96;\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 EnvGen
@@ -23,9 +23,8 @@ See the
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 envelope
+\f0\b\fs24 envelope
 \f2\b0  - an instance of Env (or an array of Controls)\
 
 \f0\b gate    
@@ -42,17 +41,16 @@ levelScale
 
 \f0\b doneAction
 \f2\b0  -\
-	 the doneAction \cf2 arg\cf0  lets you cause the \cf2 EnvGen\cf0  to stop or end the \
-	 synth without having to use a \cf2 PauseSelfWhenDone\cf0  or \cf2 FreeSelfWhenDone\cf0  ugen. \
+	 the doneAction arg lets you cause the EnvGen to stop or end the \
+	 synth without having to use a PauseSelfWhenDone or FreeSelfWhenDone ugen. \
 	 It is more efficient to use a doneAction.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
-\cf3 (\
-	\cf4 SynthDef\cf3 (\cf5 "help-EnvGen"\cf3 ,\{ \cf4 arg\cf3  out=0;\
-		\cf4 Out\cf3 .ar(out,\
-			\cf4 EnvGen\cf3 .kr(\cf4 Env\cf3 .perc,1.0,doneAction: 2) \
-				* \cf4 SinOsc\cf3 .ar(440,0,0.1)\
+\f1\fs18 \
+(\
+	\cf2 SynthDef\cf0 (\cf3 "help-EnvGen"\cf0 ,\{ \cf2 arg\cf0  out=0;\
+		\cf2 Out\cf0 .ar(out,\
+			\cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc,1.0,doneAction: 2) \
+				* \cf2 SinOsc\cf0 .ar(440,0,0.1)\
 		)\
 	\}).play;\
 )\
@@ -90,19 +88,13 @@ SynthDef("help-EnvGen",\{ arg out=0,bus=0;\
 \}).play(s,[\\out,0,\\bus,b.index]);\
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 // turn on\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // turn on\
 \cf0 b.value = 1.0;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 // turn off\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // turn off\
 \cf0 b.value = 0.0;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 // same as 1.0\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // same as 1.0\
 \cf0 b.value = 0.2;\
 \
 b.free;\
@@ -119,39 +111,37 @@ b.free;\
 \f2\b0\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf7 "env"\cf0 , \{ \cf2 arg\cf0  i_outbus=0;\
+\f1\fs18 \cf0 (\
+\cf2 SynthDef\cf0 (\cf3 "env"\cf0 , \{ \cf2 arg\cf0  i_outbus=0;\
 	\cf2 var\cf0  env, envctl;\
 	\
-	\cf6 // make a dummy 8 segment envelope\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+	\cf4 // make a dummy 8 segment envelope\
 \cf0 	env = \cf2 Env.\cf0 newClear(\cf2 8\cf0 );\
 	\
-	\cf6 // create a control argument array\
-\cf0 	envctl = \cf2 Control\cf0 .names([\cf8 \\env\cf0 ]).kr( env.asArray );\
+	\cf4 // create a control argument array\
+\cf0 	envctl = \cf2 Control\cf0 .names([\cf5 \\env\cf0 ]).kr( env.asArray );\
 	\
 	\cf2 ReplaceOut\cf0 .kr(i_outbus, \cf2 EnvGen\cf0 .kr(envctl, doneAction: 2));\
 \}).load(s);\
+)\
 \
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf7 "sine"\cf0 , \{\
+(\
+\cf2 SynthDef\cf0 (\cf3 "sine"\cf0 , \{\
 	\cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(\cf2 In\cf0 .kr(0), 0, 0.2));\
 \}).load(s);\
+)\
 \
+s.sendMsg(\cf5 \\c_set\cf0 , 0, 800);\
 \
-s.sendMsg(\cf8 \\c_set\cf0 , 0, 800);\
+s.sendMsg(\cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1001, 1, 0);\
 \
-s.sendMsg(\cf8 \\s_new\cf0 , \cf8 \\sine\cf0 , 1001, 1, 0);\
+e = \cf2 Env\cf0 ([700,900,900,800], [1,1,1]*0.4, \cf5 \\exp\cf0 ).asArray;\
+s.sendBundle(\cf2 nil\cf0 ,[\cf5 \\s_new\cf0 , \cf5 \\env\cf0 , 1002, 2, 1001],[\cf5 \\n_setn\cf0 , 1002, \cf5 \\env\cf0 , e.size] ++ e);\
 \
-e = \cf2 Env\cf0 ([700,900,900,800], [1,1,1]*0.4, \cf8 \\exp\cf0 ).asArray;\
-s.sendBundle(\cf2 nil\cf0 ,[\cf8 \\s_new\cf0 , \cf8 \\env\cf0 , 1002, 2, 1001],[\cf8 \\n_setn\cf0 , 1002, \cf8 \\env\cf0 , e.size] ++ e);\
+f = \cf2 Env\cf0 ([1000,1000,800,1000,900,1000], [1,1,1,1,1]*0.3, \cf5 \\step\cf0 ).asArray;\
+s.sendBundle(\cf2 nil\cf0 ,[\cf5 \\s_new\cf0 , \cf5 \\env\cf0 , 1003, 2, 1001],[\cf5 \\n_setn\cf0 , 1003, \cf5 \\env\cf0 , f.size] ++ f);\
 \
-f = \cf2 Env\cf0 ([1000,1000,800,1000,900,1000], [1,1,1,1,1]*0.3, \cf8 \\step\cf0 ).asArray;\
-s.sendBundle(\cf2 nil\cf0 ,[\cf8 \\s_new\cf0 , \cf8 \\env\cf0 , 1003, 2, 1001],[\cf8 \\n_setn\cf0 , 1003, \cf8 \\env\cf0 , f.size] ++ f);\
-\
-s.sendMsg(\cf8 \\n_free\cf0 , 1001);\
+s.sendMsg(\cf5 \\n_free\cf0 , 1001);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 \
@@ -173,32 +163,31 @@ If you set the gate of an EnvGen to -1 or below, then the envelope will cutoff i
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf2 SynthDef\cf0 (\cf7 "stealMe"\cf0 , \{ \cf2 arg\cf0  gate = 1;\
+\f1\fs18 \cf2 SynthDef\cf0 (\cf3 "stealMe"\cf0 , \{ \cf2 arg\cf0  gate = 1;\
 	\cf2 Out\cf0 .ar(0, \{\cf2 BrownNoise\cf0 .ar\}.dup * \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .linen(2, 4, 2, 0.3), gate, doneAction:2))\
 \}).load(s);\
 \
-s.sendMsg(\cf8 \\s_new\cf0 , \cf8 \\stealMe\cf0 , 1001, 1, 0);\
+s.sendMsg(\cf5 \\s_new\cf0 , \cf5 \\stealMe\cf0 , 1001, 1, 0);\
 \
-s.sendMsg(\cf8 \\n_set\cf0 , 1001, \cf8 \\gate\cf0 , -1.1); \cf6 // cutoff in 0.1 seconds\
+s.sendMsg(\cf5 \\n_set\cf0 , 1001, \cf5 \\gate\cf0 , -1.1); \cf4 // cutoff in 0.1 seconds\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf2 If\cf0  your synthDef has an \cf2 arg\cf0  named \cf7 "gate"\cf0 , you can use the convienience method of Node:\
+\f2\fs24 \cf2 If\cf0  your synthDef has an \cf2 arg\cf0  named \cf3 "gate"\cf0 , you can use the convienience method of Node:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 	\cf2 Node\cf0 -release(releaseTime)\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 Fast triggering tests\
+\f0\b\fs24 Fast triggering tests\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 (\
-	\cf2 SynthDef\cf0 (\cf7 "help-EnvGen"\cf0 ,\{ \cf2 arg\cf0  out=0;		\
+	\cf2 SynthDef\cf0 (\cf3 "help-EnvGen"\cf0 ,\{ \cf2 arg\cf0  out=0;		\
 		\cf2 Out\cf0 .ar(out,	\
 			\cf2 EnvGen\cf0 .kr(\
 				Env.new([ 0, 1, 0.5, 0 ], [ 0.01, 0.3, 1 ], -4, 2, nil),\
@@ -209,10 +198,10 @@ s.sendMsg(\cf8 \\n_set\cf0 , 1001, \cf8 \\gate\cf0 , -1.1); \cf6 // cutoff in 0.
 )\
 \
 (\
-	\cf2 SynthDef\cf0 (\cf7 "help-EnvGen"\cf0 ,\{ \cf2 arg\cf0  out=0;		\
+	\cf2 SynthDef\cf0 (\cf3 "help-EnvGen"\cf0 ,\{ \cf2 arg\cf0  out=0;		\
 		\cf2 Out\cf0 .ar(out,	\
 			\cf2 EnvGen\cf0 .kr(\
-				\cf2 Env\cf0 .perc( 0.1, 0.0, 0.5, 1, \cf8 \\welch\cf0  ),\
+				\cf2 Env\cf0 .perc( 0.1, 0.0, 0.5, 1, \cf5 \\welch\cf0  ),\
 				Impulse.kr(100),\
 				timeScale: 0.1\
 			) * \cf2 SinOsc\cf0 .ar(440,0,0.3)		\
@@ -225,7 +214,7 @@ s.sendMsg(\cf8 \\n_set\cf0 , 1001, \cf8 \\gate\cf0 , -1.1); \cf6 // cutoff in 0.
 \
 			
 \f2\fs24 \
-see also [InTrig]\
+see also Linen, Line, XLine, InTrig\
 \
 (not yet done: an EnvGenBuffer class)\
 \

@@ -8,12 +8,19 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs26 \cf0 keeps track of node start and stop messages from the server.
-\f0\b\fs36 \
-
-\f1\b0\fs26 in order to know whether a synth / group is playing or not.\
-usually this is not needed, but in some cases it can be essential.
+\f1\b0\fs26 \cf0 Node instances (Synths and Groups) can be registered with the NodeWatcher.  It watches for server node status messages:\
+	
+\f2\fs18 	n_go \
+		n_end\
+		n_off\
+		n_on\
+		
+\f1\fs26 \
+and sets the isPlaying and isRunning variables on the Node instance accordingly.  A Node that ends is unregistered at that time.\
+\
+In some cases this can be an invaluable service.  The use of an independant object to maintain the state keeps the implementation of the Node classes simple.  It promotes a decoupled design.
 \f2\fs18 \
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 

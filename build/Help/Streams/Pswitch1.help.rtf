@@ -15,12 +15,14 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
-chooses elements from the 
-\f0\b list
-\f1\b0  by a stream of indices (
+the elements in the list are collected as streams,\
+the stream of indices (
 \f0\b which
-\f1\b0 ).\
-always one next value of the elements is returned.\
+\f1\b0 ) is used to in turn select\
+one of the elements.  one value only is yielded from that stream.\
+\
+this is different than Pswitch which embeds the element in the stream,\
+allowing it to play out until it is finished.  Pswitch1 switches every event.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
