@@ -138,7 +138,7 @@ MIDIIn {
 	}
 	*waitBend { arg port, chan, val;
 		var event;
-		event = MIDIEvent(\control, port, chan, val, nil, thisThread);
+		event = MIDIEvent(\bend, port, chan, val, nil, thisThread);
 		bendList = bendList.add(event); // add to waiting list
 		nil.yield; // pause the thread.
 		^event
