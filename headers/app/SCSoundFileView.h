@@ -33,6 +33,8 @@
 
 //jan t
 struct SCSoundFileSelection {
+		bool startIsEditable;
+		bool sizeIsEditable;
 		int start;
 		int size;
 		SCColor color;

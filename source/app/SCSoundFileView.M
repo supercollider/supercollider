@@ -131,6 +131,8 @@ SCSoundFileView::SCSoundFileView(SCContainerView *inParent, PyrObject* inObj, SC
 	
 	for (int i=0; i<kMaxSndSelections; ++i) 
 	{
+		mSelections[i].startIsEditable = true;
+		mSelections[i].sizeIsEditable = true;
 		mSelections[i].size = 0;
 		mSelections[i].start = 0;	
 		mSelections[i].color = SCMakeColor(0.2,0.2,1.0, 0.4);	
@@ -252,15 +254,11 @@ void SCSoundFileView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *the
 	
 	} else {
 		mMoveSelection = false;		
-		mSelections[mCurrentSelection].start = frame;
-		//maybe its the cursor
-
+		if(mSelections[mCurrentSelection].startIsEditable) mSelections[mCurrentSelection].start = frame;
 	}
 	
-	mTimeCursorPosition = frame;
-	
+	mTimeCursorPosition = frame;	
 	mLastFrame = frame;
-	
 	refresh();
 }
 
@@ -287,7 +285,7 @@ void SCSoundFileView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent
 			int moveframes = frame - mLastFrame;
 			mLastFrame = frame;
 	//		post(" frame:%i, moveframes:%i, mLastFrame:%i \n", frame, moveframes, mLastFrame);
-			mSelections[mCurrentSelection].start = mSelections[mCurrentSelection].start + moveframes;
+			if(mSelections[mCurrentSelection].startIsEditable) mSelections[mCurrentSelection].start = mSelections[mCurrentSelection].start + moveframes;
 		} else {
 
 			[[NSCursor resizeRightCursor] set];
@@ -296,10 +294,10 @@ void SCSoundFileView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent
 			{
 				int endframe;
 				endframe = mSelections[mCurrentSelection].start;
-				mSelections[mCurrentSelection].start = frame;
-				mSelections[mCurrentSelection].size = endframe - mSelections[mCurrentSelection].start;
+				if(mSelections[mCurrentSelection].startIsEditable) mSelections[mCurrentSelection].start = frame;
+				if(mSelections[mCurrentSelection].sizeIsEditable) mSelections[mCurrentSelection].size = endframe - mSelections[mCurrentSelection].start;
 	//			post("current frame is %d, mSelectionStart is %d, where is %f \n", frame, mSelections[mCurrentSelection].start, where.x);
-			} else mSelections[mCurrentSelection].size = frame - mSelections[mCurrentSelection].start;
+			} else if(mSelections[mCurrentSelection].sizeIsEditable) mSelections[mCurrentSelection].size = frame - mSelections[mCurrentSelection].start;
 		}
 		sendMessage(getsym("doAction"), 0, 0, 0);
 		refresh();
@@ -561,7 +559,7 @@ void SCSoundFileView::draw(SCRect inDamage)
 		drawRect = CGRectMake(selectionstart, 
 								mBounds.y + 1.f, 
 								selectionsize, 
-								mBounds.height);	
+								mBounds.height - 2.f);	
 		CGContextSetRGBFillColor(cgc, mSelections[i].color.red, mSelections[i].color.green, mSelections[i].color.blue, mSelections[i].color.alpha);
 		CGContextFillRect (cgc, drawRect); 
 	}
@@ -576,9 +574,9 @@ void SCSoundFileView::draw(SCRect inDamage)
 		for (int i=0; xgridpos<maxwidth; ++i) 
 		{	
 			drawRect = CGRectMake(xgridpos, 
-									mBounds.y + 1, 
+									mBounds.y + 1.f, 
 									1.f, 
-									mBounds.height);	
+									mBounds.height-2.f);	
 			CGContextFillRect (cgc, drawRect); 
 			xgridpos += gridsize;
 
@@ -597,9 +595,9 @@ void SCSoundFileView::draw(SCRect inDamage)
 		CGContextSetRGBFillColor(cgc, mTimeCursorColor.red, mTimeCursorColor.green, mTimeCursorColor.blue, mTimeCursorColor.alpha);	
 		
 			drawRect = CGRectMake(xcursorpos, 
-									mBounds.y + 1, 
+									mBounds.y + 1.f, 
 									1.5f, 
-									mBounds.height);	
+									mBounds.height-2.f);	
 			CGContextFillRect (cgc, drawRect); 
 //			post("xcursorpos %f, resampleFactor %f, mTimeCursorPosition %i \n", xcursorpos, mResampleFactor, mTimeCursorPosition);
 	}
@@ -775,6 +773,26 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;	
 	}		
 	
+	if (strcmp(name, "selectionStartIsEditable")==0) {
+		if (!isKindOfSlot(slot, class_array)) return errWrongType;
+		PyrSlot *slots = slot->uo->slots;
+		int index;
+		err = slotIntVal(slots+0, &index);
+		if (err) return err;		
+		(mSelections+index)->startIsEditable = IsTrue(slots+1);
+		return errNone;
+	}
+
+	if (strcmp(name, "selectionSizeIsEditable")==0) {
+		if (!isKindOfSlot(slot, class_array)) return errWrongType;
+		PyrSlot *slots = slot->uo->slots;
+		int index;
+		err = slotIntVal(slots+0, &index);
+		if (err) return err;		
+		(mSelections+index)->sizeIsEditable = IsTrue(slots+1);
+		return errNone;
+	}
+			
 	if (strcmp(name, "setViewData")==0) {
 		
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
