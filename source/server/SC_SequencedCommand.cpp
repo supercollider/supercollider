@@ -701,20 +701,25 @@ bool AudioStatusCmd::Stage2()
 {
 	scpacket packet;
 	packet.adds("status.reply");
-	packet.maketags(5);
+	packet.maketags(8);
 	packet.addtag(',');
 	packet.addtag('i');
 	packet.addtag('i');
 	packet.addtag('i');
 	packet.addtag('i');
 	packet.addtag('i');
+	packet.addtag('f');
+	packet.addtag('f');
 
 	packet.addi(1); // audio is always active now.
-
 	packet.addi(mWorld->mNumUnits);
 	packet.addi(mWorld->mNumGraphs);
 	packet.addi(mWorld->mNumGroups);
 	packet.addi(mWorld->hw->mGraphDefLib->NumItems());
+	
+	SC_CoreAudioDriver *driver = mWorld->hw->mAudioDriver;
+	packet.addf(driver->GetAvgCPU());
+	packet.addf(driver->GetPeakCPU());
 
 	SendReply(&mReplyAddress, packet.data(), packet.size());
 
@@ -792,7 +797,7 @@ SendFailureCmd::~SendFailureCmd()
 }
 
 
-void SendFailureCmd::InitSendFailureCmd(char *inCmdName, char* inErrString)
+void SendFailureCmd::InitSendFailureCmd(const char *inCmdName, const char* inErrString)
 {
 	mCmdName = (char*)World_Alloc(mWorld, strlen(inCmdName)+1);
 	strcpy(mCmdName, inCmdName);

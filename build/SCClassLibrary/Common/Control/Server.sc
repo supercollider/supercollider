@@ -6,12 +6,17 @@ ServerOptions
 	var <>numInputBusChannels=2;
 	var <>numOutputBusChannels=2;
 	var <>numBuffers=1024;
+	
 	var <>maxNodes=1024;
 	var <>maxSynthDefs=1024;
 	var <>protocol = \udp;
+	var <>blockSize = 64;
+	var <>hardwareBufferSize = 0;
+	
+	var <>memSize = 2048;
+	var <>numRGens = 64;
+	var <>numWireBufs = 64;
 
-// blocksize
-// realtimememory size
 // max logins
 // session-password
 
@@ -41,6 +46,21 @@ ServerOptions
 		if (maxSynthDefs != 1024, { 
 			o = o ++ " -d " ++ maxSynthDefs;
 		});
+		if (blockSize != 64, {
+			o = o ++ " -z " ++ blockSize;
+		});
+		if (hardwareBufferSize != 0, {
+			o = o ++ " -Z " ++ hardwareBufferSize;
+		});
+		if (memSize != 2048, {
+			o = o ++ " -m " ++ memSize;
+		});
+		if (numRGens != 64, {
+			o = o ++ " -r " ++ numRGens;
+		});
+		if (numWireBufs != 64, {
+			o = o ++ " -w " ++ numWireBufs;
+		});
 		^o
 	}
 	
@@ -62,7 +82,8 @@ Server : Model {
 	var <bufferAllocator;
 
 	var <numUGens=0,<numSynths=0,<numGroups=0,<numSynthDefs=0;
-
+	var <avgCPU, <peakCPU;
+	
 	var alive = false,aliveThread,statusWatcher;
 	
 	var <window;
@@ -147,6 +168,8 @@ Server : Model {
 				numSynths = msg.at(3);
 				numGroups = msg.at(4);
 				numSynthDefs = msg.at(5);
+				avgCPU = msg.at(6);
+				peakCPU = msg.at(7);
 				{
 					this.serverRunning_(true);
 					this.changed(\counts);
@@ -280,7 +303,7 @@ Server : Model {
 		if (window.notNil, { ^window.front });
 		
 		if(w.isNil,{
-			w = window = SCWindow(name.asString ++ " server", Rect(10, named.values.indexOf(this) * 140 + 10, 190, 120));
+			w = window = SCWindow(name.asString ++ " server", Rect(10, named.values.indexOf(this) * 140 + 10, 256, 100));
 			w.view.decorator = FlowLayout(w.view.bounds);
 		});
 		
@@ -355,17 +378,28 @@ Server : Model {
 		w.view.decorator.nextLine;
 
 		countsViews = 
-		["UGens :", "Synths :", "Groups :", "SynthDefs :"].collect({ arg name;
-			var label,numView;
-			label = SCStaticText(w, Rect(0,0, 80, 15));
+		[
+			"Avg CPU :", "Peak CPU :", 
+			"UGens :", "Synths :", "Groups :", "SynthDefs :"
+		].collect({ arg name, i;
+			var label,numView, pctView;
+			label = SCStaticText(w, Rect(0,0, 72, 14));
 			label.string = name;
 			label.align = \right;
 		
-			numView = SCStaticText(w, Rect(0,0, 60, 15));
-			numView.string = "?";
-			numView.align = \left;
+			if (i < 2, { 
+				numView = SCStaticText(w, Rect(0,0, 30, 14));
+				numView.string = "?";
+				numView.align = \left;
 			
-			w.view.decorator.nextLine;
+				pctView = SCStaticText(w, Rect(0,0, 12, 14));
+				pctView.string = "%";
+				pctView.align = \left;
+			},{
+				numView = SCStaticText(w, Rect(0,0, 42, 14));
+				numView.string = "?";
+				numView.align = \left;
+			});
 			
 			numView
 		});
@@ -375,10 +409,12 @@ Server : Model {
 		ctlr = SimpleController(this)
 			.put(\serverRunning, {	if(serverRunning,running,stopped) })
 			.put(\counts,{
-				countsViews.at(0).string = numUGens;
-				countsViews.at(1).string = numSynths;
-				countsViews.at(2).string = numGroups;
-				countsViews.at(3).string = numSynthDefs;
+				countsViews.at(0).string = avgCPU.round(0.1);
+				countsViews.at(1).string = peakCPU.round(0.1);
+				countsViews.at(2).string = numUGens;
+				countsViews.at(3).string = numSynths;
+				countsViews.at(4).string = numGroups;
+				countsViews.at(5).string = numSynthDefs;
 			});	
 		this.startAliveThread;
 	}

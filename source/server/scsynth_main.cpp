@@ -42,6 +42,7 @@ void Usage()
 		"   -i <number-of-input-bus-channels>   (default %d)\n"
 		"   -o <number-of-output-bus-channels>  (default %d)\n"
 		"   -z <block-size>                     (default %d)\n"
+		"   -Z <hardware-buffer-size>           (default %d)\n"
 		"   -b <number-of-sample-buffers>       (default %d)\n"
 		"   -n <max-number-of-nodes>            (default %d)\n"
 		"   -d <max-number-of-synth-defs>       (default %d)\n"
@@ -61,6 +62,7 @@ void Usage()
 		kDefaultWorldOptions.mNumInputBusChannels,
 		kDefaultWorldOptions.mNumOutputBusChannels,
 		kDefaultWorldOptions.mBufLength,
+		kDefaultWorldOptions.mPreferredHardwareBufferFrameSize,
 		kDefaultWorldOptions.mNumBuffers,
 		kDefaultWorldOptions.mMaxNodes,
 		kDefaultWorldOptions.mMaxGraphDefs,
@@ -84,7 +86,7 @@ int main(int argc, char* argv[])
 	WorldOptions options = kDefaultWorldOptions;
 	
 	for (int i=1; i<argc; i+=2) {
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmw", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZ", argv[i][1]) == 0) {
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
@@ -113,6 +115,9 @@ int main(int argc, char* argv[])
 				break;
 			case 'z' :
 				options.mBufLength = NEXTPOWEROFTWO(atoi(argv[i+1]));
+				break;
+			case 'Z' :
+				options.mPreferredHardwareBufferFrameSize = NEXTPOWEROFTWO(atoi(argv[i+1]));
 				break;
 			case 'b' :
 				options.mNumBuffers = NEXTPOWEROFTWO(atoi(argv[i+1]));

@@ -76,6 +76,10 @@ class SC_CoreAudioDriver : public SC_AudioDriver
 	PriorityQueueT<SC_ScheduledEvent, 1024> mScheduler;
 	SC_Lock *mProcessPacketLock;
 	int mNumSamplesPerCallback;
+	UInt32 mPreferredHardwareBufferFrameSize;
+	double mBuffersPerSecond;
+	double mAvgCPU, mPeakCPU;
+	int mPeakCounter, mMaxPeakCounter;
 	
 	AudioBufferList * mInputBufList;
 	AudioDeviceID	mInputDevice;
@@ -103,6 +107,10 @@ public:
 
 	int SafetyOffset() const { return mSafetyOffset; }
 	int NumSamplesPerCallback() const { return mNumSamplesPerCallback; }
+	void SetPreferredHardwareBufferFrameSize(int inSize) 
+	{ 
+		mPreferredHardwareBufferFrameSize = inSize;
+	}
 
 	bool SendMsgToEngine(FifoMsg& inMsg);
 	bool SendMsgFromEngine(FifoMsg& inMsg);
@@ -116,6 +124,9 @@ public:
 	
 	void SetInputBufferList(AudioBufferList * inBufList) { mInputBufList = inBufList; }
 	AudioBufferList* GetInputBufferList() const { return mInputBufList; }	
+	
+	double GetAvgCPU() const { return mAvgCPU; }
+	double GetPeakCPU() const { return mPeakCPU; }
 };
 
 #endif

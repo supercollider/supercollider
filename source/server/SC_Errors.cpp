@@ -27,6 +27,7 @@ const char *SC_ErrorString(SCErr err)
 			case kSCErr_None : return "none";
 			case kSCErr_Failed : return "failed";
 			case kSCErr_NodeNotFound : return "Node not found";
+			case kSCErr_TargetNodeNotFound : return "target Node not found";
 			case kSCErr_GroupNotFound : return "Group not found";
 			case kSCErr_SynthDefNotFound : return "NodeDef not found";
 			case kSCErr_NoSuchCommand : return "no such command";
@@ -38,7 +39,10 @@ const char *SC_ErrorString(SCErr err)
 
 			case kSCErr_AlreadyLoggedIn : return "already logged in";
 			case kSCErr_NotLoggedIn : return "not logged in";
-			case kSCErr_TooManyUsers : return "no more users";
+			case kSCErr_TooManyUsers : return "too many users";
+			case kSCErr_TooManyNodes : return "too many nodes";
+			case kSCErr_DuplicateNodeID : return "duplicate node ID";
+			case kSCErr_OutOfRealTimeMemory : return "out of real time memory";
 
 			case kSCErr_UnsupportedHeaderFormat : return "unsupported header format";
 			case kSCErr_UnsupportedSampleFormat : return "unsupported sample format";

@@ -2498,12 +2498,13 @@ void Linen_next_k(Linen *unit, int inNumSamples)
 				counter = sc_max(1, counter);
 				unit->m_slope = -unit->m_level / counter;
 				unit->m_counter = counter;
-				//Print("release %d\n", counter);
+				
+				//Print("release %d %d\n", unit->mParent->mNode.mID, counter);
 			}
 			break;
 		case 3 : {
-			*out = 0.f;
-			//Print("done\n");
+			*out = 0.f;			
+			//Print("done %d\n", unit->mParent->mNode.mID);
 			unit->mDone = true;
 			unit->m_stage++;
 			int doneAction = (int)ZIN0(4);

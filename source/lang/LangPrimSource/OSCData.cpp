@@ -63,8 +63,6 @@ extern bool compiledOK;
 
 ///////////
 
-extern SC_UdpInPort* gUDPport;
-
 scpacket gSynthPacket;
 
 const int ivxNetAddr_Hostaddr = 0;
@@ -254,8 +252,6 @@ int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size)
 int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr);
 int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr)
 {
-	if (gUDPport == 0) return errFailed;
-
 	int err, port, addr, tcpSocket;
 	
 	err = slotIntVal(netAddrObj->slots + ivxNetAddr_Socket, &tcpSocket);
@@ -263,9 +259,13 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr)
 	
 	if (tcpSocket != -1) {
 		// send TCP
+		int32 sizebuf = msglen;
+		sendall(tcpSocket, &sizebuf, sizeof(int32));
 		sendall(tcpSocket, bufptr, msglen);
 		
 	} else {
+		if (gUDPport == 0) return errFailed;
+
 		// send UDP
 		err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
 		if (err) return err;

@@ -30,6 +30,7 @@ enum {
 	kSCErr_None,
 	kSCErr_Failed,
 	kSCErr_NodeNotFound,
+	kSCErr_TargetNodeNotFound,
 	kSCErr_GroupNotFound,
 	kSCErr_SynthDefNotFound,
 	kSCErr_NoSuchCommand,
@@ -41,6 +42,9 @@ enum {
 	kSCErr_AlreadyLoggedIn,
 	kSCErr_NotLoggedIn,
 	kSCErr_TooManyUsers,
+	kSCErr_TooManyNodes,
+	kSCErr_DuplicateNodeID,
+	kSCErr_OutOfRealTimeMemory,
 
 	kSCErr_UnsupportedHeaderFormat,
 	kSCErr_UnsupportedSampleFormat,

@@ -352,7 +352,7 @@ public:
 	SendFailureCmd(World *inWorld, ReplyAddress *inReplyAddress);
 	virtual ~SendFailureCmd();
 
-	virtual void InitSendFailureCmd(char *inCmdName, char* inErrString);
+	virtual void InitSendFailureCmd(const char *inCmdName, const char* inErrString);
 	
 	virtual bool Stage2();	// non real time
 	

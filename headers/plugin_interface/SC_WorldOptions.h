@@ -57,11 +57,12 @@ struct WorldOptions
 	
 	int mNonRealTimeSampleRate;
 	int mNumRGens;
+	int mPreferredHardwareBufferFrameSize;
 };
 
 const WorldOptions kDefaultWorldOptions = 
 {
-	0,1024,64,1024,1024,64,128,2,2,4096,64,2048, 0,0,0,0, 1, 0,0,0,0,0, 0, 64
+	0,1024,64,1024,1024,64,128,2,2,4096,64,2048, 0,0,0,0, 1, 0,0,0,0,0, 0, 64, 0
 };
 
 #include "SC_Reply.h"

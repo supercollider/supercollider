@@ -132,6 +132,10 @@ Command Line Arguments\
 \f2\i block-size
 \f0\i0 \
 	The number of samples in one control period. (default = 64)\
+-Z 
+\f2\i preferred-hardware-buffer-size
+\f0\i0 \
+	If non-zero, it will attempt to set the hardware buffer frame size. (default = 0)\
 -m 
 \f2\i real-time-memory-size
 \f0\i0 \
@@ -142,6 +146,13 @@ Command Line Arguments\
 \f2\i random-number-generators
 \f0\i0 \
 	The number of seedable random number generators. (default = 64)\
+-w 
+\f2\i max-interconnect-buffers
+\f0\i0 \
+	The maximum number of buffers that are allocated for buffers to interconnect \
+	unit generators. Sets the limit of complexity of synth defs that can be loaded at \
+	runtime. This value will be increased if a more complex synth-def is loaded at \
+	start up time, but it cannot be increased once synthesis has begun. (default = 64)\
 	\
 -l 
 \f2\i max-logins

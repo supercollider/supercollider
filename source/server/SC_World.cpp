@@ -195,7 +195,7 @@ World* World_New(WorldOptions *inOptions)
 			strncpy(world->hw->mPassword, inOptions->mPassword, 31);
 			world->hw->mPassword[31] = 0;
 		} else {
-			strcpy(world->hw->mPassword, "go");
+			world->hw->mPassword[0] = 0;
 		}
 		
 		hw->mMaxWireBufs = inOptions->mMaxWireBufs;
@@ -203,7 +203,10 @@ World* World_New(WorldOptions *inOptions)
 	
 		if (world->mRealTime) {
 			hw->mAudioDriver = new SC_CoreAudioDriver(world);
-		
+			hw->mAudioDriver->SetPreferredHardwareBufferFrameSize(
+					inOptions->mPreferredHardwareBufferFrameSize
+			);
+			
 			GraphDef *list = 0;
 			list = GraphDef_LoadDir(world, "synthdefs", list);
 			GraphDef_Define(world, list);

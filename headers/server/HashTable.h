@@ -318,6 +318,16 @@ public:
 		return mItems[inIndex];
 	}
 
+	void Dump() 
+	{
+		for (int i=0; i<mTableSize; ++i) {
+			T* item = mItems[i];
+			if (item) {
+				printf("%4d %4d %08X %08X\n", i, GetKey(item), GetHash(item), item);
+			}
+		}
+	}
+	
 private:	
 	void FixCollisionsFrom(int32 inIndex)
 	{		

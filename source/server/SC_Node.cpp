@@ -22,6 +22,7 @@
 #include "SC_Group.h"
 #include "SC_SynthDef.h"
 #include "SC_World.h"
+#include "SC_Errors.h"
 #include <stdio.h>
 #include <stdexcept>
 #include <limits.h>
@@ -33,8 +34,14 @@ void Node_StateMsg(Node* inNode, int inState);
 // create a new node
 Node* Node_New(World *inWorld, NodeDef *def, int32 inID, sc_msg_iter* args)
 {
-	if (World_GetNode(inWorld, inID)) return 0;
+	if (World_GetNode(inWorld, inID)) {
+		// enums are uncatchable. must throw an int.
+		int err = kSCErr_DuplicateNodeID;
+		throw err;
+	}
+	
 	Node* node = (Node*)World_Alloc(inWorld, def->mAllocSize);
+	
 	node->mWorld = inWorld;
 	node->mDef = def;
 	node->mParent = 0;
@@ -45,14 +52,16 @@ Node* Node_New(World *inWorld, NodeDef *def, int32 inID, sc_msg_iter* args)
 	node->mID = inID;
     node->mHash = Hash(inID);
     if (!World_AddNode(inWorld, node)) {
-        throw std::runtime_error("cannot add Node to table. duplicate name or table full.\n");
+		World_Free(inWorld, node);
+		// enums are uncatchable. must throw an int.
+		int err = kSCErr_TooManyNodes;
+		throw err;
     }
 
     (*def->fCtor)(inWorld, def, node, args);
 	
 	return node;
 }
-
 
 // node destructor
 void Node_Dtor(Node *inNode)

@@ -33,7 +33,6 @@
 #endif
 
 int recvall(int socket, void *msg, size_t len);
-int recvallfrom(int socket, void *msg, size_t len, struct sockaddr *fromaddr, int addrlen);
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
 int sendall(int socket, const void *msg, size_t len);
 
@@ -243,8 +242,7 @@ void* SC_UdpInPort::Run()
 SC_TcpInPort::SC_TcpInPort(struct World *inWorld, int inPortNum, int inMaxConnections, int inBacklog)
 	: SC_ComPort(inWorld, inPortNum), mConnectionAvailable(inMaxConnections), 
         mBacklog(inBacklog)
-{
-    
+{    
     if((mSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         throw std::runtime_error("failed to create tcp socket\n");
     }
@@ -261,6 +259,7 @@ SC_TcpInPort::SC_TcpInPort(struct World *inWorld, int inPortNum, int inMaxConnec
     {
         throw std::runtime_error("unable to bind tcp socket\n");
     }
+
     if(listen(mSocket, mBacklog) < 0)
     {
         throw std::runtime_error("unable to listen tcp socket\n");
@@ -353,7 +352,7 @@ void* SC_TcpConnectionPort::Run()
 	int32 msglen;
 	
 	// first message must be the password. 4 tries.
-	bool validated = mWorld->hw->mPassword == 0;
+	bool validated = mWorld->hw->mPassword[0] == 0;
 	for (int i=0; !validated && i<4; ++i) {		
 		size = recvall(mSocket, &msglen, sizeof(int32) );
 		if (size < 0) goto leave;
@@ -398,21 +397,7 @@ int recvall(int socket, void *msg, size_t len)
 	while (total < (int)len)
 	{
 		int numbytes = recv(socket, msg, len - total, 0);
-		if (numbytes < 0) return total;
-		total += numbytes;
-		msg = (void*)((char*)msg + numbytes);
-	}
-	return total;
-}
-
-int recvallfrom(int socket, void *msg, size_t len, struct sockaddr *fromaddr, int addrlen)
-{
-	int total = 0;
-	while (total < (int)len)
-	{
-		int addrlen2 = addrlen;
-		int numbytes = recvfrom(socket, msg, len - total, 0, fromaddr, &addrlen2);
-		if (numbytes < 0) return total;
+		if (numbytes <= 0) return total;
 		total += numbytes;
 		msg = (void*)((char*)msg + numbytes);
 	}

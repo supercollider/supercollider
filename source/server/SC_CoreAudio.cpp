@@ -402,7 +402,20 @@ bool SC_CoreAudioDriver::Setup()
 		fprintf(stdout, "get kAudioHardwarePropertyDefaultInputDevice error %4.4s\n", (char*)&err);
 		return false;
 	}
+	
+	if (mPreferredHardwareBufferFrameSize)
+	{
+		AudioTimeStamp	now;
+		now.mFlags = kAudioTimeStampHostTimeValid;
+		now.mHostTime = AudioGetCurrentHostTime();
 
+		count = sizeof(UInt32);	// it is required to pass the size of the data to be returned
+		err = AudioDeviceSetProperty(mOutputDevice, &now, 0, false, kAudioDevicePropertyBufferFrameSize, count, &mPreferredHardwareBufferFrameSize);
+		if (err != kAudioHardwareNoError) {
+			fprintf(stdout, "set kAudioDevicePropertyBufferFrameSize error %4.4s\n", (char*)&err);
+			//return false;
+		}
+	}
 	// get the buffersize that the default device uses for IO
 	count = sizeof(mHardwareBufferSize);	// it is required to pass the size of the data to be returned
 	err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyBufferSize, &count, &mHardwareBufferSize);
@@ -486,6 +499,8 @@ bool SC_CoreAudioDriver::Setup()
 	mOSCtoSamples = outputStreamDesc.mSampleRate / pow(2.,32.);
 
 	World_SetSampleRate(mWorld, outputStreamDesc.mSampleRate);
+	mBuffersPerSecond = outputStreamDesc.mSampleRate / mNumSamplesPerCallback;
+	mMaxPeakCounter = (int)mBuffersPerSecond;
 	return true;
 }
 
@@ -575,6 +590,7 @@ OSStatus appIOProc (AudioDeviceID /*inDevice*/, const AudioTimeStamp* inNow,
 void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData, 
 					AudioBufferList* outOutputData, int64 oscTime)
 {
+	int64 systemTimeBefore = AudioGetCurrentHostTime();
 	World *world = mWorld;
 	
 	try {
@@ -688,6 +704,16 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 	} catch (...) {
 		scprintf("unknown exception in real time\n");
 	}
+	int64 systemTimeAfter = AudioGetCurrentHostTime();
+	double calcTime = (double)AudioConvertHostTimeToNanos(systemTimeAfter - systemTimeBefore) * 1e-9;
+	double cpuUsage = calcTime * mBuffersPerSecond * 100.;
+	mAvgCPU = mAvgCPU + 0.1 * (cpuUsage - mAvgCPU);
+	if (cpuUsage > mPeakCPU || --mPeakCounter <= 0)
+	{
+		mPeakCPU = cpuUsage;
+		mPeakCounter = mMaxPeakCounter;
+	}
+	
 	mAudioSync.Signal();
 }
 
@@ -696,6 +722,9 @@ bool SC_CoreAudioDriver::Start()
 	OSStatus	err = kAudioHardwareNoError;
 
 	mActive = true;
+	mAvgCPU = 0.;
+	mPeakCPU = 0.;
+	mPeakCounter = 0;
 
 	World_Start(mWorld);
 	

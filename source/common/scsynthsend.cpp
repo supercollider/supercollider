@@ -33,7 +33,6 @@ void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port)
     bzero(&(toaddr.sin_zero), 8);    // zero the rest of the struct
 }
 
-int recvallfrom(int socket, void *msg, size_t len, struct sockaddr *fromaddr, int addrlen);
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
 int sendall(int socket, const void *msg, size_t len);
 
