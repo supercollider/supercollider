@@ -103,6 +103,7 @@ void initializeScheduler();
 World* World_New(WorldOptions *inOptions)
 {	
 	World *world = 0;
+	
 	try {
 		static bool gLibInitted = false;
 		if (!gLibInitted) {
@@ -114,8 +115,11 @@ World* World_New(WorldOptions *inOptions)
 	
 		
 		world = (World*)malloc(sizeof(World));
+		memset(world, 0, sizeof(World));
+		
 		printf("World_Init %08X\n", (int)world);
 		world->hw = (HiddenWorld*)malloc(sizeof(HiddenWorld));
+		memset(world->hw, 0, sizeof(HiddenWorld));
 		world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
 		world->hw->mQuitProgram = new SC_Semaphore(0);
 	
@@ -139,8 +143,13 @@ World* World_New(WorldOptions *inOptions)
 		world->mNumControlBusChannels = inOptions->mNumControlBusChannels;
 		world->mNumInputs = inOptions->mNumInputBusChannels;
 		world->mNumOutputs = inOptions->mNumOutputBusChannels;
-		world->mAudioBus = (float*)malloc(inOptions->mNumAudioBusChannels * inOptions->mBufLength * sizeof(float));
-		world->mControlBus = (float*)malloc(inOptions->mNumControlBusChannels * sizeof(float));
+
+		int numsamples = world->mBufLength * world->mNumAudioBusChannels;
+		size_t audiobussize = numsamples * sizeof(float);
+		world->mAudioBus = (float*)malloc(audiobussize);
+
+		size_t controlbussize = world->mNumControlBusChannels * sizeof(float);
+		world->mControlBus = (float*)malloc(controlbussize);
 		
 		world->mAudioBusTouched = (int32*)malloc(inOptions->mNumAudioBusChannels * sizeof(int32));
 		world->mControlBusTouched = (int32*)malloc(inOptions->mNumControlBusChannels * sizeof(int32));
@@ -149,14 +158,6 @@ World* World_New(WorldOptions *inOptions)
 		size_t sndbufsize = world->mNumSndBufs * sizeof(SndBuf);
 		world->mSndBufs = (SndBuf*)malloc(sndbufsize);
 		world->mSndBufsNonRealTimeMirror = (SndBuf*)malloc(sndbufsize);
-		
-		int numsamples = world->mBufLength * world->mNumAudioBusChannels;
-		
-		size_t audiobussize = numsamples * sizeof(float);
-		world->mAudioBus = (float*)malloc(audiobussize);
-		
-		size_t controlbussize = world->mNumControlBusChannels * sizeof(float);
-		world->mControlBus = (float*)malloc(controlbussize);
 		
 		memset(world->mAudioBus, 0, audiobussize);
 		memset(world->mControlBus, 0, controlbussize);
@@ -170,6 +171,8 @@ World* World_New(WorldOptions *inOptions)
 		world->ft = &gInterfaceTable;
 		
 		world->mRGen.init(timeseed());
+		
+		world->mNRTLock = new SC_Lock();
 		
 		if (inOptions->mPassword) {
 			strncpy(world->hw->mPassword, inOptions->mPassword, 31);
@@ -198,7 +201,7 @@ World* World_New(WorldOptions *inOptions)
 		}
 	} catch (std::exception& exc) {
 		printf("Exception in World_New: %s\n", exc.what());
-		free(world); // need a real clean up routine..
+		World_Cleanup(world); 
 		return 0;
 	} catch (...) {
 	}
@@ -227,13 +230,17 @@ void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int 
 
 void World_WaitForQuit(struct World *inWorld)
 {
+	printf("->World_WaitForQuit\n");
 	try {
+	printf("-->mQuitProgram->Acquire\n");
 		inWorld->hw->mQuitProgram->Acquire();
-		inWorld->hw->mAudioDriver->Stop();
+	printf("-->World_Cleanup\n");
+		World_Cleanup(inWorld);
 	} catch (std::exception& exc) {
 		printf("Exception in World_WaitForQuit: %s\n", exc.what());
 	} catch (...) {
 	}
+	printf("<-World_WaitForQuit\n");
 }
 
 void World_SetSampleRate(World *inWorld, double inSampleRate)
@@ -463,13 +470,39 @@ void World_Start(World *inWorld)
 	inWorld->hw->mNodeEnds.MakeEmpty();
 }
 
-void World_Stop(World *inWorld)
+void World_Cleanup(World *world)
 {
-	Group_DeleteAll(inWorld->mTopGroup);
-
-	free(inWorld->hw->mWireBufSpace);
+	if (!world) return;
 	
+	HiddenWorld *hw = world->hw;
+	
+	if (hw) hw->mAudioDriver->Stop();
+
+	if (world->mTopGroup) Group_DeleteAll(world->mTopGroup);
+	
+	if (hw) {
+		free(hw->mWireBufSpace);
+		delete hw->mAudioDriver;
+	}
+	delete world->mNRTLock;
+	World_Free(world, world->mTopGroup);
+	free(world->mSndBufsNonRealTimeMirror);
+	free(world->mSndBufs);
+	free(world->mControlBusTouched);
+	free(world->mAudioBusTouched);
+	free(world->mControlBus);
+	free(world->mAudioBus);
+	if (hw) {
+		free(hw->mUsers);
+		delete hw->mNodeLib;
+		delete hw->mGraphDefLib;
+		delete hw->mQuitProgram;
+		delete hw->mAllocPool;
+		free(hw);
+	}
+	free(world);
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -259,6 +259,19 @@ SC_CoreAudioDriver::SC_CoreAudioDriver(struct World *inWorld)
 		: mWorld(inWorld), mActive(false), mNumSamples(0), mSampleTime(0)
 {
 	mProcessPacketLock = new SC_Lock();
+	mInputBufList = 0;
+}
+
+SC_CoreAudioDriver::~SC_CoreAudioDriver()
+{
+	mRunThreadFlag = false;
+	mAudioSync.Signal();
+	printf("->pthread_join\n");
+	pthread_join(mThread, 0);
+	printf("<-pthread_join\n");
+	
+	delete mProcessPacketLock;
+	delete mInputBufList;
 }
 
 
@@ -331,6 +344,7 @@ bool SC_CoreAudioDriver::Setup()
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
+	mRunThreadFlag = true;
 	pthread_create (&mThread, NULL, core_audio_thread_func, (void*)this);
 	set_real_time_priority(mThread);
 
@@ -443,9 +457,11 @@ void* SC_CoreAudioDriver::RunThread()
 	MsgFifoNoFree<NodeEndMsg, 1024> *nodeendfifo = &mWorld->hw->mNodeEnds;
 	MsgFifoNoFree<DeleteGraphDefMsg, 512> *deletegraphfifo = &mWorld->hw->mDeleteGraphDefs;
 
-	while (true) {
+	while (mRunThreadFlag) {
 		// wait for sync
 		mAudioSync.WaitNext();
+		
+		mWorld->mNRTLock->Lock();
 		
 		// send /tr messages
 		trigfifo->Perform();		
@@ -458,6 +474,8 @@ void* SC_CoreAudioDriver::RunThread()
 		
 		// perform messages
 		mFromEngine.Perform();
+
+		mWorld->mNRTLock->Unlock();
 	}
 	return 0;
 }	
@@ -693,9 +711,7 @@ bool SC_CoreAudioDriver::Stop()
 
 	err = AudioDeviceRemoveIOProc(mOutputDevice, appIOProc);	// remove the IO proc from the device
 	if (err != kAudioHardwareNoError) return false;
-	
-	World_Stop(mWorld);
-	
+		
 	return true;
 }
 

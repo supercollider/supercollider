@@ -143,6 +143,9 @@
 		};
 		F50D050A02E69B6B01CA2799 = {
 			children = (
+				F5C7B150033D5B4801A80099,
+				F5C7B154033D5EDC01A80099,
+				F5C7B156033D611701A80099,
 				F50D050B02E69B6B01CA2799,
 				F50D050C02E69B6B01CA2799,
 				F50D050D02E69B6B01CA2799,
@@ -962,7 +965,7 @@
 			);
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /Users/jamesmcc/Dev/newdev/test6/SuperCollider3/build;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1186,6 +1189,9 @@
 				F53D4651030B905201E9DD5D,
 				F53D4654030B934D01E9DD5D,
 				F561BDB60335370801C816AC,
+				F5C7B151033D5B4801A80099,
+				F5C7B155033D5EDC01A80099,
+				F5C7B157033D611701A80099,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1386,6 +1392,7 @@
 				F50D06A402E6A1C601CA2799,
 				F50D06BF02E7F11301CA2799,
 				F50D06C102E7F29101CA2799,
+				F5C7B14F033D595901A80099,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2021,6 +2028,7 @@
 				F50D069C02E6A1C601CA2799,
 				F50D06BE02E7F11301CA2799,
 				F50D06C002E7F29001CA2799,
+				F5C7B14E033D595901A80099,
 			);
 			isa = PBXGroup;
 			name = Frameworks;
@@ -2568,6 +2576,54 @@
 		F5B7410902E9534D01CA2799 = {
 			isa = PBXTargetDependency;
 			target = F50D060502E69C2101CA2799;
+		};
+		F5C7B14E033D595901A80099 = {
+			isa = PBXFileReference;
+			name = libscsynth.a;
+			path = build/libscsynth.a;
+			refType = 4;
+		};
+		F5C7B14F033D595901A80099 = {
+			fileRef = F5C7B14E033D595901A80099;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5C7B150033D5B4801A80099 = {
+			isa = PBXFileReference;
+			name = SC_World.h;
+			path = headers/plugin_interface/SC_World.h;
+			refType = 2;
+		};
+		F5C7B151033D5B4801A80099 = {
+			fileRef = F5C7B150033D5B4801A80099;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5C7B154033D5EDC01A80099 = {
+			isa = PBXFileReference;
+			name = SC_WorldOptions.h;
+			path = headers/plugin_interface/SC_WorldOptions.h;
+			refType = 2;
+		};
+		F5C7B155033D5EDC01A80099 = {
+			fileRef = F5C7B154033D5EDC01A80099;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5C7B156033D611701A80099 = {
+			isa = PBXFileReference;
+			name = SC_Reply.h;
+			path = headers/server/SC_Reply.h;
+			refType = 2;
+		};
+		F5C7B157033D611701A80099 = {
+			fileRef = F5C7B156033D611701A80099;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		F5ED51FE02FBA97D0195E057 = {
 			isa = PBXExecutableFileReference;

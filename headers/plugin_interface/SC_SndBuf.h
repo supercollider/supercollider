@@ -32,8 +32,7 @@ struct SndBuf
 	int mask;	// for delay lines
 	int mask1;	// for interpolating oscillators.
 	int coord;	// used by fft ugens
-	int shmid;
-	key_t shmkey;
+	void *sndfile; // used by disk i/o
 };
 typedef struct SndBuf SndBuf;
 

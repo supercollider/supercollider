@@ -37,6 +37,9 @@
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
 #include "SC_ComPort.h"
+#include "SC_WorldOptions.h"
+
+struct World *gLocalSynthServer = 0;
 
 SC_UdpInPort* gUDPport = 0;
 
@@ -158,6 +161,29 @@ int makeSynthMsgWithTags(scpacket *packet, PyrSlot *slots, int size)
 	return errNone;
 }
 
+void PerformOSCBundle(OSC_Packet* inPacket);
+void PerformOSCMessage(int inSize, char *inData, ReplyAddress *inReply);
+
+void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize);
+void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
+{
+	post("localServerReplyFunc\n");
+	OSC_Packet packet;
+    packet.mIsBundle = strcmp(packet.mData, "#bundle") == 0;
+    
+    pthread_mutex_lock (&gLangMutex);
+    if (packet.mIsBundle) {
+		packet.mData = inBuf;
+		packet.mSize = inSize;
+		packet.mReplyAddr = *inReplyAddr;
+        PerformOSCBundle(&packet);
+    } else {
+        PerformOSCMessage(inSize, inBuf, inReplyAddr);
+    }
+    pthread_mutex_unlock (&gLangMutex);
+	
+}
+
 int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size);
 int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size)
 {
@@ -199,11 +225,18 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr)
 		
 	} else {
 		// send UDP
-		err = slotIntVal(netAddrObj->slots + ivxNetAddr_PortID, &port);
-		if (err) return err;
-		
 		err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
 		if (err) return err;
+		
+		if (addr == 0) {
+			if (gLocalSynthServer) {
+				World_SendPacket(gLocalSynthServer, msglen, bufptr, &localServerReplyFunc);
+			}
+			return errNone;
+		}
+
+		err = slotIntVal(netAddrObj->slots + ivxNetAddr_PortID, &port);
+		if (err) return err;		
 		
 		struct sockaddr_in toaddr;
 		makeSockAddr(toaddr, addr, port);
@@ -473,9 +506,6 @@ void ProcessOSCPacket(OSC_Packet* inPacket)
     FreeOSCPacket(inPacket);
 }
 
-
-pthread_t udp_receive_thread;
-
 void init_OSC(int port);
 void init_OSC(int port)
 {	
@@ -517,6 +547,46 @@ int prExit(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+
+int prBootInProcessServer(VMGlobals *g, int numArgsPushed);
+int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	
+	if (!gLocalSynthServer) {
+		WorldOptions options = kDefaultWorldOptions;
+		gLocalSynthServer = World_New(&options);
+	}
+	return errNone;
+}
+
+void* wait_for_quit(void* thing);
+void* wait_for_quit(void* thing)
+{
+	World *world = (World*)thing;
+	World_WaitForQuit(world);
+	return 0;
+}
+
+int prQuitInProcessServer(VMGlobals *g, int numArgsPushed);
+int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	
+	if (gLocalSynthServer) {
+		World *world = gLocalSynthServer;
+		gLocalSynthServer = 0;
+		
+        pthread_t thread;
+        pthread_create(&thread, NULL, wait_for_quit, (void*)world);
+		pthread_detach(thread);
+	}
+	
+	return errNone;
+}
+
+
+
 void init_OSC_primitives();
 void init_OSC_primitives()
 {
@@ -532,6 +602,8 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_NetAddr_SendRaw", prNetAddr_SendRaw, 2, 0);	
 	definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);	
 	definePrimitive(base, index++, "_Exit", prExit, 1, 0);	
+	definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);	
+	definePrimitive(base, index++, "_QuitInProcessServer", prQuitInProcessServer, 1, 0);	
 
 	//post("initOSCRecs###############\n");
 	s_call = getsym("call");

@@ -28,7 +28,7 @@
 
 void World_Run(struct World *inWorld);
 void World_Start(World *inWorld);
-void World_Stop(World *inWorld);
+void World_Cleanup(World *inWorld);
 void World_SetSampleRate(struct World *inWorld, double inSampleRate);
 
 void* World_Alloc(struct World *inWorld, size_t inByteSize);

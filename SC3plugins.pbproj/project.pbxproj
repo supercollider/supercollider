@@ -64,7 +64,9 @@
 		};
 		F50D04FB02E69B6B01CA2799 = {
 			children = (
+				F5D127DC03355EEC0164B34C,
 				F50D054502E69B6B01CA2799,
+				F5959CFC0339983D01A80099,
 			);
 			isa = PBXGroup;
 			path = headers;
@@ -212,6 +214,7 @@
 		F50D057E02E69B6B01CA2799 = {
 			children = (
 				F50D05D302E69B6B01CA2799,
+				F5959D010339A71301A80099,
 			);
 			isa = PBXGroup;
 			path = source;
@@ -348,6 +351,7 @@
 		};
 		F50D069402E6A1C601CA2799 = {
 			children = (
+				F5D127DE03383D340164B34C,
 			);
 			isa = PBXGroup;
 			name = Frameworks;
@@ -358,6 +362,74 @@
 			);
 			isa = PBXGroup;
 			name = Resources;
+			refType = 4;
+		};
+		F5959CF80339983301A80099 = {
+			isa = PBXFileReference;
+			name = MsgFifo.h;
+			path = headers/server/MsgFifo.h;
+			refType = 2;
+		};
+		F5959CF90339983301A80099 = {
+			isa = PBXFileReference;
+			name = SC_SyncCondition.h;
+			path = headers/server/SC_SyncCondition.h;
+			refType = 2;
+		};
+		F5959CFA0339983301A80099 = {
+			fileRef = F5959CF80339983301A80099;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5959CFB0339983301A80099 = {
+			fileRef = F5959CF90339983301A80099;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5959CFC0339983D01A80099 = {
+			children = (
+				F5959CF80339983301A80099,
+				F5959CF90339983301A80099,
+				F5959CFD03399CED01A80099,
+			);
+			isa = PBXGroup;
+			name = server;
+			path = plugin_interface;
+			refType = 4;
+		};
+		F5959CFD03399CED01A80099 = {
+			isa = PBXFileReference;
+			name = SC_Lock.h;
+			path = headers/server/SC_Lock.h;
+			refType = 2;
+		};
+		F5959CFE03399CED01A80099 = {
+			fileRef = F5959CFD03399CED01A80099;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5959CFF0339A70A01A80099 = {
+			isa = PBXFileReference;
+			name = SC_SyncCondition.cpp;
+			path = source/server/SC_SyncCondition.cpp;
+			refType = 2;
+		};
+		F5959D000339A70A01A80099 = {
+			fileRef = F5959CFF0339A70A01A80099;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5959D010339A71301A80099 = {
+			children = (
+				F5959CFF0339A70A01A80099,
+			);
+			isa = PBXGroup;
+			name = server;
+			path = plugins;
 			refType = 4;
 		};
 		F5B7408502E9455801CA2799 = {
@@ -727,6 +799,9 @@
 		F5B7410E02E9544701CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5959CFA0339983301A80099,
+				F5959CFB0339983301A80099,
+				F5959CFE03399CED01A80099,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -735,6 +810,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F5B7412802E9544701CA2799,
+				F5959D000339A70A01A80099,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -748,6 +824,7 @@
 		F5B7412902E9544701CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5D127DF03383D340164B34C,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1399,7 +1476,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/BinaryOpUGens.scx build/server/plugins";
+			shellScript = "cp build/BinaryOpUGens.scx build/plugins";
 		};
 		F5B7420902EA2E7201CA2799 = {
 			buildActionMask = 2147483647;
@@ -1412,7 +1489,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/DelayUGens.scx build/server/plugins";
+			shellScript = "cp build/DelayUGens.scx build/plugins";
 		};
 		F5B7420A02EA2EC201CA2799 = {
 			buildActionMask = 2147483647;
@@ -1425,7 +1502,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/DiskIOUGens.scx build/server/plugins";
+			shellScript = "cp build/DiskIOUGens.scx build/plugins";
 		};
 		F5B7420B02EA2EC201CA2799 = {
 			buildActionMask = 2147483647;
@@ -1438,7 +1515,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/FFT_UGens.scx build/server/plugins";
+			shellScript = "cp build/FFT_UGens.scx build/plugins";
 		};
 		F5B7420C02EA2EDC01CA2799 = {
 			buildActionMask = 2147483647;
@@ -1451,7 +1528,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/FilterUGens.scx build/server/plugins";
+			shellScript = "cp build/FilterUGens.scx build/plugins";
 		};
 		F5B7420D02EA2EF501CA2799 = {
 			buildActionMask = 2147483647;
@@ -1464,7 +1541,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/IOUGens.scx build/server/plugins";
+			shellScript = "cp build/IOUGens.scx build/plugins";
 		};
 		F5B7420E02EA2F3B01CA2799 = {
 			buildActionMask = 2147483647;
@@ -1477,7 +1554,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/LFUGens.scx build/server/plugins";
+			shellScript = "cp build/LFUGens.scx build/plugins";
 		};
 		F5B7420F02EA2FC901CA2799 = {
 			buildActionMask = 2147483647;
@@ -1490,7 +1567,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/MulAddUGens.scx build/server/plugins";
+			shellScript = "cp build/MulAddUGens.scx build/plugins";
 		};
 		F5B7421002EA2FF701CA2799 = {
 			buildActionMask = 2147483647;
@@ -1503,7 +1580,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/NoiseUGens.scx build/server/plugins";
+			shellScript = "cp build/NoiseUGens.scx build/plugins";
 		};
 		F5B7421102EA301D01CA2799 = {
 			buildActionMask = 2147483647;
@@ -1516,7 +1593,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/OscUGens.scx build/server/plugins";
+			shellScript = "cp build/OscUGens.scx build/plugins";
 		};
 		F5B7421202EA304001CA2799 = {
 			buildActionMask = 2147483647;
@@ -1529,7 +1606,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/PanUGens.scx build/server/plugins";
+			shellScript = "cp build/PanUGens.scx build/plugins";
 		};
 		F5B7421302EA306901CA2799 = {
 			buildActionMask = 2147483647;
@@ -1542,7 +1619,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/TriggerUGens.scx build/server/plugins";
+			shellScript = "cp build/TriggerUGens.scx build/plugins";
 		};
 		F5B7421402EA308701CA2799 = {
 			buildActionMask = 2147483647;
@@ -1555,7 +1632,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/UnaryOpUGens.scx build/server/plugins";
+			shellScript = "cp build/UnaryOpUGens.scx build/plugins";
+		};
+		F5D127DA03355EE10164B34C = {
+			isa = PBXFileReference;
+			name = SC_Sem.h;
+			path = common/SC_Sem.h;
+			refType = 4;
+		};
+		F5D127DC03355EEC0164B34C = {
+			children = (
+				F5D127DA03355EE10164B34C,
+			);
+			isa = PBXGroup;
+			name = common;
+			refType = 4;
+		};
+		F5D127DE03383D340164B34C = {
+			isa = PBXFileReference;
+			name = libsndfile.a;
+			path = /usr/local/lib/libsndfile.a;
+			refType = 0;
+		};
+		F5D127DF03383D340164B34C = {
+			fileRef = F5D127DE03383D340164B34C;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 	};
 	rootObject = F50D04F702E68E8201CA2799;

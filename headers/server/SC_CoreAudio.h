@@ -55,6 +55,7 @@ class SC_CoreAudioDriver
 	EngineFifo mFromEngine, mToEngine;
 	SC_SyncCondition mAudioSync;
 	pthread_t mThread;
+	bool mRunThreadFlag;
 	UInt32 mSafetyOffset;
 	int mNumSamples;
 	int mSampleTime;
@@ -73,6 +74,7 @@ class SC_CoreAudioDriver
 public:
 
 	SC_CoreAudioDriver(struct World *inWorld);
+	~SC_CoreAudioDriver();
 	
 	bool Setup();
 	bool Start();

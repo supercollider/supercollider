@@ -1,7 +1,8 @@
-{\rtf1\mac\ansicpg10000\cocoartf100
+{\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
 }
+\vieww9000\viewh9000\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs18 \cf2 Collection\cf0  \{ \
@@ -257,7 +258,7 @@
 		\
 		if (name.isNil, \{ error(\cf4 "no file name"\cf0 ); ^\cf2 nil\cf0  \});\
 		\
-		file = \cf2 File\cf0 (\cf4 "server/synthdefs/"\cf0  ++ name ++ \cf4 ".scsyndef"\cf0 , \cf4 "w"\cf0 );\
+		file = \cf2 File\cf0 (\cf4 "synthdefs/"\cf0  ++ name ++ \cf4 ".scsyndef"\cf0 , \cf4 "w"\cf0 );\
 		\
 		file.putString(\cf4 "SCgf"\cf0 );\
 		file.putInt32(0); \cf3 // file version\

@@ -19,6 +19,8 @@
 */
 
 
+#include "MsgFifo.h"
+#include "SC_SyncCondition.h"
 #include "SC_PlugIn.h"
 #include <sndfile.h>
 
@@ -44,22 +46,15 @@ enum {
 struct DiskIn : public Unit
 {
 	float m_fbufnum;
-	SndBuf *m_prebuf;
-	SndBuf *m_iobuf;
-
-	//char m_filename[FILENAME_MAX];
-	float *m_outputbufs[kMAXDISKCHANNELS];
-	int m_bufpos;
-	int m_state, m_loop;
-	int m_framestoread, m_framesread, m_framesremain, m_fileoffset;
-	int m_loopstart, m_loopend, m_filereadpos;
+	SndBuf *m_buf;
+	int m_framepos;
 };
 
 struct DiskOut : public Unit
 {
 	float m_fbufnum;
 	SndBuf *m_buf;
-	int m_state;
+	int m_framepos;
 };
 
 
@@ -84,68 +79,40 @@ extern "C"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//	void Set(struct World *inWorld, FifoMsgFunc inPerform, FifoMsgFunc inFree, void* inData);
 
-struct diskin_setup {
-	char *filename;
-	int pos, length;
-	int bufnum;
+enum {
+	kDiskCmd_Read,
+	kDiskCmd_Write,
 };
 
-/*
-void SFOpenReadAsync(filename, &fileptr, pos, length, bufptr);
-void SFReadAsync(fileptr, pos, length, bufptr);
-void SFCloseAsync(fileptr);
-*/
-
-void DiskIn_Start(DiskIn *unit, sc_msg_iter *msg)
+struct DiskIOMsg
 {
-}
-
-void DiskIn_Setup(DiskIn *unit, sc_msg_iter *msg)
-{
-	char *filename = msg->gets();
-	int ioBufNum = msg->geti(-1);
-	int preloadBufNum = msg->geti(-1);
-	int startPos = msg->geti(0);
-	int length = msg->geti(-1);
+	World *mWorld;
+	int16 mCommand;
+	int16 mChannels;
+	int32 mBufNum;
+	int32 mPos;
+	int32 mFrames;
 	
-	World *world = unit->mWorld;
-	if (ioBufNum < 0 || ioBufNum >= world->mNumSndBufs) ioBufNum = 0;
-	SndBuf *ioBuf = world->mSndBufs + ioBufNum;
-	unit->m_iobuf = ioBuf;
+	void Perform();
+};
 
-	if (preloadBufNum < 0 || preloadBufNum >= world->mNumSndBufs) preloadBufNum = 0;
-	SndBuf *preloadBuf = world->mSndBufs + preloadBufNum;
-	unit->m_prebuf = preloadBuf;
+MsgFifoNoFree<DiskIOMsg, 256> gDiskFifo;
+SC_SyncCondition gDiskFifoHasData;
 
-/*
-	int bufChannels = buf->channels;
-	int bufSamples = buf->samples;
-	int bufFrames = buf->frames;
-	int mask = buf->mask;
-	int guardFrame = bufFrames - 2;
-*/
-
-//	SFOpenReadAsync(filename, &fileptr, startPos, length, ioBuf->data);
-}
-
-void DiskOut_Setup(DiskOut *unit, sc_msg_iter *msg)
+void* disk_io_thread_func(void* arg);
+void* disk_io_thread_func(void* arg)
 {
-	char *filename = msg->gets();
-	char *headerFormat = msg->gets();
-	char *sampleFormat = msg->gets();
-
-	int ioBuf = msg->geti(-1);
+	while (true) {
+		gDiskFifoHasData.WaitEach();
+		gDiskFifo.Perform();
+	}
+	return 0;
 }
-
-void DiskOut_Start(DiskOut *unit, sc_msg_iter *msg)
-{
-}
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+#define MAXCHANNELS 32
 
 #define GET_BUF \
 	float fbufnum  = ZIN0(0); \
@@ -157,52 +124,173 @@ void DiskOut_Start(DiskOut *unit, sc_msg_iter *msg)
 	} \
 	SndBuf *buf = unit->m_buf; \
 	int bufChannels = buf->channels; \
-	int bufSamples = buf->samples; \
 	int bufFrames = buf->frames; \
-	int mask = buf->mask; \
-	int guardFrame = bufFrames - 2; \
 	float *bufData = buf->data;
 
-#define SETUP_OUT \
+#define SETUP_OUT(offset) \
 	if (unit->mNumOutputs != bufChannels) { \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
-	float *out[16]; \
-	for (int i=0; i<bufChannels; ++i) out[i] = OUT(i); 
+	float *out[MAXCHANNELS]; \
+	for (int i=0; i<bufChannels; ++i) out[i] = OUT(i+offset); 
 
 #define SETUP_IN(offset) \
-	if ((unit->mNumInputs - offset) != bufChannels) { \
+	if (unit->mNumInputs != bufChannels) { \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
-	float *in[16]; \
+	float *in[MAXCHANNELS]; \
 	for (int i=0; i<bufChannels; ++i) in[i] = IN(i+offset); 
 		
+void DiskIn_Ctor(DiskIn* unit)
+{
+	unit->m_fbufnum = -1.f;
+	unit->m_buf = unit->mWorld->mSndBufs;
+	unit->m_framepos = 0;
+}
 
 void DiskIn_next(DiskIn *unit, int inNumSamples)
 {
-	//GET_BUF
-	//SETUP_OUT
-	int remain = inNumSamples;
-	do {
-		switch (unit->m_state) {
-			case diskinIdle :
-				break;
-			case diskinStartingEmpty :
-			case diskinStartingFull :
-				break;
-			case diskinNormal :
-				break;
-			case diskinLastBuffer :
-				break;
-			case diskinEndSilence :
-				//for (int i=0; i<unit->mNumOutputs; ++i) {
-				//	Fill(remain, out+i, 0.f);
-				//}
-				break;
+	GET_BUF
+	if (!bufData || !buf->sndfile || (bufFrames % (unit->mWorld->mBufLength<<1) != 0)) {
+		unit->m_framepos = 0;
+		ClearUnitOutputs(unit, inNumSamples);
+		return;
+	}
+	SETUP_OUT(0)
+	
+	if (unit->m_framepos >= bufFrames) {
+		unit->m_framepos = 0;
+	}
+
+	bufData += unit->m_framepos * bufChannels;
+	
+	// buffer must be allocated as a multiple of 2*blocksize.
+	if (bufChannels > 2) {
+		for (int j=0; j<inNumSamples; ++j) {
+			for (int i=0; i<bufChannels; ++i) {
+				*out[i]++ = *bufData++;
+			}
 		}
-	} while (remain);
+	} else if (bufChannels == 2) {
+		float *out0 = out[0];
+		float *out1 = out[1];
+		for (int j=0; j<inNumSamples; ++j) {
+			*out0++ = *bufData++;
+			*out1++ = *bufData++;
+		}
+	} else {
+		float *out0 = out[0];
+		for (int j=0; j<inNumSamples; ++j) {
+			*out0++ = *bufData++;
+		}
+	}
+	
+	unit->m_framepos += inNumSamples;
+	int32 bufFrames2 = bufFrames >> 1;
+	if (unit->m_framepos == bufFrames) {
+		unit->m_framepos = 0;
+		goto sendMessage;
+	} else if (unit->m_framepos == bufFrames2) {
+sendMessage:
+		// send a message to read
+		DiskIOMsg msg;
+		msg.mCommand = kDiskCmd_Read;
+		msg.mBufNum = (int)fbufnum;
+		msg.mPos = bufFrames2 - unit->m_framepos;
+		msg.mFrames = bufFrames2;
+		msg.mChannels = bufChannels;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void DiskOut_Ctor(DiskOut* unit)
+{
+	unit->m_fbufnum = -1.f;
+	unit->m_buf = unit->mWorld->mSndBufs;
+	unit->m_framepos = 0;
+}
+
+
+void DiskOut_next(DiskOut *unit, int inNumSamples)
+{
+	GET_BUF
+	if (!bufData || !buf->sndfile || (bufFrames % (unit->mWorld->mBufLength<<1) != 0)) {
+		unit->m_framepos = 0;
+		return;
+	}
+	SETUP_IN(0)
+	
+	if (unit->m_framepos >= bufFrames) {
+		unit->m_framepos = 0;
+	}
+	
+	bufData += unit->m_framepos * bufChannels;
+
+	if (bufChannels > 2) {
+		for (int j=0; j<inNumSamples; ++j) {
+			for (int i=0; i<bufChannels; ++i) {
+				*bufData++ = *in[i]++;
+			}
+		}
+	} else if (bufChannels == 2) {
+		float *in0 = in[0];
+		float *in1 = in[1];
+		for (int j=0; j<inNumSamples; ++j) {
+			*bufData++ = *in0++;
+			*bufData++ = *in1++;
+		}
+	} else {
+		float *in0 = in[0];
+		for (int j=0; j<inNumSamples; ++j) {
+			*bufData++ = *in0++;
+		}
+	}
+	
+	unit->m_framepos += inNumSamples;
+	int32 bufFrames2 = bufFrames >> 1;
+	if (unit->m_framepos == bufFrames) {
+		unit->m_framepos = 0;
+		goto sendMessage;
+	} else if (unit->m_framepos == bufFrames2) {
+sendMessage:
+		// send a message to write
+		DiskIOMsg msg;
+		msg.mCommand = kDiskCmd_Write;
+		msg.mBufNum = (int)fbufnum;
+		msg.mPos = bufFrames2 - unit->m_framepos;
+		msg.mFrames = bufFrames2;
+		msg.mChannels = bufChannels;
+		gDiskFifo.Write(msg);
+		gDiskFifoHasData.Signal();
+	}
+}
+
+void DiskIOMsg::Perform()
+{
+	mWorld->mNRTLock->Lock();
+	
+	SndBuf *buf = World_GetNRTBuf(mWorld, mBufNum);
+	if (mPos > buf->frames || mPos + mFrames > buf->frames || buf->channels != mChannels) goto leave;
+
+	sf_count_t count;
+	switch (mCommand) {
+		case kDiskCmd_Read :
+			count = buf->sndfile ? sf_readf_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames) : 0;
+			if (count < mFrames) {
+				memset(buf->data + (mPos + count) * buf->channels, 0, (mFrames - count) * buf->channels);
+			}
+		break;
+		case kDiskCmd_Write :
+			if (!buf->sndfile) goto leave;
+			count = sf_writef_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames);
+		break;
+	}
+	
+leave:
+	mWorld->mNRTLock->Unlock();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -210,15 +298,12 @@ void DiskIn_next(DiskIn *unit, int inNumSamples)
 void load(InterfaceTable *inTable)
 {
 	ft = inTable;
-
-	//DefineSimpleUnit(DiskIn);
-	//DefineSimpleUnit(DiskOut);
 	
-	DefineUnitCmd("DiskIn", "setup", (UnitCmdFunc)&DiskIn_Setup);
-	DefineUnitCmd("DiskIn", "start", (UnitCmdFunc)&DiskIn_Start);
+	pthread_t diskioThread;
+	pthread_create (&diskioThread, NULL, disk_io_thread_func, (void*)0);
 	
-	DefineUnitCmd("DiskOut", "setup", (UnitCmdFunc)&DiskOut_Setup);
-	DefineUnitCmd("DiskOut", "start", (UnitCmdFunc)&DiskOut_Start);
+	DefineSimpleUnit(DiskIn);
+	DefineSimpleUnit(DiskOut);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

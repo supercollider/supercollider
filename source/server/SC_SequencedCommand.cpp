@@ -37,8 +37,7 @@ void SndBuf_Init(SndBuf *buf)
 	buf->mask = 0;
 	buf->mask1 = 0;
 	buf->coord = 0;
-	buf->shmid = 0;
-	buf->shmkey = 0;
+	buf->sndfile = 0;
 }
 
 SC_SequencedCommand::SC_SequencedCommand(World *inWorld, ReplyAddress *inReplyAddress)
@@ -464,8 +463,10 @@ int BufReadCmd::Init(char *inData, int inSize)
 	strcpy(mFilename, filename);
 	
 	mFileOffset = msg.geti();
-	mNumFrames = msg.geti();
+	mNumFrames = msg.geti(-1);
 	mBufOffset = msg.geti();
+	mLeaveFileOpen = msg.geti();
+	
 	return kSCErr_None;
 }
 
@@ -484,22 +485,25 @@ bool BufReadCmd::Stage2()
 	SF_INFO fileinfo;
 
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
+	int samplesToEnd = buf->frames - mBufOffset;
+	if (samplesToEnd <= 0) return true;
 
 	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
 		printf("File '%s' could not be opened.\n", mFilename);
 		return true;
 	}
-	if (mNumFrames <= 0 || mNumFrames > fileinfo.frames) mNumFrames = fileinfo.frames;
-	int samplesToEnd = buf->frames - mBufOffset;
+	if (mNumFrames < 0 || mNumFrames > fileinfo.frames) mNumFrames = fileinfo.frames;
 	
-	if (samplesToEnd <= 0) goto leave;
 	if (mNumFrames > samplesToEnd) mNumFrames = samplesToEnd;
 
 	sf_seek(sf, mFileOffset, SEEK_SET);
-	sf_readf_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
-leave:
-	sf_close(sf);
+	if (mNumFrames > 0) {
+		sf_readf_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
+	}
+	
+	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
+	else sf_close(sf);
 	
 	return true;
 }
@@ -535,6 +539,10 @@ int BufWriteCmd::Init(char *inData, int inSize)
 	char *headerFormatString = msg.gets();
 	char *sampleFormatString = msg.gets();
 
+	mNumFrames = msg.geti(-1);
+	mBufOffset = msg.geti();
+	mLeaveFileOpen = msg.geti();
+
 	return sndfileFormatInfoFromStrings(&mFileInfo, headerFormatString, sampleFormatString);
 }
 
@@ -551,14 +559,26 @@ void BufWriteCmd::CallDestructor()
 bool BufWriteCmd::Stage2()
 {
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
+	int samplesToEnd = buf->frames - mBufOffset;
+	if (samplesToEnd < 0) samplesToEnd = 0;
 
 	SNDFILE* sf = sf_open(mFilename, SFM_WRITE, &mFileInfo);
 	if (!sf) {
 		printf("File '%s' could not be opened.\n", mFilename);
 		return true;
 	}
-	sf_writef_float(sf, buf->data, buf->frames);
-	sf_close(sf);
+
+	if (mNumFrames < 0 || mNumFrames > buf->frames) mNumFrames = buf->frames;
+	
+	if (mNumFrames > samplesToEnd) mNumFrames = samplesToEnd;
+
+	if (mNumFrames > 0) {
+		sf_writef_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
+	}
+	
+	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
+	else sf_close(sf);
+
 	return true;
 }
 
@@ -574,9 +594,50 @@ void BufWriteCmd::Stage4()
 
 ///////////////////////////////////////////////////////////////////////////
 
+BufCloseCmd::BufCloseCmd(World *inWorld, ReplyAddress *inReplyAddress)
+	: SC_SequencedCommand(inWorld, inReplyAddress)
+{
+}
+
+int BufCloseCmd::Init(char *inData, int inSize)
+{
+	sc_msg_iter msg(inSize, inData);
+	mBufIndex = msg.geti();
+
+	return kSCErr_None;
+}
+
+void BufCloseCmd::CallDestructor() 
+{
+	this->~BufCloseCmd();
+}
+
+bool BufCloseCmd::Stage2()
+{
+	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
+	if (buf->sndfile) {
+		sf_close(buf->sndfile);
+		buf->sndfile = 0;
+	}
+	return true;
+}
+
+bool BufCloseCmd::Stage3()
+{
+	return true;
+}
+
+void BufCloseCmd::Stage4()
+{
+	SendDone("/b_close");
+}
+
+///////////////////////////////////////////////////////////////////////////
+
 AudioQuitCmd::AudioQuitCmd(World *inWorld, ReplyAddress *inReplyAddress)
 	: SC_SequencedCommand(inWorld, inReplyAddress)
 {
+	printf("AudioQuitCmd::AudioQuitCmd\n");
 }
 
 void AudioQuitCmd::CallDestructor() 
@@ -586,7 +647,21 @@ void AudioQuitCmd::CallDestructor()
 
 bool AudioQuitCmd::Stage2()
 {
+	printf("AudioQuitCmd::Stage2\n");
+	return true;
+}
+
+bool AudioQuitCmd::Stage3()
+{
+	printf("AudioQuitCmd::Stage3\n");
+	return true;
+}
+
+void AudioQuitCmd::Stage4()
+{
+	printf("AudioQuitCmd::Stage4\n");
 	SendDone("/quit");
+	printf("mWorld->hw->mQuitProgram->Release\n");
 	mWorld->hw->mQuitProgram->Release();
 	return false;
 }

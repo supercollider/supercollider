@@ -177,6 +177,27 @@ protected:
 ///////////////////////////////////////////////////////////////////////////
 
 
+class BufCloseCmd : public SC_SequencedCommand
+{
+public:
+	BufCloseCmd(World *inWorld, ReplyAddress *inReplyAddress);
+	
+	virtual int Init(char *inData, int inSize);
+
+	virtual bool Stage2();	// non real time
+	virtual bool Stage3();	//     real time
+	virtual void Stage4();	// non real time
+	
+protected:
+	int mBufIndex;
+	
+	virtual void CallDestructor();
+};
+
+
+///////////////////////////////////////////////////////////////////////////
+
+
 class BufZeroCmd : public SC_SequencedCommand
 {
 public:
@@ -236,7 +257,7 @@ protected:
 	int mBufIndex;
 	char *mFilename;
 	int mFileOffset, mNumFrames, mBufOffset;
-	bool mReportDone;
+	bool mLeaveFileOpen;
 	virtual void CallDestructor();
 };
 
@@ -258,6 +279,8 @@ protected:
 	int mBufIndex;
 	char *mFilename;
 	SF_INFO mFileInfo;
+	int mNumFrames, mBufOffset;
+	bool mLeaveFileOpen;
 	
 	virtual void CallDestructor();
 };
@@ -270,6 +293,8 @@ public:
 	AudioQuitCmd(World *inWorld, ReplyAddress *inReplyAddress);
 	
 	virtual bool Stage2();	// non real time
+	virtual bool Stage3();	//     real time
+	virtual void Stage4();	// non real time
 	
 protected:
 	

@@ -75,14 +75,14 @@ SC_NamedObj::~SC_NamedObj()
 
 void SC_NamedObj::SetName(const int32 *inName)
 {
-	if (str4len(inName) > kSCNameLen) return;
+	if (str4len(inName) > (int)kSCNameLen) return;
 	str4cpy(mName, inName);
 	mHash = Hash(mName);
 }
 
 void SC_NamedObj::SetName(const char *inName)
 {
-	if (str4len(inName) > kSCNameLen) return;
+	if (str4len(inName) > (int)kSCNameLen) return;
 	str4cpy(mName, inName);
 	mHash = Hash(mName);
 }

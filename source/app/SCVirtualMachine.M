@@ -32,7 +32,6 @@
 #include </usr/include/objc/objc-class.h>
 
 #include <pthread.h>
-//#include "SC_WorldOptions.h"
 
 ChangeCounter gUIChangeCounter;
 NSTimer *gNSTimer;
@@ -85,13 +84,9 @@ static id sharedSCVM = nil;
 - (void)start
 {
         gNSTimer = [NSTimer scheduledTimerWithTimeInterval: 0.02 target: self selector:
-            @selector(doPeriodicTask:) userInfo: nil repeats: YES];
+            @selector(doPeriodicTask:) userInfo: nil repeats: YES];        
         
-        //WorldOptions options = kDefaultWorldOptions;
-        //struct World *world = World_New(&options);
-        
-        
-        SetupHomeDirectory();
+	SetupHomeDirectory();
 	pyr_init_mem_pools(2*1024*1024, 256*1024);
 	initPostBuffer();
 	init_OSC(57120);

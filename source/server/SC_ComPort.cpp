@@ -40,6 +40,8 @@ void World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc
 	if (inSize > 0) {
 		OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 		char *data = (char*)malloc(inSize);
+		packet->mReplyAddr.mSockAddr.sin_addr.s_addr = 0;
+		packet->mReplyAddr.mSockAddr.sin_port = 0;
 		packet->mReplyAddr.mReplyFunc = inFunc;
 		packet->mSize = inSize;
 		packet->mData = data;

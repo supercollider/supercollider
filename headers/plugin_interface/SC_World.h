@@ -26,6 +26,7 @@
 #include "SC_Rate.h"
 #include "SC_SndBuf.h"
 #include "SC_RGen.h"
+#include "SC_Lock.h"
 
 struct World 
 {
@@ -70,7 +71,8 @@ struct World
 
 	int mNumUnits, mNumGraphs, mNumGroups;
 	int mSampleOffset; // offset in the buffer of current event time.
-		
+	
+	SC_Lock* mNRTLock;
 };
 
 inline SndBuf* World_GetBuf(struct World *inWorld, int index)
