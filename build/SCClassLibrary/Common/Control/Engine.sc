@@ -61,6 +61,47 @@ StackNumberAllocator
 	}
 }
 
+RingBuffer
+{
+	var array, size, head=0, tail=0;
+	*new { arg size;
+		^super.newCopyArgs(Array.newClear(size+1), size+1);
+	}
+	add { arg item;
+		var nextIndex;
+		nextIndex = (head+1) % size;
+		if ( nextIndex == tail, { ^nil }); // full
+		array.put(head, item);
+		head = nextIndex;
+	}
+	pop { var item;
+		if (head == tail, { ^nil }); // empty
+		item = array.at(tail);
+		tail = (tail+1) % size;
+		^item
+	}
+}
+		
+LRUNumberAllocator
+{
+	var lo, hi, freeList, next;
+	
+	*new { arg lo, hi;
+		^super.newCopyArgs(lo, hi).init
+	}
+	init {
+		next = lo - 1;
+		freeList = RingBuffer.new(hi-lo);
+	}
+	alloc {
+		if (next < hi, { ^next = next + 1; });
+		^freeList.pop;
+	}
+	free { arg inIndex; 
+		freeList.add(inIndex); 
+	}
+}
+
 RingNumberAllocator
 {
 	var lo, hi, next;
