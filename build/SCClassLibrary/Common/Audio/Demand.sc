@@ -14,13 +14,20 @@ Demand : MultiOutUGen {
 
 SelfDemand : Demand {
 	
+	*ar { arg dur, reset, demandUGens, doneAction=0;
+		^this.multiNewList(['audio', dur, reset, doneAction] ++ demandUGens.asArray)
+	}
+	*kr { arg dur, reset, demandUGens, doneAction=0;
+		^this.multiNewList(['control', dur, reset, doneAction] ++ demandUGens.asArray)
+	}
 	checkInputs {
 		^if(inputs.at(0).rate === \demand) {
-			if (inputs.at(1).rate !== \demand and: { inputs.at(1).rate !== rate }) { 
+			if (inputs.at(1).rate !== \demand and: { inputs.at(1).rate !== \scalar } and: 
+				{ inputs.at(1).rate !== rate }) { 
  				("first input is not" + rate + "rate: " + inputs.at(1) + inputs.at(1).rate);
  			}
 		} {
-			super.checkInputs
+			this.checkValidInputs
 		}
 	}
 }

@@ -359,14 +359,17 @@ void SelfDemand_next_da(SelfDemand *unit, int inNumSamples)
 		float zreset = ZXP(reset);
 		if (zreset > 0.f && prevreset <= 0.f) {
 			
-			for (int j=2; j<unit->mNumInputs; ++j) {
+			for (int j=3; j<unit->mNumInputs; ++j) {
 				RESETINPUT(j);
 			}
 			RESETINPUT(0);
 		}
 		if (count <= 0.f) {
 			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f;
-		
+			if(sc_isnan(count)) {
+				int doneAction = (int)ZIN0(2);
+				DoneAction(doneAction, unit);
+			}
 			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
 				float x = DEMANDINPUT(j);
 				//printf("in  %d %g\n", k, x);
@@ -376,7 +379,7 @@ void SelfDemand_next_da(SelfDemand *unit, int inNumSamples)
 			}
 		} else {
 			count--;
-			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
+			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
 				out[k][i] = prevout[k];
 			}
 		}
@@ -409,15 +412,18 @@ void SelfDemand_next_dk(SelfDemand *unit, int inNumSamples)
 		
 		if (zreset > 0.f && prevreset <= 0.f) {
 			
-			for (int j=2; j<unit->mNumInputs; ++j) {
+			for (int j=3; j<unit->mNumInputs; ++j) {
 				RESETINPUT(j);
 			}
 			RESETINPUT(0);
 		}
 		if (count <= 0.f) {
 			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f;
-		
-			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
+			if(sc_isnan(count)) {
+				int doneAction = (int)ZIN0(2);
+				DoneAction(doneAction, unit);
+			}
+			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
 				float x = DEMANDINPUT(j);
 				//printf("in  %d %g\n", k, x);
 				if (sc_isnan(x)) x = prevout[k];
@@ -426,7 +432,7 @@ void SelfDemand_next_dk(SelfDemand *unit, int inNumSamples)
 			}
 		} else {
 			count--;
-			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
+			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
 				out[k][i] = prevout[k];
 			}
 		}
@@ -467,7 +473,11 @@ void SelfDemand_next_dd(SelfDemand *unit, int inNumSamples)
 		}
 		if (count <= 0.f) {
 			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f;
-			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
+			if(sc_isnan(count)) {
+				int doneAction = (int)ZIN0(2);
+				DoneAction(doneAction, unit);
+			}
+			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
 				float x = DEMANDINPUT(j);
 				//printf("in  %d %g\n", k, x);
 				if (sc_isnan(x)) x = prevout[k];
@@ -476,7 +486,7 @@ void SelfDemand_next_dd(SelfDemand *unit, int inNumSamples)
 			}
 		} else {
 			count--;
-			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
+			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
 				out[k][i] = prevout[k];
 			}
 		}
