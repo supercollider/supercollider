@@ -22,10 +22,6 @@ BusDriver : SynthlessPlayer {
 	reset {
 		sched.clear;
 	}
-	stop { 
-		this.reset;
-		super.stop;
-	}
 	stopToBundle { arg b;
 		super.stopToBundle(b);
 		b.addAction(this,\reset);
