@@ -168,7 +168,7 @@ Buffer {
 				<< "numFrames   : " << numFrames << Char.nl
 				<< "numChannels : " << numChannels << Char.nl
 				<< "sampleRate  :" << sr << Char.nl << Char.nl;
-		}).add;
+		}).add.removeWhenDone;
 		server.sendMsg("/b_query",bufnum) 
 	}
 	
