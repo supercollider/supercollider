@@ -165,7 +165,7 @@ Event : Environment {
 						group = ~group;
 						lag = ~lag + server.latency;
 						strum = ~strum;
-						sustain = ~sustain.value;
+						sustain = ~sustain = ~sustain.value;
 			
 						desc = ~synthLib.value.synthDescs[~instrument.asSymbol];
 						if (desc.isNil) { 
