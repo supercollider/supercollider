@@ -1,12 +1,13 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red191\green0\blue0;\red0\green115\blue0;\red0\green115\blue0;\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green115\blue0;\red0\green0\blue0;\red0\green115\blue0;\red0\green0\blue191;\red96\green96\blue96;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Non-Realtime Synthesis
-\f1\b0\fs24 \cf2 \
+\f1\b0\fs24 \
 \
 This documentation is initial.\
 \
@@ -14,22 +15,23 @@ SuperCollider 3 supports non-realtime synthesis through the use of binary files 
 \
 First create an OSC command file (i.e. a score)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 f = \cf3 File\cf2 (\cf4 "Cmds.osc"\cf2 ,\cf4 "w"\cf2 );\
+\f2\fs20 \cf0 f = \cf2 File\cf0 (\cf3 "Cmds.osc"\cf0 ,\cf3 "w"\cf0 );\
 \
-\cf5 // start a sine oscillator at 0.2 seconds.\cf2 \
-c = [ 0.2, [\cf6 \\s_new\cf2 , \cf6 \\sine\cf2 , 1001, 0, 0]].asRawOSC;\
-f.write(c.size); \cf5 // each bundle is preceeded by a 32 bit size.\cf2 \
-f.write(c); \cf5 // write the bundle data.\cf2 \
+\cf4 // start a sine oscillator at 0.2 seconds.\cf0 \
+c = [ 0.2, [\cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1001, 0, 0]].asRawOSC;\
+f.write(c.size); \cf4 // each bundle is preceeded by a 32 bit size.\cf0 \
+f.write(c); \cf4 // write the bundle data.\cf0 \
 \
-\cf5 // stop sine oscillator at 3.0 seconds.\cf2 \
-c = [ 3.0, [\cf6 \\n_free\cf2 , 1001]].asRawOSC;\
+\cf4 // stop sine oscillator at 3.0 seconds.\cf0 \
+c = [ 3.0, [\cf5 \\n_free\cf0 , 1001]].asRawOSC;\
 f.write(c.size);\
 f.write(c);\
 \
-\cf5 // scsynth stops processing immediately after the last command, so here is\cf2 \
-\cf5 // a do-nothing command to mark the end of the command stream.\cf2 \
-c = [ 3.2, [\cf6 \\c_set\cf2 , 0, 0]].asRawOSC;\
+\cf4 // scsynth stops processing immediately after the last command, so here is\cf0 \
+\cf4 // a do-nothing command to mark the end of the command stream.\cf0 \
+c = [ 3.2, [\cf5 \\c_set\cf0 , 0, 0]].asRawOSC;\
 f.write(c.size);\
 f.write(c);\
 \
@@ -49,76 +51,80 @@ If you do not need an input sound file, then put "_" for the file name as in the
 This could be executed in SC as:\
 \
 
-\f2\fs20 \cf4 "./scsynth -N Cmds.osc _ NRTout.aiff 44100 AIFF int16"\cf2 .unixCmd;\
+\f2\fs20 \cf3 "./scsynth -N Cmds.osc _ NRTout.aiff 44100 AIFF int16"\cf0 .unixCmd;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
-Another option is to use the Score, which is \cf0 a convenience class to create the OSC command file for you.\
+\f1\fs24 \cf0 \
+Another option is to use the Score, which is a convenience class to create the OSC command file for you.\
 \
 Place the following code in a file to control a sine synthdef with a freq arg, where your info is in the following format\
 [start-time, [osccommand]]:\
  (for example):\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 #[\
+\f2\fs20 \cf0 #[\
 \
-[0.0, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1000, 0, 0,  \cf7 \\freq\cf0 , 1413 ]],\
-[0.1, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1001, 0, 0,  \cf7 \\freq\cf0 , 712 ]],\
-[0.2, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1002, 0, 0,  \cf7 \\freq\cf0 , 417 ]],\
-[0.3, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1003, 0, 0,  \cf7 \\freq\cf0 , 1238 ]],\
-[0.4, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1004, 0, 0,  \cf7 \\freq\cf0 , 996 ]],\
-[0.5, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1005, 0, 0,  \cf7 \\freq\cf0 , 1320 ]],\
-[0.6, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1006, 0, 0,  \cf7 \\freq\cf0 , 864 ]],\
-[0.7, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1007, 0, 0,  \cf7 \\freq\cf0 , 1033 ]],\
-[0.8, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1008, 0, 0,  \cf7 \\freq\cf0 , 1693 ]],\
-[0.9, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1009, 0, 0,  \cf7 \\freq\cf0 , 410 ]],\
-[1.0, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1010, 0, 0,  \cf7 \\freq\cf0 , 1349 ]],\
-[1.1, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1011, 0, 0,  \cf7 \\freq\cf0 , 1449 ]],\
-[1.2, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1012, 0, 0,  \cf7 \\freq\cf0 , 1603 ]],\
-[1.3, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1013, 0, 0,  \cf7 \\freq\cf0 , 333 ]],\
-[1.4, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1014, 0, 0,  \cf7 \\freq\cf0 , 678 ]],\
-[1.5, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1015, 0, 0,  \cf7 \\freq\cf0 , 503 ]],\
-[1.6, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1016, 0, 0,  \cf7 \\freq\cf0 , 820 ]],\
-[1.7, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1017, 0, 0,  \cf7 \\freq\cf0 , 1599 ]],\
-[1.8, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1018, 0, 0,  \cf7 \\freq\cf0 , 968 ]],\
-[1.9, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1019, 0, 0,  \cf7 \\freq\cf0 , 1347 ]],\
+[0.0, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1000, 0, 0,  \cf5 \\freq\cf0 , 1413 ]],\
+[0.1, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1001, 0, 0,  \cf5 \\freq\cf0 , 712 ]],\
+[0.2, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1002, 0, 0,  \cf5 \\freq\cf0 , 417 ]],\
+[0.3, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1003, 0, 0,  \cf5 \\freq\cf0 , 1238 ]],\
+[0.4, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1004, 0, 0,  \cf5 \\freq\cf0 , 996 ]],\
+[0.5, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1005, 0, 0,  \cf5 \\freq\cf0 , 1320 ]],\
+[0.6, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1006, 0, 0,  \cf5 \\freq\cf0 , 864 ]],\
+[0.7, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1007, 0, 0,  \cf5 \\freq\cf0 , 1033 ]],\
+[0.8, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1008, 0, 0,  \cf5 \\freq\cf0 , 1693 ]],\
+[0.9, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1009, 0, 0,  \cf5 \\freq\cf0 , 410 ]],\
+[1.0, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1010, 0, 0,  \cf5 \\freq\cf0 , 1349 ]],\
+[1.1, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1011, 0, 0,  \cf5 \\freq\cf0 , 1449 ]],\
+[1.2, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1012, 0, 0,  \cf5 \\freq\cf0 , 1603 ]],\
+[1.3, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1013, 0, 0,  \cf5 \\freq\cf0 , 333 ]],\
+[1.4, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1014, 0, 0,  \cf5 \\freq\cf0 , 678 ]],\
+[1.5, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1015, 0, 0,  \cf5 \\freq\cf0 , 503 ]],\
+[1.6, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1016, 0, 0,  \cf5 \\freq\cf0 , 820 ]],\
+[1.7, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1017, 0, 0,  \cf5 \\freq\cf0 , 1599 ]],\
+[1.8, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1018, 0, 0,  \cf5 \\freq\cf0 , 968 ]],\
+[1.9, [ \cf5 \\s_new\cf0 , \cf5 \\sine\cf0 , 1019, 0, 0,  \cf5 \\freq\cf0 , 1347 ]],\
 \
 \
-[3.0, [\cf7 \\c_set\cf0 , 0, 0]] \
+[3.0, [\cf5 \\c_set\cf0 , 0, 0]] \
 \
 ]\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 You can then use the Score.write to convert the above to the OSC command file using the following args:\
+\f1\fs24 \cf0 You can then use the Score.write to convert the above to the OSC command file using the following args:\
 \
 Score.write(scorefile, oscfile)\
 \
 Score will compile the score file, and write out the oscfile. For example, using an input file called test.sc.\
 \
-
-\f2\fs20 \cf3 Score\cf2 .write(\cf4 "test.sc"\cf2 , \cf4 "test.osc"\cf2 );
-\f1\fs24 \cf0 \
-\
-Remember to use FULL pathnames.\
-\cf2 \
-Then something like the following to execute:\
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 \cf8 "./scsynth -N test.osc _ testout.aiff 44100 AIFF int16"\cf0 .unixCmd;
-\f1\fs24 \cf2 \
+\f2\fs20 \cf2 Score\cf0 .write(\cf3 "test.sc"\cf0 , \cf3 "test.osc"\cf0 );
+\f1\fs24 \
+\
+Remember to use FULL pathnames.\
+\
+Then something like the following to execute:\
+\
+
+\f2\fs20 \cf3 "./scsynth -N test.osc _ testout.aiff 44100 AIFF int16"\cf0 .unixCmd;
+\f1\fs24 \
 \
 Score also has a writeList method which allows you to write without an external file.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 \cf0 x = [\
+\f2\fs20 \cf6 (\
+x = [\
 \
-[0.0, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1000, 0, 0,  \cf7 \\freq\cf0 , 1413 ]],\
-[0.1, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1001, 0, 0,  \cf7 \\freq\cf0 , 712 ]],\
-[0.2, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1002, 0, 0,  \cf7 \\freq\cf0 , 417 ]],\
-[0.3, [ \cf7 \\s_new\cf0 , \cf7 \\sine\cf0 , 1003, 0, 0,  \cf7 \\freq\cf0 , 1238 ]],\
+[0.0, [ \cf7 \\s_new\cf6 , \cf7 \\sine\cf6 , 1000, 0, 0,  \cf7 \\freq\cf6 , 1413 ]],\
+[0.1, [ \cf7 \\s_new\cf6 , \cf7 \\sine\cf6 , 1001, 0, 0,  \cf7 \\freq\cf6 , 712 ]],\
+[0.2, [ \cf7 \\s_new\cf6 , \cf7 \\sine\cf6 , 1002, 0, 0,  \cf7 \\freq\cf6 , 417 ]],\
+[0.3, [ \cf7 \\s_new\cf6 , \cf7 \\sine\cf6 , 1003, 0, 0,  \cf7 \\freq\cf6 , 1238 ]],\
 \
-[1.0, [\cf7 \\c_set\cf0 , 0, 0]] \
-]\
+[1.0, [\cf7 \\c_set\cf6 , 0, 0]] \
+];\
 \
-Score.writeList(x, "test.osc");}
+\cf8 Score\cf6 .writeList(x, \cf9 "test.osc"\cf6 );\
+)}
