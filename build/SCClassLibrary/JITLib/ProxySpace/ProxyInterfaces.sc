@@ -62,6 +62,7 @@ StreamControl : AbstractPlayControl {
 	play {
 		stream.stop;
 		stream.play(nil, false, 0); //(clock);
+		CmdPeriod.add(this); // should maybe be in PauseStream
 	}
 	
 	stop {
@@ -71,6 +72,7 @@ StreamControl : AbstractPlayControl {
 	resume { stream.resume; paused=false }
 	
 	free { stream.stop; stream = nil }
+	cmdPeriod { stream.stop }
 	
 	playToBundle { arg bundle; 
 		if(paused.not and: { stream.isPlaying.not }, {

@@ -738,7 +738,7 @@ NodeProxy : BusPlug {
 			});
 			if(this.isPlaying.not, { 
 				this.prepareToBundle(nil, bundle);
-				if(awake, {this.sendAllToBundle(bundle)});
+				if(awake, { this.sendAllToBundle(bundle) });
 			});
 		});
 		
