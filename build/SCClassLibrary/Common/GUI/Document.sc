@@ -21,13 +21,12 @@ Document {
 			doc = this.newFromIndex(i);
 		});
 	}
-	
 	*open { arg path, selectionStart=0, selectionLength=0;
 		^super.new.initFromPath(path, selectionStart, selectionLength)
 	}
 	
 	*new { arg title="Untitled", string="", makeListener=false;
-		^super.new.initByString(title, string, makeListener);
+		^super.new.initByString(title, string.asString, makeListener);
 	}
 	
 //class:
@@ -263,10 +262,11 @@ Document {
 		};
 	}
 	openWikiPage {
-		var selectedText, filename;
+		var selectedText, filename, index;
 		var extensions = #[".rtf", ".sc", ".txt", ""];
 		selectedText = this.selectedText;
-		this.selectRange(this.selectionStart, 0);
+		index = this.selectionStart;
+		this.selectRange(index, 0);
 		case { selectedText[0] == $* }
 		{ 
 			// execute file
@@ -292,6 +292,7 @@ Document {
 			("open " ++ selectedText).unixCmd;
 		}
 		{
+			if(index + selectedText.size > this.text.size) { ^this };
 			extensions.do {|ext|
 				filename = wikiDir ++ selectedText ++ ext;
 				if (File.exists(filename)) {
@@ -509,14 +510,23 @@ Document {
 
 EnvirDocument : Document {
 	var <>envir;
+	
 	*new { arg envir, title, string="", pushNow=true;
 		if(pushNow) { envir.push };
-		title = title ?? { "envir" + (envir.tryPerform(\name) ? "Untitled Environment") };
+		title = title ?? { "-" + (envir.tryPerform(\name) ? "Untitled Environment") };
 		^super.new(title, string).envir_(envir).background_(rgb(240, 240, 240));
 	}
 	
+	*open { arg envir, path, selectionStart=0, selectionLength=0, pushNow=true;
+		var doc;
+		doc = super.open(path, selectionStart, selectionLength);
+		if(doc.notNil) { doc.initEnvirDoc(envir, pushNow) };
+		^doc	}	initEnvirDoc { arg inEnv, pushNow;		this.envir = inEnv;		if (pushNow) { envir.push };
+		this.title = title ?? { "-" + (envir.tryPerform(\name) ? "Untitled Environment") }	}
+	
 	didBecomeKey {
 		envir.push;
+		this.class.current = this;
 		toFrontAction.value(this);
 	}
 	
