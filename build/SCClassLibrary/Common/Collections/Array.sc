@@ -79,7 +79,7 @@ Array[slot] : ArrayedCollection {
 		});
 	}
 	isValidUGenInput { ^true }
-	
+	numChannels { ^this.size }
 //	// 2D array support
 //	*newClear2D { arg rows=1, cols=1;
 //		^super.fill(rows, { Array.newClear(cols) });

@@ -50,7 +50,7 @@ Bus {
 		server.sendBundle(server.latency,
 			["/c_fill",index,numChans,value]);
 	}
-	// not yet implemented on the server:
+	// not yet implemented :
 	// get, getn
 
 	free {

@@ -80,6 +80,7 @@ BufAllpassC : BufCombN { }
 
 ///////////////////////////////////////
 
+/*
 GrainTap : MultiOutUGen {	
 	*ar { arg grainDur = 0.2, pchRatio = 1.0, 
 			pchDispersion = 0.0, timeDispersion = 0.0, overlap = 2.0, mul = 1.0, add = 0.0;
@@ -87,4 +88,5 @@ GrainTap : MultiOutUGen {
 			pchDispersion, timeDispersion, overlap).madd(mul, add)
 	}
 }
+*/
 

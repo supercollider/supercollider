@@ -52,7 +52,16 @@ Buffer {
 			bufStartFrame, leaveOpen.binaryValue, completionMessage.value(this)]
 		// doesn't set my numChannels etc.
 	}
-			
+	
+	cueSoundFile { arg path,startFrame = 0, bufferSize=32768,completionMessage;
+		server.listSendMsg(
+			this.cueSoundFileMsg(path,startFrame,bufferSize,completionMessage)
+		)
+	}
+	cueSoundFileMsg { arg path,startFrame,bufferSize=32768,completionMessage;
+		^["/b_read", bufnum,path,startFrame,bufferSize,0,1,completionMessage.value(this) ]
+	}
+	
 	write { arg path,headerFormat="aiff",sampleFormat="int24",numFrames = -1,
 						startFrame = 0,leaveOpen = false, completionMessage;
 		server.listSendMsg( 

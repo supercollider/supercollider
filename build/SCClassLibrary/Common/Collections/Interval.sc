@@ -1,4 +1,4 @@
-Interval : Collection {	var <>start, <>end, <>step;		*new { arg start, end, step=1;		^super.newCopyArgs(start, end, step)	}		size { ^end - start div: step + 1 }	at { arg index; 		var val;		if (index < 0 or: { index >= this.size }, { ^nil });		^step * index + start;	}	do { arg function;		forBy(start, end, step, function);	}		add { ^this.shouldNotImplement }	put { ^this.shouldNotImplement }		storeParamsOn { arg stream;		stream.putAll("( ");		[start, end, step].storeItemsOn(stream);		stream.putAll(" )");	}}
+Interval : Collection {	var <>start, <>end, <>step;		*new { arg start, end, step=1;		^super.newCopyArgs(start, end, step)	}		size { ^end - start div: step + 1 }	at { arg index; 		var val;		if (index < 0 or: { index >= this.size }, { ^nil });		^step * index + start;	}	do { arg function;		forBy(start, end, step, function);	}		add { ^this.shouldNotImplement(thisMethod) }	put { ^this.shouldNotImplement(thisMethod) }		storeParamsOn { arg stream;		stream.putAll("( ");		[start, end, step].storeItemsOn(stream);		stream.putAll(" )");	}}
 
 Range : Collection {
 	var <>start, <>size;
@@ -20,8 +20,8 @@ Range : Collection {
 		^(val >= start) and: { (val < this.end)  and: { val.frac == 0 }}
 	}
 	
-	add { ^this.shouldNotImplement }
-	put { ^this.shouldNotImplement }
+	add { ^this.shouldNotImplement(thisMethod) }
+	put { ^this.shouldNotImplement(thisMethod) }
 	
 	split { arg num;
 		// assert: size > num

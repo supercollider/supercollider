@@ -29,9 +29,9 @@ Bag : Collection {
 	}
 	
 	// accessing
-	at { ^this.shouldNotImplement }
-	atFail { ^this.shouldNotImplement }
-	put { ^this.shouldNotImplement }
+	at { ^this.shouldNotImplement(thisMethod) }
+	atFail { ^this.shouldNotImplement(thisMethod) }
+	put { ^this.shouldNotImplement(thisMethod) }
 
 	// enumerating
 	do { arg function;

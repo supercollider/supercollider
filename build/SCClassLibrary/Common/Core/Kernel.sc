@@ -379,8 +379,8 @@ Interpreter {
 	var <>k, <>l, <>m, <>n, <>o, <>p, <>q, <>r, <>s, <>t;
 	var <>u, <>v, <>w, <>x, <>y, <>z;
 	
-	*new { ^this.shouldNotImplement }
-	*newClear { ^this.shouldNotImplement }
+	*new { ^this.shouldNotImplement(thisMethod) }
+	*newClear { ^this.shouldNotImplement(thisMethod) }
 	
 	//interpretCmdLine { ^this.interpret(cmdLine) }
 	//interpretPrintCmdLine { ^this.interpretPrint(cmdLine) }

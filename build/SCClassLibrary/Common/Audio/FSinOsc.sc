@@ -33,13 +33,19 @@ Klang : UGen {
 
 Klank : UGen {	
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
+			^this.multiNewList(['audio',  input, freqscale, 
+						freqoffset, decayscale, specificationsArrayRef] )
+	}
+	*new1 { arg rate ,  input,freqscale,freqoffset,decayscale,arrayRef;
 		var specs, freqs, amps, times;
-		# freqs, amps, times = specificationsArrayRef.value;
+		# freqs, amps, times = arrayRef.dereference;
 		specs = [freqs, 
 				amps ?? {Array.fill(freqs.size,1.0)}, 
 				times ?? {Array.fill(freqs.size,1.0)}
 				].flop.flat;
-		^this.multiNewList(['audio', input, freqscale, freqoffset, decayscale] ++ specs )
+
+		^super.new.rate_(rate).addToSynth.performList(\init, 
+				[input,freqscale,freqoffset,decayscale] ++ specs); 
 	}
 }
 

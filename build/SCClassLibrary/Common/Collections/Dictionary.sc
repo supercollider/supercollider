@@ -99,8 +99,8 @@ Dictionary : Set {
 		^val
 	}	
 		
-	remove { ^this.shouldNotImplement }
-	removeFail { ^this.shouldNotImplement }
+	remove { ^this.shouldNotImplement(thisMethod) }
+	removeFail { ^this.shouldNotImplement(thisMethod) }
 	
 	// enumerating
 	keysValuesDo { arg function;

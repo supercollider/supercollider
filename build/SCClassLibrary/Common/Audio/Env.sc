@@ -87,6 +87,14 @@ Env {
 		)
 	}
 	
+	releaseTime {
+		if(releaseNode.notNil,{
+			^times.copyRange(releaseNode,times.size - 1).sum
+		},{
+			^0.0 // ?
+		})
+	}
+
 	// blend two envelopes
 	blend { arg argAnotherEnv, argBlendFrac=0.5;
 		^this.class.new(
@@ -138,5 +146,13 @@ Env {
 //		array = this.asArray;
 //		netAddr.performList(\sendMsg, "buf.setn", bufnum, 0, array.size, array);
 //	}
+
+
+	storeParamsOn { arg stream;
+		stream << "(";
+		[levels, times, curves, releaseNode, loopNode].storeItemsOn(stream);
+		stream << ")";
+	}
+
 }
 

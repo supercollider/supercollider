@@ -1,6 +1,7 @@
 SimpleNumber : Number {
 		
 	isValidUGenInput { ^true }
+	numChannels { ^1 }
 	
 	magnitude { ^this.abs }
 	angle { if (this >= 0, {^0.0}, {^pi} ) }

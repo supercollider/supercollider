@@ -1,5 +1,5 @@
 Symbol {
-	*new { ^this.shouldNotImplement }
+	*new { ^this.shouldNotImplement(thisMethod) }
 
 	// conversion
 	asSymbol { ^this }
