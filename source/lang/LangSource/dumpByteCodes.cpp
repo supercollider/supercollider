@@ -146,7 +146,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
 			numTemps = numArgNames + numVarNames;
 
-			op3 = numTemps - *ip++ - 1; // get temp var index
+			op3 = *ip++; // get temp var index
 			if (op3 < numArgNames) {
 				post(" %02X %02X StoreTempVarX '%s'\n", op2, op3,
 					block->argNames.uosym->symbols[op3]->name);
@@ -389,7 +389,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
 			numTemps = numArgNames + numVarNames;
 
-			op3 = numTemps - *ip++ - 1; // get temp var index
+			op3 = *ip++; // get temp var index
 			if (op3 < numArgNames) {
 				post(" %02X    StoreTempVar '%s'\n", op3,
 					block->argNames.uosym->symbols[op3]->name);

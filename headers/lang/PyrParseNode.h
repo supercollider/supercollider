@@ -173,9 +173,10 @@ struct PyrVarDefNode : public PyrParseNode {
 	PyrVarDefNode() : PyrParseNode(pn_VarDefNode) {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
-
+	bool hasExpr(PyrSlot *result);
+	
 	struct PyrSlotNode* mVarName;
-	PyrLiteralNode* mDefVal;
+	PyrParseNode* mDefVal;
 	int mFlags;
 } ;
 
@@ -409,7 +410,7 @@ PyrMethodNode* newPyrMethodNode(PyrSlotNode* methodName, PyrSlotNode* primitiveN
 	PyrArgListNode* arglist, PyrVarListNode *varlist, PyrParseNode* body, int isClassMethod);
 PyrArgListNode* newPyrArgListNode(PyrVarDefNode* varDefs, PyrSlotNode* rest);
 PyrVarListNode* newPyrVarListNode(PyrVarDefNode* vardefs, int flags);
-PyrVarDefNode* newPyrVarDefNode(PyrSlotNode* varName, PyrLiteralNode* defVal, int flags);
+PyrVarDefNode* newPyrVarDefNode(PyrSlotNode* varName, PyrParseNode* defVal, int flags);
 PyrCallNode* newPyrCallNode(PyrSlotNode* selector, PyrParseNode* arglist,
 	PyrParseNode* keyarglist, PyrParseNode* blocklist);
 PyrBinopCallNode* newPyrBinopCallNode(PyrSlotNode* selector,

@@ -575,7 +575,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 				vardef = varlist->mVarDefs;
 				for (; vardef; vardef = (PyrVarDefNode*)vardef->mNext) {
 					PyrSlot litslot;
-					compilePyrLiteralNode(vardef->mDefVal, &litslot);
+					compilePyrLiteralNode((PyrLiteralNode*)vardef->mDefVal, &litslot);
 					*islot++ = litslot;
 					classobj->iprototype.uo->size++;
 					*inameslot++ = vardef->mVarName->mSlot.us;
@@ -639,7 +639,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 				vardef = varlist->mVarDefs;
 				for (; vardef; vardef = (PyrVarDefNode*)vardef->mNext) {
 					PyrSlot litslot;
-					compilePyrLiteralNode(vardef->mDefVal, &litslot);
+					compilePyrLiteralNode((PyrLiteralNode*)vardef->mDefVal, &litslot);
 					*cslot++ = litslot;
 					classobj->cprototype.uo->size++;
 					*cnameslot++ = vardef->mVarName->mSlot.us;
@@ -1309,7 +1309,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 			for (i=1; i<numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
 				PyrSlot *slot, litval;
 				slot = method->prototypeFrame.uo->slots + i;
-				compilePyrLiteralNode(vardef->mDefVal, &litval);
+				compilePyrLiteralNode((PyrLiteralNode*)vardef->mDefVal, &litval);
 				*slot = litval;
 			}
 			if (funcVarArgs) {
@@ -1366,7 +1366,8 @@ void PyrMethodNode::compile(PyrSlot *result)
 		for (i=0; i<numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
 			PyrSlot *slot, litval;
 			slot = method->prototypeFrame.uo->slots + i + numArgs + funcVarArgs;
-			compilePyrLiteralNode(vardef->mDefVal, &litval);
+			vardef->hasExpr(&litval);
+			//compilePyrLiteralNode(vardef->mDefVal, &litval);
 			*slot = litval;
 		}
 	}
@@ -1551,6 +1552,12 @@ void PyrMethodNode::compile(PyrSlot *result)
 		} else {
 			compile_body:
 			SetTailIsMethodReturn mr(false);
+			if (numVars) {
+				vardef = mVarlist->mVarDefs;
+				for (i=0; i<numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
+					vardef->compile(&dummy);
+				}
+			}
 			COMPILENODE(mBody, &dummy, true);
 		}
 		installByteCodes((PyrBlock*)method);
@@ -1596,7 +1603,7 @@ void PyrVarListNode::compile(PyrSlot *result)
 	compileErrors++;
 }
 
-PyrVarDefNode* newPyrVarDefNode(PyrSlotNode* varName, PyrLiteralNode* defVal,
+PyrVarDefNode* newPyrVarDefNode(PyrSlotNode* varName, PyrParseNode* defVal,
 	int flags)
 {
 	PyrVarDefNode* node = ALLOCNODE(PyrVarDefNode);
@@ -1606,10 +1613,30 @@ PyrVarDefNode* newPyrVarDefNode(PyrSlotNode* varName, PyrLiteralNode* defVal,
 	return node;
 }
 
+bool PyrVarDefNode::hasExpr(PyrSlot *result)
+{
+	if (result) SetNil(result);
+	if (!mDefVal) return false;
+	if (mDefVal->mClassno != pn_PushLitNode) return true;
+
+	PyrPushLitNode *pushlitnode = (PyrPushLitNode*)mDefVal;
+	if (pushlitnode->mSlot.utag == tagPtr) {
+		PyrParseNode* literalObj = (PyrParseNode*)pushlitnode->mSlot.uo;
+		if (literalObj->mClassno == pn_BlockNode) return true;
+	}
+	if (result) *result = pushlitnode->mSlot;
+	return false;
+}
+
 void PyrVarDefNode::compile(PyrSlot *result)
 {
-	error("compilePyrVarDefNode: shouldn't get here.\n"); 
-	compileErrors++;
+	if (hasExpr(NULL)) {
+		COMPILENODE(mDefVal, result, false);
+		compileAssignVar((PyrParseNode*)this, mVarName->mSlot.us, true);	
+	}
+
+	//error("compilePyrVarDefNode: shouldn't get here.\n"); 
+	//compileErrors++;
 }
 
 PyrCallNode* newPyrCallNode(PyrSlotNode* selector, PyrParseNode* arglist, 
@@ -3808,7 +3835,7 @@ void PyrBlockNode::compile(PyrSlot* result)
 		for (i=0; i<numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
 			PyrSlot *slot, litval;
 			slot = block->prototypeFrame.uo->slots + i;
-			compilePyrLiteralNode(vardef->mDefVal, &litval);
+			compilePyrLiteralNode((PyrLiteralNode*)vardef->mDefVal, &litval);
 			*slot = litval;
 		}
 	}
@@ -3823,7 +3850,8 @@ void PyrBlockNode::compile(PyrSlot* result)
 		for (i=0; i<numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
 			PyrSlot *slot, litval;
 			slot = block->prototypeFrame.uo->slots + i + numArgs + funcVarArgs;
-			compilePyrLiteralNode(vardef->mDefVal, &litval);
+			vardef->hasExpr(&litval);
+			//compilePyrLiteralNode(vardef->mDefVal, &litval);
 			*slot = litval;
 		}
 	}
@@ -3841,6 +3869,12 @@ void PyrBlockNode::compile(PyrSlot* result)
 			DUMPNODE(mBody, 0);
 		}*/
 		SetTailIsMethodReturn mr(false);
+		if (numVars) {
+			vardef = mVarlist->mVarDefs;
+			for (i=0; i<numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
+				vardef->compile(&dummy);
+			}
+		}
 		COMPILENODE(mBody, &dummy, true);
 	}
 	compileOpcode(opSpecialOpcode, opcFunctionReturn);

@@ -462,7 +462,7 @@ void Interpret(VMGlobals *g)
 	// interpreter globals
 
 	// temporary variables used in the interpreter
-	int ival, jmplen, classVarIndex, numArgsPushed, numKeyArgsPushed;
+	int ival, jmplen, numArgsPushed, numKeyArgsPushed;
 	PyrFrame *tframe;
 	PyrSymbol *selector;
 	PyrClass *classobj;

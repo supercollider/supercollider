@@ -1238,7 +1238,7 @@ funcvardecls1	: funcvardecl
 					{ $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$2); }
 				;
 
-funcvardecl	: VAR slotdeflist ';'
+funcvardecl	: VAR vardeflist ';'
 				{ $$ = (long)newPyrArgListNode((PyrVarDefNode*)$2, NULL); }
 			;
 
@@ -1274,8 +1274,19 @@ slotdeflist	: slotdef
 slotdef		: name
 				{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, NULL, 0); }
 			| name '=' slotliteral
-				{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, (PyrLiteralNode*)$3, 0); }
+				{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 0); }
 			;
+
+vardeflist      : vardef
+                        | vardeflist ',' vardef
+                                { $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
+                        ;
+
+vardef          : name
+                                { $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, NULL, 0); }
+                        | name '=' expr
+                                { $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 0); }
+                        ;                              
 				
 dictslotdef	: exprseq ':' exprseq
 				{ $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
@@ -1303,7 +1314,7 @@ rwslotdeflist	: rwslotdef
 rwslotdef		: rwspec name
 					{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$2, NULL, $1); }
 				| rwspec name '=' slotliteral
-					{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$2, (PyrLiteralNode*)$4, $1); }
+					{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$2, (PyrParseNode*)$4, $1); }
 				;			
 								
 dictlit		:	'#' '(' litdictslotlist ')'
