@@ -1,5 +1,5 @@
 (defun sclang-message (string &rest args)
-  (message "SCLang: %s" (apply #'format string args)))
+  (message "SCLang: %s" (apply 'format string args)))
 
 (defun sclang-make-prompt-string (prompt default)
   (if (and default (string-match "\\(:\\)\\s *" prompt))

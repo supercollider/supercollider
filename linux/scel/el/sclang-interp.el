@@ -281,7 +281,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   (sclang--init-post-buffer)
   (sclang--start-command-process)
   (let ((process-connection-type nil))
-    (let ((proc (apply #'start-process
+    (let ((proc (apply 'start-process
 		       sclang-process sclang-post-buffer
 		       sclang-program (sclang-make-options))))
       (set-process-sentinel proc 'sclang--process-sentinel)

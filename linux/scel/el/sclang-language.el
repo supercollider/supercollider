@@ -196,7 +196,7 @@ low-resource systems."
 			    (read (current-buffer))
 			  (error nil))))
 	     (unless table (message "SCLang: Couldn't retrieve symbol table."))
-	     (setq sclang-symbol-table (sort table #'string<))
+	     (setq sclang-symbol-table (sort table 'string<))
 	     (sclang-update-font-lock))))))))
 
 (add-hook 'sclang-library-startup-hook
