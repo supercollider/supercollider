@@ -115,7 +115,7 @@ Function : AbstractFunction {
 		if (error.notNil) { handler.value(error); }
 	}
 	prTry {
-		var eh, next;
+		var next;
 		next = thisThread.exceptionHandler;
 		thisThread.exceptionHandler = {|error| 
 			thisThread.exceptionHandler = next; // pop
@@ -126,7 +126,7 @@ Function : AbstractFunction {
 		^nil
 	}
 	
-	handleError { arg error; this.value(error) }
+	handleError { arg error; ^this.value(error) }
 }
 
 
