@@ -1235,7 +1235,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 		unit->mDone = false;
 		unit->m_released = false;
 		counter = 0;
-	} else if (unit->m_prevGate > -1.f && gate < -1.f) {
+	} else if (gate <= -1.f && unit->m_prevGate > -1.f) {
 		// cutoff
 		int numstages = (int)ZIN0(kEnvGen_numStages);
 		float dur = -gate - 1.f;
@@ -1453,7 +1453,7 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 		unit->mDone = false;
 		unit->m_released = false;
 		counter = 0;
-	} else if (unit->m_prevGate > -1.f && gate < -1.f) {
+	} else if (gate <= -1.f && unit->m_prevGate > -1.f) {
 		// cutoff
 		int numstages = (int)ZIN0(kEnvGen_numStages);
 		float dur = -gate - 1.f;
@@ -1685,7 +1685,7 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 		counter = 0; \
 		nsmps = i; \
 		break; \
-	} else if (unit->m_prevGate > -1.f && gate < -1.f) { \
+	} else if (gate <= -1.f && unit->m_prevGate > -1.f) { \
 		int numstages = (int)ZIN0(kEnvGen_numStages); \
 		float dur = -gate - 1.f; \
 		counter  = (int32)(dur * SAMPLERATE); \
