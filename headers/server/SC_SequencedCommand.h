@@ -119,6 +119,8 @@ protected:
 	sc_msg_iter mMsg;
 	char *mData;
 	int mSize;
+	SndBuf mSndBuf;
+	float *mFreeData;
 	
 	virtual void CallDestructor();
 	

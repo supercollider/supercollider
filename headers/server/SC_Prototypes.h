@@ -93,7 +93,7 @@ void GraphDef_Free(GraphDef *inGraphDef);
 void GraphDef_Define(World *inWorld, GraphDef *inList);
 void GraphDef_FreeOverwritten(World *inWorld);
 
-SCErr bufAlloc(struct SndBuf* buf, int numChannels, int numFrames);
+SCErr bufAlloc(struct SndBuf* buf, int numChannels, int numFrames, double sampleRate);
 
 ////////////////////////////////////////////////////////////////////////
 

@@ -217,6 +217,7 @@ bool HasAltivec();
 	ft->fGroup_DeleteAll = &Group_DeleteAll;
 	ft->fDoneAction = &Unit_DoneAction;
 	ft->fDoAsynchronousCommand = &PerformAsynchronousCommand;
+	ft->fBufAlloc = &bufAlloc;
 }
 
 void initialize_library();
@@ -944,7 +945,7 @@ inline int32 BUFMASK(int32 x)
 	return (1 << (31 - CLZ(x))) - 1;
 }
 
-SCErr bufAlloc(SndBuf* buf, int numChannels, int numFrames)
+SCErr bufAlloc(SndBuf* buf, int numChannels, int numFrames, double sampleRate)
 {		
 	long numSamples = numFrames * numChannels;
 	if(numSamples < 1) return kSCErr_Failed;
@@ -956,6 +957,8 @@ SCErr bufAlloc(SndBuf* buf, int numChannels, int numFrames)
 	buf->samples  = numSamples;
 	buf->mask     = BUFMASK(numSamples); // for delay lines
 	buf->mask1    = buf->mask - 1;	// for oscillators
+	buf->samplerate = sampleRate;
+	buf->sampledur = 1. / sampleRate;
 
 	return kSCErr_None;
 }

@@ -247,9 +247,7 @@ bool BufAllocCmd::Stage2()
 {
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	mFreeData = buf->data;
-	bufAlloc(buf, mNumChannels, mNumFrames);
-	buf->samplerate = mWorld->mFullRate.mSampleRate;
-	buf->sampledur = mWorld->mFullRate.mSampleDur;
+	bufAlloc(buf, mNumChannels, mNumFrames, mWorld->mFullRate.mSampleRate);
 	mSndBuf = *buf;
 	return true;
 }
@@ -313,18 +311,24 @@ bool BufGenCmd::Stage2()
 {
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	
+	mFreeData = buf->data;
 	(*mBufGen->mBufGenFunc)(mWorld, buf, &mMsg);
+	if (buf->data == mFreeData) mFreeData = NULL;
+	mSndBuf = *buf;
 	return true;
 }
 
 bool BufGenCmd::Stage3()
 {
+	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
+	*buf = mSndBuf;
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	return true;
 }
 
 void BufGenCmd::Stage4()
 {
+	free(mFreeData);
 	SendDone("/b_gen");
 }
 
@@ -476,9 +480,7 @@ bool BufAllocReadCmd::Stage2()
 	
 	// alloc data size
 	mFreeData = buf->data;
-	SCErr err = bufAlloc(buf, fileinfo.channels, mNumFrames);
-	buf->samplerate = fileinfo.samplerate;
-	buf->sampledur = 1. / fileinfo.samplerate;
+	SCErr err = bufAlloc(buf, fileinfo.channels, mNumFrames, fileinfo.samplerate);
 	if (err) goto leave;
 	
 	sf_seek(sf, mFileOffset, SEEK_SET);

@@ -115,6 +115,9 @@ struct InterfaceTable
 			void* completionMsgData
 		);
 	
+
+	// fBufAlloc should only be called within a BufGenFunc
+	int (*fBufAlloc)(SndBuf *inBuf, int inChannels, int inFrames, double inSampleRate);
 };
 typedef struct InterfaceTable InterfaceTable;
 
@@ -145,6 +148,8 @@ typedef struct InterfaceTable InterfaceTable;
 
 #define NRTLock (*ft->fNRTLock)
 #define NRTUnlock (*ft->fNRTUnlock)
+
+#define BufAlloc (*ft->fBufAlloc)
 
 #define GroupDeleteAll (*ft->fGroup_DeleteAll)
 
