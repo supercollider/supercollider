@@ -129,15 +129,9 @@ Server : Model {
 		named.put(name, this);
 		set.add(this);
 		this.newAllocators;	
-		this.newNodeWatcher;
-	}
-	newNodeWatcher {
-		if(nodeWatcher.isNil) {  nodeWatcher = NodeIDWatcher.new(this) };
 	}
 	newAllocators {
-		var nodeIdOffset;
-		nodeIdOffset = 1000 + (clientID * options.maxNodes);
-		nodeAllocator = LRUNumberAllocator(nodeIdOffset, nodeIdOffset + options.maxNodes);
+		nodeAllocator = NodeIDAllocator(clientID);
 		controlBusAllocator = PowerOfTwoAllocator(options.numControlBusChannels);
 		audioBusAllocator = PowerOfTwoAllocator(options.numAudioBusChannels, 
 		options.numInputBusChannels + options.numOutputBusChannels);
@@ -340,10 +334,9 @@ Server : Model {
 		serverBooting = true;
 		if(startAliveThread, { this.startAliveThread });
 		this.newAllocators;	
-		this.newNodeWatcher;
 		this.doWhenBooted({ 
 			if(notified, { 
-				nodeWatcher.start;
+				if (nodeWatcher.notNil) { nodeWatcher.start; };
 				this.notify;
 				"notification is on".inform;
 			}, { 
@@ -408,10 +401,9 @@ Server : Model {
 		dumpMode = 0;
 		serverBooting = false;
 		this.serverRunning = false;
-		nodeWatcher.stop;
+		if (nodeWatcher.notNil) { nodeWatcher.stop; };
 		RootNode(this).freeAll;
 		this.newAllocators;
-		this.newNodeWatcher;
 	}
 	*quitAll {
 		set.do({ arg server; if(server.isLocal or: {server.inProcess} ) {server.quit}; })
@@ -430,7 +422,7 @@ Server : Model {
 	freeAll {
 		this.sendMsg("/g_freeAll",0);
 		this.sendMsg("/clearSched");
-		nodeWatcher.clear; //to be sure
+		if (nodeWatcher.notNil) { nodeWatcher.clear; };
 	}
 	*freeAll {
 		set.do({ arg server;

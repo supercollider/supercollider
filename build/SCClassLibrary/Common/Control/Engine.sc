@@ -1,4 +1,33 @@
 
+NodeIDAllocator
+{
+	var <user, temp, perm, mask;
+	// support 32 users
+	
+	*new { arg user=0;
+		if (user > 31) { "NodeIDAllocator user id > 31".error; ^nil };
+		^super.newCopyArgs(user).reset
+	}
+	reset {
+		mask = user << 26;
+		temp = 1000;
+		perm = 1;
+	}
+	alloc {
+		var x;
+		x = temp;
+		temp = (x + 1).wrap(1000, 0x03FFFFFF);
+		^x | mask
+	}
+	allocPerm {
+		var x;
+		x = perm;
+		perm = (x + 1).min(999);
+		^x | mask
+	}
+}
+
+
 PowerOfTwoBlock 
 {
 	var <address, <size, <>next;
@@ -47,8 +76,7 @@ PowerOfTwoAllocator
 }
 		
 LRUNumberAllocator
-{
-	// THIS IS THE RECOMMENDED ALLOCATOR FOR NODE ID'S
+{	
 	// implements a least recently used ID allocator.
 	
 	var lo, hi;
