@@ -220,6 +220,8 @@ Router : Server {
 	}
 	serverRunning { ^true } //assume that.
 	waitForBoot {Êarg func; func.value }
+	stopAliveThread { }
+	startAliveThread { }
 
 }
 
