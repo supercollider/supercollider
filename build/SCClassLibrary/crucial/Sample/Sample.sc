@@ -297,6 +297,19 @@ Sample : BufferProxy { // a small sound loaded from disk
 	}	
 	guiClass { ^SampleGui }
 
+	play { // for testing
+		^Patch({ arg sample;
+				PlayBuf.ar(sample.numChannels,
+						sample.bufnumIr,
+						sample.bufRateScaleKr,
+						1.0,
+						0.0,
+						1.0)
+			
+			},[
+				this
+			]).play
+	}
 }
 
 

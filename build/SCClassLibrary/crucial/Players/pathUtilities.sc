@@ -73,7 +73,7 @@
 		^obj.enpath // document enpath
 	}
 	load { arg obj, warnIfNotFound=true;
-		^this.class.load(obj,warnIfNotFound);
+		^obj.loadDocument(warnIfNotFound);
 	}
 
 }

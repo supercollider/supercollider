@@ -63,12 +63,20 @@ have to bundle it
 	
 	controllables { arg offset=0, array;
 		var inputs;
+		var defaultControl;
 		inputs = this.inputs;
 		if(array.isNil,{ array = [] });
 		inputs.do({ arg a,i;
-			if(a.isNumber or: {a.isKindOf(this.specAt(i).defaultControl.class)},{
+			var spec;
+			spec = this.specAt(i);
+			if(spec.rate == \control and: {
+				a.isNumber or: {
+					defaultControl = ControlPrototypes.forSpec(spec,this.argNameAt(i));
+					a.isKindOf(defaultControl.class)
+				}
+			},{ // if
 				array = array.add([a, offset + i, this.argNameAt(i), this.specAt(i) ]);
-			},{
+			},{ // else
 				if(a.isKindOf(HasPatchIns),{
 					a.controllables(offset + i, array)
 				})
@@ -148,12 +156,15 @@ Patch : HasPatchIns  {
 				?? 
 				{ //  or auto-create a suitable control...
 					spec = instr.specs.at(i);
-					proto = spec.defaultControl;
-					//ControlPrototypes.forSpec(spec,instr.argNames.at(i));
+					//proto = spec.defaultControl;
+					proto = ControlPrototypes.forSpec(spec,instr.argNames.at(i)) 
+								?? {spec.defaultControl};
 					//if(proto.isNil,{ spec.insp("nil proto:",instr.argNames.at(i),i) });
 					proto.tryPerform('spec_',spec); // make sure it does the spec
-					if((darg = instr.initAt(i)).isNumber,{
-						proto.tryPerform('value_',darg);// set its value
+					
+					darg = instr.initAt(i);
+					if(darg.isNumber,{
+						proto.tryPerform('value_',darg);
 					});
 					proto
 				};

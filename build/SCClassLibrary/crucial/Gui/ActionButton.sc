@@ -222,6 +222,10 @@ PopUp : ActionButton { // change to use SCPopUp
 			})
 		).gui	
 	}
+	passiveSelect { arg i;
+		index = i;
+		this.updateTitle;
+	}
 	updateTitle { arg default="choose...";
 		this.label_(title.value 
 						?? {menuLabelsFunc.value(list.value.at(index),index)} 

@@ -271,6 +271,7 @@ AbstractPlayer : AbstractFunction  {
 			})
 		},{
 			// save it in the archive of the player
+			( "building:" +this.name ).postln;
 			def = this.asSynthDef;
 			bytes = def.asBytes;
 			bundle.add(["/d_recv", bytes]);
@@ -443,12 +444,16 @@ AbstractPlayer : AbstractFunction  {
 	children { ^#[] }
 	deepDo { arg function;// includes self
 		function.value(this);
-		this.children.do({arg c; function.value(c); c.tryPerform(\children).do(function) });
+		this.children.do({arg c; 
+			var n;
+			n = c.tryPerform(\deepDo,function);
+			if(n.isNil,{ function.value(c) });
+		});
 	}	 
 	allChildren { 
 		var all;
-		all = List.new;
-		this.deepDo({ arg child; all.add(child) });
+		all = Array.new;
+		this.deepDo({ arg child; all = all.add(child) });
 		^all
 		// includes self
 	}

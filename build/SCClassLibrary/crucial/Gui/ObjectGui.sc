@@ -27,6 +27,9 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		layout.removeOnClose(this);
 		^layout
 	}
+	prClose {
+		this.remove(false);
+	}
 	remove { arg removeView=true;
 		model.removeDependant(this);
 		if(removeView,{

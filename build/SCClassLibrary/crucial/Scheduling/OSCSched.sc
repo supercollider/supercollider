@@ -154,8 +154,9 @@ BeatSched {
 }
 
 OSCSched : BeatSched {
-	
-	
+	classvar <global;	
+	*initClass { global = this.new; }
+
 	/** global scheduler **/
 	*tsched { arg seconds,server,message,clientSideFunction;
 		^global.tsched(seconds,server,message,clientSideFunction);
