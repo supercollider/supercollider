@@ -169,7 +169,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 				numKeyArgsPushed = 0;
 				selector = meth->selectors.us;
 				index = methraw->specialIndex;
-				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
+				classIndex = meth->constants.us->u.classobj->classIndex.ui;
 				recvrSlot->ucopy = g->classvars[classIndex].uo->slots[index].ucopy;				
 							
 				classobj = classOfSlot(recvrSlot);
@@ -335,7 +335,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				}
 				selector = meth->selectors.us;
 				index = methraw->specialIndex;
-				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
+				classIndex = meth->constants.us->u.classobj->classIndex.ui;
 				recvrSlot->ucopy = g->classvars[classIndex].uo->slots[index].ucopy;				
 							
 				classobj = classOfSlot(recvrSlot);
@@ -663,7 +663,7 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				}
 				selector = meth->selectors.us;
 				index = methraw->specialIndex;
-				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
+				classIndex = meth->constants.us->u.classobj->classIndex.ui;
 				recvrSlot->ucopy = g->classvars[classIndex].uo->slots[index].ucopy;				
 				
 				classobj = classOfSlot(recvrSlot);

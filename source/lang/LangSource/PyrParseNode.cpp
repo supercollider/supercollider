@@ -1044,7 +1044,7 @@ int checkPushAllButFirstTwoArgs(PyrParseNode *actualArg, int numArgs)
 	return push_Normal;
 }
 
-int compareCallArgs(PyrMethodNode* node, PyrCallNode *cnode, int *varIndex)
+int compareCallArgs(PyrMethodNode* node, PyrCallNode *cnode, int *varIndex, PyrClass **specialClass)
 {
 	int i, numFormalArgs, numActualArgs;
 	int special, varType, varLevel;
@@ -1077,7 +1077,10 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode *cnode, int *varIndex)
 		if (!varFound ) return methNormal;
 		
 		if (varType == varInst) special = methForwardInstVar;
-		else if (varType == varClass) special = methForwardClassVar;
+		else if (varType == varClass) {
+			special = methForwardClassVar;
+			*specialClass = classobj;
+		}
 		else return methNormal;
 	}
 	
@@ -1429,11 +1432,13 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 					// need to do this for binary opcodes too..
 					int specialIndex;
 					PyrCallNode *cnode;
+					PyrClass *specialClass = 0;
 					cnode = (PyrCallNode*)xnode;
-					methType = compareCallArgs(node, cnode, &specialIndex);
+					methType = compareCallArgs(node, cnode, &specialIndex, &specialClass);
 					if (methType != methNormal) {
 						methraw->specialIndex = specialIndex;
 						method->selectors = cnode->selector->slot;
+						if (specialClass) method->constants = specialClass->name;
 					}
 				}
 			} else {

@@ -2036,7 +2036,7 @@ void Interpret(VMGlobals *g)
 						}
 						selector = meth->selectors.us;
 						index = methraw->specialIndex;
-						classIndex = meth->selectors.us->u.classobj->classIndex.ui;
+						classIndex = meth->constants.us->u.classobj->classIndex.ui;
 						slot->ucopy = g->classvars[classIndex].uo->slots[index].ucopy;				
 						
 						classobj = classOfSlot(slot);
@@ -2176,7 +2176,7 @@ void Interpret(VMGlobals *g)
 						sp = (double*)g->sp;
 						selector = meth->selectors.us;
 						index = methraw->specialIndex;
-						classIndex = meth->selectors.us->u.classobj->classIndex.ui;
+						classIndex = meth->constants.us->u.classobj->classIndex.ui;
 						slot->ucopy = g->classvars[classIndex].uo->slots[index].ucopy;				
 						
 						classobj = classOfSlot(slot);
