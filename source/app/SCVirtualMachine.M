@@ -188,7 +188,14 @@ extern NSTextView *gPostView;
 {
     if (gPostView) [[gPostView window] makeKeyAndOrderFront: sender];
 }
-
+- (void)clearPostWindow:(id)sender
+{
+    if(gPostView) {
+        NSTextStorage *text = [gPostView textStorage];
+        [[text mutableString] setString:@""]; 
+        [gPostView didChangeText];
+    }
+}
 - (void)defer: (NSInvocation*) action
 {
     [deferredOperations addObject: action];

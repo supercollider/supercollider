@@ -47,6 +47,7 @@
 - (IBAction) stopMain: (id) sender;
 - (IBAction) compileLibrary: (id) sender;
 - (IBAction) newSCWindow: (id) sender;
+- (IBAction)clearPostWindow:(id)sender;
 - (void)postWindowToFront:(id)sender;
 
 // deferred primitives
@@ -55,6 +56,7 @@
 - (void)becomeFullScreen: (NSWindow*)window;
 - (void)endFullScreen: (NSWindow*)window;
 - (void)loadUserPanel:(NSString*)filename SCObject: (void*)scobj;
+
 
 -(IBAction)showHelp:(id)sender;
 
