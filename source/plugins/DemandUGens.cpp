@@ -373,6 +373,7 @@ void SelfDemand_next_da(SelfDemand *unit, int inNumSamples)
 				RESETINPUT(j);
 			}
 			RESETINPUT(0);
+			count = 0.f;
 		}
 		if (count <= 0.f) {
 			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
@@ -426,6 +427,7 @@ void SelfDemand_next_dk(SelfDemand *unit, int inNumSamples)
 				RESETINPUT(j);
 			}
 			RESETINPUT(0);
+			count = 0.f;
 		}
 		if (count <= 0.f) {
 			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
@@ -477,6 +479,7 @@ void SelfDemand_next_dd(SelfDemand *unit, int inNumSamples)
 				RESETINPUT(j);
 			}
 			RESETINPUT(0);
+			count = 0.f;
 			reset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f + reset;
 		} else { 
 			reset--; 
@@ -560,6 +563,7 @@ void TSelfDemand_next_da(TSelfDemand *unit, int inNumSamples)
 				RESETINPUT(j);
 			}
 			RESETINPUT(0);
+			count = 0.f;
 		}
 		if (count <= 0.f) {
 			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
@@ -608,6 +612,7 @@ void TSelfDemand_next_dk(TSelfDemand *unit, int inNumSamples)
 				RESETINPUT(j);
 			}
 			RESETINPUT(0);
+			count = 0.f;
 		}
 		if (count <= 0.f) {
 			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
@@ -653,6 +658,7 @@ void TSelfDemand_next_dd(TSelfDemand *unit, int inNumSamples)
 				RESETINPUT(j);
 			}
 			RESETINPUT(0);
+			count = 0.f;
 			reset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f + reset;
 		} else { 
 			reset--; 
