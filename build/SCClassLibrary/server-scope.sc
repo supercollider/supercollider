@@ -12,7 +12,7 @@
 				scope.background = Color.black;
 				scope.resize = 5;
 				synth = SynthDef("server-scope",{ 
-					ScopeOut.ar(In.ar(startingChannel, numChan), buffer.bufnum);  
+					ScopeOut.ar(InFeedback.ar(startingChannel, numChan), buffer.bufnum);  
 				}).play(this, addAction: \addToTail);
 				// free synth and buffer when window is closed
 				window.onClose = { synth.free; buffer.free; };
