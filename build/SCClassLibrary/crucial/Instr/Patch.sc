@@ -219,22 +219,13 @@ Patch : HasPatchIns  {
 				synthArgsIndices.put(i,synthPatchIns.size - 1);
 			},{
 				// watch scalars for changes. 
-				// if Env or Sample or quanity changed, synth def is invalid
-				ag.addDependant(this);		
+				// if Env or Sample or quantity changed, synth def is invalid
+				//if(ag.isNumber.not,{ ag.addDependant(this); });
 			});
 			ag		
 		});
 	}
-	update { arg changed,changer;
-		var newArgs;
-		// one of my scalar inputs changed
-		if(this.isPlaying,{
-			newArgs = synthDef.secretDefArgs(this.args);
-			synth.performList(\set,newArgs);
-		},{
-			defName = synthDef = nil;
-		})
-	}
+
 	asSynthDef {
 		// could be cached, must be able to invalidate it
 		// if an input changes
@@ -243,14 +234,54 @@ Patch : HasPatchIns  {
 			defName = synthDef.name;
 			numChannels = synthDef.numChannels;
 			rate = synthDef.rate;
+			this.watchScalars;
 			synthDef
 		}
+	}
+	watchScalars {
+		this.args.do({ arg ag,i;
+			if(this.specAt(i).rate != \scalar
+				and: {ag.rate != \scalar}
+			,{
+	
+			},{
+				// watch scalars for changes. 
+				// if Env or Sample or quantity changed, synth def is invalid
+				if(ag.isNumber.not,{ 
+					ag.addDependant(this); 
+				});
+			});	
+		})
+	}
+	update { arg changed,changer;
+		var newArgs;
+		changed.debug;
+		// one of my scalar inputs changed
+		if(this.args.includes(changed),{
+			if(this.isPlaying,{
+				newArgs = synthDef.secretDefArgs(this.args);
+				synth.performList(\set,newArgs);
+			},{
+				this.invalidateSynthDef;
+			})
+		});
 	}
 	invalidateSynthDef { 
 		synthDef = nil;
 		defName = nil;
 		readyForPlay = false;
+		this.releaseArgs;
 	}
+	releaseArgs {
+		// Sample, Env, NumberEditor are watched 
+		this.args.do({ arg ag; ag.removeDependant(this) })
+	}
+	didFree {
+		var did;
+		did = super.didFree;
+		if(did,{ this.invalidateSynthDef; });
+		^did
+	}		
 	
 	// has inputs
 	spawnToBundle { arg bundle;

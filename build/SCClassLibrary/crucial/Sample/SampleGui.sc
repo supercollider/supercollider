@@ -35,12 +35,12 @@ SampleGui : ObjectGui {
 		
 		CXLabel(layout,"bpm:");
 		tempoG=NumberEditor(model.tempo * 60.0,[0,1000])
-					.action_({ arg th; model.tempo_(th.value / 60) });
+					.action_({ arg th; model.tempo_(th.value / 60).changed(this) });
 		tempoG.smallGui(layout);
 					
 		CXLabel(layout,"beats:");
 		beatsG=NumberEditor(model.beats,[0.000001,32])
-					.action_({arg th; model.beats_(th.value)});
+					.action_({arg th; model.beats_(th.value).changed(this) });
 		beatsG.smallGui(layout);
 
 		ActionButton(layout,">",{model.play},maxx:70).background_(Color.green(alpha:0.5));
@@ -82,12 +82,11 @@ SampleGui : ObjectGui {
 		
 		this.update;		
 	}
-	update {
-		nameG.label_(model.name).refresh;
+	update { arg changed,changer;
 		tempoG.value_(model.tempo*60).changed;
 		beatsG.value_(model.beats).changed;
-
 		if(model.soundFilePath !== lastSoundFilePath,{
+			nameG.label_(model.name).refresh;
 			this.drawWaveform;
 		});
 	}

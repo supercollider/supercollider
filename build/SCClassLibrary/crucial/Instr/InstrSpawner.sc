@@ -33,6 +33,7 @@ InstrSpawner : Patch {
 			defName = synthDef.name;
 			numChannels = synthDef.numChannels;
 			rate = synthDef.rate;
+			this.watchScalars;
 			synthDef
 		}
 	}
@@ -68,7 +69,7 @@ InstrSpawner : Patch {
 				sendArray.put(i + firstSecretDefArgIndex, newarg);
 			})
 		},{
-			defName = synthDef = nil;
+			this.invalidateSynthDef;
 		})
 	}
 
@@ -167,8 +168,9 @@ InstrSpawner : Patch {
 		spawnTask = nil;
 	}
 	didFree {
-		super.didFree;
-		CmdPeriod.remove(this);
+		//if(super.didFree,{
+			CmdPeriod.remove(this);
+		//})
 	}
 	cmdPeriod {
 		this.didStop;
