@@ -123,6 +123,8 @@ SCSoundFileView::SCSoundFileView(SCContainerView *inParent, PyrObject* inObj, SC
 	mSndMinMax.isUsable = false;
 	mSndBuf.frames = 0;
 	mSndBuf.data = 0;
+	mSndBuf.channels = 0;
+	mSndBuf.samplerate = 44100;
 	mResampleFactor = 64;
 	mGridColor = SCMakeColor(0.2,0.2,1.0, 1.0);	
     mBackground = new SolidColorBackground(
@@ -233,6 +235,7 @@ void SCSoundFileView::setBounds(SCRect inBounds)
 	if(inBounds.width != mBounds.width){
 		if(mElasticMode) mZoom.x =  mSndBuf.frames/(inBounds.width-2.f);	
  		mSndMinMax.isUsable = false;
+		if(mSndBuf.channels)
 		bufAllocMinMax(&mSndMinMax, mSndBuf.channels, (int)(inBounds.width ));
 	}	
 	mBounds = inBounds;
