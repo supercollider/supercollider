@@ -35,7 +35,7 @@ Client {
 	
 	prepareSendBundle { arg args;
 		args = ["/client"]++args;
-		if(this.bundleSize(args) > 8192) { "bundle too large (> 8192)".warn; ^nil };
+		if(args.bundleSize > 8192) { "bundle too large (> 8192)".warn; ^nil };
 		^args
 	}
 	send { arg ... args;
@@ -46,16 +46,7 @@ Client {
 		addr.do({ arg a; a.sendBundle(latency, args) })
 	}
 	sendTo { arg index ... args;		var a;		args = this.prepareSendBundle(args);		a = addr[index];		if(a.notNil) { a.sendBundle(nil, args)  };	}
-	bundleSize { arg bundle;
-		var size=0;
-		bundle.do({ arg el;
-			var n;
-			n = if(el.isString) { el.size } { 4 };
-			size = size + n;
-		});
-		^size
-	}
-	
+		
 	interpret { arg string;
 		addr.do({ arg a; a.sendBundle(nil, [cmdName, \interpret, password, string]); });
 	}
