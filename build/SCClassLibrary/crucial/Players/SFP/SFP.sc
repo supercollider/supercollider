@@ -66,7 +66,7 @@
 	storeParamsOn { arg stream;		stream.storeArgs([ enpath(file) ])	}	children { ^[file] }	guiClass { ^AbstractSFPGui }	}// only SFP has a real concrete sound fileSFP : AbstractSFP  {		var tempo, <>firstBeatIsAt=0.0;// will be part of the BeatMap		 // and a real concrete tempo		 	var <found = false,<filePath;		*new { arg path,tempo,firstBeatIsAtFrame=0;		^super.new.init(path).tempo_(tempo).firstBeatIsAt_(firstBeatIsAtFrame)	}		*getNew { arg receivingFunction;		GetFileDialog({ arg ok, path;				var it;				if(ok,{				if(receivingFunction.notNil,{					receivingFunction.value(this.new(path));				},{						it=this.new(path).topGui;					})			})			})	}		init { arg sfilePath;		if(sfilePath.isNil,{			file = SoundFile.new("no soundfile specified...",numChannels:2);
 			filePath = "no soundfile specified";		},{			if(sfilePath.isString,{				file=SoundFile.new;				found =  file.openRead(sfilePath);
 				filePath = sfilePath;
-				file.insp;			},{//				if(sfilePath.isKindOf(SoundFile),{//					file=sfilePath;//					found = file.openRead(file.path);
+				//file.insp;			},{//				if(sfilePath.isKindOf(SoundFile),{//					file=sfilePath;//					found = file.openRead(file.path);
 //					filePath = fi//				},{					die("not a path or a SoundFile ",sfilePath)//				})			});		});	}		fileNotFound { arg sfilePath;		// give you a chance to search for it		ModalDialog({ arg layout;			CXLabel(layout, "SoundFile not found ! " ++ sfilePath ++ ".  Find it manually ? ");		},{			GetFileDialog({ arg ok, sfilePath;					var it;					if(ok,{					this.init(sfilePath);				})				})		});		}
 	
 	preloadData { arg startAt=0,endAt,group,bundle,parentSegmentBuffers;

@@ -142,7 +142,7 @@ AbstractPlayer : AbstractFunction  {
 			child.spawnToBundle(bundle);
 		});
 		synth = Synth.basicNew(this.defName,server);
-		patchOut ?? {this.insp("noPatchOut")};
+		//patchOut ?? {this.insp("noPatchOut")};
 		bundle.add(
 			synth.addToTailMsg(this.group,this.synthDefArgs)
 		);
