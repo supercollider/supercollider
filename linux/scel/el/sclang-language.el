@@ -81,7 +81,7 @@
   (concat "^\\s *\\*?\\(" sclang-method-name-regexp "\\)\\s *{"))
 
 (defconst sclang-block-regexp 
-  "Regular expression matching the beginning of a block of code enclosed by parentheses."
+  ;; Regular expression matching the beginning of a block of code enclosed by parentheses.
   ;; '(' must be at the beginning of a line to avoid ambiguities with normal code
   "^\\((\\)\\s *\\(?:/[/*]?.*\\)?"
   )
