@@ -1,50 +1,45 @@
 + Bus {
 
-	gate { arg target, start=0.0, level=1.0, dur=0;
-		^this.toServer(target, "system_gate_"++rate, [\i_start, start, \i_level,level, \i_dur, dur]);
+	gate { arg level=1.0, dur=0, target, latency;
+		^this.toServer(target.asTarget, "system_gate_"++rate, [\i_level,level, \i_dur, dur], latency);
 	}
 	
 		
-	line { arg target, start=0.0, end=1.0, dur=1.0;
-		^this.toServer(target, "system_line_"++rate, [ \i_start, start, \i_end, end, \i_dur, dur ]);
+	line { arg level=1.0, dur=1.0, target, latency;
+		^this.toServer(target.asTarget, "system_line_"++rate, [ \i_end, level, \i_dur, dur ], latency);
 	}
 	
-	xline { arg target, start=0.001, end=1.0, dur=1.0;
-		^this.toServer(target, "system_xline_"++rate, [ \i_start, start, \i_end, end, \i_dur, dur ]);
+	xline { arg level=1.0, dur=1.0, target, latency;
+		^this.toServer(target.asTarget, "system_xline_"++rate, [ \i_end, level, \i_dur, dur ], latency);
 	}
-	/*
-	triangle { arg target, start=0.0, level=1.0, dur=1.0;
-		^this.addNode(target, "system_triangle_"++rate, [ \i_start, start, \i_end, level, \i_dur, dur ]);
-	}
-	*/
-	
-	toServer { arg target, defName, args, expand=true;
-			var bundle;
+		
+	toServer { arg target, defName, args, latency;
+			var bundle, resp, time;
 			bundle = List.new;
-			this.serverMsg(bundle, target, defName, args, expand);
-			server.listSendBundle(nil, bundle);
+			latency = latency ? server.latency;
+			time = thisThread.time;
+			resp = OSCresponder(target.server.addr, "/c_set", { arg time, resp, msg;
+				msg.removeAt(0);
+				numChannels.do({ arg i;
+					var cArgs;
+					cArgs = args.add(\i_start);
+					cArgs = cArgs.add(msg.at(2*i+1));
+					this.gateSynthMsg(bundle, target, defName, cArgs, index+i);
+				});
+				time = (latency - time + thisThread.time).max(0);
+				server.listSendBundle(time, bundle);
+				resp.remove;
+				
+			}).add;
+			
+			server.listSendMsg(["/c_get"]++Array.series(numChannels, index, 1));
+			
 	}
-	serverMsg { arg bundle, target, defName, args;
-			numChannels.do({ arg i;
-				Synth.newMsg(bundle, defName, [\bus, index+i]++(args??{#[]}), 
-				target.asTarget, \addBefore)
-			});
-
+	gateSynthMsg { arg bundle, target, defName, args, index;
+			Synth.newMsg(bundle, defName, [\bus, index]++args, 
+				target.asTarget.group, \addToHead)
 	} 
 	
-	gateMsg { arg bundle, target, start=0.0, level=1.0, dur=0;
-		^this.serverMsg(bundle, target, "system_gate_"++rate, [\i_start, start, \i_level,level, \i_dur, dur]);
-	}
-	
-	lineMsg { arg bundle, start=0.0, end=1.0, dur=1.0, target;
-		^this.serverMsg(bundle, target, "system_line_"++rate, [ \i_start, start, \i_end, end, \i_dur, dur ]);
-	}
-	
-	xlineMsg { arg bundle, start=0.001, end=1.0, dur=1.0, target;
-		^this.serverMsg(bundle, target, "system_line_"++rate, [ \i_start, start, \i_end, end, \i_dur, dur ]);
-
-	}
-
 
 }
 
