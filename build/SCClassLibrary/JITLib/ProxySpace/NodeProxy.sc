@@ -100,9 +100,9 @@ BusPlug : AbstractFunction {
 						index = this.index;
 						numChannels = this.numChannels;
 						if(numChannels == 1) 
-							{ asSymbol("\c" ++ index) } 
+							{ "\c" ++ index } 
 							{
-							Array.fill(numChannels, { arg i; asSymbol("\c" ++ (index + i)) })
+							Array.fill(numChannels, { arg i; "\c" ++ (index + i) })
 							}
 					}          
 	}
