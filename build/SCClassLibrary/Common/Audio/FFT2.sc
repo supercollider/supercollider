@@ -30,8 +30,8 @@ PV_JensenAndersen : UGen
 
 PV_HainsworthFoote : UGen
 {
-	*ar { arg buffer, propmkl=0.0, propfoote=0.0, threshold=1.0, waittime=0.04;
-		^this.multiNew('audio', buffer, propmkl, propfoote, threshold, waittime);
+	*ar { arg buffer, proph=0.0, propf=0.0, threshold=1.0, waittime=0.04;
+		^this.multiNew('audio', buffer, proph, propf, threshold, waittime);
 	}
 }
 
@@ -40,6 +40,10 @@ RunningSum : UGen
 {
 	*ar { arg in, numsamp=40;
 		^this.multiNew('audio', in, numsamp);
+	}
+	
+	*kr { arg in, numsamp=40;
+		^this.multiNew('control', in, numsamp);
 	}
 	
 	*rms { arg in, numsamp=40;
