@@ -175,6 +175,31 @@ String[char] : RawArray {
 			thisProcess.interpreter.executeFile(path);
 		});
 	}
+	basename {
+		_String_Basename;
+		^this.primitiveFailed
+	}
+	dirname {
+		_String_Dirname;
+		^this.primitiveFailed
+	}
+	splitext {
+		arg n, m;
+		n = this.size;
+		n.do({
+			arg i;
+			m = n - i - 1;
+
+			if (this.at(m) == $\., {
+				^[this.copyFromStart(m - 1), this.copyToEnd(m + 1)]
+			});
+
+			if (this.at(m) == $/, {
+				^[this.copy, nil]
+			});
+		});
+		^[this.copy, nil]
+	}
 	
 	// runs a unix command and returns the result code.
 	//unixCmd { _String_System ^this.primitiveFailed }
