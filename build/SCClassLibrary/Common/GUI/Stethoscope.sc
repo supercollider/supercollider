@@ -4,7 +4,7 @@ Stethoscope {
 	var b, n, c, d, sl, zx, zy, spec, rate = \audio, <size=200;
 	
 
-	*new { arg server, numFrames=4096, numChannels=2, zoom=1;
+	*new { arg server, numFrames=4096, numChannels=2, zoom;
 		if(server.inProcess.not, { "scope works only with internal server".error; ^this.halt });		^super.newCopyArgs(server, numChannels).makeWindow.zoom_(zoom).allocBuffer(numFrames).run;
 	}
 	
@@ -135,6 +135,7 @@ Stethoscope {
 		window.bounds = this.windowBounds;
 	}
 	zoom_ { arg val;
+		val = val ? 1;
 		zx = zy = val.log2;
 		n.xZoom = val;
 		n.yZoom = val;
