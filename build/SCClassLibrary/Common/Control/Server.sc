@@ -75,7 +75,7 @@ Server : Model {
 	var <name, <addr;
 	var <isLocal, <inProcess;
 	var <serverRunning = false;
-	var <>options,<>latency = 0.2,<dumpMode=0;
+	var <>options,<>latency = 0.2,<dumpMode=0, <notified=true;
 	var <nodeAllocator; 
 	var <staticNodeAllocator;
 	var <controlBusAllocator;
@@ -107,7 +107,7 @@ Server : Model {
 		this.newNodeWatcher;
 	}
 	newNodeWatcher {
-		nodeWatcher = BasicNodeWatcher.new(this);
+		nodeWatcher = BasicNodeWatcher.new(addr);
 	}
 	newAllocators {
 		nodeAllocator = RingNumberAllocator(1000, 1000 + options.maxNodes);
@@ -233,6 +233,7 @@ Server : Model {
 	}
 	
 	boot {
+		var resp;
 		if (serverRunning, { "server already running".inform; ^this });
 		if (isLocal.not, { "can't boot a remote server".inform; ^this });
 		if (inProcess, { 
@@ -246,7 +247,15 @@ Server : Model {
 			("booting " ++ addr.port.asString).inform;
 		});
 		nodeWatcher.start;
-		//SystemClock.sched(1, { nodeWatcher.start; });
+		if(notified, { 
+			resp = OSCresponder(addr, '/done', {
+						this.notify;
+						resp.remove;  
+				}).add; 
+		});
+		
+		
+		
 	}
 	
 	reboot {
@@ -267,6 +276,7 @@ Server : Model {
 		addr.sendMsg("/status");
 	}
 	notify { arg flag=true;
+		notified = flag;
 		addr.sendMsg("/notify", flag.binaryValue);
 	}
 	dumpOSC { arg code=1;
