@@ -87,8 +87,8 @@ All constants, Controls, and UGens that will be used in synthesis are formatted 
 		
 \f0\b rates
 \f1\b0  \
-			an Array of specifications for the ugenGraphFunc's arguments. The order corresponds to the\
-			order of arguments. See the examples below to see how these are used.\
+			An optional Array of specifications for the ugenGraphFunc's arguments. The order corresponds \
+			to the order of arguments. See the examples below to see how these are used.\
 			A specification can be:\
 				
 \f0\b nil/zero
@@ -97,7 +97,6 @@ All constants, Controls, and UGens that will be used in synthesis are formatted 
 \f0\b a float
 \f1\b0 	the Control will have a lag of the specified time. This can be used to create \
 						smooth transitions between differnt values. t_ and i_ args cannot be lagged.\
-						The examples below demonstrate this.\
 				
 \f0\b \\ir
 \f1\b0 		the Control can be set only at creation ('initial rate'): see i_ argument above\
