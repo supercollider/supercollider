@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red26\green26\blue255;
-\red33\green33\blue255;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red26\green26\blue255;\red33\green33\blue255;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 SuperCollider Help
@@ -44,7 +44,7 @@ Order-of-execution
 \f1\b0 Classes
 \fs28 \
 
-\fs24 								Polymorphism\
+\fs24 Backwards-Compatibility				Polymorphism\
 								Syntax-Shortcuts
 \f0\b\fs28 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -103,7 +103,7 @@ GUI				FunctionDef						MIDIOut\
 Float				Rect				File				Node\
 Infinitum							Pipe				Group\
 Integer							SoundFile		Bus\
-Magnitude										Buffer\
+Magnitude						CocoaDialog		Buffer\
 Number											OSCresponder\
 Polar											OSCresponderNode\
 SimpleNumber										Synth\
@@ -157,9 +157,10 @@ ________________________\
 \f1\b0 \cf0 \
 SuperCollider 3 is a work in progress. As such much is undocumented. Many of the helpfiles have been copied over from SC2, and have unworking examples, etc. These are in the process of being updated. Executing the following\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 \cf2 Help\cf3 .all;
-\f1\fs24 \cf0 \
+\f2\fs20 \cf2 Help\cf0 .all;
+\f1\fs24 \
 \
 will open a new window which lists all helpfiles by directory.\
 \
@@ -181,11 +182,11 @@ Looking in class definitions (select any class and press Cmd-j to open its class
 
 \fs24 Further help can be obtained by subscribing to the sc-users mailing list at:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 \ul \
+\cf3 \ul \
 \ulnone http://www.create.ucsb.edu/mailman/listinfo/sc-users\ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs28 \cf0 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 Requests for documentation of undocumented methods or classes, as well as reports of errata, omissions, etc. in helpfiles can be sent to: \cf5 mullmusik@users.sourceforge.net\cf0  or to the user's list above.}
+\fs24 \cf0 Requests for documentation of undocumented methods or classes, as well as reports of errata, omissions, etc. in helpfiles can be sent to: \cf4 mullmusik@users.sourceforge.net\cf0  or to the user's list above.}
