@@ -1837,6 +1837,25 @@ int prPen_Pop(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prPen_AddRect(struct VMGlobals *g, int numArgsPushed);
+int prPen_AddRect(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+
+    if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
+
+    CGRect rect;
+    int err = slotGetCGRect(b, &rect);		
+
+    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	
+	CGContextAddRect(cgc, rect);
+    return errNone;
+}
+
 int prPen_StrokeRect(struct VMGlobals *g, int numArgsPushed);
 int prPen_StrokeRect(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1847,12 +1866,15 @@ int prPen_StrokeRect(struct VMGlobals *g, int numArgsPushed)
 
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
-    NSRect rect;
-    int err = slotGetNSRect(b, &rect);		
+    CGRect rect;
+    int err = slotGetCGRect(b, &rect);		
     if (err) return err;
     
-    [NSBezierPath strokeRect: rect];
-//    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+    //[NSBezierPath strokeRect: rect];
+    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+    CGContextBeginPath(cgc);
+	CGContextAddRect(cgc, rect);
+    CGContextDrawPath(cgc, kCGPathStroke);
     
     return errNone;
 }
@@ -1867,11 +1889,15 @@ int prPen_FillRect(struct VMGlobals *g, int numArgsPushed)
 
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
-    NSRect rect;
-    int err = slotGetNSRect(b, &rect);		
+    CGRect rect;
+    int err = slotGetCGRect(b, &rect);		
     if (err) return err;
     
-    [NSBezierPath fillRect: rect];
+    //[NSBezierPath fillRect: rect];
+    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+    CGContextBeginPath(cgc);
+	CGContextAddRect(cgc, rect);
+    CGContextDrawPath(cgc, kCGPathFill);
     
     return errNone;
 }
