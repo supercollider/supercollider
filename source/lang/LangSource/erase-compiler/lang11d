@@ -191,7 +191,7 @@ msgsend : name blocklist1
 				SetSymbol(&slot, s_value);
 				selectornode = newPyrSlotNode(&slot);
 				args = linkNextNode(
-					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1), 
+					(PyrParseNode*)$1, 
 					(PyrParseNode*)$4);
 				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, (PyrParseNode*)$7); 
 			}

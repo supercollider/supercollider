@@ -1247,7 +1247,7 @@ case 50:
 				SetSymbol(&slot, s_value);
 				selectornode = newPyrSlotNode(&slot);
 				args = linkNextNode(
-					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)yyvsp[-6]), 
+					(PyrParseNode*)yyvsp[-6], 
 					(PyrParseNode*)yyvsp[-3]);
 				yyval = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); 
 			;
