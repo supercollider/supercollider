@@ -245,7 +245,11 @@ BufGenCmd::~BufGenCmd()
 	
 int BufGenCmd::Init(char *inData, int inSize)
 {
-	sc_msg_iter msg(inSize, inData);
+	mSize = inSize;
+	mData = (char*)World_Alloc(mWorld, mSize);
+	memcpy(mData, inData, mSize);
+
+	sc_msg_iter msg(mSize, mData);
 	mBufIndex = msg.geti();
 	
 	int32 *genName = msg.gets4();
@@ -254,9 +258,6 @@ int BufGenCmd::Init(char *inData, int inSize)
 	mBufGen = GetBufGen(genName);
 	if (!mBufGen) return kSCErr_BufGenNotFound;
 
-	mSize = msg.size;
-	mData = (char*)World_Alloc(mWorld, mSize);
-	memcpy(mData, msg.data, mSize);
 	mMsg = msg;
 	
 	return kSCErr_None;
