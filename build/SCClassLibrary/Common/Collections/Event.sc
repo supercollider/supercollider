@@ -229,7 +229,7 @@ Event : Environment {
 								
 								latency = i * strum + lag;
 								
-								server.sendBundle(lag, msgArgs); 
+								server.sendBundle(latency, msgArgs); 
 							};
 						};
 					};
