@@ -197,9 +197,7 @@ Patch : HasPatchIns  {
 	}
 
 
-	storeParamsOn { arg stream;
-		stream.storeArgs([this.instr.name,enpath(args)]);
-	}
+	storeArgs { ^[this.instr.name,args] }
 
 	children { ^args }
 	guiClass { ^PatchGui }

@@ -2,20 +2,26 @@
 AudioInPlayer : AbstractPlayer {
 
 	classvar <>amp=1.0; // global control
-
-	ar {
-		^AudioIn.ar([1,2])
+	var <>numChannels,<>firstChannel;
+	
+	*new { arg numChannels=2,firstChannel=0;
+		^super.new.numChannels_(numChannels).firstChannel_(firstChannel)
 	}
-	storeParamsOn { arg stream; } // no children !!
-
+	storeArgs { ^[numChannels,firstChannel] }
+	ar {
+		^AudioIn.ar(Array.series(numChannels,firstChannel) )
+	}
+	//guiClass { ^AudioInPlayerGui }
 }
 
-MonoAudioIn : AudioInPlayer {
-	
+MonoAudioIn : AbstractPlayer {
+	classvar <>amp=1.0;
 	ar {
 		var a;
 		a = AudioIn.ar(1,mul: amp.value);
 		^[a,a]
 	}
+	numChannels { ^2 }
 	
 }
+

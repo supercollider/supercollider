@@ -10,7 +10,7 @@ CXMenu : SCViewAdapter { // multiple actions
 	*newWith { arg nameFuncs;
 		^super.new.nameFuncs_(nameFuncs)
 	}
-	gui { arg lay,windowWidth=150,height=400,argbuttonWidth=120;
+	gui { arg lay,windowWidth=150,height=400,argbuttonWidth=160;
 		buttonWidth = argbuttonWidth;
 		layout= lay ?? {MultiPageLayout.new};
 		view = SCVLayoutView.new(layout,Rect(0,0,buttonWidth,24 * nameFuncs.size));

@@ -6,12 +6,10 @@ HasSubject : AbstractPlayer {
 	*new { arg subject=0.0;
 		^super.new.subject_(subject.loadDocument)
 	}
+	storeArgs { ^[subject] }
 
 	ar { ^subject.ar }
 	
-	storeParamsOn { arg stream;
-		stream.storeArgs([enpath(subject)]);
-	}
 	stop { super.stop; subject.stop }
 	children { ^[subject] }
 	didSpawn { arg patchIn,synthArgi;
@@ -154,9 +152,7 @@ Kr : Ar { // should all be moved under KrPlayer
 		subject.tryPerform('value_',val);
 	}
 	canDoSpec {arg aspec; ^aspec.canKr }
-	storeParamsOn { arg stream;
-		stream.storeArgs([ enpath( subject ),lag ]);	
-	}
+	storeArgs { ^[  subject ,lag ] }
 	children { ^[subject,lag] }
 
 	guiClass { ^KrGui }
@@ -181,9 +177,7 @@ StreamKr : HasSubjectKr { // trigger is a kr rate trigger
 //		k=Sequencer.kr(subject.asStream,trigger.value);
 //	}
 	
-	storeParamsOn { arg stream;
-		stream.storeArgs([enpath(subject),trigger]);
-	}
+	storeArgs { ^[subject,trigger] }
 	children { ^[subject,trigger] }
 	guiClass { ^StreamKrGui }
 	
@@ -269,7 +263,7 @@ StreamKrDur : HasSubject { // Synthless, above player
 	synthDefArgs {}
 	asSynthDef {}
 	
-	
+	guiClass { ^StreamKrDurGui }
 	
 	/*
 	// for BufSeqDur

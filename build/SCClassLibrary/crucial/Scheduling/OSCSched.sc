@@ -28,7 +28,7 @@ BeatSched {
 	*tdeltaTillNext { arg quantize; ^global.tdeltaTillNext(quantize) }	
 	xblock { nextTask = nil; } // block any subsequent xscheds
 	time { ^Main.elapsedTime - epoch }
-	time_ { arg seconds; epoch = seconds; }
+	time_ { arg seconds; epoch = Main.elapsedTime - seconds; }
 	beat { ^tempo.secs2beats(Main.elapsedTime - epoch) }
 	beat_ { arg beat;
 		epoch = Main.elapsedTime - tempo.beats2secs(beat);
@@ -112,8 +112,8 @@ BeatSched {
 			pq.put(time,function);
 			// was something else already scheduled before me ?
 			if(nextAbsTime.notNil,{
-				if(nextAbsTime != pq.topPriority ,{ // i'm next
-					pq.put(nextAbsTime,nextAbsList); // put back on queue for later
+				if(time == pq.topPriority ,{ // i'm next
+					pq.put(nextAbsTime,nextAbsList); // put old top back on queue
 					this.tschedAbsNext;
 				})
 			},{
@@ -126,7 +126,6 @@ BeatSched {
 		this.tschedAbs(tempo.beats2secs(beat),function)
 	}
 
-
 	// private
 	tschedAbsNext  {
 		var function,secs;
@@ -135,12 +134,14 @@ BeatSched {
 			function = nextAbsList = pq.pop;
 			secs = nextAbsTime - this.time;
 			clock.sched(secs,thTask = nextAbsFunc = {
-				if(thTask === nextAbsFunc,function);
+				if(thTask === nextAbsFunc,{
+					function.value;
+					this.tschedAbsNext
+				});
 				nil
 			});
 		});
 	}
-
 }
 
 OSCSched : BeatSched {
@@ -216,8 +217,8 @@ OSCSched : BeatSched {
 			pq.put(time,[server,message,clientSideFunction]);
 			// was something else already scheduled before me ?
 			if(nextAbsTime.notNil,{
-				if(nextAbsTime != pq.topPriority ,{ // i'm next
-					pq.put(nextAbsTime,nextAbsList); // put back on queue for later
+				if(time == pq.topPriority ,{ // i'm next
+					pq.put(nextAbsTime,nextAbsList); // put old top back on queue
 					this.tschedAbsNext;
 				})
 			},{

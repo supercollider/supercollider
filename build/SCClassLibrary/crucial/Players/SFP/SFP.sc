@@ -63,7 +63,9 @@
 		});	
 	}
 
-	storeParamsOn { arg stream;		stream.storeArgs([ enpath(file) ])	}	children { ^[file] }	guiClass { ^AbstractSFPGui }	}// only SFP has a real concrete sound fileSFP : AbstractSFP  {		var tempo, <>firstBeatIsAt=0.0;// will be part of the BeatMap		 // and a real concrete tempo		 	var <found = false,<filePath;		*new { arg path,tempo,firstBeatIsAtFrame=0;		^super.new.init(path).tempo_(tempo).firstBeatIsAt_(firstBeatIsAtFrame)	}		*getNew { arg receivingFunction;		GetFileDialog({ arg ok, path;				var it;				if(ok,{				if(receivingFunction.notNil,{					receivingFunction.value(this.new(path));				},{						it=this.new(path).topGui;					})			})			})	}		init { arg sfilePath;		if(sfilePath.isNil,{			file = SoundFile.new("no soundfile specified...",numChannels:2);
+	storeArgs {^[file] }	children { ^[file] }	guiClass { ^AbstractSFPGui }	}// only SFP has a real concrete sound fileSFP : AbstractSFP  {		var tempo, <>firstBeatIsAt=0.0;// will be part of the BeatMap		 // and a real concrete tempo		 	var <found = false,<filePath;		*new { arg path,tempo,firstBeatIsAtFrame=0;		^super.new.init(path).tempo_(tempo).firstBeatIsAt_(firstBeatIsAtFrame)	}
+	storeArgs { ^[this.filePath,tempo,firstBeatIsAt] }
+		*getNew { arg receivingFunction;		GetFileDialog({ arg ok, path;				var it;				if(ok,{				if(receivingFunction.notNil,{					receivingFunction.value(this.new(path));				},{						it=this.new(path).topGui;					})			})			})	}		init { arg sfilePath;		if(sfilePath.isNil,{			file = SoundFile.new("no soundfile specified...",numChannels:2);
 			filePath = "no soundfile specified";		},{			if(sfilePath.isString,{				file=SoundFile.new;				found =  file.openRead(sfilePath);
 				filePath = sfilePath;
 				//file.insp;			},{//				if(sfilePath.isKindOf(SoundFile),{//					file=sfilePath;//					found = file.openRead(file.path);
@@ -90,4 +92,4 @@
 
 
 	
-	//	ar {  arg  startAt=0,endAt;////		startAt = startAt ? 0.0;//		if(endAt.notNil,{//			 ^DiskIn.ar(preloadCache.at(startAt) ? file,false,this.secs2frames(startAt)) //			 	* EnvGen.kr(Env.linen(0.01,endAt - startAt,0.05,1.0,-2))//		},{//			 ^DiskIn.ar(preloadCache.at(startAt) ? file,false,this.secs2frames(startAt)) //		})			//	}		name { ^this.fileName }	fileName { 		^PathName(filePath).fileName 	}	fileDuration { ^file.duration }	timeDuration { ^file.duration }	tempo { ^(tempo ?? {Tempo.tempo}) }	tempo_ { arg t;  		tempo = t; // ? Tempo.tempo		if(t.notNil,{			Tempo.tempo = t;		});	}	children { ^[] }		storeParamsOn { arg stream;		stream.storeArgs([this.filePath,tempo,firstBeatIsAt]);	}		guiClass { ^SFPGui }	}
+	//	ar {  arg  startAt=0,endAt;////		startAt = startAt ? 0.0;//		if(endAt.notNil,{//			 ^DiskIn.ar(preloadCache.at(startAt) ? file,false,this.secs2frames(startAt)) //			 	* EnvGen.kr(Env.linen(0.01,endAt - startAt,0.05,1.0,-2))//		},{//			 ^DiskIn.ar(preloadCache.at(startAt) ? file,false,this.secs2frames(startAt)) //		})			//	}		name { ^this.fileName }	fileName { 		^PathName(filePath).fileName 	}	fileDuration { ^file.duration }	timeDuration { ^file.duration }	tempo { ^(tempo ?? {Tempo.tempo}) }	tempo_ { arg t;  		tempo = t; // ? Tempo.tempo		if(t.notNil,{			Tempo.tempo = t;		});	}	children { ^[] }		guiClass { ^SFPGui }	}

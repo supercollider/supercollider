@@ -426,7 +426,7 @@ AbstractPlayer : AbstractFunction  {
 	path_ { arg p; path = PathName(p).asRelativePath }
 
 	// structural utilities
-	children { ^[] }
+	children { ^#[] }
 	deepDo { arg function;// includes self
 		function.value(this);
 		this.children.do({arg c; function.value(c); c.tryPerform(\children).do(function) });
@@ -445,7 +445,15 @@ AbstractPlayer : AbstractFunction  {
 		this.storeOn(stream);
 		^stream.contents
 	}
-	
+	storeParamsOn { arg stream;
+		// anything with a path gets stored as abreviated
+		var args;
+		args = this.storeArgs;
+		if(args.notEmpty,{
+			stream << "(" <<<* enpath(args) << ")";
+		})
+	}
+
 	guiClass { ^AbstractPlayerGui }
 
 }

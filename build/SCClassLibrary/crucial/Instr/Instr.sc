@@ -218,8 +218,10 @@ UGenInstr { // make a virtual Instr by reading the *ar and *kr method def
 	*new { arg ugenClass,rate=\ar;
 		^super.new.init(ugenClass,rate)
 	}
+	storeArgs {
+		^[ugenClass , rate ]
+	}
 	init { arg uc,r;
-	
 		ugenClass = uc.asClass;
 		rate = r;
 	
@@ -278,9 +280,7 @@ UGenInstr { // make a virtual Instr by reading the *ar and *kr method def
 	asString { ^"UGenInstr." ++ ugenClass.name.asString }
 	asInstr { ^this }
 	name { ^ugenClass }
-	storeParamsOn { arg stream;
-		stream << "(" <<< ugenClass << "," <<< rate << ")";
-	}
+
 }
 
 

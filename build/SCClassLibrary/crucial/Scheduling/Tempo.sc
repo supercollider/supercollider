@@ -30,6 +30,8 @@ Tempo  {
 	secs2beats { arg secs; ^tempo * secs }
 	bars2secs { arg bars; ^tempor * (bars * beatsPerBar) }
 	secs2bars { arg secs; ^tempo * secs * beatsPerBarr }
+	
+	/* scheduling.   BeatSched is more flexible */
 	// changing tempo after scheduling won't work yet
 	sched { arg delta,item; 
 		SystemClock.sched(this.beats2secs(delta),item) 
@@ -55,6 +57,8 @@ Tempo  {
 	guiClass { ^TempoGui }
 }
 
+/*  depreciated.  use BeatSched
+
 BeatClock : Clock {
 	
 	classvar global;
@@ -68,7 +72,7 @@ BeatClock : Clock {
 		SystemClock.sched(tempo.beats2secs(delta),
 			{ arg time;
 				var beat;
-				if((beat = item.value(time)).notNil,{
+				if((beat = item.value(time)).isNumber,{
 					this.sched(beat,item)
 				})
 			})
@@ -83,3 +87,6 @@ BeatClock : Clock {
 		global.schedAbs(time,item)
 	}
 }
+
+*/
+

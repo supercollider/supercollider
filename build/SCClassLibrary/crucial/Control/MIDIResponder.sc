@@ -1,4 +1,6 @@
 
+// see MIDIResponder help for all classes on this page
+
 MIDIResponder {
 	var <>function;
 	init {

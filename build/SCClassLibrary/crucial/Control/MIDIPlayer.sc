@@ -39,7 +39,7 @@ MIDIGatePlayer : MIDIPlayer {
 	*new { arg spec=\amp;
 		^super.new.spec_(spec.asSpec)
 	}
-
+	storeArgs { ^[spec] }
 	connect {
 		on = NoteOnResponder({ arg note,veloc; value = spec.map(veloc / 127.0); this.changed });
 		off = NoteOffResponder({ arg note,veloc; value = 0.0; this.changed; });
@@ -58,6 +58,7 @@ CCPlayer : MIDIPlayer {
 	*new { arg num=1,spec=\linear;
 		^super.new.num_(num).spec_(spec.asSpec)
 	}
+	storeArgs { ^[num,spec] }
 	connect {
 		resp = CCResponder(num,{ arg val; value = spec.map(val / 127.0); this.changed });
 	}

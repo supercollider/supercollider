@@ -42,7 +42,7 @@ KrGui : HasSubjectGui {
 }
 
 
-StreamKrGui : KrGui {
+StreamKrDurGui : KrGui {
 
 	guiBody { arg layout;
 		CXLabel(layout,"durs:");
@@ -54,3 +54,6 @@ StreamKrGui : KrGui {
 
 
 // StreamKrDur can simply inherit
+
+
+

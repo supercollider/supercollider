@@ -17,10 +17,7 @@ BufferProxy { // blank space for delays, loopers etc.
 			.startFrame_(0).endFrame_(numFrames - 1)
 			.numChannels_(numChannels).sampleRate_(sampleRate)
 	}
-	
-	storeParamsOn { arg stream;
-		stream << "(" <<<* [this.size,numChannels,sampleRate] << ")";
-	}
+	storeArgs { ^[this.size,numChannels,sampleRate] }
 
 	size {// actual size loaded on server, not total size
 		^if(endFrame == -1,{
@@ -136,7 +133,7 @@ Sample : BufferProxy { // a small sound loaded from disk
 		new.startFrame_(startFrame).endFrame_(endFrame);
 		^new
 	}
-
+	storeArgs { ^[ this.class.abrevPath(soundFilePath) ,tempo, startFrame, endFrame ] }
 	*soundsDir_ { arg dir;
 		soundsDir = dir.standardizePath ++ "/";
 	}
@@ -149,6 +146,14 @@ Sample : BufferProxy { // a small sound loaded from disk
 			pathName.fullPath
 		})
 	}
+	*abrevPath { arg path;
+		if(path.size < soundsDir.size,{ ^path });
+		if(path.copyRange(0,soundsDir.size - 1) == soundsDir,{
+			^path.copyRange(soundsDir.size, path.size - 1)
+		});
+		^path
+	}
+
 	soundFilePath_ { arg string;
 		soundFilePath = string;
 		if(soundFilePath.notNil,{
@@ -289,13 +294,6 @@ Sample : BufferProxy { // a small sound loaded from disk
 		patchOut = ScalarPatchOut(this);
 	}
 	
-	storeParamsOn { arg stream;
-		stream << "(";
-		//TODO must abrev the path
-		[ soundFilePath ,tempo, startFrame, endFrame ].storeItemsOn(stream);
-		stream << ")";
-	}
-	
 	guiClass { ^SampleGui }
 
 }
@@ -309,6 +307,8 @@ ArrayBuffer : BufferProxy {
 	*new { arg array;
 		^super.new(array.size).array_(array.as(Array))
 	}
+	storeArgs { ^[array] }	
+
 	//this.size wrong ?
 	
 	prepareToBundle { arg group,bundle;
@@ -321,8 +321,4 @@ ArrayBuffer : BufferProxy {
 	}
 
 	// gui show it
-	
-	storeParamsOn { arg stream;
-		stream << "(" <<< array << ")";
-	}
 }

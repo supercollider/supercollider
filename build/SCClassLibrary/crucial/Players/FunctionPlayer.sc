@@ -57,12 +57,9 @@ PlayerEfxFunc : FunctionPlayer {
 	ar {
 		^efxFunction.value(function.value)
 	}
-	
-	storeParamsOn { arg stream; 
+	storeArgs { ^[function,efxFunction] }
 		// although a Function won't save
 		// you could use Players for function
-		stream.storeArgs([enpath(function),enpath(efxFunction) ])
-	}
 	beatDuration { ^function.tryPerform(\beatDuration) }
 	children { ^[function,efxFunction ]}
 	*guiClass { ^PlayerEfxFuncGui }
@@ -99,9 +96,7 @@ XFaderPlayer : AbstractPlayer {
 	}
 
 	children { ^[one,two,xfader,pre1,pre2] }
-	storeParamsOn { arg stream;
-		stream.storeArgs(enpath([one,two,xfader,pre1,pre2]))
-	}
+	storeArgs { ^[one,two,xfader,pre1,pre2] }
 	*guiClass { ^XFaderPlayerGui }
 }
 
@@ -161,9 +156,7 @@ DualSeriesEfx : AbstractPlayer {
 		^xf2.ar( xf1.ar(newinput) )
 	}
 	children { ^super.children ++ [efx2,xfader2,post] }
-	storeParamsOn { arg stream;
-		stream.storeArgs(enpath([input,efx1,efx2,xfader1,xfader2,pre1,pre2,post]))
-	}
+	storeArgs { ^[input,efx1,efx2,xfader1,xfader2,pre1,pre2,post] }
 	*guiClass { ^DualSeriesEfxGui }
 
 }

@@ -7,6 +7,7 @@ BeatClockPlayer : KrPlayer {
 	*new { arg tempoFactor=2.0,mul=1.0,tempoBase;
 		^super.new.tempoFactor_(tempoFactor).tempoBase_(tempoBase ? Tempo.default).mul_(mul)
 	}
+	storeArgs { ^[tempoFactor,mul] } // tempoBase won't save really
 	
 	prepareToBundle { arg group,bundle;
 		//TODO: share by tempoFactor per server
@@ -32,9 +33,6 @@ BeatClockPlayer : KrPlayer {
 		^[ 0, tempoBus.index,1,patchOut.synthArg]
 	}
 
-	storeParamsOn { arg stream;
-		stream.storeArgs([tempoFactor])
-	}
 	guiClass { ^BeatClockPlayerGui }
 
 }

@@ -21,11 +21,9 @@ AudioSpec : Spec {
 		)
 	}
 	defaultControl{ 
-		^PlayerInputProxy.new	
+		^PlayerInputProxy.new(this.numChannels,this.rate)
 	}
-	storeParamsOn { arg stream;
-		stream << "(" <<< numChannels << ")"
-	}
+	storeArgs { ^[numChannels] }
 	rate { ^\audio }
 }
 
@@ -134,10 +132,7 @@ SymbolSetSpec : ScalarSpec {
 
 	defaultControl { ^symbols.first }
 	*initClass {}
-	storeParamsOn { arg stream;
-		stream << "(" <<< symbols << ")"
-	}
-
+	storeArgs { ^[symbols] }
 }
 
 BufferProxySpec : ScalarSpec {
