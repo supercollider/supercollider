@@ -6,13 +6,24 @@
 PublicProxySpace : ProxySpace {
 
 	var <>sendingKeys, <>listeningKeys, <>public=true;
-	var <>addressList, <>nickname="Anybody", <>action;
-	var <>destination;
+	var <>addressList, <>nickname, <>action;
+	var <>channel;
 	
-	classvar <>all, <resp;
+	classvar <>listeners, <resp;
 	
-	*initClass { all = IdentityDictionary.new }
+	*initClass { listeners = IdentitySet.new }
 
+	join { arg channelName, nick=\anybody; 
+		channel = channelName;
+		nickname = nick;
+		listeners.add(this)
+	}
+	
+	leave { 
+		channel = nil;
+		listeners.remove(this);
+	}
+	
 	put { arg key, obj; 
 		var notCurrent;
 		notCurrent = currentEnvironment !== this;
@@ -29,61 +40,39 @@ PublicProxySpace : ProxySpace {
 		if(notCurrent) { this.pop };
 	}
 	
-	remotePut { arg key, obj;
-		if(currentEnvironment === this) {
-				this.at(key).put(nil, obj);
-		} {
-			this.use {
-				this.at(key).put(nil, obj);
-			}
-		}
-	}
-	
-	broadcast { arg name, key, obj;
-		var str, b;
-		str = obj.asCompileString;
-		if(str.size > 8125) {Ê"string too large to publish".postln; ^this };		b = ['/proxyspace', nickname, destination ? name, key, str];
-		addressList.do { arg addr; addr.sendBundle(nil, b) };
-	}
-	
-	sendsTo { arg key;
-		^public and: {sendingKeys.notNil} and: 
-			{ 
-				sendingKeys === \all 
-				or: 
-				{ sendingKeys.includes(key) } 
-			} 
-	}
-	listensTo {Êarg key;
-		^public and: {listeningKeys.notNil} and: 
-			{
-				listeningKeys === \all 
-				or:
-				{ listeningKeys.includes(key) }
-			}
-	}
-	
-	makeLogWindow {
+	makeLogWindow { arg bounds, color;
 	 	var d; 
 	 	d = Document(name.asString);
+	 	d.bounds_(bounds ? Rect(10, 400, 600, 500));
+	 	d.background_(color ? Color.new255(180, 160, 180));
 	 	action = { arg ps, nickname, key, str;
 	 		defer { 
-	 			d.selectedString_("\n" ++ nickname ++ "\n\n" ++ str);
-	 			d.selectedString_("\n_______________________________\n");
+	 			str = "~" ++ key ++ " = " ++ str;
+	 			if(str.last !== $;) {Êstr = str ++ $; };
+	 			d.selectedString_(
+	 				"\n" ++ "//" + nickname
+	 				++ " ________________________________________________\n\n"
+	 				++ str
+	 				++ "\n\n"
+	 			);
 	 		};
 	 	};
 	 	d.onClose = { action = nil }
 	 }
 	 
-
-	*startListen { arg addr; // normally nil
+	 *get { arg channelName;
+	 	^listeners.selectAs({ |p| p.channel === channelName }, Array);
+	 }
+	 
+	 *startListen { arg addr; // normally nil
 		resp.remove;
 		resp = OSCresponderNode(addr, '/proxyspace', { arg time, resp, msg;
-			var name, nickname, key, str, proxyspace, obj, listeningKeys;
-			#nickname, name, key, str = msg[1..4];
-			proxyspace = all[name];
-			if(proxyspace.notNil) {
-				if(proxyspace.listensTo(key)) {
+			var channel, nickname, key, str, proxyspace, obj, listeningKeys;
+			#nickname, channel, key, str = msg[1..4];
+			proxyspace = this.get(channel);
+			proxyspace.do { arg proxyspace;
+				if(proxyspace.nickname !== nickname and: { proxyspace.listensTo(key) })
+				{
 					proxyspace.action.value(proxyspace, nickname, key, str);
 					obj = str.asString.interpret;
 					if(obj.notNil) {
@@ -105,9 +94,51 @@ PublicProxySpace : ProxySpace {
 	
 	*clearAll {
 		this.stopListen;
-		super.clearAll;
+		super.clearAll; // check this again
 	}
 
+	
+	// private implementation //
+	
+	
+	
+	remotePut { arg key, obj;
+		if(currentEnvironment === this) {
+				this.at(key).put(nil, obj);
+		} {
+			this.use {
+				this.at(key).put(nil, obj);
+			}
+		}
+	}
+	
+	broadcast { arg name, key, obj;
+		var str, b;
+		str = obj.asCompileString;
+		if(str.size > 8125) {Ê"string too large to publish".postln; ^this };
+		if(channel.isNil or: { nickname.isNil }) { Error("first join a channel, please").throw };
+		b = ['/proxyspace', nickname, channel, key, str];
+		addressList.do { arg addr; addr.sendBundle(nil, b) };
+	}
+	
+	sendsTo { arg key;
+		^public and: {sendingKeys.notNil} and: 
+			{ 
+				sendingKeys === \all 
+				or: 
+				{ sendingKeys.includes(key) } 
+			} 
+	}
+	listensTo {Êarg key;
+		^public and: {listeningKeys.notNil} and: 
+			{
+				listeningKeys === \all 
+				or:
+				{ listeningKeys.includes(key) }
+			}
+	}
+	
+	
 }
 
 
