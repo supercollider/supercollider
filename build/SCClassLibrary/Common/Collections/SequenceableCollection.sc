@@ -186,8 +186,8 @@ SequenceableCollection : Collection {
 
 	// ordering
 	pairsDo { arg function;
-		forBy(0,this.lastIndex,2) {|i|
-			function.value(this.at(i), this.at(i+1), i);
+		forBy(0, this.size-2, 2) {|i|
+			function.value(this[i], this[i+1], i);
 		}
 	}
 	doAdjacentPairs { arg function;
