@@ -115,12 +115,12 @@ Integer : SimpleNumber {
 	asHexString { | width=8 |
 		var x, string;
 		x = this;
-		string = String.new(width);
-		width.do {
-			string.add((x & 15).asDigit);
+		string = String.newClear(width);
+		width.do { |i|
+			string.put(width-i-1, (x & 15).asDigit);
 			x = x >> 4;
 		};
-		^string.reverse
+		^string
 	}
 }
 
