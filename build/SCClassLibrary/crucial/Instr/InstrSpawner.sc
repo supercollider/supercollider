@@ -114,7 +114,7 @@ InstrSpawner : Patch {
 				this.synthDefArgs; // make next array
 			})	
 		});
-		spawnTask.play(SystemClock)
+		spawnTask.play
 	}
 	stop { spawnTask.stop }
 	guiClass { ^InstrSpawnerGui }

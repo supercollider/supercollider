@@ -224,8 +224,8 @@ PauseStream : Stream
 // Task is a PauseStream for wrapping a Routine
 
 Task : PauseStream {
-	*new { arg func; 
-		^super.new(Routine(func)) 
+	*new { arg func, clock; 
+		^super.new(Routine(func), clock) 
 	}
 }
 
