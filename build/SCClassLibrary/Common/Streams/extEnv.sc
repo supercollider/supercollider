@@ -18,4 +18,13 @@
 		^Routine({ arg inval; this.embedInStream(inval) }) 
 	}
 	
+	asSignal { arg length = 400;
+		var duration, signal, ratio;
+		duration = times.sum;
+		ratio = duration/(length - 1);
+		signal = Signal(length);
+		length.do({ arg i; signal.add(this.at(i * ratio)) });
+		^signal;
+	}
+
 }
