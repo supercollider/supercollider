@@ -173,8 +173,8 @@ AbstractFunction {
 	}
 	
 	// embed in ugen graph
-	asUGenInput { arg rate;
-		^this.value(rate)
+	asUGenInput {
+		^this.value
 	}
 	isValidUGenInput { ^true }
 }

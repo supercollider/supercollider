@@ -25,7 +25,7 @@ UGen : AbstractFunction {
 	
 	*multiNewList { arg args;
 		var size = 0, newArgs, results;
-		args = args.asUGenInput(args[0]);	
+		args = args.asUGenInput;	
 		args.do({ arg item; 
 			(item.class == Array).if({ size = max(size, item.size) });
 		});
