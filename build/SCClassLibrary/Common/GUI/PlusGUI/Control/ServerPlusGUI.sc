@@ -48,7 +48,6 @@
 			Server.default = this;
 		};
 		
-		killer.action = { Server.killAll };	
 		
 		if (isLocal, {
 			
