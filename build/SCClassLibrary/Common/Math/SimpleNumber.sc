@@ -197,24 +197,7 @@ SimpleNumber : Number {
 		scaleDegree = this.asInteger;
 		^(stepsPerOctave * (scaleDegree div: size)) + scale.wrapAt(scaleDegree)
 	}
-	
-	// to be discussed. maybe make this a primitive, use for degreeToKey
-	degreeToKey2 { arg scale, stepsPerOctave=12;
-		var size, scaleDegree, z, d, last;
-		size = scale.size;
-		scaleDegree = this % size;
-		z = size - scaleDegree;
-		d = (stepsPerOctave * (this div: size));
-		last = scale.last;
-		^if(z < 1) 
-			{  (1-z) * (stepsPerOctave - last) + last + d } 
-			{ scale.blendAt(scaleDegree) + d }
-	}
-	
-	roundToList { arg list; // list is sorted
-		^list.at(list.indexIn(this))
-	}
-	
+			
 	keyToDegree { arg scale, stepsPerOctave=12;
 		var key, n;
 		n = this div: stepsPerOctave * scale.size;
@@ -222,11 +205,5 @@ SimpleNumber : Number {
 		^scale.indexInBetween(key) + n
 	}
 	
-	roundToScale { arg scale, stepsPerOctave=12;
-		var key, root;
-		root = this.trunc(stepsPerOctave);
-		key = this % stepsPerOctave;
-		^key.roundToList(scale) + root
-	}
 		
 }
