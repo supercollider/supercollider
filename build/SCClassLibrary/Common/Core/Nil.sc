@@ -18,6 +18,7 @@ Nil {
 	// rate access support
 	rate { ^nil }
 	numChannels { ^nil }
+	isPlaying { ^false }
 	
 	do {}
 	doReverse {}
@@ -46,7 +47,7 @@ Nil {
 	awake {}
 	play {}
 	
-	swapThisGroup{}
+	swapThisGroup {}
 	
 	performMsg {}
 	
