@@ -154,6 +154,13 @@ Dictionary : Set {
 		^event.putAll(this).yield;
 	}
 	
+	asSortedArray {
+		var array;
+		this.keysValuesDo({ arg key, value; array = array.add([key,value]); });
+		array = array.sort({ arg a, b; a.at(0) < b.at(0) });
+		^array.flop;
+	}
+	
 	// PRIVATE IMPLEMENTATION
 	keysValuesArrayDo { arg argArray, function;
 		// special byte codes inserted by compiler for this method
