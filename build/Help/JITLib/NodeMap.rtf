@@ -15,20 +15,37 @@ BusNodeMap
 \f1\fs18 \
 \
 
-\f2\fs26 	set(key1, value1, ...) 		set arguments of a node\
-	map(key1, busindex1, ...) 	set bus mappings of a node\
-	unset(key1, key2, ...)		remove settings\
-	unmap(key1, key2, ...)		remove mappings\
-	setn(key1, valueArray1, ...) 	set ranges of controls\
-	addCommand(anArray)		save a command that is applied to the node\
+\f2\fs26 	
+\f0\b\fs24 set(key1, value1, ...)
+\f2\b0  			set arguments of a node\
+	
+\f0\b map(key1, busindex1, ...)
+\f2\b0  		set bus mappings of a node\
+	
+\f0\b unset(key1, key2, ...)	
+\f2\b0 		remove settings\
+	
+\f0\b unmap(key1, key2, ...)
+\f2\b0 			remove mappings\
+	
+\f0\b setn(key1, valueArray1, ...) 
+\f2\b0 		set ranges of controls\
+	
+\f0\b addCommand(anArray)
+\f2\b0 			save a command that is applied to the node\
 \
-	send(aTarget, latency)		apply a setting to a node by sending a bundle\
+	
+\f0\b send(aTarget, latency)
+\f2\b0 			apply a setting to a node by sending a bundle
+\fs26 \
 	\
 \
-the subclass 
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 	the subclass 
 \f0\b BusNodeMap
-\f2\b0  stores the buses as objects\
-	map(key, bus1, ...) \
+\f2\b0  stores the buses as objects: map(key, bus1, ...) 
+\fs26 \
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
