@@ -79,30 +79,25 @@ Monitor {
 		var server, inGroup, numChannels, bundle, divider;
 		inGroup = target.asGroup;
 		server = inGroup.server;
-		if(multi.not and: { group.isPlaying })
-		{ 
-			if(group.group !== group) {
-				if(group.server !== group.group.server) 
-					{ÊError("group not on the same server").throw }; 
-				group.moveToTail(inGroup) 
-			};
-			group.set(\gate, 1); // if releasing, keep up.
-		};
+		bundle = List.new;
 		toNumChannels = toNumChannels ? fromNumChannels;
 		numChannels = max(fromNumChannels, toNumChannels);
-			vol = volume ? vol;
-			
-			bundle = MixedBundle.new;
-			if(group.isPlaying.not) { 
+		vol = volume ? vol;
+		if(group.isPlaying.not) { 
 				group = Group.newToBundle(bundle, inGroup, \addToTail);
-				bundle.add("/n_set", group.nodeID, \fadeTime, fadeTime);
 				NodeWatcher.register(group);
-				out = toIndex;
 				
-			} { 
-				out = out.asCollection.add(toIndex);
-			};
-			 
+		} {
+				if(group.group.nodeID != inGroup.nodeID) {
+					if(group.server !== group.group.server) 
+						{ÊError("group not on the same server").throw }; 
+						bundle.add(["/g_tail", inGroup.nodeID, group.nodeID]);
+						group.group = inGroup;
+				};
+				if(multi.not) { bundle.add(["/n_set", group.nodeID, "gate", 0.0]) }
+		};
+		
+		if(multi) {Êout = out.asCollection.add(toIndex) } {Êout = toIndex };
 			divider = if(toNumChannels.even and: { fromNumChannels.even }, 2, 1);
 			(numChannels div: divider).do { arg i;
 			bundle.add([9, "system_link_audio_"++divider, 
@@ -112,8 +107,11 @@ Monitor {
 					\vol, volume
 					]);
 			};
-			bundle.send(server, server.latency);
+		bundle.add(["/n_set", group.nodeID, "fadeTime", fadeTime]);
+		server.listSendBundle(server.latency, bundle);
 	}
+	
+	isPlaying {Ê^group.isPlaying }
 	
 	stop { arg fadeTime;
 		if(group.isPlaying) {
