@@ -107,6 +107,11 @@ void initSCViewPrimitives()
 {
 }
 
+void initCocoaFilePrimitives();
+void initCocoaFilePrimitives()
+{
+}
+
 bool compileLibrary();
 void runLibrary(PyrSymbol* selector); 
 
