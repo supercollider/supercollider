@@ -381,11 +381,11 @@ Plag : FilterPattern {
 		inevent.put('freq', \rest);
 		inevent.put('dur', lag);
 		event = inevent.yield;
-		loop ({
+		loop {
 			inevent = stream.next(event);
 			if (inevent.isNil) { ^event};
 			event = inevent.yield;
-		});
+		};
 	}
 }
 
@@ -433,6 +433,49 @@ Pbindf : FilterPattern {
 			
 			};
 			event = yield(inevent);
+		};
+	}
+}
+
+Pfx : FilterPattern {
+	var <>fxname, <>pairs;
+	*new { arg pattern, fxname ... pairs;
+		if (pairs.size.odd, { Error("Pfx should have odd number of args.\n").throw });
+		^super.new(pattern).fxname_(fxname).pairs_(pairs)
+	}
+	storeArgs { ^[pattern, fxname] ++ pairs }
+	embedInStream { arg inevent;
+	
+		var stream;
+		var event;
+		var server, id;
+
+		server = inevent[\server] ?? { Server.default };
+		id = server.nextNodeID;
+		
+		event = inevent.copy;
+		pairs.pairsDo {|name, value|
+			event[name] = value;
+		};
+		event[\addAction] = 1; // add to tail of group.
+		event[\instrument] = fxname;
+		event[\type] = \on;
+		event[\id] = id;
+		event[\delta] = 0;
+		inevent = event.yield;
+		
+		stream = pattern.asStream;
+		
+		loop {
+			event = stream.next(inevent);
+			if (event.isNil) { 
+				event = inevent.copy;
+				event[\type] = \off;
+				event[\id] = id;
+				event[\delta] = 0;
+				^event.yield;
+			};
+			inevent = event.yield;
 		};
 	}
 }

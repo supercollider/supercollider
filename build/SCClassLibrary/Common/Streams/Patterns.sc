@@ -215,6 +215,68 @@ Pbind : Pattern {
 	}
 }
 
+Pmono : Pattern {
+	var <>name, <>args, <>patternpairs;
+	*new { arg name, args ... pairs;
+		if (pairs.size.odd, { Error("Pmono should have even number of args.\n").throw; });
+		^super.newCopyArgs(name, args, pairs)
+	}
+	
+	storeArgs { ^patternpairs }
+	embedInStream { arg inevent;
+		var streampairs, endval;
+		var event;
+		var sawNil = false;
+		var first = true;
+		var server, id;
+		
+		streampairs = patternpairs.copy;
+		endval = streampairs.size - 1;
+		forBy (1, endval, 2) { arg i;
+			streampairs.put(i, streampairs[i].asStream);
+		};
+		
+		server = inevent[\server] ?? { Server.default };
+		id = server.nextNodeID;
+		loop {
+			if (inevent.isNil) { ^nil };
+			event = inevent.copy;
+			if (first) {
+				first = false;
+				event[\type] = \on;
+				name !? { event[\instrument] = name; };
+			}{
+				event[\type] = \set;
+			};
+			event[\id] = id;
+			args !? { event[\args] = args; };
+			forBy (0, endval, 2) { arg i;
+				var name, stream, streamout;
+				name = streampairs[i];
+				stream = streampairs[i+1];		
+				streamout = stream.next(event);
+				if (streamout.isNil) {
+					event[\type] = \off;
+					event[\delta] = 0;
+					inevent = event.yield;
+					^inevent 
+				};
+
+				if (name.isSequenceableCollection) {
+					streamout.do { arg val, i;
+						event.put(name[i], val);
+					};
+				}{
+					event.put(name, streamout);
+				};
+				
+			};
+			inevent = event.yield;
+		}		
+	}
+}
+
+
 Pseries : Pattern {	// arithmetic series
 	var <>start=0, <>step=1, <>length=inf;
 	*new { arg start = 0, step = 1, length=inf;

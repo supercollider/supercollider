@@ -237,7 +237,9 @@ Document {
 			doc.path = filename;
 			doc.selectRange(0,0x7FFFFFFF);
 			doc.onClose = {
-				if(doc.string == ("Write about " ++ wikiWord ++ " here.")) {Ê\ok.postln; unixCmd("rm" + filename) };
+				if(doc.string == ("Write about " ++ wikiWord ++ " here.")) {Ê
+					\ok.postln; unixCmd("rm" + filename) 
+				};
 			};
 		};
 	}

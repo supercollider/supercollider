@@ -278,7 +278,7 @@ Pdef : EventPatternProxy {
 		CmdPeriod.add(this);
 		
 		Class.initClassTree(Event);
-		phraseEvent = Event.parentEvents.noteEvent.copy;
+		phraseEvent = Event.parentEvents.default.copy;
 		phraseEvent.use {
 			~library = all;
 			~prPlay = ~play;

@@ -13,7 +13,7 @@ Event : Environment {
 		^Event.new(8, nil, defaultParentEvent, true);
 	}
 	*silent { arg dur = 1.0;
-		^parentEvents.silentEvent.copy.put(\dur, dur)
+		^defaultParentEvent.copy.put(\type, \rest)
 	}
 	
 	next { ^this.copy }
@@ -28,6 +28,9 @@ Event : Environment {
 		*/
 	}
 	play {
+		if (parent.isNil) {
+			parent = defaultParentEvent;
+		};
 		this.use {
 			this[\play].value;	
 		};
@@ -59,7 +62,7 @@ Event : Environment {
 					Mix.new(VarSaw.ar(freq + [0, Rand(-0.4,0.0), Rand(0.0,0.4)], 0, 0.3)),
 					XLine.kr(Rand(4000,5000), Rand(2500,3200), 1)
 				) * Linen.kr(gate, 0.01, amp * 0.7, 0.3, 2);
-			Out.ar(out, Pan2.ar(z, pan));
+			OffsetOut.ar(out, Pan2.ar(z, pan));
 		}, [\ir]).writeDefFile;
 		
 
@@ -112,67 +115,85 @@ Event : Environment {
 				amp: #{ ~db.dbamp },
 				db: -20.0,
 				velocity: 64, 		// MIDI units 0-127
-				pan: 0.0 			// pan center
+				pan: 0.0, 			// pan center
+				trig: 0.5
 			),
 			
 			serverEvent: (
+				server: nil,
+	
+				synthLib: nil,
 				instrument: \default,
 				
 				group: 0,
 				out: 0,
 				addAction: 0,
-										
-				synthLib: #{ SynthDescLib.global },
-	
-				server: #{ Server.default }
-			)
-		);
-		
-		// parents
-		parentEvents = (
-			
-			silentEvent: ( play: nil ).putAll( partialEvents.durEvent ),
-			
-			tempoEvent: (
-				play: #{
-					var tempo;
-					tempo = ~tempo;
-					if (tempo.notNil) {
-						thisThread.clock.tempo = tempo;
-					};
-				}
-			).putAll(
-				partialEvents.durEvent
+				
+				hasGate: nil,
+				msgFunc: nil,
+				defaultMsgFunc: #{|freq = 440, amp = 0.1, pan = 0, out = 0| [\freq, freq, \amp, amp, \pan, pan, \out, out] },
+				
+				// for \type \set
+				args: #[\freq, \amp, \pan, \trig]
 			),
 			
-			noteEvent: (
+			bufferEvent: (
+				bufnum: 0,
+				filename: "",
+				frame: 0,
+				numframes: 0,
+				numchannels: 1,
+				gencmd: \sine1,
+				genflags: 7,
+				genarray: [1]
+			),
+			
+			playerEvent: (
+				type: \note,
 				play: #{
-					var freqs, lag, dur, strum, sustain, desc;
-					var bndl, server, addAction, group, tempo;
+					var tempo, server;
 					
-					freqs = ~freq = ~freq.value + ~detune;
+					~finish.value;
+					
+					server = ~server ?? { Server.default };
 					
 					tempo = ~tempo;
 					if (tempo.notNil) {
 						thisThread.clock.tempo = tempo;
 					};
-									
-					if (freqs.isKindOf(Symbol).not) {
-						~finish.value;
-						~amp = ~amp.value;
-						server = ~server.value;
-						addAction = ~addAction;
-						group = ~group;
-						lag = ~lag + server.latency;
-						strum = ~strum;
-						sustain = ~sustain = ~sustain.value;
-			
-						desc = ~synthLib.value.synthDescs[~instrument.asSymbol];
-						if (desc.isNil) { 
-							error("instrument " ++ ~instrument ++ " not found."); 
-							~delta = ~dur = nil; // force stop
-						}{
-							bndl = desc.msgFunc.valueEnvir.flop;
+					~eventTypes[~type].value(server);
+				},
+				eventTypes: (
+					rest: #{},
+					note: #{|server|
+						var instrumentName, freqs, lag, dur, strum, sustain, desc, msgFunc;
+						var bndl, synthLib, addAction, group, hasGate;
+						
+						freqs = ~freq = ~freq.value + ~detune;
+										
+						if (freqs.isKindOf(Symbol).not) {
+							~amp = ~amp.value;
+							addAction = ~addAction;
+							group = ~group;
+							lag = ~lag + server.latency;
+							strum = ~strum;
+							sustain = ~sustain = ~sustain.value;
+							instrumentName = ~instrument.asSymbol;
+							msgFunc = ~msgFunc;
+							if (msgFunc.isNil) {
+								synthLib = ~synthLib ?? { SynthDescLib.global };
+								desc = synthLib.synthDescs[instrumentName];
+								if (desc.notNil) { 
+									hasGate = desc.hasGate;
+									msgFunc = desc.msgFunc;
+								}{
+									hasGate = ~hasGate ? true;
+									msgFunc = ~defaultMsgFunc;
+								};
+							}{
+								hasGate = ~hasGate ? true;
+							};
+							bndl = msgFunc.valueEnvir.flop;
 							bndl.do {|msgArgs, i|
 								var id, latency;
 								
@@ -180,50 +201,62 @@ Event : Environment {
 								id = server.nextNodeID;
 								
 								//send the note on bundle
-								server.sendBundle(latency, [9, desc.name, id, addAction, group] ++ msgArgs); 
+								server.sendBundle(latency, [9, instrumentName, id, addAction, group] ++ msgArgs); 
 										
-								if (desc.hasGate) {
+								if (hasGate) {
 									// send note off bundle.
 									thisThread.clock.sched(sustain) { 
-										server.sendBundle(latency, [15, id, \gate, 0]); //15 == n_set
+										server.sendBundle(latency, [\n_set, id, \gate, 0]); 
 									};
 								};
 							}
-						}
-					};
-				}
-			).putAll(
-				partialEvents.pitchEvent, 
-				partialEvents.ampEvent, 
-				partialEvents.durEvent, 
-				partialEvents.serverEvent
-			),
-			
-			
-			nodeSetEvent: (
-				play: #{
-					var freqs, lag, dur, strum, sustain, desc, bndl, server, addAction, group, tempo;
-					freqs = ~freq.value + ~detune;
-					
-					tempo = ~tempo;
-					if (tempo.notNil) {
-						thisThread.clock.tempo = tempo;
-					};
-									
-					if (freqs.isKindOf(Symbol).not) {
-						server = ~server.value;
-						~amp = ~amp.value;
-						addAction = ~addAction;
-						group = ~group;
-						lag = ~lag + server.latency;
-						strum = ~strum;
-			
-						desc = ~synthLib.value.synthDescs[~instrument.asSymbol];
-						if (desc.isNil) { 
-							error("instrument " ++ ~instrument ++ " not found."); 
-							~delta = ~dur = nil; // force stop
-						}{
-							bndl = ([15, ~id] ++ desc.msgFunc.valueEnvir).flop;
+						};
+					},
+					on: #{|server|
+						var instrumentName, freqs, lag, dur, strum, desc, msgFunc;
+						var bndl, synthLib, addAction, group;
+						
+						freqs = ~freq = ~freq.value + ~detune;
+										
+						if (freqs.isKindOf(Symbol).not) {
+							~amp = ~amp.value;
+							addAction = ~addAction;
+							group = ~group;
+							lag = ~lag + server.latency;
+							strum = ~strum;
+							~sustain = ~sustain.value;
+							synthLib = ~synthLib.value;
+							instrumentName = ~instrument.asSymbol;
+							msgFunc = ~msgFunc ?? {
+								synthLib = ~synthLib ?? { SynthDescLib.global };
+								desc = synthLib.synthDescs[instrumentName];
+								if (desc.notNil) { 
+									desc.msgFunc;
+								}{
+									~defaultMsgFunc;
+								};
+							};
+							bndl = ([\s_new, instrumentName, ~id, addAction, group] ++ msgFunc.valueEnvir).flop;
+							bndl.do {|msgArgs, i|
+								var latency;
+								
+								latency = i * strum + lag;
+								
+								//send the note on bundle
+								server.sendBundle(latency, msgArgs);
+							}
+						};
+					},
+					set: #{|server|
+						var instrumentName, freqs, lag, dur, strum, sustain, desc, bndl, msgFunc;
+						freqs = ~freq = ~freq.value + ~detune;
+										
+						if (freqs.isKindOf(Symbol).not) {
+							~amp = ~amp.value;
+							lag = ~lag + server.latency;
+							strum = ~strum;
+				
+							bndl = ([\n_set, ~id] ++ ~args.envirPairs).flop;
 							bndl.do {|msgArgs, i|
 								var latency;
 								
@@ -232,30 +265,80 @@ Event : Environment {
 								server.sendBundle(latency, msgArgs); 
 							};
 						};
-					};
-				}
-			).putAll(
-				partialEvents.pitchEvent, 
-				partialEvents.ampEvent, 
-				partialEvents.durEvent, 
-				partialEvents.serverEvent
-			),
+					},
+					off: #{|server|
+						var lag, dur, strum;
+										
+						lag = ~lag + server.latency;
+						strum = ~strum;
 			
-			controlBusEvent: (
-				play: #{
-					var server, lag, array;
-					server = ~server.value;
-					lag = ~lag + server.latency;
-					array = ~array;
-					server.sendBundle(lag, [\c_setn, ~out, array.size] ++ array);
-				}
-			).putAll(
-				partialEvents.durEvent, 
-				partialEvents.serverEvent
+						~id.asArray.do {|id, i|
+							var latency;
+							
+							latency = i * strum + lag;
+							
+							server.sendBundle(latency, [\n_set, id, \gate, 0]); 
+						};
+					},
+					kill: #{|server|
+						var lag, dur, strum;
+										
+						lag = ~lag + server.latency;
+						strum = ~strum;
+			
+						~id.do {|id, i|
+							var latency;
+							
+							latency = i * strum + lag;
+							
+							server.sendBundle(latency, [\n_free, id]); 
+						};
+					},
+	
+					bus: #{|server|
+						var lag, array;
+						lag = ~lag + server.latency;
+						array = ~array;
+						server.sendBundle(lag, [\c_setn, ~out, array.size] ++ array);
+					},
+					
+					gen: #{|server|
+						var lag, genarray;
+						lag = ~lag + server.latency;
+						genarray = ~genarray;
+						server.sendBundle(lag, [\b_gen, ~bufnum, ~gencmd, ~genflags] ++ genarray);
+					},
+					read: #{|server|
+						var lag;
+						lag = ~lag + server.latency;
+						server.sendBundle(lag, [\b_allocRead, ~bufnum, ~filename, ~frame, ~numframes]);
+					},
+					alloc: #{|server|
+						var lag;
+						lag = ~lag + server.latency;
+						server.sendBundle(lag, [\b_alloc, ~bufnum, ~numframes, ~numchannels]);
+					},
+					free: #{|server|
+						var lag;
+						lag = ~lag + server.latency;
+						server.sendBundle(lag, [\b_free, ~bufnum]);
+					}
+				)
 			)
 		);
 		
-		defaultParentEvent = parentEvents.noteEvent;
+		parentEvents = (
+			default: ().putAll(
+				partialEvents.pitchEvent, 
+				partialEvents.ampEvent, 
+				partialEvents.durEvent, 
+				partialEvents.bufferEvent,
+				partialEvents.serverEvent,
+				partialEvents.playerEvent
+			)
+		);
+		
+		defaultParentEvent = parentEvents.default;
 	}
 }
 

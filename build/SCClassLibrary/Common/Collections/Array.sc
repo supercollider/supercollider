@@ -142,6 +142,17 @@ Array[slot] : ArrayedCollection {
 		_ArrayMultiChannelExpand 
 		^super.flop 
 	}
+	envirPairs {
+		// given an array of symbols, this returns an array of pairs of symbol, value
+		// from the current environment
+		var result;
+		this.do {|name| 
+			var value;
+			value = name.envirGet;
+			value !? { result = result.add(name).add(value); };
+		};
+		^result
+	}
 
 	shift { arg n;
 		var fill, remain;
