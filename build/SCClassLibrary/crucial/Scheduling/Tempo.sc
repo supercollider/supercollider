@@ -52,7 +52,11 @@ BeatClock : Clock {
 	*new { arg tempo;
 		^super.new.tempo_(tempo ? Tempo.default)
 	}
-	*play { arg task;
-		this.sched(task.value(thisThread.time), task)
+
+	*sched { arg delta,item;
+		SystemClock.sched(tempo.beats2secs(delta),item)
+	}
+	*schedAbs { arg time,item;
+		SystemClock.sched(tempo.beats2secs(time) + beatEpoch,item)
 	}
 }
