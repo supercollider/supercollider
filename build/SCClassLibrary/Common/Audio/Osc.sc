@@ -172,6 +172,14 @@ DegreeToKey : UGen {
 	}
 }
 
+TWindex : UGen {
+	
+	*kr {
+		arg in, array, normalize=0;
+		^this.multiNewList(['control', in, normalize] ++ array)
+	}
+}
+
 Select : UGen {
 	*ar {
 		arg which, array;
