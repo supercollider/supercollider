@@ -182,7 +182,7 @@ extern "C"
 	void NRand_Ctor(NRand* unit);
 	void ExpRand_Ctor(ExpRand *unit);
 
-        void CoinGate_Ctor(CoinGate *unit);
+	void CoinGate_Ctor(CoinGate *unit);
 	void CoinGate_next_k(CoinGate *unit, int inNumSamples);
 	void CoinGate_next(CoinGate *unit, int inNumSamples);
         
