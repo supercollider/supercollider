@@ -2450,19 +2450,36 @@ int prObjectRespondsTo(struct VMGlobals *g, int numArgsPushed)
 	
 	a = g->sp - 1;
 	b = g->sp;
-	
-	if (b->utag != tagSym) return errWrongType;
 
 	classobj = classOfSlot(a);
 	
-	selector = b->us;
-	index = classobj->classIndex.ui + selector->u.index;
-	meth = gRowTable[index];
-	if (meth->name.us != selector) {
-		a->ucopy = o_false.ucopy;
-	} else {
+	if (b->utag == tagSym) {
+			
+		selector = b->us;
+		index = classobj->classIndex.ui + selector->u.index;
+		meth = gRowTable[index];
+		if (meth->name.us != selector) {
+			a->ucopy = o_false.ucopy;
+		} else {
+			a->ucopy = o_true.ucopy;
+		}
+	} else if (isKindOfSlot(b, class_array)) {
+		int size = b->uo->size;
+		PyrSlot *slot = b->uo->slots;
+		for (int i=0; i<size; ++i, ++slot) {
+			
+			if (slot->utag != tagSym) return errWrongType;
+			
+			selector = slot->us;
+			index = classobj->classIndex.ui + selector->u.index;
+			meth = gRowTable[index];
+			if (meth->name.us != selector) {
+				a->ucopy = o_false.ucopy;
+				return errNone;
+			}
+		}
 		a->ucopy = o_true.ucopy;
-	}
+	} else return errWrongType;
 	return errNone;
 }
 
