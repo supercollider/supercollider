@@ -15,14 +15,15 @@ Client programs in SuperCollider typically specify synthesis definition (how a p
 \
 To summarize, clients request; servers respond.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 Client/server examples\
+\f0\b\fs24 Client/server examples\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // EX. 1 - execute each line, one at a time\
 // define a synthesis process and make a client request to a server\cf0 \
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
@@ -50,11 +51,14 @@ s.quit;\
 \cf2 // EX. 2\cf0 \
 \cf2 // the same as in above, except on 2 computers across a network\cf0 \
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
-\cf2 // define a server; it represents a computer "somewhere" on the internet"\
-// the ip number has to be valid\
-// and the server, wherever it is, has to be running\
-// servers cannot be booted remotely, eg, a program on one machine can't boot a server on another\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // define a (remote) server; it represents a computer "somewhere" on the internet"\
+// the ip number has to be valid and the server, wherever it is, has to be running\
+// servers cannot be booted remotely, eg, a program on one machine can't boot a server on another\
+// this example assumes the server on the remote machine was booted from within\
+// supercollider and not from the terminal\cf0 \
 s = \cf3 Server\cf0 (\cf4 "aServer"\cf0 , \cf3 NetAddr\cf0 (\cf4 "... an ip number ..."\cf0 , 56789));\
 \
 \cf2 // define a synthesis engine ... exactly as in the previous example\cf0 \
@@ -63,18 +67,22 @@ s = \cf3 Server\cf0 (\cf4 "aServer"\cf0 , \cf3 NetAddr\cf0 (\cf4 "... an ip numb
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // schedule synthesis ... exactly as in the previous example\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf4 "s_new"\cf0 , \cf4 "sine"\cf0 , n = s.nextNodeID, 0, 1);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // stop the synth (delete it)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf4 "/n_free"\cf0 , n);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \cf2 // EX. 3\cf0 \
 \cf2 // client/server on one computer vs. client server on two computers\
 // the previous examples without comments\
 // they're identical except that\
 //	the example that runs on one computer explicitly boots the server\
-//	the example on two computers _assumes the server "somewhere" on the internet is booted\cf0 \
+//	the example on 2 computers _assumes the server "somewhere" on the internet is booted\cf0 \
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
 \cf2 // on one computer\cf0 \
@@ -89,8 +97,8 @@ vs.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // on two computers ... the server has to have a valid ip address\
-\cf0 s = \cf3 Server\cf0 (\cf4 "aServer"\cf0 , \cf3 NetAddr\cf0 (\cf4 "... an ip number ..."\cf0 , 56789));\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 s = \cf3 Server\cf0 (\cf4 "aServer"\cf0 , \cf3 NetAddr\cf0 (\cf4 "... an ip number ..."\cf0 , 56789));\
 \cf3 SynthDef\cf0 (\cf4 "sine"\cf0 , \{ \cf3 Out\cf0 .ar(0, \cf3 SinOsc\cf0 .ar(440, 0, 0.2)) \}).send(s);\
 s.sendMsg(\cf4 "s_new"\cf0 , \cf4 "sine"\cf0 , n = s.nextNodeID, 0, 1);\
 s.sendMsg(\cf4 "/n_free"\cf0 , n);\
@@ -98,7 +106,6 @@ s.sendMsg(\cf4 "/n_free"\cf0 , n);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 Localhost and internal servers
 \f1\b0\fs18 \
