@@ -63,6 +63,19 @@ PublicProxySpace : ProxySpace {
 			}
 	}
 	
+	makeLogWindow {
+	 	var d; 
+	 	d = Document(name.asString);
+	 	action = { arg ps, nickname, key, str;
+	 		defer { 
+	 			d.selectedString_("\n" ++ nickname ++ "\n\n" ++ str);
+	 			d.selectedString_("\n_______________________________\n");
+	 		};
+	 	};
+	 	d.onClose = { action = nil }
+	 }
+	 
+
 	*startListen { arg addr; // normally nil
 		resp.remove;
 		resp = OSCresponderNode(addr, '/proxyspace', { arg time, resp, msg;
