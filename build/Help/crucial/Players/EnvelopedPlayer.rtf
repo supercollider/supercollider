@@ -19,13 +19,21 @@ a stereo image.\
 \
 p = \cf2 EnvelopedPlayer\cf0 (\
 	\cf2 Patch\cf0 (\{\
-		\cf2 SinOsc\cf0 .ar\
+		\cf2 SinOsc\cf0 .ar * 0.1\
 	\}),\
 	Env.adsr(releaseTime: 2.0)\
 );\
 \
 p.play;\
 \
+/*\
+Group(0)\
+        Group(1)\
+                Group(1000) an EnvelopedPlayer:subjectGroup\
+                        Synth("1NKjO5" : 1002) Patch[ f715377986 ]:synth\
+                Group(1001) an EnvelopedPlayer:effectGroup\
+                        Synth("EnvelopedPlayernilyeG~u" : 1003) an EnvelopedPlayer:synth\
+*/\
 )\
 \
 p.release;\
@@ -34,4 +42,25 @@ p.release;\
 p.insp\
 \
 \
-p.group}
+p.group\
+\
+\
+\
+(\
+\
+x = PlayerSocket.new(\\audio,1);\
+x.play;\
+\
+p = \cf2 EnvelopedPlayer\cf0 (\
+	\cf2 Patch\cf0 (\{\
+		\cf2 SinOsc\cf0 .ar * 0.1\
+	\}),\
+	Env.adsr(releaseTime: 2.0),\
+	1\
+);\
+\
+\
+x.prepareAndQSpawn(p)\
+\
+x.qspawnPlayer(p)\
+)}
