@@ -159,12 +159,16 @@ BusPlug : AbstractFunction {
 	///// monitoring //////////////
 	
 	//play { arg group=0, atTime, bus, multi=false;
-	play { arg busIndex=0, nChan, group, multi=false;
+	play { arg busIndex=0, nChan, target, multi=false;
 		var bundle, divider, n, localServer, ok;
 		
 		localServer = this.localServer; //multi client support
 		if(localServer.serverRunning.not, { "server not running".inform; ^nil });
-		if(multi.not and: { monitorGroup.isPlaying }, { ^monitorGroup });
+		target = (target ? localServer).asGroup;
+		if(multi.not and: { monitorGroup.isPlaying }, { //maybe should warn if not same server
+			if(monitorGroup.group !== target) { monitorGroup.moveToTail(target) };
+			^monitorGroup 
+		});
 			
 			ok = this.initBus(\audio, nChan);
 			if(ok.not, { ("can't monitor a" + bus.rate + "proxy").error });
@@ -176,8 +180,9 @@ BusPlug : AbstractFunction {
 		
 			bundle = MixedBundle.new;
 			if(monitorGroup.isPlaying.not, { 
-				monitorGroup = Group.newToBundle(bundle, group ? localServer, \addToTail);
+				monitorGroup = Group.newToBundle(bundle, target, \addToTail);
 				NodeWatcher.register(monitorGroup);
+				[monitorGroup, monitorGroup.group].postln;
 			});
 			
 			divider = if(nChan.even, 2, 1);
@@ -187,8 +192,8 @@ BusPlug : AbstractFunction {
 					\out, busIndex + (i*divider), \in, bus.index + (i*divider)
 					]);
 			});
-		
 			bundle.send(localServer, localServer.latency);
+			[monitorGroup, monitorGroup.group].postln;
 		^monitorGroup
 	}
 	
@@ -254,7 +259,6 @@ NodeProxy : BusPlug {
 		nodeMap = ProxyNodeMap.new.proxy_(this); 
 		this.clearObjects;
 		loaded = false;
-	
 	}
 	
 	clear {
