@@ -79,9 +79,9 @@ public:
 	virtual ~SCView();
 		
 	virtual void draw(SCRect inDamage);
-        virtual void drawFocus(SCRect inDamage);
+	virtual void drawFocus(SCRect inDamage);
 	virtual void drawDisabled(SCRect inDamage);
-        virtual void drawDragHilite(SCRect inDamage);
+	virtual void drawDragHilite(SCRect inDamage);
 	virtual void drawIfNecessary(SCRect inDamage);
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
@@ -89,41 +89,41 @@ public:
 	virtual void mouseOver(SCPoint where);
 	virtual void keyDown(int character, int modifiers, unsigned short keycode);
 	virtual void keyUp(int character, int modifiers, unsigned short keycode);
-        virtual bool shouldDim();
-        void beginDrag(SCPoint where);
-        
-        virtual bool canReceiveDrag();
-        virtual void receiveDrag();
+	virtual bool shouldDim();
+	void beginDrag(SCPoint where);
+	
+	virtual bool canReceiveDrag();
+	virtual void receiveDrag();
 	
 	bool isFocus() const;
 	bool hit(SCPoint p) const;
 	void refresh();
 	void refreshFocus();
-        void setDragHilite(bool inFlag);
-        
+	void setDragHilite(bool inFlag);
+	
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	
 	virtual bool isDragSource() const;
 	virtual SCView* findView(SCPoint where);
 	virtual void makeFocus(bool focus);
-        virtual SCView* nextFocus(bool *foundFocus, bool canFocus);
-        virtual SCView* prevFocus(SCView **prevView, bool canFocus);
-        virtual bool canFocus();
+	virtual SCView* nextFocus(bool *foundFocus, bool canFocus);
+	virtual SCView* prevFocus(SCView **prevView, bool canFocus);
+	virtual bool canFocus();
 
 	void sendMessage(PyrSymbol *method, int numargs, PyrSlot *args, PyrSlot *result);
 
-        virtual void setBounds(SCRect inBounds);
-        virtual SCRect getBounds();
-        virtual Layout getLayout();
-        
-        SCView* next() { return mNext; }
-        SCContainerView* parent() { return mParent; }
+	virtual void setBounds(SCRect inBounds);
+	virtual SCRect getBounds();
+	virtual Layout getLayout();
+	
+	SCView* next() { return mNext; }
+	SCContainerView* parent() { return mParent; }
 	
 	virtual NSMenu* contextMenu(SCPoint inPoint);
 	
 	virtual void setMenuItemChosen(int inItem) {}
-        
+	
 protected:
 	friend class SCContainerView;
 
@@ -132,12 +132,12 @@ protected:
 	SCTopView *mTop;
 	PyrObject* mObj;
 	SCRect mBounds;
-        Layout mLayout;
-        DrawBackground* mBackground;
+	Layout mLayout;
+	DrawBackground* mBackground;
 	bool mVisible;
 	bool mEnabled;
 	bool mCanFocus;
-        bool mDragHilite;
+	bool mDragHilite;
 };
 
 
@@ -145,30 +145,30 @@ class SCContainerView : public SCView
 {
 public:
 	SCContainerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCContainerView();
-        
+	virtual ~SCContainerView();
+	
 	virtual void drawIfNecessary(SCRect inDamage);
 	
 	virtual void add(SCView *inChild);
 	virtual void remove(SCView *inChild);
 	virtual SCView* findView(SCPoint where);
 	virtual void makeFocus(bool focus);
-        virtual SCView* nextFocus(bool *foundFocus, bool canFocus);
-        virtual SCView* prevFocus(SCView **prevView, bool canFocus);
-        virtual bool canFocus();
+	virtual SCView* nextFocus(bool *foundFocus, bool canFocus);
+	virtual SCView* prevFocus(SCView **prevView, bool canFocus);
+	virtual bool canFocus();
 	
 protected:
 	SCView *mChildren;
-        int mNumChildren;
+	int mNumChildren;
 };
 
 class SCCompositeView : public SCContainerView
 {
 public:
 	SCCompositeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCCompositeView();
+	virtual ~SCCompositeView();
 
-        virtual void setBounds(SCRect inBounds);
+	virtual void setBounds(SCRect inBounds);
 	
 protected:
 };
@@ -177,8 +177,8 @@ class SCLayoutView : public SCContainerView
 {
 public:
 	SCLayoutView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCLayoutView();
-        
+	virtual ~SCLayoutView();
+	
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	
@@ -190,9 +190,9 @@ class SCHLayoutView : public SCLayoutView
 {
 public:
 	SCHLayoutView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCHLayoutView();
+	virtual ~SCHLayoutView();
 
-        virtual void setBounds(SCRect inBounds);
+	virtual void setBounds(SCRect inBounds);
 	
 protected:
 };
@@ -201,9 +201,9 @@ class SCVLayoutView : public SCLayoutView
 {
 public:
 	SCVLayoutView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCVLayoutView();
+	virtual ~SCVLayoutView();
 
-        virtual void setBounds(SCRect inBounds);
+	virtual void setBounds(SCRect inBounds);
 	
 protected:
 };
@@ -217,38 +217,38 @@ class SCTopView : public SCCompositeView
 public:
 	SCTopView(PyrObject* inObj, SCRect inBounds);
 	
-        SCView *focusView() { return mFocusView; }
+	SCView *focusView() { return mFocusView; }
 
 	void resetFocus();
 	void addDamage(SCRect inRect);
-        void beginDragCallback(SCPoint where, PyrSlot* slot);
-        
-        void setDamageCallback(DamageCallback inFunc, void *inHostData)
+	void beginDragCallback(SCPoint where, PyrSlot* slot);
+	
+	void setDamageCallback(DamageCallback inFunc, void *inHostData)
             { mDamageCallback = inFunc; mHostData = inHostData; }
-        void setDragCallback(DragCallback inFunc)
+	void setDragCallback(DragCallback inFunc)
             { mDragCallback = inFunc; }
-        
-        void tabNextFocus();
-        void tabPrevFocus();
-        void setDragView(SCView *inView);
+	
+	void tabNextFocus();
+	void tabPrevFocus();
+	void setDragView(SCView *inView);
 		
 		NSView* GetNSView() { return mNSView; }
 		void SetNSView(NSView* inView) { mNSView = inView; }
-        
+	
 		bool ConstructionMode() { return mConstructionMode; }
 		void SetConstructionMode(bool inFlag) { mConstructionMode = inFlag; }
 		
-        virtual void drawFocus(SCRect inDamage);
+	virtual void drawFocus(SCRect inDamage);
 		
 protected:
-        friend class SCView;
-        void focusIs(SCView *inView) { mFocusView = inView; }
+	friend class SCView;
+	void focusIs(SCView *inView) { mFocusView = inView; }
 
-        DamageCallback mDamageCallback;
-        DragCallback mDragCallback;
-        void *mHostData;
-        SCView *mFocusView;
-        SCView *mDragView;
+	DamageCallback mDamageCallback;
+	DragCallback mDragCallback;
+	void *mHostData;
+	SCView *mFocusView;
+	SCView *mDragView;
 		NSView *mNSView;
 		
 		bool mConstructionMode;
@@ -270,8 +270,8 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 
-        virtual bool canReceiveDrag();
-        virtual void receiveDrag();
+	virtual bool canReceiveDrag();
+	virtual void receiveDrag();
 
 protected:
 	virtual void setValueFromPoint(SCPoint point);
@@ -279,7 +279,7 @@ protected:
 	
 	SCRect mThumbRect;
 	double mValue, mStepSize, mStepScale;
-        DrawBackground* mKnob;
+	DrawBackground* mKnob;
 };
 SCView* NewSCSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
@@ -298,22 +298,22 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 
-        virtual bool canReceiveDrag();
-        virtual void receiveDrag();
+	virtual bool canReceiveDrag();
+	virtual void receiveDrag();
 
 protected:
 	virtual void setValueFromPoint(SCPoint point);
     // sc.solar addition
-        void moveRangeFromPoint(SCPoint point);
-        void adjustLoFromPoint(SCPoint point);
-        void adjustHiFromPoint(SCPoint point);
+	void moveRangeFromPoint(SCPoint point);
+	void adjustLoFromPoint(SCPoint point);
+	void adjustHiFromPoint(SCPoint point);
     // sc.solar addition end
 	void calcRangeRect();
 	
 	SCRect mRangeRect;
 	double mLo, mHi, mStepSize, mStepScale;
-        SCPoint mAnchor;
-        DrawBackground* mKnob;
+	SCPoint mAnchor;
+	DrawBackground* mKnob;
 };
 SCView* NewSCRangeSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
@@ -332,8 +332,8 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 
-        virtual bool canReceiveDrag();
-        virtual void receiveDrag();
+	virtual bool canReceiveDrag();
+	virtual void receiveDrag();
 
 protected:
 	virtual void setValueFromPoint(SCPoint point);
@@ -341,8 +341,8 @@ protected:
 	
 	SCRect mThumbRect;
 	double mX, mY;
-        double mStepSize, mStepScale;
-        DrawBackground* mKnob;
+	double mStepSize, mStepScale;
+	DrawBackground* mKnob;
 };
 SCView* NewSC2DSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
@@ -377,13 +377,13 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 
-        SCPoint pixelToUnits(SCPoint p) 
+	SCPoint pixelToUnits(SCPoint p) 
             { 
                 return SCMakePoint(
                     (p.x - mBounds.x) * mZoom.x + mScroll.x,
                     (p.y - mBounds.y) * mZoom.y + mScroll.y);
             }
-        SCPoint unitsToPixel(SCPoint u) 
+	SCPoint unitsToPixel(SCPoint u) 
             {
                 return SCMakePoint(
                     (u.x - mScroll.x) * mInvZoom.x + mBounds.x,
@@ -392,10 +392,10 @@ public:
             
 protected:
 	
-        SCRect mLimits;
+	SCRect mLimits;
 	SCPoint mZoom, mInvZoom, mScroll;
 	SCColor mGridColor;
-        bool mGridOn;
+	bool mGridOn;
 };
 SCView* NewSCCartesianView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
@@ -416,7 +416,7 @@ class SCButton : public SCView
 {
 public:	
 	SCButton(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCButton();
+	virtual ~SCButton();
 
 	virtual void draw(SCRect inDamage);
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
@@ -427,17 +427,17 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 
-        virtual bool canReceiveDrag();
-        virtual void receiveDrag();
+	virtual bool canReceiveDrag();
+	virtual void receiveDrag();
 
 protected:
 	
 	int mValue;
-        char mFontName[kFontNameSize];
-        float mFontSize;
-        int mNumStates;
-        SCButtonState *mStates;
-        bool mPushed;
+	char mFontName[kFontNameSize];
+	float mFontSize;
+	int mNumStates;
+	SCButtonState *mStates;
+	bool mPushed;
 };
 SCView* NewSCButton(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
@@ -446,7 +446,7 @@ class SCPopUpMenu : public SCView
 {
 public:	
 	SCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCPopUpMenu();
+	virtual ~SCPopUpMenu();
 
 	virtual void draw(SCRect inDamage);
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
@@ -457,8 +457,8 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 
-        virtual bool canReceiveDrag();
-        virtual void receiveDrag();
+	virtual bool canReceiveDrag();
+	virtual void receiveDrag();
 
 protected:
 	
@@ -475,7 +475,7 @@ class SCMultiSliderView : public SCView
 {
 public:	
 	SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCMultiSliderView();
+	virtual ~SCMultiSliderView();
 
 	virtual void draw(SCRect inDamage);
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
@@ -484,12 +484,12 @@ public:
 	
     void setSelection(SCPoint where);
 	bool setValue(int inX, double inY, bool send);
-        //virtual void setPoint(int x, double y, bool send);
+	//virtual void setPoint(int x, double y, bool send);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
-        void setVisibleSize();
-        virtual bool canReceiveDrag();
-        virtual void receiveDrag();
+	void setVisibleSize();
+	virtual bool canReceiveDrag();
+	virtual void receiveDrag();
 
 protected:
 	int indexFromPoint(SCPoint where);
@@ -497,19 +497,19 @@ protected:
 	void setValueFromPoint(SCPoint point);
 	SCRect calcThumbRect(int xIn, double valIn, float xoffset);
 	int mThumbSize, mThumbSizeY; // size of the rect
-        int mTabSize, mVisibleSize; // size of the table
-        SCColor mFillColor;
-        SCColor mStrokeColor;
+	int mTabSize, mVisibleSize; // size of the table
+	SCColor mFillColor;
+	SCColor mStrokeColor;
 	SCRect mThumbRect;
 	double mCurrentY, mCurrentX;
-        int mCurrentIndex, mStartIndex, mSelectionSize;
-        double mStepSize, mStepScale;
-        double * mYValues;
-        double * mSecYValues;
-        DrawBackground* mKnob;
-        float mXOffset ; //space between points
-        bool mReadOnly, mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsHorizontal, mIsFilled;
-        int mResamp;
+	int mCurrentIndex, mStartIndex, mSelectionSize;
+	double mStepSize, mStepScale;
+	double * mYValues;
+	double * mSecYValues;
+	DrawBackground* mKnob;
+	float mXOffset ; //space between points
+	bool mReadOnly, mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsHorizontal, mIsFilled;
+	int mResamp;
 		SCPoint mPrevPoint;
 };
 SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
@@ -566,7 +566,7 @@ protected:
 	int mCurrentIndex, mStartIndex, mSelectionSize, mLastIndex;
 	double mStepSize, mStepScale;
 	SCEnvObject * mEnvObj;
-        //DrawBackground* mKnob;
+	//DrawBackground* mKnob;
 	float mXOffset ; //space between points
 	bool  mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsFilled, mIsFixedSelection, mIsEnvView;
 	int mSelectedIndex;
@@ -580,7 +580,7 @@ protected:
     SCColor mStringColor;
     int mAlignment;
 	bool mDrawCenteredConnection;
-        
+	
     
 };
 SCView* NewSCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
@@ -599,9 +599,9 @@ public:
 	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);	
     virtual void keyDown(int character, int modifiers);
 	virtual void keyUp(int character, int modifiers);
-        
+	
 protected:
-        void mouseAction(PyrSymbol *method, SCPoint where, int modifiers);
+	void mouseAction(PyrSymbol *method, SCPoint where, int modifiers);
 };
 SCView* NewSCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
@@ -616,14 +616,14 @@ class SCStaticText : public SCView
 {
 public:	
 	SCStaticText(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCStaticText();
-        
+	virtual ~SCStaticText();
+	
 	virtual void draw(SCRect inDamage);
-        virtual bool shouldDim();
+	virtual bool shouldDim();
 
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
-        
+	
 protected:
     char *mString;
     char mFontName[kFontNameSize];
@@ -638,10 +638,10 @@ class SCNumberBox : public SCStaticText
 {
 public:	
 	SCNumberBox(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCNumberBox();
-        
+	virtual ~SCNumberBox();
+	
 	virtual void draw(SCRect inDamage);
-        virtual bool shouldDim();
+	virtual bool shouldDim();
 
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	//virtual void mouseEndTrack(SCPoint where, int modifiers);
@@ -649,8 +649,8 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 
-        virtual bool canReceiveDrag();
-        virtual void receiveDrag();
+	virtual bool canReceiveDrag();
+	virtual void receiveDrag();
 
 protected:
     SCColor mBoxColor;
@@ -661,12 +661,12 @@ class SCDragSource : public SCStaticText
 {
 public:	
 	SCDragSource(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCDragSource();
-        
+	virtual ~SCDragSource();
+	
 	virtual void draw(SCRect inDamage);
-        virtual bool shouldDim();
+	virtual bool shouldDim();
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
-        
+	
 protected:
 };
 SCView* NewSCDragSource(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
@@ -676,14 +676,14 @@ class SCDragSink : public SCStaticText
 {
 public:	
 	SCDragSink(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCDragSink();
-        
+	virtual ~SCDragSink();
+	
 	virtual void draw(SCRect inDamage);
-        virtual bool shouldDim();
-        
-        virtual bool canReceiveDrag();
-        virtual void receiveDrag();
-        
+	virtual bool shouldDim();
+	
+	virtual bool canReceiveDrag();
+	virtual void receiveDrag();
+	
 protected:
 };
 SCView* NewSCDragSink(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
@@ -693,7 +693,7 @@ class SCDragBoth : public SCDragSink
 {
 public:	
 	SCDragBoth(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        
+	
 	virtual void draw(SCRect inDamage);
 
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
@@ -708,8 +708,8 @@ class SCTabletView : public SCView
 {
 public:	
 	SCTabletView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCTabletView();
-        
+	virtual ~SCTabletView();
+	
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
