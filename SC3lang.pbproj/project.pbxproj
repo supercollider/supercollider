@@ -17,6 +17,156 @@
 			path = libraryConfig.cpp;
 			refType = 4;
 		};
+		43E6D260058A31C2000A479B = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = AIHTMLDecoder.h;
+			path = headers/app/AIHTMLDecoder.h;
+			refType = 2;
+		};
+		43E6D261058A31C2000A479B = {
+			fileRef = 43E6D260058A31C2000A479B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		43E6D262058A31E1000A479B = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = AIHTMLDecoder.m;
+			path = source/app/AIHTMLDecoder.m;
+			refType = 2;
+		};
+		43E6D263058A31E1000A479B = {
+			fileRef = 43E6D262058A31E1000A479B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		43E6D264058A34BD000A479B = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AIAttributedStringAdditions.m;
+			refType = 4;
+		};
+		43E6D265058A34BD000A479B = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AIColorAdditions.m;
+			refType = 4;
+		};
+		43E6D266058A34BD000A479B = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AIStringAdditions.m;
+			refType = 4;
+		};
+		43E6D267058A34BD000A479B = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AITextAttributes.m;
+			refType = 4;
+		};
+		43E6D268058A34BD000A479B = {
+			fileRef = 43E6D264058A34BD000A479B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		43E6D269058A34BD000A479B = {
+			fileRef = 43E6D265058A34BD000A479B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		43E6D26A058A34BD000A479B = {
+			fileRef = 43E6D266058A34BD000A479B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		43E6D26B058A34BD000A479B = {
+			fileRef = 43E6D267058A34BD000A479B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		43E6D26C058A34D6000A479B = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = AIAttributedStringAdditions.h;
+			path = headers/app/AIAttributedStringAdditions.h;
+			refType = 2;
+		};
+		43E6D26D058A34D6000A479B = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = AIColorAdditions.h;
+			path = headers/app/AIColorAdditions.h;
+			refType = 2;
+		};
+		43E6D26E058A34D6000A479B = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = AIStringAdditions.h;
+			path = headers/app/AIStringAdditions.h;
+			refType = 2;
+		};
+		43E6D26F058A34D6000A479B = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = AITextAttributes.h;
+			path = headers/app/AITextAttributes.h;
+			refType = 2;
+		};
+		43E6D270058A34D6000A479B = {
+			fileRef = 43E6D26C058A34D6000A479B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		43E6D271058A34D6000A479B = {
+			fileRef = 43E6D26D058A34D6000A479B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		43E6D272058A34D6000A479B = {
+			fileRef = 43E6D26E058A34D6000A479B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		43E6D273058A34D6000A479B = {
+			fileRef = 43E6D26F058A34D6000A479B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		43E6D274058A47D4000A479B = {
+			children = (
+				43E6D262058A31E1000A479B,
+				43E6D264058A34BD000A479B,
+				43E6D265058A34BD000A479B,
+				43E6D266058A34BD000A479B,
+				43E6D267058A34BD000A479B,
+			);
+			isa = PBXGroup;
+			name = AIHTML;
+			refType = 4;
+		};
+		43E6D275058A4806000A479B = {
+			children = (
+				43E6D260058A31C2000A479B,
+				43E6D26C058A34D6000A479B,
+				43E6D26D058A34D6000A479B,
+				43E6D26E058A34D6000A479B,
+				43E6D26F058A34D6000A479B,
+			);
+			isa = PBXGroup;
+			name = AIHTML;
+			refType = 4;
+		};
 //430
 //431
 //432
@@ -569,6 +719,7 @@
 				C21B4672046D847B00A87B78,
 				908DBC380507C65100000098,
 				92EDF0BA055F01E80089A136,
+				43E6D275058A4806000A479B,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -1059,6 +1210,7 @@
 				C21B4673046D847B00A87B78,
 				908DBC360507C63D00000098,
 				92EDF0B8055F01D50089A136,
+				43E6D274058A47D4000A479B,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -1519,6 +1671,29 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>htm</string>
+				<string>html</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>html.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/html</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>SC Help (HTML)</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>HTML</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>rtfd</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
@@ -1726,6 +1901,11 @@
 				6AB6FF77053898BC0000009F,
 				6AB6FF78053898BC0000009F,
 				92EDF0BB055F01E80089A136,
+				43E6D261058A31C2000A479B,
+				43E6D270058A34D6000A479B,
+				43E6D271058A34D6000A479B,
+				43E6D272058A34D6000A479B,
+				43E6D273058A34D6000A479B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1924,6 +2104,11 @@
 				6AB6FF75053898BC0000009F,
 				6AB6FF84053898F00000009F,
 				92EDF0B9055F01D50089A136,
+				43E6D263058A31E1000A479B,
+				43E6D268058A34BD000A479B,
+				43E6D269058A34BD000A479B,
+				43E6D26A058A34BD000A479B,
+				43E6D26B058A34BD000A479B,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

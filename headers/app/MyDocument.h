@@ -33,7 +33,7 @@ extern PyrSymbol *s_closed;
     IBOutlet NSTextView* initTextView;
     IBOutlet NSTextView* textView;
     IBOutlet NSScrollView* scrollView;
-	Boolean isRichText;
+    Boolean isRichText;
     struct PyrObject *mWindowObj;
 }
 
@@ -67,6 +67,8 @@ extern PyrSymbol *s_closed;
 - (BOOL) textView: (NSTextView *) textView
     clickedOnLink: (id) link
     atIndex: (unsigned) charIndex;
+- (IBAction) createLink: (id) sender;
+
 - (void)sendSelection: (char*) methodName;
 
 - (NSString *)windowNibName;

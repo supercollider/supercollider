@@ -23,6 +23,8 @@
 #import "SCTextView.h"
 #import "SCVirtualMachine.h"
 #import "GoToPanel.h"
+#import "AIHTMLDecoder.h"
+#import "GetStringFromUser.h"
 #include "SCBase.h"
 
 #include <unistd.h>
@@ -63,7 +65,7 @@ bool docCreatedFromLang = false; //if this is true addDocument is not called
     [aTextView setSmartInsertDeleteEnabled: NO];
     [aTextView setImportsGraphics: YES];
     [aTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
-	isRichText = YES;
+    isRichText = YES;   
     return aTextView;
 }
 
@@ -576,6 +578,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 #endif
 
+// LINK SUPPORT
 //	Handle a click in a link.
 - (BOOL) textView: (NSTextView *) textView
     clickedOnLink: (id) link
@@ -594,6 +597,48 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     
     return NO;
 }
+
+// Create a link
+
+- (IBAction) createLink: (id) sender
+{
+    NSRange			selection;
+    NSString			*link;
+    NSMutableDictionary		*linkAttributes;
+
+    selection = [textView selectedRange];
+    if (selection.length == 0)
+    {
+        NSRunAlertPanel (@"Create Link", @"Please select some text before creating a link.", nil, nil, nil);
+        return;
+    }
+
+    //	Get the text which will go into the link. 
+    // 	Currently this looks for a helpfile with the name of the selection and any of the standard extensions 
+
+    link = [pathOfHelpFileFor([self currentlySelectedTextOrLine: NULL]) lastPathComponent];
+    if ([link length] ==0)
+    {
+        return;
+    }
+    
+    //	Start to build attributes
+    linkAttributes = [NSMutableDictionary dictionaryWithObject: link
+        forKey: NSLinkAttributeName];
+
+    // Currently always blue and underlined
+    [linkAttributes setObject: [NSColor blueColor]  forKey: NSForegroundColorAttributeName];
+    [linkAttributes setObject: [NSNumber numberWithBool: YES]  forKey: NSUnderlineStyleAttributeName];
+    
+
+    //	Add the attributes. This adds the link attributes to the selected range.
+    [[textView textStorage] addAttributes: linkAttributes  range: selection];
+    
+    // Make sure it saves as HTML as default
+    [self setFileType: @"SC Help (HTML)"];
+    [self updateChangeCount: NSChangeDone];
+}
+
 
 - (void)sendSelection: (char*) methodName
 {        
@@ -635,7 +680,13 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	{
 		NSString *text = [textView string];
 		success = [text writeToFile: path atomically: YES];
-	} else {
+	} else if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"])
+        {
+                NSTextStorage *textStorage = [textView textStorage];
+		NSString *html = [AIHTMLDecoder encodeHTML: textStorage encodeFullString: YES];
+                success = html ? [html writeToFile: path atomically: YES] : NO;
+        
+        } else {
 		NSTextStorage *textStorage = [textView textStorage];
 	
 		NSRange range = NSMakeRange(0, [textStorage length]);
@@ -929,6 +980,13 @@ NSString* pathOfHelpFileFor(NSString* selection)
 	if (helpFilePath) return helpFilePath;
 	
 	helpFilePath = helpFileWithName(fileManager, selection, @".sc");
+	if (helpFilePath) return helpFilePath;
+        
+        // support for html help files
+        helpFilePath = helpFileWithName(fileManager, selection, @".htm");
+	if (helpFilePath) return helpFilePath;
+        
+        helpFilePath = helpFileWithName(fileManager, selection, @".html");
 	if (helpFilePath) return helpFilePath;
                                 // special case for html files where link contains file suffix
 	helpFilePath = helpFileWithName(fileManager, selection, @"");
