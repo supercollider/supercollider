@@ -804,30 +804,16 @@ void Integrator_next(Integrator* unit, int inNumSamples)
 		} else {
 			LOOP(inNumSamples, 
 				float y0 = ZXP(in); 
-				ZXP(out) = y1 = y0 + b1 * (y1 - y0);
+				ZXP(out) = y1 = y0 + b1 * y1;
 			);
 		}
 	} else {
 		float b1_slope = CALCSLOPE(unit->m_b1, b1);
-		if (b1 >= 0.f && unit->m_b1 >= 0.f) {
-			LOOP(inNumSamples, 
-				float y0 = ZXP(in); 
-				ZXP(out) = y1 = y0 + b1 * (y1 - y0);
-				b1 += b1_slope;
-			);
-		} else if (b1 <= 0.f && unit->m_b1 <= 0.f) {
-			LOOP(inNumSamples, 
-				float y0 = ZXP(in); 
-				ZXP(out) = y1 = y0 + b1 * (y1 + y0);
-				b1 += b1_slope;
-			);
-		} else {
-			LOOP(inNumSamples, 
-				float y0 = ZXP(in); 
-				ZXP(out) = y1 = (1.f - fabs(b1)) * y0 + b1 * y1;
-				b1 += b1_slope;
-			);
-		}
+		LOOP(inNumSamples, 
+			float y0 = ZXP(in); 
+			ZXP(out) = y1 = y0 + b1 * y1;
+			b1 += b1_slope;
+		);
 	}
 	unit->m_y1 = zapgremlins(y1);
 	
