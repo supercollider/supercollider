@@ -513,7 +513,7 @@ extern bool compiledOK;
 
     {
     NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
-    NSNumber* creator2 = [attr2 objectForKey: NSFileHFSCreatorCode];
+    NSNumber* creator2 = [attr2 fileHFSCreatorCode];
     int creatorval = [creator2 intValue];
     printf("creator was %d   SCjm %d\n", creatorval, 'SCjm');
     }
@@ -525,7 +525,7 @@ extern bool compiledOK;
     printf("write success %d\n", success);
 
     NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
-    NSNumber* creator2 = [attr2 objectForKey: NSFileHFSCreatorCode];
+    NSNumber* creator2 = [attr2 fileHFSCreatorCode];
     int creatorval = [creator2 intValue];
     printf("creator is %d   SCjm %d\n", creatorval, 'SCjm');
 	
@@ -537,7 +537,8 @@ extern bool compiledOK;
 
     NSFileManager *fmgr = [NSFileManager defaultManager];
     NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
-    NSNumber* creator2 = [attr2 objectForKey: NSFileHFSCreatorCode];
+    NSNumber* creator2 = [attr2 fileHFSCreatorCode];
+	
     int creatorval = [creator2 intValue];
     printf("r creator is %d   SCjm %d\n", creatorval, 'SCjm');
 

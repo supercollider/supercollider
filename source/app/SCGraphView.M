@@ -111,7 +111,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
                         keepOn = NO;
                         break;
                 default:
-                    post("evtype %d %c%c%c%c\n", evtype, (evtype>>24)&255, (evtype>>16)&255, (evtype>>8)&255, (evtype)&255);
+                    post("evtype %d %4.4s\n", evtype, (char*)&evtype);
                         /* Ignore any other kind of event. */
                         break;
             }
