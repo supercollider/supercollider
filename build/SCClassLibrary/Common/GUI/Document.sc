@@ -6,7 +6,7 @@ Document {
 	var <dataptr, path, title, visible, <background, <stringColor;
 	var <>keyDownAction, <>onClose;
 	var <isListener, <>toFrontAction, <>endFrontAction, <>mouseDownAction;
-	var < editable;
+	var <editable;
 	
 	*initClass {
 		var num, listenernum, doc;
@@ -435,7 +435,6 @@ EnvirDocument : Document {
 						if(num == 49, { (envir.server ? Server.default).boot }); //ctl-1
 						if(num == 50, { envir.at(\out).toggle }); //ctl-2
 						if(num == 51, { envir.at(\out).releaseAndStop }); //ctl-3
-						if(num == 35, { PrePro.interpret(this.selectedString) }); //ctl-#
 					});
 				})
 		});
