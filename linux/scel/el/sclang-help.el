@@ -91,6 +91,12 @@
   ;; character quote
   (modify-syntax-entry ?\\ "/" table)
   (modify-syntax-entry ?\" "." table)
+  (modify-syntax-entry ?\{ "(" table)
+  (modify-syntax-entry ?\} ")" table)
+  (modify-syntax-entry ?\( "." table)
+  (modify-syntax-entry ?\) "." table)
+  (modify-syntax-entry ?\[ "." table)
+  (modify-syntax-entry ?\] "." table)
   table)
 
 (defvar sclang-rtf-syntax-table (sclang-fill-rtf-syntax-table (make-syntax-table))
