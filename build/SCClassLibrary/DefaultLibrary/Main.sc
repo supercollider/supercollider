@@ -3,7 +3,7 @@ Main : Process {
 	startup {
 		super.startup;
 		// set the 's' interpreter variable to the default server.
-		interpreter.s = Server.local;
+		interpreter.s = Server.default;
 		// make server window
 		Server.internal.makeWindow;
 		Server.local.makeWindow;
