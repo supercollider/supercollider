@@ -80,14 +80,8 @@ OSCresponderNode {
 		^super.newCopyArgs(addr, cmdName.asSymbol, action);
 		
 	}
-	
-	add {
-		var resp, alreadyThere;
-		resp = OSCMultiResponder(addr, cmdName);
-		alreadyThere = OSCresponder.all.findMatch(resp);
-		if(alreadyThere.isNil, { alreadyThere = resp; alreadyThere.add });
-		alreadyThere.nodes = alreadyThere.nodes.add(this);
-	}
+	//i.zannos fix
+	add {		var made, found;		made = OSCMultiResponder(addr, cmdName);		found = OSCresponder.all.findMatch(made);		if(found.isNil, { made.nodes = [this]; made.add; ^this });		if (found.class === OSCresponder, {			found.remove;			made.nodes = [found, this];			made.add;		},{			found.nodes = found.nodes.add(this)		});	}
 	
 	removeWhenDone {
 		var func;
