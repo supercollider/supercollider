@@ -871,46 +871,45 @@ void SCHLayoutView::setBounds(SCRect inBounds)
     child = mChildren;
     float widths[mNumChildren];
     SCView *children[mNumChildren];
-    int i=0;
+    int ri = mNumChildren;
     while(child) {
         float width;
         //reverse the array
-        children[mNumChildren - i - 1] = child;
+        children[--ri] = child;
         Layout layout = child->getLayout();
         float weightedWidth = scaleWeight * layout.mWeight;
         if(layout.mHResize == 0) {// okay to resize
             if (weightedWidth < layout.mMinWidth) {
                 width = layout.mMinWidth;
-                widths[i]  = width;
+                widths[ri]  = width;
                 totalWidth -= width;
                 totalWeight -= layout.mWeight;
             } else {
                 if (weightedWidth > layout.mMaxWidth) {
                     width = layout.mMaxWidth;
-                    widths[i]  = width;
+                    widths[ri]  = width;
                     totalWidth -= width;
                     totalWeight -= layout.mWeight;
                 } else {
-                    widths[i] = -1.0;
+                    widths[ri] = -1.0;
                 }
             }
         }  else {
             SCRect rect = child->getBounds();
-            widths[i] = rect.width;
+            widths[ri] = rect.width;
         }
-        i++;
         child = child->next();
     }
     //totalWidth is now the remaining flexible width
     
     // now layout the views
-    float left = inBounds.x;//right edge
+    float left = inBounds.x;
     float top = inBounds.y;
     float height = inBounds.height;
     scaleWeight = totalWidth * (1.0/totalWeight);
     child = mChildren;
-    for(i = 0; i < mNumChildren; i++ ) {
-//    while(child) {  // goes backwards
+    int i=0;
+    for(; i < mNumChildren; i++ ) {
         child = children[i];
         Layout layout = child->getLayout();
         float width;
