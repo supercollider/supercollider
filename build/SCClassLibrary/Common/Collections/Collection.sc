@@ -361,4 +361,16 @@ Collection {
 	layout { arg bounds;
 		this.do({ arg item; item.layout(bounds); });
 	}
+
+	// Flow control
+	case {
+                arg default;
+                var out;
+                out = this.detect({arg it; it.key.value;});
+                if (out.notNil, {
+                        ^out.value.value
+                }, {
+                        ^default.value;
+                });
+        }
 }
