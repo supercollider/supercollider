@@ -727,12 +727,14 @@ public:
 	void SetAll(double inTempo, double inBeats, double inSeconds);
 	double ElapsedBeats();
 	void Clear();
+	//void Flush();
 	double GetTempo() const { return mTempo; }
 	double GetBeatDur() const { return mBeatDur; }
 	double BeatsToSecs(double beats) const 
 		{ return (beats - mBaseBeats) * mBeatDur + mBaseSeconds; }
 	double SecsToBeats(double secs) const 
 		{ return (secs - mBaseSeconds) * mTempo + mBaseBeats; }
+	void Dump();
 	
 //protected:
 	VMGlobals* g;
@@ -933,6 +935,33 @@ leave:
 	return 0;
 }
 
+/*
+void TempoClock::Flush()
+{
+	while (mQueue->size && elapsedBeats >= mQueue->slots->uf) {
+		double delta;
+		PyrSlot task;
+		
+		//printf("while %.6f >= %.6f\n", elapsedBeats, mQueue->slots->uf);
+					
+		getheap(mQueue, &mBeats, &task);
+
+		(++g->sp)->ucopy = task.ucopy;
+		(++g->sp)->uf = mBeats;
+		(++g->sp)->uf = BeatsToSecs(mBeats);
+		++g->sp;	SetObject(g->sp, mTempoClockObj);
+		
+		runAwakeMessage(g);
+		long err = slotDoubleVal(&g->result, &delta);
+		if (!err) {
+			// add delta time and reschedule
+			double beats = mBeats + delta;
+			Add(beats, &task);
+		}
+	}
+}
+*/
+
 
 void TempoClock::Add(double inBeats, PyrSlot* inTask)
 {
@@ -949,6 +978,16 @@ void TempoClock::Clear()
 		mQueue->size = 0;
 		pthread_cond_signal (&mCondition);
 	}
+}
+
+void TempoClock::Dump()
+{
+	post("mTempo %g\n", mTempo);
+	post("mBeatDur %g\n", mBeatDur);
+	post("mBeats %g\n", mBeats);
+	post("seconds %g\n", BeatsToSecs(mBeats));
+	post("mBaseSeconds %g\n", mBaseSeconds);
+	post("mBaseBeats %g\n", mBaseBeats);
 }
 
 int prTempoClock_New(struct VMGlobals *g, int numArgsPushed);
@@ -998,6 +1037,17 @@ int prTempoClock_Clear(struct VMGlobals *g, int numArgsPushed)
 
 	return errNone;
 }
+
+int prTempoClock_Dump(struct VMGlobals *g, int numArgsPushed);
+int prTempoClock_Dump(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	if (clock) clock->Dump();
+
+	return errNone;
+}
+
 
 int prTempoClock_Tempo(struct VMGlobals *g, int numArgsPushed);
 int prTempoClock_Tempo(struct VMGlobals *g, int numArgsPushed)
@@ -1252,6 +1302,7 @@ void initSchedPrimitives()
 	definePrimitive(base, index++, "_TempoClock_New", prTempoClock_New, 4, 0);	
 	definePrimitive(base, index++, "_TempoClock_Free", prTempoClock_Free, 1, 0);	
 	definePrimitive(base, index++, "_TempoClock_Clear", prTempoClock_Clear, 1, 0);	
+	definePrimitive(base, index++, "_TempoClock_Dump", prTempoClock_Dump, 1, 0);	
 	definePrimitive(base, index++, "_TempoClock_Sched", prTempoClock_Sched, 3, 0);	
 	definePrimitive(base, index++, "_TempoClock_SchedAbs", prTempoClock_SchedAbs, 3, 0);	
 	definePrimitive(base, index++, "_TempoClock_Tempo", prTempoClock_Tempo, 1, 0);	

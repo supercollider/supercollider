@@ -123,6 +123,11 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.primitiveFailed
 	}
 	
+	prDump { 
+		_TempoClock_Dump
+		^this.primitiveFailed
+	}
+	
 	
 	beats2bars { arg beats;
 		^(beats - baseBarBeat) * barsPerBeat + baseBar;
