@@ -63,7 +63,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	
 	*cmdPeriod {
 		all.do({ arg item; item.clear });
-		all.do({ arg item; item.stop  })
+		all.do({ arg item; if(item !== default, { item.stop })  })
 	}	
 
 	init { arg tempo, beats, seconds;
