@@ -8,14 +8,25 @@
 \f0\b\fs36 \cf0 Buffer
 \f1\b0\fs24 \
 \
-Represents and encapsulates all the common tasks, OSC messages and  capabilities of a buffer on a server.\
+Represents and encapsulates all the common tasks, OSC messages and capabilities of a buffer on a server.\
 \
 BufferIDs are automatically allocated from the Server's bufferID allocator.  The Buffer object you create can be sent the message 
 \f0\b .free
 \f1\b0  and it will release the buffer on the server, and return the bufferID for future reallocation.\
 \
-Buffers are used with [PlayBuf], [RecordBuf], [DiskIn], [DiskOut] and other UGens.\
-See individual help files for more examples.\
+Buffers are used with 
+\f0\b PlayBuf
+\f1\b0 , 
+\f0\b RecordBuf
+\f1\b0 , 
+\f0\b DiskIn
+\f1\b0 , 
+\f0\b DiskOut
+\f1\b0 , 
+\f0\b BufWr
+\f1\b0 , 
+\f0\b BufRd
+\f1\b0 , and other UGens. See their individual help files for more examples.\
 \
 notes:\
 	Internal server will not post file not found notifications.\
@@ -28,15 +39,16 @@ notes:\
 \f0\b\fs24 \cf0 \
 completionMessage
 \f1\b0  \
-Many buffer operations are asynchronous.  They are passed to the background thread on the server so as not to steal CPU time from the audio synthesis thread.    At the end of these messages, another OSC message may be included that will be executed as soon as the first operation is done.  For example, load a sound into the buffer, and when done start a synth to play that sound.\
-With Buffer methods that take a completionsMessage, it is also possible to pass in a function that creates the OSC message.  It will be passed the Buffer as an argument.\
+Many buffer operations are asynchronous. They are passed to the background thread on the server so as not to steal CPU time from the audio synthesis thread. At the end of these messages, another OSC message may be included so that the server will execute it as soon as the first operation is done. For example, load a sound into the buffer, and when done start a synth to play that sound.\
+\
+With Buffer methods that take a completionMessage, it is also possible to pass in a function that returns an OSC message. It will be passed the Buffer as an argument. It is important to understand that this function will be evaluated after the Buffer object has been created (so that it's bufnum and other details are accessible), but before the corresponding message is sent to the server.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Creating
+\f0\b\fs28 \cf0 \ul Creation
 \f2\b0\fs18 \ulnone \
 	\
 \
@@ -57,7 +69,7 @@ With Buffer methods that take a completionsMessage, it is also possible to pass 
 		b = \cf2 Buffer\cf0 .alloc(s,44100 * 8.0,2);\
 	\
 	
-\f0\b\fs24 Buffer.read(server, path, startFrame = 0, numFrames = -1,completionMessage);\
+\f0\b\fs24 Buffer.read(server, path, startFrame = 0, numFrames = -1, completionMessage);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
@@ -104,8 +116,7 @@ With Buffer methods that take a completionsMessage, it is also possible to pass 
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 	Buffer.cueSoundFile(server, path, startFrame, numChannels, \
-							bufferSize,completionMessage);\
+\f0\b\fs24 \cf0 	Buffer.cueSoundFile(server, path, startFrame, numChannels, bufferSize,completionMessage);\
 
 \f1\b0 	\
 		Allocate a buffer and preload a soundfile for use with DiskIn.\
@@ -147,7 +158,7 @@ With Buffer methods that take a completionsMessage, it is also possible to pass 
 \f0\b\fs28 \cf0 \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 \ulnone 	Buffer.new(server, numFrames, numChannels,);\
+\fs24 \cf0 \ulnone 	Buffer.new(server, numFrames, numChannels);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 	\
@@ -161,25 +172,47 @@ With Buffer methods that take a completionsMessage, it is also possible to pass 
 \f2\fs18 \cf0 	\
 	s = \cf2 Server\cf0 .local;\
 	b = \cf2 Buffer\cf0 .new(s,44100 * 8.0,2);\
-	b = \cf2 Buffer\cf0 .new(s,44100 * 8.0,2);\
+	c = \cf2 Buffer\cf0 .new(s,44100 * 8.0,2);\
 	s.sendBundle(0,b.allocMsg,c.allocMsg); // sent both at the same time\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 \ul \
-instance methods:
-\f1\b0\fs24 \ulnone \
-	\
-	Each method has a version that sends immeditely, and one that just\
-	returns the message to you, but does not send it to the server.\
-		\
+Accessing Instance Variables\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	read(path,fileStartFrame, numFrames, bufStartFrame, leaveOpen, \
-										completionMessage);\
+\f1\b0\fs24 \cf0 \ulnone 	
+\f0\b server
+\f1\b0  - this returns the corresponding Server object.\
+	
+\f0\b bufnum 
+\f1\b0 - this returns the Buffer's buffer number.\
+	
+\f0\b numFrames
+\f1\b0  - this returns the number of frames.\
+	
+\f0\b numChannels 
+\f1\b0 - this returns the number of channels.\
+	
+\f0\b path
+\f1\b0  - if the Buffer has read or written to a soundfile, this returns it's path. Otherwise nil.\
+	\
+	
+\f2\fs18 b = \cf2 Buffer\cf0 .new(s,44100 * 8.0,2);\
+	b.bufnum.postln;
+\f1\fs24 \
+	
+\f0\b\fs28 \ul \
+Instance Methods
+\f1\b0\fs24 \ulnone \
+	\
+	Each method has a version that sends immediately, and one that just returns the message to you, but does not send it to the server.\
+		\
+
+\f0\b 	read(path,fileStartFrame, numFrames, bufStartFrame, leaveOpen, completionMessage);\
 
 \f1\b0 	
-\f0\b readMsg(path,fileStartFrame, numFrames, bufStartFrame, leaveOpen, \
-										completionMessage);\
+\f0\b readMsg(path,fileStartFrame, numFrames, bufStartFrame, leaveOpen, completionMessage);\
 
 \f1\b0 \
 		Read a soundfile into the buffer.\
@@ -201,7 +234,7 @@ instance methods:
 \f0\b leaveOpen
 \f1\b0  -\
 			for DiskIn you will want this to be\cf2  
-\f2\fs18 true
+\f2\fs18 \cf2 true
 \f1\fs24 \cf0 , the buffer will be\
 			used for streaming the soundfile from disk.\
 			the buffer must have been allocated with a multiple of\
@@ -216,10 +249,10 @@ instance methods:
 
 \f1\b0 \
 
-\f0\b 	cueSoundFile(path,fileStartFrame, bufferSize,completionMessage);\
+\f0\b 	cueSoundFile(path,fileStartFrame, bufferSize, completionMessage);\
 
 \f1\b0 	
-\f0\b cueSoundFileMsg(path,fileStartFrame, bufferSize,completionMessage);\
+\f0\b cueSoundFileMsg(path,fileStartFrame, bufferSize, completionMessage);\
 
 \f1\b0 \
 		Cue a soundfile into the buffer for use with DiskIn\
@@ -380,11 +413,15 @@ instance methods:
 		\cf2 Synth\cf0 (\cf3 "help-Buffer"\cf0 , [\cf4 \\buf\cf0 , c.bufnum]);\
 
 \f1\fs24 \
-		b.free;\
-		c.free;\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b 	close(completionMessage)\
+\f2\fs18 \cf0 		b.free;\
+		c.free;
+\f1\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 	close(completionMessage)\
 	closeMsg(completionMessage)\
 	\
 
