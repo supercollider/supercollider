@@ -3,36 +3,42 @@
 }
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
 \red0\green115\blue0;}
-\vieww12560\viewh11840\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 SuperCollider 3 Server Tutorial\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \
-To follow this tutorial you should read the first two sections of the 
-\f0\b SuperCollider 3 Synth Server Architecture
-\f1\b0  document, which are the 
-\f0\b Introduction
-\f1\b0  and 
-\f0\b Main Design Concepts
-\f1\b0 . Reading the 
-\f0\b Glossary
-\f1\b0  would also be helpful. This tutorial also assumes that you are familiar with SuperCollider version 2 since the creating a SynthDef in SC3 is very similar to creating a Synth in SC2.\
+\f1\b0\fs24 \cf0 \
+To follow this tutorial you should read \
+	
+\f0\b Server-Architecture\
+
+\f1\b0 and\
+	
+\f0\b Server-Command-Reference\
+	
+\f1\b0 \
+This tutorial also assumes that you are familiar with SuperCollider version 2 since the creating a SynthDef in SC3 is very similar to creating a Synth in SC2.\
 \
 There are two parts to SuperCollider. One part is the language application and another is  a synthesis server that can run either inside the language application, or as a separate program on the same machine, or run on a different computer across a network connection. The language application sends command messages to the server using a subset of the Open Sound Control protocol.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 Booting a Server\
+\f0\b\fs28 \cf0 Booting a Server\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \
+\f1\b0\fs24 \cf0 \
 In order to run sound we need to start a server running. The easiest way to start a server is to click on one of the "Start Server" buttons in the server windows. Sometimes though it is useful to start a server under program control. To do this we need to get or create a server object and tell it to "boot". Two servers, internal and local, are predefined.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 // this expression will get the internal server object.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s = \cf3 Server\cf0 .internal;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // this expression will get a server object for running on the local host machine.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s = \cf3 Server\cf0 .local;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -58,6 +64,7 @@ We can also create a server to run. To create a server object we need to provide
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 // create a server object that will run on the local host using port #58009\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s = \cf3 Server\cf0 (\cf4 "127.0.0.1"\cf0 , 58009); \
 \
 s.boot; \cf2 //start the server\
@@ -72,14 +79,21 @@ It is not possible to boot a server on a remote machine, but if you have one run
 
 \f2\fs18 \cf2 // create a server object for talking to the server running on a machine having \
 // IP address 192.168.0.47 using port #57110\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s = \cf3 Server\cf0 (\cf4 "192.168.0.47"\cf0 , 57110); \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 Making Sound\
+\f0\b\fs28 \cf0 Making Sound\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \
+\f1\b0\fs24 \cf0 \
+(note: This tutorial uses raw OSC commands as described in 
+\f0\b Server-Command-Reference, 
+\f1\b0 rather than the classes Synth and Group.  See those helpfiles also for some simpler ways of working with Synths.  This tutorial explains the basic underlying design of Synths and SynthDefs).\
+\
 Now lets make some audio. \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -101,9 +115,11 @@ Create a SynthDef. A SynthDef is a description of a processing module that you w
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 "sine"\cf0 , \{\
 	\cf3 var\cf0  osc;\
 	osc = \cf3 SinOsc\cf0 .ar(800, 0, 0.1); \cf2 // 800 Hz sine oscillator\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 Out\cf0 .ar(0, osc); \cf2 // send output to audio bus zero.\
 \cf0 \}).writeDefFile;\
 )\
@@ -143,8 +159,9 @@ s.quit;\
 \f0\b\fs28 \cf0 \
 Using Arguments\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 It is useful to be able to specify parameters of a synth when it is created. Here a frequency argument is added to the sine SynthDef so that we can create it 
+\f1\b0\fs24 \cf0 It is useful to be able to specify parameters of a synth when it is created. Here a frequency argument is added to the sine SynthDef so that we can create it 
 \f0\b\fs28 \
 
 \f1\b0\fs24 \
@@ -159,9 +176,11 @@ Using Arguments\
 \f2\fs18 \cf0 s.boot;\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 "sine"\cf0 , \{ arg freq;\
 	\cf3 var\cf0  osc;\
 	osc = \cf3 SinOsc\cf0 .ar(freq, 0, 0.1); \cf2 // 800 Hz sine oscillator\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 Out\cf0 .ar(0, osc); \cf2 // send output to audio bus zero.\
 \cf0 \}).writeDefFile;\
 )\
@@ -219,8 +238,9 @@ s.sendMsg(\cf4 "/n_free"\cf0 , 1002);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 Playing three voices at once using bundles. Bundles allow you to send multiple messages with a time stamp. The messages in the bundle will be scheduled to be performed together. The time argument to sendBundle is an offset into the future from the current thread's logical time.\
+\f1\b0\fs24 \cf0 Playing three voices at once using bundles. Bundles allow you to send multiple messages with a time stamp. The messages in the bundle will be scheduled to be performed together. The time argument to sendBundle is an offset into the future from the current thread's logical time.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
@@ -238,17 +258,20 @@ Adding an Effect Dynamically\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 You can dynamically add and remove an effect to process another synth. In order to do this, the effect has to be added after the node to be processed.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \
+\f0\b\fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // define a noise pulse\
 \cf3 SynthDef\cf0 (\cf4 "tish"\cf0 , \{ \cf3 arg\cf0  freq = 1200, rate = 2;\
 	\cf3 var\cf0  osc, trg;\
 	trg = \cf3 Decay2\cf0 .ar(\cf3 Impulse\cf0 .ar(rate,0,0.3), 0.01, 0.3);\
 	osc = \{\cf3 WhiteNoise\cf0 .ar(trg)\}.dup;\
 	\cf3 Out\cf0 .ar(0, osc); \cf2 // send output to audio bus zero.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \}).writeDefFile;\
 s.sendSynthDef(\cf4 "tish"\cf0 );\
 )\
@@ -258,40 +281,56 @@ s.sendSynthDef(\cf4 "tish"\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // define an echo effect\
 \cf3 SynthDef\cf0 (\cf4 "echo"\cf0 , \{ \cf3 arg\cf0  delay = 0.2, decay = 4;\
 	\cf3 var\cf0  in;\
 	in = \cf3 In\cf0 .ar(0,2);\
 	\cf2 // use ReplaceOut to overwrite the previous contents of the bus.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 ReplaceOut\cf0 .ar(0, \cf3 CombN\cf0 .ar(in, 0.5, delay, decay, 1, in));\
 \}).writeDefFile;\
 s.sendSynthDef(\cf4 "echo"\cf0 );\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // start the pulse\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "tish"\cf0 , 1001, 1, 0, \cf5 \\freq\cf0 , 200, \cf5 \\rate\cf0 , 1.2);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // add an effect\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "echo"\cf0 , 1002, 1, 0);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // stop the effect\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf4 "/n_free"\cf0 , 1002);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // add an effect (time has come today.. hey!)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "echo"\cf0 , 1002, 1, 0, \cf5 \\delay\cf0 , 0.1, \cf5 \\decay\cf0 , 2);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // stop the effect\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf4 "/n_free"\cf0 , 1002);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // stop the pulse\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf4 "/n_free"\cf0 , 1001);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 This works because we added the effect after the other node. Sometimes you will need to use groups or /n_after to insure that an effect gets added after what it is supposed to process.\
+\f1\b0\fs24 \cf0 This works because we added the effect after the other node. Sometimes you will need to use groups or /n_after to insure that an effect gets added after what it is supposed to process.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \
+\f0\b\fs28 \cf0 \
 \
 Chaining Effects\
 \
@@ -302,6 +341,7 @@ Mapping an Argument to a Control Bus\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // define a control\
 \cf3 SynthDef\cf0 (\cf4 "line"\cf0 , \{ \cf3 arg\cf0  bus=10, start=1000, end=500, time=1;\
 	\cf3 ReplaceOut\cf0 .kr(bus, \cf3 Line.kr(start, end, time)\cf0 );\
@@ -311,8 +351,9 @@ s.sendSynthDef(\cf4 "line"\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 Play a 900 Hz sine wave.\
+\f1\b0\fs24 \cf0 Play a 900 Hz sine wave.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
