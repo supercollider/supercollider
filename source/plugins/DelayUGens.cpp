@@ -542,7 +542,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	if (in >= hi) {
 		if (!loop) {
 			unit->mDone = true;
-			return hi;
+			return hi - 1.;
 		}
 		in -= hi;
 		if (in < hi) return in;
