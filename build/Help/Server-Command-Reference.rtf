@@ -84,6 +84,11 @@ Commands are defined by plug-ins.\
 	bytes - buffer of data. \
 \
 Loads a file of synth definitions from a buffer in the message. Resident definitions with the same names are overwritten. \
+
+\f1\b Asynchronous
+\f0\b0 . Replies to sender with 
+\f1\b /done 
+\f0\b0 when complete.\
 \
 \
 
@@ -94,6 +99,11 @@ Loads a file of synth definitions from a buffer in the message. Resident definit
 	string - pathname of file. \
 \
 Loads a file of synth definitions. Resident definitions with the same names are overwritten. \
+
+\f1\b Asynchronous
+\f0\b0 . Replies to sender with 
+\f1\b /done 
+\f0\b0 when complete.\
 \
 \
 
@@ -102,6 +112,11 @@ Loads a file of synth definitions. Resident definitions with the same names are 
 	string - pathname of directory.\
 	\
 Loads a directory of synth definitions files. Resident definitions with the same names are overwritten. \
+
+\f1\b Asynchronous
+\f0\b0 . Replies to sender with 
+\f1\b /done 
+\f0\b0 when complete.\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
@@ -551,34 +566,10 @@ Get contiguous ranges of buses. Replies to sender with the corresponding
 
 \f1\b\fs28 \cf0 Non Real Time Mode Commands
 \f0\b0\fs24 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
-
-\f1\b \cf0 \
-/nrt_start						begin non real time mode, write a file header\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
-\cf2 not yet implemented\cf0  \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
-
-\f0\b0 \cf0 	string - path name of input sound file. If null string, then no input.\
-	string - path name of output sound file to create.\
-	string - header format.\
-	string - sample format.\
-	int - number of channels.\
 \
-Begin accepting messages in non real time mode. All time stamped messages sent will be stored in a queue until 
-\f1\b /nrt_end
-\f0\b0  or 
-\f1\b /nrt_advance
-\f0\b0  is received. \
-A sound file is created to store the calculated output.\
-Real time and non real time modes may not operate concurrently. \
-OSC time begins at zero for non real time mode.\
-Replies to sender with 
-\f1\b /done 
-\f0\b0 when complete.\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b /nrt_end						end real time mode, close file\
+\f1\b \cf0 /nrt_end						end real time mode, close file\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 \cf2 not yet implemented\cf0  \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
@@ -592,21 +583,10 @@ Replies to sender with
 \f1\b /done 
 \f0\b0 when complete.\
 \
-
-\f1\b /nrt_advance					calculate samples in non real time mode.
-\f0\b0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
-
-\f1\b \cf2 not yet implemented\cf0  \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
-
-\f0\b0 \cf0 	no arguments.\
 \
-This message should be sent in a bundle in non real time mode. The synthesizer will calculate samples up to the bundle's time stamp. No messages with earlier time stamps should be sent after this one. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f1\b\fs28 \cf0 \
-\
 Replies to Commands\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
@@ -846,8 +826,9 @@ These are the currently defined fill routines for use with the
 	\
 	NUMBER_OF_COMMANDS=\cf4 39\cf0 \
 \};\
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
 
-\f0 \CocoaLigature1 \
+\f0 \cf0 \CocoaLigature1 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 copyright \'a9 2002 James McCartney\
 }

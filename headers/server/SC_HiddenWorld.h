@@ -81,6 +81,10 @@ struct HiddenWorld
 	MsgFifoNoFree<DeleteGraphDefMsg, 512> mDeleteGraphDefs;
 	
 	SC_Semaphore* mQuitProgram;
+
+	void *mNRTInputFile; 
+	void *mNRTOutputFile; 
+	FILE *mNRTCmdFile;
 };
 
 typedef struct HiddenWorld HiddenWorld;

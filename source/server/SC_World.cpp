@@ -214,6 +214,35 @@ World* World_New(WorldOptions *inOptions)
 			GraphDef_Define(world, list);
 
 			// batch process non real time audio
+			if (!inOptions->mNonRealTimeCmdFilename)
+				throw std::runtime_error("Non real time command filename is NULL.\n");
+				
+			if (!inOptions->mNonRealTimeOutputFilename) 
+				throw std::runtime_error("Non real time output filename is NULL.\n");
+			
+			SF_INFO info;
+			info.samplerate = inOptions->mNonRealTimeSampleRate;
+			info.channels = world->mNumOutputs;
+			world->hw->mNRTOutputFile = sf_open(inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &info);
+			if (!world->hw->mNRTOutputFile) 
+				throw std::runtime_error("Couldn't open non real time output file.\n");
+			
+			if (inOptions->mNonRealTimeInputFilename) {
+				world->hw->mNRTInputFile = sf_open(inOptions->mNonRealTimeInputFilename, SFM_READ, &info);
+				if (!world->hw->mNRTInputFile) 
+					throw std::runtime_error("Couldn't open non real time input file.\n");
+				
+				if (info.samplerate != inOptions->mNonRealTimeSampleRate)
+					printf("WARNING: input file sample rate does not equal output sample rate.\n");
+					
+			} else {
+				world->hw->mNRTInputFile = 0;
+			}
+			
+			world->hw->mNRTCmdFile = fopen(inOptions->mNonRealTimeCmdFilename, "r");
+			if (!world->hw->mNRTCmdFile) 
+				throw std::runtime_error("Couldn't open non real time command file.\n");
+			
 		}
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_New: %s\n", exc.what());

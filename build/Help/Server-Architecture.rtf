@@ -1,7 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica-Oblique;
 }
-{\colortbl;\red255\green255\blue255;}
+{\colortbl;\red255\green255\blue255;\red255\green3\blue3;}
+\vieww11700\viewh12120\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f0\fs36 \cf0 \
@@ -33,12 +34,10 @@ Main Design Concepts
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f1\b \cf0 Node\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 A Node is an addressable node in a tree of nodes run by the synth engine. There are two types, Synths and Groups. The tree defines the order of execution of all Synths. All nodes have an integer ID.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f0\b0 A Node is an addressable node in a tree of nodes run by the synth engine. There are two types, Synths and Groups. The tree defines the order of execution of all Synths. All nodes have an integer ID.\
 
-\f1\b \cf0 \
+\f1\b \
 Group
 \f0\b0 \
 A Group is a collection of Nodes represented as a linked list. A new Node may be added to the head or tail of the group. The Nodes within a Group may be controlled together. The Nodes in a Group may be both Synths and other Groups. At startup there is a top level group with an ID of zero that defines the root of the tree.\
@@ -153,13 +152,58 @@ Command Line Arguments\
 	UDP ports never require passwords, so if password protection is desired, \
 	use TCP.\
 \
+-N 
+\f2\i cmd-filename input-filename output-filename sample-rate header-format sample-format\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+
+\f1\i0\b \cf2 not yet implemented\cf0  \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+
+\f0\b0 \cf0 \
+	Run in non-real-time mode. \
+	The 
+\f2\i cmd-filename
+\f0\i0  should be a file that contains OSC bundles sorted in \
+	ascending time order.\
+	The audio input will taken from 
+\f2\i input-filename
+\f0\i0 . \
+	If 
+\f2\i input-filename
+\f0\i0  is the underscore character _, then no input file will be read. \
+	Output will be written to 
+\f2\i output-filename
+\f0\i0 .\
+	The output file's sample rate is specified by 
+\f2\i sample-rate
+\f0\i0 . Default =44100\
+	The output file 
+\f2\i header-format
+\f0\i0  should be one of: AIFF, WAVE, NeXT. \
+		Default = AIFF\
+	The output file 
+\f2\i sample-format
+\f0\i0  should be one of: int16, int24, int32, float, double. \
+		Default =16\
+	The number of channels in the output file is specified with the -o argument.\
+\
+\
 example:\
 \
-supercollider_synth -u 57117 >synth_log &\
+scscynth -u 57117 >synth_log &\
 	\
 	Accept commands via UDP on port 57117. \
 	Send output to file "synth_log"\
 	Run asynchronously: &.\
+\
+scsynth -N score.osc _ out.aiff 48000 AIFF int24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+
+\f1\b \cf2 not yet implemented\cf0  \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+
+\f0\b0 \cf0 	\
+	Run in non real time mode with command file score.osc, no input file, and output file named out.aiff. Sample rate is 48000. Output file header format is aiff, sample format is 24 bit integer.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \fs36 \cf0 \
@@ -169,12 +213,10 @@ Binary Format of Messages\
 
 \fs24 \cf0 Messages are similar in format to Open Sound Control messages, except that OSC #bundles may not be nested, and pattern matching of the command name is not performed. When streamed via TCP, Messages are each preceeded by a 32 bit integer giving the length in bytes of the message. UDP datagrams contain this length information already.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 Types:\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b Types:\
 
-\f0\b0 \cf0 All values are in network byte order.\
+\f0\b0 All values are in network byte order.\
 	
 \f1\b long
 \f0\b0  - a 64 bit integer. Used for time stamps only.\
@@ -191,52 +233,42 @@ Binary Format of Messages\
 \f1\b bytes
 \f0\b0  - a buffer of data preceeded by a 32 bit length field and padded to a multiple of 4 bytes. \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 Tags:\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b Tags:\
 
-\f0\b0 \cf0 Command arguments have single character tags which occur in a tag string to identify their types.\
+\f0\b0 Command arguments have single character tags which occur in a tag string to identify their types.\
 	'i' - an int.\
 	'f' - a float\
 	's' - a string\
 	'b' - bytes\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 a Command consists of:\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b a Command consists of:\
 
-\f0\b0 \cf0 	string - the command name. See the Command Reference below.\
+\f0\b0 	string - the command name. See the Command Reference below.\
 	string - a string with tags defined by the types of the arguments to follow. \
 			The tag string begins with a comma ',' character.\
 	...any combination of arguments of types: int, float, or string.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 a Bundle consists of:\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b a Bundle consists of:\
 
-\f0\b0 \cf0 	time stamp - long. Time stamps are in the same format as defined by Open Sound Control :  The top 32 bits are seconds since 1970 and the lower 32 bits represent the 32 bit fraction of one second.\
+\f0\b0 	time stamp - long. Time stamps are in the same format as defined by Open Sound Control :  The top 32 bits are seconds since 1970 and the lower 32 bits represent the 32 bit fraction of one second.\
 	...a series of Commands each preceded by a 32-bit integer byte length.\
 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 a Message consists of:\
+\f1\b a Message consists of:\
 	using UDP : \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 		one Bundle or one Command.\
+\f0\b0 		one Bundle or one Command.\
 		\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 	using TCP : \
+\f1\b 	using TCP : \
 		
 \f0\b0 int - the length in bytes of the following message.
 \f1\b \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 		one Bundle or one Command.\
+\f0\b0 		one Bundle or one Command.\
 	\
 \
 \
@@ -247,9 +279,8 @@ Binary Format of Messages\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 buffer
+\f1\b buffer
 \f0\b0  - a header and array of floating point sample data. Buffers are used for sound files, delay lines, arrays of global controls, and arrays of inter-synth patch points.\
 \
 
@@ -292,7 +323,6 @@ Binary Format of Messages\
 
 \fs20 \cf0 copyright \'a9 2002 James McCartney\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 \
+\fs24 \
 }

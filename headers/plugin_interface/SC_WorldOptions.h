@@ -48,11 +48,19 @@ struct WorldOptions
 	float *mSharedControls;
 	
 	bool mRealTime;
+	
+	char *mNonRealTimeCmdFilename;
+	char *mNonRealTimeInputFilename;
+	char *mNonRealTimeOutputFilename;
+	char *mNonRealTimeOutputHeaderFormat;
+	char *mNonRealTimeOutputSampleFormat;
+	
+	int mNonRealTimeSampleRate;
 };
 
 const WorldOptions kDefaultWorldOptions = 
 {
-	0,1024,64,1024,1024,64,128,2,2,4096,64,2048, 0,0,0,0, 1
+	0,1024,64,1024,1024,64,128,2,2,4096,64,2048, 0,0,0,0, 1, 0,0,0,0,0, 0
 };
 
 #include "SC_Reply.h"
