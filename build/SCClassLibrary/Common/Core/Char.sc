@@ -63,6 +63,8 @@ Char : Magnitude {
 		^this.ascii < aChar.ascii
 	}
 	== { arg aChar;  ^this.ascii == aChar.ascii }
+	
+	++ { |that| ^this.asString ++ that }
 
 	*nl { ^$\n }
 	*ff { ^$\f }
