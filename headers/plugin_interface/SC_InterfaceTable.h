@@ -140,5 +140,14 @@ typedef struct InterfaceTable InterfaceTable;
 	(*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, \
 	(UnitDtorFunc)&name##_Dtor, 0);
 
+#define DefineSimpleCantAliasUnit(name) \
+	(*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, 0, kUnitDef_CantAliasInputsToOutputs);
+
+#define DefineDtorCantAliasUnit(name) \
+	(*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, \
+	(UnitDtorFunc)&name##_Dtor, kUnitDef_CantAliasInputsToOutputs);
+
+
+
 
 #endif
