@@ -4,12 +4,19 @@ AutoCompMethodBrowser {
 	classvar	<methodExclusions, <classExclusions;
 
 	classvar	<w, textField, listView,		// gui objects
-		masterList,				// a list of all methods with that selector
-		reducedList,				// only the ones displayed
-		skipThis,					// flag: do (this, xxx) or (xxx) in argList
-		dropMeta,				// flag: display Meta_ for metaclasses?
-		doc,					// document from which this was created
-		start, size;	// start and length of identifier in document
+		selector,			// string typed by the user to match to classes or methods
+		masterList,		// a list of all methods with that selector
+		reducedList,		// only the ones displayed
+		skipThis,			// flag: do (this, xxx) or (xxx) in argList
+		dropMeta,			// flag: display Meta_ for metaclasses?
+		doc,				// document from which this was created
+		start, size;		// start and length of identifier in document
+
+	classvar	overwriteOnCancel = false;
+
+	*initClass {
+		methodExclusions = methodExclusions.asArray;
+	}
 
 		// prevent certain method selector strings from being gui'ed during typing
 		// assumes that selectors are spelled correctly!
@@ -35,7 +42,7 @@ AutoCompMethodBrowser {
 	}
 	
 	*init { arg argStart, argSize, argDoc;
-		var	selector, temp, initString;
+		var	displaySel, temp, initString;
 		skipThis = dropMeta = false;
 		selector = argDoc.string(argStart, argSize);
 		(selector.size == 0).if({
@@ -49,12 +56,13 @@ AutoCompMethodBrowser {
 					// identify classes containing that string
 				masterList = Class.allClasses.select({ |cl|
 					cl.isMetaClass and: { cl.name.asString.containsi(selector) }
-				}).collect({ |cl|	// then grab their *new method
+				}).collect({ |cl|	// then grab their *new methods
 					[cl, cl.findRespondingMethodFor(\new), cl.name]  // cl.name used for sorting
 				}).reject({ |item| item[1].isNil });
 				initString = selector;
-				selector = "new";
+				displaySel = "new";
 				skipThis = dropMeta = true;
+				overwriteOnCancel = true;
 			});
 		}, {
 			masterList = IdentitySet.new;
@@ -68,6 +76,8 @@ AutoCompMethodBrowser {
 				});
 			});
 			initString = "";
+			displaySel = selector;
+			overwriteOnCancel = false;
 		});
 		(masterList.size > 0).if({
 				// this sort will sort both of them (desired)
@@ -78,7 +88,7 @@ AutoCompMethodBrowser {
 			doc = argDoc;
 			start = argStart;
 			size = argSize;
-			this.prInit("." ++ selector);
+			this.prInit("." ++ displaySel);
 			textField.string_(initString);
 			this.restrictList;
 		}, {
@@ -86,14 +96,26 @@ AutoCompMethodBrowser {
 		});
 	}
 	
-	*free {
+	*free { |finished = false|
+		var	string;
 			// if window is nil, isclosed should be true
 			// close the window only if it isn't closed
 		(w.tryPerform(\isClosed) ? true).not.if({
 				// if there's typing in the text box and no possible autocomplete,
 				// add it into the document
-			(textField.string.size > 0 and: { reducedList.size == 0 }).if({
-				doc.selectedString_(textField.string);
+			((string = textField.string).size > 0 and: { finished.not }).if({
+					// does the string start with the selector?
+					// size var is size of selector
+				(string.left(size) == selector).if({
+						// if so, drop it so the rest can go in the document
+					string = string[size..];
+				}, {
+						// if not, and the selector is a class, we need to drop it from doc
+					overwriteOnCancel.if({
+						doc.selectRange(start, size+1)
+					});
+				});
+				doc.selectedString_(string);
 			});
 			w.close;
 		});
@@ -111,7 +133,7 @@ AutoCompMethodBrowser {
 			doc.selectRange(selectStart, selectSize);	// reposition cursor
 			textField.string_("");  // .free will do something bad if I don't clear this
 		});
-		this.free;
+		this.free(true);
 	}
 	
 	*finalSelection { |str|
@@ -234,6 +256,7 @@ AutoCompClassBrowser : AutoCompMethodBrowser {
 		size = argSize;
 		this.prInit(savedClass.name);
 		this.restrictList;
+		overwriteOnCancel = false;
 	}
 	
 	*getMethods { arg class;
@@ -270,13 +293,18 @@ AutoCompClassBrowser : AutoCompMethodBrowser {
 	
 }
 
+// need to think about this some more
+// what if user deletes chars but doesn't add?
+// maybe best solution is *free below -- never add chars
+// ok because user will not type ctrl-. in normal use
+
 AutoCompClassSearch : AutoCompClassBrowser {
 	classvar	classBrowser;	// reserve one class browser for autocomplete use
+//			userEditedString = false;
 
 	*newCondition { ^Document.allowAutoComp }	// no restrictions on when a window will be opened
 	
 	*init { arg argStart, argSize, argDoc;
-		var	selector;
 		selector = argDoc.string(argStart, argSize);
 		reducedList = masterList = Class.allClasses.reject({ |cl|
 				cl.isMetaClass or: { classExclusions.includes(cl) } })
@@ -287,8 +315,11 @@ AutoCompClassSearch : AutoCompClassBrowser {
 		size = argSize;
 		this.prInit("Open a class browser");
 		textField.string_(selector);
+//		userEditedString = false;
 		this.restrictList;
 	}
+	
+	*free { super.free(true) }
 	
 	*finish {
 			// I need to test whether the method chosen is in a superclass of the class
@@ -313,7 +344,7 @@ AutoCompClassSearch : AutoCompClassBrowser {
 					list.defaultKeyDownAction(char, modifiers, unicode)
 				});
 			});
-		this.free;
+		this.free(true);
 	}
 	
 	*finishString { 
