@@ -9,7 +9,11 @@
 \f1\b0\fs18 \
 \
 
-\f2\fs24 Represents an audio or control bus on a server.  Encapsulates all the OSC messages a Bus can receive.  Manages allocation and deallocation of bus indices.
+\f2\fs24 The clientside representation of an audio or control bus on a server.  Encapsulates all the OSC messages a Bus can receive.  Manages allocation and deallocation of bus indices so that you don't need to worry about conflicts. For more information see 
+\f0\b ClientVsServer
+\f2\b0  and 
+\f0\b Server-Architecture
+\f2\b0 .
 \f1\fs18 \
 
 \f2\fs24 \
@@ -61,13 +65,11 @@ value_(aFloat)\
 	so they can be reallocated to someone else.\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 s = \cf2 Server\cf0 .local;\
+\f1\fs18 s = \cf2 Server\cf0 .local;\
 s.boot;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 	
+\f2\fs24 	
 \f1\fs18 \
 (\cf3 \
 // something to play with\
