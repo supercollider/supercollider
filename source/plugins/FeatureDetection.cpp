@@ -291,7 +291,7 @@ void PV_HainsworthFoote_next(PV_HainsworthFoote *unit, int inNumSamples)
         //Foote measure- footediv will be zero initially
         float footediv= ((sqrt(norm))*(sqrt(unit->m_prevNorm)));
         if(footediv<0.0001) footediv=0.0001;
-        float foote= footesum/footediv;
+        float foote= 1.0- (footesum/footediv); //1.0 - similarity
         //printf("mkl %f foote %f \n",mkl, foote);
       
 		unit->m_prevNorm= norm;
