@@ -105,6 +105,12 @@ struct SinOsc : public TableLookup
 	float m_phasein;
 };
 
+struct SinOscFB : public TableLookup
+{
+	int32 m_phase;
+	float m_prevout;
+};
+
 struct OscN : public TableLookup
 {
 	int32 m_phase, m_phaseoffset;
@@ -1444,6 +1450,53 @@ void SinOsc_Ctor(SinOsc *unit)
 		unit->m_phase = unit->m_phaseoffset;
 	}
 	SinOsc_next_ikk(unit, 1);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////!!!
+
+void SinOscFB_next_ik(SinOscFB *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float freqin = ZIN0(0);
+	float feedback = ZIN0(1) * unit->m_radtoinc;
+	
+	float *table0 = ft->mSineWavetable;
+	float *table1 = table0 + 1;
+
+	int32 phase = unit->m_phase;
+	int32 lomask = unit->m_lomask;
+	float prevout = unit->m_prevout;
+	
+	int32 freq = (int32)(unit->m_cpstoinc * freqin);
+	
+	LooP(inNumSamples) {
+		prevout = lookupi1(table0, table1, phase + (int32)(feedback * prevout), lomask);
+		ZXP(out) = prevout;
+		phase += freq;
+	}
+	unit->m_phase = phase;
+	unit->m_prevout = prevout;
+}
+
+void SinOscFB_Ctor(SinOscFB *unit)
+{
+	//Print("next_ik\n");
+	SETCALC(SinOscFB_next_ik);
+
+	int tableSize2 = ft->mSineSize;
+	unit->m_lomask = (tableSize2 - 1) << 3; 
+	unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); 
+	unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.; 
+	unit->m_prevout = 0.;
+	
+	unit->m_phase = 0;
+
+	SinOscFB_next_ik(unit, 1);
 }
 
 
@@ -4089,6 +4142,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(SigOsc);
 	DefineSimpleUnit(FSinOsc);
 	DefineSimpleUnit(SinOsc);
+	DefineSimpleUnit(SinOscFB);
 	DefineSimpleUnit(VOsc);
 	DefineSimpleUnit(VOsc3);
 	DefineSimpleUnit(Osc);
