@@ -60,6 +60,7 @@ bool docCreatedFromLang = false; //if this is true addDocument is not called
     textView = nil;
     scrollView = nil;
     isRichText = YES;
+	promptToSave = YES;	
 	return [super init];
 }
 
@@ -906,7 +907,7 @@ extern PyrSymbol * s_didResignKey;
 
 - (BOOL) isDocumentEdited
 {
-	if ([self textView] == gPostView) return false;
+	if ([self textView] == gPostView || !promptToSave) return false;
 	return [super isDocumentEdited];
 }
 
@@ -1033,6 +1034,16 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 	[[self initTextView] setBackgroundColor: color];
 	[[self scrollView] setBackgroundColor: color];
 	[[[self textView] window] setAlphaValue: [color alphaComponent]];
+}
+
+- (BOOL)promptToSave
+{
+	return promptToSave;
+}
+
+-(void)setPromptToSave:(BOOL)flag
+{
+	promptToSave = flag;
 }
 
 @end
