@@ -216,6 +216,34 @@ int slotBackgroundVal(PyrSlot *slot, DrawBackground **ioPtr)
     return errNone;
 }
 
+// for any sc class that supports mouseDown and mouseUp methods
+#import "TabletEvents.h"
+
+#define TABLETTRACK(method) \
+    if (mObj) { \
+        pthread_mutex_lock (&gLangMutex); \
+        VMGlobals *g = gMainVMGlobals; \
+        g->canCallOS = true; \
+        ++g->sp;  SetObject(g->sp, mObj); \
+        SetFloat(++g->sp, where.x - mBounds.x); \
+        SetFloat(++g->sp, where.y - mBounds.y); \
+        SetFloat(++g->sp, (float)[theEvent pressure]); \
+        NSPoint tilt; \
+        tilt = (NSPoint)[theEvent tilt]; \
+        SetFloat(++g->sp, tilt.x); \
+        SetFloat(++g->sp, tilt.y); \
+        SetInt(++g->sp,[theEvent deviceID]); \
+        SetInt(++g->sp,[theEvent buttonNumber]); \
+        SetInt(++g->sp,[theEvent clickCount]); \
+        runInterpreter(g, method, 9); \
+        g->canCallOS = false; \
+        pthread_mutex_unlock (&gLangMutex); \
+    } \
+
+
+
+
+
 Layout::Layout()
     : mMinWidth(0.), mMaxWidth(10000.), mMinHeight(0.), mMaxHeight(10000.), mWeight(1.),
     mShouldResize(true), mHResize(layout_FixedLeft), mVResize(layout_FixedTop) {
@@ -477,7 +505,6 @@ void SCView::sendMessage(PyrSymbol *method, int numargs, PyrSlot *args, PyrSlot 
 {    
     //CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     //CGContextSaveGState(cgc);
-
     pthread_mutex_lock (&gLangMutex);
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
@@ -1661,6 +1688,49 @@ void SC2DSlider::receiveDrag()
 {
     sendMessage(s_receiveDrag, 0, 0, 0);
 }
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+SCView* NewSC2DTabletSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SC2DTabletSlider(inParent, inObj, inBounds);
+}
+
+SC2DTabletSlider::SC2DTabletSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+	: SC2DSlider(inParent, inObj, inBounds),mStepSize(0.), mStepScale(0.), mKnob(0)
+{
+        mX = -1.;
+        mY = -1.;
+	setValue(0.0, 0.0, false);
+}
+
+void SC2DTabletSlider::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+    if (modifiers & NSCommandKeyMask) {
+        beginDrag(where);
+    } else {
+        setValueFromPoint(where);
+        TABLETTRACK(getsym("mouseDown"))
+    }
+}
+
+void SC2DTabletSlider::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+    if (! (modifiers & NSCommandKeyMask)) {
+        setValueFromPoint(where);
+        TABLETTRACK(s_doaction)
+    }
+}
+
+void SC2DTabletSlider::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+    if (modifiers & NSCommandKeyMask) {
+        receiveDrag();
+    } else {
+        TABLETTRACK(getsym("mouseUp"))
+    }
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -3761,48 +3831,31 @@ SCTabletView::~SCTabletView()
 {
 }
 
-void SCTabletView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+void SCTabletView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-    // get  x, y, pressure, tiltx, tilty, deviceID, buttonNumber,clickCount
-    PyrSlot args[8];
-
-    // x y
-    NSPoint loc = [theEvent locationInWindow];
-    SetFloat(args+0, loc.x - mBounds.x);
-    SetFloat(args+1, loc.y - mBounds.y);
-
-    //pressure
-    SetFloat(args+2, (float)[theEvent pressure]);
-    
-    // tilt
-    NSPoint tilt;
-    tilt = (NSPoint)[theEvent tilt];
-    SetFloat(args+3, tilt.x); 
-    SetFloat(args+4, tilt.y); 
-    
-    SetInt(args+5,[theEvent deviceID]);
-    SetInt(args+6,[theEvent buttonNumber]);
-    SetInt(args+7,[theEvent clickCount]);
-    
-    switch( [theEvent type] )
-    {
-        case kEventMouseDown:
-            sendMessage(getsym("mouseDown"), 8, args, 0);
-            break;
-        case kEventMouseUp:
-            sendMessage(getsym("mouseUp"), 8, args, 0);
-            break;
-        case kEventMouseDragged:
-            sendMessage(getsym("mouseDragged"), 8, args, 0);
-            break;
-        default:
-            // won't happen
-            sendMessage(getsym("doAction"), 8, args, 0);
+    if (modifiers & NSCommandKeyMask) {
+        beginDrag(where);
+    } else {
+        TABLETTRACK(getsym("mouseDown"))
     }
-
 }
 
- 
+void SCTabletView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+    if (! (modifiers & NSCommandKeyMask)) {
+        TABLETTRACK(s_doaction)
+    }
+}
+
+void SCTabletView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+    if (modifiers & NSCommandKeyMask) {
+        this->receiveDrag();
+    } else {
+        TABLETTRACK(getsym("mouseUp"))
+    }
+}
+
 
 ////////////////////////////////////////////////
 
@@ -3814,7 +3867,6 @@ SCViewMaker::SCViewMaker(const char* inName, SCViewCtor inCtor)
 
 SCView* MakeSCView(PyrObject* inObj, SCContainerView *inParent, SCRect inBounds,const char *classname)
 {
-    // const char *classname = inObj->classptr->name.us->name;
     SCViewMaker* maker = gSCViewMakers;
 	while (maker) {
         if (strcmp(classname, maker->mName) == 0) {
@@ -3839,6 +3891,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCSlider", NewSCSlider);
     new SCViewMaker("SCRangeSlider", NewSCRangeSlider);
     new SCViewMaker("SC2DSlider", NewSC2DSlider);
+    new SCViewMaker("SC2DTabletSlider", NewSC2DSlider);
     new SCViewMaker("SCButton", NewSCButton);
     new SCViewMaker("SCStaticText", NewSCStaticText);
     new SCViewMaker("SCNumberBox", NewSCNumberBox);

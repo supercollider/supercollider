@@ -303,11 +303,11 @@ public:
 
 protected:
 	void setValueFromPoint(SCPoint point);
-// sc.solar addition
+    // sc.solar addition
         void moveRangeFromPoint(SCPoint point);
         void adjustLoFromPoint(SCPoint point);
         void adjustHiFromPoint(SCPoint point);
-// sc.solar addition end
+    // sc.solar addition end
 	void calcRangeRect();
 	
 	SCRect mRangeRect;
@@ -345,6 +345,24 @@ protected:
         DrawBackground* mKnob;
 };
 SCView* NewSC2DSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+
+
+class SC2DTabletSlider : public SC2DSlider
+{
+public:	
+	SC2DTabletSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+
+	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+
+protected:	
+	SCRect mThumbRect;
+	double mX, mY;
+        double mStepSize, mStepScale;
+        DrawBackground* mKnob;
+};
+SCView* NewSC2DTabletSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
 
 /*
@@ -694,9 +712,9 @@ public:
 	SCTabletView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
         virtual ~SCTabletView();
         
-	//virtual void draw(SCRect inDamage);
-    
-    virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
        
 };
 SCView* NewSCTabletView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
