@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red191\green0\blue0;
-\red0\green115\blue0;\red26\green26\blue255;\red33\green33\blue255;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
+\red33\green33\blue255;\red26\green26\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 More on Getting Help
@@ -118,7 +118,7 @@ Selecting any method and pressing Cmd-y will open a window with a list of all th
 Similarly, selecting any text and typing shift-cmd-y will open a window showing all references to the selected text, i.e. each place it is used within the class library. (This will not find methods calls compiled with special byte codes like 'value'.)\
 \
 
-\f2\fs18 \cf4 // try it on these\cf0 \
+\f2\fs18 \cf3 // try it on these\cf0 \
 asStream \
 SCWindow
 \f1\fs24 \
@@ -138,7 +138,7 @@ If you know that a class responds to a particular message, you can use findRespo
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 Array\cf0 .findRespondingMethodFor(\cf5 'select'\cf0 ); \cf3 // you can Cmd-J on the result in the post window\cf0 \
+\f2\fs18 \cf2 Array\cf0 .findRespondingMethodFor(\cf4 'select'\cf0 ); \cf3 // you can Cmd-J on the result in the post window\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
@@ -146,7 +146,7 @@ Similarly, helpFileForMethod will open the helpfile of the class in which the re
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 Array\cf0 .helpFileForMethod(\cf5 'select'\cf0 ); \cf3 // this will open the Collection helpfile; scroll down for select
+\f2\fs18 \cf2 Array\cf0 .helpFileForMethod(\cf4 'select'\cf0 ); \cf3 // this will open the Collection helpfile; scroll down for select
 \f1\fs24 \cf0 \
 \
 In general poking around can be a good way to learn about how things work. See 
@@ -163,17 +163,28 @@ In general poking around can be a good way to learn about how things work. See
 \f1\b0 \cf0 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 A good starting place for figuring out how to do something are the numerous files in the Examples folder.
-\fs28 \
+\fs24 \cf0 A good starting place for figuring out how to do something are the numerous files in the Examples folder. The SuperCollider swiki is another good source of tips, examples, and information:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf5 http://swiki.hfbk-hamburg.de:8888/MusicTechnology/6
+\fs28 \cf0 \
 \
 
 \fs24 Further help can be obtained by subscribing and sending questions to the sc-users mailing list:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf6 \ul \
-\ulnone http://www.create.ucsb.edu/mailman/listinfo/sc-users\ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 \ulnone http://www.create.ucsb.edu/mailman/listinfo/sc-users\cf6 \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs28 \cf0 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 Requests for documentation of undocumented methods or classes, as well as reports of errata, omissions, etc. in helpfiles can be sent to: \cf7 mullmusik@users.sourceforge.net\cf0  or to the user's list above.}
+\fs24 \cf0 An archive of the list can be searched from this page:\
+\
+\cf5 http://swiki.hfbk-hamburg.de:8888/MusicTechnology/437\cf0 \
+\
+Requests for documentation of undocumented methods or classes, as well as reports of errata, omissions, etc. in helpfiles can be sent to: \cf5 mullmusik@users.sourceforge.net\cf0  or to the user's list above.}
