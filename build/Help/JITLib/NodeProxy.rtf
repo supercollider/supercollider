@@ -6,8 +6,9 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 NodeProxy\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \
+\f1\b0\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs26 \cf0 superclass: AbstractFunction\
@@ -102,7 +103,11 @@ ___________________________________________________\
 	fadeTime_(time)\
 		
 \f2\b0 set the attack/release time\
-		\
+	\
+	
+\f0\b clock_(aClock)
+\f2\b0 \
+		use a clock for scheduling beat accurate\
 _________________________________________________________	\
 		
 \f1\fs18 \
@@ -110,23 +115,28 @@ _________________________________________________________	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //examples\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\cf0 s.boot;\
+\
 a = \cf3 NodeProxy.audio\cf0 (s, 2);\
 x = a.play; \cf2 //play to hardware output, return a group with synths\
 \cf0 a.source = \{ \cf3 SinOsc\cf0 .ar([350, 390], 0, 0.1) \};\
-a.source = \{ SinOsc.ar(a.ar*2000*LFNoise1.kr(0.2, 1, 1) + 200, 0, 0.1) \};\
+a.source = \{ \cf3 SinOsc\cf0 .ar([390, 290], 0, 0.1) \};\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //feedback\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 a.source = \{ \cf3 SinOsc\cf0 .ar(a.ar*2000*\cf3 LFNoise1\cf0 .kr(1, 1, 1) + 200, 0, 0.1) \};\
 \
 a.fadeTime = 2.0;\
 a.source = \{ \cf3 arg\cf0  f=400; \cf3 SinOsc\cf0 .ar(f*[1,1.2], 0, 0.1) \};\
 a.set(\cf4 \\f\cf0 , 700);\
-a.source = \{ \cf3 arg\cf0  f=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f*[0.4,1], 0.5, 0.1), f*2) \};\
+a.source = \{ \cf3 arg\cf0  f=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f*[1,1.2], 0.5, 0.1), f*2) \};\
 \
 \
 c = \cf3 NodeProxy.control\cf0 (s,1);\
 c.source = \{ \cf3 SinOsc\cf0 .kr(10, 0, 100, 300) \};\
 a.map(\cf4 \\f\cf0 , c);\
 a.source = \{ \cf3 arg\cf0  f=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f*[0.4,1], 0.2, 0.1), f*3) \};\
-a.source = \{ \cf3 Line\cf0 .kr(300, 500, 10) + \cf3 SinOsc\cf0 .kr(20, 0, 10) \};\
+c.source = \{ \cf3 Line\cf0 .kr(300, 500, 10) + \cf3 SinOsc\cf0 .kr(20, 0, 10) \};\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
 //stop synthesis, then wake up proxies:\
@@ -141,14 +151,24 @@ x = a.play;\
 a.add(\{ \cf3 SinOsc\cf0 .ar([350, 390]*1.25, 0, 0.1) \});\
  \
  \
- \
-_____________________________\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //beat accurate playing\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 a.clock = \cf3 QuantClock\cf0 (2.0); \cf2 //round to every 2.0 seconds\
+\cf0 a.source = \{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(0.5, 0, 0.3), 3000, 0.01) \};\
+a.add(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar([0.5, 1], 0, 0.3), 1000, 0.01) \});\
+a.add(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar([3, 5]/2, 0, 0.3), 8000, 0.01) \});\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+_\cf0 _\cf3 __\cf0 _\cf3 ___\cf0 __\cf3 __\cf0 _____\cf3 ___\cf0 __\cf3 __\cf0 ___\cf3 _\cf0 _\
 \
 presently, NodeProxy can be used implicitly using the following shortcut:\
 (just a suggestion)\
 \
-\{ \cf3 SinOsc\cf0 .ar([350, 390], 0, 0.1) \}.send(\\out);\
+\{ \cf3 SinOsc\cf0 .ar([350, 390], 0, 0.1) \}.play(\\out);\
 \\out.play;\
+\
+\{ \cf3 SinOsc\cf0 .ar([350, 390]+20, 0, 0.1) \}.play(\\out);\
 \
 \
 }

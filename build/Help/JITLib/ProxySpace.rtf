@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red0\green115\blue0;\red191\green0\blue0;\red0\green0\blue191;
-\red0\green0\blue0;\red191\green0\blue0;\red0\green115\blue0;\red96\green96\blue96;}
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 ProxySpace
@@ -47,7 +47,8 @@ multiple NodeProxies created at the same time (there is no id in the '/done' mes
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s = \cf4 Server\cf0 .local;\
 s.boot;\
-currentEnvironment = \cf4 ProxySpace\cf0 (s);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 ProxySpace.push\cf0 (s);\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -123,8 +124,8 @@ x.free;\
 \
 x = ~out.play;\
 ~out1 = \{ \cf4 SinOsc\cf0 .ar(600, 0, 0.1) \};\
-~out2 = \{ \cf4 SinOsc\cf0 .ar(340, 0, 0.1) \};\
-~out3 = \{ \cf4 SinOsc\cf0 .ar(342, 0, 0.1) \};\
+~out2 = \{ \cf4 SinOsc\cf0 .ar(500, 0, 0.1) \};\
+~out3 = \{ \cf4 SinOsc\cf0 .ar(400, 0, 0.1) \};\
 ~out = ~out2 + ~out1 + ~out3;\
 ~out = ~out1 + ~out2;\
 ~out = ~out1;\
@@ -133,8 +134,8 @@ x = ~out.play;\
 \cf3 //another way is:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 ~out = \{ \cf4 SinOsc\cf0 .ar(600, 0, 0.1) \};\
-~out.add(\{ \cf4 SinOsc\cf0 .ar(340, 0, 0.1) \});\
-~out.add(\{ \cf4 SinOsc\cf0 .ar(370, 0, 0.1) \});\
+~out.add(\{ \cf4 SinOsc\cf0 .ar(500, 0, 0.1) \});\
+~out.add(\{ \cf4 SinOsc\cf0 .ar(400, 0, 0.1) \});\
 ~out.free;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -204,9 +205,10 @@ x = ~out.play;\
 		);\
 ~out.set(\cf2 \\dens\cf0 , 2, \\freq, 9000);\
 \
-~out = \cf4 Patch\cf0 ([\cf2 \\test\cf0 ], [100, 6000]);\cf3 \
-\
-\
+~out = \cf4 Patch\cf0 ([\cf2 \\test\cf0 ], [100, 2000]); \cf3 //doesn't work yet\
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs26 \cf0 setting the xfade time
@@ -302,20 +304,24 @@ q.use(\{\
 )\
 \
 y = q.play; \cf3 //out is the default output\
-\cf5 \
-\
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 //record output\
-\cf5 r = p.record(\cf7 \\out\cf5 , \cf8 "proxySpace.aif"\cf5 ); \cf6 //starts record after 1 sec\
-\cf5 \
-\cf6 //pause recording\
-\cf5 r.pause;\
-\
-\cf6 //stop recording\
-\cf5 r.stop;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 //record output\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 r = p.record(\cf2 \\out\cf0 , \cf5 "proxySpace.aif"\cf0 ); \cf3 //starts record after 1 sec\
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 //pause recording\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 r.pause;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 //stop recording\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 r.stop;\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //patch two spaces together (must be on one server)\
