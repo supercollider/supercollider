@@ -6,6 +6,10 @@ Tempo  {
 	var <tempo=1.0,<beatsPerBar=4.0;
 	var tempor,beatsPerBarr;
 	
+	*new { arg tempo=1.0;
+		^super.new.tempo_(tempo)
+	}
+	
 	*initClass { default = this.new; }
 		
 	bpm { ^tempo * 60.0 }
@@ -47,14 +51,10 @@ Tempo  {
 
 BeatClock : Clock {
 	
-	classvar global;
 	var <>tempo;
 	
 	*new { arg tempo;
 		^super.new.tempo_(tempo ? Tempo.default)
-	}
-	*initClass {
-		global = this.new;
 	}
 	sched { arg delta,item;
 		SystemClock.sched(tempo.beats2secs(delta),item)
@@ -62,12 +62,4 @@ BeatClock : Clock {
 	schedAbs { arg time,item;
 		SystemClock.sched(tempo.beats2secs(time),item)
 	}
-	
-	*sched { arg delta,item;
-		global.sched(delta,item);
-	}
-	*schedAbs { arg time,item;
-		global.schedAbs(time,item);
-	}
-	
 }
