@@ -198,12 +198,12 @@ Stream : AbstractFunction {
 		clock.play(this, quant);
 	}
 	
-	trace { arg key, printStream;
+	trace { arg key, printStream, prefix="";
 		printStream = printStream ? Post;
 		^if(key.isNil) {
-			this.collect {|item| printStream << item << Char.nl; item }
+			this.collect {|item| printStream << prefix << item << Char.nl; item }
 		} {
-			this.collect {|item| printStream << item.at(key) << Char.nl; item }
+			this.collect {|item| printStream << prefix << item.at(key) << Char.nl; item }
 		}
 			 
 	}

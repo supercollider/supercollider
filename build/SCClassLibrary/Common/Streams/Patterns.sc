@@ -56,7 +56,7 @@ Pattern : AbstractFunction {
 		^PdegreeToKey(this,scale,stepsPerOctave)
 	}
 	
-	trace { arg key, printStream; ^Ptrace(this, key, printStream) }
+	trace { arg key, printStream, prefix=""; ^Ptrace(this, key, printStream, prefix) }
 	
 	//////////////////////
 	

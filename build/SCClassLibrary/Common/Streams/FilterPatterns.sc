@@ -564,12 +564,12 @@ Pwrap : FilterPattern {
 }
 
 Ptrace : FilterPattern {
-	var <>key, printStream;
-	*new { arg pattern, key, printStream; 
-		^super.newCopyArgs(pattern, key, printStream) 
+	var <>key, printStream, prefix;
+	*new { arg pattern, key, printStream, prefix; 
+		^super.newCopyArgs(pattern, key, printStream, prefix) 
 	}
 	asStream {
-		^pattern.asStream.trace(key, printStream)
+		^pattern.asStream.trace(key, printStream, prefix)
 	}
 
 }
