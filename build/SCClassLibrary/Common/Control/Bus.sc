@@ -72,8 +72,11 @@ Bus {
 		server.sendBundle(nil,
 			["/c_fill",index,numChans,value]);
 	}
-	// not yet implemented :
-	// get, getn
+	
+	fillMsg { arg value;
+		^["/c_fill",index,numChannels,value]);
+	}
+
 
 	free {
 		if(index.isNil,{ (this.asString + " has already been freed").warn; ^this });
