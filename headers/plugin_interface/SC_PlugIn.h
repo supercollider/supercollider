@@ -31,3 +31,5 @@
 #include "SC_RGen.h"
 #include "clz.h"
 #include "sc_msg_iter.h"
+#include "SC_Altivec.h"
+

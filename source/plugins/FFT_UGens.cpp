@@ -23,10 +23,13 @@
 #include <sndfile.h>
 #include "SCComplex.h"
 
+// not ready for altivec yet..
+#undef __VEC__
+#define __VEC__ 0
+
 #if __VEC__
-	#include "vDSP.h"
+	#include <vecLib/vecLib.h>
 	FFTSetup fftsetup[32];
-	
 #else
 extern "C" {
 	#include "fftlib.h"

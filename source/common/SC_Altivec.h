@@ -52,15 +52,15 @@ inline vfloat32 vload( float f )
 
 // seed = ((seed & mask) << shift1) ^ (((seed << shift2) ^ seed) >> shift3);
 
-#define mask   ((vuint32)(0xFFFFFFFE,0xFFFFFFF8,0xFFFFFFF0,0))
 #define define_trshifts \
-	vuint32 trshift1 = ((vuint32)(12, 14,  7,  0)) \
-	vuint32 trshift2 = ((vuint32)(13,  2,  3,  0)) \
-	vuint32 trshift3 = ((vuint32)(19, 25, 11,  0))
+	vuint32 trmask = ((vuint32)(0xFFFFFFFE,0xFFFFFFF8,0xFFFFFFF0,0)); \
+	vuint32 trshift1 = ((vuint32)(12, 14,  7,  0)); \
+	vuint32 trshift2 = ((vuint32)(13,  2,  3,  0)); \
+	vuint32 trshift3 = ((vuint32)(19, 25, 11,  0));
 
-inline vuint32 trands(vuint32 seed, vuint32 shift1, vuint32 shift2, vuint32 shift3)
+inline vuint32 trands(vuint32 seed, vuint32 trmask, vuint32 shift1, vuint32 shift2, vuint32 shift3)
 {
-	return vec_xor(vec_sl(vec_and(seed, mask),shift1), vec_sr(vec_xor(vec_sl(seed,shift2),seed),shift3));
+	return vec_xor(vec_sl(vec_and(seed, trmask),shift1), vec_sr(vec_xor(vec_sl(seed,shift2),seed),shift3));
 }
 
 #endif

@@ -143,7 +143,7 @@
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				OPTIMIZATION_CFLAGS = "-O0";
+				OPTIMIZATION_CFLAGS = "-O0 -faltivec";
 			};
 			isa = PBXBuildStyle;
 			name = Development;
@@ -153,7 +153,7 @@
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
-				OPTIMIZATION_CFLAGS = "-O3 -funroll-loops";
+				OPTIMIZATION_CFLAGS = "-O3 -funroll-loops -faltivec";
 			};
 			isa = PBXBuildStyle;
 			name = Deployment;
@@ -1437,7 +1437,6 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "-faltivec";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";

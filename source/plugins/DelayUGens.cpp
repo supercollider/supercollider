@@ -680,7 +680,22 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 	float *trigin  = ZIN(2);
 	int32 loop     = (int32)ZIN0(4);
 	
-	GET_BUF
+	float fbufnum  = ZIN0(0);
+	if (fbufnum != unit->m_fbufnum) {
+		int bufnum = (int)fbufnum;
+		World *world = unit->mWorld;
+		if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0;
+		unit->m_fbufnum = fbufnum;
+		unit->m_buf = world->mSndBufs + bufnum;
+	}
+	SndBuf *buf = unit->m_buf;
+	float *bufData __attribute__((__unused__)) = buf->data;
+	int bufChannels __attribute__((__unused__)) = buf->channels;
+	int bufSamples __attribute__((__unused__)) = buf->samples;
+	int bufFrames = buf->frames;
+	int mask __attribute__((__unused__)) = buf->mask;
+	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
+
 	CHECK_BUF
 	SETUP_OUT	
 
@@ -708,7 +723,22 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 	float trig     = ZIN0(2);
 	int32 loop     = (int32)ZIN0(4);
 	
-	GET_BUF
+	float fbufnum  = ZIN0(0);
+	if (fbufnum != unit->m_fbufnum) {
+		int bufnum = (int)fbufnum;
+		World *world = unit->mWorld;
+		if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0;
+		unit->m_fbufnum = fbufnum;
+		unit->m_buf = world->mSndBufs + bufnum;
+	}
+	SndBuf *buf = unit->m_buf;
+	float *bufData __attribute__((__unused__)) = buf->data;
+	int bufChannels __attribute__((__unused__)) = buf->channels;
+	int bufSamples __attribute__((__unused__)) = buf->samples;
+	int bufFrames = buf->frames;
+	int mask __attribute__((__unused__)) = buf->mask;
+	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
+
 	CHECK_BUF
 	SETUP_OUT	
 	

@@ -262,14 +262,9 @@ void ampmix_ii(MulAdd *unit, int inNumSamples)
 
 #if __VEC__
 
-#include "SC_Altivec.h"
-
 void v_ampmix_aa(MulAdd *unit, int inNumSamples);
 void v_ampmix_aa(MulAdd *unit, int inNumSamples)
 {
-	ampmix_aa(unit, inNumSamples);
-	return;
-	
 	float *in = IN(0);
 	float *out = OUT(0);
 	float *amp = MULIN;
@@ -297,7 +292,7 @@ void v_ampmix_ak(MulAdd *unit, int inNumSamples)
 	float nextMix = ADDIN[0];
 	
 	float mix_cur = unit->mPrevAdd;
-	float mix_slope = CALCSLOPE(ADDIN[0], mix_cur);
+	float mix_slope = CALCSLOPE(nextMix, mix_cur);
 	if (mix_slope == 0.f) {
 		if (mix_cur == 0.f) {
 			//LOOP(inNumSamples, PZ(out); *out = ZXP(amp) * *out; ZP(out););
@@ -559,7 +554,8 @@ void v_ampmix_ki(MulAdd *unit, int inNumSamples)
 	float *in = IN(0);
 	float *out = OUT(0);
 	amp_cur = unit->mPrevMul;
-	amp_slope = CALCSLOPE(MULIN[0], amp_cur);
+	float nextAmp = MULIN[0];
+	amp_slope = CALCSLOPE(nextAmp, amp_cur);
 	mix_cur = unit->mPrevAdd;
 	if (amp_slope == 0.f) {
 		if (amp_cur == 1.f) {
@@ -598,7 +594,7 @@ void v_ampmix_ki(MulAdd *unit, int inNumSamples)
 			vec_st(vec_madd(vamp, vec_ld(i, vin), vmix), i, vout);
 			vamp = vec_add(vamp, vamp_slope);
 		}
-		unit->mPrevMul = amp_cur;
+		unit->mPrevMul = nextAmp;
 	}
 }
 

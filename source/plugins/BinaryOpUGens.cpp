@@ -4130,6 +4130,335 @@ void hypotx_ai(BinaryOpUGen *unit, int inNumSamples)
 }
 
 
+#pragma mark
+
+
+#if __VEC__
+
+void vadd_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_add(vec_ld(i, va), vec_ld(i, vb)), i, vout);
+	}
+}
+
+void vsub_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_sub(vec_ld(i, va), vec_ld(i, vb)), i, vout);
+	}
+}
+
+void vmul_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_mul(vec_ld(i, va), vec_ld(i, vb)), i, vout);
+	}
+}
+
+
+void vadd_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 zva = vload(ZIN0(0));
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_add(zva, vec_ld(i, vb)), i, vout);
+	}
+}
+
+void vsub_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 zva = vload(ZIN0(0));
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_sub(zva, vec_ld(i, vb)), i, vout);
+	}
+}
+
+void vmul_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 zva = vload(ZIN0(0));
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_mul(zva, vec_ld(i, vb)), i, vout);
+	}
+}
+
+
+void vadd_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 zvb = vload(ZIN0(1));
+	int len = inNumSamples << 2;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_add(vec_ld(i, va), zvb), i, vout);
+	}
+}
+
+void vsub_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 zvb = vload(ZIN0(1));
+	int len = inNumSamples << 2;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_sub(vec_ld(i, va), zvb), i, vout);
+	}
+}
+
+void vmul_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 zvb = vload(ZIN0(1));
+	int len = inNumSamples << 2;
+	define_vzero;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_mul(vec_ld(i, va), zvb), i, vout);
+	}
+}
+
+void vadd_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	float nextB = ZIN0(1);
+	int len = inNumSamples << 2;
+
+	float xb = unit->mPrevB;
+	
+	if (xb == nextB) {
+		if (xb == 0.f) {
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_ld(i, va), i, vout);
+			}
+		} else {
+			vfloat32 vxb = vload(xb);
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_add(vec_ld(i, va), vxb), i, vout);
+			}
+		}
+	} else {
+		float slope =  CALCSLOPE(nextB, xb);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxb = vstart(xb, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_add(vec_ld(i, va), vxb), i, vout);
+			vxb = vec_add(vxb, vslope);
+		}
+		unit->mPrevB = nextB;
+	}
+}
+
+void vsub_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	float nextB = ZIN0(1);
+	int len = inNumSamples << 2;
+
+	float xb = unit->mPrevB;
+	
+	if (xb == nextB) {
+		if (xb == 0.f) {
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_ld(i, va), i, vout);
+			}
+		} else {
+			vfloat32 vxb = vload(xb);
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_sub(vec_ld(i, va), vxb), i, vout);
+			}
+		}
+	} else {
+		float slope =  CALCSLOPE(nextB, xb);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxb = vstart(xb, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_sub(vec_ld(i, va), vxb), i, vout);
+			vxb = vec_add(vxb, vslope);
+		}
+		unit->mPrevB = nextB;
+	}
+}
+
+void vmul_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	float nextB = ZIN0(1);
+	int len = inNumSamples << 2;
+
+	float xb = unit->mPrevB;
+	
+	if (xb == nextB) {
+		if (xb == 0.f) {
+			define_vzero;
+			for (int i=0; i<len; i += 16) {
+				vec_st(vzero, i, vout);
+			}
+		} else if (xb == 1.f) {
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_ld(i, va), i, vout);
+			}
+		} else {
+			vfloat32 vxb = vload(xb);
+			define_vzero;
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_mul(vec_ld(i, va), vxb), i, vout);
+			}
+		}
+	} else {
+		float slope =  CALCSLOPE(nextB, xb);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxb = vstart(xb, vslope);
+		define_vzero;
+		
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_mul(vec_ld(i, va), vxb), i, vout);
+			vxb = vec_add(vxb, vslope);
+		}
+		unit->mPrevB = nextB;
+	}
+}
+
+
+void vadd_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	float xa = unit->mPrevA;
+	vfloat32 *vb = (vfloat32*)IN(1);
+	float nextA = ZIN0(0);
+	int len = inNumSamples << 2;
+	
+	if (xa == nextA) {
+		if (xa == 0.f) {
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_ld(i, vb), i, vout);
+			}
+		} else {
+			vfloat32 vxa = vload(xa);
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_add(vxa, vec_ld(i, vb)), i, vout);
+			}
+		}
+	} else {
+		float slope =  CALCSLOPE(nextA, xa);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxa = vstart(xa, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_add(vxa, vec_ld(i, vb)), i, vout);
+			vxa = vec_add(vxa, vslope);
+		}
+		unit->mPrevA = nextA;
+	}
+}
+
+
+void vsub_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	float xa = unit->mPrevA;
+	vfloat32 *vb = (vfloat32*)IN(1);
+	float nextA = ZIN0(0);
+	int len = inNumSamples << 2;
+	
+	if (xa == nextA) {
+		vfloat32 vxa = vload(xa);
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_sub(vxa, vec_ld(i, vb)), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextA, xa);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxa = vstart(xa, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_sub(vxa, vec_ld(i, vb)), i, vout);
+			vxa = vec_add(vxa, vslope);
+		}
+		unit->mPrevA = nextA;
+	}
+}
+
+
+void vmul_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	float xa = unit->mPrevA;
+	vfloat32 *vb = (vfloat32*)IN(1);
+	float nextA = ZIN0(0);
+	int len = inNumSamples << 2;
+	define_vzero;
+	
+	if (xa == nextA) {
+		if (xa == 0.f) {
+			for (int i=0; i<len; i += 16) {
+				vec_st(vzero, i, vout);
+			}
+		} else if (xa == 1.f) {
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_ld(i, vb), i, vout);
+			}
+		} else {
+			vfloat32 vxa = vload(xa);
+			for (int i=0; i<len; i += 16) {
+				vec_st(vec_mul(vxa, vec_ld(i, vb)), i, vout);
+			}
+		}
+	} else {
+		float slope =  CALCSLOPE(nextA, xa);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxa = vstart(xa, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_mul(vxa, vec_ld(i, vb)), i, vout);
+			vxa = vec_add(vxa, vslope);
+		}
+		unit->mPrevA = nextA;
+	}
+}
+
+#endif
+
+
+#pragma mark
+
+
+
 BinaryOpFunc ChooseOneSampleFunc(BinaryOpUGen *unit);
 BinaryOpFunc ChooseOneSampleFunc(BinaryOpUGen *unit)
 {		
@@ -4182,110 +4511,418 @@ BinaryOpFunc ChooseOneSampleFunc(BinaryOpUGen *unit)
 	return func;
 }
 
-void ChooseOperatorFunc(BinaryOpUGen *unit)
+#if __VEC__
+
+BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 {
-	//Print("->ChooseOperatorFunc %d\n", unit->mSpecialIndex);
-	BinaryOpFunc func = &zero_aa;
+	BinaryOpFunc func = &zero_1;
+
+	int rateA = INRATE(0);
+	int rateB = INRATE(1);
 	
-	if (unit->mRate->mBufLength == 1) {
-		func = ChooseOneSampleFunc(unit);
-	} else {
-		int rateA = INRATE(0);
-		int rateB = INRATE(1);
-		
-		if (rateA == calc_FullRate) {
+	//printf("ChooseVectorFunc %d %d %d\n", rateA, rateB, unit->mSpecialIndex);
+	
+	switch (rateA) {
+		case calc_FullRate:
+			switch (rateB) {
+				case calc_FullRate:
+					switch (unit->mSpecialIndex) {
+						//case opSilence2 : func = &zero_aa; break;
+						case opAdd : func = &vadd_aa; break;
+						case opSub : func = &vsub_aa; break;
+						case opMul : func = &vmul_aa; break;
+						case opFDiv : func = &div_aa; break;
+						case opMod : func = &mod_aa; break;
+						case opEQ  : func = &eq_aa; break;
+						case opNE  : func = &neq_aa; break;
+						case opLT  : func = &lt_aa; break;
+						case opGT  : func = &gt_aa; break;
+						case opLE  : func = &le_aa; break;
+						case opGE  : func = &ge_aa; break;
+						case opMin : func = &min_aa; break;
+						case opMax : func = &max_aa; break;
+						case opBitAnd : func = &and_aa; break;
+						case opBitOr : func = &or_aa; break;
+						case opBitXor : func = &xor_aa; break;
+						case opRound : func = &round_aa; break;
+						case opTrunc : func = &trunc_aa; break;
+						case opAtan2 : func = &atan2_aa; break;
+						case opHypot : func = &hypot_aa; break;
+						case opHypotx : func = &hypotx_aa; break;
+						case opPow   : func = &pow_aa; break;
+						case opRing1 : func = &ring1_aa; break;
+						case opRing2 : func = &ring2_aa; break;
+						case opRing3 : func = &ring3_aa; break;
+						case opRing4 : func = &ring4_aa; break;
+						case opDifSqr : func = &difsqr_aa; break;
+						case opSumSqr : func = &sumsqr_aa; break;
+						case opSqrSum : func = &sqrsum_aa; break;
+						case opSqrDif : func = &sqrdif_aa; break;
+						case opAbsDif : func = &absdif_aa; break;
+						case opThresh : func = &thresh_aa; break;
+						case opAMClip : func = &amclip_aa; break;
+						case opScaleNeg : func = &scaleneg_aa; break;
+						case opClip2 : func = &clip2_aa; break;
+						case opFold2 : func = &fold2_aa; break;
+						case opWrap2 : func = &wrap2_aa; break;
+						case opExcess : func = &excess_aa; break;
+						case opFirstArg : func = &firstarg_aa; break;
+						//case opSecondArg : func = &secondarg_aa; break;
+						default : func = &add_aa; break;
+					}
+					break;
+				case calc_BufRate :
+					switch (unit->mSpecialIndex) {
+						//case opSilence2 : func = &zero_aa; break;
+						case opAdd : func = &vadd_ak; break;
+						case opSub : func = &vsub_ak; break;
+						case opMul : func = &vmul_ak; break;
+						case opFDiv : func = &div_ak; break;
+						case opMod : func = &mod_ak; break;
+						case opEQ  : func = &eq_ak; break;
+						case opNE  : func = &neq_ak; break;
+						case opLT  : func = &lt_ak; break;
+						case opGT  : func = &gt_ak; break;
+						case opLE  : func = &le_ak; break;
+						case opGE  : func = &ge_ak; break;
+						case opMin : func = &min_ak; break;
+						case opMax : func = &max_ak; break;
+						case opBitAnd : func = &and_ak; break;
+						case opBitOr : func = &or_ak; break;
+						case opBitXor : func = &xor_ak; break;
+						case opRound : func = &round_ak; break;
+						case opTrunc : func = &trunc_ak; break;
+						case opAtan2 : func = &atan2_ak; break;
+						case opHypot : func = &hypot_ak; break;
+						case opHypotx : func = &hypotx_ak; break;
+						case opPow   : func = &pow_ak; break;
+						case opRing1 : func = &ring1_ak; break;
+						case opRing2 : func = &ring2_ak; break;
+						case opRing3 : func = &ring3_ak; break;
+						case opRing4 : func = &ring4_ak; break;
+						case opDifSqr : func = &difsqr_ak; break;
+						case opSumSqr : func = &sumsqr_ak; break;
+						case opSqrSum : func = &sqrsum_ak; break;
+						case opSqrDif : func = &sqrdif_ak; break;
+						case opAbsDif : func = &absdif_ak; break;
+						case opThresh : func = &thresh_ak; break;
+						case opAMClip : func = &amclip_ak; break;
+						case opScaleNeg : func = &scaleneg_ak; break;
+						case opClip2 : func = &clip2_ak; break;
+						case opFold2 : func = &fold2_ak; break;
+						case opWrap2 : func = &wrap2_ak; break;
+						case opExcess : func = &excess_ak; break;
+						case opFirstArg : func = &firstarg_aa; break;
+						//case opSecondArg : func = &secondarg_aa; break;
+						default : func = &add_ak; break;
+					}
+					break;
+				case calc_ScalarRate :
+					switch (unit->mSpecialIndex) {
+						//case opSilence2 : func = &zero_aa; break;
+						case opAdd : func = &vadd_ai; break;
+						case opSub : func = &vsub_ai; break;
+						case opMul : func = &vmul_ai; break;
+						case opFDiv : func = &div_ai; break;
+						case opMod : func = &mod_ai; break;
+						case opEQ  : func = &eq_ai; break;
+						case opNE  : func = &neq_ai; break;
+						case opLT  : func = &lt_ai; break;
+						case opGT  : func = &gt_ai; break;
+						case opLE  : func = &le_ai; break;
+						case opGE  : func = &ge_ai; break;
+						case opMin : func = &min_ai; break;
+						case opMax : func = &max_ai; break;
+						case opBitAnd : func = &and_ai; break;
+						case opBitOr : func = &or_ai; break;
+						case opBitXor : func = &xor_ai; break;
+						case opRound : func = &round_ai; break;
+						case opTrunc : func = &trunc_ai; break;
+						case opAtan2 : func = &atan2_ai; break;
+						case opHypot : func = &hypot_ai; break;
+						case opHypotx : func = &hypotx_ai; break;
+						case opPow   : func = &pow_ai; break;
+						case opRing1 : func = &ring1_ai; break;
+						case opRing2 : func = &ring2_ai; break;
+						case opRing3 : func = &ring3_ai; break;
+						case opRing4 : func = &ring4_ai; break;
+						case opDifSqr : func = &difsqr_ai; break;
+						case opSumSqr : func = &sumsqr_ai; break;
+						case opSqrSum : func = &sqrsum_ai; break;
+						case opSqrDif : func = &sqrdif_ai; break;
+						case opAbsDif : func = &absdif_ai; break;
+						case opThresh : func = &thresh_ai; break;
+						case opAMClip : func = &amclip_ai; break;
+						case opScaleNeg : func = &scaleneg_ai; break;
+						case opClip2 : func = &clip2_ai; break;
+						case opFold2 : func = &fold2_ai; break;
+						case opWrap2 : func = &wrap2_ai; break;
+						case opExcess : func = &excess_ai; break;
+						case opFirstArg : func = &firstarg_aa; break;
+						//case opSecondArg : func = &secondarg_aa; break;
+						default : func = &add_ai; break;
+					}
+				}
+			break;
+		case calc_BufRate :
 			if (rateB == calc_FullRate) {
 				switch (unit->mSpecialIndex) {
 					//case opSilence2 : func = &zero_aa; break;
-					case opAdd : func = &add_aa; break;
-					case opSub : func = &sub_aa; break;
-					case opMul : func = &mul_aa; break;
-					case opFDiv : func = &div_aa; break;
-					case opMod : func = &mod_aa; break;
-					case opEQ  : func = &eq_aa; break;
-					case opNE  : func = &neq_aa; break;
-					case opLT  : func = &lt_aa; break;
-					case opGT  : func = &gt_aa; break;
-					case opLE  : func = &le_aa; break;
-					case opGE  : func = &ge_aa; break;
-					case opMin : func = &min_aa; break;
-					case opMax : func = &max_aa; break;
-					case opBitAnd : func = &and_aa; break;
-					case opBitOr : func = &or_aa; break;
-					case opBitXor : func = &xor_aa; break;
-					case opRound : func = &round_aa; break;
-					case opTrunc : func = &trunc_aa; break;
-					case opAtan2 : func = &atan2_aa; break;
-					case opHypot : func = &hypot_aa; break;
-					case opHypotx : func = &hypotx_aa; break;
-					case opPow   : func = &pow_aa; break;
-					case opRing1 : func = &ring1_aa; break;
-					case opRing2 : func = &ring2_aa; break;
-					case opRing3 : func = &ring3_aa; break;
-					case opRing4 : func = &ring4_aa; break;
-					case opDifSqr : func = &difsqr_aa; break;
-					case opSumSqr : func = &sumsqr_aa; break;
-					case opSqrSum : func = &sqrsum_aa; break;
-					case opSqrDif : func = &sqrdif_aa; break;
-					case opAbsDif : func = &absdif_aa; break;
-					case opThresh : func = &thresh_aa; break;
-					case opAMClip : func = &amclip_aa; break;
-					case opScaleNeg : func = &scaleneg_aa; break;
-					case opClip2 : func = &clip2_aa; break;
-					case opFold2 : func = &fold2_aa; break;
-					case opWrap2 : func = &wrap2_aa; break;
-					case opExcess : func = &excess_aa; break;
-					case opFirstArg : func = &firstarg_aa; break;
+					case opAdd : func = &vadd_ka; break;
+					case opSub : func = &vsub_ka; break;
+					case opMul : func = &vmul_ka; break;
+					case opFDiv : func = &div_ka; break;
+					case opMod : func = &mod_ka; break;
+					case opEQ  : func = &eq_ka; break;
+					case opNE  : func = &neq_ka; break;
+					case opLT  : func = &lt_ka; break;
+					case opGT  : func = &gt_ka; break;
+					case opLE  : func = &le_ka; break;
+					case opGE  : func = &ge_ka; break;
+					case opMin : func = &min_ka; break;
+					case opMax : func = &max_ka; break;
+					case opBitAnd : func = &and_ka; break;
+					case opBitOr : func = &or_ka; break;
+					case opBitXor : func = &xor_ka; break;
+					case opRound : func = &round_ka; break;
+					case opTrunc : func = &trunc_ka; break;
+					case opAtan2 : func = &atan2_ka; break;
+					case opHypot : func = &hypot_ka; break;
+					case opHypotx : func = &hypotx_ka; break;
+					case opPow   : func = &pow_ka; break;
+					case opRing1 : func = &ring1_ka; break;
+					case opRing2 : func = &ring2_ka; break;
+					case opRing3 : func = &ring3_ka; break;
+					case opRing4 : func = &ring4_ka; break;
+					case opDifSqr : func = &difsqr_ka; break;
+					case opSumSqr : func = &sumsqr_ka; break;
+					case opSqrSum : func = &sqrsum_ka; break;
+					case opSqrDif : func = &sqrdif_ka; break;
+					case opAbsDif : func = &absdif_ka; break;
+					case opThresh : func = &thresh_ka; break;
+					case opAMClip : func = &amclip_ka; break;
+					case opScaleNeg : func = &scaleneg_ka; break;
+					case opClip2 : func = &clip2_ka; break;
+					case opFold2 : func = &fold2_ka; break;
+					case opWrap2 : func = &wrap2_ka; break;
+					case opExcess : func = &excess_ka; break;
+					//case opFirstArg : func = &firstarg_aa; break;
 					//case opSecondArg : func = &secondarg_aa; break;
-					default : func = &add_aa; break;
+					default : func = &add_ka; break;
 				}
 			} else {
+				// this should have been caught by mBufLength == 1
+				func = &zero_aa;
+			}
+			break;
+		case calc_ScalarRate :
+			if (rateB == calc_FullRate) {
 				switch (unit->mSpecialIndex) {
 					//case opSilence2 : func = &zero_aa; break;
-					case opAdd : func = &add_ak; break;
-					case opSub : func = &sub_ak; break;
-					case opMul : func = &mul_ak; break;
-					case opFDiv : func = &div_ak; break;
-					case opMod : func = &mod_ak; break;
-					case opEQ  : func = &eq_ak; break;
-					case opNE  : func = &neq_ak; break;
-					case opLT  : func = &lt_ak; break;
-					case opGT  : func = &gt_ak; break;
-					case opLE  : func = &le_ak; break;
-					case opGE  : func = &ge_ak; break;
-					case opMin : func = &min_ak; break;
-					case opMax : func = &max_ak; break;
-					case opBitAnd : func = &and_ak; break;
-					case opBitOr : func = &or_ak; break;
-					case opBitXor : func = &xor_ak; break;
-					case opRound : func = &round_ak; break;
-					case opTrunc : func = &trunc_ak; break;
-					case opAtan2 : func = &atan2_ak; break;
-					case opHypot : func = &hypot_ak; break;
-					case opHypotx : func = &hypotx_ak; break;
-					case opPow   : func = &pow_ak; break;
-					case opRing1 : func = &ring1_ak; break;
-					case opRing2 : func = &ring2_ak; break;
-					case opRing3 : func = &ring3_ak; break;
-					case opRing4 : func = &ring4_ak; break;
-					case opDifSqr : func = &difsqr_ak; break;
-					case opSumSqr : func = &sumsqr_ak; break;
-					case opSqrSum : func = &sqrsum_ak; break;
-					case opSqrDif : func = &sqrdif_ak; break;
-					case opAbsDif : func = &absdif_ak; break;
-					case opThresh : func = &thresh_ak; break;
-					case opAMClip : func = &amclip_ak; break;
-					case opScaleNeg : func = &scaleneg_ak; break;
-					case opClip2 : func = &clip2_ak; break;
-					case opFold2 : func = &fold2_ak; break;
-					case opWrap2 : func = &wrap2_ak; break;
-					case opExcess : func = &excess_ak; break;
-					case opFirstArg : func = &firstarg_aa; break;
+					case opAdd : func = &vadd_ia; break;
+					case opSub : func = &vsub_ia; break;
+					case opMul : func = &vmul_ia; break;
+					case opFDiv : func = &div_ia; break;
+					case opMod : func = &mod_ia; break;
+					case opEQ  : func = &eq_ia; break;
+					case opNE  : func = &neq_ia; break;
+					case opLT  : func = &lt_ia; break;
+					case opGT  : func = &gt_ia; break;
+					case opLE  : func = &le_ia; break;
+					case opGE  : func = &ge_ia; break;
+					case opMin : func = &min_ia; break;
+					case opMax : func = &max_ia; break;
+					case opBitAnd : func = &and_ia; break;
+					case opBitOr : func = &or_ia; break;
+					case opBitXor : func = &xor_ia; break;
+					case opRound : func = &round_ia; break;
+					case opTrunc : func = &trunc_ia; break;
+					case opAtan2 : func = &atan2_ia; break;
+					case opHypot : func = &hypot_ia; break;
+					case opHypotx : func = &hypotx_ia; break;
+					case opPow   : func = &pow_ia; break;
+					case opRing1 : func = &ring1_ia; break;
+					case opRing2 : func = &ring2_ia; break;
+					case opRing3 : func = &ring3_ia; break;
+					case opRing4 : func = &ring4_ia; break;
+					case opDifSqr : func = &difsqr_ia; break;
+					case opSumSqr : func = &sumsqr_ia; break;
+					case opSqrSum : func = &sqrsum_ia; break;
+					case opSqrDif : func = &sqrdif_ia; break;
+					case opAbsDif : func = &absdif_ia; break;
+					case opThresh : func = &thresh_ia; break;
+					case opAMClip : func = &amclip_ia; break;
+					case opScaleNeg : func = &scaleneg_ia; break;
+					case opClip2 : func = &clip2_ia; break;
+					case opFold2 : func = &fold2_ia; break;
+					case opWrap2 : func = &wrap2_ia; break;
+					case opExcess : func = &excess_ia; break;
+					//case opFirstArg : func = &firstarg_aa; break;
 					//case opSecondArg : func = &secondarg_aa; break;
-					default : func = &add_ak; break;
+					default : func = &add_ia; break;
 				}
+			} else {
+				// this should have been caught by mBufLength == 1
+				func = &zero_aa;
 			}
-		} else {
+			break;
+	}
+
+	return func;
+}
+
+#endif
+
+BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
+{
+	BinaryOpFunc func = &zero_1;
+
+	int rateA = INRATE(0);
+	int rateB = INRATE(1);
+	
+	switch (rateA) {
+		case calc_FullRate:
+			switch (rateB) {
+				case calc_FullRate:
+					switch (unit->mSpecialIndex) {
+						//case opSilence2 : func = &zero_aa; break;
+						case opAdd : func = &add_aa; break;
+						case opSub : func = &sub_aa; break;
+						case opMul : func = &mul_aa; break;
+						case opFDiv : func = &div_aa; break;
+						case opMod : func = &mod_aa; break;
+						case opEQ  : func = &eq_aa; break;
+						case opNE  : func = &neq_aa; break;
+						case opLT  : func = &lt_aa; break;
+						case opGT  : func = &gt_aa; break;
+						case opLE  : func = &le_aa; break;
+						case opGE  : func = &ge_aa; break;
+						case opMin : func = &min_aa; break;
+						case opMax : func = &max_aa; break;
+						case opBitAnd : func = &and_aa; break;
+						case opBitOr : func = &or_aa; break;
+						case opBitXor : func = &xor_aa; break;
+						case opRound : func = &round_aa; break;
+						case opTrunc : func = &trunc_aa; break;
+						case opAtan2 : func = &atan2_aa; break;
+						case opHypot : func = &hypot_aa; break;
+						case opHypotx : func = &hypotx_aa; break;
+						case opPow   : func = &pow_aa; break;
+						case opRing1 : func = &ring1_aa; break;
+						case opRing2 : func = &ring2_aa; break;
+						case opRing3 : func = &ring3_aa; break;
+						case opRing4 : func = &ring4_aa; break;
+						case opDifSqr : func = &difsqr_aa; break;
+						case opSumSqr : func = &sumsqr_aa; break;
+						case opSqrSum : func = &sqrsum_aa; break;
+						case opSqrDif : func = &sqrdif_aa; break;
+						case opAbsDif : func = &absdif_aa; break;
+						case opThresh : func = &thresh_aa; break;
+						case opAMClip : func = &amclip_aa; break;
+						case opScaleNeg : func = &scaleneg_aa; break;
+						case opClip2 : func = &clip2_aa; break;
+						case opFold2 : func = &fold2_aa; break;
+						case opWrap2 : func = &wrap2_aa; break;
+						case opExcess : func = &excess_aa; break;
+						case opFirstArg : func = &firstarg_aa; break;
+						//case opSecondArg : func = &secondarg_aa; break;
+						default : func = &add_aa; break;
+					}
+					break;
+				case calc_BufRate :
+					switch (unit->mSpecialIndex) {
+						//case opSilence2 : func = &zero_aa; break;
+						case opAdd : func = &add_ak; break;
+						case opSub : func = &sub_ak; break;
+						case opMul : func = &mul_ak; break;
+						case opFDiv : func = &div_ak; break;
+						case opMod : func = &mod_ak; break;
+						case opEQ  : func = &eq_ak; break;
+						case opNE  : func = &neq_ak; break;
+						case opLT  : func = &lt_ak; break;
+						case opGT  : func = &gt_ak; break;
+						case opLE  : func = &le_ak; break;
+						case opGE  : func = &ge_ak; break;
+						case opMin : func = &min_ak; break;
+						case opMax : func = &max_ak; break;
+						case opBitAnd : func = &and_ak; break;
+						case opBitOr : func = &or_ak; break;
+						case opBitXor : func = &xor_ak; break;
+						case opRound : func = &round_ak; break;
+						case opTrunc : func = &trunc_ak; break;
+						case opAtan2 : func = &atan2_ak; break;
+						case opHypot : func = &hypot_ak; break;
+						case opHypotx : func = &hypotx_ak; break;
+						case opPow   : func = &pow_ak; break;
+						case opRing1 : func = &ring1_ak; break;
+						case opRing2 : func = &ring2_ak; break;
+						case opRing3 : func = &ring3_ak; break;
+						case opRing4 : func = &ring4_ak; break;
+						case opDifSqr : func = &difsqr_ak; break;
+						case opSumSqr : func = &sumsqr_ak; break;
+						case opSqrSum : func = &sqrsum_ak; break;
+						case opSqrDif : func = &sqrdif_ak; break;
+						case opAbsDif : func = &absdif_ak; break;
+						case opThresh : func = &thresh_ak; break;
+						case opAMClip : func = &amclip_ak; break;
+						case opScaleNeg : func = &scaleneg_ak; break;
+						case opClip2 : func = &clip2_ak; break;
+						case opFold2 : func = &fold2_ak; break;
+						case opWrap2 : func = &wrap2_ak; break;
+						case opExcess : func = &excess_ak; break;
+						case opFirstArg : func = &firstarg_aa; break;
+						//case opSecondArg : func = &secondarg_aa; break;
+						default : func = &add_ak; break;
+					}
+					break;
+				case calc_ScalarRate :
+					switch (unit->mSpecialIndex) {
+						//case opSilence2 : func = &zero_aa; break;
+						case opAdd : func = &add_ai; break;
+						case opSub : func = &sub_ai; break;
+						case opMul : func = &mul_ai; break;
+						case opFDiv : func = &div_ai; break;
+						case opMod : func = &mod_ai; break;
+						case opEQ  : func = &eq_ai; break;
+						case opNE  : func = &neq_ai; break;
+						case opLT  : func = &lt_ai; break;
+						case opGT  : func = &gt_ai; break;
+						case opLE  : func = &le_ai; break;
+						case opGE  : func = &ge_ai; break;
+						case opMin : func = &min_ai; break;
+						case opMax : func = &max_ai; break;
+						case opBitAnd : func = &and_ai; break;
+						case opBitOr : func = &or_ai; break;
+						case opBitXor : func = &xor_ai; break;
+						case opRound : func = &round_ai; break;
+						case opTrunc : func = &trunc_ai; break;
+						case opAtan2 : func = &atan2_ai; break;
+						case opHypot : func = &hypot_ai; break;
+						case opHypotx : func = &hypotx_ai; break;
+						case opPow   : func = &pow_ai; break;
+						case opRing1 : func = &ring1_ai; break;
+						case opRing2 : func = &ring2_ai; break;
+						case opRing3 : func = &ring3_ai; break;
+						case opRing4 : func = &ring4_ai; break;
+						case opDifSqr : func = &difsqr_ai; break;
+						case opSumSqr : func = &sumsqr_ai; break;
+						case opSqrSum : func = &sqrsum_ai; break;
+						case opSqrDif : func = &sqrdif_ai; break;
+						case opAbsDif : func = &absdif_ai; break;
+						case opThresh : func = &thresh_ai; break;
+						case opAMClip : func = &amclip_ai; break;
+						case opScaleNeg : func = &scaleneg_ai; break;
+						case opClip2 : func = &clip2_ai; break;
+						case opFold2 : func = &fold2_ai; break;
+						case opWrap2 : func = &wrap2_ai; break;
+						case opExcess : func = &excess_ai; break;
+						case opFirstArg : func = &firstarg_aa; break;
+						//case opSecondArg : func = &secondarg_aa; break;
+						default : func = &add_ai; break;
+					}
+				}
+			break;
+		case calc_BufRate :
 			if (rateB == calc_FullRate) {
 				switch (unit->mSpecialIndex) {
 					//case opSilence2 : func = &zero_aa; break;
@@ -4327,7 +4964,7 @@ void ChooseOperatorFunc(BinaryOpUGen *unit)
 					case opFold2 : func = &fold2_ka; break;
 					case opWrap2 : func = &wrap2_ka; break;
 					case opExcess : func = &excess_ka; break;
-					case opFirstArg : func = &firstarg_aa; break;
+					//case opFirstArg : func = &firstarg_aa; break;
 					//case opSecondArg : func = &secondarg_aa; break;
 					default : func = &add_ka; break;
 				}
@@ -4335,11 +4972,81 @@ void ChooseOperatorFunc(BinaryOpUGen *unit)
 				// this should have been caught by mBufLength == 1
 				func = &zero_aa;
 			}
-		}
+			break;
+		case calc_ScalarRate :
+			if (rateB == calc_FullRate) {
+				switch (unit->mSpecialIndex) {
+					//case opSilence2 : func = &zero_aa; break;
+					case opAdd : func = &add_ia; break;
+					case opSub : func = &sub_ia; break;
+					case opMul : func = &mul_ia; break;
+					case opFDiv : func = &div_ia; break;
+					case opMod : func = &mod_ia; break;
+					case opEQ  : func = &eq_ia; break;
+					case opNE  : func = &neq_ia; break;
+					case opLT  : func = &lt_ia; break;
+					case opGT  : func = &gt_ia; break;
+					case opLE  : func = &le_ia; break;
+					case opGE  : func = &ge_ia; break;
+					case opMin : func = &min_ia; break;
+					case opMax : func = &max_ia; break;
+					case opBitAnd : func = &and_ia; break;
+					case opBitOr : func = &or_ia; break;
+					case opBitXor : func = &xor_ia; break;
+					case opRound : func = &round_ia; break;
+					case opTrunc : func = &trunc_ia; break;
+					case opAtan2 : func = &atan2_ia; break;
+					case opHypot : func = &hypot_ia; break;
+					case opHypotx : func = &hypotx_ia; break;
+					case opPow   : func = &pow_ia; break;
+					case opRing1 : func = &ring1_ia; break;
+					case opRing2 : func = &ring2_ia; break;
+					case opRing3 : func = &ring3_ia; break;
+					case opRing4 : func = &ring4_ia; break;
+					case opDifSqr : func = &difsqr_ia; break;
+					case opSumSqr : func = &sumsqr_ia; break;
+					case opSqrSum : func = &sqrsum_ia; break;
+					case opSqrDif : func = &sqrdif_ia; break;
+					case opAbsDif : func = &absdif_ia; break;
+					case opThresh : func = &thresh_ia; break;
+					case opAMClip : func = &amclip_ia; break;
+					case opScaleNeg : func = &scaleneg_ia; break;
+					case opClip2 : func = &clip2_ia; break;
+					case opFold2 : func = &fold2_ia; break;
+					case opWrap2 : func = &wrap2_ia; break;
+					case opExcess : func = &excess_ia; break;
+					//case opFirstArg : func = &firstarg_aa; break;
+					//case opSecondArg : func = &secondarg_aa; break;
+					default : func = &add_ia; break;
+				}
+			} else {
+				// this should have been caught by mBufLength == 1
+				func = &zero_aa;
+			}
+			break;
+	}
+
+	return func;
+}
+
+
+void ChooseOperatorFunc(BinaryOpUGen *unit)
+{
+	//Print("->ChooseOperatorFunc %d\n", unit->mSpecialIndex);
+	BinaryOpFunc func = &zero_aa;
+	
+	if (BUFLENGTH == 1) {
+		func = ChooseOneSampleFunc(unit);
+#if __VEC__
+	} else if (ft->mAltivecAvailable && !(BUFLENGTH & 3)) {
+		func = ChooseVectorFunc(unit);
+#endif
+	} else {
+		func = ChooseNormalFunc(unit);
 	}
 	unit->mCalcFunc = (UnitCalcFunc)func;
-	//Print("<-ChooseOperatorFunc %08X    %08X %08X %08X %08X\n", func, &mul_aa, &mul_ak, &mul_ka, &mul_1);
-	//Print("calc %d    %d %d %d\n", unit->mCalcRate, calc_ScalarRate, calc_BufRate, calc_FullRate);
+	//Print("<-ChooseOperatorFunc %08X\n", func);
+	//Print("calc %d\n", unit->mCalcRate);
 }
 
 
