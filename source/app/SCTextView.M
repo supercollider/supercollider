@@ -63,6 +63,31 @@
     } else if (([characters isEqual: @"\n"] || [characters isEqual: @"\r"]) && !([event modifierFlags] & NSAlternateKeyMask)) {
         [self autoIndent];
     } else {
+        //call lang
+        unsigned int modifiers = [event modifierFlags];
+        unichar character = 0;
+		if([characters length] > 0) {
+            character = [characters characterAtIndex: 0];
+        }
+		unsigned int keycode = [event keyCode];
+		MyDocument * doc = [self delegate];
+		PyrObject * pobj = [doc getSCObject];
+		PyrSymbol *method = getsym("keyDown");
+		pthread_mutex_lock (&gLangMutex);
+		if (pobj) {
+			VMGlobals *g = gMainVMGlobals;
+			g->canCallOS = true;
+			++g->sp;  SetObject(g->sp, pobj); 
+			++g->sp;  SetChar(g->sp, character); 
+			++g->sp;  SetInt(g->sp, modifiers); 
+			++g->sp;  SetInt(g->sp, character); 
+			++g->sp;  SetInt(g->sp, keycode); 
+			runInterpreter(g, method, 5);
+			g->canCallOS = false;
+		}
+		pthread_mutex_unlock (&gLangMutex);
+		//(character, modifiers,[event keyCode]
+		
         [super keyDown: event];
     }
 }
@@ -101,8 +126,21 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
     } else {
 below:
         [super mouseDown: event];
+		
+		MyDocument * doc = [self delegate];
+		PyrObject * pobj = [doc getSCObject];
+		PyrSymbol *method = getsym("mouseDown");
+		pthread_mutex_lock (&gLangMutex);
+		if (pobj) {
+			VMGlobals *g = gMainVMGlobals;
+			g->canCallOS = true;
+			++g->sp;  SetObject(g->sp, pobj); 
+			runInterpreter(g, method, 1);
+			g->canCallOS = false;
+		}
+		pthread_mutex_unlock (&gLangMutex);
+
     }
 }
-
 
 @end
