@@ -17,30 +17,30 @@ SynthDef {
 	var <>available;
 	
 	
-	*new { arg name, ugenGraphFunc, lags, prependArgs;
+	*new { arg name, ugenGraphFunc, rates, prependArgs;
 		^this.prNew(name)
-			.build(ugenGraphFunc, lags, prependArgs)
+			.build(ugenGraphFunc, rates, prependArgs)
 	}
 	*prNew { arg name;
 		^super.new.name_(name.asString)
 	}
-	build { arg ugenGraphFunc, lags, prependArgs;
+	build { arg ugenGraphFunc, rates, prependArgs;
 		this.initBuild;
-		this.buildUgenGraph(ugenGraphFunc, lags, prependArgs);
+		this.buildUgenGraph(ugenGraphFunc, rates, prependArgs);
 		this.finishBuild;
 	}
 	
-	*wrap { arg func, lags, prependArgs;
+	*wrap { arg func, rates, prependArgs;
 		if (UGen.buildSynthDef.isNil, { 
 			"SynthDef.wrap should be called inside a SynthDef ugenGraphFunc.\n".error; 
 			^0 
 		});
-		^UGen.buildSynthDef.buildUgenGraph(func, lags, prependArgs);
+		^UGen.buildSynthDef.buildUgenGraph(func, rates, prependArgs);
 	}
 	//only write if no file exists
-	*writeOnce { arg name, func, lags, prependArgs, dir="synthdefs/";
+	*writeOnce { arg name, func, rates, prependArgs, dir="synthdefs/";
 		^pathMatch(dir ++ name ++ ".scsyndef").isEmpty.if({
-			this.new(name, func, lags, prependArgs).writeDefFile(dir)
+			this.new(name, func, rates, prependArgs).writeDefFile(dir)
 		}, nil);
 	}
 	
@@ -50,17 +50,17 @@ SynthDef {
 		constants = Dictionary.new;
 		constantSet = Set.new;
 	}
-	buildUgenGraph { arg func, lags, prependArgs;
+	buildUgenGraph { arg func, rates, prependArgs;
 		// restart controls in case of *wrap
 		irnames = irvalues = ircontrols = irpositions = nil;
 		krnames = krvalues = krcontrols = krpositions = krlags = nil;
 		trnames = trvalues = trcontrols = trpositions = nil;
 
 		prependArgs = prependArgs.asArray;
-		this.addControlsFromArgsOfFunc(func, lags, prependArgs.size);
+		this.addControlsFromArgsOfFunc(func, rates, prependArgs.size);
 		^func.valueArray(prependArgs ++ this.buildControls);
 	}
-	addControlsFromArgsOfFunc { arg func, lags, skipArgs=0;
+	addControlsFromArgsOfFunc { arg func, rates, skipArgs=0;
 		var def, names, values,argNames;
 		
 		def = func.def;
@@ -74,12 +74,12 @@ SynthDef {
 		// the OutputProxies of these two Control ugens in the original order.
 		values = def.prototypeFrame.copyToEnd(skipArgs).extend(names.size);
 		values = values.collect({ arg value; value ? 0.0 });
-		lags = lags.asArray.extend(names.size, 0).collect({ arg lag; lag ? 0.0 });
+		rates = rates.asArray.extend(names.size, 0).collect({ arg lag; lag ? 0.0 });
 		names.do({ arg name, i; 
 			var c, c2, value, lag;
 			#c, c2 = name.asString;
 			value = values.at(i);
-			lag = lags.at(i);
+			lag = rates.at(i);
 			if ((lag == \ir) or: { c == $i and: { c2 == $_ }}, {
 				if (lag.isNumber and: { lag != 0 }, {
 					Post << "WARNING: lag value "<< lag <<" for i-rate arg '"

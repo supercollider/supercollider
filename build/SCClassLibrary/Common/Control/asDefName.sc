@@ -51,8 +51,8 @@
 		^def.name
 	}
 	
-	asSynthDef { arg lags, prependArgs, outClass=\Out, fadeTime;
-		^GraphBuilder.wrapOut(this.hash.asString, this, lags, prependArgs, outClass, fadeTime);	}
+	asSynthDef { arg rates, prependArgs, outClass=\Out, fadeTime;
+		^GraphBuilder.wrapOut(this.hash.asString, this, rates, prependArgs, outClass, fadeTime);	}
 		
 	play { arg target, outbus = 0, fadeTime=0.02;
 		var def, synth, server;

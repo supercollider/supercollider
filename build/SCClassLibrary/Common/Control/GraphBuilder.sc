@@ -1,10 +1,10 @@
 GraphBuilder {
 	//used to create an out ugen automatically and a fade envelope
 	
-	*wrapOut { arg name, func, lags, prependArgs, outClass=\Out, fadeTime;
+	*wrapOut { arg name, func, rates, prependArgs, outClass=\Out, fadeTime;
 		^SynthDef.new(name, { arg i_out=0;
 			var result, rate, env;
-			result = SynthDef.wrap(func, lags, prependArgs);
+			result = SynthDef.wrap(func, rates, prependArgs);
 			rate = result.rate;
 			
 			if(rate === \scalar,{

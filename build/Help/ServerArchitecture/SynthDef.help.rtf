@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fswiss\fcharset77 Helvetica-BoldOblique;\f4\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green115\blue0;\red0\green0\blue0;\red191\green0\blue0;
-\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green115\blue0;\red191\green0\blue0;\red0\green0\blue191;
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 SynthDef				
@@ -16,7 +16,7 @@ All constants, Controls, and UGens that will be used in synthesis are formatted 
 \
 \
 
-\f0\b *new(synthDefName,ugenGraphFunc, specs/lags, prependArgs)\
+\f0\b *new(synthDefName,ugenGraphFunc, rates, prependArgs)\
 
 \f1\b0 	Create a synthDef instance, evaluate the ugenGraphFunc and build the ugenGraph.\
 \
@@ -85,7 +85,7 @@ All constants, Controls, and UGens that will be used in synthesis are formatted 
 	\
 		\
 		
-\f0\b specs/lags
+\f0\b rates
 \f1\b0  \
 			an Array of specifications for the ugenGraphFunc's arguments. \
 			one specification can be:\
@@ -106,7 +106,7 @@ All constants, Controls, and UGens that will be used in synthesis are formatted 
 \
 \
 
-\f0\b *writeOnce(synthDefName,ugenGraphFunc, lags, prependArgs, dir)\
+\f0\b *writeOnce(synthDefName,ugenGraphFunc, rates, prependArgs, dir)\
 			\
 			
 \f1\b0 Create a new SynthDef and write it to disk, only if a defFile with this name does not \
@@ -124,8 +124,7 @@ All constants, Controls, and UGens that will be used in synthesis are formatted 
 \f1\b0 \cf0 \ulnone 	\
 	
 \f0\b \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 		name
+		name
 \f1\b0 \
 			return my name.\
 			a SynthDef is always referred to by its name, which should be unique.\
@@ -159,8 +158,7 @@ All constants, Controls, and UGens that will be used in synthesis are formatted 
 \f0\b Synth
 \f1\b0 . The default is \cf2 \\addToTail\cf0 \
 		\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	\
+	\
 see also basic introductions, like [
 \f0\b SynthDefsVsSynths]
 \f1\b0 \
@@ -173,56 +171,55 @@ see also basic introductions, like [
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f4\fs18 \cf0 \ulnone \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	\cf3 \
-\cf0 	\cf4 // Note that SynthDef(...) is short for SynthDef.new(...).\cf3 \
-\cf0 	\cf4 // Thus the following calls *new to create a SynthDef, and then .play on the resulting instance.\cf3 \
-\cf0 	\cf4 // It is common to use similar constructions for .send, .load, and so on.\cf3 \
-\cf0 	\cf3 \
-\cf0 	\cf3 (\
-\cf0 	\cf3 d = \cf5 SynthDef\cf3 (\cf6 "trigTest"\cf3 , \{ \cf5 arg\cf3  t_trig=0, freq=440; \cf4 // t_trig creates a TrigControl\cf3 \
-\cf0 	\cf3 	\cf5 Out\cf3 .ar(0, \cf5 SinOsc\cf3 .ar(freq+[0,1], 0, \cf5 Decay2\cf3 .kr(t_trig, 0.005, 1.0)));\
-\cf0 	\cf3 \
-\cf0 	\cf3 	\}, [0, 4]		\cf4 // lag the freq, but not t_trig (won't work anyway)\cf3 \
-\cf0 	\cf3 );\
-\cf0 	\cf3 )\
-\cf0 	\cf3 \
-\cf0 	\cf4 //if specs are used, the above can be written also like this:\cf3 \
-\cf0 	\cf3 (\
-\cf0 	\cf3 d = \cf5 SynthDef\cf3 (\cf6 "trigTest"\cf3 , \{ \cf5 arg\cf3  trig=0, freq=440; \
-\cf0 	\cf3 	\cf5 Out\cf3 .ar(0, \cf5 SinOsc\cf3 .ar(freq+[0,1], 0, \cf5 Decay2\cf3 .kr(trig, 0.005, 1.0)));\
-\cf0 	\cf3 \
-\cf0 	\cf3 	\}, [\cf7 \\tr\cf3 , 4]		\cf4 // lag the freq (lagtime: 4s),\cf8  \\tr creates a TrigControl\cf4  for trig\cf3 \
-\cf0 	\cf3 ); 		\
-\cf0 	\cf3 )\
-\cf0 	\cf3 \
-\cf0 	\cf4 //send the def to the local server:\cf3 \
-\cf0 	\cf3 s = \cf5 Server\cf3 .local;\
-\cf0 	\cf3 d.send(s);\
-\cf0 	\cf3 \
-\cf0 	\cf4 //create a synth on the server with the synthdef name:\cf3 \
-\cf0 	\cf3 \
-\cf0 	\cf3 z = \cf5 Synth\cf3 .head(s, \cf7 \\trigTest\cf3 );\
-\cf0 	\cf3 z.set(\cf7 \\trig\cf3 , 1); 				\cf4 // you can do this multiple times \cf3 \
-\cf0 	\cf3 z.set(\cf7 \\trig\cf3 , 1, \cf7 \\freq\cf3 , 220); 	\cf4 // hear how the freq lags\cf3 \
-\cf0 	\cf3 z.set(\cf7 \\trig\cf3 , 1, \cf7 \\freq\cf3 , 880);\
-\cf0 	\cf3 \
-\cf0 	\cf3 d.free; \cf4 //free the synth
-\f1\fs24 \cf3 \
-\cf0 	\cf3 \
-\cf0 	\cf3 \
-\cf0 	
-\f4\fs18 \cf8 //play shortcut syntax: this syntax is used in many helpfiles.
-\f1\fs24 \cf3 \
-\cf0 	
-\f4\fs18 z = d.play(s); \cf8 // .play returns a Synth object, assigned here to d. sending the def is done internally.\
+	\
+	\cf3 // Note that SynthDef(...) is short for SynthDef.new(...).\cf0 \
+	\cf3 // Thus the following calls *new to create a SynthDef, and then .play on the resulting instance.\cf0 \
+	\cf3 // It is common to use similar constructions for .send, .load, and so on.\cf0 \
+	\
+	(\
+	d = \cf4 SynthDef\cf0 (\cf5 "trigTest"\cf0 , \{ \cf4 arg\cf0  t_trig=0, freq=440; \cf3 // t_trig creates a TrigControl\cf0 \
+		\cf4 Out\cf0 .ar(0, \cf4 SinOsc\cf0 .ar(freq+[0,1], 0, \cf4 Decay2\cf0 .kr(t_trig, 0.005, 1.0)));\
+	\
+		\}, [0, 4]		\cf3 // lag the freq, but not t_trig (won't work anyway)\cf0 \
+	);\
+	)\
+	\
+	\cf3 //if specs are used, the above can be written also like this:\cf0 \
+	(\
+	d = \cf4 SynthDef\cf0 (\cf5 "trigTest"\cf0 , \{ \cf4 arg\cf0  trig=0, freq=440; \
+		\cf4 Out\cf0 .ar(0, \cf4 SinOsc\cf0 .ar(freq+[0,1], 0, \cf4 Decay2\cf0 .kr(trig, 0.005, 1.0)));\
+	\
+		\}, [\cf2 \\tr\cf0 , 4]		\cf3 // lag the freq (lagtime: 4s), \\tr creates a TrigControl for trig\cf0 \
+	); 		\
+	)\
+	\
+	\cf3 //send the def to the local server:\cf0 \
+	s = \cf4 Server\cf0 .local;\
+	d.send(s);\
+	\
+	\cf3 //create a synth on the server with the synthdef name:\cf0 \
+	\
+	z = \cf4 Synth\cf0 .head(s, \cf2 \\trigTest\cf0 );\
+	z.set(\cf2 \\trig\cf0 , 1); 				\cf3 // you can do this multiple times \cf0 \
+	z.set(\cf2 \\trig\cf0 , 1, \cf2 \\freq\cf0 , 220); 	\cf3 // hear how the freq lags\cf0 \
+	z.set(\cf2 \\trig\cf0 , 1, \cf2 \\freq\cf0 , 880);\
+	\
+	d.free; \cf3 //free the synth
+\f1\fs24 \cf0 \
+	\
+	\
+	
+\f4\fs18 \cf3 //play shortcut syntax: this syntax is used in many helpfiles.
+\f1\fs24 \cf0 \
+	
+\f4\fs18 z = d.play(s); \cf3 // .play returns a Synth object, assigned here to d. sending the def is done internally.\
 \cf0 	z.set(\cf2 \\trig\cf0 , 1);
-\f1\fs24 \cf3 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 \
+\f1\fs24 \
 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 common \cf3 argument names: 
+\f0\b \cf0 common argument names: 
 \f3\i out
 \f0\i0  
 \f1\b0 and
@@ -231,50 +228,49 @@ see also basic introductions, like [
 \f1\i0\b0 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	
-\f4\fs18 \cf3 (\
-\cf0 	\cf5 SynthDef\cf3 (\cf6 \\synthDefTest\cf3 , \{ \cf5 arg\cf3  out, gate=1, freq=440; \
-\cf0 	\cf3 		\cf5 Out\cf3 .ar(out, \cf5 SinOsc\cf3 .ar(freq) * \cf5 EnvGen\cf3 .kr(\cf5 Env\cf3 .asr(0.1, 0.3, 1.3), gate, doneAction:2));\
-\cf0 	\cf3 \
-\cf0 	\cf3 	\}).send(s); 		\
-\cf0 	\cf3 )\
-\cf0 	\cf3 \
-\cf0 	\cf3 x = \cf5 Synth\cf3 (\cf7 \\synthDefTest\cf3 , [\cf7 \\out\cf3 , 0]); \cf4 //play out through hardware output bus 0 (see Out.help)\cf3 \
-\cf0 	\cf3 x.release;\cf4 //releases and frees the synth, if and only if doneAction is > 2\cf3 \
-\cf0 	\cf3 \
-\cf0 	\cf4 //equivalent:\cf3 \
-\cf0 	\cf3 \
-\cf0 	\cf3 x = \cf5 Synth\cf3 (\cf7 \\synthDefTest\cf3 ); \cf4 // out defaults to zero, if no default arg is given.\cf3 \
-	x.set(\cf7 \\gate\cf3 , 0); \cf8 //releases and frees the synth, if and only if doneAction is > 2\cf3 \
-\cf0 	\cf3 \
-\cf0 	\cf4 //if value is negative, it describes the release time:\cf3 \
-\cf0 	\cf3 \
-\cf0 	\cf3 x = \cf5 Synth\cf3 (\cf7 \\synthDefTest\cf3 );\
-\cf0 	\cf3 x.set(\cf7 \\gate\cf3 , -5);\
-\cf0 	\cf3 \
-\cf0 	\cf3 \
-\cf0 	\cf4 //equivalent:\cf3 \
-\cf0 	\cf3 x = \cf5 Synth\cf3 (\cf7 \\synthDefTest\cf3 );\
-\cf0 	\cf3 x.release(5);\
-\cf0 	\cf3 \
-\cf0 	\cf3 \
-\cf0 	\cf3 \
-\cf0 	\cf4 //if the out arg is used in a standard way, it can always be changed without knowing the synth def\cf3 \
-\cf0 	\cf3 x = \cf5 Synth\cf3 (\cf7 \\synthDefTest\cf3 , [\cf7 \\out\cf3 , 0]);\
-\cf0 	\cf3 x.set(\cf7 \\out\cf3 , 1); \cf4 //play through channel 1\cf3 \
-\cf0 	\cf3 \
-\cf0 	\cf4 //also it can be used in an event stream:\cf3 \
-\cf0 	\cf4 //if the doneAction is 1 the synths pile up and do not get freed.\cf3 \
-\cf0 	\cf3 (\
-\cf0 	\cf5 Pbind\cf3 (\
-\cf0 	\cf3 	\cf7 \\instrument\cf3 , \cf7 \\synthDefTest\cf3 ,\
-\cf0 	\cf3 	\cf7 \\freq\cf3 , \cf5 Pseq\cf3 ([500, 600, \cf5 Prand\cf3 ([200, 456, 345],1)], \cf5 inf\cf3 ),\
-\cf0 	\cf3 	\cf7 \\legato\cf3 , \cf5 Pseq\cf3 ([1.5, 0.2], \cf5 inf\cf3 ),\
-\cf0 	\cf3 	\cf7 \\dur\cf3 , 0.4\
-\cf0 	\cf3 ).play;\
-\cf0 	\cf3 )\
-\cf0 	\cf3 \
-\cf0 	\cf3 \
-\cf0 	\cf3 \
+	
+\f4\fs18 (\
+	\cf4 SynthDef\cf0 (\cf5 \\synthDefTest\cf0 , \{ \cf4 arg\cf0  out, gate=1, freq=440; \
+			\cf4 Out\cf0 .ar(out, \cf4 SinOsc\cf0 .ar(freq) * \cf4 EnvGen\cf0 .kr(\cf4 Env\cf0 .asr(0.1, 0.3, 1.3), gate, doneAction:2));\
+	\
+		\}).send(s); 		\
+	)\
+	\
+	x = \cf4 Synth\cf0 (\cf2 \\synthDefTest\cf0 , [\cf2 \\out\cf0 , 0]); \cf3 //play out through hardware output bus 0 (see Out.help)\cf0 \
+	x.release;\cf3 //releases and frees the synth, if and only if doneAction is > 2\cf0 \
+	\
+	\cf3 //equivalent:\cf0 \
+	\
+	x = \cf4 Synth\cf0 (\cf2 \\synthDefTest\cf0 ); \cf3 // out defaults to zero, if no default arg is given.\cf0 \
+	x.set(\cf2 \\gate\cf0 , 0); \cf3 //releases and frees the synth, if and only if doneAction is > 2\cf0 \
+	\
+	\cf3 //if value is negative, it describes the release time:\cf0 \
+	\
+	x = \cf4 Synth\cf0 (\cf2 \\synthDefTest\cf0 );\
+	x.set(\cf2 \\gate\cf0 , -5);\
+	\
+	\
+	\cf3 //equivalent:\cf0 \
+	x = \cf4 Synth\cf0 (\cf2 \\synthDefTest\cf0 );\
+	x.release(5);\
+	\
+	\
+	\
+	\cf3 //if the out arg is used in a standard way, it can always be changed without knowing the synth def\cf0 \
+	x = \cf4 Synth\cf0 (\cf2 \\synthDefTest\cf0 , [\cf2 \\out\cf0 , 0]);\
+	x.set(\cf2 \\out\cf0 , 1); \cf3 //play through channel 1\cf0 \
+	\
+	\cf3 //also it can be used in an event stream:\cf0 \
+	\cf3 //if the doneAction is 1 the synths pile up and do not get freed.\cf0 \
+	(\
+	\cf4 Pbind\cf0 (\
+		\cf2 \\instrument\cf0 , \cf2 \\synthDefTest\cf0 ,\
+		\cf2 \\freq\cf0 , \cf4 Pseq\cf0 ([500, 600, \cf4 Prand\cf0 ([200, 456, 345],1)], \cf4 inf\cf0 ),\
+		\cf2 \\legato\cf0 , \cf4 Pseq\cf0 ([1.5, 0.2], \cf4 inf\cf0 ),\
+		\cf2 \\dur\cf0 , 0.4\
+	).play;\
+	)\
+	\
+	\
+	\
 }
