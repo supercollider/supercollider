@@ -28,11 +28,13 @@ ObjectGui {
 		// implement this in your subclass
 	}
 
-	gui { arg layout ... args;
-		layout=this.guify(layout);
+	gui { arg lay ... args;
+		var layout;
+		layout=this.guify(lay);
 		this.writeName(layout);
 		this.performList(\guiBody,[layout] ++ args);
-		layout.front;
+		//if you created it, front it
+		if(lay.isNil,{ layout.front });
 	}
 	topGui { arg layout ... args;
 		layout=this.guify(layout);

@@ -10,7 +10,7 @@ AbstractPlayerGui : ObjectGui {
 		layout=this.guify(layout);
 		this.writeName(layout,true);
 		this.guiBody(layout);
-		layout.resizeWindowToFit;
+		layout.resizeWindowToFit.front;
 	}
 	
 	gui { arg layout;

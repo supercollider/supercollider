@@ -130,8 +130,8 @@ PageLayout  {
 	checkNotClosed { ^isClosed.not }
 	front {
 		//windows.do({ arg w; w.unhide });
-		//windows.reverseDo({arg w; w.front }); 
-		windows.first.front;
+		windows.reverseDo({arg w; w.front }); 
+		//windows.first.front;
 	}
 	hide {
 		// for now

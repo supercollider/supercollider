@@ -471,7 +471,7 @@ Crucial {
 		Tempo.gui(menu.startRow);
 
 		if(resize,{
-			menu.resizeWindowToFit;
+			menu.resizeWindowToFit.front;
 		});
 	}
 	
