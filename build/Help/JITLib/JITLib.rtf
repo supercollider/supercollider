@@ -43,7 +43,7 @@ other topics:		[jitlib_efficiency][the_lazy_proxy][jitlib_fading]\
 \f1\b0 \cf0 storing control settings:	[NodeMap]
 \f0\b \
 
-\f1\b0 special purpose Groups: 	[Ensemble] [ModelGroup]
+\f1\b0 special purpose Groups: 	[Ensemble] [ModelGroup] // will be removed
 \f0\b \
 
 \f1\b0 \
@@ -104,6 +104,11 @@ there is a couple of other classes that are not specifically connected:\
 \
 NodeProxy / ProxySpace:\
 	\
+	\ul feb\ulnone \
+	added garbage collector to ProxySpace\
+	fixed unmap\
+	control rate proxies do not wrap channels anymore.\
+	\
 	\ul jan 10\
 	\ulnone Pref / Prefn are tested, update properly. I'm thinking of merging them with Pdef.\
 	fixed wakeUp bug in NodeProxy.\
@@ -143,13 +148,22 @@ NodeProxy / ProxySpace:\
 	bin/unops work fully now again like any math op.\
 \
 TODO:\
+	\
+	\
+	full post of proxyspace\
 	full test load from file\
+	check .lineAt\
+	check StreamClutch for bugs\
+\
+\
+	once Condition/signal synth msg id exists change sendBundle implementation\
+	allow save synthdefs\
 	improve interface to crucial lib\
 	finish PlayerSpace\
 
 \f2\fs18 \
-\
-
+	\
+	
 \f1\fs24 _____________________________________\
 for suggestions / comments contact me\
 Julian Rohrhuber rohrhuber@uni-hamburg.de
