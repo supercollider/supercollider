@@ -155,7 +155,7 @@ Instr  {
 		
 		
 		// should only happen if you are ar or kr out
-		^SynthDef.newList(defName,{ arg inputs;
+		^SynthDef.newFromSpecs(defName,{ arg inputs;
 			var outIndex,funcArgs;
 			//outIndex = inputs.removeAt(0);
 			
@@ -170,13 +170,13 @@ Instr  {
 						["fixed", fixedArgs.at(i)].postln;
 						fixedArgs.at(i) ?? {this.defArgAt(i)}//or nil:  get def arg
 					},{// control
-						fixedArgs.at(i) ?? {									//if(spec.isKindOf(TrigSpec),{ // create a trig, responds to /c_set
-							//	InTrig.kr(inputs.at(controlIndices.at(i)))
-							//},{
+						fixedArgs.at(i) ?? {									if(spec.isKindOf(TrigSpec),{ // create a trig, responds to /c_set
+								InTrig.kr(inputs.at(controlIndices.at(i)))
+							},{
 								// in  already is a control signal.
 								// patching involves using /map, not In.kr
 								inputs.at(controlIndices.at(i)) // no support for variable channel kr
-							//})
+							})
 						} 
 					})
 				});

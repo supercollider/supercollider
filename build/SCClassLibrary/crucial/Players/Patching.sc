@@ -21,7 +21,6 @@ PatchIn {
 	}
 	connectTo { arg patchOut;
 		// break any previous ?
-		// connectedTo = patchOut; //  patchOut does me
 		patchOut.connectTo(this);
 	}
 	server { ^nodeControl.server }
@@ -36,7 +35,6 @@ AudioPatchIn : PatchIn {
 	}
 	value_ { arg val;
 		// the nodeControl indicates the audio bus number
-
 		// to set the value of audio, would have to set up a bus and set the sample value
 		thisMethod.notYetImplemented;
 	}

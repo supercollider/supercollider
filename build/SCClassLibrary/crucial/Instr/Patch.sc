@@ -63,14 +63,15 @@ Patch : AbstractPlayer  {
 		patchIns = [];
 		synthArgs = [];
 		fixedArgs = args.collect({ arg ag,i;
-			// scalar rate or floats
-			if(instr.specs.at(i).rate == \scalar or: {ag.isNumber},{
+			if(instr.specs.at(i).rate == \scalar,{
 				ag.value
 			},{
+				//TODO: force floats to PatchIn.scalar so you don't waste
+				//an extra Control
 				patchIns = 
 					patchIns.add(PatchIn.newByRate(instr.specs.at(i).rate));
 				synthArgs = synthArgs.add(ag);
-				nil
+				nil // not fixed
 			})
 		});
 		

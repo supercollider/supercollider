@@ -13,7 +13,7 @@
 	*/
 	
 	// newFromSpecs
-	*newList { arg name, ugenGraphFunc,inputSpecs;
+	*newFromSpecs { arg name, ugenGraphFunc,inputSpecs;
 		^super.new.name_(name).buildList(ugenGraphFunc,inputSpecs);
 	}
 
