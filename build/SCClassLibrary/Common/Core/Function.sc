@@ -79,7 +79,7 @@ Function : AbstractFunction {
 	get { arg prevVal; ^prevVal }
 	
 	fork { arg clock, quant=0.0;
-		Routine(this).play(clock, quant);
+		^Routine(this).play(clock, quant);
 	}
 	
 	awake { arg beats, seconds, clock;
