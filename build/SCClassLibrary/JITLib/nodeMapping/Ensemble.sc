@@ -78,7 +78,6 @@ Ensemble : AbstractEnsemble {
 		nodeMap.addToBundle(bundle, reciever);
 	}
 	
-	//isPlaying { ^server.nodeIsPlaying(nodeID) }
 	
 }
 
