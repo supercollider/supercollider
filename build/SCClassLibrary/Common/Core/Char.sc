@@ -71,11 +71,6 @@ Char : Magnitude {
 	*space { ^$  }
 	*comma { ^$\, }
 
-	draw { 
-		_String_Draw
-		^this.primitiveFailed
-	}
-
 	printOn { arg stream;
 		stream.put(this);
 	}

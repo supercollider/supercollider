@@ -60,14 +60,6 @@ Symbol {
 		^currentEnvironment.put(this, aValue) 
 	}
 
-	draw { 
-		_Symbol_Draw
-		^this.primitiveFailed
-	}
-	fontID {
-		_Symbol_GetFontID
-		^this.primitiveFailed
-	}
 	blend { // Envelopes may call this on the curves inst var.
 		^this
 	}

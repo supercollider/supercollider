@@ -182,7 +182,7 @@ Process {
 	shutDown {
 		// This method is called before recompiling or quitting.
 		// Override in class 'Main' to do whatever you want.
-		SCWindow.closeAll;
+		UI.shutdown;
 		//OSCPort.closeAll;
 		File.closeAll;
 	}

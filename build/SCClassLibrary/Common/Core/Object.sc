@@ -160,7 +160,7 @@ Object {
 	// errors
 	halt { 
 		currentEnvironment = topEnvironment; // restore top Environment
-		CocoaDialog.clear;
+		UI.reset;
 		this.prHalt 
 	}
 	prHalt { _Halt }
@@ -361,10 +361,6 @@ Object {
 		});		
 	}
 
-	mouseDown { ^nil }
-	mouseOver { ^nil }
-	keyDown { }
-		
 	// layout support
 	getLayoutSize { ^LayoutSize.new }
 	layout {}

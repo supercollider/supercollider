@@ -42,20 +42,6 @@ String[char] : RawArray {
 	postcln { "// ".post; this.postln; }
 	postc { "// ".post; this.post; }
 
-	newTextWindow { arg title="Untitled", makeListener=false;
-		_NewTextWindow 
-		^this.primitiveFailed
-	}
-	openTextFile { arg selectionStart=0, selectionLength=0;
-		_OpenTextFile 
-		^this.primitiveFailed
-	}
-	
-//	*fromUser { arg prompt="Enter string :", default="";
-//		_GetStringFromUser
-//		^this.primitiveFailed
-//	}
-	
 	die { arg ... culprits; 
 		"FATAL ERROR:\n".post;  
 		this.postln;  
@@ -151,35 +137,6 @@ String[char] : RawArray {
 	interpret { ^thisProcess.interpreter.interpret(this); } 
 	interpretPrint { ^thisProcess.interpreter.interpretPrint(this); }
 	
-	draw {
-		this.drawAtPoint(Point(0,0), Font.default, Color.black);
-	}
-	drawAtPoint { arg point, font, color;
-		_String_DrawAtPoint
-		^this.primitiveFailed
-	}
-	drawInRect { arg rect, font, color;
-		_String_DrawInRect
-		^this.primitiveFailed
-	}
-	drawCenteredIn { arg inRect;
-		this.drawAtPoint(this.bounds.centerIn(inRect).origin);
-	}
-	drawLeftJustIn { arg inRect;
-		var pos, bounds;
-		bounds = this.bounds;
-		pos = bounds.centerIn(inRect);
-		pos.x = inRect.left + 2;
-		this.drawAtPoint(pos);
-	}
-	drawRightJustIn { arg inRect;
-		var pos, bounds;
-		bounds = this.bounds;
-		pos = bounds.centerIn(inRect);
-		pos.x = inRect.right - 2 - bounds.width;
-		this.drawAtPoint(pos);
-	}
-	
 	*readNew { arg file;
 		^file.readAllString;
 	}
@@ -191,17 +148,6 @@ String[char] : RawArray {
 	storeOn { arg stream;
 		stream.putAll(this.asCompileString);
 	}
-	
-//	bounds { ^this.prBounds(Rect.new) }
-//	getLayoutSize {
-//		arg extent;
-//		extent = this.bounds.extent;
-//		^LayoutSize(extent.x+1, extent.x+1, extent.y+1, extent.y+1, 0);
-//	}
-//	prBounds { arg rect;
-//		_String_GetBounds
-//		^this.primitiveFailed
-//	}
 	
 	inspectorClass { ^StringInspector }
 	
@@ -231,24 +177,6 @@ String[char] : RawArray {
 	ugenCodeString { arg ugenIndex, isDecl, inputNames=#[], inputStrings=#[];
 		_UGenCodeString
 		^this.primitiveFailed
-	}
-	
-	/// cocoa or at least foundation dependant
-	standardizePath { _Cocoa_StandardizePath ^this.primitiveFailed }
-	findHelpFile {
-		_Cocoa_HelpFileForString_
-		^this.primitiveFailed
-	}
-	openHelpFile {
-		(this.findHelpFile ? "Help/Help.help.rtf").openTextFile
-	}
-	
-	speak { arg voice=0;
-		if(Speech.initialized.not,{Speech.init});
-		this.prSpeak(voice);
-	}
-	prSpeak { arg voice=0;
-		_SpeakText
 	}
 }
 

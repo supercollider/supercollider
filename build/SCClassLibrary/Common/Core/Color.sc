@@ -22,18 +22,6 @@ Color {
 	}
 	*rand { arg lo=0.3,hi=0.9; ^Color.new(rrand(lo,hi),rrand(lo,hi),rrand(lo,hi)) }
 
-	setStroke {
-		_Color_SetStroke
-		^this.primitiveFailed
-	}
-	setFill {
-		_Color_SetFill
-		^this.primitiveFailed
-	}
-	set {
-		this.setStroke.setFill;
-	}
-
 	scaleByAlpha {
 		^Color.new(red * alpha, green * alpha, blue * alpha, 1.0)
 	}

@@ -96,13 +96,6 @@ Signal[float] : FloatArray {
 		// if the other signal is too long only the first part is overwritten
 		^this.primitiveFailed 
 	}
-	plot { arg name, bounds;
-		this.asciiPlot;
-		// open a window
-		//name = name ? "signal";
-		//bounds = bounds ? Rect.new(40,80,600,380);
-		//SignalWindow.new(name, bounds, this);
-	}
 	/*
 	play { arg sampleRate, name=\Signal, loop = true;
 		var playbackRate = 1.0;
@@ -302,8 +295,6 @@ Wavetable[float] : FloatArray {
 	asSignal {
 		_WavetableAsSignal
 		^this.primitiveFailed 
-	}
-	plot { arg name, bounds;
 	}
 
 	blend { arg anotherWavetable, blendFrac=0.5;

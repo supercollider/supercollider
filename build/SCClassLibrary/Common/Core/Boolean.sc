@@ -15,7 +15,6 @@ Boolean {
 		_KeywordError 
 	} 
 	trace { _Trace } // this is only available in a special debugging version of the app
-	tabletTracking { _TabletTracking } // Wacom tablet support
 	
 	printOn { arg stream;
 		stream.putAll(this.asString);

@@ -11,9 +11,6 @@ Nil {
 	push { arg function; ^function.value }
 	appendStream { arg stream; ^stream }
 		
-	// nil parent view
-	asView {}
-
 	// support a nil Plug
 	source {}
 	source_ {}
@@ -67,14 +64,6 @@ Nil {
 	++ { arg array; ^array }
 	asCollection { ^[] }
 
-	
-	// graphical support
-	draw {}
-	click { ^nil }
-	fontID { ^nil }
-	asRect { ^Rect.new }
-	asArray { ^[] }
-	
 	// ControlView support
 	set {}
 	get { arg prevVal; ^prevVal }

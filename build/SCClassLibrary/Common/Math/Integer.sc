@@ -97,7 +97,6 @@ Integer : SimpleNumber {
 		*/
 	}
 
-	getKeys { _GetKeys } 
 	// code gen
 	outputType { ^\INT }
 	
