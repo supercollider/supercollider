@@ -4,7 +4,7 @@ BusPlug : AbstractFunction {
 	
 	var <server, <bus; 		
 	var <monitor;
-	var <busArg = \; // cache for "/s_new" bus arg
+	var <busArg = ""; // cache for "/s_new" bus arg
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
 	
 	
@@ -263,7 +263,7 @@ NodeProxy : BusPlug {
 
 	var <group, <objects, <nodeMap;	
 	var <loaded=false, <>awake=true, <>paused=false;
-	var <>clock;
+	var <>clock, <>quant;
 	classvar <>buildProxyControl;
 	
 	
@@ -296,13 +296,13 @@ NodeProxy : BusPlug {
 	}
 	
 	pause {
-		if(this.isPlaying) { objects.do { |item| item.pause(clock) } };
+		if(this.isPlaying) { objects.do { |item| item.pause(clock, quant) } };
 		paused = true;
 	}
 	
 	resume {
 		paused = false;
-		if(this.isPlaying) { objects.do { |item| item.resume(clock) } };
+		if(this.isPlaying) { objects.do { |item| item.resume(clock, quant) } };
 	}
 	
 	fadeTime_ { arg t;
@@ -372,7 +372,7 @@ NodeProxy : BusPlug {
 					container.wakeUpParentsToBundle(bundle);
 					this.sendObjectToBundle(bundle, container, extraArgs, index);
 				};
-				bundle.schedSend(server, clock);
+				bundle.schedSend(server, clock, quant);
 			} {
 				loaded = false;
 			};
@@ -432,7 +432,7 @@ NodeProxy : BusPlug {
 			this.stopAllToBundle(bundle); 
 			group = agroup;
 			this.sendAllToBundle(bundle); 
-			bundle.schedSend(server, clock);
+			bundle.schedSend(server, clock, quant);
 		} { group = agroup };
 	}
 	
@@ -454,7 +454,7 @@ NodeProxy : BusPlug {
 			{
 			old.unsetArgsToBundle(bundle, group); // unmap old
 			nodeMap.addToBundle(bundle, group); // map new
-			bundle.schedSend(server, clock);
+			bundle.schedSend(server, clock, quant);
 			}
 		};
 	}
@@ -477,11 +477,11 @@ NodeProxy : BusPlug {
 		if(this.isPlaying) {
 			bundle = MixedBundle.new;
 			this.stopAllToBundle(bundle);
-			bundle.schedSend(server, clock);
+			bundle.schedSend(server, clock, quant);
 			bundle = MixedBundle.new;
 			this.loadToBundle(bundle);
 			this.sendAllToBundle(bundle);
-			bundle.schedSend(server, clock);
+			bundle.schedSend(server, clock, quant);
 		} {
 			loaded = false;
 		};
@@ -621,7 +621,7 @@ NodeProxy : BusPlug {
 				var bundle;
 				bundle = MixedBundle.new;
 				this.wakeUpToBundle(bundle);
-				bundle.schedSend(server, clock)
+				bundle.schedSend(server, clock, quant)
 	}
 		
 		
