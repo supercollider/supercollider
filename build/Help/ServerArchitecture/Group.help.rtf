@@ -20,6 +20,9 @@
 \f1\fs24 \cf0 A Group is a collection of Nodes represented as a linked list. A new Node may be added to the head or tail of the group. The Nodes within a Group may be controlled together. The Nodes in a Group may be both Synths and other Groups. \
 \
 At startup there is a top level group with an ID of zero that defines the root of the tree.  This is represented by a subclass of Group: RootNode.\
+also there is always a default group with id 1: see [
+\f0\b default_group
+\f1\b0 ]\
 \
 \
 Groups are very useful for controlling [
@@ -32,32 +35,27 @@ Groups are very useful for controlling [
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 	*new\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 		a new group at the head of the RootNode of the defaultServer\
+\f1\b0 		a new group at the head of the RootNode of the defaultServer\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 	*after(aGroup)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 		create a group and add immediately after aGroup, \
+\f1\b0 		create a group and add immediately after aGroup, \
 		in the same group,\
 		on the same server \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \
+\f0\b \
 	*before(aGroup)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 		create a group and add immediately before aGroup, \
+\f1\b0 		create a group and add immediately before aGroup, \
 		in the same group,\
 		on the same server\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \
+\f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 	
@@ -188,32 +186,27 @@ Groups are very useful for controlling [
 	See the example below.\
 		\
 		\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	freeAll\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b 	freeAll\
 
-\f1\b0 \cf0 		free all the nodes in the group, but do not free the group itself.\
+\f1\b0 		free all the nodes in the group, but do not free the group itself.\
 	\
 	
 \f0\b do(function)\
 		
 \f1\b0 iterate over all the nodes in the group, valueing the function on each\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	deepDo(function)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b 	deepDo(function)\
 
-\f1\b0 \cf0 		depth first traversal.\
+\f1\b0 		depth first traversal.\
 		iterate over all the nodes in the group, and all the nodes in any group\
 		within any groups within this group.\
 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \
+\f0\b \
 \
 \
 Examples
