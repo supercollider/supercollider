@@ -33,6 +33,21 @@ IRand : UGen {
 	}
 }
 
+
+TRand : UGen {
+	// uniform distribution
+	*kr { arg lo = 0.0, hi = 1.0, trig = 0.0;
+		^this.multiNew('control', lo, hi, trig)
+	}
+}
+
+TIRand : UGen {
+	// uniform distribution of integers
+	*kr { arg lo = 0, hi = 127, trig = 0.0;
+		^this.multiNew('control', lo, hi, trig)
+	}
+}
+
 LinRand : UGen {
 	// linear distribution
 	// if minmax <= 0 then skewed towards lo.
