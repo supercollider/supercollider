@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green0\blue191;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Server
@@ -10,15 +10,30 @@
 \f0\b object representing an sc-server application
 \f1\b0 \
 \
-superclass: Model\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 superclass: Model
+\f1\b0 \
 \
 A Server object is the client-side representation of a server app and is used to control the app from sc-lang. (See 
 \f0\b ClientVsServer
 \f1\b0  for more details on the distinction.) It forwards osc-messages and keeps a number of allocators that keep track of id's for nodes, buses and buffers. The server application is a commandline program, so all commands apart from the osc-messages are unix commands.\
 \
+When a 
+\f0\b Server
+\f1\b0  is booted there is a top level group with an ID of 0 that defines the root of the node tree. (This is represented by a subclass of Group: 
+\f0\b RootNode
+\f1\b0 .) There is also a 
+\f0\b default_group
+\f1\b0  with an ID of 1, which is the default group for all Nodes when using object style. This provides a predictable basic Node tree so that methods such as Server-scope, Server-record, etc. can function without running into order of execution problems. The default group is persistent, and is recreated after a reboot, pressing cmd-., etc. See 
+\f0\b RootNode
+\f1\b0  and 
+\f0\b default_group
+\f1\b0  for more information.\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 \ul Class Methods
+\f0\b\fs30 \cf0 \ul \ulc0 Class Methods
 \f1\b0\fs24 \ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -26,65 +41,65 @@ A Server object is the client-side representation of a server app and is used to
 \f0\b \cf0 *new(name, address, options, clientID)
 \f1\b0 \
 	\
-		
+	
 \f0\b name
 \f1\b0  	\
-				each server object is stored in one global classvariable under its name.\
-		\
-		
+			each server object is stored in one global classvariable under its name.\
+	\
+	
 \f0\b address
 \f1\b0  	\
-				instance of 
+			instance of 
 \f0\b NetAddr
 \f1\b0 , providing host and port\
-		\
-		
+	\
+	
 \f0\b options
 \f1\b0 	\
-				instance of 
+			instance of 
 \f0\b ServerOptions
 \f1\b0 , providing all special options\
-		\
-		
+	\
+	
 \f0\b clientID
 \f1\b0 	an integer. \
-				in multi client situations, every client can be given a separate nodeID range\
+			in multi client situations, every client can be given a separate nodeID range\
 \
 
 \f0\b *local
 \f1\b0 \
-		returns the local server, stored in classvar local (created already on initClass)\
+	returns the local server, stored in classvar local (created already on initClass)\
 \
 
 \f0\b *internal
 \f1\b0 \
-		returns the local server, stored in classvar local (created already on initClass)\
+	returns the local server, stored in classvar local (created already on initClass)\
 
 \f0\b \
 *default
 \f1\b0 \
-		returns the default server, default: local. this can be set to any server and any synths are created\
+	returns the default server, default: local. this can be set to any server and any synths are created\
 		on this server.\
 		\
 
 \f0\b *quitAll
 \f1\b0 \
-		quit all registered servers\
+	quit all registered servers\
 		\
 
 \f0\b *killAll
 \f1\b0 \
-		query the system for any sc-servers and quit them\
+	query the system for any sc-servers and quit them\
 		\
 
 \f0\b *freeAll
 \f1\b0 \
-		free all nodes in all servers\
+	free all nodes in all servers\
 		\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 \ul Instance Methods
+\f0\b\fs30 \cf0 \ul \ulc0 Instance Methods
 \f1\b0\fs24 \ulnone \
 			\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -92,23 +107,25 @@ A Server object is the client-side representation of a server app and is used to
 \f0\b \cf0 sendMsg(arg1, arg2, arg3, ... argN)
 \f1\b0 \
 \
-		send an osc message to the server.\
+	send an osc message to the server.\
 		\
-		s.sendMsg("/s_new", "default", 1980, 0);\
+	
+\f2\fs18 s.sendMsg("/s_new", "default", 1980, 0);
+\f1\fs24 \
 		\
 
 \f0\b sendBundle(time, array1, array1, array1, ... arrayN)
 \f1\b0 \
 		\
-		send  osc bundles to the server.\
+	send  osc bundles to the server.\
 		\
-		time:  \
-			as the network might have irregular performance the message is \
-			scheduled to be evaluated the future so that all messages are synchroneous\
-			relative to each other, but delayed by a constant offset.\
-			if such a bundle arrives late, the server replies with a late message but still evaluates it.				\
-		\
-		s.sendBundle(0.2, ["/s_new", "default", 1980, 0], ["/n_map", 1980, "freq", 0]);\
+	time:  \
+		as the network might have irregular performance the message is scheduled to be evaluated the \
+		future so that all messages are synchroneous relative to each other, but delayed by a constant offset.\
+		if such a bundle arrives late, the server replies with a late message but still evaluates it.				\
+	
+\f2\fs18 \cf2 s.sendBundle(0.2, [\cf3 "/s_new"\cf2 , \cf3 "default"\cf2 , 1980, 0], [\cf3 "/n_map"\cf2 , 1980, \cf3 "freq"\cf2 , 0]);
+\f1\fs24 \cf0 \
 		\
 
 \f0\b sendRaw(aRawArray)
@@ -116,125 +133,186 @@ A Server object is the client-side representation of a server app and is used to
 \
 
 \f0\b listSendMsg([arg1, arg2, arg3, ... argN])\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
-		same like sendMsg, but takes an array as argument\
+\f1\b0 \cf0 \
+	same like sendMsg, but takes an array as argument\
 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b listSendBundle(time, [array1, array1, array1, ... arrayN])\
+\f0\b \cf0 listSendBundle(time, [array1, array1, array1, ... arrayN])\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
-		same like sendMsg, but takes an array as argument, which allows to send a list of bundles\
+\f1\b0 \cf0 \
+	same like sendMsg, but takes an array as argument, which allows to send a list of bundles\
 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b sendSynthDef(name, dir)\
+\f0\b \cf0 sendSynthDef(name, dir)\
 	
 \f1\b0 \
-		send a synthDef to the server that was written in a local directory\
+	send a synthDef to the server that was written in a local directory\
 		\
 
 \f0\b loadSynthDef(name, completionMsg, dir)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
-		load a synthDef that resides in the remote directory\
+\f1\b0 \cf0 \
+	load a synthDef that resides in the remote directory\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b loadDirectory(dir, completionMsg)\
+\f0\b \cf0 loadDirectory(dir, completionMsg)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
-		load all the SynthDefs in the directory 
+\f1\b0 \cf0 \
+	load all the SynthDefs in the directory 
 \f0\b dir
 \f1\b0 . 
 \f0\b dir
 \f1\b0  is a String which is a valid path.\
 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b nextNodeID
+\f0\b \cf0 nextNodeID
 \f1\b0 \
-		get a unique nodeID. if the synth is freed, also the nodeID is freed by the NodeIDWatcher \
+	get a unique nodeID. When this node is freed, the nodeID will be freed by this server's NodeIDWatcher \
 		\
 
 \f0\b wait(responseName)
 \f1\b0 \
-		this can be used within a Routine to wait for a server reply\
+	this can be used within a Routine to wait for a server reply\
 		\
 
 \f0\b waitForBoot(func, limit)
 \f1\b0 \
-		evaluate the function as soon as the server has booted. \
-		if it is running, it is evaluated immediately.\
-		if it is not running, boot the server and evaluate the function.\
-		limit: maximum times to try. (5 times/sec)\
+	evaluate the function as soon as the server has booted. \
+	if it is running, it is evaluated immediately.\
+	if it is not running, boot the server and evaluate the function.\
+	
+\f0\b limit
+\f1\b0 : maximum times to try. (5 times/sec)\
 \
 
 \f0\b doWhenBooted(func, limit)
 \f1\b0 \
-		evaluate the function as soon as the server has booted. \
-		if it is running, it is evaluated immediately.\
-		limit: maximum times to try. (5 times/sec)\
+	evaluate the function as soon as the server has booted. \
+	if it is running, it is evaluated immediately.\
+	
+\f0\b limit
+\f1\b0 : maximum times to try. (5 times/sec)\
 		\
 
 \f0\b boot(startAliveThread)
 \f1\b0 \
-		boot the remote server, create new allocators.\
-		startAliveThread: if set to false, the server is not queried to give information for the window.\
+	boot the remote server, create new allocators.\
+	
+\f0\b startAliveThread
+\f1\b0 : if set to false, the server is not queried to give information for the window.\
 \
 
 \f0\b quit
 \f1\b0 \
-		quit the server application\
+	quit the server application\
 		\
 
 \f0\b reboot
 \f1\b0 \
-		quit and restart the server application\
+	quit and restart the server application\
 		\
 
 \f0\b freeAll
 \f1\b0 \
-		free all nodes in this server \
+	free all nodes in this server \
 		\
 
 \f0\b status
 \f1\b0 \
-		query the server status\
-\
+	query the server status\
 \
 
 \f0\b notify(flag)
 \f1\b0 \
-		server sends notifications, for example if a node was created, a 'tr' message from a SendTrig,\
-		or a /done action. if flag is set to false, these messages are not sent. The default is true.\
-\
+	server sends notifications, for example if a node was created, a 'tr' message from a SendTrig,\
+	or a /done action. if flag is set to false, these messages are not sent. The default is true.\
 \
 
-\f0\b dumpOSC(code)
-\f1\b0 \
-	
-\f2\fs18 \cf2 	0 - turn dumping OFF.\
+\f0\b dumpOSC(code)\
+	code
+\f1\b0 :\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 		0 - turn dumping OFF.\
 		1 - print the parsed contents of the message.\
 		2 - print the contents in hexadecimal.\
 		3 - print both the parsed and hexadecimal representations of the contents.\
-	\
-\
-\
-\
+		\
 
-\f1\fs24 \cf0 \
+\f0\b queryAllNodes\
+	
+\f1\b0 Post a representation of this Server's current Node tree to the post window. Very helpful for debugging.
+\f2\fs18 \cf4 \
+	\
+	\cf0 s.boot;\
+	s.queryAllNodes; // note the root node (ID 0) and the default group (ID 1)\
+	s.quit;\
+	\
+	
+\f0\b\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 \ul Scope Support
+\fs30 \cf0 \ul \ulc0 Persistent Node Trees\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 The instance variable tree can be used to store a function which will be evaluated after the server is booted, after all nodes are freed, and after cmd-. is pressed. This allows, for example, for one to create a persistent basic node structure. tree is evaluated after the default group is created, so its existence can be relied upon.\
+ 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 tree_(aFunction)\
+	
+\f1\b0 sets the function to be evaluated\
+	\
+	
+\f2\fs18 \cf2 s.quit;\
+	s.tree = \{\cf5 Group\cf2 .new(s.defaultGroup); \cf3 "Other code can be evaluated too"\cf2 .postln;\};\
+	s.boot;\
+	s.queryAllNodes; \cf6 // note the group within the default group\cf2 \
+	s.tree = \cf5 nil\cf2 ; s.quit; \cf6 // reset to default
+\f0\b\fs24 \cf0 \
+		
+\f2\b0\fs18 \cf4 \
+
+\f0\b\fs24 \cf0 tree\
+	
+\f1\b0 returns the contents of this Server's tree instance variable (most likely a Function).\
+	
+\f0\b \
+defaultGroup\
+	
+\f1\b0 returns this Server's default group.
+\f2\fs18 \cf4 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 \ul \ulc0 Scope Support
 \f1\b0\fs24 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 This only works with the internal server, and currently only on OSX.\
+\f1\b0 \cf0 This only works with the internal server, and currently only on OSX.\
 see
 \f0\b  [Stethoscope] 
 \f1\b0 for details\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
 scope(numChannels, index, bufsize, zoom, rate)
 \f1\b0 \
 		Opens a scope window showing the audio output of the Server. \
@@ -256,11 +334,10 @@ scope(numChannels, index, bufsize, zoom, rate)
 \f0\b rate
 \f1\b0  - whether to display audio or control rate buses (either \\audio or \\control)\
 		\
-\
 		\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 \ul Recording Support
+\f0\b\fs30 \cf0 \ul \ulc0 Recording Support
 \fs24 \ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -271,105 +348,134 @@ scope(numChannels, index, bufsize, zoom, rate)
 \f0\b Non-Realtime-Synthesis
 \f1\b0  helpfile. \
 \
-
-\f0\b NOTE:
-\f1\b0  
+This functionality is also available through the recording button on the server windows. Pressing it once calls 
+\f0\b prepareForRecord
+\f1\b0 , pressing it again calls 
 \f0\b record
-\f1\b0  creates the recording synth at the tail of the Server's default node and uses 
-\f0\b In.ar
-\f1\b0 . Thus if you add nodes after the recording synth their output will not be captured. To avoid this, either use Synth objects (which use the default node as target) or use target nodeID 1, when using an osc message.\
+\f1\b0 , and pressing it a third time calls 
+\f0\b stopRecording
+\f1\b0  (see below). When doing so the file created will be in the recordings/ folder and be named for the current date and time.\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf3 \
-example: s.sendMsg("/s_new", "default", 1900, 1,1);
+\f0\b \cf0 NOTE:
+\f1\b0  
+\f0\b record
+\f1\b0  creates the recording synth after the Server's default node and uses 
+\f0\b In.ar
+\f1\b0 . Thus if you add nodes after the recording synth their output will not be captured. To avoid this, either use 
+\f0\b Node
+\f1\b0  objects (which use the default node as their target) or use a target nodeID of 1 when using an osc message.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf7 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 s.sendMsg(\cf3 "/s_new"\cf2 , \cf3 "default"\cf2 , 1900, 1,1);
 \f1\fs24 \cf0 \
 \
 For more detail on this subject see 
-\f0\b Order-of-execution
+\f0\b Order-of-execution,
+\f1\b0  
+\f0\b default_node
+\f1\b0 , and 
+\f0\b NodeMessaging
 \f1\b0 .\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 \
-prepareForRecord(path, headerFormat, sampleFormat, numChannels)\
+prepareForRecord(path)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 		Allocates the necessary buffer, etc. for recording the server's output. (See record below.)\
-		See 
-\f0\b SoundFile
-\f1\b0  for information on the various sample and header formats.\
+\f1\b0 \cf0 	Allocates the necessary buffer, etc. for recording the server's output. (See record below.)\
 		\
-		
+	
 \f0\b path 
-\f1\b0 - A String representing the path of the output file.\
-		
-\f0\b headerFormat
-\f1\b0  - A Symbol indicating the output file's format. Default is 'aiff'.\
-		
-\f0\b sampleFormat
-\f1\b0  - A Symbol indicating the output file's sample format. Default is 'int16'.\
-		
-\f0\b numChannels
-\f1\b0  - The number of channels of the output file.\
+\f1\b0 - A String representing the path and name of the output file. \
+	If you do not specify a path than a file will be created in the folder recordings/ called SC_thisDateAndTime.\
+	Changes to the header or sample format, or number of channels must be made BEFORE calling this.\
 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b record
+\f0\b \cf0 record
 \f1\b0 \
-		Starts or resumes recording the output. You must have called prepareForRecord first (see above).\
+	Starts or resumes recording the output. You must have called prepareForRecord first (see above).\
 			\
 
 \f0\b pauseRecording
 \f1\b0 		\
-		Pauses recording. Can be resumed by executing record again.\
+	Pauses recording. Can be resumed by executing record again.\
 		\
 
 \f0\b stopRecording\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 		Stops recording, closes the file, and frees the associated resources. \
-		You must call this when finished recording or the output file will be unusable.\
-		Cmd-. while recording has the same effect.\
+\f1\b0 \cf0 	Stops recording, closes the file, and frees the associated resources. \
+	You must call this when finished recording or the output file will be unusable.\
+	Cmd-. while recording has the same effect.\
 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b recordNode\
-		
-\f1\b0 Returns the current recording synth so that it can be used as a target. Nodes added or moved after \
-		the recording synth in the order of nodes will not be recorded.\
+\f0\b \cf0 recordNode\
+	
+\f1\b0 Returns the current recording synth so that it can be used as a target. \
+	This should only be necessary for nodes which are not created in the default group.\
 \
+The following setter methods have corresponding getters. See 
+\f0\b SoundFile
+\f1\b0  for information on the various sample and header formats.	Not all sample and header formats are compatible.\
 \
 
-\f2\fs18 s.boot; \cf2 // start the server\cf0 \
+\f0\b recChannels_(anInteger)\
+	
+\f1\b0 Sets the number of channels to record. The default is two. Must be called BEFORE prepareForRecord.\
+\
+
+\f0\b recHeaderFormat_(aString)\
+	
+\f1\b0 Sets the header format of the output file. The default is "aiff". Must be called BEFORE prepareForRecord.\
+	
+\f0\b \
+recSampleFormat_(aString)\
+	
+\f1\b0 Sets the sample format of the output file. The default is "float". Must be called BEFORE prepareForRecord.\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // something to record\cf0 \
+
+\f2\fs18 \cf0 s.boot; \cf4 // start the server\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // something to record\cf0 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "bubbles"\cf0 , \{\
-	\cf3 var\cf0  f, zout;\
-	f = \cf3 LFSaw\cf0 .kr(0.4, 0, 24, \cf3 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps; \cf2 // glissando function\cf0 \
-	zout = \cf3 CombN\cf0 .ar(\cf3 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4); \cf2 // echoing sine wave\cf0 \
-	\cf3 Out\cf0 .ar(0, zout);\
+\cf7 SynthDef\cf0 (\cf8 "bubbles"\cf0 , \{\
+	\cf7 var\cf0  f, zout;\
+	f = \cf7 LFSaw\cf0 .kr(0.4, 0, 24, \cf7 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps; \cf4 // glissando function\cf0 \
+	zout = \cf7 CombN\cf0 .ar(\cf7 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4); \cf4 // echoing sine wave\cf0 \
+	\cf7 Out\cf0 .ar(0, zout);\
 \}).send(s);\
-\cf3 SynthDef\cf0 (\cf4 "tpulse"\cf0 , \{ \cf3 arg\cf0  out=0,freq=700,sawFreq=440.0; \
-	\cf3 Out\cf0 .ar(out, \cf3 SyncSaw\cf0 .ar(freq,  sawFreq,0.1) ) \
+\cf7 SynthDef\cf0 (\cf8 "tpulse"\cf0 , \{ \cf7 arg\cf0  out=0,freq=700,sawFreq=440.0; \
+	\cf7 Out\cf0 .ar(out, \cf7 SyncSaw\cf0 .ar(freq,  sawFreq,0.1) ) \
 \}).send(s);\
 \
 )\
 \
-x = \cf3 Synth\cf0 .new(\cf4 "bubbles"\cf0 );\
+x = \cf7 Synth\cf0 .new(\cf8 "bubbles"\cf0 );\
 \
-s.prepareForRecord("testout.aiff"); \cf2 // you have to call this first\
+s.prepareForRecord; \cf4 // you have to call this first\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 s.record;\
 \
-s.pauseRecording; \cf2 // pausable\
+s.pauseRecording; \cf4 // pausable\
 \cf0 \
-s.record \cf2 // start again\
-\
-// add another synth, making sure the node gets added BEFORE the recording synth\
-\cf0 y = \cf3 Synth\cf0 .before(s.recordNode, \cf4 "tpulse"\cf0 ); \cf2 \
+s.record \cf4 // start again\
 \cf0 \
-s.stopRecording; \cf2 // this closes the file and deallocates the buffer recording node, etc.\
+s.stopRecording; \cf4 // this closes the file and deallocates the buffer recording node, etc.\
 \
-\cf0 x.free; y.free; \cf2 // stop the synths\
+\cf0 x.free; \cf4 // stop the synths\
+\
+// look in the recordings/ folder and you'll find a file named for this date and time\
 \
 \
 \

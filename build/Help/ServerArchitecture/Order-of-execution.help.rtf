@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red0\green115\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+\red0\green115\blue0;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;}
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
 \f0\b\fs40 \cf0 Order of execution \
@@ -20,7 +20,7 @@ If you have on the server:\
 \
 If you don't have any synths that use In.ar, you don't have to worry about order of execution. It only matters when one synth is reading the output of another.\
 \
-The rule is simple: if you have a synth on the server (which I will call here the "effect") that depends on the output from another synth (the "source"), the effect must appear later in the chain of nodes on the server than the source.\
+The rule is simple: if you have a synth on the server (i.e. an "effect") that depends on the output from another synth (the "source"), the effect must appear later in the chain of nodes on the server than the source.\
 \
 	source ---> effect \
 \
@@ -30,10 +30,45 @@ If you have:\
 \
 The effect synth will not hear the source synth, and you won't get the results you want. \
 \
-\
-\
 
-\f0\b\fs28 \ul Controlling order of execution\ulnone  \
+\f0\b\fs28 \ul Some Notes about Servers and Targets\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \ulnone There is always a default 
+\f0\b Server
+\f1\b0 , which can be accessed or set through the class method Server.default. At startup this is set to be the local Server, and is also assigned to the interpreter variable s.\
+\
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f2\fs18 \cf2 // execute the following and watch the post window\cf3 \
+s === \cf4 Server\cf3 .default;\
+s === \cf4 Server\cf3 .local;\
+\cf4 Server\cf3 .default = \cf4 Server\cf3 .internal; s === \cf4 Server\cf3 .default;
+\f1\fs24 \
+
+\f2\fs18 \cf4 Server\cf3 .default = \cf4 Server\cf3 .local; \cf2 // return it to the local server
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+When a 
+\f0\b Server
+\f1\b0  is booted there is a top level group with an ID of 0 that defines the root of the node tree. This is represented by a subclass of Group: 
+\f0\b RootNode
+\f1\b0 . There is also a 
+\f0\b default_group
+\f1\b0  with an ID of 1. This group is the default group for all Nodes. This is what you will get if you supply a Server as a target. If you don't specify a target or pass in nil, you will get the default group of the default Server.  \
+\
+The default group serves an important purpose: It provides a predictable basic Node tree so that methods such as Server-scope and Server-record can function without running into order of execution problems. Thus in general one should create new Nodes within the default group rather than in the RootNode. See 
+\f0\b default_group
+\f1\b0  and 
+\f0\b RootNode 
+\f1\b0 for more detail.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul \ulc0 \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 \ul Controlling order of execution\ulnone  \
 
 \f1\b0\fs24 \
 There are three ways to control the order of execution: using addAction in your synth creation messages, moving nodes, and placing your synths in groups. Using groups is optional, but they are the most effective in helping you organize the order of execution.\
@@ -45,50 +80,46 @@ There are three ways to control the order of execution: using addAction in your 
 \
 By specifying an addAction argument for 
 \f0\b Synth.new
-\f1\b0  one can specify the node's placement relative to a target. The target might be a group node, another synth node, or a server. \
+\f1\b0  (or SynthDef.play, Function.play, etc.) one can specify the node's placement relative to a target. The target might be a group node, another synth node, or a server. \
 \
-The default is the 
-\f0\b default node
+As noted above, the default target is the 
+\f0\b default_group
 \f1\b0  (the group with 
 \f0\b nodeID 1
-\f1\b0 ) of the default server. \
-	
-\f0\b see [RootNode] for this
-\f1\b0 \
+\f1\b0 ) of the default Server. \
 \
  The following 
 \f0\b Symbols
-\f1\b0  are valid addActions: \cf2 \\addToHead\cf0 , \cf2 \\addToTail\cf0 , \cf2 \\addBefore\cf0 , \cf2 \\addAfter\cf0 , \cf2 \\addReplace\cf0 . These correspond to the following convenience methods of class 
-\f0\b Synth
-\f1\b0 :\
+\f1\b0  are valid addActions for Synth.new: \cf5 \\addToHead\cf0 , \cf5 \\addToTail\cf0 , \cf5 \\addBefore\cf0 , \cf5 \\addAfter\cf0 , \cf5 \\addReplace\cf0 .\
 \
 
-\f0\b 	Synth.new(defName, args, aTarget, addAction)\
-		 
-\f1\b0 add the new node to the the head of the node specified by 
-\f0\b aTarget
-\f1\b0 .\
-	 	 If 
-\f0\b aTarget
-\f1\b0  is a synth node, the new synth will be 
-\f0\b added to the head
-\f1\b0  of that node's group.\
-	 	 aTarget can also be a server or nil. if it is a server, the node will be added to the\
-	 	 head of the default group (1), or according to the 
-\f0\b addAction
-\f1\b0 . \
-	 	 if it is nil, the default server is used.
+\f0\b 	Synth.new(defName, args, target, addAction)
+\f1\b0 \
+		if target is a Synth the  \cf5 \\addToHead\cf0 , and \cf5 \\addToTail\cf0  methods will apply to that Synths group\
+		if target is a Server it will resolve to that Server's default group\
+		if target is nil it will resolve to the default group of the default Server\
+	 	 
+\f0\b \
+
+\f1\b0 For each addAction there is also a corresponding convenience method of class 
+\f0\b Synth
+\f1\b0 :
 \f0\b \
 	\
 	Synth.head(aGroup, defName, args)\
-		 
-\f1\b0 add the new node to the the head of the group specified by aGroup.\
-	 	 If aGroup is a synth node, the new synth will be added to the head of that node's group.\
+		
+\f1\b0 add the new synth to the the head of the group specified by aGroup\
+	 	if aGroup is a synth node, the new synth will be added to the head of that node's group\
+	 	if target is a Server it will resolve to that Server's default group\
+		if target is nil it will resolve to the default group of the default Server\
 
 \f0\b \
 	Synth.tail(aGroup, defName, args)\
 		
-\f1\b0 add the new node to the the tail of the group specified by aGroup. If aGroup is a synth node, the 		new 	synth will be added to the head of that node's group.\
+\f1\b0 add the new synth to the the tail of the group specified by aGroup\
+	 	if aGroup is a synth node, the new synth will be added to the tail of that node's group\
+	 	if target is a Server it will resolve to that Server's default group\
+		if target is nil it will resolve to the default group of the default Server\
 
 \f0\b 	\
 	Synth.before(aNode, defName, args)\
@@ -110,10 +141,9 @@ Using Synth.new without an addAction will result in the default addAction. (You 
 \f1\b0  for more details.) Where order of execution matters, it is important that you specify an addAction, or use one of the convenience methods shown above.\
 \
 \
-\
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
-\f0\b \cf0 Moving nodes \
+\f0\b \cf0 Moving nodes:\
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
 \f1\b0 \cf0 \
@@ -129,13 +159,11 @@ If you need to change the order of execution after synths and groups have been c
 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
-\f2\fs18 \cf0 	~fx = \cf3 Synth\cf0 .tail(s, \cf4 "fx"\cf0 );\
-	~src = \cf3 Synth\cf0 .tail(s, \cf4 "src"\cf0 );  \cf5 // effect will not be heard b/c it's earlier\cf0 \
-	~src.moveBefore(~fx);   \cf5 // place the source before the effect\cf0 \
-\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
-
-\f1\fs24 \cf0 \
-\
+\f2\fs18 \cf0 	~fx = \cf6 Synth\cf0 .tail(s, \cf7 "fx"\cf0 );\
+	~src = \cf6 Synth\cf0 .tail(s, \cf7 "src"\cf0 );  \cf8 // effect will not be heard b/c it's earlier\cf0 \
+	~src.moveBefore(~fx);   \cf8 // place the source before the effect\cf0 \
+	
+\f1\fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-2880\ql\qnatural
 
@@ -143,7 +171,7 @@ If you need to change the order of execution after synths and groups have been c
 
 \f1\b0 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
-\cf0 Groups can be moved in the same way, just like synths. When you move a group, all the synths in that group move with it. This is why groups are such an important tool for managing order of execution. (See the 
+\cf0 Groups can be moved in the same way as synths. When you move a group, all the synths in that group move with it. This is why groups are such an important tool for managing order of execution. (See the 
 \f0\b Group
 \f1\b0  helpfile for details on this and other convenient aspects of Groups.)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-2880\ql\qnatural
@@ -155,7 +183,6 @@ In the above configuration, all of the synths in group 1 will execute before all
 Determine your architecture, then make groups to support the architecture.\
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 \cf0 \
-\
 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
@@ -173,7 +200,7 @@ This is a perfect place to use a group:\
 \
 	Group ( [lots of synths] ) ----> effect ----> transfer\
 \
-To make the structure clearer in my code, one can also make a group for the effect (even if there's only one synth in it):\
+To make the structure clearer in the code, one can also make a group for the effect (even if there's only one synth in it):\
 \
 	Group ( [lots of synths] ) ----> Group ( [effect] ) ----> transfer \
 \
@@ -186,67 +213,68 @@ So, at the beginning of your program:\
 \f2\fs18 \cf0 s.boot;\
 \
 (\
-l = \cf3 Bus\cf0 .control(s, 1);  \cf5 // get a bus for the LFO--not relevant to order-of-exec\cf0 \
-b = \cf3 Bus\cf0 .audio(s, 2);	\cf5 // assuming stereo--this is to keep the src->fx chain separate from\cf0 \
-				\cf5 // other similar chains\cf0 \
-~synthgroup = \cf3 Group\cf0 .tail(s);\
-~fxgroup = \cf3 Group\cf0 .tail(s);\
+l = \cf6 Bus\cf0 .control(s, 1);  \cf8 // get a bus for the LFO--not relevant to order-of-exec\cf0 \
+b = \cf6 Bus\cf0 .audio(s, 2);	\cf8 // assuming stereo--this is to keep the src->fx chain separate from\cf0 \
+				\cf8 // other similar chains\cf0 \
+~synthgroup = \cf6 Group\cf0 .tail(s);\
+~fxgroup = \cf6 Group\cf0 .tail(s);\
 \
-\cf5 // now you have synthgroup --> fxgroup\cf0 \
+\cf8 // now you have synthgroup --> fxgroup within the default group of s\cf0 \
 \
-\cf5 // make some synthdefs to play with\cf0 \
-\cf3 SynthDef\cf0 (\cf4 "order-of-ex-dist"\cf0 , \{ \cf3 arg\cf0  bus, preGain, postGain;\
-	\cf3 var\cf0  sig;\
-	sig = \cf3 In\cf0 .ar(bus, 2);\
+\cf8 // make some synthdefs to play with\cf0 \
+\cf6 SynthDef\cf0 (\cf7 "order-of-ex-dist"\cf0 , \{ \cf6 arg\cf0  bus, preGain, postGain;\
+	\cf6 var\cf0  sig;\
+	sig = \cf6 In\cf0 .ar(bus, 2);\
 	sig = (sig * preGain).distort;\
-	\cf3 ReplaceOut\cf0 .ar(bus, sig * postGain);\
+	\cf6 ReplaceOut\cf0 .ar(bus, sig * postGain);\
 \}).send(s);\
 \
-\cf3 SynthDef\cf0 (\cf4 "order-of-ex-pulse"\cf0 , \{ \cf3 arg\cf0  freq, bus, ffreq, pan, lfobus;\
-	\cf3 var\cf0  sig, noteLen;\
-	noteLen = \cf3 In\cf0 .kr(lfobus, 1);\
-	sig = \cf3 RLPF\cf0 .ar(\cf3 Pulse\cf0 .ar(freq, 0.2, 0.5), ffreq, 0.3);\
-	\cf3 Out\cf0 .ar(bus, \cf3 Pan2\cf0 .ar(sig, pan)\
-		* \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.1, 1), timeScale: noteLen, doneAction: 2));\
+\cf6 SynthDef\cf0 (\cf7 "order-of-ex-pulse"\cf0 , \{ \cf6 arg\cf0  freq, bus, ffreq, pan, lfobus;\
+	\cf6 var\cf0  sig, noteLen;\
+	noteLen = \cf6 In\cf0 .kr(lfobus, 1);\
+	sig = \cf6 RLPF\cf0 .ar(\cf6 Pulse\cf0 .ar(freq, 0.2, 0.5), ffreq, 0.3);\
+	\cf6 Out\cf0 .ar(bus, \cf6 Pan2\cf0 .ar(sig, pan)\
+		* \cf6 EnvGen\cf0 .kr(\cf6 Env\cf0 .perc(0.1, 1), timeScale: noteLen, doneAction: 2));\
 \}).send(s);\
 \
-\cf3 SynthDef\cf0 (\cf4 "LFNoise1"\cf0 , \{ \cf3 arg\cf0  freq, mul, add, bus;\
-	\cf3 Out\cf0 .kr(bus, \cf3 LFNoise1\cf0 .kr(freq, mul:mul, add:add));\
+\cf6 SynthDef\cf0 (\cf7 "LFNoise1"\cf0 , \{ \cf6 arg\cf0  freq, mul, add, bus;\
+	\cf6 Out\cf0 .kr(bus, \cf6 LFNoise1\cf0 .kr(freq, mul:mul, add:add));\
 \}).send(s);\
 )\
 \
-\cf5 // Place LFO:\cf0 \
+\cf8 // Place LFO:\cf0 \
 \
-~lfo = \cf3 Synth\cf0 .head(s, \cf4 "LFNoise1"\cf0 , [\cf2 \\freq\cf0 , 0.3, \cf2 \\mul\cf0 , 0.68, \cf2 \\add\cf0 , 0.7, \cf2 \\bus\cf0 , l.index]);\
+~lfo = \cf6 Synth\cf0 .head(s, \cf7 "LFNoise1"\cf0 , [\cf5 \\freq\cf0 , 0.3, \cf5 \\mul\cf0 , 0.68, \cf5 \\add\cf0 , 0.7, \cf5 \\bus\cf0 , l.index]);\
 \
-\cf5 // Then place your effect: \cf0 \
+\cf8 // Then place your effect: \cf0 \
 \
-~dist = \cf3 Synth\cf0 .tail(~fxgroup, \cf4 "order-of-ex-dist"\cf0 , [\cf2 \\bus\cf0 , b.index, \cf2 \\preGain\cf0 , 8, \cf2 \\postGain\cf0 , 0.6]);\
+~dist = \cf6 Synth\cf0 .tail(~fxgroup, \cf7 "order-of-ex-dist"\cf0 , [\cf5 \\bus\cf0 , b.index, \cf5 \\preGain\cf0 , 8, \cf5 \\postGain\cf0 , 0.6]);\
 \
-\cf5 // transfer the results to main out, with level scaling:\cf0 \
+\cf8 // transfer the results to main out, with level scaling\
+// play at tail of s's default group (note that Function-play also takes addActions!\cf0 \
 \
-~xfer = \{ \cf3 Out\cf0 .ar(0, 0.25 * \cf3 In\cf0 .ar(b.index, 2)) \}.play(s);   \cf5 // play at tail of s's rootnode\cf0 \
+~xfer = \{ \cf6 Out\cf0 .ar(0, 0.25 * \cf6 In\cf0 .ar(b.index, 2)) \}.play(s, addAction: \cf5 \\addToTail\cf0 );   \
 \
-\cf5 // And start your routine:\cf0 \
+\cf8 // And start your routine:\cf0 \
 \
 (\
-r = \cf3 Routine\cf0 (\{\
+r = \cf6 Routine\cf0 (\{\
 	\{\
-		\cf3 Synth\cf0 .tail(~synthgroup, \cf4 "order-of-ex-pulse"\cf0 ,\
-			[\cf2 \\freq\cf0 , rrand(200, 800), \cf2 \\ffreq\cf0 , rrand(1000, 15000), \cf2 \\pan\cf0 , 1.0.rand2,\
-			 \cf2 \\bus\cf0 , b.index, \cf2 \\lfobus\cf0 , l.index]);\
+		\cf6 Synth\cf0 .tail(~synthgroup, \cf7 "order-of-ex-pulse"\cf0 ,\
+			[\cf5 \\freq\cf0 , rrand(200, 800), \cf5 \\ffreq\cf0 , rrand(1000, 15000), \cf5 \\pan\cf0 , 1.0.rand2,\
+			 \cf5 \\bus\cf0 , b.index, \cf5 \\lfobus\cf0 , l.index]);\
 		0.07.wait;\
 	\}.loop;\
-\}).play(\cf3 SystemClock\cf0 );\
+\}).play(\cf6 SystemClock\cf0 );\
 )\
 \
-~dist.run(\cf3 false\cf0 );	\cf5 // proves that the distortion effect is doing something\cf0 \
-~dist.run(\cf3 true\cf0 );\
+~dist.run(\cf6 false\cf0 );	\cf8 // proves that the distortion effect is doing something\cf0 \
+~dist.run(\cf6 true\cf0 );\
 \
-\cf5 // to clean up:\cf0 \
+\cf8 // to clean up:\cf0 \
 (\
 r.stop;\
-[~synthgroup, ~fxgroup, b, l, ~lfo, ~xfer].do(\{ \cf3 arg\cf0  x; x.free \});\
+[~synthgroup, ~fxgroup, b, l, ~lfo, ~xfer].do(\{ \cf6 arg\cf0  x; x.free \});\
 )\
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
@@ -313,7 +341,7 @@ If Synth 1 were moved after Synth 2 then Synth 2's InFeedback would receive a mi
 (As well, if any In.ar wrote to busA earlier in the node order than Synth 2, it would zero the bus before Synth 3's data reached Synth 2. This is true even it there were no node before Synth 2 writing to busA.)\
 \
 Because of this it is often useful to allocate a separate bus for feedback. With the following arrangement Synth 2 will receive data from Synth3 regardless of Synth 1's position in the node order.
-\f2\fs18 \cf3 \
+\f2\fs18 \cf6 \
 \
 
 \f1\fs24 \cf0 Synth 1 -> busA\
@@ -321,44 +349,45 @@ Synth 2 (with InFeedback) <- busB \
 Synth 3 -> busB + busA \
 \
 The following example demonstrates this issue with In.kr:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf3 \
+\f2\fs18 \cf6 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-Infreq"\cf0 , \{ \cf3 arg\cf0  bus;\
-	\cf3 Out\cf0 .ar(0, \cf3 FSinOsc\cf0 .ar(\cf3 In\cf0 .kr(bus), 0, 0.5));\
+\cf6 SynthDef\cf0 (\cf7 "help-Infreq"\cf0 , \{ \cf6 arg\cf0  bus;\
+	\cf6 Out\cf0 .ar(0, \cf6 FSinOsc\cf0 .ar(\cf6 In\cf0 .kr(bus), 0, 0.5));\
 \}).send(s);\
 \
-\cf3 SynthDef\cf0 (\cf4 "help-Outfreq"\cf0 , \{ \cf3 arg\cf0  freq = 200, bus;\
-	\cf3 Out\cf0 .kr(bus, \cf3 SinOsc\cf0 .kr(1, 0, freq/40, freq));\
+\cf6 SynthDef\cf0 (\cf7 "help-Outfreq"\cf0 , \{ \cf6 arg\cf0  freq = 400, bus;\
+	\cf6 Out\cf0 .kr(bus, \cf6 SinOsc\cf0 .kr(1, 0, freq/40, freq));\
 \}).send(s);\
 \
-b = \cf3 Bus\cf0 .control(s,1);\
+b = \cf6 Bus\cf0 .control(s,1);\
 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 // add the first control Synth at the tail of the default server; no audio yet\cf0 \
-x = \cf3 Synth\cf0 .tail(s, \cf4 "help-Outfreq"\cf0 , [\cf2 \\bus\cf0 , b.index]);\
+\cf8 // add the first control Synth at the tail of the default server; no audio yet\cf0 \
+x = \cf6 Synth\cf0 .tail(s, \cf7 "help-Outfreq"\cf0 , [\cf5 \\bus\cf0 , b.index]);\
 \
-\cf5 // add the sound producing Synth BEFORE it; It receives x's data from the previous cycle\cf0 \
-y = \cf3 Synth\cf0 .before(x, \cf4 "help-Infreq"\cf0 , [\cf2 \\bus\cf0 , b.index]);\
+\cf8 // add the sound producing Synth BEFORE it; It receives x's data from the previous cycle\cf0 \
+y = \cf6 Synth\cf0 .before(x, \cf7 "help-Infreq"\cf0 , [\cf5 \\bus\cf0 , b.index]);\
 \
-\cf5 // add another control Synth before y, at the head of the server\cf0 \
-\cf5 // It now overwrites x's cycle old data before y receives it\cf0 \
-z = \cf3 Synth\cf0 .head(s, \cf4 "help-Outfreq"\cf0 , [\cf2 \\bus\cf0 , b.index, \cf2 \\freq\cf0 , 800]);\
+\cf8 // add another control Synth before y, at the head of the server\cf0 \
+\cf8 // It now overwrites x's cycle old data before y receives it\cf0 \
+z = \cf6 Synth\cf0 .head(s, \cf7 "help-Outfreq"\cf0 , [\cf5 \\bus\cf0 , b.index, \cf5 \\freq\cf0 , 800]);\
 \
-\cf5 // get another bus\cf0 \
-c = \cf3 Bus\cf0 .control(s, 1);\
+\cf8 // get another bus\cf0 \
+c = \cf6 Bus\cf0 .control(s, 1);\
 \
-\cf5 // now y receives x's data even though z is still there\cf0 \
-y.set(\cf2 \\bus\cf0 , c.index); x.set(\cf2 \\bus\cf0 , c.index);\
+\cf8 // now y receives x's data even though z is still there\cf0 \
+y.set(\cf5 \\bus\cf0 , c.index); x.set(\cf5 \\bus\cf0 , c.index);\
 \
 x.free; y.free; z.free;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 	
-\f2\fs18 \cf3 \
+\f2\fs18 \cf6 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
 \f0\b\fs28 \cf0  

@@ -1,9 +1,9 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red96\green96\blue96;
-\red191\green0\blue0;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs32 \cf0 The default Group			
 \fs26 id:1
@@ -11,57 +11,95 @@
 \
 \
 
-\f0\b\fs22 root node (id:0) [\
+\f0\b\fs26 root node (id:0) [\
 		default group (id:1)\
 ]
 \f1\b0\fs24 \
 \
-see also: [RootNode]\
+When a 
+\f0\b Server
+\f1\b0  is booted there is a top level group with an ID of 0 that defines the root of the node tree. (This is represented by a subclass of Group: 
+\f0\b RootNode
+\f1\b0 .) There is also a 
+\f0\b default group
+\f1\b0  with an ID of 1, which is the default group for all Nodes when using object style. This group is what you will get if you supply a Server as a target. If you don't specify a target or pass in nil, you will get the default group of the default Server.  \
 \
-\
-when the server is started, it always has a group, the default group with 
-\f0\b nodeID of 1
-\f1\b0 ,\
-which is used for any synth objects that have no target specified.\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 a = \cf2 Synth\cf0 .new(\cf3 \\default\cf0 );\
-a.group;\
+\f2\fs18 \cf2 Server\cf0 .default.boot;\
+a = \cf2 Synth\cf0 .new(\cf3 \\default\cf0 ); \cf4 // creates a synth in the default group of the default Server\cf0 \
+a.group; \cf4 // note the Group ID\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
-this allows to place effect, recording or scoping nodes in a way that they are guaranteed to execute after the default synths:\
+\f1\fs24 \cf0 \
+The default group serves an important purpose: It provides a predictable basic Node tree so that methods such as Server-scope, Server-record, etc. can function without running into order of execution problems. In the example below the scoping node will come after the default group.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 SynthDef\cf0 (\cf4 "fx"\cf0 , \{ \cf2 ReplaceOut\cf0 .ar(0, \cf2 In\cf0 .ar(0,2) * \cf2 MouseX\cf0 .kr) \}).send(s);\
+\f2\fs18 \cf2 Server\cf0 .internal.boot;\
 \
-b = \cf2 Synth\cf0 (\cf3 \\fx\cf0 , addAction: \cf3 \\addAfter\cf0 );
-\f1\fs24 \
+\{ \cf2 SinOsc\cf0 .ar(mul: 0.2) \}.scope(1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 \
+// watch the post window;\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Server\cf0 .internal.queryAllNodes; \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // our SinOsc synth is within the default group (ID 1)\cf0 \
+\cf4 // the scope node comes after the default group, so no problems\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+Server\cf0 .internal.quit;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 a = \cf2 Synth\cf0 .new(\cf3 \\default\cf0 );\
-\
-\
-
-\f1\fs24 similarly, nodes can be placed before any node that uses the default group;\
-\
-
-\f2\fs18 \cf2 SynthDef\cf0 (\cf4 "lfo"\cf0 ,\{ arg out; \cf2 Out\cf0 .ar(out, SinOsc.ar(20, 0, 200, 600)) \}).send(s);\
-\cf2 SynthDef\cf0 (\cf4 "snd"\cf0 , \{ arg in=5; \cf2 Out\cf0 .ar(0, SinOsc.ar(In.ar(in) + 400)* 0.1)  \}).send(s);\
-\
-a = \cf2 Synth\cf0 .new(\cf3 \\snd\cf0 );\
-b = \cf2 Synth\cf0 (\cf3 \\lfo\cf0 , [\\out, 27], addAction: \cf3 \\addBefore\cf0 );\
-a.set(\\in, 27);\
-\
-\
-
-\f1\fs24 using osc messages this means \ul that target node id 1 can be used always\ulnone :
+\f1\fs24 \cf0 \
+Note that the default group is persistent: It is created in Server's initTree method (execute along with any code stored in its tree instance variable; see 
+\f0\b Server 
+\f1\b0 for more detail) and is recreated upon reboot, after pressing Cmd-., and after all nodes are freed. When using osc messages this means \ul that a target node of id 1 can always \ul \ulc0 be used\ulnone :
 \f2\fs18 \
 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "snd"\cf0 , 1832,0,1); \cf5 // add to head of group 1\cf0 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "lfo"\cf0 , 1887,2,1, \cf4 "out"\cf0 , 27); \cf5 // add before group 1
+s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "snd"\cf0 , 1832,0,1); \cf4 // add to head of group 1
 \f1\fs24 \cf0 \
+\
+The default group can be specifically freed, but there is generally no reason that one would want to do so.\
+\
+In general one should add nodes to the default group rather than the RootNode unless one has a specific reason to do so (i.e. adding some new functionality such as recording and scoping which is dependent upon a predictable basic node order). When using object style the default group is the default target for all new nodes, so nodes will normally not be added to the RootNode unless that is explicitly specified. It is of course possible to do so, but it should only be done with a proper understanding of the issues involved. \
+\
+For instance, if one were to place an 'effects' synth after the default group and call Server-record or Server-scope, the resulting recording or scope synths may not be correctly ordered:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 s.sendMsg(\cf4 "/n_set"\cf0 , 1832, \cf4 "in"\cf0 , 27); \cf5 // add to head of group 1\cf0 \
+\f0\b \cf0 default group [\
+	source synth1\
+	source synth2\
+]\
+recording synth\
+effects synth\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 In the above example the recording synth might not capture the output of the effects synth since it comes later in the node order.\
 \
+A better method in this case is to create a group within the default group and place the effects synth after that.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 default group [\
+	source group [\
+		source synth1\
+		source synth2\
+	]\
+	effects synth\
+]\
+recording synth\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 See also: 
+\f0\b RootNode, NodeMessaging 
+\f1\b0 and 
+\f0\b Order-of-execution\
+
+\f1\b0 \
 }

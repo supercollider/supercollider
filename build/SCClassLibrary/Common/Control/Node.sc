@@ -210,8 +210,8 @@ Group : Node {
 	}
 	*after { arg aNode;    ^this.new(aNode, \addAfter) }
 	*before {  arg aNode; 	^this.new(aNode, \addBefore) }
-	*head { arg aGroup; 	^this.new(aGroup.asGroup, \addToHead) }
-	*tail { arg aGroup; 	^this.new(aGroup.asGroup, \addToTail) }
+	*head { arg target; 	^this.new(target.asGroup, \addToHead) }
+	*tail { arg target; 	^this.new(target.asGroup, \addToTail) }
 	*replace { arg groupToReplace; ^this.new(groupToReplace, \addReplace) }
 	
 	moveNodeToHead { arg aNode;

@@ -112,7 +112,7 @@ Server : Model {
 	var <>tree;
 	
 	var <window, <>scopeWindow;
-	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float", recChannels=2;
+	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float"; 	var <>recChannels=2;
 	
 	*new { arg name, addr, options, clientID=0;
 		^super.new.init(name, addr, options, clientID)
@@ -513,6 +513,89 @@ Server : Model {
 		this.changed(\cmdPeriod);
 		CmdPeriod.remove(this);
 	}
+	
+	defaultGroup { ^Group.basicNew(this, 1) }
+	
+	// from Crucial
+	queryAllNodes {
+	
+			var probe,probing,resp,nodes,server,report,indent = 0,order=0;
+			var nodeWatcher;
+			
+			nodeWatcher = NodeWatcher.newFrom(this);
+			
+			nodes = IdentityDictionary.new;
+			probing = List.new;
+			
+			probe = { arg nodeID;
+				probing.add(nodeID);
+				this.sendMsg("/n_query",nodeID);
+			};
+			
+			report = { arg nodeID=0;
+				var child,synth;
+				indent.do({ " ".post });
+				nodes.at(nodeID).use({
+					~order = order;
+					if(~isGroup,{ 
+						("Group(" ++ nodeID ++ ")").postln;
+						child = ~head;
+						indent = indent + 8;
+						while({
+							child > 0
+						},{
+							order = order + 1;
+							report.value(child);
+							child = nodes.at(child).at(\next);
+						});
+						indent = indent - 8;
+					},{
+						synth = nodeWatcher.nodes.at(nodeID);
+						if(synth.notNil,{ // get defName if available
+							synth.asString.postln;
+						},{
+							("Synth" + nodeID).postln;
+						});
+					});
+				});
+			};
+				
+			resp = OSCresponder(this.addr,'/n_info',{ arg a,b,c;
+						var cmd,nodeID,parent,prev,next,isGroup,head,tail;
+						# cmd,nodeID,parent,prev,next,isGroup,head,tail = c;
+						
+						//[cmd,nodeID,parent,prev,next,isGroup,head,tail].debug;
+						
+						nodes.put(nodeID,
+							Environment.make({
+								~nodeID = nodeID;
+								~parent = parent;
+								~prev = prev;
+								~next = next;
+								~isGroup = isGroup == 1;
+								~head = head;
+								~tail = tail;
+							})
+						);
+						
+						if(next > 0,{
+							probe.value(next);
+						});
+						if(isGroup==1,{
+							if(head > 0,{
+								probe.value(head);
+							});
+						});
+						probing.remove(nodeID);
+						if(probing.size == 0,{
+							resp.remove;
+							report.value;
+						});
+					}).add;
+					
+			probe.value(0);
 
+		
+	}
 	
 }
