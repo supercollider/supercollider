@@ -596,6 +596,63 @@ int prArrayPutEach(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prArrayPutSeries(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b, *c, *d, *e;
+	
+	a = g->sp - 4;
+	b = g->sp - 3;
+	c = g->sp - 2;
+	d = g->sp - 1;
+	e = g->sp;
+	
+	PyrObject *inobj = a->uo;
+	
+	int size = inobj->size;
+	
+	if (b->utag != tagInt && b->utag != tagNil) return errWrongType;
+	if (c->utag != tagInt && c->utag != tagNil) return errWrongType;
+	if (d->utag != tagInt && d->utag != tagNil) return errWrongType;
+	
+	int first  = b->utag == tagInt ? b->ui : 0;	
+	int last   = d->utag == tagInt ? d->ui : size - 1;
+	int second = c->utag == tagInt ? c->ui : (first < last ? b->ui + 1 : b->ui - 1);
+
+	int step = second - first;
+
+	first = sc_clip(first, 0, size-1);
+	last = sc_clip(last, 0, size-1);
+	
+	int err = errNone;
+	
+	if (step == 0) return errFailed;
+	if (step == 1) {
+		for (int i=first; i<=last; ++i) {
+			err = putIndexedSlot(g, inobj, e, i);
+			if (err) return err;
+		}
+	} else if (step == -1) {
+		for (int i=last; i>=first; --i) {
+			err = putIndexedSlot(g, inobj, e, i);
+			if (err) return err;
+		}
+	} else if (step > 0) {
+		int length = (last - first) / step + 1;
+				
+		for (int i=first, j=0; j<length; i+=step, ++j) {
+			err = putIndexedSlot(g, inobj, e, i);
+			if (err) return err;
+		}
+	} else if (step < 0) {
+		int length = (first - last) / -step + 1;
+				
+		for (int i=first, j=0; j<length; i+=step, ++j) {
+			err = putIndexedSlot(g, inobj, e, i);
+			if (err) return err;
+		}
+	}
+	return errNone;
+}
 
 
 int prArrayAdd(struct VMGlobals *g, int numArgsPushed);
@@ -1849,7 +1906,8 @@ void initArrayPrimitives()
 	definePrimitive(base, index++, "_ArrayPop", prArrayPop, 1, 0);
 	definePrimitive(base, index++, "_ArrayCat", prArrayCat, 2, 0);	
 	definePrimitive(base, index++, "_ArrayPutEach", prArrayPutEach, 3, 0);	
-	definePrimitive(base, index++, "_ArrayAddAll", prArrayAddAll, 2, 0);	
+	definePrimitive(base, index++, "_ArrayAddAll", prArrayAddAll, 2, 0);
+	definePrimitive(base, index++, "_ArrayPutSeries", prArrayPutSeries, 5, 0);
 	definePrimitive(base, index++, "_ArrayOverwrite", prArrayOverwrite, 3, 0);	
 
 	definePrimitive(base, index++, "_ArrayNormalizeSum", prArrayNormalizeSum, 1, 0);

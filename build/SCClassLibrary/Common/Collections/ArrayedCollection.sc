@@ -113,7 +113,12 @@ ArrayedCollection : SequenceableCollection {
 		_ObjectCopySeries;
 		^this.primitiveFailed 
 	}
-
+	putSeries { arg first, second, last, value; 
+		// puts value into array at indices defined by the series. see copySeries.
+		_ArrayPutSeries;
+		^this.primitiveFailed 
+	}
+	
 	add { arg item; 
 		// add item to end of array.
 		// if the capacity is exceeded, this returns a new
