@@ -110,7 +110,7 @@ MultiLevelIdentityDictionary : Collection
 			item = item.at(name); 
 			if (item.isNil, { ^nil });
 		});
-		item.removeAt(lastName);
+		^item.removeAt(lastName);
 	}
 
 	
