@@ -54,6 +54,7 @@ struct InternalSynthServerGlobals
 
 const int kNumDefaultSharedControls = 1024;
 float gDefaultSharedControls[kNumDefaultSharedControls];
+bool gUseDoubles = false;
 
 InternalSynthServerGlobals gInternalSynthServer = { 0, kNumDefaultSharedControls, gDefaultSharedControls };
 
@@ -121,7 +122,8 @@ void addMsgSlot(scpacket *packet, PyrSlot *slot)
 		case tagSFrame :
 			break;
 		default :
-			packet->addf(slot->uf);
+			if (gUseDoubles) packet->addd(slot->uf);
+			else packet->addf(slot->uf);
 			break;
 	}
 }
@@ -179,8 +181,13 @@ void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
 			packet->addi(0);
 			break;
 		default :
-			packet->addtag('f');
-			packet->addf(slot->uf);
+			if (gUseDoubles) {
+				packet->addtag('d');
+				packet->addd(slot->uf);
+			} else {
+				packet->addtag('f');
+				packet->addf(slot->uf);
+			}
 			break;
 	}
 }
@@ -446,6 +453,17 @@ int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
 }
 
 
+int prNetAddr_UseDoubles(VMGlobals *g, int numArgsPushed);
+int prNetAddr_UseDoubles(VMGlobals *g, int numArgsPushed)
+{	
+	//PyrSlot* netAddrSlot = g->sp - 1;
+	PyrSlot* flag = g->sp;
+
+	gUseDoubles = IsTrue(flag);
+	
+	return errNone;
+}
+
 int prArray_OSCBytes(VMGlobals *g, int numArgsPushed);
 int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
 {	
@@ -505,6 +523,9 @@ PyrObject* ConvertOSCMessage(int inSize, char *inData)
                     break;
                 case 'f' :
                     SetFloat(slots+i+1, msg.getf());
+                    break;
+                case 'd' :
+                    SetFloat(slots+i+1, msg.getd());
                     break;
                 case 's' :
                     SetSymbol(slots+i+1, getsym(msg.gets()));
@@ -785,6 +806,7 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_NetAddr_SendMsg", prNetAddr_SendMsg, 1, 1);	
 	definePrimitive(base, index++, "_NetAddr_SendBundle", prNetAddr_SendBundle, 2, 1);	
 	definePrimitive(base, index++, "_NetAddr_SendRaw", prNetAddr_SendRaw, 2, 0);	
+	definePrimitive(base, index++, "_NetAddr_UseDoubles", prNetAddr_UseDoubles, 2, 0);	
 	definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);	
 	definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);	
 	definePrimitive(base, index++, "_Exit", prExit, 1, 0);	

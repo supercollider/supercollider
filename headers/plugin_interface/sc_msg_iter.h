@@ -56,13 +56,14 @@ inline int32 OSCint(char* inData)
 
 inline int64 OSCtime(char* inData)
 {
-#if BYTE_ORDER == BIG_ENDIAN
-	int64 time;
-	memcpy(&time, inData, sizeof(time));
-	return time;
-#else
 	return ((int64)ntohl(*(uint32*)inData) << 32) + (ntohl(*(uint32*)(inData + 4)));
-#endif
+}
+
+inline float64 OSCdouble(char* inData)
+{
+	elem64 slot;
+	slot.i = ((int64)ntohl(*(uint32*)inData) << 32) + (ntohl(*(uint32*)(inData + 4)));
+	return slot.f;
 }
 
 struct sc_msg_iter 
@@ -75,6 +76,7 @@ struct sc_msg_iter
 	void init(int inSize, char* inData);
 	int32 geti(int32 defaultValue = 0);
 	float32 getf(float32 defaultValue = 0.f);
+	float64 getd(float64 defaultValue = 0.f);
 	char *gets(char* defaultValue = 0);
 	int32 *gets4(char* defaultValue = 0);
 	size_t getbsize();
@@ -143,6 +145,9 @@ inline float32 sc_msg_iter::getf(float32 defaultValue)
 		if (tags[count] == 'f') {
 			value = OSCfloat(rdpos);
 			rdpos += sizeof(float32);
+		} else if (tags[count] == 'd') {
+			value = (float64)OSCdouble(rdpos);
+			rdpos += sizeof(float64);
 		} else if (tags[count] == 'i') {
 			value = (float32)OSCint(rdpos);
 			rdpos += sizeof(int32);
@@ -160,6 +165,36 @@ inline float32 sc_msg_iter::getf(float32 defaultValue)
 	count ++;
 	return value;
 }
+
+inline float64 sc_msg_iter::getd(float64 defaultValue)
+{
+	float64 value;
+	if (remain() <= 0) return defaultValue;
+	if (tags) {
+		if (tags[count] == 'f') {
+			value = (float64)OSCfloat(rdpos);
+			rdpos += sizeof(float32);
+		} else if (tags[count] == 'd') {
+			value = OSCdouble(rdpos);
+			rdpos += sizeof(float64);
+		} else if (tags[count] == 'i') {
+			value = (float64)OSCint(rdpos);
+			rdpos += sizeof(int32);
+/*		} else if (tags[count] == 's') {
+			value = atof(rdpos);
+			rdpos = OSCstrskip(rdpos);
+*/
+		} else {
+			value = defaultValue;
+		}
+	} else {
+		value = OSCdouble(rdpos);
+		rdpos += sizeof(float64);
+	}
+	count ++;
+	return value;
+}
+
 
 inline char* sc_msg_iter::gets(char* defaultValue)
 {

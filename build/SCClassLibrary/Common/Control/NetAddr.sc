@@ -26,6 +26,11 @@ NetAddr {
 
 ///////////////
 
+	useDoubles { arg flag = false;
+		_NetAddr_UseDoubles
+		^this.primitiveFailed;
+	}
+
 	sendRaw { arg rawArray;
 		_NetAddr_SendRaw
 		^this.primitiveFailed;

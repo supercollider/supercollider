@@ -45,6 +45,7 @@ struct scpacket {
 	void addi(int i);
 	void addii(int64 ii);
 	void addf(float f);
+	void addd(double f);
 	void adds(char *cstr);
 	void adds(char *src, size_t len);
 	void addb(uint8 *src, size_t len);
@@ -117,6 +118,15 @@ inline void scpacket::addf(float f)
 	elem32 slot;
 	slot.f = f;
 	*wrpos++ = htonl(slot.i);
+}
+
+inline void scpacket::addd(double f)
+{
+	if (wrpos >= endpos) BUFFEROVERFLOW;
+	elem64 slot;
+	slot.f = f;
+	*wrpos++ = htonl(slot.i >> 32);
+	*wrpos++ = htonl(slot.i & 0x00000000FFFFFFFF);
 }
 
 inline void scpacket::adds(char *src)

@@ -54,6 +54,12 @@ typedef union {
 	float32 f;
 } elem32;
 
+typedef union { 
+	uint64 u;
+	int64 i;
+	float64 f;
+} elem64;
+
 const unsigned int kSCNameLen = 8;
 const unsigned int kSCNameByteLen = kSCNameLen * sizeof(int32);
 
