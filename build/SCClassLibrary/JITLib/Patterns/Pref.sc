@@ -81,16 +81,20 @@ Pref : Pattern {
 }
 
 Prefn : Pref {
-
-	 *default { ^Pn(0, inf) }
-	 constrainStream { arg str; ^str }
+	classvar <>patterns;
+	
+	*initClass { 
+		patterns = (); 
+	}
+	*default { ^Pn(0, inf) }
+	constrainStream { arg str; ^str }
 }
 
 
-Penvir : Pattern {
-	var  <>which,  <>repeats, <>default;
-	*new { arg  which, repeats=inf, default;
-		^super.newCopyArgs(which, repeats, default);
+Pdict : Pattern {
+	var <>dict, <>which, <>repeats, <>default;
+	*new { arg dict, which, repeats=inf, default;
+		^super.newCopyArgs(dict, which, repeats, default);
 	}	
 	asStream {
 		^Routine.new({ arg inval;
@@ -99,29 +103,14 @@ Penvir : Pattern {
 			repeats.value.do({
 				key = keyStream.next;
 				if(key.notNil) {
-					inval = this.at(key).embedInStream(inval);
+					inval = (dict.at(key) ? default).embedInStream(inval);
 				} {
 					nil.alwaysYield
 				}
 			})
 		});
 	}
-	at { arg key;
-		^currentEnvironment.at(key) ? default
-	}
-	
 }
-
-Pdict : Penvir {
-	var  <>dict;
-	*new { arg dict, which, repeats=inf, default;
-		^super.new(which, repeats, default).dict_(dict);
-	}
-
-	at { arg key; ^dict.at(key) ? default }	
-
-}
-
 
 
 
