@@ -59,7 +59,7 @@ x = a.asStream;\
 		\cf2 var\cf0  env;\
 		env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .asr(0.001, 1, 0.2), gate, doneAction:2);\
 		\cf2 Out\cf0 .ar(out, \cf2 SinOsc\cf0 .ar(freq, 0, env * 0.1))\
-	\}).send(s);\
+	\}).store;\
 )\
 \
 (\
