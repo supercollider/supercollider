@@ -1,8 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red0\green0\blue191;
-\red96\green96\blue96;\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 BeatSched
@@ -169,52 +168,90 @@ tschedAbs(time,function)\
  \
 In the examples, remember to execute groups of code lines together.\
  \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	
-\f2\fs18 \cf3 b = \cf4 BeatSched\cf3 .new;\
-\cf0 	\cf3  \
-\cf0 	\cf3 b.qsched(2.0,\{ \cf5 "hello"\cf3 .postln; \});\
-\cf0 	\cf3  \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	b.qsched(2.0,\{ \cf6 "hello"\cf0 .postln; \});\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+	
+\f2\fs18 b = \cf2 BeatSched\cf0 .new;\
+	 \
+	b.qsched(2.0,\{ \cf3 "hello"\cf0 .postln; \});\
+	 \
+	b.qsched(2.0,\{ \cf3 "hello"\cf0 .postln; \});\
 \
 \
-	\cf3 b.time; // since the app started\
-\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	b.time = 0.0; // reset the time\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	b.time;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	\cf3  \
+\
+	b.time; // since the app started\
+\
+	b.time = 0.0; // reset the time\
+\
+	b.time;\
+	 \
 	b.beat;\
 \
 	Tempo.bpm = 60;\
 	b.beat.postln;\
 	Tempo.bpm = 120;\
 	b.beat.postln;\
-\cf0 \
 \
-	\cf3 b.time = 0.0;\
-\cf0 	\cf3 b.tschedAbs(4.0,\{ \cf5 "4 seconds absolute time"\cf3 .postln; \});\
-\cf0 	\cf3 b.tschedAbs(2.0,\{ \cf5 "2 seconds absolute time"\cf3 .postln; \});\
+\
+	b.time = 0.0;\
+	b.tschedAbs(4.0,\{ \cf3 "4 seconds absolute time"\cf0 .postln; \});\
+	b.tschedAbs(2.0,\{ \cf3 "2 seconds absolute time"\cf0 .postln; \});\
+
+\f1\fs24 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 \
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs18 \cf3 	b.xsched(4.0, \{ \cf5 "4 beats later"\cf3 .postln \});\
+\f2\fs18 \cf0 	b.xsched(4.0, \{ \cf3 "4 beats later"\cf0 .postln \});\
 	// cancels previous xsched\
-	b.xsched(2.0, \{ \cf5 "2 beats later"\cf3 .postln \});\
+	b.xsched(2.0, \{ \cf3 "2 beats later"\cf0 .postln \});\
 \
 	\
 	\
-	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 A little rounding error\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Tempo\cf0 .bpm_(120);\
+d = \cf2 Routine\cf0 (\{\
+                20.do(\{\
+                        \cf2 var\cf0  dbeat;\
+                        dbeat = \cf2 OSCSched\cf0 .global.tdeltaTillNext(4.0);\
+                        dbeat.postln;\
+                        \cf2 Tempo\cf0 .beats2secs(dbeat).wait;\
+                        \cf3 "Next wait"\cf0 .postln;             \
+                \});\
+        \});\
+        \cf2 SystemClock\cf0 .play(d);\
+)\
+\
+\
+at 5206.432346276  we ask for deltaTillNext 4\
+[ 5204, 4, 5206.432346276 ]\
+1.5676537239997\
+Next wait\
+\
+that would be\
+5206.432346276 + 1.5676537239997\
+// at 5208\
+5208\
+\
+\
+// but when the scheded event comes due:\
+[ 5204, 4, 5207.999072862 ]\
+0.00092713799949706\
+\
+its appears to be slightly ahead of schedule, due\
+to rounding errors in the several math ops that have happened.\
+\
+so the right answer is 0.00092713799949706\
+as far as BeatSched is concerned.\
+\
+but if you try to loop like this, you will suffer from rounding errors.\
+\
+mostly you would never set up a loop like this, mostly\
+you just want to know when the next even beat is so you can get your groove on.\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 	  \
