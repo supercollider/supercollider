@@ -25,6 +25,7 @@ with the arguments: inUid, status, chan, val1, val2
 added prDisposeMIDIClient
 added prRestartMIDI
 19/9 call different actions,disconnect midiInPort, midiout: sendmidi
+04/feb/03 prListMIDIEndpoints modification by Ron Kuivila added jt.
 */
 #include <CoreAudio/HostTime.h>
 #include <Carbon/Carbon.h>
@@ -33,6 +34,8 @@ added prRestartMIDI
 #include "VMGlobals.h"
 #include "PyrSymbolTable.h"
 #include "PyrInterpreter.h"
+#include "PyrKernel.h"
+
 #include "PyrPrimitive.h"
 #include "PyrObjectProto.h"
 #include "PyrPrimitiveProto.h"
@@ -225,24 +228,26 @@ void midiListEndpoints()
 {
 }
 
-/*
-
-need a primitive to connect a source (by name), and disconnect a source.
-
-*/
 
 int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed);
 int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
-{
+{ char *x, *y;
+    x = (char*) malloc(1280);
+    y = (char *)malloc(1280);
+    sprintf(x, "");
     int numSrc = MIDIGetNumberOfSources();
 	post("numSrc %d\n",  numSrc);
+
+        sprintf(y, "[ [ ");
+        strcat(x,y);
+
     for (int i=0; i<numSrc; ++i) {
         MIDIEndpointRef src = MIDIGetSource(i);
 		MIDIEntityRef ent;
 		MIDIEndpointGetEntity(src, &ent);
 		MIDIDeviceRef dev;
 		MIDIEntityGetDevice(ent, &dev);
-		
+
         CFStringRef devname, endname;
         MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
         MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
@@ -251,19 +256,28 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 		char cendname[1024], cdevname[1024];
 		CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
 		CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
-		post("in %3d   uid %8d   dev '%s'   endpt '%s'\n", i, id, cdevname, cendname);
+  //             post("in %3d   uid %8d   dev '%s'   endpt '%s'\n", i, id, cdevname, cendname);
         CFRelease(devname);
         CFRelease(endname);
+        if (i + 1 == numSrc) sprintf(y," '%s %s', %8d ", cdevname, cendname,id);
+        else sprintf(y," '%s %s', %8d, ", cdevname, cendname, id);
+        strcat(x,y);
     }
-    int numDst = MIDIGetNumberOfDestinations();
-	post("numDst %d\n",  numDst);
+        sprintf(y, "], [ ");
+        strcat(x,y);
+
+
+        int numDst = MIDIGetNumberOfDestinations();
+
+//	post("numDst %d\n",  numDst);
+
     for (int i=0; i<numDst; ++i) {
         MIDIEndpointRef dst = MIDIGetDestination(i);
 		MIDIEntityRef ent;
 		MIDIEndpointGetEntity(dst, &ent);
 		MIDIDeviceRef dev;
 		MIDIEntityGetDevice(ent, &dev);
-		
+
         CFStringRef devname, endname;
         MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
         MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &endname);
@@ -272,10 +286,19 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 		char cendname[1024], cdevname[1024];
 		CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
 		CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
-		post("out %3d   uid %8d   dev '%s'   endpt '%s'\n", i, id, cdevname, cendname);
+//		post("out %3d   uid %8d   dev '%s'   endpt '%s'\n", i, id, cdevname, cendname);
         CFRelease(devname);
         CFRelease(endname);
-    }
+        if (i + 1 == numDst) sprintf(y," '%s %s', %8d ", cdevname, cendname,id);
+        else sprintf(y," '%s %s', %8d, ", cdevname, cendname, id);
+         strcat(x,y);
+     }
+        sprintf(y, "] ] ");
+        strcat(x,y);
+       ++g->sp; SetObject(g->sp,newPyrString(g->gc, x, 0, true) ); // push string onto return stack
+
+        free(x);
+        free(y);
 	return errNone;
 }
 
