@@ -131,8 +131,9 @@ MultiPageLayout  {
 	
 	resizeToFit { 
 		views.reverse.do({ arg v,vi;
-			v.resizeToFit;
-			windows.at(vi).setInnerExtent(v.bounds.width, v.bounds.height );
+			var b;
+			b = v.resizeToFit;
+			windows.at(vi).setInnerExtent(b.width, b.height );
 		});
 	}
 	fullScreen {

@@ -79,6 +79,7 @@ FlowView : SCLayoutView {
 		super.bounds = new = this.bounds.resizeTo(used.width,used.height);
 		decorator.bounds = new;
 		// don't reflow unless asked
+		^new
 	}
 	bounds_ { arg b;
 		if(b != this.bounds,{

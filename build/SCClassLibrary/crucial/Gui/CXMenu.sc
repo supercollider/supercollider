@@ -12,7 +12,7 @@ CXMenu : SCViewAdapter { // multiple actions
 	}
 	gui { arg lay,windowWidth=150,height=400,argbuttonWidth=160;
 		buttonWidth = argbuttonWidth;
-		layout= lay ?? {MultiPageLayout.new};
+		layout= lay ?? {MultiPageLayout.new("menu",Rect(20,20,windowWidth,height))};
 		view = SCVLayoutView.new(layout,Rect(0,0,buttonWidth,24 * nameFuncs.size));
 		this.guiBody;
 		this.enableKeyDowns;
@@ -20,10 +20,14 @@ CXMenu : SCViewAdapter { // multiple actions
 	}
 	guiBody {
 		nameFuncs.do({arg nf;
-			this.add(nf);
+			this.addToGui(nf);
 		});
 	}
 	add { arg nf;
+		nameFuncs = nameFuncs.add(nf);
+		if(layout.notNil,{ this.addToGui(nf); });
+	}
+	addToGui { arg nf;
 		var ab;
 		ab = ActionButton(view,nf.key,{
 				nf.value.value; 
@@ -41,9 +45,11 @@ CXMenu : SCViewAdapter { // multiple actions
 			},buttonWidth)
 			.background_(backColor ? Color.new255(112, 128, 144))
 			.labelColor_(stringColor ? Color.white);
+		view.bounds = view.bounds.resizeTo(buttonWidth,24 * nameFuncs.size);
 	}
 	resize {
-		layout.resizeToFit;
+		// what if its not my layout ?
+		//layout.resizeToFit;
 	}
 	nameFuncs_ { arg nf;
 		nameFuncs = nf;
