@@ -379,7 +379,6 @@ Server : Model {
 		var resp;
 		if (serverRunning, { "server already running".inform; ^this });
 		if (serverBooting, { "server already booting".inform; ^this });
-		if (isLocal.not, { "can't boot a remote server".inform; ^this });
 		
 		serverBooting = true;
 		if(startAliveThread, { this.startAliveThread });
@@ -394,8 +393,13 @@ Server : Model {
 			serverBooting = false;
 			this.initTree;
 		});
-		this.bootServerApp;
+		if (isLocal.not, { 
+			"You will have to manually boot remote server.".inform;
+		},{
+			this.bootServerApp;
+		});
 	}
+	
 	bootServerApp {
 		if (inProcess, { 
 			"booting internal".inform;
