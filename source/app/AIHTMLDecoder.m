@@ -197,6 +197,7 @@ int HTMLEquivalentForFontSize(int fontSize);
                 [string appendFormat:@"&#%d;", currentChar];
             }else if(currentChar == '\r' || currentChar == '\n'){
                 [string appendString:@"<BR>"];
+                [string appendFormat:@"%C", currentChar]; // add returns for ease of reading
             }else{
                 //unichar characters may have a length of up to 3; be careful to get the whole character
                 NSRange composedCharRange = [chunk rangeOfComposedCharacterSequenceAtIndex:i];
