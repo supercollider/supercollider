@@ -2,42 +2,24 @@
 CXAbstractLabel : SCStaticText {
 
 	*new { arg layout,string,x,y=17,maxx=15;
-		^super.new(layout,	Rect(0,0,x ?? {(string.size * 7.0).max(maxx)} ,y))
+		^super.new(layout,	Rect(0,0,x ?? {(string.size * 7.5).max(maxx)} ,y))
 			.string_(string)
 	}
 	*viewClass { ^SCStaticText }
-	//deprec me
-	backColor_ { arg c; this.background_(c) }
-
 	label_ { arg string;
 		this.string_(string);
-		//view.string_(string);
 	}
-//	align_ { arg a=\left;
-//		view.align = a;
-//	}
-//	font_ { arg f;
-//		view.font = f;
-//	}
+
 	bold { 
 		this.font = Font("Helvetica-Bold",12.0);
 	}
+	//deprec me
+	backColor_ { arg c; this.background_(c) }
 
 }
 
 CXLabel : CXAbstractLabel {
 	classvar <>bgcolor;
-
-//	*prNew { arg layout,string,x,y=17,maxx=15;
-//		//layout = layout.asPageLayout;//View ?? {FlowView.new};
-//		//layout.dump;
-//		^super.new.view_(
-//			SCStaticText(layout,
-//					Rect(0,0,x ?? {(string.size * 7.0).max(maxx)} ,y)
-//						//layout.layRight(x ?? { (string.size * 7.0).max(maxx) },y)
-//			).string_(string)
-//		)
-//	}
 
 	*new { arg layout,string,x,y=17,maxx=15;
 		var new;
