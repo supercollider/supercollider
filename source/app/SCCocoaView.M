@@ -577,8 +577,8 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if(err) return err;
 		[mMovieView resizeWithMagnification: mag];
 		NSSize size = [mMovieView sizeForMagnification: mag];
-		mBound.width = size.width;
-		mBound.height = size.height;
+		mBounds.width = size.width;
+		mBounds.height = size.height;
 		return errNone;
 	}	
 	if (strcmp(name, "bounds")==0) {
