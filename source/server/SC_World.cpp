@@ -383,7 +383,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 
 		numInputChannels = world->mNumInputs = inputFileInfo.channels; // force it.
 
-		if (inputFileInfo.samplerate != inOptions->mPreferredSampleRate)
+		if (inputFileInfo.samplerate != (int)inOptions->mPreferredSampleRate)
 			scprintf("WARNING: input file sample rate does not equal output sample rate.\n");
 			
 	} else {
