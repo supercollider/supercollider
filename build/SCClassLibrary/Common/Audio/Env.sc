@@ -1,12 +1,14 @@
 
 Env { 
 	// envelope specification for an EnvGen, Env is not a UGen itself
-	var <>levels;
-	var <>times;
-	var <>curves = 'lin';		// can also be 'exp', 'sin', 'cos', a float curve value, 
+	var <levels;
+	var <times;
+	var <curves = 'lin';		// can also be 'exp', 'sin', 'cos', a float curve value, 
 								// or an array of curve values
-	var <>releaseNode;	// index of release level, if nil then ignore release;
-	var <>loopNode;		// index of loop start level, if nil then does not loop;
+	var <releaseNode;	// index of release level, if nil then ignore release;
+	var <loopNode;		// index of loop start level, if nil then does not loop;
+	
+	var <array;
 	
 	classvar shapeNames;
 	
@@ -26,12 +28,46 @@ Env {
 			\exp -> 2,
 			\exponential -> 2,
 			\sin -> 3,
-			\cos -> 4,
+			\sine -> 3,
+			\wel -> 4,
+			\welch -> 4,
 			\sqr -> 6,
 			\squared -> 6,
+			\cub -> 7,
 			\cubed -> 7
 		];	
 	}
+	
+	levels_ { arg z; 
+		levels = z;
+		array = nil;
+	} 
+	times_ { arg z; 
+		times = z;
+		array = nil;
+	} 
+	curves_ { arg z; 
+		curves = z;
+		array = nil;
+	} 
+	releaseNode_ { arg z; 
+		releaseNode = z;
+		array = nil;
+	} 
+	loopNode_ { arg z; 
+		releaseNode = z;
+		array = nil;
+	}
+	
+	asArray {
+		if (array.isNil) { array = this.prAsArray }
+		^array
+	}
+	
+	at { arg time;
+		^this.asArray.envAt(time)
+	}
+	
 	// methods to make some typical shapes :
 	
 	// fixed duration envelopes
@@ -124,25 +160,14 @@ Env {
 	}
 		
 	shapeNumber { arg shapeName;
-		^shapeNames.at(shapeName) ? 5
+		var shape;
+		if (shapeName.isValidUGenInput) { ^5 };
+		shape = shapeNames.at(shapeName);
+		if (shape.notNil) { ^shape };
+		Error("Env shape not defined.").throw;
 	}
 	curveValue { arg curve;
 		if (curve.isValidUGenInput, { ^curve },{ ^0 });
-	}
-	asArray {
-		var contents, curvesArray;
-		contents = [levels.at(0), times.size, 
-				releaseNode ? -99, loopNode ? -99];
-		curvesArray = curves.asArray;
-		times.size.do({ arg i;
-			contents = contents ++ [
-				levels.at(i+1),
-				times.at(i),
-				this.shapeNumber(curvesArray.wrapAt(i)),
-				this.curveValue(curvesArray.wrapAt(i))
-			];
-		});	
-		^contents
 	}
 	
 //	send { arg netAddr, bufnum;
@@ -171,5 +196,21 @@ Env {
 
 	storeArgs { ^[levels, times, curves, releaseNode, loopNode] }
 
+	
+	prAsArray {
+		var contents, curvesArray;
+		contents = [levels.at(0), times.size, 
+				releaseNode ? -99, loopNode ? -99];
+		curvesArray = curves.asArray;
+		times.size.do({ arg i;
+			contents = contents ++ [
+				levels.at(i+1),
+				times.at(i),
+				this.shapeNumber(curvesArray.wrapAt(i)),
+				this.curveValue(curvesArray.wrapAt(i))
+			];
+		});	
+		^contents
+	}
 }
 

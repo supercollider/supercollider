@@ -27,6 +27,7 @@ Primitives for Arrays.
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
 #include "SC_InlineBinaryOp.h"
+#include "SC_Constants.h"
 #include <string.h>
 
 int basicSize(VMGlobals *g, int numArgsPushed);
@@ -2026,6 +2027,124 @@ int prArrayWIndex(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+enum {
+	shape_Step,
+	shape_Linear,
+	shape_Exponential,
+	shape_Sine,
+	shape_Welch,
+	shape_Curve,
+	shape_Squared,
+	shape_Cubed
+};
+
+enum {
+	kEnv_initLevel,
+	kEnv_numStages,
+	kEnv_releaseNode,
+	kEnv_loopNode
+};
+
+int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+	
+	PyrObject* env = a->uo;
+	PyrSlot* slots = env->slots;
+	double time;
+	int err = slotDoubleVal(b, &time);
+	if (err) return err;
+	
+	double begLevel;
+	err = slotDoubleVal(slots + kEnv_initLevel, &begLevel);
+	if (err) return err;
+	
+	int numStages;
+	err = slotIntVal(slots + kEnv_numStages, &numStages);
+	if (err) return err;
+	
+	double begTime = 0.;
+	double endTime = 0.;
+	
+	for (int i=0; i<numStages; ++i) {
+		double dur, endLevel;
+		
+		slots += 4;
+		
+		err = slotDoubleVal(slots + 0, &endLevel);
+		if (err) return err;
+		err = slotDoubleVal(slots + 1, &dur);
+		if (err) return err;
+		
+		endTime += dur;
+		
+		//post("%d   %g   %g %g   %g   %g\n", i, time, begTime, endTime, dur, endLevel);
+		
+		if (time < endTime) {
+			int shape;
+			double curve;
+			
+			err = slotIntVal(slots + 2, &shape);
+			if (err) return err;
+			
+			double level;
+			double pos = (time - begTime) / dur;
+			
+			//post("    shape %d   pos %g\n", shape, pos);
+			switch (shape)
+			{
+				case shape_Step :
+					level = endLevel;
+					break;
+				case shape_Linear :
+				default:
+					level = pos * (endLevel - begLevel) + begLevel;
+					break;
+				case shape_Exponential :
+					level = begLevel * pow(endLevel / begLevel, pos);
+					break;
+				case shape_Sine :
+					level = begLevel + (endLevel - begLevel) * (-cos(pi * pos) * 0.5 + 0.5);
+					break;
+				case shape_Welch :
+					if (begLevel < endLevel)
+						level = begLevel + (endLevel - begLevel) * sin(pi2 * pos);
+					else 
+						level = begLevel + (endLevel - begLevel) * sin(pi2 - pi2 * pos);
+					break;
+				case shape_Curve :
+					err = slotDoubleVal(slots + 3, &curve);
+					if (err) return err;
+					
+					if (fabs(curve) < 0.0001) {
+						level = pos * (endLevel - begLevel) + begLevel;
+					} else {
+						double denom = 1. - exp(curve);
+						double numer = 1. - exp(pos * curve);
+						level = begLevel + (endLevel - begLevel) * (numer/denom);
+					}
+					break;
+				case shape_Squared :
+					level = pos * pos * (endLevel - begLevel) + begLevel;
+					break;
+				case shape_Cubed :
+					level = pos * pos * pos * (endLevel - begLevel) + begLevel;
+					break;
+			}
+			SetFloat(a, level);
+			return errNone;
+		}
+		
+		begTime = endTime;
+		begLevel = endLevel;
+	}
+	
+	SetFloat(a, begLevel);
+	
+	return errNone;
+}
+
 
 
 void initArrayPrimitives();
@@ -2083,6 +2202,8 @@ void initArrayPrimitives()
 	definePrimitive(base, index++, "_ArrayStutter", prArrayStutter, 2, 0);
 	definePrimitive(base, index++, "_ArraySlide", prArraySlide, 3, 0);
 	definePrimitive(base, index++, "_ArrayContainsSeqColl", prArrayContainsSeqColl, 1, 0);
+	
+	definePrimitive(base, index++, "_ArrayEnvAt", prArrayEnvAt, 2, 0);
 }
 
 
