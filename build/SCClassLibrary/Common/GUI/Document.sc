@@ -5,13 +5,13 @@ Document {
 	var <dataptr, path, title, visible, <background, <stringColor;
 	var <>keyDownAction, <>onClose;
 	var <isListener, <>toFrontAction, <>endFrontAction, <>mouseDownAction;
+	var < editable;
 	
 	*initClass {
 		var num, listenernum, doc;
 		num = this.numberOfOpen;
 		num.do({arg i;
 			doc = this.newFromIndex(i);
-			doc.prisListener(false);
 		});
 		listenernum = this.prGetIndexOfListener;	
 		allDocuments.at(listenernum).prisListener(true);
@@ -146,6 +146,13 @@ Document {
 	selectRange {arg start=0, length=0;
 		_TextWindow_SelectRange
 	}
+	editable_{arg abool=true;
+		editable = abool;
+		this.prisEditable_(abool);
+	}
+	prisEditable_{arg editable=true;
+		_TextWindow_SetEditable
+	}
 	
 // state info
 	isEdited {
@@ -255,19 +262,11 @@ Document {
 	}
 
 	
-	//check if there is already a document with the same pointer
 	prAdd {
-		
-		if(allDocuments.isNil,{allDocuments = allDocuments.add(this);});
-		allDocuments.do({arg doc;
-			if(doc.dataptr == this.dataptr,{
-				this = doc;
-				^doc
-			})
-		});
 		allDocuments = allDocuments.add(this);
-		^this
+		this.editable = true;
 	}
+	
 	//this is called after recompiling the lib
 	*numberOfOpen {
 		_NumberOfOpenTextWindows
@@ -278,9 +277,11 @@ Document {
 	}
 	initByIndex { arg idx;
 		//allDocuments = allDocuments.add(this);
-		
-		this.prinitByIndex(idx);
-		^this.prAdd;
+		var doc;
+		doc = this.prinitByIndex(idx);
+		if(doc.isNil,{this = nil; ^nil});
+		doc.prisListener(false);
+		this.prAdd;
 	}
 	prinitByIndex { arg idx;
 		_TextWindow_GetByIndex
@@ -292,9 +293,12 @@ Document {
 	}
 	
 	initLast {
-		this.prGetLastIndex;
+		var doc;
+		doc = this.prGetLastIndex;
+		if(doc.isNil,{ this = nil; ^nil});
 		isListener = false;
 		^this.prAdd;
+	
 	}
 	
 	prGetLastIndex {
