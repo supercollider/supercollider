@@ -53,6 +53,8 @@ PyrSymbol* s_sctopview;
 PyrSymbol* s_beginDrag;
 PyrSymbol* s_receiveDrag;
 PyrSymbol* s_canReceiveDrag;
+PyrSymbol* s_mouseDown;
+PyrSymbol* s_mouseUp;
 
 extern pthread_mutex_t gLangMutex;
 
@@ -1741,7 +1743,7 @@ void SC2DTabletSlider::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *th
         double x = (where.x - mBounds.x - 1 - THUMBSIZE/2) / (mBounds.width - THUMBSIZE - 2);
         double y = 1. - (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
         setValue(x, y, false); // do NOT send action
-        TABLETTRACK(getsym("mouseDown"),x,y)
+        TABLETTRACK(s_mouseDown,x,y)
     }
 }
 
@@ -1763,7 +1765,7 @@ void SC2DTabletSlider::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theE
         double x = (where.x - mBounds.x - 1 - THUMBSIZE/2) / (mBounds.width - THUMBSIZE - 2);
         double y = 1. - (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
         setValue(x, y, false); // do NOT send action
-        TABLETTRACK(getsym("mouseUp"),x,y)
+        TABLETTRACK(s_mouseUp,x,y)
     }
 }
 
@@ -3859,7 +3861,7 @@ SCView* NewSCTabletView(SCContainerView *inParent, PyrObject* inObj, SCRect inBo
 }
 
 SCTabletView::SCTabletView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: SCView(inParent, inObj, inBounds)
+	: SCView(inParent, inObj, inBounds), mClipToBounds(1)
 {
 }
 
@@ -3867,28 +3869,60 @@ SCTabletView::~SCTabletView()
 {
 }
 
+int SCTabletView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	int err;
+        char *name = symbol->name;
+        if (strcmp(name, "clipToBounds")==0) {
+            slotIntVal(slot, &mClipToBounds);
+            return errNone;
+        }
+        return SCView::setProperty(symbol, slot);
+}
+
 void SCTabletView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
+    float x,y;
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else {
-        TABLETTRACK(getsym("mouseDown"),where.x - mBounds.x,where.y - mBounds.y)
+        x = where.x - mBounds.x;
+        y = where.y - mBounds.y;
+        if(mClipToBounds) {
+            x = sc_clip(x,0.,mBounds.width);
+            y = sc_clip(y,0.,mBounds.height);
+        }
+        TABLETTRACK(s_mouseDown,x,y)
     }
 }
 
 void SCTabletView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
+    float x,y;
     if (! (modifiers & NSCommandKeyMask)) {
-        TABLETTRACK(s_doaction,where.x - mBounds.x,where.y - mBounds.y)
+        x = where.x - mBounds.x;
+        y = where.y - mBounds.y;
+        if(mClipToBounds) {
+            x = sc_clip(x,0.,mBounds.width);
+            y = sc_clip(y,0.,mBounds.height);
+        }
+        TABLETTRACK(s_doaction,x,y)
     }
 }
 
 void SCTabletView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
+    float x,y;
     if (modifiers & NSCommandKeyMask) {
         this->receiveDrag();
     } else {
-        TABLETTRACK(getsym("mouseUp"),where.x - mBounds.x,where.y - mBounds.y)
+        x = where.x - mBounds.x;
+        y = where.y - mBounds.y;
+        if(mClipToBounds) {
+            x = sc_clip(x,0.,mBounds.width);
+            y = sc_clip(y,0.,mBounds.height);
+        }
+        TABLETTRACK(s_mouseUp,x,y)
     }
 }
 
@@ -4091,6 +4125,8 @@ void initSCViewPrimitives()
         s_beginDrag = getsym("beginDrag");
         s_receiveDrag = getsym("receiveDrag");
         s_canReceiveDrag = getsym("canReceiveDrag");
+        s_mouseDown = getsym("mouseDown");
+        s_mouseUp = getsym("mouseUp");
         
 	base = nextPrimitiveIndex();
 	index = 0;

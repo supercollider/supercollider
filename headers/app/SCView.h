@@ -714,11 +714,14 @@ class SCTabletView : public SCView
 public:	
 	SCTabletView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
 	virtual ~SCTabletView();
-	
+    
+	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
-       
+protected:
+    int mClipToBounds;
 };
 SCView* NewSCTabletView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
