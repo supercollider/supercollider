@@ -3427,13 +3427,19 @@ int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	char *name = symbol->name;
 	if (strcmp(name, "items")==0) {
 		if (IsNil(slot)) {
-			if (mArray) CFRelease(mArray);
+			if (mArray) { 
+				CFRelease(mArray);
+				mArray = NULL;
+			}
 			return errNone;
 		}
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
 		
 		// wipe out old
-		if (mArray) CFRelease(mArray);
+		if (mArray) { 
+			CFRelease(mArray);
+			mArray = NULL;
+		}
 		
 		PyrObject *array = slot->uo;
 		int numItems = array->size;
