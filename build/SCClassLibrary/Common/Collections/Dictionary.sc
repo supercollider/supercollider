@@ -236,8 +236,8 @@ Dictionary : Set {
 		},{
 			newIndex = this.scanFor(key);
 			if ( oldIndex != newIndex, { 
-				this.swap(oldIndex, newIndex);
-				this.swap(oldIndex+1, newIndex+1) 
+				array.swap(oldIndex, newIndex);
+				array.swap(oldIndex+1, newIndex+1) 
 			})
 		})
 	}

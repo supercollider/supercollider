@@ -164,10 +164,9 @@ Set : Collection {
 			(element = this.keyAt(oldIndex)).notNil
 		},{
 			newIndex = this.scanFor(element);
-			if ( oldIndex != newIndex, { this.swap(oldIndex, newIndex) })
+			if ( oldIndex != newIndex, { array.swap(oldIndex, newIndex) })
 		})
 	}
-	swap { arg i, j; array.swap(i, j) }
 	keyAt { arg index; ^array.at(index) }
 	
 }
