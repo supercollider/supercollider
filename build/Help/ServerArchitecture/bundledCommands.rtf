@@ -10,19 +10,14 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 Using Synth/Node/Group sclang objects to build classes often\
-there is the need to construct bundles to send messages together.\
-One example is you want to start a synth that should be mapped\
-instantly to certain buses.\
+\fs24 \cf0 Using Synth/Node/Group sclang objects to build classes often there is the need to construct bundles to send messages together. One example is you want to start a synth that should be mapped instantly to certain buses.\
 \
-This extension uses a list that is passed to all message methods\
-which add their message to it and do all needed preparation on \
-language side. \
+This extension uses a list that is passed to all message methods which add their message to it and do all needed preparation on language side. \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b Note
-\f1\b0 : you have to use this with care. Normally the other ways\
-of creating Synths and Groups are more safe.\
+\f0\b \cf0 Note
+\f1\b0 : you have to use this with care. Normally the other ways of creating Synths and Groups are more safe.\
 \
 aNode.
 \f0\b msgToBundle
@@ -52,8 +47,9 @@ Group.
 \
 
 \f0\b creating messages that can be added to a bundle\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 aSynth.
 \f0\b newMsg
 \f1\b0 (target, addAction, argList) \
@@ -72,8 +68,9 @@ aNode.
 	returns a message that causes the server to move this node before another one\
 \
 analogous messages: \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b moveAfterMsg / moveToHeadMsg / moveToTailMsg / \
+\f0\b \cf0 moveAfterMsg / moveToHeadMsg / moveToTailMsg / \
 moveNodeToHeadMsg / moveNodeToTailMsg
 \f2\b0\fs20 \
 \
