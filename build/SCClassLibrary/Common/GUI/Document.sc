@@ -32,12 +32,20 @@ Document {
 	
 //class:
 
-	*dir_ { arg path; path = path.standardizePath ++ "/";
-		if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln }Ê{Êdir = path }
+	*dir_ { arg path; path = path.standardizePath;
+		if(path == "") {Êdir = path } {
+			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln }Ê{Ê
+				dir = path ++ "/"
+			}
+		}
 	}
 	
-	*wikiDir_ { arg path; path = path.standardizePath ++ "/";
-		if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln }Ê{ÊwikiDir = path }
+	*wikiDir_ { arg path; path = path.standardizePath;
+		if(path == "") {ÊwikiDir = path } {
+			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln }Ê{Ê
+				wikiDir = path ++ "/"
+			}
+		}
 	}
 	
 	*standardizePath { arg p;
@@ -256,7 +264,6 @@ Document {
 		var extensions = #[".rtf", ".sc", ".txt", ""];
 		selectedText = this.selectedText;
 		this.selectRange(this.selectionStart, 0);
-
 		case { selectedText[0] == $* }
 		{ 
 			// execute file
@@ -298,7 +305,6 @@ Document {
 		
 	mouseDown { arg clickPos;	
 		mouseDownAction.value(this);
-		
 		if (wikiBrowse and: { this.selectUnderlinedText(clickPos) }) {
 			^this.openWikiPage
 		};		
