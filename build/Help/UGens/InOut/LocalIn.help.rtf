@@ -17,6 +17,7 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	
 \f0\b\fs24 *ar(numChannels) 
 \f2\b0 - define and read from an audio bus local to the SynthDef.
@@ -42,9 +43,15 @@ The audio can be written to the bus using
 \f0\b LocalOut
 \f2\b0 .\
 \
+
+\f0\b N.B.
+\f2\b0  Audio written to a 
+\f0\b LocalOut
+\f2\b0  will not be read by a corresponding LocalIn until the next cycle, i.e. one block size of samples later. Because of this it is important to take this additional delay into account when using LocalIn to create feedback delays with delay times shorter than the threshold of pitch (i.e. < 0.05 seconds or > 20Hz), or where sample accurate alignment is required. See the resonator example below.\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs20 \cf0 (\
+\f1\fs18 \cf0 (\
 \{\
 	\cf2 var\cf0  source, local;\
 	\
@@ -62,12 +69,8 @@ The audio can be written to the bus using
 )\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs20 \cf0 (\
+\
+(\
 z = \cf2 SynthDef\cf0 (\cf4 "tank"\cf0 , \{\
 	\cf2 var\cf0  local, in;\
 	\
@@ -82,7 +85,7 @@ z = \cf2 SynthDef\cf0 (\cf4 "tank"\cf0 , \{\
 	4.do \{ in = \cf2 AllpassN\cf0 .ar(in, 0.03, \{\cf2 Rand\cf0 (0.005,0.02)\}.dup, 1); \};\
 	\
 	local = \cf2 LocalIn\cf0 .ar(2) * 0.98;\
-	local = \cf2 OnePole\cf0 .ar(local, \cf2 0.5\cf0 );\
+	local = \cf2 OnePole\cf0 .ar(local, 0.5);\
 	\
 	local = \cf2 Rotate2\cf0 .ar(local[0], local[1], 0.23);\
 	local = \cf2 AllpassN\cf0 .ar(local, 0.05, \{\cf2 Rand\cf0 (0.01,0.05)\}.dup, 2);\
@@ -100,12 +103,8 @@ z = \cf2 SynthDef\cf0 (\cf4 "tank"\cf0 , \{\
 )\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs20 \cf0 (\
+\
+(\
 z = \cf2 SynthDef\cf0 (\cf4 "tape"\cf0 , \{\
 	\cf2 var\cf0  local, in, amp;\
 	\
@@ -130,4 +129,22 @@ z = \cf2 SynthDef\cf0 (\cf4 "tape"\cf0 , \{\
 	\cf2 Out\cf0 .ar(0, local * 0.1);\
 \}).play;\
 )\
-}
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // Resonator, must subtract blockSize for correct tuning\cf0 \
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  play, imp, initial;\
+\cf2 SynthDef\cf0 (\cf4 "testRes"\cf0 , \{\
+\
+play = \cf2 LocalIn\cf0 .ar(1); \
+imp = \cf2 Impulse\cf0 .ar(1);\
+\
+\cf2 LocalOut\cf0 .ar(\cf2 DelayC\cf0 .ar(imp + (play * 0.995), 1, 440.reciprocal - ControlRate.ir.reciprocal)); \cf3 // for feedback\cf0 \
+\
+\cf2 OffsetOut\cf0 .ar(0, play);\
+\
+\}).play(s);\
+\
+\{\cf2 SinOsc\cf0 .ar(440, 0, 0.2) \}.play(s, 1); \cf3 // compare pitch\cf0 \
+)}
