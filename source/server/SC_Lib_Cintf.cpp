@@ -36,6 +36,7 @@ HashTable<struct UnitDef, Malloc> *gUnitDefLib = 0;
 HashTable<struct BufGen, Malloc> *gBufGenLib = 0;
 HashTable<struct PlugInCmd, Malloc> *gPlugInCmds = 0;
 extern struct InterfaceTable gInterfaceTable;
+SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 
 void initMiscCommands();
 bool PlugIn_LoadDir(char *dirname);

@@ -101,15 +101,23 @@ SCErr SC_LibCmd::Perform(struct World *inWorld, int inSize, char *inData, ReplyA
 	return err;
 }
 
-SCErr NewCommand(const char *inPath, SC_CommandFunc inFunc)
+SCErr NewCommand(const char *inPath, uint32 inCommandNumber, SC_CommandFunc inFunc)
 {
 	char path[256];
 	sprintf(path, "/%s", inPath);
-	
+
 	SC_LibCmd *cmd = new SC_LibCmd(inFunc);
 	cmd->SetName(path);
 	gCmdLib->Add(cmd);
 	
+	// support OSC commands without the leading slash
+	SC_LibCmd *cmd2 = new SC_LibCmd(inFunc);
+	cmd2->SetName(inPath);
+	gCmdLib->Add(cmd2);
+
+	// support integer OSC commands
+	gCmdArray[inCommandNumber] = cmd;
+
 	return kSCErr_None;
 }
 

@@ -37,8 +37,14 @@
 int OSCstrlen(char *strin);
 
 
-SCErr meth_bufAlloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_bufAlloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_none(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_none(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+{	
+	return kSCErr_None;
+}
+
+SCErr meth_b_alloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_alloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {	
 	sc_msg_iter msg(inSize, inData);
 	int bufindex = msg.geti();
@@ -58,8 +64,8 @@ SCErr meth_bufShmAlloc(World *inWorld, int inSize, char *inData, ReplyAddress *i
 	return kSCErr_None;
 }*/
 
-SCErr meth_bufFree(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_bufFree(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_b_free(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_free(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	sc_msg_iter msg(inSize, inData);
 	int bufindex = msg.geti();
@@ -71,16 +77,16 @@ SCErr meth_bufFree(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 	return kSCErr_None;
 }
 
-SCErr meth_bufClose(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_bufClose(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_b_close(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_close(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	CallSequencedCommand(BufCloseCmd, inWorld, inSize, inData, inReply);
 	
 	return kSCErr_None;
 }
 
-SCErr meth_bufAllocRead(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_bufAllocRead(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_b_allocRead(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_allocRead(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	sc_msg_iter msg(inSize, inData);
 	int bufindex = msg.geti();
@@ -92,46 +98,46 @@ SCErr meth_bufAllocRead(World *inWorld, int inSize, char *inData, ReplyAddress *
 	return kSCErr_None;
 }
 
-SCErr meth_bufRead(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_bufRead(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_b_read(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_read(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	CallSequencedCommand(BufReadCmd, inWorld, inSize, inData, inReply);
 	
 	return kSCErr_None;
 }
 
-SCErr meth_bufWrite(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_bufWrite(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_b_write(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_write(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	CallSequencedCommand(BufWriteCmd, inWorld, inSize, inData, inReply);
 
 	return kSCErr_None;
 }
 
-SCErr meth_bufZero(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_bufZero(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_b_zero(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_zero(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	CallSequencedCommand(BufZeroCmd, inWorld, inSize, inData, inReply);
 	return kSCErr_None;
 }
 
 
-SCErr meth_unitCmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_unitCmd(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_u_cmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_u_cmd(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	return Unit_DoCmd(inWorld, inSize, inData);	
 };
 
-SCErr meth_defCmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_defCmd(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_cmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_cmd(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	return PlugIn_DoCmd(inSize, inData);	
 };
 
 
 /*
-SCErr meth_nodeCmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_nodeCmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_n_cmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_cmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	sc_msg_iter msg(inSize, inData);	
 	int32 nodeID = msg.geti();
@@ -147,8 +153,8 @@ SCErr meth_nodeCmd(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 }
 */
 
-SCErr meth_synthTrace(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_synthTrace(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_s_trace(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_s_trace(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
 	int32 nodeID = msg.geti();
@@ -160,8 +166,8 @@ SCErr meth_synthTrace(World *inWorld, int inSize, char *inData, ReplyAddress* /*
 	return kSCErr_None;
 }
 
-SCErr meth_nodeRun(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_nodeRun(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_n_run(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_run(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
 	int32 nodeID = msg.geti();
@@ -175,8 +181,8 @@ SCErr meth_nodeRun(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 	return kSCErr_None;
 }
 
-SCErr meth_nodeMap(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_nodeMap(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_n_map(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_map(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	//printf("meth_nodeMap\n");
 	sc_msg_iter msg(inSize, inData);	
@@ -199,8 +205,8 @@ SCErr meth_nodeMap(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 	return kSCErr_None;
 }
 
-SCErr meth_nodeSet(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_nodeSet(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	//printf("meth_nodeSet\n");
 	sc_msg_iter msg(inSize, inData);	
@@ -223,8 +229,8 @@ SCErr meth_nodeSet(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 	return kSCErr_None;
 }
 
-SCErr meth_nodeSetN(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_nodeSetN(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
 	int id = msg.geti();
@@ -252,8 +258,8 @@ SCErr meth_nodeSetN(World *inWorld, int inSize, char *inData, ReplyAddress* /*in
 	return kSCErr_None;
 }
 
-SCErr meth_nodeFill(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_nodeFill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_n_fill(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_fill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
 	int id = msg.geti();
@@ -285,8 +291,8 @@ SCErr meth_nodeFill(World *inWorld, int inSize, char *inData, ReplyAddress* /*in
 }
 
 
-SCErr meth_defLoad(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_defLoad(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_d_load(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_d_load(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	CallSequencedCommand(LoadSynthDefCmd, inWorld, inSize, inData, inReply);
 	
@@ -294,8 +300,8 @@ SCErr meth_defLoad(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 
 }
 
-SCErr meth_defRecv(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_defRecv(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_d_recv(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_d_recv(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	CallSequencedCommand(RecvSynthDefCmd, inWorld, inSize, inData, inReply);
 	
@@ -303,16 +309,16 @@ SCErr meth_defRecv(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 
 }
 
-SCErr meth_defLoadDir(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_defLoadDir(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_d_loadDir(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_d_loadDir(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	CallSequencedCommand(LoadSynthDefDirCmd, inWorld, inSize, inData, inReply);
 	
 	return kSCErr_None;
 }
 
-SCErr meth_defFreeAll(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_defFreeAll(World *inWorld, int /*inSize*/, char */*inData*/, ReplyAddress* /*inReply*/)
+SCErr meth_d_freeAll(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_d_freeAll(World *inWorld, int /*inSize*/, char */*inData*/, ReplyAddress* /*inReply*/)
 {
 	printf("meth_defFreeAll\n");
 
@@ -321,8 +327,8 @@ SCErr meth_defFreeAll(World *inWorld, int /*inSize*/, char */*inData*/, ReplyAdd
 }
 
 
-SCErr meth_synthNew(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_synthNew(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	//printf("->meth_synthNew\n");
 	sc_msg_iter msg(inSize, inData);	
@@ -377,8 +383,8 @@ SCErr meth_synthNew(World *inWorld, int inSize, char *inData, ReplyAddress* /*in
 	return kSCErr_None;
 }
 
-SCErr meth_groupNew(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_groupNew(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
 	int32 newGroupID = msg.geti();
@@ -426,8 +432,8 @@ SCErr meth_groupNew(World *inWorld, int inSize, char *inData, ReplyAddress* /*in
 }
 
 
-SCErr meth_nodeDelete(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_nodeDelete(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_n_free(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_free(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	//printf("meth_nodeDelete\n");
 	sc_msg_iter msg(inSize, inData);	
@@ -441,8 +447,8 @@ SCErr meth_nodeDelete(World *inWorld, int inSize, char *inData, ReplyAddress* /*
 	return kSCErr_None;
 }
 
-SCErr meth_nodeAddBefore(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_nodeAddBefore(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_n_before(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_before(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
 	int32 nodeID = msg.geti();
@@ -463,8 +469,8 @@ SCErr meth_nodeAddBefore(World *inWorld, int inSize, char *inData, ReplyAddress*
 	return kSCErr_None;
 }
 
-SCErr meth_nodeAddAfter(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_nodeAddAfter(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_n_after(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_after(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
 	int32 nodeID = msg.geti();
@@ -485,8 +491,8 @@ SCErr meth_nodeAddAfter(World *inWorld, int inSize, char *inData, ReplyAddress* 
 	return kSCErr_None;
 }
 
-SCErr meth_groupAddHead(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_groupAddHead(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_g_head(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_g_head(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
 	Group *group = World_GetGroup(inWorld, msg.geti());
@@ -508,8 +514,8 @@ SCErr meth_groupAddHead(World *inWorld, int inSize, char *inData, ReplyAddress* 
 	return kSCErr_None;
 }
 
-SCErr meth_groupAddTail(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_groupAddTail(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_g_tail(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_g_tail(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
 	Group *group = World_GetGroup(inWorld, msg.geti());
@@ -530,8 +536,8 @@ SCErr meth_groupAddTail(World *inWorld, int inSize, char *inData, ReplyAddress* 
 	return kSCErr_None;
 }
 
-SCErr meth_groupInsert(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_groupInsert(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_g_insert(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_g_insert(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	//printf("meth_groupInsert\n");
 	sc_msg_iter msg(inSize, inData);	
@@ -555,8 +561,8 @@ SCErr meth_groupInsert(World *inWorld, int inSize, char *inData, ReplyAddress* /
 	return kSCErr_None;
 }
 
-SCErr meth_groupDeleteAll(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_groupDeleteAll(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_g_freeAll(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_g_freeAll(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
 	Group *group = World_GetGroup(inWorld, msg.geti());
@@ -566,15 +572,15 @@ SCErr meth_groupDeleteAll(World *inWorld, int inSize, char *inData, ReplyAddress
 	return kSCErr_None;
 }
 
-SCErr meth_audioStatus(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_audioStatus(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_status(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_status(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	CallSequencedCommand(AudioStatusCmd, inWorld, inSize, inData, inReply);
 	return kSCErr_None;
 }
 
-SCErr meth_audioQuit(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_audioQuit(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_quit(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_quit(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	CallSequencedCommand(AudioQuitCmd, inWorld, inSize, inData, inReply);
 	return kSCErr_None;
@@ -583,8 +589,8 @@ SCErr meth_audioQuit(World *inWorld, int inSize, char *inData, ReplyAddress *inR
 int64 oscTimeNow();
 
 
-SCErr meth_bufSet(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_bufSet(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_b_set(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);
 	int bufindex = msg.geti();
@@ -607,10 +613,10 @@ SCErr meth_bufSet(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 	return kSCErr_None;
 }
 
-SCErr meth_bufSetN(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_bufSetN(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_b_setn(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {		
-	//printf("meth_bufSetN\n");
+	//printf("meth_b_setn\n");
 	sc_msg_iter msg(inSize, inData);
 	int bufindex = msg.geti();
 	SndBuf* buf = World_GetBuf(inWorld, bufindex);
@@ -641,8 +647,8 @@ SCErr meth_bufSetN(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 }
 
 
-SCErr meth_bufFill(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_bufFill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_b_fill(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_fill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {		
 	sc_msg_iter msg(inSize, inData);
 	int bufindex = msg.geti();
@@ -670,8 +676,8 @@ SCErr meth_bufFill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 	return kSCErr_None;
 }
 
-SCErr meth_bufGen(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_bufGen(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+SCErr meth_b_gen(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_gen(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {		
 	CallSequencedCommand(BufGenCmd, inWorld, inSize, inData, inReply);
 
@@ -679,8 +685,8 @@ SCErr meth_bufGen(World *inWorld, int inSize, char *inData, ReplyAddress *inRepl
 }
 
 
-SCErr meth_busSet(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_busSet(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_c_set(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_c_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);
 	
@@ -700,10 +706,10 @@ SCErr meth_busSet(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 	return kSCErr_None;
 }
 
-SCErr meth_busSetN(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_busSetN(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_c_setn(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_c_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {		
-	//printf("meth_bufSetN\n");
+	//printf("meth_b_setn\n");
 	sc_msg_iter msg(inSize, inData);
 	
 	float *data = inWorld->mControlBus;
@@ -731,8 +737,8 @@ SCErr meth_busSetN(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 }
 
 
-SCErr meth_busFill(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_busFill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_c_fill(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_c_fill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {		
 	sc_msg_iter msg(inSize, inData);
 	
@@ -765,6 +771,7 @@ SCErr meth_notify(World *inWorld, int inSize, char *inData, ReplyAddress *inRepl
 }
 
 
+#define NEW_COMMAND(name) NewCommand(#name, cmd_##name, meth_##name)
 
 void initMiscCommands();
 void initMiscCommands()
@@ -772,64 +779,65 @@ void initMiscCommands()
 	//printf("->initMiscCommands\n");
 
 // nrt
-	NewCommand("notify", meth_notify);		
-	NewCommand("status", meth_audioStatus);	
-	NewCommand("quit", meth_audioQuit);		
+	NEW_COMMAND(none);		
+	NEW_COMMAND(notify);		
+	NEW_COMMAND(status);	
+	NEW_COMMAND(quit);		
 		
 // async
-	NewCommand("d_recv", meth_defRecv);		
-	NewCommand("d_load", meth_defLoad);		
-	NewCommand("d_loadDir", meth_defLoadDir);	
-	NewCommand("d_freeAll", meth_defFreeAll);	
+	NEW_COMMAND(d_recv);		
+	NEW_COMMAND(d_load);		
+	NEW_COMMAND(d_loadDir);	
+	NEW_COMMAND(d_freeAll);	
 
-	NewCommand("s_new", meth_synthNew);			
-	NewCommand("s_trace", meth_synthTrace);
+	NEW_COMMAND(s_new);			
+	NEW_COMMAND(s_trace);
 				
-	NewCommand("n_free", meth_nodeDelete);		
-	NewCommand("n_run", meth_nodeRun);				
+	NEW_COMMAND(n_free);		
+	NEW_COMMAND(n_run);				
 
 // sync	
-	NewCommand("u_cmd", meth_unitCmd);	
-	NewCommand("cmd", meth_defCmd);	
+	NEW_COMMAND(u_cmd);	
+	NEW_COMMAND(cmd);	
 		
-	//NewCommand("n_cmd", meth_nodeCmd);		
-	NewCommand("n_map", meth_nodeMap);		
-	NewCommand("n_set", meth_nodeSet);		
-	NewCommand("n_setn", meth_nodeSetN);		
-	NewCommand("n_fill", meth_nodeFill);		
+	//NEW_COMMAND(n_cmd);		
+	NEW_COMMAND(n_map);		
+	NEW_COMMAND(n_set);		
+	NEW_COMMAND(n_setn);		
+	NEW_COMMAND(n_fill);		
 	
 // sync	
-	NewCommand("n_before", meth_nodeAddBefore);		
-	NewCommand("n_after", meth_nodeAddAfter);		
+	NEW_COMMAND(n_before);		
+	NEW_COMMAND(n_after);		
 
 // sync	
-	NewCommand("g_new", meth_groupNew);			
-	NewCommand("g_head", meth_groupAddHead);		
-	NewCommand("g_tail", meth_groupAddTail);		
-	NewCommand("g_freeAll", meth_groupDeleteAll);		
+	NEW_COMMAND(g_new);			
+	NEW_COMMAND(g_head);		
+	NEW_COMMAND(g_tail);		
+	NEW_COMMAND(g_freeAll);		
 
 // async
-	NewCommand("b_alloc", meth_bufAlloc);		
-	NewCommand("b_allocRead", meth_bufAllocRead);	
+	NEW_COMMAND(b_alloc);		
+	NEW_COMMAND(b_allocRead);	
 		
 // async
-	NewCommand("b_read", meth_bufRead);		
-	NewCommand("b_write", meth_bufWrite);	
+	NEW_COMMAND(b_read);		
+	NEW_COMMAND(b_write);	
 		
 // async
-	NewCommand("b_free", meth_bufFree);		
-	NewCommand("b_close", meth_bufClose);		
+	NEW_COMMAND(b_free);		
+	NEW_COMMAND(b_close);		
 	
 // async
-	NewCommand("b_zero", meth_bufZero);		
-	NewCommand("b_set", meth_bufSet);		
-	NewCommand("b_setn", meth_bufSetN);		
-	NewCommand("b_fill", meth_bufFill);			
-	NewCommand("b_gen", meth_bufGen);			
+	NEW_COMMAND(b_zero);		
+	NEW_COMMAND(b_set);		
+	NEW_COMMAND(b_setn);		
+	NEW_COMMAND(b_fill);			
+	NEW_COMMAND(b_gen);			
 
-	NewCommand("c_set", meth_busSet);		
-	NewCommand("c_setn", meth_busSetN);		
-	NewCommand("c_fill", meth_busFill);					
+	NEW_COMMAND(c_set);		
+	NEW_COMMAND(c_setn);		
+	NEW_COMMAND(c_fill);					
 
 	//printf("<-initMiscCommands\n");
 }

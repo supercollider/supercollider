@@ -157,7 +157,14 @@ void ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 int PerformOSCMessage(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	//printf("->PerformOSCMessage '%s'\n", inData);
-	SC_LibCmd *cmdObj = gCmdLib->Get((int32*)inData);
+	SC_LibCmd *cmdObj;
+	if (inData[0] == 0) {
+		uint32 index = inData[3];
+		if (index >= NUMBER_OF_COMMANDS) cmdObj = 0;
+		else cmdObj = gCmdArray[index];
+	} else {
+		cmdObj = gCmdLib->Get((int32*)inData);
+	}
 	//printf("cmdObj %08X\n", cmdObj);
 	if (!cmdObj) {
 		CallSendFailureCommand(inWorld, inData, "Command not found", inReply);

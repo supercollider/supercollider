@@ -79,15 +79,17 @@ public:
 	void Resize()
 	{
 		int32 newSize = sc_max(mTableSize << 1, 32);
+		int32 oldSize = mTableSize;
 		T** oldItems = mItems;
 		mItems = AllocTable(newSize);
-		for (int i=0; i<mTableSize; ++i) {
-			T* item = oldItems[i];
-			if (item) Add(item);
-		}
 		mTableSize = newSize;
 		mMaxItems = mTableSize >> 1;
 		mHashMask = mTableSize - 1;
+		mNumItems = 0;
+		for (int i=0; i<oldSize; ++i) {
+			T* item = oldItems[i];
+			if (item) Add(item);
+		}
 		mPool->Free(oldItems);
 		//printf("mMaxItems %d   mTableSize %d   newSize %d\n", mMaxItems, mTableSize, newSize);
 	}
