@@ -12,7 +12,7 @@ SynthDef {
 	var <>arAvailable, <>krAvailable;
 	
 	*new { arg name, ugenGraphFunc;
-		^super.new.name_(name).build(ugenGraphFunc);
+		^super.new.name_(name.asString).build(ugenGraphFunc);
 	}
 	
 	addUGen { arg ugen;
