@@ -59,8 +59,12 @@ PyrBlock *gCompilingBlock = NULL;
 PyrBlock *gPartiallyAppliedFunction = NULL;
 
 bool gIsTailCodeBranch = false;
-int gTailIsMethodReturn = false;
+bool gTailIsMethodReturn = false;
+#if TAILCALLOPTIMIZE
 bool gGenerateTailCallByteCodes = true;
+#else
+bool gGenerateTailCallByteCodes = false;
+#endif
 
 long gInliningLevel;
 
@@ -112,8 +116,8 @@ void compileTail()
 {
 	if (gGenerateTailCallByteCodes && gIsTailCodeBranch)
 	{
-		//if (gCompilingClass && gCompilingMethod) post("tail call %s-%s\n", 
-		//	gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
+		//if (gCompilingClass && gCompilingMethod) post("tail call %s-%s  ismethod %d\n", 
+		//	gCompilingClass->name.us->name, gCompilingMethod->name.us->name, gTailIsMethodReturn);
 		if (gTailIsMethodReturn)
 			compileByte(255);
 		else 
@@ -1528,7 +1532,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 			} else goto compile_body;
 		} else {
 			compile_body:
-			gTailIsMethodReturn = false;
+			SetTailIsMethodReturn mr(false);
 			COMPILENODE(mBody, &dummy, true);
 		}
 		installByteCodes((PyrBlock*)method);
@@ -1684,7 +1688,7 @@ void PyrCallNodeBase::compilePartialApplication(int numCurryArgs, PyrSlot *resul
 	initByteCodes();
 	{
 		SetTailBranch branch(true);
-		gTailIsMethodReturn = false;
+		SetTailIsMethodReturn mr(false);
 		PyrSlot body;
 		compileCall(&body);
 	}
@@ -3111,7 +3115,7 @@ void PyrReturnNode::compile(PyrSlot *result)
 	PyrPushLitNode *lit;
 	PyrSlot dummy;
 	
-	//postfl("->compilePyrReturnNode\n");
+	//post("->compilePyrReturnNode\n");
 	if (!mExpr) {
 		compileOpcode(opSpecialOpcode, opcReturnSelf);
 	} else if (mExpr->mClassno == pn_PushLitNode) {
@@ -3130,12 +3134,11 @@ void PyrReturnNode::compile(PyrSlot *result)
 		}
 	} else {
 		SetTailBranch branch(true);
-		gTailIsMethodReturn = true;
+		SetTailIsMethodReturn mr(true);
 		COMPILENODE(mExpr, &dummy, true);
 		compileOpcode(opSpecialOpcode, opcReturn);
-		gTailIsMethodReturn = false;
 	}
-	//postfl("<-compilePyrReturnNode\n");
+	//post("<-compilePyrReturnNode\n");
 }
 
 PyrBlockReturnNode* newPyrBlockReturnNode()
@@ -3822,7 +3825,7 @@ void PyrBlockNode::compile(PyrSlot* result)
 			post("block %d\n", gIsTailCodeBranch);
 			DUMPNODE(mBody, 0);
 		}*/
-		gTailIsMethodReturn = false;
+		SetTailIsMethodReturn mr(false);
 		COMPILENODE(mBody, &dummy, true);
 	}
 	compileOpcode(opSpecialOpcode, opcFunctionReturn);

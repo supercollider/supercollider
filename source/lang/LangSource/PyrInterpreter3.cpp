@@ -398,7 +398,9 @@ bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 	g->thread = g->process->mainThread.uot;
 	
 	// these will be set up when the run method is called
+#if TAILCALLOPTIMIZE
 	g->tailCall = 0;
+#endif
 	g->method = NULL;
 	g->block = NULL;
 	g->frame = NULL;
@@ -696,7 +698,9 @@ void Interpret(VMGlobals *g)
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			g->primitiveIndex = op2;
 			doSpecialUnaryArithMsg(g, -1);
+#if TAILCALLOPTIMIZE
 			g->tailCall = 0;
+#endif
 			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip;
 			break;
@@ -880,7 +884,9 @@ void Interpret(VMGlobals *g)
 		case  97 : // push one and subtract
 			if (((PyrSlot*)sp)->utag == tagInt) {
 				((PyrSlot*)sp)->ui--;
+#if TAILCALLOPTIMIZE
 				g->tailCall = 0;
+#endif
 			} else {
 				*++sp = gSpecialValues[svOne];
 				g->sp = (PyrSlot*)sp; g->ip = ip;
@@ -902,7 +908,9 @@ void Interpret(VMGlobals *g)
 		case 107 : // push one and add
 			if (((PyrSlot*)sp)->utag == tagInt) {
 				((PyrSlot*)sp)->ui++;
+#if TAILCALLOPTIMIZE
 				g->tailCall = 0;
+#endif
 			} else {
 				*++sp = gSpecialValues[svOne];
 				g->sp = (PyrSlot*)sp; g->ip = ip; 
@@ -1636,7 +1644,9 @@ void Interpret(VMGlobals *g)
 			goto class_lookup;
 			
 		case 176 : // opcTailCallReturnFromFunction
+#if TAILCALLOPTIMIZE
 			g->tailCall = 2;
+#endif
 			break;
 		// opSuperMsg
 		case 177 :  
@@ -1690,19 +1700,27 @@ void Interpret(VMGlobals *g)
 		case 208 :  // opNeg
 			if (IsFloat((PyrSlot*)sp)) {
 				*sp = -*sp;
+#if TAILCALLOPTIMIZE
 				g->tailCall = 0;
+#endif
 			} else if (((PyrSlot*)sp)[0].utag == tagInt) {
 				((PyrSlot*)sp)[0].ui = -((PyrSlot*)sp)[0].ui;
+#if TAILCALLOPTIMIZE
 				g->tailCall = 0;
+#endif
 			} else goto unary_send;
 			break;
 		case 209 : // opNot
 			if (((PyrSlot*)sp)[0].utag == tagTrue) {
 				((PyrSlot*)sp)[0].utag = tagFalse;
+#if TAILCALLOPTIMIZE
 				g->tailCall = 0;
+#endif
 			} else if (((PyrSlot*)sp)[0].utag == tagFalse) {
 				((PyrSlot*)sp)[0].utag = tagTrue;
+#if TAILCALLOPTIMIZE
 				g->tailCall = 0;
+#endif
 			} else goto unary_send;
 			break;
 		case 210 : // opIsNil
@@ -1711,7 +1729,9 @@ void Interpret(VMGlobals *g)
 			} else {
 				*sp = gSpecialValues[svFalse];
 			}
+#if TAILCALLOPTIMIZE
 			g->tailCall = 0;
+#endif
 			break;
 		case 211 : // opNotNil
 			if (((PyrSlot*)sp)[0].utag != tagNil) {
@@ -1719,7 +1739,9 @@ void Interpret(VMGlobals *g)
 			} else {
 				((PyrSlot*)sp)[0].utag = tagFalse;
 			}
+#if TAILCALLOPTIMIZE
 			g->tailCall = 0;
+#endif
 			break;
 
 		case 212 :  case 213 :  case 214 :  case 215 :  
@@ -1738,7 +1760,9 @@ void Interpret(VMGlobals *g)
 			if (((PyrSlot*)sp)[-1].utag == tagInt) {
 				if (((PyrSlot*)sp)[0].utag == tagInt) {
 					--sp; ((PyrSlot*)sp)[0].ui += ((PyrSlot*)sp)[1].ui;
+#if TAILCALLOPTIMIZE
 					g->tailCall = 0;
+#endif
 				} else {
 					g->sp = (PyrSlot*)sp; g->ip = ip; 
 					g->primitiveIndex = opAdd;
@@ -1758,7 +1782,9 @@ void Interpret(VMGlobals *g)
 			if (((PyrSlot*)sp)[-1].utag == tagInt) {
 				if (((PyrSlot*)sp)[0].utag == tagInt) {
 					--sp; ((PyrSlot*)sp)[0].ui -= ((PyrSlot*)sp)[1].ui;
+#if TAILCALLOPTIMIZE
 					g->tailCall = 0;
+#endif
 				} else {
 					g->sp = (PyrSlot*)sp; g->ip = ip; 
 					g->primitiveIndex = opSub;
@@ -1778,7 +1804,9 @@ void Interpret(VMGlobals *g)
 			if (((PyrSlot*)sp)[-1].utag == tagInt) {
 				if (((PyrSlot*)sp)[0].utag == tagInt) {
 					--sp; ((PyrSlot*)sp)[0].ui *= ((PyrSlot*)sp)[1].ui;
+#if TAILCALLOPTIMIZE
 					g->tailCall = 0;
+#endif
 				} else {
 					g->sp = (PyrSlot*)sp; g->ip = ip; 
 					g->primitiveIndex = opMul;
@@ -1936,7 +1964,9 @@ void Interpret(VMGlobals *g)
 			sp = (double*)g->sp; ip = g->ip;
 			break;
 		case 255 : // opcTailCallReturnFromMethod
+#if TAILCALLOPTIMIZE
 			g->tailCall = 1;
+#endif
 			break;
 			
 			////////////////////////////////////
@@ -2084,7 +2114,9 @@ void Interpret(VMGlobals *g)
 						break;
 				} // switch (meth->methType)
 			} // end handle message
+#if TAILCALLOPTIMIZE
 			g->tailCall = 0;
+#endif
 			continue;
 			
 			////////////////////////////////////
@@ -2226,7 +2258,9 @@ void Interpret(VMGlobals *g)
 				} // switch (meth->methType)
 			} // end handle message
 			numKeyArgsPushed = 0;
+#if TAILCALLOPTIMIZE
 			g->tailCall = 0;
+#endif
 	} // switch(op1)
 	} // end while(true)
 	g->sp = (PyrSlot*)sp; g->ip = ip; 

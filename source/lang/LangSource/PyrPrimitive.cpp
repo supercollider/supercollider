@@ -835,6 +835,7 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
 	
+#if TAILCALLOPTIMIZE
 	int tailCall = g->tailCall;
 	if (tailCall) {
 		if (tailCall == 1) {
@@ -843,6 +844,7 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 			returnFromBlock(g);
 		}
 	}
+#endif
 
 	g->execMethod = 30;
 
@@ -967,6 +969,7 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
 	
+#if TAILCALLOPTIMIZE
 	int tailCall = g->tailCall;
 	if (tailCall) {
 		if (tailCall == 1) {
@@ -975,6 +978,7 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 			returnFromBlock(g);
 		}
 	}
+#endif
 	
 	g->execMethod = 40;
 
@@ -1127,6 +1131,7 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	PyrMethodRaw *methraw;
 	PyrSlot *curEnvirSlot;
 	
+#if TAILCALLOPTIMIZE
 	int tailCall = g->tailCall;
 	if (tailCall) {
 		if (tailCall == 1) {
@@ -1135,6 +1140,7 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 			returnFromBlock(g);
 		}
 	}
+#endif
 		
 	g->execMethod = 50;
 
@@ -1273,6 +1279,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	PyrMethodRaw *methraw;
 	PyrSlot *curEnvirSlot;
 	
+#if TAILCALLOPTIMIZE
 	int tailCall = g->tailCall;
 	if (tailCall) {
 		if (tailCall == 1) {
@@ -1281,6 +1288,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 			returnFromBlock(g);
 		}
 	}
+#endif
 	
 	g->execMethod = 60;
 
@@ -2357,12 +2365,14 @@ int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
 	//PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
 	
+#if TAILCALLOPTIMIZE
 	if (IsTrue(b)) {
 		gGenerateTailCallByteCodes = true;
 	} else if (IsFalse(b)) {
 		gGenerateTailCallByteCodes = false;
 	} else return errWrongType;
-	
+#endif
+
 	return errNone;
 }
 
@@ -2779,7 +2789,9 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	PyrGC *gc;
 	PyrFrame *frame;
 	
+#if TAILCALLOPTIMIZE
 	g->tailCall = 0; // ?? prevent a crash. is there a way to allow a TCO ?
+#endif
 	
 	oldthread = g->thread;
 	if (newthread == oldthread) return;

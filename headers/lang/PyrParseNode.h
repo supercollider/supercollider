@@ -355,6 +355,7 @@ struct PyrLitDictNode : public PyrParseNode {
 extern PyrParseNode* gRootParseNode;
 extern int gParserResult;
 extern bool gIsTailCodeBranch;
+extern bool gTailIsMethodReturn;
 
 extern bool compilingCmdLine;
 
@@ -372,6 +373,19 @@ public:
 	}
 	~SetTailBranch() {
 		gIsTailCodeBranch = mSave;
+	}
+};
+
+class SetTailIsMethodReturn
+{
+	bool mSave;
+public:
+	SetTailIsMethodReturn(bool inValue) { 
+		mSave = gTailIsMethodReturn;
+		gTailIsMethodReturn = inValue;
+	}
+	~SetTailIsMethodReturn() {
+		gTailIsMethodReturn = mSave;
 	}
 };
 

@@ -187,7 +187,9 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 				break;
 		}
 	}
+#if TAILCALLOPTIMIZE
 	g->tailCall = 0;
+#endif
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<sendMessageWithKeys");
@@ -377,7 +379,9 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				
 		}
 	}
+#if TAILCALLOPTIMIZE
 	g->tailCall = 0;
+#endif
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<sendMessage");
@@ -516,7 +520,9 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 				break;
 		}
 	}
+#if TAILCALLOPTIMIZE
 	g->tailCall = 0;
+#endif
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<sendSuperMessageWithKeys");
@@ -707,7 +713,9 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				
 		}
 	}
+#if TAILCALLOPTIMIZE
 	g->tailCall = 0;
+#endif
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<sendSuperMessage");
@@ -899,6 +907,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	}
 #endif
 	
+#if TAILCALLOPTIMIZE
 	int tailCall = g->tailCall;
 	if (tailCall) {
 		if (tailCall == 1) {
@@ -907,6 +916,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 			returnFromBlock(g);
 		}
 	}
+#endif
 
 	g->execMethod = 10;
 	
@@ -1053,6 +1063,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	}
 #endif
 	
+#if TAILCALLOPTIMIZE
 	int tailCall = g->tailCall;
 	if (tailCall) {
 		if (tailCall == 1) {
@@ -1061,6 +1072,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 			returnFromBlock(g);
 		}
 	}
+#endif
 
 	g->execMethod = 20;
 	
@@ -1225,7 +1237,9 @@ void returnFromMethod(VMGlobals *g)
 	homeContext = curframe->context.uof->homeContext.uof;
 	if (homeContext == NULL) {
 		null_return:
+#if TAILCALLOPTIMIZE
 		if (g->tailCall) return; // do nothing.
+#endif
 		/*
 		post("return all the way out. sd %d\n", g->sp - g->gc->Stack()->slots);
 		postfl("%s-%s\n", 
