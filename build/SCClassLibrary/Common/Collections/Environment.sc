@@ -35,7 +35,8 @@ Environment : IdentityDictionary {
 	eventAt { arg key; ^this.at(key) }
 	
 	*pop {
-		if(stack.notEmpty) { currentEnvironment = stack.pop }
+		if(stack.notEmpty) { currentEnvironment = stack.pop.debug };
+		\pop.debug;
 	}
 	
 	*push { arg envir;
@@ -132,6 +133,7 @@ Event : Environment {
 			
 			~group = 0;
 			~out = 0;
+			~addAction = 0;
 			
 			~finish = #{
 				// do final calculations
