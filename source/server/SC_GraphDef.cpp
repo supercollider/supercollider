@@ -148,8 +148,6 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 
 	GraphDef* graphDef = (GraphDef*)malloc(sizeof(GraphDef));
 		
-	graphDef->mNodeDef.fCtor = (NodeCtorFunc)&Graph_Ctor;
-	graphDef->mNodeDef.fDtor = (NodeDtorFunc)&Graph_Dtor;
 	graphDef->mNodeDef.mAllocSize = sizeof(Graph);
 	
 	memcpy((char*)graphDef->mNodeDef.mName, (char*)name, kSCNameByteLen);
@@ -186,7 +184,6 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 	graphDef->mNumWires = graphDef->mNumConstants;
 	graphDef->mNumUnitSpecs = readInt16_be(buffer);
 	graphDef->mUnitSpecs = (UnitSpec*)malloc(sizeof(UnitSpec) * graphDef->mNumUnitSpecs);
-	graphDef->mTotalAllocSize = 0;
 	graphDef->mNumCalcUnits = 0;
 	for (int i=0; i<graphDef->mNumUnitSpecs; ++i) {
 		UnitSpec *unitSpec = graphDef->mUnitSpecs + i;
@@ -197,7 +194,7 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 		if (unitSpec->mCalcRate == calc_FullRate) unitSpec->mRateInfo = &inWorld->mFullRate;
 		else unitSpec->mRateInfo = &inWorld->mBufRate;
 		
-		graphDef->mTotalAllocSize += unitSpec->mAllocSize;
+		graphDef->mNodeDef.mAllocSize += unitSpec->mAllocSize;
 		graphDef->mNumWires += unitSpec->mNumOutputs;
 	}
 	
@@ -207,15 +204,15 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 	graphDef->mUnitsAllocSize = graphDef->mNumUnitSpecs * sizeof(Unit*);
 	graphDef->mCalcUnitsAllocSize = graphDef->mNumCalcUnits * sizeof(Unit*);
 
-	graphDef->mTotalAllocSize += graphDef->mWiresAllocSize;
-	graphDef->mTotalAllocSize += graphDef->mUnitsAllocSize;
-	graphDef->mTotalAllocSize += graphDef->mCalcUnitsAllocSize;
+	graphDef->mNodeDef.mAllocSize += graphDef->mWiresAllocSize;
+	graphDef->mNodeDef.mAllocSize += graphDef->mUnitsAllocSize;
+	graphDef->mNodeDef.mAllocSize += graphDef->mCalcUnitsAllocSize;
 
 	graphDef->mControlAllocSize = graphDef->mNumControls * sizeof(float);
-	graphDef->mTotalAllocSize += graphDef->mControlAllocSize;
+	graphDef->mNodeDef.mAllocSize += graphDef->mControlAllocSize;
 	
 	graphDef->mMapControlsAllocSize = graphDef->mNumControls * sizeof(float*);
-	graphDef->mTotalAllocSize += graphDef->mMapControlsAllocSize;
+	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlsAllocSize;
 	
 	graphDef->mNext = inList;
 	graphDef->mRefCount = 1;

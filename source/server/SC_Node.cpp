@@ -32,7 +32,7 @@
 void Node_StateMsg(Node* inNode, int inState);
 
 // create a new node
-Node* Node_New(World *inWorld, NodeDef *def, int32 inID, sc_msg_iter* args)
+Node* Node_New(World *inWorld, NodeDef *def, int32 inID)
 {
 	if (inID < 0) {
 		if (inID == -1) { // -1 means generate an id for the event
@@ -68,8 +68,6 @@ Node* Node_New(World *inWorld, NodeDef *def, int32 inID, sc_msg_iter* args)
 		int err = kSCErr_TooManyNodes;
 		throw err;
     }
-
-    (*def->fCtor)(inWorld, def, node, args);
 	
 	inWorld->hw->mRecentID = inID;
 	
@@ -105,7 +103,8 @@ void Node_Remove(Node* s)
 // delete a node
 void Node_Delete(Node* inNode)
 {
-	(*inNode->mDef->fDtor)(inNode);
+	if (inNode->mIsGroup) Group_Dtor((Group*)inNode);
+	else Graph_Dtor((Graph*)inNode);
 }
 
 // add a node after another one

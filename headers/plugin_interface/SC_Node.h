@@ -38,7 +38,7 @@ struct Node
 	struct Node *mPrev, *mNext;
 	struct Group *mParent;
 	
-	bool mIsGroup;
+	int32 mIsGroup;
 };
 typedef struct Node Node;
 

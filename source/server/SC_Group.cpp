@@ -31,16 +31,6 @@
 
 NodeDef gGroupNodeDef;
 
-void Group_Ctor(World *inWorld, NodeDef* inNodeDef, Group *inGroup, sc_msg_iter* inMsg);
-void Group_Ctor(World *inWorld, NodeDef* /*inNodeDe*/f, Group *inGroup, sc_msg_iter* /*inMsg*/)
-{
-	inGroup->mNode.mCalcFunc = (NodeCalcFunc)&Group_Calc;
-	inGroup->mNode.mIsGroup = true;
-	inGroup->mHead = 0;
-	inGroup->mTail = 0;
-	inWorld->mNumGroups++;
-}
-
 void Group_Dtor(Group *inGroup)
 {
 	Group_DeleteAll(inGroup);
@@ -53,14 +43,17 @@ void GroupNodeDef_Init()
 	str4cpy(gGroupNodeDef.mName, "group");
 	gGroupNodeDef.mHash = Hash(gGroupNodeDef.mName);
 	gGroupNodeDef.mAllocSize = sizeof(Group);
-	gGroupNodeDef.fCtor = (NodeCtorFunc)&Group_Ctor;
-	gGroupNodeDef.fDtor = (NodeDtorFunc)&Group_Dtor;
 }
 
 Group* Group_New(World *inWorld, int32 inID)
 {	
-	sc_msg_iter args(0,"");
-	return (Group*)Node_New(inWorld, &gGroupNodeDef, inID, &args);
+	Group *group = (Group*)Node_New(inWorld, &gGroupNodeDef, inID);
+	group->mNode.mCalcFunc = (NodeCalcFunc)&Group_Calc;
+	group->mNode.mIsGroup = true;
+	group->mHead = 0;
+	group->mTail = 0;
+	inWorld->mNumGroups++;
+	return group;
 }
 
 void Group_Calc(Group *inGroup)

@@ -97,6 +97,7 @@ void Dimension_Init(struct Dimension *inDimension, int inWidth, int inHeight);
 
 #define GRAPHDEF(inGraph) ((GraphDef*)((inGraph)->mNode.mDef))
 
+Graph* Graph_New(struct World *inWorld, struct GraphDef *def, int32 inID, struct sc_msg_iter* args);
 void Graph_Ctor(struct World *inWorld, struct GraphDef *inGraphDef, struct Graph *graph, struct sc_msg_iter *msg);
 void Graph_Dtor(struct Graph *inGraph);
 int  Graph_GetControl(struct Graph* inGraph, int inIndex, float& outValue);
@@ -109,7 +110,7 @@ void Graph_Trace(Graph *inGraph);
 
 ////////////////////////////////////////////////////////////////////////
 
-Node* Node_New(struct World *inWorld, struct NodeDef *def, int32 inID, struct sc_msg_iter* args);
+Node* Node_New(struct World *inWorld, struct NodeDef *def, int32 inID);
 void Node_Dtor(struct Node *inNode);
 void Node_Remove(struct Node* s);
 void Node_Delete(struct Node* inNode);

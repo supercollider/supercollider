@@ -56,7 +56,6 @@ void Graph_Dtor(Graph *inGraph)
 		GraphDef_DeleteMsg(world, def);
 	}
 	
-	World_Free(world, inGraph->mMemory);
 	Node_Dtor(&inGraph->mNode);
 	//scprintf("<-Graph_Dtor\n");
 }
@@ -66,13 +65,19 @@ void Graph_Dtor(Graph *inGraph)
 void Graph_FirstCalc(Graph *inGraph);
 
 
+Graph* Graph_New(struct World *inWorld, struct GraphDef *inGraphDef, int32 inID, struct sc_msg_iter* args)
+{
+	Graph* graph = (Graph*)Node_New(inWorld, &inGraphDef->mNodeDef, inID);
+	Graph_Ctor(inWorld, inGraphDef, graph, args);
+	return graph;
+}
+
 void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter *msg)
 {	
 	//scprintf("->Graph_Ctor\n");
 	
 	// hit the memory allocator only once.
-	char *memory = (char*)World_Alloc(inWorld, inGraphDef->mTotalAllocSize);
-	graph->mMemory = memory;
+	char *memory = (char*)graph + sizeof(Graph);
 	
 	// allocate space for children
 	int numUnits = inGraphDef->mNumUnitSpecs;
@@ -89,7 +94,6 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	// allocate wires
 	graph->mNumWires = inGraphDef->mNumWires;
 	graph->mWire = (Wire*)memory;
-	
 	memory += inGraphDef->mWiresAllocSize;
 
 	graph->mNumCalcUnits = inGraphDef->mNumCalcUnits;

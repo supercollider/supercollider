@@ -24,8 +24,6 @@
 #include "SC_Types.h"
 #include "sc_msg_iter.h"
 
-typedef void (*NodeCtorFunc)(struct World *inWorld, struct NodeDef* inNodeDef, 
-					struct Node* inNode, sc_msg_iter* args);
 typedef void (*NodeDtorFunc)(struct Node* inNode);
 
 struct NodeDef
@@ -34,8 +32,6 @@ struct NodeDef
 	int32 mHash;
 	
 	size_t mAllocSize;
-	NodeCtorFunc fCtor;
-	NodeDtorFunc fDtor;	
 };
 typedef struct NodeDef NodeDef;
 

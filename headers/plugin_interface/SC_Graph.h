@@ -28,9 +28,7 @@
 struct Graph 
 {
 	Node mNode;
-	
-	char *mMemory;
-	
+		
 	int mNumWires;
 	struct Wire *mWire;
 	
