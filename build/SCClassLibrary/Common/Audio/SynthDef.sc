@@ -354,18 +354,20 @@ SynthDef {
 		)
 	}
 	store { arg libname=\global, path="synthdefs/", completionMsg;
-		var lib;
-		
+		var lib, bytes, file;
 		lib = SynthDescLib.all[libname];
-		if(lib.isNil) { "library" + libname  + "not found".error; ^nil };
-		this.writeDefFile(path);
+		if(lib.isNil) { Error("library" + libname  + "not found").throw };
 		path = path ++ name ++ ".scsyndef";
-		lib.read(path);
-		lib.servers.do { arg server;
-			server.listSendMsg(
-				["/d_load", path, completionMsg ]
-			)
-		}
+		file = File(path, "w");
+		protect {
+			bytes = this.asBytes;
+			file.putAll(bytes);
+			file.close;
+			lib.read(path);
+			lib.servers.do { arg server;
+				server.sendMsg("/d_recv", bytes, completionMsg)
+			}
+		} { file.close }
 	}
 
 	play { arg target,args,addAction=\addToHead;
