@@ -259,16 +259,16 @@ Object {
 		stream << if((title @ 0).isVowel, { "an " }, { "a " }) << title ;
 	}
 	storeOn { arg stream;
-		stream << this.class.name << ".new";
+		stream << this.class.name;
 		this.storeParamsOn(stream);
 		this.storeModifiersOn(stream);
 	}
 	storeParamsOn { arg stream;
 		var args;
 		args = this.storeArgs;
-		if(args.notEmpty,{
+		if(args.notEmpty) {
 			stream << "(" <<<* args << ")";
-		})
+		} { stream << ".new" }
 	}
 	storeArgs { ^#[] }
 	storeModifiersOn { arg stream;}
