@@ -160,6 +160,9 @@
 		subclassView = SCListView(w, Rect(0,0, 220, 260));
 		methodView = SCListView(w, Rect(0,0, 180, 260));
 		argView = SCListView(w, Rect(0,0, 180, 260));
+		subclassView.resize = 4;
+		methodView.resize = 4;
+		argView.resize = 4;
 		
 		w.view.decorator.nextLine;
 		

@@ -41,6 +41,9 @@
 		controlsListView = SCListView(w, Rect(0,0, 240, 160));
 		inputsListView = SCListView(w, Rect(0,0, 200, 160));
 		outputsListView = SCListView(w, Rect(0,0, 200, 160));
+		controlsListView.resize = 4;
+		inputsListView.resize = 4;
+		outputsListView.resize = 4;
 		
 		// this is a trick to not show hilighting.
 		controlsListView.hiliteColor = Color.clear;
