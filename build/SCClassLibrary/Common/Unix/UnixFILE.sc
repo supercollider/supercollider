@@ -38,7 +38,7 @@ UnixFILE : IOStream {
 	}
 
 	write { arg item; 
-		/* writes any of the following items:
+		/* writes any of the following items in big endian byte order:
 			a double float,
 			a 32 bit int,
 			a char,
@@ -51,10 +51,33 @@ UnixFILE : IOStream {
 		^this.primitiveFailed;
 	}
 	read { arg buffer; 
+		// reads big endian data
 		// buffer should be a RawArray.
 		// fills the buffer, or as much is available.
 		// returns bytes read.
 		_FileReadRaw;
+		^this.primitiveFailed;
+	}
+
+	writeLE { arg item; 
+		/* writes any of the following items in little endian byte order:
+			a double float,
+			a 32 bit int,
+			a char,
+			the name of a Symbol as chars,
+			RawArrays,
+				(i.e. Strings, Int8Arrays, Int16Arrays,
+				Signals, etc.)
+		*/
+		_FileWriteLE 
+		^this.primitiveFailed;
+	}
+	readLE { arg buffer; 
+		// reads little endian data
+		// buffer should be a RawArray.
+		// fills the buffer, or as much is available.
+		// returns bytes read.
+		_FileReadRawLE;
 		^this.primitiveFailed;
 	}
 	

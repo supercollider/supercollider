@@ -213,7 +213,6 @@ int prFileWrite(struct VMGlobals *g, int numArgsPushed)
 	FILE *file;
 	PyrObject *obj;
 	char chr;
-	int elemsize;
 	
 	a = g->sp - 1;
 	b = g->sp;
@@ -222,8 +221,11 @@ int prFileWrite(struct VMGlobals *g, int numArgsPushed)
 	if (file == NULL) return errFailed;
 	switch (b->utag) {
 		case tagInt :
-                    fwrite(&b->ui, 1, sizeof(int), file);
-                    break;
+		{
+			SC_IOStream<FILE*> scio(file);
+			scio.writeInt32_be(b->ui);
+			break;
+		}
 		case tagSym :
 			fwrite(b->us->name, sizeof(char), b->us->length, file);
 			break;
@@ -236,20 +238,173 @@ int prFileWrite(struct VMGlobals *g, int numArgsPushed)
 		case tagTrue :
 		case tagPtr :
 			return errWrongType;
-		case tagObj : 	
+		case tagObj : 
+		{	
 			// writes the indexable part of any non obj_slot format object 
 			obj = b->uo;
+			if (!isKindOf(obj, class_rawarray) 
+				|| isKindOf(obj, class_symbolarray)) return errWrongType;
 			if (obj->size) {
-				if (obj->obj_format == obj_slot 
-                                    || obj->obj_format == obj_symbol) return errWrongType;
 				ptr = obj->slots;
-				elemsize = gFormatElemSize[obj->obj_format];
-				fwrite(ptr, elemsize, obj->size, file);
+				int elemSize = gFormatElemSize[obj->obj_format];
+				int numElems = obj->size;
+	#if BYTE_ORDER != BIG_ENDIAN
+				switch (elemSize) {
+					case 1:
+						break;
+					case 2:
+					{
+						char *ptr = b->uos->s;
+						char *ptrend = ptr + numElems*2;
+						for (; ptr < ptrend; ptr+=2) {
+							fputc(ptr[1], file);
+							fputc(ptr[0], file);
+						}
+						break;
+					}
+					case 4:
+					{
+						char *ptr = b->uos->s;
+						char *ptrend = ptr + numElems*4;
+						for (; ptr < ptrend; ptr+=4) {
+							fputc(ptr[3], file);
+							fputc(ptr[2], file);
+							fputc(ptr[1], file);
+							fputc(ptr[0], file);
+						}
+						break;
+					}
+					case 8:
+					{
+						char *ptr = b->uos->s;
+						char *ptrend = ptr + numElems*8;
+						for (; ptr < ptrend; ptr+=8) {
+							fputc(ptr[7], file);
+							fputc(ptr[6], file);
+							fputc(ptr[5], file);
+							fputc(ptr[4], file);
+							fputc(ptr[3], file);
+							fputc(ptr[2], file);
+							fputc(ptr[1], file);
+							fputc(ptr[0], file);
+						}
+						break;
+					}
+				}
+	#else
+				fwrite(ptr, elemSize, numElems, file);
+	#endif
 			}
 			break;
+		}
 		default : // double
-			fwrite(&b->uf, sizeof(double), 1, file);
+		{
+			SC_IOStream<FILE*> scio(file);
+			scio.writeDouble_be(b->uf);
 			break;
+		}
+	}
+	return errNone;
+}
+
+
+int prFileWriteLE(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b, *ptr;
+	PyrFile *pfile;
+	FILE *file;
+	PyrObject *obj;
+	char chr;
+	
+	a = g->sp - 1;
+	b = g->sp;
+	pfile = (PyrFile*)a->uo;
+	file = (FILE*)pfile->fileptr.ui;
+	if (file == NULL) return errFailed;
+	switch (b->utag) {
+		case tagInt :
+		{
+			SC_IOStream<FILE*> scio(file);
+			scio.writeInt32_le(b->ui);
+			break;
+		}
+		case tagSym :
+			fwrite(b->us->name, sizeof(char), b->us->length, file);
+			break;
+		case tagChar :
+			chr = b->ui;
+			fwrite(&chr, sizeof(char), 1, file);
+			break;
+		case tagNil :
+		case tagFalse :
+		case tagTrue :
+		case tagPtr :
+			return errWrongType;
+		case tagObj : 
+		{	
+			// writes the indexable part of any non obj_slot format object 
+			obj = b->uo;
+			if (!isKindOf(obj, class_rawarray) 
+				|| isKindOf(obj, class_symbolarray)) return errWrongType;
+			if (obj->size) {
+				ptr = obj->slots;
+				int elemSize = gFormatElemSize[obj->obj_format];
+				int numElems = obj->size;
+#if BYTE_ORDER == BIG_ENDIAN
+				switch (elemSize) {
+					case 1:
+						break;
+					case 2:
+					{
+						char *ptr = b->uos->s;
+						char *ptrend = ptr + numElems*2;
+						for (; ptr < ptrend; ptr+=2) {
+							fputc(ptr[1], file);
+							fputc(ptr[0], file);
+						}
+						break;
+					}
+					case 4:
+					{
+						char *ptr = b->uos->s;
+						char *ptrend = ptr + numElems*4;
+						for (; ptr < ptrend; ptr+=4) {
+							fputc(ptr[3], file);
+							fputc(ptr[2], file);
+							fputc(ptr[1], file);
+							fputc(ptr[0], file);
+						}
+						break;
+					}
+					case 8:
+					{
+						char *ptr = b->uos->s;
+						char *ptrend = ptr + numElems*8;
+						for (; ptr < ptrend; ptr+=8) {
+							fputc(ptr[7], file);
+							fputc(ptr[6], file);
+							fputc(ptr[5], file);
+							fputc(ptr[4], file);
+							fputc(ptr[3], file);
+							fputc(ptr[2], file);
+							fputc(ptr[1], file);
+							fputc(ptr[0], file);
+						}
+						break;
+					}
+				}
+#else
+				fwrite(ptr, elemSize, numElems, file);
+#endif
+			}
+			break;
+		}
+		default : // double
+		{
+			SC_IOStream<FILE*> scio(file);
+			scio.writeDouble_le(b->uf);
+			break;
+		}
 	}
 	return errNone;
 }
@@ -757,9 +912,149 @@ int prFileReadRaw(struct VMGlobals *g, int numArgsPushed)
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-		
-	b->uo->size = fread(b->uos->s, gFormatElemSize[b->uo->obj_format], b->uo->size, file);
-		
+	
+	int elemSize = gFormatElemSize[b->uo->obj_format];
+	int numElems = b->uo->size;
+	numElems = fread(b->uos->s, elemSize, numElems, file);
+	b->uo->size = numElems;
+	
+#if BYTE_ORDER != BIG_ENDIAN
+	switch (elemSize) {
+		case 1:
+			break;
+		case 2:
+		{
+			char *ptr = b->uos->s;
+			char *ptrend = ptr + numElems*2;
+			for (; ptr < ptrend; ptr+=2) {
+				char temp = ptr[0];
+				ptr[0] = ptr[1];
+				ptr[1] = temp;
+			}
+			break;
+		}
+		case 4:
+		{
+			char *ptr = b->uos->s;
+			char *ptrend = ptr + numElems*4;
+			for (; ptr < ptrend; ptr+=4) {
+				char temp = ptr[0];
+				ptr[0] = ptr[3];
+				ptr[3] = temp;
+				
+				temp = ptr[1];
+				ptr[1] = ptr[2];
+				ptr[2] = temp;
+			}
+			break;
+		}
+		case 8:
+		{
+			char *ptr = b->uos->s;
+			char *ptrend = ptr + numElems*8;
+			for (; ptr < ptrend; ptr+=8) {
+				char temp = ptr[0];
+				ptr[0] = ptr[7];
+				ptr[7] = temp;
+				
+				temp = ptr[1];
+				ptr[1] = ptr[6];
+				ptr[6] = temp;
+				
+				temp = ptr[2];
+				ptr[2] = ptr[5];
+				ptr[5] = temp;
+				
+				temp = ptr[3];
+				ptr[3] = ptr[4];
+				ptr[4] = temp;
+			}
+			break;
+		}
+	}
+#endif
+
+	if (b->uo->size==0) SetNil(a);
+	else a->ucopy = b->ucopy;
+	return errNone;
+}
+
+int prFileReadRawLE(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrFile *pfile;
+	FILE *file;
+	
+	PyrSlot* a = g->sp - 1;
+	PyrSlot* b = g->sp;
+        
+        if (!isKindOfSlot(b, class_rawarray) 
+            || isKindOfSlot(b, class_symbolarray)) return errWrongType;
+        
+	pfile = (PyrFile*)a->uo;
+	file = (FILE*)pfile->fileptr.ui;
+	if (file == NULL) return errFailed;
+	
+	int elemSize = gFormatElemSize[b->uo->obj_format];
+	int numElems = b->uo->size;
+	numElems = fread(b->uos->s, elemSize, numElems, file);
+	b->uo->size = numElems;
+	
+#if BYTE_ORDER == BIG_ENDIAN
+	switch (elemSize) {
+		case 1:
+			break;
+		case 2:
+		{
+			char *ptr = b->uos->s;
+			char *ptrend = ptr + numElems*2;
+			for (; ptr < ptrend; ptr+=2) {
+				char temp = ptr[0];
+				ptr[0] = ptr[1];
+				ptr[1] = temp;
+			}
+			break;
+		}
+		case 4:
+		{
+			char *ptr = b->uos->s;
+			char *ptrend = ptr + numElems*4;
+			for (; ptr < ptrend; ptr+=4) {
+				char temp = ptr[0];
+				ptr[0] = ptr[3];
+				ptr[3] = temp;
+				
+				temp = ptr[1];
+				ptr[1] = ptr[2];
+				ptr[2] = temp;
+			}
+			break;
+		}
+		case 8:
+		{
+			char *ptr = b->uos->s;
+			char *ptrend = ptr + numElems*8;
+			for (; ptr < ptrend; ptr+=8) {
+				char temp = ptr[0];
+				ptr[0] = ptr[7];
+				ptr[7] = temp;
+				
+				temp = ptr[1];
+				ptr[1] = ptr[6];
+				ptr[6] = temp;
+				
+				temp = ptr[2];
+				ptr[2] = ptr[5];
+				ptr[5] = temp;
+				
+				temp = ptr[3];
+				ptr[3] = ptr[4];
+				ptr[4] = temp;
+			}
+			break;
+		}
+	}
+#endif
+
 	if (b->uo->size==0) SetNil(a);
 	else a->ucopy = b->ucopy;
 	return errNone;
@@ -1458,6 +1753,7 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_FilePos", prFilePos, 1, 0);	
 	definePrimitive(base, index++, "_FileLength", prFileLength, 1, 0);	
 	definePrimitive(base, index++, "_FileWrite", prFileWrite, 2, 0);	
+	definePrimitive(base, index++, "_FileWriteLE", prFileWriteLE, 2, 0);	
 	definePrimitive(base, index++, "_FileReadLine", prFileReadLine, 2, 0);	
 	definePrimitive(base, index++, "_File_getcwd", prFileGetcwd, 2, 0);	
 
@@ -1486,6 +1782,7 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_FilePutString", prFilePutString, 2, 0);	
 	
 	definePrimitive(base, index++, "_FileReadRaw", prFileReadRaw, 2, 0);	
+	definePrimitive(base, index++, "_FileReadRawLE", prFileReadRawLE, 2, 0);	
 
 #ifdef NOCLASSIC
 	definePrimitive(base, index++, "_Directory_At", prDirectory_At, 3, 0);	
