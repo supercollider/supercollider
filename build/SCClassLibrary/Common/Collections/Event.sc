@@ -166,6 +166,51 @@ Event : Environment {
 					~eventTypes[~type].value(server);
 				},
 				eventTypes: (
+					note_score:#{|server|
+						var instrumentName, freqs, lag, dur, strum, sustain, desc, msgFunc;
+						var bndl, synthLib, addAction, group, hasGate;
+						var score;
+						freqs = ~freq = ~freq.value + ~detune;
+						score = ~score;
+						if (freqs.isKindOf(Symbol).not) {
+							~amp = ~amp.value;
+							addAction = ~addAction;
+							group = ~group;
+							lag = ~lag;
+							strum = ~strum;
+							sustain = ~sustain = ~sustain.value;
+							instrumentName = ~instrument.asSymbol;
+							msgFunc = ~msgFunc;
+							if (msgFunc.isNil) {
+								synthLib = ~synthLib ?? { SynthDescLib.global };
+								desc = synthLib.synthDescs[instrumentName];
+								if (desc.notNil) { 
+									hasGate = desc.hasGate;
+									msgFunc = desc.msgFunc;
+								}{
+									hasGate = ~hasGate ? true;
+									msgFunc = ~defaultMsgFunc;
+								};
+							}{
+								hasGate = ~hasGate ? true;
+							};
+							bndl = msgFunc.valueEnvir.flop;
+							bndl.do {|msgArgs, i|
+								var id, latency;
+								
+								latency = i * strum + lag;
+								id = server.nextNodeID;
+								//send the note on bundle
+								score.add([~absTime,  [\s_new, instrumentName, 
+										id, addAction, group] ++ msgArgs]);
+								if (hasGate) {
+									// send note off bundle.
+									score.add([sustain + ~absTime, [\n_set, id, \gate, 0]]); 
+									
+								};
+							}
+						};
+					},				
 					rest: #{},
 					note: #{|server|
 						var instrumentName, freqs, lag, dur, strum, sustain, desc, msgFunc;
