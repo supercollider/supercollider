@@ -15,14 +15,16 @@
 \
 Disclaimer: there is no time, really; punctuality is your personal responsibility though.
 \f3\fs18 \
-\
+
+\f1\fs24 \
 \
 
-\f1\fs24 Concept of this library is to provide placeholders that\
-can be modified while playing, so that writing code\
-becomes an even closer part of musical practice.\
-\
-its concepts extend the live coding possibilities that supercollider provides\
+\f2\i Just in time programming
+\f1\i0  (or: 
+\f2\i live coding, interactive programming, realtime programming
+\f1\i0 ) is a paradigm that includes the programming activity itself in the program's operation. This means a program is not seen as a tool that is made first, then to be productive, but a dynamic construction process of description and conversation - writing code becomes a closer part of musical practice. SuperCollider, being a very dynamic environment, provides several possibilities for modification of a running program - this library attempts to extend, simplify and develop them, mainly by providing placeholders
+\f2\i  (proxies)
+\f1\i0  that can be modified and used in calcuations while playing. There is some specific networking classes which are made to simplify the distribution of  live coding activity.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
@@ -31,9 +33,9 @@ its concepts extend the live coding possibilities that supercollider provides\
 
 \f1\fs24 the main environment for this is [
 \f0\b ProxySpace
-\f1\b0 ] and the stream classes 
+\f1\b0 ], which handles server side processes and 
 \f0\b Pdef/Pdefn/Tdef
-\f1\b0 \
+\f1\b0 , which handle client side streams. \
 \
 There is various classes that are used in this context that\
 can be also useful:\
@@ -82,12 +84,20 @@ there is a couple of other classes that are not specifically connected:\
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
 \f3\fs18 \cf0 \
-	\
+\
+\
+\
+
+\f1\fs24 for suggestions / comments contact me\
+Julian Rohrhuber,  rohrhuber@uni-hamburg.de
+\f3\fs18 \
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 \cf0 \
+\
+\
 \
 
 \f1\fs24 RECENT CHANGES:\
@@ -95,7 +105,7 @@ there is a couple of other classes that are not specifically connected:\
 	\
 2004\
 	\ul july\ulnone \
-	Pdef/Tdef: pause and resume are now beat quantized, play correctly with offset now\
+	Pdef/Tdef: pause and resume are now beat quantized\
 	embedInStream is more efficient now, fadeTime is only applied for transitions\
 	added recursive phrasing event\
 	corrected Client bundle size calculation\
@@ -208,7 +218,8 @@ there is a couple of other classes that are not specifically connected:\
 \
 	\
 TODO:	\
-	\
+		\
+		check rebuild implementation	\
 \
 	allow save synthdefs\
 	improve interface to crucial lib\
@@ -218,8 +229,7 @@ TODO:	\
 \
 	
 \f1\fs24 _____________________________________\
-for suggestions / comments contact me\
-Julian Rohrhuber rohrhuber@uni-hamburg.de
+
 \f3\fs18 \
 \
 }
