@@ -41,13 +41,10 @@ BufRd : MultiOutUGen {
 }
 
 BufWr : UGen {	
-	*ar { arg numChannels, bufnum=0, phase=0.0, loop=1.0;
-		^this.multiNew('audio', numChannels, bufnum, phase, loop)
-	}
-	
-	init { arg argNumChannels ... theInputs;
-		inputs = theInputs;
-		^this.initOutputs(argNumChannels, rate);
+	*ar { arg inputArray, bufnum=0, phase=0.0, loop=1.0;
+		this.multiNewList(['audio', bufnum, phase, 
+			loop] ++ inputArray.asArray)
+		^inputArray
 	}
 }
 
@@ -56,9 +53,6 @@ RecordBuf : UGen {
 	*ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0, run=1.0, loop=1.0, trigger=1.0;
 		this.multiNewList(['audio', bufnum, offset, recLevel, preLevel, run, loop, trigger ] ++ inputArray.asArray);
 		^inputArray
-	}
-	init { arg ... theInputs;
-		inputs = theInputs;
 	}
 }
 
