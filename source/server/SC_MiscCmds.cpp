@@ -414,12 +414,14 @@ SCErr meth_n_free(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 {
 	sc_msg_iter msg(inSize, inData);	
 
-	int32 nodeID = msg.geti();
-	Node *node = World_GetNode(inWorld, nodeID);
-	if (!node) return kSCErr_NodeNotFound;
-
-	Node_Delete(node);
-
+	while (msg.remain()) {
+		int32 nodeID = msg.geti();
+		Node *node = World_GetNode(inWorld, nodeID);
+		if (!node) return kSCErr_NodeNotFound;
+	
+		Node_Delete(node);
+	}
+	
 	return kSCErr_None;
 }
 
@@ -540,10 +542,12 @@ SCErr meth_g_freeAll(World *inWorld, int inSize, char *inData, ReplyAddress *inR
 SCErr meth_g_freeAll(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	Group *group = World_GetGroup(inWorld, msg.geti());
-	if (!group) return kSCErr_GroupNotFound;
-
-	Group_DeleteAll(group);
+	while (msg.remain()) {
+		Group *group = World_GetGroup(inWorld, msg.geti());
+		if (!group) return kSCErr_GroupNotFound;
+	
+		Group_DeleteAll(group);
+	}
 	return kSCErr_None;
 }
 

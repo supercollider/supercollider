@@ -113,9 +113,11 @@ Loads a directory of synth definitions files. Resident definitions with the same
 
 \f1\b \cf0 n_free					delete a node.\
 
-\f0\b0 	int - node ID\
+\f0\b0 	[\
+		int - node ID\
+	] * N\
 	\
-Stops the node abruptly, removes it from its group, and frees its memory.\
+Stops a node abruptly, removes it from its group, and frees its memory. A list of node IDs may be specified.\
 \
 
 \f1\b /n_run					turn node on or off\
@@ -278,9 +280,11 @@ Adds the node to the tail (last to be executed) of the group.\
 
 \f1\b /g_freeAll					delete all nodes in a group.\
 
-\f0\b0 	int - group ID\
+\f0\b0 	[\
+		int - group ID\
+	] * N\
 	\
-Frees all nodes in the group. \
+Frees all nodes in the group. A list of groups may be specified.\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
