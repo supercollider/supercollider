@@ -283,6 +283,7 @@ Document {
 			filename = this.class.standardizePath(selectedText ++ ".rtf");
 			this.makeWikiPage(filename, selectedText);
 		};
+		this.selectRange(this.selectionStart, 0);
 	}
 		
 	mouseDown {		
