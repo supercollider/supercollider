@@ -65,6 +65,12 @@ Symbol {
 	}
 	
 	++ { arg aString; ^this.asString ++ aString }
+	
+	asBinOpString { 
+		var res;
+		res = this.asString;
+		^if(res[0].isAlphaNum) { res ++ ":" } { res }
+	}
 
 	// support for math on symbols
 
