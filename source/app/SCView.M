@@ -2610,13 +2610,13 @@ SCMultiSliderView::SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj
         mYValues = new double [mTabSize];
         memset(mYValues, 0, mTabSize * sizeof(double));
         mReadOnly = mShowIndex = false;
-        mResamp = 1; //used for zooming out
         mFillColor = SCMakeColor(0,0,0,1); // black
         mStrokeColor = SCMakeColor(0,0,0,1); // black
         mIsFilled = mDrawLinesActive = false;
         mDrawRectsActive = true;
         mSecYValues = NULL;
         mIsHorizontal = true;
+		mElasticMode = 0;
         //setVisibleSize();
 }
 SCMultiSliderView::~SCMultiSliderView()
@@ -2633,11 +2633,14 @@ void SCMultiSliderView::draw(SCRect inDamage)
     CGRect rect = SCtoCGRect(mBounds);
     CGContextClipToRect(cgc, rect);
     double * vals = mYValues;
-	if(mLayout.mHResize == 0) resizeThumbsToFit();
-    //int xpixels = getVisibleMax();
 	int xpixels = mTabSize;
     int xstart = mStartIndex;
-       
+	if(mElasticMode) {
+		if(mIsHorizontal) mElasticIndexStep = (1.0/(mTabSize-mStartIndex-1)) * (mBounds.width - mThumbSize - 2);
+		else mElasticIndexStep = (1.0/(mTabSize-mStartIndex-1)) * (mBounds.height - mThumbSize - 2);
+	} else mElasticIndexStep = 0.0;
+	double step = mElasticIndexStep;
+	
     if (mBackground) mBackground->draw(cgc, rect);
     QDDrawBevelRect(cgc, rect, 1, true);
     
@@ -2646,18 +2649,17 @@ void SCMultiSliderView::draw(SCRect inDamage)
     
     CGRect drawRect;
     float yval = 0;
-    float tsize = mXOffset;  
 
      //draw dots for multislider
     if(mDrawRectsActive)
     {
 		int j = 0;
 		for(int i = xstart; i < xpixels; i++, j++){
-            drawRect = SCtoCGRect(calcThumbRect(j, vals[i], mXOffset));
-            CGContextFillRect (cgc, SCtoCGRect(calcThumbRect(j, vals[i], mXOffset)));
+            drawRect = SCtoCGRect(calcThumbRect(j, vals[i], step));
+            CGContextFillRect (cgc, drawRect);
             if (mThumbSize > 1)	CGContextStrokeRect(cgc,drawRect);
 			if(mSecYValues){ //draw the upper part of a wave view
-				drawRect = SCtoCGRect(calcThumbRect(j, mSecYValues[i], mXOffset));
+				drawRect = SCtoCGRect(calcThumbRect(j, mSecYValues[i], step));
                 CGContextFillRect (cgc, drawRect);
                 if (mThumbSize > 1)	CGContextStrokeRect(cgc,drawRect);
 			}
@@ -2671,7 +2673,7 @@ void SCMultiSliderView::draw(SCRect inDamage)
 		int j = 0;
 		for(int i = xstart; i < xpixels; i++, j++){
             yval = vals[i];
-            drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
+            drawRect = SCtoCGRect(calcThumbRect(j, yval, step));
             gcx =  drawRect.origin.x + xadd;
             gcy =  drawRect.origin.y + xadd;
 			if( i == xstart)
@@ -2684,7 +2686,7 @@ void SCMultiSliderView::draw(SCRect inDamage)
             int j = xpixels - 1 - xstart;
             for(int i = xpixels - 1; i >= xstart; i--, j--){
                 yval = mSecYValues[i];
-                drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
+                drawRect = SCtoCGRect(calcThumbRect(j, yval, step));
                 gcx =  drawRect.origin.x + xadd;
                 gcy =  drawRect.origin.y + xadd;
                 CGContextAddLineToPoint(cgc, gcx, gcy);
@@ -2699,15 +2701,21 @@ void SCMultiSliderView::draw(SCRect inDamage)
             int currentI, selsize;
             if(mCurrentIndex < xstart) { 
                 currentI = 0;
-                selsize = sc_clip(mSelectionSize - (xstart - mCurrentIndex), 1, mTabSize);
+                selsize = sc_clip(mSelectionSize, xstart, mTabSize);
             } else {
-                currentI =  mCurrentIndex - xstart;
+                currentI = mCurrentIndex - xstart;
                 selsize = mSelectionSize;
             }
             if(mIsHorizontal){
-                drawRect = CGRectMake(mBounds.x + 1 + (currentI * ( mXOffset + mThumbSize)), mBounds.y + 1, (selsize * ( mXOffset + mThumbSize)) - mXOffset, mBounds.height);
+                drawRect = CGRectMake(mBounds.x + 1 + (currentI * ( mXOffset + mThumbSize)), 
+							mBounds.y + 1, 
+							(selsize * ( mXOffset + mThumbSize)) - mXOffset, 
+							mBounds.height);
             } else {
-                drawRect = CGRectMake( mBounds.x + 1, mBounds.y + 1 + (currentI * ( mXOffset + mThumbSize)), mBounds.width, selsize * ( mXOffset + mThumbSize));
+                drawRect = CGRectMake( mBounds.x + 1, 
+							mBounds.y + 1 + (currentI * ( mXOffset + mThumbSize)), 
+							mBounds.width, 
+							(selsize * ( mXOffset + mThumbSize))  - mXOffset);
             }
             CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, 0.4);
             CGContextFillRect (cgc, drawRect); 
@@ -2742,7 +2750,7 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
         changed = false;
         xindx = (int) xIn ;
         xindx = sc_clip(xindx, 0, mTabSize - 1);
-        mCurrentIndex = xindx + mStartIndex;
+        mCurrentIndex = xindx;
         mCurrentY = mYValues[mCurrentIndex];
         if(mCurrentIndex > (lastindx + mSelectionSize)) mSelectionSize = 1;
         maxSize = mTabSize - mCurrentIndex;
@@ -2759,7 +2767,10 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
 int SCMultiSliderView::indexFromPoint(SCPoint where)
 {
     if(mIsHorizontal){
-        return (int) ((where.x - mBounds.x -1)/(mThumbSize + mXOffset)) + mStartIndex;
+		if(mElasticMode) 
+			return (int) ((where.x - mBounds.x -1)/mElasticIndexStep);
+		else
+			return (int) ((where.x - mBounds.x -1)/(mThumbSize + mXOffset)) + mStartIndex;
     } else {
         return (int) ((where.y - mBounds.y -1)/(mThumbSize + mXOffset)) + mStartIndex;
     }
@@ -2781,24 +2792,36 @@ void SCMultiSliderView::setValueFromPoint(SCPoint where)
     setValue(xIndx, y, true);
 }
 
-SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, float xoffset)
+SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, double step)
 {    
     double x,y, thumbx, thumby;
-    
+	float xoffset = mXOffset;
+	
+	//post("step is: %f ", step);
+	
     if(mIsHorizontal){
         thumby = mThumbSizeY;
-        x = (double) indexIn * ( xoffset + mThumbSize);
+		if(mElasticMode){
+			thumbx = (step > mThumbSize) ? mThumbSize : (step>1.0) ? step : 1;
+			x = indexIn * step ;
+		}else{
+			x = (double) indexIn * ( xoffset + mThumbSize);
+			thumbx = mThumbSize;
+		}
         y = valIn * (mBounds.height - thumby - 2);
         y = mBounds.y + mBounds.height - y - 1 - thumby; 
         x = mBounds.x + x + 1;
         if(mIsFilled) thumby = mBounds.width - y;
-        thumbx = mThumbSize;
     } else {
         thumbx = mThumbSizeY;
-        y = (double) indexIn * ( xoffset + mThumbSize);
-        x = valIn * (mBounds.width - thumbx - 2);
-        //x = mBounds.x + mBounds.width - x - 1 - thumby; 
-
+		if(mElasticMode){
+			thumbx = (step > mThumbSize) ? mThumbSize : step;
+			y = indexIn * step ;
+		}else{
+			y = (double) indexIn * ( xoffset + mThumbSize);
+		}
+		x = valIn * (mBounds.width - thumbx - 2);
+        //x = mBounds.x + mBounds.width - x - 1 - thumby;
 		x = mBounds.x + x + 1;
 		y = mBounds.y + y + 1;
         if(mIsFilled){
@@ -2810,24 +2833,12 @@ SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, float xoffset
     return SCMakeRect( x, y, thumbx, thumby);   
 }
 
-void SCMultiSliderView::resizeThumbsToFit()
-{
-	int size = mTabSize - mStartIndex;
-	int thumbsize = (int) sc_round((mBounds.width - (size * mXOffset))/size, 1.0f);
-	if(thumbsize < 1) thumbsize = 1;
-	mThumbSize = thumbsize;
-	//setVisibleSize();	
-}
-
 void SCMultiSliderView::setSelection(SCPoint where)
 {
     int wx;
     int visiIn = mCurrentIndex - mStartIndex;
     int maxSize = mTabSize - mCurrentIndex;
-    if(mIsHorizontal) 
-        wx = (int) ((where.x - mBounds.x - 1) /( mXOffset + mThumbSize));
-    else 
-        wx = (int) ((where.y - mBounds.y - 1)/( mXOffset + mThumbSize));
+	wx = indexFromPoint(where);
     if(wx > visiIn) mSelectionSize = (int) wx - visiIn;
         else {
             setValueFromPoint(where);
@@ -3017,12 +3028,9 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
     if (strcmp(name, "referenceValues")==0) {
         if (!isKindOfSlot(slot, class_array)) return errWrongType;
         if(slot->uo->size == mTabSize && mSecYValues != NULL) {
-        //int len = slot->uo->size;
-            //memcpy(mSecYValues, slot->uo->slots, len * sizeof(double));
-            //mTabSize = slot->uo->size;
             err = allocSlotDoubleArrayVal(slot, &mSecYValues);    
         } else {
-                err = allocSlotDoubleArrayVal(slot, &mSecYValues);
+			err = allocSlotDoubleArrayVal(slot, &mSecYValues);
         }
         refresh();
         return errNone;
@@ -3032,6 +3040,14 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         refresh();
         return errNone;
     }
+
+    if (strcmp(name, "elasticResizeMode")==0) {
+        slotIntVal(slot, &mElasticMode);
+        refresh();
+        return errNone;
+    }
+	
+	
 
     return SCView::setProperty(symbol, slot);
 }

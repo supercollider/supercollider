@@ -560,7 +560,7 @@ protected:
 
 	double valueFromPoint(SCPoint where);
 	void setValueFromPoint(SCPoint point);
-	SCRect calcThumbRect(int xIn, double valIn, float xoffset);
+	SCRect calcThumbRect(int xIn, double valIn, double step);
 	int mThumbSize, mThumbSizeY; // size of the rect
 	int mTabSize, mVisibleSize; // size of the table
 	SCColor mFillColor;
@@ -574,10 +574,10 @@ protected:
 	DrawBackground* mKnob;
 	float mXOffset ; //space between points
 	bool mReadOnly, mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsHorizontal, mIsFilled;
-	int mResamp;
 	SCPoint mPrevPoint;
-	void resizeThumbsToFit ();
-			
+	int mElasticMode;
+	double mElasticIndexStep;
+	
 };
 SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 ////
