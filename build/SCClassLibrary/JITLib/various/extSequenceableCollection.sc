@@ -1,3 +1,33 @@
+/*
++SequenceableCollection {
+	
+	obtain { arg index, default; ^this[index] ? default }
+	
+	instill { arg index, item, default;
+		var res;
+		res = if(index >= this.size) { this.extend(index + 1, default) } { this }
+		^res.put(index, item)
+	}
+	
+	
+}
+
++Object {
+
+	obtain { arg index, default;  ^if(index == 0) {Êthis } {Êdefault } }
+	
+	instill { arg index, item, default;
+		^if(index == 0) { item } {
+			this.asArray.instill(index, item, default)
+		}
+	}
+	
+}
+
+
+
+
+
 +Function {
 	hatchArray {}
 }
@@ -40,5 +70,5 @@
 	}
 
 }
-
+*/
 
