@@ -75,7 +75,7 @@ SynthDef {
 		irpositions = irpositions.add(controlsSize);
 		controlsSize = controlsSize + 1;
 	}
-	addKr { arg name, value, lag;
+	addKr { arg name, value, lag=0;
 		krnames = krnames.add(name);
 		krvalues = krvalues.add(value);
 		krpositions = krpositions.add(controlsSize);

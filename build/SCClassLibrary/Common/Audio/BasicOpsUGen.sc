@@ -14,6 +14,8 @@ BasicOpUGen : UGen {
 //		file.putString(opname);
 //	}
 	specialIndex { ^operator.specialIndex }
+	argNamesInputsOffset { ^1 }
+
 }
 
 UnaryOpUGen : BasicOpUGen {	

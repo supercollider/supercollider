@@ -54,6 +54,7 @@ PanAz : MultiOutUGen {
 		channels = Array.fill(numChans, { arg i; OutputProxy(\audio,this, i) });
 		^channels
 	}
+
 }
 
 XFade2 : UGen {

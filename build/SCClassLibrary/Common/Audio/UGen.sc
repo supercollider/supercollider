@@ -71,14 +71,34 @@ UGen : AbstractFunction {
 	source { ^this }
 	isValidUGenInput { ^true }
 	numChannels { ^1 }
-	checkInputs { ^nil }
+	checkInputs { 
+		inputs.do({arg in,i;
+			var argName;
+			if(in.isNil,{
+				argName = this.argNameForInputAt(i);
+				if(argName.isNil,{
+					^"has nil input at index:" + i;
+				},{
+					^"has nil input for:" + argName;
+				});
+			})
+		});
+		^nil 
+	}
 	checkSameRateAsFirstInput {
  		if (rate == 'audio' and: {inputs.at(0).rate != 'audio'}, { 
  			^("first input is not audio rate: " + inputs.at(0) + inputs.at(0).rate);
  		});
  		^nil
  	}
-
+	argNameForInputAt { arg i;
+		var method;
+		method = this.class.class.findMethod(this.methodSelectorForRate);
+		if(method.isNil or: {method.argNames.isNil},{ ^nil });
+		^method.argNames.at(i + this.argNamesInputsOffset)
+	}
+	argNamesInputsOffset { ^1 }
+	
 	degreeToKey { arg scale, stepsPerOctave=12;
 		^DegreeToKey.kr(scale, this, stepsPerOctave)
 	}
@@ -118,6 +138,18 @@ UGen : AbstractFunction {
 		if (rate == \audio, { ^2 });
 		if (rate == \control, { ^1 });
 		^0
+	}
+	methodSelectorForRate {
+		if(rate == \audio,{ ^\ar });
+		if(rate == \control, { ^\kr });
+		if(rate == \scalar, { 
+			if(this.class.class.respondsTo(\ir),{
+				^\ir
+			},{
+				^\new
+			});
+		});
+		^nil
 	}
 	writeInputSpec { arg file, synthDef;
 		file.putInt16(synthIndex); 

@@ -8,9 +8,10 @@ PlayBuf : MultiOutUGen {
 	}
 	
 	init { arg argNumChannels ... theInputs;
-		inputs = theInputs;
+		inputs = theInputs.insp;
 		^this.initOutputs(argNumChannels, rate);
 	}
+	argNamesInputsOffset { ^2 }
 }
 
 
@@ -38,6 +39,7 @@ BufRd : MultiOutUGen {
 		inputs = theInputs;
 		^this.initOutputs(argNumChannels, rate);
 	}
+	argNamesInputsOffset { ^2 }
 }
 
 BufWr : UGen {	
