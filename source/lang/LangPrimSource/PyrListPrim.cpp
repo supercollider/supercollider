@@ -246,7 +246,7 @@ int prIdentDict_Put(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 2;  // dict
 	b = g->sp - 1;	// key
 	c = g->sp;		// value
-	
+	if(IsNil(b)) return errWrongType;
 	return identDictPut(g, a->uo, b, c);
 }	
 
