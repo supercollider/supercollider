@@ -22,6 +22,10 @@
 #ifndef _SC_ComPort_
 #define _SC_ComPort_
 
+#if defined (__APPLE__) && defined (__GNUC__)
+#define USE_RENDEZVOUS
+#endif
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "OSC_Packet.h"
@@ -52,6 +56,10 @@ protected:
 	int mSocket;
 	struct sockaddr_in mBindSockAddr;
 
+#ifdef USE_RENDEZVOUS
+	pthread_t mRendezvousThread;
+#endif
+
 public:
 	SC_ComPort(struct World *inWorld, int inPortNum);
 	virtual ~SC_ComPort();
@@ -59,6 +67,11 @@ public:
 	int Socket() { return mSocket; }
         
 	int PortNum() const { return mPortNum; }
+#ifdef USE_RENDEZVOUS
+	// default implementation does nothing (this is correct for
+	// SC_TcpConnectionPort). Subclasses may override.
+	virtual void PublishToRendezvous() {  }; 
+#endif
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,6 +89,10 @@ public:
 	int PortNum() const { return mPortNum; }
 
 	void* Run();
+#ifdef USE_RENDEZVOUS
+	virtual void PublishToRendezvous();
+#endif
+	
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +111,9 @@ public:
         virtual void* Run();
         
         void ConnectionTerminated();
+#ifdef USE_RENDEZVOUS
+	virtual void PublishToRendezvous();
+#endif
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
