@@ -67,6 +67,19 @@ what loop constructs the compiler can best generate code.
 #endif
 
 
+
+// above macros are not friendly to the debugger
+#if FOR_IS_FASTER
+
+#define LooP(length) for (int xxi=0; xxi<(length); ++xxi)
+	
+#elif WHILE_IS_FASTER
+
+#define LooP(length) for (int xxi=(length); --xxi;)
+	
+#endif
+
+
 // LOOP INDEXING :
 
 /*
