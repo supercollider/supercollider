@@ -57,9 +57,9 @@
     NSArray *urls = [docctl URLsFromRunningOpenPanel];
     if(urls) {
         temp = [urls retain];
-		[self returnPaths];
+        [self returnPaths];
     } else {
-		[self cancel];
+        [self cancel];
     }
 }
         
@@ -67,6 +67,7 @@
 {
     int i;
     NSArray *urls = (NSArray*) temp;
+    [temp release];
     int count = [urls count];
     
     VMGlobals *g = gMainVMGlobals;
