@@ -14,6 +14,7 @@ Main : Process {
 	
 	shutDown { // at recompile, quit
 		Server.quitAll;
+		HIDDeviceService.releaseDeviceList;
 		super.shutDown;
 	}
 	
