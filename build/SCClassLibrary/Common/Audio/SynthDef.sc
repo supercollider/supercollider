@@ -230,5 +230,16 @@ SynthDef {
 		this.writeDefFile;
 		server.loadSynthDef(name);
 	}
+	
+	play { arg target,args,addAction=\addToTail;
+		target = target.asTarget;
+		this.load(target.server);
+		// pause ...
+		// TODO: wait for /done at some central responder
+		AppClock.sched(0.2,{
+			Synth(name,args,target,addAction);
+			nil
+		});
+	}
 }
 
