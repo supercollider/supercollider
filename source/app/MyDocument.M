@@ -136,7 +136,7 @@ bool docCreatedFromLang = false; //if this is true addDocument is not called
     [self sendSelection: "methodReferences"];
 }
 
-#define GETTEXTCHAR(pos, text, textlen)	((pos<0) ? 0 : ((pos>=textlen) ? 0 : text[pos]))
+#define GETTEXTCHAR(pos, text, textlen)	(((int)pos<0) ? 0 : (((int)pos>=(int)textlen) ? 0 : text[pos]))
 #define MAXBRAX 128
 unichar braks[MAXBRAX];
 int brakptr = 0;

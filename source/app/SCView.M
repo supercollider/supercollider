@@ -1831,7 +1831,7 @@ int getScopeBuf(uint32 index, SndBuf *buf, bool& didChange);
 void SCScope::animate()
 {
 	bool didChange;
-	int err = getScopeBuf(mBufNum, &mSndBuf, didChange);
+	/*int err =*/ getScopeBuf(mBufNum, &mSndBuf, didChange);
 	if (didChange) refresh();
 }
 
