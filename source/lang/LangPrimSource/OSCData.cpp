@@ -283,8 +283,8 @@ int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size, bool useElapsed)
 	return errNone;
 }
 
-int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr);
-int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr)
+int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen=true);
+int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen)
 {
 	int err, port, addr, tcpSocket;
 	
@@ -293,10 +293,12 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr)
 	
 	if (tcpSocket != -1) {
 		// send TCP
-		// sk: msglen is in network byte order
-		int32 sizebuf = htonl(msglen);
-		sendall(tcpSocket, &sizebuf, sizeof(int32));
-		sendall(tcpSocket, bufptr, htonl(msglen));
+		if (sendMsgLen) {
+			// send length of message in network byte-order
+			int32 sizebuf = htonl(msglen);
+			sendall(tcpSocket, &sizebuf, sizeof(int32));
+		}
+		sendall(tcpSocket, bufptr, msglen);
 		
 	} else {
 		if (gUDPport == 0) return errFailed;
@@ -446,7 +448,7 @@ int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
 	char *bufptr = (char*)array->slots;
 	int32 msglen = array->size * gFormatElemSize[array->obj_format];
 	
-	return netAddrSend(netAddrObj, msglen, bufptr);
+	return netAddrSend(netAddrObj, msglen, bufptr, false);
 }
 
 
