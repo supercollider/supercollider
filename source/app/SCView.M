@@ -216,8 +216,7 @@ int slotBackgroundVal(PyrSlot *slot, DrawBackground **ioPtr)
 
 Layout::Layout()
     : mMinWidth(0.), mMaxWidth(10000.), mMinHeight(0.), mMaxHeight(10000.), mWeight(1.),
-    mShouldResize(true), mHResize(layout_FixedLeft), mVResize(layout_FixedTop
-{
+    mShouldResize(true), mHResize(layout_FixedLeft), mVResize(layout_FixedTop) {
 }
 
 SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
@@ -859,67 +858,69 @@ void SCHLayoutView::setBounds(SCRect inBounds)
     float totalWeight = 0.0;
     while(child) {
         Layout layout = child->getLayout();
+        // could store this when child added
         totalWeight += layout.mWeight;
         child = child->next();
     }
-    float totalWidth = inBounds.width;
+    // subtract the spacers we will use
+    float totalWidth = inBounds.width - (mSpacing * (mNumChildren - 1));
 
     // find views who are constrained by a minimum or maximum size 
     // and remove them from the set of weights.
     float scaleWeight = sc_max(totalWidth,0.0) * (1.0 / sc_max(totalWeight,0.01));
     child = mChildren;
     float widths[mNumChildren];
+    SCView *children[mNumChildren];
     int i=0;
     while(child) {
         float width;
-        bool widthSet = false;
+        //reverse the array
+        children[mNumChildren - i - 1] = child;
         Layout layout = child->getLayout();
         float weightedWidth = scaleWeight * layout.mWeight;
-        if(layout.mHResize == 0) {
-            if (weightedWidth < layout.mMinWidth) { 
+        if(layout.mHResize == 0) {// okay to resize
+            if (weightedWidth < layout.mMinWidth) {
                 width = layout.mMinWidth;
-                widthSet = true;
-            } else {
-                if (weightedWidth > layout.mMaxWidth) { 
-                    width = layout.mMaxWidth;
-                    widthSet = true;
-                }
-            }
-            if (widthSet) {
                 widths[i]  = width;
-                totalWidth = totalWidth - width;
-                totalWeight = totalWeight - layout.mWeight;
+                totalWidth -= width;
+                totalWeight -= layout.mWeight;
             } else {
-                widths[i] = -1.0;
+                if (weightedWidth > layout.mMaxWidth) {
+                    width = layout.mMaxWidth;
+                    widths[i]  = width;
+                    totalWidth -= width;
+                    totalWeight -= layout.mWeight;
+                } else {
+                    widths[i] = -1.0;
+                }
             }
         }  else {
             SCRect rect = child->getBounds();
             widths[i] = rect.width;
-            //printf("fixed width: %f\n", rect.width);
         }
         i++;
         child = child->next();
     }
-    // += (mSpacer * (mNumChildren - 1));
+    //totalWidth is now the remaining flexible width
     
     // now layout the views
-    float left = inBounds.x;
+    float left = inBounds.x;//right edge
     float top = inBounds.y;
+    float height = inBounds.height;
     scaleWeight = totalWidth * (1.0/totalWeight);
     child = mChildren;
-    i = 0;
-    while(child) {
+    for(i = 0; i < mNumChildren; i++ ) {
+//    while(child) {  // goes backwards
+        child = children[i];
         Layout layout = child->getLayout();
         float width;
         if(widths[i] == -1.0) {
-            //printf("not const\n");
             width = scaleWeight * layout.mWeight;
-        } else { //if it was constrained
-            //printf("constrained: %f\n",widths[i]);
+        } else { // was constrained
             width = widths[i];
         }
-        child->setBounds(SCMakeRect( left, top, width, inBounds.height));
-        left = left + width; // + mSpacer;
+        child->setBounds(SCMakeRect( left, top, width, height));
+        left += (width + mSpacing);
         child = child->next();
     }
     mBounds = inBounds;
