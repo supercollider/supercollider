@@ -2636,7 +2636,7 @@ SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect
 }
 
 SCMultiSliderView::SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: SCView(inParent, inObj, inBounds), mThumbSize(12), mStepSize(0.), 
+	: SCView(inParent, inObj, inBounds), mThumbSize(12.), mStepSize(0.), 
 		mStepScale(0.), mKnob(0), mXOffset(1)
 {
         mTabSize = (int) (inBounds.width / mThumbSize);
@@ -2695,11 +2695,11 @@ void SCMultiSliderView::draw(SCRect inDamage)
 		for(int i = xstart; i < xpixels; i++, j++){
             drawRect = SCtoCGRect(calcThumbRect(j, vals[i], step));
             CGContextFillRect (cgc, drawRect);
-            if (mThumbSize > 1)	CGContextStrokeRect(cgc,drawRect);
+            if (mThumbSize > 1.)	CGContextStrokeRect(cgc,drawRect);
 			if(mSecYValues){ //draw the upper part of a wave view
 				drawRect = SCtoCGRect(calcThumbRect(j, mSecYValues[i], step));
                 CGContextFillRect (cgc, drawRect);
-                if (mThumbSize > 1)	CGContextStrokeRect(cgc,drawRect);
+                if (mThumbSize > 1.)	CGContextStrokeRect(cgc,drawRect);
 			}
         }
     }
@@ -2969,25 +2969,25 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
     if (strcmp(name, "thumbSize")==0) {
-        err = slotIntVal(slot, &mThumbSize);
+        err = slotFloatVal(slot, &mThumbSize);
         //setVisibleSize();
         refresh();
         return errNone;
     } 
     if (strcmp(name, "thumbWidth")==0) {
-        err = slotIntVal(slot, &mThumbSizeY);
+        err = slotFloatVal(slot, &mThumbSizeY);
         //setVisibleSize();
         refresh();
         return errNone;
     } 
     if (strcmp(name, "indexThumbSize")==0) {
-        err = slotIntVal(slot, &mThumbSize);
+        err = slotFloatVal(slot, &mThumbSize);
         //setVisibleSize();
         refresh();
         return errNone;
     } 
     if (strcmp(name, "valueThumbSize")==0) {
-        err = slotIntVal(slot, &mThumbSizeY);
+        err = slotFloatVal(slot, &mThumbSizeY);
         //setVisibleSize();
         refresh();
         return errNone;
