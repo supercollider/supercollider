@@ -92,6 +92,7 @@ Function : AbstractFunction {
 	plot {
 		^thisMethod.notYetImplemented
 	}
+	cmdPeriod { this.value }
 }
 
 
