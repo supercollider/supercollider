@@ -216,7 +216,8 @@ int slotBackgroundVal(PyrSlot *slot, DrawBackground **ioPtr)
 
 Layout::Layout()
     : mMinWidth(0.), mMaxWidth(10000.), mMinHeight(0.), mMaxHeight(10000.), mWeight(1.),
-    mShouldResize(true), mHResize(layout_FixedLeft), mVResize(layout_FixedTop)
+    mShouldResize(true), mHResize(layout_FixedLeft), mVResize(layout_FixedTop),
+    mFixWidth(-1.),mFixHeight(-1.)
 {
 }
 
@@ -548,9 +549,26 @@ int SCView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             mTop->refresh();
             return errNone;
 	}
-	/*if (strcmp(name, "backColor")==0) {
-            return setSlotColor(slot, &mBackColor);
-	}*/
+    if(strcmp(name,"minWidth") ==0) {
+        mLayout.mMinWidth = slot->ui;
+        mTop->refresh();
+        return errNone;
+    }
+    if(strcmp(name,"maxWidth") ==0) {
+        mLayout.mMaxWidth = slot->ui;
+        mTop->refresh();
+        return errNone;
+    }
+    if(strcmp(name,"minHeight") ==0) {
+        mLayout.mMinHeight = slot->ui;
+        mTop->refresh();
+        return errNone;
+    }
+    if(strcmp(name,"maxHeight") ==0) {
+        mLayout.mMaxHeight = slot->ui;
+        mTop->refresh();
+        return errNone;
+    }
 	if (strcmp(name, "background")==0) {
             err = slotBackgroundVal(slot, &mBackground);
             if (err) return err;
@@ -732,6 +750,8 @@ SCCompositeView::~SCCompositeView()
 void SCCompositeView::setBounds(SCRect inBounds)
 {
     SCView *child = mChildren;
+    float right = mBounds.x + mBounds.width;
+    float bottom = mBounds.y + mBounds.height;
     while (child) {
         SCRect bounds = child->getBounds();
         Layout layout = child->getLayout();
@@ -745,7 +765,11 @@ void SCCompositeView::setBounds(SCRect inBounds)
                 break;
             case layout_HElastic :
                 offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
-                bounds.width = (inBounds.width) - (bounds.x + offset);
+                bounds.width = sc_clip(
+                                    (inBounds.width) - (bounds.x + offset),
+                                    layout.mMinWidth ,
+                                    sc_min(layout.mMaxWidth,right - bounds.x)
+                                );
         }
         switch (layout.mVResize) {
             case layout_FixedTop : 
@@ -756,11 +780,17 @@ void SCCompositeView::setBounds(SCRect inBounds)
                 break;
             case layout_VElastic :
                 offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
-                bounds.height = (inBounds.height) - (bounds.y + offset);
+                bounds.height = sc_clip(
+                                    (inBounds.height) - (bounds.y + offset),
+                                    layout.mMinHeight ,
+                                    sc_min(layout.mMaxHeight,bottom - bounds.y)
+                                );
         }
         child->setBounds(bounds);
+        //bounds = child->getBounds();
         child = child->next();
     }
+    // should be limited by the limitations of the contents
     mBounds = inBounds;
 }
 
@@ -826,13 +856,71 @@ SCHLayoutView::~SCHLayoutView()
 
 void SCHLayoutView::setBounds(SCRect inBounds)
 {
-    //float totalWidth = mSpacing * (mNumChildren + 1);
     SCView *child = mChildren;
-    while (child) {
-        SCRect bounds = child->getBounds();
-        //Layout layout = child->getLayout();
-        
-        child->setBounds(bounds);
+    float totalWeight = 0.0;
+    while(child) {
+        Layout layout = child->getLayout();
+        totalWeight += layout.mWeight;
+        child = child->next();
+    }
+    float totalWidth = inBounds.width;
+
+    // find views who are constrained by a minimum or maximum size 
+    // and remove them from the set of weights.
+    float scaleWeight = sc_max(totalWidth,0.0) * (1.0 / sc_max(totalWeight,0.01));
+    child = mChildren;
+    float widths[mNumChildren];
+    int i=0;
+    while(child) {
+        float width;
+        bool widthSet = false;
+        Layout layout = child->getLayout();
+        float weightedWidth = scaleWeight * layout.mWeight;
+        if(layout.mHResize == 0) {
+            if (weightedWidth < layout.mMinWidth) { 
+                width = layout.mMinWidth;
+                widthSet = true;
+            } else {
+                if (weightedWidth > layout.mMaxWidth) { 
+                    width = layout.mMaxWidth;
+                    widthSet = true;
+                }
+            }
+            if (widthSet) {
+                widths[i]  = width;
+                totalWidth = totalWidth - width;
+                totalWeight = totalWeight - layout.mWeight;
+            } else {
+                widths[i] = -1.0;
+            }
+        }  else {
+            SCRect rect = child->getBounds();
+            widths[i] = rect.width;
+            //printf("fixed width: %f\n", rect.width);
+        }
+        i++;
+        child = child->next();
+    }
+    // += (mSpacer * (mNumChildren - 1));
+    
+    // now layout the views
+    float left = inBounds.x;
+    float top = inBounds.y;
+    scaleWeight = totalWidth * (1.0/totalWeight);
+    child = mChildren;
+    i = 0;
+    while(child) {
+        Layout layout = child->getLayout();
+        float width;
+        if(widths[i] == -1.0) {
+            //printf("not const\n");
+            width = scaleWeight * layout.mWeight;
+        } else { //if it was constrained
+            //printf("constrained: %f\n",widths[i]);
+            width = widths[i];
+        }
+        child->setBounds(SCMakeRect( left, top, width, inBounds.height));
+        left = left + width; // + mSpacer;
         child = child->next();
     }
     mBounds = inBounds;
@@ -3601,6 +3689,7 @@ void registerSCViewClasses()
 
     new SCViewMaker("SCTopView", NewSCTopView);
     new SCViewMaker("SCCompositeView", NewSCCompositeView);
+    new SCViewMaker("SCHLayoutView", NewSCHLayoutView);
     new SCViewMaker("SCSlider", NewSCSlider);
     new SCViewMaker("SCRangeSlider", NewSCRangeSlider);
     new SCViewMaker("SC2DSlider", NewSC2DSlider);
@@ -3634,7 +3723,8 @@ int prSCView_New(struct VMGlobals *g, int numArgsPushed)
             if (!isKindOfSlot(args+1, s_sccontview->u.classobj)) return errWrongType;
             parent = (SCContainerView*)args[1].uo->slots[0].ui;
         }
-	
+        if(IsNil(args+2)) return errWrongType; // nil bounds
+        
 	SCRect bounds;
 	int err = slotGetSCRect(args+2, &bounds);
 	if (err) return err;
@@ -3685,6 +3775,36 @@ int prSCView_GetProperty(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prSCView_Focus(struct VMGlobals *g, int numArgsPushed);
+int prSCView_Focus(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+
+	PyrSlot *viewObjSlot = g->sp - 1;	
+	SCView *view = (SCView*)viewObjSlot[0].uo->slots[0].ui;
+	PyrSlot *boo = g->sp;
+    
+	if (!view) return errFailed;
+    
+    if(IsTrue(boo)) {
+        view->makeFocus(true);
+    } else {
+        view->makeFocus(false);
+    }
+	return errNone;
+}
+
+int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed);
+int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+
+	SCView *view = (SCView*)(g->sp)[0].uo->slots[0].ui;
+    view->refresh();
+	return errNone;
+}
+
+
 void initSCViewPrimitives()
 {
 
@@ -3710,6 +3830,8 @@ void initSCViewPrimitives()
 	definePrimitive(base, index++, "_SCView_New", prSCView_New, 3, 0);
 	definePrimitive(base, index++, "_SCView_SetProperty", prSCView_SetProperty, 3, 0);
 	definePrimitive(base, index++, "_SCView_GetProperty", prSCView_GetProperty, 3, 0);	
+	definePrimitive(base, index++, "_SCView_Focus", prSCView_Focus, 2, 0);	
+	definePrimitive(base, index++, "_SCView_Refresh", prSCView_Refresh, 1, 0);	
 }
 
 void initGUI();
