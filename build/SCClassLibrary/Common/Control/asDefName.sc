@@ -54,41 +54,21 @@
 		Server.local.loadSynthDef(def.name);
 		^def.name
 	}
-	asSynthDef {
-		var cycle;
-		cycle = Library.at(Function,'__asSynthDef__') ? 0;
-		Library.put(Function,'__asSynthDef__', cycle + 1);
-		^SynthDef("__asSynthDef__" ++ cycle.asString,{
-			var result,rate;
-			result = this.value;
-			rate = result.rate;
-			if(rate === \scalar,{
-				// Out, SendTrig etc. probably a 0.0
-				result
-			},{
-				if(rate === \audio,{
-					Out.ar(0,result)
-				},{
-					// allocate a private control bus ?
-					// on what server ?
-					// you might have played it for its side effects
-					result
-				})
-			})
-		})
-	}
-	play { arg key, server, mixToPresent=false, onComplete, latency;
-		var def, synth;
-		server = server ? Server.local;
-		if(key.isNil,{ 
-			def = this.asSynthDef;
-			synth = Synth.basicNew(def.name,server);
-			def.send(server, synth.newMsg);
-			^synth
-		}, {
-			// this couples the Common library to JITLibrary
-			^this.send(key, server, mixToPresent, onComplete, latency)
-		})
+	
+	asSynthDef { arg lags, prependArgs, outClass=\Out, xfade=false;
+		
+		^SynthDef.newWrapOut(this.hash.asString, this, lags, prependArgs, outClass, xfade);	}
+		
+	play { arg target, xfade=true;
+		var def, synth, server;
+		target = target.asTarget;
+		server = target.server;
+		def = this.asSynthDef(xfade:xfade);
+		synth = Synth.basicNew(def.name,server);
+		server.waitForBoot({
+			def.send(server, synth.newMsg(target));
+		});
+		^synth
 	}
 	
 }
