@@ -145,15 +145,15 @@ Server : Model {
 				}.defer;
 			}).add;	
 	}
-	startAliveThread { arg secs=0.7; // not needed for an inProcess server ?
+	startAliveThread { arg delay=4.0, period=0.7;
 		^aliveThread ?? {
 			this.addStatusWatcher;
 			aliveThread = Routine({
 				// this thread polls the server to see if it is alive
-				4.0.wait;
+				delay.wait;
 				loop({
 					this.status;
-					0.7.wait;
+					period.wait;
 					this.serverRunning = alive;
 					alive = false;
 				});
@@ -163,8 +163,14 @@ Server : Model {
 		}
 	}
 	stopAliveThread {
-		aliveThread.stop;
-		statusWatcher.remove;
+		if( aliveThread.notNil, { 
+			aliveThread.stop; 
+			aliveThread = nil;
+		});
+		if( statusWatcher.notNil, { 
+			statusWatcher.remove;
+			statusWatcher = nil;
+		});
 	}
 	
 	boot {
@@ -222,6 +228,12 @@ Server : Model {
 				server.freeAll;
 			})
 		})
+	}
+	*resumeThreads {
+		set.do({ arg server;
+			server.stopAliveThread;
+			server.startAliveThread(0.7);
+		});
 	}
 	
 	// internal server commands

@@ -20,6 +20,8 @@ Main : Process {
 		
 		SystemClock.clear;
 		AppClock.clear;
+		
+		Server.resumeThreads;
 	}
 	
 	recvOSCmessage { arg time, replyAddr, msg;
