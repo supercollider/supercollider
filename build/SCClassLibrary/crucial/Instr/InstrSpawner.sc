@@ -87,8 +87,9 @@ InstrSpawner : Patch {
 
 		streams.do({ arg s,i;
 			// replace players with their outputs
-			// other objects return themselves
-			streams.put(i,s.synthArg);
+			if(s.isKindOf(AbstractPlayer),{
+				streams.put(i,s.synthArg);
+			})
 		});
 		sendArray.put(4,spawnGroup.nodeID);
 		sendArray.put(sendArray.size - 1, this.patchOut.synthArg);
