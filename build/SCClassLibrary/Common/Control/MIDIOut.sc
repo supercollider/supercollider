@@ -1,7 +1,7 @@
 MIDIEndPoint {
-var <> name, <>uid;
-	*new{arg name, uid;
-		^super.newCopyArgs(name, uid)
+var <> device, <> name, <>uid;
+	*new{arg device, name, uid;
+		^super.newCopyArgs(device, name, uid)
 		}
 }
 
@@ -14,19 +14,17 @@ MIDIClient {
 		this.list;
 	}
 	*list{
-		var out, arr, endp;
+		var out, arr, endp, soIds, soNames, soDevs, devIds;
 		out = this.prList;
-		out = out.interpret;
-		arr = out.at(0);
-		arr.do({arg aval, i;
-			if(i.odd,{
-				sources = sources.add(MIDIEndPoint(arr.at(i-1), aval))
-			})});
-		arr = out.at(1);
-		arr.do({arg aval, i;
-			if(i.odd,{
-				destinations = destinations.add(MIDIEndPoint(arr.at(i-1), aval))
-			})});
+		if(out.notNil, {
+		out.at(0).do({arg id, i;
+			sources = sources.add(MIDIEndPoint(out.at(1).at(i), out.at(2).at(i),id))
+			});
+		out.at(3).do({arg id, i;
+			destinations = destinations.add(MIDIEndPoint(out.at(4).at(i), out.at(4).at(i), id))
+			});
+		});
+		
 	}
 	*prInit {arg inports, outports;
 		_InitMIDI;
