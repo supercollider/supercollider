@@ -131,7 +131,7 @@ SynthDef {
 
 		file.putInt16(controls.size);
 		controls.do({ arg item;
-			file.putFloat(item.asFloat);
+			file.putFloat(item);
 		});
 				
 		file.putInt16(controlNames.size);
