@@ -20,7 +20,7 @@ DelayProcess {
 	*ar { arg bank, firstIndex, function, inputs, delayTime, interpolationType=2;
 		var indices, delayedSignals, outputs;
 		//[bank, firstIndex, function, inputs, delayTime, interpolationType].postln;
-		if (delayTime.isKindOf(Array), {
+		if (delayTime.isArray, {
 			// need separate buffers.
 			
 			inputs = inputs.asArray;

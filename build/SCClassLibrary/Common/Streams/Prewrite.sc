@@ -7,7 +7,7 @@ Prewrite : FilterPattern {
 		var newlist;
 		if (level == 0, { 
 			// if at bottom level, then embed all items in the stream
-			if (list.isKindOf(SequenceableCollection), {
+			if (list.isSequenceableCollection, {
 				// isKindOf is necessary because Integer.do would do the wrong thing..
 				list.do({ arg item; 
 					inval = item.embedInStream(inval); 
@@ -16,7 +16,7 @@ Prewrite : FilterPattern {
 				inval = list.embedInStream(inval);
 			});
 		},{
-			if (list.isKindOf(SequenceableCollection), {
+			if (list.isSequenceableCollection, {
 				// isKindOf is necessary because Integer.do would do the wrong thing..
 				list.do({ arg item;					
 					// lookup item in rewrite dictionary

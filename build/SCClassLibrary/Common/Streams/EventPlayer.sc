@@ -34,7 +34,7 @@ NotePlayer : EventPlayer {
 			~finish.value; // finish the event
 			freqs = ~freq;
 			if (freqs.isKindOf(Symbol), { nil },{
-				if (freqs.isKindOf(SequenceableCollection), {
+				if (freqs.isSequenceableCollection, {
 					freqs.do({ arg freq;
 						~freq = freq;
 						this.playOneEvent;

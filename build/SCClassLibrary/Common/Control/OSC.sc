@@ -18,7 +18,7 @@ OSCNode {
 		children = children.collect({ arg subtree; 
 			var name, thing, value;
 			#name, thing, value = subtree;
-			if (thing.isKindOf(Array), {
+			if (thing.isArray, {
 				this.tree(thing, name, value); 
 			},{
 				OSCNode(name, thing, nil, value);

@@ -232,13 +232,13 @@ SequenceableCollection : Collection {
 		maxsize = 0;
 		this.do({ arg sublist;
 			var sz;
-			sz = if (sublist.isKindOf(SequenceableCollection), { sublist.size },{ 1 });
+			sz = if (sublist.isSequenceableCollection, { sublist.size },{ 1 });
 			if (sz > maxsize, { maxsize = sz });
 		});
 						 
 		list = this.species.fill(maxsize, { this.species.new(size) });
 		this.do({ arg isublist, i;
-			if (isublist.isKindOf(SequenceableCollection), {
+			if (isublist.isSequenceableCollection, {
 				list.do({ arg jsublist, j;
 					jsublist.add( isublist.wrapAt(j); );
 				});
@@ -309,7 +309,7 @@ SequenceableCollection : Collection {
 		stretch = stretch * beats / divisions.sum;
 		repeats.do({
 			divisions.do({ arg val;
-				if (val.isKindOf(SequenceableCollection), {
+				if (val.isSequenceableCollection, {
 					tie = val.convertOneRhythm(list, tie, stretch)
 				},{
 					val = val * stretch;

@@ -187,7 +187,7 @@ SCSlider : SCSliderBase
 		currentDrag = this.value; 
 	}
 	canReceiveDrag {
-		^currentDrag.isKindOf(SimpleNumber);
+		^currentDrag.isNumber;
 	}
 	receiveDrag {
 		this.value = currentDrag;
@@ -386,7 +386,7 @@ SCNumberBox : SCStaticText {
 		currentDrag = object.asFloat; 
 	}
 	canReceiveDrag {
-		^currentDrag.isKindOf(SimpleNumber);
+		^currentDrag.isNumber;
 	}
 	receiveDrag {
 		this.value = currentDrag;

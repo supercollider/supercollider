@@ -20,6 +20,7 @@ String[char] : RawArray {
 	!= { arg aString; ^this.compare(aString) != 0 }
 	hash { _StringHash }
 	
+	isString { ^true }
 	asString { ^this }
 	asCompileString { ^"\"" ++ this ++ "\"" }
 	species { ^String }
@@ -43,6 +44,7 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	
+	die { "FATAL ERROR:\n".post;  this.postln;  this.halt; }
 	error { "ERROR:\n".post; this.postln; }
 	warn { "WARNING:\n".post; this.postln }
 	inform { ^this.postln }

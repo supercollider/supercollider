@@ -399,7 +399,7 @@ Pbindf : FilterPattern {
 				if (streamout.isNil, {
 					sawNil = true;
 				},{
-					if (name.isKindOf(SequenceableCollection), {					
+					if (name.isSequenceableCollection, {					
 						streamout.do({ arg val, i;
 							inevent.put(name.at(i), val);
 						});
@@ -544,7 +544,7 @@ Pmono : FilterPattern {
 			var defVal;
 			defVal = def.prototypeFrame.at(i);
 			argName = argNames.at(i);
-			if (defVal.isKindOf(SimpleNumber), {
+			if (defVal.isSimpleNumber, {
 				plug = Plug.kr(defVal, 0.0, argName);
 				iplugs.add( plug );
 				iargs.add( plug );

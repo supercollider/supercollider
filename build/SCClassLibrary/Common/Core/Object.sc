@@ -121,8 +121,8 @@ Object {
 	basicHash { _ObjectHash; ^this.primitiveFailed }
 	hash { _ObjectHash; ^this.primitiveFailed }
 	identityHash { _ObjectHash; ^this.primitiveFailed }
-	uniqueID { _ObjectID; ^this.primitiveFailed }
-	objPtr { _ObjectPtr; ^this.primitiveFailed }
+	//uniqueID { _ObjectID; ^this.primitiveFailed }
+	//objPtr { _ObjectPtr; ^this.primitiveFailed }
 		
 	// create an association
 	-> { arg obj; ^Association.new(this, obj) }
@@ -135,13 +135,6 @@ Object {
 	eventAt { ^nil }
 	finishEvent {}
 	atLimit { ^false }
-
-//	Lazy lists have been removed..	
-//	// support for lazy lists
-//	isLazyList { ^false }	
-//	demandThisNode { 
-//		^LazyList.new(this, this.next);
-//	}
 	
 	// testing
 	? { arg obj; ^this }
@@ -152,6 +145,8 @@ Object {
 	isInteger { ^false }
 	isFloat { ^false }	
 	isSequenceableCollection { ^false }
+	isArray { ^false }
+	isString { ^false }
 	isValidUGenInput { ^false }
 	pointsTo { arg obj; _ObjectPointsTo; ^this.primitiveFailed }
 	mutable { _ObjectIsMutable; ^this.primitiveFailed }

@@ -150,7 +150,7 @@ Collection {
 	sumabs {  // sum of the absolute values - used to convert Mikael Laursen's rhythm lists.
 		var sum = 0;
 		this.do({ arg elem; 
-			if (elem.isKindOf(SequenceableCollection), { elem = elem.at(0) });
+			if (elem.isSequenceableCollection, { elem = elem.at(0) });
 			sum = sum + elem.abs; 
 		})
 		^sum;

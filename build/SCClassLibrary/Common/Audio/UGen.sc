@@ -61,7 +61,7 @@ UGen : AbstractFunction {
 	
 	collectConstants {
 		inputs.do({ arg input;
-			if (input.isKindOf(SimpleNumber), { synthDef.addConstant(input.asFloat)  });
+			if (input.isNumber, { synthDef.addConstant(input.asFloat)  });
 		}); 
 	}
 	

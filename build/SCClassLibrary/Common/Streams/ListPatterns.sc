@@ -317,7 +317,7 @@ Place : Pseq {
 				repeats.value.do({ arg j;
 					list.size.reverseDo({ arg i;
 						item = list @@ (i + offsetValue);
-						if (item.isKindOf(SequenceableCollection), {
+						if (item.isSequenceableCollection, {
 							item = item @@ j;
 						});
 						inval = item.embedInStream(inval);
@@ -327,7 +327,7 @@ Place : Pseq {
 				repeats.value.do({ arg j;
 					list.size.do({ arg i;
 						item = list @@ (i + offsetValue);
-						if (item.isKindOf(SequenceableCollection), {
+						if (item.isSequenceableCollection, {
 							item = item @@ j;
 						});
 						inval = item.embedInStream(inval);

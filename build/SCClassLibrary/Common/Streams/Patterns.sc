@@ -163,7 +163,7 @@ Pbind : Pattern {
 				if (streamout.isNil, {
 					sawNil = true;
 				},{
-					if (name.isKindOf(SequenceableCollection), {					
+					if (name.isSequenceableCollection, {					
 						streamout.do({ arg val, i;
 							inval.put(name.at(i), val);
 						});
