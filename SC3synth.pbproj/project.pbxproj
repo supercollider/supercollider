@@ -267,6 +267,7 @@
 				F50D056102E69B6B01CA2799,
 				F50D056202E69B6B01CA2799,
 				F50D056302E69B6B01CA2799,
+				F53F797C03B28832011C068F,
 				F50D056402E69B6B01CA2799,
 				F50D056502E69B6B01CA2799,
 				F50D056602E69B6B01CA2799,
@@ -464,6 +465,7 @@
 		};
 		F50D05E602E69B6B01CA2799 = {
 			children = (
+				F53F78F103B28353011C068F,
 				F50D05E902E69B6B01CA2799,
 				F50D05EB02E69B6B01CA2799,
 				F50D05EC02E69B6B01CA2799,
@@ -625,6 +627,7 @@
 				F50D069902E6A1C601CA2799,
 				F50D06BE02E7F11301CA2799,
 				F50D06C002E7F29001CA2799,
+				F53F78F503B2842D011C068F,
 			);
 			isa = PBXGroup;
 			name = Frameworks;
@@ -654,6 +657,46 @@
 			name = libsndfile.a;
 			path = /usr/local/lib/libsndfile.a;
 			refType = 0;
+		};
+		F53F78F103B28353011C068F = {
+			isa = PBXFileReference;
+			path = Rendezvous.cpp;
+			refType = 4;
+		};
+		F53F78F303B28353011C068F = {
+			fileRef = F53F78F103B28353011C068F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F53F78F503B2842D011C068F = {
+			isa = PBXFrameworkReference;
+			name = CoreServices.framework;
+			path = /System/Library/Frameworks/CoreServices.framework;
+			refType = 0;
+		};
+		F53F797003B2842E011C068F = {
+			fileRef = F53F78F503B2842D011C068F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F53F797103B28442011C068F = {
+			fileRef = F53F78F503B2842D011C068F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F53F797C03B28832011C068F = {
+			isa = PBXFileReference;
+			path = Rendezvous.h;
+			refType = 4;
+		};
+		F53F797D03B28832011C068F = {
+			fileRef = F53F797C03B28832011C068F;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		F561BDB4033536A801C816AC = {
 			isa = PBXFileReference;
@@ -772,6 +815,7 @@
 				F59DF0A503073A6001CE0C16,
 				F59DF0A603073A6001CE0C16,
 				F5EB7BDD031805D701CA2799,
+				F53F797D03B28832011C068F,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1104,6 +1148,7 @@
 				F59DF0CA030777F201CE0C16,
 				F59DF0CB030777F201CE0C16,
 				F59DF0CC030777F201CE0C16,
+				F53F78F303B28353011C068F,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1239,6 +1284,7 @@
 			files = (
 				F5CDE9140319620001CA2799,
 				F58C3E0D034AAEAF01CA2799,
+				F53F797003B2842E011C068F,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1375,6 +1421,7 @@
 				F5CDE9100318BAC501CA2799,
 				F5CDE912031959DB01CA2799,
 				F5CDE9170319677401CA2799,
+				F53F797103B28442011C068F,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

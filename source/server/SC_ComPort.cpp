@@ -28,6 +28,10 @@
 #include <stdarg.h>
 #include <netinet/tcp.h>
 
+#ifdef USE_RENDEZVOUS
+#include "Rendezvous.h"
+#endif
+
 int recvall(int socket, void *msg, size_t len);
 int recvallfrom(int socket, void *msg, size_t len, struct sockaddr *fromaddr, int addrlen);
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
@@ -96,11 +100,33 @@ void SC_CmdPort::Start()
     set_real_time_priority(mThread);
 }
 
+#ifdef USE_RENDEZVOUS
+void* rendezvous_thread_func(void* arg);
+void* rendezvous_thread_func(void* arg)
+{
+	SC_ComPort* port = reinterpret_cast<SC_ComPort*>(arg);
+	port->PublishToRendezvous();
+	return NULL;
+}
+
+void SC_UdpInPort::PublishToRendezvous()
+{
+	PublishPortToRendezvous(kSCRendezvous_UDP, htons(mPortNum));
+}
+
+void SC_TcpInPort::PublishToRendezvous()
+{
+	PublishPortToRendezvous(kSCRendezvous_TCP, htons(mPortNum));
+}
+
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 	: SC_ComPort(inWorld, inPortNum)
 {	
+	printf("SC_UdpInPort::SC_UdpInPort\n");
 	if ((mSocket = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		throw std::runtime_error("failed to create udp socket\n");
 	}
@@ -117,6 +143,14 @@ SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 	}
 
 	Start();
+
+#ifdef USE_RENDEZVOUS
+	printf("USE_RENDEZVOUS\n");
+	pthread_create(&mRendezvousThread, 
+		NULL, 
+		rendezvous_thread_func, 
+		(void*)this);
+#endif
 }
 
 SC_UdpInPort::~SC_UdpInPort()
@@ -237,6 +271,12 @@ SC_TcpInPort::SC_TcpInPort(struct World *inWorld, int inPortNum, int inMaxConnec
     }
     
     Start();
+#ifdef USE_RENDEZVOUS
+	pthread_create(&mRendezvousThread, 
+		NULL, 
+		rendezvous_thread_func, 
+		(void*)this);
+#endif
 }
 
 void* SC_TcpInPort::Run()
