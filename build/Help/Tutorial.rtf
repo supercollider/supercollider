@@ -6,9 +6,8 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 SuperCollider 3 Server Tutorial\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \cf0 \
+\f1\b0\fs24 \
 To follow this tutorial you should read \
 	
 \f0\b Server-Architecture\
@@ -39,7 +38,10 @@ The internal server runs in the same process as the SuperCollider application.  
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 The local server runs on the same machine as the SuperCollider application, but is a separate program, 'scsynth'.\
+\f0\b\fs28 \cf0 VERY IMPORTANT: 
+\f1\b0\fs24 This line must be executed for the variable 's' to be set. The mechanics are different depending on your platform. The MacOSX standard is to place the cursor anywhere on this line and press the "Enter" key on the numeric keypad. Pressing the main return key does not execute code! This allows you to write code fragments of multiple lines. To execute a multi-line block of code, select the block and press "Enter." For convenience, a code block can be enclosed in parentheses, and the entire block selected by double-clicking just inside either parenthesis. (For linux or Windows instructions, consult the documentation specific to that platform.)\
+\
+The local server runs on the same machine as the SuperCollider application, but is a separate program, 'scsynth'.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 // set the interpreter variable s to the local server object.\
