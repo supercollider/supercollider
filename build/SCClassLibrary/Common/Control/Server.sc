@@ -378,7 +378,7 @@ Server : Model {
 	resetBufferAutoInfo {
 		// Buffer info support
 		// allow room for protected scope and record buffers
-		bufInfoResponder.remove;
+		bufInfoResponder.notNil.if({bufInfoResponder.remove;});
 		bufferArray = Array.newClear(options.numBuffers + 2);
 		waitingBufs = 0;
 		waitingForBufInfo = false;
