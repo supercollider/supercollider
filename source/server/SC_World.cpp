@@ -751,7 +751,7 @@ inline int32 BUFMASK(int32 x)
 SCErr bufAlloc(SndBuf* buf, int numChannels, int numFrames)
 {		
 	long numSamples = numFrames * numChannels;
-	
+	if(numSamples < 1) return kSCErr_Failed;
 	buf->data = (float*)zalloc(numSamples, sizeof(float));
 	if (!buf->data) return kSCErr_Failed;
 	
