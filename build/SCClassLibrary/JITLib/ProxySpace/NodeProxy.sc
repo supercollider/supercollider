@@ -49,10 +49,7 @@ BusPlug : AbstractFunction {
 	
 	////////  bus definitions  //////////////////////////////////////////
 	
-	freeBus {
-		if(bus.notNil, { bus.setAll(0); [\freeBus, bus].debug; bus.free });
-		bus = nil;
-	}
+	
 	
 	bus_ { arg b; this.freeBus; bus = b; }
 	
@@ -69,20 +66,31 @@ BusPlug : AbstractFunction {
 	}
 	
 	defineBus { arg rate=\audio, numChannels;
-		if(bus.notNil, { bus.free });
+		
+		this.freeBus;
 		if(numChannels.isNil, {
 			numChannels = if(rate === \audio, { 
 								this.class.defaultNumAudio 
 								}, {
 								this.class.defaultNumControl							})
 		});
-		bus = Bus.alloc(rate, server, numChannels); 
+		//bus = Bus.alloc(rate, server, numChannels); 
+		bus = SharedBus.alloc(rate, server, numChannels);
+	}
+	
+	freeBus {
+		if(bus.notNil, { 
+			bus.setAll(0); // clean up
+			bus.releaseBus; // free shared bus
+			//bus.free;
+		});
+		bus = nil;
 	}
 		
 	
 	wakeUpToBundle {}
 	wakeUp {}
-	asBus { ^if(this.isNeutral, { nil }, { bus.as(SharedBus) }) }
+	asBus { ^if(this.isNeutral, { nil }, { bus }) }
 	
 	
 	
@@ -317,6 +325,7 @@ NodeProxy : BusPlug {
 			
 			if(server.serverRunning, {
 				container.sendDefToBundle(bundle, server);
+				loaded = true;
 				if(awake, {
 					if(this.isPlaying.not, { 
 						this.prepareToBundle(nil, bundle);
@@ -329,7 +338,6 @@ NodeProxy : BusPlug {
 					
 				});
 				bundle.schedSend(server, clock);
-				loaded = true;
 			}, {
 				loaded = false;
 			});
@@ -381,8 +389,8 @@ NodeProxy : BusPlug {
 	}
 	
 	build { 
-		this.initParents;
-		if(bus.notNil, { bus.realloc });
+		this.initParents.debug;
+		if(bus.notNil, { bus.realloc }); // if server was rebooted 
 		this.class.buildProxy = this;
 			objects.do({ arg item, i;
 				item.build(this, i);
