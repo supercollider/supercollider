@@ -17,7 +17,7 @@ RecNodeProxy : NodeProxy {
 	
 	*newFrom { arg proxy, numChannels;
 		^this.audio(proxy.server, numChannels ? proxy.numChannels)
-			.source_({ proxy.ar(numChannels) });
+			.source_({ proxy.ar(numChannels ? proxy.numChannels) });
 	}
 	
 	
@@ -70,12 +70,14 @@ RecNodeProxy : NodeProxy {
 		}, { "not recording".inform })
 	}
 	
-	unpause { 
+	resume { 
 		if(this.isPlaying && recGroup.notNil, {
 			recGroup.run(true);
 			inform("_____now recording: " ++ path);
 		}, { "not ready for recording".inform })
 	}
+	
+	unpause { this.resume }
 	
 	close {
 		if(recGroup.isPlaying, { recGroup.free });
