@@ -82,7 +82,10 @@ void AudioLibInit::FillTables()
 		double phase = i * sineIndexToPhase;
 		float32 d = (float)sin(phase);
 		gSine[i] = d;
-		gInvSine[i] = (float)(1. / d);
+        if( d == 0. )
+            gInvSine[i] = 0.;
+        else
+            gInvSine[i] = (float)(1. / d);
 		gPMSine[i] = (float)(d * pmf);
 	}
 	SignalAsWavetable(gSine, gSineWavetable, kSineSize);
