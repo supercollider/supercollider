@@ -464,6 +464,10 @@ SequenceableCollection : Collection {
 	asFloat { ^this.performUnaryOp('asFloat') }
 	asInteger { ^this.performUnaryOp('asInteger') }
 	
+	nthPrime { ^this.performUnaryOp('nthPrime') }
+	prevPrime { ^this.performUnaryOp('prevPrime') }
+	nextPrime { ^this.performUnaryOp('nextPrime') }
+	
 	real { ^this.performUnaryOp('real') }
 	imag { ^this.performUnaryOp('imag') }
 
