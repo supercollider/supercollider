@@ -682,22 +682,8 @@ SequenceableCollection : Collection {
 	expexp { arg inMin, inMax, outMin, outMax; 
 		^this.collect {|item| item.expexp(inMin, inMax, outMin, outMax) }  
 	}
-	
-	// support UGen clock division arguments.
-	cdiv { ^this.collect({ arg item; item.cdiv; }); }
-	minDiv {
-		var div;
-		div = UGen.scalarRate;
-		this.do({ arg item; div = min(div, item.cdiv) });
-		^div
-	}
-	maxDiv {
-		var div;
-		div = 1;
-		this.do({ arg item; div = max(div, item.cdiv) });
-		^div
-	}
-	
+	asFraction { ^this.collect { |item| item.asFraction } }
+		
 	// support UGen rate access
 	
 	rate { 
