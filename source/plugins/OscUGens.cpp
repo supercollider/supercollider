@@ -245,6 +245,7 @@ void Select_next_a(Select *unit, int inNumSamples);
 
 void TWindex_Ctor(TWindex *unit);
 void TWindex_next_k(TWindex *unit, int inNumSamples);
+void TWindex_next_ak(TWindex *unit, int inNumSamples);
 
 void Index_Ctor(Index *unit);
 void Index_next_1(Index *unit, int inNumSamples);
@@ -562,14 +563,12 @@ void Select_next_a(Select *unit, int inNumSamples)
 
 void TWindex_Ctor(TWindex *unit)
 {
-	/*
+	
         if (INRATE(0) == calc_FullRate) {
-                SETCALC(TWindex_next_k); //ar  later
+                SETCALC(TWindex_next_ak); //ar  later
 	} else {
 		SETCALC(TWindex_next_k);
 	}
-        */
-        SETCALC(TWindex_next_k);
 	unit->m_prevIndex = 0;
         unit->m_trig = -1.f; // make it trigger the first time
         TWindex_next_k(unit, 1);
@@ -616,6 +615,51 @@ void TWindex_next_k(TWindex *unit, int inNumSamples)
 			ZXP(out) = index;
 	)
        unit->m_trig = trig;
+        
+    
+
+}
+
+void TWindex_next_ak(TWindex *unit, int inNumSamples)
+{
+	
+        int maxindex = unit->mNumInputs;
+	int32 index = maxindex;
+       
+	float sum = 0.f;
+        float maxSum = 0.f;
+        float normalize = ZIN0(1);//switch normalisation on or off
+	float *trig = ZIN(0);
+	float *out = ZOUT(0);
+        float curtrig;
+        if(normalize == 1) {
+                    for (int32 k=2; k<maxindex; ++k) { maxSum += ZIN0(k); }
+                } else { 
+                    maxSum = 1.f; 
+                }
+        RGen& rgen = *unit->mParent->mRGen;
+        
+        LOOP(inNumSamples,
+            curtrig = ZXP(trig);
+            if (curtrig > 0.f && unit->m_trig <= 0.f) {
+               float max = maxSum * rgen.frand();
+                for (int32 k=2; k<maxindex; ++k) {
+			sum += ZIN0(k);
+                        if(sum >= max) { 
+                            index = k - 2;
+                            break; 
+                        }
+		}
+                
+		unit->m_prevIndex = index;
+	} else {
+		index = unit->m_prevIndex;
+	}
+        
+	ZXP(out) = index;
+        unit->m_trig = curtrig;
+	)
+       
         
     
 
