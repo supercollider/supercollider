@@ -173,7 +173,7 @@ ProxySpace : EnvironmentRedirect {
 		stream << "ProxySpace: " << Char.nl;
 		this.keysValuesDo { arg key, item, i;
 			key = key.asString;
-			stream <<< key << Char.tab << Char.tab << if(key.size < 3) { Char.tab } { "" } 
+			stream << "~" << key << Char.tab << Char.tab << if(key.size < 3) { Char.tab } { "" } 
 			<< if(item.rate === 'audio') { "ar" } { 
 					if(item.rate === 'control', { "kr" }, { "ir" })
 					}

@@ -134,7 +134,7 @@
 }
 
 
-+Stream {
++Stream { // assumes event stream
 
 
 	buildForProxy { arg proxy, channelOffset=0;
@@ -184,7 +184,10 @@
 
 +Task {
 	buildForProxy {}
-
+	
+	proxyControlClass {
+		^TaskControl
+	}
 }
 
 

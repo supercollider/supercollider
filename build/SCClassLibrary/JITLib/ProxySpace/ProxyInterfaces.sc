@@ -52,8 +52,40 @@ AbstractPlayControl {
 	
 }
 
-StreamControl : AbstractPlayControl {
-	var <stream, clock, fadeTime;
+TaskControl : AbstractPlayControl {
+	var <stream, clock;
+	
+	playToBundle { arg bundle, args, proxy;
+		if(paused.not and: { stream.isPlaying.not }, {
+			bundle.addAction(this, \play); //no latency (latency is in stream already)
+		})
+		^nil //return a nil object instead of a synth
+	}
+	stopToBundle { arg bundle, fadeTime, stopTasks=false;
+		if(stopTasks) { bundle.addAction(this, \stop) };
+	}
+	
+	build { arg proxy;
+		clock = proxy.clock;
+		paused = proxy.paused;
+		stream = source;
+		^true;
+	}
+	
+	
+	pause { stream.pause; paused=true }
+	resume { arg clock, quant=1.0; stream.resume(clock, quant); paused=false }
+	
+	isPlaying { ^stream.isPlaying }
+	readyForPlay { ^stream.notNil }
+
+	play { stream.play(clock, false) }
+	stop { stream.stop }
+	
+}
+
+StreamControl : TaskControl {
+	var fadeTime;
 		
 	play { 
 		var dt;
@@ -72,22 +104,9 @@ StreamControl : AbstractPlayControl {
 			SystemClock.sched(dt, { stream.stop }) 
 		};
 	}
-	
-	pause { stream.pause; paused=true }
-	resume { arg clock, quant=1.0; stream.resume(clock, quant); paused=false }
-	
-	isPlaying { ^stream.isPlaying }
-	readyForPlay { ^stream.notNil }
-	
-	playToBundle { arg bundle; 
-		if(paused.not and: { stream.isPlaying.not }, {
-			bundle.addAction(this, \play); //no latency (latency is in stream already)
-		})
-		^nil //return a nil object instead of a synth
-	}
-	
+		
 	build { arg proxy;
-		fadeTime = { proxy.fadeTime }; // needed for fadetime
+		fadeTime = { proxy.fadeTime }; // needed for pattern xfade
 		stream = source.buildForProxy(proxy, channelOffset);
 		clock = proxy.clock;
 		paused = proxy.paused;
