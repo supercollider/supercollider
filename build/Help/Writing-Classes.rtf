@@ -239,21 +239,19 @@ note that an object looks always for the method it has defined first and then lo
 
 \f4\fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
+\cf0 	
 \f3\fs18 \cf4 Superclass\cf5  \{ \
-\
-	calculate \{ \cf4 arg\cf5  in; in * 2 \}\
-	value \{ \cf4 arg\cf5  in; ^\cf4 this\cf5 .calculate(in) \}\
-\}\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
+\cf0 	\cf5 \
+\cf0 	\cf5 	calculate \{ \cf4 arg\cf5  in; in * 2 \}\
+\cf0 	\cf5 	value \{ \cf4 arg\cf5  in; ^\cf4 this\cf5 .calculate(in) \}\
+\cf0 	\cf5 \}\
+\cf0 	
 \f4\fs28 \cf5 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
+\cf0 	
 \f3\fs18 \cf4 NewClass\cf5  : \cf4 Superclass\cf5  \{ \
-\
-	calculate \{ \cf4 arg\cf5  in; in * 3 \}\
-\}\
+\cf0 	\cf5 \
+\cf0 	\cf5 	calculate \{ \cf4 arg\cf5  in; in * 3 \}\
+\cf0 	\cf5 \}\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f4\fs28 \cf0 \
@@ -268,26 +266,24 @@ if the method of the superclass is needed, it can be called by
 
 \f4\fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
+\cf0 	
 \f3\fs18 \cf4 Superclass\cf5  \{ \
-	\cf4 var\cf5  x;\
-	\
-	init \{\
-		 x = 5;\
-	\}\
-\}\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
+\cf0 	\cf5 	\cf4 var\cf5  x;\
+\cf0 	\cf5 	\
+\cf0 	\cf5 	init \{\
+\cf0 	\cf5 		 x = 5;\
+\cf0 	\cf5 	\}\
+\cf0 	\cf5 \}\
+\cf0 	
 \f4\fs28 \cf5 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
+\cf0 	
 \f3\fs18 \cf4 NewClass\cf5  : \cf4 Superclass\cf5  \{ \
-	\cf4 var\cf5  y;\
-	init \{ \
-		\cf4 super\cf5 .init;\
-		y = 6; \
-	\}\
-\}
+\cf0 	\cf5 	\cf4 var\cf5  y;\
+\cf0 	\cf5 	init \{ \
+\cf0 	\cf5 		\cf4 super\cf5 .init;\
+\cf0 	\cf5 		y = 6; \
+\cf0 	\cf5 	\}\
+\cf0 	\cf5 \}
 \f4\fs28 \cf5 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
@@ -303,21 +299,21 @@ if the method of the superclass is needed, it can be called by
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs28 \cf0 \
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
+\cf0 	\
+	
 \f3\fs18 \cf3 NewClass\cf0  : \cf3 Superclass\cf0  \{ \
-\
-	\cf3 var\cf0  myVariable;\
-\
-	variable \{ \
-		^variable \
+	\
+		\cf3 var\cf0  myVariable;\
+	\
+		variable \{ \
+			^variable \
+		\}\
+	\
+		variable_ \{ \cf3 arg\cf0  newValue; \
+			variable = newValue; \
+		\}\
 	\}\
-\
-	variable_ \{ \cf3 arg\cf0  newValue; \
-		variable = newValue; \
-	\}\
-\}\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f4\fs28 \cf0 \
