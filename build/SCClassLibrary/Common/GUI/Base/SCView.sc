@@ -81,7 +81,7 @@ SCView {  // abstract class
 			parent.prRemoveChild(this);
 			this.prRemove;
 		},{
-			"SCView-remove : this view already removed".warn;
+			"SCView-remove : this view already removed.".debug(this);
 		});
 	}
 	/*
@@ -208,6 +208,10 @@ SCView {  // abstract class
 		// we compile it to an SCObject.
 		currentDrag = currentDrag.interpret;
 	}
+	*exportDrag {
+		// this is called when an SCObject is dragged onto a text window
+		^currentDrag.asCompileString
+	}
 }
 
 SCContainerView : SCView { // abstract class
@@ -244,7 +248,7 @@ SCTopView : SCCompositeView {
 }
 
 SCLayoutView : SCContainerView {
-	properties { ^super.properties.add(\spacing) }
+	properties { ^super.properties ++ #[\spacing] }
 }
 
 SCHLayoutView : SCLayoutView {}
