@@ -41,12 +41,6 @@
 			settings = {
 			};
 		};
-		928FEE1503CBC6AE00CA27E6 = {
-			fileRef = F50D06C002E7F29001CA2799;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 //920
 //921
 //922
@@ -1427,7 +1421,6 @@
 				F5CDE9140319620001CA2799,
 				F58C3E0D034AAEAF01CA2799,
 				F53F797003B2842E011C068F,
-				928FEE1503CBC6AE00CA27E6,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
