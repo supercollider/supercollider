@@ -1,7 +1,5 @@
-
 Environment : IdentityDictionary {
-	classvar <>stack;
-	
+	classvar <>stack;	
 	
 	*make { arg function;
 		^this.new.make(function)
@@ -37,74 +35,11 @@ Environment : IdentityDictionary {
 	*pop {
 		if(stack.notEmpty) { currentEnvironment = stack.pop };
 	}
-	
 	*push { arg envir;
 		stack = stack.add(currentEnvironment);
 		currentEnvironment = envir;
 	}
-	
 	pop { ^this.class.pop }
 	push { this.class.push(this) }
-	
-}
-
-// Events are returned by Pattern Streams
-
-Event : Environment {
-	classvar defaultPlayer;
-	
-	*default {
-		^Event.new(8, defaultPlayer.parentEvent);
-	}
-	
-	next { ^this.copy }
-	delta {
-		_Event_Delta
-		^this.primitiveFailed;
-		/*
-		// implemented by primitive for speed
-		var delta;
-		delta = this.at('delta');
-		if (delta.notNil, { ^delta },{ ^this.at('dur') * this.at('stretch') });
-		*/
-	}
-	play {
-		this[\player].playEvent(this);		
-		^this.delta
-	}
-	
-	*silent { arg time;
-		^this.default.make { ~freq = \rest; ~delta = time };
-	}
-	
-	*initClass {
-		Class.initClassTree(Server);
-		Class.initClassTree(TempoClock);
-		
-		defaultPlayer = NotePlayer.new;
-		
-		SynthDef(\default, { arg out=0, freq=440, amp=0.1, pan=0, gate=1;
-			var z;
-			z = LPF.ar(
-				Mix.new(VarSaw.ar(freq + [0, Rand(-0.4,0.0), Rand(0.0,0.4)], 0, 0.3)),
-				XLine.kr(Rand(4000,5000), Rand(2500,3200), 1)) * Linen.kr(gate, 0.01, amp * 0.7, 0.3, 2);
-			Out.ar(out, Pan2.ar(z, pan));
-		}, [\ir]).writeDefFile;
-
-	}
-	
-	printOn { arg stream, itemsPerLine = 5;
-		var max, itemsPerLinem1, i=0;
-		itemsPerLinem1 = itemsPerLine - 1;
-		max = this.size;
-		stream << "( ";
-		this.keysValuesDo({ arg key, val; 
-			stream <<< key << ": " << val; 
-			if ((i=i+1) < max, { stream.comma.space;
-				if (i % itemsPerLine == itemsPerLinem1, { stream.nl.space.space });
-			});
-		});
-		stream << " )";
-	}
 }
 
