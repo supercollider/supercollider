@@ -894,14 +894,14 @@ SCMultiSliderView : SCView {
 	}
 	value_ { arg val;
 		this.size = val.size;
-		^this.setProperty(\value, val)
+		this.setProperty(\value, val)
 	}
 	reference { //returns array
 		^this.getProperty(\referenceValues, Array.newClear(this.size))
 	}
 	reference_ { arg val;
 		//this.size = val.size;
-		^this.setProperty(\referenceValues, val)
+		this.setProperty(\referenceValues, val)
 	}
 	index { //returns selected index
 		^this.getProperty(\x)
@@ -910,10 +910,10 @@ SCMultiSliderView : SCView {
 		this.setProperty(\x, inx)
 	}
 	isFilled_ { arg abool;
-		^this.setProperty(\isFilled, abool);
+		this.setProperty(\isFilled, abool);
 	}
 	xOffset_ { arg aval;
-		^this.setProperty(\xOffset, aval);
+		this.setProperty(\xOffset, aval);
 	}
 	gap_ { arg inx;
 		gap = inx;
@@ -924,16 +924,16 @@ SCMultiSliderView : SCView {
 		^this.getProperty(\selectionSize)
 	}
 	selectionSize_ { arg aval;
-		^this.setProperty(\selectionSize, aval)
+		this.setProperty(\selectionSize, aval)
 	}
 	currentvalue { //returns value of selected index
 		^this.getProperty(\y)
 	}
 	fillColor_ { arg acolor;
-		^this.setProperty(\fillColor, acolor)
+		this.setProperty(\fillColor, acolor)
 	}
 	strokeColor_ { arg acolor;
-		^this.setProperty(\strokeColor, acolor)
+		this.setProperty(\strokeColor, acolor)
 	}
 	colors_ { arg strokec, fillc;
 		this.strokeColor_(strokec);
