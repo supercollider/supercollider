@@ -126,7 +126,7 @@ void SC_SequencedCommand::CallNextStage()
 			break;
 	} 
 	mNextStage++;
-	SC_CoreAudioDriver *driver = AudioDriver(mWorld);
+	SC_AudioDriver *driver = AudioDriver(mWorld);
 	if (sendAgain) {
 		msg.Set(mWorld, DoSequencedCommand, 0, (void*)this);
 		// send this to next time.
@@ -738,7 +738,7 @@ bool AudioStatusCmd::Stage2()
 	packet.addi(mWorld->mNumGroups);
 	packet.addi(mWorld->hw->mGraphDefLib->NumItems());
 	
-	SC_CoreAudioDriver *driver = mWorld->hw->mAudioDriver;
+	SC_AudioDriver *driver = mWorld->hw->mAudioDriver;
 	packet.addf(driver->GetAvgCPU());
 	packet.addf(driver->GetPeakCPU());
 

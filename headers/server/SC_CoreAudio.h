@@ -55,20 +55,6 @@ class SC_JackPortList;
 #include "portaudio.h"
 #endif
 
-class SC_AudioDriver
-{
-public:
-
-	SC_AudioDriver(struct World *inWorld);
-
-	int64 mOSCbuftime;
-
-protected:
-	int64 mOSCincrement;
-	struct World *mWorld;
-	double mOSCtoSamples;
-	int mSampleTime;
-};
 
 struct SC_ScheduledEvent 
 {
@@ -86,8 +72,15 @@ struct SC_ScheduledEvent
 
 typedef MsgFifo<FifoMsg, 1024> EngineFifo;
 
-class SC_CoreAudioDriver : public SC_AudioDriver
+
+class SC_AudioDriver
 {
+protected:
+    int64 mOSCincrement;
+	struct World *mWorld;
+	double mOSCtoSamples;
+	int mSampleTime;
+
 	// Common members
 	uint32	mHardwareBufferSize;	// bufferSize returned by kAudioDevicePropertyBufferSize
 	EngineFifo mFromEngine, mToEngine;
@@ -110,48 +103,19 @@ class SC_CoreAudioDriver : public SC_AudioDriver
 	double mPrevSampleTime;
 	double mSmoothSampleRate;
 	double mSampleRate;
-	
-	// Driver members
-#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
-	AudioBufferList * mInputBufList;
-	AudioDeviceID	mInputDevice;
-	AudioDeviceID	mOutputDevice;
 
-	AudioStreamBasicDescription	inputStreamDesc;	// info about the default device
-	AudioStreamBasicDescription	outputStreamDesc;	// info about the default device
-
-	friend OSStatus appIOProc (		AudioDeviceID inDevice, 
-									const AudioTimeStamp* inNow, 
-									const AudioBufferList* inInputData,
-									const AudioTimeStamp* inInputTime, 
-									AudioBufferList* outOutputData, 
-									const AudioTimeStamp* inOutputTime,
-									void* defptr);
-#endif // SC_AUDIO_API_COREAUDIO
-
-#if SC_AUDIO_API == SC_AUDIO_API_JACK
-	jack_client_t		*mClient;
-	SC_JackPortList		*mInputList;
-	SC_JackPortList		*mOutputList;
-#endif // SC_AUDIO_API_JACK
-
-#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
-    int mInputChannelCount, mOutputChannelCount;
-    PaStream *mStream;
-#endif // SC_AUDIO_API_PORTAUDIO
-
-	// Driver interface methods
-	void DriverInitialize();
-	void DriverRelease();
-	bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
-	bool DriverStart();
-	bool DriverStop();
-
+    // Driver interface methods, implemented by subclasses
+	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate) = 0;
+	virtual bool DriverStart() = 0;
+	virtual bool DriverStop() = 0;
+    
 public:
 	// Common methods
-	SC_CoreAudioDriver(struct World *inWorld);
-	~SC_CoreAudioDriver();
-	
+	SC_AudioDriver(struct World *inWorld);
+	~SC_AudioDriver();
+
+    int64 mOSCbuftime;
+    
 	bool Setup();
 	bool Start();
 	bool Stop();
@@ -178,10 +142,40 @@ public:
 
 	double GetAvgCPU() const { return mAvgCPU; }
 	double GetPeakCPU() const { return mPeakCPU; }
+};
 
-	// Driver methods	
+
+// the following classes should be split out into separate source files.
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
-	void Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime);
+class SC_CoreAudioDriver : public SC_AudioDriver
+{
+
+    AudioBufferList * mInputBufList;
+	AudioDeviceID	mInputDevice;
+	AudioDeviceID	mOutputDevice;
+
+	AudioStreamBasicDescription	inputStreamDesc;	// info about the default device
+	AudioStreamBasicDescription	outputStreamDesc;	// info about the default device
+
+	friend OSStatus appIOProc (		AudioDeviceID inDevice, 
+									const AudioTimeStamp* inNow, 
+									const AudioBufferList* inInputData,
+									const AudioTimeStamp* inInputTime, 
+									AudioBufferList* outOutputData, 
+									const AudioTimeStamp* inOutputTime,
+									void* defptr);
+
+protected:
+    // Driver interface methods
+	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
+	virtual bool DriverStart();
+	virtual bool DriverStop();
+    
+public:
+    SC_CoreAudioDriver(struct World *inWorld);
+	~SC_CoreAudioDriver();
+
+    void Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime);
 
 	bool UseInput() { return mInputDevice != kAudioDeviceUnknown; }
 	bool UseSeparateIO() { return UseInput() && mInputDevice != mOutputDevice; }
@@ -190,19 +184,71 @@ public:
 	
 	void SetInputBufferList(AudioBufferList * inBufList) { mInputBufList = inBufList; }
 	AudioBufferList* GetInputBufferList() const { return mInputBufList; }	
+};
+
+inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
+{
+    return new SC_CoreAudioDriver(inWorld);
+}
 #endif // SC_AUDIO_API_COREAUDIO
 
+
 #if SC_AUDIO_API == SC_AUDIO_API_JACK
-	void JackRun();
+class SC_JackDriver : public SC_AudioDriver
+{
+    jack_client_t		*mClient;
+	SC_JackPortList		*mInputList;
+	SC_JackPortList		*mOutputList;
+
+protected:
+    // Driver interface methods
+	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
+	virtual bool DriverStart();
+	virtual bool DriverStop();
+    
+public:
+    SC_JackDriver(struct World *inWorld);
+	~SC_JackDriver();
+
+    void JackRun();
 	void JackBufferSizeChanged(int numSamples);
 	void JackSampleRateChanged(double sampleRate);
+};
+
+inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
+{
+    return new SC_JackDriver(inWorld);
+}
 #endif // SC_AUDIO_API_JACK
 
+
 #if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
+class SC_PortAudioDriver : public SC_AudioDriver
+{
+
+    int mInputChannelCount, mOutputChannelCount;
+    PaStream *mStream;
+
+protected:
+    // Driver interface methods
+	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
+	virtual bool DriverStart();
+	virtual bool DriverStop();
+    
+public:
+    SC_PortAudioDriver(struct World *inWorld);
+	~SC_PortAudioDriver();
+
     int PortAudioCallback( const void *input, void *output,
             unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
             PaStreamCallbackFlags statusFlags );
-#endif // SC_AUDIO_API_PORTAUDIO
 };
+
+inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
+{
+    return new SC_PortAudioDriver(inWorld);
+}
+#endif // SC_AUDIO_API_PORTAUDIO
+
 
 #endif

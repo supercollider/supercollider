@@ -73,7 +73,7 @@ struct HiddenWorld
 	uint32 mNumUsers, mMaxUsers;
 	ReplyAddress *mUsers;
 	
-	class SC_CoreAudioDriver *mAudioDriver;
+	class SC_AudioDriver *mAudioDriver;
 	char mPassword[32];
 	
 	uint32 mMaxWireBufs;
@@ -95,7 +95,7 @@ struct HiddenWorld
 
 typedef struct HiddenWorld HiddenWorld;
 
-inline SC_CoreAudioDriver *AudioDriver(World *inWorld)
+inline SC_AudioDriver *AudioDriver(World *inWorld)
 {
 	return inWorld->hw->mAudioDriver;
 }

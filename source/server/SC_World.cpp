@@ -234,7 +234,7 @@ World* World_New(WorldOptions *inOptions)
 		hw->mWireBufSpace = 0;
 	
 		if (world->mRealTime) {
-			hw->mAudioDriver = new SC_CoreAudioDriver(world);
+			hw->mAudioDriver = SC_NewAudioDriver(world);
 			hw->mAudioDriver->SetPreferredHardwareBufferFrameSize(
 					inOptions->mPreferredHardwareBufferFrameSize
 			);
