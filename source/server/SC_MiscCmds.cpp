@@ -186,6 +186,34 @@ SCErr meth_n_map(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	return kSCErr_None;
 }
 
+SCErr meth_n_mapn(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_mapn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+{
+	sc_msg_iter msg(inSize, inData);	
+	int id = msg.geti();	
+	Node *node = World_GetNode(inWorld, id);
+	if (!node) return kSCErr_NodeNotFound;
+	
+	while (msg.remain() >= 12) {
+		if (msg.nextTag('i') == 's') {
+			int32* name = msg.gets4();
+			int bus = msg.geti();
+			int n = msg.geti();
+			for (int i=0; i<n; ++i) {
+				Node_MapControl(node, name, i, bus+i);
+			}
+		} else {
+			int32 index = msg.geti();
+			int32 bus = msg.geti();
+			int n = msg.geti();
+			for (int i=0; i<n; ++i) {
+				Node_MapControl(node, index+i, bus+i);
+			}
+		}
+	}
+	return kSCErr_None;
+}
+
 SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
@@ -1153,6 +1181,7 @@ void initMiscCommands()
 		
 	//NEW_COMMAND(n_cmd);		
 	NEW_COMMAND(n_map);		
+	NEW_COMMAND(n_mapn);		
 	NEW_COMMAND(n_set);		
 	NEW_COMMAND(n_setn);		
 	NEW_COMMAND(n_fill);		
