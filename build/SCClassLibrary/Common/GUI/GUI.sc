@@ -1,3 +1,9 @@
+
+
+/*
+	These are from sc3d5 for os9.
+	they do not work currently in sc3 (os x)
+*/
 //
 //SCSlider {
 //	var dataptr;	
