@@ -38,14 +38,20 @@ Control : MultiOutUGen {
 }
 
 LagControl : Control {	
-	*kr { arg values, lags;
+	*kr { arg values, lags, outputs;
 		values = values.asArray;
 		lags = lags.asArray;
 		if (values.size != lags.size, {
 			"LagControl values.size != lags.size".error; 
 			^nil 
 		});
-		^this.multiNewList(['control'] ++ values ++ lags)
+		values = values.clump(16);
+		lags = lags.clump(16);
+		outputs = [];
+		values.size.do({ arg i;
+			outputs = outputs ++ this.multiNewList(['control'] ++ values.at(i) ++ lags.at(i));
+		});
+		^outputs
 	}
 	*ir {
 		^this.shouldNotImplement(thisMethod)
