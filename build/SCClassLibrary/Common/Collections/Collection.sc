@@ -431,7 +431,7 @@ Collection {
 	
 	writeDef { | file |
 		file.putString("SCgf");
-		file.putInt32(0); // file version
+		file.putInt32(1); // file version
 		file.putInt16(this.size); // number of defs in file.
 		
 		this.do { | item | item.writeDef(file); }

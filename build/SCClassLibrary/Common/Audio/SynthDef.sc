@@ -12,6 +12,7 @@ SynthDef {
 	
 	// topo sort
 	var <>available;
+	var <>variants;
 	
 	classvar <synthDefDir = "synthdefs/";
 	
@@ -20,8 +21,8 @@ SynthDef {
 		synthDefDir = dir;
 	}
 	
-	*new { arg name, ugenGraphFunc, rates, prependArgs;
-		^this.prNew(name)
+	*new { arg name, ugenGraphFunc, rates, prependArgs, variants;
+		^this.prNew(name).variants_(variants)
 			.build(ugenGraphFunc, rates, prependArgs)
 	}
 	*prNew { arg name;
@@ -34,17 +35,17 @@ SynthDef {
 	}
 	
 	*wrap { arg func, rates, prependArgs;
-		if (UGen.buildSynthDef.isNil, { 
+		if (UGen.buildSynthDef.isNil) { 
 			"SynthDef.wrap should be called inside a SynthDef ugenGraphFunc.\n".error; 
 			^0 
-		});
+		};
 		^UGen.buildSynthDef.buildUgenGraph(func, rates, prependArgs);
 	}
 	//only write if no file exists
 	*writeOnce { arg name, func, rates, prependArgs, dir;
-		^pathMatch(dir ++ name ++ ".scsyndef").isEmpty.if({
+		^pathMatch(dir ++ name ++ ".scsyndef").isEmpty.if {
 			this.new(name, func, rates, prependArgs).writeDefFile(dir)
-		});
+		};
 	}
 	
 	
@@ -76,7 +77,7 @@ SynthDef {
 		
 		def = func.def;
 		argNames = def.argNames;
-		if(argNames.isNil,{ ^nil }); 
+		if(argNames.isNil) { ^nil }; 
 		names = def.argNames[skipArgs..];
 		// OK what we do here is separate the ir, tr and kr rate arguments,
 		// create one Control ugen for all of each rate, 
@@ -85,28 +86,31 @@ SynthDef {
 		values = def.prototypeFrame[skipArgs..].extend( names.size );
 		values = values.collect {|value| value ? 0.0 };
 		rates = rates.asArray.extend(names.size, 0).collect {|lag| lag ? 0.0 };
-		names.do({ arg name, i; 
+		names.do { arg name, i; 
 			var c, c2, value, lag;
 			#c, c2 = name.asString;
 			value = values[i];
 			lag = rates[i];
-			if ((lag == \ir) or: { c == $i and: { c2 == $_ }}, {
-				if (lag.isNumber and: { lag != 0 }, {
+			case { (lag == \ir) or: { c == $i and: { c2 == $_ }}} 
+			{
+				if (lag.isNumber and: { lag != 0 }) {
 					Post << "WARNING: lag value "<< lag <<" for i-rate arg '"
 						<< name <<"' will be ignored.\n";
-				});
+				};
 				this.addIr(name, value);
-			},{
-			if ((lag == \tr) or: { c == $t and: { c2 == $_ }}, {
-				if (lag.isNumber and: { lag != 0 }, {
+			}
+			{(lag == \tr) or: { c == $t and: { c2 == $_ }}} 
+			{
+				if (lag.isNumber and: { lag != 0 }) {
 					Post << "WARNING: lag value "<< lag <<" for trigger arg '"
 						<< name <<"' will be ignored.\n";
-				});
+				};
 				this.addTr(name, value);
-			},{
+			}
+			{
 				this.addKr(name, value, lag);
-			})});
-		});
+			};
+		};
 	}
 	
 	addControlName { arg cn;
@@ -222,7 +226,7 @@ SynthDef {
 	}
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.
-		var allControlNamesTemp;
+		var allControlNamesTemp, allControlNamesMap;
 
 		file.putPascalString(name);
 		
@@ -230,35 +234,78 @@ SynthDef {
 
 		//controls have been added by the Control UGens
 		file.putInt16(controls.size);
-		controls.do({ arg item;
+		controls.do { | item |
 			file.putFloat(item);
-		});		
+		};		
 
-		allControlNamesTemp = allControlNames.reject({ |cn| cn.rate == \noncontrol });
+		allControlNamesTemp = allControlNames.reject { |cn| cn.rate == \noncontrol };
 		file.putInt16(allControlNamesTemp.size);
-		allControlNamesTemp.do({ arg item;
-			if (item.name.notNil, {
+		allControlNamesTemp.do { | item |
+			if (item.name.notNil) {
 				file.putPascalString(item.name.asString);
 				file.putInt16(item.index);
-			});
-		});
+			};
+		};
 	
 		file.putInt16(children.size);
-		children.do({ arg item;
+		children.do { | item |
 			item.writeDef(file);
-		});
+		};
+		
+		file.putInt16(variants.size);
+		if (variants.size > 0) {
+			allControlNamesMap = ();
+			allControlNamesTemp.do { |cn|
+				allControlNamesMap[cn.name] = cn;
+			};
+			variants.keysValuesDo {|varname, pairs|
+				var varcontrols;
+				
+				varname = name ++ "." ++ varname;
+				if (varname.size > 32) {
+					Post << "variant '" << varname << "' name too long.\n";
+					^nil
+				};
+				varcontrols = controls.copy;
+				pairs.pairsDo { |cname, values|
+					var cn, index;
+					cn = allControlNamesMap[cname];
+					if (cn.notNil) {
+						values = values.asArray;
+						if (values.size > cn.defaultValue.asArray.size) {
+							Post << "variant: '" << varname << "' control: '" << cname 
+								<< "' size mismatch.\n";
+							^nil
+						}{
+							index = cn.index;
+							values.do {|val, i|
+								varcontrols[index + i] = val;
+							}
+						}
+					}{
+						Post << "variant: '" << varname << "' control: '" << cname 
+								<< "' not found.\n";
+						^nil
+					}
+				};
+				file.putPascalString(varname);
+				varcontrols.do { | item |
+					file.putFloat(item);
+				};		
+			};
+		}
 	}
 	writeConstants { arg file;
 		var array;
 		array = FloatArray.newClear(constants.size);
-		constants.keysValuesDo({ arg value, index;
+		constants.keysValuesDo { arg value, index;
 			array[index] = value;
-		});
+		};
 
 		file.putInt16(constants.size);
-		array.do({ arg item; 
+		array.do { | item | 
 			file.putFloat(item) 
-		});
+		};
 	}
 	
 	checkInputs {
@@ -287,20 +334,20 @@ SynthDef {
 	}
 	replaceUGen { arg a, b;
 		children.remove(b);
-		children.do({ arg item, i;
-			if (item === a and: { b.isKindOf(UGen) }, { 
+		children.do { arg item, i;
+			if (item === a and: { b.isKindOf(UGen) }) { 
 				children[i] = b; 
-			});
-			item.inputs.do({ arg input, j;
-				if (input === a, { item.inputs[j] = b });
-			});
-		});
+			};
+			item.inputs.do { arg input, j;
+				if (input === a) { item.inputs[j] = b };
+			};
+		};
 	}
 	addConstant { arg value;
-		if (constantSet.includes(value).not, {
+		if (constantSet.includes(value).not) {
 			constantSet.add(value);
 			constants[value] = constants.size;
-		});
+		};
 	}
 
 	
@@ -310,52 +357,53 @@ SynthDef {
 	
 	optimizeGraph {
 		this.initTopoSort;
-		children.copy.do({ arg ugen;
+		children.copy.do { arg ugen;
 			ugen.optimizeGraph;
-		});
+		};
 	}
 	collectConstants {
-		children.do({ arg ugen; 
+		children.do { arg ugen; 
 			ugen.collectConstants;
-		});
+		};
 	}
 	
 	initTopoSort {
 		available = nil;
-		children.do({ arg ugen;
+		children.do { arg ugen;
 			ugen.antecedents = Set.new;
 			ugen.descendants = Set.new;
-		});
-		children.do({ arg ugen;
+		};
+		children.do { arg ugen;
 			// this populates the descendants and antecedents
 			ugen.initTopoSort;
-		});
-		children.reverseDo({ arg ugen;
+		};
+		children.reverseDo { arg ugen;
 			ugen.descendants = ugen.descendants.asArray.sort(
 								{ arg a, b; a.synthIndex < b.synthIndex }
 							);
 			ugen.makeAvailable; // all ugens with no antecedents are made available
-		});
+		};
 	}
 	cleanupTopoSort {
-		children.do({ arg ugen;
+		children.do { arg ugen;
 			ugen.antecedents = nil;
 			ugen.descendants = nil;
-		});
+		};
 	}
 	topologicalSort {
 		var outStack;
 		this.initTopoSort;
-		while ({ available.size > 0 },{
+		while { available.size > 0 }
+		{
 			outStack = available.pop.schedule(outStack);
-		});
+		};
 		children = outStack;
 		this.cleanupTopoSort;
 	}
 	indexUGens {
-		children.do({ arg ugen, i;
+		children.do { arg ugen, i;
 			ugen.synthIndex = i;
-		});
+		};
 	}
 	
 	dumpUGens {
