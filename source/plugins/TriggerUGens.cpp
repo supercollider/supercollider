@@ -982,7 +982,7 @@ void Phasor_next_kk(Phasor *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	
 	float in        = ZIN0(0);
-	float rate      = ZIN0(1) * SAMPLEDUR;
+	float rate      = ZIN0(1);
 	float start     = ZIN0(2);
 	float end       = ZIN0(3);
 	float resetPos  = ZIN0(4);
@@ -1009,7 +1009,7 @@ void Phasor_next_ak(Phasor *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	
 	float *in       = ZIN(0);
-	float rate      = ZIN0(1) * SAMPLEDUR;
+	float rate      = ZIN0(1);
 	float start     = ZIN0(2);
 	float end       = ZIN0(3);
 	float resetPos  = ZIN0(4);
@@ -1046,11 +1046,10 @@ void Phasor_next_aa(Phasor *unit, int inNumSamples)
 	
 	float previn = unit->m_previn;
 	float level = unit->mLevel;
-	float sampleDur = SAMPLEDUR;
 	
 	LOOP(inNumSamples,
 		float curin = ZXP(in);
-		float zrate = *rate++ * sampleDur;
+		float zrate = *rate++;
 		if (previn <= 0.f && curin > 0.f) {
 			float frac = -previn/(curin-previn);
 			level = resetPos + frac * zrate;
