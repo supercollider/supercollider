@@ -290,7 +290,7 @@ Pbindf : FilterPattern {
 					name = streampairs.at(i);
 					stream = streampairs.at(i+1);
 					
-					streamout = stream.next(inevent);
+					streamout = stream.next(event);
 					
 					if (streamout.isNil, {
 						sawNil = true;

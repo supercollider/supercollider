@@ -109,6 +109,28 @@ Pbinop : Pattern {
 	}
 }
 
+Pevent : Pattern {
+	var <>pattern, <>event;
+	
+	*new { arg pattern, event;
+		^super.newCopyArgs(pattern, event);
+	}
+	asStream {
+		^Sevent(pattern.asStream, event);
+	}
+} 
+
+Sevent : Stream {
+	var stream, event;
+	// the stream class for Pevent.
+	*new { arg stream, event;
+		^super.newCopyArgs(stream, event ? Event.default);
+	}
+	next { arg inEvent; 
+		^stream.next(event);
+	}
+}
+
 
 Pbind : Pattern {
 	var <>patternpairs;
@@ -135,8 +157,7 @@ Pbind : Pattern {
 					name = streampairs.at(i);
 					stream = streampairs.at(i+1);
 					
-					streamout = stream.next(inevent);
-
+					streamout = stream.next(event);
 					if (streamout.isNil, {
 						sawNil = true;
 					},{
