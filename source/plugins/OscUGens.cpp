@@ -403,7 +403,7 @@ void DegreeToKey_Ctor(DegreeToKey *unit)
 	} else {
 		SETCALC(DegreeToKey_next_k);
 	}
-	unit->mOctave = (int32)ZIN0(1);
+	unit->mOctave = (int32)ZIN0(2);
 	unit->mPrevIndex = LONG_MIN;
 	unit->mPrevKey = 0.;
 	DegreeToKey_next_1(unit, 1);
