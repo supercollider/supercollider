@@ -96,8 +96,11 @@ static id sharedSCVM = nil;
 	[[NSRunLoop currentRunLoop] addTimer: appClockTimer 
 		forMode: NSModalPanelRunLoopMode];
 	
+	[[NSRunLoop currentRunLoop] addTimer: appClockTimer 
+		forMode: NSEventTrackingRunLoopMode];
+	
 	SetupHomeDirectory();
-	pyr_init_mem_pools(2*1024*1024, 256*1024);
+	pyr_init_mem_pools( 2*1024*1024, 256*1024 );
 	initPostBuffer();
 	init_OSC(57120);
 	schedInit();
