@@ -13,11 +13,8 @@ Editor {
 	poll { ^value }
 	
 	setPatchOut { arg po; patchOut = po }
-
-	prepareToBundle { arg group,bundle;
-		if(patchOut.isNil,{
-			patchOut = ScalarPatchOut(this);
-		});
+	makePatchOut {
+		patchOut = ScalarPatchOut(this)
 	}
 	synthArg { ^this.poll }
 	instrArgFromControl { arg control;
@@ -30,8 +27,7 @@ Editor {
 		},{
 			callback.value(value);
 		})
-	}
-	
+	}	
 }
 
 NumberEditor : Editor {
@@ -67,8 +63,6 @@ NumberEditor : Editor {
 
 }
 
-
-// for controls that won't talk to the server
 KrNumberEditor : NumberEditor { 
 
  	var lag=0.05;
@@ -91,10 +85,8 @@ KrNumberEditor : NumberEditor {
 //			^control
 //		})
 //	}
-	prepareToBundle { arg group,bundle;
-		if(patchOut.isNil,{
-			patchOut = UpdatingScalarPatchOut(this,enabled: false);
-		});
+	makePatchOut { 
+		patchOut = UpdatingScalarPatchOut(this,enabled: false);
 	}
 	connectToPatchIn { arg patchIn,needsValueSetNow = true;
 		patchOut.connectTo(patchIn,needsValueSetNow);
@@ -106,13 +98,6 @@ KrNumberEditor : NumberEditor {
  
 }
 
-IntegerEditor : NumberEditor {
-
-	value_ { arg val,changer;
-		value = val.asInteger;
-		this.changed(\value,changer);
-	}
-}
 
 // paul.crabbe@free.fr
 PopUpEditor : KrNumberEditor {
@@ -146,6 +131,13 @@ PopUpEditor : KrNumberEditor {
 	guiClass { ^PopUpEditorGui }
 }
 
+IntegerEditor : NumberEditor {
+
+	value_ { arg val,changer;
+		value = val.asInteger;
+		this.changed(\value,changer);
+	}
+}
 
 BooleanEditor : NumberEditor {
 

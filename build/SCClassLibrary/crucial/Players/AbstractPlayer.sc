@@ -36,27 +36,30 @@ AbstractPlayer : AbstractFunction  {
 			Routine({
 				var limit = 100,bsize;
 				if(server.serverRunning.not,{
-					server.boot;
-					server.startAliveThread(0.1,0.5);
+					server.startAliveThread(0.1,0.4);
+					server.boot(false);
 					while({
 						server.serverRunning.not 
 							and: {(limit = limit - 1).isStrictlyPositive}
 					},{
 						"waiting for server to boot...".inform;
-						0.2.wait;	
+						0.4.wait;	
 					});
+					if(server.dumpMode != 0,{ server.stopAliveThread; });
 					//atTime is now bogus
 				});
 				if(server.serverRunning.not,{
 					"server failed to start".error;
 				},{
-					bsize = this.prepareForPlay(group,false,bus) / 30.0;
+					if(server.dumpMode != 0,{
+						server.stopAliveThread;
+					});
+					bsize = this.prepareForPlay(group,false,bus) / 25.0;
 					// need some way to track all the preps completion
 					// also in some cases the prepare can have a completion
 					// tacked on and we might combine with the spawn message
 					
 					// need a fully fledged OSCMessage that can figure it out
-					// 1 second for 40 msgs
 					bsize.wait;
 			
 					atTime = atTime ? 0;
@@ -581,23 +584,40 @@ MultiTrackPlayer : MultiplePlayers { // abstract
 
 
 
-AbstractPlayerProxy : AbstractPlayer {
+AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 
-	// like  a voice, holds a source that does the actual playing
-	// should be switchable
-	// duplicates the Patch and Bus to the source
-	
-	
-	// isPlaying is if the source isPlaying, but it could be better to track it
-	
-	var <>source;
+	var <>source,<isPlaying = false, <isSleeping = true;
 
 	asSynthDef { ^source.asSynthDef }
 	synthDefArgs { ^source.synthDefArgs }
-
 	rate { ^source.rate }
 	numChannels { ^source.numChannels }
 	defName { ^source.defName }
+	spawnToBundle { arg bundle; 
+		source.spawnToBundle(bundle);
+		bundle.addMessage(this,\didSpawn);
+	}
+	didSpawn {
+		isPlaying = true;
+		isSleeping = false;
+	}
+	instrArgFromControl { arg control;
+		^source.instrArgFromControl(control)
+	}
+	free {
+		source.free;
+		super.free;
+		isPlaying = false;
+		isSleeping = true;
+	}
+	stop {
+		isPlaying = false;
+		isSleeping = true;
+		source.stop;
+		super.stop;
+	}
+	children { ^[source] }
+	//called by topMakePatchOut
 	setPatchOut { arg po;
 		super.setPatchOut(po);
 		// a copy to the source
@@ -605,18 +625,8 @@ AbstractPlayerProxy : AbstractPlayer {
 			source.setPatchOut(PatchOut(source,patchOut.group,patchOut.bus.copy));
 		});
 	}
-	//children { ^source.children }
-	children { ^[source] }
-	instrArgFromControl { arg control;
-		^source.instrArgFromControl(control)
-	}
-	free {
-		source.free;
-		super.free;
-	}
-	stop {
-		source.stop;
-		super.stop;
+	childrenMakePatchOut { arg group,private,bundle;
+		source.childrenMakePatchOut(group,private,bundle);
 	}
 	
 }

@@ -229,7 +229,6 @@ UpdatingScalarPatchOut : ScalarPatchOut {
 		if(needsValueSetNow,{
 			controlPatchIn.value = source.value;
 		});
-		//updater moved to the object
 		this.enable;
 	}
 	scalar { arg scalarPatchIn;

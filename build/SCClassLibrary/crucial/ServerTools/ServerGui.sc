@@ -16,7 +16,7 @@ ServerGui : ObjectGui {
 			booter.action = { arg view; 
 				if(view.value == 1, {
 					booting.value;
-					model.boot;
+					model.boot(model.dumpMode == 0);
 				});
 				if(view.value == 0,{
 					model.quit;
@@ -64,8 +64,9 @@ ServerGui : ObjectGui {
 		status.background = Color.black;
 		status.stringColor = Color.green;
 		status.align = \right;
-
-		model.startAliveThread(0.0,1.0);
+		if(model.dumpMode == 0,{
+			model.startAliveThread(0.0,1.0);
+		});
 	}
 	update { arg changer,what;
 		if(what == \serverRunning,{

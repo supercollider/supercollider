@@ -32,7 +32,7 @@ MultiTrackAudioSpec : AudioSpec {
 	*new { arg tracks=2,numChannels=2;
 		^super.new(numChannels).tracks_(tracks)
 	}
-	
+	storeArgs { ^[tracks,numChannels] }
 }
 
 
@@ -51,7 +51,7 @@ TrigSpec : ControlSpec {
 }
 
 
-TempoSpec : ControlSpec {
+TempoSpec : Spec {
 	defaultControl { ^TempoPlayer.new }
 	*initClass {
 		specs.putAll(
@@ -142,7 +142,7 @@ BufferProxySpec : ScalarSpec {
 	*new { arg prototype;
 		^super.new.prototype_(prototype)
 	}
-	
+	storeArgs { ^[prototype] }
 	*initClass {
 		specs.putAll(
 		 IdentityDictionary[

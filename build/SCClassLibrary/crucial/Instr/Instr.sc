@@ -320,7 +320,10 @@ InstrSynthDef : SynthDef {
 		var isScalarOut;
 		var outputProxies;
 		
-		// need to know the output type now
+		// restart controls in case of *wrap
+		irnames = irvalues = ircontrols = irpositions = nil;
+		krnames = krvalues = krcontrols = krpositions = krlags = nil;
+		fixedNames = fixedValues = fixedPositions = nil;
 		
 		// OutputProxy In InTrig Float etc.		
 		outputProxies = this.buildControlsWithObjects(instr,args);
@@ -423,7 +426,7 @@ InstrSynthDef : SynthDef {
 			defarg.addToSynthDef(this,name);
 			defarg
 		});
-		outputProxies = this.buildControls;//.insp("buildControls");
+		outputProxies = this.buildControls;
 		// wrap them in In.kr etc. if needed
 		^outputProxies.collect({ arg outp,i;
 			defargs.at(i).instrArgFromControl(outp,i)

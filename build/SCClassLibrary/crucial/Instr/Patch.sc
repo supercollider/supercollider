@@ -86,9 +86,31 @@ have to bundle it
 			this.setInput(ai - offset, ag);
 			^true
 		});
+		offset = offset + inputs.size;
 		^inputs.any({ arg a,i;
-			a.isKindOf(HasPatchIns) and: { a.setDeepInput(ai,ag,offset + i) }
+			var set=false;
+			a.isKindOf(HasPatchIns) and: { 
+				set = a.setDeepInput(ai,ag,offset + i);
+				offset = offset + a.inputs.size;
+				set
+			}
 		})
+	}
+	deepSpecAt { arg ai,offset=0;
+		var inputs,deepSpec;
+		inputs = this.inputs;
+		if(inputs.size + offset > ai,{
+			^this.specAt(ai - offset)
+		});
+		offset = offset + inputs.size;
+		inputs.detect({ arg a,i;
+			a.isKindOf(HasPatchIns) and: { 
+				deepSpec = a.deepSpecAt(ai,offset + i);
+				offset = offset + a.inputs.size;
+				deepSpec.notNil
+			}
+		});
+		^deepSpec
 	}		
 }
 
@@ -222,6 +244,14 @@ Patch : HasPatchIns  {
 	}
 
 	inputs { ^args }
+	setInput { arg ai, ag;
+		var synthArgi;
+		args.put(ai,ag);
+		synthArgi = synthArgsIndices.at(ai);
+		if(synthArgi.notNil,{
+			argsForSynth.put(synthArgi,ag);
+		});
+	}
 	argNameAt { arg i; ^instr.argNameAt(i) }
 	specAt { arg i; ^instr.specs.at(i) }
 	
@@ -235,9 +265,6 @@ Patch : HasPatchIns  {
 			)
 	}
 
-	setInput { arg ai, ag;
-		args.put(ai,ag)
-	}
 	storeArgs { ^[this.instr.name,args] }
 
 	children { ^args }

@@ -5,7 +5,7 @@ EditorGui : ObjectGui {
 
 NumberEditorGui : EditorGui {
 
-	var numv;
+	var numv,slv;
 	
 	guiBody { arg layout,slider=true;
 		layout=this.guify(layout);
@@ -32,25 +32,19 @@ NumberEditorGui : EditorGui {
 	update {arg changed,changer; // always has a number box
 		if(changer !== numv,{
 			numv.value_(model.poll);
-		})
+		});
+		if(changer !== slv and: {slv.notNil},{
+			slv.value_(model.spec.unmap(model.poll));
+		});
 	}
 	
 	slider { arg layout, x=100,y=15;
-		var slv,r;
+		var r;
 		slv = SCSlider(layout, Rect(0,0,100,15));
 		slv.setProperty(\value,model.spec.unmap(model.poll));
 		slv.action_({arg th; 
 			model.activeValue_(model.spec.map(th.value)).changed(slv)
-		});		
-			
-		layout.removeOnClose(	
-			Updater(model,{ arg changed,changer;
-				// without triggering action
-				if(changer !== slv,{
-					slv.value_(model.spec.unmap(model.poll))
-				});
-			});
-		);
+		});
 	}
 }
 

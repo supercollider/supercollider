@@ -24,7 +24,7 @@ PlayerInputProxy : Silence { // audio
 		patchIn.nodeControl = nc;
 	}
 	synthArg {
-		^initValue
+		^initValue // ? spec.default
 	}
 	prepareToBundle { arg group,bundle;
 		if(initValue.isNil,{

@@ -16,7 +16,7 @@
 PlayerSocket : AbstractPlayerProxy {
 
 	var <>round,<>rate,<>numChannels;
-	var <>env,<isPlaying = false, <isSleeping = true;
+	var <>env;
 	
 	*new { arg round=0.0,rate=\audio,numChannels=2;
 		^super.new.round_(round)
@@ -25,7 +25,7 @@ PlayerSocket : AbstractPlayerProxy {
 	
 	prepareToBundle { arg group,bundle;
 		if(source.notNil,{
-			super.prepareToBundle(group,bundle)
+			source.prepareToBundle(group,bundle)
 		})
 	}
 //	makePatchOut { arg group,public;
@@ -35,30 +35,26 @@ PlayerSocket : AbstractPlayerProxy {
 //	}
 	childrenMakePatchOut { arg group,private = true;
 		if(source.notNil,{
-			super.childrenMakePatchOut(group,private)
-		})
-	}
-	spawnAtTime { arg atTime;
-		if(source.notNil,{
-			super.spawnAtTime(atTime)
-		});
-		if(atTime.isNumber,{
-			AppClock.sched(atTime,{ isPlaying = true; nil });
-		},{
-			isPlaying = true;
+			source.childrenMakePatchOut(group,private)
 		})
 	}
 	loadDefFileToBundle { arg bundle,server;
 		if(source.notNil,{
-			super.loadDefFileToBundle(bundle,server)
+			source.loadDefFileToBundle(bundle,server)
 		})
 	}
 	spawnToBundle { arg bundle;
 		if(source.notNil,{
-			super.spawnToBundle(bundle)
-		},{
-			bundle.addMessage(this,\didSpawn);
+			source.spawnToBundle(bundle)
 		});
+		bundle.addMessage(this,\didSpawn);
+	}
+	instrArgFromControl { arg control;
+		^if(this.rate == \audio,{
+			In.ar(control,this.numChannels)
+		},{
+			In.kr(control,this.numChannels)
+		})
 	}
 	
 	// prepared sources only
@@ -77,7 +73,7 @@ PlayerSocket : AbstractPlayerProxy {
 			
 			// deallocate busses !
 			// but keep samples etc.
-			source.freePatchOut;
+			//source.freePatchOut;
 		});
 		source = s;
 		source.spawnOnToBundle(this.group,this.bus,bundle);
@@ -102,7 +98,7 @@ PlayerSocket : AbstractPlayerProxy {
 			onTrigger.value;
 			nil
 		});
-		bundle.send(this.server, BeatSched.tdeltaTillNext(round) );
+		bundle.send(this.server, this.qtime );
 	}
 	
 	preparePlayer { arg player;
@@ -112,10 +108,11 @@ PlayerSocket : AbstractPlayerProxy {
 	prepareAndTrigger { arg player;
 		// play on my bus
 		player.play(this.group,nil,this.bus);
+		isSleeping = false;
+		this.changed;
+		
+		source.stop;
 
-		if(source.notNil,{
-			source.free; // or stop
-		});
 		source = player;
 	}
 

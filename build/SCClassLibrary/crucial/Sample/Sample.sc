@@ -46,11 +46,11 @@ BufferProxy { // blank space for delays, loopers etc.
 		buffer.numFrames = this.size;
 		buffer.numChannels = numChannels;
 		bundle.add( buffer.allocMsg );
-
 		readyForPlay = true;
+	}
+	makePatchOut {
 		patchOut = ScalarPatchOut(this);
 	}
-
 	setPatchOut { arg po; patchOut = po }
 	free {  
 		buffer.free; 
@@ -291,9 +291,10 @@ Sample : BufferProxy { // a small sound loaded from disk
 			bundle.add( buffer.allocMsg )
 		});
 		readyForPlay = true;
-		patchOut = ScalarPatchOut(this);
 	}
-	
+	makePatchOut {
+		patchOut = ScalarPatchOut(this);
+	}	
 	guiClass { ^SampleGui }
 
 }
@@ -317,8 +318,9 @@ ArrayBuffer : BufferProxy {
 		buffer.numChannels = numChannels;
 		bundle.add( buffer.allocMsg( buffer.setnMsg(0,array ) ) );
 		readyForPlay = true;
+	}
+	makePatchOut {
 		patchOut = ScalarPatchOut(this);
 	}
-
 	// gui show it
 }

@@ -37,13 +37,13 @@ BeatSched {
 		pq.clear;
 		nextTask = nextAbsFunc = nextAbsTime = nil;
 	}	
-	deltaTillNext { arg quantize; // delta beats !
+	deltaTillNext { arg quantize; // delta in beats till next beat
 		var beats,next;
 		beats = this.beat;
 		next = beats.trunc(quantize);
 		^if(next == beats,0 ,{ next + quantize - beats }) // now or next
 	}
-	tdeltaTillNext { arg quantize;
+	tdeltaTillNext { arg quantize; // delta in seconds till next beat
 		var beats,next;
 		beats = this.beat;
 		next = beats.trunc(quantize);
