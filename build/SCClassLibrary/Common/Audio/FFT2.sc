@@ -19,3 +19,18 @@ Convolution : UGen
 }
 
 
+//jensen andersen inspired FFT feature detector
+PV_JensenAndersen : UGen
+{
+	*ar { arg buffer, propsc=0.25, prophfe=0.25, prophfc=0.25, propsf=0.25, threshold=1.0, waittime=0.04;
+		^this.multiNew('audio', buffer, propsc, prophfe, prophfc, propsf,  threshold, waittime);
+	}
+}
+
+
+PV_HainsworthFoote : UGen
+{
+	*ar { arg buffer, propmkl=0.0, propfoote=0.0, threshold=1.0, waittime=0.04;
+		^this.multiNew('audio', buffer, propmkl, propfoote, threshold, waittime);
+	}
+}
