@@ -76,6 +76,7 @@ UGen : AbstractFunction {
 			var argName;
 			if(in.isValidUGenInput.not,{
 				argName = this.argNameForInputAt(i) ? i;
+				inputs.dump;
 				^"arg: '" ++ argName ++ "' has bad input:" + in;
 			})
 		});
@@ -118,7 +119,7 @@ UGen : AbstractFunction {
 		^BinaryOpUGen.new(aSelector, aUGen, this)
 	}
 	composeNAryOp { arg aSelector, anArgList;
-		^this.notYetImplemented
+		^thisMethod.notYetImplemented
 	}
 	
 	// complex support	
