@@ -6,9 +6,8 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 SynthDefs versus Synths\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \cf0 \
+\f1\b0\fs24 \
 In SC2 Synth.play was the standard way to compile a ugenGraphFunc and play it. Each time you executed Synth.play, or Spawned a new event, that function was compiled anew. SC3 on the other hand, makes use of what are called SynthDefs. A 
 \f0\b SynthDef
 \f1\b0  takes a ugenGraphFunc and compiles it to a kind of bytecode (sort of like Java bytecode) which can be understood by the server app. The server reads the SynthDef and creates a synth node based upon it. \
@@ -23,7 +22,7 @@ SynthDefs can be precompiled and saved to disk. Any def saved in the synthdefs/ 
 \
 SynthDefs can also be compiled and loaded into the Server without writing them to disk. This can be done while performing.\
 \
-The downside of this is that precompiled SynthDefs lack some of the programmatic flexibility that was one SC2's great strengths. Much of this flexibility is gained back however, through the ability to set and change arguments (which you build into your ugenGraphFunc), and through new ugens such as 
+The downside of this is that precompiled SynthDefs lack some of the programmatic flexibility that was one of SC2's great strengths. Much of this flexibility is gained back however, through the ability to set and change arguments (which you build into your ugenGraphFunc), and through new ugens such as 
 \f0\b Rand
 \f1\b0  and 
 \f0\b TRand
@@ -45,7 +44,7 @@ Another important distinction is between Synth in SC2 and
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs26 \cf0 \ul Examples
+\f0\b\fs26 \cf0 \ul \ulc0 Examples
 \f1\b0\fs24 \ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
