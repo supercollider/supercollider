@@ -805,6 +805,7 @@ int processbinop(char *token)
 	node = newPyrSlotNode(&slot);
 	zzval = (int)node;
 	if (strcmp(token, "<>")==0) return READWRITEVAR;
+	if (strcmp(token, "|")==0) return '|';
 	if (strcmp(token, "<")==0) return '<';
 	if (strcmp(token, ">")==0) return '>';
 	if (strcmp(token, "-")==0) return '-';
