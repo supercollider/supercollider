@@ -1,7 +1,7 @@
 
 Node {
 	
-	var <>nodeID, <group, <>prev, <>next;
+	var <>nodeID, <>group, <>prev, <>next;
 	var <>server;
 	var <>isPlaying = false, <>isRunning = false;
 	
