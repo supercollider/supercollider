@@ -41,6 +41,7 @@ AbstractPlayControl {
 	
 	wakeUpParentsToBundle {}
 	addParent { "wrong object in NodeProxy.buildControl".error } // for now.
+	parents { ^nil }
 	
 }
 
@@ -216,7 +217,7 @@ SynthControl : AbstractPlayControl {
 
 SynthDefControl : SynthControl {
 	classvar <>writeDefs=true;
-	var <synthDef, parents;
+	var <synthDef, <parents;
 	
 	readyForPlay { ^synthDef.notNil }
 	
