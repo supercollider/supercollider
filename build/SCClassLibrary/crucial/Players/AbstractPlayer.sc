@@ -35,7 +35,7 @@ AbstractPlayer : AbstractFunction  {
 				var limit = 100,bsize;
 				if(server.serverRunning.not,{
 					server.boot;
-					server.startAliveThread;
+					server.startAliveThread(0.1,0.5);
 					while({
 						server.serverRunning.not 
 							and: {(limit = limit - 1).isStrictlyPositive}

@@ -24,12 +24,14 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		},{
 			layout = layout.asPageLayout(title,bounds);
 		});
-		//layout.removeOnClose(this);
+		layout.removeOnClose(this);
 		^layout
 	}
-	remove {
+	remove { arg removeView=true;
 		model.removeDependant(this);
-		super.remove;
+		if(removeView,{
+			super.remove;
+		});
 	}
 
 	gui { arg lay, bounds ... args;
@@ -39,12 +41,12 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 			view = layout;
 			this.writeName(layout);
 			this.performList(\guiBody,[layout] ++ args);
-		}).background_(Color.yellow(0.2,0.15));
+		},bounds).background_(Color.yellow(0.2,0.15));
 		//if you created it, front it
 		if(lay.isNil,{ layout.resizeToFit.front });
 	}
-	topGui { arg layout ... args;
-		this.performList(\gui,[layout] ++ args);
+	topGui { arg ... args;
+		this.performList(\gui, args);
 	}
 	
 	writeName { arg layout;

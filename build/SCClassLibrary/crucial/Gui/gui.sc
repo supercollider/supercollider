@@ -3,16 +3,16 @@
 
 	guiClass { ^ObjectGui }
 
-	gui { arg lay ... args; 
-		^this.guiClass.new(this).performList(\gui,[lay] ++ args);
+	gui { arg  ... args; 
+		^this.guiClass.new(this).performList(\gui,args);
 	}
 	
-	topGui { arg lay ... args; 
-		^this.guiClass.new(this).performList(\topGui,[lay] ++ args);
+	topGui { arg ... args; 
+		^this.guiClass.new(this).performList(\gui,args);
 	}
 	
-	smallGui { arg lay;
-		^this.guiClass.new(this).smallGui(lay);
+	smallGui { arg  ... args;
+		^this.guiClass.new(this).performList(\smallGui,args);
 	}
 	
 	insp { arg  ... args;

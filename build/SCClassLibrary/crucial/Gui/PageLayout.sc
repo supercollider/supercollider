@@ -35,7 +35,7 @@ MultiPageLayout  {
 			v.decorator.margin_(margin);
 		});
 		views = views.add(v );
-		autoRemoves = IdentitySet.new;
+		autoRemoves = [];//IdentitySet.new;
 	}
 	*on { arg parent,bounds,margin,metal=true;
 		^super.new.initon(parent,bounds,margin,metal)
@@ -51,6 +51,7 @@ MultiPageLayout  {
 		views = [v];
 		metal = argmetal;
 		onBoundsExceeded = \warnError;
+		autoRemoves = [];
 	}
 	
 	window { ^windows.last }
@@ -99,7 +100,7 @@ MultiPageLayout  {
 				});
 				windows=views=nil;
 			});
-			autoRemoves.do({ arg updater; updater.remove });
+			autoRemoves.do({ arg updater; updater.remove(false) });
 			NotificationCenter.notify(this,\didClose);
 		});
 	}
@@ -361,7 +362,7 @@ PageLayout  {
 				});
 				windows=nil;
 			});
-			autoRemoves.do({ arg updater; updater.remove });
+			autoRemoves.do({ arg updater; updater.remove(false) });
 			NotificationCenter.notify(this,\didClose);
 		});
 	}

@@ -58,7 +58,7 @@ FlowView : SCLayoutView {
 								w
 							},
 							bounds ?? {parent.asView.bounds});
-		decorator = FlowLayout(this.bounds);// after i am placed by parent
+		decorator = FlowLayout(this.bounds,Point(2,2),Point(3,3));// after i am placed by parent
 		autoRemoves = IdentitySet.new;
 	}
 

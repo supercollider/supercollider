@@ -14,7 +14,7 @@ NumberEditorGui : EditorGui {
 			this.slider(layout);
 		});
 	}
-	smallGui { arg layout ... args;
+	smallGui { arg layout;
 		var l;
 		l=this.guify(layout);
 		this.box(l);
