@@ -432,14 +432,29 @@ int basicPut(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 	
-	if (a->utag != tagObj) return errWrongType;
-	if (b->utag != tagInt) return errIndexNotAnInteger;
 	obj = a->uo;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
-	index = b->ui;
-	if (index < 0 || index >= obj->size) return errIndexOutOfRange;
-	return putIndexedSlot(g, obj, c, index);
+
+	if (a->utag != tagObj) return errWrongType;
+	if (b->utag == tagInt) {
+		index = b->ui;
+		if (index < 0 || index >= obj->size) return errIndexOutOfRange;
+		return putIndexedSlot(g, obj, c, index);
+	} else if (isKindOfSlot(b, class_arrayed_collection)) {
+		PyrSlot *indices = b->uo->slots;
+		int size = b->uo->size;
+
+		for (int i=0; i<size; ++i) {
+			int index;
+			int err = slotIntVal(indices + i, &index);
+			if (err) return err;
+			if (index < 0 || index >= obj->size) return errIndexOutOfRange;
+			err = putIndexedSlot(g, obj, c, index);
+			if (err) return err;
+		}
+		return errNone;
+	} else return errIndexNotAnInteger;
 }
 
 int basicClipPut(struct VMGlobals *g, int numArgsPushed)
@@ -452,14 +467,29 @@ int basicClipPut(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 	
-	if (a->utag != tagObj) return errWrongType;
-	if (b->utag != tagInt) return errIndexNotAnInteger;
 	obj = a->uo;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
-	index = b->ui;
-	index = sc_clip(index, 0, obj->size);
-	return putIndexedSlot(g, obj, c, index);
+
+	if (a->utag != tagObj) return errWrongType;
+	if (b->utag == tagInt) {
+		index = b->ui;
+		index = sc_clip(index, 0, obj->size);
+		return putIndexedSlot(g, obj, c, index);
+	} else if (isKindOfSlot(b, class_arrayed_collection)) {
+		PyrSlot *indices = b->uo->slots;
+		int size = b->uo->size;
+
+		for (int i=0; i<size; ++i) {
+			int index;
+			int err = slotIntVal(indices + i, &index);
+			if (err) return err;
+			index = sc_clip(index, 0, obj->size);
+			err = putIndexedSlot(g, obj, c, index);
+			if (err) return err;
+		}
+		return errNone;
+	} else return errIndexNotAnInteger;
 }
 
 int basicWrapPut(struct VMGlobals *g, int numArgsPushed)
@@ -472,14 +502,29 @@ int basicWrapPut(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 	
-	if (a->utag != tagObj) return errWrongType;
-	if (b->utag != tagInt) return errIndexNotAnInteger;
 	obj = a->uo;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
-	index = b->ui;
-	index = sc_mod((int)index, (int)obj->size);
-	return putIndexedSlot(g, obj, c, index);
+
+	if (a->utag != tagObj) return errWrongType;
+	if (b->utag == tagInt) {
+		index = b->ui;
+		index = sc_mod((int)index, (int)obj->size);
+		return putIndexedSlot(g, obj, c, index);
+	} else if (isKindOfSlot(b, class_arrayed_collection)) {
+		PyrSlot *indices = b->uo->slots;
+		int size = b->uo->size;
+
+		for (int i=0; i<size; ++i) {
+			int index;
+			int err = slotIntVal(indices + i, &index);
+			if (err) return err;
+			index = sc_mod((int)index, (int)obj->size);
+			err = putIndexedSlot(g, obj, c, index);
+			if (err) return err;
+		}
+		return errNone;
+	} else return errIndexNotAnInteger;
 }
 
 int basicFoldPut(struct VMGlobals *g, int numArgsPushed)
@@ -492,14 +537,29 @@ int basicFoldPut(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 	
-	if (a->utag != tagObj) return errWrongType;
-	if (b->utag != tagInt) return errIndexNotAnInteger;
 	obj = a->uo;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
-	index = b->ui;
-	index = sc_fold(index, 0, obj->size);
-	return putIndexedSlot(g, obj, c, index);
+
+	if (a->utag != tagObj) return errWrongType;
+	if (b->utag == tagInt) {
+		index = b->ui;
+		index = sc_fold(index, 0, obj->size);
+		return putIndexedSlot(g, obj, c, index);
+	} else if (isKindOfSlot(b, class_arrayed_collection)) {
+		PyrSlot *indices = b->uo->slots;
+		int size = b->uo->size;
+
+		for (int i=0; i<size; ++i) {
+			int index;
+			int err = slotIntVal(indices + i, &index);
+			if (err) return err;
+			index = sc_fold(index, 0, obj->size);
+			err = putIndexedSlot(g, obj, c, index);
+			if (err) return err;
+		}
+		return errNone;
+	} else return errIndexNotAnInteger;
 }
 
 int prArrayAdd(struct VMGlobals *g, int numArgsPushed);
