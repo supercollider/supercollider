@@ -818,7 +818,7 @@ arrayelems1	: exprseq
 			| arrayelems1 ',' exprseq ':' exprseq
 				{
 					PyrParseNode* elems;
-					elems = (PyrParseNode*)linkNextNode($3, (PyrParseNode*)$5); 
+					elems = (PyrParseNode*)linkNextNode((PyrParseNode*)$3, (PyrParseNode*)$5); 
 					$$ = (long)linkNextNode((PyrParseNode*)$1, elems); 
 				}
 			;
