@@ -83,22 +83,22 @@ NodeProxy : AbstractFunction {
 		
 	play { arg busIndex=0, nChan;
 		var playGroup, bundle, divider;
-		if(server.serverRunning.not, { "server not running".inform; ^nil });
-		if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
-		
 		bundle = MixedBundle(server);
 		playGroup = Group.newToBundle(bundle, server);
+		if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
 		nChan = nChan ? this.numChannels;
 		nChan = nChan.min(this.numChannels);
 		this.wakeUpParentsToBundle(bundle);
 		divider = if(nChan.even, 2, 1);
 		(nChan div: divider).do({ arg i;
-				bundle.add([9, "proxyOut-linkDefAr-"++divider, 
+		bundle.add([9, "proxyOut-linkDefAr-"++divider, 
 					server.nextNodeID, 1,playGroup.nodeID,
 					\i_busOut, busIndex+(i*divider), \i_busIn, outbus.index+(i*divider)]);
 		});
 		
-		this.sendBundle(bundle,0,clock);
+		WaitForServerBoot(server, {
+			this.sendBundle(bundle,0,clock);
+		});
 		^playGroup
 	}
 	
@@ -137,10 +137,8 @@ NodeProxy : AbstractFunction {
 	
 	
 	rate { ^outbus.tryPerform(\rate) }
-	
-	numChannels {
-		^outbus.tryPerform(\numChannels);
-	}
+	numChannels { ^outbus.tryPerform(\numChannels) }
+	index { ^outbus.tryPerform(\index) }
 	
 	isPlaying { 
 		//^(group.notNil and: {group.isPlaying})
@@ -200,7 +198,7 @@ NodeProxy : AbstractFunction {
 		var bundle;
 		if(server.serverRunning, { 
 			bundle = MixedBundle(server);
-			this.loadToBundle(bundle);
+			this.sendAllDefsToBundle(bundle);
 			bundle.send;
 			loaded = true; 
 		});
@@ -292,11 +290,11 @@ NodeProxy : AbstractFunction {
 	sendToServer { arg bundle, freeAll=true, latency=0.3, extraArgs, onCompletion;
 		var resp;
 		
-		if(server.serverRunning, {
+		//if(server.serverRunning, {
 				if(this.isPlaying.not, { this.prepareForPlayToBundle(bundle, freeAll) });
 				this.sendSynthToBundle(bundle, freeAll, extraArgs);
 				this.sendBundle(bundle, latency=0.3, clock, onCompletion);
-		});
+		//});
 	}
 	
 	sendBundle { arg bundle, latency=0.3, clock, onCompletion;

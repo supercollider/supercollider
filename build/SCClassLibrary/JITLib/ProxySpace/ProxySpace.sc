@@ -71,9 +71,43 @@
 	release {
 		this.do({ arg proxy; proxy.release });
 	}
+	remove { all.remove(this) }
 		*clearAll {
 		all.do({ arg item; item.clear });
 	}	
 	*undo {		lastEdited.tryPerform(\undo)	}
 	
-		}
+	printOn { arg stream; 
+		this.keysValuesDo({ arg key, item; 
+			stream <<< key << " " 
+			<< if(item.rate==='audio', { "ar" }, { "kr" }) 
+			<< "(" << item.numChannels << ")   "
+		});
+		stream << Char.nl
+		
+	}
+		}
+
+SharedProxySpace  : ProxySpace {
+	
+	einit { arg srv, argName, argClock, controlKeys, audioKeys;
+		super.einit(srv,argName, argClock); 
+		//initialize single letters as shared busses: xyz are audio busses, the rest control
+		controlKeys = controlKeys ?? { Array.fill(25 - 3, { arg i; asSymbol(asAscii(97 + i)) }) };
+		audioKeys = audioKeys ?? { Array.fill(3, { arg i; asSymbol(asAscii(97 + 25 - 3 + i)) }) };
+		controlKeys.do({ arg key; this.makeSharedProxy(key, 'control') });
+		audioKeys.do({ arg key; this.makeSharedProxy(key, 'audio') });
+	}
+	
+	makeSharedProxy { arg key, rate;
+			var proxy, srv;
+			srv = server.broadcast;
+			proxy = if(rate.isNil, {NodeProxy(srv)},{NodeProxy.perform(rate,srv)});
+			proxy.clock = clock;
+			this.prPut(key, proxy);
+			^proxy
+	}
+	
+
+
+}
