@@ -57,6 +57,73 @@ bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#if defined(SC_LINUX)
+
+#define _XOPEN_SOURCE 600
+#include <stdlib.h>
+
+#define SC_MEMORY_ALIGNMENT 16
+#define SC_DEBUG_MEMORY 0
+
+inline void* sc_malloc(size_t size)
+{
+	void* ptr;
+	if (posix_memalign(&ptr, SC_MEMORY_ALIGNMENT, size) != 0)
+		return 0;
+	return ptr;
+}
+
+void* sc_dbg_malloc(size_t size, const char* tag, int line)
+{
+	void* ptr = sc_malloc(size);
+	fprintf(stderr, "sc_dbg_malloc [%s:%d] %p %u\n", tag, line, ptr, size);
+	if (((int)ptr % SC_MEMORY_ALIGNMENT) != 0) abort();
+	return ptr;
+}
+
+inline void sc_free(void* ptr)
+{
+	free(ptr);
+}
+
+void sc_dbg_free(void* ptr, const char* tag, int line)
+{
+	fprintf(stderr, "sc_dbg_free [%s:%d]: %p\n", tag, line, ptr);
+	free(ptr);
+}
+
+inline void* sc_zalloc(size_t n, size_t size)
+{
+	size *= n;
+	if (size) {
+		void* ptr = sc_malloc(size);
+		if (ptr) {
+			memset(ptr, 0, size);
+			return ptr;
+		}
+	}
+	return 0;
+}
+
+void* sc_dbg_zalloc(size_t n, size_t size, const char* tag, int line)
+{
+	void* ptr = sc_zalloc(n, size);
+	fprintf(stderr, "sc_dbg_zalloc [%s:%d]: %p %u %u\n", tag, line, ptr, n, size);
+	return ptr;
+}
+
+# if SC_DEBUG_MEMORY
+#  define malloc(size)			sc_dbg_malloc((size), __FUNCTION__, __LINE__)
+#  define free(ptr)				sc_dbg_free((ptr), __FUNCTION__, __LINE__)
+#  define zalloc(n, size)		sc_dbg_zalloc((n), (size), __FUNCTION__, __LINE__)
+# else
+#  define malloc(size)			sc_malloc((size))
+#  define free(ptr)				sc_free((ptr))
+#  define zalloc(n, size)		sc_zalloc((n), (size))
+# endif // SC_DEBUG_MEMORY
+
+#else // !SC_LINUX
+
 // replacement for calloc. 
 // calloc lazily zeroes memory on first touch. This is good for most purposes, but bad for realtime audio.
 void *zalloc(size_t n, size_t size)
@@ -71,6 +138,7 @@ void *zalloc(size_t n, size_t size)
 	}
 	return 0;
 }
+#endif // SC_LINUX
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -260,7 +328,8 @@ World* World_New(WorldOptions *inOptions)
 				scprintf("start audio failed.\n");
 				return 0;
 			}
-		} else {	
+		} else {
+			hw->mAudioDriver = 0;
 			World_NonRealTimeSynthesis(world, inOptions);
 			world = 0;
 		}
