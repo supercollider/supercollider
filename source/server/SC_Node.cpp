@@ -34,10 +34,15 @@ void Node_StateMsg(Node* inNode, int inState);
 // create a new node
 Node* Node_New(World *inWorld, NodeDef *def, int32 inID, sc_msg_iter* args)
 {
-	
-	if (inID == -1) { // negative means generate an id for the event
-		HiddenWorld* hw = inWorld->hw;
-		inID = hw->mHiddenID = (hw->mHiddenID - 8) | 0x80000000;
+	if (inID < 0) {
+		if (inID == -1) { // -1 means generate an id for the event
+			HiddenWorld* hw = inWorld->hw;
+			inID = hw->mHiddenID = (hw->mHiddenID - 8) | 0x80000000;
+		} else {
+			// enums are uncatchable. must throw an int.
+			int err = kSCErr_ReservedNodeID;
+			throw err;
+		}
 	}
 	
 	if (World_GetNode(inWorld, inID)) {

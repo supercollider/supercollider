@@ -42,6 +42,7 @@ const char *SC_ErrorString(SCErr err)
 			case kSCErr_TooManyUsers : return "too many users";
 			case kSCErr_TooManyNodes : return "too many nodes";
 			case kSCErr_DuplicateNodeID : return "duplicate node ID";
+			case kSCErr_ReservedNodeID : return "negative node IDs are reserved";
 			case kSCErr_OutOfRealTimeMemory : return "out of real time memory";
 
 			case kSCErr_UnsupportedHeaderFormat : return "unsupported header format";
