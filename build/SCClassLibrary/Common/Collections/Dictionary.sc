@@ -354,7 +354,11 @@ IdentityDictionary : Dictionary {
 			if (selector.isSetter) {
 				selector = selector.asGetter;
 				^this[selector] = args[0];
-			}
+			};
+			func = this[\forward];
+			if (func.notNil) {
+				^func.functionPerformList(\value, this, selector, args);
+			};
 		};
 
 		^this.superPerformList(\doesNotUnderstand, selector, args);
