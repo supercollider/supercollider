@@ -8,68 +8,126 @@
 \f0\b\fs36 \cf0 Bus
 \f1\b0\fs18 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 The clientside representation of an audio or control bus on a server.  Encapsulates all the OSC messages a Bus can receive.  Manages allocation and deallocation of bus indices so that you don't need to worry about conflicts. For more information see 
+\f2\fs24 \cf0 The clientside representation of an audio or control bus on a server.  Encapsulates all the OSC messages a Bus can receive.  Manages allocation and deallocation of bus indices so that you don't need to worry about conflicts. For more information see 
 \f0\b ClientVsServer
 \f2\b0  and 
 \f0\b Server-Architecture
-\f2\b0 .
+\f2\b0 .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Note that using the 
+\f0\b Bus
+\f2\b0  class to create a multichannel bus simply reserves a series of adjacent bus indices. abus.index simply returns the first of those indices. When using a Bus with an 
+\f0\b In
+\f2\b0  or 
+\f0\b Out
+\f2\b0  ugen there is nothing to stop you from reading to or writing from a larger range. You are responsible for making sure that the number of channels match and that there are no conflicts.
 \f1\fs18 \
 
 \f2\fs24 \
 
-\f0\b Bus.control( server, numChannels );\
+\f0\b\fs28 \ul Class Methods\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 	Allocate a control bus on the server.  \
+\fs24 \cf0 \ulnone \
+Bus.control(server, numChannels);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 	Allocate a control bus on the server.  \
 	Defaults: default server, 1 channel.\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b Bus.audio( server, numChannels );\
+\f0\b \cf0 Bus.audio(server, numChannels);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 	Allocate an audio bus on the server. \
+\f2\b0 \cf0 	Allocate an audio bus on the server. \
 	Defaults: default server, 1 channel.\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b Bus.alloc( rate, server, numChannels);\
+\f0\b \cf0 Bus.alloc(rate, server, numChannels);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 	Allocate a bus of either rate as specified by the symbols: \
+\f2\b0 \cf0 	Allocate a bus of either rate as specified by the symbols: \
 		\\control or \\audio\
 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b Bus.new( rate, index, numChannels);\
+\f0\b \cf0 Bus.new(rate, index, numChannels);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 	This method does not allocate a bus index, but assumes that you\
+\f2\b0 \cf0 	This method does not allocate a bus index, but assumes that you\
 	already have allocated the appropriate bus index and can supply it\
 	yourself.
 \f1\fs18 \
 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \
+\f0\b\fs28 \ul \
 Instance Methods
 \fs24 \ulnone \
 \
+index\
+
+\f2\b0 	Get the Bus' index.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
 value_(aFloat)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0 \cf0 	Set all channels to this float value.\
 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b set(...values)\
+\f0\b \cf0 set(...values)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 	A list of values for each channel of the bus.  The list of values\
+\f2\b0 \cf0 	A list of values for each channel of the bus.  The list of values\
 	supplied should not be greater than the number of channels.\
 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b free\
+\f0\b \cf0 free\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 	Return the bus' indices to the server's bus allocator\
-	so they can be reallocated to someone else.\
+\f2\b0 \cf0 	Return the bus' indices to the server's bus allocator so they can be reallocated.\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 rate\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 	Get the Bus' rate. This is a symbol, either \\control or \\audio.\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 numChannels\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 	Get the Bus' number of channels.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 server\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 	Get the Bus' server object.\
 \
 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 s = \cf2 Server\cf0 .local;\
+\f1\fs18 \cf0 s = \cf2 Server\cf0 .local;\
 s.boot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 	
+\f2\fs24 \cf0 	
 \f1\fs18 \
 (\cf3 \
 // something to play with\
@@ -88,32 +146,23 @@ x = \cf2 Synth\cf0 (\cf4 "help-Bus"\cf0 );\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // get a bus\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b = \cf2 Bus\cf0 .control(s);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // map the synth's second input (ffreq) to read\
 // from the bus' output index\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 x.map(1,b.index);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // By setting the bus' value you send a /c_fill message\
 // to each channel of the bus setting it to supplied float value\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b.value = 100;\
 b.value = 1000;\
 b.value = 30;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // Since this is a single channel bus this has the same effect\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b.set(300);\
 b.numChannels.postln;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // multi-channel:  b.set(300,350);\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 x.free;\
 \
