@@ -12,6 +12,10 @@
 \fs36 \
 
 \fs24 \
+
+\f0\b0 superclass: MultiOutUGen
+\f1\b \
+\
 Demand.ar(trig, reset, [..ugens..])\
 
 \f0\b0 \
@@ -32,7 +36,6 @@ When there is a trigger at the reset input, the demand rate ugens in the list ar
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // examples\cf0 \
 \
 (\
@@ -56,17 +59,6 @@ When there is a trigger at the reset input, the demand rate ugens in the list ar
 )\
 \
 \
-\
-(\
-\{\
-	\cf3 var\cf0  freq, trig, reset, seq;\
-	trig = \cf3 Impulse\cf0 .kr(10);\
-	reset = \cf3 Dust\cf0 .kr(1);\
-	seq = \cf3 Dgeom\cf0 (24, 72.midicps, 1.midiratio); \
-	freq = \cf3 Demand\cf0 .kr(trig, reset, seq);\
-	\cf3 SinOsc\cf0 .ar(freq + [0,0.7]).cubed.max(0) * 0.1;\
-\}.play;\
-)\
 \
 \
 (\
