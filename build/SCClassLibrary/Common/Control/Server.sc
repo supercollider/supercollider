@@ -75,7 +75,7 @@ Server : Model {
 	var <name, <addr;
 	var <isLocal, <inProcess;
 	var <serverRunning = false;
-	var <>options,<>latency = 0.2;
+	var <>options,<>latency = 0.2,<dumpMode=0;
 	var <nodeAllocator;
 	var <controlBusAllocator;
 	var <audioBusAllocator;
@@ -249,7 +249,18 @@ Server : Model {
 	}
 	notify { arg flag=true;
 		addr.sendMsg("/notify", flag.binaryValue);
-	}	
+	}
+	dumpOSC { arg code=1;
+		/*
+			0 - turn dumping OFF.
+			1 - print the parsed contents of the message.
+			2 - print the contents in hexadecimal.
+			3 - print both the parsed and hexadecimal representations of the contents.
+		*/
+		dumpMode = code;
+		this.sendMsg(\dumpOSC,code);
+	}
+
 	quit {
 		addr.sendMsg("/quit");
 		if (inProcess, { 
