@@ -27,7 +27,11 @@
 
 #define SANITYCHECK 0
 
+#ifdef SC_WIN32
+const int64 kMaxInt64 = 0x7FFFFFFFFFFFFFFF;
+#else
 const int64 kMaxInt64 = ~(1LL<<63);
+#endif
 
 template <class Event, int N> 
 class PriorityQueueT
