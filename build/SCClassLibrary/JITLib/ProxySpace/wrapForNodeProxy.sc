@@ -58,7 +58,7 @@
 			{ Array.fill(proxy.numChannels, { Line.kr(this,this,0.001) }) }
 		})
 	}
-//problem here: when there is a fade, the bus is still written on after the setting.
+//problem here: when there is a fade, the bus is still written to after setting.
 //	wrapForNodeProxy { arg proxy, lags, channelOffset=0;
 //		var ok;
 //		ok = proxy.initBus('control',1);
@@ -90,8 +90,8 @@
 }
 
 +SoundDef {
-	prepareForProxySynthDef {
-		^obj
+	wrapForNodeProxy { arg proxy, channelOffset=0;
+		^synthDef.wrapForNodeProxy(proxy, channelOffset);
 	}
 }
 
@@ -145,44 +145,6 @@
 		
 	}
 }
-
-
-
-
-/*
-//for now:
-+Patch {
-	defArgs {
-		//needs prepare play!
-		//^this.synthDefArgs
-		^instr.defArgs
-	}
-	argNames {
-		^instr.argNames
-	}
-
-}
-
-
-+InstrE {
-	prepareForProxySynthDef { 
-		^{var c, defArgs, argNames;
-			defArgs = this.defArgs;
-			argNames = this.argNames;
-			argNames.do({ arg key, i;
-				var val;
-				val = envir.at(key);
-				if(val.notNil, {
-					defArgs.put(i, val)
-				});
-			});
-			c = Control.names(this.argNames).kr(defArgs);
-			func.valueArray(c)
-		}
-	}
-}
-*/
-
 
 
 
