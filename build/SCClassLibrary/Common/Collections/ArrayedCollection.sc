@@ -128,6 +128,10 @@ ArrayedCollection : SequenceableCollection {
 		aCollection.asCollection.do({ arg item; array = array.add(item) }) ;
 		^array
 	}
+	putEach { arg keys, values; 
+		_ArrayPutEach
+		^super.putEach(keys, values)
+	}
 	extend { arg size, item; 
 		_ArrayExtend
 		^this.primitiveFailed

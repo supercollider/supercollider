@@ -562,6 +562,43 @@ int basicFoldPut(struct VMGlobals *g, int numArgsPushed)
 	} else return errIndexNotAnInteger;
 }
 
+int prArrayPutEach(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b, *c;
+	int index;
+	PyrObject *obj;
+	
+	a = g->sp - 2;
+	b = g->sp - 1;
+	c = g->sp;
+	
+	obj = a->uo;
+	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
+		return errNotAnIndexableObject;
+
+	if (!isKindOfSlot(b, class_arrayed_collection)) return errWrongType;
+	if (!isKindOfSlot(c, class_arrayed_collection)) return errWrongType;
+	
+	PyrSlot *indices = b->uo->slots;
+	PyrSlot *values = c->uo->slots;
+	int size = b->uo->size;
+	int valsize = c->uo->size;
+
+	for (int i=0; i<size; ++i) {
+		int index;
+		int err = slotIntVal(indices + i, &index);
+		if (err) return err;
+		if (index < 0 || index >= obj->size) return errIndexOutOfRange;
+		int valindex = sc_mod(i, valsize);
+		err = putIndexedSlot(g, obj, values + valindex, index);
+		if (err) return err;
+	}
+	
+	return errNone;
+}
+
+
+
 int prArrayAdd(struct VMGlobals *g, int numArgsPushed);
 int prArrayAdd(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1812,6 +1849,7 @@ void initArrayPrimitives()
 	definePrimitive(base, index++, "_ArrayFill", prArrayFill, 2, 0);
 	definePrimitive(base, index++, "_ArrayPop", prArrayPop, 1, 0);
 	definePrimitive(base, index++, "_ArrayCat", prArrayCat, 2, 0);	
+	definePrimitive(base, index++, "_ArrayPutEach", prArrayPutEach, 3, 0);	
 	definePrimitive(base, index++, "_ArrayAddAll", prArrayAddAll, 2, 0);	
 	definePrimitive(base, index++, "_ArrayOverwrite", prArrayOverwrite, 3, 0);	
 

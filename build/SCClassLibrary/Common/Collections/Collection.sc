@@ -71,6 +71,13 @@ Collection {
 		};
 		^removedItems
 	}
+
+	putEach { arg keys, values; 
+		// works for ArrayedCollections and Dictionaries
+		keys = keys.asArray;
+		values = values.asArray;
+		keys.do { |key, i| this[key] = values.wrapAt(i) } ;
+	}
 		
 	includes { | item1 | 
 		this.do {|item2| if (item1 === item2) {^true} };
