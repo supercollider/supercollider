@@ -68,13 +68,14 @@ struct DeleteGraphDefMsg {
 typedef MsgFifoNoFree<TriggerMsg, 1024> TriggersFifo;
 typedef MsgFifoNoFree<NodeEndMsg, 1024> NodeEndsFifo;
 typedef MsgFifoNoFree<DeleteGraphDefMsg, 512> DeleteGraphDefsFifo;
+typedef HashTable<struct GraphDef, Malloc> GrafDefTable;
 
 struct HiddenWorld
 {
 
 	class AllocPool *mAllocPool;
 	IntHashTable<struct Node, AllocPool> *mNodeLib;
-	HashTable<struct GraphDef, Malloc> *mGraphDefLib;
+	GrafDefTable *mGraphDefLib;
 	uint32 mNumUsers, mMaxUsers;
 	ReplyAddress *mUsers;
 	

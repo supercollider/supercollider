@@ -267,7 +267,7 @@ World* World_New(WorldOptions *inOptions)
 		extern Malloc gMalloc;
 	
 		HiddenWorld *hw = world->hw;
-		hw->mGraphDefLib = new HashTable<GraphDef, Malloc>(&gMalloc, inOptions->mMaxGraphDefs, false);
+		hw->mGraphDefLib = new HashTable<struct GraphDef, Malloc>(&gMalloc, inOptions->mMaxGraphDefs, false);
 		hw->mNodeLib = new IntHashTable<Node, AllocPool>(hw->mAllocPool, inOptions->mMaxNodes, false);
 		hw->mUsers = (ReplyAddress*)zalloc(inOptions->mMaxLogins, sizeof(ReplyAddress));
 		hw->mNumUsers = 0;
@@ -698,27 +698,27 @@ int32 GetHash(GraphDef *inGraphDef)
 	return inGraphDef->mNodeDef.mHash;
 }
 
-bool World_AddGraphDef(World *inWorld, GraphDef* inGraphDef)
+void World_AddGraphDef(World *inWorld, GraphDef* inGraphDef)
 {
-	return inWorld->hw->mGraphDefLib->Add(inGraphDef);
+	inWorld->hw->mGraphDefLib->Add(inGraphDef);
+	for (uint32 i=0; i<inGraphDef->mNumVariants; ++i) {
+		GraphDef* var = inGraphDef->mVariants + i;
+		inWorld->hw->mGraphDefLib->Add(var);
+	}
 }
 
-bool World_RemoveGraphDef(World *inWorld, GraphDef* inGraphDef)
+void World_RemoveGraphDef(World *inWorld, GraphDef* inGraphDef)
 {
-	bool res =  inWorld->hw->mGraphDefLib->Remove(inGraphDef);
-	return res;
-}
-
-bool World_FreeGraphDef(World *inWorld, GraphDef* inGraphDef)
-{
-	bool res =  inWorld->hw->mGraphDefLib->Remove(inGraphDef);
-	if (res) GraphDef_Free(inGraphDef);
-	return res;
+	for (uint32 i=0; i<inGraphDef->mNumVariants; ++i) {
+		GraphDef* var = inGraphDef->mVariants + i;
+		inWorld->hw->mGraphDefLib->Remove(var);
+	}
+	inWorld->hw->mGraphDefLib->Remove(inGraphDef);
 }
 
 void World_FreeAllGraphDefs(World *inWorld)
 {
-	HashTable<struct GraphDef, Malloc>* lib = inWorld->hw->mGraphDefLib;
+	GrafDefTable* lib = inWorld->hw->mGraphDefLib;
 	int size = lib->TableSize();
 	for (int i=0; i<size; ++i) {
 		GraphDef *def = lib->AtIndex(i);

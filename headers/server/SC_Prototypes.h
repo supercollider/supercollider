@@ -84,9 +84,8 @@ int PlugIn_DoCmd(struct World *inWorld, int inSize, char *inArgs, struct ReplyAd
 
 int32 *GetKey(struct GraphDef *inGraphDef);
 int32 GetHash(struct GraphDef *inGraphDef);
-bool World_AddGraphDef(struct World *inWorld, struct GraphDef* inGraphDef);
-bool World_FreeGraphDef(struct World *inWorld, struct GraphDef* inGraphDef);
-bool World_RemoveGraphDef(struct World *inWorld, struct GraphDef* inGraphDef);
+void World_AddGraphDef(struct World *inWorld, struct GraphDef* inGraphDef);
+void World_RemoveGraphDef(struct World *inWorld, struct GraphDef* inGraphDef);
 struct GraphDef* World_GetGraphDef(struct World *inWorld, int32* inKey);
 void World_FreeAllGraphDefs(World *inWorld);
 void GraphDef_Free(GraphDef *inGraphDef);

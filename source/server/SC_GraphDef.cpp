@@ -121,7 +121,7 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer)
 	inUnitSpec->mAllocSize = inUnitSpec->mUnitDef->mAllocSize + numPorts * (sizeof(Wire*) +  sizeof(float*));
 }
 
-GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList);
+GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 inVersion);
 
 GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList);
 GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList)
@@ -129,12 +129,13 @@ GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList)
 	int32 magic = readInt32_be(buffer);
 	if (magic != (('S'<<24)|('C'<<16)|('g'<<8)|'f') /*'SCgf'*/) return inList;
 	
-	/*int32 version = */ readInt32_be(buffer);
+	int32 version = readInt32_be(buffer);
+	if (version > 1) return inList;
 		
 	uint32 numDefs = readInt16_be(buffer);
 		
 	for (uint32 i=0; i<numDefs; ++i) {
-		inList = GraphDef_Read(inWorld, buffer, inList);
+		inList = GraphDef_Read(inWorld, buffer, inList, version);
 	}
 	return inList;
 }
@@ -143,13 +144,31 @@ GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList)
 void ChooseMulAddFunc(GraphDef *graphDef, UnitSpec* unitSpec);
 void DoBufferColoring(World *inWorld, GraphDef *inGraphDef);
 
-GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
+void GraphDef_ReadVariant(World *inWorld, char*& buffer, GraphDef* inGraphDef, GraphDef* inVariant)
+{
+	memcpy(inVariant, inGraphDef, sizeof(GraphDef));
+
+	inVariant->mNumVariants = 0;
+	inVariant->mVariants = 0;
+
+	ReadName(buffer, inVariant->mNodeDef.mName);	
+	inVariant->mNodeDef.mHash = Hash(inVariant->mNodeDef.mName);
+
+	inVariant->mInitialControlValues = (float32*)malloc(sizeof(float32) * inGraphDef->mNumControls);
+	for (uint32 i=0; i<inGraphDef->mNumControls; ++i) {
+		inVariant->mInitialControlValues[i] = readFloat_be(buffer);
+	}
+}
+
+GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 inVersion)
 {
 	int32 name[kSCNameLen];
 	ReadName(buffer, name);
 
-	GraphDef* graphDef = (GraphDef*)malloc(sizeof(GraphDef));
-		
+	GraphDef* graphDef = (GraphDef*)calloc(1, sizeof(GraphDef));
+
+	graphDef->mOriginal = graphDef;
+
 	graphDef->mNodeDef.mAllocSize = sizeof(Graph);
 	
 	memcpy((char*)graphDef->mNodeDef.mName, (char*)name, kSCNameByteLen);
@@ -214,6 +233,16 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 		graphDef->mNumWires += unitSpec->mNumOutputs;
 	}
 	
+	if (inVersion >= 1) {
+		graphDef->mNumVariants = readInt16_be(buffer);
+		if (graphDef->mNumVariants) {
+			graphDef->mVariants = (GraphDef*)calloc(graphDef->mNumVariants, sizeof(GraphDef));
+			for (uint32 i=0; i<graphDef->mNumVariants; ++i) {
+				GraphDef_ReadVariant(inWorld, buffer, graphDef, graphDef->mVariants + i);
+			}
+		}
+	}
+	
 	DoBufferColoring(inWorld, graphDef);
 		
 	graphDef->mWiresAllocSize = graphDef->mNumWires * sizeof(Wire);
@@ -245,9 +274,7 @@ void GraphDef_Define(World *inWorld, GraphDef *inList)
 		
 		GraphDef* previousDef = World_GetGraphDef(inWorld, graphDef->mNodeDef.mName);
 		if (previousDef) {
-			if (!World_RemoveGraphDef(inWorld, previousDef)) {
-				scprintf("World_RemoveGraphDef failed? shouldn't happen.\n");
-			}
+			World_RemoveGraphDef(inWorld, previousDef);
 			if (--previousDef->mRefCount == 0) {
 				GraphDef_DeleteMsg(inWorld, previousDef);
 			}
@@ -255,6 +282,17 @@ void GraphDef_Define(World *inWorld, GraphDef *inList)
 		World_AddGraphDef(inWorld, graphDef);
 		graphDef->mNext = 0;
 		graphDef = next;
+	}
+}
+
+void GraphDef_Remove(World *inWorld, int32 *inName)
+{
+	GraphDef* graphDef = World_GetGraphDef(inWorld, inName);
+	if (graphDef) {
+		World_RemoveGraphDef(inWorld, graphDef);
+		if (--graphDef->mRefCount == 0) {
+			GraphDef_DeleteMsg(inWorld, graphDef);
+		}
 	}
 }
 
@@ -500,14 +538,20 @@ void UnitSpec_Free(UnitSpec *inUnitSpec)
 
 void GraphDef_Free(GraphDef *inGraphDef)
 {
+	if (inGraphDef != inGraphDef->mOriginal) return;
+		
 	for (uint32 i=0; i<inGraphDef->mNumUnitSpecs; ++i) {
 		UnitSpec_Free(inGraphDef->mUnitSpecs + i);
+	}
+	for (uint32 i=0; i<inGraphDef->mNumVariants; ++i) {
+		free(inGraphDef->mVariants[i].mInitialControlValues);
 	}
 	delete inGraphDef->mParamSpecTable;
 	free(inGraphDef->mParamSpecs);
 	free(inGraphDef->mInitialControlValues);
 	free(inGraphDef->mConstants);
 	free(inGraphDef->mUnitSpecs);
+	free(inGraphDef->mVariants);
 	free(inGraphDef);
 }
 

@@ -60,6 +60,11 @@ struct GraphDef
 	
 	int mRefCount;
 	struct GraphDef* mNext;
+
+	struct GraphDef *mOriginal;
+	
+	uint32 mNumVariants;
+	struct GraphDef* mVariants;
 };
 typedef struct GraphDef GraphDef;
 
