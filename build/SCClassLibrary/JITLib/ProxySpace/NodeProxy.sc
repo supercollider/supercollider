@@ -204,17 +204,17 @@ BusPlug : AbstractFunction {
 		bundle = MixedBundle.new;
 		this.initBus(\audio, numChannels);
 		if(this.rate !== 'audio') { Error("can't monitor a control rate proxy").throw };
-		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
+		if(this.isPlaying.not) { this.wakeUpToBundle(bundle); };
 		if(monitor.isNil) { monitor = Monitor.new };
 		group = (group ? homeServer).asGroup;
 		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, 
 				group, multi, vol);
-		bundle.schedSend(homeServer, this.clock)
+		bundle.schedSend(homeServer, this.clock, this.quant)
 		^monitor.group
 	}
 	
 	fadeTime { ^0.02 }
-	
+	quant { ^nil }
 	vol { ^if(monitor.isNil) { 1.0 }{ monitor.vol } }
 	vol_ { arg val; if(this.rate === 'audio') {
 						if(monitor.isNil) { monitor = Monitor.new }; monitor.vol = val 
@@ -330,6 +330,8 @@ NodeProxy : BusPlug {
 	
 	at { arg index;  ^objects.at(index) }
 	
+	source { ^if(objects.size == 1) { objects.at(0).source } { objects.array.collect(_.source) } }
+	
 	
 	put { arg index, obj, channelOffset = 0, extraArgs; 			var container, bundle, orderIndex;
 			
@@ -432,7 +434,7 @@ NodeProxy : BusPlug {
 			this.stopAllToBundle(bundle); 
 			group = agroup;
 			this.sendAllToBundle(bundle); 
-			bundle.schedSend(server, clock, quant);
+			bundle.schedSend(server, clock, 0.0);
 		} { group = agroup };
 	}
 	
@@ -479,6 +481,7 @@ NodeProxy : BusPlug {
 			this.stopAllToBundle(bundle);
 			bundle.schedSend(server, clock, quant);
 			bundle = MixedBundle.new;
+			loaded = false;
 			this.loadToBundle(bundle);
 			this.sendAllToBundle(bundle);
 			bundle.schedSend(server, clock, quant);
