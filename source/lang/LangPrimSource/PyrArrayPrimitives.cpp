@@ -840,9 +840,9 @@ int prArrayExtend(struct VMGlobals *g, int numArgsPushed)
 	int numbytes, elemsize, format;
 	int err;
 	
-	PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
+	PyrSlot *a = g->sp - 2; // array
+	PyrSlot *b = g->sp - 1; // size
+    PyrSlot *c = g->sp;     // filler item
 	
 	
 	if (b->utag != tagInt) return errWrongType;
@@ -851,9 +851,10 @@ int prArrayExtend(struct VMGlobals *g, int numArgsPushed)
 		aobj->size = b->ui;
 		return errNone;
 	}
-	if (b->ui > MAXINDEXSIZE(aobj)) {
-		format = aobj->obj_format;
-		elemsize = gFormatElemSize[format];
+    
+    format = aobj->obj_format;
+    if (b->ui > MAXINDEXSIZE(aobj)) {
+        elemsize = gFormatElemSize[format];
 		numbytes = b->ui * elemsize;
 		
 		PyrObject *obj = g->gc->New(numbytes, 0, format, true);
