@@ -313,6 +313,16 @@ ArrayedCollection : SequenceableCollection {
 		depth = depth-1;
 		^this.collect {|item| item.deepCollect(depth, function) }
 	}
+	reshapeLike { arg another, indexing=\wrapAt;
+		var flat, index = 0;	
+		flat = this.flat;
+		^another.deepCollect(0x7FFFFFFF) {
+			var item;
+			item = flat.perform(indexing, index);
+			index = index + 1;
+			item;
+		};
+	}
 	
 	unbubble { arg depth=0, levels=1;
 		if (depth <= 0) {
