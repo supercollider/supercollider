@@ -288,8 +288,8 @@ EventStreamPlayer : PauseStream {
 	}
 
 	play { arg argClock, doReset = false, quant=1.0;
-		if (stream.notNil, { "already playing".postln; ^this });
-		if (doReset, { this.reset });
+		if (stream.notNil) { "already playing".postln; ^this };
+		if (doReset) { this.reset };
 		clock = argClock ? clock ? TempoClock.default;
 		stream = originalStream; 
 		clock.play(this, quant);
@@ -301,14 +301,14 @@ EventStreamPlayer : PauseStream {
 	next { arg inTime;
 		var outEvent, nextTime;
 		outEvent = stream.next(event);
-		if (outEvent.isNil, {
+		if (outEvent.isNil) {
 			stream = nil;
 			^nil
-		},{
-			if (muteCount > 0, { outEvent.put(\freq, \rest) });
-			if ((nextTime = outEvent.play).isNil, { stream = nil });
+		}{
+			if (muteCount > 0) { outEvent.put(\freq, \rest) };
+			if ((nextTime = outEvent.play).isNil) { stream = nil };
 			^nextTime
-		});
+		};
 	}
 	
 	asEventStreamPlayer { ^this }
