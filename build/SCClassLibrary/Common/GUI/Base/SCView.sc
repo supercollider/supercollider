@@ -917,7 +917,7 @@ SCFuncUserView : SCUserView {
 	}
 }
 
-//by jt v.0.12
+//by jt v.0.22
 SCMultiSliderView : SCView { 
 
 	var <>acceptDrag = true;
@@ -925,6 +925,7 @@ SCMultiSliderView : SCView {
 	var <>size ;
 	var <gap;
 	var < editable = true;
+	var < elasticMode = 0;
 	
 
 	draw {}
@@ -934,8 +935,13 @@ SCMultiSliderView : SCView {
 		mouseUpAction.value(this);
 	}
 	properties {
-		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \thumbWidth, \absoluteX, \isFilled, \step]
+		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \thumbWidth, \absoluteX, \isFilled, \step, \elasticResizeMode]
 	}	
+	
+	elasticMode_{arg mode;
+		elasticMode =mode;
+		this.setProperty(\elasticResizeMode, mode);
+	}
 	
 	step_ { arg stepSize;
 		this.setPropertyWithAction(\step, stepSize);
