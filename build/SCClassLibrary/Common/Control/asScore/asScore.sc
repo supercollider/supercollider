@@ -1,15 +1,22 @@
 + Pattern {
-	asScore { arg maxTime=60;
-		^this.asStream.asScore(maxTime);
+
+	asScoreStreamPlayer{|protoEvent|
+		^ScoreStreamPlayer(this.asStream, protoEvent);
+
+	}
+	
+	asScore{|numberOfEvents=100, protoEvent|
+
+	^this.asScoreStreamPlayer(protoEvent).read(numberOfEvents)
 	}
 }
 
-+ Stream {
-	asScore { arg maxTime=60;
-		^RenderNotePlayer(maxTime).read(this).score
-			
-	}
-}
+//+ Stream {
+//	asScore { arg maxTime=60;
+//		^RenderNotePlayer(maxTime).read(this).score
+//			
+//	}
+//}
 + Object {
 	
 	render { arg path, maxTime=60, sampleRate = 44100, 
