@@ -244,28 +244,36 @@ BinaryOpFunction : AbstractFunction {
 }
 
 CompositeFunction : AbstractFunction {
-	var a, b;
+	var operands;
 	
-	*new { arg a, b; 
-		^super.newCopyArgs(a, b) 
+	*new { arg ... args; 
+		^super.newCopyArgs(args) 
 	}
+	<> { arg obj; this.class.new(*operands.add(obj)) }
+
 	value { arg ... args;
-		^a.valueArray(b.valueArray(args))
+		operands.reverseDo { |item| args = item.valueArray(args) }
+		^args
 	}
 	valueArray { arg args;
-		^a.valueArray(b.valueArray(args))
+		operands.reverseDo { |item| args = item.valueArray(args) }
+		^args
 	}
-	valueEnvir { arg ... args; 
-		^a.valueArrayEnvir(b.valueArrayEnvir(args))
+	valueEnvir { arg ... args;
+		operands.reverseDo { |item| args = item.valueArrayEnvir(args) }
+		^args
 	}
 	valueArrayEnvir { arg ... args; 
-		^a.valueArrayEnvir(b.valueArrayEnvir(args))
+		operands.reverseDo { |item| args = item.valueArrayEnvir(args) }
+		^args
 	}
 	functionPerformList { arg selector, arglist;
 		^this.performList(selector, arglist)
 	}
 	storeOn { arg stream;
-		stream << "(" <<< a << " <> " <<< b << ")"
+			stream << "("; 
+			operands.do { |item,i|  if(i != 0) { stream << " <> " }; stream <<< item; }; 
+			stream << ")"
 	}
 }
 
