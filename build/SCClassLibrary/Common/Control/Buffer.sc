@@ -35,8 +35,7 @@ Buffer {
 	*read { arg server,path,startFrame = 0,numFrames = -1, bufnum, action;
 		server = server ? Server.default;
 		^super.newCopyArgs(server,
-						bufnum ?? { server.bufferAllocator.alloc(1) },
-						numFrames)
+						bufnum ?? { server.bufferAllocator.alloc(1) })
 					.allocRead(path,startFrame,{|buf|["/b_query",buf.bufnum]})
 					.addToServerArray.doOnInfo_(action).waitForBufInfo;
 	}
