@@ -24,24 +24,28 @@
 
 @implementation SCTextView
 
-- (void) autoIndent
+- (void) autoIndent: (NSEvent*) event
 {
-        unichar c;
+	unichar c;
 	unichar spaces[128];
 	int nspaces = 0;
 	NSRange range = [self selectedRange];
         
-        NSString *string = [self string];
+	NSString *string = [self string];
 	int pos = range.location;
         
 	for (; pos > 0;) {
-                c = [string characterAtIndex: --pos];
-                if (c == '\r' || c == '\n') break;
+		c = [string characterAtIndex: --pos];
+		if (c == '\r' || c == '\n') break;
 		if ((c == '\t' || c == ' ') && nspaces < 126) spaces[nspaces++] = c;
 		else nspaces = 0;
 	}
-        spaces[nspaces++] = '\n';
-	spaces[nspaces] = 0;
+ 
+	[super keyDown: event];
+	range = [self selectedRange];
+	
+	if (nspaces) {
+		spaces[nspaces] = 0;
 	
         // reverse the string
         for (int i=0; i<nspaces/2; ++i) {
@@ -54,6 +58,7 @@
             [self replaceCharactersInRange: range withString: newString];
             [self didChangeText];
         }
+	}
 }
 
 - (void) keyDown: (NSEvent*) event
@@ -62,7 +67,7 @@
     if ([characters isEqual: @"\03"]) {
         [[self delegate] executeSelection: self];
     } else if (([characters isEqual: @"\n"] || [characters isEqual: @"\r"]) && !([event modifierFlags] & NSAlternateKeyMask)) {
-        [self autoIndent];
+        [self autoIndent: event];
     } else {
         //call lang
         unsigned int modifiers = [event modifierFlags];
