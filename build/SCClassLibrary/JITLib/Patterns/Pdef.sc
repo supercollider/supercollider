@@ -74,7 +74,7 @@ Pdefn : Pattern {
 
 Pdef : Pdefn {
 	var <isPlaying=false;
-	var <player, <>fadeTime=0.0;
+	var <player, <>fadeTime;
 	
 	classvar <>all, <>defaultQuant=1.0;
 	
