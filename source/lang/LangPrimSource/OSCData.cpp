@@ -229,8 +229,8 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
 	
 }
 
-int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size);
-int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size)
+int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
+int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size, bool useElapsed)
 {
 	double time;
 	int err;
@@ -238,7 +238,11 @@ int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size)
 	
 	err = slotDoubleVal(slots, &time);
 	if (!err) {
-		oscTime = ElapsedTimeToOSC(time);
+		if (useElapsed) {
+			oscTime = ElapsedTimeToOSC(time);
+		} else {
+			oscTime = (int64)(time * kSecondsToOSC);
+		}
 	} else {
 		oscTime = 1;	// immediate
 	}
@@ -309,7 +313,7 @@ inline int OSCStrLen(char *str)
 }
 
 
-int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size);
+int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
 
 int prNetAddr_Connect(VMGlobals *g, int numArgsPushed);
 int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
@@ -400,7 +404,7 @@ int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
 		SetFloat(args, time);
 	}
 	int numargs = numArgsPushed - 1;
-	makeSynthBundle(&packet, args, numargs);
+	makeSynthBundle(&packet, args, numargs, true);
 	
 	//for (int i=0; i<packet.size()/4; i++) post("%d %08X\n", i, packet.buf[i]);
 	
@@ -425,6 +429,37 @@ int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
 	
 	return netAddrSend(netAddrObj, msglen, bufptr);
 }
+
+
+int prArray_OSCBytes(VMGlobals *g, int numArgsPushed);
+int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
+{	
+	PyrSlot* a = g->sp;
+	PyrObject *array = a->uo;
+	PyrSlot* args = array->slots;
+	int numargs = array->size;
+	if (numargs < 1) return errFailed;
+	scpacket packet;
+	
+	if (IsFloat(args) || IsNil(args) || IsInt(args)) {
+		makeSynthBundle(&packet, args, numargs, false);
+	} else if (IsSym(args) || isKindOfSlot(args, class_string)) {
+		makeSynthMsgWithTags(&packet, args, numargs);
+	} else {
+		return errWrongType;
+	}
+	
+	int size = packet.size();
+	PyrInt8Array* obj = newPyrInt8Array(g->gc, size, 0, true);
+	obj->size = size;
+	memcpy(obj->b, packet.data(), size);
+	SetObject(a, (PyrObject*)obj);
+	//for (int i=0; i<packet.size()/4; i++) post("%d %08X\n", i, packet.buf[i]);
+	
+	return errNone;
+}
+
+
 
 PyrObject* ConvertOSCMessage(int inSize, char *inData)
 {
@@ -776,6 +811,7 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_NetAddr_SendMsg", prNetAddr_SendMsg, 1, 1);	
 	definePrimitive(base, index++, "_NetAddr_SendBundle", prNetAddr_SendBundle, 2, 1);	
 	definePrimitive(base, index++, "_NetAddr_SendRaw", prNetAddr_SendRaw, 2, 0);	
+	definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);	
 	definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);	
 	definePrimitive(base, index++, "_Exit", prExit, 1, 0);	
 	definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);	

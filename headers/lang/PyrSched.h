@@ -57,4 +57,10 @@ bool getheap4(PyrObject *heap, double *schedtime, PyrSlot *task,
 	PyrSlot *numRepeats, PyrSlot *maxRepeats) ;
 void dumpheap4(PyrObject *heap);
 
+const double kSecondsToOSC  = 4294967296.; // pow(2,32)/1
+const double kMicrosToOSC = 4294.967296; // pow(2,32)/1e6
+const double kNanosToOSC  = 4.294967296; // pow(2,32)/1e9
+const double kOSCtoSecs = 2.328306436538696e-10;  // 1/pow(2,32)
+const double kOSCtoNanos  = 0.2328306436538696; // 1e9/pow(2,32)
+
 #endif

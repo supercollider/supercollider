@@ -282,11 +282,6 @@ pthread_t gResyncThread;
 pthread_cond_t gSchedCond; 
 pthread_mutex_t gLangMutex;
 
-const double kSecondsToOSC  = 4294967296.; // pow(2,32)/1
-const double kMicrosToOSC = 4294.967296; // pow(2,32)/1e6
-const double kNanosToOSC  = 4.294967296; // pow(2,32)/1e9
-const double kOSCtoSecs = 2.328306436538696e-10;  // 1/pow(2,32)
-const double kOSCtoNanos  = 0.2328306436538696; // 1e9/pow(2,32)
 int64 gHostOSCoffset = 0; 
 int64 gHostStartNanos = 0;
 int64 gElapsedOSCoffset = 0;
