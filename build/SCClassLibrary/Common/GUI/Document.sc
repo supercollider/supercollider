@@ -51,7 +51,6 @@ Document {
 	*standardizePath { arg p;
 		var pathName;
 		pathName = PathName.fromOS9(p.standardizePath);
-		pathName.fullPath.postln;
 		^if(pathName.isRelativePath,{
 			dir  ++ pathName.fullPath
 		},{
