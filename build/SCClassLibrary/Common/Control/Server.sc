@@ -70,7 +70,7 @@ ServerOptions
 }
 
 Server : Model {
-	classvar <>local, <>internal, <>named, <>set, <>program;
+	classvar <>local, <>internal, <>default, <>named, <>set, <>program;
 	
 	var <name, <addr, <clientID=0;
 	var <isLocal, <inProcess;
@@ -126,7 +126,7 @@ Server : Model {
 		named = IdentityDictionary.new;
 		set = Set.new;
 		internal = Server.new(\internal, NetAddr.new);
-		local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
+		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
 		program = "./scsynth";
 	}
 	sendMsg { arg ... args;
