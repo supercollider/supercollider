@@ -694,14 +694,10 @@ public:
 	SCTabletView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
         virtual ~SCTabletView();
         
-	virtual void draw(SCRect inDamage);
-        //virtual bool shouldDim();
+	//virtual void draw(SCRect inDamage);
     
     virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
-
-	//virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
-	//virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
-        
+       
 };
 SCView* NewSCTabletView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 

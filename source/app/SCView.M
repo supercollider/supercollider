@@ -3759,12 +3759,6 @@ SCTabletView::~SCTabletView()
 {
 }
 
-void SCTabletView::draw(SCRect inDamage)
-{
-        SCView::draw(inDamage);
-        
-        //SCRect bounds = mBounds;
-}
 void SCTabletView::mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent)
 {
     // get  x, y, pressure, tiltx, tilty, deviceID, buttonNumber,clickCount
