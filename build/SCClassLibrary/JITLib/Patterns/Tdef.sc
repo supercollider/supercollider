@@ -1,31 +1,44 @@
 //task definition
 
 Tdef : PauseStream {
-	var <key, <>repeats;
+	var <key, <isPlaying=false;
 	
-	*new { arg key, function, repeats=inf;
+	*new { arg key, function;
 		var t;
+		key = key.asSymbol;
+		
 		t = this.at(key);
+		
 		if(t.isNil, { 
-			t = super.new.repeats_(repeats).function_(function);
+			t = super.new.function_(function);
 			this.put(key, t);
 		}, { 
 			if(function.notNil, {
-				t.function = function
+				t.function_(function);
 			})
 		 });
+		 
 		^t
 	} 
 
 	function_ { arg function;
-		var playing;
-		playing = this.isPlaying;
-		this.stop;
-		originalStream = stream = Routine({ repeats.do(function) });
-		if(playing, { this.start });
+		this.stream = Routine({ arg argList; 
+							function.valueArray(argList);
+					});
 	}
 	
-	isPlaying { ^stream.isNil }
+	stream_ { arg argStream; 
+		if(stream.notNil, {
+			stream = argStream;
+		});
+		originalStream = argStream;
+	}
+	
+	embed { arg inval;
+		originalStream.embed(inval)
+	}
+	
+	///////global access
 	
 	*at { arg key;
 		^Library.at(this, key);
@@ -42,3 +55,4 @@ Tdef : PauseStream {
 
 
 }
+
