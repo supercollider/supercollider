@@ -1875,6 +1875,8 @@ void SCPopUpMenu::receiveDrag()
 
 /////////////////////////////////////////////////////////////////
 //SCMultiSliderView by jan trutzschler jan.21.03 //jan.23.03 changed draw added more prop.//jan.28.03 debug
+//jan.29.03 value 1.0 up // draw .
+
 int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr);
 int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr)
 {
@@ -1991,16 +1993,8 @@ void SCMultiSliderView::draw(SCRect inDamage)
             }
         //these are fixed values: used for the max of soundfiles
         if (mSecYValues != NULL) {
-        int j = 0;
-            if(mIsHorizontal){
-                CGContextAddLineToPoint(cgc, gcx, mBounds.height * 0.5);
-               // CGContextMoveToPoint(cgc, mBounds.x, mBounds.height * 0.5);
-               CGContextAddLineToPoint(cgc, mBounds.x + 1, mBounds.height * 0.5);
-            } else {
-                CGContextAddLineToPoint(cgc, mBounds.width * 0.5, gcy);
-                CGContextMoveToPoint(cgc, mBounds.width * 0.5, mBounds.y);
-            }        
-            for(int i = xstart; i < xpixels; i++, j++){
+            int j = xpixels - 1;
+            for(int i = xpixels - 1; i >= xstart; i--, j--){
                 yval = mSecYValues[i];
                 drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
                 gcx =  drawRect.origin.x + xadd;
@@ -2008,14 +2002,6 @@ void SCMultiSliderView::draw(SCRect inDamage)
                 CGContextAddLineToPoint(cgc, gcx, gcy);
               //  CGContextMoveToPoint(cgc, gcx, gcy);
             }
-         if(mIsHorizontal){
-                CGContextAddLineToPoint(cgc, gcx, mBounds.height * 0.5);
-                //CGContextMoveToPoint(cgc, mBounds.x, mBounds.height * 0.5);
-            } else {
-                CGContextAddLineToPoint(cgc, mBounds.width * 0.5, gcy);
-                //CGContextMoveToPoint(cgc, mBounds.width * 0.5, mBounds.y);
-            }
-
         }
         if(mIsFilled)
       //  CGContextFillPath(cgc);
@@ -2101,7 +2087,8 @@ int SCMultiSliderView::indexFromPoint(SCPoint where)
 double SCMultiSliderView::valueFromPoint(SCPoint where)
 {
     if(mIsHorizontal){
-        return (where.y - mBounds.y - 1 - mThumbSizeY/2) / (mBounds.height - mThumbSizeY - 2);
+        return 1.0 - (where.y - mBounds.y - 1 - mThumbSizeY/2) / (mBounds.height - mThumbSizeY - 2);
+        //return  (mBounds.height - mThumbSizeY - 2) / (where.y - mBounds.y - 1 - mThumbSizeY/2);
     } else {
         return (where.x - mBounds.x - 1 - mThumbSizeY/2) / (mBounds.width - mThumbSizeY - 2);
     }
@@ -2117,20 +2104,27 @@ void SCMultiSliderView::setValueFromPoint(SCPoint where)
 SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, float xoffset)
 {    
     double x,y, thumbx, thumby;
+    
     if(mIsHorizontal){
         thumby = mThumbSizeY;
         x = (double) indexIn * ( xoffset + mThumbSize);
         y = valIn * (mBounds.height - thumby - 2);
+        y = (mBounds.height - y) + 3 - thumby;
+        x = mBounds.x + x + 1;
         if(mIsFilled) thumby = mBounds.width - y;
         thumbx = mThumbSize;
     } else {
         thumbx = mThumbSizeY;
         y = (double) indexIn * ( xoffset + mThumbSize);
         x = valIn * (mBounds.width - thumbx - 2);
-        if(mIsFilled) thumbx = mBounds.width + x;
+        x = mBounds.x + x + 1;
+        if(mIsFilled){
+            thumbx += x -  mBounds.x;
+            x = mBounds.x;
+        }
         thumby = mThumbSize;
     }
-    return SCMakeRect(mBounds.x + x + 1, mBounds.y + y + 1, thumbx, thumby);   
+    return SCMakeRect( x, y, thumbx, thumby);   
 }
 
 void SCMultiSliderView::setSelection(SCPoint where)
@@ -2401,7 +2395,6 @@ void SCMultiSliderView::receiveDrag()
 {
     sendMessage(s_receiveDrag, 0, 0, 0);
 }
-
 //////////////////////////////////////////////////////////////////////////////////
 
 
