@@ -10,9 +10,8 @@
 \f0\b\fs24 stream reference definition
 \f1\b0\fs18 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 superclass: Tdef\
+\f2\fs24 superclass: Tdef\
 \
 \
 \
@@ -34,12 +33,6 @@ Pdef(key) returns the instance, Pdef(key, pat) stores the pattern and returns th
 \f0\b *defaultEvent_(event)
 \f2\b0 \
 			set the default event\
-	\
-	
-\f0\b *defaultStream_(stream)
-\f2\b0 \
-			set the default stream that is used when no pattern arg is provided\
-			and there is no Pdef stored already.\
 	\
 	
 \f0\b *remove(key)
@@ -89,7 +82,6 @@ Pdef(key) returns the instance, Pdef(key, pat) stores the pattern and returns th
 (\
 \cf2 // load a synthdef\cf0 \
 s.boot;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 "pdef_grainlet"\cf0 , \
 	\{ \cf3 arg\cf0  out=0, freq=440, dur=0.05;\
 		\cf3 var\cf0  env;\
@@ -98,7 +90,6 @@ s.boot;\
 	\}).load(s);\
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // make a default event\cf0 \
 (\
 e = \cf3 Event\cf0 .default.copy;\
@@ -108,16 +99,11 @@ e.use(\{\
 	~octave =  7;\
 \});\
 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 ); \cf2 // creates a Pdef with a default pattern.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 ).event = e;\
 \cf3 Pdef\cf0 (\cf5 \\y\cf0 ).event = e;\
 \
@@ -126,10 +112,8 @@ e.use(\{\
 \
 \cf3 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // assign various patterns to it:\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25)); \
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, 4, 5, 6], \cf3 inf\cf0 )));\
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, 4, 5, 6]+1, \cf3 inf\cf0 )));\
@@ -142,25 +126,19 @@ e.use(\{\
 \
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 ).play;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // tempo change\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 TempoClock\cf0 .default.tempo = 1.3;\
 \cf3 Pdef\cf0 (\cf5 \\y\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, 4, 5, 6]+1, \cf3 inf\cf0 )));\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // drop in ending patterns\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, [7,4], 5, 6]-2)));\
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.125, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, [7,4], 5, 4]-3)));\
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.35, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, [7,4], 5, 4, 3]-3)));\
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25, \cf5 \\degree\cf0 , \cf3 Pshuf\cf0 ([3, [7,4], 5, 6]-2)));\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // clear all.\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Pdef\cf0 .remove(\cf5 \\x\cf0 );\
 \cf3 Pdef\cf0 .remove(\cf5 \\y\cf0 );\
 \cf3 TempoClock\cf0 .default.tempo = 1;\
