@@ -32,11 +32,13 @@ Pdef : EventStreamPlayer {
 		res = this.at(key);
 		stream = pat.asStream;
 		if(res.isNil, { 
+				if(stream.isNil, { stream = this.defaultStream });
 				res = super.new(stream, event);
 				this.put(key, res)
+		}, {
+			if(stream.notNil, { res.stream = stream });
+			if(event.notNil, { res.event = event });
 		});
-		if(stream.notNil, { res.stream = stream });
-		if(event.notNil, { res.event = event });
 		^res
 	}
 	*at { arg key;
@@ -45,9 +47,31 @@ Pdef : EventStreamPlayer {
 	*put { arg key, obj;
 		Library.put(this, key, obj)
 	}
+	*defaultStream {
+		^Pbind(\freq, \rest).asStream
+	}
 	
-	originalStream { ^originalStream }
-
+	asStream {
+		^Routine.new({ arg inval;
+			var val;
+			this.refresh;
+			while({
+				val = stream.next(inval);
+				val.notNil;
+			}, {
+				val.yield;
+			})
+		
+		})
+	}
+	
+	embedInStream { arg stream;
+		^this.asStream.embedInStream(stream)
+	}
+	
+	collect { arg func;
+		^this.asStream.collect(func)
+	}
 }
 
 
