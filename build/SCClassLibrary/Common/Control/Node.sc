@@ -335,7 +335,7 @@ Synth : Node {
 
 	/** does not send	(used for bundling) **/
 	*basicNew { arg defName, server, nodeID;
-		^super.basicNew(nodeID, server).defName_(defName.asDefName)
+		^super.basicNew(server, nodeID).defName_(defName.asDefName)
 	}
 	*newToBundle { arg bundle, defName, args, target, addAction=\addToTail;
 		var synth;
