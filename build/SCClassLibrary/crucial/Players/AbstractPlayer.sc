@@ -107,7 +107,8 @@ AbstractPlayer : AbstractFunction  {
 				("Wrong output rate: " + this.rate + 
 			".  AbstractPlayer cannot prepare this object for play.").error;
 			});
-		})
+		});
+		^patchOut
 	}
 	
 	prepareForPlay { arg group,bundle;
@@ -125,11 +126,12 @@ AbstractPlayer : AbstractFunction  {
 						Bus.alloc(this.rate,group.server,this.numChannels))
 						// private buss on this server
 		});
+		// has inputs
 		patchOutsOfChildren = this.children.collect({ arg child;
 			child.prepareForPlay(group,bundle);
+			//child.makePatchOut(group)
 			child.patchOut
 		});
-
 		
 		// not really until the last confirmation comes from server
 		readyForPlay = true;
@@ -145,7 +147,6 @@ AbstractPlayer : AbstractFunction  {
 		// schedule atTime:
 		synth.isPlaying = true;
 		synth.isRunning = true;
-		
 		this.didSpawn;
 	}
 	spawnToBundle { arg bundle;
@@ -160,14 +161,6 @@ AbstractPlayer : AbstractFunction  {
 					//++ this.children.collect({ arg child; child.secretSynthDefArgs }).flat,
 			)
 		);
-//		Synth.newMsg(bundle, // newToBundle
-//				this.defName,
-//				this.synthDefArgs.collect({ arg a,i; [i,a]}).flat ,
-//					//++ this.secretSynthDefArgs
-//					//++ this.children.collect({ arg child; child.secretSynthDefArgs }).flat,
-//				patchOut.group,
-//				\addToTail
-//				);
 	}
 	/*
 		when player saves, save defName and secret args (name -> inputIndex)
@@ -182,7 +175,6 @@ AbstractPlayer : AbstractFunction  {
 			true
 			// Library.at(SynthDef,patchOut.server,this.defName.asSymbol).isNil
 		},{
-			// you might need child's numChannels (Patch) to be known
 			this.children.do({ arg child;
 				child.loadDefFileToBundle(bundle);
 			});
@@ -215,7 +207,11 @@ AbstractPlayer : AbstractFunction  {
 	//  but its probably more complicated if you have inputs
 	asSynthDef { 
 		^SynthDef(this.defName,{ arg outIndex = 0;
-			Out.ar(outIndex,this.ar)
+			if(this.rate == \audio,{
+				Out.ar(outIndex,this.ar)
+			},{
+				Out.kr(outIndex,this.kr)
+			})
 		})
 	}
 	// if children are your args, you won't have to implement this
@@ -228,8 +224,30 @@ AbstractPlayer : AbstractFunction  {
 	defName {
 		^defName ?? {this.class.name.asString}
 	}
-	didSpawn {}
-	
+	didSpawn { arg patchIn,synthArgi;
+		if(patchIn.notNil,{
+			patchOut.connectTo(patchIn,false); // we are connected now
+			patchIn.nodeControl_(NodeControl(synth,synthArgi));
+		});
+			
+		//node control if you want it
+		//synthPatchIns.do({ arg patchIn,synthArgi;
+		//	patchIn.nodeControl_(NodeControl(synth,synthArgi));
+		//});
+		//patchIns.do({ arg patchIn,pti;
+		//	// objects hook up 
+		//	patchOutsOfChildren.at(pti).connectTo(patchIn,false); 
+		//});
+		/* probably better
+		this.children.do({arg ag,i;
+			ag.parentDidSpawn(patchIns.at(i));
+		});
+		*/
+	}
+	//parentDidSpawn { arg parentalPatchIn;
+	//	patchOut.connectTo(parentalPatchIn,false); // don't send data
+	//}
+
 
 
 

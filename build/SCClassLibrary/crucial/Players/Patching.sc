@@ -19,10 +19,10 @@ PatchIn {
 	*scalar { arg nodeControl;
 		^ScalarPatchIn(nodeControl)
 	}
-	connectTo { arg patchOut,needsValueSetNow=true;
-		// break any previous ?
-		patchOut.connectTo(this,needsValueSetNow);
-	}
+//	connectTo { arg patchOut,needsValueSetNow=true;
+//		// break any previous ?
+//		patchOut.connectTo(this,needsValueSetNow);
+//	}
 	server { ^nodeControl.server }
 	group { ^nodeControl.group }
 }
@@ -44,6 +44,7 @@ AudioPatchIn : PatchIn {
 ControlPatchIn : AudioPatchIn {
 	rate { ^\control }
 	value_ { arg val;
+		//[this,nodeControl].insp(thisMethod);
 		nodeControl.value = val;
 	}
 }
@@ -151,10 +152,10 @@ AudioPatchOut : ControlPatchOut {
 ScalarPatchOut : PatchOut { 
 
 	// floats,NumberEditors, numeric pattern players, midi, wacom
-	// all respond to .value
+
 	// things that are not ON the server
 	
-	var updater; // multiple outs, multiple updaters
+	var <>updater; // multiple outs, multiple updaters
 	
 	*new { arg source,bus; // TODO use this to get server...
 		^this.prNew(source)
@@ -176,12 +177,7 @@ ScalarPatchOut : PatchOut {
 		if(needsValueSetNow,{
 			controlPatchIn.value = source.value;
 		});
-		//if(source.dependants.includes(updater).not,{
-			updater = SimpleController(source)
-						.put(\value,{
-							controlPatchIn.value = source.value;
-						});
-		//});
+		//updater moved to the object
 	}
 	scalar { arg scalarPatchIn;
 		//thisMethod.notYetImplemented;

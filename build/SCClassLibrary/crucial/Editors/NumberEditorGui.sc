@@ -43,11 +43,13 @@ NumberEditorGui : EditorGui {
 		slv.action_({arg th; 
 			model.activeValue_(model.spec.map(th.value))
 		});		
-				
-		Updater(model,{ arg changed,changer;
-			// without triggering action
-			slv.value_(model.spec.unmap(model.poll))
-		}).removeOnClose(layout);
+			
+		layout.removeOnClose(	
+			Updater(model,{ arg changed,changer;
+				// without triggering action
+				slv.value_(model.spec.unmap(model.poll))
+			});//.removeOnClose(layout);
+		);
 	}
 }
 

@@ -6,7 +6,7 @@ Sample {
 	
 	var <soundFilePath,<>name,<>soundFile,<tempo=2.0,<beats=4.0;
 	
-	var <buffer,<patchOut,<readyForPlay = false;
+	var <buffer,<>patchOut,<readyForPlay = false;
 	
 	var <beatsize,<size=0,<end;
 	

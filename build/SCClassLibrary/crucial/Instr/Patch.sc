@@ -5,6 +5,9 @@ Patch : AbstractPlayer  {
 		
 	var <>args,<instr;
 	var <patchIns,synthPatchIns,argsForSynth;
+	
+	var synthArgsIndices;
+	
 	var synthDef;
 	var <numChannels,<rate; // determined after making synthdef
 	
@@ -20,10 +23,13 @@ Patch : AbstractPlayer  {
 	}
 
 	createArgs { arg argargs;
+		var argsSize;
 		argsForSynth = [];
 		patchIns = [];
 		synthPatchIns = [];
-		args=Array.fill(this.instr.argsSize,{arg i; 
+		argsSize = this.instr.argsSize;
+		synthArgsIndices = Array.newClear(argsSize);
+		args=Array.fill(argsSize,{arg i; 
 			var proto,spec,ag,patchIn,darg;
 			ag = 
 				argargs.at(i) // explictly specified
@@ -48,6 +54,7 @@ Patch : AbstractPlayer  {
 			,{
 				argsForSynth = argsForSynth.add(ag);
 				synthPatchIns = synthPatchIns.add(patchIn);
+				synthArgsIndices.put(i,synthPatchIns.size - 1);
 			});
 			
 			ag		
@@ -83,13 +90,6 @@ Patch : AbstractPlayer  {
 				synthArgs ++ synthDef.secretDefArgs(args)//.insp("secretArgs"),
 			)
 		);
-
-//		synth = Synth.newMsg(bundle, // newToBundle
-//				this.defName,
-//				synthArgs ++ synthDef.secretDefArgs(args),//.insp("secretArgs"),
-//				patchOut.group,
-//				\addToTail
-//				);
 	}
 
 	synthDefArgs {
@@ -97,17 +97,33 @@ Patch : AbstractPlayer  {
 		^(argsForSynth.collect({ arg ag; ag.synthArg })
 			++ [patchOut.bus.index]) // always goes last
 	}
-	didSpawn {
-		//node control if you want it
-		synthPatchIns.do({ arg patchIn,synthArgi;
+	// has inputs
+	didSpawn { arg patchIn,synthArgi;
+		if(patchIn.notNil,{
+			patchOut.connectTo(patchIn,false); // we are connected now
 			patchIn.nodeControl_(NodeControl(synth,synthArgi));
 		});
-		patchIns.do({ arg patchIn,pti;
-			// objects hook up 
-			patchOutsOfChildren.at(pti).connectTo(patchIn,false); 
+		//i know of the synth, i hand out the NodeControls
+		synthPatchIns.do({ arg synpatchIn,synthArgi;
+			synpatchIn.nodeControl_(NodeControl(synth,synthArgi));
+		});
+		this.children.do({ arg child,childi;
+			// some of the kids get a nil synth arg index
+			// that's okay, they won't talk to the synth anyway
+			child.didSpawn(patchIns.at(childi),
+					synthArgsIndices.at(childi));
 		});
 	}
-	
+//	didSpawn {
+//		//node control if you want it
+//		synthPatchIns.do({ arg patchIn,synthArgi;
+//			patchIn.nodeControl_(NodeControl(synth,synthArgi));
+//		});
+//		patchIns.do({ arg patchIn,pti;
+//			// objects hook up 
+//			patchOutsOfChildren.at(pti).connectTo(patchIn,false); 
+//		});
+//	}
 	free {
 		// TODO only if i am the only exclusive owner
 		this.children.do({ arg child; child.free });

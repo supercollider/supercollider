@@ -140,6 +140,7 @@ PageLayout  {
 		windows.do({ arg w; w.alpha = 1.0 })
 	}
 	close { // called when the GUIWindow closes
+		//isClosed.insp("closing page layout" , this);
 		if(isClosed.not,{
 			isClosed = true; 
 			if(windows.notNil,{
@@ -150,7 +151,7 @@ PageLayout  {
 			});
 			autoRemoves.do({ arg updater; updater.remove });
 			NotificationCenter.notify(this,\didClose);
-		})
+		});
 	}
 
 	hr { arg color,height=8,borderStyle=1; // html joke

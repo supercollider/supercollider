@@ -15,12 +15,15 @@ ObjectGui {
 		layout = layout ?? {
 			PageLayout(title ?? {model.asString},width,height);
 		};
-		NotificationCenter.registerOneShot(layout,\didClose,this,{
-			model.removeDependant(this); // when the window shuts
-		});
+		layout.removeOnClose(this);
+//		NotificationCenter.registerOneShot(layout,\didClose,this,{
+//			model.removeDependant(this); // when the window shuts
+//		});
 		^layout
 	}
-
+	remove {
+		model.removeDependant(this);
+	}
 	guiBody {arg layout;
 		// implement this in your subclass
 	}

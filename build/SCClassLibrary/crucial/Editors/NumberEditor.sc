@@ -1,7 +1,7 @@
 
 Editor {
 	var  <>action, // { arg value,theEditor; }
-		<>value;
+		<>value, <>patchOut;
 	
 	guiClass { ^ObjectGui }
 
@@ -37,6 +37,7 @@ NumberEditor : Editor {
 		// server support
 		// could also do it with a dependant
 		//if(patchIn.notNil,{ patchIn.value = value });
+		//[this,value,changer,this.dependants].insp("number editor value_");
 		this.changed(\value,changer);
 	}
 	activeValue_ { arg val;
@@ -51,42 +52,15 @@ NumberEditor : Editor {
 	canDoSpec { arg aspec; ^aspec.isKindOf(ControlSpec) }
 	//kr { arg lag=0.05; ^Plug.kr({value},lag) }
 
-	play { arg group,atTime;
-		^this.spawn(atTime);
-	}
-	prepareForPlay {}
-	readyForPlay { ^true }
-	spawn { arg atTime;
-		^ScalarPatchOut.new(this)
-	}
-
 	guiClass { ^NumberEditorGui }
 
 }
 
 
-/* obsolete
+KrNumberEditor : NumberEditor { }
 
-	KrNumberEditor
-		optimised for change
-		even the gui talks directly
-
-
-KrNumberEditor : NumberEditor { 
-
-	var <>lag;
-
-	*new { arg value=1.0,spec='amp',lag=0.05;
-		^super.new(value,spec).lag_(lag)
-	}
-
-	value {
-		^this.kr(lag)
-	}	
-	
-}
-
-
+/* 
+	obsolete
 */
 
 
