@@ -87,7 +87,7 @@ extern bool compiledOK;
 
 			if (pobj) {
 				pthread_mutex_lock (&gLangMutex);
-				if(NotNil(pobj->slots+1)){
+				if(NotNil(pobj->slots+2)){
 					VMGlobals *g = gMainVMGlobals;
 					g->canCallOS = true;
 					++g->sp;  SetObject(g->sp, pobj); 
