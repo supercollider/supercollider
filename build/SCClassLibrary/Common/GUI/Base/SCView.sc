@@ -1134,19 +1134,15 @@ SCEnvelopeView : SCMultiSliderView {
 		this.size = val.at(0).size;
 		this.setProperty(\value, val)
 	}
-	string_ { arg astring;
-		items =items.add(astring);
-		this.setProperty(\string, astring)
+	string_ { arg index, astring;
+		//items = items.add(astring);
+		this.setProperty(\string, [index, astring])
 	}
-	prString_ { arg astring;
-		this.setProperty(\string, astring)
-	}
+
 	strings_ { arg astrings;
 		astrings.do({arg str,i;
-		this.select(i);
-		this.prString_(str);
+			this.string_(i,str);
 		});
-		this.select(-1);
 	}
 	value {
 		var ax, ay, axy;
@@ -1156,17 +1152,19 @@ SCEnvelopeView : SCMultiSliderView {
 		^this.getProperty(\value, axy)
 	}
 	thumbHeight_ { arg index, height;
-		this.select(index);
-		this.setProperty(\thumbHeight, height);
-		this.select(-1);
+		this.setProperty(\thumbHeight, [index, height]);
 	}
 	thumbWidth_ { arg index, width;
-		this.select(index);
-		this.setProperty(\thumbWidth, width);
-		this.select(-1);
+		this.setProperty(\thumbWidth, [index, width]);
 	}
-	connect { arg aconnections; //draw a connection between the selected index 
-		this.setProperty(\connect, aconnections.asFloat);
+	thumbSize_ { arg index, size;
+		this.setProperty(\thumbSize, [index, size]);
+	}
+	connect { arg from, aconnections; //draw a connection between the selected index 
+		this.setProperty(\connect, [from, aconnections.asFloat]);
+	}
+	fillColor_ { arg index, color; //draw a connection between the selected index 
+		this.setProperty(\fillColor, [index, color]);
 	}
 	select { arg index; //this means no refresh;
 		this.setProperty(\setIndex, index);
@@ -1197,6 +1195,11 @@ SCEnvelopeView : SCMultiSliderView {
 		this.setProperty(\isStatic, abool);
 		this.select(-1); //unselect
 	}
+	
+	editable_{arg index, abool;
+		this.setProperty(\editable, [index,abool]);		
+	}
+	
 	selectionColor_ { arg acolor;
 		this.setProperty(\selectionColor, acolor)
 	}
