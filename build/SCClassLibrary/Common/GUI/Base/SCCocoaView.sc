@@ -2,7 +2,7 @@ SCTextView : SCView{
 	var <>mouseDownAction;
 	var <stringColor, <font, <editable;
 	var 	<autohidesScrollers, <hasHorizontalScroller, <hasVerticalScroller, <textBounds;
-	var <usesTabToFocusNextView=true, <enterExecutesSelection=true;
+	var <usesTabToFocusNextView=true, <enterInterpretsSelection=true;
 	mouseDown { arg clickPos;	
 //		this.focus(true);
 		mouseDownAction.value(this, clickPos);	
@@ -60,8 +60,8 @@ SCTextView : SCView{
 		usesTabToFocusNextView=bool;
 		this.setProperty(\usesTabToFocusNextView, bool);
 	}
-	enterExecutesSelection_{|bool|
-		enterExecutesSelection=bool;
+	enterInterpretsSelection_{|bool|
+		enterInterpretsSelection=bool;
 		this.setProperty(\enterExecutesSelection, bool);
 	}	
 	autohidesScrollers_{|bool|
