@@ -69,7 +69,7 @@ String[char] : RawArray {
 		var string;
 		string = this.copy;
 		list.do({ arg item, i;
-			string = string primCat: " " ++ item;
+			string = string prCat: " " ++ item;
 		});
 		^string
 	}
@@ -77,7 +77,7 @@ String[char] : RawArray {
 		var string;
 		string = this.copy;
 		list.do({ arg item, i;
-			string = string primCat: ", " ++ item;
+			string = string prCat: ", " ++ item;
 		});
 		^string
 	}
