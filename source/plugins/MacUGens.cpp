@@ -95,22 +95,35 @@ void* gstate_update_func(void* arg)
 
 void* gstate_update_func(void* arg)
 {
-	UserInputUGenGlobalState* gstate = &gUserInputUGenGlobals;
-	RgnHandle rgn = GetGrayRgn();
-	Rect screenBounds;
-	GetRegionBounds(rgn, &screenBounds);
-	float rscreenWidth = 1. / (screenBounds.right - screenBounds.left);
-	float rscreenHeight = 1. / (screenBounds.bottom - screenBounds.top);
-	for (;;) {
-		Point p;
-		GetGlobalMouse(&p);
-		gstate->mouseX = (float)p.h * rscreenWidth;
-		gstate->mouseY = (float)p.v * rscreenHeight;
-		gstate->mouseButton = Button();
-		GetKeys((long*)gstate->keys);
-		usleep(17000);
+	POINT p;
+	int mButton;
+	UserInputUGenGlobalState* gstate;
+
+	if(GetSystemMetrics(SM_SWAPBUTTON)){
+		mButton = VK_RBUTTON; // if  swapped
+	}else {
+		mButton = VK_LBUTTON; // not swapped (normal)
 	}
+
+	int screenWidth  = GetSystemMetrics( SM_CXSCREEN ); 
+	int screenHeight = GetSystemMetrics( SM_CYSCREEN );
+		// default: SM_CX/CYSCREEN gets the size of a primary screen.
+		// lines uncommented below are just for a specially need on multi-display.
+	//int screenWidth  = GetSystemMetrics( SM_CXVIRTUALSCREEN ); 
+	//int screenHeight = GetSystemMetrics( SM_CYVIRTUALSCREEN );
+	float r_screenWidth  = 1. / (float)(screenWidth  -1);
+	float r_screenHeight = 1. / (float)(screenHeight -1);
+
+	gstate = &gUserInputUGenGlobals;
 	
+	for(;;)	{
+		GetCursorPos(&p);
+		gstate->mouseX = (float)p.x * r_screenWidth;
+		gstate->mouseY = 1.0 - (float)p.y * r_screenHeight;
+		gstate->mouseButton = (GetKeyState(mButton) < 0);
+		//GetKey((long*)gstate->keys);  // "KeyState" is disabled now...
+		::Sleep(17); // 17msec.
+	}
 	return 0;
 }
 
