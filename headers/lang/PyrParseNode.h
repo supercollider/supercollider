@@ -397,7 +397,7 @@ bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name,
 void countClassVarDefs(PyrClassNode* node, int *numClassMethods, int *numInstMethods);
 void compileNodeList(PyrParseNode *node);
 void dumpNodeList(PyrParseNode *node);
-int compareCallArgs(PyrMethodNode* node, PyrCallNode *cnode, int *varIndex);
+int compareCallArgs(PyrMethodNode* node, PyrCallNode *cnode, int *varIndex, PyrClass *specialClass);
 
 bool findSpecialClassName(PyrSymbol *className, int *index);
 int getIndexType(PyrClassNode *classnode);
