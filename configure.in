@@ -349,6 +349,28 @@ else
 	SC_ALSA_LIBS=""
 fi
 
+# linux input layer support
+AC_ARG_ENABLE(lid,
+AC_HELP_STRING([--enable-lid],[enable linux input device support]))
+
+if test "x$enable_lid" = "x"; then
+	enable_lid="no"
+fi
+if test "$enable_lid" = "yes"; then
+	AC_CHECK_HEADER(
+	[linux/input.h],
+	[HAVE_LID=true],
+	[HAVE_LID=false])
+else
+	HAVE_LID="false"
+fi
+if $HAVE_LID; then
+	AC_DEFINE([HAVE_LID],[1],[Define when linux input layer is available])
+	feat_lid="yes"
+else
+	feat_lid="no"
+fi
+
 # class library
 AC_ARG_ENABLE(library,
 AC_HELP_STRING([--disable-library],[do not install the class library]))
@@ -436,6 +458,7 @@ sclang
 ------------------------------------------------------------
  enabled                           $feat_sclang
  ALSA sequencer support            $feat_aseq
+ linux input device support        $feat_lid
  class library installation        $feat_library
  scel emacs interface              $feat_scel
 ------------------------------------------------------------

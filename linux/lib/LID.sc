@@ -266,10 +266,10 @@ LIDKeySlot : LIDSlot {
 }
 
 LIDRelSlot : LIDSlot {
-	initSpec {
-	}
-	value_ { | rawValue |
-		value = value + rawValue;
+	initSpec { }
+	value { ^value }
+	value_ { | delta |
+		value = value + delta;
 		action.value(this);
 	}
 }

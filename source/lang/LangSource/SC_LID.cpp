@@ -20,15 +20,6 @@
 	Linux Input Device interface, 2004 <sk>
 */
 
-#include <errno.h>
-#include <fcntl.h>
-#include <linux/input.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/select.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #include "SCBase.h"
 #include "VMGlobals.h"
 #include "PyrSymbolTable.h"
@@ -43,6 +34,20 @@
 #include "SC_InlineBinaryOp.h"
 #include "PyrSched.h"
 #include "GC.h"
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#if HAVE_LID
+#include <errno.h>
+#include <fcntl.h>
+#include <linux/input.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/select.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define BITS_PER_LONG			(sizeof(long) * 8)
 #define NBITS(x)				((((x) - 1) / BITS_PER_LONG) + 1)
@@ -679,8 +684,29 @@ void SC_LIDInit()
 	definePrimitive(base, index++, "_LID_Grab", prLID_Grab, 2, 0);
 	definePrimitive(base, index++, "_LID_Start", prLID_Start, 1, 0);
 	definePrimitive(base, index++, "_LID_Stop", prLID_Stop, 1, 0);
-	
 }
+#else // !HAVE_LID
+int prLID_Start(VMGlobals* g, int numArgsPushed)
+{
+	return errNone;
+}
+
+int prLID_Stop(VMGlobals* g, int numArgsPushed)
+{
+	return errNone;
+}
+
+void SC_LIDInit()
+{
+	int base, index;
+
+	base = nextPrimitiveIndex();
+	index = 0;
+
+	definePrimitive(base, index++, "_LID_Start", prLID_Start, 1, 0);
+	definePrimitive(base, index++, "_LID_Stop", prLID_Stop, 1, 0);	
+}
+#endif // HAVE_LID
 
 void initHIDPrimitives()
 {
