@@ -11,7 +11,8 @@ Class {
 	var instanceFormat, instanceFlags;
 	var <classIndex, classFlags, <maxSubclassIndex;
 	var <filenameSymbol, <charPos;
-
+	classvar <>classesInited;
+	
 	// Every class has a metaclass which has 'Meta_' prepended to the name.
 	// Though there is a class Meta_Class which is the class of Class, the
 	// class of Meta_Class is Class. It is a loop, but a different one 
@@ -23,14 +24,21 @@ Class {
 	}
 	asClass { ^this }
 
-	initClass {}
-	initClassTree {
-		this.initClass;
-		subclasses.notNil.if({
-			subclasses.do({ arg class; class.initClassTree; });
-		})
-	}
+	initClass {   } 
+	// call Class.initClassTree(SomeClass) to force a class to init if you depend on its resources
 	
+	*initClassTree { arg aClass; 
+		// sometimes you need a class to be inited before another class
+		// start the process: Class.initClassTree(Object)
+		if((classesInited ?? {classesInited = IdentitySet.new}).includes(aClass).not,{
+			aClass.initClass;
+			classesInited.add(aClass);			
+			if(aClass.subclasses.notNil,{
+				aClass.subclasses.do({ arg class; this.initClassTree(class); });
+			});
+		});
+	}
+
 	*allClasses { _AllClasses }
 	
 	findMethod { arg methodName;
@@ -86,12 +94,12 @@ Class {
 		stream << name;
 	}
 	
-	hasHelpFile { _ClassHasHelpFile }
-	openHelpFile { _ClassOpenHelpFile }
+	//hasHelpFile { _ClassHasHelpFile }
+	//openHelpFile { _ClassOpenHelpFile }
 	
 	shallowCopy { ^this }
-	listInstances { _ListInstancesOf }
-	traceAnyPathToAllInstancesOf { _TraceAnyPathToAllInstancesOf }
+	//listInstances { _ListInstancesOf }
+	//traceAnyPathToAllInstancesOf { _TraceAnyPathToAllInstancesOf }
 	
 	openCodeFile {
 		this.filenameSymbol.asString.openTextFile(this.charPos, -1);
@@ -139,9 +147,10 @@ Process {
 	var schedulerQueue;
 	
 	startUp {
-                // if something fails during initClassTree we still have a clock to tick
-		AppClock.initClass; 
-		Object.initClassTree;
+		Class.initClassTree(AppClock); // AppClock first in case of error
+		Class.initClassTree(Object);
+		"Class tree inited".inform;
+		Class.classesInited = nil;
 		
 		topEnvironment = Environment.new;
 		currentEnvironment = topEnvironment;
@@ -150,9 +159,7 @@ Process {
 		// Override in class 'Main' to do initialization stuff,
 		// but make sure to call this superclass method.
 		
-		// the AppClock is not started until after this method is complete,
-		// but it will be started regardless of whether startUp failed due
-		// to errors
+		// the AppClock is not started until after this method is complete
 	}
 	run {
 		// This method is called when 'Run Main' is chosen from the menu.
