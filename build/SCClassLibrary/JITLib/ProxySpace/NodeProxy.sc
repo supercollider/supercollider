@@ -301,10 +301,10 @@ NodeProxy : BusPlug {
 			if(parents.isEmpty, { grandParents = parents }, {
 				grandParents = parents.copy;
 				if(freeAll, { this.initParents });
-			});
+			});			
 			
-			
-			container = this.wrapObject(obj, channelOffset, index ? objects.size);			if(container.readyForPlay, {
+			container = this.wrapObject(obj, channelOffset, index ? objects.size);
+			if(container.readyForPlay, {
 				this.addObject(bundle, container, index, freeAll);
 			}, { 
 				parents = grandParents;
@@ -316,7 +316,7 @@ NodeProxy : BusPlug {
 				container.sendDefToBundle(bundle, server);
 				if(awake, {
 					if(this.isPlaying.not, { 
-						this.prepareForPlayToBundle(bundle);
+						this.prepareToBundle(nil, bundle);
 					});
 					if(freeAll, {
 							this.sendAllToBundle(bundle, extraArgs)
@@ -347,24 +347,24 @@ NodeProxy : BusPlug {
 	
 	addObject { arg bundle, obj, index, freeAll;
 		var rep;
+		
 		if(freeAll, { 
-			if(this.isPlaying, { this.freeAllToBundle(bundle) }); 
-			objects.do({ arg item; item.free });
+			if(this.isPlaying, { this.stopAllToBundle(bundle) }); 
+			objects.do({ arg item; item.freeToBundle(bundle);  });
 			objects = Order.with(obj);
 		}, {
 			if(index.isNil, {
-			objects = objects.add(obj);
+				objects.add(obj);
 			}, {
-				rep = objects.at(index);
-				if(rep.notNil, { 
-					rep.stopToBundle(bundle);
-					rep.free;
-				});
+				this.stopToBundleAt(bundle, index);
+				objects.at(index).freeToBundle(bundle);
 				objects = objects.put(index, obj);
 			})
 		})
+	
 	}
-		
+	
+			
 	defineBus { arg rate=\audio, numChannels;
 		super.defineBus(rate, numChannels);
 		this.linkNodeMap;
@@ -454,7 +454,7 @@ NodeProxy : BusPlug {
 		var bundle;
 		if(this.isPlaying, {
 			bundle = MixedBundle.new;
-			this.freeAllToBundle(bundle);
+			this.stopAllToBundle(bundle);
 			this.sendBundle(bundle);
 			bundle = MixedBundle.new;
 			this.build;
@@ -474,7 +474,7 @@ NodeProxy : BusPlug {
 		bundle = MixedBundle.new;
 		dt = this.fadeTime;
 		this.fadeTime = 0.1;
-		this.freeAllToBundle(bundle);
+		this.stopAllToBundle(bundle);
 		objects = undo;
 		this.loadToBundle(bundle);
 		this.sendAllToBundle(bundle);
@@ -496,7 +496,7 @@ NodeProxy : BusPlug {
 			obj = objects.at(index);
 			if(obj.notNil, {
 				bundle = MixedBundle.new.preparationTime_(0); //latency is 0, def is on server
-				if(this.isPlaying.not, { this.prepareForPlayToBundle(bundle) });
+				if(this.isPlaying.not, { this.prepareToBundle(nil, bundle) });
 				if(freeLast, { obj.stopToBundle(bundle) });
 				this.sendObjectToBundle(bundle, obj, extraArgs);
 				this.sendBundle(bundle);
@@ -506,8 +506,8 @@ NodeProxy : BusPlug {
 	sendAll { arg extraArgs, freeLast=false, each=false;
 			var bundle;
 			bundle = MixedBundle.new.preparationTime_(0); //latency is 0, def is on server
-			if(this.isPlaying.not, { this.prepareForPlayToBundle(bundle) });
-			if(freeLast, { this.freeAllToBundle(bundle) });
+			if(this.isPlaying.not, { this.prepareToBundle(nil, bundle) });
+			if(freeLast, { this.stopAllToBundle(bundle) });
 			if(each, 
 				{ this.sendEachToBundle(bundle, extraArgs) }, 
 				{ this.sendAllToBundle(bundle, extraArgs) }
@@ -557,29 +557,35 @@ NodeProxy : BusPlug {
 					})
 	}
 	
-	read { arg proxies;
+	readFromBus { arg busses;
 		var n, x;
-		proxies = proxies.asCollection;
+		busses = busses.asCollection;
 		n = this.numChannels;
-		proxies.do({ arg item, i;
-			if(item.isPlaying.not, { item.wakeUp });
+		busses.do({ arg item, i;
 			x = min(item.numChannels ? n, n);
 			this.put(i,
-				SynthControl.new("system_link_" ++ this.rate ++ "_" ++ n).hasGate_(true), 
+				SynthControl.new("system_link_" ++ this.rate ++ "_" ++ x).hasGate_(true), 
 				0, 
 				[\in, item.index, \out, this.index]
 			)
 		});
 	}
 	
+	read { arg proxies; //bus or proxy
+		proxies = proxies.asCollection;
+		proxies.do({ arg item; item.wakeUp });
+		this.readFromBus(proxies)
+	}
+	
 	/////// append to bundle commands
 	
-			
-	prepareForPlayToBundle { arg bundle;
-				group = Group.basicNew(server);
+	defaultGroupID { ^nil } //shared proxy support
+	
+	prepareToBundle { arg argGroup, bundle;
+				group = Group.basicNew(server, this.defaultGroupID);
 				NodeWatcher.register(group);
 				if(server.serverRunning, { group.isPlaying = true });
-				bundle.add(group.newMsg(server, \addToHead));
+				bundle.add(group.newMsg(argGroup ? server, \addToHead));
 				if(task.notNil, { this.playTaskToBundle(bundle) });
 	}
 	
@@ -610,17 +616,26 @@ NodeProxy : BusPlug {
 				});
 	}
 	
-	freeAllToBundle { arg bundle;
+	stopAllToBundle { arg bundle;
 				objects.do({ arg item;
 					item.stopToBundle(bundle);
 				});
 	}
 	
+	stopToBundleAt { arg bundle, index;
+		var obj;
+		obj = objects.at(index);
+		if(obj.notNil, { obj.stopToBundle(bundle) });
+	}
+
+	
 	wakeUp { 
 		var bundle;
-		bundle = MixedBundle.new;
-		this.wakeUpToBundle(bundle);
-		this.sendBundle(bundle);
+		if(this.isPlaying.not, {
+			bundle = MixedBundle.new;
+			this.wakeUpToBundle(bundle);
+			this.sendBundle(bundle);
+		})
 	}
 	
 	wakeUpToBundle { arg bundle, checkedAlready;
@@ -635,7 +650,7 @@ NodeProxy : BusPlug {
 				bundle.preparationTime = 0;
 			});
 			if(this.isPlaying.not, { 
-				this.prepareForPlayToBundle(bundle);
+				this.prepareToBundle(nil, bundle);
 				if(awake, {this.sendAllToBundle(bundle)});
 			});
 		});
@@ -740,7 +755,7 @@ NodeProxy : BusPlug {
 		var bundle;
 		bundle = MixedBundle.new;
 		if(this.isPlaying, { 
-			this.freeAllToBundle(bundle);
+			this.stopAllToBundle(bundle);
 			bundle.send(server);
 		});
 	}
@@ -943,18 +958,14 @@ SharedNodeProxy : NodeProxy {
 		^monitorGroup
 	}
 	
-	prepareForPlayToBundle { arg bundle, freeAll=true;
+	defaultGroupID { 
 				postln("started new shared group" + constantGroupID);
-				group = Group.basicNew(server, constantGroupID);
-				group.isPlaying = true; //force isPlaying.
-				NodeWatcher.register(group);
-				bundle.add(["/g_new", constantGroupID, 0, 0]);
-				if(task.notNil, { this.playTaskToBundle(bundle) });
+				^constantGroupID;
 	}
 	
 	
 	
-	freeAllToBundle { arg bundle;
+	stopAllToBundle { arg bundle;
 				objects.do({ arg item;
 					item.stopClientToBundle(bundle);
 				});

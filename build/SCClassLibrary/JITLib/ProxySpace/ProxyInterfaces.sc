@@ -28,6 +28,9 @@ AbstractPlayControl {
 		bundle.addAction(this, \play); //no latency (latency is in stream already)
 		^nil //return a nil object instead of a synth
 	}
+	freeToBundle { arg bundle;
+		bundle.addAction(this, \free);
+	}
 	
 	stopToBundle { arg bundle;
 		bundle.addAction(this, \stop);
@@ -116,6 +119,7 @@ SynthControl : AbstractPlayControl {
 	}
 	play { arg group, extraArgs;
 		var bundle;
+		group = group.asGroup;
 		bundle = MixedBundle.new;
 		this.playToBundle(bundle, extraArgs, group);
 		bundle.send(group.server)
@@ -187,28 +191,36 @@ SoundDefControl : SynthDefControl {
 
 
 CXPlayerControl : AbstractPlayControl {
-	//here the lazy bus init happens and allocation of ressources
+	//here the lazy bus init happens and allocation of client side ressources
+	//there is no bundle passing in build
 	build { arg proxy;
-		var player;
-		//source.prepareForPlay(proxy.group, false, proxy.bus.as(SharedBus));
-		//^proxy.initBus(source.rate, source.numChannels);
-		^proxy.initBus(source.rate ? 'audio', source.numChannels ? 2);
+		var player, tempBus, ok;
+		if(proxy.isNeutral.not, { proxy.bus.as(SharedBus) });
+		source.prepareForPlay(bus: tempBus); //to get the rate
+		proxy.initBus(source.rate ? 'audio', source.numChannels ? 2);
+		//source.free; 
+		tempBus.free;
+		^ok
 	}
-	//this allocates the bus and plays it
+	
 	playToBundle { arg bundle, extraArgs, proxy;
 		var bus, group;
 		//we'll need channel offset maybe.
 		group = Group.newToBundle(bundle, proxy.group, \addToTail);
-		//source.group_ = group;
-		//source.bus = proxy.bus.as(SharedBus);
-		source.prepareForPlay(group, false, proxy.bus.as(SharedBus));
+//		if(source.readyForPlay, {
+//			source.prepareToBundle(group, bundle);
+//			source.bus = proxy.bus.as(SharedBus);
+//		}, {
+		
+			source.prepareToBundle(group, bundle);
+			source.makePatchOut(group, true, proxy.bus.as(SharedBus), bundle);
+//		});
 		source.spawnToBundle(bundle);
 		^source.synth;
 	}
 	
 	stopToBundle { arg bundle;
 		source.stopToBundle(bundle);
-		//bundle.addAction(source, \free);
 	}
 	
 	stop {
