@@ -2,18 +2,18 @@
 	Sound File Format symbols:
 		header formats:
 			read/write formats:
-				'AIFF', 	- Apple's AIFF
-				'WAV','RIFF' 	- Microsoft .WAV
-				'SD2', 	- Sound Designer 2
-				'Sun', 	- NeXT/Sun
-				'IRCAM', 	- old IRCAM format
-				'none'	- no header = raw data
+				"AIFF", 	- Apple's AIFF
+				"WAV","RIFF" 	- Microsoft .WAV
+				"SD2", 	- Sound Designer 2
+				"Sun", 	- NeXT/Sun
+				"IRCAM", 	- old IRCAM format
+				"none"	- no header = raw data
 			A huge number of other formats are supported read only.
 			
 		sample formats:
-			'int8', 'int16', 'int24', 'int32'
-			'mulaw', 'alaw',
-			'float32'
+			"int8", "int16", "int24", "int32"
+			"mulaw", "alaw",
+			"float"
 			
 		not all header formats support all sample formats.
 
@@ -23,12 +23,13 @@ SoundFile {
 	classvar <openFiles;
 	
 	var <>fileptr;
-	var <>headerFormat = 'aiff';
-	var <>sampleFormat = 'float32';
+	var <>headerFormat = "AIFF";
+	var <>sampleFormat = "float";
 	var <numFrames = 0;		// number of frames
 	var <>numChannels = 1;	// number of channels
 	var <>sampleRate = 44100.0;
 
+	
 	
 	*closeAll {
 		if (openFiles.notNil, {
@@ -37,6 +38,18 @@ SoundFile {
 	}
 	isOpen {
 		^fileptr.notNil
+	}
+	
+	*openRead{ arg pathName;
+		var file;
+		file = SoundFile.new;
+		if(file.openRead(pathName)){^file}{^nil}
+	}
+	
+	*openWrite{ arg pathName;
+		var file;
+		file = SoundFile.new;
+		if(file.openWrite(pathName)){^file}{^nil}
 	}
 
 	openRead { arg pathName; 
