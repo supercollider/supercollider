@@ -73,11 +73,76 @@ Pdefn : Pattern {
 }
 
 
+Tdef : Pdefn {
+	var <isPlaying=false, <player;
+	classvar <>all, <>defaultQuant=1.0;
+	
+	*initClass { 
+		all = IdentityDictionary.new;
+		CmdPeriod.add(this); 
+	}
+	*cmdPeriod { this.all.do { arg item; item.stop } }
+	
+	*new { arg key, func;
+		var pattern;
+		if(func.notNil) { 
+			pattern = Prout({ arg x; 
+				protect { 	// this error handling only helps if error is not in substream
+					func.value(x);
+					nil.alwaysYield; // prevent from calling handler
+				} { 
+					this.at(key).player.removedFromScheduler 
+				} 
+			}) 
+		};
+		^super.new(key, pattern)
+	}
+	
+	pattern_ { arg pat;
+		pattern = pat;
+		if(isPlaying and: { player.isPlaying.not }) { this.play }
+	}
+
+
+	*default { ^Routine({ loop { 1.wait } }) }
+	
+	storeArgs { ^[key,pattern.routineFunc] }
+	
+	constrainStream { arg str;
+		^if(quant.notNil and: { str.notNil }) {
+			Pseq([
+				Pconst(this.timeToNextBeat, str, 0.001),
+				pattern
+			])
+		} { pattern }.asStream
+	}
+	
+	playOnce { arg argClock, doReset = false, quant;
+		^PauseStream.new(this.asStream)
+			.play(argClock ? clock, doReset, quant ? this.quant)
+	}
+	play { arg argClock, doReset = false, quant;
+		isPlaying = true;
+		if(player.isPlaying.not) { player = this.playOnce(argClock, doReset, quant) }
+	}
+	
+	stop { player.stop; isPlaying = false }
+	pause { if(player.notNil) { this.doInTime { player.pause } } }
+	resume { if(player.notNil) { this.doInTime { player.resume } } }
+
+	clear { this.class.all.removeAt(key).stop }
+	*removeAll { 
+		this.all.do { arg pat; pat.stop }; 
+		all = IdentityDictionary.new; 
+	}
+}
+
+
+
 // contains event patterns
 
-Pdef : Pdefn {
-	var <isPlaying=false;
-	var <player, <>fadeTime;
+Pdef : Tdef {
+	var <>fadeTime;
 	
 	classvar <>all, <>defaultQuant=1.0;
 	
@@ -85,15 +150,27 @@ Pdef : Pdefn {
 		all = IdentityDictionary.new; 
 		CmdPeriod.add(this); 
 	}
-	*cmdPeriod { this.all.do { arg item; item.stop } }
+	
+	*new { arg key, pattern;
+		var p;
+	 	p = this.at(key);
+	 	if(p.notNil) {
+	 		if(pattern.notNil) { p.pattern_(pattern) };
+	 	} {
+	 		if(pattern.isNil) { pattern = this.default };
+	 		p = this.newCopyArgs(key).pattern_(pattern)
+	 			.clock_(TempoClock.default).quant_(this.defaultQuant);
+			this.put(key, p);
+		};
+		^p
+	}
+
 		
 	*default { ^Pbind(\freq, \rest) }
 	
-	pattern_ { arg pat;
-		pattern = pat;
-		if(isPlaying and: { player.isPlaying.not }) { this.play }
-	}
-
+	storeArgs { ^[key,pattern] }
+	
+	
 	constrainStream { arg str;
 		var dt, tolerance;
 		^if(quant.notNil) {
@@ -132,74 +209,18 @@ Pdef : Pdefn {
 		isPlaying = true;
 		if(player.isPlaying.not) { player = this.playOnce(argClock, protoEvent, quant) }
 	}
-	stop { player.stop; isPlaying = false }
-	pause { if(player.notNil) { this.doInTime { player.pause } } }
-	resume { if(player.notNil) { this.doInTime { player.resume } } }
-
-	clear { this.class.all.removeAt(key).stop }
-	*removeAll { 
-		this.all.do { arg pat; pat.stop }; 
-		all = IdentityDictionary.new; 
-	}
+	
 
 	
 }
 
-
-
-Tdef : Pdef {
-	classvar <>all, <>defaultQuant=1.0;
-	
-	*initClass { 
-		all = IdentityDictionary.new;
-		CmdPeriod.add(this); 
-	}
-	
-	*new { arg key, func;
-		var pattern;
-		if(func.notNil) { 
-			pattern = Prout({ arg x; 
-				protect { 	// this error handling only helps if error is not in substream
-					func.value(x);
-					nil.alwaysYield; // prevent from calling handler
-				} { 
-					this.at(key).player.removedFromScheduler 
-				} 
-			}) 
-		};
-		^super.new(key, pattern)
-	}
-
-	*default { ^Routine({ loop { 1.wait } }) }
-	
-	storeArgs { ^[key,pattern.routineFunc] }
-	
-	constrainStream { arg str;
-		^if(quant.notNil and: { str.notNil }) {
-			Pseq([
-				Pconst(this.timeToNextBeat, str, 0.001),
-				pattern
-			])
-		} { pattern }.asStream
-	}
-	
-	playOnce { arg argClock, doReset = false, quant;
-		^PauseStream.new(this.asStream)
-			.play(argClock ? clock, doReset, quant ? this.quant)
-	}
-	play { arg argClock, doReset = false, quant;
-		isPlaying = true;
-		if(player.isPlaying.not) { player = this.playOnce(argClock, doReset, quant) }
-	}
-
-}
 
 
 // created by Pdef, Pdefn and Tdef
 
 RefStream : Stream {
 	classvar <>action;
-	var <>stream, <>pattern; 
+	var  <>pattern, <>stream; 
 	var <parent; 
 	
 	*new { arg parent;
@@ -208,6 +229,8 @@ RefStream : Stream {
 	
 	parent_ { arg argParent;
 		parent = argParent;
+		pattern = parent.pattern;
+		stream = pattern.asStream;
 		action.value(this);
 	}
 	
