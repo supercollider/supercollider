@@ -5,8 +5,12 @@ Pattern : AbstractFunction {
 	// concatenate Patterns
 	++ { arg aPattern;
 		^Pseq.new([this, aPattern])
-	}	
-
+	}
+	// compose Patterns
+	<> { arg aPattern;
+		^Pchain(this, aPattern)
+	}
+	
 	play { arg clock, protoEvent, quant=1.0;
 		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)	}
 
@@ -126,7 +130,6 @@ Pfuncn : Pattern {
 }	
 
 
-
 // Punop and Pbinop are used to create patterns in response to math operations
 Punop : Pattern {
 	var <>operator, <>a;
@@ -179,6 +182,38 @@ Pnaryop : Pattern {
 		^NAryOpStream.new(operator, streamA, streamlist);
 	}
 }
+
+Pchain : Pattern {
+	var <>patterns;
+	*new { arg ... patterns;
+		^super.newCopyArgs(patterns);
+	}
+	<> { arg aPattern;
+		var list;
+		list = patterns.copy.add(aPattern);
+		^this.class.new(*list)
+	}
+	embedInStream { arg inval;
+		var streams, inevent;
+		streams = patterns.collect(_.asStream);
+		loop {
+			streams.reverseDo { |str|
+				inevent = str.value(inval);
+				if(inevent.isNil) { ^inval };
+				inval = inevent;
+			};
+			inval = yield(inevent);
+		};
+	}
+	storeOn { arg stream;
+		stream << "(" <<< patterns[0];
+		(patterns.size - 1).do {|i|
+			stream << " <> " <<< patterns[i]
+		};
+		stream << ")"
+	}
+}
+
 
 Pevent : Pattern {
 	var <>pattern, <>event;

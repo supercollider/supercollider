@@ -277,8 +277,7 @@ Pdrop : FilterPattern {
 			event = inevent.yield;
 		};
 	}
-}	
-
+}
 
 Pfin : FilterPattern {
 	var <>count;
@@ -398,28 +397,6 @@ Plag : FilterPattern {
 			inevent = stream.next(event);
 			if (inevent.isNil) { ^event};
 			event = inevent.yield;
-		};
-	}
-}
-
-Pchain : FilterPattern {
-	var <>pattern1;
-	*new { arg pattern1, pattern2;
-		^super.new(pattern2).pattern1_(pattern1);
-	}
-	embedInStream { arg inval;
-		var stream1, stream2, inevent;
-
-		stream2 = pattern.asStream;
-		stream1 = pattern1.asStream;
-		loop {
-			inevent = stream1.value(inval);
-			if(inevent.isNil) { ^inval };
-			
-			inevent = stream2.value(inevent);
-			if (inevent.isNil) { ^inval };
-			
-			inval = yield(inevent);
 		};
 	}
 }
