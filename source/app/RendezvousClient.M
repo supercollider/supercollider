@@ -83,6 +83,11 @@
 
 void initRendezvousPrimitives();
 
+static NSString* kOSCServiceTypeStrings[kNumOSCServiceTypes] = {
+	@"_osc._udp.",
+	@"_osc._tcp."
+};
+
 static RendezvousClient* sharedRendezvousClient = nil;  // shared instance of the rendezvous client
 static OSCService* serviceBeingResolved = nil;			// placeholder for what I'm currently resolving
 static unsigned indexOfServiceBeingResolved = 0;		// which service am I currently resolving?
@@ -104,8 +109,11 @@ static unsigned indexOfServiceBeingResolved = 0;		// which service am I currentl
 {
 	[super init];
 	
-	browser = [[NSNetServiceBrowser alloc] init];
-	[browser setDelegate: self];
+	for (int serviceType = 0; serviceType < kNumOSCServiceTypes; serviceType++) {
+		browsers[serviceType] = [[NSNetServiceBrowser alloc] init];
+		[browsers[serviceType] setDelegate: self];
+	}
+	
 	// 10 elements is a reasonable starting point
 	oscServices = [[NSMutableArray alloc] initWithCapacity: 10];
 	
@@ -114,7 +122,9 @@ static unsigned indexOfServiceBeingResolved = 0;		// which service am I currentl
 
 - (void)findOSCServices
 {
-	[browser searchForServicesOfType: @"_osc._udp." inDomain: @""];
+	for (int serviceType = 0; serviceType < kNumOSCServiceTypes; serviceType++) {
+		[browsers[serviceType] searchForServicesOfType: kOSCServiceTypeStrings[serviceType] inDomain: @""];
+	}
 }
 
 - (unsigned)numberOfOSCServices
@@ -359,6 +369,17 @@ int prInitOSCService(struct VMGlobals *g, int numArgsPushed)
 	int port = (int) service->port;
 	SetInt(&serverObject->slots[2], port);
 	
+	// protocol
+	NSString* type = [service->netService type];
+	PyrSlot* protoSlot = &serverObject->slots[3];
+	if ([type isEqualToString: kOSCServiceTypeStrings[kOSCServiceUDP]]) {
+		SetSymbol(protoSlot, getsym("udp"));
+	} else if ([type isEqualToString: kOSCServiceTypeStrings[kOSCServiceTCP]]) {
+		SetSymbol(protoSlot, getsym("tcp"));
+	} else {
+		SetNil(protoSlot);
+	}
+
 /*
 	// if OSCService is changed to hold onto a netAddr, use this to set the netAddr fields
 	PyrSlot *netAddrSlot = &serverObject->slots[1];

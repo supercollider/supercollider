@@ -23,8 +23,15 @@
 
 @end
 
+enum OSCServiceType
+{
+	kOSCServiceUDP,
+	kOSCServiceTCP,
+	kNumOSCServiceTypes
+};
+
 @interface RendezvousClient : NSObject {
-	NSNetServiceBrowser* browser;
+	NSNetServiceBrowser* browsers[kNumOSCServiceTypes];
 	NSMutableArray* oscServices;
 }
 

@@ -1,5 +1,5 @@
 OSCService {
-	var <name, <hostname, <port;
+	var <name, <hostname, <port, <protocol;
 
 // the way OSCServers should be created	
 	*knownServices {
@@ -16,10 +16,11 @@ OSCService {
 		^services;		
 	}
 	
-	*knownAddresses { arg applicationType="SuperCollider";
+	*knownAddresses { arg applicationType="SuperCollider", protocol=\udp;
 		var addr;
 		this.knownServices.do { arg item;
-			if(applicationType.isNil or: { item.name == applicationType }, {
+			if(applicationType.isNil or: { item.name == applicationType }
+			   and: { protocol.isNil or: { item.protocol == protocol } }, {
 				addr = addr.add(item.netAddr);
 			});
 		};
@@ -41,5 +42,6 @@ OSCService {
 	}
 	
 	printOn { arg stream; 
-		stream << this.class.name << "(" <<* [name, hostname, port]  <<")" }
+		stream << this.class.name << "(" <<* [name, hostname, port, protocol ? \unknown]  <<")"
+	}
 }
