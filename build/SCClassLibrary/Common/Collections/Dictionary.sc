@@ -149,17 +149,17 @@ Dictionary : Set {
 		});
 	}
 
-    choose {
-        var index, key, val;
-        if (this.size <= 0, { ^nil }); // empty dictionary
-        while({
-            index = (array.size >> 1).rand << 1; // generate an even index.
-            array.at(index).isNil;              // key is at even index.
-        });
-        // return the value for the first non Nil key we find.
-        // the value is at the odd index.
-        ^array.at(index + 1); 
-    }
+	choose {
+		var index, key, val;
+		if (this.size <= 0, { ^nil }); // empty dictionary
+		while({
+			index = (array.size >> 1).rand << 1; // generate an even index.
+			array.at(index).isNil;			  // key is at even index.
+		});
+		// return the value for the first non Nil key we find.
+		// the value is at the odd index.
+		^array.at(index + 1); 
+	}
 	
 	// Pattern support
 	transformEvent { arg event;
@@ -332,6 +332,16 @@ IdentityDictionary : Dictionary {
 		});
 		^-2
 */
+	}
+
+	
+	collapse {
+		// cyclic parents will crash.
+		^this.collapseParents(this.class.new);
+	}
+	collapseParents { arg all;
+		if (parent.notNil) { all.putAll(parent.collapseParents(all)) };
+		^all.putAll(this);
 	}
 	
 	// not the fastest way, but the simplest
