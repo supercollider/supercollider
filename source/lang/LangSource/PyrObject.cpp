@@ -2513,13 +2513,13 @@ int putIndexedFloat(PyrObject *obj, double val, int index)
 int calcHash(PyrSlot *a);
 int calcHash(PyrSlot *a)
 {
-	int hash, z;
+	int hash;
 	switch (a->utag) {
 		case tagObj : hash = Hash(a->ui); break;
 		case tagHFrame : hash = Hash(a->ui); break;
 		case tagSFrame : hash = Hash(a->ui); break;
 		case tagInt : hash = Hash(a->ui); break;
-		case tagChar : z = Hash(a->ui & 255); break;
+		case tagChar : hash = Hash(a->ui & 255); break;
 		case tagSym : hash = a->us->hash; break;
 		case tagNil : hash = 0xA5A5A5A5; break;
 		case tagFalse : hash = 0x55AA55AA; break;
