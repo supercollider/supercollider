@@ -21,6 +21,9 @@ OSCresponder {
 		^true
 	}
 	*add { arg responder;
+		var old;
+		old = all.findMatch(responder);
+		if(old.notNil,{ all.remove(old) });
 		all.add(responder);
 	}
 	*remove { arg responder;
@@ -41,7 +44,7 @@ OSCresponder {
 	hash {
 		^addr.hash bitXor: cmdName.hash
 	}
-	add { all.add(this); }
+	add { this.class.add(this); }
 	remove { all.remove(this) }
 	removeWhenDone {
 		var func;
