@@ -1,8 +1,9 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
-\red0\green115\blue0;\red191\green0\blue0;\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+\red96\green96\blue96;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Tdef	
@@ -10,8 +11,9 @@
 \f0\b\fs24 task reference definition
 \f1\b0\fs18 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 superclass: StreamPlayerReference\
+\f2\fs24 \cf0 superclass: StreamPlayerReference\
 \
 \
 \
@@ -40,9 +42,14 @@ Tdef(key) returns the instance, Tdef(key, pat) stores the pattern and returns th
 			remove all tasks\
 			\
 	
+\f0\b *all
+\f2\b0 \
+			dict that stores all Tdefs\
+			\
+	
 \f0\b quant_(beats)
 \f2\b0 \
-			set the quant time\
+			set the quantisation time for beat accurate scheduling \
 			\
 	
 \f0\b isPlaying
@@ -52,36 +59,81 @@ Tdef(key) returns the instance, Tdef(key, pat) stores the pattern and returns th
 			as soon as a new one is assigned to it.\
 	
 \f1\fs18 \
-\
+	
+\f0\b\fs24 pause / unpause / reset\
+			
+\f2\b0 perform player method 
+\f1\fs18 \
 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // examples\cf0 \
 \
-\cf3 \
-\cf4 Tdef\cf3 (\cf5 \\x\cf3 ).play; \cf6 // create an empty Tdef and play it.\cf3 \
 \
-\cf4 Tdef\cf3 (\cf5 \\x\cf3 , \{ loop(\{ \cf7 "ggggggggggggggggg9999ggg999ggg999gg"\cf3 .scramble.postln; 0.5.wait; \}) \});\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Tdef\cf0 (\cf4 \\x\cf0 ).play; \cf2 // create an empty Tdef and play it.\cf0 \
+\
+\cf3 Tdef\cf0 (\cf4 \\x\cf0 , \{ loop(\{ \cf5 "ggggggggggggggggg9999ggg999ggg999gg"\cf0 .scramble.postln; 0.5.wait; \}) \});\
 \
 \
-\cf4 Tdef\cf3 (\cf5 \\x\cf3 , \{ loop(\{ \cf7 "---------////----------------------"\cf3 .scramble.postln; 0.25.wait; \}) \});\
-\cf4 Tdef\cf3 (\cf5 \\x\cf3 , \{ loop(\{ \cf4 thisThread\cf3 .seconds.postln; 1.wait; \}) \});\
-\cf4 Tdef\cf3 (\cf5 \\x\cf3 , \{ loop(\{ \cf4 thisThread\cf3 .seconds.postln; 1.01.wait; \}) \});\
+\cf3 Tdef\cf0 (\cf4 \\x\cf0 , \{ loop(\{ \cf5 "---------////----------------------"\cf0 .scramble.postln; 0.25.wait; \}) \});\
+\cf3 Tdef\cf0 (\cf4 \\x\cf0 , \{ loop(\{ \cf3 thisThread\cf0 .seconds.postln; 1.wait; \}) \});\
+\cf3 Tdef\cf0 (\cf4 \\x\cf0 , \{ loop(\{ \cf3 thisThread\cf0 .seconds.postln; 1.01.wait; \}) \});\
 \
-\cf4 TempoClock\cf3 .default.tempo = 2;\
+\cf3 TempoClock\cf0 .default.tempo = 2;\
 \
-\cf4 Tdef\cf3 (\cf5 \\x\cf3 , \{ \cf7 "the end"\cf3 .postln \});\
-\cf4 Tdef\cf3 (\cf5 \\x\cf3 , \{ \cf7 "one more"\cf3 .postln \});\
-\cf4 Tdef\cf3 (\cf5 \\x\cf3 , \{ loop(\{ \cf7 "some more"\cf3 .scramble.postln; 0.25.wait; \}) \});\
+\cf3 Tdef\cf0 (\cf4 \\x\cf0 , \{ \cf5 "the end"\cf0 .postln \});\
+\cf3 Tdef\cf0 (\cf4 \\x\cf0 , \{ \cf5 "one more"\cf0 .postln \});\
+\cf3 Tdef\cf0 (\cf4 \\x\cf0 , \{ loop(\{ \cf5 "some more"\cf0 .scramble.postln; 0.25.wait; \}) \});\
 \
-\cf4 TempoClock\cf3 .default.tempo = 1;\
+\cf3 TempoClock\cf0 .default.tempo = 1;\
 \
-\cf4 Tdef\cf3 (\cf5 \\x\cf3 ).stop;\
-\cf4 Tdef\cf3 (\cf5 \\x\cf3 ).play;\
+\cf3 Tdef\cf0 (\cf4 \\x\cf0 ).stop;\
+\cf3 Tdef\cf0 (\cf4 \\x\cf0 ).play;\
 \
-\cf4 Tdef\cf3 .remove(\cf5 \\x\cf3 );\
+\cf3 Tdef\cf0 .remove(\cf4 \\x\cf0 );\
 \
-\cf0 \
+\
+\
+\
+\cf6 // sound example\cf7 \
+\
+(\
+\cf6 // load a synthdef\cf7 \
+s.boot;\
+\cf8 SynthDef\cf7 (\cf9 "pdef_grainlet"\cf7 , \
+	\{ \cf8 arg\cf7  out=0, freq=440, dur=0.05;\
+		\cf8 var\cf7  env;\
+		env = \cf8 EnvGen\cf7 .kr(\cf8 Env\cf7 .perc(0.01, dur, 0.3), doneAction:2);\
+		\cf8 Out\cf7 .ar(out, \cf8 SinOsc\cf7 .ar(freq, 0, env))\
+	\}).load(s);\
+)\
+\cf8 Tdef\cf7 (\cf10 \\x\cf7 ).play;\
+\
+(\
+\cf8 Tdef\cf7 (\cf10 \\x\cf7 , \{ \
+	loop(\{\
+		s.sendMsg(\cf9 "/s_new"\cf7 , \cf9 "pdef_grainlet"\cf7 , -1,0,0, \cf10 \\freq\cf7 , rrand(600, 640));\
+		0.1.wait;\
+	\})\
+\})\
+)\
+\
+(\
+\cf8 Tdef\cf7 (\cf10 \\x\cf7 , \{ \
+	\cf8 var\cf7  x;\
+	x = \cf8 Pseries\cf7 (300, 20, 100).loop.asStream;\
+	loop(\{\
+		s.sendMsg(\cf9 "/s_new"\cf7 , \cf9 "pdef_grainlet"\cf7 , -1,0,0, \cf10 \\freq\cf7 , x.next);\
+		0.05.wait;\
+	\})\
+\})\
+)\
+\
+... and so on ...\
+\
+\cf8 Tdef\cf7 (\cf10 \\x\cf7 ).stop;\
+\cf8 Tdef\cf7 .remove(\cf10 \\x\cf7 );\
 \
 }
