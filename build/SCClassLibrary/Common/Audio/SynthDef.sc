@@ -118,7 +118,6 @@ SynthDef {
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.
 		
-		if(InspManager.global.notNil,{ name.insp("name as fed to file") });
 		file.putPascalString(name);
 		
 		this.writeConstants(file);
