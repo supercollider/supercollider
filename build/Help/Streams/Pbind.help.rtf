@@ -187,7 +187,7 @@ efx's input bus.  The effect Synth must also be created.  Synth.new is one way o
 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf5 "pbindefx"\cf0 , \{ \cf2 arg\cf0  in;  \cf3 //efx synthdef- dig the timing on the delay and the pbind.  :-P\
+\cf2 SynthDef\cf0 (\cf5 "pbindefx"\cf0 , \{ \cf2 arg\cf0  out, in;  \cf3 //efx synthdef- dig the timing on the delay and the pbind.  :-P\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	var audio, efx;\
 	audio = \cf2 In\cf0 .ar([20,21],2);\
