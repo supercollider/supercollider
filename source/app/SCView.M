@@ -420,6 +420,12 @@ SCView* SCView::findView(SCPoint where)
 	else return 0;
 }
 
+SCView* SCView::findViewByID(int32 inID)
+{
+	if (inID == mID) return this;
+	else return 0;
+}
+
 bool SCView::shouldDim()
 {
     return true;
@@ -571,32 +577,37 @@ int SCView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 //  1  2  3
 //  4  5  6
 //  7  8  9
-            int resize = slot->ui;
+            int32 resize;
+			err = slotIntVal(slot, &resize);
+			if (err) return err;
             if (resize < 1 || resize > 9) return errIndexOutOfRange;
             mLayout.mHResize = ((resize - 1) % 3) - 1;
             mLayout.mVResize = ((resize - 1) / 3) - 1;
             mTop->refresh();
             return errNone;
 	}
+    if(strcmp(name,"id") ==0) {
+		return slotIntVal(slot, &mID);
+    }
     if(strcmp(name,"minWidth") ==0) {
-        mLayout.mMinWidth = slot->ui;
+		err = slotFloatVal(slot, &mLayout.mMinWidth);
         mTop->refresh();
-        return errNone;
+        return err;
     }
     if(strcmp(name,"maxWidth") ==0) {
-        mLayout.mMaxWidth = slot->ui;
+		err = slotFloatVal(slot, &mLayout.mMaxWidth);
         mTop->refresh();
-        return errNone;
+        return err;
     }
     if(strcmp(name,"minHeight") ==0) {
-        mLayout.mMinHeight = slot->ui;
-        mTop->refresh();
-        return errNone;
+ 		err = slotFloatVal(slot, &mLayout.mMinHeight);
+       mTop->refresh();
+        return err;
     }
     if(strcmp(name,"maxHeight") ==0) {
-        mLayout.mMaxHeight = slot->ui;
+ 		err = slotFloatVal(slot, &mLayout.mMaxHeight);
         mTop->refresh();
-        return errNone;
+        return err;
     }
 	if (strcmp(name, "background")==0) {
             err = slotBackgroundVal(slot, &mBackground);
@@ -635,6 +646,10 @@ int SCView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
             SetInt(slot, resize);
             return errNone;
         }
+	if (strcmp(name, "id")==0) {
+		SetInt(slot, mID);
+		return errNone;
+	}
 	/*if (strcmp(name, "background")==0) {
             int err = getBackgroundVal(slot, mBackground);
             return err;
@@ -734,6 +749,18 @@ SCView* SCContainerView::findView(SCPoint where)
                     child = child->mNext;
             }
         }
+	return 0;
+}
+
+SCView* SCContainerView::findViewByID(int32 inID)
+{
+	if (inID == mID) return this;
+	SCView *child = mChildren;
+	while (child) {
+		SCView *found = child->findViewByID(inID);
+		if (found) return found;
+		child = child->mNext;
+	}
 	return 0;
 }
 
@@ -3983,6 +4010,31 @@ int prSCView_GetProperty(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prSCView_FindByID(struct VMGlobals *g, int numArgsPushed);
+int prSCView_FindByID(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+		
+	SCView *view = (SCView*)a->uo->slots[0].ui;
+	if (!view) return errFailed;
+	
+	int32 tag;
+	int err = slotIntVal(b, &tag);
+	if (err) return err;
+
+	view = view->findViewByID(tag);
+	if (!view) {
+		SetNil(a);
+	} else {
+		SetObjectOrNil(a, view->GetSCObj());
+	}
+	
+	return errNone;
+}
+
 int prSCView_Focus(struct VMGlobals *g, int numArgsPushed);
 int prSCView_Focus(struct VMGlobals *g, int numArgsPushed)
 {
@@ -4046,6 +4098,7 @@ void initSCViewPrimitives()
 	definePrimitive(base, index++, "_SCView_New", prSCView_New, 4, 0);
 	definePrimitive(base, index++, "_SCView_SetProperty", prSCView_SetProperty, 3, 0);
 	definePrimitive(base, index++, "_SCView_GetProperty", prSCView_GetProperty, 3, 0);	
+	definePrimitive(base, index++, "_SCView_FindByID", prSCView_FindByID, 2, 0);	
 	definePrimitive(base, index++, "_SCView_Focus", prSCView_Focus, 2, 0);	
 	definePrimitive(base, index++, "_SCView_Refresh", prSCView_Refresh, 1, 0);	
 	definePrimitive(base, index++, "_SCView_Remove", prSCView_Remove, 1, 0);	

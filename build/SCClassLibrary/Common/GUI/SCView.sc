@@ -60,8 +60,20 @@ SCView {  // abstract class
 		_SCView_Focus
 		^this.primitiveFailed
 	}
+
+	id {
+		^this.getProperty(\id)
+	}
+	id_ { arg id;
+		this.setProperty(\id, id)
+	}
+	
 	refresh {
 		_SCView_Refresh
+		^this.primitiveFailed
+	}
+	findByID { arg id;
+		_SCView_FindByID
 		^this.primitiveFailed
 	}
 	remove {

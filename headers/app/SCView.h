@@ -106,6 +106,7 @@ public:
 	
 	virtual bool isDragSource() const;
 	virtual SCView* findView(SCPoint where);
+	virtual SCView* findViewByID(int32 inID);
 	virtual void makeFocus(bool focus);
 	virtual SCView* nextFocus(bool *foundFocus, bool canFocus);
 	virtual SCView* prevFocus(SCView **prevView, bool canFocus);
@@ -124,6 +125,8 @@ public:
 	
 	virtual void setMenuItemChosen(int inItem) {}
 	
+	PyrObject* GetSCObj() { return mObj; }
+	
 protected:
 	friend class SCContainerView;
 
@@ -138,6 +141,7 @@ protected:
 	bool mEnabled;
 	bool mCanFocus;
 	bool mDragHilite;
+	int32 mID;
 };
 
 
@@ -152,6 +156,7 @@ public:
 	virtual void add(SCView *inChild);
 	virtual void remove(SCView *inChild);
 	virtual SCView* findView(SCPoint where);
+	virtual SCView* findViewByID(int32 inID);
 	virtual void makeFocus(bool focus);
 	virtual SCView* nextFocus(bool *foundFocus, bool canFocus);
 	virtual SCView* prevFocus(SCView **prevView, bool canFocus);

@@ -2,7 +2,7 @@
 SCWindow {
 	classvar <>allWindows;
 	
-	var dataptr, <name, <>onClose, <view,<userCanClose=true;
+	var dataptr, <name, <>onClose, <view, <userCanClose=true;
 	
 	*new { arg name = "panel", bounds, resizable = true, border = true;
 		^super.new.initSCWindow(name, bounds, resizable, border)
@@ -92,6 +92,10 @@ SCWindow {
 			});
 		});
 		
+	}
+	
+	findByID { arg id;
+		^view.findByID(id)
 	}
 			
 	// PRIVATE
