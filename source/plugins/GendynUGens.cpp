@@ -46,14 +46,17 @@
         };
 		
 		
-		//works out all breakpoints per cycle and normalises time intervals to desired frequency
+		//Random walks as Gendy1 but works out all breakpoints per cycle and normalises time intervals to desired frequency
 		struct Gendy3 : public Unit
         {
-			double mPhase;
-			float mFreqMul, mAmp, mNextAmp, mSpeed, mDur;      
+			double mPhase, mNextPhase, mLastPhase;
+			float mSpeed, mFreqMul;
+			float mAmp, mNextAmp, mInterpMult;      
 			int mMemorySize, mIndex;
-			float* mMemoryAmp; 	//could hard code as 12
+			float* mMemoryAmp;
 			float* mMemoryDur;
+			double* mPhaseList;
+			float* mAmpList;
         };
 		
         extern "C" {  
@@ -65,8 +68,13 @@
 			void Gendy2_next_k(Gendy2 *unit, int inNumSamples);
             void Gendy2_Ctor(Gendy2* unit);
             void Gendy2_Dtor(Gendy2* unit);
+        
+			void Gendy3_next_k(Gendy3 *unit, int inNumSamples);
+            void Gendy3_Ctor(Gendy3* unit);
+            void Gendy3_Dtor(Gendy3* unit);
             
         }
+		
     
         void Gendy1_Ctor( Gendy1* unit ) {
                          
@@ -473,6 +481,185 @@
 
 
 
+ void Gendy3_Ctor( Gendy3* unit ) {
+                         
+			SETCALC(Gendy3_next_k);
+	 
+			unit->mFreqMul = unit->mRate->mSampleDur;
+			unit->mPhase = 1.f;	//should immediately decide on new target 
+			unit->mAmp = 0.0; 
+			unit->mNextAmp = 0.0;
+			unit->mNextPhase = 0.0;
+			unit->mLastPhase = 0.0;
+			unit->mInterpMult = 1.0;
+			unit->mSpeed = 100; 
+			
+			unit->mMemorySize= (int) ZIN0(7);
+			if(unit->mMemorySize<1) unit->mMemorySize=1;
+			unit->mIndex=0;
+			unit->mMemoryAmp= (float*)RTAlloc(unit->mWorld, unit->mMemorySize * sizeof(float));
+			unit->mMemoryDur= (float*)RTAlloc(unit->mWorld, unit->mMemorySize * sizeof(float));
+			
+			//one more in amp list for guard (wrap) element
+			unit->mAmpList= (float*)RTAlloc(unit->mWorld, (unit->mMemorySize+1) * sizeof(float));
+			unit->mPhaseList= (double*)RTAlloc(unit->mWorld, (unit->mMemorySize+1) * sizeof(double));
+			
+			RGen& rgen = *unit->mParent->mRGen;
+			
+			//initialise to zeroes and separations
+			int i=0;
+			for(i=0; i<unit->mMemorySize;++i) {
+				unit->mMemoryAmp[i]=2*rgen.frand() - 1.0;
+				unit->mMemoryDur[i]=rgen.frand();
+				unit->mAmpList[i]=2*rgen.frand() - 1.0;
+				unit->mPhaseList[i]=1.0; //will be intialised immediately
+			}
+			
+			unit->mMemoryAmp[0]=0.0;	//always zeroed first BP
+        }
+    
+        void Gendy3_Dtor(Gendy3 *unit)
+        {
+			RTFree(unit->mWorld, unit->mMemoryAmp);
+			RTFree(unit->mWorld, unit->mMemoryDur);
+        	RTFree(unit->mWorld, unit->mAmpList);
+			RTFree(unit->mWorld, unit->mPhaseList);
+		}
+		
+		void Gendy3_next_k( Gendy3 *unit, int inNumSamples ) {
+        
+			float *out = ZOUT(0);
+			
+			//distribution choices for amp and dur and constants of distribution
+			int whichamp= ZIN0(0);
+			int whichdur= ZIN0(1);
+			float aamp = ZIN0(2);
+			float adur = ZIN0(3);
+			float freq = ZIN0(4);
+			float scaleamp = ZIN0(5);
+			float scaledur = ZIN0(6); 
+	
+			double phase = unit->mPhase;
+			float amp= unit->mAmp;
+			float nextamp= unit->mNextAmp;
+			float speed= unit->mSpeed;
+			int index= unit->mIndex;  
+			int interpmult= unit->mInterpMult;
+			double lastphase= unit->mLastPhase;
+			double nextphase= unit->mNextPhase;
+			
+			RGen& rgen = *unit->mParent->mRGen;
+
+			float * amplist= unit->mAmpList;
+			double * phaselist= unit->mPhaseList;
+
+			LOOP(inNumSamples, 
+			float z;
+					
+			if (phase >= 1.f) { //calculate all targets for new period
+					phase -= 1.f;
+
+					int num= (int)(ZIN0(8));
+					if((num>(unit->mMemorySize)) || (num<1)) num=unit->mMemorySize;
+
+					int j; 
+					
+					float dursum=0.0;
+					
+					float * memoryamp= unit->mMemoryAmp;
+					float * memorydur= unit->mMemoryDur;
+					
+					for(j=0; j<num; ++j) {
+					
+						if(j>0) {   //first BP always stays at 0
+						float amp= (memoryamp[j])+ (scaleamp*Gendyn_distribution(whichamp, aamp, rgen.frand()));
+						amp= Gendyn_mirroring(-1.0,1.0,amp);
+						memoryamp[j]=amp;
+						}
+					   
+					    float dur= (memorydur[j])+ (scaledur*Gendyn_distribution(whichdur, adur, rgen.frand()));
+						dur= Gendyn_mirroring(0.01,1.0,dur);	//will get normalised in a moment, don't allow zeroes
+						memorydur[j]=dur;
+						dursum += dur;
+					}
+					
+					//normalising constant
+					dursum=1.0/dursum;
+					
+					int active=0;
+					
+					//phase duration of a sample
+					float minphase=unit->mFreqMul;
+					
+					speed= freq*minphase;
+			
+					//normalise and discard any too short (even first)
+					for(j=0; j<num; ++j) {
+					
+					    float dur= memorydur[j];
+						dur *= dursum;
+						
+						if(dur>=minphase) {
+							amplist[active]=memoryamp[j];
+							phaselist[active]=dur;
+							++active;
+						}
+					}
+					
+					//add a zero on the end at active
+					amplist[active]=0.0; //guard element
+					phaselist[active]=2.0; //safety element
+					
+					//lastphase=0.0;
+//					nextphase= phaselist[0];
+//					amp=amplist[0];
+//					nextamp=amplist[1];
+//					index=0;
+//					unit->mIndex=index;
+//					
+					//setup to trigger next block
+					nextphase=0.0;
+					nextamp=amplist[0];
+					index= -1;
+			} 
+					
+				
+			if (phase >= nextphase) { //are we into a new region?
+				
+					//new code for indexing
+					++index; //=index+1; //%num;
+					
+					amp=nextamp;
+				   
+					unit->mIndex=index;
+					
+					lastphase=nextphase;
+					nextphase=lastphase+phaselist[index];
+					nextamp=amplist[index+1]; 
+										
+					interpmult= 1.0/(nextphase-lastphase);
+					
+				}	
+					
+			float interp= (phase-lastphase)*interpmult;		
+					
+			//linear interpolation could be changed
+			z = ((1.0-interp)*amp) + (interp*nextamp);
+			
+			phase +=  speed;
+			ZXP(out) = z;
+			);
+
+			unit->mPhase = phase;
+			unit->mSpeed = speed;
+			unit->mInterpMult=interpmult; 
+			unit->mAmp =  amp;      
+			unit->mNextAmp = nextamp;
+			unit->mLastPhase= lastphase;
+			unit->mNextPhase= nextphase;
+	
+        }
+
 
 
     
@@ -483,6 +670,8 @@
 						DefineDtorUnit(Gendy1);
 						
 						DefineDtorUnit(Gendy2);
+				
+						DefineDtorUnit(Gendy3);
                     }
         
         
