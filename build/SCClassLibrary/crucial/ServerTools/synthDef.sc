@@ -16,14 +16,9 @@
 		bundle = List.new;
 		group = group.asGroup;
 		this.prepareToBundle(group,bundle);
-		//bundle.insp;
-		if(bundle.size < 5,{
-			group.server.listSendBundle(nil,bundle);
-		},{
-			bundle.clump(5).do({ arg bundle;
-				group.server.listSendBundle(nil,bundle);
-			})
-		})				
+		bundle.clump(5).do({ arg bundle,i;
+			group.server.listSendBundle(i * 0.001,bundle);
+		})
 	}
 	spawnToBundle {}
 	loadDefFileToBundle {}
