@@ -55,6 +55,27 @@ NumberEditorGui : EditorGui {
 }
 
 
+PopUpEditorGui : EditorGui {	
+	var popV;
+	
+	guiBody { arg layout;
+		var horSize;
+		horSize = model.labels.maxValue({arg item; item.size }) * 12;
+		popV = SCPopUpMenu(layout,Rect(0,0,horSize,15))
+			.items_(model.labels)
+			.action_({ arg nb;
+				model.selectByIndex(popV.value).changed(this)
+			});
+		popV.setProperty(\value,model.selectedIndex)
+	}
+	update { arg changed,changer;
+		if(changer !== this,{
+			popV.setProperty(\value,model.selectedIndex)
+		});
+	}	
+}
+
+
 
 BooleanEditorGui : EditorGui {
 	var cb;

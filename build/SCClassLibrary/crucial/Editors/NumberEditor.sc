@@ -14,14 +14,6 @@ Editor {
 	
 	setPatchOut { arg po; patchOut = po }
 
-	editWithCallback { arg callback;
-		ModalDialog({ arg layout;
-			this.gui(layout);
-		},{
-			callback.value(value);
-		})
-	}
-	
 	prepareToBundle { arg group,bundle;
 		// i need this now ?
 		if(patchOut.isNil,{ // private out
@@ -33,6 +25,15 @@ Editor {
 	instrArgFromControl { arg control;
 		^control
 	}
+	
+	editWithCallback { arg callback;
+		ModalDialog({ arg layout;
+			this.gui(layout);
+		},{
+			callback.value(value);
+		})
+	}
+	
 }
 
 KrNumberEditor : Editor {
@@ -46,13 +47,6 @@ KrNumberEditor : Editor {
 		spec = aspec.asSpec ?? {ControlSpec.new};
 		this.value_(spec.constrain(val));
 	}
-//	value_ { arg val;
-//		value = val;
-//		// server support
-//		// could also do it with a dependant
-//		//if(patchIn.notNil,{ patchIn.value = value });
-//		//this.changed(\value,changer);
-//	}
 	activeValue_ { arg val;
 		this.value_(val);
 		action.value(value);
@@ -68,14 +62,14 @@ KrNumberEditor : Editor {
 		synthDef.addKr(name,this.synthArg);
 	}
 	instrArgRate { ^\control }
-	instrArgFromControl { arg control;
-		//should request a LagControl
-		if(lag > 0.0,{
-			^Lag.kr(control,lag)
-		},{
-			^control
-		})
-	}
+//	instrArgFromControl { arg control;
+//		//should request a LagControl
+//		if(lag > 0.0,{
+//			^Lag.kr(control,lag)
+//		},{
+//			^control
+//		})
+//	}
 	didSpawn { arg patchIn,synthi;
 		//patchOut.enable;
 		patchOut.connectTo(patchIn,false);
@@ -110,8 +104,8 @@ NumberEditor : KrNumberEditor {
 		^value
 	}
 	instrArgRate { ^\scalar }
-
 }
+
 IntegerEditor : NumberEditor {
 
 	value_ { arg val,changer;
@@ -120,6 +114,37 @@ IntegerEditor : NumberEditor {
 	}
 }
 
+// paul.crabbe@free.fr
+PopUpEditor : KrNumberEditor {
+
+	var <>labels, <>values,<selectedIndex;
+	
+	*new { arg initVal,labels,values;
+		^super.new.pueinit(initVal,values,labels)
+	}
+	init {} // should be a shared superclass above this
+			// not using spec or constrain
+	pueinit { arg initVal,v,l;
+		value = initVal;
+		if(l.isNil,{
+			values = v ?? { Array.series(10,0,0.1) };
+			labels = (l ? values).collect({ arg l; l.asString });
+		},{
+			values = v ?? { Array.series(labels.size,0,1) };
+			labels = l.collect({ arg l; l.asString });
+		});	
+		selectedIndex = values.indexOf(value) ? 0;
+	}
+	value_ { arg val;
+		value = val;
+		selectedIndex = values.indexOf(value) ? 0;
+	}
+	selectByIndex { arg index;
+		value = values.at(index);
+		selectedIndex = index;
+	}
+	guiClass { ^PopUpEditorGui }
+}
 
 
 BooleanEditor : NumberEditor {
