@@ -1637,7 +1637,7 @@ SCPopUpMenu::SCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 	: SCView(inParent, inObj, inBounds), mMenuH(0), mValue(0)
 {
 	mStringColor = SCMakeColor(0,0,0,1);
-	//mButtonColor = SCMakeColor(0,0,0,0);
+	//mArrowColor = SCMakeColor(0,0,0,0);
 	strcpy(mFontName, "Helvetica");
 	mFontSize = 12.;
 }
@@ -1660,7 +1660,7 @@ void SCPopUpMenu::draw(SCRect inDamage)
     CGRect bounds = SCtoCGRect(mBounds);
     QDDrawBevelRect(cgc, bounds, 1, false);
 
-	CGContextSetRGBFillColor(cgc, 0, 0, 0, 1);
+	CGContextSetRGBFillColor(cgc, mStringColor.red, mStringColor.green, mStringColor.blue, mStringColor.alpha);
 	
 	int vc = bounds.origin.y + bounds.size.height/2;
 	int hc = bounds.origin.x + 7;
@@ -1709,16 +1709,6 @@ bool SCPopUpMenu::setValue(int inValue, bool send)
 
 void SCPopUpMenu::mouseBeginTrack(SCPoint where, int modifiers)
 {	
-
-/*
-FUNCTION NewMenu (menuID: Integer; menuTitle: Str255): MenuHandle;
-PROCEDURE AppendMenu (menu: MenuHandle; data: Str255); 
-PROCEDURE DisposeMenu (theMenu: MenuHandle); 
-PopUpMenuSelect (menu: MenuHandle;
-                           Top: Integer; Left: Integer; 
-                           PopUpItem: Integer)
-                           : LongInt;
-*/
 	if (!mMenuH) return;
 	
 	[mTop->GetNSView() startMenuTracking: this];
