@@ -69,7 +69,7 @@ OSCMultiResponder : OSCresponder {
 
 OSCresponderNode {
 	var <addr, <cmdName, <>action;
-	*new { arg addr, cmdName, action, removeWhenDone=false;
+	*new { arg addr, cmdName, action;
 		^super.newCopyArgs(addr, cmdName.asSymbol, action);
 		
 	}
