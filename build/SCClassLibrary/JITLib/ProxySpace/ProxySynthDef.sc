@@ -15,6 +15,9 @@ ProxySynthDef : SynthDef {
 			var envgen, synthGate, synthFadeTime, out, outCtl;
 			
 			prependArgs = prependArgs.collect({ arg parg; parg.value });
+			if(func.def.argNames.asArray.includes(\out), { 
+				"out argument is provided internally!".error; ^nil 
+			});
 			output = SynthDef.wrap(func, lags, prependArgs);
 			rate = output.rate;
 			
