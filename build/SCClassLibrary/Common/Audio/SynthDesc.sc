@@ -237,7 +237,7 @@ SynthDescLib {
 	*send {
 		global.send;
 	}
-	*read { arg path = "./synthdefs/*.scsyndef";
+	*read { arg path;
 		global.read(path);
 	}
 	at { arg i; ^synthDescs.at(i) }
@@ -247,7 +247,10 @@ SynthDescLib {
 			synthDescs.do {|desc| desc.send(server) };
 		};
 	}
-	read	{ arg path = "./synthdefs/*.scsyndef";
+	read	{ arg path;
+		if (path.isNil) {
+			path = SynthDef.synthDefDir ++ "*.scsyndef";
+		};
 		synthDescs = SynthDesc.read(path, true, synthDescs);
 		Post << "SynthDescLib '" << name << "' read of '" << path << "' done.\n"
 	}

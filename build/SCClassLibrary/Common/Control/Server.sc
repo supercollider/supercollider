@@ -229,8 +229,9 @@ Server : Model {
 	}
 
 	// load from disk locally, send remote
-	sendSynthDef { arg name,dir="synthdefs/";
+	sendSynthDef { arg name, dir;
 		var file, buffer;
+		dir = dir ? SynthDef.synthDefDir;
 		file = File(dir ++ name ++ ".scsyndef","r");
 		if (file.isNil, { ^nil });
 		protect {
@@ -242,7 +243,8 @@ Server : Model {
 		this.sendMsg("/d_recv", buffer);
 	}
 	// tell server to load from disk
-	loadSynthDef { arg name, completionMsg,dir="synthdefs/";
+	loadSynthDef { arg name, completionMsg, dir;
+		dir = dir ? SynthDef.synthDefDir;
 		this.listSendMsg(
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
 		) 

@@ -87,7 +87,11 @@ Function : AbstractFunction {
 	}
 	
 	defer { arg delta = 0;
-		AppClock.sched(delta, this)
+		if (delta == 0 and: {this.canCallOS}) {
+			this.value
+		}{
+			AppClock.sched(delta, this)
+		}
 	}
 
 	// Pattern support

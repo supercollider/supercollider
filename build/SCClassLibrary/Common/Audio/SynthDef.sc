@@ -13,6 +13,12 @@ SynthDef {
 	// topo sort
 	var <>available;
 	
+	classvar <synthDefDir = "synthdefs/";
+	
+	*synthDefDir_ { arg dir;
+		if (dir.last != $/) { dir = dir ++ $/ };
+		synthDefDir = dir;
+	}
 	
 	*new { arg name, ugenGraphFunc, rates, prependArgs;
 		^this.prNew(name)
@@ -35,7 +41,7 @@ SynthDef {
 		^UGen.buildSynthDef.buildUgenGraph(func, rates, prependArgs);
 	}
 	//only write if no file exists
-	*writeOnce { arg name, func, rates, prependArgs, dir="synthdefs/";
+	*writeOnce { arg name, func, rates, prependArgs, dir;
 		^pathMatch(dir ++ name ++ ".scsyndef").isEmpty.if({
 			this.new(name, func, rates, prependArgs).writeDefFile(dir)
 		}, nil);
@@ -211,8 +217,8 @@ SynthDef {
 		this.asArray.writeDef(stream);
 		^stream.collection;
 	}
-	writeDefFile { arg dir="synthdefs/";
-		super.writeDefFile(name,dir);
+	writeDefFile { arg dir;
+		super.writeDefFile(name, dir);
 	}
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.
@@ -370,7 +376,7 @@ SynthDef {
 		server.listSendBundle(nil,[["/d_recv", this.asBytes,completionMsg]]);
 		//server.sendMsg("/d_recv", this.asBytes,completionMsg);
 	}
-	load { arg server, completionMsg,dir="synthdefs/";
+	load { arg server, completionMsg,dir;
 		// i should remember what dir i was written to
 		var path;
 		this.writeDefFile(dir);
@@ -378,11 +384,12 @@ SynthDef {
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
 		)
 	}
-	store { arg libname=\global, path="synthdefs/", completionMsg;
-		var lib, bytes, file;
+	store { arg libname=\global, dir, completionMsg;
+		var lib, bytes, file, path;
+		dir = dir ? synthDefDir;
 		lib = SynthDescLib.all[libname];
 		if(lib.isNil) { Error("library" + libname  + "not found").throw };
-		path = path ++ name ++ ".scsyndef";
+		path = dir ++ name ++ ".scsyndef";
 		file = File(path, "w");
 		protect {
 			bytes = this.asBytes;

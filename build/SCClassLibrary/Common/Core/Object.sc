@@ -33,6 +33,7 @@ Object {
 	gcDumpSet { arg set; _GCDumpSet }
 	gcInfo { _GCInfo }
 	gcSanity { _GCSanity }
+	canCallOS { _CanCallOS }
 	
 		
 	//accessing
@@ -138,6 +139,17 @@ Object {
 	eventAt { ^nil }
 	finishEvent {}
 	atLimit { ^false }
+	generate { arg n = 16;
+		var list, stream;
+		stream = this.asStream;
+		n.do {
+			var item;
+			item = stream.next;
+			if (item.isNil) {^list};
+			list = list.add( item );
+		};
+		^list
+	}
 	
 	// testing
 	? { arg obj; ^this }
@@ -463,8 +475,10 @@ Object {
 		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
 	
-	writeDefFile { arg name, dir="synthdefs/";
+	writeDefFile { arg name, dir;
 		var file;
+
+		dir = dir ? SynthDef.synthDefDir;
 		
 		if (name.isNil, { error("no file name"); ^nil });
 		
