@@ -407,7 +407,7 @@ int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
 	double time;
 	int err = slotDoubleVal(args, &time);
 	if (!err) {
-		time += g->thread->time.uf;
+		time += g->thread->seconds.uf;
 		SetFloat(args, time);
 	}
 	int numargs = numArgsPushed - 1;

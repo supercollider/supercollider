@@ -37,8 +37,9 @@ Environment : IdentityDictionary {
 // Events are returned by Pattern Streams
 
 Event : Environment {
-	classvar <defaultProtoEvent;
+	classvar <default;
 	
+	next { ^this.copy }
 	delta {
 		_Event_Delta
 		^this.primitiveFailed;
@@ -54,9 +55,9 @@ Event : Environment {
 		^this.delta / this.at(\tempo)
 	}
 	
-	*protoEvent { ^defaultProtoEvent.copy }
-	*initClass {		
-		defaultProtoEvent = this.make({		
+	*initClass {
+		Class.initClassTree(Server);
+		default = this.make({		
 			// fill prototype event with default property values
 			
 			~reverse = false;
@@ -122,13 +123,18 @@ Event : Environment {
 			~player = NotePlayer.new;
 			
 			~msgFunc = { arg id, freq;
-				[9, ~instrument, id, 1, ~group, 
-					\freq, freq, \amp, ~amp, \out, ~out, \pan, ~pan];
+				[[9, ~instrument, id, 1, ~group, 
+					\i_out, ~out, \freq, freq, \amp, ~amp, \pan, ~pan]];
 			};
 			
 			~server = Server.local;
 		});
+		
+		SynthDef(\default, { arg i_out=0, freq=440, amp=0.1, pan=0, gate=1;
+			var z;
+			z = LPF.ar(LFSaw.ar(freq) * Linen.kr(gate, 0.01, amp, 0.3, 2), freq * 12);
+			Out.ar(i_out, Pan2.ar(z, pan));
+		}).writeDefFile;
 	}
 }
-
 

@@ -7,21 +7,21 @@ EventPlayer {
 
 NotePlayer : EventPlayer {
 	playOneEvent { arg lag, dur, freq;
-		var msg, server, id;
+		var bndl, server, id;
 		
 		server = ~server;
 		id = server.nextNodeID;
 		
-		msg = ~msgFunc.value(id, freq);
+		bndl = ~msgFunc.value(id, freq);
 		
 		//send the note on bundle
-		server.sendBundle(lag, msg); 
+		server.listSendBundle(lag, bndl); 
 				
 		// send note off bundle. 
 		server.sendBundle(lag + dur, [15, id, \gate, 0]); //15 == n_set
 	}
 	playEvent { arg event;
-		var freqs, lag, dur, strum;
+		var freqs, lag, dur, strum, sustain;
 		event.use({
 			~finish.value; // finish the event
 			// if tempo changes this will be inaccurate.
@@ -30,14 +30,15 @@ NotePlayer : EventPlayer {
 			lag = ~lag + ~server.latency;
 			freqs = ~freq;
 			strum = ~strum;
+			sustain = ~sustain;
 			if (freqs.isKindOf(Symbol), { nil },{
 				if (freqs.isSequenceableCollection, {
 					freqs.do({ arg freq, i;
-						this.playOneEvent(i * strum + lag, dur, freq);
+						this.playOneEvent(i * strum + lag, sustain, freq);
 					});
 						
 				},{	
-					this.playOneEvent(lag, dur, freqs);
+					this.playOneEvent(lag, sustain, freqs);
 				});
 			});
 		});

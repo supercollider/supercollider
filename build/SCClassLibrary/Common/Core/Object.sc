@@ -435,12 +435,13 @@ Object {
 	isUGen { ^false }
 
 	// scheduling
-	awake { arg inTime;
+	awake { arg beats, seconds, clock;
 		var time;
-		time = inTime; // prevent optimization
-		^this.next(inTime)
+		time = seconds; // prevent optimization
+		^this.next(beats)
 	}
-	time_ {  } // for PauseStream
+	beats_ {  } // for PauseStream
+	clock_ {  } // for Clock
 
 	// catch binary operators failure
 	performBinaryOpOnSomething { arg aSelector;

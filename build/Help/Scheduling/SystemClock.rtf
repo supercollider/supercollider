@@ -7,8 +7,9 @@
 \f0\b\fs36 \cf0 SystemClock
 \f1\b0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 superclass: Clock\
+\f0\b\fs28 \cf0 superclass: Clock\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
@@ -25,6 +26,7 @@ AppClock is less accurate (uses NSTimers) but can call Cocoa primitives.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 		SystemClock\cf0 .sched(0.0,\{ arg time;  \
 			time.postln; \
 			rrand(0.1,0.9) \
@@ -36,6 +38,7 @@ AppClock is less accurate (uses NSTimers) but can call Cocoa primitives.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 		SystemClock\cf0 .sched(2.0,\{ \
 			\cf3 "2.0 seconds later"\cf0 .postln; \
 			\cf2 nil\cf0  \
@@ -53,7 +56,7 @@ AppClock is less accurate (uses NSTimers) but can call Cocoa primitives.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 *absSched(time,task)\
+\f0\b\fs24 \cf0 *schedAbs(time,task)\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 

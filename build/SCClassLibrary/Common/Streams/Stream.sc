@@ -186,7 +186,7 @@ FuncStream : Stream {
 
 PauseStream : Stream
 {
-	var <stream, originalStream, clock;
+	var <stream, originalStream, <clock;
 	
 	*new { arg argStream, argClock; 
 		^super.newCopyArgs(nil, argStream, argClock ? SystemClock) 
@@ -213,11 +213,9 @@ PauseStream : Stream
 		if (nextTime.isNil, { stream = nil });
 		^nextTime
 	}
-	
-	awake { arg inTime;
-		var nextTime;
-		stream.time = inTime;
-		^this.next(inTime);
+	awake { arg beats, seconds, inClock;
+		stream.beats = beats;
+		^this.next(beats)
 	}
 }
 
@@ -232,15 +230,16 @@ Task : PauseStream {
 ////////////////////////////////////////////////////////////////////////
 
 EventStream : PauseStream {
-	var <>protoEvent;
-	*new { arg stream, protoEvent;
-		^super.new(stream, SystemClock).protoEvent_(protoEvent);
+	*new { arg stream;
+		^super.new(stream, SystemClock);
 	}
-	next {
+	next { arg inTime;
 		var event, nextTime;
-		event = stream.next( protoEvent.copy );		
+		event = stream.next(inTime);		
 		nextTime = event.play;
 		if (nextTime.isNil, { stream = nil });
 		^nextTime
 	}
 }
+
+

@@ -9,7 +9,7 @@ Pdefn : Pattern {
 		numericals = IdentityDictionary.new; 
 		clock = QuantClock.new(1.0);
 		patterns.put(\rest,  
-			Pdef.make(\rest, Pbind( 
+			Pdef.make(\rest, Pbind(nil,
 				\freq, \rest, 
 				\dur, 1
 		 	 )));

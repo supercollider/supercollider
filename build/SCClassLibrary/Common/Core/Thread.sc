@@ -12,7 +12,7 @@ Thread : Stream {
 	var top=0, numpop=0, returnLevels=0, receiver, numArgsPushed=0;
 	var parent, terminalValue;
 	var <primitiveError=0, <primitiveIndex=0, <randData=0;
-	var <>time=0.0;
+	var <beats=0.0, <seconds=0.0, <clock;
 
 	*new { arg func, stackSize=512;
 		^super.new.init(func, stackSize)
@@ -22,6 +22,13 @@ Thread : Stream {
 		^this.primitiveFailed
 	}
 	copy { ^this } // sorry cannot copy
+	
+	clock_ { arg inClock;
+		clock = inClock;
+		beats = clock.secs2beats(seconds);
+	}
+	seconds_ { arg inSeconds; seconds = inSeconds; beats = clock.secs2beats(inSeconds); }
+	beats_ { arg inBeats; beats = inBeats; seconds = clock.beats2secs(inBeats); }
 	
 	randSeed_ { arg seed;
 		// You supply an integer seed.
@@ -69,9 +76,11 @@ Routine : Thread {
 	}
 		
 	// PRIVATE
-	awake { arg inTime;
-		time = inTime;
-		^this.next(inTime)
+	awake { arg inBeats, inSeconds, inClock;
+		beats = inBeats;
+		seconds = inSeconds;
+		clock = inClock;
+		^this.next(beats)
 	}
 	prStart { arg inval;
 		func.value(inval);

@@ -306,7 +306,10 @@ void slotString(PyrSlot *slot, char *str)
 			sprintf(str, "inf");
 			break;
 		case tagHFrame :
-			if (slot->uof->method.uoblk->classptr == class_method) {
+			if (!slot->uof) {
+				sprintf(str, "Frame (%0X)%s", slot->ui,
+					slot->utag == tagHFrame ? "H":"S");
+			} else if (slot->uof->method.uoblk->classptr == class_method) {
 				sprintf(str, "Frame (%0X)%s of %s-%s", slot->ui,
 					slot->utag == tagHFrame ? "H":"S",
 					slot->uof->method.uom->ownerclass.uoc->name.us->name,

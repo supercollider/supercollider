@@ -14,11 +14,11 @@ Condition {
 	signal {
 		var tempWaitingThreads, time;
 		if (func.value, {		
-			time = thisThread.time;
+			time = thisThread.seconds;
 			tempWaitingThreads = waitingThreads;
 			waitingThreads = nil;
 			tempWaitingThreads.do({ arg thread; 
-				thread.time = time;
+				thread.seconds = time;
 				thread.resume;
 			});
 		});
@@ -35,11 +35,11 @@ Wait {
 	}
 	signal {
 		var tempWaitingThreads, time;
-		time = thisThread.time;
+		time = thisThread.seconds;
 		tempWaitingThreads = waitingThreads;
 		waitingThreads = nil;
 		tempWaitingThreads.do({ arg thread; 
-			thread.time = time;
+			thread.seconds = time;
 			thread.resume;
 		});
 	}

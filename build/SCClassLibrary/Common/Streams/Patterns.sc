@@ -7,15 +7,15 @@ Pattern : AbstractFunction {
 		^Pseq.new([this, aPattern])
 	}	
 
-	play { arg protoEvent, clock;
-		^Pevent(this, protoEvent).play(clock)
+	play { arg clock;
+		^this.asEventStream.play
 	}
 	
 	asStream {
 		^this.subclassResponsibility(thisMethod)
 	}
-	asEventStream { arg protoEvent;
-		^EventStream(this,protoEvent);
+	asEventStream {
+		^EventStream(this.asStream);
 	}
 	embedInStream { arg inval;
 		^this.asStream.embedInStream(inval);
@@ -44,19 +44,6 @@ Pattern : AbstractFunction {
 	}
 	composeNAryOp { arg selector, argList;
 		^this.notYetImplemented
-	}
-}
-
-Pevent : Pattern {
-	var <>pattern, <>event;
-	*new { arg pattern, event;
-		^super.newCopyArgs(pattern, event ? Event.protoEvent);
-	}
-	asStream {
-		^EventStream(pattern.asStream, event);
-	}
-	play {
-		^this.asStream.play
 	}
 }
 
@@ -124,44 +111,47 @@ Pbinop : Pattern {
 
 
 Pbind : Pattern {
-	var <>patternpairs;
-	*new { arg ... pairs;
-		if (pairs.size.odd, { "Pbind should have even number of args.\n".error; this.halt });
-		^super.new.patternpairs_(pairs)
+	var <>pattern, <>patternpairs;
+	*new { arg pattern ... pairs;
+		if (pairs.size.odd, { "Pbind should have odd number of args.\n".error; this.halt });
+		^super.newCopyArgs(pattern ? Event.default, pairs)
 	}
 	asStream {
-		var streampairs, endval;
+		var streampairs, endval, eventStream;
 		
 		streampairs = patternpairs.copy;
 		endval = streampairs.size - 1;
 		forBy (1, endval, 2, { arg i;
 			streampairs.put(i, streampairs.at(i).asStream);
 		});
+		eventStream = pattern.asStream;
 		
-		^FuncStream.new({ arg inval;
+		^FuncStream.new({ arg time;
+			var event;
 			var sawNil = false;
-			inval = inval.copy;
+			event = eventStream.next(time);
+			if (event.isNil, { ^nil });
 			forBy (0, endval, 2, { arg i;
 				var name, stream, streamout;
 				name = streampairs.at(i);
 				stream = streampairs.at(i+1);
 				
-				streamout = stream.next(inval);
+				streamout = stream.next(time);
 				
 				if (streamout.isNil, {
 					sawNil = true;
 				},{
 					if (name.isSequenceableCollection, {					
 						streamout.do({ arg val, i;
-							inval.put(name.at(i), val);
+							event.put(name.at(i), val);
 						});
 					},{
-						inval.put(name, streamout);
+						event.put(name, streamout);
 					});
 				});
 			});
 			if (sawNil, { nil },{ 
-				inval 
+				event 
 			});
 		},{
 			streampairs = patternpairs.copy;

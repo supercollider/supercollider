@@ -119,7 +119,8 @@ void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 
 }
 
-void initPyrThread(class GC *gc, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, double time, bool collect);
+void initPyrThread(class GC *gc, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
+	double beats, double seconds, PyrSlot* clock, bool collect);
 int32 timeseed();
 
 PyrProcess* newPyrProcess(class GC *gc, PyrClass *procclassobj)
@@ -151,8 +152,10 @@ PyrProcess* newPyrProcess(class GC *gc, PyrClass *procclassobj)
 		rgenArray->size = 4;
 		((RGen*)(rgenArray->i))->init(timeseed());
 
-		initPyrThread(gc, thread, &o_nil, EVALSTACKDEPTH, rgenArray, 0., false);
-		postfl("elapsedTime %.6f\n", elapsedTime());
+		PyrSlot clockSlot;
+		SetObject(&clockSlot, s_systemclock->u.classobj);
+		initPyrThread(gc, thread, &o_nil, EVALSTACKDEPTH, rgenArray, 0., 0., &clockSlot, false);
+		//postfl("elapsedTime %.6f\n", elapsedTime());
 	} else {
 		error("Class Thread not found.\n");
 	}
@@ -349,8 +352,10 @@ bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 	g->ip = NULL;	
 	g->returnLevels = 0;
         g->execMethod = 0;
-	g->thread->time.uf = elapsedTime();
-
+	g->thread->beats.uf = g->thread->seconds.uf = elapsedTime();
+	SetObject(&g->thread->clock, s_systemclock->u.classobj);
+	g->gc->GCWrite(g->thread, s_systemclock->u.classobj);
+	
 	// set process as the receiver
 	PyrSlot *slot = g->sp - numArgsPushed + 1;
 	g->receiver.ucopy = slot->ucopy;

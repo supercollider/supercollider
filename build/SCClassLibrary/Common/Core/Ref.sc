@@ -31,3 +31,9 @@ Ref : AbstractFunction
 		stream << "`(" <<< value << ")";
 	}
 }
+
+RefCopy : Ref
+{
+	next { ^value.copy }
+}
+

@@ -219,6 +219,7 @@ extern PyrSymbol *s_synth, *s_spawn, *s_environment;
 extern PyrSymbol *s_interpreter;
 extern PyrSymbol *s_finalizer;
 extern PyrSymbol *s_awake;
+extern PyrSymbol *s_systemclock;
 
 
 extern int gFormatElemSize[NUMOBJFORMATS];

@@ -2874,8 +2874,10 @@ PyrThread* popThread(VMGlobals *g, PyrObject *obj, PyrSlot *head)
 }
 #endif
 
-void initPyrThread(class GC *gc, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, double time, bool collect);
-void initPyrThread(class GC *gc, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, double time, bool collect)
+void initPyrThread(class GC *gc, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
+	double beats, double seconds, PyrSlot* clock, bool collect);
+void initPyrThread(class GC *gc, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
+	double beats, double seconds, PyrSlot* clock, bool collect)
 {
 	PyrObject *array;
 	
@@ -2892,7 +2894,15 @@ void initPyrThread(class GC *gc, PyrThread *thread, PyrSlot *func, int stacksize
 	SetObject(&thread->randData, rgenArray);
 	gc->GCWrite(thread, rgenArray);
 
-	thread->time.uf = time;
+	thread->beats.uf = beats;
+	thread->seconds.uf = seconds;
+	
+	if (IsNil(clock)) {
+		SetObject(&thread->clock, s_systemclock->u.classobj); 
+	} else {
+		thread->clock.ucopy = clock->ucopy; 
+		gc->GCWrite(thread, clock);
+	}
 }
 
 extern PyrSymbol *s_prstart;
@@ -2921,7 +2931,8 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(c, &stacksize);
 	if (err) return err;
 	
-	initPyrThread(g->gc, thread, b, stacksize, (PyrInt32Array*)(g->thread->randData.uo), g->thread->time.uf, true);
+	initPyrThread(g->gc, thread, b, stacksize, (PyrInt32Array*)(g->thread->randData.uo), 
+		g->thread->beats.uf, g->thread->seconds.uf, &g->thread->clock, true);
 	
 	//postfl("<-prThreadInit\n");
 	//assert(g->gc->SanityCheck());
@@ -3177,61 +3188,6 @@ int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-void schedAdd(VMGlobals *g, PyrObject* inQueue, double inTime, PyrSlot* inTask);
-void schedClearUnsafe();
-
-int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed);
-int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed)
-{
-	//PyrSlot *a = g->sp;
-
-	schedClearUnsafe();
-
-	return errNone;
-}
-
-int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed);
-int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed)
-{
-	//PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
-
-	double delta, time;
-	int err = slotDoubleVal(b, &delta);
-	if (err) return errNone; // return nil OK, just don't schedule
-	err = slotDoubleVal(&g->thread->time, &time);
-	if (err) return errNone; // return nil OK, just don't schedule
-	time += delta;
-	PyrObject* inQueue = g->process->sysSchedulerQueue.uo;
-	schedAdd(g, inQueue, time, c);
-
-	return errNone;
-}
-
-int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed);
-int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
-{
-	//PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
-
-	double time;
-	int err = slotDoubleVal(b, &time);
-	if (err) return errNone; // return nil OK, just don't schedule
-	PyrObject* inQueue = g->process->sysSchedulerQueue.uo;
-	schedAdd(g, inQueue, time, c);
-
-	return errNone;
-}
-
-int prElapsedTime(struct VMGlobals *g, int numArgsPushed);
-int prElapsedTime(struct VMGlobals *g, int numArgsPushed)
-{
-	SetFloat(g->sp, elapsedTime());
-	return errNone;
-}
 
 bool gBlork = false;
 
@@ -3776,10 +3732,6 @@ void initPrimitives()
 	definePrimitive(base, index++, "_RoutineReset", prRoutineReset, 1, 0);	
 	definePrimitive(base, index++, "_RoutineYieldAndReset", prRoutineYieldAndReset, 2, 0);	
 	definePrimitive(base, index++, "_RoutineStop", prRoutineStop, 1, 0);	
-	definePrimitive(base, index++, "_SystemClock_Clear", prSystemClock_Clear, 1, 0);	
-	definePrimitive(base, index++, "_SystemClock_Sched", prSystemClock_Sched, 3, 0);	
-	definePrimitive(base, index++, "_SystemClock_SchedAbs", prSystemClock_SchedAbs, 3, 0);	
-	definePrimitive(base, index++, "_ElapsedTime", prElapsedTime, 1, 0);	
 	
 //	definePrimitive(base, index++, "_IsDemo", prIsDemo, 1, 0);	
 	definePrimitive(base, index++, "_Blork", prBlork, 1, 0);	
@@ -3831,6 +3783,9 @@ void initGUIPrimitives();
 
 void initSCViewPrimitives();
         initSCViewPrimitives();
+
+void initSchedPrimitives();
+        initSchedPrimitives();
 
 void initMIDIPrimitives();
 		initMIDIPrimitives();

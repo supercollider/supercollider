@@ -76,10 +76,10 @@ Function : AbstractFunction {
 	get { arg prevVal; ^prevVal }
 	
 	
-	awake { arg inTime;
+	awake { arg beats, seconds, clock;
 		var time;
-		time = inTime; // prevent optimization
-		^this.value(inTime)
+		time = seconds; // prevent optimization
+		^this.value(beats, seconds, clock)
 	}
 //	play { arg clock;
 //		clock = clock ? SystemClock;

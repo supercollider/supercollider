@@ -162,7 +162,7 @@ SimpleNumber : Number {
 
 	// scheduled Routine support
 	wait { ^this.yield }
-	waitUntil { ^(this - thisThread.time).yield }
+	waitUntil { ^(this - thisThread.beats).yield }
 	
 	printOn { arg stream;
 		stream.putAll(this.asString);

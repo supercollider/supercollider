@@ -13,9 +13,9 @@ Pn : FilterPattern {
 		^super.new(pattern).repeats_(repeats)
 	}
 	asStream {
-		^Routine.new({ arg inval;
+		^Routine.new({ arg time;
 			repeats.do({
-				inval = pattern.embedInStream(inval);
+				time = pattern.embedInStream(time);
 			});
 		});
 	}
@@ -65,113 +65,51 @@ Pfset : FuncFilterPattern {
 	}
 }
 
+
+
 Pset : FilterPattern {
 	var <>name, <>value;
-	
 	*new { arg name, value, pattern;
 		^super.new(pattern).name_(name).value_(value)
 	}
+	filterEvent { arg event, val;
+		^event.put(name, val)
+	}
 	asStream {
-		var stream;
+		var evtStream, valStream;
 		
-		stream = pattern.asStream;
+		valStream = value.asStream;
 		
-		^FuncStream.new({ arg event;
-			if (event.notNil, { event = event.copy.put(name, value) });
-			stream.next(event);
+		evtStream = pattern.asStream;
+		
+		^FuncStream.new({ arg time;
+			var event, val;
+			event = evtStream.next(time);
+			val = valStream.next;
+			if (val.isNil, { nil },{
+				if (event.notNil, { this.filter(event, val) });
+				event
+			});
 		});
 	}
 }
 
 Padd : Pset {
-	asStream {
-		var stream;
-		
-		stream = pattern.asStream;
-		
-		^FuncStream.new({ arg event;
-			if (event.notNil, { event = event.copy.put(name, event.at(name) + value) });
-			stream.next(event);
-		});
+	filterEvent { arg event, val;
+		^event.put(name, event.at(name) + val)
 	}
 }
 
 Pmul : Pset {
-	asStream {
-		var stream;
-		
-		stream = pattern.asStream;
-		
-		^FuncStream.new({ arg event;
-			if (event.notNil, { event = event.copy.put(name, event.at(name) * value) });
-			stream.next(event);
-		});
-	}
-}
-
-Pnot : FilterPattern {
-	var <>name;
-	
-	*new { arg name, pattern;
-		^super.new(pattern).name_(name)
-	}
-	asStream {
-		var stream;
-		
-		stream = pattern.asStream;
-		
-		^FuncStream.new({ arg event;
-			event = event.copy;
-			event.put(name, event.at(name).not);
-			stream.next(event);
-		});
-	}
-}
-
-
-Psetpost : Pset {
-	asStream {
-		var stream;
-		
-		stream = pattern.asStream;
-		
-		^FuncStream.new({ arg event;
-			event = stream.next(event);
-			if (event.notNil, { event.copy.put(name, value) });
-		});
-	}
-}
-
-Paddpost : Pset {
-	asStream {
-		var stream;
-		
-		stream = pattern.asStream;
-		
-		^FuncStream.new({ arg event;
-			event = stream.next(event);
-			if (event.notNil, { event.copy.put(name, event.at(name) + value) });
-		});
-	}
-}
-
-Pmulpost : Pset {
-	asStream {
-		var stream;
-		
-		stream = pattern.asStream;
-		
-		^FuncStream.new({ arg event;
-			event = stream.next(event);
-			if (event.notNil, { event.copy.put(name, event.at(name) * value) });
-		});
+	filterEvent { arg event, val;
+		^event.put(name, event.at(name) * val)
 	}
 }
 
 
 Psetp : Pset {
 	asStream {
-		^Routine.new({ arg inevent;
+		^Routine.new({ arg time;
 			var valStream, evtStream, val, outevent;
 			valStream = value.asStream;
 			while({
@@ -180,12 +118,11 @@ Psetp : Pset {
 			},{
 				evtStream = pattern.asStream;
 				while({
-					inevent = inevent.copy;
-					inevent.put(name, val);
-					outevent = evtStream.next(inevent);
+					outevent = evtStream.next(time);
 					outevent.notNil
 				},{
-					inevent = outevent.yield;
+					this.filterEvent(outevent, val);
+					time = outevent.yield;
 				});
 			});
 		});
@@ -193,54 +130,14 @@ Psetp : Pset {
 }
 
 Paddp : Pset {
-	asStream {
-		^Routine.new({ arg inevent;
-			var valStream, evtStream, val, outevent, prevval;
-			
-			prevval = inevent.at(name);
-			valStream = value.asStream;
-			while({
-				val = valStream.next;
-				val.notNil
-			},{
-				evtStream = pattern.asStream;
-				while({
-					inevent = inevent.copy;
-					inevent.put(name, prevval + val);
-					outevent = evtStream.next(inevent);
-					outevent.notNil
-				},{
-					inevent = outevent.yield;
-					prevval = inevent.at(name);
-				});
-			});
-		});
+	filterEvent { arg event, val;
+		^event.put(name, event.at(name) + val)
 	}
 }
 
 Pmulp : Pset {
-	asStream {
-		^Routine.new({ arg inevent;
-			var valStream, evtStream, val, outevent, prevval;
-			
-			prevval = inevent.at(name);
-			valStream = value.asStream;
-			while({
-				val = valStream.next;
-				val.notNil
-			},{
-				evtStream = pattern.asStream;
-				while({
-					inevent = inevent.copy;
-					inevent.put(name, prevval * val);
-					outevent = evtStream.next(inevent);
-					outevent.notNil
-				},{
-					inevent = outevent.yield;
-					prevval = inevent.at(name);
-				});
-			});
-		});
+	filterEvent { arg event, val;
+		^event.put(name, event.at(name) * val)
 	}
 }
 
@@ -251,13 +148,13 @@ Pfin : FilterPattern {
 		^super.new(pattern).count_(count)
 	}
 	asStream { 
-		^Routine.new({ arg inevent;
-			var item, stream;
+		^Routine.new({ arg time;
+			var event, stream;
 		
 			stream = pattern.asStream;
 			
 			count.value.do({
-				inevent = stream.next(inevent).yield;
+				time = stream.next(time).yield;
 			});
 		});
 	}
@@ -429,16 +326,16 @@ Pstutter : FilterPattern {
 		^super.new(pattern).n_(n)
 	}
 	asStream { 
-		^Routine.new({ arg inevent;
-			var outevent, stream;
+		^Routine.new({ arg time;
+			var event, stream;
 		
 			stream = pattern.asStream;
 		
 			while ({
-				(outevent = stream.next(inevent)).notNil
+				(event = stream.next(time)).notNil
 			},{
 				n.do({
-					inevent = outevent.copy.yield;
+					time = event.copy.yield;
 				});
 			});
 		});

@@ -116,6 +116,7 @@ PyrSymbol *s_prstart;
 PyrSymbol *s_interpreter;
 PyrSymbol *s_finalizer;
 PyrSymbol *s_awake;
+PyrSymbol *s_systemclock;
 
 PyrSymbol *s_nocomprendo;
 PyrSymbol *s_curProcess, *s_curMethod, *s_curBlock, *s_curClosure, *s_curThread;
@@ -211,6 +212,7 @@ void initSymbols()
 	s_interpreter = getsym("Interpreter");
 	s_finalizer = getsym("Finalizer");
 	s_awake = getsym("awake");
+	s_systemclock = getsym("SystemClock");
 	
 	s_linear = getsym("linear");
 	s_exponential = getsym("exponential");
@@ -1341,7 +1343,7 @@ void initClasses()
 	class_absfunc = makeIntrinsicClass(s_absfunc, s_object, 0, 0); 
 	class_stream = makeIntrinsicClass(s_stream, s_absfunc, 0, 0); 
 
-	class_thread = makeIntrinsicClass(s_thread, s_stream, 20, 0);
+	class_thread = makeIntrinsicClass(s_thread, s_stream, 22, 0);
 		addIntrinsicVar(class_thread, "state", &o_nil);
 		addIntrinsicVar(class_thread, "func", &o_nil);
 		addIntrinsicVar(class_thread, "stack", &o_nil);
@@ -1362,7 +1364,9 @@ void initClasses()
 		addIntrinsicVar(class_thread, "primitiveError", &o_zero);
 		addIntrinsicVar(class_thread, "primitiveIndex", &o_zero);
 		addIntrinsicVar(class_thread, "randData", &o_zero);
-		addIntrinsicVar(class_thread, "time", &o_fzero);
+		addIntrinsicVar(class_thread, "beats", &o_fzero);
+		addIntrinsicVar(class_thread, "seconds", &o_fzero);
+		addIntrinsicVar(class_thread, "clock", &o_nil);
 
 	class_finalizer = makeIntrinsicClass(s_finalizer, s_object, 2, 0);
 		addIntrinsicVar(class_finalizer, "cFunction", &o_nil);
