@@ -132,7 +132,21 @@ String[char] : RawArray {
 		});
 		^false
 	}
-	
+	escapeChar { arg charToEscape; // $"
+		^this.class.streamContents({ arg st;
+			this.do({ arg char;
+				if(char == charToEscape,{ 
+					st << $\\ 
+				});
+				st << char;
+			})
+		})
+	}
+	tr { arg from,to;
+		^this.collect({ arg char;
+			if(char == from,{to},{from})
+		})
+	}
 	compile { ^thisProcess.interpreter.compile(this); }
 	interpret { ^thisProcess.interpreter.interpret(this); } 
 	interpretPrint { ^thisProcess.interpreter.interpretPrint(this); }
