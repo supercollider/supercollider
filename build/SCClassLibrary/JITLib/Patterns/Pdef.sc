@@ -4,7 +4,7 @@
 Pdefn : Pattern {
 	var <key, <pattern;
 	var <>clock, <>quant, <>offset=0; 	// quant new pattern insertion
-	classvar <>all, <>defaultQuant;
+	classvar <>all, <>defaultQuant, <>action;
 	
 	*initClass { 
 		all = IdentityDictionary.new;
@@ -43,8 +43,24 @@ Pdefn : Pattern {
 		}
 	}
 	
-	asStream {
-		^RefStream(this);
+	asStream { ^Routine.new({ arg inval; this.embedInStream(inval) }) }
+	
+	embedInStream {Êarg inval;
+		var pat, stream, outval;
+		pat = pattern;
+		stream = pattern.asStream;
+		action.value(this, stream);
+		while { 
+			if((pat !== pattern)) {
+					pat = pattern;
+					stream = this.constrainStream(stream);
+			};
+			outval = stream.next(inval);
+			outval.notNil
+		} {
+			inval = outval.yield;
+		}
+		^inval
 	}
 	
 	storeArgs { ^[key,pattern] }
@@ -67,8 +83,8 @@ Pdefn : Pattern {
 	
 	// posting stream usage //
 	
-	*startPost { RefStream.action = { arg str; ("----" + str.parent.key).postln } }
-	*stopPost { RefStream.action = nil }
+	*startPost { action = { arg str; ("----" + str.parent.key).postln } }
+	*stopPost { action = nil }
 	
 }
 
@@ -151,7 +167,7 @@ Pdef : Tdef {
 		CmdPeriod.add(this); 
 	}
 	
-	*new { arg key, pattern;
+	*new { arg key, pattern; // this is a copy from Pdefn, to avoid a redirection
 		var p;
 	 	p = this.at(key);
 	 	if(p.notNil) {
@@ -164,7 +180,12 @@ Pdef : Tdef {
 		};
 		^p
 	}
-
+	
+	pattern_ { arg pat;
+		if(pat.isKindOf(Function)) {Êpat = Plazy(pat) }; // allow functions to be passed in
+		pattern = pat;
+		if(isPlaying and: { player.isPlaying.not }) { this.play }
+	}
 		
 	*default { ^Pbind(\freq, \rest) }
 	
@@ -215,36 +236,6 @@ Pdef : Tdef {
 }
 
 
-
-// created by Pdef, Pdefn and Tdef
-
-RefStream : Stream {
-	classvar <>action;
-	var  <>pattern, <>stream; 
-	var <parent; 
-	
-	*new { arg parent;
-		^super.new.parent_(parent);
-	}
-	
-	parent_ { arg argParent;
-		parent = argParent;
-		pattern = parent.pattern;
-		stream = pattern.asStream;
-		action.value(this);
-	}
-	
-	next { arg inval;
-		var outval;
-		if((parent.pattern !== pattern)) {
-			pattern = parent.pattern;
-			stream = parent.constrainStream(stream);
-		};
-		outval = stream.next(inval);
-		^outval
-	}
-	
-}
 
 
 // general purpose lookup stream
