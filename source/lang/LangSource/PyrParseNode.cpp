@@ -1671,7 +1671,7 @@ void PyrCallNodeBase::compilePartialApplication(int numCurryArgs, PyrSlot *resul
 	methraw->methType = methBlock;
 
 	{
-		PyrSymbol* s_empty = getsym("");
+		PyrSymbol* s_empty = getsym("_");
 		PyrSymbol **blockargs = block->argNames.uosym->symbols;
 		for (int i=0; i<numCurryArgs; ++i) {
 			// put it in mArglist
