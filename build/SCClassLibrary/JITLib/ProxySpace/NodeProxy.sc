@@ -133,9 +133,12 @@ BusPlug : AbstractFunction {
 	
 	///// monitoring //////////////
 	
-	play { arg busIndex=0, nChan, group;
+	play { arg busIndex=0, nChan, group, multi=false;
 		var bundle, divider, n;
+		
 		if(server.serverRunning.not, { "server not running".inform; ^nil });
+		if(multi.not and: { monitorGroup.isPlaying }, { ^monitorGroup });
+		
 			bundle = MixedBundle.new;
 			
 			if(this.isNeutral, { 
@@ -167,10 +170,17 @@ BusPlug : AbstractFunction {
 			this.sendBundle(bundle);
 		^monitorGroup
 	}
+	
+	
+	toggle {
+		if(monitorGroup.isPlaying, { this.stop }, { this.play });
+	}
 
 	stop {
-		monitorGroup.free;
-		monitorGroup = nil;
+		if(monitorGroup.isPlaying, {
+			monitorGroup.free;
+			monitorGroup = nil;
+		})
 	}
 	
 	record { arg path, headerFormat="aiff", sampleFormat="int16", numChannels;
@@ -207,7 +217,7 @@ NodeProxy : BusPlug {
 
 	var <group, <objects;
 	var <parents, <nodeMap;	//playing templates
-	var <lags, <prepend, <loaded=false, <>awake=true; 	
+	var <lags, <prepend, <task, <loaded=false, <>awake=true; 	
 	classvar <>buildProxy;
 	
 	clear {
@@ -226,6 +236,8 @@ NodeProxy : BusPlug {
 	initParents {
 		parents = IdentitySet.new;
 	}
+	
+	end { this.stop; this.free; } //stop playback and inner group
 	
 	fadeTime_ { arg t;
 		this.set('#fadeTime', t);
@@ -352,7 +364,12 @@ NodeProxy : BusPlug {
 		this.class.buildProxy = nil;
 		objects.selectInPlace({ arg item; item.readyForPlay }); //clean up
 	}
+	task_ { arg argTask;
+		if(task.notNil, { task.stop });
+		task = argTask;
+		if(this.isPlaying, { task.play });//clock
 	
+	}
 	lags_ { arg list;
 		lags = list;
 		this.rebuild;
@@ -412,12 +429,24 @@ NodeProxy : BusPlug {
 		if(this.isPlaying, { this.refresh(true) });
 	}
 	
-	refresh { arg each=false;
+	refresh { arg each=false, args;
 		var bundle;
 		bundle = MixedBundle.new;
 		bundle.preparationTime = 0;
 		this.freeAllToBundle(bundle);
-		if(each, { this.sendEachToBundle(bundle) }, { this.sendAllToBundle(bundle) });
+		if(each, { this.sendEachToBundle(bundle, args) }, { this.sendAllToBundle(bundle, args) });
+		this.sendBundle(bundle);
+	}
+	
+	refreshAt { arg index=0, args;
+		var bundle, obj;
+		obj = objects.at(index);
+		if(obj.notNil, {
+			bundle = MixedBundle.new;
+			bundle.preparationTime = 0;
+			obj.stopToBundle(bundle);
+			this.sendObjectToBundle(bundle, obj, args);
+		});
 		this.sendBundle(bundle);
 	}
 	
@@ -482,6 +511,18 @@ NodeProxy : BusPlug {
 	}
 	
 	
+	xtexture { arg beats=1, argFunc, index;
+		var dt;
+		dt = beats.asStream; //.loop;
+		if(index.isNil, {
+			this.task = Task({ loop({ this.refresh(false, argFunc.value); dt.value.wait; }) })
+		}, {
+			this.task = Task({ loop({ this.refreshAt(index, argFunc.value); dt.value.wait; }) })
+		
+		});
+	}
+	
+	
 	
 	/////// append to bundle commands
 	
@@ -491,6 +532,7 @@ NodeProxy : BusPlug {
 				NodeWatcher.register(group);
 				group.isPlaying = true; //force isPlaying.
 				bundle.add(group.newMsg(server, \addToHead));
+				if(task.notNil, { bundle.addFunction({ task.stop; task.play; })  });
 	}
 	
 
@@ -650,6 +692,11 @@ NodeProxy : BusPlug {
 		});
 	}
 	
+	releaseAndStop {
+		var dt;
+		dt = this.fadeTime ? 0.01;
+		Routine({ this.release; (dt + server.latency).wait; this.end }).play;
+	}
 	
 	//xfades
 	
@@ -730,7 +777,7 @@ NodeProxy : BusPlug {
 			keys = keys.select({ arg key, i;
 				var ok;
 				ok = nodeMap.settings.at(key).notNil;
-				if(ok.not, {
+				if(ok.not, { //set all undefined keys directly to value. this is probably what is expected.
 					this.set(key, levels.wrapAt(i));
 					if(i < levels.size, { levels.removeAt(i) });
 					if(i < durs.size, { durs.removeAt(i) });
@@ -816,11 +863,12 @@ SharedNodeProxy : NodeProxy {
 	
 	//play local, wakeUp global
 	
-	play { arg busIndex=0, nChan, n;
+	play { arg busIndex=0, nChan, n, multi=false;
 		var bundle, localBundle, localServer, divider;
 		
 		localServer = server.localServer;
 		if(localServer.serverRunning.not, { "local server not running".inform; ^nil });
+		if(multi.not and: { monitorGroup.isPlaying }, { ^monitorGroup });
 			bundle = MixedBundle.new;
 			localBundle = MixedBundle.new;
 			if(this.isNeutral, { 
