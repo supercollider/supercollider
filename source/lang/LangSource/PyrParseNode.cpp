@@ -1883,6 +1883,9 @@ ByteCodes compileSubExpressionWithGoto(PyrPushLitNode* litnode, int branchLen)
 	//compileStatements(expr->body, false);
 	COMPILENODE(bnode->body, &dummy);
 	if (branchLen) {
+		if (!byteCodeLength(gCompilingByteCodes)) {
+			compileOpcode(opPushSpecialValue, opsvNil); // push nil
+		}
 		compileJump(opcJumpFwd, branchLen);
 	}
 
