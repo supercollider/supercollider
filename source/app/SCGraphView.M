@@ -58,6 +58,8 @@ extern PyrSymbol *s_scview;
             SCView *view = mTopView->focusView();
             if (view) {
                 view->keyDown(character, modifiers);
+            } else {
+                mTopView->keyDown(character,modifiers);
             }
         }
     }
