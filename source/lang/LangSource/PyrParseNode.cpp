@@ -2583,8 +2583,13 @@ void compileSwitchMsg(PyrCallNode* node)
 				gc->GCWrite(array, &value);
 				gc->GCWrite(array, key);
 				
-				offset += byteCodeLength(byteCodes);
-				compileAndFreeByteCodes(byteCodes);
+				if (byteCodes) {
+					offset += byteCodeLength(byteCodes);
+					compileAndFreeByteCodes(byteCodes);
+				} else {
+					compileOpcode(opPushSpecialValue, opsvNil);
+					offset += 1;
+				}
 
 				nextargnode = nextargnode->mNext;
 				if (nextargnode == NULL) {
@@ -2596,8 +2601,14 @@ void compileSwitchMsg(PyrCallNode* node)
 				ByteCodes byteCodes = compileSubExpressionWithGoto((PyrPushLitNode*)argnode, 0, true);
 
 				lastOffset = offset;
-				offset += byteCodeLength(byteCodes);
-				compileAndFreeByteCodes(byteCodes);
+				if (byteCodes) {
+					offset += byteCodeLength(byteCodes);
+					compileAndFreeByteCodes(byteCodes);
+				} else {
+					compileOpcode(opPushSpecialValue, opsvNil);
+					lastOffset = offset;
+					offset += 1;
+				}
 			}
 		}
 		
