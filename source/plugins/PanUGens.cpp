@@ -651,7 +651,58 @@ void Pan2_Ctor(Pan2 *unit)
 void Pan4_Ctor(Pan4 *unit)
 {	
 	SETCALC(Pan4_next);
-	Pan4_next(unit, 1);
+	float *in = ZIN(0);
+	float xpos = ZIN0(1);
+	float ypos = ZIN0(2);
+	float level = ZIN0(3);
+
+	unit->m_xpos = xpos;
+	unit->m_ypos = ypos;
+	unit->m_level = level;
+	if (xpos < -1.f || xpos > 1.f || ypos < -1.f || ypos > 1.f) {
+		float xabs = fabs(xpos);
+
+		if (ypos > xabs) {
+			xpos = (xpos + ypos) / ypos - 1.f;
+			ypos = 1.f;
+		} else if (ypos < -xabs) {
+			xpos = (xpos - ypos) / -ypos - 1.f;
+			ypos = -1.f;
+		} else {
+			float yabs = fabs(ypos);
+			if (yabs < xpos) {
+				ypos = (ypos + xpos) / xpos - 1.f;
+				xpos = 1.f;
+			} else {
+				ypos = (ypos - xpos) / -xpos - 1.f;
+				xpos = -1.f;
+			}
+		}						
+	}
+
+	int32 ixpos = (int32)(1024.f * xpos + 1024.f);
+	ixpos = sc_clip(ixpos, 0, 2048);
+	float leftamp  = ft->mSine[2048 - ixpos];
+	float rightamp = ft->mSine[ixpos];
+	
+	int32 iypos = (int32)(1024.f * ypos + 1024.f);
+	iypos = sc_clip(iypos, 0, 2048);
+	float frontamp = ft->mSine[iypos];
+	float backamp  = ft->mSine[2048 - iypos];
+	
+	frontamp *= level;
+	backamp  *= level;
+	
+	unit->m_LF_amp = leftamp  * frontamp;
+	unit->m_RF_amp = rightamp * frontamp;
+	unit->m_LB_amp = leftamp  * backamp;
+	unit->m_RB_amp = rightamp * backamp;		
+
+	float z = ZIN0(0);
+	ZOUT0(0) = z * unit->m_LF_amp;
+	ZOUT0(1) = z * unit->m_RF_amp;
+	ZOUT0(2) = z * unit->m_LB_amp;
+	ZOUT0(3) = z * unit->m_RB_amp;
 }
 
 void Pan4_next(Pan4 *unit, int inNumSamples)
