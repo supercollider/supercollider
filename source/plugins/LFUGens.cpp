@@ -2971,6 +2971,7 @@ void Linen_next_k(Linen *unit, int inNumSamples)
 		unit->m_slope = (susLevel - unit->m_level) / counter;
 		unit->m_counter = counter;
 	}
+
 	switch (unit->m_stage) {
 		case 0 : 
 		case 2 : 
@@ -2980,7 +2981,15 @@ void Linen_next_k(Linen *unit, int inNumSamples)
 			break;
 		case 1 : 
 			*out = unit->m_level;
-			if (gate <= 0.f) {
+			if (gate <= -1.f) {
+				// cutoff
+				unit->m_stage = 2;
+				float releaseTime = -gate - 1.f;
+				int counter  = (int)(releaseTime * SAMPLERATE);
+				counter  = sc_max(1, counter);
+				unit->m_slope = -unit->m_level / counter;
+				unit->m_counter = counter;
+			} else if (gate <= 0.f) {
 				unit->m_stage = 2;
 				float releaseTime = ZIN0(3);
 				int counter = (int)(releaseTime * SAMPLERATE);
@@ -3057,6 +3066,7 @@ void Linen_next_ak(Linen *unit, int inNumSamples)
 				LOOP(nsmps, 
 					ZXP(out) = level;
 				);
+				counter -= nsmps;
 				if (gate <= 0.f) {
 					unit->m_stage = 2;
 					float releaseTime = ZIN0(3);
@@ -3064,6 +3074,15 @@ void Linen_next_ak(Linen *unit, int inNumSamples)
 					counter = sc_max(1, counter);
 					unit->m_slope = -level / counter;
 					counter = counter;
+				} else if (gate <= -1.f && unit->m_prevGate > -1.f) {
+					// cutoff
+					unit->m_stage = 2;
+					float releaseTime = -gate - 1.f;
+					counter  = (int32)(releaseTime * SAMPLERATE);
+					counter  = sc_max(1, counter);
+					unit->m_shape = shape_Linear;
+					unit->m_grow = -unit->m_level / counter;
+					unit->m_counter = counter;
 				}
 				break;
 			case 2 : 
@@ -3078,7 +3097,11 @@ void Linen_next_ak(Linen *unit, int inNumSamples)
 				}
 				break;
 			case 3 :
-				*out = 0.f;
+				level = 0.f;
+				LOOP(nsmps, 
+					ZXP(out) = level;
+				);
+				counter -= nsmps;
 				break;
 		}
 	} while (remain);
