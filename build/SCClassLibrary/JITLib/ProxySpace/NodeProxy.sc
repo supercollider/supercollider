@@ -207,6 +207,8 @@ BusPlug : AbstractFunction {
 			bundle.send(server)
 	}
 	
+	shared { ^false } //shared node proxy support
+	
 	printOn { arg stream;
 		stream 	<< this.class.name << "." << bus.rate << "(" 
 				<< server << ", " << bus.numChannels <<")";
@@ -230,7 +232,8 @@ NodeProxy : BusPlug {
 	var <loaded=false, <>awake=true, <task, <>clock; 	
 	classvar <>buildProxy;
 	
-	*new { arg server, rate, numChannels; //, inputs;
+	
+	*make { arg server, rate, numChannels, inputs;
 		var res;
 		res = super.new(server).defineBus(rate, numChannels);
 		//inputs.do({ arg o; res.add(o) }); //to do.
@@ -416,11 +419,8 @@ NodeProxy : BusPlug {
 	}
 	
 	group_ { arg agroup;
-		if(this.isPlaying, { 
-			this.free; group = agroup; this.wakeUp;
-		}, { 
-			group = agroup 
-		});
+		if(agroup.server !== server, { "cannot move to another server".error; ^this });
+		if(this.isPlaying, { this.free; group = agroup; this.wakeUp }, { group = agroup });
 	}
 		
 	sendNodeMap { 
@@ -896,24 +896,14 @@ SharedNodeProxy : NodeProxy {
 	*new { arg server, groupID;
 		^super.newCopyArgs(server).initGroupID(groupID).clear	
 	}
+	
+	shared { ^true }
 		
 	initGroupID { arg groupID;  
 		constantGroupID = groupID ?? {server.nextSharedNodeID}; 
 		awake = true;
-	} 											
-	
-	prepareForPlayToBundle { arg bundle, freeAll=true;
-				postln("started new shared group" + constantGroupID);
-				group = Group.basicNew(server, constantGroupID);
-				group.isPlaying = true; //force isPlaying.
-				NodeWatcher.register(group);
-				bundle.add(["/g_new", constantGroupID, 0, 0]);
-	}
-	
-	generateUniqueName {
-		^asString(constantGroupID)
-	}
-	
+	} 
+					
 	//play local, wakeUp global
 	
 	play { arg busIndex=0, nChan, n, multi=false;
@@ -953,6 +943,16 @@ SharedNodeProxy : NodeProxy {
 		^monitorGroup
 	}
 	
+	prepareForPlayToBundle { arg bundle, freeAll=true;
+				postln("started new shared group" + constantGroupID);
+				group = Group.basicNew(server, constantGroupID);
+				group.isPlaying = true; //force isPlaying.
+				NodeWatcher.register(group);
+				bundle.add(["/g_new", constantGroupID, 0, 0]);
+				if(task.notNil, { this.playTaskToBundle(bundle) });
+	}
+	
+	
 	
 	freeAllToBundle { arg bundle;
 				objects.do({ arg item;
@@ -963,6 +963,25 @@ SharedNodeProxy : NodeProxy {
 					bundle.add(["/g_freeAll", group.nodeID]);
 				})
 	}
+	
+	generateUniqueName {
+		^asString(constantGroupID)
+	}
+
+	//map to a control proxy
+	map { arg key, proxy ... args;
+		args = [key,proxy]++args;
+		//check if any not shared proxy is passed in
+		(args.size div: 2).do({ arg i; 
+			if(args[2*i+1].shared.not, { "shouldn't map a local to a shared proxy".error; ^this }) 
+		});
+		nodeMap.performList(\map, args);
+		if(this.isPlaying, { 
+			nodeMap.sendToNode(group);
+		})
+	}
+	
+	mapEnvir {}
 
 }
 
