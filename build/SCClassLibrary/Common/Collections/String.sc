@@ -90,7 +90,7 @@ String[char] : RawArray {
 		});
 		^string
 	}
-	split { arg separator="/";
+	split { arg separator=$/;
 		var array,word;
 		word="";
 		array=[];
