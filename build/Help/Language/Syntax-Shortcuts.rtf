@@ -22,7 +22,7 @@ instead of writing:					you can write:\
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
 
-\f0\b\fs28 \cf0 			instance variable declaration\
+\f0\b\fs28 \cf0 			defining instance variable accessor methods\
 
 \fs24 \
 instead of writing:					you can write:\
@@ -42,7 +42,7 @@ instead of writing:					you can write:\
 
 \f1 \cf0 \
 
-\f0\b\fs28 			instance variable setter method\
+\f0\b\fs28 			calling an instance variable setter method\
 
 \f1\b0\fs24 \
 
@@ -51,8 +51,7 @@ instead of writing:					you can write:\
 \f1\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 p.x = y;							p.x_(y)\
-\
+\f2 \cf0 p.x_(y)								p.x = y;							\
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
 
 \f0\b\fs28 \cf0 			use a selector as binary operator\
@@ -251,4 +250,20 @@ while(\{ a < b \},\{ a = a * 2 \});		while \{ a < b \} \{ a = a * 2 \};\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 z.put(i, y);						z[i] = y;\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0\b\fs28 \cf0 			creating IdentityDictionaries\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 instead of writing:							you can write:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 IdentityDictionary['a'->1,'b'->2]		(a: 1, b: 2)\
 }
