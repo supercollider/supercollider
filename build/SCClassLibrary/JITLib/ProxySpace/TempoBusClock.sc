@@ -1,5 +1,7 @@
-//for now: set tempo of something that understands source_
+//for now: set tempo of something that understands set(0, val)
 //and plays on the server
+
+//doesn't fully work
 
 TempoBusClock : TempoClock {
 	var <>serverControl;
@@ -13,14 +15,14 @@ TempoBusClock : TempoClock {
 	}	
 	initBus { arg ctl, tempo;
 		serverControl = ctl;
-		serverControl.source = (tempo ? 1);
+		serverControl.set(0,tempo ? 1);
 	}
 	setTempoAtBeat { arg newTempo, beats;
-		serverControl.source = newTempo; // see for latency etc..
+		serverControl.set(0, newTempo); // see for latency etc..
 		^super.setTempoAtBeat(newTempo, beats)
 	}
 	setTempoAtSec { arg newTempo, secs;
-		serverControl.source = newTempo;
+		serverControl.set(0, newTempo);
 		^super.setTempoAtSec(newTempo, secs)
 	}
 

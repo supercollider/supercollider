@@ -21,7 +21,9 @@
 
 \f0\fs24 \cf0 Generally a proxy is a placeholder for something, which in this case \
 is something playing on a server that writes to a limited number of busses.\
-(this can be for example a synth or an event stream)
+(this can be for example a synth or an event stream). The rate and number\
+of channels is determined eithe when the instance is created (.control/.audio) \
+or by lazy initialisation from the first source.
 \f3 \
 \
 
@@ -186,7 +188,7 @@ ___________________________________________________\
 		
 \f3\b0 gate my bus to the level value for dur time\
 		\
-	\
+	\cf2 //does not work not yet !\cf0 \
 	
 \f1\b lineAt(key, value, dur)\
 		
@@ -234,14 +236,13 @@ ___________________________________________________\
 		the argument list is applied to all synths.
 \f1\b \
 	\
-	put(anObject, channelOffset, sendFlag, freeAllFlag)\
+	put(anObject, channelOffset, index, freeAllFlag)\
 		
 \f3\b0 set the source. \
 			anObject:	 can be a Function, an Instr, any valid UGen input\
 						a pattern can be used if it returns an EventStream.\
 			channelOffset: 	using a multichannel setup it can be useful to set this.\
 							when the objects numChannels is smaller than the proxy \
-			sendFlag: 	send it or not -  default:false\
 			freeAllFlag: 	replace current synth or not - default:true\
 						if false, add the new synth to the ones playing\
 			\
@@ -353,8 +354,8 @@ a.play; \cf2 //play to hardware output, return a group with synths\
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //setting the source\cf0 \
-a.source = \{ \cf3 SinOsc\cf0 .ar([350, 351.3], 0, 0.1) \};\
-a.source = \{ \cf3 SinOsc\cf0 .ar([390, 286] * 1.2, 0, 0.1) \};\
+a.source = \{ \cf3 SinOsc\cf0 .ar([350, 351.3], 0, 0.2) \};\
+a.source = \{ \cf3 SinOsc\cf0 .ar([390, 286] * 1.2, 0, 0.2) \};\
 a.source = \{ \cf3 WhiteNoise\cf0 .ar([0.01,0.01]) \};\
 a.source = 0;\
 \
@@ -364,7 +365,7 @@ a.source = \{ \cf3 SinOsc\cf0 .ar(a.ar * 6000 * \cf3 MouseX.kr(0, 2)\cf0  + [100
 \
 \
 \cf2 //adding nodes\cf0 \
-a.add(\{ \cf3 SinOsc\cf0 .ar([350, 390]*1.25, 0, 0.1) \});\
+a.add(\{ \cf3 SinOsc\cf0 .ar([50, 390]*1.25, 0, 0.1) \});\
 a.add(\{ \cf3 BrownNoise\cf0 .ar([0.02,0.02]) \});\
 \
 \
@@ -374,9 +375,9 @@ a.source = \{ \cf3 arg\cf0  f=400; \cf3 SinOsc\cf0 .ar(f * [1,1.2] * rrand(0.9, 
 a.set(\cf4 \\f\cf0 , rrand(900, 300));\
 a.set(\cf4 \\f\cf0 , rrand(1500, 700));\
 a.xset(\cf4 \\f\cf0 , rrand(1500, 700)); \cf2 //crossfaded setting\cf0 \
-a.source = \{ \cf3 arg\cf0  f=400; \cf3 RLPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f * [1,1.2] * 0.05, 0.5, 0.2), f * 0.58, 0.2) \};\
+a.source = \{ \cf3 arg\cf0  f=400; \cf3 RLPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f * [1,1.02] * 0.05, 0.5, 0.2), f * 0.58, 0.2) \};\
 \
-\cf2 //control lags\
+\cf2 //control lags: this is set explicitly for now (this might change!)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 a.fadeTime = 0.01;\
 a.lags = [0.5]; \cf2 //for now argument lags can be set like this\cf0 \
@@ -417,8 +418,26 @@ c.source = 400;\
 c.gate(1000, 0.1);\
 c.line(1000, 1);\cf2 \
 \
+//direct access\
+\cf0 a.lineAt(\cf4 \\f\cf0 , 300, 2);\
+a.xlineAt(\cf4 \\f\cf0 , 600, 0.3);\
+a.gateAt(\cf4 \\f\cf0 , 1600, 0.3);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
 \
-//sending envelopes\cf0 \
+//changing nodeMaps\cf0 \
+a.unmap(\cf4 \\f\cf0 );\
+n = a.nodeMap.copy;\
+n.set(\cf4 \\f\cf0 , 700);\
+a.fadeToMap(n);\
+n = a.nodeMap.copy;\
+n.set(\cf4 \\f\cf0 , 400);\
+a.fadeTime = 1.0;\
+a.fadeToMap(n, [\cf4 \\f\cf0 ]); \cf2 //linear interpolation to new map\cf0 \
+a.map(\cf4 \\f\cf0 , c); \cf2 //restore mapping\
+\
+\
+//sending envelopes (up to 8 levels)\cf0 \
 w = Env.new(Array.rand(3, 400, 1000),Array.rand(2, 0.3, 0.001), -4);\
 c.env(w);\
 c.env(w);\
@@ -426,6 +445,7 @@ w = Env.new(Array.rand(8, 400, 1000),Array.rand(7, 0.03, 0.1));\
 c.env(w);\cf2 \
 \
 //stop synthesis, then wake up proxies:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 a.stop; \cf2 //stop the monitor\cf0 \
 a.play; \cf2 //start the monitor\cf0 \
@@ -457,14 +477,15 @@ a.clearPrepend;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs24 \cf0 \ul channel offset
+\f0\fs24 \cf0 \ul channel offset/object index
 \f2\fs18 \ulnone \
 \
 a = \cf3 NodeProxy\cf0 .audio(s,2);\
 a.play;\
-a.add(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(5, 0, 0.1), 360) \}, 0);\
-a.add(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(5.3, 0, 0.1), 320) \}, 1);\
-a.add(\{ \cf3 Ringz\cf0 .ar(\cf3 Dust\cf0 .ar([1,1]*15.3,  0.01), 720) \}, 0);\
+a.put(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(5, 0, 0.1), 1260) \}, 0, 0);\
+a.put(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(5.3, 0, 0.1), 320) \}, 1, 1);\
+a.put(\{ \cf3 Ringz\cf0 .ar(\cf3 Dust\cf0 .ar([1,1]*15.3,  0.1), 720) \}, 0, 1);\
+a.put(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(5.3, 0, 0.1), 320) \}, 1, 1);\
 a.release;\
 \
 
@@ -478,11 +499,10 @@ a.play;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 a.clock = \cf3 TempoClock\cf0 (1.0); \cf2 //round to every 2.0 seconds\
+\cf0 a.clock = \cf3 TempoClock\cf0 (2.0); \cf2 //round to every 2.0 seconds\
 \cf0 a.source = \{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(0.5, 0, 0.3), 3000, 0.01) \};\
 a.add(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar([0.5, 1], 0, 0.3), 1000, 0.01) \});\
 a.add(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar([3, 5]/2, 0, 0.3), 8000, 0.01) \});\
-a.source = \{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(4, 0, 0.3), 3000, 0.01) \};\
 \
 a.removeLast;\
 a.removeAt(0);\
@@ -509,7 +529,7 @@ a.clear;\
 	\cf3 Out\cf0 .ar(out, Pan2.ar(\
 		\cf3 Formant\cf0 .ar(freq, ffreq, 300, \cf3 EnvGen.kr(\cf0 env, gate, doneAction:2)), Rand(-1.0, 1.0))\
 	)\
-\}).load(s);\
+\}).send(s);\
 )\
 \
 (\
@@ -547,9 +567,9 @@ c.source = \{ \cf3 MouseX.kr(\cf0 100, 5500, 'exponential') \};\
 b.source = \cf3 Pbind\cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 			\\instrument\cf0 , \cf4 \\who\cf0 , \
-			\cf4 \\freq\cf0 , Pseq([600, 390],inf),\
+			\cf4 \\freq\cf0 , Pseq([600, 390, 300],inf),\
 			\\legato, 0.1,\
-			\cf4 \\dur\cf0 , 0.25\cf3 \
+			\cf4 \\dur\cf0 , Pseq([1, 0.5, 0.75, 0.125]*0.25, inf)\cf3 \
 		\cf0 );\
 )\
 \
@@ -570,10 +590,9 @@ b.removeLast;\
 a.source = \{  b.ar * \cf3 WhiteNoise.ar(0.1, 1)\cf0   \}; \
 a.source = \{  b.ar * \cf3 WhiteNoise.ar(0.1, 1) + (b.ar * SinOsc\cf0 .ar(\cf3 SinOsc\cf0 .kr(0.01, 0, 50, 330)))  \}; \
 \
-c.source = \{ \cf3 Line.kr(1900, 10, 10)\cf0  \};\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 \
+c.source = \{ \cf3 XLine\cf0 .kr(1900, 10, 10) \};\
 \
+a.clear; c.clear;\cf3 \
 \
 \
 \

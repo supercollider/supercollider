@@ -71,7 +71,7 @@ MixedBundle : OSCBundle {
 			this.sendPrepare(server, server.latency);
 			SystemClock.sched(preparationTime, {
 				if(clock.isNil, {
-					this.send(server, server.latency ? 0 + preparationTime) 
+					this.send(server, server.latency) 
 				}, {
 					clock.schedAbs(clock.elapsedBeats.ceil, { 
 						this.send(server, server.latency);  
@@ -81,22 +81,41 @@ MixedBundle : OSCBundle {
 			})
 		
 	}
+	//need to wait for id in async messages
+	//schedSendRespond { arg server, clock;
+//			var msg, prep, func;
+//			func = {
+//								if(clock.isNil, {
+//										this.send(server, server.latency) 
+//									}, {
+//										clock.schedAbs(clock.elapsedBeats.ceil, { 
+//											this.send(server, server.latency); 
+//											nil 
+//									})
+//							});
+//				};
+//			if(preparationMessages.notNil, {
+//				msg = AsyncResponder.nextMsg(server, func);
+//				prep = preparationMessages.last.add(msg);
+//				preparationMessages.put(preparationMessages.size-1, prep).debug;				this.sendPrepare(server, server.latency);
+//			}, func);
+//	}
 	//todo
-	schedSendRespond { arg server, clock;
-			var resp;
-			resp = OSCresponderNode(server.addr, '/done', {
-								if(clock.isNil, {
-										this.send(server, server.latency) 
-									}, {
-										clock.schedAbs(clock.elapsedBeats.ceil, { 
-											this.send(server, server.latency); 
-											nil 
-									})
-							});
-							resp.remove;
-				}).add;
-			this.sendPrepare(server, server.latency);
-	}
+	//schedSendRespond { arg server, clock;
+//			var resp;
+//			resp = OSCresponderNode(server.addr, '/done', {
+//								if(clock.isNil, {
+//										this.send(server, server.latency) 
+//									}, {
+//										clock.schedAbs(clock.elapsedBeats.ceil, { 
+//											this.send(server, server.latency); 
+//											nil 
+//									})
+//							});
+//							resp.remove;
+//				}).add;
+//			this.sendPrepare(server, server.latency);
+//	}
 }
 
 DebugBundle : MixedBundle {

@@ -33,6 +33,7 @@ ProxySpace : EnvironmentRedirect {
 		var clock, proxy;
 		proxy = NodeProxy.control(server, 1);
 		proxy.fadeTime = 0.0;
+		proxy.source = { arg val=1; val };
 		//this will change as soon as a general scheme comes up
 		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds);
 		super.put(\tempo, proxy);
@@ -78,45 +79,48 @@ ProxySpace : EnvironmentRedirect {
 			});
 			
 		});
-		proxy.put(obj, 0, true, true);
+		proxy.put(obj, 0, -1);
 		this.class.lastEdited = proxy;
 	}
 		
 	
 	play { arg key=\out, busIndex=0, nChan=2;
 		^this.use({ arg envir;
-			envir.at(key).play(busIndex, nChan);
+			this.at(key).play(busIndex, nChan);
 		});
 	}
 	
 	record { arg key, path, headerFormat="aiff", sampleFormat="int16";
 		^this.use({ arg envir;
-			envir.at(key).record(path, headerFormat="aiff", sampleFormat);
+			this.at(key).record(path, headerFormat="aiff", sampleFormat);
 		});
 	}
 	
 	ar { arg key, numChannels;
 		^this.use({ arg envir;
-			envir.at(key).ar(numChannels)
+			this.at(key).ar(numChannels)
 		})
 	}
 	
 	kr { arg key, numChannels;
 		^this.use({ arg envir;
-			envir.at(key).kr(numChannels)
+			this.at(key).kr(numChannels)
 		})
 	}
 	
 	free {
 		this.do({ arg proxy; proxy.free });
 	}
+	
 	clear {
 		this.do({ arg proxy; proxy.clear });
 		envir.makeEmpty;
 	}
+	
 	release {
 		this.do({ arg proxy; proxy.release });
 	}
+	
 	remove { all.remove(this) }
 	
 	wakeUp {

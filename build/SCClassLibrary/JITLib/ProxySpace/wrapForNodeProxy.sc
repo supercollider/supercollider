@@ -2,6 +2,9 @@
 
 +Object { 
 	
+	//objects can define their own wrapper classes dependant on 
+	//how they play, stop, build, etc. see SynthDefControl for example
+	
 	proxyControlClass {
 		^SynthDefControl
 	}
@@ -10,10 +13,12 @@
 		^this.proxyControlClass.new(this, channelOffset); 
 	}
 	
-	//assumes some GraphBuilder
-	prepareForProxySynthDef {
-		^this
-	}
+	
+	//any preparations that have to be done to make the object
+	//a synthdef, if it is possible
+	//class Object assumes to be some graph builder
+	
+	prepareForProxySynthDef { }
 	
 	wrapForNodeProxy { arg proxy, channelOffset=0, index=0;
 		^ProxySynthDef(
@@ -39,19 +44,6 @@
 	prepareForProxySynthDef { arg proxy;
 		^{ this.collect({ arg item; item.value(proxy) }) }
 	}
-	putExtend { arg index, item;
-		var res;
-		res = this;
-		^if(index.isNil, {
-			this.add(item)
-		}, {
-			if(index >= this.size, {
-				res = this.extend(index + 1);
-			});
-			res.put(index, item)
-		});
-	
-	}
 }
 
 +ProxySynthDef {
@@ -60,10 +52,10 @@
 	}
 }
 
+
 +SynthDef {
-	wrapForNodeProxy {
-		^this
-	}
+	wrapForNodeProxy {}
+	
 	hasGate {
 		^if(controlNames.isNil, { 
 			false 
@@ -84,6 +76,13 @@
 
 }
 
++Symbol {
+	wrapForNodeProxy {}
+	proxyControlClass {
+		^SynthControl
+	}
+}
+
 
 +AbstractPlayer {
 	
@@ -94,8 +93,20 @@
 
 }
 
+//use patch later
++Instr {
+	prepareForProxySynthDef {
+		^func.prepareForProxySynthDef;
+	}
+	
+	//makeProxyControl { arg channelOffset=0;
+	//	^Patch(this.name).makeProxyControl(channelOffset)
+	//}
+	
+}
 
-+SimpleNumber {
+
++SimpleNumber { //some more efficient way needed to put a value here
 	prepareForProxySynthDef { arg proxy;
 		^if(proxy.rate === 'audio', {
 			{ Array.fill(proxy.numChannels, { K2A.ar(this) }) }
@@ -105,11 +116,7 @@
 	}
 }
 
-+Instr {
-	prepareForProxySynthDef {
-		^func.prepareForProxySynthDef;
-	}
-}
+
 
 +Function {
 	
@@ -134,8 +141,17 @@
 		^StreamControl
 	}
 	wrapForNodeProxy { arg proxy, channelOffset=0;
+		^this.asEventStream.wrapForNodeProxy(proxy, channelOffset)
+	}
+}
+
+
++Stream {
+
+	//wrapForNodeProxy {}
+	wrapForNodeProxy { arg proxy, channelOffset=0;
 		//assume audio rate event stream for now.
-		var pat, ok, argNames, msgFunc;
+		var str, ok, argNames, msgFunc;
 		ok = proxy.initBus('audio', 2);
 		
 		argNames = [\freq,\amp,\sustain,\pan];//more later
@@ -157,34 +173,45 @@
 		^if(ok, {
 			//bus = proxy.index; //done in bundle already
 			
-			pat = this.collect({ arg event;
+			this.collect({ arg event;
 				event.use({ 
 					~nodeID = proxy.group.asNodeID; //in case of Pmono. see.
 					~argNames = argNames;
 					~msgFunc = msgFunc;
 				});
 				event;
-			});
-			pat.asEventStream
+			}); 
 		}, nil);
 
 	}
-
-}
-
-
-// add  Stream .wrapForNodeProxy
-// this assumes initBus is done in Pattern-wrapForNodeProxy.
-
-+Stream {
-
-	wrapForNodeProxy {}
 	
 	proxyControlClass {
 		^StreamControl
 	}
 }
 
++Pdef {
+	wrapForNodeProxy { arg proxy, channelOffset=0;
+		^EventStream(this.asStream).wrapForNodeProxy(proxy, channelOffset);
+	}
 
+}
++Task {
+	wrapForNodeProxy {}
+
+}
+
+
++PauseStream {
+	collect { arg func;
+		^this.class.new(originalStream.collect(func), clock)
+	}
+}
+
++EventStream {
+	collect { arg func;
+		^this.class.new(originalStream.collect(func), event)
+	}
+}
 
 

@@ -81,6 +81,10 @@ NodeMap {
 		^setting
 	}
 	
+	valueAt { arg key;
+		^settings.at(key).value
+	}
+	
 	updateBundle { arg nodeID;
 		var newBundle;
 		if(upToDate, {
@@ -99,6 +103,14 @@ NodeMap {
 			target = target.asNodeID;
 			this.updateBundle(target);
 			inBundle.addAll(bundle);
+	}
+	
+	copy {
+		var res, nset;
+		res = this.class.new;
+		nset = res.settings; 
+		settings.keysValuesDo({ arg key, val; nset.put(key, val.copy) });
+		^res
 	}
 
 

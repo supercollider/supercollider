@@ -21,7 +21,9 @@ NodeMapSetting {
 		bundle.add([14, nodeID, key, bus])
 	}
 	
-
+	copy {
+		^this.class.new(key, value, bus)
+	}
 }
 
 
