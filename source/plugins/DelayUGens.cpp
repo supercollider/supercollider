@@ -37,6 +37,7 @@ struct PlayBuf : public Unit
 	float m_prevtrig;
 	float m_fbufnum;
 	SndBuf *m_buf;
+    bool m_trigged;
 };
 
 #if NOTYET
@@ -548,7 +549,10 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		in -= hi;
 		if (in < hi) return in;
 	} else if (in < 0.) {
-		if (!loop) return 0.;
+		if (!loop) {
+            unit->mDone = true;
+            return 0.;
+        }
 		in += hi;
 		if (in >= 0.) return in;
 	} else return in;
@@ -556,9 +560,12 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	return in - hi * floor(in/hi); 
 }
 
+
+
 #define GET_BUF \
 	float fbufnum  = ZIN0(0); \
 	if (fbufnum != unit->m_fbufnum) { \
+    printf("changing buf : %f  to %f \n",unit->m_fbufnum,fbufnum); \
 		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
 		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
@@ -571,13 +578,13 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \
 	uint32 bufFrames = buf->frames; \
 	int mask __attribute__((__unused__)) = buf->mask; \
-	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
+	int guardFrame __attribute__((__unused__)) = bufFrames - 2; \
 
 #define CHECK_BUF \
 	if (!bufData) { \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
-	} 
+	}
 
 #define SETUP_OUT \
 	uint32 numOutputs = unit->mNumOutputs; \
@@ -644,7 +651,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		}
 
 #define LOOP_BODY_1 \
-		phase = sc_loop((Unit*)unit, phase, bufFrames, loop); \
+        phase = sc_loop((Unit*)unit, phase, bufFrames, loop); \
 		int32 iphase = (int32)phase; \
 		float* table1 = bufData + iphase * bufChannels; \
 		int32 index = 0; \
@@ -671,8 +678,9 @@ void PlayBuf_Ctor(PlayBuf *unit)
 	
 	unit->m_fbufnum = -1e9f;
 	unit->m_prevtrig = 0.;
-	unit->m_phase = ZIN0(3);
-	
+	unit->m_phase = 0.;
+    unit->mDone = true; // waiting first trigger
+    
 	ClearUnitOutputs(unit, 1);
 }
 
@@ -681,7 +689,8 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 	float *ratein  = ZIN(1);
 	float *trigin  = ZIN(2);
 	int32 loop     = (int32)ZIN0(4);
-	
+    bool done = unit->mDone;
+
 	float fbufnum  = ZIN0(0);
 	if (fbufnum != unit->m_fbufnum) {
 		uint32 bufnum = (int)fbufnum;
@@ -700,23 +709,28 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 
 	CHECK_BUF
 	SETUP_OUT	
-
 	double phase = unit->m_phase;
 	float prevtrig = unit->m_prevtrig;
 	for (int i=0; i<inNumSamples; ++i) {
 		float trig = ZXP(trigin);
 		if (trig > 0.f && prevtrig <= 0.f) {
-			unit->mDone = false;
+			done = false;
 			phase = ZIN0(3);
 		}
 		prevtrig = trig;
-		
-		LOOP_BODY_4
-		
-		phase += ZXP(ratein);
-	}
+        if(done) {
+            for (uint32 i=0; i<numOutputs; ++i) {
+                *++(out[i]) = 0.0;
+            }
+        } else {
+            LOOP_BODY_4
+            phase += ZXP(ratein);
+        }
+    }
+
 	unit->m_phase = phase;
 	unit->m_prevtrig = prevtrig;
+    unit->mDone = done;
 }
 
 void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
@@ -724,7 +738,7 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 	float *ratein  = ZIN(1);
 	float trig     = ZIN0(2);
 	int32 loop     = (int32)ZIN0(4);
-	
+
 	float fbufnum  = ZIN0(0);
 	if (fbufnum != unit->m_fbufnum) {
 		uint32 bufnum = (int)fbufnum;
@@ -745,18 +759,23 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 	SETUP_OUT	
 	
 	double phase = unit->m_phase;
+    if(phase == -1.) phase = bufFrames;
 	if (trig > 0.f && unit->m_prevtrig <= 0.f) {
 		unit->mDone = false;
 		phase = ZIN0(3);
 	}
 	unit->m_prevtrig = trig;
-	for (int i=0; i<inNumSamples; ++i) {
+    if(unit->mDone) {
+        ClearUnitOutputs(unit,inNumSamples);
+    } else {
+        for (int i=0; i<inNumSamples; ++i) {
 		
-		LOOP_BODY_4
+            LOOP_BODY_4
 		
-		phase += ZXP(ratein);
-	}
-	unit->m_phase = phase;
+            phase += ZXP(ratein);
+        }
+        unit->m_phase = phase;
+    }
 }
 
 void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples)
@@ -764,10 +783,10 @@ void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples)
 	float rate     = ZIN0(1);
 	float trig     = ZIN0(2);
 	int32 loop     = (int32)ZIN0(4);
-	
+
 	GET_BUF
 	CHECK_BUF
-	SETUP_OUT	
+	SETUP_OUT
 	
 	double phase = unit->m_phase;
 	if (trig > 0.f && unit->m_prevtrig <= 0.f) {
@@ -775,13 +794,17 @@ void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples)
 		phase = ZIN0(3);
 	}
 	unit->m_prevtrig = trig;
-	for (int i=0; i<inNumSamples; ++i) {
+    if(unit->mDone) {
+        ClearUnitOutputs(unit,inNumSamples);
+    } else {
+        for (int i=0; i<inNumSamples; ++i) {
 		
-		LOOP_BODY_4
+            LOOP_BODY_4
 		
-		phase += rate;
-	}
-	unit->m_phase = phase;
+            phase += rate;
+        }
+        unit->m_phase = phase;
+    }
 }
 
 void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples)
@@ -789,12 +812,14 @@ void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples)
 	float rate     = ZIN0(1);
 	float *trigin  = ZIN(2);
 	int32 loop     = (int32)ZIN0(4);
-	
+	bool done = unit->mDone;
+
 	GET_BUF
 	CHECK_BUF
 	SETUP_OUT	
 	
 	double phase = unit->m_phase;
+    if(phase == -1.) phase = bufFrames;
 	float prevtrig = unit->m_prevtrig;
 	for (int i=0; i<inNumSamples; ++i) {
 		float trig = ZXP(trigin);
@@ -804,13 +829,20 @@ void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples)
 			else phase = ZIN0(3);
 		}
 		prevtrig = trig;
+		if(done) {
+            //ClearUnitOutputs(unit,1) ?
+            for (uint32 i=0; i<numOutputs; ++i) {
+                *++(out[i]) = 0.0;
+            }
+        } else {
+            LOOP_BODY_4
 		
-		LOOP_BODY_4
-		
-		phase += rate;
+            phase += rate;
+        }
 	}
 	unit->m_phase = phase;
 	unit->m_prevtrig = prevtrig;
+    unit->mDone = done;
 }
 
 
