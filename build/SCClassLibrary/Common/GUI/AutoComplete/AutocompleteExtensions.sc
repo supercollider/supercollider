@@ -70,10 +70,6 @@
 		this.isMetaClass.if({ ^this },
 			{ ^("Meta_" ++ name).asSymbol.asClass });
 	}
-	
-	browse {
-		^ClassBrowser.new(this)
-	}
 }
 
 + Method {
