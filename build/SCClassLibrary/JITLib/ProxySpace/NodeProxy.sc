@@ -4,6 +4,7 @@ BusPlug : AbstractFunction {
 	
 	var <server, <bus; 		
 	var <monitorGroup;
+	var <busArg; // cache for "/s_new" bus arg
 	
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
 	
@@ -27,11 +28,11 @@ BusPlug : AbstractFunction {
 	
 	*initClass {
 		2.do({ arg i; i = i + 1;
-			SynthDef.writeOnce("system_link_audio_" ++ i, { arg out=0, in=16;
+			SynthDef("system_link_audio_" ++ i, { arg out=0, in=16, vol=1;
 				var env;
-				env = ProxySynthDef.makeFadeEnv;
+				env = ProxySynthDef.makeFadeEnv * vol;
 				Out.ar(out, InFeedback.ar(in, i) * env) 
-			}, [\ir, \ir]);
+			}, [\ir, \ir]).writeDefFile;
 		});
 		2.do({ arg i; i = i + 1;
 			SynthDef.writeOnce("system_link_control_" ++ i, { arg out=0, in=16;
@@ -54,7 +55,11 @@ BusPlug : AbstractFunction {
 	
 	
 	
-	bus_ { arg b; this.freeBus; bus = b; }
+	bus_ { arg b; 
+		this.freeBus; 
+		bus = b; 
+		this.makeBusArg;
+	}
 	
 	//returns boolean
 	initBus { arg rate, numChannels;
@@ -69,16 +74,15 @@ BusPlug : AbstractFunction {
 	}
 	
 	defineBus { arg rate=\audio, numChannels;
-		
-		this.freeBus;
 		if(numChannels.isNil, {
 			numChannels = if(rate === \audio, { 
 								this.class.defaultNumAudio 
 								}, {
 								this.class.defaultNumControl							})
 		});
-		//bus = Bus.alloc(rate, server, numChannels); 
+		this.freeBus;
 		bus = SharedBus.alloc(rate, server, numChannels);
+		this.makeBusArg;
 	}
 	
 	freeBus {
@@ -88,14 +92,20 @@ BusPlug : AbstractFunction {
 			//bus.free;
 		});
 		bus = nil;
+		this.makeBusArg;
 	}
 		
-	
+	makeBusArg { 	busArg = if(bus.isNil or: {Êbus.rate === 'audio' }) // audio buses can't be 
+					{Ê\ } { asSymbol("\c" ++ bus.index) }          // used for control mapping
+	}
 	wakeUpToBundle {}
 	wakeUp {}
 	asBus { ^if(this.isNeutral, { nil }, { bus }) }
 	
+	//////////// embedding bus in event streams //////////////////////////////////
 	
+	embedInStream { ^busArg.yield }
+	asStream { ^busArg }
 	
 	////////////  playing and access  /////////////////////////////////////////////
 	
@@ -448,9 +458,7 @@ NodeProxy : BusPlug {
 		
 	bus_ { arg inBus;
 		if(server != inBus.server, { "can't change the server".inform;^this });
-		this.freeBus;
-		bus = inBus;
-		this.linkNodeMap;
+		super.bus_(inBus);
 		this.rebuild;
 	}
 	
