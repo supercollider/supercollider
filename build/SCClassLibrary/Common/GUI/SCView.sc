@@ -58,7 +58,14 @@ SCView {  // abstract class
 	canFocus_ { arg bool;
 		this.setProperty(\canFocus, bool)
 	}
-
+	focus { arg flag=true;
+		_SCView_Focus
+		^this.primitiveFailed
+	}
+	refresh {
+		_SCView_Refresh
+		^this.primitiveFailed
+	}
 	/*
 	resize behaviour in an SCCompositeView:
 		1  2  3
@@ -139,7 +146,8 @@ SCView {  // abstract class
 	}
 	
 	properties {
-		^#[\bounds, \visible, \enabled, \canFocus, \resize, \background]
+		^#[\bounds, \visible, \enabled, \canFocus, \resize, \background,
+				\minWidth,\maxWidth,\minHeight,\maxHeight]
 	}
 	getPropertyList {
 		^this.properties.collect({ arg name;
@@ -167,12 +175,7 @@ SCView {  // abstract class
 	getProperty { arg key, value;
 		_SCView_GetProperty
 		^this.primitiveFailed
-	}
-	focus {
-		_SCView_Focus
-		^this.primitiveFailed
-	}
-	
+	}	
 	setPropertyWithAction { arg symbol, obj;
 		// setting some properties may need to have the action called.
 		if (this.setProperty(symbol, obj), {
@@ -215,6 +218,15 @@ SCTopView : SCCompositeView {
 	}
 }
 
+SCLayoutView : SCContainerView {
+
+}
+
+SCHLayoutView : SCLayoutView {
+	
+}
+
+
 SCControlView : SCView { // abstract class
 }
 
@@ -235,7 +247,7 @@ SCSliderBase : SCControlView {
 	}
 	
 	properties {
-		^super.properties ++ [\knobColor, \step]
+		^super.properties ++ #[\knobColor, \step]
 	}
 
 }
@@ -314,7 +326,7 @@ SCRangeSlider : SCSliderBase {
 	}	
 
 	properties {
-		^super.properties ++ [\lo, \hi]
+		^super.properties ++ #[\lo, \hi]
 	}
 	
 	increment { 
@@ -386,7 +398,7 @@ SC2DSlider : SCSliderBase {
 		this.setPropertyWithAction(\y, val);
 	}	
 	properties {
-		^super.properties ++ [\x, \y]
+		^super.properties ++ #[\x, \y]
 	}
 
 	incrementY { ^this.y = this.y + this.bounds.height.reciprocal }
@@ -458,7 +470,7 @@ SCButton : SCControlView {
 	}
 	
 	properties {
-		^super.properties ++ [\value, \font, \states]
+		^super.properties ++ #[\value, \font, \states]
 	}
 
 	beginDrag { 
@@ -480,7 +492,7 @@ SCPopUpMenu : SCControlView {
 	*paletteExample { arg parent, bounds;
 		var v;
 		v = this.new(parent, bounds);
-		v.items = ["linear","exponential","sine","welch","squared","cubed"];
+		v.items = #["linear","exponential","sine","welch","squared","cubed"];
 		^v
 	}
 		
@@ -518,7 +530,7 @@ SCPopUpMenu : SCControlView {
 	}
 	
 	properties {
-		^super.properties ++ [\value, \font, \items, \stringColor]
+		^super.properties ++ #[\value, \font, \items, \stringColor]
 	}
 
 	beginDrag { 
@@ -564,7 +576,7 @@ SCStaticTextBase : SCView {
 	}
 	
 	properties {
-		^super.properties ++ [\string, \font, \stringColor]
+		^super.properties ++ #[\string, \font, \stringColor]
 	}
 }
 
@@ -625,7 +637,7 @@ SCNumberBox : SCStaticTextBase {
 	}	
 
 	properties {
-		^super.properties ++ [\boxColor]
+		^super.properties ++ #[\boxColor]
 	}
 	beginDrag { 
 		currentDrag = object.asFloat; 
@@ -720,23 +732,19 @@ SCFuncUserView : SCUserView {
 SCMultiSliderView : SCView { 
 
 	var <>acceptDrag = true;
-	var <> metaAction, <> mouseEndTrackAction;
+	var <>metaAction, <>mouseEndTrackAction;
 	var <> size ;
-	var < gap;
+	var <gap;
 
 	draw {}
-	mouseBeginTrack { arg x, y, modifiers;
-		}
-	mouseTrack { arg x, y, modifiers; 	
- 	}
+	mouseBeginTrack { arg x, y, modifiers;}
+	mouseTrack { arg x, y, modifiers; 	}
 	mouseEndTrack { arg x, y, modifiers;
-	
-	 mouseEndTrackAction.value(this);
-	 //"hi".postln;
-	 
+		mouseEndTrackAction.value(this);
+		 //"hi".postln; 
 	}
 	properties {
-		^super.properties ++ [\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \thumbWidth, \absoluteX, \isFilled]
+		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \thumbWidth, \absoluteX, \isFilled]
 	}	
 	value {//returns array
 		^this.getProperty(\value, Array.newClear(this.size))
