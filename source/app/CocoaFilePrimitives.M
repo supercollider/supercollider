@@ -128,6 +128,8 @@ id nsCodableFromPyrSlot(PyrSlot* b)
     return [NSNull null];
 }
 
+#if 0
+commenting out because it has compile errors on new compiler and it is not used anyway.
 void setInvocationArgFromPyrSlot(NSInvocation *invocation,int i,PyrSlot* slot) 
 {
     if(IsFloat(slot)) { // floats don't have tags, check for them first
@@ -218,6 +220,7 @@ void setInvocationArgFromPyrSlot(NSInvocation *invocation,int i,PyrSlot* slot)
     NSLog( @"setInvocationArgFromPyrSlot failed to determine type of object");
     [invocation setArgument: NULL atIndex: i];
 }
+#endif
 
 /** PRIMITIVES **/
 
@@ -384,10 +387,10 @@ messages.
 int prAllocInit(struct VMGlobals *g, int numArgsPushed);
 int prAllocInit(struct VMGlobals *g, int numArgsPushed)
 {
-    PyrSlot *receiver = g->sp - 3;
+    //PyrSlot *receiver = g->sp - 3;
     PyrSlot *classname = g->sp - 2;
-    PyrSlot *initname = g->sp - 1;
-    PyrSlot *args  = g->sp;
+   // PyrSlot *initname = g->sp - 1;
+    //PyrSlot *args  = g->sp;
     
     // have to put them in a specific pool so they can be released on command
 
@@ -400,7 +403,7 @@ int prAllocInit(struct VMGlobals *g, int numArgsPushed)
         return errFailed;
     }
     //receiver set dataptr
-    SetInt( receiver, newThing );
+    SetInt( receiver, (int)newThing );
     return errNone;
 }
 
