@@ -12,11 +12,8 @@ Event : Environment {
 	*default {
 		^Event.new(8, nil, defaultParentEvent, true);
 	}
-	*silent { arg time = 1.0;
-		var res;
-		res = Event.new(8, nil, parentEvents.silentEvent, true);
-		res.use { ~dur = time; ~play = #{} };
-		^res
+	*silent { arg dur = 1.0;
+		^parentEvents.silentEvent.copy.put(\dur, dur)
 	}
 	
 	next { ^this.copy }
@@ -91,6 +88,13 @@ Event : Environment {
 				},
 				freq: #{
 					(~midinote.value + ~ctranspose).midicps;
+				},
+				freqToScale: #{ arg self, freq; // conversion from frequency to scale value
+					self.use {
+						var midinote;
+						midinote = (freq.cpsmidi - ~ctranspose);
+						midinote / 12.0 - ~octave * ~stepsPerOctave - ~root - ~gtranspose
+					}
 				}
 			),
 	
