@@ -74,6 +74,7 @@ void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port);
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
 int sendall(int socket, const void *msg, size_t len);
 int makeSynthMsgWithTags(scpacket *packet, PyrSlot *slots, int size);
+int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
 
 void addMsgSlot(scpacket *packet, PyrSlot *slot);
 void addMsgSlot(scpacket *packet, PyrSlot *slot)
@@ -95,7 +96,11 @@ void addMsgSlot(scpacket *packet, PyrSlot *slot)
 			} else if (isKindOf(slot->uo, class_array)) {
 				PyrObject *arrayObj = slot->uo;
 				scpacket packet2;
-				makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);				
+				if (arrayObj->size > 1 && isKindOfSlot(arrayObj->slots+1, class_array)) {
+					makeSynthBundle(&packet2, arrayObj->slots, arrayObj->size, true);
+				} else {
+					makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);
+				}
 				packet->addb((uint8*)packet2.data(), packet2.size());
 			}
 			break;
@@ -140,7 +145,11 @@ void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
 				if (arrayObj->size) {
 					packet->addtag('b');
 					scpacket packet2;
-					makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);
+					if (arrayObj->size > 1 && isKindOfSlot(arrayObj->slots+1, class_array)) {
+						makeSynthBundle(&packet2, arrayObj->slots, arrayObj->size, true);
+					} else {
+						makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);
+					}
 					packet->addb((uint8*)packet2.data(), packet2.size());
 				} else {
 					packet->addtag('i');
@@ -228,7 +237,6 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
 	
 }
 
-int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
 int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size, bool useElapsed)
 {
 	double time;
