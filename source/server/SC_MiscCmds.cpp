@@ -168,7 +168,7 @@ SCErr meth_n_map(World *inWorld, int inSize, char *inData, ReplyAddress *inReply
 SCErr meth_n_map(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	int id = msg.geti();
+	int id = msg.geti();	
 	Node *node = World_GetNode(inWorld, id);
 	if (!node) return kSCErr_NodeNotFound;
 	

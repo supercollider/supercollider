@@ -505,6 +505,7 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 			}
 		}
 		inGraphDef->mNumWireBufs = bufColor.NumBufs();
+		//scprintf("num wire bufs = %d\n", inGraphDef->mNumWireBufs);
 		if (inWorld->mRunning)
 		{
 			// cannot reallocate interconnect buffers while running audio.

@@ -143,6 +143,9 @@ World* World_New(WorldOptions *inOptions)
 		hw->mUsers = (ReplyAddress*)calloc(inOptions->mMaxLogins * sizeof(ReplyAddress), 1);
 		hw->mNumUsers = 0;
 		hw->mMaxUsers = inOptions->mMaxLogins;
+		hw->mHiddenID = -8;
+		hw->mRecentID = -8;
+		
 		
 		world->mNumUnits = 0;
 		world->mNumGraphs = 0;
@@ -486,11 +489,13 @@ bool World_RemoveNode(World *inWorld, Node* inNode)
 
 Node* World_GetNode(World *inWorld, int32 inID)
 {
+	if (inID == -1) inID = inWorld->hw->mRecentID;
 	return inWorld->hw->mNodeLib->Get(inID);
 }
 
 Graph* World_GetGraph(World *inWorld, int32 inID)
 {
+	if (inID == -1) inID = inWorld->hw->mRecentID;
 	Node *node = World_GetNode(inWorld, inID);
 	if (!node) return 0;
 	return node->mIsGroup ? 0 : (Graph*)node;

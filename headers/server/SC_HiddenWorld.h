@@ -88,6 +88,9 @@ struct HiddenWorld
 	void *mNRTInputFile; 
 	void *mNRTOutputFile; 
 	FILE *mNRTCmdFile;
+	
+	int32 mHiddenID;
+	int32 mRecentID;
 };
 
 typedef struct HiddenWorld HiddenWorld;
