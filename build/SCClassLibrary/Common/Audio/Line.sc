@@ -24,7 +24,7 @@ LinExp : UGen {
 		^this.multiNew('control',  in, srclo, srchi, dstlo, dsthi)
 	}
 }	
-
+// not installed
 K2A : UGen { // control rate to audio rate converter - used internally on outputs to Synth
 	*ar { arg in = 0.0;
 		^this.multiNew('audio', in)
