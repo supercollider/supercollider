@@ -382,7 +382,7 @@ void BufZeroCmd::Stage4()
 ///////////////////////////////////////////////////////////////////////////
 
 BufAllocReadCmd::BufAllocReadCmd(World *inWorld, ReplyAddress *inReplyAddress)
-	: SC_SequencedCommand(inWorld, inReplyAddress)
+	: SC_SequencedCommand(inWorld, inReplyAddress), mFreeData(0)
 {
 }
 
@@ -423,8 +423,11 @@ bool BufAllocReadCmd::Stage2()
 	memset(&fileinfo, 0, sizeof(fileinfo));
 	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
-		scprintf("File '%s' could not be opened.\n", mFilename);
-		return true;
+		char str[256];
+		sprintf(str, "File '%s' could not be opened.\n", mFilename);
+		SendFailure(&mReplyAddress, "/b_allocRead", str);
+		scprintf(str);
+		return false;
 	}
 	if (mNumFrames <= 0 || mNumFrames > fileinfo.frames) mNumFrames = fileinfo.frames;
 	
@@ -508,8 +511,11 @@ bool BufReadCmd::Stage2()
 
 	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
-		scprintf("File '%s' could not be opened.\n", mFilename);
-		return true;
+		char str[256];
+		sprintf(str, "File '%s' could not be opened.\n", mFilename);
+		SendFailure(&mReplyAddress, "/b_read", str);
+		scprintf(str);
+		return false;
 	}
 	if (mNumFrames < 0 || mNumFrames > fileinfo.frames) mNumFrames = fileinfo.frames;
 	
@@ -593,9 +599,12 @@ bool BufWriteCmd::Stage2()
 	SNDFILE* sf = sf_open(mFilename, SFM_WRITE, &mFileInfo);
 	if (!sf) {
 		char sferr[256];
+		char str[256];
 		sf_error_str(NULL, sferr, 256);
-		scprintf("File '%s' could not be opened. '%s'\n", mFilename, sferr);
-		return true;
+		sprintf(str, "File '%s' could not be opened. '%s'\n", mFilename, sferr);
+		SendFailure(&mReplyAddress, "/b_write", str);
+		scprintf(str);
+		return false;
 	}
 
 	if (mNumFrames < 0 || mNumFrames > buf->frames) mNumFrames = buf->frames;
@@ -764,6 +773,7 @@ bool NotifyCmd::Stage2()
 			if (mReplyAddress == hw->mUsers[i]) {
 				// already in table - don't fail though..
 				SendFailure(&mReplyAddress, "/notify", "already registered\n");
+				scprintf("already registered\n");
 				return false;
 			}
 		}
@@ -771,6 +781,7 @@ bool NotifyCmd::Stage2()
 		// add reply address to user table
 		if (hw->mNumUsers >= hw->mMaxUsers) {
 			SendFailure(&mReplyAddress, "/notify", "too many users\n");
+			scprintf("too many users\n");
 			return false;
 		}
 			
@@ -788,6 +799,7 @@ bool NotifyCmd::Stage2()
 		}
 		
 		SendFailure(&mReplyAddress, "/notify", "not registered\n");
+		scprintf("not registered\n");
 	}
 	return false;
 }
