@@ -12,7 +12,7 @@ Client {
 	}
 	
 	defaultPort { ^57120 } //this is hardcoded in the sources for now
-	defaultAddr { ^NetAddr("127.0.0.1", 57120) }
+	defaultAddr { ^[NetAddr("127.0.0.1", 57120)] }
 	
 	minit { arg argAddr;
 		this.addr = argAddr;
