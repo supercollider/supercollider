@@ -255,6 +255,7 @@ Sample : AbstractSample { // a small sound loaded from disk
 			^this
 		});
 
+		// just reading the headers
 		// if tempo and endFrame are supplied, avoid loading
 		// need sampleRate
 		if(thing.isString,{
@@ -314,20 +315,23 @@ Sample : AbstractSample { // a small sound loaded from disk
 		tempo = beats / (size/soundFile.sampleRate);
 	}
 			
-	calculate { 	
+	calculate {
 		size=soundFile.numFrames;
 		end=size-1;
 	}
-	guessBeats {
-		if(tempo > 3.0,{ this.beats_(beats / 2.0) });
-		if(tempo > 3.0,{ this.beats_(beats / 2.0) });
-		if(tempo > 3.0,{ this.beats_(beats / 2.0) });
-		if(tempo > 3.0,{ this.beats_(beats / 2.0) });
-		if(tempo > 3.0,{ this.beats_(beats / 2.0) });
-		if(tempo < 0.5,{ this.beats_(beats * 2.0) });
-		if(tempo < 0.5,{ this.beats_(beats * 2.0) });			if(tempo < 0.5,{ this.beats_(beats * 2.0) });
-		if(tempo < 0.5,{ this.beats_(beats * 2.0) });
-		if(tempo < 0.5,{ this.beats_(beats * 2.0) });
+	guessBeats { arg min=80,max=140;
+		min = min / 60;
+		max = max / 60;
+		if(tempo > max,{ this.beats_(beats / 2.0) });
+		if(tempo > max,{ this.beats_(beats / 2.0) });
+		if(tempo > max,{ this.beats_(beats / 2.0) });
+		if(tempo > max,{ this.beats_(beats / 2.0) });
+		if(tempo > max,{ this.beats_(beats / 2.0) });
+		if(tempo < min,{ this.beats_(beats * 2.0) });
+		if(tempo < min,{ this.beats_(beats * 2.0) });
+		if(tempo < min,{ this.beats_(beats * 2.0) });
+		if(tempo < min,{ this.beats_(beats * 2.0) });
+		if(tempo < min,{ this.beats_(beats * 2.0) });
 	}
 	initForSynthDef { arg synthDef,argi;
 		super.initForSynthDef(synthDef,argi);
