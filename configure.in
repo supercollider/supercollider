@@ -349,6 +349,22 @@ else
 	SC_ALSA_LIBS=""
 fi
 
+# class library
+AC_ARG_ENABLE(library,
+AC_HELP_STRING([--disable-library],[do not install the class library]))
+
+if test "x$enable_library" = "x"; then
+	enable_library="yes"
+fi
+if test "$enable_library" = "yes"; then
+	WITH_LIBRARY=true
+	feat_library="yes"
+else
+	WITH_LIBRARY=false
+	feat_library="no"
+fi
+AM_CONDITIONAL(WITH_LIBRARY, $WITH_LIBRARY)
+
 # scel emacs interface
 AC_ARG_ENABLE(scel,
 AC_HELP_STRING([--disable-scel],[disable emacs interface]))
@@ -389,6 +405,7 @@ linux/Makefile
 linux/libscsynth.pc
 linux/libsclang.pc
 linux/examples/Makefile
+linux/lib/Makefile
 linux/scel/Makefile
 linux/scel/el/Makefile
 linux/scel/sc/Makefile
@@ -419,6 +436,7 @@ sclang
 ------------------------------------------------------------
  enabled                           $feat_sclang
  ALSA sequencer support            $feat_aseq
+ class library installation        $feat_library
  scel emacs interface              $feat_scel
 ------------------------------------------------------------
 ])

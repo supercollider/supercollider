@@ -283,8 +283,8 @@
 	    (setq sclang-help-topic-alist
 		  (sort result (lambda (a b) (string< (car a) (car b)))))
 	    (sclang-message "Indexing help topics ... Done"))))
-	(setq sclang-help-topic-alist nil)
-	(sclang-message "Help directory is unset")))
+    (setq sclang-help-topic-alist nil)
+    (sclang-message "Help directory is unset")))
 
 (defun sclang-edit-help-file ()
   (interactive)
@@ -455,7 +455,10 @@
 ;; module setup
 ;; =====================================================================
 
-(add-hook 'sclang-library-startup-hook 'sclang-index-help-topics)
+(add-hook 'sclang-library-startup-hook (lambda ()
+					 (condition-case nil
+					     (sclang-index-help-topics)
+					   (error nil))))
 (sclang-fill-help-syntax-table sclang-help-mode-syntax-table)
 (sclang-fill-help-mode-map sclang-help-mode-map)
 (add-to-list 'auto-mode-alist '("\\.rtf$" . sclang-help-mode))

@@ -8,13 +8,19 @@
 DISTCLEANFILES		= libscsynth.pc libsclang.pc
 MAINTAINERCLEANFILES	= Makefile.in
 
+if WITH_LIBRARY
+linuxlibdir		= lib
+else
+linuxlibdir		=
+endif # WITH_LIBRARY
+
 if WITH_SCEL
 sceldir			= scel
 else
 sceldir			=
-endif
+endif # WITH_SCEL
 
-SUBDIRS			= examples $(sceldir)
+SUBDIRS			= examples $(linuxlibdir) $(sceldir)
 EXTRA_DIST		= \
 	ChangeLog \
 	INSTALL \

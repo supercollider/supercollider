@@ -41,9 +41,9 @@ libsclang_la_SOURCES	=		\
 	PyrSignal.cpp			\
 	PyrSignalPrim.cpp		\
 	PyrSymbolTable.cpp		\
-	SC_ComPort.cpp			\
-	SC_HID.cpp			\
 	SC_AlsaMIDI.cpp			\
+	SC_ComPort.cpp			\
+	SC_LID.cpp			\
 	SC_LanguageClient.cpp		\
 	SC_LibraryConfig.cpp		\
 	SC_TerminalClient.cpp		\

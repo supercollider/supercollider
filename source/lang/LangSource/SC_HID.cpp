@@ -24,8 +24,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  */
-#ifdef SC_DARWIN
-
 #include <Carbon/Carbon.h>
 
 #include "HID_Utilities_External.h"
@@ -488,9 +486,3 @@ void initHIDPrimitives()
 	definePrimitive(base, index++, "_HIDDequeueElement", prHIDDequeueElement, 3, 0);
 	definePrimitive(base, index++, "_HIDQueueElement", prHIDQueueElement, 3, 0);
 }
-#else // !SC_DARWIN
-void initHIDPrimitives()
-{
-	//other platforms?
-}
-#endif // SC_DARWIN

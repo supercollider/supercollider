@@ -104,7 +104,7 @@ Monitor {
 		divider = if(toNumChannels.even and: { fromNumChannels.even }, 2, 1);
 		(numChannels div: divider).do { arg i;
 			bundle.add([9, "system_link_audio_"++divider, 
-					server.nextNodeID.debug, 1, group.nodeID,
+					server.nextNodeID, 1, group.nodeID,
 					\out, toIndex + (i * divider  % toNumChannels), 
 					\in, fromIndex + (i * divider % fromNumChannels),
 					\vol, vol

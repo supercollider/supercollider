@@ -181,8 +181,8 @@
 
 (defvar sclang-font-lock-method-list
   '(
-    "if" "while" "loop" "forBy"
-    "ar" "kr"
+    "if" "while" "loop" "for" "forBy"
+    "ar" "kr" "ir"
     )
   "*List of methods to highlight in SCLang mode.")
 

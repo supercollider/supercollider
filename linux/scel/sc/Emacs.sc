@@ -42,26 +42,6 @@ EmacsInterface
 
 	*initDefaultHandlers {
 		this
-		.put(\symbolTable, {
-			var result;
-
-			"Emacs: Building symbol table ...".post;
-
-			result = IdentitySet.new;
-			
-			Class.allClasses.do { | class |
-				result.add(class.name);
-				class.methods.do { | method |
-					result.add(method.name);
-				};
-			};
-
-			result = result.collectAs({ | symbol | symbol.asString }, Array);
-			
-			" done.".postln;
-
-			result
-		})
 		.put(\symbolTable, { | fileName |
 			var result, file;
 			var t;
@@ -198,7 +178,7 @@ Emacs
 		Class.initClassTree(EmacsInterface);
 		Class.initClassTree(EmacsDocument);
 		requestHandlers = IdentityDictionary.new;
-		requestAllocator = LRUNumberAllocator(0, 1024);
+		requestAllocator = StackNumberAllocator(0, 128);
 		keys = IdentityDictionary.new;
 		outFileName = "SCLANG_COMMAND_FIFO".getenv;
 		if (outFileName.isNil) {
