@@ -36,7 +36,7 @@ MIDIGatePlayer : MIDIPlayer {
 	var off;
 	
 	*new { arg spec=\amp;
-		^super.new.spec_(spec.asSpec)
+		^super.new.spec_(spec = spec.asSpec).value_(0.0)
 	}
 	storeArgs { ^[spec] }
 	initResponders {
@@ -54,7 +54,7 @@ CCPlayer : MIDIPlayer {
 	var <>num;
 	
 	*new { arg num=1,spec=\linear;
-		^super.new.num_(num).spec_(spec.asSpec)
+		^super.new.num_(num).spec_(spec = spec.asSpec).value_(spec.default)
 	}
 	storeArgs { ^[num,spec] }
 	initResponders {
@@ -63,6 +63,7 @@ CCPlayer : MIDIPlayer {
 }
 
 MIDIFreqPlayer : MIDIPlayer {
+	*new { arg init=440.0; ^super.new.value_(init) }
 	initResponders {
 		resp = NoteOnResponder({ arg note,veloc; value = note.midicps; this.changed });
 	}
