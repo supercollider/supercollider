@@ -112,7 +112,9 @@ SynthDef {
 		this.asArray.writeDef(stream);
 		^stream.collection;
 	}
-
+	writeDefFile { arg dir="synthdefs/";
+		super.writeDefFile(name,dir);
+	}
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.
 		
