@@ -1,16 +1,12 @@
 
 OSCBundle {
-	var <server, <messages;
-	*new { arg server; ^super.new.minit(server) }
-	
-	minit { arg srv;
-		server = srv;
-	}	
-	send {
-		server.listSendBundle(nil, messages);
+	var <messages;
+		
+	send { arg server, time;
+		server.listSendBundle(time, messages);
 	}
-	schedSend { arg time, clock;
-		(clock ? SystemClock).sched(time ? 0,{ this.send });
+	schedSend { arg server, time, clock;
+		(clock ? SystemClock).sched(time ? 0,{ this.send(server,time) });
 	}
 	add { arg msg;
 		messages = messages.add(msg);
@@ -37,31 +33,28 @@ MixedBundle : OSCBundle {
 	var <functions; //functions to evaluate on send 
 	var <preparationMessages; //messages to send first on schedSend
 	
-	minit { arg srv;
-		server = srv;
-	}
 	
-	schedSend { arg time, clock, onCompletion;
-		//maybe use OSCScheduler later
-			this.sendPrepare;
+	
+	schedSend { arg server, time, clock, onCompletion;
+			this.sendPrepare(server);
 			(clock ? SystemClock).sched(time ? 0, {
-								this.send;
+								this.send(server);
 								onCompletion.value 
 			});
 		
 	}
 	
-	schedSendRespond { arg time, clock, onCompletion;
+	schedSendRespond { arg server, time, clock, onCompletion;
 		var resp;
 			
-			resp = OSCresponder(server.addr, '/done', { 
+			resp = OSCresponderNode(server.addr, '/done', { 
 							(clock ? SystemClock).sched(time ? 0,{ 
-								this.send;
+								this.send(server);
 								onCompletion.value
 							});
 							resp.remove;
 				}).add;
-			this.sendPrepare;
+			this.sendPrepare(server);
 	}
 	
 	addFunction { arg func;
@@ -72,17 +65,15 @@ MixedBundle : OSCBundle {
 		preparationMessages = preparationMessages.add(msg);
 	}
 	
-	send { 
-		var array, latency;
-		//array = asRawOSC([nil,messages]).postln;
-		latency = server.latency;
+	send { arg server, latency;
+		var array;
+		latency = latency ? server.latency;
 		functions.do({ arg item; item.value(latency) });
+		//messages.asCompileString.postln;
 		server.listSendBundle(latency, messages);
-		//server.sendRaw(array);
-		
 	}
 	
-	sendPrepare {
+	sendPrepare { arg server;
 		server.listSendBundle(nil, preparationMessages);
 	}
 
