@@ -370,7 +370,9 @@ int Graph_GetControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex
 void Graph_SetControl(Graph* inGraph, uint32 inIndex, float inValue)
 {
 	if (inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
-	inGraph->mControls[inIndex] = inValue;
+	float *ptr = inGraph->mControls + inIndex;
+	inGraph->mMapControls[inIndex] = ptr; // unmap the control
+	*ptr = inValue;
 }
 
 void Graph_SetControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, float inValue)

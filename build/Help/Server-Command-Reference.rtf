@@ -241,13 +241,13 @@ Set contiguous ranges of control indices to single values. For each range, the s
 		int - control bus index\
 	] * N\
 	\
-Takes a list of pairs of control names or indices and bus indices and causes those controls to be read continuously from a global control bus instead of responding to 
+Takes a list of pairs of control names or indices and bus indices and causes those controls to be read continuously from a global control bus. If the node is a group, then it maps the controls of every node in the group. If the control bus index is -1 then any current mapping is undone. Any 
 \f0\b n_set
 \f1\b0 , 
 \f0\b n_setn
 \f1\b0  and 
 \f0\b n_fill
-\f1\b0  commands. If the node is a group, then it maps the controls of every node in the group. If the control bus index is -1 then any current mapping is undone and control reverts to normal.\
+\f1\b0  command will also unmap the control.\
 \
 
 \f0\b /n_mapn					map a node's controls to read from buses\
@@ -259,7 +259,13 @@ Takes a list of pairs of control names or indices and bus indices and causes tho
 		int - number of controls to map\
 	] * N\
 	\
-Takes a list of triplets of control names or indices, bus indices, and number of controls to map and causes those controls to be mapped sequentially to buses. If the node is a group, then it maps the controls of every node in the group. If the control bus index is -1 then any current mapping is undone and control reverts to normal.\
+Takes a list of triplets of control names or indices, bus indices, and number of controls to map and causes those controls to be mapped sequentially to buses. If the node is a group, then it maps the controls of every node in the group. If the control bus index is -1 then any current mapping is undone. Any 
+\f0\b n_set
+\f1\b0 , 
+\f0\b n_setn
+\f1\b0  and 
+\f0\b n_fill
+\f1\b0  command will also unmap the control.\
 \
 
 \f0\b /n_before					place a node before another\
