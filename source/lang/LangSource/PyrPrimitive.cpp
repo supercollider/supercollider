@@ -700,6 +700,12 @@ int blockValueArray(struct VMGlobals *g, int numArgsPushed)
 			array = (PyrObject*)b->uo;
 			above:
 			size = array->size;
+
+			PyrObject *stack = g->gc->Stack();
+			int stackDepth = g->sp - stack->slots + 1;
+			int stackSize = ARRAYMAXINDEXSIZE(stack);
+			int stackRemain = stackSize - stackDepth;
+			if (stackRemain < size) return errStackOverflow;
 			
 			pslot = (double*)(array->slots - 1);
 			qslot = (double*)(b - 1);
@@ -743,6 +749,12 @@ int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
 			array = (PyrObject*)b->uo;
 			above:
 			size = array->size;
+
+			PyrObject *stack = g->gc->Stack();
+			int stackDepth = g->sp - stack->slots + 1;
+			int stackSize = ARRAYMAXINDEXSIZE(stack);
+			int stackRemain = stackSize - stackDepth;
+			if (stackRemain < size) return errStackOverflow;
 			
 			pslot = (double*)(array->slots - 1);
 			qslot = (double*)(b - 1);
@@ -1879,7 +1891,7 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 		array = listSlot->uo;
 		
 		PyrObject *stack = g->gc->Stack();
-		int stackDepth = g->sp - stack->slots;
+		int stackDepth = g->sp - stack->slots + 1;
 		int stackSize = ARRAYMAXINDEXSIZE(stack);
 		int stackRemain = stackSize - stackDepth;
 		if (stackRemain < array->size) return errStackOverflow;
