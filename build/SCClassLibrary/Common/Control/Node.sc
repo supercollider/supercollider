@@ -12,23 +12,23 @@ Node {
 
 	free { arg sendFlag=true;
 		if(sendFlag, {
-			server.sendBundle(server.latency, [11, nodeID]);  //"/n_free"
+			server.sendBundle(nil, [11, nodeID]);  //"/n_free"
 		});
 		this.remove;
 	}
 	run { arg flag=true;
-		server.sendBundle(server.latency, [12, nodeID,flag.binaryValue]); //"/n_run"
+		server.sendBundle(nil, [12, nodeID,flag.binaryValue]); //"/n_run"
 	}
 	map { arg controlName, busIndex ... args;
-		server.sendBundle(server.latency, 
+		server.sendBundle(nil, 
 			[14, nodeID,controlName, busIndex]++args); //"/n_map"
 	}
 	set { arg controlName, value ... args;
-		server.sendBundle(server.latency, 
+		server.sendBundle(nil, 
 			[15, nodeID,controlName, value]++args); //"/n_set"
 	}
 	setWithArray { arg args;
-		server.sendBundle(server.latency, 
+		server.sendBundle(nil, 
 			[15, nodeID] ++ args); //"/n_set"
 	}
 
@@ -40,16 +40,16 @@ Node {
 			nargs = nargs.add((two = cnv.at(1)).size);
 			nargs = nargs.add(two);
 		});
-		server.sendBundle(server.latency, 
+		server.sendBundle(nil, 
 			([16, nodeID,controlName, values.size] ++ values 
 				++ nargs)); // "n_setn"
 	}
 	fill { arg controlName, numControls, value ... args;
-		server.sendBundle(server.latency, 
+		server.sendBundle(nil, 
 			[17, nodeID,controlName,numControls, value]++args); //"n_setn"
 	}
 	release { //assumes a control called 'gate' in the synth
-		server.sendBundle(server.latency, 
+		server.sendBundle(nil, 
 			[15, nodeID, \gate, 0]) //"/n_set"
 	}	      
 
@@ -206,19 +206,19 @@ Group : Node {
 	*replace { arg groupToReplace; ^this.new(groupToReplace, \addReplace) }
 	
 	moveNodeToHead { arg aNode;
-		server.sendBundle(server.latency,
+		server.sendBundle(nil,
 			[22, nodeID, aNode.nodeID]); //"/g_head"
 	}
 	moveNodeToTail { arg aNode;
-		server.sendBundle(server.latency,
+		server.sendBundle(nil,
 			[23, nodeID, aNode.nodeID]); //"/g_tail"
 	}
 	moveNodeBefore { arg  movedNode, aNode;
-		server.sendBundle(server.latency,
+		server.sendBundle(nil,
 			[18, movedNode.nodeID, aNode.nodeID]); //"/n_before"
 	}
 	moveNodeAfter { arg  movedNode, aNode;
-		server.sendBundle(server.latency,
+		server.sendBundle(nil,
 			[19, movedNode.nodeID, aNode.nodeID]); //"/n_after"
 	}       
 	
@@ -228,7 +228,7 @@ Group : Node {
 		
 	freeAll { arg sendFlag=true;
 		// free my children, but this node is still playing
-		server.sendBundle(server.latency,[24,nodeID]); //"/g_freeAll"
+		server.sendBundle(nil,[24,nodeID]); //"/g_freeAll"
 	}
 	
 			
@@ -368,7 +368,7 @@ Synth : Node {
 	// basic msg construction
 	addToHeadMsg { arg arggroup,args;
 		group = arggroup;
-		^[9, defName, nodeID, 0, group.nodeID] ++ args
+		^[9, defName, nodeID, 0, group.nodeID] ++ args // s_new
 	}
 	addToTailMsg { arg arggroup,args;
 		group = arggroup; 
