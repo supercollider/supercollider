@@ -42,7 +42,7 @@ public:
 
 	bool Write(MsgType& data)
 	{
-		long next = NextPos(mWriteHead);
+		unsigned int next = NextPos(mWriteHead);
 		if (next == mFreeHead) return false; // fifo is full
 		mItems[next] = data;
 #ifdef SC_DARWIN
@@ -58,7 +58,7 @@ public:
 	void Perform() // get next and advance
 	{
 		while (HasData()) {
-			long next = NextPos(mReadHead);
+			unsigned int next = NextPos(mReadHead);
 			mItems[next].Perform();
 #ifdef SC_DARWIN
 			// we don't really need a compare and swap, but this happens to call 
@@ -72,7 +72,7 @@ public:
 	void Free() // reclaim messages
 	{
 		while (NeedsFree()) {
-			long next = NextPos(mFreeHead);
+			unsigned int next = NextPos(mFreeHead);
 			mItems[next].Free();
 #ifdef SC_DARWIN
 			// we don't really need a compare and swap, but this happens to call 
@@ -90,7 +90,7 @@ private:
 #ifdef SC_DARWIN
 	UInt32 mReadHead, mWriteHead, mFreeHead;
 #else
-	volatile int mReadHead, mWriteHead, mFreeHead;
+	volatile unsigned int mReadHead, mWriteHead, mFreeHead;
 #endif
 	MsgType mItems[N];
 };
@@ -112,7 +112,7 @@ public:
 
 	bool Write(MsgType& data)
 	{
-		long next = NextPos(mWriteHead);
+		unsigned int next = NextPos(mWriteHead);
 		if (next == mReadHead) return false; // fifo is full
 		mItems[next] = data;
 #ifdef SC_DARWIN
@@ -128,7 +128,7 @@ public:
 	void Perform() // get next and advance
 	{
 		while (HasData()) {
-			long next = NextPos(mReadHead);
+			unsigned int next = NextPos(mReadHead);
 			mItems[next].Perform();
 #ifdef SC_DARWIN
 			// we don't really need a compare and swap, but this happens to call 
@@ -146,7 +146,7 @@ private:
 #ifdef SC_DARWIN
 	UInt32 mReadHead, mWriteHead;
 #else
-	volatile int mReadHead, mWriteHead;
+	volatile unsigned int mReadHead, mWriteHead;
 #endif
 	MsgType mItems[N];
 };

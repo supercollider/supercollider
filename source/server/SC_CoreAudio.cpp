@@ -232,7 +232,7 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket);
 int PerformOSCMessage(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 
 void Perform_ToEngine_Msg(FifoMsg *inMsg);
-void Free_ToEngine_Msg(FifoMsg *inMsg);
+void FreeOSCPacket(FifoMsg *inMsg);
 
 struct IsBundle
 {
@@ -250,7 +250,7 @@ bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 	inPacket->mIsBundle = gIsBundle.checkIsBundle((int32*)inPacket->mData);
 	driver->Lock();
 		FifoMsg fifoMsg;
-		fifoMsg.Set(inWorld, Perform_ToEngine_Msg, Free_ToEngine_Msg, (void*)inPacket);
+		fifoMsg.Set(inWorld, Perform_ToEngine_Msg, FreeOSCPacket, (void*)inPacket);
 		bool result = driver->SendMsgToEngine(fifoMsg);
 	driver->Unlock();
 	return result;
@@ -326,6 +326,7 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 			
 			SC_ScheduledEvent event(world, time, packet);
 			driver->AddEvent(event);
+			inMsg->mData = 0;
 			inMsg->mFreeFunc = 0;
 		}
 	}
@@ -345,19 +346,14 @@ void PerformCompletionMsg(World *inWorld, OSC_Packet *inPacket)
 }
 
 
-void FreeOSCPacket(OSC_Packet *inPacket);
-void FreeOSCPacket(OSC_Packet *inPacket)
-{
-	if (inPacket) {
-		free(inPacket->mData);
-		free(inPacket);
-	}
-}
-
-void Free_ToEngine_Msg(FifoMsg *inMsg)
+void FreeOSCPacket(FifoMsg *inMsg)
 {
 	OSC_Packet *packet = (OSC_Packet*)inMsg->mData;
-	FreeOSCPacket(packet);
+	if (packet) {
+		inMsg->mData = 0;
+		free(packet->mData);
+		free(packet);
+	}
 }
 
 void Free_FromEngine_Msg(FifoMsg *inMsg);
@@ -365,14 +361,6 @@ void Free_FromEngine_Msg(FifoMsg *inMsg)
 {
 	World_Free(inMsg->mWorld, inMsg->mData);
 }
-
-void DoneWithPacket(FifoMsg *inMsg);
-void DoneWithPacket(FifoMsg *inMsg)
-{
-	OSC_Packet *packet = (OSC_Packet*)inMsg->mData;
-	FreeOSCPacket(packet);
-}
-
 
 // =====================================================================
 // Audio driver (Common)
@@ -448,7 +436,7 @@ void SC_ScheduledEvent::Perform()
 {
 	PerformOSCBundle(mWorld, mPacket); 
 	FifoMsg msg;
-	msg.Set(mWorld, DoneWithPacket, 0, (void*)mPacket);
+	msg.Set(mWorld, FreeOSCPacket, 0, (void*)mPacket);
 	mWorld->hw->mAudioDriver->SendMsgFromEngine(msg);
 }
 
