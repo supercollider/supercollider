@@ -16,13 +16,18 @@ SynthDef {
 	var <>arAvailable, <>krAvailable;
 	
 	*new { arg name, ugenGraphFunc;
+		^this.prNew(name)
+			.build(ugenGraphFunc)
+	}
+	*prNew { arg name;
 		^super.new.name_(name.asString)
-			.initBuild
+	}
+	build { arg ugenGraphFunc;
+		this.initBuild
 			.buildUgenGraph(ugenGraphFunc)
 			.finishBuild
 	}
-	*prNew { ^super.new 	}
-	
+		
 	initBuild {
 		UGen.buildSynthDef = this;
 		constants = Dictionary.new;
@@ -113,6 +118,7 @@ SynthDef {
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.
 		
+		if(InspManager.global.notNil,{ name.insp("name as fed to file") });
 		file.putPascalString(name);
 		
 		this.writeConstants(file);
