@@ -611,6 +611,18 @@ int prTextWindow_Text(struct VMGlobals *g, int numArgsPushed)
         SetObject(a, string);
         return errNone;
 }
+int prTextWindow_RemoveUndo(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_RemoveUndo(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+        
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		[doc updateChangeCount: NSChangeUndone];
+		return errNone;
+}
 
 int prTextWindow_UnfocusedFront(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_UnfocusedFront(struct VMGlobals *g, int numArgsPushed)
@@ -728,23 +740,20 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
         NSString *nspath = [url path];
         
 		docCreatedFromLang = true;
-		
-        MyDocument *doc = (MyDocument*)[docctl documentForFileName: nspath];
-        if (!doc) {
-            doc = [docctl openDocumentWithContentsOfFile: nspath display: true];
-            if (!doc) {
-                post("Can't open Document '%s'\n", [nspath cString]);
-				docCreatedFromLang = false;
-                return errFailed;
-            }
-
-        }
-        NSWindow *window = [[[doc windowControllers] objectAtIndex: 0] window];
-        if (!window) {
-            post("window controller returns nil\n");
+		//this is not needed openDocumentWithContentsOfFile does it also. jt
+		//MyDocument *doc = (MyDocument*)[docctl documentForFileName: nspath];
+		MyDocument *doc = [docctl openDocumentWithContentsOfFile: nspath display: true];
+		if (!doc) {
+			post("Can't open Document '%s'\n", [nspath cString]);
 			docCreatedFromLang = false;
-            return errFailed;
-        }
+			return errFailed;
+		}
+		NSWindow *window = [[[doc windowControllers] objectAtIndex: 0] window];
+		if (!window) {
+				post("window controller returns nil\n");
+				docCreatedFromLang = false;
+				return errFailed;
+		}
         [window makeKeyAndOrderFront: nil];
         
         // select 
@@ -2508,6 +2517,8 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_GetBounds", prTextWindow_GetBounds, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_SetName", prTextWindow_SetName, 2, 0);	
 	definePrimitive(base, index++, "_TextWindow_SetEditable", prTextWindow_SetEditable, 2, 0);	
+	definePrimitive(base, index++, "_TextWindow_RemoveUndo", prTextWindow_RemoveUndo, 1, 0);	
+
 
 
 
