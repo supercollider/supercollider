@@ -1877,6 +1877,195 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 }
 
 
+int objectSuperPerform(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *recvrSlot, *selSlot, *listSlot;
+	double *pslot, *qslot;
+	PyrSymbol *selector;
+	int m, mmax;
+	
+	recvrSlot = g->sp - numArgsPushed + 1;
+
+	PyrClass* classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
+	if (!isKindOfSlot(recvrSlot, classobj)) {
+		error("superPerform must be called with 'this' as the receiver.\n");
+		return errFailed;
+	}
+
+	selSlot = recvrSlot + 1;
+	if (IsSym(selSlot)) {
+		selector = selSlot->us;
+		// move args down one to fill selector's position
+		pslot = (double*)(selSlot - 1);
+		qslot = (double*)selSlot;
+		for (m=0; m<numArgsPushed - 2; ++m) *++pslot = *++qslot;
+		g->sp -- ;
+		numArgsPushed -- ;
+		// now the stack looks just like it would for a normal message send
+	} else if (IsObj(selSlot)) {
+		listSlot = selSlot;
+		if (listSlot->uo->classptr == class_list) {
+			listSlot = listSlot->uo->slots;
+		}
+		if (listSlot->utag != tagObj || listSlot->uo->classptr != class_array) {
+			goto badselector;
+		}
+		PyrObject *array = listSlot->uo;
+		if (array->size < 1) {
+			error("Array must have a selector.\n");
+			return errFailed; 
+		}
+		selSlot = array->slots;
+		selector = selSlot->us;
+
+		if (numArgsPushed>2) {
+			qslot = (double*)recvrSlot + numArgsPushed;
+			pslot = (double*)recvrSlot + numArgsPushed + array->size - 2;
+			for (m=0; m<numArgsPushed - 2; ++m) *--pslot = *--qslot;
+		}
+		
+		pslot = (double*)(recvrSlot);
+		qslot = (double*)(selSlot);
+		for (m=0,mmax=array->size-1; m<mmax; ++m) *++pslot = *++qslot;
+		
+		g->sp += array->size - 2;
+		numArgsPushed += array->size - 2;
+		// now the stack looks just like it would for a normal message send
+		
+	} else {
+		badselector:
+		error("perform selector not a Symbol or Array.\n");
+		dumpObjectSlot(listSlot);
+		return errWrongType; 
+	}
+	
+	sendSuperMessage(g, selector, numArgsPushed);
+	g->numpop = 0;
+	return errNone;
+}
+
+int objectSuperPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPushed);
+int objectSuperPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPushed)
+{
+	PyrSlot *recvrSlot, *selSlot, *listSlot;
+	double *pslot, *qslot;
+	PyrSymbol *selector;
+	int m, mmax;
+	
+	recvrSlot = g->sp - numArgsPushed + 1;
+
+	PyrClass* classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
+	if (!isKindOfSlot(recvrSlot, classobj)) {
+		error("superPerform must be called with 'this' as the receiver.\n");
+		return errFailed;
+	}
+
+	selSlot = recvrSlot + 1;
+	if (IsSym(selSlot)) {
+		selector = selSlot->us;
+		// move args down one to fill selector's position
+		pslot = (double*)(selSlot - 1);
+		qslot = (double*)selSlot;
+		for (m=0; m<numArgsPushed - 2; ++m) *++pslot = *++qslot;
+		g->sp -- ;
+		numArgsPushed -- ;
+		// now the stack looks just like it would for a normal message send
+	} else if (IsObj(selSlot)) {
+		listSlot = selSlot;
+		if (listSlot->uo->classptr == class_list) {
+			listSlot = listSlot->uo->slots;
+		}
+		if (listSlot->utag != tagObj || listSlot->uo->classptr != class_array) {
+			goto badselector;
+		}
+		PyrObject *array = listSlot->uo;
+		if (array->size < 1) {
+			error("Array must have a selector.\n");
+			return errFailed; 
+		}
+		selSlot = array->slots;
+		selector = selSlot->us;
+
+		if (numArgsPushed>2) {
+			qslot = (double*)recvrSlot + numArgsPushed;
+			pslot = (double*)recvrSlot + numArgsPushed + array->size - 2;
+			for (m=0; m<numArgsPushed - 2; ++m) *--pslot = *--qslot;
+		}
+		
+		pslot = (double*)(recvrSlot);
+		qslot = (double*)(selSlot);
+		for (m=0,mmax=array->size-1; m<mmax; ++m) *++pslot = *++qslot;
+		
+		g->sp += array->size - 2;
+		numArgsPushed += array->size - 2;
+		// now the stack looks just like it would for a normal message send
+		
+	} else {
+		badselector:
+		error("perform selector not a Symbol or Array.\n");
+		dumpObjectSlot(listSlot);
+		return errWrongType; 
+	}
+	
+	sendSuperMessageWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
+	g->numpop = 0;
+	return errNone;
+}
+
+
+int objectSuperPerformList(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *recvrSlot, *selSlot, *listSlot;
+	double *pslot, *qslot;
+	PyrSymbol *selector;
+	int m, mmax, numargslots;
+	PyrObject *array;
+	
+	recvrSlot = g->sp - numArgsPushed + 1;
+	selSlot = recvrSlot + 1;
+	listSlot = g->sp;
+	numargslots = numArgsPushed - 3;
+	if (selSlot->utag != tagSym) {
+		error("Selector not a Symbol :\n");
+		return errWrongType;
+	}
+	selector = selSlot->us;
+	if (listSlot->utag != tagObj) {
+		return objectPerform(g, numArgsPushed);
+	}
+	if (listSlot->uo->classptr == class_array) {
+		doarray:
+		pslot = (double*)(recvrSlot);
+		if (numargslots>0) {
+			qslot = (double*)selSlot;
+			for (m=0; m<numargslots; ++m) *++pslot = *++qslot;
+		} else numargslots = 0;
+		array = listSlot->uo;
+		qslot = (double*)(array->slots - 1);
+		for (m=0,mmax=array->size; m<mmax; ++m) *++pslot = *++qslot;
+	} else if (listSlot->uo->classptr == class_list) {
+		listSlot = listSlot->uo->slots;
+		if (listSlot->utag != tagObj || listSlot->uo->classptr != class_array) {
+			error("List array not an Array.\n");
+			dumpObjectSlot(listSlot);
+			return errWrongType; 
+		}
+		goto doarray;
+	} else {
+		return objectSuperPerform(g, numArgsPushed);
+	}
+	g->sp += array->size - 2;
+	numArgsPushed = numargslots + array->size + 1;
+	// now the stack looks just like it would for a normal message send
+	
+	sendSuperMessage(g, selector, numArgsPushed);
+	g->numpop = 0;
+	return errNone;
+}
+
+
+
+
 int objectPerformSelList(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *recvrSlot, *selSlot, *listSlot;
@@ -3813,6 +4002,9 @@ void initPrimitives()
 	definePrimitiveWithKeys(base, index, "_ObjectPerform", objectPerform, objectPerformWithKeys, 2, 1);	
 	index+=2;
 	definePrimitive(base, index++, "_ObjectPerformList", objectPerformList, 2, 1);	
+	definePrimitiveWithKeys(base, index, "_SuperPerform", objectSuperPerform, objectSuperPerformWithKeys, 2, 1);	
+	index+=2;
+	definePrimitive(base, index++, "_SuperPerformList", objectSuperPerformList, 2, 1);	
 	definePrimitive(base, index++, "_ObjectPerformMsg", objectPerformSelList, 2, 0);
 	//definePrimitive(base, index++, "_ArrayPerformMsg", arrayPerformMsg, 1, 1);
 	definePrimitive(base, index++, "_ObjectString", prObjectString, 1, 0);	

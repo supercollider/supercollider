@@ -76,19 +76,34 @@ Object {
 	isKindOf { arg aClass; _ObjectIsKindOf; ^this.primitiveFailed }
 	isMemberOf { arg aClass; _ObjectIsMemberOf; ^this.primitiveFailed }
 	respondsTo { arg aSymbol; _ObjectRespondsTo; ^this.primitiveFailed }
-	perform { arg selector ... args;
-		_ObjectPerform; 
-		^this.primitiveFailed 
-	}
+
 	performMsg { arg msg;
 		_ObjectPerformMsg; 
 		^this.primitiveFailed 
 	}
 	
+	perform { arg selector ... args;
+		_ObjectPerform; 
+		^this.primitiveFailed 
+	}
 	performList { arg selector, arglist;
 		_ObjectPerformList; 
 		^this.primitiveFailed 
+	}	
+	
+	// super.perform(selector,arg) doesn't do what you might think.
+	// \perform would be looked up in the superclass, not the selector you are interested in.
+	// Hence these methods, which look up the selector in the superclass.
+	// These methods must be called with this as the receiver.
+	superPerform { arg selector ... args;
+		_SuperPerform; 
+		^this.primitiveFailed 
 	}
+	superPerformList { arg selector, arglist;
+		_SuperPerformList; 
+		^this.primitiveFailed 
+	}	
+	
 	tryPerform { arg selector ... args;
 		^if(this.respondsTo(selector),{
 			this.performList(selector,args)

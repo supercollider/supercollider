@@ -315,6 +315,270 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	//postfl("<-sendMessage\n");
 }
 
+
+void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, long numKeyArgsPushed)
+{
+	PyrMethod *meth = NULL;
+	PyrMethodRaw *methraw;
+	PyrSlot *recvrSlot, *sp;
+	PyrClass *classobj;
+	long index, classIndex;
+	PyrObject *obj;
+		
+	//postfl("->sendMessage\n");
+#if SANITYCHECK
+	g->gc->SanityCheck();
+#endif
+	recvrSlot = g->sp - numArgsPushed + 1;
+	
+	classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
+	//assert(isKindOfSlot(recvrSlot, classobj));
+
+	lookup_again:	
+	index = classobj->classIndex.ui + selector->u.index;
+	meth = gRowTable[index];
+	
+	if (meth->name.us != selector) {
+		doesNotUnderstandWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
+	} else {
+		methraw = METHRAW(meth);
+		//postfl("methraw->methType %d\n", methraw->methType);
+		switch (methraw->methType) {
+			case methNormal : /* normal msg send */
+				executeMethodWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
+				break;
+			case methReturnSelf : /* return self */
+				g->sp -= numArgsPushed - 1;
+				break;
+			case methReturnLiteral : /* return literal */
+				sp = g->sp -= numArgsPushed - 1;
+				sp[0].ucopy = meth->selectors.ucopy; /* in this case selectors is just a single value */
+				break;
+			case methReturnArg : /* return an argument */
+				sp = g->sp -= numArgsPushed - 1;
+				index = methraw->specialIndex; // zero is index of the first argument
+				if (index < numArgsPushed) {
+					sp[0].ucopy = sp[index].ucopy;
+				} else {
+					sp[0].ucopy = meth->prototypeFrame.uo->slots[index].ucopy;
+				}
+				break;
+			case methReturnInstVar : /* return inst var */
+				sp = g->sp -= numArgsPushed - 1;
+				index = methraw->specialIndex;
+				sp[0].ucopy = recvrSlot->uo->slots[index].ucopy;
+				break;
+			case methAssignInstVar : /* assign inst var */
+				sp = g->sp -= numArgsPushed - 1;
+				index = methraw->specialIndex;
+				obj = recvrSlot->uo;
+				if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
+				if (numArgsPushed >= 2) {
+					obj->slots[index].ucopy = sp[1].ucopy;
+					g->gc->GCWrite(obj, sp + 1);
+				} else {
+					SetNil(&obj->slots[index]);
+				}
+				sp[0].ucopy = recvrSlot->ucopy;
+				break;
+			case methReturnClassVar : /* return class var */
+				sp = g->sp -= numArgsPushed - 1;
+				index = methraw->specialIndex;
+				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
+				sp[0].ucopy = g->classvars[classIndex].uo->slots[index].ucopy;
+				break;
+			case methAssignClassVar : /* assign class var */
+				sp = g->sp -= numArgsPushed - 1;
+				index = methraw->specialIndex;
+				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
+				obj = g->classvars[classIndex].uo;
+				if (numArgsPushed >= 2) {
+					obj->slots[index].ucopy = sp[1].ucopy;
+					g->gc->GCWrite(obj, sp + 1);
+				} else {
+					SetNil(&obj->slots[index]);
+				}
+				sp[0].ucopy = recvrSlot->ucopy;
+				break;
+			case methRedirect : /* send a different selector to self, e.g. this.subclassResponsibility */
+				if (numArgsPushed < methraw->numargs) { // not enough args pushed
+					/* push default arg values */
+					double *pslot, *qslot;
+					long m, mmax;
+					pslot = (double*)g->sp;
+					qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
+					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+					numArgsPushed = methraw->numargs;
+					g->sp += mmax;
+				}
+				selector = meth->selectors.us;
+				goto lookup_again;
+			case methForward : /* forward to an instance variable */
+				if (numArgsPushed < methraw->numargs) { // not enough args pushed
+					/* push default arg values */
+					double *pslot, *qslot;
+					long m, mmax;
+					pslot = (double*)g->sp;
+					qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
+					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+					numArgsPushed = methraw->numargs;
+					g->sp += mmax;
+				}
+				selector = meth->selectors.us;
+				index = methraw->specialIndex;
+				recvrSlot->ucopy = recvrSlot->uo->slots[index].ucopy;
+							
+				classobj = classOfSlot(recvrSlot);
+				
+				goto lookup_again;
+			case methPrimitive : /* primitive */
+				doPrimitiveWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
+#if SANITYCHECK
+	g->gc->SanityCheck();
+#endif
+				break;
+		}
+	}
+#if SANITYCHECK
+	g->gc->SanityCheck();
+#endif
+	//postfl("<-sendMessage\n");
+}
+
+
+void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
+{
+	PyrMethod *meth = NULL;
+	PyrMethodRaw *methraw;
+	PyrSlot *recvrSlot, *sp;
+	PyrClass *classobj;
+	long index, classIndex;
+	PyrObject *obj;
+		
+	//postfl("->sendMessage\n");
+#if SANITYCHECK
+	g->gc->SanityCheck();
+#endif
+	recvrSlot = g->sp - numArgsPushed + 1;
+	
+	classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
+	//assert(isKindOfSlot(recvrSlot, classobj));
+	
+	lookup_again:	
+	index = classobj->classIndex.ui + selector->u.index;
+	meth = gRowTable[index];
+	
+	if (meth->name.us != selector) {
+		doesNotUnderstand(g, selector, numArgsPushed);
+	} else {
+		methraw = METHRAW(meth);
+		//postfl("methraw->methType %d\n", methraw->methType);
+		switch (methraw->methType) {
+			case methNormal : /* normal msg send */
+				executeMethod(g, meth, numArgsPushed);
+				break;
+			case methReturnSelf : /* return self */
+				g->sp -= numArgsPushed - 1;
+				break;
+			case methReturnLiteral : /* return literal */
+				sp = g->sp -= numArgsPushed - 1;
+				sp[0].ucopy = meth->selectors.ucopy; /* in this case selectors is just a single value */
+				break;
+			case methReturnArg : /* return an argument */
+				sp = g->sp -= numArgsPushed - 1;
+				index = methraw->specialIndex; // zero is index of the first argument
+				if (index < numArgsPushed) {
+					sp[0].ucopy = sp[index].ucopy;
+				} else {
+					sp[0].ucopy = meth->prototypeFrame.uo->slots[index].ucopy;
+				}
+				break;
+			case methReturnInstVar : /* return inst var */
+				sp = g->sp -= numArgsPushed - 1;
+				index = methraw->specialIndex;
+				sp[0].ucopy = recvrSlot->uo->slots[index].ucopy;
+				break;
+			case methAssignInstVar : /* assign inst var */
+				sp = g->sp -= numArgsPushed - 1;
+				index = methraw->specialIndex;
+				obj = recvrSlot->uo;
+				if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
+				if (numArgsPushed >= 2) {
+					obj->slots[index].ucopy = sp[1].ucopy;
+					g->gc->GCWrite(obj, sp + 1);
+				} else {
+					SetNil(&obj->slots[index]);
+				}
+				sp[0].ucopy = recvrSlot->ucopy;
+				break;
+			case methReturnClassVar : /* return class var */
+				sp = g->sp -= numArgsPushed - 1;
+				index = methraw->specialIndex;
+				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
+				sp[0].ucopy = g->classvars[classIndex].uo->slots[index].ucopy;
+				break;
+			case methAssignClassVar : /* assign class var */
+				sp = g->sp -= numArgsPushed - 1;
+				index = methraw->specialIndex;
+				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
+				obj = g->classvars[classIndex].uo;
+				if (numArgsPushed >= 2) {
+					obj->slots[index].ucopy = sp[1].ucopy;
+					g->gc->GCWrite(obj, sp + 1);
+				} else {
+					SetNil(&obj->slots[index]);
+				}
+				sp[0].ucopy = recvrSlot->ucopy;
+				break;
+			case methRedirect : /* send a different selector to self, e.g. this.subclassResponsibility */
+				selector = meth->selectors.us;
+				goto lookup_again;
+			case methForward : /* forward to an instance variable */
+				selector = meth->selectors.us;
+				index = methraw->specialIndex;
+				recvrSlot->ucopy = recvrSlot->uo->slots[index].ucopy;
+				
+							
+				classobj = classOfSlot(recvrSlot);
+				
+				goto lookup_again;
+			case methPrimitive : /* primitive */
+				doPrimitive(g, meth, numArgsPushed);
+#if SANITYCHECK
+	g->gc->SanityCheck();
+#endif
+				break;
+			/*
+			case methMultDispatchByClass : {
+				index = methraw->specialIndex;
+				if (index < numArgsPushed) {
+					classobj = sp[index].uo->classptr;
+					selector = meth->selectors.us;
+					goto lookup_again;
+				} else {
+					doesNotUnderstand(g, selector, numArgsPushed);
+				}
+			} break;
+			case methMultDispatchByValue : {
+				index = methraw->specialIndex;
+				if (index < numArgsPushed) {
+					index = arrayAtIdentityHashInPairs(array, b);
+					meth = meth->selectors.uo->slots[index + 1].uom;
+					goto meth_select_again;
+				} else {
+					doesNotUnderstand(g, selector, numArgsPushed);
+				}
+			} break;
+			*/
+				
+		}
+	}
+#if SANITYCHECK
+	g->gc->SanityCheck();
+#endif
+	//postfl("<-sendMessage\n");
+}
+
 long arrayAtIdentityHashInPairs(PyrObject *array, PyrSlot *key);
 
 extern PyrClass *class_identdict;
