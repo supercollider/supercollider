@@ -12,21 +12,21 @@ Harmonics {
 	decay { arg k = 1;
 		^Array.fill(size) {|i| 1.0 / ((i+1) ** k) }
 	}
-	geom { arg k = 0.8;
+	geom { arg k = 1.2;
 		^Array.fill(size) {|i| 1.0 / (k ** i) }
 	}
 		
 	// random values
-	rand { arg lo, hi;
+	rand { arg lo=0.0, hi=1.0;
 		^Array.rand(size, lo, hi)
 	}
-	exprand { arg lo, hi;
+	exprand { arg lo=0.01, hi=1.0;
 		^Array.exprand(size, lo, hi)
 	}
-	linrand { arg lo, hi;
+	linrand { arg lo=0.0, hi=1.0;
 		^Array.linrand(size, lo, hi)
 	}
-	rand2 { arg val;
+	rand2 { arg val=1.0;
 		^Array.rand2(size, val)
 	}
 	coin { arg prob = 0.5;
@@ -34,7 +34,7 @@ Harmonics {
 	}
 
 	// other useful shapes
-	formant { arg center, width = 3;
+	formant { arg center=12, width = 3;
 		var start, end;
 		start = center - (width/2);
 		end = center + (width/2);
