@@ -9,7 +9,7 @@ ProxySwitch : NodeProxy {
 	
 	initProxy { arg prx;
 		proxy = prx;
-		this.setObj(this.outFunc, true, true, false, { this.input_(prx) });
+		this.put(this.outFunc, 0, true, true, false, { this.input_(prx) });
 	}
 	
 	input_ { arg prx;

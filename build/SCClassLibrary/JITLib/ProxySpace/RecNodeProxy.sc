@@ -17,7 +17,7 @@ RecNodeProxy : NodeProxy {
 	
 	*newFrom { arg proxy, numChannels, onCompletion;
 		^this.audio(proxy.server, numChannels ? proxy.numChannels)
-			.setObj({proxy.ar(numChannels) }, true, onCompletion:onCompletion);
+			.put({proxy.ar(numChannels) }, 0, true, onCompletion:onCompletion);
 	}
 	
 	
