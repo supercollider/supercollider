@@ -390,3 +390,52 @@ Pslide : ListPattern {
     }
 }
 
+Pwalk : ListPattern {
+		// random walk pattern - hjh - jamshark70@yahoo.com
+	
+	var	<>startPos,	// starting index
+		<>stepPattern,	// pattern for steps
+		<>directionPattern;	// pattern should return a stream of:
+							// 1 to move in direction of stepPattern
+							// -1 to reverse the direction of stepPattern
+							// a new direction will be chosen when the walker
+							// reaches a boundary
+	
+	*new { arg list, stepPattern, directionPattern = 1, startPos = 0;
+		^super.new(list).startPos_(startPos)
+			.stepPattern_(stepPattern ?? { Prand([-1, 1], inf) })
+			.directionPattern_(directionPattern ? 1);
+	}
+	
+	storeArgs { ^[list, stepPattern, directionPattern, startPos] }
+	
+	copy {
+		^super.copy.list_(list.copy).stepPattern_(stepPattern)
+			.directionPattern_(directionPattern);
+	}
+	
+	asStream {
+		^Routine({ arg inval;
+			var	index, step, stepStream, directionStream,
+				direction;	// 1 = use steps as is; -1 = reverse direction
+			
+			index = startPos;
+			stepStream = stepPattern.asStream;
+			directionStream = directionPattern.asStream;
+			direction = directionStream.next ? 1;	// start with first value
+
+			{ (step = stepStream.next).notNil }.while({  // get step, stop when nil
+				inval = list[index].embedInStream(inval);  // pop value/stream out
+				step = step * direction;	// apply direction
+					// if next thing will be out of bounds
+				(((index + step) < 0) or: ((index + step) >= list.size)).if({
+					direction = directionStream.next ? 1;  // next direction, or 1
+					step = step.abs * direction.sign;  // apply to this step
+				});
+				index = (index + step) % list.size;
+			});
+
+			nil.yield;
+		});
+	}
+}
