@@ -113,12 +113,12 @@ Env {
 			EnvGen.ar(this, 1, 0, 1, 0, timeScale)
 		}, 0.01)
 	}
-	test { arg releaseTime = 3.0;
+	/*test { arg releaseTime = 3.0;
 		Synth.play({ arg synth;
 			synth.releaseTime = releaseTime;
 			EnvGen.ar(this, FSinOsc.ar(800, 0.3))
 		})
-	}
+	}*/
 	
 	shapeNumber { arg shapeName;
 		^shapeNames.at(shapeName) ? 5
