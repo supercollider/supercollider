@@ -317,14 +317,18 @@ GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
 		strcpy(entrypathname, dirname);
 		strcat(entrypathname, "/");
 		strcat(entrypathname, (char*)de->d_name);
+#ifndef SC_WIN32 /*no d_type in POSIX dirent, so no directory recursion */
 		if (de->d_type == DT_DIR) {
 			inList = GraphDef_LoadDir(inWorld, entrypathname, inList);
 		} else {
+#endif
 			int dnamelen = strlen(de->d_name);
 			if (strncmp(de->d_name+dnamelen-9, ".scsyndef", 9)==0) {
 				inList = GraphDef_Load(inWorld, entrypathname, inList);
-			}	
+			}
+#ifndef SC_WIN32
 		}
+#endif
 		free(entrypathname);
 	}
 	
