@@ -23,7 +23,8 @@ StreamPlayerReference {
 	}
 	
 	stop {  player.stop; isPlaying = false; }
-	pause { player.stop; isPlaying = false; }
+	pause { player.pause; isPlaying = false; }
+	resume { player.resume; isPlaying = true; }
 	reset { player.reset }
 	sched { arg func; if(isPlaying,  
 					{ player.clock.play({ func.value; nil }, quant) },
@@ -68,15 +69,17 @@ Tdef : StreamPlayerReference {
 	setProperties { arg argList;
 		var func;
 		#func = argList;
-		if(func.notNil, { 
-			this.stream = Routine.new(func);
-		})
+		if(func.notNil) { this.stream = Routine.new(func) }
+	}
+	
+	timeToNextBeat {
+		var t;
+		t = player.clock.elapsedBeats;
+		^t.roundUp(quant) - t
 	}
 	
 	constrainStream { arg argStream;
-		var t;
-		t = player.clock.elapsedBeats;
-		^argStream.constrain(t.roundUp(quant) - t)
+		^argStream.constrain(this.timeToNextBeat)
 	}
 	
 	
@@ -126,8 +129,8 @@ Pdef : Tdef {
 		var pat, event, stream;
 		#pat, event = argList;
 		stream = pat.asStream;
-		if(event.notNil, { this.sched({ this.event = event }) });
-		if(stream.notNil, { this.stream = stream });
+		if(event.notNil) { this.sched({ this.event = event }) };
+		if(stream.notNil) { this.stream = stream };
 	}
 	// set inevent but keep parent. maybe find another solution later //
 	event_ { arg inEvent; 
@@ -139,9 +142,7 @@ Pdef : Tdef {
 	unmute { player.unmute }
 	
 	constrainStream { arg argStream;
-		var t;
-		t = player.clock.elapsedBeats;
-		^Pfindur(t.roundUp(quant) - t, argStream)
+		^Pfindur(this.timeToNextBeat, argStream)
 	}	
 }
 
