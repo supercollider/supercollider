@@ -657,7 +657,7 @@ SCErr meth_g_deepFree(World *inWorld, int inSize, char *inData, ReplyAddress* /*
 		Group *group = World_GetGroup(inWorld, msg.geti());
 		if (!group) return kSCErr_GroupNotFound;
 	
-		Group_DeepDeleteAllNodes(group);
+		Group_DeepFreeGraphs(group);
 	}
 	return kSCErr_None;
 }

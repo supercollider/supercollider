@@ -101,13 +101,13 @@ void Group_DeleteAll(Group *inGroup)
 	inGroup->mHead = inGroup->mTail = 0;
 }
 
-void Group_DeepDeleteAllNodes(Group *inGroup)
+void Group_DeepFreeGraphs(Group *inGroup)
 {
 	Node *child = inGroup->mHead;
 	while (child) {
         Node *next = child->mNext;
 		if (child->mIsGroup) {
-			Group_DeepDeleteAllNodes((Group*)child);
+			Group_DeepFreeGraphs((Group*)child);
 		} else {
 			Node_Remove(child);
 			Node_Delete(child);

@@ -150,7 +150,7 @@ void Graph_Calc(struct Graph *inGraph);
 Group* Group_New(World *inWorld, int32 inID);
 void Group_Dtor(Group *inGroup);
 void Group_DeleteAll(Group *inGroup);
-void Group_DeepDeleteAllNodes(Group *inGroup);
+void Group_DeepFreeGraphs(Group *inGroup);
 void Group_AddHead (Group *s, Node *child);
 void Group_AddTail (Group *s, Node *child);
 void Group_Insert(Group *s, Node *child, int inIndex);

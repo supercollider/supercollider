@@ -309,13 +309,17 @@ void Unit_DoneAction(int doneAction, Unit *unit)
 		{
 			Node_End(&unit->mParent->mNode);
 			Node* prev = unit->mParent->mNode.mPrev;
+			if (!prev) break;
 			if (prev && prev->mIsGroup) Group_DeleteAll((Group*)prev);
+			else Node_End(prev);
 		} break;
 		case 6 : 
 		{
 			Node_End(&unit->mParent->mNode);
 			Node* next = unit->mParent->mNode.mNext;
-			if (next && next->mIsGroup) Group_DeleteAll((Group*)next);
+			if (!next) break;
+			if (next->mIsGroup) Group_DeleteAll((Group*)next);
+			else Node_End(next);
 		} break;
 		case 7 : 
 		{
@@ -334,6 +338,34 @@ void Unit_DoneAction(int doneAction, Unit *unit)
 				Node_End(node);
 				node = next;
 			}
+		} break;
+		case 9 :
+		{
+			Node_End(&unit->mParent->mNode);
+			Node* prev = unit->mParent->mNode.mPrev;
+			if (prev) Node_SetRun(prev, 0);
+		} break;
+		case 10 : 
+		{
+			Node_End(&unit->mParent->mNode);
+			Node* next = unit->mParent->mNode.mNext;
+			if (next) Node_SetRun(next, 0);
+		} break;
+		case 11 : 
+		{
+			Node_End(&unit->mParent->mNode);
+			Node* prev = unit->mParent->mNode.mPrev;
+			if (!prev) break;
+			if (prev->mIsGroup) Group_DeepFreeGraphs((Group*)prev);
+			else Node_End(prev);
+		} break;
+		case 12 : 
+		{
+			Node_End(&unit->mParent->mNode);
+			Node* next = unit->mParent->mNode.mNext;
+			if (!next) break;
+			if (next->mIsGroup) Group_DeepFreeGraphs((Group*)next);
+			else Node_End(next);
 		} break;
 	}
 }

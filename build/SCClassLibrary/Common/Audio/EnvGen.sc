@@ -49,10 +49,15 @@ Free : UGen {
 // doneAction = 2   remove the synth and deallocate it.
 // doneAction = 3   remove and deallocate both this synth and the preceeding node.
 // doneAction = 4   remove and deallocate both this synth and the following node.
-// doneAction = 5   remove and deallocate this synth and free all children in the preceeding group (if it is a group).
+// doneAction = 5   remove and deallocate this synth and if the preceeding node is a group then do g_freeAll on it, else n_free it.
 // doneAction = 6   remove and deallocate this synth and free all children in the following group (if it is a group).
 // doneAction = 7   remove and deallocate this synth and all preceeding nodes in this group
 // doneAction = 8   remove and deallocate this synth and all following nodes in this group
+
+// doneAction = 9   remove and deallocate this synth and pause the preceeding node
+// doneAction = 10   remove and deallocate this synth and pause the following node
+// doneAction = 11   remove and deallocate this synth and if the preceeding node is a group then do g_deepFree on it, else n_free it.
+// doneAction = 12   remove and deallocate this synth and if the following node is a group then do g_deepFree on it, else n_free it.
 
 EnvGen : UGen { // envelope generator	
 	*ar { arg envelope, gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction = 0;
