@@ -234,11 +234,15 @@ void compilePushVar(PyrParseNode *node, PyrSymbol *varName)
 				compileOpcode(opPushInstVar, index);
 				break;
 			case varClass : {
-				PyrSlot slot;
-				slot.ucopy = classobj->name.ucopy;
-				vindex = conjureLiteralSlotIndex(node, gCompilingBlock, &slot);
-				compileOpcode(opPushClassVar, vindex);
-				compileByte(index);
+				index += classobj->classVarIndex.ui;
+				if (index < 4096) {
+					compileByte((opPushClassVar<<4) | ((index >> 8) & 15));
+					compileByte(index & 255);
+				} else {				
+					compileByte(opPushClassVar);
+					compileByte((index >> 8) & 255);
+					compileByte(index & 255);
+				}
 			} break;
 			case varTemp :
 				vindex = index;
@@ -382,7 +386,7 @@ bool compareVarDefs(PyrClassNode* node, PyrClass* classobj)
 	numinstvars = numInstVars(classobj);
 	numclassvars = numClassVars(classobj);
 	if (numinstvars == node->mVarTally[varInst] + node->mNumSuperInstVars
-		&& numclassvars <= node->mVarTally[varClass]) {
+		&& numclassvars == node->mVarTally[varClass]) {
 		
 		xclass = 0;
 		xinst = node->mNumSuperInstVars;
@@ -661,7 +665,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno]);
 
 						methraw->methType = methReturnClassVar;
-						methraw->specialIndex = classVarIndex;
+						methraw->specialIndex = classVarIndex + classobj->classVarIndex.ui;
 						addMethod(metaclassobj, method);
 					}
 					if (vardef->mFlags & rwWriteOnly) {
@@ -690,7 +694,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno]);
 
 						methraw->methType = methAssignClassVar;
-						methraw->specialIndex = classVarIndex;
+						methraw->specialIndex = classVarIndex + classobj->classVarIndex.ui;
 						addMethod(metaclassobj, method);
 					}
 					classVarIndex++;
@@ -1062,6 +1066,7 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode *cnode, int *varIndex, PyrC
 		if (varType == varInst) special = methForwardInstVar;
 		else if (varType == varClass) {
 			special = methForwardClassVar;
+			*varIndex += classobj->classVarIndex.ui;
 			*specialClass = classobj;
 		}
 		else return methNormal;
@@ -3240,15 +3245,11 @@ void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop)
 				}
 				break;
 			case varClass : {
-				PyrSlot slot;
-				slot.ucopy = classobj->name.ucopy;
-				vindex = conjureLiteralSlotIndex(node, gCompilingBlock, &slot);
-				//compileOpcode(opStoreClassVar, vindex);
-				//compileByte(index);
+				index += classobj->classVarIndex.ui;
 				if (drop) {
-					if (vindex <= 15) {
-						compileByte((opStoreClassVar<<4) | vindex);
-						compileByte(index);
+					if (index < 4096) {
+						compileByte((opStoreClassVar<<4) | ((index>>8) & 15));
+						compileByte(index & 255);
 					} else {
 						compileByte(opStoreClassVar);
 						compileByte(vindex);
@@ -3257,8 +3258,8 @@ void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop)
 					}
 				} else {
 					compileByte(opStoreClassVar);
-					compileByte(vindex);
-					compileByte(index);
+					compileByte((index >> 8) & 255);
+					compileByte(index & 255);
 				}
 			} break;
 			case varTemp :

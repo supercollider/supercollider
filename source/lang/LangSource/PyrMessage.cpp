@@ -64,7 +64,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 	PyrMethodRaw *methraw;
 	PyrSlot *recvrSlot, *sp;
 	PyrClass *classobj;
-	long index, classIndex;
+	long index, classVarIndex;
 	PyrObject *obj;
 		
 	//postfl("->sendMessage\n");
@@ -130,20 +130,15 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 				break;
 			case methReturnClassVar : /* return class var */
 				sp = g->sp -= numArgsPushed - 1;
-				index = methraw->specialIndex;
-				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
-				sp[0].ucopy = g->classvars[classIndex].uo->slots[index].ucopy;
+				sp[0].ucopy = g->classvars->slots[methraw->specialIndex].ucopy;
 				break;
 			case methAssignClassVar : /* assign class var */
 				sp = g->sp -= numArgsPushed - 1;
-				index = methraw->specialIndex;
-				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
-				obj = g->classvars[classIndex].uo;
 				if (numArgsPushed >= 2) {
-					obj->slots[index].ucopy = sp[1].ucopy;
-					g->gc->GCWrite(obj, sp + 1);
+					g->classvars->slots[methraw->specialIndex].ucopy = sp[1].ucopy;
+					g->gc->GCWrite(g->classvars, sp + 1);
 				} else {
-					SetNil(&obj->slots[index]);
+					SetNil(&g->classvars->slots[methraw->specialIndex]);
 				}
 				sp[0].ucopy = recvrSlot->ucopy;
 				break;
@@ -168,13 +163,13 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 				classobj = classOfSlot(recvrSlot);
 				
 				goto lookup_again;
-			case methForwardClassVar : /* forward to an instance variable */
+			case methForwardClassVar : /* forward to a class variable */
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
 				selector = meth->selectors.us;
 				index = methraw->specialIndex;
-				classIndex = meth->constants.us->u.classobj->classIndex.ui;
-				recvrSlot->ucopy = g->classvars[classIndex].uo->slots[index].ucopy;				
+				classVarIndex = meth->constants.us->u.classobj->classIndex.ui;
+				recvrSlot->ucopy = g->classvars->slots[classVarIndex+index].ucopy;				
 							
 				classobj = classOfSlot(recvrSlot);
 				
@@ -204,7 +199,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	PyrMethodRaw *methraw;
 	PyrSlot *recvrSlot, *sp;
 	PyrClass *classobj;
-	long index, classIndex;
+	long index, classVarIndex;
 	PyrObject *obj;
 		
 	//postfl("->sendMessage\n");
@@ -267,20 +262,15 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				break;
 			case methReturnClassVar : /* return class var */
 				sp = g->sp -= numArgsPushed - 1;
-				index = methraw->specialIndex;
-				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
-				sp[0].ucopy = g->classvars[classIndex].uo->slots[index].ucopy;
+				sp[0].ucopy = g->classvars->slots[methraw->specialIndex].ucopy;
 				break;
 			case methAssignClassVar : /* assign class var */
 				sp = g->sp -= numArgsPushed - 1;
-				index = methraw->specialIndex;
-				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
-				obj = g->classvars[classIndex].uo;
 				if (numArgsPushed >= 2) {
-					obj->slots[index].ucopy = sp[1].ucopy;
-					g->gc->GCWrite(obj, sp + 1);
+					g->classvars->slots[methraw->specialIndex].ucopy = sp[1].ucopy;
+					g->gc->GCWrite(g->classvars, sp + 1);
 				} else {
-					SetNil(&obj->slots[index]);
+					SetNil(&g->classvars->slots[methraw->specialIndex]);
 				}
 				sp[0].ucopy = recvrSlot->ucopy;
 				break;
@@ -329,7 +319,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				classobj = classOfSlot(recvrSlot);
 				
 				goto lookup_again;
-			case methForwardClassVar : /* forward to an instance variable */
+			case methForwardClassVar : /* forward to a class variable */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
 					/* push default arg values */
 					double *pslot, *qslot;
@@ -342,8 +332,8 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				}
 				selector = meth->selectors.us;
 				index = methraw->specialIndex;
-				classIndex = meth->constants.us->u.classobj->classIndex.ui;
-				recvrSlot->ucopy = g->classvars[classIndex].uo->slots[index].ucopy;				
+				classVarIndex = meth->constants.us->u.classobj->classIndex.ui;
+				recvrSlot->ucopy = g->classvars->slots[classVarIndex+index].ucopy;				
 							
 				classobj = classOfSlot(recvrSlot);
 				
@@ -396,7 +386,7 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 	PyrMethodRaw *methraw;
 	PyrSlot *recvrSlot, *sp;
 	PyrClass *classobj;
-	long index, classIndex;
+	long index, classVarIndex;
 	PyrObject *obj;
 		
 	//postfl("->sendMessage\n");
@@ -463,20 +453,15 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 				break;
 			case methReturnClassVar : /* return class var */
 				sp = g->sp -= numArgsPushed - 1;
-				index = methraw->specialIndex;
-				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
-				sp[0].ucopy = g->classvars[classIndex].uo->slots[index].ucopy;
+				sp[0].ucopy = g->classvars->slots[methraw->specialIndex].ucopy;
 				break;
 			case methAssignClassVar : /* assign class var */
 				sp = g->sp -= numArgsPushed - 1;
-				index = methraw->specialIndex;
-				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
-				obj = g->classvars[classIndex].uo;
 				if (numArgsPushed >= 2) {
-					obj->slots[index].ucopy = sp[1].ucopy;
-					g->gc->GCWrite(obj, sp + 1);
+					g->classvars->slots[methraw->specialIndex].ucopy = sp[1].ucopy;
+					g->gc->GCWrite(g->classvars, sp + 1);
 				} else {
-					SetNil(&obj->slots[index]);
+					SetNil(&g->classvars->slots[methraw->specialIndex]);
 				}
 				sp[0].ucopy = recvrSlot->ucopy;
 				break;
@@ -501,13 +486,13 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 				classobj = classOfSlot(recvrSlot);
 				
 				goto lookup_again;
-			case methForwardClassVar : /* forward to an instance variable */
+			case methForwardClassVar : /* forward to a class variable */
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
 				selector = meth->selectors.us;
 				index = methraw->specialIndex;
-				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
-				recvrSlot->ucopy = g->classvars[classIndex].uo->slots[index].ucopy;				
+				classVarIndex = meth->selectors.us->u.classobj->classIndex.ui;
+				recvrSlot->ucopy = g->classvars->slots[classVarIndex+index].ucopy;				
 							
 				classobj = classOfSlot(recvrSlot);
 				
@@ -537,7 +522,7 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	PyrMethodRaw *methraw;
 	PyrSlot *recvrSlot, *sp;
 	PyrClass *classobj;
-	long index, classIndex;
+	long index, classVarIndex;
 	PyrObject *obj;
 		
 	//postfl("->sendMessage\n");
@@ -601,20 +586,15 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				break;
 			case methReturnClassVar : /* return class var */
 				sp = g->sp -= numArgsPushed - 1;
-				index = methraw->specialIndex;
-				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
-				sp[0].ucopy = g->classvars[classIndex].uo->slots[index].ucopy;
+				sp[0].ucopy = g->classvars->slots[methraw->specialIndex].ucopy;
 				break;
 			case methAssignClassVar : /* assign class var */
 				sp = g->sp -= numArgsPushed - 1;
-				index = methraw->specialIndex;
-				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
-				obj = g->classvars[classIndex].uo;
 				if (numArgsPushed >= 2) {
-					obj->slots[index].ucopy = sp[1].ucopy;
-					g->gc->GCWrite(obj, sp + 1);
+					g->classvars->slots[methraw->specialIndex].ucopy = sp[1].ucopy;
+					g->gc->GCWrite(g->classvars, sp + 1);
 				} else {
-					SetNil(&obj->slots[index]);
+					SetNil(&g->classvars->slots[methraw->specialIndex]);
 				}
 				sp[0].ucopy = recvrSlot->ucopy;
 				break;
@@ -663,7 +643,7 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				classobj = classOfSlot(recvrSlot);
 				
 				goto lookup_again;
-			case methForwardClassVar : /* forward to an instance variable */
+			case methForwardClassVar : /* forward to a class variable */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
 					/* push default arg values */
 					double *pslot, *qslot;
@@ -676,8 +656,8 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				}
 				selector = meth->selectors.us;
 				index = methraw->specialIndex;
-				classIndex = meth->constants.us->u.classobj->classIndex.ui;
-				recvrSlot->ucopy = g->classvars[classIndex].uo->slots[index].ucopy;				
+				classVarIndex = meth->constants.us->u.classobj->classVarIndex.ui;
+				recvrSlot->ucopy = g->classvars->slots[classVarIndex+index].ucopy;				
 				
 				classobj = classOfSlot(recvrSlot);
 				
@@ -763,7 +743,7 @@ void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 
 	if (meth->ownerclass.uoc == class_object) {
 		// lookup instance specific method
-		uniqueMethodSlot = g->classvars[class_object->classIndex.ui].uo->slots + cvxUniqueMethods;
+		uniqueMethodSlot = &g->classvars->slots[cvxUniqueMethods];
 		if (isKindOfSlot(uniqueMethodSlot, class_identdict)) {
 			arraySlot = uniqueMethodSlot->uo->slots + ivxIdentDict_array;
 			if ((IsObj(arraySlot) && (array = arraySlot->uo)->classptr == class_array)) {
@@ -836,7 +816,7 @@ void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 	
 	if (meth->ownerclass.uoc == class_object) {
 		// lookup instance specific method
-		uniqueMethodSlot = g->classvars[class_object->classIndex.ui].uo->slots + cvxUniqueMethods;
+		uniqueMethodSlot = &g->classvars->slots[cvxUniqueMethods];
 		if (isKindOfSlot(uniqueMethodSlot, class_identdict)) {
 			arraySlot = uniqueMethodSlot->uo->slots + ivxIdentDict_array;
 			if ((IsObj(arraySlot) && (array = arraySlot->uo)->classptr == class_array)) {

@@ -2265,12 +2265,6 @@ bool passOne_ProcessOneFile(char *filename, int level)
 	return success;
 }
 
-void InitSynthGlobals(VMGlobals *g, int inNumInputs, int inNumOutputs);
-void InitSynthGlobals(VMGlobals *g, int inNumInputs, int inNumOutputs)
-{
-//	PyrObject *classvararray = g->classvars[s_synth->u.classobj->classIndex.ui].uo;
-}
-
 void schedRun();
 
 void compileSucceeded();
@@ -2284,9 +2278,8 @@ void compileSucceeded()
 			
 		if (compiledOK) { 				
 			VMGlobals *g = gMainVMGlobals;
-			InitSynthGlobals(g,  2, 2);
 			
-                        g->canCallOS = true;
+			g->canCallOS = true;
 			//++g->sp; SetObject(g->sp, g->process);
 			//runInterpreter(g, s_hardwaresetup, 1);
 			

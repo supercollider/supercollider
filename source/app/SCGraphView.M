@@ -411,10 +411,9 @@ const int circDiam = 20;
 		pthread_mutex_lock (&gLangMutex);
 			VMGlobals *g = gMainVMGlobals;
 			PyrString* pstrobj = newPyrString(g->gc, [nsstring UTF8String], 0, true);
-			int classIndex = getsym("SCView")->u.classobj->classIndex.ui;
-			PyrObject *classvars = g->classvars[classIndex].uo;
-			SetObject(classvars->slots+0, pstrobj);
-			g->gc->GCWrite(classvars, pstrobj);
+			int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
+			SetObject(&g->classvars->slots[classVarIndex+0], pstrobj);
+			g->gc->GCWrite(g->classvars, pstrobj);
 			
 			PyrSymbol *method = getsym("importDrag");
 			//g->canCallOS = true;

@@ -62,7 +62,7 @@ struct VMGlobals {
 	struct PyrProcess *process;
 	class SymbolTable *symbolTable;
 	class PyrGC *gc;		// garbage collector for this process
-	PyrSlot *classvars;
+	PyrObject *classvars;
 #if TAILCALLOPTIMIZE
 	int tailCall; // next byte code is a tail call.
 #endif

@@ -27,6 +27,7 @@
 extern bool gRunningInterpreterThread;
 
 extern int gNumClasses;
+extern int gNumClassVars;
 
 bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed);
 bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool);

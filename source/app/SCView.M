@@ -707,9 +707,8 @@ void SCView::beginDrag(SCPoint where)
     pthread_mutex_lock (&gLangMutex);
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
-        int classIndex = getsym("SCView")->u.classobj->classIndex.ui;
-        PyrObject *classvars = g->classvars[classIndex].uo;
-        slot.ucopy = classvars->slots[0].ucopy;
+        int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
+        slot.ucopy = g->classvars->slots[classVarIndex].ucopy;
     }
     pthread_mutex_unlock (&gLangMutex);
     

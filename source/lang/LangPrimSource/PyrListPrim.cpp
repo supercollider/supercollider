@@ -441,7 +441,7 @@ int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed)
 	
 	a = g->sp;  // key
 	
-	PyrSlot* currentEnvironmentSlot = g->classvars[class_object->classIndex.ui].uo->slots + 1;
+	PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
 	PyrObject *dict = currentEnvironmentSlot->uo;
 	
 	if (!IsObj(currentEnvironmentSlot)) return errFailed;
@@ -464,7 +464,7 @@ int prSymbol_envirPut(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;  // key
 	b = g->sp;  // value
 	
-	PyrSlot* currentEnvironmentSlot = g->classvars[class_object->classIndex.ui].uo->slots + 1;
+	PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
 	PyrObject *dict = currentEnvironmentSlot->uo;
 
 	if (!IsObj(currentEnvironmentSlot)) return errFailed;

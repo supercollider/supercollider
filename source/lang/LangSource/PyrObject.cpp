@@ -37,6 +37,7 @@
 PyrClass *gClassList = NULL;
 int gNumSelectors = 0;
 int gNumClasses = 0;
+int gNumClassVars = 0;
 int gFormatElemSize[NUMOBJFORMATS];
 int gFormatElemCapc[NUMOBJFORMATS];
 int gFormatElemTag[NUMOBJFORMATS];
@@ -443,7 +444,9 @@ PyrClass* newClassObj(PyrClass *classObjSuperClass,
 	SetInt(&classobj->maxSubclassIndex, 0);
 	SetNil(&classobj->filenameSym);
 	SetInt(&classobj->charPos, 0);
-	
+	SetInt(&classobj->classVarIndex, gNumClassVars);
+	//if (numClassVars) post("%16s %4d %4d\n", className->name, gNumClassVars, numClassVars);
+	gNumClassVars += numClassVars;
 	return classobj;
 }
 
@@ -482,7 +485,7 @@ void reallocClassObj(PyrClass* classobj,
 	}
 	
 	if (numClassVars) {
-		//post("reallocClassObj %s numClassVars %d\n", classobj->name.us->name, numInstVars);
+		//post("reallocClassObj %s numClassVars %d\n", classobj->name.us->name, numClassVars);
 		symarray = newPyrSymbolArray(NULL, numClassVars, obj_permanent | obj_immutable, false);
 		//array->size = numClassVars;
 		SetObject(&classobj->classVarNames, symarray);
@@ -1220,6 +1223,7 @@ PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 		classobj->iprototype.uo->size = superInstVars;
 		classobj->instVarNames.uo->size = superInstVars;
 	}
+		
 	return classobj;
 }
 
@@ -1247,6 +1251,7 @@ void initClasses()
 	
 	// BOOTSTRAP THE OBJECT HIERARCHY
 	
+	gNumClassVars = 0;
 	gClassList = NULL;
 	gNullMethod = newPyrMethod();
 	gNullMethod->name.us = 0;
@@ -1255,8 +1260,8 @@ void initClasses()
 	
 	// build intrinsic classes
 	class_class = NULL;
-	class_object = makeIntrinsicClass(s_object, 0, 0, 4);
-	class_class = makeIntrinsicClass(s_class, s_object, classClassNumInstVars, 0);
+	class_object = makeIntrinsicClass(s_object, 0, 0, 5);
+	class_class = makeIntrinsicClass(s_class, s_object, classClassNumInstVars, 1);
 
 	// now fix class_class ptrs that were just previously installed erroneously
 	class_object->classptr->classptr = class_class;
@@ -1268,6 +1273,7 @@ void initClasses()
 		addIntrinsicClassVar(class_object, "currentEnvironment", &o_nil);
 		addIntrinsicClassVar(class_object, "topEnvironment", &o_nil);
 		addIntrinsicClassVar(class_object, "uniqueMethods", &o_nil);
+		addIntrinsicClassVar(class_object, "nl", &o_nil);
 	
 		// declare varNames for Class
 		
@@ -1289,6 +1295,9 @@ void initClasses()
 		addIntrinsicVar(class_class, "maxSubclassIndex", &o_zero);
 		addIntrinsicVar(class_class, "filenameSymbol", &o_nil);
 		addIntrinsicVar(class_class, "charPos", &o_zero);
+		addIntrinsicVar(class_class, "classVarIndex", &o_zero);
+
+		addIntrinsicClassVar(class_class, "classesInited", &o_nil);
 		
 	// class_object_meta's inst var names need to be copied from class_class
 	// because class_class didn't exist when it was created

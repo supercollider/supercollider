@@ -1193,7 +1193,7 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 		for (m=0; m<numtemps - numArgsPushed; ++m) *++pslot = *++qslot;
 
 		// replace defaults with environment variables
-		curEnvirSlot = g->classvars[0].uo->slots + 1; // currentEnvironment is the second class var.
+		curEnvirSlot = &g->classvars->slots[1]; // currentEnvironment is the second class var.
 
 		if (isKindOfSlot(curEnvirSlot, s_identitydictionary->u.classobj)) {
 			PyrSymbol **argNames;
@@ -1342,7 +1342,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 		for (m=0; m<numtemps - numArgsPushed; ++m) *++pslot = *++qslot;
 		
 		// replace defaults with environment variables
-		curEnvirSlot = g->classvars[0].uo->slots + 1; // currentEnvironment is the second class var.
+		curEnvirSlot = &g->classvars->slots[1]; // currentEnvironment is the second class var.
 
 		if (isKindOfSlot(curEnvirSlot, s_identitydictionary->u.classobj)) {
 			PyrSymbol **argNames;
@@ -2790,8 +2790,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	gc = g->gc;
 
         // save environment in oldthread
-        PyrObject* objClassVars = g->classvars[class_object->classIndex.ui].uo;
-        PyrSlot* currentEnvironmentSlot = objClassVars->slots + 1;
+        PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
         oldthread->environment.ucopy = currentEnvironmentSlot->ucopy;
         gc->GCWrite(oldthread, currentEnvironmentSlot);
 
@@ -2905,7 +2904,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 
         // set new environment
         currentEnvironmentSlot->ucopy = g->thread->environment.ucopy;
-        g->gc->GCWrite(objClassVars, currentEnvironmentSlot);
+        g->gc->GCWrite(g->classvars, currentEnvironmentSlot);
 
 	//post("old thread %08X stack %08X\n", oldthread, oldthread->stack.uo);
 	//post("new thread %08X stack %08X\n", g->thread, g->thread->stack.uo);
@@ -2989,7 +2988,7 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 		gc->GCWrite(thread, clock);
 	}
         
-	PyrSlot* currentEnvironmentSlot = g->classvars[class_object->classIndex.ui].uo->slots + 1;
+	PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
         thread->environment.ucopy = currentEnvironmentSlot->ucopy;
         gc->GCWrite(thread, currentEnvironmentSlot);
 }

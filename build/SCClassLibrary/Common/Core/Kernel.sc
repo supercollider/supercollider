@@ -10,7 +10,7 @@ Class {
 	var <iprototype, <cprototype;
 	var instanceFormat, instanceFlags;
 	var <classIndex, classFlags, <maxSubclassIndex;
-	var <filenameSymbol, <charPos;
+	var <filenameSymbol, <charPos, <classVarIndex;
 	
 	classvar <>classesInited;
 	
@@ -125,7 +125,10 @@ Class {
 		this.filenameSymbol.asString.openTextFile(this.charPos, -1);
 	}
 	classVars {
-		^thisProcess.instVarAt(0).at(this.classIndex)
+		var start, end;
+		start = this.classVarIndex;
+		end = start + this.classVarNames.size;
+		^thisProcess.instVarAt(0).copyRange(start, end)
 	}
 	inspectorClass { ^ClassInspector }
 	findReferences { arg aSymbol, references; 

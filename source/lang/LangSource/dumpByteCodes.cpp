@@ -124,9 +124,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 5 : // Extended, PushClassVar
 			op2 = *ip++; // get class var literal index
 			op3 = *ip++; // get class var index
-			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
-			post(" %02X %02X PushClassVarX '%s'\n", op2, op3,
-				classobj ? classobj->classVarNames.uosym->symbols[op3]->name : "<missing class>");
+			post(" %02X %02X PushClassVarX\n", op2, op3);
 			break;
 		case 6 :  // Extended, PushSpecialValue == push a special class
 			op2 = *ip++; // get class name index
@@ -160,9 +158,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 9 : // Extended, StoreClassVar
 			op2 = *ip++; // get class var literal index
 			op3 = *ip++; // get class var index
-			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
-			post(" %02X %02X StoreClassVarX '%s'\n", op2, op3,
-				classobj ? classobj->classVarNames.uosym->symbols[op3]->name : "<missing class>");
+			post(" %02X %02X StoreClassVarX\n", op2, op3);
 			break;
 		case 10 : // Extended, SendMsg
 			op2 = *ip++; // get num args
@@ -352,9 +348,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 92 :  case 93 :  case 94 :  case 95 :
 			op2 = op1 & 15;
 			op3 = *ip++; // get class var index
-			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
-			post(" %02X %02X PushClassVar '%s'\n", op2, op3,
-				classobj ? classobj->classVarNames.uosym->symbols[op3]->name : "<missing class>");
+			post(" %02X %02X PushClassVar\n", op2, op3);
 			break;
 			
 		// PushSpecialValue		
@@ -466,9 +460,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 156 :  case 157 :  case 158 :  case 159 :
 			op2 = op1 & 15;
 			op3 = *ip++; // get class var index
-			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
-			post(" %02X    StoreClassVar '%s'\n", op3,
-				classobj ? classobj->classVarNames.uosym->symbols[op3]->name : "<missing class>");
+			post(" %02X    StoreClassVar\n", op3);
 			break;
 			
 		// SendMsg

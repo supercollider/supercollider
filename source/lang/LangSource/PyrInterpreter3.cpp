@@ -156,23 +156,22 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 	PyrInterpreter *interpreter;
 	PyrClass *classobj;
 	PyrObject *classVars;
-	PyrObject *classVarArray;
 	PyrThread *thread;
 	//PyrDSP *dsp;
         PyrGC* gc = g->gc;
 	
-	int classIndex, numClassVars;
+	int numClassVars;
 	
 	proc = (PyrProcess*)instantiateObject(gc, procclassobj, 0, true, false);
 		
 	PyrObject *sysSchedulerQueue = newPyrArray(gc, 1024, 0, false);
 	SetObject(&proc->sysSchedulerQueue, sysSchedulerQueue);
 	
-	classVars = newPyrArray(gc, gNumClasses, 0, false);
-	classVars->size = gNumClasses;
-	nilSlots(classVars->slots, gNumClasses);
+	classVars = newPyrArray(gc, gNumClassVars, 0, false);
+	classVars->size = gNumClassVars;
+	nilSlots(classVars->slots, gNumClassVars);
 	SetObject(&proc->classVars, classVars);
-	g->classvars = classVars->slots;
+	g->classvars = classVars;
 	
 	// fill class vars from prototypes:
 	classobj = gClassList;
@@ -180,11 +179,7 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 		if (classobj->cprototype.uo) {
 			numClassVars = classobj->cprototype.uo->size;
 			if (numClassVars > 0) {
-				classVarArray = newPyrArray(gc, numClassVars, 0, false);
-				classIndex = classobj->classIndex.ui;
-				SetObject(classVars->slots + classIndex, classVarArray);
-				classVarArray->size = numClassVars;
-				memcpy(classVarArray->slots, classobj->cprototype.uo->slots, numClassVars * sizeof(PyrSlot));
+				memcpy(g->classvars->slots + classobj->classVarIndex.ui, classobj->cprototype.uo->slots, numClassVars * sizeof(PyrSlot));
 			}
 		}
 		classobj = classobj->nextclass.uoc;
@@ -455,6 +450,9 @@ void StoreToImmutableB(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip)
 	ip = g->ip;
 }
 
+
+void dumpByteCodes(PyrBlock *theBlock);
+
 void Interpret(VMGlobals *g)
 {
 	// byte code values
@@ -464,7 +462,7 @@ void Interpret(VMGlobals *g)
 	// interpreter globals
 
 	// temporary variables used in the interpreter
-	int ival, jmplen, classIndex, numArgsPushed, numKeyArgsPushed;
+	int ival, jmplen, classVarIndex, numArgsPushed, numKeyArgsPushed;
 	PyrFrame *tframe;
 	PyrSymbol *selector;
 	PyrClass *classobj;
@@ -602,11 +600,10 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 5 : // opExtended, opPushClassVar
-			op2 = ip[1]; // get temp var level
-			op3 = ip[2]; // get temp var index
+			op2 = ip[1]; // get class
+			op3 = ip[2]; // get class var index
 			ip += 2;
-			classIndex = g->block->selectors.uo->slots[op2].us->u.classobj->classIndex.ui;
-			*++sp = g->classvars[classIndex].uo->slots[op3].uf;
+			*++sp = g->classvars->slots[(op2<<8)|op3].uf;
 			break;
 		case 6 :  // opExtended, opPushSpecialValue == push a special class
 			op2 = ip[1]; ip++; // get class name index
@@ -640,12 +637,8 @@ void Interpret(VMGlobals *g)
 			op2 = ip[1]; // get index of class name literal
 			op3 = ip[2]; // get class var index
 			ip += 2;
-			classobj = g->block->selectors.uo->slots[op2].us->u.classobj;
-			classIndex = classobj->classIndex.ui;
-			obj = g->classvars[classIndex].uo;
-			slot = obj->slots + op3;
-			slot->uf = *sp;
-			g->gc->GCWrite(obj, slot);
+			g->classvars->slots[(op2<<8)|op3].uf = *sp;
+			g->gc->GCWrite(g->classvars, (PyrSlot*)sp);
 			break;
 		case 10 : // opExtended, opSendMsg
 			numArgsPushed = ip[1]; // get num args
@@ -865,9 +858,7 @@ void Interpret(VMGlobals *g)
 		case 92 :  case 93 :  case 94 :  case 95 :
 			op2 = op1 & 15;
 			op3 = ip[1]; ip++; // get class var index
-			classobj = g->block->selectors.uo->slots[op2].us->u.classobj;
-			classIndex = classobj->classIndex.ui;
-			*++sp = g->classvars[classIndex].uo->slots[op3].uf;
+			*++sp = g->classvars->slots[(op2<<8)|op3].uf;
 			break;
 			
 		// opPushSpecialValue
@@ -1701,12 +1692,8 @@ void Interpret(VMGlobals *g)
 		case 156 :  case 157 :  case 158 :  case 159 :
 			op2 = op1 & 15;
 			op3 = ip[1]; ip++; // get class var index
-			classobj = g->block->selectors.uo->slots[op2].us->u.classobj;
-			classIndex = classobj->classIndex.ui;
-			obj = g->classvars[classIndex].uo;
-			slot = obj->slots + op3;
-			slot->uf = *sp--;
-			g->gc->GCWrite(obj, slot);
+			g->classvars->slots[(op2<<8)|op3].uf = *sp--;
+			g->gc->GCWrite(g->classvars, (PyrSlot*)(sp+1));
 			break;
 			
 		// opSendMsg
@@ -2122,20 +2109,15 @@ void Interpret(VMGlobals *g)
 						break;
 					case methReturnClassVar : /* return class var */
 						sp -= numArgsPushed - 1;
-						index = methraw->specialIndex;
-						classIndex = meth->selectors.us->u.classobj->classIndex.ui;
-						*sp = g->classvars[classIndex].uo->slots[index].uf;
+						*sp = g->classvars->slots[methraw->specialIndex].uf;
 						break;
 					case methAssignClassVar : /* assign class var */
 						sp -= numArgsPushed - 1;
-						index = methraw->specialIndex;
-						classIndex = meth->selectors.us->u.classobj->classIndex.ui;
-						obj = g->classvars[classIndex].uo;
 						if (numArgsPushed >= 2) {
-							obj->slots[index].uf = sp[1];
-							g->gc->GCWrite(obj, (PyrSlot*)sp + 1);
+							g->classvars->slots[methraw->specialIndex].uf = sp[1];
+							g->gc->GCWrite(g->classvars, (PyrSlot*)sp + 1);
 						} else {
-							obj->slots[index].uf = gSpecialValues[svNil];
+							g->classvars->slots[methraw->specialIndex].uf = gSpecialValues[svNil];
 						}
 						*sp = slot->uf;
 						break;
@@ -2189,8 +2171,8 @@ void Interpret(VMGlobals *g)
 						}
 						selector = meth->selectors.us;
 						index = methraw->specialIndex;
-						classIndex = meth->constants.us->u.classobj->classIndex.ui;
-						slot->ucopy = g->classvars[classIndex].uo->slots[index].ucopy;				
+						classVarIndex = meth->constants.us->u.classobj->classVarIndex.ui;
+						slot->ucopy = g->classvars->slots[classVarIndex+index].ucopy;				
 						
 						classobj = classOfSlot(slot);
 						
@@ -2277,21 +2259,15 @@ void Interpret(VMGlobals *g)
 						break;
 					case methReturnClassVar : /* return class var */
 						sp -= numArgsPushed - 1;
-						index = methraw->specialIndex;
-						classIndex = meth->selectors.us->u.classobj->classIndex.ui;
-						*sp = g->classvars[classIndex].uo->slots[index].uf;
+						*sp = g->classvars->slots[methraw->specialIndex].uf;
 						break;
 					case methAssignClassVar : /* assign class var */
 						sp -= numArgsPushed - 1;
-						numArgsPushed -= numKeyArgsPushed << 1;
-						index = methraw->specialIndex;
-						classIndex = meth->selectors.us->u.classobj->classIndex.ui;
-						obj = g->classvars[classIndex].uo;
 						if (numArgsPushed >= 2) {
-							obj->slots[index].uf = sp[1];
-							g->gc->GCWrite(obj, (PyrSlot*)sp + 1);
+							g->classvars->slots[methraw->specialIndex].uf = sp[1];
+							g->gc->GCWrite(g->classvars, (PyrSlot*)sp + 1);
 						} else {
-							obj->slots[index].uf = gSpecialValues[svNil];
+							g->classvars->slots[methraw->specialIndex].uf = gSpecialValues[svNil];
 						}
 						*sp = slot->uf;
 						break;
@@ -2332,8 +2308,8 @@ void Interpret(VMGlobals *g)
 						sp = (double*)g->sp;
 						selector = meth->selectors.us;
 						index = methraw->specialIndex;
-						classIndex = meth->constants.us->u.classobj->classIndex.ui;
-						slot->ucopy = g->classvars[classIndex].uo->slots[index].ucopy;				
+						classVarIndex = meth->constants.us->u.classobj->classVarIndex.ui;
+						slot->ucopy = g->classvars->slots[classVarIndex+index].ucopy;				
 						
 						classobj = classOfSlot(slot);
 						
