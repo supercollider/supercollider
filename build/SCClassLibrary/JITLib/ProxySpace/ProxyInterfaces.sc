@@ -111,7 +111,7 @@ SynthControl : AbstractPlayControl {
 	}
 	spawnToBundle { arg bundle, extraArgs, target, addAction=0; //assumes self freeing
 		var synthMsg;
-		synthMsg = [9, this.name, -1, addAction, target.asTarget.nodeID]++extraArgs; 
+		synthMsg = [9, this.name, -1, addAction, target.asTarget.nodeID]++extraArgs;
 		bundle.add(synthMsg);
 	}
 	
@@ -172,7 +172,7 @@ SynthDefControl : SynthControl {
 		rate = synthDef.rate ?? { if(proxy.rate !== \control) { \audio } { \control } };
 		numChannels = synthDef.numChannels ? proxy.numChannels ? 2;
 		ok = proxy.initBus(rate, numChannels);
-		[rate, numChannels].debug;
+		// [rate, numChannels].debug;
 		if(ok && synthDef.notNil, { 
 			paused = proxy.paused;
 			// schedule to avoid hd sleep latency. 
