@@ -19,6 +19,7 @@ ProxySynthDef : SynthDef {
 			
 			// build the controls from args
 			output = SynthDef.wrap(func, rates, prependArgs);
+			output = output.asUGenInput;
 			
 			// determine rate and numChannels of ugen func
 			rate = output.rate;

@@ -145,16 +145,16 @@ BusPlug : AbstractFunction {
 	
 	
 	
-	//////////// embedding bus in event streams, myself if within a normal stream
+	// embed bus in event streams
 	
 	embedInStream { arg inval;
 					if(inval.notNil) {
 						if(this.isPlaying.not) {
 							if(this.isNeutral) { this.defineBus(\control, 1) }; 
 							this.wakeUp 
-						};
+						};// if in event stream yield bus arg, else a normal stream
 						busArg.yield;
-					} { this.yield  } // if in event stream yield bus arg
+					} { this.yield  }
 					^inval
 	}
 	asStream  {
@@ -162,13 +162,13 @@ BusPlug : AbstractFunction {
 				loop { inval = this.embedInStream(inval) }
 			}
 	}
-	
+		
 	
 	/////  math support  /////////
 	
 	value { arg something; 
 		var n;
-		n = something.numChannels;
+		something !? {Ên = something.numChannels };
 		^if(something.rate == 'audio') { this.ar(n) } { this.kr(n) }  
 	}
 	
@@ -186,11 +186,6 @@ BusPlug : AbstractFunction {
 		//^NAryOpPlug.new(aSelector, [this]++anArgList) // nary op ugens are not yet implemented
 	}
 	
-	// user error catch
-	
-	writeInputSpec { Error("use .ar or .kr to use within a synth.").throw }
-	isValidUGenInput { Error("use ar. or kr. within Synth definitions").throw }
-	checkInputs { ^nil }
 	
 	
 	///// monitoring //////////////

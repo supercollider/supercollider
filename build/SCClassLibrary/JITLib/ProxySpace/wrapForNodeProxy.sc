@@ -76,6 +76,13 @@
 
 }
 
++AbstractOpPlug {
+	prepareForProxySynthDef { arg proxy;
+		proxy.initBus(this.rate, this.numChannels);
+		^{ this.value(proxy) }
+	}
+}
+
 //needs a visit: lazy init + channelOffset
 
 +Bus {

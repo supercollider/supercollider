@@ -14,10 +14,6 @@ AbstractOpPlug : AbstractFunction {
 	composeNAryOp { arg aSelector, anArgList;
 		^{ this.value(anArgList).performList(aSelector, anArgList) }
 	}
-	
-	prepareForProxySynthDef { arg proxy;
-		^{ this.value(proxy) }
-	}
 	writeInputSpec {
 		Error("use .ar or .kr to use within a synth.").throw;
 	}
@@ -47,7 +43,7 @@ UnaryOpPlug : AbstractOpPlug {
 		rate = this.rate;
 		if(rate === 'stream') { rate = nil };  // cx defines rate of func as \stream
 		numChannels = this.numChannels;
-		if(rate.notNil and: { numChannels.notNil }, { 
+		if(rate.notNil and: { numChannels.notNil } and: { proxy.notNil }, { 
 			proxy.initBus(rate, numChannels)
 		});
 		a.initBus(rate, numChannels);
@@ -78,7 +74,7 @@ BinaryOpPlug : AbstractOpPlug  {
 		rate = this.rate;
 		if(rate === 'stream') { rate = nil };  // cx defines rate of func as \stream
 		numChannels = this.numChannels;
-		if(rate.notNil and: { numChannels.notNil }, { 
+		if(rate.notNil and: { numChannels.notNil } and: { proxy.notNil }, { 
 			proxy.initBus(rate, numChannels)
 		});
 		this.initBus(rate, numChannels);

@@ -4,9 +4,8 @@ GraphBuilder {
 	*wrapOut { arg name, func, rates, prependArgs, outClass=\Out, fadeTime;
 		^SynthDef.new(name, { arg i_out=0;
 			var result, rate, env;
-			result = SynthDef.wrap(func, rates, prependArgs);
+			result = SynthDef.wrap(func, rates, prependArgs).asUGenInput;
 			rate = result.rate;
-			
 			if(rate === \scalar,{
 				// Out, SendTrig etc. probably a 0.0
 				result
