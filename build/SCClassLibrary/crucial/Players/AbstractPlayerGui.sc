@@ -9,7 +9,7 @@ AbstractPlayerGui : ObjectGui {
 			view = layout;
 			this.writeName(layout);
 			this.guiBody(layout);
-		}).background_(Color.grey(0.5,0.3))
+		}).background_(Color.blue(0.5,0.1))
 	}
 	topGui { arg layout;
 		layout = this.guify(layout);
@@ -21,7 +21,7 @@ AbstractPlayerGui : ObjectGui {
 			view = layout;
 			this.writeName(layout,true);
 			this.guiBody(layout);
-		}).background_(Color.grey(0.5,0.3));
+		}).background_(Color.blue(0.5,0.1));
 		layout.resizeToFit.front;
 	}
 	

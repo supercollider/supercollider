@@ -61,7 +61,7 @@ VariableNameLabel : CXAbstractLabel {
 
 ArgNameLabel : CXAbstractLabel {
 	*new { arg name,layout,maxx=130;
-		^super.new(layout,name,maxx: maxx)
+		^super.new(layout," " ++ name,maxx: maxx)
 			.backColor_(Color( 0.47843137254902, 0.72941176470588, 0.50196078431373 ))
 			.font_(Font("Helvetica",10))
 			.align_(\left)

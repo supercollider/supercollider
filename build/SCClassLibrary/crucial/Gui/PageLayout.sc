@@ -12,7 +12,7 @@ MultiPageLayout  {
 	
 	var autoRemoves;
 	
-	*new { arg title,width,height ,posx,posy,hspacer,vspacer,metal=false;
+	*new { arg title,width,height ,posx,posy,hspacer,vspacer,metal=true;
 		^super.new.init(title,width ,height ,
 							posx ,posy ,hspacer ,vspacer , 
 							metal)

@@ -25,7 +25,7 @@ Crucial {
 		PageLayout.screenWidth = 1100;
 		PageLayout.screenHeight = 700;
 
-		PageLayout.bgcolor = Color.new255(226,240,223);
+		//PageLayout.bgcolor = Color.new255(226,240,223);
 		
 		CXLabel.bgcolor = Color.new255(250,250,240);
 /*
