@@ -186,6 +186,7 @@ SynthDesc {
 		};
 		msgFunc = string.postln.interpret;
 	}
+	
 }
 
 SynthDescLib {
@@ -198,6 +199,7 @@ SynthDescLib {
 	}
 	init {
 		all.put(name.asSymbol, this);
+		synthDescs = IdentityDictionary.new;
 	}
 	*initClass {
 		Class.initClassTree(Server);
@@ -211,6 +213,7 @@ SynthDescLib {
 	*read { arg path = "./synthdefs/*.scsyndef";
 		global.read(path);
 	}
+	at { arg i; ^synthDescs.at(i) }
 
 	send { 
 		servers.do {|server|
