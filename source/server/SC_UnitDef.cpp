@@ -106,8 +106,8 @@ int Unit_DoCmd(World *inWorld, int inSize, char *inData)
 	Graph* graph = World_GetGraph(inWorld, nodeID);
 	if (!graph) return kSCErr_NodeNotFound;
 	
-	int unitID = msg.geti();
-	if (unitID < 0 || unitID >= graph->mNumUnits) return kSCErr_IndexOutOfRange;
+	uint32 unitID = msg.geti();
+	if (unitID >= graph->mNumUnits) return kSCErr_IndexOutOfRange;
 	
 	Unit *unit = graph->mUnits[unitID];
 	

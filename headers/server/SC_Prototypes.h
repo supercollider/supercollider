@@ -107,12 +107,12 @@ void Dimension_Init(struct Dimension *inDimension, int inWidth, int inHeight);
 Graph* Graph_New(struct World *inWorld, struct GraphDef *def, int32 inID, struct sc_msg_iter* args);
 void Graph_Ctor(struct World *inWorld, struct GraphDef *inGraphDef, struct Graph *graph, struct sc_msg_iter *msg);
 void Graph_Dtor(struct Graph *inGraph);
-int  Graph_GetControl(struct Graph* inGraph, int inIndex, float& outValue);
-int  Graph_GetControl(struct Graph* inGraph, int32 inHash, int32 *inName, int inIndex, float& outValue);
-void Graph_SetControl(struct Graph* inGraph, int inIndex, float inValue);
-void Graph_SetControl(struct Graph* inGraph, int32 inHash, int32 *inName, int inIndex, float inValue);
-void Graph_MapControl(Graph* inGraph, int inIndex, int inBus);
-void Graph_MapControl(Graph* inGraph, int32 inHash, int32 *inName, int inIndex, int inBus);
+int  Graph_GetControl(struct Graph* inGraph, uint32 inIndex, float& outValue);
+int  Graph_GetControl(struct Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, float& outValue);
+void Graph_SetControl(struct Graph* inGraph, uint32 inIndex, float inValue);
+void Graph_SetControl(struct Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, float inValue);
+void Graph_MapControl(Graph* inGraph, uint32 inIndex, uint32 inBus);
+void Graph_MapControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus);
 void Graph_Trace(Graph *inGraph);
 void Graph_RemoveID(World* inWorld, Graph *inGraph);
 
@@ -154,10 +154,10 @@ void Group_DeepFreeGraphs(Group *inGroup);
 void Group_AddHead (Group *s, Node *child);
 void Group_AddTail (Group *s, Node *child);
 void Group_Insert(Group *s, Node *child, int inIndex);
-void Group_SetControl(struct Group* inGroup, int inIndex, float inValue);
-void Group_SetControl(struct Group *inGroup, int32 inHash, int32 *inName, int inIndex, float inValue);
-void Group_MapControl(Group* inGroup, int inIndex, int inBus);
-void Group_MapControl(Group* inGroup, int32 inHash, int32 *inName, int inIndex, int inBus);
+void Group_SetControl(struct Group* inGroup, uint32 inIndex, float inValue);
+void Group_SetControl(struct Group *inGroup, int32 inHash, int32 *inName, uint32 inIndex, float inValue);
+void Group_MapControl(Group* inGroup, uint32 inIndex, uint32 inBus);
+void Group_MapControl(Group* inGroup, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus);
 void Group_Trace(Group* inGroup);
 
 ////////////////////////////////////////////////////////////////////////

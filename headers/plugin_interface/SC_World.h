@@ -42,10 +42,10 @@ struct World
 	int mBufLength;
 	int mBufCounter;
 	
-	int mNumAudioBusChannels;
-	int mNumControlBusChannels;
-	int mNumInputs;
-	int mNumOutputs;
+	uint32 mNumAudioBusChannels;
+	uint32 mNumControlBusChannels;
+	uint32 mNumInputs;
+	uint32 mNumOutputs;
 	
 	// vector of samples for all audio busses
 	float *mAudioBus;
@@ -59,7 +59,7 @@ struct World
 	int32 *mAudioBusTouched;
 	int32 *mControlBusTouched;
 	
-	int mNumSndBufs;
+	uint32 mNumSndBufs;
 	SndBuf *mSndBufs;
 	SndBuf *mSndBufsNonRealTimeMirror;
 
@@ -67,18 +67,18 @@ struct World
 
 	Rate mFullRate, mBufRate;
 	
-	int mNumRGens;
+	uint32 mNumRGens;
 	RGen *mRGen;
 
-	int mNumUnits, mNumGraphs, mNumGroups;
+	uint32 mNumUnits, mNumGraphs, mNumGroups;
 	int mSampleOffset; // offset in the buffer of current event time.
 	
 	SC_Lock* mNRTLock;
 	
-	int mNumSharedSndBufs;
+	uint32 mNumSharedSndBufs;
 	struct SndBuf *mSharedSndBufs;
 	
-	int mNumSharedControls;
+	uint32 mNumSharedControls;
 	float *mSharedControls;	
 	
 	bool mRealTime;
@@ -90,15 +90,15 @@ extern "C" {
 	int scprintf(const char *fmt, ...);
 }
 
-inline SndBuf* World_GetBuf(struct World *inWorld, int index)
+inline SndBuf* World_GetBuf(struct World *inWorld, uint32 index)
 {
-	if (index < 0 || index > inWorld->mNumSndBufs) index = 0;
+	if (index > inWorld->mNumSndBufs) index = 0;
 	return inWorld->mSndBufs + index;
 }
 
-inline SndBuf* World_GetNRTBuf(struct World *inWorld, int index)
+inline SndBuf* World_GetNRTBuf(struct World *inWorld, uint32 index)
 {
-	if (index < 0 || index > inWorld->mNumSndBufs) index = 0;
+	if (index > inWorld->mNumSndBufs) index = 0;
 	return inWorld->mSndBufsNonRealTimeMirror + index;
 }
 

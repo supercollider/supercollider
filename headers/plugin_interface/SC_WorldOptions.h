@@ -23,25 +23,26 @@
 #define _SC_WorldOptions_
 
 #include <stdarg.h>
+#include "SC_Types.h"
 
 typedef int (*PrintFunc)(const char *format, va_list ap);
 
 struct WorldOptions
 {
 	const char* mPassword;
-	int mNumBuffers;
-	int mMaxLogins;
-	int mMaxNodes;
-	int mMaxGraphDefs;
-	int mMaxWireBufs;
-	int mNumAudioBusChannels;
-	int mNumInputBusChannels;
-	int mNumOutputBusChannels;
-	int mNumControlBusChannels;
-	int mBufLength;
-	int mRealTimeMemorySize;
+	uint32 mNumBuffers;
+	uint32 mMaxLogins;
+	uint32 mMaxNodes;
+	uint32 mMaxGraphDefs;
+	uint32 mMaxWireBufs;
+	uint32 mNumAudioBusChannels;
+	uint32 mNumInputBusChannels;
+	uint32 mNumOutputBusChannels;
+	uint32 mNumControlBusChannels;
+	uint32 mBufLength;
+	uint32 mRealTimeMemorySize;
 	
-	int mNumSharedSndBufs;
+	uint32 mNumSharedSndBufs;
 	struct SndBuf *mSharedSndBufs;
 
 	int mNumSharedControls;
@@ -56,8 +57,8 @@ struct WorldOptions
 	char *mNonRealTimeOutputSampleFormat;
 	
 	int mNonRealTimeSampleRate;
-	int mNumRGens;
-	int mPreferredHardwareBufferFrameSize;
+	uint32 mNumRGens;
+	uint32 mPreferredHardwareBufferFrameSize;
 };
 
 const WorldOptions kDefaultWorldOptions = 

@@ -767,7 +767,7 @@ bool NotifyCmd::Stage2()
 	HiddenWorld *hw = mWorld->hw;
 	
 	if (mOnOff) {
-		for (int i=0; i<hw->mNumUsers; ++i) {
+		for (uint32 i=0; i<hw->mNumUsers; ++i) {
 			if (mReplyAddress == hw->mUsers[i]) {
 				// already in table - don't fail though..
 				SendFailure(&mReplyAddress, "/notify", "notify: already registered\n");
@@ -787,7 +787,7 @@ bool NotifyCmd::Stage2()
 		
 		SendDone("/notify");
 	} else {
-		for (int i=0; i<hw->mNumUsers; ++i) {
+		for (uint32 i=0; i<hw->mNumUsers; ++i) {
 			if (mReplyAddress == hw->mUsers[i]) {
 				// remove from list
 				hw->mUsers[i] = hw->mUsers[--hw->mNumUsers];

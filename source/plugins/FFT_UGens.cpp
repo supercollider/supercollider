@@ -335,8 +335,8 @@ void FFTBase_Ctor(FFTBase *unit)
 {
 	World *world = unit->mWorld;
 
-	int bufnum = (int)ZIN0(0);
-	if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0;
+	uint32 bufnum = (uint32)ZIN0(0);
+	if (bufnum >= world->mNumSndBufs) bufnum = 0;
 	SndBuf *buf = world->mSndBufs + bufnum; 
 	
 	unit->m_fftsndbuf = buf;
@@ -558,9 +558,9 @@ void IFFT_next(IFFT *unit, int inNumSamples)
 	float fbufnum = ZIN0(0); \
 	if (fbufnum < 0.f) { ZOUT0(0) = -1.f; return; } \
 	ZOUT0(0) = fbufnum; \
-	int ibufnum = (int)fbufnum; \
+	uint32 ibufnum = (uint32)fbufnum; \
 	World *world = unit->mWorld; \
-	ibufnum = sc_clipbuf(ibufnum, world->mNumSndBufs); \
+	if (ibufnum >= world->mNumSndBufs) ibufnum = 0; \
 	SndBuf *buf = world->mSndBufs + ibufnum; \
 	int numbins = buf->samples - 2 >> 1;
 
@@ -570,11 +570,11 @@ void IFFT_next(IFFT *unit, int inNumSamples)
 	float fbufnum2 = ZIN0(1); \
 	if (fbufnum1 < 0.f || fbufnum2 < 0.f) { ZOUT0(0) = -1.f; return; } \
 	ZOUT0(0) = fbufnum1; \
-	int ibufnum1 = (int)fbufnum1; \
-	int ibufnum2 = (int)fbufnum2; \
+	uint32 ibufnum1 = (int)fbufnum1; \
+	uint32 ibufnum2 = (int)fbufnum2; \
 	World *world = unit->mWorld; \
-	ibufnum1 = sc_clipbuf(ibufnum1, world->mNumSndBufs); \
-	ibufnum2 = sc_clipbuf(ibufnum2, world->mNumSndBufs); \
+	if (ibufnum1 >= world->mNumSndBufs) ibufnum1 = 0; \
+	if (ibufnum2 >= world->mNumSndBufs) ibufnum2 = 0; \
 	SndBuf *buf1 = world->mSndBufs + ibufnum1; \
 	SndBuf *buf2 = world->mSndBufs + ibufnum2; \
 	if (buf1->samples != buf2->samples) return; \

@@ -34,7 +34,7 @@ struct Unit
 	struct World *mWorld;
 	struct UnitDef *mUnitDef;
 	struct Graph *mParent;
-	int16 mNumInputs, mNumOutputs;
+	uint16 mNumInputs, mNumOutputs;
 	int16 mCalcRate;
 	int16 mSpecialIndex;		// used by unary and binary ops
 	int16 mParentIndex;

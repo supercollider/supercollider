@@ -194,7 +194,7 @@ World* World_New(WorldOptions *inOptions)
 		
 		world->mNumRGens = inOptions->mNumRGens;
 		world->mRGen = new RGen[world->mNumRGens];
-		for (int i=0; i<world->mNumRGens; ++i) {
+		for (uint32 i=0; i<world->mNumRGens; ++i) {
 			world->mRGen[i].init(timeseed());
 		}
 		
@@ -296,7 +296,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 
 		inputFileBuf = (float*)calloc(1, inputFileInfo.channels * kFileBufFrames * sizeof(float));
 		
-		if (world->mNumInputs != inputFileInfo.channels)
+		if (world->mNumInputs != (uint32)inputFileInfo.channels)
 			scprintf("WARNING: input file channels didn't match number of inputs specified in options.\n");
 
 		numInputChannels = world->mNumInputs = inputFileInfo.channels; // force it.
@@ -665,8 +665,8 @@ void World_Run(World *inWorld)
 void World_Start(World *inWorld)
 {
 	inWorld->mBufCounter = 0;
-	for (int i=0; i<inWorld->mNumAudioBusChannels; ++i) inWorld->mAudioBusTouched[i] = -1;
-	for (int i=0; i<inWorld->mNumControlBusChannels; ++i) inWorld->mControlBusTouched[i] = -1;
+	for (uint32 i=0; i<inWorld->mNumAudioBusChannels; ++i) inWorld->mAudioBusTouched[i] = -1;
+	for (uint32 i=0; i<inWorld->mNumControlBusChannels; ++i) inWorld->mControlBusTouched[i] = -1;
 	
 	inWorld->hw->mWireBufSpace = (float*)malloc(inWorld->hw->mMaxWireBufs * inWorld->mBufLength * sizeof(float));
 	
@@ -694,7 +694,7 @@ void World_Cleanup(World *world)
 	delete world->mNRTLock;
 	World_Free(world, world->mTopGroup);
 	
-	for (int i=0; i<world->mNumSndBufs; ++i) {
+	for (uint32 i=0; i<world->mNumSndBufs; ++i) {
 		SndBuf *nrtbuf = world->mSndBufsNonRealTimeMirror + i;
 		SndBuf * rtbuf = world->mSndBufs + i;
 		

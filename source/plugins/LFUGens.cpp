@@ -2095,9 +2095,9 @@ void BufEnvGen_Ctor(BufEnvGen *unit)
 	//Print("BufEnvGen_Ctor B\n");
 	// get table
 	float fbufnum = ZIN0(0);
-	int bufnum = (int)fbufnum;
+	uint32 bufnum = (int)fbufnum;
 	World *world = unit->mWorld;
-	if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0;
+	if (bufnum >= world->mNumSndBufs) bufnum = 0;
 	unit->m_buf = world->mSndBufs + bufnum;
 	SndBuf *buf = unit->m_buf;
 	int tableSize = buf->samples;
@@ -2145,9 +2145,9 @@ void BufEnvGen_next_k(BufEnvGen *unit, int inNumSamples)
 		float fbufnum = ZIN0(0);
 		if (fbufnum != unit->m_fbufnum) {
 			unit->m_fbufnum = fbufnum;
-			int bufnum = (int)fbufnum;
+			uint32 bufnum = (int)fbufnum;
 			World *world = unit->mWorld;
-			if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0;
+			if (bufnum >= world->mNumSndBufs) bufnum = 0;
 			unit->m_buf = world->mSndBufs + bufnum;
 		}
 		SndBuf *buf = unit->m_buf;
@@ -2348,9 +2348,9 @@ void BufEnvGen_next_ak(BufEnvGen *unit, int inNumSamples)
 			float fbufnum = ZIN0(0);
 			if (fbufnum != unit->m_fbufnum) {
 				unit->m_fbufnum = fbufnum;
-				int bufnum = (int)fbufnum;
+				uint32 bufnum = (int)fbufnum;
 				World *world = unit->mWorld;
-				if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0;
+				if (bufnum >= world->mNumSndBufs) bufnum = 0;
 				unit->m_buf = world->mSndBufs + bufnum;
 			}
 			SndBuf *buf = unit->m_buf;
@@ -2578,9 +2578,9 @@ void BufEnvGen_next_aa(BufEnvGen *unit, int inNumSamples)
 			float fbufnum = ZIN0(0);
 			if (fbufnum != unit->m_fbufnum) {
 				unit->m_fbufnum = fbufnum;
-				int bufnum = (int)fbufnum;
+				uint32 bufnum = (int)fbufnum;
 				World *world = unit->mWorld;
-				if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0;
+				if (bufnum >= world->mNumSndBufs) bufnum = 0;
 				unit->m_buf = world->mSndBufs + bufnum;
 			}
 			SndBuf *buf = unit->m_buf;

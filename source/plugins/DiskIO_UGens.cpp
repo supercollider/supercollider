@@ -47,14 +47,14 @@ struct DiskIn : public Unit
 {
 	float m_fbufnum;
 	SndBuf *m_buf;
-	int m_framepos;
+	uint32 m_framepos;
 };
 
 struct DiskOut : public Unit
 {
 	float m_fbufnum;
 	SndBuf *m_buf;
-	int m_framepos;
+	uint32 m_framepos;
 };
 
 
@@ -111,15 +111,15 @@ void* disk_io_thread_func(void* arg)
 #define GET_BUF \
 	float fbufnum  = ZIN0(0); \
 	if (fbufnum != unit->m_fbufnum) { \
-		int bufnum = (int)fbufnum; \
+		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
-		if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0; \
+		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
 		unit->m_fbufnum = fbufnum; \
 		unit->m_buf = world->mSndBufs + bufnum; \
 	} \
 	SndBuf *buf = unit->m_buf; \
-	int bufChannels = buf->channels; \
-	int bufFrames = buf->frames; \
+	uint32 bufChannels = buf->channels; \
+	uint32 bufFrames = buf->frames; \
 	float *bufData = buf->data;
 
 #define SETUP_OUT(offset) \
@@ -128,15 +128,15 @@ void* disk_io_thread_func(void* arg)
 		return; \
 	} \
 	float *out[MAXCHANNELS]; \
-	for (int i=0; i<bufChannels; ++i) out[i] = OUT(i+offset); 
+	for (uint32 i=0; i<bufChannels; ++i) out[i] = OUT(i+offset); 
 
 #define SETUP_IN(offset) \
-	if (unit->mNumInputs - offset != bufChannels) { \
+	if (unit->mNumInputs - (uint32)offset != bufChannels) { \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
 	float *in[MAXCHANNELS]; \
-	for (int i=0; i<bufChannels; ++i) in[i] = IN(i+offset); 
+	for (uint32 i=0; i<bufChannels; ++i) in[i] = IN(i+offset); 
 		
 void DiskIn_Ctor(DiskIn* unit)
 {
@@ -165,7 +165,7 @@ void DiskIn_next(DiskIn *unit, int inNumSamples)
 	// buffer must be allocated as a multiple of 2*blocksize.
 	if (bufChannels > 2) {
 		for (int j=0; j<inNumSamples; ++j) {
-			for (int i=0; i<bufChannels; ++i) {
+			for (uint32 i=0; i<bufChannels; ++i) {
 				*out[i]++ = *bufData++;
 			}
 		}
@@ -184,7 +184,7 @@ void DiskIn_next(DiskIn *unit, int inNumSamples)
 	}
 	
 	unit->m_framepos += inNumSamples;
-	int32 bufFrames2 = bufFrames >> 1;
+	uint32 bufFrames2 = bufFrames >> 1;
 	if (unit->m_framepos == bufFrames) {
 		unit->m_framepos = 0;
 		goto sendMessage;
@@ -232,7 +232,7 @@ void DiskOut_next(DiskOut *unit, int inNumSamples)
 
 	if (bufChannels > 2) {
 		for (int j=0; j<inNumSamples; ++j) {
-			for (int i=0; i<bufChannels; ++i) {
+			for (uint32 i=0; i<bufChannels; ++i) {
 				*bufData++ = *in[i]++;
 			}
 		}
@@ -251,7 +251,7 @@ void DiskOut_next(DiskOut *unit, int inNumSamples)
 	}
 	
 	unit->m_framepos += inNumSamples;
-	int32 bufFrames2 = bufFrames >> 1;
+	uint32 bufFrames2 = bufFrames >> 1;
 	//printf("pos %d  %d %d\n", unit->m_framepos, bufFrames, bufFrames2);
 	if (unit->m_framepos == bufFrames) {
 		unit->m_framepos = 0;

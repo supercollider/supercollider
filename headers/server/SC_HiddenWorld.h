@@ -70,13 +70,13 @@ struct HiddenWorld
 	class AllocPool *mAllocPool;
 	IntHashTable<struct Node, AllocPool> *mNodeLib;
 	HashTable<struct GraphDef, Malloc> *mGraphDefLib;
-	int mNumUsers, mMaxUsers;
+	uint32 mNumUsers, mMaxUsers;
 	ReplyAddress *mUsers;
 	
 	class SC_CoreAudioDriver *mAudioDriver;
 	char mPassword[32];
 	
-	int mMaxWireBufs;
+	uint32 mMaxWireBufs;
 	float *mWireBufSpace;
 	
 	MsgFifoNoFree<TriggerMsg, 1024> mTriggers;

@@ -699,8 +699,8 @@ void RandID_next(RandID* unit, int inNumSamples)
         
 	if (id != unit->m_id) {
 		unit->m_id = id;
-		int iid = (int)id;
-		if (iid >= 0 && iid < unit->mWorld->mNumRGens) {
+		uint32 iid = (uint32)id;
+		if (iid < unit->mWorld->mNumRGens) {
 			unit->mParent->mRGen = unit->mWorld->mRGen + iid;
 		}
 	} 

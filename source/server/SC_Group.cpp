@@ -150,7 +150,7 @@ void Group_Insert(Group *s, Node *child, int index)
 	}
 }
 
-void Group_MapControl(Group *inGroup, int inIndex, int inBus)
+void Group_MapControl(Group *inGroup, uint32 inIndex, uint32 inBus)
 {
 	Node *child = inGroup->mHead;
 	while (child) {
@@ -160,7 +160,7 @@ void Group_MapControl(Group *inGroup, int inIndex, int inBus)
 	}			
 }
 
-void Group_MapControl(Group *inGroup, int32 inHash, int32 *inName, int inIndex, int inBus)
+void Group_MapControl(Group *inGroup, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus)
 {
 	Node *child = inGroup->mHead;
 	while (child) {
@@ -170,7 +170,7 @@ void Group_MapControl(Group *inGroup, int32 inHash, int32 *inName, int inIndex, 
 	}			
 }
 
-void Group_SetControl(Group *inGroup, int inIndex, float inValue)
+void Group_SetControl(Group *inGroup, uint32 inIndex, float inValue)
 {
 	Node *child = inGroup->mHead;
 	while (child) {
@@ -180,7 +180,7 @@ void Group_SetControl(Group *inGroup, int inIndex, float inValue)
 	}			
 }
 
-void Group_SetControl(Group *inGroup, int32 inHash, int32 *inName, int inIndex, float inValue)
+void Group_SetControl(Group *inGroup, int32 inHash, int32 *inName, uint32 inIndex, float inValue)
 {
 	Node *child = inGroup->mHead;
 	while (child) {

@@ -307,14 +307,14 @@ void Graph_Trace(Graph *inGraph)
 }
 
 
-int Graph_GetControl(Graph* inGraph, int inIndex, float& outValue)
+int Graph_GetControl(Graph* inGraph, uint32 inIndex, float& outValue)
 {
-	if (inIndex < 0 || inIndex >= GRAPHDEF(inGraph)->mNumControls) return kSCErr_IndexOutOfRange;
+	if (inIndex >= GRAPHDEF(inGraph)->mNumControls) return kSCErr_IndexOutOfRange;
 	outValue = inGraph->mControls[inIndex];
 	return kSCErr_None;
 }
 
-int Graph_GetControl(Graph* inGraph, int32 inHash, int32 *inName, int inIndex, float& outValue)
+int Graph_GetControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, float& outValue)
 {
 	ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
 	ParamSpec *spec = table->Get(inHash, inName);
@@ -322,14 +322,14 @@ int Graph_GetControl(Graph* inGraph, int32 inHash, int32 *inName, int inIndex, f
 	return Graph_GetControl(inGraph, spec->mIndex + inIndex, outValue);
 }
 
-void Graph_SetControl(Graph* inGraph, int inIndex, float inValue)
+void Graph_SetControl(Graph* inGraph, uint32 inIndex, float inValue)
 {
-	if (inIndex < 0 || inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
+	if (inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
 	inGraph->mControls[inIndex] = inValue;
 	inGraph->mControlTouched = inGraph->mNode.mWorld->mBufCounter;
 }
 
-void Graph_SetControl(Graph* inGraph, int32 inHash, int32 *inName, int inIndex, float inValue)
+void Graph_SetControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, float inValue)
 {
 	ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
 	ParamSpec *spec = table->Get(inHash, inName);
@@ -338,21 +338,20 @@ void Graph_SetControl(Graph* inGraph, int32 inHash, int32 *inName, int inIndex, 
 
 
 
-void Graph_MapControl(Graph* inGraph, int32 inHash, int32 *inName, int inIndex, int inBus)
+void Graph_MapControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus)
 {
 	ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
 	ParamSpec *spec = table->Get(inHash, inName);
 	if (spec) Graph_MapControl(inGraph, spec->mIndex + inIndex, inBus);
 }
 
-void Graph_MapControl(Graph* inGraph, int inIndex, int inBus)
+void Graph_MapControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
 {
-	if (inIndex < 0 || inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
+	if (inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
 	World *world = inGraph->mNode.mWorld;
-	if (inBus < -1 || inBus >= world->mNumControlBusChannels) return;
-	if (inBus == -1) {
+	if (inBus == 0xFFFFFFFF) {
 		inGraph->mMapControls[inIndex] = inGraph->mControls + inIndex;
-	} else {
+	} else if (inBus >= world->mNumControlBusChannels) {
 		inGraph->mMapControls[inIndex] = world->mControlBus + inBus;
 	}
 }

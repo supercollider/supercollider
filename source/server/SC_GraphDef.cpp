@@ -109,10 +109,10 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer)
 	inUnitSpec->mSpecialIndex = readInt16_be(buffer);
 	inUnitSpec->mInputSpec = (InputSpec*)malloc(sizeof(InputSpec) * inUnitSpec->mNumInputs);
 	inUnitSpec->mOutputSpec = (OutputSpec*)malloc(sizeof(OutputSpec) * inUnitSpec->mNumOutputs);
-	for (int i=0; i<inUnitSpec->mNumInputs; ++i) {
+	for (uint32 i=0; i<inUnitSpec->mNumInputs; ++i) {
 		InputSpec_Read(inUnitSpec->mInputSpec + i, buffer);
 	}
-	for (int i=0; i<inUnitSpec->mNumOutputs; ++i) {
+	for (uint32 i=0; i<inUnitSpec->mNumOutputs; ++i) {
 		OutputSpec_Read(inUnitSpec->mOutputSpec + i, buffer);
 	}
 	int numPorts = inUnitSpec->mNumInputs + inUnitSpec->mNumOutputs;
@@ -129,9 +129,9 @@ GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList)
 	
 	/*int32 version = */ readInt32_be(buffer);
 		
-	int32 numDefs = readInt16_be(buffer);
+	uint32 numDefs = readInt16_be(buffer);
 		
-	for (int i=0; i<numDefs; ++i) {
+	for (uint32 i=0; i<numDefs; ++i) {
 		inList = GraphDef_Read(inWorld, buffer, inList);
 	}
 	return inList;
@@ -156,13 +156,13 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 	
 	graphDef->mNumConstants = readInt16_be(buffer);
 	graphDef->mConstants = (float*)malloc(graphDef->mNumConstants * sizeof(float));
-	for (int i=0; i<graphDef->mNumConstants; ++i) {
+	for (uint32 i=0; i<graphDef->mNumConstants; ++i) {
 		graphDef->mConstants[i] = readFloat_be(buffer);
 	}
 
 	graphDef->mNumControls = readInt16_be(buffer);
 	graphDef->mInitialControlValues = (float32*)malloc(sizeof(float32) * graphDef->mNumControls);
-	for (int i=0; i<graphDef->mNumControls; ++i) {
+	for (uint32 i=0; i<graphDef->mNumControls; ++i) {
 		graphDef->mInitialControlValues[i] = readFloat_be(buffer);
 	}
 	
@@ -171,7 +171,7 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 		int hashTableSize = NEXTPOWEROFTWO(graphDef->mNumParamSpecs);
 		graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, hashTableSize, false);
 		graphDef->mParamSpecs = (ParamSpec*)malloc(graphDef->mNumParamSpecs * sizeof(ParamSpec));
-		for (int i=0; i<graphDef->mNumParamSpecs; ++i) {
+		for (uint32 i=0; i<graphDef->mNumParamSpecs; ++i) {
 			ParamSpec *paramSpec = graphDef->mParamSpecs + i;
 			ParamSpec_Read(paramSpec, buffer);
 			graphDef->mParamSpecTable->Add(paramSpec);
@@ -186,7 +186,7 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 	graphDef->mNumUnitSpecs = readInt16_be(buffer);
 	graphDef->mUnitSpecs = (UnitSpec*)malloc(sizeof(UnitSpec) * graphDef->mNumUnitSpecs);
 	graphDef->mNumCalcUnits = 0;
-	for (int i=0; i<graphDef->mNumUnitSpecs; ++i) {
+	for (uint32 i=0; i<graphDef->mNumUnitSpecs; ++i) {
 		UnitSpec *unitSpec = graphDef->mUnitSpecs + i;
 		UnitSpec_Read(unitSpec, buffer);
 		
@@ -341,7 +341,7 @@ void UnitSpec_Free(UnitSpec *inUnitSpec)
 
 void GraphDef_Free(GraphDef *inGraphDef)
 {
-	for (int i=0; i<inGraphDef->mNumUnitSpecs; ++i) {
+	for (uint32 i=0; i<inGraphDef->mNumUnitSpecs; ++i) {
 		UnitSpec_Free(inGraphDef->mUnitSpecs + i);
 	}
 	delete inGraphDef->mParamSpecTable;
@@ -368,14 +368,14 @@ void GraphDef_Dump(GraphDef *inGraphDef)
 	scprintf("mNumUnitSpecs %d\n", inGraphDef->mNumUnitSpecs);
 	scprintf("mNumWireBufs %d\n", inGraphDef->mNumWireBufs);
 
-	for (int i=0; i<inGraphDef->mNumControls; ++i) {
+	for (uint32 i=0; i<inGraphDef->mNumControls; ++i) {
 		scprintf("   %d mInitialControlValues %g\n", i, inGraphDef->mInitialControlValues[i]);
 	}
 
-	for (int i=0; i<inGraphDef->mNumWires; ++i) {
+	for (uint32 i=0; i<inGraphDef->mNumWires; ++i) {
 		//WireSpec_Dump(inGraphDef->mWireSpec + i);
 	}
-	for (int i=0; i<inGraphDef->mNumUnitSpecs; ++i) {
+	for (uint32 i=0; i<inGraphDef->mNumUnitSpecs; ++i) {
 		//UnitSpec_Dump(inGraphDef->mUnitSpecs + i);
 	}
 }
@@ -463,9 +463,9 @@ inline bool BufColorAllocator::release(int inIndex)
 void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 {
 	// count consumers of outputs
-	for (int j=0; j<inGraphDef->mNumUnitSpecs; ++j) {
+	for (uint32 j=0; j<inGraphDef->mNumUnitSpecs; ++j) {
 		UnitSpec *unitSpec = inGraphDef->mUnitSpecs + j;
-		for (int i=0; i<unitSpec->mNumInputs; ++i) {
+		for (uint32 i=0; i<unitSpec->mNumInputs; ++i) {
 			InputSpec *inputSpec = unitSpec->mInputSpec + i;
 			if (inputSpec->mFromUnitIndex >= 0) {
 				UnitSpec *outUnit = inGraphDef->mUnitSpecs + inputSpec->mFromUnitIndex;
@@ -479,11 +479,11 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 	{
 		BufColorAllocator bufColor(inGraphDef->mNumUnitSpecs);
 		int wireIndexCtr = inGraphDef->mNumConstants;
-		for (int j=0; j<inGraphDef->mNumUnitSpecs; ++j) {
+		for (uint32 j=0; j<inGraphDef->mNumUnitSpecs; ++j) {
 			UnitSpec *unitSpec = inGraphDef->mUnitSpecs + j;
 			
 			// set wire index, release inputs
-			for (int i=unitSpec->mNumInputs-1; i>=0; --i) {
+			for (uint32 i=unitSpec->mNumInputs-1; i>=0; --i) {
 				InputSpec *inputSpec = unitSpec->mInputSpec + i;
 				if (inputSpec->mFromUnitIndex >= 0) {
 					UnitSpec *outUnit = inGraphDef->mUnitSpecs + inputSpec->mFromUnitIndex;
@@ -502,7 +502,7 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 				}
 			}
 			// set wire index, alloc outputs
-			for (int i=0; i<unitSpec->mNumOutputs; ++i) {
+			for (uint32 i=0; i<unitSpec->mNumOutputs; ++i) {
 				OutputSpec *outputSpec = unitSpec->mOutputSpec + i;
 				outputSpec->mWireIndex = wireIndexCtr++;
 				if (outputSpec->mCalcRate == calc_FullRate) {
@@ -526,9 +526,9 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 	
 	// multiply buf indices by buf length for proper offset
 	int bufLength = inWorld->mBufLength;
-	for (int j=0; j<inGraphDef->mNumUnitSpecs; ++j) {
+	for (uint32 j=0; j<inGraphDef->mNumUnitSpecs; ++j) {
 		UnitSpec *unitSpec = inGraphDef->mUnitSpecs + j;
-		for (int i=0; i<unitSpec->mNumOutputs; ++i) {
+		for (uint32 i=0; i<unitSpec->mNumOutputs; ++i) {
 			OutputSpec *outputSpec = unitSpec->mOutputSpec + i;
 			if (outputSpec->mCalcRate == calc_FullRate) {
 				outputSpec->mBufferIndex *= bufLength;

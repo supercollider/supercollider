@@ -29,15 +29,15 @@ struct Graph
 {
 	Node mNode;
 		
-	int mNumWires;
+	uint32 mNumWires;
 	struct Wire *mWire;
 	
-	int mNumControls;
+	uint32 mNumControls;
 	float *mControls;
 	float **mMapControls;
 	int mControlTouched;
 		
-	int mNumUnits;
+	uint32 mNumUnits;
 	struct Unit **mUnits;
 	
 	int mNumCalcUnits;

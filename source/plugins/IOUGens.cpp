@@ -108,9 +108,9 @@ extern "C"
 
 void Control_next_k(Unit *unit, int inNumSamples)
 {
-	int numChannels = unit->mNumOutputs;
+	uint32 numChannels = unit->mNumOutputs;
 	float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
-	for (int i=0; i<numChannels; ++i, mapin++) {
+	for (uint32 i=0; i<numChannels; ++i, mapin++) {
 		float *out = OUT(i);
 		*out = **mapin;
 	}
@@ -139,9 +139,9 @@ void Control_Ctor(Unit* unit)
 
 void LagControl_next_k(LagControl *unit, int inNumSamples)
 {
-	int numChannels = unit->mNumOutputs;
+	uint32 numChannels = unit->mNumOutputs;
 	float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
-	for (int i=0; i<numChannels; ++i, mapin++) {
+	for (uint32 i=0; i<numChannels; ++i, mapin++) {
 		float *out = OUT(i);
 		float z = **mapin;
 		*out = unit->m_y1[i] = z + unit->m_b1[i] * (unit->m_y1[i] - z);
@@ -200,10 +200,10 @@ void In_next_a(IOUnit *unit, int inNumSamples)
 	float fbusChannel = ZIN0(0);
 	if (fbusChannel != unit->m_fbusChannel) {
 		unit->m_fbusChannel = fbusChannel;
-		int busChannel = (int)fbusChannel;
+		int busChannel = (uint32)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumAudioBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
 			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
 			unit->m_busTouched = world->mAudioBusTouched + busChannel;
 		}
@@ -224,21 +224,21 @@ void In_next_k(IOUnit *unit, int inNumSamples)
 {
 //Print("->In_next_k\n");
 	World *world = unit->mWorld;
-	int numChannels = unit->mNumOutputs;
+	uint32 numChannels = unit->mNumOutputs;
 
 	float fbusChannel = ZIN0(0);
 	if (fbusChannel != unit->m_fbusChannel) {
 		unit->m_fbusChannel = fbusChannel;
-		int busChannel = (int)fbusChannel;
+		int busChannel = (uint32)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumControlBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumControlBusChannels)) {
 			unit->m_bus = world->mControlBus + busChannel;
 		}
 	}
 	
 	float *in = unit->m_bus;
-	for (int i=0; i<numChannels; ++i, in++) {
+	for (uint32 i=0; i<numChannels; ++i, in++) {
 		float *out = OUT(i);
 		*out = *in;
 	}
@@ -280,7 +280,7 @@ void LagIn_next_k(LagIn *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumControlBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumControlBusChannels)) {
 			unit->m_bus = world->mControlBus + busChannel;
 		}
 	}
@@ -308,7 +308,7 @@ void LagIn_next_0(LagIn *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumControlBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumControlBusChannels)) {
 			unit->m_bus = world->mControlBus + busChannel;
 		}
 	}
@@ -353,7 +353,7 @@ void InFeedback_next_a(IOUnit *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumAudioBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
 			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
 			unit->m_busTouched = world->mAudioBusTouched + busChannel;
 		}
@@ -398,7 +398,7 @@ void InTrig_next_k(IOUnit *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumControlBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumControlBusChannels)) {
 			unit->m_bus = world->mControlBus + busChannel;
 			unit->m_busTouched = world->mControlBusTouched + busChannel;
 		}
@@ -445,7 +445,7 @@ void ReplaceOut_next_a(IOUnit *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumAudioBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
 			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
 			unit->m_busTouched = world->mAudioBusTouched + busChannel;
 		}
@@ -472,7 +472,7 @@ void ReplaceOut_next_k(IOUnit *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumControlBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumControlBusChannels)) {
 			unit->m_bus = world->mControlBus + busChannel;
 			unit->m_busTouched = world->mControlBusTouched + busChannel;
 		}
@@ -519,7 +519,7 @@ void Out_next_a(IOUnit *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumAudioBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
 			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
 			unit->m_busTouched = world->mAudioBusTouched + busChannel;
 		}
@@ -554,7 +554,7 @@ void vOut_next_a(IOUnit *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumAudioBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
 			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
 			unit->m_busTouched = world->mAudioBusTouched + busChannel;
 		}
@@ -595,7 +595,7 @@ void Out_next_k(IOUnit *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumControlBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumControlBusChannels)) {
 			unit->m_bus = world->mControlBus + busChannel;
 			unit->m_busTouched = world->mControlBusTouched + busChannel;
 		}
@@ -654,7 +654,7 @@ void XOut_next_a(XOut *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumAudioBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
 			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
 			unit->m_busTouched = world->mAudioBusTouched + busChannel;
 		}
@@ -734,7 +734,7 @@ void vXOut_next_a(XOut *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumAudioBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
 			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
 			unit->m_busTouched = world->mAudioBusTouched + busChannel;
 		}
@@ -817,7 +817,7 @@ void XOut_next_k(XOut *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumControlBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumControlBusChannels)) {
 			unit->m_bus = world->mControlBus + busChannel;
 			unit->m_busTouched = world->mControlBusTouched + busChannel;
 		}
@@ -880,7 +880,7 @@ void OffsetOut_next_a(OffsetOut *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumAudioBusChannels)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
 			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
 			unit->m_busTouched = world->mAudioBusTouched + busChannel;
 		}
@@ -943,7 +943,7 @@ void SharedIn_next_k(IOUnit *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumSharedControls)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumSharedControls)) {
 			unit->m_bus = world->mSharedControls + busChannel;
 		}
 	}
@@ -985,7 +985,7 @@ void SharedOut_next_k(IOUnit *unit, int inNumSamples)
 		int busChannel = (int)fbusChannel;
 		int lastChannel = busChannel + numChannels;
 		
-		if (!(busChannel < 0 || lastChannel > world->mNumSharedControls)) {
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumSharedControls)) {
 			unit->m_bus = world->mSharedControls + busChannel;
 		}
 	}

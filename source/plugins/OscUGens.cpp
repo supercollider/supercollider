@@ -325,9 +325,9 @@ void Klank_next(Klank *unit, int inNumSamples);
 #define GET_TABLE \
 		float fbufnum = ZIN0(0); \
 		if (fbufnum != unit->m_fbufnum) { \
-			int bufnum = (int)fbufnum; \
+			uint32 bufnum = (uint32)fbufnum; \
 			World *world = unit->mWorld; \
-			if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0; \
+			if (bufnum >= world->mNumSndBufs) bufnum = 0; \
 			unit->m_buf = world->mSndBufs + bufnum; \
 		} \
 		SndBuf *buf = unit->m_buf; \
@@ -3370,11 +3370,11 @@ void CopyBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 	int channels1 = buf->channels;
 	
 	int toPos = msg->geti();
-	int bufnum2 = msg->geti();
+	uint32 bufnum2 = msg->geti();
 	int fromPos = msg->geti();
 	int length = msg->geti();
 	
-	if (bufnum2 < 0 || bufnum2 >= world->mNumSndBufs) bufnum2 = 0;
+	if (bufnum2 >= world->mNumSndBufs) bufnum2 = 0;
 	SndBuf* buf2 = world->mSndBufs + bufnum2;
 	int frames2 = buf2->frames;
 	int channels2 = buf2->channels;

@@ -65,7 +65,7 @@ struct RecordBuf : public Unit
 {
 	float m_fbufnum;
 	SndBuf *m_buf;
-	int32 m_writepos;
+	uint32 m_writepos;
 	float m_recLevel, m_preLevel;
 	float m_prevtrig;
 };
@@ -80,7 +80,7 @@ struct Pitch : public Unit
 	float m_dsamp, m_x1, m_y1;
 	float m_delaytime;
 	int m_iwrphase;
-	int m_numoutput;
+	uint32 m_numoutput;
 	
 	float m_freq, m_minfreq, m_maxfreq, m_hasfreq, m_srate, m_ampthresh, m_peakthresh;
 	int m_maxperiod, m_execPeriod, m_index, m_readp, m_size;
@@ -94,8 +94,8 @@ struct BufDelayUnit : public Unit
 	SndBuf *m_buf;
 	float m_dsamp, m_x1, m_y1;
 	float m_delaytime;
-	long m_iwrphase;
-	long m_numoutput;
+	int m_iwrphase;
+	uint32 m_numoutput;
 };
 
 struct BufDelayN : public BufDelayUnit
@@ -406,9 +406,9 @@ void NumRunningSynths_Ctor(Unit *unit, int inNumSamples)
 #define SIMPLE_GET_BUF \
 	float fbufnum  = ZIN0(0); \
 	if (fbufnum != unit->m_fbufnum) { \
-		int bufnum = (int)fbufnum; \
+		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
-		if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0; \
+		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
 		unit->m_fbufnum = fbufnum; \
 		unit->m_buf = world->mSndBufs + bufnum; \
 	} \
@@ -559,17 +559,17 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 #define GET_BUF \
 	float fbufnum  = ZIN0(0); \
 	if (fbufnum != unit->m_fbufnum) { \
-		int bufnum = (int)fbufnum; \
+		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
-		if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0; \
+		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
 		unit->m_fbufnum = fbufnum; \
 		unit->m_buf = world->mSndBufs + bufnum; \
 	} \
 	SndBuf *buf = unit->m_buf; \
 	float *bufData __attribute__((__unused__)) = buf->data; \
-	int bufChannels __attribute__((__unused__)) = buf->channels; \
-	int bufSamples __attribute__((__unused__)) = buf->samples; \
-	int bufFrames = buf->frames; \
+	uint32 bufChannels __attribute__((__unused__)) = buf->channels; \
+	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \
+	uint32 bufFrames = buf->frames; \
 	int mask __attribute__((__unused__)) = buf->mask; \
 	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
 
@@ -585,15 +585,15 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		return; \
 	} \
 	float *out[16]; \
-	for (int i=0; i<bufChannels; ++i) out[i] = ZOUT(i); 
+	for (uint32 i=0; i<bufChannels; ++i) out[i] = ZOUT(i); 
 
 #define SETUP_IN(offset) \
-	if ((unit->mNumInputs - offset) != bufChannels) { \
+	if ((unit->mNumInputs - (uint32)offset) != bufChannels) { \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
 	float *in[16]; \
-	for (int i=0; i<bufChannels; ++i) in[i] = ZIN(i+offset); 
+	for (uint32 i=0; i<bufChannels; ++i) in[i] = ZIN(i+offset); 
 		
 
 #define LOOP_BODY_4 \
@@ -615,7 +615,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		} \
 		int32 index = 0; \
 		float fracphase = phase - (double)iphase; \
-		for (int i=0; i<bufChannels; ++i) { \
+		for (uint32 i=0; i<bufChannels; ++i) { \
 			float a = table0[index]; \
 			float b = table1[index]; \
 			float c = table2[index]; \
@@ -634,7 +634,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		} \
 		int32 index = 0; \
 		float fracphase = phase - (double)iphase; \
-		for (int i=0; i<bufChannels; ++i) { \
+		for (uint32 i=0; i<bufChannels; ++i) { \
 			float b = table1[index]; \
 			float c = table2[index]; \
 			*++(out[i]) = b + fracphase * (c - b); \
@@ -646,7 +646,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		int32 iphase = (int32)phase; \
 		float* table1 = bufData + iphase * bufChannels; \
 		int32 index = 0; \
-		for (int i=0; i<bufChannels; ++i) { \
+		for (uint32 i=0; i<bufChannels; ++i) { \
 			*++(out[i]) = table1[index++]; \
 		}
 
@@ -682,17 +682,17 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 	
 	float fbufnum  = ZIN0(0);
 	if (fbufnum != unit->m_fbufnum) {
-		int bufnum = (int)fbufnum;
+		uint32 bufnum = (int)fbufnum;
 		World *world = unit->mWorld;
-		if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0;
+		if (bufnum >= world->mNumSndBufs) bufnum = 0;
 		unit->m_fbufnum = fbufnum;
 		unit->m_buf = world->mSndBufs + bufnum;
 	}
 	SndBuf *buf = unit->m_buf;
 	float *bufData __attribute__((__unused__)) = buf->data;
-	int bufChannels __attribute__((__unused__)) = buf->channels;
-	int bufSamples __attribute__((__unused__)) = buf->samples;
-	int bufFrames = buf->frames;
+	uint32 bufChannels __attribute__((__unused__)) = buf->channels;
+	uint32 bufSamples __attribute__((__unused__)) = buf->samples;
+	uint32 bufFrames = buf->frames;
 	int mask __attribute__((__unused__)) = buf->mask;
 	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
 
@@ -725,17 +725,17 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 	
 	float fbufnum  = ZIN0(0);
 	if (fbufnum != unit->m_fbufnum) {
-		int bufnum = (int)fbufnum;
+		uint32 bufnum = (int)fbufnum;
 		World *world = unit->mWorld;
-		if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0;
+		if (bufnum >= world->mNumSndBufs) bufnum = 0;
 		unit->m_fbufnum = fbufnum;
 		unit->m_buf = world->mSndBufs + bufnum;
 	}
 	SndBuf *buf = unit->m_buf;
 	float *bufData __attribute__((__unused__)) = buf->data;
-	int bufChannels __attribute__((__unused__)) = buf->channels;
-	int bufSamples __attribute__((__unused__)) = buf->samples;
-	int bufFrames = buf->frames;
+	uint32 bufChannels __attribute__((__unused__)) = buf->channels;
+	uint32 bufSamples __attribute__((__unused__)) = buf->samples;
+	uint32 bufFrames = buf->frames;
 	int mask __attribute__((__unused__)) = buf->mask;
 	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
 
@@ -903,7 +903,7 @@ void BufWr_next(BufWr *unit, int inNumSamples)
 		double phase = sc_loop((Unit*)unit, ZXP(phasein), bufFrames, loop);
 		int32 iphase = (int32)phase;
 		float* table0 = bufData + iphase * bufChannels;
-		for (int i=0; i<bufChannels; ++i) {
+		for (uint32 i=0; i<bufChannels; ++i) {
 			table0[i] = *++(in[i]);
 		}
 	}
@@ -917,7 +917,7 @@ void RecordBuf_Ctor(RecordBuf *unit)
 {	
 	
 	unit->m_fbufnum = -1e9f;
-	unit->m_writepos = (int32)ZIN0(1);
+	unit->m_writepos = (uint32)ZIN0(1);
 	unit->m_recLevel = ZIN0(2);
 	unit->m_preLevel = ZIN0(3);
 
@@ -946,7 +946,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 	float trig     = ZIN0(6);
 	//printf("loop %d  run %g\n", loop, run);
 
-	int32 writepos = unit->m_writepos;
+	uint32 writepos = unit->m_writepos;
 	
 	float recLevel_slope = CALCSLOPE(recLevel, unit->m_recLevel);
 	float preLevel_slope = CALCSLOPE(preLevel, unit->m_preLevel);
@@ -979,7 +979,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 			} else {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
-					for (int i=0; i<bufChannels; ++i) {
+					for (uint32 i=0; i<bufChannels; ++i) {
 						float *samp = table0 + i;
 						*samp = *++(in[i]) * recLevel + *samp * preLevel;
 					}
@@ -1015,7 +1015,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 			} else {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
-					for (int i=0; i<bufChannels; ++i) {
+					for (uint32 i=0; i<bufChannels; ++i) {
 						float *samp = table0 + i;
 						*samp = *++(in[i]) * recLevel + *samp * preLevel;
 					}
@@ -1057,7 +1057,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 			} else {
 				for (int32 k=0; k<nsmps; ++k) { 
 					float* table0 = bufData + writepos;
-					for (int i=0; i<bufChannels; ++i) {
+					for (uint32 i=0; i<bufChannels; ++i) {
 						float *samp = table0 + i;
 						*samp = *++(in[i]) * recLevel + *samp * preLevel;
 					}
@@ -1092,7 +1092,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 			} else {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
-					for (int i=0; i<bufChannels; ++i) {
+					for (uint32 i=0; i<bufChannels; ++i) {
 						float *samp = table0 + i;
 						*samp = *++(in[i]) * recLevel + *samp * preLevel;
 					}
@@ -1103,7 +1103,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 				}
 			}
 		}
-		if (writepos < 0 || writepos >= bufSamples) unit->mDone = true;
+		if (writepos >= bufSamples) unit->mDone = true;
 	}
 	buf->writeFrame = writepos;
 	unit->m_prevtrig = trig;
@@ -1124,7 +1124,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 	float trig     = ZIN0(6);
 	//printf("loop %d  run %g\n", loop, run);
 
-	int32 writepos = unit->m_writepos;
+	uint32 writepos = unit->m_writepos;
 	
 	if (loop) {
 		if (writepos < 0) writepos = bufSamples - bufChannels;
@@ -1148,7 +1148,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 			} else {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
-					for (int i=0; i<bufChannels; ++i) {
+					for (uint32 i=0; i<bufChannels; ++i) {
 						float *samp = table0 + i;
 						*samp = *++(in[i]);
 					}
@@ -1175,7 +1175,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 			} else {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
-					for (int i=0; i<bufChannels; ++i) {
+					for (uint32 i=0; i<bufChannels; ++i) {
 						float *samp = table0 + i;
 						*samp = *++(in[i]);
 					}
@@ -1208,7 +1208,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 			} else {
 				for (int32 k=0; k<nsmps; ++k) { 
 					float* table0 = bufData + writepos;
-					for (int i=0; i<bufChannels; ++i) {
+					for (uint32 i=0; i<bufChannels; ++i) {
 						float *samp = table0 + i;
 						*samp = *++(in[i]);
 					}
@@ -1234,7 +1234,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 			} else {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
-					for (int i=0; i<bufChannels; ++i) {
+					for (uint32 i=0; i<bufChannels; ++i) {
 						float *samp = table0 + i;
 						*samp = *++(in[i]);
 					}
@@ -1242,7 +1242,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 				}
 			}
 		}
-		if (writepos < 0 || writepos >= bufSamples) unit->mDone = true;
+		if (writepos >= bufSamples) unit->mDone = true;
 	}
 	buf->writeFrame = writepos;
 	unit->m_prevtrig = trig;
@@ -1391,8 +1391,8 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 	GET_BUF
 	CHECK_BUF
 	float* in = ZIN(1);
-	int size = unit->m_size;
-	int index = unit->m_index;
+	uint32 size = unit->m_size;
+	uint32 index = unit->m_index;
 	int downsamp = unit->m_downsamp;
 	int readp = unit->m_readp;
 	int ksamps = BUFLENGTH;
@@ -4896,7 +4896,7 @@ void SimpleLoopBuf_next_kk(SimpleLoopBuf *unit, int inNumSamples)
 		int32 iphase = (int32)phase;
 		float* table1 = bufData + iphase * bufChannels;
 		int32 index = 0;
-		for (int i=0; i<bufChannels; ++i) {
+		for (uint32 i=0; i<bufChannels; ++i) {
 			*++(out[i]) = table1[index++];
 		}
 		
@@ -4926,9 +4926,9 @@ void SimpleLoopBuf_Ctor(SimpleLoopBuf *unit)
 #define GET_SCOPEBUF \
 	float fbufnum  = ZIN0(0); \
 	if (fbufnum != unit->m_fbufnum) { \
-		int bufnum = (int)fbufnum; \
+		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
-		if (bufnum < 0 || bufnum >= world->mNumSharedSndBufs) bufnum = 0; \
+		if (bufnum >= world->mNumSharedSndBufs) bufnum = 0; \
 		unit->m_fbufnum = fbufnum; \
 		unit->m_buf = world->mSharedSndBufs + bufnum; \
 	} \

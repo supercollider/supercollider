@@ -38,13 +38,13 @@ struct GraphDef
 {
 	NodeDef mNodeDef;
 	
-	int32 mNumControls;
+	uint32 mNumControls;
 	
-	int32 mNumWires;
-	int32 mNumConstants;
-	int32 mNumUnitSpecs;
-	int32 mNumWireBufs;
-	int32 mNumCalcUnits;
+	uint32 mNumWires;
+	uint32 mNumConstants;
+	uint32 mNumUnitSpecs;
+	uint32 mNumWireBufs;
+	uint32 mNumCalcUnits;
 	
 	float32 *mInitialControlValues;
 	float32 *mConstants;
@@ -54,7 +54,7 @@ struct GraphDef
 	size_t mWiresAllocSize, mUnitsAllocSize, mCalcUnitsAllocSize;
 	size_t mControlAllocSize, mMapControlsAllocSize;
 	
-	int32 mNumParamSpecs;
+	uint32 mNumParamSpecs;
 	ParamSpec *mParamSpecs;
 	ParamSpecTable *mParamSpecTable;
 	
