@@ -1174,7 +1174,7 @@ void Interpret(VMGlobals *g)
 			// these byte codes are specific to their method and should only be used there.
 			op2 = ip[1]; ip++; // get which one
 			switch (op2) {
-				// Integer::do : 143 0, 143 1
+				// Integer-do : 143 0, 143 1
 				case 0 :
 					if (g->frame->vars[0].ui < g->receiver.ui) {
 						*++sp = g->frame->vars[-1].uf; // push function
@@ -1200,7 +1200,7 @@ void Interpret(VMGlobals *g)
 					ip -= 4;
 					break;
 					
-				// Integer::reverseDo : 143 2, 143 3, 143 4
+				// Integer-reverseDo : 143 2, 143 3, 143 4
 				case 2 :
 					g->frame->vars[-1].ui = g->receiver.ui - 1;
 					break;
@@ -1230,27 +1230,42 @@ void Interpret(VMGlobals *g)
 					ip -= 4;
 					break;
 					
-				// Integer::for : 143 5, 143 6, 143 16
+				// Integer-for : 143 5, 143 6, 143 16
 				case 5 : 
-					tag = g->frame->vars[-3].utag;
+					tag = g->frame->vars[-4].utag;
+					
 					if (tag != tagInt && tag != tagInf) {
-						error("Integer::for : endval not an Integer or Infinitum.\n");
-						
-						*++sp = g->receiver.ui;
-						numArgsPushed = 1;
-						selector = gSpecialSelectors[opmPrimitiveFailed];
-						slot = (PyrSlot*)sp;
-						
-						goto class_lookup;
+						if (IsFloat(&g->frame->vars[-4])) {
+							// coerce to int
+							SetInt(&g->frame->vars[-4], (int32)(g->frame->vars[-4].uf));
+						} else {
+							error("Integer-for : endval not a SimpleNumber Infinitum.\n");
+							
+							*++sp = g->receiver.ui;
+							numArgsPushed = 1;
+							selector = gSpecialSelectors[opmPrimitiveFailed];
+							slot = (PyrSlot*)sp;
+							
+							goto class_lookup;
+						}
 					}
-					g->frame->vars[-1].ucopy = g->receiver.ucopy;
+					
+					if (tag == tagInf || g->receiver.ui <= g->frame->vars[-4].ui) {
+						g->frame->vars[0].ui = 1;
+					} else {
+						g->frame->vars[0].ui = -1;
+					}
+					g->frame->vars[-2].ucopy = g->receiver.ucopy;
+
 					break;
 				case 6 :
-					if (g->frame->vars[-3].utag == tagInf 
-							|| g->frame->vars[-1].ui <= g->frame->vars[-3].ui) {
-						*++sp = g->frame->vars[-2].uf; // push function
-						*++sp = g->frame->vars[-1].uf; // push i
-						*++sp = g->frame->vars[0].uf; // push j
+					if (g->frame->vars[-4].utag == tagInf 
+							|| (g->frame->vars[0].ui > 0 && g->frame->vars[-2].ui <= g->frame->vars[-4].ui)
+							|| (g->frame->vars[0].ui < 0 && g->frame->vars[-2].ui >= g->frame->vars[-4].ui)) 
+					{
+						*++sp = g->frame->vars[-3].uf; // push function
+						*++sp = g->frame->vars[-2].uf; // push i
+						*++sp = g->frame->vars[-1].uf; // push j
 						// SendSpecialMsg value
 						numArgsPushed = 3;
 						selector = gSpecialSelectors[opmValue];
@@ -1266,12 +1281,12 @@ void Interpret(VMGlobals *g)
 					}
 					break;
 					
-				// Integer::forBy : 143 7, 143 8, 143 9
+				// Integer-forBy : 143 7, 143 8, 143 9
 				case 7 :
 					tag = g->frame->vars[-4].utag;
 					if ((tag != tagInt && tag != tagInf)
 							|| g->frame->vars[-3].utag != tagInt) {
-						error("Integer::forBy : endval or stepval not an Integer.\n");
+						error("Integer-forBy : endval or stepval not an Integer.\n");
 						
 						*++sp = g->receiver.ui;
 						numArgsPushed = 1;
@@ -1284,7 +1299,8 @@ void Interpret(VMGlobals *g)
 					break;
 				case 8 :
 					if (g->frame->vars[-4].utag == tagInf 
-							|| g->frame->vars[-1].ui <= g->frame->vars[-4].ui) {
+							|| (g->frame->vars[-3].ui >= 0 && g->frame->vars[-1].ui <= g->frame->vars[-4].ui)
+							|| (g->frame->vars[-3].ui < 0 && g->frame->vars[-1].ui >= g->frame->vars[-4].ui)) {
 						*++sp = g->frame->vars[-2].uf; // push function
 						*++sp = g->frame->vars[-1].uf; // push i
 						*++sp = g->frame->vars[0].uf; // push j
@@ -1309,7 +1325,7 @@ void Interpret(VMGlobals *g)
 					ip -= 4;
 					break;
 					
-				// ArrayedCollection::do : 143 10, 143 1
+				// ArrayedCollection-do : 143 10, 143 1
 				case 10 :
 					if (g->frame->vars[0].ui < g->receiver.uo->size) {
 						*++sp = g->frame->vars[-2].uf; // push function
@@ -1330,7 +1346,7 @@ void Interpret(VMGlobals *g)
 					}
 					break;
 					
-				// ArrayedCollection::reverseDo : 143 11, 143 12, 143 4
+				// ArrayedCollection-reverseDo : 143 11, 143 12, 143 4
 				case 11 :
 					g->frame->vars[-1].ui = g->receiver.uo->size - 1;
 					break;
@@ -1354,7 +1370,7 @@ void Interpret(VMGlobals *g)
 					}
 					break;
 					
-				// Dictionary::keysValuesArrayDo
+				// Dictionary-keysValuesArrayDo
 				case 13 : 
 					m = g->frame->vars[-4].ui;
 					obj = g->frame->vars[-6].uo;
@@ -1395,7 +1411,7 @@ void Interpret(VMGlobals *g)
 					g->frame->vars[-4].ui += 2; // inc i
 					ip -= 4;
 					break;
-				// Infinitum::do : 143 15, 143 1
+				// Infinitum-do : 143 15, 143 1
 				case 15 :
 					*++sp = g->frame->vars[-1].uf; // push function
 					*++sp = g->frame->vars[0].uf; // push i
@@ -1410,12 +1426,12 @@ void Interpret(VMGlobals *g)
 					
 				case 16 :
 					sp -- ; // Drop
-					g->frame->vars[-1].ui ++; // inc i
-					g->frame->vars[0].ui ++; // inc j
+					g->frame->vars[-2].ui += g->frame->vars[0].ui; // inc i by stepval
+					g->frame->vars[-1].ui ++; // inc j
 					ip -= 4;
 					break;
 					
-				// Float::do : 143 17, 143 18
+				// Float-do : 143 17, 143 18
 				case 17 :
 					if (g->frame->vars[0].uf + 0.5 < g->receiver.uf) {
 						*++sp = g->frame->vars[-1].uf; // push function
@@ -1441,7 +1457,7 @@ void Interpret(VMGlobals *g)
 					ip -= 4;
 					break;
 					
-				// Float::reverseDo : 143 19, 143 20, 143 21
+				// Float-reverseDo : 143 19, 143 20, 143 21
 				case 19 :
 					g->frame->vars[-1].uf = g->receiver.uf - 1.0;
 					break;
@@ -1792,15 +1808,19 @@ void Interpret(VMGlobals *g)
 			
 			//assert(g->gc->SanityCheck());
 			break;
-		case 254 : // opcPushInt
-			ival = (ip[1] << 24) | (ip[2] << 16) | (ip[3] << 8) | ip[4];
-			ip+=4;
-			++sp; SetInt((PyrSlot*)sp, ival);
+		case 254 : // opcUnused1
 			break;
-		case 255 : // opcPushConstant
-			ival = (ip[1] << 24) | (ip[2] << 16) | (ip[3] << 8) | ip[4];
-			ip+=4;
-			*++sp = g->block->constants.uo->slots[ival].uf;
+		case 255 : // opcUnused2
+			/*
+			// special case for this as only arg
+			numArgsPushed = ip[1]; ip++; 
+			*++sp = g->receiver.uf;
+			selector = gSpecialOpcodes[opmNew];
+			slot = (PyrSlot*)sp;
+			classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
+						
+			goto msg_lookup;
+			*/
 			break;
 			
 			////////////////////////////////////

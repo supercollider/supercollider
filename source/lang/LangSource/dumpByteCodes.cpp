@@ -556,23 +556,11 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			jmplen = (op2<<8) | op3;
 			post(" %02X %02X JumpBak %d  (%d)\n", op2, op3, jmplen, n - jmplen + 1);
 			break;
-		case 254 : // PushInt
-			op2 = *ip++;
-			op3 = *ip++;
-			op4 = *ip++;
-			op5 = *ip++;
-			ival = (op2 << 24) | (op3 << 16) | (op4 << 8) | op5;
-			post(" %02X %02X %02X %02X PushInt %d\n", op2, op3, op4, op5, ival);
+		case 254 :
+			post("       Unused1\n");
 			break;
-		case 255 : // PushConstant
-			op2 = *ip++;
-			op3 = *ip++;
-			op4 = *ip++;
-			op5 = *ip++;
-			ival = (op2 << 24) | (op3 << 16) | (op4 << 8) | op5;
-			slot = theBlock->constants.uo->slots + ival;
-			slotString(slot, str);
-			post(" %02X %02X %02X %02X PushConstant %s\n", op2, op3, op4, op5, str);
+		case 255 :
+			post("       Unused2\n");
 			break;
 	}
 	return ip;

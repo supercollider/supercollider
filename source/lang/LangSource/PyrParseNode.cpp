@@ -3489,6 +3489,9 @@ void initSpecialClasses()
 			gSpecialClasses[op_class_environment] = s_environment;
 			gSpecialClasses[op_class_wavetable] = s_wavetable;
 			gSpecialClasses[op_class_env] = s_env;
+			gSpecialClasses[op_class_routine] = s_routine;
+			gSpecialClasses[op_class_color] = s_color;
+			gSpecialClasses[op_class_rect] = s_rect;
 			
 			//Infinitum, Point, Rect, ??
 }
@@ -3625,6 +3628,7 @@ void initSpecialSelectors()
 	
 	sel[opmNew] = getsym("new");
 	sel[opmNewClear] = getsym("newClear");
+	sel[opmNewCopyArgs] = getsym("newCopyArgs");
 	sel[opmInit] = getsym("init");			
 	sel[opmAt] = getsym("at");
 	sel[opmPut] = getsym("put");
@@ -3681,11 +3685,11 @@ void initSpecialSelectors()
 	sel[opmClipAtSign] = getsym("|@|");
 	sel[opmFoldAtSign] = getsym("@|@");
 
-	sel[opmMultiChanPerform] = getsym("multiChannelPerform"); // UGens
+	sel[opmMultiNew] = getsym("multiNew"); // UGens
+	sel[opmMultiNewList] = getsym("multiNewList"); // UGens
 	sel[opmAR] = getsym("ar"); // UGens
-	sel[opmAR1] = getsym("ar1"); // UGens
 	sel[opmKR] = getsym("kr"); // UGens
-	sel[opmKR1] = getsym("kr1"); // UGens
+	sel[opmIR] = getsym("ir"); // UGens
 	
 	sel[opmEnvirGet] = getsym("envirGet");
 	sel[opmEnvirPut] = getsym("envirPut");
@@ -3695,6 +3699,21 @@ void initSpecialSelectors()
 	sel[opmReverseDo] = getsym("reverseDo");
 	sel[opmLoop] = getsym("loop");
 	sel[opmNonBooleanError] = getsym("mustBeBoolean");
+
+	sel[opmCopy] = getsym("copy");
+	sel[opmPerformList] = getsym("performList");
+	sel[opmIsKindOf] = getsym("isKindOf");
+	sel[opmPostln] = getsym("postln");
+	sel[opmAsString] = getsym("asString");
+
+	sel[opmPlusPlus] = getsym("++");
+	sel[opmLTLT] = getsym("<<");
+	sel[opmQuestionMark] = getsym("?");
+	sel[opmDoubleQuestionMark] = getsym("??");
+	
+	sel[opmYield] = getsym("yield");
+	sel[opmName] = getsym("name");
+	sel[opmMulAdd] = getsym("madd");
 
 	for (i=0; i<opNumUnarySelectors; ++i) {
 		gSpecialUnarySelectors[i]->specialIndex = i;

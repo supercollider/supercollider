@@ -39,7 +39,7 @@ Integer : SimpleNumber {
 	for { arg endval, function;
 		// iterates function from this to endval (inclusive)
 		// special byte codes inserted by compiler for this method
-		var i, j=0;
+		var i, j=0, stepval=1;
 		i = this;
 		while ({ i <= endval }, { function.value(i, j); i = i + 1; j = j + 1; });
 	}

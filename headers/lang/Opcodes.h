@@ -60,8 +60,8 @@ enum {
 	opcJumpIfTruePushTrue,		// OR: 		
 	opcJumpFwd,			
 	opcJumpBak,			
-	opcPushInt,				
-	opcPushConstant,		// 15
+	opcUnused1,				
+	opcSuperNew,		// 15
 	
 	opcNewList,
 	
@@ -278,11 +278,18 @@ enum {
 	opmFoldAtSign,
 
 	opmNewClear,
-	opmMultiChanPerform,
+	opmNewCopyArgs,
+	opmMultiNew,
+	opmMultiNewList,
 	opmAR,
-	opmAR1,
 	opmKR,
-	opmKR1,
+	opmIR,
+	
+	opmCopy,
+	opmPerformList,
+	opmIsKindOf,
+	opmPostln,
+	opmAsString,
 	
 	opmEnvirGet,
 	opmEnvirPut,
@@ -293,6 +300,15 @@ enum {
 	opmLoop,
 	
 	opmNonBooleanError,
+	
+	opmPlusPlus,
+	opmLTLT,
+	opmQuestionMark,
+	opmDoubleQuestionMark,
+	
+	opmYield,
+	opmName,
+	opmMulAdd,
 	
 	opmNumSpecialSelectors
 };
@@ -342,6 +358,7 @@ enum {
 	selAnd,
 	selOr,
 	selLoop,
+	selSuperNew,
 	
 	selNumSelectorTypes
 };
@@ -399,6 +416,10 @@ enum {
 		op_class_environment,
 		op_class_wavetable,
 		op_class_env,
+		
+		op_class_routine,
+		op_class_color,
+		op_class_rect,
 	
 	op_NumSpecialClasses
 };
