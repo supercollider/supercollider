@@ -772,6 +772,7 @@ extern PyrSymbol * s_didResignKey;
 	
 }
 - (void) callSCLangWithMethod: (PyrSymbol*) method {
+	if(!compiledOK) return;
 	pthread_mutex_lock (&gLangMutex);
     struct PyrObject *scobj = [self getSCObject];
     if (scobj) {
