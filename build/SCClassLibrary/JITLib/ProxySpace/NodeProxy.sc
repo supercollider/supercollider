@@ -3,7 +3,7 @@
 BusPlug : AbstractFunction {
 	
 	var <server, <bus; 		
-	var <monitorGroup, <>clock;
+	var <monitorGroup;
 	
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
 	
@@ -54,6 +54,7 @@ BusPlug : AbstractFunction {
 		bus = nil;
 	}
 	
+	bus_ { arg b; this.freeBus; bus = b; }
 	
 	//returns boolean
 	initBus { arg rate, numChannels;
@@ -67,6 +68,7 @@ BusPlug : AbstractFunction {
 	}
 	
 	defineBus { arg rate=\audio, numChannels;
+		if(bus.notNil, { bus.free });
 		if(numChannels.isNil, {
 			numChannels = if(rate === \audio, { 
 								this.class.defaultNumAudio 
@@ -99,20 +101,20 @@ BusPlug : AbstractFunction {
 	
 	prepareOutput { } //see subclass
 
-	ar { arg numChannels;
+	ar { arg numChannels, offset=0;
 		if(this.isNeutral, { 
 			this.defineBus(\audio, numChannels) 
 		});
 		this.prepareOutput;
-		^InBus.ar(bus, numChannels ? this.class.defaultNumAudio)
+		^InBus.ar(bus, numChannels ? this.class.defaultNumAudio, offset)
 	}
 	
-	kr { arg numChannels=1;
+	kr { arg numChannels, offset=0;
 		if(this.isNeutral, { 
 			this.defineBus(\control, numChannels) 
 		});
 		this.prepareOutput;
-		^InBus.kr(bus, numChannels ? this.class.defaultNumControl)
+		^InBus.kr(bus, numChannels ? this.class.defaultNumControl, offset)
 	}
 	
 	
@@ -131,15 +133,13 @@ BusPlug : AbstractFunction {
 		^UnaryOpPlug.new(aSelector, this)
 	}
 	composeBinaryOp { arg aSelector, something;
-		//^{ this.value(something).perform(aSelector, something.value) }
 		^BinaryOpPlug.new(aSelector, this, something)
 	}
 	reverseComposeBinaryOp { arg aSelector, something;
-		//^{ something.value.perform(aSelector, this.value(something)) }
 		^BinaryOpPlug.new(aSelector, something, this)
 	}
 	composeNAryOp { arg aSelector, anArgList;
-		^{ this.value(anArgList).performList(aSelector, anArgList) }
+		^thisMethod.notYetImplemented
 	}
 	
 	
@@ -204,14 +204,13 @@ BusPlug : AbstractFunction {
 	}
 	
 	sendBundle { arg bundle;
-			bundle.schedSend(server, clock)
+			bundle.send(server)
 	}
 	
 	printOn { arg stream;
-		stream << this.class.name << "." << bus.rate << "(" << server << ", " << bus.numChannels <<")";
+		stream 	<< this.class.name << "." << bus.rate << "(" 
+				<< server << ", " << bus.numChannels <<")";
 	}
-	
-	
 	
 	
 }
@@ -228,8 +227,16 @@ NodeProxy : BusPlug {
 
 	var <group, <objects;
 	var <parents, <nodeMap;	//playing templates
-	var <task, <loaded=false, <>awake=true; 	
+	var <loaded=false, <>awake=true, <task, <>clock; 	
 	classvar <>buildProxy;
+	
+	*new { arg server, rate, numChannels; //, inputs;
+		var res;
+		res = super.new(server).defineBus(rate, numChannels);
+		//inputs.do({ arg o; res.add(o) }); //to do.
+		^res
+	}
+	
 	
 	clear {
 		nodeMap = ProxyNodeMap.new.proxy_(this); 
@@ -284,7 +291,8 @@ NodeProxy : BusPlug {
 	at { arg index;  ^objects.at(index) }
 	
 	
-	put { arg index=0, obj, channelOffset = 0, extraArgs; 					var container, bundle, grandParents, freeAll;
+	put { arg index=0, obj, channelOffset = 0, extraArgs; 			var container, bundle, grandParents, freeAll;
+			
 			freeAll = index.notNil and: {index < 0};
 			bundle = MixedBundle.new;
 			if(parents.isEmpty, { grandParents = parents }, {
@@ -353,8 +361,7 @@ NodeProxy : BusPlug {
 			})
 		})
 	}
-	
-	
+		
 	defineBus { arg rate=\audio, numChannels;
 		super.defineBus(rate, numChannels);
 		this.linkNodeMap;
@@ -362,7 +369,7 @@ NodeProxy : BusPlug {
 	
 	linkNodeMap {
 		var index;
-		index = bus.index;
+		index = this.index;
 		if(index.isNil, { "couldn't allocate bus".error; this.halt });
 		nodeMap.set(\out, index, \i_out, index);
 	}
@@ -398,6 +405,7 @@ NodeProxy : BusPlug {
 		
 	bus_ { arg inBus;
 		if(server != inBus.server, { "can't change the server".inform;^this });
+		this.freeBus;
 		bus = inBus;
 		this.linkNodeMap;
 		this.rebuild;
@@ -405,6 +413,14 @@ NodeProxy : BusPlug {
 	
 	index_ { arg i;
 		this.bus = Bus.new(this.rate, i, this.numChannels, server);
+	}
+	
+	group_ { arg agroup;
+		if(this.isPlaying, { 
+			this.free; group = agroup; this.wakeUp;
+		}, { 
+			group = agroup 
+		});
 	}
 		
 	sendNodeMap { 
@@ -499,10 +515,16 @@ NodeProxy : BusPlug {
 			this.sendBundle(bundle);
 	}
 	
+	sendBundle { arg bundle;
+			bundle.schedSend(server, clock)
+	}
+
+	/// special tasks ///
 	
 	spawner { arg beats=1, argFunc;
 		var dt;
 		dt = beats.asStream;
+		if(argFunc.notNil, { argFunc = argFunc.hatchArray });
 		argFunc = argFunc.hatchArray;
 		this.task = Routine.new({ 
 					inf.do({ arg i;

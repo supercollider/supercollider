@@ -1,21 +1,21 @@
 InBus {
 	
-	*ar { arg bus, numChannels=2;
-		^this.getOutput(bus.asBus, 'audio', numChannels);
+	*ar { arg bus, numChannels=2, offset=0; //offset is your own responsibility
+		^this.getOutput(bus.asBus, 'audio', numChannels, offset);
 	}
 	
-	*kr { arg bus, numChannels=1;
-		^this.getOutput(bus.asBus, 'control', numChannels);
+	*kr { arg bus, numChannels=1, offset=0;
+		^this.getOutput(bus.asBus, 'control', numChannels, offset);
 	}
 	
-	*getOutput { arg bus, argRate, numChannels;
+	*getOutput { arg bus, argRate, numChannels, offset=0;
 		var rate, n, out, index, indices;
 		rate = bus.rate;
-		index = bus.index;
+		index = bus.index + offset;
 		n = bus.numChannels;
 		if(n >= numChannels, {
 			out = if(rate === 'audio', {
-				InFeedback.ar(index, numChannels)
+				InFeedback.ar(index.min(n + bus.index), numChannels)
 			}, {
 				In.kr(index, numChannels)
 			})

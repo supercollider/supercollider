@@ -145,13 +145,13 @@ ProxySpace : EnvironmentRedirect {
 	}
 	
 	printOn { arg stream; 
-		stream << "ProxySpace: ";
-		this.keysValuesDo({ arg key, item; 
-			stream <<< key << " " 
-			<< if(item.rate==='audio', { "ar" }, { 
+		stream << "ProxySpace: " << Char.nl;
+		this.sortedKeysValuesDo({ arg key, item; 
+			stream <<< key << Char.tab 
+			<< if(item.rate === 'audio', { "ar" }, { 
 					if(item.rate === 'control', { "kr" }, { "ir" })
 					}) 
-			<< "(" << item.numChannels << ")   "
+			<< "(" << item.numChannels << ")   " << Char.nl
 		});
 		stream << Char.nl
 		

@@ -69,6 +69,9 @@ EnvironmentRedirect {
 	findKeyForValue { arg val;
 		^envir.findKeyForValue(val)
 	}
+	sortedKeysValuesDo { arg function;
+		envir.sortedKeysValuesDo(function);
+	}
 	
 	choose {
         ^envir.choose
