@@ -147,9 +147,10 @@ BusPlug : AbstractFunction {
 	///// monitoring //////////////
 	
 	play { arg busIndex=0, nChan, group, multi=false;
-		var bundle, divider, n;
+		var bundle, divider, n, localServer;
 		
-		if(server.serverRunning.not, { "server not running".inform; ^nil });
+		localServer = this.localServer; //multi client support
+		if(localServer.serverRunning.not, { "server not running".inform; ^nil });
 		if(multi.not and: { monitorGroup.isPlaying }, { ^monitorGroup });
 			bundle = MixedBundle.new;
 			
@@ -158,30 +159,32 @@ BusPlug : AbstractFunction {
 			}, {
 				if(bus.rate != 'audio', { ("can't monitor a" + bus.rate + "proxy").error; 
 				^nil });
-			}); 
+			});
+			
+			this.wakeUp;
+			
 			n = bus.numChannels;
 			nChan = nChan ? n;
 			nChan = nChan.min(n);
 		
-			this.wakeUpToBundle(bundle);
-	
 			if(monitorGroup.isPlaying.not, { 
-				monitorGroup = Group.newToBundle(bundle, group ? server);
+				monitorGroup = Group.newToBundle(bundle, group ? localServer);
 				NodeWatcher.register(monitorGroup);
 			});
 			
 			divider = if(nChan.even, 2, 1);
 			(nChan div: divider).do({ arg i;
 			bundle.add([9, "system_link_audio_"++divider, 
-					server.nextNodeID, 1, monitorGroup.nodeID,
+					localServer.nextNodeID, 1, monitorGroup.nodeID,
 					\out, busIndex + (i*divider), \in, bus.index + (i*divider)
 					]);
 			});
 		
-			this.sendBundle(bundle);
+			bundle.send(localServer, localServer.latency);
 		^monitorGroup
 	}
 	
+	localServer { ^server }
 	
 	toggle {
 		if(monitorGroup.isPlaying, { this.stop }, { this.play });
@@ -201,10 +204,6 @@ BusPlug : AbstractFunction {
 		rec.open(path, headerFormat, sampleFormat);
 		rec.record;
 		^rec
-	}
-	
-	sendBundle { arg bundle;
-			bundle.send(server)
 	}
 	
 	shared { ^false } //shared node proxy support
@@ -519,7 +518,7 @@ NodeProxy : BusPlug {
 			bundle.schedSend(server, clock)
 	}
 
-	/// special tasks ///
+	/// special tasks: might move out! ///
 	
 	spawner { arg beats=1, argFunc;
 		var dt;
@@ -756,7 +755,7 @@ NodeProxy : BusPlug {
 		bundle = MixedBundle.new;
 		if(this.isPlaying, { 
 			this.stopAllToBundle(bundle);
-			bundle.send(server);
+			this.sendBundle(bundle);
 		});
 	}
 	
@@ -903,67 +902,26 @@ Ndef : NodeProxy {
 //the server needs to be a BroadcastServer.
 //this class takes care for a constant groupID.
 
-//do not add patterns for now.
+//do not add patterns for now as they will not get the right server.
 
 SharedNodeProxy : NodeProxy {
 	var <constantGroupID;
 	
 	*new { arg server, groupID;
-		^super.newCopyArgs(server).initGroupID(groupID).clear	
-	}
+		^super.newCopyArgs(server).initGroupID(groupID).clear	}
 	
 	shared { ^true }
-		
+	
 	initGroupID { arg groupID;  
 		constantGroupID = groupID ?? {server.nextSharedNodeID}; 
 		awake = true;
-	} 
-					
-	//play local, wakeUp global
-	
-	play { arg busIndex=0, nChan, n, multi=false;
-		var bundle, localBundle, localServer, divider;
-		
-		localServer = server.localServer;
-		if(localServer.serverRunning.not, { "local server not running".inform; ^nil });
-		if(multi.not and: { monitorGroup.isPlaying }, { ^monitorGroup });
-			bundle = MixedBundle.new;
-			localBundle = MixedBundle.new;
-			if(this.isNeutral, { 
-				this.defineBus(\audio, nChan)
-			}, {
-				if(bus.rate != 'audio', { ("can't play a" + bus.rate + "nodeproxy").error; ^nil });
-			}); 
-			if(monitorGroup.isPlaying.not, { 
-				monitorGroup = Group.newToBundle(localBundle, localServer);
-				NodeWatcher.register(monitorGroup);
-			});
-			n = bus.numChannels;
-			nChan = nChan ? n;
-			nChan = nChan.min(n);
-		
-			divider = if(nChan.even, 2, 1);
-			(nChan div: divider).do({ arg i;
-			localBundle.add([9, "system_link_audio_"++divider, 
-						localServer.nextNodeID, 1, monitorGroup.nodeID,
-						\out, 	busIndex+(i*divider), 
-						\in,	 	bus.index+(i*divider)
-					]);
-			});
-			this.wakeUpToBundle(bundle);
-			this.sendBundle(bundle);
-			localBundle.send(localServer, localServer.latency);
-		
-		
-		^monitorGroup
 	}
-	
 	defaultGroupID { 
 				postln("started new shared group" + constantGroupID);
 				^constantGroupID;
 	}
 	
-	
+	localServer { ^server.localServer }
 	
 	stopAllToBundle { arg bundle;
 				objects.do({ arg item;
