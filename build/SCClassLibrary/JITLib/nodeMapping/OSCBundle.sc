@@ -6,7 +6,13 @@ OSCBundle {
 		server.listSendBundle(time, messages);
 	}
 	schedSend { arg server, time, clock;
-		(clock ? SystemClock).sched(time ? 0,{ this.send(server,time) });
+		SystemClock.sched(time ? 0, {
+			if(clock.isNil, {
+				this.send(server,time) 
+			}, {
+				clock.schedAbs(clock.elapsedBeats.ceil, { this.send(server,time) })
+			});
+		})
 	}
 	add { arg msg;
 		messages = messages.add(msg);
@@ -64,11 +70,15 @@ MixedBundle : OSCBundle {
 	
 	schedSend { arg server, time, clock, onCompletion;
 			this.sendPrepare(server);
-			(clock ? SystemClock).schedToBeat(time ? 0, {
-								this.send(server);
-								onCompletion.value;
-								nil 
-			});
+			SystemClock.sched(time ? 0, {
+				if(clock.isNil, {
+						this.send(server,time) 
+				}, {
+						clock.schedAbs(clock.elapsedBeats.ceil, { 
+							this.send(server,time); nil 
+						})
+				});
+			})
 		
 	}
 	
@@ -76,10 +86,14 @@ MixedBundle : OSCBundle {
 		var resp;
 			
 			resp = OSCresponderNode(server.addr, '/done', { 
-							(clock ? SystemClock).schedToBeat(time ? 0,{ 
-								this.send(server);
-								onCompletion.value;
-								nil
+							SystemClock.sched(time ? 0, {
+								if(clock.isNil, {
+										this.send(server,time) 
+									}, {
+										clock.schedAbs(clock.elapsedBeats.ceil, { 
+										this.send(server,time); nil 
+									})
+								})
 							});
 							resp.remove;
 				}).add;
