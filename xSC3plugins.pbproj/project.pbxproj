@@ -202,6 +202,7 @@
 				46781BD105C854B9002B7D2B,
 				46781BD305C85772002B7D2B,
 				46781CED05C872AC002B7D2B,
+				467E248B05CFF06E007951D5,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -320,6 +321,20 @@
 		};
 		46781CED05C872AC002B7D2B = {
 			fileRef = 46781CEC05C872AC002B7D2B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		467E248A05CFF06E007951D5 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = FeatureDetection.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		467E248B05CFF06E007951D5 = {
+			fileRef = 467E248A05CFF06E007951D5;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -1177,6 +1192,7 @@
 				46781BD205C85772002B7D2B,
 				46781BD005C854B9002B7D2B,
 				46781CEC05C872AC002B7D2B,
+				467E248A05CFF06E007951D5,
 				F50D05D902E69B6B01CA2799,
 				F50D05DA02E69B6B01CA2799,
 				F50D05DB02E69B6B01CA2799,
