@@ -73,6 +73,8 @@ Symbol {
 	}
 
 	// support for math on symbols
+	
+	performBinaryOpOnSomething {Ê^this }
 
 	// unary ops
 	neg { ^this }
