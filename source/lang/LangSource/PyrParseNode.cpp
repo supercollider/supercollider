@@ -4120,7 +4120,7 @@ bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name,
 				*index = i;
 				*varType = varTemp;
 				if (tempfunc) *tempfunc = func;
-				if (j > 0) gFunctionHighestExternalRef = j;
+				if (j > gFunctionHighestExternalRef) gFunctionHighestExternalRef = j;
 				return true;
 			}
 		}
@@ -4132,7 +4132,7 @@ bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name,
 				*index = k;
 				*varType = varTemp;
 				if (tempfunc) *tempfunc = func;
-				if (j > 0) gFunctionHighestExternalRef = j;
+				if (j > gFunctionHighestExternalRef) gFunctionHighestExternalRef = j;
 				return true;
 			}
 		}
