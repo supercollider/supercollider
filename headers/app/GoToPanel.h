@@ -34,6 +34,7 @@
 
 /* Main method for external users; does a find in the first responder. Selects found range or beeps. */
 - (void)selectLine:(id)sender;
+- (void) getAndDisplayCurrentLine;
 - (void)prselectLine:(int)linenum;
 
 /* Loads UI lazily */

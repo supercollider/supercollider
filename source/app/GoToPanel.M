@@ -91,7 +91,24 @@ if (![NSBundle loadNibNamed:@"GoToLinePanel" owner:self]){
 - (void)selectLine:(id)sender{
     int linenum = [findTextField intValue];
     linenum = linenum;
+    if(!linenum)[self getAndDisplayCurrentLine];
+    else
     [self prselectLine: linenum];
+}
+- (void) getAndDisplayCurrentLine {
+    NSTextView *localTextView = [self textObjectToSelectIn];
+	NSRange range = [localTextView selectedRange];
+	unsigned select = range.location;
+	if(!select) select = 0;
+    NSLayoutManager *layoutManager = [localTextView layoutManager];
+    unsigned numberOfLines, index, numberOfGlyphs = [layoutManager numberOfGlyphs];
+    NSRange lineRange;
+    for (numberOfLines = 0, index = 0; index < numberOfGlyphs && index<select; numberOfLines++){
+    
+        (void) [layoutManager lineFragmentRectForGlyphAtIndex:index effectiveRange:&lineRange];
+            index = NSMaxRange(lineRange);
+    }
+    [findTextField setIntValue: numberOfLines];
 }
 - (void)prselectLine:(int)linenum{
           	
