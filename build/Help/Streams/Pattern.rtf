@@ -1,6 +1,6 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
-\f3\fnil\fcharset77 Monaco;}
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+\f3\fswiss\fcharset77 Helvetica-Oblique;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red96\green96\blue96;
 \red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -12,51 +12,55 @@
 \f0\b\fs24 \cf0 \
 superclass: AbstractFunction\
 \
-overview\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \
+\fs28 \cf0 Patterns versus Streams\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	Pattern 
-\f1\b0 is an abstract class, it is not used directly.  The library of classes derived\
-from Pattern form a remarkably rich and concise score language. This help file attempts\
-a brief introduction to this library.\
+\fs24 \cf0 \
+	Pattern 
+\f1\b0 is an abstract class that is the base for library of classes that form a remarkably \
+rich and concise score language. This help file attempts a brief introduction.\
 \
-	A Stream models a sequence of values.  Successive values are returned in response\
-to 
-\f0\b next 
-\f1\b0 messages.  A 
-\f0\b reset 
-\f1\b0 message will cause the stream to restart.
+	A 
+\f0\b Stream
+\f1\b0  represents a sequence of values.  The sequence is obtained one at a time by\
+ sending the stream the message 
+\f2 next
+\f1 .  A 
+\f2 reset
 \f0\b  
-\f1\b0 If a stream runs out of \
-values it will return nil in response to next. Streams can be defined with classes such as \
-
-\f0\b FuncStream 
-\f1\b0 and 
-\f0\b Routine
-\f1\b0 .  The message 
-\f0\b embedInStream 
-\f1\b0 allows a Stream to be iterated\
-from within another Stream.
-\f0\b \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\b0 \cf0 \
-	A Pattern
-\f0\b  
+\f1\b0 message will cause the stream to restart (many but \
+ not all streams actually repeat themselves.) If a stream runs out of  values it returns 
+\f2 nil
+\f1  in response to \
+ 
+\f2 next
+\f1 .  All objects respond to 
+\f2 next
+\f1  and 
+\f2 reset,
+\f1 most by returning themselves in response to next.  \
+ Thus, the number 7 defines a Stream that produces an infinite sequence of 7's.\
+\
+	A 
+\f0\b Pattern 
 \f1\b0 defines the  behavior of a Stream and creates such streams in response to \
 the message 
 \f0\b asStream
-\f1\b0 .  The message 
-\f0\b embedInStream
-\f1\b0  creates the stream and iterates it\
-to completion.  In the default case, an object simply yields itself once in response to embedInStream.\
+\f1\b0 .  This may be contrasted with classes such as 
+\f0\b Routine 
+\f1\b0 that define\
+a single Stream only.   The difference between a Pattern and a Stream is similar to the \
+difference between a score and a performance of that score or a class and an instance of \
+that class.  All objects respond to 
+\f0\b asStream
+\f1\b0 , most by returning themselves.  So most\
+objects are patterns that return streams that are an infinite sequence of the object itself.\
 \
-	The difference between a Pattern and a Stream is similar to the difference between a\
- score and a performance of that score or a class and an instance of that class. The following\
- examples illustrate the differences.\
+	So, what is the advantage of this abstraction?  Patterns are defined in terms of other \
+Patterns, so a Pattern of arbitrary complexity may be substituted for a single value anywhere\
+within a Pattern definition.  The following examples illustrate the difference.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -64,16 +68,19 @@ to completion.  In the default case, an object simply yields itself once in resp
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 The Pattern class 
+\fs24 \cf0 The Pattern class 
 \f0\b Pseq(array, repetitions) 
 \f1\b0 defines a stream that iterates an array. Below a stream\
 is created with 
 \f0\b Pseq 
-\f1\b0 and an identical stream is created using 
+\f1\b0 and an 
+\f2 asStream
+\f0\b  
+\f1\b0 message. An identical stream is created directly using 
 \f0\b Routine
 \f1\b0 .\
-\
 \
 ( 
 \f0\b // a Routine vs a Pattern 
@@ -88,32 +95,76 @@ is created with
 	5.do(\{ Post << Char.tab << r.next << " " << q.next << Char.nl; \});\
 )\
 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 example 2 - Nesting patterns\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
-	Pseq actually iterates the array as  a collection of 
-\f2\i patterns to be embedded
-\f1\i0 . This allows patterns \
-to be called within other patterns, an important source of the richness of Patterns as a score language.  \
-Notice that Routine now calls embedInStream rather than yield. \
-( \
+	In example 1, there is little difference between using the Pattern class Pseq and the Stream class\
+Routine.  But Pseq actually iterates its array as  a collection of 
+\f3\i patterns to be embedded
+\f1\i0 . This allows any of \
+the values in the array a to be replaced by patterns.  The Routine, on the other hand,  needs to be \
+completely redefined.\
+\
+( var routinesA;\
+	a = [3, Pseq([-100,00,300,400]), Pseq([-100,00,300,400].reverse) ];\
+	routinesA = [[3], [-100,00,300,400], [-100,00,300,400].reverse];\
+	p = Pseq(a);\
+	q = p.asStream;\
+\
+	r = Routine(\{ \
+		routinesA.do(\{ arg v; v.do(\{ arg i; i.yield\}) \}) ;\
+	\});\
+	10.do(\{ Post << Char.tab << r.next << " " << q.next << Char.nl; \});\
+)	\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 example 3 - Stream-embedInStream\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+The message 
+\f2 embedInStream
+\f1  is what allows Patterns to do this kind of nesting.   Most  objects \
+(such as the number 3 below) respond to 
+\f2 embedInStream
+\f0\b  
+\f1\b0 by yielding themselves once and returning.\
+Streams respond to embedInStream by iterating themselves to completion, effectively "taking over" the \
+calling stream for that time.  \
+\
+A Routine can perform a pattern simply by replacing calls to 
+\f2 yield 
+\f1 with calls to 
+\f2 embedInStream.\
+
+\f1 ( \
 	a = [3, Pseq([-100,00,300,400]), Pseq([-100,00,300,400].reverse) ];\
 \
 	r = Routine(\{ a.do(\{ arg v; v.
-\f2\i embedInStream
+\f3\i embedInStream
 \f1\i0 \}) \}) ;\
 	p = Pseq(a);\
 	q = p.asStream;\
 	10.do(\{ Post << Char.tab << r.next << " " << q.next << Char.nl; \});\
 )	\
 \
+However, there is no concise way to define this stream without using the classes Pattern library. \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 A Brief note on Event Patterns
+\f0\b \cf0 note: 
+\f1\b0 For reasons of efficiency, the implementation of embedInStream assumes that it is called from\
+within a Routine. Consequently, embedInStream should never be called from within the function that\
+defines a FuncStream or a Pfunc (the pattern that creates FuncStreams).\
+ \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 Event Patterns
 \f1\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -143,7 +194,7 @@ all rely on the patterns assigned to the Interpreter variable p, q, and r in the
 \f0\b\fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\b0\fs18 \cf2 \
+\f2\b0\fs18 \cf2 \
 (\
 SynthDescLib\cf0 .global.read;\
 \
@@ -180,7 +231,7 @@ q = Pbindf(p, \\instrument, \\default );\
 	// Pbind( ArrayOfPatternPairs )\
 	\
 	
-\f3\b0\fs18 \cf2 p = Pbind\cf0 (\
+\f2\b0\fs18 \cf2 p = Pbind\cf0 (\
 		[\cf3 \\degree\cf0 , \cf3 \\dur\cf0 ], \cf2 Pseq\cf0 ([[0,0.1],[2,0.1],[3,0.1],[4,0.1],[5,0.8]],1),\
 		\cf3 \\amp\cf0 , 0.05, \cf3 \\octave\cf0 , 6, \cf3 \\instrument\cf0 , \cf3 \\cfstring1\cf0 , \cf3 \\mtranspose\cf0 , 0);\
 		\
@@ -190,20 +241,20 @@ q = Pbindf(p, \\instrument, \\default );\
 \f0\b\fs24 //Ppar(arrayOfPatterns, repeats) - play in parallel\
 	\
 	
-\f3\b0\fs18 Ppar([Pseq([p],4),Pseq([Pbindf(q,\\ctranspose, -24)],5)]).play
+\f2\b0\fs18 Ppar([Pseq([p],4),Pseq([Pbindf(q,\\ctranspose, -24)],5)]).play
 \f0\b\fs24 \
 	\
 	//Ptpar(arrayOfTimePatternPairs, repeats) - play in parallel at different times\
 	\
 	
-\f3\b0\fs18 Ptpar([1,Pseq([p],4),0, Pseq([Pbindf(q,\\ctranspose, -24)],5)]).play
+\f2\b0\fs18 Ptpar([1,Pseq([p],4),0, Pseq([Pbindf(q,\\ctranspose, -24)],5)]).play
 \f0\b\fs24 \
 	\
 
-\f3\b0\fs18 	
+\f2\b0\fs18 	
 \f0\b\fs24 // Pbindf( pattern, ArrayOfNamePatternPairs )\
 	
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 	q = Pbindf(p, \\instrument, \\default );\
 	q.play;\
 	\
@@ -213,7 +264,7 @@ q = Pbindf(p, \\instrument, \\default );\
 	
 \f1\b0 // function constructs an event that is passed to the pattern.asStream\
 	
-\f3\fs18 \
+\f2\fs18 \
 	\cf2 Pfset\cf0 (\cf3 \{ ~freq\cf0  = \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ).asStream \}, q).play;\
 	\
 	
@@ -225,7 +276,7 @@ q = Pbindf(p, \\instrument, \\default );\
 \f0\b Padd
 \f1\b0  are similar)\
 	
-\f3\fs18 \
+\f2\fs18 \
 	\cf2 Pset\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q).play;\
 	\
 	
@@ -237,7 +288,7 @@ q = Pbindf(p, \\instrument, \\default );\
 \f0\b Paddp
 \f1\b0  are similar)\
 	
-\f3\fs18 \
+\f2\fs18 \
 	\cf2 r = Pset\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
 	\
 	\cf2 Psetp\cf0 (\cf3 \\legato\cf0 , Pseq([0.01, 1.1],inf), r).play;\
@@ -251,7 +302,7 @@ q = Pbindf(p, \\instrument, \\default );\
 \f0\b Paddpre
 \f1\b0  are similar)\
 	
-\f3\fs18 \
+\f2\fs18 \
 	\cf2 r = Psetpre\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
 	\
 	\cf2 Psetp\cf0 (\cf3 \\legato\cf0 , Pseq([0.01, 1.1],inf), r).play;\
@@ -261,7 +312,7 @@ q = Pbindf(p, \\instrument, \\default );\
 	
 \f1\b0 // stretches durations after \
 	
-\f3\fs18 \
+\f2\fs18 \
 	\cf2 r = Psetpre\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
 	\
 	\cf2 Pstretch(Pn(Env([0.5,2,0.5], [10,10]))\cf0 , Pn(r)).play;\
@@ -273,7 +324,7 @@ q = Pbindf(p, \\instrument, \\default );\
 	
 \f1\b0 // stretches durations after \
 	
-\f3\fs18 \
+\f2\fs18 \
 	\cf2 r = Psetpre\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
 	\
 	\cf2 Pstretchp(Pn(Env([0.5,2,0.5], [10,10]))\cf0 , r).play;\
@@ -282,24 +333,24 @@ q = Pbindf(p, \\instrument, \\default );\
 \f0\b\fs24 // Pfindur( duration, pattern ) - play pattern for duration\
 	\
 	
-\f3\b0\fs18 Pfindur(2,Pn(q,inf)).play;\
+\f2\b0\fs18 Pfindur(2,Pn(q,inf)).play;\
 	
 \f0\b\fs24 \
 	// PfadeIn(  pattern, fadeTime, holdTime, tolerance )\
 	
-\f3\b0\fs18 PfadeIn(Pn(q), 3, 0).play(quant: 0);\
+\f2\b0\fs18 PfadeIn(Pn(q), 3, 0).play(quant: 0);\
 	
 \f0\b\fs24 \
 	// PfadeOut(  pattern, fadeTime, holdTime, tolerance )\
 	
-\f3\b0\fs18 PfadeOut(Pn(q), 3, 0).play(quant: 0);\
+\f2\b0\fs18 PfadeOut(Pn(q), 3, 0).play(quant: 0);\
 	
 \f0\b\fs24 \
 	// Psync( pattern, quantization, dur, tolerance )\
 	// pattern is played for dur seconds (within tolerance), then a rest is played so the next pattern\
 	\
 	
-\f3\b0\fs18 Pn(Psync(\
+\f2\b0\fs18 Pn(Psync(\
 		Pbind(	\\dur, Pwhite(0.2,0.5).round(0.2), \
 				\\db, Pseq([-10,-15,-15,-15,-15,-15,-30])\
 		), 2,3\
@@ -309,7 +360,7 @@ q = Pbindf(p, \\instrument, \\default );\
 	//Plag(duration, pattern)\
 	\
 	
-\f3\b0\fs18 Ppar([Plag(1.2,Pn(p,4)),Pn(Pbindf(q,\\ctranspose, -24),5)]).play\
+\f2\b0\fs18 Ppar([Plag(1.2,Pn(p,4)),Pn(Pbindf(q,\\ctranspose, -24),5)]).play\
 	\
 
 \f0\b\fs24 // GENERAL PATTERNS that work with both event and value streams\
@@ -317,7 +368,7 @@ q = Pbindf(p, \\instrument, \\default );\
 	//Ptrace(pattern, key, printStream)  - print the contents of a pattern
 \f1\b0 \
 	
-\f3\fs18 \
+\f2\fs18 \
 	\cf2 r = Psetpre\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([500, 600, 700], \cf2 2\cf0 ), q);\
 	\
 	\cf2 Ptrace(r\cf0 ).play;\
@@ -336,14 +387,14 @@ q = Pbindf(p, \\instrument, \\default );\
 	// to force repetion of pseudo-random patterns\
 	\
 	
-\f3\b0\fs18 Pn(Pseed(44, Pbindf(q,\\ctranspose,Pbrown(-3.0,3.0, 10) ) ) ).play;\
+\f2\b0\fs18 Pn(Pseed(44, Pbindf(q,\\ctranspose,Pbrown(-3.0,3.0, 10) ) ) ).play;\
 
 \f0\b\fs24 \
 	//Proutine(function) - on exit, the function must return the last value returned by yield\
 	// (otherwise, the pattern cannot be reliably manipulated by other patterns)\
 	\
 	
-\f3\b0\fs18 Proutine(\{ arg inval; \
+\f2\b0\fs18 Proutine(\{ arg inval; \
 		inval = p.embedInStream(inval);\
 		inval = Event.silent(4).yield;\
 		inval = q.embedInStream(inval);\
@@ -355,7 +406,7 @@ q = Pbindf(p, \\instrument, \\default );\
 	//Pfunc(function) - the function should not have calls to embedInStream, use Proutine instead.\
 		\
 		
-\f3\b0\fs18 Pn(Pbindf(q,\\legato, Pfunc(\{ arg inval; if (inval.at(\\degree)== 5)  \{4\} \{0.2\}; \})) ).play
+\f2\b0\fs18 Pn(Pbindf(q,\\legato, Pfunc(\{ arg inval; if (inval.at(\\degree)== 5)  \{4\} \{0.2\}; \})) ).play
 \f0\b\fs24 \
 \
 	// the following patterns control the sequencing and repetition of other patterns\
@@ -363,13 +414,13 @@ q = Pbindf(p, \\instrument, \\default );\
 		//Pseq(arrayOfPatterns, repeats) - play as a sequence\
 		\
 		
-\f3\b0\fs18 Pseq([Pseq([p],4),Pseq([Pbindf(q,\\ctranspose, -24)],5)]).play\
+\f2\b0\fs18 Pseq([Pseq([p],4),Pseq([Pbindf(q,\\ctranspose, -24)],5)]).play\
 		
 \f0\b\fs24 \
 		//Pser(arrayOfPatterns, num) - play num patterns from the arrayOfPatterns\
 		\
 		
-\f3\b0\fs18 Pser([p,q,r],5).play\
+\f2\b0\fs18 Pser([p,q,r],5).play\
 		
 \f0\b\fs24 \
 		//Place(arrayOfPatterns, repeats) - similar to Pseq\
@@ -377,89 +428,89 @@ q = Pbindf(p, \\instrument, \\default );\
 		// embedding the first element on the first repetition, second on the second, etc\
 		\
 		
-\f3\b0\fs18 Place([[p,q,r],q,r],5).play\
+\f2\b0\fs18 Place([[p,q,r],q,r],5).play\
 		
 \f0\b\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\b0\fs18 \cf0 		
+\f2\b0\fs18 \cf0 		
 \f0\b\fs24 \
 		// Pn( pattern, patternRepetitions ) - repeat the pattern n times\
 		\
 		
-\f3\b0\fs18 Pn(p,2).play;\
+\f2\b0\fs18 Pn(p,2).play;\
 		
 \f0\b\fs24 \
 		// Pfin( eventcount, pattern ) - play n events from the pattern\
 		\
 		
-\f3\b0\fs18 Pfin(12,Pn(p,inf)).play;\
+\f2\b0\fs18 Pfin(12,Pn(p,inf)).play;\
 		
 \f0\b\fs24 \
 		// Pstutter( eventRepetitions, pattern ) - repeat each event from the pattern n times\
 		
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 		Pstutter(4,q).play
 \f0\b\fs24 \
 		\
 		//Pwhile(function, pattern) \
 		
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 		Pwhile(\{coin(0.5).postln;\}, q).play\
 		
 \f0\b\fs24 \
 		// Pswitch( patternList, selectPattern ) - when a pattern ends, switch according to select\
 		\
 		
-\f3\b0\fs18 Pswitch([p,q,r], Pwhite(0,100)).play\
+\f2\b0\fs18 Pswitch([p,q,r], Pwhite(0,100)).play\
 		\
 		
 \f0\b\fs24 // Pswitch1( patternList, selectPattern ) - on each event switch according to select\
 		
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 		Pn(Pswitch1([p,q,r], Pwhite(0,2))).play\
 		
 \f0\b\fs24 \
 
-\f3\b0\fs18 		
+\f2\b0\fs18 		
 \f0\b\fs24 // Prand( patternList, repeats ) -  random selection from list		
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 		Prand([p,q,r],  inf).play\
 \
 		
 \f0\b\fs24 // Pxrand( patternList, repeats ) -  random selection from list without repeats		
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 		Pxrand([p,q,r],  inf).play\
 \
 		
 \f0\b\fs24 // Pwrand( patternList, weights, repeats ) - weighted random selection from list		
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 		Pwrand([p,q,r], #[1, 3, 5].normalizeSum, inf).play\
 \
 		
 \f0\b\fs24 // Pwalk( patternList, stepPattern, directionPattern ) - walk through a list of patterns\
 		
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 		Pwalk([p,q,r], 1, Pseq([-1,1], inf)).play\
 \
 		
 \f0\b\fs24 // Pslide(list, repeats, length, step, start)\
 \
 		
-\f3\b0\fs18  Pbind(\\degree, \cf2 Pslide\cf0 (#[1, 2, 3, 4, 5], inf, 3, 1, 0), \\dur,0.2).play
+\f2\b0\fs18  Pbind(\\degree, \cf2 Pslide\cf0 (#[1, 2, 3, 4, 5], inf, 3, 1, 0), \\dur,0.2).play
 \f1\fs24 \
 \
 
-\f3\fs18 		
+\f2\fs18 		
 \f0\b\fs24 // Pshuf( patternList, repeats ) -  random selection from list		
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 		Pn(Pshuf([p,q,r,r,p])).play\
 \
 		
 \f0\b\fs24 // Ptuple(list, repeats)\
 \
 		
-\f3\b0\fs18  Pbind(\\degree,Ptuple([Pwhite(1,-6), Pbrown(8,15,2)]), \
+\f2\b0\fs18  Pbind(\\degree,Ptuple([Pwhite(1,-6), Pbrown(8,15,2)]), \
 		 	\\dur, Pfunc(\{ arg ev; ev.at(\\degree).last/80 round: 0.1\}), \
 		 	\\db, Pfunc(\{ if (coin(0.8)) \{-25\} \{-20\} \})\
 		 ).play
@@ -471,19 +522,19 @@ q = Pbindf(p, \\instrument, \\default );\
 	\
 		//Pcollect(function, pattern) \
 		
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 		Pcollect(\{ arg inval; inval.use(\{ ~freq = 1000.rand \}); inval\}, q).play\
 		
 \f0\b\fs24 \
 		//Pselect(function, pattern) \
 		
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 		Pselect(\{ arg inval; inval.at(\\degree) != 0 \}, q).play(quant: 0)\
 		
 \f0\b\fs24 \
 		//Preject(function, pattern) \
 		
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 		Preject(\{ arg inval; inval.at(\\degree) != 0 \}, q).play(quant: 0)\
 		
 \f0\b\fs24 \
@@ -491,58 +542,58 @@ q = Pbindf(p, \\instrument, \\default );\
 	// function receives the current pattern as an argument and returns the next pattern to be played\
 	\
 
-\f3\b0\fs18 	Ppatmod(p, \{ arg oldPat; [p,q,r].choose \}, inf).play
+\f2\b0\fs18 	Ppatmod(p, \{ arg oldPat; [p,q,r].choose \}, inf).play
 \f0\b\fs24 \
 \
 // VALUE PATTERNS: these patterns define or act on streams of numbers\
 \
 	// Env as a pattern\
 	
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 	Pbindf(Pn(q,inf),\\ctranspose, Pn(Env.linen(3,0,0.3,20),inf) ).play;\
 	\
 	
 \f0\b\fs24 // Pwhite(lo, hi, length)\
 	
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 	Pbindf(Pn(q,inf),\\ctranspose,Pwhite(-3.0,3.0) ).play;\
 	\
 	
 \f0\b\fs24 // Pbrown(lo, hi, step, length)\
 	
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 	Pbindf(Pn(q,inf),\\ctranspose,Pbrown(-3.0,3.0, 2) ).play;\
 	\
 	
 \f0\b\fs24 // Pseries(start,step, length)\
 	
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 	Pbindf(Pn(q,inf),\\ctranspose,Pseries(0,0.1,10) ).play;\
 	\
 	
 \f0\b\fs24 // Pgeom(start,step, length)\
 	
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 	Pbindf(Pn(q,inf),\\ctranspose,Pgeom(1,1.2,20) ).play;\
 	\
 	
 \f0\b\fs24 // Pwrap(pattern,lo, hi)\
 	
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 	Pbind(\\note, Pwrap(Pwhite(0, 128), 10, 20).round(2), \\dur, 0.05).play;\
 	\
 	
 \f0\b\fs24 // PdegreeToKey(pattern, scale, stepsPerOctave)\
 	// this reimplements part of pitchEvent (see Event)\
 	
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 	Pbindf(Pn(q,inf),\\note,PdegreeToKey(Pbrown(-8, 8, 2), [0,2,4,5,7,9,11]) ).play;\
 	\
 	
 \f0\b\fs24 // Prewrite(pattern, dict, levels) - see help page for details.\
 	// (notice use of Env to define a chord progression of sorts...\
 	
-\f3\b0\fs18 \
+\f2\b0\fs18 \
 	Pbind(\\degree, \
 		\cf2 Prewrite\cf0 (0,\cf5 	\cf2 (\cf0 	0: #[2,0],\
 	 					1: #[0,0,1],\
@@ -554,7 +605,7 @@ q = Pbindf(p, \\instrument, \\default );\
 	
 \f0\b\fs24 // PdurStutter( repetitionPattern, patternOfDurations ) - \
 	
-\f3\b0\fs18 Pbindf(Pn(q), \\dur, \cf2 PdurStutter\cf0 (\
+\f2\b0\fs18 Pbindf(Pn(q), \\dur, \cf2 PdurStutter\cf0 (\
 		Pseq(#[1,1,1,1,1,2,2,2,2,2,3,4,5,7,15],inf),\
 		Pseq(#[0.5],inf)\
 		)\
@@ -569,7 +620,7 @@ q = Pbindf(p, \\instrument, \\default );\
 	// combine multiple patterns with depth first traversal\
 \
 	
-\f3\b0\fs18 \cf2 Pbind\cf0 (\
+\f2\b0\fs18 \cf2 Pbind\cf0 (\
 		\cf3 \\octave\cf0 , 4,\
 		\cf3 \\degree\cf0 , \cf2 PstepNadd\cf0 (\
 					\cf2 Pseq\cf0 ([1, 2, 3]), \
