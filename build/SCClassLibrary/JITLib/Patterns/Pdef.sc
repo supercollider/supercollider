@@ -1,148 +1,261 @@
-StreamPlayerReference {
-	
-	var <>quant=1.0, <>isPlaying=false;
-	var <player;
-	
-
-	*new { arg key ... argList;
-		var res, stream;
-		res = this.at(key);
-		if(res.isNil, {
-				res = super.new.initPlayer(argList);
-				this.put(key, res)
-		}, {
-			res.setProperties(argList);
-		});
-		^res
-	}
-	
-	play { arg argClock, doReset = true, argQuant;
-		if (isPlaying, { "reference already playing".postln; ^this });
-		player.play(argClock, doReset, argQuant ? quant);
-		isPlaying = true;
-	}
-	
-	stop {  player.stop; isPlaying = false; }
-	pause { player.pause; isPlaying = false; }
-	resume { player.resume; isPlaying = true; }
-	reset { player.reset }
-	sched { arg func; if(isPlaying,  
-					{ player.clock.play({ func.value; nil }, quant) },
-					func)
-	}
-	
-	*put { this.subclassResponsibility(thisMethod) }
-	*at { this.subclassResponsibility(thisMethod) }
-	setProperties { this.subclassResponsibility(thisMethod) } // this is called when player exists
-	initPlayer { this.subclassResponsibility(thisMethod) } // this is called on init
-	
-
-}
+// maybe move playing features out to dedicated player class.
 
 
-Tdef : StreamPlayerReference {
-	classvar <>all;
+// contains numerical patterns
+
+Pdefn : Pattern {
+	var <key, <pattern, <>clock;
+	var <>quant; 	// quant new pattern insertion
+	classvar <>all, <>defaultQuant;
 	
-	*initClass {
-		CmdPeriod.add(this);
-		this.clear;
+	*initClass { 
+		all = ();
 	}
-	*cmdPeriod { this.all.do({ arg item; item.stop }) }
 	
-	*remove { arg key;
-		this.all.removeAt(key).stop;
-	}
-	*removeAll { this.all.do({ arg item; item.stop }); this.clear }
-	*clear { all = () }
 	*at { arg key;
-		^this.all.at(key)
+		^this.all.at(key);
 	}
-	*put { arg key, obj;
-		this.all.put(key, obj)
-	}
-	initPlayer { arg argList;
-		var func;
-		#func = argList;
-		player = Task.new(func ? { 1.yield });
+	*put { arg key, pattern;
+		this.all.put(key, pattern);
 	}
 	
-	setProperties { arg argList;
-		var func;
-		#func = argList;
-		if(func.notNil) { this.stream = Routine.new(func) }
+	*new { arg key, pattern;
+		var p;
+	 	p = this.at(key);
+	 	if(p.notNil) {
+	 		if(pattern.notNil) { p.pattern_(pattern) };
+	 	} {
+	 		if(pattern.isNil) { pattern = this.default };
+	 		p = this.newCopyArgs(key).pattern_(pattern)
+	 			.clock_(TempoClock.default).quant_(this.defaultQuant);
+			this.put(key, p);
+		};
+		^p
 	}
+	
+	*default { ^0 }
+	
+	constrainStream { arg str; ^pattern.asStream }
+	
+	pattern_ { arg pat;
+		if(quant.isNil) {
+			pattern = pat
+		} {
+			clock.play({ 
+				pattern = pat;
+				nil 
+			}, quant)
+		}
+	}
+	
+	asStream {
+		^RefStream(this);
+	}
+	
+	storeArgs { ^[key,pattern] }
 	
 	timeToNextBeat {
 		var t;
-		t = player.clock.elapsedBeats;
-		^t.roundUp(quant) - t
-	}
-	
-	constrainStream { arg argStream;
-		^argStream.constrain(this.timeToNextBeat)
-	}
-	
-	
-	stream_ { arg argStream;
-			var oldstr, str;
-			if(isPlaying)
-				{ 
-					if(player.isPlaying)
-					 { 
-					 	oldstr = player.stream;
-					 	str = Routine.new({ arg inval;
-					 			this.constrainStream(oldstr).embedInStream(inval);
-					 			argStream.embedInStream(inval) 
-					 	});
-					 	player.stream = str;
-					  }
-			 		 { player.stream = argStream; player.play(quant: quant) }
-				}
-			 	{ 
-			 		player.stream = argStream
-			 	}
+		t = clock.elapsedBeats;
+		^(t.roundUp(quant) - t);
 	}
 
+	clear { all.removeAt(key) }
+	
+	*removeAll { this.initClass }
+		// posting stream usage //
+	
+	*startPost { RefStream.action = { arg str; ("----" + str.parent.key).postln } }
+	*stopPost { RefStream.action = nil }
+	
+}
+
+
+// contains event patterns
+
+Pdef : Pdefn {
+	var <isPlaying=false;
+	var <player;
+	classvar <>all, <>defaultQuant=1.0;
+	
+	*initClass { all = () }
+		
+	*default { ^Pbind(\freq, \rest) }
+	
+	pattern_ { arg pat;
+		pattern = pat;
+		if(isPlaying and: { player.isPlaying.not }) { this.play }
+	}
+	
+	/*
+	
+	pattern_ { arg pat;
+		if(min.notNil or: { max.notNil }) { pat = Plim(pat, min, max) };
+		pattern = pat;
+		if(isPlaying and: { this.streamIsPlaying.not }) { this.play }
+	}
+
+	min_ { arg val;
+		min = val;
+		this.pattern = pattern.pattern;
+	}
+	max_ { arg val;
+		min = val;
+		this.pattern = pattern.pattern;
+	}
+	
+	*/
+
+	constrainStream { arg str;
+		^if(quant.notNil) {
+			Pseq([
+				Pfindur(this.timeToNextBeat, str, 0.001),
+				pattern
+			])
+		} { pattern }.asStream
+	}
+	// playing one instance //
+	
+	*cmdPeriod { all.do { arg item; item.stop } }
+	
+	play { arg argClock, protoEvent, quant;
+		isPlaying = true;
+		CmdPeriod.add(this.class);
+		if(player.isPlaying.not) { 
+			player = EventStreamPlayer(this.asStream, protoEvent)
+				.play(argClock ? clock, true, quant ? this.quant) 
+		}
+	}
+	stop { player.stop; isPlaying = false }
+	pause { if(player.notNil) { player.pause } }
+	resume { if(player.notNil) { player.resume } }
+
+	clear { this.class.all.removeAt(key).stop }
+	*removeAll { this.all.do { arg pat; pat.stop }; this.initClass; }
+
+	
+}
+
+
+Tdef : Pdef {
+	classvar <>all, <>defaultQuant=1.0;
+	
+	*initClass { all = () }
+	
+	*new { arg key, func;
+		var pattern;
+		if(func.notNil) { pattern = Prout(func) };
+		^super.new(key, pattern)
+	}
+
+	*default { ^Routine({ loop { 1.wait } }) }
+	
+	storeArgs { ^[key,pattern.routineFunc] }
+	
+	constrainStream { arg str;
+		^if(quant.notNil) {
+			Pseq([
+				Pconst(this.timeToNextBeat, str, 0.001),
+				pattern
+			])
+		} { pattern }.asStream
+	}
+	
+	play { arg argClock, doReset = false, quant;
+		isPlaying = true;
+		CmdPeriod.add(this.class);
+		if(player.isPlaying.not) { 
+			player = PauseStream.new(this.asStream)
+			.play(argClock ? clock, doReset, quant ? this.quant)
+		}
+	}
+	
+	
 
 }
 
-Pdef : Tdef {
-	classvar <all, <>defaultEvent;
+//create an addressable and resetable single instance of a stream
+
+Pstr : Stream {
+	var <>stream, <>pattern;
 	
-	*initClass {
-		CmdPeriod.add(this);
-		this.clear;
-	}
-	*clear { all = () }
-	*defaultStream { ^Pbind(\freq, \rest).asStream }
-	
-	initPlayer { arg argList;
-		var pat, event, stream;
-		#pat, event = argList;
-		player = EventStreamPlayer.new(
-			stream.asStream ? this.class.defaultStream, 
-			event ? this.class.defaultEvent
-		);
+	*new { arg pattern; 
+		^this.basicNew(pattern).resetPat;
 	}
 	
-	setProperties { arg argList;
-		var pat, event, stream;
-		#pat, event = argList;
-		stream = pat.asStream;
-		if(event.notNil) { this.sched({ this.event = event }) };
-		if(stream.notNil) { this.stream = stream };
+	*basicNew { arg pattern;
+		^super.new.pattern_(pattern)
 	}
-	// set inevent but keep parent. maybe find another solution later //
-	event_ { arg inEvent; 
-		var oldParent; 
-		oldParent = player.event.parent;
-		player.event = inEvent.collapse.parent_(oldParent);
-	}
-	mute { player.mute }
-	unmute { player.unmute }
 	
-	constrainStream { arg argStream;
-		^Pfindur(this.timeToNextBeat, argStream).asStream
+	next { arg inval; ^stream.next(inval) }
+	
+	reset { stream.reset }
+	
+	resetPat { stream = pattern.asStream }
+	
+	refresh { arg pat;
+		if(pat.notNil, { pattern = pat; this.resetPat }, { this.reset });
+	}
+	
+}
+
+// created by Pdef, Pdefn and Tdef
+
+RefStream : Pstr {
+	classvar <>action;
+	var <parent, <changed; 
+	
+	*new { arg parent;
+		^super.new.makeDependant(parent);
+	}
+	
+	makeDependant { arg argParent;
+		parent = argParent;
+		pattern = argParent.pattern;
+		action.value(this);
+		this.resetPat;
+		
+	}
+
+	key { ^parent.key }
+	
+	next { arg inval;
+		var outval;
+		if((parent.pattern !== pattern) and: { changed.not }) {
+			pattern = parent.pattern;
+			stream = parent.constrainStream(stream);
+		};
+		outval = stream.next(inval);
+		^outval
+	}
+	
+	resetPat { super.resetPat; changed = false }
+	
+
+}
+
+
+// general purpose lookup stream
+
+Pdict : Pattern {
+	var <>dict, <>which, <>repeats, <>default;
+	*new { arg dict, which, repeats=inf, default;
+		^super.newCopyArgs(dict, which, repeats, default);
 	}	
+	asStream {
+		^Routine.new({ arg inval;
+			var keyStream, key;
+			keyStream = which.asStream;
+			repeats.value.do({
+				key = keyStream.next;
+				if(key.notNil) {
+					inval = (dict.at(key) ? default).embedInStream(inval);
+				} {
+					nil.alwaysYield
+				}
+			})
+		});
+	}
 }
+
 
