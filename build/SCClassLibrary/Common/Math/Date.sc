@@ -42,30 +42,30 @@ Date {
 	}
 	asSortableString {  // standard database format, alphabetically sortable
 		^String.streamContents({ arg s;
-			s << year.asString;
+			s << year;
 			if(month < 10,{ s <<  0 });
-			s <<  month.asString;
+			s <<  month;
 			if(day < 10,{ s <<  0 });
-			s <<  day.asString;
+			s <<  day;
 			if(hour < 10,{ s <<  0 });
-			s <<  hour.asString;
+			s <<  hour;
 			if(minute < 10, { s <<  0 });
-			s <<  minute.asString;
+			s <<  minute;
 			if(second < 10, { s <<  0 });
-			s <<  second.asString;
+			s <<  second;
 		})
 	}
 
-	asctime {
-		_AscTime
-		^this.primitiveFailed
-	}
-	asString {
-		^this.asctime
-	}
-	format {
-		arg format;
-		_prStrFTime;
-		^this.primitiveFailed
-	}
+//	asctime {
+//		_AscTime
+//		^this.primitiveFailed
+//	}
+//	asString {
+//		^this.asctime
+//	}
+//	format {
+//		arg format;
+//		_prStrFTime;
+//		^this.primitiveFailed
+//	}
 }
