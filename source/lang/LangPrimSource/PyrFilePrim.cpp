@@ -28,6 +28,7 @@ Primitives for File i/o.
 #include "PyrPrimitive.h"
 #include "PyrFilePrim.h"
 #include "PyrFileUtils.h"
+#include "ReadWriteMacros.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
@@ -291,7 +292,9 @@ int prFilePutInt32(struct VMGlobals *g, int numArgsPushed)
         int err = slotIntVal(b, &val);
         if (err) return err;
 	
-	fwrite(&val, sizeof(int32), 1, file);
+	SC_IOStream<FILE*> scio(file);
+	scio.writeInt32_be(val);
+
 	return errNone;
 }
 
@@ -300,7 +303,6 @@ int prFilePutInt16(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrFile *pfile;
 	FILE *file;
-	short z;
 	
 	a = g->sp - 1;
 	b = g->sp;
@@ -313,8 +315,58 @@ int prFilePutInt16(struct VMGlobals *g, int numArgsPushed)
         int err = slotIntVal(b, &val);
         if (err) return err;
 	
-	z = val;
-	fwrite(&z, sizeof(short), 1, file);
+	
+	SC_IOStream<FILE*> scio(file);
+	scio.writeInt16_be(val);
+	
+	return errNone;
+}
+
+
+int prFilePutInt32LE(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b;
+	PyrFile *pfile;
+	FILE *file;
+	
+	a = g->sp - 1;
+	b = g->sp;
+	
+	pfile = (PyrFile*)a->uo;
+	file = (FILE*)pfile->fileptr.ui;
+	if (file == NULL) return errFailed;
+        
+        int val;
+        int err = slotIntVal(b, &val);
+        if (err) return err;
+	
+	SC_IOStream<FILE*> scio(file);
+	scio.writeInt32_le(val);
+
+	return errNone;
+}
+
+int prFilePutInt16LE(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b;
+	PyrFile *pfile;
+	FILE *file;
+	
+	a = g->sp - 1;
+	b = g->sp;
+	
+	pfile = (PyrFile*)a->uo;
+	file = (FILE*)pfile->fileptr.ui;
+	if (file == NULL) return errFailed;
+
+        int val;
+        int err = slotIntVal(b, &val);
+        if (err) return err;
+	
+	
+	SC_IOStream<FILE*> scio(file);
+	scio.writeInt16_le(val);
+	
 	return errNone;
 }
 
@@ -323,7 +375,6 @@ int prFilePutInt8(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrFile *pfile;
 	FILE *file;
-	int8 z;
 	
 	a = g->sp - 1;
 	b = g->sp;
@@ -336,8 +387,10 @@ int prFilePutInt8(struct VMGlobals *g, int numArgsPushed)
         int err = slotIntVal(b, &val);
         if (err) return err;
 	
-	z = val;
-	fwrite(&z, sizeof(int8), 1, file);
+	
+	SC_IOStream<FILE*> scio(file);
+	scio.writeInt8(val);
+
 	return errNone;
 }
 
@@ -357,7 +410,10 @@ int prFilePutChar(struct VMGlobals *g, int numArgsPushed)
 	if (b->utag != tagChar) return errWrongType;
 	
 	z = b->ui;
-	fwrite(&z, sizeof(char), 1, file);
+
+	SC_IOStream<FILE*> scio(file);
+	scio.writeInt8(z);
+
 	return errNone;
 }
 
@@ -381,7 +437,9 @@ int prFilePutFloat(struct VMGlobals *g, int numArgsPushed)
         int err = slotFloatVal(b, &val);
         if (err) return err;
 	
-	fwrite(&val, sizeof(float), 1, file);
+	SC_IOStream<FILE*> scio(file);
+	scio.writeFloat_be(val);
+
 	return errNone;
 }
 
@@ -403,7 +461,61 @@ int prFilePutDouble(struct VMGlobals *g, int numArgsPushed)
         int err = slotDoubleVal(b, &val);
         if (err) return err;
 	
-	fwrite(&val, sizeof(double), 1, file);
+	SC_IOStream<FILE*> scio(file);
+	scio.writeDouble_be(val);
+
+	return errNone;
+}
+
+
+int prFilePutFloatLE(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b;
+	PyrFile *pfile;
+	FILE *file;
+	
+	printf("prFilePutFloatLE\n");
+	a = g->sp - 1;
+	b = g->sp;
+	
+	pfile = (PyrFile*)a->uo;
+	file = (FILE*)pfile->fileptr.ui;
+	if (file == NULL) {
+            dumpObjectSlot(a);
+            return errFailed;
+        }
+
+        float val;
+        int err = slotFloatVal(b, &val);
+        if (err) return err;
+	
+	SC_IOStream<FILE*> scio(file);
+	scio.writeFloat_le(val);
+
+	return errNone;
+}
+
+int prFilePutDoubleLE(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b;
+	PyrFile *pfile;
+	FILE *file;
+	
+	a = g->sp - 1;
+	b = g->sp;
+	
+	pfile = (PyrFile*)a->uo;
+	file = (FILE*)pfile->fileptr.ui;
+	if (file == NULL) return errFailed;
+
+
+        double val;
+        int err = slotDoubleVal(b, &val);
+        if (err) return err;
+	
+	SC_IOStream<FILE*> scio(file);
+	scio.writeDouble_le(val);
+
 	return errNone;
 }
 
@@ -440,8 +552,11 @@ int prFileGetDouble(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
 	
-	int count = fread(&a->uf, sizeof(double), 1, file);
-	if (count==0) SetNil(a);
+	if (feof(file)) SetNil(a);
+	else {
+		SC_IOStream<FILE*> scio(file);
+		SetFloat(a, scio.readDouble_be());
+	}
 	return errNone;
 }
 
@@ -450,7 +565,6 @@ int prFileGetFloat(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	float z;
 	
 	a = g->sp;
 	
@@ -458,9 +572,52 @@ int prFileGetFloat(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
 	
-	int count = fread(&z, sizeof(float), 1, file);
-	if (count==0) SetNil(a);
-	else SetFloat(a, z);
+	if (feof(file)) SetNil(a);
+	else {
+		SC_IOStream<FILE*> scio(file);
+		SetFloat(a, scio.readFloat_be());
+	}
+	return errNone;
+}
+
+
+int prFileGetDoubleLE(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a;
+	PyrFile *pfile;
+	FILE *file;
+	
+	a = g->sp;
+	
+	pfile = (PyrFile*)a->uo;
+	file = (FILE*)pfile->fileptr.ui;
+	if (file == NULL) return errFailed;
+	
+	if (feof(file)) SetNil(a);
+	else {
+		SC_IOStream<FILE*> scio(file);
+		SetFloat(a, scio.readDouble_le());
+	}
+	return errNone;
+}
+
+int prFileGetFloatLE(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a;
+	PyrFile *pfile;
+	FILE *file;
+	
+	a = g->sp;
+	
+	pfile = (PyrFile*)a->uo;
+	file = (FILE*)pfile->fileptr.ui;
+	if (file == NULL) return errFailed;
+	
+	if (feof(file)) SetNil(a);
+	else {
+		SC_IOStream<FILE*> scio(file);
+		SetFloat(a, scio.readFloat_le());
+	}
 	return errNone;
 }
 
@@ -507,7 +664,6 @@ int prFileGetInt16(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	short z;
 	
 	a = g->sp;
 	
@@ -515,9 +671,11 @@ int prFileGetInt16(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
 	
-	int count = fread(&z, sizeof(short), 1, file);
-	if (count==0) SetNil(a);
-	else SetInt(a, z);
+	if (feof(file)) SetNil(a);
+	else {
+		SC_IOStream<FILE*> scio(file);
+		SetInt(a, scio.readInt16_be());
+	}
 	return errNone;
 }
 
@@ -533,9 +691,52 @@ int prFileGetInt32(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
 	
-	int count = fread(&a->ui, sizeof(int), 1, file);
-	if (count==0) SetNil(a);
-	else a->utag = tagInt;
+	if (feof(file)) SetNil(a);
+	else {
+		SC_IOStream<FILE*> scio(file);
+		SetInt(a, scio.readInt32_be());
+	}
+	return errNone;
+}
+
+
+int prFileGetInt16LE(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a;
+	PyrFile *pfile;
+	FILE *file;
+	
+	a = g->sp;
+	
+	pfile = (PyrFile*)a->uo;
+	file = (FILE*)pfile->fileptr.ui;
+	if (file == NULL) return errFailed;
+	
+	if (feof(file)) SetNil(a);
+	else {
+		SC_IOStream<FILE*> scio(file);
+		SetInt(a, scio.readInt16_le());
+	}
+	return errNone;
+}
+
+int prFileGetInt32LE(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a;
+	PyrFile *pfile;
+	FILE *file;
+	
+	a = g->sp;
+	
+	pfile = (PyrFile*)a->uo;
+	file = (FILE*)pfile->fileptr.ui;
+	if (file == NULL) return errFailed;
+	
+	if (feof(file)) SetNil(a);
+	else {
+		SC_IOStream<FILE*> scio(file);
+		SetInt(a, scio.readInt32_le());
+	}
 	return errNone;
 }
 
@@ -1024,6 +1225,10 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_FilePutInt32", prFilePutInt32, 2, 0);	
 	definePrimitive(base, index++, "_FilePutFloat", prFilePutFloat, 2, 0);	
 	definePrimitive(base, index++, "_FilePutDouble", prFilePutDouble, 2, 0);	
+	definePrimitive(base, index++, "_FilePutInt16LE", prFilePutInt16LE, 2, 0);	
+	definePrimitive(base, index++, "_FilePutInt32LE", prFilePutInt32LE, 2, 0);	
+	definePrimitive(base, index++, "_FilePutFloatLE", prFilePutFloatLE, 2, 0);	
+	definePrimitive(base, index++, "_FilePutDoubleLE", prFilePutDoubleLE, 2, 0);	
 
 	definePrimitive(base, index++, "_FileGetChar", prFileGetChar, 1, 0);	
 	definePrimitive(base, index++, "_FileGetInt8", prFileGetInt8, 1, 0);	
@@ -1031,6 +1236,10 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_FileGetInt32", prFileGetInt32, 1, 0);	
 	definePrimitive(base, index++, "_FileGetFloat", prFileGetFloat, 1, 0);	
 	definePrimitive(base, index++, "_FileGetDouble", prFileGetDouble, 1, 0);	
+	definePrimitive(base, index++, "_FileGetInt16LE", prFileGetInt16LE, 1, 0);	
+	definePrimitive(base, index++, "_FileGetInt32LE", prFileGetInt32LE, 1, 0);	
+	definePrimitive(base, index++, "_FileGetFloatLE", prFileGetFloatLE, 1, 0);	
+	definePrimitive(base, index++, "_FileGetDoubleLE", prFileGetDoubleLE, 1, 0);	
 
 	definePrimitive(base, index++, "_FilePutString", prFilePutString, 2, 0);	
 	

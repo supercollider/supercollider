@@ -23,6 +23,7 @@
 #define _ReadWriteMacros_
 
 #include "SC_Types.h"
+#include "SC_Endian.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -32,7 +33,8 @@ class SC_IOStream
 protected:
     T s;
 public:
-    SC_IOStream() {}
+    SC_IOStream() : s(0) {}
+    SC_IOStream(T inStream) : s(inStream) {}
 
     void SetStream(T inStream) { s = inStream; }
     T GetStream() { return s; }
@@ -78,7 +80,44 @@ public:
         writeUInt8((uint8)(inInt >> 24));
     }
 
-#if _BIG_ENDIAN_
+#if BIG_ENDIAN
+    void writeFloat_be(float inFloat)
+#else
+    void writeFloat_le(float inFloat)
+#endif
+    {
+	union {
+		float f;
+		uint8 c[4];
+	} u;
+        u.f = inFloat;
+		printf("writeFloat_be %g  %02X %02X %02X %02X\n", u.f, u.c[0], u.c[1], u.c[2], u.c[3]);
+        writeUInt8(u.c[0]);
+        writeUInt8(u.c[1]);
+        writeUInt8(u.c[2]);
+        writeUInt8(u.c[3]);
+    }
+
+#if BIG_ENDIAN
+    void writeFloat_le(float inFloat)
+#else
+    void writeFloat_be(float inFloat)
+#endif
+    {
+	union {
+		float f;
+		uint8 c[4];
+	} u;
+        u.f = inFloat;
+		printf("writeFloat_le %g  %02X %02X %02X %02X\n", u.f, u.c[0], u.c[1], u.c[2], u.c[3]);
+        writeUInt8(u.c[3]);
+        writeUInt8(u.c[2]);
+        writeUInt8(u.c[1]);
+        writeUInt8(u.c[0]);
+    }
+
+
+#if BIG_ENDIAN
     void writeDouble_be(double inDouble)
 #else
     void writeDouble_le(double inDouble)
@@ -99,7 +138,7 @@ public:
         writeUInt8(u.c[7]);
     }
 
-#if _BIG_ENDIAN_
+#if BIG_ENDIAN
     void writeDouble_le(double inDouble)
 #else
     void writeDouble_be(double inDouble)
@@ -158,7 +197,42 @@ public:
         return (int32)((d << 24) | (c << 16) | (b << 8) | a);
     }
 
-#if _BIG_ENDIAN_
+#if BIG_ENDIAN
+    float readFloat_be()
+#else
+    float readFloat_le()
+#endif
+    {
+	union {
+		float f;
+		uint8 c[4];
+	} u;
+        u.c[0] = readUInt8();
+        u.c[1] = readUInt8();
+        u.c[2] = readUInt8();
+        u.c[3] = readUInt8();
+        return u.f;
+    }
+
+#if BIG_ENDIAN
+    float readFloat_le()
+#else
+    float readFloat_be()
+#endif
+    {
+	union {
+		float f;
+		uint8 c[4];
+	} u;
+        u.c[3] = readUInt8();
+        u.c[2] = readUInt8();
+        u.c[1] = readUInt8();
+        u.c[0] = readUInt8();
+        return u.f;
+    }
+
+
+#if BIG_ENDIAN
     double readDouble_be()
 #else
     double readDouble_le()
@@ -179,7 +253,7 @@ public:
         return u.f;
     }
 
-#if _BIG_ENDIAN_
+#if BIG_ENDIAN
     double readDouble_le()
 #else
     double readDouble_be()

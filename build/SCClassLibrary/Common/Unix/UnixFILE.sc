@@ -83,6 +83,10 @@ UnixFILE : IOStream {
 	getInt32 { _FileGetInt32; ^this.primitiveFailed; }
 	getFloat { _FileGetFloat; ^this.primitiveFailed; }
 	getDouble { _FileGetDouble; ^this.primitiveFailed; }
+	getInt16LE { _FileGetInt16LE; ^this.primitiveFailed; }
+	getInt32LE { _FileGetInt32LE; ^this.primitiveFailed; }
+	getFloatLE { _FileGetFloatLE; ^this.primitiveFailed; }
+	getDoubleLE { _FileGetDoubleLE; ^this.primitiveFailed; }
 	
 	putChar { arg aChar; _FilePutChar; ^this.primitiveFailed; }
 	putInt8 { arg anInteger; _FilePutInt8; ^this.primitiveFailed; }
@@ -90,6 +94,10 @@ UnixFILE : IOStream {
 	putInt32 { arg anInteger; _FilePutInt32; ^this.primitiveFailed; }
 	putFloat { arg aFloat; _FilePutFloat; ^this.primitiveFailed; }
 	putDouble { arg aFloat; _FilePutDouble; ^this.primitiveFailed; }
+	putInt16LE { arg anInteger; _FilePutInt16LE; ^this.primitiveFailed; }
+	putInt32LE { arg anInteger; _FilePutInt32LE; ^this.primitiveFailed; }
+	putFloatLE { arg aFloat; _FilePutFloatLE; ^this.primitiveFailed; }
+	putDoubleLE { arg aFloat; _FilePutDoubleLE; ^this.primitiveFailed; }
 	putString { arg aString; _FilePutString; ^this.primitiveFailed; }
 	putString0 { arg aString;
 		this.putString(aString);

@@ -117,11 +117,21 @@ CollStream : IOStream {
 		this.putInt8(anInteger>>8);
 		this.putInt8(anInteger);
 	}
+	putInt16LE { arg anInteger; 
+		this.putInt8(anInteger);
+		this.putInt8(anInteger>>8);
+	}
 	putInt32 { arg anInteger; 
 		this.putInt8(anInteger>>24);
 		this.putInt8(anInteger>>16);
 		this.putInt8(anInteger>>8);
 		this.putInt8(anInteger);
+	}
+	putInt32LE { arg anInteger; 
+		this.putInt8(anInteger);
+		this.putInt8(anInteger>>8);
+		this.putInt8(anInteger>>16);
+		this.putInt8(anInteger>>24);
 	}
 	putFloat { arg aFloat; 
 		aFloat = aFloat.asFloat;
@@ -131,6 +141,15 @@ CollStream : IOStream {
 		aFloat = aFloat.asFloat; 
 		this.putInt32(aFloat.high32Bits); 
 		this.putInt32(aFloat.low32Bits); 
+	}
+	putFloatLE { arg aFloat; 
+		aFloat = aFloat.asFloat;
+		this.putInt32LE(aFloat.as32Bits); 
+	}
+	putDoubleLE { arg aFloat;
+		aFloat = aFloat.asFloat; 
+		this.putInt32LE(aFloat.low32Bits); 
+		this.putInt32LE(aFloat.high32Bits); 
 	}
 	putString { arg aString; 
 		aString.do({ arg char; this.putChar(char); });

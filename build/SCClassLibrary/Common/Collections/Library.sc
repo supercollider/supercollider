@@ -392,6 +392,10 @@ Archive : LibraryBase
 	*read { arg filename = "archive.scar";
 		if (File.exists(filename)) {
 			global = this.readArchive(filename);
+			if (global.isNil) {
+				// there is an archive but it is not readable.
+				File.delete(filename);
+			}
 		}
 	}
 	*write { arg filename = "archive.scar";
