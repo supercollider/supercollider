@@ -352,13 +352,13 @@ Get contiguous ranges of controls. Replies to sender with the corresponding
 \f0\b0  command. \
 \
 
-\f1\b /s_noid					auto-reassign node's ID to a reserved value\
+\f1\b /s_noid					auto-reassign synth's ID to a reserved value\
 
 \f0\b0 	[\
 		int - synth ID\
 	] * N\
 	\
-This command is used when the client no longer needs to communicate with the node and wants to have the freedom to reuse the node ID. The server will reassign this node to a reserved negative number. This command is purely for bookkeeping convenience of the client. No notification is sent when this occurs.\
+This command is used when the client no longer needs to communicate with the synth and wants to have the freedom to reuse the ID. The server will reassign this synth to a reserved negative number. This command is purely for bookkeeping convenience of the client. No notification is sent when this occurs.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
