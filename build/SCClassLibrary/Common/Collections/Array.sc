@@ -65,11 +65,11 @@ Array[slot] : ArrayedCollection {
 	// multiChannelExpand and flop do the same thing.
 	flop {
 		_ArrayMultiChannelExpand 
-		^this.primitiveFailed 
+		^super.flop 
 	}
 	multiChannelExpand {
 		_ArrayMultiChannelExpand 
-		^this.primitiveFailed 
+		^super.flop 
 	}
 
 	shift { arg n;
