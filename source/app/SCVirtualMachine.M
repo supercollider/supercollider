@@ -153,7 +153,7 @@ static id sharedSCVM = nil;
 - (void)compileLibrary:(id)sender
 {
     // if not and user pref, open first error file to that line
-    compileLibrary();
+    if(! compileLibrary() ) [self postWindowToFront: NULL];
 }
 
 - (void)runMain:(id)sender
