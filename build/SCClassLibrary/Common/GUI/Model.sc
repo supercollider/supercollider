@@ -2,28 +2,23 @@ Model {
 	var <>dependants;
 	
 	changed { arg what ... moreArgs;
-		if (dependants.notNil, {
-			dependants.do({ arg item;
-				item.performList(\update, this, what, moreArgs);
-			});
+		dependants.do({ arg item;
+			item.performList(\update, this, what, moreArgs);
 		});
 	}
 	addDependant { arg dependant;
-		this.checkDependants;
+		if (dependants.isNil, {
+			dependants = IdentitySet.new(4);
+		});
 		dependants.add(dependant);
 	}
 	removeDependant { arg dependant;
 		if (dependants.notNil, {
 			dependants.remove(dependant);
-		})
+		});
 	}
 	release {
 		dependants = nil;
-	}
-	checkDependants {
-		if (dependants.isNil, {
-			dependants = IdentitySet.new(4);
-		})
 	}
 }
 
