@@ -25,22 +25,18 @@ PublicProxySpace : ProxySpace {
 		listeningSpaces.remove(this);
 	}
 	
-	put { arg key, obj; 
-		var notCurrent, sends;
-		notCurrent = currentEnvironment !== this;
-		if(notCurrent) { this.push };
+	put { arg key, obj;
 		if(this.sendsTo(key))
 		{
 			if(obj.isKindOf(Function) and: { obj.isClosed.not}) {
 				(Char.bullet ++ " only closed functions can be sent").postln;
 				^this
 			};
-			this.at(key).put(nil, obj);
+			this.localPut(key, obj);
 			this.broadcast(name, key, obj) 
 		} {
-			this.at(key).put(nil, obj);
+			this.localPut(key, obj);
 		};
-		if(notCurrent) { this.pop };
 	}
 	
 	lurk { listeningKeys = \all; sendingKeys = nil; }
@@ -79,18 +75,22 @@ PublicProxySpace : ProxySpace {
 	 	d.onClose = { action = nil }
 	 }
 	 
-	 *get { arg channelName;
-	 	^listeningSpaces.select { |p| p.channel === channelName };
+	 *getListening { arg channelName, nickname;
+	 	^listeningSpaces.select { |p| 
+	 		p.channel === channelName
+	 		and:
+	 		{ p.nickname !== nickname }
+	 	};
 	 }
 	 
 	 *startListen { arg addr; // normally nil
 		resp.remove;
 		resp = OSCresponderNode(addr, '/proxyspace', { arg time, resp, msg;
-			var channel, nickname, key, str, proxyspace, obj, listeningKeys;
+			var channel, nickname, key, str, proxyspaces, obj, listeningKeys;
 			#nickname, channel, key, str = msg[1..4];
-			proxyspace = this.get(channel);
-			proxyspace.do { arg proxyspace; // don't listen to myself
-				if(proxyspace.nickname !== nickname and: { proxyspace.listensTo(key) })
+			proxyspaces = this.getListening(channel, nickname);
+			proxyspaces.do { arg proxyspace; // don't listen to myself
+				if(proxyspace.listensTo(key))
 				{
 					proxyspace.action.value(proxyspace, nickname, key, str);
 					obj = str.asString.interpret;
