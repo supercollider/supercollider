@@ -31,14 +31,17 @@ BusNodeMap
 \f0\b setn(key1, valueArray1, ...) 
 \f2\b0 		set ranges of controls\
 	
-\f0\b addCommand(anArray)
-\f2\b0 			save a command that is applied to the node\
+\f0\b addMsg(anArray)
+\f2\b0 				save a message that is applied to the node\
 \
 	
 \f0\b send(aTarget, latency)
 \f2\b0 			apply a setting to a node by sending a bundle
 \fs26 \
-	\
+	
+\f0\b\fs24 addToBundle(aBundle)			
+\f2\b0 add all my messages to the bundle
+\fs26 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -51,7 +54,6 @@ BusNodeMap
 
 \f1\fs18 \cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "modsine"\cf0 , \
 	\{ \cf2 arg\cf0  freq=320, amp=0.1;\
 		\cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(freq, 0, amp));\
@@ -84,7 +86,7 @@ k.set(\cf5 \\freq\cf0 , 400);\
 k.unmap(\cf5 \\amp\cf0 );\
 \
 e = \cf2 NodeMap\cf0 .new;\
-e.addCommand([\cf3 "/n_free"\cf0 ]);\
+e.addMsg([\cf3 "/n_free"\cf0 ]);\
 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
