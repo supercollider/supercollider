@@ -102,14 +102,14 @@ void HiliteGradientBackground::drawSelf(CGContextRef cgc, CGRect inRect)
         rectA.size.width *= mFrac;
         rectB.origin.x += rectA.size.width;
         rectB.size.width *= mFrac1;
-        hPaintGradient(cgc, rectA, mStartColor, mEndColor, mSteps * mFrac);
-        hPaintGradient(cgc, rectB, mEndColor, mStartColor, mSteps * mFrac1);
+        hPaintGradient(cgc, rectA, mStartColor, mEndColor, (int)(mSteps * mFrac));
+        hPaintGradient(cgc, rectB, mEndColor, mStartColor, (int)(mSteps * mFrac1));
     } else {
         rectA.size.height *= mFrac;
         rectB.origin.y += rectA.size.height;
         rectB.size.height *= mFrac1;
-        vPaintGradient(cgc, rectA, mStartColor, mEndColor, mSteps * mFrac);
-        vPaintGradient(cgc, rectB, mEndColor, mStartColor, mSteps * mFrac1);
+        vPaintGradient(cgc, rectA, mStartColor, mEndColor, (int)(mSteps * mFrac));
+        vPaintGradient(cgc, rectB, mEndColor, mStartColor, (int)(mSteps * mFrac1));
     }
 }
 
