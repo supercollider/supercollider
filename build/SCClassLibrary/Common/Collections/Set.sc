@@ -78,7 +78,7 @@ Set : Collection {
 	}
 	
 	// PRIVATE IMPLEMENTATION
-	initSet { arg n; array = Array.newClear(n); }
+	initSet { arg n; array = Array.newClear(n); size = 0; }
 	putCheck { arg index, item;
 		array.put(index, item);
 		size = size + 1;
