@@ -109,7 +109,7 @@ Order : SequenceableCollection {
 	
 		max = indices.size;
 		while {  slot < max } {  
-			if(indices[slot] >= index)Ê{ ^slot };
+			if(indices[slot] >= index){ ^slot };
 			slot = slot + 1;
 		}
 		^nil
@@ -117,7 +117,7 @@ Order : SequenceableCollection {
 	
 	detect { arg function, start;
 		var slot, max, elem;
-		slot = if(start.isNil) {Ê0 } { this.findSlotFor(start) };
+		slot = if(start.isNil) {0 } { this.findSlotFor(start) };
 		max = indices.size - 1;
 		if(slot.isNil or: {slot > max}) { ^nil };
 		while { slot <= max } {

@@ -14,7 +14,7 @@ StreamClutch : Stream {
 	}
 	
 	reset { stream.reset; reset = true }
-	step {Êarg inval; value = stream.next(inval ? Event.default); }
+	step {arg inval; value = stream.next(inval ? Event.default); }
 
 }
 

@@ -1,8 +1,8 @@
 
 
-//lightweight objects that insulate different ways of playing/stopping.
-//the bundle that is passed in is a MixedBundle
-//these could be players in future, a superclass of AbstractPlayer would be required
+// lightweight objects that insulate different ways of playing/stopping.
+// the bundle that is passed in is a MixedBundle
+
 
 AbstractPlayControl {
 	var <source, <>channelOffset;
@@ -19,7 +19,7 @@ AbstractPlayControl {
 	nodeID { ^nil }
 	
 	readyForPlay { ^true }
-	distributable {Ê^false } // shared proxy support
+	distributable {^false } // shared proxy support
 
 	loadToBundle {}
 	spawnToBundle {} // only active in synthcontrols
@@ -75,11 +75,11 @@ StreamControl : AbstractPlayControl {
 	readyForPlay { ^stream.notNil }
 
 	play { 
-		if(stream.isPlaying.not)Ê{ 
+		if(stream.isPlaying.not){ 
 			stream.stop; stream = stream.copy; stream.play(clock, false, 0.0)
 		} 
 	}
-	stop {Êstream.stop }
+	stop {stream.stop }
 	
 }
 
@@ -220,7 +220,7 @@ SynthControl : AbstractPlayControl {
 	
 	synthDesc { var dict;
 		dict = SynthDescLib.global.synthDescs;
-		^if(dict.notNil) { dict.at(source) } {Ênil }; // source is symbol: synth def name
+		^if(dict.notNil) { dict.at(source) } {nil }; // source is symbol: synth def name
 	}
 
 	controlNames { var desc; 
@@ -228,7 +228,7 @@ SynthControl : AbstractPlayControl {
 					^if(desc.notNil) { desc.controls } { nil } 
 	}
 	
-	synthDefPath {Ê^SynthDef.synthDefDir ++ this.asDefName ++ ".scsyndef" }
+	synthDefPath {^SynthDef.synthDefDir ++ this.asDefName ++ ".scsyndef" }
 	store { SynthDescLib.global.read(this.synthDefPath) }
 	
 }
@@ -292,7 +292,7 @@ SynthDefControl : SynthControl {
 	}
 	
 	freeToBundle { arg bundle; 
-		if(synthDef.notNil) {Êbundle.addPrepare([53, synthDef.name]) } // "/d_free"
+		if(synthDef.notNil) {bundle.addPrepare([53, synthDef.name]) } // "/d_free"
 	}
 	
 	writeSynthDefFile { arg path, bytes;

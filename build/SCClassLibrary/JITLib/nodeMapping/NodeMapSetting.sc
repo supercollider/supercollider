@@ -5,7 +5,7 @@ NodeMapSetting {
 		^super.newCopyArgs(key, value, busNumChannels)
 	}
 	
-	map {Êarg index, numChannels=1;
+	map { arg index, numChannels=1;
 		value = index;
 		busNumChannels = numChannels;
 	}

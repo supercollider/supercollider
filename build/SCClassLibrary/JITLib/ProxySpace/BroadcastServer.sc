@@ -2,8 +2,8 @@
 
 BroadcastServer : Server {
 
-	var <>homeServer, <>addressList;
-Ê
+	var <>homeServer, <>addresses;
+ 
 	init { arg argName, argAddr, options, clientID;
 		homeServer = Server.new(argName.asSymbol, argAddr, options, clientID ? 0);
 		name = (argName ++ "_broadcast").asSymbol;
@@ -12,46 +12,46 @@ BroadcastServer : Server {
 	}
 	
 	
-	*for { arg homeServer, addressList; //local server is a router
+	*for { arg homeServer, addresses; //local server is a router
 			^super.new(homeServer.name)
 				.homeServer_(homeServer)
-				.addressList_(addressList)
+				.addresses_(addresses)
 	}
 	
-	addr { ^addressList } // support NodeWatcher.register
+	addr { ^addresses } // support NodeWatcher.register
 		
 	// iterating
 	
 	at { arg index;
-		^addressList.clipAt(index)
+		^addresses.clipAt(index)
 	}
 	
 	wrapAt { arg index;
-		^addressList.wrapAt(index)
+		^addresses.wrapAt(index)
 	}
 	
 	do { arg function;
-		^addressList.do(function)
+		^addresses.do(function)
 	}
 	
 	
 	// message forwarding
 		
 	sendMsg { arg ... args;
-		addressList.do({ arg addr; addr.sendMsg(*args) });
+		addresses.do({ arg addr; addr.sendMsg(*args) });
 	}
 	sendBundle { arg time ... messages;
-		addressList.do({ arg addr; addr.sendBundle(time, *messages); });
+		addresses.do({ arg addr; addr.sendBundle(time, *messages); });
 	}
 	sendRaw { arg rawArray;
-		addressList.do({ arg addr; addr.sendRaw(rawArray) })
+		addresses.do({ arg addr; addr.sendRaw(rawArray) })
 	}
 	
 	listSendMsg { arg msg;
-		addressList.do({ arg addr; addr.sendMsg(*msg) });
+		addresses.do({ arg addr; addr.sendMsg(*msg) });
 	}
  	listSendBundle { arg time,bundle;
- 		addressList.do({ arg addr; addr.sendBundle(time, *bundle) })
+ 		addresses.do({ arg addr; addr.sendBundle(time, *bundle) })
 	}
 	
 	// need to verride some methods in superclass
@@ -85,10 +85,10 @@ BroadcastServer : Server {
 		var cmdName, count;
 		if (condition.isNil) { condition = Condition.new };
 		condition.test = false;
-		count = addressList.size;
+		count = addresses.size;
 		cmdName = args[0].asString;
 		if (cmdName[0] != $/) { cmdName = cmdName.insert(0, $/) };
-		addressList.do { arg addr;
+		addresses.do { arg addr;
 			var resp;
 			resp = OSCresponderNode(addr, "/done", {|time, resp, msg|
 			if (msg[1].asString == cmdName) {
@@ -109,9 +109,9 @@ BroadcastServer : Server {
 	sync { arg condition, bundles, latency; // array of bundles that cause async action
 		var count;
 		if (condition.isNil) { condition = Condition.new };
-		count = addressList.size;
+		count = addresses.size;
 		condition.test = false;
-		addressList.do { arg addr;
+		addresses.do { arg addr;
 			var resp, id;
 			id = UniqueID.next;
 			resp = OSCresponderNode(addr, "/synced", {|time, resp, msg|

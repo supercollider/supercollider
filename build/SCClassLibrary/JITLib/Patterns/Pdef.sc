@@ -8,7 +8,7 @@ PatternProxy : Pattern {
 	classvar <>defaultQuant, <>action;
 	
 	// basicNew should be used for instantiation: *new is used in Pdef/Tdef/Pdefn
-	*basicNew {Êarg source;
+	*basicNew { arg source;
 		^super.new.init(source)
 	}
 		
@@ -23,10 +23,10 @@ PatternProxy : Pattern {
 	constrainStream { arg str; ^pattern.asStream }
 	
 	source_ { arg pat; this.sched { pattern = pat } }
-	source {Ê^pattern }
+	source { ^pattern }
 	pattern_ { arg pat; this.source_(pat) }
 		
-	embedInStream {Êarg inval;
+	embedInStream { arg inval;
 		var pat, stream, outval;
 		pat = pattern;
 		stream = pattern.asStream;
@@ -208,7 +208,7 @@ EventPatternProxy : TaskProxy {
 	
 	source_ { arg item;
 		if(item.isKindOf(Function)) // allow functions to be passed in
-			{Êsource = item; pattern = PlazyEnvir(item) } 
+			{ source = item; pattern = PlazyEnvir(item) } 
 			{ pattern = source = item };
 		this.wakeUp;
 	}
@@ -219,7 +219,7 @@ EventPatternProxy : TaskProxy {
 		var delta, tolerance, new;
 		^if(quant.notNil) {
 			delta = clock.timeToNextBeat(quant);
-			tolerance = if(quant.isSequenceableCollection) { quant[0] } {Êquant };
+			tolerance = if(quant.isSequenceableCollection) { quant[0] } { quant };
 			tolerance = tolerance % delta % 0.125;
 			
 			if(preRoll.notNil and: { quant > preRoll }) {
@@ -352,7 +352,7 @@ PbindProxy : Pattern {
 		^source.embedInStream(inval)
 	}
 	find { arg key; // optimize later maybe.
-		pairs.pairsDo {Ê|u,x,i| if(u === key) {Ê^i } }; ^nil
+		pairs.pairsDo { |u,x,i| if(u === key) { ^i } }; ^nil
 	}
 	quant_ { arg val;
 		pairs.pairsDo { arg key, item; item.quant = val }; // maybe use ref later
@@ -360,7 +360,7 @@ PbindProxy : Pattern {
 	}
 	quant { ^source.quant }
 	
-	at { arg key; var i; i = this.find(key); ^if(i.notNil) { pairs[i+1] } {Ênil } }
+	at { arg key; var i; i = this.find(key); ^if(i.notNil) { pairs[i+1] } { nil } }
 	
 	// does not yet work with adding arrayed keys/values
 	set { arg ... args; // key, val ...
@@ -404,7 +404,7 @@ Pbindef : Pdef {
 				src.set(*pairs);
 				pat.wakeUp;
 			} {
-				if(src.class === Pbind and: {Êsrc.patternpairs != #[\freq, \rest]}) 
+				if(src.class === Pbind and: { src.patternpairs != #[\freq, \rest]}) 
 				{
 					src.patternpairs.pairsDo { |key, pat|
 						if(pairs.includes(key).not) { 

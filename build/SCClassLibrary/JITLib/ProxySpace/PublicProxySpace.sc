@@ -6,7 +6,7 @@
 PublicProxySpace : ProxySpace {
 
 	var <>sendingKeys, <>listeningKeys, <>public=true;
-	var <>addresses, <>channel, <>nickname, <>action, <>logSelf=false;
+	var <>addresses, <>channel, <>nickname, <>action, <>logSelf=true;
 	
 	classvar <listeningSpaces, <resp;
 	
@@ -29,7 +29,7 @@ PublicProxySpace : ProxySpace {
 		notCurrent = currentEnvironment !== this;
 		if(notCurrent) { this.push };
 		if(this.sendsTo(key))
-		{Ê
+		{
 			if(obj.isKindOf(Function) and: {obj.isClosed.not}) {
 				(Char.bullet ++ " only closed functions can be sent").postln;
 				^this
@@ -42,8 +42,9 @@ PublicProxySpace : ProxySpace {
 		if(notCurrent) { this.pop };
 	}
 	
-	lurk {ÊlisteningKeys = \all; sendingKeys = nil; }
-	boss {ÊlisteningKeys = nil; sendingKeys = \all; } 
+	lurk {listeningKeys = \all; sendingKeys = nil; }
+	boss {listeningKeys = nil; sendingKeys = \all; } 
+	 
 	
 	makeLogWindow { arg bounds, color;
 	 	var d; 
@@ -55,7 +56,7 @@ PublicProxySpace : ProxySpace {
 	 		defer { 
 	 			if(d.selectionSize > 0) { d.selectRange(d.text.size-1, 0) }; // deselect user
 	 			str = "~" ++ key ++ " = " ++ str;
-	 			if(str.last !== $;) {Êstr = str ++ $; };
+	 			if(str.last !== $;) {str = str ++ $; };
 	 			d.selectedString_(
 	 				"\n" ++ "//" + nickname
 	 				+ "______"
@@ -93,7 +94,10 @@ PublicProxySpace : ProxySpace {
 		
 		});
 		resp.add;
-	
+		//addresses.do {arg addr; 
+//			addr.sendMsg('/proxyspace', nickname, channel, key, nickname + "has joined" + channel);
+//		
+//		}
 	}
 	
 	
@@ -120,8 +124,8 @@ PublicProxySpace : ProxySpace {
 	broadcast { arg name, key, obj;
 		var str, b;
 		str = obj.asCompileString;
-		if(logSelf) {Êaction.value(this, nickname, key, str) };
-		if(str.size > 8125) {Ê"string too large to publish".postln; ^this };
+		if(logSelf) {action.value(this, nickname, key, str) };
+		if(str.size > 8125) {"string too large to publish".postln; ^this };
 		if(channel.isNil or: { nickname.isNil }) { Error("first join a channel, please").throw };
 		b = ['/proxyspace', nickname, channel, key, str];
 		addresses.do { arg addr; addr.sendBundle(nil, b) };
@@ -135,7 +139,7 @@ PublicProxySpace : ProxySpace {
 				{ sendingKeys.includes(key) } 
 			} 
 	}
-	listensTo {Êarg key;
+	listensTo {arg key;
 		^public and: {listeningKeys.notNil} and: 
 			{
 				listeningKeys === \all 
@@ -204,7 +208,7 @@ SharedProxySpace : ProxySpace {
 			res = res + (a - 97 + (i * 26)); 
 		};
 		if(res > 999) // use nodeIDs between 2 and 999
-		{ÊError("this name" + string + "creates a too high node id. choose a shorter one").throw };
+		{Error("this name" + string + "creates a too high node id. choose a shorter one").throw };
 		^res
 	}
 

@@ -37,7 +37,7 @@
 						outval = this.next(inval) 
 					};
 					outval
-			} {Ênil }
+			} { nil }
 		}, {	n = repeats; this.reset })
 	}
 	
@@ -63,7 +63,7 @@
 	}
 	
 
-//	scrubForward {Êarg by, tolerance=0, rate, silent=true;
+//	scrubForward { arg by, tolerance=0, rate, silent=true;
 //		var ref;
 //		ref = Ref.new;
 //		{ ref.value = this.fastForward( by, tolerance=0, rate, silent) }.fork;

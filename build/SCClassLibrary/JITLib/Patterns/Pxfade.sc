@@ -23,6 +23,7 @@ PfadeIn : FilterPattern {
 					nil.alwaysYield;
 				
 				} {
+					outval = outval.copy;
 					outval[\amp] = c.max(0) * outval[\amp];
 					inval = outval.yield;
 				}
@@ -48,6 +49,7 @@ PfadeOut : PfadeIn {
 					if(c >= 1.0) { 
 						nil.alwaysYield 
 					} {
+						outval = outval.copy;
 						outval[\amp] = (1.0 - c) * outval[\amp];
 						inval = outval.yield;
 					}

@@ -26,7 +26,7 @@ Client {
 	
 	addr_ { arg address;
 		if(address.isNil) 
-			{ addr =Êthis.defaultAddr }
+			{ addr =this.defaultAddr }
 			{
 				addr = address.asArray;
 				addr.do({ arg item; item.port_(this.defaultPort) });
@@ -45,7 +45,12 @@ Client {
 		args = this.prepareSendBundle(args);
 		addr.do({ arg a; a.sendBundle(latency, *args) })
 	}
-	sendTo { arg index ... args;		var a;		args = this.prepareSendBundle(args);		a = addr[index];		if(a.notNil) { a.sendBundle(nil, args)  };	}
+	sendTo { arg index ... args;
+		var a;
+		args = this.prepareSendBundle(args);
+		a = addr[index];
+		if(a.notNil) { a.sendBundle(nil, args)  };
+	}
 		
 	interpret { arg string;
 		addr.do({ arg a; a.sendBundle(nil, [cmdName, \interpret, password, string]); });
@@ -91,7 +96,7 @@ LocalClient : Client {
 	defaultAddr { ^[nil] } // default: listen to all.
 	
 	start {
-		if(isListening.not, { resp.do {Êarg u; u.add }; isListening = true });
+		if(isListening.not, { resp.do {arg u; u.add }; isListening = true });
 	}
 	
 	stop {
@@ -99,7 +104,7 @@ LocalClient : Client {
 		isListening = false;
 	}
 	*stop {
-		named.do {Êarg u; u.stop }
+		named.do {arg u; u.stop }
 	}
 	
 	
@@ -125,7 +130,7 @@ ClientFunc {
 	*new { arg name, func;
 		^super.newCopyArgs(name, func).toLib;
 	}
-	*initClass {Êthis.clear }
+	*initClass {this.clear }
 	*clear { all = IdentityDictionary.new }
 	*at { arg key; ^all.at(key) }
 	*removeAt { arg key; ^all.removeAt(key) }

@@ -129,7 +129,7 @@ NodeMap {
 	unsetArgsToBundle { arg bundle, target, keys;
 		var args;
 		if(settings.isEmpty) { ^this };
-		keys.do { arg key;
+		(keys ?? { settings.keys }).do { arg key;
 			var item;
 			item = settings[key];
 			if(item.notNil) { args = args ++ [key, -1] }
@@ -140,7 +140,7 @@ NodeMap {
 	unmapArgsToBundle { arg bundle, target, keys;
 		var args;
 		if(settings.isEmpty) { ^this };
-		keys.do { arg key;
+		(keys ?? { settings.keys }).do { arg key;
 			var item;
 			item = settings[key];
 			if(item.notNil and: {item.isMapped}) {

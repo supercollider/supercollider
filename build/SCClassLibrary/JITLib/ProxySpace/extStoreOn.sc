@@ -20,7 +20,7 @@
 	storeOn { arg stream;
 		var key;
 		key = this.key;
-		if(key.notNil) {Êstream << "~" << key } { super.storeOn(stream) };
+		if(key.notNil) {stream << "~" << key } { super.storeOn(stream) };
 	}
 }
 
@@ -32,7 +32,7 @@
 			{ "~" ++ a.key } { a.asCompileString };
 		bstr = if(b.isKindOf(NodeProxy))
 			{ "~" ++ b.key } { b.asCompileString };
-		if(b.isKindOf(AbstractOpPlug))Ê{ bstr = "(" ++ bstr ++ ")" };
+		if(b.isKindOf(AbstractOpPlug)){ bstr = "(" ++ bstr ++ ")" };
 		opstr = if(operator.isBasicOperator.not) 
 			{ "." ++ operator ++ "(" } { " " ++ operator ++ " " };
 		stream << astr  << opstr  << bstr;
@@ -70,21 +70,21 @@
 			if(proxy.objects.size == 1) {
 				str = proxy[0].source.asCompileString ? "";
 				multiline = str.includes(Char.nl);
-				if(multiline)Ê{ stream << "(" << Char.nl };
+				if(multiline){ stream << "(" << Char.nl };
 				stream << "~" << key << " = ";
 				str.printOn(stream);
 				stream << ";";
-				if(multiline)Ê{ stream << Char.nl << ");" << Char.nl };
+				if(multiline){ stream << Char.nl << ");" << Char.nl };
 			} {
 				proxy.objects.keysValuesDo({ arg index, item;
 					var multiline, str;
 					str = item.source.asCompileString ? "";
 					multiline = str.includes(Char.nl);
-					if(multiline)Ê{ stream << "(" << Char.nl };
+					if(multiline){ stream << "(" << Char.nl };
 					stream << "~" << key << "[" << index << "] = ";
 					str.printOn(stream);
 					stream << ";";
-					if(multiline)Ê{ stream << Char.nl << ");" << Char.nl };
+					if(multiline){ stream << Char.nl << ");" << Char.nl };
 					stream.nl;
 				});
 			};

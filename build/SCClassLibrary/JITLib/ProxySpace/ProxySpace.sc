@@ -19,9 +19,10 @@ ProxySpace : EnvironmentRedirect {
 	einit { arg argServer, argClock; 
 		server = argServer;  
 		clock = argClock;
-		if(name.notNil) { this.class.all.put(name, this) };
+		this.add;
 	}
 	
+		
 	clock_ { arg aClock;
 		clock = aClock;
 		this.do({ arg item; item.clock = aClock });
@@ -119,7 +120,17 @@ ProxySpace : EnvironmentRedirect {
 		tempoProxy.free;
 	}
 	
-	remove { ^all.remove(this) }
+	add {
+		if(name.notNil) { 
+			if(this.class.all[name].isNil) 
+			{ this.class.all.put(name, this) } 
+			{ "there is already an environment with this name".warn };
+		}
+	}
+	
+	remove {
+		this.class.all.removeAt(name)
+	}
 	
 	wakeUp {
 		this.use({ arg envir;
@@ -176,16 +187,17 @@ ProxySpace : EnvironmentRedirect {
 	
 	
 	printOn { arg stream;
-		stream << this.class.name << " - " << (name ? "") << Char.nl;
+		stream << this.class.name;
+		if(envir.isEmpty) { stream << " ()\n"; ^this };
+		stream << " ( " << (name ? "") << Char.nl;
 		this.keysValuesDo { arg key, item, i;
-			key = key.asString;
-			stream << "~" << key << Char.tab << Char.tab << if(key.size < 3) { Char.tab } { "" } 
-			<< if(item.rate === 'audio') { "ar" } { 
+			stream << "~" << key << " - "; 
+			stream << if(item.rate === 'audio') { "ar" } { 
 					if(item.rate === 'control', { "kr" }, { "ir" })
 					}
-			<< "(" << item.numChannels << ")   " << if(i.even) { Char.tab } { Char.nl };
+			<< "(" << item.numChannels << ")   " << if(i.even) { "\t\t" } { "\n" };
 		};
-		stream << Char.nl
+		stream << "\n)\n"
 		
 	}
 	

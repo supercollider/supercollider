@@ -95,8 +95,8 @@ BusPlug : AbstractFunction {
 		
 	makeBusArg { 	
 			var index, numChannels;
-			busArg = if(bus.isNil or: { bus.rate === 'audio' }) // audio buses can't be 
-					{ "" } {						// used for control mapping
+			busArg = if(bus.isNil or: {bus.rate === 'audio' }) // audio buses can't be 
+					{"" } {						// used for control mapping
 						index = this.index;
 						numChannels = this.numChannels;
 						if(numChannels == 1) 
@@ -148,7 +148,7 @@ BusPlug : AbstractFunction {
 	//////////// embedding bus in event streams, myself if within a normal stream
 	
 	embedInStream { arg inval;
-					if(inval.notNil) { 
+					if(inval.notNil) {
 						if(this.isPlaying.not) {
 							if(this.isNeutral) { this.defineBus(\control, 1) }; 
 							this.wakeUp 
@@ -213,15 +213,15 @@ BusPlug : AbstractFunction {
 		^monitor.group
 	}
 	
-	fadeTime  { ^0.02 }
+	fadeTime { ^0.02 }
 	
-	vol { ^if(monitor.isNil) { 1.0 } { monitor.vol } }
+	vol { ^if(monitor.isNil) { 1.0 }{ monitor.vol } }
 	vol_ { arg val; if(this.rate === 'audio') {
 						if(monitor.isNil) { monitor = Monitor.new }; monitor.vol = val 
 				}
 	}
-	monitorIndex { ^if(monitor.isNil) { nil } { monitor.out } }
-	monitorGroup { ^if(monitor.isNil) { nil } { monitor.group } }
+	monitorIndex { ^if(monitor.isNil) { nil }{ monitor.out } }
+	monitorGroup {^if(monitor.isNil) { nil } {monitor.group } }
 	
 	stop { arg fadeTime=0.1;
 		monitor.stop(fadeTime)
@@ -296,13 +296,13 @@ NodeProxy : BusPlug {
 	}
 	
 	pause {
-		if(this.isPlaying) { objects.do { |item| item.pause(clock) } };
+		if(this.isPlaying) {objects.do { |item| item.pause(clock) } };
 		paused = true;
 	}
 	
 	resume {
 		paused = false;
-		if(this.isPlaying) { objects.do { |item| item.resume(clock) } };
+		if(this.isPlaying) {objects.do { |item| item.resume(clock) } };
 	}
 	
 	fadeTime_ { arg t;
@@ -337,7 +337,7 @@ NodeProxy : BusPlug {
 			
 			orderIndex = index ? 0;
 			if(obj.isSequenceableCollection)
-				{ 
+				{
 					channelOffset = channelOffset.asArray;
 					obj.do { |item, i| this.put(i + orderIndex, item, channelOffset.wrapAt(i)) }; 
 					^this 
@@ -438,9 +438,12 @@ NodeProxy : BusPlug {
 	
 	// applying the settings to nodes //
 	
+	nodeMap_ { arg map;
+		this.setNodeMap(map, false)
+	}
 	
-	nodeMap_ { arg map, xfade=true;
-		var bundle, old, oldargs, fadeTime;
+	setNodeMap { arg map, xfade=true;
+		var bundle, old, fadeTime;
 		map.set(\fadeTime, this.fadeTime); // keep old fadeTime
 		bundle = MixedBundle.new;
 		old = nodeMap;
@@ -449,7 +452,7 @@ NodeProxy : BusPlug {
 		if(this.isPlaying) {
 			if(xfade) { this.sendEach(nil,true) }
 			{
-			oldargs = nodeMap.unsetArgsToBundle(bundle); // unmap old
+			old.unsetArgsToBundle(bundle, group); // unmap old
 			nodeMap.addToBundle(bundle, group); // map new
 			bundle.schedSend(server, clock);
 			}
@@ -488,7 +491,7 @@ NodeProxy : BusPlug {
 	controlNames {
 		var all; // Set doesn't work, because equality undefined for ControlName
 		all = Array.new;
-		objects.do { |el|
+		objects.do {|el|
 			var cn;
 			cn = el.controlNames.reject { |item| 
 				all.any { |cn| cn.name === item.name }
@@ -514,6 +517,14 @@ NodeProxy : BusPlug {
 		}
 
 	}
+	
+	/*
+	supplementNodeMapFromServer { arg keys;
+			controlNames = this.controlNames;
+	
+	}
+	*/
+	
 	generateUniqueName {
 			^server.clientID.asString ++ this.identityHash.abs
 	}
@@ -726,7 +737,7 @@ NodeProxy : BusPlug {
 	}
 	
 	wakeUpParentsToBundle { arg bundle, checkedAlready;
-			objects.do { arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) };
+			objects.do{ arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) };
 			nodeMap.wakeUpParentsToBundle(bundle, checkedAlready);
 	}
 		
