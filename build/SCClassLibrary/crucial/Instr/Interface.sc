@@ -10,7 +10,7 @@ Interface : AbstractPlayerProxy {
 		
 		<>onNoteOn,
 		<>onNoteOff,
-		<>onPitchBend,
+		//<>onPitchBend,
 		<>onCC,
 		
 		<guiFunction,
@@ -18,6 +18,8 @@ Interface : AbstractPlayerProxy {
 		<>keyDownAction,
 		<>keyUpAction;
 
+	var nor,nfr,ccr;
+	
 	*new { arg interfaceDef,args;
 		^super.new.init(interfaceDef,args);
 	}
@@ -39,8 +41,8 @@ Interface : AbstractPlayerProxy {
 	}
 	createArgs { arg argargs;
 		^Array.fill(interfaceDef.argsSize,{arg i; 
-			var spec,proto,darg;
-			argargs.at(i) // explictly specified
+			var spec,proto,darg,ag;
+			ag = argargs.at(i) // explictly specified
 			?? 
 			{ //  or auto-create a suitable control...
 				spec = interfaceDef.specs.at(i);
@@ -52,6 +54,8 @@ Interface : AbstractPlayerProxy {
 				});
 				proto
 			};
+			ag.addDependant(this);
+			ag
 		});
 	}
 	
@@ -61,10 +65,22 @@ Interface : AbstractPlayerProxy {
 		super.didSpawn;
 		environment.use(onPlay ? interfaceDef.onPlay);
 		// if midi, install
+		if(onNoteOn.notNil,{
+			nor = NoteOnResponder({ arg num,veloc; environment.use({onNoteOn.value(num,veloc)}) });
+		});
+		if(onNoteOff.notNil,{
+			nfr = NoteOffResponder({ arg num,veloc; environment.use({onNoteOff.value(num,veloc)}) });
+		});
+		if(onCC.notNil,{
+			ccr = CCResponder({ arg num,value; environment.use({onCC.value(num,value)}) });
+		});
 	}
 	didStop {
 		super.didStop;
 		environment.use(onStop ? interfaceDef.onStop);
+		if(nor.notNil,{ nor.remove; nor = nil; });
+		if(nfr.notNil,{ nfr.remove; nfr = nil; });
+		if(ccr.notNil,{ ccr.remove; ccr = nil; });
 	}
 	freeToBundle { arg b;
 		super.freeToBundle(b);
