@@ -114,5 +114,29 @@ const int kTextBufSize = 8192;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+class SC_TcpClientPort : public SC_ComPort
+{
+public:
+	typedef void (*ClientNotifyFunc)(void* clientData);
+
+public:
+	SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc=0, void* clientData=0);
+	virtual ~SC_TcpClientPort();
+
+	virtual void* Run();
+	void Close();
+
+protected:
+	virtual ReplyFunc GetReplyFunc();
+
+private:
+	struct sockaddr_in	mReplySockAddr;
+	int					mCmdFifo[2];
+	ClientNotifyFunc	mClientNotifyFunc;
+	void*				mClientData;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #endif
 

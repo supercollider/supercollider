@@ -1,6 +1,14 @@
 
 NetAddr {
-	var <addr=0, <>port=0, <hostname, <socket = -1;
+	var <addr=0, <>port=0, <hostname, <socket;
+	classvar connections;
+
+	*initClass {
+		UI.registerForShutdown({
+			this.disconnectAll
+		});
+	}
+
 	*new { arg hostname, port=0;
 		var addr;
 		addr = if (hostname.notNil,{ hostname.gethostbyname },{ 0 });
@@ -13,6 +21,12 @@ NetAddr {
 	*useDoubles_ { arg flag = false;
 		_NetAddr_UseDoubles
 		^this.primitiveFailed;
+	}
+	*disconnectAll {
+		connections.copy.do({ | netAddr |
+			netAddr.disconnect;
+		});
+		connections = nil;
 	}
 
 	hostname_ { arg inHostname;
@@ -34,13 +48,19 @@ NetAddr {
 		^this.primitiveFailed;
 	}
 	
+	isConnected {
+		^socket.notNil
+	}
 	connect {
-		_NetAddr_Connect
-		^this.primitiveFailed;
+		if (this.isConnected.not) {
+			this.prConnect;
+			connections = connections.add(this);
+		};
 	}
 	disconnect {
-		_NetAddr_Disconnect
-		^this.primitiveFailed;
+		if (this.isConnected) {
+			this.prDisconnect;
+		};
 	}
 	
 	== { arg that; 
@@ -52,5 +72,27 @@ NetAddr {
 
 	ip {
 		^addr.asIPString
+	}
+
+	printOn { | stream |
+		super.printOn(stream);
+		stream << $( << this.ip << ", " << port << $)
+	}
+
+	// PRIVATE
+	prConnect {
+		_NetAddr_Connect
+		^this.primitiveFailed;		
+	}
+	prDisconnect {
+		_NetAddr_Disconnect
+		^this.primitiveFailed;
+	}
+	prConnectionClosed {
+		// called from the recv thread when connection is closed
+		// either by sclang or by peer
+		if (connections.notNil) {
+			connections.remove(this);
+		};
 	}
 }

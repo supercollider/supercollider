@@ -18,13 +18,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
+#include "SC_BoundsMacros.h"
 #include "SC_ComPort.h"
 #include "SC_Endian.h"
 //#include "SC_Lock.h"
 #include <ctype.h>
 #include <stdexcept>
 #include <stdarg.h>
+#include <unistd.h>
 
 #ifdef SC_DARWIN
 typedef int socklen_t;
@@ -32,7 +33,18 @@ typedef int socklen_t;
 
 #ifdef SC_LINUX
 # include <errno.h>
-# include <unistd.h>
+#endif
+
+// sk: determine means of blocking SIGPIPE for send(2) (implementation
+// dependent)
+
+#define HAVE_SO_NOSIGPIPE 0
+#define HAVE_MSG_NOSIGNAL 0
+
+#if defined(SO_NOSIGPIPE)
+# define HAVE_SO_NOSIGPIPE 1
+#elif defined(MSG_NOSIGNAL)
+# define HAVE_MSG_NOSIGNAL 1
 #endif
 
 int recvall(int socket, void *msg, size_t len);
@@ -420,13 +432,123 @@ leave:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#include <sys/select.h>
+
+SC_TcpClientPort::SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc, void *clientData)
+	: SC_ComPort(0),
+	  mClientNotifyFunc(notifyFunc),
+	  mClientData(clientData)
+{
+	mSocket = inSocket;
+	socklen_t sockAddrLen = sizeof(mReplySockAddr);
+
+	if (getpeername(mSocket, (struct sockaddr*)&mReplySockAddr, &sockAddrLen) == -1) {
+		memset(&mReplySockAddr, 0, sizeof(mReplySockAddr));
+		mReplySockAddr.sin_family = AF_INET;
+		mReplySockAddr.sin_addr.s_addr = htonl(INADDR_NONE);
+		mReplySockAddr.sin_port = htons(0);
+	}
+	
+#if HAVE_SO_NOSIGPIPE
+	int sockopt = 1;
+	setsockopt(mSocket, SOL_SOCKET, SO_NOSIGPIPE, &sockopt);
+#endif // HAVE_SO_NOSIGPIPE
+
+	if (pipe(mCmdFifo) == -1) {
+		mCmdFifo[0] = mCmdFifo[1] = -1;
+	}
+
+    Start();
+}
+
+SC_TcpClientPort::~SC_TcpClientPort()
+{
+	close(mCmdFifo[0]);
+	close(mCmdFifo[1]);
+	close(mSocket);
+}
+
+void* SC_TcpClientPort::Run()
+{
+	OSC_Packet *packet = 0;
+	int32 size;
+	int32 msglen;	
+
+	int cmdfd = mCmdFifo[0];
+	int sockfd = mSocket;
+	int nfds = sc_max(cmdfd, sockfd) + 1;
+
+	pthread_detach(mThread);
+
+	while (true) {
+		fd_set rfds;
+		FD_ZERO(&rfds);
+		FD_SET(cmdfd, &rfds);
+		FD_SET(sockfd, &rfds);
+
+		if ((select(nfds, &rfds, 0, 0, 0) == -1) || FD_ISSET(cmdfd, &rfds))
+			goto leave;
+
+		if (!FD_ISSET(sockfd, &rfds))
+			continue;
+
+		packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
+		if (!packet) goto leave;
+		packet->mData = 0;
+
+		size = recvall(sockfd, &msglen, sizeof(int32));
+		if (size < (int32)sizeof(int32)) goto leave;
+		
+		// msglen is in network byte order
+		msglen = ntohl(msglen);
+		
+		packet->mData = (char*)malloc(msglen);
+		if (!packet->mData) goto leave;
+
+		size = recvall(sockfd, packet->mData, msglen);
+		if (size < msglen) goto leave;
+		
+		memcpy(&packet->mReplyAddr.mSockAddr, &mReplySockAddr, sizeof(mReplySockAddr));
+		packet->mReplyAddr.mSockAddrLen = sizeof(mReplySockAddr);
+		packet->mReplyAddr.mSocket = sockfd;
+		packet->mReplyAddr.mReplyFunc = tcp_reply_func;
+		packet->mSize = msglen;
+		ProcessOSCPacket(packet);
+
+		packet = 0;
+	}
+
+leave:
+	if (packet) {
+		free(packet->mData);
+		free(packet);
+	}
+	if (mClientNotifyFunc) {
+		(*mClientNotifyFunc)(mClientData);
+	}
+    return 0;
+}
+
+void SC_TcpClientPort::Close()
+{
+	char cmd = 0;
+	write(mCmdFifo[1], &cmd, sizeof(cmd));
+}
+
+ReplyFunc SC_TcpClientPort::GetReplyFunc()
+{
+	return tcp_reply_func;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 int recvall(int socket, void *msg, size_t len)
 {
 	size_t total = 0;
 	while (total < len)
 	{
 		int numbytes = recv(socket, msg, len - total, 0);
-		if (numbytes < 0) return total;
+		if (numbytes <= 0) return total;
 		total += numbytes;
 		msg = (void*)((char*)msg + numbytes);
 	}
@@ -469,7 +591,12 @@ int sendall(int socket, const void *msg, size_t len)
 	size_t total = 0;
 	while (total < len) 
 	{
-		int numbytes = send(socket, msg, len - total, 0);
+#if HAVE_MSG_NOSIGNAL
+		int flags = MSG_NOSIGNAL;
+#else
+		int flags = 0;
+#endif // HAVE_MSG_NOSIGNAL
+		int numbytes = send(socket, msg, len - total, flags);
 		if (numbytes < 0) return total;
 		total += numbytes;
 		msg = (void*)((char*)msg + numbytes);

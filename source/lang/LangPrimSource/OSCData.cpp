@@ -286,20 +286,22 @@ int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size, bool useElapsed)
 int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen=true);
 int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen)
 {
-	int err, port, addr, tcpSocket;
-	
-	err = slotIntVal(netAddrObj->slots + ivxNetAddr_Socket, &tcpSocket);
-	if (err) return err;
-	
-	if (tcpSocket != -1) {
+	int err, port, addr;
+
+	SC_TcpClientPort* comPort = (SC_TcpClientPort*)(netAddrObj->slots + ivxNetAddr_Socket)->uptr;
+
+	if (comPort) {
 		// send TCP
+		int tcpSocket = comPort->Socket();
+
 		if (sendMsgLen) {
 			// send length of message in network byte-order
 			int32 sizebuf = htonl(msglen);
 			sendall(tcpSocket, &sizebuf, sizeof(int32));
 		}
+
 		sendall(tcpSocket, bufptr, msglen);
-		
+
 	} else {
 		if (gUDPport == 0) return errFailed;
 
@@ -322,6 +324,7 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 	
 		sendallto(gUDPport->Socket(), bufptr, msglen, (sockaddr*)&toaddr, sizeof(toaddr));
 	}
+
 	return errNone;
 }
 
@@ -335,6 +338,29 @@ inline int OSCStrLen(char *str)
 
 
 int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
+
+static void netAddrTcpClientNotifyFunc(void *clientData);
+void netAddrTcpClientNotifyFunc(void *clientData)
+{
+	extern bool compiledOK;
+
+	pthread_mutex_lock(&gLangMutex);
+	if (compiledOK) {
+		PyrObject* netAddrObj = (PyrObject*)clientData;
+		SC_TcpClientPort* comPort = (SC_TcpClientPort*)(netAddrObj->slots + ivxNetAddr_Socket)->uptr;
+
+		if (comPort) {
+			delete comPort;
+			SetNil(netAddrObj->slots + ivxNetAddr_Socket);
+			VMGlobals* g = gMainVMGlobals;
+			g->canCallOS = false;
+			++g->sp; SetObject(g->sp, netAddrObj);
+			runInterpreter(g, getsym("prConnectionClosed"), 1);
+			g->canCallOS = false;
+		}
+	}
+	pthread_mutex_unlock(&gLangMutex);
+}
 
 int prNetAddr_Connect(VMGlobals *g, int numArgsPushed);
 int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
@@ -374,7 +400,8 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
         return errFailed;
     }
 	
-	SetInt(netAddrObj->slots + ivxNetAddr_Socket, aSocket);
+	SC_TcpClientPort *comPort = new SC_TcpClientPort(aSocket, netAddrTcpClientNotifyFunc, netAddrObj);
+	SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
 
 	return errNone;
 }
@@ -385,13 +412,9 @@ int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
 	PyrSlot* netAddrSlot = g->sp;
 	PyrObject* netAddrObj = netAddrSlot->uo;
 	
-	int tcpSocket;
-	int err = slotIntVal(netAddrObj->slots + ivxNetAddr_Socket, &tcpSocket);
-	if (err) return err;
-	
-	if (tcpSocket != -1) close(tcpSocket);
-	SetInt(netAddrObj->slots + ivxNetAddr_Socket, -1);
-	
+	SC_TcpClientPort *comPort = (SC_TcpClientPort*)(netAddrObj->slots + ivxNetAddr_Socket)->uptr;
+	if (comPort) comPort->Close();
+
 	return errNone;
 }
 
