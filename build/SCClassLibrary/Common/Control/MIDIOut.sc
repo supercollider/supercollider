@@ -16,7 +16,8 @@ MIDIClient {
 	*restart{
 		_RestartMIDI
 	}
-	}
+}
+
 MIDIIn {
 	var <>port;
 	classvar <>action, 
@@ -58,7 +59,7 @@ MIDIIn {
 		_DisconnectMIDIIn		
 	}
 	
-	}
+}
 	
 MIDIOut {
 	var <>port, <> uid;

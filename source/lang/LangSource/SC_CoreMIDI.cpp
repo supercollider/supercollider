@@ -235,42 +235,45 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 	post("numSrc %d\n",  numSrc);
     for (int i=0; i<numSrc; ++i) {
         MIDIEndpointRef src = MIDIGetSource(i);
-        CFStringRef name;
-        MIDIObjectGetStringProperty(src, kMIDIPropertyName, &name);
+		MIDIEntityRef ent;
+		MIDIEndpointGetEntity(src, &ent);
+		MIDIDeviceRef dev;
+		MIDIEntityGetDevice(ent, &dev);
+		
+        CFStringRef devname, endname;
+        MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
+        MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
         SInt32 id;
         MIDIObjectGetIntegerProperty(src, kMIDIPropertyUniqueID, &id);
-		char cname[1024];
-		CFStringGetCString(name, cname, 1024, kCFStringEncodingUTF8);
-		post("in  %3d %8d %s\n", i, id, cname);
-        CFRelease(name);
+		char cendname[1024], cdevname[1024];
+		CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+		CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+		post("in %3d   uid %8d   dev '%s'   endpt '%s'\n", i, id, cdevname, cendname);
+        CFRelease(devname);
+        CFRelease(endname);
     }
     int numDst = MIDIGetNumberOfDestinations();
 	post("numDst %d\n",  numDst);
     for (int i=0; i<numDst; ++i) {
         MIDIEndpointRef dst = MIDIGetDestination(i);
-        CFStringRef name;
-        MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &name);
+		MIDIEntityRef ent;
+		MIDIEndpointGetEntity(dst, &ent);
+		MIDIDeviceRef dev;
+		MIDIEntityGetDevice(ent, &dev);
+		
+        CFStringRef devname, endname;
+        MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
+        MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &endname);
         SInt32 id;
         MIDIObjectGetIntegerProperty(dst, kMIDIPropertyUniqueID, &id);
-		char cname[1024];
-		CFStringGetCString(name, cname, 1024, kCFStringEncodingUTF8);
-		post("out %3d   uid %8d   name %s\n", i, id, cname);
-        CFRelease(name);
+		char cendname[1024], cdevname[1024];
+		CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+		CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+		post("out %3d   uid %8d   dev '%s'   endpt '%s'\n", i, id, cdevname, cendname);
+        CFRelease(devname);
+        CFRelease(endname);
     }
 	return errNone;
-}
-
-MIDIEndpointRef MIDIGetSourceByUID(SInt32 inUID);
-MIDIEndpointRef MIDIGetSourceByUID(SInt32 inUID)
-{
-	int n = MIDIGetNumberOfSources();
-	for (int i = 0; i < n; ++i) {
-		MIDIEndpointRef src = MIDIGetSource(i);
-		SInt32 uid;
-		MIDIObjectGetIntegerProperty(src, kMIDIPropertyUniqueID, &uid);
-		if (uid == inUID) return src;
-	}
-	return 0;
 }
 
 int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed);
@@ -287,8 +290,12 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 	
 	err = slotIntVal(c, &uid);
 	if (err) return err;
-	MIDIEndpointRef src = MIDIGetSourceByUID(uid);
-	if (!src) return errFailed;
+
+	
+	MIDIEndpointRef src=0;
+	MIDIObjectType mtype;
+	MIDIObjectFindByUniqueID(uid, (MIDIObjectRef*)&src, &mtype);
+	if (mtype != kMIDIObjectType_Source) return errFailed;
        
         //pass the uid to the midiReadProc to identify the src
        
@@ -308,8 +315,12 @@ int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 	if (inputIndex < 0 || inputIndex >= gNumMIDIInPorts) return errIndexOutOfRange;
 	err = slotIntVal(c, &uid);
 	if (err) return err;
-	MIDIEndpointRef src = MIDIGetSourceByUID(uid);
-	if (!src) return errFailed;
+
+	MIDIEndpointRef src=0;
+	MIDIObjectType mtype;
+	MIDIObjectFindByUniqueID(uid, (MIDIObjectRef*)&src, &mtype);
+	if (mtype != kMIDIObjectType_Source) return errFailed;
+
 	MIDIPortDisconnectSource(gMIDIInPort[inputIndex], src);
 	
 	return errNone;
@@ -349,19 +360,7 @@ int prRestartMIDI(VMGlobals *g, int numArgsPushed)
     MIDIRestart();
     return errNone;	
 }
-//midi out :
-MIDIEndpointRef MIDIGetDestinationByUID(SInt32 inUID);
-MIDIEndpointRef MIDIGetDestinationByUID(SInt32 inUID)
-{
-	int n = MIDIGetNumberOfSources();
-	for (int i = 0; i < n; ++i) {
-		MIDIEndpointRef src = MIDIGetDestination(i);
-		SInt32 uid;
-		MIDIObjectGetIntegerProperty(src, kMIDIPropertyUniqueID, &uid);
-		if (uid == inUID) return src;
-	}
-	return 0;
-}
+
 void sendmidi(int port, MIDIEndpointRef dest, int length, int chan, int status, int aval, int bval, float late);
 void sendmidi(int port, MIDIEndpointRef dest, int length, int chan, int status, int aval, int bval, float late)
 {
@@ -376,8 +375,9 @@ void sendmidi(int port, MIDIEndpointRef dest, int length, int chan, int status, 
     pk->data[1] = (Byte) aval;
     pk->data[2] = (Byte) bval;
     pk = MIDIPacketListAdd(pktlist, sizeof(struct MIDIPacketList) , pk,(MIDITimeStamp) utime,nData,pk->data);
-   	OSStatus error = MIDISend(gMIDIOutPort[port],  dest, pktlist );
+   	/*OSStatus error =*/ MIDISend(gMIDIOutPort[port],  dest, pktlist );
 }
+
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed);
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 {
@@ -416,7 +416,12 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
         err = slotFloatVal(plat, &late);
 	if (err) return err;
-        MIDIEndpointRef dest = MIDIGetDestinationByUID(uid);
+
+	MIDIEndpointRef dest;
+	MIDIObjectType mtype;
+	MIDIObjectFindByUniqueID(uid, (MIDIObjectRef*)&dest, &mtype);
+	if (mtype != kMIDIObjectType_Destination) return errFailed;
+		
 	if (!dest) return errFailed;
 
     sendmidi(outputIndex, dest, length, chan, status, aval, bval, late);
