@@ -72,9 +72,8 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 	switch (op1) {
 		case 0 : //	push class
 			op2 = *ip++; // get literal index
-			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
 			post(" %02X    PushClassX '%s'\n", op2,
-				classobj->name.us->name);
+				theBlock->selectors.uo->slots[op2].us->name);
 			break;
 		case 1 : // Extended, PushInstVar
 			op2 = *ip++; // get inst var index
@@ -127,7 +126,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op3 = *ip++; // get class var index
 			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
 			post(" %02X %02X PushClassVarX '%s'\n", op2, op3,
-				classobj->classVarNames.uosym->symbols[op3]->name);
+				classobj ? classobj->classVarNames.uosym->symbols[op3]->name : "<missing class>");
 			break;
 		case 6 :  // Extended, PushSpecialValue == push a special class
 			op2 = *ip++; // get class name index
@@ -163,7 +162,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op3 = *ip++; // get class var index
 			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
 			post(" %02X %02X StoreClassVarX '%s'\n", op2, op3,
-				classobj->classVarNames.uosym->symbols[op3]->name);
+				classobj ? classobj->classVarNames.uosym->symbols[op3]->name : "<missing class>");
 			break;
 		case 10 : // Extended, SendMsg
 			op2 = *ip++; // get num args
@@ -319,7 +318,6 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
 			numTemps = numArgNames + numVarNames;
 
-			op2 = numTemps - op2 - 1;
 			if (op2 < numArgNames) {
 				post("       PushTempZeroVar '%s'\n",
 					theBlock->argNames.uosym->symbols[op2]->name);
@@ -348,7 +346,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op3 = *ip++; // get class var index
 			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
 			post(" %02X %02X PushClassVar '%s'\n", op2, op3,
-				classobj->classVarNames.uosym->symbols[op3]->name);
+				classobj ? classobj->classVarNames.uosym->symbols[op3]->name : "<missing class>");
 			break;
 			
 		// PushSpecialValue		
@@ -443,7 +441,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			break;
 		case 143 :
 			op2 = *ip++; // get loop opcode
-			if (op2 < 22) {
+			if (op2 < 23) {
 				post(" %02X     LoopOpcode\n", op2); break;
 			} else {
 				op3 = *ip++; // jump
@@ -462,7 +460,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op3 = *ip++; // get class var index
 			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
 			post(" %02X    StoreClassVar '%s'\n", op3,
-				classobj->classVarNames.uosym->symbols[op3]->name);
+				classobj ? classobj->classVarNames.uosym->symbols[op3]->name : "<missing class>");
 			break;
 			
 		// SendMsg
