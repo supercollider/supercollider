@@ -27,27 +27,33 @@ BinaryOpStream : Stream {
 		if (vala.isNil, { ^nil });
 		valb = b.next;
 		if (valb.isNil, { ^nil });
-		
 		^vala.perform(operator, valb);
 	}
 	reset { a.reset; b.reset }
 }
 
 NAryOpStream : Stream {
-	var >operator, >a, >arglist;
+	var >operator, >a, arglist;
+	var isNumeric;
 	
 	*new { arg operator, a, arglist;	
-		^super.newCopyArgs(operator, a, arglist)
+		^super.newCopyArgs(operator, a).arglist_(arglist)
+	}
+	arglist_ { arg list;
+		isNumeric = list.every({ arg item; item.isNumber }); // optimization
+		arglist = list;
 	}
 	next {  
 		var vala, values;
 		vala = a.next;
 		if (vala.isNil, { ^nil });
-		values = arglist.collect({ arg item; var res; 
+		values = if (isNumeric) { arglist } {
+				arglist.collect({ arg item; var res; 
 					res = item.next; 
 					if(res.isNil) { ^nil }; 
 					res 
-				});
+				})
+				};
 		^vala.performList(operator, values);
 	}
 	reset { a.reset; arglist.do({ arg item; item.reset }) }
