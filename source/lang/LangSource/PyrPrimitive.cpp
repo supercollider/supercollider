@@ -3879,6 +3879,11 @@ void initCocoaFilePrimitives();
 // CR ADDED
 void initRendezvousPrimitives();
 	initRendezvousPrimitives();
+	
+#ifdef SCOGL_COMPILE
+void initOpenGLPrimitives();
+        initOpenGLPrimitives();
+#endif
 
 	s_recvmsg = getsym("receiveMsg");
 	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());
