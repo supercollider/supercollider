@@ -242,7 +242,7 @@ Pfindur : FilterPattern {
 	}
 }
 
-Pconstrain : FilterPattern {
+Pconst : FilterPattern {
 	var <>sum, <>tolerance;
 	*new { arg sum, pattern, tolerance=0.001;
 		^super.new(pattern).sum_(sum).tolerance_(tolerance)
