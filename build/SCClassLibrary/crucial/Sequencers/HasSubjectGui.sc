@@ -3,10 +3,8 @@
 HasSubjectGui : AbstractPlayerGui {
 	//smallGui could not gui the subject
 	guiBody { arg layout;
-		CXLabel(layout,"on:");
-		layout.indent(1);
+		layout.startRow;
 		model.subject.gui(layout);
-		layout.indent(-1);
 	}
 }
 
@@ -29,9 +27,7 @@ PlayerAmpGui : HasSubjectGui {
 		if(layout.isNil,{ l.front });
 	}
 	update { arg changed,changer;
-		//if(changer !== this,{
-			num.value = model.amp;
-		//})
+		num.value_(model.amp).changed;
 	}
 }
 
