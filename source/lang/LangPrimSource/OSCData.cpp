@@ -698,7 +698,6 @@ int prGetHostByName(VMGlobals *g, int numArgsPushed)
 	if (!he) return errFailed;
 	
 	SetInt(a, ntohl(*(int*)he->h_addr));
-	postfl("prGetHostByName hostname %s addr %d\n", hostname, a->ui);
 	
 	return errNone;
 }
