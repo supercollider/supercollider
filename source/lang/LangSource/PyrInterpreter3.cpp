@@ -417,15 +417,37 @@ void endInterpreter(VMGlobals *g)
 }
 
 
-int haltInterpreter(struct VMGlobals *g, int numArgsPushed);
-
-void StoreToImmutable(VMGlobals *g);
-void StoreToImmutable(VMGlobals *g)
+void StoreToImmutableA(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip);
+void StoreToImmutableA(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip)
 {
-	post(BULLET" Store to immutable object in method %s-%s\n",
-		g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
-	DumpBackTrace(g);
-	haltInterpreter(g, 0);
+	// only the value is on the stack
+	sp[1].ucopy = sp[0].ucopy; // copy value up one
+	sp[0].ucopy = g->receiver.ucopy; // put receiver in place
+	sp++;
+	g->sp = sp;
+	g->ip = ip;
+	post("StoreToImmutableA\n");
+	dumpObjectSlot(sp-1);
+	dumpObjectSlot(sp);
+	sendMessage(g, getsym("immutableError"), 2);
+	sp = g->sp;
+	ip = g->ip;
+}
+
+void StoreToImmutableB(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip);
+void StoreToImmutableB(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip)
+{
+	// receiver and value are on the stack.
+	sp++;
+	g->sp = sp;
+	g->ip = ip;
+	post("StoreToImmutableB\n");
+	dumpObjectSlot(sp-1);
+	dumpObjectSlot(sp);
+	PyrSymbol *selector = getsym("immutableError");
+	sendMessage(g, selector, 2);
+	sp = g->sp;
+	ip = g->ip;
 }
 
 void Interpret(VMGlobals *g)
@@ -592,10 +614,12 @@ void Interpret(VMGlobals *g)
 		case 7 : // opExtended, opStoreInstVar
 			op2 = ip[1]; ip++; // get inst var index
 			obj = g->receiver.uo;
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + op2;
-			slot->uf = *sp;
-			g->gc->GCWrite(obj, slot);
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + op2;
+				slot->uf = *sp;
+				g->gc->GCWrite(obj, slot);
+			}
 			break;
 		case 8 : // opExtended, opStoreTempVar
 			op2 = ip[1]; // get temp var level
@@ -865,115 +889,147 @@ void Interpret(VMGlobals *g)
 #if 1
 		case 112 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 113 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 1;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 1;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 114 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 2;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 2;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 115 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 3;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 3;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 116 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 4;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 4;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 117 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 5;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 5;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 118 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 6;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 6;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 119 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 7;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 7;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 120 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 8;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 8;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 121 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 9;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 9;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 122 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 10;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 10;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 123 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 11;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 11;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 124 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 12;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 12;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 125 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 13;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 13;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 126 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 14;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 14;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 		case 127 :						
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + 15;	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + 15;	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 #else
 		case 112 :  case 113 :  case 114 :  case 115 :  
@@ -981,10 +1037,12 @@ void Interpret(VMGlobals *g)
 		case 120 :  case 121 :  case 122 :  case 123 :  
 		case 124 :  case 125 :  case 126 :  case 127 :
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-			slot = obj->slots + (op1 & 15);	
-			slot->uf = *sp--;	
-			g->gc->GCWrite(obj, slot);	
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			else {
+				slot = obj->slots + (op1 & 15);	
+				slot->uf = *sp--;	
+				g->gc->GCWrite(obj, slot);	
+			}
 			break;
 #endif
 		
@@ -1898,14 +1956,16 @@ void Interpret(VMGlobals *g)
 						sp -= numArgsPushed - 1;
 						index = methraw->specialIndex;
 						obj = slot->uo;
-						if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-						if (numArgsPushed >= 2) {
-							obj->slots[index].uf = sp[1];
-							g->gc->GCWrite(obj, (PyrSlot*)sp + 1);
-						} else {
-							obj->slots[index].uf = gSpecialValues[svNil];
+						if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, (PyrSlot*)sp, ip); }
+						else {
+							if (numArgsPushed >= 2) {
+								obj->slots[index].uf = sp[1];
+								g->gc->GCWrite(obj, (PyrSlot*)sp + 1);
+							} else {
+								obj->slots[index].uf = gSpecialValues[svNil];
+							}
+							*sp = slot->uf;
 						}
-						*sp = slot->uf;
 						break;
 					case methReturnClassVar : /* return class var */
 						sp -= numArgsPushed - 1;
@@ -2048,14 +2108,16 @@ void Interpret(VMGlobals *g)
 						numArgsPushed -= numKeyArgsPushed << 1;
 						index = methraw->specialIndex;
 						obj = slot->uo;
-						if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-						if (numArgsPushed >= 2) {
-							obj->slots[index].uf = sp[1];
-							g->gc->GCWrite(obj, (PyrSlot*)sp + 1);
-						} else {
-							obj->slots[index].uf = gSpecialValues[svNil];
+						if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, (PyrSlot*)sp, ip); }
+						else {
+							if (numArgsPushed >= 2) {
+								obj->slots[index].uf = sp[1];
+								g->gc->GCWrite(obj, (PyrSlot*)sp + 1);
+							} else {
+								obj->slots[index].uf = gSpecialValues[svNil];
+							}
+							*sp = slot->uf;
 						}
-						*sp = slot->uf;
 						break;
 					case methReturnClassVar : /* return class var */
 						sp -= numArgsPushed - 1;

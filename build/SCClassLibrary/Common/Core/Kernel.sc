@@ -365,9 +365,8 @@ Method : FunctionDef {
 
 Frame {
 	// frames contain the local variables, context and continuation of a function or method invocation.
-	// since Frames are often created on the stack, it is too 
-	// dangerous to allow access to them. Dangling pointers
-	// could result.
+	// since some Frames are deleted instead of garbage collected, it is too 
+	// dangerous to allow access to them. Dangling pointers could result.
 	shallowCopy { ^this }
 	inspectorClass { ^FrameInspector }
 }

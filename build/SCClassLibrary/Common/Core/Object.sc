@@ -181,6 +181,9 @@ Object {
 	outOfContextReturn { arg method, result;
 		OutOfContextReturnError(this, method, result).throw;
 	} 
+	immutableError { arg value;
+		ImmutableError(this, value).throw;
+	} 
 	
 	mustBeBoolean { MustBeBooleanError(nil, this).throw; }
 	notYetImplemented { NotYetImplemented(nil, this).throw; }

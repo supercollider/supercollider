@@ -107,6 +107,16 @@ OutOfContextReturnError : MethodError {
 	}
 }
 
+ImmutableError : MethodError {
+	var <>value;
+	*new { arg receiver, value;
+		^super.new(nil, receiver).value_(value)
+	}
+	errorString {
+		^"ERROR: Object is immutable: " ++ receiver 
+	}
+}
+
 BinaryOpFailureError : DoesNotUnderstandError {
 	errorString {
 		^"ERROR: binary operator '" ++ selector ++ "' failed."

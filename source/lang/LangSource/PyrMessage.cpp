@@ -44,7 +44,7 @@ extern bool gTraceInterpreter;
 long cvxUniqueMethods;
 extern long ivxIdentDict_array;
 
-void StoreToImmutable(VMGlobals *g);
+void StoreToImmutableB(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip);
 
 void CallStackSanity(VMGlobals *g, char *tagstr);
 
@@ -113,14 +113,16 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
 				obj = recvrSlot->uo;
-				if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-				if (numArgsPushed >= 2) {
-					obj->slots[index].ucopy = sp[1].ucopy;
-					g->gc->GCWrite(obj, sp + 1);
-				} else {
-					SetNil(&obj->slots[index]);
+				if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, g->ip); }
+				else {
+					if (numArgsPushed >= 2) {
+						obj->slots[index].ucopy = sp[1].ucopy;
+						g->gc->GCWrite(obj, sp + 1);
+					} else {
+						SetNil(&obj->slots[index]);
+					}
+					sp[0].ucopy = recvrSlot->ucopy;
 				}
-				sp[0].ucopy = recvrSlot->ucopy;
 				break;
 			case methReturnClassVar : /* return class var */
 				sp = g->sp -= numArgsPushed - 1;
@@ -245,14 +247,16 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
 				obj = recvrSlot->uo;
-				if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-				if (numArgsPushed >= 2) {
-					obj->slots[index].ucopy = sp[1].ucopy;
-					g->gc->GCWrite(obj, sp + 1);
-				} else {
-					SetNil(&obj->slots[index]);
+				if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, g->ip); }
+				else {
+					if (numArgsPushed >= 2) {
+						obj->slots[index].ucopy = sp[1].ucopy;
+						g->gc->GCWrite(obj, sp + 1);
+					} else {
+						SetNil(&obj->slots[index]);
+					}
+					sp[0].ucopy = recvrSlot->ucopy;
 				}
-				sp[0].ucopy = recvrSlot->ucopy;
 				break;
 			case methReturnClassVar : /* return class var */
 				sp = g->sp -= numArgsPushed - 1;
@@ -436,14 +440,16 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
 				obj = recvrSlot->uo;
-				if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-				if (numArgsPushed >= 2) {
-					obj->slots[index].ucopy = sp[1].ucopy;
-					g->gc->GCWrite(obj, sp + 1);
-				} else {
-					SetNil(&obj->slots[index]);
+				if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, g->ip); }
+				else {
+					if (numArgsPushed >= 2) {
+						obj->slots[index].ucopy = sp[1].ucopy;
+						g->gc->GCWrite(obj, sp + 1);
+					} else {
+						SetNil(&obj->slots[index]);
+					}
+					sp[0].ucopy = recvrSlot->ucopy;
 				}
-				sp[0].ucopy = recvrSlot->ucopy;
 				break;
 			case methReturnClassVar : /* return class var */
 				sp = g->sp -= numArgsPushed - 1;
@@ -569,14 +575,16 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
 				obj = recvrSlot->uo;
-				if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
-				if (numArgsPushed >= 2) {
-					obj->slots[index].ucopy = sp[1].ucopy;
-					g->gc->GCWrite(obj, sp + 1);
-				} else {
-					SetNil(&obj->slots[index]);
+				if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, g->ip); }
+				else {
+					if (numArgsPushed >= 2) {
+						obj->slots[index].ucopy = sp[1].ucopy;
+						g->gc->GCWrite(obj, sp + 1);
+					} else {
+						SetNil(&obj->slots[index]);
+					}
+					sp[0].ucopy = recvrSlot->ucopy;
 				}
-				sp[0].ucopy = recvrSlot->ucopy;
 				break;
 			case methReturnClassVar : /* return class var */
 				sp = g->sp -= numArgsPushed - 1;
