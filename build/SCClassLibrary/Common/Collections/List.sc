@@ -48,7 +48,7 @@ List : SequenceableCollection {
 	add { arg item; array = array.add(item); }
 	addFirst { arg item; array = array.addFirst(item); }
 	insert { arg index, item; array = array.insert(index, item); }
-	removeAt { arg item; ^array.removeAt(item); }
+	removeAt { arg index; ^array.removeAt(index); }
 	pop { ^array.pop }
 	first { if (this.size > 0, { ^array.at(0) }, { ^nil }) }
 	last { if (this.size > 0, { ^array.at(this.size - 1) }, { ^nil }) }
@@ -108,7 +108,7 @@ List : SequenceableCollection {
 		^this.class.newUsing(array.pyramid(patternType));
 	}
 	lace { arg length;
-		^this.species.newUsing(array.lace(length))
+		^this.class.newUsing(array.lace(length))
 	}
 	slide { arg windowLength=3, stepSize=1;
 		^this.class.newUsing(array.slide(windowLength, stepSize));
