@@ -11,7 +11,7 @@ Node {
 
 	free { arg sendFlag=true;
 		if(sendFlag, {
-			server.sendBundle(nil, [11, nodeID]);  	//"/n_free"
+			server.sendBundle(nil, ["/n_free", nodeID]);  //"/n_free"
 		});
 		group = nil;
 		isPlaying = false;
@@ -34,7 +34,7 @@ Node {
 	
 	set { arg controlName, value ... args;
 		server.sendBundle(nil, 
-			[15, nodeID, controlName, value] ++args); 	 //"/n_set"
+			["/n_set", nodeID, controlName, value] ++args); 	 //"/n_set"
 	}
 	
 	setWithArray { arg args;
@@ -70,12 +70,27 @@ Node {
 		},{
 			releaseTime = -1.0 - releaseTime;
 		});
-		^[15, nodeID, \gate, releaseTime]
+		^["/n_set", nodeID, \gate, releaseTime]
 	}
 	trace {
 		server.sendMsg(10, nodeID);//"/n_trace"
 	}
-
+	query {
+		OSCresponder(server.addr,'/n_info',{ arg a,b,c;
+			var cmd,argnodeID,parent,prev,next,isGroup,head,tail;
+			# cmd,argnodeID,parent,prev,next,isGroup,head,tail = c;
+			// assuming its me ... if(nodeID == argnodeID)
+			Post << if(isGroup == 1, "Group:" , "Synth:") << nodeID << Char.nl
+				<< "parent   : " << parent << Char.nl
+				<< "prev : " << prev << Char.nl
+				<< "next  :" << next << Char.nl;
+			if(isGroup==1,{
+				Post << "head :" << head << Char.nl
+				 << "tail :" << tail << Char.nl << Char.nl;
+			});
+		}).add.removeWhenDone;
+		server.sendMsg("/n_query",nodeID) 
+	}
 
 	moveBefore { arg aNode;
 		aNode.group.moveNodeBefore(this, aNode);
@@ -114,7 +129,7 @@ Node {
 		^this.nodeToServerMsg(removeThisOne.nodeID, 4, args);
 	}
 	moveBeforeMsg { arg  bundle, aNode;
-		^bundle.add([18, nodeID, aNode.nodeID]);//"/n_after"
+		^bundle.add([18, nodeID, aNode.nodeID]);//"/n_before"
 	}
 	moveAfterMsg { arg bundle, aNode;
 		^bundle.add([19, nodeID, aNode.nodeID]); //"/n_after"
@@ -222,7 +237,7 @@ Group : Node {
 	}  
 	freeAll {
 		// free my children, but this node is still playing
-		server.sendBundle(nil, [24, nodeID]); //"/g_freeAll"
+		server.sendBundle(nil, ["/g_freeAll", nodeID]); //"/g_freeAll"
 	}
 	deepFree {
 		server.sendBundle(nil, ["/g_deepFree", nodeID])
@@ -231,29 +246,29 @@ Group : Node {
 	/*  return messages */
 	addToHeadMsg { arg arggroup; 
 		group = arggroup.asGroup;
-		^[21, nodeID, 0, group.nodeID] 
+		^["/g_new", nodeID, 0, group.nodeID] 
 	}
 	addToTailMsg { arg arggroup;
 		group = arggroup.asGroup;
-		^[21, nodeID, 1, group.nodeID] 
+		^["/g_new", nodeID, 1, group.nodeID] 
 	}
 	addAfterMsg {  arg afterThisOne;
 		group = afterThisOne.group;
-		^[21, nodeID, 3, afterThisOne.nodeID] 
+		^["/g_new", nodeID, 3, afterThisOne.nodeID] 
 	}
 	addBeforeMsg {  arg beforeThisOne;
 		group = beforeThisOne.group;
-		^[21, nodeID, 2, beforeThisOne.nodeID] 
+		^["/g_new", nodeID, 2, beforeThisOne.nodeID] 
 	}
 	addReplaceMsg { arg removeThisOne;
 		group = removeThisOne.group;
-		^[21, nodeID, 4, removeThisOne.nodeID] 
+		^["/g_new", nodeID, 4, removeThisOne.nodeID] 
 	}
 	moveNodeToHeadMsg { arg aNode;
-		^[22, nodeID, aNode.nodeID]; //"/g_head"
+		^["/g_head", nodeID, aNode.nodeID]; //"/g_head"
 	}
 	moveNodeToTailMsg { arg aNode;
-		^[23, nodeID, aNode.nodeID];//g_tail
+		^["/g_tail", nodeID, aNode.nodeID];//g_tail
 	}
 
 		
@@ -270,7 +285,7 @@ Group : Node {
 	}
 	//private
 	nodeToServerMsg { arg targetID, addActionNum;
-		^[21, nodeID, addActionNum, targetID]  	 // "/g_new"
+		^["/g_new", nodeID, addActionNum, targetID]  	 // "/g_new"
 	}
 	
 	finishBundle { //override this to do modifications that are dependant
@@ -348,23 +363,23 @@ Synth : Node {
 
 	addToHeadMsg { arg arggroup, args;
 		group = arggroup;
-		^[9, defName, nodeID, 0, group.nodeID] ++ args // s_new
+		^["/s_new", defName, nodeID, 0, group.nodeID] ++ args // s_new
 	}
 	addToTailMsg { arg arggroup, args;
 		group = arggroup; 
-		^[9, defName, nodeID, 1, group.nodeID] ++ args
+		^["/s_new", defName, nodeID, 1, group.nodeID] ++ args
 	}
 	addAfterMsg {  arg afterThisOne, args;
 		group = afterThisOne.group; 
-		^[9, defName, nodeID, 3, afterThisOne.nodeID] ++ args
+		^["/s_new", defName, nodeID, 3, afterThisOne.nodeID] ++ args
 	}
 	addBeforeMsg {  arg beforeThisOne, args;
 		group = beforeThisOne.group; 
-		^[9, defName, nodeID, 2, beforeThisOne.nodeID] ++ args
+		^["/s_new", defName, nodeID, 2, beforeThisOne.nodeID] ++ args
 	}
 	addReplaceMsg { arg removeThisOne, args;
 		group = removeThisOne.group; 
-		^[9, defName, nodeID, 4, removeThisOne.nodeID] ++ args
+		^["/s_new", defName, nodeID, 4, removeThisOne.nodeID] ++ args
 	}
 		
 	// private
@@ -372,14 +387,16 @@ Synth : Node {
 		^this.basicNew(defName, server)
 	}
 	nodeToServerMsg { arg targetID, addActionNum, args;
-		^[9, defName, nodeID, addActionNum, targetID] ++ args
+		^["/s_new", defName, nodeID, addActionNum, targetID] ++ args
 	}
+	
+	printOn { arg stream; stream << this.class.name << "(" <<< defName << " : " << nodeID <<")" }
+
 }
 
 RootNode : Group {
 	
 	classvar <roots;
-	
 	
 	*new { arg server;
 		server = server ?? {Server.local};
