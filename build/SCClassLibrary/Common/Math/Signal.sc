@@ -109,11 +109,13 @@ Signal[float] : FloatArray {
 		});
 	}
 	plot { arg name, bounds;
+		this.asciiPlot;
 		// open a window
-		name = name ? "signal";
-		bounds = bounds ? Rect.new(40,80,600,380);
-		SignalWindow.new(name, bounds, this);
+		//name = name ? "signal";
+		//bounds = bounds ? Rect.new(40,80,600,380);
+		//SignalWindow.new(name, bounds, this);
 	}
+	/*
 	play { arg sampleRate, name=\Signal, loop = true;
 		var playbackRate = 1.0;
 		if (sampleRate.isNil, { 
@@ -129,6 +131,7 @@ Signal[float] : FloatArray {
 			}); 
 		}, 1.0);
 	}
+	*/
 	
 	waveFill { arg function, start = 0.0, end = 1.0;
 		var i = 0, step, size, val, x;
