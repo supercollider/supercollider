@@ -11,20 +11,20 @@ SCSoundFileView : SCScope{
 	soundfile_{|snd|
 		soundfile = snd;
 		if(soundfile.isOpen){^this};
-		soundfile.openRead(snd.path);
-		if(soundfile.openRead(snd.path).not){^this};
+		if(soundfile.openRead.not){^this};
 		soundfile.close;
 	}
 
-	read{|startframe=0, frames=0, block=64|
+	read{|startframe=0, frames=0, block=64, closeFile=true|
 		if(soundfile.isOpen.not){
 			if(soundfile.openRead.not){
 				^this
-			}
+			};
 		};
 		startFrame = startframe;
 		numFrames = frames;
-		this.readFile(soundfile, startframe, frames, block)
+		this.readFile(soundfile, startframe, frames, block);
+		if(closeFile){soundfile.close};
 	}
 
 	readWithTask{|startframe=0, frames, block=64, doneAction, showProgress=true|
@@ -55,7 +55,7 @@ SCSoundFileView : SCScope{
 			spec = [0, times].asSpec;
 			times.do{|i|
 				readtime = {
-					this.read(frame, o, block);
+					this.read(frame, o, block, false);
 					frame = frame + o;		
 					readProgress = spec.unmap(i);
 				}.bench(false);
