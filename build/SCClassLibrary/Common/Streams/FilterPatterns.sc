@@ -242,6 +242,16 @@ Pfindur : FilterPattern {
 	}
 }
 
+Pconstrain : FilterPattern {
+	var <>sum, <>tolerance;
+	*new { arg sum, pattern, tolerance=0.001;
+		^super.new(pattern).sum_(sum).tolerance_(tolerance)
+	}
+	storeArgs { ^[sum,pattern,tolerance] }
+	asStream {
+		^pattern.asStream.constrain(sum,tolerance)
+	}
+}
 
 Plag : FilterPattern {
 	var <>lag;
