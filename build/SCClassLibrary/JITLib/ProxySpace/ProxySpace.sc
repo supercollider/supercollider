@@ -27,17 +27,16 @@ ProxySpace : EnvironmentRedirect {
 		fadeTime = dt;
 		this.do({ arg item; item.fadeTime = dt });
 	}
-	/*
+	
 	makeTempoClock { arg tempo, beats, seconds;
 		var clock, proxy;
 		proxy = NodeProxy.control(server, 1);
 		proxy.fadeTime = 0.0;
-		proxy.source = { arg val=1; val };
-		//this will change as soon as a general scheme comes up
-		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds);
+		proxy.source = 1;
+		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds).permanent_(true);
 		super.put(\tempo, proxy);
 	}
-	*/
+	
 	
 	//todo add group to target
 	einit { arg srv, argName, argClock; 
@@ -101,15 +100,15 @@ ProxySpace : EnvironmentRedirect {
 		});
 	}
 	
-	ar { arg key, numChannels;
+	ar { arg key, numChannels, offset=0;
 		^this.use({ arg envir;
-			this.at(key).ar(numChannels)
+			this.at(key).ar(numChannels, offset)
 		})
 	}
 	
-	kr { arg key, numChannels;
+	kr { arg key, numChannels, offset=0;
 		^this.use({ arg envir;
-			this.at(key).kr(numChannels)
+			this.at(key).kr(numChannels, offset)
 		})
 	}
 	
