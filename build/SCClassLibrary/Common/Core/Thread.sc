@@ -54,8 +54,10 @@ Thread : Stream {
 
 Routine : Thread {
 
-	*run { arg func, stackSize=512;
-		^super.new(func, stackSize).value;
+	*run { arg func, stackSize=512, clock;
+		var routine;
+		routine = super.new(func, stackSize);
+		^routine.play(clock);
 	}
 		
 	// resume, next, value, run are synonyms

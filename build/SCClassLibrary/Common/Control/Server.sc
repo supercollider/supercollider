@@ -224,7 +224,7 @@ Server : Model {
 		} {
 			addr.sendBundle(latency, *(bundles ++ [["/sync", id]]));
 		};
-		condition.wait;
+		condition.wait(0);
 	}
 	
 	schedSync { arg func;
@@ -624,6 +624,5 @@ Server : Model {
 			probe.value(0);
 
 		
-	}
-	
+	}	
 }
