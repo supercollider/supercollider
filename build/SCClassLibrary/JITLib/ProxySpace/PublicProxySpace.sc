@@ -6,12 +6,15 @@
 PublicProxySpace : ProxySpace {
 
 	var <>sendingKeys, <>listeningKeys;
-	var <>addressList;
+	var <>addressList, <>sendToName;
 	classvar <>all, <resp;
 	
 	*initClass { all = IdentityDictionary.new }
 
 	put { arg key, obj; 
+		var notCurrent;
+		notCurrent = currentEnvironment !== this;
+		if(notCurrent) { this.push };
 		if(this.sendsTo(key))
 		{Ê
 			if(obj.isKindOf(Function) and: {obj.isClosed.not}) {
@@ -21,17 +24,26 @@ PublicProxySpace : ProxySpace {
 			this.at(key).put(nil, obj);
 			this.broadcast(name, key, obj) 
 		};
-		this.at(key).put(nil, obj);
+		try { this.at(key).put(nil, obj) }; // test
+		if(notCurrent) { this.pop };
 	}
 	
 	remotePut { arg key, obj;
-		this.at(key).put(nil, obj);
+		if(currentEnvironment === this) {
+				this.at(key).put(nil, obj);
+		} {
+			"not current".postln;
+			this.use {
+				key.envirGet.postln;
+				this.at(key).put(nil, obj);
+			}
+		}
 	}
 	
 	broadcast { arg name, key, obj;
 		var str, b;
 		str = obj.asCompileString;
-		if(str.size > 8125) {Ê"string too large to publish".postln; ^this };		b = ['/proxyspace', name, key, str];
+		if(str.size > 8125) {Ê"string too large to publish".postln; ^this };		b = ['/proxyspace', sendToName ? name, key, str];
 		addressList.do { arg addr; addr.sendBundle(nil, b) };
 	}
 	
