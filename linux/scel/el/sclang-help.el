@@ -68,20 +68,32 @@
       (let ((case-fold-search nil)
 	    (max-specpdl-size 10000)
 	    result)
-	(flet ((index (dir)
-		      (dolist (file (directory-files dir t "^[^.]" t))
-			(cond ((file-directory-p file)
-			       ;; recurse into sub-directories
-			       (unless (string-match "CVS$" file) (index file)))
-			      ((string-match "\\(\\(\\.help\\)?\\.\\(rtf\\|sc\\)\\)$" file)
-			       (push (cons (file-name-nondirectory (replace-match "" nil nil file 1)) file)
-				     result))))))
-	  (sclang-message "Indexing help topics ...")
-	  (index sclang-help-directory)
-	  (setq sclang-help-topic-alist (sort result (lambda (a b) (string< (car a) (car b)))))
-	  (sclang-message "Indexing help topics ... Done")))
-    (setq sclang-help-topic-alist nil)
-    (sclang-message "Help directory is unset")))
+	(flet ((push-file
+		(name path)
+		(push (cons
+		       (file-name-nondirectory (replace-match "" nil nil name 1))
+		       path)
+		      result)))
+	  (flet ((index-dir
+		  (dir)
+		  (dolist (file (directory-files dir t "^[^.]" t))
+		    (cond ((file-directory-p file)
+			   (unless (string-match "CVS$" file)
+			     ;; handle XXX.rtfd/TXT.rtf
+			     (if (string-match "\\(\\.rtfd\\)$" file)
+				 (push-file file (concat file "/TXT.rtf"))
+			       ;; recurse into sub-directory
+			       (index-dir file))))
+			  ((string-match "\\(\\(\\.help\\)?\\.\\(rtf\\|sc\\)\\)$" file)
+			   (push-file file file))))
+		  result))
+	    (sclang-message "Indexing help topics ...")
+	    (index-dir sclang-help-directory)
+	    (setq sclang-help-topic-alist
+		  (sort result (lambda (a b) (string< (car a) (car b)))))
+	    (sclang-message "Indexing help topics ... Done"))))
+	(setq sclang-help-topic-alist nil)
+	(sclang-message "Help directory is unset")))
 
 (defun sclang-edit-help-file ()
   (interactive)
