@@ -1,11 +1,12 @@
 ScoreStreamPlayer : EventStreamPlayer {
-	var absTime=0, <>score, <>server;
+	var absTime=0, <>score, <>server, <>maxTime;
 	
 	*new { arg stream, event, server;
 		^super.new(stream).event_(event ? Event.default).score_(Score.new).server_(server ? Server.default);
 	}
 
-	read { arg times=100, doReset = false;
+	read { arg maxTime=1.0, doReset = false;
+		var i =0;
 		if (stream.notNil) { "already reading".postln; ^this };
 		if (doReset) { this.reset };
 		stream = originalStream;
@@ -16,7 +17,7 @@ ScoreStreamPlayer : EventStreamPlayer {
 		event.put(\type, (event.type ++ \_score).asSymbol);
 //		this.debug(event[\type]);
 		
-		times.do{|i| this.next(i)};
+		while({absTime<= maxTime}, {this.next(i);i=i+1;});
 		stream = nil;
 		^score;
 	}
