@@ -1605,7 +1605,7 @@ extern "C" {
 
 void dumpObject(PyrObject *obj)
 {
-	char str[128];
+	char str[256];
 	PyrClass *classobj;
 	int i;
 	

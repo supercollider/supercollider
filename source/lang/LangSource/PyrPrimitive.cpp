@@ -387,11 +387,21 @@ int prAsCompileString(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrString *string;
-	int err;
+	int err = errNone;
 	
 	a = g->sp;
 	if (IsSym(a)) {
-		string = newPyrString(g->gc, a->us->name, 0, true);
+		int len = strlen(a->us->name) + 1;
+		if (len < 255) {
+			char str[256];
+			sprintf(str, "'%s'", a->us->name);
+			string = newPyrString(g->gc, str, 0, true);
+		} else {
+			char *str = (char*)malloc(len+2);
+			sprintf(str, "'%s'", a->us->name);
+			string = newPyrString(g->gc, str, 0, true);
+			free(str);
+		}
 	} else {
 		char str[256];
 		err = asCompileString(a, str);
