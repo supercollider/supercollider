@@ -1023,7 +1023,6 @@ void SharedIn_Ctor(IOUnit* unit)
 
 	SETCALC(SharedIn_next_k);
 	unit->m_bus = world->mSharedControls;
-	//unit->m_busTouched = world->mControlBusTouched;
 	SharedIn_next_k(unit, 1);
 
 //Print("<-SharedIn_Ctor\n");
@@ -1036,7 +1035,7 @@ void SharedOut_next_k(IOUnit *unit, int inNumSamples)
 {
 //Print("->SharedOut_next_k\n");
 	World *world = unit->mWorld;
-	int numChannels = unit->mNumInputs;
+	int numChannels = unit->mNumInputs - 1;
 
 	float fbusChannel = ZIN0(0);
 	if (fbusChannel != unit->m_fbusChannel) {
@@ -1065,7 +1064,6 @@ void SharedOut_Ctor(IOUnit* unit)
 
 	SETCALC(SharedOut_next_k);
 	unit->m_bus = world->mSharedControls;
-	//unit->m_busTouched = world->mControlBusTouched;
 	SharedOut_next_k(unit, 1);
 
 //Print("<-SharedOut_Ctor\n");

@@ -159,7 +159,6 @@ Out : AbstractOut {
 	}
 }
 
-
 ReplaceOut : Out {}
 OffsetOut : Out {}
 
@@ -185,4 +184,23 @@ XOut : AbstractOut {
  		^nil
  	}
 }
+
+
+SharedOut : AbstractOut {
+	*kr { arg bus, channelsArray;
+		this.multiNewList(['control', bus] ++ channelsArray.asArray)
+		^0.0		// Out has no output
+	}
+}
+
+SharedIn : MultiOutUGen {	
+	*kr { arg bus = 0, numChannels = 1;
+		^this.multiNew('control', numChannels, bus)
+	}
+	init { arg numChannels ... argBus;
+		inputs = argBus.asArray;
+		^this.initOutputs(numChannels, rate)
+	}
+}
+
 

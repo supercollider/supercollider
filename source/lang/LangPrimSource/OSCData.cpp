@@ -653,6 +653,10 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 	if (!gInternalSynthServer.mWorld) {
 		SetPrintFunc(&vpost);
 		WorldOptions options = kDefaultWorldOptions;
+		options.mNumSharedControls = gInternalSynthServer.mNumSharedControls;
+		options.mSharedControls = gInternalSynthServer.mSharedControls;
+		options.mNumSharedSndBufs = gInternalSynthServer.mNumSharedSndBufs;
+		options.mSharedSndBufs = gInternalSynthServer.mSharedSndBufs;
 		gInternalSynthServer.mWorld = World_New(&options);
 	}
 	return errNone;

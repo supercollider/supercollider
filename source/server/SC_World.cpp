@@ -192,7 +192,6 @@ World* World_New(WorldOptions *inOptions)
 		world->mAudioBus = (float*)zalloc(numsamples, sizeof(float));
 
 		world->mControlBus = (float*)zalloc(world->mNumControlBusChannels, sizeof(float));
-		world->mSharedControls = (float*)zalloc(world->mNumSharedControls, sizeof(float));
 		
 		world->mAudioBusTouched = (int32*)zalloc(inOptions->mNumAudioBusChannels, sizeof(int32));
 		world->mControlBusTouched = (int32*)zalloc(inOptions->mNumControlBusChannels, sizeof(int32));
