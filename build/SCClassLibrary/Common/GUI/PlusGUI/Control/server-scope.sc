@@ -1,14 +1,16 @@
 + Server {
 
-	scope { arg numChannels, startingChannel = 0, bufsize = 4096, zoom;
+	scope { arg numChannels, index, bufsize = 4096, zoom, rate;
 			
 			if(scopeWindow.isNil) {
 				numChannels = numChannels ? this.options.numOutputBusChannels;
-				scopeWindow = Stethoscope.new(this, bufsize, numChannels, zoom)
+				scopeWindow = 
+					Stethoscope.new(this, numChannels, index, bufsize, zoom, rate)
 			} {
-				scopeWindow.index = startingChannel;
+				if(index.notNil) { scopeWindow.index = index };
+				if(rate.notNil) { scopeWindow.rate = rate };
 				if(numChannels.notNil) {ÊscopeWindow.numChannels = numChannels };
-				if(scopeWindow.numFrames != bufsize) { scopeWindow.allocBuffer(bufsize) };
+				if(scopeWindow.bufsize != bufsize) { scopeWindow.allocBuffer(bufsize) };
 				if(zoom.notNil) { scopeWindow.zoom = zoom };
 				scopeWindow.run;
 				
@@ -22,16 +24,16 @@
 
 + Bus {
 	scope { arg bufsize = 4096, zoom;
-		^server.scope(numChannels, index, bufsize, zoom)
+		^server.scope(numChannels, index, bufsize, zoom, rate)
 	}
 }
 
 
 + Function {
-	scope { arg numChannels, outbus = 0, fadeTime=0.05, bufsize = 4096, zoom;
+	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom;
 		var synth;
 		synth = this.play(Server.internal, outbus, fadeTime, \addToHead);
-		synth.notNil.if { Server.internal.scope(numChannels, outbus, bufsize, zoom) };
+		synth.notNil.if { Server.internal.scope(numChannels, outbus, bufsize, zoom, \audio) };
 		^synth
 	}
 }
