@@ -665,12 +665,11 @@ NodeProxy : BusPlug {
 				if(synthID.notNil) {
 					if(index.notNil) { // if nil, all are sent anyway
 					// make list of nodeIDs following the index
-						nodes = Array(8);
-						objects.doFrom( { arg obj; nodes = nodes ++ obj.nodeID }, index + 2);
-						//(["/n_before", synthID] ++ nodes).debug;
-						if(nodes.size > 0) { bundle.add(["/n_before", synthID] ++ nodes) };
-						
-					};
+					nodes = Array(8);
+					objects.doFrom({ arg obj, i; nodes = nodes ++ synthID ++ obj.nodeID }, 
+						index + 1);
+					if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes) };
+				};
 				nodeMap.addToBundle(bundle, synthID)
 				};
 	}
