@@ -436,15 +436,109 @@ void SyntaxColorize(NSTextView* textView);
     
 }
 
-- (IBAction) executeSelection: (id) sender;
+- (IBAction) executeSelection: (id) sender
 {
     [self sendSelection: "interpretPrintCmdLine" ];
 }
 
-- (IBAction) showHelp: (id) sender;
+#if 0
+
+- (IBAction) showHelp: (id) sender
 {
     [self sendSelection: "showHelp" ];
 }
+
+#else
+
+NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile, NSString* extension)
+{
+    // Try to find the help file
+
+    // The place to start looking
+    NSString* helpFolderPath = [NSString stringWithFormat: @"%@/Help/",
+		    [fileManager currentDirectoryPath]];
+
+    // the name of the help file we are looking for
+    NSString* helpFileName = [NSString stringWithFormat: @"%@%@", desiredHelpFile, extension];
+
+    // recurse through this directory until we find it
+    NSString* helpFilePath = nil;
+    NSDirectoryEnumerator* dirEnumerator = [fileManager enumeratorAtPath:helpFolderPath];
+    NSString* candidate;
+    while (candidate = [dirEnumerator nextObject]) {
+	if([[candidate lastPathComponent] isEqual:helpFileName]) {
+	    helpFilePath = [helpFolderPath stringByAppendingString: candidate];
+	    break;
+	}
+    }
+
+    return helpFilePath;
+}
+
+- (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange
+{
+    NSString* string = [textView string];
+    NSRange selectedRange = [textView selectedRange];
+    if (selectedRange.length <= 0) {
+        unsigned int lineStart, lineEnd;
+        [string getLineStart: &lineStart end: &lineEnd 
+            contentsEnd: nil forRange:selectedRange];
+        selectedRange = NSMakeRange(lineStart, lineEnd - lineStart);
+    }
+	if (outRange) *outRange = selectedRange;
+    return [string substringWithRange: selectedRange];
+}
+
+- (IBAction) showHelp: (id) sender;
+{
+    NSDocumentController* docctl = [NSDocumentController sharedDocumentController];
+    if (!docctl)
+	return;
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    if (!fileManager)
+	return;
+
+    // What do they want help for?
+	NSString* selection = [self currentlySelectedTextOrLine: NULL];
+	
+    // figure out the name of the help file
+    NSString* helpFilePath = helpFileWithName(fileManager, selection, @".help.rtf");
+    if (!helpFilePath) {
+		helpFilePath = helpFileWithName(fileManager, selection, @".rtf");
+		if (!helpFilePath) {
+			helpFilePath = helpFileWithName(fileManager, selection, @".help");
+			if (!helpFilePath) {
+				helpFilePath = helpFileWithName(fileManager, selection, @".sc");
+				if (!helpFilePath) {
+					helpFilePath = helpFileWithName(fileManager, @"Help", @".help.rtf");
+					if (!helpFilePath) {
+						// Oops -- doesn't exist... let the user know
+						post("\nCan't open help for '%s'\n", [selection cString]);
+						return;
+					}
+				}
+			}
+		}
+    }
+
+    MyDocument *doc = (MyDocument*)[docctl documentForFileName: helpFilePath];
+    if (!doc) {
+	doc = [docctl openDocumentWithContentsOfFile: helpFilePath display: true];
+	if (!doc) {
+	    post("Can't open Document '%s'\n", [helpFilePath cString]);
+	    return;
+	}
+
+    }
+    NSWindow *window = [[[doc windowControllers] objectAtIndex: 0] window];
+    if (!window) {
+	post("window controller returns nil\n");
+	return;
+    }
+    [window makeKeyAndOrderFront: nil];
+}
+
+#endif
 
 extern bool compiledOK;
 
@@ -454,17 +548,8 @@ extern bool compiledOK;
         return;
     }
 
-    NSString* string = [textView string];
-    NSRange selectedRange = [textView selectedRange];
-    NSString* selection;
-
-    if (selectedRange.length <= 0) {
-        unsigned int lineStart, lineEnd;
-        [string getLineStart: &lineStart end: &lineEnd 
-            contentsEnd: nil forRange:selectedRange];
-        selectedRange = NSMakeRange(lineStart, lineEnd - lineStart);
-    }
-    selection = [string substringWithRange: selectedRange];
+	NSRange selectedRange;
+	NSString* selection = [self currentlySelectedTextOrLine: &selectedRange];
     const char *text = [selection UTF8String];
     
     [[SCVirtualMachine sharedInstance] setCmdLine: text length: selectedRange.length];
@@ -524,12 +609,6 @@ extern bool compiledOK;
 	if (!success) return NO;
     
 	NSFileManager *fmgr = [NSFileManager defaultManager];
-
-    {
-    NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
-    OSType creatorval = [attr2 fileHFSCreatorCode];
-    //printf("creator was %d   SCjm %d\n", creatorval, 'SCjm');
-    }
     
     NSMutableDictionary *attr = [NSMutableDictionary dictionary];
     NSNumber *creator = [NSNumber numberWithInt: 'SCjm'];
@@ -537,9 +616,8 @@ extern bool compiledOK;
     success = [fmgr changeFileAttributes: attr atPath: path];
     //printf("write success %d\n", success);
 
-    NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
-    OSType creatorval = [attr2 fileHFSCreatorCode];
-
+    //NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
+    //OSType creatorval = [attr2 fileHFSCreatorCode];
     //printf("creator is %d   SCjm %d\n", creatorval, 'SCjm');
 	
     return success;
@@ -549,8 +627,8 @@ extern bool compiledOK;
 {
 
     NSFileManager *fmgr = [NSFileManager defaultManager];
-    NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
-    OSType creatorval = [attr2 fileHFSCreatorCode];
+    //NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
+    //OSType creatorval = [attr2 fileHFSCreatorCode];
 	
     //printf("r creator is %d   SCjm %d\n", creatorval, 'SCjm');
 
