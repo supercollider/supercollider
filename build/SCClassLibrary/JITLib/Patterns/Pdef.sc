@@ -219,7 +219,8 @@ EventPatternProxy : TaskProxy {
 		var dt, tolerance;
 		^if(quant.notNil) {
 			dt = clock.timeToNextBeat(quant);
-			tolerance = quant % dt % 0.125;
+			tolerance = quant.asCollection.first // in case there is offset
+				% dt % 0.125;
 			if(fadeTime.isNil) {
 				if(dt < 0.01) { 
 					Routine({ arg inval;
