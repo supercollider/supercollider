@@ -130,13 +130,6 @@ Server : Model {
 		addr.performList(\sendBundle, [time ? this.latency] ++ bundle);
 	}
 	
-	// same as listSendBundle, but this has an extra performList call,
-	// so do not use anymore.
-	sendMsgList { arg msgList, latency;
-		//"sent to server: ".post; msgList.asCompileString.postln;
-		this.performList(\sendBundle, [latency ? this.latency ] ++ msgList) 
-	}
-	
 	
 	sendSynthDef { arg name,dir="synthdefs/";
 		var file, buffer;
