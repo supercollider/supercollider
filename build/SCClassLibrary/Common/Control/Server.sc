@@ -205,10 +205,11 @@ Server : Model {
 	}
 	*killAll {
 		// if you see Exception in World_OpenUDP: unable to bind udp socket
-		// its often because of multiple servers
-		// and you can't cause them to quit via OSC
-		
-		// doesn't work here ?
+		// its probably because you have  multiple servers running, left
+		// over from crashes, unexpected quits etc.
+		// you can't cause them to quit via OSC (the boot button)
+
+		// this brutally kills them all off		
 		//	ps -axo pid,command | grep -i "[s]csynth" | awk '{system("kill " $1)}'
 		unixCmd("ps axo pid,command | grep -i \"[s]csynth\" | awk '{system(\"kill \" $1)}'");
 	}
