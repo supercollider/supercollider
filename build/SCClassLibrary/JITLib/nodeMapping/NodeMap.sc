@@ -33,6 +33,7 @@ NodeMap {
 		
 	}
 	
+	
 	setn { arg ... args;
 		this.performList(\set, args);
 		upToDate = false;
@@ -121,14 +122,7 @@ ProxyNodeMap : NodeMap {
 			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
 		}
 		
-		unmap { arg ... keys;
-			if(keys.at(0).isNil, { keys = this.mappingKeys });
-			this.performList(\unmap, keys);
-			keys.do({ arg key; 
-				parents.removeAt(key);
-			});
-		}
-		
+				
 		mappingKeys {
 			^settings.select({ arg item; item.bus.notNil }).collect({ arg item; item.key })
 		}
@@ -164,6 +158,24 @@ ProxyNodeMap : NodeMap {
 			keys.do({ arg key; args.add(key); args.add(currentEnvironment.at(key)) });
 			this.map(args);
 		}
+		
+		unmap { arg ... keys;
+			var setting;
+			if(keys.at(0).isNil, { keys = this.mappingKeys });
+			keys.do({ arg key;
+				setting = this.at(key);
+				if(setting.value.isNil, { 
+					settings.removeAt(key) 
+				}, {
+					setting.bus_(nil);
+				});
+			});
+			upToDate = false;
+			keys.do({ arg key; 
+				parents.removeAt(key);
+			});
+		}
+
 	
 }
 
