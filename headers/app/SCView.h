@@ -454,7 +454,7 @@ protected:
 };
 SCView* NewSCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
-//by jan trutzschler (jan.t@kandos.de)
+//by jan trutzschler (jt@kandos.de)
 class SCMultiSliderView : public SCView
 {
 public:	
@@ -494,10 +494,12 @@ protected:
 		SCPoint mPrevPoint;
 };
 SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
-// SCEnvelopeView by jan truetzschler
+////
+//by jan truetzschler jt@kandos.de
 struct SCEnvObject {
     SCColor mColor;
     SCRect mRect;
+    SCPoint mDrawPoint;
     double x, y;
     bool mIsSelected, mIsVisible, mIsStatic;
 };
@@ -523,7 +525,7 @@ protected:
 
 	void setValueFromPoint(SCPoint point);
 	//SCRect calcThumbRect(int xIn, double valIn, float xoffset);
-	void setEnvRect(int inIndx, double valX, double valY);
+	void setEnvRect(double valX, double valY, SCEnvObject * envobIn);
 	int mThumbSize, mThumbSizeY; // size of the rect
         int mTabSize, mVisibleSize, mActiveSize; // size of the table
         SCColor mFillColor, mSelectedColor;
@@ -541,7 +543,6 @@ protected:
     
 };
 SCView* NewSCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
-
 
 //
 
