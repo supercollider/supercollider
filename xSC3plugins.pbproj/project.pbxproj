@@ -562,6 +562,18 @@
 			settings = {
 			};
 		};
+		924710CF078A4A48001B3E08 = {
+			containerPortal = F50D04F702E68E8201CA2799;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 92962AE5078537100049266B;
+			remoteInfo = ChaosUGens;
+		};
+		924710D0078A4A48001B3E08 = {
+			isa = PBXTargetDependency;
+			target = 92962AE5078537100049266B;
+			targetProxy = 924710CF078A4A48001B3E08;
+		};
 		92962AE1078537100049266B = {
 			buildActionMask = 2147483647;
 			files = (
@@ -627,7 +639,6 @@
 			explicitFileType = "compiled.mach-o.dylib";
 			includeInIndex = 0;
 			isa = PBXFileReference;
-			name = ChaosUGens;
 			path = ChaosUGens.scx;
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -2165,6 +2176,7 @@
 				46781BCF05C85110002B7D2B,
 				92ADA1FF06265BC40093F2C8,
 				B969DA11069188990096E93F,
+				924710D0078A4A48001B3E08,
 			);
 			isa = PBXAggregateTarget;
 			name = All;
