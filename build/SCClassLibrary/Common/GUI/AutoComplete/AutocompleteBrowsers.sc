@@ -44,18 +44,18 @@ AutoCompMethodBrowser {
 			}, { ^nil })	// if no string and prev char was not a ., then abort
 		});
 			// if it's part of a class name, 
-		(selector[0] >= $A and: selector[0] <= $Z).if({
-				// identify classes containing that string
-			masterList = Class.allClasses.select({ |cl|
-				cl.isMetaClass 
-					and: { AutoCompClassBrowser.classExclusions.includes(cl).not }
-					and: { cl.name.asString.containsi(selector) }
-			}).collect({ |cl|	// then grab their *new method
-				[cl, cl.findRespondingMethodFor(\new), cl.name]  // cl.name used for sorting
-			}).reject({ |item| item[1].isNil });
-			initString = selector;
-			selector = "new";
-			skipThis = dropMeta = true;
+		(selector[0] >= $A and: { selector[0] <= $Z }).if({
+			AutoCompClassBrowser.classExclusions.includes(selector.asSymbol.asClass).not.if({
+					// identify classes containing that string
+				masterList = Class.allClasses.select({ |cl|
+					cl.isMetaClass and: { cl.name.asString.containsi(selector) }
+				}).collect({ |cl|	// then grab their *new method
+					[cl, cl.findRespondingMethodFor(\new), cl.name]  // cl.name used for sorting
+				}).reject({ |item| item[1].isNil });
+				initString = selector;
+				selector = "new";
+				skipThis = dropMeta = true;
+			});
 		}, {
 			masterList = IdentitySet.new;
 			Class.allClasses.do({ |class|
