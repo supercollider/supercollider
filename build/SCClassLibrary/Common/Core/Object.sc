@@ -108,6 +108,8 @@ Object {
 	poll { ^this.value }
 	value { ^this }
 	valueArray { ^this }
+	valueEnvir { ^this }
+	valueArrayEnvir { ^this }
 	
 	// equality, identity
 	== { arg obj; ^this === obj }
