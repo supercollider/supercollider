@@ -2,12 +2,11 @@ ProxySynthDef : SynthDef {
 	
 	var <>rate, <>numChannels; 
 	var <>canReleaseSynth, <>canFreeSynth;
-	classvar <>outClass;
+	classvar <>sampleAccurate=false;
 	
 	*initClass {
 		//clean up any written synthdefs starting with "temp__"
 		unixCmd("rm synthdefs/"++ this.tempPrefix ++ "*");
-		outClass = Out; // either Out or OffsetOut
 	}
 	
 	*tempPrefix {Ê^"temp__" }
@@ -82,7 +81,7 @@ ProxySynthDef : SynthDef {
 					output
 				}, {
 					outCtl = Control.names(\out).ir(0) + channelOffset;
-					outClass.multiNewList([rate, outCtl]++output)
+					if(rate === \audio and: { sampleAccurate }) { OffsetOut } { Out } 						.multiNewList([rate, outCtl]++output)
 			})
 		});
 		
