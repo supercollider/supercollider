@@ -309,9 +309,9 @@ GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList)
 	try {
 		inList = GraphDefLib_Read(inWorld, buffer, inList);
 	} catch (std::exception& exc) {
-		scprintf("exception in GrafDef_Load: %s\n", exc.what());
+		scprintf("exception in GraphDef_Recv: %s\n", exc.what());
 	} catch (...) {
-		scprintf("unknown exception in GrafDef_Load\n");
+		scprintf("unknown exception in GraphDef_Recv\n");
 	}
 		
 	return inList;
@@ -416,8 +416,10 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 		inList = GraphDefLib_Read(inWorld, buffer, inList);
 	} catch (std::exception& exc) {
 		scprintf("exception in GrafDef_Load: %s\n", exc.what());
+		scprintf("while reading file '%s'\n", filename);
 	} catch (...) {
 		scprintf("unknown exception in GrafDef_Load\n");
+		scprintf("while reading file '%s'\n", filename);
 	}
 	
 	free(buffer);
