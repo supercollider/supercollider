@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+const double kSecondsToOSCunits = 4294967296.; // pow(2,32)
 const double kMicrosToOSCunits = 4294.967296; // pow(2,32)/1e6
 const double kNanosToOSCunits  = 4.294967296; // pow(2,32)/1e9
 int64 gOSCoffset = 0; 
@@ -151,12 +152,17 @@ void initializeScheduler()
 // TODO: figure out how to get the timebase resolution (ticks/sec) on
 // powerpc.
 
+static inline int64 SC_JackOSCTime(const struct timeval& tv)
+{
+	return ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
+		+ (int64)(tv.tv_usec * kMicrosToOSCunits);
+}
+
 static inline int64 SC_JackOSCTime()
 {
 	struct timeval tv;
 	gettimeofday(&tv, 0);
-	return ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
-		+ (int64)(tv.tv_usec * kMicrosToOSCunits);
+	return SC_JackOSCTime(tv);
 }
 
 int32 timeseed();
@@ -1588,14 +1594,51 @@ bool SC_JackDriver::DriverStop()
 
 void SC_JackDriver::Run()
 {
+	jack_client_t* client = mClient;
 	World *world = mWorld;
-	int64 oscTime = SC_JackOSCTime();
 
-	// TODO: samplerate smoothing can be done using
-	// jack_get_microseconds (only available in newer jack versions).
+	struct timeval hostTime;
+	gettimeofday(&hostTime, 0);
+
+	double hostSecs = (double)hostTime.tv_sec + (double)hostTime.tv_usec * 1e-6;
+	double sampleTime = (double)(jack_frame_time(client) + jack_frames_since_cycle_start(client));
+
+	if (mStartHostSecs == 0) {
+		mStartHostSecs = hostSecs;
+		mStartSampleTime = sampleTime;
+	} else {
+		double instSampleRate = (sampleTime - mPrevSampleTime) / (hostSecs - mPrevHostSecs);
+		double smoothSampleRate = mSmoothSampleRate;
+		smoothSampleRate = smoothSampleRate + 0.002 * (instSampleRate - smoothSampleRate);
+		if (fabs(smoothSampleRate - mSampleRate) > 10.) {
+			smoothSampleRate = mSampleRate;
+		}
+		mOSCincrement = (int64)(mOSCincrementNumerator / smoothSampleRate);
+		mSmoothSampleRate = smoothSampleRate;
+
+#if 0
+		double avgSampleRate = (sampleTime - mStartSampleTime)/(hostSecs - mStartHostSecs);
+		double jitter = (smoothSampleRate * (hostSecs - mPrevHostSecs)) - (sampleTime - mPrevSampleTime);
+		double drift = (smoothSampleRate - mSampleRate) * (hostSecs - mStartHostSecs);
+
+		static int tick = 0;
+		if (++tick > 1000) {
+			tick = 0;
+			if (fabs(jitter) > 0.01) {
+				scprintf(
+					"avgSR %.6f smoothSR %.6f instSR %.6f jitter %.6f drift %.6f inc %lld\n", 
+					avgSampleRate, smoothSampleRate, instSampleRate, jitter, drift, mOSCincrement
+					);
+			}
+		}
+#endif
+	}
+
+	mPrevHostSecs = hostSecs;
+	mPrevSampleTime = sampleTime;
 
 	try {
-		mOSCbuftime = oscTime;
+		int64 oscTime = mOSCbuftime = SC_JackOSCTime(hostTime) + mMaxOutputLatency;
 		
 		mFromEngine.Free();
 		mToEngine.Perform();
@@ -1652,13 +1695,18 @@ void SC_JackDriver::Run()
 			// run engine
 			int64 schedTime;
 			int64 nextTime = oscTime + oscInc;
+			
 			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
 				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
+				if (world->mSampleOffset < 0)
+					world->mSampleOffset = 0;
+				else if (world->mSampleOffset >= world->mBufLength)
+					world->mSampleOffset = world->mBufLength - 1;
 				SC_ScheduledEvent event = mScheduler.Remove();
 				event.Perform();
-				world->mSampleOffset = 0;
 			}
-			
+
+			world->mSampleOffset = 0;
 			World_Run(world);
 
 			// copy touched outputs
@@ -1677,8 +1725,8 @@ void SC_JackDriver::Run()
 				}
 			}
 
-			// update buffer time
-			mOSCbuftime = nextTime;
+			// update OSC time
+			mOSCbuftime = oscTime = nextTime;
 		}
 	} catch (std::exception& exc) {
 		scprintf("SC_JackDriver: exception in real time: %s\n", exc.what());
@@ -1697,25 +1745,19 @@ void SC_JackDriver::Run()
 	mAudioSync.Signal();
 }
 
-// ====================================================================
-// TODO: do something more appropriate later
-
 void SC_JackDriver::BufferSizeChanged(int numSamples)
 {
-	// FIXME: jack now actually allows the buffer size to be changed
-	// on the fly. have to handle this correctly (stop/restart
-	// synthesis)!
-
-#ifndef NDEBUG
-	scprintf("SC_JackDriver::JackBufferSizeChanged %d\n", numSamples);
-#endif
+	mNumSamplesPerCallback = numSamples;
+	mBuffersPerSecond = mSampleRate / mNumSamplesPerCallback;
+	mMaxPeakCounter = (int)mBuffersPerSecond;
 }
 
 void SC_JackDriver::SampleRateChanged(double sampleRate)
 {
-#ifndef NDEBUG
-	scprintf("SC_JackDriver::JackSampleRateChanged %f\n", sampleRate);
-#endif
+	World_SetSampleRate(mWorld, sampleRate);
+	mSampleRate = mSmoothSampleRate = sampleRate;
+	mBuffersPerSecond = sampleRate / mNumSamplesPerCallback;
+	mMaxPeakCounter = (int)mBuffersPerSecond;
 	mOSCincrement = (int64)(mOSCincrementNumerator / sampleRate);
 }
 
@@ -1729,7 +1771,12 @@ void SC_JackDriver::GraphOrderChanged()
 		lat = sc_max(lat, jack_port_get_total_latency(mClient, port));
 	}
 
-	mMaxOutputLatency = (int64)((lat * 1.0e6) / (mSampleRate * kMicrosToOSCunits));
+	int64 maxLat = (int64)((double)lat / mSampleRate * kSecondsToOSCunits);
+
+	if (maxLat != mMaxOutputLatency) {
+		mMaxOutputLatency = maxLat;
+		scprintf("SC_JackDriver: max output latency %f\n", maxLat * kOSCtoSecs);
+	}
 }
 #endif // SC_AUDIO_API_JACK
 
