@@ -3,9 +3,17 @@ PolyPlayer : EventPlayer {
 	playEvent { arg event;
 		
 		event.use({
-			var bundles, latency, noteOffTime, mapBundles, strum, mapArgs, server;
+			var bundles, latency, noteOffTime, mapBundles, strum, mapArgs, server, canRelease, info;
+			
 			~finish.value; // finish the event
+			// info = SynthDefInfo.at(~instrument);
+			// ~argNames = info.argNames ? #[\out, \freq, \amp, \pan, \sustain];
+			~argNames = ~argNames ? #[\out, \freq, \amp, \pan, \sustain];
+
+			//canRelease = info.canReleaseSynth;
+			
 			bundles = MultiChannelEventHatch.newSynthMsg;
+			
 			mapArgs = ~mapArgs;
 			server = ~server;
 			latency = server.latency;
@@ -17,7 +25,9 @@ PolyPlayer : EventPlayer {
 					var offset;
 					offset = i * strum;
 					server.sendBundle(offset + latency.wrapAt(i), item);
-					server.sendBundle(offset + noteOffTime.wrapAt(i), [15, item[2], \gate, 0])
+					//if(canRelease, {
+						server.sendBundle(offset + noteOffTime.wrapAt(i), [15, item[2], \gate, 0])
+					//})
 				})
 			}, {
 				bundles.do({ arg item, i;
@@ -27,7 +37,9 @@ PolyPlayer : EventPlayer {
 					dt = offset + latency.wrapAt(i);
 					server.sendBundle(dt, item);
 					server.sendBundle(dt, [14, id] ++ mapArgs); //n_map
-					server.sendBundle(offset + noteOffTime.wrapAt(i), [15, id, \gate, 0])
+				//	if(canRelease, {
+						server.sendBundle(offset + noteOffTime.wrapAt(i), [15, id, \gate, 0])
+				//	});
 				})
 			});
 		})
