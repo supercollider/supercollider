@@ -460,7 +460,11 @@ Document {
 		stpath = this.class.standardizePath(path);
 		this.propen(stpath, selectionStart, selectionLength);
 		if(dataptr.isNil,{ 
-			^this.class.allDocuments.detect({|d| d == this})
+			^this.class.allDocuments.do{|d| 
+					if(d.path == stpath.absolutePath){
+						^d
+					}
+				}
 		});
 		this.background_(Color.white);
 		^this.prAdd;
