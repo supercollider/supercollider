@@ -161,7 +161,7 @@ int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 	struct tm* tm = localtime((const time_t*)&tv.tv_sec);
 	
 	SetInt(slots+0, tm->tm_year + 1900);
-	SetInt(slots+1, tm->tm_mon);
+	SetInt(slots+1, tm->tm_mon + 1); // 0 based month ??
 	SetInt(slots+2, tm->tm_mday);
 	SetInt(slots+3, tm->tm_hour);
 	SetInt(slots+4, tm->tm_min);
@@ -186,7 +186,7 @@ int prGMTime(struct VMGlobals *g, int numArgsPushed)
 	struct tm* tm = gmtime((const time_t*)&tv.tv_sec);
 	
 	SetInt(slots+0, tm->tm_year + 1900);
-	SetInt(slots+1, tm->tm_mon);
+	SetInt(slots+1, tm->tm_mon + 1);
 	SetInt(slots+2, tm->tm_mday);
 	SetInt(slots+3, tm->tm_hour);
 	SetInt(slots+4, tm->tm_min);
