@@ -688,7 +688,6 @@ SCErr meth_n_before(World *inWorld, int inSize, char *inData, ReplyAddress* /*in
 		Node_AddBefore(prevNode, prevTarget);
 		Node_StateMsg(prevNode, kNode_Move);
 	}
-	else return kSCErr_NodeNotFound; // don't tolerate total failure
 
 	return kSCErr_None;
 }
@@ -724,7 +723,6 @@ SCErr meth_n_after(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 		Node_AddAfter(prevNode, prevTarget);
 		Node_StateMsg(prevNode, kNode_Move);
 	}
-	else return kSCErr_NodeNotFound; // don't tolerate total failure
 
 	return kSCErr_None;
 }
