@@ -1,8 +1,12 @@
 
 SynthDef {	
 	var <>name;
-	var <>controlNames;
-	var <>controls;
+	
+	var controlsSize=0;
+	var irnames, irvalues, ircontrols, irpositions;
+	var krnames, krvalues, krcontrols, krpositions;
+
+	var <>controls,<>controlNames; // ugens add to this
 	var <>children;
 		
 	var <>constants;
@@ -12,28 +16,78 @@ SynthDef {
 	var <>arAvailable, <>krAvailable;
 	
 	*new { arg name, ugenGraphFunc;
-		^super.new.name_(name.asString).build(ugenGraphFunc);
+		^super.new.name_(name.asString)
+			.initBuild
+			.buildUgenGraph(ugenGraphFunc)
+			.finishBuild
 	}
+	*prNew { ^super.new 	}
 	
-	addUGen { arg ugen;
-		ugen.synthIndex = children.size;
-		children = children.add(ugen);
-	}
-	removeUGen { arg ugen;
-		children.remove(ugen);
-		this.indexUGens;
-	}
-	
-	build { arg func;
-		var controls;
-		
+	initBuild {
 		UGen.buildSynthDef = this;
 		constants = Dictionary.new;
 		constantSet = Set.new;
+	}
+	buildUgenGraph { arg func;
+		func.valueArray(this.buildControlsFromArgsOfFunc(func));
+	}
+	buildControlsFromArgsOfFunc { arg func;
+		var def, names, values;
 		
-		controls = this.buildControlsFromArgs(func);
-		func.valueArray(controls);
-
+		def = func.def;
+		names = def.argNames;
+		if (names.isNil, { ^nil });
+		controlsSize = 0;
+		// OK what we do here is separate the ir and kr rate arguments,
+		// create one Control ugen for all of the ir and one for all of 
+		// the kr, and then construct the argument array from combining 
+		// the OutputProxies of these two Control ugens in the original order.
+		values = def.prototypeFrame.copy.extend(names.size);
+		values = values.collect({ arg value; value ? 0.0 });
+		names.do({ arg name, i; 
+			var c, c2, value;
+			#c, c2 = name.asString;
+			value = values.at(i);
+			if (c == $i && { c2 == $_ }, {
+				this.addIr(name,value);
+			},{
+				this.addKr(name,value);
+			});
+		});
+		^this.buildControls
+	}
+	// allow incremental building of controls
+	addIr { arg name,value,defargi;
+		irnames = irnames.add(name);
+		irvalues = irvalues.add(value);
+		irpositions = irpositions.add(controlsSize);
+		controlsSize = controlsSize + 1;
+	}
+	addKr { arg name,value;
+		krnames = krnames.add(name);
+		krvalues = krvalues.add(value);
+		krpositions = krpositions.add(controlsSize);
+		controlsSize = controlsSize + 1;
+	}
+	buildControls {
+		var outputProxies;
+		// the Controls add themselves to my controls
+		if (irnames.size > 0, {
+			ircontrols = Control.names(irnames).ir(irvalues);
+		});
+		if (krnames.size > 0, {
+			krcontrols = Control.names(krnames).kr(krvalues);
+		});
+		outputProxies = Array.newClear(controlsSize);
+		ircontrols.asArray.do({ arg control, i; 
+			outputProxies.put(irpositions.at(i), control);
+		});
+		krcontrols.asArray.do({ arg control, i; 
+			outputProxies.put(krpositions.at(i), control);
+		});
+		^outputProxies
+	}
+	finishBuild {
 		this.optimizeGraph;
 
 		if (this.checkInputs.not, { ^nil });
@@ -43,75 +97,9 @@ SynthDef {
 		this.topologicalSort;
 		this.indexUGens;
 	}
-	buildControlsFromArgs { arg func;
-		var def, size, names, values, controls;
-		var irnames, irvalues, ircontrols, irpositions;
-		var krnames, krvalues, krcontrols, krpositions;
 
-		def = func.def;
-		names = def.argNames;
-		if (names.isNil, { ^nil });
-		
-		// OK what we do here is separate the ir and kr rate arguments,
-		// create one Control ugen for all of the ir and one for all of 
-		// the kr, and then construct the argument array from combining 
-		// the OutputProxies of these two Control ugens in the original order.
-		size = names.size;
-		values = def.prototypeFrame.copy.extend(size);
-		values = values.collect({ arg value; value ? 0.0 });
-		names.do({ arg name, i; 
-			var c, c2, value;
-			#c, c2 = name.asString;
-			value = values.at(i);
-			if (c == $i && { c2 == $_ }, {
-				irnames = irnames.add(name);
-				irvalues = irvalues.add(value);
-				irpositions = irpositions.add(i);
-			},{
-				krnames = krnames.add(name);
-				krvalues = krvalues.add(value);
-				krpositions = krpositions.add(i);
-			});
-		});
-		if (irnames.size > 0, {
-			ircontrols = Control.names(irnames).ir(irvalues);
-		});
-		if (krnames.size > 0, {
-			krcontrols = Control.names(krnames).kr(krvalues);
-		});
-		controls = Array.newClear(size);
-		ircontrols.asArray.do({ arg control, i; 
-			controls.put(irpositions.at(i), control);
-		});
-		krcontrols.asArray.do({ arg control, i; 
-			controls.put(krpositions.at(i), control);
-		});
-		
-		^controls
-	}
 	
-	checkInputs {
-		children.do({ arg ugen; 
-			if (ugen.checkInputs.not, { 
-				Post << ugen.class << " has bad inputs: " 
-					<< ugen.inputs << ".\n";
-				^false 
-			});
-		});
-		^true
-	}
-	
-	addConstant { arg value;
-		if (constantSet.includes(value).not, {
-			constantSet.add(value);
-			constants.put(value, constants.size);
-		});
-	}
-	collectConstants {
-		children.do({ arg ugen; 
-			ugen.collectConstants;
-		});
-	}
+
 
 	asBytes {
 		var stream;
@@ -129,6 +117,7 @@ SynthDef {
 		
 		this.writeConstants(file);
 
+		//controls have been added by the Control UGens
 		file.putInt16(controls.size);
 		controls.do({ arg item;
 			file.putFloat(item);
@@ -162,7 +151,45 @@ SynthDef {
 			file.putFloat(item) 
 		});
 	}
+	
+	checkInputs {
+		children.do({ arg ugen; 
+			if (ugen.checkInputs.not, { 
+				Post << ugen.class << " has bad inputs: " 
+					<< ugen.inputs << ".\n";
+				^false 
+			});
+		});
+		^true
+	}
 
+
+	
+	// UGens do these
+	addUGen { arg ugen;
+		ugen.synthIndex = children.size;
+		children = children.add(ugen);
+	}
+	removeUGen { arg ugen;
+		children.remove(ugen);
+		this.indexUGens;
+	}
+	replaceUGen { arg a, b;
+		children.do({ arg item, i;
+			if (item === a, { children.put(i, b) });
+			item.inputs.do({ arg input, j;
+				if (input === a, { item.inputs.put(j, b) });
+			});
+		});
+	}
+	addConstant { arg value;
+		if (constantSet.includes(value).not, {
+			constantSet.add(value);
+			constants.put(value, constants.size);
+		});
+	}
+
+	
 	// multi channel expansion causes a non optimal breadth-wise ordering of the graph.
 	// the topological sort below follows branches in a depth first order,
 	// so that cache performance of connection buffers is optimized.
@@ -173,13 +200,9 @@ SynthDef {
 			ugen.optimizeGraph;
 		});
 	}
-	
-	replaceUGen { arg a, b;
-		children.do({ arg item, i;
-			if (item === a, { children.put(i, b) });
-			item.inputs.do({ arg input, j;
-				if (input === a, { item.inputs.put(j, b) });
-			});
+	collectConstants {
+		children.do({ arg ugen; 
+			ugen.collectConstants;
 		});
 	}
 	
@@ -231,17 +254,23 @@ SynthDef {
 		});
 	}
 	
-	load { arg server, completionMsg;
-		this.writeDefFile;
-		server.loadSynthDef(name, completionMsg);
-	}
 	
+	send { arg server,completionMsg;
+		server.listSendBundle(nil,[["/d_recv", this.asBytes,completionMsg]]);
+	}
+	load { arg server, completionMsg,dir="synthdefs/";
+		// i should remember what dir i was written to
+		this.writeDefFile;
+		server.listSendMsg(
+			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
+		)
+	}
 	play { arg target,args,addAction=\addToTail;
 		var synth, msg;
 		target = target.asTarget;
 		synth = Synth.prNew(name);
 		msg = synth.newMsg(target, addAction, args);
-		this.load(target.server, msg);
+		this.send(target.server, msg);
 		^synth
 	}
 }
