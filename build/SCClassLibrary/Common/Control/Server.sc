@@ -45,14 +45,15 @@ Server : Model {
 	var <serverRunning = false, <alive = false;
 	var <window;
 
-	var <>options = "";
+	var <>options;
 	
-	*new { arg name, addr;
-		^super.new.init(name, addr)
+	*new { arg name, addr, options;
+		^super.new.init(name, addr, options)
 	}
-	init { arg n,a;
-		name = n;
-		addr = a;
+	init { arg argName, argAddr, argOptions;
+		name = argName;
+		addr = argAddr;
+		options = argOptions ? ServerOptions.new;
 		if (addr.isNil, { addr = NetAddr("127.0.0.1", 57110) });
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.addr == 2130706433 };
@@ -227,11 +228,11 @@ Server : Model {
 			// this thread polls the server to see if it is alive
 			OSCresponder.add(OSCresponder(addr, 'status.reply', { arg time, resp, msg;
 				alive = true;
-				AppClock.sched(0, {
+				{
 					// have to sched with AppClock because cocoa 
 					// cannot be called from socket routine
 					msg.copyRange(2, 5).do({ arg val, i; s1s.at(i).string = val.asString; });
-				});
+				}.defer;
 			}));
 			4.wait;
 			loop({
