@@ -24,16 +24,16 @@ Examples:\
 (\
 // same as OnePole\
 \{\
-	x = XLine.ar(22.0, 2.2, 5);\
-	FOS.ar(LFSaw.ar(200, 0.2), x, 0.0, x)\
+	x = LFTri.ar(0.4, 0, 0.99);\
+	FOS.ar(LFSaw.ar(200, 0, 0.2), 1 - x.abs, 0.0, x)\
 \}.play;\
 )\
 \
 (\
 // same as OneZero\
 \{\
-	x = XLine.ar(0.1, 440.0, 5);\
-	FOS.ar(LFSaw.ar(200, 0.2), x, x, 0.0)\
+	x = LFTri.ar(0.4, 0, 0.99);\
+	FOS.ar(LFSaw.ar(200, 0, 0.2), 1 - x.abs, x, 0.0)\
 \}.play;\
 )\
 }
