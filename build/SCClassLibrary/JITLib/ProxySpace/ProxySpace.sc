@@ -78,7 +78,7 @@ ProxySpace : EnvironmentRedirect {
 			});
 			
 		});
-		proxy.put(obj, 0, -1);
+		proxy.source = obj; //(-1, obj, 0);
 		this.class.lastEdited = proxy;
 	}
 		

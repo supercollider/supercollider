@@ -67,7 +67,7 @@ StreamControl : AbstractPlayControl {
 	}
 	
 	build { arg proxy;
-		stream = source.wrapForNodeProxy(proxy, channelOffset);
+		stream = source.buildForProxy(proxy, channelOffset);
 		clock = proxy.clock;
 		^stream.notNil;
 	}
@@ -79,7 +79,7 @@ StreamControl : AbstractPlayControl {
 }
 
 SynthControl : AbstractPlayControl {
-	var <synth;
+	var <synth, >hasGate=false;
 	
 	sendDef { } //assumes that SoundDef does send to the same server 
 	writeDef { }
@@ -128,7 +128,7 @@ SynthControl : AbstractPlayControl {
 	
 	pause { synth.run(false) }
 	unpause { synth.run(true) }
-	hasGate { ^false }
+	hasGate { ^hasGate }
 }
 
 
@@ -140,10 +140,10 @@ SynthDefControl : SynthControl {
 	
 	build { arg proxy, index=0; 
 		var ok;
-		synthDef = source.wrapForNodeProxy(proxy, channelOffset, index);//channelOffest
+		synthDef = source.buildForProxy(proxy, channelOffset, index);//channelOffest
 		ok = proxy.initBus(synthDef.rate, synthDef.numChannels);
 		if(ok && synthDef.notNil, { 
-			//schedule to avoid hd sleep latency. this is only for server reboot
+			//schedule to avoid hd sleep latency. def writing is only for server reboot
 			AppClock.sched(rrand(0.2, 1), { this.writeDef; nil }); 
 		}, { 
 			synthDef = nil; 
@@ -151,7 +151,7 @@ SynthDefControl : SynthControl {
 	}
 	
 	
-	clear {
+	free {
 		synth = nil;
 		synthDef = nil;
 	}
@@ -180,7 +180,21 @@ SoundDefControl : SynthDefControl {
 	sendDefToBundle {}
 }
 
-
+//to do:
+//kr, ar, binop
+NodeProxyControl : SynthControl {
+	hasGate { ^true }
+	playToBundle { arg bundle, extraArgs, proxy;
+		^super.playToBundle(
+			bundle, 
+			extraArgs ++ [\i_busIn, source.index, \i_busOut, proxy.index], 
+			proxy
+		)
+	}
+	name {//for now only 2 channels
+		^if(source.numChannels == 1, {'system-switch-1'}, {'system-switch-2'});//change names!
+	}
+}
 
 CXPlayerControl : AbstractPlayControl {
 	//here the lazy bus init happens and allocation of ressources
@@ -197,10 +211,11 @@ CXPlayerControl : AbstractPlayControl {
 		source.prepareForPlay(group, true, bus);				source.spawnOnToBundle(group, bus, bundle);
 		^source.synth;
 	}
+	
 	stopToBundle { arg bundle;
 		bundle.addFunction({ source.stopSynthToBundle(bundle) });
-		//bundle.addFunction({ source.free })
 	}
+	
 	stop {
 		source.stop; //release? proxy time
 	}

@@ -12,7 +12,7 @@ ProxySynthDef : SynthDef {
 		var def, rate, output;
 		name = "temp__" ++ name;		
 		def = super.new(name, { 
-			var envgen, synthGate, synthFadeTime, out, outCtl;
+			var envgen,  out, outCtl;
 			
 			prependArgs = prependArgs.collect({ arg parg; parg.value });
 			if(func.def.argNames.asArray.includes(\out), { 
@@ -21,14 +21,7 @@ ProxySynthDef : SynthDef {
 			output = SynthDef.wrap(func, lags, prependArgs);
 			rate = output.rate;
 			
-			envgen = if(makeFadeEnv, {
-					synthGate = Control.names('#gate').kr(1.0);
-					synthFadeTime = Control.names('#fadeTime').kr(0.02);
-					//Linen.kr(synthGate,synthFadeTime, 1.0, synthFadeTime, 2)
-					EnvGen.kr(Env.new(#[0,1,0],[1,1.25],'sin',1),synthGate,1,0,synthFadeTime,2)	
-				}, { 
-					1.0 
-			});
+			envgen = if(makeFadeEnv, { this.makeFadeEnv }, { 1.0 });
 			output = output * envgen;
 			if(rate === 'scalar', {
 					output
@@ -41,6 +34,13 @@ ProxySynthDef : SynthDef {
 		def.numChannels = output.numChannels;
 		^def
 	}
+	
+	*makeFadeEnv {
+		var synthGate, synthFadeTime;
+		synthGate = Control.names('#gate').kr(1.0);
+		synthFadeTime = Control.names('#fadeTime').kr(0.02);
+					//Linen.kr(synthGate,synthFadeTime, 1.0, synthFadeTime, 2)
+		^EnvGen.kr(Env.new(#[0,1,0],[1,1.25],'sin',1),synthGate,1,0,synthFadeTime,2)	}
 	
 	
 }

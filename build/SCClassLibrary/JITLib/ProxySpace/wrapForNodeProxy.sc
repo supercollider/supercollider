@@ -20,23 +20,22 @@
 	
 	prepareForProxySynthDef { }
 	
-	wrapForNodeProxy { arg proxy, channelOffset=0, index=0;
+	buildForProxy { arg proxy, channelOffset=0, index=0;
+		var argNames;
+		argNames = this.argNames;
 		^ProxySynthDef(
-			proxy.generateUniqueName ++ index, 
+			proxy.generateUniqueName ++ index,
 			this.prepareForProxySynthDef(proxy),
-			proxy.lags,
-			proxy.prepend, 
+			proxy.nodeMap.lagsFor(argNames),
+			nil, 
 			true, 
 			channelOffset
 		); 
 	}
 	
+	argNames { ^nil }
 	numChannels { ^nil } 
 	
-	//move elsewhere later
-	findKey { 
-		^currentEnvironment.findKeyForValue(this)
-	}
 	
 }
 
@@ -54,7 +53,7 @@
 
 
 +SynthDef {
-	wrapForNodeProxy {}
+	buildForProxy {}
 	
 	hasGate {
 		^if(controlNames.isNil, { 
@@ -67,7 +66,7 @@
 }
 
 +SoundDef {
-	wrapForNodeProxy {
+	buildForProxy {
 		^synthDef
 	}
 	proxyControlClass {
@@ -77,33 +76,16 @@
 }
 
 +Symbol {
-	wrapForNodeProxy {}
+	buildForProxy {}
 	proxyControlClass {
 		^SynthControl
 	}
 }
 
-
-+AbstractPlayer {
-	
-	wrapForNodeProxy {}
-	proxyControlClass {
-		^CXPlayerControl
-	}
-
++AbstractPlayControl {
+	makeProxyControl {} //already wrapped
 }
 
-//use patch later
-+Instr {
-	prepareForProxySynthDef {
-		^func.prepareForProxySynthDef;
-	}
-	
-	//makeProxyControl { arg channelOffset=0;
-	//	^Patch(this.name).makeProxyControl(channelOffset)
-	//}
-	
-}
 
 
 +SimpleNumber { //some more efficient way needed to put a value here
@@ -128,28 +110,40 @@
 	}
 }
 
+//use patch later
++Instr {
+	prepareForProxySynthDef {
+		^func;
+	}
+	
+	//makeProxyControl { arg channelOffset=0;
+	//	^Patch(this.name).makeProxyControl(channelOffset)
+	//}
+	
+}
+
 +BusPlug {
 	prepareForProxySynthDef { arg proxy;
 		^{ this.value(proxy) }
 	}
 }
 
+///////////////// Pattern - Streams //////////////
 
 
 +Pattern {
 	proxyControlClass {
 		^StreamControl
 	}
-	wrapForNodeProxy { arg proxy, channelOffset=0;
-		^this.asEventStream.wrapForNodeProxy(proxy, channelOffset)
+	buildForProxy { arg proxy, channelOffset=0;
+		^this.asEventStream.buildForProxy(proxy, channelOffset)
 	}
 }
 
 
 +Stream {
 
-	//wrapForNodeProxy {}
-	wrapForNodeProxy { arg proxy, channelOffset=0;
+	buildForProxy { arg proxy, channelOffset=0;
 		//assume audio rate event stream for now.
 		var str, ok, argNames, msgFunc;
 		ok = proxy.initBus('audio', 2);
@@ -191,13 +185,13 @@
 }
 
 +Pdef {
-	wrapForNodeProxy { arg proxy, channelOffset=0;
-		^EventStream(this.asStream).wrapForNodeProxy(proxy, channelOffset);
+	buildForProxy { arg proxy, channelOffset=0;
+		^EventStream(this.asStream).buildForProxy(proxy, channelOffset);
 	}
 
 }
 +Task {
-	wrapForNodeProxy {}
+	buildForProxy {}
 
 }
 
@@ -213,5 +207,32 @@
 		^this.class.new(originalStream.collect(func), event)
 	}
 }
+
+///////////////// cx players ////////////
+
++AbstractPlayer {
+	
+	buildForProxy {}
+	makeProxyControl { arg channelOffset=0;
+		var patch;
+		//trying to wrap it in a fader
+		patch = Patch({ arg input;
+						var synthGate, synthFadeTime;
+						synthGate = Control.names('#gate').kr(1.0);
+						synthFadeTime = Control.names('#fadeTime').kr(0.02);
+						input * 											EnvGen.kr(
+							Env.new(#[0,1,0],[1,1.25],'sin',1),
+							synthGate,1,0,synthFadeTime,2
+						)	
+				}, [this]);
+		^this.proxyControlClass.new(patch, channelOffset); 
+	}
+	proxyControlClass {
+		^CXPlayerControl
+	}
+
+}
+
+
 
 
