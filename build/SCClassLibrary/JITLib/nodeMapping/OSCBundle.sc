@@ -36,10 +36,7 @@ MixedBundle {
 		functions.do({ arg item; item.value }); 
 	}
 	
-	sendPrepare { arg server; server.listSendBundle(nil, preparationMessages) }
-	
 	sendAndEvaluate { arg server, latency;
-		var array; // maybe pass in latency? does not work for perform message
 		this.doFunctions;
 		if(messages.notNil, {
 			server.listSendBundle(latency, messages);
@@ -54,8 +51,7 @@ MixedBundle {
 	schedSend { arg server, clock;
 			Routine.run {
 				if(preparationMessages.notNil) {
-					this.sendPrepare(server);
-					server.sync;
+					server.sync(Condition.new, preparationMessages);
 				};
 				if(clock.isNil, {
 						this.sendAndEvaluate(server, server.latency) 
@@ -70,8 +66,7 @@ MixedBundle {
 	send { arg server, time;
 			Routine.run {
 				if(preparationMessages.notNil) {
-					this.sendPrepare(server);
-					server.sync;
+					server.sync(Condition.new, preparationMessages);
 				};
 				this.sendAndEvaluate(server, time);
 			}
@@ -93,23 +88,3 @@ MixedBundle {
 	
 }
 
-DebugBundle : MixedBundle {
-	sendAndEvaluate { arg server, latency;
-		var array;
-		functions.do({ arg item; item.value(latency, server) }); 
-		"sending messages:".inform;
-		"[".postln;
-		messages.do({ arg item; item.asCompileString.postln });
-		"]".postln;
-		server.listSendBundle(latency, messages);
-	}
-	
-	sendPrepare { arg server;
-		"sending preparation messages:".inform;
-		preparationMessages.asCompileString.postln; 
-		Char.nl.post;
-		server.listSendBundle(nil, preparationMessages);
-	}
-
-
-}
