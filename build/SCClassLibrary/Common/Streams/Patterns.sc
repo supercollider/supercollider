@@ -19,6 +19,9 @@ Pattern : AbstractFunction {
 	embedInStream { arg inval;
 		^this.asStream.embedInStream(inval);
 	}
+	do { arg function;
+		this.asStream.do(function)
+	}
 	
 	// filtering operations
 	collect { arg function;
