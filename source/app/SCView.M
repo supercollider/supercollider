@@ -1848,6 +1848,10 @@ int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr);
 int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr)
 {
     int len;
+     if (*arr) {
+		delete [] *arr;
+		*arr = 0;
+	}
     if (isKindOfSlot(slot, class_array)) {
             len = slot->uo->size;
             *arr = new double[len];
@@ -1906,13 +1910,12 @@ void SCMultiSliderView::draw(SCRect inDamage)
         int j = 0;
         for(int i = 0; i < mTabSize; i++){
             if(!(i % mResamp )) {
-            yval = vals[i];
-            drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
-            CGContextAddLineToPoint(cgc, drawRect.origin.x, drawRect.origin.y);
-            CGContextAddRect(cgc, drawRect);
-            CGContextMoveToPoint(cgc, drawRect.origin.x, drawRect.origin.y);
-            j++;
-            //yval = 0;
+                yval = vals[i];
+                drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
+                CGContextAddLineToPoint(cgc, drawRect.origin.x, drawRect.origin.y);
+                CGContextAddRect(cgc, drawRect);
+                CGContextMoveToPoint(cgc, drawRect.origin.x, drawRect.origin.y);
+                j++;
             }
         }
     CGContextStrokePath(cgc);	 
