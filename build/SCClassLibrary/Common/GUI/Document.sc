@@ -2,10 +2,11 @@ Document {
 
 	classvar <dir="", <allDocuments, thelistener;
 	
-	var <dataptr, path, title, visible, < background, < stringColor, <> keyDownAction, <>onClose;
-	var <isListener, <>toFrontAction, <> mouseDownAction;
+	var <dataptr, path, title, visible, <background, <stringColor;
+	var <>keyDownAction, <>onClose;
+	var <isListener, <>toFrontAction, <>endFrontAction, <>mouseDownAction;
 	
-	*initClass{
+	*initClass {
 		var num, listenernum, doc;
 		num = this.numberOfOpen;
 		num.do({arg i;
@@ -22,12 +23,12 @@ Document {
 		^super.new.initFromPath(path, selectionStart, selectionLength)
 	}
 	
-	*new{ arg str="", title="Untitled", makeListener=false;
+	*new { arg str="", title="Untitled", makeListener=false;
 		^super.new.initByString(str, title, makeListener);
 	}
 	
 //class:
-	*current{
+	*current {
 		var idx;
 		idx = this.prcurrentDocument;
 		^allDocuments.at(idx);
@@ -51,11 +52,11 @@ Document {
 		^path
 	}
 	
-	*openDocuments{
+	*openDocuments {
 		^allDocuments
 	}
 	
-	*hasEditedDocuments{
+	*hasEditedDocuments {
 		allDocuments.do({arg doc, i;
 			if(doc.isEdited, {
 				^true;
@@ -64,7 +65,7 @@ Document {
 		^false
 	}
 	
-	*closeAll{arg leavePostWindowOpen = true;
+	*closeAll {arg leavePostWindowOpen = true;
 		allDocuments.do({arg doc, i;
 			if(leavePostWindowOpen.not, {
 				doc.close;
@@ -76,7 +77,7 @@ Document {
 		})
 	}
 	
-	*closeAllUnedited{arg leavePostWindowOpen = true;
+	*closeAllUnedited {arg leavePostWindowOpen = true;
 		var listenerWindow;
 		allDocuments.do({arg doc, i;
 			if(doc.isListener,{ 
@@ -92,7 +93,7 @@ Document {
 		})
 	}
 	
-	*listener{
+	*listener {
 		var listenernum;
 		if(thelistener.isNil,{
 			listenernum = this.prGetIndexOfListener;
@@ -102,21 +103,21 @@ Document {
 	}
 	
 //document setup	
-	title{
+	title {
 		if(title.isNil,{title = this.prgetTitle})
 		^title
 	}
 	
-	title_{arg argName;
+	title_ {arg argName;
 		this.prSetName(argName);
 	}
 	
-	background_{arg color, rangestart= -1, rangesize = 0;
+	background_ {arg color, rangestart= -1, rangesize = 0;
 		background = color;
 		this.setBackgroundColor(background, rangestart, rangesize);
 	}
 	
-	stringColor_{arg color, rangeStart = -1, rangeSize = 0;
+	stringColor_ {arg color, rangeStart = -1, rangeSize = 0;
 		stringColor = color;
 		this.setTextColor(color,rangeStart, rangeSize);
 	}
@@ -128,75 +129,79 @@ Document {
 	}
 //interaction:	
 
-	close{
+	close {
 		this.prclose
 	}
 	
-	front{
+	front {
 		_TextWindow_ToFront
 	}
 	
-	unfocusedFront{
+	unfocusedFront {
 		_TextWindow_UnfocusedFront
 	}
 	
-	syntaxColorize{
+	syntaxColorize {
 		_TextWindow_SyntaxColorize
 	}
 	
-	selectLine{arg line;
+	selectLine {arg line;
 		line = line - 1;
 		this.prselectLine(line);
 	}
 	
-	selectRange{arg start=0, length=0;
+	selectRange {arg start=0, length=0;
 		_TextWindow_SelectRange
 	}
 	
 // state info
-	isEdited{
+	isEdited {
 		_TextWindow_IsEdited
 	}
 	
-	selectionStart{
+	selectionStart {
 		^this.selectedRangeLocation
 	}
 	
-	selectionSize{
+	selectionSize {
 		^this.selectedRangeSize
 	}
 	
-	string{arg rangestart, rangesize = 1;
+	string {arg rangestart, rangesize = 1;
 		if(rangestart.isNil,{
 		^this.text;
 		});
 		^this.rangeText(rangestart, rangesize);
 	}
-	string_{arg string, rangestart = -1, rangesize = 1;
+	string_ {arg string, rangestart = -1, rangesize = 1;
 		this.insertTextRange(string, rangestart, rangesize);
 	}
-	selectedString{
+	selectedString {
 		^this.selectedText
 	}
 	
-	font_{arg font, rangestart = -1, rangesize;
+	font_ {arg font, rangestart = -1, rangesize;
 		this.setFont(font.name, font.size, rangestart, rangesize)
 	}
 		 
-	selectedString_{arg txt;
+	selectedString_ {arg txt;
 		this.prinsertText(txt)
 	}
 	
 //actions:	
-	didBecomeKey{
+	didBecomeKey {
 		toFrontAction.value(this);
 	}
 	
-	mouseDown{
+	didResignKey {
+		endFrontAction.value(this);
+	}
+	
+	mouseDown {
 		mouseDownAction.value(this);
 	}
 	
-	keyDown{arg character, modifiers, keycode;
+	keyDown {arg character, modifiers, keycode;
 		keyDownAction.value(character, modifiers, keycode);
 	}
 	
@@ -216,26 +221,26 @@ Document {
 	}
 
 	//if range is -1 apply to whole doc
-	setFont{arg fontname="Monaco", size=9, rangeStart= -1, rangeSize=100;
+	setFont {arg fontname="Monaco", size=9, rangeStart= -1, rangeSize=100;
 		_TextWindow_SetFont
 	}
 	
-	setTextColor{arg color,  rangeStart = -1, rangeSize = 0;
+	setTextColor { arg color,  rangeStart = -1, rangeSize = 0;
 		_TextWindow_SetTextColor
 	}
 	
-	text{
+	text {
 		_TextWindow_Text
 	}
-	selectedText{
+	selectedText {
 		_TextWindow_SelectedText
 	}
 	
-	rangeText{arg rangestart=0, rangesize=1; 
+	rangeText { arg rangestart=0, rangesize=1; 
 		_TextWindow_TextWithRange
 	}
 	
-	prclose{
+	prclose {
 		_TextWindow_Close
 	}
 
@@ -245,20 +250,20 @@ Document {
 		dataptr = nil;
 	}
 	
-	prinsertText{arg dataPtr, txt;
+	prinsertText { arg dataPtr, txt;
 	 	_TextWindow_InsertText
 	}
-	insertTextRange{arg string, rangestart, rangesize;
+	insertTextRange { arg string, rangestart, rangesize;
 		_TextWindow_InsertTextInRange
 	}
 
 	
-	*prcurrentDocument{
+	*prcurrentDocument {
 		_TextWindow_Current
 	}
 	
 	//check if there is already a document with the same pointer
-	prAdd{
+	prAdd {
 		
 		if(allDocuments.isNil,{allDocuments = allDocuments.add(this);});
 		allDocuments.do({arg doc;
@@ -271,44 +276,44 @@ Document {
 		^this
 	}
 	//this is called after recompiling the lib
-	*numberOfOpen{
+	*numberOfOpen {
 		_NumberOfOpenTextWindows
 	}
 	
-	*newFromIndex{arg idx;
+	*newFromIndex { arg idx;
 		^super.new.initByIndex(idx)
 	}
-	initByIndex{arg idx;
+	initByIndex { arg idx;
 		//allDocuments = allDocuments.add(this);
 		this.prinitByIndex(idx);
 	}
-	prinitByIndex{arg idx;
+	prinitByIndex { arg idx;
 		_TextWindow_GetByIndex
 	}
 	
 	//this is called from the menu: open, new
-	*prGetLast{
+	*prGetLast {
 		^super.new.initLast
 	}
 	
-	initLast{
+	initLast {
 		this.prGetLastIndex;
 		isListener = false;
 		^this.prAdd;
 	}
 	
-	prGetLastIndex{
+	prGetLastIndex {
 		_TextWindow_GetLastIndex
 	}
 	//private open
-	initFromPath{arg apath, selectionStart, selectionLength;
+	initFromPath { arg apath, selectionStart, selectionLength;
 		var stpath;
 		path = apath;
 		stpath = this.class.standardizePath(path);
 		this.propen(stpath, selectionStart, selectionLength);
 		^this.prAdd;
 	}
-	propen{arg path, selectionStart=0, selectionLength=0;
+	propen { arg path, selectionStart=0, selectionLength=0;
 		_OpenTextFile
 	}
 	//private newTextWindow
@@ -323,37 +328,36 @@ Document {
 		this.prinitByString(str, title, makeListener);
 	
 	}
-	prinitByString{arg str, title, makeListener;
+	prinitByString { arg str, title, makeListener;
 		_NewTextWindow
 	}
 	//
-	prgetTitle{
+	prgetTitle {
 		_TextWindow_DisplayName
 	}
 	//other private
 	//if -1 whole doc
-	setBackgroundColor
-	{arg color;
+	setBackgroundColor { arg color;
 		_TextWindow_SetBackgroundColor
 	}
 	
-	selectedRangeLocation{
+	selectedRangeLocation {
 		_TextWindow_GetSelectedRangeLocation
 	}
-	selectedRangeSize{
+	selectedRangeSize {
 		_TextWindow_GetSelectedRangeLength
 	}
 	
-	prselectLine{arg line;
+	prselectLine { arg line;
 		_TextWindow_SelectLine;
 		^this.primitiveFailed
 	}
 	
-	prisListener{arg makeListener;
+	prisListener { arg makeListener;
 		isListener = makeListener;
 	}
 	
-	*prGetIndexOfListener{
+	*prGetIndexOfListener {
 		_TextWindow_GetIndexOfListener
 	}
 	//---not yet implemented
