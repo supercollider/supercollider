@@ -9,6 +9,11 @@ ServerOptions
 	var <>maxNodes=1024;
 	var <>maxSynthDefs=1024;
 
+// blocksize
+// realtimememory size
+// max logins
+// session-password
+
 	asOptionsString { // asString confused the Inspector
 		var o;
 		o = "";
@@ -198,6 +203,15 @@ Server : Model {
 	}
 	*quitAll {
 		set.do({ arg server; server.quit; })
+	}
+	*killAll {
+		// if you see Exception in World_OpenUDP: unable to bind udp socket
+		// its often because of multiple servers
+		// and you can't cause them to quit via OSC
+		
+		// doesn't work here
+//	ps aux | grep -i "[s]csynth" | awk '{system("kill " $2)}'
+		unixCmd("ps aux | grep -i \"[s]csynth\" | awk '{system(\"kill \" $2)}'");
 	}
 	freeAll {
 		this.sendMsg("/g_freeAll",0);
