@@ -51,6 +51,8 @@
 #include "dirent.h"
 #include <string.h>
 
+#include "libraryConfig.h"
+
 int yyparse();
 
 extern bool gFullyFunctional;
@@ -59,6 +61,8 @@ int gNumCompiledFiles;
 /*
 thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 */
+
+LibraryConfig *gLibraryConfig = 0;
 
 PyrSymbol *gCompilingFileSym = 0;
 VMGlobals *gCompilingVMGlobals = 0;
@@ -1703,10 +1707,18 @@ void finiPassOne()
     //postfl("<-finiPassOne\n");
 }
 
-bool passOne_ProcessDir(char *dirname);
-bool passOne_ProcessDir(char *dirname)
+bool passOne_ProcessDir(char *dirname, int level);
+bool passOne_ProcessDir(char *dirname, int level)
 {
 	bool success = true;
+
+ 	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
+ 	  post("\texcluding dir: '%s'\n", dirname);
+ 	  return success;
+ 	}
+ 
+ 	if (level == 0) post("\tcompiling dir: '%s'\n", dirname);
+
 	DIR *dir = opendir(dirname);	
 	if (!dir) {
 		error("open directory failed '%s'\n", dirname); fflush(stdout);
@@ -1727,9 +1739,9 @@ bool passOne_ProcessDir(char *dirname)
 		strcat(entrypathname, (char*)de->d_name);
 
 		if (de->d_type == DT_DIR) {
-			success = passOne_ProcessDir(entrypathname);
+			success = passOne_ProcessDir(entrypathname, level + 1);
 		} else {
-			success = passOne_ProcessOneFile(entrypathname);
+			success = passOne_ProcessOneFile(entrypathname, level + 1);
 		}
 		free(entrypathname);
 		if (!success) break;
@@ -1752,10 +1764,14 @@ bool passOne()
 
 	getcwd(gCompileDir, MAXPATHLEN-32);
 	strcat(gCompileDir, "/SCClassLibrary");
-	post("\tcompile dir: '%s'\n", gCompileDir);
     
-	success = passOne_ProcessDir(gCompileDir);
+	success = passOne_ProcessDir(gCompileDir, 0);
 	if (!success) return false;
+
+ 	if (gLibraryConfig)
+ 	  if (!gLibraryConfig->forEachIncludedDirectory(passOne_ProcessDir))
+ 	    return false;
+
 	finiPassOne();
 	return true;
 }
@@ -1790,9 +1806,15 @@ bool passOne_ProcessOneFile(char *filename)
 #endif
 
 // sekhar's replacement
-bool passOne_ProcessOneFile(char *filename)
+bool passOne_ProcessOneFile(char *filename, int level)
 {
 	bool success = true;
+
+ 	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(filename)) {
+ 	  post("\texcluding file: '%s'\n", filename);
+ 	  return success;
+ 	}
+
 	PyrSymbol *fileSym;
 	if (isValidSourceFileName(filename)) {
 		gNumCompiledFiles++;
@@ -1809,7 +1831,7 @@ bool passOne_ProcessOneFile(char *filename)
 		char realpathname[MAXPATHLEN];
 		realpath(filename, realpathname);
 		if (strncmp(filename, realpathname, strlen(filename)))
-			success = passOne_ProcessDir(realpathname);
+			success = passOne_ProcessDir(realpathname, level);
 	}
 	return success;
 }
