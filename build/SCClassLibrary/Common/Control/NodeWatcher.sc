@@ -1,23 +1,28 @@
-//watches a server for created nodes and ending nodes.
+//watches an address for created nodes and ending nodes.
 
 BasicNodeWatcher {
-	var <nodes, <server, <responders;
+	var <nodes, <addr, <responders;
 	var <isWatching=false;
 	
-	*new { arg server;
-		^super.new.ninit(server)
+	*new { arg addr;
+		^super.new.ninit(addr)
 	}
 	
-	ninit { arg s;
+	ninit { arg address;
 		var cmds;
-		server = s;
+		addr = address;
 		this.clear;
-		responders = this.cmds.collect({ arg cmd;
+		responders = [];
+		addr.asArray.do({ arg addr; //support for multiple servers
+			this.cmds.do({ arg cmd;
 				var method;
 				method = cmd.copyToEnd(1).asSymbol;
-				OSCresponder(server.addr, cmd, 
-					{ arg time, resp, msg; this.respond(method, msg) }
+				responders = responders.add(
+					OSCresponderNode(addr, cmd, 
+						{ arg time, resp, msg; this.respond(method, msg) }
+					)
 				)
+			});
 		});
 	}
 	cmds {  ^#["/n_go", "/n_end"] }
@@ -27,9 +32,8 @@ BasicNodeWatcher {
 				msg.removeAt(0);
 				this.performList(method, msg)
 	}
-	
+		
 	start {
-		server.notify(true);
 		if(isWatching.not, {
 			responders.do({ arg item; item.add });
 			isWatching = true;
@@ -46,6 +50,10 @@ BasicNodeWatcher {
 	nodeIsPlaying { arg nodeID;
 		^nodes.includes(nodeID);
 	}
+	nodeIsPlaying_ { arg nodeID; 	
+		//sometimes it is needed to set this before the server reply
+		^nodes.add(nodeID);
+	}
 		
 	clear { 
 		nodes = IdentitySet.new;
@@ -53,9 +61,11 @@ BasicNodeWatcher {
 	}
 		
 	n_end { arg nodeID;
+		//postln("ended" + nodeID);
 		nodes.remove(nodeID);
 	}
 	n_go { arg nodeID;
+		//postln("started" + nodeID);
 		nodes.add(nodeID);
 	}
 	
@@ -72,6 +82,7 @@ NodeWatcher : BasicNodeWatcher {
 
 	cmds { ^#["/n_go", "/n_end", "/n_off", "/n_on"] }
 	respond { arg method, msg;
+						msg.postln;
 						msg.removeAt(0);
 						if(nodes.at(msg.at(0)).notNil, {//for speed
 							msg = this.lookUp(msg);
