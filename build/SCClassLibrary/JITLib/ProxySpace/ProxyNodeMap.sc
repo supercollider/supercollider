@@ -31,7 +31,7 @@ ProxyNodeMap : NodeMap {
 				ok = proxy.initBus(\control, key.size);
 			
 				if(ok, {
-					bus = proxy.outbus;
+					bus = proxy.bus;
 					if(proxy.isPlaying.not, { proxy.wakeUp });
 					min(key.size, bus.numChannels).do({ arg chan;
 						var theKey;
