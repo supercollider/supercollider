@@ -34,9 +34,8 @@ A Patch supplies arguments to that function.\
 			\cf2 SinOsc\cf0 .ar([freq,freq + 30],0,amp)\
 		\});\
 	p = \cf2 Patch\cf0 (i,[ 500,	0.3 ]);\
-	p.play\
-\
-\
+	p.gui\
+	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 a Function\
@@ -49,7 +48,7 @@ A Patch supplies arguments to that function.\
 		500,\
 		0.3\
 	]);\
-	p.play\cf2 \
+	p.gui\cf2 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -68,7 +67,7 @@ A Patch supplies arguments to that function.\
 	\
 	\cf4 // the patch retrieves it\
 \cf0 	p = \cf2 Patch\cf0 (\cf5 \\bubbles\cf0 ,[0.4] );\
-	p.play\
+	p.gui\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -79,7 +78,7 @@ A Patch supplies arguments to that function.\
 \f1\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 This is the strongest power of Patch.  It can be easily saved to disk, and make use of a large library of Instr functions.  Compared to a simple SynthDef function, an Instr can produce many SynthDefs, varying in output rate or number of channels or internal structure.\
+\f2\fs24 \cf0 Patch can be easily saved to disk, and make use of a large library of Instr functions.  Compared to a simple SynthDef function, an Instr can produce many SynthDefs, varying in output rate or number of channels or internal structure.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -122,7 +121,7 @@ p.run(\cf2 true\cf0 );\
 \
 p.insp; //inspect it\
 \
-p.topGui;\
+p.gui;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // close the window\
@@ -131,7 +130,7 @@ p.topGui;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // open it again\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 p.topGui;\
+\cf0 p.gui;\
 \
 \
 )\
@@ -170,7 +169,7 @@ p.topGui;\
 	q = \cf2 Patch\cf0 (\cf5 \\bubbles\cf0 )\
 ]);\
 \
-\
+p.gui\
 )\
 \
 \
@@ -239,7 +238,7 @@ q.insp;\
 \cf4 // and the gui all works\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
-p.topGui;\
+p.gui;\
 \
 \
 \
@@ -266,7 +265,7 @@ q = \cf2 Patch\cf0 ([\cf5 \\jmcExamples\cf0 ,\cf5 'moto-rev'\cf0 ],[\
 	0.2\
 ]);\
 \
-q.topGui;\
+q.gui;\
 \
 )\
 \

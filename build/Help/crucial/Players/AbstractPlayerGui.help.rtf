@@ -17,10 +17,10 @@ Usually the only method you need to implement in your subclass is
 \
 to the ObjectGui implementation it adds\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b topGui
+\f0\b \cf0 topGui
 \f1\b0 \
-	adds a regui button (see below)\
 	does\
 		synthConsole\
 		saveConsole\
@@ -40,17 +40,6 @@ to the ObjectGui implementation it adds\
 \f1\b0 \
 	standard play/record/etc. controls.   you can override this method in \
 	subclasses to customise.\
-
-\f0\b regui
-\f1\b0 \
-	This will close the current gui and call .topGui on \
-	your model again.  This is because its a bit tricky to do proper dynamic\
-	guis in sc2.  If something major like a Patch arg changed, rather than\
-	keep track of all the View objects and remove them and add new ones, and\
-	then resize and move all the View objects around the window,\
-	its easier	to just shut the window and rebuild a fresh correct gui.\
-	Due to high CPU spikes in building windows sc2 can sometimes crash during\
-	this, so there is a breif text dialog to slow it down.  Simply hit return.\
 
 \f0\b durationString
 \f1\b0 \

@@ -1,61 +1,29 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green0\blue0;
 \red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;\red0\green112\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 PageLayout
+\f0\b\fs36 \cf0 MultiPageLayout
 \fs32 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs22 \cf0 \
-A PageLayout is a window that manages the layout of views added to it.\
+A MultiPageLayout creates one or more windows with FlowViews on them.\
+It can be used as the specified parent for any view.  It will place the view on the current FlowVIew, creating a new window as necessary to handle overflow.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 You request a rectangle using 
-\f0\b layout.layRight(x,y)\
-
-\f1\b0 \
-the layout manager moves its internal cursor, wrapping to a new line, then to a new window as necessary.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs22 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs24 \cf0 Wraps to the next line
-\f0\b \ul \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\b0\fs18 \cf0 \ulnone (\cf2 	\
-	\cf3 var\cf2  f;\
-	f=\cf3 PageLayout\cf2 .new(\cf4 "flow"\cf2 );\
-	\
-	504.do(\{ \cf3 arg\cf2  i;\
-		\cf3 SCButton\cf2 ( f.window, f.layRight(30,30) )\
-			.states_([[i.asString,\cf3 Color\cf2 .black,\cf3 Color\cf2 .white]])\
-	\});\
-	\
-	f.front;\
-\cf0 )\
-\
-\
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs24 \cf0 Exceeding the bottom of the window wraps to a new window\
+\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
-	\cf5 var\cf0  f;\
-	f=\cf5 PageLayout\cf0 .new(\cf6 "flow"\cf0 );\
+	\cf2 var\cf0  f;\
+	f=\cf2 MultiPageLayout\cf0 .new(\cf3 "flow"\cf0 );\
 	\
-	800.do(\{ \cf5 arg\cf0  i;\
-		\cf5 var\cf0  r;\
-		r= f.layRight(30,30); \cf7 // obtain the rectangle first\
-\cf0 	\cf7 					// in case we cascade to the next window\
-\cf0 		\cf5 SCButton\cf0 ( f.window, r )\
+	800.do(\{ \cf2 arg\cf0  i;\
+		\cf2 SCButton\cf0 ( f, Rect(0,0,30,30 ) )\
 			.states_([[i.asString,Color.black,Color.white]])\
 	\});\
 	f.front;\
@@ -72,77 +40,77 @@ the layout manager moves its internal cursor, wrapping to a new line, then to a 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 .window \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 returns the current window being written to.\
+\f1\b0 \cf0 returns the current window being written to.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b\fs24 \cf0 .layRight(x,y) \
-
-\f1\b0 allocates space and returns a \cf5 Rect\cf0  of size (x,y)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs18 \cf0 \
+.view\
+the FlowView on the current window\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 .close\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 close all windows created by the PageLayout\
+\f1\b0 \cf0 close all windows created by the MultiPageLayout\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 .focus( index )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 focus the view on the current window\
+\f1\b0 \cf0 focus the view on the current window\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 .toFront\
+\f0\b\fs24 \cf0 .front\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 cascades all windows owned by PageLayout to front\
+\f1\b0 \cf0 cascades all windows owned by MultiPageLayout to front\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 .resizeToFit\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 resizes all windows to fit their contents, brings them all to front\
+\f1\b0 \cf0 resizes all windows to fit their contents, brings them all to front\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
 \
-( \
-\cf5 	var\cf0  f,sliders;\
-	f= \cf5 PageLayout\cf0 .new("a vaguely practical example");\
+(\cf4  \
+	\cf5 var\cf4  f,sliders;\
+	f= \cf5 MultiPageLayout\cf4 .new(\cf6 "a vaguely practical example"\cf4 );\
 	\
-	sliders=\cf5 Array\cf0 .fill(rrand(16,32),\{ \cf5 arg\cf0  i;\
-		SC\cf5 Slider\cf0 ( f.window, f.layRight(10, 150));\
+	sliders=\cf5 Array\cf4 .fill(rrand(16,32),\{ \cf5 arg\cf4  i;\
+		\cf5 SCSlider\cf4 ( f, 10@150 );\
 	\});\
 \
-	f.within( 50,150,\{ \cf5 arg\cf0  subf;\
-		SC\cf5 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
-		SC\cf5 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
-		SC\cf5 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
-		SC\cf5 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
-	\});\
+	f.flow( \{ \cf5 arg\cf4  subf;\
+		\cf5 SCSlider\cf4 ( subf, 30@30 );\
+		\cf5 SCSlider\cf4 ( subf, 30@30 );\
+		\cf5 SCSlider\cf4 ( subf, 30@30 );\
+		\cf5 SCSlider\cf4 ( subf, 30@30 );\
+	\}, 50@100 );\
 	\
 	f.resizeToFit;\
 	f.front;\
-)\
+\cf0 )\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf7 //\
 //// layout within a layout\
 //(var f;\
-//	f=PageLayout.new("flow");\
+//	f=MultiPageLayout.new("flow");\
 //	\
 //	30.rand.do(\{ arg i;\
 //		SliderView(f.win, f.layRight(80.rand,80.rand))\
@@ -177,20 +145,20 @@ the layout manager moves its internal cursor, wrapping to a new line, then to a 
 
 \f1\fs24 \cf0 \
 \
-A nice way to work with \cf5 PageLayout\cf0  is with [
-\f0\b \cf5 Sheet
+A nice way to work with \cf2 MultiPageLayout\cf0  is with [
+\f0\b \cf2 Sheet
 \f1\b0 \cf0 ]\
 \
 \
 \
-A \cf5 PageLayout\cf0  closes all of its windows when any of its windows is closed.\
-When a \cf5 PageLayout\cf0  closes, it sends the \cf8 \\didClose\cf0  notification (see NotificationCenter).\
+A \cf2 MultiPageLayout\cf0  closes all of its windows when any of its windows is closed.\
+When a \cf2 MultiPageLayout\cf0  closes, it sends the \cf8 \\didClose\cf0  notification (see NotificationCenter).\
 \
 	You can register to receive that notification:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 	\
-	\cf5 NotificationCenter\cf0 .registerOneShot( f,\cf8 \\didClose\cf0 , yourObject,\{\
+	\cf2 NotificationCenter\cf0 .registerOneShot( f,\cf8 \\didClose\cf0 , yourObject,\{\
 			\cf7 // stop the model from playing, clean house, \
 			// unregister a keydown etc.\
 \cf0 	\});
@@ -202,7 +170,7 @@ When a \cf5 PageLayout\cf0  closes, it sends the \cf8 \\didClose\cf0  notificati
 
 \f0\b \cf0 removeOnClose(controller)
 \f1\b0 \
-	this method adds the controller to the PageLayout's autoremove list.  when the window closes, all items on the list will be sent the 
+	this method adds the controller to the MultiPageLayout's autoremove list.  when the window closes, all items on the list will be sent the 
 \f0\b .remove
 \f1\b0  message.  this allows them to release any of their own dependancies, clean the poop out of their cage etc.\
 \
@@ -212,17 +180,18 @@ When a \cf5 PageLayout\cf0  closes, it sends the \cf8 \\didClose\cf0  notificati
 \
 
 \f0\b A Note about MVC/Dependencies\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 this is some under-the-hood stuff that you don't need to know about but might be interested in.\
 \
-When a subclass of ObjectGui is added to a PageLayout it adds itself as a dependant on that layout. (ObjectGui::guify).\
+When a subclass of ObjectGui is added to a MultiPageLayout it adds itself as a dependant on that layout. (ObjectGui::guify).\
 	\
-When PageLayout creates a SCWindow, it sets the window's onClose function to call PageLayout::release.  this calls .
+When MultiPageLayout creates a SCWindow, it sets the window's onClose function to call MultiPageLayout::release.  this calls .
 \f0\b release 
-\f1\b0 on all of the PageLayout's dependants.\
+\f1\b0 on all of the MultiPageLayout's dependants.\
 \
-The PageLayout calls .
+The MultiPageLayout calls .
 \f0\b release
 \f1\b0  on all the gui objects when the SCWindow closes.  The gui objects release their dependancy on their models, thus severing the link between the two, allowing garbage collection.\
 	\
