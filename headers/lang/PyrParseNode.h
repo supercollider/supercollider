@@ -90,8 +90,8 @@ struct PyrParseNode {
 
 	struct PyrParseNode *mNext;
 	struct PyrParseNode *mTail;
-	short mLineno;
-	unsigned char mCharno;
+	int mLineno;
+	int mCharno;
 	unsigned char mClassno;
 };
 

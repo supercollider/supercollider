@@ -109,7 +109,6 @@ int lastClosedFuncCharNo = 0;
 
 char *binopchars = "!@%&*-+=|<>?/";
 char yytext[MAXYYLEN];
-char linebuf[256];
 char curfilename[PATH_MAX];
 
 int yylen;
@@ -356,7 +355,6 @@ int input()
 			}
 			linestarts[lineno] = linepos;
 		}
-		if (charno < 256) linebuf[charno] = 0;
 		charno = 0;
 	}
 	if (c != 0 && yylen < MAXYYLEN-2) yytext[yylen++] = c;
@@ -385,7 +383,6 @@ int input0()
 			}
 			linestarts[lineno] = linepos;
 		}
-		if (charno && charno < 256) linebuf[charno-1] = 0;
 		charno = 0;
 	}
 	//if (gDebugLexer) postfl("input0 '%c' %d\n",c,c);
