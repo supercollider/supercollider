@@ -1,0 +1,33 @@
+Order
+
+superclass: SequenceableCollection
+
+an order of objects. works similar to a Dictionary, but represents a numerical order.
+
+Instance Methods
+
+	Most methods are inherited from the superclasses.
+
+	put(index, obj)
+
+		insert an object at index. if there is an object present it is replaced
+
+	selectInPlace, rejectInPlace
+
+		internally perform a select /reject operation without returning a copy
+
+note: 	this class is not as fast as Dictionary and PriorityQueue, 
+		the primitives are still to be written
+
+//example
+
+a = Order.new;
+
+a.put(2, \two);
+a.put(77, \eight);
+a.put(0, \nope);
+a.put(2, \three);
+a.remove(\eight);
+a;
+a.removeAt(0);
+a;
