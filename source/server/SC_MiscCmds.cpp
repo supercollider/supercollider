@@ -442,14 +442,14 @@ SCErr meth_n_before(World *inWorld, int inSize, char *inData, ReplyAddress* /*in
 		Node *beforeThisOne = World_GetNode(inWorld, msg.geti());
 		if (!beforeThisOne) return kSCErr_NodeNotFound;
 	
-		Group *prevGroup = node->mParent;
+		//Group *prevGroup = node->mParent;
 			
 		Node_Remove(node);
 		Node_AddBefore(node, beforeThisOne);
 	
-		if (node->mParent != prevGroup) {
+		//if (node->mParent != prevGroup) {
 			Node_StateMsg(node, kNode_Move);
-		}
+		//}
 	}
 	return kSCErr_None;
 }
@@ -515,14 +515,14 @@ SCErr meth_g_tail(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 		Node *node = World_GetNode(inWorld, nodeID);
 		if (!node) return kSCErr_NodeNotFound;
 	
-		Group *prevGroup = node->mParent;
+		//Group *prevGroup = node->mParent;
 	
 		Node_Remove(node);
 		Group_AddTail(group, node);
 	
-		if (group != prevGroup) {
+		//if (group != prevGroup) {
 			Node_StateMsg(node, kNode_Move);
-		}
+		//}
 	}
 	return kSCErr_None;
 }
