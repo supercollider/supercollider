@@ -71,6 +71,26 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PySCLang", "..\Psycollider\
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChaosUGens", "PlugIns\ChaosUGens.vcproj", "{4E998729-F079-485C-B30C-B0B99BD69B19}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DemandUGens", "PlugIns\DemandUGens.vcproj", "{4E998729-F079-485C-B30C-B0B99BD69B19}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynNoiseUGens", "PlugIns\DynNoiseUGens.vcproj", "{4E998729-F079-485C-B30C-B0B99BD69B19}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FFT2_UGens", "PlugIns\FFT2_UGens.vcproj", "{4E998729-F079-485C-B30C-B0B99BD69B19}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GendynUGens", "PlugIns\GendynUGens.vcproj", "{4E998729-F079-485C-B30C-B0B99BD69B19}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -115,6 +135,26 @@ Global
 		{580DA691-0F33-4970-8D19-69CB47DE67D4}.Debug.Build.0 = Debug|Win32
 		{580DA691-0F33-4970-8D19-69CB47DE67D4}.Release.ActiveCfg = Release|Win32
 		{580DA691-0F33-4970-8D19-69CB47DE67D4}.Release.Build.0 = Release|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Debug.ActiveCfg = Debug|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Debug.Build.0 = Debug|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Release.ActiveCfg = Release|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Release.Build.0 = Release|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Debug.ActiveCfg = Debug|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Debug.Build.0 = Debug|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Release.ActiveCfg = Release|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Release.Build.0 = Release|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Debug.ActiveCfg = Debug|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Debug.Build.0 = Debug|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Release.ActiveCfg = Release|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Release.Build.0 = Release|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Debug.ActiveCfg = Debug|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Debug.Build.0 = Debug|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Release.ActiveCfg = Release|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Release.Build.0 = Release|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Debug.ActiveCfg = Debug|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Debug.Build.0 = Debug|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Release.ActiveCfg = Release|Win32
+		{4E998729-F079-485C-B30C-B0B99BD69B19}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
