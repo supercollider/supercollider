@@ -1,6 +1,7 @@
 
 Environment : IdentityDictionary {
-	classvar <>saveEnvir;
+	classvar <>stack;
+	
 	
 	*new { arg size=8; ^super.new(size) }
 	*make { arg function;
@@ -9,6 +10,7 @@ Environment : IdentityDictionary {
 	*use { arg function;
 		^this.new.use(function)
 	}
+	*initClass { stack = LinkedList.new }
 
 	make { arg function;
 		// pushes the Envir, executes function, returns the Envir
@@ -35,12 +37,17 @@ Environment : IdentityDictionary {
 	eventAt { arg key; ^this.at(key) }
 	
 	*pop {
-		if(saveEnvir.notNil) { currentEnvironment = saveEnvir };
+		if(stack.notEmpty) { currentEnvironment = stack.pop }
 	}
+	
+	*push { arg envir;
+		stack.add(currentEnvironment);
+		currentEnvironment = envir;
+	}
+	
 	pop { this.class.pop }
 	push {
-		this.class.pop;
-		if(currentEnvironment.notNil) { this.class.saveEnvir = currentEnvironment };
+		this.class.stack.add(currentEnvironment);
 		currentEnvironment = this;
 	}
 	
