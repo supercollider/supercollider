@@ -123,7 +123,7 @@ SynthControl : AbstractPlayControl {
 			if(this.canReleaseSynth, {
 					bundle.add([15, synth.nodeID, \gate, 0.0]); //to be sure.
 			}, {
-					if(this.canFreeSynth.not, { bundle.add([11, synth.nodeID]) }); //"/n_free"
+					if(this.canFreeSynth.not, { "free".debug; bundle.add([11, synth.nodeID]) }); //"/n_free"
 			});
 			synth.isPlaying = false;
 		});

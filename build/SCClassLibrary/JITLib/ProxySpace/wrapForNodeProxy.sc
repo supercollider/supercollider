@@ -40,7 +40,7 @@
 	prepareForProxySynthDef { ^this.subclassResponsibility(thisMethod) }
 	
 	argNames { ^nil }
-	numChannels { ^nil } 
+	//numChannels { ^nil } 
 	clear { }
 	//support for unop / binop proxy
 	isNeutral { ^true }
@@ -309,6 +309,3 @@
 		})
 	}
 }
-
-
-

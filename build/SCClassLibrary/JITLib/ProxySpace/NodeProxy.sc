@@ -544,7 +544,9 @@ NodeProxy : BusPlug {
 	taskFunc_ { arg func;
 		var envir;
 		envir = currentEnvironment;
-		this.task = Routine({ envir.use({ func.value(this) }) })
+		this.task = Routine({ 
+			envir.use({ func.value(this) }); 
+		})
 	}
 	
 	readFromBus { arg busses;

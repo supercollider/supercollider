@@ -48,10 +48,17 @@ ProxySynthDef : SynthDef {
 			// constrain the output to the right number of channels if supplied
 			// and wrap it in a fade envelope
 			envgen = if(makeFadeEnv, { this.makeFadeEnv }, { 1.0 });
-			if(chanConstraint.notNil and: { chanConstraint !== numChannels }, {
-				output = NumChannels(output, chanConstraint, true);
-				numChannels = chanConstraint;
-			});
+			if(chanConstraint.notNil  
+				and: { chanConstraint < numChannels }
+				and: { isScalar.not }, 
+				{
+					postln(
+					"wrapped channels from" + numChannels + "to" + chanConstraint + "channels"
+					);
+					output = NumChannels(output, chanConstraint, true);
+					numChannels = chanConstraint;
+					
+				});
 			output = output * envgen;
 			
 			if(isScalar, {
@@ -67,7 +74,7 @@ ProxySynthDef : SynthDef {
 		def.rate = rate;
 		def.numChannels = numChannels;
 		def.canReleaseSynth = makeFadeEnv || hasOwnGate;
-		def.canFreeSynth = def.canReleaseSynth || canFree; //revisit
+		def.canFreeSynth = def.canReleaseSynth || canFree;
 		//[\defcanReleaseSynth, def.canReleaseSynth, \defcanFreeSynth, def.canFreeSynth].debug;
 		^def
 	}
