@@ -427,7 +427,7 @@ PyrObject* ConvertOSCMessage(int inSize, char *inData)
                     //post("sym '%s'\n", slots[i+1].us->name);
                     break;
                 case 'b' :
-                    SetObject(slots+i+1, getsym(msg.gets()));
+					SetNil(slots+i+1);
                     //post("sym '%s'\n", slots[i+1].us->name);
                     break;
             }
