@@ -443,6 +443,7 @@ Interpreter {
 	}
 	
 	executeFile { arg pathName;
+		if (File.exists(pathName).not) { ["file \"",pathName,"\" does not exist."].join.postln; ^nil }
 		^this.compileFile(pathName).value;
 	}
 	
