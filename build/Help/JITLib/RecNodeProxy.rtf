@@ -2,6 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+\red0\green115\blue0;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
 }
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -24,8 +25,9 @@ instance creation:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs16 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 	
+\f2\fs24 \cf0 	
 \f0\b *new(server) / *audio(server, numChannels)\
 		
 \f2\b0 see superclass
@@ -50,8 +52,9 @@ instance creation:\
 
 \f2\b0 \cf0 		start the recording synth, if paused is false start recording immediately\
 		default: true\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b 	\
+\f0\b \cf0 	\
 	close\
 		
 \f2\b0 stop recording, close file 
@@ -67,10 +70,16 @@ instance creation:\
 \f2\b0 see if recording right now
 \f0\b \
 	\
+	wakeUp \
 			
-\f1\b0\fs16 \
+\f2\b0 until the proxy is not used by any output ( either .play or .ar/.kr )\
+			it is not running on the server. you can wake it up to force it playing.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 ___________________________________________________
+\f1\fs16 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 ___________________________________________________
 \f1\b0\fs18 \
 \
 \
@@ -94,7 +103,6 @@ a.source = \{ \cf2 SinOsc\cf0 .ar([400,700], 0, 0.1) \};\
 a.source = \{ \cf2 SinOsc\cf0 .ar([410,510], 0, 0.1) \};\
 a.source = \{ \cf2 SinOsc\cf0 .ar([\cf2 LFNoise1\cf0 .kr(80, 100, 300),500], 0, 0.1) \};\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //stop recording and close file\cf0 \
 a.close;\
 \
@@ -103,7 +111,31 @@ a.stop; \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs26 \cf0 \
+\f0\b\fs26 \cf0 recording from some bus\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 a = \cf2 Bus\cf0 .audio(s, 2); \
+\
+\cf2 SynthDef\cf0 (\cf4 "test"\cf0 , \{ \cf2 arg\cf0  out; \cf2 Out\cf0 .ar(out, \{ \cf2 WhiteNoise\cf0 .ar(0.1) \}.dup(2)) \}).send(s);\
+x = \cf2 Synth\cf0 (\cf4 "test"\cf0 , [\cf5 \\out\cf0 , a.index]);\
+\
+\
+n = \cf2 RecNodeProxy\cf0 .audio(s, 2);\
+n.source = \{ \cf2 InFeedback\cf0 .ar(a.index, 2) \};\
+\
+n.play;\cf3 //monitor\cf0 \
+n.stop;\cf3 //turn off monitor\cf0 \
+\
+n.open(\cf4 "noise.aif"\cf0 );\
+n.record;\
+n.unpause;\
+\
+n.close;
+\f2\fs26 \
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -132,11 +164,9 @@ r.unpause;\
 r.pause;\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //stop recording and close file\cf0 \
 r.close;\
 b.stop; \cf3 //stop listen to b\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -156,4 +186,45 @@ r.unpause; \cf3 //start recording\cf0 \
 r.close;  \cf3 //end recording, close file\cf0 \
 b.stop;	\cf3 //stop listen\
 \cf0 \
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs26 \cf0 recording from other sources\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\
+\
+s = \cf2 Server\cf0 .local;\
+s.boo\cf6 t;\
+\
+a = \cf7 RecNodeProxy\cf6 .audio(s, 2);\
+b = a.index; \cf8 //get the bus index;\cf6 \
+a.play; 		\cf8 //monitor;\cf6 \
+a.open(\cf9 "xproxySpace.aif"\cf6 );\
+a.record;\
+a.unpause;\
+\
+(\
+\cf7 Routine\cf6 (\{\cf0 \
+	var id;\
+	loop(\{\
+		id = s.nextNodeID;\
+		s.sendMsg("/s_new", "default", id,0,0, \\out, b, \\freq, rrand(400, 800));\
+		0.2.wait;\
+		s.sendMsg("/n_set", id, \\gate, 0);\
+		0.2.wait;\
+	\})\
+\}).play;\
+)\
+\
+\
+\cf3 //stop recording and close file\cf0 \
+a.close;\
+\
+\cf3 //monitor off\cf0 \
+a.stop; \
+\
 }
