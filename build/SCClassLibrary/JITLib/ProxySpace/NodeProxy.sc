@@ -18,13 +18,12 @@ NodeProxy : AbstractFunction {
 	}
 		
 	*initClass {
-		SynthDef("proxyOut-linkDefAr-1", { arg i_busOut=0, i_busIn=16; 
+		SynthDef.writeOnce("proxyOut-linkDefAr-1", { arg i_busOut=0, i_busIn=16; 
 			Out.ar(i_busOut, InFeedback.ar(i_busIn, 1)) 
-		}).writeDefFile;
-		SynthDef("proxyOut-linkDefAr-2", { arg i_busOut=0, i_busIn=16; 
+		});
+		SynthDef.writeOnce("proxyOut-linkDefAr-2", { arg i_busOut=0, i_busIn=16; 
 			Out.ar(i_busOut, InFeedback.ar(i_busIn, 2)) 
-		}).writeDefFile;
-		
+		});
 	}
 	
 	clear {
@@ -150,6 +149,9 @@ NodeProxy : AbstractFunction {
 		^asString(this.identityHash.abs) ++ objects.size
 	}
 	
+	asInstr {
+		^{ this.value }.asInstr
+	}
 	//asDefName { ^this.generateUniqueName }
 	
 	// setting the source to anything that returns a valid ugen input
