@@ -49,6 +49,8 @@ AbstractPlayControl {
 		//used in shared node proxy
 		this.stopToBundle(bundle);
 	}
+	controlNames { ^[] }
+	controlValues { ^[] }
 	
 	play { this.subclassResponsibility(thisMethod) }
 	stop { this.subclassResponsibility(thisMethod) }
@@ -168,6 +170,9 @@ SynthControl : AbstractPlayControl {
 	}
 	
 	canReleaseSynth { ^canReleaseSynth }
+	// todo: get from SynthDescLib
+	controlNames { ^[] }
+	controlValues { ^[] }
 }
 
 
@@ -210,6 +215,8 @@ SynthDefControl : SynthControl {
 	}
 	
 	name { ^synthDef.name }
+	controlNames { ^source.def.argNames }
+	controlValues { ^source.def.prototypeFrame }
 	
 	
 }
@@ -219,6 +226,47 @@ SoundDefControl : SynthDefControl {
 	writeDef { }
 	build { synthDef = source.synthDef; ^true }
 	sendDefToBundle {} //assumes that SoundDef does send to the same server 
+}
+
+DiskInControl : SynthControl {
+	var buffer, numChannels, oldFadeTime, proxy;
+	classvar <>defaultBufferSize = 65536;
+	*initClass {
+		2.do { |i|
+			i = i + 1;
+			SynthDef("system_diskin_" ++ i, { arg out, gate=1, bufnum;
+				var env;
+				env = EnvGen.kr(Env.asr(0.01, 1, 0.02), gate, doneAction:2);
+				Out.ar(out, DiskIn.ar(i, bufnum) * env);
+			}).writeDefFile;
+		}
+	}
+	
+	build { arg argProxy;
+		var ok, server, i, sf;
+		server = proxy.server;
+		ok = proxy.initBus(proxy.rate ? \audio, proxy.numChannels ? 2);
+		numChannels = proxy.numChannels.min(2);
+		proxy = argProxy;
+		// sf = proxy.nodeMap[\startFrame].value;
+		oldFadeTime = proxy.fadeTime; //remember to add it back after
+		proxy.fadeTime = 0.0; 
+		if(ok) { 
+			buffer = Buffer.cueSoundFile(
+						server, source, 0, numChannels, this.class.defaultBufferSize
+			)
+		}
+	}
+	
+	name  { ^"system_diskin_" ++ numChannels }
+		
+	free { 
+		buffer.close; 
+		buffer.free; 
+		buffer = nil; 
+		numChannels = nil; 
+		proxy.fadeTime = oldFadeTime;
+	}
 }
 
 

@@ -515,6 +515,18 @@ NodeProxy : BusPlug {
 	
 	}
 	
+	supplementNodeMap {
+		objects.do { |obj|
+				var names, values;
+				names = obj.controlNames;
+				values = obj.controlValues;
+				names.do({ arg name,i; 
+					if (nodeMap.at(name).isNil)
+						{ nodeMap.set(name, values.at(i)) }
+				});
+		};
+	}
+	
 	
 	/*
 	undo {
