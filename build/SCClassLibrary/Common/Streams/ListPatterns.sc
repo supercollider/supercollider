@@ -132,8 +132,9 @@ Pfsm : ListPattern {
 				while({
 					index = list.at(index).choose.clip(0, maxState) * 2 + 2;
 					item = list.at(index - 1);
+					item.notNil
+				},{
 					inval = item.embedInStream(inval);
-					inval.notNil;
 				});
 			});
 		});
