@@ -1,0 +1,110 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green0\blue0;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Bus
+\f1\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Represents an audio or control bus on a server.  Encapsulates all the OSC messages a Bus can receive.  Manages allocation and deallocation of bus indices.
+\f1\fs18 \
+
+\f2\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Bus.control( server, numChannels );\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 	Allocate a control bus on the server.  \
+	Defaults: default server, 1 channel.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Bus.audio( server, numChannels );\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 	Allocate an audio bus on the server. \
+	Defaults: default server, 1 channel.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Bus.alloc( rate, server, numChannels);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 	Allocate a bus of either rate as specified by the symbols: \
+		\\control or \\audio\
+		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Bus.new( rate, index, numChannels);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 	This method does not allocate a bus index, but assumes that you\
+	already have allocated the appropriate bus index and can supply it\
+	yourself.
+\f1\fs18 \
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // something to play with\
+\cf3 SynthDef\cf4 (\cf5 "moto-rev"\cf4 , \{ \cf3 arg\cf4  ffreq=100;\
+	\cf3 var\cf4  x;\
+	x = \cf3 RLPF\cf4 .ar(\cf3 LFPulse\cf4 .ar(\cf3 SinOsc\cf4 .kr(0.2, 0, 10, 21), [0,0.1], 0.1),\
+			 ffreq, 0.1)\
+			 .clip2(0.4);\
+	\cf3 Out\cf4 .ar(0, x);\
+\}).writeDefFile;\
+\
+s = \cf3 Server\cf4 .local;\
+s.boot;\
+\
+x = \cf3 Synth\cf4 (\cf5 "moto-rev"\cf4 );\
+\
+\cf2 // get a bus\
+\cf4 b = \cf3 Bus\cf4 .control(s);\
+\
+\cf2 // map the synth's first input (ffreq) to read\
+// from the bus' output index\
+\cf4 x.map(0,b.index);\
+\
+\cf2 // by setting the bus' value you send a /c_fill message\
+// to set each channel of the bus to that float value\
+\cf4 b.value = 100;\
+b.value = 1000;\
+b.value = 30;\
+\
+\cf2 // this is a single channel bus anyway\
+\cf4 b.set(300);\
+\
+\cf2 // multi chan:  b.set(300,350);\
+\cf4 \
+x.free;\
+\
+b.free; \cf2 // release it to be reallocated !!\
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 value_(aFloat)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 	set all channels to this float value\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 set(...values)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 	a list of values for each channel of the bus\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 free\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 	return the bus' indices to the server's bus allocator\
+	so they can be reallocated to someone else.
+\f1\fs18 \
+	\
+}

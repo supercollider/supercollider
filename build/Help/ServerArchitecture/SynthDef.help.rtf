@@ -9,18 +9,22 @@
 Evaluates a UGen function, generating a ugenGraph that describes the exact architecture of a Synth.  All constants, Controls, and UGens that will be used in synthesis are formatted for the Server and written to disk.  \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b SynthDef(name,ugenGraphFunc)\
+\f0\b \cf0 SynthDef(synthDefName,ugenGraphFunc)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	Create a synthDef instance, evaluate the ugenGraphFunc and build the ugenGraph.\
+\f1\b0 \cf0 	Create a synthDef instance, evaluate the ugenGraphFunc and build the ugenGraph.\
+\
 	Argument names that begin with the letter 'i' will be static and non-modulatable.\
 		they will not respond to /n_set or /n_map.\
 	Other arguments are all Float inputs, representing either values or bus indices\
 		for use in In or Out.\
 	Functions inside of a SynthDef are evaluated only at the time of building \
 		the ugenGraph.  Once the graph is built, it is a fixed architecture.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b name
+\f0\b \cf0 name
 \f1\b0 \
 	a SynthDef is always referred to by its name, which should be unique.\
 
