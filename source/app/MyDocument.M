@@ -538,10 +538,13 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 -(void)selectLine:(int)linenum
 {
     NSTextView *localTextView = [self textView];
+	NSString *nsstring = [localTextView string];
+	int length = [nsstring length];
+	if(length < 1) return;
     NSLayoutManager *layoutManager = [localTextView layoutManager];
     unsigned numberOfLines, index, numberOfGlyphs = [layoutManager numberOfGlyphs];
     NSRange lineRange;
-    if(linenum <= 0) linenum = 1;
+	if(linenum <= 0) linenum = 1;
     for (numberOfLines = 0, index = 0; index < numberOfGlyphs && numberOfLines<linenum; numberOfLines++){
     
         (void) [layoutManager lineFragmentRectForGlyphAtIndex:index effectiveRange:&lineRange];
@@ -551,6 +554,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     [localTextView setSelectedRange: lineRange];
     [localTextView scrollRangeToVisible: lineRange];
 }
+
 
 //call from menu
 - (IBAction)selectLineWindow: (id) sender
