@@ -55,7 +55,7 @@ Env {
 		array = nil;
 	} 
 	loopNode_ { arg z; 
-		releaseNode = z;
+		loopNode = z;
 		array = nil;
 	}
 	
