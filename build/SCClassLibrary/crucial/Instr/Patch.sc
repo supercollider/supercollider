@@ -296,7 +296,7 @@ Patch : HasPatchIns  {
 		});
 		^args
 	}
-	defName { ^defName.debug("defName thanks for asking") } // super would say 'Patch'
+	defName { ^defName } // super would say 'Patch'
 	
 	stopToBundle { arg bundle;
 		super.stopToBundle(bundle);
