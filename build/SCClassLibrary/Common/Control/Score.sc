@@ -40,7 +40,8 @@ Score {
 					(deltatime-timekeep).wait;
 					inserver.sendBundle(inserver.latency, msg);
 					timekeep = deltatime;
-				}
+				};
+				isPlaying = false;
 			});
 			isPlaying = true;
 			routine.play;
