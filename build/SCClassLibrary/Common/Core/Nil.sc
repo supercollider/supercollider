@@ -24,7 +24,7 @@ Nil {
 	collect {}
 	select {}
 	reject {}
-	detect { ^false }
+	detect {}
 	collectAs {}
 	selectAs {}
 	rejectAs {}
@@ -54,7 +54,7 @@ Nil {
 		stream.putAll(this.asString);
 	}
 	storeOn { arg stream;
-		stream.putAll(this.asCompileString);
+		stream.putAll("nil");
 	}
 	
 	// Array support
