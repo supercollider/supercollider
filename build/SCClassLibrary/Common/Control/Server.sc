@@ -109,7 +109,8 @@ Server : Model {
 	var <numUGens=0,<numSynths=0,<numGroups=0,<numSynthDefs=0;
 	var <avgCPU, <peakCPU;
 	
-	var alive = false,booting = false,aliveThread,statusWatcher;
+	var alive = false, booting = false, aliveThread, statusWatcher;
+	var <>tree;
 	
 	var <window, scopeWindow, scopeBuffer, <scopeSynth;
 	var recordBuf, <recordNode;
@@ -128,7 +129,8 @@ Server : Model {
 		serverRunning = false;
 		named.put(name, this);
 		set.add(this);
-		this.newAllocators;	
+		this.newAllocators;
+		tree = { this.sendMsg("/g_new", 1) };	
 	}
 	newAllocators {
 		nodeAllocator = NodeIDAllocator(clientID);
@@ -349,6 +351,7 @@ Server : Model {
 				"notification is off".inform; 
 			});
 			serverBooting = false;
+			tree.value(this);
 		});
 		this.bootServerApp;
 	}
@@ -427,9 +430,10 @@ Server : Model {
 		this.quitAll;
 	}
 	freeAll {
-		this.sendMsg("/g_freeAll",0);
+		this.sendMsg("/g_freeAll", 0);
 		this.sendMsg("/clearSched");
-		if (nodeWatcher.notNil) { nodeWatcher.clear; };
+		tree.value(this);
+		if (nodeWatcher.notNil) { nodeWatcher.clear };
 	}
 	*freeAll {
 		set.do({ arg server;
