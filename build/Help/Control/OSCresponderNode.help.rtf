@@ -5,17 +5,27 @@
 \red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 OSCresponderNode\
+\f0\b\fs36 \cf0 OSCresponderNode			
+\fs30 client side responder
+\fs36 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \cf0 Register a function to be called upon receiving a specific command from a specific OSC address.\
+\f1\b0\fs24 \cf0 \
+Register a function to be called upon receiving a specific command from a specific OSC address.\
 same interface like 
 \f0\b OSCresponder, 
 \f1\b0 but allows multiple responders to the same command.\
 \
-note that OSCresponderNode evaluates its function in the SystemClock thread.\
-in order to access the AppClock thread (e.g. for GUI access ) use \{ ... \}.defer;\
+note that OSCresponderNode evaluates its function in the system process.\
+in order to access the application process (e.g. for GUI access ) use 
+\f0\b \{ ... \}.defer
+\f1\b0 ;\
+\
+\
+\
+\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -49,4 +59,7 @@ s.notify;\
 a.remove;\
 b.remove;\
 x.free;\
+\
+\
+\
 }
