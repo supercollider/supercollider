@@ -13,14 +13,14 @@ Demand : MultiOutUGen {
 }
 
 Dseries : UGen {
-	*new { arg start = 0, step = 1, length=100;
-		^this.multiNew('demand', start, step, length)
+	*new { arg start = 1, step = 1, length = 100;
+		^this.multiNew('demand', length, start, step)
 	}	
 }
 
 Dgeom : UGen {
 	*new { arg start = 1, grow = 2, length=100;
-		^this.multiNew('demand', start, grow, length)
+		^this.multiNew('demand', length, start, grow)
 	}	
 }
 
@@ -45,7 +45,7 @@ Dswitch1 : UGen {
 
 Dwhite : UGen {
 	*new { arg lo, hi, length=inf;
-		^this.multiNew('demand', lo, hi, length)
+		^this.multiNew('demand', length, lo, hi)
 	}
 }
 
@@ -53,7 +53,7 @@ Diwhite : Dwhite {}
 
 Dbrown : UGen {
 	*new { arg lo, hi, step, length=inf;
-		^this.multiNew('demand', lo, hi, step, length)
+		^this.multiNew('demand', length, lo, hi, step)
 	}
 }
 
