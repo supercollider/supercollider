@@ -587,7 +587,7 @@ void AllocPool::DoCheckChunk(AllocChunkPtr p)
   //size_t maxsize = mAreaInitSize > mAreaMoreSize ? mAreaInitSize : mAreaMoreSize;
  // assert(size < maxsize);
   
-  AllocChunkPtr next = p->ChunkAtOffset(size);	 
+  AllocChunkPtr next __attribute__((__unused__)) = p->ChunkAtOffset(size);	 
   assert(p->mSize == next->mPrevSize);
 }
 
@@ -595,7 +595,7 @@ void AllocPool::DoCheckChunk(AllocChunkPtr p)
 void AllocPool::DoCheckFreeChunk(AllocChunkPtr p) 
 { 
   size_t size = p->Size();
-  AllocChunkPtr next = p->ChunkAtOffset(size);
+  AllocChunkPtr next __attribute__((__unused__)) = p->ChunkAtOffset(size);
 
   DoCheckChunk(p);
 
@@ -649,7 +649,7 @@ void AllocPool::DoCheckInUseChunk(AllocChunkPtr p)
 void AllocPool::DoCheckAllocedChunk(AllocChunkPtr p, size_t s) 
 {
   size_t size = p->Size();
-  long room = size - s;
+  long room __attribute__((__unused__)) = size - s;
 
   DoCheckInUseChunk(p);
 
