@@ -72,14 +72,14 @@ struct Schmidt : public Unit
 	float mLevel;
 };
 
-struct PulseDivider : public Unit
+struct PulseDiv : public Unit
 {
 	float mLevel;
 	float m_prevtrig;
 	long mCounter;
 };
 
-struct PulseCounter : public Unit
+struct PulseCount : public Unit
 {
 	float mLevel;
 	float m_prevtrig, m_prevreset;
@@ -188,11 +188,11 @@ void Gate_next_aa(Gate *unit, int inNumSamples);
 void Schmidt_Ctor(Schmidt *unit);
 void Schmidt_next(Schmidt *unit, int inNumSamples);
 
-void PulseDivider_Ctor(PulseDivider *unit);
-void PulseDivider_next(PulseDivider *unit, int inNumSamples);
+void PulseDiv_Ctor(PulseDiv *unit);
+void PulseDiv_next(PulseDiv *unit, int inNumSamples);
 
-void PulseCounter_Ctor(PulseCounter *unit);
-void PulseCounter_next(PulseCounter *unit, int inNumSamples);
+void PulseCount_Ctor(PulseCount *unit);
+void PulseCount_next(PulseCount *unit, int inNumSamples);
 
 void TDelay_Ctor(TDelay *unit);
 void TDelay_next(TDelay *unit, int inNumSamples);
@@ -636,9 +636,9 @@ void Schmidt_next(Schmidt *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void PulseDivider_Ctor(PulseDivider *unit)
+void PulseDiv_Ctor(PulseDiv *unit)
 {
-	SETCALC(PulseDivider_next);
+	SETCALC(PulseDiv_next);
 
 	unit->m_prevtrig = 0.f;
 	unit->mLevel = 0.f;
@@ -648,7 +648,7 @@ void PulseDivider_Ctor(PulseDivider *unit)
 }
 
 
-void PulseDivider_next(PulseDivider *unit, int inNumSamples)
+void PulseDiv_next(PulseDiv *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *trig = ZIN(0);
@@ -680,9 +680,9 @@ void PulseDivider_next(PulseDivider *unit, int inNumSamples)
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
-void PulseCounter_Ctor(PulseCounter *unit)
+void PulseCount_Ctor(PulseCount *unit)
 {
-	SETCALC(PulseCounter_next);
+	SETCALC(PulseCount_next);
 
 	unit->m_prevtrig = 0.f;
 	unit->m_prevreset = 0.f;
@@ -692,7 +692,7 @@ void PulseCounter_Ctor(PulseCounter *unit)
 }
 
 
-void PulseCounter_next(PulseCounter *unit, int inNumSamples)
+void PulseCount_next(PulseCount *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *trig = ZIN(0);
@@ -1275,8 +1275,8 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Latch);
 	DefineSimpleUnit(Gate);
 	DefineSimpleUnit(Schmidt);
-	DefineSimpleUnit(PulseDivider);
-	DefineSimpleUnit(PulseCounter);
+	DefineSimpleUnit(PulseDiv);
+	DefineSimpleUnit(PulseCount);
 	DefineSimpleUnit(TDelay);
 	DefineSimpleUnit(ZeroCrossing);
 	DefineSimpleUnit(Peak);
