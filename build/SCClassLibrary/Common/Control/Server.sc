@@ -77,7 +77,6 @@ Server : Model {
 	var <serverRunning = false, <serverBooting=false;
 	var <>options,<>latency = 0.2,<dumpMode=0, <notified=true;
 	var <nodeAllocator; 
-	var <staticNodeAllocator;
 	var <controlBusAllocator;
 	var <audioBusAllocator;
 	var <bufferAllocator;
@@ -108,7 +107,7 @@ Server : Model {
 		this.newNodeWatcher;
 	}
 	newNodeWatcher {
-		nodeWatcher = NodeIDWatcher.new(addr, staticNodeAllocator);
+		nodeWatcher = NodeIDWatcher.new(addr, nodeAllocator);
 	}
 	newAllocators {
 		var nodeIdOffset;
