@@ -22,7 +22,9 @@
 	Plays back break point envelopes. The envelopes are instances of the Env class. \
 	See the 
 \f0\b Env
-\f2\b0  help file for more info.\
+\f2\b0  help file for more info. see also 
+\f0\b UGensWithDoneAction
+\f2\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -51,7 +53,7 @@
 	
 \f1\fs18 \
 \
-		\cf2 \{ \cf3 EnvGen\cf2 .kr(\cf3 Env\cf2 .perc, 1.0, doneAction: 2) * \cf3 SinOsc\cf2 .ar(440,0,0.1) \}.play;\cf0 \
+	\cf2 \{ \cf3 EnvGen\cf2 .kr(\cf3 Env\cf2 .perc, 1.0, doneAction: 2) * \cf3 SinOsc\cf2 .ar(440,0,0.1) \}.play;\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -86,32 +88,41 @@
 \f1\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\
+\
+\
+\
 \cf4 // example\cf2 \
 \
-(\
-\cf3 SynthDef\cf2 (\cf5 "env-help"\cf2 , \{ \cf3 arg\cf2  out, gate; \
-	\cf3 var\cf2  z;\
-	z =  \cf3 EnvGen\cf2 .kr(\cf3 Env\cf2 .adsr,gate) * \cf3 SinOsc\cf2 .ar(440,0,0.1);\
-	\cf3 Out\cf2 .ar(out, z)\
-\}).send(s);\
-)\
-\
-s.sendMsg(\cf5 "/s_new"\cf2 , \cf5 "env-help"\cf2 , 1980); \cf4 // start a synth (silently, as gate defaults to 0)\cf2 \
-\
-\
-\cf4 // turn on\cf2 \
-s.sendMsg(\cf5 "/n_set"\cf2 , 1980, \cf6 \\gate\cf2 , 1);\
-\
-\cf4 // turn off\cf2 \
-s.sendMsg(\cf5 "/n_set"\cf2 , 1980, \cf6 \\gate\cf2 , 0);\
-\
-\cf4 // it does not matter to what value the gate is set, as long as it is > 0\cf2 \
-s.sendMsg(\cf5 "/n_set"\cf2 , 1980, \cf6 \\gate\cf2 , 2);\
-\
-s.sendMsg(\cf5 "/n_free"\cf2 , 1980);\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs24 \cf0 \
+\cf0 	\cf2 (\
+\cf0 	\cf3 SynthDef\cf2 (\cf5 "env-help"\cf2 , \{ \cf3 arg\cf2  out, gate; \
+\cf0 	\cf2 	\cf3 var\cf2  z;\
+\cf0 	\cf2 	z =  \cf3 EnvGen\cf2 .kr(\cf3 Env\cf2 .adsr,gate) * \cf3 SinOsc\cf2 .ar(440,0,0.1);\
+\cf0 	\cf2 	\cf3 Out\cf2 .ar(out, z)\
+\cf0 	\cf2 \}).send(s);\
+\cf0 	\cf2 )\
+\cf0 	\cf2 \
+\cf0 	\cf2 s.sendMsg(\cf5 "/s_new"\cf2 , \cf5 "env-help"\cf2 , 1980); \cf4 // start a synth (silently, as gate defaults to 0)\cf2 \
+\cf0 	\cf2 \
+\cf0 	\cf2 \
+\cf0 	\cf4 // turn on\cf2 \
+\cf0 	\cf2 s.sendMsg(\cf5 "/n_set"\cf2 , 1980, \cf6 \\gate\cf2 , 1);\
+\cf0 	\cf2 \
+\cf0 	\cf4 // turn off\cf2 \
+\cf0 	\cf2 s.sendMsg(\cf5 "/n_set"\cf2 , 1980, \cf6 \\gate\cf2 , 0);\
+\cf0 	\cf2 \
+\cf0 	\cf4 // it does not matter to what value the gate is set, as long as it is > 0\cf2 \
+\cf0 	\cf2 s.sendMsg(\cf5 "/n_set"\cf2 , 1980, \cf6 \\gate\cf2 , 2);\
+\cf0 	\cf2 \
+\cf0 	\cf2 s.sendMsg(\cf5 "/n_free"\cf2 , 1980);\cf0 \
+	
+\f2\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\
+\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -120,41 +131,38 @@ s.sendMsg(\cf5 "/n_free"\cf2 , 1980);\cf0 \
 
 \f2\b0\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs18 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf7 SynthDef\cf0 (\cf8 "env"\cf0 , \{ \cf7 arg\cf0  i_outbus=0;\
-	\cf7 var\cf0  env, envctl;\
+\cf0 	
+\f1\fs18 (\
+	\cf7 SynthDef\cf0 (\cf8 "env"\cf0 , \{ \cf7 arg\cf0  i_outbus=0;\
+		\cf7 var\cf0  env, envctl;\
+		\
+		\cf9 // make a dummy 8 segment envelope\
+\cf0 		env = \cf7 Env.\cf0 newClear(\cf7 8\cf0 );\
+		\
+		\cf9 // create a control argument array\
+\cf0 		envctl = \cf7 Control\cf0 .names([\cf10 \\env\cf0 ]).kr( env.asArray );\
+		\
+		\cf7 ReplaceOut\cf0 .kr(i_outbus, \cf7 EnvGen\cf0 .kr(envctl, doneAction: 2));\
+	\}).send(s);\
+	)\
 	\
-	\cf9 // make a dummy 8 segment envelope\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	env = \cf7 Env.\cf0 newClear(\cf7 8\cf0 );\
+	(\
+	\cf7 SynthDef\cf0 (\cf8 "sine"\cf0 , \{\
+		\cf7 Out\cf0 .ar(0, \cf7 SinOsc\cf0 .ar(\cf7 In\cf0 .kr(0), 0, 0.2));\
+	\}).send(s);\
+	)\
 	\
-	\cf9 // create a control argument array\
-\cf0 	envctl = \cf7 Control\cf0 .names([\cf10 \\env\cf0 ]).kr( env.asArray );\
+	s.sendMsg(\cf10 \\c_set\cf0 , 0, 800);\
 	\
-	\cf7 ReplaceOut\cf0 .kr(i_outbus, \cf7 EnvGen\cf0 .kr(envctl, doneAction: 2));\
-\}).send(s);\
-)\
-\
-(\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf7 SynthDef\cf0 (\cf8 "sine"\cf0 , \{\
-	\cf7 Out\cf0 .ar(0, \cf7 SinOsc\cf0 .ar(\cf7 In\cf0 .kr(0), 0, 0.2));\
-\}).send(s);\
-)\
-\
-s.sendMsg(\cf10 \\c_set\cf0 , 0, 800);\
-\
-s.sendMsg(\cf10 \\s_new\cf0 , \cf10 \\sine\cf0 , 1001, 1, 0);\
-\
-e = \cf7 Env\cf0 ([700,900,900,800], [1,1,1]*0.4, \cf10 \\exp\cf0 ).asArray;\
-s.sendBundle(\cf7 nil\cf0 ,[\cf10 \\s_new\cf0 , \cf10 \\env\cf0 , 1002, 2, 1001],[\cf10 \\n_setn\cf0 , 1002, \cf10 \\env\cf0 , e.size] ++ e);\
-\
-f = \cf7 Env\cf0 ([1000,1000,800,1000,900,1000], [1,1,1,1,1]*0.3, \cf10 \\step\cf0 ).asArray;\
-s.sendBundle(\cf7 nil\cf0 ,[\cf10 \\s_new\cf0 , \cf10 \\env\cf0 , 1003, 2, 1001],[\cf10 \\n_setn\cf0 , 1003, \cf10 \\env\cf0 , f.size] ++ f);\
-\
-s.sendMsg(\cf10 \\n_free\cf0 , 1001);\
+	s.sendMsg(\cf10 \\s_new\cf0 , \cf10 \\sine\cf0 , 1001, 1, 0);\
+	\
+	e = \cf7 Env\cf0 ([700,900,900,800], [1,1,1]*0.4, \cf10 \\exp\cf0 ).asArray;\
+	s.sendBundle(\cf7 nil\cf0 ,[\cf10 \\s_new\cf0 , \cf10 \\env\cf0 , 1002, 2, 1001],[\cf10 \\n_setn\cf0 , 1002, \cf10 \\env\cf0 , e.size] ++ e);\
+	\
+	f = \cf7 Env\cf0 ([1000,1000,800,1000,900,1000], [1,1,1,1,1]*0.3, \cf10 \\step\cf0 ).asArray;\
+	s.sendBundle(\cf7 nil\cf0 ,[\cf10 \\s_new\cf0 , \cf10 \\env\cf0 , 1003, 2, 1001],[\cf10 \\n_setn\cf0 , 1003, \cf10 \\env\cf0 , f.size] ++ f);\
+	\
+	s.sendMsg(\cf10 \\n_free\cf0 , 1001);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 \
@@ -176,9 +184,11 @@ s.sendMsg(\cf10 \\n_free\cf0 , 1001);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf3 	SynthDef\cf2 (\cf5 "stealMe"\cf2 , \{ \cf3 arg\cf2  gate = 1;\
-		\cf3 Out\cf2 .ar(0, \{\cf3 BrownNoise\cf2 .ar\}.dup * \cf3 EnvGen\cf2 .kr(\cf3 Env\cf2 .linen(2, 4, 2, 0.3), gate, doneAction:2))\
+\f1\fs18 \cf3 	(\
+	SynthDef\cf2 (\cf5 "stealMe"\cf2 , \{ \cf3 arg\cf2  gate = 1;\
+		\cf3 Out\cf2 .ar(0, \{\cf3 BrownNoise\cf2 .ar\}.dup * \cf3 EnvGen\cf2 .kr(\cf3 Env\cf2 .asr, gate, doneAction:2))\
 	\}).send(s);\
+	)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf2 \
 \cf0 	\cf2 s.sendMsg(\cf6 \\s_new\cf2 , \cf6 \\stealMe\cf2 , 1001, 1, 0);\
@@ -190,8 +200,11 @@ s.sendMsg(\cf10 \\n_free\cf0 , 1001);\
 	
 \f1\fs18 \
 	Node-release(releaseTime)\
+	\
+	\cf2 d = \{ \cf3 arg\cf2  gate=1; \{\cf3 BrownNoise\cf2 .ar\}.dup * \cf3 EnvGen\cf2 .kr(\cf3 Env\cf2 .asr, gate, doneAction:2) \}.play;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\cf2 	d.release(3);\cf0 \
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -222,13 +235,8 @@ s.sendMsg(\cf10 \\n_free\cf0 , 1001);\
 	\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
-\
-			
-\f2\fs24 \
-see also Linen, Line, XLine, InTrig\
-\
-(not yet done: an EnvGenBuffer class)\
+
+\f2\fs24 \cf0 \
 \
 \
 \
