@@ -8,6 +8,7 @@ UGen : AbstractFunction {
 	var <>synthIndex = -1;
 	
 	var <>antecedents, <>descendants; // topo sorting
+	var <>topoDepth;
 	
 	// instance creation
 	*new1 { arg rate ... args;
@@ -162,11 +163,7 @@ UGen : AbstractFunction {
 	
 	makeAvailable {
 		if (antecedents.size == 0, {
-			if (this.rate == 'audio', {
-				synthDef.arAvailable = synthDef.arAvailable.add(this);
-			},{
-				synthDef.krAvailable = synthDef.krAvailable.add(this);
-			});
+			synthDef.available = synthDef.available.add(this);
 		});
 	}
 	
@@ -176,7 +173,7 @@ UGen : AbstractFunction {
 	}
 		
 	schedule { arg outStack;
-		descendants.do({ arg ugen;
+		descendants.reverseDo({ arg ugen;
 			ugen.removeAntecedent(this);
 		});
 		^outStack.add(this);

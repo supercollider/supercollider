@@ -13,7 +13,7 @@ SynthDef {
 	var <>constantSet;
 	
 	// topo sort
-	var <>arAvailable, <>krAvailable;
+	var <>available;
 	
 	*new { arg name, ugenGraphFunc;
 		^this.prNew(name)
@@ -148,9 +148,6 @@ SynthDef {
 			array.put(index, value);
 		});
 
-		//constants.size.postln;
-		//array.postln;
-
 		file.putInt16(constants.size);
 		array.do({ arg item; 
 			file.putFloat(item) 
@@ -180,8 +177,11 @@ SynthDef {
 		this.indexUGens;
 	}
 	replaceUGen { arg a, b;
+		children.remove(b);
 		children.do({ arg item, i;
-			if (item === a, { children.put(i, b) });
+			if (item === a, { 
+				children.put(i, b) 
+			});
 			item.inputs.do({ arg input, j;
 				if (input === a, { item.inputs.put(j, b) });
 			});
@@ -212,7 +212,7 @@ SynthDef {
 	}
 	
 	initTopoSort {
-		arAvailable = krAvailable = nil;
+		available = nil;
 		children.do({ arg ugen;
 			ugen.antecedents = Set.new;
 			ugen.descendants = Set.new;
@@ -221,7 +221,7 @@ SynthDef {
 			// this populates the descendants and antecedents
 			ugen.initTopoSort;
 		});
-		children.do({ arg ugen;
+		children.reverseDo({ arg ugen;
 			ugen.descendants = ugen.descendants.asSortedList;
 			ugen.makeAvailable; // all ugens with no antecedents are made available
 		});
@@ -229,13 +229,8 @@ SynthDef {
 	topologicalSort {
 		var outStack;
 		this.initTopoSort;
-		while ({ krAvailable.size + arAvailable.size > 0 },{
-			while ({ krAvailable.size > 0 },{
-				outStack = krAvailable.pop.schedule(outStack);
-			});
-			if (arAvailable.size > 0, {
-				outStack = arAvailable.pop.schedule(outStack);
-			});
+		while ({ available.size > 0 },{
+			outStack = available.pop.schedule(outStack);
 		});
 		
 		children = outStack;
