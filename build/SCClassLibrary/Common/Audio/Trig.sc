@@ -202,3 +202,13 @@ MostChange : UGen
 }
 
 LeastChange : MostChange {}
+
+LastValue : UGen {
+	
+	*ar { arg in=0.0, diff=0.01;
+		^this.multiNew('audio', in, diff)
+	}
+	*kr { arg in=0.0, diff=0.01;
+		^this.multiNew('control', in, diff)
+	}
+}
