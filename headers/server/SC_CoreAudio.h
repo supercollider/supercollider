@@ -204,6 +204,7 @@ class SC_JackDriver : public SC_AudioDriver
     jack_client_t		*mClient;
 	SC_JackPortList		*mInputList;
 	SC_JackPortList		*mOutputList;
+	int64				mMaxOutputLatency;
 
 protected:
     // Driver interface methods
@@ -215,9 +216,10 @@ public:
     SC_JackDriver(struct World *inWorld);
 	virtual ~SC_JackDriver();
 
-    void JackRun();
-	void JackBufferSizeChanged(int numSamples);
-	void JackSampleRateChanged(double sampleRate);
+    void Run();
+	void BufferSizeChanged(int numSamples);
+	void SampleRateChanged(double sampleRate);
+	void GraphOrderChanged();
 };
 
 inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)

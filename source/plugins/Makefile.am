@@ -30,8 +30,10 @@ else
 MACUGENS_LA =
 endif
 
-INCLUDE_DIR		= $(top_srcdir)/../../headers
-INCLUDES		= -I$(INCLUDE_DIR)/common -I$(INCLUDE_DIR)/plugin_interface -I$(INCLUDE_DIR)/server
+SC_INCLUDE_DIR		= $(top_srcdir)/../../headers
+INCLUDES		= -I$(SC_INCLUDE_DIR)/common \
+			-I$(SC_INCLUDE_DIR)/plugin_interface \
+			-I$(SC_INCLUDE_DIR)/server
 AM_CPPFLAGS		= $(SC_CPPFLAGS)
 AM_CFLAGS		= $(SC_CFLAGS)
 AM_CXXFLAGS		= $(AM_CFLAGS)
@@ -85,7 +87,9 @@ LFUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 
 # MacUGens
 MacUGens_la_SOURCES		= MacUGens.cpp
+MacUGens_la_CXXFLAGS		= $(SC_X11_CFLAGS)
 MacUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
+MacUGens_la_LIBADD		= $(SC_X11_LIBS)
 
 # MulAddUGens
 MulAddUGens_la_SOURCES		= MulAddUGens.cpp

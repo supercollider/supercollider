@@ -52,12 +52,17 @@ public:
 	void printf(const char* fmt, ...);
 
 protected:
+	enum {
+		kGrowAlign = 256,
+		kGrowMask = kGrowAlign - 1
+	};
+
 	void growBy(size_t request);
 
 private:
-	char*	mData;
 	size_t	mCapacity;
 	char*	mPtr;
+	char*	mData;
 };
 
 // =====================================================================

@@ -165,12 +165,26 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 ;; process startup/shutdown
 ;; =====================================================================
 
+(defun sclang-setup-runtime-directory (dir)
+  (let ((prompt-fmt "Directory \"%s\" doesn't exist; create? "))
+    (unless (file-exists-p dir)
+      (when (y-or-n-p (format prompt-fmt dir))
+	(make-directory dir)))
+    (when (file-directory-p dir)
+      (let ((synthdef-dir (expand-file-name "synthdefs" dir)))
+	(unless (file-exists-p dir)
+	  (when (y-or-n-p (format prompt-fmt synthdef-dir))
+	    (make-directory synthdef-dir)))))))
+
 (defun sclang-start ()
   "Start SuperCollider process."
   (interactive)
   (sclang-stop)
   (sclang--init-post-buffer)
   (sclang--start-command-process)
+  ;; setup runtime directory structure
+  (and sclang-runtime-directory
+       (sclang-setup-runtime-directory sclang-runtime-directory))
   (let ((process-connection-type nil))
     (let ((proc (start-process sclang-process nil
 			       sclang-program

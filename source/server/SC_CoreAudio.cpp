@@ -18,7 +18,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
 #include "SC_CoreAudio.h"
 #include "SC_Sem.h"
 #include "SC_ComPort.h"
@@ -30,11 +29,6 @@
 #include "SC_Lib_Cintf.h"
 #include <stdlib.h>
 #include <pthread.h>
-
-#ifdef SC_LINUX
-#include <sys/time.h>
-#include <unistd.h>
-#endif // SC_LINUX
 
 const double kMicrosToOSCunits = 4294.967296; // pow(2,32)/1e6
 const double kNanosToOSCunits  = 4.294967296; // pow(2,32)/1e9
@@ -49,89 +43,10 @@ void set_real_time_priority(pthread_t thread);
 double gSampleRate, gSampleDur;
 
 // =====================================================================
-// Timing
+// Timing (CoreAudio)
 
-#if SC_AUDIO_API == SC_AUDIO_API_JACK
+#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
 
-struct SC_JackGlobalState
-{
-	jack_client_t*	mClient;
-	pthread_mutex_t	mLock;
-	jack_nframes_t	mFrameEpoch;
-	jack_nframes_t	mFrameTime;
-	double			mFrameTimeToNanos;
-};
-static SC_JackGlobalState gJackState = { 0, PTHREAD_MUTEX_INITIALIZER, 0, 0, 0. };
-
-inline static int64 JackGetCurrentFrameTime(jack_nframes_t frameTime)
-{
-	if (frameTime < gJackState.mFrameTime) {
-		// frame time wrapped around
-		gJackState.mFrameEpoch++;
-	}
-	gJackState.mFrameTime = frameTime;
-	
-	return (int64)gJackState.mFrameEpoch * (int64)(~(jack_nframes_t)0) + (int64)frameTime;
-}
-
-inline static int64 AudioGetCurrentHostTime()
-{
-	int64 res;
-	
-	if (gJackState.mClient && (pthread_mutex_trylock(&gJackState.mLock) == 0)) {
-        if (gJackState.mClient) {
-            res = JackGetCurrentFrameTime(jack_frame_time(gJackState.mClient));
-        } else {
-            res = JackGetCurrentFrameTime(gJackState.mFrameTime);
-        }
-        pthread_mutex_unlock(&gJackState.mLock);
-	} else {
-		res = JackGetCurrentFrameTime(gJackState.mFrameTime);
-	}
-
-	return res;
-}
-
-inline static double AudioConvertHostTimeToNanos(int64 frameTime)
-{
-	return (double)frameTime * gJackState.mFrameTimeToNanos;
-}
-#endif // SC_AUDIO_API_JACK
-
-#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
-
-static inline int64 GetCurrentOSCTime()
-{
-/*	struct timeval tv;
-	uint64 s, f;
-	gettimeofday(&tv, 0); 
-
-	s = (uint64)tv.tv_sec + (uint64)kSECONDS_FROM_1900_to_1970;
-	f = (uint64)((double)tv.tv_usec * kMicrosToOSCunits);
-
-	return (s << 32) + f;
-*/
-// TODO
-    return 0;
-}
-
-int32 timeseed()
-{
-	int64 time = GetCurrentOSCTime();
-	return Hash((int32)(time >> 32) + Hash((int32)time));
-}
-
-int64 oscTimeNow()
-{
-	return GetCurrentOSCTime();
-}
-
-void initializeScheduler()
-{
-}
-#endif // SC_AUDIO_API_PORTAUDIO
-
-#if (SC_AUDIO_API == SC_AUDIO_API_COREAUDIO) || (SC_AUDIO_API == SC_AUDIO_API_JACK)
 int32 timeseed()
 {
 	static int32 count = 0;
@@ -208,16 +123,103 @@ void initializeScheduler()
 	pthread_create (&resyncThread, NULL, resyncThreadFunc, (void*)0);
 	set_real_time_priority(resyncThread);
 }
+#endif // SC_AUDIO_API_COREAUDIO
 
-#endif // SC_AUDIO_API_COREAUDIO || SC_AUDIO_API_JACK
+// =====================================================================
+// Timing (Jack)
+
+#if SC_AUDIO_API == SC_AUDIO_API_JACK
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+// NOTE: falling back to a direct call to gettimeofday, since there is
+// no low-overhead, high-resolution, _portable_ time source on
+// linux.
+
+// clock_gettime might help, but it's implemented in terms of
+// gettimeofday on linux.
+
+// jack_frame_time is quantized to buffer boundaries, and thus not
+// very useful. jack_transport_info_t.usecs is also quantized to
+// buffer boundaries.
+
+// we may use the cycle counter on pentium and the timebase register
+// on powerpc, both 64 bit wide. there seems to be the issue of the
+// timbase used by the kernel on SMP machines (?)
+
+// TODO: figure out how to get the timebase resolution (ticks/sec) on
+// powerpc.
+
+static inline int64 SC_JackOSCTime()
+{
+	struct timeval tv;
+	gettimeofday(&tv, 0);
+	return ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
+		+ (int64)(tv.tv_usec * kMicrosToOSCunits);
+}
+
+int32 timeseed();
+int32 timeseed()
+{
+	static int32 count = 0;
+	struct timeval tv;
+	gettimeofday(&tv, 0);
+	return (int32)tv.tv_sec ^ (int32)tv.tv_usec ^ count--;
+}
+
+// sk: doesn't seem to be used?
+int64 oscTimeNow();
+int64 oscTimeNow()
+{
+	return SC_JackOSCTime();
+}
+
+void initializeScheduler()
+{
+	gOSCoffset = 0;
+}
+#endif // SC_AUDIO_API_JACK
+
+// =====================================================================
+// Timing (PortAudio)
+
+#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
+
+static inline int64 GetCurrentOSCTime()
+{
+/*	struct timeval tv;
+	uint64 s, f;
+	gettimeofday(&tv, 0); 
+
+	s = (uint64)tv.tv_sec + (uint64)kSECONDS_FROM_1900_to_1970;
+	f = (uint64)((double)tv.tv_usec * kMicrosToOSCunits);
+
+	return (s << 32) + f;
+*/
+// TODO
+    return 0;
+}
+
+int32 timeseed()
+{
+	int64 time = GetCurrentOSCTime();
+	return Hash((int32)(time >> 32) + Hash((int32)time));
+}
+
+int64 oscTimeNow()
+{
+	return GetCurrentOSCTime();
+}
+
+void initializeScheduler()
+{
+}
+#endif // SC_AUDIO_API_PORTAUDIO
+
 
 // =====================================================================
 // Packets (Common)
-
-
-
-////////////////////////////////////////////////////////////////////////////
-
 
 bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket);
 void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket);
@@ -1347,11 +1349,13 @@ static int sc_jack_process_cb(jack_nframes_t numFrames, void *arg);
 static int sc_jack_bufsize_cb(jack_nframes_t numSamples, void *arg);
 static int sc_jack_srate_cb(jack_nframes_t sampleRate, void *arg);
 
+typedef jack_default_audio_sample_t sc_jack_sample_t;
+
 struct SC_JackPortList
 {
-	int				mSize;
-	jack_port_t**	mPorts;
-	float**			mBuffers;
+	int					mSize;
+	jack_port_t**		mPorts;
+	sc_jack_sample_t**	mBuffers;
 
 	SC_JackPortList(jack_client_t *client, int numPorts, int type);
 	~SC_JackPortList();
@@ -1397,19 +1401,25 @@ SC_JackPortList::~SC_JackPortList()
 
 int sc_jack_process_cb(jack_nframes_t numFrames, void *arg)
 {
-	((SC_JackDriver*)arg)->JackRun();
+	((SC_JackDriver*)arg)->Run();
 	return 0;
 }
 
 int sc_jack_bufsize_cb(jack_nframes_t numSamples, void *arg)
 {
-	((SC_JackDriver*)arg)->JackBufferSizeChanged((int)numSamples);
+	((SC_JackDriver*)arg)->BufferSizeChanged((int)numSamples);
 	return 0;
 }
 
 int sc_jack_srate_cb(jack_nframes_t sampleRate, void *arg)
 {
-	((SC_JackDriver*)arg)->JackSampleRateChanged((double)sampleRate);
+	((SC_JackDriver*)arg)->SampleRateChanged((double)sampleRate);
+	return 0;
+}
+
+int sc_jack_graph_order_callback(void* arg)
+{
+	((SC_JackDriver*)arg)->GraphOrderChanged();
 	return 0;
 }
 
@@ -1420,19 +1430,13 @@ SC_JackDriver::SC_JackDriver(struct World *inWorld)
 	: SC_AudioDriver(inWorld),
 	  mClient(0),
 	  mInputList(0),
-	  mOutputList(0)
+	  mOutputList(0),
+	  mMaxOutputLatency(0)
 {
-	pthread_mutex_init(&gJackState.mLock, 0);
 }
 
 SC_JackDriver::~SC_JackDriver()
 {
-    if (gJackState.mClient) {
-		pthread_mutex_lock(&gJackState.mLock);
-		gJackState.mClient = 0;
-		pthread_mutex_unlock(&gJackState.mLock);
-	}
-
 	if (mClient) {
 		jack_client_close(mClient);
 	}
@@ -1446,28 +1450,31 @@ SC_JackDriver::~SC_JackDriver()
 // the platform driver, we rely on environment variables:
 //
 //  SC_JACK_NAME:				JACK client identifier for this synth
-//
 // 	SC_JACK_DEFAULT_INPUTS:		which outports to connect to
 // 	SC_JACK_DEFAULT_OUTPUTS:	which inports to connect to
-//
-// e.g. in a shell type
-//
-//  $ export SC_JACK_DEFAULT_INPUTS=alsa:in_1,alsa:in_2
-//  $ export SC_JACK_DEFAULT_OUTPUTS=alsa:out_1,alsa:out_2
-//
-// will connect the first two in/out ports to the respective ports of
-// the alsa driver client, up to the number of ports actually available.
+// ====================================================================
 
 bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 {
 	// create jack client
+	// FIXME: this is non-optimal
 	char* clientName = getenv("SC_JACK_NAME");
-	mClient = jack_client_new(clientName ? clientName : "SuperCollider");
+	char uniqueName[64];
+
+	if (clientName) {
+		mClient = jack_client_new(clientName);
+	} else {
+		clientName = "SuperCollider";
+		mClient = jack_client_new(clientName);
+		if (mClient == 0) {
+			sprintf(uniqueName, "SuperCollider-%d", getpid());
+			clientName = uniqueName;
+			mClient = jack_client_new(uniqueName);
+		}
+	}
 	if (mClient == 0) return false;
 
-	// pthread_mutex_lock(&gJackState.mLock);
-	gJackState.mClient = mClient;
-	// pthread_mutex_unlock(&gJackState.mLock);
+	scprintf("SC_JackDriver: jack name is %s\n", clientName);
 
 	// create jack I/O ports
 	mInputList = new SC_JackPortList(mClient, mWorld->mNumInputs, JackPortIsInput);
@@ -1477,7 +1484,8 @@ bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	jack_set_process_callback(mClient, sc_jack_process_cb, this);
 	jack_set_buffer_size_callback(mClient, sc_jack_bufsize_cb, this);
 	jack_set_sample_rate_callback(mClient, sc_jack_srate_cb, this);
-
+	jack_set_graph_order_callback(mClient, sc_jack_graph_order_callback, this);
+ 
 	*outNumSamples = (int)jack_get_buffer_size(mClient);
 	*outSampleRate = (double)jack_get_sample_rate(mClient);
 
@@ -1540,11 +1548,14 @@ bool SC_JackDriver::DriverStop()
 	return err == 0;
 }
 
-void SC_JackDriver::JackRun()
+void SC_JackDriver::Run()
 {
 	World *world = mWorld;
-	int64 oscTime = CoreAudioHostTimeToOSC(JackGetCurrentFrameTime(jack_frame_time(mClient)));
-	
+	int64 oscTime = SC_JackOSCTime();
+
+	// TODO: samplerate smoothing can be done using
+	// jack_get_microseconds (only available in newer jack versions).
+
 	try {
 		mOSCbuftime = oscTime;
 		
@@ -1555,8 +1566,8 @@ void SC_JackDriver::JackRun()
 		int numOutputs = mOutputList->mSize;
 		jack_port_t **inPorts = mInputList->mPorts;
 		jack_port_t **outPorts = mOutputList->mPorts;
-		float **inBuffers = mInputList->mBuffers;
-		float **outBuffers = mOutputList->mBuffers;
+		sc_jack_sample_t **inBuffers = mInputList->mBuffers;
+		sc_jack_sample_t **outBuffers = mOutputList->mBuffers;
 
 		int numSamples = NumSamplesPerCallback();
 		int bufFrames = mWorld->mBufLength;
@@ -1567,20 +1578,18 @@ void SC_JackDriver::JackRun()
 		int32 *inTouched = mWorld->mAudioBusTouched + mWorld->mNumOutputs;
 		int32 *outTouched = mWorld->mAudioBusTouched;
 
-		int minInputs = sc_min(numInputs, mWorld->mNumInputs);
-		int minOutputs = sc_min(numOutputs, mWorld->mNumOutputs);
+		int minInputs = sc_min(numInputs, (int)mWorld->mNumInputs);
+		int minOutputs = sc_min(numOutputs, (int)mWorld->mNumOutputs);
 
 		int bufFramePos = 0;
 
-		// cache I/O buffers, blindly assuming jack_default_audio_sample_t is
-		// float
-
+		// cache I/O buffers
 		for (int i = 0; i < minInputs; ++i) {
-			inBuffers[i] = (float *)jack_port_get_buffer(inPorts[i], numSamples);
+			inBuffers[i] = (sc_jack_sample_t*)jack_port_get_buffer(inPorts[i], numSamples);
 		}
 
 		for (int i = 0; i < minOutputs; ++i) {
-			outBuffers[i] = (float *)jack_port_get_buffer(outPorts[i], numSamples);
+			outBuffers[i] = (sc_jack_sample_t*)jack_port_get_buffer(outPorts[i], numSamples);
 		}
 
 		int64 oscInc = mOSCincrement;
@@ -1594,7 +1603,7 @@ void SC_JackDriver::JackRun()
 			// copy+touch inputs
 			tch = inTouched;
 			for (int k = 0; k < minInputs; ++k) {
-				float *src = inBuffers[k] + bufFramePos;
+				sc_jack_sample_t *src = inBuffers[k] + bufFramePos;
 				float *dst = inBuses + k * bufFrames;
 				for (int n = 0; n < bufFrames; ++n) {
 					*dst++ = *src++;
@@ -1617,7 +1626,7 @@ void SC_JackDriver::JackRun()
 			// copy touched outputs
 			tch = outTouched;
 			for (int k = 0; k < minOutputs; ++k) {
-				float *dst = outBuffers[k] + bufFramePos;
+				sc_jack_sample_t *dst = outBuffers[k] + bufFramePos;
 				if (*tch++ == bufCounter) {
 					float *src = outBuses + k * bufFrames;
 					for (int n = 0; n < bufFrames; ++n) {
@@ -1653,21 +1662,36 @@ void SC_JackDriver::JackRun()
 // ====================================================================
 // TODO: do something more appropriate later
 
-void SC_JackDriver::JackBufferSizeChanged(int numSamples)
+void SC_JackDriver::BufferSizeChanged(int numSamples)
 {
+	// FIXME: jack now actually allows the buffer size to be changed
+	// on the fly. have to handle this correctly (stop/restart
+	// synthesis)!
+
 #ifndef NDEBUG
 	scprintf("SC_JackDriver::JackBufferSizeChanged %d\n", numSamples);
 #endif
 }
 
-void SC_JackDriver::JackSampleRateChanged(double sampleRate)
+void SC_JackDriver::SampleRateChanged(double sampleRate)
 {
 #ifndef NDEBUG
 	scprintf("SC_JackDriver::JackSampleRateChanged %f\n", sampleRate);
 #endif
-	gJackState.mFrameEpoch = 0;
-	gJackState.mFrameTime = 0;
-	gJackState.mFrameTimeToNanos = sampleRate * 1.0e9;
+	mOSCincrement = (int64)(mOSCincrementNumerator / sampleRate);
+}
+
+void SC_JackDriver::GraphOrderChanged()
+{
+	SC_JackPortList* outputs = mOutputList;
+	jack_nframes_t lat = 0;
+
+	for (int i=0; i < outputs->mSize; i++) {
+		jack_port_t* port = outputs->mPorts[i];
+		lat = sc_max(lat, jack_port_get_total_latency(mClient, port));
+	}
+
+	mMaxOutputLatency = (int64)((lat * 1.0e6) / (mSampleRate * kMicrosToOSCunits));
 }
 #endif // SC_AUDIO_API_JACK
 

@@ -5,25 +5,18 @@
 ## CVS:         $Id$
 ## ====================================================================
 
-MAINTAINERCLEANFILES =	\
-	Makefile.in	\
-	aclocal.m4	\
-	autom4te.cache	\
-	config.cache	\
-	config.guess	\
-	config.h.in	\
-	config.h.in~	\
-	config.sub	\
-	configure	\
-	install-sh	\
-	ltmain.sh	\
-	missing		\
-	mkinstalldirs	\
-	stamp-h.in	\
-        config.log      \
-        depcomp         \
-        stamp-h
+MAINTAINERCLEANFILES = Makefile.in
 
-SUBDIRS			= source headers build linux
+lisp_LISP = \
+	sclang-browser.el \
+	sclang-help.el \
+	sclang-interp.el \
+	sclang-keys.el \
+	sclang-language.el \
+	sclang-menu.el \
+	sclang-mode.el \
+	sclang-server.el \
+	sclang-util.el \
+	sclang.el
 
 ## EOF ================================================================

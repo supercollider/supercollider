@@ -70,17 +70,14 @@ static FILE* gPostFile = stdout;
 // SC_StringBuffer
 // =====================================================================
 
-const size_t kGrowAlign = 256;
-const size_t kGrowMask = kGrowAlign-1;
-
 SC_StringBuffer::SC_StringBuffer(size_t initialSize)
-	: mData(0), mCapacity(0), mPtr(0)
+	: mCapacity(0), mPtr(0), mData(0)
 {
 	growBy(initialSize);
 }
 
 SC_StringBuffer::SC_StringBuffer(const SC_StringBuffer& other)
-	: mData(0), mCapacity(0), mPtr(0)
+	: mCapacity(0), mPtr(0), mData(0)
 {
 	growBy(other.getSize());
 	append(other.getData(), other.getSize());
@@ -152,7 +149,12 @@ void SC_StringBuffer::printf(const char* fmt, ...)
 void SC_StringBuffer::growBy(size_t request)
 {
 	size_t oldSize = getSize();
-	size_t newCapacity = mCapacity + ((request + kGrowMask) & ~kGrowMask);
+	size_t newCapacity = mCapacity + ((request + (size_t)kGrowAlign) & (size_t)~kGrowMask);
+
+// 	post("%s: mCapacity %u, request %u, newCapacity %u\n",
+// 		 __PRETTY_FUNCTION__, mCapacity, request, newCapacity);
+	assert((newCapacity >= (mCapacity + request)) && ((newCapacity & kGrowMask) == 0));
+
 	char* newData = (char*)realloc(mData, newCapacity);
 	if (newData) {
 		mData = newData;
@@ -418,10 +420,10 @@ void printUsage()
 			"\n"
 			"options:\n"
 			"   -c <expression>                         execute expression\n"
-			"   -d <path>                               set sclang build directory\n"
-			"   -g <memory-growth>[km]                  set memory growth (default %d)\n"
+			"   -d <path>                               set sclang runtime directory\n"
+			"   -g <memory-growth>[km]                  set heap growth (default %d)\n"
 			"   -h                                      display this message and exit\n"
-			"   -m <memory-space>[km]                   set initial memory size (default %d)\n"
+			"   -m <memory-space>[km]                   set initial heap size (default %d)\n"
 			"   -r                                      call Main::run on startup\n"
 			"   -s                                      call Main::stop on exit\n"
 			"   -u <network-port-number>                set listening port (default %d)\n",
@@ -510,10 +512,6 @@ int SC_TerminalClient::run(Options& opt)
 	char* homeDir = getenv("HOME");
 	SC_StringBuffer tmpBuf(64);
 
-	if (opt.mRuntimeDir) {
-		chdir(opt.mRuntimeDir);
-	}
-	
 	if (homeDir) {
 		tmpBuf.reset();
 		tmpBuf.printf("%s/%s", homeDir, kSC_LibraryConfigFileName);
@@ -524,10 +522,15 @@ int SC_TerminalClient::run(Options& opt)
 			gLibraryConfig = new LibraryConfig();
 			configFile.read(kSC_LibraryConfigFileName, gLibraryConfig);
 		} else {
-			post("No library configuration file\n");
+			fprintf(stderr, "No library configuration file.\n");
+			return 1;
 		}
 	}
 
+	if (opt.mRuntimeDir) {
+		chdir(opt.mRuntimeDir);
+	}
+	
     // Start virtual machine
     pyr_init_mem_pools(opt.mMemSpace, opt.mMemGrow);
     init_OSC(opt.mPort);

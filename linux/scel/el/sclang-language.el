@@ -66,22 +66,26 @@
 					      ))))
 
 (defvar sclang-symbol-table nil
-  "Obarray of all defined symbols.")
+  "List of all defined symbols.")
 
-(defvar sclang-symbol-history nil)
+(defvar sclang-symbol-history nil
+  "List of recent symbols read from the minibuffer.")
 
 ;; =====================================================================
 ;; regexp building
 ;; =====================================================================
 
-;; (defun sclang-make-class-definition-regexp (name)
-;;   (concat
-;;    "\\(" (regexp-quote name) "\\)"
-;;    "\\(\\s *:\\s *\\(" sclang-class-name-regexp "\\)\\)?"
-;;    "\\s *{"))
+(defun sclang-make-class-definition-regexp (name)
+  (concat "\\(" (regexp-quote name) "\\)"
+	  "\\(\\s *:\\s *\\(" sclang-class-name-regexp "\\)\\)?"
+	  "\\s *{"))
 
-;; (defun sclang-make-method-definition-regexp (name)
-;;   (concat "\\(" (regexp-quote name) "\\)\\s *{"))
+(defun sclang-make-class-extension-regexp (name)
+  (concat "\\+\\s *\\(" (regexp-quote name) "\\)"
+	  "\\s *{"))
+
+(defun sclang-make-method-definition-regexp (name)
+  (concat "\\(" (regexp-quote name) "\\)\\s *{"))
 
 ;; =====================================================================
 ;; string matching
@@ -342,20 +346,21 @@ are considered."
 ;; browsing definitions
 ;; =====================================================================
 
-(defcustom sclang-symbol-definition-marker-ring-length 32
-  "*Length of marker ring `sclang-symbol-definition-marker-ring'."
+(defcustom sclang-definition-marker-ring-length 32
+  "*Length of marker ring `sclang-definition-marker-ring'."
   :group 'sclang-interface
   :version "21.3"
   :type 'integer)
 
-(defvar sclang-symbol-definition-marker-ring
-  (make-ring sclang-symbol-definition-marker-ring-length)
-  "Ring of markers which are locations from which \\[sclang-find-symbol-definitions] was invoked.")
+(defvar sclang-definition-marker-ring
+  (make-ring sclang-definition-marker-ring-length)
+  "Ring of markers which are locations from which \\[sclang-find-definitions] was invoked.")
 
+;; really do that?
 (add-hook 'sclang-library-startup-hook
 	  (lambda ()
-	    (setq sclang-symbol-definition-marker-ring
-		  (make-ring sclang-symbol-definition-marker-ring-length))))
+	    (setq sclang-definition-marker-ring
+		  (make-ring sclang-definition-marker-ring-length))))
 
 (sclang-set-command-handler
  'classDefinitions
@@ -365,7 +370,16 @@ are considered."
      (if data
 	 (sclang-browse-definitions
 	  name data
-	  "*Definitions*" (format "Definitions of '%s'\n" name))
+	  "*Definitions*" (format "Definitions of '%s'\n" name)
+	  (lambda (name)
+	    (let ((case-fold-search nil))
+	      ;; point is either
+	      ;;  - at a class definition
+	      ;;  - inside a class extension
+	      ;; so jump to the class name
+	      (when (or (looking-at (sclang-make-class-definition-regexp name))
+			(re-search-backward (sclang-make-class-extension-regexp name) nil t))
+		(match-beginning 1)))))
        (message "No definitions of '%s'" name)))))
 
 (sclang-set-command-handler
@@ -376,7 +390,11 @@ are considered."
      (if data
 	 (sclang-browse-definitions
 	  name data
-	  "*Definitions*" (format "Definitions of '%s'\n" name))
+	  "*Definitions*" (format "Definitions of '%s'\n" name)
+	  (lambda (name)
+	    (let ((case-fold-search nil))
+	      (when (re-search-forward (sclang-make-method-definition-regexp name))
+		(match-beginning 1)))))
        (message "No definitions of '%s'" name)))))
 
 (sclang-set-command-handler
@@ -387,28 +405,34 @@ are considered."
      (if data
 	 (sclang-browse-definitions
 	  name data
-	  "*References*" (format "References to '%s'\n" name))
+	  "*References*" (format "References to '%s'\n" name)
+	  (lambda (name)
+	    (let ((case-fold-search nil))
+	      (when (re-search-forward (regexp-quote name))
+		(match-beginning 0)))))
        (message "No references to '%s'" name)))))
 
-(defun sclang-open-definition (file pos &optional search-func)
+(defun sclang-open-definition (name file pos &optional pos-func)
   (let ((buffer (find-file file)))
     (when (bufferp buffer)
       (with-current-buffer buffer
 	(goto-char (or pos (point-min)))
-	(when (functionp search-func)
-	  (funcall search-func))))
-	;;       (back-to-indentation)
-	;;       ;; skip classvar, classmethod clutter
-;; 	(and regexp (re-search-forward regexp nil t)
-;; 	     (goto-char (match-beginning 0)))))
+	(when (functionp pos-func)
+	  (let ((pos (funcall pos-func name)))
+	    (and pos (goto-char pos))))))
       buffer))
 
-(defun sclang-pop-symbol-definition-mark ()
+(defun sclang-pop-definition-mark ()
+  "Pop back to where \\[sclang-find-definition] or \\[sclang-find-reference] was last invoked."
   (interactive)
-  (let ((find-tag-marker-ring sclang-symbol-definition-marker-ring))
-    (pop-tag-mark)))
+  (unless (ring-empty-p sclang-definition-marker-ring)
+    (let ((marker (ring-remove sclang-definition-marker-ring 0)))
+      (switch-to-buffer (or (marker-buffer marker)
+			    (error "The marked buffer has been deleted")))
+      (goto-char (marker-position marker))
+      (set-marker marker nil nil))))
 
-(defun sclang-browse-definitions (name definitions buffer-name header &optional regexp)
+(defun sclang-browse-definitions (name definitions buffer-name header &optional pos-func)
   (if (cdr definitions)
       (let ((same-window-buffer-names (list buffer-name)))
 	(with-sclang-browser
@@ -430,25 +454,22 @@ are considered."
 	     (let ((string (format format-string
 				   (propertize (file-name-nondirectory (nth 1 def)) 'face 'bold)
 				   (nth 0 def)))
-		   (data (list (nth 1 def) (nth 2 def) regexp)))
+		   (data (list name (nth 1 def) (nth 2 def) pos-func)))
 	       (insert (sclang-browser-make-link string data))
 	       (insert "\n"))))))
   ;; single definition: jump directly
   (let ((def (car definitions)))
-    (sclang-open-definition (nth 1 def) (nth 2 def) regexp))))
+    (sclang-open-definition name (nth 1 def) (nth 2 def) pos-func))))
 
 (defun sclang-find-definitions (name)
   "Find all definitions of symbol NAME."
   (interactive
    (list
-    (let ((name (sclang-symbol-at-point)))
-      (if current-prefix-arg
-	  (sclang-read-symbol "Find definitions of: " name nil t)
-	(unless name (message "No symbol at point"))
-	name))))
+    (sclang-read-symbol "Find definitions of: "
+			(sclang-symbol-at-point) nil t)))
   (if (sclang-get-symbol name)
       (progn
-	(ring-insert sclang-symbol-definition-marker-ring (point-marker))
+	(ring-insert sclang-definition-marker-ring (point-marker))
 	(if (sclang-class-name-p name)
 	    (sclang-perform-command 'classDefinitions name)
 	  (sclang-perform-command 'methodDefinitions name)))
@@ -458,29 +479,25 @@ are considered."
   "Find all references to symbol NAME."
   (interactive
    (list
-    (let ((name (sclang-symbol-at-point)))
-      (if current-prefix-arg
-	  (sclang-read-symbol "Find references to: " name nil t)
-	(unless name (message "No symbol at point"))
-	name))))
+    (sclang-read-symbol "Find references to: "
+			(sclang-symbol-at-point) nil t)))
   (if (sclang-get-symbol name)
       (progn
-	(ring-insert sclang-symbol-definition-marker-ring (point-marker))
+	(ring-insert sclang-definition-marker-ring (point-marker))
 	(sclang-perform-command 'methodReferences name))
     (message "'%s' is undefined" name)))
 
 (defun sclang-dump-interface (class)
-  "Dump interface of class CLASS."
+  "Dump interface of CLASS."
   (interactive
    (list
-    (let ((class (sclang-symbol-at-point)))
-      (if current-prefix-arg
-	  (sclang-read-symbol "Dump interface of: " class 'sclang-class-name-p t)
-	(unless name (message "No class at point"))
-	name))))
-  (and (sclang-get-symbol class)
-       (sclang-class-name-p class)
-       (sclang-send-string (format "%s.dumpFullInterface" class))))
+    (let* ((symbol (sclang-symbol-at-point))
+	   (class (and (sclang-get-symbol symbol)
+		       (sclang-class-name-p symbol)
+		       symbol)))
+      (sclang-read-symbol "Dump interface of: "
+			  class 'sclang-class-name-p t))))
+  (sclang-send-string (format "%s.dumpFullInterface" class)))
 
 ;; =====================================================================
 ;; sc-code formatting
@@ -490,9 +507,13 @@ are considered."
   (unless (listp list) (setq list (list list)))
   (mapconcat 'sclang-object-to-string list ", "))
 
+(defconst false 'false)
+
 (defun sclang-object-to-string (obj)
   (cond ((null obj)
 	 "nil")
+	((eq 'false obj)
+	 "false")
 	((eq t obj)
 	 "true")
 	((symbolp obj)

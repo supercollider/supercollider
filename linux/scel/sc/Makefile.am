@@ -5,25 +5,9 @@
 ## CVS:         $Id$
 ## ====================================================================
 
-MAINTAINERCLEANFILES =	\
-	Makefile.in	\
-	aclocal.m4	\
-	autom4te.cache	\
-	config.cache	\
-	config.guess	\
-	config.h.in	\
-	config.h.in~	\
-	config.sub	\
-	configure	\
-	install-sh	\
-	ltmain.sh	\
-	missing		\
-	mkinstalldirs	\
-	stamp-h.in	\
-        config.log      \
-        depcomp         \
-        stamp-h
+MAINTAINERCLEANFILES = Makefile.in
 
-SUBDIRS			= source headers build linux
+sceldir = $(pkgdatadir)/SCClassLibrary/Emacs
+scel_DATA = Emacs.sc homeContext.sc storeLispOn.sc
 
 ## EOF ================================================================

@@ -80,7 +80,7 @@
      "-"
      ["Find Definitions ..."	sclang-find-definitions]
      ["Find References ..."	sclang-find-references]
-     ["Pop Mark"		sclang-pop-symbol-definition-mark]
+     ["Pop Mark"		sclang-pop-definition-mark]
      ["Dump Interface"		sclang-dump-interface]
      "-"
      ["Index Help Topics"	sclang-index-help-topics]
@@ -104,7 +104,7 @@
   (define-key map "\M-\t"	'sclang-complete-symbol)
   (define-key map "\C-c:"	'sclang-find-definitions)
   (define-key map "\C-c;"	'sclang-find-references)
-  (define-key map "\C-c}"	'sclang-pop-symbol-definition-mark)
+  (define-key map "\C-c}"	'sclang-pop-definition-mark)
   (define-key map "\C-c{"	'sclang-dump-interface)
   ;; documentation access
   (define-key map "\C-c\C-h"	'sclang-find-help)

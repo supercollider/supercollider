@@ -31,7 +31,7 @@
 # include <Carbon/Carbon.h>
 #endif
 
-#ifdef SC_LINUX
+#if defined(SC_LINUX) && defined(__ALTIVEC__)
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
@@ -50,19 +50,17 @@ bool HasAltivec()
 #endif // SC_DARWIN
 
 #if defined(SC_LINUX) && defined(__ALTIVEC__)
-	if (getenv("SC_USE_ALTIVEC")) {
-		const char* cpuInfoFile = "/proc/cpuinfo";
-		const char* cpuInfoAltivec = "altivec supported";
+	const char* cpuInfoFile = "/proc/cpuinfo";
+	const char* cpuInfoAltivec = "altivec supported";
 		
-		FILE* fd = fopen(cpuInfoFile, "r");
-		if (fd) {
-			char* buffer;
-			int err = fscanf(fd, "cpu\t: %a[^\n]", &buffer);
-			fclose(fd);
-			if (err == 1) {
-				hasAltivec = strstr(buffer, cpuInfoAltivec) != 0;
-				free(buffer);
-			}
+	FILE* fd = fopen(cpuInfoFile, "r");
+	if (fd) {
+		char* buffer;
+		int err = fscanf(fd, "cpu\t: %a[^\n]", &buffer);
+		fclose(fd);
+		if (err == 1) {
+			hasAltivec = strstr(buffer, cpuInfoAltivec) != 0;
+			free(buffer);
 		}
 	}
 

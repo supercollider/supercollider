@@ -7,7 +7,7 @@
 
 MAINTAINERCLEANFILES		= Makefile.in
 
-libscsynthincludedir		= $(pkgincludedir)
+libscsynthincludedir		= $(pkgincludedir)/server
 libscsynthinclude_HEADERS =	\
 	HashTable.h		\
 	IntFifo.h		\

@@ -8,7 +8,7 @@
 
 MAINTAINERCLEANFILES		= Makefile.in
 
-libcommonincludedir		= $(pkgincludedir)
+libcommonincludedir		= $(pkgincludedir)/common
 libcommoninclude_HEADERS	= \
 	dfftlib.h		\
 	dlfcn.h			\

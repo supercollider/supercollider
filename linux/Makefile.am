@@ -8,17 +8,17 @@
 DISTCLEANFILES		= libscsynth.pc libsclang.pc
 MAINTAINERCLEANFILES	= Makefile.in
 
+SUBDIRS = examples scel
 EXTRA_DIST =			\
 	ChangeLog		\
 	INSTALL                 \
 	NEWS			\
 	README			\
 	bootstrap		\
-	libscsynth.pc.in
-
-#	libsclang.pc.in
+	libscsynth.pc.in	\
+	libsclang.pc.in
 
 pkgconfigdir		= $(libdir)/pkgconfig
-pkgconfig_DATA		= libscsynth.pc # libsclang.pc
+pkgconfig_DATA		= libscsynth.pc libsclang.pc
 
 ## EOF ================================================================

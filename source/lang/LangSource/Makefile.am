@@ -16,8 +16,8 @@ AM_CPPFLAGS		= $(SC_CPPFLAGS) -DSC_LIBRARY_DIR=\"$(SC_LIBRARY_DIR)\"
 AM_CFLAGS		= $(SC_CFLAGS) $(SNDFILE_CFLAGS)
 AM_CXXFLAGS		= $(AM_CFLAGS)
 
-#lib_LTLIBRARIES		= libsclang.la
-noinst_LTLIBRARIES	= libsclang.la
+lib_LTLIBRARIES		= libsclang.la
+#noinst_LTLIBRARIES	= libsclang.la
 libsclang_la_LDFLAGS	= -version-info $(SC_LANG_SHARED_VERSION_INFO)
 libsclang_la_LIBADD	= $(top_builddir)/source/common/libcommon.la \
 			$(top_builddir)/source/lang/LangPrimSource/liblangprim.la \

@@ -8,4 +8,4 @@ Version: @VERSION@
 Description: libsclang, SuperCollider synthesis language library
 Requires: sndfile >= 1.0.0, libscsynth
 Libs: -L${libdir} -lsclang -lm -lpthread
-Cflags: -I${includedir}
+Cflags: -I${includedir}/common -I${includedir}/plugin_interface -I${includedir}/server

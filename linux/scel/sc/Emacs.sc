@@ -47,15 +47,22 @@ EmacsInterface {
 		var result, class, files;
 
 		result = List.new;
-		class = name.asSymbol.asClass;
 
-		if (class.notNil) {
+		if ((class = name.asSymbol.asClass).notNil) {
 			files = IdentitySet.new;
-			result.add(["  " ++ name, class.filenameSymbol.asString, class.charPos + 1]);
+			result.add([
+				"  " ++ name,
+				class.filenameSymbol.asString,
+				class.charPos + 1
+			]);
 			files.add(class.filenameSymbol);
 			class.methods.do { arg method;
 				if (files.includes(method.filenameSymbol).not) {
-					result.add(["+ " ++ name, method.filenameSymbol.asString, nil]);
+					result.add([
+						"+ " ++ name,
+						method.filenameSymbol.asString,
+						method.charPos + 1
+					]);
 					files.add(method.filenameSymbol);
 				}
 			}
@@ -69,12 +76,10 @@ EmacsInterface {
 		
 		result = List.new;
 		symbol = name.asSymbol;
-		getter = symbol.asGetter;
-		setter = symbol.asSetter;
 
 		Class.allClasses.do { arg class;
 			class.methods.do { arg method;
-				if ((method.name === getter).or { method.name === setter }) {
+				if (method.name === symbol) {
 					result.add([
 						class.name ++ "-" ++ name,
 						method.filenameSymbol.asString,
@@ -99,7 +104,7 @@ EmacsInterface {
 			result = List.new;
 			methods.do { arg method;
 				result.add([
-					method.ownerClass.name.asString ++ "-" ++ method.name.asString,
+					method.ownerClass.name ++ "-" ++ method.name,
 					method.filenameSymbol.asString,
 					method.charPos + 1
 				])

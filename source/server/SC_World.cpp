@@ -64,8 +64,10 @@ void *zalloc(size_t n, size_t size)
 	size *= n;
 	if (size) {
 		void* ptr = malloc(size);
-		memset(ptr, 0, size);
-		return ptr;
+		if (ptr) {
+			memset(ptr, 0, size);
+			return ptr;
+		}
 	}
 	return 0;
 }

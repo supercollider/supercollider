@@ -7,7 +7,7 @@
 
 MAINTAINERCLEANFILES		= Makefile.in
 
-libpluginincludedir		= $(pkgincludedir)
+libpluginincludedir		= $(pkgincludedir)/plugin_interface
 libplugininclude_HEADERS =	\
 	clz.h			\
 	Hash.h			\
