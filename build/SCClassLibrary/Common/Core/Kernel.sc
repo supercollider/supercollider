@@ -11,6 +11,7 @@ Class {
 	var instanceFormat, instanceFlags;
 	var <classIndex, classFlags, <maxSubclassIndex;
 	var <filenameSymbol, <charPos;
+	
 	classvar <>classesInited;
 	
 	// Every class has a metaclass which has 'Meta_' prepended to the name.
@@ -95,8 +96,17 @@ Class {
 		stream << name;
 	}
 	
-	//hasHelpFile { _ClassHasHelpFile }
-	//openHelpFile { _ClassOpenHelpFile }
+	hasHelpFile { 
+		//should cache this in Library or classvar
+		//can't add instance variables to Class
+		^this.name.asString.findHelpFile.notNil
+	}
+	helpFilePath {
+		^this.name.asString.findHelpFile
+	}
+	openHelpFile { 
+		(this.helpFilePath ? "Help/Help.help.rtf").openTextFile
+	}
 	
 	shallowCopy { ^this }
 	//listInstances { _ListInstancesOf }
@@ -174,7 +184,7 @@ Process {
 		// This method is called before recompiling or quitting.
 		// Override in class 'Main' to do whatever you want.
 		SCWindow.closeAll;
-		OSCPort.closeAll;
+		//OSCPort.closeAll;
 		File.closeAll;
 	}
 	tick { // called repeatedly by SCVirtualMachine::doPeriodicTask
@@ -266,10 +276,7 @@ Process {
 	}
 
 	showHelp {
-		var string;
-		string = interpreter.cmdLine;
-		// should put a script to find appropriate help here.
-		Post << "\nuser asked for help for '" << string << "'.\n";
+		interpreter.cmdLine.openHelpFile
 	}	
 
 	shallowCopy { ^this }
@@ -326,6 +333,9 @@ Method : FunctionDef {
 
 	openCodeFile {
 		this.filenameSymbol.asString.openTextFile(this.charPos, -1);
+	}
+	openHelpFile {
+		this.name.asString.openHelpFile
 	}
 	inspectorClass { ^MethodInspector }
 }
