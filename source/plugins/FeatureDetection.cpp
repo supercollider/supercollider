@@ -56,8 +56,8 @@ int m_5kindex,m_30Hzindex;
 //for time domain onset detection/RMS
 struct RunningSum : public Unit {
 	int msamp, mcount;     
-	float msum;
-	float mmeanmult;
+	float msum,msum2;
+	//float mmeanmult;
 	float* msquares;
 };
 
@@ -355,11 +355,12 @@ void RunningSum_Ctor( RunningSum* unit ) {
 
 	unit->msamp= (int) ZIN0(1);
 
-	unit->mmeanmult= 1.0f/(unit->msamp);
+	//unit->mmeanmult= 1.0f/(unit->msamp);
 	unit->msum=0.0f;
+	unit->msum2=0.0f;
 	unit->mcount=0; //unit->msamp-1;
+	
 	unit->msquares= (float*)RTAlloc(unit->mWorld, unit->msamp * sizeof(float));
-
 	//initialise to zeroes
 	for(int i=0; i<unit->msamp; ++i)
 	unit->msquares[i]=0.f;
@@ -381,30 +382,40 @@ void RunningSum_next_k( RunningSum *unit, int inNumSamples ) {
 	int samp= unit->msamp;
 
 	float * data= unit->msquares;
-	float sum= unit->msum;
-	//float meanmult= unit->mmeanmult;
+	float sum= unit->msum;	
+	//avoids floating point error accumulation over time- thanks to Ross Bencina
+	float sum2= unit->msum2;
+	
+int todo=0;
+int done=0;
+while(done<inNumSamples){
+	todo= sc_min(inNumSamples-done,samp-count);
 
-	LOOP(inNumSamples, 
+	for(int j=0;j<todo;++j) {
+		sum -=data[count];  
+		float next= ZXP(in);
+		data[count]= next;
+		sum += next;
+		sum2 +=next;
+		ZXP(out) = sum; 
+		++count;
+	}
 
-	//update sum
-	sum -=data[count];  
-	//prone to floating point error accumulation over time? not if assume error is distributed equally either side of 0
-	float next= ZXP(in);
-	data[count]= next;
-	sum += next;
-	 
-	count=(count+1)%samp;
+    done+=todo;
 
-	ZXP(out) = sum; //*meanmult; //could ditch the mean if don't need normalised
-	);
-
-	unit->mcount =count;
-	unit->msum =  sum;      
+	if( count == samp ){
+		count = 0;
+		sum = sum2;
+		sum2 = 0;
+	}
 
 }
 
+	unit->mcount =count;
+	unit->msum =  sum;  
+	unit->msum2 =  sum2;     
 
-
+}
 
 
 void initFeatureDetectors(InterfaceTable *it)
