@@ -38,6 +38,15 @@ NetAddr {
 		^this.primitiveFailed;
 	}
 	
+	connect {
+		_NetAddr_Connect
+		^this.primitiveFailed;
+	}
+	disconnect {
+		_NetAddr_Disconnect
+		^this.primitiveFailed;
+	}
+	
 	== { arg that; 
 		^(this.port == that.port) and: { this.addr == that.addr }
 	}

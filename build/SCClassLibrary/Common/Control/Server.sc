@@ -8,15 +8,18 @@ ServerOptions
 	var <>numBuffers=1024;
 	var <>maxNodes=1024;
 	var <>maxSynthDefs=1024;
+	var <>protocol = \udp;
 
 // blocksize
 // realtimememory size
 // max logins
 // session-password
 
-	asOptionsString { // asString confused the Inspector
+	asOptionsString { arg port;
 		var o;
-		o = "";
+		o = if (protocol == \tcp, " -t ", " -u ");
+		o = o ++ port;
+		
 		if (numAudioBusChannels != 128, { 
 			o = o ++ " -a " ++ numAudioBusChannels;
 		});
@@ -52,7 +55,7 @@ Server : Model {
 	var <name, <addr;
 	var <isLocal, <inProcess;
 	var <serverRunning = false;
-	var >options,<>latency = 0.2;
+	var <>options,<>latency = 0.2;
 	var <nodeAllocator;
 	var <controlBusAllocator;
 	var <audioBusAllocator;
@@ -96,7 +99,6 @@ Server : Model {
 		//local.makeWindow;
 		//internal.makeWindow;
 	}
-	options { ^(options ?? {options = ServerOptions.new}) }
 	sendMsg { arg ... args;
 		addr.sendBundle(nil, args);
 	}
@@ -190,7 +192,7 @@ Server : Model {
 			//this.serverRunning = true;
 		},{
 			//isBooting = true;
-			unixCmd("./scsynth -u " ++ addr.port ++ " " ++ (if(options.notNil,{options.asOptionsString},"")));
+			unixCmd("./scsynth" ++ options.asOptionsString(addr.port));
 			("booting " ++ addr.port.asString).inform;
 		});
 		this.notify(true);
