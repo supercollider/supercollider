@@ -41,6 +41,11 @@ UGen : AbstractFunction {
  		// store the inputs as an array
  		inputs = theInputs;
  	}
+ 	copy { 
+ 		// you can't really copy a UGen without disturbing the Synth. 
+ 		// Usually you want the same object. This makes .dup work
+ 		^this 
+ 	}
  	
  	madd { arg mul = 1.0, add = 0.0; 		
  		^MulAdd(this, mul, add);
