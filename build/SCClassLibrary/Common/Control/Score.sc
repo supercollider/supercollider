@@ -15,6 +15,10 @@ Score {
 		score = list;
 	}
 	
+	add { arg bundle;
+		score = score.add(bundle)
+	}
+	
 	*playFromFile { arg path, server;
 		var list;
 		list = thisProcess.interpreter.executeFile(path);
@@ -26,15 +30,16 @@ Score {
 	}	
 	
 	play { arg server;
-		var size, osccmd, timekeep, inserver, rout;
+		var size, osccmd, timekeep, inserver, rout, sortedScore;
+		sortedScore = score.quickSort({ arg a, b; a[0] < b[0] }).postcs;
 		isPlaying.not.if({
 			inserver = server ? Server.default;
-			size = score.size;
+			size = sortedScore.size;
 			timekeep = 0;
 			routine = Routine({
 				size.do { |i|
 					var deltatime, msg;
-					osccmd = score[i];
+					osccmd = sortedScore[i];
 					deltatime = osccmd[0];
 					msg = osccmd.copyToEnd(1);
 					(deltatime-timekeep).wait;
@@ -53,14 +58,14 @@ Score {
 		"AIFF", sampleFormat = "int16", options;
 		this.write(oscFilePath);
 		unixCmd("./scsynth -N" + oscFilePath + (inputFilePath ? "_") + outputFilePath + 			sampleRate + headerFormat + sampleFormat + 
-			(options ? Server.default.options).asOptionsString);
+			(options ?? {ServerOptions.new}).asOptionsString);
 	}
 	
 	*recordNRT { arg list, oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, 
 		headerFormat = "AIFF", sampleFormat = "int16", options;
 		this.write(list, oscFilePath);
 		unixCmd("./scsynth -N" + oscFilePath + (inputFilePath ? "_") + outputFilePath + 			sampleRate + headerFormat + sampleFormat + 
-			(options ? Server.default.options).asOptionsString);
+			(options ?? {ServerOptions.new}).asOptionsString);
 	}
 	
 	stop {
