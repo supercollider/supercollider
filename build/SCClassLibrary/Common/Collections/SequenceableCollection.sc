@@ -9,10 +9,8 @@ SequenceableCollection : Collection {
 	*series { arg size, start=0, step=1;
 		var i=0, obj;
 		obj = this.new(size);
-		while ({ i < size },{
-			obj.add(start);
-			start = start + step;
-			i = i + 1;
+		size.do({ arg i;
+			obj.add(start + (step * i));
 		});
 		^obj
 	}		
