@@ -534,25 +534,26 @@ SharedNodeProxy : NodeProxy {
 		var playGroup, bundle, divider, checkedAlready, localServer;
 		
 		localServer = server.localServer;
-		bundle = MixedBundle.new;
-		playGroup = Group.newToBundle(bundle, localServer);
-		if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
-		nChan = nChan ? this.numChannels;
-		nChan = nChan.min(this.numChannels);
-		checkedAlready = Set.new;
-		this.wakeUpToBundle(bundle, checkedAlready);
-	
-		divider = if(nChan.even, 2, 1);
-		(nChan div: divider).do({ arg i;
-		bundle.add([9, "proxyOut-linkDefAr-"++divider, 
-					localServer.nextNodeID, 1,playGroup.nodeID,
-					\i_busOut, busIndex+(i*divider), \i_busIn, outbus.index+(i*divider)]);
-		});
+		if(localServer.serverRunning, {
+			bundle = MixedBundle.new;
+			playGroup = Group.newToBundle(bundle, localServer);
+			if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
+			nChan = nChan ? this.numChannels;
+			nChan = nChan.min(this.numChannels);
+			checkedAlready = Set.new;
+			this.wakeUpToBundle(bundle, checkedAlready);
 		
-		localServer.waitForBoot({
-			bundle.sendPrepare(server, server.latency);
-			bundle.send(localServer, localServer.latency);
-		});
+			divider = if(nChan.even, 2, 1);
+			(nChan div: divider).do({ arg i;
+			bundle.add([9, "proxyOut-linkDefAr-"++divider, 
+						localServer.nextNodeID, 1,playGroup.nodeID,
+						\i_busOut, busIndex+(i*divider), \i_busIn, outbus.index+(i*divider)]);
+			});
+			
+			
+				bundle.sendPrepare(server, server.latency);
+				bundle.send(localServer, localServer.latency);
+		}, { "local server not running".inform });
 		
 		^playGroup
 	}
