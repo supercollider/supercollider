@@ -369,9 +369,9 @@ Collection {
 	isSubsetOf { | that | ^that.includesAll(this) }
 
 	msgSize {
-		^this.inject(0, { | sum, elt |
-			if(sum + elt.isString)
-			{ elt.size + 4 - (elt.size bitAnd: 3) }
+		^this.inject(0, { | sum, item |
+			sum + if(item.isString)
+			{ item.size + 4 - (item.size bitAnd: 3) }
 			{ 4 };
 		}) + this.size + 4 - (this.size bitAnd: 3)
     }
