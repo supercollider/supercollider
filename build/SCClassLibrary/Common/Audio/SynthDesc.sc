@@ -105,6 +105,8 @@ SynthDesc {
 			constants = nil;
 		};
 		this.makeMsgFunc;
+		UGen.buildSynthDef = nil;
+		
 	}
 	
 	readUGenSpec { arg stream;
