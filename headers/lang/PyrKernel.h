@@ -153,6 +153,7 @@ struct PyrBlock : public PyrObjectHdr
 	PyrSlot context;			// ***defining block context
 	PyrSlot argNames;			// ***arguments to block
 	PyrSlot varNames;			// ***variables in block
+	PyrSlot sourceCode;			// source code if it is a closed function.
 };
 
 struct PyrMethod : public PyrBlock 

@@ -6,6 +6,8 @@ Function : AbstractFunction {
 	*new { ^this.shouldNotImplement(thisMethod) }
 	
 	isClosed { _FunctionIsClosed }
+
+	asCompileString { ^def.sourceCode }
 	
 	shallowCopy { ^this }
 	
@@ -94,7 +96,7 @@ Function : AbstractFunction {
 	plot {
 		^thisMethod.notYetImplemented
 	}
-	cmdPeriod { this.value }
+	cmdPeriod { this.value }	
 }
 
 

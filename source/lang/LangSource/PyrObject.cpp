@@ -1300,7 +1300,7 @@ void initClasses()
 	fixClassArrays(class_arrayed_collection);
 	fixClassArrays(class_array);
 	
-	class_fundef = makeIntrinsicClass(s_fundef, s_object, 9, 0);
+	class_fundef = makeIntrinsicClass(s_fundef, s_object, 10, 0);
 		// declare varNames for Block
 		
 		addIntrinsicVar(class_fundef, "raw1", &o_nil);
@@ -1313,6 +1313,7 @@ void initClasses()
 		addIntrinsicVar(class_fundef, "context", &o_nil);
 		addIntrinsicVar(class_fundef, "argNames", &o_nil);
 		addIntrinsicVar(class_fundef, "varNames", &o_nil);
+		addIntrinsicVar(class_fundef, "sourceCode", &o_nil);
 	
 	class_method = makeIntrinsicClass(s_method, s_fundef, 5, 0);
 		addIntrinsicVar(class_method, "ownerClass", &o_nil);

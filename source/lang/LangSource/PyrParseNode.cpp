@@ -32,6 +32,7 @@
 #include <stdarg.h>
 #include "InitAlloc.h"
 #include "PredefinedSymbols.h"
+#include "SimpleStack.h"
 
 AdvancingAllocPool gParseNodePool;
 
@@ -2911,6 +2912,8 @@ void compilePyrLitListNode(PyrLitListNode* node, void* result)
 }
 
 
+extern LongStack closedFuncCharNo;
+
 PyrBlockNode* newPyrBlockNode(PyrArgListNode *arglist, PyrVarListNode *varlist, PyrParseNode *body, bool isTopLevel)
 {
 	PyrBlockNode* node;
@@ -2925,6 +2928,17 @@ PyrBlockNode* newPyrBlockNode(PyrArgListNode *arglist, PyrVarListNode *varlist, 
 	node->varlist = varlist;
 	node->body = body;
 	node->isTopLevel = isTopLevel;
+	
+	if (isTopLevel) {
+		if (emptyls(&closedFuncCharNo)) {
+			node->beginCharNo = 0;
+		} else {
+			node->beginCharNo = popls(&closedFuncCharNo);
+		}
+	} else {
+		node->beginCharNo = 0;
+	}
+
 	return node;
 }
 
@@ -2964,6 +2978,13 @@ void compilePyrBlockNode(PyrBlockNode* node, void* result)
 	
 	if (node->isTopLevel) {
 		SetNil(&block->context);
+		
+		int endCharNo = linestarts[node->lineno] + node->charno;
+		int stringLength = endCharNo - node->beginCharNo;
+		
+		PyrString* string = newPyrStringN(compileGC(), stringLength, flags, false);
+		memcpy(string->s, text+node->beginCharNo, stringLength);
+		SetObject(&block->sourceCode, string);
 	} else {
 		SetObject(&block->context, prevBlock);
 	}

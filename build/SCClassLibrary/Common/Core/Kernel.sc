@@ -301,7 +301,8 @@ Process {
 
 FunctionDef {
 	var raw1, raw2, <code, <selectors, <constants, <prototypeFrame, <context, <argNames, <varNames;
-	
+	var <sourceCode;
+
 	// a FunctionDef is defined by a code within curly braces {}
 	// When you use a FunctionDef in your code it gets pushed on the stack
 	// as an instance of Function

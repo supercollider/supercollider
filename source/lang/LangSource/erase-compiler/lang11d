@@ -2,7 +2,7 @@
 %token  VAR ARG CLASSVAR CONST 
 %token	NILOBJ TRUEOBJ FALSEOBJ INFINITUMOBJ
 %token	PSEUDOVAR
-%token  ELLIPSIS DOTDOT PIE
+%token  ELLIPSIS DOTDOT PIE BEGINCLOSEDFUNC
 %token  BADTOKEN INTERPRET
 %left	':'
 %right  '='
@@ -878,9 +878,9 @@ listliteral	: integer	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 block	: '{' argdecls funcvardecls funcbody '}'
 				{ $$ = (long)newPyrBlockNode((PyrArgListNode*)$2, (PyrVarListNode*)$3, 
 					(PyrParseNode*)$4, false); }
-		| '#' '{' argdecls funcvardecls funcbody '}'
-				{ $$ = (long)newPyrBlockNode((PyrArgListNode*)$3, (PyrVarListNode*)$4, 
-					(PyrParseNode*)$5, true); }
+		| BEGINCLOSEDFUNC argdecls funcvardecls funcbody '}'
+				{ $$ = (long)newPyrBlockNode((PyrArgListNode*)$2, (PyrVarListNode*)$3, 
+					(PyrParseNode*)$4, true); }
 		;
 
 funcvardecls	: { $$ = 0; }

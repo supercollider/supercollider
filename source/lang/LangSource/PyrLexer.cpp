@@ -83,6 +83,7 @@ bool gDebugLexer = false;
 
 bool gShowWarnings = false;
 LongStack brackets;
+LongStack closedFuncCharNo;
 
 char *binopchars = "!@%&*-+=|<>?/";
 char yytext[MAXYYLEN];
@@ -228,6 +229,7 @@ bool startLexer(char* filename)
 	textlen = stripNonAscii(text);
 	
 	initLongStack(&brackets);
+	initLongStack(&closedFuncCharNo);
 	textpos = 0;
 	linepos = 0;
 	lineno = 1;
@@ -264,6 +266,7 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	//postfl("text '%s' %d\n", text, text);
 		
 	initLongStack(&brackets);
+	initLongStack(&closedFuncCharNo);
 	textpos = 0;
 	linepos = 0;
 	lineno = 1;
@@ -285,6 +288,7 @@ void finiLexer()
 	pyr_pool_compile->Free(linestarts);
 	pyr_pool_compile->Free(text);
 	freeLongStack(&brackets);
+	freeLongStack(&closedFuncCharNo);
 }
 
 void initLexer() 
@@ -473,7 +477,18 @@ start:
 		}
 			
 	}
-	else if (c == '#') { r = '#'; goto leave; }
+	else if (c == '#') { 
+		int charno1 = linestarts[lineno] + charno - 1;
+		if ((c = input()) == OPENCURLY) {
+			pushls(&brackets, OPENCURLY);
+			pushls(&closedFuncCharNo, charno1);
+			r = BEGINCLOSEDFUNC;
+		} else {
+			unput(c); 
+			r = '#'; 
+		}
+		goto leave;
+	}
 	else if (c == '$') { 
 		c = input();
 		if (c == '\\') {

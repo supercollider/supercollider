@@ -203,6 +203,7 @@ struct PyrBlockNode : public PyrParseNode {
 	struct PyrVarListNode *varlist;
 	struct PyrParseNode *body;
 	bool isTopLevel;
+	int beginCharNo;
 } ;
 
 

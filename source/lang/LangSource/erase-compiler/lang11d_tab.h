@@ -22,13 +22,14 @@
 #define	ELLIPSIS	275
 #define	DOTDOT	276
 #define	PIE	277
-#define	BADTOKEN	278
-#define	INTERPRET	279
-#define	BINOP	280
-#define	KEYBINOP	281
-#define	READWRITEVAR	282
-#define	DOUBLEEQUAL	283
-#define	UMINUS	284
+#define	BEGINCLOSEDFUNC	278
+#define	BADTOKEN	279
+#define	INTERPRET	280
+#define	BINOP	281
+#define	KEYBINOP	282
+#define	READWRITEVAR	283
+#define	DOUBLEEQUAL	284
+#define	UMINUS	285
 
 
 extern YYSTYPE yylval;
