@@ -146,17 +146,6 @@ SequenceableCollection : Collection {
 		^((val - a) / (b - a)) + i - 1
 	}
 	
-	nearest { arg val;  // collection is sorted
-		^this.at(this.indexIn(this))
-	}
-	
-	nearestInScale { arg val, stepsPerOctave=12; // collection is sorted
-		var key, root;
-		root = val.trunc(stepsPerOctave);
-		key = val % stepsPerOctave;
-		^key.nearestInList(this) + root
-	}
-	
 	remove { arg item;
 		var index;
 		index = this.indexOf(item);
@@ -335,6 +324,16 @@ SequenceableCollection : Collection {
 		^scale.indexInBetween(key) + n
 	}
 	
+	nearestInScale { arg scale, stepsPerOctave=12; // collection is sorted
+		var key, root;
+		root = this.trunc(stepsPerOctave);
+		key = this % stepsPerOctave;
+		^key.nearestInList(scale) + root
+	}
+	nearestInList { arg list;  // collection is sorted
+		^this.collect({ arg item; list.at(list.indexIn(item)) })
+	}
+	
 	transposeKey { arg amount, octave=12;
 		^((this + amount) % octave).sort
 	}
@@ -503,7 +502,7 @@ SequenceableCollection : Collection {
 	firstArg { arg aNumber; ^this.performBinaryOp('firstArg', aNumber) }
 	rrand { arg aNumber; ^this.performBinaryOp('rrand', aNumber) }
 	exprand { arg aNumber; ^this.performBinaryOp('exprand', aNumber) }
-
+	
 	// math op dispatch support
 	performUnaryOp { arg aSelector;
 		^this.collect({ arg item; item.perform(aSelector) });
@@ -564,6 +563,7 @@ SequenceableCollection : Collection {
 		^this.collect({ arg item; item.rate }).minItem; 
 		// 'scalar' > 'control' > 'audio'
 	}
+		
 	
 	// support UGen range
 
@@ -756,5 +756,6 @@ SequenceableCollection : Collection {
 		function.value(stream);
 		^stream.contents
 	}
+	
 	
 }
