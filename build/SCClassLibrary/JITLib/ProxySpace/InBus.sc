@@ -71,10 +71,10 @@ XInFeedback {
 
 Monitor {
 	
-	var <group, <vol, <out;
+	var <group, <vol=1.0, <out;
 	
 	play { arg fromIndex, fromNumChannels=2, toIndex=0, toNumChannels, 
-			target, multi=false, volume=1, fadeTime=0.02;
+			target, multi=false, volume, fadeTime=0.02;
 			
 		var server, inGroup, numChannels, bundle, divider;
 		inGroup = target.asGroup;
@@ -83,6 +83,7 @@ Monitor {
 		toNumChannels = toNumChannels ? fromNumChannels;
 		numChannels = max(fromNumChannels, toNumChannels);
 		vol = volume ? vol;
+		
 		if(group.isPlaying.not) { 
 				group = Group.newToBundle(bundle, inGroup, \addToTail);
 				NodeWatcher.register(group);
@@ -104,7 +105,7 @@ Monitor {
 					server.nextNodeID.debug, 1, group.nodeID,
 					\out, toIndex + (i * divider  % toNumChannels), 
 					\in, fromIndex + (i * divider % fromNumChannels),
-					\vol, volume
+					\vol, vol
 					]);
 			};
 		bundle.add(["/n_set", group.nodeID, "fadeTime", fadeTime]);

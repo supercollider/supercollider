@@ -1,10 +1,10 @@
 TChoose {
 	*ar { arg trig, array;
-		^Select.ar(TRand.kr(0, array.size, trig), array)
+		^Select.ar(TIRand.kr(0, array.lastIndex, trig), array)
 	
 	}
 	*kr { arg trig, array;
-		^Select.kr(TRand.kr(0, array.size, trig), array)
+		^Select.kr(TIRand.kr(0, array.lastIndex, trig), array)
 	
 	}
 }

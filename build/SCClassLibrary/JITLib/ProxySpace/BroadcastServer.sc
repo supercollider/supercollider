@@ -199,9 +199,13 @@ Router : Server {
 	
 		super.newAllocators;
 		sharedNodeIDAllocator = RingNumberAllocator(128, 800);
+		// alloc shared busses.
+		// maybe pre allocate 26 + 8 audio busses
+		// and 1000 kr busses?
 		
 	}
 	serverRunning { ^true } //assume that.
+	
 	//waitForBoot {Êarg func; func.value }
 	//stopAliveThread { }
 	//startAliveThread { }

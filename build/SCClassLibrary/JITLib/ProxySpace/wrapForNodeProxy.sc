@@ -134,10 +134,18 @@
 	buildForProxy {}
 	
 	proxyControlClass {
-		^TaskControl
+		^StreamControl
 	}
 }
 
+/*
++Pdef {
+	buildForProxy { arg proxy, channelOffset=0;
+		isPlaying = true;
+		^super.buildForProxy(proxy, channelOffset);
+	}
+}
+*/
 
 +Pattern {
 	proxyControlClass {

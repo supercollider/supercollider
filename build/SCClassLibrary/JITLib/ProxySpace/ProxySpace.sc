@@ -43,13 +43,12 @@ ProxySpace : EnvironmentRedirect {
 	}
 	
 	
-	makeProxy { arg key;
+	makeProxy {
 			var proxy;
 			proxy = NodeProxy(server);
 			proxy.clock = clock;
+			proxy.awake = awake;
 			if(fadeTime.notNil, { proxy.fadeTime = fadeTime });
-			proxy.awake_(awake);
-			envir.put(key, proxy);
 			^proxy
 	}
 	
@@ -60,6 +59,7 @@ ProxySpace : EnvironmentRedirect {
 		proxy = super.at(key);
 		if(proxy.isNil) {
 			proxy = this.makeProxy(key);
+			envir.put(key, proxy);
 		};
 		^proxy
 	
@@ -260,10 +260,9 @@ ProxySpace : EnvironmentRedirect {
 
 PlayerSpace : ProxySpace {
 	
-	makeProxy { arg key;
+	makeProxy {
 			var proxy;
 			proxy = PlayerSocket(\audio, 1, server); //for now..
-			envir.put(key, proxy);
 			^proxy
 	}
 
@@ -273,6 +272,7 @@ PlayerSpace : ProxySpace {
 		proxy = envir.at(key);
 		if(proxy.isNil, {
 			proxy = this.makeProxy(key);
+			envir.put(key, proxy);
 		});
 		^proxy
 	
@@ -280,16 +280,7 @@ PlayerSpace : ProxySpace {
 	
 	put { arg key, obj;
 		var proxy;
-		proxy = envir.at(key);
-		if(proxy.isNil, {
-			proxy = this.makeProxy(key);
-		}, {
-			if(obj.isNil, { 
-				proxy.free; 
-				this.removeAt(key);  
-			});
-			
-		});
+		proxy = this.at(key);
 		proxy.prepareAndSpawn(obj.asPlayer, 0.1);
 	}
 

@@ -59,6 +59,9 @@ Pdefn : Pattern {
 	sched { arg task;
 		clock.schedAbs(clock.elapsedBeats.roundUp(quant) + offset, task)
 	}
+	doInTime { arg func;
+		if(quant.isNil) { func.value } { this.sched({ func.value; nil }) }
+	}
 	
 	*removeAll { all = IdentityDictionary.new; }
 	
@@ -130,8 +133,8 @@ Pdef : Pdefn {
 		if(player.isPlaying.not) { player = this.playOnce(argClock, protoEvent, quant) }
 	}
 	stop { player.stop; isPlaying = false }
-	pause { if(player.notNil) { player.pause } }
-	resume { if(player.notNil) { player.resume } }
+	pause { if(player.notNil) { this.doInTime { player.pause } } }
+	resume { if(player.notNil) { this.doInTime { player.resume } } }
 
 	clear { this.class.all.removeAt(key).stop }
 	*removeAll { 
