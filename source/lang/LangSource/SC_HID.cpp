@@ -24,6 +24,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  */
+#ifdef SC_DARWIN
+
 #include <Carbon/Carbon.h>
 
 #include "HID_Utilities_External.h"
@@ -72,11 +74,31 @@ void releaseHIDDevices ()
 	gNumberOfHIDDevices = 0;
 }
 
+int prHIDGetElementListSize(VMGlobals *g, int numArgsPushed);
+int prHIDGetElementListSize(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1; //class
+	PyrSlot *b = g->sp; //locID device	
+	int locID;
+	int err = slotIntVal(b, &locID);
+	if (err) return err;	
+    pRecDevice  pCurrentHIDDevice = HIDGetFirstDevice ();
+	while (pCurrentHIDDevice && (pCurrentHIDDevice->locID !=locID))
+        pCurrentHIDDevice = HIDGetNextDevice (pCurrentHIDDevice);
+	if(!pCurrentHIDDevice) return errFailed;
+	UInt32 numElements = HIDCountDeviceElements (pCurrentHIDDevice, kHIDElementTypeInput);
+	SetInt(a, numElements);
+	return errNone;
+}
+
 int prHIDBuildElementList(VMGlobals *g, int numArgsPushed);
 int prHIDBuildElementList(VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp - 1; //class
-	PyrSlot *b = g->sp; //locID device
+
+	PyrSlot *a = g->sp - 2; //class
+	PyrSlot *b = g->sp - 1; //locID device
+	PyrSlot *c = g->sp; //array
+
 	int locID;
 	int err = slotIntVal(b, &locID);
 	if (err) return err;
@@ -89,28 +111,30 @@ int prHIDBuildElementList(VMGlobals *g, int numArgsPushed)
 	pRecElement	devElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeInput);
 	UInt32 numElements = HIDCountDeviceElements (pCurrentHIDDevice, kHIDElementTypeInput);
 
-		PyrObject* devAllElementsArray = newPyrArray(g->gc, numElements * sizeof(PyrObject), 0 , true);
-		
-		for(UInt32 i=0; i<numElements; i++) {
+//		PyrObject* devAllElementsArray = newPyrArray(g->gc, numElements * sizeof(PyrObject), 0 , true);
+		PyrObject *devAllElementsArray = c->uo;
+//		post("numElements: %d\n", numElements);
+		numElements = sc_clip(numElements, 0, devAllElementsArray->size);
+		for(int i=0; i<numElements; i++){
 			
 			char cstrElementName [256];
 			PyrObject* devElementArray = newPyrArray(g->gc, 5 * sizeof(PyrObject), 0 , true);
 			HIDGetTypeName((IOHIDElementType) devElement->type, cstrElementName);
 			PyrString *devstring = newPyrString(g->gc, cstrElementName, 0, true);
 			SetObject(devElementArray->slots+devElementArray->size++, devstring);
-			g->gc->GCWrite(devElementArray, (PyrObject*) devstring);
+			//g->gc->GCWrite(devElementArray, (PyrObject*) devstring);
 			//usage
 			HIDGetUsageName (devElement->usagePage, devElement->usage, cstrElementName);
-			devstring = newPyrString(g->gc, cstrElementName, 0, true);
-			SetObject(devElementArray->slots+devElementArray->size++, devstring);
-			g->gc->GCWrite(devElementArray, (PyrObject*) devstring);
+			PyrString *usestring = newPyrString(g->gc, cstrElementName, 0, true);			
+			SetObject(devElementArray->slots+devElementArray->size++, usestring);
+			//g->gc->GCWrite(devElementArray, (PyrObject*) usestring);
 			//cookie
 			SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->cookie);
 			SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->min);
 			SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->max);
 			
-			SetObject(devAllElementsArray->slots+devAllElementsArray->size++, devElementArray);
-			g->gc->GCWrite(devAllElementsArray, (PyrObject*) devElementArray);
+			SetObject(devAllElementsArray->slots+i, devElementArray);
+			//g->gc->GCWrite(devAllElementsArray, (PyrObject*) devElementArray);
 			
 			devElement =  HIDGetNextDeviceElement (devElement, kHIDElementTypeInput);
 		}
@@ -353,10 +377,17 @@ void callback  (void * target, IOReturn result, void * refcon, void * sender)
 int prHIDRunEventLoop(VMGlobals *g, int numArgsPushed);
 int prHIDRunEventLoop(VMGlobals *g, int numArgsPushed)
 {
-	//PyrSlot *a = g->sp - 1; //class
-
-	InstallEventLoopTimer (GetCurrentEventLoop(), 0, 0.001, GetTimerUPP (), 0, &gTimer);
-
+	PyrSlot *a = g->sp - 1; //class
+	PyrSlot *b = g->sp; //num
+	double eventtime;
+	int err = slotDoubleVal(b, &eventtime);
+	if (err) return err;
+	if(gTimer)
+	{
+        RemoveEventLoopTimer(gTimer);
+		gTimer = NULL;
+	}
+	InstallEventLoopTimer (GetCurrentEventLoop(), 0, (EventTimerInterval) eventtime, GetTimerUPP (), 0, &gTimer);
 	//HIDSetQueueCallback(pCurrentHIDDevice, callback);
 	return errNone;	
 }
@@ -365,7 +396,7 @@ int prHIDQueueDevice(VMGlobals *g, int numArgsPushed);
 int prHIDQueueDevice(VMGlobals *g, int numArgsPushed)
 {
 	
-	//PyrSlot *a = g->sp - 1; //class
+	PyrSlot *a = g->sp - 1; //class
 	PyrSlot *b = g->sp; //locID device
 	int locID;
 	int err = slotIntVal(b, &locID);
@@ -383,7 +414,7 @@ int prHIDQueueElement(VMGlobals *g, int numArgsPushed);
 int prHIDQueueElement(VMGlobals *g, int numArgsPushed)
 {
 	
-	//PyrSlot *a = g->sp - 2; //class
+	PyrSlot *a = g->sp - 2; //class
 	PyrSlot *b = g->sp - 1; //locID device
 	PyrSlot *c = g->sp; //element cookie
 	int locID, cookieNum;
@@ -411,7 +442,7 @@ int prHIDDequeueElement(VMGlobals *g, int numArgsPushed);
 int prHIDDequeueElement(VMGlobals *g, int numArgsPushed)
 {
 	
-	//PyrSlot *a = g->sp - 2; //class
+	PyrSlot *a = g->sp - 2; //class
 	PyrSlot *b = g->sp - 1; //locID device
 	PyrSlot *c = g->sp; //element cookie
 	int locID, cookieNum;
@@ -438,7 +469,7 @@ int prHIDDequeueDevice(VMGlobals *g, int numArgsPushed);
 int prHIDDequeueDevice(VMGlobals *g, int numArgsPushed)
 {
 	
-	//PyrSlot *a = g->sp - 1; //class
+	PyrSlot *a = g->sp - 1; //class
 	PyrSlot *b = g->sp; //locID device
 	int locID;
 	int err = slotIntVal(b, &locID);
@@ -456,8 +487,10 @@ int prHIDStopEventLoop(VMGlobals *g, int numArgsPushed);
 int prHIDStopEventLoop(VMGlobals *g, int numArgsPushed)
 {
 	if (gTimer)
+	{
         RemoveEventLoopTimer(gTimer);
-	gTimer = NULL;
+		gTimer = NULL;
+	}
 	return errNone;	
 }
 
@@ -474,14 +507,22 @@ void initHIDPrimitives()
 	base = nextPrimitiveIndex();
 	index = 0;
 	definePrimitive(base, index++, "_HIDBuildDeviceList", prHIDBuildDeviceList, 3, 0);
-	definePrimitive(base, index++, "_HIDBuildElementList", prHIDBuildElementList, 2, 0);
+
+	definePrimitive(base, index++, "_HIDGetElementListSize", prHIDGetElementListSize, 2, 0);
+	definePrimitive(base, index++, "_HIDBuildElementList", prHIDBuildElementList, 3, 0);
 
 	definePrimitive(base, index++, "_HIDGetValue", prHIDGetValue, 3, 0);
 	definePrimitive(base, index++, "_HIDReleaseDeviceList", prHIDReleaseDeviceList, 1, 0);
-	definePrimitive(base, index++, "_HIDRunEventLoop", prHIDRunEventLoop, 1, 0);
+	definePrimitive(base, index++, "_HIDRunEventLoop", prHIDRunEventLoop, 2, 0);
 	definePrimitive(base, index++, "_HIDStopEventLoop", prHIDStopEventLoop, 1, 0);
 	definePrimitive(base, index++, "_HIDQueueDevice", prHIDQueueDevice, 2, 0);
 	definePrimitive(base, index++, "_HIDDequeueDevice", prHIDDequeueDevice, 2, 0);
 	definePrimitive(base, index++, "_HIDDequeueElement", prHIDDequeueElement, 3, 0);
 	definePrimitive(base, index++, "_HIDQueueElement", prHIDQueueElement, 3, 0);
 }
+#else // !SC_DARWIN
+void initHIDPrimitives()
+{
+	//other platforms?
+}
+#endif // SC_DARWIN
