@@ -41,9 +41,15 @@ as n increases, distribution converges towards gaussian
 )\
 \
 (\
+n = 0;\
 Routine(\{\
 	inf.do(\{ arg i;\
-		\cf4 Synth\cf0 .new(\cf5 "help-NRand", [\\n, i div: 30]\cf0 ); 0.05.wait;\
+		\cf4 Synth\cf0 .new(\cf5 "help-NRand", [\\n, n]\cf0 ); 0.05.wait;\
 	\})\
 \}).play;\
-)}
+)\
+\
+n = 1;\
+n = 2;\
+n = 4;\
+}
