@@ -237,12 +237,6 @@ SCView::~SCView()
     delete mBackground;
 }
 
-void SCView::remove()
-{
-    if (mParent) mParent->remove(this);
-    if (mObj) SetNil(mObj->slots+0);
-}
-    
 bool SCView::hit(SCPoint where) const
 {
 	return SCPointInRect(where, mBounds);
@@ -3874,13 +3868,8 @@ int prSCView_Focus(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *boo = g->sp;
     
 	if (!view) return errFailed;
-    
-    if(IsTrue(boo)) {
-        view->makeFocus(true);
-    } else {
-        view->makeFocus(false);
-    }
-	return errNone;
+    view->makeFocus(IsTrue(boo));
+    return errNone;
 }
 
 int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed);
@@ -3896,11 +3885,15 @@ int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed)
 int prSCView_Remove(struct VMGlobals *g, int numArgsPushed);
 int prSCView_Remove(struct VMGlobals *g, int numArgsPushed)
 {
-	if (!g->canCallOS) return errCantCallOS;
+	//if (!g->canCallOS) return errCantCallOS;
 
-	SCView *view = (SCView*)(g->sp)[0].uo->slots[0].ui;
-    view->remove();
-	return errNone;
+    PyrSlot *viewObjSlot = g->sp;
+    SCView *view = (SCView*)viewObjSlot[0].uo->slots[0].ui;
+    if(!view) return errFailed;
+    
+	// removes from parent, set mObj to nil
+    delete view;
+    return errNone;
 }
 
 void initSCViewPrimitives()

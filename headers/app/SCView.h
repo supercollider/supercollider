@@ -78,8 +78,6 @@ public:
 	SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
 	virtual ~SCView();
 		
-    virtual void remove();
-
 	virtual void draw(SCRect inDamage);
         virtual void drawFocus(SCRect inDamage);
 	virtual void drawDisabled(SCRect inDamage);
