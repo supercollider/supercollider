@@ -2,13 +2,13 @@
 
 + ArrayedCollection{
 	
-	plot { arg name, bounds, discrete=false;
-		//this.asciiPlot;
-		var plotter, val, minval, maxval, txt, window, thumbsize, zoom, width;
+	plot { arg name, bounds, discrete=false, numChannels = 1;
+		var plotter, txt, chanArray, unlaced, val, minval, maxval, window, thumbsize, zoom, width, 
+			layout;
 		bounds = bounds ?  Rect(200 , 140, 705, 410);
 		
 		width = bounds.width-8;
-		zoom = width / this.size;
+		zoom = (width / (this.size / numChannels));
 		
 		if(discrete) {
 			thumbsize = max(1.0, zoom);
@@ -19,32 +19,38 @@
 		name = name ? "plot";
 		minval = this.minItem;
 		maxval = this.maxItem;
-		val = Array.newClear(width);
-		width.do { arg i;
-			var x;
-			x = this.blendAt(i / zoom);
-			val[i] = x.linlin(minval, maxval, 0.0, 1.0);
-		
-		};
-		
+		unlaced = this.unlace(numChannels);
+		chanArray = Array.newClear(numChannels);
+		unlaced.do({ |chan, j|
+			val = Array.newClear(width);
+			width.do { arg i;
+				var x;
+				x = chan.blendAt(i / zoom);
+				val[i] = x.linlin(minval, maxval, 0.0, 1.0);
+			};
+			chanArray[j] = val;
+		});
 		window = SCWindow(name, bounds);
-		window.view.decorator =  FlowLayout(window.view.bounds);
-		txt = SCStaticText(window, bounds.width @18)
-			.string_("index: 0, value: " ++ this[0].asString);
-		window.view.decorator.nextLine;
-		plotter = SCMultiSliderView(window, Rect(0, 0, width, bounds.height - 60))
-			.readOnly_(true)
-			.drawLines_(discrete.not)
-			.drawRects_(discrete)
-			.thumbSize_(thumbsize) 
-			.valueThumbSize_(1)
-			.colors_(Color.black, Color.blue(1.0,1.0))
-			.action_({|v| 
-				txt.string_("index: " ++ (v.index / zoom).roundUp(0.01).asString ++ 
+		txt = SCStaticText(window, Rect(8, 0, width, 18))
+				.string_("index: 0, value: " ++ this[0].asString);
+		layout = SCVLayoutView(window, Rect(4, txt.bounds.height, width, 
+			bounds.height - 30 - txt.bounds.height)).resize_(5);
+		numChannels.do({ |i|
+			plotter = SCMultiSliderView(layout, Rect(0, 0, 
+					layout.bounds.width,layout.bounds.height))
+				.readOnly_(true)
+				.drawLines_(discrete.not)
+				.drawRects_(discrete)
+				.thumbSize_(thumbsize) 
+				.valueThumbSize_(1)
+				.colors_(Color.black, Color.blue(1.0,1.0))
+				.action_({|v| 
+					txt.string_("index: " ++ (v.index / zoom).roundUp(0.01).asString ++ 
 					", value: " ++ v.currentvalue.linlin(0.0, 1.0, minval, maxval).asString) })
-			.value_(val)
-			.resize_(5)
-			.elasticMode_(1);
+				.value_(chanArray[i])
+				.resize_(5)
+				.elasticMode_(1);
+		});
 		^window.front;
 		
 	}
@@ -68,8 +74,42 @@
 
 + Buffer {
 	plot { arg name, bounds;
-		this.loadToFloatArray(action: { arg array; {array.plot(name, bounds) }.defer;});
+		this.loadToFloatArray(action: { |array, buf| {array.plot(name, bounds, 
+			numChannels: buf.numChannels) }.defer;});
 	}
+}
+
++ Function {
+	plot { arg duration  = 0.01, server, bounds;
+		var buffer, def, synth, name, value, numChannels;
+		server = server ? Server.default;
+		server.isLocal.not.if({"Function-plot only works with a localhost server".warn; ^nil });
+		server.serverRunning.not.if({"Server not running!".warn; ^nil });
+		value = this.value;
+		if(value.size == 0, { numChannels = 1 }, { numChannels =  value.size });
+		buffer = Buffer.new(server, duration * server.sampleRate, numChannels);
+		// no need to check for rate as RecordBuf is ar only
+		name = this.hash.asString;
+		def = SynthDef(name, { 
+			RecordBuf.ar(this.value,  buffer.bufnum, loop:0);
+			Line.ar(dur: duration, doneAction: 2);
+		});
+		Routine.run({
+			var c;
+			c = Condition.new;
+			server.sendMsgSync(c, *buffer.allocMsg);
+			server.sendMsgSync(c, "/d_recv", def.asBytes);
+			synth = Synth.basicNew(name, server);
+			OSCpathResponder(server.addr, ['/n_end', synth.nodeID], { 
+				buffer.loadToFloatArray(action: { |array, buf| 
+					{array.plot(bounds: bounds, numChannels: buf.numChannels) }.defer;
+					buffer.free;
+				});
+			}).add.removeWhenDone;
+			server.listSendMsg(synth.newMsg);
+		});
+	}
+
 }
 
 

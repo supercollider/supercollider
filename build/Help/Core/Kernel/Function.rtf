@@ -2,18 +2,16 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green115\blue0;}
+\red0\green115\blue0;\red0\green0\blue0;\red0\green0\blue191;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Function
 \f1\b0\fs24 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 superclass: AbstractFunction\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b superclass: AbstractFunction\
 
-\f1\b0 \cf0 \
+\f1\b0 \
 A Function is a reference to a FunctionDef and its defining context Frame. When a FunctionDef is encountered in your code it is pushed on the stack as a Function. A Function can be evaluated by using the 'value' method.\
 \
 Because it inherits from AbstractFunction, Functions can respond to math operations by creating a new Function. For example:\
@@ -230,9 +228,9 @@ Break from a loop. Calls the receiver with an argument which is a function that 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs20 \cf0 \
-
-\fs18 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 (\
 \cf2 var\cf0  i, x, z;\
 z = [0, 1, 1.1, 1.3, 1.5, 2];\
 i = z.choose;\
@@ -346,13 +344,13 @@ Audio Support\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs24 \cf0 \ulnone \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
 
 \f0\b \cf0 play(target, outbus, fadetime, addAction)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \
-This is probably the simplest way to get audio in SC3. It wraps the Function in a 
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li580\fi-580\ql\qnatural
+\cf0 	This is probably the simplest way to get audio in SC3. It wraps the Function in a 
 \f0\b SynthDef
 \f1\b0  (adding an 
 \f0\b Out
@@ -363,19 +361,19 @@ This is probably the simplest way to get audio in SC3. It wraps the Function in 
 \f1\b0  is also added to avoid clicks, which is configured to allow the resulting Synth to have its 
 \f2\fs18 \cf5 \\gate 
 \f1\fs24 \cf0 argument set, or to respond to a release message. Args in the function become args in the resulting def.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
 
 \f0\b \cf0 \
-target 
+	target 
 \f1\b0 - a Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.\
 
-\f0\b outbus 
+\f0\b 	outbus 
 \f1\b0 - the output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.\
 
-\f0\b fadeTime
+\f0\b 	fadeTime
 \f1\b0  - a fadein time. The default is 0.02 seconds, which is just enough to avoid a click. This will also be the fadeout time for a release if you do not specify.\
 
-\f0\b addAction
+\f0\b 	addAction
 \f1\b0  - see 
 \f0\b Synth
 \f1\b0  for a list of valid addActions. The default is 
@@ -386,15 +384,16 @@ target
 
 \f2 \cf0 \
 
-\fs18 x = \{ arg freq = 440; \cf2 SinOsc\cf0 .ar(freq, 0, 0.3) \}.play; \cf3 // this returns a Synth object;\cf0 \
-x.set(\cf5 \\freq\cf0 , 880); \cf3 // note you can set the freq argument\cf0 \
-x.defName; \cf3 // the name of the resulting SynthDef (derived from the Functions hash value)\cf0 \
-x.release(4); \cf3 // fadeout over 4 seconds
+\fs18 	x = \{ arg freq = 440; \cf2 SinOsc\cf0 .ar(freq, 0, 0.3) \}.play; \cf3 // this returns a Synth object;\cf0 \
+	x.set(\cf5 \\freq\cf0 , 880); \cf3 // note you can set the freq argument\cf0 \
+	x.defName; \cf3 // the name of the resulting SynthDef (derived from the Functions hash value)\cf0 \
+	x.release(4); \cf3 // fadeout over 4 seconds
 \fs20 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
-Many of the examples in SC3 make use of the Function.play syntax. Note that reusing such code in a 
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li580\fi-580\ql\qnatural
+\cf0 	Many of the examples in SC3 make use of the Function.play syntax. Note that reusing such code in a 
 \f0\b SynthDef
 \f1\b0  requires the addition of an 
 \f0\b Out
@@ -404,50 +403,98 @@ Many of the examples in SC3 make use of the Function.play syntax. Note that reus
 \f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs18 \cf3 // the following two lines produce equivalent results\cf0 \
-\{ \cf2 SinOsc\cf0 .ar(440, 0, 0.3) \}.play(fadeTime: 0.0); \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf4 "help-FuncPlay"\cf0 , \{ \cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(440, 0, 0.3))\}).play;
+\fs18 \cf3 	// the following two lines produce equivalent results\cf0 \
+	\{ \cf2 SinOsc\cf0 .ar(440, 0, 0.3) \}.play(fadeTime: 0.0); \
+	\cf2 SynthDef\cf0 (\cf4 "help-FuncPlay"\cf0 , \{ \cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(440, 0, 0.3))\}).play;
 \fs20 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li580\fi-580\ql\qnatural
 
-\f1\fs24 \cf0 Function.play is often more convienent than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice. \
-\
+\f1\fs24 \cf0 	Function.play is often more convienent than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice. \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 scope(numChannels, outbus, fadeTime, bufsize, zoom)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
-As 
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li580\fi-580\ql\qnatural
+\cf0 	As 
 \f0\b play 
 \f1\b0 above, but plays it on the internal 
 \f0\b Server
 \f1\b0 , and calls Server-scope to open a scope window in which to view the output. Currently only works on OSX.\
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b \cf0 numChannels
-\f1\b0  - number of channels to display in the scope window, starting from 
+\cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
+\cf0 	
+\f0\b numChannels
+\f1\b0  - The number of channels to display in the scope window, starting from 
 \f0\b outbus
 \f1\b0 . The default is 2.
 \f0\b \
-outbus 
-\f1\b0 - the output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.\
-
+	outbus 
+\f1\b0 - The output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.\
+	
 \f0\b fadeTime
-\f1\b0  - a fadein time. The default is 0.02 seconds, which is just enough to avoid a click.\
-
+\f1\b0  - A fadein time. The default is 0.02 seconds, which is just enough to avoid a click.\
+	
 \f0\b bufsize 
-\f1\b0 - the size of the buffer for the ScopeView. The default is 4096.\
-
+\f1\b0 - The size of the buffer for the ScopeView. The default is 4096.\
+	
 \f0\b zoom
-\f1\b0  - a zoom value for the scope's X axis. Larger values show more. The default is 1.\
-\
+\f1\b0  - A zoom value for the scope's X axis. Larger values show more. The default is 1.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 \{ \cf2 FSinOsc\cf0 .ar(440, 0, 0.3) \}.scope(1)\
+\f2\fs18 \cf0 	\{ \cf2 FSinOsc\cf0 .ar(440, 0, 0.3) \}.scope(1)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 plot(duration, server, bounds)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li580\fi-580\ql\qnatural
+
+\f1\b0 \cf0 	Calculates 
+\f0\b duration
+\f1\b0  in seconds worth of the output of this function, and plots it in a GUI window. Currently only works on OSX. Unlike 
+\f0\b play
+\f1\b0  and 
+\f0\b scope
+\f1\b0  it will not work with explicit Out Ugens, so your function should return a UGen or an 
+\f0\b Array
+\f1\b0  of them. The plot will be calculated in realtime.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
+
+\f0\b \cf0 	duration
+\f1\b0  - The duration of the function to plot in seconds. The default is 0.01.
+\f0\b \
+	server 
+\f1\b0 - The 
+\f0\b Server
+\f1\b0  on which to calculate the plot. This must be running on your local machine, but does not need to be the internal server. If nil the default server will be used.\
+	
+\f0\b bounds
+\f1\b0  - An instance of 
+\f0\b Rect
+\f1\b0  or 
+\f0\b Point
+\f1\b0  indicating the bounds of the plot window.
+\f0\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf6 	\{ \cf7 SinOsc\cf6 .ar(440) \}.plot(1, bounds: \cf7 SCWindow\cf6 .screenBounds);\
+	\
+	\{ \{\cf7 |i|\cf6  \cf7 SinOsc\cf6 .ar(1 + i)\}.dup(7) \}.plot(1);\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
@@ -460,7 +507,7 @@ asSynthDef(rates, prependArgs, outClass, fadetime)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
-Returns a SynthDef based on this Function, adding a 
+	Returns a SynthDef based on this Function, adding a 
 \f0\b Linen 
 \f1\b0 and an 
 \f0\b Out
@@ -468,18 +515,20 @@ Returns a SynthDef based on this Function, adding a
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 \
-rates 
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
+\cf0 	rates 
 \f1\b0 - An Array of rates and lagtimes for the function's arguments (see 
 \f0\b SynthDef
 \f1\b0  for more details).\
-
+	
 \f0\b outClass
 \f1\b0  - The class of the output ugen as a symbol. The default is \cf5 \\Out\cf0 .\
-
+	
 \f0\b fadeTime
 \f1\b0  - a fadein time. The default is 0.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
 \
 asDefName\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural

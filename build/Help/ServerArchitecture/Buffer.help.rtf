@@ -917,6 +917,7 @@ Accessing Instance Variables
 			x = \{ \cf2 PlayBuf\cf0 .ar(2, buf.bufnum, \cf2 BufRateScale\cf0 .kr(buf.bufnum), loop: 1) * 0.5 \}.play;\
 		\});\
 		)\
+		b.plot;\
 		x.free; b.free;\
 		\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
@@ -1211,7 +1212,7 @@ Accessing Instance Variables
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
 
-\f1\b0 \cf0 		Plot the contents of the Buffer in a GUI window. OSX only; currently only works properly with single channel buffers. (Multichannel buffers will result in the interleaved data being plotted.)\
+\f1\b0 \cf0 		Plot the contents of the Buffer in a GUI window. OSX only.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1700\fi-1700\ql\qnatural
 \cf0 		\
 		

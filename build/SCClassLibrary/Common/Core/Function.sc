@@ -113,9 +113,7 @@ Function : AbstractFunction {
 		time = seconds; // prevent optimization
 		^this.value(beats, seconds, clock)
 	}
-	plot {
-		^thisMethod.notYetImplemented
-	}
+
 	cmdPeriod { this.value }	
 	
 	<> { arg that;
