@@ -138,7 +138,7 @@ Phasor : UGen {
 	}
 }
 
-PeakFollower : UGen { // not installed
+PeakFollower : UGen {
 	
 	*ar { arg in = 0.0, decay = 0.999;
 		^this.multiNew('audio', in, decay)
