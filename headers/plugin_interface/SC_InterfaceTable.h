@@ -35,7 +35,7 @@ struct InterfaceTable
 	unsigned int mSineSize;
 	float32 *mSineWavetable;
 	float32 *mSine;
-	float32 *mSecant;
+	float32 *mCosecant;
 	
 	// call printf for debugging. should not use in finished code.
 	int (*fPrint)(const char *fmt, ...);

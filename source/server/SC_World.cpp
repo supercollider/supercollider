@@ -58,7 +58,7 @@ void InterfaceTable_Init()
 	InterfaceTable *ft = &gInterfaceTable;
 	
 	ft->mSine = gSine;
-	ft->mSecant = gInvSine;
+	ft->mCosecant = gInvSine;
 	ft->mSineSize = kSineSize;
 	ft->mSineWavetable = gSineWavetable;
 	

@@ -2182,7 +2182,7 @@ void Blip_next(Blip *unit, int inNumSamples)
 	int32 phase = unit->m_phase;
 		
 	float* numtbl = ft->mSine;
-	float* dentbl = ft->mSecant;
+	float* dentbl = ft->mCosecant;
 	
 	int32 freq, N, prevN;
 	float scale, prevscale;
@@ -2331,7 +2331,7 @@ void Saw_next(Saw *unit, int inNumSamples)
 	float y1 = unit->m_y1;
 	
 	float* numtbl = ft->mSine;
-	float* dentbl = ft->mSecant;
+	float* dentbl = ft->mCosecant;
 	
 	int32 freq, N, prevN;
 	float scale, prevscale;
@@ -2480,7 +2480,7 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 	float y1 = unit->m_y1;
 	
 	float* numtbl = ft->mSine;
-	float* dentbl = ft->mSecant;
+	float* dentbl = ft->mCosecant;
 	
 	int32 freq, N, prevN;
 	float scale, prevscale;
