@@ -175,7 +175,8 @@ InstrSynthDef : SynthDef {
 		"Clearing AbstractPlayer SynthDef cache".inform;
 		Library.put(SynthDef,server,nil);		
 	}
-	*loadCacheFromDir { arg server,dir = "synthdefs/";
+	*loadCacheFromDir { arg server,dir;
+		dir = dir ? SynthDef.synthDefDir;
 		(dir++"*").pathMatch.do({ arg p;
 			var defName;
 			defName = PathName(p).fileNameWithoutExtension;
