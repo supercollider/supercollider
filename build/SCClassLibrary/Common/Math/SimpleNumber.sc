@@ -125,6 +125,18 @@ SimpleNumber : Number {
 	performBinaryOpOnComplex { arg aSelector, aComplex, adverb; ^aComplex.perform(aSelector, this.asComplex, adverb) }
 	performBinaryOpOnSignal { arg aSelector, aSignal; ^error("Math operation failed.\n") }
 
+	
+	quantize { arg quantum = 1.0, tolerance = 0.05, strength = 1.0;
+		var diff, round;
+		round = round(this, quantum);
+		diff = round - this;
+		if (abs(diff) < tolerance) {
+			^this + (strength * diff)
+		}{
+			^this
+		}
+	}
+		
 	linlin { arg inMin, inMax, outMin, outMax;
 		// linear to linear mapping
 		if (this <= inMin, { ^outMin });
