@@ -19,6 +19,12 @@ ProxySpace : EnvironmentRedirect {
 		^this.new(server, name, clock).push;
 	}
 	
+	einit { arg srv, argName, argClock; 
+		server = srv;  
+		clock = argClock;
+		if(name.notNil, { this.class.all.add(this) });
+	}
+	
 	clock_ { arg aClock;
 		clock = aClock;
 		this.do({ arg item; item.clock = aClock });
@@ -38,12 +44,6 @@ ProxySpace : EnvironmentRedirect {
 	}
 	
 	
-	//todo add group to target
-	einit { arg srv, argName, argClock; 
-		server = srv;  
-		clock = argClock;
-		if(name.notNil, { this.class.all.add(this) });
-	}
 	
 	makeProxy { arg key;
 			var proxy;

@@ -6,7 +6,7 @@ EnvironmentRedirect {
 	classvar <>saveEnvir, <>saveTopEnvir;
 	
 	*new { arg name;
-		^super.newCopyArgs(Environment.new, name.asSymbol)
+		^super.newCopyArgs(Environment.new, name)
 	}
 	
 	*push { arg name;
