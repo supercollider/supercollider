@@ -304,10 +304,9 @@ Pfindur : FilterPattern {
 			nextElapsed = elapsed + delta;
 			if (nextElapsed.roundUp(tolerance) >= dur) {
 				// must always copy an event before altering it.
-				inevent = inevent.copy; 
-				// fix delta time.
-				inevent.put(\delta, dur - elapsed);
-				^inevent;
+				// fix delta time and yield to play the event.
+				inevent = inevent.copy.put(\delta, dur - elapsed).yield;
+				^inevent;		// this terminates the Pfindur. Event will not be played here.
 			};
 
 			elapsed = nextElapsed;
