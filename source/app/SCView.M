@@ -920,7 +920,15 @@ int SCLayoutView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
                 refresh();
 		return errNone;
 	}
-	
+	if (strcmp(name, "bounds")==0) {
+		SCRect screct;
+		err = slotGetSCRect(slot, &screct);
+                if (err) return err;
+                refreshFocus();
+                setBounds(screct);
+                refreshFocus();
+		return errNone;
+	}
         return SCView::setProperty(symbol, slot);
 }
 
@@ -933,6 +941,12 @@ int SCLayoutView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
         }
 
         return SCView::getProperty(symbol, slot);
+}
+
+void SCLayoutView::add(SCView *inChild)
+{
+	SCContainerView::add(inChild);
+	setBounds(mBounds); // re-layout
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

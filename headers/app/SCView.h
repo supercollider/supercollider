@@ -194,7 +194,8 @@ public:
 	
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
-	
+	virtual void add(SCView *inChild);
+
 protected:
     float mSpacing;
 };
@@ -217,7 +218,7 @@ public:
 	virtual ~SCVLayoutView();
 
 	virtual void setBounds(SCRect inBounds);
-	
+
 protected:
 };
 
