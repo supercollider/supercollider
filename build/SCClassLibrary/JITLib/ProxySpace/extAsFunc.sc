@@ -1,9 +1,14 @@
 //these need some redesign. maybe crucial players
 
-+Object {
++Object { 
+	//assumes some GraphBuilder
 	asPFunction {
 		^{ this }
 	}
+	asProxySynthDef { arg proxy;
+		^ProxySynthDef(proxy, this.asPFunction); 
+	}
+	
 }
 
 +SimpleNumber {
@@ -18,13 +23,11 @@
 		^this
 	}
 }
-
-+AudioProxy {
++NodeProxy {
 	asPFunction { 
 		^{this.value}
 	}
 }
-
 +Instr {
 	asPFunction { 
 		^this.func
