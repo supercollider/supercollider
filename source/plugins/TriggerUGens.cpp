@@ -230,8 +230,8 @@ void PauseSelf_next(PauseSelf *unit, int inNumSamples);
 void Pause_Ctor(Pause *unit);
 void Pause_next(Pause *unit, int inNumSamples);
 
-void Free_Ctor(Pause *unit);
-void Free_next(Pause *unit, int inNumSamples);
+void Free_Ctor(Free *unit);
+void Free_next(Free *unit, int inNumSamples);
 
 void PauseSelfWhenDone_Ctor(PauseSelfWhenDone *unit);
 void PauseSelfWhenDone_next(PauseSelfWhenDone *unit, int inNumSamples);
