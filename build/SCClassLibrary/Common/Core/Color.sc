@@ -27,6 +27,7 @@ Color {
 	
 	*rand { arg lo=0.3,hi=0.9; ^Color.new(rrand(lo,hi),rrand(lo,hi),rrand(lo,hi)) }
 
+
 	scaleByAlpha {
 		^Color.new(red * alpha, green * alpha, blue * alpha, 1.0)
 	}
@@ -61,6 +62,21 @@ Color {
 				};
 			//[r, g, b].postln;
 			^this.new(r, g, b, alpha);
+	}
+	
+	asHSV {
+		var max, min, delta, hue, sat, val;	
+		max = [red,green,blue].maxItem;
+		min = [red,green,blue].minItem;
+		delta = max - min;
+		if (red == max, {hue = (green - blue) / delta});
+		if (green == max, {hue = (blue - red) / delta + 2});
+		if (blue == max, {hue = (red - green) / delta + 4});
+		hue = hue/6;
+		if (hue < 0, {hue = hue + 1});
+	 	sat = delta / max;
+		val = max;
+		^[hue, sat, val, alpha]
 	}
 	
 	asArray { ^[red, green, blue, alpha] }
