@@ -615,7 +615,7 @@ NodeProxy : BusPlug {
 			}
 	}
 	
-	sendAll { arg extraArgs, freeLast=true; 
+	sendAll { arg extraArgs, freeLast=true; // better use send.
 		this.send(extraArgs, nil, freeLast);
 	}
 	
@@ -844,7 +844,7 @@ NodeProxy : BusPlug {
 		if(all) { keys = nodeMap.settingKeys };
 		nodeMap.unset(*keys);
 		if(all) { this.linkNodeMap };
-		if(this.isPlaying) { this.sendAll(nil, true) };
+		if(this.isPlaying) { this.send(nil, nil, true) };
 	}
 	
 	unmap { arg ... keys;
