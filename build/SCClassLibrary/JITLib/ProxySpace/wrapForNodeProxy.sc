@@ -136,7 +136,7 @@
 		^StreamControl
 	}
 	buildForProxy { arg proxy, channelOffset=0;
-		^this.asEventStream.buildForProxy(proxy, channelOffset)
+		^this.asEventStreamPlayer.buildForProxy(proxy, channelOffset)
 	}
 }
 
@@ -186,7 +186,7 @@
 
 +Pdef {
 	buildForProxy { arg proxy, channelOffset=0;
-		^EventStream(this.asStream).buildForProxy(proxy, channelOffset);
+		^EventStreamPlayer(this.asStream).buildForProxy(proxy, channelOffset);
 	}
 
 }
@@ -202,7 +202,7 @@
 	}
 }
 
-+EventStream {
++EventStreamPlayer {
 	collect { arg func;
 		^this.class.new(originalStream.collect(func), event)
 	}
