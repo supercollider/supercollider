@@ -73,19 +73,29 @@ Monitor {
 	
 	var <group, <vol=1.0, <out=0;
 	
-	play { arg fromIndex, fromNumChannels=2, toIndex=0, toNumChannels, 
+	play { arg fromIndex, fromNumChannels=2, toIndex, toNumChannels, 
 			target, multi=false, volume, fadeTime=0.02;
-			
 		var server, inGroup, numChannels, bundle, divider;
+		
 		inGroup = target.asGroup;
 		server = inGroup.server;
-		bundle = List.new;
 		
-		toNumChannels = toNumChannels ? fromNumChannels;
-		numChannels = max(fromNumChannels, toNumChannels);
+		bundle = List.new;
+		this.playToBundle(
+			bundle, fromIndex, fromNumChannels, toIndex, toNumChannels, inGroup, multi, volume, fadeTime
+		); 
+		server.listSendBundle(server.latency, bundle);
+	}
+	
+	playToBundle { arg bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels, 
+			inGroup, multi, volume, fadeTime=0.02;
+		var divider, server, numChannels;
+		toIndex = toIndex ? out;
 		vol = volume ? vol;
-
-		if(group.isPlaying.not) { 
+		if(multi) {Êout = out.asCollection.add(toIndex) } {Êout = toIndex };
+		toNumChannels = toNumChannels ? fromNumChannels;
+		server = inGroup.server;
+		if(group.isPlaying.not) {
 				group = Group.basicNew(inGroup.server);
 				bundle.add(group.newMsg(inGroup, \addToTail));
 				NodeWatcher.register(group);
@@ -93,25 +103,22 @@ Monitor {
 		} {
 				if(group.group.nodeID != inGroup.nodeID) {
 					if(group.server !== group.group.server) 
-						{ÊError("group not on the same server").throw }; 
+						{ÊError("group not on the same server").throw };
 						bundle.add(["/g_tail", inGroup.nodeID, group.nodeID]);
 						group.group = inGroup;
 				};
 				if(multi.not) { bundle.add(["/n_set", group.nodeID, "gate", 0.0]) }
 		};
-		
-		if(multi) {Êout = out.asCollection.add(toIndex) } {Êout = toIndex };
+		numChannels = max(fromNumChannels, toNumChannels);
 		divider = if(toNumChannels.even and: { fromNumChannels.even }, 2, 1);
 		(numChannels div: divider).do { arg i;
 			bundle.add([9, "system_link_audio_"++divider, 
 					server.nextNodeID, 1, group.nodeID,
-					\out, toIndex + (i * divider  % toNumChannels), 
-					\in, fromIndex + (i * divider % fromNumChannels),
-					\vol, vol
-					]);
+					"out", toIndex + (i * divider  % toNumChannels), 
+					"in", fromIndex + (i * divider % fromNumChannels)
+			]);
 		};
-		bundle.add(["/n_set", group.nodeID, "fadeTime", fadeTime]);
-		server.listSendBundle(server.latency, bundle);
+		bundle.add([15, group.nodeID, "fadeTime", fadeTime, "vol", vol]);
 	}
 	
 	isPlaying {Ê^group.isPlaying }
