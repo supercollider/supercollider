@@ -446,6 +446,43 @@ protected:
 };
 SCView* NewSCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
+//by jan trutzschler 
+class SCMultiSliderView : public SCView
+{
+public:	
+	SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+
+	virtual void draw(SCRect inDamage);
+	virtual void mouseTrack(SCPoint where, int modifiers);
+	
+	bool setValue(int inX, double inY, bool send);
+        //virtual void setPoint(int x, double y, bool send);
+	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+
+        virtual bool canReceiveDrag();
+        virtual void receiveDrag();
+
+protected:
+	void setValueFromPoint(SCPoint point);
+	SCRect calcThumbRect(int xIn, double valIn, float xoffset);
+	int mThumbSize; // size of the rect
+        int mTabSize; // size of the table
+        SCColor mFillColor;
+        SCColor mStrokeColor;
+	SCRect mThumbRect;
+	double mCurrentY;
+        int mCurrentIndex;
+        double mStepSize, mStepScale;
+        double * mYValues;
+        DrawBackground* mKnob;
+        float mXOffset ; //space between points
+        bool mReadOnly;
+        int mResamp;
+       // CGRect * mCGRects;
+};
+SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+
 
 
 class SCUserView : public SCView
