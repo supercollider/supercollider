@@ -4,7 +4,7 @@ BusPlug : AbstractFunction {
 	
 	var <server, <bus; 		
 	var <monitorGroup;
-	var <busArg; // cache for "/s_new" bus arg
+	var <busArg = \; // cache for "/s_new" bus arg
 	
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
 	
@@ -112,10 +112,7 @@ BusPlug : AbstractFunction {
 	wakeUp {}
 	asBus { ^if(this.isNeutral, { nil }, { bus }) }
 	
-	//////////// embedding bus in event streams //////////////////////////////////
-	
-	embedInStream { this.wakeUp; ^busArg.yield }
-	asStream { this.wakeUp; ^busArg }
+		
 	
 	////////////  playing and access  /////////////////////////////////////////////
 	
@@ -149,17 +146,27 @@ BusPlug : AbstractFunction {
 		^InBus.kr(bus, numChannels ? this.class.defaultNumControl, offset)
 	}
 	
+	//////////// embedding bus in event streams, myself if within a normal stream
 	
-	writeInputSpec {
-		"use .ar or .kr to use within a synth.".error; this.halt;
+	embedInStream { arg inval;
+			if(this.isPlaying.not) { this.wakeUp }; 
+			if(inval.isNil) {Êthis.yield } { busArg.yield } // if in event stream yield bus arg
 	}
+	asStream  {
+			^Routine.new({ arg inval;
+				loop({
+					if(this.isPlaying.not) { this.wakeUp }; 
+					if(inval.isNil) {Êthis.yield } { busArg.yield }
+				})
+			})
+	}
+	
 	
 	///// lazy  math support  /////////
 	
 	value { arg something; 
 		var n;
 		n = something.numChannels;
-		[something, n].debug;
 		^if(something.rate == 'audio', {this.ar(n)}, {this.kr(n)})  
 	}
 	composeUnaryOp { arg aSelector;
@@ -175,6 +182,11 @@ BusPlug : AbstractFunction {
 		^thisMethod.notYetImplemented
 	}
 	
+	// error catch
+	
+	writeInputSpec {
+		"use .ar or .kr to use within a synth.".error; this.halt;
+	}
 	
 	
 	///// monitoring //////////////
@@ -402,7 +414,7 @@ NodeProxy : BusPlug {
 		var rep;
 		
 		if(freeAll, { 
-			if(this.isPlaying, { this.stopAllToBundle(bundle); \stop.debug; }); 
+			if(this.isPlaying, { this.stopAllToBundle(bundle); }); 
 			objects.do({ arg item; item.freeToBundle(bundle);  });
 			objects = Order.with(obj);
 		}, {
