@@ -53,7 +53,7 @@
 int yyparse();
 
 extern bool gFullyFunctional;
-float compileStartTime;
+double compileStartTime;
 int gNumCompiledFiles;
 /*
 thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
@@ -1528,7 +1528,7 @@ void traverseFullDepTree2()
 			findDiscrepancy();
 			compileErrors++;
 		} else {
-			float elapsed;
+			double elapsed;
 			buildBigMethodMatrix();
 			SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
 			post("   Number of Symbols %d\n", symbolTable->NumItems());
@@ -1536,8 +1536,8 @@ void traverseFullDepTree2()
 			//elapsed = TickCount() - compileStartTime;
 			//elapsed = 0;
                         elapsed = elapsedTime() - compileStartTime;
-                        post("   compiled %d files in %.2f seconds\n", 
-				gNumCompiledFiles, elapsed / 60.);
+                        post("   compiled %d files in %.2f seconds \n", 
+				gNumCompiledFiles, elapsed );
 			post("compile done\n");
 		}
 	}
@@ -1819,7 +1819,7 @@ bool compileLibrary()
 	pthread_mutex_lock (&gLangMutex);
 	gNumCompiledFiles = 0;
 	compiledOK = false;
-        compileStartTime = elapsedTime(); //TickCount();
+        compileStartTime = elapsedTime();
 	
 	totalByteCodes = 0;
 
@@ -1828,7 +1828,7 @@ bool compileLibrary()
 	bool res = passOne();
 	if (res) {
 		
-		postfl("pass 1 done\n"); //fflush(stdout);
+		postfl("pass 1 done\n");
 		
 		if (!compileErrors) {
 			buildDepTree();
