@@ -214,6 +214,7 @@ int prAscTime(struct VMGlobals *g, int numArgsPushed)
         if (slotIntVal(slots+0, &tm0.tm_year)) return errWrongType;
         tm0.tm_year -= 1900;
         if (slotIntVal(slots+1, &tm0.tm_mon)) return errWrongType;
+		tm0.tm_mon -- ;
         if (slotIntVal(slots+2, &tm0.tm_mday)) return errWrongType;
         if (slotIntVal(slots+3, &tm0.tm_hour)) return errWrongType;
         if (slotIntVal(slots+4, &tm0.tm_min)) return errWrongType;
