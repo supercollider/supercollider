@@ -273,7 +273,7 @@ SynthDefControl : SynthControl {
 			}; // in case of server reboot
 			
 		}{
-			"SynthDef too large to be sent to remote server via udp".warn;
+			"SynthDef too large (" ++ size ++ ") to be sent to remote server via udp".warn;
 			path = this.synthDefPath;
 			this.writeSynthDefFile(path, bytes);
 			bundle.addPrepare([6, path]); //"/d_load"
