@@ -1455,7 +1455,6 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 		counter = 0;
 	} else if (unit->m_prevGate > -1.f && gate < -1.f) {
 		// cutoff
-		printf("cutoff\n");
 		int numstages = (int)ZIN0(kEnvGen_numStages);
 		float dur = -gate - 1.f;
 		counter  = (int32)(dur * SAMPLERATE);
