@@ -15,7 +15,6 @@ ObjectGui {
 		if(layout.isNil or: {layout.isClosed},{
 			layout = PageLayout(title ?? {model.asString},
 					600, 600,x ? 100, y ? 100);
-			layout.front;
 		});
 		
 		NotificationCenter.registerOneShot(layout,\didClose,this,{
