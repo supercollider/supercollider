@@ -41,9 +41,8 @@ All subarrays, if not nil, should have the same length.\
 
 \f0\b iTimeScale
 \f1\b0  - a scale factor multiplied by all ring times at initialization time.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf0 \{ \cf2 Klank\cf0 .ar(`[[800, 1071, 1153, 1723], \cf2 nil\cf0 , [1, 1, 1, 1]], \cf2 Impulse\cf0 .ar(2, 0, 0.1)) \}.play;\
@@ -83,7 +82,7 @@ s = Server.local;\
 	klank = \cf2 Klank\cf0 .ar(`[harm,amp,ring], \{\cf2 ClipNoise\cf0 .ar(0.003)\}.dup, i_freq);\
 	\
 	\cf2 Out\cf0 .ar(out, klank);\
-\}).load(s);\
+\}).send(s);\
 )\
 \
 \cf3 // nothing special yet, just using the default set of harmonics.\

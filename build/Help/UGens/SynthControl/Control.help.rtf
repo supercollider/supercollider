@@ -57,7 +57,7 @@ s = Server.local;\
 	klank = \cf2 Klank\cf0 .ar(`[harm,amp,ring], \{\cf2 ClipNoise\cf0 .ar(0.003)\}.dup, i_freq);\
 	\
 	\cf2 Out\cf0 .ar(out, klank);\
-\}).load(s);\
+\}).send(s);\
 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural

@@ -10,8 +10,7 @@
 \
 \
 Record to a soundfile to disk.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\
 s.boot; \cf2 // start the server\
 \cf0 \
 (\
@@ -22,7 +21,7 @@ s.boot; \cf2 // start the server\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	zout = \cf3 CombN\cf0 .ar(\cf3 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4); \cf2 // echoing sine wave\
 \cf0 	\cf3 Out\cf0 .ar(0, zout);\
-\}).load(s);\
+\}).send(s);\
 )\
 \
 \
@@ -32,7 +31,7 @@ s.boot; \cf2 // start the server\
 	\cf3 DiskOut\cf0 .ar(0, \cf3 In\cf0 .ar(0,2));\
 	\cf2 //Out.ar(0, In.ar(0,2));\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \}).load(s)\
+\cf0 \}).send(s)\
 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural

@@ -23,8 +23,9 @@ See the
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 envelope
+\f0\b\fs24 \cf0 envelope
 \f2\b0  - an instance of Env (or an array of Controls)\
 
 \f0\b gate    
@@ -44,8 +45,9 @@ levelScale
 	 the doneAction arg lets you cause the EnvGen to stop or end the \
 	 synth without having to use a PauseSelfWhenDone or FreeSelfWhenDone ugen. \
 	 It is more efficient to use a doneAction.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \
+\f1\fs18 \cf0 \
 (\
 	\cf2 SynthDef\cf0 (\cf3 "help-EnvGen"\cf0 ,\{ \cf2 arg\cf0  out=0;\
 		\cf2 Out\cf0 .ar(out,\
@@ -88,13 +90,19 @@ SynthDef("help-EnvGen",\{ arg out=0,bus=0;\
 \}).play(s,[\\out,0,\\bus,b.index]);\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // turn on\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b.value = 1.0;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // turn off\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b.value = 0.0;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // same as 1.0\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b.value = 0.2;\
 \
 b.free;\
@@ -112,23 +120,26 @@ b.free;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "env"\cf0 , \{ \cf2 arg\cf0  i_outbus=0;\
 	\cf2 var\cf0  env, envctl;\
 	\
 	\cf4 // make a dummy 8 segment envelope\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	env = \cf2 Env.\cf0 newClear(\cf2 8\cf0 );\
 	\
 	\cf4 // create a control argument array\
 \cf0 	envctl = \cf2 Control\cf0 .names([\cf5 \\env\cf0 ]).kr( env.asArray );\
 	\
 	\cf2 ReplaceOut\cf0 .kr(i_outbus, \cf2 EnvGen\cf0 .kr(envctl, doneAction: 2));\
-\}).load(s);\
+\}).send(s);\
 )\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "sine"\cf0 , \{\
 	\cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(\cf2 In\cf0 .kr(0), 0, 0.2));\
-\}).load(s);\
+\}).send(s);\
 )\
 \
 s.sendMsg(\cf5 \\c_set\cf0 , 0, 800);\
@@ -165,7 +176,7 @@ If you set the gate of an EnvGen to -1 or below, then the envelope will cutoff i
 
 \f1\fs18 \cf2 SynthDef\cf0 (\cf3 "stealMe"\cf0 , \{ \cf2 arg\cf0  gate = 1;\
 	\cf2 Out\cf0 .ar(0, \{\cf2 BrownNoise\cf0 .ar\}.dup * \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .linen(2, 4, 2, 0.3), gate, doneAction:2))\
-\}).load(s);\
+\}).send(s);\
 \
 s.sendMsg(\cf5 \\s_new\cf0 , \cf5 \\stealMe\cf0 , 1001, 1, 0);\
 \
@@ -179,8 +190,9 @@ s.sendMsg(\cf5 \\n_set\cf0 , 1001, \cf5 \\gate\cf0 , -1.1); \cf4 // cutoff in 0.
 \f1\fs18 \cf0 	\cf2 Node\cf0 -release(releaseTime)\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 Fast triggering tests\
+\f0\b\fs24 \cf0 Fast triggering tests\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0 \cf0 \

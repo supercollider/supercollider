@@ -27,10 +27,9 @@ s.boot; \cf3 // start the server\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf4 "diskin"\cf0 , \{\
 	\cf2 Out\cf0 .ar(0, \cf2 DiskIn\cf0 .ar(2, 0));\
-\}).load(s)\
+\}).send(s)\
 )\
 \
 \
@@ -68,15 +67,15 @@ s.sendMsg(\cf4 "/quit"\cf0 ); \cf3 // quit the server\
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 Using Buffer
+\f0\b\fs28 \cf0 Using Buffer
 \f1\b0\fs18 \
 (\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 File\cf0 .openDialog(\cf4 "Choose a long stereo soundfile..."\cf0 ,\{ \cf2 arg\cf0  path;\
 	\cf3 //read a file into the buffer\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	b = \cf2 Buffer\cf0 .cueSoundFile(s,path,0,2);\
 \});\
 \
@@ -92,19 +91,17 @@ s.sendMsg(\cf4 "/quit"\cf0 ); \cf3 // quit the server\
 \
 ( \cf3 // cue and play right away\
 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf4 "help-Buffer"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum;\
 			\cf2 Out\cf0 .ar(out,\
 				\cf2 DiskIn\cf0 .ar( 2, bufnum )\
 			)\
-\}).load(s);\
+\}).send(s);\
 		\
 m = \{ \cf2 arg\cf0  buf; [\cf4 "/s_new"\cf0 , \cf4 "help-Buffer"\cf0 , s.nodeAllocator.alloc, 1, 0,\
 				\cf5 \\bufnum\cf0 ,buf.bufnum]\};\
 \
 \cf2 File\cf0 .openDialog(\cf4 "Choose a long stereo soundfile..."\cf0 ,\{ \cf2 arg\cf0  path;\
 	\cf3 //read a file into the buffer and play it right away\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	b = \cf2 Buffer\cf0 .cueSoundFile(s,path,0,2, completionMessage: m);\
 \});\
 \
@@ -112,7 +109,6 @@ m = \{ \cf2 arg\cf0  buf; [\cf4 "/s_new"\cf0 , \cf4 "help-Buffer"\cf0 , s.nodeAl
 		\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
