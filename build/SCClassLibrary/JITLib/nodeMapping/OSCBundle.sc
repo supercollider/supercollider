@@ -2,33 +2,17 @@
 OSCBundle {
 	var <messages;
 		
-	send { arg server, latency;
-		server.listSendBundle(latency, messages);
+	send { arg server, delta;
+		if(messages.notNil,{
+			server.listSendBundle(delta, messages);
+		});
 	}
-	schedSend { arg server, time, clock, latency;
-		SystemClock.sched(time ? 0, {
-			if(clock.isNil, {
-				this.send(server, latency) 
-			}, {
-				clock.schedAbs(clock.elapsedBeats.ceil, { this.send(server) })
-			});
-		})
-	}
+	
 	add { arg msg;
 		messages = messages.add(msg);
 	}
 	addAll { arg mgs;
 		messages = messages.addAll(mgs)
-	}
-	
-	*eventToBundle { arg event;
-		var res;
-		event.use({ arg e;
-			~finish.value;
-			res = Array.newClear(~argNames.size*2);
-			~argNames.collect({ arg name, i; res.put(2*i,name); res.put(2*i+1,e.at(name)) })
-		});
-		^res
 	}
 	
 	printOn { arg stream;
@@ -39,12 +23,9 @@ OSCBundle {
 		stream << this.class.name << ": " <<< messages;
 	}
 }
+
 /*
-	sendPrepare: on schedSend this is done before the other messages are sent
-	send: the functions evaluated, if there is any and the messages are sent.
-	
-	the time arg is the time between prepare and send (schedSend) or 
-	the sched time from the reception of the '/done' message (schedSendRespond) 
+	this bundle is offset by preparationTime at all times.
 
 */
 
@@ -65,33 +46,58 @@ MixedBundle : OSCBundle {
 	addAction { arg receiver, selector, args;
 		functions = functions.add( Message(receiver,selector,args) )
 	}
-	
-	send { arg server, latency;
-		var array;
-		//no latency here, because usuallay the streams etc have their own 
-		//latency handling:
-		functions.do({ arg item; item.value(latency, server) }); 
-		server.listSendBundle(latency, messages);
+	doFunctions {
+		functions.do({ arg item; item.value }); 
 	}
 	
-	sendPrepare { arg server, latency;
-		server.listSendBundle(latency, preparationMessages);
+	sendPrepare { arg server;
+		if(preparationMessages.notNil, {
+			server.listSendBundle(nil, preparationMessages);
+		})
 	}
+	
+	sendAndEvaluate { arg server, latency;
+		var array; // maybe pass in latency? does not work for perform message
+		this.doFunctions;
+		if(messages.notNil, {
+			server.listSendBundle(latency, messages);
+		})
+	}
+	
+	// the sound starts at: preparationTime + (next beat + latency) 
+	// the client side task starts at: preparationTime + next beat
+	// next beat is 0 if no clock is passed in.
+	// eventstreams e.g. take into account the latency internally
 	
 	schedSend { arg server, clock;
-			this.sendPrepare(server, server.latency);
+			this.sendPrepare(server);
 			SystemClock.sched(preparationTime, {
 				if(clock.isNil, {
-					this.send(server, server.latency) 
+					this.sendAndEvaluate(server, server.latency) 
 				}, {
 					clock.schedAbs(clock.elapsedBeats.ceil, { 
-						this.send(server, server.latency);  
+						this.sendAndEvaluate(server, server.latency);  
 					});
 				});
 				nil
 			})
 		
 	}
+	
+	send { arg server, time;
+			this.sendPrepare(server);
+			SystemClock.sched(preparationTime, {
+				this.sendAndEvaluate(server, server.latency);
+				nil
+			})
+	}
+	
+	// offset by preparation time.
+	sendAtTime { arg server, atTime, timeOfRequest;
+		atTime.schedCXBundle(this,server,timeOfRequest ?? {Main.elapsedTime});
+	}
+	
+	
 	//need to wait for id in async messages
 	//schedSendRespond { arg server, clock;
 //			var msg, prep, func;
@@ -130,7 +136,7 @@ MixedBundle : OSCBundle {
 }
 
 DebugBundle : MixedBundle {
-	send { arg server, latency;
+	sendAndEvaluate { arg server, latency;
 		var array;
 		functions.do({ arg item; item.value(latency, server) }); 
 		"sending messages:".inform;
@@ -140,12 +146,12 @@ DebugBundle : MixedBundle {
 		server.listSendBundle(latency, messages);
 	}
 	
-	sendPrepare { arg server, latency;
+	sendPrepare { arg server;
 		"sending preparation messages:".inform;
 		preparationMessages.asCompileString.postln; 
 		("current delay between preparation and action:" + preparationTime).inform;
 		Char.nl.post;
-		server.listSendBundle(latency, preparationMessages);
+		server.listSendBundle(nil, preparationMessages);
 	}
 
 

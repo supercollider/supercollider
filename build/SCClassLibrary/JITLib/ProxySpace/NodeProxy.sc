@@ -50,7 +50,7 @@ BusPlug : AbstractFunction {
 	////////  bus definitions  //////////////////////////////////////////
 	
 	freeBus {
-		if(bus.notNil, { bus.free });
+		if(bus.notNil, { bus.setAll(0); [\freeBus, bus].debug; bus.free });
 		bus = nil;
 	}
 	
@@ -89,9 +89,9 @@ BusPlug : AbstractFunction {
 	////////////  playing and access  /////////////////////////////////////////////
 	
 	
-	rate {  ^bus.tryPerform(\rate) ? \scalar }
-	numChannels {  ^bus.tryPerform(\numChannels) }
-	index { ^bus.tryPerform(\index) }
+	rate {  ^if(bus.isNil) { \scalar } { bus.rate } }
+	numChannels {  ^if(bus.isNil) { nil } { bus.numChannels } }
+	index { ^if(bus.isNil) { nil } { bus.index } }
 	
 	
 	isNeutral {
@@ -149,26 +149,21 @@ BusPlug : AbstractFunction {
 	
 	//play { arg group=0, atTime, bus, multi=false;
 	play { arg busIndex=0, nChan, group, multi=false;
-		var bundle, divider, n, localServer;
+		var bundle, divider, n, localServer, ok;
 		
 		localServer = this.localServer; //multi client support
 		if(localServer.serverRunning.not, { "server not running".inform; ^nil });
 		if(multi.not and: { monitorGroup.isPlaying }, { ^monitorGroup });
-			bundle = MixedBundle.new;
 			
-			if(this.isNeutral, { 
-				this.defineBus(\audio, nChan)
-			}, {
-				if(bus.rate != 'audio', { ("can't monitor a" + bus.rate + "proxy").error; 
-				^nil });
-			});
-			
+			ok = this.initBus(\audio, nChan);
+			if(ok.not, { ("can't monitor a" + bus.rate + "proxy").error });
 			this.wakeUp;
 			
 			n = bus.numChannels;
 			nChan = nChan ? n;
 			nChan = nChan.min(n);
 		
+			bundle = MixedBundle.new;
 			if(monitorGroup.isPlaying.not, { 
 				monitorGroup = Group.newToBundle(bundle, group ? localServer, \addToTail);
 				NodeWatcher.register(monitorGroup);
@@ -186,7 +181,6 @@ BusPlug : AbstractFunction {
 		^monitorGroup
 	}
 	
-	localServer { ^server }
 	
 	toggle {
 		if(monitorGroup.isPlaying, { this.stop }, { this.play });
@@ -208,7 +202,10 @@ BusPlug : AbstractFunction {
 		^rec
 	}
 	
-	shared { ^false } //shared node proxy support
+	// shared node proxy support
+	
+	shared { ^false } 
+	localServer { ^server }
 	
 	printOn { arg stream;
 		stream 	<< this.class.name << "." << bus.rate << "(" 
@@ -229,8 +226,8 @@ NodeProxy : BusPlug {
 
 
 	var <group, <objects;
-	var <parents, <nodeMap;	//playing templates
-	var <loaded=false, <>awake=true, <task, <>clock, block=false; 	
+	var <parents, <nodeMap;	// playing templates
+	var <loaded=false, <>awake=true, <task, <>clock; 	
 	classvar <>buildProxy;
 	
 	
@@ -387,8 +384,8 @@ NodeProxy : BusPlug {
 		this.initParents;
 		if(bus.notNil, { bus.realloc });
 		this.class.buildProxy = this;
-			objects.do({ arg container, i;
-				container.build(this, i);
+			objects.do({ arg item, i;
+				item.build(this, i);
 			});
 			objects.selectInPlace({ arg item; item.readyForPlay }); //clean up
 		this.class.buildProxy = nil;
@@ -545,7 +542,7 @@ NodeProxy : BusPlug {
 	}
 	
 	taskFunc_ { arg func; 
-		this.task = EnvirRoutine.new({ func.value(this) })
+		this.task = Routine.new({ func.value(this) })
 	}
 	
 	readFromBus { arg busses;
@@ -574,6 +571,7 @@ NodeProxy : BusPlug {
 	
 	getBundle { arg prepTime=0.0;//default: def is on server, time required is 0
 		var bundle;
+		nodeMap.updateBundle;
 		bundle = 	MixedBundle.new.preparationTime_(prepTime); 
 		if(this.isPlaying.not, { this.prepareToBundle(nil, bundle) });
 		^bundle
@@ -586,6 +584,7 @@ NodeProxy : BusPlug {
 				i = this.index;
 				bundle = this.getBundle;
 				obj.spawnToBundle(bundle, [\out, i, \i_out, i] ++ extraArgs, this);
+				nodeMap.setToBundle(bundle, -1);
 				nodeMap.mapToBundle(bundle, -1);
 				bundle.schedSend(server);
 			})

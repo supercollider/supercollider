@@ -1,4 +1,31 @@
-UnaryOpPlug : AbstractFunction {
+// has no own bus.
+
+AbstractOpPlug : AbstractFunction {
+	
+	composeUnaryOp { arg aSelector;
+		^UnaryOpPlug.new(aSelector, this)
+	}
+	composeBinaryOp { arg aSelector, something;
+		^BinaryOpPlug.new(aSelector, this, something)
+	}
+	reverseComposeBinaryOp { arg aSelector, something;
+		^BinaryOpPlug.new(aSelector, something, this)
+	}
+	composeNAryOp { arg aSelector, anArgList;
+		^{ this.value(anArgList).performList(aSelector, anArgList) }
+	}
+	
+	prepareForProxySynthDef { arg proxy;
+		^{ this.value(proxy) }
+	}
+	writeInputSpec {
+		"use .ar or .kr to use within a synth.".error; this.halt;
+	}
+	
+
+}
+
+UnaryOpPlug : AbstractOpPlug {
 	var >operator, >a;
 	*new { arg operator, a;
 		^super.newCopyArgs(operator, a)
@@ -29,26 +56,17 @@ UnaryOpPlug : AbstractFunction {
 	initBus { arg rate, numChannels;
 		^a.initBus(rate, numChannels)
 	}
-
-	composeUnaryOp { arg aSelector;
-		^UnaryOpPlug.new(aSelector, this)
+	wakeUp  {
+		a.wakeUp;
 	}
-	composeBinaryOp { arg aSelector, something;
-		^BinaryOpPlug.new(aSelector, this, something)
-	}
-	reverseComposeBinaryOp { arg aSelector, something;
-		^BinaryOpPlug.new(aSelector, something, this)
-	}
-	composeNAryOp { arg aSelector, anArgList;
-		^{ this.value(anArgList).performList(aSelector, anArgList) }
-	}
+	
 	prepareForProxySynthDef { arg proxy;
 		^{ this.value(proxy) }
 	}
 }
 
 
-BinaryOpPlug : AbstractFunction  {
+BinaryOpPlug : AbstractOpPlug  {
 	var >operator, <>a, <>b;
 	*new { arg operator, a, b;	
 		^super.newCopyArgs(operator, a, b)
@@ -70,19 +88,6 @@ BinaryOpPlug : AbstractFunction  {
 		^a.initBus(rate, numChannels) and: { b.initBus(rate, numChannels) };
 	}
 	
-	composeUnaryOp { arg aSelector;
-		^UnaryOpPlug.new(aSelector, this)
-	}
-	composeBinaryOp { arg aSelector, something;
-		^BinaryOpPlug.new(aSelector, this, something)
-	}
-	reverseComposeBinaryOp { arg aSelector, something;
-		^BinaryOpPlug.new(aSelector, something, this)
-	}
-	composeNAryOp { arg aSelector, anArgList;
-		^{ this.value(anArgList).performList(aSelector, anArgList) }
-	}
-	
 	isNeutral { ^a.isNeutral && b.isNeutral }
 		
 	rate {
@@ -98,10 +103,12 @@ BinaryOpPlug : AbstractFunction  {
 		res = if(n1.isNil, { n2 }, { if(n2.isNil, { n1 }, { max(n1, n2) }) });
 		^if(res.notNil, { max(max,res) }, { nil })
 	}
-	
-	prepareForProxySynthDef { arg proxy;
-		^{ this.value(proxy) }
+	wakeUp  {
+		a.wakeUp;
+		b.wakeUp;
 	}
+
 	
+		
 }
 

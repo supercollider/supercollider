@@ -142,21 +142,22 @@
 		//assume audio rate event stream for now.
 		var str, ok, msgFunc, index;
 		ok = proxy.initBus('audio', 2);
-		index = proxy.index;
-		msgFunc = { arg id, freq;
-				var args, bundle, names, nodeMap;
-				names = ~argNames;
-				args = currentEnvironment.hatch(names);
-				bundle = [9, ~instrument, id, 0, ~group] ++ args;
-				bundle = [bundle ++ [\freq, freq]];
-				//mapping to buses
-				nodeMap = proxy.nodeMap;
-				nodeMap.mapToBundle(bundle, id);
-				~mapArgs = nodeMap.mapArgs; //polyplayer support
-				bundle
-		};
+		
 
 		^if(ok, {
+			index = proxy.index;
+			msgFunc = { arg id, freq;
+					var args, bundle, names, nodeMap;
+					names = ~argNames;
+					args = currentEnvironment.hatch(names);
+					bundle = [9, ~instrument, id, 0, ~group] ++ args;
+					bundle = [bundle ++ [\freq, freq]];
+					//mapping to buses
+					nodeMap = proxy.nodeMap;
+					nodeMap.mapToBundle(bundle, id);
+					~mapArgs = nodeMap.mapArgs; //polyplayer support
+					bundle
+			};
 			this.collect({ arg event;
 				event.use({ 
 					~group = proxy.group.asNodeID;

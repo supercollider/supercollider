@@ -58,9 +58,9 @@ AbstractPlayControl {
 StreamControl : AbstractPlayControl {
 	var <stream, clock;
 		
-	play { arg proxy;
+	play {
 		stream.stop;
-		stream.play(clock, false); //(clock);
+		stream.play(nil, false, 0); //(clock);
 	}
 	
 	stop {
