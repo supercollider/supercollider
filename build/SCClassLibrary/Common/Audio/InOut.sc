@@ -160,7 +160,7 @@ AbstractOut : UGen {
  				});
  			});
  		});
- 		^nil
+ 		^this.checkValidInputs
  	}
  	
  	*isOutputUGen { ^true }
@@ -239,7 +239,7 @@ XOut : AbstractOut {
  				});
  			});
  		});
- 		^nil
+ 		^this.checkValidInputs
  	}
 }
 

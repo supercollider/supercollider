@@ -223,7 +223,7 @@ Select : UGen {
  				});
  			});
  		});
- 		^nil
+ 		^this.checkValidInputs
  	}
 }
 

@@ -12,6 +12,19 @@ Demand : MultiOutUGen {
  	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
+DurDemand : Demand {
+	
+	checkInputs {
+		^if(inputs.at(0).rate === \demand) {
+			if (inputs.at(1).rate !== \demand and: { inputs.at(1).rate !== rate }) { 
+ 				("first input is not" + rate + "rate: " + inputs.at(1) + inputs.at(1).rate);
+ 			}
+		} {
+			super.checkInputs
+		}
+	}
+}
+
 Dseries : UGen {
 	*new { arg start = 1, step = 1, length = 100;
 		^this.multiNew('demand', length, start, step)

@@ -98,7 +98,10 @@ UGen : AbstractFunction {
 				
 	isValidUGenInput { ^true }
 	numChannels { ^1 }
-	checkInputs { 
+	
+	
+	checkInputs { ^this.checkValidInputs }
+	checkValidInputs {
 		inputs.do({arg in,i;
 			var argName;
 			if(in.isValidUGenInput.not,{
@@ -108,13 +111,15 @@ UGen : AbstractFunction {
 			})
 		});
 		^nil 
+
 	}
 	checkSameRateAsFirstInput {
  		if (rate !== inputs.at(0).rate) { 
  			^("first input is not" + rate + "rate: " + inputs.at(0) + inputs.at(0).rate);
  		};
- 		^nil
+ 		^this.checkValidInputs
  	}
+ 	
 	argNameForInputAt { arg i;
 		var method;
 		method = this.class.class.findMethod(this.methodSelectorForRate);

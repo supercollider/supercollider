@@ -64,7 +64,7 @@ BufRd : MultiOutUGen {
  		if (rate == 'audio' and: {inputs.at(1).rate != 'audio'}, { 
  			^("phase input is not audio rate: " + inputs.at(1) + inputs.at(1).rate);
  		});
- 		^nil
+ 		^this.checkValidInputs
  	}
 }
 
@@ -83,7 +83,7 @@ BufWr : UGen {
  		if (rate == 'audio' and: {inputs.at(1).rate != 'audio'}, { 
  			^("phase input is not audio rate: " + inputs.at(1) + inputs.at(1).rate);
  		});
- 		^nil
+ 		^this.checkValidInputs
  	}
 }
 

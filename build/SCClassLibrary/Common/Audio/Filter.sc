@@ -191,7 +191,7 @@ Median : Filter {
  				^"input was not audio rate";
  			});
  		});
- 		^nil
+ 		^this.checkValidInputs
  	}
 
 }

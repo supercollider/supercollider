@@ -14,7 +14,7 @@ DiskOut : UGen {
  				});
  			});
  		});
- 		^nil
+ 		^this.checkValidInputs
  	}
 }
 

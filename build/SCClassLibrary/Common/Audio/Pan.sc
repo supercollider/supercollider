@@ -9,7 +9,7 @@ Panner : MultiOutUGen {
 		 		};
 		 	};
 		 };
- 		^nil
+ 		^this.checkValidInputs
  	}
  	checkInputs { ^this.checkNInputs(1) }
 }
