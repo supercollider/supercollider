@@ -40,6 +40,11 @@ int OSCstrlen(char *strin);
 SCErr meth_bufAlloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_bufAlloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {	
+	sc_msg_iter msg(inSize, inData);
+	int bufindex = msg.geti();
+	SndBuf* buf = World_GetBuf(inWorld, bufindex);
+	if (buf->shared) return kSCErr_SharedBuf;
+	
 	CallSequencedCommand(BufAllocCmd, inWorld, inSize, inData, inReply);
 	return kSCErr_None;
 }
@@ -56,6 +61,11 @@ SCErr meth_bufShmAlloc(World *inWorld, int inSize, char *inData, ReplyAddress *i
 SCErr meth_bufFree(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_bufFree(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
+	sc_msg_iter msg(inSize, inData);
+	int bufindex = msg.geti();
+	SndBuf* buf = World_GetBuf(inWorld, bufindex);
+	if (buf->shared) return kSCErr_SharedBuf;
+	
 	CallSequencedCommand(BufFreeCmd, inWorld, inSize, inData, inReply);
 	
 	return kSCErr_None;
@@ -72,6 +82,11 @@ SCErr meth_bufClose(World *inWorld, int inSize, char *inData, ReplyAddress *inRe
 SCErr meth_bufAllocRead(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_bufAllocRead(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
+	sc_msg_iter msg(inSize, inData);
+	int bufindex = msg.geti();
+	SndBuf* buf = World_GetBuf(inWorld, bufindex);
+	if (buf->shared) return kSCErr_SharedBuf;
+	
 	CallSequencedCommand(BufAllocReadCmd, inWorld, inSize, inData, inReply);
 	
 	return kSCErr_None;

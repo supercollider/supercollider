@@ -32,12 +32,16 @@ void SndBuf_Init(SndBuf *buf)
 {
 	buf->data = 0;
 	buf->channels = 0;
-	buf->frames = 0;
 	buf->samples = 0;
+	buf->frames = 0;
+	buf->readFrame = 0;
+	buf->writeFrame = 0;
 	buf->mask = 0;
 	buf->mask1 = 0;
 	buf->coord = 0;
-	buf->sndfile = 0;
+	//buf->sndfile = 0;
+	
+	buf->shared = 0;
 }
 
 SC_SequencedCommand::SC_SequencedCommand(World *inWorld, ReplyAddress *inReplyAddress)
