@@ -80,6 +80,16 @@ Order : SequenceableCollection {
 		})
 			
 	}
+	
+	doFrom { arg func, index=0;
+		var slot;
+		slot = this.findSlotFor(index);
+		if(slot.notNil) {
+			for(slot, indices.size-1, { arg i;
+				func.value(array[i],i)
+			})
+		}
+	}
 		
 	slotOf { arg index;
 		var slot;
@@ -108,7 +118,7 @@ Order : SequenceableCollection {
 	detect { arg function, start;
 		var slot, max, elem;
 		slot = if(start.isNil) {Ê0 } { this.findSlotFor(start) };
-		max = indices.last;
+		max = indices.size - 1;
 		if(slot.isNil or: {slot > max}) { ^nil };
 		while { slot <= max } {
 			elem = array[slot];
