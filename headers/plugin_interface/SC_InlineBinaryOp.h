@@ -370,7 +370,7 @@ inline int sc_mod(int in, int hi)
 
 inline int sc_wrap(int in, int lo, int hi) 
 {
-	return sc_mod(in - lo, hi - lo) + lo;
+	return sc_mod(in - lo, hi - lo + 1) + lo;
 }
 
 inline int sc_clip2(int a, int b)
@@ -488,7 +488,7 @@ inline long sc_clip2(long a, long b)
 
 inline long sc_wrap(long in, long lo, long hi) 
 {
-	return sc_mod(in - lo, hi - lo) + lo;
+	return sc_mod(in - lo, hi - lo + 1) + lo;
 }
 
 inline long sc_wrap2(long a, long b)

@@ -29,6 +29,7 @@ SendTrig : UGen {
 }
 
 TDelay : Trig1 {
+ 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 Latch : UGen {
@@ -53,9 +54,21 @@ PulseCount : UGen {
 	*kr { arg trig = 0.0, reset = 0.0;
 		^this.multiNew('control', trig, reset)
 	}
+ 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 Peak : PulseCount {
+}
+
+Stepper : UGen {
+	
+	*ar { arg trig=0, reset=0, min=0, max=7, step=1, resetval;
+		^this.multiNew('audio', trig, reset, min, max, step, resetval ? min)
+	}
+	*kr { arg trig=0, reset=0, min=0, max=7, step=1, resetval;
+		^this.multiNew('control', trig, reset, min, max, step, resetval ? min)
+	}
+ 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 

@@ -85,6 +85,12 @@ struct PulseCount : public Unit
 	float m_prevtrig, m_prevreset;
 };
 
+struct Stepper : public Unit
+{
+	float mLevel;
+	float m_prevtrig, m_prevreset;
+};
+
 struct Ramp : public Unit
 {
 	double mLevel;
@@ -217,6 +223,11 @@ void PulseDivider_next(PulseDivider *unit, int inNumSamples);
 
 void PulseCount_Ctor(PulseCount *unit);
 void PulseCount_next(PulseCount *unit, int inNumSamples);
+
+void Stepper_Ctor(Stepper *unit);
+void Stepper_next_aa(Stepper *unit, int inNumSamples);
+void Stepper_next_ak(Stepper *unit, int inNumSamples);
+void Stepper_next_a0(Stepper *unit, int inNumSamples);
 
 void TDelay_Ctor(TDelay *unit);
 void TDelay_next(TDelay *unit, int inNumSamples);
@@ -777,6 +788,110 @@ void PulseCount_next(PulseCount *unit, int inNumSamples)
 	unit->mLevel = level;
 	unit->m_prevtrig = prevtrig;
 	unit->m_prevreset = prevreset;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+
+void Stepper_Ctor(Stepper *unit)
+{
+	if (unit->mCalcRate == calc_FullRate && INRATE(0) == calc_FullRate && INRATE(1) == calc_ScalarRate) {
+		SETCALC(Stepper_next_a0);
+	} else if (unit->mCalcRate == calc_FullRate && INRATE(0) == calc_FullRate && INRATE(1) != calc_FullRate) {
+		SETCALC(Stepper_next_ak);
+	} else {
+		SETCALC(Stepper_next_aa);
+	}
+
+	int32 resetval = (int32)ZIN0(5);
+
+	unit->m_prevtrig = 0.f;
+	unit->m_prevreset = 0.f;
+	unit->mLevel = (float)resetval;
+	
+	ZOUT0(0) = 0.f;
+}
+
+
+void Stepper_next_aa(Stepper *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *trig = ZIN(0);
+	float *reset = ZIN(1);
+	int32 zmin = (int32)ZIN0(2);
+	int32 zmax = (int32)ZIN0(3);
+	int32 step = (int32)ZIN0(4);
+	int32 resetval = (int32)ZIN0(5);
+	float prevtrig = unit->m_prevtrig;
+	float prevreset = unit->m_prevreset;
+	float level = unit->mLevel;
+
+	LOOP(inNumSamples, 
+		float curtrig = ZXP(trig);
+		float curreset = ZXP(reset);
+		if (prevreset <= 0.f && curreset > 0.f) {
+			level = (float)sc_wrap(resetval, zmin, zmax);
+		} else if (prevtrig <= 0.f && curtrig > 0.f) {
+			level = (float)sc_wrap((int32)level + step, zmin, zmax);
+		}
+		ZXP(out) = level;
+		prevtrig = curtrig;
+		prevreset = curreset;
+	);
+	unit->mLevel = level;
+	unit->m_prevtrig = prevtrig;
+	unit->m_prevreset = prevreset;
+}
+
+void Stepper_next_ak(Stepper *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *trig = ZIN(0);
+	float curreset = ZIN0(1);
+	int32 zmin = (int32)ZIN0(2);
+	int32 zmax = (int32)ZIN0(3);
+	int32 step = (int32)ZIN0(4);
+	int32 resetval = (int32)ZIN0(5);
+	float prevtrig = unit->m_prevtrig;
+	float prevreset = unit->m_prevreset;
+	float level = unit->mLevel;
+
+	LOOP(inNumSamples, 
+		float curtrig = ZXP(trig);
+		if (prevreset <= 0.f && curreset > 0.f) {
+			level = (float)sc_wrap(resetval, zmin, zmax);
+		} else if (prevtrig <= 0.f && curtrig > 0.f) {
+			level = (float)sc_wrap((int32)level + step, zmin, zmax);
+		}
+		ZXP(out) = level;
+		prevtrig = curtrig;
+		prevreset = curreset;
+	);
+	unit->mLevel = level;
+	unit->m_prevtrig = prevtrig;
+	unit->m_prevreset = prevreset;
+}
+
+void Stepper_next_a0(Stepper *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *trig = ZIN(0);
+	int32 zmin = (int32)ZIN0(2);
+	int32 zmax = (int32)ZIN0(3);
+	int32 step = (int32)ZIN0(4);
+	float prevtrig = unit->m_prevtrig;
+	float level = unit->mLevel;
+
+	LOOP(inNumSamples, 
+		float curtrig = ZXP(trig);
+		if (prevtrig <= 0.f && curtrig > 0.f) {
+			level = (float)sc_wrap((int32)level + step, zmin, zmax);
+		}
+		ZXP(out) = level;
+		prevtrig = curtrig;
+	);
+	unit->mLevel = level;
+	unit->m_prevtrig = prevtrig;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1704,6 +1819,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Schmidt);
 	DefineSimpleUnit(PulseDivider);
 	DefineSimpleUnit(PulseCount);
+	DefineSimpleUnit(Stepper);
 	DefineSimpleUnit(TDelay);
 	DefineSimpleUnit(ZeroCrossing);
 	DefineSimpleUnit(Timer);
