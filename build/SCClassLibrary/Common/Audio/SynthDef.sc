@@ -16,6 +16,7 @@ SynthDef {
 	// topo sort
 	var <>available;
 	
+	
 	*new { arg name, ugenGraphFunc, lags, prependArgs;
 		^this.prNew(name)
 			.build(ugenGraphFunc, lags, prependArgs)
@@ -41,6 +42,32 @@ SynthDef {
 		^pathMatch(dir ++ name ++ ".scsyndef").isEmpty.if({
 			this.new(name, func, lags, prependArgs).writeDefFile(dir)
 		}, nil);
+	}
+	
+	//used to create an out ugen automatically and a fade envelope
+	
+	*newWrapOut { arg name, func, lags, prependArgs, outClass=\Out, fadeTime;
+		^this.new(name, { arg i_out=0;
+			var result, rate, env;
+			result = this.wrap(func, lags, prependArgs);
+			rate = result.rate;
+			
+			if(rate === \scalar,{
+				// Out, SendTrig etc. probably a 0.0
+				result
+			},{
+				env = if(fadeTime.notNil, { this.makeFadeEnv(fadeTime) }, 1);
+				result = result * env;
+				outClass.asClass.multiNewList([rate, i_out]++result)
+			})
+		})
+	}
+
+	*makeFadeEnv { arg fadeTime;
+		var dt, gate;
+		#dt, gate = Control.names(['_fadeTime', '_gate']).kr([fadeTime, 1.0]);
+		^Linen.kr(gate, dt, 1.0, dt, 2);
+	
 	}
 	
 	initBuild {
@@ -333,5 +360,8 @@ SynthDef {
 		this.send(target.server, msg);
 		^synth
 	}
+	
+	
+
 }
 
