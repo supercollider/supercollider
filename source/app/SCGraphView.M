@@ -31,6 +31,7 @@
 extern PyrSymbol *s_draw;
 extern PyrSymbol *s_scview;
 extern PyrSymbol *s_closed;
+extern PyrSymbol *s_callDrawHook;
 
 @implementation SCGraphView
 
@@ -553,9 +554,6 @@ const int circDiam = 20;
     }
     pthread_mutex_lock (&gLangMutex);
     if (mWindowObj && NotNil(mWindowObj->slots+6)) {
-		static PyrSymbol *s_callDrawHook = 0;
-		if (!s_callDrawHook) s_callDrawHook = getsym("callDrawHook");
-
         CGRect cgrect = *(CGRect*)&drawBounds;
         CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
         CGContextSaveGState(cgc);
