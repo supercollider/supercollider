@@ -1,24 +1,22 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
-}
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
-\red0\green115\blue0;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;\red96\green96\blue96;
-\red191\green0\blue0;}
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs38 \cf0 Sample
-\f1\b0\fs18 \
+\f0\fs38 \cf0 Sample
+\f1\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 This class can be used as an argument to a Patch.  It will take care of all the troubles of loading, allocating, measuring, and even beat synchronizing of a small sound file.\
+\f0\fs24 \cf0 This class can be used as an argument to a Patch.  It will take care of all the troubles of loading, allocating, measuring, and even beat synchronizing of a small sound file.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 	Sample.new(soundFilePath,tempo)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 \
+\f0\fs24 \cf0 \
 It will not play by itself, but it holds all the intelligence to allow other things to play it very easily.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -34,7 +32,7 @@ It will not play by itself, but it holds all the intelligence to allow other thi
 			sample.sampleRate / 44100,\
 			1.0,\
 			0.0,\
-			0.0)\
+			1.0)\
 \
 \},[\
 	\cf2 Sample\cf0 (\cf3 "sounds/a11wlk01.wav"\cf0 )\
@@ -44,83 +42,59 @@ It will not play by itself, but it holds all the intelligence to allow other thi
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 In this case the SynthDef created is one-time-only use, the buffer number and sample rate are embedded in the SynthDef as constants. The def name was calculated as f-431886303O8NEut\
+\f0\fs24 \cf0 In this case the SynthDef created is one-time-only use, the buffer number and sample rate are embedded in the SynthDef as constants. The def name was calculated as f-431886303O8NEut\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 Using the various xxxxxIr and xxxxxKr methods, you can cause the SynthDef to be reusable, so that extra synthDefs aren't needed to be sent to the server.\
+\f0\fs24 \cf0 Using the various xxxxxIr and xxxxxKr methods, you can cause the SynthDef to be reusable, so that extra synthDefs aren't needed to be sent to the server.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0  \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 Within the Instr function you use these methods on your Sample object\
+\f0\fs24 \cf0 Within the Instr function you use these methods on your Sample object\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf0 \
+\f1\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 	
-\f0\b bufnum
-\f2\b0 \
+\f0\fs24 \cf0 	bufnum\
 		an integer of the current sample's bufnum, embedded into the SynthDef as a constant.\
-	
-\f0\b bufnumIr
-\f2\b0 \
+	bufnumIr\
 		at the start of the synth, this will get the dynamic bufferID of your Sample object.\
 		this Instr will reuse SynthDefs where possible.  Multiple synths may use the same\
 		basic sample synthDef for many voices with no need to compile new SynthDefs\
 		and send to the server.\
-	
-\f0\b bufnumKr
-\f2\b0 \
+	bufnumKr\
 		a dynamically modulateable bufferID.  note that you can simply load a different sound\
 		into the buffer while playing, and you rarely need to modulate the buffer number.\
 		as long as you used bufFramesKr etc. your synth should still work\
 		\
-	
-\f0\b sampleRate
-\f2\b0 \
+	sampleRate\
 		a float of the current sample's sample rate, embedded into the SynthDef as a constant.\
-	
-\f0\b sampleRateKr
-\f2\b0 \
+	sampleRateKr\
 		a kr rate signal that will change if you load a different sample into the buffer,even\
 		while playing.\
 \
-	
-\f0\b bufRateScaleKr
-\f2\b0 \
+	bufRateScaleKr\
 		the nominal pitchRatio value needed to play at the original pitch\
 		\
-	
-\f0\b bufFramesKr
-\f2\b0 \
+	bufFramesKr\
 		a kr rate signal with the number of frames of the current sample\
-	
-\f0\b bufSamplesKr
-\f2\b0 \
+	bufSamplesKr\
 		a kr rate signal with the number of samples of the current sample (?)\
 \
-	
-\f0\b bufDurKr
-\f2\b0 \
+	bufDurKr\
 		duration in seconds\
-	
-\f0\b duration
-\f2\b0 \
+	duration\
 		duration in seconds of current sample, embedded into SynthDef as a constant.\
 		\
-	
-\f0\b bufChannelsKr
-\f2\b0 \
+	bufChannelsKr\
 		number of channels of the current sample.  you cannot use this to modulate\
 		a PlayBuf.\
-	
-\f0\b numChannels
-\f2\b0 \
+	numChannels\
 		integer, number of channels of the current sample.  this will be embedded\
 		into the SynthDef as a constant.  the SynthDef will still be reusable for \
 		all samples of the same numChannels.
@@ -133,27 +107,29 @@ It will not play by itself, but it holds all the intelligence to allow other thi
 	\cf2 PlayBuf\cf0 .ar(sample.numChannels,\
 				sample.bufnumIr, \cf4 // finds the buffer number when the synth starts\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 				sample.sampleRateKr / 44100,\
-				1.0,0.0,0.0);\
-\});\
+\cf0 				sample.bufRateScaleKr * 0.25,\
+				1.0,0.0,1.0);\
+\},nil,\\stereo);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Patch\cf0 (\cf3 "help-Sample"\cf0 ,[\
+\cf2 p = Patch\cf0 (\cf3 "help-Sample"\cf0 ,[\
 	\cf2 Sample\cf0 (\cf3 "sounds/a11wlk01.wav"\cf0 )\
-]).play\
+]);\
+\
+p.topGui\
 \
 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 The def name was : help-SampleO8NEut\
+\f0\fs24 \cf0 The def name was : help-SampleO8NEut\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 You can build up a library of Instr functions and exploit them with Patch.\
+\f0\fs24 \cf0 You can build up a library of Instr functions and exploit them with Patch.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -168,40 +144,36 @@ It will not play by itself, but it holds all the intelligence to allow other thi
 \cf0 \});\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 \
+\f0\fs24 \cf0 \
 \
 this Patch object:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 	p = \cf7 Patch\cf6 ([\cf8 \\help\cf6 ,\cf8 \\Sample\cf6 ],\
+	p = \cf2 Patch\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\
 	[\
-		\cf7 Sample\cf6 (\cf9 "sounds/a11wlk01.wav"\cf6 )\
+		\cf2 Sample\cf0 (\cf3 "sounds/a11wlk01.wav"\cf0 )\
 	]);\
 	\
-	\cf10 // edit controls on the gui\
-\cf6 	p.topGui\
+	\cf4 // edit controls on the gui\
+\cf0 	p.topGui\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 \
+\f0\fs24 \cf0 \
 \
 save it,  and this will fully restore the complete sound.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 	\cf7 Patch\cf6 .new(\
-		[ \cf8 'help'\cf6 , \cf8 'Sample'\cf6  ], [ \cf7 Sample\cf6 .new(\cf9 "sounds/a11wlk01.wav"\cf6 , 1.6347258775994), \
+	\cf2 Patch\cf0 .new(\
+		[ \cf5 'help'\cf0 , \cf5 'Sample'\cf0  ], [ \cf2 Sample\cf0 .new(\cf3 "sounds/a11wlk01.wav"\cf0 , 1.6347258775994), \
 			0.46511627906977, 0.17441860465116 ]\
-	)\
+	).play\
 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	\
+\
+	\
 	\
 	(\
 	\cf4 //beatlock\
@@ -227,33 +199,23 @@ save it,  and this will fully restore the complete sound.\
 	p.topGui\
 	\
 	)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 This will embed the sample's tempo into the SynthDef as a constant.\
+\f0\fs24 \cf0 This will embed the sample's tempo into the SynthDef as a constant.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 \
+\f0\fs24 \cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b \cf0 soundFilePath
-\f2\b0 \
-
-\f0\b end
-\f2\b0 \
+soundFilePath\
+end\
 	signal.size - 1\
 	the last indexable position in the signal\
-
-\f0\b duration
-\f2\b0 \
-
-\f0\b totalMemory
-\f2\b0 \
+duration\
+totalMemory\
 	numFrames * numChannels\
 \
 \
@@ -262,17 +224,11 @@ save it,  and this will fully restore the complete sound.\
 The following methods are relevant if the sample is some kind of loop.\
 \
 \
-
-\f0\b tempo
-\f2\b0 \
+tempo\
 	beats per second the original recording is regarded to have.\
-
-\f0\b beats
-\f2\b0 \
+beats\
 	number of beats\
-
-\f0\b beatsize
-\f2\b0 \
+beatsize\
 	the number of samples per beat\
 \
 \
@@ -281,7 +237,6 @@ The following methods are relevant if the sample is some kind of loop.\
 
 \f1\fs18 \cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 /***\
 \
 ( \
@@ -374,7 +329,7 @@ Patch(\{arg gate,env,sample,startBeat;\
 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf4 \
+\f0\fs24 \cf4 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf4 \

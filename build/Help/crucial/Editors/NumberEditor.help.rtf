@@ -30,8 +30,9 @@ n = \cf2 NumberEditor\cf0 (2.3,[0,10]);\
 n.value = 5.6;\
 n.asCompileString.postln;\
 5.6\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs20 )\
+\fs20 \cf0 )\
 \
 \
 (\
@@ -44,7 +45,7 @@ n.inspect;\
 \
 (\cf3 // so make sure you get the NumberEditor \
 \cf0 n=\cf2 NumberEditor\cf0 (440.0,\cf4 \\freq\cf0 );\
-n.gui;\
+n.topGui;\
 n.inspect;\
 )\
 \
@@ -53,14 +54,18 @@ n.inspect;\
 	f=\cf2 PageLayout\cf0 .new;\
 	\
 	n=\cf2 NumberEditor\cf0 (440.0,\cf4 \\freq\cf0 );\
-	n.gui(f);\
+	n.topGui(f);\
 	\
 	\cf2 ActionButton\cf0 (f,\cf5 "post value"\cf0 ,\{ n.value.postln \});\
 	\cf3 // it compiles as its value\
 \cf0 	\cf2 ActionButton\cf0 (f,\cf5 "post NumberEditor asCompileString"\cf0 ,\{ \
 		n.asCompileString.postln \
-	\})\
+	\});\
 )\
+\
+// programatically set it, the slider moves\
+n.value = 100\
+\
 \
 (\cf3 // works as a stream .. convienient for patterns\
 \cf0 	n=\cf2 NumberEditor\cf0 (440.0,\cf4 \\freq\cf0 );\
