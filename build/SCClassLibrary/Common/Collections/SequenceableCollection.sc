@@ -498,6 +498,9 @@ SequenceableCollection : Collection {
 			aNumber.perform(aSelector, item)
 		}) 
 	}
+	clip { arg lo, hi; ^this.collect {|item| item.clip(lo,hi) }  }
+	wrap { arg lo, hi; ^this.collect {|item| item.wrap(lo,hi) }  }
+	fold { arg lo, hi; ^this.collect {|item| item.fold(lo,hi) }  }
 	
 	// support UGen clock division arguments.
 	cdiv { ^this.collect({ arg item; item.cdiv; }); }
