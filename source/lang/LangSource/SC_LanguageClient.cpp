@@ -1,6 +1,8 @@
 #include "SC_LanguageClient.h"
 #include "SC_LibraryConfig.h"
 
+#include <unistd.h>
+
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
