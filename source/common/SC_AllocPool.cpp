@@ -582,12 +582,14 @@ void AllocPool::DoCheckPool()
 
 
 void AllocPool::DoCheckChunk(AllocChunkPtr p)
-{ 
+{
+#ifndef NDEBUG
   size_t size = p->Size();
   //size_t maxsize = mAreaInitSize > mAreaMoreSize ? mAreaInitSize : mAreaMoreSize;
  // assert(size < maxsize);
-  
-  AllocChunkPtr next __attribute__((__unused__)) = p->ChunkAtOffset(size);	 
+
+  AllocChunkPtr next = p->ChunkAtOffset(size);
+#endif
   assert(p->mSize == next->mPrevSize);
 }
 
@@ -595,8 +597,9 @@ void AllocPool::DoCheckChunk(AllocChunkPtr p)
 void AllocPool::DoCheckFreeChunk(AllocChunkPtr p) 
 { 
   size_t size = p->Size();
-  AllocChunkPtr next __attribute__((__unused__)) = p->ChunkAtOffset(size);
-
+#ifndef NDEBUG
+  AllocChunkPtr next = p->ChunkAtOffset(size);
+#endif
   DoCheckChunk(p);
 
   /* Check whether it claims to be free ... */
@@ -648,8 +651,10 @@ void AllocPool::DoCheckInUseChunk(AllocChunkPtr p)
 
 void AllocPool::DoCheckAllocedChunk(AllocChunkPtr p, size_t s) 
 {
+#ifndef NDEBUG
   size_t size = p->Size();
-  long room __attribute__((__unused__)) = size - s;
+  long room = size - s;
+#endif
 
   DoCheckInUseChunk(p);
 
