@@ -247,7 +247,7 @@ e = \cf3 Document\cf0 (\cf5 "chat-write"\cf0 ).background_(\cf3 Color\cf0 .rand)
 a = \cf3 LocalClient\cf0 .default.start; 	\
 b = \cf3 Client\cf0 .new;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 ClientFunc\cf0 (\cf4 \\chat\cf0 , \{ \cf3 arg\cf0  dt, r, str; \{ d.string =  d.string ++ str ++ Char.nl \}.defer \});\
+\cf3 ClientFunc\cf0 (\cf4 \\chat\cf0 , \{ \cf3 arg\cf0  str; \{ d.string =  d.string ++ str ++ Char.nl \}.defer \});\
 \
 e.keyDownAction_(\{\'ca\cf3 arg\cf0  char;\
 	 if(char === \cf3 Char.tab\cf0 ) \
