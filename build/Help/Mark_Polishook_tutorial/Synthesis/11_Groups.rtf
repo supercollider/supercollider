@@ -15,25 +15,25 @@ or\
 \
 Most of the SuperCollider help documents for the UGens show other such examples. Evaluate the following line to see a list of all UGen help files.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Help\cf0 (\cf3 "Help/UGens"\cf0 ).dumpToDoc(\cf3 "SuperCollider UGens (Unit Generators)"\cf0 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 ////////////////////////////////////////////////////////////////////////////////////////////////////
 \f1 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0 Many synthesis processes, because they use more than a few ugens, are often best divided into component parts. This can make code modular, resusable, and easier to read.\
+\f0 \cf0 Many synthesis processes, because they use more than a few ugens, are often best divided into component parts. This can make code modular, resusable, and easier to read.\
 \
 The 
 \f2\b\fs24 Group
 \f0\b0\fs18  class, which is the means to specify a collection of nodes, provides a mechanism through which to control several synths at once. \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b\fs24 \cf0 Groups are linked lists\
+\f2\b\fs24 Groups are linked lists\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b0\fs18 \cf0 \
@@ -43,11 +43,11 @@ Groups, through their head and tail mechanisms, allow synths to be placed in ord
 \
 Another feature of groups is they allow synths to receive messages from a single point of control, eg, one message to the group goes to all of nodes that belong to the group. \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b\fs24 \cf0 Nodes, linked lists, trees\
+\f2\b\fs24 Nodes, linked lists, trees\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b0\fs18 \cf0 \
@@ -58,18 +58,18 @@ See the
 http://en.wikipedia.org/wiki/Node\
 http://en.wikipedia.org/wiki/Linked_list\
 http://en.wikipedia.org/wiki/Tree_data_structure\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 \
 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b\fs24 \cf0 Rootnode and default_group
+\f2\b\fs24 RootNode and default_group
 \f0\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf0 \
 By default, the localhost and internal servers each boot with two predefined groups: the 
-\f2\b\fs24 Rootnode
+\f2\b\fs24 RootNode
 \f0\b0\fs18  and the 
 \f2\b\fs24 default_group 
 \f0\b0\fs18 (see their help files). To see this, start the localhost server and then evaluate\
@@ -85,6 +85,7 @@ will appear in the transcript window.\
         \
 Group(0) is the rootnode group and Group(1) is the default_group. Group(1) is indented to show that it branches from Group(0).\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
 New synths are attached by default to the head of the default_group.\
@@ -309,9 +310,9 @@ Set a control for all of the synths in a group.\
 ~myGroup = \cf2 Group\cf0 .new;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // attach 3 synths\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Synth\cf0 .head(~myGroup, \cf3 "synthNumber1"\cf0 );\
@@ -324,10 +325,12 @@ Set a control for all of the synths in a group.\
 ~myGroup.set(\cf5 \\mul\cf0 , 0.01.rrand(0.2))\
 \
 \cf4 // execute to see a diagram of the nodes\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
 s.queryAllNodes;\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 ////////////////////////////////////////////////////////////////////////////////////////////////////\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
