@@ -15,8 +15,11 @@ Environment : IdentityDictionary {
 		
 		saveEnvir = currentEnvironment;
 		currentEnvironment = this;
-		function.value(this);
-		currentEnvironment = saveEnvir;
+		protect {
+			function.value(this);
+		}{
+			currentEnvironment = saveEnvir;
+		};
 	}
 	use { arg function;
 		// temporarily replaces the currentEnvironment with this, 
@@ -25,8 +28,11 @@ Environment : IdentityDictionary {
 		
 		saveEnvir = currentEnvironment;
 		currentEnvironment = this;
-		result = function.value(this);
-		currentEnvironment = saveEnvir;
+		protect {
+			result = function.value(this);
+		}{
+			currentEnvironment = saveEnvir;
+		};
 		^result
 	}
 	
