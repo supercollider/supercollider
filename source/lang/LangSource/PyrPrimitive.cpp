@@ -2362,6 +2362,33 @@ int prCanCallOS(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+extern bool gGenerateTailCallByteCodes;
+
+int prGetTailCallOptimize(struct VMGlobals *g, int numArgsPushed);
+int prGetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	
+	SetBool(a, gGenerateTailCallByteCodes);
+	
+	return errNone;
+}
+
+int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed);
+int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+	
+	if (IsTrue(b)) {
+		gGenerateTailCallByteCodes = true;
+	} else if (IsFalse(b)) {
+		gGenerateTailCallByteCodes = false;
+	} else return errWrongType;
+	
+	return errNone;
+}
+
 
 int prTraceOn(struct VMGlobals *g, int numArgsPushed);
 int prTraceOn(struct VMGlobals *g, int numArgsPushed)
@@ -3851,6 +3878,9 @@ void initPrimitives()
 	definePrimitive(base, index++, "_Trace", prTraceOn, 1, 0);
 	definePrimitive(base, index++, "_CanCallOS", prCanCallOS, 1, 0);
 	definePrimitive(base, index++, "_KeywordError", prKeywordError, 1, 0);
+	definePrimitive(base, index++, "_GetTailCallOptimize", prGetTailCallOptimize, 1, 0);
+	definePrimitive(base, index++, "_SetTailCallOptimize", prSetTailCallOptimize, 2, 0);
+
 
 	definePrimitive(base, index++, "_PrimitiveError", prPrimitiveError, 1, 0);	
 	definePrimitive(base, index++, "_PrimitiveErrorString", prPrimitiveErrorString, 1, 0);	

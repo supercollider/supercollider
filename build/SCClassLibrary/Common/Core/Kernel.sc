@@ -204,6 +204,10 @@ Process {
 	tick { // called repeatedly by SCVirtualMachine::doPeriodicTask
 		AppClock.tick;
 	}
+
+	*tailCallOptimize { _GetTailCallOptimize }
+	*tailCallOptimize_ { arg bool; _SetTailCallOptimize ^this.primitiveFailed }
+
 	openCodeFile {
 		var string, class, method, words;
 		string = interpreter.cmdLine;
