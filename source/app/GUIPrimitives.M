@@ -428,11 +428,12 @@ int prTextWindow_InsertTextInRange(struct VMGlobals *g, int numArgsPushed)
 		PyrString* pstring = b->uos;
 		NSRange selectedRange;
 		int length = [[[doc textView] string] length];
-		if(rangeStart<0) selectedRange =	NSMakeRange(0, length);
-		else selectedRange =	NSMakeRange(rangeStart, rangeSize);
 		
 		if(rangeStart >= length) rangeStart = length - 1 ;
 		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
+		
+                if(rangeStart<0) selectedRange =	NSMakeRange(0, length);
+		else selectedRange =	NSMakeRange(rangeStart, rangeSize);
 		
 		
 		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
