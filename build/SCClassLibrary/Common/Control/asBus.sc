@@ -1,7 +1,7 @@
 
 + Server {
 	asBus { arg rate,numChannels,server;
-		^Bus.next(rate,numChannels,this,server)
+		^Bus.alloc(rate,numChannels,this,server)
 	}
 }
 
@@ -20,7 +20,7 @@
 		^if(rate == \audio,{
 			Bus(\audio,0,numChannels,server); // out yer speakers
 		},{
-			Bus.next(\control,numChannels,server); // private control bus
+			Bus.alloc(\control,numChannels,server); // private control bus
 		})
 	}
 }
