@@ -15,6 +15,13 @@ LinkedListNode {
 LinkedList : SequenceableCollection {
 	var head, tail, <size = 0;
 	
+	
+	copy {
+		var copy;
+		copy = LinkedList.new;
+		this.do {|item| copy.add(item) }
+		^copy
+	}
 	species { ^this.class }
 	do { arg function;
 		var i = 0, node;
