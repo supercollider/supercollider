@@ -54,7 +54,6 @@ Pevent : Pattern {
 		^EventStream(pattern.asStream, event);
 	}
 	play { arg clock;
-		\Pevent_play.postln;
 		this.asStream.play(clock ? SystemClock)
 	}
 }
