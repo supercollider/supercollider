@@ -1,6 +1,7 @@
 
 Object {
 	classvar <dependantsDictionary, currentEnvironment, topEnvironment, <uniqueMethods; 
+	classvar <nl="\n";
 	
 	*new { arg maxSize = 0; 
 		_BasicNew 
