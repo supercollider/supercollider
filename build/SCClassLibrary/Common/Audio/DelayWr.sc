@@ -1,25 +1,4 @@
 
-/*
-	these are still set up for sc3d5 style PlayBuf.
-	won't work on scsynth yet
-	-felix
-*/
-/*
-PingPong {
-	*ar { arg bank, index, inputs, delayTime, feedback=0.7, rotate=1, interpolationType=2;
-	
-		var indices, delayedSignals, outputs;
-		
-		delayedSignals = PlayBuf.ar(bank, index, -1, delayTime, interpolationType).postln;	
-
-		outputs = delayedSignals.rotate(rotate) * feedback + inputs;
-		
-		RecordBuf.ar(bank, index, outputs, run: -1);	// feedback to buffers
-
-		^outputs
-	}
-}
-*/
 
 PingPong {
 	//your buffer should be the same numChannels as your inputs
@@ -38,7 +17,32 @@ PingPong {
 }
 
 
+/* old version
+PingPong {
+	*ar { arg bank, index, inputs, delayTime, feedback=0.7, rotate=1, interpolationType=2;
+	
+		var indices, delayedSignals, outputs;
+		
+		delayedSignals = PlayBuf.ar(bank, index, -1, delayTime, interpolationType).postln;	
+
+		outputs = delayedSignals.rotate(rotate) * feedback + inputs;
+		
+		RecordBuf.ar(bank, index, outputs, run: -1);	// feedback to buffers
+
+		^outputs
+	}
+}
+*/
+
+
 /**
+
+
+/*
+	these are still set up for sc3d5 style PlayBuf.
+	won't work on scsynth yet
+	-felix
+*/
 
 
 DelayProcess {
