@@ -33,7 +33,7 @@ Float : SimpleNumber {
 	}
 
 	reverseDo { arg function;
-		// iterates function from 0 to this-1 
+		// iterates function from this-1 to 0
 		// special byte codes inserted by compiler for this method
 		var i, j=0.0;
 		i = this - 1.0;
