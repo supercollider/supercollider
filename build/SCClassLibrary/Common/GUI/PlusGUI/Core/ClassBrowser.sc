@@ -32,7 +32,9 @@ ClassBrowser {
 		currentClass = class;
 		history = [currentClass];
 		
-		w = SCWindow("class browser", Rect(128, 320, 640, 560));
+		w = SCWindow("class browser", Rect(128, 320, 640, 560))
+			.onClose_({ this.free });
+
 		w.view.decorator = FlowLayout(w.view.bounds);
 		
 		currentClassNameView = SCTextField(w, Rect(0,0, 256, 32));
@@ -273,6 +275,15 @@ ClassBrowser {
 				({|name| name.asString }, Array).sort;
 				
 		filenameView.string = currentClass.filenameSymbol.asString;
+	}
+	
+	free {
+		(w.notNil and: { w.isClosed.not }).if({ w.close });
+		w = currentClassNameView = superClassNameView = subclassView = methodView = argView
+			= instVarView = classVarView = filenameView = cvsButton = bakButton = fwdButton
+			= superButton = metaButton = helpButton = methodSourceButton = classSourceButton
+			= implementationButton = refsButton = currentClass = currentMethod = subclassArray
+			= classMethodArray = methodArray = updateViews = setNewClass = hvBold12 = history 			= historyPos = nil;
 	}
 
 }
