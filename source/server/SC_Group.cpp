@@ -66,6 +66,28 @@ void Group_Calc(Group *inGroup)
 	}			
 }
 
+void Group_CalcTrace(Group *inGroup)
+{
+	scprintf("TRACE Group %d\n", inGroup->mNode.mID);
+	Node *child = inGroup->mHead;
+	while (child) {
+        Node *next = child->mNext;
+		scprintf("   %d %s\n", child->mID, (char*)child->mDef->mName);
+		(*child->mCalcFunc)(child);
+		child = next;
+	}			
+	inGroup->mNode.mCalcFunc = (NodeCalcFunc)&Group_Calc;
+}
+
+void Group_Trace(Group *inGroup)
+{
+	if (inGroup->mNode.mCalcFunc == (NodeCalcFunc)&Group_Calc) {
+		inGroup->mNode.mCalcFunc = (NodeCalcFunc)&Group_CalcTrace;
+	}
+}
+
+
+
 void Group_DeleteAll(Group *inGroup)
 {
 	Node *child = inGroup->mHead;
@@ -77,6 +99,21 @@ void Group_DeleteAll(Group *inGroup)
 		child = next;
 	}
 	inGroup->mHead = inGroup->mTail = 0;
+}
+
+void Group_DeepDeleteAllNodes(Group *inGroup)
+{
+	Node *child = inGroup->mHead;
+	while (child) {
+        Node *next = child->mNext;
+		if (child->mIsGroup) {
+			Group_DeepDeleteAllNodes((Group*)child);
+		} else {
+			Node_Remove(child);
+			Node_Delete(child);
+		}
+		child = next;
+	}
 }
 
 void Group_AddHead (Group *s, Node *child)

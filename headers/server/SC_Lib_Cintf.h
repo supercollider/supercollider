@@ -59,8 +59,8 @@ enum {
 	cmd_d_freeAll = 8,
 
 	cmd_s_new = 9,
-	cmd_s_trace = 10,
-
+	
+	cmd_n_trace = 10,
 	cmd_n_free = 11,
 	cmd_n_run = 12,
 	cmd_n_cmd = 13,
@@ -109,7 +109,9 @@ enum {
 	cmd_n_mapn = 48,
 	cmd_s_noid = 49,
 
-	NUMBER_OF_COMMANDS = 50
+	cmd_g_deepFree = 50,
+
+	NUMBER_OF_COMMANDS = 51
 };
 
 extern SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];

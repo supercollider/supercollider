@@ -130,17 +130,19 @@ SCErr meth_n_cmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply
 }
 */
 
-SCErr meth_s_trace(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_s_trace(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_n_trace(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_trace(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	
+	scprintf("meth_n_trace\n");
 	while (msg.remain()) {
 		int32 nodeID = msg.geti();
-		Graph *graph = World_GetGraph(inWorld, nodeID);
-		if (!graph) return kSCErr_NodeNotFound;
+		scprintf("nodeID %d\n", nodeID);
+		Node *node = World_GetNode(inWorld, nodeID);
+		scprintf("node %08X\n", node);
+		if (!node) return kSCErr_NodeNotFound;
 		
-		Graph_Trace(graph);
+		Node_Trace(node);
 	}
 	
 	return kSCErr_None;
@@ -649,6 +651,21 @@ SCErr meth_g_freeAll(World *inWorld, int inSize, char *inData, ReplyAddress* /*i
 	}
 	return kSCErr_None;
 }
+
+SCErr meth_g_deepFree(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_g_deepFree(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+{
+	sc_msg_iter msg(inSize, inData);	
+	while (msg.remain()) {
+		Group *group = World_GetGroup(inWorld, msg.geti());
+		if (!group) return kSCErr_GroupNotFound;
+	
+		Group_DeepDeleteAllNodes(group);
+	}
+	return kSCErr_None;
+}
+
+
 
 SCErr meth_status(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_status(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
@@ -1191,9 +1208,9 @@ void initMiscCommands()
 	NEW_COMMAND(d_loadDir);	
 	NEW_COMMAND(d_freeAll);	
 
-	NEW_COMMAND(s_new);			
-	NEW_COMMAND(s_trace);
-				
+	NEW_COMMAND(s_new);	
+			
+	NEW_COMMAND(n_trace);
 	NEW_COMMAND(n_free);		
 	NEW_COMMAND(n_run);				
 
@@ -1214,6 +1231,7 @@ void initMiscCommands()
 	NEW_COMMAND(g_head);		
 	NEW_COMMAND(g_tail);		
 	NEW_COMMAND(g_freeAll);		
+	NEW_COMMAND(g_deepFree);		
 
 	NEW_COMMAND(b_alloc);		
 	NEW_COMMAND(b_allocRead);	

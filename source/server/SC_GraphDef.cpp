@@ -470,7 +470,6 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 			if (inputSpec->mFromUnitIndex >= 0) {
 				UnitSpec *outUnit = inGraphDef->mUnitSpecs + inputSpec->mFromUnitIndex;
 				OutputSpec *outputSpec = outUnit->mOutputSpec + inputSpec->mFromOutputIndex;
-				int p = outputSpec->mNumConsumers;
 				outputSpec->mNumConsumers ++;
 			}
 		}

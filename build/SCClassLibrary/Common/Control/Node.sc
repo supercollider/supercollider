@@ -70,6 +70,10 @@ Node {
                );
                server.nodeAllocator.free(nodeID);
     	}
+	trace {
+		server.sendMsg(10, nodeID);//"/n_trace"
+	}
+
 
 
 	moveBefore { arg aNode;
@@ -340,12 +344,7 @@ Synth : Node {
 		group = removeThisOne.group; 
 		^[9, defName, nodeID, 4, removeThisOne.nodeID] ++ args
 	}
-	
-	
-	trace {
-		server.sendMsg(10, nodeID);//"/s_trace"
-	}
-
+		
 	// private
 	*prNew { arg defName, server;
 		^super.prNew(server).defName_(defName.asDefName)

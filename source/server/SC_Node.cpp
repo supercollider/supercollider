@@ -220,6 +220,15 @@ void Node_SetRun(Node* inNode, int inRun)
 }
 
 
+void Node_Trace(Node *inNode)
+{
+	if (inNode->mIsGroup) {
+		Group_Trace((Group*)inNode);
+	} else {
+		Graph_Trace((Graph*)inNode);
+	}
+}
+
 void Node_End(Node* inNode)
 {
 	inNode->mCalcFunc = (NodeCalcFunc)&Node_Delete;

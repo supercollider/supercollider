@@ -130,6 +130,7 @@ void Node_SetControl(Node* inNode, int32 inHash, int32 *inName, int inIndex, flo
 void Node_MapControl(Node* inNode, int inIndex, int inBus);
 void Node_MapControl(Node* inNode, int32 inHash, int32 *inName, int inIndex, int inBus);
 void Node_StateMsg(Node* inNode, int inState);
+void Node_Trace(Node* inNode);
 
 extern "C" {
 void Node_SetRun(Node* inNode, int inRun);
@@ -149,6 +150,7 @@ void Graph_Calc(struct Graph *inGraph);
 Group* Group_New(World *inWorld, int32 inID);
 void Group_Dtor(Group *inGroup);
 void Group_DeleteAll(Group *inGroup);
+void Group_DeepDeleteAllNodes(Group *inGroup);
 void Group_AddHead (Group *s, Node *child);
 void Group_AddTail (Group *s, Node *child);
 void Group_Insert(Group *s, Node *child, int inIndex);
@@ -156,6 +158,7 @@ void Group_SetControl(struct Group* inGroup, int inIndex, float inValue);
 void Group_SetControl(struct Group *inGroup, int32 inHash, int32 *inName, int inIndex, float inValue);
 void Group_MapControl(Group* inGroup, int inIndex, int inBus);
 void Group_MapControl(Group* inGroup, int32 inHash, int32 *inName, int inIndex, int inBus);
+void Group_Trace(Group* inGroup);
 
 ////////////////////////////////////////////////////////////////////////
 

@@ -275,6 +275,15 @@ The server sends an
 \f1\b /n_info
 \f0\b0  message.\
 \
+
+\f1\b /n_trace						trace a node\
+
+\f0\b0 	[\
+		int - node ID\
+	] * N\
+\
+Causes a synth to print out the values of the inputs and outputs of its unit generators for one control period. Causes a group to print the node IDs and names of each node in the group for one control period.\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
@@ -317,15 +326,6 @@ If you use a node ID of -1 for any other command, such as
 \f1\b /s_new
 \f0\b0  (auto generated ID or not). This is how you can map  the controls of a node with an auto generated ID. In a multi-client situation, the only way you can be sure what node -1 refers to is to put the messages in a bundle.\
 \
-\
-
-\f1\b /s_trace						trace unit generators inputs and outputs\
-
-\f0\b0 	[\
-		int - synth ID\
-	] * N\
-\
-Causes the synth to print out the values of the inputs and outputs of its unit generators for one control period.\
 \
 
 \f1\b /s_get					get control value(s)\
@@ -417,6 +417,15 @@ Adds the node to the tail (last to be executed) of the group.\
 	] * N\
 	\
 Frees all nodes in the group. A list of groups may be specified.\
+\
+
+\f1\b /g_deepFree				free all synths in this group and all its sub-groups.\
+
+\f0\b0 	[\
+		int - group ID\
+	] * N\
+	\
+Traverses all groups below this group and frees all the synths. Sub-groups are not freed. A list of groups may be specified.\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
@@ -958,8 +967,8 @@ These are the currently defined fill routines for use with the
 	cmd_d_freeAll = \cf4 8\cf0 ,\
 \
 	cmd_s_new = \cf4 9\cf0 ,\
-	cmd_s_trace = \cf4 10\cf0 ,\
-\
+	\
+	cmd_n_trace = \cf4 10\cf0 ,\
 	cmd_n_free = \cf4 11\cf0 ,\
 	cmd_n_run = \cf4 12\cf0 ,\
 	cmd_n_cmd = \cf4 13\cf0 ,\
