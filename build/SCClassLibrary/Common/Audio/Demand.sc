@@ -12,7 +12,7 @@ Demand : MultiOutUGen {
  	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
-DurDemand : Demand {
+SelfDemand : Demand {
 	
 	checkInputs {
 		^if(inputs.at(0).rate === \demand) {
