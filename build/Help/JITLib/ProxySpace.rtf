@@ -20,7 +20,7 @@ is something playing on a server that writes to a limited number of buses.\
 (this can be for example a synth or an event stream)\
 \
 \
-When accessed, ProxySpace returns a [\ul NodeProxy\ulnone ]. \
+When accessed, ProxySpace returns a [NodeProxy]. \
 The rate is determined in a lazy way from the first object\
 put into this environment. Once it is created it can only be set to a function\
 that returns the same rate and a number of channels equal to the intial one or smaller. \
@@ -57,9 +57,8 @@ this is experimental and things change.\
 \f2\fs26 restore the previous currentEnvironment\
 	
 \f1\fs18 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs26 \cf0 ____________________________________________________
+\f2\fs26 ____________________________________________________
 \f1\fs18 \
 \
 \
@@ -68,11 +67,9 @@ this is experimental and things change.\
 \cf2 //prepare the environment\cf0 \
 s = \cf3 Server\cf0 .local;\
 s.boot;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 ProxySpace\cf0 .push(s);\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //play some output to the hardware buses, this could be any audio rate key.\cf0 \
 x = ~out.play; \cf2 //returns a group, store in interpreter variable x\cf0 \
 ~out = \{ \cf3 SinOsc\cf0 .ar([400, 500]*0.9, 0, 0.1) \};\
@@ -106,12 +103,12 @@ x = ~out.play; \cf2 //returns a group, store in interpreter variable x\cf0 \
 \cf2 //setting the node controls\cf0 \
 ~out = \{ \cf3 arg\cf0  rate=2; \cf3 Pan2\cf0 .ar(\cf3 PinkNoise\cf0 .ar(0.1), \cf3 LFClipNoise\cf0 .kr(rate)) \};\
 ~out.set(\cf5 \\rate\cf0 , 50);\
-~out = \{ \cf3 arg\cf0  rate=2; \cf3 Pan2\cf0 .ar(\cf3 Dust\cf0 .ar(2000, 0.5), \cf3 LFClipNoise\cf0 .kr(rate)) \};\
+~out = \{ \cf3 arg\cf0  rate=2; \cf3 Pan2\cf0 .ar(\cf3 Dust\cf0 .ar(2000, 0.2), \cf3 LFClipNoise\cf0 .kr(rate)) \};\
 ~out.set(\cf5 \\rate\cf0 , 2);\
 \
 \cf2 //patching\cf0 \
 ~lfo = \{ \cf3 LFNoise2\cf0 .kr(30, 300, 500) \};\
-~out = \{ \cf3 SinOsc\cf0 .ar(~lfo.kr, 0, 0.1)  \};\
+~out = \{ \cf3 SinOsc\cf0 .ar(~lfo.kr, 0, 0.15)  \};\
 ~out = \{ \cf3 SinOsc\cf0 .ar(~lfo.kr * [1, 1.2], 0, 0.1) * \cf3 Pulse\cf0 .ar(~lfo.kr * [0.1, 0.125], 0.5) \};\
 ~lfo = \{ \cf3 LFNoise1\cf0 .kr(30, 60) + \cf3 SinOsc\cf0 .kr(0.1, 0, 100, 500) \};\
 ~out = \{ \cf3 SinOsc\cf0 .ar(~lfo.kr * [1, 1.2], 0, 0.1)  \};\
@@ -185,6 +182,7 @@ x = ~out.play; \
 ~out.send; \cf2 //this resends the last synth\
 \cf0 ~out.free; \
 ~out.sendAll; \cf2 //this resends all synths\
+\
 //removing:\cf0 \
 ~out.removeLast;\
 ~out.removeAt(0);\
@@ -275,6 +273,8 @@ currentEnvironment.clear;\
 )\
 ~out.set(\cf5 \\dens\cf0 , 2, \cf5 \\freq\cf0 , 9000);\
 \
+\
+//doesn't work anymore. wait for a more general interface with cx lib \
 ~out = \cf3 Patch\cf0 ([\cf5 \\test\cf0 ], [10]);\
 \cf2 //set the unassigned parameter\cf0 \
 ~out.set(\cf5 \\freq\cf0 , 4000);\
@@ -321,21 +321,16 @@ playing multiple synths (much more efficient than creating new defs)\
 \f1\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //putting an synthdef into the node proxy without playing it right away\cf0 \
-\cf2 //the function has an envelope that frees by itself.\cf0 \
+\cf2 //the synthdef has an envelope that frees by itself.\cf0 \
 (\
-~out.freeSelf = \cf3 false\cf0 ; \cf2 //the envelope is now in the grain
-\f2\fs26 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs18 \cf0 \
-~out.put(\{ \cf3 arg\cf0  freq=800, pmf=1.0;\
-	\cf3 var\cf0  env;\
-	env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.001, 0.04, 0.4),doneAction:2); \cf2 //envelope\cf0 \
-	\cf3 SinOsc\cf0 .ar(freq * \cf3 Rand\cf0 (0.9, 1.1), \cf3 SinOsc\cf0 .ar(pmf, 0, pi), env) \
-\});\
+~out.put(\
+	SynthDef("a", \{ \cf3 arg\cf0  out=0, freq=800, pmf=1.0;\
+		\cf3 var\cf0  env;\
+		env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.001, 0.04, 0.4),doneAction:2); \cf2 //envelope\cf0 \
+		Out.ar(out, \cf3 SinOsc\cf0 .ar(freq * \cf3 Rand\cf0 (0.9, 1.1), \cf3 SinOsc\cf0 .ar(pmf, 0, pi), env))\
+	\}));\
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //create a task to repeatedly send grains\cf0 \
 (\
 t = \cf3 Task\cf0 (\{\
@@ -357,11 +352,13 @@ t.start;\
 \
 \cf2 //change the definition while going along\cf0 \
 (\
-~out.put(\{ \cf3 arg\cf0  freq=800;\
-	\cf3 var\cf0  env;\
-	env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.01, 0.1, 0.3),doneAction:2);\
-	\cf3 Pulse\cf0 .ar(freq*\cf3 Rand\cf0 (0.9, 1.1), 0.5, env) \
-\});\
+~out.put(\
+	SynthDef("a", \{ \cf3 arg\cf0  freq=800;\
+		\cf3 var\cf0  env;\
+		env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.01, 0.1, 0.3),doneAction:2);\
+		\cf3 Pulse\cf0 .ar(freq * \cf3 Rand\cf0 (0.9, 1.1), 0.5, env) \
+	\});\
+)\
 )\
 \
 t.stop;\
@@ -383,6 +380,7 @@ efficient granular synthesis\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 "grain"\cf0 , \{ \cf3 arg\cf0  i_out = 0;\
 	\cf3 var\cf0  env;\
 	env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.001, 0.003),doneAction:2);\
@@ -404,20 +402,21 @@ t = \cf3 Task\cf0 (\{\
 )\
 \
 ~out = \{ CombL.ar(~someInput.ar, 0.1, 0.1, \cf3 MouseX\cf0 .kr(0.1, 3, 'exponential')) \};\
-~out = \{ \cf3 LPF\cf0 .ar(~someInput.ar, \cf3 LFNoise1\cf0 .kr(3, 1000, 1040)) \};\
+~out = \{ R\cf3 LPF\cf0 .ar(~someInput.ar, \cf3 LFNoise1\cf0 .kr(3, 1000, 1040), 0.01) \};\
 \
 t.stop;\
-out.stop;\
+~out.stop;\
 currentEnvironment.clear;\
 \cf3 ProxySpace\cf0 .pop; \cf2 //restore original environment
 \f2\fs26 \cf0 \
 \
 using multiple proxy spaces\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \
+\f1\fs18 \cf0 \
 p = \cf3 ProxySpace\cf0 (s);\
 q = \cf3 ProxySpace\cf0 (s);\
-p.fadeTime = q.fadeTime = 1; \cf2 //avoid blow up\cf0 \
+p.fadeTime = q.fadeTime = 1; \
 \
 (\
 p.use(\{\
