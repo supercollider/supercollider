@@ -965,9 +965,9 @@
 			);
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
-				LIBRARY_SEARCH_PATHS = /Users/jamesmcc/Dev/newdev/test6/SuperCollider3/build;
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = SuperCollider;
 				SECTORDER_FLAGS = "";
@@ -1391,7 +1391,6 @@
 				F50D06A302E6A1C601CA2799,
 				F50D06A402E6A1C601CA2799,
 				F50D06BF02E7F11301CA2799,
-				F50D06C102E7F29101CA2799,
 				F5C7B14F033D595901A80099,
 			);
 			isa = PBXFrameworksBuildPhase;
@@ -2319,12 +2318,6 @@
 			name = libsndfile.a;
 			path = /usr/local/lib/libsndfile.a;
 			refType = 0;
-		};
-		F50D06C102E7F29101CA2799 = {
-			fileRef = F50D06C002E7F29001CA2799;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 		F50D06C202E7F64801CA2799 = {
 			isa = PBXFileReference;

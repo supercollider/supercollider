@@ -623,6 +623,12 @@
 			path = SC_Sem.h;
 			refType = 4;
 		};
+		F58C3E0D034AAEAF01CA2799 = {
+			fileRef = F50D069902E6A1C601CA2799;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		F59DF065030733E801CE0C16 = {
 			isa = PBXFileReference;
 			path = dlopen.c;
@@ -657,7 +663,6 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = STATIC;
 				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
 				PREBINDING = NO;
@@ -1195,6 +1200,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F5CDE9140319620001CA2799,
+				F58C3E0D034AAEAF01CA2799,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1290,7 +1296,7 @@
 			buildSettings = {
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = scsynth;
 				REZ_EXECUTABLE = YES;
@@ -1331,7 +1337,6 @@
 				F5CDE9100318BAC501CA2799,
 				F5CDE912031959DB01CA2799,
 				F5CDE9170319677401CA2799,
-				F5CDE9190319691301CA2799,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1375,12 +1380,6 @@
 		};
 		F5CDE9170319677401CA2799 = {
 			fileRef = F50D069902E6A1C601CA2799;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		F5CDE9190319691301CA2799 = {
-			fileRef = F50D06C002E7F29001CA2799;
 			isa = PBXBuildFile;
 			settings = {
 			};

@@ -791,7 +791,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = DiskIOUGens.scx;
@@ -836,7 +836,6 @@
 		F5B7412902E9544701CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
-				F5D127DF03383D340164B34C,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1665,12 +1664,6 @@
 			name = libsndfile.a;
 			path = /usr/local/lib/libsndfile.a;
 			refType = 0;
-		};
-		F5D127DF03383D340164B34C = {
-			fileRef = F5D127DE03383D340164B34C;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 	};
 	rootObject = F50D04F702E68E8201CA2799;
