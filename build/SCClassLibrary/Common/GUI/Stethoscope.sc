@@ -112,8 +112,7 @@ Stethoscope {
 	numChannels_ { arg n;
 	
 		var isPlaying;
-		if(n != numChannels) {Ê
-			
+		if(n != numChannels and: { n > 0 }) {Ê
 			isPlaying = synth.isPlaying;
 			if(isPlaying) { synth.free; synth.isPlaying = false; }; // immediate
 			numChannels = n;
@@ -154,7 +153,7 @@ Stethoscope {
 		}
 	}
 	
-	size_ { arg val=212; window.bounds = this.makeBounds(val) }
+	size_ { arg val=212; if(window.notNil) { window.bounds = this.makeBounds(val) } }
 	
 	zoom_ { arg val;
 		val = val ? 1;
@@ -181,7 +180,7 @@ Stethoscope {
 		this.numChannels = server.options.numOutputBusChannels;
 	}
 	adjustBufferSize {
-		this.allocBuffer(max(128,nextPowerOfTwo(asInteger(n.bounds.width * n.xZoom))))
+		this.allocBuffer(max(256,nextPowerOfTwo(asInteger(n.bounds.width * n.xZoom))))
 	}
 	
 
