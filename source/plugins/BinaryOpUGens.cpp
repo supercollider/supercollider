@@ -5038,7 +5038,7 @@ void ChooseOperatorFunc(BinaryOpUGen *unit)
 	if (BUFLENGTH == 1) {
 		func = ChooseOneSampleFunc(unit);
 #if __VEC__
-	} else if (ft->mAltivecAvailable && !(BUFLENGTH & 3)) {
+	} else if (USEVEC) {
 		func = ChooseVectorFunc(unit);
 #endif
 	} else {

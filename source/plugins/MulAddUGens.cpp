@@ -714,7 +714,7 @@ void MulAdd_Ctor(MulAdd *unit)
 	//Print("**** %08X %08X %08X    %08X\n", IN(0), IN(1), IN(2), OUT(0));
 
 #if __VEC__	
-	if (!ft->mAltivecAvailable || (BUFLENGTH & 3)) {
+	if (!USEVEC) {
 #endif
 		switch (mulRate) {
 			case calc_FullRate :
@@ -789,11 +789,9 @@ void MulAdd_Ctor(MulAdd *unit)
 			case calc_ScalarRate :
 				switch (addRate) {
 					case calc_FullRate :
-		Print("choose v_ampmix_ia\n");
 						unit->mCalcFunc = (UnitCalcFunc)&v_ampmix_ia;
 						break;
 					case calc_BufRate :
-		Print("choose v_ampmix_ik\n");
 						unit->mCalcFunc = (UnitCalcFunc)&v_ampmix_ik;
 						break;
 					case calc_ScalarRate :

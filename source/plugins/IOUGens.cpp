@@ -486,7 +486,7 @@ void Out_Ctor(IOUnit* unit)
 	
 	if (unit->mCalcRate == calc_FullRate) {
 #if __VEC__
-		if (ft->mAltivecAvailable && !(BUFLENGTH & 3)) {
+		if (USEVEC) {
 			SETCALC(vOut_next_a);
 		} else {
 			SETCALC(Out_next_a);
@@ -713,7 +713,7 @@ void XOut_Ctor(XOut* unit)
 	unit->m_xfade = ZIN0(1);
 	if (unit->mCalcRate == calc_FullRate) {
 #if __VEC__
-		if (ft->mAltivecAvailable && !(BUFLENGTH & 3)) {
+		if (USEVEC) {
 			SETCALC(vXOut_next_a);
 		} else {
 			SETCALC(XOut_next_a);

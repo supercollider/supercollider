@@ -36,6 +36,7 @@
 #define vec_mul(a, b) (vec_madd(a, b, vzero))
 #define vec_2sComp(x) (vec_sub(vec_sub (x, x), x))
 
+#define USEVEC (ft->mAltivecAvailable && !(BUFLENGTH & 3))
 
 typedef union vec_union {
         int32		i[4];
