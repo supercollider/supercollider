@@ -64,7 +64,8 @@ void Graph_Dtor(Graph *inGraph)
 	
 	GraphDef* def = GRAPHDEF(inGraph);
 	if (--def->mRefCount <= 0) {
-		GraphDef_DeleteMsg(world, def);
+		if (world->mRealTime) GraphDef_DeleteMsg(world, def);
+		else GraphDef_Free(def);
 	}
 	
 	Node_Dtor(&inGraph->mNode);

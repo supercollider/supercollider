@@ -399,9 +399,9 @@ void* audio_driver_thread_func(void* arg)
 
 void* SC_AudioDriver::RunThread()
 {
-	MsgFifoNoFree<TriggerMsg, 1024> *trigfifo = &mWorld->hw->mTriggers;
-	MsgFifoNoFree<NodeEndMsg, 1024> *nodeendfifo = &mWorld->hw->mNodeEnds;
-	MsgFifoNoFree<DeleteGraphDefMsg, 512> *deletegraphfifo = &mWorld->hw->mDeleteGraphDefs;
+	TriggersFifo *trigfifo = &mWorld->hw->mTriggers;
+	NodeEndsFifo *nodeendfifo = &mWorld->hw->mNodeEnds;
+	DeleteGraphDefsFifo *deletegraphfifo = &mWorld->hw->mDeleteGraphDefs;
 
 	while (mRunThreadFlag) {
 		// wait for sync

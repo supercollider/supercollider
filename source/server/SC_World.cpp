@@ -337,8 +337,11 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket);
 void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 {
 	World_LoadGraphDefs(world);
-	const int kFileBufFrames = 8192;
-	const int kBufMultiple = kFileBufFrames / world->mBufLength;
+	int bufLength = world->mBufLength;
+	int fileBufFrames = inOptions->mPreferredHardwareBufferFrameSize;
+	if (fileBufFrames <= 0) fileBufFrames = 8192; 
+	int bufMultiple = (fileBufFrames + bufLength - 1) / bufLength;
+	fileBufFrames = bufMultiple * bufLength;
 
 	// batch process non real time audio		
 	if (!inOptions->mNonRealTimeOutputFilename) 
@@ -359,14 +362,14 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	if (!world->hw->mNRTOutputFile) 
 		throw std::runtime_error("Couldn't open non real time output file.\n");
 	
-	outputFileBuf = (float*)calloc(1, world->mNumOutputs * kFileBufFrames * sizeof(float));
+	outputFileBuf = (float*)calloc(1, world->mNumOutputs * fileBufFrames * sizeof(float));
 	
 	if (inOptions->mNonRealTimeInputFilename) {
 		world->hw->mNRTInputFile = sf_open(inOptions->mNonRealTimeInputFilename, SFM_READ, &inputFileInfo);
 		if (!world->hw->mNRTInputFile) 
 			throw std::runtime_error("Couldn't open non real time input file.\n");
 
-		inputFileBuf = (float*)calloc(1, inputFileInfo.channels * kFileBufFrames * sizeof(float));
+		inputFileBuf = (float*)calloc(1, inputFileInfo.channels * fileBufFrames * sizeof(float));
 		
 		if (world->mNumInputs != (uint32)inputFileInfo.channels)
 			scprintf("WARNING: input file channels didn't match number of inputs specified in options.\n");
@@ -402,7 +405,6 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	World_SetSampleRate(world, inOptions->mNonRealTimeSampleRate);
 	World_Start(world);
 	
-	int bufLength = world->mBufLength;
 	int64 oscTime = 0;
         double oscToSeconds = 1. / pow(2.,32.);
 	double oscToSamples = inOptions->mNonRealTimeSampleRate * oscToSeconds;
@@ -423,14 +425,14 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 		float* outBufPos = outputFileBuf;
 		
 		if (world->hw->mNRTInputFile) {
-			int framesRead = sf_readf_float(world->hw->mNRTInputFile, inputFileBuf, kFileBufFrames);
-			if (framesRead < kFileBufFrames) {
+			int framesRead = sf_readf_float(world->hw->mNRTInputFile, inputFileBuf, fileBufFrames);
+			if (framesRead < fileBufFrames) {
 				memset(inputFileBuf + framesRead * numInputChannels, 0, 
-					(kFileBufFrames - framesRead) * numInputChannels * sizeof(float));
+					(fileBufFrames - framesRead) * numInputChannels * sizeof(float));
 			}
 		}
 		
-		for (int i=0; i<kBufMultiple && run; ++i) {
+		for (int i=0; i<bufMultiple && run; ++i) {
 			int bufCounter = world->mBufCounter;
 			
 			// deinterleave input to input buses
@@ -452,7 +454,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 			while (schedTime <= nextTime) {
 				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
 				if (world->mSampleOffset < 0) world->mSampleOffset = 0;
-				else if (world->mSampleOffset >= world->mBufLength) world->mSampleOffset = world->mBufLength-1;
+				else if (world->mSampleOffset >= bufLength) world->mSampleOffset = bufLength-1;
 	
 				PerformOSCBundle(world, &packet);
 				if (nextOSCPacket(cmdFile, &packet, schedTime)) { run = false; break; }
@@ -489,6 +491,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 			world->mBufCounter++;
                         oscTime = nextTime;
 		}
+
 Bail:
 		// write output
 		sf_writef_float(world->hw->mNRTOutputFile, outputFileBuf, bufFramesCalculated);

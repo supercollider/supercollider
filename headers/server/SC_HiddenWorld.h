@@ -64,6 +64,11 @@ struct DeleteGraphDefMsg {
 	void Perform();
 };
 
+
+typedef MsgFifoNoFree<TriggerMsg, 1024> TriggersFifo;
+typedef MsgFifoNoFree<NodeEndMsg, 1024> NodeEndsFifo;
+typedef MsgFifoNoFree<DeleteGraphDefMsg, 512> DeleteGraphDefsFifo;
+
 struct HiddenWorld
 {
 
@@ -79,9 +84,9 @@ struct HiddenWorld
 	uint32 mMaxWireBufs;
 	float *mWireBufSpace;
 	
-	MsgFifoNoFree<TriggerMsg, 1024> mTriggers;
-	MsgFifoNoFree<NodeEndMsg, 1024> mNodeEnds;
-	MsgFifoNoFree<DeleteGraphDefMsg, 512> mDeleteGraphDefs;
+	TriggersFifo mTriggers;
+	NodeEndsFifo mNodeEnds;
+	DeleteGraphDefsFifo mDeleteGraphDefs;
 	
 	SC_Semaphore* mQuitProgram;
 
