@@ -79,7 +79,6 @@ OSCpathResponder : OSCresponder {
 		var responder, match;
 		responder = OSCpathDispatcher(addr, cmdName);
 		match = OSCresponder.all.findMatch(responder);
-		match.postln;
 		if(match.isNil, { ^responder.add });
 		if (match.class === OSCresponder,  {
 			match.remove;
