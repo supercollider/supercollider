@@ -183,7 +183,12 @@ SequenceableCollection : Collection {
 			nil
 		});
 	}
-	
+	removing { arg item;
+		var coll;
+		coll = this.copy;
+		coll.remove(item);
+		^coll
+	}
 	take { arg item;
 		var index;
 		index = this.indexOf(item);
@@ -711,6 +716,9 @@ SequenceableCollection : Collection {
 	}
 	sortBy { arg key;
 		^this.sort({| a, b | a[key] <= b[key] })
+	}
+	sortMap { arg function;
+		^this.sort({| a, b | function.value(a) <= function.value(b) })
 	}
 	median { arg function;
 		var sorted, index;
