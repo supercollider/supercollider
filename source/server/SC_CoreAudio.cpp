@@ -859,8 +859,8 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 								inputTouched[b+j] = bufCounter;
 							}
 						}
+						b += nchan;
 					}
-					b += nchan;
 				}
 			}
 			//count++;
@@ -910,8 +910,8 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 							} 
 						}
 					}
+					b += nchan;
 				}
-				b += nchan;
 			}	
 			oscTime = mOSCbuftime = nextTime;
 		}
@@ -936,7 +936,10 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 bool SC_CoreAudioDriver::DriverStart()
 {
 	OSStatus	err = kAudioHardwareNoError;
-
+	AudioTimeStamp	now;
+	UInt32 propertySize;
+	Boolean writable;
+	
 	scprintf("start   UseSeparateIO?: %d\n", UseSeparateIO());
 	
 	if (UseSeparateIO()) {
@@ -944,6 +947,18 @@ bool SC_CoreAudioDriver::DriverStart()
 		if (err != kAudioHardwareNoError) {
 			fprintf(stdout, "AudioDeviceAddIOProc failed %d\n", (int)err);
 			return false;
+		}
+
+		if (mWorld->hw->mOutputStreamsEnabled) {
+			err = AudioDeviceGetPropertyInfo(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, &writable);
+			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
+			su->mIOProc = (void*)appIOProc2;
+			err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
+			int len = std::min(su->mNumberStreams, strlen(mWorld->hw->mOutputStreamsEnabled));
+			for (int i=0; i<len; ++i) {
+				su->mStreamIsOn[i] = mWorld->hw->mOutputStreamsEnabled[i] == '1';
+			}
+			err = AudioDeviceSetProperty(mOutputDevice, &now, 0, false, kAudioDevicePropertyIOProcStreamUsage, propertySize, su);
 		}
 		
 		err = AudioDeviceStart(mInputDevice, NULL);		// start playing sound through the device
@@ -963,6 +978,30 @@ bool SC_CoreAudioDriver::DriverStart()
 		if (err != kAudioHardwareNoError) {
 			fprintf(stdout, "AudioDeviceAddIOProc failed %d\n", (int)err);
 			return false;
+		}
+
+		if (mWorld->hw->mInputStreamsEnabled) {
+			err = AudioDeviceGetPropertyInfo(mOutputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, &writable);
+			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
+			su->mIOProc = (void*)appIOProc;
+			err = AudioDeviceGetProperty(mOutputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
+			int len = std::min(su->mNumberStreams, strlen(mWorld->hw->mInputStreamsEnabled));
+			for (int i=0; i<len; ++i) {
+				su->mStreamIsOn[i] = mWorld->hw->mInputStreamsEnabled[i] == '1';
+			}
+			err = AudioDeviceSetProperty(mOutputDevice, &now, 0, true, kAudioDevicePropertyIOProcStreamUsage, propertySize, su);
+		}
+		
+		if (mWorld->hw->mOutputStreamsEnabled) {
+			err = AudioDeviceGetPropertyInfo(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, &writable);
+			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
+			su->mIOProc = (void*)appIOProc;
+			err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
+			int len = std::min(su->mNumberStreams, strlen(mWorld->hw->mOutputStreamsEnabled));
+			for (int i=0; i<len; ++i) {
+				su->mStreamIsOn[i] = mWorld->hw->mOutputStreamsEnabled[i] == '1';
+			}
+			err = AudioDeviceSetProperty(mOutputDevice, &now, 0, false, kAudioDevicePropertyIOProcStreamUsage, propertySize, su);
 		}
 	
 		err = AudioDeviceStart(mOutputDevice, appIOProc);		// start playing sound through the device

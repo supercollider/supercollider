@@ -231,7 +231,11 @@ World* World_New(WorldOptions *inOptions)
 		} else {
 			world->hw->mPassword[0] = 0;
 		}
-		
+
+#ifdef SC_DARWIN
+		world->hw->mInputStreamsEnabled = inOptions->mInputStreamsEnabled;
+		world->hw->mOutputStreamsEnabled = inOptions->mOutputStreamsEnabled;
+#endif		
 		hw->mMaxWireBufs = inOptions->mMaxWireBufs;
 		hw->mWireBufSpace = 0;
 	

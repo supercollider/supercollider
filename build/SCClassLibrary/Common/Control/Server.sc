@@ -19,6 +19,9 @@ ServerOptions
 
 	var <>sampleRate = 0;
 	var <>loadDefs = true;
+	
+	var <>inputStreamsEnabled;
+	var <>outputStreamsEnabled;
 
 // max logins
 // session-password
@@ -69,6 +72,12 @@ ServerOptions
 		});
 		if (loadDefs.not, {
 			o = o ++ " -D 0";
+		});
+		if (inputStreamsEnabled.notNil, {
+			o = o ++ " -I " ++ inputStreamsEnabled ;
+		});
+		if (outputStreamsEnabled.notNil, {
+			o = o ++ " -O " ++ outputStreamsEnabled ;
 		});
 		^o
 	}

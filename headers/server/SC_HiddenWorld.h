@@ -96,6 +96,11 @@ struct HiddenWorld
 	
 	int32 mHiddenID;
 	int32 mRecentID;
+
+#ifdef SC_DARWIN
+	const char* mInputStreamsEnabled;
+	const char* mOutputStreamsEnabled;
+#endif
 };
 
 typedef struct HiddenWorld HiddenWorld;

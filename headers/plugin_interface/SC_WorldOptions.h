@@ -47,11 +47,11 @@ struct WorldOptions
 	
 	bool mRealTime;
 	
-	char *mNonRealTimeCmdFilename;
-	char *mNonRealTimeInputFilename;
-	char *mNonRealTimeOutputFilename;
-	char *mNonRealTimeOutputHeaderFormat;
-	char *mNonRealTimeOutputSampleFormat;
+	const char *mNonRealTimeCmdFilename;
+	const char *mNonRealTimeInputFilename;
+	const char *mNonRealTimeOutputFilename;
+	const char *mNonRealTimeOutputHeaderFormat;
+	const char *mNonRealTimeOutputSampleFormat;
 	
 	uint32 mPreferredSampleRate;
 	uint32 mNumRGens;
@@ -59,11 +59,19 @@ struct WorldOptions
 	uint32 mPreferredHardwareBufferFrameSize;
 	
 	uint32 mLoadGraphDefs;
+	
+#ifdef SC_DARWIN
+	const char *mInputStreamsEnabled;
+	const char *mOutputStreamsEnabled;
+#endif
 };
 
 const WorldOptions kDefaultWorldOptions = 
 {
 	0,1024,64,1024,1024,64,128,2,2,4096,64,2048, 0,0, 1, 0,0,0,0,0, 0, 64, 0, 1
+#ifdef SC_DARWIN
+	,0,0
+#endif
 };
 
 #include "SC_Reply.h"
