@@ -3,11 +3,12 @@
 CmdPeriod {
 	classvar <>objects;
 	
-	*initClass {
+	*init {
 		objects = IdentitySet.new;
 	}
 	
 	*add { arg object;
+		if(objects.isNil) { this.init }; // lazy init
 		objects = objects.add(object)
 	}
 	
@@ -17,7 +18,6 @@ CmdPeriod {
 	}
 	
 	*clear {
-		
 		objects.copy.do({ arg item; item.cmdPeriod;  });
 	}
 
