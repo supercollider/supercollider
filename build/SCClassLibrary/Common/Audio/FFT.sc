@@ -24,7 +24,7 @@ PV_MagAbove : UGen
 
 PV_MagBelow : PV_MagAbove {}
 PV_MagClip : PV_MagAbove {}
-PV_LocalMax : PV_MagAbove {}
+//PV_LocalMax : PV_MagAbove {}
 
 PV_MagSmear : UGen
 {
@@ -127,13 +127,13 @@ PV_MagFreeze : UGen
 		^this.multiNew('control', buffer, freeze)
 	}
 }
-
-PV_BinScramble : UGen
-{
-	*new { arg buffer, wipe = 0.0, width = 0.2, trig = 0.0;
-		^this.multiNew('control', buffer, wipe, width, trig)
-	}
-}
+//
+//PV_BinScramble : UGen
+//{
+//	*new { arg buffer, wipe = 0.0, width = 0.2, trig = 0.0;
+//		^this.multiNew('control', buffer, wipe, width, trig)
+//	}
+//}
 
 ////////////////////////////////////////////////////
 /*
