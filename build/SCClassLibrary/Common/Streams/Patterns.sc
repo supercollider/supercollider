@@ -59,7 +59,7 @@ Pfunc : Pattern {
 	*new { arg nextFunc, resetFunc;	
 		^super.newCopyArgs(nextFunc, resetFunc)
 	}
-	storeArgs { ^[nextFunc,resetFunc] }
+	storeArgs { ^[nextFunc] ++ resetFunc }
 	asStream {
 		^FuncStream.new(nextFunc, resetFunc)
 	}
@@ -97,7 +97,9 @@ Punop : Pattern {
 	*new { arg operator, a;
 		^super.newCopyArgs(operator, a)
 	}
-	storeArgs { ^[operator,a] }
+	
+	storeOn { arg stream; stream <<< a << "." << operator }
+
 	asStream {
 		var stream;
 		stream = a.asStream;
@@ -110,7 +112,13 @@ Pbinop : Pattern {
 	*new { arg operator, a, b, adverb;
 		^super.newCopyArgs(operator, a, b, adverb)
 	}
-	storeArgs { ^[operator, a, b, adverb] }
+	
+	storeOn { arg stream;
+			stream << "(" <<< a << " " << operator.asBinOpString;
+			if(adverb.notNil) { stream << "." << adverb };
+			stream << " " <<< b << ")"
+	}
+
 	asStream {
 		var streamA, streamB;
 		streamA = a.asStream;
@@ -130,7 +138,7 @@ Pnaryop : Pattern {
 	*new { arg operator, a, arglist;
 		^super.newCopyArgs(operator, a, arglist)
 	}
-	storeArgs { ^[operator,a,arglist] }
+	storeOn { arg stream; stream <<< a << "." << operator << "(" <<<* arglist << ")" }
 	asStream {
 		var streamA, streamlist;
 		streamA = a.asStream;
@@ -169,6 +177,7 @@ Pbind : Pattern {
 		if (pairs.size.odd, { "Pbind should have even number of args.\n".error; this.halt });
 		^super.newCopyArgs(pairs)
 	}
+	
 	storeArgs { ^patternpairs }
 	asStream {
 		var streampairs, endval;
