@@ -29,7 +29,6 @@ const char *SC_ErrorString(SCErr err)
 			case kSCErr_NodeNotFound : return "Node not found";
 			case kSCErr_GroupNotFound : return "Group not found";
 			case kSCErr_SynthDefNotFound : return "NodeDef not found";
-			case kSCErr_BufBusy : return "Buffer operation already pending";
 			case kSCErr_NoSuchCommand : return "no such command";
 			case kSCErr_WrongArgType : return "wrong argument types";
 			case kSCErr_IndexOutOfRange : return "index out of range";

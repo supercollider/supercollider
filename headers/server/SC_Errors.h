@@ -32,7 +32,6 @@ enum {
 	kSCErr_NodeNotFound,
 	kSCErr_GroupNotFound,
 	kSCErr_SynthDefNotFound,
-	kSCErr_BufBusy,
 	kSCErr_NoSuchCommand,
 	kSCErr_WrongArgType,
 	kSCErr_IndexOutOfRange,
