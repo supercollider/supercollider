@@ -1012,17 +1012,6 @@ SharedNodeProxy : NodeProxy {
 	
 	localServer { ^server.localServer }
 	
-	stopAllToBundle { arg bundle;
-				objects.do({ arg item;
-					item.stopClientToBundle(bundle);
-				});
-			// ??
-				if(group.notNil, {
-					bundle.add(["/g_freeAll", group.nodeID]);
-				})
-				
-	}
-	
 	generateUniqueName {
 		^asString(constantGroupID)
 	}
