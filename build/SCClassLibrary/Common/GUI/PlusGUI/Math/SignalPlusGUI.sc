@@ -4,7 +4,7 @@
 	
 	plot { arg name, bounds, discrete=false, numChannels = 1;
 		var plotter, txt, chanArray, unlaced, val, minval, maxval, window, thumbsize, zoom, width, 
-			layout;
+			layout, write=false;
 		bounds = bounds ?  Rect(200 , 140, 705, 410);
 		
 		width = bounds.width-8;
@@ -45,12 +45,22 @@
 				.valueThumbSize_(1)
 				.colors_(Color.black, Color.blue(1.0,1.0))
 				.action_({|v| 
+					var curval;
+					curval = v.currentvalue.linlin(0.0, 1.0, minval, maxval);
+					
 					txt.string_("index: " ++ (v.index / zoom).roundUp(0.01).asString ++ 
-					", value: " ++ v.currentvalue.linlin(0.0, 1.0, minval, maxval).asString) })
+					", value: " ++ curval);
+					if(write) { this[(v.index / zoom).asInteger]Ê= curval };
+				})
+				.keyDownAction_({ |v, char|
+					if(char === $l) { write = write.not; v.readOnly = write.not;  };
+				})
 				.value_(chanArray[i])
 				.resize_(5)
 				.elasticMode_(1);
+				
 		});
+		
 		^window.front;
 		
 	}
