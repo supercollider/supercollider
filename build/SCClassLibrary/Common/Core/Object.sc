@@ -151,6 +151,7 @@ Object {
 	isNumber { ^false }
 	isInteger { ^false }
 	isFloat { ^false }	
+	isSequenceableCollection { ^false }
 	isValidUGenInput { ^false }
 	pointsTo { arg obj; _ObjectPointsTo; ^this.primitiveFailed }
 	mutable { _ObjectIsMutable; ^this.primitiveFailed }
@@ -434,7 +435,6 @@ Object {
 		},{
 			error("performBinaryOp failed.\n");
 			this.dumpBackTrace;
-			this.flushErrors;
 			this.halt 
 		})});
 	}

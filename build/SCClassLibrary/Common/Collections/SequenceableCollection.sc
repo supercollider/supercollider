@@ -331,7 +331,9 @@ SequenceableCollection : Collection {
 		// blendFrac should be from zero to one
 		^this.collect({ arg item, i; item.blend(anotherSeqColl.at(i), blendFrac); });
 	}
-		
+	
+	isSequenceableCollection { ^true }
+	
 	// unary math ops
 	neg { ^this.performUnaryOp('neg') }
 	bitNot { ^this.performUnaryOp('bitNot') }
