@@ -2726,7 +2726,7 @@ dtoa
 		*decpt = 9999;
 #ifdef IEEE_Arith
 		if (!word1(d) && !(word0(d) & 0xfffff))
-			return nrv_alloc("Infinity", rve, 8);
+			return nrv_alloc("inf", rve, 8);
 #endif
 		return nrv_alloc("NaN", rve, 3);
 		}
