@@ -3,12 +3,15 @@ PathName { 	// this class by originally by AdC
 
 	var <fullPath, <colonIndices;
 	
-	classvar <>scroot="/Volumes/Macintosh HD/Applications/SC";
+	classvar <>scroot;
 	
 	*new { arg path = ""; 
 		^super.new.init(path.standardizePath); 
 	} 
-
+	*initClass {
+		// uh ... no
+		//scroot = 	unixCmd("pwd") ++ "/";
+	}
 	init { arg inPath;			// always calculate indices for all the colons,
 							// since they are always needed.
 		fullPath = inPath;	
@@ -22,6 +25,17 @@ PathName { 	// this class by originally by AdC
 		^fullPath.copyRange((this.lastColonIndex) + 1, (fullPath.size -1).max(0));
 	} 
 	
+	fileNameWithoutExtension {
+		var fileName;
+		fileName = this.fileName;
+		fileName.reverseDo({ arg char,i;
+			if(char == $.,{
+				^fileName.copyRange(0,fileName.size - (i + 2))
+			})
+		});
+		^fileName
+	}
+
 	pathOnly { 		
 		^fullPath.copyRange(0, this.lastColonIndex);
 	}

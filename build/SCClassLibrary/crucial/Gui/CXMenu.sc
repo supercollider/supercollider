@@ -9,7 +9,7 @@ CXMenu { // multiple actions
 	*newWith { arg nameFuncs;
 		^super.new.nameFuncs_(nameFuncs)
 	}
-	gui { arg lay,width=150,height=75,xtent=85;
+	gui { arg lay,width=150,height=75,xtent=120;
 		
 		layout=lay.asPageLayout("CXMenu",width,height.clip(700,nameFuncs.size * 20));
 		layout.backColor_(Color(0.12549019607843, 0.16862745098039, 0.49803921568627, 1));

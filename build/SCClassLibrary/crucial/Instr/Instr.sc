@@ -51,7 +51,7 @@ Instr  {
 
 	rate { ^outSpec.rate }
 	numChannels { ^outSpec.numChannels }
-
+	path { ^instrDirectory ++ name.first.asString ++ ".rtf" }
 	
 	*put { arg instr;
 		^Library.putList([this.name,instr.name,instr].flatten )
@@ -175,13 +175,14 @@ Instr  {
 
 		^SynthDef.newFromSpecs(defName,{ arg inputs;
 			var outIndex,funcArgs,out,anOutChannel;
-			// only gets inputs matching controls
+			// only gets inputs matching Controls
 			funcArgs = this.specs.collect({ arg spec,i;
 				if(spec.rate == \audio,{
 					fixedArgs.at(i) ?? 
 						{
-						In.ar(inputs.at(controlIndices.at(i)), 
-						spec.numChannels)} 
+							In.ar(inputs.at(controlIndices.at(i)), 
+								spec.numChannels)
+						} 
 					// not possible to fix an audio anyway
 				},{
 					if(spec.rate == \scalar,{
@@ -207,7 +208,7 @@ Instr  {
 				anOutChannel = if(out.isSequenceableCollection,
 									{out.first},{out});
 				if(anOutChannel.rate == \audio,{
-					outSpec = AudioSpec(out.size);
+					outSpec = AudioSpec(if(out.isSequenceableCollection,{out.size},1));
 					// MultiTrackAudioSpec must be explicitly stated
 					// in the Instr def
 				},{

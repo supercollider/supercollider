@@ -55,7 +55,7 @@ Tile : ActionButton {
 
 InspectorLink : ActionButton {
 	*new { arg  target,layout,maxx=100; 
-		^super.new(layout,target.asString,{target.inspect},maxx,13,3)
+		^super.new(layout,target.asString,{target.inspect},maxx)
 			.backColor_(Color( 0.5921568627451, 0.56862745098039, 1 ))
 			.labelColor_(Color.blue)
 	}

@@ -22,12 +22,10 @@
 		var obj,path;
 		path = this.standardizePath;
 		if(File.exists(path),{
-			obj = thisProcess.interpreter.executeFile(this.standardizePath);
-			if(obj.isNil,{
-				die("String-load failed loading string assumed to be path " + this);
-			},{
-				obj.tryPerform(\path_,this);
-			});
+			obj = thisProcess.interpreter.executeFile(path);
+			obj.tryPerform(\path_,this);
+		},{
+			warn("String-loadPath file not found " + this + path);
 		});
 		^obj
 	}

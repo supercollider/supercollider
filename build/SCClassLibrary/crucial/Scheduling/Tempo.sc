@@ -3,16 +3,28 @@ Tempo  {
 
 	classvar <default;
 	
-	var <tempo=1.0;
+	var <tempo=1.0,<beatsPerBar=4.0;
+	var tempor,beatsPerBarr;
 	
 	*initClass { default = this.new; }
 		
 	bpm { ^tempo * 60.0 }
 	bpm_ { arg bpm; tempo = bpm / 60.0; this.changed; }
-	tempo_ { arg t; tempo = t; this.changed; }	
-	beats2secs { arg beats; ^tempo.reciprocal * beats }
-	secs2beats { arg secs; ^tempo * secs }
+	tempo_ { arg t; 
+		tempo = t; 
+		tempor = tempo.reciprocal; 
+		this.changed; 
+	}	
+	beatsPerBar_ { arg b; 
+		beatsPerBar = b; 
+		beatsPerBarr = beatsPerBar.reciprocal; 
+		this.changed; 
+	}	
 
+	beats2secs { arg beats; ^tempor * beats }
+	secs2beats { arg secs; ^tempo * secs }
+	bars2secs { arg bars; ^tempor * (bars * beatsPerBar) }
+	secs2bars { arg secs; ^tempo * secs * beatsPerBarr }
 	// changing tempo after scheduling won't work yet
 	sched { arg delta,item; SystemClock.sched(this.beats2secs(delta),item) }
 	schedAbs { arg beat,item; SystemClock.schedAbs(this.beats2secs(beat),item) }
@@ -33,3 +45,14 @@ Tempo  {
 	guiClass { ^TempoGui }
 }
 
+BeatClock : Clock {
+	
+	var <>tempo;
+	
+	*new { arg tempo;
+		^super.new.tempo_(tempo ? Tempo.default)
+	}
+	*play { arg task;
+		this.sched(task.value(thisThread.time), task)
+	}
+}

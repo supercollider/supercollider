@@ -25,7 +25,6 @@ AudioSpec : Spec {
 		stream << "(" <<< numChannels << ")"
 	}
 	rate { ^\audio }
-
 }
 
 MultiTrackAudioSpec : AudioSpec {

@@ -19,11 +19,12 @@ TempoBus  {
 	index { ^bus.index }	
 	
 	free {
-		bus.free;
-		bus = nil;
-		// who will call this ?  when ?
-		// never maybe, not worth it.
-		isReady = false;
+		// for now just leave it on the server, its cheap
+		// but we need reference counting, since its a shared object.
+		
+		//bus.free;
+		//bus = nil;
+		//isReady = false;
 	}
 	
 	init { arg server;
@@ -35,7 +36,6 @@ TempoBus  {
 		bus.value = tempo.tempo;
 	}
 	update { arg changed,changer;
-		//[changed,changer,tempo].postln;
 		if(changed === tempo,{
 			bus.value = tempo.tempo;	
 		})
