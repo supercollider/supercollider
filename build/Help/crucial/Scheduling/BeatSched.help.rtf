@@ -215,11 +215,10 @@ In the examples, remember to execute groups of code lines together.\
 \cf2 Tempo\cf0 .bpm_(120);\
 d = \cf2 Routine\cf0 (\{\
                 20.do(\{\
-                        \cf2 var\cf0  dbeat;\
-                        dbeat = \cf2 OSCSched\cf0 .global.tdeltaTillNext(4.0);\
-                        dbeat.postln;\
-                        \cf2 Tempo\cf0 .beats2secs(dbeat).wait;\
-                        \cf3 "Next wait"\cf0 .postln;             \
+                	var t;\
+                   t = \cf2 OSCSched\cf0 .global.tdeltaTillNext(4.0);\
+                   t.postln;\
+				t.wait;\
                 \});\
         \});\
         \cf2 SystemClock\cf0 .play(d);\
@@ -229,7 +228,6 @@ d = \cf2 Routine\cf0 (\{\
 at 5206.432346276  we ask for deltaTillNext 4\
 [ 5204, 4, 5206.432346276 ]\
 1.5676537239997\
-Next wait\
 \
 that would be\
 5206.432346276 + 1.5676537239997\
@@ -254,5 +252,24 @@ you just want to know when the next even beat is so you can get your groove on.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 	  \
+\f1\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Tempo\cf0 .bpm_(120);\
+d = \cf2 Routine\cf0 (\{\
+	\cf3 "wait for the downbeat..."\cf0 .postln; \
+	\cf2 OSCSched\cf0 .global.tdeltaTillNext(4.0).wait;\
+\
+      32.do(\{ arg i;\
+           [i,BeatSched.beat].postln;				\
+           Tempo.beats2secs(1.0).wait;\
+      \});\
+ \});\
+\cf2 SystemClock\cf0 .play(d);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
   }

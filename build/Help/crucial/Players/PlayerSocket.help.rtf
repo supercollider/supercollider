@@ -7,15 +7,19 @@
 \f0\b\fs36 \cf0 PlayerSocket
 \f1\b0\fs18 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 able to switch between different players.\
+\f2\fs24 a voice that is able to switch between different players.\
 this is raw, no envelopes, no crossfading.\
-this is a component for use by other classes.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f1\fs18 \
 will add envs later.\
+\
+\
+preparePlayer(aPlayer)\
+prepareAndSpawn(aPlayer)\
+spawnPlayer(aPlayer)\
+qspawnPlayer(aPlayer)\
+releaseVoice\
 \
 \
 p = \cf2 PlayerSocket\cf0 .new;\
@@ -24,13 +28,13 @@ p.play;\
 q = \cf2 Patch\cf0 (\{ \cf2 Saw\cf0 .ar * 0.2 \});\
 r = \cf2 Patch\cf0 (\{ \cf2 Saw\cf0 .ar(800) * 0.2 \});\
 \
-p.prepareAndTrigger(q);\
+p.prepareAndSpawn(q);\
 \
-p.prepareAndTrigger(r);\
+p.prepareAndSpawn(r);\
 \
 p.patchOut.insp;\
 \
-p.release;\
+p.releaseVoice;\
 \
 p.isSleeping;\
 \
@@ -43,6 +47,38 @@ p.isSleeping;\
 p.isPlaying;\
 \
 see PlayerPool\
+\
+\
+(\
+q = \cf2 Patch\cf0 (\{ \cf2 Saw\cf0 .ar * 0.2 \});\
+r = \cf2 Patch\cf0 (\{ \cf2 Saw\cf0 .ar(800) * 0.2 \});\
+p = \cf2 PlayerSocket\cf0 .new(numChannels: 1);\
+e = \cf2 Patch\cf0 (\{ \cf2 arg\cf0  audio; \cf2 RLPF\cf0 .ar(audio,200) \},[ p ]);\
+e.play;\
+)\
+\
+\
+p.prepareAndSpawn(q);\
+\
+p.prepareAndSpawn(r);\
+\
+p.prepareAndSpawn(q);\
+\
+p.prepareAndSpawn(r);\
+\
+// after you have prepared it\
+p.spawnPlayer(q);\
+\
+p.spawnPlayer(r);\
+\
+\
+p.releaseVoice\
+\
+p.insp\
+e.insp\
+p.synthArg\
+\
+e.free;\
 \
 \
 }

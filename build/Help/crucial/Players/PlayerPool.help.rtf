@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red0\green115\blue0;\red0\green0\blue191;\red0\green112\blue0;
-\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;}
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 PlayerPool
@@ -74,9 +74,8 @@ Easiest to use with lists of paths to saved players.
 	 \
 	 \cf3 PlayerPool\cf0 ([ p,q,r ]).gui\
 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 Click on the green squares to change from one to the other.\
+\f1\fs24 Click on the green squares to change from one to the other.\
 Click on the title (a Patch) to gui that patch.
 \f2\fs18 \
 If the patches had been loaded from disk, they would display their filenames.\
@@ -114,39 +113,37 @@ o.free;\
 \f0\b\fs24 \cf0 Sending the PlayerPool through an effect patch
 \f2\b0\fs18 \
 \
-still broken\
 \
-(\cf5 \
-\
-	\cf6 Instr\cf5 ([\cf7 \\oscillOrc\cf5 ,	\cf7 \\pmosc\cf5 ],\{ \cf6 arg\cf5  freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;\
-		\cf6 PMOsc\cf5 .ar(freq,freq2,pmindex,phasemod,amp)\
+(\
+	\cf3 Instr\cf0 ([\cf2 \\oscillOrc\cf0 ,	\cf2 \\pmosc\cf0 ],\{ \cf3 arg\cf0  freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;\
+		\cf3 PMOsc\cf0 .ar(freq,freq2,pmindex,phasemod,amp)\
 	\});\
 	\
-	p = \cf6 Patch\cf5 .new([ \cf7 'oscillOrc'\cf5 , \cf7 'pmosc'\cf5  ],\
+	p = \cf3 Patch\cf0 .new([ \cf2 'oscillOrc'\cf0 , \cf2 'pmosc'\cf0  ],\
 	[\
-		\cf6 KrNumberEditor\cf5 (240.06,\cf7 \\freq\cf5 ), \
+		\cf3 KrNumberEditor\cf0 (240.06,\cf2 \\freq\cf0 ), \
 		27.7707, \
 	  	1.3, \
 	 	0, \
 	  	0.616317\
 	 ]);\
 	 \
-	 q = \cf6 Patch\cf5 .new([ \cf7 'oscillOrc'\cf5 , \cf7 'pmosc'\cf5  ],\
+	 q = \cf3 Patch\cf0 .new([ \cf2 'oscillOrc'\cf0 , \cf2 'pmosc'\cf0  ],\
 		[\
-		\cf6 KrNumberEditor\cf5 (90,\cf7 \\freq\cf5 ), \
+		\cf3 KrNumberEditor\cf0 (90,\cf2 \\freq\cf0 ), \
 	  	27.7707, \
-	  	\cf6 Patch\cf5 .new([ \cf7 'oscillOrc'\cf5 , \cf7 'pmosc'\cf5  ],\
+	  	\cf3 Patch\cf0 .new([ \cf2 'oscillOrc'\cf0 , \cf2 'pmosc'\cf0  ],\
 		[\
-			\cf6 KrNumberEditor\cf5 (150.06,\cf7 \\freq\cf5 ), \
+			\cf3 KrNumberEditor\cf0 (150.06,\cf2 \\freq\cf0 ), \
 			27.7707, \
 		  	1.3, \
 		 	0, \
 		  	0.616317\
 		 ]), \
 	 	0, \
-		\cf6 Patch\cf5 .new([ \cf7 'oscillOrc'\cf5 , \cf7 'pmosc'\cf5  ],\
+		\cf3 Patch\cf0 .new([ \cf2 'oscillOrc'\cf0 , \cf2 'pmosc'\cf0  ],\
 		[\
-			\cf6 KrNumberEditor\cf5 (150.06,\cf7 \\freq\cf5 ), \
+			\cf3 KrNumberEditor\cf0 (150.06,\cf2 \\freq\cf0 ), \
 			27.7707, \
 		  	1.3, \
 		 	0, \
@@ -154,54 +151,34 @@ still broken\
 		 ])\
 	 ]);\
 	 \
-	 r =  \cf6 Patch\cf5 .new([ \cf7 'oscillOrc'\cf5 , \cf7 'pmosc'\cf5  ], [\
-		\cf6 KrNumberEditor\cf5 (40,\cf7 \\freq\cf5 ), \
-	  	\cf6 nil\cf5 , \
-	  	\cf6 Patch\cf5 .new([ \cf7 'oscillOrc'\cf5 , \cf7 'pmosc'\cf5  ], [\
-			\cf6 KrNumberEditor\cf5 (150.06,\cf7 \\freq\cf5 ), \
+	 r =  \cf3 Patch\cf0 .new([ \cf2 'oscillOrc'\cf0 , \cf2 'pmosc'\cf0  ], [\
+		\cf3 KrNumberEditor\cf0 (40,\cf2 \\freq\cf0 ), \
+	  	\cf3 nil\cf0 , \
+	  	\cf3 Patch\cf0 .new([ \cf2 'oscillOrc'\cf0 , \cf2 'pmosc'\cf0  ], [\
+			\cf3 KrNumberEditor\cf0 (150.06,\cf2 \\freq\cf0 ), \
 			27.7707, \
 		  	1.3, \
 		 	0, \
 		  	0.616317\
 		 ]), \
 	 	0, \
-		\cf6 Patch\cf5 .new([ \cf7 'oscillOrc'\cf5 , \cf7 'pmosc'\cf5  ], [\
-			\cf6 KrNumberEditor\cf5 (150.06,\cf7 \\freq\cf5 ), \
+		\cf3 Patch\cf0 .new([ \cf2 'oscillOrc'\cf0 , \cf2 'pmosc'\cf0  ], [\
+			\cf3 KrNumberEditor\cf0 (150.06,\cf2 \\freq\cf0 ), \
 			27.7707, \
 		  	1.3, \
 		 	0, \
 		  	0.616317\
 		 ])\
 	 ]);\
-	 \
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 Patch\cf5 (\{ \cf6 arg\cf5  audio,delayTime=0.3,feedback=0.2,buffer;\
-	\cf6 PingPong\cf5 .ar(buffer.bufnumIr, [audio,audio],delayTime,feedback)\
-\},[\
-	\cf6 PlayerPool\cf5 ([p,q,r],\
-			env: \cf6 Env\cf5 .adsr(1.0,releaseTime: 8.0),\
-			round: 0.0),\
-	0.3,0.5\
-]).gui\
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 )\
-\
-\
-\
-// simple ping pong test\
-(\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Patch\cf0 (\{ \cf3 arg\cf0  audio,delayTime=0.3,feedback=0.2,buffer;\
 	\cf3 PingPong\cf0 .ar(buffer.bufnumIr, [audio,audio],delayTime,feedback)\
 \},[\
-	\cf3 Patch\cf0 (\{ \
-			\cf3 Saw\cf0 .ar(\
-				Linen.kr( Impulse.kr(1) , susLevel: 800,releaseTime: 0.3 )\
-			) \
-		\})\
+	\cf3 PlayerPool\cf0 ([p,q,r],\
+			env: \cf3 Env\cf0 .adsr(1.0,releaseTime: 8.0),\
+			round: 0.0),\
+	0.3,0.5\
 ]).gui\
 \
 )\
