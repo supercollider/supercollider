@@ -53,7 +53,8 @@ s.quit;\
 \cf0 \
 \cf2 // define a server; it represents a computer "somewhere" on the internet"\
 // the ip number has to be valid\
-// and the server, wherever it is, has to be running\cf0 \
+// and the server, wherever it is, has to be running\
+// servers cannot be booted remotely, eg, a program on one machine can't boot a server on another\cf0 \
 s = \cf3 Server\cf0 (\cf4 "aServer"\cf0 , \cf3 NetAddr\cf0 (\cf4 "... an ip number ..."\cf0 , 56789));\
 \
 \cf2 // define a synthesis engine ... exactly as in the previous example\cf0 \
@@ -64,13 +65,16 @@ s = \cf3 Server\cf0 (\cf4 "aServer"\cf0 , \cf3 NetAddr\cf0 (\cf4 "... an ip numb
 \cf2 // schedule synthesis ... exactly as in the previous example\
 \cf0 s.sendMsg(\cf4 "s_new"\cf0 , \cf4 "sine"\cf0 , n = s.nextNodeID, 0, 1);\
 \
-\cf2 // stop the synth (delete it) ... exactly the same as step 5 in the previous example\
+\cf2 // stop the synth (delete it)\
 \cf0 s.sendMsg(\cf4 "/n_free"\cf0 , n);\
 \
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \cf2 // EX. 3\cf0 \
 \cf2 // client/server on one computer vs. client server on two computers\
-// the previous examples without comments\cf0 \
+// the previous examples without comments\
+// they're identical except that\
+//	the example that runs on one computer explicitly boots the server\
+//	the example on two computers _assumes the server "somewhere on the internet" is booted\cf0 \
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
 \cf2 // on one computer\cf0 \
