@@ -76,13 +76,6 @@ StreamControl : AbstractPlayControl {
 		^nil //return a nil object instead of a synth
 	}
 	
-	mute {
-		stream.mute;
-	}
-	unmute {
-		stream.unmute;
-	}
-	
 	build { arg proxy;
 		stream = source.buildForProxy(proxy, channelOffset);
 		clock = proxy.clock;
@@ -94,6 +87,7 @@ StreamControl : AbstractPlayControl {
 	}
 	
 }
+
 
 SynthControl : AbstractPlayControl {
 	var <synth, >canReleaseSynth=true, >canFreeSynth=true;

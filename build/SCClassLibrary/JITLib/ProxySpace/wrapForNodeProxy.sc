@@ -76,7 +76,7 @@
 	}
 }
 
-//needs a visit: lazy init + channleOffset
+//needs a visit: lazy init + channelOffset
 
 +Bus {
 	makeProxyControl { arg channelOffset=0;
@@ -139,15 +139,17 @@
 
 +Stream {
 
-	buildForProxy { arg proxy, channelOffset=0;
-		//assume audio rate event stream for now.
-		var str, ok, msgFunc, index;
-		ok = proxy.initBus('audio', 2);
-		
 
-		^if(ok, {
-			index = proxy.index;
-			msgFunc = { arg id, freq;
+	buildForProxy { arg proxy, channelOffset=0;
+		var player, ok, index;
+		player = this.asEventStreamPlayer;
+		ok = proxy.initBus(player.event.at(\rate) ? 'audio', player.event.at(\numChannels) ? 2);
+		index = proxy.index;
+		^if(ok)
+			// remember to add to event's parent, so that 
+			// an external change of player's event doesn't override this.
+			{ player.event.use({
+				~msgFunc = { arg id, freq;
 					var args, bundle, names, nodeMap;
 					names = ~argNames;
 					args = currentEnvironment.hatch(names);
@@ -158,17 +160,19 @@
 					nodeMap.mapToBundle(bundle, id);
 					~mapArgs = nodeMap.mapArgs; //polyplayer support
 					bundle
-			};
-			this.collect({ arg event;
-				event.use({ 
+				};
+				~finish = {
 					~group = proxy.group.asNodeID;
 					~i_out = ~out = index;
-					~msgFunc = msgFunc;
 					~server = proxy.server;
+					~freq = ~freq.value + ~detune;
+					~amp = ~amp.value;
+					~sustain = ~sustain.value;
+				}
 				});
-				event;
-			}).asEventStreamPlayer
-		}, nil);
+			player
+			
+		} { nil }
 
 	}
 	
@@ -177,10 +181,19 @@
 	}
 }
 
-+Pdef {
-	buildForProxy { arg proxy, channelOffset=0;
-		^EventStreamPlayer(this.asStream).buildForProxy(proxy, channelOffset);
++StreamPlayerReference {
+	proxyControlClass {
+		^StreamControl
 	}
+	buildForProxy {}
+}
+
++Pdef {
+	
+	buildForProxy { arg proxy, channelOffset=0;
+		^this.player.buildForProxy(proxy, channelOffset);
+	}
+	
 
 }
 +Task {
@@ -188,12 +201,6 @@
 
 }
 
-
-+PauseStream {
-	collect { arg func;
-		^this.class.new(originalStream.collect(func), clock)
-	}
-}
 
 
 ///////////////// cx players ////////////
