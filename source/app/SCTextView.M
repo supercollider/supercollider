@@ -163,7 +163,7 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
     if ([event clickCount] == 2) {
         NSString *string = [self string];
         int length = [string length];
-        if (index < 0 || index > length) { goto below; }
+        if (index < 0 || index >= length) { goto below; }
         unichar c = [string characterAtIndex: index];
         if (index > 0 && (c == '\n' || c == '\r')) {
             c = [string characterAtIndex: --index];
