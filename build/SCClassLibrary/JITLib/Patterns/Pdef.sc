@@ -174,9 +174,10 @@ Pdef : Tdef {
 		^p
 	}
 	
-	pattern_ { arg pat;
-		if(pat.isKindOf(Function)) {Êpat = Plazy(pat) }; // allow functions to be passed in
-		pattern = pat;
+	pattern_ { arg item;
+		pattern = if(item.isKindOf(Function)) {Ê // allow functions to be passed in
+				Prout({ arg inval; item.valueEnvir.embedInStream(inval) }) 
+		} { item };
 		if(isPlaying and: { player.isPlaying.not }) { this.play }
 	}
 		
