@@ -8,6 +8,8 @@ Sample {
 	
 	var <beatsize,<size,<end;
 	
+	var <>forArgName;
+	
 	*new { arg soundFilePath,tempo;
 		^super.new.readHeader(soundFilePath).tempo_(tempo)
 	}

@@ -3,7 +3,7 @@ AbstractPlayer : AbstractFunction  {
 
 	var <path,<>dirty=false; 
 	
-	var <synth,<patchOut,<>readyForPlay = false;
+	var <synth,<patchOut,<>readyForPlay = false, defName;
 		
 	// subclasses must implement
 	ar { ^this.subclassResponsibility(thisMethod) }
@@ -87,10 +87,13 @@ AbstractPlayer : AbstractFunction  {
 					this.prepareForPlay(group,bundle);
 					["-play prepared",bundle].postln;
 					if(bundle.notEmpty,{
-						server.sendBundle(nil,bundle);
+						server.listSendBundle(nil,bundle);
 					});
 					// need some way to track all the preps completion
-					0.2.wait;
+					// also in some cases the prepare can have a completion
+					// tacked on
+					// need a fully fledged OSCMessage
+					0.1.wait;
 					
 					this.spawnAtTime(atTime);
 				});
@@ -99,7 +102,7 @@ AbstractPlayer : AbstractFunction  {
 	}
 
 	prepareForPlay { arg group,bundle;
-		var defName;
+		
 		readyForPlay = false;
 		// play would have already done this if we were top level object
 		if(patchOut.isNil,{
@@ -144,14 +147,14 @@ AbstractPlayer : AbstractFunction  {
 				);
 	}
 	loadDefFileToBundle { arg bundle;
-		var defName,def,bytes;
-		defName = this.defName;
-		if(Library.at(SynthDef,patchOut.server,defName.asSymbol).isNil,{
+		var def,bytes;
+		if(this.defName.isNil or: {
+			Library.at(SynthDef,patchOut.server,this.defName.asSymbol).isNil
+		},{
 			//TODO check path, if a saved version is there
+			// save it in the archive of the player
 			def = this.asSynthDef;
 			bytes = def.asBytes;
-			// write it to disk if this player or its parent hasPath
-			//def.writeDefFile;
 			bundle.add(["/d_recv", bytes]);
 			defName = def.name;
 			//bundle.add(["/d_load", "synthdefs/" ++ defName ++ ".scsyndef"]);
@@ -172,7 +175,7 @@ AbstractPlayer : AbstractFunction  {
 			child.writeDefFile;
 		});
 	}
-	initDefArg { ^patchOut.initDefArg }
+	//initDefArg { ^patchOut.initDefArg }
 	
 	
 	/** SUBCLASSES SHOULD IMPLEMENT **/
@@ -185,8 +188,8 @@ AbstractPlayer : AbstractFunction  {
 	}
 	// if children are your args, you won't have to implement this
 	synthDefArgs { 
-		^[patchOut.bus.index] ++ 
-			this.children.collect({ arg ag,i; ag.initDefArg })  
+		^this.children.collect({ arg ag,i; ag.synthArg })  
+				 ++ [patchOut.bus.index] // always goes last
 	}
 	defName {
 		^this.class.name.asString

@@ -98,7 +98,7 @@ ControlPatchOut : PatchOut { // you are returned from a .kr play
 		bus = bus.asBus(this.rate,source.numChannels,this.server);
 	}
 	rate { ^\control }
-	initDefArg { ^bus.index } //need some initialValue
+	synthArg { ^bus.index } //need some initialValue
 
 	// private
 	control { arg controlPatchIn,needsValueSetNow;
@@ -128,7 +128,7 @@ ControlPatchOut : PatchOut { // you are returned from a .kr play
 
 AudioPatchOut : ControlPatchOut {
 	rate { ^\audio }
-	initDefArg { ^bus.index }
+	synthArg { ^bus.index }
 	audio { arg audioPatchIn,needsValueSetNow;
 		if(needsValueSetNow,{
 			// check if on same server
@@ -164,9 +164,9 @@ ScalarPatchOut : PatchOut {
 
 	init {}
 	rate { ^\scalar }
-	initDefArg {
+	synthArg {
 		//["initial ",source.value,source].postln;
-	 	^source.initDefArg
+	 	^source.synthArg
 	 }
 	audio { arg audioPatchIn,needsValueSetNow=false;
 		if(needsValueSetNow,{

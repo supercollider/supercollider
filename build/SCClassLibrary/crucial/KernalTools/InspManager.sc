@@ -1,5 +1,6 @@
 
 Insp {
+
 	var <subject,<notes,<name,layout;
 	
 	*new { arg subject, notes;
@@ -13,19 +14,30 @@ Insp {
 		});
 		InspManager.global.watch(this)
 	}	
-	gui {
+	gui { arg origin;
 		// ideally this will be a proper snapshot at the time of calling
+		// keep same location as last window
 		{	
-			// what's the calling method ?
-			layout = Sheet({ arg layout;
-				notes.do({ arg ag;
-					ag.smallGui(layout);
-				});
-				layout.startRow;
-				CXObjectInspector(subject).topGui(layout);
-			},"insp:" + name,200);
+			if(this === InspManager.global.currentInsp, {
+				// what's the calling method ?
+				if(origin.isNil, { origin = 300@30; });
+				layout = Sheet({ arg layout;
+					notes.do({ arg ag;
+						ag.smallGui(layout);
+					});
+					layout.startRow;
+					CXObjectInspector(subject).topGui(layout);
+				},"insp:" + name,origin.x,origin.y);
+			});
 			nil
 		}.defer
+	}
+	origin { 
+		^if(layout.notNil,{
+			layout.bounds.origin
+		},{
+			nil
+		}) 
 	}
 	close {
 		if(layout.notNil, { layout.close })
@@ -36,7 +48,7 @@ InspManager {
 
 	classvar <global;
 
-	var <insps,menu,currentInsp;
+	var <insps,menu,<currentInsp;
 	
 	*initClass { global = this.new }
 	
@@ -49,7 +61,7 @@ InspManager {
 						insp.name -> {this.showInsp(insp) } 
 					}));
 					menu.closeOnSelect = false;
-			{ 	menu.gui; 
+			{ 	menu.gui(nil,200,400,180); 
 				menu.layout.removeOnClose(this);
 				this.showInsp(insp);
 				nil; 
@@ -65,9 +77,13 @@ InspManager {
 		});		
 	}
 	showInsp { arg insp;
-		if(currentInsp.notNil,{ currentInsp.close });		
-		insp.gui;
+		var origin;
+		if(currentInsp.notNil,{ 
+			//origin = currentInsp.origin;
+			currentInsp.close 
+		});			
 		currentInsp = insp;
+		insp.gui; //(origin);
 	}
 	remove { // the menu shut
 		insps = [];

@@ -17,7 +17,7 @@
 	spawnToBundle {}
 	//spawn { ^ScalarPatchOut(this) }
 	
-	initDefArg {}
+	synthArg {}
 	free {}
 }
 
