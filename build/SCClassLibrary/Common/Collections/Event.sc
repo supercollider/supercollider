@@ -4,12 +4,16 @@ Event : Environment {
 	classvar defaultParentEvent;
 	classvar parentEvents;
 	classvar partialEvents;
+
+	*new { arg n=8, proto, parent, know=true; 
+		^super.new(n, proto, parent, know)
+	}
 	
 	*default {
-		^Event.new(8, nil, defaultParentEvent);
+		^Event.new(8, nil, defaultParentEvent, true);
 	}
 	*silent { arg time;
-		^Event.new(8, nil, parentEvents.silentEvent);
+		^Event.new(8, nil, parentEvents.silentEvent, true);
 	}
 	
 	next { ^this.copy }
