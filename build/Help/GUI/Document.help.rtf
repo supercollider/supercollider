@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
-\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue191;\red0\green0\blue0;
+\red96\green96\blue96;\red96\green96\blue96;\red191\green0\blue0;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Document
@@ -13,18 +13,18 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 Document(text, title, isPostWindow);\
+\f0\b\fs24 \cf0 Document(title, text, isPostWindow);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \cf2 Document.new("this the title", "this is a text");
+\f2\b0\fs18 \cf3 Document\cf4 .new(\cf5 "this is the title"\cf4 , \cf5 "this is the text"\cf4 );
 \f0\b\fs24 \cf0 \
 \
 \
 Document.open(path);
 \f2\b0\fs18 \cf2 \
 \
-Document.open("Help/Help.help.rtf");\
+\cf3 Document\cf4 .open(\cf5 "Help/Help.help.rtf"\cf4 );\cf2 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -78,7 +78,7 @@ Document.open("Help/Help.help.rtf");\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf2 (\cf0 \
-a = \cf2 Document\cf0 (\cf3 "background", "'hardly see anything"\cf0 );\
+a = \cf2 Document\cf0 (\cf6 "background", "'hardly see anything"\cf0 );\
 a.background_(\cf2 Color\cf0 .blue(alpha:0.8));\
 \cf2 )\
 \
@@ -92,7 +92,7 @@ a.background_(\cf2 Color\cf0 .blue(alpha:0.8));\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf2 (\cf0 \
-a = \cf2 Document\cf0 (\cf3 "background", "where are my glasses?"\cf0 );\
+a = \cf2 Document\cf0 (\cf6 "background", "where are my glasses?"\cf0 );\
 a.background_(\cf2 Color\cf0 .red(alpha:0.8));\
 a.stringColor_(\cf2 Color\cf0 .red);\
 \cf2 )\
@@ -127,7 +127,7 @@ a.stringColor_(\cf2 Color\cf0 .red);\
 (\cf0 \
 \cf2 Task\cf0 (\{\
 	\cf2 var\cf0  doc;\
-	doc = \cf2 Document\cf0 (\cf3 "background", "closing in 2 seconds"\cf0 );\
+	doc = \cf2 Document\cf0 (\cf6 "background", "closing in 2 seconds"\cf0 );\
 	doc.stringColor_(\cf2 Color\cf0 .red);\
 	1.wait;\
 	doc.background_(\cf2 Color\cf0 .red(alpha:0.8));\
@@ -233,6 +233,7 @@ Document.current.selectRange(Document\cf0 .current.selectionStart, 100\cf2 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 var doc;\
 doc = \cf2 Document.current;\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 doc.selectRange(doc\cf0 .selectionStart-40, 10\cf2 );\
 doc.selectedString.postln;\cf0 \
 \cf2 )\
@@ -247,8 +248,10 @@ string_(string, rangestart, rangesize)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf2 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 var doc;\
 doc = \cf2 Document(string:"");\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 doc.string_("set a String")\cf0 \
 \cf2 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -265,7 +268,7 @@ selectedString_\
 (\cf0 \
 \cf2 var\cf0  doc, txt;\
 doc = \cf2 Document\cf0 .current;\
-txt = \cf3 "doc.postln; \\n"\cf0 ;\
+txt = \cf6 "doc.postln; \\n"\cf0 ;\
 doc.selectedString_(txt);\
 \cf2 )\
 \
@@ -275,6 +278,7 @@ doc.selectedString_(txt);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Document\cf0 .allDocuments.at(0).front; \
 \cf2 )\
 \
@@ -288,8 +292,10 @@ doc.selectedString_(txt);\
 
 \f2\fs18 \cf2 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 var doc, txt;\
 doc = \cf2 Document.current;\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 doc.\cf0 keyDownAction_\cf2 (\{arg key, modifiers, num;\
 	[key, modifiers].postln\
 \});\
@@ -310,8 +316,10 @@ doc = \cf2 Document.current;\cf0 \
 example:\
 associate a proxyspace to two different windows.\
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s = \cf2 Server\cf0 .local;\
 s.boot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 q = ProxySpace\cf0 .push(s);\
 q.pop;\
 r = \cf2 ProxySpace\cf0 .push(r);\
@@ -332,8 +340,10 @@ a.toFrontAction_(\{\
 \
 \});\
 \cf2 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
-\cf4 //need to pop proxyspace from other examples\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf7 //need to pop proxyspace from other examples\cf0 \
 q.pop\
 r.pop\
 )\cf2 \
@@ -349,7 +359,7 @@ r.pop\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Document\cf0 .current.onClose_(\{\
 	\cf2 var\cf0  doc;\
-	doc = \cf2 Document\cf0 (\cf3 "before closing","did you call me?"\cf0 );\
+	doc = \cf2 Document\cf0 (\cf6 "before closing","did you call me?"\cf0 );\
 \
 	\cf2 Task\cf0 (\{\
 	\
@@ -370,17 +380,19 @@ r.pop\
 
 \f2\b0\fs18 \cf2 (\cf0 \
 \
-\cf4 //add a mouse action to this document: \cf0 \
-\cf4 //example: easy button:\cf0 \
-\cf4 //when you click in front of a 17 a SinOsc will start up;\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf7 //add a mouse action to this document: \cf0 \
+\cf7 //example: easy button:\cf0 \
+\cf7 //when you click in front of a 17 a SinOsc will start up;\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Server\cf0 .local.boot;\
 \cf2 Document\cf0 .current.mouseDownAction_(\{\cf2 arg\cf0  doc;\
 	\cf2 var\cf0  char;\
 	char = doc.rangeText(doc.selectionStart, 2);\
-	if(char == \cf3 "17"\cf0 ,\{\
+	if(char == \cf6 "17"\cf0 ,\{\
 		\{EnvGen.kr(\cf2 Env\cf0 .perc, doneAction:2) * \cf2 SinOsc\cf0 .ar([600,720,300].choose, 0, 0.5)\}.play;\
 	\});\
-	if(char == \cf3 "23"\cf0 ,\{\
+	if(char == \cf6 "23"\cf0 ,\{\
 		\{EnvGen.kr(\cf2 Env\cf0 .perc, doneAction:2) * \cf2 PinkNoise\cf0 .ar(0.2)\}.play;\
 	\});\
 \})\
@@ -395,7 +407,7 @@ r.pop\
 \fs26 \cf0 	\cf2 17\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf2 	23
-\fs18 \cf2 \
+\fs18 \
 \
 \
 \
@@ -413,7 +425,7 @@ r.pop\
 (\cf0 \
 \
 \cf2 var\cf0  doc;\
-doc = \cf2 Document\cf0 (\cf3 "", "||"\cf0 );\
+doc = \cf2 Document\cf0 (\cf6 "", "||"\cf0 );\
 doc.background_(\cf2 Color\cf0 .blue(alpha: 1.0.rand));\
 \cf2 Task\cf0 (\{\
 	1000.do(\{\
@@ -430,7 +442,7 @@ doc.background_(\cf2 Color\cf0 .blue(alpha: 1.0.rand));\
 \cf2 Task\cf0 (\{\
 	100.do(\{\
 		1.01.wait;\
-		doc.selectedString_([\cf3 "\\"\cf5 \\n\cf0 #\cf3 ","\cf0 ||\cf3 ","\cf0 -\cf3 ", "\cf0 --"].choose);\
+		doc.selectedString_([\cf6 "\\"\cf8 \\n\cf0 #\cf6 ","\cf0 ||\cf6 ","\cf0 -\cf6 ", "\cf0 --"].choose);\
 	\})\
 \}).play(AppClock);\
 Task(\{\
@@ -457,7 +469,7 @@ In Main-startUp you can set this to a more practical directory:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
-	\cf2 Document\cf0 .dir = \cf3 "~/Documents/SuperCollider"\cf0 ;\
+	\cf2 Document\cf0 .dir = \cf6 "~/Documents/SuperCollider"\cf0 ;\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -471,19 +483,19 @@ In Main-startUp you can set this to a more practical directory:\
 
 \f2\fs18 \cf0 		\
 	\cf2 Document\cf0 .standardizePath(\
-		\cf3 ":Patches:newfoots:fastRuckAndTuck"\cf0 \
+		\cf6 ":Patches:newfoots:fastRuckAndTuck"\cf0 \
 	)\
 	/Volumes/Macintosh HD/Users/cruxxial/Documents/SC3docs/Patches/newfoots/fastRuckAndTuck\
 	\
 	\
 	\cf2 Document\cf0 .standardizePath(\
-		\cf3 "~/Documents/SC3docs/Patches/newfoots/fastRuckAndTuck"\cf0 \
+		\cf6 "~/Documents/SC3docs/Patches/newfoots/fastRuckAndTuck"\cf0 \
 	)\
 	Patches/newfoots/fastRuckAndTuck\
 	\
 	\
 	\cf2 Document\cf0 .standardizePath(\
-		\cf3 "Patches/newfoots/fastRuckAndTuck"\cf0 \
+		\cf6 "Patches/newfoots/fastRuckAndTuck"\cf0 \
 	)\
 	Patches/newfoots/fastRuckAndTuck\
 	\
