@@ -10,6 +10,14 @@ Spec {
 	defaultControl {
 		^thisMethod.subclassResponsibility
 	}
+	== { arg that;
+		if(this === that,{ ^true });
+		if(this.class !== that.class,{ ^false });
+		this.instVarSize.do({ arg i;
+			if(this.instVarAt(i) != that.instVarAt(i),{ ^false });
+		});
+		^true
+	}
 }
 
 ControlSpec : Spec {
