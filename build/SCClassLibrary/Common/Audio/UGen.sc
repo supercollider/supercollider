@@ -244,6 +244,7 @@ MultiOutUGen : UGen {
 		channels.do({ arg output; output.writeOutputSpec(file); });
 	}
 	synthIndex_ { arg index;
+		synthIndex = index;
 		channels.do({ arg output; output.synthIndex_(index); });
 	}
 }	
