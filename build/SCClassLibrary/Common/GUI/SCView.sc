@@ -1,8 +1,7 @@
-
 SCView {  // abstract class
-	classvar <>currentDrag;
+	classvar <>currentDrag, <>globalKeyDownAction, <>globalKeyUpAction;
 	
-	var dataptr, parent, <>action, <background;
+	var dataptr, <parent, <>action, <background, <>keyDownAction, <>keyUpAction, <>keyTyped;
 	
 	*new { arg parent, bounds;
 		^super.new.init(parent, bounds);
@@ -10,8 +9,18 @@ SCView {  // abstract class
 	
 	init { arg argParent, argBounds;
 		parent = argParent.asView;
-		this.prInit(parent, argBounds ?? {Rect(20,20,20,20)});
+		this.prInit(parent, argBounds);
 		if (parent.notNil, { parent.add(this); });
+		// init default keydown & keyup
+		this.keyDownAction_({ arg view, key, modifiers;
+			this.defaultKeyDownAction(key, modifiers);
+			nil
+		});
+		this.keyUpAction_({ arg view, key, modifiers;
+			this.defaultKeyUpAction(key, modifiers);
+			nil
+		});
+
 	}
 	
 	asView { ^this }
@@ -43,7 +52,11 @@ SCView {  // abstract class
 	canFocus_ { arg bool;
 		this.setProperty(\canFocus, bool)
 	}
-	
+	// sc.solar addition
+	focus {
+		this.prFocus
+	}
+
 	/*
 	resize behaviour in an SCCompositeView:
 		1  2  3
@@ -73,8 +86,46 @@ SCView {  // abstract class
 		background = color;
 		this.setProperty(\background, color)
 	}
+
+	keyDown { arg key, modifiers;
+		globalKeyDownAction.value(this, key, modifiers); 
+		this.handleKeyDownBubbling(this, key, modifiers);
+	}
 	
-	keyDown { arg key, modifiers; }
+	defaultKeyDownAction { arg key, modifiers;}
+		
+	handleKeyDownBubbling { arg view, key, modifiers;
+		// nil from keyDownAction --> pass it on
+		this.keyDownAction.value(view, key, modifiers) ?? {
+			// call local keydown action of parent view
+			this.parent.handleKeyDownBubbling(view, key, modifiers);
+		};
+	}
+	
+	// sc.solar addition
+	keyUp {arg key, modifiers; this.keyTyped = key;
+		// allways call global keydown action first
+		globalKeyUpAction.value(this, key, modifiers);
+		this.handleKeyUpBubbling(this, key, modifiers);
+	}
+	defaultKeyUpAction { arg key, modifiers;}
+		
+	handleKeyUpBubbling { arg view, key, modifiers;
+		// nil from keyUpAction --> pass it on
+		this.keyUpAction.value(view, key, modifiers) ?? {
+			// call local keyUp action of parent view
+			this.parent.handleKeyUpBubbling(view, key, modifiers);
+		};
+	}
+
+	// get the view parent tree up to the SCTopView
+	getParents {
+		var parents, view;
+		view = this;
+		parents = List.newClear;
+		while({view.parent.notNil},{view = view.parent; parents.add(view)});
+		^parents
+	}
 	
 	doAction {
 		action.value(this);
@@ -84,6 +135,7 @@ SCView {  // abstract class
 		^#[\bounds, \visible, \enabled, \canFocus, \resize, \background]
 	}
 	getPropertyList {
+	// has to return !
 		^this.properties.collect({ arg name;
 			[name, this.perform(name)]
 		});
@@ -92,6 +144,7 @@ SCView {  // abstract class
 		list.do({ arg item;
 			var name, value;
 			#name, value = item;
+			item.postln;
 			this.perform(name.asSetter, value);
 		});
 	}
@@ -110,6 +163,10 @@ SCView {  // abstract class
 		_SCView_GetProperty
 		^this.primitiveFailed
 	}
+	prFocus {
+		_SCView_Focus
+		^this.primitiveFailed
+	}
 	
 	setPropertyWithAction { arg symbol, obj;
 		// setting some properties may need to have the action called.
@@ -121,7 +178,7 @@ SCView {  // abstract class
 }
 
 SCContainerView : SCView { // abstract class
-	var children, <>decorator;
+	var <children, <>decorator;
 			
 	add { arg child;
 		children = children.add(child);
@@ -139,6 +196,12 @@ SCCompositeView : SCContainerView {
 
 SCTopView : SCCompositeView {
 	// created by SCWindow
+	handleKeyDownBubbling { arg view, key, modifiers;
+		this.keyDownAction.value(view, key, modifiers);
+	}
+	handleKeyUpBubbling { arg view, key, modifiers;
+		this.keyUpAction.value(view, key, modifiers);
+	}
 }
 
 SCControlView : SCView { // abstract class
@@ -175,20 +238,20 @@ SCSlider : SCSliderBase
 		this.setPropertyWithAction(\value, val);
 	}	
 	
-	keyDown { arg key, modifiers;
-		if (key == $r, { this.value = 1.0.rand; ^this });
-		if (key == $n, { this.value = 0.0; ^this });
-		if (key == $x, { this.value = 1.0; ^this });
-		if (key == $c, { this.value = 0.5; ^this });
+	defaultKeyDownAction { arg key, modifiers;
+		// standard keydown
+		if (key == $r, { this.value = 1.0.rand; });
+		if (key == $n, { this.value = 0.0; });
+		if (key == $x, { this.value = 1.0; });
+		if (key == $c, { this.value = 0.5; });
 		if (key == $], { 
 			this.value = this.value + (1/this.bounds.width); 
-			^this 
 		});
 		if (key == $[, { 
 			this.value = this.value - (1/this.bounds.width); 
-			^this 
 		});
 	}
+	
 	beginDrag { 
 		currentDrag = this.value; 
 	}
@@ -228,19 +291,19 @@ SCRangeSlider : SCSliderBase {
 	properties {
 		^super.properties ++ [\lo, \hi]
 	}
-	keyDown { arg key, modifiers;
+	defaultKeyDownAction { arg key, modifiers;
 		var a, b;
+		// standard keydown
 		if (key == $r, { 
 			a = 1.0.rand; 
 			b = 1.0.rand; 
 			this.lo = min(a, b);
 			this.hi = max(a, b);
-			^this 
 		});
-		if (key == $n, { this.lo = 0.0; this.hi = 0.0; ^this });
-		if (key == $x, { this.lo = 1.0; this.hi = 1.0; ^this });
-		if (key == $c, { this.lo = 0.5; this.hi = 0.5; ^this });
-		if (key == $a, { this.lo = 0.0; this.hi = 1.0; ^this });
+		if (key == $n, { this.lo = 0.0; this.hi = 0.0; });
+		if (key == $x, { this.lo = 1.0; this.hi = 1.0; });
+		if (key == $c, { this.lo = 0.5; this.hi = 0.5; });
+		if (key == $a, { this.lo = 0.0; this.hi = 1.0; });
 	}
 	beginDrag { 
 		currentDrag = Point(this.lo, this.hi); 
@@ -249,6 +312,7 @@ SCRangeSlider : SCSliderBase {
 		^currentDrag.isKindOf(Point);
 	}
 	receiveDrag {
+	// changed to x,y instead of lo, hi
 		this.lo = currentDrag.x;
 		this.hi = currentDrag.y;
 		currentDrag = nil;
@@ -271,11 +335,12 @@ SC2DSlider : SCSliderBase {
 	properties {
 		^super.properties ++ [\x, \y]
 	}
-	keyDown { arg key, modifiers;
-		if (key == $r, { this.x = 1.0.rand; this.y = 1.0.rand; ^this });
-		if (key == $n, { this.x = 0.0; this.y = 0.0; ^this });
-		if (key == $x, { this.x = 1.0; this.y = 1.0; ^this });
-		if (key == $c, { this.x = 0.5; this.y = 0.5; ^this });
+	defaultKeyDownAction { arg key, modifiers;
+		// standard keydown
+		if (key == $r, { this.x = 1.0.rand; this.y = 1.0.rand; });
+		if (key == $n, { this.x = 0.0; this.y = 0.0; });
+		if (key == $x, { this.x = 1.0; this.y = 1.0; });
+		if (key == $c, { this.x = 0.5; this.y = 0.5; });
 	}
 	beginDrag { 
 		currentDrag = Point(this.x, this.y); 
@@ -301,10 +366,6 @@ SCButton : SCControlView {
 		this.setPropertyWithAction(\value, val);
 	}	
 
-	keyDown { arg key, modifiers;
-		if (key == $ , { this.value = this.value + 1; ^this });
-		if (key == $\r, { this.value = this.value + 1; ^this });
-	}
 	font_ { arg argFont;
 		font = argFont;
 		this.setProperty(\font, font)
@@ -317,62 +378,6 @@ SCButton : SCControlView {
 	
 	properties {
 		^super.properties ++ [\value, \font, \states]
-	}
-
-	beginDrag { 
-		currentDrag = this.value; 
-	}
-	canReceiveDrag {
-		^currentDrag.isNumber;
-	}
-	receiveDrag {
-		this.value = currentDrag;
-		currentDrag = nil;
-	}
-}
-
-SCPopUpMenu : SCControlView {
-	var <font, <items;
-	
-	value {
-		^this.getProperty(\value)
-	}
-	value_ { arg val;
-		this.setPropertyWithAction(\value, val);
-	}	
-
-	keyDown { arg key, modifiers;
-		if (key == $ , { this.value = this.value + 1; ^this });
-		if (key == $\r, { this.value = this.value + 1; ^this });
-	}
-	font_ { arg argFont;
-		font = argFont;
-		this.setProperty(\font, font)
-	}
-	items_ { arg array;
-		items = array;
-		this.setProperty(\items, items);
-	}
-	stringColor {
-		^this.getProperty(\stringColor, Color.new)
-	}
-	stringColor_ { arg color;
-		this.setProperty(\stringColor, color)
-	}
-	
-	properties {
-		^super.properties ++ [\value, \font, \items, \stringColor]
-	}
-
-	beginDrag { 
-		currentDrag = this.value; 
-	}
-	canReceiveDrag {
-		^currentDrag.isNumber;
-	}
-	receiveDrag {
-		this.value = currentDrag;
-		currentDrag = nil;
 	}
 }
 
@@ -411,18 +416,19 @@ SCStaticText : SCView {
 }
 
 SCNumberBox : SCStaticText {
-	var keyString;
+	var <> keyString;
 	
-	keyDown { arg key, modifiers; 
+	defaultKeyDownAction { arg key, modifiers;
+		// standard keydown
 		if ((key == 3.asAscii) || (key == $\r) || (key == $\n), { // enter key
-			this.value = keyString.asFloat;
-			^this
+			if (keyString.notNil,{ // no error on repeated enter
+				this.value = keyString.asFloat;
+			});
 		});
 		if (key == 127.asAscii, { // delete key
 			keyString = nil;
 			this.string = object.asString;
 			this.stringColor = Color.black;
-			^this
 		});
 		if (key.isDecDigit || "+-.eE".includes(key), {
 			if (keyString.isNil, { 
@@ -446,16 +452,17 @@ SCNumberBox : SCStaticText {
 	}
 	beginDrag { 
 		currentDrag = object.asFloat; 
+		
 	}
 	canReceiveDrag {
 		^currentDrag.isNumber;
 	}
 	receiveDrag {
 		this.value = currentDrag;
+		
 		currentDrag = nil;
 	}
 }
-
 
 SCDragView : SCStaticText {
 }
@@ -502,8 +509,93 @@ SCDragBoth : SCDragSink {
 SCUserView : SCView { // abstract class
 	draw {}
 	mouseBeginTrack { arg x, y, modifiers; }
-	mouseTrack { arg x, y, modifiers; }
+	mouseTrack { arg x, y, modifiers;x.postln }
 	mouseEndTrack { arg x, y, modifiers; }
+}
+SCPopUpMenu : SCControlView {
+	var <font, <items;
+	
+	value {
+		^this.getProperty(\value)
+	}
+	value_ { arg val;
+		this.setPropertyWithAction(\value, val);
+	}	
+
+	keyDown { arg key, modifiers;
+		if (key == $ , { this.value = this.value + 1; ^this });
+		if (key == $\r, { this.value = this.value + 1; ^this });
+	}
+	font_ { arg argFont;
+		font = argFont;
+		this.setProperty(\font, font)
+	}
+	items_ { arg array;
+		items = array;
+		this.setProperty(\items, items);
+	}
+	stringColor {
+		^this.getProperty(\stringColor, Color.new)
+	}
+	stringColor_ { arg color;
+		this.setProperty(\stringColor, color)
+	}
+	
+	properties {
+		^super.properties ++ [\value, \font, \items, \stringColor]
+	}
+
+	beginDrag { 
+		currentDrag = this.value; 
+	}
+	canReceiveDrag {
+		^currentDrag.isNumber;
+	}
+	receiveDrag {
+		this.value = currentDrag;
+		currentDrag = nil;
+	}
+}
+//by jt
+SCMultiSliderView : SCView { // abstract class
+	var <> points = nil;
+	var <> win;
+	
+	draw {
+	
+}
+
+	mouseBeginTrack { arg x, y, modifiers;
+		}
+	mouseTrack { arg x, y, modifiers; 
+	
+ 	}
+ 	
+	mouseEndTrack { arg x, y, modifiers;
+	
+	}
+	
+properties {
+		^super.properties ++ [\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y]
+	}	
+value {arg val;
+		^this.getProperty(\value, val)
+	}
+value_ {arg val;
+		^this.setProperty(\value, val)
+	}
+x {
+		^this.getProperty(\x)
+	}
+	y {
+		^this.getProperty(\y)
+	}
+readOnly_{arg val;
+	^this.setProperty(\readOnly, val);
+	}
+	thumbSize_{arg val;
+	^this.setProperty(\thumbSize, val)
+	}	
 }
 
 SCFuncUserView : SCUserView {
@@ -515,13 +607,13 @@ SCFuncUserView : SCUserView {
 		mouseBeginTrackFunc.value(this, x, y, modifiers); 
 	}
 	mouseTrack { arg x, y, modifiers; 
-		mouseTrackFunc.value(this, x, y, modifiers); 
+		mouseTrackFunc.value(this, x, y, modifiers);
+		x.postln; 
 	}
 	mouseEndTrack { arg x, y, modifiers; 
 		mouseEndTrackFunc.value(this, x, y, modifiers); 
 	}
-	keyDown { arg key, modifiers; 
-		keyDownFunc.value(this, key, modifiers) 
+	defaultKeyDownAction { arg key, modifiers;
 	}
 }
 
@@ -539,5 +631,14 @@ HiliteGradient {
 		^super.newCopyArgs(color1, color2, direction, steps, frac)
 	}
 }
-
-
+//including keydown by Heiko:
+// bug fixed in SCRangeSlider-receiveDrag
+// bug fixed in SCView-getPropertyList
+// allowing children in SCContainerView and parent in SCView to be accessed
+// globalKeyDownAction as classvar for all Views
+// KeyDownAction for all Views
+// bug fixed in SCNumberBox-defaultKeyDownAction
+// passing keydown up the tree
+// consuming keydown in function 
+// added keyup
+// and SCMultiSlider by jan t.
