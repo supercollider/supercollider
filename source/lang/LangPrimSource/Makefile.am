@@ -9,7 +9,8 @@ MAINTAINERCLEANFILES	= Makefile.in
 
 INCLUDES		= -I$(top_srcdir)/headers/common \
 			-I$(top_srcdir)/headers/plugin_interface \
-			-I$(top_srcdir)/headers/lang -I$(top_srcdir)/headers/server
+			-I$(top_srcdir)/headers/lang \
+			-I$(top_srcdir)/headers/server
 AM_CPPFLAGS		= $(SC_CPPFLAGS)
 AM_CFLAGS		= $(SC_CFLAGS) $(SNDFILE_CFLAGS) 
 AM_CXXFLAGS		= $(AM_CFLAGS)

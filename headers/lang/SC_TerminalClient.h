@@ -48,8 +48,8 @@ public:
 	void append(const char* src, size_t len);
 	void append(char c);
 	void append(const char* str);
-	void vprintf(const char* fmt, va_list vargs);
-	void printf(const char* fmt, ...);
+	void vappendf(const char* fmt, va_list vargs);
+	void appendf(const char* fmt, ...);
 
 protected:
 	enum {
@@ -120,7 +120,7 @@ public:
 	void setCmdLine(const char* buf, size_t size);
 	void setCmdLine(const char* str);
 	void setCmdLine(const SC_StringBuffer& strBuf);
-	void setCmdLine(const char* fmt, ...);
+	void setCmdLinef(const char* fmt, ...);
 	void runLibrary(PyrSymbol* pyrSymbol);
 	void runLibrary(const char* methodName);
 	void interpretCmdLine() { runLibrary(s_interpretCmdLine); }

@@ -8,4 +8,4 @@ Version: @VERSION@
 Description: libscsynth, SuperCollider synthesis server library
 Requires: jack >= 0.40.1, sndfile >= 1.0.0
 Libs: -L${libdir} -lscsynth -lm -lpthread
-Cflags: -I${includedir}/common -I${includedir}/plugin_interface -I${includedir}/lang -I${includedir}/server
+Cflags: -I${includedir}/common -I${includedir}/plugin_interface -I${includedir}/server

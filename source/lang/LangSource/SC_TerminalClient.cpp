@@ -103,7 +103,7 @@ void SC_StringBuffer::append(const char* str)
 	append(str, strlen(str));
 }
 
-void SC_StringBuffer::vprintf(const char* fmt, va_list ap)
+void SC_StringBuffer::vappendf(const char* fmt, va_list ap)
 {
 	va_list ap2;
 	size_t remaining = getRemaining();
@@ -131,11 +131,11 @@ void SC_StringBuffer::vprintf(const char* fmt, va_list ap)
 	va_end(ap2);
 }
 
-void SC_StringBuffer::printf(const char* fmt, ...)
+void SC_StringBuffer::appendf(const char* fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	vprintf(fmt, ap);
+	vappendf(fmt, ap);
 	va_end(ap);
 }
 
@@ -400,7 +400,7 @@ void SC_LanguageClient::init(const Options& opt)
 	if (!homeDir) homeDir = "";
 	
 	tmpBuf.reset();
-	tmpBuf.printf("%s/%s", homeDir, kSC_LibraryConfigFileName);
+	tmpBuf.appendf("%s/%s", homeDir, kSC_LibraryConfigFileName);
 	tmpBuf.finish();
 
 	SC_LibraryConfigFile configFile;
@@ -437,7 +437,7 @@ void SC_LanguageClient::compileLibrary()
 	if (homeDir) {
 		SC_StringBuffer tmpBuf(64);
 		tmpBuf.reset();
-		tmpBuf.printf("%s/.sclang.sc", homeDir);
+		tmpBuf.appendf("%s/.sclang.sc", homeDir);
 		tmpBuf.finish();
 
 		struct stat stat_buf;
@@ -489,12 +489,12 @@ void SC_LanguageClient::setCmdLine(const SC_StringBuffer& strBuf)
 	setCmdLine(strBuf.getData(), strBuf.getSize());
 }
 
-void SC_LanguageClient::setCmdLine(const char* fmt, ...)
+void SC_LanguageClient::setCmdLinef(const char* fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
 	mScratch.reset();
-	mScratch.vprintf(fmt, ap);
+	mScratch.vappendf(fmt, ap);
 	va_end(ap);
 	setCmdLine(mScratch);
 }
@@ -515,7 +515,7 @@ void SC_LanguageClient::runLibrary(const char* methodName)
 
 void SC_LanguageClient::executeFile(const char* fileName)
 {
-	setCmdLine("thisProcess.interpreter.executeFile(\"%s\")", fileName);
+	setCmdLinef("thisProcess.interpreter.executeFile(\"%s\")", fileName);
 	runLibrary(s_interpretCmdLine);
 }
 
