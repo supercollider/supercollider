@@ -21,6 +21,8 @@ Disclaimer: there is no time, really; punctuality is your personal responsibilit
 \f1\fs24 Concept of this library is to provide placeholders that\
 can be modified while playing, so that writing code\
 becomes an even closer part of musical practice.\
+\
+its concepts  extend the live coding possibilities that supercollider provides\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
@@ -29,7 +31,9 @@ becomes an even closer part of musical practice.\
 
 \f1\fs24 the main environment for this is [
 \f0\b ProxySpace
-\f1\b0 ]\
+\f1\b0 ] and the stream classes 
+\f0\b Pdef/Pdefn/Tdef
+\f1\b0 \
 \
 There is various classes that are used in this context that\
 can be also useful:\
@@ -38,8 +42,8 @@ can be also useful:\
 
 \f0\b \cf0 \
 \
-placeholders: 		[NodeProxy][RecNodeProxy]\
-			[Pdef][Pdefn][Tdef][Ndef]\
+placeholders: 		for nodes: 	[NodeProxy][RecNodeProxy][Ndef]\
+			for streams: 	[Pdef][Pdefn][Tdef]\
 			\
 other topics:		[jitlib_efficiency][the_lazy_proxy][jitlib_fading][jitlib_asCompileString]\
 \
