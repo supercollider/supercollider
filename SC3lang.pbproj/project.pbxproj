@@ -35,12 +35,6 @@
 			settings = {
 			};
 		};
-		920F88420443F59700A80088 = {
-			fileRef = 920F88400443F59700A80088;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 //920
 //921
 //922
@@ -2892,7 +2886,6 @@
 				F59DF0C203073BC901CE0C16,
 				F59DF0C8030777A201CE0C16,
 				F5285E0F0316170401CA2799,
-				920F88420443F59700A80088,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
