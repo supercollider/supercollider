@@ -1,8 +1,7 @@
 
 Node {
 	
-	var <>nodeID, <>group, <>prev, <>next;
-	var <>server;
+	var <>nodeID, <>group, <>server;
 	var <>isPlaying = false, <>isRunning = false;
 	
 	*basicNew { arg nodeID,server;
@@ -12,27 +11,33 @@ Node {
 
 	free { arg sendFlag=true;
 		if(sendFlag, {
-			server.sendBundle(nil, [11, nodeID]);  //"/n_free"
+			server.sendBundle(nil, [11, nodeID]);  	//"/n_free"
 		});
 		this.remove;
 	}
+	
 	run { arg flag=true;
-		server.sendBundle(nil, [12, nodeID,flag.binaryValue]); //"/n_run"
+		server.sendBundle(nil, 
+			[12, nodeID,flag.binaryValue]); 			 //"/n_run"
 	}
+	
 	map { arg controlName, busIndex ... args;
 		server.sendBundle(nil, 
 			[14, nodeID,controlName, busIndex]++args); //"/n_map"
 	}
+	
 	mapMsg {  arg controlName, busIndex ... args;
-		^[14, nodeID,controlName, busIndex]++args; //"/n_map"
+			^[14, nodeID,controlName, busIndex]++args; //"/n_map"
 	}
+	
 	set { arg controlName, value ... args;
 		server.sendBundle(nil, 
-			[15, nodeID,controlName, value]++args); //"/n_set"
+			[15, nodeID,controlName, value]++args); 	 //"/n_set"
 	}
+	
 	setWithArray { arg args;
 		server.sendBundle(nil, 
-			[15, nodeID] ++ args); //"/n_set"
+			[15, nodeID] ++ args); 					//"/n_set"
 	}
 
 	setn { arg controlName,  values ... args;
@@ -45,16 +50,27 @@ Node {
 		});
 		server.sendBundle(nil, 
 			([16, nodeID,controlName, values.size] ++ values 
-				++ nargs)); // "n_setn"
+				++ nargs)); 						// "n_setn"
 	}
+	
 	fill { arg controlName, numControls, value ... args;
 		server.sendBundle(nil, 
 			[17, nodeID,controlName,numControls, value]++args); //"n_setn"
 	}
-	release { //assumes a control called 'gate' in the synth
-		server.sendBundle(nil, 
-			[15, nodeID, \gate, 0]) //"/n_set"
-	}	      
+	
+	release { arg releaseTime;
+               //assumes a control called 'gate' in the synth
+               if(releaseTime.isNil, {
+                       releaseTime = 0.0;
+               },{
+                       releaseTime = -1.0 - releaseTime;
+               });
+                server.sendBundle(nil,
+                       [15, nodeID, \gate, releaseTime]
+               );
+               server.nodeAllocator.free(nodeID);
+    	}
+
 
 	moveBefore { arg aNode;
 		aNode.group.moveNodeBefore(this, aNode);
@@ -127,30 +143,14 @@ Node {
 	prSetPlaying { arg flag=true; isPlaying = flag; isRunning = flag }
 	prMoveAfter {  arg afterThisOne;
 		this.group = afterThisOne.group;
-		prev = afterThisOne;
-		next = afterThisOne.next;
-		if (afterThisOne.next.notNil, { 
-			afterThisOne.next.prev = this; 
-		},{ 
-			group.tail = this; 
-		});
-		afterThisOne.next = this;
 	}
 	prMoveBefore {  arg beforeThisOne;
 		this.group = beforeThisOne.group;
-		next = beforeThisOne;
-		prev = beforeThisOne.prev;
-		if (beforeThisOne.prev.notNil, { 
-			beforeThisOne.prev.next = this; 
-		},{ 
-			group.head = this; 
-		});
-		beforeThisOne.prev = this;
 	}
 	nodeToServer { arg addAction,target,args;
 		var msg;
 		msg = [this.perform(addAction,target,args)];
-		target.group.finishBundle(msg, this);
+		target.asGroup.finishBundle(msg, this);
 		server.listSendBundle(nil, msg);
 		//isPlaying = isRunning = true;
 	}
@@ -163,25 +163,13 @@ Node {
 		nodeID = server.nextNodeID;
 	}
 	remove {
-		if (next.notNil, { 
-			next.prev = prev; 
-		},{
-			if(group.notNil, { group.tail = prev });
-		});
-		if (prev.notNil, { 
-			prev.next = next; 
-		},{
-			if(group.notNil, { group.head = next });
-		});
-		group = next = prev = nil;
+		group = nil;
 		isPlaying = false;
 		isRunning = false;
 	}
-	// for Group-deepDo
-	deepDo {	}
-	asStream { ^Ref(this) } //insulate next
 
 	hash {  ^server.hash bitXor: nodeID.hash	}
+	
 	== { arg aNode;
 		^(aNode.nodeID == nodeID) and: {aNode.server === server}
 	}
@@ -202,10 +190,10 @@ Group : Node {
 		group.nodeToServer(addAction,target);
 		^group
 	}
-	*after { arg aNode;     ^this.new(aNode, \addAfter) }
-	*before {  arg aNode; ^this.new(aNode, \addBefore) }
-	*head { arg aGroup; ^this.new(aGroup.asGroup, \addToHead) }
-	*tail { arg aGroup; ^this.new(aGroup.asGroup, \addToTail) }
+	*after { arg aNode;    ^this.new(aNode, \addAfter) }
+	*before {  arg aNode; 	^this.new(aNode, \addBefore) }
+	*head { arg aGroup; 	^this.new(aGroup.asGroup, \addToHead) }
+	*tail { arg aGroup; 	^this.new(aGroup.asGroup, \addToTail) }
 	*replace { arg groupToReplace; ^this.new(groupToReplace, \addReplace) }
 	
 	moveNodeToHead { arg aNode;
@@ -226,7 +214,7 @@ Group : Node {
 	}       
 	
 	nodeToServerMsg { arg targetID, addActionNum;
-		^["/g_new", nodeID, addActionNum, targetID]  // 21
+		^[21, nodeID, addActionNum, targetID]  	 // "/g_new"
 	}
 		
 	freeAll { arg sendFlag=true;
@@ -236,6 +224,7 @@ Group : Node {
 	
 			
 	/** bundle messages **/
+	
 	*newToBundle { arg bundle, target, addAction=\addToTail;
 		var group;
 		target = target.asTarget;
@@ -246,57 +235,19 @@ Group : Node {
 	}
 	
 	moveNodeToHeadMsg { arg aNode;
-		^["/g_head", nodeID, aNode.nodeID]; //"/g_head"   22
+		^[22, nodeID, aNode.nodeID]; //"/g_head"
 	}
 	
 	moveNodeToTailMsg { arg aNode;
 		^[23, nodeID, aNode.nodeID];//g_tail
 	}
+	
 	finishBundle { //overridden in subclass
 	}
 	
-	//these work only with linked nodes.
-	do { arg function;
-		var node, nextNode;
-		node = head;
-		while({ node.notNil }, {
-			nextNode = node.next;
-			function.value(node);
-			node = nextNode;
-		});		     
-	}
-	deepDo { arg function;
-		var node, nextNode;
-		node = head;
-		while({ node.notNil }, {
-			nextNode = node.next;
-			function.value(node);
-			node.deepDo(function);
-			node = nextNode;
-		});
-	}
+	
 
-	//private
-	prAddHead { arg node;
-		node.group = this;
-		node.prev = nil;
-		node.next = head;
-		if(head.notNil, { head.prev = node });
-		head = node;
-		if (tail.isNil, {
-			tail = node;
-		});
-	}
-	prAddTail { arg node;
-		node.group = this;
-		node.next = nil;
-		node.prev = tail;
-		if(tail.notNil, { tail.next = node });
-		tail = node;
-		if (head.isNil, {
-			head = node;
-		});
-	}
+	
 }
 
 Synth : Node {
@@ -409,10 +360,10 @@ RootNode : Group {
 	classvar <roots;
 	
 	
-	*new { arg server, connected=false;
+	*new { arg server;
 		server = server ?? {Server.local};
 		^(roots.at(server.name) ?? {
-			^super.prNew(server).rninit//.connect(connected)
+			^super.prNew(server).rninit
 		})
 	}
 	rninit { 
@@ -428,15 +379,7 @@ RootNode : Group {
 	
 	nodeToServer {} // already running
 	
-	remove {
-		if (next.notNil, { 
-			next.prev = prev; 
-		});
-		if (prev.notNil, { // i have no prev
-			prev.next = next; 
-		});
-		next = prev = nil;
-	}
+	remove {}
 
 	// post warning ?
 	run {}
