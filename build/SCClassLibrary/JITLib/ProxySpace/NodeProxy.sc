@@ -240,7 +240,7 @@ NodeProxy : BusPlug {
 
 
 	var <group, <objects;
-	var <parents, <nodeMap;	// playing templates
+	var <parents, <nodeMap;	
 	var <loaded=false, <>awake=true, <>paused=false, <task, <>clock; 	
 	classvar <>buildProxy;
 	
@@ -355,7 +355,7 @@ NodeProxy : BusPlug {
 						this.prepareToBundle(nil, bundle);
 					});
 					if(freeAll, {
-							this.sendAllToBundle(bundle, extraArgs)
+							this.sendAllToBundle(bundle, extraArgs);
 					}, {
 							this.sendObjectToBundle(bundle, container, extraArgs);
 					});
@@ -375,7 +375,7 @@ NodeProxy : BusPlug {
 		var container, ok;
 		container = obj.makeProxyControl(channelOffset,this);
 		this.class.buildProxy = this;
-		container.build(this, index); //bus allocation happens here
+		container.build(this, index); // bus allocation happens here
 		this.class.buildProxy = nil;
 		^container
 	}
@@ -437,11 +437,11 @@ NodeProxy : BusPlug {
 	}
 	
 	lag { arg ... args;
-		nodeMap.lag(args);
+		nodeMap.putRates(args);
 		this.rebuild;
 	}
 	unlag { arg ... args;
-		nodeMap.unlag(args);
+		nodeMap.removeRates(args);
 		this.rebuild;
 	}
 		
@@ -1030,6 +1030,52 @@ SharedNodeProxy : NodeProxy {
 	}
 	
 	mapEnvir {}
+	// use shared node proxy only with functions for now.
+	stopAllToBundle { arg bundle;
+				bundle.add(["/n_set", constantGroupID, \gate, 0]);
+				//bundle.add(["/g_freeAll", constantGroupID]);
+	}
+	stopToBundleAt { arg bundle, index;
+				bundle.add(["/n_set", constantGroupID, \gate, 0]);
+				// bundle.add(["/g_freeAll", constantGroupID]);
+	}
+	
+	
+	/////// needs revisit and testing ////////
+	
+	//apply the node map settings to the entire group
+	sendAllToBundle { arg bundle, extraArgs;
+				bundle.add(["/g_new", this.defaultGroupID]);
+				super.sendAllToBundle(bundle, extraArgs);
+	}
+	
+	/*
+	//apply the node map settings to each synth separately
+	sendEachToBundle { arg bundle, extraArgs;
+				bundle.add(["/g_new", this.defaultGroupID]);
+				super.sendEachToBundle(bundle, extraArgs);
+	}
+	*/
+	
+	
+	//send single object: does not work yet properly
+	sendObjectToBundle { arg bundle, object, extraArgs;
+				bundle.add(["/g_new", this.defaultGroupID]);
+				super.sendObjectToBundle(bundle, object, extraArgs);
+	}
+	
+
+	///////////////////
+	
+	prepareToBundle { arg argGroup, bundle; // ignore ingroup
+				group = Group.basicNew(server, this.defaultGroupID);
+				group.isPlaying = true;
+				NodeWatcher.newFrom(this.localServer).register(group);
+				// this happens in sendAll and sendEach, should implement in sendObj
+				// bundle.add(group.newMsg(argGroup ? server, \addToHead));
+	}
+	
+
 
 }
 

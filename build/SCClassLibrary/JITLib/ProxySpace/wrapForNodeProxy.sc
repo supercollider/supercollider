@@ -30,7 +30,7 @@
 		^ProxySynthDef(
 			proxy.generateUniqueName ++ nameEnd,
 			this.prepareForProxySynthDef(proxy),
-			proxy.nodeMap.lagsFor(argNames),
+			proxy.nodeMap.ratesFor(argNames),
 			nil, 
 			true, 
 			channelOffset,

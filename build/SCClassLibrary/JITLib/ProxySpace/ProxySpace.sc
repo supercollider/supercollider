@@ -181,8 +181,11 @@ SharedProxySpace  : ProxySpace {
 		nControl = firstAudioKey.digit - 10;
 		nAudio = 26 - nControl;
 		controlKeys = controlKeys ?? { this.defaultControlKeys(nControl) };
-		audioKeys = audioKeys ?? { this.defaultAudioKeys(nAudio, nControl) };
+		this.makeSharedProxy(controlKeys.removeAt(0), 'control', 8); // make multichannel proxy
 		controlKeys.do({ arg key; this.makeSharedProxy(key, 'control') });
+		
+		audioKeys = audioKeys ?? { this.defaultAudioKeys(nAudio, nControl) };
+		this.makeSharedProxy(audioKeys.removeAt(0), 'audio', 8); // make multichannel proxy
 		audioKeys.do({ arg key; this.makeSharedProxy(key, 'audio') });
 	}
 	
@@ -193,14 +196,14 @@ SharedProxySpace  : ProxySpace {
 		^Array.fill(n, { arg i; asSymbol(asAscii(97 + offset + i)) }) 
 	}
 
-	makeSharedProxy { arg key, rate;
+	makeSharedProxy { arg key, rate, numChannels;
 			var proxy, broadcast;
 			broadcast = server.broadcast;
 			proxy = if(rate.isNil, {
 				SharedNodeProxy(broadcast)
 			},{
 				
-				SharedNodeProxy.perform(rate, broadcast)
+				SharedNodeProxy.perform(rate, broadcast, numChannels)
 			});
 			proxy.clock = clock;
 			envir.put(key, proxy);

@@ -6,10 +6,10 @@ SoundDef {
 	var <synthDef, <controlNames;
 	classvar <all, <>servers;
 	
-	*new { arg key, func, lags, prependArgs;
+	*new { arg key, func, rates, prependArgs;
 		var synthDef;
 		if(func.isNil, { ^all.at(key.asSymbol) });
-		synthDef = SynthDef(key, func, lags, prependArgs);
+		synthDef = SynthDef(key, func, rates, prependArgs);
 		^super.newCopyArgs(synthDef).toLib(key.asSymbol) //add some preparation later
 	}
 	
