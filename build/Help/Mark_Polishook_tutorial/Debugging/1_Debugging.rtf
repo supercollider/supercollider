@@ -7,9 +7,11 @@
 \f0\b\fs24 \cf0 My code doesn't work!
 \f1\b0\fs18 \
 \
-Debugging code, learning to make it error free, is a skill worth learning. This is because code, even when written with great care, often fails to run. In such cases, SuperCollider sometimes will tell you why and sometimes it won't. \
+Debugging code, learning to make it error free, is a skill worth learning. This is because code, even when written with great care, often fails to run as expected. In such cases, SuperCollider sometimes will tell you why and sometimes it won't. \
 \
-When SuperCollider does supply information about problems in code, it's usually to give notification of a syntax or a runtime error. When SuperCollider doesn't give information about problems it often the case that the code runs but doesn't work as expected. One common example of this are synths (nodes) that don't execute in the desired order.\
+When SuperCollider does supply information about problems in code, it's usually to give notification of a syntax or a runtime error.\
+\
+ When SuperCollider doesn't give information about problems, it's often because the code works, that is it runs, but not as expected or hoped for. An example of this are synths (nodes) written so that they execute in the wrong order (a source place after, instead of before, an effect). Another example is adding instead of multiplying (biasing an amplitude instead of scaling it).\
 \
 For context about debugging, here are links that describe debugging in languages other than SuperCollider.\
 \
