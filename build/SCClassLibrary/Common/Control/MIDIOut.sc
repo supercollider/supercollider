@@ -80,6 +80,11 @@ MIDIEvent {
 			c.matchItem(inC)
 		}}}
 	}
+	// convenience accessors
+	note { ^b }
+	veloc { ^c }
+	ctlnum { ^b }
+	ctlval { ^c }
 }
 
 MIDIIn {
