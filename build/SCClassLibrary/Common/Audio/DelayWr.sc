@@ -4,7 +4,7 @@
 	won't work on scsynth yet
 	-felix
 */
-
+/*
 PingPong {
 	*ar { arg bank, index, inputs, delayTime, feedback=0.7, rotate=1, interpolationType=2;
 	
@@ -19,6 +19,26 @@ PingPong {
 		^outputs
 	}
 }
+*/
+
+PingPong {
+	//your buffer should be the same numChannels as your inputs
+	*ar { arg  bufnum=0,  inputs, delayTime, feedback=0.7, rotate=1;
+	
+		var indices, delayedSignals, outputs;
+		
+		delayedSignals = PlayBuf.ar(inputs.size,bufnum,1.0,1.0,0.0,1.0);
+		
+		outputs = delayedSignals.rotate(rotate) * feedback + inputs;
+		// feedback to buffers		
+		RecordBuf.ar(outputs,bufnum,0.0,1.0,0.0,1.0,1.0,1.0);
+		
+		^outputs
+	}
+}
+
+
+/**
 
 
 DelayProcess {
@@ -53,3 +73,5 @@ DelayProcess {
 		^outputs	// output the mixed signal and force the DelayWr into the call graph
 	}
 }
+
+**/
