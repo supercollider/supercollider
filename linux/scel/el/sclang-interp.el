@@ -35,6 +35,13 @@
 (defconst sclang-post-buffer "*SCLang*"
   "Name of the SuperCollider process output buffer.")
 
+(defcustom sclang-max-post-buffer-size 0
+  "*Maximum number of characters to insert in post buffer.
+Zero means no limit."
+  :group 'sclang-interface
+  :version "21.3"
+  :type 'integer)
+
 (defun sclang-get-post-buffer ()
   (get-buffer-create sclang-post-buffer))
 
@@ -95,7 +102,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
    (sclang-mode)
    (set (make-local-variable 'font-lock-fontify-region-function)
 	(lambda (&rest args))))
-;;   (sclang-clear-post-buffer)
+  (sclang-clear-post-buffer)
   (sclang-show-post-buffer))
 
 ;; =====================================================================
@@ -181,7 +188,9 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 ;; library initialization works like this:
 ;;
 ;; * emacs starts sclang with SCLANG_COMMAND_FIFO set in the environment
-;; * sclang sends '_init' command reply during class tree initialization
+;; * sclang opens fifo for communication with emacs during class tree
+;;   initialization
+;; * sclang sends '_init' command
 ;; * '_init' command handler calls sclang--on-library-startup to complete
 ;;   initialization
 
@@ -190,10 +199,10 @@ If EOB-P is non-nil, positions cursor at end of buffer."
        sclang--library-initialized-p))
 
 (defun sclang--on-library-startup ()
-  (message "SCLang: Initializing library ...")
+  (sclang-message "Initializing library ...")
   (setq sclang--library-initialized-p t)
   (run-hooks 'sclang-library-startup-hook)
-  (message "SCLang: Initializing library ... Done"))
+  (sclang-message "Initializing library ... Done"))
 
 (defun sclang--on-library-shutdown ()
   (run-hooks 'sclang-library-shutdown-hook)
@@ -205,7 +214,11 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 
 (defun sclang--process-sentinel (proc msg)
   (with-sclang-post-buffer
-   (insert (format "%s %s" proc (substring msg 0 -1))))
+   (goto-char (point-max))
+   (insert
+    (if (and (bolp) (eolp)) "\n" "\n\n")
+    (format "*** %s %s ***" proc (substring msg 0 -1))
+    "\n\n"))
   (when (memq (process-status proc) '(exit signal))
     (sclang--on-library-shutdown)))
 
@@ -213,6 +226,9 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   (let* ((buffer (process-buffer proc))
 	 (window (display-buffer buffer)))
     (with-current-buffer buffer
+      (when (and (> sclang-max-post-buffer-size 0)
+		 (> (buffer-size) sclang-max-post-buffer-size))
+	(erase-buffer))
       (let ((moving (= (point) (process-mark proc))))
 	(save-excursion
 	  ;; Insert the text, advancing the process marker.
@@ -408,15 +424,11 @@ Change this if \"cat\" has a non-standard name or location."
   (put symbol 'sclang-command-handler function))
 
 (defun sclang-perform-command (symbol &rest args)
-;;   (and (functionp (get symbol 'sclang-command-handler))
-;;        (not (eq ?_ (aref (symbol-name symbol) 0)))
   (sclang-eval-string (sclang-format
 		       "Emacs.lispPerformCommand(%o, %o, true)"
 		       symbol args)))
 
 (defun sclang-perform-command-no-result (symbol &rest args)
-;;   (and (functionp (get symbol 'sclang-command-handler))
-;;        (not (eq ?_ (aref (symbol-name symbol) 0)))
   (sclang-eval-string (sclang-format
 		       "Emacs.lispPerformCommand(%o, %o, false)"
 		       symbol args)))

@@ -23,13 +23,15 @@ SC_LANG_SHARED_VERSION_INFO="0:0:0"
 AC_SUBST(SC_LANG_SHARED_VERSION_INFO)
 
 # check for programs
+AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CXX
-AC_PROG_AWK
 AC_PROG_INSTALL
+AC_PROG_LD
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_LD
+dnl AC_PROG_YACC
+
 AM_PROG_LIBTOOL
 
 # emacs lisp handling
@@ -82,6 +84,18 @@ AC_SUBST(SNDFILE_LIBS)
 # common compiler flags
 SC_CPPFLAGS="-Wall -Wno-unknown-pragmas -DSC_LINUX -D_REENTRANT"
 SC_CFLAGS=""
+
+# include paths
+AC_SUBST(SC_SYNTH_INCLUDES)
+AC_SUBST(SC_PLUGIN_INCLUDES)
+AC_SUBST(SC_LANG_INCLUDES)
+
+SC_SYNTH_INCLUDES=\
+'-I$(top_srcdir)/headers/common -I$(top_srcdir)/headers/plugin_interface -I$(top_srcdir)/headers/server'
+SC_PLUGIN_INCLUDES=\
+'-I$(top_srcdir)/headers/common -I$(top_srcdir)/headers/plugin_interface -I$(top_srcdir)/headers/server'
+SC_LANG_INCLUDES=\
+'-I$(top_srcdir)/headers/common -I$(top_srcdir)/headers/plugin_interface -I$(top_srcdir)/headers/lang -I$(top_srcdir)/headers/server'
 
 # ======================================================================
 # debugging
@@ -349,6 +363,7 @@ source/server/Makefile
 source/plugins/Makefile
 source/lang/Makefile
 source/lang/LangPrimSource/Makefile
+source/lang/LangSource/erase-compiler/Makefile
 source/lang/LangSource/Makefile
 linux/Makefile
 linux/libscsynth.pc

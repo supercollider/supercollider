@@ -36,44 +36,25 @@ EmacsDocument : Document
 			nil
 		})
 		.put(\documentClosed, { | id |
-// 			[\documentClosed, id].postln;
 			this.documentDo(id, { | doc |
+// 				[\documentClosed, doc].postln;
 				doc.closed;
 			});
 			nil
 		})
-// 		.put(\documentEdited, { | id, flag |
-// 			this.documentDo(id, { | doc |
-// // 				[\documentEdited, id, flag].postln;
-// 				doc.isEdited = flag.notNil;
-// 			});
-// 			nil
-// 		})
-		.put(\documentBecomeKey, { | id, flag |
-			this.documentDo(id, { | doc |
-// 				[\documentBecomeKey, doc, flag].postln;
-				if (flag.notNil) {
+		.put(\documentSetCurrent, { | id |
+			if (current.notNil) {
+// 				[\didResignKey, current].postln;
+				current.didResignKey;
+			};
+			if (id.notNil) {
+				this.documentDo(id, { | doc |
+// 					[\didBecomeKey, doc].postln;
 					doc.didBecomeKey;
-				}{
-					doc.didResignKey;
-				}
-			});
+				});
+			};
 			nil
 		})
-// 		.put(\documentRenamed, { | id, name |
-// 			this.documentDo(id, { | doc |
-// 				[\documentRenamed, id, name].postln;
-// 				doc.prSetName(name);
-// 			});
-// 			nil
-// 		})
-// 		.put(\documentSetEdited, { | id, flag |
-// 			this.documentDo(id, { | doc |
-// 				[\documentEdited, id, flag].postln;
-// 				doc.prSetEdited(flag.notNil);
-// 			});
-// 			nil
-// 		})
 		.put(\documentSetProperty, { | id, msg, value |
 			this.documentDo(id, { | doc |
 // 				[\documentSetProperty, doc, msg, value].postln;

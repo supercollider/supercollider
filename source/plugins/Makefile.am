@@ -23,10 +23,7 @@ MAINTAINERCLEANFILES =	\
 	stamp-h.in	\
         stamp-h
 
-SC_INCLUDE_DIR		= $(top_srcdir)/headers
-INCLUDES		= -I$(SC_INCLUDE_DIR)/common \
-			-I$(SC_INCLUDE_DIR)/plugin_interface \
-			-I$(SC_INCLUDE_DIR)/server
+INCLUDES		= $(SC_PLUGIN_INCLUDES)
 AM_CPPFLAGS		= $(SC_CPPFLAGS)
 AM_CFLAGS		= $(SC_CFLAGS)
 AM_CXXFLAGS		= $(AM_CFLAGS)

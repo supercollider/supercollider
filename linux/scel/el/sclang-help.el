@@ -42,11 +42,9 @@
   :group 'sclang-programs
   :type 'string)
 
-;; (defvar sclang-help-syntax-table nil
-;;   "Syntax table used in SuperCollider help buffers.")
-
 (defvar sclang-help-topic-alist nil
   "Alist mapping help topics to file names.")
+
 (defvar sclang-help-topic-history nil
   "List of recently invoked help topics.")
 ;; (defvar sclang-help-topic-ring-length 32)
@@ -55,8 +53,6 @@
 (defvar sclang-help-file nil)
 (defvar sclang-current-help-file nil)
 (make-variable-buffer-local 'sclang-help-file)
-
-;; (defvar sclang-help-mode-syntax-table nil)
 
 (defun sclang-get-help-file (topic)
   (cdr (assoc topic sclang-help-topic-alist)))
@@ -107,6 +103,10 @@
 (defstruct sclang-rtf-state
   output font-table font face pos)
 
+(macrolet ((rtf-p (pos) `(plist-get (text-properties-at ,pos) 'rtf-p)))
+  (defun sclang-rtf-p (pos) (rtf-p pos))
+  (defun sclang-code-p (pos) (not (rtf-p pos))))
+
 (defmacro with-sclang-rtf-state-output (state &rest body)
   `(with-current-buffer (sclang-rtf-state-output ,state)
      ,@body))
@@ -126,11 +126,12 @@
 				(sclang-rtf-state-font-table ,state)))
 			  sclang-rtf-font-map)))
 	     (,face (sclang-rtf-state-face ,state)))
-	 (if ,font
-	     (add-text-properties
-	      ,pos (point)
-	      (list 'rtf-p t 'rtf-face (append (list ,font) ,face))))
-	 (setf (sclang-rtf-state-pos ,state) (point))))))
+	 (when (> (point) ,pos)
+	   (if ,font
+	       (add-text-properties
+		,pos (point)
+		(list 'rtf-p t 'rtf-face (append (list ,font) ,face))))
+	   (setf (sclang-rtf-state-pos ,state) (point)))))))
 
 (defmacro sclang-rtf-state-set-font (state font)
   `(progn
@@ -153,7 +154,8 @@
 
 (defun sclang-parse-rtf (state)
   (while (not (eobp))
-    (cond ((looking-at "{")			; container
+    (cond ((looking-at "{")
+	   ;; container
 	   (let ((beg (point)))
 	     (with-syntax-table sclang-rtf-syntax-table
 	       (forward-list 1))
@@ -163,17 +165,21 @@
 		 (goto-char (point-min))
 		 (sclang-parse-rtf-container state)
 		 (widen)))))
-	  ((looking-at "\\\\\\([{}\\\n]\\)")	; escape
-	   (princ (match-string 1))
-	   (goto-char (match-end 0)))
-	  ((looking-at "\\\\\\([^\\ \n]+\\) ?")
+	  ((or (looking-at "\\\\\\([{}\\\n]\\)")
+	       (looking-at "\\\\\\([^\\ \n]+\\) ?"))
+	   ;; control
 	   (let ((end (match-end 0)))
 	     (sclang-parse-rtf-control state (match-string 1))
 	     (goto-char end)))
-	  ((looking-at "\\([^{\\\n]+\\)")	; normal text
-	   (princ (match-string 1))
-	   (goto-char (match-end 0)))
-	  (t (forward-char 1)))))
+	  ((looking-at "\\([^{\\\n]+\\)")
+	   ;; normal text
+	   (let ((end (match-end 0))
+		 (match (match-string 1)))
+	     (with-sclang-rtf-state-output state (insert match))
+	     (goto-char end)))
+	  (t
+	   ;; never reached (?)
+	   (forward-char 1)))))
 
 (defun sclang-parse-rtf-container (state)
   (cond ((looking-at "\\\\rtf1")		; document
@@ -187,21 +193,30 @@
 	((looking-at "{\\\\NeXTGraphic \\([^\\]+\\.[a-z]+\\)") ; inline graphic
 	 (let* ((file (match-string 1))
 		(image (and file (create-image (expand-file-name file)))))
-	   (if image
-	       (with-sclang-rtf-state-output state (insert-image image))
-	     (sclang-rtf-state-push-face state 'italic)
-	     (princ file)
-	     (sclang-rtf-state-pop-face state 'italic))))
+	   (with-sclang-rtf-state-output
+	    state
+	    (if image
+		(insert-image image))
+	    (sclang-rtf-state-push-face state 'italic)
+	    (insert file)
+	    (sclang-rtf-state-pop-face state 'italic))))
 	))
 
 (defun sclang-parse-rtf-control (state ctrl)
   (let ((char (aref ctrl 0)))
-    (cond ((string= ctrl "par")
-	   (princ "\n"))
+    (cond ((memq char '(?{ ?} ?\\))
+	   (with-sclang-rtf-state-output state (insert char)))
+	  ((or (eq char ?\n)
+	       (string= ctrl "par"))
+	   (sclang-rtf-state-apply state)
+	   (with-sclang-rtf-state-output
+	    state
+	    (when (sclang-rtf-p (line-beginning-position))
+	      (fill-region (line-beginning-position) (line-end-position)
+			   t t))
+	      (insert ?\n)))
 	  ((string= ctrl "tab")
-	   (princ "\t"))
-	  ((or (eq char ?{) (eq char ?}))
-	   (princ (char-to-string char)))
+	   (with-sclang-rtf-state-output state (insert ?\t)))
 	  ((string= ctrl "b")
 	   (sclang-rtf-state-push-face state 'bold))
 	  ((string= ctrl "b0")
@@ -212,8 +227,7 @@
 
 (defun sclang-convert-rtf-buffer (output)
   (let ((case-fold-search nil)
-	(fill-column 80)
-	(standard-output output))
+	(fill-column 80))
     (save-excursion
       (goto-char (point-min))
       (when (looking-at "{\\\\rtf1")
@@ -221,10 +235,6 @@
 	  (setf (sclang-rtf-state-output state) output)
 	  (sclang-parse-rtf state)
 	  (sclang-rtf-state-apply state))))))
-
-(macrolet ((rtf-p (pos) `(plist-get (text-properties-at ,pos) 'rtf-p)))
-  (defun sclang-rtf-p (pos) (rtf-p pos))
-  (defun sclang-code-p (pos) (not (rtf-p pos))))
 
 ;; =====================================================================
 ;; help file access
@@ -284,13 +294,15 @@
 	(skip-syntax-forward "w_")
 	(setq end (point))
 	(goto-char beg)
-	(buffer-substring-no-properties beg end)))))
+	(car (assoc (buffer-substring-no-properties beg end)
+		    sclang-help-topic-alist))))))
 
 (defun sclang-find-help (topic)
   (interactive
    (list
     (let ((topic (or (and mark-active (buffer-substring-no-properties (region-beginning) (region-end)))
-		     (sclang-help-topic-at-point))))
+		     (sclang-help-topic-at-point)
+		     "Help")))
       (completing-read (format "Help topic%s: " (if (sclang-get-help-file topic)
 						    (format " (default %s)" topic) ""))
 		       sclang-help-topic-alist nil t nil 'sclang-help-topic-history topic))))
@@ -308,8 +320,8 @@
 		    (sclang-help-mode))
 		  (set-buffer-modified-p nil)))
 	      (switch-to-buffer buffer))
-	  (sclang-message "Help file not found"))
-      (sclang-message "No help for \"%s\"" topic))))
+	  (sclang-message "Help file not found") nil)
+      (sclang-message "No help for \"%s\"" topic) nil)))
 
 ;; =====================================================================
 ;; help mode
@@ -389,18 +401,21 @@
       (setq buffer-auto-save-file-name nil)
       (save-excursion
 	(when (sclang-rtf-file-p file)
-	  (let ((tmp-buffer (generate-new-buffer " *RTF*")))
-	    (sclang-convert-rtf-buffer tmp-buffer)
-	    (erase-buffer)
-	    (insert-buffer-substring tmp-buffer)
-	    (set-buffer-modified-p nil)
-	    (kill-buffer tmp-buffer)))))
+	  (let ((tmp-buffer (generate-new-buffer " *RTF*"))
+		(modified-p (buffer-modified-p)))
+	    (unwind-protect
+		(progn
+		  (sclang-convert-rtf-buffer tmp-buffer)
+		  (erase-buffer)
+		  (insert-buffer-substring tmp-buffer))
+	      (and (buffer-modified-p) (not modified-p) (set-buffer-modified-p nil))
+	      (kill-buffer tmp-buffer))))))
     (set (make-local-variable 'sclang-help-file) file)
     (setq font-lock-defaults
 	  (append font-lock-defaults
 		  '((font-lock-fontify-region-function . sclang-help-mode-fontify-region))))
     (set (make-local-variable 'beginning-of-defun-function) 'sclang-help-mode-beginning-of-defun)
-    (setq indent-line-function #'sclang-help-mode-indent-line)
+    (set (make-local-variable 'indent-line-function) 'sclang-help-mode-indent-line)
     ))
 
 ;; =====================================================================

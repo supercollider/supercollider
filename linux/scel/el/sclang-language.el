@@ -205,6 +205,11 @@ low-resource systems."
 		  (setq sclang--symbol-table-file file)
 		  (sclang-perform-command 'symbolTable file))))))
 
+(add-hook 'sclang-library-shutdown-hook
+	  (lambda ()
+	    (setq sclang-symbol-table nil)
+	    (sclang-update-font-lock)))
+
 (defun sclang-make-symbol-completion-table ()
   (mapcar (lambda (s) (cons s nil)) sclang-symbol-table))
 
@@ -240,7 +245,10 @@ Use font-lock information if font-lock-mode is enabled."
       ;; use available information in font-lock-mode
       (eq (get-text-property (point) 'face) 'font-lock-comment-face)
     ;; else parse from the beginning
-    (not (null (nth 4 (parse-partial-sexp (point-min) (point)))))))
+    (save-excursion
+      (let ((beg (point)))
+	(beginning-of-defun)
+	(not (null (nth 4 (parse-partial-sexp (point) beg))))))))
 
 (defun sclang-beginning-of-defun (&optional arg)
   (interactive "p")
@@ -549,7 +557,9 @@ are considered."
   (interactive)
   (let ((regexp (concat
 		 sclang-class-name-regexp
-		 "[ \t\n]*\\(?:\\.[ \t\n]*\\(" sclang-method-name-regexp "\\)\\)?[ \t\n]*("))
+		 "[ \t\n]*\\(?:\\.[ \t\n]*\\("
+		 sclang-method-name-regexp
+		 "\\)\\)?[ \t\n]*("))
 	(case-fold-search nil)
 	(beg (point)))
     (save-excursion

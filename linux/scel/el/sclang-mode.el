@@ -133,9 +133,11 @@
   (define-key map "\C-c\C-r"	'sclang-main-run)
   (define-key map "\C-c\C-s"	'sclang-main-stop)
   ;; electric characters
+;;   (define-key map "{"		'sclang-electric-brace)
   (define-key map "}"		'sclang-electric-brace)
-  (define-key map "("		'sclang-electric-brace)
+;;   (define-key map "("		'sclang-electric-brace)
   (define-key map ")"		'sclang-electric-brace)
+;;   (define-key map "["		'sclang-electric-brace)
   (define-key map "]"		'sclang-electric-brace)
   (define-key map "/"		'sclang-electric-slash)
   (define-key map "*"		'sclang-electric-star)
@@ -191,7 +193,9 @@
     "warn"
     )
   "*List of methods signalling errors or warnings.")
-  
+
+(defvar sclang-font-lock-class-keywords nil)
+
 (defvar sclang-font-lock-keywords-1 nil
   "Subdued level highlighting for SCLang mode.")
 
@@ -225,30 +229,42 @@
 	 ;; comment
 	 'font-lock-comment-face)))
 
+;; (defun sclang-font-lock-class-keyword-matcher (limit)
+;;   "Find all occurrences of class symbols defined in the library."
+;;   (let ((regexp (concat "\\<" sclang-class-name-regexp "\\>"))
+;; 	(case-fold-search nil)
+;; 	success)
+;;     (if (and sclang-symbol-table (not sclang-font-lock-class-keywords))
+;; 	(let* ((list (remove-if
+;; 		      (lambda (x) (or (not (sclang-class-name-p x))
+;; 				      (sclang-meta-class-name-p x)))
+;; 		      sclang-symbol-table))
+;; 	       (max-specpdl-size (length list)))
+;; 	  (setq sclang-font-lock-class-keywords
+;; 		(concat "\\<\\(?:Meta_\\)?\\(?:" (regexp-opt list) "\\)\\>"))))
+
+;;     (while (and (not success) (re-search-forward regexp limit t))
+;;       (save-excursion
+;; 	(goto-char (match-beginning 0))
+;; 	(setq success (save-match-data (sclang-get-symbol (sclang-symbol-at-point))))))
+;;     success))
+
 (defun sclang-font-lock-class-keyword-matcher (limit)
-  "Find all occurrences of class symbols defined in the library."
-  (let ((regexp (concat "\\<" sclang-class-name-regexp "\\>"))
-	(case-fold-search nil)
-	success)
-    (while (and (not success) (re-search-forward regexp limit t))
-      (save-excursion
-	(goto-char (match-beginning 0))
-	(setq success (save-match-data (sclang-get-symbol (sclang-symbol-at-point))))))
-    success))
+  (let ((regexp (or sclang-font-lock-class-keywords
+		    (concat "\\<" sclang-class-name-regexp "\\>")))
+	(case-fold-search nil))
+    (re-search-forward regexp limit t)))
 
 (defun sclang-set-font-lock-keywords ()
-;;   (unless sclang-font-lock-class-keywords
-;;     (sclang-set-font-lock-class-keywords))
-
   (setq
    ;; level 1
    sclang-font-lock-keywords-1
    (list
     ;; keywords
-    (cons (regexp-opt (sort (copy-list sclang-font-lock-keyword-list) 'string<) 'words)
+    (cons (regexp-opt sclang-font-lock-keyword-list'words)
 	  'font-lock-keyword-face)
     ;; builtins
-    (cons (regexp-opt (sort (copy-list sclang-font-lock-builtin-list) 'string<) 'words)
+    (cons (regexp-opt sclang-font-lock-builtin-list 'words)
 	  'font-lock-builtin-face)
     ;; constants
     (cons "\\s/\\s\\?." 'font-lock-constant-face) ; characters
@@ -269,10 +285,10 @@
      (cons sclang-method-definition-regexp
 	   (list 1 'font-lock-function-name-face))
      ;; methods
-     (cons (regexp-opt (sort (copy-list sclang-font-lock-method-list) 'string<) 'words)
+     (cons (regexp-opt sclang-font-lock-method-list 'words)
 	   'font-lock-function-name-face)
      ;; errors
-     (cons (regexp-opt (sort (copy-list sclang-font-lock-error-list) 'string<) 'words)
+     (cons (regexp-opt sclang-font-lock-error-list 'words)
 	   'font-lock-warning-face)
      ))
    ;; level 3
@@ -282,6 +298,7 @@
     (list
      ;; classes
      (cons 'sclang-font-lock-class-keyword-matcher 'font-lock-type-face)
+;;      (cons (concat "\\<" sclang-class-name-regexp "\\>") 'font-lock-type-face)
      ))
    ;; default level
    sclang-font-lock-keywords sclang-font-lock-keywords-1
@@ -289,10 +306,25 @@
 
 (defun sclang-update-font-lock ()
   "Update font-lock information in all sclang-mode buffers."
-  (dolist (buffer (buffer-list))
-    (with-current-buffer buffer
-      (and (eq major-mode 'sclang-mode)
-	   (font-lock-fontify-buffer)))))
+  (setq sclang-font-lock-class-keywords
+	(and sclang-symbol-table
+	     (let* ((list (remove-if
+			   (lambda (x) (or (not (sclang-class-name-p x))
+					   (sclang-string-match "^Meta_" x)))
+			   sclang-symbol-table))
+		    ;; need to set this for large numbers of classes
+		    (max-specpdl-size (length list)))
+	       (condition-case nil
+		   (concat "\\<\\(?:Meta_\\)?\\(?:" (regexp-opt list) "\\)\\>")
+		 (error nil)))))
+  ;; too expensive
+  ;;   (dolist (buffer (buffer-list))
+  ;;     (with-current-buffer buffer
+  ;;       (and (eq major-mode 'sclang-mode)
+  ;; 	   (eq t (car font-lock-keywords))
+  ;; 	   (setq font-lock-keywords (cdr font-lock-keywords)))))
+  (if (eq major-mode 'sclang-mode)
+      (font-lock-fontify-buffer)))
 
 ;; =====================================================================
 ;; indentation
@@ -381,9 +413,14 @@ Returns the column to indent to."
 (defun sclang-electric-brace (arg)
   (interactive "*P")
   (self-insert-command (prefix-numeric-value arg))
-  (indent-according-to-mode)
-  (when (eq (char-before) ?\()
-    (sclang-show-method-args)))
+  (and (save-excursion
+	 (beginning-of-line)
+	 (looking-at "\\s *\\s)"))
+       (indent-according-to-mode))
+  ;; too expensive
+  ;;   (when (eq (char-before) ?\()
+  ;;     (sclang-show-method-args))
+  )
 
 (defun sclang-electric-slash (arg)
   (interactive "*P")
@@ -414,6 +451,13 @@ Returns the column to indent to."
 
 (defvar sclang--document-idle-timer nil)
 
+(defconst sclang-document-property-map
+  '((sclang-document-name . (prSetName (buffer-name)))
+    (sclang-document-path . (prSetPath (buffer-file-name)))
+    (sclang-document-listener-p . (prSetIsListener (eq (current-buffer) (sclang-get-post-buffer))))
+    (sclang-document-editable-p . (prSetEditable (not buffer-read-only)))
+    (sclang-document-edited-p . (prSetEdited (buffer-modified-p)))))
+
 (defmacro sclang-next-document-id ()
   `(incf sclang--document-counter))
 
@@ -436,39 +480,35 @@ Returns the column to indent to."
 	   (sclang-document-list)))
 
 (defun sclang-init-document ()
-  (setq sclang-document-id (sclang-next-document-id))
+  (set (make-local-variable 'sclang-document-id) (sclang-next-document-id))
+  (set (make-local-variable 'sclang-document-envir) nil)
+  (dolist (assoc sclang-document-property-map)
+    (set (make-local-variable (car assoc)) nil))
   (pushnew (current-buffer) sclang--document-list))
 
-(defconst sclang-document-state-keys
-  '((prSetName . buffer-name)
-    (prSetPath . buffer-file-name)
-    (prSetIsListener . (lambda () (eq (current-buffer) (sclang-get-post-buffer))))
-    (prSetEditable . (lambda () (not buffer-read-only)))
-    (prSetEdited . buffer-modified-p)))
+(defun sclang-document-update-property-1 (assoc &optional force)
+  (when (consp assoc)
+    (let* ((key (car assoc))
+	   (prop (cdr assoc))
+	   (prev-value (eval key))
+	   (cur-value (eval (cadr prop))))
+      (when (or force (not (equal prev-value cur-value)))
+	(set key cur-value)
+	(sclang-perform-command-no-result
+	 'documentSetProperty sclang-document-id
+	 (car prop) cur-value)))))
 
-(defun sclang-document-set-property (msg value)
-  (sclang-perform-command-no-result
-   'documentSetProperty sclang-document-id msg value))
+(defun sclang-document-update-property (key &optional force)
+  (sclang-document-update-property-1 (assq key sclang-document-property-map) force))
 
 (defun sclang-document-update-properties (&optional force)
-  (let ((keys sclang-document-state-keys)
-	(prev-state sclang-document-state)
-	next-state)
-    (dolist (assoc keys)
-      (let ((prev-value (car prev-state))
-	    (next-value (funcall (cdr assoc))))
-	(setq next-state (append next-state (list next-value)))
-	(when (or force (not (equal prev-value next-value)))
-	  (sclang-document-set-property (car assoc) next-value))
-	(setq prev-state (cdr prev-state))))
-    (setq sclang-document-state next-state)))
+  (dolist (assoc sclang-document-property-map)
+    (sclang-document-update-property-1 assoc force)))
 
-(defun sclang-make-document (buffer)
-  (with-sclang-document
-   buffer
-   (sclang-perform-command-no-result 'documentNew sclang-document-id)
-   (sclang-document-update-properties t)))
-
+(defun sclang-make-document ()
+  (sclang-perform-command-no-result 'documentNew sclang-document-id)
+  (sclang-document-update-properties t))
+  
 (defun sclang-close-document (buffer)
   (with-sclang-document
    buffer
@@ -476,89 +516,29 @@ Returns the column to indent to."
    (sclang-perform-command-no-result
     'documentClosed sclang-document-id)))
 
-(defun sclang-make-buffer-current (buffer)
-  (unless (eq buffer sclang--current-document)
-    ;;       (message "%s %s %s %s" prev (sclang-document-id prev) buffer id)
-    (when sclang--current-document
-      (sclang-perform-command-no-result
-       'documentBecomeKey (sclang-document-id sclang--current-document) nil))
-    (let ((id (sclang-document-id buffer)))
-      (setq sclang--current-document
-	    (when id
-	      (sclang-perform-command-no-result
-	       'documentBecomeKey id t)
-	      buffer)))))
+(defun sclang-set-current-document (buffer &optional force)
+  (when (or force (not (eq buffer sclang--current-document)))
+    (setq sclang--current-document buffer)
+    (sclang-perform-command-no-result 'documentSetCurrent (sclang-document-id buffer))
+    t))
 
-;; (defun sclang-set-document-modified-p (buffer flag)
-;;   (let ((id (sclang-document-id buffer)))
-;;     (when (integerp id)
-;;       (sclang-perform-command-no-result
-;;        'documentSetEdited id flag))))
-
-(defun sclang--document-idle-function ()
-  (dolist (buffer (sclang-document-list))
-    (with-current-buffer buffer
-      (sclang-document-update-properties))))
-
-(defun sclang--document-library-shutdown-hook-function ()
-  (if sclang--document-idle-timer (cancel-timer sclang--document-idle-timer)))
-  
 (defun sclang--document-library-startup-hook-function ()
   (dolist (buffer (sclang-document-list))
-    (sclang-make-document buffer))
-  (sclang-make-buffer-current (current-buffer))
-  (sclang--document-library-shutdown-hook-function)
-  (setq sclang--document-idle-timer (run-with-idle-timer 0.5 t 'sclang--document-idle-function)))
+    (with-current-buffer buffer
+      (sclang-make-document)))
+  (sclang-set-current-document (current-buffer) t))
 
 (defun sclang--document-kill-buffer-hook-function ()
   (sclang-close-document (current-buffer)))
 
 (defun sclang--document-post-command-hook-function ()
-  (sclang-make-buffer-current (current-buffer)))
+  (when (and (sclang-library-initialized-p)
+	     (sclang-document-p (current-buffer)))
+    (sclang-document-update-properties))
+  (sclang-set-current-document (current-buffer)))
 
 (defun sclang--document-change-major-mode-hook-function ()
   (sclang-close-document (current-buffer)))
-
-;; (defun sclang--document-first-change-hook-function ()
-;;   (sclang-set-document-modified-p (current-buffer) t))
-
-;; (defun sclang--document-after-save-hook-function ()
-;;   (sclang-set-document-modified-p (current-buffer) (buffer-modified-p)))
-
-;; (defun sclang--document-idle-function ()
-;;   (dolist (buffer (sclang-document-list))
-;;     (with-current-buffer buffer
-;;       (let ((prev-state sclang-document-state)
-;; 	    (cur-state (list (list 'name (buffer-name))
-;; 			     (list 'path (buffer-file-name))
-;; 			     (list 'editable (not buffer-read-only))
-;; 			     (list 'edited (buffer-modified-p))))
-;; 	    changed)
-;; 	(dolist (assoc cur-state)
-;; 	  (unless (equal assoc (car prev-state))
-;; 	    (push assoc changed))
-;; 	  (setq prev-state (cdr prev-state)))
-;; 	(when changed
-;; 	  (sclang-perform-command-no-result
-;; 	   'documentPropertiesChanged sclang-document-id changed)
-;; 	  (setq sclang-document-state cur-state))))))
-
-;; (defadvice rename-buffer (after sclang-rename-document last activate compile)
-;;   "Propagate buffer name changes to SuperCollider process."
-;;   (let ((id (sclang-document-id (current-buffer))))
-;;     (when id
-;;       (sclang-perform-command-no-result
-;;        'documentRenamed
-;;        id (buffer-name)))))
-
-;; (defadvice set-buffer-modified-p (around sclang-set-buffer-modified-p last activate compile)
-;;   (let ((flag (not (buffer-modified-p))))
-;;     ad-do-it
-;;     (when (eq flag (buffer-modified-p))
-;;       (sclang-set-document-modified-p (current-buffer) flag))))
-
-;; (defadvice set-buffer-modified-p (after sclang-set-buffer-modified-p last activate compile)
-;;   (sclang-set-document-modified-p (current-buffer) (buffer-modified-p)))
 
 ;; =====================================================================
 ;; command handlers
@@ -593,7 +573,8 @@ Returns the column to indent to."
  '_documentClose
  (lambda (arg)
    (let ((doc (and (integerp arg) (sclang-get-document arg))))
-     (and doc (kill-buffer doc)))))
+     (and doc (kill-buffer doc)))
+   nil))
 
 (sclang-set-command-handler
  '_documentRename
@@ -603,7 +584,9 @@ Returns the column to indent to."
        (let ((doc (and (integerp id) (sclang-get-document id))))
 	 (when doc
 	   (with-current-buffer doc
-	     (rename-buffer name t))))))))
+	     (rename-buffer name t)
+	     (sclang-document-update-property 'sclang-document-name))))))
+   nil))
 
 (sclang-set-command-handler
  '_documentSetEditable
@@ -612,19 +595,23 @@ Returns the column to indent to."
      (let ((doc (and (integerp id) (sclang-get-document id))))
        (when doc
 	 (with-current-buffer doc
-	   (setq buffer-read-only (not flag))))))))
+	   (setq buffer-read-only (not flag))
+	   (sclang-document-update-property 'sclang-editable-p)))))
+   nil))
 
 (sclang-set-command-handler
  '_documentSwitchTo
  (lambda (arg)
    (let ((doc (and (integerp arg) (sclang-get-document arg))))
-     (and doc (switch-to-buffer doc)))))
+     (and doc (switch-to-buffer doc)))
+   nil))
 
 (sclang-set-command-handler
  '_documentPopTo
  (lambda (arg)
    (let ((doc (and (integerp arg) (sclang-get-document arg))))
-     (and doc (display-buffer doc)))))
+     (and doc (display-buffer doc)))
+   nil))
 
 ;; =====================================================================
 ;; sclang-mode
@@ -657,7 +644,7 @@ Returns the column to indent to."
        "[ \t]*\\(//+\\|\\**\\)[ \t]*$\\|^")
   (set (make-local-variable 'paragraph-separate) paragraph-start)
   (set (make-local-variable 'paragraph-ignore-fill-prefix) t)
-  (set (make-local-variable 'adaptive-fille-mode) t)
+  (set (make-local-variable 'adaptive-fill-mode) t)
   (set (make-local-variable 'adaptive-fill-regexp)
        "[ \t]*\\(//+\\|\\**\\)[ \t]*\\([ \t]*\\([-|#;>*]+[ \t]*\\|(?[0-9]+[.)][ \t]*\\)*\\)")
   ;; font lock
@@ -665,10 +652,6 @@ Returns the column to indent to."
        'sclang-font-lock-syntactic-face)
   (set (make-local-variable 'font-lock-defaults)
        sclang-font-lock-defaults)
-  ;; document interface
-  (set (make-local-variable 'sclang-document-id) nil)
-  (set (make-local-variable 'sclang-document-state) nil)
-  (set (make-local-variable 'sclang-document-envir) nil)
   ;; ---
   nil)
 
@@ -696,7 +679,7 @@ Returns the column to indent to."
   (sclang-mode-set-local-variables)
   (sclang-set-font-lock-keywords)
   (sclang-init-document)
-  (sclang-make-document (current-buffer))
+  (sclang-make-document)
   (run-hooks 'sclang-mode-hook))
 
 ;; =====================================================================
@@ -707,13 +690,9 @@ Returns the column to indent to."
 (add-to-list 'interpreter-mode-alist '("sclang" . sclang-mode))
 
 (add-hook 'sclang-library-startup-hook 'sclang--document-library-startup-hook-function)
-(add-hook 'sclang-library-shutdown-hook 'sclang--document-library-shutdown-hook-function)
 (add-hook 'kill-buffer-hook 'sclang--document-kill-buffer-hook-function)
 (add-hook 'post-command-hook 'sclang--document-post-command-hook-function)
-(add-hook 'post-command-hook 'sclang--document-idle-function)
 (add-hook 'change-major-mode-hook 'sclang--document-change-major-mode-hook-function)
-;; (add-hook 'first-change-hook 'sclang--document-first-change-hook-function)
-;; (add-hook 'after-save-hook 'sclang--document-after-save-hook-function)
 
 (provide 'sclang-mode)
 

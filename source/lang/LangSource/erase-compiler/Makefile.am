@@ -7,23 +7,16 @@
 
 MAINTAINERCLEANFILES	= Makefile.in
 
-INCLUDES		= $(SC_LANG_INCLUDES)
+INCLUDES		= -I$(top_srcdir)/headers/common \
+			-I$(top_srcdir)/headers/plugin_interface \
+			-I$(top_srcdir)/headers/lang \
+			-I$(top_srcdir)/headers/server
 AM_CPPFLAGS		= $(SC_CPPFLAGS)
-AM_CFLAGS		= $(SC_CFLAGS) $(SNDFILE_CFLAGS) 
+AM_CFLAGS		= $(SC_CFLAGS)
 AM_CXXFLAGS		= $(AM_CFLAGS)
 
-noinst_LTLIBRARIES	= liblangprim.la
+noinst_LTLIBRARIES	= liblangparser.la
 
-liblangprim_la_SOURCES	=		\
-	OSCData.cpp			\
-	PyrArchiver.cpp			\
-	PyrArrayPrimitives.cpp		\
-	PyrBitPrim.cpp			\
-	PyrCharPrim.cpp			\
-	PyrFilePrim.cpp			\
-	PyrListPrim.cpp			\
-	PyrStringPrim.cpp		\
-	PyrSymbolPrim.cpp		\
-	PyrUnixPrim.cpp
+liblangparser_la_SOURCES = lang11d_tab.cpp
 
 ## EOF ================================================================

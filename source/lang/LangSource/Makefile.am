@@ -5,14 +5,11 @@
 ## CVS:         $Id$
 ## ====================================================================
 
-CLEANFILES		= lang_tab.tmp.cpp
 MAINTAINERCLEANFILES	= Makefile.in
 
-INCLUDES		= -I$(top_srcdir)/headers/common \
-			-I$(top_srcdir)/headers/plugin_interface \
-			-I$(top_srcdir)/headers/lang \
-			-I$(top_srcdir)/headers/server \
-			-I$(srcdir)/erase-compiler
+SUBDIRS			= erase-compiler
+
+INCLUDES		= $(SC_LANG_INCLUDES) -I$(srcdir)/erase-compiler
 AM_CPPFLAGS		= $(SC_CPPFLAGS)
 AM_CFLAGS		= $(SC_CFLAGS) $(SNDFILE_CFLAGS)
 AM_CXXFLAGS		= $(AM_CFLAGS)
@@ -21,6 +18,7 @@ lib_LTLIBRARIES		= libsclang.la
 libsclang_la_LDFLAGS	= -version-info $(SC_LANG_SHARED_VERSION_INFO)
 libsclang_la_LIBADD	= $(top_builddir)/source/common/libcommon.la \
 			$(top_builddir)/source/lang/LangPrimSource/liblangprim.la \
+			$(top_builddir)/source/lang/LangSource/erase-compiler/liblangparser.la \
 			$(SC_LIBS) $(SNDFILE_LIBS) $(ALSA_LIBS) $(DMALLOC_LIBS) \
 			-lm -lpthread 
 
@@ -54,15 +52,10 @@ libsclang_la_SOURCES	=		\
 	SimpleStack.cpp			\
 	VMGlobals.cpp			\
 	alloca.cpp			\
-	dumpByteCodes.cpp		\
-	lang_tab.tmp.cpp
+	dumpByteCodes.cpp
 
 bin_PROGRAMS		= sclang
 sclang_LDADD		= libsclang.la $(top_builddir)/source/server/libscsynth.la
 sclang_SOURCES		= cmdLineFuncs.cpp
-
-# copy parser source from erase-compiler
-lang_tab.tmp.cpp: $(srcdir)/erase-compiler/lang11d_tab.cpp
-	cp $< $@
 
 ## EOF ================================================================

@@ -7,9 +7,7 @@
 
 MAINTAINERCLEANFILES	= Makefile.in
 
-INCLUDES		= -I$(top_srcdir)/headers/common \
-			-I$(top_srcdir)/headers/plugin_interface \
-			-I$(top_srcdir)/headers/server
+INCLUDES		= $(SC_SYNTH_INCLUDES)
 AM_CPPFLAGS		= $(SC_CPPFLAGS) -DSC_AUDIO_API=$(SC_AUDIO_API) \
 			-DSC_PLUGIN_DIR=\"$(SC_PLUGIN_DIR)\" \
 			-DSC_PLUGIN_EXT=\"$(SC_PLUGIN_EXT)\" \
