@@ -109,6 +109,11 @@ Stethoscope {
 		if(server.scopeWindow === this) { server.scopeWindow = nil }
 	}
 	
+	quit {
+		window.close;
+		this.free;
+	}
+	
 	numChannels_ { arg n;
 	
 		var isPlaying;
