@@ -94,6 +94,18 @@ inline bool ISPOWEROFTWO(int32 x)
 	return (x & (x-1)) == 0;
 }
 
+// input a series of counting integers, outputs a series of gray codes .
+inline int32 GRAYCODE(int32 x)
+{
+	return x & (x>>1);
+}
+
+// find least significant bit
+inline int32 LSBit(int32 x)
+{
+	return x & -x;
+}
+
 
 #endif
 
