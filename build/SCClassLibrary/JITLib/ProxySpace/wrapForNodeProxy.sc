@@ -101,15 +101,7 @@
 	rate { ^nil }
 }
 
-+SoundDef {
-	buildForProxy {
-		^synthDef
-	}
-	proxyControlClass {
-		^SoundDefControl
-	}
 
-}
 
 +Symbol {
 	buildForProxy {}
