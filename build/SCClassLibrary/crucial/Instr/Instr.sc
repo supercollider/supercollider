@@ -11,16 +11,17 @@ Instr  {
 		});
 		^super.newCopyArgs(name,func).init(specs,outSpec)//.write;
 	}
+	*initClass {
+		Class.initClassTree(Document);
+		// default is relative to your doc directory
+		instrDirectory = Instr.instrDirectory = Document.dir ++ "Instr/";
+	}
 	//*write go ahead and write it
 
 	init { arg specs,outsp;
-		this.makeSpecs(specs ?? {[]});
-		
+		this.makeSpecs(specs ? #[]);
 		if(outsp.isNil,{
-			outSpec = nil; //ArOutputSpec.new;
-			// it should be possible to divine the out spec from 
-			// valuing the function.
-			
+			outSpec = nil;
 		},{
 			outSpec = outsp.asSpec;
 		});
@@ -155,7 +156,6 @@ Instr  {
 	write {
 		var synthDef;
 		synthDef = this.asSynthDef;
-		//synthDef.dumpUGens;
 		synthDef.writeDefFile;
 		this.writePropertyList(synthDef);
 	}

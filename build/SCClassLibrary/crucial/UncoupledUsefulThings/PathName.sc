@@ -22,10 +22,7 @@ PathName { 	// this class by originally by AdC
 				});
 		^super.new.init(treated.as(String))
 	}
-	*initClass {
-		// uh ... no
-		//scroot = 	unixCmd("pwd") ++ "/";
-	}
+	*initClass {	scroot = File.getcwd;	}
 	init { arg inPath;			// always calculate indices for all the colons,
 							// since they are always needed.
 		fullPath = inPath;	

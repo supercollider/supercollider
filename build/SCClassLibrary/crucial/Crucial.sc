@@ -5,28 +5,20 @@ Crucial {
 		
 	*initClass {
 		
-		// SETTINGS
-		PathName.scroot =
-				"/Volumes/Macintosh HD/Users/cruxxial/SuperCollider3/build/";
-
-
-		// you can move all of your documents elsewhere
-		Document.dir = ""; // where the SC app is, or use eg. "~/Documents/SC3/";
-		
-		Instr.instrDirectory = Document.dir ++ "Instr/";
-		Sample.soundsDir = Document.dir ++ "sounds/";
-
-
-
-		// hint: Lib menu, post... color
-			//not working yet
+		// DEFAULT SETTINGS
+		/* 
+			you should set these in your Main-startUp method
 			
-		//tibook g4		
-		PageLayout.screenWidth = 1100;
-		PageLayout.screenHeight = 700;
-
-		//PageLayout.bgcolor = Color.new255(226,240,223);
+		// you can move all of your documents elsewhere
+		Document.dir = "~/Documents/SuperCollider/";
 		
+		// this would allow your sounds to be shared by other applications
+		Sample.soundsDir = "~/Sounds/";
+		// copy a11wlk01.wav to there for use in helpfiles
+		*/
+
+		/* color settings */
+		// you can override these by setting in Main-startUp which will run after this
 		CXLabel.bgcolor = Color.new255(250,250,240);
 /*
 		Tile.bgcolor =   Color.new255(231,250,178);
@@ -45,10 +37,10 @@ Crucial {
 		SelectButtonSet.defaultColor =   Color.new255(254,247,253);
 		SelectButtonSet.defaultSelectedColor =   Color.new255(151,151,255);
 */
+
 		// force to init first
 		Class.initClassTree(Warp);
 		Class.initClassTree(Spec);
-		//Class.initClassTree(SC2compat);
 		this.initSpecs;
 		Class.initClassTree(Library);
 		this.initLibraryItems;	

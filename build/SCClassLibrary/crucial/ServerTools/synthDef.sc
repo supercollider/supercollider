@@ -45,50 +45,6 @@
 	rate { ^this.at(0).rate } // no attempt to error check you
 }
 
-+ Editor {
-
-	prepareToBundle { arg group,bundle;
-		if(patchOut.isNil,{ // private out
-			patchOut = ScalarPatchOut(this);
-		});
-	}
-	synthArg { ^this.poll }
-	instrArgFromControl { arg control;
-		^control
-	}
-}
-
-/*
-+ KrNumberEditor {
-		
-	addToSynthDef {  arg synthDef,name;
-		synthDef.addKr(name,this.synthArg);
-	}
-	instrArgRate { ^\control }
-
-	didSpawn { arg patchIn,synthi;
-		patchOut.connectTo(patchIn,false);
-
-		// am i already connected to this client ?
-		if(this.dependants.includes(patchOut.updater).not,{
-			patchOut.updater = 
-				SimpleController(this)
-						.put(\value,{
-							patchIn.value = value;
-						});
-		});
-	}
-}
-
-+ NumberEditor {
-
-	addToSynthDef { }
-	instrArgFromControl { arg control;
-		^value
-	}
-	instrArgRate { ^\scalar }
-}
-*/
 
 + TempoBus {
 	addToSynthDef {  arg synthDef,name;

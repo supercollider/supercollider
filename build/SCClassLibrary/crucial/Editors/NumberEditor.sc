@@ -21,11 +21,23 @@ Editor {
 			callback.value(value);
 		})
 	}
+	
+	prepareToBundle { arg group,bundle;
+		// i need this now ?
+		if(patchOut.isNil,{ // private out
+			//patchOut = UpdatingScalarPatchOut(this,enabled: false);
+			patchOut = ScalarPatchOut(this);
+		});
+	}
+	synthArg { ^this.poll }
+	instrArgFromControl { arg control;
+		^control
+	}
 }
 
 KrNumberEditor : Editor {
 	
-	var <spec;
+	var <spec,lag=0.05;
 	
 	*new { arg value=1.0,spec='amp';
 		^super.new.init(value,spec)
@@ -56,8 +68,16 @@ KrNumberEditor : Editor {
 		synthDef.addKr(name,this.synthArg);
 	}
 	instrArgRate { ^\control }
-
+	instrArgFromControl { arg control;
+		//should request a LagControl
+		if(lag > 0.0,{
+			^Lag.kr(control,lag)
+		},{
+			^control
+		})
+	}
 	didSpawn { arg patchIn,synthi;
+		//patchOut.enable;
 		patchOut.connectTo(patchIn,false);
 		// am i already connected to this client ?
 		if(this.dependants.includes(patchOut.updater).not,{
@@ -68,6 +88,7 @@ KrNumberEditor : Editor {
 		});
 	}
 	free {
+		//patchOut.free;
 		if(patchOut.notNil and: {patchOut.updater.notNil},{
 			patchOut.updater.remove;
 			patchOut.updater = nil;

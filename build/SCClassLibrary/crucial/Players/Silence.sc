@@ -6,7 +6,7 @@ Silence : SynthlessPlayer {
 
 PlayerInputProxy : Silence { // audio
 
-	var <>numChannels,<>rate;
+	var <>numChannels,<>rate,<patchIn;
 	var inBus,nullBus;
 	
 	*new { arg numChannels=1,rate=\audio;
@@ -15,6 +15,7 @@ PlayerInputProxy : Silence { // audio
 	pipinit { arg n,r;
 		numChannels = n;
 		rate = r;
+		patchIn = PatchIn.newByRate(rate);
 	}
 	setInputBus { arg bus;
 		if(nullBus.notNil and: {nullBus.index.notNil},{ nullBus.free });

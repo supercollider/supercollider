@@ -79,7 +79,10 @@ PatchOut {
 		^ScalarPatchOut.prNew(source, group,bus)
 	}
 	connectTo { arg patchIn,needsValueSetNow=true;
-		connectedTo = connectedTo.add(patchIn);
+		// am i already connected to this client ?
+		if(connectedTo.notNil and: {connectedTo.includes(patchIn).not},{
+			connectedTo = connectedTo.add(patchIn);
+		});
 		patchIn.connectedTo = this;
 		this.perform(patchIn.rate,patchIn,needsValueSetNow);// set value, bus etc.
 	}
@@ -199,5 +202,26 @@ ScalarPatchOut : PatchOut {
 	free {
 		updater.remove;
 		updater = nil;
+	}
+}
+
+UpdatingScalarPatchOut : ScalarPatchOut {
+
+	*new { arg source,bus,enabled=true;
+		^this.prNew(source,enabled)
+	}
+	*prNew {arg source,enabled; ^super.newCopyArgs(source).init(enabled) }
+
+	init { arg enabled=true;
+		if(enabled,{
+			source.addDependant(this)
+		})
+	}
+	enable { source.addDependant(this).insp }
+	update {
+		connectedTo.do({ arg c; c.value = source.value })
+	}
+	free {
+		source.removeDependant(this)
 	}
 }

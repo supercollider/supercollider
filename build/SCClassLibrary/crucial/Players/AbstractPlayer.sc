@@ -299,7 +299,7 @@ AbstractPlayer : AbstractFunction  {
 	}
 	didSpawn { arg patchIn,synthArgi;
 		if(patchIn.notNil,{
-			patchOut.connectTo(patchIn,false); // we are connected now
+			patchOut.connectTo(patchIn,false);
 			patchIn.nodeControl_(NodeControl(synth,synthArgi));
 		});
 		if(synth.notNil,{
@@ -318,8 +318,14 @@ AbstractPlayer : AbstractFunction  {
 
 
 	/** hot patching **/
-	patchTo { arg player,inputIndex=0;
+	connectTo { arg hasInput;
 		// if my bus is public, change to private
+		if(this.isPlaying and: {this.bus.isAudioOut},{
+			this.bus = Bus.alloc(this.rate,this.server,this.numChannels);
+		});
+		patchOut.connectTo(hasInput.patchIn,this.isPlaying);
+	}
+	connectToInputAt { arg player,inputIndex=0;
 		if(this.isPlaying and: {this.bus.isAudioOut},{
 			this.bus = Bus.alloc(this.rate,this.server,this.numChannels);
 		});
@@ -488,7 +494,6 @@ SynthlessPlayer : AbstractPlayer { // should be higher
 		super.stop;
 		isPlaying = false;
 	}
-
 }
 
 MultiplePlayers : SynthlessPlayer { // SynthlessAggregatePlayer

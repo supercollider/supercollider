@@ -39,7 +39,7 @@ have to bundle it
 	*/
 	
 	//inputs subclassResponsibility // players, floats etc.
-	inputProxies { 
+	inputProxies { // want from all children ?
 		^this.inputs.select({ arg a; a.isKindOf(PlayerInputProxy) })
 	}
 	
@@ -138,14 +138,12 @@ Patch : HasPatchIns  {
 		var args;
 		args = Array(argsForSynth.size * 2 + 2);
 		argsForSynth.do({ arg ag,i;
-			//args.add(instr.argNameAt(i)); // NO not the right name
 			args.add(i);
 			args.add(ag.synthArg);
 		});
 		args.add(\out);
-		args.add(patchOut.synthArg //?? {"patchout bus was nil!".error}
-							);
-		^args//.insp("args")
+		args.add(patchOut.synthArg);
+		^args
 	}
 	defName { ^defName } // NOT 'Patch' ever
 	
