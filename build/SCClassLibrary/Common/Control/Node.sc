@@ -74,12 +74,10 @@ Node {
 	
 	setnMsg { arg controlName,  values ... args;
 		var nargs;
-		args.do({ arg cnv;
-			var two;
-			nargs = nargs.add(cnv.at(0));
-			nargs = nargs.add((two = cnv.at(1)).size);
-			nargs = nargs.add(two);
-		});
+		nargs = List.new;
+		args.pairsDo({ arg control, moreVals; 
+			nargs.addAll([control, moreVals.size, moreVals].flat)}
+		);
 		^[16, nodeID,controlName, values.size] ++ values ++ nargs; 
 			// "n_setn"
 	}
@@ -125,46 +123,35 @@ Node {
 	}
 	
 	moveBefore { arg aNode;
-		this.group = aNode.group; 
+		group = aNode.group; 
 		server.sendMsg(18, nodeID, aNode.nodeID); //"/n_before"
 	}
 	moveAfter { arg aNode;
-		this.group = aNode.group; 
+		group = aNode.group; 
 		server.sendMsg(19, nodeID, aNode.nodeID); //"/n_after"
 	}       
 	moveToHead { arg aGroup;
-		aGroup.asGroup.moveNodeToHead(this);
+		(aGroup ? server.defaultGroup).moveNodeToHead(this);
 	}
 	moveToTail { arg aGroup;
-		aGroup.asGroup.moveNodeToTail(this);
+		(aGroup ? server.defaultGroup).moveNodeToTail(this);
 	}
 
 	// message creating methods
 	
 	moveBeforeMsg { arg aNode;
+		group = aNode.group;
 		^[18, nodeID, aNode.nodeID];//"/n_before"
 	}
 	moveAfterMsg { arg aNode;
+		group = aNode.group;
 		^[19, nodeID, aNode.nodeID]; //"/n_after"
 	}       
 	moveToHeadMsg { arg aGroup;
-		^(aGroup ? group).moveNodeToHeadMsg(this);
+		^(aGroup ? server.defaultGroup).moveNodeToHeadMsg(this);
 	}
-	moveToTailMsg { arg bundle, aGroup;
-		^(aGroup ? group).moveNodeToTailMsg(this);
-	}
-
-	// private
-	*prNew { arg server;
-		^super.newCopyArgs(server.nextNodeID, server ? Server.default)
-	}
-	prSetNodeID { arg id;  nodeID = id ?? {server.nextNodeID}  }
-	prSetPlaying { arg flag=true; isPlaying = flag; isRunning = flag }
-	prMoveAfter {  arg afterThisOne;
-		this.group = afterThisOne.group;
-	}
-	prMoveBefore {  arg beforeThisOne;
-		this.group = beforeThisOne.group;
+	moveToTailMsg { arg aGroup;
+		^(aGroup ? server.defaultGroup).moveNodeToTailMsg(this);
 	}
 
 	hash {  ^server.hash bitXor: nodeID.hash	}
@@ -192,17 +179,43 @@ Group : Node {
 	}
 	newMsg { arg target, addAction = \addToHead;
 		var addNum, inTarget;
-		inTarget = target.asTarget;
+		// if target is nil set to default group of server specified when basicNew was called
+		inTarget = (target ? server.defaultGroup).asTarget;
 		addNum = addActions[addAction];
 		(addNum < 2).if({ group = inTarget; }, { group = inTarget.group; });
 		^[21, nodeID, addNum, inTarget.nodeID]		//"/g_new"
 	}
 	*after { arg aNode;    ^this.new(aNode, \addAfter) }
 	*before {  arg aNode; 	^this.new(aNode, \addBefore) }
-	*head { arg target; 	^this.new(target.asGroup, \addToHead) }
-	*tail { arg target; 	^this.new(target.asGroup, \addToTail) }
-	*replace { arg groupToReplace; ^this.new(groupToReplace, \addReplace) }
+	*head { arg aGroup; 	^this.new(aGroup, \addToHead) }
+	*tail { arg aGroup; 	^this.new(aGroup, \addToTail) }
+	*replace { arg nodeToReplace; ^this.new(nodeToReplace, \addReplace) }
 	
+	// for bundling
+	addToHeadMsg { arg aGroup; 
+		// if aGroup is nil set to default group of server specified when basicNew was called
+		group = (aGroup ? server.defaultGroup);
+		^[21, nodeID, 0, group.nodeID] 			//"/g_new"
+	}
+	addToTailMsg { arg aGroup;
+		// if aGroup is nil set to default group of server specified when basicNew was called
+		group = (aGroup ? server.defaultGroup);
+		^[21, nodeID, 1, group.nodeID] 			//"/g_new"
+	}
+	addAfterMsg {  arg aNode;
+		group = aNode.group;
+		^[21, nodeID, 3, aNode.nodeID] 	//"/g_new"
+	}
+	addBeforeMsg {  arg aNode;
+		group = aNode.group;
+		^[21, nodeID, 2, aNode.nodeID] 	//"/g_new"
+	}
+	addReplaceMsg { arg nodeToReplace;
+		group = nodeToReplace.group;
+		^[21, nodeID, 4, nodeToReplace.nodeID] 	//"/g_new"
+	}
+	
+	// move Nodes to this group
 	moveNodeToHead { arg aNode;
 		aNode.group = this;
 		server.sendMsg(22, nodeID, aNode.nodeID); //"/g_head"
@@ -211,40 +224,28 @@ Group : Node {
 		aNode.group = this;
 		server.sendMsg(23, nodeID, aNode.nodeID); //"/g_tail"
 	}
+	moveNodeToHeadMsg { arg aNode;
+		aNode.group = this;
+		^[22, nodeID, aNode.nodeID]; 			//"/g_head"
+	}
+	moveNodeToTailMsg { arg aNode;
+		aNode.group = this;
+		^[23, nodeID, aNode.nodeID];			//g_tail
+	}
+	
 	freeAll {
 		// free my children, but this node is still playing
 		server.sendMsg(24, nodeID); //"/g_freeAll"
 	}
+	freeAllMsg {
+		// free my children, but this node is still playing
+		^[24, nodeID]; //"/g_freeAll"
+	}
 	deepFree {
 		server.sendMsg(50, nodeID) //"/g_deepFree"
 	}
-
-	/*  return messages */
-	addToHeadMsg { arg arggroup; 
-		group = arggroup.asGroup;
-		^[21, nodeID, 0, group.nodeID] 			//"/g_new"
-	}
-	addToTailMsg { arg arggroup;
-		group = arggroup.asGroup;
-		^[21, nodeID, 1, group.nodeID] 			//"/g_new"
-	}
-	addAfterMsg {  arg afterThisOne;
-		group = afterThisOne.group;
-		^[21, nodeID, 3, afterThisOne.nodeID] 	//"/g_new"
-	}
-	addBeforeMsg {  arg beforeThisOne;
-		group = beforeThisOne.group;
-		^[21, nodeID, 2, beforeThisOne.nodeID] 	//"/g_new"
-	}
-	addReplaceMsg { arg removeThisOne;
-		group = removeThisOne.group;
-		^[21, nodeID, 4, removeThisOne.nodeID] 	//"/g_new"
-	}
-	moveNodeToHeadMsg { arg aNode;
-		^[22, nodeID, aNode.nodeID]; 			//"/g_head"
-	}
-	moveNodeToTailMsg { arg aNode;
-		^[23, nodeID, aNode.nodeID];			//g_tail
+	deepFreeMsg {
+		^[50, nodeID] //"/g_deepFree"
 	}
 	
 }
@@ -261,7 +262,18 @@ Synth : Node {
 		addNum = addActions[addAction];
 		synth = this.basicNew(defName, server);
 		if((addNum < 2), { synth.group = inTarget; }, { synth.group = inTarget.group; });
-		server.sendMsg(9, defName, synth.nodeID, addNum, inTarget.nodeID, *args;);
+		server.sendMsg(9, defName, synth.nodeID, addNum, inTarget.nodeID, *args); //"s_new"
+		^synth
+	}
+	*newPaused { arg defName, args, target, addAction=\addToHead;
+		var synth, server, addNum, inTarget;
+		inTarget = target.asTarget;
+		server = inTarget.server;
+		addNum = addActions[addAction];
+		synth = this.basicNew(defName, server);
+		if((addNum < 2), { synth.group = inTarget; }, { synth.group = inTarget.group; });
+		server.sendBundle(nil, [9, defName, synth.nodeID, addNum, inTarget.nodeID] ++ args, 
+			[12, synth.nodeID, 0]); // "s_new" + "/n_run"
 		^synth
 	}
 		/** does not send	(used for bundling) **/
@@ -272,7 +284,8 @@ Synth : Node {
 	newMsg { arg target, args, addAction = \addToHead;
 		var addNum, inTarget;
 		addNum = addActions[addAction];
-		inTarget = target.asTarget;
+		// if target is nil set to default group of server specified when basicNew was called
+		inTarget = (target ? server.defaultGroup).asTarget;
 		(addNum < 2).if({ group = inTarget; }, { group = inTarget.group; });
 		^[9, defName, nodeID, addNum, inTarget.nodeID] ++ args; //"/s_new"
 	}
@@ -288,9 +301,33 @@ Synth : Node {
 	*tail { arg aGroup, defName, args; 
 		^this.new(defName, args, aGroup, \addToTail);  
 	}
-	*replace { arg synthToReplace, defName, args;
-		^this.new(defName, args, synthToReplace, \addReplace)
+	*replace { arg nodeToReplace, defName, args;
+		^this.new(defName, args, nodeToReplace, \addReplace)
 	}
+	// for bundling
+	addToHeadMsg { arg aGroup, args;
+		// if aGroup is nil set to default group of server specified when basicNew was called
+		group = (aGroup ? server.defaultGroup);
+		^[9, defName, nodeID, 0, group.nodeID] ++ args	// "/s_new"
+	}
+	addToTailMsg { arg aGroup, args;
+		// if aGroup is nil set to default group of server specified when basicNew was called
+		group = (aGroup ? server.defaultGroup);
+		^[9, defName, nodeID, 1, group.nodeID] ++ args // "/s_new"
+	}
+	addAfterMsg {  arg aNode, args;
+		group = aNode.group; 
+		^[9, defName, nodeID, 3, aNode.nodeID] ++ args // "/s_new"
+	}
+	addBeforeMsg {  arg aNode, args;
+		group = aNode.group; 
+		^[9, defName, nodeID, 2, aNode.nodeID] ++ args // "/s_new"
+	}
+	addReplaceMsg { arg nodeToReplace, args;
+		group = nodeToReplace.group; 
+		^[9, defName, nodeID, 4, nodeToReplace.nodeID] ++ args // "/s_new"
+	}
+	
 	// nodeID -1 
 	*grain { arg defName, args, target, addAction=\addToHead;
 		var server;
@@ -300,54 +337,25 @@ Synth : Node {
 			//"/s_new"
 		^nil;
 	}
-
-	*newPaused { arg defName, args, target, addAction=\addToHead;
-		var synth, server;
-		target = target.asTarget;
-		server = target.server;
-		synth = this.basicNew(defName, server);
-		server.sendBundle(nil, synth.newMsg(synth.defName, target, args, addAction), 
-			[12, synth.nodeID, 0]); // "/n_run"
-		^synth
-	}
-	addToHeadMsg { arg arggroup, args;
-		group = arggroup.asGroup;
-		^[9, defName, nodeID, 0, group.nodeID] ++ args	// "/s_new"
-	}
-	addToTailMsg { arg arggroup, args;
-		group = arggroup.asGroup; 
-		^[9, defName, nodeID, 1, group.nodeID] ++ args // "/s_new"
-	}
-	addAfterMsg {  arg afterThisOne, args;
-		group = afterThisOne.group; 
-		^[9, defName, nodeID, 3, afterThisOne.nodeID] ++ args // "/s_new"
-	}
-	addBeforeMsg {  arg beforeThisOne, args;
-		group = beforeThisOne.group; 
-		^[9, defName, nodeID, 2, beforeThisOne.nodeID] ++ args // "/s_new"
-	}
-	addReplaceMsg { arg removeThisOne, args;
-		group = removeThisOne.group; 
-		^[9, defName, nodeID, 4, removeThisOne.nodeID] ++ args // "/s_new"
-	}
 	
 	get { arg index, action;
 		OSCpathResponder(server.addr,['/n_set',nodeID,index],{ arg time, r, msg; 
 			action.value(msg.at(3)); r.remove }).add;
 		server.sendMsg(44, nodeID, index);	//"/s_get"
 	}
+	getMsg { arg index;
+		^[44, nodeID, index];	//"/s_get"
+	}
 	
 	getn { arg index, count, action;
-
 		OSCpathResponder(server.addr,['/n_setn',nodeID,index],{arg time, r, msg;
 			action.value(msg.copyToEnd(4)); r.remove } ).add; 
 		server.sendMsg(45, nodeID, index, count); //"/s_getn"
 	}
-		
-	// private
-	*prNew { arg defName, server;
-		^this.basicNew(defName, server)
-	}	
+	getnMsg { arg index, count;
+		^[45, nodeID, index, count]; //"/s_getn"
+	}
+			
 	printOn { arg stream; stream << this.class.name << "(" <<< defName << " : " << nodeID <<")" }
 
 }
