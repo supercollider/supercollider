@@ -556,7 +556,11 @@ Return the receiver. aNumber is ignored.\
 	
 \f2\fs18 (\
 		l = [0, 1, 5, 9, 11]; // pentatonic scale\
-		(60, 61..75).collect \{ |i| i.keyToDegree(l, 12, 5) \}\
+		(60, 61..75).collect \{ |i| i.keyToDegree(l, 12) \}\
+	)\
+	(\
+		l = [0, 1, 5, 9, 11]; // pentatonic scale\
+		(60, 61..75).postln.collect \{ |i| i.keyToDegree(l, 12).degreeToKey(l) \}\
 	)\
 
 \f1\fs24 \
