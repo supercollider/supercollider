@@ -133,19 +133,25 @@ void Node_AddBefore(Node* s, Node *beforeThisOne)
 
 void Node_Replace(Node* s, Node *replaceThisOne) 
 {
-	if (!replaceThisOne->mParent) return; // failed
+	//scprintf("->Node_Replace\n");
+	Group *group = replaceThisOne->mParent;
+	if (!group) return; // failed
 	
-	s->mParent = replaceThisOne->mParent;
+	s->mParent = group;
 	s->mPrev = replaceThisOne->mPrev;
 	s->mNext = replaceThisOne->mNext;
 	
-	if (!replaceThisOne->mPrev) s->mParent->mHead = s;
-	if (!replaceThisOne->mNext) s->mParent->mTail = s;
+	if (s->mPrev) s->mPrev->mNext = s;
+	else group->mHead = s;
+	
+	if (s->mNext) s->mNext->mPrev = s;
+	else group->mTail = s;
 	
     replaceThisOne->mPrev = replaceThisOne->mNext = 0;
     replaceThisOne->mParent = 0;
 
 	Node_Delete(replaceThisOne);
+	//scprintf("<-Node_Replace\n");
 }
 
 // set a node's control so that it reads from a control bus - index argument
