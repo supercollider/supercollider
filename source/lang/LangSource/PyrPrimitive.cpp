@@ -2916,45 +2916,6 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	//post("switchToThread ip2 %08X\n", g->ip);
 }
 
-#if 0
-void pushThread(VMGlobals *g, PyrObject *obj, PyrSlot *head, PyrThread* thread);
-void pushThread(VMGlobals *g, PyrObject *obj, PyrSlot *head, PyrThread* thread)
-{
-	PyrSlot *tail = head + 1;
-	
-	//post("->pushThread\n");
-	tail = head+1;
-	if (NotNil(tail)) {
-		SetObject(&tail->uot->nextThread, thread);
-		g->gc->GCWrite(tail->uo, thread);
-	} else {
-		SetObject(head, thread);
-		g->gc->GCWrite(obj, thread);
-	}
-	SetObject(tail, thread);
-	g->gc->GCWrite(obj, thread);
-}
-
-PyrThread* popThread(VMGlobals *g, PyrObject *obj, PyrSlot *head);
-PyrThread* popThread(VMGlobals *g, PyrObject *obj, PyrSlot *head)
-{
-	PyrSlot *tail = head + 1;
-	PyrThread* thread;
-	
-	//post("->popThread\n");
-	thread = head->uot;
-	tail = head+1;
-	if (tail->uot == thread) {
-		SetNil(head);
-		SetNil(tail);
-	} else {
-		head->ucopy = thread->nextThread.ucopy;
-		g->gc->GCWrite(obj, head->uo);
-	}
-	return thread;
-}
-#endif
-
 void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
 	double beats, double seconds, PyrSlot* clock, bool collect);
 void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
