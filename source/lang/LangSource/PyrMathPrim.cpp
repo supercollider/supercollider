@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <machine/endian.h>
 
 
 inline bool IsSignal(PyrSlot* slot) { return ((slot)->utag == tagObj && (slot)->uo->classptr == class_signal); }
@@ -682,6 +683,38 @@ int prAs32Bits(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prHigh32Bits(VMGlobals *g, int numArgsPushed);
+int prHigh32Bits(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	
+#if BYTE_ORDER == BIG_ENDIAN
+	union { struct { uint32 hi, lo; } i; double f; } du;
+#else
+	union { struct { uint32 lo, hi; } i; double f; } du;
+#endif
+
+	du.f = a->uf;
+	SetInt(a, du.i.hi);
+	return errNone;
+}
+
+int prLow32Bits(VMGlobals *g, int numArgsPushed);
+int prLow32Bits(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	
+#if BYTE_ORDER == BIG_ENDIAN
+	union { struct { uint32 hi, lo; } i; double f; } du;
+#else
+	union { struct { uint32 lo, hi; } i; double f; } du;
+#endif
+
+	du.f = a->uf;
+	SetInt(a, du.i.lo);
+	return errNone;
+}
+
 
 int mathClipInt(struct VMGlobals *g, int numArgsPushed)
 {
@@ -937,6 +970,8 @@ void initMathPrimitives()
 	definePrimitive(base, index++, "_NextPrime", prNextPrime, 1, 0);
 	definePrimitive(base, index++, "_IsPrime", prIsPrime, 1, 0);
 	definePrimitive(base, index++, "_As32Bits", prAs32Bits, 1, 0);
+	definePrimitive(base, index++, "_High32Bits", prHigh32Bits, 1, 0);
+	definePrimitive(base, index++, "_Low32Bits", prLow32Bits, 1, 0);
 	
 	definePrimitive(base, index++, "_ClipInt", mathClipInt, 3, 0);
 	definePrimitive(base, index++, "_ClipFloat", mathClipFloat, 3, 0);
