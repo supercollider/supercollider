@@ -3,6 +3,7 @@
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
 \red0\green112\blue0;}
+\vieww9000\viewh9000\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 PageLayout
@@ -26,9 +27,8 @@ the layout manager moves its internal cursor, wrapping to a new line, then to a 
 
 \fs24 \cf0 Wraps to the next line
 \f0\b \ul \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \cf0 \ulnone (	\
+\f2\b0\fs18 \ulnone (	\
 	\cf2 var\cf0  f;\
 	f=\cf2 PageLayout\cf0 .new(\cf3 "flow"\cf0 );\
 	\
@@ -40,14 +40,11 @@ the layout manager moves its internal cursor, wrapping to a new line, then to a 
 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 Exceeding the bottom of the window wraps to a new window\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\fs24 Exceeding the bottom of the window wraps to a new window\
 
-\f2\fs18 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	\cf2 var\cf0  f;\
+\f2\fs18 (\
+	\cf2 var\cf0  f;\
 	f=\cf2 PageLayout\cf0 .new(\cf3 "flow"\cf0 );\
 	\
 	800.do(\{ \cf2 arg\cf0  i;\
@@ -57,73 +54,53 @@ the layout manager moves its internal cursor, wrapping to a new line, then to a 
 \cf0 		\cf2 SCButton\cf0 ( f.window, r )\
 			.states_([[i.asString,Color.black,Color.white]])\
 	\})\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 )\
+)\
 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 The windows are treated as a group.  When one closes, they all close.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\fs24 The windows are treated as a group.  When one closes, they all close.\
 
-\f2\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\fs18 \
 
-\f0\b\fs24 \cf0 .window \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b\fs24 .window \
 
-\f1\b0 \cf0 returns the current window being written to.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\b0 returns the current window being written to.\
 
-\f2\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\fs18 \
 
-\f0\b\fs24 \cf0 .layRight(x,y) \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b\fs24 .layRight(x,y) \
 
-\f1\b0 \cf0 allocates space and returns a \cf2 Rect\cf0  of size (x,y)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\b0 allocates space and returns a \cf2 Rect\cf0  of size (x,y)\
 
-\f2\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\fs18 \
 
-\f0\b\fs24 \cf0 .close\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b\fs24 .close\
 
-\f1\b0 \cf0 close all windows created by the PageLayout\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\b0 close all windows created by the PageLayout\
 
-\f2\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\fs18 \
 
-\f0\b\fs24 \cf0 .focus( index )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b\fs24 .focus( index )\
 
-\f1\b0 \cf0 focus the view on the current window\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\b0 focus the view on the current window\
 
-\f2\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\fs18 \
 
-\f0\b\fs24 \cf0 .toFront\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b\fs24 .toFront\
 
-\f1\b0 \cf0 cascades all windows owned by PageLayout to front\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\b0 cascades all windows owned by PageLayout to front\
 
-\f2\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\fs18 \
 
-\f0\b\fs24 \cf0 .resizeToFit\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b\fs24 .resizeToFit\
 
-\f1\b0 \cf0 resizes all windows to fit their contents, brings them all to front\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\b0 resizes all windows to fit their contents, brings them all to front\
 
-\f2\fs18 \cf0 \
+\f2\fs18 \
 \
 ( \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 	var\cf0  f,sliders;\
 	f= \cf2 PageLayout\cf0 .new("a vaguely practical example");\
 	\
@@ -142,6 +119,7 @@ the layout manager moves its internal cursor, wrapping to a new line, then to a 
 )\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //\
 //// layout within a layout\
 //(var f;\
@@ -174,10 +152,10 @@ the layout manager moves its internal cursor, wrapping to a new line, then to a 
 //	\});\
 //	\
 //)\
-\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 
-\f1\fs24 \cf0 \
+\f1\fs24 \
 \
 A nice way to work with \cf2 PageLayout\cf0  is with [
 \f0\b \cf2 Sheet
@@ -189,9 +167,8 @@ A \cf2 PageLayout\cf0  closes all of its windows when any of its windows is clos
 When a \cf2 PageLayout\cf0  closes, it sends the \cf5 \\didClose\cf0  notification (see NotificationCenter).\
 \
 	You can register to receive that notification:\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 	\
+\f2\fs18 	\
 	\cf2 NotificationCenter\cf0 .registerOneShot( f,\cf5 \\didClose\cf0 , yourObject,\{\
 			\cf4 // stop the model from playing, clean house, \
 			// unregister a keydown etc.\
@@ -200,9 +177,8 @@ When a \cf2 PageLayout\cf0  closes, it sends the \cf5 \\didClose\cf0  notificati
 	\
 	This notification unregisters itself after being called.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 removeOnClose(controller)
+\f0\b removeOnClose(controller)
 \f1\b0 \
 	this method adds the controller to the PageLayout's autoremove list.  when the window closes, all items on the list will be sent the 
 \f0\b .remove
@@ -214,9 +190,8 @@ When a \cf2 PageLayout\cf0  closes, it sends the \cf5 \\didClose\cf0  notificati
 \
 
 \f0\b A Note about MVC/Dependencies\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \
+\f1\b0 \
 this is some under-the-hood stuff that you don't need to know about but might be interested in.\
 \
 When a subclass of ObjectGui is added to a PageLayout it adds itself as a dependant on that layout. (ObjectGui::guify).\
@@ -231,8 +206,8 @@ The PageLayout calls .
 	\
 	\
 		\
-in sc2 all Views must actually be on a window.  when a View is created, it is added to a window, and the SCWindow keeps track of them in its 
-\f0\b views
+in sc all Views must actually be on a window.  when a View is created, it is added to a window, and the SCWindow keeps track of them in its 
+\f0\b view.children
 \f1\b0  array.\
 	\
 this gui system has Gui classes that build and maintain an interface/gui on a specific model.  They are Controllers, and they create actual View objects and control the interface between those and the Model.\
@@ -251,7 +226,7 @@ The Gui objects (controllers) need to know when the window closes so they can re
 	in Object::guify this happens:\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 	\cf0 	layout.closeOnRemove(guiObject)\
+\cf4 	\cf0 	layout.removeOnClose(guiObject)\
 	\
 	\
 	\cf4 \
