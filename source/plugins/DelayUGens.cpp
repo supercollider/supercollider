@@ -567,7 +567,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	if (in >= hi) {
 		if (!loop) {
 			unit->mDone = true;
-			return hi - 1.;
+			return hi;
 		}
 		in -= hi;
 		if (in < hi) return in;
@@ -629,7 +629,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		
 
 #define LOOP_BODY_4 \
-		phase = sc_loop((Unit*)unit, phase, bufFrames, loop); \
+		phase = sc_loop((Unit*)unit, phase, loopMax, loop); \
 		int32 iphase = (int32)phase; \
 		float* table1 = bufData + iphase * bufChannels; \
 		float* table0 = table1 - bufChannels; \
@@ -657,7 +657,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		}
 
 #define LOOP_BODY_2 \
-		phase = sc_loop((Unit*)unit, phase, bufFrames, loop); \
+		phase = sc_loop((Unit*)unit, phase, loopMax, loop); \
 		int32 iphase = (int32)phase; \
 		float* table1 = bufData + iphase * bufChannels; \
 		float* table2 = table1 + bufChannels; \
@@ -674,7 +674,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		}
 
 #define LOOP_BODY_1 \
-        phase = sc_loop((Unit*)unit, phase, bufFrames, loop); \
+        phase = sc_loop((Unit*)unit, phase, loopMax, loop); \
 		int32 iphase = (int32)phase; \
 		float* table1 = bufData + iphase * bufChannels; \
 		int32 index = 0; \
@@ -731,8 +731,10 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 	CHECK_BUF
 	SETUP_OUT	
 
+	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 	double phase = unit->m_phase;
 	float prevtrig = unit->m_prevtrig;
+
 	for (int i=0; i<inNumSamples; ++i) {
 		float trig = ZXP(trigin);
 		if (trig > 0.f && prevtrig <= 0.f) {
@@ -774,6 +776,7 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 	CHECK_BUF
 	SETUP_OUT	
 	
+	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 	double phase = unit->m_phase;
     if(phase == -1.) phase = bufFrames;
 	if (trig > 0.f && unit->m_prevtrig <= 0.f) {
@@ -800,6 +803,7 @@ void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples)
 	CHECK_BUF
 	SETUP_OUT
 	
+	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 	double phase = unit->m_phase;
 	if (trig > 0.f && unit->m_prevtrig <= 0.f) {
 		unit->mDone = false;
@@ -825,6 +829,7 @@ void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples)
 	CHECK_BUF
 	SETUP_OUT	
 	
+	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 	double phase = unit->m_phase;
 	float prevtrig = unit->m_prevtrig;
 	for (int i=0; i<inNumSamples; ++i) {
@@ -869,6 +874,8 @@ void BufRd_next_4(BufRd *unit, int inNumSamples)
 	GET_BUF
 	CHECK_BUF
 	SETUP_OUT
+
+	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 		
 	for (int i=0; i<inNumSamples; ++i) {
 		double phase = ZXP(phasein);
@@ -886,6 +893,8 @@ void BufRd_next_2(BufRd *unit, int inNumSamples)
 	GET_BUF
 	CHECK_BUF
 	SETUP_OUT
+
+	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 		
 	for (int i=0; i<inNumSamples; ++i) {
 		double phase = ZXP(phasein);
@@ -903,6 +912,8 @@ void BufRd_next_1(BufRd *unit, int inNumSamples)
 	GET_BUF
 	CHECK_BUF
 	SETUP_OUT
+
+	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 		
 	for (int i=0; i<inNumSamples; ++i) {
 		double phase = ZXP(phasein);
@@ -931,9 +942,10 @@ void BufWr_next(BufWr *unit, int inNumSamples)
 	GET_BUF
 	CHECK_BUF
 	SETUP_IN(3)
-
+	double loopMax = (double)(bufFrames - (loop ? 0 : 1));
+	
 	for (int32 k=0; k<inNumSamples; ++k) { 
-		double phase = sc_loop((Unit*)unit, ZXP(phasein), bufFrames, loop);
+		double phase = sc_loop((Unit*)unit, ZXP(phasein), loopMax, loop);
 		int32 iphase = (int32)phase;
 		float* table0 = bufData + iphase * bufChannels;
 		for (uint32 i=0; i<numInputs; ++i) {
@@ -5775,10 +5787,23 @@ inline float IN_AT(Unit* unit, int index, int offset)
 	return ZIN0(index);
 }
 
+inline double sc_gloop(double in, double hi) 
+{
+	// avoid the divide if possible
+	if (in >= hi) {
+		in -= hi;
+		if (in < hi) return in;
+	} else if (in < 0.) {
+		in += hi;
+		if (in >= 0.) return in;
+	} else return in;
+	
+	return in - hi * floor(in/hi); 
+}
 
 #define GRAIN_LOOP_BODY_4 \
 		float amp = y1 * y1; \
-		phase = sc_loop((Unit*)unit, phase, bufFrames, 1); \
+		phase = sc_gloop(phase, loopMax); \
 		int32 iphase = (int32)phase; \
 		float* table1 = bufData + iphase; \
 		float* table0 = table1 - 1; \
@@ -5809,7 +5834,7 @@ inline float IN_AT(Unit* unit, int index, int offset)
 
 #define GRAIN_LOOP_BODY_2 \
 		float amp = y1 * y1; \
-		phase = sc_loop((Unit*)unit, phase, bufFrames, 1); \
+		phase = sc_gloop(phase, loopMax); \
 		int32 iphase = (int32)phase; \
 		float* table1 = bufData + iphase; \
 		float* table2 = table1 + 1; \
@@ -5829,7 +5854,7 @@ inline float IN_AT(Unit* unit, int index, int offset)
 
 #define GRAIN_LOOP_BODY_1 \
 		float amp = y1 * y1; \
-		phase = sc_loop((Unit*)unit, phase, bufFrames, 1); \
+		phase = sc_gloop(phase, loopMax); \
 		int32 iphase = (int32)phase; \
 		float outval = amp * bufData[iphase]; \
 		ZXP(out1) += outval * pan1; \
@@ -5856,11 +5881,15 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 	for (int i=0; i < unit->mNumActive; ) {
 		Grain *grain = unit->mGrains + i;
 		uint32 bufnum = grain->bufnum;
+		
 		GRAIN_BUF
+		
 		if (bufChannels != 1) {
 			 ++i;
 			 continue;
 		}
+
+		double loopMax = (double)bufFrames;
 				
 		float pan1 = grain->pan1;
 		float pan2 = grain->pan2;
@@ -5919,10 +5948,12 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 			if (bufnum >= numBufs) continue;
 			GRAIN_BUF
 
+			if (bufChannels != 1) continue;
+
 			float bufSampleRate = buf->samplerate;
 			float bufRateScale = bufSampleRate * SAMPLEDUR;
+			double loopMax = (double)bufFrames;
 
-			if (bufChannels != 1) continue;
 			Grain *grain = unit->mGrains + unit->mNumActive++;
 			grain->bufnum = bufnum;
 
