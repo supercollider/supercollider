@@ -105,6 +105,8 @@ _________________________________________________________	\
 a = \cf3 NodeProxy.audio\cf0 (s, 2);\
 x = a.play; \cf2 //play to hardware output, return a group with synths\
 \cf0 a.source = \{ \cf3 SinOsc\cf0 .ar([350, 390], 0, 0.1) \};\
+a.source = \{ SinOsc.ar(a.ar*2000*LFNoise1.kr(0.2, 1, 1) + 200, 0, 0.1) \};\
+\
 a.fadeTime = 2.0;\
 a.source = \{ \cf3 arg\cf0  f=400; \cf3 SinOsc\cf0 .ar(f*[1,1.2], 0, 0.1) \};\
 a.set(\cf4 \\f\cf0 , 700);\
