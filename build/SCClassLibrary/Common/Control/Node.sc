@@ -3,45 +3,49 @@ Node {
 	
 	var <nodeID, <group, <>prev, <>next;
 	var <server;
-	var <>isPlaying = false,<>isRunning = false;
+	var <>isPlaying = false, <>isRunning = false;
 	
-	free { arg sendCmd = true; 
-		/* might be called by the group doing g_freeAll
-			so then we wouldn't want to send the command, just free the
-			structure */
-		if(isPlaying, {
-			this.remove;
-			this.isPlaying = false;
-			(this.asString ++ " was freed").postln;
-			if(sendCmd, { 
-				server.sendBundle(server.latency, ["/n_free", nodeID]); 
-			});
+	free {  arg sendFlag=true;
+		if(sendFlag, {
+			if(isPlaying, {
+				server.sendBundle(server.latency, [11, nodeID]);  //"/n_free"
+			})
+		}, {
+			this.unregister;
 		});
 	}
 	run { arg flag=true;
-		isRunning = flag;
-		server.sendBundle(server.latency, ["/n_run", nodeID,flag.binaryValue]);
+		server.sendBundle(server.latency, [12, nodeID,flag.binaryValue]); //"/n_run"
 	}
+	
+	map { arg controlName, busIndex ... args;
+		server.sendBundle(server.latency, 
+			[14, nodeID,controlName, busIndex]++args); //"/n_map"
+	}
+
 	set { arg controlName, value ... args;
 		server.sendBundle(server.latency, 
-			["/n_set", nodeID,controlName, value]++args);
-	}	
+			[15, nodeID,controlName, value]++args); //"/n_set"
+	}
+	//assumes a control called 'gate' in the synth
+	release { 
+		server.sendBundle(server.latency, [15, nodeID, \gate, 0]) //"/n_set"
+	}  		
+	
 	setn { arg controlName,  values ... args;
 		args = args.collect({ arg cnv;
 			[cnv.at(0), cnv.at(1).size, cnv.at(1)];
 		}).flat;
 		server.sendBundle(server.latency, 
-			(["/n_setn", nodeID,controlName, values.size] ++ values 
-				++ args).postln);
+			([16, nodeID,controlName, values.size] ++ values 
+				++ args).postln); // "n_setn"
 	}
 	fill { arg controlName, numControls, value ... args;
 		server.sendBundle(server.latency, 
-			["/n_fill", nodeID,controlName,numControls, value]++args);
+			[17, nodeID,controlName,numControls, value]++args); //"n_setn"
 	}	
-	map { arg controlName, busIndex ... args;
-		server.sendBundle(server.latency, 
-			["/n_map", nodeID,controlName, busIndex]++args);
-	}
+		
+
 		
 	moveBefore { arg aNode;
 		aNode.group.moveNodeBefore(this, aNode);
@@ -56,6 +60,7 @@ Node {
 	moveToTail { arg aGroup;
 		(aGroup ? group).moveNodeToTail(this);
 	}
+	
 	//support for Group::deepDo
 	deepDo { 	}
 	
@@ -65,12 +70,56 @@ Node {
 	hash { 	^server.hash bitXor: nodeID.hash	}
 	printOn { arg stream; stream << this.class.name << "(" << nodeID <<")" }
 	
+	// bundle commands //
+	
+	convertAddAction { arg symbol;
+		^[\addToHead, \addToTail, \addBefore, \addAfter].indexOf(symbol)
+	}
+	
+	getCommand { arg cmdName, argList;
+		^[cmdName, nodeID]++argList??{[]};
+	}
+	
+	addCommand { arg cmdList, cmdName, argList;
+		^cmdList.add([cmdName, nodeID]++argList??{[]});
+	}
+	
+	//your responsibility to send these commands.
+	//if they are not sent, the sclang model
+	//gets out of sync with the server.
+	
+	freeCommand { arg cmdList;
+		^cmdList.add([11, nodeID]); //"/n_free"
+	}
+	
+	moveBeforeCommand { arg  cmdList, aNode;
+		^cmdList.add([18, nodeID, aNode.nodeID]);//"/n_after"
+	}
+	
+	moveAfterCommand { arg cmdList, aNode;
+		^cmdList.add([19, nodeID, aNode.nodeID]); //"/n_after"
+		
+	}
+	
+	moveToHeadCommand { arg cmdList, aGroup;
+		^(aGroup ? group).moveNodeToHeadCommand(cmdList, this);
+	}
+	
+	moveToTailCommand { arg cmdList, aGroup;
+		^(aGroup ? group).moveNodeToTailCommand(cmdList, this);
+	}
+	
 	/** PRIVATE IMPLEMENTATION  **/
+	
 	*prNew {
 		^super.new //just return the instance, gets called by RootNode
 	}
-	
-	initNodeID {  nodeID = server.nodeAllocator.alloc  }
+	//remote node creation needs to set id. normally it is not passed in
+	prSetNodeID { arg id;  nodeID = id ?? {server.nodeAllocator.alloc}  }
+	//in some cases these need to be set.
+	prSetServer { arg s; server = s ?? {Server.local} }
+	prSetPlaying { arg flag=true; isPlaying = flag }
+	freeNodeID {  server.nodeAllocator.free(nodeID); nodeID = nil  }
 	
 	group_ { arg g;
 		group = g;
@@ -81,19 +130,19 @@ Node {
 	}
 	
 	addToHead { arg arggroup,args;
-		arggroup.prAddHead(this); // sets group
-		this.nodeToServer(0,group.nodeID,args);
+		group = arggroup; 
+		this.nodeToServer(0,arggroup.nodeID,args);
 	}
 	addToTail { arg arggroup,args;
-		arggroup.prAddTail(this);
-		this.nodeToServer(1,group.nodeID,args);
+		group = arggroup; 
+		this.nodeToServer(1,arggroup.nodeID,args);
 	}
 	addAfter {  arg afterThisOne,args;
-		this.prMoveAfter(afterThisOne);
+		group = afterThisOne.group; 
 		this.nodeToServer(3,afterThisOne.nodeID,args);
 	}
 	addBefore {  arg beforeThisOne,args;
-		this.prMoveBefore(beforeThisOne);
+		group = beforeThisOne.group; 
 		this.nodeToServer(2,beforeThisOne.nodeID,args);
 	}
 	prMoveAfter {  arg afterThisOne;
@@ -122,16 +171,28 @@ Node {
 		if (next.notNil, { 
 			next.prev = prev; 
 		},{
-			group.tail = prev;
+			if(group.notNil, { group.tail = prev });
 		});
 		if (prev.notNil, { 
 			prev.next = next; 
 		},{
-			group.head = next;
+			if(group.notNil, { group.head = next });
 		});
 		group = next = prev = nil;
 	}
 	
+	register { arg argServer;
+		server = argServer;
+		this.prSetNodeID;
+		RootNode(server).registerNode(this);
+	}
+	
+	unregister {
+		RootNode(server).unregisterNode(this);
+		this.freeNodeID;
+	}
+
+		
 }
 
 
@@ -149,29 +210,23 @@ Group : Node {
 
 	
 	moveNodeToHead { arg aNode;
-		aNode.remove;
-		this.prAddHead(aNode);
-		server.sendBundle(server.latency,["/g_head", nodeID, aNode.nodeID]);
+			server.sendBundle(server.latency,
+			[22, nodeID, aNode.nodeID]); //"/g_head"
 	}
 		
 	moveNodeToTail { arg aNode;
-		aNode.remove;
-		this.prAddTail(aNode);
-		server.sendBundle(server.latency,["/g_tail", nodeID, aNode.nodeID]);
+			server.sendBundle(server.latency,
+			[23, nodeID, aNode.nodeID]); //"/g_tail"
 	}
 	
 	moveNodeBefore { arg  movedNode, aNode;
-		movedNode.remove;
-		movedNode.prMoveBefore(aNode);
-		server.sendBundle(server.latency,
-			["/n_before", movedNode.nodeID, aNode.nodeID]);
+			server.sendBundle(server.latency,
+			[18, movedNode.nodeID, aNode.nodeID]); //"/n_before"
 	}
 	
 	moveNodeAfter { arg  movedNode, aNode;
-		movedNode.remove;
-		movedNode.prMoveAfter(aNode);
-		server.sendBundle(server.latency,
-			["/n_after", movedNode.nodeID, aNode.nodeID]);
+			server.sendBundle(server.latency,
+			[19, movedNode.nodeID, aNode.nodeID]); //"/n_after"
 	}	
 	
 	nodeToServer { arg addActionNum,targetID;
@@ -179,68 +234,78 @@ Group : Node {
 	
 	sendGroupToServer { arg arggroup, addActionNum,targetID;
 		if(server.serverRunning, {
-			arggroup.initNodeID;
+			arggroup.register(server);
 			server.sendBundle(server.latency,
-				["/g_new", arggroup.nodeID, addActionNum, targetID].postln
+				[21, arggroup.nodeID, addActionNum, targetID] //"/g_new"
 			);
 			
-			arggroup.isPlaying = true;
-			arggroup.isRunning = true;
 		}, { "Server not running".inform });
-	
 	}
 	
 	sendSynthToServer { arg argsynth, addActionNum,targetID,args;
 		if(server.serverRunning, {
-			argsynth.initNodeID;
+			argsynth.register(server);
 			server.sendBundle(server.latency,
-				(["/s_new", argsynth.defName, argsynth.nodeID, 
+				([9, argsynth.defName, argsynth.nodeID, //"/s_new"
 					addActionNum, targetID] 
 				++ args).postln);
 			
-			argsynth.isPlaying = true;
-			argsynth.isRunning = true;
 		}, { "Server not running".inform });
-	
 	}
 	
-	freeChildren {
-		this.do({ arg node;
-			node.free(false);
-		});
-	}
 	freeAll { 	
-		server.sendBundle(server.latency,["/g_freeAll",nodeID]);
-		this.freeChildren;
+		server.sendBundle(server.latency,[24,nodeID]); //"/g_freeAll"
 		// free my children, but this node is still playing
 	}
-	free {
-		super.free;
-		this.freeChildren;
-		
-	}
+	
 	
 	do { arg function;
-		var node, nextNode;
+		var node;
 		node = head;
 		while({ node.notNil }, {
-			nextNode = node.next;
 			function.value(node);
-			node = nextNode;
+			node = node.next;
 		});			
 	}
 	
 	deepDo { arg function;
-		var node, nextNode;
+		var node;
 		node = head;
 		while({ node.notNil }, {
-			nextNode = node.next;
 			function.value(node);
 			node.deepDo(function);
-			node = nextNode;
+			node = node.next;
 		});
 	}
 		
+	// bundle commands //
+	
+	*newCommand { arg cmdList, target, addAction=\addToTail;
+		var group, actionNumber;
+		target = target.asTarget;
+		addAction = addAction ?? {target.defaultAddAction};
+		group = this.prNew;
+		
+		group.register(target.server);
+		//your responsibility to send. you also should send it to my server!
+		group.basicNewCommand(cmdList, addAction, target);
+		^group
+	}
+	
+	basicNewCommand { arg cmdList, addAction, target;
+		var cmd, addActionNum;
+		addActionNum = this.convertAddAction(addAction);
+		cmd = [21, nodeID, addActionNum, target.nodeID]; //"/g_new"
+		^cmdList.add(cmd);
+	}
+
+	moveNodeToHeadCommand { arg cmdList, aNode;
+			^cmdList.add([22, nodeID, aNode.nodeID]); //"/g_head"
+	}
+	
+	moveNodeToTailCommand { arg cmdList, aNode;
+		^cmdList.add([23, nodeID, aNode.nodeID]);
+	}
 	
 
 	//private
@@ -277,6 +342,34 @@ Synth : Node {
 		^super.new.defName_(defName.asDefName)
 	}
 	
+	*newLoad { arg defName,args,target,addAction=\addToTail;
+		var cmd, synth;
+		cmd = List.new;
+		synth = this.newCommand(cmd, defName,args,target,addAction);
+		synth.server.sendMsg(6, "synthdefs/"++synth.defName++".scsyndef", cmd.at(0).postln); //"/d_load"
+		^synth
+	
+	} 
+	
+	*newPaused {arg defName,args,target,addAction=\addToTail;
+		var cmd, synth;
+		cmd = List.new;
+		synth = this.newCommand(cmd, defName,args,target,addAction);
+		synth.addCommand(cmd, 12, 0); //"/n_run"
+		synth.server.sendCmdList(cmd);
+		^synth
+	}
+	//no linking, only use for self releasing nodes
+	*newUnlinked { arg defName,args,target,addAction=\addToTail;
+		var synth, cmd;
+		cmd = List.new;
+		synth = this.prNew(defName);
+		target = target.asTarget;
+		synth.basicNewCommand(cmd, addAction, target, args);
+		target.server.sendCmdList(cmd);
+		^synth
+	}
+	
 	*after { arg aNode,defName,args;	
 		^this.prNew(defName).addAfter(aNode,args) 
 	}
@@ -294,31 +387,85 @@ Synth : Node {
 		group.sendSynthToServer(this, addActionNum,targetID,args); 	}
 
 	trace {
-		server.sendMsg("/s_trace", nodeID);
+		server.sendMsg(10, nodeID);//"/s_trace"
+	}
+	
+	
+	///  bundle commands  ///
+	//this adds the command to the commandlist and returns the synth.
+	//use a List as first arg
+	
+	*newCommand { arg cmdList, defName, args, target, addAction=\addToTail;
+		var synth, actionNumber;
+		synth = this.prNew(defName);
+		target = target.asTarget;
+		addAction = addAction ?? {target.defaultAddAction};
+		synth.register(target.server);
+		//your responsibility to send. you also should send it to my server!
+		synth.basicNewCommand(cmdList, addAction, target, args);
+		^synth
+	}
+	
+	
+	basicNewCommand { arg cmdList, addAction, target, args;
+		var cmd, addActionNum;
+		addActionNum = this.convertAddAction(addAction);
+		cmd = [9, defName, nodeID, addActionNum, target.nodeID] ++ args??{[]}; //"/s_new"
+		^cmdList.add(cmd);
 	}
 }
 
 RootNode : Group {
 	
 	classvar <roots;
+	var nodeWatcher, <>connected;
 	
-	*new { arg server;
+	*new { arg server, connected=true;
 		server = server ?? {Server.local};
+		
 		^(roots.at(server.name) ?? {
-			^super.prNew.rninit(server)
+			^super.prNew.rninit(server).connected_(connected)
 		})
 	}
 	rninit { arg s; 
 		server = s;
-		roots.put(s.name,this);
+		roots.put(s.name, this);
 		nodeID = 0;
 		isPlaying = isRunning = true;
 		group = this; // self
+		
 	}
+	
 	*initClass {  roots = IdentityDictionary.new; }
 	nodeToServer {} // already running
 
+	connect { connected = true; if(nodeWatcher.notNil, { nodeWatcher.startListen }); }
+	disconnect { connected = false; if(nodeWatcher.notNil, { nodeWatcher.stopListen }); }
 	
+	nodeWatcher { //lazy init
+		^nodeWatcher ?? {
+			nodeWatcher = NodeWatcher(server);
+			nodeWatcher.startListen;
+			nodeWatcher.register(this);
+		}
+	}
+	
+	registerNode { arg node;
+		if(connected, {
+			if(server.serverRunning, {
+				this.nodeWatcher.register(node);
+			})
+		})
+		
+	}
+	
+	unregisterNode { arg node;
+		if(connected, {
+			nodeWatcher.unregister(node);
+		})
+
+	}
+
 	
 	remove {
 		if (next.notNil, { 
@@ -338,11 +485,16 @@ RootNode : Group {
 	moveToHead { 	}
 	moveToTail{}
 	
+	deepDo { } 
+	
 	stop {
 		this.freeAll;
+		
 	}
+	clear { this.nodeWatcher.clear }
 	*stop { arg server;
 		var r;
+		
 		if (server.isNil, {
 			roots.do({ arg rn; rn.stop; });
 		}, {
