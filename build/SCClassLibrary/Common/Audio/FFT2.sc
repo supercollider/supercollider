@@ -9,8 +9,7 @@ PV_ConformalMap : UGen
 	}
 }
 
-
-//sick lincoln learns what real convolution involves
+//in and kernel are both audio rate changing signals
 Convolution : UGen
 {
 	*ar { arg in, kernel, framesize=512,mul = 1.0, add = 0.0;
@@ -18,13 +17,14 @@ Convolution : UGen
 	}
 }
 
-//fixed kernel- cheaper on CPU
+//fixed kernel convolver with fix by nescivi to update the kernel on receipt of a trigger message 
 Convolution2 : UGen
 {
-	*ar { arg in, bufnum, framesize=512,mul = 1.0, add = 0.0;
-		^this.multiNew('audio', in, bufnum, framesize).madd(mul, add);
-	}
+ *ar { arg in, bufnum, trigger, framesize=512,mul = 1.0, add = 0.0;
+  ^this.multiNew('audio', in, bufnum, trigger, framesize).madd(mul, add);
+ }
 }
+
 
 //jensen andersen inspired FFT feature detector
 PV_JensenAndersen : UGen
