@@ -20,6 +20,11 @@ Color {
 	*grey { arg grey = 0.5, alpha = 1.0;
 		^Color.new(grey, grey, grey, alpha);
 	}
+	*gray { arg gray = 0.5, alpha = 1.0;
+		// synonym
+		^Color.grey(gray, alpha);
+	}
+	
 	*rand { arg lo=0.3,hi=0.9; ^Color.new(rrand(lo,hi),rrand(lo,hi),rrand(lo,hi)) }
 
 	scaleByAlpha {
