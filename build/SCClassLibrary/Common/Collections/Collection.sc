@@ -43,6 +43,9 @@ Collection {
 	
 	species { ^Array }
 	do { ^this.subclassResponsibility(thisMethod) }
+	iter { 
+		^Routine({ this.do {|item| item.yield } })
+	}
 	size { 
 		// this is the slow way. Most collections have a faster way.
 		var tally = 0;

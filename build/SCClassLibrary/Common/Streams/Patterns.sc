@@ -11,6 +11,7 @@ Pattern : AbstractFunction {
 		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)	}
 
 	asStream { ^Routine({ arg inval; this.embedInStream(inval) }) }
+	iter { ^this.asStream }
 
 	asEventStreamPlayer { arg protoEvent;
 		^EventStreamPlayer(this.asStream, protoEvent);

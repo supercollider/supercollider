@@ -130,12 +130,15 @@ Object {
 	// stream
 	next { ^this }
 	reset { ^this }
+	first { arg inval; this.reset; ^this.next(inval) }
+	iter { ^OneShotStream(this) }
 	stop { ^this }
 	free { ^this }
 	removedFromScheduler { ^this }
 	isPlaying { ^false }
 	embedInStream { ^this.yield; }
 	asStream { ^this }
+	
 	eventAt { ^nil }
 	finishEvent {}
 	atLimit { ^false }
