@@ -1187,7 +1187,7 @@ enum {
 
 void EnvGen_Ctor(EnvGen *unit)
 {
-	//Print("EnvGen_Ctor A\n");
+	Print("EnvGen_Ctor A\n");
 	if (unit->mCalcRate == calc_FullRate) {
 		if (INRATE(1) == calc_FullRate) {
 			SETCALC(EnvGen_next_aa);
@@ -1235,6 +1235,16 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 		unit->mDone = false;
 		unit->m_released = false;
 		counter = 0;
+	} else if (unit->m_prevGate >= 0. && gate <= -1.) {
+		// cutoff
+		int numstages = (int)ZIN0(kEnvGen_numStages);
+		float dur = -gate - 1.f;
+		counter  = (int32)(dur * SAMPLERATE);
+		counter  = sc_max(1, counter);
+		unit->m_stage = numstages;
+		unit->m_shape = shape_Linear;
+		unit->m_grow = -level / counter;
+		unit->m_endLevel = 0.;
 	}
 	unit->m_prevGate = gate;
 	
@@ -1443,6 +1453,17 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 		unit->mDone = false;
 		unit->m_released = false;
 		counter = 0;
+	} else if (unit->m_prevGate >= 0. && gate <= -1.) {
+		// cutoff
+		printf("cutoff\n");
+		int numstages = (int)ZIN0(kEnvGen_numStages);
+		float dur = -gate - 1.f;
+		counter  = (int32)(dur * SAMPLERATE);
+		counter  = sc_max(1, counter);
+		unit->m_stage = numstages;
+		unit->m_shape = shape_Linear;
+		unit->m_grow = -level / counter;
+		unit->m_endLevel = 0.;
 	}
 	unit->m_prevGate = gate;
 	
@@ -1664,6 +1685,16 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 		unit->mDone = false; \
 		counter = 0; \
 		nsmps = i; \
+		break; \
+	} else if (unit->m_prevGate >= 0. && gate <= -1.) { \
+		int numstages = (int)ZIN0(kEnvGen_numStages); \
+		float dur = -gate - 1.f; \
+		counter  = (int32)(dur * SAMPLERATE); \
+		counter  = sc_max(1, counter); \
+		unit->m_stage = numstages; \
+		unit->m_shape = shape_Linear; \
+		unit->m_grow = -level / counter; \
+		unit->m_endLevel = 0.; \
 		break; \
 	}
 	
