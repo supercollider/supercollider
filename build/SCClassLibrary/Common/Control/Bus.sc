@@ -23,8 +23,8 @@ Bus {
 		});
 		^this.new(\audio,alloc,numChannels,server)
 	}
-	*alloc { arg rate=\audio,server,numChannels=1;
-		^this.perform(rate,server,numChannels);
+	*alloc { arg rate,server,numChannels=1;
+		^this.perform(rate ? \audio,server,numChannels);
 	}
 
 	*new { arg rate=\audio,index=0,numChannels=2,server;
@@ -32,9 +32,14 @@ Bus {
 	}
 
 	set { arg ... values; // shouldn't be larger than this.numChannels
-		server.sendBundle(server.latency,["/c_set"] 
-			++ values.collect({ arg v,i; [index + i ,v] }).flat);
+		server.sendBundle(server.latency,(["/c_set"] 
+			++ values.collect({ arg v,i; [index + i ,v] }).flat));
 	}
+	setMsg { arg ... values;
+		^["/c_set"] 
+			++ values.collect({ arg v,i; [index + i ,v] }).flat
+	}
+	
 	setn { arg values;
 		// could throw an error if values.size > numChannels
 		server.sendBundle(server.latency,
@@ -47,8 +52,8 @@ Bus {
 	}
 	// not yet implemented on the server:
 	// get, getn
+
 	free {
-		// it should be an error to try and free a non-private bus ?
 		if(rate == \audio,{
 			server.audioBusAllocator.free(index);
 		},{
@@ -57,8 +62,6 @@ Bus {
 		index = nil;
 		numChannels = nil;
 	}
-
-
 
 	// alternate syntaxes
 	setAll { arg value;
