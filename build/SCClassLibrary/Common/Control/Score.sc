@@ -63,11 +63,11 @@ Score {
 	}
 	
 	*recordNRT { arg list, oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, 
-		headerFormat = "AIFF", sampleFormat = "int16", options, completionString;
+		headerFormat = "AIFF", sampleFormat = "int16", options, completionString="";
 		this.write(list, oscFilePath);
 		unixCmd("./scsynth -N" + oscFilePath + (inputFilePath ? "_") + outputFilePath + 			sampleRate + headerFormat + sampleFormat + 
 			(options ?? {ServerOptions.new}).asOptionsString  
-			+ completionString).debug;
+			+ completionString);
 	}
 	
 	stop {
