@@ -156,7 +156,7 @@ BusPlug : AbstractFunction {
 					^inval
 	}
 	asStream  {
-			^Routine.new { arg inval;
+			^Routine { arg inval;
 				loop { inval = this.embedInStream(inval) }
 			}
 	}
@@ -180,14 +180,13 @@ BusPlug : AbstractFunction {
 	}
 	composeNAryOp { arg aSelector, anArgList;
 		^thisMethod.notYetImplemented
+		//^NAryOpPlug.new(aSelector, [this]++anArgList) // nary op ugens are not yet implemented
 	}
 	
 	// error catch
 	
-	writeInputSpec {
-		Error("use .ar or .kr to use within a synth.").throw;
-	}
-	
+	writeInputSpec { Error("use .ar or .kr to use within a synth.").throw }
+	isValidUGenInput { Error("use ar. or kr. within Synth definitions").throw }
 	
 	///// monitoring //////////////
 	
@@ -288,7 +287,7 @@ NodeProxy : BusPlug {
 	end { arg fadeTime;
 		var dt;
 		dt = fadeTime ? this.fadeTime;
-		Routine.new { this.free(dt, true); (dt + server.latency).wait; this.stop(0);  } .play;
+		Routine { this.free(dt, true); (dt + server.latency).wait; this.stop(0);  } .play;
 	}
 	
 	pause {
@@ -434,12 +433,6 @@ NodeProxy : BusPlug {
 	
 	// applying the settings to nodes //
 	
-	sendNodeMap {
-		var bundle;
-		bundle = MixedBundle.new;
-		nodeMap.addToBundle(bundle, group);
-		bundle.schedSend(server, clock);
-	}
 	
 	nodeMap_ { arg map, xfade=true;
 		var bundle, old, oldargs, fadeTime;
@@ -451,8 +444,7 @@ NodeProxy : BusPlug {
 		if(this.isPlaying) {
 			if(xfade) { this.sendEach(nil,true) }
 			{
-			oldargs = nodeMap.unsetArgs; 
-			if(oldargs.notNil) { bundle.add(["/n_set", group.nodeID] ++ oldargs) }; // unmap old
+			oldargs = nodeMap.unsetArgsToBundle(bundle); // unmap old
 			nodeMap.addToBundle(bundle, group); // map new
 			bundle.schedSend(server, clock);
 			}
@@ -463,7 +455,7 @@ NodeProxy : BusPlug {
 		var fadeTime, values;
 		fadeTime = this.fadeTime; // todo: old args
 		if(interpolKeys.notNil) { 
-			values = interpolKeys.asCollection.collect { arg item; map.settings[item].value };
+			values = interpolKeys.asCollection.collect { arg item; map[item].value };
 			this.lineAt(interpolKeys, values) 
 		};
 		nodeMap = map.copy;
@@ -555,9 +547,7 @@ NodeProxy : BusPlug {
 				i = this.index;
 				bundle = this.getBundle;
 				obj.spawnToBundle(bundle, extraArgs, this);
-				nodeMap.updateBundle;
-				nodeMap.setToBundle(bundle, -1);
-				nodeMap.mapToBundle(bundle, -1);
+				nodeMap.addToBundle(bundle, -1);
 				bundle.schedSend(server);
 			}
 	}
@@ -567,7 +557,7 @@ NodeProxy : BusPlug {
 			var bundle, obj;
 			if(index.isNil) { 
 				bundle = this.getBundle;
-				if(freeLast, { this.stopAllToBundle(bundle) });
+				if(freeLast) { this.stopAllToBundle(bundle) };
 				this.sendAllToBundle(bundle, extraArgs);
 				bundle.schedSend(server);
 			
@@ -575,7 +565,7 @@ NodeProxy : BusPlug {
 				obj = objects.at(index);
 				if(obj.notNil) {
 					bundle = this.getBundle;
-					if(freeLast, { this.stopToBundle(bundle, index) });
+					if(freeLast) { this.stopToBundle(bundle, index) };
 					
 					this.sendObjectToBundle(bundle, obj, extraArgs, index);
 					bundle.schedSend(server);
@@ -642,7 +632,7 @@ NodeProxy : BusPlug {
 				if(synthID.notNil) {
 					if(index.notNil) { // if nil, all are sent anyway
 					// make list of nodeIDs following the index
-					nodes = Array(8);
+					nodes = Array(4);
 					objects.doFrom({ arg obj, i; 
 						var id; id = obj.nodeID;
 						if(id.notNil) { nodes = nodes ++ id ++ synthID };
@@ -705,7 +695,6 @@ NodeProxy : BusPlug {
 			checkedAlready.add(this);
 			this.wakeUpParentsToBundle(bundle, checkedAlready);
 			if(loaded.not) { this.loadToBundle(bundle) };
-			
 			if(awake and: { this.isPlaying.not }) { 
 				this.prepareToBundle(nil, bundle);
 				this.sendAllToBundle(bundle)
@@ -725,16 +714,17 @@ NodeProxy : BusPlug {
 		var parents;
 		parents = IdentitySet.new;
 		alreadyAsked = alreadyAsked ?? { IdentitySet.new };
-		alreadyAsked.add(this);
-		objects.do { arg obj; parents.addAll(obj.parents) };
-		parents.addAll(nodeMap.parents);
-		parents.do { arg proxy; 
-			if(alreadyAsked.includes(proxy).not) { proxy.getFamily(parents, alreadyAsked) }
+		if(alreadyAsked.includes(this).not) {
+			alreadyAsked.add(this);
+			objects.do { arg obj; parents.addAll(obj.parents) };
+			parents.addAll(nodeMap.parents);
+			parents.do { arg proxy; proxy.getFamily(parents, alreadyAsked) };
+			set.add(this);
+			set.addAll(parents);
 		};
-		set.add(this);
-		set.addAll(parents);
 		^set 	
 	}
+
 		
 	
 	////// private /////
@@ -763,7 +753,7 @@ NodeProxy : BusPlug {
 		var bundle;
 		if(this.isPlaying) {	
 			bundle = MixedBundle.new;
-			if(fadeTime.notNil) { bundle.add(["/n_set", group.nodeID, "fadeTime", fadeTime]) };
+			if(fadeTime.notNil) { bundle.add([15, group.nodeID, "fadeTime", fadeTime]) };
 			this.stopAllToBundle(bundle);
 			if(freeGroup) { 
 				bundle.addSchedFunction({ group.free }, 
@@ -811,7 +801,7 @@ NodeProxy : BusPlug {
 			server.listSendBundle(server.latency, bundle);
 		} { nodeMap.mapn(*args) }
 	}
-
+	
 	
 	// map to current environment
 	mapEnvir { arg keys;
@@ -823,12 +813,19 @@ NodeProxy : BusPlug {
 	
 		
 	unset { arg ... keys;
-		var all;
+		var bundle, all;
 		all = keys.isEmpty;
-		if(all) { keys = nodeMap.settingKeys };
+		if(all) { 
+			keys = nodeMap.settings.keys; 			
+			keys.remove('out');
+			keys.remove('i_out');  
+		};
+		if(this.isPlaying) {
+			bundle = List.new;
+			nodeMap.unsetArgsToBundle(bundle, group.nodeID, keys);
+			server.listSendBundle(server.latency, bundle);
+		};
 		nodeMap.unset(*keys);
-		if(all) { this.linkNodeMap };
-		if(this.isPlaying) { this.send(nil, nil, true) };
 	}
 	
 	unmap { arg ... keys;
@@ -838,8 +835,8 @@ NodeProxy : BusPlug {
 			bundle = List.new;
 			nodeMap.unmapArgsToBundle(bundle, group.nodeID, keys);
 			server.listSendBundle(server.latency, bundle);
-			nodeMap.unmap(*keys);
 		};
+		nodeMap.unmap(*keys);
 	}
 	
 	
@@ -856,6 +853,9 @@ NodeProxy : BusPlug {
 	}
 	xmapn { arg ... args;
 		this.xFadePerform(\mapn, args);
+	}
+	xunset { arg ... args;
+		this.xFadePerform(\unset, args);
 	}
 
 	xFadePerform { arg selector, args;
@@ -892,7 +892,7 @@ NodeProxy : BusPlug {
 		
 	gateAt { arg key, level=1.0, dur=1.0;
 		this.group.set(key, level); 
-		SystemClock.sched(dur, { this.group.set(key, nodeMap.settings[key].value); nil });
+		SystemClock.sched(dur, { this.group.set(key, nodeMap[key].value); nil });
 	}
 	
 	lineAt { arg key, level=1.0, dur;
@@ -915,7 +915,7 @@ NodeProxy : BusPlug {
 			ctlIndex = ctlBus.index;
 			bundle = ["/n_map", id];
 			keys.do { arg key, i; bundle = bundle.addAll([key, ctlIndex + i]) };
-			missing = keys.select { arg key; nodeMap.settings[key].isNil };
+			missing = keys.select { arg key; nodeMap[key].isNil };
 			if(missing.notEmpty) { 
 				this.supplementNodeMap(missing); 
 				nodeMap.addToBundle(bundle, group) 
@@ -1027,12 +1027,12 @@ SharedNodeProxy : NodeProxy { // should pass in a bus index/numChannels.
 	// use shared node proxy only with functions that can release the synth.
 	// this is checked and throws an error in addObj
 	stopAllToBundle { arg bundle;
-			bundle.add(["/n_set", constantGroupID, "gate", 0])
+			bundle.add([15, constantGroupID, "gate", 0])
 	}
 	stopToBundle { arg bundle, index;
 				if(allowMultipleObjects) 
 					{ super.stopToBundle(bundle, index) } 
-					{ bundle.add(["/n_set", constantGroupID, "gate", 0]) }
+					{ bundle.add([15, constantGroupID, "gate", 0]) }
 	}
 	group_ {}
 	bus_ {}
@@ -1050,7 +1050,7 @@ SharedNodeProxy : NodeProxy { // should pass in a bus index/numChannels.
 				group.isPlaying = true;
 				NodeWatcher.register(group);
 		};
-		bundle.add(["/g_new", constantGroupID]); // duplicate sending is no problem
+		bundle.add([21, constantGroupID]); // duplicate sending is no problem
 	}
 	
 

@@ -107,7 +107,7 @@
 
 ///////////////////////////// Pattern - Streams ///////////////////////////////////
 
-+Stream { // assumes event stream
++Stream {
 
 	proxyControlClass {
 		^StreamControl
@@ -188,7 +188,7 @@
 +AbstractPlayControl {
 	makeProxyControl { ^this.deepCopy } //already wrapped, but needs to be copied
 	
-	/* these adverbial extendible interfaces are for supporting different preparation schemes.
+	/* these adverbial extendible interfaces are for supporting different role schemes.
 	it is called by Association, so ~out = \filter -> ... will call this */
 
 	*initClass {

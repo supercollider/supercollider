@@ -20,7 +20,7 @@ ProxySpace : EnvironmentRedirect {
 	einit { arg srv, argName, argClock; 
 		server = srv;  
 		clock = argClock;
-		if(name.notNil, { this.class.all.add(this) });
+		if(name.notNil) { all.add(this) };
 	}
 	
 	clock_ { arg aClock;
@@ -33,7 +33,7 @@ ProxySpace : EnvironmentRedirect {
 		this.do({ arg item; item.fadeTime = dt });
 	}
 	
-	makeTempoClock { arg tempo=1, beats, seconds;
+	makeTempoClock { arg tempo=1.0, beats, seconds;
 		var clock, proxy;
 		proxy = NodeProxy.control(server, 1);
 		proxy.fadeTime = 0.0;
@@ -41,11 +41,11 @@ ProxySpace : EnvironmentRedirect {
 		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds).permanent_(true);
 		envir.proto.put(\tempo, proxy);
 	}
-	
+
 	
 	makeProxy {
 			var proxy;
-			proxy = NodeProxy(server);
+			proxy = NodeProxy.new(server);
 			proxy.clock = clock;
 			proxy.awake = awake;
 			if(fadeTime.notNil, { proxy.fadeTime = fadeTime });
@@ -66,7 +66,7 @@ ProxySpace : EnvironmentRedirect {
 	}
 	
 	put { arg key, obj;
-		this.at(key).source = obj;
+		this.at(key).put(nil, obj)
 	}
 	
 	removeAt { arg key;
@@ -164,7 +164,7 @@ ProxySpace : EnvironmentRedirect {
 		var monitors;
 		monitors = Array.new;
 		envir.do { arg proxy; 
-			if(proxy.monitorGroup.isPlaying) { monitors =  monitors.add(proxy) }
+			if(proxy.monitor.isPlaying) { monitors =  monitors.add(proxy) }
 		};
 		^monitors
 	}

@@ -36,7 +36,8 @@ AbstractPlayControl {
 	
 	freeToBundle {}
 	
-	controlNames { ^nil }	
+	controlNames { ^nil }
+		
 	play { this.subclassResponsibility(thisMethod) }
 	stop { this.subclassResponsibility(thisMethod) }
 	
@@ -45,6 +46,7 @@ AbstractPlayControl {
 	addParent { "wrong object in NodeProxy.buildControl".error } // for now.
 	parents { ^nil }
 	store {}
+	
 	
 }
 
@@ -76,10 +78,11 @@ StreamControl : AbstractPlayControl {
 			stream.stop; stream = stream.copy; stream.play(clock, false, 0.0)
 		} 
 	}
-	stop { }
-	freeToBundle { arg bundle; bundle.addMessage(stream, \stop) }
+	stop {Êstream.stop }
 	
 }
+
+
 
 PatternControl : StreamControl {
 	var fadeTime, <array;
@@ -243,7 +246,7 @@ SynthDefControl : SynthControl {
 		numChannels = synthDef.numChannels ? proxy.numChannels ? 2;
 		ok = proxy.initBus(rate, numChannels);
 
-		if(ok && synthDef.notNil, { 
+		if(ok and: {synthDef.notNil}, { 
 			paused = proxy.paused;
 			canReleaseSynth = synthDef.canReleaseSynth;
 			canFreeSynth = synthDef.canFreeSynth;
@@ -271,5 +274,6 @@ SynthDefControl : SynthControl {
 		parents.add(proxy);
 	}
 	controlNames { ^synthDef.allControlNames }
+	
 }
 
