@@ -53,7 +53,7 @@
 		if (file.notNil, {
 			file.write(this);
 			if(file.length < this.size,{
-				die("Write file failed !!!! " ++ path);
+				Error("Write file failed !!!! " ++ path).throw;
 			});
 			file.close;
 		});

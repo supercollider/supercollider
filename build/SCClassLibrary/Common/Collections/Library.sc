@@ -71,7 +71,7 @@ MultiLevelIdentityDictionary : Collection
 		},{
 			item = this.at(*start);
 			if(item.isNil,{
-				("Library-choose start address not found:" + start).die;
+				Error("Library-choose start address not found: " ++ start).throw;
 			});
 		});
 		^this.prChooseFrom(item);

@@ -1094,7 +1094,7 @@ SCEnvelopeView : SCMultiSliderView {
 	value_ { arg val;
 		if(val.at(1).size != val.at(0).size,{
 			// otherwise its a fatal crash
-			"SCEnvelopeView got mismatched times/levels arrays".die;
+			Error("SCEnvelopeView got mismatched times/levels arrays").throw;
 		});
 		this.size = val.at(0).size;
 		this.setProperty(\value, val)
