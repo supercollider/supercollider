@@ -265,7 +265,7 @@ int main(int argc, char* argv[])
 	if (tcpPortNum >= 0) World_OpenTCP(world, tcpPortNum, options.mMaxLogins, 8);
 
 #ifdef SC_DARWIN
-    World_OpenMachPorts(world, options.mServerPortName, options.mReplyPortName);
+    //World_OpenMachPorts(world, options.mServerPortName, options.mReplyPortName);
 #endif
 	
 	scprintf("SuperCollider 3 server ready..\n");
