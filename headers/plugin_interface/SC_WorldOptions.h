@@ -25,6 +25,10 @@
 #include <stdarg.h>
 #include "SC_Types.h"
 
+#ifdef SC_DARWIN
+#include <CoreFoundation/CFString.h>
+#endif
+
 typedef int (*PrintFunc)(const char *format, va_list ap);
 
 struct WorldOptions
@@ -63,6 +67,8 @@ struct WorldOptions
 #ifdef SC_DARWIN
 	const char *mInputStreamsEnabled;
 	const char *mOutputStreamsEnabled;
+    CFStringRef mServerPortName;
+    CFStringRef mReplyPortName;
 #endif
 };
 
@@ -70,7 +76,7 @@ const WorldOptions kDefaultWorldOptions =
 {
 	0,1024,64,1024,1024,64,128,8,8,4096,64,8192, 0,0, 1, 0,0,0,0,0, 0, 64, 0, 1
 #ifdef SC_DARWIN
-	,0,0
+	,0,0,CFSTR("com.audiosynth.scsynth"),NULL
 #endif
 };
 
@@ -86,6 +92,9 @@ extern "C" {
 	struct World* World_New(WorldOptions *inOptions);
 	void World_OpenUDP(struct World *inWorld, int inPort);
 	void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
+#ifdef SC_DARWIN
+    void World_OpenMachPorts(struct World *inWorld, CFStringRef localName, CFStringRef remoteName);
+#endif
 	void World_WaitForQuit(struct World *inWorld);
 	bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
 	int World_CopySndBuf(World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool &didChange);

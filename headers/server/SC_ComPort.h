@@ -140,5 +140,31 @@ const int kPacketBufSize = 8192; // this seems to be the maximum size of a UDP p
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef SC_DARWIN
+
+#include <CoreFoundation/CFMessagePort.h>
+
+class SC_MachMessagePort : public SC_CmdPort
+{
+    CFMessagePortRef mServerPort;
+    CFMessagePortRef mReplyPort;
+    
+protected:
+    virtual ReplyFunc GetReplyFunc();
+    
+public:
+    SC_MachMessagePort(struct World *inWorld, CFStringRef serverPortName, CFStringRef replyPortName);
+    virtual ~SC_MachMessagePort();
+    
+    virtual void* Run();
+
+private:
+    static CFDataRef messagePortCallBack(CFMessagePortRef local, SInt32 msgid, CFDataRef data, void *info);
+};
+
+#endif // SC_DARWIN
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #endif
 

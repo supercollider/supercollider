@@ -79,6 +79,7 @@ void Usage()
 #ifdef SC_DARWIN
 		"   -I <input-streams-enabled>\n"
 		"   -O <output-streams-enabled>\n"
+        "   -M <server-mach-port-name> <reply-mach-port-name>\n"
 #endif
 		"\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n",
 		kDefaultWorldOptions.mNumControlBusChannels,
@@ -233,6 +234,12 @@ int main(int argc, char* argv[])
 				checkNumArgs(2);
 				options.mOutputStreamsEnabled = argv[j+1];
 				break;
+            case 'M':
+// -M serverPortName replyPortName                
+                checkNumArgs(3);
+                options.mServerPortName = CFStringCreateWithCStringNoCopy(NULL, argv[j + 1], kCFStringEncodingUTF8, kCFAllocatorNull);
+                options.mReplyPortName = CFStringCreateWithCStringNoCopy(NULL, argv[j + 2], kCFStringEncodingUTF8, kCFAllocatorNull);
+                break;
 #endif
 			default: Usage();
 		}
@@ -251,6 +258,10 @@ int main(int argc, char* argv[])
 	
 	if (udpPortNum >= 0) World_OpenUDP(world, udpPortNum);
 	if (tcpPortNum >= 0) World_OpenTCP(world, tcpPortNum, options.mMaxLogins, 8);
+
+#ifdef SC_DARWIN
+    World_OpenMachPorts(world, options.mServerPortName, options.mReplyPortName);
+#endif
 	
 	scprintf("SuperCollider 3 server ready..\n");
 	fflush(stdout);

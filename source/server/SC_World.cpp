@@ -639,6 +639,18 @@ void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int 
 	}
 }
 
+#ifdef SC_DARWIN
+void World_OpenMachPorts(struct World *inWorld, CFStringRef localName, CFStringRef remoteName)
+{
+	try {
+		new SC_MachMessagePort(inWorld, localName, remoteName);
+	} catch (std::exception& exc) {
+		scprintf("Exception in World_OpenMachPorts: %s\n", exc.what());
+	} catch (...) {
+	}
+}
+#endif
+
 void World_WaitForQuit(struct World *inWorld)
 {
 	try {
