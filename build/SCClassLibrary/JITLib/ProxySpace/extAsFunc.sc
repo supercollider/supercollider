@@ -82,9 +82,9 @@
 		^if(ok, {
 			EventStreamControl.new(this.collect({ arg event;
 				event.copy.use({ 
-					~outIndex = proxy.outbus.index + channelOffset;
+					~out = proxy.outbus.index + channelOffset;
 					~nodeMap = proxy.nodeMap;
-					~argNames = [\freq,\amp,\sustain,\pan,\outIndex];//more later
+					~argNames = [\freq,\amp,\sustain,\pan,\out];//more later
 			})
 		
 			}))
