@@ -3,6 +3,8 @@ Stream : AbstractFunction {
 	// 'reset' is defined in class Object to do nothing.
 	// reading
 	next { ^this.subclassResponsibility(thisMethod) }
+	iter { ^this }
+		
 	value { arg inval; ^this.next(inval) }
 	valueArray { ^this.next }
 	
@@ -105,11 +107,11 @@ Stream : AbstractFunction {
 		^FuncStream.new({
 			var val;
 			if ( nextx.isNil, {
-				if ( nexty.isNil, {nil},{ val=nexty; nexty = stream.next; val });
+				if ( nexty.isNil, {nil},{ val = nexty; nexty = stream.next; val });
 			},{
 				if ( nexty.isNil or: { function.value(nextx,nexty) }, 
-					{ val=nextx; nextx = this.next; val },
-					{ val=nexty; nexty = stream.next; val }
+					{ val = nextx; nextx = this.next; val },
+					{ val = nexty; nexty = stream.next; val }
 				);					
 			});
 		},
@@ -123,7 +125,13 @@ Stream : AbstractFunction {
 	++ { arg stream; ^this.appendStream(stream) }
 	
 	appendStream { arg stream;
+		var reset = false;
 		^Routine({ arg inval;
+			if (reset) {
+				this.reset;
+				stream.reset;
+			};
+			reset = true;
 			inval = this.embedInStream(inval);
 			stream.embedInStream(inval);
 		});
@@ -203,6 +211,15 @@ Stream : AbstractFunction {
 	
 }
 
+OneShotStream : Stream {
+	var value, once = true;
+	*new { arg value;
+		^super.newCopyArgs(value)
+	}
+	next { ^if (once) {once = false; value} }
+	reset { once = true }
+}
+
 FuncStream : Stream {
 	var <>nextFunc; // Func is evaluated for each next state
 	var <>resetFunc; // Func is evaluated for each next state
@@ -248,7 +265,7 @@ PauseStream : Stream
 	}
 	
 	isPlaying { ^stream.notNil }
-	play { arg argClock, doReset = false, quant=1.0;
+	play { arg argClock, doReset = false, quant=0.0;
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
 		clock = argClock ? clock ? TempoClock.default;
