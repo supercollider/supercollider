@@ -879,7 +879,7 @@ valrange2	: exprseq DOTDOT
 				
 				SetSymbol(&selectorSlot, s_series);
 				selectornode = newPyrSlotNode(&selectorSlot);
-				args = linkNextNode($1, nilnode);
+				args = linkNextNode((PyrParseNode*)$1, nilnode);
 				args = linkNextNode(args, nilnode2);
 				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
 			}

@@ -2338,7 +2338,7 @@ case 107:
 				
 				SetSymbol(&selectorSlot, s_series);
 				selectornode = newPyrSlotNode(&selectorSlot);
-				args = linkNextNode(yyvsp[-1], nilnode);
+				args = linkNextNode((PyrParseNode*)yyvsp[-1], nilnode);
 				args = linkNextNode(args, nilnode2);
 				yyval = (long)newPyrCallNode(selectornode, args, 0, 0); 
 			;
