@@ -14,6 +14,8 @@ same interface like
 \f0\b OSCresponder, 
 \f1\b0 but allows multiple responders to the same command.\
 \
+note that OSCresponderNode evaluates its function in the SystemClock thread.\
+in order to access the AppClock thread (e.g. for GUI access ) use \{ ... \}.defer;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
