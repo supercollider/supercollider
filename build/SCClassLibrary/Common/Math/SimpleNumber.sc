@@ -219,16 +219,16 @@ SimpleNumber : Number {
 		^list.at(this.asIndex(list))
 	}
 	
-	keyToDegree { arg scale, stepsPerOctave=12, octave=5;
+	keyToDegree { arg scale, stepsPerOctave=12;
 		var key;
-		key = this - (stepsPerOctave * octave) % stepsPerOctave;
+		key = this % stepsPerOctave;
 		^key.asIndex2(scale)
 	}
 	
-	roundToScale { arg scale, stepsPerOctave=12, octave=5;
+	roundToScale { arg scale, stepsPerOctave=12;
 		var key, root;
-		root = (stepsPerOctave * octave);
-		key = this - root % stepsPerOctave;
+		root = this.trunc(stepsPerOctave);
+		key = this % stepsPerOctave;
 		^key.roundToList(scale) + root
 	}
 	
