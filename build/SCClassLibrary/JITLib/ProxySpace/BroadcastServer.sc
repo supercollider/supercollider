@@ -29,7 +29,7 @@ BroadcastServer : Server {
 	makeWindow {} //doesn't make sense, use Router for gui
 	
 	newNodeWatcher {
-		nodeWatcher = NodeWatcher.new(allAddr, this.nodeAllocator);
+		nodeWatcher = NodeWatcher.new(allAddr);
 		nodeWatcher.start;
 		
 	}

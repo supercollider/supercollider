@@ -8,7 +8,7 @@ ProxyNodeMap : NodeMap {
 		}
 		
 		wakeUpParentsToBundle { arg bundle, checkedAlready;
-			parents.do({ arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) });
+			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
 		}
 		
 		unmapProxy { arg keys;

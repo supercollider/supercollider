@@ -82,7 +82,7 @@ NodeProxy : AbstractFunction {
 		nChan = nChan ? this.numChannels;
 		nChan = nChan.min(this.numChannels);
 		checkedAlready = Set.new;
-		this.wakeUpParentsToBundle(bundle, checkedAlready);
+		this.wakeUpToBundle(bundle, checkedAlready);
 	
 		divider = if(nChan.even, 2, 1);
 		(nChan div: divider).do({ arg i;
@@ -95,25 +95,6 @@ NodeProxy : AbstractFunction {
 			this.sendBundle(bundle,0);
 		});
 		^playGroup
-	}
-	
-	send { arg extraArgs;
-			//latency is 0, def is on server
-			this.sendToServer(MixedBundle.new, false, 0.0, extraArgs);
-	}
-	
-	sendAll { arg extraArgs;
-			//latency is 0, def is on server
-			this.sendToServer(MixedBundle.new, true, 0.0, extraArgs);
-	}
-	
-	
-	refresh {
-		var bundle;
-		bundle = MixedBundle.new;
-		this.freeAllToBundle(bundle);
-		this.sendAllToBundle(bundle);
-		this.sendBundle(bundle,0);
 	}
 	
 	record { arg path, headerFormat="aiff", sampleFormat="int16", numChannels;
@@ -132,6 +113,7 @@ NodeProxy : AbstractFunction {
 	
 	
 	
+		
 	rate { ^outbus.tryPerform(\rate) }
 	numChannels { ^outbus.tryPerform(\numChannels) }
 	index { ^outbus.tryPerform(\index) }
@@ -149,12 +131,8 @@ NodeProxy : AbstractFunction {
 		^asString(this.identityHash.abs) ++ objects.size
 	}
 	
-	asInstr {
-		^{ this.value }.asInstr
-	}
-	//asDefName { ^this.generateUniqueName }
 	
-	// setting the source to anything that returns a valid ugen input
+	//////////// set the source to anything that returns a valid ugen input ////////////
 	
 	add { arg obj, channelOffset=0, send=true;
 		this.put(obj, channelOffset, send, false)
@@ -188,34 +166,14 @@ NodeProxy : AbstractFunction {
 							bundle.sendPrepare 
 						});
 						loaded = true;
+				 	}, {
+				 		loaded = false;
 				 	});
 				},  { "rate/numChannels must match".inform })
 			
 	}
 	
-	load {
-		var bundle;
-		if(server.serverRunning, { 
-			bundle = MixedBundle.new;
-			this.sendAllDefsToBundle(bundle);
-			bundle.send(server);
-			loaded = true; 
-		});
 	
-	}
-		
-	loadAll {
-		var bundle;
-		bundle = MixedBundle.new;
-		if(server.serverRunning, {
-			parents.do({ arg proxy; 
-				proxy.sendAllDefsToBundle(bundle); 
-			});
-			this.sendAllDefsToBundle(bundle);
-			bundle.send;
-			loaded = true; 
-		}, { "server not running".inform });
-	}
 
 	//////////////behave like my bus/////////////
 	
@@ -315,6 +273,26 @@ NodeProxy : AbstractFunction {
 	
 	/////////////////////////////////////////////
 	
+	send { arg extraArgs;
+			//latency is 0, def is on server
+			this.sendToServer(MixedBundle.new, false, 0.0, extraArgs);
+	}
+	
+	sendAll { arg extraArgs;
+			//latency is 0, def is on server
+			this.sendToServer(MixedBundle.new, true, 0.0, extraArgs);
+	}
+	
+	
+	refresh {
+		var bundle;
+		bundle = MixedBundle.new;
+		this.freeAllToBundle(bundle);
+		this.sendAllToBundle(bundle);
+		this.sendBundle(bundle,0);
+	}
+	
+
 	
 	// server communications, updating
 	
@@ -381,6 +359,14 @@ NodeProxy : AbstractFunction {
 		// todo maybe
 	}
 	
+	loadToBundle { arg bundle;
+		if(loaded == false, {
+			this.sendAllDefsToBundle(bundle);
+			loaded = true; 
+		});
+	}
+	
+	
 	////// private /////
 	
 	
@@ -422,7 +408,10 @@ NodeProxy : AbstractFunction {
 	}
 	
 	wakeUpToBundle { arg bundle, checkedAlready; //no need to wait, def is on server
-		if(this.isPlaying.not && checkedAlready.includes(this).not, { 
+		if(this.isPlaying.not && checkedAlready.includes(this).not, {
+			checkedAlready.add(this); 
+			//this.loadToBundle(bundle);
+			this.wakeUpParentsToBundle(bundle, checkedAlready);
 			this.prepareForPlayToBundle(bundle);
 			this.sendAllToBundle(bundle);
 		});
@@ -430,19 +419,16 @@ NodeProxy : AbstractFunction {
 	}
 	
 	wakeUpParentsToBundle { arg bundle, checkedAlready;
-		if(this.isPlaying.not && checkedAlready.includes(this).not, {
 			//if(loaded.not, { this.loadAll; });
-			this.wakeUpToBundle(bundle, checkedAlready);
-			parents.do({ arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) });
+			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
 			nodeMap.wakeUpParentsToBundle(bundle, checkedAlready);
-		});
 	}
 	
-	wakeUpParents { arg latency=0.0; //see for load 
+	wakeUp { arg latency=0.0; //see for load 
 		var bundle, checkedAlready;
 		bundle = MixedBundle.new;
 		checkedAlready = Set.new;
-		this.wakeUpParentsToBundle(bundle, checkedAlready);
+		this.wakeUpToBundle(bundle, checkedAlready);
 		this.sendBundle(bundle,0);
 	}
 			
@@ -477,7 +463,7 @@ LibNodeProxy : NodeProxy {
 	}
 }
 
-//the server needs to be a Router.
+//the server needs to be a Broadcast.
 //this class takes care for a constant groupID.
 
 
@@ -490,7 +476,7 @@ SharedNodeProxy : NodeProxy {
 		
 	initGroupID {   
 		constantGroupID = server.nextSharedNodeID; 
-	 } 											
+	} 											
 		
 	prepareForPlayToBundle { arg bundle, freeAll=true;
 				postln("started new shared group" + constantGroupID);
@@ -501,6 +487,33 @@ SharedNodeProxy : NodeProxy {
 	}
 	generateUniqueName {
 		^asString(constantGroupID) ++ objects.size
+	}
+	
+	play { arg busIndex=0, nChan;
+		var playGroup, bundle, divider, checkedAlready, localServer;
+		
+		localServer = server.localServer;
+		bundle = MixedBundle.new;
+		playGroup = Group.newToBundle(bundle, localServer);
+		if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
+		nChan = nChan ? this.numChannels;
+		nChan = nChan.min(this.numChannels);
+		checkedAlready = Set.new;
+		this.wakeUpToBundle(bundle, checkedAlready);
+	
+		divider = if(nChan.even, 2, 1);
+		(nChan div: divider).do({ arg i;
+		bundle.add([9, "proxyOut-linkDefAr-"++divider, 
+					localServer.nextNodeID, 1,playGroup.nodeID,
+					\i_busOut, busIndex+(i*divider), \i_busIn, outbus.index+(i*divider)]);
+		});
+		
+		localServer.waitForBoot({
+			bundle.sendPrepare(server);
+			bundle.send(localServer);
+		});
+		
+		^playGroup
 	}
 
 }
