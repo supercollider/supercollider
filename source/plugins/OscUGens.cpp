@@ -498,7 +498,7 @@ void Select_Ctor(Select *unit)
 
 void Select_next_1(Select *unit, int inNumSamples)
 {
-	int32 maxindex = unit->mNumInputs;
+	int32 maxindex = unit->mNumInputs - 1;
 	int32 index = (int32)ZIN0(0) + 1;
 	index = sc_clip(index, 1, maxindex);
 	ZOUT0(0) = ZIN0(index);
@@ -507,7 +507,7 @@ void Select_next_1(Select *unit, int inNumSamples)
 
 void Select_next_k(Select *unit, int inNumSamples)
 {
-	int32 maxindex = unit->mNumInputs;
+	int32 maxindex = unit->mNumInputs - 1;
 	int32 index = (int32)ZIN0(0) + 1;
 	index = sc_clip(index, 1, maxindex);
 
@@ -520,13 +520,14 @@ void Select_next_k(Select *unit, int inNumSamples)
 
 void Select_next_a(Select *unit, int inNumSamples)
 {
-	int32 maxindex = unit->mNumInputs;
+	int32 maxindex = unit->mNumInputs - 1;
 
 	float *out = ZOUT(0);
+	float *in0 = ZIN(0);
 	float **in = unit->mInBuf;
 	
 	for (int i=0; i<inNumSamples; ++i) {
-		int32 index = (int32)ZXP(in) + 1;
+		int32 index = (int32)ZXP(in0) + 1;
 		index = sc_clip(index, 1, maxindex);
 		ZXP(out) = in[index][i];
 	}
