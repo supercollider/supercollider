@@ -17,13 +17,20 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 (select an bold item and type cmd-shift-? to view its helpfile)\
+\
+in order to get a total overview of all present helpfiles, evaluate this:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 PathName.helpIndex;
+\f2\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 Topics
-\f2\b0 \
+\f0\b \cf0 \ul Topics
+\f2\b0 \ulnone \
 
 \f0\b 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -43,7 +50,7 @@
 \f2\b0\fs28 \cf0 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 Language\
+\f0\b \cf0 \ul Language\ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -61,7 +68,8 @@
 \fs28 \
 \
 \
-Classes\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul Classes\ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0 \cf0 	(incomplete list)\
@@ -73,68 +81,76 @@ Classes\
 		Streams\
 		Operators\
 		Collections\
+	\
+	\ul Core\ulnone \
+		Object\
+		Class\
+		Frame\
+		Function\
+		FunctionDef\
+		AbstractFunction\
+		Interpreter\
+		Process\
+		Method\
+		RawPointer\
+		Routine\
+		Nil\
+		Boolean \
+			True \
+			False\
+		Char\
+		Symbol\
+		Ref\
+		AppClock\
+		SystemClock\
 		\
-	Object\
-	Class\
-	Frame\
-	Function\
-	Interpreter\
-	Process\
-	Method\
-	RawPointer\
-	Routine\
-	FunctionDef\
-	Nil\
-	Boolean\
-	True\
-	False\
-	Char\
-	Symbol\
-	Ref\
-	Point\
-	Rect\
-	Color\
-	AbstractFunction\
-	Complex\
-	Float\
-	Infinitum\
-	Integer\
-	Magnitude\
-	Number\
-	Polar\
-	SimpleNumber\
-	BinaryOpStream\
-	EventStream\
-	UnaryOpStream\
-	In\
-	Out\
-	ReplaceOut\
-	SynthDef\
-	AppClock\
-	SystemClock\
-	Font\
-	Color\
-	SC2DSlider\
-	SCWindow\
-	Node\
-	Synth\
-	Group\
-	RootNode\
-	Bus\
-	Buffer\
-	OSCresponder\
-	OSCresponderNode\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\b0 \cf0 	
-\f0\b CocoaDialog\
-	NodeWatcher\
-	Document\
+	\ul Geometry\ulnone \
+		Point\
+		Rect\
+		Color\
+		\
+	\ul Math\ulnone \
+		Complex\
+		Float\
+		Infinitum\
+		Integer\
+		Magnitude\
+		Number\
+		Polar\
+		SimpleNumber\
+	\
+	\ul Streams\ulnone \
+		see Streams\
+	\
+	\ul Audio\ulnone \
+		SynthDef\
+		UGens\
+	\
+	\
+	\ul Control\ulnone \
+		Node\
+		Synth\
+		Group\
+		RootNode\
+		Bus\
+		Buffer\
+		OSCresponder\
+		OSCresponderNode\
+		NodeWatcher\
+	\
+	\ul GUI\ulnone \
+		Font\
+		Color\
+		SC2DSlider\
+		SCWindow\
+			CocoaDialog\
+		Document\
 	
 \f2\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 Methods\
+\f0\b\fs28 \cf0 \
+Methods\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs24 \cf0 \
@@ -145,6 +161,8 @@ Classes\
 \f0\b writeAsPlist\
 
 \f2\b0 \
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 'Third Party' Libraries\
@@ -155,6 +173,9 @@ Classes\
 \f0\b CRUCIAL-LIBRARY\
 	JITLib
 \f2\b0 \
+\
+\
+\
 \
 to be continued...\
 \
