@@ -58,11 +58,12 @@
 		var def, synth, server;
 		target = target.asTarget;
 		server = target.server;
+		if(server.serverRunning.not) { 
+			("server '" ++ server.name ++ "' not running.").warn; ^nil
+		};
 		def = this.asSynthDef(fadeTime:fadeTime);
 		synth = Synth.basicNew(def.name,server);
-		server.waitForBoot({
-			def.send(server, synth.newMsg(target, \addToTail, [\i_out, outbus, \out, outbus]));
-		});
+		def.send(server, synth.newMsg(target, \addToTail, [\i_out, outbus, \out, outbus]));
 		^synth
 	}
 	
