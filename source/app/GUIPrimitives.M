@@ -295,6 +295,19 @@ int prTextWindow_SetFont(struct VMGlobals *g, int numArgsPushed)
         [[doc textView] setFont: font range: selectedRange];
 		return errNone;
 }
+int prTextWindow_UnderlineSelection(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_UnderlineSelection(struct VMGlobals *g, int numArgsPushed)
+{
+        		if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+		
+		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        		if (!doc) return errFailed;
+		[[doc textView] underline: NULL];
+		return errNone;
+
+}
 
 int prTextWindow_Close(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_Close(struct VMGlobals *g, int numArgsPushed)
@@ -389,6 +402,8 @@ int prTextWindow_GetByIndex(struct VMGlobals *g, int numArgsPushed)
 		}
 		[doc setSCObject: a->uo];
 		SetPtr(a->uo->slots + 0, doc);
+//		if([doc getSCKeyDownAction])
+//		SetObject(a->uo->slots + 1, [doc getSCKeyDownAction]);
 		return errNone;
 }
 
@@ -826,6 +841,7 @@ int prNewTextWindow(struct VMGlobals *g, int numArgsPushed)
 		PyrObject * obj = [doc getSCObject];
 		if(obj){
 			//post("docuemnt has scObject already\n");
+			docCreatedFromLang = false;
 			SetNil(d);
 			return errNone;
 		}
@@ -888,12 +904,13 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
 		if(obj){
 			//post("docuemnt has scObject already\n");
 			SetNil(d);
+			docCreatedFromLang = false;
 			return errNone;
 		}
 		[doc setSCObject: d->uo];
 		SetPtr(d->uo->slots + 0, doc);
 		docCreatedFromLang = false;
-	return errNone;
+		return errNone;
 }
 
 int prGetStringFromUser(struct VMGlobals *g, int numArgsPushed);
@@ -2600,6 +2617,9 @@ void initGUIPrimitives()
 		int num = [[docctl documents] count];
         for(int i=0; i<num; i++){
 			MyDocument * doc = [[docctl documents] objectAtIndex: i];
+			PyrObject * pobj = [doc getSCObject];
+//			if(pobj)
+//			[doc setSCKeyDownAction: (pobj->slots+1)->uo];
 			[doc setSCObject: nil];
 		}
 	}
@@ -2632,6 +2652,8 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_RemoveUndo", prTextWindow_RemoveUndo, 1, 0);	
 //	definePrimitive(base, index++, "_TextWindow_SelectToken", prTextWindow_SelectToken, 1, 0);	
 	definePrimitive(base, index++, "_TextWindow_SelectUnderlinedText", prTextWindow_SelectUnderlinedText, 2, 0);	
+	
+	definePrimitive(base, index++, "_TextWindow_UnderlineSelection", prTextWindow_UnderlineSelection, 1, 0);	
 
 
 ///
