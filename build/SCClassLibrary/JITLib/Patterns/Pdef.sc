@@ -274,22 +274,19 @@ Pdef : EventPatternProxy {
 		all.put(key, pattern);
 	}
 	*initClass {
-		var phraseEvent;
-		
-		all = IdentityDictionary.new; 
+		var phraseEventFunc;
 		CmdPeriod.add(this);
 		
+		all = IdentityDictionary.new; 
 		Class.initClassTree(Event);
-		phraseEvent = Event.parentEvents.default.copy;
-		phraseEvent.use {
-			~library = all;
-			~prPlay = ~play;
-			~synthDef = \default;
-			~embeddingLevel = 0; // infinite recursion catch
-			~play = #{
-				var pat, event, outerEvent, recursionLevel, instrument, embeddingLevel;
-				pat = ~library.at(~instrument);
-				if(pat.notNil and: { (embeddingLevel = ~embeddingLevel) < 8 })
+		
+		phraseEventFunc = {
+			var pat, event, outerEvent, recursionLevel, instrument, embeddingLevel;
+			
+				embeddingLevel = ~embeddingLevel ? 0; // infinite recursion catch
+				
+				pat = all.at(~instrument);
+				if(pat.notNil and: { embeddingLevel < 8 })
 				{
 					// preserve information from outer pattern
 					outerEvent = currentEnvironment.copy;
@@ -308,7 +305,7 @@ Pdef : EventPatternProxy {
 							};
 						} {
 							// play pattern in the ordinary way
-							outerEvent.put(\play, ~prPlay);
+							~type = \note;
 							outerEvent.put(\instrument, ~synthDef);
 						};
 					} {	// avoid recursion, if instrument not set.
@@ -316,15 +313,16 @@ Pdef : EventPatternProxy {
 						outerEvent.parent_(Event.parentEvents.default);
 					};
 					
-					pat = Pfindur(~sustain.value, pat, 0.0); // avoid cutting off last event
+					pat = Pfindur(~sustain.value, pat);
 					pat.play(thisThread.clock, outerEvent, 0.0);
 				} {
-					~prPlay.value;
+					~type = \note;
+					~play.value;
 				}
-			}
 		
 		};
-		Event.parentEvents.put(\phraseEvent, phraseEvent);
+		
+		Event.parentEvents.default.eventTypes.put(\phrase, phraseEventFunc);
 	}
 	
 }
