@@ -71,6 +71,7 @@ Char : Magnitude {
 	*tab { ^$\t }
 	*space { ^$  }
 	*comma { ^$\, }
+	*bullet { ^165.asAscii }
 
 	printOn { arg stream;
 		stream.put(this);
