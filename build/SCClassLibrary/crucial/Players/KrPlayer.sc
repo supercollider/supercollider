@@ -12,12 +12,6 @@ KrPlayer : AbstractPlayer {
 
 	//guiClass { ^KrPlayerGui }
 	
-	asSynthDef { 
-		// but its probably more complicated for your subclass
-		^SynthDef(this.defName,{ arg outIndex = 0;
-			Out.kr(outIndex,this.kr)
-		})
-	}
 }
 
 

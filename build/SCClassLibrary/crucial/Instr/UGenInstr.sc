@@ -15,7 +15,6 @@ UGenInstr { // make a virtual Instr by reading the class def
 		specs = this.argNames.collect({ arg ag,i;
 			ag.asSpec
 		});
-	
 	}
 
 	value { arg args;

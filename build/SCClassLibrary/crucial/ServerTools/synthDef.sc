@@ -4,7 +4,8 @@
 	
 	//writeDefFile {}
 	
-//	play { ^ScalarPatchOut(this) }
+	//play { ^ScalarPatchOut(this) }
+
 	patchOut { ^ScalarPatchOut(this) }
 	isPlaying { ^false }
 
@@ -33,7 +34,6 @@
 
 + Editor {
 
-	//editor
 	prepareForPlay { arg group,bundle;
 		if(patchOut.isNil,{ // private out
 			patchOut = ScalarPatchOut(this);
@@ -41,7 +41,6 @@
 	}
 	synthArg { ^this.poll }
 	instrArgFromControl { arg control;
-		//control.insp("instrArgFromControl");
 		^control
 	}
 }
@@ -82,9 +81,6 @@
 + AbstractPlayer {
 
 	addToSynthDef {  arg synthDef,name;
-		// properly we should make patchOut after making synth def
-		// on child, then on self.
-		//[name,this.synthArg,this].insp("addToSynthDef");
 		// value doesn't matter so much, we are going to pass in a real live one
 		synthDef.addKr(name,this.synthArg ? 0); // \out is a .kr bus index
 	}
@@ -115,15 +111,14 @@
 	}
 }
 
-+ Sample {
++ BufferProxy {
 
-	// already does prepare
-	
 	instrArgFromControl { arg control,argi;
 		forArgi = argi; // for buffer etc. to build a control
 		^this
 	}
-	//didSpawn isPlaying
 }
 
+
 // trig things, supply an InTrig.kr
+

@@ -21,8 +21,7 @@
 	defName {
 		^("BeatClockPlayer" ++ tempoFactor.asString)
 	}	synthDefArgs { // synthinputs collect synthArg
-		^[ tempoBus.index,patchOut.synthArg]//.insp("Beatclok synthdefargs")
+		^[ tempoBus.index,patchOut.synthArg]
 	}
-	//synthArg { ^patchOut.synthArg }
 
 	storeParamsOn { arg stream;		stream.storeArgs([tempoFactor])	}	guiClass { ^BeatClockPlayerGui }}

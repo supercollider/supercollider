@@ -5,33 +5,8 @@ AbstractPlayer : AbstractFunction  {
 	
 	var <path,name,<>dirty=true; 
 	
-	var <synth,<>patchOut,<>readyForPlay = false,defName,patchOutsOfChildren;
+	var <synth,<>patchOut,<>readyForPlay = false,defName;
 		
-	// subclasses must implement
-	ar { ^this.subclassResponsibility(thisMethod) }
-	kr { ^this.ar }
-	value {  ^this.ar }
-	valueArray { ^this.value }
-	
-	// ugen style syntax
-	*ar { arg ... args;
-		^this.performList(\new,args).ar
-	}
-	*kr { arg ... args;
-		^this.performList(\new,args).kr
-	}
-
-	// function composition
-	composeUnaryOp { arg operator;
-		^PlayerUnop.new(operator, this)
-	}
-	composeBinaryOp { arg operator, pattern;
-		^PlayerBinop.new(operator, this, pattern)
-	}
-	reverseComposeBinaryOp { arg operator, pattern;
-		^PlayerBinop.new(operator, pattern, this)
-	}
-	
 	rate { ^\audio }
 	numChannels { ^1 }
 
@@ -70,10 +45,11 @@ AbstractPlayer : AbstractFunction  {
 				if(server.serverRunning.not,{
 					"server failed to start".error;
 				},{
+					// screwy
 					patchOut = true; // keep it from making one
+					
 					this.prepareForPlay(group,bundle);
 					
-					//["-play prepared",bundle].postln;
 					if(bundle.notEmpty,{
 						server.listSendBundle(nil,bundle
 												//.insp("prepare")
@@ -112,25 +88,22 @@ AbstractPlayer : AbstractFunction  {
 	}
 	
 	prepareForPlay { arg group,bundle;
-		//this.insp("prepareForPlay");
 		readyForPlay = false;
 		
-		this.loadDefFileToBundle(bundle);
+		group = group.asGroup;
+		this.loadDefFileToBundle(bundle,group.server);
 		// if made, we have secret controls now
 		// else we already had them
 		
 		// play would have already done this if we were top level object
 		if(patchOut.isNil,{ // private out
-			group = group.asGroup;
 			patchOut = PatchOut(this,group,
 						Bus.alloc(this.rate,group.server,this.numChannels))
 						// private buss on this server
 		});
 		// has inputs
-		patchOutsOfChildren = this.children.collect({ arg child;
+		this.children.do({ arg child;
 			child.prepareForPlay(group,bundle);
-			//child.makePatchOut(group)
-			child.patchOut
 		});
 		
 		// not really until the last confirmation comes from server
@@ -169,31 +142,34 @@ AbstractPlayer : AbstractFunction  {
 			
 		save it all in InstrSynthDef
 	*/
-	loadDefFileToBundle { arg bundle;
-		var def,bytes;
-		if(this.defName.isNil or: {
-			true
-			// Library.at(SynthDef,patchOut.server,this.defName.asSymbol).isNil
-		},{
-			this.children.do({ arg child;
-				child.loadDefFileToBundle(bundle);
-			});
+	loadDefFileToBundle { arg bundle,server;
+		var def,bytes,dn;
 
+		// can't assume the children are unchanged
+		this.children.do({ arg child;
+			child.loadDefFileToBundle(bundle);
+		});
+
+		dn = this.defName;
+		if(dn.isNil or: {
+			dn = dn.asSymbol;
+			Library.at(SynthDef,server,dn).isNil
+		},{
 			// save it in the archive of the player
 			def = this.asSynthDef;
 			bytes = def.asBytes;
 			bundle.add(["/d_recv", bytes]);
+			// even if name was nil before (Patch), its set now
 			defName = def.name;
-			
-			//secretArgs = def.secretArgs;
 			
 			// on server quit have to clear this
 			// but for now at least we know it was written, and therefore
 			// loaded automatically on reboot
-			// Library.put(SynthDef,patchOut.server,this.defName.asSymbol,true);
+			Library.put(SynthDef,server,defName,true);
 		});
 	}
 	
+	//always sending right now
 	writeDefFile {
 		this.asSynthDef.writeDefFile; // todo: 	check if needed
 		this.children.do({ arg child;
@@ -203,14 +179,14 @@ AbstractPlayer : AbstractFunction  {
 	
 	
 	/** SUBCLASSES SHOULD IMPLEMENT **/
-	// this works for simple audio function subclasses
+	//  this works for simple audio function subclasses
 	//  but its probably more complicated if you have inputs
 	asSynthDef { 
-		^SynthDef(this.defName,{ arg outIndex = 0;
+		^SynthDef(this.defName,{ arg i_outIndex = 0;
 			if(this.rate == \audio,{
-				Out.ar(outIndex,this.ar)
+				Out.ar(i_outIndex,this.ar)
 			},{
-				Out.kr(outIndex,this.kr)
+				Out.kr(i_outIndex,this.kr)
 			})
 		})
 	}
@@ -220,7 +196,6 @@ AbstractPlayer : AbstractFunction  {
 		^this.children.collect({ arg ag,i; ag.synthArg })  
 				 ++ [patchOut.bus.index] // always goes last
 	}
-	//secretSynthDefArgs { ^#[] } // requires names
 	defName {
 		^defName ?? {this.class.name.asString}
 	}
@@ -229,26 +204,7 @@ AbstractPlayer : AbstractFunction  {
 			patchOut.connectTo(patchIn,false); // we are connected now
 			patchIn.nodeControl_(NodeControl(synth,synthArgi));
 		});
-			
-		//node control if you want it
-		//synthPatchIns.do({ arg patchIn,synthArgi;
-		//	patchIn.nodeControl_(NodeControl(synth,synthArgi));
-		//});
-		//patchIns.do({ arg patchIn,pti;
-		//	// objects hook up 
-		//	patchOutsOfChildren.at(pti).connectTo(patchIn,false); 
-		//});
-		/* probably better
-		this.children.do({arg ag,i;
-			ag.parentDidSpawn(patchIns.at(i));
-		});
-		*/
 	}
-	//parentDidSpawn { arg parentalPatchIn;
-	//	patchOut.connectTo(parentalPatchIn,false); // don't send data
-	//}
-
-
 
 
 	/* status */
@@ -274,11 +230,11 @@ AbstractPlayer : AbstractFunction  {
 		// release any connections i have made
 		readyForPlay = false;
 	}
+	busIndex { ^patchOut.index }
 
 
 
-
-/*
+/*  RECORDING ETC.
 	scope 	{ Synth.scope({ Tempo.setTempo; this.ar }) }
 	fftScope 	{ Synth.fftScope({ Tempo.setTempo; this.ar }) }
 	record	{ arg pathName,headerFormat='SD2',sampleFormat='16 big endian signed';
@@ -297,6 +253,48 @@ AbstractPlayer : AbstractFunction  {
 
 
 
+/* UGEN STYLE USAGE */
+
+	// only works immediately in  { }.play
+	// for quick experimentation, does not encourage reuse
+	ar {
+		// ideally would add itself as a child to the current InstrSynthDef
+		//this.play;
+		//^In.ar(this.busIndex,this.numChannels)
+		// would break for anyone who overrides .ar
+		// could change to asUGenFunc
+		// or this could be asInAr
+		
+		^thisMethod.subclassResponsibility
+	}
+	kr { ^this.ar }
+	value {  ^this.ar }
+	valueArray { ^this.value }
+	
+	// ugen style syntax
+	*ar { arg ... args;
+		^this.performList(\new,args).ar
+	}
+	*kr { arg ... args;
+		^this.performList(\new,args).kr
+	}
+
+	// function composition
+	composeUnaryOp { arg operator;
+		^PlayerUnop.new(operator, this)
+	}
+	composeBinaryOp { arg operator, pattern;
+		^PlayerBinop.new(operator, this, pattern)
+	}
+	reverseComposeBinaryOp { arg operator, pattern;
+		^PlayerBinop.new(operator, pattern, this)
+	}
+	
+
+
+
+
+
 
 	// subclasses need only implement beatDuration 
 	beatDuration { ^nil } // nil means inf
@@ -310,8 +308,8 @@ AbstractPlayer : AbstractFunction  {
 	}
 	delta { 	^this.beatDuration	}
 	
-	// all that is needed to play inside standard patterns
 /*
+	// all that is needed to play inside standard patterns
 	embedInStream { arg inval;
 		// i am one event
 		^inval.make({
@@ -339,6 +337,7 @@ AbstractPlayer : AbstractFunction  {
 	asString { ^this.name ?? { super.asString } }
 
 	path_ { arg p; path = PathName(p).asRelativePath }
+
 
 	// structural utilities
 	children { ^[] }

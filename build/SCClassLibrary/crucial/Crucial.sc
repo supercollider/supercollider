@@ -9,7 +9,13 @@ Crucial {
 		PathName.scroot =
 				"/Volumes/Macintosh HD/Users/cruxxial/SuperCollider3/build/";
 
-		Instr.instrDirectory = "Instr/"; // or ~/Documents/SC3/Instr/
+
+		// you can move all of your documents elsewhere
+		Document.dir = ""; // same as SC, or use "~/Documents/SC3";
+		
+		Instr.instrDirectory = Document.dir ++ "Instr/";
+		Sample.soundsDir = Document.dir ++ "sounds/";
+
 
 
 		// hint: Lib menu, post... color

@@ -1,7 +1,7 @@
 PlayerMixer : AbstractPlayer {	var <>players;
 	//,<>timeSplay=0.007;// 0.0029025 is one block		*new { arg players;		^super.new.players_(loadDocument(players) ? [])	}
 	prepareForPlay { arg group,bundle;
-		//this.insp("prepare for play");
+		//super.prepareForPlay(group,bundle);
 		players.do({ arg pl;
 			pl.prepareForPlay(group,bundle)
 		})	

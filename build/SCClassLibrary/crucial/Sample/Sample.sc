@@ -1,31 +1,112 @@
 
-Sample { 
-	// mono or stereo
+BufferProxy { // blank space for delays, loopers etc.
+
+	var <buffer,<>patchOut,<readyForPlay = false;
+
+	var size=0,<end=0,<>numChannels=1,<>sampleRate=44100.0;
+	var <>startFrame=0,<>endFrame = -1;
+
+
+	// while building the synth def...
+	var <>forArgi,bufnumControl;
+
+	*new { arg seconds=1.0,numChannels=1,sampleRate=44100.0;
+		^super.new
+			.startFrame_(0).endFrame_(seconds * sampleRate)
+			.numChannels_(numChannels).sampleRate_(sampleRate)
+	}
+	
+	size {// actual size loaded on server, not total size
+		^if(endFrame == -1,{
+			end
+		},{
+			endFrame - startFrame
+		})	
+	}
+	
+	/* server support */
+	prepareForPlay { arg group,bundle;
+		buffer = Buffer.new(group.asGroup.server,this.size,numChannels);
+		buffer.numFrames = this.size;
+		buffer.numChannels = numChannels;
+		bundle.add( buffer.allocMsg );
+
+		readyForPlay = true;
+		patchOut = ScalarPatchOut(this);
+	}
+
+
+	free {  
+		buffer.free; 
+		buffer = nil;
+		patchOut = nil;
+		readyForPlay = false;
+	}
+	bufnum { ^buffer.bufnum }
+	bufnumIr {
+		// add a secret ir control
+		^bufnumControl ?? {
+			bufnumControl = UGen.buildSynthDef.addSecretIr(
+				("__bufnum__" ++ forArgi.asString).asSymbol,0,forArgi,\bufnum);
+		}
+	}
+	bufnumKr {
+		// add a secret kr control
+		^bufnumControl ?? {
+			bufnumControl = UGen.buildSynthDef.addSecretKr(
+				("__bufnum__" ++ forArgi.asString).asSymbol,0,forArgi,\bufnum);
+		}
+	}
+	sampleRateKr {
+		^BufSampleRate.kr(this.bufnumKr)
+	}
+	
+// no ir yet
+//	sampleRateIr {
+//		^BufSampleRate.ir(this.bufnumIr)
+//	}
+		
+	bufRateScaleKr {
+		^BufRateScale.kr(this.bufnumKr)
+	}
+	bufFramesKr {
+		^BufFrames.kr(this.bufnumKr)
+	}
+	bufSamplesKr {
+		^BufSamples.kr(this.bufnumKr)
+	}
+	bufDurKr {
+		^BufDur.kr(this.bufnumKr)
+	}
+	bufChannelsKr {
+		^BufChannels.kr(this.bufnumKr)
+	}
+	
+
+}
+
+
+// BufferArray
+
+
+
+Sample : BufferProxy { // a small sound loaded from disk
 	
 	classvar <soundsDir="sounds/";
 	
-	var <soundFilePath,<>name,<>soundFile,<tempo=2.0,<beats=4.0;
-	
-	var <buffer,<>patchOut,<readyForPlay = false;
-	
-	var <beatsize,size=0,<end;
-	var <>startFrame=0,<>endFrame = -1;
-	
-	// while building the synth def...
-	var <>forArgi,bufnumControl;
+	var <soundFilePath,<>name,<>soundFile,<beats=4.0,<tempo=1.0;
+
+	var <beatsize;
 	
 	*new { arg soundFilePath,tempo,startFrame=0,endFrame = -1;
 		var new;
 		new = super.new;
 		new.load(soundFilePath);
-		new.tempo_(tempo);
+		new.tempo_(tempo ? Tempo.tempo);
 		new.startFrame_(startFrame).endFrame_(endFrame);
 		^new
 	}
 
-	*newClear {
-		^super.new
-	}
 	*soundsDir_ { arg dir;
 		soundsDir = dir.standardizePath ++ "/";
 	}
@@ -54,20 +135,14 @@ Sample {
 	prLoad { arg thing;
 		var pathName;
 		
-		if(thing.isNil,{
+		if(thing.isNil,{ // a blank holder till you load something by gui
 			this.soundFile_(SoundFile.new);
 			// channels, numFrames...
 			size = 44100; // 1 second
 			this.calculate;
 			this.tempo = Tempo.tempo;
-			^this
-		});
-		if(thing.isNumber,{
-			soundFile = SoundFile.new;
-			size = thing; // how much to allocate for
-					// assumes mono for now !
-			this.calculate;
-			this.tempo = Tempo.tempo;
+			numChannels = 1;
+			sampleRate = 44100.0;
 			^this
 		});
 		if(thing.isKindOf(SoundFile),{
@@ -75,6 +150,8 @@ Sample {
 			this.soundFilePath = this.class.standardizePath( soundFile.path );
 			this.calculate;
 			this.guessBeats;
+			numChannels = soundFile.numChannels;
+			sampleRate = soundFile.sampleRate;
 			^this
 		});
 		if(thing.isString,{
@@ -87,7 +164,9 @@ Sample {
 					+ soundFilePath).error;
 			});
 			this.calculate;
-			this.guessBeats
+			this.guessBeats;
+			numChannels = soundFile.numChannels;
+			sampleRate = soundFile.sampleRate;
 		})
 	}
 						
@@ -112,13 +191,6 @@ Sample {
 		size=soundFile.numFrames;
 		end=size-1;
 	}
-	size {// actual size loaded on server, not total size
-		^if(endFrame == -1,{
-			end
-		},{
-			endFrame - startFrame
-		})	
-	}
 	guessBeats {
 		this.beats_(4.0); // this may look wack, but it works very well !
 		if(tempo > 4.0,{ this.beats_(beats / 2.0) });
@@ -129,95 +201,37 @@ Sample {
 		if(tempo < 0.5,{ this.beats_(beats * 2.0) });
 	}
 	
-	sampleRate { ^soundFile.sampleRate }
 	duration { ^this.size / this.sampleRate }
 	asString { ^(name ?? { super.asString }) }
 	// yeah but how many doubles ?
-	totalMemory { ^this.numChannels * this.size }
-	numChannels { ^soundFile.numChannels }
+	totalMemory { ^numChannels * this.size }
+	
+	
+	pchRatioKr { arg temp;
+		// InstrSynthDef can support a shared tempo input
+		
+		// would have to send __mytempo__ when you load buffer and recalc
+		// UGen.buildSynthDef.addSecretKr(
+		//		("__mytempo__" ++ forArgi.asString).asSymbol,tempo,forArgi,\tempo)
+		
+		^(this.bufRateScaleKr * temp).madd(tempo.reciprocal)
+	}
+	
 	
 	/* server support */
 	prepareForPlay { arg group,bundle;
-		buffer = Buffer.new(group.asGroup.server,this.size,this.numChannels);
+		buffer = Buffer.new(group.asGroup.server,this.size,numChannels);
 		if(soundFilePath.notNil,{
 			bundle.add( buffer.allocReadMsg(this.soundFilePath,startFrame) )
 		},{
 			buffer.numFrames = this.size;
-			buffer.numChannels = this.numChannels;
+			buffer.numChannels = numChannels;
 			bundle.add( buffer.allocMsg )
 		});
 		readyForPlay = true;
 		patchOut = ScalarPatchOut(this);
 	}
-	free {  
-		buffer.free; 
-		buffer = nil;
-		patchOut = nil;
-		readyForPlay = false;
-	}
-	bufnum { ^buffer.bufnum }
-	bufnumIr {
-		// add a secret ir control
-		^bufnumControl ?? {
-			bufnumControl = UGen.buildSynthDef.addSecretIr(
-				("__bufnum__" ++ forArgi.asString).asSymbol,0,forArgi,\bufnum);
-		}
-	}
-	bufnumKr {
-		// add a secret kr control
-		^bufnumControl ?? {
-			bufnumControl = UGen.buildSynthDef.addSecretKr(
-				("__bufnum__" ++ forArgi.asString).asSymbol,0,forArgi,\bufnum);
-		}
-	}
-	sampleRateKr {
-		^BufSampleRate.kr(this.bufnumKr)
-	}
-// no ir yet
-//	sampleRateIr {
-//		^BufSampleRate.ir(this.bufnumIr)
-//	}
-		
-	bufRateScaleKr {
-		^BufRateScale.kr(this.bufnumKr)
-	}
-	bufFramesKr {
-		^BufFrames.kr(this.bufnumKr)
-	}
-	bufSamplesKr {
-		^BufSamples.kr(this.bufnumKr)
-	}
-	bufDurKr {
-		^BufDur.kr(this.bufnumKr)
-	}
-	bufChannelsKr {
-		^BufChannels.kr(this.bufnumKr)
-	}
-/*	
-	pchRatioKr {
-		this.bufRateScaleKr  * this.tempoPlayer * 
-		can't kr the tempoPlayer until we have a server.
-		can't get a tempo bus until we have a server
-		
-		can add a secret control, to be fed the tempo bus when
-		we have server
-	}
 	
-	tempoPlayer {
-		// add a control on the tempo bus
-		// return In.kr(
-		^(tempoPlayer ?? {
-			tempoPlayer = TempoPlayer.new;
-		})
-	}
-*/
-	pchRatioKr { arg temp;
-		// would have to send __mytempo__ when you load buffer and recalc
-		//UGen.buildSynthDef.addSecretKr(
-		//		("__mytempo__" ++ forArgi.asString).asSymbol,tempo,forArgi,\tempo)
-		
-		^this.bufRateScaleKr * temp * tempo.reciprocal
-	}
 	storeParamsOn { arg stream;
 		stream << "(";
 		//TODO must abrev the path
@@ -228,29 +242,4 @@ Sample {
 	guiClass { ^SampleGui }
 
 }
-
-//
-//SampleProxy {
-//
-//	var <sample;
-//	
-//	*new { arg sample;
-//		^super.newCopyArgs(sample)
-//	}
-//	
-//	bufnum {
-//		^sample.bufnum
-//	}
-//	numChannels {
-//		^sample.numChannels
-//	}
-//	numFrames {
-//		^BufFrames.ir(sample.bufnum)
-//	}
-////	sampleRate {
-////		
-////	}
-//
-//}
-
 

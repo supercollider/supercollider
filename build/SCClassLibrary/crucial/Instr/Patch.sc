@@ -114,16 +114,7 @@ Patch : AbstractPlayer  {
 					synthArgsIndices.at(childi));
 		});
 	}
-//	didSpawn {
-//		//node control if you want it
-//		synthPatchIns.do({ arg patchIn,synthArgi;
-//			patchIn.nodeControl_(NodeControl(synth,synthArgi));
-//		});
-//		patchIns.do({ arg patchIn,pti;
-//			// objects hook up 
-//			patchOutsOfChildren.at(pti).connectTo(patchIn,false); 
-//		});
-//	}
+
 	free {
 		// TODO only if i am the only exclusive owner
 		this.children.do({ arg child; child.free });
