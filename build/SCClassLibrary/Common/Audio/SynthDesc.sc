@@ -244,7 +244,7 @@ SynthDescLib {
 
 	send { 
 		servers.do {|server|
-			synthDescs.do {|desc| desc.send(server) };
+			synthDescs.do {|desc| desc.send(server.value) };
 		};
 	}
 	read	{ arg path;
