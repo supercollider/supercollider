@@ -446,8 +446,9 @@ void envirArray(PyrSlot *dictSlot, int &listSize, PyrObject **arrayList)
 		if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) 
 			break;
 		PyrSlot *arraySlot = dict->slots + ivxIdentDict_array;
-		if (!(IsObj(arraySlot) && (array = arraySlot->uo)->classptr == class_array)) 
-			break;
+		if (!IsObj(arraySlot)) break;
+		array = arraySlot->uo;
+		 if (array->classptr != class_array) break;
 		arrayList[numArrays++] = array;
 		dictSlot = dict->slots + ivxIdentDict_parent;
 	}
@@ -459,10 +460,11 @@ bool envirArrayAt(int listSize, PyrObject **arrayList, PyrSlot *key, PyrSlot *re
 {
 	PyrSlot *slot;
 	int i;
-
+	int hash = calcHash(key);
+	
 	for (int j=0; j<listSize; ++j) {
 		PyrObject* array = arrayList[j];
-		i = arrayAtIdentityHashInPairsWithHash(array, key, calcHash(key));
+		i = arrayAtIdentityHashInPairsWithHash(array, key, hash);
 		
 		if (i >= 0) {
 			slot = array->slots + i;
@@ -473,7 +475,6 @@ bool envirArrayAt(int listSize, PyrObject **arrayList, PyrSlot *key, PyrSlot *re
 			}
 		}
 	}
-	SetNil(res);
 	return false;
 }
 
@@ -494,23 +495,22 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 	envirArray(a, arrayListSize, arrayList);
 	
 	SetSymbol(&key, s_delta);
-	envirArrayAt(arrayListSize, arrayList, &key, &delta);
 	
-	if (NotNil(&delta)) {
+	if (envirArrayAt(arrayListSize, arrayList, &key, &delta)) {
 		a->ucopy = delta.ucopy;
 	} else {
 		SetSymbol(&key, s_dur);
-		envirArrayAt(arrayListSize, arrayList, &key, &dur);	
+		if (!envirArrayAt(arrayListSize, arrayList, &key, &dur)) return errWrongType;
 		
 		err = slotDoubleVal(&dur, &fdur);
 		if (err) return err;
 		
 		SetSymbol(&key, s_stretch);
-		envirArrayAt(arrayListSize, arrayList, &key, &stretch);
+		if(!envirArrayAt(arrayListSize, arrayList, &key, &stretch)) return errWrongType;
 		
 		err = slotDoubleVal(&stretch, &fstretch);
 		if (err) return err;
-		
+				
 		SetFloat(a, fdur * fstretch );
 	}
 		
