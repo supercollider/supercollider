@@ -10,15 +10,17 @@
 
 \fs24 \cf0 (incomplete)\
 \
-\
-\ul \
+	UGen\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul \ulc0 \
 Analysis\ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
 	Amplitude\
 	Compander\
-	Pitch
+	Pitch\
+	Slope
 \f0\b \ul \
 \
 Control\ulnone \
@@ -35,7 +37,6 @@ In/Out\ulnone \
 
 \f1\b0 \
 	AudioIn\
-	Control\
 	In\
 	InTrig\
 	InFeedback\
@@ -46,14 +47,17 @@ In/Out\ulnone \
 \f0\b \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ul Oscillators\
-\ulnone 	
+\cf0 \ul \ulc0 Oscillators\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone 	
 \f1\b0 \
 	Blip\
 	Formant\
 	FSinOsc\
+	Gendy1\
+	Gendy2\
+	Gendy3\
 	Impulse\
-	Index\
 	Klang\
 	LFCub\
 	LFPar\
@@ -65,16 +69,39 @@ In/Out\ulnone \
 	Saw\
 	SinOsc\
 	SyncSaw\
-	TWindex\
 	VarSaw\
 	VOsc\
 	VOsc3\
-	Select\
-	\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \ul Panners\
-\ulnone 	
+\f0\b \cf0 \ul \ulc0 Delays\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \ulnone \
+	AllpassC\
+	AllpassL\
+	AllpassN\
+	CombC\
+	CombL\
+	CombN\
+	Delay1\
+	Delay2\
+	DelayC\
+	DelayL\
+	DelayN\
+	PingPong\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \ul \ulc0 Multiple Channels\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone 	
 \f1\b0 \
+	Mix\
+	MultiOutUGen\
+	OutputProxy\
+	\
 	BiPanB2\
 	DecodeB2\
 	LinPan2\
@@ -88,20 +115,37 @@ In/Out\ulnone \
 	XFade2\
 	
 \f0\b \
-\ul Filters\
-\ulnone 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul \ulc0 Physical Models\
+\
+	
+\f1\b0 \ulnone Ball\
+	Spring\
+	TBall\
+	
+\f0\b \ul \
+Filters\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 	BPF\
 	BPZ2\
+	BRF\
 	Formlet\
 	FOS\
 	HPF\
 	HPZ1\
 	HPZ2\
+	Integrator\
 	Klank\
+	Lag\
+	Lag2\
+	Lag3\
 	LeakDC\
 	Limiter\
+	LinExp\
+	LinLin\
 	LPF\
 	LPZ1\
 	LPZ2\
@@ -119,8 +163,9 @@ In/Out\ulnone \
 	
 \f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ul Noise\
-\ulnone 	\
+\cf0 \ul \ulc0 Noise\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 	LFNoise1\
@@ -131,6 +176,8 @@ In/Out\ulnone \
 	NoahNoise        \
 	WhiteNoise\
 	GrayNoise \
+	Hasher\
+	MantissaMask\
 	PinkerNoise\
 	PinkNoise\
 	ClipNoise        \
@@ -138,33 +185,22 @@ In/Out\ulnone \
 	Dust2            \
 	Latoocarfian     \
 	Rossler\
-	Crackle\
-	\
-	Rand\
-	ExpRand          \
-	LinRand  \
-	NRand\
-	IRand \
-	CoinGate\
-	\
-	TIRand\
-	TRand\
-	    \
-	RandSeed\
-	RandID   
+	Crackle   
 \f0\b    \
 	         \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ul Triggers\ulnone \
+\cf0 \ul \ulc0 Triggers\ulnone \
 \
  	
 \f1\b0 MostChange       \
  	PulseCount\
 	Stepper\
-	Gate             \
+	Gate\
+	CoinGate             \
 	Peak             \
 	PulseDivider\
 	LastValue\
+	Latch\
 	Trig\
 	Trig1\
 	SendTrig\
@@ -174,13 +210,18 @@ In/Out\ulnone \
 \f0\b \
 	\
 \ul Frequency Domain\
-\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone \
 	
-\f1\b0 FFT
+\f1\b0 FFT\
+	Convolution\
+	PV_ConformalMap
 \f0\b \
-\ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul \ulc0 \
 Buffer Manipulation\
-\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone \
 	
 \f1\b0 BufRd\
 	BufWr
@@ -188,12 +229,18 @@ Buffer Manipulation\
 	
 \f1\b0 DiskIn\
 	DiskOut\
+	Index\
+	WrapIndex\
 	PlayBuf\
+	RecordBuf\
 	PingPong\
+	TGrains\
 	
 \f0\b \
-\ul Binary Operators\
-\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul \ulc0 Binary Operators\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone \
 	
 \f1\b0 BinaryOpUGen (overview)\
 	+\
@@ -226,8 +273,10 @@ Buffer Manipulation\
 	wrap2\
 
 \f0\b \
-\ul InfoUGens\
-\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul \ulc0 InfoUGens\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone \
 	
 \f1\b0 BufChannels\
 	BufDur\
@@ -240,21 +289,60 @@ Buffer Manipulation\
 	\
 	
 \f0\b \
-\ul Synth-Controlling-UGens\
-\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul \ulc0 Synth-Controlling-UGens\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone \
 	see overview: [Synth-Controlling-UGens
 \f2\b0 ]
 \f0\b \
 	\
 	
+\f1\b0 Control
+\f0\b \
+	
+\f1\b0 DetectSilence
+\f0\b \
+	
 \f1\b0 EnvGen\
+	Line\
+	XLine\
 	Linen\
+	Free\
 	FreeSelf\
+	Pause\
 	PauseSelf\
-	\
-	\
 
 \f0\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul \ulc0 Random Values\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	Rand\
+	ExpRand          \
+	LinRand  \
+	NRand\
+	IRand \
+	TIRand\
+	TRand\
+	TExpRand\
+	RandSeed\
+	RandID\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \ul \ulc0 Array Usage\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+	Select \
+	TWindex\
+	  \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
 	        \
 	\
  to be continued  ....\
