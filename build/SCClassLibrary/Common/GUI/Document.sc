@@ -174,6 +174,10 @@ Document {
 		_TextWindow_RemoveUndo
 	}
 	
+	underlineSelection{
+		_TextWindow_UnderlineSelection
+	}
+	
 // state info
 	isEdited {
 		_TextWindow_IsEdited
@@ -314,6 +318,12 @@ Document {
 		keyDownAction.value(this,character, modifiers, keycode);
 	}
 	
+	== { arg doc;
+		^if(path.isNil or: { doc.path.isNil }) { doc === this } {
+			path == doc.path
+		}
+	}
+	
 //private-----------------------------------
 	prSetName { arg argName;
 		_TextWindow_SetName
@@ -426,8 +436,10 @@ Document {
 		path = apath;
 		stpath = this.class.standardizePath(path);
 		this.propen(stpath, selectionStart, selectionLength);
-		if(dataptr.isNil,{ this = nil; ^nil});
-		this.prAdd;
+		if(dataptr.isNil,{ 
+			^this.class.allDocuments.detect({|d| d == this})
+		});
+		^this.prAdd;
 	}
 	propen { arg path, selectionStart=0, selectionLength=0;
 		_OpenTextFile
