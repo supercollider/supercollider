@@ -21,7 +21,7 @@ AudioSpec : Spec {
 		)
 	}
 	defaultControl{ 
-		^Silence.new // silence
+		^PlayerInputProxy.new	
 	}
 	storeParamsOn { arg stream;
 		stream << "(" <<< numChannels << ")"
