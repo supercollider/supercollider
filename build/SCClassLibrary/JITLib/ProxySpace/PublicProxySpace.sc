@@ -15,7 +15,8 @@ PublicProxySpace : ProxySpace {
 		nickname = nick;
 		if(listeningSpaces.isNil or: { listeningSpaces.includes(this).not }) {
 			listeningSpaces = listeningSpaces.add(this)
-		}
+		};
+		("\nwelcome to #" ++ channel ++ "."+"\nplease respect the privacy of others.\n\n").postln;
 	}
 	
 	leave { 
