@@ -294,6 +294,17 @@ NodeProxy : BusPlug {
 	asGroup { ^group.asGroup }
 	asTarget { ^group.asGroup }
 	
+	pause {
+		objects.do { |item| item.pause };
+		task.stop;
+		awake = false;
+	}
+	
+	resume {
+		awake = true;
+		this.sendAll(nil, true);
+	}
+	
 		
 	//////////// set the source to anything that returns a valid ugen input ////////////
 	
@@ -413,15 +424,14 @@ NodeProxy : BusPlug {
 		
 	}
 	
-	freeTask { this.task = nil }
+	freeTask { this.task = nil;  }
 	
 	task_ { arg argTask;
 		var bundle;
 		bundle = MixedBundle.new;
-		if(task.notNil, { bundle.addAction(task, \stop) });
-		awake = true;
+		if(task.notNil) { bundle.addAction(task, \stop) };
 		task = argTask;
-		if(this.isPlaying, {  this.playTaskToBundle(bundle) });//clock
+		if(awake and: {this.isPlaying}, {  this.playTaskToBundle(bundle) });//clock
 		bundle.schedSend(server, clock);
 
 	}
@@ -526,6 +536,7 @@ NodeProxy : BusPlug {
 		var dt;
 		dt = beats.asStream;
 		argFunc = if(argFunc.notNil, { argFunc.asArgStream }, { #[] });
+		awake = true;
 		this.task = Routine.new({ 
 					inf.do({ arg i;
 						var t, args;
@@ -548,6 +559,7 @@ NodeProxy : BusPlug {
 		dt = beats.asStream;
 		argFunc = if(argFunc.notNil, { argFunc.asArgStream }, { #[] });
 		index = index.loop.asStream;
+		awake = true;
 		this.task = Routine.new({ 
 					inf.do({ arg i;	
 						var t;
@@ -561,6 +573,8 @@ NodeProxy : BusPlug {
 					});
 		awake = false;
 	}
+	
+	freeSpawn { awake = true; this.task = nil } // find better solution later
 	
 	taskFunc_ { arg func; 
 		this.task = Routine.new({ func.value(this) })
@@ -776,7 +790,7 @@ NodeProxy : BusPlug {
 		if(this.isPlaying, { group.run(flag) });
 	}
 	
-	pause { task.stop; this.run(false) }
+	
 	
 
 	set { arg ... args;

@@ -16,7 +16,7 @@ AbstractPlayControl {
 	prepareForPlay {}
 	build { ^true }
 	pause { this.stop } 
-	unpause { this.start }
+	resume { this.start }
 	synth { ^nil }
 	
 	readyForPlay { ^true }
@@ -32,6 +32,10 @@ AbstractPlayControl {
 	
 	freeToBundle { arg bundle;
 		bundle.addAction(this, \free);
+	}
+	
+	resumeToBundle { arg bundle, args;
+		//...//
 	}
 	
 	stopToBundle { arg bundle;
@@ -66,6 +70,8 @@ StreamControl : AbstractPlayControl {
 	stop {
 		stream.stop;
 	}
+	pause { stream.pause }
+	resume { stream.resume }
 	
 	free { stream.stop; stream = nil }
 	
@@ -141,8 +147,8 @@ SynthControl : AbstractPlayControl {
 			
 	stopClientToBundle { }  // used in shared node proxy
 	
-	pause { synth.run(false) }
-	unpause { synth.run(true) }
+	pause { if(synth.notNil) {synth.run(false)} }
+	resume { if(synth.notNil) { synth.run(true) } }
 	canReleaseSynth { ^canReleaseSynth }
 }
 
@@ -239,6 +245,8 @@ CXPlayerControl : AbstractPlayControl {
 	free { 
 		source.stop;
 	}
+	pause { source.pause }
+	resume { source.resume }
 	moveIn {}
 	
 }
