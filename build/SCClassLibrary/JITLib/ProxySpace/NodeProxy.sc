@@ -1,12 +1,12 @@
 
 NodeProxy : AbstractFunction {
 
-	var <server, <group, <outbus; 		//server access
+	var <server, <group, <outbus; 		//server access, the group that has the inner synths
 	var <objects, <parents; 			//playing templates
 	
 	var <nodeMap, <>lags, <>prepend, <>clock; //lags might go into function annotation later
 	var <>freeSelf=true, <loaded=false;	//synthDef information
-	var <playGroup;					//the group that has the user synth
+	var <playGroup;					//the group that has the user output synth
 	
 	classvar <>buildProxy;
 	
@@ -130,8 +130,8 @@ NodeProxy : AbstractFunction {
 	
 	isPlaying { 
 		^group.isPlaying
-		//^server.nodeIsPlaying(group.asNodeID)
 	}
+	
 	
 	printOn { arg stream;
 		stream << this.class.name << "." << this.rate << "(" << server << ", " << this.numChannels <<")";
@@ -306,19 +306,19 @@ NodeProxy : AbstractFunction {
 	}
 	xFadePerform { arg selector, args;
 		var bundle;
+		if(selector === 'map', {
+				nodeMap.mapToProxy(args);
+			}, {
+				nodeMap.performList(selector, args);
+		});
+		
 		if(this.isPlaying, { 
 			bundle = MixedBundle.new;
 			bundle.preparationTime = 0;
 			this.freeAllToBundle(bundle);
-			if(selector === 'map', {
-				nodeMap.mapToProxy(args);
-			}, {
-				nodeMap.performList(selector, args);
-			});
+			
 			this.sendEachToBundle(bundle);
 			this.sendBundle(bundle);
-		}, {
-			nodeMap.performList(selector, args);
 		})
 	}
 	
