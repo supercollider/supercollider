@@ -139,22 +139,19 @@
 
 	buildForProxy { arg proxy, channelOffset=0;
 		//assume audio rate event stream for now.
-		var str, ok, argNames, msgFunc, index;
+		var str, ok, msgFunc, index;
 		ok = proxy.initBus('audio', 2);
 		index = proxy.index;
-		argNames = [\amp,\sustain,\pan];//change later
 		msgFunc = { arg id, freq;
-				var args, bundle, names;
-				names = ~argNames ? argNames;
-				args = Array.newClear(names.size * 2);
-				names.do({ arg name, i; 
-						args.put(i*2, name); 
-						args.put(i*2+1, currentEnvironment.at(name))
-					});
-				
-				args = args ++ [\out, index, \i_out, index, \freq, freq];
-				bundle = List[[9, ~instrument, id, 1, ~group] ++ args];
-				proxy.nodeMap.mapToBundle(bundle, id);
+				var args, bundle, names, nodeMap;
+				names = ~argNames;
+				args = currentEnvironment.hatch(names);
+				bundle = EventHatch.newSynthMsg(id);
+				bundle = [bundle ++ [\freq, freq]];
+				//mapping to buses
+				nodeMap = proxy.nodeMap;
+				nodeMap.mapToBundle(bundle, id);
+				~mapArgs = nodeMap.mapArgs; //polyplayer support
 				bundle
 		};
 
@@ -162,7 +159,7 @@
 			this.collect({ arg event;
 				event.use({ 
 					~nodeID = proxy.group.asNodeID; //in case of Pmono
-					~argNames = ~argNames ? argNames;
+					~i_out = ~out = index;
 					~msgFunc = msgFunc;
 					~server = proxy.server;
 				});
@@ -229,15 +226,17 @@
 	}
 	
 	makeProxyControl { arg channelOffset=0, proxy;
+			
 			this.prepareToPlayWithProxy(proxy); //do it here for now.
 			^this.proxyControlClass.new(this.wrapInFader(proxy), channelOffset); 
 	}
 	
 	wrapInFader { arg bus;
 			var n;
-			n = bus.numChannels;
+			n = bus.numChannels ? this.numChannels;
+			[[n]].debug;
 			^EnvelopedPlayer(
-				Patch({ arg input; NumChannels.ar(input, n, true) },[this]),
+				this, //Patch({ arg input; NumChannels.ar(input, n, true) },[this]),
 				Env.asr(0.5, 1, 0.5), 
 				n
 			);
