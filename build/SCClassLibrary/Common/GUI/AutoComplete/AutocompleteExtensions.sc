@@ -45,7 +45,7 @@
 	*openFileAutoComplete {	arg path;		// open a file by path
 							// can use wildcards
 		path.pathMatch.do({ |p|
-			Document.open(p).ac;
+			Document.open(p).autoComplete;
 		});
 	}
 	
