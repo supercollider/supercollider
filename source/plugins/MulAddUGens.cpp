@@ -292,7 +292,7 @@ void v_ampmix_ak(MulAdd *unit, int inNumSamples)
 	float *amp = MULIN;
 
 	float mix_cur = unit->mPrevAdd;
-	float mix_slope = CalcSlope(ADDIN[0], mix_cur);
+	float mix_slope = CALCSLOPE(ADDIN[0], mix_cur);
 	if (mix_slope == 0.f) {
 		if (mix_cur == 0.f) {
 			//LOOP(inNumSamples, PZ(out); *out = ZXP(amp) * *out; ZP(out););
