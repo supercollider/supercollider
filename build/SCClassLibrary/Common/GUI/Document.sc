@@ -1,6 +1,6 @@
 Document {
 
-	classvar <dir="", <allDocuments, thelistener;
+	classvar <dir="", <allDocuments, thelistener, <>current;
 	
 	var <dataptr, path, title, visible, <background, <stringColor;
 	var <>keyDownAction, <>onClose;
@@ -28,11 +28,11 @@ Document {
 	}
 	
 //class:
-	*current {
-		var idx;
-		idx = this.prcurrentDocument;
-		^allDocuments.at(idx);
-	}
+	//*current {
+//		var idx;
+//		idx = this.prcurrentDocument;
+//		^allDocuments.at(idx);
+//	}
 
 	*dir_ { arg path;  dir = path.standardizePath ++ "/"; }
 	*standardizePath { arg p;
@@ -192,6 +192,7 @@ Document {
 	
 //actions:	
 	didBecomeKey {
+		this.class.current = this;
 		toFrontAction.value(this);
 	}
 	
@@ -260,9 +261,9 @@ Document {
 	}
 
 	
-	*prcurrentDocument {
-		_TextWindow_Current
-	}
+	//*prcurrentDocument {
+//		_TextWindow_Current
+//	}
 	
 	//check if there is already a document with the same pointer
 	prAdd {
