@@ -84,6 +84,8 @@ PV_MagMul : UGen
 PV_CopyPhase : PV_MagMul {}
 PV_Max : PV_MagMul {}
 PV_Min : PV_MagMul {}
+PV_Mul : PV_MagMul {}
+PV_Add : PV_MagMul {}
 
 PV_RandComb : UGen 
 {
@@ -134,6 +136,8 @@ PV_BinScramble : UGen
 		^this.multiNew('control', buffer, wipe, width, trig)
 	}
 }
+
+
 
 ////////////////////////////////////////////////////
 /*
