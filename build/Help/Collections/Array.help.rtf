@@ -7,28 +7,62 @@
 \f0\b\fs36 \cf0 Array
 \f1\b0\fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b Superclass: ArrayedCollection\
+\f0\b \cf0 Superclass: ArrayedCollection\
 
 \f1\b0 \
 Arrays are ArrayedCollections whose slots may contain any object.\
 Arrays have a fixed maximum size beyond which they cannot grow.\
 For expandable arrays, use the List class.\
 \
-For Arrays, the 'add' method may or may not change the receiver. It will add the\
-argument to the receiver if there is space, otherwise it returns a new Array\
-with the argument added. Thus the proper usage of 'add' with an Array is\
-to always assign the result as follows:\
+An array can be created with a fixed maxiumum capacity:\
+	\
+	z = Array.new(size);\
 \
-
+Which will return an array of size 0, but the capability to add up to 32\
+objects. \
+\
+	
 \f2 z = z.add(obj);\
 
 \f1 \
+z now has a size of 1.\
 \
+For Arrays, the 'add' method may or may not return the same Array object. It will add the argument to the receiver if there is space, otherwise it returns a new Array object with the argument added. Thus the proper usage of 'add' with an Array is to always assign the result as follows:\
+\
+	
+\f2 z = z.add(obj);\
 
-\f0\b\fs28 \ul Class Methods\
+\f1 \
+This allows an efficient use of resources, only growing the array when it needs to.  The List class manages the Array for you, and in many cases in more suitable.\
+\
+An array can be created with all slots filled with nils:\
+\
+	z = Array.newClear(size);\
+\
+Elements can be put into an existing slot:\
+\
+	a.put(2,obj);\
+\
+And accessed :\
+\
+	a.at(2);\
+\
+See 
+\f0\b ArrayedCollection
+\f1\b0  for the principal methods:\
+	at\
+	put\
+	clipAt, wrapAt etc.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \ulnone \
+\f0\b\fs28 \cf0 \ul Class Methods\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \ulnone \
 
 \f0\b *with(... args)\
 
@@ -36,22 +70,25 @@ to always assign the result as follows:\
 Create a new Array whose slots are filled with the given arguments. \
 This is the same as the method in ArrayedCollection, but is reimplemented here to be more efficient.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 Array.with(7, 'eight',  9).postln;\
+\f2 \cf0 Array.with(7, 'eight',  9).postln;\
 \
 
 \f0\b\fs28 \ul Instance Methods
 \f2\b0\fs24 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 
 \f0\b reverse
 \f1\b0 \
 \
 Returns a new Array whose elements are reversed. The receiver is unchanged.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 [1, 2, 3].reverse.postln;\
+\f2 \cf0 [1, 2, 3].reverse.postln;\
 \
 (\
 x = [1, 2, 3];\
@@ -59,28 +96,33 @@ z = x.reverse;\
 x.postln;\
 z.postln;\
 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 
 \f0\b scramble
 \f1\b0 \
 \
 Returns a new Array whose elements have been scrambled. The receiver is unchanged.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 [1, 2, 3, 4, 5, 6].scramble.postln;\
+\f2 \cf0 [1, 2, 3, 4, 5, 6].scramble.postln;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b mirror
+\f0\b \cf0 mirror
 \f1\b0 \
 \
 Return a new Array which is the receiver made into a palindrome. \
 The receiver is unchanged.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 [1, 2, 3, 4].mirror.postln;\
+\f2 \cf0 [1, 2, 3, 4].mirror.postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 
 \f0\b mirror1
 \f1\b0 \
@@ -89,10 +131,12 @@ Return a new Array which is the receiver made into a palindrome with the last el
 This is useful if the list will be repeated cyclically, the first element will not get played twice.\
 The receiver is unchanged.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 [1, 2, 3, 4].mirror1.postln;\
+\f2 \cf0 [1, 2, 3, 4].mirror1.postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 
 \f0\b mirror2
 \f1\b0 \
@@ -100,20 +144,24 @@ The receiver is unchanged.\
 Return a new Array which is the receiver concatenated with a reversal of itself. \
 The center element is duplicated. The receiver is unchanged.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 [1, 2, 3, 4].mirror2.postln;\
+\f2 \cf0 [1, 2, 3, 4].mirror2.postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 
 \f0\b stutter(n)\
 
 \f1\b0 \
 Return a new Array whose elements are repeated n times. The receiver is unchanged.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 [1, 2, 3].stutter(2).postln;\
+\f2 \cf0 [1, 2, 3].stutter(2).postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 
 \f0\b rotate(n)\
 
@@ -121,14 +169,16 @@ Return a new Array whose elements are repeated n times. The receiver is unchange
 Return a new Array whose elements are in rotated order. Negative n values rotate left, postive n values\
 rotate right. The receiver is unchanged.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 [1, 2, 3, 4, 5].rotate(1).postln;\
+\f2 \cf0 [1, 2, 3, 4, 5].rotate(1).postln;\
 \
 [1, 2, 3, 4, 5].rotate(-1).postln;\
 \
 [1, 2, 3, 4, 5].rotate(3).postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 
 \f0\b pyramid
 \f1\b0 \
@@ -136,16 +186,18 @@ rotate right. The receiver is unchanged.\
 Return a new Array whose elements have been reordered via one of 10 "counting" algorithms.\
 The algorithms are numbered 1 through 10. Run the examples to see the algorithms.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 [1, 2, 3, 4].pyramid(1).postln;\
+\f2 \cf0 [1, 2, 3, 4].pyramid(1).postln;\
 \
 (\
 10.do(\{ arg i;\
 	[1, 2, 3, 4].pyramid(i + 1).asCompileString.postln;\
 \});\
 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 \
 
 \f0\b lace
@@ -166,14 +218,16 @@ foldExtend\
 Return a new Array whose elements are repeated subsequences from the receiver. \
 Easier to demonstrate than explain.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 [1, 2, 3, 4, 5, 6].slide(3, 1).asCompileString.postln;\
+\f2 \cf0 [1, 2, 3, 4, 5, 6].slide(3, 1).asCompileString.postln;\
 \
 [1, 2, 3, 4, 5, 6].slide(3, 2).asCompileString.postln;\
 \
 [1, 2, 3, 4, 5, 6].slide(4, 1).asCompileString.postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 \
 
 \f0\b containsSeqColl
@@ -181,12 +235,14 @@ Easier to demonstrate than explain.\
 \
 Returns true if the receiver Array contains any instance of SequenceableCollection\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 [1, 2, 3, 4].containsSeqColl.postln\
+\f2 \cf0 [1, 2, 3, 4].containsSeqColl.postln\
 \
 [1, 2, [3], 4].containsSeqColl.postln\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 \
 
 \f0\b multiChannelExpand
@@ -201,14 +257,16 @@ Used by UGens to perform multi channel expansion.\
 Some UGens return Arrays of OutputProxy when instantiated. This method allows you to\
 get at the source UGen.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 (\
+\f2 \cf0 (\
 z = Pan2.ar;\
 z.postln;\
 z.source.postln;\
 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 \
 
 \f0\b atIdentityHash(argKey)
