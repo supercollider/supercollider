@@ -16,7 +16,11 @@ OSCresponder {
 		#cmdName = msg;
 		responder = this.new(addr, cmdName);
 		match = all.findMatch(responder);
-		if (match.isNil, { ^false });
+		if (match.isNil, { 
+			responder.addr = nil;
+			match = all.findMatch(responder);
+			if (match.isNil, { ^false });
+		});
 		match.value(time, msg); 
 		^true
 	}
