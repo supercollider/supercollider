@@ -22,11 +22,50 @@ PlayerSocket : AbstractPlayerProxy {
 		^super.new.round_(round)
 			.rate_(rate).numChannels_(numChannels)
 	}
+	preparePlayer { arg player;
+		player.prepareForPlay(socketGroup,bus: this.bus)
+	}
+	prepareAndSpawn { arg player;
+		// use players prepare / spawn sequence
+		player.play(socketGroup,nil,this.bus);
+		isSleeping = false;
+		this.changed;
+		if(player != source,{
+			source.stop;
+		});
+		source = player;
+	}
+	spawnPlayer { arg player,newEnv,onTrigger,atTime;
+		var bundle;
+		bundle = CXBundle.new;
+		this.setSourceToBundle(player,bundle);
+		bundle.addFunction({
+			isSleeping = false;
+			this.changed;
+			onTrigger.value;
+			nil
+		});
+		// should use a shared BeatSched
+		bundle.send(this.server, atTime );
+	}
+	qspawnPlayer { arg player,newEnv,onTrigger;
+		this.spawnPlayer(player,newEnv,onTrigger,BeatSched.tdeltaTillNext(round))
+	}
 	
+
+	releaseVoice {
+		isSleeping = true;
+		if(source.notNil,{
+			source.stop;
+		});
+		this.changed;
+	}
+	
+	
+	//
 	prepareToBundle { arg group,bundle;
 		group = group.asGroup;
 		socketGroup = Group.basicNew(server: group.server);
-		//["made socket group",socketGroup.nodeID].debug;
 		bundle.add( socketGroup.addToTailMsg(group) );
 		if(source.notNil,{
 			source.prepareToBundle(socketGroup,bundle)
@@ -72,49 +111,7 @@ PlayerSocket : AbstractPlayerProxy {
 		source.spawnOnToBundle(socketGroup,this.bus,bundle);
 	}
 
-	trigger { arg player,newEnv;
-		isSleeping = false;
-		// ideally replace the same node, bus
-		this.setSource(player);
-		this.changed;
-	}
-	qtime { ^BeatSched.tdeltaTillNext(round) }
-	qtrigger { arg player,newEnv,onTrigger;
-		var bundle;
-		bundle = CXBundle.new;
-		
-		this.setSourceToBundle(player,bundle);
-		bundle.addFunction({
-			isSleeping = false;
-			this.changed;
-			onTrigger.value;
-			nil
-		});
-		// should use a shared BeatSched
-		bundle.send(this.server, this.qtime );
-	}
-	
-	preparePlayer { arg player;
-		player.prepareForPlay(socketGroup,bus: this.bus)
-	}
-	prepareAndTrigger { arg player;
-		// use players prepare / spawn sequence
-		player.play(socketGroup,nil,this.bus);
-		isSleeping = false;
-		this.changed;
-		if(player != source,{
-			source.stop;
-		});
-		source = player;
-	}
 
-	releaseVoice {
-		isSleeping = true;
-		if(source.notNil,{
-			source.stop;
-		});
-		this.changed;
-	}
 	free {
 		isPlaying = false;
 		isSleeping = true;

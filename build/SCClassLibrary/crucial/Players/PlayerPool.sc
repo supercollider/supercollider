@@ -7,7 +7,7 @@
 	}
 
 	//selectable interface	select { arg i;		selected = i;		if(this.isPlaying,{
-			this.qtrigger(list.at(i));
+			this.qspawnPlayer(list.at(i));
 		})
 	}	selectedItem { ^list.at(selected) }		selectedAsString {		^list.at(selected).asString	}	maxIndex { ^list.size }			choose {		this.select(list.size.rand)	}	rate { ^list.first.rate } // what else to do ?	numChannels { ^list.maxValue({ arg pl; pl.numChannels }) }	children { ^list }	
 	prepareToBundle { arg group,bundle;
@@ -68,7 +68,7 @@
 			//});
 			player = list.at(i);
 
-			// set the initial value (maybe slightly wrong by qtrigger time)
+			// set the initial value (maybe slightly wrong by qspawnPlayer time)
 			bundle = CXBundle.new;
 			proxyMatches.at(i).do({ arg inpinp;
 				var inputProxy,input;

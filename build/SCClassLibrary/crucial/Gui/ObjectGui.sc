@@ -31,7 +31,6 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		this.remove(false);
 	}
 	remove { arg removeView=true;
-		"ObjectGui-remove".postln;
 		model.removeDependant(this);
 		if(removeView,{
 			super.remove;

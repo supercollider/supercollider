@@ -93,7 +93,6 @@ MultiPageLayout  {
 		//windows.do({ arg w; w.show })
 	}
 	close { // called when the GUIWindow closes
-		"MultiPageLayout-close".postln;
 		if(isClosed.not,{
 			isClosed = true; 
 			autoRemoves.do({ arg updater; updater.remove(false) });

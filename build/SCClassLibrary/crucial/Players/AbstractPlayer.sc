@@ -213,11 +213,11 @@ AbstractPlayer : AbstractFunction  {
 				if(patchOut.bus.isAudioOut,{
 					patchOut.bus = Bus.audio(group.server,this.numChannels);
 				})
-			},{
+			}/*,{
 				if(patchOut.bus.isAudioOut.not,{
 					patchOut.bus = Bus(\audio,0,this.numChannels,group.server)
 				})
-			})
+			}*/)
 		},{
 			//Patch doesn't know its numChannels or rate until after it makes the synthDef
 			if(this.rate == \audio,{// out yr speakers
