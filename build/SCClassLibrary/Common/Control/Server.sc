@@ -129,8 +129,11 @@ Server : Model {
 		serverRunning = false;
 		named.put(name, this);
 		set.add(this);
-		this.newAllocators;
-		tree = { this.sendMsg("/g_new", 1) };	
+		this.newAllocators;	
+	}
+	initTree {
+		this.sendMsg("/g_new", 1);
+		tree.value(this);
 	}
 	newAllocators {
 		nodeAllocator = NodeIDAllocator(clientID);
@@ -351,7 +354,7 @@ Server : Model {
 				"notification is off".inform; 
 			});
 			serverBooting = false;
-			tree.value(this);
+			this.initTree;
 		});
 		this.bootServerApp;
 	}
@@ -432,7 +435,7 @@ Server : Model {
 	freeAll {
 		this.sendMsg("/g_freeAll", 0);
 		this.sendMsg("/clearSched");
-		tree.value(this);
+		this.initTree;
 		if (nodeWatcher.notNil) { nodeWatcher.clear };
 	}
 	*freeAll {
