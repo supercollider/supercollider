@@ -32,14 +32,14 @@ struct Demand : public Unit
 	float m_prevout[MAXCHANNELS];
 };
 
-struct SelfDemand : public Unit
+struct Duty : public Unit
 {
 	float m_count;
 	float m_prevreset;
 	float m_prevout[MAXCHANNELS];
 };
 
-struct TSelfDemand : public Unit
+struct TDuty : public Unit
 {
 	float m_count;
 	float m_prevreset; 
@@ -137,8 +137,8 @@ void load(InterfaceTable *inTable);
 void Demand_Ctor(Demand *unit);
 void Demand_next(Demand *unit, int inNumSamples);
 
-void SelfDemand_Ctor(SelfDemand *unit);
-void SelfDemand_next(SelfDemand *unit, int inNumSamples);
+void Duty_Ctor(Duty *unit);
+void Duty_next(Duty *unit, int inNumSamples);
 
 void Dseries_Ctor(Dseries *unit);
 void Dseries_next(Dseries *unit, int inNumSamples);
@@ -350,7 +350,7 @@ void Demand_Ctor(Demand *unit)
 /////////////////////////////////////////////////////////////////////////////
 
 
-void SelfDemand_next_da(SelfDemand *unit, int inNumSamples)
+void Duty_next_da(Duty *unit, int inNumSamples)
 {
 	
 	float *reset = ZIN(1);
@@ -405,7 +405,7 @@ void SelfDemand_next_da(SelfDemand *unit, int inNumSamples)
 	}
 }
 
-void SelfDemand_next_dk(SelfDemand *unit, int inNumSamples)
+void Duty_next_dk(Duty *unit, int inNumSamples)
 {
 	
 	float zreset = ZIN0(1);
@@ -460,7 +460,7 @@ void SelfDemand_next_dk(SelfDemand *unit, int inNumSamples)
 }
 
 
-void SelfDemand_next_dd(SelfDemand *unit, int inNumSamples)
+void Duty_next_dd(Duty *unit, int inNumSamples)
 {
 	
 	float *out[MAXCHANNELS];
@@ -514,19 +514,19 @@ void SelfDemand_next_dd(SelfDemand *unit, int inNumSamples)
 }
 
 
-void SelfDemand_Ctor(SelfDemand *unit)
+void Duty_Ctor(Duty *unit)
 {
 	if (INRATE(1) == calc_FullRate) {
 
-			SETCALC(SelfDemand_next_da);
+			SETCALC(Duty_next_da);
 			unit->m_prevreset = 0.f;
 		
 	} else { 
 		if(INRATE(1) == calc_DemandRate) {
-			SETCALC(SelfDemand_next_dd);
+			SETCALC(Duty_next_dd);
 			unit->m_prevreset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f;
 		} else {
-			SETCALC(SelfDemand_next_dk);
+			SETCALC(Duty_next_dk);
 			unit->m_prevreset = 0.f;
 		}
 	}
@@ -541,7 +541,7 @@ void SelfDemand_Ctor(SelfDemand *unit)
 
 /////////////////////////////////////////////////////////////////////////////
 
-void TSelfDemand_next_da(TSelfDemand *unit, int inNumSamples)
+void TDuty_next_da(TDuty *unit, int inNumSamples)
 {
 	
 	float *reset = ZIN(1);
@@ -592,7 +592,7 @@ void TSelfDemand_next_da(TSelfDemand *unit, int inNumSamples)
 	
 }
 
-void TSelfDemand_next_dk(TSelfDemand *unit, int inNumSamples)
+void TDuty_next_dk(TDuty *unit, int inNumSamples)
 {
 	
 	float zreset = ZIN0(1);
@@ -641,7 +641,7 @@ void TSelfDemand_next_dk(TSelfDemand *unit, int inNumSamples)
 }
 
 
-void TSelfDemand_next_dd(TSelfDemand *unit, int inNumSamples)
+void TDuty_next_dd(TDuty *unit, int inNumSamples)
 {
 	
 	float *out[MAXCHANNELS];
@@ -690,19 +690,19 @@ void TSelfDemand_next_dd(TSelfDemand *unit, int inNumSamples)
 }
 
 
-void TSelfDemand_Ctor(TSelfDemand *unit)
+void TDuty_Ctor(TDuty *unit)
 {
 	if (INRATE(1) == calc_FullRate) {
 
-			SETCALC(TSelfDemand_next_da);
+			SETCALC(TDuty_next_da);
 			unit->m_prevreset = 0.f;
 		
 	} else { 
 		if(INRATE(1) == calc_DemandRate) {
-			SETCALC(TSelfDemand_next_dd);
+			SETCALC(TDuty_next_dd);
 			unit->m_prevreset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f;
 		} else {
-			SETCALC(TSelfDemand_next_dk);
+			SETCALC(TDuty_next_dk);
 			unit->m_prevreset = 0.f;
 		}
 	}
@@ -1179,8 +1179,8 @@ void load(InterfaceTable *inTable)
 	ft = inTable;
 
 	DefineSimpleCantAliasUnit(Demand);
-	DefineSimpleCantAliasUnit(SelfDemand);
-	DefineSimpleCantAliasUnit(TSelfDemand);
+	DefineSimpleCantAliasUnit(Duty);
+	DefineSimpleCantAliasUnit(TDuty);
 	DefineSimpleUnit(Dseries);
 	DefineSimpleUnit(Dgeom);
 	DefineSimpleUnit(Dwhite);

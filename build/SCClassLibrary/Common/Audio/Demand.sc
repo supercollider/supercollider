@@ -12,7 +12,7 @@ Demand : MultiOutUGen {
  	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
-SelfDemand : MultiOutUGen {
+Duty : MultiOutUGen {
 	
 	*ar { arg dur, reset, demandUGens, doneAction=0;
 		^this.multiNewList(['audio', dur, reset, doneAction] ++ demandUGens.asArray)
@@ -36,7 +36,7 @@ SelfDemand : MultiOutUGen {
 	}
 }
 
-TSelfDemand : SelfDemand {}
+TDuty : Duty {}
 
 Dseries : UGen {
 	*new { arg start = 1, step = 1, length = 100;
