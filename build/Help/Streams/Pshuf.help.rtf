@@ -16,8 +16,9 @@
 \f1\b0 \cf0 \
 returns a shuffled version of the list item by item, with n repeats.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 (\
+\f2\fs18 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  a, b;\
 a = \cf2 Pshuf\cf0 (#[1, 2, 3, 4, 5], 3);	\cf3 // repeat 3 times\
@@ -27,8 +28,9 @@ a = \cf2 Pshuf\cf0 (#[1, 2, 3, 4, 5], 3);	\cf3 // repeat 3 times\
 )
 \fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 Pshuf used as a sequence of pitches:\
+\f1 \cf0 Pshuf used as a sequence of pitches:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
@@ -41,7 +43,7 @@ a = \cf2 Pshuf\cf0 (#[1, 2, 3, 4, 5], 3);	\cf3 // repeat 3 times\
 		\cf2 var\cf0  env;\
 		env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.01, dur, 0.2), doneAction:2);\
 		\cf2 Out\cf0 .ar(out, \cf2 SinOsc\cf0 .ar(freq, 0, env))\
-	\}).load(s);\
+	\}).send(s);\
 )\
 \
 \

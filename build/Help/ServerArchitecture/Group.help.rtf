@@ -22,32 +22,27 @@ superclass: Node\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 	Group.new\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 		a new group at the head of the RootNode of the defaultServer\
+\f2\b0 		a new group at the head of the RootNode of the defaultServer\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 	Group.after(aGroup)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 		create a group and add immediately after aGroup, \
+\f2\b0 		create a group and add immediately after aGroup, \
 		in the same group,\
 		on the same server \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \
+\f0\b \
 	Group.before(aGroup)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 		create a group and add immediately before aGroup, \
+\f2\b0 		create a group and add immediately before aGroup, \
 		in the same group,\
 		on the same server\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \
+\f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs18 \cf0 	
@@ -172,23 +167,19 @@ superclass: Node\
 	See the example below.\
 		\
 		\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	freeAll\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b 	freeAll\
 
-\f2\b0 \cf0 		free all the nodes in the group, but do not free the group itself.\
+\f2\b0 		free all the nodes in the group, but do not free the group itself.\
 	\
 	
 \f0\b do(function)\
 		
 \f2\b0 iterate over all the nodes in the group, valueing the function on each\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	deepDo(function)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b 	deepDo(function)\
 
-\f2\b0 \cf0 		depth first traversal.\
+\f2\b0 		depth first traversal.\
 		iterate over all the nodes in the group, and all the nodes in any group\
 		within any groups within this group.\
 \
@@ -196,7 +187,7 @@ superclass: Node\
 \
 \
 First collect some things to play with.\
-(they are slightly different than Synth examples !)\
+(they are slightly different than Synth examples!)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -210,7 +201,7 @@ s.boot;\
 	x = \cf3 RLPF\cf0 .ar(\cf3 LFPulse\cf0 .ar(\cf3 SinOsc\cf0 .kr(0.2, 0, 10, freq), [0,0.1], 0.1), \
 		ffreq, 0.1).clip2(0.4);\
 	\cf3 Out\cf0 .ar(out, x);\
-\}).writeDefFile;\
+\}).send(s);\
 \
 \
 \cf3 SynthDef\cf0 (\cf4 "wah"\cf0 , \{ \cf3 arg\cf0  out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq=0.1;\
@@ -227,10 +218,7 @@ s.boot;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 ReplaceOut\cf0 .ar( out , zout ); \
 	\
-\}).writeDefFile;\
-\
-s.loadSynthDef(\cf4 "moto-rev"\cf0 );\
-s.loadSynthDef(\cf4 "wah"\cf0 );\
+\}).send(s);\
 \
 )\
 \

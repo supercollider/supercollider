@@ -26,6 +26,7 @@ An event stream is created for a Pattern by sending it the
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 \\cfstring1\cf0 .postln, \{ \cf2 arg\cf0  i_out, freq = 360, gate = 1, pan, amp=0.1;\
 	\cf2 var\cf0  out, eg, fc, osc, a, b, w;\
 	fc = \cf2 LinExp\cf0 .kr(\cf2 LFNoise1\cf0 .kr(\cf2 Rand\cf0 (0.25,0.4)), -1,1,500,2000);\
@@ -34,7 +35,7 @@ An event stream is created for a Pattern by sending it the
 	out = eg * \cf2 RLPF\cf0 .ar(osc, fc, 0.1);\
 	#a, b = out;\
 	\cf2 Out\cf0 .ar(i_out, \cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a, b], [pan, pan+0.3])));\
-\}).load(s);\
+\}).send(s);\
 )\
 \
 e = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Pwhite\cf0 (0,12), \cf3 \\dur\cf0 , 0.2, \cf3 \\instrument\cf0 , \cf3 \\cfstring1\cf0 ).play; \cf4 // returns an EventStream\cf0 \
@@ -90,7 +91,7 @@ e.resume;\
 	#a, b = out;\
 	\cf2 DetectSilence\cf0 .ar(a, 0.0001, doneAction: 2);\
 	\cf2 Out\cf0 .ar(i_out, \cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a, b], [pan, pan+1])));\
-\}).load(s);\
+\}).send(s);\
 )\
 \
 f = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Pseq\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \cf3 \\dur\cf0 , 0.8, \cf3 \\octave\cf0 , 3, \cf3 \\instrument\cf0 , \cf3 \\berlinb\cf0 , \cf3 \\amp\cf0 , 0.03).play;\
@@ -125,7 +126,6 @@ f.stream = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Prand\cf0 ([0,1,2,4,6,3,4,8]
 	)\
 \});\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // have to write the def still...\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -146,7 +146,7 @@ f.stream = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Prand\cf0 ([0,1,2,4,6,3,4,8]
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //
-\f2 \cf4 (
+\f2 (
 \fs18 \cf4 \
 //var pattern, stream;\
 //\
@@ -174,7 +174,7 @@ f.stream = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Prand\cf0 ([0,1,2,4,6,3,4,8]
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //
-\f2 \cf4 (
+\f2 (
 \fs18 \cf4 \
 //var pattern, stream;\
 //\
@@ -198,7 +198,7 @@ f.stream = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Prand\cf0 ([0,1,2,4,6,3,4,8]
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //
-\f2 \cf4 (
+\f2 (
 \fs18 \cf4 \
 //var pattern, stream;\
 //pattern = \
@@ -218,7 +218,7 @@ f.stream = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Prand\cf0 ([0,1,2,4,6,3,4,8]
 \f1 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //
-\f2 \cf4 (\
+\f2 (\
 //var pattern, stream;\
 //pattern = \
 //	Prand([\
@@ -301,6 +301,7 @@ This example can generate 36 different patches: 3 instruments * 3 freqs\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //
 \fs18 \cf4 (\
 //var a, b, c, pattern, stream;\

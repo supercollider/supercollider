@@ -23,8 +23,9 @@ the number of times to repeat the entire list. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 (\
+\f2\fs18 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  a, b;\
 a = \cf2 Pseq\cf0 .new(#[1, 2, 3], 2);	\cf3 // repeat twice\
@@ -32,12 +33,14 @@ a = \cf2 Pseq\cf0 .new(#[1, 2, 3], 2);	\cf3 // repeat twice\
 \cf0 b = a.asStream;\
 7.do(\{ b.next.postln; \});\
 )\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
 Pseq also has an offset argument which gives a starting offset into the list.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 (\
+\f2\fs18 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  a, b;\
 a = \cf2 Pseq\cf0 .new(#[1, 2, 3, 4], 3, 2); \cf3 // repeat 3, offset 2\
@@ -47,11 +50,13 @@ a = \cf2 Pseq\cf0 .new(#[1, 2, 3, 4], 3, 2); \cf3 // repeat 3, offset 2\
 )
 \fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 You can pass a function for the repeats variable that gets evaluated when the stream is created.\
+\f1 \cf0 You can pass a function for the repeats variable that gets evaluated when the stream is created.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 (\
+\f2\fs18 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  a, b;\
 a = \cf2 Pseq\cf0 .new(#[1, 2], \{ rrand(1, 3) \});	\cf3 // repeat 1,2, or 3 times\
@@ -61,13 +66,15 @@ a = \cf2 Pseq\cf0 .new(#[1, 2], \{ rrand(1, 3) \});	\cf3 // repeat 1,2, or 3 tim
 )
 \fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 If you specify the value 
+\f1 \cf0 If you specify the value 
 \f0\b inf
 \f1\b0  for the repeats variable, then it will repeat indefinitely.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 (\
+\f2\fs18 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  a, b;\
 a = \cf2 Pseq\cf0 .new(#[1, 2, 3], \cf2 inf\cf0 );	\cf3 // infinite repeat\
@@ -77,8 +84,9 @@ a = \cf2 Pseq\cf0 .new(#[1, 2, 3], \cf2 inf\cf0 );	\cf3 // infinite repeat\
 )
 \fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 Pseq used as a sequence of pitches:\
+\f1 \cf0 Pseq used as a sequence of pitches:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
@@ -92,7 +100,7 @@ a = \cf2 Pseq\cf0 .new(#[1, 2, 3], \cf2 inf\cf0 );	\cf3 // infinite repeat\
 		\cf2 var\cf0  env;\
 		env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.01, dur, 0.2), doneAction:2);\
 		\cf2 Out\cf0 .ar(out, \cf2 SinOsc\cf0 .ar(freq, 0, env))\
-	\}).load(s);\
+	\}).send(s);\
 )\
 \
 \

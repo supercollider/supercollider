@@ -17,8 +17,9 @@
 returns one item from the list at random for each repeat, the probability\
 for each item is determined by a list of weights which should sum to 1.0.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 (\
+\f2\fs18 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  a, b;\
 a = \cf2 Pwrand\cf0 .new(#[1, 2, 3], #[1, 3, 5].normalizeSum, 6);	\cf3 // return 6 items\
@@ -28,8 +29,9 @@ a = \cf2 Pwrand\cf0 .new(#[1, 2, 3], #[1, 3, 5].normalizeSum, 6);	\cf3 // return
 )
 \fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 Prand used as a sequence of pitches:\
+\f1 \cf0 Prand used as a sequence of pitches:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
@@ -42,7 +44,7 @@ a = \cf2 Pwrand\cf0 .new(#[1, 2, 3], #[1, 3, 5].normalizeSum, 6);	\cf3 // return
 		\cf2 var\cf0  env;\
 		env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.01, dur, 0.2), doneAction:2);\
 		\cf2 Out\cf0 .ar(out, \cf2 SinOsc\cf0 .ar(freq, 0, env))\
-	\}).load(s);\
+	\}).send(s);\
 )\
 \
 \

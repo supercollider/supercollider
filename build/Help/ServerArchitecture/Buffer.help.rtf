@@ -84,7 +84,7 @@ With Buffer methods that take a completionsMessage, it is also possible to pass 
 		\cf2 Out\cf0 .ar( out,\
 			\cf2 PlayBuf\cf0 .ar(1,bufnum,\cf2 BufRateScale\cf0 .kr(bufnum))\
 		)\
-	\}).load(s);\
+	\}).send(s);\
 	\
 	\
 	y = \cf2 Synth\cf0 .basicNew(\cf3 "help-Buffer"\cf0 ); \cf5 // not sent yet\
@@ -106,9 +106,8 @@ With Buffer methods that take a completionsMessage, it is also possible to pass 
 
 \f0\b\fs24 \cf0 	Buffer.cueSoundFile(server, path, startFrame, numChannels, \
 							bufferSize,completionMessage);\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 	\
+\f1\b0 	\
 		Allocate a buffer and preload a soundfile for use with DiskIn.\
 		\
 		
@@ -135,7 +134,7 @@ With Buffer methods that take a completionsMessage, it is also possible to pass 
 			\cf2 Out\cf0 .ar(out,\
 				\cf2 DiskIn\cf0 .ar( 2, bufnum )\
 			)\
-		\}).load(s);\
+		\}).send(s);\
 		\
 		m = \{ \cf2 arg\cf0  buf; [\cf3 "/s_new"\cf0 , \cf3 "help-Buffer"\cf0 , s.nodeAllocator.alloc, 1, 0, \
 						\cf4 \\bufnum\cf0 ,buf.bufnum]\};\
@@ -177,9 +176,8 @@ instance methods:
 
 \f0\b \cf0 	read(path,fileStartFrame, numFrames, bufStartFrame, leaveOpen, \
 										completionMessage);\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 	
+\f1\b0 	
 \f0\b readMsg(path,fileStartFrame, numFrames, bufStartFrame, leaveOpen, \
 										completionMessage);\
 
@@ -217,12 +215,10 @@ instance methods:
 \f0\b 	\
 
 \f1\b0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	cueSoundFile(path,fileStartFrame, bufferSize,completionMessage);\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b 	cueSoundFile(path,fileStartFrame, bufferSize,completionMessage);\
 
-\f1\b0 \cf0 	
+\f1\b0 	
 \f0\b cueSoundFileMsg(path,fileStartFrame, bufferSize,completionMessage);\
 
 \f1\b0 \
@@ -257,16 +253,13 @@ instance methods:
 		see 
 \f0\b SoundFile
 \f1\b0  for headerFormat and sampleFormat\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b \
 
-\f1\b0 \cf0 \
+\f1\b0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	free(completionMessage)
+\f0\b 	free(completionMessage)
 \f1\b0 \
 
 \f0\b 	freeMsg(completionMessage)
@@ -298,9 +291,8 @@ instance methods:
 
 \f0\b 	set(index,float ... morePairs)\
 	setMsg(index,float ... morePairs)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 		set the sample at index to float\
+\f1\b0 		set the sample at index to float\
 		additional pairs of indices and floats may be included in the same message\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -309,13 +301,11 @@ instance methods:
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	setn(startAt,values ... morePairs)\
+\f0\b 	setn(startAt,values ... morePairs)\
 	setnMsg(startAt,values ... morePairs)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 	\
+\f1\b0 	\
 		values should be an array of floats.  starting at the index startAt, sets\
 		each sample to the corresponding value.\
 		additional pairs of starting indices and float arrays may be included\
@@ -342,23 +332,19 @@ instance methods:
 
 \f1\fs24 \cf0 			\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	fill(startAt,numFrames,value ... more)\
+\f0\b 	fill(startAt,numFrames,value ... more)\
 	fillMsg(startAt,numFrames,value ... more)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 		\
+\f1\b0 		\
 		starting at the index startAt, set the next numFrames samples to value.\
 		additional triplets may be included in the same message.\
 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	copyTo(buf, numSamples, dstSamplePos, srcSamplePos)\
+\f0\b 	copyTo(buf, numSamples, dstSamplePos, srcSamplePos)\
 	copyToMsg(buf, numSamples, dstSamplePos, srcSamplePos)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 		\
+\f1\b0 		\
 		starting at the sample index srcSamplePos, copy numSamples samples\
 		from this to the destination buffer buf starting at dstSamplePos.\
 		if numSamples is negative, the maximum number of samples possible is\
@@ -366,14 +352,14 @@ instance methods:
 \
 		
 \f2\fs18 (\
+			s = \cf2 Server\cf0 .local;\
 			\cf2 SynthDef\cf0 (\cf3 "help-Buffer"\cf0 , \{ \cf2 arg\cf0  out=0, buf;\
 				\cf2 Line\cf0 .ar(0, 0, dur: \cf2 BufDur\cf0 .kr(buf), doneAction: 2);\
 				\cf2 Out\cf0 .ar(out, \cf2 PlayBuf\cf0 .ar(1, buf, 0.25));\
-			\}).load(s);\
+			\}).send(s);\
 		)\
 		\
 		(\
-			s = \cf2 Server\cf0 .local;\
 			b = \cf2 Buffer\cf0 .read(s, \cf3 "sounds/a11wlk01.wav"\cf0 );\
 			c = \cf2 Buffer\cf0 .alloc(s, 120000);\
 		)\
@@ -397,14 +383,12 @@ instance methods:
 		b.free;\
 		c.free;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	close(completionMessage)\
+\f0\b 	close(completionMessage)\
 	closeMsg(completionMessage)\
 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 		after using a Buffer with DiskOut, close the soundfile and write the\
+\f1\b0 		after using a Buffer with DiskOut, close the soundfile and write the\
 		header information.\
 		\
 		

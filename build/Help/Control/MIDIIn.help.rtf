@@ -1,27 +1,30 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red191\green0\blue0;
-\red96\green96\blue96;\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf2 MIDIIn
-\f1\b0\fs18 \cf3 \
+\f0\b\fs36 \cf0 MIDIIn
+\f1\b0\fs18 \
 \
-
-\f0\b\fs24 \cf2 A\cf3  popular 80s technology\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf3 \
+\f0\b\fs24 \cf0 A popular 80s technology\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
 \
-\cf2 MIDIIn\cf3 .connect; \cf4 // init for one port midi interface\cf3 \
+\cf2 MIDIIn\cf0 .connect; \cf3 // init for one port midi interface\cf0 \
 \
-\cf4 // register functions\cf3 \
-\cf2 MIDIIn\cf3 .control = \{ \cf2 arg\cf3  src, chan, num, val;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // register functions\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 MIDIIn\cf0 .control = \{ \cf2 arg\cf0  src, chan, num, val;\
 				[chan,num,val].postln;\
 			\};\
 \
-\cf2 MIDIIn\cf3 .noteOn = \{ \cf2 arg\cf3  src, chan, num, vel;\
+\cf2 MIDIIn\cf0 .noteOn = \{ \cf2 arg\cf0  src, chan, num, vel;\
 				[chan,num.midicps,vel / 127].postln;\
 			\};\
 \
@@ -29,67 +32,67 @@
 	 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf3 noteOn\
+\f0\b\fs24 \cf0 noteOn\
 noteOff\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf3 	\cf2 MIDIIn\cf3 .noteOff = \{ \cf2 arg\cf3  src,chan,num,vel;\
+\f1\b0\fs18 \cf0 	\cf2 MIDIIn\cf0 .noteOff = \{ \cf2 arg\cf0  src,chan,num,vel;\
 			[chan,num,vel].postln;\
 		\};\
-
-\f2\fs24 	\cf2 The\cf3  velocity is usually 64 unless you have a keyboard that supports release velocity.		\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf3 polytouch\
+\f2\fs24 \cf0 	\cf2 The\cf0  velocity is usually 64 unless you have a keyboard that supports release velocity.		\
+
+\f0\b polytouch\
 control\
 program\
 touch\
 bend	\
+
+\f2\b0 	0..16384,   the  midpoint is 8192\
+
+\f0\b action
+\f1\b0\fs18 \
+
+\f2\fs24 	all other midi events will fire \cf2 this\cf0  action	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf3 	0..16384,   the  midpoint is 8192\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b \cf3 action
-\f1\b0\fs18 \cf3 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs24 \cf3 	all other midi events will fire \cf2 this\cf3  action	\
-
-\f1\fs18 \
+\f1\fs18 \cf0 \
 \
 \
 (\
-\cf2 MIDIIn\cf3 .connect;\
-s = \cf2 Server\cf3 .local;\
+\cf2 MIDIIn\cf0 .connect;\
+s = \cf2 Server\cf0 .local;\
 s.boot;\
 s.latency = 0;\
 \
-\cf2 SynthDef\cf3 (\cf5 "sik-goo"\cf3 , \{ \cf2 arg\cf3  freq=440,formfreq=100,gate=0.0,bwfreq=800;\
-	\cf2 var\cf3  x;\
-	x = \cf2 Formant\cf3 .ar(\
-			\cf2 SinOsc\cf3 .kr(0.02, 0, 10, freq), \
+\cf2 SynthDef\cf0 (\cf4 "sik-goo"\cf0 , \{ \cf2 arg\cf0  freq=440,formfreq=100,gate=0.0,bwfreq=800;\
+	\cf2 var\cf0  x;\
+	x = \cf2 Formant\cf0 .ar(\
+			\cf2 SinOsc\cf0 .kr(0.02, 0, 10, freq), \
 			formfreq,\
 			bwfreq\
 			);\
-	x = \cf2 EnvGen\cf3 .kr(\cf2 Env\cf3 .adsr, gate,\cf2 Latch\cf3 .kr(gate,gate)) * x;\
-	\cf2 Out\cf3 .ar(0, x);\
-\}).load(s);\
+	x = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .adsr, gate,\cf2 Latch\cf0 .kr(gate,gate)) * x;\
+	\cf2 Out\cf0 .ar(0, x);\
+\}).send(s);\
 \
-x = \cf2 Synth\cf3 (\cf5 "sik-goo"\cf3 );\
+x = \cf2 Synth\cf0 (\cf4 "sik-goo"\cf0 );\
 \
-\cf4 //set the action:\cf3 \
-\cf2 MIDIIn\cf3 .noteOn = \{\cf2 arg\cf3  src, chan, num, vel;\
-				x.set(\cf6 \\freq\cf3 , num.midicps / 4.0);\
-				x.set(\cf6 \\gate\cf3 , vel / 200 );\
-				x.set(\cf6 \\formfreq\cf3 , vel / 127 * 1000);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 //set the action:\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 MIDIIn\cf0 .noteOn = \{\cf2 arg\cf0  src, chan, num, vel;\
+				x.set(\cf5 \\freq\cf0 , num.midicps / 4.0);\
+				x.set(\cf5 \\gate\cf0 , vel / 200 );\
+				x.set(\cf5 \\formfreq\cf0 , vel / 127 * 1000);\
 			\};\
-\cf2 MIDIIn\cf3 .noteOff = \{ \cf2 arg\cf3  src,chan,num,vel;\
-				x.set(\cf6 \\gate\cf3 , 0.0);\
+\cf2 MIDIIn\cf0 .noteOff = \{ \cf2 arg\cf0  src,chan,num,vel;\
+				x.set(\cf5 \\gate\cf0 , 0.0);\
 			\};\
-\cf2 MIDIIn\cf3 .bend = \{ \cf2 arg\cf3  src,chan,val;\
-				\cf4 //(val * 0.048828125).postln;\cf3 \
-				x.set(\cf6 \\bwfreq\cf3 , val * 0.048828125 );\
+\cf2 MIDIIn\cf0 .bend = \{ \cf2 arg\cf0  src,chan,val;\
+				\cf3 //(val * 0.048828125).postln;\cf0 \
+				x.set(\cf5 \\bwfreq\cf0 , val * 0.048828125 );\
 			\};\
 )\
 \
@@ -97,54 +100,61 @@ x = \cf2 Synth\cf3 (\cf5 "sik-goo"\cf3 );\
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf4 //i used this and got acceptable latency for triggering synths live.\cf3 \
-\cf4 //The latency might actually be less than sc2, but i haven't used it enough\cf3 \
-\cf4 //to tell for sure yet.\cf3 \
-\cf4 //Powerbook G4, 512mb ram.\cf3 \
+\f2\fs24 \cf3 //i used this and got acceptable latency for triggering synths live.\cf0 \
+\cf3 //The latency might actually be less than sc2, but i haven't used it enough\cf0 \
+\cf3 //to tell for sure yet.\cf0 \
+\cf3 //Powerbook G4, 512mb ram.\cf0 \
 - matrix6k@somahq.com\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \
+\f1\fs18 \cf0 \
 \
 writing to the bus rather than directly to the synth\
 \
-s = \cf2 Server\cf3 .local;\
+s = \cf2 Server\cf0 .local;\
 s.boot;\
 \
 (\
 s.latency = 0;\
-\cf2 SynthDef\cf3 (\cf5 "moto-rev"\cf3 , \{ \cf2 arg\cf3  ffreq=100;\
-	\cf2 var\cf3  x;\
-	x = \cf2 RLPF\cf3 .ar(\cf2 LFPulse\cf3 .ar(\cf2 SinOsc\cf3 .kr(0.2, 0, 10, 21), [0,0.1], 0.1),\
+\cf2 SynthDef\cf0 (\cf4 "moto-rev"\cf0 , \{ \cf2 arg\cf0  ffreq=100;\
+	\cf2 var\cf0  x;\
+	x = \cf2 RLPF\cf0 .ar(\cf2 LFPulse\cf0 .ar(\cf2 SinOsc\cf0 .kr(0.2, 0, 10, 21), [0,0.1], 0.1),\
 			 ffreq, 0.1)\
 			 .clip2(0.4);\
-	\cf2 Out\cf3 .ar(0, x);\
-\}).load(s);\
+	\cf2 Out\cf0 .ar(0, x);\
+\}).send(s);\
 \
-b = \cf2 Bus\cf3 .control(s);\
+b = \cf2 Bus\cf0 .control(s);\
 \
-x = \cf2 Synth\cf3 (\cf5 "moto-rev"\cf3 );\
+x = \cf2 Synth\cf0 (\cf4 "moto-rev"\cf0 );\
 \
-\cf4 // map the synth's first input (ffreq) to read\cf3 \
-\cf4 // from the bus' output index\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // map the synth's first input (ffreq) to read\cf0 \
+\cf3 // from the bus' output index\cf0 \
 x.map(0,b.index);\
 \
 \
-\cf2 MIDIIn\cf3 .connect;\
-\cf4 //set the action:\cf3 \
-\cf2 MIDIIn\cf3 .noteOn = \{\cf2 arg\cf3  src, chan, num, vel;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 MIDIIn\cf0 .connect;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 //set the action:\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 MIDIIn\cf0 .noteOn = \{\cf2 arg\cf0  src, chan, num, vel;\
 				b.value = num.midicps.postln;\
 			\};\
 \
-\cf2 MIDIIn\cf3 .control = \{\cf2 arg\cf3  src, chan, num, val;\
+\cf2 MIDIIn\cf0 .control = \{\cf2 arg\cf0  src, chan, num, val;\
 				[chan,num,val].postln;\
 			\};\
-\cf2 MIDIIn\cf3 .bend = \{\cf2 arg\cf3  src, chan, val;\
+\cf2 MIDIIn\cf0 .bend = \{\cf2 arg\cf0  src, chan, val;\
 				val.postln;\
 			\};\
 )\
 \
-\cf4 // cleanup\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // cleanup\cf0 \
 x.free;\
 b.free;\
 \
@@ -152,74 +162,74 @@ b.free;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf3 Keyboard Split for two voices\
+\f0\b\fs24 \cf0 Keyboard Split for two voices\
 pbend to cutoff, mod to rez, 7 to amp\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf4 // - matrix6k@somahq.com
-\f1\fs18 \cf3 \
+\f2\b0 \cf3 // - matrix6k@somahq.com
+\f1\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs20 \cf3 prepare
-\f1\b0\fs18 \cf3 \
+\f0\b\fs20 \cf0 prepare
+\f1\b0\fs18 \
 s.boot;\
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf3 (\cf5 "funk"\cf3 ,\{ \cf2 arg\cf3  freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, lfospeed=0;\
-     \cf2 var\cf3  e,x,env,range,filterfreq;\
-	e = \cf2 Env\cf3 .new([0, 0.1, 0.1, 0], [0, 0.1, 0.1], \cf6 'linear'\cf3 , 2);\
-	env=\cf2 Env\cf3 .adsr(0.3,1,1,1);\
+\cf2 SynthDef\cf0 (\cf4 "funk"\cf0 ,\{ \cf2 arg\cf0  freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, lfospeed=0;\
+     \cf2 var\cf0  e,x,env,range,filterfreq;\
+	e = \cf2 Env\cf0 .new([0, 0.1, 0.1, 0], [0, 0.1, 0.1], \cf5 'linear'\cf0 , 2);\
+	env=\cf2 Env\cf0 .adsr(0.3,1,1,1);\
 	range = cutoff -1;\
-	filterfreq = \cf2 SinOsc\cf3 .kr(lfospeed,0, range, cutoff).abs;\
-	x = \cf2 RLPF\cf3 .ar(\cf2 Mix\cf3 .ar([\
-			\cf2 Mix\cf3 .arFill(2, \{\cf2 Saw\cf3 .ar(freq *2 + 0.2.rand2, amp)\}),\
-			\cf2 Mix\cf3 .arFill(2, \{\cf2 Saw\cf3 .ar(freq *4+ 0.2.rand2, amp)\})\
+	filterfreq = \cf2 SinOsc\cf0 .kr(lfospeed,0, range, cutoff).abs;\
+	x = \cf2 RLPF\cf0 .ar(\cf2 Mix\cf0 .ar([\
+			\cf2 Mix\cf0 .arFill(2, \{\cf2 Saw\cf0 .ar(freq *2 + 0.2.rand2, amp)\}),\
+			\cf2 Mix\cf0 .arFill(2, \{\cf2 Saw\cf0 .ar(freq *4+ 0.2.rand2, amp)\})\
 			]),\
-			\cf2 EnvGen\cf3 .kr(env,gate)*filterfreq,\
+			\cf2 EnvGen\cf0 .kr(env,gate)*filterfreq,\
 			rez);\
-     \cf2 Out\cf3 .ar([0,1],x * \cf2 EnvGen\cf3 .kr(e, gate, doneAction: 2))\
+     \cf2 Out\cf0 .ar([0,1],x * \cf2 EnvGen\cf0 .kr(e, gate, doneAction: 2))\
 \
-\}).load(s);\
+\}).send(s);\
 \
-\cf2 SynthDef\cf3 (\cf5 "strings"\cf3 ,\{ \cf2 arg\cf3  freq = 700, amp = 0.2, gate = 1;\
-     \cf2 var\cf3  x,enve;\
-	enve = \cf2 Env\cf3 .new([0, 0.1, 0.1, 0], [2, 0.1, 1], \cf6 'linear'\cf3 , 2);\
-	x = \cf2 RLPF\cf3 .ar(\cf2 Mix\cf3 .ar([\
-					\cf2 Mix\cf3 .arFill(2, \{\cf2 Saw\cf3 .ar(freq +2.rand2,0.6)\}),\
-					\cf2 Mix\cf3 .arFill(2, \{\cf2 Saw\cf3 .ar(freq *0.5 + 2.rand2,0.6)\})\
+\cf2 SynthDef\cf0 (\cf4 "strings"\cf0 ,\{ \cf2 arg\cf0  freq = 700, amp = 0.2, gate = 1;\
+     \cf2 var\cf0  x,enve;\
+	enve = \cf2 Env\cf0 .new([0, 0.1, 0.1, 0], [2, 0.1, 1], \cf5 'linear'\cf0 , 2);\
+	x = \cf2 RLPF\cf0 .ar(\cf2 Mix\cf0 .ar([\
+					\cf2 Mix\cf0 .arFill(2, \{\cf2 Saw\cf0 .ar(freq +2.rand2,0.6)\}),\
+					\cf2 Mix\cf0 .arFill(2, \{\cf2 Saw\cf0 .ar(freq *0.5 + 2.rand2,0.6)\})\
 			]),\
 			6000,1);\
-     \cf2 Out\cf3 .ar([0,1],x * \cf2 EnvGen\cf3 .kr(enve, gate, doneAction: 2))\
+     \cf2 Out\cf0 .ar([0,1],x * \cf2 EnvGen\cf0 .kr(enve, gate, doneAction: 2))\
 \
-\}).load(s);\
+\}).send(s);\
 \
 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs20 \cf3 then...\
+\f0\b\fs20 \cf0 then...\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf3 (\
-\cf2 var\cf3  keys, cutspec, cutbus, rezspec, rezbus, lfospec, lfobus;\
-keys = \cf2 Array\cf3 .newClear(128);\
+\f1\b0\fs18 \cf0 (\
+\cf2 var\cf0  keys, cutspec, cutbus, rezspec, rezbus, lfospec, lfobus;\
+keys = \cf2 Array\cf0 .newClear(128);\
 \
-\cf2 MIDIClient\cf3 .init;\
-\cf2 MIDIIn\cf3 .connect(0, \cf2 MIDIClient\cf3 .sources.at(0));\
+\cf2 MIDIClient\cf0 .init;\
+\cf2 MIDIIn\cf0 .connect(0, \cf2 MIDIClient\cf0 .sources.at(0));\
 \
-g = \cf2 Group\cf3 .new;\
+g = \cf2 Group\cf0 .new;\
 \
-cutspec = \cf2 ControlSpec\cf3 (100,10000,\cf6 \\linear\cf3 ,0.001);\
-cutbus = \cf2 Bus\cf3 .new(\cf6 \\control\cf3 ,1,1,s);\
+cutspec = \cf2 ControlSpec\cf0 (100,10000,\cf5 \\linear\cf0 ,0.001);\
+cutbus = \cf2 Bus\cf0 .new(\cf5 \\control\cf0 ,1,1,s);\
 cutbus.value = 10000;\
 \
-rezspec = \cf2 ControlSpec\cf3 (1,0,\cf6 \\linear\cf3 ,0.001);\
-rezbus = \cf2 Bus\cf3 .new(\cf6 \\control\cf3 ,2,1,s);\
+rezspec = \cf2 ControlSpec\cf0 (1,0,\cf5 \\linear\cf0 ,0.001);\
+rezbus = \cf2 Bus\cf0 .new(\cf5 \\control\cf0 ,2,1,s);\
 rezbus.value = 1.0;\
 \
-lfospec = \cf2 ControlSpec\cf3 (0,50,\cf6 \\linear\cf3 ,0.001);\
-lfobus = \cf2 Bus\cf3 .new(\cf6 \\control\cf3 ,3,1,s);\
+lfospec = \cf2 ControlSpec\cf0 (0,50,\cf5 \\linear\cf0 ,0.001);\
+lfobus = \cf2 Bus\cf0 .new(\cf5 \\control\cf0 ,3,1,s);\
 \
-\cf2 MIDIIn\cf3 .control = \{\cf2 arg\cf3  src, chan, num, val;\
+\cf2 MIDIIn\cf0 .control = \{\cf2 arg\cf0  src, chan, num, val;\
 			if(num == 1,\{\
 				rezbus.value = rezspec.map(val/127.0);\
 			\});\
@@ -227,37 +237,37 @@ lfobus = \cf2 Bus\cf3 .new(\cf6 \\control\cf3 ,3,1,s);\
 				lfobus.value = lfospec.map(val/127.0).postln;\
 			\});\
 			\};\
-\cf2 MIDIIn\cf3 .bend = \{\cf2 arg\cf3  src, chan, val;\
+\cf2 MIDIIn\cf0 .bend = \{\cf2 arg\cf0  src, chan, val;\
 			cutbus.value = cutspec.map(val/16383.0);\
 			\};\
 \
-\cf2 MIDIIn\cf3 .noteOn = \{\cf2 arg\cf3  src, chan, num, vel;\
-	\cf2 var\cf3  node;\
+\cf2 MIDIIn\cf0 .noteOn = \{\cf2 arg\cf0  src, chan, num, vel;\
+	\cf2 var\cf0  node;\
 	if(num < 60, \{\
+		node = \cf2 Synth\cf0 .tail(g, \cf4 "funk"\cf0 , [\cf5 \\freq\cf0 , num.midicps, \cf5 \\amp\cf0 , vel/255]);\
+		node.map(\cf4 "cutoff"\cf0 ,1,\cf4 "rez"\cf0 ,2,\cf4 "lfospeed"\cf0 ,3);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 		node = \cf2 Synth\cf3 .tail(g, \cf5 "funk"\cf3 , [\cf6 \\freq\cf3 , num.midicps, \cf6 \\amp\cf3 , vel/255]);\
-		node.map(\cf5 "cutoff"\cf3 ,1,\cf5 "rez"\cf3 ,2,\cf5 "lfospeed"\cf3 ,3);\
-\cf4 //		node = Synth.basicNew("funk",s);\cf3 \
-\cf4 //		s.sendBundle(nil,\cf3 \
-\cf4 //			node.addToTailMsg(g,[\\freq, num.midicps, \\amp, vel/255]),\cf3 \
-\cf4 //			node.mapMsg("cutoff",1,"rez",2,"lfospeed",3)\cf3 \
-\cf4 //		);\cf3 \
+\cf3 //		node = Synth.basicNew("funk",s);\cf0 \
+\cf3 //		s.sendBundle(nil,\cf0 \
+\cf3 //			node.addToTailMsg(g,[\\freq, num.midicps, \\amp, vel/255]),\cf0 \
+\cf3 //			node.mapMsg("cutoff",1,"rez",2,"lfospeed",3)\cf0 \
+\cf3 //		);\cf0 \
 		keys.put(num, node)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 	\},\{ \
-		node = \cf2 Synth\cf3 .tail(g, \cf5 "strings"\cf3 , [\cf6 \\freq\cf3 , num.midicps, \cf6 \\amp\cf3 , vel/255]);\
+	\},\{ \
+		node = \cf2 Synth\cf0 .tail(g, \cf4 "strings"\cf0 , [\cf5 \\freq\cf0 , num.midicps, \cf5 \\amp\cf0 , vel/255]);\
 		keys.put(num, node)\
 	\});\
 \};\
 \
-\cf2 MIDIIn\cf3 .noteOff = \{\cf2 arg\cf3  src, chan, num, vel;\
-    \cf2 var\cf3  node;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 MIDIIn\cf0 .noteOff = \{\cf2 arg\cf0  src, chan, num, vel;\
+    \cf2 var\cf0  node;\
     node = keys.at(num);\
     if (node.notNil, \{\
-        keys.put(num, \cf2 nil\cf3 );\
-        s.sendMsg(\cf5 "/n_set"\cf3 , node.nodeID, \cf5 "gate"\cf3 , 0);\
-        \cf4 // or node.release\
-        // then free it ... or get the NodeWatcher to do it\cf3 \
+        keys.put(num, \cf2 nil\cf0 );\
+        s.sendMsg(\cf4 "/n_set"\cf0 , node.nodeID, \cf4 "gate"\cf0 , 0);\
+        \cf3 // or node.release\
+        // then free it ... or get the NodeWatcher to do it\cf0 \
     \});\
 \};\
 \
@@ -267,13 +277,13 @@ lfobus = \cf2 Bus\cf3 .new(\cf6 \\control\cf3 ,3,1,s);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf3 init for 2 ports\
+\f0\b\fs24 \cf0 init for 2 ports\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf2 MIDIClient\cf3 .init(2,2);\
-\cf2 MIDIIn\cf3 .connect(0, \cf2 MIDIClient\cf3 .sources.at(0)); \cf4 // 1st device\cf3 \
-\cf2 MIDIIn\cf3 .connect(1, \cf2 MIDIClient\cf3 .sources.at(1)); \cf4 // 2nd device ?\cf3 \
+\f1\b0\fs18 \cf2 MIDIClient\cf0 .init(2,2);\
+\cf2 MIDIIn\cf0 .connect(0, \cf2 MIDIClient\cf0 .sources.at(0)); \cf3 // 1st device\cf0 \
+\cf2 MIDIIn\cf0 .connect(1, \cf2 MIDIClient\cf0 .sources.at(1)); \cf3 // 2nd device ?\cf0 \
 \
 \
 \

@@ -1,14 +1,16 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
-\red96\green96\blue96;\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs36 \cf0 Bundled Server Messages\
+\f0\b\fs38 \cf0 Bundled Server Messages
+\f1\b0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs22 Using Synth/Node/Group sclang objects to build classes often\
+\fs24 \cf0 Using Synth/Node/Group sclang objects to build classes often\
 there is the need to construct bundles to send messages together.\
 One example is you want to start a synth that should be mapped\
 instantly to certain buses.\
@@ -18,96 +20,100 @@ which add their message to it and do all needed preparation on \
 language side. \
 \
 
-\f1\b Note
-\f0\b0 : you have to use this with care. Normally the other ways\
+\f0\b Note
+\f1\b0 : you have to use this with care. Normally the other ways\
 of creating Synths and Groups are more safe.\
 \
 aNode.
-\f1\b msgToBundle
-\f0\b0 (bundle, cmdName, argList) \
+\f0\b msgToBundle
+\f1\b0 (bundle, cmdName, argList) \
 	adds a message to the bundle (a list)\
 aNode.
-\f1\b getMsg
-\f0\b0 (cmdName or number, argList) \
+\f0\b getMsg
+\f1\b0 (cmdName or number, argList) \
 	returns a message\
 \
 
-\f1\b instance creation and adding to a bundle ( usually a List )
-\f0\b0 \
+\f0\b instance creation and adding to a bundle ( usually a List )
+\f1\b0 \
 \
 Synth.
-\f1\b newToBundle
-\f0\b0 (bundle, defName, argList, target, addAction)\
+\f0\b newToBundle
+\f1\b0 (bundle, defName, argList, target, addAction)\
 	returns a new synth and adds commands to the bundle\
 	all initialisations and registring the node are done\
 \
 Group.
-\f1\b newToBundle
-\f0\b0 (bundle, target, addAction)\
+\f0\b newToBundle
+\f1\b0 (bundle, target, addAction)\
 	returns a new synth and adds commands to the bundle\
 	all initialisations and registring the node are done\
 \
 \
 
-\f1\b creating messages that can be added to a bundle\
+\f0\b creating messages that can be added to a bundle\
 
-\f0\b0 \
+\f1\b0 \
 aSynth.
-\f1\b newMsg
-\f0\b0 (target, addAction, argList) \
+\f0\b newMsg
+\f1\b0 (target, addAction, argList) \
 	use this with a synth that was created by prNew(defName).\
 	all initialisations and registring the node are done\
 	\
 aGroup.
-\f1\b newMsg
-\f0\b0 (target, addAction) \
+\f0\b newMsg
+\f1\b0 (target, addAction) \
 	use this with a group that was created by prNew\
 	all initialisations and registring the node are done\
 \
 aNode.
-\f1\b moveBeforeMsg
-\f0\b0 (aNode)\
+\f0\b moveBeforeMsg
+\f1\b0 (aNode)\
 	returns a message that causes the server to move this node before another one\
 \
 analogous messages: \
 
-\f1\b moveAfterMsg / moveToHeadMsg / moveToTailMsg / \
+\f0\b moveAfterMsg / moveToHeadMsg / moveToTailMsg / \
 moveNodeToHeadMsg / moveNodeToTailMsg
-\f2\b0\fs18 \
+\f2\b0\fs20 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //prepare some def\cf3 \
-s = \cf4 Server\cf3 .local;\
+\cf2 //prepare some def\cf0 \
+s = \cf3 Server\cf0 .local;\
 s.boot;
-\f0\fs22 \cf3 \
+\f1\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf3 (\
-\cf4 SynthDef\cf3 (\cf5 "void"\cf3 , \{ \cf4 arg\cf3  freq=800, out=0;\
-	\cf4 Out\cf3 .ar(out, \cf4 SinOsc\cf3 .ar(\cf4 SinOsc\cf3 .ar(\cf4 SinOsc\cf3 .kr([2,1.1],0,8,12),freq*0.3,freq), 0, 0.2));\
-\}).load(s);\
+\f2\fs20 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "void"\cf0 , \{ \cf3 arg\cf0  freq=800, out=0;\
+	\cf3 Out\cf0 .ar(out, \cf3 SinOsc\cf0 .ar(\cf3 SinOsc\cf0 .ar(\cf3 SinOsc\cf0 .kr([2,1.1],0,8,12),freq*0.3,freq), 0, 0.2));\
+\}).send(s);\
 )
-\f0\fs22 \cf0 \
+\f1\fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf3 \
-\cf2 //create a list to add all messages\cf3 \
-b = \cf4 List\cf3 .new; \
-\cf2 //return an in instance of synth (registered) and adds the message to the list \cf3 \
-y = \cf4 Synth\cf3 .newToBundle(b, \cf5 "void"\cf3 );\
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //create a list to add all messages\cf0 \
+b = \cf3 List\cf0 .new; \
+\cf2 //return an in instance of synth (registered) and adds the message to the list \cf0 \
+y = \cf3 Synth\cf0 .newToBundle(b, \cf4 "void"\cf0 );\
 \
-\cf2 //add a couple of messages\cf3 \
-b.add(y.getMsg(\cf5 "/n_set"\cf3 , [\cf6 \\freq\cf3 , 500]));\
-b.add(y.getMsg(\cf5 "/n_set"\cf3 , [\cf6 \\out\cf3 , 0]));\
+\cf2 //add a couple of messages\cf0 \
+b.add(y.getMsg(\cf4 "/n_set"\cf0 , [\cf5 \\freq\cf0 , 500]));\
+b.add(y.getMsg(\cf4 "/n_set"\cf0 , [\cf5 \\out\cf0 , 0]));\
 \
-\cf2 //create a second list to add message\cf3 \
+\cf2 //create a second list to add message\cf0 \
 \
-c = [y.getMsg(\cf5 "/n_free"\cf3 )];\
+c = [y.getMsg(\cf4 "/n_free"\cf0 )];\
 \
-\cf2 //send the messages (do this only once.)\cf3 \
+\cf2 //send the messages (do this only once.)\cf0 \
 (\
-s.listSendBundle(1, b); \cf2 //start after one sec.\cf3 \
-s.listSendBundle(1.1, c);\cf2 //runs for exactly 0.1 sec.\cf3 \
+s.listSendBundle(1, b); \cf2 //start after one sec.\cf0 \
+s.listSendBundle(1.1, c);\cf2 //runs for exactly 0.1 sec.\cf0 \
 )\
 \
 \
