@@ -40,7 +40,6 @@ struct PinkNoise : public Unit
 {
 	uint32 mDice[16];
 	int32 mTotal;
-	int mCounter;
 };
 
 struct Dust : public Unit
@@ -301,8 +300,8 @@ void PinkNoise_next(PinkNoise *unit, int inNumSamples)
 	
 	uint32 total = unit->mTotal;
 	uint32 *dice = unit->mDice;
-	int counter = unit->mCounter;
 	LOOP(inNumSamples, 
+		uint32 counter = trand(s1,s2,s3); // Magnus Jonsson's suggestion.
 		int k = (CTZ(counter)) & 15; 
 		uint32 prevrand = dice[k]; 
 		uint32 newrand = trand(s1,s2,s3) >> 13;
@@ -313,7 +312,6 @@ void PinkNoise_next(PinkNoise *unit, int inNumSamples)
 		ZXP(out) = ((*(float*)&ifval) - 3.0f); 
 		counter ++; 
 	);
-	unit->mCounter = counter;
 	unit->mTotal = total;
 	RPUT
 	
@@ -332,7 +330,6 @@ void PinkNoise_Ctor(PinkNoise* unit)
 		dice[i] = newrand;
 	}	
 	unit->mTotal = total;
-	unit->mCounter = 1;
 
 	ZOUT0(0) = total;
 	RPUT
