@@ -59,6 +59,16 @@ RecordBuf : UGen {
 }
 
 
+ScopeOut : UGen {
+	*ar { arg bufnum=0, in=0.0, zoom=1.0;
+		this.multiNew('audio', bufnum, in, zoom);
+		^0.0
+	}
+	*kr { arg bufnum=0, in=0.0, zoom=1.0;
+		this.multiNew('control', bufnum, in, zoom);
+		^0.0
+	}
+}
 
 Tap : UGen {
 	*ar { arg bufnum = 0, numChannels = 1, delaytime = 0.2;
@@ -67,3 +77,5 @@ Tap : UGen {
 		^PlayBuf.ar(numChannels, bufnum, 1, 0, n, 1);
 	}
 }
+
+
