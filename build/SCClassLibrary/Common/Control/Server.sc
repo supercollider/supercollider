@@ -147,8 +147,9 @@ Server : Model {
 		this.sendMsg("/d_recv", buffer);
 	}
 	loadSynthDef { arg name, completionMsg,dir="synthdefs/";
-		this.listSendMsg(["/d_load", dir ++ name ++ ".scsyndef"]
-					.addIfNotNil(completionMsg)) 
+		this.listSendMsg(
+			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
+		) 
 	}
 	//loadDir
 	

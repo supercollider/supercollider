@@ -134,7 +134,6 @@ void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
 			} else if (isKindOf(slot->uo, class_int8array)) {
 				PyrInt8Array *arrayObj = slot->uob;
 				packet->addtag('b');
-				//printf("arrayObj %08X %d\n", arrayObj, arrayObj->size);
 				packet->addb(arrayObj->b, arrayObj->size);
 			} else if (isKindOf(slot->uo, class_array)) {
 				PyrObject *arrayObj = slot->uo;
@@ -143,17 +142,25 @@ void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
 					scpacket packet2;
 					makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);				
 					packet->addb((uint8*)packet2.data(), packet2.size());
+				} else {
+					packet->addtag('i');
+					packet->addi(0);
 				}
 			}
 			break;
-		case tagNil :
 		case tagTrue :
+			packet->addtag('i');
+			packet->addi(1);
+			break;
 		case tagFalse :
+		case tagNil :
 		case tagChar :
 		case tagInf :
 		case tagPtr :
 		case tagHFrame :
 		case tagSFrame :
+			packet->addtag('i');
+			packet->addi(0);
 			break;
 		default :
 			packet->addtag('f');
@@ -180,22 +187,17 @@ int makeSynthMsgWithTags(scpacket *packet, PyrSlot *slots, int size)
 {
 	packet->BeginMsg();
 	
-	//char *name = (char*)packet->wrpos;
-	addMsgSlot(packet, slots);
+	addMsgSlot(packet, slots); // msg address
 	
 	// skip space for tags
-	//postfl("maketags %d %d\n", size, (size + 4) >> 2);
 	packet->maketags(size);
 	
-        //char *tags = packet->tagwrpos;
 	packet->addtag(',');
 
 	for (int i=1; i<size; ++i) {
 		addMsgSlotWithTags(packet, slots+i);
 	}
-	
-	//postfl("pkt '%s' '%s'\n", name, tags);
-	
+		
 	packet->EndMsg();
 
 	return errNone;

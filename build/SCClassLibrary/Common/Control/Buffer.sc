@@ -19,7 +19,7 @@ Buffer {
 						numFrames).allocRead(path,startFrame,completionMessage)
 	}
 	// preload a buffer for use with DiskIn
-	*cueSoundFile { arg server,path,startFrame = 0,numChannels= 2, bufferSize = 32768,completionMessage;
+	*cueSoundFile { arg server,path,startFrame = 0,numChannels= 2, bufferSize = 32768, completionMessage;
 		^this.new(server,bufferSize,numChannels)
 			.read(path,startFrame,-1,0,true,completionMessage)
 	}
@@ -30,7 +30,7 @@ Buffer {
 		path = argpath;
 		server.sendMsg("/b_read", bufnum, path, 
 				fileStartFrame, numFrames, 
-				bufStartFrame, leaveOpen.binaryValue, completionMessage.value(this) ?? {[]});
+				bufStartFrame, leaveOpen.binaryValue, completionMessage.value(this));
 		// check size and channels if don't know ?
 	}
 	write { arg path,headerFormat="aiff",sampleFormat="int24",numFrames = -1,
@@ -38,16 +38,16 @@ Buffer {
 		// doesn't change my path 
 		server.sendMsg("/b_write", bufnum, path, 
 				headerFormat,sampleFormat, numFrames, startFrame, 
-				leaveOpen.binaryValue, completionMessage.value(this) ?? {[]});
+				leaveOpen.binaryValue, completionMessage.value(this));
 		// writeEnabled = true;
 	}
 	free { arg completionMessage;
-		server.sendMsg("/b_free", bufnum, completionMessage.value(this) ?? {[]});
+		server.sendMsg("/b_free", bufnum, completionMessage.value(this));
 		server.bufferAllocator.free(bufnum);
 	}
 	
 	zero { arg completionMessage;
-		server.sendMsg("/b_zero", bufnum, completionMessage.value(this) ?? {[]});
+		server.sendMsg("/b_zero", bufnum, completionMessage.value(this));
 	}
 	set { arg index,float ... morePairs;
 		server.performList(\sendMsg,["/b_set",bufnum,index,float] 
@@ -78,11 +78,11 @@ Buffer {
 	
 	//private	
 	alloc { arg completionMessage;
-		server.sendMsg("/b_alloc", bufnum, numFrames, numChannels, completionMessage.value(this) ?? {[]});
+		server.sendMsg("/b_alloc", bufnum, numFrames, numChannels, completionMessage.value(this));
 	}
 	allocRead { arg argpath,startFrame,completionMessage;
 		path = argpath;
-		server.sendMsg("/b_allocRead",bufnum, path,startFrame,numFrames,completionMessage.value(this) ?? {[]});
+		server.sendMsg("/b_allocRead",bufnum, path,startFrame,numFrames,completionMessage.value(this));
 		// check size and channels if don't know
 	}
 	
