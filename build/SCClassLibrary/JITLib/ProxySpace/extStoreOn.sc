@@ -91,11 +91,6 @@
 			stream.nl;
 		// add settings to compile string
 			proxy.nodeMap.storeOn(stream, "~" ++ key, true, envir);
-		// add task to compile string
-			if(proxy.task.notNil) { 
-				stream.nl << "~" << key << ".task = " << 
-				"Task(" <<< proxy.task.originalStream.func << ")" << ";" 
-			};
 			stream.nl;
 		}
 	}
@@ -106,7 +101,7 @@
 			keys = this.monitors.collect { arg item; item.key(envir) };
 		};
 		str = String.streamContents({ arg stream; 
-			stream << "p = ProxySpace.push(s);";
+			stream << "p = ProxySpace.new(s).push;";
 			stream.nl.nl;
 			this.storeOn(stream, keys); 
 		});
