@@ -95,8 +95,18 @@ BusPlug : AbstractFunction {
 		this.makeBusArg;
 	}
 		
-	makeBusArg { 	busArg = if(bus.isNil or: {Êbus.rate === 'audio' }) // audio buses can't be 
-					{Ê\ } { asSymbol("\c" ++ bus.index) }          // used for control mapping
+	makeBusArg { 	
+			var index, numChannels;
+			busArg = if(bus.isNil or: {Êbus.rate === 'audio' }) // audio buses can't be 
+					{Ê\ } {						// used for control mapping
+						index = this.index;
+						numChannels = this.numChannels;
+						if(numChannels == 1) 
+							{ asSymbol("\c" ++ index) } 
+							{
+							Array.fill(numChannels, { arg i; asSymbol("\c" ++ (index + i)) })
+							}
+					}          
 	}
 	wakeUpToBundle {}
 	wakeUp {}
@@ -104,8 +114,8 @@ BusPlug : AbstractFunction {
 	
 	//////////// embedding bus in event streams //////////////////////////////////
 	
-	embedInStream { ^busArg.yield }
-	asStream { ^busArg }
+	embedInStream { this.wakeUp; ^busArg.yield }
+	asStream { this.wakeUp; ^busArg }
 	
 	////////////  playing and access  /////////////////////////////////////////////
 	
@@ -149,6 +159,7 @@ BusPlug : AbstractFunction {
 	value { arg something; 
 		var n;
 		n = something.numChannels;
+		[something, n].debug;
 		^if(something.rate == 'audio', {this.ar(n)}, {this.kr(n)})  
 	}
 	composeUnaryOp { arg aSelector;

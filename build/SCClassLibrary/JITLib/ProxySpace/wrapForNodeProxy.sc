@@ -71,9 +71,14 @@
 }
 
 +BusPlug {
-	prepareForProxySynthDef { arg proxy;
-		^{ this.value(proxy) }
+	buildForProxy { arg proxy, channelOffset=0, nameEnd;
+		var ok;
+		ok = proxy.initBus(this.rate, this.numChannels);
+		^if(ok) {
+			^{ this.value(proxy) }.buildForProxy(proxy, channelOffset, nameEnd) 
+		}
 	}
+
 }
 
 //needs a visit: lazy init + channelOffset
@@ -141,23 +146,30 @@
 
 
 	buildForProxy { arg proxy, channelOffset=0;
-		var player, ok, index, newParent, event, numChannels;
+		var player, ok, index, server, newParent, event, numChannels, rate;
 		player = this.asEventStreamPlayer;
-		ok = proxy.initBus(player.event.at(\rate) ? 'audio', player.event.at(\numChannels) ? 2);
-		index = proxy.index;
-		numChannels = proxy.numChannels;
-		^if(ok)
-			// remember to add to event's parent, so that 
-			// an external change of player's event doesn't override this.
-			{ 
+		ok = if(proxy.isNeutral) { 
+			rate = player.event.at(\rate) ? 'audio';
+			numChannels = player.event.at(\numChannels) ? 2;
+			proxy.initBus(rate, numChannels);
+		} {
+			rate = proxy.rate; // if proxy is initialized, it is user's responsibility
+			numChannels = proxy.numChannels;
+			true
+		};
+		^if(ok) { 
+				index = proxy.index;
+				server = proxy.server;
+				
 				event = player.event;
 				newParent = Event.make({
 					~player = MapNotePlayer.new;
+					~channelOffset = channelOffset;
 					~finish = {
-						~group = proxy.group.asNodeID;
+						~group = proxy.group.nodeID;
 						~mapping = proxy.nodeMap.mapArgs;
-						~i_out = ~out = (~channelOffset ? channelOffset % numChannels + index);
-						~server = proxy.server;
+						~i_out = ~out = ~channelOffset % numChannels + index;
+						~server = server;
 						~freq = ~freq.value + ~detune;
 						~amp = ~amp.value;
 						~sustain = ~sustain.value;
@@ -165,7 +177,6 @@
 				}).parent_(event.parent);
 				event.parent = newParent.collapse;
 			player
-			
 		} { nil }
 
 	}
@@ -228,7 +239,7 @@
 			n = bus.numChannels ? this.numChannels;
 			
 			^EnvelopedPlayer(
-				this, //Patch({ arg input; NumChannels.ar(input, n, true) },[this]),
+				this, 
 				Env.asr(1, 1, 1), 
 				n
 			);
