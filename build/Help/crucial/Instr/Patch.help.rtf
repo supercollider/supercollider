@@ -13,7 +13,6 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // write Instr as in SC2, without Out.ar\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Instr\cf0 (\cf4 \\bubbles\cf0 , \{ \cf3 arg\cf0  amp=1.0;\
 	\cf3 var\cf0  f, zout;\
 	f = \cf3 LFSaw\cf0 .kr(0.4, 0, 24, \cf3 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps;\
@@ -51,8 +50,9 @@ p.topGui;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 Fixed Arguments\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \
+\f2\b0 \cf0 \
 Floats and other scalar values including Envelopes, are transparently dealt with by Patch.  The SynthDef that it produces does not have a separate control input for that argument.  It doesn't need one.  The value is fixed.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -60,6 +60,7 @@ Floats and other scalar values including Envelopes, are transparently dealt with
 \f1\fs18 \cf0 \
 ( // fixing arguments\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Instr\cf0 ([\cf4 \\jmcExamples\cf0 ,\cf4 'moto-rev'\cf0 ],\{ \cf3 arg\cf0  lfo=0.2,ffreq=1000,rq=0.1;\
 	\cf3 RLPF\cf0 .ar(\cf3 LFPulse\cf0 .ar(\cf3 SinOsc\cf0 .kr(lfo, 0, 10, 21), [0,0.1], 0.1), ffreq, rq).clip2(0.4);\
 \});\
@@ -80,6 +81,7 @@ q.topGui;\
 \f1\b0\fs18 \cf0 \
 ( \cf2 // lets collect the cast...\
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Instr\cf0 (\cf4 \\bubbles\cf0 , \{ \cf3 arg\cf0  amp=1.0;\
 	\cf3 var\cf0  f, zout;\
 	f = \cf3 LFSaw\cf0 .kr(0.4, 0, 24, \cf3 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps;\
@@ -90,10 +92,11 @@ q.topGui;\
 ],\cf3 ArOutputSpec\cf4 (2)\cf0 ); // stereo out\
 \
 \
-\cf3 Instr\cf0 (\cf4 \\rlpf\cf0 ,\{ \cf3 arg\cf0  audio=0,ffreq=200,rq=0.1;\
+\cf3 Instr\cf0 (\cf4 \\rlpf\cf0 ,\{ \cf3 arg\cf0  audio=0,ffreq=500,rq=0.1;\
 	\cf3 RLPF\cf0 .ar(audio, ffreq, rq)\
 \},[\
 	\cf2 // this will not multi channel expand !\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf2 // must specify input and output specs with correct numChannels\
 \cf0 	\cf2 // or this will assume to build a mono filter\
 \cf0 	\cf4 \\stereo\cf0 ,\
