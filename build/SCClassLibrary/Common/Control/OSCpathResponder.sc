@@ -15,15 +15,15 @@ OSCpathDispatcher : OSCMultiResponder {
 	
 	*initClass {
 		cmdPathIndices = IdentityDictionary.new;		
-		cmdPathIndices.put('/b_set',	[1,2]);
-		cmdPathIndices.put('/b_setn',	[1,2]);
-		cmdPathIndices.put('/c_set',	[1]);
-		cmdPathIndices.put('/c_setn',	[1]);
-		cmdPathIndices.put('/n_set',	[1,2]);
-		cmdPathIndices.put('/n_setn',	[1,2]);
-		cmdPathIndices.put('/tr',		[1,2]);
-		cmdPathIndices.put('/n_end',	[1]);
-		cmdPathIndices.put('/c_end',	[1]);		// dummy OSC command
+		cmdPathIndices.put('/b_set',	#[1,2]);
+		cmdPathIndices.put('/b_setn',	#[1,2]);
+		cmdPathIndices.put('/c_set',	#[1]);
+		cmdPathIndices.put('/c_setn',	#[1]);
+		cmdPathIndices.put('/n_set',	#[1,2]);
+		cmdPathIndices.put('/n_setn',	#[1,2]);
+		cmdPathIndices.put('/tr',		#[1,2]);
+		cmdPathIndices.put('/n_end',	#[1]);
+		cmdPathIndices.put('/c_end',	#[1]);		// dummy OSC command
 	}	
 	*new {  arg addr, cmdName, action, pathIndices;
 		^super.new(addr, cmdName, action).init(pathIndices);
@@ -59,8 +59,10 @@ OSCpathDispatcher : OSCMultiResponder {
 	}
 	removeChild { arg responder;
 		 pathResponders.remove(responder);
-		// if(pathResponders.size ==0 && (nodes.size == 0), { this.remove})
+		 // if(this.isEmpty) { this.remove };
 	}
+	
+	isEmpty { ^(nodes.size + pathResponders.size) == 0 }
 }
 
 OSCpathResponder : OSCresponder {
@@ -78,7 +80,7 @@ OSCpathResponder : OSCresponder {
 		responder = OSCpathDispatcher(addr, cmdName);
 		match = OSCresponder.all.findMatch(responder);
 		match.postln;
-		if(match.isNil, {^responder.add});
+		if(match.isNil, { ^responder.add });
 		if (match.class === OSCresponder,  {
 			match.remove;
 			responder.nodes_([match]);

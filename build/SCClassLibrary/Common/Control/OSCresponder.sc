@@ -69,7 +69,7 @@ OSCMultiResponder : OSCresponder {
 	value { arg time, msg;
 		nodes.do({ arg node; node.action.value(time, this, msg) });
 	}
-	
+	isEmpty { ^nodes.size == 0 }
 	
 }
 
@@ -108,13 +108,11 @@ OSCresponderNode {
 		var resp, alreadyThere;
 		resp = OSCMultiResponder(addr, cmdName);
 		alreadyThere = OSCresponder.all.findMatch(resp);
-		if(alreadyThere.notNil, { 
-			if(alreadyThere.nodes.size == 1, { 
-				alreadyThere.remove 
-			},{
-				alreadyThere.nodes.remove(this);
-			});
-		}); 
+		if(alreadyThere.notNil) 
+		{ 
+			alreadyThere.nodes.remove(this);
+			if(alreadyThere.isEmpty, { alreadyThere.remove });
+		}; 
 	}
 	
 	value { arg time, msg;
