@@ -162,7 +162,7 @@ SimpleNumber : Number {
 		// exponential to exponential mapping
 		if (this <= inMin, { ^outMin });
 		if (this >= inMax, { ^outMax });
-		^pow(outMax/outMin, log(this/inMin)) / (log(inMax/inMin)) * outMin;
+		^pow(outMax/outMin, log(this/inMin) / log(inMax/inMin)) * outMin;
 	}
 
 	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax;
