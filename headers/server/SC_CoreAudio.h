@@ -193,7 +193,7 @@ public:
 #endif // SC_AUDIO_API_COREAUDIO
 
 #if SC_AUDIO_API == SC_AUDIO_API_JACK
-	void JackRun(int64 oscTime);
+	void JackRun();
 	void JackBufferSizeChanged(int numSamples);
 	void JackSampleRateChanged(double sampleRate);
 #endif // SC_AUDIO_API_JACK

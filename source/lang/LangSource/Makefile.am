@@ -8,17 +8,23 @@
 CLEANFILES		= lang_tab.tmp.cpp
 MAINTAINERCLEANFILES	= Makefile.in
 
-AM_CXXFLAGS		= -DSC_LIBRARY_DIR=\"$(SC_LIBRARY_DIR)\" \
-			-I$(top_srcdir)/headers/common \
+INCLUDES		= -I$(top_srcdir)/headers/common \
 			-I$(top_srcdir)/headers/plugin_interface \
 			-I$(top_srcdir)/headers/lang -I$(top_srcdir)/headers/server \
-			-I$(srcdir)/erase-compiler @SNDFILE_CFLAGS@
-lib_LTLIBRARIES		= libsclang.la
-libsclang_la_LDFLAGS	= -version-info @SC_LANG_SHARED_VERSION_INFO@
+			-I$(srcdir)/erase-compiler
+AM_CPPFLAGS		= $(SC_CPPFLAGS) -DSC_LIBRARY_DIR=\"$(SC_LIBRARY_DIR)\" 
+AM_CFLAGS		= $(SC_CFLAGS) $(SNDFILE_CFLAGS)
+AM_CXXFLAGS		= $(AM_CFLAGS)
+
+#lib_LTLIBRARIES		= libsclang.la
+noinst_LTLIBRARIES	= libsclang.la
+libsclang_la_LDFLAGS	= -version-info $(SC_LANG_SHARED_VERSION_INFO)
 libsclang_la_LIBADD	= $(top_builddir)/source/common/libcommon.la \
 			$(top_builddir)/source/lang/LangPrimSource/liblangprim.la \
-			@SNDFILE_LIBS@ -lm -lpthread
-libsclang_la_SOURCES =			\
+			-lm -lpthread \
+			$(SNDFILE_LIBS) $(DMALLOC_LIBS)
+
+libsclang_la_SOURCES	=		\
 	AdvancingAllocPool.cpp		\
 	ByteCodeArray.cpp		\
 	DumpParseNode.cpp		\
@@ -41,15 +47,18 @@ libsclang_la_SOURCES =			\
 	SC_ComPort.cpp			\
 	SC_HID.cpp			\
 	SC_CoreMIDI.cpp			\
+	SC_TerminalClient.cpp		\
 	Samp.cpp			\
 	SimpleStack.cpp			\
 	VMGlobals.cpp			\
 	alloca.cpp			\
 	dumpByteCodes.cpp		\
-	lang_tab.tmp.cpp
+	lang_tab.tmp.cpp		\
+	libraryConfig.cpp
 
-# those are in libcommon.a
-# SC_AllocPool.cpp
+bin_PROGRAMS		= sclang
+sclang_LDADD		= libsclang.la $(top_srcdir)/source/server/libscsynth.la
+sclang_SOURCES		= cmdLineFuncs.cpp
 
 # copy parser source from erase-compiler
 lang_tab.tmp.cpp: $(srcdir)/erase-compiler/lang11d_tab.cpp

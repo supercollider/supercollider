@@ -175,7 +175,7 @@ void vinvert_a(UnaryOpUGen *unit, int inNumSamples)
 	vfloat32 *out = (vfloat32*)OUT(0);
 	vfloat32 *a = (vfloat32*)IN(0);
 	
-	vint32 neg = (vint32)(0x80000000);
+	vint32 neg = (vint32)vinit(0x80000000);
 	
 	int len = inNumSamples << 2;
 	for (int i=0; i<len; i+=16) {
@@ -225,7 +225,7 @@ void vabs_a(UnaryOpUGen *unit, int inNumSamples)
 	vfloat32 *out = (vfloat32*)OUT(0);
 	vfloat32 *a = (vfloat32*)IN(0);
 	
-	vint32 mask = (vint32)(0x7fffffff);
+	vint32 mask = (vint32)vinit(0x7fffffff);
 	
 	int len = inNumSamples << 2;
 	for (int i=0; i<len; i+=16) {
@@ -635,7 +635,7 @@ void vdistort_a(UnaryOpUGen *unit, int inNumSamples)
 	vfloat32 *a = (vfloat32*)IN(0);
 	define_vzero;
 	define_vones;
-	vint32 mask = (vint32)(0x7fffffff);
+	vint32 mask = (vint32)vinit(0x7fffffff);
 	
 	int len = inNumSamples << 2;
 	for (int i=0; i<len; i+=16) {

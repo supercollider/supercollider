@@ -21,7 +21,9 @@
 
 #include "AdvancingAllocPool.h"
 #include "SC_AllocPool.h"
-#define NDEBUG
+#ifndef NDEBUG
+# define NDEBUG
+#endif
 #include <assert.h>
 
 

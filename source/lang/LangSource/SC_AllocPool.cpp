@@ -23,7 +23,9 @@
 #include <stdexcept>
 #include "SC_AllocPool.h"
 #include "SC_BoundsMacros.h"
-#define NDEBUG
+#ifndef NDEBUG
+# define NDEBUG
+#endif
 #include <assert.h>
 
 /* 

@@ -1283,11 +1283,11 @@ void vSinOsc_next_ikk(SinOsc *unit, int inNumSamples)
 
 	vint32 vphase = vload(phase, phase+phaseinc, phase+2*phaseinc, phase+3*phaseinc);
 	vint32 vphaseinc = vload(phaseinc << 2);
-	vint32 v3F800000 = (vint32)(0x3F800000);
-	vint32 v007FFF80 = (vint32)(0x007FFF80);
+	vint32 v3F800000 = (vint32)vinit(0x3F800000);
+	vint32 v007FFF80 = (vint32)vinit(0x007FFF80);
 	vint32 vlomask = vload(lomask);
-	vuint32 vxlobits1 = (vuint32)(xlobits1);
-	vuint32 v7 = (vuint32)(7);
+	vuint32 vxlobits1 = (vuint32)vinit(xlobits1);
+	vuint32 v7 = (vuint32)vinit(7);
 	
 	vint32 vtable0 = vload((int32)table0); // assuming 32 bit pointers
 	vint32 vtable1 = vload((int32)table1); // assuming 32 bit pointers

@@ -100,8 +100,6 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-
 int prFileClose(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
@@ -114,6 +112,19 @@ int prFileClose(struct VMGlobals *g, int numArgsPushed)
 	if (file == NULL) return errNone;
 	SetPtr(&pfile->fileptr, NULL);
 	if (fclose(file)) return errFailed;
+	return errNone;
+}
+
+int prFileFlush(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a;
+	PyrFile *pfile;
+	FILE *file;
+
+	a = g->sp;
+	pfile = (PyrFile*)a->uo;
+	file = (FILE*)pfile->fileptr.ui;
+	if (file != NULL) fflush(file);
 	return errNone;
 }
 
@@ -997,8 +1008,9 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_PipeClose", prPipeClose, 1, 0);	
 	
 	definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);	
-	definePrimitive(base, index++, "_FileOpen", prFileOpen, 3, 0);	
+	definePrimitive(base, index++, "_FileOpen", prFileOpen, 3, 0);
 	definePrimitive(base, index++, "_FileClose", prFileClose, 1, 0);	
+	definePrimitive(base, index++, "_FileFlush", prFileFlush, 1, 0);	
 	definePrimitive(base, index++, "_FileSeek", prFileSeek, 3, 0);	
 	definePrimitive(base, index++, "_FilePos", prFilePos, 1, 0);	
 	definePrimitive(base, index++, "_FileLength", prFileLength, 1, 0);	

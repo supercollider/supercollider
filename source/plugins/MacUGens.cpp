@@ -19,14 +19,14 @@
 */
 
 
-#include "SC_PlugIn.h"
-
 #if SC_DARWIN
 #include <Carbon/Carbon.h>
 #else
 #include <time.h>
 #include <X11/Intrinsic.h>
 #endif
+
+#include "SC_PlugIn.h"
 
 static InterfaceTable *ft;
 

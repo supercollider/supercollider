@@ -5,7 +5,25 @@
 ## CVS:         $Id$
 ## ====================================================================
 
-MAINTAINERCLEANFILES = Makefile.in
+MAINTAINERCLEANFILES =	\
+	Makefile.in	\
+	aclocal.m4	\
+	autom4te.cache	\
+	config.cache	\
+	config.guess	\
+	config.h.in	\
+	config.h.in~	\
+	config.log      \
+	config.status   \
+	config.sub	\
+	configure	\
+	depcomp         \
+	install-sh	\
+	ltmain.sh	\
+	missing		\
+	mkinstalldirs	\
+        stamp-h         \
+	stamp-h.in
 
 if HAVE_X11
 MACUGENS_LA = MacUGens.la
@@ -13,11 +31,14 @@ else
 MACUGENS_LA =
 endif
 
-AM_CXXFLAGS		= -I$(top_srcdir)/headers/common \
-			-I$(top_srcdir)/headers/plugin_interface \
-			-I$(top_srcdir)/headers/server
+INCLUDE_DIR		= $(top_srcdir)/../../headers
+INCLUDES		= -I$(INCLUDE_DIR)/common -I$(INCLUDE_DIR)/plugin_interface -I$(INCLUDE_DIR)/server
+AM_CPPFLAGS		= $(SC_CPPFLAGS)
+AM_CFLAGS		= $(SC_CFLAGS)
+AM_CXXFLAGS		= $(AM_CFLAGS)
+
 plugindir		= $(SC_PLUGIN_DIR)
-plugin_LTLIBRARIES = 		\
+plugin_LTLIBRARIES	= 	\
 	BinaryOpUGens.la	\
 	DelayUGens.la		\
 	DiskIO_UGens.la		\

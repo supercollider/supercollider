@@ -297,6 +297,10 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 	return inList;
 }
 
+#ifdef SC_LINUX
+# include <sys/stat.h>
+# include <sys/types.h>
+#endif // SC_LINUX
 
 GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
 {
@@ -317,18 +321,33 @@ GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
 		strcpy(entrypathname, dirname);
 		strcat(entrypathname, "/");
 		strcat(entrypathname, (char*)de->d_name);
-#ifndef SC_WIN32 /*no d_type in POSIX dirent, so no directory recursion */
-		if (de->d_type == DT_DIR) {
+
+        bool isDirectory = false;
+
+#ifdef SC_DARWIN
+        isDirectory = (de->d_type == DT_DIR);
+#endif // SC_DARWIN
+#ifdef SC_LINUX
+        {
+            struct stat stat_buf;
+            isDirectory = 
+                (stat(entrypathname, &stat_buf) == 0)
+                && S_ISDIR(stat_buf.st_mode);
+        }
+#endif // SC_LINUX
+#ifdef SC_WIN32
+        // no d_type in POSIX dirent, so no directory recursion
+        isDirectory = false;
+#endif // SC_WIN32
+
+		if (isDirectory) {
 			inList = GraphDef_LoadDir(inWorld, entrypathname, inList);
 		} else {
-#endif
 			int dnamelen = strlen(de->d_name);
 			if (strncmp(de->d_name+dnamelen-9, ".scsyndef", 9)==0) {
 				inList = GraphDef_Load(inWorld, entrypathname, inList);
 			}
-#ifndef SC_WIN32
 		}
-#endif
 		free(entrypathname);
 	}
 	

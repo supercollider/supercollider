@@ -119,7 +119,9 @@ meanings of the indexing macros:
 
 #include "SC_BoundsMacros.h"
 
-#define NDEBUG
+#ifndef NDEBUG
+# define NDEBUG
+#endif
 #include <assert.h>
 
 inline void Clear(int numSamples, float *out)

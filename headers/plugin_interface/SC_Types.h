@@ -57,14 +57,5 @@ typedef union {
 const unsigned int kSCNameLen = 8;
 const unsigned int kSCNameByteLen = kSCNameLen * sizeof(int32);
 
-#if __VEC__
-
-typedef vector signed int vint32;
-typedef vector unsigned int vuint32;
-typedef vector float vfloat32;
-
-#endif
-
-
 #endif
 

@@ -7,5 +7,5 @@ Name: libscsynth
 Version: @VERSION@
 Description: libscsynth, SuperCollider synthesis server library
 Requires: jack >= 0.40.1, sndfile >= 1.0.0
-Libs: -L${libdir} -lscsynth -lm -lpthread -ldl
-Cflags: -I${includedir}
+dnl Libs: -L${libdir} -lscsynth -lm -lpthread -ldl
+dnl Cflags: -I${includedir}

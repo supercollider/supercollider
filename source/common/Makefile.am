@@ -7,14 +7,19 @@
 
 MAINTAINERCLEANFILES	= Makefile.in
 
-AM_CXXFLAGS		= -I$(top_srcdir)/headers/common \
+INCLUDES		= -I$(top_srcdir)/headers/common \
 			-I$(top_srcdir)/headers/plugin_interface \
 			-I$(top_srcdir)/headers/server
+AM_CPPFLAGS		= $(SC_CPPFLAGS)
+AM_CFLAGS		= $(SC_CFLAGS)
+AM_CXXFLAGS		= $(AM_CFLAGS)
+
 noinst_LTLIBRARIES	= libcommon.la
-libcommon_la_SOURCES = 	\
-SC_AllocPool.cpp	\
-SC_Sem.cpp		\
-SC_StringParser.cpp	\
-scsynthsend.cpp
+
+libcommon_la_SOURCES	= 	\
+	SC_AllocPool.cpp	\
+	SC_Sem.cpp		\
+	SC_StringParser.cpp	\
+	scsynthsend.cpp
 
 ## EOF ================================================================

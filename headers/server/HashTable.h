@@ -353,5 +353,4 @@ struct Malloc
 	void* Alloc(size_t size) { return malloc(size); }
 };
 
-
 #endif

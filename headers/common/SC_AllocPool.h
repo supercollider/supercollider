@@ -123,6 +123,7 @@ private:
 };
 
 const size_t kMinAllocSize = 2 * kAlign;
+// FIXME: add kAlign to overhead? <sk>
 const size_t kAreaOverhead = sizeof(AllocAreaHdr) + 2 * sizeof(AllocChunk);
 
 typedef void* (*NewAreaFunc)(size_t size);

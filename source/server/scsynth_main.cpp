@@ -66,7 +66,7 @@ void Usage()
 		"   -m <real-time-memory-size>          (default %d)\n"
 		"   -w <number-of-wire-buffers>         (default %d)\n"
 		"   -r <number-of-random-seeds>         (default %d)\n"
-		"   -l <max-logins>                  (default %d)\n"
+		"   -l <max-logins>                     (default %d)\n"
 		"          maximum number of named return addresses stored\n"
 		"          also maximum number of tcp connections accepted\n"
 		"   -p <session-password>\n"

@@ -31,6 +31,11 @@ UnixFILE : IOStream {
 		});
 	}
 
+	flush {
+		_FileFlush
+		^this.primitiveFailed
+	}
+
 	write { arg item; 
 		/* writes any of the following items:
 			a double float,

@@ -7,8 +7,9 @@
 
 MAINTAINERCLEANFILES		= Makefile.in
 
-libsclangincludedir		= $(pkgincludedir)
-libsclanginclude_HEADERS =	\
+#libsclangincludedir		= $(pkgincludedir)
+#libsclanginclude_HEADERS =	\
+noinst_HEADERS =		\
 	AdvancingAllocPool.h	\
 	AllocPools.h		\
 	bullet.h		\
@@ -55,10 +56,12 @@ libsclanginclude_HEADERS =	\
 	SC_LogFile.h		\
 	SC_Msg.h		\
 	SC_SynthImpl.h		\
+	SC_TerminalClient.h	\
 	SC_UnorderedList.h	\
 	SFHeaders.h		\
 	SimpleStack.h		\
-	VMGlobals.h
+	VMGlobals.h		\
+	libraryConfig.h
 
 noinst_HEADERS =		\
 	SC_ComPort.h

@@ -29,10 +29,10 @@ count leading zeroes function and those that can be derived from it
 
 #include "SC_Types.h"
 
+#ifdef __MWERKS__
+
 #define __PPC__ 1
 #define __X86__ 0
-
-#ifdef __MWERKS__
 
 // powerpc native count leading zeroes instruction:
 #define CLZ(x)  ((int)__cntlzw((unsigned int)x))
@@ -57,7 +57,7 @@ end:
 #else
 
 static __inline__ int CLZ(int arg) {
-#if defined(__ppc__)
+#if defined(__ppc__) || defined(__PPC__)
          __asm__ volatile("cntlzw %0, %1" : "=r" (arg) : "r" (arg));
 #elif defined(__i386__)
          __asm__ volatile("bsrl %0, %0\n\txorl $31,%0\n" : "=r" (arg) : 

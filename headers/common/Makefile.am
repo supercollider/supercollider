@@ -1,4 +1,5 @@
 ## ====================================================================
+## vim:		sw=8 tabstop=8:
 ## file:	Makefile.am
 ## contents:	automake template
 ## author:      stefan kersten <steve@k-hornz.de>
@@ -8,7 +9,7 @@
 MAINTAINERCLEANFILES		= Makefile.in
 
 libcommonincludedir		= $(pkgincludedir)
-libcommoninclude_HEADERS =	\
+libcommoninclude_HEADERS	= \
 	dfftlib.h		\
 	dlfcn.h			\
 	fftlib.h		\

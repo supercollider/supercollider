@@ -12,6 +12,7 @@ AC_CANONICAL_SYSTEM
 
 # initialize automake
 AM_INIT_AUTOMAKE(SuperCollider,3.0)
+# config.h is not currently used
 AM_CONFIG_HEADER(config.h)
 
 # variables
@@ -37,6 +38,7 @@ SC_LIBRARY_DIR='$(pkglibdir)/library'
 AC_SUBST(SC_LIBRARY_DIR)
 
 # check for programs
+AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_AWK
 AC_PROG_INSTALL
@@ -47,25 +49,30 @@ AM_PROG_LIBTOOL
 
 # additional configure flags
 AC_ARG_ENABLE(debug,
-AC_HELP_STRING([--enable-debug],[generate debugging symbols]))
+AC_HELP_STRING([--enable-debug],[enable debugging features]))
 
-AC_ARG_ENABLE(optimize,
-AC_HELP_STRING([--enable-optimize],[enable compiler optimizations]))
+# We need a multithreaded dmalloc for C++, so AM_WITH_DMALLOC is not
+# appropriate.
+AC_ARG_WITH(dmalloc,
+AC_HELP_STRING([--with-dmalloc],[use dmalloc (http://www.dmalloc.com) when debugging is enabled]))
+
+dnl NOTE: config.h is not included by any file, so we can as well omit the
+dnl checks.
 
 # check for header files
-AC_CHECK_HEADERS([errno.h strings.h unistd.h endian.h machine/endian.h])
-AC_HEADER_STDC
+dnl AC_CHECK_HEADERS([errno.h strings.h unistd.h endian.h machine/endian.h])
+dnl AC_HEADER_STDC
 
 # check for typedefs, structs, and compiler pecularities
-AC_C_CONST
-AC_C_INLINE
-AC_TYPE_SIZE_T
-AC_HEADER_TIME
+dnl AC_C_CONST
+dnl AC_C_INLINE
+dnl AC_TYPE_SIZE_T
+dnl AC_HEADER_TIME
 
 # check for library functions
-AC_FUNC_MALLOC
-AC_FUNC_MMAP
-AC_CHECK_FUNCS([bzero ftruncate gettimeofday memmove memset socket strcasecmp strchr strerror ntohs ntohl htons htonl])
+dnl AC_FUNC_MALLOC
+dnl AC_FUNC_MMAP
+dnl AC_CHECK_FUNCS([bzero ftruncate gettimeofday memmove memset socket strcasecmp strchr strerror ntohs ntohl htons htonl])
 
 # check for packages
 pkg_modules="sndfile >= 1.0.0"
@@ -89,39 +96,35 @@ if test "x$lib_dl" = "x" ; then
     AC_MSG_ERROR([libdl (dynamic link support) required])
 fi
 
-# X11 support is optional
-AC_PATH_XTRA
-if test "$with_x" = no || test "$no_x" = yes; then
-   HAVE_X11=false
-else
-   HAVE_X11=true
-   LIBS="$X_PRE_LIBS $X_LIBS $X_EXTRA_LIBS $LIBS"
-
-   AC_CHECK_HEADERS(X11/Intrinsic.h)
-   AC_CHECK_LIB(X11, XQueryPointer)
-fi
-AM_CONDITIONAL(HAVE_X11, $HAVE_X11)
-
-dnl AC_MSG_NOTICE([OS is $target_os])
-dnl case "$target_os" in
-dnl     linux* )
-dnl 	;;
-dnl esac # $target_os
-
 # assemble compiler flags
-CXXFLAGS="-Wall -DSC_LINUX -D_REENTRANT"
+SC_CPPFLAGS="-Wall -DSC_LINUX -D_REENTRANT"
 
-# add debug/optimization flags
+# add default (platform dependent) flags
+case "$target_cpu" in
+    powerpc*|ppc*)
+	SC_CFLAGS="-fsigned-char"
+	SC_CFLAGS_OPT="-maltivec"
+	;;
+esac
+
 if test "x$enable_debug" = "xyes" ; then
+    # add debugging flags
     AC_MSG_NOTICE([enabling debugging symbols])
-    CXXFLAGS="$CXXFLAGS -g"
-else
-    AC_MSG_NOTICE([enabling compiler optimizations])
-    CXXFLAGS="$CXXFLAGS -DNDEBUG"
-    if test "x$enable_optimize" = "xyes" ; then
-	CXXFLAGS="$CXXFLAGS -O6 -fomit-frame-pointer -fstrength-reduce -funroll-loops -fmove-all-movables -finline -finline-functions"
+    SC_CFLAGS="-O0 -g $SC_CFLAGS"
+    if test "x$with_dmalloc" = "xyes"; then
+	# add dmalloc support
+	AC_MSG_NOTICE([compiling with dmalloc support])
+	SC_CPPFLAGS="$SC_CPPFLAGS -DUSE_DMALLOC"
+	DMALLOC_LIBS="-ldmallocthcxx"
     fi
+else
+    SC_CPPFLAGS="$SC_CPPFLAGS -DNDEBUG"
+    SC_CFLAGS="$SC_CFLAGS $SC_CFLAGS_OPT"
 fi
+
+AC_SUBST(SC_CPPFLAGS)
+AC_SUBST(SC_CFLAGS)
+AC_SUBST(DMALLOC_LIBS)
 
 # generate output files
 AC_OUTPUT(
@@ -133,14 +136,13 @@ headers/server/Makefile
 headers/lang/Makefile
 source/Makefile
 source/common/Makefile
-source/plugins/Makefile
 source/server/Makefile
 source/lang/Makefile
 source/lang/LangPrimSource/Makefile
 source/lang/LangSource/Makefile
 linux/Makefile
 linux/libscsynth.pc
-linux/libsclang.pc
+dnl linux/libsclang.pc
 )
 
 dnl EOF ===============================================================

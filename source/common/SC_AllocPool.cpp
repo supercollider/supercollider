@@ -18,8 +18,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
-#define NDEBUG
+#ifndef NDEBUG
+# define NDEBUG
+#endif
 #include <string.h>
 #include <stdexcept>
 #include "SC_AllocPool.h"
@@ -140,7 +141,7 @@ void AllocPool::FreeAllInternal()
 		do {
 			AllocAreaPtr nextarea = area->mNext;
 			size_t size = area->mSize;
-			AllocChunkPtr chunk = &area->mChunk;
+		AllocChunkPtr chunk = &area->mChunk;
 			chunk->SetSizeFree(size);
 			chunk->SetNeighborsInUse(size);	    
 			LinkFree(chunk);
@@ -199,13 +200,16 @@ void AllocPool::Free(void *inPtr)
 AllocAreaPtr AllocPool::NewArea(size_t inAreaSize)
 {
 	void *ptr = (AllocAreaPtr)(mAllocArea)(inAreaSize + kAreaOverhead);
-	
+
 	if (ptr == NULL) { 
 		throw std::runtime_error("Could not allocate new area"); 
 	}
-	AllocAreaPtr area = (AllocAreaPtr)((unsigned long)ptr & ~kAlignMask);
+	// AllocAreaPtr area = (AllocAreaPtr)((unsigned long)ptr & ~kAlignMask);
+	AllocAreaPtr area = (AllocAreaPtr)(((unsigned long)ptr + kAlignMask) & ~kAlignMask);
+	assert((area >= ptr) && (((unsigned long)area & kAlignMask) == area));
+
 	area->mUnalignedPointerToThis = ptr;
-	
+
 	/* link in area */
 	if (mAreas) {
 		area->mNext = mAreas;
@@ -217,7 +221,7 @@ AllocAreaPtr AllocPool::NewArea(size_t inAreaSize)
 		area->mPrev = area;
 	}
 	mAreas = area;
-	
+
 	/* set area size */
 	area->mSize = inAreaSize;
 	area->mChunk.BeEmpty();

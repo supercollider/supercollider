@@ -6,6 +6,9 @@
 # CVS:		$Id$
 # =====================================================================
 
+top_dir=$PWD
+bootstrap=`basename $0`
+
 set -x
 
 aclocal \
@@ -13,5 +16,9 @@ aclocal \
 && autoheader \
 && automake --add-missing --foreign \
 && autoconf
+
+if [ -d source/plugins ]; then
+    cd source/plugins && $top_dir/linux/$bootstrap
+fi
 
 # EOF

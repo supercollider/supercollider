@@ -20,7 +20,23 @@
 
 #ifndef _SC_Altivec_
 #define _SC_Altivec_
+
+#if defined(SC_LINUX) && defined(__ALTIVEC__)
+# include <altivec.h>
+#endif
+
 #if __VEC__
+
+typedef vector signed int vint32;
+typedef vector unsigned int vuint32;
+typedef vector float vfloat32;
+
+// Since gcc 3.3 vector initializers are surrounded by brackets. <sk>
+#if defined(__GNUC__) && (__GNUC__ >= 3) && (__GNUC_MINOR__ >= 3)
+# define vinit(x)	{ x, x, x, x }
+#else
+# define vinit(x)	( x )
+#endif
 
 //#define vload(x) (*vtempptr = (x), vec_splat(vtemp,0))
 #define define_vtemp vfloat32 vtemp; float *vtempptr = (float*)&vtemp;

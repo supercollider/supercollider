@@ -70,7 +70,7 @@ ServerOptions
 }
 
 Server : Model {
-	classvar <>local, <>internal, <>named, <>set;
+	classvar <>local, <>internal, <>named, <>set, <>program;
 	
 	var <name, <addr, <clientID=0;
 	var <isLocal, <inProcess;
@@ -127,6 +127,7 @@ Server : Model {
 		set = Set.new;
 		internal = Server.new(\internal, NetAddr.new);
 		local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
+		program = "./scsynth";
 	}
 	sendMsg { arg ... args;
 		addr.sendBundle(nil, args);
@@ -282,7 +283,7 @@ Server : Model {
 			//alive = true;
 			//this.serverRunning = true;
 		},{
-			unixCmd("./scsynth" ++ options.asOptionsString(addr.port));
+			unixCmd(program ++ options.asOptionsString(addr.port));
 			("booting " ++ addr.port.asString).inform;
 		});
 	}

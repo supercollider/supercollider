@@ -28,28 +28,46 @@
  */
 
 #ifdef SC_DARWIN
+# include <Carbon/Carbon.h>
+#endif
 
-#include <Carbon/Carbon.h>
+#ifdef SC_LINUX
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <unistd.h>
+#endif
 
 bool HasAltivec()
 {
-#if __VEC__
+	bool hasAltivec = false;
+
+#if defined(SC_DARWIN) && __VEC__
 	long response;
 	Gestalt(gestaltPowerPCProcessorFeatures, &response);
 	//printf("HasAltivec %08X %d\n", response, response & (1<<gestaltPowerPCHasVectorInstructions));
-	return response & (1<<gestaltPowerPCHasVectorInstructions);
-#else
-	//printf("HasAltivec false\n");
-	return false;
-#endif
-}
-
-#else // !SC_DARWIN
-
-bool HasAltivec()
-{
-	// sk: how to do this on ppc linux?
-	return false;
-}
-
+	hasAltivec = response & (1<<gestaltPowerPCHasVectorInstructions);
 #endif // SC_DARWIN
+
+#if defined(SC_LINUX) && defined(__ALTIVEC__)
+	if (getenv("SC_USE_ALTIVEC")) {
+		const char* cpuInfoFile = "/proc/cpuinfo";
+		const char* cpuInfoAltivec = "altivec supported";
+		
+		FILE* fd = fopen(cpuInfoFile, "r");
+		if (fd) {
+			char* buffer;
+			int err = fscanf(fd, "cpu\t: %a[^\n]", &buffer);
+			fclose(fd);
+			if (err == 1) {
+				hasAltivec = strstr(buffer, cpuInfoAltivec) != 0;
+				free(buffer);
+			}
+		}
+	}
+
+	printf("HasAltivec: %s\n", hasAltivec ? "yes" : "no");
+#endif // SC_LINUX
+
+	return hasAltivec;
+}

@@ -61,9 +61,13 @@ bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 // calloc lazily zeroes memory on first touch. This is good for most purposes, but bad for realtime audio.
 void *zalloc(size_t n, size_t size)
 {
-	void* ptr = malloc(n * size);
-	memset(ptr, 0, size);
-	return ptr;
+	size *= n;
+	if (size) {
+		void* ptr = malloc(size);
+		memset(ptr, 0, size);
+		return ptr;
+	}
+	return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

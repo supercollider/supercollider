@@ -7,12 +7,16 @@
 
 MAINTAINERCLEANFILES	= Makefile.in
 
-AM_CXXFLAGS		= -I$(top_srcdir)/headers/common \
+INCLUDES		= -I$(top_srcdir)/headers/common \
 			-I$(top_srcdir)/headers/plugin_interface \
-			-I$(top_srcdir)/headers/lang -I$(top_srcdir)/headers/server \
-			@SNDFILE_CFLAGS@
+			-I$(top_srcdir)/headers/lang -I$(top_srcdir)/headers/server
+AM_CPPFLAGS		= $(SC_CPPFLAGS)
+AM_CFLAGS		= $(SC_CFLAGS) $(SNDFILE_CFLAGS) 
+AM_CXXFLAGS		= $(AM_CFLAGS)
+
 noinst_LTLIBRARIES	= liblangprim.la
-liblangprim_la_SOURCES =		\
+
+liblangprim_la_SOURCES	=		\
 	OSCData.cpp			\
 	PyrArchiver.cpp			\
 	PyrArrayPrimitives.cpp		\

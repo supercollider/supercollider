@@ -263,7 +263,8 @@ Object {
 	as { arg aSimilarClass; ^aSimilarClass.newFrom(this) }
 	dereference { ^this } // see Ref::dereference
 	asRef { ^Ref.new(this) }
-	asArray { ^Array.with(this) }
+	// asArray { ^Array.with(this) }
+	asArray { ^this.asCollection.asArray }
 	
 	// looping
 	while { arg body;

@@ -25,6 +25,8 @@
 #include <new.h>
 #include <stdlib.h>
 #include <sys/param.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "lang11d_tab.h"
 #include "SCBase.h"
 #include "PyrObject.h"
@@ -62,7 +64,12 @@ int gNumCompiledFiles;
 thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 */
 
-#undef ENABLE_LIBRARY_CONFIGURATOR
+#ifdef SC_LINUX
+# define ENABLE_LIBRARY_CONFIGURATOR 1
+#else
+# undef ENABLE_LIBRARY_CONFIGURATOR
+#endif // SC_LINUX
+
 LibraryConfig *gLibraryConfig = 0;
 
 PyrSymbol *gCompilingFileSym = 0;
@@ -1741,11 +1748,26 @@ bool passOne_ProcessDir(char *dirname, int level)
 		strcat(entrypathname, "/");
 		strcat(entrypathname, (char*)de->d_name);
 
-		if (de->d_type == DT_DIR) {
-			success = passOne_ProcessDir(entrypathname, level + 1);
-		} else {
-			success = passOne_ProcessOneFile(entrypathname, level + 1);
+        bool isDirectory = false;
+
+#ifdef SC_DARWIN
+		isDirectory = (de->d_type == DT_DIR);
+#endif // SC_DARWIN
+#ifdef SC_LINUX
+		{
+			struct stat stat_buf;
+			isDirectory =
+				(stat(entrypathname, &stat_buf) == 0)
+				&& S_ISDIR(stat_buf.st_mode);
 		}
+#endif // SC_LINUX
+
+        if (isDirectory) {
+            success = passOne_ProcessDir(entrypathname, level + 1);
+        } else {
+            success = passOne_ProcessOneFile(entrypathname, level + 1);
+        }
+
 		free(entrypathname);
 		if (!success) break;
 	}
@@ -1765,17 +1787,18 @@ bool passOne()
 	// It should choose a directory to scan recursively and call
 	// passOne_ProcessOneFile(char *filename) for each file
 
-	getcwd(gCompileDir, MAXPATHLEN-32);
-	strcat(gCompileDir, "/SCClassLibrary");
+	if (!gLibraryConfig) {
+		getcwd(gCompileDir, MAXPATHLEN-32);
+		strcat(gCompileDir, "/SCClassLibrary");
     
-	success = passOne_ProcessDir(gCompileDir, 0);
-	if (!success) return false;
-
+		success = passOne_ProcessDir(gCompileDir, 0);
+		if (!success) return false;
+	} else {
 #ifdef ENABLE_LIBRARY_CONFIGURATOR
- 	if (gLibraryConfig)
- 	  if (!gLibraryConfig->forEachIncludedDirectory(passOne_ProcessDir))
- 	    return false;
-#endif
+		success = gLibraryConfig->forEachIncludedDirectory(passOne_ProcessDir);
+		if (!success) return false;
+#endif // ENABLE_LIBRARY_CONFIGURATOR
+	}
 
 	finiPassOne();
 	return true;
@@ -1902,15 +1925,21 @@ void aboutToCompileLibrary()
 void closeAllGUIScreens();
 void TempoClock_stopAll(void);
 
+void shutdownLibrary();
+void shutdownLibrary()
+{
+	closeAllGUIScreens();
+	aboutToCompileLibrary();
+	schedStop();
+	TempoClock_stopAll();	
+}
+
 bool compileLibrary();
 bool compileLibrary() 
 {
 	//printf("->compileLibrary\n");
-	closeAllGUIScreens();
-	aboutToCompileLibrary();
-	schedStop();
-	TempoClock_stopAll();
-	
+	shutdownLibrary();
+
 	pthread_mutex_lock (&gLangMutex);
 	gNumCompiledFiles = 0;
 	compiledOK = false;

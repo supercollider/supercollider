@@ -27,6 +27,8 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 
 #ifndef _PYRSLOT_H_
 #define _PYRSLOT_H_
+
+#include "SC_Endian.h"
 #include "PyrSymbol.h"
 
 /* 
@@ -70,7 +72,11 @@ struct RGBColor8 {
 typedef union pyrslot {
 	double f;
 	struct {
-		int tag;	
+// #if BYTE_ORDER == BIG_ENDIAN
+// FIXME: need to swap on intel?! <sk>
+#if 1
+		int tag;
+#endif
 		union {
 			int c; /* char */
 			int i;
@@ -94,6 +100,10 @@ typedef union pyrslot {
 			struct PyrInterpreter *oi;
 			struct PyrPlug *plug;
 		} u;
+// #if BYTE_ORDER == LITTLE_ENDIAN
+#if 0
+		int tag;
+#endif
 	} s;
 } PyrSlot;
 

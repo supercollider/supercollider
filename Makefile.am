@@ -12,6 +12,7 @@ MAINTAINERCLEANFILES =	\
 	config.cache	\
 	config.guess	\
 	config.h.in	\
+	config.h.in~	\
         config.log      \
         config.status   \
 	config.sub	\

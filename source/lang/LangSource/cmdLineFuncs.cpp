@@ -18,6 +18,24 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifdef SC_DARWIN
+# define USE_SC_TERMINAL_CLIENT 0
+#else
+# define USE_SC_TERMINAL_CLIENT 1
+#endif
+
+#if USE_SC_TERMINAL_CLIENT
+
+#include "SC_TerminalClient.h"
+
+int main(int argc, char** argv)
+{
+	SC_TerminalClient app;
+	return app.run(argc, argv);
+}
+
+#else // !USE_SC_TERMINAL_CLIENT
+
 #include "PyrSymbol.h"
 #include "PyrObject.h"
 #include "InitAlloc.h"
@@ -151,5 +169,4 @@ int main()
 	return 0;
 }
 
-
-
+#endif // USE_SC_TERMINAL_CLIENT

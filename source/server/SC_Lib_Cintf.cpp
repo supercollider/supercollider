@@ -144,6 +144,11 @@ bool PlugIn_Load(const char *filename)
 #endif
 }
 
+#ifdef SC_LINUX
+# include <sys/stat.h>
+# include <sys/types.h>
+#endif // SC_LINUX
+
 bool PlugIn_LoadDir(char *dirname);
 bool PlugIn_LoadDir(char *dirname)
 {
@@ -166,21 +171,37 @@ bool PlugIn_LoadDir(char *dirname)
 		strcat(entrypathname, "/");
 		strcat(entrypathname, (char*)de->d_name);
 
-#ifndef SC_WIN32 /*no d_type in POSIX dirent, so no directory recursion */
-		if (de->d_type == DT_DIR) {
+		bool isDirectory = false;
+
+#ifdef SC_DARWIN
+		isDirectory = (de->d_type == DT_DIR);
+#endif // SC_DARWIN
+#ifdef SC_LINUX
+		{
+			struct stat stat_buf;
+			isDirectory =
+				(stat(entrypathname, &stat_buf) == 0)
+				&& S_ISDIR(stat_buf.st_mode);
+		}
+#endif // SC_LINUX
+#ifdef SC_WIN32
+		// no d_type in POSIX dirent, so no directory recursion
+		isDirectory = false;
+#endif SC_WIN32
+
+		if (isDirectory) {
 			success = PlugIn_LoadDir(entrypathname);
 		} else {
-#endif
 			int dnamelen = strlen(de->d_name);
 			int extlen = strlen(SC_PLUGIN_EXT);
 			char *extptr = de->d_name+dnamelen-extlen;
 			if (strncmp(extptr, SC_PLUGIN_EXT, extlen)==0) {
 				success = PlugIn_Load(entrypathname);
 			}
-#ifndef SC_WIN32
 		}
-#endif
+
 		free(entrypathname);
+
 		// sk: process rest of directory if load failed
 		if (!success) continue /* break */;
 	}
