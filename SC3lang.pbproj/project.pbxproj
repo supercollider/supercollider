@@ -2372,6 +2372,7 @@
 		};
 		F5285E0D0316170401CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = OSCData.cpp;
 			refType = 4;
 		};
