@@ -160,18 +160,22 @@ TaskProxy : PatternProxy {
 	classvar <>defaultQuant=1.0;
 	
 		
-	source_ { arg function;
-			pattern = Prout { arg x; 
-				protect { 	// this error handling only helps if error is not in substream
-					function.value(x);
-					nil.alwaysYield; // prevent from calling handler
-				} { 
-					player.removedFromScheduler 
+	source_ { arg obj;
+			pattern = if(obj.isKindOf(Function)) {
+				Prout { arg x;
+					protect { 	// this error handling only helps if error is not in substream
+						obj.value(x);
+						nil.alwaysYield; // prevent from calling handler
+					} { 
+						player.removedFromScheduler 
+					}
 				}
+			}{ 
+				obj 
 			};
 			if(envir.notNil) { pattern = Penvir(envir, pattern, envir[\isolate] ? false) };
 			this.wakeUp;
-			source = function;
+			source = obj;
 	}
 	
 		
