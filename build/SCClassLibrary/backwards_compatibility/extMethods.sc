@@ -21,3 +21,24 @@
 	}
 	
 }
+
++ Synth {
+	
+	*stop {
+		RootNode.new.freeAll;
+	}
+	*isPlaying {
+		//server is running
+		// at least one thing playing
+		RootNode.new.head.deepDo({ arg child;
+			if(child.isPlaying,{ ^true })
+		});
+		^false
+	}
+//	*play {
+//		// play the func
+//	}
+//	play {
+//		//if not already playing, play
+//	}
+}
