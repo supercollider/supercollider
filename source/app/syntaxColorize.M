@@ -327,5 +327,4 @@ error2:
 	
 leave:
     free(text);
-    [textView didChangeText];
 }

@@ -252,6 +252,7 @@ void SyntaxColorize(NSTextView* textView);
 - (void)syntaxColorize: (id)sender
 {
     SyntaxColorize(textView);
+    [textView didChangeText];
 }
 
 - (void) insertText: (char*) text length: (int)length
@@ -382,6 +383,7 @@ void SyntaxColorize(NSTextView* textView);
         [textView didChangeText];
         [textView setSelectedRange: newSelectedRange];
         SyntaxColorize(textView);
+		[textView didChangeText];
     }
 }
 
@@ -430,6 +432,7 @@ void SyntaxColorize(NSTextView* textView);
         [textView didChangeText];
         [textView setSelectedRange: newSelectedRange];
         SyntaxColorize(textView);
+		[textView didChangeText];
     }
     
 }
@@ -493,23 +496,35 @@ extern bool compiledOK;
     } else {
         return [textView writeRTFToFile: path atomically: YES];
     }*/
-
+	
     BOOL success;
-    NSTextStorage *textStorage = [textView textStorage];
 
-    NSRange range = NSMakeRange(0, [textStorage length]);
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-
-    if ([textStorage containsAttachments]) {
-        NSFileWrapper *wrapper = [textStorage RTFDFileWrapperFromRange: range documentAttributes: dict];
-        success = wrapper ? [wrapper writeToFile: path atomically:YES updateFilenames: YES] : NO;
-    } else {
-        NSData *data = [textStorage RTFFromRange: range documentAttributes: dict];
-        success = data ? [data writeToFile: path atomically: YES] : NO;
-    }
-    if (!success) return NO;
-
-    NSFileManager *fmgr = [NSFileManager defaultManager];
+	NSString* extension = [path pathExtension];
+	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"txt"]) {
+		NSString *text = [textView string];
+		success = [text writeToFile: path atomically: YES];
+	} else {
+		NSTextStorage *textStorage = [textView textStorage];
+	
+		NSRange range = NSMakeRange(0, [textStorage length]);
+		NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+		if ([textStorage containsAttachments]) {
+			if ([extension isEqualToString: @""]) {
+				path = [path stringByAppendingPathExtension: @"rtfd"];
+			}
+			NSFileWrapper *wrapper = [textStorage RTFDFileWrapperFromRange: range documentAttributes: dict];
+			success = wrapper ? [wrapper writeToFile: path atomically:YES updateFilenames: YES] : NO;
+		} else {
+			if ([extension isEqualToString: @""]) {
+				path = [path stringByAppendingPathExtension: @"rtf"];
+			}
+			NSData *data = [textStorage RTFFromRange: range documentAttributes: dict];
+			success = data ? [data writeToFile: path atomically: YES] : NO;
+		}
+	}
+	if (!success) return NO;
+    
+	NSFileManager *fmgr = [NSFileManager defaultManager];
 
     {
     NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
@@ -558,8 +573,15 @@ extern bool compiledOK;
     [text beginEditing];	// Bracket with begin/end editing for efficiency
     [[text mutableString] setString:@""];	// Empty the document
     success = [text readFromURL:url options:options documentAttributes: &docAttrs];	// Read!
+
+	NSString* extension = [path pathExtension];
     [text endEditing];
- 
+ 	if ([extension isEqualToString: @"sc"]) {
+		[initTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
+		SyntaxColorize(initTextView);
+		//[textView didChangeText];
+	}
+
     return success;
 }
 
