@@ -22,7 +22,7 @@
 			var bundle;
 			bundle = List.new;
 			this.serverMsg(bundle, target, defName, args, expand);
-			server.sendMsgList(bundle);
+			server.listSendBundle(nil, bundle);
 	}
 	serverMsg { arg bundle, target, defName, args;
 			numChannels.do({ arg i;

@@ -62,7 +62,7 @@ NodeMap {
 		msg = List.new;
 		targetNode = targetNode.asTarget;
 		this.updateMsg(msg, targetNode);
-		targetNode.server.sendMsgList(msg, latency);
+		targetNode.server.listSendBundle(latency, msg);
 	}
 	
 	mapArgs {	

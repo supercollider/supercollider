@@ -73,7 +73,7 @@ NodeProxy : AbstractFunction {
 		nChan.do({ arg i;
 			Synth.newMsg(msg, "proxyOut-linkDefAr", [\i_busOut, outBus+i, \i_busIn, bus.index+i], playGroup, \addToTail);
 		});
-		server.sendMsgList(msg);
+		server.listSendBundle(0, msg);
 		^playGroup
 	}
 	
@@ -215,7 +215,7 @@ NodeProxy : AbstractFunction {
 	schedSendOSC { arg msg, onCompletion;
 					if(clock.notNil, {
 						clock.sched(0, { 
-							server.sendMsgList(msg); 
+							server.listSendBundle(nil, msg); 
 							onCompletion.value(this) 
 						})
 					}, {
