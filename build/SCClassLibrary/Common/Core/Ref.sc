@@ -17,6 +17,9 @@ Ref : AbstractFunction
 	get { ^value }
 	dereference { ^value }
 	asRef { ^this }
+	valueArray { ^value }
+	valueEnvir { ^value }
+	valueArrayEnvir { ^value }
 
 	//behave like a stream
 	next { ^value }
