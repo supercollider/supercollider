@@ -55,6 +55,7 @@ NodeWatcher {
 	
 	unregister { arg node;
 		nodes.removeAt(node.nodeID);
+		node.freeNodeID;
 	}
 	
 	clear { 
