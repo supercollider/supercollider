@@ -111,19 +111,22 @@ File : UnixFILE {
 	classvar <openDialogs;
 	
 	*openDialog { arg prompt, successFunc, cancelFunc;
-		var path;
 		// replace with platform independant stuff later
 		CocoaDialog.getPaths({arg paths; successFunc.value(paths.first) },cancelFunc,3);
-		//		path = this.prOpenDialog(prompt);
-		//		if (path.notNil, { successFunc.value(path) },{ cancelFunc.value(path) });
+
+		// 	var path;
+		//	path = this.prOpenDialog(prompt);
+		//	if (path.notNil, { successFunc.value(path) },{ cancelFunc.value(path) });
 	}
 	
-//  not yet implemented
-//	*saveDialog { arg prompt, defaultName, successFunc, cancelFunc;
-//		var path;
-//		path = this.prSaveDialog(prompt, defaultName);
-//		if (path.notNil, { successFunc.value(path) },{ cancelFunc.value(path) });
-//	}
+	*saveDialog { arg prompt, defaultName, successFunc, cancelFunc;
+		// no prompts or defaultNames in cocoa
+		CocoaDialog.savePanel(successFunc,cancelFunc);
+
+		//	var path;
+		//	path = this.prSaveDialog(prompt, defaultName);
+		//	if (path.notNil, { successFunc.value(path) },{ cancelFunc.value(path) });
+	}
 	
 	*new { arg pathName, mode; 
 		^super.new.open(pathName, mode);
