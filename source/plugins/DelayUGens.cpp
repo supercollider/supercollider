@@ -4991,8 +4991,6 @@ struct PitchShift : public Unit
 	long counter, stage, numoutput, framesize;
 };
 
-#include "SC_UnitDef.h"
-
 void PitchShift_next(PitchShift *unit, int inNumSamples);
 void PitchShift_next(PitchShift *unit, int inNumSamples)
 {
@@ -5010,9 +5008,6 @@ void PitchShift_next(PitchShift *unit, int inNumSamples)
 	
 	out = ZOUT(0);
 	in = ZIN(0);
-	//Print("in '%s' %08X %g\n", unit->mInput[0]->mFromUnit->mUnitDef->mUnitDefName, 
-	//	unit->mInBuf[0], unit->mInBuf[0][0]);
-	//Print("inp %08X %g %d\n", in+ZOFF, in[ZOFF], ZOFF);
 	
 	pchratio = ZIN0(2);
 	winsize = ZIN0(1);
@@ -5152,7 +5147,6 @@ void PitchShift_next(PitchShift *unit, int inNumSamples)
 			
 			dlybuf[iwrphase] = ZXP(in);
 			ZXP(out) = value *= 0.5;
-			//if (xxi<2) Print("%d  %d %d   %g %g   %g %g\n", xxi, irdphase, iwrphase, dlybuf[irdphase], dlybuf[iwrphase], in[0], value);
 		);
 	}
 
