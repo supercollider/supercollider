@@ -19,4 +19,9 @@ lisp_LISP = \
 	sclang-util.el \
 	sclang.el
 
+# NOTE: there seem to be problems with byte-compiling the package,
+# disabling it for now.
+
+ELCFILES = 
+
 ## EOF ================================================================
