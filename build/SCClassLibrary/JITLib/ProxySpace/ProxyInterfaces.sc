@@ -25,8 +25,8 @@ AbstractPlayControl {
 	sendDefToBundle {}
 	spawnToBundle {}
 	
-	playToBundle { arg bundle, args, proxy; 
-		bundle.addAction(this, \play, [proxy]); //no latency (latency is in stream already)
+	playToBundle { arg bundle, args; 
+		bundle.addAction(this, \play); //no latency (latency is in stream already)
 		^nil //return a nil object instead of a synth
 	}
 	
@@ -60,7 +60,7 @@ StreamControl : AbstractPlayControl {
 		
 	play { arg proxy;
 		stream.stop;
-		stream.play(clock, false, proxy); //(clock);
+		stream.play(clock, false); //(clock);
 	}
 	
 	stop {
@@ -69,9 +69,9 @@ StreamControl : AbstractPlayControl {
 	
 	free { stream.stop; stream = nil }
 	
-	playToBundle { arg bundle, args, proxy; 
+	playToBundle { arg bundle, args; 
 		if(stream.isPlaying.not, {
-			bundle.addAction(this, \play, [proxy]); //no latency (latency is in stream already)
+			bundle.addAction(this, \play); //no latency (latency is in stream already)
 		})
 		^nil //return a nil object instead of a synth
 	}
@@ -105,14 +105,14 @@ SynthControl : AbstractPlayControl {
 	name { ^source }
 	clear { synth = nil }
 	
-	spawnToBundle { arg bundle, extraArgs, proxy; //assumes self freeing
+	spawnToBundle { arg bundle, extraArgs, target, addAction=0; //assumes self freeing
 		var synthMsg;
-		synthMsg = [9, this.name, -1, 0, proxy.group.nodeID]++extraArgs; 
+		synthMsg = [9, this.name, -1, addAction, target.asTarget.nodeID]++extraArgs; 
 		bundle.add(synthMsg);
 	}
 	
-	playToBundle { arg bundle, extraArgs, group;
-		synth = Synth.newToBundle(bundle, this.name, extraArgs, group.asGroup, \addToTail);
+	playToBundle { arg bundle, extraArgs, target, addAction=\addToTail;
+		synth = Synth.newToBundle(bundle, this.name, extraArgs, target.asTarget, addAction);
 		synth.isPlaying = true;
 		^synth
 	}
@@ -137,7 +137,6 @@ SynthControl : AbstractPlayControl {
 
 	play { arg group, extraArgs;
 		var bundle;
-		group = group.asGroup;
 		bundle = MixedBundle.new;
 		this.playToBundle(bundle, extraArgs, group);
 		bundle.send(group.server)
@@ -159,7 +158,7 @@ SynthControl : AbstractPlayControl {
 
 
 SynthDefControl : SynthControl {
-	classvar <>writeDefs=true;
+	classvar <>writeDefs=false;
 	var <synthDef;
 	
 	readyForPlay { ^synthDef.notNil }
@@ -215,21 +214,15 @@ CXPlayerControl : AbstractPlayControl {
 		^source.prepareToPlayWithProxy(proxy)
 	}
 	
-	playToBundle { arg bundle, extraArgs, proxy;
-		var bus, group;
-		if(source.isPlaying.not, {
-		//we'll need channel offset maybe.
-		group = Group.newToBundle(bundle, proxy.group, \addToTail);
-//		if(source.readyForPlay, {
-//			source.prepareToBundle(group, bundle);
-//			source.bus = proxy.bus.as(SharedBus);
-//		}, {
-			
-			source.prepareToBundle(group, bundle);
-			source.makePatchOut(group, true, proxy.asBus, bundle);
-//		});
+	playToBundle { arg bundle, extraArgs, proxy, addAction=\addToTail;
+		var group;
+		if(source.isPlaying, { source.stopToBundle(bundle) });
+			//we'll need channel offset maybe.
+		group = Group.newToBundle(bundle, proxy.asTarget, addAction);
+		
+		source.prepareToBundle(group, bundle);
+		if(source.patchOut.isNil, { source.makePatchOut(group,true,proxy.asBus,bundle) });
 		source.spawnToBundle(bundle);
-		});
 		^source.synth;
 		
 	}

@@ -274,6 +274,7 @@ NodeProxy : BusPlug {
 	}
 	
 	asGroup { ^group.asGroup }
+	asTarget { ^group.asGroup }
 	
 		
 	//////////// set the source to anything that returns a valid ugen input ////////////

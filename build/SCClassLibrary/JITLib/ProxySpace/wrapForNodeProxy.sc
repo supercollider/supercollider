@@ -216,14 +216,15 @@
 	}
 	
 	prepareToPlayWithProxy { arg proxy;
-		var tempBus, ok, bundle;
-		bundle = MixedBundle.new;
+		var tempBus, ok;
 		tempBus = proxy.asBus;
 		this.prepareForPlay(bus: tempBus); 
 		//get the rate. there seems a bug in prepareForPlay: doesn't set the rate
 		//[this.numChannels, tempBus].debug;
 		ok = proxy.initBus(this.rate ? 'audio', this.numChannels ? 2); 
 		tempBus.free;
+		this.prepareForPlay(bus: proxy.asBus);
+		
 		^ok
 	}
 	
@@ -236,7 +237,7 @@
 			var n;
 			n = bus.numChannels;
 			^EnvelopedPlayer(
-				Patch({ arg input; NumChannels.ar(input, n, false) },[this]),
+				Patch({ arg input; NumChannels.ar(input, n, true) },[this]),
 				Env.asr(0.5, 1, 0.5), 
 				n
 			);
