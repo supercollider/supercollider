@@ -7,26 +7,34 @@ EventPlayer {
 
 NotePlayer : EventPlayer {
 	playOneEvent {
-		var msg, id, dur, server;
+		var msg,  dur, args, server, synth;
 		
-		id = UniqueID.next;
+		
 		server = ~server ? Server.local;
+		msg = List.new;
+		args = Array.new(~argNames.size*2);
+		~argNames.do({ arg name;
+			args.add(name);
+			args.add(currentEnvironment.at(name));
+		});
+		synth = Synth.newMsg(msg, ~instrument, args, ~group, \addToHead);
+		
+		//here any additions to the bundle can be done	
+		~finishBundle.value(synth);
+		
+		//send the bundle
+		server.listSendBundle(~latency, msg); 
 		
 		// create note on event
-		msg = ["/s_new", ~instrument, id, ~group];
-		~argNames.do({ arg name;
-			msg = msg.add(name);
-			msg = msg.add(currentEnvironment.at(name));
-		});
-		// send note on event
-		server.sendBundle(~latency, msg);
 		
 		// if tempo changes this will be inaccurate.
 		// another way must be found to do this. but for now..
 		dur = ~dur / ~tempo;
 		
-		// send note off
-		server.sendBundle(~latency + dur, ["/n_set", id, "gate", 0]);
+		// send note off. maybe use oscScheduler?
+		
+		server.sendBundle(~latency + dur, ["/n_set", synth.nodeID, "gate", 0]);
+		
 	}
 	playEvent { arg event;
 		var freqs;
