@@ -172,16 +172,19 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 \
 	\
 2004\
-	\ul september\ulnone \
+	october\
+	fixed a bug in Tdef/Pdef where the clock wasn't passed in (.play) properly when it was set before.\
+	\
+	september\
 	refactored Pdef: new subclasses\
 	improvements in NodeMap and NodeProxy\
 	added role scheme (helpfiles to come)\
 	\
-	\ul august\ulnone \
+	august\
 	nodeProxy.mapn expands to multiple controls. (not by arrays of keys anymore!)\
 	some small efficiency improvements\
 	\
-	\ul july\ulnone \
+	july\
 	Pdef/Tdef: pause and resume are now beat quantized\
 	embedInStream is more efficient now, fadeTime is only applied for transitions\
 	added recursive phrasing event\
@@ -192,7 +195,7 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 	\
 	\
 	\
-	\ul june\ulnone \
+	june\
 	removed N / Debug class to reduce number of classes.\
 	NodeProxy/ProxySpace:\
 	wrapForNodeProxy improved (Bus works now, NodeProxy more tolerant)\
@@ -218,7 +221,7 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 	supplementNodeMap also works for non functions.\
 	\
 	\
-	\ul may\
+	may\ul \
 	\ulnone loading large proxyspaces now works - no late messages anymore\
 	fixed bug in NodeProxy.clear when using patterns\
 	fixed group order\
@@ -230,7 +233,7 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 	nodeProxy.send now sends all if no index is given\
 	refactoring, readability improved.\
 	\
-	\ul april\ulnone \
+	april\
 	fixed bug on ProxySpace-reduce that caused infinite recursion in some cases\
 	fixed bug in BinaryOpPlug (account for function.rate returning \\stream)\
 	\
@@ -240,18 +243,18 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 	added .storeOn, .document methods for ProxySpace. see [jitlib_asCompileString] \
 	\
 	\
-	\ul march\ulnone \
+	march\
 	fixed Pattern support for NodeProxy/ProxySpace due to change in Event implementation\
 	fixed Prefn\
 	removed Penvir, Sfin etc, Ensemble etc. (removed classes can be found on sc-swiki)\
 	simplifications\
 	\
-	\ul feb\ulnone \
+	feb\
 	added garbage collector to ProxySpace\
 	fixed unmap\
 	control rate proxies do not wrap channels anymore.\
 	\
-	\ul jan \
+	jan \ul \
 	\ulnone Pref / Prefn are tested, update properly. I'm thinking of merging them with Pdef.\
 	fixed wakeUp bug in NodeProxy.\
 	fixed bug in load when no server is present\
@@ -262,16 +265,16 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 	\
 2003\
 	\
-	\ul nov\
+	nov\ul \
 	\ulnone Pdef, Tdef work now, also with NodeProxy.\
 	NodeProxy-releaseAndFree is replaced by .end.\
 	\
-	\ul oct\ulnone \
+	oct\
 	symbol input is assumed to represent a synthdef that has a gate and frees.\
 	functions and synthdefs are searched for their inner envelopes and the appropriate\
 	method of freeing / releasing is chosen accordingly.\
 	\
-	\ul earlier:\ulnone \
+	earlier:\
 	input channels now wrap. so any number of channels can be set to any proxy.\
 	\
 	ar and kr take a second argument for the channel offset within the proxy\
