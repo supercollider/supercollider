@@ -3,14 +3,12 @@ Environment : IdentityDictionary {
 	classvar <>stack;
 	
 	
-	*new { arg size=8; ^super.new(size) }
 	*make { arg function;
 		^this.new.make(function)
 	}
 	*use { arg function;
 		^this.new.use(function)
 	}
-	*initClass { stack = LinkedList.new }
 
 	make { arg function;
 		// pushes the Envir, executes function, returns the Envir
@@ -41,13 +39,12 @@ Environment : IdentityDictionary {
 	}
 	
 	*push { arg envir;
-		stack.add(currentEnvironment);
-		currentEnvironment = envir;
+		^envir.push;
 	}
 	
-	pop { this.class.pop }
+	pop { ^this.class.pop }
 	push {
-		this.class.stack.add(currentEnvironment);
+		stack = stack.add(currentEnvironment);
 		currentEnvironment = this;
 	}
 	
@@ -56,7 +53,11 @@ Environment : IdentityDictionary {
 // Events are returned by Pattern Streams
 
 Event : Environment {
-	classvar <default;
+	classvar default;
+	
+	*default {
+		^Event.new(8, default);
+	}
 	
 	next { ^this.copy }
 	delta {

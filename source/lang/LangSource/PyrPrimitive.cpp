@@ -1177,8 +1177,8 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	return errNone;
 }
 
-PyrObject* envirArray(PyrObject *envir);
-bool envirArrayAt(PyrObject *array, PyrSlot *key, PyrSlot *res);
+void envirArray(PyrSlot *dictSlot, int &listSize, PyrObject **arrayList);
+bool envirArrayAt(int listSize, PyrObject **arrayList, PyrSlot *key, PyrSlot *res);
 
 int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1198,7 +1198,10 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
 	PyrSlot *curEnvirSlot;
-	PyrObject *envArray;
+	
+	const int kMaxEnvirDepth = 32;
+	int numEnvirArrays;
+	PyrObject *envirArrays[kMaxEnvirDepth];
 	
 	g->execMethod++; // for the benefit of primitives using interpreter recursion
 
@@ -1255,15 +1258,16 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 
 			// replace defaults with environment variables
 			curEnvirSlot = g->classvars[0].uo->slots + 1; // currentEnvironment is the second class var.
-			envArray = envirArray(curEnvirSlot->uo);
-			if (envArray) {
+			numEnvirArrays = kMaxEnvirDepth;
+			envirArray(curEnvirSlot, numEnvirArrays, envirArrays);
+			if (numEnvirArrays) {
 				PyrSymbol **argNames;
 				argNames = block->argNames.uosym->symbols;
 				for (m=numArgsPushed; m<methraw->numargs; ++m) {
 					// replace the args with values from the environment if they exist
 					PyrSlot keyslot;
 					SetSymbol(&keyslot, argNames[m]);
-					envirArrayAt(envArray, &keyslot, vars+m+1);
+					envirArrayAt(numEnvirArrays, envirArrays, &keyslot, vars+m+1);
 				}
 			}
 		} else if (methraw->varargs) {
@@ -1328,15 +1332,16 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 
 			// replace defaults with environment variables
 			curEnvirSlot = g->classvars[0].uo->slots + 1; // currentEnvironment is the second class var.
-			envArray = envirArray(curEnvirSlot->uo);
-			if (envArray) {
+			numEnvirArrays = kMaxEnvirDepth;
+			envirArray(curEnvirSlot, numEnvirArrays, envirArrays);
+			if (numEnvirArrays) {
 				PyrSymbol **argNames;
 				argNames = block->argNames.uosym->symbols;
 				for (m=numArgsPushed; m<methraw->numargs; ++m) {
 					// replace the args with values from the environment if they exist
 					PyrSlot keyslot;
 					SetSymbol(&keyslot, argNames[m]);
-					envirArrayAt(envArray, &keyslot, vars+m+1);
+					envirArrayAt(numEnvirArrays, envirArrays, &keyslot, vars+m+1);
 				}
 			}
 
@@ -1423,7 +1428,10 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
 	PyrSlot *curEnvirSlot;
-	PyrObject *envArray;
+	
+	const int kMaxEnvirDepth = 32;
+	int numEnvirArrays;
+	PyrObject *envirArrays[kMaxEnvirDepth];
 	
 	g->execMethod++; // for the benefit of primitives using interpreter recursion
 
@@ -1481,15 +1489,16 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 			
 			// replace defaults with environment variables
 			curEnvirSlot = g->classvars[0].uo->slots + 1; // currentEnvironment is the second class var.
-			envArray = envirArray(curEnvirSlot->uo);
-			if (envArray) {
+			numEnvirArrays = kMaxEnvirDepth;
+			envirArray(curEnvirSlot, numEnvirArrays, envirArrays);
+			if (numEnvirArrays) {
 				PyrSymbol **argNames;
 				argNames = block->argNames.uosym->symbols;
 				for (m=numArgsPushed; m<methraw->numargs; ++m) {
 					// replace the args with values from the environment if they exist
 					PyrSlot keyslot;
 					SetSymbol(&keyslot, argNames[m]);
-					envirArrayAt(envArray, &keyslot, vars+m+1);
+					envirArrayAt(numEnvirArrays, envirArrays, &keyslot, vars+m+1);
 				}
 			}
 			
@@ -1595,15 +1604,16 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 			
 			// replace defaults with environment variables
 			curEnvirSlot = g->classvars[0].uo->slots + 1; // currentEnvironment is the second class var.
-			envArray = envirArray(curEnvirSlot->uo);
-			if (envArray) {
+			numEnvirArrays = kMaxEnvirDepth;
+			envirArray(curEnvirSlot, numEnvirArrays, envirArrays);
+			if (numEnvirArrays) {
 				PyrSymbol **argNames;
 				argNames = block->argNames.uosym->symbols;
 				for (m=numArgsPushed; m<methraw->numargs; ++m) {
 					// replace the args with values from the environment if they exist
 					PyrSlot keyslot;
 					SetSymbol(&keyslot, argNames[m]);
-					envirArrayAt(envArray, &keyslot, vars+m+1);
+					envirArrayAt(numEnvirArrays, envirArrays, &keyslot, vars+m+1);
 				}
 			}
 

@@ -34,7 +34,7 @@
 
 int objectPerform(VMGlobals *g, int numArgsPushed);
 
-int ivxIdentDict_array, ivxIdentDict_size;
+int ivxIdentDict_array, ivxIdentDict_size, ivxIdentDict_parent;
 
 int class_array_index, class_array_maxsubclassindex;
 int class_identdict_index, class_identdict_maxsubclassindex;
@@ -327,8 +327,11 @@ int prIdentDict_At(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;  // dict
 	b = g->sp;		// key
 	
+	PyrObject *obj = a->uo;
 
-	PyrSlot *arraySlot = a->uo->slots + ivxIdentDict_array;
+again:
+
+	PyrSlot *arraySlot = obj->slots + ivxIdentDict_array;
 	
 	if (!IsObj(arraySlot)) return errFailed;
 	
@@ -339,13 +342,21 @@ int prIdentDict_At(struct VMGlobals *g, int numArgsPushed)
 	index = arrayAtIdentityHashInPairs(array, b);
 	a->ucopy = array->slots[index + 1].ucopy;
 	
+	if (IsNil(a)) {
+		PyrSlot *parentSlot = obj->slots + ivxIdentDict_parent;
+		if (isKindOfSlot(parentSlot, s_identitydictionary->u.classobj)) {
+			obj = parentSlot->uo;
+			goto again; // tail call
+		}
+	}
+	
 	return errNone;
 }
 
 int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed);
 int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a;
+	PyrSlot *a, *result;
 	unsigned int index;
 	int objClassIndex;
 	
@@ -353,11 +364,12 @@ int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed)
 	
 	PyrSlot* currentEnvironmentSlot = g->classvars[class_object->classIndex.ui].uo->slots + 1;
 	PyrObject *dict = currentEnvironmentSlot->uo;
-
+	
 	if (!IsObj(currentEnvironmentSlot)) return errFailed;
 
 	if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) return errFailed;
 
+again:
 	PyrSlot *arraySlot = dict->slots + ivxIdentDict_array;
 	
 	if (!IsObj(arraySlot)) return errFailed;
@@ -367,7 +379,17 @@ int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed)
 	if (!ISKINDOF(array, class_array_index, class_array_maxsubclassindex)) return errFailed;
 	
 	index = arrayAtIdentityHashInPairs(array, a);
-	a->ucopy = array->slots[index + 1].ucopy;
+	result = array->slots + index + 1;
+
+	if (IsNil(result)) {
+		PyrSlot *parentSlot = dict->slots + ivxIdentDict_parent;
+		if (isKindOfSlot(parentSlot, s_identitydictionary->u.classobj)) {
+			dict = parentSlot->uo;
+			goto again; // tail call
+		}
+	}
+	
+	a->ucopy = result->ucopy;
 	
 	return errNone;
 }
@@ -377,7 +399,6 @@ int prSymbol_envirPut(struct VMGlobals *g, int numArgsPushed);
 int prSymbol_envirPut(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
-	unsigned int index;
 	int objClassIndex;
 	
 	a = g->sp - 1;  // key
@@ -408,96 +429,90 @@ void identDictAt(PyrObject *dict, PyrSlot *inKey, PyrSlot *outValue)
 	outValue->ucopy = array->slots[index + 1].ucopy;
 }
 
+void envirArray(PyrSlot *dictSlot, int &listSize, PyrObject **arrayList);
+void envirArray(PyrSlot *dictSlot, int &listSize, PyrObject **arrayList)
+{
+	PyrObject *array;
+	int objClassIndex;
+
+	int numArrays = 0;
+	for (int i=0; i<listSize; ++i) {
+		if (!IsObj(dictSlot)) 
+			break;
+		PyrObject *dict = dictSlot->uo;
+		if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) 
+			break;
+		PyrSlot *arraySlot = dict->slots + ivxIdentDict_array;
+		if (!(IsObj(arraySlot) && (array = arraySlot->uo)->classptr == class_array)) 
+			break;
+		arrayList[numArrays++] = array;
+		dictSlot = dict->slots + ivxIdentDict_parent;
+	}
+	listSize = numArrays;
+}
+
+bool envirArrayAt(int listSize, PyrObject **arrayList, PyrSlot *key, PyrSlot *res);
+bool envirArrayAt(int listSize, PyrObject **arrayList, PyrSlot *key, PyrSlot *res)
+{
+	PyrSlot *slot;
+	int i;
+
+	for (int j=0; j<listSize; ++j) {
+		PyrObject* array = arrayList[j];
+		i = arrayAtIdentityHashInPairsWithHash(array, key, calcHash(key));
+		
+		if (i >= 0) {
+			slot = array->slots + i;
+			if (NotNil(slot)) {
+				slot ++;
+				res->ucopy = slot->ucopy;
+				return true;
+			}
+		}
+	}
+	SetNil(res);
+	return false;
+}
+
+
 int prEvent_Delta(struct VMGlobals *g, int numArgsPushed);
 int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, key, dur, stretch;
+	PyrSlot *a, key, dur, stretch, delta;
 	double fdur, fstretch;
-	int err, index, objClassIndex;
-	PyrObject *array;
+	int err;
+	
+	const int kMaxEnvirDepth = 32;
+	int arrayListSize = kMaxEnvirDepth;
+	PyrObject *arrayList[kMaxEnvirDepth];
 	
 	a = g->sp;  // dict
 	
-	array = a->uo->slots[ivxIdentDict_array].uo;
-	if (!ISKINDOF(array, class_array_index, class_array_maxsubclassindex)) return errFailed;
+	envirArray(a, arrayListSize, arrayList);
 	
 	SetSymbol(&key, s_delta);
-	index = arrayAtIdentityHashInPairs(array, &key);
-	a->ucopy = array->slots[index + 1].ucopy;
+	envirArrayAt(arrayListSize, arrayList, &key, &delta);
 	
-	if (IsNil(a)) {
+	if (NotNil(&delta)) {
+		a->ucopy = delta.ucopy;
+	} else {
 		SetSymbol(&key, s_dur);
-		index = arrayAtIdentityHashInPairs(array, &key);
-		dur.ucopy = array->slots[index + 1].ucopy;
+		envirArrayAt(arrayListSize, arrayList, &key, &dur);	
 		
 		err = slotDoubleVal(&dur, &fdur);
 		if (err) return err;
 		
 		SetSymbol(&key, s_stretch);
-		index = arrayAtIdentityHashInPairs(array, &key);
-		stretch.ucopy = array->slots[index + 1].ucopy;
+		envirArrayAt(arrayListSize, arrayList, &key, &stretch);
 		
 		err = slotDoubleVal(&stretch, &fstretch);
 		if (err) return err;
 		
-		a->uf = fdur * fstretch;
+		SetFloat(a, fdur * fstretch );
 	}
-	
+		
 	return errNone;
 }
-
-PyrObject* envirArray(PyrObject *dict);
-PyrObject* envirArray(PyrObject *dict)
-{
-	PyrObject *array;
-	int objClassIndex;
-	
-	if (ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) {
-		PyrSlot *arraySlot = dict->slots + ivxIdentDict_array;
-		if ((IsObj(arraySlot) && (array = arraySlot->uo)->classptr == class_array)) {
-			return array;
-		}
-	}
-	return NULL;
-}
-
-bool envirArrayAt(PyrObject *array, PyrSlot *key, PyrSlot *res);
-bool envirArrayAt(PyrObject *array, PyrSlot *key, PyrSlot *res)
-{
-	PyrSlot *slot;
-	int i;
-	
-	i = arrayAtIdentityHashInPairsWithHash(array, key, calcHash(key));
-	if (i >= 0) {
-		slot = array->slots + i;
-		if (NotNil(slot)) {
-			slot ++;
-			res->ucopy = slot->ucopy;
-			return true;
-		}
-	}
-	return false;
-}
-
-
-bool getEnvirValue(VMGlobals *g, PyrSymbol *keyword, PyrSlot *value);
-bool getEnvirValue(VMGlobals *g, PyrSymbol *keyword, PyrSlot *value)
-{
-	PyrObject* envirClassVars = g->classvars[class_object->classIndex.ui].uo;
-	PyrSlot* curEnvirSlot = envirClassVars->slots + 1;
-	if (isKindOfSlot(curEnvirSlot, class_identdict)) {
-		int objClassIndex;
-		PyrObject* array = curEnvirSlot->uo->slots[ivxIdentDict_array].uo;
-		if (!ISKINDOF(array, class_array_index, class_array_maxsubclassindex)) goto fail;
-		PyrSlot keyslot;
-		SetSymbol(&keyslot, keyword);
-		return envirArrayAt(array, &keyslot, value);
-	} else {
-		fail:
-		value->ucopy = o_nil.ucopy;
-		return false;
-	}
-}  
 
 void PriorityQueueAdd(struct VMGlobals *g, PyrObject* queueobj, PyrSlot* item, double time);
 void PriorityQueueAdd(struct VMGlobals *g, PyrObject* queueobj, PyrSlot* item, double time)
@@ -713,8 +728,9 @@ void initPatterns()
 {
 	PyrSymbol *sym;
 	
-	ivxIdentDict_array = instVarOffset("IdentityDictionary", "array");
-	ivxIdentDict_size  = instVarOffset("IdentityDictionary", "size");
+	ivxIdentDict_array  = instVarOffset("IdentityDictionary", "array");
+	ivxIdentDict_size   = instVarOffset("IdentityDictionary", "size");
+	ivxIdentDict_parent = instVarOffset("IdentityDictionary", "parent");
 	
 	sym = getsym("IdentityDictionary");
 	class_identdict = sym ? sym->u.classobj : NULL;

@@ -1,6 +1,6 @@
 Dictionary : Set {
 		
-	*new { arg n=3; ^super.new(max(n,2)*4) }
+	*new { arg n=8; ^super.new(n*2) }
 	*newFrom { arg aCollection;
 		var newCollection;
 		newCollection = this.new(aCollection.size);
@@ -262,6 +262,12 @@ Dictionary : Set {
 }
 
 IdentityDictionary : Dictionary {
+	var <>parent; // inheritance of properties
+
+	*new { arg n=8, parent; 
+		^super.new(n).parent_(parent) 
+	}
+	
 	at { arg key, value;
 		_IdentDict_At
 		^this.primitiveFailed

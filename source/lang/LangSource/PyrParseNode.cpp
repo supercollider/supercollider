@@ -2755,7 +2755,7 @@ void compilePyrDynDictNode(PyrDynDictNode* node, void* result)
 	//postfl("compilePyrDynDictNode\n");
 	numItems = nodeListLength(node->elems) >> 1;
 
-        compilePushVar((PyrParseNode*)node, s_identitydictionary);
+        compilePushVar((PyrParseNode*)node, s_event);
 
 	compileOpcode(opSpecialOpcode, opcPushPosInt);
 	compileNumber(numItems);

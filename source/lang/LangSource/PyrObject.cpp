@@ -133,7 +133,7 @@ PyrSymbol *s_env;
 PyrSymbol *s_ugen, *s_outputproxy;
 PyrSymbol *s_new, *s_ref, *s_value, *s_at, *s_put;
 PyrSymbol *s_envirGet, *s_envirPut;
-PyrSymbol *s_synth, *s_spawn, *s_environment;
+PyrSymbol *s_synth, *s_spawn, *s_environment, *s_event;
 PyrSymbol *s_hardwaresetup, *s_shutdown;
 PyrSymbol *s_linear, *s_exponential, *s_gate;
 PyrSymbol *s_super, *s_this;
@@ -223,6 +223,7 @@ void initSymbols()
 	s_synth = getsym("Synth");
 	s_spawn = getsym("BasicSpawn");
 	s_environment = getsym("Environment");
+	s_event = getsym("Event");
 	s_hardwaresetup = getsym("hardwareSetup");
 	s_shutdown = getsym("shutDown");
 	
