@@ -623,19 +623,9 @@ extern bool compiledOK;
     return @"MyDocument";
 }
 
+
 - (BOOL)writeToFile:(NSString*) path ofType:(NSString *)aType
 {
-	//post("type '%s'\n", [aType cString]);
-    // Insert code here to write your document from the given data.  You can also choose to override -fileWrapperRepresentationOfType: or -writeToFile:ofType: instead.
-    //NSString* string = [textView string];
-    
-    //return [textView RTFDFromRange: NSMakeRange(0, [string length]);
-/*    if ([[textView textStorage] containsAttachments]) {
-        return [textView writeRTFDToFile: path atomically: YES];
-    } else {
-        return [textView writeRTFToFile: path atomically: YES];
-    }*/
-	
     BOOL success;
 
 	NSString* extension = [path pathExtension];
@@ -649,12 +639,10 @@ extern bool compiledOK;
 	
 		NSRange range = NSMakeRange(0, [textStorage length]);
 		NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-	//post(">path '%s'\n", [path cString]);
 		if ([textStorage containsAttachments]) {
 			if (![extension isEqualToString: @"rtfd"]) {
 				path = [[path stringByDeletingPathExtension] stringByAppendingPathExtension: @"rtfd"];
 			}
-	//post("<path '%s'\n", [path cString]);
 			NSFileWrapper *wrapper = [textStorage RTFDFileWrapperFromRange: range documentAttributes: dict];
 			success = wrapper ? [wrapper writeToFile: path atomically:YES updateFilenames: YES] : NO;
 		} else {
@@ -665,23 +653,19 @@ extern bool compiledOK;
 			success = data ? [data writeToFile: path atomically: YES] : NO;
 		}
 	}
-	//post("success %d\n", success);
-	if (!success) return NO;
-    
-	NSFileManager *fmgr = [NSFileManager defaultManager];
-    
+// CR MODIFIED
+	return success;
+}
+
+// CR ADDED
+- (NSDictionary *)fileAttributesToWriteToFile:(NSString *)fullDocumentPath ofType:(NSString *)type saveOperation: (NSSaveOperationType) saveOperationType
+{
     NSMutableDictionary *attr = [NSMutableDictionary dictionary];
     NSNumber *creator = [NSNumber numberWithInt: 'SCjm'];
     [attr setObject: creator forKey: NSFileHFSCreatorCode];
-    success = [fmgr changeFileAttributes: attr atPath: path];
-    //printf("write success %d\n", success);
-
-    //NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
-    //OSType creatorval = [attr2 fileHFSCreatorCode];
-    //printf("creator is %d   SCjm %d\n", creatorval, 'SCjm');
-	
-    return success;
+	return attr;
 }
+
 
 - (BOOL)readFromFile:(NSString *)path ofType:(NSString *)aType
 {
