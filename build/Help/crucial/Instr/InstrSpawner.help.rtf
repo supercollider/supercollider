@@ -46,10 +46,8 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // start and pchRatio are streamed\cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 InstrSpawner\cf0 (\{ \cf3 arg\cf0  sample,start=0,pchRatio=1.0,env;\
 	\cf3 PlayBuf\cf0 .ar( \
 		sample.numChannels, \
@@ -72,11 +70,10 @@
 \
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\
 \cf2 // pchRatio will not stream, is fixed at -1\cf0 \
 (\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 InstrSpawner\cf0 (\{ \cf3 arg\cf0  sample,start=0,pchRatio=1.0,env;\
 	\cf3 PlayBuf\cf0 .ar( sample.numChannels, sample.bufnumIr,pchRatio,1,start * sample.bufFramesIr,1 )\
 		 * \cf3 EnvGen\cf0 .kr(env,doneAction: 2)\
@@ -92,7 +89,7 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0  the \cf3 Patch\cf0  in the width input plays continously and is patched into each spawn event\
+\f0\b\fs24 \cf0  the \cf3 Patch\cf0  in the width input plays continuously and is patched into each spawn event\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs18 \cf0 (\
@@ -153,7 +150,6 @@ note: for beats see InstrGateSpawner\
 \
 (\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Instr\cf0 (\cf5 \\InstrSpawner\cf0 ,\{ \cf3 arg\cf0  freq=1000,amp=0.1,env;\
 	\
 		\cf3 SinOsc\cf0 .ar(freq,mul: amp)\
@@ -195,7 +191,6 @@ sliders are polled on the gui\
 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // how to get eventCount like sc2 Spawn\cf0 \
 (\
 \
