@@ -7,7 +7,7 @@ Node {
 	
 	*basicNew { arg nodeID,server;
 		server = server ? Server.local;
-		^super.new.server_(server).nodeID_(nodeID ?? {server.nodeAllocator.alloc})
+		^super.new.server_(server).nodeID_(nodeID ?? {server.nextNodeID})
 	}
 
 	free { arg sendFlag=true;
@@ -64,19 +64,15 @@ Node {
 	// create messages but don't send them or add them to parent node objects
 		
 	getMsg { arg cmdName, argList;
-		^[cmdName, nodeID] ++ (argList ? #[]);
+		^[cmdName, nodeID] ++ argList
 	}
-	addMsg { arg bundle, cmdName, argList;
-		^bundle.add([cmdName, nodeID] ++ (argList ? #[]));
+	msgToBundle { arg bundle, cmdName, argList;
+		^bundle.add([cmdName, nodeID] ++ argList)
 	}
 	newMsg { arg target, addAction=\addToTail, args;
 		var bundle, addActionNum;
 		target = target.asTarget;
-		^this.perform(addAction, target, args);
-	}
-	freeMsg {
-		this.remove;
-		^[11, nodeID]
+		^this.perform(addAction, target, args)
 	}
 
 	moveBeforeMsg { arg  bundle, aNode;
@@ -118,10 +114,10 @@ Node {
 	}
 	
 	
-	nodeToServer { arg addAction,targetID, args;
+	nodeToServer { arg addAction,target,args;
 		var msg;
-		msg = [this.perform(addAction,targetID,args)];
-		group.finishBundle(msg, this);
+		msg = [this.perform(addAction,target,args)];
+		target.group.finishBundle(msg, this);
 		server.listSendBundle(nil, msg);
 		  
 	}
@@ -131,30 +127,24 @@ Node {
 	
 	//these now return messages
 	
-	addToHead { arg arggroup,args;
-		group = arggroup; 
-		group.prAddHead(this);
-		^this.nodeToServerMsg(arggroup.nodeID, 0, args);
+	addToHead { arg arggroup,args; 
+		group = arggroup.asGroup;
+		^this.nodeToServerMsg(group.nodeID, 0, args);
 	}
 	addToTail { arg arggroup,args;
-		group = arggroup; 
-		group.prAddTail(this);
-		^this.nodeToServerMsg(arggroup.nodeID, 1, args);
+		group = arggroup.asGroup;
+		^this.nodeToServerMsg(group.nodeID, 1, args);
 	}
 	addAfter {  arg afterThisOne,args;
-		group = afterThisOne.group; 
-		this.prMoveAfter(afterThisOne);
+		group = afterThisOne.group;
 		^this.nodeToServerMsg(afterThisOne.nodeID, 3, args);
 	}
 	addBefore {  arg beforeThisOne,args;
 		group = beforeThisOne.group;
-		this.prMoveBefore(beforeThisOne);
 		^this.nodeToServerMsg(beforeThisOne.nodeID, 2, args);
 	}
 	addReplace { arg removeThisOne,args;
-		group = removeThisOne.group; 
-		this.prMoveAfter(removeThisOne);
-		removeThisOne.remove;
+		group = removeThisOne.group;
 		^this.nodeToServerMsg(removeThisOne.nodeID, 4, args);
 	}
 	
@@ -215,7 +205,7 @@ Group : Node {
 		target = target.asTarget;
 		server = target.server;
 		group = this.prNew(server);
-		server.sendBundle(server.latency, group.perform(addAction,target))
+		group.nodeToServer(addAction,target);
 		^group
 	}
 	*after { arg aNode;     ^this.new(aNode, \addAfter) }
@@ -248,29 +238,35 @@ Group : Node {
 	nodeToServerMsg { arg targetID, addActionNum;
 		^[21, nodeID, addActionNum, targetID] 
 	}
-	
-	free {arg sendFlag=true;
-		this.freeAll(sendFlag);
-		super.free(sendFlag);
-	}
-	
+		
 	freeAll { arg sendFlag=true;
 		// free my children, but this node is still playing
-		this.deepDo({ arg item; item.free(false) });
-		if(sendFlag, {
-			server.sendBundle(server.latency,[24,nodeID]); //"/g_freeAll"
-		});
-		
+		server.sendBundle(server.latency,[24,nodeID]); //"/g_freeAll"
 	}
 	
-	freeAllMsg { 
-		this.do({ arg item; item.free(false) });
-		^[24,nodeID]
+			
+	// bundle messages //
+
+	*newToBundle { arg bundle, target, addAction=\addToTail;
+		var group;
+		target = target.asTarget;
+		group = this.prNew(target.server);
+		bundle.add(group.perform(addAction, target));
+		group.group.finishBundle(bundle, group);
+		^group
 	}
-	freeMsg {
-		this.freeAll(false);
-		^[11, nodeID]
+	
+	moveNodeToHeadMsg { arg aNode;
+		^[22, nodeID, aNode.nodeID]; //"/g_head"
 	}
+	
+	moveNodeToTailMsg { arg aNode;
+		^[23, nodeID, aNode.nodeID];//g_tail
+	}
+	finishBundle { //overridden in subclass
+	}
+	
+	//these do work only with linked nodes.
 	
 	do { arg function;
 		var node, nextNode;
@@ -291,27 +287,6 @@ Group : Node {
 			node.deepDo(function);
 			node = nextNode;
 		});
-	}
-		
-	// bundle messages //
-
-	*newMsg { arg bundle, target, addAction=\addToTail;
-		var group;
-		target = target.asTarget;
-		group = this.prNew(target.server);
-		bundle.add(group.perform(addAction, target));
-		group.group.finishBundle(bundle, group);
-		^group
-	}
-	
-	moveNodeToHeadMsg { arg aNode;
-		^[22, nodeID, aNode.nodeID]; //"/g_head"
-	}
-	
-	moveNodeToTailMsg { arg aNode;
-		^[23, nodeID, aNode.nodeID];//g_tail
-	}
-	finishBundle { //overridden in subclass
 	}
 
 	//private
@@ -346,7 +321,7 @@ Synth : Node {
 		target = target.asTarget;
 		server = target.server;
 		synth = this.prNew(defName, server);
-		server.sendBundle(server.latency, synth.perform(addAction,target,args));
+		synth.nodeToServer(addAction, target, args);
 		^synth
 	}
 	*prNew { arg defName, server;
@@ -372,8 +347,8 @@ Synth : Node {
 	*newPaused { arg defName,args,target,addAction=\addToTail;
 		var bundle, synth;
 		bundle = List.new;
-		synth = this.newMsg(bundle, defName,args,target,addAction);
-		synth.addMsg(bundle, 12, 0); //"/n_run"
+		synth = this.newToBundle(bundle, defName,args,target,addAction);
+		synth.msgToBundle(bundle, 12, 0); //"/n_run"
 		synth.server.listSendBundle(nil, bundle);
 		^synth
 	}
@@ -404,7 +379,7 @@ Synth : Node {
 	///  bundle messages  ///
 	// this adds the message to the bundle and returns the synth.
 	// bundle should be a List
-	*newMsg { arg bundle, defName, args, target, addAction=\addToTail;
+	*newToBundle { arg bundle, defName, args, target, addAction=\addToTail;
 		var synth;
 		target = target.asTarget;
 		synth = this.prNew(defName, target.server);
