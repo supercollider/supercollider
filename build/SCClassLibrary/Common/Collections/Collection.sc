@@ -72,6 +72,9 @@ Collection {
 		^removedItems
 	}
 
+	atAll { arg keys;
+		^keys.collect {|index| this[index] }
+	}
 	putEach { arg keys, values; 
 		// works for ArrayedCollections and Dictionaries
 		keys = keys.asArray;

@@ -167,6 +167,7 @@ SequenceableCollection : Collection {
 	}
 	
 	// accessing
+	lastIndex { ^this.size - 1 }
 	first { if (this.size > 0, { ^this.at(0) }, { ^nil }) }
 	last { if (this.size > 0, { ^this.at(this.size - 1) }, { ^nil }) }
 	top { ^this.last }
@@ -305,6 +306,25 @@ SequenceableCollection : Collection {
 			sublist = list.at(i % numlists);
 			sublist.add(item);
 		});
+		^list
+	}
+	
+	integrate {
+		var list, sum = 0;
+		list = this.class.new(this.size);
+		this.do {|item|
+			sum = sum + item;
+			list.add( sum );
+		};
+		^list
+	}
+	differentiate {
+		var list, prev = 0;
+		list = this.class.new(this.size);
+		this.do {|item|
+			list.add( item - prev );
+			prev = item;
+		};
 		^list
 	}
 		

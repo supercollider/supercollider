@@ -246,5 +246,11 @@ SimpleNumber : Number {
 		^key.nearestInList(scale) + root
 	}
 	
+	partition { arg parts=2, min=1;
+		var n;
+		// randomly partition a number into parts of at least min size :
+		n = this - (min - 1 * parts);		^(1..n-1).scramble.keep(parts-1).sort.add(n).differentiate + (min - 1)
+	}
+	
 		
 }
