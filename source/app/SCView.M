@@ -354,9 +354,9 @@ void SCView::drawIfNecessary(SCRect inDamage)
 {
 	if (SCRectsDoIntersect(inDamage, mBounds) && mVisible) {
 		draw(inDamage);
-                drawDisabled(inDamage);
-                drawDragHilite(inDamage);
-                drawFocus(inDamage);
+		drawDisabled(inDamage);
+		drawDragHilite(inDamage);
+		drawFocus(inDamage);
 	}
 }
 
@@ -830,8 +830,8 @@ SCTopView::SCTopView(PyrObject* inObj, SCRect inBounds)
     mTop = this;
     float ltgry = 0.8;
     float dkgry = 0.5;
-    mBackground = new SolidColorBackground(
-                    SCMakeColor(ltgry, ltgry, ltgry, 1.0));
+    //mBackground = new SolidColorBackground(
+    //                SCMakeColor(ltgry, ltgry, ltgry, 1.0));
 }
 
 void SCTopView::addDamage(SCRect inRect)

@@ -21,7 +21,7 @@
 #import <Cocoa/Cocoa.h>
 #import "SCView.h"
 
-@interface SCGraphView : NSQuickDrawView
+@interface SCGraphView : NSView
 {
     struct PyrObject *mWindowObj;
     SCTopView *mTopView;
@@ -33,6 +33,8 @@
 - (void) mouseDown: (NSEvent*) event;
 - (void)setSCObject: (struct PyrObject*)inObject;
 - (struct PyrObject*)getSCObject;
+- (BOOL)isFlipped;
+- (BOOL)mouseDownCanMoveWindow;
 
 - (void)setSCTopView: (SCTopView*)inView;
 //- (void)dealloc;

@@ -191,7 +191,7 @@ SlotInspector {
 		
 		slotKeyView = SCStaticText(w, Rect(8, vpos, 110, this.buttonHeight));
 		slotKeyView.align = \right;
-		slotKeyView.font = Font("Palatino", 12);
+		slotKeyView.font = Font("Helvetica", 12);
 		//slotKeyView.background = Color.grey(0.85);
 		
 		if (key.isKindOf(Symbol), {
@@ -219,7 +219,7 @@ SlotInspector {
 			});
 		});
 		slotValueView.resize = 2;
-		slotValueView.font = Font("Palatino", 12);
+		slotValueView.font = Font("Helvetica", 12);
 		slotValueView.background = Color.grey(if(hasSetter,0.95,0.85));
 
 		inspectButton = SCButton(w, Rect(344, vpos, this.buttonHeight, this.buttonHeight));

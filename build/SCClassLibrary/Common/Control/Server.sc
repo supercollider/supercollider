@@ -269,8 +269,8 @@ Server : Model {
 //		if(serverRunning,{ active.setProperty(\value,2); });
 		if(isLocal,{
 			booter = SCButton(w, Rect(0,0, 50, 24));
-			booter.states = [["Boot", Color.white, Color.grey(0.5)],
-						   ["Quit", Color.white, Color.grey(0.5)]];
+			booter.states = [["Boot", Color.black, Color.clear],
+						   ["Quit", Color.black, Color.clear]];
 			
 			booter.action = { arg view; 
 				if(view.value == 1, {

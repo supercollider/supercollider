@@ -31,6 +31,16 @@ extern PyrSymbol *s_draw;
 
 @implementation SCGraphView
 
+- (BOOL)isFlipped
+{
+	return YES;
+}
+
+- (BOOL)mouseDownCanMoveWindow
+{
+	return NO;
+}
+
 - (void) keyDown: (NSEvent*) event
 {
     NSString *characters = [event characters];
@@ -75,6 +85,9 @@ static NSString *sSCObjType = @"SuperCollider object address";
 {
     [super initWithFrame: frame];
     [self registerForDraggedTypes: [NSArray arrayWithObject: sSCObjType]];
+	mDragStarted = NO;
+	mWindowObj = 0;
+	mTopView = 0;
     return self;
 }
 
@@ -90,7 +103,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
     if (view) {
-       mDragStarted = false;
+		mDragStarted = false;
         view->makeFocus(true);
         view->mouseBeginTrack(scpoint, modifiers);
         [self displayIfNeeded];

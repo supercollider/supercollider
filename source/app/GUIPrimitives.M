@@ -233,6 +233,7 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
         unsigned int mask = IsTrue(d) && IsTrue(e) ? NSResizableWindowMask : 0;
         mask |= IsTrue(e) ? 
             NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask 
+			| NSTexturedBackgroundWindowMask
             : NSBorderlessWindowMask;
             
 	NSRect bounds;
@@ -255,7 +256,6 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
         [view setSCTopView: (SCTopView*)(f->uo->slots[0].ui)];
         SetPtr(a->uo->slots + 0, view);
         
-
         [window setDelegate: scvm];
         [window setContentView: view];
         [view autorelease];

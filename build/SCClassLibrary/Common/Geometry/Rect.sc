@@ -114,11 +114,11 @@ Rect {
 	}
 
 	printOn { arg stream;
-		stream << this.class.name << ".new(" 
+		stream << this.class.name << "(" 
 			<<* [left, top, width, height] << ")";
 	}
 	storeOn { arg stream;
-		stream << this.class.name << ".new(" 
+		stream << this.class.name << "(" 
 			<<<* [left, top, width, height] << ")";
 	}
 	
