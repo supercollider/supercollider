@@ -210,6 +210,7 @@ BusPlug : AbstractFunction {
 		group = (group ? localServer).asGroup;
 		if(multi.not and: { monitorGroup.isPlaying }, { //maybe should warn if not same server
 			if(monitorGroup.group !== group) { monitorGroup.moveToTail(group) };
+			monitorGroup.set(\gate, 1); // if releasing, keep up.
 			^monitorGroup 
 		});
 			
@@ -260,6 +261,7 @@ BusPlug : AbstractFunction {
 			}); // revisit
 		})
 	}
+	scope { arg bufsize = 4096, zoom; if(this.isNeutral.not) { bus.scope(bufsize, zoom) } }
 	
 	record { arg path, headerFormat="aiff", sampleFormat="int16", numChannels;
 		var rec;
@@ -451,7 +453,7 @@ NodeProxy : BusPlug {
 		bundle = MixedBundle.new;
 		if(task.notNil) { bundle.addAction(task, \stop) };
 		task = argTask;
-		if(paused.not and: {this.isPlaying}, {  this.playTaskToBundle(bundle) });//clock
+		if(paused.not and: { this.isPlaying }) { this.playTaskToBundle(bundle) };//clock
 		bundle.schedSend(server, clock);
 
 	}
@@ -467,7 +469,7 @@ NodeProxy : BusPlug {
 	}
 		
 	bus_ { arg inBus; // should be a SharedBus, or releaseBus should be implemented in Bus
-		if(server != inBus.server, { "can't change the server".inform;^this });
+		if(server != inBus.server, { "can't change the server".inform; ^this });
 		super.bus_(inBus);
 		this.linkNodeMap;
 		this.rebuild;
@@ -829,27 +831,25 @@ NodeProxy : BusPlug {
 	
 	
 	set { arg ... args;
-		nodeMap.performList(\set, args);
-		if(this.isPlaying, { 
+		nodeMap.set(*args);
+		if(this.isPlaying) { 
 			server.sendBundle(server.latency, [15, group.nodeID] ++ args); 
-		});
+		};
 	}
 	
 	setn { arg ... args;
-		nodeMap.performList(\setn, args);
-		if(this.isPlaying, { 
-			group.performList(\setn, args);
-		});
+		nodeMap.setn(*args);
+		if(this.isPlaying) { group.setn(*args) };
 	}
 	
 	// map to a control proxy
 	map { arg key, proxy ... args;
 		args = [key,proxy]++args;
-		nodeMap.performList(\map, args);
-		if(this.isPlaying, { 
+		nodeMap.map(*args);
+		if(this.isPlaying) { 
 			nodeMap.updateBundle;
 			server.sendBundle(server.latency, [14, group.nodeID] ++ nodeMap.mapArgs);
-		})
+		}
 	}
 	
 	// map to current environment
@@ -863,17 +863,17 @@ NodeProxy : BusPlug {
 		
 	unset { arg ... keys;
 		if(keys.isEmpty, { keys = nodeMap.settingKeys });
-		nodeMap.performList(\unset, keys);
-		if(this.isPlaying, { this.sendAll(nil, true) });
+		nodeMap.unset(*keys);
+		if(this.isPlaying) { this.sendAll(nil, true) };
 	}
 	
 	unmap { arg ... keys;
-		if(keys.isEmpty, { keys = nodeMap.mappingKeys });
-		nodeMap.performList(\unmap, keys);
-		if(this.isPlaying, {
-			keys.do({ arg key; group.map(key,-1) });
+		if(keys.isEmpty) { keys = nodeMap.mappingKeys };
+		nodeMap.unmap(*keys);
+		if(this.isPlaying) {
+			keys.do { arg key; group.map(key,-1) };
 			nodeMap.sendToNode(group) 
-		});
+		};
 	}
 	
 	
@@ -921,7 +921,7 @@ NodeProxy : BusPlug {
 	}
 	
 	setBus { arg ... values; //does work only when no node is playing
-		if(bus.notNil) { bus.performList(\set, values) };
+		if(bus.notNil) { bus.set(*values) };
 	}
 	
 	gateAt { arg key, level=1.0, dur=1.0;
@@ -972,7 +972,7 @@ NodeProxy : BusPlug {
 			ctlBus.free;
 			
 			setArgs = [keys, levels].flop.flat;
-			nodeMap.performList(\set, setArgs);
+			nodeMap.set(*setArgs);
 			
 			server.sendBundle(server.latency + durs.maxItem, 
 				 ["/n_map", id] ++ [keys, -1].flop.flat,
@@ -1055,10 +1055,8 @@ SharedNodeProxy : NodeProxy {
 		(args.size div: 2).do({ arg i; 
 			if(args[2*i+1].shared.not, { "shouldn't map a local to a shared proxy".error; ^this }) 
 		});
-		nodeMap.performList(\map, args);
-		if(this.isPlaying, { 
-			nodeMap.sendToNode(group);
-		})
+		nodeMap.map(*args);
+		if(this.isPlaying) { nodeMap.sendToNode(group) }
 	}
 	
 	mapEnvir {}
