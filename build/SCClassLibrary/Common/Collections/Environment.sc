@@ -90,11 +90,11 @@ Event : Environment {
 			~dur = 1.0;
 			~stretch = 1.0;
 			~legato = 0.8;
-			~sustain = { ~dur * ~legato * ~stretch };
+			~sustain = #{ ~dur * ~legato * ~stretch };
 			~lag = 0.0;
 			~strum = 0.0;
 			
-			~amp = { ~db.dbamp };
+			~amp = #{ ~db.dbamp };
 			~db = -20.0;
 			~velocity = 64; 		// MIDI units 0-127
 			~pan = 0.0; 			// pan center
@@ -110,16 +110,16 @@ Event : Environment {
 			~stepsPerOctave = 12.0;
 			~detune   = 0.0;		// detune in Hertz
 			
-			~note = {
+			~note = #{
 				(~degree + ~mtranspose).degreeToKey(~scale, ~stepsPerOctave);
 			};
-			~midinote = {
+			~midinote = #{
 				var divs;	
 				divs = ~stepsPerOctave;
 				(~note.value + ~gtranspose + (~octave * divs) + ~root)
 					 * 12.0 / divs; 
 			};
-			~freq = {
+			~freq = #{
 				(~midinote.value + ~ctranspose).midicps;
 			};
 
@@ -128,7 +128,7 @@ Event : Environment {
 			~group = 0;
 			~out = 0;
 			
-			~finish = {
+			~finish = #{
 				// do final calculations
 				~freq = ~freq.value + ~detune;
 				~amp = ~amp.value;
@@ -137,7 +137,7 @@ Event : Environment {
 						
 			~player = NotePlayer.new;
 			~argNames = #[\out, \freq, \amp, \pan, \sustain];
-			~msgFunc = { arg id, freq;
+			~msgFunc = #{ arg id, freq;
 				[[9, ~instrument, id, 0, ~group, 
 					\out, ~out, \freq, freq, \amp, ~amp, \pan, ~pan]];
 			};
