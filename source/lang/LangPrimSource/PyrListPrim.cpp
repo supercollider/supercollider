@@ -334,49 +334,46 @@ int prArray_AtIdentityHashInPairs(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-bool identDict_lookupNonNil(PyrObject *dict, PyrSlot *key, PyrSlot *result);
-bool identDict_lookupNonNil(PyrObject *dict, PyrSlot *key, PyrSlot *result)
+
+bool identDict_lookupNonNil(PyrObject *dict, PyrSlot *key, int hash, PyrSlot *result);
+bool identDict_lookupNonNil(PyrObject *dict, PyrSlot *key, int hash, PyrSlot *result)
 {
-	bool found = false;
 again:	
 	PyrSlot *dictslots = dict->slots;
 	PyrSlot *arraySlot = dictslots + ivxIdentDict_array;
 	
 	if (isKindOfSlot(arraySlot, class_array)) {
 		PyrObject *array = arraySlot->uo;
-		int index = arrayAtIdentityHashInPairs(array, key);
-		PyrSlot *valueSlot = array->slots + (index + 1);
-		if (NotNil(valueSlot)) {
-			result->ucopy = valueSlot->ucopy;
-			found = true;
-		}
-	}
 	
-	if (!found) {
-		PyrClass *identDictClass = s_identitydictionary->u.classobj;
-		PyrSlot *parentSlot = dictslots + ivxIdentDict_parent;
-		PyrSlot * protoSlot = dictslots + ivxIdentDict_proto;
-		if (isKindOfSlot(parentSlot, identDictClass)) {
-			if (isKindOfSlot(protoSlot, identDictClass)) {
-				// recursive call.
-				found = identDict_lookupNonNil(protoSlot->uo, key, result);
-				if (found) return true;
-			}
-		
-			dict = parentSlot->uo;
-			goto again; // tail call
-		} else {
-			if (isKindOfSlot(protoSlot, identDictClass)) {
-				dict = protoSlot->uo;
-				goto again; // tail call
-			}
+		int index = arrayAtIdentityHashInPairsWithHash(array, key, hash);
+		if (SlotEq(key, array->slots + index)) {
+			result->ucopy = array->slots[index + 1].ucopy;
+			return true;
 		}
 	}
-	return found;
+
+	PyrClass *identDictClass = s_identitydictionary->u.classobj;
+	PyrSlot *parentSlot = dictslots + ivxIdentDict_parent;
+	PyrSlot * protoSlot = dictslots + ivxIdentDict_proto;
+	if (isKindOfSlot(parentSlot, identDictClass)) {
+		if (isKindOfSlot(protoSlot, identDictClass)) {
+			// recursive call.
+			if (identDict_lookupNonNil(protoSlot->uo, key, hash, result)) return true;
+		}
+	
+		dict = parentSlot->uo;
+		goto again; // tail call
+	} else {
+		if (isKindOfSlot(protoSlot, identDictClass)) {
+			dict = protoSlot->uo;
+			goto again; // tail call
+		}
+	}
+	return false;
 }
 
-void identDict_lookup(PyrObject *dict, PyrSlot *key, PyrSlot *result);
-void identDict_lookup(PyrObject *dict, PyrSlot *key, PyrSlot *result)
+bool identDict_lookup(PyrObject *dict, PyrSlot *key, int hash, PyrSlot *result);
+bool identDict_lookup(PyrObject *dict, PyrSlot *key, int hash, PyrSlot *result)
 {
 again:	
 	PyrSlot *dictslots = dict->slots;
@@ -385,32 +382,32 @@ again:
 	if (isKindOfSlot(arraySlot, class_array)) {
 		PyrObject *array = arraySlot->uo;
 	
-		int index = arrayAtIdentityHashInPairs(array, key);
-		result->ucopy = array->slots[index + 1].ucopy;
-	} else {
-		SetNil(result);
-	}
-	
-	if (IsNil(result)) {
-		PyrClass *identDictClass = s_identitydictionary->u.classobj;
-		PyrSlot *parentSlot = dictslots + ivxIdentDict_parent;
-		PyrSlot * protoSlot = dictslots + ivxIdentDict_proto;
-		if (isKindOfSlot(parentSlot, identDictClass)) {
-			if (isKindOfSlot(protoSlot, identDictClass)) {
-				// recursive call.
-				identDict_lookup(protoSlot->uo, key, result);
-				if (NotNil(result)) return;
-			}
-		
-			dict = parentSlot->uo;
-			goto again; // tail call
-		} else {
-			if (isKindOfSlot(protoSlot, identDictClass)) {
-				dict = protoSlot->uo;
-				goto again; // tail call
-			}
+		int index = arrayAtIdentityHashInPairsWithHash(array, key, hash);
+		if (SlotEq(key, array->slots + index)) {
+			result->ucopy = array->slots[index + 1].ucopy;
+			return true;
 		}
-	}	
+	}
+
+	PyrClass *identDictClass = s_identitydictionary->u.classobj;
+	PyrSlot *parentSlot = dictslots + ivxIdentDict_parent;
+	PyrSlot * protoSlot = dictslots + ivxIdentDict_proto;
+	if (isKindOfSlot(parentSlot, identDictClass)) {
+		if (isKindOfSlot(protoSlot, identDictClass)) {
+			// recursive call.
+			if (identDict_lookup(protoSlot->uo, key, hash, result)) return true;
+		}
+	
+		dict = parentSlot->uo;
+		goto again; // tail call
+	} else {
+		if (isKindOfSlot(protoSlot, identDictClass)) {
+			dict = protoSlot->uo;
+			goto again; // tail call
+		}
+	}
+	SetNil(result);
+	return false;
 }
 
 int prIdentDict_At(struct VMGlobals *g, int numArgsPushed);
@@ -432,7 +429,7 @@ int prIdentDict_At(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 	
-	identDict_lookup(dict, key, a);
+	identDict_lookup(dict, key, calcHash(key), a);
 	return errNone;
 }
 
@@ -440,7 +437,6 @@ int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed);
 int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, result;
-	unsigned int index;
 	int objClassIndex;
 	
 	a = g->sp;  // key
@@ -452,7 +448,7 @@ int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed)
 
 	if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) return errFailed;
 
-	identDict_lookup(dict, a, &result);
+	identDict_lookup(dict, a, calcHash(a), &result);
 	a->ucopy = result.ucopy;
 	
 	return errNone;
@@ -494,23 +490,36 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp;  // dict
 	
 	SetSymbol(&key, s_delta);
-	identDict_lookup(a->uo, &key, &delta);
+	identDict_lookup(a->uo, &key, calcHash(&key), &delta);
+	
+	post("delta\n");
+	dumpObjectSlot(&delta);
 	if (NotNil(&delta)) {
 		a->ucopy = delta.ucopy;
 	} else {
 		SetSymbol(&key, s_dur);
-		identDict_lookup(a->uo, &key, &dur);
-		if (IsNil(&dur)) return errWrongType;
+		identDict_lookup(a->uo, &key, calcHash(&key), &dur);
 		
 		err = slotDoubleVal(&dur, &fdur);
-		if (err) return err;
+	post("dur %d\n", err);
+	dumpObjectSlot(&dur);
+		if (err) {
+			if (NotNil(&dur)) return err;
+			SetNil(a);
+			return errNone;
+		}
 		
 		SetSymbol(&key, s_stretch);
-		identDict_lookup(a->uo, &key, &stretch);
-		if (IsNil(&stretch)) return errWrongType;
+		identDict_lookup(a->uo, &key, calcHash(&key), &stretch);
 		
 		err = slotDoubleVal(&stretch, &fstretch);
-		if (err) return err;
+	post("stretch %d\n", err);
+	dumpObjectSlot(&stretch);
+		if (err) {
+			if (NotNil(&stretch)) return err;
+			SetNil(a);
+			return errNone;
+		}
 				
 		SetFloat(a, fdur * fstretch );
 	}
