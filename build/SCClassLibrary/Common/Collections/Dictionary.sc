@@ -1,7 +1,12 @@
 Dictionary : Set {
 		
 	*new { arg n=3; ^super.new(n*2) }
-	
+	*newFrom { arg aCollection;
+		var newCollection;
+		newCollection = this.new(aCollection.size);
+		aCollection.keysValuesDo({ arg k,v, i; newCollection.put(k,v) });
+		^newCollection
+	}
 	// accessing
 	at { arg key;
 		^array.at(this.scanFor(key) + 1)
@@ -300,6 +305,11 @@ IdentityDictionary : Dictionary {
 		});
 		^-2
 */
+	}
+	
+	// not the fastest way, but the simplest
+	writeAsPlist { arg path;
+		this.as(Dictionary).writeAsPlist(path);
 	}
 	
 }

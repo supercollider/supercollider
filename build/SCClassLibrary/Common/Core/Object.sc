@@ -70,7 +70,7 @@ Object {
 		^this.class.instVarNames.at(index)
 	}
 	
-	//do { arg function; function.value(this, 0) }
+	do { arg function; function.value(this, 0) }
 	//reverseDo { arg function; function.value(this, 0) }
 	
 	// class membership
@@ -387,6 +387,11 @@ Object {
 	}
 	asArchive {
 		_AsArchive
+		^this.primitiveFailed;
+	}
+	
+	writeAsPlist { arg pathname;
+		_Cocoa_SaveAsPlist
 		^this.primitiveFailed;
 	}
 	

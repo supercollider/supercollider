@@ -96,18 +96,18 @@ Signal[float] : FloatArray {
 		// if the other signal is too long only the first part is overwritten
 		^this.primitiveFailed 
 	}
-//	asciiPlot {
-//		// draw the waveform down the page as asterisks
-//		var lo, hi, scale, pt;
-//		lo = this.minItem; 
-//		hi = this.maxItem;
-//		scale = 72 / (hi - lo);
-//		this.size.do({ arg i;
-//			pt = ((this.at(i) - lo) * scale).asInteger;
-//			pt.do({ " ".post; });
-//			"*\n".post;
-//		});
-//	}
+	asciiPlot {
+		// draw the waveform down the page as asterisks
+		var lo, hi, scale, pt;
+		lo = this.minItem; 
+		hi = this.maxItem;
+		scale = 72 / (hi - lo);
+		this.size.do({ arg i;
+			pt = ((this.at(i) - lo) * scale).asInteger;
+			pt.do({ " ".post; });
+			"*\n".post;
+		});
+	}
 	plot { arg name, bounds;
 		// open a window
 		name = name ? "signal";
