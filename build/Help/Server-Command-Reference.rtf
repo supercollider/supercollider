@@ -3,7 +3,7 @@
 }
 {\colortbl;\red255\green255\blue255;\red255\green3\blue3;\red118\green15\blue80;\red0\green0\blue255;
 }
-\vieww15320\viewh11980\viewkind0
+\vieww12680\viewh12480\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f0\fs36 \cf0 SuperCollider Server Synth Engine Command Reference\
@@ -306,6 +306,17 @@ Controls may be set when creating the synth. The control arguments are the same 
 \f1\b n_set
 \f0\b0  command.\
 \
+If you send 
+\f1\b /s_new
+\f0\b0  with a synth ID of -1, then the server will generate an ID for you. The server reserves all negative IDs. Since you don't know what the ID is, you cannot talk to this node directly later. So this is useful for nodes that are of finite duration and that get the control information they need from arguments and buses or messages directed to their group. In addition no notifications are sent when there are changes of state for this node, such as /go, /end, /on, /off.\
+\
+If you use a node ID of -1 for any other command, such as 
+\f1\b /n_map
+\f0\b0 , then it refers to the most recently created node by 
+\f1\b /s_new
+\f0\b0  (auto generated ID or not). This is how you can map  the controls of a node with an auto generated ID. In a multi-client situation, the only way you can be sure what node -1 refers to is to put the messages in a bundle.\
+\
+\
 
 \f1\b /s_trace						trace unit generators inputs and outputs\
 
@@ -339,6 +350,15 @@ Replies to sender with the corresponding
 Get contiguous ranges of controls. Replies to sender with the corresponding 
 \f1\b /n_setn
 \f0\b0  command. \
+\
+
+\f1\b /s_noid					auto-reassign node's ID to a reserved value\
+
+\f0\b0 	[\
+		int - synth ID\
+	] * N\
+	\
+This command is used when the client no longer needs to communicate with the node and wants to have the freedom to reuse the node ID. The server will reassign this node to a reserved negative number. This command is purely for bookkeeping convenience of the client. No notification is sent when this occurs.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
