@@ -3,19 +3,20 @@
 
 EnvironmentRedirect {
 	var <>envir, <name;
-	classvar <>saveEnvir, <>saveTopEnvir;
+	var <>crashProof=true;
 	
-	*new { arg name;
-		^super.newCopyArgs(nil, name).clear
+	*new { arg name, envir;
+		^super.newCopyArgs(nil, name).init(envir)
 	}
+	init { arg argEnvir; if(argEnvir.notNil) {Êenvir = argEnvir }Ê{ this.clear } }
 	
-	clear { envir = Environment.new(32, nil, Environment.new) }
+	clear { arg size=32; envir = Environment.new(size, Environment.new)  }
 	
 	*push { arg name;
 		^this.new(name).push;
 	}
 	
-	*pop { 
+	*pop {
 		^Environment.pop;
 	}
 	
@@ -24,15 +25,16 @@ EnvironmentRedirect {
 	}
 	
 	push { 
-		// avoid chaining, maybe move down
-		if(currentEnvironment !== this, {
-			topEnvironment = this;
+		// avoid chaining
+		if(currentEnvironment !== this) {
+			if(crashProof) { topEnvironment = this }; // Object-halt restores to top envir
 			Environment.push(this);
-		});
+		};
 		
 	}
 	
-	//override in subclasses
+	// override in subclasses
+	// behave like my environment
 	
 	at { arg key;
 		^envir.at(key)
@@ -41,14 +43,24 @@ EnvironmentRedirect {
 	put { arg key, obj;
 		envir.put(key, obj)
 	}
-		
-		
-	// behave like my environment
 	
 	removeAt { arg key;
 		^envir.removeAt(key)
 	}
-
+	
+	make { arg function;
+		// pushes the Envir, executes function, returns the Envir
+		// usually used to create an environment by adding new variables to it.
+		var result, saveEnvir;
+		
+		saveEnvir = currentEnvironment;
+		currentEnvironment = this;
+		protect {
+			function.value(this);
+		}{
+			currentEnvironment = saveEnvir;
+		};
+	}
 	
 	use { arg function;
 		// temporarily replaces the currentEnvironment with this, 
@@ -57,11 +69,14 @@ EnvironmentRedirect {
 		
 		saveEnvir = currentEnvironment;
 		currentEnvironment = this;
-		result = function.value(this);
-		currentEnvironment = saveEnvir;
+		protect {
+			result = function.value(this);
+		}{
+			currentEnvironment = saveEnvir;
+		};
 		^result
 	}
-	
+		
 	do { arg function;
 		envir.do(function)
 	}
@@ -84,6 +99,8 @@ EnvironmentRedirect {
         ^envir.choose
      }
      
+     //// this should maybe go in Environment
+     
      makeDocument { arg title, string="";
      	^EnvirDocument.new(this, title, string);
 	}
@@ -100,3 +117,7 @@ EnvironmentRedirect {
      	});
      }
 }
+
+
+
+

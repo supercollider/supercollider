@@ -1,6 +1,4 @@
 
-
-
 ProxySpace : EnvironmentRedirect {
 	classvar <>all; //access
 	
@@ -14,8 +12,8 @@ ProxySpace : EnvironmentRedirect {
 		^super.new(name).einit(server ? Server.default, name, clock)
 	}
 	
-	*push { arg server, name, clock; // save user data
-		if(currentEnvironment.isKindOf(this)) { currentEnvironment.clear };
+	*push { arg server, name, clock;
+		if(name.isNil and: { currentEnvironment.isKindOf(this) }) { currentEnvironment.clear };
 		^this.new(server, name, clock).push;
 	}
 	
@@ -29,6 +27,7 @@ ProxySpace : EnvironmentRedirect {
 		clock = aClock;
 		this.do({ arg item; item.clock = aClock });
 	}
+	
 	fadeTime_ { arg dt;
 		fadeTime = dt;
 		this.do({ arg item; item.fadeTime = dt });
@@ -40,7 +39,7 @@ ProxySpace : EnvironmentRedirect {
 		proxy.fadeTime = 0.0;
 		proxy.source = tempo;
 		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds).permanent_(true);
-		envir.parent.put(\tempo, proxy);
+		envir.proto.put(\tempo, proxy);
 	}
 	
 	
@@ -54,12 +53,14 @@ ProxySpace : EnvironmentRedirect {
 			^proxy
 	}
 	
+	//////// redirects
+	
 	at { arg key;
 		var proxy;
 		proxy = super.at(key);
-		if(proxy.isNil, {
+		if(proxy.isNil) {
 			proxy = this.makeProxy(key);
-		});
+		};
 		^proxy
 	
 	}
@@ -67,6 +68,14 @@ ProxySpace : EnvironmentRedirect {
 	put { arg key, obj;
 		this.at(key).source = obj;
 	}
+	
+	removeAt { arg key;
+		var proxy;
+		proxy = envir.removeAt(key);
+		if(proxy.notNil) { proxy.clear };
+	}
+	
+	///////////////
 		
 	
 	play { arg key=\out, busIndex=0, nChan=2;
@@ -75,11 +84,7 @@ ProxySpace : EnvironmentRedirect {
 		});
 	}
 	
-	stop { arg key=\out, fadeTime;
-		^this.use({ arg envir;
-			this.at(key).stop(fadeTime);
-		});
-	}
+	stop { arg key=\out, fadeTime; this.at(key).stop(fadeTime) }
 	
 	record { arg key, path, headerFormat="aiff", sampleFormat="int16";
 		^this.use({ arg envir;
@@ -186,50 +191,14 @@ ProxySpace : EnvironmentRedirect {
 	}
 	postln { Post << this }
 		
-}
-
-//needs further testing
-
-SharedProxySpace  : ProxySpace {
+	//////// shared proxy space
 	
-	*new { arg router, name, clock, controlKeys, audioKeys, firstAudioKey=$s;
-		^super.new(router, name, clock).addSharedKeys(controlKeys, audioKeys, firstAudioKey)
-	}
-	
-	
-	*push { arg router, name, clock, controlKeys, audioKeys, firstAudioKey=$s;
-		^this.new(router, name, clock, controlKeys, audioKeys, firstAudioKey).push
-	}
-	
-	//default: initialize single letters as shared busses, 
-	//up to firstAudioKey control, the rest audio
-		
-	addSharedKeys { arg controlKeys, audioKeys, firstAudioKey;
-		var nControl, nAudio;
-		
-		nControl = firstAudioKey.digit - 10;
-		nAudio = 26 - nControl;
-		controlKeys = controlKeys ?? { this.defaultControlKeys(nControl) };
-		this.makeSharedProxy(controlKeys.removeAt(0), 'control', 8); // make multichannel proxy
-		controlKeys.do({ arg key; this.makeSharedProxy(key, 'control') });
-		
-		audioKeys = audioKeys ?? { this.defaultAudioKeys(nAudio, nControl) };
-		this.makeSharedProxy(audioKeys.removeAt(0), 'audio', 8); // make multichannel proxy
-		audioKeys.do({ arg key; this.makeSharedProxy(key, 'audio') });
-	}
-	
-	defaultControlKeys { arg n;
-		^Array.fill(n, { arg i; asSymbol(asAscii(97 + i)) })
-	}
-	defaultAudioKeys { arg n, offset;
-		^Array.fill(n, { arg i; asSymbol(asAscii(97 + offset + i)) }) 
-	}
-
-	makeSharedProxy { arg key, rate, numChannels;
-			var proxy, broadcast;
+	makeSharedProxy { arg key, rate=\audio, numChannels=2;
+			var proxy, broadcast, groupID;
 			broadcast = server.broadcast;
+			groupID = this.stringToNodeID(key.asString);
 			proxy = if(rate.isNil, {
-				SharedNodeProxy(broadcast)
+				SharedNodeProxy(broadcast, groupID)
 			},{
 				
 				SharedNodeProxy.perform(rate, broadcast, numChannels)
@@ -238,10 +207,50 @@ SharedProxySpace  : ProxySpace {
 			envir.put(key, proxy);
 			^proxy
 	}
+
+	// default: initialize single letters as shared busses, 
+	// up to firstAudioKey control, the rest audio
+	// in shared networks this has to be done initially, so server keys match.
 	
+	// todo: think about shared busses.
+	
+	addSharedKeys { arg controlKeys, audioKeys, firstAudioKey=$s;
+		var nControl, nAudio;
+		
+		nControl = firstAudioKey.digit - 10;
+		nAudio = 26 - nControl;
+		controlKeys = controlKeys ?? { this.class.defaultControlKeys(nControl) };
+		this.makeSharedProxy(controlKeys.removeAt(0), 'control', 8); // make 1 multichannel proxy
+		controlKeys.do({ arg key; this.makeSharedProxy(key, 'control') });
+		
+		audioKeys = audioKeys ?? { this.class.defaultAudioKeys(nAudio, nControl) };
+		this.makeSharedProxy(audioKeys.removeAt(0), 'audio', 8); // make multichannel proxy
+		audioKeys.do({ arg key; this.makeSharedProxy(key, 'audio') });
+	}
+	
+	*defaultControlKeys { arg n;
+		^Array.fill(n, { arg i; asSymbol(asAscii(97 + i)) })
+	}
+	*defaultAudioKeys { arg n, offset;
+		^Array.fill(n, { arg i; asSymbol(asAscii(97 + offset + i)) }) 
+	}
 
-
+	stringToNodeID { arg string;
+		var res=2;
+		string.do { arg char, i; 
+			var a;
+			a = char.ascii;
+			if(a < 97 or: a > 122) { Error("use only lower case letters in shared names").throw };
+			res = res + (a - 97 + (i * 26)); 
+		};
+		if(res > 999) // use nodeIDs between 2 and 999
+		{ÊError("this name" + string + "creates a too high node id. choose a shorter one").throw };
+		^res
+	}
+	
 }
+
+
 
 /*
 	to do: 
