@@ -14,7 +14,7 @@ Sheet {
 
 ModalDialog { // hit ok or cancel
 
-	*new { arg buildDialog,okFunc,name="?";
+	*new { arg buildDialog,okFunc,name="?",cancelFunc;
 	
 		Sheet({ arg layout;
 			var returnObjects;
@@ -28,6 +28,7 @@ ModalDialog { // hit ok or cancel
 			});
 			
 			ActionButton(layout,"Cancel",{
+				cancelFunc.value(returnObjects);
 				layout.close;
 			});
 		
