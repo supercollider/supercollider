@@ -1,6 +1,8 @@
 
 Buffer {
 
+	// don't use the setter methods for the vars below
+	// they're private and have no effect on the server
 	var <server, <bufnum, <>numFrames, <>numChannels, <>sampleRate;
 	var <>path, >doOnInfo;
 	
