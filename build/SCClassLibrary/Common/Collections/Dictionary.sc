@@ -273,7 +273,7 @@ IdentityDictionary : Dictionary {
 		/*
 		var index, atKey, prev;
 		index = this.scanFor(key);
-		prev = array.at(index);
+		prev = array.at(index + 1);
 		array.put(index+1, obj);
 		if ( array.at(index).isNil, {
 			array.put(index, key);
