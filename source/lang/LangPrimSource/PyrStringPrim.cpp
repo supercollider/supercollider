@@ -97,6 +97,7 @@ int prString_AsCompileString(struct VMGlobals *g, int numArgsPushed)
 		chars2[k++] = c;
 	}
 	SetObject(a, newString);
+	return errNone;
 }
 
 int memcmpi(char *a, char *b, int len)
@@ -262,6 +263,58 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */)
 	return errNone;
 }
 
+int prString_Find(struct VMGlobals *g, int numArgsPushed);
+int prString_Find(struct VMGlobals *g, int numArgsPushed)
+{	
+	PyrSlot *a = g->sp - 3; // source string
+	PyrSlot *b = g->sp - 2; // search string
+	PyrSlot *c = g->sp - 1; // offset
+	PyrSlot *d = g->sp;		// ignoreCase
+	
+	int offset;
+	int err = slotIntVal(c, &offset);
+	if (err) return err;
+
+	int alength = a->uo->size - offset;
+	int blength = b->uo->size;
+	
+	if (!isKindOfSlot(b, class_string)
+            || (alength <= 0)
+            || (blength == 0)
+                // should also return false if search string is longer than source
+            || (blength > alength)) {
+		SetFalse(a);
+		return errNone;
+	}
+            
+	int cmp = 1;	// assume contains will be false
+	char *achar = a->uos->s + offset;
+	char *bchar = b->uos->s;
+	char bchar0 = bchar[0];
+	int scanlength = alength - blength;
+	if (IsTrue(d)) {
+		for (int i=0; i <= scanlength; ++i, ++achar) {
+			if (*achar == bchar0) {
+				cmp = memcmpi(achar+1, bchar+1, blength-1);
+				if (cmp == 0) break;
+			}
+		}
+	} else {
+		for (int i=0; i <= scanlength; ++i, ++achar) {
+			if (*achar == bchar0) {
+				cmp = memcmp(achar+1, bchar+1, blength-1);
+				if (cmp == 0) break;
+			}
+		}
+	}
+	if (cmp == 0) {
+		SetInt(a, achar - a->uos->s);
+	} else {
+		SetNil(a);
+	}
+	return errNone;
+}
+
 void initStringPrimitives();
 void initStringPrimitives()
 {
@@ -278,8 +331,8 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_String_AsCompileString", prString_AsCompileString, 1, 0);	
 	definePrimitive(base, index++, "_String_Getenv", prString_Getenv, 1, 0);
     definePrimitive(base, index++, "_String_Setenv", prString_Setenv, 2, 0);
+    definePrimitive(base, index++, "_String_Find", prString_Find, 4, 0);
 }
-
 
 #if _SC_PLUGINS_
 

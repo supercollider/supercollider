@@ -96,51 +96,23 @@ String[char] : RawArray {
 	}
 	
 	containsStringAt { arg index, string;
-		if (string.size > (this.size - index), { ^false });
-		string.do({ arg char, i;
-				if(char != this.at(index + i), { ^false })
-		});
-		^true
-	}
-	
-	
-	// case insensitive
-	
-	icontainsStringAt { arg index, string;		if (string.size > (this.size - index), { ^false });		string.do({ arg char, i;			if (this.at(index + i).toLower != char.toLower, { ^false });		})		^true	}
-	
-	contains { arg string;
-		var firstChar;
-		firstChar = string.at(0);
-		this.do({	arg char,i;
-			if(char == firstChar,{
-				if(this.containsStringAt(i, string), { ^true });
-			})
-		});
-		^false
-	}
-	
-	// case insensitive
-	containsi { arg string;
-		var firstChar;
-		firstChar = string.at(0);
-		this.do({	arg char,i;
-			if((char.toLower == firstChar) or: (char.toUpper == firstChar),{
-				if(this.icontainsStringAt(i, string), { ^true });
-			})
-		});
-		^false
+		^compare( this[index..index + string.size-1], string, false) == 0
 	}
 
-	find { arg string;
-		// returns the index of the substring, or nil if not found
-		var firstChar;
-		firstChar = string.at(0);
-		this.do({	arg char,i;
-			if(char == firstChar,{
-				if(this.containsStringAt(i, string), { ^i });
-			})
-		});
-		^nil
+	icontainsStringAt { arg index, string;
+		^compare( this[index..index + string.size-1], string, true) == 0
+	}
+		
+
+	contains { arg string, offset = 0;
+		^this.find(string, offset, false).notNil
+	}
+	containsi { arg string, offset = 0;
+		^this.find(string, offset, true).notNil
+	}
+	find { arg string, offset = 0, ignoreCase = false;
+		_String_Find
+		^this.primitiveFailed
 	}
 	
 
