@@ -1,5 +1,6 @@
 // this is probably not working anymore. see NetAddr.sc instead for the newer way.
 
+/*
 // Open Sound Control support
 
 OSCNode {
@@ -232,4 +233,6 @@ OSCOutPort : OSCPort {
 		^this.primitiveFailed;
 	}
 }
+*/
+
 
