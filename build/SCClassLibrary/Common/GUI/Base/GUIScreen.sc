@@ -3,6 +3,7 @@ SCWindow {
 	classvar <>allWindows;
 	
 	var dataptr, <name, <>onClose, <view, <userCanClose=true;
+	var <alwaysOnTop=false;
 	
 	*initClass {
 		UI.registerForShutdown({ this.closeAll });
@@ -56,6 +57,16 @@ SCWindow {
 		_SCWindow_ToFront
 		^this.primitiveFailed
 	}
+	
+	alwaysOnTop_{|boolean=true|
+		alwaysOnTop = boolean;
+		this.prSetAlwaysOnTop(boolean);	
+	}
+	
+	prSetAlwaysOnTop{|boolean=true|
+		_SCWindow_AlwaysOnTop	
+	}
+	
 	refresh {
 		_SCWindow_Refresh
 		^this.primitiveFailed
