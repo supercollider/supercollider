@@ -65,15 +65,6 @@ EnvGen : UGen { // envelope generator
 	}
 }
 
-//BufEnvGen : UGen { // envelope generator	
-//	*ar { arg bufnum, gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction = 0;
-//		^this.multiNew('audio', bufnum, gate, levelScale, levelBias, timeScale, doneAction)
-//	}
-//	*kr { arg bufnum, gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction = 0;
-//		^this.multiNew('control', bufnum, gate, levelScale, levelBias, timeScale, doneAction)
-//	}
-//}
-
 Linen : UGen {
 	*kr { arg gate = 1.0, attackTime = 0.01, susLevel = 1.0, releaseTime = 1.0, doneAction = 0;
 		^this.multiNew('control', gate, attackTime, susLevel, releaseTime, doneAction)
