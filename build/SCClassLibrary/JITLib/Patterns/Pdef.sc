@@ -204,7 +204,7 @@ Tdef : TaskProxy {
 
 EventPatternProxy : TaskProxy {
 	var <>fadeTime;
-	classvar <>defaultQuant=1.0;
+	classvar <>defaultQuant=1.0, <>preRoll;
 	
 	source_ { arg item;
 		if(item.isKindOf(Function)) // allow functions to be passed in
@@ -214,29 +214,35 @@ EventPatternProxy : TaskProxy {
 	}
 	
 	*default { ^Pbind(\freq, \rest) }
-	
+		
 	constrainStream { arg str;
-		var dt, tolerance;
+		var delta, tolerance, new;
 		^if(quant.notNil) {
-			dt = clock.timeToNextBeat(quant);
+			delta = clock.timeToNextBeat(quant);
 			tolerance = if(quant.isSequenceableCollection) { quant[0] } {Êquant };
-			tolerance = tolerance % dt % 0.125;
+			tolerance = tolerance % delta % 0.125;
+			
+			if(preRoll.notNil and: { quant > preRoll }) {
+				new = pattern.asStream;
+				delta = new.fastForward(quant - delta, tolerance);
+			} {
+				new = pattern
+			};
+			
 			if(fadeTime.isNil) {
-				if(dt < 0.01) { 
+				if(delta < 0.01) { 
 					Routine({ arg inval;
-						Event.silent(dt).yield;
-						pattern.embedInStream(inval)
+						Event.silent(delta).yield;
+						new.embedInStream(inval)
 					})
 				}{	
-					Pseq([
-						Pfindur(dt, str, tolerance),
-						pattern
-					])
+					Pseq([ Pfindur(delta, str, tolerance), new ])
+					
 				}
 			}{
 				Ppar([
-					PfadeOut(str, fadeTime, dt, tolerance),
-					PfadeIn(pattern, fadeTime, dt, tolerance)
+					PfadeOut(str, fadeTime, delta, tolerance),
+					PfadeIn(new, fadeTime, delta, tolerance)
 				])
 			}
 		} { pattern }.asStream
