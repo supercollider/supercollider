@@ -10,12 +10,12 @@ BroadcastServer : Server {
 				.ninit(localServer.name.asString ++ "_broadcast")
 				.allAddr_(allAddr)
 	}
-	// doesn't work currently
+	
 	autoConfigure { arg getAnyApplication=false;
 		var addr;
 		addr = Set.new;
 		OSCService.knownServices.do({ arg item;
-			if(getAnyApplication || (item.name == "SuperCollider"), {
+			if(getAnyApplication or: {item.name == "SuperCollider"}, {
 				addr = addr.add(NetAddr(item.hostname, item.port));
 				[item.name, item.hostname, item.port].postln;
 			});
