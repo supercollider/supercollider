@@ -141,7 +141,6 @@ void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
 					packet->addtag('b');
 					scpacket packet2;
 					makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);
-					printf("bb %d\n", packet2.size());
 					packet->addb((uint8*)packet2.data(), packet2.size());
 				} else {
 					packet->addtag('i');
