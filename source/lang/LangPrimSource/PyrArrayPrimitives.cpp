@@ -2173,11 +2173,16 @@ int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
 					level = begLevel + (endLevel - begLevel) * (-cos(pi * pos) * 0.5 + 0.5);
 					break;
 				case shape_Welch :
+				{
+					double pos1 = 1. - pos;
 					if (begLevel < endLevel)
 						level = begLevel + (endLevel - begLevel) * sin(pi2 * pos);
+						//level = endLevel - (endLevel - begLevel) * (pos1 * pos1);
 					else 
-						level = begLevel + (endLevel - begLevel) * sin(pi2 - pi2 * pos);
+						level = endLevel - (endLevel - begLevel) * sin(pi2 - pi2 * pos);
+						//level = begLevel + (endLevel - begLevel) * (pos * pos);
 					break;
+				}
 				case shape_Curve :
 					err = slotDoubleVal(slots + 3, &curve);
 					if (err) return err;
