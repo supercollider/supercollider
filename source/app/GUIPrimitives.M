@@ -267,12 +267,13 @@ int prTextWindow_SetFont(struct VMGlobals *g, int numArgsPushed)
         if (!doc) return errFailed;
 		
 		NSString* string = [[doc textView] string];
-		
+		int length = [string length];
+		if(length < 1) return errFailed;
 		if(rangeStart < 0){
 			[[doc textView] setFont: font];
 			return errNone;
 		}
-		int length = [string length];
+		
 		if(rangeStart >= length) rangeStart = length - 1 ;
 		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
 		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
@@ -551,6 +552,11 @@ int prTextWindow_TextWithRange(struct VMGlobals *g, int numArgsPushed)
         if (!doc) return errFailed;
 		NSString* string = [[doc textView] string];
 		int length = [string length];
+		if(length < 1) 
+		{
+			SetNil(a);
+			return errNone;
+		}
 		if(rangeStart >= length) rangeStart = length - 1 ;
 		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart - 1;
 		
@@ -560,7 +566,6 @@ int prTextWindow_TextWithRange(struct VMGlobals *g, int numArgsPushed)
         [str getCString: cstr];
         PyrString *pstring = newPyrString(g->gc, cstr, 0, true);
         SetObject(a, pstring);
-
 		return errNone;
 }
 
