@@ -171,6 +171,7 @@ Function : AbstractFunction {
 	}
 
 	r { ^Routine(this) }
+	p { ^Prout(this) }
 	
 	matchItem { arg item;
 		^this.value(item)
