@@ -17,7 +17,7 @@
 	valueForRate { arg ... args;
 		var buildSynthDef, res;
 		buildSynthDef = UGen.buildSynthDef;
-		UGen.buildSynthDef = SynthDef("temp", { 0.0 }); //ugly hack, but well.
+		UGen.buildSynthDef = SynthDef("temp", { arg i_i; i_i }); //ugly hack, but well.
 		res = this.valueArray(args);
 		UGen.buildSynthDef = buildSynthDef;
 		^res
