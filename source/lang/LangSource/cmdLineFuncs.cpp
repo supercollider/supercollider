@@ -128,6 +128,12 @@ void initCocoaFilePrimitives()
 {
 }
 
+// CR ADDED
+void initRendezvousPrimitives();
+void initRendezvousPrimitives()
+{
+}
+
 bool compileLibrary();
 void runLibrary(PyrSymbol* selector); 
 

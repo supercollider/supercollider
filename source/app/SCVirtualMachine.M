@@ -24,6 +24,9 @@
 #include "ChangeCounter.h"
 #include "SCGraphView.h"
 
+// CR ADDED
+#import "RendezvousClient.h"
+
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "GC.h"
@@ -105,6 +108,9 @@ static id sharedSCVM = nil;
 	init_OSC(57120);
 	schedInit();
 	compileLibrary();
+	
+	// CR ADDED
+	[[RendezvousClient sharedClient] findOSCServices];
 }
 
 - (void)doPeriodicTask: (NSTimer*) timer
