@@ -101,18 +101,19 @@ Event : Environment {
 				(~midinote.value + ~ctranspose).midicps;
 			};
 			
-			~env = Env.asr(0.01, 1.0, 0.5);
-			~envgen = { EnvGen.kr(~env, 1, ~amp) };
+			
 
 			~chanOffset = 0;
 			~instrument = \default;
 			~wavetable = Wavetable.sineFill(1024, 1/[1,2,3,4,5,6]);
-			~ugenFunc = { 
-				Library.at(\instruments, ~instrument).ugenFunc.valueEnvir; 
-			};
 			
-			~argNames = #[\freq, \amp, \pan];
-			//~group = 0;
+			
+			~argNames = #[\freq, \amp, \pan, \gate, \out];
+			~group = 0;
+			~out = 0;
+			~doneAction = 2;
+			~releaseValue = 0; // sent to gate on release
+			~gate = 1.0;
 			
 			~finish = {
 				// do final calculations
