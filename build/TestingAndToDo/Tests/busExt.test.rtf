@@ -21,7 +21,7 @@ c = Synth("\cf3 help-busGate", [\\out, 1]);\
 \cf0 d = Synth("\cf3 help-busGate", [\\out, 0]);\cf0 \
 \
 c.map(\\freq, a.index);\
-d.map(\\freq, a.index);\
+d.map(\\freq, a.index+1);\
 \
 a.value = 300;\
 \
