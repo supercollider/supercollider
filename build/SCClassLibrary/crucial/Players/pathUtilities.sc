@@ -55,7 +55,7 @@
 		^Document.abrevPath(this)
 	}
 	openDocument {
-		^Document(this).showWindow
+		^Document.open(this)
 	}
 	guiDocument {
 		var doc;
