@@ -600,20 +600,7 @@ int prTextWindow_UnfocusedFront(struct VMGlobals *g, int numArgsPushed)
         return errNone;
 }
 
-int prTextWindow_Current(struct VMGlobals *g, int numArgsPushed);
-int prTextWindow_Current(struct VMGlobals *g, int numArgsPushed)
-{
-        if (!g->canCallOS) return errCantCallOS;
 
-		PyrSlot *a = g->sp;
-		NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
-        if (!docctl) return errFailed;
-		MyDocument* doc = [docctl currentDocument];
-        if (!doc) return errFailed;
-		int index = [[docctl documents] indexOfObject: doc];
-		SetInt(a, index);
-        return errNone;
-}
 extern NSTextView *gPostView;
 
 int prTextWindow_GetIndexOfListener(struct VMGlobals *g, int numArgsPushed);
@@ -641,14 +628,13 @@ int prNewTextWindow(struct VMGlobals *g, int numArgsPushed)
         if (!g->canCallOS) return errCantCallOS;
 		
         PyrSlot *d = g->sp - 3;
-	
-        PyrSlot *a = g->sp - 2;
-		PyrSlot *b = g->sp - 1;
+		PyrSlot *titleSlot = g->sp - 2;
+        PyrSlot *stringSlot = g->sp - 1;
 		PyrSlot *c = g->sp;
         
-		if (!(isKindOfSlot(a, class_string))) return errWrongType;
+		if (!(isKindOfSlot(stringSlot, class_string))) return errWrongType;
 
-        PyrString* string = a->uos;
+        PyrString* string = stringSlot->uos;
         NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
         if (!docctl) return errFailed;
 		docCreatedFromLang = true;
@@ -666,8 +652,8 @@ int prNewTextWindow(struct VMGlobals *g, int numArgsPushed)
 			docCreatedFromLang = false;
 			return errFailed;
 		}        
-		if (isKindOfSlot(b, class_string)) {
-            PyrString* title = b->uos;
+		if (isKindOfSlot(titleSlot, class_string)) {
+            PyrString* title = titleSlot->uos;
             NSString *nstitle = [NSString stringWithCString: title->s length: title->size];
             [window setTitle: nstitle];
         }
@@ -681,6 +667,7 @@ int prNewTextWindow(struct VMGlobals *g, int numArgsPushed)
 		docCreatedFromLang = false;
 	return errNone;
 }
+
 
 int prOpenTextFile(struct VMGlobals *g, int numArgsPushed);
 int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
@@ -2440,7 +2427,7 @@ void initGUIPrimitives()
         s_closed = getsym("closed");
         s_tick = getsym("tick");
         s_doaction = getsym("doAction");
-	s_didBecomeKey = getsym("didBecomeKey");
+		s_didBecomeKey = getsym("didBecomeKey");
         s_didResignKey = getsym("didResignKey");
 
 	base = nextPrimitiveIndex();
@@ -2459,7 +2446,6 @@ void initGUIPrimitives()
 	}
 	definePrimitive(base, index++, "_TextWindow_ToFront", prTextWindow_ToFront, 1, 0);	
 	definePrimitive(base, index++, "_TextWindow_SelectedText", prTextWindow_SelectedText, 1, 0);
-	definePrimitive(base, index++, "_TextWindow_Current", prTextWindow_Current, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_InsertText", prTextWindow_InsertText, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_InsertTextInRange", prTextWindow_InsertTextInRange, 4, 0);
 	definePrimitive(base, index++, "_TextWindow_GetByIndex", prTextWindow_GetByIndex, 2, 0);
