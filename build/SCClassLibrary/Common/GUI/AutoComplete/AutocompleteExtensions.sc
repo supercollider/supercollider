@@ -16,7 +16,7 @@
 	*allowAutoComp { ^true }		// maybe you want to turn off the IDE features
 
 	*autoComplete {
-		^Document.new.ac;
+		^Document.new.autoComplete;
 	}
 
 	autoComplete {	// enable ide for this document
