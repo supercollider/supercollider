@@ -344,6 +344,14 @@ Collection {
 	}
 	
 	// Synth support
+	writeDefFile { arg name,dir="synthdefs/";
+		var file;
+		
+		if (name.isNil, { error("no file name"); ^nil });
+		file = File(dir ++ name ++ ".scsyndef", "w");
+		this.writeDef(file);
+	}
+	
 	writeDef { arg file;
 		file.putString("SCgf");
 		file.putInt32(0); // file version
