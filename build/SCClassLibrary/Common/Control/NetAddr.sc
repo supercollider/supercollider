@@ -4,8 +4,9 @@ NetAddr {
 	classvar connections;
 
 	*initClass {
+		connections = IdentityDictionary.new;
 		UI.registerForShutdown({
-			this.disconnectAll
+			this.disconnectAll;
 		});
 	}
 
@@ -23,10 +24,9 @@ NetAddr {
 		^this.primitiveFailed;
 	}
 	*disconnectAll {
-		connections.copy.do({ | netAddr |
+		connections.keys.do({ | netAddr |
 			netAddr.disconnect;
 		});
-		connections = nil;
 	}
 
 	hostname_ { arg inHostname;
@@ -51,15 +51,16 @@ NetAddr {
 	isConnected {
 		^socket.notNil
 	}
-	connect {
+	connect { | disconnectHandler |
 		if (this.isConnected.not) {
 			this.prConnect;
-			connections = connections.add(this);
+			connections.put(this, disconnectHandler);
 		};
 	}
 	disconnect {
 		if (this.isConnected) {
 			this.prDisconnect;
+			this.prConnectionClosed;
 		};
 	}
 	
@@ -94,11 +95,9 @@ NetAddr {
 		^this.primitiveFailed;
 	}
 	prConnectionClosed {
-		// called from the recv thread when connection is closed
-		// either by sclang or by peer
-		if (connections.notNil) {
-			connections.remove(this);
-		};
+		// called when connection is closed either by sclang or by peer
+		socket = nil;
+		connections.removeAt(this).value(this);
 	}
 	recover { ^this }
 }

@@ -508,6 +508,8 @@ void* SC_TcpClientPort::Run()
 	int sockfd = mSocket;
 	int nfds = sc_max(cmdfd, sockfd) + 1;
 
+	bool cmdClose = false;
+	
 	pthread_detach(mThread);
 
 	while (true) {
@@ -516,7 +518,7 @@ void* SC_TcpClientPort::Run()
 		FD_SET(cmdfd, &rfds);
 		FD_SET(sockfd, &rfds);
 
-		if ((select(nfds, &rfds, 0, 0, 0) == -1) || FD_ISSET(cmdfd, &rfds))
+		if ((select(nfds, &rfds, 0, 0, 0) == -1) || (cmdClose = FD_ISSET(cmdfd, &rfds)))
 			goto leave;
 
 		if (!FD_ISSET(sockfd, &rfds))
@@ -553,9 +555,11 @@ leave:
 		free(packet->mData);
 		free(packet);
 	}
-	if (mClientNotifyFunc) {
+	// Only call notify function when not closed explicitly
+	if (!cmdClose && mClientNotifyFunc) {
 		(*mClientNotifyFunc)(mClientData);
 	}
+	delete this;
     return 0;
 }
 

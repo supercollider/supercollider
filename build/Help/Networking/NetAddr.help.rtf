@@ -45,12 +45,15 @@ superclass: Objects\
 \f2\b0 	send a raw message without timestamp to the addr.\
 	\
 	
-\f0\b connect
-\f2\b0 				open connection again after disconnect\
+\f0\b connect(disconnectHandler)
+\f2\b0 		open TCP connection. 
+\f0\b disconnectHandler
+\f2\b0  is called when\
+						the connection is closed (either by the client or by the server)\
 	\
 	
 \f0\b disconnect
-\f2\b0 			close connection\
+\f2\b0 			close TCP connection\
 	\
 	
 \f0\b ip 
@@ -60,10 +63,9 @@ superclass: Objects\
 \f1\fs18 n = NetAddr("localhost", 57110);\
 						n.ip;\
 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 	*disconnectAll			
-\f2\b0 close all connections\
+\f0\b\fs24 	*disconnectAll			
+\f2\b0 close all TCP connections\
 	\
 	\
 	\
@@ -71,6 +73,7 @@ superclass: Objects\
 
 \f1\fs18 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // example\cf0 \
 \
 \

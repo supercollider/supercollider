@@ -355,17 +355,11 @@ void netAddrTcpClientNotifyFunc(void *clientData)
 	pthread_mutex_lock(&gLangMutex);
 	if (compiledOK) {
 		PyrObject* netAddrObj = (PyrObject*)clientData;
-		SC_TcpClientPort* comPort = (SC_TcpClientPort*)(netAddrObj->slots + ivxNetAddr_Socket)->uptr;
-
-		if (comPort) {
-			delete comPort;
-			SetNil(netAddrObj->slots + ivxNetAddr_Socket);
-			VMGlobals* g = gMainVMGlobals;
-			g->canCallOS = false;
-			++g->sp; SetObject(g->sp, netAddrObj);
-			runInterpreter(g, getsym("prConnectionClosed"), 1);
-			g->canCallOS = false;
-		}
+		VMGlobals* g = gMainVMGlobals;
+		g->canCallOS = false;
+		++g->sp; SetObject(g->sp, netAddrObj);
+		runInterpreter(g, getsym("prConnectionClosed"), 1);
+		g->canCallOS = false;
 	}
 	pthread_mutex_unlock(&gLangMutex);
 }
