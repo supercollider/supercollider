@@ -183,17 +183,23 @@ SoundDefControl : SynthDefControl {
 
 
 CXPlayerControl : AbstractPlayControl {
+	//here the lazy bus init happens and allocation of ressources
 	build { arg proxy;
-		source.asSynthDef;//build synthDef
+		//source.asSynthDef;//build synthDef
+		source.prepareForPlay(bus: proxy.bus.copy); //don't know why it has to be here, but well.
 		^proxy.initBus(source.rate, source.numChannels);
 	}
+	
 	playToBundle { arg bundle, extraArgs, proxy;
 		var bus, group;
-		bus = proxy.bus;
+		bus = proxy.bus.copy; //needs a copy, otherwise player frees my bus when stopped
 		group = proxy.group;
-		source.prepareForPlay(group, false, bus);
-		source.spawnOnToBundle(group, bus, bundle);
+		source.prepareForPlay(group, true, bus);				source.spawnOnToBundle(group, bus, bundle);
 		^source.synth;
+	}
+	stopToBundle { arg bundle;
+		bundle.addFunction({ source.stopSynthToBundle(bundle) });
+		//bundle.addFunction({ source.free })
 	}
 	stop {
 		source.stop; //release? proxy time
