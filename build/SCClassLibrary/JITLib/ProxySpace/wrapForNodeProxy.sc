@@ -271,17 +271,21 @@
 	}
 }
 
+
 + EnvGen {
 	canFreeSynth {
-		^if(inputs.at(4) > 1, { //doneAction
-			if(inputs.at(7) != -99 and: { inputs.at(0).isNumber }, { //releaseNode, gate
-				false
-			}, {
-				true
-			})
-		}, { 
-			false 
-		})
+		^(inputs.at(4) > 1) and: //doneAction
+			{ // it can happen that the gate is 1 and the envelope runs out
+				inputs.at(0).isNumber.not or: //variable gate
+				{ inputs.at(7) == -99 }		//or self releasing envelope
+			}
+		
+	}
+}
+
++ Linen {
+	canFreeSynth {
+		^(inputs.at(4) > 1) and: { inputs.at(0).isNumber.not }
 	}
 }
 
