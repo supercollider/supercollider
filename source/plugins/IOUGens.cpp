@@ -969,10 +969,14 @@ void OffsetOut_next_a(OffsetOut *unit, int inNumSamples)
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out+=bufLength, saved += offset) {
 		float *in = IN(i+1);
+		//Print("out %d  %d %d  %d %d\n", 
+		//	i, touched[i] == bufCounter, unit->m_empty,
+		//	offset, remain);
+			
 		if (touched[i] == bufCounter) {
 			if (unit->m_empty) {
 				unit->m_empty = false;
-				Print("touched offset %d\n", offset);
+				//Print("touched offset %d\n", offset);
 			} else {
 				Accum(offset, out, saved);
 			}
@@ -981,7 +985,7 @@ void OffsetOut_next_a(OffsetOut *unit, int inNumSamples)
 			if (unit->m_empty) {
 				Clear(offset, out);
 				unit->m_empty = false;
-				Print("untouched offset %d\n", offset);
+				//Print("untouched offset %d\n", offset);
 			} else {
 				Copy(offset, out, saved);
 			}
@@ -989,7 +993,7 @@ void OffsetOut_next_a(OffsetOut *unit, int inNumSamples)
 			touched[i] = bufCounter;
 		}
 		Copy(offset, saved, in + remain);
-		//Print("out %d %g %g\n", i, in[0], out[0]);
+		//Print("out %d %d %d  %g %g\n", i, in[0], out[0]);
 	}
 }
 
