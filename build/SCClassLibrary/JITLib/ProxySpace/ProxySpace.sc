@@ -207,3 +207,46 @@ SharedProxySpace  : ProxySpace {
 
 
 }
+
+/*
+	to do: 
+	-node map thing
+	-lazy init
+*/
+PlayerSpace : ProxySpace {
+	
+	makeProxy { arg key;
+			var proxy;
+			proxy = PlayerSocket(\audio, 2, server); //for now..
+			envir.put(key, proxy);
+			^proxy
+	}
+
+
+	at { arg key;
+		var proxy;
+		proxy = super.at(key);
+		if(proxy.isNil, {
+			proxy = this.makeProxy(key);
+		});
+		^proxy
+	
+	}
+	
+	put { arg key, obj;
+		var proxy;
+		proxy = envir.at(key);
+		if(proxy.isNil, {
+			proxy = this.makeProxy(key);
+		}, {
+			if(obj.isNil, { 
+				proxy.free; 
+				this.removeAt(key);  
+			});
+			
+		});
+		proxy.prepareAndSpawn(obj, 0.1); //(-1, obj, 0);
+	}
+
+}
+
