@@ -1506,7 +1506,7 @@ void EnvGen_Ctor(EnvGen *unit)
 	// level0, numstages, releaseNode, loopNode,
 	// [level, dur, shape, curve]
 		
-	unit->m_endLevel = unit->m_level = ZIN0(kEnvGen_initLevel);
+	unit->m_endLevel = unit->m_level = ZIN0(kEnvGen_initLevel) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
 	unit->m_counter = 0;
 	unit->m_stage = 1000000000;
 	unit->m_prevGate = 0.f;
