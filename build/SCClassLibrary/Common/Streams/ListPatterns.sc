@@ -142,32 +142,29 @@ Pfsm : ListPattern {
 }
 
 Pdfsm : ListPattern {
-	var >startState, >signalStream;
-	*new { arg startState=0, repeats=1, signalStream=0 ... states;
-		^super.new( states, repeats )
-			.startState_(startState).signalStream_(signalStream)
-	}
+	var >startState;
+	*new { arg list, startState=0, repeats=1;
+		^super.new( list, repeats ).startState_(startState)	}
 	asStream {
 		^Routine({ arg inval;
-			var currState, sigStream;
+			var currState, sigStream, numStates;
 			var sig, state, stream;
+			numStates = list.size - 1;
 			repeats.do({
 				
 				currState = startState;
-				sigStream = signalStream.asStream;
+				sigStream = list[0].asStream;
 				
 				while({
 					sig = sigStream.next;
-					if( sig.isNil, { false }, {
-						state = list[currState];
-						if( state.isNil, { false }, {
-							if( state.includesKey(sig), {
-								#currState, stream = state[sig];
-							}, {
-								#currState, stream = state[\default];
-							});
-							currState.notNil;
-						})
+					state = list[currState + 1];
+					if( sig.isNil || state.isNil, { false }, {
+						if( state.includesKey(sig), {
+							#currState, stream = state[sig];
+						}, {
+							#currState, stream = state[\default];
+						});
+						currState.notNil and: {currState < numStates};
 					})
 				}, {
 					inval = stream.embedInStream(inval);
@@ -176,7 +173,6 @@ Pdfsm : ListPattern {
 		})
 	}
 }
-
 	
 //Ppar : ListPattern {
 //	initStreams { arg priorityQ;
