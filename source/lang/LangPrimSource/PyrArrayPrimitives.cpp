@@ -150,7 +150,6 @@ int basicAt(struct VMGlobals *g, int numArgsPushed)
 	
 	int err = slotIntVal(b, &index);
 	if (!err) {
-		index = b->ui;
 		if (index < 0 || index >= obj->size) {
 			a->ucopy = o_nil.ucopy;
 		} else {
@@ -189,12 +188,14 @@ int basicRemoveAt(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 	
 	if (a->utag != tagObj) return errWrongType;
-	if (b->utag != tagInt) return errIndexNotAnInteger;
+	int err = slotIntVal(b, &index);
+	if (err) return errWrongType;
+	
 	obj = a->uo;
 	if (obj->obj_flags & obj_immutable) return errImmutableObject;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
-	index = b->ui;
+
 	if (index < 0 || index >= obj->size) return errIndexOutOfRange;
 	switch (obj->obj_format) {
 		case obj_slot :
@@ -257,12 +258,14 @@ int basicTakeAt(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 	
 	if (a->utag != tagObj) return errWrongType;
-	if (b->utag != tagInt) return errIndexNotAnInteger;
+	int err = slotIntVal(b, &index);
+	if (err) return errWrongType;
+
 	obj = a->uo;
 	if (obj->obj_flags & obj_immutable) return errImmutableObject;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
-	index = b->ui;
+
 	lastIndex = obj->size - 1;
 	if (index < 0 || index >= obj->size) return errIndexOutOfRange;
 	switch (obj->obj_format) {
@@ -334,8 +337,9 @@ int basicWrapAt(struct VMGlobals *g, int numArgsPushed)
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
 		
-	if (b->utag == tagInt) {
-		index = b->ui;
+	int err = slotIntVal(b, &index);
+
+	if (!err) {
 		index = sc_mod((int)index, (int)obj->size);
 		getIndexedSlot(obj, a, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
@@ -369,8 +373,9 @@ int basicFoldAt(struct VMGlobals *g, int numArgsPushed)
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
 		
-	if (b->utag == tagInt) {
-		index = b->ui;
+	int err = slotIntVal(b, &index);
+
+	if (!err) {
 		index = sc_fold(index, 0, obj->size);
 		getIndexedSlot(obj, a, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
@@ -404,8 +409,9 @@ int basicClipAt(struct VMGlobals *g, int numArgsPushed)
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
 		
-	if (b->utag == tagInt) {
-		index = b->ui;
+	int err = slotIntVal(b, &index);
+
+	if (!err) {
 		index = sc_clip(index, 0, obj->size - 1);
 		getIndexedSlot(obj, a, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
@@ -442,8 +448,9 @@ int basicPut(struct VMGlobals *g, int numArgsPushed)
 		return errNotAnIndexableObject;
 
 	if (a->utag != tagObj) return errWrongType;
-	if (b->utag == tagInt) {
-		index = b->ui;
+	int err = slotIntVal(b, &index);
+
+	if (!err) {
 		if (index < 0 || index >= obj->size) return errIndexOutOfRange;
 		return putIndexedSlot(g, obj, c, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
@@ -477,8 +484,9 @@ int basicClipPut(struct VMGlobals *g, int numArgsPushed)
 		return errNotAnIndexableObject;
 
 	if (a->utag != tagObj) return errWrongType;
-	if (b->utag == tagInt) {
-		index = b->ui;
+	int err = slotIntVal(b, &index);
+
+	if (!err) {
 		index = sc_clip(index, 0, obj->size);
 		return putIndexedSlot(g, obj, c, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
@@ -512,8 +520,9 @@ int basicWrapPut(struct VMGlobals *g, int numArgsPushed)
 		return errNotAnIndexableObject;
 
 	if (a->utag != tagObj) return errWrongType;
-	if (b->utag == tagInt) {
-		index = b->ui;
+	int err = slotIntVal(b, &index);
+
+	if (!err) {
 		index = sc_mod((int)index, (int)obj->size);
 		return putIndexedSlot(g, obj, c, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
@@ -547,8 +556,9 @@ int basicFoldPut(struct VMGlobals *g, int numArgsPushed)
 		return errNotAnIndexableObject;
 
 	if (a->utag != tagObj) return errWrongType;
-	if (b->utag == tagInt) {
-		index = b->ui;
+	int err = slotIntVal(b, &index);
+
+	if (!err) {
 		index = sc_fold(index, 0, obj->size);
 		return putIndexedSlot(g, obj, c, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
