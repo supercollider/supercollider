@@ -137,6 +137,7 @@ supported inputs
 	Symbol					plays a synth from the def with this name\
 	Pattern					played as event pattern\
 	Stream					played as event stream\
+	nil						removes all objects\
 	Pdef						played like a stream\
 	Task						played, no output assigned\
 	Tdef						played like Task\
@@ -310,7 +311,7 @@ supported inputs
 		
 \f3\b0 gate my bus to the level value for dur time\
 		\
-	\cf2 //do not work properly yet !\cf0 \
+	\cf2 // do not work properly yet !\cf0 \
 	
 \f1\b lineAt(key, value, dur)\
 		
@@ -354,6 +355,7 @@ supported inputs
 \f3\b0 send a new synth without releasing the old one.\
 		the argument list is applied to the synth only.\
 		freeLast: if to free the last synth at that index\
+		if index is nil, sends all\
 		\
 	
 \f1\b sendAll(argList, freeLast)\
@@ -455,8 +457,7 @@ supported inputs
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //examples\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // examples\
 \cf0 s = Server.local;\
 s.boot;\
 \
@@ -468,69 +469,63 @@ s.boot;\
 \
 \
 a = \cf3 NodeProxy.audio\cf0 (s, 2);\
-a.play; \cf2 //play to hardware output, return a group with synths\
+a.play; \cf2 // play to hardware output, return a group with synths\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //setting the source\cf0 \
+\cf2 // setting the source\cf0 \
 a.source = \{ \cf3 SinOsc\cf0 .ar([350, 351.3], 0, 0.2) \};\
 \
-\cf2 //the proxy has two channels now:\cf0 \
+\cf2 // the proxy has two channels now:\cf0 \
 a.numChannels.postln;\
 a.source = \{ \cf3 SinOsc\cf0 .ar([390, 286] * 1.2, 0, 0.2) \};\
 \
-\cf2 //exeeding channels wrap:\cf0 \
+\cf2 // exeeding channels wrap:\cf0 \
 a.source = \{ \cf3 SinOsc\cf0 .ar([390, 286, 400, 420, 300] * 1.2, 0, 0.2) \};\
 \
-\cf2 //other inputs\cf0 \
+\cf2 // other inputs\cf0 \
 a.source = \{ \cf3 WhiteNoise\cf0 .ar([0.01,0.01]) \};\
 a.source = 0;\
-a.source = \cf4 \\default\cf0 ; \cf2 //synthDef on server\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+a.source = \cf4 \\default\cf0 ; \cf2 // synthDef on server\
 \cf0 a.source = \cf3 SynthDef\cf0 (\cf5 "w"\cf0 , \{ \cf3 arg\cf0  out=0; \cf3 Ou\cf0 t.ar(out,\cf3 SinOsc\cf0 .ar([\cf3 Rand\cf0 (430, 600), 600], 0, 0.2)) \});\
-a.source = \cf3 nil\cf0 ; \cf2 // removes any object\cf0 \
+a.source = \cf3 nil\cf0 ; \cf2 //  removes any object\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //feedback\cf0 \
+\cf2 // feedback\cf0 \
 a.source = \{ \cf3 SinOsc\cf0 .ar(a.ar * 7000 * \cf3 LFNoise1\cf0 .kr(1, 0.3, 0.6) + 200, 0, 0.1) \};\
 a.source = \{ \cf3 SinOsc\cf0 .ar(a.ar * 6000 * \cf3 MouseX.kr(0, 2)\cf0  + [100, 104], 0, 0.1) \};\
 \
 \
-\cf2 //adding nodes\cf0 \
+\cf2 // adding nodes\cf0 \
 a.add(\{ \cf3 SinOsc\cf0 .ar([50, 390]*1.25, 0, 0.1) \});\
 a.add(\{ \cf3 BrownNoise\cf0 .ar([0.02,0.02]) \});\
 \
-\cf2 //setting nodes at indices:\cf0 \
+\cf2 // setting nodes at indices:\cf0 \
 a[1] = \{ \cf3 LFPulse\cf0 .kr(3, 0.3) * \cf3 SinOsc\cf0 .ar(500, 0, 0.1) \};\
 a[2] = \{ \cf3 LFPulse\cf0 .kr(3.5, 0.3) * \cf3 SinOsc\cf0 .ar(600, 0, 0.1) \};\
 a[3] = \{ SinOsc.ar([1,1.25] * 840, 0, 0.1) \};\
 \
-\cf2 //replacing input\cf0 \
+\cf2 // replacing input\cf0 \
 a[2] = \{ arg out; \cf3 ReplaceOut\cf0 .ar(out, a.ar * \cf3 SinOsc\cf0 .ar(100)) \};\
 a[2] = \{ arg out; \cf3 ReplaceOut\cf0 .ar(out, a.ar(2) * \cf3 MouseY\cf0 .kr(0,1)) \};\
 a[2] = \{ arg out; \cf3 ReplaceOut\cf0 .ar(out, a.ar(2) * \cf3 MouseY\cf0 .kr(0,1)) \};\
 a[4] = \{ arg out; \cf3 ReplaceOut\cf0 .ar(out, a.ar * \cf3 SinOsc\cf0 .ar(2).max(0)) \};\
 \
-\cf2 //setting controls\cf0 \
+\cf2 // setting controls\cf0 \
 a.fadeTime = 2.0;\
 a.source = \{ \cf3 arg\cf0  f=400; \cf3 SinOsc\cf0 .ar(f * [1,1.2] * rrand(0.9, 1.1), 0, 0.1) \};\
 a.set(\cf4 \\f\cf0 , rrand(900, 300));\
 a.set(\cf4 \\f\cf0 , rrand(1500, 700));\
-a.xset(\cf4 \\f\cf0 , rrand(1500, 700)); \cf2 //crossfaded setting\cf0 \
+a.xset(\cf4 \\f\cf0 , rrand(1500, 700)); \cf2 // crossfaded setting\cf0 \
 a.source = \{ \cf3 arg\cf0  f=400; \cf3 RLPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f * [1,1.02] * 0.05, 0.5, 0.2), f * 0.58, 0.2) \};\
 \
-\cf2 //control lags\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // control lags\
 \cf0 a.fadeTime = 0.01;\
-a.lag(\\f, 0.5); \cf2 //the objects are built again internally and sent to the server.\
+a.lag(\\f, 0.5); \cf2 // the objects are built again internally and sent to the server.\
 \cf0 a.set(\cf4 \\f\cf0 , rrand(1500, 700));\
 a.lag(\cf4 \\f\cf0 , \cf3 nil\cf0 );\
 a.set(\cf4 \\f\cf0 , rrand(1500, 700));\
 a.fadeTime = 1.0;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //mapping controls to other node proxies\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // mapping controls to other node proxies\
 \cf0 c = \cf3 NodeProxy.control\cf0 (s, 2);\
 c.source = \{ \cf3 SinOsc\cf0 .kr([10,20] * 0.1, 0, 150, 1300) \};\
 a.map(\cf4 \\f\cf0 , c);\
@@ -539,10 +534,9 @@ c.source = \{ \cf3 SinOsc\cf0 .kr([10,16] * 0.02, 0, 50, 700) \};\
 c.source = \{ \cf3 Line\cf0 .kr(300, 1500, 10) + \cf3 SinOsc\cf0 .kr(20 * [1,2], 0, 100) \};\
 a[1] = \{ \cf3 arg\cf0  f; \cf3 LFPar\cf0 .ar(f % \cf3 MouseX\cf0 .kr(1, 40, 1) * 4 + 360, 0, 0.2) \};\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //map multiple channels of one proxy to multiple controls of another\cf0 \
+\cf2 // map multiple channels of one proxy to multiple controls of another\cf0 \
 a.source = \{ \cf3 arg\cf0  f=400, f2=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f * [0.4,1], 0.2, 0.2), f2 * 3) \};\
-a.map([\cf4 \\f\cf0 ,\cf4 \\f2\cf0 ], c); \cf2 //same as a.map([0,1], c); \cf0 \
+a.map([\cf4 \\f\cf0 ,\cf4 \\f2\cf0 ], c); \cf2 // same as a.map([0,1], c); \cf0 \
 a.source = \{ \cf3 arg\cf0  f=400, f2=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar([f, f2], 0.2, 0.2), f2) \};\
 a.source = \{ \cf3 arg\cf0  f=400, f2=400; \cf3 Formant\cf0 .ar(140, [f, f2]*1.5, 100, 0.1)  \};\
 c.source = \{ \cf3 SinOsc\cf0 .kr([\cf3 Line\cf0 .kr(1, 30, 10), 1], 0, [100, 700], [300, 700]) \};\
@@ -555,20 +549,18 @@ c.source = \{ \cf3 SinOsc\cf0 .kr([2.3, 1.0], 0, [100, 700], [300, 1700]) \};\
 c.source = 400;\
 \cf2 \
 \
-//behave like a sc2 plug\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+// behave like a sc2 plug\
 \cf0 c.gate(1400, 0.1);\
 c.gate(1000, 0.1);\
 c.line(1000, 1);\cf2 \
 \
-//direct access\
+// direct access\
 \cf0 a.lineAt(\cf4 \\f\cf0 , 300, 2);\
 a.xlineAt(\cf4 \\f\cf0 , 600, 0.3);\
 a.gateAt(\cf4 \\f\cf0 , 1600, 0.3);\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
 \
-//changing nodeMaps\cf0 \
+// changing nodeMaps\cf0 \
 a.unmap(\cf4 \\f\cf0 );\
 n = a.nodeMap.copy;\
 n.set(\cf4 \\f\cf0 , 700);\
@@ -576,27 +568,24 @@ a.fadeToMap(n);\
 n = a.nodeMap.copy;\
 n.set(\cf4 \\f\cf0 , 400);\
 a.fadeTime = 1.0;\
-a.fadeToMap(n, [\cf4 \\f\cf0 ]); \cf2 //linear interpolation to new map: experimental\cf0 \
-a.map(\cf4 \\f\cf0 , c); \cf2 //restore mapping\
+a.fadeToMap(n, [\cf4 \\f\cf0 ]); \cf2 // linear interpolation to new map: experimental\cf0 \
+a.map(\cf4 \\f\cf0 , c); \cf2 // restore mapping\
 \
 \
-//sending envelopes (up to 8 levels)\cf0 \
+// sending envelopes (up to 8 levels)\cf0 \
 w = Env.new(Array.rand(3, 400, 1000),Array.rand(2, 0.3, 0.001), -4);\
 c.env(w);\
 c.env(w);\
 w = Env.new(Array.rand(8, 400, 1000),Array.rand(7, 0.03, 0.1));\
 c.env(w);\cf2 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 c.env(w);\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
-//stop synthesis, then wake up proxies:\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+// stop synthesis, then wake up proxies:\
 \cf0 \
-a.stop; \cf2 //stop the monitor\cf0 \
-a.play; \cf2 //start the monitor\cf0 \
-a.end;	\cf2 //release the synths and stop the monitor\cf0 \
-c.free;  \cf2 //free the control proxy c\cf0 \
+a.stop; \cf2 // stop the monitor\cf0 \
+a.play; \cf2 // start the monitor\cf0 \
+a.end;	\cf2 // release the synths and stop the monitor\cf0 \
+c.free;  \cf2 // free the control proxy c\cf0 \
 \
 \
 \
@@ -621,10 +610,8 @@ a.end;\
 \
 a = \cf3 NodeProxy\cf0 .audio(s,2);\
 a.play;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 a.clock = \cf3 TempoClock\cf0 (2.0).permanent_(true); \cf2 //round to every 2.0 seconds\
+\cf0 a.clock = \cf3 TempoClock\cf0 (2.0).permanent_(true); \cf2 // round to every 2.0 seconds\
 \cf0 a.source = \{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(0.5, 0, 0.3), 3000, 0.01) \};\
 a[1] = \{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar([0.5, 1], 0, 0.3), 1000, 0.01) \};\
 a[2] = \{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar([3, 5]/2, 0, 0.3), 8000, 0.01) \};\
@@ -644,9 +631,7 @@ a.clear;\
 \
 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //must have 'out' or 'i_out' argument to work properly\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // must have 'out' or 'i_out' argument to work properly\cf0 \
 \cf3 SynthDef\cf0 (\cf5 "who"\cf0 , \{ \cf3 arg\cf0  freq, gate=1, out=0, ffreq=800, amp=0.1; \
 	\cf3 var\cf0  env;\
 	env = \cf3 Env\cf0 .asr(0.01, amp, 0.5);\
@@ -666,23 +651,21 @@ b = \cf3 NodeProxy\cf0 .audio(s,2);\
 b.fadeTime = 3;\
 )\
 \
-a.play; \cf2 //monitor output\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+a.play; \cf2 // monitor output\
 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //play the pattern silently in b\cf0 \
+\cf2 // play the pattern silently in b\cf0 \
 b.source = \cf3 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\who\cf0 , \cf4 \\freq\cf0 , 500, \cf4 \\ffreq\cf0 , 700, \cf4 \\legato\cf0 , 0.02);\
 \
-\cf2 //play b out through a:\cf0 \
+\cf2 // play b out through a:\cf0 \
 a.source = b;\
 \
-\cf2 //filter b with ring modulation:\cf0 \
-a.source = \{  b.ar  * \cf3 SinOsc\cf0 .ar(\cf3 SinOsc\cf0 .kr(0.2, 300, 330))  \}; \cf2 //filter the input of the pattern\cf0 \
-a.source = \{  b.ar * \cf3 LFCub\cf0 .ar([2, 8], add: -0.5)  \}; \cf2 //filter the input of the pattern\cf0 \
+\cf2 // filter b with ring modulation:\cf0 \
+a.source = \{  b.ar  * \cf3 SinOsc\cf0 .ar(\cf3 SinOsc\cf0 .kr(0.2, 300, 330))  \}; \cf2 // filter the input of the pattern\cf0 \
+a.source = \{  b.ar * \cf3 LFCub\cf0 .ar([2, 8], add: -0.5)  \}; \cf2 // filter the input of the pattern\cf0 \
 \
 a.source = b;\
 \
-\cf2 //map b to another proxy\cf0 \
+\cf2 // map b to another proxy\cf0 \
 c = \cf3 NodeProxy\cf0 .control(s, 1).fadeTime_(1);\
 c.source = \{ \cf3 SinOsc\cf0 .kr(2, 0, 400, 700) \};\
 \
@@ -727,8 +710,7 @@ a.source = \{  b.ar * \cf3 WhiteNoise\cf0 .ar(0.1, 1) + (b.ar * \cf3 SinOsc\cf0 
 \
 c.source = \{ \cf3 XLine\cf0 .kr(1900, 10, 10) \};\
 \
-a.clear; b.clear; c.clear; \cf2 //clear all, free bus\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+a.clear; b.clear; c.clear; \cf2 // clear all, free bus\cf0 \
 \cf3 \
  \
 \
