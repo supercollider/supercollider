@@ -129,29 +129,25 @@ SynthDef {
 		if (irControlNames.size > 0) {
 			values = nil;
 			irControlNames.do {|cn| 
-				values = values.addAll(cn.defaultValue);
+				values = values.add(cn.defaultValue);
 			};
-			controlUGens = Control.ir(values).asArray;
-			irControlNames.do {|cn|
-				valsize = cn.defaultValue.asArray.size;
+			controlUGens = Control.ir(values.flat).asArray.reshapeLike(values);
+			irControlNames.do {|cn, i|
 				cn.index = controlIndex;
-				controlIndex = controlIndex + valsize;
-				arguments[cn.argNum] = controlUGens.keep(valsize).unbubble;
-				controlUGens = controlUGens.drop(valsize);
+				controlIndex = controlIndex + cn.defaultValue.asArray.size;
+				arguments[cn.argNum] = controlUGens[i];
 			};
 		};
 		if (trControlNames.size > 0) {
 			values = nil;
 			trControlNames.do {|cn| 
-				values = values.addAll(cn.defaultValue);
+				values = values.add(cn.defaultValue);
 			};
-			controlUGens = TrigControl.kr(values).asArray;
-			trControlNames.do {|cn|
-				valsize = cn.defaultValue.asArray.size;
+			controlUGens = TrigControl.kr(values.flat).asArray.reshapeLike(values);
+			trControlNames.do {|cn, i|
 				cn.index = controlIndex;
-				controlIndex = controlIndex + valsize;
-				arguments[cn.argNum] = controlUGens.keep(valsize).unbubble;
-				controlUGens = controlUGens.drop(valsize);
+				controlIndex = controlIndex + cn.defaultValue.asArray.size;
+				arguments[cn.argNum] = controlUGens[i];
 			};
 		};
 		if (krControlNames.size > 0) {
@@ -159,20 +155,18 @@ SynthDef {
 			lags = nil;
 			krControlNames.do {|cn| 
 				valsize = cn.defaultValue.asArray.size;
-				values = values.addAll(cn.defaultValue);
+				values = values.add(cn.defaultValue);
 				lags = lags.addAll(cn.lag.asArray.wrapExtend(valsize));
 			};
 			if (lags.any {|lag| lag != 0 }) {
-				controlUGens = LagControl.kr(values, lags).asArray;
+				controlUGens = LagControl.kr(values.flat, lags).asArray.reshapeLike(values);
 			}{
-				controlUGens = Control.kr(values).asArray;
+				controlUGens = Control.kr(values.flat).asArray.reshapeLike(values);
 			};
-			krControlNames.do {|cn|
-				valsize = cn.defaultValue.asArray.size;
+			krControlNames.do {|cn, i|
 				cn.index = controlIndex;
-				controlIndex = controlIndex + valsize;
-				arguments[cn.argNum] = controlUGens.keep(valsize).unbubble;
-				controlUGens = controlUGens.drop(valsize);
+				controlIndex = controlIndex + cn.defaultValue.asArray.size;
+				arguments[cn.argNum] = controlUGens[i];
 			};
 		};
 		controlNames = controlNames.reject {|cn| cn.rate == 'noncontrol' };
