@@ -17,11 +17,11 @@ UGen : AbstractFunction {
 		^this.multiNewList(args);
 	}
 	*multiNewList { arg args;
-		var size = 1, newArgs, results;	
+		var size = 0, newArgs, results;	
 		args.do({ arg item; 
 			(item.class == Array).if({ size = max(size, item.size) });
 		});
-		if (size == 1, { ^this.performList(\new1, args) });
+		if (size == 0, { ^this.performList(\new1, args) });
 		newArgs = Array.newClear(args.size);
 		results = Array.newClear(size);
 		size.do({ arg i;
