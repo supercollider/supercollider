@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green0\blue0;
-\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Bus
@@ -48,37 +48,46 @@
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // something to play with\
-\cf3 SynthDef\cf4 (\cf5 "moto-rev"\cf4 , \{ \cf3 arg\cf4  ffreq=100;\
-	\cf3 var\cf4  x;\
-	x = \cf3 RLPF\cf4 .ar(\cf3 LFPulse\cf4 .ar(\cf3 SinOsc\cf4 .kr(0.2, 0, 10, 21), [0,0.1], 0.1),\
+\cf3 SynthDef\cf0 (\cf4 "help-Bus"\cf0 , \{ \cf3 arg\cf0  out=0,ffreq=100;\
+	\cf3 var\cf0  x;\
+	x = \cf3 RLPF\cf0 .ar(\cf3 LFPulse\cf0 .ar(\cf3 SinOsc\cf0 .kr(0.2, 0, 10, 21), [0,0.1], 0.1),\
 			 ffreq, 0.1)\
 			 .clip2(0.4);\
-	\cf3 Out\cf4 .ar(0, x);\
+	\cf3 Out\cf0 .ar(out, x);\
 \}).writeDefFile;\
 \
-s = \cf3 Server\cf4 .local;\
+s = \cf3 Server\cf0 .local;\
 s.boot;\
 \
-x = \cf3 Synth\cf4 (\cf5 "moto-rev"\cf4 );\
+x = \cf3 Synth\cf0 (\cf4 "help-Bus"\cf0 );\
 \
 \cf2 // get a bus\
-\cf4 b = \cf3 Bus\cf4 .control(s);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 b = \cf3 Bus\cf0 .control(s);\
 \
-\cf2 // map the synth's first input (ffreq) to read\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // map the synth's second input (ffreq) to read\
 // from the bus' output index\
-\cf4 x.map(0,b.index);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 x.map(1,b.index);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // by setting the bus' value you send a /c_fill message\
 // to set each channel of the bus to that float value\
-\cf4 b.value = 100;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 b.value = 100;\
 b.value = 1000;\
 b.value = 30;\
 \
-\cf2 // this is a single channel bus anyway\
-\cf4 b.set(300);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // this is a single channel bus anyway, so this has the same effect\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 b.set(300);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // multi chan:  b.set(300,350);\
-\cf4 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 x.free;\
 \
 b.free; \cf2 // release it to be reallocated !!\
