@@ -34,3 +34,17 @@ PV_HainsworthFoote : UGen
 		^this.multiNew('audio', buffer, propmkl, propfoote, threshold, waittime);
 	}
 }
+
+//not FFT but useful for time domain onset detection
+RunningSum : UGen
+{
+	*ar { arg in, numsamp=40;
+		^this.multiNew('audio', in, numsamp);
+	}
+	
+	*rms { arg in, numsamp=40;
+		^(RunningSum.ar(in.squared,numsamp)*(numsamp.reciprocal)).sqrt;
+	}
+}
+
+

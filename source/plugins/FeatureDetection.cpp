@@ -51,6 +51,14 @@ int m_5kindex,m_30Hzindex;
 
 };
 
+//for time domain onset detection/RMS
+struct RunningSum : public Unit {
+	int msamp, mcount;     
+	float msum;
+	float mmeanmult;
+	float* msquares;
+};
+
 
 
 extern "C"
@@ -65,6 +73,10 @@ extern "C"
   void PV_HainsworthFoote_Ctor(PV_HainsworthFoote *unit);
   void PV_HainsworthFoote_Dtor(PV_HainsworthFoote *unit);
   void PV_HainsworthFoote_next(PV_HainsworthFoote *unit, int inNumSamples);
+  
+  void RunningSum_next_k(RunningSum *unit, int inNumSamples);
+  void RunningSum_Ctor(RunningSum* unit);
+  void RunningSum_Dtor(RunningSum* unit);
   
 }		      
 
@@ -313,6 +325,62 @@ void PV_HainsworthFoote_next(PV_HainsworthFoote *unit, int inNumSamples)
 }
 
 
+void RunningSum_Ctor( RunningSum* unit ) {
+					 
+	SETCALC(RunningSum_next_k);
+
+	unit->msamp= (int) ZIN0(1);
+
+	unit->mmeanmult= 1.0f/(unit->msamp);
+	unit->msum=0.0f;
+	unit->mcount=0; //unit->msamp-1;
+	unit->msquares= (float*)RTAlloc(unit->mWorld, unit->msamp * sizeof(float));
+
+	//initialise to zeroes
+	for(int i=0; i<unit->msamp; ++i)
+	unit->msquares[i]=0.f;
+
+}
+
+void RunningSum_Dtor(RunningSum *unit) {
+	RTFree(unit->mWorld, unit->msquares);
+}
+
+//RMS is easy because convolution kernel can be updated just by deleting oldest sample and adding newest-
+//half hanning window convolution etc requires updating values for all samples in memory on each iteration 
+void RunningSum_next_k( RunningSum *unit, int inNumSamples ) {
+
+	float *in = ZIN(0);
+	float *out = ZOUT(0);
+
+	int count= unit->mcount;
+	int samp= unit->msamp;
+
+	float * data= unit->msquares;
+	float sum= unit->msum;
+	//float meanmult= unit->mmeanmult;
+
+	LOOP(inNumSamples, 
+
+	//update sum
+	sum -=data[count];  
+	//prone to floating point error accumulation over time? not if assume error is distributed equally either side of 0
+	float next= ZXP(in);
+	data[count]= next;
+	sum += next;
+	 
+	count=(count+1)%samp;
+
+	ZXP(out) = sum; //*meanmult; //could ditch the mean if don't need normalised
+	);
+
+	unit->mcount =count;
+	unit->msum =  sum;      
+
+}
+
+
+
 
 
 void initFeatureDetectors(InterfaceTable *it)
@@ -320,4 +388,6 @@ void initFeatureDetectors(InterfaceTable *it)
 	DefineDtorUnit(PV_JensenAndersen);
 	
 	DefineDtorUnit(PV_HainsworthFoote);
+	
+	DefineDtorUnit(RunningSum);
 }
