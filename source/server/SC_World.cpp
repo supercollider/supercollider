@@ -253,7 +253,11 @@ World* World_New(WorldOptions *inOptions)
 			world->hw->mNRTCmdFile = fopen(inOptions->mNonRealTimeCmdFilename, "r");
 			if (!world->hw->mNRTCmdFile) 
 				throw std::runtime_error("Couldn't open non real time command file.\n");
+				
+			World_Start(world);
 			
+			World_Cleanup(world);
+			world = 0;
 		}
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_New: %s\n", exc.what());
@@ -517,6 +521,7 @@ void World_Start(World *inWorld)
 	
 	inWorld->hw->mTriggers.MakeEmpty();
 	inWorld->hw->mNodeEnds.MakeEmpty();
+	inWorld->mRunning = true;
 }
 
 void World_Cleanup(World *world)
@@ -526,6 +531,8 @@ void World_Cleanup(World *world)
 	HiddenWorld *hw = world->hw;
 	
 	if (hw) hw->mAudioDriver->Stop();
+	
+	world->mRunning = false;
 
 	if (world->mTopGroup) Group_DeleteAll(world->mTopGroup);
 	
@@ -556,6 +563,11 @@ void World_Cleanup(World *world)
 	free(world->mAudioBus);
 	delete [] world->mRGen;
 	if (hw) {
+	
+		if (hw->mNRTInputFile) sf_close(hw->mNRTInputFile);
+		if (hw->mNRTOutputFile) sf_close(hw->mNRTOutputFile);
+		if (hw->mNRTCmdFile) fclose(hw->mNRTCmdFile);
+		
 		free(hw->mUsers);
 		delete hw->mNodeLib;
 		delete hw->mGraphDefLib;

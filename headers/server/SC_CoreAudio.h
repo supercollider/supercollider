@@ -37,14 +37,11 @@ public:
 
 	SC_AudioDriver(struct World *inWorld);
 
-	bool Active() const { return mActive; }
-
 	int64 mOSCbuftime;
 
 protected:
 	int64 mOSCincrement;
 	struct World *mWorld;
-	bool mActive;			// playing now?
 	double mOSCtoSamples;
 	int mSampleTime;
 };

@@ -344,7 +344,7 @@ protected:
 	if (!cmd) return kSCErr_Failed; \
 	cmd->InitSendFailureCmd(inCmdName, inErrString); \
 	if (inWorld->mRealTime) cmd->CallNextStage(); \
-	else cmd->CallEveryStage();
+	else cmd->CallEveryStage(); \
 
 class SendFailureCmd : public SC_SequencedCommand
 {

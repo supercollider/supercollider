@@ -505,9 +505,7 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 			}
 		}
 		inGraphDef->mNumWireBufs = bufColor.NumBufs();
-		if (inWorld->mRealTime 
-			&& inWorld->hw->mAudioDriver
-			&& inWorld->hw->mAudioDriver->Active()) 
+		if (inWorld->mRunning)
 		{
 			// cannot reallocate interconnect buffers while running audio.
 			if (inGraphDef->mNumWireBufs > inWorld->hw->mMaxWireBufs) {

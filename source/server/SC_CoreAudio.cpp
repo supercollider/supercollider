@@ -292,7 +292,7 @@ void DoneWithPacket(FifoMsg *inMsg)
 }
 
 SC_AudioDriver::SC_AudioDriver(struct World *inWorld)
-		: mWorld(inWorld), mActive(false), mSampleTime(0)
+		: mWorld(inWorld), mSampleTime(0)
 {
 }
 
@@ -754,7 +754,6 @@ bool SC_CoreAudioDriver::Start()
 {
 	OSStatus	err = kAudioHardwareNoError;
 
-	mActive = true;
 	mAvgCPU = 0.;
 	mPeakCPU = 0.;
 	mPeakCounter = 0;
@@ -811,8 +810,6 @@ bool SC_CoreAudioDriver::Stop()
 {
 	scprintf("SC_CoreAudioDriver::Stop\n");
 	OSStatus err = kAudioHardwareNoError;
-
-	mActive = false;
 
 	if (UseSeparateIO()) {
 		err = AudioDeviceStop(mOutputDevice, appIOProc2);		
