@@ -200,11 +200,10 @@ void TrigControl_Ctor(Unit* unit)
 	//Print("TrigControl_Ctor\n");
 	if (unit->mNumOutputs == 1) {
 		SETCALC(TrigControl_next_1);
-		TrigControl_next_1(unit, 1);
 	} else {
 		SETCALC(TrigControl_next_k);
-		TrigControl_next_k(unit, 1);
 	}
+	ClearUnitOutputs(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
