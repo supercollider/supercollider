@@ -52,6 +52,8 @@ Nil {
 	}
 	play {}
 	
+	nextTimeOnGrid { arg clock; ^clock.nextTimeOnGrid }
+
 	swapThisGroup {}
 	
 	performMsg {}
