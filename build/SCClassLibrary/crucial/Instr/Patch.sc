@@ -288,8 +288,10 @@ Patch : HasPatchIns  {
 			args.add(argNamesForSynth.at(i));
 			args.add(ag.synthArg);
 		});
-		args.add(\out);
-		args.add(patchOut.synthArg);
+		if(patchOut.rate != \scalar,{
+			args.add(\out);
+			args.add(patchOut.synthArg);
+		});
 		^args
 	}
 	defName { ^defName } // NOT 'Patch' ever
