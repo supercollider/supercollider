@@ -253,6 +253,9 @@ SCSlider : SCSliderBase
 	value_ { arg val;
 		this.setPropertyWithAction(\value, val);
 	}	
+	valueQuiet_ { arg val;
+		this.setProperty(\value, val);
+	}	
 	
 	increment { ^this.value = this.value + this.bounds.width.reciprocal }
 	decrement { ^this.value = this.value - this.bounds.width.reciprocal }
@@ -440,6 +443,9 @@ SCButton : SCControlView {
 	value_ { arg val;
 		this.setPropertyWithAction(\value, val);
 	}	
+	valueQuiet_ { arg val;
+		this.setProperty(\value, val);
+	}	
 
 	defaultKeyDownAction { arg key, modifiers, unicode;
 		if (key == $ , { this.value = this.value + 1; ^this });
@@ -489,6 +495,9 @@ SCPopUpMenu : SCControlView {
 	value_ { arg val;
 		this.setPropertyWithAction(\value, val);
 	}
+	valueQuiet_ { arg val;
+		this.setProperty(\value, val);
+	}	
 
 	defaultKeyDownAction { arg key, modifiers, unicode;
 		if (key == $ , { this.value = this.value + 1; ^this });
@@ -607,11 +616,14 @@ SCNumberBox : SCStaticTextBase {
 		});
 	}
 	value { ^object }
-	value_ { arg val;
+	valueQuiet_ { arg val;
 		keyString = nil;
 		this.stringColor = Color.black;
 		object = val;
 		this.string = val.asString;
+	}	
+	value_ { arg val;
+		this.valueQuiet(val);
 		this.doAction;
 	}
 	properties {
