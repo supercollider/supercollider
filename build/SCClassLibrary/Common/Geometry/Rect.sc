@@ -88,10 +88,13 @@ Rect {
 		spacing  = (inRect.extent - this.extent) * 0.5;
 		^inRect.origin - this.origin + spacing;
 	}
-	
+
 	containsPoint { arg aPoint;
 		^ aPoint.x.inclusivelyBetween(left, left + width) 
 			and: { aPoint.y.inclusivelyBetween(top, top + height) }
+	}
+	containsRect { arg aRect;
+		^(this.containsPoint(aRect.leftTop) and: {this.containsPoint(aRect.rightBottom) })
 	}
 	intersects { arg aRect;
 		if (aRect.right < this.left, { ^false });
@@ -129,6 +132,12 @@ Rect {
 	
 	asRect { ^this }
 	bounds { ^Rect.new(left, top, width, height) }
+	== { arg that; 
+		^(left == that.left 
+			and: {(top == that.top)} 
+			and: {(width == that.width)} 
+			and: {(height == that.height)})
+	}
 	layout { arg argBounds; 
 		this.set(argBounds.left, argBounds.top, argBounds.width, argBounds.height);
 	}
@@ -157,6 +166,7 @@ RoundRect : Rect {
 		_RoundRect_Draw
 		^this.primitiveFailed
 	}
+	// ==
 }
 
 Arc : Rect {
@@ -174,6 +184,7 @@ Arc : Rect {
 		_Arc_Draw
 		^this.primitiveFailed
 	}
+	// ==
 }
 
 
@@ -192,5 +203,6 @@ BevelRect : Rect {
 		_BevelRect_Draw
 		^this.primitiveFailed
 	}
+	// ==
 }
 
