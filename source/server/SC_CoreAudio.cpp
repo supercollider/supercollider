@@ -30,6 +30,7 @@
 const double kMicrosToOSCunits = 4294.967296; // pow(2,32)/1e6
 const double kNanosToOSCunits  = 4.294967296; // pow(2,32)/1e9
 int64 gOSCoffset = 0; 
+int64 gStartupOSCTime;
 
 const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800UL; /* 17 leap years */
 
@@ -495,10 +496,12 @@ bool SC_CoreAudioDriver::Setup()
 	scprintf("mHardwareBufferSize %lu\n", mHardwareBufferSize);
 	  
 	// compute a per sample increment to the OpenSoundControl Time
-	mOSCincrement = (int64)(mWorld->mBufLength * pow(2.,32.)/outputStreamDesc.mSampleRate);
+	mOSCincrementNumerator = (double)mWorld->mBufLength * pow(2.,32.);
+	mOSCincrement = (int64)(mOSCincrementNumerator / outputStreamDesc.mSampleRate);
 	mOSCtoSamples = outputStreamDesc.mSampleRate / pow(2.,32.);
 
 	World_SetSampleRate(mWorld, outputStreamDesc.mSampleRate);
+	mSampleRate = mSmoothSampleRate = outputStreamDesc.mSampleRate;
 	mBuffersPerSecond = outputStreamDesc.mSampleRate / mNumSamplesPerCallback;
 	mMaxPeakCounter = (int)mBuffersPerSecond;
 	return true;
@@ -581,6 +584,31 @@ OSStatus appIOProc (AudioDeviceID /*inDevice*/, const AudioTimeStamp* inNow,
 	SC_CoreAudioDriver* def = (SC_CoreAudioDriver*)defptr;
 
 	int64 oscTime = CoreAudioHostTimeToOSC(inOutputTime->mHostTime);
+	
+	double hostSecs = (double)AudioConvertHostTimeToNanos(inOutputTime->mHostTime) * 1e-9;
+	double sampleTime = inOutputTime->mSampleTime;
+	if (def->mStartHostSecs == 0) {
+		def->mStartHostSecs = hostSecs;
+		def->mStartSampleTime = sampleTime;
+	} else {
+		double instSampleRate = (sampleTime -  def->mPrevSampleTime)/(hostSecs -  def->mPrevHostSecs);
+		double smoothSampleRate = def->mSmoothSampleRate;
+		smoothSampleRate = smoothSampleRate + 0.002 * (instSampleRate - smoothSampleRate);
+		def->mOSCincrement = (int64)(def->mOSCincrementNumerator / smoothSampleRate);
+		def->mSmoothSampleRate = smoothSampleRate;
+
+#if 0
+		double avgSampleRate  = (sampleTime - def->mStartSampleTime)/(hostSecs - def->mStartHostSecs);
+		double jitter = (smoothSampleRate * (hostSecs - def->mPrevHostSecs)) - (sampleTime - def->mPrevSampleTime);
+		double drift = (smoothSampleRate - def->mSampleRate) * (hostSecs - def->mStartHostSecs);
+		//if (fabs(jitter) > 0.01) {
+			scprintf("avgSR %.6f   smoothSR %.6f   instSR %.6f   jitter %.6f   drift %.6f   inc %lld\n", 
+				avgSampleRate, smoothSampleRate, instSampleRate, jitter, drift, def->mOSCincrement);
+		//}
+#endif
+	}
+	def->mPrevHostSecs = hostSecs;
+	def->mPrevSampleTime = sampleTime;
 
 	def->Run(inInputData, outOutputData, oscTime);
 
@@ -654,15 +682,20 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 			}
 			//count++;
 					
-			/*if (mScheduler.Ready(mOSCbuftime)) {
-				double diff = (mScheduler.NextTime() - mOSCbuftime)*kOSCtoSecs; 
-				scprintf("rdy %.9f %.9f %.9f\n", mScheduler.NextTime() * kOSCtoSecs, mOSCbuftime*kOSCtoSecs, diff);
-			}*/
 			
 			int64 schedTime;
 			int64 nextTime = oscTime + oscInc;
+			
+			/*if (mScheduler.Ready(nextTime)) {
+				double diff = (mScheduler.NextTime() - mOSCbuftime)*kOSCtoSecs; 
+				scprintf("rdy %.9f %.9f %.9f\n", (mScheduler.NextTime()-gStartupOSCTime) * kOSCtoSecs, (mOSCbuftime-gStartupOSCTime)*kOSCtoSecs, diff);
+			}*/
 			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
+			
 				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
+				if (world->mSampleOffset < 0) world->mSampleOffset = 0;
+				else if (world->mSampleOffset >= world->mBufLength) world->mSampleOffset = world->mBufLength-1;
+
 				SC_ScheduledEvent event = mScheduler.Remove();
 				event.Perform();
 			}
@@ -697,7 +730,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 				}
 				b += nchan;
 			}	
-			mOSCbuftime = nextTime;
+			oscTime = mOSCbuftime = nextTime;
 		}
 	} catch (std::exception& exc) {
 		scprintf("exception in real time: %s\n", exc.what());
@@ -725,8 +758,14 @@ bool SC_CoreAudioDriver::Start()
 	mAvgCPU = 0.;
 	mPeakCPU = 0.;
 	mPeakCounter = 0;
+	
+	mStartHostSecs = 0.;
+	mPrevHostSecs = 0.;
+	mStartSampleTime = 0.;
+	mPrevSampleTime = 0.;
 
 	World_Start(mWorld);
+	gStartupOSCTime = oscTimeNow();
 	
 	scprintf("start   UseSeparateIO?: %d\n", UseSeparateIO());
 	

@@ -80,6 +80,7 @@ class SC_CoreAudioDriver : public SC_AudioDriver
 	double mBuffersPerSecond;
 	double mAvgCPU, mPeakCPU;
 	int mPeakCounter, mMaxPeakCounter;
+	double mOSCincrementNumerator;
 	
 	AudioBufferList * mInputBufList;
 	AudioDeviceID	mInputDevice;
@@ -87,6 +88,22 @@ class SC_CoreAudioDriver : public SC_AudioDriver
 
 	AudioStreamBasicDescription	inputStreamDesc;	// info about the default device
 	AudioStreamBasicDescription	outputStreamDesc;	// info about the default device
+
+	double mStartHostSecs;
+	double mPrevHostSecs;
+	double mStartSampleTime;
+	double mPrevSampleTime;
+	double mSmoothSampleRate;
+	double mSampleRate;
+	
+	friend OSStatus appIOProc (		AudioDeviceID inDevice, 
+									const AudioTimeStamp* inNow, 
+									const AudioBufferList* inInputData,
+									const AudioTimeStamp* inInputTime, 
+									AudioBufferList* outOutputData, 
+									const AudioTimeStamp* inOutputTime,
+									void* defptr);
+
 
 public:
 
