@@ -1226,8 +1226,12 @@ void SCSlider::draw(SCRect inDamage)
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(mBounds);
     if (mBackground) mBackground->draw(cgc, rect);
+	
     QDDrawBevelRect(cgc, rect, 1, true);
-    QDDrawBevelRect(cgc, SCtoCGRect(mThumbRect), 2, false);
+	
+    CGRect cgThumbRect = SCtoCGRect(mThumbRect);
+    if (mKnob) mKnob->draw(cgc, cgThumbRect);
+    QDDrawBevelRect(cgc, cgThumbRect, 2, false);
     CGContextRestoreGState(cgc);
 
     //drawBevelRect(SCtoQDRect(mBounds), 1, 1, SCtoQDColor(mBackColor), 2);
@@ -1307,20 +1311,22 @@ int SCSlider::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 	char *name = symbol->name;
 	if (strcmp(name, "knobColor")==0) {
-                refresh();
+		err = slotBackgroundVal(slot, &mKnob);
+		if (err) return err;
+		refresh();
 		return errNone;
 	}
-        if (strcmp(name, "step")==0) {
-            err = slotDoubleVal(slot, &mStepSize);
-            if (!err) {
-                mStepScale = 1. / mStepSize;
-		bool changed = setValue(mValue, false);
-                SetBool(slot, changed);
-            }
-            return errNone;
-        }
-	
-        return SCView::setProperty(symbol, slot);
+	if (strcmp(name, "step")==0) {
+		err = slotDoubleVal(slot, &mStepSize);
+		if (!err) {
+			mStepScale = 1. / mStepSize;
+			bool changed = setValue(mValue, false);
+			SetBool(slot, changed);
+		}
+		return errNone;
+	}
+
+	return SCView::setProperty(symbol, slot);
 }
 
 int SCSlider::getProperty(PyrSymbol *symbol, PyrSlot *slot)
@@ -1563,17 +1569,23 @@ int SCRangeSlider::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
 	char *name = symbol->name;
-        if (strcmp(name, "step")==0) {
-            err = slotDoubleVal(slot, &mStepSize);
-            if (!err) {
-                mStepScale = 1. / mStepSize;
-		bool changed = setValue(mLo, mHi, false);
-                SetBool(slot, changed);
-            }
-            return errNone;
-        }
+	if (strcmp(name, "step")==0) {
+		err = slotDoubleVal(slot, &mStepSize);
+		if (!err) {
+			mStepScale = 1. / mStepSize;
+			bool changed = setValue(mLo, mHi, false);
+			SetBool(slot, changed);
+		}
+		return errNone;
+	}
+	if (strcmp(name, "knobColor")==0) {
+		err = slotBackgroundVal(slot, &mKnob);
+		if (err) return err;
+		refresh();
+		return errNone;
+	}
 	
-        return SCView::setProperty(symbol, slot);
+	return SCView::setProperty(symbol, slot);
 }
 
 int SCRangeSlider::getProperty(PyrSymbol *symbol, PyrSlot *slot)
@@ -1637,8 +1649,12 @@ void SC2DSlider::draw(SCRect inDamage)
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(mBounds);
     if (mBackground) mBackground->draw(cgc, rect);
+
     QDDrawBevelRect(cgc, rect, 1, true);
-    QDDrawBevelRect(cgc, SCtoCGRect(mThumbRect), 2, false);
+
+    CGRect cgThumbRect = SCtoCGRect(mThumbRect);
+    if (mKnob) mKnob->draw(cgc, cgThumbRect);
+    QDDrawBevelRect(cgc, cgThumbRect, 2, false);
     CGContextRestoreGState(cgc);
 
 //    drawBevelRect(SCtoQDRect(mBounds), 1, 1, SCtoQDColor(mBackColor), 2);
@@ -1708,17 +1724,23 @@ int SC2DSlider::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
 	char *name = symbol->name;
-        if (strcmp(name, "step")==0) {
-            err = slotDoubleVal(slot, &mStepSize);
-            if (!err) {
-                mStepScale = 1. / mStepSize;
-		bool changed = setValue(mX, mY, false);
-                SetBool(slot, changed);
-            }
-            return errNone;
-        }
-	
-        return SCView::setProperty(symbol, slot);
+	if (strcmp(name, "knobColor")==0) {
+		err = slotBackgroundVal(slot, &mKnob);
+		if (err) return err;
+		refresh();
+		return errNone;
+	}
+	if (strcmp(name, "step")==0) {
+		err = slotDoubleVal(slot, &mStepSize);
+		if (!err) {
+			mStepScale = 1. / mStepSize;
+			bool changed = setValue(mX, mY, false);
+			SetBool(slot, changed);
+		}
+		return errNone;
+	}
+
+	return SCView::setProperty(symbol, slot);
 }
 
 int SC2DSlider::getProperty(PyrSymbol *symbol, PyrSlot *slot)
