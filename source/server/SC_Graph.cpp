@@ -330,7 +330,7 @@ void Graph_CalcTrace(Graph *inGraph)
 {
 	int numCalcUnits = inGraph->mNumCalcUnits;
 	Unit **calcUnits = inGraph->mCalcUnits;
-	scprintf("\nTRACE %d  %s    num ugens %d\n", inGraph->mNode.mID, inGraph->mNode.mDef->mName, numCalcUnits);
+	scprintf("\nTRACE %d  %s    #units: %d\n", inGraph->mNode.mID, inGraph->mNode.mDef->mName, numCalcUnits);
 	for (int i=0; i<numCalcUnits; ++i) {
 		Unit *unit = calcUnits[i];
 		scprintf("  unit %d %s\n    in ", i, (char*)unit->mUnitDef->mUnitDefName);
