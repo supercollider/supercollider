@@ -57,6 +57,9 @@ extern PyrSymbol *s_closed;
 - (IBAction)shiftRight: (id)sender;
 - (IBAction)commentCode: (id)sender;
 - (IBAction)uncommentCode:(id)sender;
+- (IBAction)wrapParens: (int)sender;
+- (IBAction)wrapSquareBrackets: (int)sender;
+- (IBAction)wrapCurlyBrackets: (int)sender;
 
 - (IBAction) executeSelection: (id) sender;
 - (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange;
