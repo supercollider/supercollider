@@ -31,10 +31,9 @@ String[char] : RawArray {
 		^this.perform(aSelector, aComplex)
 	}
 
-	
 	isString { ^true }
 	asString { ^this }
-	asCompileString { ^"\"" ++ this ++ "\"" }
+	asCompileString { _String_AsCompileString; }
 	species { ^String }
 	
 	postln { _PostLine }
@@ -188,8 +187,6 @@ String[char] : RawArray {
 	storeOn { arg stream;
 		stream.putAll(this.asCompileString);
 	}
-	archiveAsCompileString { ^true }
-	archiveAsObject { ^true }
 	
 	inspectorClass { ^StringInspector }
 	

@@ -77,6 +77,28 @@ int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prString_AsCompileString(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	PyrString* scstr = a->uos;
+	char *chars1 = scstr->s;
+	int newSize = scstr->size + 2;
+	for (int i=0; i<scstr->size; ++i) {
+		if (chars1[i] == '"') newSize++;
+	}
+	PyrString *newString = newPyrStringN(g->gc, newSize, 0, true);
+	char *chars2 = newString->s;
+	chars2[0] = '"';
+	chars2[newSize - 1] = '"';
+	int k = 1;
+	for (int i=0; i<scstr->size; ++i) {
+		int c = chars1[i];
+		if (c == '"') chars2[k++] = '\\';
+		chars2[k++] = c;
+	}
+	SetObject(a, newString);
+}
+
 int memcmpi(char *a, char *b, int len)
 {
 	for (int i=0; i<len; ++i) {
@@ -253,6 +275,7 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_StringAsSymbol", prStringAsSymbol, 1, 0);	
 	definePrimitive(base, index++, "_String_AsInteger", prString_AsInteger, 1, 0);	
 	definePrimitive(base, index++, "_String_AsFloat", prString_AsFloat, 1, 0);	
+	definePrimitive(base, index++, "_String_AsCompileString", prString_AsCompileString, 1, 0);	
 	definePrimitive(base, index++, "_String_Getenv", prString_Getenv, 1, 0);
     definePrimitive(base, index++, "_String_Setenv", prString_Setenv, 2, 0);
 }
