@@ -281,7 +281,27 @@ Pstretchp : FilterPattern {
 	}
 }
 
-
+Pplayer : FilterPattern {
+	var <>playerPattern, <>subPattern;
+	*new { arg playerPattern, subPattern;
+		^super.newCopyArgs(playerPattern, subPattern)
+	}
+	asStream {
+		var playerStream, stream;
+		playerStream = playerPattern.asStream;
+		stream = subPattern.asStream;
+		^FuncStream({ arg event;
+			var player;
+			event = stream.next(event);
+			if (event.notNil) {
+				player = playerStream.next(event);
+				if (player.notNil) {
+					event.parent = player.event;
+				}
+			};
+		})
+	}
+}
 
 
 Pfin : FilterPattern {
