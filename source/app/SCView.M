@@ -4004,13 +4004,16 @@ int prSCView_New(struct VMGlobals *g, int numArgsPushed)
 
 	PyrSlot *args = g->sp - 3;
         // view, parent, bounds, viewclass
-    
-        SCContainerView* parent;
+        PyrSlot parentSlot;
+        SCContainerView *parent;
         if (isKindOfSlot(args, s_sctopview->u.classobj)) {
             parent = 0;
         } else {
             if (!isKindOfSlot(args+1, s_sccontview->u.classobj)) return errWrongType;
-            parent = (SCContainerView*)args[1].uo->slots[0].ui;
+            // check if it still has a dataptr
+            parentSlot = args[1].uo->slots[0];
+            if(IsNil(&parentSlot)) return errFailed;
+            parent = (SCContainerView*)parentSlot.ui;
         }
         if (!(isKindOfSlot(args+2, s_rect->u.classobj))) return errWrongType;
         
