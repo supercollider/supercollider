@@ -92,14 +92,28 @@ Pdef : Pdefn {
 	}
 
 	constrainStream { arg str;
-		var dt, tfade;
+		var dt, tolerance;
 		^if(quant.notNil) {
 			dt = this.timeToNextBeat;
-			tfade = fadeTime ? 0.0; // maybe use Pseq if fadetime is nil
-			Ppar([
-				PfadeOut(str, tfade, dt),
-				PfadeIn(pattern, tfade, dt)
-			])
+			tolerance = quant % dt % 0.125;
+			if(fadeTime.isNil) {
+				if(dt < 0.01) { 
+					Routine({ arg inval;
+						Event.silent(dt).yield;
+						pattern.embedInStream(inval)
+					})
+				}{	
+					Pseq([
+						Pfindur(dt, str, tolerance),
+						pattern
+					])
+				}
+			} {
+				Ppar([
+					PfadeOut(str, fadeTime, dt, tolerance),
+					PfadeIn(pattern, fadeTime, dt, tolerance)
+				])
+			}
 		} { pattern }.asStream
 	}
 	
