@@ -378,5 +378,13 @@ void Unit_DoneAction(int doneAction, Unit *unit)
 			if (next->mIsGroup) Group_DeepFreeGraphs((Group*)next);
 			else Node_End(next);
 		} break;
-	}
+		case 13 : 
+		{
+			Node* node = unit->mParent->mNode.mParent->mHead;
+			while (node) {
+				Node *next = node->mNext;
+				Node_End(node);
+				node = next;
+			}
+		} break;	}
 }
