@@ -19,9 +19,9 @@ PatchIn {
 	*scalar { arg nodeControl;
 		^ScalarPatchIn(nodeControl)
 	}
-	connectTo { arg patchOut;
+	connectTo { arg patchOut,needsValueSetNow=true;
 		// break any previous ?
-		patchOut.connectTo(this);
+		patchOut.connectTo(this,needsValueSetNow);
 	}
 	server { ^nodeControl.server }
 	group { ^nodeControl.group }
@@ -57,7 +57,7 @@ ScalarPatchIn : ControlPatchIn {
 PatchOut {
 
 	var <source,<group,<>bus;
-	var <connectedTo;
+	var <connectedTo,<>patchOutsOfInputs;
 
 	*new { arg source,group,bus;
 		^this.perform(source.rate,source,group,bus)
@@ -74,14 +74,19 @@ PatchOut {
 	*scalar { arg source, group,bus;
 		^ScalarPatchOut.prNew(source, group,bus)
 	}
-	connectTo { arg patchIn;
+	connectTo { arg patchIn,needsValueSetNow=true;
 		connectedTo = connectedTo.add(patchIn);
 		patchIn.connectedTo = this;
-		this.perform(patchIn.rate,patchIn);// set value, bus etc.
+		this.perform(patchIn.rate,patchIn,needsValueSetNow);// set value, bus etc.
 	}
 	free {
 		// tell my connectedTo that i'm gone
 	}
+//	pause { arg requester;
+//		if(connectedTo.every({ arg cn; cn === requester }),{
+//			// then we can pause
+//		})
+//	}
 }
 
 ControlPatchOut : PatchOut { // you are returned from a .kr play
@@ -93,14 +98,15 @@ ControlPatchOut : PatchOut { // you are returned from a .kr play
 		bus = bus.asBus(this.rate,source.numChannels,this.server);
 	}
 	rate { ^\control }
-	value { ^bus.index } //need some initialValue
+	initDefArg { ^bus.index } //need some initialValue
 
 	// private
-	control { arg controlPatchIn;
-		// TODO ! check if on same server
-
-		// dont have to this unless changed
-		controlPatchIn.readFromBus(bus)
+	control { arg controlPatchIn,needsValueSetNow;
+		if(needsValueSetNow,{
+			// TODO ! check if on same server
+			// dont have to this unless changed
+			controlPatchIn.readFromBus(bus)
+		})
 	}
 	audio { arg audioPatchIn;
 		// K2A convertor needed
@@ -122,11 +128,13 @@ ControlPatchOut : PatchOut { // you are returned from a .kr play
 
 AudioPatchOut : ControlPatchOut {
 	rate { ^\audio }
-	value { ^bus.index }
-	audio { arg audioPatchIn;
-		// check if on same server
-		audioPatchIn.readFromBus(bus)
-		// create mixer if needed
+	initDefArg { ^bus.index }
+	audio { arg audioPatchIn,needsValueSetNow;
+		if(needsValueSetNow,{
+			// check if on same server
+			audioPatchIn.readFromBus(bus)
+			// create mixer if needed
+		});
 	}
 	control { arg controlPatchIn;
 		// A2K convertor needed ?
@@ -156,15 +164,19 @@ ScalarPatchOut : PatchOut {
 
 	init {}
 	rate { ^\scalar }
-	value {
+	initDefArg {
 		//["initial ",source.value,source].postln;
-	 	^source.value 
+	 	^source.initDefArg
 	 }
-	audio { arg audioPatchIn;
-		audioPatchIn.value = source.value;
+	audio { arg audioPatchIn,needsValueSetNow=false;
+		if(needsValueSetNow,{
+			audioPatchIn.value = source.value;
+		})
 	}
-	control { arg controlPatchIn;
-		controlPatchIn.value = source.value;
+	control { arg controlPatchIn,needsValueSetNow=false;
+		if(needsValueSetNow,{
+			controlPatchIn.value = source.value;
+		});
 		updater = SimpleController(source)
 					.put(\value,{
 						controlPatchIn.value = source.value;

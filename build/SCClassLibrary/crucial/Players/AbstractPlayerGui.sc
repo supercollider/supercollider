@@ -7,7 +7,10 @@ AbstractPlayerGui : ObjectGui {
 		this.synthConsole(layout);
 		this.saveConsole(layout);
 		layout.startRow;
-		this.gui(layout);
+		layout=this.guify(layout);
+		this.writeName(layout,true);
+		this.guiBody(layout);
+		layout.resizeWindowToFit;
 	}
 	
 	gui { arg layout;
@@ -20,18 +23,19 @@ AbstractPlayerGui : ObjectGui {
 		layout=this.guify(layout);
 		Tile(model,layout); // writes name
 	}
-	writeName { arg layout; //color it based on whether it has a .path 
+	writeName { arg layout,big=false; 
+			//color it based on whether it has a .path 
 							// (was loaded from disk)
 		if(model.path.notNil,{
 			ActionButton(layout,"edit",{
 				model.path.openTextFile;
 			});
 		});
-		ActionButton(layout,model.asString,{ 	
-			model.inspect;
-		})
-		.backColor_( Color( 0.7921568627451, 1, 0.63137254901961 ) )
-		.labelColor_(Color( 0.121568627450, 0.101960784313, 0.521568627450 ))
+		if(big,{
+			InspectorLink.big(model,layout);
+		},{
+			InspectorLink.new(model,layout);
+		})		
 	}
 
 	saveConsole { arg layout;
@@ -62,20 +66,19 @@ AbstractPlayerGui : ObjectGui {
 	durationGui { arg layout;
 		var durb;
 		var durv;
-		CXLabel(layout,"dur:");
 		// make switchable between beats and secs
 		
-		durv= CXLabel(layout, "_______");
+		durv= CXLabel(layout, "dur:_____");
 
 		layout.removeOnClose(
 			Updater(model,{  arg changed,changer;// any change to model at all
-				durv.label_(this.durationString);	
+				durv.label_("dur:" + this.durationString);
 			}).update;
 		);
 		
 		layout.removeOnClose(
 			Updater(Tempo,{ // any change to Tempo
-				durv.label_(this.durationString);	
+				durv.label_("dur:" + this.durationString);	
 			}).update;
 		);
 	}

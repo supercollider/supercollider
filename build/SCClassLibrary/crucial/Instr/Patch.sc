@@ -4,7 +4,7 @@
 Patch : AbstractPlayer  {
 		
 	var <>args,<instr;
-	var <patchIns,synthArgs,argOuts;
+	var <patchIns,synthArgs;
 	var defName;
 	
 	*new { arg name,args;
@@ -27,14 +27,17 @@ Patch : AbstractPlayer  {
 		},{
 			instr = Instr.at(name);
 			if(instr.isNil,{
-				("Instrument not found !!" ++ name).die;
+				("Instrument not found !!" + name).die;
 			});
 		})
 	}
 
 	createArgs { arg argargs;
+		synthArgs = [];
+		patchIns = [];
 		args=Array.fill(this.instr.argsSize,{arg i; 
-			var proto,spec;
+			var proto,spec,ag;
+			ag = 
 				argargs.at(i) // explictly specified
 				?? 
 				{ //  or auto-create a suitable control...
@@ -47,79 +50,54 @@ Patch : AbstractPlayer  {
 					//proto.tryPerform('spec_',spec); 
 					// make sure it does the spec
 					proto
-				}
+				};
+			if(instr.specs.at(i).rate != \scalar,{
+				synthArgs = synthArgs.add(ag);
 			});
+			//TODO: force floats to PatchIn.scalar so you don't waste
+			//an extra Control. but then you can't live patch it
+			patchIns = patchIns.add(PatchIn.newByRate(instr.specs.at(i).rate));
+
+			ag		
+		});
 	}
 	
 	numChannels { ^instr.numChannels }
 	rate { ^instr.rate }
 	
 	/* scserver support */
-	defName { // needs to be identical to what the instr writes
-		^defName
-	}
 	asSynthDef { 
 		var synthDef,fixedArgs;
-		patchIns = [];
-		synthArgs = [];
 		fixedArgs = args.collect({ arg ag,i;
 			if(instr.specs.at(i).rate == \scalar,{
 				ag.value
 			},{
-				//TODO: force floats to PatchIn.scalar so you don't waste
-				//an extra Control
-				patchIns = 
-					patchIns.add(PatchIn.newByRate(instr.specs.at(i).rate));
-				synthArgs = synthArgs.add(ag);
 				nil // not fixed
 			})
 		});
 		
-		synthDef = this.instr.asSynthDef(	fixedArgs );		defName = synthDef.name;
+		synthDef = this.instr.asSynthDef( fixedArgs );			defName = synthDef.name;
 		^synthDef
 	} // the default Out version
-
-	prepareForPlay { arg group,onComplete;
-		group = group.asGroup;
-		super.prepareForPlay(group,{
-			var unpreparedChildren,aChildIsReady;
-			readyForPlay = false;
-			unpreparedChildren = this.args.size;
-			aChildIsReady = {
-				unpreparedChildren = unpreparedChildren - 1;
-				if(unpreparedChildren == 0,{
-					readyForPlay = true;
-					onComplete.value;
-				})
-			};
-			this.args.do({ arg child,i;
-				// is ready, is ready immediately, must thread
-				if(child.readyForPlay,aChildIsReady,{
-					child.prepareForPlay(group,aChildIsReady)
-				});
-			});
-		});
-		^false
+	synthDefArgs {
+		^[patchOut.bus.index] ++ 
+			// not every arg makes it into the synth def
+			synthArgs.collect({ arg ag; ag.initDefArg })
 	}
-	
-	spawn { arg atTime;
-		argOuts = synthArgs.collect({ arg argh,i;
-			argh.spawn(atTime) // returns PatchOut
-		});
-
-		// after the children
-		synth = Synth.tail(patchOut.group,this.defName,				[0, patchOut.bus.index] ++ 
-					argOuts.collect({	arg o,i;
-						[ i + 1 , o.value ] // bus indices, float values
-					}).flat
-		);
+	defName { // needs to be identical to what the instr writes
+			// prepare,asSynthDef would have been called first
+		^defName
+	}
+	didSpawn {
 		// make the connection
 		patchIns.do({ arg pti,i;
+			var argOut;
 			pti.nodeControl_(NodeControl(synth,i + 1));
 			// not finding the node until after playing
-			argOuts.at(i).connectTo(pti); // scalars hooked up
+			patchOut.patchOutsOfInputs.at(i).connectTo(pti,false); // scalars hooked up
+			//[ i, patchOut.patchOutsOfInputs.at(i), pti ].ins;
 		});
-		^patchOut
+		//patchIns.i(nil,"patchIns");
 	}
 
 //	setInput { arg i,newarg;
@@ -135,13 +113,8 @@ Patch : AbstractPlayer  {
 //		});
 //	}
 	free {
-		patchIns = nil;
-		synthArgs.do({ arg argh;
-			argh.free;			
-		});
-		synthArgs = nil;
-		argOuts.do({ arg argh; argh.free });
-		argOuts = nil;
+		// TODO only if i am the only owner
+		this.children.do({ arg child; child.free });
 		super.free;
 	}
 

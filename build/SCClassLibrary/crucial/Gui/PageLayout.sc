@@ -7,14 +7,15 @@ PageLayout  {
 	var windows, <>vspacer=3,<>hspacer=5, maxx=0, maxy=0, currx, curry;
 	var <margin; // max area in window we may occupy
 	var <winMaxBounds,tabs=0;
-	var onBoundsExceeded='newWindow';
+	var onBoundsExceeded='newWindow',metal;
 	var <>isClosed=false;
 	
 	var autoRemoves;
 	
-	*new{ arg title,width,height ,posx,posy,hspacer,vspacer;
+	*new { arg title,width,height ,posx,posy,hspacer,vspacer,metal=false;
 		^super.new.init(title,width ? screenWidth,height ? screenHeight,
-							posx ? 20,posy ? 20,hspacer ? 5,vspacer ? 3)
+							posx ? 20,posy ? 20,hspacer ? 5,vspacer ? 3, 
+							metal)
 	}
 
 	// see also .within
@@ -23,7 +24,7 @@ PageLayout  {
 	}
 	
 	//asPageLayout
-	*guify { arg lay,title,width,height;
+	*guify { arg lay,title,width,height,metal=false;
 		if(lay.class === GUIPlacement,{ ^lay });
 		if(lay.notNil and: {lay.checkNotClosed},{
 			// if its a GUIWindow we return a flow layout on it
@@ -33,11 +34,11 @@ PageLayout  {
 				^lay
 			});
 		},{
-			^this.new(title,width,height )
+			^this.new(title,width,height,metal: metal )
 		})
 	}
 	
-	init { arg title,width,height,posx,posy,arghspacer,argvspacer;
+	init { arg title,width,height,posx,posy,arghspacer,argvspacer,argmetal;
 		var w,gwmaxx,gwmaxy;
 		hspacer = arghspacer;
 		vspacer = argvspacer;
@@ -61,8 +62,10 @@ PageLayout  {
 						this.close; // close all windows in this layout
 					})
 		);
-		w.view.background_(bgcolor);
-		//.focusColor_(focuscolor)	
+		metal = argmetal;
+		if(metal.not,{
+			w.view.background_(bgcolor);
+		});
 
 		isClosed = false;	
 			
@@ -162,10 +165,10 @@ PageLayout  {
 		if(first.notNil,{first.focus });
 	}
 	focusOnAButton {
-		var first;
-		// not needed now ?
-		first = this.window.views.detect({arg v; v.isKindOf(SCButton) });
-		if(first.notNil,{first.focus });
+//		var first;
+//		// not needed now ?
+//		first = this.window.views.detect({arg v; v.isKindOf(SCButton) });
+//		if(first.notNil,{first.focus });
 	}
 
 	backColor { ^this.window.view.background }
@@ -228,14 +231,14 @@ PageLayout  {
 		windows.reverse.do({ arg w;
 			var b;
 			
-			b = Rect.new(w.bounds.left, w.bounds.top,
+			b = Rect.newSides(w.view.bounds.left, w.bounds.top,
 				 w.view.children.maxValue({ arg v; v.bounds.right }) 
-				 		+ hspacer ,
+				 		+ hspacer + hspacer ,
 				 w.view.children.maxValue({ arg v; v.bounds.bottom }) 
-				 		+ vspacer);
+				 		+ vspacer + vspacer + 45);
 			
-			// SCWindow.bounds_ doesn't work yet	 
-			//w.bounds_(b);
+			b.top = b.bottom; //centers it vertically
+			w.bounds_(b);
 			margin = b.insetAll(hspacer,vspacer,hspacer,vspacer);
 			// warning: subsequent windows would have the same margin
 			w.front;
@@ -255,11 +258,13 @@ PageLayout  {
 				(ow.bounds.left + 100).wrap(0,900),
 				(ow.bounds.top+10).wrap(0,300),
 				hspacer,
-				vspacer);
-		this.window.view.background_(ow.view.background);
-		tabs.do({
-			this.layRight(10,10);
-		});
+				vspacer,
+				metal);
+//		this.halt;
+//		//this.window.view.background_(ow.view.background);
+//		tabs.do({
+//			this.layRight(10,10);
+//		});
 	}
 
 	// make flowLayout gui objects dropable

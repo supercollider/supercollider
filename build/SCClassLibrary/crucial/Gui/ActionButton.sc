@@ -4,18 +4,24 @@ ActionButton  {
 	classvar <>offcolor;
 	var <>action,<>butt;
 	
-	*new { arg layout,title,function,maxx=20,maxy=17,borderStyle=3;
+	*new { arg layout,title,function,maxx=20,maxy=17;
+		^this.prNew(layout,title,function,maxx,maxy)
+				.font_(Font("Helvetica",12.0))
+	}
+	*prNew { arg layout,title,function,maxx=20,maxy=17;
 		var rect,butt;
-		layout = layout.asPageLayout;
+		layout = layout.asPageLayout(title,300,100);
 		title = title.asString;
-		butt = SCButton(layout, layout.layRight(
-					(title.size * 9).max(maxx?20),
-					(maxy ? 17)))
+		rect = layout.layRight(
+					(title.size * 8.3).max(maxx?20),
+					(maxy ? 17));
+		butt = SCButton(layout, rect )
 			.states_([[title,Color.black,offcolor]])
 			.action_(function);
 
 		^super.new.butt_(butt)
 	}
+
 	backColor_ { arg color;
 		var s;
 		s = butt.states;
@@ -33,6 +39,9 @@ ActionButton  {
 		s = butt.states;
 		s.at(0).put(0,string.asString);
 		butt.states = s;
+	}
+	font_ { arg f;
+		butt.font = f;
 	}
 	*initClass {
 		 offcolor = Color(0.84313725490, 0.81960784313, 0.75686274509 );

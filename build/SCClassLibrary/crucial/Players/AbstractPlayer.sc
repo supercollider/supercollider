@@ -4,10 +4,9 @@ AbstractPlayer : AbstractFunction  {
 	var <path,<>dirty=false; 
 	
 	var <synth,<patchOut,<>readyForPlay = false;
-	
+		
 	// subclasses must implement
 	ar { ^this.subclassResponsibility(thisMethod) }
-
 	kr { ^this.ar }
 	value {  ^this.ar }
 	valueArray { ^this.value }
@@ -38,125 +37,130 @@ AbstractPlayer : AbstractFunction  {
 	play { arg group,atTime;
 
 		// specify patching, boot server, prepare, load, spawn
-		var server;
+		var server,bundle;
+		bundle = List.new;
 		
 		if(synth.isPlaying,{
-			^patchOut // already playing, return my output object
+			^this
 		}); // what if i'm patched to something old ?
 		// depend on stop being issued
 
 		group = group.asGroup;		
 		if(patchOut.isNil,{
-			if(this.rate == \audio,{
-				// public buss
-				patchOut = PatchOut(this,group,Bus(\audio,0,this.numChannels,group.server))
+			if(this.rate == \audio,{// out yr speakers
+				patchOut = PatchOut(this,
+								group,
+							Bus(\audio,0,this.numChannels,group.server))
 			},{
 				if(this.rate == \control,{
 					patchOut = 
 						PatchOut(this,group,
-								Bus.next(\control,this.numChannels,group.server))
+								Bus.control(this.numChannels,group.server))
 				},{
-					("Wrong output rate: " + this.rate.asString + ".  AbstractPlayer cannot prepare this object for play.").error;
+					("Wrong output rate: " + this.rate + 
+				".  AbstractPlayer cannot prepare this object for play.").error;
 				});
 			})
 		});
-		// a kr player only cares about its patchIn, it doesnt have to
-		// run on the server at all.  not really kr then.
-		// assuming you directly set the control input of the patchIn
-		// rather than set the control output of a bus (more cpu)
 
 		if(readyForPlay,{
-			this.spawn(group,atTime);
+			this.spawnAtTime(atTime);
 		},{
 			Routine({
 				var limit = 100;
 				server = patchOut.server;
-				if(server.serverRunning.not,{ // TODO only one attempt to boot per server
-					if(server.boot.notNil,{ // it is trying
-						while({
-							server.serverRunning.not and: {(limit = limit - 1) > 0}
-						},{
-							//would be nice to get a Notification or changed
-							"waiting for server to boot...".inform;
-							0.2.wait;	
-						});
+				if(server.serverRunning.not,{
+					server.boot;
+					while({
+						server.serverRunning.not 
+							and: {(limit = limit - 1) > 0}
+					},{
+						//can watch for Server.changed but we still need to time out
+						"waiting for server to boot...".inform;
+						0.2.wait;	
 					});
 				});
-
 				if(server.serverRunning.not,{
-					"server failed to start".error; //die
+					"server failed to start".error;
 				},{
 					// already have a patchOut
-					this.prepareForPlay(group,{
-						//"prepared finished, spawning".postln;
-						
-						// set TempoBus if you need to
-						{
-							Tempo.changed;
-							nil
-						}.defer;
-						
-						this.spawn(group,atTime);
-						//"spawned".postln;
-
+					this.prepareForPlay(group,bundle);
+					["-play prepared",bundle].postln;
+					if(bundle.notEmpty,{
+						server.sendBundle(nil,bundle);
 					});
+					// need some way to track all the preps completion
+					0.2.wait;
+					
+					this.spawnAtTime(atTime);
 				});
 			}).play;
 		});
-		^patchOut
 	}
 
-	prepareForPlay { arg group,onComplete;
-		// subclasses handle children as they wish to
-		
-		// might already be playing on a different server
-
-		// how do i specify private or public bus ?
-
+	prepareForPlay { arg group,bundle;
+		var defName;
 		readyForPlay = false;
-		
-		// play would have already done this if we were top level
+		// play would have already done this if we were top level object
 		if(patchOut.isNil,{
 			group = group.asGroup;
 			patchOut = PatchOut(this,group,
-					Bus.alloc(this.rate,group.server,this.numChannels))
-					// private buss on this server
+						Bus.alloc(this.rate,group.server,this.numChannels))
+						// private buss on this server
 		});
-		
-		fork({		
-			var server;
-			server = patchOut.server;		
-			// boot server if needed
-		
-			// requires the children to be written already
-			this.loadDefFile(server); // if not already loaded, written
-
-			// temporary pause
-			0.3.wait;
-			
-			// Library.put(SynthDef,server.name ? server,this.defName);
-			// on server quit have to clear this
-			
-			readyForPlay = true;
-			onComplete.value
+		patchOut.patchOutsOfInputs = this.children.collect({ arg child;
+			child.prepareForPlay(group,bundle);
+			child.patchOut
 		});
-	}
 
-	spawn { arg atTime;
-		//subclasses should spawn children if they need to
-		synth = Synth.tail(patchOut.group,this.defName,
-					this.synthDefArgs.collect({ arg a,i; [i,a]}).flat );
-		^patchOut
+		this.loadDefFileToBundle(bundle);
+		
+		// not really until the last confirmation comes from server
+		readyForPlay = true;
+		
+		^bundle
 	}
-
-	loadDefFile { arg server;
-		var def;
+	spawnAtTime { arg atTime;
+		var bundle;
+		bundle = List.new;
+		this.spawnToBundle(bundle);
+		
+//		"spawnAtTime->".postln;
+//		bundle.do({ arg l; 
+//			l.postln; 
+//		});
+		
+		// atTime.asDelta
+		patchOut.server.listSendBundle( atTime, bundle);
+		this.didSpawn;
+	}
+	spawnToBundle { arg bundle;
 		this.children.do({ arg child;
-			child.loadDefFile(server);
-		});		
-		def = this.asSynthDef;
-		def.writeDefFile; // todo: 	check if needed
-		server.loadSynthDef(def.name);
+			child.spawnToBundle(bundle);
+		});
+		synth = Synth.newMsg(bundle, // newToBundle
+				this.defName,
+				this.synthDefArgs.collect({ arg a,i; [i,a]}).flat,
+				patchOut.group,
+				\addToTail
+				);
+	}
+	loadDefFileToBundle { arg bundle;
+		var defName,def;
+		defName = this.defName;
+		if(Library.at(SynthDef,patchOut.server,defName.asSymbol).isNil,{
+			def = this.asSynthDef;
+			def.writeDefFile;
+			defName = def.name;
+			bundle.add(["/d_load", "synthdefs/" ++ defName ++ ".scsyndef"]);
+			// on server quit have to clear this
+			// but for now at least we know it was written, and therefore
+			// loaded automatically on reboot
+			Library.put(SynthDef,patchOut.server,this.defName.asSymbol,true);
+		});
+		this.children.do({ arg child;
+			child.loadDefFileToBundle(bundle);
+		});
 	}
 	
 	writeDefFile {
@@ -165,24 +169,34 @@ AbstractPlayer : AbstractFunction  {
 			child.writeDefFile;
 		});
 	}
+	initDefArg { ^patchOut.initDefArg }
 	
-	// this might work for your subclass, 
-	//  but  its probably more complicated if you have inputs
+	
+	/** SUBCLASSES SHOULD IMPLEMENT **/
+	// this works for simple audio function subclasses
+	//  but its probably more complicated if you have inputs
 	asSynthDef { 
 		^SynthDef(this.defName,{ arg outIndex = 0;
 			Out.ar(outIndex,this.ar)
 		})
 	}
-	synthDefArgs { ^[patchOut.bus.index] }
-
+	// if children are your args, you won't have to implement this
+	synthDefArgs { 
+		^[patchOut.bus.index] ++ 
+			this.children.collect({ arg ag,i; ag.initDefArg })  
+	}
 	defName {
 		^this.class.name.asString
 	}
+	didSpawn {}
 	
+
+	/* status */
 	isPlaying { ^synth.isPlaying }
 
 	stop { ^this.free } // for now
-	// do we control all the children ? mostly
+	// do we control all the children ?
+	// they need to keep track of their own connections via PatchOut
 	run { arg flag=true;
 		if(synth.notNil,{
 			synth.run(flag);
@@ -200,6 +214,8 @@ AbstractPlayer : AbstractFunction  {
 		// release any connections i have made
 		readyForPlay = false;
 	}
+
+
 
 
 /*
@@ -277,28 +293,6 @@ AbstractPlayer : AbstractFunction  {
 
 }
 
-KrPlayer : AbstractPlayer {
-
-	var <>spec;
-	
-	rate { ^\control }
-
-	kr {  ^this.subclassResponsibility(thisMethod) }
-	ar { ^K2A.ar(this.kr) }
-	value { ^this.kr }
-
-	initialValue { ^0.0 }
-
-	//guiClass { ^KrPlayerGui }
-	
-	asSynthDef { 
-		// but its probably more complicated for your subclass
-		^SynthDef(this.defName,{ arg outIndex = 0;
-			Out.kr(outIndex,this.kr)
-		})
-	}
-	
-}
 
 
 

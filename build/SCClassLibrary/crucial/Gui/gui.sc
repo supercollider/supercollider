@@ -15,9 +15,20 @@
 		^this.guiClass.new(this).smallGui(lay);
 	}
 	
-	i { arg layout;
-		CXObjectInspector(this).gui(layout)
+	ins { arg layout ... args;
+		{
+			CXObjectInspector(this).gui(layout,args);
+			nil
+		}.defer
 	}
 	
+}
+
++ Class {
+	guiClass { ^ClassGui }
+}
+
++ Method {
+	guiClass { ^MethodGui }
 }
 

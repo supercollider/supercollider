@@ -12,7 +12,7 @@ ObjectGui {
 	}
 	
 	guify { arg layout,title,width,height;
-		layout = layout.asPageLayout(title,width,height);
+		layout = layout.asPageLayout(title ? model.asString,width,height);
 		NotificationCenter.registerOneShot(layout,\didClose,this,{
 			model.removeDependant(this); // when the window shuts
 		});
@@ -35,9 +35,7 @@ ObjectGui {
 	}
 	
 	writeName { arg layout;
-		ActionButton(layout,model.asString,{ 	// link to console
-			model.i;
-		},60)
+		InspectorLink(model,layout,100)
 	}
 	
 	saveConsole { arg layout;

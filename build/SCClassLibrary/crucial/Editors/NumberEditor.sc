@@ -59,6 +59,7 @@ NumberEditor : Editor {
 	spawn { arg atTime;
 		^ScalarPatchOut.new(this)
 	}
+	initDefArg { ^value }
 
 	guiClass { ^NumberEditorGui }
 

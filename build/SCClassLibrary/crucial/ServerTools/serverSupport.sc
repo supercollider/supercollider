@@ -3,19 +3,24 @@
 + Object {
 
 	// sc server support
-	writeDefFile {}
-	loadDefFile {}
+	//writeDefFile {}
+	loadDefFileToBundle {}
 	
 //	play { ^ScalarPatchOut(this) }
+	patchOut { ^ScalarPatchOut(this) }
 	isPlaying { ^false }
 
 	// floats only ?
 	readyForPlay { ^true }
-	prepareForPlay { ^true } // i am ready
-
-	spawn { ^ScalarPatchOut(this) }
+	prepareForPlay {  }
+	
+	spawnToBundle {}
+	//spawn { ^ScalarPatchOut(this) }
+	
+	initDefArg {}
 	free {}
 }
+
 //
 //+ Nil {
 //
