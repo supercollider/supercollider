@@ -155,7 +155,12 @@ AudioProxy : AbstractFunction {
 		var def;
 		def = ProxySynthDef(this, obj).writeDefFile;
 		if(def.notNil, { 
-			server.sendSynthDef(def.name); 
+			if(server.isLocal, {
+				server.loadSynthDef(def.name)
+				//server.sendSynthDef(def.name)
+			}, {
+				server.sendSynthDef(def.name)
+			}); 
 			lastDef = def 
 		}, { "writing synthDef failed".inform });
 	}
@@ -168,6 +173,12 @@ AudioProxy : AbstractFunction {
 				server.sendCmdList(cmd);
 	}
 	
+	load {
+		if(server.serverRunning, {
+			parents.do({ arg item; item.load });
+			this.updateSynthDef
+		}, { "server not running".inform });
+	}
 	
 	
 	sendSynthCommand { arg cmd;
@@ -203,7 +214,8 @@ AudioProxy : AbstractFunction {
 		this.wakeUp;
 	}
 	
-
+	
+	
 	
 }
 
