@@ -13,6 +13,11 @@ Env {
 	*new { arg levels=#[0,1,0], times=#[1,1], curve='lin', releaseNode, loopNode;
 		^super.newCopyArgs(levels, times, curve, releaseNode, loopNode)
 	}
+	*newClear { arg numSegments=8; 
+		// make an envelope for filling in later.
+		^this.new(Array.fill(numSegments+1,0), Array.fill(numSegments,1))
+	}
+
 	*initClass {
 		shapeNames = IdentityDictionary[
 			\step -> 0,
