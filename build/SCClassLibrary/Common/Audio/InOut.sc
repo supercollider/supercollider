@@ -9,6 +9,7 @@ ControlName
 
 	printOn { arg stream;
 		stream << "   P " << index.asString;
+		if (name.notNil) { stream << " " << name; };
 		if (rate.notNil) { stream << " " << rate; };
 		if (defaultValue.notNil) { stream << " " << defaultValue; };
 		stream << "\n"

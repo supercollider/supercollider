@@ -480,4 +480,5 @@ Object {
 	isInputUGen { ^false }
 	isOutputUGen { ^false }
 	isControlUGen { ^false }
+	source { ^this }
 }

@@ -14,14 +14,16 @@ IODesc {
 
 
 SynthDesc {
-	var <>name, <>parameters, <>inputs, <>outputs; 
+	var <>name, <>controlNames;
+	var <>controls, <>inputs, <>outputs; 
+	
 	var <>constants, <>def;
 	
 	printOn { arg stream;
 		stream << name << " :\n";
-		parameters.do {|param| param.printOn(stream) };
-		inputs.do {|input| stream << "I "; input.printOn(stream) };
-		outputs.do {|output| stream << "O "; output.printOn(stream) };
+		controls.do {|control| control.printOn(stream) };
+		inputs.do {|input| stream << "   I "; input.printOn(stream) };
+		outputs.do {|output| stream << "   O "; output.printOn(stream) };
 	}
 	
 	*read { arg path;
@@ -34,18 +36,18 @@ SynthDesc {
 			result
 		}
 	}
-	*readFile { arg stream;
+	*readFile { arg stream, keepDefs=false;
 		var numDefs, array;
 		stream.getInt32; // 'SCgf'
 		stream.getInt32; // version
 		numDefs = stream.getInt16;
 		numDefs.do {
-			array = array.add( SynthDesc.new.readSynthDef(stream));
+			array = array.add( SynthDesc.new.readSynthDef(stream, keepDefs));
 		}
 		^array
 	}
-	readSynthDef { arg stream;
-		var numParameters, numConstants, numParamNames, numUGens;
+	readSynthDef { arg stream, keepDef=false;
+		var numControls, numConstants, numControlNames, numUGens;
 		
 		inputs = [];
 		outputs = [];
@@ -59,22 +61,23 @@ SynthDesc {
 		constants = FloatArray.newClear(numConstants);
 		stream.read(constants);
 				
-		numParameters = stream.getInt16;
-		def.controls = FloatArray.newClear(numParameters);
+		numControls = stream.getInt16;
+		def.controls = FloatArray.newClear(numControls);
 		stream.read(def.controls);
 		
-		parameters = Array.fill(numParameters) 
+		controls = Array.fill(numControls) 
 			{ |i|
 				ControlName("?", i, '?', def.controls[i]);
 			};
 		
-		numParamNames = stream.getInt16;
-		numParamNames.do 
+		numControlNames = stream.getInt16;
+		numControlNames.do 
 			{
-				var paramName, paramIndex;
-				paramName = stream.getPascalString;
-				paramIndex = stream.getInt16;
-				parameters[paramIndex].name = paramName;
+				var controlName, controlIndex;
+				controlName = stream.getPascalString;
+				controlIndex = stream.getInt16;
+				controls[controlIndex].name = controlName;
+				controlNames = controlNames.add(controlName);
 			};
 			
 		numUGens = stream.getInt16;
@@ -82,9 +85,14 @@ SynthDesc {
 			this.readUGenSpec(stream);
 		};
 		
-		def.controlNames = parameters.select {|x| x.name.notNil };
+		def.controlNames = controls.select {|x| x.name.notNil };
 		def.constants = Dictionary.new;
 		constants.do {|k,i| def.constants.put(k,i) };
+		if (keepDef.not) {
+			// throw away unneeded stuff
+			def = nil;
+			constants = nil;
+		}
 	}
 	
 	readUGenSpec { arg stream;
@@ -92,6 +100,7 @@ SynthDesc {
 		var inputSpecs, outputSpecs;
 		var bus;
 		var ugenInputs, ugen;
+		var control;
 		
 		ugenClass = stream.getPascalString.asSymbol.asClass;
 		rateIndex = stream.getInt8;
@@ -127,16 +136,23 @@ SynthDesc {
 		
 		if (ugenClass.isControlUGen) {
 			numOutputs.do { |i|
-				parameters[i+specialIndex].rate = rate;
+				controls[i+specialIndex].rate = rate;
 			}
 		} {
-			if (inputSpecs[0] == -1) 
-				{ bus = constants[inputSpecs[1]].asInteger }
-				{ bus = "?" }; // could do more work to determine if bus is a parameter.
 			if (ugenClass.isInputUGen) {
+				bus = ugen.inputs[0];
+				if (bus.class.isControlUGen) {
+					control = controls.detect {|item| item.index == bus.specialIndex };
+					if (control.notNil) { bus = control.name }
+				};
 				inputs = inputs.add( IODesc(rate, numOutputs, bus))
 			} {
 			if (ugenClass.isOutputUGen) {
+				bus = ugen.inputs[0].source;
+				if (bus.class.isControlUGen) {
+					control = controls.detect {|item| item.index == bus.specialIndex };
+					if (control.notNil) { bus = control.name }
+				};
 				outputs = outputs.add( IODesc(rate, numInputs - ugenClass.numFixedArgs, bus))
 			}}
 		};

@@ -79,7 +79,6 @@ UGen : AbstractFunction {
 	//*new { ^this.shouldNotImplement(thisMethod) }
 	*newClear { ^this.shouldNotImplement(thisMethod) }
 			
-	source { ^this }
 	isValidUGenInput { ^true }
 	numChannels { ^1 }
 	checkInputs { 
