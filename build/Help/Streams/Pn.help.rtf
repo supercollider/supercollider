@@ -7,31 +7,27 @@
 \f0\b\fs36 \cf0 Pn
 \f1\b0\fs24  \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 superclass: FilterPatterns\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b superclass: FilterPatterns\
 
-\f1\b0 \cf0 \
-repeats the enclosed patterns a number of times \
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b \cf0 Pn(pattern, repeats)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\b0 \cf0 \
-\
+\f1\b0 \
+repeats the enclosed pattern a number of times \
 \
 
-\f2\fs18 (\
+\f0\b Pn(pattern, repeats)\
+
+\f1\b0 \
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
 \cf2 var\cf0  a, b;\
-a = Pn(\cf2 Pseq\cf0 (#[1, 2, 3], 1), 4);	\cf3 // repeat inner pattern four times\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+a = Pn(\cf2 Pseq\cf0 (#[1, 2, 3], 1), 4);	\cf3 // repeat pattern four times\
 \cf0 b = a.asStream;\
 16.do(\{ b.next.postln; \});\
 )\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
 }
