@@ -112,6 +112,17 @@ Buffer {
 		server.listSendMsg(["/b_setn",bufnum,startAt,values.size] 
 			++ values ++ morePairs.flat);
 	}
+	get { arg index, action;
+		OSCpathResponder(server.addr,['/b_set',bufnum,index],{ arg time, r, msg; 
+			action.value(msg.at(3)); r.remove }).add;
+		server.listSendMsg(["/b_get",bufnum,index]);
+	}
+	getn { arg index, count, action;
+
+		OSCpathResponder(server.addr,['/b_setn',bufnum,index],{arg time, r, msg; 
+			action.value(msg.copyToEnd(4)); r.remove } ).add; 
+		server.listSendMsg(["/b_getn",bufnum,index, count]);
+	}
 	setnMsg { arg startAt , values ... morePairs;
 		^["/b_setn",bufnum,startAt,values.size] 
 			++ values ++ morePairs.flat

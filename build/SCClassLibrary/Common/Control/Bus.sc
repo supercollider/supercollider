@@ -45,6 +45,17 @@ Bus {
 		server.sendBundle(nil,
 			["/c_setn",index,values.size] ++ values);
 	}
+	get { arg action;
+		OSCpathResponder(server.addr,['/c_set',index], { arg time, r, msg; 
+			action.value(msg.at(2)); r.remove }).add;
+		server.listSendMsg(["/c_get",index]);
+	}	
+	getn { arg count, action;
+		OSCpathResponder(server.addr,['/c_setn',index],{arg time, r, msg; 
+			action.value(msg.copyToEnd(4)); r.remove } ).add; 
+		server.listSendMsg(["/c_getn",index, count]);
+	}
+
 	fill { arg value,numChans;
 		// could throw an error if numChans > numChannels
 		server.sendBundle(nil,
