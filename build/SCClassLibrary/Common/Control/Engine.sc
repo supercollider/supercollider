@@ -9,10 +9,11 @@ PowerOfTwoBlock
 
 PowerOfTwoAllocator
 {
+	// THIS IS THE RECOMMENDED ALLOCATOR FOR BUSES AND BUFFERS
 	var size, array, freeLists, pos=0;
 	
-	*new { arg size;
-		^super.newCopyArgs(size, Array.newClear(size), Array.newClear(32), 0)
+	*new { arg size, pos=0;
+		^super.newCopyArgs(size, Array.newClear(size), Array.newClear(32), pos)
 	}
 	alloc { arg n;
 		var sizeClass, node, address;
@@ -40,9 +41,12 @@ PowerOfTwoAllocator
 		freeLists.put(sizeClass, node);
 	}
 }
-
-StackNumberAllocator
+		
+LRUNumberAllocator
 {
+	// THIS IS THE RECOMMENDED ALLOCATOR FOR NODE ID'S
+	// implements a least recently used ID allocator.
+	
 	var lo, hi, freeList, next;
 	
 	*new { arg lo, hi;
@@ -50,19 +54,20 @@ StackNumberAllocator
 	}
 	init {
 		next = lo - 1;
+		freeList = RingBuffer.new(hi-lo);
 	}
 	alloc {
-		if (freeList.size > 0, { ^freeList.pop });
 		if (next < hi, { ^next = next + 1; });
-		^nil
+		^freeList.pop;
 	}
 	free { arg inIndex; 
-		freeList = freeList.add(inIndex); 
+		freeList.add(inIndex); 
 	}
 }
 
 RingBuffer
 {
+	// used by LRUNumberAllocator
 	var array, size, head=0, tail=0;
 	*new { arg size;
 		^super.newCopyArgs(Array.newClear(size+1), size+1);
@@ -81,8 +86,8 @@ RingBuffer
 		^item
 	}
 }
-		
-LRUNumberAllocator
+
+StackNumberAllocator
 {
 	var lo, hi, freeList, next;
 	
@@ -91,14 +96,14 @@ LRUNumberAllocator
 	}
 	init {
 		next = lo - 1;
-		freeList = RingBuffer.new(hi-lo);
 	}
 	alloc {
+		if (freeList.size > 0, { ^freeList.pop });
 		if (next < hi, { ^next = next + 1; });
-		^freeList.pop;
+		^nil
 	}
 	free { arg inIndex; 
-		freeList.add(inIndex); 
+		freeList = freeList.add(inIndex); 
 	}
 }
 

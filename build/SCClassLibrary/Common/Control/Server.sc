@@ -48,6 +48,10 @@ Server : Model {
 	var <isLocal, <inProcess;
 	var <serverRunning = false;
 	var >options;
+	var <nodeAllocator;
+	var <controlBusAllocator;
+	var <audioBusAllocator;
+	var <bufferAllocator;
 
 	var <numUGens=0,<numSynths=0,<numGroups=0,<numSynthDefs=0;
 
@@ -68,6 +72,13 @@ Server : Model {
 		serverRunning = false;
 		named.put(name, this);
 		set.add(this);
+		
+		nodeAllocator = LRUNumberAllocator(1000, 1000 + options.maxNodes);
+		controlBusAllocator = PowerOfTwoAllocator(options.numControlBusChannels);
+		audioBusAllocator = PowerOfTwoAllocator(options.numAudioBusChannels, 
+			options.numInputBusChannels + options.numOutputBusChannels);
+		bufferAllocator = PowerOfTwoAllocator(options.numBuffers);
+		
 	}
 	
 	*initClass {
