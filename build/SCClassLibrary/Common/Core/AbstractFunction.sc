@@ -3,16 +3,16 @@ AbstractFunction {
 	// function compositions
 	// override these in subclasses to perform different kinds of function compositions
 	composeUnaryOp { arg aSelector;
-		^{ this.value.perform(aSelector) }
+		^{|...args| this.valueArray(args).perform(aSelector) }
 	}
 	composeBinaryOp { arg aSelector, function, adverb;
-		^{ this.value.perform(aSelector, function.value, adverb) }
+		^{|...args| this.valueArray(args).perform(aSelector, function.value, adverb) }
 	}
 	reverseComposeBinaryOp { arg aSelector, something, adverb;
-		^{ something.value.perform(aSelector, this.value, adverb) }
+		^{|...args| something.value.perform(aSelector, this.valueArray(args), adverb) }
 	}
 	composeNAryOp { arg aSelector, anArgList;
-		^{ this.value.performList(aSelector, anArgList) }
+		^{|...args| this.valueArray(args).performList(aSelector, anArgList) }
 	}
 
 	// double dispatch for mixed operations
