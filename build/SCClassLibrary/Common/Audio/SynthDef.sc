@@ -37,7 +37,7 @@ SynthDef {
 		});
 		^UGen.buildSynthDef.buildUgenGraph(func, lags, prependArgs);
 	}
-	//use this for system synth defs
+	//only write if no file exists
 	*writeOnce { arg name, func, lags, prependArgs, dir="synthdefs/";
 		^pathMatch(dir ++ name ++ ".scsyndef").isEmpty.if({
 			this.new(name, func, lags, prependArgs).writeDefFile(dir)
@@ -51,7 +51,7 @@ SynthDef {
 		constantSet = Set.new;
 	}
 	buildUgenGraph { arg func, lags, prependArgs;
-		// clean up.
+		// restart controls in case of *wrap
 		irnames = irvalues = ircontrols = irpositions = nil;
 		krnames = krvalues = krcontrols = krpositions = krlags = nil;
 		trnames = trvalues = trcontrols = trpositions = nil;
@@ -145,7 +145,7 @@ SynthDef {
 		krcontrols.asArray.do({ arg control, i; 
 			outputProxies.put(krpositions.at(i), control);
 		});
-				
+
 		^outputProxies
 	}
 	finishBuild {
@@ -330,7 +330,7 @@ SynthDef {
 	play { arg target,args,addAction=\addToTail;
 		var synth, msg;
 		target = target.asTarget;
-		synth = Synth.prNew(name,target.server);
+		synth = Synth.basicNew(name,target.server);
 		msg = synth.newMsg(target, addAction, args);
 		this.send(target.server, msg);
 		^synth
