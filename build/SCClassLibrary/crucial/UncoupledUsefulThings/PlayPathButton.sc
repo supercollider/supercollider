@@ -1,7 +1,7 @@
 
 PlayPathButton : ActionButton { // loads the object at loadPath and .plays it
 
-	var <>subject;
+	var <>subject,<isPlaying=false,player;
 
 	*new { arg layout,loadPath,maxx=150;
 		var new;
@@ -11,22 +11,20 @@ PlayPathButton : ActionButton { // loads the object at loadPath and .plays it
 		^new
 	}
 	
-	/*
-		Views store the function in a C-accessible attribute.
-		so doAction never really gets called directly as you might expect.
-		so either way, by gui or programmatically, i force doAction to happen
-	*/
 	doAction { 
-		if(Synth.isPlaying,{
+		if(this.isPlaying,{
 			this.backColor_(rgb(228,255,107));
-			Synth.stop;
+			player.stop;
 		},{
 			this.backColor_(Color.green);
 			this.play;
 		})
 	}
 	
-	play { ^subject.loadPath.play }
+	play { 
+		player = subject.loadPath;
+		^player.play 
+	}
 
 }
 

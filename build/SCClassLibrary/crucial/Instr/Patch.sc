@@ -22,15 +22,17 @@ Patch : AbstractPlayer  {
 		patchIns = [];
 		synthPatchIns = [];
 		args=Array.fill(this.instr.argsSize,{arg i; 
-			var proto,spec,ag,patchIn;
+			var proto,spec,ag,patchIn,darg;
 			ag = 
 				argargs.at(i) // explictly specified
 				?? 
 				{ //  or auto-create a suitable control...
 					spec = instr.specs.at(i);
-					// should check for argName match too...
-					//proto = spec.defaultControl(instr.defArgAt(i));
-					spec.defaultControl(0.2);
+					proto = ControlPrototypes.forSpec(spec,instr.argNames.at(i));
+					proto.tryPerform('spec_',spec); // make sure it does the spec
+					if((darg = instr.initAt(i)).notNil,{
+						proto.tryPerform('value_',darg);// set its value
+					});
 					proto
 				};
 				

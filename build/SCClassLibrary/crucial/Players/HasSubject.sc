@@ -57,7 +57,7 @@ AsStream : HasSubject {  // this is for passing in patterns or streams to Patche
 
 /*
 
-Kr : Ar { // should all be moved under ControlPlayer
+Kr : Ar { // should all be moved under KrPlayer
 
 	var <>lag;
 	

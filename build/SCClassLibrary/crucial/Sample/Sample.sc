@@ -12,7 +12,12 @@ Sample {
 	var <>forArgName,bufnumControl;
 	
 	*new { arg soundFilePath,tempo;
-		^super.new.readHeader(soundFilePath).tempo_(tempo)
+		var new;
+		new = super.new;
+		new.load(soundFilePath);
+		new.calculate;
+		new.tempo_(tempo);
+		^new
 	}
 
 	*newClear {
@@ -20,23 +25,37 @@ Sample {
 	}
 	
 	soundFilePath_ { arg string;
-		soundFilePath=string;
-		if(string.notNil,{
+		soundFilePath = string;
+		if(soundFilePath.notNil,{
 			name=PathName(soundFilePath).fileName.asSymbol;
+		});
+	}
+	load { arg thing;
+		if(thing.isNil,{ 
+			^this.soundFile_(SoundFile.new);
+		});
+		if(thing.isNumber,{
+			// a clear buffer
+			soundFile = SoundFile.new;
+				// todo
+		});
+		if(thing.isKindOf(SoundFile),{
+			soundFile=thing;
+			soundFilePath= soundFile.path;
+			^this
+		});
+		if(thing.isString,{
+			soundFilePath = thing;
+			soundFile = SoundFile.new;
+			if(soundFile.openRead(soundFilePath),{
+				soundFile.close; // got it
+			},{
+				("Sample failed to load SoundFile at path: " 
+					+ soundFilePath).error;
+			});
 		})
 	}
-	readHeader { arg soundFilePath;
-		soundFile = SoundFile.new;
-		if(soundFile.openRead(soundFilePath),{
-			soundFile.close; // got it
-		},{
-			("Sample failed to load SoundFile at path: " 
-				+ soundFilePath).error;
-		});
-		this.soundFilePath = soundFilePath;
-		this.calculate;
-	}
-			
+						
 	tempo_ { arg tm;
 		if(tm.notNil,{ 
 			tempo = tm; 

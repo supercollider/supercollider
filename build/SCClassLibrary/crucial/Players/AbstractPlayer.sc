@@ -1,7 +1,7 @@
 
 AbstractPlayer : AbstractFunction  { 
 
-	var <path,<>dirty=false; 
+	var <path,name,<>dirty=false; 
 	
 	var <synth,<patchOut,<>readyForPlay = false, defName;
 		
@@ -277,7 +277,14 @@ AbstractPlayer : AbstractFunction  {
 	
 	// if i am saved/loaded from disk my name is my filename
 	// otherwise it is "a MyClassName"
-	name { ^(if(path.notNil,{ PathName(path).fileName},nil )  ) }
+	name { ^(name ?? 
+		{
+			name = if(path.notNil,{ 
+						PathName(path).fileName
+					},nil);
+			name  
+		}) 
+	}
 	asString { ^this.name ?? { super.asString } }
 
 	path_ { arg p; path = PathName(p).asRelativePath }

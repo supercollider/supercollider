@@ -86,8 +86,8 @@ InspManager {
 		insp.gui; //(origin);
 	}
 	remove { // the menu shut
-		insps = [];
 		insps.do({ arg insp; insp.close });
+		insps = [];
 		menu = nil;
 	}
 	

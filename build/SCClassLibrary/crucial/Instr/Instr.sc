@@ -125,8 +125,9 @@ Instr  {
 	defArgAt { arg i; 
 		var nn;
 		nn=func.def.prototypeFrame;
-		^nn.at(i) ?? {specs.at(i).default}
+		^nn.at(i)
 	}
+	initAt { arg i;  ^(this.defArgAt(i) ?? {this.specs.at(i).defaultControl}) }
 	
 	/*  server support */
 	defName {
@@ -171,14 +172,15 @@ Instr  {
 			"outputSpec" -> outSpec.asPropertyList
 		].writeAsPlist("synthdefs/" ++ synthDef.name ++ ".plist");
 	}
-	
-	
-	
-	test {
+
+	test { arg ... args;
 		var p;
-		p = Patch(this.name);
+		p = Patch(this.name,args);
 		p.topGui;
 		^p
+	}
+	play { arg ... args;
+		^Patch(this.name,args).play
 	}
 /*
 	*choose { arg startAt;

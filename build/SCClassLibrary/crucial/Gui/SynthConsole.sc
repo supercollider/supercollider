@@ -35,14 +35,14 @@ SynthConsole : AbstractConsole  {
 		ActionButton(layout,">",{this.registerPlayKey.doPlay }).backColor_(Color.green);
 	}
 	registerPlayKey { arg keycode=49; // spacebar
-	/*	KeyDown.resetKeycode(keycode).registerKeycode(0,keycode,{  
+		/*	KeyDown.resetKeycode(keycode).registerKeycode(0,keycode,{  
 			if(Synth.isPlaying,{
 				this.doStop
 			},{
 				this.doPlay    
 			})
 		});//  
-	*/
+		*/
 	}	
 	scope {arg duration=0.5;
 		//ActionButton(layout,"scope",{this.doScope(duration)})
@@ -80,7 +80,7 @@ SynthConsole : AbstractConsole  {
 	}
 
 	formats {
-//		SelectButtonSet(layout,['32float','16aiff','16SD2','24AIFF'],{arg i,th; format = th.selectedLabel })
+		//SelectButtonSet(layout,['32float','16aiff','24AIFF'],{arg i,th; format = th.selectedLabel })
 	}
 
 	tempo {
@@ -108,8 +108,9 @@ SynthConsole : AbstractConsole  {
 	
 	doStop { arg stopFunc;
 		stopFunc.value;
-		ugenFunc.stop;
-		//NotificationCenter.notify(this,\didStop);
+		RootNode.new.freeAll;
+		//ugenFunc.stop;
+		NotificationCenter.notify(this,\didStop);
 	}
 		
 	doRecord {	arg path;
@@ -180,10 +181,6 @@ SynthConsole : AbstractConsole  {
 		
 		if(format=='16aiff',{
 			^[ 'AIFF' ,'16 big endian signed']
-		});
-		
-		if(format=='16SD2',{
-			^[ 'SD2', '16 big endian signed' ]
 		});
 		
 		if(format=='32float',{

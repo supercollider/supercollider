@@ -7,7 +7,21 @@ PathName { 	// this class by originally by AdC
 	
 	*new { arg path = ""; 
 		^super.new.init(path.standardizePath); 
-	} 
+	}
+	*fromOS9 { arg path="";
+		var treated;
+		treated = Array.new(path.size);
+		path = path.do({ arg char,i ;
+					if(char == $:,{
+						if(i != 0,{ // leading : is not wanted in unix
+							treated.add($/);
+						})
+					},{
+						treated.add(char)
+					});
+				});
+		^super.new.init(treated.as(String))
+	}
 	*initClass {
 		// uh ... no
 		//scroot = 	unixCmd("pwd") ++ "/";
