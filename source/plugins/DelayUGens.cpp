@@ -561,6 +561,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 }
 
 
+    //printf("changing buf: %f %f \n",unit->m_fbufnum, fbufnum); \
 
 #define GET_BUF \
 	float fbufnum  = ZIN0(0); \
@@ -596,7 +597,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 
 #define SETUP_IN(offset) \
 	uint32 numInputs = unit->mNumInputs - (uint32)offset; \
-	if (numInputs > bufChannels) { \
+	if (numInputs != bufChannels) { \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
@@ -1423,7 +1424,7 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 	
 	GET_BUF
 	CHECK_BUF
-	float* in = ZIN(1);
+	float* in = ZIN(kPitchIn);
 	uint32 size = unit->m_size;
 	uint32 index = unit->m_index;
 	int downsamp = unit->m_downsamp;
@@ -1437,7 +1438,7 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 	
 	float freq = unit->m_freq;
 	float hasfreq = unit->m_hasfreq;
-	//postbuf("> %d %d %d %d\n", index, size, readp, downsamp);
+	//printf("> %d %d readp %d ds %d\n", index, size, readp, downsamp);
 	do {
 		bufData[index++] = in[readp];
 		readp += downsamp;
@@ -1449,7 +1450,8 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 			hasfreq = 0.f; // assume failure
 			
 			int maxperiod = unit->m_maxperiod;
-			
+			// amp is always too low. not looping correctly ?
+            //printf("ampthresh %f maxperiod %d \n",ampthresh,maxperiod);
 			// check for amp threshold
 			for (int j = 0; j < maxperiod; ++j) {	
 				if (fabs(bufData[j]) >= ampthresh) {
@@ -1490,7 +1492,7 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 				}
 				int startperiod = i;	
 				int period;
-				//postbuf("startperiod %d\n", startperiod);
+				//printf("startperiod %d\n", startperiod);
 				
 				// find the first peak
 				float maxsum = threshold;
@@ -1517,7 +1519,7 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 					}
 				}
 				
-				//postbuf("found %d  thr %g  maxs %g  per %d  bs %d\n", foundPeak, threshold, maxsum, period, peakbinstep);
+				//printf("found %d  thr %g  maxs %g  per %d  bs %d\n", foundPeak, threshold, maxsum, period, peakbinstep);
 				if (foundPeak) {
 					float prevampsum, nextampsum;
 				
@@ -1538,7 +1540,7 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 						}
 					}
 					
-					//postbuf("prevnext %g %g %g   %d\n", prevampsum, maxsum, nextampsum, period);
+					//printf("prevnext %g %g %g   %d\n", prevampsum, maxsum, nextampsum, period);
 					// not on a peak yet. This can happen if binstep > 1
 					while (prevampsum > maxsum && period > 0) {
 						nextampsum = maxsum;
@@ -1549,7 +1551,7 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 						for (int j = 0; j < maxperiod; ++j) {	
 							prevampsum += bufData[i+j] * bufData[j];
 						}
-						//postbuf("slide left %g %g %g   %d\n", prevampsum, maxsum, nextampsum, period);
+						//printf("slide left %g %g %g   %d\n", prevampsum, maxsum, nextampsum, period);
 					}
 					while (nextampsum > maxsum && period < maxperiod) {
 						prevampsum = maxsum;
@@ -1581,9 +1583,9 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 					// calculate frequency
 					float tempfreq = unit->m_srate / fperiod;
 					
-					//postbuf("freq %g   %g / %g    %g %g  %d\n", tempfreq, unit->m_srate, fperiod,
-					//	unit->m_minfreq, unit->m_maxfreq, 
-					//	tempfreq >= unit->m_minfreq && tempfreq <= unit->m_maxfreq);
+					printf("freq %g   %g / %g    %g %g  %d\n", tempfreq, unit->m_srate, fperiod,
+						unit->m_minfreq, unit->m_maxfreq, 
+						tempfreq >= unit->m_minfreq && tempfreq <= unit->m_maxfreq);
 						
 					if (tempfreq >= unit->m_minfreq && tempfreq <= unit->m_maxfreq) {
 						freq = tempfreq;
@@ -1597,12 +1599,14 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 						startperiod = (ksamps+downsamp-1)/downsamp;
 					}
 				}
-			}
+			}/* else {
+                printf("amp too low \n");
+            }*/
 			
 			// shift buffer for next fill
 			int execPeriod = unit->m_execPeriod;
 			int interval = size - execPeriod;
-			//postbuf("interval %d  sz %d ep %d\n", interval, size, execPeriod);
+			//printf("interval %d  sz %d ep %d\n", interval, size, execPeriod);
 			for (int i = 0; i < interval; i++) {
 				bufData[i] = bufData[i + execPeriod];
 			}
