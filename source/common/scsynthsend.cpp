@@ -19,8 +19,13 @@
 */
 
 #include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
+#ifdef SC_WIN32
+# include <winsock2.h>
+# define bzero( ptr, count ) memset( ptr, 0, count )
+#else
+# include <netinet/in.h>
+# include <sys/socket.h>
+#endif
 #include "scsynthsend.h"
 #include "SC_Endian.h"
 
