@@ -838,19 +838,19 @@ void PulseCount_next_k(PulseCount *unit, int inNumSamples)
 	float prevreset = unit->m_prevreset;
 	float level = unit->mLevel;
 	
-	if (prevreset <= 0.f && curreset > 0.f) level = 0.f;
-
 	LOOP(inNumSamples, 
 		float curtrig = ZXP(trig);
-		if (prevtrig <= 0.f && curtrig > 0.f) {
+		if (prevreset <= 0.f && curreset > 0.f) level = 0.f;
+		else if (prevtrig <= 0.f && curtrig > 0.f) {
 			level += 1.f;
 		}
 		ZXP(out) = level;
 		prevtrig = curtrig;
+		prevreset = curreset;
 	);
 	unit->mLevel = level;
 	unit->m_prevtrig = prevtrig;
-	unit->m_prevreset = curreset;
+	unit->m_prevreset = prevreset;
 }
 
 void PulseCount_next_0(PulseCount *unit, int inNumSamples)
