@@ -11,32 +11,35 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \cf0 superclass: UGen\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\fs24 \cf0 superclass: UGen
+\f1\b0 \
 
-\f0\b\fs36 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs24 \cf0 	\
-	*ar(input, thresh, doneAction) \
-	*kr(input, thresh, doneAction) 
+\f0\b 	\
+*ar(input, thresh, doneAction) \
+*kr(input, thresh, doneAction) 
 \f1\b0 \
 \
 		\
-		
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li880\fi-880\ql\qnatural
+\cf0 	
 \f0\b input
-\f1\b0  		any source\
-		
+\f1\b0  - any source\
+	
 \f0\b thresh
-\f1\b0 		when input falls below this, evaluate doneAction\
-		
+\f1\b0  - when input falls below this, evaluate doneAction\
+	
+\f0\b time
+\f1\b0 	- the minimum duration of the for which input must fall below thresh before this triggers. The default is 0.1 seconds.\
+	
 \f0\b doneAction
-\f1\b0  	for the various doneActions, see: 
+\f1\b0  - for the various doneActions, see: 
 \f0\b Synth-Controlling-UGens
 \f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
+\
+If the signal input starts with silence at the beginning of the synth's duration, then DetectSilence will wait indefinitely until the first sound before starting to monitor for silence. \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
