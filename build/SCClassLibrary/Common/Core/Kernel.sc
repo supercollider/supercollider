@@ -345,6 +345,11 @@ FunctionDef {
 		});
 		^references
 	}	
+	storeOn { arg stream;
+		stream << "nil" 
+	}
+	checkCanArchive { "cannot archive FunctionDefs".warn }
+	archiveAsCompileString { ^true }
 }
 
 Method : FunctionDef {
@@ -363,6 +368,11 @@ Method : FunctionDef {
 		this.name.asString.openHelpFile
 	}
 	inspectorClass { ^MethodInspector }
+	storeOn { arg stream;
+		stream << ownerClass.name << ".findMethod(" << name.asCompileString << ")"
+	}
+	archiveAsObject { ^true }
+	checkCanArchive {}
 }
 
 Frame {
