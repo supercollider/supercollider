@@ -160,6 +160,14 @@ Document {
 		_TextWindow_UnfocusedFront
 	}
 	
+	alwaysOnTop_{|boolean=true|
+		_TextWindow_AlwaysOnTop
+	}
+	
+	alwaysOnTop{
+		_TextWindow_IsAlwaysOnTop
+	}
+		
 	syntaxColorize {
 		_TextWindow_SyntaxColorize
 	}
@@ -171,6 +179,7 @@ Document {
 	selectRange {arg start=0, length=0;
 		_TextWindow_SelectRange
 	}
+	
 	editable_{arg abool=true;
 		editable = abool;
 		this.prIsEditable_(abool);
@@ -178,6 +187,14 @@ Document {
 	removeUndo{
 		_TextWindow_RemoveUndo
 	}
+	
+	promptToSave_{|bool|
+		_TextWindow_SetPromptToSave
+	}
+	
+	promptToSave{
+		_TextWindow_PromptToSave
+	}	
 	
 	underlineSelection{
 		_TextWindow_UnderlineSelection
