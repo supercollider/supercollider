@@ -63,7 +63,7 @@ static id sharedSCVM = nil;
     }
     return sharedSCVM;
 }
-
+ 
 - (id)init
 {
     if (sharedSCVM) {
@@ -78,7 +78,7 @@ static id sharedSCVM = nil;
     
     guiWindows = [NSMutableArray arrayWithCapacity: 8];
     [guiWindows retain];
-    
+    [NSApp setDelegate: self]; //just to get a notification when sc quits. jan.t
     sharedSCVM = self;
     return self;
 }
@@ -369,6 +369,11 @@ bool gIsFullScreen = false;
 -(IBAction)showHelp:(id)sender {
     // a useless waste of a search to get the main page
     [[[NSDocument sharedDocumentController] currentDocument] showHelpFor: @"Help"];
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification
+{
+		[self sendMain: "shutDown"];
 }
 
 
