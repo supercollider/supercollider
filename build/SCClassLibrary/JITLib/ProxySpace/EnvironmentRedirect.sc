@@ -3,7 +3,6 @@
 
 EnvironmentRedirect {
 	var <>envir, <name;
-	var <>crashProof=true;
 	
 	*new { arg name, envir;
 		^super.newCopyArgs(nil, name).init(envir)
@@ -25,16 +24,10 @@ EnvironmentRedirect {
 	}
 	
 	push { 
-		// avoid chaining
-		if(currentEnvironment !== this) {
-			if(crashProof) { topEnvironment = this }; // Object-halt restores to top envir
-			Environment.push(this);
-		};
-		
+		Environment.push(this);
 	}
 	
 	// override in subclasses
-	// behave like my environment
 	
 	at { arg key;
 		^envir.at(key)
@@ -47,6 +40,8 @@ EnvironmentRedirect {
 	removeAt { arg key;
 		^envir.removeAt(key)
 	}
+	
+	// emulate usual environment interface
 	
 	make { arg function;
 		// pushes the Envir, executes function, returns the Envir
@@ -105,12 +100,12 @@ EnvironmentRedirect {
      	^EnvirDocument.new(this, title, string);
 	}
      
-     linkDoc { arg doc, instantPush=true;
+     linkDoc { arg doc, pushNow=true;
      	doc = doc ? Document.current;
      	if(doc.isKindOf(EnvirDocument), {
      		doc.envir_(this)
      	}, {
-     		if(instantPush) {this.push};
+     		if(pushNow) {this.push};
      		"added actions to current doc".inform;
      		doc	.toFrontAction_({ this.push })
      			.endFrontAction_({ this.pop });
