@@ -174,16 +174,15 @@ Pdef : Tdef {
 		^p
 	}
 	
-	pattern_ { arg item;
-		pattern = if(item.isKindOf(Function)) {Ê // allow functions to be passed in
-				Prout({ arg inval; item.valueEnvir.embedInStream(inval) }) 
-		} { item };
+	pattern_ { arg item; 
+		pattern = if(item.isKindOf(Function)) // allow functions to be passed in
+		{ÊPlazyEnvir(item) } { item };
 		if(isPlaying and: { player.isPlaying.not }) { this.play }
 	}
 		
 	*default { ^Pbind(\freq, \rest) }
 	
-	storeArgs { ^[key,pattern] }
+	storeArgs { ^[key, if(pattern.class === PlazyEnvir)Ê{ pattern.func } { pattern }] }
 	
 	
 	constrainStream { arg str;
