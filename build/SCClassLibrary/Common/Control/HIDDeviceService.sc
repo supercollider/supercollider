@@ -91,8 +91,8 @@ HIDDeviceService{
 		_HIDStopEventLoop
 	}
 
-	*hidAction{arg productID, vendorID, locID, cookie, val;
-		action.value(productID, vendorID, locID, cookie, val);
+	*hidAction{arg vendorID, productID, locID, cookie, val;
+		action.value(vendorID, productID, locID, cookie, val);
 	}
 	
 	*queueDevice{arg locID;
