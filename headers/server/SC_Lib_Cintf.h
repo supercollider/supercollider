@@ -98,8 +98,15 @@ enum {
 
 	cmd_c_get = 40,
 	cmd_c_getn = 41,
+	cmd_b_get = 42,
+	cmd_b_getn = 43,
+	cmd_s_get = 44,
+	cmd_s_getn = 45,
 	
-	NUMBER_OF_COMMANDS = 42
+	cmd_n_query = 46,
+	cmd_b_query = 47,
+
+	NUMBER_OF_COMMANDS = 48
 };
 
 extern SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];

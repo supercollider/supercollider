@@ -710,9 +710,15 @@ void NodeEndMsg::Perform()
 		case kNode_Move :
 			packet.adds("/n_move");
 			break;
+		case kNode_Info :
+			packet.adds("/n_info");
+			break;
 	}
-	packet.maketags(5);
+	packet.maketags(8);
 	packet.addtag(',');
+	packet.addtag('i');
+	packet.addtag('i');
+	packet.addtag('i');
 	packet.addtag('i');
 	packet.addtag('i');
 	packet.addtag('i');
@@ -721,6 +727,9 @@ void NodeEndMsg::Perform()
 	packet.addi(mGroupID);
 	packet.addi(mPrevNodeID);
 	packet.addi(mNextNodeID);
+	packet.addi(mIsGroup);
+	packet.addi(mHeadID);
+	packet.addi(mTailID);
 
 	ReplyAddress *users = mWorld->hw->mUsers;
 	int numUsers = mWorld->hw->mNumUsers;

@@ -50,6 +50,9 @@ struct NodeEndMsg {
 	int32 mGroupID;
 	int32 mPrevNodeID;
 	int32 mNextNodeID;
+	int32 mIsGroup;
+	int32 mHeadID;
+	int32 mTailID;
 	int32 mState;
 	
 	void Perform();

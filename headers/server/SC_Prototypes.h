@@ -99,6 +99,8 @@ void Dimension_Init(struct Dimension *inDimension, int inWidth, int inHeight);
 
 void Graph_Ctor(struct World *inWorld, struct GraphDef *inGraphDef, struct Graph *graph, struct sc_msg_iter *msg);
 void Graph_Dtor(struct Graph *inGraph);
+int  Graph_GetControl(struct Graph* inGraph, int inIndex, float& outValue);
+int  Graph_GetControl(struct Graph* inGraph, int32 *inName, int inIndex, float& outValue);
 void Graph_SetControl(struct Graph* inGraph, int inIndex, float inValue);
 void Graph_SetControl(struct Graph* inGraph, int32 *inName, int inIndex, float inValue);
 void Graph_MapControl(Graph* inGraph, int inIndex, int inBus);

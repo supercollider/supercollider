@@ -47,7 +47,6 @@ const char *SC_ErrorString(SCErr err)
 			case kSCErr_UnsupportedHeaderFormat : return "unsupported header format";
 			case kSCErr_UnsupportedSampleFormat : return "unsupported sample format";
 
-			case kSCErr_SharedBuf : return "can't perform operation on shared buffer";
 			case kSCErr_BufGenNotFound : return "buf gen routine not found";
 			
 			default : return "unknown error";

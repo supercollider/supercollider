@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "SC_Prototypes.h"
+#include "SC_Errors.h"
 #include "Unroll.h"
 
 void Unit_ChooseMulAddFunc(Unit* unit);
@@ -267,6 +268,24 @@ void Graph_Trace(Graph *inGraph)
 	}
 }
 
+
+int Graph_GetControl(Graph* inGraph, int inIndex, float& outValue)
+{
+	if (inIndex < 0 || inIndex >= GRAPHDEF(inGraph)->mNumControls) return kSCErr_IndexOutOfRange;
+	outValue = inGraph->mControls[inIndex];
+	return kSCErr_None;
+}
+
+int Graph_GetControl(Graph* inGraph, int32 *inName, int inIndex, float& outValue)
+{
+	GraphDef *def = (GraphDef*)(inGraph->mNode.mDef);
+	HashTable<ParamSpec, Malloc>* table = def->mParamSpecTable;
+	if (!table) return kSCErr_IndexOutOfRange;
+	ParamSpec *spec = table->Get(inName);
+	if (!spec) return kSCErr_IndexOutOfRange;
+	int index = spec->mIndex + inIndex;	
+	return Graph_GetControl(inGraph, index, outValue);
+}
 
 void Graph_SetControl(Graph* inGraph, int inIndex, float inValue)
 {

@@ -42,7 +42,7 @@ struct Node
 };
 typedef struct Node Node;
 
-enum { kNode_Go, kNode_End, kNode_On, kNode_Off, kNode_Move };
+enum { kNode_Go, kNode_End, kNode_On, kNode_Off, kNode_Move, kNode_Info };
 
 #endif
 

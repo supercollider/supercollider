@@ -244,7 +244,16 @@ void Node_StateMsg(Node* inNode, int inState)
 	msg.mGroupID = inNode->mParent ? inNode->mParent->mNode.mID : -1 ;
 	msg.mPrevNodeID = inNode->mPrev ? inNode->mPrev->mID : -1 ;
 	msg.mNextNodeID = inNode->mNext ? inNode->mNext->mID : -1 ;
-	
+	if (inNode->mIsGroup) {
+		Group *group = (Group*)inNode;
+		msg.mIsGroup = 1;
+		msg.mHeadID = group->mHead ? group->mHead->mID : -1;
+		msg.mTailID = group->mTail ? group->mTail->mID : -1;
+	} else {
+		msg.mIsGroup = 0;
+		msg.mHeadID = -1;
+		msg.mTailID = -1;
+	}
 	msg.mState = inState;
 	world->hw->mNodeEnds.Write(msg);
 }

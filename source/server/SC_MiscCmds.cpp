@@ -46,24 +46,14 @@ SCErr meth_none(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 
 SCErr meth_b_alloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_b_alloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
-{	
-	sc_msg_iter msg(inSize, inData);
-	int bufindex = msg.geti();
-	SndBuf* buf = World_GetBuf(inWorld, bufindex);
-	if (buf->shared) return kSCErr_SharedBuf;
-	
+{		
 	CallSequencedCommand(BufAllocCmd, inWorld, inSize, inData, inReply);
 	return kSCErr_None;
 }
 
 SCErr meth_b_free(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_b_free(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
-{
-	sc_msg_iter msg(inSize, inData);
-	int bufindex = msg.geti();
-	SndBuf* buf = World_GetBuf(inWorld, bufindex);
-	if (buf->shared) return kSCErr_SharedBuf;
-	
+{	
 	CallSequencedCommand(BufFreeCmd, inWorld, inSize, inData, inReply);
 	
 	return kSCErr_None;
@@ -79,12 +69,7 @@ SCErr meth_b_close(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 
 SCErr meth_b_allocRead(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_b_allocRead(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
-{
-	sc_msg_iter msg(inSize, inData);
-	int bufindex = msg.geti();
-	SndBuf* buf = World_GetBuf(inWorld, bufindex);
-	if (buf->shared) return kSCErr_SharedBuf;
-	
+{	
 	CallSequencedCommand(BufAllocReadCmd, inWorld, inSize, inData, inReply);
 	
 	return kSCErr_None;
@@ -282,6 +267,56 @@ SCErr meth_n_fill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 
 	return kSCErr_None;
 }
+
+
+SCErr meth_n_query(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_query(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+{
+	sc_msg_iter msg(inSize, inData);	
+	
+	while (msg.remain()) {
+		int id = msg.geti();
+		Node *node = World_GetNode(inWorld, id);
+		if (!node) return kSCErr_NodeNotFound;
+	
+		Node_StateMsg(node, kNode_Info);
+	}
+	return kSCErr_None;
+}
+
+SCErr meth_b_query(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_query(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+{
+	sc_msg_iter msg(inSize, inData);	
+	
+	scpacket packet;
+
+	int numbufs = msg.remain() >> 2;
+	packet.adds("/b_info");
+	packet.maketags(numbufs * 4 + 1);
+	packet.addtag(',');
+	
+	while (msg.remain()) {
+		int bufindex = msg.geti();
+		SndBuf* buf = World_GetBuf(inWorld, bufindex);
+
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addtag('f');
+		packet.addi(bufindex);
+		packet.addi(buf->frames);
+		packet.addi(buf->channels);
+		packet.addf(buf->samplerate);
+	}
+	
+	if (packet.size()) {
+		CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
+	}
+	
+	return kSCErr_None;
+}
+
 
 
 SCErr meth_d_load(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
@@ -615,13 +650,13 @@ SCErr meth_b_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	if (!buf) return kSCErr_Failed;
 	
 	float *data = buf->data;
-	int numSamples = buf->samples;
+	uint32 numSamples = buf->samples;
 	
 	while (msg.remain() >= 8)
 	{	
-		int32 sampleIndex = msg.geti();
+		uint32 sampleIndex = msg.geti();
 		float32 value = msg.getf();
-		if (sampleIndex >= 0 && sampleIndex < numSamples) 
+		if (sampleIndex < numSamples) 
 		{
 			data[sampleIndex] = value;
 		} else return kSCErr_IndexOutOfRange;
@@ -707,13 +742,13 @@ SCErr meth_c_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	float *data = inWorld->mControlBus;
 	int32 *touched = inWorld->mControlBusTouched;
 	int32 bufCounter = inWorld->mBufCounter;
-	int maxIndex = inWorld->mNumControlBusChannels;
+	uint32 maxIndex = inWorld->mNumControlBusChannels;
 	
 	while (msg.remain() >= 8)
 	{	
-		int32 index = msg.geti();
+		uint32 index = msg.geti();
 		float32 value = msg.getf();
-		if (index >= 0 && index < maxIndex) 
+		if (index < maxIndex) 
 		{
 			data[index] = value;
 			touched[index] = bufCounter;
@@ -758,7 +793,7 @@ SCErr meth_c_get(World *inWorld, int inSize, char *inData, ReplyAddress* inReply
 	sc_msg_iter msg(inSize, inData);
 		
 	float *data = inWorld->mControlBus;
-	int maxIndex = inWorld->mNumControlBusChannels;
+	uint32 maxIndex = inWorld->mNumControlBusChannels;
 	
 	int numheads = msg.remain() >> 2;
 
@@ -769,8 +804,8 @@ SCErr meth_c_get(World *inWorld, int inSize, char *inData, ReplyAddress* inReply
 	
 	while (msg.remain() >= 4)
 	{	
-		int32 index = msg.geti();
-		if (index < 0 && index >= maxIndex)
+		uint32 index = msg.geti();
+		if (index >= maxIndex)
 			return kSCErr_IndexOutOfRange;
 		packet.addtag('i');
 		packet.addtag('f');
@@ -869,6 +904,219 @@ SCErr meth_c_fill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 	return kSCErr_None;
 }
 
+
+
+SCErr meth_b_get(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_get(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
+{
+	sc_msg_iter msg(inSize, inData);
+	int bufindex = msg.geti();
+	SndBuf* buf = World_GetBuf(inWorld, bufindex);
+	if (!buf) return kSCErr_Failed;
+		
+	float *data = buf->data;
+	uint32 maxIndex = buf->samples;
+	
+	int numheads = msg.remain() >> 2;
+
+	scpacket packet;
+	packet.adds("/b_set");
+	packet.maketags(numheads * 2 + 2);
+	packet.addtag(',');
+	packet.addtag('i');
+	packet.addi(bufindex);
+	
+	while (msg.remain() >= 4)
+	{	
+		uint32 index = msg.geti();
+		if (index >= maxIndex)
+			return kSCErr_IndexOutOfRange;
+		packet.addtag('i');
+		packet.addtag('f');
+		packet.addi(index);
+		packet.addf(data[index]);
+	}
+	
+	if (packet.size()) {
+		CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
+	}
+	
+	return kSCErr_None;
+}
+
+SCErr meth_b_getn(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_b_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
+{		
+	sc_msg_iter msg(inSize, inData);
+	int bufindex = msg.geti();
+	SndBuf* buf = World_GetBuf(inWorld, bufindex);
+	if (!buf) return kSCErr_Failed;
+	
+	float *data = buf->data;
+	int32 maxIndex = buf->samples;
+	
+	// figure out how many tags to allocate   
+	int numcontrols = 0;
+	int numheads = msg.remain() >> 3;
+	
+	while (msg.remain()) {
+		msg.geti(); // skip start
+		int32 n = msg.geti();
+		numcontrols += n;
+	}
+	
+	scpacket packet;
+	packet.adds("/b_setn");
+	packet.maketags(numheads * 2 + numcontrols + 2);
+	packet.addtag(',');
+
+	// start over at beginning of message
+	msg.init(inSize, inData);
+	msg.geti(); // skip buf index
+
+	packet.addtag('i');
+	packet.addi(bufindex);
+	
+	while (msg.remain()) {
+		int32 start = msg.geti();
+		int32 n = msg.geti();
+		int32 end = start+n-1;
+		
+		if (start < 0 || end >= maxIndex || start > end) 
+			return kSCErr_IndexOutOfRange;
+		
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addi(start);
+		packet.addi(n);
+
+		for (int i=start; i<=end; ++i) {
+			packet.addtag('f');
+			packet.addf(data[i]);
+		}
+	}
+
+	if (packet.size()) {
+		CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
+	}
+
+	return kSCErr_None;
+}
+
+
+SCErr meth_s_get(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_s_get(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
+{
+	sc_msg_iter msg(inSize, inData);
+	int id = msg.geti();
+	Graph *graph = World_GetGraph(inWorld, id);
+	if (!graph) return kSCErr_NodeNotFound;
+			
+	int numheads = msg.remain() >> 2;
+
+	scpacket packet;
+	packet.adds("/n_set");
+	packet.maketags(numheads * 2 + 1);
+	packet.addtag(',');
+	packet.addtag('i');
+	packet.addi(id);
+	
+	while (msg.remain() >= 4) {
+		if (msg.nextTag('i') == 's') {
+			int32* name = msg.gets4();
+			float32 value = 0.f;
+			Graph_GetControl(graph, name, 0, value);
+			packet.addtag('s');
+			packet.addtag('f');
+			packet.adds((char*)name);
+			packet.addf(value);
+		} else {
+			int32 index = msg.geti();
+			float32 value = 0.f;
+			Graph_GetControl(graph, index, value);
+			packet.addtag('i');
+			packet.addtag('f');
+			packet.addi(index);
+			packet.addf(value);
+		}
+	}
+	
+	if (packet.size()) {
+		CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
+	}
+	
+	return kSCErr_None;
+}
+
+SCErr meth_s_getn(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_s_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
+{		
+	sc_msg_iter msg(inSize, inData);
+	int id = msg.geti();
+	Graph *graph = World_GetGraph(inWorld, id);
+	if (!graph) return kSCErr_NodeNotFound;
+	
+	// figure out how many tags to allocate   
+	int numcontrols = 0;
+	int numheads = msg.remain() >> 3;
+	
+	while (msg.remain()) {
+		msg.geti(); // skip start
+		int32 n = msg.geti();
+		numcontrols += n;
+	}
+	
+	scpacket packet;
+	packet.adds("/b_setn");
+	packet.maketags(numheads * 2 + numcontrols + 2);
+	packet.addtag(',');
+
+	// start over at beginning of message
+	msg.init(inSize, inData);
+	msg.geti(); // skip buf index
+
+	packet.addtag('i');
+	packet.addi(id);
+	
+	while (msg.remain()) {
+		if (msg.nextTag('i') == 's') {
+			int32* name = msg.gets4();
+			int32 n = msg.geti();
+			packet.addtag('s');
+			packet.addtag('i');
+			packet.adds((char*)name);
+			packet.addi(n);
+			for (int i=0; i<n; ++i) {
+				float32 value = 0.f;
+				Graph_GetControl(graph, name, i, value);
+				packet.addtag('f');
+				packet.addf(value);
+			}
+		} else {
+			int32 index = msg.geti();
+			int32 n = msg.geti();
+			packet.addtag('i');
+			packet.addtag('i');
+			packet.addi(index);
+			packet.addi(n);
+			for (int i=0; i<n; ++i) {
+				float32 value = 0.f;
+				Graph_GetControl(graph, index+i, value);
+				packet.addtag('f');
+				packet.addf(value);
+			}
+		}
+	}
+
+	if (packet.size()) {
+		CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
+	}
+
+	return kSCErr_None;
+}
+
+
+
 SCErr meth_notify(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_notify(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
@@ -939,7 +1187,14 @@ void initMiscCommands()
 	NEW_COMMAND(dumpOSC);					
 
 	NEW_COMMAND(c_get);		
-	NEW_COMMAND(c_getn);		
+	NEW_COMMAND(c_getn);
+	NEW_COMMAND(b_get);		
+	NEW_COMMAND(b_getn);
+	NEW_COMMAND(s_get);		
+	NEW_COMMAND(s_getn);
+			
+	NEW_COMMAND(n_query);		
+	NEW_COMMAND(b_query);		
 }
 
 

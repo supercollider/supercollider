@@ -247,6 +247,21 @@ Places node A in the same group as node B, to execute immediately before node B.
 \
 Places node A in the same group as node B, to execute immediately after node B.\
 \
+
+\f1\b /n_query					get info about a node\
+
+\f0\b0 	[\
+		int - node ID\
+	] * N\
+\
+The server sends an 
+\f1\b /n_info
+\f0\b0  message for each node to registered clients. See 
+\f1\b Node Notifications
+\f0\b0  for the format of the 
+\f1\b /n_info
+\f0\b0  message.\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
@@ -287,6 +302,31 @@ Controls may be set when creating the synth. The control arguments are the same 
 	] * N\
 \
 Causes the synth to print out the values of the inputs and outputs of its unit generators for one control period.\
+\
+
+\f1\b /s_get					get control value(s)\
+
+\f0\b0 	int - synth ID\
+	[\
+		int or string - a control index or name\
+	] * N\
+	\
+Replies to sender with the corresponding 
+\f1\b /n_set
+\f0\b0  command.\
+
+\f1\b \
+/s_getn					get ranges of control value(s)\
+
+\f0\b0 	int - synth ID\
+	[\
+		int or string - a control index or name\
+		int - number of sequential controls to get (M)\
+	] * N\
+	\
+Get contiguous ranges of controls. Replies to sender with the corresponding 
+\f1\b /n_setn
+\f0\b0  command. \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
@@ -509,7 +549,7 @@ Set contiguous ranges of sample indices to sets of values. For each range, the s
 		float - value\
 	] * N\
 	\
-Set contiguous ranges of sample indices to single values. For each range, the starting sample index is given followed by the number of samples to change, followed by the value to fill.\
+Set contiguous ranges of sample indices to single values. For each range, the starting sample index is given followed by the number of samples to change, followed by the value to fill. This is only meant for setting a few samples, not whole buffers or large sections.\
 \
 \
 
@@ -521,13 +561,58 @@ Set contiguous ranges of sample indices to single values. For each range, the st
 \
 Plug-ins can define commands that operate on buffers. The arguments after the command name are defined by the command. The currently defined buffer fill commands are listed below in a separate section.\
 \
-\
 
 \f1\b /b_close\
 
 \f0\b0 	int - buffer number\
 	\
 After using a buffer with DiskOut, close the soundfile and write header information.\
+\
+
+\f1\b /b_query\
+
+\f0\b0 	[\
+		int - buffer number\
+	] * N\
+	\
+Responds to the sender with a 
+\f1\b /b_info
+\f0\b0  message.  The arguments to 
+\f1\b /b_info
+\f0\b0  are as follows:\
+	[\
+		int - buffer number\
+		int - number of frames\
+		int - number of channels\
+		float - sample rate\
+	] * N\
+\
+
+\f1\b /b_get					get sample value(s)\
+
+\f0\b0 	int - buffer number\
+	[\
+		int - a sample index\
+	] * N\
+	\
+Replies to sender with the corresponding 
+\f1\b /b_set
+\f0\b0  command.\
+
+\f1\b \
+/b_getn					get ranges of sample value(s)\
+
+\f0\b0 	int - buffer number\
+	[\
+		int - starting sample index\
+		int - number of sequential samples to get (M)\
+	] * N\
+	\
+Get contiguous ranges of samples. Replies to sender with the corresponding 
+\f1\b /b_setn
+\f0\b0  command. This is only meant for getting a few samples, not whole buffers or large sections.\
+\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
@@ -536,7 +621,7 @@ After using a buffer with DiskOut, close the soundfile and write header informat
 
 \f0\b0\fs24 \cf0 \
 
-\f1\b /c_set					set sample value(s)\
+\f1\b /c_set					set bus value(s)\
 
 \f0\b0 	[\
 		int - a bus index\
@@ -546,11 +631,11 @@ After using a buffer with DiskOut, close the soundfile and write header informat
 Takes a list of pairs of bus indices and values and sets the buses to those values. \
 \
 
-\f1\b /c_setn					set ranges of sample value(s)\
+\f1\b /c_setn					set ranges of bus value(s)\
 
 \f0\b0 	[\
 		int - starting bus index\
-		int - number of sequential channels to change (M)\
+		int - number of sequential buses to change (M)\
 		[\
 			float - a control value\
 		] * M\
@@ -559,37 +644,37 @@ Takes a list of pairs of bus indices and values and sets the buses to those valu
 Set contiguous ranges of buses to sets of values. For each range, the starting bus index is given followed by the number of channels to change, followed by the values.\
 \
 
-\f1\b /c_fill						fill ranges of sample value(s)\
+\f1\b /c_fill						fill ranges of bus value(s)\
 
 \f0\b0 	[\
 		int - starting bus index\
-		int - number of channels to fill (M)\
+		int - number of buses to fill (M)\
 		float - value\
 	] * N\
 	\
-Set contiguous ranges of buses to single values. For each range, the starting sample index is given followed by the number of samples to change, followed by the value to fill.\
+Set contiguous ranges of buses to single values. For each range, the starting sample index is given followed by the number of buses to change, followed by the value to fill.\
 \
 
-\f1\b /c_get					get sample value(s)\
+\f1\b /c_get					get bus value(s)\
 
 \f0\b0 	[\
 		int - a bus index\
 	] * N\
 	\
 Takes a list of buses and replies to sender with the corresponding 
-\f1\b c_set
+\f1\b /c_set
 \f0\b0  command.\
 \
 
-\f1\b /c_getn					get ranges of sample value(s)\
+\f1\b /c_getn					get ranges of bus value(s)\
 
 \f0\b0 	[\
 		int - starting bus index\
-		int - number of sequential samples to get (M)\
+		int - number of sequential buses to get (M)\
 	] * N\
 	\
 Get contiguous ranges of buses. Replies to sender with the corresponding 
-\f1\b c_setn
+\f1\b /c_setn
 \f0\b0  command.\
 \
 \
@@ -663,53 +748,61 @@ The command was received too late to be executed on time. Sent only to the sende
 These messages are sent as notification of some event to all clients who have registered via the /notify command .\
 \
 
+\f1\b Node Notifications\
+\
+
+\f0\b0 All of these have the same arguments:\
+	int - node ID\
+	int - the node's parent group ID\
+	int - previous node ID, -1 if no previous node.\
+	int - next node ID, -1 if no next node.\
+	int - 1 if the node is a group, 0 if it is a synth\
+	int - if it is a group then the ID of the head node, -1 if there is no head node.\
+	int - if it is a group then the ID of the tail node, -1 if there is no tail node.\
+\
+
 \f1\b /n_go					a node was started\
 
-\f0\b0 	int - node ID\
-	int - group ID\
-	int - prev node ID\
-	int - next node ID\
-	\
+\f0\b0 	\
 This command is sent to all registered clients when a node is created.\
 \
 
 \f1\b /n_end					a node ended\
 
-\f0\b0 	int - node ID\
-	int - group ID\
-	int - prev node ID\
-	int - next node ID\
-	\
+\f0\b0 	\
 This command is sent to all registered clients when a node ends and is deallocated.\
 \
 
 \f1\b /n_off					a node was turned off\
 
-\f0\b0 	int - node ID\
-	int - group ID\
-	int - prev node ID\
-	int - next node ID\
-	\
+\f0\b0 	\
 This command is sent to all registered clients when a node is turned off.\
 \
 
 \f1\b /n_on					a node was turned on\
 
-\f0\b0 	int - node ID\
-	int - group ID\
-	int - prev node ID\
-	int - next node ID\
-	\
+\f0\b0 	\
 This command is sent to all registered clients when a node is turned on.\
 \
 
 \f1\b /n_move					a node was moved\
 
-\f0\b0 	int - node ID\
-	int - group ID\
-	int - prev node ID\
-	int - next node ID\
-	\
+\f0\b0 \
+This command is sent to all registered clients when a node is moved.\
+\
+
+\f1\b /n_info					reply to /n_query\
+
+\f0\b0 \
+This command is sent to all registered clients in response to an 
+\f1\b /n_query
+\f0\b0  command.\
+\
+\
+
+\f1\b Trigger Notification\
+
+\f0\b0 	\
 This command is sent to all registered clients when a node is moved from one group to another.\
 \
 
@@ -865,8 +958,15 @@ These are the currently defined fill routines for use with the
 \
 	cmd_c_get = \cf4 40\cf0 ,\
 	cmd_c_getn = \cf4 41\cf0 ,\
+	cmd_b_get = \cf4 42\cf0 ,\
+	cmd_b_getn = \cf4 43\cf0 ,\
+	cmd_s_get = \cf4 44\cf0 ,\
+	cmd_s_getn = \cf4 45\cf0 ,\
 	\
-	NUMBER_OF_COMMANDS=\cf4 42\cf0 \
+	cmd_n_query = \cf4 46\cf0 ,\
+	cmd_b_query = \cf4 47\cf0 ,\
+\
+	NUMBER_OF_COMMANDS = \cf4 48\cf0 \
 \};\
 \pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
 
