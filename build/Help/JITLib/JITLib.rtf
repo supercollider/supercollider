@@ -36,13 +36,17 @@ can be also useful:\
 placeholders: 		[NodeProxy][RecNodeProxy]\
 			[Pdef][Tdef][Ndef]\
 			\
-storing control settings:	[NodeMap]\
-special purpose Groups: 	[Ensemble] [ModelGroup]\
-			\
 other topics:		[jitlib_efficiency][the_lazy_proxy][jitlib_fading]\
+\
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
-\f1\b0 \cf0 \
+\f1\b0 \cf0 storing control settings:	[NodeMap]
+\f0\b \
+
+\f1\b0 special purpose Groups: 	[Ensemble] [ModelGroup]
+\f0\b \
+
+\f1\b0 \
 \
 there is a couple of other classes that are not specifically connected:\
 \
@@ -57,7 +61,7 @@ there is a couple of other classes that are not specifically connected:\
 \f0\b StreamClutch
 \f1\b0 \
 	
-\f0\b PolyPlayer
+\f0\b PolyPlayer // <-will be removed soon, NotePlayer does it now.
 \f1\b0 \
 	(undocumented: Pdict, Pref: they might change.)\
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
@@ -65,8 +69,10 @@ there is a couple of other classes that are not specifically connected:\
 \f2\fs18 \cf0 \
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
-\f0\b\fs24 \cf0 UGens	
-\f1\b0 Channel
+\f0\b\fs24 \cf0 UGens	\
+\pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
+
+\f1\b0 \cf0 	Channel
 \f0\b \
 	
 \f1\b0 TChoose
@@ -74,8 +80,9 @@ there is a couple of other classes that are not specifically connected:\
 	
 \f1\b0 TWChoose\
 	\
+\pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
-\f0\b Order
+\f0\b \cf0 Order
 \f1\b0  	ordered collection\
 	\
 
@@ -100,6 +107,7 @@ NodeProxy / ProxySpace:\
 	\ul jan 10\
 	\ulnone Pref / Prefn are tested, update properly. I'm thinking of merging them with Pdef.\
 	fixed wakeUp bug in NodeProxy.\
+	fixed bug in load when no server is present\
 	\
 	embed control proxies in streams as bus index\
 	added possibility to use \\offset key in event streams to have offset index in multichannel proxy\
