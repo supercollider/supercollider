@@ -101,6 +101,7 @@ SCView {  // abstract class
 		_SCView_New
 		^this.primitiveFailed
 	}
+	prClose { dataptr = nil; }
 	setProperty { arg key, value;
 		_SCView_SetProperty
 		^this.primitiveFailed
@@ -125,6 +126,11 @@ SCContainerView : SCView { // abstract class
 	add { arg child;
 		children = children.add(child);
 		if (decorator.notNil, { decorator.place(child); });
+	}
+	// private
+	prClose {
+		super.prClose;
+		children.do({ arg item; item.prClose });
 	}
 }
 

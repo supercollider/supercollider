@@ -29,6 +29,7 @@ SCWindow {
 	}
 	closed {
 		dataptr = nil;
+		view.prClose;
 		onClose.value; // call user function
 		allWindows.remove(this);
 	}
