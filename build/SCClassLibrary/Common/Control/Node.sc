@@ -204,37 +204,40 @@ Group : Node {
 	
 	}
 	
-	freeAll { 	
-		server.sendBundle(server.latency,["/g_freeAll",nodeID]);
+	freeChildren {
 		this.do({ arg node;
 			node.free(false);
 		});
+	}
+	freeAll { 	
+		server.sendBundle(server.latency,["/g_freeAll",nodeID]);
+		this.freeChildren;
 		// free my children, but this node is still playing
 	}
 	free {
 		super.free;
-		this.do({ arg node;
-			node.free(false);
-		});
+		this.freeChildren;
 		
 	}
 	
 	do { arg function;
-		var node;
+		var node, nextNode;
 		node = head;
 		while({ node.notNil }, {
+			nextNode = node.next;
 			function.value(node);
-			node = node.next;
+			node = nextNode;
 		});			
 	}
 	
 	deepDo { arg function;
-		var node;
+		var node, nextNode;
 		node = head;
 		while({ node.notNil }, {
+			nextNode = node.next;
 			function.value(node);
 			node.deepDo(function);
-			node = node.next;
+			node = nextNode;
 		});
 	}
 		
