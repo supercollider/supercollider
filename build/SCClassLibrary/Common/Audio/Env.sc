@@ -106,6 +106,16 @@ Env {
 	*cutoff { arg releaseTime = 0.1, level = 1.0, curve = \lin;
 		^this.new([level, 0], [releaseTime], curve, 0)
 	}
+	*dadsr { arg delayTime=0.1, attackTime=0.01, decayTime=0.3, 
+			sustainLevel=0.5, releaseTime=1.0,
+				peakLevel=1.0, curve = -4.0, bias = 0.0;
+		^this.new(
+			[0, 0, peakLevel, peakLevel * sustainLevel, 0] + bias,
+			[delayTime, attackTime, decayTime, releaseTime], 
+			curve,
+			3
+		)
+	}
 	*adsr { arg attackTime=0.01, decayTime=0.3, 
 			sustainLevel=0.5, releaseTime=1.0,
 				peakLevel=1.0, curve = -4.0, bias = 0.0;
