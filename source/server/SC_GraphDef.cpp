@@ -505,7 +505,10 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 			}
 		}
 		inGraphDef->mNumWireBufs = bufColor.NumBufs();
-		if (inWorld->mRealTime && inWorld->hw->mAudioDriver->Active()) {
+		if (inWorld->mRealTime 
+			&& inWorld->hw->mAudioDriver
+			&& inWorld->hw->mAudioDriver->Active()) 
+		{
 			// cannot reallocate interconnect buffers while running audio.
 			if (inGraphDef->mNumWireBufs > inWorld->hw->mMaxWireBufs) {
 				throw std::runtime_error("exceeded number of interconnect buffers.");

@@ -239,3 +239,42 @@ void Node_StateMsg(Node* inNode, int inState)
 	msg.mState = inState;
 	world->hw->mNodeEnds.Write(msg);
 }
+
+#include "SC_Unit.h"
+
+void Unit_DoneAction(int doneAction, Unit *unit)
+{
+	switch (doneAction) 
+	{
+		case 1 :
+			Node_SetRun(&unit->mParent->mNode, 0);
+			break;
+		case 2 :
+			Node_End(&unit->mParent->mNode);
+			break;
+		case 3 :
+		{
+			Node_End(&unit->mParent->mNode);
+			Node* prev = unit->mParent->mNode.mPrev;
+			if (prev) Node_End(prev);
+		} break;
+		case 4 : 
+		{
+			Node_End(&unit->mParent->mNode);
+			Node* next = unit->mParent->mNode.mNext;
+			if (next) Node_End(next);
+		} break;
+		case 5 : 
+		{
+			Node_End(&unit->mParent->mNode);
+			Node* prev = unit->mParent->mNode.mPrev;
+			if (prev && prev->mIsGroup) Group_DeleteAll((Group*)prev);
+		} break;
+		case 6 : 
+		{
+			Node_End(&unit->mParent->mNode);
+			Node* next = unit->mParent->mNode.mNext;
+			if (next && next->mIsGroup) Group_DeleteAll((Group*)next);
+		} break;
+	}
+}

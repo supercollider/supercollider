@@ -31,6 +31,24 @@
 #include "PriorityQueue.h"
 #include "SC_Lock.h"
 
+class SC_AudioDriver
+{
+public:
+
+	SC_AudioDriver(struct World *inWorld);
+
+	bool Active() const { return mActive; }
+
+	int64 mOSCbuftime;
+
+protected:
+	int64 mOSCincrement;
+	struct World *mWorld;
+	bool mActive;			// playing now?
+	double mOSCtoSamples;
+	int mSampleTime;
+};
+
 struct SC_ScheduledEvent 
 {
 	SC_ScheduledEvent() : mTime(0), mPacket(0) {}
@@ -47,22 +65,17 @@ struct SC_ScheduledEvent
 
 typedef MsgFifo<FifoMsg, 1024> EngineFifo;
 
-class SC_CoreAudioDriver
+class SC_CoreAudioDriver : public SC_AudioDriver
 {
-	struct World *mWorld;
-	bool mActive;			// playing now?
 	UInt32	mHardwareBufferSize;	// bufferSize returned by kAudioDevicePropertyBufferSize
 	EngineFifo mFromEngine, mToEngine;
 	SC_SyncCondition mAudioSync;
 	pthread_t mThread;
 	bool mRunThreadFlag;
 	UInt32 mSafetyOffset;
-	int mNumSamples;
-	int mSampleTime;
-	int64 mOSCincrement;
-	double mOSCtoSamples;
 	PriorityQueueT<SC_ScheduledEvent, 1024> mScheduler;
 	SC_Lock *mProcessPacketLock;
+	int mNumSamplesPerCallback;
 	
 	AudioBufferList * mInputBufList;
 	AudioDeviceID	mInputDevice;
@@ -88,9 +101,8 @@ public:
 
 	void* RunThread();
 
-	bool Active() const { return mActive; }
-	int NumSamples() const { return mNumSamples; }
 	int SafetyOffset() const { return mSafetyOffset; }
+	int NumSamplesPerCallback() const { return mNumSamplesPerCallback; }
 
 	bool SendMsgToEngine(FifoMsg& inMsg);
 	bool SendMsgFromEngine(FifoMsg& inMsg);
@@ -103,9 +115,7 @@ public:
 	AudioDeviceID OutputDevice() { return mOutputDevice; }
 	
 	void SetInputBufferList(AudioBufferList * inBufList) { mInputBufList = inBufList; }
-	AudioBufferList* GetInputBufferList() const { return mInputBufList; }
-	
-	int64 mOSCbuftime;
+	AudioBufferList* GetInputBufferList() const { return mInputBufList; }	
 };
 
 #endif

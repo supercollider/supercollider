@@ -125,6 +125,7 @@ void Node_SetRun(Node* inNode, int inRun);
 void Node_SendTrigger(Node* inNode, int triggerID, float value);
 void Node_End(struct Node* inNode);
 void Node_NullCalc(struct Node* inNode);
+void Unit_DoneAction(int doneAction, struct Unit* unit);
 }
 
 ////////////////////////////////////////////////////////////////////////

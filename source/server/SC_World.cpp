@@ -108,6 +108,7 @@ void InterfaceTable_Init()
 #endif
 
 	ft->fGroup_DeleteAll = &Group_DeleteAll;
+	ft->fDoneAction = &Unit_DoneAction;
 
 }
 

@@ -96,6 +96,7 @@ struct InterfaceTable
 	bool mAltivecAvailable;
 
 	void (*fGroup_DeleteAll)(struct Group* group);
+	void (*fDoneAction)(int doneAction, struct Unit *unit);
 	
 };
 typedef struct InterfaceTable InterfaceTable;
@@ -112,6 +113,7 @@ typedef struct InterfaceTable InterfaceTable;
 #define SendTrigger (*ft->fSendTrigger)
 #define SendMsgFromRT (*ft->fSendMsgFromRT)
 #define SendMsgToRT (*ft->fSendMsgToRT)
+#define DoneAction (*ft->fDoneAction)
 
 #define NRTAlloc (*ft->fNRTAlloc)
 #define NRTRealloc (*ft->fNRTRealloc)

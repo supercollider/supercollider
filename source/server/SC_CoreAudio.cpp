@@ -290,8 +290,13 @@ void DoneWithPacket(FifoMsg *inMsg)
 	FreeOSCPacket(packet);
 }
 
+SC_AudioDriver::SC_AudioDriver(struct World *inWorld)
+		: mWorld(inWorld), mActive(false), mSampleTime(0)
+{
+}
+
 SC_CoreAudioDriver::SC_CoreAudioDriver(struct World *inWorld)
-		: mWorld(inWorld), mActive(false), mNumSamples(0), mSampleTime(0)
+		: SC_AudioDriver(inWorld), mNumSamplesPerCallback(0)
 {
 	mProcessPacketLock = new SC_Lock();
 	mInputBufList = 0;
@@ -472,8 +477,8 @@ bool SC_CoreAudioDriver::Setup()
 		}
 	}
 
-	mNumSamples = mHardwareBufferSize / outputStreamDesc.mBytesPerFrame;
-	scprintf("mNumSamples %d\n", mNumSamples);
+	mNumSamplesPerCallback = mHardwareBufferSize / outputStreamDesc.mBytesPerFrame;
+	scprintf("mNumSamplesPerCallback %d\n", mNumSamplesPerCallback);
 	scprintf("mHardwareBufferSize %lu\n", mHardwareBufferSize);
 	  
 	// compute a per sample increment to the OpenSoundControl Time
@@ -533,7 +538,7 @@ OSStatus appIOProc2 (AudioDeviceID /*inDevice*/, const AudioTimeStamp* inNow,
 	int64 oscTime = CoreAudioHostTimeToOSC(inOutputTime->mHostTime);
 	
 	AudioTimeStamp readTime;
-	readTime.mSampleTime = inNow->mSampleTime - def->SafetyOffset() - def->NumSamples();
+	readTime.mSampleTime = inNow->mSampleTime - def->SafetyOffset() - def->NumSamplesPerCallback();
 	readTime.mFlags = kAudioTimeStampSampleTimeValid;
 	
 	AudioDeviceRead(def->InputDevice(), &readTime, def->GetInputBufferList());
@@ -573,7 +578,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 	World *world = mWorld;
 	
 	try {
-		int numSamples = NumSamples();
+		int numSamplesPerCallback = NumSamplesPerCallback();
 		mOSCbuftime = oscTime;
 		
 		mFromEngine.Free();
@@ -583,7 +588,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 		mToEngine.Perform();
 		
 		int bufFrames = world->mBufLength;
-		int numBufs = numSamples / bufFrames;
+		int numBufs = numSamplesPerCallback / bufFrames;
 		
 		int numInputBuses    = world->mNumInputs;
 		int numOutputBuses   = world->mNumOutputs;
