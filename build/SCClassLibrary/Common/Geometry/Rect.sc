@@ -40,6 +40,7 @@ Rect {
 	origin { ^Point.new(left, top) }
 	extent { ^Point.new(width, height) }
 	center { ^Point.new(left + (width * 0.5), top + (height * 0.5)) }
+	center_ { arg center; ^this.class.aboutPoint(center, width * 0.5, height * 0.5) }
 	
 	bottom { ^top + height }
 	right { ^left + width }
