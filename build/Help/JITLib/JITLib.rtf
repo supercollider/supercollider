@@ -34,9 +34,9 @@ Disclaimer: there is no time, really; punctuality is your personal responsibilit
 
 \f3\fs18 \cf0 \
 
-\f1\fs24 the main environment for this is [
+\f1\fs24 the main environment for this is 
 \f0\b ProxySpace
-\f1\b0 ], which handles server side processes and 
+\f1\b0 , which handles processes that play onto a bus on the server and 
 \f0\b Pdef/Pdefn/Tdef
 \f1\b0 , which handle client side streams. \
 \
@@ -47,8 +47,17 @@ can be also useful:\
 
 \f0\b \cf0 \
 \
-placeholders: 		for nodes: 	[NodeProxy][RecNodeProxy][Ndef]\
-			for streams: 	[Pdef][Pdefn][Tdef]\
+placeholders: 		for nodes: 	
+\f1\b0 [
+\f0\b ProxySpace
+\f1\b0 ] 
+\f0\b [NodeProxy]
+\f1\b0 [RecNodeProxy][Ndef]
+\f0\b \
+			for streams: 	[Pdef][Pdefn][Tdef][Pbindef]\
+					[PbindProxy]
+\f1\b0 [PatternProxy][EventPatternProxy]
+\f0\b \
 			\
 other topics:		[jitlib_efficiency][the_lazy_proxy][jitlib_fading][jitlib_asCompileString]\
 			[recursive_phrasing]\
@@ -98,10 +107,9 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 \
 
 \f1\fs24 [1] see for example 
-\f2\i http://toplap.org
-\f3\i0\fs18 \
+\f2\i http://toplap.org\
 
-\f1\fs24 [2] 
+\f1\i0 [2] 
 \f2\i dynamic programming
 \f1\i0  would have been a good term, but it is in use for something else already\
 	compare: \
@@ -120,6 +128,15 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 \
 	\
 2004\
+	september\
+	refactored Pdef: new subclasses\
+	improvements in NodeMap and NodeProxy\
+	added role scheme (helpfiles to come)\
+	\
+	\ul august\ulnone \
+	nodeProxy.mapn expands to multiple controls. (not by arrays of keys anymore!)\
+	some small efficiency improvements\
+	\
 	\ul july\ulnone \
 	Pdef/Tdef: pause and resume are now beat quantized\
 	embedInStream is more efficient now, fadeTime is only applied for transitions\
@@ -235,7 +252,6 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 	\
 TODO:	\
 		\
-		check rebuild implementation	\
 \
 	allow save synthdefs\
 	improve interface to crucial lib\
