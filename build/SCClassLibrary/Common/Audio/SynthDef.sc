@@ -45,12 +45,13 @@ SynthDef {
 		this.addControlsFromArgsOfFunc(func, lags, prependArgs.size);
 		^func.valueArray(prependArgs.asArray ++ this.buildControls);
 	}
-	addControlsFromArgsOfFunc { arg func, lags, skipArgs;
-		var def, names, values;
+	addControlsFromArgsOfFunc { arg func, lags, skipArgs=0;
+		var def, names, values,argNames;
 		
 		def = func.def;
+		argNames = def.argNames;
+		if(argNames.isNil,{ ^nil }); 
 		names = def.argNames.copyToEnd(skipArgs);
-		if (names.isNil, { ^nil });
 		controlsSize = 0;
 		// OK what we do here is separate the ir and kr rate arguments,
 		// create one Control ugen for all of the ir and one for all of 
