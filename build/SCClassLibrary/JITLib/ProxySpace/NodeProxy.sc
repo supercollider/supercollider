@@ -70,6 +70,7 @@ NodeProxy : AbstractFunction {
 		playGroup = Group.newMsg(msg, server);
 		nChan = nChan ? this.numChannels;
 		nChan = nChan.min(this.numChannels);
+		
 		nChan.do({ arg i;
 			Synth.newMsg(msg, "proxyOut-linkDefAr", [\i_busOut, outBus+i, \i_busIn, bus.index+i], playGroup, \addToTail);
 		});
@@ -78,14 +79,14 @@ NodeProxy : AbstractFunction {
 	}
 	
 	send { arg extraArgs;
-			this.sendToServer(false, true, extraArgs);
+			this.sendToServer(false, 0.0, extraArgs);
 	}
 	
 		
 	load {
 		if(server.serverRunning, {
 			parents.do({ arg item; item.load });
-			this.updateSynthDef
+			this.updateSynthDefs;
 		}, { "server not running".inform });
 	}
 	
@@ -111,7 +112,7 @@ NodeProxy : AbstractFunction {
 		this.setObj(obj, true) 
 	}
 	
-	setObj { arg obj, send=false, freeLast=true, add=false, onCompletion, latency=0.3; 		var def, ok, writeOK;
+	setObj { arg obj, send=false, freeLast=true, add=false, onCompletion, latency=0.5; 		var def, ok, writeOK;
 			
 			ok = this.initFor(obj);
 			
@@ -122,14 +123,12 @@ NodeProxy : AbstractFunction {
 				});
 				
 				def = obj.asProxySynthDef(this);
-				def.writeDefFile;
-				
 				synthDefs = synthDefs.add(def);
-					
-				if(send, 
-						{ this.sendToServer(freeLast, false, nil, onCompletion, latency) },
-						{ this.updateSynthDef } //only load def. maybe we are on server already? 
-				);
+				def.writeDefFile;
+				server.sendMsg("/d_recv", def.asBytes);
+				
+				
+				if(send, { this.sendToServer(freeLast, latency, onCompletion) });
 				
 			}, { "rate/numChannels must match".inform })
 			
@@ -191,15 +190,13 @@ NodeProxy : AbstractFunction {
 			
 	// server communications, updating
 	
-	sendToServer { arg freeLast=true, loaded=false, extraArgs, onCompletion, latency=0.3;
+	sendToServer { arg freeLast=true, latency=0.3, extraArgs, onCompletion;
 		var msg, resp;
 		if( synthDefs.isEmpty.not and: { server.serverRunning }, {
 				msg = List.new;
 				this.sendSynthMsg(msg, freeLast, extraArgs);
 				
-				if(loaded.not, { 
-					this.updateSynthDef;
-					if(latency.notNil, {
+				if(latency.notNil, {
 						SystemClock.sched(latency, {
 							this.schedSendOSC(msg, onCompletion); 
 						});
@@ -210,10 +207,8 @@ NodeProxy : AbstractFunction {
 							this.schedSendOSC(msg, onCompletion);
 							resp.remove;
 						}).add
-					});
-				}, { 
-					this.schedSendOSC(msg, onCompletion)
 				});
+				
 		});
 	}
 	
@@ -229,7 +224,7 @@ NodeProxy : AbstractFunction {
 					})
 	}
 	
-	updateSynthDef {
+	updateSynthDefs {
 		if(synthDefs.isEmpty.not, { 
 			synthDefs.do({ arg synthDef;
 			/*
@@ -240,19 +235,24 @@ NodeProxy : AbstractFunction {
 				server.sendSynthDef(synthDef.name)
 			}); 
 			*/
+			//server.sendSynthDef(synthDef.name);
+			//server.loadSynthDef(synthDef.name);
 			server.sendMsg("/d_recv", synthDef.asBytes);
 			});
 				
 		});
 	}
 	
+	startGroupMsg { arg msg;
+					group = Group.newMsg(msg, server, \addToHead);
+					group.prIsPlaying(true);
+				
+	}
 	
 	sendSynthMsg { arg msg, freeLast=true, extraArgs;
 	
 				if(this.isPlaying.not, {
-					group = Group.newMsg(msg, server, \addToHead);
-					group.prIsPlaying(true);
-				
+					this.startGroupMsg(msg);
 				}, {
 					//release current synth
 					if(freeLast, {
@@ -325,7 +325,7 @@ NodeProxy : AbstractFunction {
 	
 	wakeUp { 
 		
-		if(this.isPlaying.not, { this.sendToServer(true, true) });
+		if(this.isPlaying.not, { this.sendToServer(true, 0) });//no need to wait, def is on server
 	
 	}
 	
