@@ -245,7 +245,7 @@ Collection {
 			^minElement;
 		}
 	}
-	maxValue { | function |//	// must supply a function
+	maxValue { | function |			// must supply a function
 		var maxValue, maxElement;
 		this.do {|elem, i| 
 				var val;
