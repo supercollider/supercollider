@@ -8,7 +8,7 @@ Spec {
 	}
 	asSpec { ^this }
 	defaultControl {
-		^thisMethod.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	== { arg that;
 		if(this === that,{ ^true });
@@ -21,7 +21,8 @@ Spec {
 }
 
 ControlSpec : Spec {
-	var <>minval, <>maxval, <>warp, <>step, <>default, <>units;
+	var <minval, <maxval, <>warp, <>step, <>default, <>units;
+	var <clipLo,<clipHi;
 	
 	*new { arg minval=0.0, maxval=1.0, warp='lin', step=0.0, default, units;
 		^super.newCopyArgs(minval, maxval, warp, step, 
@@ -31,10 +32,24 @@ ControlSpec : Spec {
 	storeArgs { ^[minval,maxval,warp.asSpecifier,step,default,units] }
 	init { 
 		warp = warp.asWarp(this);
+		if(minval < maxval,{
+			clipLo = minval;
+			clipHi = maxval;
+		}, {
+			clipLo = maxval;
+			clipHi = minval;
+		});	
 	}
-	
+	minval_ { arg v;
+		minval = v;
+		this.init;	// rechoose the constrainfunc
+	}
+	maxval_ { arg v;
+		maxval = v;
+		this.init
+	}
 	constrain { arg value;
-		^value.clip(minval, maxval).round(step)
+		^value.clip(clipLo, clipHi).round(step)
 	}
 	range { ^maxval - minval }
 	ratio { ^maxval / minval }
@@ -44,7 +59,7 @@ ControlSpec : Spec {
 	}
 	unmap { arg value;
 		// maps a value from spec range to [0..1]
-		^warp.unmap(value.clip(minval, maxval).round(step));
+		^warp.unmap(value.clip(clipLo, clipHi).round(step));
 	}
 	
 	*initClass {
@@ -95,6 +110,7 @@ Warp {
 	unmap { arg value; ^value }
 
 	*asWarp { arg spec; ^this.new(spec) }
+	asWarp { ^this }
 	*initClass {
 		// support Symbol-asWarp
 		warps = IdentityDictionary[
