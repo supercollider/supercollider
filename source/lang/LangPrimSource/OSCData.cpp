@@ -504,9 +504,9 @@ PyrObject* ConvertOSCMessage(int inSize, char *inData)
         if (inSize == cmdNameLen) {
             numElems = 0;
         } else {
-			if (msg.tags[0] != ',') {
+			if (!msg.tags) {
 				numElems = 0;
-				error("OSC messages must have type tags.\n");
+				error("OSC messages must have type tags.  %s\n", cmdName);
 			} else {
 				numElems = strlen(msg.tags);
 			}
