@@ -25,6 +25,7 @@ Primitives for String.
 
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
+#include "GC.h"
 #include "Hash.h"
 #include <string.h>
 #include <stdlib.h>
@@ -106,6 +107,39 @@ int prStringHash(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+#include <glob.h>
+
+int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
+int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+
+	char pattern[1024];
+	int err = slotStrVal(a, pattern, 1023);
+	if (err) return err;
+	
+	glob_t pglob;
+	
+	int gerr = glob(pattern, GLOB_MARK | GLOB_TILDE | GLOB_QUOTE, NULL, &pglob);
+	if (gerr) {
+		pglob.gl_matchc = 0;
+	}
+	PyrObject* array = newPyrArray(g->gc, pglob.gl_matchc, 0, true);
+	SetObject(a, array);
+	if (gerr) return errNone;
+	
+	for (int i=0; i<pglob.gl_matchc; ++i) {
+		PyrObject *string = (PyrObject*)newPyrString(g->gc, pglob.gl_pathv[i], 0, true);
+		SetObject(array->slots+i, string);
+		g->gc->GCWrite(array, string);
+		array->size++;
+	}
+	
+	globfree(&pglob);
+	
+	return errNone;
+}
+
 void initStringPrimitives();
 void initStringPrimitives()
 {
@@ -115,6 +149,7 @@ void initStringPrimitives()
 
 	definePrimitive(base, index++, "_StringCompare", prStringCompare, 2, 0);	
 	definePrimitive(base, index++, "_StringHash", prStringHash, 1, 0);	
+	definePrimitive(base, index++, "_StringPathMatch", prStringPathMatch, 1, 0);	
 	definePrimitive(base, index++, "_StringAsSymbol", prStringAsSymbol, 1, 0);	
 	definePrimitive(base, index++, "_String_AsInteger", prString_AsInteger, 1, 0);	
 	definePrimitive(base, index++, "_String_AsFloat", prString_AsFloat, 1, 0);	

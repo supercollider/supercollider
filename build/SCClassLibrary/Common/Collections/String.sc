@@ -202,6 +202,8 @@ String[char] : RawArray {
 	
 	/// unix
 	
+	pathMatch { _StringPathMatch ^this.primitiveFailed }
+	
 	// runs a unix command and returns the result code.
 	//unixCmd { _String_System ^this.primitiveFailed }
 	
