@@ -3,8 +3,7 @@
 
 NodeMap {
 	var <>settings;
-	var <bundle, <upToDate=false;
-	var <>setArgs, <>setnArgs, <>mapArgs, <>mapnArgs;
+	var <upToDate, <>setArgs, <>setnArgs, <>mapArgs, <>mapnArgs; // cache args
 	
 	*new {
 		^super.new.clear
@@ -14,12 +13,10 @@ NodeMap {
 		^NodeMapSetting
 	}
 	
-	clearArgs {
-		setArgs = setnArgs = mapArgs = mapnArgs = nil;
-	}
 	
 	clear {
 		settings = IdentityDictionary.new;
+		upToDate = false;
 	}
 
 	
@@ -100,7 +97,7 @@ NodeMap {
 		^settings.at(key)
 	}
 	
-	settingKeys { 
+	settingKeys {
 		var res;
 		settings.do { arg item; if(item.isMapped.not) { res = res.add(item.key) } };
 		^res
@@ -112,39 +109,32 @@ NodeMap {
 	}
 		
 	updateBundle {
-			if(upToDate.not, {
-				this.clearArgs;
-				settings.do({ arg item; item.updateNodeMap(this) });
+			if(upToDate.not) {
+				setArgs = setnArgs = mapArgs = mapnArgs = nil;
+				settings.do { arg item; item.updateNodeMap(this) };
 				upToDate = true;
-			});
+			};
 	}
-	
-	setMsg  { arg nodeID; ^if(setArgs.notNil, { [15, nodeID] ++ setArgs }, { nil }) }
-	mapMsg  { arg nodeID; ^if(mapArgs.notNil, { [14, nodeID] ++ mapArgs }, { nil }) }
-	setnMsg { arg nodeID; ^if(setnArgs.notNil, { [16, nodeID] ++ setnArgs }, { nil }) }
-	mapnMsg  { arg nodeID; ^if(mapArgs.notNil, { [48, nodeID] ++ mapnArgs }, { nil }) }
-	
-	setToBundle { arg bundle, nodeID; if(setArgs.notNil, { bundle.add([15, nodeID] ++ setArgs) }) }
-	setnToBundle { arg bundle, nodeID;if(setnArgs.notNil,{ bundle.add([16, nodeID] ++ setnArgs)}) }
-	mapToBundle { arg bundle, nodeID; if(mapArgs.notNil, { bundle.add([14, nodeID] ++ mapArgs) }) }
-	mapnToBundle { arg bundle, nodeID; if(mapnArgs.notNil, { bundle.add([48, nodeID] ++ mapnArgs) }) }
 
-	addToBundle { arg inBundle, target;
+	addToBundle { arg bundle, target;
 			var msgs;
 			target = target.asNodeID;
 			this.updateBundle;
-			this.setToBundle(inBundle, target);
-			this.setnToBundle(inBundle, target);
-			this.mapToBundle(inBundle, target);
-			this.mapnToBundle(inBundle, target);
+			if(setArgs.notNil) { bundle.add([15, target] ++ setArgs) };
+			if(setnArgs.notNil) { bundle.add([16, target] ++ setnArgs) };
+			if(mapArgs.notNil) { bundle.add([14, target] ++ mapArgs) };
+			if(mapnArgs.notNil) { bundle.add([48, target] ++ mapnArgs) };
 	}
 	
-	unsetArgs {
-		var res;
-		if(settings.isEmpty) { ^nil };
-		res = Array.newClear(settings.size * 2);
-		settings.keys.do { arg item, i; res.put(i * 2, item) };
-		^res
+	unsetArgsToBundle { arg bundle, target, keys;
+		var args;
+		if(settings.isEmpty) { ^this };
+		keys.do { arg key;
+			var item;
+			item = settings[key];
+			if(item.notNil) { args = args ++ [key, -1] }
+		};
+		if(args.notNil) { bundle.add([15, target.asNodeID] ++ args) };
 	}
 	
 	unmapArgsToBundle { arg bundle, target, keys;

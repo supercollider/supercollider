@@ -35,9 +35,7 @@ OSCBundle {
 			}
 	}
 	
-	// offset by preparation time.
-	
-	sendAtTime { arg server, atTime, timeOfRequest;
+	sendAtTime { arg server, atTime, timeOfRequest; // offset by preparation
 		atTime.schedCXBundle(this,server,timeOfRequest ?? {Main.elapsedTime});
 	}
 	
