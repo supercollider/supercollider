@@ -99,10 +99,10 @@ Node {
 		aNode.group.moveNodeAfter(this, aNode);
 	}       
 	moveToHead { arg aGroup;
-		(aGroup ? group).moveNodeToHead(this);
+		aGroup.asGroup.moveNodeToHead(this);
 	}
 	moveToTail { arg aGroup;
-		(aGroup ? group).moveNodeToTail(this);
+		aGroup.asGroup.moveNodeToTail(this);
 	}
 	
 	
