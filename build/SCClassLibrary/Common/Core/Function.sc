@@ -91,7 +91,7 @@ Function : AbstractFunction {
 		if (delta == 0 and: {this.canCallOS}) {
 			this.value
 		}{
-			AppClock.sched(delta, this)
+			AppClock.sched(delta, { this.value; nil })
 		}
 	}
 
