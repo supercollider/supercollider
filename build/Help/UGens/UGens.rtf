@@ -7,31 +7,111 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 (incomplete)\ul \
-\
-In/Out\ulnone \
+\fs24 \cf0 (incomplete)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul \
+Analysis\ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
+	Amplitude\
+	Compander\
+	Pitch
+\f0\b \ul \
+\
+Control\ulnone \
+
+\f1\b0 \
+	DegreeToKey\
+	Slew\
+	
+\f0\b \ul \
+In/Out\ulnone \
+
+\f1\b0 \
+	AudioIn\
+	Control\
 	In\
+	InTrig\
 	InFeedback\
 	Out\
 	ReplaceOut\
-	XOut
+	XOut\
+	OffsetOut
 \f0\b \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \ul Oscillators:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ulnone \
+\cf0 \ulnone 	
+\f1\b0 \
+	Blip\
+	BufRd\
+	BufWr\
+	Formant\
+	FSinOsc\
+	Impulse\
+	Index\
+	LFCub\
+	LFPar\
+	LFPulse\
+	LFSaw\
+	Osc\
+	OscN\
+	Pulse\
+	Saw\
+	SinOsc\
+	SyncSaw\
+	TWindex\
+	VarSaw\
+	VOsc\
+	VOsc3\
+	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 	SinOsc\
-	SyncSaw\
-	OscN\
-	Osc
+\f0\b \cf0 \ul Panners:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone 	
+\f1\b0 \
+	BiPanB2\
+	DecodeB2\
+	PanB2\
+	Rotate2\
+	XFade2\
+	
 \f0\b \
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul Filters:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	BPF\
+	BPZ2\
+	Formlet\
+	FOS\
+	HPF\
+	HPZ1\
+	HPZ2\
+	Klank\
+	LeakDC\
+	Limiter\
+	LPF\
+	LPZ1\
+	LPZ2\
+	Median\
+	Normalizer\
+	OnePole\
+	OneZero\
+	Resonz\
+	RHPF\
+	Ringz\
+	RLPF\
+	SOS\
+	TwoPole\
+	TwoZero\
+	
+\f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \ul Noise:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -76,7 +156,11 @@ In/Out\ulnone \
  	PulseCount\
 	Gate             \
 	Peak             \
-	PulseDivider
+	PulseDivider\
+	LastValue\
+	Trig\
+	Trig1\
+	SendTrig
 \f0\b \
 	\
 \ul Frequency Domain\
@@ -85,7 +169,18 @@ In/Out\ulnone \
 	
 \f1\b0 FFT
 \f0\b \
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul \
+Buffer\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone \
+	
+\f1\b0 DiskIn\
+	DiskOut\
+	PlayBuf\
+	PingPong\
+	
+\f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \ul Binary Operators\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -122,6 +217,17 @@ In/Out\ulnone \
 	wrap2\
 
 \f0\b 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul others\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone \
+	
+\f1\b0 EnvGen\
+	Linen\
+	FreeSelf\
+	PauseSelf\
+	Select
+\f0\b \
 	        \
 	\
  to be continued  ....\
