@@ -1,0 +1,284 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Stream
+\f1\b0 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+superclass: AbstractFunction\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Stream is an abstract class that is not used directly.  The following attempts to document some\
+aspects of the use of Streams for music generation.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs30 \cf0 Overview\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+A Stream represents a sequence of values that are obtained incrementally by repeated\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 next 
+\f1\b0 messages.  A Stream can be restarted with a 
+\f0\b reset 
+\f1\b0 message. (Not all streams \
+actually implement reset semantics.)\
+\
+The class Object defines 
+\f0\b next
+\f1\b0  to return the object itself.  Thus every object can be viewed\
+as a stream and most simply stream themselves.  \
+\
+
+\f0\b Stream 
+\f1\b0 is the base class for classes that define streams.\
+\
+In SuperCollider, Streams are primarily used for handling text and for generating music.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 Two Stream classes: FuncStream and Routine
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 FuncStream(nextFunction, resetFunction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+A Function defines a stream consisting of the Function itself, a FuncStream defines a stream\
+that consists of 
+\f2\i evaluations 
+\f1\i0 of
+\f2\i  
+\f1\i0 its nextFunction.\
+\
+(
+\f0\b 	// Example 1: a Function vs. a FuncStream
+\f1\b0 \
+	f = \{ 33.rand \};\
+	s = FuncStream(f);\
+	10.do(\{ [f.next, s.next].postln \});\
+)\
+\
+(
+\f0\b 	// Example 2: the reset function
+\f1\b0 \
+\
+	f = \{ 33.rand \};\
+	s = FuncStream(f, \{thisThread.randSeed_(345)\});\
+	s.reset;\
+	10.do(\{ [f.next, s.next].postln \});\
+	s.reset;\
+	10.do(\{ [f.next, s.next].postln \});\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Routine(nextFunction, stacksize)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+In a FuncStream, the nextFunction runs through to completion for each element of the stream.\
+In a Routine, the nextFunction returns values with 
+\f0\b yield
+\f1\b0  and resumes execution (when it receives\
+a 
+\f0\b next 
+\f1\b0  message) at the expression folowing the yield.  This allows a sequence of expressions in\
+the function definition to represent a sequence of distinct events, like a musical score.\
+\
+(
+\f0\b 	// Example 1: a Routine
+\f1\b0 \
+	s = Routine(\{ \
+		1.yield; \
+		2.yield; \
+		3.yield; \});\
+	4.do(\{ s.next.postln \});\
+)\
+\
+Once the nextFunction completes execution, the Routine simply yields nil repeatedly.\
+Control structures (such as 
+\f0\b do
+\f1\b0  or 
+\f0\b while
+\f1\b0 ) can be used within the nextFunction in a manner analogous\
+to repeat marks in a score\
+\
+(
+\f0\b 	// Example 1: a Routine
+\f1\b0 \
+	s = Routine(\{ \
+		4.do(\{\
+			[1,2,3,4].do(\{ arg i; i.yield; \})\
+		\})\
+	\});\
+	17.do(\{ s.next.postln \});\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs32 \cf0 Composite Streams\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs30 \cf0 	Iteration\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+	\
+	
+\f0\b do (function)\
+		
+\f1\b0 iterate until a nil is encountered
+\f0\b \
+		\ul beware:
+\f1\b0 \ulnone  applying do to an endless stream will lock up the interpreter!
+\f0\b \
+\
+
+\f1\b0 	Where 
+\f0\b do 
+\f1\b0 effectively 'plays' a stream by iterating all of its contects,  the \
+	following messages create a stream by filtering another stream in some way.\
+\
+	
+\f0\b collect (function)\
+		
+\f1\b0 iterate indefinitely
+\f0\b \
+\
+	reject (function)\
+		
+\f1\b0 return only those elements for which function.value(element) is false
+\f0\b \
+\
+	select (function)\
+		
+\f1\b0 return only those elements for which function.value(element) is true
+\f0\b \
+
+\f1\b0 \
+	
+\f0\b dot(function, stream)\
+		
+\f1\b0 return function.value(this.next, stream.next)
+\f0\b \
+
+\f1\b0 \
+	
+\f0\b interlace(function, stream)\
+		
+\f1\b0 iterate all of stream for each element of this.  Combine the values using function.
+\f0\b \
+	\
+	appendStream(stream)
+\fs28 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 		
+\f1\b0 append stream after this
+\f0\b  
+\f1\b0 returns nil
+\f0\b\fs28 \
+
+\fs24 	
+\f1\b0 \
+	
+\f0\b embedInStream(inval)\
+		
+\f1\b0 iterate all of this from within whatever Stream definition it is called.
+\f0\b \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 Composite Streams can be defined as combinations of Streams using the unary and binary \
+messages \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul \ulc0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs30 \cf0 \ulnone 	Unary messages\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+	Streams support most of the unary messages  defined in AbstractFunction:\
+\
+(\
+	a = Routine(\{ 20.do(\{ 33.rand.yield \}) \});\
+	b = Routine(\{ [-100,00,300,400].do(\{ arg v; v.yield\}) \});\
+\
+	c = b.neg;			// define a composite stream		\
+	c.trace.do;\
+\
+	// enumerate and perform all of the unary messages	:	\
+	
+\f0\b [ \
+		\\neg, \\reciprocal, \\bitNot, \\abs, \\asFloat, \\asInteger, \\ceil, \
+		\\floor, \\frac, \\sign, \\squared, \\cubed, \\sqrt, \\exp, \\midicps, \
+		\\cpsmidi, \\midiratio, \\ratiomidi, \\ampdb, \\dbamp, \\octcps, \
+		\\cpsoct, \\log, \\log2, \\log10, \\sin, \\cos, \\tan, \\asin, \\acos, \\atan, \
+		\\sinh, \\cosh, \\tanh, \\rand, \\rand2, \\linrand, \\bilinrand, \\sum3rand, \
+		\\distort, \\softclip, \\coin, \\even, \\odd, \\isPositive, \\isNegative,\
+		\\isStrictlyPositive\
+	]\
+	
+\f1\b0 	.do(\{ arg msg;\
+			Post << " " << msg << " "\
+			msg.post; " ".post; \
+			b.reset.perform(msg).do(\{arg v; v.post; " ".post;\}) \
+		\});\
+	\
+)	 \
+	In addition, it is possible to print out the results of a stream with\
+	\
+	
+\f0\b trace\
+
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 	Binary messages\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+	Streams support the following binary messages  defined in AbstractFunction:\
+(\
+	a = Routine(\{ 20.do(\{ 33.rand.yield \}) \});\
+	b = Routine(\{ [-100,00,300,400].do(\{ arg v; v.yield\}) \});\
+	[\
+	'+'
+\f0\b  , '-' , '*', '/', \\div, '%', '**', \\min, \\max, '<', '<=', '>', '>=', '&', '|', \
+	\\bitXor, \\lcm, \\gcd, \\round, \\trunc, \\atan2, \
+	\\hypot, '>>', '+>>', \\ring1, \\ring2, \\ring3, \\ring4, \
+	\\difsqr, \\sumsqr, \\sqrdif, \\absdif, \\amclip,\
+	\\scaleneg, \\clip2, \\excess, '<!', \\rrand, \\exprand\
+	]\
+
+\f1\b0 	.do(\{ arg msg;\
+		"".postln;\
+		msg.post; " ".post; \
+		b.reset.perform(msg, a.reset).do(\{arg v; v.post; " ".post;\}) \
+	\});\
+)\
+ \
+\
+	}
