@@ -185,7 +185,7 @@ SynthDesc {
 			controls.do {|controlName, i|
 				var name, name2;
 				name = controlName.name;
-				if (name != "?") {
+				if (name.asString != "?") {
 					if (name == "gate") {
 						hasGate = true;
 					}{
@@ -203,7 +203,7 @@ SynthDesc {
 			controls.do {|controlName, i|
 				var name, name2;
 				name = controlName.name;
-				if (name != "?") {
+				if (name.asString != "?") {
 					if (name != "gate") {
 						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name }; 
 						if (comma) { stream << ", " } { comma = true };
@@ -254,7 +254,7 @@ SynthDescLib {
 			path = SynthDef.synthDefDir ++ "*.scsyndef";
 		};
 		synthDescs = SynthDesc.read(path, true, synthDescs);
-		Post << "SynthDescLib '" << name << "' read of '" << path << "' done.\n"
+		postf("SynthDescLib '%' read of '%' done.\n", name, path);
 	}
 }
 
