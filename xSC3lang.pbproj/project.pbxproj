@@ -31,6 +31,36 @@
 //6A2
 //6A3
 //6A4
+		6A7207D307BB709000A1F778 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
+			name = SCCocoaView.M;
+			path = source/app/SCCocoaView.M;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		6A7207D407BB709000A1F778 = {
+			fileRef = 6A7207D307BB709000A1F778;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6A7207DC07BB70CB00A1F778 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = SCCocoaView.h;
+			path = headers/app/SCCocoaView.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		6A7207DD07BB70CB00A1F778 = {
+			fileRef = 6A7207DC07BB70CB00A1F778;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		6AB6FF62053898BC0000009F = {
 			children = (
 				6AB6FF64053898BC0000009F,
@@ -2303,6 +2333,7 @@
 				F50D050402E69B6B01CA2799,
 				F50D050502E69B6B01CA2799,
 				F50D050602E69B6B01CA2799,
+				6A7207DC07BB70CB00A1F778,
 				F50D050702E69B6B01CA2799,
 				F50D050802E69B6B01CA2799,
 				F50D050902E69B6B01CA2799,
@@ -2947,6 +2978,7 @@
 				F50D058B02E69B6B01CA2799,
 				F50D058C02E69B6B01CA2799,
 				F50D058D02E69B6B01CA2799,
+				6A7207D307BB709000A1F778,
 				F50D058E02E69B6B01CA2799,
 				F50D058F02E69B6B01CA2799,
 				F50D059002E69B6B01CA2799,
@@ -3698,6 +3730,7 @@
 				9286AEA4057D30EC000EBAEB,
 				92B4EA57059397C600CA25E4,
 				92B4EA63059399DD00CA25E4,
+				6A7207DD07BB70CB00A1F778,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3905,6 +3938,7 @@
 				92B4EA68059399F300CA25E4,
 				92FC9D7506EAFCE900AA3E95,
 				92FC9DD906EB002800AA3E95,
+				6A7207D407BB709000A1F778,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
