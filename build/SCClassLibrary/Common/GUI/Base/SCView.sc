@@ -76,6 +76,7 @@ SCView {  // abstract class
 		if(dataptr.notNil,{
 			parent.prRemoveChild(this);
 			this.prRemove;
+			this.prClose;
 		},{
 			"SCView-remove : this view already removed.".debug(this);
 		});
@@ -929,7 +930,7 @@ SCDragBoth : SCDragSink {
 SCUserView : SCView { // abstract class
 	draw {}
 	mouseBeginTrack { arg x, y, modifiers; }
-	mouseTrack { arg x, y, modifiers;x.postln }
+	mouseTrack { arg x, y, modifiers; }
 	mouseEndTrack { arg x, y, modifiers; }
 }
 
