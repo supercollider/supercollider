@@ -159,8 +159,7 @@ supported inputs
 	source_(anObject)\
 		
 \f3\b0 play a new synth through me, release old one.\
-		anObject can be a Function, a SynthDef, an Instr, any valid UGen input\
-		a pattern can be used if it returns an EventStream.\
+		anObject can be one of the supported inputs (see above)\
 			[only if the used synthdef (applies also to patterns) has the right number of channels\
 			and an out argument, this can be used to do filtering. \
 			if you supply a gate, the nodeProxy will assume doneAction 2 and fade out].\
@@ -638,6 +637,7 @@ a.clear;\
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //must have 'out' or 'i_out' argument to work properly\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 SynthDef\cf0 (\cf6 "who"\cf0 , \{ \cf4 arg\cf0  freq, gate=1, out=0, ffreq=800; \
 	\cf4 var\cf0  env;\
 	env = \cf4 Env\cf0 .asr(0.01, 0.1, 0.5);\
@@ -655,6 +655,7 @@ a.play; \cf3 //monitor output\cf0 \
 b = \cf4 NodeProxy\cf0 .audio(s,2);\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //play the pattern silently in b\cf0 \
 b.source = \cf4 Pbind\cf0 (\cf5 \\instrument\cf0 , \cf5 \\\cf6 who\cf0 , \cf5 \\freq\cf0 , 500, \\legato, 0.02);\
 \
@@ -707,6 +708,7 @@ a.source = \{  b.ar * \cf4 WhiteNoise\cf0 .ar(0.1, 1) + (b.ar * \cf4 SinOsc\cf0 
 c.source = \{ \cf4 XLine\cf0 .kr(1900, 10, 10) \};\
 \
 a.clear; c.clear; \cf3 //clear all, free bus\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 \
 \
 \
