@@ -125,27 +125,32 @@ Function : AbstractFunction {
 	}
 	
 	protect { arg handler;
-		var error;
-		error = this.prTry;
-		handler.value(error);
-		error.throw;
+		var result;
+		result = this.prTry;
+		if (result.isException) {
+			handler.value(result);
+			result.throw;
+		}{
+			handler.value; // argument should be nil if there was no exception.
+			^result
+		};
 	}
 	
 	try { arg handler;
-		var error;
-		error = this.prTry;
-		if (error.notNil) { handler.value(error); }
+		var result;
+		result = this.prTry;
+		if (result.isException) { ^handler.value(result); } { ^result }
 	}
 	prTry {
-		var next;
+		var next, result;
 		next = thisThread.exceptionHandler;
 		thisThread.exceptionHandler = {|error| 
 			thisThread.exceptionHandler = next; // pop
 			^error 
 		};
-		this.value;
+		result = this.value;
 		thisThread.exceptionHandler = next; // pop
-		^nil
+		^result
 	}
 	
 	handleError { arg error; ^this.value(error) }

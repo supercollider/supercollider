@@ -150,6 +150,7 @@ Object {
 	isArray { ^false }
 	isString { ^false }
 	isValidUGenInput { ^false }
+	isException { ^false }
 	pointsTo { arg obj; _ObjectPointsTo; ^this.primitiveFailed }
 	mutable { _ObjectIsMutable; ^this.primitiveFailed }
 	frozen { _ObjectIsPermanent; ^this.primitiveFailed }

@@ -1,5 +1,5 @@
 
-Error {
+Exception {
 	classvar <>handling = false;
 	classvar <>debug = false;
 	
@@ -7,15 +7,22 @@ Error {
 
 	*new { arg what;
 		var backtrace;
-		if (Error.debug) { backtrace = this.getBackTrace.caller };
+		if (debug) { backtrace = this.getBackTrace.caller };
 		^super.newCopyArgs(what ? this.name, backtrace)
 	}
 	errorString {
-		^"ERROR: " ++ what
+		^"EXCEPTION: " ++ what
 	}
 	reportError {
 		this.errorString.postln;
 		this.dumpBackTrace;
+	}
+	isException { ^true }
+}
+
+Error : Exception {
+	errorString {
+		^"ERROR: " ++ what
 	}
 }
 
