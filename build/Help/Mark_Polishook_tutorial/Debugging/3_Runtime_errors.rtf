@@ -1,0 +1,158 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green115\blue0;\red0\green0\blue191;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Runtime errors\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+Runtime errors occur only after SuperCollider determines that 1. a program has no syntax or grammar errors and 2. when an object, after this check, doesn't know how to respond to a message. Such errors are also known as exceptions.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////
+\f0\b\fs24 \cf0 \
+\
+Common error
+\f1\b0\fs18 \
+\
+1. an object receives a message to which it doesn't know how to respond\
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 Execute the following line\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 3.createRuntimeError\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 Neither the Integer class of which 3 is an instance or any of the superclasses from which Integer inherits knows what to do with a .createRuntimeError message; obviously, a .createRuntimeError is not defined anywhere in the system. \
+\
+In such instances, when an object doesn't know how to respond to a message, SuperCollider, by default, executes a .doesNotUnderstand message which then returns a four-part error notification. The names of the parts of the notification are ERROR, RECEIVER, ARGS, and CALL STACK.\
+\
+ERROR:\
+Message 'createRuntimeError' not understood.\
+\
+RECEIVER:\
+   Integer 3\
+ARGS:\
+Instance of Array \{    (052C6560, gc=01, fmt=01, flg=11, set=00)\
+  indexed slots [0]\
+\}\
+CALL STACK:\
+	Object-doesNotUnderstand\
+		arg this = 3\
+		arg selector = 'createRuntimeError'\
+		arg args = [*0]\
+	< closed FunctionDef >  (no arguments or variables)\
+	Interpreter-interpretPrintCmdLine\
+		arg this = <instance of Interpreter>\
+		var res = nil\
+	Process-interpretPrintCmdLine\
+		arg this = <instance of Main>\
+		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+The ERROR section explains what went wrong. \
+\
+The RECEIVER section names the object that received the message. \
+\
+The ARGS section says how many arguments were included in the message - in this case the number was 0. \
+\
+The CALL STACK shows the code that led up to the runtime error. Read the stack from the bottom; the stack shows everything leading up to the error. As seen above, execution moves from \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 Process\cf0 -interpretPrintCmdLine \
+\
+to \
+\
+\cf4 Interpreter\cf0 -interpretPrintCmdLine \
+\
+to \
+\
+\cf4 Object\cf0 -doesNotUnderstand. \
+\
+The first line in the stack, which shows \
+\
+\cf4 Object\cf0 -doesNotUnderstand \
+\
+is the method that prints the error notification to the transcript window. \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+To see how the error message is created, select the entire line \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 Object\cf0 -doesNotUnderstand\
+\
+and press cmd-j to bring up a window with the code for the .doesNotUnderstand method.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 Execute the following example to create another runtime error message. The error is simple: characters can't be multiplied.\
+\
+$a * $b\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+The printout in the transcript window shows headers for ERROR, RECEIVER, ARGS, and CALL STACK (exactly the same as in the previous example).\
+\
+ERROR:\
+Message '*' not understood.\
+\
+RECEIVER:\
+   Character 97 'a'\
+ARGS:\
+Instance of Array \{    (052AAFB0, gc=90, fmt=01, flg=00, set=01)\
+  indexed slots [1]\
+      0 : Character 98 'b'\
+\}\
+CALL STACK:\
+	Object-doesNotUnderstand\
+		arg this = $a\
+		arg selector = '*'\
+		arg args = [*1]\
+	< closed FunctionDef >  (no arguments or variables)\
+	Interpreter-interpretPrintCmdLine\
+		arg this = <instance of Interpreter>\
+		var res = nil\
+	Process-interpretPrintCmdLine\
+		arg this = <instance of Main>\
+		\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+One way to fix to the problem of trying to multiply to characters is just to write\
+\
+$a.ascii * $b.ascii;\
+\
+Q: How would you know this?\
+A: Look in the Char.sc document (select the word Char and press cmd-j) to see the messages to which the Char class responds. \
+\
+Or evaluate\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 Char\cf0 .dumpInterface\
+\
+to see a list of messages to which Char can answer. \
+\
+Evaluate\
+\
+\cf4 Char\cf0 .dumpClassSubtree\
+\
+to see the classes from which Char inherits. Messages to those classes can also be used and messages defined in Object are valid, as well.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+}
