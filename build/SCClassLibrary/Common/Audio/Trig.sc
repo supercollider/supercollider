@@ -221,23 +221,3 @@ LastValue : UGen {
 	}
 }
 
-Spring : UGen {
-	*ar { arg in=0.0, spring=1, damp=0;
-		^this.multiNew('audio', in, spring, damp)
-	}
-
-}
-
-Ball : UGen {
-	*ar { arg in=0.0, g=1, damp=0, friction=0.01;
-		^this.multiNew('audio', in, g, damp, friction)
-	}
-
-}
-
-TBall : UGen {
-	*ar { arg in=0.0, g=10, damp=0, friction=0.01;
-		^this.multiNew('audio', in, g, damp, friction)
-	}
-
-}
