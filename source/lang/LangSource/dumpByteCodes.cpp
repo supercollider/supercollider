@@ -449,13 +449,13 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			break;
 		case 143 :
 			op2 = *ip++; // get loop opcode
-			if (op2 < 23) {
-				post(" %02X     LoopOpcode\n", op2); break;
+			if (op2 < 23 || op2 == 28) {
+				post(" %02X       ControlOpcode\n", op2); break;
 			} else {
 				op3 = *ip++; // jump
 				op4 = *ip++; // jump
 				jmplen = ((op3 & 0xFF)<<8) | (op4 & 0xFF);
-				post(" %02X %02X %02X LoopOpcode %d  (%d)\n", op2, op3, op4, jmplen, n + jmplen + 3); break;
+				post(" %02X %02X %02X ControlOpcode %d  (%d)\n", op2, op3, op4, jmplen, n + jmplen + 3); break;
 			}
 			break;
 

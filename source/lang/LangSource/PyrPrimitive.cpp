@@ -2377,7 +2377,7 @@ int prGetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
 int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed);
 int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp - 1;
+	//PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
 	
 	if (IsTrue(b)) {
@@ -3267,7 +3267,7 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 		SetInt(&thread->numpop, 0);
 		SetNil(&thread->parent);
 	} else if (state == tDone) {
-		PyrObject *array;
+		//PyrObject *array;
 		thread->state.ui = tInit;
 		//array = newPyrArray(g->gc, thread->stackSize.ui, 0, true);
 		//SetObject(&thread->stack, array);

@@ -22,6 +22,7 @@
 #include "PyrParseNode.h"
 #include "PyrLexer.h"
 #include "PyrKernel.h"
+#include "PyrListPrim.h"
 #include "PyrSymbolTable.h"
 #include "Opcodes.h"
 #include "PyrKernelProto.h"
@@ -1949,11 +1950,9 @@ void PyrCallNode::compileCall(PyrSlot *result)
 			case selCase :
 				compileCaseMsg(this);
 				break;
-#if 0
 			case selSwitch :
 				compileSwitchMsg(this);
 				break;
-#endif
 			case selWhile :
 				compileWhileMsg(this);
 				break;
@@ -2066,6 +2065,17 @@ bool isAnInlineableBlock(PyrParseNode *node)
 				res = true;
 			}
 		}
+	}
+	return res;
+}
+
+bool isLiteral(PyrParseNode *node)
+{
+	bool res = false;
+	if (node->mClassno == pn_PushLitNode) {
+		PyrPushLitNode *anode;
+		anode = (PyrPushLitNode*)node;
+		if (anode->mSlot.utag != tagObj && anode->mSlot.utag != tagPtr) res = true;
 	}
 	return res;
 }
@@ -2374,7 +2384,7 @@ PyrParseNode* reverseNodeList(PyrParseNode** list)
 PyrCallNode* buildCase(PyrParseNode *arg1)
 {
 	// transform case statement into nested if statements.
-	int numArgs = nodeListLength(arg1);
+	//int numArgs = nodeListLength(arg1);
 
 	//post("->buildCase %d\n", numArgs);
 	
@@ -2465,19 +2475,131 @@ void compileCaseMsg(PyrCallNodeBase2* node)
 	}
 }
 
-#if 0
-
 void compileSwitchMsg(PyrCallNode* node)
 {
-	PyrParseNode *argnode = node->mArglist;
-	for (; argnode; argnode = argnode->mNext) {
-		COMPILENODE(argnode, &dummy, false);
+	PyrSlot dummy;
+	bool canInline = true;
+	int numArgs;
+	{
+		PyrParseNode *argnode = node->mArglist;
+		numArgs = nodeListLength(argnode);
+		
+		argnode = argnode->mNext; // skip first arg.
+		
+		PyrParseNode* nextargnode = 0;
+		for (; argnode; argnode = nextargnode) {
+			nextargnode = argnode->mNext;
+			if (nextargnode != NULL) {
+				if (!isLiteral(argnode)) {
+					canInline = false;
+					break;
+				}
+				if (!isAnInlineableBlock(nextargnode)) {
+					canInline = false;
+					break;
+				}
+				nextargnode = nextargnode->mNext;
+			} else {
+				if (!isAnInlineableBlock(argnode)) {
+					canInline = false;
+				}
+				break;
+			}
+		}
 	}
-	compileTail();
-	compileOpcode(opSendSpecialMsg, numArgs);
-	compileByte(opmSwitch);
+	
+	if (canInline) {
+		PyrParseNode *argnode = node->mArglist;
+		
+		int flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
+		int arraySize = NEXTPOWEROFTWO(numArgs * 2);
+		PyrObject* array = newPyrArray(compileGC(), arraySize, flags, false);
+		array->size = arraySize;
+		nilSlots(array->slots, arraySize);
+		
+		PyrSlot slot;
+		SetObject(&slot, array);
+		
+		COMPILENODE(argnode, &dummy, false);
+		compilePushConstant(node, &slot);
+		
+		compileByte(143); // lookup slot in dictionary and jump to offset.
+		compileByte(28);
+
+		argnode = argnode->mNext; // skip first arg.
+		
+		PyrParseNode* nextargnode = 0;
+		int absoluteOffset = byteCodeLength(gCompilingByteCodes);
+		int offset = 0;
+		int lastOffset = 0;
+		for (; argnode; argnode = nextargnode) {
+			nextargnode = argnode->mNext;
+			if (nextargnode != NULL) {
+				ByteCodes byteCodes = compileSubExpressionWithGoto((PyrPushLitNode*)nextargnode, 0x6666, true);
+				
+				PyrSlot *key = &((PyrPushLitNode*)argnode)->mSlot;
+				PyrSlot value;
+				SetInt(&value, offset);
+				
+				int index = arrayAtIdentityHashInPairs(array, key);
+				PyrSlot *slot = array->slots + index;
+				slot->ucopy = key->ucopy;
+				SetInt(slot+1, offset); 
+				PyrGC *gc = compileGC();
+				gc->GCWrite(array, &value);
+				gc->GCWrite(array, key);
+				
+				offset += byteCodeLength(byteCodes);
+				compileAndFreeByteCodes(byteCodes);
+
+				nextargnode = nextargnode->mNext;
+				if (nextargnode == NULL) {
+					compileOpcode(opPushSpecialValue, opsvNil);
+					lastOffset = offset;
+					offset += 1;
+				}
+			} else {
+				ByteCodes byteCodes = compileSubExpressionWithGoto((PyrPushLitNode*)argnode, 0, true);
+
+				lastOffset = offset;
+				offset += byteCodeLength(byteCodes);
+				compileAndFreeByteCodes(byteCodes);
+			}
+		}
+		
+		Byte *bytes = gCompilingByteCodes->bytes + absoluteOffset;
+		PyrSlot *slots = array->slots;
+		{
+			int jumplen = offset - lastOffset;
+			bytes[lastOffset-2] = (jumplen >> 8) & 255;
+			bytes[lastOffset-1] = jumplen & 255;
+		}
+		for (int i=0; i<arraySize; i+=2) {
+			PyrSlot *key = slots + i;
+			PyrSlot *value = key + 1;
+			
+			if (IsNil(value)) {
+				SetInt(value, lastOffset);
+			} else {
+				int offsetToHere = value->ui;
+				if (offsetToHere) {
+					int jumplen = offset - offsetToHere;
+					bytes[offsetToHere-2] = (jumplen >> 8) & 255;
+					bytes[offsetToHere-1] = jumplen & 255;
+				}
+			}
+		}
+		
+	} else {
+		PyrParseNode *argnode = node->mArglist;
+		for (; argnode; argnode = argnode->mNext) {
+			COMPILENODE(argnode, &dummy, false);
+		}
+		compileTail();
+		compileOpcode(opSendSpecialMsg, numArgs);
+		compileByte(opmSwitch);
+	}
 }
-#endif
 
 void compileWhileMsg(PyrCallNodeBase2* node)
 {
@@ -3352,6 +3474,87 @@ void PyrLitListNode::compile(PyrSlot* result)
 }
 
 
+PyrLitDictNode* newPyrLitDictNode(PyrParseNode *elems)
+{
+	PyrLitDictNode* node = ALLOCNODE(PyrLitDictNode);
+	node->mElems = elems;
+
+	return node;
+}
+
+int litDictPut(PyrObject *dict, PyrSlot *key, PyrSlot *value);
+int litDictPut(PyrObject *dict, PyrSlot *key, PyrSlot *value)
+{
+#if 0
+	PyrSlot *slot, *newslot;
+	int i, index, size;
+	PyrObject *array;
+	
+	bool knows = IsTrue(dict->slots + ivxIdentDict_know);
+	if (knows && IsSym(key)) {
+		if (key->us == s_parent) {
+			dict->slots[ivxIdentDict_parent].ucopy = value->ucopy;
+			return errNone;
+		}
+		if (key->us == s_proto) {
+			dict->slots[ivxIdentDict_proto].ucopy = value->ucopy;
+			return errNone;
+		}
+	}
+	array = dict->slots[ivxIdentDict_array].uo;
+	if (!isKindOf((PyrObject*)array, class_array)) return errFailed;
+	
+	index = arrayAtIdentityHashInPairs(array, key);
+	slot = array->slots + index;
+	slot[1].ucopy = value->ucopy;
+	if (IsNil(slot)) {
+		slot->ucopy = key->ucopy;
+	}
+#endif
+	return errNone;
+}
+
+
+void PyrLitDictNode::dump(int level)
+{
+}
+
+void PyrLitDictNode::compile(PyrSlot* result)
+{
+#if 0
+	PyrSlot *resultSlot;
+	PyrSlot itemSlot;
+	PyrObject *array;
+	PyrParseNode *inode;
+	int i, numItems, flags;
+	
+	//postfl("->compilePyrLitListNode\n");
+	if (mClassname && ((PyrSlotNode*)mClassname)->mSlot.us != s_array) {
+		error("Only Array is supported as literal type.\n");
+		post("Compiling as an Array.\n");
+	}
+	resultSlot = (PyrSlot*)result;
+	numItems = mElems ? nodeListLength(mElems) : 0;
+	int numSlots = NEXTPOWEROFTWO(numItems*2);
+
+    PyrObject *obj = instantiateObject(g->gc, class_event->u.classobj, 0, true, false);
+    PyrSlot *slots = obj->slots;
+
+	flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
+	array = newPyrArray(compileGC(), numSlots, flags, false);
+	nilSlots(array->slots, numSlots);
+	inode = mElems;
+	for (i=0; i<numItems; ++i, inode = (PyrParseNode*)inode->mNext) {
+		COMPILENODE(inode, &itemSlot, false);
+		array->slots[i] = itemSlot;
+	}
+	array->size = numItems;
+	SetObject(resultSlot, array);
+	//postfl("<-compilePyrLitListNode\n");
+#endif
+}
+
+
 extern LongStack closedFuncCharNo;
 
 PyrBlockNode* newPyrBlockNode(PyrArgListNode *arglist, PyrVarListNode *varlist, PyrParseNode *body, bool isTopLevel)
@@ -3652,11 +3855,9 @@ int conjureSelectorIndex(PyrParseNode *node, PyrBlock* func,
 		} else if (selector == gSpecialSelectors[opmCase]) {
 			*selType = selCase;
 			return opmCase;
-#if 0
 		} else if (selector == gSpecialSelectors[opmSwitch]) {
 			*selType = selSwitch;
 			return opmSwitch;
-#endif
 		} else if (selector == gSpecialSelectors[opmLoop]) {
 			*selType = selLoop;
 			return opmLoop;
@@ -3971,6 +4172,7 @@ void initSpecialClasses()
 			gSpecialClasses[op_class_synth] = s_synth;
 			gSpecialClasses[op_class_ref] = s_ref;
 			gSpecialClasses[op_class_environment] = s_environment;
+			gSpecialClasses[op_class_event] = s_event;
 			gSpecialClasses[op_class_wavetable] = s_wavetable;
 			gSpecialClasses[op_class_env] = s_env;
 			gSpecialClasses[op_class_routine] = s_routine;
@@ -4130,7 +4332,7 @@ void initSpecialSelectors()
 	sel[opmAnd] = getsym("and");
 	sel[opmOr] = getsym("or");				
 	sel[opmCase] = getsym("case");				
-	//sel[opmSwitch] = getsym("switch");				
+	sel[opmSwitch] = getsym("switch");				
 	sel[opmIdentical] = getsym("===");		
 	sel[opmNotIdentical] = getsym("!==");	
 		

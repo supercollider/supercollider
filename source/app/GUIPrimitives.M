@@ -595,9 +595,9 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 
 		if (isUnderlined) {
 		
-			// underlined range should not cross newlines.
 			NSString* string = [[doc textView] string];
 			
+		   // underlined range should not cross newlines.
 			for (int i=clickLoc; i>=(int)underlineRange.location; --i) {
 				int c = [string characterAtIndex: i];
 				if (c == '\n') {

@@ -243,7 +243,7 @@ enum {
 	opmAnd,			
 	opmOr,
 	opmCase,
-	//opmSwitch,
+	opmSwitch,
 	opmIdentical,
 	opmNotIdentical,
 	opmPrint,		
@@ -419,6 +419,7 @@ enum {
 		op_class_synth,
 		op_class_ref,
 		op_class_environment,
+		op_class_event,
 		op_class_wavetable,
 		op_class_env,
 		

@@ -24,6 +24,7 @@
 #include "PyrPrimitive.h"
 #include "PyrPrimitiveProto.h"
 #include "PyrMathPrim.h"
+#include "PyrListPrim.h"
 #include "PyrKernel.h"
 #include "PyrMessage.h"
 #include "PyrParseNode.h"
@@ -1586,6 +1587,12 @@ void Interpret(VMGlobals *g)
 						sp--;
 					}
 					break;					
+				case 28 : // switch
+					obj = ((PyrSlot*)sp)->uo;
+					op2 = 1 + arrayAtIdentityHashInPairs(obj, (PyrSlot*)(sp-1));
+					sp-=2;
+					ip += obj->slots[op2].ui;
+					break;					
 			}
 			break;
 
@@ -1816,7 +1823,7 @@ void Interpret(VMGlobals *g)
 			sp = (double*)g->sp; ip = g->ip; 
 			break;	
 		case 244 : // opcReturnSelf
-			*++sp = g->receiver.uf; 
+		*++sp = g->receiver.uf; 
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			returnFromMethod(g); 
 			if (g->returnLevels) { --g->returnLevels; return; }

@@ -46,6 +46,7 @@ enum {
 	pn_DynDictNode,
 	pn_DynListNode,
 	pn_LitListNode,
+	pn_LitDictNode,
 	
 	pn_StaticVarListNode,
 	pn_InstVarListNode,
@@ -343,6 +344,14 @@ struct PyrLitListNode : public PyrParseNode {
 	struct PyrParseNode *mElems;
 } ;
 	
+struct PyrLitDictNode : public PyrParseNode {
+	PyrLitDictNode() : PyrParseNode(pn_LitDictNode) {}
+	virtual void compile(PyrSlot *result);
+	virtual void dump(int level);
+
+	struct PyrParseNode *mElems;
+} ;
+	
 extern PyrParseNode* gRootParseNode;
 extern int gParserResult;
 extern bool gIsTailCodeBranch;
@@ -406,6 +415,7 @@ PyrPushNameNode* newPyrPushNameNode(PyrSlotNode *slotNode);
 PyrDynDictNode* newPyrDynDictNode(PyrParseNode *elems);
 PyrDynListNode* newPyrDynListNode(PyrParseNode *classname, PyrParseNode *elems);
 PyrLitListNode* newPyrLitListNode(PyrParseNode *classname, PyrParseNode *elems);
+PyrLitDictNode* newPyrLitDictNode(PyrParseNode *elems);
 PyrMultiAssignVarListNode* newPyrMultiAssignVarListNode(PyrSlotNode* varNames, 
 	PyrSlotNode* rest);
 PyrBlockNode* newPyrBlockNode(PyrArgListNode *arglist, PyrVarListNode *varlist, PyrParseNode *body, bool isTopLevel);
@@ -449,6 +459,7 @@ void compileOrMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileXQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileSwitchMsg(PyrCallNode* node);
 
 void compilePushInt(int value);
 void compileAssignVar(PyrParseNode *node, PyrSymbol* varName, bool drop);
