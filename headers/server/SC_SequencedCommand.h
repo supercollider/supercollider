@@ -97,12 +97,10 @@ public:
 	
 protected:
 	int mBufIndex;
-	SndBuf mSndBuf;
 	BufGen *mBufGen;
 	sc_msg_iter mMsg;
 	char *mData;
 	int mSize;
-	float *mFreeData;
 	
 	virtual void CallDestructor();
 	

@@ -269,23 +269,18 @@ void BufGenCmd::CallDestructor()
 bool BufGenCmd::Stage2()
 {
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
-	mFreeData = buf->data;
 	
 	(*mBufGen->mBufGenFunc)(mWorld, buf, &mMsg);
-	mSndBuf = *buf;
 	return true;
 }
 
 bool BufGenCmd::Stage3()
 {
-	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
-	*buf = mSndBuf;
 	return true;
 }
 
 void BufGenCmd::Stage4()
 {
-	free(mFreeData);
 	SendDone("/b_gen");
 }
 
