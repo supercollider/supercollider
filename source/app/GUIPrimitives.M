@@ -817,6 +817,65 @@ int prTextWindow_UnfocusedFront(struct VMGlobals *g, int numArgsPushed)
         return errNone;
 }
 
+int prTextWindow_AlwaysOnTop(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_AlwaysOnTop(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp-1;
+		PyrSlot *b = g->sp;
+		        
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		if(IsTrue(b))
+			[[[doc textView] window] setLevel:NSFloatingWindowLevel];
+		else
+			[[[doc textView] window] setLevel:NSNormalWindowLevel];		
+        return errNone;
+}
+
+int prTextWindow_IsAlwaysOnTop(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_IsAlwaysOnTop(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+		PyrSlot *a = g->sp;		        
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		int level = [[[doc textView] window] level];
+		if(level>0) SetTrue(a);	
+		else SetFalse(a);
+        return errNone;
+}
+
+int prTextWindow_SetPromptToSave(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SetPromptToSave(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp-1;
+		PyrSlot *b = g->sp;
+		        
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		if(IsTrue(b))
+			[doc setPromptToSave:YES];
+		else
+			[doc setPromptToSave:NO];		
+        return errNone;
+}
+
+int prTextWindow_PromptToSave(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_PromptToSave(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+		PyrSlot *a = g->sp;		        
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		bool flag = [doc promptToSave];
+		if(flag) SetTrue(a);
+		else SetFalse(a);	
+        return errNone;
+}
 
 extern NSTextView *gPostView;
 
@@ -1284,6 +1343,24 @@ int prSCWindow_SetShouldClose(struct VMGlobals *g, int numArgsPushed)
     [view setWindowShouldClose: IsTrue(boo)];
 
     return errNone;
+}
+
+int prSCWindow_AlwaysOnTop(struct VMGlobals *g, int numArgsPushed);
+int prSCWindow_AlwaysOnTop(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+    
+    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    if (!view) return errNone;
+    NSWindow *window = [view window];
+	if(IsTrue(b))
+		[window setLevel:NSFloatingWindowLevel];
+	else
+		[window setLevel:NSNormalWindowLevel];		
+	return errNone;
 }
 
 int prSCWindow_SetName(struct VMGlobals *g, int numArgsPushed);
@@ -2694,6 +2771,11 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_GetFileName", prTextWindow_GetFileName, 1, 0);	
 	
 	definePrimitive(base, index++, "_TextWindow_UnderlineSelection", prTextWindow_UnderlineSelection, 1, 0);	
+	definePrimitive(base, index++, "_TextWindow_AlwaysOnTop", prTextWindow_AlwaysOnTop, 2, 0);	
+	definePrimitive(base, index++, "_TextWindow_IsAlwaysOnTop", prTextWindow_IsAlwaysOnTop, 1, 0);	
+	definePrimitive(base, index++, "_TextWindow_SetPromptToSave", prTextWindow_SetPromptToSave, 2, 0);	
+	definePrimitive(base, index++, "_TextWindow_PromptToSave", prTextWindow_PromptToSave, 1, 0);	
+
 
 
 ///
@@ -2712,6 +2794,8 @@ void initGUIPrimitives()
     
 	definePrimitive(base, index++, "_SCWindow_Show", prSCWindow_Show, 1, 0);	
 	definePrimitive(base, index++, "_SCWindow_Hide", prSCWindow_Hide, 1, 0);	
+	definePrimitive(base, index++, "_SCWindow_AlwaysOnTop", prSCWindow_AlwaysOnTop, 2, 0);	
+
 	definePrimitive(base, index++, "_SCWindow_SetName", prSCWindow_SetName, 2, 0);	
 	definePrimitive(base, index++, "_SCWindow_SetAlpha", prSCWindow_SetAlpha, 2, 0);	
 	definePrimitive(base, index++, "_SCWindow_SetBounds", prSCWindow_SetBounds, 2, 0);	
