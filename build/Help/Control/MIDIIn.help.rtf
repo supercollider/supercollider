@@ -25,7 +25,7 @@ s = \cf2 Server\cf0 .internal;\
 s.boot;\
 s.latency = 0;\
 \
-(	\
+(\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "moto-rev"\cf0 , \{ \cf2 arg\cf0  ffreq=100;\
 	\cf2 var\cf0  x;\
@@ -41,6 +41,7 @@ s.sendMsg(\cf3 "/s_new"\cf0 , \cf3 "moto-rev"\cf0 , 2002, 1, 0);\
 s.sendMsg(\cf3 "/n_map"\cf0 ,2002,\cf4 \\ffreq\cf0 ,1);\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // map the synth's first input (ffreq) to read\
 // from the bus' output index\
 //x.map(0,b.index);\
@@ -49,12 +50,16 @@ s.sendMsg(\cf3 "/n_map"\cf0 ,2002,\cf4 \\ffreq\cf0 ,1);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 MIDIClient\cf0 .init;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 //There are three possibilities to connect for example to the first device:\
 //MIDIIn.connect(0, MIDIClient.sources.at(0));\
-\cf2 MIDIIn\cf0 .connect(0, \cf2 MIDIClient\cf0 .sources.at(0).uid);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 MIDIIn\cf0 .connect(0, \cf2 MIDIClient\cf0 .sources.at(0));\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 //MIDIIn.connect(0, 0);\
 //set the action:\
-\cf2 MIDIIn\cf0 .note = \{\cf2 arg\cf0  src, chan, num, vel;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 MIDIIn\cf0 .noteOn = \{\cf2 arg\cf0  src, chan, num, vel;\
 			b.value = num.midicps.postln;\
 			\};\
 \
@@ -65,4 +70,7 @@ s.sendMsg(\cf3 "/n_map"\cf0 ,2002,\cf4 \\ffreq\cf0 ,1);\
 			val.postln;\
 			\};\
 )\
-s.sendMsg(\cf3 "/n_free"\cf0 , 2002);}
+s.sendMsg(\cf3 "/n_free"\cf0 , 2002);\
+\
+\
+}
