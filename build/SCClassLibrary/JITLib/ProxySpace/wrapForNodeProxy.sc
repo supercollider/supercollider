@@ -181,14 +181,7 @@
 }
 
 
-+Pdef {
-	
-	buildForProxy { arg proxy, channelOffset=0;
-		^this.player.buildForProxy(proxy, channelOffset);
-	}
-	
 
-}
 +Task {
 	buildForProxy {}
 
