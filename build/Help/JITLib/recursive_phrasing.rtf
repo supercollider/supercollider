@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
-\red96\green96\blue96;\red0\green115\blue0;\red191\green0\blue0;}
+\red96\green96\blue96;\red0\green115\blue0;\red0\green0\blue191;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs32 \cf2 recursive instrumental phrases or granular composite sounds
@@ -146,15 +146,15 @@ s.boot;\
 \
 \
 \
-\cf3 //////// recursion examples //////////\
+\cf3 //////// recursion examples //////////\cf2 \
 \
-// the given pattern can be recursively applied to itself \cf2 \
-\cf3 // resulting in selfsimilar sound structures, like lindenmeyer systems (see also Prewrite)\
-// special care is taken so that no infinite loops can happen.\
-// just like with non recursive phrasing, new values override old values, \
-// any \cf7 values that are \cf3 not provided within the pattern definition \
-// are passed in from the outer event.\
-\cf2 \
+\cf3 // the given pattern can be recursively applied to itself \cf2 \
+\cf3 // resulting in selfsimilar sound structures, like lindenmeyer systems (see also Prewrite)\cf2 \
+\cf3 // special care is taken so that no infinite loops can happen.\cf2 \
+\cf3 // just like with non recursive phrasing, new values override old values, \cf2 \
+\cf3 // any values that are not provided within the pattern definition \cf2 \
+\cf3 // are passed in from the outer event.\cf2 \
+\
 \
 \
 (\
@@ -417,7 +417,7 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 	\cf6 \\n\cf2 , 3,\
 	\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ([0, 2b, 3, 4], \cf4 inf\cf2 ),\
 	\cf6 \\dur\cf2 , 2,\
-	\\legato, 2\
+	\cf6 \\legato\cf2 , 2\
 ).play\
 )\
 \
@@ -427,12 +427,44 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 	\cf4 Pbind\cf2 (\
 		\cf6 \\instrument\cf2 , \cf6 \\pgrain\cf2 ,\
 		\cf6 \\dur\cf2 , exprand(0.01, 0.1),\
-		\cf6 \\legato\cf2 , \cf4 rrand(0.01, 2.0)\cf2 ,\
+		\cf6 \\legato\cf2 , rrand(0.01, 2.0),\
 		\cf6 \\octave\cf2 , rrand(5, 7)\
 	)\
 )\
 )\
 \
 \
+\cf3 // koch "snowflake"\cf2 \
+(\
+\cf4 Pdef\cf2 (\cf6 \\koch\cf2 , \{\'ca\cf4 arg\cf2  dur=1, freq=440;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\dur\cf2 , dur.value / 3,\
+		\cf6 \\freq\cf2 , freq.value + \cf4 Pseq\cf2 ([0, 500, 0])\
+	)\
+\});\
+)\
+\
+(\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+		\cf6 \\instrument\cf2 , \cf6 \\koch\cf2 ,\
+		\cf6 \\synthDef\cf2 , \cf6 \\pgrain\cf2 ,\
+		\cf6 \\dur\cf2 , 9,\
+		\cf6 \\recursionLevel\cf2 , 5,\
+		\cf6 \\legato\cf2 , 1.1\
+	).play\
+)\
+\
+\cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf7 Pdef\cf0 (\cf8 \\koch\cf0 , \{\'ca\cf7 arg\cf0  dur=1, degree=0;\
+	\cf7 Pbind\cf0 (\
+		\cf8 \\dur\cf0 , dur.value / 3,\
+		\cf8 \\degree\cf0 , degree + \cf7 Pseq\cf0 ([0, 2, 0])\
+	)\
+\});\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
 \
 }
