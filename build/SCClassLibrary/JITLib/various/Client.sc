@@ -25,27 +25,33 @@ Client {
 
 	
 	addr_ { arg address;
-		addr = address ?? {Êthis.defaultAddr };
-		addr = addr.asCollection;
-		addr.do({ arg item; item.port_(this.defaultPort) });
+		if(address.isNil) 
+			{ addr =Êthis.defaultAddr }
+			{
+				addr = address.asArray;
+				addr.do({ arg item; item.port_(this.defaultPort) });
+			}
 	}
 	
 	prepareSendBundle { arg args;
 		args = ["/client"]++args;
-		if(this.checkBundleSize(args) > 8192) { "bundle too large (> 8192)".warn; ^nil };
+		if(this.bundleSize(args) > 8192) { "bundle too large (> 8192)".warn; ^nil };
 		^args
 	}
 	send { arg ... args;
+		this.sendBundle(nil, args);
+	}
+	sendBundle { arg latency, args;
 		args = this.prepareSendBundle(args);
-		addr.do({ arg a; a.sendBundle(nil, args) })
+		addr.do({ arg a; a.sendBundle(latency, args) })
 	}
 	sendTo { arg index ... args;		var a;		args = this.prepareSendBundle(args);		a = addr[index];		if(a.notNil) { a.sendBundle(nil, args)  };	}
-	checkBundleSize { arg bundle;
-		var size=0, dict;
-		
-		dict = (\String: { arg x; x.size }, \Integer: 4, \Float: 4);
+	bundleSize { arg bundle;
+		var size=0;
 		bundle.do({ arg el;
-			size = size + (dict.at(el.class.name).value(el) ? 0);
+			var n;
+			n = if(el.isString) { el.size } { 4 };
+			size = size + n;
 		});
 		^size
 	}
@@ -58,7 +64,7 @@ Client {
 		if(password.isNil, { "set password to allow interpret".inform; ^this });
 		this.interpret("ClientFunc.new(" ++ name ++ string ++ ")");
 	}
-	
+	remove { named.removeAt(name).stop }
 
 }
 
@@ -80,25 +86,31 @@ LocalClient : Client {
 	
 	minit { arg argAddr;
 		super.minit(argAddr);
-		resp = OSCresponderNode(addr.first, '/client', { arg time, responder, msg;
-			var key, func;
-			key = msg[1];
-			func = ClientFunc.at(key);
-			func.valueArray(msg.drop(2));
-		});
+		resp = addr.collect { arg netaddr;
+				OSCresponderNode(netaddr, '/client', { arg time, responder, msg;
+				var key, func;
+				key = msg[1];
+				func = ClientFunc.at(key);
+				func.value(msg.drop(2), time, responder);
+			});
+		};
 
 	}
 	
-	defaultAddr { ^nil } // default: listen to all.
+	defaultAddr { ^[nil] } // default: listen to all.
 	
 	start {
-		if(isListening.not, { resp.add; isListening = true });
+		if(isListening.not, { resp.do {Êarg u; u.add }; isListening = true });
 	}
 	
 	stop {
-		resp.remove;
+		resp.do { arg u; u.remove };
 		isListening = false;
 	}
+	*stop {
+		named.do {Êarg u; u.stop }
+	}
+	
 	
 	// a powerful tool for both good and evil
 		
@@ -126,9 +138,17 @@ ClientFunc {
 	*at { arg key; ^all.at(key) }
 	*removeAt { arg key; ^all.removeAt(key) }
 	toLib { all.put(name.asSymbol, this) }
-	value { arg ... args; func.valueArray(args) }
-	valueArray { arg args; func.valueArray(args) }
+	value { arg args;
+		func.valueArray(args)
+	}
 	
 	
+}
+
+ResponderClientFunc : ClientFunc {
+	value { arg args, resp, time;
+		func.valueArray([resp, time] ++ args)
+	}
+
 }
 
