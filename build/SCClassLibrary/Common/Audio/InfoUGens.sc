@@ -1,13 +1,16 @@
 
 InfoUGenBase : UGen {
-	*ir { 
+	*ir {
 		^this.multiNew('scalar')
 	}
 }
 
-BufInfoUGenBase : UGen {
+BufInfoUGenBase : InfoUGenBase {
 	*kr { arg bufnum;
 		^this.multiNew('control', bufnum)
+	}
+	*ir { arg bufnum;
+		^this.multiNew('scalar',bufnum)
 	}
 }
 
