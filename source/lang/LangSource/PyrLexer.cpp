@@ -103,7 +103,7 @@ int radixcharpos, decptpos;
 
 int rtf2txt(char* txt);
 
-extern inline void asRelativePath(char *inPath, char *outPath)
+extern void asRelativePath(char *inPath, char *outPath)
 {
 	int len = strlen(gCompileDir);
 	if (strlen(inPath) < len || memcmp(inPath, gCompileDir, len) != 0) {

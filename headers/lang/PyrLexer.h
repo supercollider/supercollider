@@ -76,7 +76,7 @@ void fatal() ;
 bool isValidSourceFileName(char *filename);
 bool passOne_ProcessOneFile(char *filename);
 
-extern inline void asRelativePath(char *inPath,char *outPath);
+extern void asRelativePath(char *inPath,char *outPath);
 
 void initLexer();
 void init_SuperCollider();
