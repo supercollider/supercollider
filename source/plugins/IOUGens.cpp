@@ -975,7 +975,6 @@ void OffsetOut_next_a(OffsetOut *unit, int inNumSamples)
 			
 		if (touched[i] == bufCounter) {
 			if (unit->m_empty) {
-				unit->m_empty = false;
 				//Print("touched offset %d\n", offset);
 			} else {
 				Accum(offset, out, saved);
@@ -984,7 +983,6 @@ void OffsetOut_next_a(OffsetOut *unit, int inNumSamples)
 		} else {
 			if (unit->m_empty) {
 				Clear(offset, out);
-				unit->m_empty = false;
 				//Print("untouched offset %d\n", offset);
 			} else {
 				Copy(offset, out, saved);
@@ -995,6 +993,7 @@ void OffsetOut_next_a(OffsetOut *unit, int inNumSamples)
 		Copy(offset, saved, in + remain);
 		//Print("out %d %d %d  %g %g\n", i, in[0], out[0]);
 	}
+	unit->m_empty = false;
 }
 
 void OffsetOut_Ctor(OffsetOut* unit)
