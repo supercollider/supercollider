@@ -9,7 +9,7 @@ SCTextField : SCNumberBox {
 		// standard keydown
 		if ((key == 3.asAscii) || (key == $\r) || (key == $\n), { // enter key
 			if (keyString.notNil,{ // no error on repeated enter
-				this.valueAction_(keyString);
+				this.valueAction_(string);
 				keyString = nil;// restart editing
 			});
 			^this
