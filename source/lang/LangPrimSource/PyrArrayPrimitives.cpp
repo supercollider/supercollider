@@ -123,6 +123,10 @@ int basicSwap(struct VMGlobals *g, int numArgsPushed)
 	getIndexedSlot(obj, &tempj, j);
 	putIndexedSlot(g, obj, &tempi, j);
 	putIndexedSlot(g, obj, &tempj, i);
+	// in case it is partial scan obj
+	g->gc->GCWrite(obj, &tempi);
+	g->gc->GCWrite(obj, &tempj);
+	
 	return errNone;
 }
 
@@ -208,11 +212,15 @@ int basicRemoveAt(struct VMGlobals *g, int numArgsPushed)
 	if (length > 0) {
 		elemsize = gFormatElemSize[obj->obj_format];
 		memmove(ptr, (char*)ptr + elemsize, length * elemsize);
+		if (obj->obj_format <= obj_slot) {
+			// might be partial scan object
+			g->gc->GCWrite(obj, obj->slots + index);
+		}
 	}
 	obj->size -- ;
 	return errNone;
 }
-
+ 
 
 int basicTakeAt(struct VMGlobals *g, int numArgsPushed);
 int basicTakeAt(struct VMGlobals *g, int numArgsPushed)
@@ -240,6 +248,8 @@ int basicTakeAt(struct VMGlobals *g, int numArgsPushed)
 			PyrSlot* lastptr = obj->slots + lastIndex;
 			a->uf = *(double*)ptr;
 			*ptr = *lastptr;
+			// might be partial scan obj
+			g->gc->GCWrite(obj, ptr);
 		} break;
 		case obj_float : {
 			float* ptr = ((float*)(obj->slots)) + index;	
@@ -716,6 +726,7 @@ int prArrayFill(struct VMGlobals *g, int numArgsPushed)
 			for (i=0; i<array->size; ++i) {
 				slots[i].ucopy = b->ucopy;
 			}
+			g->gc->GCWrite(array, b);
 			break;
 		case obj_int32 :
 			err = slotIntVal(b, &ival);

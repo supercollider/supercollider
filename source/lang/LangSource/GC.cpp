@@ -390,6 +390,14 @@ void GC::SweepBigObjects()
 	mCanSweep = false;
 }
 
+void GC::CompletePartialScan(PyrObject *obj)
+{
+	if (mPartialScanObj == obj) {
+		int32 remain = obj->size - mPartialScanSlot;
+		ScanSlots(mPartialScanObj->slots + mPartialScanSlot, remain);
+	}
+}
+
 void GC::DoPartialScan(int32 inObjSize)
 {
 	int32 remain = inObjSize - mPartialScanSlot;
@@ -410,7 +418,7 @@ void GC::DoPartialScan(int32 inObjSize)
 		mPartialScanSlot += numtoscan;
 		mNumToScan -= numtoscan; 
 	}
-	if (mNumToScan<0) mNumToScan = 0;
+	if (mNumToScan < 0) mNumToScan = 0;
 	//post("partial %5d xx %4d %2d %s\n", mScans, mNumToScan, mNumGrey);
 	//post("partial %5d %2d %4d %2d %s\n", mScans, i, mNumToScan, mNumGrey, obj->classptr->name.us->name);
 }
@@ -440,11 +448,15 @@ bool GC::ScanOneObj()
 
 	int32 size = ScanSize(obj);
 	//post("<- scan %d %d %d %d\n", mNumGrey, IsGrey(obj), mNumToScan, size);
-	if (size > mNumToScan + 32) {
+	if (size > mNumToScan + 32) 
+	{
 		mPartialScanObj = obj;
 		mPartialScanSlot = 0;
 		DoPartialScan(size);
-	} else if (size > 0) {
+	} 
+	else 
+	if (size > 0) 
+	{
 		ScanSlots(obj->slots, size);
 		mNumToScan -= (1L << obj->obj_sizeclass) + 4;
 		if (mNumToScan<0) mNumToScan = 0;
@@ -599,9 +611,9 @@ void GC::ScanFinalizers()
 	}
 }
 
-//#define GCTHROW(str)
+#define GCTHROW(str)
 //#define GCTHROW(str) throw std::runtime_error(str)
-#define GCTHROW(str) fatalerror(str)
+//#define GCTHROW(str) fatalerror(str)
 
 bool GC::SanityCheck2()
 {
@@ -619,16 +631,20 @@ bool GC::SanityCheck2()
 	return mNumGrey == numgrey;
 }
 
+	#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
+
 bool GC::SanityCheck()
 {
 	if (!mRunning) return true;
 	
 	
 	//postfl("GC::SanityCheck\n");
-	bool res = LinkSanity() && ListSanity();
+	bool res = LinkSanity() && ListSanity()
 	//&& SanityMarkObj((PyrObject*)mProcess,NULL,0) && SanityMarkObj(mStack,NULL,0) 
-	//&& SanityClearObj((PyrObject*)mProcess,0) && SanityClearObj(mStack,0);
+	//&& SanityClearObj((PyrObject*)mProcess,0) && SanityClearObj(mStack,0)
+	;
 	//if (!res) DumpInfo();
+	if (!res) Debugger();
 	return res;
 }
 
@@ -716,6 +732,10 @@ bool GC::ListSanity()
 				GCTHROW(str);
 				//dumpObject((PyrObject*)obj);
 			}
+			
+			// scan for refs to white.
+			if (!BlackToWhiteCheck((PyrObject*)obj)) return false;
+
 			obj = obj->next;
 		}
 				
@@ -839,24 +859,14 @@ bool GC::LinkSanity()
 
 #define DUMPINSANITY 1
 
-bool GC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
+bool GC::BlackToWhiteCheck(PyrObject *objA)
 {
 	int j, size, tag;
 	PyrSlot *slot;
 	PyrObject *objB;
 	char str[256];
-	
-	if (objA->IsPermanent()) return true;
-	if (objA->IsMarked()) return true;
-	if (objA->size > MAXINDEXSIZE(objA)) {
-		sprintf(str, "obj indexed size larger than max: %d > %d\n", objA->size, MAXINDEXSIZE(objA));
-		postfl(str);
-		GCTHROW(str);
-		//dumpObject((PyrObject*)objA);
-		return false;
-	}
-	objA->SetMark(); // mark it
-	
+
+	if (objA->obj_format > obj_slot) return true;
 	// scan it
 	size = objA->size;
 	if (size > 0) {
@@ -879,30 +889,88 @@ bool GC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
 				if (objA == mStack) {
 				} else if (objA->gc_color == mBlackColor && objA != mPartialScanObj) {
 					if (objB->gc_color == mWhiteColor) { 
-						
-						//debugf("black to white ref %0X %0X\n", objA, objB);
-						//debugf("sizeclass %d %d\n",  objA->obj_sizeclass, objB->obj_sizeclass);
-						//debugf("class %s %s\n",  objA->classptr->name.us->name, objB->classptr->name.us->name);
-						
 						sprintf(str, "black to white ref %0X %0X\n", objA, objB);
 						postfl(str);
-						GCTHROW(str);
 #if DUMPINSANITY
 						dumpBadObject(objA);
 						dumpBadObject(objB);
 						postfl("\n");
 #endif
+						GCTHROW(str);
 						return false;
 					}
 				}
-				/*if (level > 40) {
-					postfl("40 levels deep!\n");
-					dumpBadObject(objA);
-					dumpBadObject(objB);
+			}
+		}
+	}
+	return true;
+}
+
+bool GC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
+{
+	int j, size, tag;
+	PyrSlot *slot;
+	PyrObject *objB;
+	char str[256];
+	
+	if (objA->IsPermanent()) return true;
+	if (objA->IsMarked()) return true;
+	if (objA->size > MAXINDEXSIZE(objA)) {
+		sprintf(str, "obj indexed size larger than max: %d > %d\n", objA->size, MAXINDEXSIZE(objA));
+		postfl(str);
+		GCTHROW(str);
+		//dumpObject((PyrObject*)objA);
+		return false;
+	}
+	objA->SetMark(); // mark it
+	if (objA->obj_format <= obj_slot) {
+		// scan it
+		size = objA->size;
+		if (size > 0) {
+			slot = objA->slots;
+			for (j=size; j--; ++slot) {
+				objB = NULL;
+				tag = slot->utag;
+				if (tag == tagHFrame && slot->uof) {
+					objB = slot->uof->myself.uo;
+				} else if (tag == tagObj && slot->uo) {	
+					objB = slot->uo;
+				}
+				if (objB && (long)objB < 100) {
+					sprintf(str, "weird obj ptr\n");
+					postfl(str);
+					GCTHROW(str);
 					return false;
-				}*/
-				bool err = SanityMarkObj(objB, objA, level + 1);
-				if (!err) return false;
+				}
+				if (objB) {
+					if (objA == mStack) {
+					} else if (objA->gc_color == mBlackColor && objA != mPartialScanObj) {
+						if (objB->gc_color == mWhiteColor) { 
+							
+							//debugf("black to white ref %0X %0X\n", objA, objB);
+							//debugf("sizeclass %d %d\n",  objA->obj_sizeclass, objB->obj_sizeclass);
+							//debugf("class %s %s\n",  objA->classptr->name.us->name, objB->classptr->name.us->name);
+							
+							sprintf(str, "black to white ref %0X %0X\n", objA, objB);
+							postfl(str);
+							GCTHROW(str);
+	#if DUMPINSANITY
+							dumpBadObject(objA);
+							dumpBadObject(objB);
+							postfl("\n");
+	#endif
+							return false;
+						}
+					}
+					/*if (level > 40) {
+						postfl("40 levels deep!\n");
+						dumpBadObject(objA);
+						dumpBadObject(objB);
+						return false;
+					}*/
+					bool err = SanityMarkObj(objB, objA, level + 1);
+					if (!err) return false;
+				}
 			}
 		}
 	}
@@ -917,27 +985,29 @@ bool GC::SanityClearObj(PyrObject *objA, int level)
 	if (objA->IsPermanent()) return true;
 	objA->ClearMark(); // unmark it
 	
-	// scan it
-	size = objA->size;
-	if (size > 0) {
-		PyrSlot *slot = objA->slots;
-		for (int j=size; j--; ++slot) {
-			PyrObject *objB = NULL;
-			int tag = slot->utag;
-			if (tag == tagHFrame && slot->uof) {
-				objB = slot->uof->myself.uo;
-			} else if (tag == tagObj && slot->uo) {	
-				objB = slot->uo;
-			}
-			if (objB) {
-				/*if (level > 40) {
-					postfl("40 levels deep!\n");
-					dumpBadObject(objA);
-					//dumpObject((PyrObject*)objB);  //newPyrFrame
-					return errFailed;
-				}*/
-				bool err = SanityClearObj(objB, level+1);
-				if (!err) return false;
+	if (objA->obj_format <= obj_slot) {
+		// scan it
+		size = objA->size;
+		if (size > 0) {
+			PyrSlot *slot = objA->slots;
+			for (int j=size; j--; ++slot) {
+				PyrObject *objB = NULL;
+				int tag = slot->utag;
+				if (tag == tagHFrame && slot->uof) {
+					objB = slot->uof->myself.uo;
+				} else if (tag == tagObj && slot->uo) {	
+					objB = slot->uo;
+				}
+				if (objB) {
+					/*if (level > 40) {
+						postfl("40 levels deep!\n");
+						dumpBadObject(objA);
+						//dumpObject((PyrObject*)objB);  //newPyrFrame
+						return errFailed;
+					}*/
+					bool err = SanityClearObj(objB, level+1);
+					if (!err) return false;
+				}
 			}
 		}
 	}

@@ -107,14 +107,12 @@ public:
 			if (IsBlack(inParent) && IsObj(inSlot) && IsWhite(inSlot->uo)) {
 				ToGrey(inSlot->uo);
 			}
-			assert(SanityCheck2());
 		}
 	void GCWrite(PyrObjectHdr* inParent, PyrObjectHdr* inChild) 
 		{ 
 			if (IsBlack(inParent) && IsWhite(inChild)) {
 				ToGrey(inChild);
 			}
-			assert(SanityCheck2());
 		}
 	// when you know the parent is black:
 	void GCWriteBlack(PyrSlot* inSlot) 
@@ -124,14 +122,12 @@ public:
 					ToGrey(inSlot->uo);
 				}
 			}
-			assert(SanityCheck());
 		}
 	void GCWriteBlack(PyrObjectHdr* inChild) 
 		{ 
 			if (IsWhite(inChild)) {
 				ToGrey(inChild);
 			}
-			assert(SanityCheck());
 		}
 	// when you know the child is white
 	void GCWriteNew(PyrObjectHdr* inParent, PyrObjectHdr* inChild) 
@@ -139,7 +135,6 @@ public:
 			if (IsBlack(inParent)) {
 				ToGrey(inChild);
 			}
-			assert(SanityCheck());
 		}
 
 // users should not call anything below.
@@ -149,7 +144,8 @@ public:
 	void FullCollection();
 	void ScanFinalizers();
 	GCSet* GetGCSet(PyrObjectHdr* inObj);
-		
+	void CompletePartialScan(PyrObject *obj);
+	
 	void ToGrey(PyrObjectHdr* inObj);
 	void ToGrey2(PyrObjectHdr* inObj);
 	void ToBlack(PyrObjectHdr* inObj);
@@ -163,6 +159,7 @@ public:
 	bool SanityCheck2();
 	bool LinkSanity();
 	bool ListSanity();
+	bool BlackToWhiteCheck(PyrObject *objA);
 	bool SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level);
 	bool SanityClearObj(PyrObject *objA, int level);
 	void DumpInfo();
