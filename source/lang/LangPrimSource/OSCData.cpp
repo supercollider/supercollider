@@ -811,8 +811,10 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 		err = slotIntVal(optionsSlots + 8, (int*)&options.mBufLength);
 		if (err) return err;
 		
-		err = slotIntVal(optionsSlots + 9, (int*)&options.mPreferredHardwareBufferFrameSize);
-		if (err) return err;
+		if (NotNil(optionsSlots + 9)) {
+			err = slotIntVal(optionsSlots + 9, (int*)&options.mPreferredHardwareBufferFrameSize);
+			if (err) return err;
+		}
 		
 		err = slotIntVal(optionsSlots + 10, (int*)&options.mRealTimeMemorySize);
 		if (err) return err;
@@ -823,8 +825,10 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 		err = slotIntVal(optionsSlots + 12, (int*)&options.mMaxWireBufs);
 		if (err) return err;
 		
-		err = slotIntVal(optionsSlots + 13, (int*)&options.mPreferredSampleRate);
-		if (err) return err;
+		if (NotNil(optionsSlots + 13)) {
+			err = slotIntVal(optionsSlots + 13, (int*)&options.mPreferredSampleRate);
+			if (err) return err;
+		}
 		
 		options.mLoadGraphDefs = IsTrue(optionsSlots + 14) ? 1 : 0;
 		

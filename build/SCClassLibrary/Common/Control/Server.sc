@@ -11,13 +11,13 @@ ServerOptions
 	var <>maxSynthDefs=1024;
 	var <>protocol = \udp;
 	var <>blockSize = 64;
-	var <>hardwareBufferSize = 0;
+	var <>hardwareBufferSize = nil;
 	
 	var <>memSize = 8192;
 	var <>numRGens = 64;
 	var <>numWireBufs = 64;
 
-	var <>sampleRate = 0;
+	var <>sampleRate = nil;
 	var <>loadDefs = true;
 	
 	var <>inputStreamsEnabled;
@@ -60,7 +60,7 @@ ServerOptions
 		if (blockSize != 64, {
 			o = o ++ " -z " ++ blockSize;
 		});
-		if (hardwareBufferSize != 0, {
+		if (hardwareBufferSize.notNil, {
 			o = o ++ " -Z " ++ hardwareBufferSize;
 		});
 		if (memSize != 8192, {
@@ -72,7 +72,7 @@ ServerOptions
 		if (numWireBufs != 64, {
 			o = o ++ " -w " ++ numWireBufs;
 		});
-		if (sampleRate != 0, {
+		if (sampleRate.notNil, {
 			o = o ++ " -S " ++ sampleRate;
 		});
 		if (loadDefs.not, {
