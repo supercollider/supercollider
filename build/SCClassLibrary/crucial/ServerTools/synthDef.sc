@@ -5,7 +5,6 @@
 	
 	
 	stopToBundle {}
-	free {}
 	freeHeavyResources {}
 	freeToBundle {}
 	
