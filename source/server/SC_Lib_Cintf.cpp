@@ -27,6 +27,7 @@
 #include "SC_BufGen.h"
 #include "SC_World.h"
 #include "SC_StringParser.h"
+#include "SC_InterfaceTable.h"
 #include <stdexcept>
 #include <dirent.h>
 
@@ -84,14 +85,47 @@ void initialize_library()
 
 bool PlugIn_Load(const char *filename);
 bool PlugIn_Load(const char *filename)
-{	
+{
+#ifdef SC_WIN32
+
+    HINSTANCE hinstance = LoadLibrary( filename );
+    if (!hinstance) {
+        char *s;
+        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                0, GetLastError(), 0, (char*)&s, 1, 0 );
+        scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename, s);
+        LocalFree( s );     
+		return false;
+	}
+
+    void *ptr = GetProcAddress( hinstance, SC_PLUGIN_LOAD_SYM );
+    if (!ptr) {
+        char *s;
+        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                0, GetLastError(), 0, (char*)&s, 1, 0 );
+        scprintf("*** ERROR: GetProcAddress %s err '%s'\n", SC_PLUGIN_LOAD_SYM, s);
+        LocalFree( s );
+
+		FreeLibrary(hinstance);
+		return false;
+	}	
+
+    LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
+	(*loadFunc)(&gInterfaceTable);		
+
+    // FIXME: at the moment we never call FreeLibrary() on a loaded plugin
+    
+	return true;
+
+#else
+
 	void* handle = dlopen(filename, RTLD_NOW | RTLD_UNSHARED);
 	
 	if (!handle) {
 		scprintf("*** ERROR: dlopen '%s' err '%s'\n", filename, dlerror());
 		dlclose(handle);
 		return false;
-	}		
+	}
 	
 	void *ptr;
 	
@@ -106,6 +140,8 @@ bool PlugIn_Load(const char *filename)
 	(*loadFunc)(&gInterfaceTable);		
 
 	return true;
+    
+#endif
 }
 
 bool PlugIn_LoadDir(char *dirname);
@@ -130,16 +166,20 @@ bool PlugIn_LoadDir(char *dirname)
 		strcat(entrypathname, "/");
 		strcat(entrypathname, (char*)de->d_name);
 
+#ifndef SC_WIN32 /*no d_type in POSIX dirent, so no directory recursion */
 		if (de->d_type == DT_DIR) {
 			success = PlugIn_LoadDir(entrypathname);
 		} else {
+#endif
 			int dnamelen = strlen(de->d_name);
 			int extlen = strlen(SC_PLUGIN_EXT);
 			char *extptr = de->d_name+dnamelen-extlen;
 			if (strncmp(extptr, SC_PLUGIN_EXT, extlen)==0) {
 				success = PlugIn_Load(entrypathname);
 			}
+#ifndef SC_WIN32
 		}
+#endif
 		free(entrypathname);
 		// sk: process rest of directory if load failed
 		if (!success) continue /* break */;
