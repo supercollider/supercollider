@@ -358,7 +358,7 @@ int prHIDRunEventLoop(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1; //class
 
-	InstallEventLoopTimer (GetCurrentEventLoop(), 0, 0.01, GetTimerUPP (), 0, &gTimer);
+	InstallEventLoopTimer (GetCurrentEventLoop(), 0, 0.001, GetTimerUPP (), 0, &gTimer);
 
 	//HIDSetQueueCallback(pCurrentHIDDevice, callback);
 	return errNone;	
