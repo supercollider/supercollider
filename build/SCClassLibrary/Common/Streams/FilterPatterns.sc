@@ -413,10 +413,10 @@ Pchain : FilterPattern {
 		stream2 = pattern.asStream;
 		stream1 = pattern1.asStream;
 		loop {
-			inevent = stream1.next(inval);
+			inevent = stream1.value(inval);
 			if(inevent.isNil) { ^inval };
 			
-			inevent = stream2.next(inevent);
+			inevent = stream2.value(inevent);
 			if (inevent.isNil) { ^inval };
 			
 			inval = yield(inevent);
