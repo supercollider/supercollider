@@ -12,12 +12,12 @@ SCView {  // abstract class
 		this.prInit(parent, argBounds);
 		if (parent.notNil, { parent.add(this); });
 		// init default keydown & keyup
-		this.keyDownAction_({ arg view, key, modifiers;
-			this.defaultKeyDownAction(key, modifiers);
+		this.keyDownAction_({ arg view, key, modifiers, unicode;
+			this.defaultKeyDownAction(key, modifiers, unicode);
 			nil
 		});
-		this.keyUpAction_({ arg view, key, modifiers;
-			this.defaultKeyUpAction(key, modifiers);
+		this.keyUpAction_({ arg view, key, modifiers, unicode;
+			this.defaultKeyUpAction(key, modifiers, unicode);
 			nil
 		});
 
@@ -87,28 +87,29 @@ SCView {  // abstract class
 		this.setProperty(\background, color)
 	}
 
-	keyDown { arg key, modifiers;
-		globalKeyDownAction.value(this, key, modifiers); 
-		this.handleKeyDownBubbling(this, key, modifiers);
+	keyDown { arg key, modifiers, unicode;
+		globalKeyDownAction.value(this, key, modifiers, unicode); 
+		this.handleKeyDownBubbling(this, key, modifiers, unicode);
 	}
 	
-	defaultKeyDownAction { arg key, modifiers;}
+	defaultKeyDownAction { arg key, modifiers, unicode;}
 		
-	handleKeyDownBubbling { arg view, key, modifiers;
+	handleKeyDownBubbling { arg view, key, modifiers, unicode;
 		// nil from keyDownAction --> pass it on
-		this.keyDownAction.value(view, key, modifiers) ?? {
+		this.keyDownAction.value(view, key, modifiers, unicode) ?? {
 			// call local keydown action of parent view
-			this.parent.handleKeyDownBubbling(view, key, modifiers);
+			this.parent.handleKeyDownBubbling(view, key, modifiers, unicode);
 		};
 	}
 	
 	// sc.solar addition
-	keyUp {arg key, modifiers; this.keyTyped = key;
+	keyUp { arg key, modifiers, unicode; 
+		this.keyTyped = key;
 		// allways call global keydown action first
-		globalKeyUpAction.value(this, key, modifiers);
-		this.handleKeyUpBubbling(this, key, modifiers);
+		globalKeyUpAction.value(this, key, modifiers, unicode);
+		this.handleKeyUpBubbling(this, key, modifiers, unicode);
 	}
-	defaultKeyUpAction { arg key, modifiers;}
+	defaultKeyUpAction { arg key, modifiers, unicode; }
 		
 	handleKeyUpBubbling { arg view, key, modifiers;
 		// nil from keyUpAction --> pass it on
@@ -144,7 +145,6 @@ SCView {  // abstract class
 		list.do({ arg item;
 			var name, value;
 			#name, value = item;
-			item.postln;
 			this.perform(name.asSetter, value);
 		});
 	}
@@ -196,11 +196,11 @@ SCCompositeView : SCContainerView {
 
 SCTopView : SCCompositeView {
 	// created by SCWindow
-	handleKeyDownBubbling { arg view, key, modifiers;
-		this.keyDownAction.value(view, key, modifiers);
+	handleKeyDownBubbling { arg view, key, modifiers, unicode;
+		this.keyDownAction.value(view, key, modifiers, unicode);
 	}
-	handleKeyUpBubbling { arg view, key, modifiers;
-		this.keyUpAction.value(view, key, modifiers);
+	handleKeyUpBubbling { arg view, key, modifiers, unicode;
+		this.keyUpAction.value(view, key, modifiers, unicode);
 	}
 }
 
@@ -238,18 +238,21 @@ SCSlider : SCSliderBase
 		this.setPropertyWithAction(\value, val);
 	}	
 	
-	defaultKeyDownAction { arg key, modifiers;
+	increment { ^this.value = this.value + this.bounds.width.reciprocal }
+	decrement { ^this.value = this.value - this.bounds.width.reciprocal }
+	
+	defaultKeyDownAction { arg key, modifiers, unicode;
 		// standard keydown
 		if (key == $r, { this.value = 1.0.rand; });
 		if (key == $n, { this.value = 0.0; });
 		if (key == $x, { this.value = 1.0; });
 		if (key == $c, { this.value = 0.5; });
-		if (key == $], { 
-			this.value = this.value + (1/this.bounds.width); 
-		});
-		if (key == $[, { 
-			this.value = this.value - (1/this.bounds.width); 
-		});
+		if (key == $], { this.increment; ^this });
+		if (key == $[, { this.decrement; ^this });
+		if (unicode == 16rF700, { this.increment; ^this });
+		if (unicode == 16rF703, { this.increment; ^this });
+		if (unicode == 16rF701, { this.decrement; ^this });
+		if (unicode == 16rF702, { this.decrement; ^this });
 	}
 	
 	beginDrag { 
@@ -291,7 +294,31 @@ SCRangeSlider : SCSliderBase {
 	properties {
 		^super.properties ++ [\lo, \hi]
 	}
-	defaultKeyDownAction { arg key, modifiers;
+	
+	increment { 
+		var inc, val; 
+		inc = this.bounds.width.reciprocal;
+		val = this.hi + inc;
+		if (val > 1, {
+			inc = 1 - this.hi;
+			val = 1;
+		});
+		this.lo = this.lo + inc;
+		this.hi = val;
+	}
+	decrement { 
+		var inc, val; 
+		inc = this.bounds.width.reciprocal;
+		val = this.lo - inc;
+		if (val < 0, {
+			inc = this.lo;
+			val = 0;
+		});
+		this.lo = val;
+		this.hi = this.hi - inc;
+	}
+
+	defaultKeyDownAction { arg key, modifiers, unicode;
 		var a, b;
 		// standard keydown
 		if (key == $r, { 
@@ -304,6 +331,10 @@ SCRangeSlider : SCSliderBase {
 		if (key == $x, { this.lo = 1.0; this.hi = 1.0; });
 		if (key == $c, { this.lo = 0.5; this.hi = 0.5; });
 		if (key == $a, { this.lo = 0.0; this.hi = 1.0; });
+		if (unicode == 16rF700, { this.increment; ^this });
+		if (unicode == 16rF703, { this.increment; ^this });
+		if (unicode == 16rF701, { this.decrement; ^this });
+		if (unicode == 16rF702, { this.decrement; ^this });
 	}
 	beginDrag { 
 		currentDrag = Point(this.lo, this.hi); 
@@ -335,12 +366,22 @@ SC2DSlider : SCSliderBase {
 	properties {
 		^super.properties ++ [\x, \y]
 	}
-	defaultKeyDownAction { arg key, modifiers;
+
+	incrementY { ^this.y = this.y + this.bounds.height.reciprocal }
+	decrementY { ^this.y = this.y - this.bounds.height.reciprocal }
+	incrementX { ^this.x = this.x + this.bounds.width.reciprocal }
+	decrementX { ^this.x = this.x - this.bounds.width.reciprocal }
+
+	defaultKeyDownAction { arg key, modifiers, unicode;
 		// standard keydown
 		if (key == $r, { this.x = 1.0.rand; this.y = 1.0.rand; });
 		if (key == $n, { this.x = 0.0; this.y = 0.0; });
 		if (key == $x, { this.x = 1.0; this.y = 1.0; });
 		if (key == $c, { this.x = 0.5; this.y = 0.5; });
+		if (unicode == 16rF700, { this.incrementY; ^this });
+		if (unicode == 16rF703, { this.incrementX; ^this });
+		if (unicode == 16rF701, { this.decrementY; ^this });
+		if (unicode == 16rF702, { this.decrementX; ^this });
 	}
 	beginDrag { 
 		currentDrag = Point(this.x, this.y); 
@@ -366,6 +407,11 @@ SCButton : SCControlView {
 		this.setPropertyWithAction(\value, val);
 	}	
 
+	defaultKeyDownAction { arg key, modifiers, unicode;
+		if (key == $ , { this.value = this.value + 1; ^this });
+		if (key == $\r, { this.value = this.value + 1; ^this });
+	}
+
 	font_ { arg argFont;
 		font = argFont;
 		this.setProperty(\font, font)
@@ -379,7 +425,69 @@ SCButton : SCControlView {
 	properties {
 		^super.properties ++ [\value, \font, \states]
 	}
+
+	beginDrag { 
+		currentDrag = this.value; 
+	}
+	canReceiveDrag {
+		^currentDrag.isNumber;
+	}
+	receiveDrag {
+		this.value = currentDrag;
+		currentDrag = nil;
+	}
 }
+
+
+SCPopUpMenu : SCControlView {
+	var <font, <items;
+	
+	value {
+		^this.getProperty(\value)
+	}
+	value_ { arg val;
+		this.setPropertyWithAction(\value, val);
+	}	
+
+	defaultKeyDownAction { arg key, modifiers, unicode;
+		if (key == $ , { this.value = this.value + 1; ^this });
+		if (key == $\r, { this.value = this.value + 1; ^this });
+		if (unicode == 16rF700, { this.value = this.value + 1; ^this });
+		if (unicode == 16rF703, { this.value = this.value + 1; ^this });
+		if (unicode == 16rF701, { this.value = this.value - 1; ^this });
+		if (unicode == 16rF702, { this.value = this.value - 1; ^this });
+	}
+	font_ { arg argFont;
+		font = argFont;
+		this.setProperty(\font, font)
+	}
+	items_ { arg array;
+		items = array;
+		this.setProperty(\items, items);
+	}
+	stringColor {
+		^this.getProperty(\stringColor, Color.new)
+	}
+	stringColor_ { arg color;
+		this.setProperty(\stringColor, color)
+	}
+	
+	properties {
+		^super.properties ++ [\value, \font, \items, \stringColor]
+	}
+
+	beginDrag { 
+		currentDrag = this.value; 
+	}
+	canReceiveDrag {
+		^currentDrag.isNumber;
+	}
+	receiveDrag {
+		this.value = currentDrag;
+		currentDrag = nil;
+	}
+}
+
 
 
 SCStaticText : SCView {
@@ -418,17 +526,19 @@ SCStaticText : SCView {
 SCNumberBox : SCStaticText {
 	var <> keyString;
 	
-	defaultKeyDownAction { arg key, modifiers;
+	defaultKeyDownAction { arg key, modifiers, unicode;
 		// standard keydown
 		if ((key == 3.asAscii) || (key == $\r) || (key == $\n), { // enter key
 			if (keyString.notNil,{ // no error on repeated enter
 				this.value = keyString.asFloat;
 			});
+			^this
 		});
 		if (key == 127.asAscii, { // delete key
 			keyString = nil;
 			this.string = object.asString;
 			this.stringColor = Color.black;
+			^this
 		});
 		if (key.isDecDigit || "+-.eE".includes(key), {
 			if (keyString.isNil, { 
@@ -512,50 +622,26 @@ SCUserView : SCView { // abstract class
 	mouseTrack { arg x, y, modifiers;x.postln }
 	mouseEndTrack { arg x, y, modifiers; }
 }
-SCPopUpMenu : SCControlView {
-	var <font, <items;
-	
-	value {
-		^this.getProperty(\value)
-	}
-	value_ { arg val;
-		this.setPropertyWithAction(\value, val);
-	}	
 
-	keyDown { arg key, modifiers;
-		if (key == $ , { this.value = this.value + 1; ^this });
-		if (key == $\r, { this.value = this.value + 1; ^this });
-	}
-	font_ { arg argFont;
-		font = argFont;
-		this.setProperty(\font, font)
-	}
-	items_ { arg array;
-		items = array;
-		this.setProperty(\items, items);
-	}
-	stringColor {
-		^this.getProperty(\stringColor, Color.new)
-	}
-	stringColor_ { arg color;
-		this.setProperty(\stringColor, color)
-	}
+SCFuncUserView : SCUserView {
+	var <>keyDownFunc, <>drawFunc;
+	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
 	
-	properties {
-		^super.properties ++ [\value, \font, \items, \stringColor]
+	draw { drawFunc.value(this) }
+	mouseBeginTrack { arg x, y, modifiers; 
+		mouseBeginTrackFunc.value(this, x, y, modifiers); 
 	}
-
-	beginDrag { 
-		currentDrag = this.value; 
+	mouseTrack { arg x, y, modifiers; 
+		mouseTrackFunc.value(this, x, y, modifiers); 
 	}
-	canReceiveDrag {
-		^currentDrag.isNumber;
+	mouseEndTrack { arg x, y, modifiers; 
+		mouseEndTrackFunc.value(this, x, y, modifiers); 
 	}
-	receiveDrag {
-		this.value = currentDrag;
-		currentDrag = nil;
+	keyDown { arg key, modifiers, unicode; 
+		keyDownFunc.value(this, key, modifiers, unicode) 
 	}
 }
+
 //by jt
 SCMultiSliderView : SCView { // abstract class
 	var <> points = nil;
@@ -596,25 +682,6 @@ readOnly_{arg val;
 	thumbSize_{arg val;
 	^this.setProperty(\thumbSize, val)
 	}	
-}
-
-SCFuncUserView : SCUserView {
-	var <>keyDownFunc, <>drawFunc;
-	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
-	
-	draw { drawFunc.value(this) }
-	mouseBeginTrack { arg x, y, modifiers; 
-		mouseBeginTrackFunc.value(this, x, y, modifiers); 
-	}
-	mouseTrack { arg x, y, modifiers; 
-		mouseTrackFunc.value(this, x, y, modifiers);
-		x.postln; 
-	}
-	mouseEndTrack { arg x, y, modifiers; 
-		mouseEndTrackFunc.value(this, x, y, modifiers); 
-	}
-	defaultKeyDownAction { arg key, modifiers;
-	}
 }
 
 
