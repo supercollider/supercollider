@@ -321,7 +321,7 @@ void PinkNoise_next(PinkNoise *unit, int inNumSamples)
 		ZXP(out) = ((*(float*)&ifval) - 3.0f); 
 		counter ++; 
 	);
-	unit->mTotal = total;
+	unit->mTotal = zapgremlins((float)total);
 	RPUT
 	
 }
@@ -358,7 +358,7 @@ void BrownNoise_next(BrownNoise *unit, int inNumSamples)
 		else if (z < -1.f) z = -2.f - z; 
 		ZXP(out) = z;
 	);
-	unit->mLevel = z;
+	unit->mLevel = zapgremlins((float)z);
 	RPUT
 	
 }
