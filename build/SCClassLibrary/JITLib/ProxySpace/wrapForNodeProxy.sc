@@ -33,7 +33,8 @@
 			proxy.nodeMap.lagsFor(argNames),
 			nil, 
 			true, 
-			channelOffset
+			channelOffset,
+			proxy.numChannels
 		); 
 	}
 	prepareForProxySynthDef { ^this.subclassResponsibility(thisMethod) }

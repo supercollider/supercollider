@@ -3,26 +3,38 @@ ProxySynthDef : SynthDef {
 	
 	
 	*initClass {
-		//clean up
+		//clean up any written synthdefs starting with "temp__"
 		unixCmd("rm synthdefs/temp__*");
 	}
 		
 	
-	*new { arg name, func, lags, prependArgs, makeFadeEnv=true, channelOffset=0;
-		var def, rate, output, isScalar, envgen;
+	*new { arg name, func, lags, prependArgs, makeFadeEnv=true, channelOffset=0, chanConstraint;
+		var def, rate, numChannels, output, isScalar, envgen;
 		name = "temp__" ++ name;		
 		def = super.new(name, { 
 			var  out, outCtl;
 			
-			prependArgs = prependArgs.collect({ arg parg; parg.value });
+			// check for out key. this is used by internal control.
 			if(func.def.argNames.asArray.includes(\out), { 
 				"out argument is provided internally!".error; ^nil 
 			});
+			
+			// build the controls from args
 			output = SynthDef.wrap(func, lags, prependArgs);
+			
+			// determine rate and numChannels of ugen func
 			rate = output.rate;
 			isScalar = rate === 'scalar';
+			numChannels = output.numChannels;
+			
+			// constrain the output to the right number of channels if supplied
+			// and wrap it in a fade envelope
 			envgen = if(makeFadeEnv and: { isScalar.not }, { this.makeFadeEnv }, { 1.0 });
+			if(chanConstraint.notNil and: { chanConstraint !== numChannels }, {
+				output = NumChannels(output, chanConstraint, true);
+			});
 			output = output * envgen;
+			
 			if(isScalar, {
 					output
 				}, {
@@ -30,8 +42,10 @@ ProxySynthDef : SynthDef {
 					Out.multiNewList([rate, outCtl]++output)
 			})
 		});
+		// set the synthDefs instvars, so they can be checked later
+		
 		def.rate = rate;
-		def.numChannels = output.numChannels;
+		def.numChannels = numChannels;
 		if(isScalar, { def.hasGate = false });
 		def.canFreeSynth = def.prCanFreeSynth(envgen);
 		^def

@@ -640,7 +640,7 @@ NodeProxy : BusPlug {
 	
 	playTaskToBundle { arg bundle; //revisit
 				bundle.addFunction({ 
-					SystemClock.sched(server.latency, { task.reset; task.play; })
+					SystemClock.sched(server.latency, { task.reset; task.play; nil; })
 				}) 
 	}
 
