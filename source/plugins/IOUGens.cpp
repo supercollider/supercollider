@@ -800,17 +800,17 @@ void vXOut_next_a(XOut *unit, int inNumSamples)
 	float next_xfade = ZIN0(1);
 	float xfade0 = unit->m_xfade;
 	float *out = unit->m_bus;
-	vfloat32* vout = (vfloat32*)out;
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	int32 len = inNumSamples << 2;
 	if (xfade0 != next_xfade) {
 		float slope = CALCSLOPE(next_xfade, xfade0);
 		vfloat32 vslope = vload(4.f * slope);
-		for (int i=0; i<numChannels; ++i) {
+		for (int i=0; i<numChannels; ++i, out+=bufLength) {
 			vfloat32 vxfade = vstart(xfade0, vslope);
 			float *in = IN(i+2);
 			vfloat32* vin = (vfloat32*)in;
+			vfloat32* vout = (vfloat32*)out;
 			if (touched[i] == bufCounter) {
 				for (int j=0; j<len; j+=16) {
 					vfloat32 zvin = vec_ld(j, vin);
@@ -830,6 +830,7 @@ void vXOut_next_a(XOut *unit, int inNumSamples)
 	} else if (xfade0 == 1.f) {
 		for (int i=0; i<numChannels; ++i, out+=bufLength) {
 			vfloat32 *vin = (vfloat32*)IN(i+2);
+			vfloat32* vout = (vfloat32*)out;
 			for (int j=0; j<len; j+=16) {
 				vec_st(vec_ld(j, vin), j, vout);
 			}
@@ -838,9 +839,10 @@ void vXOut_next_a(XOut *unit, int inNumSamples)
 	} else if (xfade0 == 0.f) {
 		// do nothing.
 	} else {
-		for (int i=0; i<numChannels; ++i) {
+		for (int i=0; i<numChannels; ++i, out+=bufLength) {
 			float *in = IN(i+2);
 			vfloat32* vin = (vfloat32*)in;
+			vfloat32* vout = (vfloat32*)out;
 			vfloat32 vxfade = vload(xfade0);
 			if (touched[i] == bufCounter) {
 				for (int j=0; j<len; j+=16) {
