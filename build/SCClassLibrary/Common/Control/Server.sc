@@ -157,8 +157,8 @@ Server : Model {
 	listSendMsg { arg msg;
 		addr.sendBundle(nil,msg);
 	}
- 	listSendBundle { arg time,bundle;
-		addr.performList(\sendBundle, [time] ++ bundle);
+ 	listSendBundle { arg time, bundle;
+		addr.performList(\sendBundle, time, bundle);
 	}
 	
 	// load from disk locally, send remote
