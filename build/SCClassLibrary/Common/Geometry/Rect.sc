@@ -126,7 +126,7 @@ Rect {
 	}
 	
 	asRect { ^this }
-	bounds { ^this.copy }
+	bounds { ^Rect.new(left, top, width, height) }
 	== { arg that; 
 		^(this.class == that.class 
 			and: {left == that.left }
