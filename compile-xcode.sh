@@ -9,7 +9,7 @@ xcodebuild -project xSC3synth.pbproj -target "All" -buildstyle "Deployment" buil
 
 # sc plugins
 echo "building plugins"
-xcodebuild -project xSC3plugins.pbproj -target "All Plugins" -buildstyle "Deployment" build || exit
+xcodebuild -project xSC3plugins.pbproj -target "All" -buildstyle "Deployment" build || exit
 
 #sclang
 echo "building sclang"

@@ -2063,7 +2063,7 @@
 				B969DA11069188990096E93F,
 			);
 			isa = PBXAggregateTarget;
-			name = "All Plugins";
+			name = All;
 			productName = "SC_Synth PlugIns";
 		};
 		F5B740A602E94DC001CA2799 = {
