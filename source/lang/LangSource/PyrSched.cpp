@@ -891,6 +891,10 @@ int prTempoClock_New(struct VMGlobals *g, int numArgsPushed)
 	double tempo;
 	int err = slotDoubleVal(b, &tempo);
 	if (err) tempo = 1.;
+	if (tempo <= 0.) {
+		error("invalid tempo %g\n", tempo);
+		return errFailed;
+	}
 
 	double beats;
 	err = slotDoubleVal(c, &beats);
@@ -1035,6 +1039,10 @@ int prTempoClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
 	double tempo, beat;
 	int err = slotDoubleVal(b, &tempo);
 	if (err) return errFailed;
+	if (tempo <= 0.) {
+		error("invalid tempo %g\n", tempo);
+		return errFailed;
+	}
 
 	err = slotDoubleVal(c, &beat);
 	if (err) return errFailed;
