@@ -461,4 +461,18 @@ Object {
 	performBinaryOpOnInfinitum { arg aSelector;
 		^this.performBinaryOpOnSomething(aSelector)
 	}
+	
+	writeDefFile { arg name;
+		var file;
+		
+		if (name.isNil, { error("no file name"); ^nil });
+		
+		file = File("synthdefs/" ++ name ++ ".scsyndef", "w");
+		
+		this.asArray.writeDef(file);
+		
+		file.length.postln;
+		file.close;
+	}
+
 }

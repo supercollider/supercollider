@@ -110,14 +110,28 @@ CollStream : IOStream {
 //	getFloat { _CollStream_GetFloat; ^this.primitiveFailed; }
 //	getDouble { _CollStream_GetDouble; ^this.primitiveFailed; }
 //	
-//	putChar { arg aChar; _CollStream_PutChar; ^this.primitiveFailed; }
-//	putInt8 { arg anInteger; _CollStream_PutInt8; ^this.primitiveFailed; }
-//	putInt16 { arg anInteger; _CollStream_PutInt16; ^this.primitiveFailed; }
-//	putInt32 { arg anInteger; _CollStream_PutInt32; ^this.primitiveFailed; }
-//	putFloat { arg aFloat; _CollStream_PutFloat; ^this.primitiveFailed; }
+	// collection should be an Int8Array
+	putChar { arg aChar; this.put(aChar.ascii); }
+	putInt8 { arg anInteger; this.put(anInteger & 255); }
+	putInt16 { arg anInteger; 
+		this.putInt8(anInteger>>8);
+		this.putInt8(anInteger);
+	}
+	putInt32 { arg anInteger; 
+		this.putInt8(anInteger>>24);
+		this.putInt8(anInteger>>16);
+		this.putInt8(anInteger>>8);
+		this.putInt8(anInteger);
+	}
+	putFloat { arg aFloat; this.putInt32(aFloat.as32Bits); }
 //	putDouble { arg aFloat; _CollStream_PutDouble; ^this.primitiveFailed; }
-//	putString { arg aString; _CollStream_PutString; ^this.primitiveFailed; }
-
+	putString { arg aString; 
+		aString.do({ arg char; this.putChar(char); });
+	}
+	putPascalString { arg aString;
+		this.putInt8(aString.size);
+		this.putString(aString);
+	}
 }
 
 LimitedWriteStream : CollStream {

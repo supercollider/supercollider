@@ -112,8 +112,15 @@ SynthDef {
 			ugen.collectConstants;
 		});
 	}
-	writeDefFile {
-		[this].writeDefFile(name)
+
+	asBytes {
+		var stream;
+		stream = CollStream.on(Int8Array.new(256));
+		this.asArray.writeDef(stream);
+		^stream.collection;
+	}
+	writeDefFile { arg inName;
+		super.writeDefFile(inName ? name)
 	}
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.
@@ -135,12 +142,10 @@ SynthDef {
 			});
 		});
 
-		//children.size.postln;
 		file.putInt16(children.size);
 		children.do({ arg item;
 			item.writeDef(file);
 		});
-		//[this.class.name, file.length].postln;
 	}
 	writeConstants { arg file;
 		var array;
