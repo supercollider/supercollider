@@ -1,6 +1,7 @@
+
 + Server {
 	makeWindow { arg w;
-		var active,booter,running,booting,stopped;
+		var active,booter,killer,running,booting,stopped;
 		var countsViews, ctlr;
 		
 		if (window.notNil, { ^window.front });
@@ -26,6 +27,11 @@
 				});
 			};
 			booter.setProperty(\value,serverRunning.binaryValue);
+			
+			killer = SCButton(w, Rect(0,0, 24, 24));
+			killer.states = [["K", Color.black, Color.new(1,0,0,0.7)]];
+			
+			killer.action = { Server.killAll };	
 		});
 		
 		active = SCStaticText(w, Rect(0,0, 80, 24));
@@ -36,6 +42,7 @@
 		if(serverRunning,running,stopped);		
 		
 		if (isLocal, {
+			
 			running = {
 				active.stringColor_(Color.red);
 				booter.setProperty(\value,1);
