@@ -23,8 +23,8 @@ Pan4 : MultiOutUGen {
 	}
 	init { arg ... theInputs;
 		inputs = theInputs;		
-		channels = [ OutputProxy.ar1(this, 0), OutputProxy.ar1(this, 1),
-					OutputProxy.ar1(this, 2), OutputProxy.ar1(this, 3) ];
+		channels = [ OutputProxy(\audio,this, 0), OutputProxy(\audio,this, 1),
+					OutputProxy(\audio,this, 2), OutputProxy(\audio,this, 3) ];
 		^channels
 	}
 }
@@ -38,8 +38,8 @@ PanB : UGen {
 	}
 	init { arg ... theInputs;
 		inputs = theInputs;		
-		channels = [ OutputProxy.ar1(this), OutputProxy.ar1(this),
-					OutputProxy.ar1(this), OutputProxy.ar1(this) ];
+		channels = [ OutputProxy(\audio,this,0), OutputProxy(\audio,this,1),
+					OutputProxy(\audio,this,2), OutputProxy(\audio,this,3) ];
 		^channels
 	}
 }
@@ -51,7 +51,7 @@ PanAz : MultiOutUGen {
 	}
 	init { arg numChans ... theInputs;
 		inputs = theInputs;		
-		channels = Array.fill(numChans, { arg i; OutputProxy.ar1(this, i) });
+		channels = Array.fill(numChans, { arg i; OutputProxy(\audio,this, i) });
 		^channels
 	}
 }
@@ -84,10 +84,11 @@ Pan8 : MultiOutUGen {
 	}
 	init { arg ... theInputs;
 		inputs = theInputs;		
-		channels = [ OutputProxy.ar1(this, 0), OutputProxy.ar1(this, 1),
-					OutputProxy.ar1(this, 2), OutputProxy.ar1(this, 3),
-					OutputProxy.ar1(this, 4), OutputProxy.ar1(this, 5),
-					OutputProxy.ar1(this, 6), OutputProxy.ar1(this, 7) ];
+		channels = [ OutputProxy(\audio,this, 0), OutputProxy(\audio,this, 1),
+					OutputProxy(\audio,this, 2), OutputProxy(\audio,this, 3),
+					OutputProxy(\audio,this, 4), OutputProxy(\audio,this, 5),
+					OutputProxy(\audio,this, 6),OutputProxy(\audio,this, 7) 
+					];
 		^channels
 	}
 }
