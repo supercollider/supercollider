@@ -76,8 +76,10 @@ MixedBundle : OSCBundle {
 		server.listSendBundle(latency, messages);
 	}
 	
-	sendPrepare { arg server;
-		server.listSendBundle(nil, preparationMessages);
+	sendPrepare {arg server, latency;
+		latency = latency ? server.latency;
+		//preparationMessages.asCompileString.postln;
+		server.listSendBundle(latency, preparationMessages);
 	}
 
 		
