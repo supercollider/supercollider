@@ -174,7 +174,7 @@ VoicerMIDISocket also allows you to route MIDI controllers to specific synthdef 
 	\cf6 var\cf7 	sig;\
 	sig = \cf6 RLPF\cf7 .ar(\
 		\cf6 Saw\cf7 .ar(freq, \cf6 Latch\cf7 .kr(gate, gate)),  \cf9 // Latch is to grab velocity and hold it\cf7 \
-		ffreq, rq\
+		ffreq, rq, 0.2\
 	) * \cf6 EnvGen\cf7 .kr(\cf6 Env\cf7 .adsr, gate, doneAction:2);\
 	\cf6 Out\cf7 .ar(out, [sig, sig])\
 \}).send(s);\
@@ -183,8 +183,8 @@ v = \cf2 Voicer\cf0 (10, \cf3 \\rlpf\cf0 );\
 k = \cf2 VoicerMIDISocket\cf0 (0, v);\
   \cf4 // controller number (mod wheel), argument name (filter cutoff), initial value\
   // and spec, describing how 0-127 should map to actual synth values\cf0 \
-k.addControl(1, \cf3 \\ffreq\cf0 , 2000, \\freq);\
-\
+\cf7 k.addControl(1, \cf8 \\ffreq\cf7 , 2000, \cf8 \\freq\cf7 );\
+\cf0 \
 v.free;	\cf4 // when done; also frees the midi socket
 \f1\fs24 \cf0 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
