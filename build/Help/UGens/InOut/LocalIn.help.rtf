@@ -88,7 +88,7 @@ z = \cf2 SynthDef\cf0 (\cf4 "tank"\cf0 , \{\
 	local = \cf2 AllpassN\cf0 .ar(local, 0.05, \{\cf2 Rand\cf0 (0.01,0.05)\}.dup, 2);\
 	 			\
 	local = \cf2 DelayN\cf0 .ar(local, 0.3, [0.19,0.26]);\
-	\cf2 AllpassN\cf0 .ar(local, 0.05, \{\cf2 Rand\cf0 (0.03,0.15)\}.dup, 2);\
+	local = \cf2 AllpassN\cf0 .ar(local, 0.05, \{\cf2 Rand\cf0 (0.03,0.15)\}.dup, 2);\
 	\
 	local = \cf2 LeakDC\cf0 .ar(local);	\
 	local = local + in;\
