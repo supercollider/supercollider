@@ -100,17 +100,17 @@ audio feedback modulation:\
 	\}).send(s);\
 	)\
 	\
-	n = s.options.firstPrivateBus;\
+	x = Bus.audio(s, 1);\
 \
 	\cf4 // read from bus n play to bus 0 (silent)\cf0 \
-	a = \cf2 Synth\cf0 (\cf3 "help-InFeedback"\cf0 ,[\cf5 \\in\cf0 , n, \cf5 \\out\cf0 , 0]);\
+	a = \cf2 Synth\cf0 (\cf3 "help-InFeedback"\cf0 ,[\cf5 \\in\cf0 , x.index, \cf5 \\out\cf0 , 0]);\
 \
-	\cf4 // now play a synth after this one, playing to bus n\cf0 \
-	b = \cf2 Synth\cf0 .after(a, \cf3 "help-SinOsc"\cf0 , [\cf5 \\out\cf0 , n]);\
+	\cf4 // now play a synth after this one, playing to bus x\cf0 \
+	b = \cf2 Synth\cf0 .after(a, \cf3 "help-SinOsc"\cf0 , [\cf5 \\out\cf0 , x.index]);\
 	\
-	\cf4 // add another synth before a which also writes to bus n\cf0 \
+	\cf4 // add another synth before a which also writes to bus x\cf0 \
 	\cf4 // now you can't hear b, as its data is one cycle old, and is overwritten by c\cf0 \
-	c = \cf2 Synth\cf0 .before(a, \cf3 "help-SinOsc"\cf0 , [\cf5 \\out\cf0 , n, \cf5 \\freq\cf0 , 800]);\
+	c = \cf2 Synth\cf0 .before(a, \cf3 "help-SinOsc"\cf0 , [\cf5 \\out\cf0 , x.index, \cf5 \\freq\cf0 , 800]);\
 	\
 	\cf4 // free c and you can hear b again\cf0 \
 	c.free;\
