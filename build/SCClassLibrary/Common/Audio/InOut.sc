@@ -23,12 +23,15 @@ Control : MultiOutUGen {
 	*names { arg names;
 		var synthDef, index;
 		synthDef = UGen.buildSynthDef;
-		index = synthDef.controls.size;
-		names.asArray.do { |name, i|
-			synthDef.controlNames = synthDef.controlNames.add(
-				ControlName(name.asString, index + i)
+		index = synthDef.controlIndex;
+		names = names.asArray;
+		names.do { |name, i|
+			synthDef.addControlName(
+				ControlName(name.asString, index + i, 'control', 
+					nil, synthDef.allControlNames.size)
 			);
 		};
+		synthDef.controlIndex = synthDef.controlIndex + names.size;
 	}
 	*kr { arg values;
 		^this.multiNewList(['control'] ++ values.asArray)
@@ -36,9 +39,9 @@ Control : MultiOutUGen {
 	*ir { arg values;
 		^this.multiNewList(['scalar'] ++ values.asArray)
 	}
-	init { arg ... argValues;		
+	init { arg ... argValues;
 		values = argValues;
-		if (synthDef.notNil) { 
+		if (synthDef.notNil) {
 			specialIndex = synthDef.controls.size;
 			synthDef.controls = synthDef.controls.addAll(values);
 		};
@@ -50,7 +53,7 @@ Control : MultiOutUGen {
 TrigControl : Control {}
 
 LagControl : Control {	
-	*kr { arg values, lags;
+ 	*kr { arg values, lags;
 		var outputs;
 
 		values = values.asArray;
@@ -74,8 +77,8 @@ LagControl : Control {
 		var lags, size, size2;
 		size = stuff.size;
 		size2 = size >> 1;
-		values = stuff.copyRange(0, size2-1);
-		inputs = stuff.copyRange(size2, size-1);
+		values = stuff[ .. size2-1];
+		inputs = stuff[size2 .. size-1];
 		if (synthDef.notNil, { 
 			specialIndex = synthDef.controls.size;
 			synthDef.controls = synthDef.controls.addAll(values);

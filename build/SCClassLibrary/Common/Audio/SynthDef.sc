@@ -60,7 +60,6 @@ SynthDef {
 		this.addControlsFromArgsOfFunc(func, rates, prependArgs.size);
 		result = func.valueArray(prependArgs ++ this.buildControls);
 		
-		allControlNames = allControlNames ++ controlNames;
 		controlNames = saveControlNames
 		
 		^result
@@ -104,21 +103,26 @@ SynthDef {
 		});
 	}
 	
+	addControlName { arg cn;
+		controlNames = controlNames.add(cn);
+		allControlNames = allControlNames.add(cn);
+	}
+	
 	// allow incremental building of controls
 	addNonControl { arg name, values;
-		controlNames = controlNames.add(ControlName(name, nil, 'noncontrol', 
+		this.addControlName(ControlName(name, nil, 'noncontrol', 
 			values.copy, controlNames.size));
 	}
 	addIr { arg name, values;
-		controlNames = controlNames.add(ControlName(name, controls.size, 'scalar', 
+		this.addControlName(ControlName(name, controls.size, 'scalar', 
 			values.copy, controlNames.size));
 	}
 	addKr { arg name, values, lags;
-		controlNames = controlNames.add(ControlName(name, controls.size, 'control', 
+		this.addControlName(ControlName(name, controls.size, 'control', 
 			values.copy, controlNames.size, lags.copy));
 	}
 	addTr { arg name, values;
-		controlNames = controlNames.add(ControlName(name, controls.size, 'trigger', 
+		this.addControlName(ControlName(name, controls.size, 'trigger', 
 			values.copy, controlNames.size));
 	}
 	buildControls {
@@ -135,7 +139,7 @@ SynthDef {
 		trControlNames = controlNames.select {|cn| cn.rate == 'trigger' };
 		
 		if (nonControlNames.size > 0) {
-			irControlNames.do {|cn|
+			nonControlNames.do {|cn|
 				arguments[cn.argNum] = cn.defaultValue;
 			};
 		};
