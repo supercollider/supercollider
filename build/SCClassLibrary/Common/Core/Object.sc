@@ -332,7 +332,7 @@ Object {
 	// dependancy support
 	*initClass { dependantsDictionary = IdentityDictionary.new(4); }
 	dependants {
-		^dependantsDictionary.at(this) ?? { ^IdentitySet.new };
+		^dependantsDictionary.at(this) ?? { IdentitySet.new };
 	}
 	changed { arg theChanger;
 		dependantsDictionary.at(this).do({ arg item;
@@ -360,6 +360,9 @@ Object {
 		});
 	}
 	release {
+		this.releaseDependants;
+	}
+	releaseDependants {
 		dependantsDictionary.removeAt(this);
 	}
 	update { arg theChanged, theChanger;	// respond to a change in a model
