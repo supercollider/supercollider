@@ -5,10 +5,143 @@
 	};
 	objectVersion = 39;
 	objects = {
-		920DAED20425A5D200A80067 = {
-			expectedFileType = sourcecode.c.h;
+		46964EDB05B93E5600AB268B = {
+			buildPhases = (
+				46964EDC05B93E5600AB268B,
+				46964EDF05B93E5600AB268B,
+				46964EE105B93E5600AB268B,
+				46964EE305B93E5600AB268B,
+				46964EE405B93E5600AB268B,
+			);
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				LIBRARY_STYLE = BUNDLE;
+				OPTIMIZATION_CFLAGS = "-O3";
+				OTHER_CFLAGS = "-DSC_DARWIN";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOL_FLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = GendynUGens.scx;
+				REZ_EXECUTABLE = YES;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
+			};
+			dependencies = (
+			);
+			isa = PBXLibraryTarget;
+			name = GendynUGens;
+			productInstallPath = /usr/local/lib;
+			productName = TriggerUGens;
+			productReference = 46964EE505B93E5600AB268B;
+		};
+		46964EDC05B93E5600AB268B = {
+			buildActionMask = 2147483647;
+			files = (
+				46964EDD05B93E5600AB268B,
+				46964EDE05B93E5600AB268B,
+			);
+			isa = PBXHeadersBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		46964EDD05B93E5600AB268B = {
+			fileRef = 920DAED20425A5D200A80067;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		46964EDE05B93E5600AB268B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		46964EDF05B93E5600AB268B = {
+			buildActionMask = 2147483647;
+			files = (
+				46964EF605B9408A00AB268B,
+			);
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		46964EE105B93E5600AB268B = {
+			buildActionMask = 2147483647;
+			files = (
+				46964EE205B93E5600AB268B,
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		46964EE205B93E5600AB268B = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		46964EE305B93E5600AB268B = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXRezBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		46964EE405B93E5600AB268B = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXShellScriptBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp build/GendynUGens.scx build/plugins";
+		};
+		46964EE505B93E5600AB268B = {
+			explicitFileType = "compiled.mach-o.dylib";
+			includeInIndex = 0;
+			isa = PBXFileReference;
+			path = GendynUGens.scx;
+			refType = 3;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		46964EF505B9408A00AB268B = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = GendynUGens.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		46964EF605B9408A00AB268B = {
+			fileRef = 46964EF505B9408A00AB268B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		46964F0505B94E5000AB268B = {
+			containerPortal = F50D04F702E68E8201CA2799;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 46964EDB05B93E5600AB268B;
+			remoteInfo = GendynUGens;
+		};
+		46964F0605B94E5000AB268B = {
+			isa = PBXTargetDependency;
+			target = 46964EDB05B93E5600AB268B;
+			targetProxy = 46964F0505B94E5000AB268B;
+		};
+//460
+//461
+//462
+//463
+//464
+//920
+//921
+//922
+//923
+//924
+		920DAED20425A5D200A80067 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = SC_Altivec.h;
 			path = common/SC_Altivec.h;
 			refType = 4;
@@ -191,17 +324,17 @@
 			remoteInfo = BinaryOpUGens;
 		};
 		92CCC51E045B451100CA2167 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = MacUGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		92CCC51F045B4BDE00CA2167 = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = Carbon.framework;
 			path = /System/Library/Frameworks/Carbon.framework;
 			refType = 0;
@@ -268,7 +401,7 @@
 			productReference = 92CCC525045B4BFD00CA2167;
 		};
 		92CCC525045B4BFD00CA2167 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = MacUGens.scx;
@@ -312,9 +445,9 @@
 //AA3
 //AA4
 		AAE924420481416E00A8010B = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = SC_Endian.h;
 			path = common/SC_Endian.h;
 			refType = 4;
@@ -442,6 +575,7 @@
 				F5B741FB02E9D32B01CA2799,
 				F5B7408602E9455801CA2799,
 				92CCC524045B4BFD00CA2167,
+				46964EDB05B93E5600AB268B,
 			);
 		};
 		F50D04F802E68E8201CA2799 = {
@@ -525,177 +659,177 @@
 			sourceTree = "<group>";
 		};
 		F50D054602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = clz.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = Hash.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_BoundsMacros.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_BufGen.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054A02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Constants.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054B02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Dimension.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054C02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_FifoMsg.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054D02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Graph.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054E02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_InlineBinaryOp.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054F02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_InlineUnaryOp.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_InterfaceTable.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = sc_msg_iter.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Node.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_PlugIn.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055402E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Rate.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_RGen.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_SndBuf.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Types.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Unit.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Wire.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055A02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_World.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055D02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = Unroll.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -712,6 +846,7 @@
 		};
 		F50D05D302E69B6B01CA2799 = {
 			children = (
+				46964EF505B9408A00AB268B,
 				F50D05D502E69B6B01CA2799,
 				F50D05D602E69B6B01CA2799,
 				F50D05D702E69B6B01CA2799,
@@ -737,149 +872,149 @@
 			sourceTree = "<group>";
 		};
 		F50D05D502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = BinaryOpUGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05D602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = DelayUGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05D702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = DiskIO_UGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05D802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = FFT_UGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05D902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			lineEnding = 0;
 			path = fftlib.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05DA02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = fftlib.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05DB02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = FilterUGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05DC02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = IOUGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05DD02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = LFUGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05DE02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = MulAddUGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05DF02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = NoiseUGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05E002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = OscUGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05E102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = PanUGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05E202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = SCComplex.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05E302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SCComplex.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05E402E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = TriggerUGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05E502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = UnaryOpUGens.cpp;
 			refType = 4;
 			sourceTree = "<group>";
@@ -900,6 +1035,7 @@
 				F5B741F302E9D0C501CA2799,
 				F5B741FA02E9D32A01CA2799,
 				92CCC525045B4BFD00CA2167,
+				46964EE505B93E5600AB268B,
 			);
 			isa = PBXGroup;
 			name = Products;
@@ -926,9 +1062,9 @@
 			sourceTree = "<group>";
 		};
 		F5499A1103A3023A01BA7E76 = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = vecLib.framework;
 			path = /System/Library/Frameworks/vecLib.framework;
 			refType = 0;
@@ -1013,18 +1149,18 @@
 			};
 		};
 		F5959CF80339983301A80099 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = MsgFifo.h;
 			path = headers/server/MsgFifo.h;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		F5959CF90339983301A80099 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = SC_SyncCondition.h;
 			path = headers/server/SC_SyncCondition.h;
 			refType = 2;
@@ -1055,9 +1191,9 @@
 			sourceTree = "<group>";
 		};
 		F5959CFD03399CED01A80099 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = SC_Lock.h;
 			path = headers/server/SC_Lock.h;
 			refType = 2;
@@ -1070,9 +1206,9 @@
 			};
 		};
 		F5959CFF0339A70A01A80099 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			name = SC_SyncCondition.cpp;
 			path = source/server/SC_SyncCondition.cpp;
 			refType = 2;
@@ -1095,7 +1231,7 @@
 			sourceTree = "<group>";
 		};
 		F5B7408502E9455801CA2799 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = UnaryOpUGens.scx;
@@ -1187,6 +1323,7 @@
 				F5B7412C02E954B301CA2799,
 				F5B7414E02E955B601CA2799,
 				F5B7417102E9587701CA2799,
+				46964F0605B94E5000AB268B,
 				F5B7419202E9BBEF01CA2799,
 				F5B741B302E9BD0301CA2799,
 				F5B7420102E9D84201CA2799,
@@ -1207,7 +1344,7 @@
 			targetProxy = 92B5F2F50547315200496808;
 		};
 		F5B740A702E94E2001CA2799 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = BinaryOpUGens.scx;
@@ -1289,7 +1426,7 @@
 			targetProxy = 92B5F3000547315200496808;
 		};
 		F5B740C802E94F7101CA2799 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = NoiseUGens.scx;
@@ -1365,7 +1502,7 @@
 			};
 		};
 		F5B740E702E9525D01CA2799 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = DelayUGens.scx;
@@ -1451,7 +1588,7 @@
 			targetProxy = 92B5F2FF0547315200496808;
 		};
 		F5B7410C02E9544701CA2799 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = DiskIOUGens.scx;
@@ -1537,7 +1674,7 @@
 			targetProxy = 92B5F2FE0547315200496808;
 		};
 		F5B7412D02E9554601CA2799 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = FFT_UGens.scx;
@@ -1646,7 +1783,7 @@
 			};
 		};
 		F5B7415102E9582A01CA2799 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = FilterUGens.scx;
@@ -1728,7 +1865,7 @@
 			targetProxy = 92B5F2FC0547315200496808;
 		};
 		F5B7417202E9BAE801CA2799 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = IOUGens.scx;
@@ -1810,7 +1947,7 @@
 			targetProxy = 92B5F2FB0547315200496808;
 		};
 		F5B7419302E9BC6101CA2799 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = LFUGens.scx;
@@ -1892,7 +2029,7 @@
 			targetProxy = 92B5F2FA0547315200496808;
 		};
 		F5B741B402E9BD8401CA2799 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = MulAddUGens.scx;
@@ -1969,7 +2106,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		F5B741D302E9CBFD01CA2799 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = OSCUGens.scx;
@@ -2046,7 +2183,7 @@
 			};
 		};
 		F5B741F302E9D0C501CA2799 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = PanUGens.scx;
@@ -2122,7 +2259,7 @@
 			};
 		};
 		F5B741FA02E9D32A01CA2799 = {
-			expectedFileType = "compiled.mach-o.bundle";
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = TriggerUGens.scx;
@@ -2335,9 +2472,9 @@
 			shellScript = "cp build/UnaryOpUGens.scx build/plugins";
 		};
 		F5D127DA03355EE10164B34C = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = SC_Sem.h;
 			path = common/SC_Sem.h;
 			refType = 4;
@@ -2355,8 +2492,8 @@
 			sourceTree = "<group>";
 		};
 		F5D127DE03383D340164B34C = {
-			expectedFileType = archive.ar;
 			isa = PBXFileReference;
+			lastKnownFileType = archive.ar;
 			name = libsndfile.a;
 			path = /usr/local/lib/libsndfile.a;
 			refType = 0;
