@@ -37,6 +37,18 @@ count leading zeroes function and those that can be derived from it
 // powerpc native count leading zeroes instruction:
 #define CLZ(x)  ((int)__cntlzw((unsigned int)x))
 
+#elif defined(SC_WIN32) && !defined(__GCC__)
+
+static int CLZ( int arg )
+{
+    asm{
+        bsr    eax, arg
+        xor    eax, 31
+        mov    arg, eax
+    }
+    return arg;
+}
+
 #else
 
 static __inline__ int CLZ(int arg) {
