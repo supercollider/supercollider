@@ -591,7 +591,7 @@ SCNumberBox : SCStaticTextBase {
 		// standard keydown
 		if ((key == 3.asAscii) || (key == $\r) || (key == $\n), { // enter key
 			if (keyString.notNil,{ // no error on repeated enter
-				this.value = keyString.asFloat;
+				this.valueAction_(keyString.asFloat);
 			});
 			^this
 		});
@@ -866,9 +866,9 @@ SCMultiSliderView : SCView {
 	} //when ctrl click
 }
 
-
 SCEnvelopeView : SCMultiSliderView {
 	var connection, <>allConnections, doOnce;
+	var <>items;
 	setPdStyle{
 		connection = Array.newClear(3);
 		doOnce = true;
@@ -922,7 +922,18 @@ SCEnvelopeView : SCMultiSliderView {
 		^this.setProperty(\value, val)
 	}
 	string_{arg astring;
+		items =items.add(astring);
 		^this.setProperty(\string, astring)
+	}
+	prString_{arg astring;
+		^this.setProperty(\string, astring)
+	}
+	strings_{arg astrings;
+		astrings.do({arg str,i;
+		this.select(i);
+		this.prString_(str);
+		});
+		this.select(-1);
 	}
 	value {
 		var ax, ay, axy;
@@ -977,7 +988,13 @@ SCEnvelopeView : SCMultiSliderView {
 		^this.setProperty(\selectionColor, acolor)
 		}
 	receiveDrag {
+		if(currentDrag.isKindOf(String), {
+		this.addValue;
+		items = items.insert(this.lastIndex + 1, currentDrag);
+		this.strings_(items);		
+		},{		
 		this.value_(currentDrag);
+		});
 	}
 	beginDrag {
 		currentDrag = this.value;
@@ -1000,9 +1017,8 @@ SCEnvelopeView : SCMultiSliderView {
 			arrx = arrx.add( xval );
 			arry = arry.add( yval);
 			});
-			arr.put(0,arrx);
-			arr.put(1,arry);
-			this.value_(arr);
+			
+			this.value_([arrx,arry]);
 	
 	}
 	
