@@ -19,8 +19,6 @@ Pn : FilterPattern {
 	}
 }
 
-// will be removed
-Ploop : Pn {}
 
 FuncFilterPattern : FilterPattern {
 	var <>func;
