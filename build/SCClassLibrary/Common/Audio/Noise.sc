@@ -61,7 +61,7 @@ IRand : UGen {
 TRand : UGen {
 	// uniform distribution
 	*ar { arg lo = 0.0, hi = 1.0, trig = 0.0;
-		^this.multiNew('control', lo, hi, trig)
+		^this.multiNew('audio', lo, hi, trig)
 	}
 	*kr { arg lo = 0.0, hi = 1.0, trig = 0.0;
 		^this.multiNew('control', lo, hi, trig)
@@ -75,6 +75,8 @@ TIRand : UGen {
 	}
 }
 
+
+
 LinRand : UGen {
 	// linear distribution
 	// if minmax <= 0 then skewed towards lo.
@@ -83,6 +85,7 @@ LinRand : UGen {
 		^this.multiNew('scalar', lo, hi, minmax)
 	}
 }
+
 NRand : UGen {
 	// sum of N uniform distributions.
 	// n = 1 : uniform distribution - same as Rand
@@ -100,6 +103,17 @@ ExpRand : UGen {
 		^this.multiNew('scalar', lo, hi)
 	}
 }
+
+TExpRand : UGen {
+	// uniform distribution
+	*ar { arg lo = 0.01, hi = 1.0, trig = 0.0;
+		^this.multiNew('audio', lo, hi, trig)
+	}
+	*kr { arg lo = 0.01, hi = 1.0, trig = 0.0;
+		^this.multiNew('control', lo, hi, trig)
+	}
+}
+
 
 CoinGate : UGen {
 	*ar { arg prob, in;

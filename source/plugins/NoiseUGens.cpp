@@ -94,6 +94,11 @@ struct TIRand : public Unit
 	float m_trig, m_value;
 };
 
+struct TExpRand : public Unit
+{
+	float m_trig, m_value;
+};
+
 struct NRand : public Unit
 {
 };
@@ -198,6 +203,9 @@ extern "C"
 
 	void TRand_next(TRand *unit, int inNumSamples);
 	void TRand_Ctor(TRand *unit);
+
+	void TExpRand_next(TExpRand *unit, int inNumSamples);
+	void TExpRand_Ctor(TExpRand *unit);
 
 	void Logistic_next_1(Logistic *unit, int inNumSamples);
 	void Logistic_next_k(Logistic *unit, int inNumSamples);
@@ -572,6 +580,36 @@ void TRand_next(TRand* unit, int inNumSamples)
 		float range = hi - lo;
 		RGen& rgen = *unit->mParent->mRGen;	
 		ZOUT0(0) = unit->m_value = rgen.frand() * range + lo;
+	} else {
+		ZOUT0(0) = unit->m_value;
+	}
+	unit->m_trig = trig;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void TExpRand_Ctor(TExpRand* unit)
+{	
+	float lo = ZIN0(0);
+	float hi = ZIN0(1);
+	float ratio = hi / lo;
+	RGen& rgen = *unit->mParent->mRGen;	
+	
+	ZOUT0(0) = pow(ratio, rgen.frand()) * lo;
+	SETCALC(TExpRand_next);
+	unit->m_trig = ZIN0(2);
+}
+
+void TExpRand_next(TExpRand* unit, int inNumSamples)
+{	
+	float trig = ZIN0(2);
+	if (trig > 0.f && unit->m_trig <= 0.f) {
+		float lo = ZIN0(0);
+		float hi = ZIN0(1);
+		float ratio = hi / lo;
+		RGen& rgen = *unit->mParent->mRGen;	
+		ZOUT0(0) = unit->m_value = pow(ratio, rgen.frand()) * lo;
 	} else {
 		ZOUT0(0) = unit->m_value;
 	}
@@ -1069,6 +1107,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Rand);
 	DefineSimpleUnit(IRand);
 	DefineSimpleUnit(TRand);
+	DefineSimpleUnit(TExpRand);
 	DefineSimpleUnit(TIRand);
 	DefineSimpleUnit(NRand);
 	DefineSimpleUnit(LinRand);
