@@ -1043,7 +1043,7 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 		PyrSlot *key;
 		PyrSymbol **name0, **name;
 		name0 = block->argNames.uosym->symbols;
-		key = g->sp + numArgsPushed + 1;
+		key = args + numArgsPushed + 1;
 		for (i=0; i<numKeyArgsPushed; ++i, key+=2) {
 			name = name0;
 			for (j=0; j<methraw->posargs; ++j, ++name) {
@@ -1348,7 +1348,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 		PyrSymbol **name0, **name;
 		PyrSlot *key;
 		name0 = block->argNames.uosym->symbols;
-		key = g->sp + numArgsPushed + 1;
+		key = args + numArgsPushed + 1;
 		for (i=0; i<numKeyArgsPushed; ++i, key+=2) {
 			name = name0;
 			for (j=0; j<methraw->posargs; ++j, ++name) {
