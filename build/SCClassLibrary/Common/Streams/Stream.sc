@@ -14,7 +14,7 @@ Stream : AbstractFunction {
 	all {
 		// don't do this on infinite streams.
 		var array;
-		this.do { arg item; array = array.add(item); };
+		this.do {|item| array = array.add(item); };
 		^array
 	}
 	
@@ -26,62 +26,68 @@ Stream : AbstractFunction {
 		n.do({ this.put(item); });
 	}
 	putAll { arg aCollection;
-		aCollection.do({ arg item; this.put(item); });
+		aCollection.do {|item| this.put(item); };
 	}
 	
 	do { arg function;
 		var item, i=0;
-		while ({ 
+		while { 
 			item = this.next; 
 			item.notNil 
-		},{
+		}{
 			function.value(item, i);
 			i = i + 1;
-		});
+		};
+	}
+	generate { arg function, item;
+		var i=0;
+		while { 
+			item = this.next(item); 
+			item.notNil 
+		}{
+			function.value(item, i);
+			i = i + 1;
+		};
 	}
 	
 	// combination
 	collect { arg argCollectFunc;
 		// modify a stream
-		var nextFunc, resetFunc;
-
-		nextFunc = { arg inval;
+		var nextFunc = { arg inval;
 			inval = this.next(inval);
 			if ( inval.notNil, {
 				argCollectFunc.value(inval) 
 			})
 		};
-		resetFunc = { this.reset };
+		var resetFunc = { this.reset };
 		^FuncStream.new(nextFunc, resetFunc);
 	}
 	reject { arg function;
 		// reject elements from a stream
-		var nextFunc, resetFunc;
-		nextFunc = { arg inval;
+		var nextFunc = { arg inval;
 			inval = this.next(inval);
-			while ({ 
+			while { 
 				inval.notNil and: { function.value(inval) }
-			},{
+			}{
 				inval = this.next(inval);
-			});
+			};
 			inval
 		};
-		resetFunc = { this.reset };
+		var resetFunc = { this.reset };
 		^FuncStream.new(nextFunc, resetFunc);
 	}
 	select { arg function;
 		// select elements from a stream
-		var nextFunc, resetFunc;
-		nextFunc = { arg inval;
+		var nextFunc = { arg inval;
 			inval = this.next(inval);
-			while ({ 
+			while { 
 				inval.notNil and: { function.value(inval).not }
-			},{
+			}{
 				inval = this.next(inval);
-			});
+			};
 			inval
 		};
-		resetFunc = { this.reset };
+		var resetFunc = { this.reset };
 		^FuncStream.new(nextFunc, resetFunc);
 	}
 	
@@ -89,9 +95,8 @@ Stream : AbstractFunction {
 		// combine item by item with another stream
 		^FuncStream.new(
 			{ arg inval;
-				var x, y;
-				x = this.next(inval);
-				y = stream.next(inval);
+				var x = this.next(inval);
+				var y = stream.next(inval);
 				if ( x.notNil and: { y.notNil }, {
 					function.value(x, y)
 				});
@@ -101,20 +106,18 @@ Stream : AbstractFunction {
 	}
 	interlace { arg function, stream;
 		// interlace with another stream
-		var nextx, nexty;
-		
-		nextx = this.next;
-		nexty = stream.next;
+		var nextx = this.next;
+		var nexty = stream.next;
 		^FuncStream.new({
 			var val;
-			if ( nextx.isNil, {
-				if ( nexty.isNil, {nil},{ val = nexty; nexty = stream.next; val });
-			},{
+			if ( nextx.isNil ) {
+				if ( nexty.isNil) {nil}{ val = nexty; nexty = stream.next; val };
+			}{
 				if ( nexty.isNil or: { function.value(nextx,nexty) }, 
 					{ val = nextx; nextx = this.next; val },
 					{ val = nexty; nexty = stream.next; val }
 				);					
-			});
+			};
 		},
 		{ 
 			this.reset; stream.reset; 
@@ -140,7 +143,7 @@ Stream : AbstractFunction {
 	
 	collate { arg stream;
 		// ascending order merge of two streams
-		^this.interlace({ arg x, y; x < y }, stream);
+		^this.interlace({|x y| x < y }, stream);
 	}
 			
 
@@ -160,12 +163,12 @@ Stream : AbstractFunction {
 
 	embedInStream { arg inval;
 		var outval;
-		while ({
+		while {
 			outval = this.value(inval);
 			outval.notNil
-		},{
+		}{
 			inval = outval.yield;
-		});
+		};
 		^inval
 	}
 	
@@ -181,9 +184,9 @@ Stream : AbstractFunction {
 	trace { arg key, printStream;
 		printStream = printStream ? Post;
 		^if(key.isNil) {
-			this.collect { arg item; printStream << item << Char.nl; item }
+			this.collect {|item| printStream << item << Char.nl; item }
 		} {
-			this.collect { arg item; printStream << item.at(key) << Char.nl; item }
+			this.collect {|item| printStream << item.at(key) << Char.nl; item }
 		}
 			 
 	}
@@ -198,13 +201,13 @@ Stream : AbstractFunction {
 					nil.alwaysYield 
 				};
 				nextElapsed = elapsed + delta;
-				if (nextElapsed.round(tolerance) >= sum, {
+				if (nextElapsed.round(tolerance) >= sum) {
 					(sum - elapsed).yield;
 					nil.alwaysYield;
-				},{
+				}{
 					elapsed = nextElapsed;
 					delta.yield;
-				});
+				};
 			});
 		}
 	}
@@ -296,8 +299,7 @@ PauseStream : Stream
 	}
 
 	next { arg inval; 
-		var nextTime;
-		nextTime = stream.next(inval);
+		var nextTime = stream.next(inval);
 		if (nextTime.isNil) { stream = nextBeat = nil }
 			{ nextBeat = inval + nextTime };	// inval is current logical beat
 		^nextTime
@@ -340,8 +342,8 @@ EventStreamPlayer : PauseStream {
 	unmute { muteCount = muteCount - 1; }
 	
 	next { arg inTime;
-		var outEvent, nextTime;
-		outEvent = stream.next(event);
+		var nextTime;
+		var outEvent = stream.next(event);
 		if (outEvent.isNil) {
 			stream = nextBeat = nil;
 			^nil

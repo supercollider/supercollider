@@ -110,8 +110,7 @@ Punop : Pattern {
 	storeOn { arg stream; stream <<< a << "." << operator }
 
 	asStream {
-		var stream;
-		stream = a.asStream;
+		var stream = a.asStream;
 		^UnaryOpStream.new(operator, stream);
 	}
 }
@@ -129,9 +128,8 @@ Pbinop : Pattern {
 	}
 
 	asStream {
-		var streamA, streamB;
-		streamA = a.asStream;
-		streamB = b.asStream;
+		var streamA = a.asStream;
+		var streamB = b.asStream;
 		if (adverb.isNil) {
 			^BinaryOpStream.new(operator, streamA, streamB);
 		};
@@ -149,9 +147,8 @@ Pnaryop : Pattern {
 	}
 	storeOn { arg stream; stream <<< a << "." << operator << "(" <<<* arglist << ")" }
 	asStream {
-		var streamA, streamlist;
-		streamA = a.asStream;
-		streamlist = arglist.collect({ arg item; item.asStream });
+		var streamA = a.asStream;
+		var streamlist = arglist.collect({ arg item; item.asStream });
 		^NAryOpStream.new(operator, streamA, streamlist);
 	}
 }
@@ -164,8 +161,8 @@ Pevent : Pattern {
 	}
 	storeArgs { ^[pattern, event] }
 	embedInStream { arg inval;
-		var stream, outval;
-		stream = pattern.asStream;
+		var outval;
+		var stream = pattern.asStream;
 		loop { 
 			outval = stream.next(event);
 			if (outval.isNil) {^inval};
@@ -184,12 +181,11 @@ Pbind : Pattern {
 	
 	storeArgs { ^patternpairs }
 	embedInStream { arg inevent;
-		var streampairs, endval;
 		var event;
-		var sawNil = false;
-		
-		streampairs = patternpairs.copy;
-		endval = streampairs.size - 1;
+		var sawNil = false;		
+		var streampairs = patternpairs.copy;
+		var endval = streampairs.size - 1;
+
 		forBy (1, endval, 2) { arg i;
 			streampairs.put(i, streampairs[i].asStream);
 		};
@@ -198,10 +194,9 @@ Pbind : Pattern {
 			if (inevent.isNil) { ^nil };
 			event = inevent.copy;
 			forBy (0, endval, 2) { arg i;
-				var name, stream, streamout;
-				name = streampairs[i];
-				stream = streampairs[i+1];		
-				streamout = stream.next(event);
+				var name = streampairs[i];
+				var stream = streampairs[i+1];		
+				var streamout = stream.next(event);
 				if (streamout.isNil) { ^inevent };
 
 				if (name.isSequenceableCollection) {
@@ -227,14 +222,13 @@ Pmono : Pattern {
 	
 	storeArgs { ^patternpairs }
 	embedInStream { arg inevent;
-		var streampairs, endval;
 		var event;
 		var sawNil = false;
 		var first = true;
 		var server, id;
+		var streampairs = patternpairs.copy;
+		var endval = streampairs.size - 1;
 		
-		streampairs = patternpairs.copy;
-		endval = streampairs.size - 1;
 		forBy (1, endval, 2) { arg i;
 			streampairs.put(i, streampairs[i].asStream);
 		};
@@ -254,10 +248,9 @@ Pmono : Pattern {
 			event[\id] = id;
 			args !? { event[\args] = args; };
 			forBy (0, endval, 2) { arg i;
-				var name, stream, streamout;
-				name = streampairs[i];
-				stream = streampairs[i+1];		
-				streamout = stream.next(event);
+				var name = streampairs[i];
+				var stream = streampairs[i+1];		
+				var streamout = stream.next(event);
 				if (streamout.isNil) {
 					event[\type] = \off;
 					event[\delta] = 0;
@@ -288,8 +281,8 @@ Pseries : Pattern {	// arithmetic series
 	storeArgs { ^[start,step,length] }	
 
 	embedInStream { arg inval;
-		var outval, cur, counter = 0;
-		cur = start;
+		var outval, counter = 0;
+		var cur = start;
 		while ({counter < length}, {
 			outval = cur;
 			cur = cur + step;
@@ -307,8 +300,8 @@ Pgeom : Pattern {	// geometric series
 	}
 	storeArgs { ^[start,grow,length] }
 	embedInStream { arg inval;
-		var outval, cur, counter = 0;
-		cur = start;
+		var outval, counter = 0;
+		var cur = start;
 		while ({counter < length}, {
 			outval = cur;
 			cur = cur * grow;
@@ -326,10 +319,8 @@ Pbrown : Pattern {
 		^super.newCopyArgs(lo, hi, step, length)
 	}
 	storeArgs { ^[lo,hi,step,length] }
-	embedInStream {
-		var inval;
-		var cur;
-		cur = lo rrand: hi;
+	embedInStream { arg inval;
+		var cur = lo rrand: hi;
 		length.do({
 			cur = (cur + step.xrand2).fold(lo,hi);
 			inval = cur.yield;				
@@ -344,7 +335,7 @@ Pwhite : Pattern {
 		^super.newCopyArgs(lo, hi, length)
 	}
 	storeArgs { ^[lo,hi,length] }
-	embedInStream { var inval;
+	embedInStream { arg inval;
 		length.do({
 			inval = rrand(lo,hi).yield;				
 		});
@@ -362,16 +353,16 @@ Pstep2add : Pattern {
 		var stream1, stream2, val1, val2;
 		
 		stream1 = pattern1.asStream;
-		while ({
+		while {
 			(val1 = stream1.next(inval)).notNil;
-		},{
+		}{
 			stream2 = pattern2.asStream;
-			while ({
+			while {
 				(val2 = stream2.next(inval)).notNil;
-			},{
+			}{
 				inval = yield( val1 + val2 );
-			});
-		});
+			};
+		};
 		^inval
 	}
 }
@@ -387,21 +378,21 @@ Pstep3add : Pattern {
 		var stream1, stream2, stream3, val1, val2, val3;
 		
 		stream1 = pattern1.asStream;
-		while ({
+		while {
 			(val1 = stream1.next(inval)).notNil;
-		},{
+		}{
 			stream2 = pattern2.asStream;
-			while ({
+			while {
 				(val2 = stream2.next(inval)).notNil;
-			},{
+			}{
 				stream3 = pattern3.asStream;
-				while ({
+				while {
 					(val3 = stream3.next(inval)).notNil;
-				},{
+				}{
 					inval = yield( val1 + val2 + val3 );
-				});
-			});
-		});
+				};
+			};
+		};
 		^inval;
 	}
 }
@@ -414,26 +405,24 @@ PstepNfunc : Pattern {
 	}
 	
 	embedInStream { arg inval;
-		var val;
-		
-		var f, streams, vals, size, max;
-		size = patterns.size;
-		max = size - 1;
-		streams = Array.newClear(size);
-		vals = Array.newClear(size);
-		f = { arg inval, level=0;
+		var val;		
+		var size = patterns.size;
+		var max = size - 1;
+		var streams = Array.newClear(size);
+		var vals = Array.newClear(size);
+		var f = { arg inval, level=0;
 				var val;
 				streams[level] = patterns[level].asStream;
-				while({
+				while{
 					vals[level] = val = streams[level].next(inval);
 					val.notNil;
-				}, {
-					if(level < max, {
+				}{
+					if(level < max) {
 						f.value(inval, level + 1)
-					}, {
+					}{
 						inval = yield(function.value(vals));
-					})
-				});
+					}
+				};
 			inval;	
 		};
 		^f.value(inval);
@@ -455,10 +444,10 @@ Ptime : Pattern {
 	*new { arg repeats=inf;
 		^super.newCopyArgs(repeats)
 	}
-	embedInStream {
-		var start;
-		start = thisThread.beats;
-		repeats.do { (thisThread.beats - start).yield }
+	embedInStream { arg inval;
+		var start = thisThread.beats;
+		repeats.do { inval = (thisThread.beats - start).yield };
+		^inval
 	}
 }
 

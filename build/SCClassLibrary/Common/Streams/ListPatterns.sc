@@ -4,10 +4,10 @@ Pindex : Pattern {
 		^super.newCopyArgs(listPat, indexPat, repeats)
 	}
 	embedInStream { arg inval;
-		var listStream, indexStream, list, index, item;
-		listStream = listPat.asStream;
+		var indexStream, index, item;
+		var listStream = listPat.asStream;
 		repeats.do {
-			list = listStream.next;
+			var list = listStream.next;
 			if (list.isNil) { ^inval };
 			indexStream = indexPat.asStream;
 			while {
@@ -69,9 +69,8 @@ Pseq : ListPattern {
 
 Pser : Pseq {
 	embedInStream { arg inval;
-		var item, offsetValue;
-		
-		offsetValue = offset.value;
+		var item;
+		var offsetValue = offset.value;
 		if (inval.eventAt('reverse') == true, {
 			repeats.value.reverseDo({ arg i;
 				item = list.wrapAt(i + offsetValue);
@@ -89,9 +88,9 @@ Pser : Pseq {
 
 Pshuf : ListPattern {
 	embedInStream { arg inval;
-		var localList, item, stream;
+		var item, stream;
 		
-		localList = list.copy.scramble;
+		var localList = list.copy.scramble;
 		repeats.value.do({ arg j;
 			localList.size.do({ arg i;
 				item = localList.wrapAt(i);
@@ -116,8 +115,8 @@ Prand : ListPattern {
 
 Pxrand : ListPattern {
 	embedInStream { arg inval;			
-		var item, index, size;
-		index = list.size.rand;
+		var item, size;
+		var index = list.size.rand;
 		repeats.value.do({ arg i;
 			size = list.size;
 			index = (index + (size - 1).rand + 1) % size;
@@ -147,8 +146,8 @@ Pwrand : ListPattern {
 
 Pfsm : ListPattern {
 	embedInStream {  arg inval;
-		var item, index=0, maxState;
-		maxState = ((list.size - 1) div: 2) - 1;
+		var item, index=0;
+		var maxState = ((list.size - 1) div: 2) - 1;
 		repeats.value.do({
 			index = 0;
 			while({
@@ -168,9 +167,9 @@ Pdfsm : ListPattern {
 	*new { arg list, startState=0, repeats=1;
 		^super.new( list, repeats ).startState_(startState)	}
 	embedInStream { arg inval;
-		var currState, sigStream, numStates;
+		var currState, sigStream;
 		var sig, state, stream;
-		numStates = list.size - 1;
+		var numStates = list.size - 1;
 		repeats.do({
 			
 			currState = startState;
@@ -226,8 +225,8 @@ Ppar : ListPattern {
 		});
 	}
 	embedInStream { arg inval;
-		var priorityQ, assn;
-		priorityQ = PriorityQueue.new;
+		var assn;
+		var priorityQ = PriorityQueue.new;
 	
 		repeats.value.do({ arg j;
 			var outval, stream, nexttime, now = 0.0;
@@ -291,9 +290,9 @@ Pswitch : Pattern {
 		^super.new.list_(list).which_(which)
 	}
 	embedInStream {  arg inval;
-		var item, index, indexStream;
+		var item, index;
 		
-		indexStream = which.asStream;
+		var indexStream = which.asStream;
 		while ({
 			(index = indexStream.next).notNil;
 		},{
@@ -306,10 +305,10 @@ Pswitch : Pattern {
 
 Pswitch1 : Pswitch {	
 	embedInStream { arg inval;
-		var streamList, indexStream, index, outval;
+		var index, outval;
 		
-		streamList = list.collect({ arg pattern; pattern.asStream; });
-		indexStream = which.asStream;
+		var streamList = list.collect({ arg pattern; pattern.asStream; });
+		var indexStream = which.asStream;
 		loop {
 			if ((index = indexStream.next).isNil) { ^inval };
 			outval = streamList.wrapAt(index.asInteger).next(inval);
@@ -370,9 +369,9 @@ Ptuple : ListPattern {
 
 Place : Pseq {
 	embedInStream {  arg inval;
-		var item, offsetValue;
+		var item;
 		
-		offsetValue = offset.value;
+		var offsetValue = offset.value;
 		if (inval.eventAt('reverse') == true, {
 			repeats.value.do({ arg j;
 				list.size.reverseDo({ arg i;
@@ -401,9 +400,9 @@ Place : Pseq {
 // similar to Place, but the list is an array of Patterns or Streams
 Ppatlace : Pseq {
 	embedInStream { |inval|
-		var	streamList, consecutiveNils = 0, index, repeat, offsetValue, item;
-		streamList = list.collect({ |item| item.asStream });
-		offsetValue = offset.value;
+		var	consecutiveNils = 0, index, repeat, item;
+		var streamList = list.collect({ |item| item.asStream });
+		var offsetValue = offset.value;
 		index = repeat = 0;
 		{ (repeat < repeats) and: { consecutiveNils < list.size } }.while({
 			(inval.eventAt(\reverse) == true).if({
@@ -439,8 +438,8 @@ Pslide : ListPattern {
         ^super.new(list, repeats).len_(len).step_(step).start_(start)
     }
     embedInStream { arg inval;
-	    	var pos, item;
-	    	pos = start; 
+	    	var item;
+	    	var pos = start; 
 	    	repeats.do({
 	    		len.do({ arg j;
 	    			item = list.wrapAt(pos + j);
@@ -477,13 +476,12 @@ Pwalk : ListPattern {
 	}
 	
 	embedInStream { arg inval;
-		var	index, step, stepStream, directionStream,
-			direction;	// 1 = use steps as is; -1 = reverse direction
-		
-		index = startPos;
-		stepStream = stepPattern.asStream;
-		directionStream = directionPattern.asStream;
-		direction = directionStream.next ? 1;	// start with first value
+		var	step;	
+		var index = startPos;
+		var stepStream = stepPattern.asStream;
+		var directionStream = directionPattern.asStream;
+		// 1 = use steps as is; -1 = reverse direction
+		var direction = directionStream.next ? 1;	// start with first value
 
 		{ (step = stepStream.next).notNil }.while({  // get step, stop when nil
 			inval = list[index].embedInStream(inval);  // pop value/stream out

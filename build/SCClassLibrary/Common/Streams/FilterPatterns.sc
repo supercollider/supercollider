@@ -51,11 +51,9 @@ Preject : FuncFilterPattern {
 
 Pfset : FuncFilterPattern {
 	embedInStream { arg event;
-		var stream, envir, inevent;
-
-		envir = Event.make(func);
-		
-		stream = pattern.asStream;
+		var inevent;
+		var envir = Event.make(func);
+		var stream = pattern.asStream;
 		
 		loop { 
 			event = event.copy;
@@ -79,11 +77,9 @@ Psetpre : FilterPattern {
 		^event[name] = val;
 	}
 	embedInStream { arg event;
-		var evtStream, valStream, val, inevent;
-		
-		valStream = value.asStream;
-		
-		evtStream = pattern.asStream;
+		var val, inevent;
+		var valStream = value.asStream;		
+		var evtStream = pattern.asStream;
 		
 		loop {
 			val = valStream.next;
@@ -118,10 +114,9 @@ Pset : FilterPattern {
 		^event[name] = val;
 	}
 	embedInStream { arg event;
-		var evtStream, valStream, val, inEvent;
-		
-		valStream = value.asStream;
-		evtStream = pattern.asStream;
+		var val, inEvent;
+		var valStream = value.asStream;
+		var evtStream = pattern.asStream;
 		
 		loop {
 			inEvent = evtStream.next(event);
@@ -152,21 +147,22 @@ Pmul : Pset {
 
 Psetp : Pset {
 	embedInStream { arg event;
-		var valStream, evtStream, val, inevent;
-		valStream = value.asStream;
-		while({
+		var evtStream, val, inevent;
+		var valStream = value.asStream;
+		
+		while {
 			val = valStream.next;
 			val.notNil
-		},{
+		}{
 			evtStream = pattern.asStream;
-			while({
+			while {
 				inevent = evtStream.next(event);
 				inevent.notNil
-			},{
+			}{
 				this.filterEvent(inevent, val);
 				event = inevent.yield;
-			});
-		});
+			};
+		};
 		^event;
 	}
 }
@@ -191,12 +187,10 @@ Pstretch : FilterPattern {
 	}
 	storeArgs { ^[value,pattern] }
 	embedInStream {  arg event;
-		var evtStream, valStream, inevent;
+		var inevent;
 		var val, delta;
-		
-		valStream = value.asStream;
-		
-		evtStream = pattern.asStream;
+		var valStream = value.asStream;
+		var evtStream = pattern.asStream;
 		
 		loop {
 			inevent = evtStream.next(event);
@@ -219,8 +213,8 @@ Pstretch : FilterPattern {
 Pstretchp : Pstretch {
 
 	embedInStream { arg event;
-		var valStream, evtStream, val, inevent, delta;
-		valStream = value.asStream;
+		var evtStream, val, inevent, delta;
+		var valStream = value.asStream;
 		while({
 			val = valStream.next;
 			val.notNil
@@ -249,9 +243,9 @@ Pplayer : FilterPattern {
 		^super.newCopyArgs(playerPattern, subPattern)
 	}
 	embedInStream { arg event;
-		var playerStream, stream, player, inevent;
-		playerStream = playerPattern.asStream;
-		stream = subPattern.asStream;
+		var player, inevent;
+		var playerStream = playerPattern.asStream;
+		var stream = subPattern.asStream;
 		loop{ 
 			inevent = stream.next(event);
 			if (inevent.isNil) { ^event };
@@ -272,9 +266,8 @@ Pfin : FilterPattern {
 	}
 	storeArgs { ^[count,pattern] }
 	embedInStream { arg event;
-		var stream, inevent;
-	
-		stream = pattern.asStream;
+		var inevent;
+		var stream = pattern.asStream;
 		
 		count.value.do({
 			inevent = stream.next(event);
@@ -293,9 +286,9 @@ Pfindur : FilterPattern {
 	}
 	storeArgs { ^[dur,pattern,tolerance] }
 	embedInStream { arg event;
-		var item, stream, delta, elapsed = 0.0, nextElapsed, inevent;
+		var item, delta, elapsed = 0.0, nextElapsed, inevent;
 	
-		stream = pattern.asStream;
+		var stream = pattern.asStream;
 		
 		loop {
 			inevent = stream.next(event);
@@ -373,11 +366,10 @@ Plag : FilterPattern {
 	}
 	storeArgs { ^[lag,pattern] }
 	embedInStream { arg event;	
-		var inevent;	
-		var stream, item;
-	
-		stream = pattern.asStream;
-		inevent = event.copy;
+		var item;	
+		var stream = pattern.asStream;
+		var inevent = event.copy;
+		
 		inevent.put('freq', \rest);
 		inevent.put('dur', lag);
 		event = inevent.yield;
@@ -419,15 +411,13 @@ Pbindf : FilterPattern {
 		^super.new(pattern ? Event.default).patternpairs_(pairs)
 	}
 	storeArgs { ^[pattern] ++ patternpairs }
-	embedInStream { arg event;
-	
-		var streampairs, endval, eventStream;
+	embedInStream { arg event;	
+		var eventStream;
 		var inevent;
 		var sawNil = false;
-
+		var streampairs = patternpairs.copy;
+		var endval = streampairs.size - 1;
 		
-		streampairs = patternpairs.copy;
-		endval = streampairs.size - 1;
 		forBy (1, endval, 2) { arg i;
 			streampairs.put(i, streampairs[i].asStream);
 		};
@@ -438,11 +428,9 @@ Pbindf : FilterPattern {
 
 			if (inevent.isNil) { ^event };
 			forBy (0, endval, 2) { arg i;
-				var name, stream, streamout;
-				name = streampairs[i];
-				stream = streampairs[i+1];
-				
-				streamout = stream.next(inevent);
+				var name = streampairs[i];
+				var stream = streampairs[i+1];
+				var streamout = stream.next(inevent);
 				
 				if (streamout.isNil) { ^event };
 				if (name.isSequenceableCollection) {					
@@ -466,16 +454,12 @@ Pfx : FilterPattern {
 		^super.new(pattern).fxname_(fxname).pairs_(pairs)
 	}
 	storeArgs { ^[pattern, fxname] ++ pairs }
-	embedInStream { arg inevent;
-	
+	embedInStream { arg inevent;	
 		var stream;
-		var event;
-		var server, id;
+		var server = inevent[\server] ?? { Server.default };
+		var id = server.nextNodeID;
+		var event = inevent.copy;
 
-		server = inevent[\server] ?? { Server.default };
-		id = server.nextNodeID;
-		
-		event = inevent.copy;
 		pairs.pairsDo {|name, value|
 			event[name] = value;
 		};
@@ -510,10 +494,10 @@ Pstutter : FilterPattern {
 	}
 	storeArgs { ^[n,pattern] }
 	embedInStream { arg event;
-		var inevent, stream, nstream, nn;
+		var inevent, nn;
 
-		stream = pattern.asStream;
-		nstream = n.asStream;
+		var stream = pattern.asStream;
+		var nstream = n.asStream;
 
 		while ({
 			(inevent = stream.next(event)).notNil
@@ -532,9 +516,9 @@ Pstutter : FilterPattern {
 PdurStutter : Pstutter { // float streams
 	
 	embedInStream { arg event;
-		var durs,stutts,dur,stut;
-		durs = pattern.asStream;
-		stutts = n.asStream;
+		var dur, stut;
+		var durs = pattern.asStream;
+		var stutts = n.asStream;
 		while({
 			(dur = durs.next).notNil
 			and: {(stut = stutts.next).notNil}
@@ -570,8 +554,8 @@ Pwrap : FilterPattern {
 	}
 	storeArgs { ^[pattern,lo,hi] }
 	embedInStream { arg event;
-		var stream,next;
-		stream = pattern.asStream;
+		var next;
+		var stream = pattern.asStream;
 		while({
 			(next = stream.next).notNil
 		},{
