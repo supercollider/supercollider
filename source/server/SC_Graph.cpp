@@ -38,17 +38,23 @@ void Unit_ChooseMulAddFunc(Unit* unit);
 
 ////////////////////////////////////////////////////////////////////////////////
 
+void Graph_FirstCalc(Graph *inGraph);
+
 void Graph_Dtor(Graph *inGraph)
 {
 	//scprintf("->Graph_Dtor %d\n", inGraph->mNode.mID);
 	World *world = inGraph->mNode.mWorld;
-	for (int i = 0; i<inGraph->mNumUnits; ++i) {
-		//scprintf("%d\n", i);
-		Unit *unit = inGraph->mUnits[i];
-		UnitDtorFunc dtor = unit->mUnitDef->mUnitDtorFunc;
-		if (dtor) (dtor)(unit);
+	int numUnits = inGraph->mNumUnits;
+	Unit** graphUnits = inGraph->mUnits;
+	if (inGraph->mNode.mCalcFunc != Graph_FirstCalc) {
+		// the above test insures that dtors are not called if ctors have not been called.
+		for (int i = 0; i<numUnits; ++i) {
+			Unit *unit = graphUnits[i];
+			UnitDtorFunc dtor = unit->mUnitDef->mUnitDtorFunc;
+			if (dtor) (dtor)(unit);
+		}
 	}
-	world->mNumUnits -= inGraph->mNumUnits;
+	world->mNumUnits -= numUnits;
 	world->mNumGraphs --;
 	
 	GraphDef* def = (GraphDef*)inGraph->mNode.mDef;
@@ -61,9 +67,6 @@ void Graph_Dtor(Graph *inGraph)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-void Graph_FirstCalc(Graph *inGraph);
-
 
 Graph* Graph_New(struct World *inWorld, struct GraphDef *inGraphDef, int32 inID, struct sc_msg_iter* args)
 {
@@ -154,20 +157,21 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	// initialize units
 	//scprintf("initialize units\n");
 	Unit** calcUnits = graph->mCalcUnits;
+	Unit** graphUnits = graph->mUnits;
 	int calcCtr=0;
 
 	float *bufspace = inWorld->hw->mWireBufSpace;
 	int wireCtr = numConstants;
-	for (int i=0; i<numUnits; ++i) {
+	UnitSpec *unitSpec = inGraphDef->mUnitSpecs;
+	for (int i=0; i<numUnits; ++i, ++unitSpec) {
 		// construct unit from spec
-		UnitSpec *unitSpec = inGraphDef->mUnitSpecs + i;
 		Unit *unit = Unit_New(inWorld, unitSpec, memory);
 		
 		// set parent
 		unit->mParent = graph;
 		unit->mParentIndex = i;
 		
-		graph->mUnits[i] = unit;
+		graphUnits[i] = unit;
 		
 		{
 			// hook up unit inputs
