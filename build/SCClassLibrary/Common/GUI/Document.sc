@@ -301,6 +301,14 @@ Document {
 					filename.load;
 					^this
 				}
+				{
+				filename = "Help/help-scripts/" ++ selectedText ++ ext;
+				if (File.exists(filename)) {
+					// open help-script document
+					filename.load;
+					^this
+				}
+				}
 			};
 		}
 		{ selectedText.first == $[ and: { selectedText.last == $] }}
