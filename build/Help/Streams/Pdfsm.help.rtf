@@ -41,8 +41,7 @@ based on the fsm described by Minsky in 'Computation, Finite and Infinite Machin
 \f0\b more on the list -\
 
 \f1\b0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	[\
+	[\
 		
 \f0\b signal stream - 
 \f1\b0 can be a stream of anything
@@ -76,8 +75,7 @@ based on the fsm described by Minsky in 'Computation, Finite and Infinite Machin
 \f1\b0 ]\
 		 ),\
 		 ... \cf3 // state 1 ... N\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	]\
+	]\
 	\
 any number of states can be given, and are indexed by the order in which they are given.\
 if the fsm is in state x and it receives a 
@@ -102,15 +100,15 @@ if there is no
 \f1\b0  given for a particular signal, and no \cf4 \\default\cf0   is supplied then upi will get a runtime error.
 \f2\fs18 \
 \
-(\cf5 \
-	p = \cf6 Pdfsm\cf5 (\
+(\
+	p = \cf2 Pdfsm\cf0 (\
 		[\
-			\cf6 Pseq\cf5 ( [\cf7 \\foo\cf5 ,\cf7 \\bar\cf5 ], 2 ), \cf8 // foobar signals	\cf5 \
-			( \cf8 // state 0\cf5 \
-				\cf7 \\foo\cf5  : [ 1, \cf6 Pseq\cf5 ([ 0, 1 ], 2 ) ]\
+			\cf2 Pseq\cf0 ( [\cf4 \\foo\cf0 ,\cf4 \\bar\cf0 ], 2 ), \cf3 // foobar signals	\cf0 \
+			( \cf3 // state 0\cf0 \
+				\cf4 \\foo\cf0  : [ 1, \cf2 Pseq\cf0 ([ 0, 1 ], 2 ) ]\
 			),\
-			( \cf8 // state 1\cf5 \
-				\cf7 \\bar\cf5  : [ 0, 3 ]\
+			( \cf3 // state 1\cf0 \
+				\cf4 \\bar\cf0  : [ 0, 3 ]\
 			)\
 		],\
 		0,   \
@@ -118,12 +116,12 @@ if there is no
 	).asStream;\
 	\
 	11.do(\{ p.next.postln \});\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 )
+)
 \f1\fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 (\
+\f2\fs18 \cf0 (\
 \cf2 SynthDef\cf0 (\cf4 'Help-Pdfsm1'\cf0 , \
 	\{ \cf2 arg\cf0  out=0, freq=440, dur=0.05;\
 		\cf2 var\cf0  env;\
@@ -136,8 +134,7 @@ if there is no
 \cf2 var\cf0  p;\
 p = \cf2 Pdfsm\cf0 (\
 	[\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 		\cf2 Prand\cf0 ([0,1,2],\cf2 inf\cf0 ), 	\cf3 // signalStream\cf0 \
+		\cf2 Prand\cf0 ([0,1,2],\cf2 inf\cf0 ), 	\cf3 // signalStream\cf0 \
 	\
 		\cf2 IdentityDictionary\cf0 [ 	\cf3 // state 0\cf0 \
 			0 -> [ 2, \cf2 Pseq\cf0 ([67,68,69], 2) ],\
@@ -155,8 +152,7 @@ p = \cf2 Pdfsm\cf0 (\
 						\cf3 // so the fsm only ends because of this nil\
 \cf0 	\cf3 					// 2 -> [nil, nil] is also fine\cf0 \
 		]\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	],\
+	],\
 	1, 					\cf3 // startState\cf0 \
 	1 					\cf3 // repeats \cf0 \
 ).asStream;\
@@ -169,20 +165,21 @@ p = \cf2 Pdfsm\cf0 (\
 	\})\
 \}).play;\
 )\
-\
+\cf5 \
 (\
-\cf2 SynthDef\cf0 (\cf4 'Help-Pdfsm2'\cf0 , \
-	\{ \cf2 arg\cf0  freq, gate=1;\
-		\cf2 var\cf0  n=8, env, osc;\
-		env = \cf2 Linen\cf0 .kr( gate, 0.01, 1, 0.03, 2 );\
-		osc = \{\cf2 Mix\cf0 .fill( n, \{ \cf2 arg\cf0  i;\
-			\cf2 FSinOsc\cf0 .ar(freq + \cf2 Rand\cf0 (-2.0,2.0), \cf2 Rand\cf0 (0, 0.05pi)) ring4:\
-			\cf2 FSinOsc\cf0 .ar(freq * (i+1));\
-		\})\}.dup * \cf2 FSinOsc\cf0 .kr(\cf2 Rand\cf0 (1.5,4.5),\{\cf2 Rand\cf0 (-0.1pi,0.1pi)\}.dup,0.6,env*0.4);\
-		\cf2 Out\cf0 .ar(0, env * osc / (n*4)  )\
-	\}).send(s);\
+\cf6 SynthDef\cf5 (\cf7 'Help-Pdfsm2'\cf5 , \
+	\{ \cf6 arg\cf5  freq, gate=1;\
+		\cf6 var\cf5  n=8, env, osc;\
+		env = \cf6 Linen\cf5 .kr( gate, 0.01, 1, 0.03, 2 );\
+		osc = \{\cf6 Mix\cf5 .fill( n, \{ \cf6 arg\cf5  i;\
+			\cf6 FSinOsc\cf5 .ar(freq + \cf6 Rand\cf5 (-2.0,2.0), \cf6 Rand\cf5 (0, 0.05pi)) ring4:\
+			\cf6 FSinOsc\cf5 .ar(freq * (i+1));\
+		\})\}.dup * \cf6 FSinOsc\cf5 .kr(\cf6 Rand\cf5 (1.5,4.5),\{\cf6 Rand\cf5 (-0.1pi,0.1pi)\}.dup,0.6,env*0.4);\
+		\cf6 Out\cf5 .ar(0, env * osc / (n*4)  )\
+	\}).load(s);\
+	\cf6 SynthDescLib\cf5 .global.read; \cf8 // needed for the Pbinds below\cf5 \
 )\
-\
+\cf0 \
 (\
 \cf2 var\cf0  n=3, base, penult;\
 \
@@ -194,8 +191,7 @@ for( 1, n, \{ \cf2 arg\cf0  i;\
 		\cf4 \\instrument\cf0 , \cf4 'Help-Pdfsm2'\cf0 ,\
 		\cf2 Pdfsm\cf0 (\
 			[\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 				\cf2 Pseq\cf0 ([	\cf3 // signalStream\cf0 \
+				\cf2 Pseq\cf0 ([	\cf3 // signalStream\cf0 \
 					\cf2 Pn\cf0 (1,22 + i),\
 					\cf2 Pn\cf0 (0,4),\
 					\cf2 Pn\cf0 (1,8),\
@@ -219,8 +215,7 @@ for( 1, n, \{ \cf2 arg\cf0  i;\
 				(		\cf3 // state 2\cf0 \
 					\cf4 \\default\cf0  : [ 2, \cf2 Pbind\cf0 ( \cf4 \\degree\cf0 , \cf2 Prand\cf0 (base - (i*7), 5), \cf4 \\dur\cf0 , \cf2 Prand\cf0 ([0.6,0.8],5) ) ]\
 				)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 			],\
+			],\
 			i%2 		\cf3 // startState\cf0 \
 		)\
 	).play;\
