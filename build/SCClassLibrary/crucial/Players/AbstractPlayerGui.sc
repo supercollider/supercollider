@@ -12,7 +12,7 @@ AbstractPlayerGui : ObjectGui {
 			layout.startRow;
 		});
 		layout.flow({ arg layout;
-			view = layout;
+			this.view = layout;
 			this.writeName(layout);
 			this.guiBody(layout);
 		},bounds).background_(this.background);

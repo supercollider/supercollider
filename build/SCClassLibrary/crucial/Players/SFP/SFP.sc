@@ -223,11 +223,8 @@ SFP : AbstractSFP  {
 		);
 		parentSegmentBuffers.add( sf );
 	}
-
-
-
 	
-	
+// sc2 version... ah so simple	
 //	ar {  arg  startAt=0,endAt;
 //
 //		startAt = startAt ? 0.0;
@@ -258,3 +255,4 @@ SFP : AbstractSFP  {
 	guiClass { ^SFPGui }
 	
 }
+

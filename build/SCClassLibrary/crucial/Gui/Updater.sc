@@ -6,7 +6,6 @@ Updater {
 	*new { arg model,updateFunc;
 		^super.new.model_(model).updateFunc_(updateFunc).init
 	}
-	
 	init {
 		model.addDependant(this);
 	}
@@ -22,9 +21,7 @@ Updater {
 			this.remove;
 		})
 	}
-
 }
-
 
 NotificationCenter {
 
@@ -74,5 +71,4 @@ NotificationRegistration { // flowLayout.autorelease(notiReg)
 		NotificationCenter.unregister(object,message,listener)
 	}
 }
-
 

@@ -24,27 +24,15 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		layout.removeOnClose(this);
 		^layout
 	}
-	remove { arg removeView=false;
+	viewDidClose {
 		model.removeDependant(this);
-		if(removeView,{
-			view.remove(true);
-			view = nil;		
-		});
+		super.viewDidClose;
 	}
-	/*removeView {
-		var parent;
-		this.remove(true);
-		parent = view.parent;
-		view.remove;
-		parent.refresh;
-		view = nil;
-	}*/
-
 	gui { arg lay, bounds ... args;
 		var layout;
 		layout=this.guify(lay,bounds);
 		layout.flow({ arg layout;
-			view = layout;
+			this.view = layout;
 			this.writeName(layout);
 			this.performList(\guiBody,[layout] ++ args);
 		},bounds).background_(this.background);
@@ -81,7 +69,7 @@ ModelImplementsGuiBody : ObjectGui {
 		var layout;
 		layout=this.guify(lay,bounds);
 		layout.flow({ arg layout;
-			view = layout;
+			this.view = layout;
 			this.writeName(layout);
 			model.performList(\guiBody,[layout] ++ args);
 		},bounds).background_(this.background);
@@ -89,5 +77,4 @@ ModelImplementsGuiBody : ObjectGui {
 		if(lay.isNil,{ layout.resizeToFit.front });
 	}
 }
-
 

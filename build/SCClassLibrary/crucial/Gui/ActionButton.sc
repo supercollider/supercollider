@@ -1,12 +1,24 @@
 
-
-SCViewAdapter { // SCViewHolder
+SCViewAdapter { // better name :SCViewHolder
 	
 	// SCViewAdapter makes it possible to wrap more capabilities by holding, not subclassing
 	// "has a"  not "is a"
 	
-	var <>view;
+	var <view;
 	
+	view_ { arg v;
+		// subclasses need ALWAYS use this method to set the view
+		view = v;
+		view.onClose = { this.viewDidClose; };
+	}
+	viewDidClose { view = nil; }
+	remove {
+		if(view.notNil,{
+			view.remove;// will cause view.onClose
+			//view = nil;
+		});
+	}
+
 	action_ { arg f; view.action_(f) }
 	doAction { view.doAction }
 	keyDownAction_ { arg f;
@@ -28,31 +40,19 @@ SCViewAdapter { // SCViewHolder
 	font_ { arg f;
 		view.font = f;
 	}
-	remove { 
-		if(view.notNil,{
-			view.remove;
-			view = nil;
-		});
-	}
-// i'm not really in it
-//	prClose { 
-//		"SCViewAdapter-prClose".debug(this);
-//		view.prClose;
-//		view = nil;
-//	}
 }
-
-
 
 StartRow : SCViewAdapter {
 	*new { arg parent,bounds;
-		^super.new.view_(parent)
+		var new;
+		new = super.new;
+		if(parent.notNil,{ new.view_(parent) });
+		^new
 	}
 	bounds { ^Rect(0,0,0,0) }
 	bounds_ {}
 	prClose {}
 }
-
 
 FlowView : SCLayoutView {
 
@@ -122,7 +122,6 @@ FlowView : SCLayoutView {
 		var r;
 		r = this.bounds;
 		^this.children.any({ arg c;
-			//[r,c.bounds,r.containsRect( c.bounds )].debug;
 			r.containsRect( c.bounds ).not
 		});
 	}
@@ -138,15 +137,10 @@ FlowView : SCLayoutView {
 	removeOnClose { arg updater;
 		autoRemoves.add(updater);
 	}
-	prClose {
+	viewDidClose {
 		autoRemoves.do({ arg u; u.remove });
 		autoRemoves = nil;
-		super.prClose; // close the view		
-	}
-	remove {
-		autoRemoves.do({ arg u; u.remove });
-		autoRemoves = nil;
-		super.remove;
+		super.viewDidClose;
 	}
 	hr { arg color,height=3,borderStyle=1; // html joke
 		this.startRow;
@@ -164,15 +158,14 @@ SCButtonAdapter : SCViewAdapter {
 	makeView { arg layout,x,y;
 		var rect;
 		layout = layout.asFlowView;
-		//rect = layout.layRight(x,y ? defaultHeight);
-		view = SCButton(layout,Rect(0,0,x,y ? defaultHeight));
+		this.view = SCButton(layout,Rect(0,0,x,y ? defaultHeight));
 	}
 	flowMakeView { arg layout,x,y;
-		view = SCButton(layout.asFlowView,Rect(0,0,x,y ? defaultHeight));
+		this.view = SCButton(layout.asFlowView,Rect(0,0,x,y ? defaultHeight));
 	}		
 
 	makeViewWithStringSize { arg layout,stringsize,maxx,maxy;
-		//maxx is now dependant on font size !
+		// maxx is now dependant on font size !
 		// NSFont-boundingRectForFont
 		// or NSString- (NSSize) sizeWithAttributes: (NSDictionary *) attributes 
 		this.makeView( layout,
@@ -206,7 +199,6 @@ SCButtonAdapter : SCViewAdapter {
 //	align_ { arg align;
 //		view.align_(align)
 //	}
-	
 }
 
 ActionButton : SCButtonAdapter { // one state
@@ -276,10 +268,7 @@ PopUp : ActionButton { // change to use SCPopUpMenu
 						?? {list.value.at(index).asString} 
 						??  {"choose..."}).refresh
 	}
-
 }
-
-
 
 ToggleButton : SCButtonAdapter {
 
@@ -321,21 +310,13 @@ ToggleButton : SCButtonAdapter {
 		});
 	}
 }
-//
-//
+
 //LabelledNumericalView : SCViewAdapter {
 //	
 //	*new { arg parent,rect,name;
 //		^super.new(parent,rect).init(name)
 //	}
 //	*viewClass { ^SCSlider }
-//	init { arg name;
-//		
-//	
-//	}
-//
+//	init { arg name;}
 //}
-//
-
-
 
