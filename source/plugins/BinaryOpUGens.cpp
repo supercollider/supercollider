@@ -4569,6 +4569,729 @@ void vdiv_ka(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
+
+
+void vmin_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_min(vec_ld(i, va), vec_ld(i, vb)), i, vout);
+	}
+}
+
+void vmax_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_max(vec_ld(i, va), vec_ld(i, vb)), i, vout);
+	}
+}
+
+
+void vmin_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 zva = vload(ZIN0(0));
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_min(zva, vec_ld(i, vb)), i, vout);
+	}
+}
+
+void vmax_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 zva = vload(ZIN0(0));
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_max(zva, vec_ld(i, vb)), i, vout);
+	}
+}
+
+void vmin_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 zvb = vload(ZIN0(1));
+	int len = inNumSamples << 2;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_min(vec_ld(i, va), zvb), i, vout);
+	}
+}
+
+void vmax_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 zvb = vload(ZIN0(1));
+	int len = inNumSamples << 2;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_max(vec_ld(i, va), zvb), i, vout);
+	}
+}
+
+void vmin_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	float nextB = ZIN0(1);
+	int len = inNumSamples << 2;
+
+	float xb = unit->mPrevB;
+	
+	if (xb == nextB) {
+		vfloat32 vxb = vload(xb);
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_min(vec_ld(i, va), vxb), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextB, xb);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxb = vstart(xb, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_min(vec_ld(i, va), vxb), i, vout);
+			vxb = vec_add(vxb, vslope);
+		}
+		unit->mPrevB = nextB;
+	}
+}
+
+void vmax_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	float nextB = ZIN0(1);
+	int len = inNumSamples << 2;
+
+	float xb = unit->mPrevB;
+	
+	if (xb == nextB) {
+		vfloat32 vxb = vload(xb);
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_max(vec_ld(i, va), vxb), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextB, xb);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxb = vstart(xb, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_max(vec_ld(i, va), vxb), i, vout);
+			vxb = vec_add(vxb, vslope);
+		}
+		unit->mPrevB = nextB;
+	}
+}
+
+void vmin_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	float xa = unit->mPrevA;
+	vfloat32 *vb = (vfloat32*)IN(1);
+	float nextA = ZIN0(0);
+	int len = inNumSamples << 2;
+	
+	if (xa == nextA) {
+		vfloat32 vxa = vload(xa);
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_min(vxa, vec_ld(i, vb)), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextA, xa);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxa = vstart(xa, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_min(vxa, vec_ld(i, vb)), i, vout);
+			vxa = vec_add(vxa, vslope);
+		}
+		unit->mPrevA = nextA;
+	}
+}
+
+void vmax_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	float xa = unit->mPrevA;
+	vfloat32 *vb = (vfloat32*)IN(1);
+	float nextA = ZIN0(0);
+	int len = inNumSamples << 2;
+	
+	if (xa == nextA) {
+		vfloat32 vxa = vload(xa);
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_max(vxa, vec_ld(i, vb)), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextA, xa);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxa = vstart(xa, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vec_st(vec_max(vxa, vec_ld(i, vb)), i, vout);
+			vxa = vec_add(vxa, vslope);
+		}
+		unit->mPrevA = nextA;
+	}
+}
+
+
+
+void vlt_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zva = vec_ld(i, va);
+		vfloat32 zvb = vec_ld(i, vb);
+		vec_st(vec_sel(vzero, vones, vec_cmplt(zva, zvb)), i, vout);
+	}
+}
+
+void vlt_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 zvb = vload(ZIN0(1));
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zva = vec_ld(i, va);
+		vec_st(vec_sel(vzero, vones, vec_cmplt(zva, zvb)), i, vout);
+	}
+}
+
+void vlt_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 zva = vload(ZIN0(0));
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zvb = vec_ld(i, vb);
+		vec_st(vec_sel(vzero, vones, vec_cmplt(zva, zvb)), i, vout);
+	}
+}
+
+void vlt_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	float nextB = ZIN0(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	float xb = unit->mPrevB;
+	
+	if (xb == nextB) {
+		vfloat32 vxb = vload(xb);
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxa = vec_ld(i, va);
+			vec_st(vec_sel(vzero, vones, vec_cmplt(vxa, vxb)), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextB, xb);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxb = vstart(xb, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxa = vec_ld(i, va);
+			vec_st(vec_sel(vzero, vones, vec_cmplt(vxa, vxb)), i, vout);
+			vxb = vec_add(vxb, vslope);
+		}
+		unit->mPrevB = nextB;
+	}
+}
+
+void vlt_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	float xa = unit->mPrevA;
+	vfloat32 *vb = (vfloat32*)IN(1);
+	float nextA = ZIN0(0);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	if (xa == nextA) {
+		vfloat32 vxa = vload(xa);
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxb = vec_ld(i, vb);
+			vec_st(vec_sel(vzero, vones, vec_cmplt(vxa, vxb)), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextA, xa);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxa = vstart(xa, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxb = vec_ld(i, vb);
+			vec_st(vec_sel(vzero, vones, vec_cmplt(vxa, vxb)), i, vout);
+			vxa = vec_add(vxa, vslope);
+		}
+		unit->mPrevA = nextA;
+	}
+}
+
+
+
+
+void vgt_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zva = vec_ld(i, va);
+		vfloat32 zvb = vec_ld(i, vb);
+		vec_st(vec_sel(vzero, vones, vec_cmpgt(zva, zvb)), i, vout);
+	}
+}
+
+void vgt_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 zvb = vload(ZIN0(1));
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zva = vec_ld(i, va);
+		vec_st(vec_sel(vzero, vones, vec_cmpgt(zva, zvb)), i, vout);
+	}
+}
+
+void vgt_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 zva = vload(ZIN0(0));
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zvb = vec_ld(i, vb);
+		vec_st(vec_sel(vzero, vones, vec_cmpgt(zva, zvb)), i, vout);
+	}
+}
+
+void vgt_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	float nextB = ZIN0(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	float xb = unit->mPrevB;
+	
+	if (xb == nextB) {
+		vfloat32 vxb = vload(xb);
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxa = vec_ld(i, va);
+			vec_st(vec_sel(vzero, vones, vec_cmpgt(vxa, vxb)), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextB, xb);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxb = vstart(xb, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxa = vec_ld(i, va);
+			vec_st(vec_sel(vzero, vones, vec_cmpgt(vxa, vxb)), i, vout);
+			vxb = vec_add(vxb, vslope);
+		}
+		unit->mPrevB = nextB;
+	}
+}
+
+void vgt_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	float xa = unit->mPrevA;
+	vfloat32 *vb = (vfloat32*)IN(1);
+	float nextA = ZIN0(0);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	if (xa == nextA) {
+		vfloat32 vxa = vload(xa);
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxb = vec_ld(i, vb);
+			vec_st(vec_sel(vzero, vones, vec_cmpgt(vxa, vxb)), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextA, xa);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxa = vstart(xa, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxb = vec_ld(i, vb);
+			vec_st(vec_sel(vzero, vones, vec_cmpgt(vxa, vxb)), i, vout);
+			vxa = vec_add(vxa, vslope);
+		}
+		unit->mPrevA = nextA;
+	}
+}
+
+
+
+
+void vle_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zva = vec_ld(i, va);
+		vfloat32 zvb = vec_ld(i, vb);
+		vec_st(vec_sel(vzero, vones, vec_cmple(zva, zvb)), i, vout);
+	}
+}
+
+void vle_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 zvb = vload(ZIN0(1));
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zva = vec_ld(i, va);
+		vec_st(vec_sel(vzero, vones, vec_cmple(zva, zvb)), i, vout);
+	}
+}
+
+void vle_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 zva = vload(ZIN0(0));
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zvb = vec_ld(i, vb);
+		vec_st(vec_sel(vzero, vones, vec_cmple(zva, zvb)), i, vout);
+	}
+}
+
+void vle_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	float nextB = ZIN0(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	float xb = unit->mPrevB;
+	
+	if (xb == nextB) {
+		vfloat32 vxb = vload(xb);
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxa = vec_ld(i, va);
+			vec_st(vec_sel(vzero, vones, vec_cmple(vxa, vxb)), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextB, xb);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxb = vstart(xb, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxa = vec_ld(i, va);
+			vec_st(vec_sel(vzero, vones, vec_cmple(vxa, vxb)), i, vout);
+			vxb = vec_add(vxb, vslope);
+		}
+		unit->mPrevB = nextB;
+	}
+}
+
+void vle_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	float xa = unit->mPrevA;
+	vfloat32 *vb = (vfloat32*)IN(1);
+	float nextA = ZIN0(0);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	if (xa == nextA) {
+		vfloat32 vxa = vload(xa);
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxb = vec_ld(i, vb);
+			vec_st(vec_sel(vzero, vones, vec_cmple(vxa, vxb)), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextA, xa);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxa = vstart(xa, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxb = vec_ld(i, vb);
+			vec_st(vec_sel(vzero, vones, vec_cmple(vxa, vxb)), i, vout);
+			vxa = vec_add(vxa, vslope);
+		}
+		unit->mPrevA = nextA;
+	}
+}
+
+
+
+
+void vge_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zva = vec_ld(i, va);
+		vfloat32 zvb = vec_ld(i, vb);
+		vec_st(vec_sel(vzero, vones, vec_cmpge(zva, zvb)), i, vout);
+	}
+}
+
+void vge_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 zvb = vload(ZIN0(1));
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zva = vec_ld(i, va);
+		vec_st(vec_sel(vzero, vones, vec_cmpge(zva, zvb)), i, vout);
+	}
+}
+
+void vge_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 zva = vload(ZIN0(0));
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zvb = vec_ld(i, vb);
+		vec_st(vec_sel(vzero, vones, vec_cmpge(zva, zvb)), i, vout);
+	}
+}
+
+void vge_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	float nextB = ZIN0(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	float xb = unit->mPrevB;
+	
+	if (xb == nextB) {
+		vfloat32 vxb = vload(xb);
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxa = vec_ld(i, va);
+			vec_st(vec_sel(vzero, vones, vec_cmpge(vxa, vxb)), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextB, xb);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxb = vstart(xb, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxa = vec_ld(i, va);
+			vec_st(vec_sel(vzero, vones, vec_cmpge(vxa, vxb)), i, vout);
+			vxb = vec_add(vxb, vslope);
+		}
+		unit->mPrevB = nextB;
+	}
+}
+
+void vge_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	float xa = unit->mPrevA;
+	vfloat32 *vb = (vfloat32*)IN(1);
+	float nextA = ZIN0(0);
+	int len = inNumSamples << 2;
+	define_vzero;
+	define_vones;
+	
+	if (xa == nextA) {
+		vfloat32 vxa = vload(xa);
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxb = vec_ld(i, vb);
+			vec_st(vec_sel(vzero, vones, vec_cmpge(vxa, vxb)), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextA, xa);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxa = vstart(xa, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxb = vec_ld(i, vb);
+			vec_st(vec_sel(vzero, vones, vec_cmpge(vxa, vxb)), i, vout);
+			vxa = vec_add(vxa, vslope);
+		}
+		unit->mPrevA = nextA;
+	}
+}
+
+
+void vthresh_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zva = vec_ld(i, va);
+		vec_st(vec_sel(zva, vzero, vec_cmplt(zva, vec_ld(i, vb))), i, vout);
+	}
+}
+
+void vthresh_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	vfloat32 zvb = vload(ZIN0(1));
+	int len = inNumSamples << 2;
+	define_vzero;
+	
+	for (int i=0; i<len; i += 16) {
+		vfloat32 zva = vec_ld(i, va);
+		vec_st(vec_sel(zva, vzero, vec_cmplt(zva, zvb)), i, vout);
+	}
+}
+
+void vthresh_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 zva = vload(ZIN0(0));
+	vfloat32 *vb = (vfloat32*)IN(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	
+	for (int i=0; i<len; i += 16) {
+		vec_st(vec_sel(zva, vzero, vec_cmplt(zva, vec_ld(i, vb))), i, vout);
+	}
+}
+
+void vthresh_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	vfloat32 *va = (vfloat32*)IN(0);
+	float nextB = ZIN0(1);
+	int len = inNumSamples << 2;
+	define_vzero;
+	
+	float xb = unit->mPrevB;
+	
+	if (xb == nextB) {
+		vfloat32 vxb = vload(xb);
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxa = vec_ld(i, va);
+			vec_st(vec_sel(vxa, vzero, vec_cmplt(vxa, vxb)), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextB, xb);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxb = vstart(xb, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxa = vec_ld(i, va);
+			vec_st(vec_sel(vxa, vzero, vec_cmplt(vxa, vxb)), i, vout);
+			vxb = vec_add(vxb, vslope);
+		}
+		unit->mPrevB = nextB;
+	}
+}
+
+void vthresh_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *vout = (vfloat32*)OUT(0);
+	float xa = unit->mPrevA;
+	vfloat32 *vb = (vfloat32*)IN(1);
+	float nextA = ZIN0(0);
+	int len = inNumSamples << 2;
+	define_vzero;
+	
+	if (xa == nextA) {
+		vfloat32 vxa = vload(xa);
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxb = vec_ld(i, vb);
+			vec_st(vec_sel(vxa, vzero, vec_cmplt(vxa, vxb)), i, vout);
+		}
+	} else {
+		float slope =  CALCSLOPE(nextA, xa);
+		vfloat32 vslope = vload(4.f * slope);
+		vfloat32 vxa = vstart(xa, vslope);
+		
+		for (int i=0; i<len; i += 16) {
+			vfloat32 vxb = vec_ld(i, vb);
+			vec_st(vec_sel(vxa, vzero, vec_cmplt(vxa, vxb)), i, vout);
+			vxa = vec_add(vxa, vslope);
+		}
+		unit->mPrevA = nextA;
+	}
+}
+
+
+
 #endif
 
 
@@ -4652,12 +5375,12 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 						case opMod : func = &mod_aa; break;
 						case opEQ  : func = &eq_aa; break;
 						case opNE  : func = &neq_aa; break;
-						case opLT  : func = &lt_aa; break;
-						case opGT  : func = &gt_aa; break;
-						case opLE  : func = &le_aa; break;
-						case opGE  : func = &ge_aa; break;
-						case opMin : func = &min_aa; break;
-						case opMax : func = &max_aa; break;
+						case opLT  : func = &vlt_aa; break;
+						case opGT  : func = &vgt_aa; break;
+						case opLE  : func = &vle_aa; break;
+						case opGE  : func = &vge_aa; break;
+						case opMin : func = &vmin_aa; break;
+						case opMax : func = &vmax_aa; break;
 						case opBitAnd : func = &and_aa; break;
 						case opBitOr : func = &or_aa; break;
 						case opBitXor : func = &xor_aa; break;
@@ -4676,7 +5399,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 						case opSqrSum : func = &sqrsum_aa; break;
 						case opSqrDif : func = &sqrdif_aa; break;
 						case opAbsDif : func = &absdif_aa; break;
-						case opThresh : func = &thresh_aa; break;
+						case opThresh : func = &vthresh_aa; break;
 						case opAMClip : func = &amclip_aa; break;
 						case opScaleNeg : func = &scaleneg_aa; break;
 						case opClip2 : func = &clip2_aa; break;
@@ -4698,12 +5421,12 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 						case opMod : func = &mod_ak; break;
 						case opEQ  : func = &eq_ak; break;
 						case opNE  : func = &neq_ak; break;
-						case opLT  : func = &lt_ak; break;
-						case opGT  : func = &gt_ak; break;
-						case opLE  : func = &le_ak; break;
-						case opGE  : func = &ge_ak; break;
-						case opMin : func = &min_ak; break;
-						case opMax : func = &max_ak; break;
+						case opLT  : func = &vlt_ak; break;
+						case opGT  : func = &vgt_ak; break;
+						case opLE  : func = &vle_ak; break;
+						case opGE  : func = &vge_ak; break;
+						case opMin : func = &vmin_ak; break;
+						case opMax : func = &vmax_ak; break;
 						case opBitAnd : func = &and_ak; break;
 						case opBitOr : func = &or_ak; break;
 						case opBitXor : func = &xor_ak; break;
@@ -4722,7 +5445,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 						case opSqrSum : func = &sqrsum_ak; break;
 						case opSqrDif : func = &sqrdif_ak; break;
 						case opAbsDif : func = &absdif_ak; break;
-						case opThresh : func = &thresh_ak; break;
+						case opThresh : func = &vthresh_ak; break;
 						case opAMClip : func = &amclip_ak; break;
 						case opScaleNeg : func = &scaleneg_ak; break;
 						case opClip2 : func = &clip2_ak; break;
@@ -4744,12 +5467,12 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 						case opMod : func = &mod_ai; break;
 						case opEQ  : func = &eq_ai; break;
 						case opNE  : func = &neq_ai; break;
-						case opLT  : func = &lt_ai; break;
-						case opGT  : func = &gt_ai; break;
-						case opLE  : func = &le_ai; break;
-						case opGE  : func = &ge_ai; break;
-						case opMin : func = &min_ai; break;
-						case opMax : func = &max_ai; break;
+						case opLT  : func = &vlt_ai; break;
+						case opGT  : func = &vgt_ai; break;
+						case opLE  : func = &vle_ai; break;
+						case opGE  : func = &vge_ai; break;
+						case opMin : func = &vmin_ai; break;
+						case opMax : func = &vmax_ai; break;
 						case opBitAnd : func = &and_ai; break;
 						case opBitOr : func = &or_ai; break;
 						case opBitXor : func = &xor_ai; break;
@@ -4768,7 +5491,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 						case opSqrSum : func = &sqrsum_ai; break;
 						case opSqrDif : func = &sqrdif_ai; break;
 						case opAbsDif : func = &absdif_ai; break;
-						case opThresh : func = &thresh_ai; break;
+						case opThresh : func = &vthresh_ai; break;
 						case opAMClip : func = &amclip_ai; break;
 						case opScaleNeg : func = &scaleneg_ai; break;
 						case opClip2 : func = &clip2_ai; break;
@@ -4792,12 +5515,12 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 					case opMod : func = &mod_ka; break;
 					case opEQ  : func = &eq_ka; break;
 					case opNE  : func = &neq_ka; break;
-					case opLT  : func = &lt_ka; break;
-					case opGT  : func = &gt_ka; break;
-					case opLE  : func = &le_ka; break;
-					case opGE  : func = &ge_ka; break;
-					case opMin : func = &min_ka; break;
-					case opMax : func = &max_ka; break;
+					case opLT  : func = &vlt_ka; break;
+					case opGT  : func = &vgt_ka; break;
+					case opLE  : func = &vle_ka; break;
+					case opGE  : func = &vge_ka; break;
+					case opMin : func = &vmin_ka; break;
+					case opMax : func = &vmax_ka; break;
 					case opBitAnd : func = &and_ka; break;
 					case opBitOr : func = &or_ka; break;
 					case opBitXor : func = &xor_ka; break;
@@ -4816,7 +5539,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 					case opSqrSum : func = &sqrsum_ka; break;
 					case opSqrDif : func = &sqrdif_ka; break;
 					case opAbsDif : func = &absdif_ka; break;
-					case opThresh : func = &thresh_ka; break;
+					case opThresh : func = &vthresh_ka; break;
 					case opAMClip : func = &amclip_ka; break;
 					case opScaleNeg : func = &scaleneg_ka; break;
 					case opClip2 : func = &clip2_ka; break;
@@ -4843,12 +5566,12 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 					case opMod : func = &mod_ia; break;
 					case opEQ  : func = &eq_ia; break;
 					case opNE  : func = &neq_ia; break;
-					case opLT  : func = &lt_ia; break;
-					case opGT  : func = &gt_ia; break;
-					case opLE  : func = &le_ia; break;
-					case opGE  : func = &ge_ia; break;
-					case opMin : func = &min_ia; break;
-					case opMax : func = &max_ia; break;
+					case opLT  : func = &vlt_ia; break;
+					case opGT  : func = &vgt_ia; break;
+					case opLE  : func = &vle_ia; break;
+					case opGE  : func = &vge_ia; break;
+					case opMin : func = &vmin_ia; break;
+					case opMax : func = &vmax_ia; break;
 					case opBitAnd : func = &and_ia; break;
 					case opBitOr : func = &or_ia; break;
 					case opBitXor : func = &xor_ia; break;
@@ -4867,7 +5590,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 					case opSqrSum : func = &sqrsum_ia; break;
 					case opSqrDif : func = &sqrdif_ia; break;
 					case opAbsDif : func = &absdif_ia; break;
-					case opThresh : func = &thresh_ia; break;
+					case opThresh : func = &vthresh_ia; break;
 					case opAMClip : func = &amclip_ia; break;
 					case opScaleNeg : func = &scaleneg_ia; break;
 					case opClip2 : func = &clip2_ia; break;

@@ -32,8 +32,8 @@
 #define vstart(x, vslope) (vec_madd(vslope, v0123_4ths, vload(x)))
 
 #define vec_not(a) (vtemp = (a); vec_nor(vtemp, vtemp))
-#define vec_cmplt(a, b) (vec_not(vec_cmpge(a, b)))
-#define vec_cmple(a, b) (vec_not(vec_cmpgt(a, b)))
+#define vec_cmplt(a, b) (vec_cmpgt(b, a))
+#define vec_cmple(a, b) (vec_cmpge(b, a))
 #define vec_mul(a, b) (vec_madd(a, b, vzero))
 #define vec_2sComp(x) (vec_sub(vec_sub (x, x), x))
 
