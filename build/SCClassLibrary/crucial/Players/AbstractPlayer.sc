@@ -69,22 +69,22 @@ AbstractPlayer : AbstractFunction  {
 		});
 	}
 	makePatchOut { arg group;
-		//patch doesn't know its numChannels until after it makes the synthDef
+		//Patch doesn't know its numChannels or rate until after it makes the synthDef
 		if(this.rate == \audio,{// out yr speakers
-			patchOut = PatchOut(this,
+			patchOut = AudioPatchOut(this,
 							group,
 						Bus(\audio,0,this.numChannels,group.server))
 		},{
 			if(this.rate == \control,{
 				patchOut = 
-					PatchOut(this,group,
+					ControlPatchOut(this,group,
 							Bus.control(this.numChannels,group.server))
 			},{
 				("Wrong output rate: " + this.rate + 
 			".  AbstractPlayer cannot prepare this object for play.").error;
 			});
 		});
-		^patchOut
+		^patchOut//.insp("made public patch out",this)
 	}
 	
 	prepareForPlay { arg group,bundle;
@@ -147,7 +147,7 @@ AbstractPlayer : AbstractFunction  {
 
 		// can't assume the children are unchanged
 		this.children.do({ arg child;
-			child.loadDefFileToBundle(bundle);
+			child.loadDefFileToBundle(bundle,server);
 		});
 
 		dn = this.defName;

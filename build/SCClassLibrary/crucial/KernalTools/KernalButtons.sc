@@ -63,7 +63,7 @@ InspectorLink : ActionButton {
 	*new { arg  target,layout,maxx=100; 
 		^super.prNew(layout,target.asString,{target.insp},maxx)
 			.backColor_(Color.white)
-			.labelColor_(Color.new255(70, 130, 180))
+			.labelColor_(Color.new255(70, 130, 200))
 			.font_(Font("Helvetica",12))
 			//.align_(\left)
 	}

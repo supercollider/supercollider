@@ -2,7 +2,7 @@
 	
 	guify { arg layout,title,width,height;
 		^super.guify(layout,title,width ? 800,height ? 800)
-	}	writeName { arg layout;		ClassNameLabel.newBig(model.class,layout);		CXLabel(layout,model.asString,200,30)
+	}	writeName { arg layout;		ClassNameLabel.newBig(model.class,layout);		CXLabel(layout,model.asString,300,30)
 			.view.font_(Font("Helvetica-Bold",18));
 		ActionButton(layout,"gui...",{ model.topGui });
 		ActionButton(layout,"#",{ model.asCompileString.postln });

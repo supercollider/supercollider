@@ -91,7 +91,8 @@ Patch : AbstractPlayer  {
 			)
 		);
 	}
-
+	defName { ^defName } // NOT 'Patch' ever
+	
 	synthDefArgs {
 		// not every arg makes it into the synth def
 		^(argsForSynth.collect({ arg ag; ag.synthArg })

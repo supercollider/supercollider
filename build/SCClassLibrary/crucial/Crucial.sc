@@ -187,7 +187,8 @@ Crucial {
 			'envadsr'->EnvSpec.new,
 			'envperc'->EnvSpec.new,
 			\in->AudioSpec.new,
-			\k->ControlSpec(-6.0,6.0)
+			\k->ControlSpec(-6.0,6.0),
+			\stepsPerOctave->ControlSpec(0.5,128.0)
 		  ]
 		);
 	}	

@@ -15,7 +15,7 @@ CXLabel {
 		layout = layout.asPageLayout(string);
 		^super.new.view_(
 			SCStaticText(layout.window,
-					layout.layRight(x ?? { (string.size * 8.3).max(maxx) },y)
+					layout.layRight(x ?? { (string.size * 7.0).max(maxx) },y)
 			).string_(string)
 		)
 	}
@@ -39,17 +39,17 @@ VariableNameLabel : CXLabel {
 	*new { arg name,layout,maxx=120;
 		^super.prNew(layout,name,maxx: maxx)
 			.backColor_(Color( 1, 0.86666666666667, 0.38039215686275 ))
-			.font_(Font("Monaco",10))
+			.font_(Font("Helvetica",10))
 			.align_(\right)
 	}
 }
 
 ArgNameLabel : CXLabel {
-	*new { arg name,layout,maxx=100;
+	*new { arg name,layout,maxx=130;
 		^super.prNew(layout,name,maxx: maxx)
 			.backColor_(Color( 0.47843137254902, 0.72941176470588, 0.50196078431373 ))
-			.font_(Font("Monaco",10))
-			.align_(\right)
+			.font_(Font("Helvetica",10))
+			.align_(\left)
 	}
 }
 

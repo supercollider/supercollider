@@ -137,10 +137,11 @@ AudioPatchOut : ControlPatchOut {
 			// create mixer if needed
 		});
 	}
-	control { arg controlPatchIn;
+	control { arg controlPatchIn,needsValueSetNow;
 		// A2K convertor needed ?
-		// how else can i read from a .kr buss ?
+		// how else can i get a .kr input to read from an .ar buss ?
 		thisMethod.notYetImplemented;
+		
 	}
 	scalar { arg scalarPatchIn;
 		// polling of value not yet implemented on scserver

@@ -43,9 +43,9 @@
 			pl.didSpawn(patchIn,synthArgi);
 		})
 	}
-	loadDefFileToBundle { arg bundle;
+	loadDefFileToBundle { arg bundle,server;
 		players.do({ arg pl;
-			pl.loadDefFileToBundle(bundle)
+			pl.loadDefFileToBundle(bundle,server)
 		})
 	}		
 	free {

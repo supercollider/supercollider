@@ -135,7 +135,9 @@ SampleSpec : ScalarSpec {
 	*initClass {
 		specs.putAll(
 		 IdentityDictionary[
-			\sample -> this.new			
+			\sample -> this.new,
+			\bufferProxy -> this.new,
+			\arrayBuffer -> this.new			
 			];
 		)
 	}

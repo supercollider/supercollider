@@ -13,7 +13,9 @@ UGenInstr { // make a virtual Instr by reading the class def
 	
 		//specs
 		specs = this.argNames.collect({ arg ag,i;
-			ag.asSpec
+			ag.asSpec ?? {
+				("UGenInstr-init  spec not found for:" + ag).warn;
+			}
 		});
 	}
 
@@ -62,6 +64,7 @@ UGenInstr { // make a virtual Instr by reading the class def
 		
 //	guiClass { ^UGenInstrGui }
 	asString { ^"UGenInstr." ++ ugenClass.name.asString }
+	asInstr { ^this }
 	name { ^ugenClass }
 	storeParamsOn { arg stream;
 		stream << "(" <<< ugenClass << "," <<< rate << ")";

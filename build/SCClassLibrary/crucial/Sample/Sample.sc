@@ -4,18 +4,24 @@ BufferProxy { // blank space for delays, loopers etc.
 	var <buffer,<>patchOut,<readyForPlay = false;
 
 	var size=0,<end=0,<>numChannels=1,<>sampleRate=44100.0;
-	var <>startFrame=0,<>endFrame = -1;
 
+	// move down, no sense up here
+	var <>startFrame=0,<>endFrame = -1;
 
 	// while building the synth def...
 	var <>forArgi,bufnumControl;
 
-	*new { arg seconds=1.0,numChannels=1,sampleRate=44100.0;
+
+	*new { arg numFrames=44100,numChannels=1,sampleRate=44100.0;
 		^super.new
-			.startFrame_(0).endFrame_(seconds * sampleRate)
+			.startFrame_(0).endFrame_(numFrames - 1)
 			.numChannels_(numChannels).sampleRate_(sampleRate)
 	}
 	
+	storeParamsOn { arg stream;
+		stream << "(" <<<* [this.size,numChannels,sampleRate] << ")";
+	}
+
 	size {// actual size loaded on server, not total size
 		^if(endFrame == -1,{
 			end
@@ -81,12 +87,10 @@ BufferProxy { // blank space for delays, loopers etc.
 	bufChannelsKr {
 		^BufChannels.kr(this.bufnumKr)
 	}
-	
 
 }
 
 
-// BufferArray
 
 
 
@@ -243,3 +247,29 @@ Sample : BufferProxy { // a small sound loaded from disk
 
 }
 
+
+
+ArrayBuffer : BufferProxy {
+
+	var <>array;
+	
+	*new { arg array;
+		^super.new(array.size).array_(array.as(Array))
+	}
+	//this.size wrong ?
+	
+	prepareForPlay { arg group,bundle;
+		buffer = Buffer.new(group.asGroup.server,array.size,numChannels);
+		buffer.numFrames = this.size;
+		buffer.numChannels = numChannels;
+		bundle.add( buffer.allocMsg( buffer.setnMsg(0,array ) ) );
+		readyForPlay = true;
+		patchOut = ScalarPatchOut(this);
+	}
+
+	// gui show it
+	
+	storeParamsOn { arg stream;
+		stream << "(" <<< array << ")";
+	}
+}
