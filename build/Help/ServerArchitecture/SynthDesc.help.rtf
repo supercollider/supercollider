@@ -14,16 +14,24 @@
 contains information about a SynthDef, such as its name, its control names and default values.\
 also information is provided of its outputs and inputs and whether it has a gate control.\
 \
-SynthDescs are created by SynthDescLib, by reading a compiled synth def file.
+\
+\
+	
+\f0\b *read(path, keepDefs, dict)
+\f2\b0 \
+					adds all synthDescs in a path to a dict \
+\
+	SynthDescs are created by 
+\f0\b SynthDescLib
+\f2\b0 , by reading a compiled synth def file.
 \f1\fs18 \
 \
-	\cf2 SynthDescLib\cf0 .global.read(\cf3 "synthdefs/default.scsyndef"\cf0 );\
-	\cf2 SynthDescLib\cf0 .global.synthDescs.at(\cf4 \\default\cf0 )\
-\
-\
+			\cf2 SynthDescLib\cf0 .global.read(\cf3 "synthdefs/default.scsyndef"\cf0 );\
+			\cf2 SynthDescLib\cf0 .global.synthDescs.at(\cf4 \\default\cf0 )\
 \
 
-\f0\b\fs24 	name
+\f2\fs24 	
+\f0\b name
 \f2\b0 			returns the name of the SynthDef\
 
 \f0\b 	controlNames
@@ -31,12 +39,25 @@ SynthDescs are created by SynthDescLib, by reading a compiled synth def file.
 					have the following fields: name, index, rate, defaultValue
 \f1\fs18 \
 	\
-	\cf2 SynthDescLib\cf0 .global.synthDescs.at(\cf4 \\default\cf0 ).controlNames.postln\
+			\cf2 SynthDescLib\cf0 .global.synthDescs.at(\cf4 \\default\cf0 ).controlNames.postln;\
 	\
-\
-\
+	
+\f0\b\fs24 hasGate
+\f2\b0 			is true if the Synthdef has a gate input\
+	
+\f0\b msgFunc
+\f2\b0 			the function which is used to create an array of arguments for\
+					playing a synth def in patterns\
+					\
 
-\f2\fs24 SynthDescs are needed by the event stream system, so when using Pbind and NotePlayer,\
+\f1\fs18 			\cf2 SynthDescLib\cf0 .global.synthDescs.at(\cf4 \\default\cf0 ).msgFunc.postcs;\
+
+\f2\fs24 \
+SynthDescs are needed by the event stream system, so when using 
+\f0\b Pbind
+\f2\b0  and 
+\f0\b NotePlayer
+\f2\b0 ,\
 the instruments' default parameters are derived from the SynthDesc.\
 
 \f1\fs18 \
