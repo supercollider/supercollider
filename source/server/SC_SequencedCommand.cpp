@@ -253,7 +253,7 @@ bool BufGenCmd::Stage2()
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	mFreeData = buf->data;
 	
-	(*mBufGen->mBufGenFunc)(buf, &mMsg);
+	(*mBufGen->mBufGenFunc)(mWorld, buf, &mMsg);
 	mSndBuf = *buf;
 	return true;
 }

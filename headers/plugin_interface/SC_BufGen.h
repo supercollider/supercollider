@@ -23,7 +23,7 @@
 
 #include "SC_Types.h"
 
-typedef void (*BufGenFunc)(struct SndBuf *buf, struct sc_msg_iter *msg);
+typedef void (*BufGenFunc)(struct World *world, struct SndBuf *buf, struct sc_msg_iter *msg);
 
 struct BufGen
 {
