@@ -135,10 +135,10 @@ Node {
 		^bundle.add([19, nodeID, aNode.nodeID]); //"/n_after"
 	}       
 	moveToHeadMsg { arg bundle, aGroup;
-		^(aGroup ? group).moveNodeToHeadMsg(bundle, this);
+		^bundle.add((aGroup ? group).moveNodeToHeadMsg(this));
 	}
 	moveToTailMsg { arg bundle, aGroup;
-		^(aGroup ? group).moveNodeToTailMsg(bundle, this);
+		^bundle.add((aGroup ? group).moveNodeToTailMsg(this));
 	}
 
 	//another syntax style
