@@ -269,102 +269,102 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 
 
     for (int i=0; i<numSrc; ++i) {
-		MIDIEndpointRef src = MIDIGetSource(i);
-		SInt32 id;
+        MIDIEndpointRef src = MIDIGetSource(i);
+        SInt32 id;
         MIDIObjectGetIntegerProperty(src, kMIDIPropertyUniqueID, &id);
 
         MIDIEntityRef ent;
         error = MIDIEndpointGetEntity(src, &ent);
 
         CFStringRef devname, endname;
-		char cendname[1024], cdevname[1024];
-
-		// Virtual sources don't have entities
-        if(error)
-        {
-			MIDIObjectGetStringProperty(src, kMIDIPropertyName, &devname);
-			MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
-			CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
-			CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
-		}
-        else       
-        {
-			MIDIDeviceRef dev;
-			
-			MIDIEntityGetDevice(ent, &dev);
-			MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
-			MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);       
-			CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
-			CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
-		}
-				
-		PyrString *string = newPyrString(g->gc, cendname, 0, true);
-		SetObject(namearraySo->slots+i, string);
-		namearraySo->size++;
-		g->gc->GCWrite(namearraySo, (PyrObject*)string);
-
-		PyrString *devstring = newPyrString(g->gc, cdevname, 0, true);   
-		SetObject(devarraySo->slots+i, devstring);   
-		devarraySo->size++;
-		g->gc->GCWrite(devarraySo, (PyrObject*)devstring);
-
-		SetInt(idarraySo->slots+i, id);
-		idarraySo->size++;
-
-		CFRelease(devname);
-		CFRelease(endname);
-	}
-
-
-
-//      post("numDst %d\n",  numDst);
-	for (int i=0; i<numDst; ++i) {
-		MIDIEndpointRef dst = MIDIGetDestination(i);
-		SInt32 id;
-        MIDIObjectGetIntegerProperty(dst, kMIDIPropertyUniqueID, &id);
-		
-		MIDIEntityRef ent;
-		error = MIDIEndpointGetEntity(dst, &ent);
-
-        CFStringRef devname, endname;
         char cendname[1024], cdevname[1024];
-		
-		// Virtual destinations don't have entities either
+
+        // Virtual sources don't have entities
         if(error)
         {
-			MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &devname);
-			MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &endname);
-			CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
-			CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
-
+            MIDIObjectGetStringProperty(src, kMIDIPropertyName, &devname);
+            MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
+            CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+            CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
         }
-        else       
+        else
         {
-			MIDIDeviceRef dev;
-			
+            MIDIDeviceRef dev;
+
             MIDIEntityGetDevice(ent, &dev);
-			MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
-            MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &endname);       
-			CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+            MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
+            MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
+            CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
             CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
         }
 
-		PyrString *string = newPyrString(g->gc, cendname, 0, true);
-		SetObject(namearrayDe->slots+namearrayDe->size++, string);
-		g->gc->GCWrite(namearrayDe, (PyrObject*)string);
+        PyrString *string = newPyrString(g->gc, cendname, 0, true);
+        SetObject(namearraySo->slots+i, string);
+        namearraySo->size++;
+        g->gc->GCWrite(namearraySo, (PyrObject*)string);
 
-		PyrString *devstring = newPyrString(g->gc, cdevname, 0, true);
+        PyrString *devstring = newPyrString(g->gc, cdevname, 0, true);
+        SetObject(devarraySo->slots+i, devstring);
+        devarraySo->size++;
+        g->gc->GCWrite(devarraySo, (PyrObject*)devstring);
 
-		SetObject(devarrayDe->slots+devarrayDe->size++, devstring);
-		g->gc->GCWrite(devarrayDe, (PyrObject*)devstring);
+        SetInt(idarraySo->slots+i, id);
+        idarraySo->size++;
 
-		SetInt(idarrayDe->slots+idarrayDe->size++, id);
+        CFRelease(devname);
+        CFRelease(endname);
+    }
+    
 
-		CFRelease(devname);
-		CFRelease(endname);
 
-	}
-	return errNone;
+//      post("numDst %d\n",  numDst);
+    for (int i=0; i<numDst; ++i) {
+        MIDIEndpointRef dst = MIDIGetDestination(i);
+        SInt32 id;
+        MIDIObjectGetIntegerProperty(dst, kMIDIPropertyUniqueID, &id);
+
+        MIDIEntityRef ent;
+        error = MIDIEndpointGetEntity(dst, &ent);
+
+        CFStringRef devname, endname;
+        char cendname[1024], cdevname[1024];
+
+        // Virtual destinations don't have entities either
+        if(error)
+        {
+            MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &devname);
+            MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &endname);
+            CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+            CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+
+        }
+        else
+        {
+            MIDIDeviceRef dev;
+
+            MIDIEntityGetDevice(ent, &dev);
+            MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
+            MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &endname);
+            CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+            CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+        }
+
+        PyrString *string = newPyrString(g->gc, cendname, 0, true);
+        SetObject(namearrayDe->slots+namearrayDe->size++, string);
+        g->gc->GCWrite(namearrayDe, (PyrObject*)string);
+
+        PyrString *devstring = newPyrString(g->gc, cdevname, 0, true);
+
+        SetObject(devarrayDe->slots+devarrayDe->size++, devstring);
+        g->gc->GCWrite(devarrayDe, (PyrObject*)devstring);
+
+        SetInt(idarrayDe->slots+idarrayDe->size++, id);
+
+        CFRelease(devname);
+        CFRelease(endname);
+
+    }
+    return errNone;
 }
 
 
