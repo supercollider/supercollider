@@ -42,8 +42,8 @@ ProxySynthDef : SynthDef {
 			
 			hasOwnGate = canFree && hasOwnGate; //only counts when it can actually free synth.
 			
-			"gate detection:".postln;
-			[\makeFadeEnv, makeFadeEnv, \canFree, canFree, \hasOwnGate, hasOwnGate].debug;
+			//"gate detection:".postln;
+			//[\makeFadeEnv, makeFadeEnv, \canFree, canFree, \hasOwnGate, hasOwnGate].debug;
 			
 			// constrain the output to the right number of channels if supplied
 			// and wrap it in a fade envelope
@@ -68,7 +68,7 @@ ProxySynthDef : SynthDef {
 		def.numChannels = numChannels;
 		def.canReleaseSynth = makeFadeEnv || hasOwnGate;
 		def.canFreeSynth = def.canReleaseSynth || canFree; //revisit
-		[\defcanReleaseSynth, def.canReleaseSynth, \defcanFreeSynth, def.canFreeSynth].debug;
+		//[\defcanReleaseSynth, def.canReleaseSynth, \defcanFreeSynth, def.canFreeSynth].debug;
 		^def
 	}
 	
