@@ -48,11 +48,11 @@ extern PyrSymbol *s_scview;
     NSString *characters = [event characters];
     unsigned int modifiers = [event modifierFlags];
     unichar character = 0;
-    if([characters cStringLength] > 0) {
+    if([characters length] > 0) {
         character = [characters characterAtIndex: 0];
     }
     //control tab/escape doesn't get passed here at all ?
-    //NSLog(@"unicode %d",character);
+    //NSLog(@"unicode %d  length:%d clength:%d",character,[characters length],[characters cStringLength]);
     
     if (mTopView) {
         if(character == 9 && (modifiers == 0)) {
@@ -84,7 +84,7 @@ extern PyrSymbol *s_scview;
 {
     NSString *characters = [event characters];
     unichar character = 0;
-    if([characters cStringLength] > 0) {
+    if([characters length] > 0) {
         character = [characters characterAtIndex: 0];
     }
 
