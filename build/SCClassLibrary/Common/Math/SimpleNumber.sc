@@ -280,7 +280,7 @@ SimpleNumber : Number {
 		lower = [0,1]; 
 		upper = [1,0];
 		loop {
-			mediant = [(lower[0] + upper[0]), (lower[1] + upper[1])];
+			mediant = [lower[0] + upper[0], lower[1] + upper[1]];
 			
 			case 
 			{ (this * mediant[1]) > mediant[0] } 
