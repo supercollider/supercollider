@@ -20,6 +20,18 @@ String[char] : RawArray {
 	!= { arg aString; ^this.compare(aString) != 0 }
 	hash { _StringHash }
 	
+	// no sense doing collect as per superclass collection
+	performBinaryOpOnSimpleNumber { arg aSelector, aNumber; 
+		^this.perform(aSelector, aNumber)
+	}
+	performBinaryOpOnComplex { arg aSelector, aComplex; 
+		^this.perform(aSelector, aComplex)
+	}
+	performBinaryOpOnInfinitum { arg aSelector, aNumber; 
+		^this.perform(aSelector, aNumber)
+	}
+
+	
 	isString { ^true }
 	asString { ^this }
 	asCompileString { ^"\"" ++ this ++ "\"" }
@@ -82,7 +94,7 @@ String[char] : RawArray {
 	compile { ^thisProcess.interpreter.compile(this); }
 	interpret { ^thisProcess.interpreter.interpret(this); } 
 	interpretPrint { ^thisProcess.interpreter.interpretPrint(this); }
-
+	
 	draw {
 		this.drawAtPoint(Point(0,0), Font.default, Color.black);
 	}
@@ -124,17 +136,16 @@ String[char] : RawArray {
 		stream.putAll(this.asCompileString);
 	}
 	
-	bounds { ^this.prBounds(Rect.new) }
-	getLayoutSize {
-		arg extent;
-		extent = this.bounds.extent;
-		^LayoutSize(extent.x+1, extent.x+1, extent.y+1, extent.y+1, 0);
-	}
-
-	prBounds { arg rect;
-		_String_GetBounds
-		^this.primitiveFailed
-	}
+//	bounds { ^this.prBounds(Rect.new) }
+//	getLayoutSize {
+//		arg extent;
+//		extent = this.bounds.extent;
+//		^LayoutSize(extent.x+1, extent.x+1, extent.y+1, extent.y+1, 0);
+//	}
+//	prBounds { arg rect;
+//		_String_GetBounds
+//		^this.primitiveFailed
+//	}
 	
 	inspectorClass { ^StringInspector }
 	
