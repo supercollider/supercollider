@@ -30,7 +30,7 @@ MethodLabel : ActionButton {
 	
 //	// search by selector link
 //	*browseSelectorLink { arg method,layout;
-//		^super.prNew(layout, "::" ++ method.name.asString,{SelectorBrowser(method.name).gui},100,13,2).backColor_(Color(160,206,147));
+//		^super.prNew(layout, "::" ++ method.name.asString,{SelectorBrowser(method.name).gui},100,13,2).background_(Color(160,206,147));
 //	}
 
 }

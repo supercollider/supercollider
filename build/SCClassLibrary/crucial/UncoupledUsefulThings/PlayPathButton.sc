@@ -24,13 +24,13 @@ PlayPathButton : SCButtonAdapter { // loads the object at loadDocument and .play
 	}
 	stop {
 		isPlaying = false;
-		this.backColor_(rgb(228,255,107));
+		this.background_(rgb(228,255,107));
 		if(player.notNil,{player.stop });		
 	}
 	play { 
 		isPlaying = true;
 		player = subject.loadDocument;
-		this.backColor_(Color.green);
+		this.background_(Color.green);
 		
 		^player.play 
 	}
@@ -96,18 +96,18 @@ XPlayButton : PlayButton { // plays exclusively one thing at any time.
 		if(prev.notNil,{ prev.displayOff });
 		prev = this;
 	}
-	displayOn { this.backColor_(Color.green) }
-	displayOff { this.backColor_(rgb(228,255,107)) }
+	displayOn { this.background_(Color.green) }
+	displayOff { this.background_(rgb(228,255,107)) }
 
 }
 
 	doAction { 
 		if(this.isPlaying,{
 			isPlaying = false;
-			this.backColor_(rgb(228,255,107));
+			this.background_(rgb(228,255,107));
 			if(player.notNil,{player.stop });
 		},{
-			this.backColor_(Color.green);
+			this.background_(Color.green);
 			this.play;
 		})
 	}

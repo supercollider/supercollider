@@ -4,40 +4,6 @@ Crucial {
 	classvar menu;
 		
 	*initClass {
-		
-		// DEFAULT SETTINGS
-		/* 
-			you should set these in your Main-startUp method
-			
-		// you can move all of your documents elsewhere
-		Document.dir = "~/Documents/SuperCollider/";
-		
-		// this would allow your sounds to be shared by other applications
-		Sample.soundsDir = "~/Sounds/";
-		// copy a11wlk01.wav to there for use in helpfiles
-		*/
-
-		/* color settings */
-		// you can override these by setting in Main-startUp which will run after this
-		CXLabel.bgcolor = Color.new255(250,250,240);
-/*
-		Tile.bgcolor =   Color.new255(231,250,178);
-		InspectorLink.bgcolor =   Color.new255(151,145,255);
-		MethodLabel.bgcolor =   Color.new255(160,206,147);
-		ClassNameLabel.bgcolor =   Color.new255(133,193,230);
-		ArgNameLabel.bgcolor =   Color.new255(255,221,97);
-		VariableNameLabel.bgcolor =   Color.new255(255,221,97);
-		SelectorLabel.bgcolor =   Color.new255(190,206,147);
-		
-		ToggleButton.offcolor =   Color.new255(189,151,70);
-		ToggleButton.bgcolor =   Color.new255(104,244,50);
-		BoolDisplay.offcolor =   Color.new255(189,151,70);
-		BoolDisplay.bgcolor =   Color.new255(104,244,50);
-		
-		SelectButtonSet.defaultColor =   Color.new255(254,247,253);
-		SelectButtonSet.defaultSelectedColor =   Color.new255(151,151,255);
-*/
-
 		// force to init first
 		Class.initClassTree(Warp);
 		Class.initClassTree(Spec);
@@ -194,16 +160,7 @@ Crucial {
 		Library.put(\menuItems,\test,'run Class unit tests',{
 			TestCase.runAll;
 		});
-		
-//		
-//		Library.put(\menuItems,\test,'midiCC test',{var w;
-//			w = PageLayout.new("jlcooper",200,150);
-//			8.do({arg i;
-//			SliderView.new( w.view, w.layRight(10,100), "SliderView", 0.409449, 0, 1, 0, 'lin')
-//				.prSetMIDIMapping(176, 1, 50 + i)
-//			})
-//		});
-	
+			
 		Library.put(\menuItems,\post,'post [char,unicode,modifier,keycode]...',{
 			Sheet({ arg l;
 				ActionButton.new(l,"press keys and modifiers").focus
@@ -212,8 +169,7 @@ Crucial {
 								});
 			})
 		});
-	
-		
+
 //		Library.put(\menuItems,\post,'post color...',{
 //			GetColorDialog("Color",Color.white,{ arg ok,color;
 //				if(ok,{ color.post;})
@@ -272,40 +228,41 @@ Crucial {
 				})
 			});
 		});
-//		Library.put(\menuItems,\introspection,\methodfinder,{
-//			GetStringDialog("methodname or partial string","",{
-//				arg ok,string;
-//				var matches,f,classes;
-//				matches = IdentitySet.new;
-//				if(ok,{
-//					Class.allClasses.do({ arg cl;
-//						if(cl.isMetaClass.not and: {cl.name.asString.containsi(string)},{
-//							matches = matches.add(cl);
-//						});
-//					});
-//
-//					f = PageLayout.new;
-//					matches.do({ arg cl;
-//						CXLabel(f.startRow,cl.name,maxx:200);
-//						ActionButton(f.startRow,"source",{
-//							cl.openCodeFile;
-//						},60);
-//						ActionButton(f,"help",{
-//							if(cl.hasHelpFile,{
-//								cl.openHelpFile;
-//							},{
-//								cl.ownerClass.openHelpFile;
-//							});
-//						},60);
-//						ActionButton(f,"browser",{
-//							cl.gui;
-//						},60);
-//					});
-//					f.resizeToFit;
-//				})
-//			});
-//		});
-		
+		/*
+		Library.put(\menuItems,\introspection,\methodfinder,{
+			GetStringDialog("methodname or partial string","",{
+				arg ok,string;
+				var matches,f,classes;
+				matches = IdentitySet.new;
+				if(ok,{
+					Class.allClasses.do({ arg cl;
+						if(cl.isMetaClass.not and: {cl.name.asString.containsi(string)},{
+							matches = matches.add(cl);
+						});
+					});
+
+					f = PageLayout.new;
+					matches.do({ arg cl;
+						CXLabel(f.startRow,cl.name,maxx:200);
+						ActionButton(f.startRow,"source",{
+							cl.openCodeFile;
+						},60);
+						ActionButton(f,"help",{
+							if(cl.hasHelpFile,{
+								cl.openHelpFile;
+							},{
+								cl.ownerClass.openHelpFile;
+							});
+						},60);
+						ActionButton(f,"browser",{
+							cl.gui;
+						},60);
+					});
+					f.resizeToFit;
+				})
+			});
+		});
+		*/
 
 	
 		Library.put(\menuItems,\introspection,\findReferencesToClass,{
@@ -440,10 +397,6 @@ Crucial {
 				});
 			},"AudioBusses on local")
 		});
-		
-	
-	
 	}
-
 	
 }

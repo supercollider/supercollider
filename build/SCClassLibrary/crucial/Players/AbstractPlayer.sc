@@ -319,17 +319,21 @@ AbstractPlayer : AbstractFunction  {
 
 	/** hot patching **/
 	connectTo { arg hasInput;
+		var playing;
 		// if my bus is public, change to private
-		if(this.isPlaying and: {this.bus.isAudioOut},{
+		if((playing = this.isPlaying).insp and: {this.bus.isAudioOut},{
 			this.bus = Bus.alloc(this.rate,this.server,this.numChannels);
 		});
-		patchOut.connectTo(hasInput.patchIn,this.isPlaying);
+		patchOut.connectTo(hasInput.patchIn,playing);
 	}
 	connectToInputAt { arg player,inputIndex=0;
 		if(this.isPlaying and: {this.bus.isAudioOut},{
 			this.bus = Bus.alloc(this.rate,this.server,this.numChannels);
 		});
 		patchOut.connectTo( player.patchIns.at(inputIndex), this.isPlaying )
+	}
+	disconnect {
+		patchOut.disconnect;
 	}
 	
 	

@@ -14,7 +14,7 @@ CXAbstractLabel : SCStaticText {
 		this.font = Font("Helvetica-Bold",12.0);
 	}
 	//deprec me
-	backColor_ { arg c; this.background_(c) }
+	//backColor_ { arg c; this.background_(c) }
 
 }
 
@@ -25,7 +25,7 @@ CXLabel : CXAbstractLabel {
 		var new;
 		new = super.new(layout,string,x,y,maxx);
 		new.font_(Font("Helvetica",12.0))
-			.background_(bgcolor)
+			.background_(Color.new255(250,250,240))
 			.align_(\center);
 		^new
 	}
@@ -35,7 +35,7 @@ CXLabel : CXAbstractLabel {
 VariableNameLabel : CXAbstractLabel {
 	*new { arg name,layout,maxx=120;
 		^super.new(layout,name,maxx: maxx)
-			.backColor_(Color( 1, 0.86666666666667, 0.38039215686275 ))
+			.background_(Color( 1, 0.86666666666667, 0.38039215686275 ))
 			.font_(Font("Helvetica",10))
 			.align_(\right)
 	}
@@ -44,7 +44,7 @@ VariableNameLabel : CXAbstractLabel {
 ArgNameLabel : CXAbstractLabel {
 	*new { arg name,layout,maxx=130;
 		^super.new(layout," " ++ name,maxx: maxx)
-			.backColor_(Color( 0.47843137254902, 0.72941176470588, 0.50196078431373 ))
+			.background_(Color( 0.47843137254902, 0.72941176470588, 0.50196078431373 ))
 			.font_(Font("Helvetica",10))
 			.align_(\left)
 	}

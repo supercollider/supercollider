@@ -119,10 +119,11 @@ MultiPageLayout  {
 		if(first.notNil,{first.focus });
 	}
 
+	background_ { arg c; this.view.background_(c) }
+
 	//TODO remove
-	backColor { ^this.view.background }
-	backColor_ { arg c; this.view.background_(c) }
-	background_ { arg b; this.view.background_(b) }
+	//backColor { ^this.view.background }
+	//backColor_ { arg b; this.view.background_(b) }
 	
 	removeOnClose { arg dependant;
 		autoRemoves = autoRemoves.add(dependant);
@@ -389,12 +390,11 @@ PageLayout  {
 		if(first.notNil,{first.focus });
 	}
 
+	background_ { arg c; this.view.background_(c) }
+
 	//TODO remove
-	backColor { ^this.view.background }
-	backColor_ { arg c; this.view.background_(c) }
-	
-	background_ { arg b; this.view.background_(b) }
-	
+	//backColor { ^this.view.background }
+	//backColor_ { arg b; this.view.background_(b) }
 	
 	removeOnClose { arg dependant;
 		autoRemoves = autoRemoves.add(dependant);

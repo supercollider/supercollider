@@ -11,10 +11,10 @@ SampleGui : ObjectGui {
 		//layout.startRow;
 		nameG = ActionButton(layout,"pathname",{
 			this.loadDialog
-		},maxx:140).backColor_(Color.white);
+		},maxx:140).background_(Color.white);
 		
 		//ActionButton(layout,"play",{model.play},maxx:70);
-		//ActionButton(layout, "save...",{model.save},maxx:70).backColor_(Color.white);
+		//ActionButton(layout, "save...",{model.save},maxx:70).background_(Color.white);
 		
 			
 		//ActionButton(layout,"selAll",{sigG.setSelection(0,model.size)},maxx:70);

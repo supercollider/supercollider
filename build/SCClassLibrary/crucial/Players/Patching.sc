@@ -86,6 +86,9 @@ PatchOut {
 		patchIn.connectedTo = this;
 		this.perform(patchIn.rate,patchIn,needsValueSetNow);// set value, bus etc.
 	}
+	disconnect {
+		("disconnect" + this).postln;
+	}
 	free {
 		// tell my connectedTo that i'm gone
 	}

@@ -32,7 +32,7 @@ SynthConsole : AbstractConsole  {
 	
 	play {	// any time you hit play, you register the space bar as the stop/start play key
 			// if several consoles are open, the most recently played one has the keydown registration
-		ActionButton(layout,">",{this.registerPlayKey.doPlay }).backColor_(Color.green);
+		ActionButton(layout,">",{this.registerPlayKey.doPlay }).background_(Color.green);
 	}
 	registerPlayKey { arg keycode=49; // spacebar
 		/*	KeyCodeResponder.resetKeycode(keycode).registerKeycode(0,keycode,{  
@@ -46,17 +46,17 @@ SynthConsole : AbstractConsole  {
 	}	
 	scope {arg duration=0.5;
 		//ActionButton(layout,"scope",{this.doScope(duration)})
-		//	.backColor_(Color.green);
+		//	.background_(Color.green);
 	}
 	fftScope {
 		//ActionButton(layout,"fftScope",{this.doFFTScope})
-		//	.backColor_(Color.green);
+		//	.background_(Color.green);
 	}
 	record { arg defpath;
 		/*if(defpath.notNil,{ defaultPath = defpath });
 		ActionButton(layout,"|*|",{
 			this.getPathThen(\doRecord);
-		}).backColor_(Color.red);
+		}).background_(Color.red);
 		*/
 	}
 	pauseableRecord { arg defpath;
@@ -64,7 +64,7 @@ SynthConsole : AbstractConsole  {
 		// should be a multi state button
 		//ActionButton(layout,"|,|",{
 		//	this.getPathThen(\doPauseableRecord);
-		//}).backColor_(Color.red);
+		//}).background_(Color.red);
 		//pauseControl = CheckBoxView(layout.win,layout.layRight(29,13),",");
 	}
 	write {arg dur,defpath;
@@ -224,7 +224,7 @@ SaveConsole : AbstractConsole {
 		 	},{	
 		 		this.doSave 
 		 	})
-	 	},maxx).backColor_(
+	 	},maxx).background_(
 	 		if(path.value.isNil,{ // virgin
 	 			Color(202,255,161) 
 	 		},{

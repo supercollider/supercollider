@@ -31,15 +31,15 @@ CXMenu : SCViewAdapter { // multiple actions
 					layout.close
 				},{
 					if(lastButton.notNil,{ 
-						lastButton.backColor_(backColor ? Color.white);
+						lastButton.background_(backColor ? Color.white);
 						lastButton.labelColor_(Color.black);
 					});
-					ab.backColor_(Color.new255(112, 128, 144));
+					ab.background_(Color.new255(112, 128, 144));
 					ab.labelColor_(Color.white);
 					lastButton = ab;
 				});
 			},buttonWidth)
-			.backColor_(backColor ? Color.new255(112, 128, 144))
+			.background_(backColor ? Color.new255(112, 128, 144))
 			.labelColor_(stringColor ? Color.white);
 	}
 	resize {

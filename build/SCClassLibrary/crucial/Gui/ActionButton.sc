@@ -151,7 +151,7 @@ SCButtonAdapter : SCViewAdapter {
 		});
 	}
 	// assumes 1 state
-	backColor_ { arg color;
+	background_ { arg color;
 		var s;
 		s = view.states;
 		s.at(0).put(2,color);

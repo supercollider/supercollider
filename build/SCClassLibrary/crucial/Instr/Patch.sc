@@ -37,12 +37,29 @@ have to bundle it
 		});
 	}
 	*/
-	
-	//inputs subclassResponsibility // players, floats etc.
-	inputProxies { // want from all children ?
+	//subclassResponsibility
+	// inputs
+	// specAt
+	// argNameAt	
+
+	inputProxies { // just this patch
 		^this.inputs.select({ arg a; a.isKindOf(PlayerInputProxy) })
 	}
-	
+	annotatedInputProxies { arg offset=0,array;
+		var inputs;
+		inputs = this.inputs;
+		if(array.isNil,{ array = [] });
+		inputs.do({ arg a,i;
+			if(a.isKindOf(PlayerInputProxy),{
+				array = array.add([a, offset + i, this.argNameAt(i), this.specAt(i) ]);
+			},{
+				if(a.isKindOf(HasPatchIns),{
+					a.annotatedInputProxies(offset + i, array)
+				})
+			})
+		});
+		^array
+	}
 }
 
 Patch : HasPatchIns  {
@@ -179,9 +196,10 @@ Patch : HasPatchIns  {
 		this.children.do({ arg child; child.stop });
 	}
 
-
 	inputs { ^args }
-
+	argNameAt { arg i; ^instr.argNameAt(i) }
+	specAt { arg i; ^instr.specs.at(i) }
+	
 	//act like a simple ugen function
 	ar { 	arg ... overideArgs;	^this.valueArray(overideArgs) }
 	value { arg ... overideArgs;  ^this.valueArray(overideArgs) }
