@@ -386,10 +386,12 @@ Synth : Node {
 		^this.prNew(defName, aNode.server).addBefore(aNode,args) 
 	}
 	*head { arg aGroup,defName,args; 
-		^this.prNew(defName, aGroup.server).addToHead(aGroup.asGroup,args) 
+		aGroup = aGroup.asGroup;
+		^this.prNew(defName, aGroup.server).addToHead(aGroup,args) 
 	}
 	*tail { arg aGroup,defName,args; 
-		^this.prNew(defName, aGroup.server).addToTail(aGroup.asGroup,args) 
+		aGroup = aGroup.asGroup;
+		^this.prNew(defName, aGroup.server).addToTail(aGroup,args) 
 	}
 	
 	
