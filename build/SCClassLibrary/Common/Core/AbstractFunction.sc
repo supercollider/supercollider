@@ -132,16 +132,12 @@ AbstractFunction {
 	firstArg { arg function; ^this.composeBinaryOp('firstArg', function) }
 	rrand { arg function; ^this.composeBinaryOp('rrand', function) }
 	exprand { arg function; ^this.composeBinaryOp('exprand', function) }
-	
+	@ { arg function; ^this.composeBinaryOp('@', function) }
 	
 	// complex support
 	real { ^this }
 	imag { ^0.0 }
 	
-	//point support
-	@ { arg function;
-		^Point.new(this, function)
-	}
 
 	|| { arg function; ^this.composeBinaryOp('||', function) }
 	&& { arg function; ^this.composeBinaryOp('&&', function) }

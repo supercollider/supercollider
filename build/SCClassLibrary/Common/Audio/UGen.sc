@@ -60,6 +60,7 @@ UGen : AbstractFunction {
  		})
  	}
 	signalRange { ^\bipolar }
+	@ { arg y; ^Point.new(this, y) } // dynamic geometry support
  	 	
 	addToSynth {
 		synthDef = buildSynthDef;
