@@ -592,7 +592,19 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case tagObj :
 					goto send_normal_2;
 					break;
-				case tagInf : res = o_true; break;
+				case tagInf : 
+					switch (opcode) {
+						case opEQ  : res = o_true; break;
+						case opNE  : res = o_false; break;
+						case opLT  : res = o_false; break;
+						case opGT  : res = o_false; break;
+						case opLE  : res = o_false; break;
+						case opGE  : res = o_false; break;
+						case opMin : res.uf = o_inf.uf; break;
+						case opMax : res.uf = o_inf.uf; break;
+						default : goto send_normal_2;
+					}
+					break;
 				default:
 					switch (opcode) {
 						case opEQ  : res = o_false; break;
