@@ -46,17 +46,25 @@ ProxySynthDef : SynthDef {
 			//[\makeFadeEnv, makeFadeEnv, \canFree, canFree, \hasOwnGate, hasOwnGate].debug;
 			
 			// constrain the output to the right number of channels if supplied
+			// if control rate, no channel wrapping is applied
 			// and wrap it in a fade envelope
 			envgen = if(makeFadeEnv, { this.makeFadeEnv }, { 1.0 });
 			if(chanConstraint.notNil  
 				and: { chanConstraint < numChannels }
 				and: { isScalar.not }, 
 				{
-					postln(
-					"wrapped channels from" + numChannels + "to" + chanConstraint + "channels"
-					);
-					output = NumChannels(output, chanConstraint, true);
-					numChannels = chanConstraint;
+					if(rate === 'audio') {
+						postln(
+						"wrapped channels from" + numChannels 
+						+ "to" + chanConstraint + "channels");
+						output = NumChannels(output, chanConstraint, true);
+						numChannels = chanConstraint;
+					} {
+						postln("kept first" + chanConstraint + "channels from" 
+						+ numChannels + "channel input");
+						output = output.keep(chanConstraint);
+						numChannels = chanConstraint;
+					}
 					
 				});
 			output = output * envgen;
@@ -79,11 +87,11 @@ ProxySynthDef : SynthDef {
 		^def
 	}
 	
-	*makeFadeEnv {
+	*makeFadeEnv { arg doneAction=2;
 		var synthGate, synthFadeTime;
 		synthGate = Control.names('gate').kr(1.0);
 		synthFadeTime = Control.names('fadeTime').kr(0.02);
-		^EnvGen.kr(Env.new(#[0,1,0],[1,1],'sin',1), synthGate, 1.0, 0, synthFadeTime, 2)	}
+		^EnvGen.kr(Env.new(#[0,1,0],[1,1],'sin',1), synthGate, 1.0, 0, synthFadeTime, doneAction)	}
 		
 	
 }

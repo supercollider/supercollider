@@ -150,7 +150,10 @@ BusPlug : AbstractFunction {
 	
 	embedInStream { arg inval;
 					if(inval.notNil) {Ê
-						if(this.isPlaying.not) { this.wakeUp };  
+						if(this.isPlaying.not) {
+							if(this.isNeutral) { this.defineBus(\control, 1) }; 
+							this.wakeUp 
+						};  
 						busArg.yield;
 					} { this.yield  } // if in event stream yield bus arg
 					^inval
@@ -215,6 +218,7 @@ BusPlug : AbstractFunction {
 			bundle = MixedBundle.new;
 			if(monitorGroup.isPlaying.not, { 
 				monitorGroup = Group.newToBundle(bundle, group, \addToTail);
+				bundle.add("/n_set", monitorGroup.nodeID, \fadeTime, this.fadeTime);
 				NodeWatcher.register(monitorGroup);
 			});
 			
@@ -240,10 +244,15 @@ BusPlug : AbstractFunction {
 		if(monitorGroup.isPlaying, { this.stop }, { this.play });
 	}
 
-	stop {
+	stop { arg fadeTime;
 		if(monitorGroup.isPlaying, {
-			monitorGroup.free;
-			monitorGroup = nil;
+			monitorGroup.release(fadeTime);
+			SystemClock.sched(fadeTime ? this.fadeTime, { 
+				monitorGroup.free;
+				monitorGroup = nil;
+			}); // revisit
+						// simplify by using only one monitor, maybe. check recording though
+			
 		})
 	}
 	
@@ -300,8 +309,10 @@ NodeProxy : BusPlug {
 	}
 	
 	clear {
-		this.init;
-		super.init;
+		this.end(0);
+		this.freeTask; // remove any proxy task
+		this.freeBus;	 // free the bus from the server allocator 
+		this.init;	// reset the environment
 	}
 	
 	clearObjects {
@@ -314,10 +325,10 @@ NodeProxy : BusPlug {
 		parents = IdentitySet.new;
 	}
 	
-	end {
+	end { arg fadeTime;
 		var dt;
-		dt = this.fadeTime;
-		Routine({ this.free; (dt + server.latency).wait; this.stop;  }).play;
+		dt = fadeTime ? this.fadeTime;
+		Routine({ this.free(dt, true); (dt + server.latency).wait; this.stop(0);  }).play;
 	}
 	
 	fadeTime_ { arg t;
@@ -356,6 +367,7 @@ NodeProxy : BusPlug {
 		this.put(-1, obj, 0) 
 	}
 	
+	// revisit 
 	removeLast { 
 		this.removeAt(objects.size - 1); 
 	}
@@ -638,7 +650,7 @@ NodeProxy : BusPlug {
 		busses.do({ arg item, i;
 			x = min(item.numChannels ? n, n);
 			this.put(i,
-				SynthControl.new("system_link_" ++ this.rate ++ "_" ++ x).hasGate_(true), 
+				SynthControl.new("system_link_" ++ this.rate ++ "_" ++ x), 
 				0, 
 				[\in, item.index, \out, this.index]
 			)
@@ -696,7 +708,7 @@ NodeProxy : BusPlug {
 			bundle.schedSend(server);
 	}
 	
-	sendEach { arg extraArgs, freeLast=false;
+	sendEach { arg extraArgs, freeLast=true;
 			var bundle;
 			bundle = this.getBundle;
 			if(freeLast, { this.stopAllToBundle(bundle) });
@@ -768,8 +780,10 @@ NodeProxy : BusPlug {
 	}
 
 	
-	wakeUp { 		
-			var bundle;
+	wakeUp { 	if(this.isPlaying.not) { this.deepWakeUp } }
+	
+	deepWakeUp {
+				var bundle;
 				bundle = MixedBundle.new;
 				this.wakeUpToBundle(bundle);
 				bundle.schedSend(server, clock)
@@ -797,7 +811,15 @@ NodeProxy : BusPlug {
 	wakeUpParentsToBundle { arg bundle, checkedAlready;
 			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
 			nodeMap.wakeUpParentsToBundle(bundle, checkedAlready);
-	}	
+	}
+	
+	getFamily { arg list;
+		list = list ?? { IdentitySet.new };
+		list.add(this);
+		list.addAll(parents);
+		parents.do { arg proxy; proxy.getFamily(list) };
+		^list 	
+	}
 		
 	
 	////// private /////
@@ -806,7 +828,7 @@ NodeProxy : BusPlug {
 	prepareOutput {
 		var parentPlaying;
 		parentPlaying = this.addToParentProxy;
-		if(parentPlaying, { this.wakeUp });
+		if(parentPlaying, { this.deepWakeUp });
 	}
 	
 	addToParentProxy {
@@ -820,17 +842,20 @@ NodeProxy : BusPlug {
 	////////////behave like my group////////////
 	
 	isPlaying { ^group.isPlaying }
-	free { arg all=true;
+	free { arg fadeTime, freeGroup = true;
 		var bundle;
 		if(this.isPlaying, {	
 			bundle = MixedBundle.new;
+			if(fadeTime.notNil) {Êbundle.add(["/n_set", group.nodeID, \fadeTime, fadeTime]) };
 			this.stopAllToBundle(bundle);
-			if(all) { bundle.add(["/n_free", group.nodeID]) };
+			if(freeGroup) { 
+				bundle.addSchedFunction({ group.free }, fadeTime ? this.fadeTime) 
+			};
 			bundle.send(server);
 		})
  	}
 	
-	release { this.free(false) }
+	release { arg fadeTime; this.free(fadeTime, false) }
 	
 	
 //	set { arg ... args;
@@ -981,11 +1006,11 @@ NodeProxy : BusPlug {
 			ctlBus.perform(action, levels, durs);
 			ctlBus.free;
 			
-			setArgs = [keys, levels].multiChannelExpand.flat;
+			setArgs = [keys, levels].flopn.flat;
 			nodeMap.performList(\set, setArgs);
 			
 			server.sendBundle(server.latency + durs.maxItem, 
-				 ["/n_map", id] ++ [keys, -1].multiChannelExpand.flat,
+				 ["/n_map", id] ++ [keys, -1].flop.flat,
 				 ["/n_set", id] ++ setArgs
 			);
 		}, { "not playing".inform });
@@ -1074,6 +1099,7 @@ SharedNodeProxy : NodeProxy {
 	mapEnvir {}
 	
 	// use shared node proxy only with functions that can release the synth.
+	// this is checked and throws an error in addObj
 	stopAllToBundle { arg bundle;
 				bundle.add(["/n_set", constantGroupID, \gate, 0]);
 	}

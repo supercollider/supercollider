@@ -39,11 +39,14 @@ EnvironmentRedirect {
 	put { arg key, obj;
 		envir.put(key, obj)
 	}
-	
-	
+		
 		
 	// behave like my environment
 	
+	removeAt { arg key;
+		^envir.removeAt(key)
+	}
+
 	
 	use { arg function;
 		// temporarily replaces the currentEnvironment with this, 

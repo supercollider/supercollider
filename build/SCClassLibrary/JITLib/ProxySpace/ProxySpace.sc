@@ -2,7 +2,6 @@
 
 
 ProxySpace : EnvironmentRedirect {
-	classvar <>lastEdited;//undo support
 	classvar <>all; //access
 	
 	var <server, <clock, <fadeTime, <>awake=true;
@@ -78,7 +77,6 @@ ProxySpace : EnvironmentRedirect {
 			
 		});
 		proxy.source = obj;
-		this.class.lastEdited = proxy;
 	}
 		
 	
@@ -135,13 +133,51 @@ ProxySpace : EnvironmentRedirect {
 		});
 	}
 	
+	// garbage collector
+	
+	// ends all proxies that are not needed
+	reduce { arg excluding;
+		this.gcList(excluding).do { arg proxy; proxy.end };
+	}
+	
+	// removes all proxies that are not needed
+	clean { arg excluding;
+		this.gcList(excluding).do { arg proxy; proxy.clear };
+		this.removeNeutral;
+	}
+	
+	removeNeutral { // should be in envir.select
+		var newEnvir;
+		newEnvir = envir.copy;
+		envir.keysValuesDo { arg key, val; if(val.isNeutral) {  newEnvir.removeAt(key) } };
+		envir = newEnvir;
+	}
+	// get a list of all proxies that are not reached either by the list passed in
+	// or (if nil) by the monitoring proxies
+	gcList { arg excluding;
+		var monitors, all, toBeKept, res; 
+		monitors = excluding ?? { this.monitors };
+		toBeKept = IdentitySet.new;
+		res = List.new;
+		monitors.do { arg proxy; proxy.getFamily(toBeKept) };
+		envir.do { arg proxy; if(toBeKept.includes(proxy).not) { res.add(proxy) } };
+		^res
+	}
+	monitors {
+		var monitors;
+		monitors = Array.new;
+		envir.do { arg proxy; 
+			if(proxy.monitorGroup.isPlaying) { monitors =  monitors.add(proxy) }
+		};
+		^monitors
+	}
+	
+	// global clearing up
+	
 	*clearAll {
 		all.do({ arg item; item.clear });
 	}
 	
-	*undo {
-		lastEdited.tryPerform(\undo)
-	}
 	
 	printOn { arg stream; 
 		stream << "ProxySpace: " << Char.nl;

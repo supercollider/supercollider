@@ -64,7 +64,7 @@ StreamControl : AbstractPlayControl {
 		
 	play {
 		stream.stop;
-		stream.play(nil, false, 0); //(clock);
+		stream.play(clock, false, 0); // maybe in event?
 		CmdPeriod.add(this); // should maybe be in PauseStream
 	}
 	
@@ -107,7 +107,7 @@ SynthControl : AbstractPlayControl {
 	loadToBundle {} //assumes that SynthDef is loaded in the server 
 	name { ^source }
 	clear { nodeID = nil }
-	distributable { ^canReleaseSynth } // n_free not implemented in shared nod proxy
+	distributable { ^canReleaseSynth } // n_free not implemented in shared node proxy
 	
 	build { arg proxy; // assumes audio, if proxy is not initialized
 		var rate, desc;

@@ -163,12 +163,13 @@
 				
 				event = player.event;
 				newParent = Event.make({
-					~player = MapNotePlayer.new;
-					~channelOffset = channelOffset;
+					//~player = MapNotePlayer.new;
+					~channelOffset = channelOffset; // default value
+					~addAction = 1;
 					~finish = {
 						~group = proxy.group.nodeID;
-						~mapping = proxy.nodeMap.mapArgs;
-						~i_out = ~out = ~channelOffset % numChannels + index;
+						//~mapping = proxy.nodeMap.mapArgs;
+						~out = ~channelOffset % numChannels + index;
 						~server = server;
 						~freq = ~freq.value + ~detune;
 						~amp = ~amp.value;
@@ -256,6 +257,7 @@
 	}
 	
 }
+
 
 
 ///////////  query whether some UGen can possibly free its synth from within
