@@ -266,7 +266,7 @@ expr1	: pushliteral
 				selectornode = newPyrSlotNode(&slot);
 				$$ = (long)newPyrCallNode(selectornode, argnode, 0, 0); 
 			}
-		|  '[' arglistc ']'
+		|  '[' arrayelems ']'
 			{ $$ = (long)newPyrDynListNode(0, (PyrParseNode*)$2); }
 		|	'(' valrange2 ')'
 			{ $$ = $2; }
@@ -314,7 +314,7 @@ expr1	: pushliteral
 				args = linkNextNode(args, (PyrParseNode*)$3);
 				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, 0); 
 			}
-		| classname '[' arglistc ']'
+		| classname '[' arrayelems ']'
 			{ $$ = (long)newPyrDynListNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
 		| expr1 '[' arglist1 ']'
 			{ 
@@ -793,10 +793,36 @@ exprn	: expr
 exprseq : exprn optsemi
 		;
 				
-arglistc	: { $$ = 0; }
-			| arglist1 optcomma
+arrayelems	: { $$ = 0; }
+			| arrayelems1 optcomma
+			  { $$ = $1; }
 			;
 
+arrayelems1	: exprseq
+			| exprseq ':' exprseq
+				{ $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
+			| keybinop exprseq
+				{
+					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)$1, NULL);
+					$$ = (long)linkNextNode(key, (PyrParseNode*)$2); 
+				}
+			| arrayelems1 ',' exprseq
+					{ $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
+			| arrayelems1 ',' keybinop exprseq
+				{
+					PyrParseNode* elems;
+					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)$3, NULL);
+					elems = (long)linkNextNode(key, (PyrParseNode*)$4); 
+					$$ = (long)linkNextNode($1, elems); 
+				}
+			| arrayelems1 ',' exprseq ':' exprseq
+				{
+					PyrParseNode* elems;
+					elems = (long)linkNextNode($3, (PyrParseNode*)$5); 
+					$$ = (long)linkNextNode($1, elems); 
+				}
+			;
+								
 arglist1	: exprseq
 			| arglist1 ',' exprseq
 					{ $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
@@ -932,9 +958,9 @@ slotdef		: name
 				{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, (PyrLiteralNode*)$3, 0); }
 			;
 				
-dictslotdef	: expr ':' expr
+dictslotdef	: exprseq ':' exprseq
 				{ $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
-			| keybinop expr
+			| keybinop exprseq
 				{
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)$1, NULL);
 					$$ = (long)linkNextNode(key, (PyrParseNode*)$2); 
