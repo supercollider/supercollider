@@ -238,7 +238,7 @@ SynthDef {
 	replaceUGen { arg a, b;
 		children.remove(b);
 		children.do({ arg item, i;
-			if (item === a, { 
+			if (item === a and: { b.isKindOf(UGen) }, { 
 				children.put(i, b) 
 			});
 			item.inputs.do({ arg input, j;

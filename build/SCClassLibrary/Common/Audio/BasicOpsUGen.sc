@@ -88,10 +88,12 @@ BinaryOpUGen : BasicOpUGen {
 		var a, b, muladd;
 		#a, b = inputs;
 		
+		this.constantFolding;
+		
 		if (operator == '+', {
 			// create a MulAdd if possible.
-			if (a.isKindOf(BinaryOpUGen) && { a.operator == '*' }
-				&& { a.descendants.size == 1 }, 
+			if (a.isKindOf(BinaryOpUGen) and: { a.operator == '*' 
+				and: { a.descendants.size == 1 }}, 
 			{
 				if (MulAdd.canBeMulAdd(a.inputs[0], a.inputs[1], b), {
 					buildSynthDef.removeUGen(a);
@@ -102,8 +104,8 @@ BinaryOpUGen : BasicOpUGen {
 					muladd = MulAdd.new(a.inputs[1], a.inputs[0], b)
 				})});
 			},{
-			if (b.isKindOf(BinaryOpUGen) && { b.operator == '*' }
-				&& { b.descendants.size == 1 }, 
+			if (b.isKindOf(BinaryOpUGen) and: { b.operator == '*' 
+				and: { b.descendants.size == 1 }}, 
 			{
 				if (MulAdd.canBeMulAdd(b.inputs[0], b.inputs[1], a), {
 					buildSynthDef.removeUGen(b);
@@ -118,6 +120,106 @@ BinaryOpUGen : BasicOpUGen {
 				synthDef.replaceUGen(this, muladd);
 			});
 		});
+	}
+	
+	constantFolding {
+		var a, b, aa, bb, cc, dd, temp, ac_ops, value;
+		
+		// associative & commutative operators
+		ac_ops = #['+','*','min','max','&&','||'];
+		
+		if (ac_ops.includes(operator).not) { ^this };
+		
+		#a, b = inputs;
+		if (a.isKindOf(BinaryOpUGen) and: { operator == a.operator 
+			and: { b.isKindOf(BinaryOpUGen) and: { operator == b.operator } }}) {
+			#aa, bb = a.inputs;
+			#cc, dd = b.inputs;
+			if (aa.isKindOf(SimpleNumber)) {
+				if (cc.isKindOf(SimpleNumber)) {
+					b.inputs[0] = bb;
+					this.inputs[0] = aa.perform(operator, cc);
+					synthDef.removeUGen(a);
+				}{
+				if (dd.isKindOf(SimpleNumber)) {
+					b.inputs[1] = bb;
+					this.inputs[0] = aa.perform(operator, dd);
+					synthDef.removeUGen(a);
+				}}
+			}{
+			if (bb.isKindOf(SimpleNumber)) {
+				if (cc.isKindOf(SimpleNumber)) {
+					b.inputs[0] = aa;
+					this.inputs[0] = bb.perform(operator, cc);
+					synthDef.removeUGen(a);
+				}{
+				if (dd.isKindOf(SimpleNumber)) {
+					b.inputs[1] = aa;
+					this.inputs[0] = bb.perform(operator, dd);
+					synthDef.removeUGen(a);
+				}}
+			}};
+			
+		};
+		#a, b = inputs;
+		if (a.isKindOf(BinaryOpUGen) and: { operator == a.operator }) {
+			#aa, bb = a.inputs;
+			if (b.isKindOf(SimpleNumber)) {
+				if (aa.isKindOf(SimpleNumber)) {
+					buildSynthDef.removeUGen(a);
+					this.inputs[0] = aa.perform(operator, b);
+					this.inputs[1] = bb;
+					^this
+				};
+				if (bb.isKindOf(SimpleNumber)) {
+					buildSynthDef.removeUGen(a);
+					this.inputs[0] = bb.perform(operator, b);
+					this.inputs[1] = aa;
+					^this
+				};
+			};
+			// percolate constants upward so that a subsequent folding may occur
+			if (aa.isKindOf(SimpleNumber)) {
+				this.inputs[1] = aa;
+				a.inputs[0] = b;
+			}{
+			if (bb.isKindOf(SimpleNumber)) {
+				this.inputs[1] = bb;
+				a.inputs[1] = b;
+			}};
+		};
+		#a, b = inputs;
+		if (b.isKindOf(BinaryOpUGen) and: { operator == b.operator }) {
+			#cc, dd = b.inputs;
+			if (a.isKindOf(SimpleNumber)) {
+				if (cc.isKindOf(SimpleNumber)) {
+					buildSynthDef.removeUGen(b);
+					this.inputs[0] = a.perform(operator, cc);
+					this.inputs[1] = dd;
+					^this
+				};
+				if (dd.isKindOf(SimpleNumber)) {
+					buildSynthDef.removeUGen(b);
+					this.inputs[0] = a.perform(operator, dd);
+					this.inputs[1] = cc;
+					^this
+				};
+			};
+			// percolate constants upward so that a subsequent folding may occur
+			if (cc.isKindOf(SimpleNumber)) {
+				this.inputs[0] = cc;
+				b.inputs[0] = a;
+			}{
+			if (dd.isKindOf(SimpleNumber)) {
+				this.inputs[0] = dd;
+				b.inputs[1] = a;
+			}};
+		};
+		#a, b = inputs;
+		if (a.isKindOf(SimpleNumber) and: { b.isKindOf(SimpleNumber) }) {
+			synthDef.replaceUGen(this, a.perform(operator, b));
+			synthDef.removeUGen(this);
+		};
 	}
 }
 
@@ -150,8 +252,8 @@ MulAdd : UGen {
 		// see if these inputs satisfy the constraints of a MulAdd ugen.
 		if (in.rate == \audio, { ^true });
 		if (in.rate == \control 
-			&& { mul.rate == \control || { mul.rate == \scalar }} 
-			&& { add.rate == \control || { add.rate == \scalar }}, 
+			and: { mul.rate == \control || { mul.rate == \scalar }} 
+			and: { add.rate == \control || { add.rate == \scalar }}, 
 		{ 
 			^true 
 		});
