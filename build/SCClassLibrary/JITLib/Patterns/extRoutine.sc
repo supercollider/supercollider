@@ -1,23 +1,10 @@
 
 
-
-+Task {
-	
-	refresh {
-		stream = originalStream
-	}
-	isPlaying {
-		^stream != nil
-	}
-}
-
 +Pattern {
 	
-	loop { ^this.repeat(inf)  }
+	loop { ^Pn(this, inf) }
 
-	repeat { arg repeats = inf;
-		^Ploop(this, repeats)
-	}
+	repeat { arg repeats = inf; ^Pn(this, repeats) }
 	limit { arg n=1;
 		^Pfin(n.asStream, this.asStream)
 	}
@@ -26,41 +13,41 @@
 
 +Stream {
 	loop { 
-		^Routine.new({ arg inevent;
-			var res;
-			inf.do({
-				res = this.next(inevent);
-				if(res.isNil, { res = this.reset.next(inevent) });
-				inevent = res.yield(inevent)
-			})
-		});  
+		^FuncStream.new({ arg inval;
+			var outval;
+			outval = this.next(inval);
+			if(outval.isNil) {  this.reset; outval = this.next(inval) };
+			outval
+		}, { this.reset })  
 	}
-	
-	repeat { arg repeats;
+	repeat { arg repeats = inf;
+		var n;
 		if(inf === repeats) { ^this.loop };
-		^Routine.new({ arg inevent;
-			var res;
-			inf.do({
-				res = this.next(inevent);
-				if(res.isNil, { 
-					res = this.reset.next(inevent);
-					repeats = repeats - 1;  
-				});
-				if(repeats > 0, {
-					inevent = res.yield(inevent)
-				}, {
-					nil.alwaysYield 
-				});
-			})
-		});
+		n = repeats - 1;
+		^FuncStream.new({ arg inval;
+			var outval;
+			outval = this.next(inval);
+			if(n > 0) {
+					if(outval.isNil) {  
+						n = n - 1; 
+						this.reset;
+						outval = this.next(inval) 
+					};
+					outval
+			} {Ênil }
+		}, {	n = repeats; this.reset })
 	}
-	
+
 }
 
 +Object {
+
 	loop {}
-	repeat { arg repeats = inf;
-		^Routine.new({ repeats.do({ arg inval; inval = this.yield(inval) }) })
+	
+	repeat { arg repeats = inf; 
+		^if(inf === repeats) { this } {
+			Pn(this, repeats).asStream 
+		}
 	}
 }
 
