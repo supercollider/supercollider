@@ -22,6 +22,7 @@ Class {
 		^superclass.asClass
 	}
 	asClass { ^this }
+
 	initClass {}
 	initClassTree {
 		this.initClass;
@@ -29,7 +30,7 @@ Class {
 			subclasses.do({ arg class; class.initClassTree; });
 		})
 	}
-
+	
 	*allClasses { _AllClasses }
 	
 	findMethod { arg methodName;
@@ -40,7 +41,7 @@ Class {
 	findRespondingMethodFor { arg methodName;
 		var class, method;
 		class = this;
-		while (class != Class, {
+		while ({class.notNil && (class != Class)}, {
 			method = class.findMethod(methodName);
 			if (method.notNil, { ^method });
 			class = class.superclass;
@@ -138,13 +139,19 @@ Process {
 	var schedulerQueue;
 	
 	startUp {
+		AppClock.initClass; // if something fails during initClassTree we still have a clock to tick
 		Object.initClassTree;
+		
 		topEnvironment = Environment.new;
 		currentEnvironment = topEnvironment;
 
 		// This method is called automatically right after compiling.
 		// Override in class 'Main' to do initialization stuff,
 		// but make sure to call this superclass method.
+		
+		// the AppClock is not started until after this method is complete,
+		// but it will be started regardless of whether startUp failed due
+		// to errors
 	}
 	run {
 		// This method is called when 'Run Main' is chosen from the menu.
@@ -161,7 +168,7 @@ Process {
 		OSCPort.closeAll;
 		File.closeAll;
 	}
-	tick {
+	tick { // called repeatedly by SCVirtualMachine::doPeriodicTask
 		AppClock.tick;
 	}
 	openCodeFile {
