@@ -89,6 +89,16 @@ In : MultiOutUGen {
 	}
 }
 
+LagIn : MultiOutUGen {	
+	*kr { arg bus = 0, numChannels = 1, lag = 0.1;
+		^this.multiNew('control', numChannels, bus, lag)
+	}
+	init { arg numChannels ... argInputs;
+		inputs = argInputs.asArray;
+		^this.initOutputs(numChannels, rate)
+	}
+}
+
 InFeedback : MultiOutUGen {	
 	*ar { arg bus = 0, numChannels = 1;
 		^this.multiNew('audio', numChannels, bus)

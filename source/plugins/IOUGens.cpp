@@ -50,6 +50,13 @@ struct LagControl : public IOUnit
 	float m_y1[kMaxLags];
 };
 
+
+struct LagIn : public IOUnit
+{
+	float m_b1;
+	float m_y1[kMaxLags];
+};
+
 extern "C"
 {
 	void load(InterfaceTable *inTable);
@@ -71,6 +78,10 @@ extern "C"
 	void In_Ctor(IOUnit *unit);
 	void In_next_a(IOUnit *unit, int inNumSamples);
 	void In_next_k(IOUnit *unit, int inNumSamples);
+
+	void LagIn_Ctor(LagIn *unit);
+	void LagIn_next_0(LagIn *unit, int inNumSamples);
+	void LagIn_next_k(LagIn *unit, int inNumSamples);
 
 	void InFeedback_Ctor(IOUnit *unit);
 	void InFeedback_next_a(IOUnit *unit, int inNumSamples);
@@ -252,6 +263,79 @@ void In_Ctor(IOUnit* unit)
 		In_next_k(unit, 1);
 	}
 //Print("<-In_Ctor\n");
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void LagIn_next_k(LagIn *unit, int inNumSamples)
+{
+//Print("->LagIn_next_k\n");
+	World *world = unit->mWorld;
+	int numChannels = unit->mNumOutputs;
+
+	float fbusChannel = ZIN0(0);
+	if (fbusChannel != unit->m_fbusChannel) {
+		unit->m_fbusChannel = fbusChannel;
+		int busChannel = (int)fbusChannel;
+		int lastChannel = busChannel + numChannels;
+		
+		if (!(busChannel < 0 || lastChannel > world->mNumControlBusChannels)) {
+			unit->m_bus = world->mControlBus + busChannel;
+		}
+	}
+	
+	float *in = unit->m_bus;
+	float b1 = unit->m_b1;
+	float *y1 = unit->m_y1;
+	for (int i=0; i<numChannels; ++i, in++) {
+		float *out = OUT(i);
+		float z = *in;
+		*out = y1[i] = z + b1 * (y1[i] - z);
+	}
+//Print("<-In_next_k\n");
+}
+
+void LagIn_next_0(LagIn *unit, int inNumSamples)
+{
+//Print("->LagIn_next_k\n");
+	World *world = unit->mWorld;
+	int numChannels = unit->mNumOutputs;
+
+	float fbusChannel = ZIN0(0);
+	if (fbusChannel != unit->m_fbusChannel) {
+		unit->m_fbusChannel = fbusChannel;
+		int busChannel = (int)fbusChannel;
+		int lastChannel = busChannel + numChannels;
+		
+		if (!(busChannel < 0 || lastChannel > world->mNumControlBusChannels)) {
+			unit->m_bus = world->mControlBus + busChannel;
+		}
+	}
+	
+	float *in = unit->m_bus;
+	float *y1 = unit->m_y1;
+	for (int i=0; i<numChannels; ++i, in++) {
+		float *out = OUT(i);
+		*out = y1[i] = *in;
+	}
+//Print("<-In_next_k\n");
+}
+
+void LagIn_Ctor(LagIn* unit)
+{
+//Print("->LagIn_Ctor\n");
+	World *world = unit->mWorld;
+	unit->m_fbusChannel = -1.;
+
+	float lag = ZIN0(1);
+	unit->m_b1 = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
+
+	SETCALC(LagIn_next_k);
+	unit->m_bus = world->mControlBus;
+	//unit->m_busTouched = world->mControlBusTouched;
+	LagIn_next_0(unit, 1);
+//Print("<-LagIn_Ctor\n");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -942,6 +1026,7 @@ void load(InterfaceTable *inTable)
 	DefineUnit("ReplaceOut", sizeof(IOUnit), (UnitCtorFunc)&ReplaceOut_Ctor, 0);
 	DefineUnit("Out", sizeof(IOUnit), (UnitCtorFunc)&Out_Ctor, 0);
 	DefineUnit("In", sizeof(IOUnit), (UnitCtorFunc)&In_Ctor, 0);
+	DefineUnit("LagIn", sizeof(IOUnit), (UnitCtorFunc)&LagIn_Ctor, 0);
 	DefineUnit("InFeedback", sizeof(IOUnit), (UnitCtorFunc)&InFeedback_Ctor, 0);
 	DefineUnit("InTrig", sizeof(IOUnit), (UnitCtorFunc)&InTrig_Ctor, 0);
 
