@@ -66,34 +66,37 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 			if (slot->uo->classptr == class_array) {
 				len = slot->uo->size;
 				maxlen = len > maxlen ? len : maxlen;
+			} else if (isKindOf(slot->uo, class_arrayed_collection)) {
+				return errFailed; // this primitive only handles Arrays.
 			}
 		}
 	}
-		obj2 = newPyrArray(g->gc, maxlen, 0, true);
-		obj2->size = maxlen;
-		slots2 = obj2->slots;
-		for (i=0; i<maxlen; ++i) {
-			obj3 = newPyrArray(g->gc, size, 0, false);
-			obj3->size = size;
-			SetObject(slots2 + i, obj3);
-			slots1 = obj1->slots;
-			slots3 = obj3->slots;
-			for (j=0; j<size; ++j) {
-				slot = slots1 + j;
-				if (slot->utag == tagObj) {
-					if (slot->uo->classptr == class_array && slot->uo->size > 0) {
-						obj4 = slot->uo;
-						slots4 = obj4->slots;
-						slots3[j].ucopy = slots4[i % obj4->size].ucopy;
-					} else {
-						slots3[j].ucopy = slot->ucopy;
-					}
+	
+	obj2 = newPyrArray(g->gc, maxlen, 0, true);
+	obj2->size = maxlen;
+	slots2 = obj2->slots;
+	for (i=0; i<maxlen; ++i) {
+		obj3 = newPyrArray(g->gc, size, 0, false);
+		obj3->size = size;
+		SetObject(slots2 + i, obj3);
+		slots1 = obj1->slots;
+		slots3 = obj3->slots;
+		for (j=0; j<size; ++j) {
+			slot = slots1 + j;
+			if (slot->utag == tagObj) {
+				if (slot->uo->classptr == class_array && slot->uo->size > 0) {
+					obj4 = slot->uo;
+					slots4 = obj4->slots;
+					slots3[j].ucopy = slots4[i % obj4->size].ucopy;
 				} else {
 					slots3[j].ucopy = slot->ucopy;
 				}
+			} else {
+				slots3[j].ucopy = slot->ucopy;
 			}
 		}
-	
+	}
+
 	SetObject(a, obj2);
 
 	return errNone;
