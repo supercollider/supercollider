@@ -96,31 +96,6 @@ ArrayedCollection : SequenceableCollection {
 
 	isArray { ^true }
 	asArray { ^this }
-	*with { arg ... args; 
-		var newColl;
-		// answer an array of my class of the given arguments
-		// the class Array has a simpler implementation
-		newColl = this.new(args.size);
-		args.do({ arg item, i; newColl.add(i, item) });
-		^newColl
-	}
-	*series { arg size, start=0, step=1;
-		var array;
-		array = this.new(size);
-		size.do({ arg i;
-			array.add(start + (step * i));
-		});
-		^array
-	}
-	*geom { arg size, start, grow;
-		var array;
-		array = this.new(size);
-		size.do({ arg i;
-			array.add(start);
-			start = start * grow;
-		});
-		^array
-	}		
 
 	copyRange { arg start, end; 
 		// copies the fixed part of an object and the indexed slots
