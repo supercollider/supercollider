@@ -3153,6 +3153,8 @@ void compilePyrBlockNode(PyrBlockNode* node, void* result)
 		
 		int endCharNo = linestarts[node->lineno] + node->charno;
 		int stringLength = endCharNo - node->beginCharNo;
+		int lastChar = text[node->beginCharNo + stringLength - 1];
+		if (lastChar == 0) stringLength--;
 		
 		PyrString* string = newPyrStringN(compileGC(), stringLength, flags, false);
 		memcpy(string->s, text+node->beginCharNo, stringLength);
