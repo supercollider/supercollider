@@ -876,7 +876,7 @@ void Shaper_Ctor(Shaper *unit)
 	unit->m_fbufnum = -1e9f;
 	if (BUFLENGTH == 1) {
 		SETCALC(Shaper_next_1);
-	} else if (INRATE(0) == calc_FullRate) {
+	} else if (INRATE(1) == calc_FullRate) {
 		SETCALC(Shaper_next_a);
 	} else {
 		SETCALC(Shaper_next_k);
@@ -891,23 +891,20 @@ void Shaper_next_1(Shaper *unit, int inNumSamples)
 	GET_TABLE
 		float *table0 = bufData;
 		float *table1 = table0 + 1;
-		int32 maxindex = tableSize - 1;
-		float offset = maxindex * 0.5;
+		float fmaxindex = (float)(tableSize>>1) - 0.0001;
+		float offset = tableSize * 0.25;
 	
 	float val;
 
 	float fin = ZIN0(1);
-	if (fin < -1.f) val = *(float*)((char*)table0);
-	else if (fin > 1.f) val = *(float*)((char*)table0  + maxindex);
-	else {
-		float findex = offset + fin * offset;
-		int32 index = (int32)findex;
-		float pfrac = findex - (index - 1);
-		index <<= 3;
-		float val1 = *(float*)((char*)table0 + index);
-		float val2 = *(float*)((char*)table1 + index);
-		val = val1 + val2 * pfrac;
-	}
+	float findex = offset + fin * offset;
+	findex = sc_clip(findex, 0.f, fmaxindex);
+	int32 index = (int32)findex;
+	float pfrac = findex - (index - 1);
+	index <<= 3;
+	float val1 = *(float*)((char*)table0 + index);
+	float val2 = *(float*)((char*)table1 + index);
+	val = val1 + val2 * pfrac;
 	ZOUT0(0) = val;
 
 }
@@ -918,8 +915,8 @@ void Shaper_next_k(Shaper *unit, int inNumSamples)
 	GET_TABLE
 		float *table0 = bufData;
 		float *table1 = table0 + 1;
-		int32 maxindex = tableSize - 1;
-		float offset = maxindex * 0.5;
+		float fmaxindex = (float)(tableSize>>1) - 0.0001;
+		float offset = tableSize * 0.25;
 
 	float *out = ZOUT(0);
 	
@@ -930,20 +927,16 @@ void Shaper_next_k(Shaper *unit, int inNumSamples)
 	unit->mPrevIn = fin;
 
 	LOOP(inNumSamples,
-		fin += phaseinc;
-		if (fin < -1.f) val = *(float*)((char*)table0);
-		else if (fin > 1.f) val = *(float*)((char*)table0  + maxindex);
-		else {
-			float findex = offset + fin * offset;
-		
-			int32 index = (int32)findex;
-			float pfrac = findex - (index - 1);
-			index <<= 3;
-			float val1 = *(float*)((char*)table0 + index);
-			float val2 = *(float*)((char*)table1 + index);
-			val = val1 + val2 * pfrac;
-		}
+		float findex = offset + fin * offset;
+		findex = sc_clip(findex, 0.f, fmaxindex);
+		int32 index = (int32)findex;
+		float pfrac = findex - (index - 1);
+		index <<= 3;
+		float val1 = *(float*)((char*)table0 + index);
+		float val2 = *(float*)((char*)table1 + index);
+		val = val1 + val2 * pfrac;
 		ZXP(out) = val;
+		fin += phaseinc;
 	);
 	
 }
@@ -954,8 +947,8 @@ void Shaper_next_a(Shaper *unit, int inNumSamples)
 	GET_TABLE
 		float *table0 = bufData;
 		float *table1 = table0 + 1;
-		int32 maxindex = tableSize - 1;
-		float offset = maxindex * 0.5;
+		float fmaxindex = (float)(tableSize>>1) - 0.0001;
+		float offset = tableSize * 0.25;
 
 	float *out = ZOUT(0);
 	float *in = ZIN(1);
@@ -963,18 +956,14 @@ void Shaper_next_a(Shaper *unit, int inNumSamples)
 
 	LOOP(inNumSamples,
 		float fin = ZXP(in);
- 		if (fin < -1.f) val = *(float*)((char*)table0);
- 		else if (fin > 1.f) val = *(float*)((char*)table0  + maxindex);
-		else {
-			float findex = offset + fin * offset;
-		
-			int32 index = (int32)findex;
-			float pfrac = findex - (index - 1);
-			index <<= 3;
-			float val1 = *(float*)((char*)table0 + index);
-			float val2 = *(float*)((char*)table1 + index);
-			val = val1 + val2 * pfrac;
-		}
+		float findex = offset + fin * offset;
+		findex = sc_clip(findex, 0.f, fmaxindex);
+		int32 index = (int32)findex;
+		float pfrac = findex - (index - 1);
+		index <<= 3;
+		float val1 = *(float*)((char*)table0 + index);
+		float val2 = *(float*)((char*)table1 + index);
+		val = val1 + val2 * pfrac;
 		ZXP(out) = val;
 	);
 
