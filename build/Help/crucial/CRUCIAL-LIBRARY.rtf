@@ -5,9 +5,8 @@
 
 \f0\b\fs48 \cf0 CrucialLibrary
 \f1\b0\fs24 \
-\
-\
-This library offers:\
+  \
+Higher level interfaces for managing musical objects.\
 \
 	
 \f0\b AbstractPlayer
@@ -17,7 +16,12 @@ This library offers:\
 		them off again when you are done.\
 	\
 	Patch\
-		the most common and well known Player\
+		the most common and well known Player.  This patches inputs into a function.  Inputs can be floats,\
+		other players, Envs (envelopes), Samples, or SFP (sound file player).\
+		a Patch plays continously and infinitely (until you stop it).\
+		\
+	InstrSpawner, InstrGateSpawner\
+		a Patch that plays successive events, iterating the inputs as streams. \
 		\
 	introspection tools\
 		.insp  -  a debugging tool\
@@ -25,14 +29,14 @@ This library offers:\
 		class browser\
 			AbstractPlayer.gui\
 \
-It is not advisable to use "the whole library".  Don't think of it as a single entity.  Try out one or two things and work them into what you are normally doing.  As time goes on, learn some more objects.\
+It is not advisable to use "the whole library"--don't think of it as a single entity.  Try out one or two things and work them into what you are normally doing;  as time goes on, learn some more objects.\
 It should not be an all or nothing commitment.  If you perceive it as that, then you are approaching it wrong.\
 \
 Although there is a convienient system for instantly making guis for instrument functions, 
 \f0\b the purpose of the library is not "a gui system".
 \f1\b0   It is flexible, and can be used in any coding situation.\
 \
-	\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 INSTALLATION
@@ -59,6 +63,7 @@ Although there is a convienient system for instantly making guis for instrument 
 \cf2 Patch\cf0 \
 \
 InstrSpawner\
+InstrGateSpawner\
 \
 \cf2 AbstractPlayer\cf0 \
 \
@@ -83,7 +88,7 @@ PlayerEfxFun\cf0 c\cf3 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \ul What you can do for Me:
+\f0\b \cf0 \ul \ulc0 What you can do for Me:
 \f1\b0 \ulnone \
 \
 send me a copy of any record/CD you put out using this stuff\

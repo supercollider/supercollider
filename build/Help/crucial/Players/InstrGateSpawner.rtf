@@ -1,6 +1,6 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
-}
+\f3\fnil\fcharset77 Verdana-Bold;\f4\fnil\fcharset77 Verdana;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
 }
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -12,6 +12,8 @@
 \f0\b0\fs24 \
 \
 superclass: InstrSpawner, Patch\
+\
+see InstrSpawner\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -36,11 +38,10 @@ superclass: InstrSpawner, Patch\
 \f0\b0 \
 		\
 it stops when any arg or the delta returns nil.\
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 \
+\f2\fs18 \
 (\
+	Tempo.bpm = 140.0;\
 	\cf2 InstrGateSpawner\cf0 (\{ \cf2 arg\cf0  freq=440,rq=0.1,width=0.5,fenv,fenvmod=1000,envadsr,dur=0.1,tempo;\
 		\cf2 var\cf0  gate;\
 		gate = \cf2 Trig1\cf0 .kr(1.0,dur / tempo);\
@@ -52,13 +53,14 @@ it stops when any arg or the delta returns nil.\
 			),\
 			\cf2 EnvGen\cf0 .kr(fenv,gate,levelScale: fenvmod),\
 			rq)\
-	 		  * \cf2 EnvGen\cf0 .kr(envadsr,gate,0.3, doneAction: 2)\
+	 		  * \cf2 EnvGen\cf0 .kr(envadsr,gate,0.2, doneAction: 2)\
 	\},[\
-		\cf2 Pseq\cf0 ((70 + [ 0, 1, 5, 6, 10 ]).midicps ,\cf2 inf\cf0 ),\
+		\cf2 Pseq\cf0 ((70 + [ 0, 1, 5, 6, 10 ]).midicps ,\cf2 inf\cf0 ) *\
+			Prand(2 ** [0,-1,2,-2,-3],inf), // octave shifts\
 		0.2,\
 		\cf2 Patch\cf0 (\{ \cf2 LFTri\cf0 .kr(0.1,[0.0,0.5],0.5,0.5) \}),\
 		\cf2 Env\cf0 .adsr(0.3,sustainLevel: 0.4),\
-		\cf2 Pbrown\cf0 (4000,10000,100),\
+		\cf2 Pbrown\cf0 (2000,10000,100),\
 		\cf2 Env\cf0 .adsr(releaseTime: 0.5),\
 		\
 		// dur uses a Pfunc to ask the delta till the next event\
@@ -81,32 +83,40 @@ it stops when any arg or the delta returns nil.\
 			),\
 			\cf2 EnvGen\cf0 .kr(fenv,gate,levelScale: fenvmod),\
 			rq)\
-	 		  * \cf2 EnvGen\cf0 .kr(envadsr,gate,0.3, doneAction: 2)\
+	 		  * \cf2 EnvGen\cf0 .kr(envadsr,gate,0.15, doneAction: 2)\
 	\},[\
 		\cf2 PdurStutter\cf0 (\
 			\cf2 Pseq\cf0 (#[1,1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,0,4,4],\cf2 inf\cf0 ),\
-			\cf2 Pseq\cf0 ((70 + [ 0, 1, 5, 6, 10 ]).midicps ,\cf2 inf\cf0 )\
+			\cf2 Pseq\cf0 ((70 + [ 0, 1, 4, 8, 10, 15 ]).midicps ,\cf2 inf\cf0 )\
 		),\
 		0.2,\
-		\cf2 Patch\cf0 (\{ \cf2 LFTri\cf0 .kr(0.1,[0.0,0.5],0.5,0.5) \}),\
-		\cf2 Env\cf0 .adsr(0.3,sustainLevel: 0.4),\
+		\cf2 Patch\cf0 (\{ \cf2 LFTri\cf0 .kr(FSinOsc.kr(1.0).range(0.1,3.0),[0.0,0.5],0.5,0.5) \}),\
+		\cf2 Env\cf0 .adsr(0.3,sustainLevel: 0.1),\
 		\cf2 Pbrown\cf0 (6000,10000,100),\
 		\cf2 Env\cf0 .adsr(releaseTime: 0.5),\
 		\
 		// dur uses a Pfunc to ask the delta till the next event\
-		\cf2 Pfunc\cf0 (\{ \cf2 arg\cf0  igs;  (igs.delta * 0.9) \}),\
+		\cf2 Pfunc\cf0 (\{ \cf2 arg\cf0  igs;  (igs.delta * rrand(0.9,2.0)) \}),\
 		\
 		\cf2 TempoPlayer\cf0 .new\
 	],\
 		\cf2 Prand\cf0 ([	\
 			\cf2 Pn\cf0 (0.125,16),\
 			\cf2 Pn\cf0 (0.25,8),\
-			\cf2 Prand\cf0 ([0.5,0.25],4),\
+			\cf2 Prand\cf0 ([0.5,0.25,0.125,0.3],4),\
 			0.5,0.75,2.0],\cf2 inf\cf0 ) \cf3 // in beats\cf0 \
 	).play\
 )\
 \
-(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b\fs22 \cf0 Chord changes\
+
+\f4\b0\fs18 however crazy the durations get, the current chord and pitch is determined by indexing into\
+a chord progression using the current beat: igs.beat\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 (\
 	\cf2 InstrGateSpawner\cf0 (\{ \cf2 arg\cf0  freq,rq,width,fenv,fenvmod,envperc,dur,tempo;\
 		\cf2 var\cf0  gate;\
 		gate = \cf2 Trig1\cf0 .kr(1.0,dur / tempo);\
@@ -123,19 +133,19 @@ it stops when any arg or the delta returns nil.\
 		\cf2 Pfunc\cf0 (\{  \cf2 arg\cf0  igs;\
 			(\
 				\cf3 // choose degree convert it via a scale to a note number\cf0 \
-				( [1,3,5].choose.degreeToKey([ 0, 1, 3, 7, 8 ]) )\
+				( [1,3,5].choose.degreeToKey([ 0, 1, 4, 8, 12 ]) )\
 				\cf3 // choose an octave\cf0 \
-				+ 30 + [0,11,23].choose\
+				+ 30 + [0,11,23,35].choose\
 				\cf3 // 1 4 5 1 chord progression\cf0 \
 				+ [1,4,5,1].wrapAt(igs.beat div: 16)\
 			).midicps \
 		\}),\
-		0.1,\
-		\cf2 Patch\cf0 (\{ \cf2 FSinOsc\cf0 .kr(0.1,[0.0,0.5],0.45,0.5) \}),\
-		\cf2 Env\cf0 .adsr(sustainLevel: 0.1),\
-		6000,\
-		\cf2 Env\cf0 .adsr(releaseTime: 0.1),\
-		\cf2 Pfunc\cf0 (\{ \cf2 arg\cf0  igs;  (igs.delta * rrand(0.1,1.4)) \}),\
+		\cf2 Patch\cf0 (\{ \cf2 LFTri\cf0 .kr(FSinOsc.kr(0.05).range(0.01,1.0),0.0).range(0.01,0.4) \}),\
+		\cf2 Patch\cf0 (\{ \cf2 LFTri\cf0 .kr(FSinOsc.kr(0.05).range(0.01,1.0),[0.0,0.5],0.5,0.5) \}),\
+		\cf2 Env\cf0 .adsr(0.2,0.01,0.1),\
+		12000,\
+		\cf2 Env\cf0 .adsr(0.01,0.1,0.2, 0.05),\
+		\cf2 Pfunc\cf0 (\{ \cf2 arg\cf0  igs;  (igs.delta * rrand(0.1,5.0)) \}),\
 		\cf2 TempoPlayer\cf0 .new\
 	],\
 		\cf2 PdurStutter\cf0 (\
@@ -148,11 +158,13 @@ it stops when any arg or the delta returns nil.\
 
 \f0\fs24 \cf0 \
 \
-note that the patch is stereo because the width input is a stereo kr rate Patch.\
+note that the patch has expanded to stereo because the width input is a stereo kr rate Patch.\
 \
 anything that returns a rate of \\stream (a Pattern or Function) will cause an .ir rate input to be created for the synth.\
 \
 to use a slider on a gui :\
+	Pfunc(\{ numberEditor.value \})\
+	or\
 	AsStream( NumberEditor.new )\
 or make your own gui and poll the slider:\
 	Pfunc(\{ slider.value \})\
@@ -165,6 +177,8 @@ or make your own gui and poll the slider:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b0 \cf0 \
+Its a different approach and has plusses and minuses.\
+\
 Pbind streams each item, whether it is going to change or not (a float will not change, an Env will not change).\
 so InstrGateSpawner has much more simple/efficient event handling, \
 	not using an environment\
@@ -180,7 +194,7 @@ the usual flexibility of players with regards to patching, saving\
 \
 cons:\
 	can't do Pseq([ Pbind, Pbind ] ) etc.\
-		isn't a pattern, doesn't end with a nil, so can't sequence sections with it.\
+		isn't a pattern, doesn't end with a nil, so you can't sequence sections with it.\
 		but it is possible to use CropPlayer and Pseq or PlayerSeqTrack.\
 	can't use pattern filters\
 	can't switch ugenFuncs dynamically\
@@ -200,6 +214,9 @@ compare with the first example from Pbind help
 	#a, b = out;\
 	\cf2 Out\cf0 .ar(i_out, \cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a, b], [pan, pan+0.3])));\
 \}).load(s);\
+\cf2 \
+SynthDescLib\cf0 .global.read;\
+\
 )\
 \
 e = \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pwhite\cf0 (0,12), \cf4 \\dur\cf0 , 0.2, \cf4 \\instrument\cf0 , \cf4 \\cfstring1\cf0 ).play; \cf3 // returns an EventStream\cf0 \

@@ -7,12 +7,15 @@
 
 \f0\b\fs36 \cf0 MIDIResponder\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 register multiple functions to be evaluated when MIDI events occur.\
+\fs24 \cf0 register multiple functions to be evaluated when MIDI events occur.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs36 \
+\fs36 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 This does not check the MIDI channel, since I have very rarely found need for separate MIDI channels on the input.  It automatically initializes the MIDIClient with 1 standard device.  If you have more devices, simply initialize the MIDIClient yourself before using any MIDIResponders.\
+\f1\b0\fs24 \cf0 This does not check the MIDI channel, since I have very rarely found need for separate MIDI channels on the input.  It automatically initializes the MIDIClient with 1 standard device.  If you have more devices, simply initialize the MIDIClient yourself before using any MIDIResponders.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
@@ -30,10 +33,12 @@ CCResponder
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \cf0 a = 50;\
+\f2\b0\fs18 \cf0 (\
+a = 50;\
 b = 51;\
 c = \cf2 CCResponder\cf0 (a,\{ \cf2 arg\cf0  val; [a,val].postln  \});\
 d = \cf2 CCResponder\cf0 (b,\{ \cf2 arg\cf0  val; [b,val].postln  \});\
+)\
 \
 c.remove;\
 d.remove;\
@@ -45,8 +50,8 @@ d.remove;\
 
 \f2\fs18 \cf0 CCResponder supports multiple responders on the same cc number.\
 \
-CCResponder(1,func1);\
-CCResponder(1,func2);\
+CCResponder(1,\{ "tweedle dee".postln; \});\
+CCResponder(1,\{ "tweedle dum".postln; );\
 \
 \
 \
