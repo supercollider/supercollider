@@ -27,7 +27,7 @@ A Synth is a single sound producing unit.  A SynthDef specifies what UGens are u
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Order of Execution\ulnone \
+\f0\b\fs28 \cf0 \ul \ulc0 Order of Execution\ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
@@ -46,13 +46,13 @@ See the
 \f0\b [Order-of-execution]
 \f1\b0  help file for more specifics.\
 \
-Do not confuse this with audio patching !  Audio patching is accomplished by using Busses, but you must get your order or execution correct in order for your patching to work !\
+Do not confuse this with audio patching !  Audio patching is accomplished by using Busses, but you must get your order of execution correct in order for your patching to work !\
 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Creation Methods
+\f0\b\fs28 \cf0 \ul \ulc0 Creation Methods
 \fs24 \ulnone \
 	\
 	*new(defName, args: [ arg1, value1,... argN, valueN  ], target, addAction)
@@ -95,8 +95,8 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 \f0\b\fs24 addAction  \
 				
 \f1\b0 a symbol that specifies the position your Synth relative to target\
-				The default is \cf2 \\addToTail
-\f2\fs18 \cf0 \
+				The default is 
+\f2\fs18 \cf2 \\addToHead\cf0 \
 				\cf2 \\addToHead\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -140,7 +140,7 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 					keeping the same nodeID\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ul Examples:\
+\cf0 \ul \ulc0 Examples:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -154,20 +154,18 @@ s.boot;\
 \
 (\
 \cf3 // send a synth def to server\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 SynthDef\cf0 (\cf5 "tpulse"\cf0 , \{ \cf4 arg\cf0  out=0,freq=700,sawFreq=440.0; \
 	\cf4 Out\cf0 .ar(out, \cf4 SyncSaw\cf0 .ar(freq,  sawFreq,0.1) ) \
 \}).send(s);\
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // Here the defaults for *new will result in a Synth at the tail of the RootNode\cf0 \
+\cf3 // Here the defaults for *new will result in a Synth at the head of the RootNode\cf0 \
 \cf3 // of the default Server. This will use the SynthDef's default arguments;\cf0 \
 y = \cf4 Synth\cf0 .new(\cf5 "tpulse"\cf0 ); \
 y.free;\
 \
 \cf3 // The same done explicitly\cf0 \
-y = \cf4 Synth\cf0 .new(\cf5 "tpulse"\cf0 , \cf4 nil\cf0 , s, \cf2 \\addToTail\cf0 ); \
+y = \cf4 Synth\cf0 .new(\cf5 "tpulse"\cf0 , \cf4 nil\cf0 , s, \cf2 \\addToHead\cf0 ); \
 y.free;\
 \
 \cf3 // With some arguments\cf0 \
@@ -175,12 +173,12 @@ y = \cf4 Synth\cf0 .new(\cf5 "tpulse"\cf0 , [\cf2 \\freq\cf0 , 350, \cf2 \\sawFr
 y.free;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \
+\f0\b\fs28 \cf0 \ul \ulc0 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \cf0 \ul The following methods duplicate the addActions listed above:\ulnone \
+\f1\b0\fs24 \cf0 \ul \ulc0 The following methods duplicate the addActions listed above:\ulnone \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -290,7 +288,7 @@ y.free;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Control\ulnone \
+\f0\b\fs28 \cf0 \ul \ulc0 Control\ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -320,7 +318,7 @@ y.free;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 \ul Examples:\
+\f1\fs24 \cf0 \ul \ulc0 Examples:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \ulnone \
@@ -348,7 +346,6 @@ y.run(\cf4 false\cf0 );\
 \
 y.run(\cf4 true\cf0 );\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // by argument name\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 y.set(\cf5 "freq"\cf0 ,200);\
@@ -380,7 +377,7 @@ y.run(\cf4 true\cf0 );\
 \f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul changing the order of execution\
+\f0\b\fs28 \cf0 \ul \ulc0 changing the order of execution\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 \ulnone \
@@ -397,7 +394,6 @@ y.run(\cf4 true\cf0 );\
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // first collect some things to play with\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 SynthDef\cf0 (\cf5 "moto-rev"\cf0 , \{ \cf4 arg\cf0  out=0;\
 	\cf4 var\cf0  x;\
 	x = \cf4 RLPF\cf0 .ar(\cf4 LFPulse\cf0 .ar(\cf4 SinOsc\cf0 .kr(0.2, 0, 10, 21), [0,0.1], 0.1), \
