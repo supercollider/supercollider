@@ -12,18 +12,18 @@ Pseed : FilterPattern {
 	
 	embedInStream { arg inval;
 		var seedStream;
-		var seed;
+		var seed, thread;
 		seedStream = randSeed.asStream;
 
-		while({
+		while {
 			seed = seedStream.next;
 			seed.notNil
-			}, {
-			thisThread.randSeed = seed;
-			inval = pattern.embedInStream(inval);
-		});
+		}{
+			thread = pattern.asStream;
+			thread.randSeed = seed;
+			inval = thread.embedInStream(inval);
+		};
 		^inval
-		
 	}
 
 }
