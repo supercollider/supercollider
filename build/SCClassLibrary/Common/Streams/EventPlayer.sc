@@ -1,26 +1,108 @@
 EventPlayer {
+	var <>parentEvent;
+	
+	*new { arg event;
+		event = event ?? { () };
+		event.parent = this.defaultParentEvent;
+		^super.newCopyArgs(event)
+	}
+	*defaultParentEvent {
+		^this.subclassResponsibility(thisMethod)
+	}
 	playEvent { arg event;
+		event.parent = parentEvent;
 		event.use({ ~finish.value; });
 		event.postln;
 	}
 }
 
 NotePlayer : EventPlayer {
-	playOneEvent { arg desc, lag, msgArgs;
-		var server, id;
+	classvar <>defaultParentEvent;
+	
+	*initClass {
+
+		SynthDef(\default, { arg out=0, freq=440, amp=0.1, pan=0, gate=1;
+			var z;
+			z = LPF.ar(
+				Mix.new(VarSaw.ar(freq + [0, Rand(-0.4,0.0), Rand(0.0,0.4)], 0, 0.3)),
+				XLine.kr(Rand(4000,5000), Rand(2500,3200), 1)) * Linen.kr(gate, 0.01, amp * 0.7, 0.3, 2);
+			Out.ar(out, Pan2.ar(z, pan));
+		}, [\ir]).writeDefFile;
+		
+		defaultParentEvent = Event.make({
+			// fill prototype event with default property values			
+			~tempoclock = TempoClock.default;
+			~tempo = nil;
+			
+			~dur = 1.0;
+			~stretch = 1.0;
+			~legato = 0.8;
+			~sustain = #{ ~dur * ~legato * ~stretch };
+			~lag = 0.0;
+			~strum = 0.0;
+			
+			~amp = #{ ~db.dbamp };
+			~db = -20.0;
+			~velocity = 64; 		// MIDI units 0-127
+			~pan = 0.0; 			// pan center
+			
+			~mtranspose = 0;
+			~gtranspose = 0.0;
+			~ctranspose = 0.0;
+			
+			~octave = 5.0;
+			~root = 0.0;		// root of the scale
+			~degree = 0;
+			~scale = #[0, 2, 4, 5, 7, 9, 11]; // diatonic major scale
+			~stepsPerOctave = 12.0;
+			~detune   = 0.0;		// detune in Hertz
+			
+			~note = #{
+				(~degree + ~mtranspose).degreeToKey(~scale, ~stepsPerOctave);
+			};
+			~midinote = #{
+				var divs;	
+				divs = ~stepsPerOctave;
+				(~note.value + ~gtranspose + (~octave * divs) + ~root)
+					 * 12.0 / divs; 
+			};
+			~freq = #{
+				(~midinote.value + ~ctranspose).midicps;
+			};
+
+			~instrument = \default;
+			
+			~group = 0;
+			~out = 0;
+			~addAction = 0;
+			
+			~finish = #{
+				// do final calculations
+				~freq = ~freq.value + ~detune;
+				~amp = ~amp.value;
+				~sustain = ~sustain.value;
+			};
+									
+			~player = NotePlayer.new;
+			~synthLib = SynthDescLib.global;
+
+			~server = Server.default;
+		});
+	}
+	playOneEvent { arg server, addAction, group, desc, lag, sustain, msgArgs;
+		var id;
 //		var ttbeats, ttseconds;
 		
-		server = ~server;
 		id = server.nextNodeID;
 		
 		//send the note on bundle
-		server.sendBundle(lag, [9, desc.name, id, ~addAction, ~group] ++ msgArgs); 
+		server.sendBundle(lag, [9, desc.name, id, addAction, group] ++ msgArgs); 
 //		ttbeats = thisThread.beats;
 //		ttseconds = thisThread.seconds;
 				
 		if (desc.hasGate) {
 			// send note off bundle.
-			~tempoclock.sched(~sustain, { 
+			~tempoclock.sched(sustain, { 
 	//			if (thisThread.seconds <= ttseconds) {
 	//				[\ooo, ttbeats, ttseconds, thisThread.beats, thisThread.seconds, dur].postln;
 	//				TempoClock.default.prDump;
@@ -30,27 +112,46 @@ NotePlayer : EventPlayer {
 		};
 	}
 	playEvent { arg event;
-		var freqs, lag, dur, strum, sustain, desc, bndl;
+		var freqs, lag, dur, strum, sustain, desc, bndl, server, addAction, group;
+		event.parent = parentEvent;
 		event.use({
 			~finish.value; // finish the event
-			lag = ~lag + ~server.latency;
 			freqs = ~freq;
-			strum = ~strum;
-			sustain = ~sustain;
-
-			if (~tempo.notNil) { ~tempoclock.tempo = ~tempo };
-	
-			desc = ~synthLib.synthDescs[~instrument];
-			if (desc.isNil) { error("instrument " ++ ~instrument ++ " not found."); ^nil };
 						
 			if (freqs.isKindOf(Symbol), { nil },{
+				server = ~server;
+				addAction = ~addAction;
+				group = ~group;
+				lag = ~lag + server.latency;
+				strum = ~strum;
+				sustain = ~sustain;
+	
+				desc = ~synthLib.synthDescs[~instrument.asSymbol];
+				if (desc.isNil) { error("instrument " ++ ~instrument ++ " not found."); ^nil };
 
-				bndl = desc.msgFunc.value.flop;
+				bndl = desc.msgFunc.valueEnvir.flop;
 				bndl.do {|msgArgs, i|
-					this.playOneEvent(desc, i * strum + lag, msgArgs);
+					this.playOneEvent(server, addAction, group, desc, i * strum + lag, sustain, msgArgs);
 				};
 			});
 		});
+	}
+}
+
+TempoEventPlayer : EventPlayer {
+	classvar <>defaultParentEvent;
+	
+	*initClass {
+		defaultParentEvent = Event.make({
+			~tempoclock = TempoClock.default;
+			~tempo = nil;
+			
+			~dur = 1.0;
+			~stretch = 1.0;
+		});
+	}
+	playEvent { arg event;
+		event[\tempoclock].tempo = event[\tempo];
 	}
 }
 

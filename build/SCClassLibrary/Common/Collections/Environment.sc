@@ -69,7 +69,7 @@ Event : Environment {
 		*/
 	}
 	play {
-		this.at(\player).playEvent(this);
+		this[\player].playEvent(this);		
 		^this.delta
 	}
 	

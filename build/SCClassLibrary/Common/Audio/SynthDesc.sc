@@ -171,15 +171,37 @@ SynthDesc {
 	makeMsgFunc {
 		var string, comma=false;
 		string = String.streamContents {|stream|
-			stream << "#{ [ ";
-			controlNames.do {|name, i| 
-				var name2;
-				if (name == "gate") {
-					hasGate = true;
-				}{
-					if (name[1] == $_) { name2 = name.drop(2) } { name2 = name }; 
-					if (comma) { stream << "," } { comma = true };
-					stream << " '" << name << "', ~" << name2; 
+			stream << "#{ ";
+			if (controlNames.size > 0) {
+				stream << "arg " ;
+			};
+			controls.do {|controlName, i|
+				var name, name2;
+				name = controlName.name;
+				if (name != "?") {
+					if (name == "gate") {
+						hasGate = true;
+					}{
+						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name }; 
+						if (comma) { stream << ", " } { comma = true };
+						stream << name2 << " = " << controlName.defaultValue.asStringPrec(7); 
+					};
+				};
+			};
+			if (controlNames.size > 0) {
+				stream << ";\n" ;
+			};
+			stream << "\t[ ";
+			comma = false;
+			controls.do {|controlName, i|
+				var name, name2;
+				name = controlName.name;
+				if (name != "?") {
+					if (name != "gate") {
+						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name }; 
+						if (comma) { stream << ", " } { comma = true };
+						stream << "'" << name << "', " << name2; 
+					};
 				};
 			};
 			stream << " ] }";
