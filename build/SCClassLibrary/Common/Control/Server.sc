@@ -467,6 +467,7 @@ Server : Model {
 			Routine.run {
 				this.quit;
 				this.wait(\done);
+				0.1.wait;
 				func.value;
 				this.boot;
 			}
