@@ -146,7 +146,7 @@
 				var args, bundle, names, nodeMap;
 				names = ~argNames;
 				args = currentEnvironment.hatch(names);
-				bundle = EventHatch.newSynthMsg(id);
+				bundle = [9, ~instrument, id, 0, ~group] ++ args;
 				bundle = [bundle ++ [\freq, freq]];
 				//mapping to buses
 				nodeMap = proxy.nodeMap;
