@@ -25,7 +25,7 @@ SynthDef {
 	build { arg ugenGraphFunc, lags, prependArgs;
 		this.initBuild;
 		this.buildUgenGraph(ugenGraphFunc, lags, prependArgs);
-		this.finishBuild
+		this.finishBuild;
 	}
 	
 	*wrap { arg func, lags, prependArgs;
@@ -126,6 +126,7 @@ SynthDef {
 		^outputProxies
 	}
 	finishBuild {
+
 		this.optimizeGraph;
 		this.collectConstants;
 		this.checkInputs;// will die on error
@@ -258,7 +259,7 @@ SynthDef {
 		});
 		children.reverseDo({ arg ugen;
 			ugen.descendants = ugen.descendants.asSortedList(
-								{ arg a, b; ^a.synthIndex < b.synthIndex}
+								{ arg a, b; a.synthIndex < b.synthIndex }
 							);
 			ugen.makeAvailable; // all ugens with no antecedents are made available
 		});
