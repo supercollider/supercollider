@@ -140,6 +140,14 @@ Dictionary : Set {
 			{ res.put(key, elem) } }
 		^res;
 	}
+	
+	invert {
+		var dict = this.class.new(this.size);
+		this.keysValuesDo {|key, val|
+			dict.put(val, key)
+		};
+		^dict
+	}
 
 
 
