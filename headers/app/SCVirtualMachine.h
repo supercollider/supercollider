@@ -24,6 +24,8 @@
 @interface SCVirtualMachine : NSObject {
     NSMutableArray *deferredOperations;
     NSMutableArray *guiWindows;
+	NSTimer *deferredTaskTimer;
+	NSTimer *appClockTimer;
 }
 
 + (id)sharedInstance;
@@ -31,6 +33,7 @@
 - (id)init;
 - (void)start;
 - (void)doPeriodicTask: (NSTimer*) timer;
+- (void)doClockTask: (NSTimer*) timer;
 - (void)setCmdLine: (const char*) text length: (int)length;
 - (void)sendMain: (char*) methodName;
 

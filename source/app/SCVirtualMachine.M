@@ -34,7 +34,6 @@
 #include <pthread.h>
 
 ChangeCounter gUIChangeCounter;
-NSTimer *gNSTimer;
 
 extern bool compiledOK;
 extern pthread_mutex_t gLangMutex;
@@ -83,9 +82,20 @@ static id sharedSCVM = nil;
 
 - (void)start
 {
-        gNSTimer = [NSTimer scheduledTimerWithTimeInterval: 0.02 target: self selector:
-            @selector(doPeriodicTask:) userInfo: nil repeats: YES];        
+	deferredTaskTimer = 
+			[NSTimer scheduledTimerWithTimeInterval: 0.047 target: self selector:
+				@selector(doPeriodicTask:) userInfo: nil repeats: YES];        
         
+	appClockTimer = 
+			[NSTimer scheduledTimerWithTimeInterval: 0.020 target: self selector:
+				@selector(doClockTask:) userInfo: nil repeats: YES]; 
+				       
+	[deferredTaskTimer retain];
+	[appClockTimer retain];
+	
+	[[NSRunLoop currentRunLoop] addTimer: appClockTimer 
+		forMode: NSModalPanelRunLoopMode];
+	
 	SetupHomeDirectory();
 	pyr_init_mem_pools(2*1024*1024, 256*1024);
 	initPostBuffer();
@@ -96,11 +106,16 @@ static id sharedSCVM = nil;
 
 - (void)doPeriodicTask: (NSTimer*) timer
 {
+    [self performDeferredOperations];
+    flushPostBuf();
+}
+
+- (void)doClockTask: (NSTimer*) timer
+{
     if (pthread_mutex_trylock(&gLangMutex) == 0) {
         if (compiledOK) runLibrary(s_tick);
         pthread_mutex_unlock(&gLangMutex);
     }
-    [self performDeferredOperations];
     flushPostBuf();
 }
 
