@@ -104,8 +104,40 @@ As post and postln above, but formatted as a comment.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 "This is a comment."\cf0 .postcln;
-\f1\fs24 \
+\f2\fs18 \cf2 "This is a comment."\cf0 .postcln;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 postf
+\f1\b0 \
+\
+Prints a formatted string with arguments to the current post window. The % character in the format string is replaced by a string representation of an argument.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+postf(\cf2 "this % a %. pi = %, list = %\\n", "is"\cf0 , \cf2 "test"\cf0 , pi.round(1e-4), (1..4))\
+\
+this is a test. pi = 3.1416, list = [ 1, 2, 3, 4 ]\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 format
+\f1\b0 \
+\
+Returns a formatted string with arguments. The % character in the format string is replaced by a string representation of an argument.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+format(\cf2 "this % a %. pi = %, list = %\\n", "is"\cf0 , \cf2 "test"\cf0 , pi.round(1e-4), (1..4))\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 this is a test. pi = 3.1416, list = [ 1, 2, 3, 4 ]\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -594,8 +626,9 @@ pathMatch\
 
 \f0\b \cf0 load\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Load and execute the file at the path represented by the receiver.\
+\f1\b0 \cf0 Load and execute the file at the path represented by the receiver.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
