@@ -116,14 +116,9 @@ Rect {
 			this.right min: aRect.right, this.bottom min: aRect.bottom)
 	}
 	storeArgs { ^[left,top,width,height] }
-//	printOn { arg stream;
-//		stream << this.class.name << "(" 
-//			<<* [left, top, width, height] << ")";
-//	}
-//	storeOn { arg stream;
-//		stream << this.class.name << "(" 
-//			<<<* [left, top, width, height] << ")";
-//	}
+	printOn { arg stream;
+		stream << this.class.name << "(" <<* [left, top, width, height] << ")";
+	}
 	
 	draw { arg color, operation=2;
 		_Rect_Draw
@@ -131,9 +126,10 @@ Rect {
 	}
 	
 	asRect { ^this }
-	bounds { ^Rect.new(left, top, width, height) }
+	bounds { ^this.copy }
 	== { arg that; 
-		^(left == that.left 
+		^(this.class == that.class 
+			and: {left == that.left }
 			and: {(top == that.top)} 
 			and: {(width == that.width)} 
 			and: {(height == that.height)})
