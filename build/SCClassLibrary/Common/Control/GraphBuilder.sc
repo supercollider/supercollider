@@ -23,7 +23,7 @@ GraphBuilder {
 
 	*makeFadeEnv { arg fadeTime;
 		var dt, gate;
-		#dt, gate = Control.names(['_fadeTime', '_gate']).kr([fadeTime, 1.0]);
+		#dt, gate = Control.names(['fadeTime', 'gate']).kr([fadeTime, 1.0]);
 		^Linen.kr(gate, dt, 1.0, dt, 2);
 	
 	}
