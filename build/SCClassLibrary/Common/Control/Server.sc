@@ -326,8 +326,9 @@ Server : Model {
 			"/quit sent\n".inform;
 		});
 		alive = false;
-		this.serverRunning = false;
+		dumpMode = 0;
 		serverBooting = false;
+		this.serverRunning = false;
 		nodeWatcher.stop;
 		this.newAllocators;
 		RootNode(this).freeAll;

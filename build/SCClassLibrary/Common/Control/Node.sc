@@ -15,7 +15,8 @@ Node {
 		});
 		this.remove;
 	}
-	
+	freeMsg { ^[11, nodeID] }
+
 	run { arg flag=true;
 		server.sendBundle(nil, 
 			[12, nodeID,flag.binaryValue]); 			 //"/n_run"
@@ -32,7 +33,7 @@ Node {
 	
 	set { arg controlName, value ... args;
 		server.sendBundle(nil, 
-			[15, nodeID,controlName, value]++args); 	 //"/n_set"
+			[15, nodeID,controlName, value] ++args); 	 //"/n_set"
 	}
 	
 	setWithArray { arg args;
@@ -57,23 +58,36 @@ Node {
 		server.sendBundle(nil, 
 			[17, nodeID,controlName,numControls, value]++args); //"n_setn"
 	}
-	
+/*
 	release { arg releaseTime;
-               //assumes a control called 'gate' in the synth
-               if(releaseTime.isNil, {
-                       releaseTime = 0.0;
-               },{
-                       releaseTime = -1.0 - releaseTime;
-               });
-                server.sendBundle(nil,
-                       [15, nodeID, \gate, releaseTime]
-               );
-               server.nodeAllocator.free(nodeID);
+		//assumes a control called 'gate' in the synth
+		if(releaseTime.isNil, { 
+			releaseTime = 0.0;
+		},{
+			releaseTime = -1.0 - releaseTime;
+		});
+		server.sendBundle(nil, 
+			[15, nodeID, \gate, releaseTime],
+			["/s_noid", nodeID]
+		);
+		server.nodeAllocator.free(nodeID);
+	}
+*/	
+	release { arg releaseTime;
+		//assumes a control called 'gate' in the synth
+		if(releaseTime.isNil, {
+			releaseTime = 0.0;
+		},{
+			releaseTime = -1.0 - releaseTime;
+		});
+		server.sendBundle(nil,
+			[15, nodeID, \gate, releaseTime]
+		);
+		server.nodeAllocator.free(nodeID);
     	}
 	trace {
 		server.sendMsg(10, nodeID);//"/n_trace"
 	}
-
 
 
 	moveBefore { arg aNode;
