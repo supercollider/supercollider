@@ -488,18 +488,21 @@ Pstutter : FilterPattern {
 	}
 	storeArgs { ^[n,pattern] }
 	embedInStream { arg event;
-			var inevent, stream;
-		
-			stream = pattern.asStream;
-		
-			while ({
-				(inevent = stream.next(event)).notNil
-			},{
-				n.do({
+		var inevent, stream, nstream, nn;
+
+		stream = pattern.asStream;
+		nstream = n.asStream;
+
+		while ({
+			(inevent = stream.next(event)).notNil
+		},{
+			(nn = nstream.next).notNil.if({
+				nn.do({
 					event = inevent.copy.yield;
 				});
-			});
-			^event;
+			}, { ^event });
+		});
+		^event;
 	}
 }
 
