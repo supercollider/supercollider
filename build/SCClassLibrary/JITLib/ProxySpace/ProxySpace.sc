@@ -132,13 +132,13 @@ ProxySpace : EnvironmentRedirect {
 	// garbage collector
 	
 	// ends all proxies that are not needed
-	reduce { arg excluding;
-		this.gcList(excluding).do { arg proxy; proxy.end };
+	reduce { arg excluding, method=\end;
+		this.gcList(excluding).do { arg proxy; proxy.perform(method) };
 	}
 	
 	// removes all proxies that are not needed
 	clean { arg excluding;
-		this.gcList(excluding).do { arg proxy; proxy.clear };
+		this.reduce(nil, \clear);
 		this.removeNeutral;
 	}
 	
@@ -176,7 +176,7 @@ ProxySpace : EnvironmentRedirect {
 	
 	
 	printOn { arg stream;
-		stream << "ProxySpace: " << Char.nl;
+		stream << this.class.name << " - " << (name ? "") << Char.nl;
 		this.keysValuesDo { arg key, item, i;
 			key = key.asString;
 			stream << "~" << key << Char.tab << Char.tab << if(key.size < 3) { Char.tab } { "" } 
