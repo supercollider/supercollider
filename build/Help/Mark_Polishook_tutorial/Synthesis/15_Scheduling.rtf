@@ -149,11 +149,11 @@ instead of \
 
 \f0\b\fs24 \cf0 Scheduling synths with routines\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf0 Enclose synths within routines. It's often the case that the synthdef used by the synth in routines should have an envelope with a doneAction parameter set to 2 (to deallocate the memory needed for the synth after its envelope has finished playing).\
+\f1\b0\fs18 Enclose synths within routines. It's often the case that the synthdef used by the synth in routines should have an envelope with a doneAction parameter set to 2 (to deallocate the memory needed for the synth after its envelope has finished playing).\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // DEFINE A SYNTHDEF\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 "fm2"\cf0 , \{ \
@@ -209,7 +209,7 @@ r.reset.play;\
 \
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
-Play synths spawned in a routine through an echo effects unit that runs outside of the routine. \
+Process synths spawned in a routine through effects that run outside of the routine. \
 \
 (\
 \cf2 // DEFINE A SYNTHDEF\cf0 \
@@ -259,7 +259,9 @@ r = \cf3 Routine\cf0 (\{\
 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // PLAY THE ROUTINE\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 r.reset.play;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\
 }
