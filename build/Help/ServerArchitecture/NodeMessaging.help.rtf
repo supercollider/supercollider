@@ -5,15 +5,14 @@
 \red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 Node Messaging
-\f1\b0 \
-\
+\f0\b\fs36 \cf0 Node Messaging\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs28 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 The most direct and fast way to send commands to the  server is to send \
-messages to the server object, if you are within sc-lang, or within a shell,\
-for example, you can use 
+\fs24 \cf0 The most direct and fast way to send commands to the server is to send messages to the Server object, if you are within sc-lang.  If you are in a shell you can use 
 \f0\b sendOSC
 \f1\b0  (available from CNMAT).\
 \
@@ -29,20 +28,11 @@ this messaging scheme is explained in detail in \
 \f0\b Tutorial\
 
 \f1\b0 \
+When creating nodes on the server (synths and groups) the only things we need to know are the nodeID and the server (its address to be precise).\
 \
-	\
-According to that scheme, when creating nodes on the server (synths and groups)\
-the only thing we need to know is a nodeID and the server (its address to be precise).\
+In order to communicate with a synth, one sends messages with its nodeID. If you do not intend to communicate with the node after its creation (and the node will cause itself to end without external messaging), the node id can be set to -1, which is the server's equivalent to nil.\
 \
-In order to communicate with such a synth, one sends messages with its nodeID,\
-which acts like a global variable name within the server. If you do not intend\
-to communicate with the node after its creation, the node id can be -1, which\
-is the server's equivalent to nil.\
-\
-As soon as you want to pass around the reference to a certain node, \
-assuming that you might not have only one server, it can be useful\
-to create a Synth or Group object. These objects also respond to messages,\
-and when needed can be used to obtain the state of the server side node.\
+As soon as you want to pass around the reference to a certain node, assuming that you might not have only one server, it can be useful to create a Synth or Group object. These objects also respond to messages, and when needed can be used to obtain the state of the server side node.\
 \
 see 
 \f0\b Synth
@@ -79,17 +69,16 @@ see
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 The question whether one should work with 
-\f0\b node objects or with messages
-\f1\b0  directly\
-can  be answered in the context. The encapsulation of synth objects results\
-in a certain generalization, meaning that other compound objects can respond\
-to the same messages and allow to exploit polymorphism in that way.
+\f0\b node objects 
+\f1\b0 or 
+\f0\b directly with messages
+\f1\b0  depends on the context. \
+\
+The encapsulation of synth objects results in a certain generalization, meaning that other compound objects can respond to the same messages and allow to exploit polymorphism in that way.
 \f2\fs18 \
 \
 
-\f1\fs24 In certain cases, like with granular synthesis it is recommended to use \
-the messages directly, because the language side representation is not\
-needed and it adds cpu load to the client side.\
+\f1\fs24 In certain cases, such as for granular synthesis it is recommended to use messages directly, because there is no benefit to be gained from the node objects and they add cpu load to the client side.\
 	\
 	
 \f2\fs18 (\
@@ -99,9 +88,10 @@ needed and it adds cpu load to the client side.\
 	)\
 	\
 	(\
-	\cf4 Routine\cf0 (\{ 20.do(\{\
-		s.sendMsg(\cf3 "/s_new"\cf0 , \cf3 "grain"\cf0 , -1); \
-		0.01.wait;\
+	\cf4 Routine\cf0 (\{ \
+		20.do(\{\
+			s.sendMsg(\cf3 "/s_new"\cf0 , \cf3 "grain"\cf0 , -1); \
+			0.01.wait;\
 		\})\
 	\}).play;\
 	)\
@@ -112,14 +102,11 @@ needed and it adds cpu load to the client side.\
 \f2\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 On the opposite in cases where you need to keep track of the synth's state, \
-it is advisable to use node objects and register them with a 
+\f1\fs24 \cf0 In cases where you need to keep track of the synth's state, it is advisable to use node objects and register them with a 
 \f0\b NodeWatcher
 \f1\b0 . (see helpfile)\
 \
-Apart from these cases it is a matter of taste whether you want to use\
-the combination of message and a numerical global representation\
-or an object representation.\
+Apart from these cases it is a matter of taste whether you want to use the combination of message and a numerical global representation or an object representation.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \

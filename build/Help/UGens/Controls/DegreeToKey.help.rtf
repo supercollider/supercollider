@@ -1,7 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red191\green0\blue0;
+\red0\green0\blue191;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \
@@ -30,42 +31,47 @@ The input signal value is truncated to an integer value and used as an index int
 \f0\b0  - the number of steps per octave in the scale. The default is 12.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf2 \
+\f2 \cf0 \
 
-\fs18 \cf3 /*\
+\fs18 \cf2 \
+(\cf3 \
+\cf4 // modal space\cf3 \
+\cf4 // mouse x controls discrete pitch in dorian mode\cf3 \
+\cf5 var\cf3  scale,buffer;\
+scale = \cf5 FloatArray\cf3 [0, 2, 3, 5, 7, 9, 10]; \cf4 // dorian scale\
+\cf3 buffer = Buffer.new(s,scale.size,1);\
+//...\
+)\
+\
 (\
-// modal space\
-// mouse x controls discrete pitch in dorian mode\
-var scale;\
-scale = FloatArray[0, 2, 3, 5, 7, 9, 10]; // dorian scale\
 play(\{\
-	var mix;\
+	\cf5 var\cf3  mix;\
 	\
 	mix = \
 	\
-	// lead tone\
-	SinOsc.ar(\
+	\cf4 // lead tone\cf3 \
+	\cf5 SinOsc\cf3 .ar(\
 		(\
-			DegreeToKey.kr(\
+			\cf5 DegreeToKey\cf3 .kr(\
 				scale,\
-				MouseX.kr(0,15),		// mouse indexes into scale\
-				12,					// 12 notes per octave\
-				1,					// mul = 1\
-				72					// offset by 72 notes\
+				\cf5 MouseX\cf3 .kr(0,15),		\cf4 // mouse indexes into scale\cf3 \
+				12,					\cf4 // 12 notes per octave\cf3 \
+				1,					\cf4 // mul = 1\cf3 \
+				72					\cf4 // offset by 72 notes\cf3 \
 			) \
-			+ LFNoise1.kr([3,3], 0.04)	// add some low freq stereo detuning\
-		).midicps,						// convert midi notes to hertz\
+			+ \cf5 LFNoise1\cf3 .kr([3,3], 0.04)	\cf4 // add some low freq stereo detuning\cf3 \
+		).midicps,						\cf4 // convert midi notes to hertz\cf3 \
 		0,\
 		0.1)\
 		\
-	// drone 5ths\
-	+ RLPF.ar(LFPulse.ar([48,55].midicps, 0.15),\
-		SinOsc.kr(0.1, 0, 10, 72).midicps, 0.1, 0.1);\
+	\cf4 // drone 5ths\cf3 \
+	+ \cf5 RLPF\cf3 .ar(\cf5 LFPulse\cf3 .ar([48,55].midicps, 0.15),\
+		\cf5 SinOsc\cf3 .kr(0.1, 0, 10, 72).midicps, 0.1, 0.1);\
 		\
-	// add some 70's euro-space-rock echo\
-	CombN.ar(mix, 0.31, 0.31, 2, 1, mix)\
+	\cf4 // add some 70's euro-space-rock echo\cf3 \
+	\cf5 CombN\cf3 .ar(mix, 0.31, 0.31, 2, 1, mix)\
 \})\
-)\
+\cf2 )\
 
-\fs24 \cf3 */\cf2 \
+\fs24 \cf0 \
 }

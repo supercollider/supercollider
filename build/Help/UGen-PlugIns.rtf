@@ -131,17 +131,19 @@ void load(\cf4 InterfaceTable\cf0  *inTable)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 Each group of plugins shares a target in ProjectBuilder.  They create a combined file: eg. TargetName.scx which is then copied into the plugins folder via a little shell script.\
+\fs24 \cf0 Each group of plugins shares a target in ProjectBuilder.  They create a combined file: eg. YourGroup.scx which is then copied into the plugins folder via a little shell script.  The aggregate target builds all of the targets, each of which looks in the build directory to see if an up to date 'YourGroup.scx' is there.  So you should not delete or move (rather than copy) the .scx file, or it will rebuild it each time.\
 \
 Create a new target, select type 'Library'\
-Go to expert view and set Library_Style == BUNDLE.  \
+Select the target and add your file 'YourGroup.cpp' to it by checking the box beside it in Files.\
+Go to expert view and set Library_Style to BUNDLE.  \
+	set OTHER_CFLAGS to -DSC_DARWIN\
 Set the product name to be YourGroup.scx.\
 Add a build phase (control or right click on build phases): a shell script build phase.  \
 copy the one line script from one of the other targets, changing the filename to match yours.  \
 Uncheck "run only when installing".\
 Open the "disclosure triangle" for the All Plugins target and drag your target into that list.\
 \
-Your target will be built along with the others when the aggregate target is selected.\
+Your target will be built along with the others when the aggregate target is selected and built.\
 \
 \
 \
