@@ -2,12 +2,14 @@
 {\fonttbl\f0\fnil\fcharset77 Monaco;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 LucidaGrande;
 \f3\fnil\fcharset77 LucidaGrande-Bold;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
 \red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs18 \cf0 Breaking synthesis processes into parts that accomplish small well-defined tasks encourages modular design and component reuse (the oop mantra).\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // read a soundfile from disk\cf0 \
 b = \cf3 Buffer\cf0 .read(s, \cf4 "sounds/a11wlk01.wav"\cf0 );\
 \
@@ -48,9 +50,8 @@ b = \cf3 Buffer\cf0 .read(s, \cf4 "sounds/a11wlk01.wav"\cf0 );\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b\fs24 \cf0 \
+\f1\b\fs24 \
 Information\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -61,7 +62,6 @@ BufRateScale and BufDur are of a family of ugens that inherit from InfoUGenBase 
 \
 To see the complete list of such ugens, evaluate\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 InfoUGenBase\cf0 .dumpClassSubtree\
 \
 It returns\
@@ -101,15 +101,12 @@ BufInfoUGenBase\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b\fs24 \cf0 Loop a sample
+\f1\b\fs24 Loop a sample
 \f0\b0\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 The next example uses three synthsdefs to form a chain. The first synthdef is a sample player that loops through a buffer. The second synthdef ring modulates its input. The third synthdef applies a lowpass filter.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 The next example uses three synthsdefs to make a chain. The first synthdef is a sample player that loops through a buffer. The second synthdef ring modulates its input. The third synthdef applies a lowpass filter.\
 \cf3 \
 (\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -154,7 +151,7 @@ b = \cf3 Buffer\cf0 .read(s, \cf4 "sounds/a11wlk01.wav"\cf0 );\
 		\cf3 RLPF\cf0 .ar(\
 			\cf3 In\cf0 .ar(inBus, 2),\
 			\cf3 Lag\cf0 .kr(\cf3 LFNoise0\cf0 .kr(1, freqDev, freq), 1),\
-			0.175\
+			0.2\
 		)\
 		*\
 		boost \
@@ -174,26 +171,20 @@ b = \cf3 Buffer\cf0 .read(s, \cf4 "sounds/a11wlk01.wav"\cf0 );\
 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 (\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // add the samplePlayer to the source group\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 Synth\cf0 .head(\
+\cf3 (\cf6 \
+\cf7 // add the samplePlayer to the source group\cf6 \
+~theSource = \cf8 Synth\cf6 .head(\
 	~source, \
-	\cf4 "aLoopingSamplePlayer"\cf0 , [\cf5 \\outBus\cf0 , 3, \cf5 \\bufNum\cf0 , b.bufnum, \cf5 \\rateScale\cf0 , 1, \cf5 \\mul\cf0 , 0.051]);\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // add an amplitude modulation synth to the head of the effects group\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 Synth\cf0 .head(\
+	\cf9 "aLoopingSamplePlayer"\cf6 , [\cf10 \\outBus\cf6 , 3, \cf10 \\bufNum\cf6 , b.bufnum, \cf10 \\rateScale\cf6 , 1, \cf10 \\mul\cf6 , 0.051]);\
+\cf7 // add an amplitude modulation synth to the head of the effects group\cf6 \
+~fx1 = \cf8 Synth\cf6 .head(\
 	~effect,\
-	\cf4 "ampMod"\cf0 , [\cf5 \\inBus\cf0 , 3, \cf5 \\outBus\cf0 , 5, \cf5 \\modFreq\cf0 , 1]);\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // add filtering to the tail of the effects group\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 Synth\cf0 .tail(\
+	\cf9 "ampMod"\cf6 , [\cf10 \\inBus\cf6 , 3, \cf10 \\outBus\cf6 , 5, \cf10 \\modFreq\cf6 , 1]);\
+\cf7 // add filtering to the tail of the effects group\cf6 \
+~fx2 = \cf8 Synth\cf6 .tail(\
 	~effect,\
-	\cf4 "aLowPassFilter"\cf0 , [\cf5 \\inBus\cf0 , 5, \cf5 \\outBus\cf0 , 0, \cf5 \\boost\cf0 , 5])\
-)\
+	\cf9 "aLowPassFilter"\cf6 , [\cf10 \\inBus\cf6 , 5, \cf10 \\outBus\cf6 , 0, \cf10 \\boost\cf6 , 5])\
+\cf0 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // examine the nodes\cf0 \
@@ -213,34 +204,16 @@ s.queryAllNodes;\
  |        |       \\\
  synth    synth    synth	\
  \
-\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
-\
-Changing argument (control) values effects timbre.\
-\
-(\
-~source = \cf3 Group\cf0 .head(s);\
-~effect = \cf3 Group\cf0 .tail(~s);\
-)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 (\
-Synth\cf0 .head(\
-	~source, \
-	\cf4 "aLoopingSamplePlayer"\cf0 , [\cf5 \\\cf0 outBus, 3, \cf5 \\bufNum\cf0 , b.bufnum, \cf5 \\rateScale\cf0 , 1, \cf5 \\mul\cf0 , 0.051]);\
-\cf3 Synth\cf0 .head(\
-	~effect,\
-	\cf4 "ampMod"\cf0 , [\cf5 \\inBus\cf0 , 3, \cf5 \\\cf0 outBus, 5, \cf5 \\modFreq\cf0 , 1000]);\
-Synth.tail(\
-	~effect,\
-	"aLowPassFilter", [\\inBus, 5, \\outBus, 0, \\freq, 500, \\freqDev, 200, \\boost, 7])\
+\cf7 // Changing argument (control) values effects timbre\cf6 \
+\cf0 (\
+ ~theSource.set(\cf5 \\rateScale\cf0 , 0.95.rrand(1.05), \cf5 \\mul\cf0 , 0.051.rrand(0.07));\
+ ~fx1.set(\cf5 \\modFreq\cf0 , 800.0.rrand(1200));\
+ ~fx2.set(\\freq, 500.rrand(700), \\freqDev, 180.rrand(210), \\boost, 7);\
 )\
-\
-( \cf2 // examine the nodes\cf0 \
-s.queryAllNodes;\
-)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\b \cf0 \
+ 
+\f1\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b0 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\
