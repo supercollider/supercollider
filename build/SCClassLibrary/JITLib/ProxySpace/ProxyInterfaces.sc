@@ -259,21 +259,24 @@ SynthDefControl : SynthControl {
 		}
 	}
 	
-	loadToBundle { arg bundle;
+	loadToBundle { arg bundle, server;
 		var bytes, size, path;
 		
 		bytes = synthDef.asBytes;
 		size = bytes.size;
 		size = size + 4 - (size bitAnd: 3) + 4 + 16 + 60; // apx path lengtht size + overhead
 		
-		if(size < 8192) {
+		if(server.options.protocol === \tcp or: {size < 8192}) {
 			bundle.addPrepare([5, bytes]); //"/d_recv"
 			if(writeDefs) { 
 				this.writeSynthDefFile(this.synthDefPath, bytes) 
 			}; // in case of server reboot
 			
 		}{
-			("SynthDef too large (" ++ size ++ " bytes) to be sent to remote server via udp").warn;
+			if(server.isLocal.not) {
+				Error("SynthDef too large (" ++ size 
+				++ " bytes) to be sent to remote server via udp").throw;
+			};
 			path = this.synthDefPath;
 			this.writeSynthDefFile(path, bytes);
 			bundle.addPrepare([6, path]); //"/d_load"

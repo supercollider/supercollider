@@ -360,7 +360,7 @@ NodeProxy : BusPlug {
 			};
 			
 			if(server.serverRunning) {
-				container.loadToBundle(bundle);
+				container.loadToBundle(bundle, server);
 				loaded = true;
 				if(awake) {
 					this.prepareToBundle(nil, bundle);
@@ -683,7 +683,7 @@ NodeProxy : BusPlug {
 		if(bus.notNil) { bus.realloc }; // if server was rebooted 
 		objects.do { arg item, i;
 			item.build(this, i);
-			item.loadToBundle(bundle);
+			item.loadToBundle(bundle, server);
 		};
 		loaded = true;
 	}
