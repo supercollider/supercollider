@@ -515,12 +515,59 @@ Return the receiver. aNumber is ignored.\
 \f0\b rrand(aNumber)
 \f1\b0 \
 \
-Returns a random number in the interval [a, b). If both a and b are Integer then the result will be an Integer.\
+	Returns a random number in the interval [a, b). If both a and b are Integer then the result will be an Integer.\
 \
 
 \f0\b exprand(aNumber)
 \f1\b0 \
 \
-Returns an exponentially distributed random number in the interval [a, b). Always returns a Float.\
+	Returns an exponentially distributed random number in the interval [a, b). Always returns a Float.\
 \
+\
+
+\f0\b degreeToKey(scale, stepsPerOctave)
+\f1\b0 \
+\
+	the value is truncated to an integer and used as an index into an octave repeating table of note values.\
+	Indices wrap around the table and shift octaves as they do\
+	stepsPerOctave is 12 by default\
+\
+
+\f0\b keyToDegree(scale, stepsPerOctave, octave)
+\f1\b0 \
+\
+	inverse of degreeToKey, when rounded.\
+	stepsPerOctave is 12 by default, octave is 5 by default\
+ \
+
+\f0\b roundToList(list)
+\f1\b0 \
+\
+	the value is rounded to the closest value in the list\
+\
+
+\f0\b roundToScale(list, stepsPerOctave, octave)
+\f1\b0 \
+\
+	the value is rounded to the closest value in the list, assuming an octave repeating table of note values.\
+	stepsPerOctave is 12 by default, octave is 5 by default\
+\
+
+\f0\b asIndex(list)
+\f1\b0 \
+	\
+	returns the closest index of the value in the list (list must be sorted)\
+	\
+
+\f0\b asIndex2(list)
+\f1\b0 \
+\
+	returns a float index for the value (list must be sorted)\
+	inverse operation is 
+\f0\b blendAt
+\f1\b0 \
+	\
+\
+	\
+	\
 }
