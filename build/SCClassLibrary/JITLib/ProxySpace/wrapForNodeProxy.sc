@@ -26,18 +26,26 @@
 	}
 }
 
++ProxySynthDef {
+	hasGate {
+		^true
+	}
+}
+
 +SynthDef {
 	wrapForNodeProxy { arg proxy, channelOffset=0;
 		//we don't know how many channels it has, user's responsibility
-		^SynthDefControl.new(this, false) //assumes there is no gate in the def.
+		^SynthDefControl.new(this)
 	}
-
+	hasGate {
+		^this.controlNames.any({ arg name; name.name == "gate" })
+	}
 }
 
 +SoundDef {
 	
 	wrapForNodeProxy { arg proxy, channelOffset=0;
-		^SoundDefControl.new(synthDef, false) //assumes there is no gate in the def.
+		^SoundDefControl.new(synthDef) 
 	}
 
 }
