@@ -19,4 +19,5 @@ Magnitude : Object {
 		// clip the receiver to the range lo, hi
 		^if (this < lo, {^lo}, { if (hi < this, {^hi}, {^this}) }) 
 	}
+	isNaN { ^(this >= 0 and: { this <= 0 }).not }
 }
