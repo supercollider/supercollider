@@ -130,7 +130,7 @@ Event : Environment {
 			};
 						
 			~player = NotePlayer.new;
-			~argNames = #[\out, \freq, \amp, \pan];
+			~argNames = #[\out, \freq, \amp, \pan, \sustain];
 			~msgFunc = { arg id, freq;
 				[[9, ~instrument, id, 0, ~group, 
 					\out, ~out, \freq, freq, \amp, ~amp, \pan, ~pan]];
