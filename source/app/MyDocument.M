@@ -513,18 +513,23 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     NSTextView *localTextView = [self textView];
     
     NSRange range = NSMakeRange(rangeStart, rangeSize);
+    NSString *nsstring = [localTextView string];
+	if (!nsstring) {
+		post("text view has no string\n");
+		return;
+	}
+	int maxlength  = [nsstring length];
     
-    if (rangeSize < 0) {
+	if (rangeSize < 0) {
         unsigned int lineStart, lineEnd;
         range.length = 0;
-        NSString *nsstring = [localTextView string];
-        if (!nsstring) {
-            post("text view has no string\n");
-            return;
-        }
         [nsstring getLineStart: &lineStart end: &lineEnd contentsEnd: nil forRange: range];
         range = NSMakeRange(lineStart, lineEnd - lineStart);
     }
+	if(rangeSize + rangeStart >=  maxlength) {
+		range.length = maxlength - rangeStart;
+	}
+	
     [localTextView setSelectedRange: range];
     [localTextView scrollRangeToVisible: range];
 }
@@ -535,6 +540,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     NSLayoutManager *layoutManager = [localTextView layoutManager];
     unsigned numberOfLines, index, numberOfGlyphs = [layoutManager numberOfGlyphs];
     NSRange lineRange;
+    if(linenum <= 0) linenum = 1;
     for (numberOfLines = 0, index = 0; index < numberOfGlyphs && numberOfLines<linenum; numberOfLines++){
     
         (void) [layoutManager lineFragmentRectForGlyphAtIndex:index effectiveRange:&lineRange];
