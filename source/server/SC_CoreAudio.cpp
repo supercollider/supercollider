@@ -359,6 +359,14 @@ bool SC_CoreAudioDriver::Setup()
 		return false;
 	}
 	//fprintf(stdout, "mHardwareBufferSize = %ld\n", mHardwareBufferSize);
+	
+	// get a description of the data format used by the default output device
+	count = sizeof(AudioStreamBasicDescription);	// it is required to pass the size of the data to be returned
+	err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyStreamFormat, &count, &outputStreamDesc);
+	if (err != kAudioHardwareNoError) {
+		fprintf(stdout, "get kAudioDevicePropertyStreamFormat error %c%c%c%c\n", (err>>24)&255,(err>>16)&255,(err>>8)&255,(err)&255);
+		return false;
+	}
 
 	if (mInputDevice != kAudioDeviceUnknown) {
 		// get a description of the data format used by the default input device
@@ -375,18 +383,10 @@ bool SC_CoreAudioDriver::Setup()
 			fprintf(stdout, "get kAudioDevicePropertyStreamFormat error %c%c%c%c\n", (err>>24)&255,(err>>16)&255,(err>>8)&255,(err)&255);
 			return false;
 		}
-	}
-	
-	// get a description of the data format used by the default output device
-	count = sizeof(AudioStreamBasicDescription);	// it is required to pass the size of the data to be returned
-	err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyStreamFormat, &count, &outputStreamDesc);
-	if (err != kAudioHardwareNoError) {
-		fprintf(stdout, "get kAudioDevicePropertyStreamFormat error %c%c%c%c\n", (err>>24)&255,(err>>16)&255,(err>>8)&255,(err)&255);
-		return false;
-	}
-	if (inputStreamDesc.mSampleRate != outputStreamDesc.mSampleRate) {
-		fprintf(stdout, "input and output sample rates do not match. %g != %g\n", inputStreamDesc.mSampleRate, outputStreamDesc.mSampleRate);
-		return false;
+		if (inputStreamDesc.mSampleRate != outputStreamDesc.mSampleRate) {
+			fprintf(stdout, "input and output sample rates do not match. %g != %g\n", inputStreamDesc.mSampleRate, outputStreamDesc.mSampleRate);
+			return false;
+		}
 	}
 
 	if (UseSeparateIO()) {
