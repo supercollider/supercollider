@@ -259,7 +259,7 @@ NodeProxy : BusPlug {
 
 	var <group, <objects, <nodeMap;	
 	var <loaded=false, <>awake=true, <>paused=false;
-	var <>clock, <task; 	
+	var <>clock;
 	classvar <>buildProxyControl;
 	
 	
@@ -281,7 +281,6 @@ NodeProxy : BusPlug {
 		this.free(0, true); // free group and objects
 		this.removeAll; //      take out all objects
 		this.stop(0);		// stop any monitor
-		this.task = nil;
 		this.freeBus;	 // free the bus from the server allocator 
 		this.init;	// reset the environment
 	}
@@ -433,16 +432,6 @@ NodeProxy : BusPlug {
 		} { group = agroup };
 	}
 	
-	task_ { arg newTask; 
-		var bundle;
-		bundle = MixedBundle.new;
-		if(task.isPlaying) { bundle.addMessage(task, \stop) };
-		task = newTask;
-		if(this.isPlaying) { this.playTaskToBundle(bundle) };
-		bundle.schedSend(server, clock);
-	}
-
-	
 	// applying the settings to nodes //
 	
 	sendNodeMap {
@@ -521,66 +510,10 @@ NodeProxy : BusPlug {
 	}
 	
 	
-	///////////////////// tasks ////////////////////////
 	
-	// sends all objects, frees the last ones first.
-	
-	spawner { arg beats=1, argFunc;
-		var dt;
-		if(beats.isNil) { ^this.freeSpawn };
-		dt = beats.asStream;
-		argFunc = if(argFunc.notNil) { argFunc.asArgStream } { #[] };
-		this.task = Task.new { 
-					inf.do { arg i;
-						var t, args;
-						if((t = dt.next).isNil, { nil.alwaysYield });
-						args = argFunc.next(i, beats);
-						this.send(args ++ ["i", i, "beats", thisThread.beats]); 
-						t.wait; 
-						}
-					};
-	}
-	
-	// spawns synth at index, assumes fixed time envelope
-	
-	gspawner { arg beats=1, argFunc, index=0;
-		var dt;
-		if(beats.isNil) { ^this.freeSpawn };
-		dt = beats.asStream;
-		argFunc = if(argFunc.notNil) { argFunc.asArgStream } { #[] };
-		index = index.loop.asStream;
-		this.task = Task.new { 
-					inf.do { arg i;	
-						var t;
-						if((t = dt.next).isNil, { nil.alwaysYield });
-						this.spawn(
-							argFunc.value(i, beats) ++ ["i", i, "beats", thisThread.beats], 
-							index.next
-						); 
-						t.wait; 
-						}
-					};
-	}
-		
 	/////////// filtering within one proxy /////////////////
 	
-	filter { arg i, func;
-		var ok, ugen;
-		if(this.isNeutral) { 
-			ugen = func.value(Silent.ar);
-			ok = this.initBus(ugen.rate, ugen.numChannels);
-			if(ok.not) { ^nil }
-		};
-		
-		this.put(i) { arg out;
-			var e;
-			e = EnvGate.new * Control.names(["wet"++i]).kr(1.0);
-			if(this.rate === 'audio') {
-				XOut.ar(out, e, SynthDef.wrap(func, nil, [In.ar(out, this.numChannels)]))
-			} {
-				XOut.kr(out, e, SynthDef.wrap(func, nil, [In.kr(out, this.numChannels)]))			};
-		}
-	}
+	filter { arg i, func; this.put(i, \filter -> func)	}
 	
 	/////////// shortcuts for efficient bus input //////////////
 	
@@ -777,8 +710,6 @@ NodeProxy : BusPlug {
 				this.prepareToBundle(nil, bundle);
 				this.sendAllToBundle(bundle)
 			};
-			
-			this.playTaskToBundle(bundle);
 		};
 		
 	}
@@ -787,12 +718,7 @@ NodeProxy : BusPlug {
 			objects.do { arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) };
 			nodeMap.wakeUpParentsToBundle(bundle, checkedAlready);
 	}
-	
-	playTaskToBundle { arg bundle;
-		if(task.notNil and: { task.isPlaying.not }) 
-			{ bundle.addMessage(task, \play, [clock, false, 0.0]) }
-	}
-	
+		
 	// used in 'garbage collector'
 	
 	getFamily { arg set, alreadyAsked;
@@ -840,7 +766,7 @@ NodeProxy : BusPlug {
 			if(fadeTime.notNil) { bundle.add(["/n_set", group.nodeID, "fadeTime", fadeTime]) };
 			this.stopAllToBundle(bundle);
 			if(freeGroup) { 
-				bundle.addSchedFunction({ group.free; task.stop }, 
+				bundle.addSchedFunction({ group.free }, 
 					(fadeTime ? this.fadeTime) + server.latency); 
 			};
 			bundle.send(server);
@@ -858,18 +784,34 @@ NodeProxy : BusPlug {
 	}
 	
 	setn { arg ... args;
-		nodeMap.setn(*args);
+		nodeMap.set(*args);
 		if(this.isPlaying) { group.setn(*args) };
 	}
 	
 	// map to a control proxy
+		
 	map { arg ... args; // key, proxy ... args; 
-		nodeMap.map(*args);
-		if(this.isPlaying) { 
-			nodeMap.updateBundle;
-			server.sendBundle(server.latency, [14, group.nodeID] ++ nodeMap.mapArgs);
-		}
+		var bundle;
+		if(this.isPlaying) {
+			bundle = List.new;
+			nodeMap.unmapArgsToBundle(bundle, group.nodeID, args[0,2..args.size-2]);
+			nodeMap.map(*args).updateBundle;
+			nodeMap.addToBundle(bundle, group.nodeID);
+			server.listSendBundle(server.latency, bundle);
+		} { nodeMap.map(*args) }
 	}
+	
+	mapn { arg ... args; // key, proxy ... args; proxy is multichannel
+		var bundle;
+		if(this.isPlaying) {
+			bundle = List.new;
+			nodeMap.unmapArgsToBundle(bundle, group.nodeID, args[0,2..args.size-2]);
+			nodeMap.mapn(*args).updateBundle;
+			nodeMap.addToBundle(bundle, group.nodeID);
+			server.listSendBundle(server.latency, bundle);
+		} { nodeMap.mapn(*args) }
+	}
+
 	
 	// map to current environment
 	mapEnvir { arg keys;
@@ -890,11 +832,13 @@ NodeProxy : BusPlug {
 	}
 	
 	unmap { arg ... keys;
+		var bundle;
 		if(keys.isEmpty) { keys = nodeMap.mappingKeys };
-		nodeMap.unmap(*keys);
 		if(this.isPlaying) {
-			keys.do { arg key; group.map(key,-1) };
-			nodeMap.sendToNode(group) 
+			bundle = List.new;
+			nodeMap.unmapArgsToBundle(bundle, group.nodeID, keys);
+			server.listSendBundle(server.latency, bundle);
+			nodeMap.unmap(*keys);
 		};
 	}
 	
@@ -910,6 +854,10 @@ NodeProxy : BusPlug {
 	xsetn { arg ... args;
 		this.xFadePerform(\setn, args);
 	}
+	xmapn { arg ... args;
+		this.xFadePerform(\mapn, args);
+	}
+
 	xFadePerform { arg selector, args;
 		var bundle;
 		nodeMap.performList(selector, args);

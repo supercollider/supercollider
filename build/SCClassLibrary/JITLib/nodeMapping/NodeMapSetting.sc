@@ -1,13 +1,26 @@
 NodeMapSetting {
-	var <>key, <>value, <>bus;
+	var <>key, <>value, <>busNumChannels;
 	
-	*new { arg key, value, bus;
-		^super.newCopyArgs(key, value, bus)
+	*new { arg key, value, busNumChannels;
+		^super.newCopyArgs(key, value, busNumChannels)
+	}
+	
+	map {Êarg index, numChannels=1;
+		value = index;
+		busNumChannels = numChannels;
+	}
+	set { arg val;
+		value = val;
+		busNumChannels = nil;
 	}
 		
 	updateNodeMap { arg nodeMap;
-		if(bus.notNil) {
-			this.updateBusToNodeMap(nodeMap);
+		if(busNumChannels.notNil) {
+			if(busNumChannels > 1) {
+				nodeMap.mapnArgs = nodeMap.mapnArgs.addAll([key, this.index, busNumChannels]);
+			}{
+				nodeMap.mapArgs = nodeMap.mapArgs.addAll([key, this.index]);
+			}
 		} {
 			if(value.notNil) {
 				if(value.isSequenceableCollection) {
@@ -19,17 +32,15 @@ NodeMapSetting {
 		}
 	}
 	
-	updateBusToNodeMap { arg nodeMap;
-		nodeMap.mapArgs = nodeMap.mapArgs.addAll([key, bus]);
-	}
-	
 	copy {
-		^this.class.new(key, value, bus)
+		^this.class.new(key, value, busNumChannels)
 	}
 	
-	isEmpty { ^value.isNil && bus.isNil }
+	isEmpty { ^value.isNil }
+	index { ^value }
+	isMapped { ^busNumChannels.notNil }
 	
-	storeArgs { ^[value, bus] }
+	storeArgs { ^[value, busNumChannels] }
 
 	printOn { arg stream;
 		stream << this.storeArgs
@@ -38,16 +49,14 @@ NodeMapSetting {
 
 
 ProxyNodeMapSetting : NodeMapSetting {
-	var <>channelOffset=0, <>rate;
+	var <>rate; // rate is the synthDef "rate" arg, bus is a proxy
 	
-	// bus is a proxy. this method derives the keys
-	updateBusToNodeMap { arg nodeMap;
-		nodeMap.mapArgs = nodeMap.mapArgs.addAll([key, bus.index +  channelOffset]);
-	}
+	index { ^value.index }
 	isEmpty {
-		^rate.isNil and: { super.isEmpty }
+		^value.isNil and: { rate.isNil }
 	}
-	storeArgs { ^[value, bus, channelOffset, rate] }
+	storeArgs { ^[value, busNumChannels, rate] }
 
 
 }
+

@@ -10,7 +10,7 @@ NodeMap {
 		^super.new.clear
 	}
 	
-	controlClass {
+	settingClass {
 		^NodeMapSetting
 	}
 	
@@ -18,48 +18,56 @@ NodeMap {
 		setArgs = setnArgs = mapArgs = mapnArgs = nil;
 	}
 	
+	clear {
+		settings = IdentityDictionary.new;
+	}
+
+	
 	map { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			this.get(args.at(i)).bus_(args.at(i+1));
+			this.get(args.at(i)).map(args.at(i+1));
 		});
 		upToDate = false;
 	}
 	
 	unmap { arg ... keys;
-		keys.do({ arg key;
+		keys.do { arg key;
 			var setting;
 			setting = settings.at(key);
-			if(setting.notNil, {
-				setting.bus_(nil);
-				if(setting.isEmpty, { settings.removeAt(key) })
-			});
-		});
+			if(setting.notNil and: { setting.isMapped }) {
+				setting.map(nil, nil);
+				if(setting.isEmpty) { settings.removeAt(key) }
+			};
+		};
 		upToDate = false;
 		
 	}
 	
-	setn { arg ... args;
-		forBy(0, args.size-1, 2, { arg i;
-			this.get(args.at(i)).value_(args.at(i+1).asCollection);
-		});
-		upToDate = false;
-	}
-	
 	set { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			this.get(args.at(i)).value_(args.at(i+1));
+			this.get(args.at(i)).set(args.at(i+1));
 		});
 		upToDate = false;
 	}
 	
+	setn { arg ... args; this.set(*args)  }
+	
+	
 	unset { arg ... keys;
-		keys.do({ arg key;
-			var s;
-			s = settings.at(key);
-			if(s.notNil, {
-				s.value_(nil);
-				if(s.isEmpty, { settings.removeAt(key) })
-			})
+		keys.do { arg key;
+			var setting;
+			setting = settings.at(key);
+			if(setting.notNil and: { setting.isMapped.not }) {
+				setting.map(nil, nil);
+				if(setting.isEmpty) { settings.removeAt(key) }
+			};
+		};
+		upToDate = false;
+	}
+	
+	mapn { arg ... args;
+		forBy(0, args.size-1, 3, { arg i;
+			this.get(args.at(i)).map(args.at(i+1), args.at(i+2));
 		});
 		upToDate = false;
 	}
@@ -76,16 +84,13 @@ NodeMap {
 		this.send(node.server, node.nodeID, latency)
 	}
 	
-	clear {
-		settings = IdentityDictionary.new;
-	}
-	
+		
 	
 	get { arg key;
 		var setting;
 		setting = settings.at(key);
 		if(setting.isNil, { 
-			setting = this.controlClass.new(key); 
+			setting = this.settingClass.new(key); 
 			settings.put(key, setting) 
 		});
 		^setting
@@ -97,12 +102,12 @@ NodeMap {
 	
 	settingKeys { 
 		var res;
-		settings.do({ arg item; if(item.value.notNil, { res = res.add(item.key) }) });
+		settings.do { arg item; if(item.isMapped.not) { res = res.add(item.key) } };
 		^res
 	}
 	mappingKeys { 
 		var res;
-		settings.do({ arg item; if(item.bus.notNil, { res = res.add(item.key) }) });
+		settings.do { arg item; if(item.isMapped) { res = res.add(item.key) } };
 		^res
 	}
 		
@@ -117,9 +122,12 @@ NodeMap {
 	setMsg  { arg nodeID; ^if(setArgs.notNil, { [15, nodeID] ++ setArgs }, { nil }) }
 	mapMsg  { arg nodeID; ^if(mapArgs.notNil, { [14, nodeID] ++ mapArgs }, { nil }) }
 	setnMsg { arg nodeID; ^if(setnArgs.notNil, { [16, nodeID] ++ setnArgs }, { nil }) }
+	mapnMsg  { arg nodeID; ^if(mapArgs.notNil, { [48, nodeID] ++ mapnArgs }, { nil }) }
+	
 	setToBundle { arg bundle, nodeID; if(setArgs.notNil, { bundle.add([15, nodeID] ++ setArgs) }) }
 	setnToBundle { arg bundle, nodeID;if(setnArgs.notNil,{ bundle.add([16, nodeID] ++ setnArgs)}) }
 	mapToBundle { arg bundle, nodeID; if(mapArgs.notNil, { bundle.add([14, nodeID] ++ mapArgs) }) }
+	mapnToBundle { arg bundle, nodeID; if(mapnArgs.notNil, { bundle.add([48, nodeID] ++ mapnArgs) }) }
 
 	addToBundle { arg inBundle, target;
 			var msgs;
@@ -128,15 +136,30 @@ NodeMap {
 			this.setToBundle(inBundle, target);
 			this.setnToBundle(inBundle, target);
 			this.mapToBundle(inBundle, target);
+			this.mapnToBundle(inBundle, target);
 	}
+	
 	unsetArgs {
 		var res;
 		if(settings.isEmpty) { ^nil };
 		res = Array.newClear(settings.size * 2);
 		settings.keys.do { arg item, i; res.put(i * 2, item) };
 		^res
-	
 	}
+	
+	unmapArgsToBundle { arg bundle, target, keys;
+		var args;
+		if(settings.isEmpty) { ^this };
+		keys.do { arg key;
+			var item;
+			item = settings[key];
+			if(item.notNil and: {item.isMapped}) {
+					args = args ++ [key, -1, item.busNumChannels];
+			};
+		};
+		if(args.notNil) { bundle.add([48, target.asNodeID] ++ args) };
+	}
+	
 	
 	copy {
 		var res, nset;
@@ -159,13 +182,14 @@ NodeMap {
 ProxyNodeMap : NodeMap {
 
 		var <>parents, <>proxy;
+		var hasRates=false;
 		
 		clear {
 			super.clear;
 			parents = IdentityDictionary.new;
 		}
 		
-		controlClass {
+		settingClass {
 			^ProxyNodeMapSetting
 		}
 		
@@ -183,42 +207,40 @@ ProxyNodeMap : NodeMap {
 				{ settings.removeAt(key) }
 				{ setting.rate_(rate) };
 			});
+			hasRates = settings.any { arg item; item.rate.notNil };
 		}
 		
 		ratesFor { arg keys;
-			^keys.collect({ arg key;
-				var res;
-				res = settings.at(key);
-				if(res.notNil, { res.rate }, { nil })
-			})
+			^if(hasRates) {
+				keys.collect({ arg key;
+					var res;
+					res = settings.at(key);
+					if(res.notNil, { res.rate }, { nil })
+				})
+			} { nil }
 		}
 				
-		mappingKeys {
-			^settings.select({ arg item; item.bus.notNil })
-					.asArray.collect({ arg item; item.key })
-		}
 						
-		map { arg ... args;
+		map { arg ... args; this.prMap(false, args) }
+		
+		mapn { arg ... args; this.prMap(true, args) }
+		
+		prMap { arg multiChannel, args;
 			var playing;
 			playing = proxy.isPlaying;
-			(args.size div: 2).do({ arg i;
-				var key, mapProxy, bus, ok;
-				key = args.at(i*2).asArray;
-				mapProxy = args.at(2*i+1);
+			args.pairsDo { arg key, mapProxy;
+				var ok, setting;
 				if(mapProxy.isKindOf(BusPlug).not) { Error("map: not a node proxy").throw };
-				ok = mapProxy.initBus(\control, key.size);
-				if(ok, {
+				ok = mapProxy.initBus(\control);
+				if(ok) {
 					if(playing, { mapProxy.wakeUp });
-					min(key.size, mapProxy.numChannels ? 1).do({ arg chan;
-						var theKey;
-						theKey = key.at(chan);
-						this.get(theKey).bus_(mapProxy).channelOffset_(chan);
-						parents = parents.put(theKey, mapProxy);
-					});
-				}, {
-					("rate / numChannels doesn't match:" + key + mapProxy).inform
-				});
-			});
+					setting = this.get(key);
+					setting.map(mapProxy, if(multiChannel) { mapProxy.numChannels }{ 1 });
+					parents = parents.put(key, mapProxy);
+				}{
+					("can only map to control proxy:" + key + mapProxy).inform
+				};
+			};
 			upToDate = false;
 		}
 		
@@ -236,7 +258,7 @@ ProxyNodeMap : NodeMap {
 			keys.do({ arg key;
 				setting = settings.at(key);
 				if(setting.notNil, {
-					setting.bus_(nil);
+					setting.map(nil, nil);
 					parents.removeAt(key);
 					if(setting.isEmpty, { settings.removeAt(key) })
 				});
