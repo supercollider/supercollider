@@ -219,14 +219,14 @@ int slotBackgroundVal(PyrSlot *slot, DrawBackground **ioPtr)
 // for any sc class that supports mouseDown and mouseUp methods
 #import "TabletEvents.h"
 
-#define TABLETTRACK(method) \
+#define TABLETTRACK(METHOD,X,Y) \
     if (mObj) { \
         pthread_mutex_lock (&gLangMutex); \
         VMGlobals *g = gMainVMGlobals; \
         g->canCallOS = true; \
         ++g->sp;  SetObject(g->sp, mObj); \
-        SetFloat(++g->sp, where.x - mBounds.x); \
-        SetFloat(++g->sp, where.y - mBounds.y); \
+        SetFloat(++g->sp, X); \
+        SetFloat(++g->sp, Y); \
         SetFloat(++g->sp, (float)[theEvent pressure]); \
         NSPoint tilt; \
         tilt = (NSPoint)[theEvent tilt]; \
@@ -235,7 +235,7 @@ int slotBackgroundVal(PyrSlot *slot, DrawBackground **ioPtr)
         SetInt(++g->sp,[theEvent deviceID]); \
         SetInt(++g->sp,[theEvent buttonNumber]); \
         SetInt(++g->sp,[theEvent clickCount]); \
-        runInterpreter(g, method, 9); \
+        runInterpreter(g, METHOD, 9); \
         g->canCallOS = false; \
         pthread_mutex_unlock (&gLangMutex); \
     } \
@@ -315,7 +315,6 @@ NSMenu* SCView::contextMenu(SCPoint inPoint)
 
 void SCView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-//NSLog(@"view begin");
 	mouseTrack(where, modifiers,theEvent);
 }
 
@@ -1618,7 +1617,6 @@ void SC2DSlider::calcThumbRect()
 
 void SC2DSlider::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-NSLog(@"SC2DSlider::mouseTrack");
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else {
@@ -1703,7 +1701,6 @@ SC2DTabletSlider::SC2DTabletSlider(SCContainerView *inParent, PyrObject* inObj, 
 
 void SC2DTabletSlider::setValueFromPoint(SCPoint where)
 {
-NSLog(@"SC2DTabletSlider::setValueFromPoint");
     double x = (where.x - mBounds.x - 1 - THUMBSIZE/2) / (mBounds.width - THUMBSIZE - 2);
     double y = 1. - (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
     setValue(x, y, false); // do NOT send action
@@ -1711,21 +1708,23 @@ NSLog(@"SC2DTabletSlider::setValueFromPoint");
 
 void SC2DTabletSlider::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-NSLog(@"SC2DTabletSlider::mouseBeginTrack");
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else {
-        this->setValueFromPoint(where);
-        TABLETTRACK(getsym("mouseDown"))
+        double x = (where.x - mBounds.x - 1 - THUMBSIZE/2) / (mBounds.width - THUMBSIZE - 2);
+        double y = 1. - (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
+        setValue(x, y, false); // do NOT send action
+        TABLETTRACK(getsym("mouseDown"),x,y)
     }
 }
 
 void SC2DTabletSlider::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-NSLog(@"SC2DTabletSlider::mouseTrack");
    if (! (modifiers & NSCommandKeyMask)) {
-        this->setValueFromPoint(where);
-        TABLETTRACK(s_doaction)
+        double x = (where.x - mBounds.x - 1 - THUMBSIZE/2) / (mBounds.width - THUMBSIZE - 2);
+        double y = 1. - (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
+        setValue(x, y, false); // do NOT send action
+        TABLETTRACK(s_doaction,x,y)
     }
 }
 
@@ -1734,7 +1733,10 @@ void SC2DTabletSlider::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theE
     if (modifiers & NSCommandKeyMask) {
         receiveDrag();
     } else {
-        TABLETTRACK(getsym("mouseUp"))
+        double x = (where.x - mBounds.x - 1 - THUMBSIZE/2) / (mBounds.width - THUMBSIZE - 2);
+        double y = 1. - (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
+        setValue(x, y, false); // do NOT send action
+        TABLETTRACK(getsym("mouseUp"),x,y)
     }
 }
 
@@ -3843,14 +3845,14 @@ void SCTabletView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEve
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else {
-        TABLETTRACK(getsym("mouseDown"))
+        TABLETTRACK(getsym("mouseDown"),where.x - mBounds.x,where.y - mBounds.y)
     }
 }
 
 void SCTabletView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
     if (! (modifiers & NSCommandKeyMask)) {
-        TABLETTRACK(s_doaction)
+        TABLETTRACK(s_doaction,where.x - mBounds.x,where.y - mBounds.y)
     }
 }
 
@@ -3859,7 +3861,7 @@ void SCTabletView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent
     if (modifiers & NSCommandKeyMask) {
         this->receiveDrag();
     } else {
-        TABLETTRACK(getsym("mouseUp"))
+        TABLETTRACK(getsym("mouseUp"),where.x - mBounds.x,where.y - mBounds.y)
     }
 }
 
@@ -3898,7 +3900,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCSlider", NewSCSlider);
     new SCViewMaker("SCRangeSlider", NewSCRangeSlider);
     new SCViewMaker("SC2DSlider", NewSC2DSlider);
-    new SCViewMaker("SC2DTabletSlider", NewSC2DSlider);
+    new SCViewMaker("SC2DTabletSlider", NewSC2DTabletSlider);
     new SCViewMaker("SCButton", NewSCButton);
     new SCViewMaker("SCStaticText", NewSCStaticText);
     new SCViewMaker("SCNumberBox", NewSCNumberBox);
