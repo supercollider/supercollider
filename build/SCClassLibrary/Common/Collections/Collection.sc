@@ -60,13 +60,15 @@ Collection {
 	removeAll { | list | list.do { | item | this.remove(item) } }
 	removeAllSuchThat { | function |
 		var removedItems, copy;
-		removedItems = this.species.new;
+		// changed:
+		removedItems = this.class.new;
 		copy = this.copy;
 		copy.do { | item, i |
-			if ( function.value(item, i) ) 
+			if ( function.value(item, i) )
 			{
 				this.remove(item);
-				removedItems.add(item);
+				// changed:
+				removedItems = removedItems.add(item);
 			}
 		};
 		^removedItems
