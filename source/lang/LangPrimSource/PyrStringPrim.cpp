@@ -88,7 +88,7 @@ int prString_AsCompileString(struct VMGlobals *g, int numArgsPushed)
 	char *chars1 = scstr->s;
 	int newSize = scstr->size + 2;
 	for (int i=0; i<scstr->size; ++i) {
-		if (chars1[i] == '"') newSize++;
+		if (chars1[i] == '"' || chars1[i] == '\\') newSize++;
 	}
 	PyrString *newString = newPyrStringN(g->gc, newSize, 0, true);
 	char *chars2 = newString->s;
@@ -97,7 +97,7 @@ int prString_AsCompileString(struct VMGlobals *g, int numArgsPushed)
 	int k = 1;
 	for (int i=0; i<scstr->size; ++i) {
 		int c = chars1[i];
-		if (c == '"') chars2[k++] = '\\';
+		if (c == '"' || c == '\\') chars2[k++] = '\\';
 		chars2[k++] = c;
 	}
 	SetObject(a, newString);
