@@ -105,12 +105,12 @@ String[char] : RawArray {
 		
 
 	contains { arg string, offset = 0;
-		^this.find(string, offset, false).notNil
+		^this.find(string, false, offset).notNil
 	}
 	containsi { arg string, offset = 0;
-		^this.find(string, offset, true).notNil
+		^this.find(string, true, offset).notNil
 	}
-	find { arg string, offset = 0, ignoreCase = false;
+	find { arg string, ignoreCase = false, offset = 0;
 		_String_Find
 		^this.primitiveFailed
 	}

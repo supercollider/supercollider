@@ -268,11 +268,11 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 {	
 	PyrSlot *a = g->sp - 3; // source string
 	PyrSlot *b = g->sp - 2; // search string
-	PyrSlot *c = g->sp - 1; // offset
-	PyrSlot *d = g->sp;		// ignoreCase
+	PyrSlot *c = g->sp - 1; // ignoreCase
+	PyrSlot *d = g->sp;		// offset
 	
 	int offset;
-	int err = slotIntVal(c, &offset);
+	int err = slotIntVal(d, &offset);
 	if (err) return err;
 
 	int alength = a->uo->size - offset;
@@ -292,7 +292,7 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 	char *bchar = b->uos->s;
 	char bchar0 = bchar[0];
 	int scanlength = alength - blength;
-	if (IsTrue(d)) {
+	if (IsTrue(c)) {
 		bchar0 = toupper(bchar0);
 		for (int i=0; i <= scanlength; ++i, ++achar) {
 			if (toupper(*achar) == bchar0) {
