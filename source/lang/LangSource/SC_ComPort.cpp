@@ -42,8 +42,10 @@ typedef int socklen_t;
 #define HAVE_MSG_NOSIGNAL 0
 
 #if defined(SO_NOSIGPIPE)
+# undef HAVE_SO_NOSIGPIPE
 # define HAVE_SO_NOSIGPIPE 1
 #elif defined(MSG_NOSIGNAL)
+# undef HAVE_MSG_NOSIGNAL
 # define HAVE_MSG_NOSIGNAL 1
 #endif
 
@@ -451,7 +453,7 @@ SC_TcpClientPort::SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc, vo
 	
 #if HAVE_SO_NOSIGPIPE
 	int sockopt = 1;
-	setsockopt(mSocket, SOL_SOCKET, SO_NOSIGPIPE, &sockopt);
+	setsockopt(mSocket, SOL_SOCKET, SO_NOSIGPIPE, &sockopt, sizeof(sockopt));
 #endif // HAVE_SO_NOSIGPIPE
 
 	if (pipe(mCmdFifo) == -1) {
