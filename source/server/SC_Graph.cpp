@@ -81,8 +81,6 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	// set calc func
 	graph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_Calc;
 	
-	graph->mSampleOffset = inWorld->mSampleOffset;
-	
 	// allocate wires
 	graph->mNumWires = inGraphDef->mNumWires;
 	graph->mWire = (Wire*)memory;
@@ -132,6 +130,9 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 			wire->mScalarValue = constants[i];
 		}
 	}
+	
+	graph->mSampleOffset = inWorld->mSampleOffset;
+	graph->mRGen = inWorld->mRGen; // defaults to rgen zero.
 	
 	// initialize units
 	//scprintf("initialize units\n");

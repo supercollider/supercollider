@@ -35,8 +35,9 @@ const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800UL; /* 17 leap years *
 
 int32 timeseed()
 {
+	static int32 count = 0;
 	int64 time = AudioGetCurrentHostTime();
-	return Hash((int32)(time >> 32) + Hash((int32)time));
+	return (int32)(time >> 32) ^ (int32)time ^ count--;
 }
 
 inline int64 CoreAudioHostTimeToOSC(int64 hostTime)
@@ -643,8 +644,8 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
 				SC_ScheduledEvent event = mScheduler.Remove();
 				event.Perform();
-				world->mSampleOffset = 0;
 			}
+			world->mSampleOffset = 0;
 			
 			World_Run(world);
 	

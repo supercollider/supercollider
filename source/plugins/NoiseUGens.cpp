@@ -128,6 +128,15 @@ struct LFNoise2 : public Unit
 	int mCounter;
 };
 
+struct RandSeed : public Unit
+{
+	float m_trig;
+};
+
+struct RandID : public Unit
+{
+	float m_id;
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -190,13 +199,19 @@ extern "C"
 
 	void LFNoise2_next(LFNoise2 *unit, int inNumSamples);
 	void LFNoise2_Ctor(LFNoise2 *unit);
+        
+	void RandSeed_next(RandSeed *unit, int inNumSamples);
+	void RandSeed_Ctor(RandSeed *unit);
+        
+	void RandID_next(RandID *unit, int inNumSamples);
+	void RandID_Ctor(RandID *unit);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 // macros to put rgen state in registers
 #define RGET \
-	RGen& rgen = unit->mWorld->mRGen; \
+	RGen& rgen = *unit->mParent->mRGen; \
 	uint32 s1 = rgen.s1; \
 	uint32 s2 = rgen.s2; \
 	uint32 s3 = rgen.s3; 
@@ -346,7 +361,7 @@ void BrownNoise_Ctor(BrownNoise* unit)
 {
 	SETCALC(BrownNoise_next);
 	
-	unit->mLevel = unit->mWorld->mRGen.frand2();
+	unit->mLevel = unit->mParent->mRGen->frand2();
 
 	ZOUT0(0) = unit->mLevel;
 }
@@ -518,7 +533,7 @@ void Rand_Ctor(Rand* unit)
 	float lo = ZIN0(0);
 	float hi = ZIN0(1);
 	float range = hi - lo;
-	RGen& rgen = unit->mWorld->mRGen;	
+	RGen& rgen = *unit->mParent->mRGen;	
 	ZOUT0(0) = rgen.frand() * range + lo;
 }
 
@@ -529,7 +544,7 @@ void TRand_Ctor(TRand* unit)
 	float lo = ZIN0(0);
 	float hi = ZIN0(1);
 	float range = hi - lo;
-	RGen& rgen = unit->mWorld->mRGen;	
+	RGen& rgen = *unit->mParent->mRGen;	
 	ZOUT0(0) = rgen.frand() * range + lo;
 	SETCALC(TRand_next);
 	unit->m_trig = ZIN0(2);
@@ -542,7 +557,7 @@ void TRand_next(TRand* unit, int inNumSamples)
 		float lo = ZIN0(0);
 		float hi = ZIN0(1);
 		float range = hi - lo;
-		RGen& rgen = unit->mWorld->mRGen;	
+		RGen& rgen = *unit->mParent->mRGen;	
 		ZOUT0(0) = unit->m_value = rgen.frand() * range + lo;
 	} else {
 		ZOUT0(0) = unit->m_value;
@@ -557,7 +572,7 @@ void IRand_Ctor(IRand* unit)
 	int lo = (int)ZIN0(0);
 	int hi = (int)ZIN0(1);
 	int range = hi - lo + 1;
-	RGen& rgen = unit->mWorld->mRGen;	
+	RGen& rgen = *unit->mParent->mRGen;	
 	ZOUT0(0) = (float)(rgen.irand(range) + lo);
 }
 
@@ -568,7 +583,7 @@ void TIRand_Ctor(TIRand* unit)
 	int lo = (int)ZIN0(0);
 	int hi = (int)ZIN0(1);
 	int range = hi - lo + 1;
-	RGen& rgen = unit->mWorld->mRGen;	
+	RGen& rgen = *unit->mParent->mRGen;	
 	ZOUT0(0) = (float)(rgen.irand(range) + lo);
 	SETCALC(TIRand_next);
 	unit->m_trig = ZIN0(2);
@@ -581,12 +596,57 @@ void TIRand_next(TIRand* unit, int inNumSamples)
 		int lo = (int)ZIN0(0);
 		int hi = (int)ZIN0(1);
 		int range = hi - lo + 1;
-		RGen& rgen = unit->mWorld->mRGen;	
+		RGen& rgen = *unit->mParent->mRGen;	
 		ZOUT0(0) = unit->m_value = (float)(rgen.irand(range) + lo);
 	} else {
 		ZOUT0(0) = unit->m_value;
 	}
 	unit->m_trig = trig;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void RandSeed_Ctor(RandSeed* unit)
+{	
+	unit->m_trig = 0.;
+	SETCALC(RandSeed_next);
+	RandSeed_next(unit, 1);
+}
+
+void RandSeed_next(RandSeed* unit, int inNumSamples)
+{	
+	float trig = ZIN0(0);
+        
+	if (trig > 0.f && unit->m_trig <= 0.f) {
+		RGen& rgen = *unit->mParent->mRGen;
+		int seed = (int)ZIN0(1);
+		rgen.init(seed);
+	} 
+	unit->m_trig = trig;
+	ZOUT0(0) = 0.f;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void RandID_Ctor(RandID* unit)
+{	
+	 unit->m_id = -1.;
+	SETCALC(RandID_next);
+	RandID_next(unit, 1);
+}
+
+void RandID_next(RandID* unit, int inNumSamples)
+{	
+	float id = ZIN0(0);
+        
+	if (id != unit->m_id) {
+		unit->m_id = id;
+		int iid = (int)id;
+		if (iid >= 0 && iid < unit->mWorld->mNumRGens) {
+			unit->mParent->mRGen = unit->mWorld->mRGen + iid;
+		}
+	} 
+	ZOUT0(0) = 0.f;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -598,11 +658,14 @@ void LinRand_Ctor(LinRand* unit)
 	int n = (int)ZIN0(2);
 	
 	float range = hi - lo;
-	RGen& rgen = unit->mWorld->mRGen;	
+	RGen& rgen = *unit->mParent->mRGen;	
+	float a, b;
+	a = rgen.frand();
+	b = rgen.frand();
 	if (n <= 0) {
-		ZOUT0(0) = sc_min(rgen.frand(), rgen.frand()) * range + lo;
+		ZOUT0(0) = sc_min(a, b) * range + lo;
 	} else {
-		ZOUT0(0) = sc_max(rgen.frand(), rgen.frand()) * range + lo;
+		ZOUT0(0) = sc_max(a, b) * range + lo;
 	}
 }
 
@@ -615,7 +678,7 @@ void NRand_Ctor(NRand* unit)
 	int n = (int)ZIN0(2);
 	
 	float range = hi - lo;
-	RGen& rgen = unit->mWorld->mRGen;	
+	RGen& rgen = *unit->mParent->mRGen;	
 	float sum = 0;
 	for (int i=0; i<n; ++i) {
 		sum += rgen.frand();
@@ -631,7 +694,7 @@ void ExpRand_Ctor(ExpRand* unit)
 	float hi = ZIN0(1);
 	float ratio = hi / lo;
 	
-	ZOUT0(0) = pow(ratio, unit->mWorld->mRGen.frand()) * lo;
+	ZOUT0(0) = pow(ratio, unit->mParent->mRGen->frand()) * lo;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -769,7 +832,7 @@ void LFNoise1_Ctor(LFNoise1* unit)
 	SETCALC(LFNoise1_next);
 
 	unit->mCounter = 0;
-	unit->mLevel = unit->mWorld->mRGen.frand2();
+	unit->mLevel = unit->mParent->mRGen->frand2();
 	unit->mSlope = 0.f;
 	
 	LFNoise1_next(unit, 1);
@@ -824,7 +887,7 @@ void LFNoise2_Ctor(LFNoise2* unit)
 	unit->mCounter = 0;
 	unit->mSlope = 0.f;
 	unit->mLevel = 0.f;
-	unit->m_nextvalue = unit->mWorld->mRGen.frand2();
+	unit->m_nextvalue = unit->mParent->mRGen->frand2();
 	unit->m_nextmidpt = unit->m_nextvalue * .5f;
 	
 	LFNoise2_next(unit, 1);
@@ -923,6 +986,8 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(NRand);
 	DefineSimpleUnit(LinRand);
 	DefineSimpleUnit(ExpRand);
+	DefineSimpleUnit(RandSeed);
+	DefineSimpleUnit(RandID);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

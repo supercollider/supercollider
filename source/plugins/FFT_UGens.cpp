@@ -790,7 +790,7 @@ void PV_MagShift_Dtor(PV_MagShift *unit)
 
 // macros to put rgen state in registers
 #define RGET \
-	RGen& rgen = unit->mWorld->mRGen; \
+	RGen& rgen = *unit->mParent->mRGen; \
 	uint32 s1 = rgen.s1; \
 	uint32 s2 = rgen.s2; \
 	uint32 s3 = rgen.s3; 

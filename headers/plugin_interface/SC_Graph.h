@@ -46,6 +46,7 @@ struct Graph
 	struct Unit **mCalcUnits; // excludes i-rate units.
 
 	int mSampleOffset;
+	struct RGen* mRGen;
 };
 typedef struct Graph Graph;
 

@@ -56,11 +56,12 @@ struct WorldOptions
 	char *mNonRealTimeOutputSampleFormat;
 	
 	int mNonRealTimeSampleRate;
+	int mNumRGens;
 };
 
 const WorldOptions kDefaultWorldOptions = 
 {
-	0,1024,64,1024,1024,64,128,2,2,4096,64,2048, 0,0,0,0, 1, 0,0,0,0,0, 0
+	0,1024,64,1024,1024,64,128,2,2,4096,64,2048, 0,0,0,0, 1, 0,0,0,0,0, 0, 64
 };
 
 #include "SC_Reply.h"

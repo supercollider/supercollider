@@ -133,6 +133,9 @@ int main(int argc, char* argv[])
 			case 'w' :
 				options.mMaxWireBufs = atoi(argv[i+1]);
 				break;		
+			case 'r' :
+				options.mNumRGens = atoi(argv[i+1]);
+				break;		
 			default: Usage();
 		}
 	}

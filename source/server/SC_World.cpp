@@ -182,7 +182,11 @@ World* World_New(WorldOptions *inOptions)
 		
 		world->ft = &gInterfaceTable;
 		
-		world->mRGen.init(timeseed());
+		world->mNumRGens = inOptions->mNumRGens;
+		world->mRGen = new RGen[world->mNumRGens];
+		for (int i=0; i<world->mNumRGens; ++i) {
+			world->mRGen[i].init(timeseed());
+		}
 		
 		world->mNRTLock = new SC_Lock();
 		
@@ -546,6 +550,7 @@ void World_Cleanup(World *world)
 	free(world->mAudioBusTouched);
 	free(world->mControlBus);
 	free(world->mAudioBus);
+	delete [] world->mRGen;
 	if (hw) {
 		free(hw->mUsers);
 		delete hw->mNodeLib;

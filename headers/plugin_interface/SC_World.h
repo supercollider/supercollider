@@ -67,7 +67,8 @@ struct World
 
 	Rate mFullRate, mBufRate;
 	
-	RGen mRGen;
+	int mNumRGens;
+	RGen *mRGen;
 
 	int mNumUnits, mNumGraphs, mNumGroups;
 	int mSampleOffset; // offset in the buffer of current event time.

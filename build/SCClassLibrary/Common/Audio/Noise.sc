@@ -19,6 +19,26 @@
 	
 */
 
+RandSeed : UGen {
+	*kr { arg trig = 0.0, seed=56789;
+		^this.multiNew('control', trig, seed)
+	}
+	*ir { arg trig = 0.0, seed=56789;
+		^this.multiNew('scalar', trig, seed)
+	}
+}
+
+RandID : UGen {
+	// choose which random number generator to use for this synth .
+	*kr { arg id=0;
+		^this.multiNew('control', id)
+	}
+	*ir { arg id=0;
+		^this.multiNew('scalar', id)
+	}
+}
+
+
 Rand : UGen {
 	// uniform distribution
 	*new { arg lo = 0.0, hi = 1.0;
