@@ -27,8 +27,9 @@ RecNodeProxy : NodeProxy {
 		if(this.isPlaying && recSynth.isNil, {
 			buffer = Buffer(server, 65536, n);
 			if(n <= 2, {
-				recSynth = Synth.newCommand(cmd,  "system-diskout"++n.asString, 
-					[\i_in, bus.index, \i_bufNum, buffer.bufnum], group, \addAfter);
+				recSynth = Synth.prNew("system-diskout"++n.asString);
+				recSynth.newMsg(group,
+					[\i_in, bus.index, \i_bufNum, buffer.bufnum],\addAfter);
 			}, {
 				"multichannel rec doesn't work yet (no completion command bundles)".inform;
 				^this;
