@@ -94,7 +94,6 @@ static HowlSession gHowlSession;
 HowlSession::HowlSession()
 	: mSession(0)
 {
-	sw_discovery_init(&mSession);
 	pthread_mutex_init(&mMutex, 0);
 }
 
@@ -106,11 +105,10 @@ HowlSession::~HowlSession()
 
 void HowlSession::PublishPort(SCRendezvousProtocol protocol, short portNum)
 {
-	if (mSession) {
-		pthread_mutex_lock(&mMutex);
-		PublishPort(mSession, protocol, portNum);
-		pthread_mutex_unlock(&mMutex);
-	}
+	pthread_mutex_lock(&mMutex);
+	if (!mSession) sw_discovery_init(&mSession);
+	if (mSession) PublishPort(mSession, protocol, portNum);
+	pthread_mutex_unlock(&mMutex);
 }
 
 sw_result
