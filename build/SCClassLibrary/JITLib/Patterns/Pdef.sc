@@ -236,18 +236,32 @@ Pdef : Tdef {
 			~prPlay = ~play;
 			~synthDef = \default;
 			~play = #{
-				var pat, event, recursionLevel;
+				var pat, event, outerEvent, recursionLevel;
 				pat = ~library.at(~instrument);
 				if(pat.notNil) {
-					event = Event.new.parent_(currentEnvironment.copy);
+					// preserve information from outer pattern
+					outerEvent = currentEnvironment.copy;
+					event = Event(8, nil, outerEvent);
 					recursionLevel = ~recursionLevel;
-						if(recursionLevel.isNil) {
-							event.put(\instrument, ~synthDef); // avoid recursion
+					if(recursionLevel.notNil) {
+						if(recursionLevel > 0) {
+									// in recursion, some inner values have to be overridden
+									pat = Pbindf(pat,
+										\instrument, ~instrument,
+										\parent, outerEvent,
+										\recursionLevel, recursionLevel - 1
+									);
 						} {
-							if(recursionLevel > 0) {
-								event.put(\recursionLevel, recursionLevel - 1);
-								pat = Pset(\instrument, ~instrument, pat);						}
+									outerEvent.parent_(Event.parentEvents.noteEvent);
+									event.parent_(outerEvent);
+									event.put(\instrument, ~synthDef);
+						};
+					} {	// avoid recursion, if instrument not set.
+						event.put(\instrument, ~synthDef);
+						event.parent_(Event.parentEvents.noteEvent);
 					};
+					
+					
 					pat = Pfindur(~sustain.value, pat);
 					pat.play(thisThread.clock, event, 0.0);
 				} {
