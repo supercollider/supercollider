@@ -107,6 +107,10 @@ BusPlug : AbstractFunction {
 		^this.getOutput(bus.numChannels)
 	}
 	
+	writeInputSpec {
+		"use .ar or .kr to use within a synth.".error; this.halt;
+	}
+	
 	///// lazy  math support  /////////
 	
 	value { arg something; 
@@ -130,7 +134,7 @@ BusPlug : AbstractFunction {
 	
 	play { arg busIndex=0, nChan;
 		var bundle, divider, n;
-		
+		if(server.serverRunning.not, { "server not running".inform; ^nil });
 			bundle = MixedBundle.new;
 			
 			if(this.isNeutral, { 
@@ -138,7 +142,7 @@ BusPlug : AbstractFunction {
 			}, {
 				if(bus.rate != 'audio', { ("can't monitor a" + bus.rate + "proxy").error; ^nil });
 			}); 
-		if(server.serverRunning.not, { "server not running".inform; ^nil });
+		
 			if(monitorGroup.isPlaying.not, { 
 				monitorGroup = Group.newToBundle(bundle, server);
 				NodeWatcher.register(monitorGroup);
@@ -493,11 +497,11 @@ NodeProxy : BusPlug {
 	}
 	
 	wakeUpToBundle { arg bundle, checkedAlready;
+		if(loaded.not, { this.loadToBundle(bundle) });
 		if(checkedAlready.isNil, { checkedAlready = Set.new });
 		if(this.isPlaying.not && checkedAlready.includes(this).not, {
 			checkedAlready.add(this);
 			this.wakeUpParentsToBundle(bundle, checkedAlready);
-			if(loaded.not, { this.loadToBundle(bundle) });
 			this.prepareForPlayToBundle(bundle);
 			this.sendAllToBundle(bundle);
 		});
@@ -650,7 +654,7 @@ NodeProxy : BusPlug {
 	}
 	
 	env { arg env;
-		if(bus.notNil && this.isPlaying, { group.freeAll; bus.env(env) },
+		if(bus.notNil && this.isPlaying, { group.freeAll; bus.env(env) }, //??
 		{ "not playing".inform });
 	}
 	

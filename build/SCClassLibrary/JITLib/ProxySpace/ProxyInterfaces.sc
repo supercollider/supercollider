@@ -127,12 +127,15 @@ SynthDefControl : AbstractPlayControl {
 		synthDef.writeDefFile;
 	}
 	
+	name { ^synthDef.name }
+	
 	playToBundle { arg bundle, extraArgs, group;
-		var synthMsg, msg;
+		var synthMsg, msg, name;
 		group = group.asGroup;
-		synth = Synth.basicNew(synthDef.name, group.server);
+		name = this.name;
+		synth = Synth.basicNew(name, group.server);
 		synth.isPlaying = true;
-		synthMsg = [9, synthDef.name, synth.nodeID, 0, group.nodeID]++extraArgs;
+		synthMsg = [9, name, synth.nodeID, 0, group.nodeID]++extraArgs;
 		/*
 		msg = if(this.onServer, {	
 			synthMsg
@@ -182,14 +185,30 @@ SynthDefControl : AbstractPlayControl {
 SoundDefControl : SynthDefControl {
 	sendDef { } //assumes that SoundDef does send to the same server 
 	writeDef { }
+	build { synthDef = source.synthDef; ^true }
+	sendDefToBundle {}
 }
 
-//still to do
+
 CXPlayerControl : AbstractPlayControl {
+	var bus, group;
+	build { arg proxy;
+		bus = proxy.bus;
+		group = proxy.group;
+		^true;
+	}
 	playToBundle { arg bundle, extraArgs, group;
-		source.prepareToBundle(group, bundle);
-		source.spawnToBundle(bundle);
+		//source.prepareToJITBundle(group,bundle);
+		//source.makePatchOut(group,true,bus);
+		source.prepareForPlay(group,false,bus);
+		source.spawnOnToBundle(group, bus, bundle);
 		^source.synth;
+	}
+	stop {
+		source.release; //proxy time
+	}
+	play {
+		source.play;
 	}
 
 }

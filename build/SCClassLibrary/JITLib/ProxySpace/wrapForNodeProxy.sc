@@ -86,15 +86,16 @@
 
 
 +AbstractPlayer {
-	
+	/*
 	wrapForNodeProxy { arg proxy, channelOffset=0;
 		this.prepareForPlay(proxy.group.asGroup, true, proxy.bus);
 		^this.asSynthDef;
 	}
-	
+	*/
+	wrapForNodeProxy { ^true }
 	proxyControlClass {
-		^SynthDefControl
-		//^CXPlayerControl
+		//^SynthDefControl
+		^CXPlayerControl
 	}
 
 }
