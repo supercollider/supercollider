@@ -39,6 +39,7 @@ libsclang_la_SOURCES =			\
 	PyrSignalPrim.cpp		\
 	PyrSymbolTable.cpp		\
 	SC_ComPort.cpp			\
+	SC_HID.cpp			\
 	SC_CoreMIDI.cpp			\
 	Samp.cpp			\
 	SimpleStack.cpp			\
