@@ -5,23 +5,22 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 wrap2			bilateral wrapping\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 \
+\fs24 \
 BinaryOperator\
 \
 wrap2(a, b)\
 a wrap2: b\
 a.wrap2(b)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \
+\f1\b0 \
 wraps input wave to +/- b\
-
-\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs18 \cf0 \{ \cf2 FSinOsc\cf0 .ar(1000).wrap2(\cf2 Line\cf0 .kr(0,1.01,8)) \}.play;
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 \{ \cf2 FSinOsc\cf0 .ar(1000).wrap2(\cf2 Line\cf0 .kr(0,1.01,8)) \}.scope;
 \fs24 \
 \
 }
