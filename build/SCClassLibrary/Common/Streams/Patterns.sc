@@ -7,15 +7,15 @@ Pattern : AbstractFunction {
 		^Pseq.new([this, aPattern])
 	}	
 
-	play { arg clock;
-		^this.asEventStream.play(clock)
+	play { arg clock, protoEvent;
+		^this.asEventStreamPlayer(protoEvent).play(clock)
 	}
 	
 	asStream {
 		^this.subclassResponsibility(thisMethod)
 	}
-	asEventStream { 
-		^EventStream(this.asStream);
+	asEventStreamPlayer { arg protoEvent;
+		^EventStreamPlayer(this.asStream, protoEvent);
 	}
 	embedInStream { arg inval;
 		^this.asStream.embedInStream(inval);
