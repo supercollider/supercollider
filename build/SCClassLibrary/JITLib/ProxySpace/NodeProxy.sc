@@ -96,16 +96,15 @@ BusPlug : AbstractFunction {
 	makeBusArg { 	
 			var index, numChannels;
 			busArg = if(bus.isNil or: {Êbus.rate === 'audio' }) // audio buses can't be 
-					{Ê"" } {						// used for control mapping
+					{Ê\ } {						// used for control mapping
 						index = this.index;
 						numChannels = this.numChannels;
 						if(numChannels == 1) 
-							{ "\c" ++ index } 
+							{ ("\c" ++ index).asSymbol } 
 							{
-							Array.fill(numChannels, { arg i; "\c" ++ (index + i) })
+							Array.fill(numChannels, { arg i; "\c" ++ (index + i).asSymbol })
 							}
-					};
-				busArg = busArg.asSymbol;   // for now..       
+					};      
 	}
 	wakeUpToBundle {}
 	wakeUp {}
