@@ -132,7 +132,7 @@ PyrSymbol *s_scalar;
 PyrSymbol *s_next;
 PyrSymbol *s_env;
 PyrSymbol *s_ugen, *s_outputproxy;
-PyrSymbol *s_new, *s_ref, *s_value, *s_at, *s_put;
+PyrSymbol *s_new, *s_ref, *s_value, *s_performList, *s_at, *s_put;
 PyrSymbol *s_series, *s_copyseries, *s_putseries;
 PyrSymbol *s_envirGet, *s_envirPut;
 PyrSymbol *s_synth, *s_spawn, *s_environment, *s_event;
@@ -248,6 +248,7 @@ void initSymbols()
 	s_docmdline = getsym("doCmdLine");
 	s_next = getsym("next");
 	s_value = getsym("value");
+	s_performList = getsym("performList");
 	s_at = getsym("at");
 	s_put = getsym("put");
 	

@@ -428,6 +428,7 @@ void initSpecialClasses();
 void nodePostErrorLine(PyrParseNode* node);
 
 PyrParseNode* linkNextNode(PyrParseNode* a, PyrParseNode* b);
+PyrParseNode* linkAfterHead(PyrParseNode* a, PyrParseNode* b);
 
 extern int compileErrors;
 

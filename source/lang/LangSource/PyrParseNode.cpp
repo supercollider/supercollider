@@ -3142,6 +3142,14 @@ PyrParseNode* linkNextNode(PyrParseNode* a, PyrParseNode* b)
 	return a;
 }
 
+PyrParseNode* linkAfterHead(PyrParseNode* a, PyrParseNode* b)
+{
+	b->next = a->next;
+	if (!a->next) a->tail = b;
+	a->next = b;
+	return a;
+}
+
 bool isSuperObjNode(PyrParseNode *node)
 {
 	return node->classno == pn_PushNameNode 

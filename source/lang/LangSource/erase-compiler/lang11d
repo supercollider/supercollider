@@ -170,6 +170,19 @@ msgsend : name blocklist1
 				$$ = (long)newPyrCallNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 
 						(PyrParseNode*)$4, (PyrParseNode*)$6); 
 			}
+		| name '(' arglistv1 optkeyarglist ')'
+			{
+				PyrSlotNode *selectornode;
+				PyrSlot slot;
+				PyrParseNode* args;
+				
+				SetSymbol(&slot, s_performList);
+				selectornode = newPyrSlotNode(&slot);
+				args = linkAfterHead(
+					(PyrParseNode*)$3,
+					newPyrPushLitNode((PyrSlotNode*)$1, NULL));
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$4, 0); 
+			}
 		| expr '.' '(' keyarglist1 ')' blocklist
 			{ 
 				PyrSlotNode *selectornode;
@@ -197,11 +210,39 @@ msgsend : name blocklist1
 					(PyrParseNode*)$4);
 				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, (PyrParseNode*)$7); 
 			}
+		| expr '.' '(' arglistv1 optkeyarglist ')'
+			{
+				PyrSlotNode *selectornode;
+				PyrSlot slot, slot2;
+				PyrParseNode* args;
+				
+				SetSymbol(&slot, s_performList);
+				SetSymbol(&slot2, s_value);
+				selectornode = newPyrSlotNode(&slot);
+				args = linkNextNode(
+					(PyrParseNode*)$1,
+					newPyrPushLitNode(newPyrSlotNode(&slot2), NULL));
+				args = linkNextNode(args, (PyrParseNode*)$4);
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, 0); 
+			}
 		| expr '.' name '(' arglist1 optkeyarglist ')' blocklist
 			{ 
 				PyrParseNode* args;
 				args = linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$5);
 				$$ = (long)newPyrCallNode((PyrSlotNode*)$3, args, (PyrParseNode*)$6, (PyrParseNode*)$8); 
+			}
+		| expr '.' name '(' arglistv1 optkeyarglist ')'
+			{ 
+				PyrSlotNode *selectornode;
+				PyrSlot slot;
+				PyrParseNode* args;
+				
+				SetSymbol(&slot, s_performList);
+				selectornode = newPyrSlotNode(&slot);
+
+				args = linkNextNode((PyrParseNode*)$1, newPyrPushLitNode((PyrSlotNode*)$3, NULL));
+				args = linkNextNode(args, (PyrParseNode*)$5);
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$6, 0); 
 			}
 		| expr '.' name blocklist
 			{ 
@@ -256,6 +297,22 @@ expr1	: pushliteral
 					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1), 
 					(PyrParseNode*)$3);
 				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$4, 0); 
+			}
+		| classname '(' arglistv1 optkeyarglist ')'
+			{
+				PyrSlotNode *selectornode, *selectornode2;
+				PyrSlot slot, slot2;
+				PyrParseNode* args;
+				
+				SetSymbol(&slot, s_performList);
+				SetSymbol(&slot2, s_new);
+				selectornode = newPyrSlotNode(&slot);
+				selectornode2 = newPyrSlotNode(&slot2);
+				args = linkNextNode(
+					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1),
+					newPyrPushLitNode(selectornode2, NULL));
+				args = linkNextNode(args, (PyrParseNode*)$3);
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, 0); 
 			}
 		| classname '[' arglistc ']'
 			{ $$ = (long)newPyrDynListNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
@@ -743,6 +800,12 @@ arglistc	: { $$ = 0; }
 arglist1	: exprseq
 			| arglist1 ',' exprseq
 					{ $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
+			;
+
+arglistv1	: '*' exprseq
+				{ $$ = $2; }
+			| arglist1 ',' '*' exprseq
+					{ $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$4); }
 			;
 
 keyarglist1	: keyarg
