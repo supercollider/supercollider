@@ -160,6 +160,7 @@ Server : Model {
 	
 	sendMsgSync { arg condition ... args;
 		var cmdName, resp;
+		if (condition.isNil) { condition = Condition.new };
 		cmdName = args[0].asString;
 		if (cmdName[0] != $/) { cmdName = cmdName.insert(0, $/) };
 		resp = OSCresponder(addr, "/done", {|time, resp, msg|
@@ -176,6 +177,7 @@ Server : Model {
 	
 	sync { arg condition;
 		var resp, id;
+		if (condition.isNil) { condition = Condition.new };
 		id = UniqueID.next;
 		resp = OSCresponder(addr, "/synced", {|time, resp, msg|
 			if (msg[1] == id) {
