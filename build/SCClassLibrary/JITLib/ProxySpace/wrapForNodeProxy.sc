@@ -1,9 +1,14 @@
 
+//these extensions provide means to wrap Objects so that they 
+//make sense within the server bus system according to a node proxy.
+
+////////////////////// graphs, functions, numericals and arrays //////////////////
 
 +Object { 
 	
 	//objects can define their own wrapper classes dependant on 
 	//how they play, stop, build, etc. see SynthDefControl for example
+	//the original (wrapped) object can be reached by the .source message 
 	
 	proxyControlClass {
 		^SynthDefControl
@@ -14,17 +19,17 @@
 	}
 	
 	
-	//any preparations that have to be done to make the object
-	//a synthdef, if it is possible
-	//class Object assumes to be some graph builder
+	//any preparations that have to be done to prepare the object
+	//class Object is assumed to be some graph builder that returns 
+	//a graph of ugens when .value is called
 	
-	prepareForProxySynthDef { }
 	
-	buildForProxy { arg proxy, channelOffset=0, index=0;
+	//this method is called from within the Control
+	buildForProxy { arg proxy, channelOffset=0, nameEnd;
 		var argNames;
 		argNames = this.argNames;
 		^ProxySynthDef(
-			proxy.generateUniqueName ++ index,
+			proxy.generateUniqueName ++ nameEnd,
 			this.prepareForProxySynthDef(proxy),
 			proxy.nodeMap.lagsFor(argNames),
 			nil, 
@@ -32,10 +37,14 @@
 			channelOffset
 		); 
 	}
+	prepareForProxySynthDef { }
 	
 	argNames { ^nil }
 	numChannels { ^nil } 
-	
+	clear { }
+	//support for unop / binop proxy
+	isNeutral { ^true }
+	initBus { ^true }
 	
 }
 
@@ -45,20 +54,39 @@
 	}
 }
 
++SimpleNumber { //some more efficient way needed to put a value here
+	prepareForProxySynthDef { arg proxy;
+		^if(proxy.rate === 'audio', {
+			{ Array.fill(proxy.numChannels, { K2A.ar(this) }) }
+		}, { 
+			{  Control.kr(Array.fill(proxy.numChannels, {this})) }
+		})
+	}
+}
+
++BusPlug {
+	prepareForProxySynthDef { arg proxy;
+		^{ this.value(proxy) }
+	}
+}
+
+//needs a visit: lazy init + channleOffset
+
++Bus {
+	makeProxyControl { arg channelOffset=0;
+		^BusPlug.for(this).makeProxyControl(channelOffset);
+	}
+}
+
+
+
+
+///////////////////////////// SynthDefs and alike ////////////////////////////////////
+
 
 +SynthDef {
 	buildForProxy {}
 	
-	hasGate {
-		^if(controlNames.isNil, { 
-			false 
-		}, {
-			controlNames.any({ arg name; name.name == "gate" })
-			and:
-			this.canFreeSynth
-		})
-	}
-	canFreeSynth { ^children.canFreeSynth }
 }
 
 +SoundDef {
@@ -85,47 +113,11 @@
 
 
 
-+SimpleNumber { //some more efficient way needed to put a value here
-	prepareForProxySynthDef { arg proxy;
-		^if(proxy.rate === 'audio', {
-			{ Array.fill(proxy.numChannels, { K2A.ar(this) }) }
-		}, { 
-			{  Control.kr(Array.fill(proxy.numChannels, {this})) }
-		})
-	}
-}
 
 
 
-+Function {
-	
-	defArgs {
-		^def.prototypeFrame
-	}
-	argNames {
-		^def.argNames
-	}
-}
 
-//use patch later
-+Instr {
-	prepareForProxySynthDef {
-		^func;
-	}
-	//see later for a player inherent scheme.
-	//makeProxyControl { arg channelOffset=0;
-	//	^Patch(this.name).makeProxyControl(channelOffset)
-	//}
-	
-}
-
-+BusPlug {
-	prepareForProxySynthDef { arg proxy;
-		^{ this.value(proxy) }
-	}
-}
-
-///////////////// Pattern - Streams //////////////
+///////////////////////////// Pattern - Streams ///////////////////////////////////
 
 
 +Pattern {
@@ -211,6 +203,7 @@
 		var tempBus, ok;
 		tempBus = proxy.asBus;
 		this.prepareForPlay(bus: tempBus); //to get the rate
+		[this.numChannels, tempBus].debug;
 		ok = proxy.initBus(this.rate ? 'audio', this.numChannels ? 2);
 		//source.free; 
 		tempBus.free;
@@ -225,19 +218,32 @@
 	}
 	
 	makeProxyControl { arg channelOffset=0, proxy;
-			
+			this.prepareToPlayWithProxy(proxy); //do it here for now.
 			^this.proxyControlClass.new(this.wrapInFader(proxy), channelOffset); 
 	}
 	
 	wrapInFader { arg proxy;
-			this.prepareToPlayWithProxy(proxy); //do it here for now.
-			^EnvelopedPlayer(this, Env.asr(0.5, 1, 0.5));
+			^EnvelopedPlayer(this, Env.asr(0.5, 1, 0.5), proxy.numChannels);
 			
 	}
 	
 }
 
-/////////// test : query freeing
+
+//use patch later
++Instr {
+	prepareForProxySynthDef {
+		^func;
+	}
+	//see later for a player inherent scheme.
+	//makeProxyControl { arg channelOffset=0;
+	//	^Patch(this.name).makeProxyControl(channelOffset)
+	//}
+	
+}
+
+
+///////////  query whether some UGen can possibly free its synth from within
 
 
 + Object {
@@ -275,9 +281,22 @@
 }
 
 + DetectSilence {
-	canFreeSynth { ^true }
+	canFreeSynth { ^inputs.at(3) > 1 }
 }
 
++ SynthDef {
+	canFreeSynth { ^children.canFreeSynth }
+	
+	hasGate {
+		^if(controlNames.isNil, { 
+			false 
+		}, {
+			controlNames.any({ arg name; name.name == "gate" })
+			and:
+			this.canFreeSynth
+		})
+	}
+}
 
 
 

@@ -12,7 +12,7 @@ BusPlug : AbstractFunction {
 		^super.newCopyArgs(server ? Server.local).clear	}
 	
 	*for { arg bus;
-		bus = bus.asBus;
+		bus = bus.asBus.as(SharedBus);
 		^this.new(bus.server).bus_(bus)
 	}
 	
@@ -63,6 +63,7 @@ BusPlug : AbstractFunction {
 					this.defineBus(rate, numChannels);
 					^true
 				}, {
+					numChannels = numChannels ? this.numChannels;
 					^(bus.rate === rate) && (numChannels <= bus.numChannels)
 				});
 	}
@@ -235,7 +236,8 @@ NodeProxy : BusPlug {
 	
 	*make { arg server, rate, numChannels, inputs;
 		var res;
-		res = this.new(server).defineBus(rate, numChannels);
+		res = this.new(server);
+		res.initBus(rate, numChannels);
 		inputs.do({ arg o; res.add(o) });
 		^res
 	}
@@ -358,7 +360,7 @@ NodeProxy : BusPlug {
 				objects.add(obj);
 			}, {
 				this.stopToBundleAt(bundle, index);
-				objects.at(index).freeToBundle(bundle);
+				objects.at(index).freeToBundle(bundle); //, this.fadeTime
 				objects = objects.put(index, obj);
 			})
 		})
@@ -397,7 +399,7 @@ NodeProxy : BusPlug {
 		bundle = MixedBundle.new;
 		if(task.notNil, { bundle.addAction(task, \stop) });
 		task = argTask;
-		if(this.isPlaying, {  bundle.addFunction({ task.play(SystemClock)}) });//clock
+		if(this.isPlaying, {  bundle.addAction(task, \play, [SystemClock]) });//clock
 		this.sendBundle(bundle);
 	}
 	
@@ -560,9 +562,9 @@ NodeProxy : BusPlug {
 	/////// send and spawn //////////
 	
 	
-	getBundle { arg prepTime=0;
+	getBundle { arg prepTime=0.0;//default: def is on server, time required is 0
 		var bundle;
-		bundle = 	MixedBundle.new.preparationTime_(0); //latency is 0, def is on server
+		bundle = 	MixedBundle.new.preparationTime_(prepTime); 
 		if(this.isPlaying.not, { this.prepareToBundle(nil, bundle) });
 		^bundle
 	}
@@ -622,7 +624,7 @@ NodeProxy : BusPlug {
 	prepareToBundle { arg argGroup, bundle;
 				group = Group.basicNew(server, this.defaultGroupID);
 				NodeWatcher.register(group);
-				if(server.serverRunning, { group.isPlaying = true });
+				group.isPlaying = server.serverRunning;
 				bundle.add(group.newMsg(argGroup ? server, \addToHead));
 				if(task.notNil, { this.playTaskToBundle(bundle) });
 	}

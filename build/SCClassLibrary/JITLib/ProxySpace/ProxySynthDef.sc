@@ -9,7 +9,7 @@ ProxySynthDef : SynthDef {
 		
 	
 	*new { arg name, func, lags, prependArgs, makeFadeEnv=true, channelOffset=0;
-		var def, rate, output, isScalar=false, envgen;
+		var def, rate, output, isScalar, envgen;
 		name = "temp__" ++ name;		
 		def = super.new(name, { 
 			var  out, outCtl;
@@ -20,7 +20,7 @@ ProxySynthDef : SynthDef {
 			});
 			output = SynthDef.wrap(func, lags, prependArgs);
 			rate = output.rate;
-			if(rate === 'scalar', { isScalar = true });
+			isScalar = rate === 'scalar';
 			envgen = if(makeFadeEnv and: { isScalar.not }, { this.makeFadeEnv }, { 1.0 });
 			output = output * envgen;
 			if(isScalar, {
