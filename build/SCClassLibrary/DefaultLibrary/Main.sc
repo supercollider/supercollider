@@ -22,8 +22,8 @@
 	\}\
 	\
 	recvOSCmessage \{ \cf2 arg\cf3  time, replyAddr, msg;\
-		msg.postln;\
-		\cf4 //replyAddr.dump;\
+		\cf4 //msg.postln;\
+\cf3 		\cf4 //replyAddr.dump;\
 \cf3 		\cf4 // this method is called when an OSC message is received.\
 \cf3 		\cf2 OSCresponder\cf3 .respond(time, replyAddr, msg);\
 	\}\

@@ -167,7 +167,6 @@ void PerformOSCMessage(int inSize, char *inData, ReplyAddress *inReply);
 void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize);
 void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
 {
-	post("localServerReplyFunc\n");
 	OSC_Packet packet;
     packet.mIsBundle = strcmp(packet.mData, "#bundle") == 0;
     
