@@ -313,7 +313,7 @@ Document {
 	}
 	//private newTextWindow
 	initByString{arg str, argTitle, makeListener;
-		allDocuments = allDocuments.add(this);
+		
 		title = argTitle;
 		if(makeListener, {
 			allDocuments.do({arg doc; doc.prisListener(false)})
@@ -321,6 +321,7 @@ Document {
 		isListener = makeListener;
 		thelistener = this;
 		this.prinitByString(str, title, makeListener);
+		^this.prAdd;
 	
 	}
 	prinitByString { arg str, title, makeListener;
