@@ -22,13 +22,13 @@ Some manipulation of the sound file data is possible with files small enough to 
 \
 (\
 \
-s = \cf2 SoundFile\cf0 .new;\
+f = \cf2 SoundFile\cf0 .new;\
 \
-s.openRead(\cf3 "sounds/a11wlk01.wav"\cf0 );\
+f.openRead(\cf3 "sounds/a11wlk01.wav"\cf0 );\
 \
-s.inspect;\
+f.inspect;\
 \
-s.close;\
+f.close;\
 \
 \
 )
@@ -41,12 +41,10 @@ s.close;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs24 \cf0 \ulnone \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 new\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b new\
 
-\f2\b0 \cf0 \
+\f2\b0 \
 Creates a new SoundFile instance. \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -55,17 +53,14 @@ Creates a new SoundFile instance. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs24 \cf0 \ulnone \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 openRead(inPathname)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b openRead(inPathname)\
 
-\f2\b0 \cf0 \
+\f2\b0 \
 Read the header of a file. Answers a Boolean whether the read was successful.\
 sets the numFrames,numChannels and sampleRate.  does not set the headerFormat and sampleFormat.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 inPathname
+\f0\b inPathname
 \f2\b0  - a String specifying the path name of the file to read.\
 \
 
@@ -76,13 +71,11 @@ Reads the sample data of the file into the raw array you supply. You  must have 
 \
 
 \f0\b openWrite(inPathname)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 \
+\f2\b0 \
 Write the header of a file. Answers a Boolean whether the write was successful.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 inPathname
+\f0\b inPathname
 \f2\b0  - a String specifying the path name of the file to write.\
 \
 
@@ -136,7 +129,6 @@ This is a Symbol indicating the header format which was read by openRead and wil
 			A huge number of other formats are supported read only.
 \f1\fs18 \cf4 \
 			\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
