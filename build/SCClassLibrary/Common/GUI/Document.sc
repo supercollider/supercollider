@@ -117,7 +117,9 @@ Document {
 	path{
 		^this.prGetFileName
 	}
-	
+	path_{|apath|
+		this.prSetFileName(apath);
+	}	
 	title {
 		^this.prGetTitle
 	}
@@ -375,6 +377,9 @@ Document {
 	prGetFileName {
 		_TextWindow_GetFileName
 		^this.primitiveFailed
+	}
+	prSetFileName {|apath|
+		_TextWindow_SetFileName
 	}
 	prGetBounds { arg argBounds;
 		_TextWindow_GetBounds
