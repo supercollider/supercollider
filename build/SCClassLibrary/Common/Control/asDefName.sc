@@ -65,7 +65,7 @@
 		synth = Synth.basicNew(def.name,server);
 		bytes = def.asBytes;
 		synthMsg = synth.newMsg(target, addAction, [\i_out, outbus, \out, outbus]);
-		if(bytes.size.debug > 8192) {
+		if(bytes.size > 8192) {
 			def.load(server, synthMsg);
 		} {
 			server.sendMsg("/d_recv", bytes, synthMsg)
