@@ -357,6 +357,10 @@ void Klank_next(Klank *unit, int inNumSamples);
 			unit->m_buf = world->mSndBufs + bufnum; \
 		} \
 		SndBuf *buf = unit->m_buf; \
+        if(!buf) { \
+			ClearUnitOutputs(unit, inNumSamples); \
+			return; \
+		} \
 		float *bufData __attribute__((__unused__)) = buf->data; \
 		if (!bufData) { \
 			ClearUnitOutputs(unit, inNumSamples); \
@@ -364,6 +368,7 @@ void Klank_next(Klank *unit, int inNumSamples);
 		} \
 		int tableSize = buf->samples;
 
+    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*
@@ -1866,6 +1871,7 @@ void PMOsc_next_kkkk(PMOsc *unit, int inNumSamples)
 
 void COsc_Ctor(COsc *unit)
 {
+	unit->m_fbufnum = -1e9f;
 	SETCALC(COsc_next);
 	unit->m_phase1 = 0;
 	unit->m_phase2 = 0;
