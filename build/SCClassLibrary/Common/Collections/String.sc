@@ -223,6 +223,18 @@ String[char] : RawArray {
 	unixCmd { _String_POpen ^this.primitiveFailed }
 
 	gethostbyname { _GetHostByName ^this.primitiveFailed }
+
+	// gets value of environment variable
+	getenv {
+		_String_Getenv
+		^this.primitiveFailed
+	}
+	// sets value of environment variable
+	// value may be nil to unset the variable
+	setenv { arg value;
+		_String_Setenv
+		^this.primitiveFailed
+	}
 	
 	/// code gen
 	codegen_UGenCtorArg { arg stream; 

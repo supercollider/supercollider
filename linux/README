@@ -31,7 +31,7 @@ requirements
 
    http://www.gnu.org/software/gcc/
 
-   gcc versions < 3.0 miss some required c++ features
+   gcc versions < 3.0 are missing some required c++ features
 
  * ALSA + JACK
 
@@ -185,7 +185,5 @@ rohan drape
 outro
 ------
 
-cudos to james mccartney, for making this great piece of audio
+thanks to james mccartney, for making this great piece of audio
 software publically available.
-
-<sk>

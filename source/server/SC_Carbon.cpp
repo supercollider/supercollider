@@ -31,13 +31,15 @@
 # include <Carbon/Carbon.h>
 #endif
 
-#if defined(SC_LINUX) && defined(__ALTIVEC__)
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
-# include <unistd.h>
-# include <signal.h>
-# include <setjmp.h>
+#ifdef SC_LINUX
+# include "SC_World.h"
+# ifdef __ALTIVEC__
+#  include <stdio.h>
+#  include <stdlib.h>
+#  include <string.h>
+#  include <unistd.h>
+#  include <signal.h>
+#  include <setjmp.h>
 
 // niklas werner: kernel independent altivec detection
 // borrowed from MPlayer, who borrowed from libmpeg2
@@ -55,7 +57,8 @@ static void sigIllHandler(int sig)
 	sigIllCanJump = 0;
 	siglongjmp(sigIllJmpBuf, 1);
 }
-#endif // SC_LINUX && __ALTIVEC__
+#endif // __ALTIVEC__
+#endif // SC_LINUX
 
 bool HasAltivec()
 {
@@ -68,7 +71,8 @@ bool HasAltivec()
 	hasAltivec = response & (1<<gestaltPowerPCHasVectorInstructions);
 #endif // SC_DARWIN
 
-#if defined(SC_LINUX) && defined(__ALTIVEC__)
+#ifdef SC_LINUX
+# ifdef __ALTIVEC__
 	if (getenv("SC_NOVEC") == 0) {
 		sigIllOldHandler = signal(SIGILL, sigIllHandler);
 
@@ -83,9 +87,11 @@ bool HasAltivec()
 			signal(SIGILL, sigIllOldHandler);
 			hasAltivec = true;
 		}
+	} else {
+		hasAltivec = strcmp(getenv("SC_NOVEC"), "0") == 0;
 	}
-
-	printf("HasAltivec: %s\n", hasAltivec ? "yes" : "no");
+# endif // __ALTIVEC__
+	scprintf("Using Altivec: %s\n", hasAltivec ? "yes" : "no");
 #endif // SC_LINUX
 
 	return hasAltivec;

@@ -160,6 +160,52 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prString_Getenv(struct VMGlobals* g, int numArgsPushed);
+int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */)
+{
+	PyrSlot* arg = g->sp;
+	char key[256];
+	char* value;
+	int err;
+
+	err = slotStrVal(arg, key, 256);
+	if (err) return err;
+	
+	value = getenv(key);
+
+	if (value) {
+		PyrString* pyrString = newPyrString(g->gc, value, 0, true);
+		if (!pyrString) return errFailed;
+		SetObject(arg, pyrString);
+	} else {
+		SetNil(arg);
+	}
+
+	return errNone;
+}
+
+int prString_Setenv(struct VMGlobals* g, int numArgsPushed);
+int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */)
+{
+	PyrSlot* args = g->sp - 1;
+	char key[256];
+	int err;
+
+	err = slotStrVal(args+0, key, 256);
+	if (err) return err;
+	
+	if (IsNil(args+1)) {
+		unsetenv(key);
+	} else {
+		char value[1024];
+		err = slotStrVal(args+1, value, 1024);
+		if (err) return err;
+		setenv(key, value, 1);
+	}
+	
+	return errNone;
+}
+
 void initStringPrimitives();
 void initStringPrimitives()
 {
@@ -173,7 +219,8 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_StringAsSymbol", prStringAsSymbol, 1, 0);	
 	definePrimitive(base, index++, "_String_AsInteger", prString_AsInteger, 1, 0);	
 	definePrimitive(base, index++, "_String_AsFloat", prString_AsFloat, 1, 0);	
-
+	definePrimitive(base, index++, "_String_Getenv", prString_Getenv, 1, 0);
+    definePrimitive(base, index++, "_String_Setenv", prString_Setenv, 2, 0);
 }
 
 

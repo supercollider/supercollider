@@ -15,55 +15,77 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ;; USA
 
+;; =====================================================================
+;; regexp utilities
+;; =====================================================================
+
 (defun sclang-regexp-group (regexp)
   (concat "\\(" regexp "\\)"))
 
 (defun sclang-regexp-concat (&rest regexps)
   (mapconcat 'sclang-regexp-group regexps "\\|"))
 
-(defconst sclang-symbol-regexp "\\(\\sw\\|\\s_\\)*")
-(defconst sclang-identifier-regexp (concat "[a-z]" sclang-symbol-regexp))
+;; =====================================================================
+;; some useful regular expressions
+;; =====================================================================
 
-(defconst sclang-method-name-special-chars "-!%&*+/<=>?@|")
+(defconst sclang-symbol-regexp
+  "\\(\\sw\\|\\s_\\)*")
 
-(defconst sclang-method-name-plain-regexp (concat sclang-identifier-regexp "_?"))
+(defconst sclang-identifier-regexp
+  (concat "[a-z]" sclang-symbol-regexp))
 
-(defconst sclang-method-name-special-regexp (concat
-					     "[" (regexp-quote sclang-method-name-special-chars) "]+"
-					     ))
+(defconst sclang-method-name-special-chars
+  "-!%&*+/<=>?@|")
 
-(defconst sclang-method-name-regexp (sclang-regexp-concat
-				     sclang-method-name-special-regexp
-				     sclang-method-name-plain-regexp
-				     ))
+(defconst sclang-method-name-plain-regexp
+  (concat sclang-identifier-regexp "_?"))
 
-(defconst sclang-class-name-regexp "\\(Meta_\\)?[A-Z]\\(\\sw\\|\\s_\\)*")
+(defconst sclang-method-name-special-regexp
+  (concat
+   "[" (regexp-quote sclang-method-name-special-chars) "]+"
+   ))
 
-(defconst sclang-symbol-name-regexp (sclang-regexp-concat
-				     sclang-method-name-regexp
-				     sclang-class-name-regexp
-				     ))
+(defconst sclang-method-name-regexp
+  (sclang-regexp-concat
+   sclang-method-name-special-regexp
+   sclang-method-name-plain-regexp
+   ))
 
-(defconst sclang-class-definition-regexp (concat
-					  "^\\s *"
-					  (sclang-regexp-group sclang-class-name-regexp)
-					  "\\(\\s *:\\s *"
-					  (sclang-regexp-group sclang-class-name-regexp)
-					  "\\)?\\s *{"))
+(defconst sclang-class-name-regexp
+  "\\(Meta_\\)?[A-Z]\\(\\sw\\|\\s_\\)*")
 
-(defconst sclang-method-definition-regexp (concat
-					   "^\\s *\\*?"
-					   (sclang-regexp-group sclang-method-name-regexp)
-					   "\\s *{"))
+(defconst sclang-symbol-name-regexp
+  (sclang-regexp-concat
+   sclang-method-name-regexp
+   sclang-class-name-regexp
+   ))
 
-(defconst sclang-beginning-of-defun-regexp (concat
-					    "^"
-					    (sclang-regexp-group
-					     (sclang-regexp-concat
-					      "\\s("
-					      sclang-class-definition-regexp
-;; 					      sclang-method-definition-regexp
-					      ))))
+(defconst sclang-class-definition-regexp
+  (concat
+   "^\\s *"
+   (sclang-regexp-group sclang-class-name-regexp)
+   "\\(\\s *:\\s *"
+   (sclang-regexp-group sclang-class-name-regexp)
+   "\\)?\\s *{"
+   ))
+
+(defconst sclang-method-definition-regexp
+  (concat
+   "^\\s *\\*?"
+   (sclang-regexp-group sclang-method-name-regexp)
+   "\\s *{"
+   ))
+
+(defconst sclang-beginning-of-defun-regexp
+  (concat
+   "^"
+   (sclang-regexp-group
+    (sclang-regexp-concat
+     "\\s("
+     sclang-class-definition-regexp
+     ;;      sclang-method-definition-regexp
+     ))))
 
 (defvar sclang-symbol-table nil
   "List of all defined symbols.")
@@ -145,8 +167,8 @@
    (setq sclang-symbol-table (sort data 'string<))
    (sclang-update-font-lock)))
 
-(add-hook 'sclang-library-startup-hook
-	  (lambda () (sclang-perform-command 'symbolTable)))
+;; (add-hook 'sclang-library-startup-hook
+;; 	  (lambda () (sclang-perform-command 'symbolTable)))
 
 (defun sclang-make-symbol-completion-table ()
   (mapcar (lambda (s) (cons s nil)) sclang-symbol-table))
@@ -162,10 +184,16 @@
   (let ((symbol (sclang-get-symbol default)))
     (completing-read (sclang-make-prompt-string prompt symbol)
 		     (sclang-make-symbol-completion-table)
-		     (sclang-make-symbol-completion-predicate predicate)
+		     (sclang-mak*e-symbol-completion-predicate predicate)
 		     require-match nil
 		     'sclang-symbol-history symbol
 		     inherit-input-method)))
+
+(defun sclang-get-symbol (string) string)
+
+(defun sclang-read-symbol (prompt &optional default predicate require-match inherit-input-method)
+  (read-string (sclang-make-prompt-string prompt default) nil
+	       'sclang-symbol-history default inherit-input-method))
 
 ;; =====================================================================
 ;; buffer movement
@@ -174,7 +202,7 @@
 (defun sclang-point-in-comment-p ()
   "Return non-nil if point is inside a comment.
 
-Use font-lock information is font-lock-mode is enabled."
+Use font-lock information if font-lock-mode is enabled."
   (if font-lock-mode
       ;; use available information in font-lock-mode
       (eq (get-text-property (point) 'face) 'font-lock-comment-face)
@@ -199,7 +227,7 @@ Use font-lock information is font-lock-mode is enabled."
 	    (goto-char (match-end 0))
 	    (setq arg (1+ arg)))))
     (when success
-	(beginning-of-line) t)))
+      (beginning-of-line) t)))
 
 (defun sclang-point-in-defun-p ()
   "Return non-nil if point is inside a defun.
@@ -420,7 +448,7 @@ are considered."
 	(when (functionp pos-func)
 	  (let ((pos (funcall pos-func name)))
 	    (and pos (goto-char pos))))))
-      buffer))
+    buffer))
 
 (defun sclang-pop-definition-mark ()
   "Pop back to where \\[sclang-find-definition] or \\[sclang-find-reference] was last invoked."
@@ -457,9 +485,9 @@ are considered."
 		   (data (list name (nth 1 def) (nth 2 def) pos-func)))
 	       (insert (sclang-browser-make-link string data))
 	       (insert "\n"))))))
-  ;; single definition: jump directly
-  (let ((def (car definitions)))
-    (sclang-open-definition name (nth 1 def) (nth 2 def) pos-func))))
+    ;; single definition: jump directly
+    (let ((def (car definitions)))
+      (sclang-open-definition name (nth 1 def) (nth 2 def) pos-func))))
 
 (defun sclang-find-definitions (name)
   "Find all definitions of symbol NAME."
@@ -497,7 +525,7 @@ are considered."
 		       symbol)))
       (sclang-read-symbol "Dump interface of: "
 			  class 'sclang-class-name-p t))))
-  (sclang-send-string (format "%s.dumpFullInterface" class)))
+  (sclang-eval-string (format "%s.dumpFullInterface" class)))
 
 ;; =====================================================================
 ;; sc-code formatting

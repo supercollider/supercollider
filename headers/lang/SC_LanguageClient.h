@@ -49,36 +49,29 @@ public:
 			  mRuntimeDir(0)
 		{ }
 
-		int				mMemSpace;		// memory space in bytes
-		int				mMemGrow;		// memory growth in bytes
-		int				mPort;			// network port number
-		const char*		mRuntimeDir;	// runtime directory
+		int				mMemSpace;				// memory space in bytes
+		int				mMemGrow;				// memory growth in bytes
+		int				mPort;					// network port number
+		char*			mRuntimeDir;			// runtime directory
 	};
 
 public:
-	// create the singleton instance.
-	//     name is used for command line error reporting
-	//     and should be the name of the executable
+	// create singleton instance
 	SC_LanguageClient(const char* name);
 	virtual ~SC_LanguageClient();
 
-	// return the singleton instance.
+	// return the singleton instance
 	static SC_LanguageClient* instance() { return gInstance; }
 
-	// initialize the language runtime with command line options.
-	//     common options are stripped from the passed argv.
-	//     subclass overrides should call this method.
-	virtual void init(int& argc, char**& argv);
-	void init(const Options& opt=Options());
+	// initialize language runtime
+	void initRuntime(const Options& opt=Options());
 
-	// return application name.
+	// return application name
 	const char* getName() const { return mName; }
-
-	// print command line usage info.
-	void printUsage();
 
 	// library startup/shutdown
 	bool readLibraryConfig(const char* filePath, const char* fileName=0);
+	bool readDefaultLibraryConfig();
 	bool isLibraryCompiled() { return compiledOK; }
 	void compileLibrary();
 	void shutdownLibrary();
@@ -115,38 +108,29 @@ public:
 	virtual void flush() = 0;
 
 	// common symbols
-	//     only valid after the library was compiled.
+	//     only valid after the library has been compiled.
 	static PyrSymbol* s_interpretCmdLine;
 	static PyrSymbol* s_interpretPrintCmdLine;
 	static PyrSymbol* s_run;
 	static PyrSymbol* s_stop;
 
+	// command line argument handling utilities
+	static void snprintMemArg(char* dst, size_t size, int arg);
+	static bool parseMemArg(const char* arg, int* res);
+	static bool parsePortArg(const char* arg, int* res);
+
 protected:
-	// command line usage output.
-	// NOTE: formatting
-	//       - option/usage indent column:  4
-	//       - option description column : 35
-	// see SC_TerminalClient for an example.
-	virtual void printUsage(FILE* file);		// print one-line usage info
-	virtual void printOptions(FILE* file);		// print client options section
-
-	// error reporting.
-	//     these throw std::runtime_error with an error description.
-	virtual void error(const char* fmt, ...);
-	virtual void errorOptionInvalid(const char* opt);
-	virtual void errorOptionArgExpected(const char* opt);
-	virtual void errorOptionArgInvalid(const char* opt, const char* arg);
-
-	// AppClock driver, to be called from client mainloop.
+	// AppClock driver
+	//    to be called from client mainloop.
 	void tick();
 
-	// language notifications, subclasses can override.
+	// language notifications, subclasses can override
 
-	// called after the library has been compiled.
+	// called after the library has been compiled
 	virtual void onLibraryStartup();
-	// called before the library is shut down.
+	// called before the library is shut down
 	virtual void onLibraryShutdown();
-	// called after the interpreter has been started.
+	// called after the interpreter has been started
 	virtual void onInterpStartup();
 
 private:
@@ -154,17 +138,10 @@ private:
 	friend void initGUIPrimitives();
 	friend void initGUI();
 
-	// command line handling utilities
-	void snprintMemArg(char* dst, size_t size, int arg);
-	int parseMemArg(const char* arg);
-	int parsePortArg(const char* arg);
-	void parseOptions(int& argc, char**& argv, Options& opt);
-
 private:
 	char*						mName;
 	FILE*						mPostFile;
 	SC_StringBuffer				mScratch;
-	Options						mOptions;
 	bool						mRunning;
 	static SC_LanguageClient*	gInstance;
 };

@@ -22,7 +22,6 @@
 #define SC_TERMINALCLIENT_H_INCLUDED
 
 #include "SC_LanguageClient.h"
-#include <pthread.h>
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
@@ -31,27 +30,50 @@
 class SC_TerminalClient : public SC_LanguageClient
 {
 public:
+	enum
+	{
+		kInterpretCmdLine = 0x1b,
+		kInterpretPrintCmdLine = 0x0c
+	};
+
+	struct Options : public SC_LanguageClient::Options
+	{
+		Options()
+			: mLibraryConfigFile(0),
+			  mDaemon(false),
+			  mCallRun(false),
+			  mCallStop(false)
+		{ }
+
+		char*			mLibraryConfigFile;
+		bool			mDaemon;
+		bool			mCallRun;
+		bool			mCallStop;
+	};
+
 	SC_TerminalClient();
 
-	void run(int argc, char** argv);
+	int run(int argc, char** argv);
+	void quit(int code);
 
-	void post(const char *fmt, va_list ap, bool error);
-	void post(char c);
-	void post(const char* str, size_t len);
-	void flush();
+	virtual void post(const char *fmt, va_list ap, bool error);
+	virtual void post(char c);
+	virtual void post(const char* str, size_t len);
+	virtual void flush();
 
 protected:
-	void printUsage(FILE* file);
-	void printOptions(FILE* file);
+	void parseOptions(int& argc, char**& argv, Options& opt);
+	void printUsage();
 
-	int readCommands(FILE* inputFile);
-	static void* tickThreadFunc(void* data);
+	void commandLoop();
+	void daemonLoop();
+
+	static int prExit(struct VMGlobals* g, int);
+	virtual void onLibraryStartup();
 
 private:
-	int				mArgc;
-	char**			mArgv;
-	bool			mShouldBeRunning;
-	pthread_t		mTickThread;
+	bool		mShouldBeRunning;
+	int			mReturnCode;
 };
 
 #endif // SC_TERMINALCLIENT_H_INCLUDED

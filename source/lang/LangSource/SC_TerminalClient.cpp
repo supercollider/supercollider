@@ -20,15 +20,19 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/param.h>
+#include <sys/poll.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 
-static const char kInputInterpretDelimiter = 0x1b;			// ^[
-static const char kInputInterpretPrintDelimiter = 0x0c;		// ^L
+#include "PyrPrimitive.h"
+#include "PyrSlot.h"
+#include "VMGlobals.h"
 
 SC_TerminalClient::SC_TerminalClient()
 	: SC_LanguageClient("sclang"),
-	  mShouldBeRunning(false)
+	  mShouldBeRunning(false),
+	  mReturnCode(0)
 {
 	setPostFile(stdout);
 }
@@ -53,143 +57,274 @@ void SC_TerminalClient::flush()
 	fflush(getPostFile());
 }
 
-void SC_TerminalClient::run(int argc, char** argv)
+void SC_TerminalClient::printUsage()
 {
-	int i;
-	int err;
+	Options opt;
+	
+	const size_t bufSize = 128;
+	char memGrowBuf[bufSize];
+	char memSpaceBuf[bufSize];
 
-	SC_StringBuffer cmdLine;
-	bool callRun = false;
-	bool callStop = false;
+	snprintMemArg(memGrowBuf, bufSize, opt.mMemGrow);
+	snprintMemArg(memSpaceBuf, bufSize, opt.mMemSpace);
 
-	init(argc, argv);
+	fprintf(stdout, "Usage:\n   %s [options] [file..] [-]\n\n", getName());
+	fprintf(stdout,
+			"Options:\n"
+			"   -d <path>                      Set runtime directory\n"
+			"   -D                             Enter daemon mode (no input)\n"
+			"   -g <memory-growth>[km]         Set heap growth (default %s)\n"
+			"   -h                             Display this message and exit\n"
+			"   -l <path>                      Set library configuration file\n"
+			"   -m <memory-space>[km]          Set initial heap size (default %s)\n"
+			"   -r                             Call Main.run on startup\n"
+			"   -s                             Call Main.stop on shutdown\n"
+			"   -u <network-port-number>       Set UDP listening port (default %d)\n",
+			memGrowBuf,
+			memSpaceBuf,
+			opt.mPort
+		);
+}
 
-	for (i = 1; i < argc; i++) {
-		char* opt = argv[i];
-		char* optarg = i < (argc - 1) ? argv[i+1] : 0;
+void SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
+{
+	const char* optstr = ":d:Dg:hl:m:rsu:";
+	int c;
 
-		if (!((opt[0] == '-') && opt[1])) break;
+	// inhibit error reporting
+	opterr = 0;
 
-		switch (opt[1]) {
-			case 'c':
-				if (optarg) {
-					i++;
-					cmdLine.append(optarg);
-					cmdLine.append(";\n");
-				} else {
-					errorOptionArgExpected(opt);
-				}
+	while ((c = getopt(argc, argv, optstr)) != -1) {
+		switch (c) {
+			case 'd':
+				opt.mRuntimeDir = optarg;
 				break;
-			case 'r': callRun = true; break;
-			case 's': callStop = true; break;
+			case 'D':
+				opt.mDaemon = true;
+				break;
+			case 'g':
+				if (!parseMemArg(optarg, &opt.mMemGrow))
+					goto optArgInvalid;
+				break;
+			case 'h':
+				goto help;
+			case 'l':
+				opt.mLibraryConfigFile = optarg;
+				break;
+			case 'm':
+				if (!parseMemArg(optarg, &opt.mMemSpace))
+					goto optArgInvalid;
+				break;
+			case 'r':
+				opt.mCallRun = true;
+				break;
+			case 's':
+				opt.mCallStop = true;
+				break;
+			case 'u':
+				if (!parsePortArg(optarg, &opt.mPort))
+					goto optArgInvalid;
+				break;
+			case '?':
+				goto optInvalid;
+			case ':':
+				goto optArgExpected;
 			default:
-				errorOptionInvalid(opt);
+				::post("%s: unknown error (getopt)\n", getName());
+				exit(255);
 		}
 	}
+
+	argv += optind;
+	argc -= optind;
+
+	return;
+
+ help:
+	printUsage();
+	exit(0);
+
+ optInvalid:
+	::post("%s: invalid option -%c\n", getName(), optopt);
+	exit(1);
+
+ optArgExpected:
+	::post("%s: missing argument for option -%c\n", getName(), optopt);
+	exit(1);
+
+ optArgInvalid:
+	::post("%s: invalid argument for option -%c -- %s\n", getName(), optopt, optarg);
+	exit(1);
+}
+
+int SC_TerminalClient::run(int argc, char** argv)
+{
+	Options opt;
+	parseOptions(argc, argv, opt);
+
+	// read library configuration file 
+	bool success;
+	if (opt.mLibraryConfigFile) {
+		success = readLibraryConfig(opt.mLibraryConfigFile, opt.mLibraryConfigFile);
+	} else {
+		success = readDefaultLibraryConfig();
+	}
+	if (!success) {
+		::post("%s: error reading library configuration file\n", getName());
+		exit(1);
+	}
+
+	// initialize runtime
+	initRuntime(opt);
 
 	// startup library
 	compileLibrary();
 
-	// call Main::run
-	if (callRun) runMain();
+	// enter daemon mode or read commands from stdin
+	bool enterMainLoop;
+	bool readCommands;
 
-	// execute cmdline
-	if (!cmdLine.isEmpty()) {
-		setCmdLine(cmdLine);
-		interpretCmdLine();
-	}
-
-	// execute file(s) and/or read commands from stdin
-	bool enterMainLoop = false;
-	argc -= i;
-	argv += i;
 	if (argc > 0) {
+		enterMainLoop = opt.mDaemon;
+		readCommands = !opt.mDaemon;
 		for (int i=0; i < argc; i++) {
+			// execute file
+			// - denotes input from stdin
 			const char* fileName = argv[i];
 			if (strcmp(fileName, "-") == 0) {
-				enterMainLoop = true;
+				enterMainLoop = readCommands = true;
 				break;
 			} else {
 				executeFile(fileName);
 			}
 		}
 	} else {
-		enterMainLoop = cmdLine.isEmpty();
+		enterMainLoop = true;
+		readCommands = !opt.mDaemon;
 	}
+
+	if (opt.mCallRun) runMain();
 
 	if (enterMainLoop) {
-		// setup tick thread
 		mShouldBeRunning = true;
-		if (pthread_create(&mTickThread, 0, tickThreadFunc, this) == -1) {
-			error("%s", strerror(errno));
-		}
-
-		// enter main loop
-		readCommands(stdin);
-
-		// wait for tick thread to exit
-		mShouldBeRunning = false;
-		pthread_join(mTickThread, 0);
+		if (readCommands) commandLoop();
+		else daemonLoop();
 	}
 
-	// call Main::stop
-	if (callStop) stopMain();
+	if (opt.mCallStop) stopMain();
 
 	// shutdown library
 	shutdownLibrary();
+	flush();
+
+	return mReturnCode;
 }
 
-void SC_TerminalClient::printUsage(FILE* file)
+void SC_TerminalClient::quit(int code)
 {
-	fprintf(file, "   %s [options] [file..] [-]\n", getName());
+	mShouldBeRunning = false;
+	mReturnCode = code;
 }
 
-void SC_TerminalClient::printOptions(FILE* file)
+void SC_TerminalClient::commandLoop()
 {
-	SC_LanguageClient::printOptions(file);
-	fprintf(file,
-			"\nTerminal Options:\n"
-			"   -c <expression>                Execute expression\n"
-			"   -r                             Call Main::run on startup\n"
-			"   -s                             Call Main::stop on startup\n"
-		);
-}
+	const int fd = 0;
+	const int bufSize = 256;
+	char buf[bufSize];
+	struct pollfd pfds[1] = { fd, POLLIN, 0 };
+	SC_StringBuffer cmdLine;
 
-int SC_TerminalClient::readCommands(FILE* inputFile)
-{
-    SC_StringBuffer cmdLine(128);
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
+		perror(getName());
+		quit(1);
+		return;
+	}
 
-	while (true) {
-		int c = fgetc(inputFile);
-
-		if (c == EOF) {
-			break;
-		} else if ((c == kInputInterpretDelimiter) ||
-				   (c == kInputInterpretPrintDelimiter)) {
-			setCmdLine(cmdLine);
-			runLibrary(c == kInputInterpretDelimiter
-					   ? s_interpretCmdLine : s_interpretPrintCmdLine);
-			flushPostBuf();
-			cmdLine.reset();
-		} else {
-			cmdLine.append((char)c);
+	while (mShouldBeRunning) {
+		tick();
+		int nfds = poll(pfds, 1, 50);
+		if (nfds > 0) {
+			for (;;) {
+				int n = read(fd, buf, bufSize);
+				if (n > 0) {
+					char* start = buf;
+					char* end = start;
+					while (n > 0) {
+						char c = *end;
+						if ((c == kInterpretCmdLine) || (c == kInterpretPrintCmdLine)) {
+							// end points to delimiter
+							int k = end-start;
+							if (k > 0) cmdLine.append(start, k);
+							setCmdLine(cmdLine);
+							runLibrary(
+								c == kInterpretCmdLine ?
+								s_interpretCmdLine :
+								s_interpretPrintCmdLine
+								);
+							flush();
+							cmdLine.reset();
+							// let start/end point one past delimiter
+							start += k+1;
+							end = start;
+							n -= k+1;
+						} else {
+							end++;
+							n--;
+						}
+					}
+					if (end > start) cmdLine.append(start, end-start);
+				} else {
+					if (n == 0) {
+						quit(0);
+						return;
+					} else if (errno == EAGAIN) {
+						break;
+					} else {
+						perror(getName());
+						quit(1);
+						return;
+					}
+				}
+			}
+		} else if (nfds == -1) {
+			perror(getName());
+			quit(1);
+			return;
 		}
 	}
-
-    return ferror(inputFile) ? 1 : 0;
 }
 
-void* SC_TerminalClient::tickThreadFunc(void* data)
+void SC_TerminalClient::daemonLoop()
 {
-	SC_TerminalClient* self = (SC_TerminalClient*)data;
-	struct timespec ts = { 0, 50000000 }; // 50 ms
-	
-	while (self->mShouldBeRunning) {
-		self->tick();
-		nanosleep(&ts, 0);
-	}
+	struct timespec tv = { 0, 500000 };
 
-	return 0;
+	while (mShouldBeRunning) {
+		tick(); // also flushes post buffer
+		if (nanosleep(&tv, 0) == -1) {
+			perror(getName());
+			quit(1);
+			break;
+		}
+	}
+}
+
+int SC_TerminalClient::prExit(struct VMGlobals* g, int)
+{
+	int code;
+
+	int err = slotIntVal(g->sp, &code);
+	if (err) return err;
+
+	((SC_TerminalClient*)SC_LanguageClient::instance())->quit(code);
+
+	return errNone;
+}
+
+void SC_TerminalClient::onLibraryStartup()
+{
+	int base, index = 0;
+	base = nextPrimitiveIndex();
+	definePrimitive(base, index++, "_Exit", &SC_TerminalClient::prExit, 1, 0);
 }
 
 // EOF

@@ -1,6 +1,11 @@
 Score {
 	var <>score, routine, isPlaying = false;
-	
+	classvar <>program;
+
+	*initClass {
+		program = "./scsynth";
+	}
+
 	*new { arg list;
 		^super.new.init(list);
 	}
@@ -65,7 +70,7 @@ Score {
 	*recordNRT { arg list, oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, 
 		headerFormat = "AIFF", sampleFormat = "int16", options, completionString="";
 		this.write(list, oscFilePath);
-		unixCmd("./scsynth -N" + oscFilePath + (inputFilePath ? "_") + outputFilePath + 			sampleRate + headerFormat + sampleFormat + 
+		unixCmd(program + " -N" + oscFilePath + (inputFilePath ? "_") + outputFilePath + 			sampleRate + headerFormat + sampleFormat + 
 			(options ?? {ServerOptions.new}).asOptionsString  
 			+ completionString);
 	}

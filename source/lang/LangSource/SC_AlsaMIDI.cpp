@@ -224,8 +224,7 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 		}
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex); 
-
+	pthread_mutex_unlock (&gLangMutex);
 }
 
 int initMIDI(int numIn, int numOut)
@@ -473,31 +472,31 @@ int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* a)
 	int numDst = dstPorts.size();
 
     PyrObject* idarray = newPyrArray(g->gc, 6 * sizeof(PyrObject), 0 , true);
-		SetObject(a, idarray);
+	SetObject(a, idarray);
 
     PyrObject* idarraySo = newPyrArray(g->gc, numSrc * sizeof(int32), 0 , true);
-        SetObject(idarray->slots+idarray->size++, idarraySo);
-        g->gc->GCWrite(idarray, idarraySo);
+	SetObject(idarray->slots+idarray->size++, idarraySo);
+	g->gc->GCWrite(idarray, idarraySo);
 
     PyrObject* devarraySo = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
-		SetObject(idarray->slots+idarray->size++, devarraySo);
-		g->gc->GCWrite(idarray, devarraySo);
+	SetObject(idarray->slots+idarray->size++, devarraySo);
+	g->gc->GCWrite(idarray, devarraySo);
 
 	PyrObject* namearraySo = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
-        SetObject(idarray->slots+idarray->size++, namearraySo);
-        g->gc->GCWrite(idarray, namearraySo);
+	SetObject(idarray->slots+idarray->size++, namearraySo);
+	g->gc->GCWrite(idarray, namearraySo);
 
     PyrObject* idarrayDe = newPyrArray(g->gc, numDst * sizeof(int32), 0 , true);
-        SetObject(idarray->slots+idarray->size++, idarrayDe);
-        g->gc->GCWrite(idarray, idarrayDe);
+	SetObject(idarray->slots+idarray->size++, idarrayDe);
+	g->gc->GCWrite(idarray, idarrayDe);
 
     PyrObject* namearrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
-        SetObject(idarray->slots+idarray->size++, namearrayDe);
-        g->gc->GCWrite(idarray, namearrayDe);
+	SetObject(idarray->slots+idarray->size++, namearrayDe);
+	g->gc->GCWrite(idarray, namearrayDe);
 
     PyrObject* devarrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
-        SetObject(idarray->slots+idarray->size++, devarrayDe);       
-        g->gc->GCWrite(idarray, devarrayDe);
+	SetObject(idarray->slots+idarray->size++, devarrayDe);       
+	g->gc->GCWrite(idarray, devarrayDe);
 
 
     for (int i=0; i<numSrc; ++i) {
@@ -695,9 +694,6 @@ int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
 int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed);
 int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed)
 {
-    PyrSlot *a;
-    a = g->sp - 1;
-
 	return disposeMIDI();
 }
 
@@ -710,7 +706,7 @@ int prRestartMIDI(VMGlobals *g, int numArgsPushed)
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed);
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 {
-        //port, uid, len, hiStatus, loStatus, a, b, latency
+	//port, uid, len, hiStatus, loStatus, a, b, latency
 	//PyrSlot *m = g->sp - 8;
 	PyrSlot *p = g->sp - 7;
         
@@ -733,17 +729,23 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 	
 	err = slotIntVal(u, &uid);
 	if (err) return err;
-        err = slotIntVal(l, &length);
+
+	err = slotIntVal(l, &length);
 	if (err) return err;
-        err = slotIntVal(his, &hiStatus);
+	
+	err = slotIntVal(his, &hiStatus);
 	if (err) return err;
-        err = slotIntVal(los, &loStatus);
+    
+    err = slotIntVal(los, &loStatus);
 	if (err) return err;
-        err = slotIntVal(a, &aval);
+    
+    err = slotIntVal(a, &aval);
 	if (err) return err;
-        err = slotIntVal(b, &bval);
+	
+	err = slotIntVal(b, &bval);
 	if (err) return err;
-        err = slotFloatVal(plat, &late);
+    
+    err = slotFloatVal(plat, &late);
 	if (err) return err;
 
     return sendMIDI(outputIndex, uid, length, hiStatus, loStatus, aval, bval, late);
@@ -767,7 +769,7 @@ void initMIDIPrimitives()
     s_midiBendAction = getsym("doBendAction");
     s_numMIDIDev = getsym("prSetNumberOfDevices");
     s_midiclient = getsym("MIDIClient");
-       definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
+	definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
 	definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);	
 	definePrimitive(base, index++, "_ConnectMIDIIn", prConnectMIDIIn, 3, 0);
 	definePrimitive(base, index++, "_DisconnectMIDIIn", prDisconnectMIDIIn, 3, 0);

@@ -22,16 +22,16 @@
 (defconst sclang-post-buffer "*SCLang*"
   "Name of the SuperCollider process output buffer.")
 
-(defvar sclang-post-buffer-mode-string nil
-  "Mode string used in process buffer.")
-
-(defvar sclang-post-buffer-mode-line-format '("-"
-					      mode-line-mule-info
-					      mode-line-frame-identification
-					      mode-line-buffer-identification
-					      "  "
-					      sclang-post-buffer-mode-string)
-  "*Modeline format for SuperCollider process buffer.")
+;; (defvar sclang-post-buffer-mode-string nil
+;;   "Mode string used in process buffer.")
+;; 
+;; (defvar sclang-post-buffer-mode-line-format '("-"
+;; 					      mode-line-mule-info
+;; 					      mode-line-frame-identification
+;; 					      mode-line-buffer-identification
+;; 					      "  "
+;; 					      sclang-post-buffer-mode-string)
+;;   "*Modeline format for SuperCollider process buffer.")
 
 (defun sclang-get-post-buffer ()
   (get-buffer sclang-post-buffer))
@@ -40,22 +40,22 @@
   `(with-current-buffer (sclang-get-post-buffer)
      ,@body))
 
-(defun sclang-post-string (string)
-  (with-sclang-post-buffer
-   (let ((eobp (mapcar (lambda (w)
-			 (cons w (= (window-point w) (point-max))))
-		       (get-buffer-window-list (current-buffer) nil t))))
-     (save-excursion
-       ;; insert STRING into process buffer
-       (goto-char (point-max))
-       (insert string))
-     (dolist (assoc eobp)
-       (when (cdr assoc)
-	 (save-selected-window
-	   (let ((window (car assoc)))
-	     (select-window window)
-	     (set-window-point window (point-max))
-	     (recenter -1))))))))
+;; (defun sclang-post-string (string)
+;;   (with-sclang-post-buffer
+;;    (let ((eobp (mapcar (lambda (w)
+;; 			 (cons w (= (window-point w) (point-max))))
+;; 		       (get-buffer-window-list (current-buffer) nil t))))
+;;      (save-excursion
+;;        ;; insert STRING into process buffer
+;;        (goto-char (point-max))
+;;        (insert string))
+;;      (dolist (assoc eobp)
+;;        (when (cdr assoc)
+;; 	 (save-selected-window
+;; 	   (let ((window (car assoc)))
+;; 	     (select-window window)
+;; 	     (set-window-point window (point-max))
+;; 	     (recenter -1))))))))
 
 (defun sclang-show-post-buffer (&optional eob-p)
   "Show SuperCollider process buffer.
@@ -76,9 +76,8 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   (get-buffer-create sclang-post-buffer)
   (with-sclang-post-buffer
    (sclang-mode)
-   (setq font-lock-defaults nil)
-   (setq mode-line-format sclang-post-buffer-mode-line-format))
-  (sclang-clear-post-buffer)
+   (setq font-lock-defaults nil))
+;;   (sclang-clear-post-buffer)
   (sclang-show-post-buffer))
 
 ;; =====================================================================
@@ -125,13 +124,10 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 
 ;; library initialization works like this:
 ;;
-;; sclang--init-command-process sets up sclang command interface
-;; (called when 'Class tree inited' appears in sclang output)
-;;
-;; sclang sends '_init' command reply
-;;
-;; '_init' command handler calls sclang--on-library-startup to complete
-;; initialization
+;; * emacs starts sclang with SCLANG_COMMAND_FIFO set in the environment
+;; * sclang sends '_init' command reply during class tree initialization
+;; * '_init' command handler calls sclang--on-library-startup to complete
+;;   initialization
 
 (defun sclang-library-initialized-p ()
   (and (sclang-get-process)
@@ -151,49 +147,59 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 ;; process hooks
 ;; =====================================================================
 
-(defun sclang-process-sentinel (proc msg)
-  (sclang-post-string (format "%s %s" proc msg))
+(defun sclang--process-sentinel (proc msg)
+  (message (format "%s %s" proc (substring msg 0 -1)))
   (when (memq (process-status proc) '(exit signal))
-    (sclang--on-library-shutdown)
-    (sclang--stop-command-process)))
+    (sclang--on-library-shutdown)))
 
-(defun sclang-process-filter (proc string)
-  (when (and (not (sclang-library-initialized-p))
-	     (string-match "Class tree inited" string))
-    (sclang--init-command-process))
-  (sclang-post-string string))
+(defun sclang--process-filter (proc string)
+  (let* ((buffer (process-buffer proc))
+	 (window (display-buffer buffer)))
+    (with-current-buffer buffer
+      (let ((moving (= (point) (process-mark proc))))
+	(save-excursion
+	  ;; Insert the text, advancing the process marker.
+	  (goto-char (process-mark proc))
+	  (insert string)
+	  (set-marker (process-mark proc) (point)))
+	(when moving
+	  (goto-char (process-mark proc))
+	  (set-window-point window (process-mark proc)))))))
 
 ;; =====================================================================
 ;; process startup/shutdown
 ;; =====================================================================
 
-(defun sclang-setup-runtime-directory (dir)
-  (let ((prompt-fmt "Directory \"%s\" doesn't exist; create? "))
-    (unless (file-exists-p dir)
-      (when (y-or-n-p (format prompt-fmt dir))
-	(make-directory dir)))
-    (when (file-directory-p dir)
-      (let ((synthdef-dir (expand-file-name "synthdefs" dir)))
-	(unless (file-exists-p dir)
-	  (when (y-or-n-p (format prompt-fmt synthdef-dir))
-	    (make-directory synthdef-dir)))))))
+;; (defun sclang-setup-runtime-directory (dir)
+;;   (let ((prompt-fmt "Directory \"%s\" doesn't exist; create? "))
+;;     (unless (file-exists-p dir)
+;;       (when (y-or-n-p (format prompt-fmt dir))
+;; 	(make-directory dir)))
+;;     (when (file-directory-p dir)
+;;       (let ((synthdef-dir (expand-file-name "synthdefs" dir)))
+;; 	(unless (file-exists-p dir)
+;; 	  (when (y-or-n-p (format prompt-fmt synthdef-dir))
+;; 	    (make-directory synthdef-dir)))))))
 
 (defun sclang-start ()
   "Start SuperCollider process."
   (interactive)
   (sclang-stop)
+  (sit-for 1)
   (sclang--init-post-buffer)
   (sclang--start-command-process)
   ;; setup runtime directory structure
-  (and sclang-runtime-directory
-       (sclang-setup-runtime-directory sclang-runtime-directory))
+;;   (and sclang-runtime-directory
+;;        (sclang-setup-runtime-directory sclang-runtime-directory))
   (let ((process-connection-type nil))
-    (let ((proc (start-process sclang-process nil
-			       sclang-program
-			       "-d" (expand-file-name (or sclang-runtime-directory
-							  default-directory)))))
-      (set-process-sentinel proc 'sclang-process-sentinel)
-      (set-process-filter proc 'sclang-process-filter)
+    (let ((proc (start-process
+		 sclang-process sclang-post-buffer
+		 sclang-program
+		 "-d" (expand-file-name (or sclang-runtime-directory
+					    default-directory)))))
+      (set-process-sentinel proc 'sclang--process-sentinel)
+      (set-process-filter proc 'sclang--process-filter)
+      (set-process-coding-system proc 'latin-1-unix 'latin-1-unix)
       (process-kill-without-query proc)
       proc)))
 
@@ -201,53 +207,21 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   "Stop SuperCollider process."
   (interactive)
   (when (sclang-get-process)
-    (delete-process (sclang-get-process))))
+    (process-send-eof sclang-process)
+    (let ((tries 4)
+	  (i 0))
+      (while (and (sclang-get-process)
+		  (< i tries))
+	(incf i)
+	(sit-for 0.5))))
+  (sclang-kill))
 
-;; =====================================================================
-;; code evaluation
-;; =====================================================================
-
-(defcustom sclang-eval-line-forward nil
-  "*If non-nil `sclang-eval-line' advances to the next line."
-  :group 'sclang-interface
-  :type 'boolean)
-
-(defun sclang-send-string (string &optional print-p)
-  "Send STRING to the sclang process for execution and print the result
-if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
-  (let ((proc (sclang-get-process)))
-    (when proc
-      (process-send-string proc (concat string (if print-p "\^L" "\^[")))
-      string)))
-
-(defun sclang-eval-expression (string &optional silent-p)
-  (interactive "sEval: \nP")
-  (sclang-send-string string (not silent-p)))
-
-(defun sclang-eval-line (&optional silent-p)
-  (interactive "P")
-  (let ((string (sclang-line-at-point)))
-    (when string
-      (sclang-send-string string (not silent-p))
-      (and sclang-eval-line-forward
-	   (/= (line-end-position) (point-max))
-	   (next-line 1))
-      string)))
-
-(defun sclang-eval-region (&optional silent-p)
-  (interactive "P")
-  (if mark-active
-      (sclang-send-string (buffer-substring-no-properties (region-beginning)
-							  (region-end))
-			  (not silent-p))
-    (sclang-eval-line silent-p)))
-
-(defun sclang-eval-defun (&optional silent-p)
-  (interactive "P")
-  (let ((string (sclang-defun-at-point)))
-    (when (and string (string-match "^(" string))
-      (sclang-send-string string (not silent-p))
-      string)))
+(defun sclang-kill ()
+  "Kill SuperCollider process."
+  (interactive)
+  (when (sclang-get-process)
+    (kill-process sclang-process)
+    (delete-process sclang-process)))
 
 ;; =====================================================================
 ;; command process
@@ -267,92 +241,84 @@ Change this if \"cat\" has a non-standard name or location."
   :group 'sclang-interface
   :type 'string)
 
-(defconst sclang--command-process "SCLang Command")
-(defconst sclang--command-buffer (concat " *" sclang--command-process "*"))
+(defconst sclang--command-process "SCLang Command"
+  "Subprocess for receiving command results from sclang.")
 
 (defvar sclang--command-fifo nil
   "FIFO for communicating with the subprocess.")
 
-;; (defvar sclang--command-default-file "sclang-default-commands.sc")
-
 (defun sclang--create-command-fifo ()
-  (unless sclang--command-fifo
-    (setq sclang--command-fifo (make-temp-name
-				(expand-file-name
-				 (concat temporary-file-directory
-					 "sclang-command-fifo."))))
-    (unless (file-exists-p sclang--command-fifo)
-      (unless (= 0 (call-process sclang-mkfifo-program
-				 nil nil nil
-				 sclang--command-fifo))
-	(message "SCLang: Couldn't create command fifo")
-	(setq sclang--command-fifo nil)))))
+  (setq sclang--command-fifo (make-temp-name
+			      (expand-file-name
+			       (concat temporary-file-directory
+				       "sclang-command-fifo."))))
+  (and (file-exists-p sclang--command-fifo) (delete-file sclang--command-fifo))
+  (let ((res (call-process sclang-mkfifo-program
+			   nil t t
+			   sclang--command-fifo)))
+    (unless (eq 0 res)
+      (message "SCLang: Couldn't create command fifo")
+      (setq sclang--command-fifo nil))))
+
+;; (defun sclang--create-command-fifo ()
+;;   (let ((file  "/tmp/sclang-command.fifo"))
+;; ;;     (and (file-exists-p file) (delete-file file))
+;; ;;     (call-process sclang-mkfifo-program nil nil nil file)
+;;     (message (shell-command-to-string (format "rm -f %s; mkfifo %s" file file)))
+;;     (setq sclang--command-fifo file)))
 
 (defun sclang--command-process-sentinel (proc msg)
-  (sclang-post-string (format "%s %s" proc msg))
   (when (and (memq (process-status proc) '(exit signal))
 	     sclang--command-fifo
 	     (file-exists-p sclang--command-fifo))
     (delete-file sclang--command-fifo)
     (setq sclang--command-fifo nil)))
 
-(defun sclang--command-process-filter (proc string)
-  (with-current-buffer sclang--command-buffer
-    ;; append STRING to command buffer
-    (goto-char (point-max))
-    (insert string)
-    ;; try reading expressions
-    (while (progn
-	     (goto-char (point-min))
-	     (condition-case nil
-		 (let ((assoc (read (current-buffer)))
-		       (end (point)))
-		   (save-excursion (sclang--handle-command-result assoc))
-		   ;; delete expression read
-		   (delete-region (point-min) end)
-		   t)
-	       (error nil))))))
-
 (defun sclang--start-command-process ()
   (sclang--create-command-fifo)
-  (when (and sclang--command-fifo
-	     (not (get-process sclang--command-process)))
+  (when sclang--command-fifo
+    ;; sclang gets the fifo path via the environment
+    (setenv "SCLANG_COMMAND_FIFO" sclang--command-fifo)
     (let ((process-connection-type nil))
-      (let ((proc (start-process sclang--command-process
-				 sclang--command-buffer
-				 sclang-cat-program sclang--command-fifo)))
+      (let ((proc (start-process
+		   sclang--command-process nil
+		   sclang-cat-program sclang--command-fifo)))
 	(set-process-sentinel proc 'sclang--command-process-sentinel)
 	(set-process-filter proc 'sclang--command-process-filter)
-	(process-kill-without-query proc))))
-  (unless (get-process sclang--command-process)
-    (message "SCLang: Couldn't start command process")))
+	;; this is important. use a unibyte stream without eol
+	;; conversion for communication.
+	(set-process-coding-system proc 'no-conversion 'no-conversion)
+	(process-kill-without-query proc)))
+    (unless (get-process sclang--command-process)
+      (message "SCLang: Couldn't start command process"))))
 
-(defun sclang--stop-command-process ()
-  (when (get-process sclang--command-process)
-    (delete-process sclang--command-process)))
+(defvar sclang--command-state [sclang--gather-command-output 0 ""]
+  "State array for processing command process output.
 
-;; (defun sclang-first-file-in-path (file-name path)
-;;   (let (result)
-;;     (while (and path (null result))
-;;       (let ((file (expand-file-name
-;; 		   (concat (file-name-as-directory (car path))
-;; 			   file-name))))
-;; 	(if (file-exists-p file)
-;; 	    (setq result file))))
-;;     result))
+[HANDLER EXPECTED-STRING-SIZE OUTPUT-STRING]")
 
-;; (defun sclang--init-command-process ()
-;;   (let ((fifo sclang--command-fifo)
-;; 	(file (sclang-first-file-in-path sclang--command-default-file
-;; 					 load-path)))
-;;     (and fifo file
-;; 	 (sclang-send-string
-;; 	  (sclang-format "Emacs.lispInit(%o, %o)" fifo file)))))
+(defun sclang--gather-command-output ()
+  (aset sclang--command-state 0 'sclang--gather-command-output)
+  (let ((string (aref sclang--command-state 2)))
+    (when (> (length string) 3)
+    (aset sclang--command-state 1 (sclang-string-to-int32 (substring string 0 4)))
+    (aset sclang--command-state 2 (substring string 4))
+    (sclang--scatter-command-output))))
 
-(defun sclang--init-command-process ()
-  (when sclang--command-fifo
-    (sclang-send-string
-     (sclang-format "Emacs.lispInit(%o)" sclang--command-fifo))))
+(defun sclang--scatter-command-output ()
+  (aset sclang--command-state 0 'sclang--scatter-command-output)
+  (let ((size (aref sclang--command-state 1))
+	(string (aref sclang--command-state 2)))
+  (when (and (> size 0) (>= (length string) size))
+    (let ((assoc (car (read-from-string string 0 size))))
+      (sclang--handle-command-result assoc))
+    (aset sclang--command-state 1 0)
+    (aset sclang--command-state 2 (substring string size))
+    (sclang--gather-command-output))))
+
+(defun sclang--command-process-filter (proc string)
+  (aset sclang--command-state 2 (concat (aref sclang--command-state 2) string))
+  (funcall (aref sclang--command-state 0)))
 
 ;; =====================================================================
 ;; command interface
@@ -360,32 +326,143 @@ Change this if \"cat\" has a non-standard name or location."
 
 ;; symbol property: sclang-command-handler
 
+(defvar sclang-debug-command-handler nil)
+
 (defun sclang-set-command-handler (symbol function)
-  ;; (add-to-list 'sclang--command-handler-alist (cons name function)))
   (put symbol 'sclang-command-handler function))
 
 (defun sclang-perform-command (symbol &rest args)
   (and (functionp (get symbol 'sclang-command-handler))
        (not (eq ?_ (aref (symbol-name symbol) 0)))
-       (sclang-send-string (sclang-format "Emacs.lispPerformCommand(%o, %o)"
-					  symbol args))))
+       (sclang-eval-string
+	(sclang-format
+	 "Emacs.lispPerformCommand(%o, %o)"
+	 symbol args))))
 
 (defun sclang--handle-command-result (assoc)
-  (condition-case e
-      (let ((fun (get (car assoc) 'sclang-command-handler)))
-	(when (functionp fun)
-	  (funcall fun (cdr assoc))
-	  t))
-    (error (message "SCLang: Error in command handler") nil)))
+  (save-excursion
+    (condition-case e
+	(let ((fun (get (car assoc) 'sclang-command-handler)))
+	  (when (functionp fun)
+	    (funcall fun (cdr assoc))
+	    t))
+      (error (if sclang-debug-command-handler
+		 ;; debug the sucker
+		 (progn (debug e) nil)
+	       (message "SCLang: Error in command handler") nil)))))
+
+;; =====================================================================
+;; code evaluation
+;; =====================================================================
+
+(defconst sclang--token-interpret-cmd-line (char-to-string #X1b))
+(defconst sclang--token-interpret-print-cmd-line (char-to-string #X0c))
+
+(defcustom sclang-eval-line-forward t
+  "*If non-nil `sclang-eval-line' advances to the next line."
+  :group 'sclang-interface
+  :type 'boolean)
+
+(defun sclang-send-string (token string)
+  (let ((proc (sclang-get-process)))
+    (when proc
+      (process-send-string proc (concat string token))
+      string)))
+
+(defun sclang-eval-string (string &optional print-p)
+  "Send STRING to the sclang process for evaluation and print the result
+if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
+  (sclang-send-string
+   (if print-p sclang--token-interpret-print-cmd-line sclang--token-interpret-cmd-line)
+   string))
+
+(defun sclang-eval-expression (string &optional silent-p)
+  (interactive "sEval: \nP")
+  (sclang-eval-string string (not silent-p)))
+
+(defun sclang-eval-line (&optional silent-p)
+  (interactive "P")
+  (let ((string (sclang-line-at-point)))
+    (when string
+      (sclang-eval-string string (not silent-p))
+      (and sclang-eval-line-forward
+	   (/= (line-end-position) (point-max))
+	   (next-line 1))
+      string)))
+
+(defun sclang-eval-region (&optional silent-p)
+  (interactive "P")
+  (sclang-eval-string
+   (buffer-substring-no-properties (region-beginning) (region-end))
+   (not silent-p)))
+
+(defun sclang-eval-region-or-line (&optional silent-p)
+  (interactive "P")
+  (if (and transient-mark-mode mark-active)
+      (sclang-eval-region silent-p)
+    (sclang-eval-line silent-p)))
+
+(defun sclang-eval-defun (&optional silent-p)
+  (interactive "P")
+  (let ((string (sclang-defun-at-point)))
+    (when (and string (string-match "^(" string))
+      (sclang-eval-string string (not silent-p))
+      string)))
+
+;; =====================================================================
+;; workspace
+;; =====================================================================
+
+(defcustom sclang-show-workspace-on-startup t
+  "*If non-nil show the workspace buffer on library startup."
+  :group 'sclang-interface
+  :type 'boolean)
+
+(defvar sclang-workspace-buffer "*SCWorkspace*")
+
+(defun sclang-fill-workspace-mode-map (map)
+  (define-key map "\C-c}" 'bury-buffer))
+
+(defun sclang-switch-to-workspace ()
+  (interactive)
+  (let ((buffer (get-buffer sclang-workspace-buffer)))
+    (unless buffer
+      (setq buffer (get-buffer-create sclang-workspace-buffer))
+      (with-current-buffer buffer
+	(sclang-mode)
+	(let ((map (make-sparse-keymap)))
+	  (set-keymap-parent map sclang-mode-map)
+	  (sclang-fill-workspace-mode-map map)
+	  (use-local-map map))
+	(let ((line (concat "// " (make-string 69 ?=) "\n")))
+	  (insert line)
+	  (insert "// SuperCollider Workspace\n")
+	  (insert line)
+	  (insert "\n"))
+	(set-buffer-modified-p nil)))
+    (switch-to-buffer buffer t)))
+
+(add-hook 'sclang-library-startup-hook 
+	  (lambda () (and sclang-show-workspace-on-startup
+			  (sclang-switch-to-workspace))))
+
+;; =====================================================================
+;; language control
+;; =====================================================================
+
+(defun sclang-main-run ()
+  (interactive)
+  (sclang-eval-string "thisProcess.run"))
+
+(defun sclang-main-stop ()
+  (interactive)
+  (sclang-eval-string "thisProcess.stop"))
 
 ;; =====================================================================
 ;; default command handlers
 ;; =====================================================================
 
-(sclang-set-command-handler
- '_init
- (lambda (arg)
-   (sclang--on-library-startup)))
+(sclang-set-command-handler '_init (lambda (arg) (sclang--on-library-startup)))
 
 (sclang-set-command-handler
  '_eval
@@ -395,7 +472,7 @@ Change this if \"cat\" has a non-standard name or location."
      (when (stringp expr)
        (let ((res (eval (read expr))))
 	 (when id
-	   (sclang-send-string
+	   (sclang-eval-string
 	    (sclang-format "Emacs.lispHandleCommandResult(%o, %o)" id res))))))))
 
 ;; =====================================================================
@@ -405,7 +482,7 @@ Change this if \"cat\" has a non-standard name or location."
 ;; shutdown process cleanly
 (add-hook 'kill-emacs-hook (lambda () (sclang-stop)))
 
-;; add command line switch
+;; add command line switches
 (add-to-list 'command-switch-alist
 	     (cons "sclang"
 		   (lambda (switch)

@@ -126,16 +126,8 @@
 ;; language control
 ;; =====================================================================
 
-(defun sclang-main-run ()
-  (interactive)
-  (sclang-send-string "thisProcess.run"))
-
-(defun sclang-main-stop ()
-  (interactive)
-  (sclang-send-string "thisProcess.stop"))
-
 (defun sclang-perform-server-command (command &rest args)
-  (sclang-send-string
+  (sclang-eval-string
    (sclang-format "Server.named.at(%o.asSymbol).performList(\\tryPerform, %o.asSymbol.asArray ++ %o)"
 		  sclang-current-server command args)
    nil))

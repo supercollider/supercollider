@@ -69,6 +69,7 @@
      ["Start Interpreter"	sclang-start :included (not (sclang-library-initialized-p))]
      ["Restart Interpreter"	sclang-start :included (sclang-library-initialized-p)]
      ["Stop Interpreter"	sclang-stop  :included (sclang-library-initialized-p)]
+     ["Kill Interpreter"	sclang-kill  :included (sclang-get-process)]
      "-"
      ["Show Post Buffer"	sclang-show-post-buffer]
      ["Clear Post Buffer"	sclang-clear-post-buffer]
@@ -96,12 +97,15 @@
   ;; post buffer control
   (define-key map "\C-c<"	'sclang-clear-post-buffer)
   (define-key map "\C-c>"	'sclang-show-post-buffer)
+  ;; workspace access
+  (define-key map "\C-c\C-w"	'sclang-switch-to-workspace)
   ;; code evaluation
-  (define-key map "\C-c\C-c"	'sclang-eval-region)
+  (define-key map "\C-c\C-c"	'sclang-eval-region-or-line)
+  (define-key map "\C-c\C-x"	'sclang-eval-region)
   (define-key map "\C-\M-x"	'sclang-eval-defun)
   (define-key map "\C-c\C-e"	'sclang-eval-expression)
   ;; language information
-  (define-key map "\M-\t"	'sclang-complete-symbol)
+  ;;   (define-key map "\M-\t"	'sclang-complete-symbol)
   (define-key map "\C-c:"	'sclang-find-definitions)
   (define-key map "\C-c;"	'sclang-find-references)
   (define-key map "\C-c}"	'sclang-pop-definition-mark)
@@ -146,7 +150,7 @@
 
 (defvar sclang-font-lock-method-list
   '(
-    "if" "while" "loop"
+    "if" "while" "loop" "forBy"
     "ar" "kr"
     )
   "*List of methods to highlight in SCLang mode.")
@@ -175,15 +179,6 @@
 				      nil
 				      beginning-of-defun
 				      ))
-
-;; (defun sclang-font-lock-class-match (bound)
-;;   (let ((orig (point)))
-;;     (or
-;;      (and (re-search-forward (concat "\\<" sclang-class-name-regexp "\\>") bound t)
-;; 	  (save-match-data
-;; 	    (or (null sclang-symbol-table)
-;; 		(sclang-get-symbol (match-string-no-properties 0)))))
-;;      (progn (goto-char orig) nil))))
 
 (defun sclang-set-font-lock-class-keywords ()
   (setq sclang-font-lock-class-keywords
@@ -229,9 +224,9 @@
     (cons (regexp-opt (sort (copy-list sclang-font-lock-builtin-list) 'string<) 'words)
 	  'font-lock-builtin-face)
     ;; constants
-    (cons "\\s/\\s\\?." 'font-lock-constant-face)		; characters
+    (cons "\\s/\\s\\?." 'font-lock-constant-face) ; characters
     (cons (concat "\\\\\\(" sclang-symbol-regexp "\\)")
-	  'font-lock-constant-face)				; symbols
+	  'font-lock-constant-face)	; symbols
     )
    ;; level 2
    sclang-font-lock-keywords-2
@@ -240,7 +235,7 @@
     (list
      ;; variables
      (cons (concat "\\s'\\(" sclang-identifier-regexp "\\)")
-	   'font-lock-variable-name-face)			; environment variables
+	   'font-lock-variable-name-face) ; environment variables
      (cons (concat "\\<\\(" sclang-identifier-regexp "\\)\\>:")	; keyword arguments
 	   'font-lock-variable-name-face)
      ;; method definitions
@@ -292,13 +287,13 @@ Return the amount the indentation changed by."
 	(pos (- (point-max) (point))))
     (beginning-of-line)
     (setq beg (point))
-;;     (cond ((eq indent nil)
-;; 	   (setq indent (current-indentation)))
-;; 	  (t
-;; 	   (skip-chars-forward " \t")
-;; 	   (if (listp indent) (setq indent (car indent)))
-;; 	   (if (memq (following-char) '(?} ?\) ?\]))
-;; 	       (setq indent (- indent sclang-indent-level)))))
+    ;;     (cond ((eq indent nil)
+    ;; 	   (setq indent (current-indentation)))
+    ;; 	  (t
+    ;; 	   (skip-chars-forward " \t")
+    ;; 	   (if (listp indent) (setq indent (car indent)))
+    ;; 	   (if (memq (following-char) '(?} ?\) ?\]))
+    ;; 	       (setq indent (- indent sclang-indent-level)))))
     (skip-chars-forward " \t")
     (setq shift-amt (- indent (current-column)))
     (if (zerop shift-amt)
@@ -370,8 +365,9 @@ Returns the column to indent to."
   (set (make-local-variable 'comment-start) "// ")
   (set (make-local-variable 'comment-end) "")
   (set (make-local-variable 'comment-column) 40)
-  (set (make-local-variable 'comment-start-skip)
-       "\\(^\\|\\s-\\);?// *")
+  (set (make-local-variable 'comment-start-skip) "/\\*+ *\\|//+ *")
+  ;;        "\\(^\\|\\s-\\);?// *")
+  (set (make-local-variable 'comment-multi-line) t)
   ;; parsing and movement
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'beginning-of-defun-function)
@@ -379,11 +375,13 @@ Returns the column to indent to."
   (set (make-local-variable 'end-of-defun-function)
        'sclang-end-of-defun)
   ;; paragraph formatting
-  (set (make-local-variable 'paragraph-start)
-       (concat "$\\|" page-delimiter))
-  (set (make-local-variable 'paragraph-separate)
-       paragraph-start)
+  ;;   (set (make-local-variable 'paragraph-start) (concat "$\\|" page-delimiter))
+  ;; mostly copied from c++-mode, seems to work
+  (set (make-local-variable 'paragraph-start) "[ 	]*\\(//+\\|\\**\\)[ 	]*$\\|^")
+  (set (make-local-variable 'paragraph-separate) paragraph-start)
   (set (make-local-variable 'paragraph-ignore-fill-prefix) t)
+  (set (make-local-variable 'adaptive-fille-mode) t)
+  (set (make-local-variable 'adaptive-fill-regexp) "[ 	]*\\(//+\\|\\**\\)[ 	]*\\([ 	]*\\([-|#;>*]+[ 	]*\\|(?[0-9]+[.)][ 	]*\\)*\\)")
   ;; font lock
   (set (make-local-variable 'font-lock-syntactic-face-function)
        'sclang-font-lock-syntactic-face)

@@ -1999,8 +1999,11 @@ bool passOne_ProcessOneFile(char *filename, int level)
 		// check if this is a symlink
 		char realpathname[MAXPATHLEN];
 		realpath(filename, realpathname);
-		if (strncmp(filename, realpathname, strlen(filename)))
-			success = passOne_ProcessDir(realpathname, level);
+		if (strncmp(filename, realpathname, strlen(filename))) {
+			struct stat stat_buf;
+			if ((stat(realpathname, &stat_buf) == 0) && S_ISDIR(stat_buf.st_mode))
+				success = passOne_ProcessDir(realpathname, level);
+		}
 	}
 	return success;
 }

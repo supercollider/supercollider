@@ -127,7 +127,7 @@ test -n "${cpu}" || cpu="${host_cpu}"
 case $cpu in
     powerpc*|ppc*)
 	SC_CFLAGS="-fsigned-char"
-	SC_CFLAGS_OPT="-maltivec"
+	SC_CFLAGS_OPT="-maltivec -mabi=altivec"
 	;;
 esac
 

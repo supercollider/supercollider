@@ -283,6 +283,30 @@ int prTimeSeed(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+#ifdef SC_LINUX
+#include "SC_LibraryConfig.h"
+
+// should be unified for OSX and linux
+int prString_StandardizePath(struct VMGlobals* g, int numArgsPushed);
+int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
+{
+	PyrSlot* arg = g->sp;
+	char ipath[PATH_MAX];
+	char opath[PATH_MAX];
+	int err;
+	
+	err = slotStrVal(arg, ipath, PATH_MAX);
+	if (err) return err;
+
+	if (unixStandardizePath(ipath, opath)) {
+		PyrString* pyrString = newPyrString(g->gc, opath, 0, true);
+		SetObject(arg, pyrString);
+	}
+
+	return errNone;
+}
+#endif // SC_LINUX
+
 void initUnixPrimitives();
 void initUnixPrimitives()
 {
@@ -300,6 +324,9 @@ void initUnixPrimitives()
        definePrimitive(base, index++, "_AscTime", prAscTime, 1, 0);
         definePrimitive(base, index++, "_prStrFTime", prStrFTime, 2, 0);
 	definePrimitive(base, index++, "_TimeSeed", prTimeSeed, 1, 0);
+#ifdef SC_LINUX
+	definePrimitive(base, index++, "_Cocoa_StandardizePath", prString_StandardizePath, 1, 0);
+#endif // SC_LINUX
 }
 
 

@@ -30,7 +30,7 @@
 
 + Symbol {
 	storeLispOn { arg stream;
-		stream.putAll(this)
+		stream.putAll(this.asString)
 	}
 }
 

@@ -1,14 +1,11 @@
 #include "SC_LanguageClient.h"
 #include "SC_LibraryConfig.h"
+
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
 #include "GC.h"
 #include "VMGlobals.h"
-
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdexcept>
 
 void closeAllGUIScreens();
 void initGUI();
@@ -26,21 +23,23 @@ extern PyrString* newPyrStringN(class PyrGC *gc, long length, long flags, long c
 // SC_LanguageClient
 // =====================================================================
 
-const char* kSC_LibraryConfigFileName = ".sclang.cfg";
-
 SC_LanguageClient* SC_LanguageClient::gInstance = 0;
 
 PyrSymbol* SC_LanguageClient::s_interpretCmdLine = 0;
 PyrSymbol* SC_LanguageClient::s_interpretPrintCmdLine = 0;
 PyrSymbol* SC_LanguageClient::s_run = 0;
 PyrSymbol* SC_LanguageClient::s_stop = 0;
-static PyrSymbol* s_tick;
+static PyrSymbol* s_tick = 0;
 
 SC_LanguageClient::SC_LanguageClient(const char* name)
-	: mName(0), mPostFile(stdout), mScratch(0), mRunning(false)
+	: mName(0),
+	  mPostFile(stdout),
+	  mScratch(0),
+	  mRunning(false)
 {
 	if (gInstance) {
-		throw std::runtime_error("SC_LanguageClient already running");
+		fprintf(stderr, "SC_LanguageClient already running\n");
+		abort();
 	}
 
 	mName = strdup(name);
@@ -53,39 +52,15 @@ SC_LanguageClient::~SC_LanguageClient()
 	gInstance = 0;
 }
 
-void SC_LanguageClient::printUsage()
+void SC_LanguageClient::initRuntime(const Options& opt)
 {
-	FILE* file = mPostFile ? mPostFile : stdout;
-	fprintf(file, "Usage:\n");
-	printUsage(file);
-	fprintf(file, "\n");
-	printOptions(file);
-	fprintf(file, "\n");
-}
-
-void SC_LanguageClient::init(int& argc, char**& argv)
-{
-	Options opt;
-	parseOptions(argc, argv, opt);
-	init(opt);
-}
-
-void SC_LanguageClient::init(const Options& opt)
-{
-	mOptions = opt;
-
-	// change to runtime directory
-	if (opt.mRuntimeDir) chdir(opt.mRuntimeDir);
-
-	// read default library config file
-	// this should probably be done in a derived client
-	char* home = getenv("HOME");
-	if (home) {
-		SC_StringBuffer tmpBuf(64);
-		tmpBuf.reset();
-		tmpBuf.appendf("%s/%s", home, kSC_LibraryConfigFileName);
-		tmpBuf.finish();
-		readLibraryConfig(tmpBuf.getData(), kSC_LibraryConfigFileName);
+	// start virtual machine
+	if (!mRunning) {
+		mRunning = true;
+		if (opt.mRuntimeDir) chdir(opt.mRuntimeDir);
+		pyr_init_mem_pools(opt.mMemSpace, opt.mMemGrow);
+		init_OSC(opt.mPort);
+		schedInit();
 	}
 }
 
@@ -101,33 +76,34 @@ bool SC_LanguageClient::readLibraryConfig(const char* filePath, const char* file
 	return false;
 }
 
-void SC_LanguageClient::compileLibrary()
+bool SC_LanguageClient::readDefaultLibraryConfig()
 {
-	// start virtual machine
-	if (!mRunning) {
-		mRunning = true;
-		pyr_init_mem_pools(mOptions.mMemSpace, mOptions.mMemGrow);
-		init_OSC(mOptions.mPort);
-		schedInit();
-	}
+	// try to read
+	//    $PWD/.sclang.cfg $HOME/.sclang.cfg /etc/sclang.cfg
+	// in this order.
 
-    ::compileLibrary();
+	char* paths[3] = { ".sclang.cfg", "~/.sclang.cfg", "/etc/sclang.cfg" };
 
-	// execute user setup file
-	char* homeDir = getenv("HOME");
-	if (homeDir) {
-		SC_StringBuffer tmpBuf(64);
-		tmpBuf.reset();
-		tmpBuf.appendf("%s/.sclang.sc", homeDir);
-		tmpBuf.finish();
+	char ipath[PATH_MAX];
+	char opath[PATH_MAX];
 
-		struct stat stat_buf;
-		if ((stat(tmpBuf.getData(), &stat_buf) == 0)
-			&& S_ISREG(stat_buf.st_mode)
-			&& (stat_buf.st_mode & S_IRUSR)) {
-			executeFile(tmpBuf.getData());
+	for (int i=0; i < 3; i++) {
+		snprintf(ipath, PATH_MAX, paths[i]);
+		if (unixStandardizePath(ipath, opath)) {
+			SC_LibraryConfigFile file(&::post);
+			if (!file.open(opath)) continue;
+			bool success = SC_LibraryConfig::readLibraryConfig(file, opath);
+			file.close();
+			if (success) return true;
 		}
 	}
+
+	return false;
+}
+
+void SC_LanguageClient::compileLibrary()
+{
+	::compileLibrary();
 }
 
 extern void ::shutdownLibrary();
@@ -200,68 +176,76 @@ void SC_LanguageClient::executeFile(const char* fileName)
 	runLibrary(s_interpretCmdLine);
 }
 
-void SC_LanguageClient::printUsage(FILE* file)
+void SC_LanguageClient::snprintMemArg(char* dst, size_t size, int arg)
 {
-	fprintf(file, "  %s [options]\n", getName());
+	int rem = arg;
+	int mod = 0;
+	char* modstr = "";
+
+	while (((rem % 1024) == 0) && (mod < 4)) {
+		rem /= 1024;
+		mod++;
+	}
+
+	switch (mod) {
+		case 0: modstr = ""; break;
+		case 1: modstr = "k"; break;
+		case 2: modstr = "m"; break;
+		case 3: modstr = "g"; break;
+		default: rem = arg; modstr = ""; break;
+	}
+
+	snprintf(dst, size, "%d%s", rem, modstr);
 }
 
-void SC_LanguageClient::printOptions(FILE* file)
+bool SC_LanguageClient::parseMemArg(const char* arg, int* res)
 {
-	SC_LanguageClient::Options opt;
+	long value, factor = 1;
+	char* endPtr = 0;
 	
-	const size_t bufSize = 128;
-	char memGrowBuf[bufSize];
-	char memSpaceBuf[bufSize];
+	if (*arg == '\0') return false;
 
-	snprintMemArg(memGrowBuf, bufSize, opt.mMemGrow);
-	snprintMemArg(memSpaceBuf, bufSize, opt.mMemSpace);
+	value = strtol(arg, &endPtr, 0);
 
-	fprintf(file,
-			"Common Options:\n"
-			"   -d <path>                      Set runtime directory\n"
-			"   -g <memory-growth>[km]         Set heap growth (default %s)\n"
-			"   -h                             Display this message and exit\n"
-			"   -m <memory-space>[km]          Set initial heap size (default %s)\n"
-			"   -u <network-port-number>       Set UDP listening port (default %d)\n",
-			memGrowBuf,
-			memSpaceBuf,
-			opt.mPort
-		);
+	char spec = *endPtr++;
+	if (spec != '\0') {
+		if (*endPtr != '\0')
+			// trailing characters
+			return false;
+
+		switch (spec) {
+			case 'k':
+				factor = 1024;
+				break;
+			case 'm':
+				factor = 1024 * 1024;
+				break;
+			default:
+				// invalid mem spec
+				return false;
+		}
+	}
+
+	*res = value * factor;
+
+	return true;
 }
 
-void SC_LanguageClient::error(const char* fmt, ...)
+bool SC_LanguageClient::parsePortArg(const char* arg, int* res)
 {
-    va_list ap;
-    va_start(ap, fmt);
-	mScratch.reset();
-	mScratch.appendf("%s: ", getName());
-	mScratch.vappendf(fmt, ap);
-	mScratch.finish();
-	throw std::runtime_error(mScratch.getData());
-}
+	long value;
+	char* endPtr;
 
-void SC_LanguageClient::errorOptionInvalid(const char* opt)
-{
-	mScratch.reset();
-	mScratch.appendf("%s: invalid option %s", getName(), opt);
-	mScratch.finish();
-	throw std::runtime_error(mScratch.getData());
-}
+	if (*arg == '\0') return false;
+	
+	value = strtol(arg, &endPtr, 0);
 
-void SC_LanguageClient::errorOptionArgExpected(const char* opt)
-{
-	mScratch.reset();
-	mScratch.appendf("%s: missing argument for option %s", getName(), opt);
-	mScratch.finish();
-	throw std::runtime_error(mScratch.getData());
-}
+	if ((*endPtr != '\0') || (value < 0) || (value > 65535))
+		return false;
 
-void SC_LanguageClient::errorOptionArgInvalid(const char* opt, const char* arg)
-{
-	mScratch.reset();
-	mScratch.appendf("%s: invalid argument for option %s -- %s", getName(), opt, arg);
-	mScratch.finish();
-	throw std::runtime_error(mScratch.getData());
+	*res = value;
+
+	return true;
 }
 
 void SC_LanguageClient::tick()
@@ -285,163 +269,6 @@ void SC_LanguageClient::onLibraryShutdown()
 
 void SC_LanguageClient::onInterpStartup()
 {
-}
-
-void SC_LanguageClient::snprintMemArg(char* dst, size_t size, int arg)
-{
-	int rem = arg;
-	int mod = 0;
-	char* modstr = "";
-
-	while (((rem % 1024) == 0) && (mod < 4)) {
-		rem /= 1024;
-		mod++;
-	}
-
-	switch (mod) {
-		case 0: modstr = ""; break;
-		case 1: modstr = "k"; break;
-		case 2: modstr = "m"; break;
-		case 3: modstr = "g"; break;
-		default: rem = arg; modstr = ""; break;
-	}
-
-	snprintf(dst, size, "%d%s", rem, modstr);
-}
-
-int SC_LanguageClient::parseMemArg(const char* arg)
-{
-	long value, factor = 1;
-	char* endPtr = 0;
-	
-	if (*arg == '\0')
-		return -1;
-
-	value = strtol(arg, &endPtr, 0);
-
-	char spec = *endPtr++;
-	if (spec != '\0') {
-		if (*endPtr != '\0')
-			// trailing characters
-			return -1;
-
-		switch (spec) {
-			case 'k':
-				factor = 1024;
-				break;
-			case 'm':
-				factor = 1024 * 1024;
-				break;
-			default:
-				// invalid mem spec
-				return -1;
-		}
-	}
-
-	return value * factor;
-}
-
-int SC_LanguageClient::parsePortArg(const char* arg)
-{
-	long value;
-	char* endPtr;
-
-	if (*arg == '\0')
-		return -1;
-	
-	value = strtol(arg, &endPtr, 0);
-
-	if ((*endPtr != '\0') || (value < 0) || (value > 65535))
-		return -1;
-
-	return value;
-}
-
-void SC_LanguageClient::parseOptions(int& argc, char**& argv, Options& options)
-{
-	char* opt;
-	char* optarg;
-	int nargs;
-
-	int i = 1;
-	while (i < argc) {
-		opt = argv[i];
-		optarg = i < (argc - 1) ? argv[i+1] : 0;
-		nargs = 0;
-
-		if (!((opt[0] == '-') && opt[1] && strchr("dghmu", opt[1]))) {
-			// not an option
-			i++;
-			continue;
-		}
-
-		// index before
-		switch (opt[1]) {
-			case 'd':
-				if (optarg) {
-					nargs++;
-					options.mRuntimeDir = optarg;
-				} else {
-					goto optArgExpected;
-				}
-				break;
-			case 'g':
-				if (optarg) {
-					nargs++;
-					options.mMemGrow = parseMemArg(optarg);
-					if (options.mMemGrow < 0) {
-						goto optArgInvalid;
-					}
-				} else {
-					goto optArgExpected;
-				}
-				break;
-			case 'h':
-				goto help;
-				break;
-			case 'm':
-				if (optarg) {
-					nargs++;
-					options.mMemSpace = parseMemArg(optarg);
-					if (options.mMemSpace < 0) {
-						goto optArgInvalid;
-					}
-				} else {
-					goto optArgExpected;
-				}
-				break;
-			case 'u':
-				if (optarg) {
-					nargs++;
-					options.mPort = parsePortArg(optarg);
-					if (options.mPort < 0) {
-						goto optArgInvalid;
-					}
-				} else {
-					goto optArgExpected;
-				}
-				break;
-		}
-
-		// shuffle options
-		int j, k;
-		for (j=i, k=i+nargs+1; k < argc; j++, k++) {
-			argv[j] = argv[k];
-		}
-		argc -= nargs+1;
-	}
-
-	return;
-
- help:
-	printUsage();
-	exit(EXIT_SUCCESS);	// debatable
-
- optArgExpected:
-	errorOptionArgExpected(opt);
-
- optArgInvalid:
-	errorOptionArgInvalid(opt, optarg);
 }
 
 // =====================================================================

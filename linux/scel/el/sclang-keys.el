@@ -19,11 +19,11 @@
 
 ;; (defun sclang-define-key (char beg end)
 ;;   (interactive)
-;;   (sclang-send-string (sclang-format "Emacs.defineKey(%o, %o)" char code))
+;;   (sclang-eval-string (sclang-format "Emacs.defineKey(%o, %o)" char code))
 ;;   (define-key (char-to-string char) sclang-key-mode-map 'sclang-execute-key))
 
 ;; (defun sclang-execute-key (char)
-;;   (sclang-send-string (sclang-format "Emacs.executeKey(%o)" char)))
+;;   (sclang-eval-string (sclang-format "Emacs.executeKey(%o)" char)))
 
 (defun sclang-read-keys ()
   (interactive)
@@ -34,7 +34,7 @@
       (clear-this-command-keys)
       (when (char-valid-p char)
 	(message "%s (%d)" (char-to-string char) char)
-	(sclang-send-string (format "Emacs.keys.at(%d).value(%d)" char char))))))
+	(sclang-eval-string (format "Emacs.keys.at(%d).value(%d)" char char))))))
 
 ;; EOF
 
