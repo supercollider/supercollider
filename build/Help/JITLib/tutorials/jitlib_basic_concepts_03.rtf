@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Georgia-Bold;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica;\f4\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green0\blue0;
-\red191\green0\blue0;\red0\green115\blue0;\red0\green0\blue191;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs30 \cf0 proxyspace - basic concepts  			
@@ -64,8 +64,8 @@ p = \cf3 ProxySpace\cf0 .push(s.boot);\
 \
 \cf2 // other slot numbers are accessed by positive integers:\cf0 \
 \
-~y[1] = #\{\'ca\cf3 Saw\cf0 .ar([400, 401.3], 0.4) \}; \cf2 // (this time use a closed function so we can post it later)\
-\cf0 ~y[0] = #\{\'ca\cf3 Saw\cf0 .ar([300, 301], 0.4) \}; \
+~y[1] = \{\'ca\cf3 Saw\cf0 .ar([400, 401.3], 0.4) \};\cf2 \
+\cf0 ~y[0] = \{\'ca\cf3 Saw\cf0 .ar([300, 301], 0.4) \}; \
 \
 \cf2 // to remove one of them, nil is used:\cf0 \
 \
@@ -76,12 +76,17 @@ p = \cf3 ProxySpace\cf0 .push(s.boot);\
 ~y[1].source.postcs \cf2 // the function that was put in.\
 \cf0 ~y.source; \cf2 // this returns objects in the slots.\
 \
-multiple assignment:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs24 \cf0 multiple assignment
+\f2\fs18 \cf2 \
 \
 // the function is assigned to th slots from 1 to 4 \cf0 \
 ~z[1..4] = \{ \cf3 SinOsc\cf0 .ar(exprand(300, 600), 0, \cf3 LFTri\cf0 .kr(\{exprand(1, 3)\} ! 3).sum.max(0)) * 0.1 \};\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // the function is assigned to the slots 1, 2 and 3 (subsequent)\cf0 \
 ~z[1] = [ \{\cf3 SinOsc\cf0 .ar(440) * 0.1 \}, \{ \cf3 SinOsc\cf0 .ar(870) * 0.08 \}, \{ \cf3 SinOsc\cf0 .ar(770) * 0.04 \}];\
 \
@@ -201,9 +206,9 @@ play/stop\
 \f3\b0  is used:
 \f2\fs18 \
 	\
+	~z.free; \cf2 // this does also not affect the monitoring.\cf0 \
+	~z.play; \cf2 // monitor. as the group was not playing, this starts the proxy.\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 	~z.free; \cf5 // this does also not affect the monitoring.\cf4 \
-	~z.play; \cf5 // monitor. as the group was not playing, this starts the proxy.\cf0 \
 \cf2 \
 	\
 	
@@ -235,10 +240,10 @@ play/stop\
 	\};\
 	)\
 	\cf2 \
-	\cf4 ~z.play;\
+	\cf0 ~z.play;\
 	~z.rebuild;\
-	~z.send;	\cf5 // send just creates a new synth\cf4 \
-	~z.rebuild; \cf5 // rebuild the synthdef\cf0 \
+	~z.send;	\cf2 // send just creates a new synth\cf0 \
+	~z.rebuild; \cf2 // rebuild the synthdef\cf0 \
 	~z.end;\cf2 \
 	\cf0 \
 	\
@@ -315,7 +320,7 @@ now the argument 'freq' is a control in the synth (just like in SynthDef) which 
 \f3\b0 ' message.\
 \
 
-\f2\fs18 	~y.set(\cf6 \\freq\cf0 , 440);\
+\f2\fs18 	~y.set(\cf4 \\freq\cf0 , 440);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs24 \cf0 	\
@@ -339,14 +344,14 @@ now the argument 'freq' is a control in the synth (just like in SynthDef) which 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 	~y.fadeTime = 3;\
-	~y.xset(\cf6 \\freq\cf0 , 600);
+	~y.xset(\cf4 \\freq\cf0 , 600);
 \f3\fs24 \
 	\
 
 \f2\fs18 	\cf2 // the same context is applied to all slots:\cf0 \
 \
 	~y[2] = \{ \cf3 arg\cf0  freq=500; \cf3 SinOsc\cf0 .ar(freq * [1, 1.1]) * LFPulse.kr(Rand(1, 3)) * 0.1 \};\
-	~y.xset(\cf6 \\freq\cf0 , 300);\
+	~y.xset(\cf4 \\freq\cf0 , 300);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs24 \cf0 \
@@ -358,7 +363,7 @@ the parameter context also can keep bus mappings. a control can be mapped to any
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 	~c = \{ \cf3 MouseX\cf0 .kr(300, 800, 1) \};\
-	~y.map(\cf6 \\freq\cf0 , ~c);
+	~y.map(\cf4 \\freq\cf0 , ~c);
 \f3\fs24 \
 	\
 
@@ -386,9 +391,9 @@ a multichannel control can be mapped to a multichannel proxy using
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 	~c2 =  \{ [\cf3 MouseX\cf0 .kr(300, 800, 1), \cf3 MouseY\cf0 .kr(300, 800, 1)] \};\cf4 \
-	~y = \{ \cf7 arg\cf4  freq=#[440, 550]; \cf7 SinOsc\cf4 .ar(freq) * \cf7 SinOsc\cf4 .ar(freq + 3) * 0.05 \};\cf0 \
-	~y.mapn(\cf6 \\freq\cf0 , ~c2);
+\f2\fs18 \cf0 	~c2 =  \{ [\cf3 MouseX\cf0 .kr(300, 800, 1), \cf3 MouseY\cf0 .kr(300, 800, 1)] \};\
+	~y = \{ \cf3 arg\cf0  freq=#[440, 550]; \cf3 SinOsc\cf0 .ar(freq) * \cf3 SinOsc\cf0 .ar(freq + 3) * 0.05 \};\
+	~y.mapn(\cf4 \\freq\cf0 , ~c2);
 \f3\fs24 \
 \
 \
@@ -421,8 +426,9 @@ the parameter context can be examined:\
 \f0\b\fs24 \cf0 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\b0 previous: [\ul jitlib_basic_concepts_02\ulnone ] 	next: [\ul jitlib_basic_concepts_04\ulnone ] 
+\f3\b0 \cf0 previous: [\ul jitlib_basic_concepts_02\ulnone ] 	next: [\ul jitlib_basic_concepts_04\ulnone ] 
 \f0\b \
 \
 }
