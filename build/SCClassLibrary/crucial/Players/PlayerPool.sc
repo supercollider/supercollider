@@ -4,18 +4,21 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 	var <>selected, <>list, <>autostart=false;
 	
 	*new { arg list,selected=0,env,round=0.0;
-		^super.new
-			.list_(loadDocument(list))
-			.selected_(selected)
-			.env_(env ?? {Env.new([ 0, 1.0, 0 ], [ 0.01, 0.7 ], -4, 1, nil)})
-			.round_(round)
-			//.select(selected)
+		list = loadDocument(list);
+		^super.prNew(list.first.rate,
+				//with patches they still don't know
+				list.maxValue({ arg it; it.numChannels }),
+				round, 
+				env ?? {Env.new([ 0, 1.0, 0 ], [ 0.01, 0.7 ], -4, 1, nil)})
+			.list_(list)
+			.select(selected)
 	}
 	storeArgs { ^[list, selected ,env,round ]  }
 	addPlayer { arg player;
 		var path;
 		player = loadDocument(player);
 		list = list.add(player);
+		numChannels = max(numChannels,player.numChannels);
 		if(this.isPlaying,{
 			this.preparePlayer(player);
 		});
@@ -25,7 +28,10 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 	select { arg i;
 		selected = i;
 		if(this.isPlaying,{
-			this.qspawnPlayer(list.at(i));
+			// were all prepared
+			this.prepareAndQSpawn(list.at(i));
+			// but after a release they lose their patch out
+			//this.qspawnPlayer(list.at(i));
 		},{
 			source = lastPlayer = list.at(i);
 		})
@@ -40,15 +46,12 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 	choose {
 		this.select(list.size.rand)
 	}
-	rate { ^list.first.rate } // what else to do ?
-	numChannels { ^list.maxValue({ arg pl; pl.numChannels }) }
 	children { ^list }
 
-	prepareToBundle { arg group,bundle;
-		group = group.asGroup;
-		// the superclass doesn't prepare the children
-		list.do({ arg pl; pl.prepareToBundle(socketGroup,bundle) });
-		super.prepareToBundle(group,bundle);
+	prepareChildrenToBundle { arg bundle;
+		list.do({ arg child;
+			child.prepareToBundle(socketGroup,bundle,true,sharedBus);
+		});
 	}
 	spawnToBundle { arg bundle;
 		if(autostart,{

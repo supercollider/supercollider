@@ -164,8 +164,12 @@ InstrSynthDef : SynthDef {
 			SimpleController(server)
 				.put(\serverRunning,{ //clear on quit
 					if(server.serverRunning.not,{
-						this.clearCache(server);
-						this.loadCacheFromDir(server);
+						AppClock.sched(3.0,{ // don't panic too quickly
+							if(server.serverRunning.not,{ // okay, she's dead
+								this.clearCache(server);
+								this.loadCacheFromDir(server);
+							})
+						});
 					});
 				});
 			watchedServers.put(server,Main.elapsedTime);

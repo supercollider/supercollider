@@ -105,6 +105,7 @@ PatchOut {
 			pti.readFromBus(bus);
 		})
 	}
+	hasBus { ^bus.notNil and: {bus.index.notNil} }
 		
 }
 

@@ -8,17 +8,16 @@ BeatClockPlayer : KrPlayer {
 		^super.new.tempoFactor_(tempoFactor).tempoBase_(tempoBase ? Tempo.default).mul_(mul)
 	}
 	storeArgs { ^[tempoFactor,mul] } // tempoBase won't save
-	
-	prepareToBundle { arg group,bundle;
-		// TODO: share by tempoFactor per server
-		// place in a high level group
-		if(patchOut.isNil,{
-			super.prepareToBundle(group,bundle);
+	makeResourcesToBundle { arg bundle;
+		if(tempoBus.isNil or: {tempoBus.index.isNil},{
+			// TODO: share by tempoFactor per server
+			// place in a high level group
 			tempoBus = TempoBus(group.asGroup.server,tempoBase);
 			tempoBus.prepareToBundle(group,bundle);
-		});
+		})
 	}
-	
+	//never bothers to free the bus
+		
 	asSynthDef { 
 		//unique by tempoFactor
 		^SynthDef(this.defName,{ arg i_tempoIndex=0,out = 0;

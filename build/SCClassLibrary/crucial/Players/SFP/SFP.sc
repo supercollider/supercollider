@@ -74,7 +74,7 @@ AbstractSFP  : AbstractPlayer {
 	}
 	
 	// server support
-	makeResourcesToBundle { arg bundle;
+	loadBuffersToBundle { arg bundle;
 		// prepare all the preloads
 		segmentBuffers = List.new;
 		this.preloadData(0,nil,group,bundle,segmentBuffers);

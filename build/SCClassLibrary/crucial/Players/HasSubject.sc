@@ -39,7 +39,6 @@ AbstractPlayerEffect : HasSubject {
 		subjectGroup.freeToBundle(bundle);
 		effectGroup.freeToBundle(bundle);
 		subjectGroup = effectGroup = nil;
-	
 	}
 	
 	spawnToBundle { arg bundle;

@@ -32,7 +32,7 @@ CXBundle {
 	}
 	clumpedSendNow { arg server;
 		if(messages.notNil,{
-			messages.clump(5).do({ arg bundle,i;
+			messages.clump(10).do({ arg bundle,i;
 				server.listSendBundle(i * 0.001,bundle);
 			});
 			SystemClock.sched(messages.size * 0.001,{ this.doFunctions; nil });

@@ -14,8 +14,6 @@ HasPatchIns : AbstractPlayer {
 	//subclassResponsibility
 	synthArgsIndices { ^this.subclassResponsibility(thisMethod) }
 	inputs { ^this.subclassResponsibility(thisMethod) }
-	// specAt
-	// argNameAt
 
 	mapInputToBus { arg i,bus;
 		var patchOut;
@@ -24,17 +22,17 @@ HasPatchIns : AbstractPlayer {
 		patchOut.connectTo(patchIns.at(i), this.isPlaying );
 	}
 	
-/*
-have to bundle it
-	connectInputToPlayer { arg i,player;
-		// does it have patchOut
-		if(player.patchOut.isNil,{
-			// always uncomfortable to not have patchOut decided
-			player.makePatchOut(this.group,true);
-		});
-		player.patchOut.connectTo(patchIns.at(i), this.isPlaying);
-	}
-*/				
+	/*
+	have to bundle it
+		connectInputToPlayer { arg i,player;
+			// does it have patchOut
+			if(player.patchOut.isNil,{
+				// always uncomfortable to not have patchOut decided
+				player.makePatchOut(this.group,true);
+			});
+			player.patchOut.connectTo(patchIns.at(i), this.isPlaying);
+		}
+	*/				
 	/*
 	setInput { arg i,newarg;
 		var old,newargpatchOut;
@@ -296,17 +294,6 @@ Patch : HasPatchIns  {
 		super.stopToBundle(bundle);
 		bundle.addMessage(this,\didStop);
 	}
-//	didStop {
-//	
-//		// ISSUE: if you change a static non-synth input 
-//		// nobody notices to rebuild the synth def
-//		// so for now, wipe it out
-//		// the Instr knows if it came from a file, could check the moddate
-//		
-//		// i am dependant on the args, i will watch for changes
-//		//synthDef = nil;
-//		//defName = nil;
-//	}
 	
 	// act like a simple ugen function
 	// mostly this won't work except with simple UGens

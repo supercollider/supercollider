@@ -76,9 +76,9 @@ ServerGui : ObjectGui {
 		
 		recorder = SCButton(layout, Rect(0,0, 72, 17));
 		recorder.states = [
-			["prepare rec", Color.black, Color.clear],
-			["record >", Color.red, Color.gray(0.1)],
-			["stop []", Color.black, Color.red]
+			["*", Color.black, Color.clear],
+			["*", Color.red, Color.gray(0.1)],
+			["X", Color.black, Color.red]
 		];
 		recorder.action = {
 			if (recorder.value == 1) {

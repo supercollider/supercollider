@@ -77,7 +77,10 @@ InstrSpawner : Patch {
 		NodeWatcher.register(spawnGroup);
 		this.annotate(spawnGroup,"spawnGroup");
 		bundle.add( spawnGroup.addToTailMsg(group) );
-
+	}
+	prepareToBundle { arg agroup,bundle,private = false, bus;
+		super.prepareToBundle(agroup,bundle,private,bus);
+		
 		streams = Array(argsForSynth.size);
 		sendArray = Array(argsForSynth.size * 2);
 		synthArgsIndices.do({ arg ind,i;
@@ -92,25 +95,11 @@ InstrSpawner : Patch {
 		});
 		deltaStream = deltaPattern.asStream;
 
-		CmdPeriod.add(this);		
 		sendArray = ["/s_new",defName,-1,1,nil] ++ sendArray;
 		firstSecretDefArgIndex = sendArray.size;
 		sendArray = sendArray	++ synthDef.secretDefArgs(args) 
 					++ [\out, this.patchOut.synthArg];
-	}
-	freeResourcesToBundle { arg bundle;
-		spawnGroup.freeToBundle(bundle);
-		bundle.addFunction({ spawnGroup  = nil; });
-		bundle.addFunction({ CmdPeriod.remove(this) });
-	}
-
-	makePatchOut { arg agroup,private=false,bus,bundle;
-		//group = group.asGroup;
-		//server = group.server;
-		this.topMakePatchOut(agroup,private,bus);
-
-		this.childrenMakePatchOut(spawnGroup,true,bundle);
-
+					
 		streams.do({ arg s,i;
 			// replace players with their outputs
 			if(s.isKindOf(AbstractPlayer),{
@@ -119,7 +108,25 @@ InstrSpawner : Patch {
 		});
 		sendArray.put(4,spawnGroup.nodeID);
 		sendArray.put(sendArray.size - 1, this.patchOut.synthArg);
+
+		CmdPeriod.add(this);		
 	}
+	freeResourcesToBundle { arg bundle;
+		spawnGroup.freeToBundle(bundle);
+		bundle.addFunction({ spawnGroup  = nil; });
+		// this happens in .stop too
+		bundle.addFunction({ CmdPeriod.remove(this) });
+	}
+	prepareChildrenToBundle { arg bundle;
+		this.children.do({ arg child;
+			child.prepareToBundle(spawnGroup,bundle,true)
+		});
+	}
+//	childrenMakePatchOut { arg group,private = true,bundle;
+//		this.children.do({ arg child;
+//			child.makePatchOut(spawnGroup,true,nil,bundle)
+//		});
+//	}
 
 	spawnToBundle { arg bundle;
 		if(patchOut.isNil,{ 
@@ -199,7 +206,50 @@ InstrGateSpawner : InstrSpawner {
 	}
 }
 
+ScurryableInstrGateSpawner : InstrGateSpawner {
+	
+	var scurried = 0,stepsToDo = 0;
 
+	scurry { arg by=10;
+		// as long as another one isn't in progress
+		if(stepsToDo == 0,{ stepsToDo = by; },{
+			"already scurrying".debug;	
+		});
+	}
+	makeTask {
+		deltaStream.reset; delta = 0.0; beat = 0.0;
+		streams.do({ arg stream; stream.reset });
+		spawnTask = Routine({
+			var server,accumDelta = 0.0;
+			server = this.server;
+			while({
+				beat = beat + delta;
+				this.spawnNext;
+			},{
+				if(scurried < stepsToDo,{
+					server.sendBundle( latency + (Tempo.beats2secs( accumDelta ) ), sendArray );
+					accumDelta = accumDelta + delta;
+					scurried = scurried + 1;
+					//"sending quick".debug;
+					// last time...
+					if(scurried == stepsToDo,{
+						//"last time".debug;
+						stepsToDo = 0;
+						scurried = 0;
+						accumDelta.wait;
+						accumDelta = 0.0;
+					});
+					// go round again
+				},{
+					// play as normal
+					server.sendBundle(latency, sendArray);
+					delta.wait // we are running slightly ahead of arrival time
+				});
+			});					
+		});
+	}
+
+}
 
 
 /**

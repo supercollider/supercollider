@@ -11,7 +11,9 @@
 	patchOut { ^ScalarPatchOut(this) }
 	connectToPatchIn {}
 
-	prepareToBundle {  }
+	prepareToBundle { arg  group,bundle;
+		this.makePatchOut
+	}
 	prepareForPlay {	arg group,private,bus;
 		var bundle;
 		bundle = CXBundle.new;

@@ -1,5 +1,4 @@
 
-
 Interface : AbstractPlayerProxy {
 
 	var <interfaceDef,<args,environment;
@@ -61,7 +60,7 @@ Interface : AbstractPlayerProxy {
 		});
 	}
 		
-	prepareToBundle { arg agroup,bundle,private,bus;
+	prepareToBundle { arg agroup,bundle,private=false,bus;
 		super.prepareToBundle(agroup,bundle,private,bus);
 		environment.use({ onPrepareToBundle.value(this.group,bundle,true,sharedBus); });
 	}
@@ -140,3 +139,4 @@ Interface : AbstractPlayerProxy {
 			// stored as instr name references
 	}
 }
+
