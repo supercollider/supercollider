@@ -31,10 +31,13 @@ can be also useful:\
 \
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
-\f0\b \cf0 storing control settings:	[NodeMap]\
-special purpose Groups: 	[Ensemble] [ModelGroup]\
+\f0\b \cf0 \
+\
 placeholders: 		[NodeProxy][RecNodeProxy]\
 			[Pdef][Tdef][Ndef]\
+			\
+storing control settings:	[NodeMap]\
+special purpose Groups: 	[Ensemble] [ModelGroup]\
 			\
 other topics:		[jitlib_efficiency][the_lazy_proxy][jitlib_fading]\
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
@@ -93,6 +96,11 @@ there is a couple of other classes that are not specifically connected:\
 \f1\fs24 RECENT CHANGES:\
 \
 NodeProxy / ProxySpace:\
+	\
+	\ul jan 10\
+	\ulnone Pref / Prefn are tested, update properly. I'm thinking of merging them with Pdef.\
+	fixed wakeUp bug in NodeProxy.\
+	\
 	\
 	\ul nov. 15\
 	\ulnone Pdef, Tdef work now, also with NodeProxy.\
