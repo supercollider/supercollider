@@ -171,8 +171,8 @@ rule 60   expr1 -> pseudovar
 rule 61   expr1 -> classname '(' keyarglist1 ')'
 rule 62   expr1 -> classname '(' arglist1 optkeyarglist ')'
 rule 63   expr1 -> classname '[' arglistc ']'
-rule 64   expr -> expr1
-rule 65   expr -> expr1 '[' arglist1 ']'
+rule 64   expr1 -> expr1 '[' arglist1 ']'
+rule 65   expr -> expr1
 rule 66   expr -> expr '.' '[' arglist1 ']'
 rule 67   expr -> classname
 rule 68   expr -> '`' expr
@@ -316,8 +316,8 @@ $ (-1)
 '<' (60) 157 185
 '=' (61) 71 72 73 74 75 76 77 143 147
 '>' (62) 159 186
-'[' (91) 9 59 63 65 66 76 77 148 149 150 151
-']' (93) 9 59 63 65 66 76 77 148 149 150 151
+'[' (91) 9 59 63 64 66 76 77 148 149 150 151
+']' (93) 9 59 63 64 66 76 77 148 149 150 151
 '^' (94) 39 41
 '`' (96) 68
 '{' (123) 8 9 10 21 22 23 24 126 127
@@ -398,9 +398,9 @@ blocklist (69)
 msgsend (70)
     on left: 46 47 48 49 50 51 52, on right: 56
 expr1 (71)
-    on left: 53 54 55 56 57 58 59 60 61 62 63, on right: 64 65 76
+    on left: 53 54 55 56 57 58 59 60 61 62 63 64, on right: 64 65 76
 expr (72)
-    on left: 64 65 66 67 68 69 70 71 72 73 74 75 76 77,
+    on left: 65 66 67 68 69 70 71 72 73 74 75 76 77,
     on right: 39 41 48 49 50 51 52 66 68 69 70 71 72 73 74 75 76 77
     78 79
 exprn (73)
@@ -410,7 +410,7 @@ exprseq (74)
 arglistc (75)
     on left: 81 82, on right: 59 63
 arglist1 (76)
-    on left: 83 84, on right: 47 50 51 62 65 66 74 76 77 82 84
+    on left: 83 84, on right: 47 50 51 62 64 66 74 76 77 82 84
 keyarglist1 (77)
     on left: 85 86, on right: 48 49 61 86 89
 keyarg (78)
@@ -1046,13 +1046,13 @@ state 31
 
 state 32
 
-    expr  ->  expr1 .   (rule 64)
-    expr  ->  expr1 . '[' arglist1 ']'   (rule 65)
+    expr1  ->  expr1 . '[' arglist1 ']'   (rule 64)
+    expr  ->  expr1 .   (rule 65)
     expr  ->  expr1 . '[' arglist1 ']' '=' expr   (rule 76)
 
     '[' 	shift, and go to state 86
 
-    $default	reduce using rule 64 (expr)
+    $default	reduce using rule 65 (expr)
 
 
 
@@ -1819,7 +1819,7 @@ state 85
 
 state 86
 
-    expr  ->  expr1 '[' . arglist1 ']'   (rule 65)
+    expr1  ->  expr1 '[' . arglist1 ']'   (rule 64)
     expr  ->  expr1 '[' . arglist1 ']' '=' expr   (rule 76)
 
     NAME	shift, and go to state 6
@@ -3070,7 +3070,7 @@ state 153
 
 state 154
 
-    expr  ->  expr1 '[' arglist1 . ']'   (rule 65)
+    expr1  ->  expr1 '[' arglist1 . ']'   (rule 64)
     expr  ->  expr1 '[' arglist1 . ']' '=' expr   (rule 76)
     arglist1  ->  arglist1 . ',' exprseq   (rule 84)
 
@@ -3934,12 +3934,12 @@ state 205
 
 state 206
 
-    expr  ->  expr1 '[' arglist1 ']' .   (rule 65)
+    expr1  ->  expr1 '[' arglist1 ']' .   (rule 64)
     expr  ->  expr1 '[' arglist1 ']' . '=' expr   (rule 76)
 
     '=' 	shift, and go to state 237
 
-    $default	reduce using rule 65 (expr)
+    $default	reduce using rule 64 (expr1)
 
 
 

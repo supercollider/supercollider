@@ -253,9 +253,6 @@ expr1	: pushliteral
 			}
 		| classname '[' arglistc ']'
 			{ $$ = (long)newPyrDynListNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
-		;
-		
-expr	: expr1
 		| expr1 '[' arglist1 ']'
 			{ 
 				PyrSlotNode *selectornode;
@@ -269,6 +266,9 @@ expr	: expr1
 					(PyrParseNode*)$3);
 				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
 			}
+		;
+		
+expr	: expr1
 		| expr '.' '[' arglist1 ']'
 			{ 
 				PyrSlotNode *selectornode;
