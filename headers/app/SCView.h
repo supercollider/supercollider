@@ -594,7 +594,7 @@ struct SCEnvObject {
 	double * mConnections; //tells to where it is connected
 	int mNumInputs, mNumOutputs; 
 	double x, y;
-    bool mIsSelected, mIsVisible, mIsStatic;
+    bool mIsSelected, mIsVisible, mEditable;
 	char *mString;	
 };
 typedef struct SCEnvObject SCEnvObject;
