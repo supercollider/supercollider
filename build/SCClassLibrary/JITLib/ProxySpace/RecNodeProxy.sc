@@ -30,7 +30,7 @@ RecNodeProxy : NodeProxy {
 			if(n <= 2, {
 				recSynth = Synth.prNew("system-diskout"++n.asString);
 				msg = recSynth.newMsg(group,\addAfter,
-					[\i_in, bus.index, \i_bufNum, buffer.bufnum]);
+					[\i_in, outbus.index, \i_bufNum, buffer.bufnum]);
 			}, {
 				"multichannel rec doesn't work yet (no completion command bundles)".inform;
 				^this;
@@ -38,7 +38,7 @@ RecNodeProxy : NodeProxy {
 				recSynth = Group.newCommand(cmd, group, \addAfter);
 				n.do({ arg i;
 					 Synth.newCommand(cmd,  "system-diskout1", 
-					[\i_in, bus.index+i, \i_bufNum, buffer.bufnum+i], recSynth, \addToTail);
+					[\i_in, outbus.index+i, \i_bufNum, buffer.bufnum+i], recSynth, \addToTail);
 				})
 				*/
 			});

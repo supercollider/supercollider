@@ -6,4 +6,6 @@
 	
 	prPut { arg key, obj;
 		super.put(key, obj)
-	}		push { 		if(this.class.inside, {				this.saveEnvir = currentEnvironment.saveEnvir;			}, { 				this.saveEnvir = currentEnvironment;		});		currentEnvironment = this;	}		pop {		this.class.pop	}		//PRIVATE//		replaceCurrentEnvir {				this.saveEnvir = currentEnvironment;				currentEnvironment = this;	}	}
+	}		push { 
+		//check again		if(this.class.inside, {				this.saveEnvir = currentEnvironment.saveEnvir;			}, { 				this.saveEnvir = currentEnvironment;		});		currentEnvironment = this;
+		topEnvironment = this; //to avoid error loss	}		pop {		this.class.pop	}		//PRIVATE//		replaceCurrentEnvir {				this.saveEnvir = currentEnvironment;				currentEnvironment = this;	}	}

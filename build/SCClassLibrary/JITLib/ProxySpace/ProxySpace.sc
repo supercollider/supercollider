@@ -55,4 +55,8 @@
 	}
 			
 	*undo {		lastEdited.tryPerform(\undo)	}
+	postln {
+	 "______".post;
+	 lastEdited.postln;
+	}
 		}

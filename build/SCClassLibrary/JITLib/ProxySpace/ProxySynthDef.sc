@@ -1,20 +1,22 @@
 ProxySynthDef : SynthDef {
 	var <>proxy;
+	
 	*initClass {
 		//clean up
 		unixCmd("rm synthdefs/temp_proxy_def_*");
 	}
-	*new { arg proxy, ugenGraphFunc;
+	
+	*new { arg proxy, object;
 		var name;
 		name = "temp_proxy_def_" 
 		++ proxy.identityHash.abs ++ proxy.synthDefs.size;
-		^super.prNew(name).proxy_(proxy).build(ugenGraphFunc);
+		^super.prNew(name).proxy_(proxy).build(object);
 	}
 	
-	build { arg ugenGraphFunc;
+	build { arg object;
 		var argNames, argValues, func;
-		argNames = ugenGraphFunc.def.argNames;
-		argValues = ugenGraphFunc.def.prototypeFrame;
+		argNames = object.argNames;
+		argValues = object.defArgs;
 		
 		func = {
 			var ctl, synthGate, synthFadeTime, output, env;
@@ -26,10 +28,10 @@ ProxySynthDef : SynthDef {
 				synthFadeTime = Control.names(\synthFadeTime).kr(0.005);
 				env = Linen.kr(synthGate, synthFadeTime, 1.0, synthFadeTime, 2);
 			
-				output = (env*ugenGraphFunc.valueArray(ctl)).asArray;
+				output = (env*object.valueArray(ctl)).asArray;
 			//if((output.rate === 'control') && (proxy.rate === 'audio'), 
 			//{ output = K2A.ar(output) });
-				Out.multiNewList([proxy.rate, proxy.bus.index]++output)
+				Out.multiNewList([proxy.rate, proxy.outbus.index]++output)
 		};
 		
 		super.build(func);

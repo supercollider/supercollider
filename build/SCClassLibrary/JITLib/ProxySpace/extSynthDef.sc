@@ -1,9 +1,4 @@
-+SynthDef {
-	*prNew { arg name;
-		^super.new.name_(name)
-	}
-}
-
+//sort to somewhere else later
 +Node {
 	prIsPlaying { arg flag; isPlaying = true }
 

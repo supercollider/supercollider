@@ -2,37 +2,76 @@
 
 +Object { 
 	//assumes some GraphBuilder
-	asPFunction {
-		^{ this }
+	prepareForProxySynthDef {
+		^this
 	}
 	asProxySynthDef { arg proxy;
-		^ProxySynthDef(proxy, this.asPFunction); 
-	}
+		^ProxySynthDef(proxy, this.prepareForProxySynthDef); 
+	}	
 	
 }
 
 +SimpleNumber {
-	asPFunction {
+	prepareForProxySynthDef {
 		^{ Control.names([\value]).kr([this])  }
 	}
 }
 
 
 +Function {
-	asPFunction {
-		^this
+	defArgs {
+		^def.prototypeFrame
+	}
+	argNames {
+		^def.argNames
 	}
 }
-+NodeProxy {
-	asPFunction { 
+
+//for now:
++Patch {
+	defArgs {
+		//needs prepare play!
+		//^this.synthDefArgs
+		^instr.defArgs
+	}
+	argNames {
+		^instr.argNames
+	}
+
+}
+
+/*
++AbstractFunction {
+	prepareForProxySynthDef { 
 		^{this.value}
 	}
 }
+
 +Instr {
-	asPFunction { 
+	prepareForProxySynthDef { 
 		^this.func
 	}
 }
+
++InstrE {
+	prepareForProxySynthDef { 
+		^{var c, defArgs, argNames;
+			defArgs = this.defArgs;
+			argNames = this.argNames;
+			argNames.do({ arg key, i;
+				var val;
+				val = envir.at(key);
+				if(val.notNil, {
+					defArgs.put(i, val)
+				});
+			});
+			c = Control.names(this.argNames).kr(defArgs);
+			func.valueArray(c)
+		}
+	}
+}
+*/
+
 + ProxySynthDef {
 	asProxySynthDef { arg proxy;
 		^this; 
@@ -47,17 +86,16 @@
 }
 
 
-/*
-+Pattern {
-	asPFunction { arg proxy;
++ Pattern {
+	prepareForProxySynthDef { arg proxy;
 		var eventStream;
-		eventStream = Pevent(this, Event.protoEvent.use({
-						~bus = proxy.bus;
-		});
-		eventStream.play;
-		nil
+		eventStream = Pevent(this, 
+			Event.protoEvent.put(\bus, proxy.outbus)
+		);
+			eventStream.play;
+		^0.0
 	}
-
 }
-*/
+
+
 
