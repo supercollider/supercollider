@@ -35,11 +35,13 @@ ProxySpace : EnvironmentRedirect {
 	
 	makeTempoClock { arg tempo=1.0, beats, seconds;
 		var clock, proxy;
-		proxy = NodeProxy.control(server, 1);
+		proxy = envir[\tempo];
+		if(proxy.isNil) { proxy = NodeProxy.control(server, 1); envir.put(\tempo, proxy); };
 		proxy.fadeTime = 0.0;
 		proxy.source = tempo;
 		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds).permanent_(true);
-		envir.proto.put(\tempo, proxy);
+	//	envir.proto.put(\tempo, proxy);
+		
 	}
 
 	

@@ -11,7 +11,7 @@ OSCBundle {
 	// next beat is 0 if no clock is passed in.
 	// eventstreams e.g. take into account the latency internally
 	
-	schedSend { arg server, clock, quant=1.0;
+	schedSend { arg server, clock, quant;
 			Routine.run {
 				if(preparationMessages.notNil) {
 					server.sync(Condition.new, preparationMessages);

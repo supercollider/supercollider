@@ -48,7 +48,7 @@ PublicProxySpace : ProxySpace {
 	
 	makeLogWindow { arg bounds, color;
 	 	var d; 
-	 	d = Document(name.asString);
+	 	d = Document((name ? "log").asString);
 	 	d.bounds_(bounds ? Rect(10, 400, 600, 500));
 	 	d.background_(color ? Color.new255(180, 160, 180));
 	 	d.string_("//" + Date.getDate.asString ++ "\n\n\n");

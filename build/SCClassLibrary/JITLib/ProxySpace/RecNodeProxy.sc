@@ -37,7 +37,7 @@ RecNodeProxy : NodeProxy {
 		
 	}
 	
-	record { arg paused=true;
+	record { arg paused=true, clock, quant;
 		var bundle, n;
 		if(server.serverRunning.not, { "server not running".inform; ^this  });
 		if(buffer.isNil, { "not prepared. use open to prepare a file.".inform;  ^this });
@@ -54,7 +54,7 @@ RecNodeProxy : NodeProxy {
 					\i_in, bus.index, \i_bufNum, buffer.bufnum
 				]);
 		if(paused, { bundle.add(["/n_run", recGroup.nodeID, 0]); "recording (paused)".inform }); 
-		bundle.schedSend(server);
+		bundle.schedSend(server, clock ? TempoClock.default, quant);
 	}
 	
 	

@@ -77,6 +77,7 @@ ProxySynthDef : SynthDef {
 				});
 			output = output * envgen;
 			
+			
 			if(isScalar, {
 					output
 				}, {

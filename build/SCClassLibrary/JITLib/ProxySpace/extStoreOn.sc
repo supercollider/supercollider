@@ -62,7 +62,8 @@
 			keys.do { arg key; envir[key].getFamily(proxies) };
 			keys = proxies.collect { arg item; item.key(envir) }; 
 		} { keys = envir.keys };
-		// if(hasGlobalClock) { keys.remove(\tempo) };
+		
+		if(hasGlobalClock) { keys.remove(\tempo) };
 		// add all objects to compilestring
 		keys.do { arg key; 
 			var proxy, str, multiline;

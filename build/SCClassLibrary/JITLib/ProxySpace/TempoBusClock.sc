@@ -9,12 +9,12 @@ TempoBusClock : TempoClock {
 	}
 	
 	setTempoAtBeat { arg newTempo, beats;
-		control.set(0, newTempo);
+		control.set(0, newTempo, \fadeTime, 0.0);
 		^super.setTempoAtBeat(newTempo, beats)
 	}
 	
 	setTempoAtSec { arg newTempo, secs;
-		control.set(0, newTempo)
+		control.set(0, newTempo, \fadeTime, 0.0)
 		^super.setTempoAtSec(newTempo, secs)
 	}
 
