@@ -479,7 +479,7 @@ Object {
 		
 		this.asArray.writeDef(file);
 		
-		file.length.postln;
+		//file.length.postln;
 		file.close;
 	}
 
