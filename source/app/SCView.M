@@ -3923,8 +3923,8 @@ bool SCEnvelopeView::setEnvRect(double valXIn, double valYIn, SCEnvObject * envo
 	SCEnvObject * envob = envobIn;
 	envob->x = valXIn;
 	envob->y = valYIn;
-	thumby = mThumbSizeY;
-	thumbx = mThumbSize;
+	thumby = envob->mRect.height;
+	thumbx = envob->mRect.width;
 
 	x = valXIn * (mBounds.width - thumbx - 2);
 	y = valYIn * (mBounds.height - thumby - 2);
