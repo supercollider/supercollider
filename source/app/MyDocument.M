@@ -1044,7 +1044,7 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 - (void) keyUp: (NSEvent*) event
 {
 }
-- (void) MouseDown: (NSEvent*) event
+- (void) mouseDown: (NSEvent*) event
 {
 }
 @end
