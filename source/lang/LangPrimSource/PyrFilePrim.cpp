@@ -840,44 +840,53 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 
 #include <sndfile.h>
 
-//need to add more rates, the most common for now, jan.t
-int sampleFormatToString(struct SF_INFO *info, char **string);
-int sampleFormatToString(struct SF_INFO *info, char **string)
+int sampleFormatToString(struct SF_INFO *info, const char **string);
+int sampleFormatToString(struct SF_INFO *info, const char **string)
 {
-	unsigned int samplerate =  info->format & SF_FORMAT_SUBMASK;
-	if((samplerate == SF_FORMAT_DPCM_16) || (samplerate ==SF_FORMAT_PCM_16) || (samplerate == SF_FORMAT_DWVW_16))
+	unsigned int format =  info->format & SF_FORMAT_SUBMASK;
+	switch (format)
 	{
-		*string = "int16";
-		return errNone;
+		case SF_FORMAT_DPCM_8:
+		case SF_FORMAT_PCM_S8:
+			*string = "int16";
+			break;
+		case SF_FORMAT_DPCM_16:
+		case SF_FORMAT_PCM_16:
+		case SF_FORMAT_DWVW_16:
+			*string = "int16";
+			break;
+		case SF_FORMAT_PCM_24:
+		case SF_FORMAT_DWVW_24:
+			*string = "int24";
+			break;
+		case SF_FORMAT_PCM_32:
+			*string = "int32";
+			break;
+		case SF_FORMAT_FLOAT:
+			*string = "float";
+			break;
+		case SF_FORMAT_DOUBLE:
+			*string = "double";
+			break;
+		case SF_FORMAT_ULAW:
+			*string = "ulaw";
+			break;
+		case SF_FORMAT_ALAW:
+			*string = "alaw";
+			break;
+		default:
+			*string = "float";
+			break;
 	}
-	if((samplerate == SF_FORMAT_PCM_S8) || (samplerate ==SF_FORMAT_DPCM_8) || (samplerate == SF_FORMAT_DWVW_16))
-	{
-		*string = "int16";
-		return errNone;
-	}
-	if((samplerate == SF_FORMAT_PCM_24) || (samplerate == SF_FORMAT_DWVW_24))
-	{
-		*string = "int24";
-		return errNone;
-	}
-	if((samplerate == SF_FORMAT_PCM_32))
-	{
-		*string = "int32";
-		return errNone;
-	}
-	if((samplerate == SF_FORMAT_FLOAT))
-	{
-		*string = "float";
-		return errNone;
-	}
-return errNone;
+	return errNone;
 }
 
 
-int headerFormatToString(struct SF_INFO *info, char **string);
-int headerFormatToString(struct SF_INFO *info, char **string){
+int headerFormatToString(struct SF_INFO *info, const char **string);
+int headerFormatToString(struct SF_INFO *info, const char **string){
 	switch (info->format & SF_FORMAT_TYPEMASK)
-	{	case SF_FORMAT_WAV :
+	{	
+		case SF_FORMAT_WAV :
 				*string = "WAV";
 				break;
 		case SF_FORMAT_AIFF :
@@ -941,8 +950,8 @@ int headerFormatToString(struct SF_INFO *info, char **string){
 return errNone;
 }
 
-int sndfileFormatInfoFromStrings(struct SF_INFO *info, char **stringHead,  char **stringSample);
-int sndfileFormatInfoFromStrings(struct SF_INFO *info, char **stringHead,  char **stringSample)
+int sndfileFormatInfoToStrings(struct SF_INFO *info, const char **stringHead,  const char **stringSample);
+int sndfileFormatInfoToStrings(struct SF_INFO *info, const char **stringHead,  const char **stringSample)
 {
 	int error = 0;
 	error = headerFormatToString(info, stringHead);
@@ -957,8 +966,8 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 	char filename[PATH_MAX];
 	SNDFILE *file;
 	SF_INFO info;
-	char *headerstr;
-	char *sampleformatstr;
+	const char *headerstr;
+	const char *sampleformatstr;
 		
 	a = g->sp - 1;
 	b = g->sp;
@@ -975,7 +984,7 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 	        
 	if (file) {
 		SetPtr(a->uo->slots + 0, file);
-		sndfileFormatInfoFromStrings(&info, &headerstr, &sampleformatstr);
+		sndfileFormatInfoToStrings(&info, &headerstr, &sampleformatstr);
 		//headerFormatToString(&info, &headerstr);
 		PyrString *hpstr = newPyrString(g->gc, headerstr, 0, true);
 		SetObject(a->uo->slots+1, hpstr);
