@@ -132,6 +132,11 @@ AbstractFunction {
 	firstArg { arg function; ^this.composeBinaryOp('firstArg', function) }
 	rrand { arg function; ^this.composeBinaryOp('rrand', function) }
 	exprand { arg function; ^this.composeBinaryOp('exprand', function) }
+	
+
+	clip { arg lo, hi; ^this.composeNAryOp('clip', [lo,hi]) }
+	wrap { arg lo, hi; ^this.composeNAryOp('wrap', [lo,hi])  }
+	fold { arg lo, hi; ^this.composeNAryOp('fold', [lo,hi])  }
 
 	// complex support
 	real { ^this }

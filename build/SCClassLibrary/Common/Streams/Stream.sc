@@ -148,7 +148,7 @@ Stream : AbstractFunction {
 		^BinaryOpStream.new(argSelector, argStream, this)
 	}
 	composeNAryOp { arg argSelector, anArgList;
-		^thisMethod.notYetImplemented
+		^NAryOpStream.new(argSelector, this, anArgList);
 	}
 
 	embedInStream { arg inval;

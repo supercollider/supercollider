@@ -33,3 +33,23 @@ BinaryOpStream : Stream {
 	reset { a.reset; b.reset }
 }
 
+NAryOpStream : Stream {
+	var >operator, >a, >arglist;
+	
+	*new { arg operator, a, arglist;	
+		^super.newCopyArgs(operator, a, arglist)
+	}
+	next {  
+		var vala, values;
+		vala = a.next;
+		if (vala.isNil, { ^nil });
+		values = arglist.collect({ arg item; var res; 
+					res = item.next; 
+					if(res.isNil) { ^nil }; 
+					res 
+				});
+		^vala.performList(operator, values);
+	}
+	reset { a.reset; arglist.do({ arg item; item.reset }) }
+
+}

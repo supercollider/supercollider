@@ -41,7 +41,8 @@ Pattern : AbstractFunction {
 		^Pbinop.new(operator, pattern, this)
 	}
 	composeNAryOp { arg selector, argList;
-		^thisMethod.notYetImplemented
+		//^thisMethod.notYetImplemented
+		^Pnaryop.new(selector, this, argList);
 	}
 	
 	degreeToKey { arg scale, stepsPerOctave=12;
@@ -115,6 +116,20 @@ Pbinop : Pattern {
 		streamA = a.asStream;
 		streamB = b.asStream;
 		^BinaryOpStream.new(operator, streamA, streamB);
+	}
+}
+
+Pnaryop : Pattern {
+	var <>operator, <>a, <>arglist;
+	*new { arg operator, a, arglist;
+		^super.newCopyArgs(operator, a, arglist)
+	}
+	storeArgs { ^[operator,a,arglist] }
+	asStream {
+		var streamA, streamlist;
+		streamA = a.asStream;
+		streamlist = arglist.collect({ arg item; item.asStream });
+		^NAryOpStream.new(operator, streamA, streamlist);
 	}
 }
 
