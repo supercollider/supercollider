@@ -28,11 +28,11 @@ ProxySpace : EnvironmentRedirect {
 		this.do({ arg item; item.fadeTime = dt });
 	}
 	
-	makeTempoClock { arg tempo, beats, seconds;
+	makeTempoClock { arg tempo=1, beats, seconds;
 		var clock, proxy;
 		proxy = NodeProxy.control(server, 1);
 		proxy.fadeTime = 0.0;
-		proxy.source = 1;
+		proxy.source = tempo;
 		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds).permanent_(true);
 		super.put(\tempo, proxy);
 	}

@@ -5,12 +5,7 @@ TempoBusClock : TempoClock {
 	classvar <>default;
 	
 	*new { arg control, tempo, beats, seconds;
-		^super.new(tempo, beats, seconds).initBus(control, tempo)
-	}
-	
-	initBus { arg ctl, tempo;
-		control = ctl;
-		control.set(0, tempo ? 1);
+		^super.new(tempo, beats, seconds).control_(control)
 	}
 	
 	setTempoAtBeat { arg newTempo, beats;
@@ -19,7 +14,7 @@ TempoBusClock : TempoClock {
 	}
 	
 	setTempoAtSec { arg newTempo, secs;
-		control.set(0, newTempo);
+		control.set(0, newTempo)
 		^super.setTempoAtSec(newTempo, secs)
 	}
 
