@@ -680,52 +680,6 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 		PyrObject *optionsObj = a->uo;
 		PyrSlot *optionsSlots = optionsObj->slots;
 
-/*
-
-	const char* mPassword;
-	uint32 mNumBuffers;
-	uint32 mMaxLogins;
-	uint32 mMaxNodes;
-	uint32 mMaxGraphDefs;
-	uint32 mMaxWireBufs;
-	uint32 mNumAudioBusChannels;
-	uint32 mNumInputBusChannels;
-	uint32 mNumOutputBusChannels;
-	uint32 mNumControlBusChannels;
-	uint32 mBufLength;
-	uint32 mRealTimeMemorySize;
-
-	int mNumSharedControls;
-	float *mSharedControls;
-	
-	bool mRealTime;
-	
-	char *mNonRealTimeCmdFilename;
-	char *mNonRealTimeInputFilename;
-	char *mNonRealTimeOutputFilename;
-	char *mNonRealTimeOutputHeaderFormat;
-	char *mNonRealTimeOutputSampleFormat;
-	
-	uint32 mPreferredSampleRate;
-	uint32 mNumRGens;
-	
-	uint32 mPreferredHardwareBufferFrameSize;
-	
-	uint32 mLoadGraphDefs;
-
-
-	var <>protocol = \udp;
-	var <>blockSize = 64;
-	var <>hardwareBufferSize = 0;
-	
-	var <>memSize = 2048;
-	var <>numRGens = 64;
-	var <>numWireBufs = 64;
-
-	var <>sampleRate = 0;
-	var <>loadDefs = true;
-
-*/
 		int err;
 		
 		err = slotIntVal(optionsSlots + 0, (int*)&options.mNumAudioBusChannels);
