@@ -133,11 +133,7 @@ AbstractFunction {
 	rrand { arg function; ^this.composeBinaryOp('rrand', function) }
 	exprand { arg function; ^this.composeBinaryOp('exprand', function) }
 	
-
-	clip { arg lo, hi; ^this.composeNAryOp('clip', [lo,hi]) }
-	wrap { arg lo, hi; ^this.composeNAryOp('wrap', [lo,hi])  }
-	fold { arg lo, hi; ^this.composeNAryOp('fold', [lo,hi])  }
-
+	
 	// complex support
 	real { ^this }
 	imag { ^0.0 }
@@ -151,4 +147,25 @@ AbstractFunction {
 	&& { arg function; ^this.composeBinaryOp('&&', function) }
 	xor { arg function; ^this.composeBinaryOp('xor', function) }
 	not { ^this.composeUnaryOp('not') }
+	
+	// nary operators
+	clip { arg lo, hi; ^this.composeNAryOp('clip', [lo,hi]) }
+	wrap { arg lo, hi; ^this.composeNAryOp('wrap', [lo,hi])  }
+	fold { arg lo, hi; ^this.composeNAryOp('fold', [lo,hi])  }
+	blend { arg that, blendFrac = 0.5; ^this.composeNAryOp('blend', [that,blendFrac]) }
+	
+	linlin { arg inMin, inMax, outMin, outMax;
+		^this.composeNAryOp('linlin', [inMin, inMax, outMin, outMax])
+	}
+	linexp { arg inMin, inMax, outMin, outMax;
+		^this.composeNAryOp('linexp', [inMin, inMax, outMin, outMax])
+	}
+	explin { arg inMin, inMax, outMin, outMax;
+		^this.composeNAryOp('explin', [inMin, inMax, outMin, outMax])
+	}
+	expexp { arg inMin, inMax, outMin, outMax;
+		^this.composeNAryOp('expexp', [inMin, inMax, outMin, outMax])
+	}
+
+
 }
