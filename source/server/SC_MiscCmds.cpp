@@ -768,7 +768,6 @@ void initMiscCommands()
 	NEW_COMMAND(status);	
 	NEW_COMMAND(quit);		
 		
-// async
 	NEW_COMMAND(d_recv);		
 	NEW_COMMAND(d_load);		
 	NEW_COMMAND(d_loadDir);	
@@ -780,7 +779,6 @@ void initMiscCommands()
 	NEW_COMMAND(n_free);		
 	NEW_COMMAND(n_run);				
 
-// sync	
 	NEW_COMMAND(u_cmd);	
 	NEW_COMMAND(cmd);	
 		
@@ -790,29 +788,23 @@ void initMiscCommands()
 	NEW_COMMAND(n_setn);		
 	NEW_COMMAND(n_fill);		
 	
-// sync	
 	NEW_COMMAND(n_before);		
 	NEW_COMMAND(n_after);		
 
-// sync	
 	NEW_COMMAND(g_new);			
 	NEW_COMMAND(g_head);		
 	NEW_COMMAND(g_tail);		
 	NEW_COMMAND(g_freeAll);		
 
-// async
 	NEW_COMMAND(b_alloc);		
 	NEW_COMMAND(b_allocRead);	
 		
-// async
 	NEW_COMMAND(b_read);		
 	NEW_COMMAND(b_write);	
 		
-// async
 	NEW_COMMAND(b_free);		
 	NEW_COMMAND(b_close);		
 	
-// async
 	NEW_COMMAND(b_zero);		
 	NEW_COMMAND(b_set);		
 	NEW_COMMAND(b_setn);		

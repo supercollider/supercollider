@@ -39,10 +39,10 @@ void Unit_ChooseMulAddFunc(Unit* unit);
 
 void Graph_Dtor(Graph *inGraph)
 {
-	//printf("->Graph_Dtor %d\n", inGraph->mNode.mID);
+	//scprintf("->Graph_Dtor %d\n", inGraph->mNode.mID);
 	World *world = inGraph->mNode.mWorld;
 	for (int i = 0; i<inGraph->mNumUnits; ++i) {
-		//printf("%d\n", i);
+		//scprintf("%d\n", i);
 		Unit *unit = inGraph->mUnits[i];
 		UnitDtorFunc dtor = unit->mUnitDef->mUnitDtorFunc;
 		if (dtor) (dtor)(unit);
@@ -57,14 +57,14 @@ void Graph_Dtor(Graph *inGraph)
 	
 	World_Free(world, inGraph->mMemory);
 	Node_Dtor(&inGraph->mNode);
-	//printf("<-Graph_Dtor\n");
+	//scprintf("<-Graph_Dtor\n");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter *msg)
 {	
-	//printf("->Graph_Ctor\n");
+	//scprintf("->Graph_Ctor\n");
 	
 	// hit the memory allocator only once.
 	char *memory = (char*)World_Alloc(inWorld, inGraphDef->mTotalAllocSize);
@@ -134,7 +134,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	}
 	
 	// initialize units
-	//printf("initialize units\n");
+	//scprintf("initialize units\n");
 	float *bufspace = inWorld->hw->mWireBufSpace;
 	int wireCtr=inGraphDef->mNumConstants;
 	int calcCtr=0;
@@ -156,7 +156,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 		graph->mUnits[i] = unit;
 		
 		// hook up unit inputs
-		//printf("hook up unit inputs\n");
+		//scprintf("hook up unit inputs\n");
 		InputSpec *inputSpec = unitSpec->mInputSpec;
 		for (int j=0; j<unitSpec->mNumInputs; ++j, ++inputSpec) {			
 			Wire *wire = graphWires + inputSpec->mWireIndex;
@@ -164,7 +164,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 			unit->mInBuf[j] = wire->mBuffer;
 		}
 		// hook up unit outputs
-		//printf("hook up unit outputs\n");
+		//scprintf("hook up unit outputs\n");
 		for (int j=0; j<unitSpec->mNumOutputs; ++j) {
 			OutputSpec *outputSpec = unitSpec->mOutputSpec + j;
 			Wire *wire = graph->mWire + wireCtr++;
@@ -190,22 +190,22 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 
 void Graph_Calc(Graph *inGraph)
 {
-	//printf("->Graph_Calc\n");
+	//scprintf("->Graph_Calc\n");
 	for (int i=0; i<inGraph->mNumCalcUnits; ++i) {
 		Unit *unit = inGraph->mCalcUnits[i];
-		/*printf("  unit %d %s  i", i, unit->mUnitDef->mUnitDefName);
+		/*scprintf("  unit %d %s  i", i, unit->mUnitDef->mUnitDefName);
 		for (int j=0; j<unit->mNumInputs; ++j) {
-			printf(" %g", ZIN0(j));
+			scprintf(" %g", ZIN0(j));
 		}
-		printf("\n");*/
+		scprintf("\n");*/
 		(unit->mCalcFunc)(unit, unit->mBufLength);
-		/*printf("    o");
+		/*scprintf("    o");
 		for (int j=0; j<unit->mNumOutputs; ++j) {
-			printf(" %g", ZOUT0(j));
+			scprintf(" %g", ZOUT0(j));
 		}
-		printf("\n");*/
+		scprintf("\n");*/
 	}
-	//printf("<-Graph_Calc\n");
+	//scprintf("<-Graph_Calc\n");
 }
 
 void Graph_CalcTrace(Graph *inGraph);

@@ -36,7 +36,7 @@ extern "C" {
 
 void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
 {
-	printf("PublishPortToRendezvous %d %d\n", protocol, portNum);
+	scprintf("PublishPortToRendezvous %d %d\n", protocol, portNum);
 	CFStringRef serviceType;
 	switch (protocol)
 	{

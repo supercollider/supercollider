@@ -140,7 +140,7 @@ IsBundle gIsBundle;
 
 void ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 {
-	//printf("ProcessOSCPacket %d, '%s'\n", inPacket->mSize, inPacket->mData);
+	//scprintf("ProcessOSCPacket %d, '%s'\n", inPacket->mSize, inPacket->mData);
 	
 	if (inPacket) {	
 		SC_CoreAudioDriver *driver = AudioDriver(inWorld);	
@@ -155,13 +155,16 @@ void ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 
 int PerformOSCMessage(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
-	//printf("->PerformOSCMessage '%s'\n", inData);
+	//scprintf("->PerformOSCMessage %d\n", inData[0]);
 	SC_LibCmd *cmdObj;
+	int cmdNameLen;
 	if (inData[0] == 0) {
+		cmdNameLen = 4;
 		uint32 index = inData[3];
 		if (index >= NUMBER_OF_COMMANDS) cmdObj = 0;
 		else cmdObj = gCmdArray[index];
 	} else {
+		cmdNameLen = OSCstrlen(inData);
 		cmdObj = gCmdLib->Get((int32*)inData);
 	}
 	if (!cmdObj) {
@@ -170,25 +173,24 @@ int PerformOSCMessage(World *inWorld, int inSize, char *inData, ReplyAddress *in
 		return kSCErr_NoSuchCommand;
 	}
 	
-	int cmdNameLen = OSCstrlen(inData);
 	int err = cmdObj->Perform(inWorld, inSize - cmdNameLen, inData + cmdNameLen, inReply);
-	//printf("<-PerformOSCMessage '%s'\n", inData);
+	//scprintf("<-PerformOSCMessage %d\n", inData[0]);
 	return err;
 }
 
 void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket)
 {
-	//printf("->PerformOSCBundle %d\n", inPacket->mSize);
+	//scprintf("->PerformOSCBundle %d\n", inPacket->mSize);
 	char *data = inPacket->mData + 16;
 	char* dataEnd = inPacket->mData + inPacket->mSize;
 	while (data < dataEnd) {
 		int32 msgSize = *(int32*)data;
 		data += sizeof(int32);
-		//printf("msgSize %d\n", msgSize);
+		//scprintf("msgSize %d\n", msgSize);
 		PerformOSCMessage(inWorld, msgSize, data, &inPacket->mReplyAddr);
 		data += msgSize;
 	}
-	//printf("<-PerformOSCBundle %d\n", inPacket->mSize);
+	//scprintf("<-PerformOSCBundle %d\n", inPacket->mSize);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -321,7 +323,7 @@ bool SC_CoreAudioDriver::Setup()
 	mOutputDevice = kAudioDeviceUnknown;
 	mInputDevice = kAudioDeviceUnknown;
 
-	//printf("SC_CoreAudioDriver::Setup world %08X\n", mWorld);
+	//scprintf("SC_CoreAudioDriver::Setup world %08X\n", mWorld);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -575,7 +577,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 		
 		mFromEngine.Free();
 		/*if (mToEngine.HasData()) {
-			printf("oscTime %.9f %.9f\n", oscTime*kOSCtoSecs, CoreAudioHostTimeToOSC(AudioGetCurrentHostTime())*kOSCtoSecs);
+			scprintf("oscTime %.9f %.9f\n", oscTime*kOSCtoSecs, CoreAudioHostTimeToOSC(AudioGetCurrentHostTime())*kOSCtoSecs);
 		}*/
 		mToEngine.Perform();
 		
@@ -632,7 +634,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 					
 			/*if (mScheduler.Ready(mOSCbuftime)) {
 				double diff = (mScheduler.NextTime() - mOSCbuftime)*kOSCtoSecs; 
-				printf("rdy %.9f %.9f %.9f\n", mScheduler.NextTime() * kOSCtoSecs, mOSCbuftime*kOSCtoSecs, diff);
+				scprintf("rdy %.9f %.9f %.9f\n", mScheduler.NextTime() * kOSCtoSecs, mOSCbuftime*kOSCtoSecs, diff);
 			}*/
 			
 			int64 schedTime;
@@ -691,7 +693,7 @@ bool SC_CoreAudioDriver::Start()
 
 	World_Start(mWorld);
 	
-	printf("start   UseSeparateIO?: %d\n", UseSeparateIO());
+	scprintf("start   UseSeparateIO?: %d\n", UseSeparateIO());
 	
 	if (UseSeparateIO()) {
 		err = AudioDeviceAddIOProc(mOutputDevice, appIOProc2, (void *) this);	// setup our device with an IO proc
@@ -733,7 +735,7 @@ bool SC_CoreAudioDriver::Start()
 
 bool SC_CoreAudioDriver::Stop()
 {
-	printf("SC_CoreAudioDriver::Stop\n");
+	scprintf("SC_CoreAudioDriver::Stop\n");
 	OSStatus err = kAudioHardwareNoError;
 
 	mActive = false;

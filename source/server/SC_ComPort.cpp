@@ -130,7 +130,7 @@ SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 		throw std::runtime_error("failed to create udp socket\n");
 	}
 
-	//printf("@@@ sizeof(ReplyAddress) %d\n", sizeof(ReplyAddress));
+	//scprintf("@@@ sizeof(ReplyAddress) %d\n", sizeof(ReplyAddress));
 
 	bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
 	mBindSockAddr.sin_family = AF_INET;

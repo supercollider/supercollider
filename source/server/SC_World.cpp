@@ -233,7 +233,7 @@ World* World_New(WorldOptions *inOptions)
 					throw std::runtime_error("Couldn't open non real time input file.\n");
 				
 				if (info.samplerate != inOptions->mNonRealTimeSampleRate)
-					printf("WARNING: input file sample rate does not equal output sample rate.\n");
+					scprintf("WARNING: input file sample rate does not equal output sample rate.\n");
 					
 			} else {
 				world->hw->mNRTInputFile = 0;
