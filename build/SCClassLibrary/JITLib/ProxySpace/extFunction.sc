@@ -8,7 +8,7 @@
 			proxy = NodeProxy(server);
 			Library.put(\proxy, server, key, proxy);
 		});
-		proxy.put(this, 0, true, mix.not, onComplete) //, loadLatency);
+		proxy.put(this, 0, true, mix.not, onComplete, loadLatency);
 		^proxy
 	}
 	

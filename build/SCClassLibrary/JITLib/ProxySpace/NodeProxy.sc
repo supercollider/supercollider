@@ -180,7 +180,7 @@ NodeProxy : AbstractFunction {
 				if(container.notNil, {
 					objects = objects.add(container);
 					
-					container.writeDef;
+					container.writeDef; //so it is there on server reboot
 					if(server.serverRunning, {
 						container.sendDefToBundle(bundle);
 						if(send, { 
@@ -283,7 +283,11 @@ NodeProxy : AbstractFunction {
 		if(server.serverRunning, {
 				if(this.isPlaying.not, { this.prepareForPlayToBundle(bundle, freeAll) });
 				this.sendSynthToBundle(bundle, freeAll, extraArgs);
-				bundle.schedSend(latency, clock, latency.isNil, onCompletion)
+				if(latency.isNil, {
+					bundle.schedSendRespond(0, clock, onCompletion)
+				},{
+					bundle.schedSend(latency, clock, onCompletion)
+				})
 		});
 	}
 			
