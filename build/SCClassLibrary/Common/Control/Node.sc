@@ -46,7 +46,7 @@ Node {
 	}
 	moveAfter { arg aNode;
 		aNode.group.moveNodeAfter(this, aNode);
-	}	
+	}       
 	moveToHead { arg aGroup;
 		(aGroup ? group).moveNodeToHead(this);
 	}
@@ -55,7 +55,7 @@ Node {
 	}
 	release { //assumes a control called 'gate' in the synth
 		server.sendBundle(server.latency, [15, nodeID, \gate, 0]) //"/n_set"
-	}	       
+	}	      
 	
 	asStream { ^Ref(this) } //insulate next
 	
@@ -80,7 +80,7 @@ Node {
 	}
 	moveAfterMsg { arg bundle, aNode;
 		^bundle.add([19, nodeID, aNode.nodeID]); //"/n_after"
-	}	
+	}       
 	moveToHeadMsg { arg bundle, aGroup;
 		^(aGroup ? group).moveNodeToHeadMsg(bundle, this);
 	}
@@ -98,7 +98,7 @@ Node {
 
 	
 	
-	/** PRIVATE IMPLEMENTATION  **/	
+	/** PRIVATE IMPLEMENTATION  **/ 
 	*prNew { arg server;
 		^super.new.register(server)
 	}
@@ -275,7 +275,7 @@ Group : Node {
 			nextNode = node.next;
 			function.value(node);
 			node = nextNode;
-		});			
+		});		     
 	}
 	
 	deepDo { arg function;
@@ -428,8 +428,8 @@ RootNode : Group {
 		group = this; // self
 	}
 	register { arg srv; 
-			server = srv;
-			nodeID = 0; 
+		server = srv;
+		nodeID = 0; 
 	}
 	*initClass {  roots = IdentityDictionary.new; }
 	
@@ -458,4 +458,5 @@ RootNode : Group {
 	*freeAll {
 		roots.do({ arg rn; rn.freeAll })
 	}
-}
+} 
+

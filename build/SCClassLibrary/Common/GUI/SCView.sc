@@ -58,10 +58,6 @@ SCView {  // abstract class
 	canFocus_ { arg bool;
 		this.setProperty(\canFocus, bool)
 	}
-	// sc.solar addition
-	focus {
-		this.prFocus
-	}
 
 	/*
 	resize behaviour in an SCCompositeView:
@@ -111,7 +107,7 @@ SCView {  // abstract class
 	// sc.solar addition
 	keyUp { arg key, modifiers, unicode; 
 		this.keyTyped = key;
-		// allways call global keydown action first
+		// always call global keydown action first
 		globalKeyUpAction.value(this, key, modifiers, unicode);
 		this.handleKeyUpBubbling(this, key, modifiers, unicode);
 	}
@@ -133,7 +129,7 @@ SCView {  // abstract class
 	getParents {
 		var parents, view;
 		view = this;
-		parents = List.newClear;
+		parents = List.new;
 		while({view.parent.notNil},{view = view.parent; parents.add(view)});
 		^parents
 	}
@@ -146,7 +142,6 @@ SCView {  // abstract class
 		^#[\bounds, \visible, \enabled, \canFocus, \resize, \background]
 	}
 	getPropertyList {
-	// has to return !
 		^this.properties.collect({ arg name;
 			[name, this.perform(name)]
 		});
@@ -173,7 +168,7 @@ SCView {  // abstract class
 		_SCView_GetProperty
 		^this.primitiveFailed
 	}
-	prFocus {
+	focus {
 		_SCView_Focus
 		^this.primitiveFailed
 	}

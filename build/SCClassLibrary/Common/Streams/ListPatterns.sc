@@ -253,7 +253,7 @@ Pswitch : Pattern {
 			while ({
 				(index = indexStream.next).notNil;
 			},{
-				inval = list.wrapAt(index).embedInStream(inval);
+				inval = list.wrapAt(index.asInteger).embedInStream(inval);
 			});
 		});
 	}
@@ -272,7 +272,7 @@ Pswitch1 : Pswitch {
 		^FuncStream.new({ arg inval;
 			var index;
 			if ((index = indexStream.next).notNil, {
-				streamList.wrapAt(index).next(inval);
+				streamList.wrapAt(index.asInteger).next(inval);
 			});
 		},{
 			streamList.do({ arg stream; stream.reset; });

@@ -23,7 +23,10 @@ Klang : UGen {
 	*ar { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
 		var specs, freqs, amps, phases;
 		# freqs, amps, phases = specificationsArrayRef.value;
-		specs = [freqs, amps ?? {Array.fill(freqs.size,1.0)}, phases ?? {Array.fill(freqs.size,0.0)}].flop.flat;
+		specs = [freqs, 
+				amps ?? {Array.fill(freqs.size,1.0)}, 
+				phases ?? {Array.fill(freqs.size,0.0)}
+				].flop.flat;
 		^this.multiNewList(['audio', freqscale, freqoffset] ++ specs )
 	}
 }
@@ -32,7 +35,10 @@ Klank : UGen {
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
 		var specs, freqs, amps, times;
 		# freqs, amps, times = specificationsArrayRef.value;
-		specs = [freqs, amps ?? {Array.fill(freqs.size,1.0)}, times ?? {Array.fill(freqs.size,1.0)}].flop.flat;
+		specs = [freqs, 
+				amps ?? {Array.fill(freqs.size,1.0)}, 
+				times ?? {Array.fill(freqs.size,1.0)}
+				].flop.flat;
 		^this.multiNewList(['audio', input, freqscale, freqoffset, decayscale] ++ specs )
 	}
 }

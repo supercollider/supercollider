@@ -151,7 +151,6 @@ Buffer {
 		server.listSendMsg(this.allocReadMsg( argpath,startFrame,completionMessage));
 	}
 	
-	// convienient
 	*loadDialog { arg server,startFrame = 0,numFrames = -1;
 		server = server ? Server.local;
 		^super.newCopyArgs(server,

@@ -322,9 +322,9 @@ Wavetable[float] : FloatArray {
 		^this.asSignal.blend(anotherWavetable.asSignal, blendFrac).asWavetable;
 	}
 	
-	*readNew { arg file;
-		^file.readAllSignal.asWavetable;
-	}
+	//*readNew { arg file;
+	//	^file.readAllSignal.asWavetable;
+	//}
 	write { arg path;
 		var file;
 		file = File.new(path, "wb");
@@ -333,8 +333,8 @@ Wavetable[float] : FloatArray {
 			file.close;
 		});
 	}
-	libMenuAction { arg names;
-		this.plot(names.last);
-	}
+	//libMenuAction { arg names;
+	//	this.plot(names.last);
+	//}
 }
 

@@ -80,6 +80,7 @@
 			def.send(server, synth.newMsg);
 			^synth
 		}, {
+			// this couples the Common library to JITLibrary
 			^this.send(key, server, mixToPresent, onComplete, latency)
 		})
 	}

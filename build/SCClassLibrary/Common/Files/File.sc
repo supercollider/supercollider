@@ -139,7 +139,7 @@ File : UnixFILE {
 	*openDialog { arg prompt, successFunc, cancelFunc;
 		var path;
 		// replace with platform independant stuff later
-		CocoaDialog.getPaths({arg paths; successFunc.value(paths.first) },cancelFunc,20);
+		CocoaDialog.getPaths({arg paths; successFunc.value(paths.first) },cancelFunc,3);
 		//		path = this.prOpenDialog(prompt);
 		//		if (path.notNil, { successFunc.value(path) },{ cancelFunc.value(path) });
 	}
