@@ -12,14 +12,9 @@ PageLayout  {
 	
 	var autoRemoves;
 	
-	*initClass {
-		bgcolor = Color(0.886274509803, 0.94117647058824, 0.874509803921, 1);
-		focuscolor = Color(1, 0.0980392156862, 0.129411764705, 1);
-		hrcolor = Color(0.8862745098039, 0.901960784313, 0.819607843137, 1);
-	}
-	*new{ arg title,x,y ,posx=25,posy=50,marginx,marginy;
-		^super.new.init(title,x ? screenWidth,
-			y ? screenHeight,posx,posy,marginx,marginy)
+	*new{ arg title,width,height ,posx,posy,hspacer,vspacer;
+		^super.new.init(title,width ? screenWidth,height ? screenHeight,
+							posx ? 20,posy ? 20,hspacer ? 5,vspacer ? 3)
 	}
 
 	// see also .within
@@ -28,7 +23,7 @@ PageLayout  {
 	}
 	
 	//asPageLayout
-	*guify { arg lay,title,x,y;
+	*guify { arg lay,title,width,height;
 		if(lay.class === GUIPlacement,{ ^lay });
 		if(lay.notNil and: {lay.checkNotClosed},{
 			// if its a GUIWindow we return a flow layout on it
@@ -38,25 +33,30 @@ PageLayout  {
 				^lay
 			});
 		},{
-			^this.new(title,x,y )
+			^this.new(title,width,height )
 		})
 	}
 	
-	init { arg title,x,y,posx,posy,marginx,marginy;
+	init { arg title,width,height,posx,posy,arghspacer,argvspacer;
 		var w,gwmaxx,gwmaxy;
+		hspacer = arghspacer;
+		vspacer = argvspacer;
 		/* attempt to find a suitable position
 		if(posx.isNil,{
-			gwmaxx = GUIWindow.allWindows.maxItem({ arg win; win.bounds.right }).bounds.right;
+			gwmaxx = GUIWindow.allWindows
+				.maxItem({ arg win; win.bounds.right }).bounds.right;
 			posx = (gwmaxx + x).wrap(0,screenWidth) - x;
 		});
 		if(posy.isNil,{
-			gwmaxy = GUIWindow.allWindows.maxItem({ arg win; win.bounds.bottom }).bounds.bottom;
+			gwmaxy = GUIWindow.allWindows
+				.maxItem({ arg win; win.bounds.bottom }).bounds.bottom;
 			posy = (gwmaxy + y).wrap(0,screenHeight) - y;
 		});
 		*/
 		windows=windows.add
 		(	
-			w=SCWindow.new("< " ++ title.asString ++ " >",Rect.new( posx, posy, x, y ) )
+			w=SCWindow.new("< " ++ title.asString ++ " >",
+				Rect.new( posx, posy, width, height ) )
 			.onClose_({  	
 						this.close; // close all windows in this layout
 					})
@@ -66,8 +66,8 @@ PageLayout  {
 
 		isClosed = false;	
 			
-		margin=Rect.new(0,0,x,y).insetAll(marginx ? hspacer,marginy ? vspacer,
-					marginx ? hspacer,marginy ? vspacer);
+		margin=Rect(0 + hspacer,0 + vspacer,
+				width - (hspacer * 2),height - (vspacer * 2));
 		currx=margin.left;
 		curry=margin.top;
 		
@@ -77,6 +77,13 @@ PageLayout  {
 	
 	window { ^windows.last }
 	asView { ^this.window.view }
+	asPageLayout { arg name,width,height,x,y;
+		if(isClosed,{
+			^this.class.new(name,width,height,x,y)
+		},{
+			^this
+		})
+	}
 	startRow { // move to new line if not already there
 		if(currx != margin.left,{
 			currx=margin.left;
@@ -161,8 +168,8 @@ PageLayout  {
 		if(first.notNil,{first.focus });
 	}
 
-	backColor { ^this.window.background }
-	backColor_ { arg c; this.window.background_(c) }
+	backColor { ^this.window.view.background }
+	backColor_ { arg c; this.window.view.background_(c) }
 	
 	removeOnClose { arg dependant;
 		autoRemoves = autoRemoves.add(dependant);
@@ -221,11 +228,11 @@ PageLayout  {
 		windows.reverse.do({ arg w;
 			var b;
 			
-			w.view.children.first.bounds.inspect;
-			
 			b = Rect.new(w.bounds.left, w.bounds.top,
-				 w.view.children.maxItem({ arg v; v.bounds.right }).bounds.right + hspacer ,
-				 w.view.children.maxItem({ arg v; v.bounds.bottom }).bounds.bottom + vspacer);
+				 w.view.children.maxValue({ arg v; v.bounds.right }) 
+				 		+ hspacer ,
+				 w.view.children.maxValue({ arg v; v.bounds.bottom }) 
+				 		+ vspacer);
 			
 			// SCWindow.bounds_ doesn't work yet	 
 			//w.bounds_(b);
@@ -243,7 +250,10 @@ PageLayout  {
 		var ow;
 		ow = this.window;
 		this.init("..." ++ ow.name,
-				margin.right + hspacer,margin.bottom + vspacer,(ow.bounds.left + 100).wrap(0,900),(ow.bounds.top+10).wrap(0,300));
+				margin.right + hspacer,
+				margin.bottom + vspacer,
+				(ow.bounds.left + 100).wrap(0,900),
+				(ow.bounds.top+10).wrap(0,300));
 		this.window.background_(ow.background);
 		tabs.do({
 			this.layRight(10,10);
@@ -280,6 +290,12 @@ PageLayout  {
 //		
 //		^true
 //	}
+
+	*initClass {
+		bgcolor = Color(0.886274509803, 0.94117647058824, 0.874509803921, 1);
+		focuscolor = Color(1, 0.0980392156862, 0.129411764705, 1);
+		hrcolor = Color(0.8862745098039, 0.901960784313, 0.819607843137, 1);
+	}
 
 }
 

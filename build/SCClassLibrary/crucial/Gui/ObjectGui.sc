@@ -11,12 +11,8 @@ ObjectGui {
 		^new
 	}
 	
-	guify { arg layout,title,x,y;
-		if(layout.isNil or: {layout.isClosed},{
-			layout = PageLayout(title ?? {model.asString},
-					600, 600,x ? 100, y ? 100);
-		});
-		
+	guify { arg layout,title,width,height;
+		layout = layout.asPageLayout(title,width,height);
 		NotificationCenter.registerOneShot(layout,\didClose,this,{
 			model.removeDependant(this); // when the window shuts
 		});
