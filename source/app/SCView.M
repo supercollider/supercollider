@@ -3371,6 +3371,30 @@ void SCListView::draw(SCRect inDamage)
     }
 }
 
+void SCListView::scrollToValue()
+{
+	int numItems = mArray ? CFArrayGetCount(mArray) : 0;
+	
+	float itemHeight = mStrSize.height + 3.f;
+	float visibleItems = mBounds.height / itemHeight;
+	float fraction = visibleItems / (float)numItems;
+	float totalHeight = itemHeight * numItems;
+				
+	float maxScroll = totalHeight - mBounds.height;
+	if (maxScroll < 0) maxScroll = 0;
+
+	SCRect itemBounds = mBounds;
+	itemBounds.x += 4; 
+	itemBounds.y += 2 - mScroll; 
+	itemBounds.width -= 6; itemBounds.height -= 4;
+	itemBounds.height = itemHeight;
+	
+	itemBounds.y += mValue * itemHeight;
+	
+	if (itemBounds.y < mBounds.y) mScroll = mValue * itemHeight;
+	else if (itemBounds.y + itemHeight > mBounds.y + mBounds.height) mScroll = (mValue + 1) * itemHeight - mBounds.height;
+}
+
 bool SCListView::setValue(int inValue, bool send)
 {
     bool changed = inValue != mValue;
@@ -3379,6 +3403,9 @@ bool SCListView::setValue(int inValue, bool send)
     else if (inValue >= numItems) inValue = 0;
     if (inValue != mValue || numItems < 2) {
         mValue = inValue;
+		
+		scrollToValue();
+		
         refresh();
         if (send) sendMessage(s_doaction, 0, 0, 0);
     }

@@ -512,6 +512,8 @@ public:
 
 	virtual bool canReceiveDrag();
 	virtual void receiveDrag();
+	
+	void scrollToValue();
 
 protected:
 	
