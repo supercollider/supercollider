@@ -101,6 +101,32 @@ Function : AbstractFunction {
 		// function composition
 		^{|...args| this.value(that.valueArray(args)) }
 	}
+	
+	protect { arg handler;
+		var error;
+		error = this.prTry;
+		handler.value(error);
+		error.throw;
+	}
+	
+	try { arg handler;
+		var error;
+		error = this.prTry;
+		if (error.notNil) { handler.value(error); }
+	}
+	prTry {
+		var eh, next;
+		next = thisThread.exceptionHandler;
+		thisThread.exceptionHandler = {|error| 
+			thisThread.exceptionHandler = next; // pop
+			^error 
+		};
+		this.value;
+		thisThread.exceptionHandler = next; // pop
+		^nil
+	}
+	
+	handleError { arg error; this.value(error) }
 }
 
 

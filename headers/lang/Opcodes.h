@@ -262,18 +262,17 @@ enum {
 	opmFind,
 	opmChoose,
 	opmValueList,
-	opmAddFirst,	// 35
+	opmAddFirst,
 	opmIn,
 	opmOut,
 	opmPrimitiveFailed,
 	opmSubclassResponsibility,
-	opmShouldNotImplement,	// 40
-	opmIndexOutOfRange,
+	opmShouldNotImplement,
 	opmNotYetImplemented,
 	opmDoesNotUnderstand,
 
 	opmAtSign,
-	opmWrapAtSign,		// 45
+	opmWrapAtSign,
 	opmClipAtSign,
 	opmFoldAtSign,
 

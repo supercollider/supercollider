@@ -3731,7 +3731,6 @@ void initSpecialSelectors()
 	sel[opmPrimitiveFailed] = getsym("primitiveFailed");	
 	sel[opmSubclassResponsibility] = getsym("subclassResponsibility");
 	sel[opmShouldNotImplement] = getsym("shouldNotImplement");
-	sel[opmIndexOutOfRange] = getsym("indexOutOfRange");
 	sel[opmDoesNotUnderstand] = getsym("doesNotUnderstand");	// not really needed
 	sel[opmNotYetImplemented] = getsym("notYetImplemented");	
 	

@@ -81,4 +81,14 @@ Nil {
 	// endless cascade of doesNotUnderstand messages gets printed in response to each clock tick
 	// unless we do this.
 	seconds_ {}
+	
+	// throwing Nil
+	throw {}
+	
+	handleError { arg error;
+		Error.handling = true;
+		if (Error.debug) { error.inspect } { error.reportError };
+		Error.handling = false;
+		this.halt;
+	}
 }

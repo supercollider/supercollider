@@ -381,6 +381,7 @@ DebugFrame {
 	// 'caller' points to another DebugFrame for the caller to this function.
 	// 'context' points to another DebugFrame for the frame lexically enclosing this one.
 	// 'address' memory address of the actual frame object.
+	asString { ^"DebugFrame of " ++ functionDef.asString }
 }
 
 RawPointer {

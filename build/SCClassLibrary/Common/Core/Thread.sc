@@ -14,6 +14,7 @@ Thread : Stream {
 	var <primitiveError=0, <primitiveIndex=0, <randData=0;
 	var <beats=0.0, <seconds=0.0, <clock;
 	var environment;
+	var <>exceptionHandler;
 
 	*new { arg func, stackSize=512;
 		^super.new.init(func, stackSize)

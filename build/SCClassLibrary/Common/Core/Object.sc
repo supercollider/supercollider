@@ -159,65 +159,33 @@ Object {
 	}
 	prHalt { _Halt }
 	primitiveFailed { 
-		error("Primitive '" 
-			++ thisThread.failedPrimitiveName.asString 
-			++ "' failed.\n"); 
-		Thread.primitiveErrorString.postln; 
-		this.verboseHalt;
+		PrimitiveFailedError(this).throw;
 	}
-	verboseHalt {
-		"RECEIVER:\n".post;
-		this.dump;
+	reportError {
+		error(this.asString);
 		this.dumpBackTrace;
-		this.halt 
 	}
 	
 	subclassResponsibility { arg method;
-		error( "'" ++ method.name.asString ++ "' should have been implemented by "
-			++ this.class.name.asString ++ ".\n");
-		this.dumpBackTrace;
-		this.halt;
+		SubclassResponsibilityError(this, method, this.class).throw;
 	}
 	doesNotUnderstand { arg selector ... args;
-		/*
-		// BUILT INTO VIRTUAL MACHINE
-		var methodDict, methodFunc;
-		// check for an instance specific method
-		if (uniqueMethods.notNil 
-			and: { (methodDict = uniqueMethods.at(this)).notNil }
-			and: { (methodFunc = methodDict.at(selector)).notNil },{
-			^methodFunc.valueArray(args)
-		});
-		*/
-		
-		error("Message '" 
-			++ selector.asString
-			++ "' not understood.\n"); 
-		"RECEIVER:\n".post;
-		this.dump;
-		"ARGS:\n".post;
-		args.dump;
-		this.dumpBackTrace;
-		this.halt  
+		DoesNotUnderstandError(this, selector, args).throw;
 	}
 	shouldNotImplement { arg method;
-		error(method.ownerClass.name.asString ++ "-" ++ method.name.asString 
-			++ " : Message not valid for this subclass\n");
-		this.dumpBackTrace;
-		this.halt;
+		ShouldNotImplementError(this, method, this.class).throw;
 	} 
-	mustBeBoolean {
-		error("Non Boolean in test:\n");
-		this.dump;
-		this.dumpBackTrace;
-		this.halt;
-	}
-	nonIntegerIndex { error("non Integer index used.\n") }
-	indexOutOfRange { error("Index out of range.\n") }
-	notYetImplemented { inform(this.asString + "Not yet implemented.\n") }
+	mustBeBoolean { MustBeBooleanError(nil, this).throw; }
+	notYetImplemented { NotYetImplemented(nil, this).throw; }
+	
 	dumpBackTrace { _DumpBackTrace }
 	getBackTrace { _GetBackTrace }
-		
+	throw {
+		if (Error.handling) { error("throw during error handling!\n"); ^this };
+		thisThread.exceptionHandler.handleError(this);
+	}
+	
+			
 	// conversion
 	species { ^this.class }
 	asCollection { ^[this] }
