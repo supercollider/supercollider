@@ -148,12 +148,15 @@ SCErr meth_s_trace(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 SCErr meth_s_trace(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	int32 nodeID = msg.geti();
-	Graph *graph = World_GetGraph(inWorld, nodeID);
-	if (!graph) return kSCErr_NodeNotFound;
+	
+	while (msg.remain()) {
+		int32 nodeID = msg.geti();
+		Graph *graph = World_GetGraph(inWorld, nodeID);
+		if (!graph) return kSCErr_NodeNotFound;
 		
-	Graph_Trace(graph);
-
+		Graph_Trace(graph);
+	}
+	
 	return kSCErr_None;
 }
 
