@@ -53,8 +53,8 @@ PyrSymbol* s_midiProgramAction;
 PyrSymbol* s_midiBendAction;
 //jt
 PyrSymbol * s_midiin;
-
-
+PyrSymbol * s_numMIDIDev;
+PyrSymbol * s_midiclient;
 const int kMaxMidiPorts = 16;
 MIDIClientRef gMIDIClient = 0;
 MIDIPortRef gMIDIInPort[kMaxMidiPorts], gMIDIOutPort[kMaxMidiPorts];
@@ -231,15 +231,22 @@ void midiListEndpoints()
 
 int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed);
 int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
-{ char *x, *y;
-    x = (char*) malloc(1280);
-    y = (char *)malloc(1280);
-    sprintf(x, "");
-    int numSrc = MIDIGetNumberOfSources();
-	post("numSrc %d\n",  numSrc);
+{ 
 
-        sprintf(y, "[ [ ");
-        strcat(x,y);
+    //char *x, *y;
+    PyrSlot *a = g->sp;
+    PyrSlot *slots = a->uo->slots;
+    //x = (char*) malloc(1280);
+    //y = (char *)malloc(1280);
+    //sprintf(x, "");
+    int numSrc = MIDIGetNumberOfSources();
+//	post("numSrc %d\n",  numSrc);
+    ++g->sp; SetObject(g->sp, s_midiclient->u.classobj);
+    ++g->sp; SetInt(g->sp, numSrc);
+    runInterpreter(g, getsym("prSetNumberOfSources"), 2);
+    
+      //  sprintf(y, "[ [ ");
+       // strcat(x,y);
 
     for (int i=0; i<numSrc; ++i) {
         MIDIEndpointRef src = MIDIGetSource(i);
@@ -252,23 +259,45 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
         MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
         MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
         SInt32 id;
+        SInt32 lng;
         MIDIObjectGetIntegerProperty(src, kMIDIPropertyUniqueID, &id);
 		char cendname[1024], cdevname[1024];
 		CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
 		CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+                lng = CFStringGetLength(devname);
+                post("length %d, %d", lng, strlen(cdevname));
+                
   //             post("in %3d   uid %8d   dev '%s'   endpt '%s'\n", i, id, cdevname, cendname);
         CFRelease(devname);
         CFRelease(endname);
-        if (i + 1 == numSrc) sprintf(y," '%s %s', %8d ", cdevname, cendname,id);
-        else sprintf(y," '%s %s', %8d, ", cdevname, cendname, id);
-        strcat(x,y);
+    ++g->sp; SetObject(g->sp, s_midiclient->u.classobj);
+    ++g->sp; SetInt(g->sp, i);
+    ++g->sp; SetObject(g->sp,newPyrString(g->gc, cdevname, 0, true) );
+    runInterpreter(g, getsym("prSetSourceDeviceName"), 3);
+    
+    ++g->sp; SetObject(g->sp,s_midiclient->u.classobj);
+    ++g->sp; SetInt(g->sp, i);
+    ++g->sp; SetObject(g->sp,newPyrString(g->gc, cendname, 0, true) );
+    runInterpreter(g, getsym("prSetSourcePortName"), 3);
+    
+   
+    ++g->sp; SetObject(g->sp,s_midiclient->u.classobj);
+    ++g->sp; SetInt(g->sp, i);
+    ++g->sp; SetInt(g->sp, id);
+    runInterpreter(g, getsym("prSetSourceUID"), 3);
+    
+    //    if (i + 1 == numSrc) sprintf(y," '%s %s', %8d ", cdevname, cendname,id);
+    //    else sprintf(y," '%s %s', %8d, ", cdevname, cendname, id);
+     //   strcat(x,y);
     }
-        sprintf(y, "], [ ");
-        strcat(x,y);
+      //  sprintf(y, "], [ ");
+      //  strcat(x,y);
 
 
         int numDst = MIDIGetNumberOfDestinations();
-
+    ++g->sp; SetObject(g->sp, s_midiclient->u.classobj);
+    ++g->sp; SetInt(g->sp, numSrc);
+    runInterpreter(g, getsym("prSetNumberOfDestinations"), 2);
 //	post("numDst %d\n",  numDst);
 
     for (int i=0; i<numDst; ++i) {
@@ -289,16 +318,31 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 //		post("out %3d   uid %8d   dev '%s'   endpt '%s'\n", i, id, cdevname, cendname);
         CFRelease(devname);
         CFRelease(endname);
-        if (i + 1 == numDst) sprintf(y," '%s %s', %8d ", cdevname, cendname,id);
-        else sprintf(y," '%s %s', %8d, ", cdevname, cendname, id);
-         strcat(x,y);
+        SetObject(slots,newPyrString(g->gc, cdevname, 0, true) );
+        ++g->sp; SetObject(g->sp, s_midiclient->u.classobj);
+        ++g->sp; SetInt(g->sp, i);
+        ++g->sp; SetObject(g->sp,newPyrString(g->gc, cdevname, 0, true) );
+        runInterpreter(g, getsym("prSetDestinationDeviceName"), 3);
+        
+        ++g->sp; SetObject(g->sp, s_midiclient->u.classobj);
+        ++g->sp; SetInt(g->sp, i);
+        ++g->sp; SetObject(g->sp,newPyrString(g->gc, cendname, 0, true) );
+        runInterpreter(g, getsym("prSetDestinationPortName"), 3);
+        
+        ++g->sp; SetObject(g->sp,s_midiclient->u.classobj);
+        ++g->sp; SetInt(g->sp, i);
+        ++g->sp; SetInt(g->sp, id);
+        runInterpreter(g, getsym("prSetDestinationUID"), 3);
+        //if (i + 1 == numDst) sprintf(y," '%s %s', %8d ", cdevname, cendname,id);
+        //else sprintf(y," '%s %s', %8d, ", cdevname, cendname, id);
+         //strcat(x,y);
      }
-        sprintf(y, "] ] ");
-        strcat(x,y);
-       ++g->sp; SetObject(g->sp,newPyrString(g->gc, x, 0, true) ); // push string onto return stack
+        //sprintf(y, "] ] ");
+        //strcat(x,y);
+       // SetObject(slots,newPyrString(g->gc, x, 0, true) ); // push string onto return stack
 
-        free(x);
-        free(y);
+        //free(x);
+        //free(y);
 	return errNone;
 }
 
@@ -469,8 +513,9 @@ void initMIDIPrimitives()
     s_midiPolyTouchAction = getsym("doPolyTouchAction");
     s_midiProgramAction = getsym("doProgramAction");
     s_midiBendAction = getsym("doBendAction");
-
-    definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
+    s_numMIDIDev = getsym("prSetNumberOfDevices");
+    s_midiclient = getsym("MIDIClient");
+       definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
 	definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);	
 	definePrimitive(base, index++, "_ConnectMIDIIn", prConnectMIDIIn, 3, 0);
 	definePrimitive(base, index++, "_DisconnectMIDIIn", prDisconnectMIDIIn, 3, 0);
