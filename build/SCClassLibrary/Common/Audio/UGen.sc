@@ -1,4 +1,4 @@
-{\rtf1\mac\ansicpg10000\cocoartf100
+{\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
 }
@@ -47,6 +47,18 @@
  	madd \{ \cf2 arg\cf0  mul = 1.0, add = 0.0; 		\
  		^\cf2 MulAdd\cf0 (\cf2 this\cf0 , mul, add);\
  	\}\
+ 	range \{ \cf2 arg\cf0  lo = 0.0, hi = 1.0; 	\
+ 		var mul, add;	\
+		if (this.signalRange == \\bipolar, \{\
+			mul = (hi - lo) * 0.5;\
+			add = mul + lo;\
+		\},\{\
+			mul = (hi - lo) ;\
+			add = lo;\
+		\});\
+ 		^\cf2 MulAdd\cf0 (\cf2 this\cf0 , mul, add);\
+ 	\}\
+	signalRange \{ ^\\bipolar \}\
  	 	\
 	addToSynth \{\
 		synthDef = buildSynthDef;\
@@ -170,6 +182,7 @@
 		^outStack.add(\cf2 this\cf0 );\
 	\}\
 	< \{ \cf2 arg\cf0  that; ^\cf2 this\cf0 .synthIndex < that.synthIndex \}\
+	\
 \}\
 \
 \cf2 MultiOutUGen\cf0  : \cf2 UGen\cf0  \{\

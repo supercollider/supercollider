@@ -1,4 +1,4 @@
-{\rtf1\mac\ansicpg10000\cocoartf100
+{\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
 }
@@ -62,6 +62,28 @@
 		if (selector == \cf4 '+'\cf0 , \{\
 			if (a == 0.0, \{ ^b \});\
 			if (b == 0.0, \{ ^a \});\
+			\
+			\cf2 // create a MulAdd if possible.\
+\cf0 			if (a.isKindOf(\cf3 BinaryOpUGen\cf0 ) && \{ a.operator == \cf4 '*'\cf0  \}, \{\
+				if (\cf3 MulAdd\cf0 .canMulAdd(a.inputs.at(0), a.inputs.at(1), b), \{\
+					buildSynthDef.removeUGen(a);\
+					^\cf3 MulAdd\cf0 .new(a.inputs.at(0), a.inputs.at(1), b)\
+				\});\
+				if (\cf3 MulAdd\cf0 .canMulAdd(a.inputs.at(1), a.inputs.at(0), b), \{\
+					buildSynthDef.removeUGen(a);\
+					^\cf3 MulAdd\cf0 .new(a.inputs.at(1), a.inputs.at(0), b)\
+				\});\
+			\});\
+			if (b.isKindOf(\cf3 BinaryOpUGen\cf0 ) && \{ b.operator == \cf4 '*'\cf0  \}, \{\
+				if (\cf3 MulAdd\cf0 .canMulAdd(b.inputs.at(0), b.inputs.at(1), a), \{\
+					buildSynthDef.removeUGen(b);\
+					^\cf3 MulAdd\cf0 .new(b.inputs.at(0), b.inputs.at(1), a)\
+				\});\
+				if (\cf3 MulAdd\cf0 .canMulAdd(b.inputs.at(1), b.inputs.at(0), a), \{\
+					buildSynthDef.removeUGen(b);\
+					^\cf3 MulAdd\cf0 .new(b.inputs.at(1), b.inputs.at(0), a)\
+				\});\
+			\});\
 		\},\{\
 		if (selector == \cf4 '-'\cf0 , \{\
 			if (a == 0.0, \{ ^b.neg \});\
@@ -106,6 +128,18 @@
 	init \{ \cf3 arg\cf0  in, mul, add;\
 		rate = in.rate;\
 		inputs = [in, mul, add];\
+	\}\
+	\
+	*canBeMulAdd \{ \cf3 arg\cf0  in, mul, add;\
+		\cf2 // see if these inputs satisfy the constraints of a MulAdd ugen.\
+\cf0 		if (in.rate == \cf4 \\audio\cf0 , \{ ^\cf3 true\cf0  \});\
+		if (in.rate == \cf4 \\control\cf0  \
+			&& \{ mul.rate != \cf4 \\audio\cf0  \} \
+			&& \{ add.rate != \cf4 \\audio\cf0  \}, \
+		\{ \
+			^\cf3 true\cf0  \
+		\});\
+		^\cf3 false\cf0 \
 	\}\
 \}\
 \
