@@ -195,17 +195,13 @@ SlotInspector {
 		//slotKeyView.background = Color.grey(0.85);
 		
 		if (key.isKindOf(Symbol), {
-			hasGetter = class.findMethod(key).notNil;
-			hasSetter = class.findMethod(key.asSetter).notNil && object.mutable;
+			hasGetter = class.findRespondingMethodFor(key).notNil;
+			hasSetter = class.findRespondingMethodFor(key.asSetter).notNil && object.mutable;
 		},{
 			hasGetter = true;
 			hasSetter = object.mutable;
 		});
-		if(hasGetter,{
-			slotKeyView.background = Color.white(0.85)
-		},{
-			slotKeyView.background = Color.grey(0.85);
-		});
+		slotKeyView.background = Color.grey(if(hasGetter,0.95,0.85));
 		
 		vbounds = Rect(122, vpos, 218, this.buttonHeight);
 		if (hasSetter, {
@@ -224,7 +220,7 @@ SlotInspector {
 		});
 		slotValueView.resize = 2;
 		slotValueView.font = Font("Palatino", 12);
-		slotValueView.background = Color.grey(0.85);
+		slotValueView.background = Color.grey(if(hasSetter,0.95,0.85));
 
 		inspectButton = SCButton(w, Rect(344, vpos, this.buttonHeight, this.buttonHeight));
 		inspectButton.states = [["I"]];
