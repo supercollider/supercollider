@@ -1365,6 +1365,8 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 	methType = methNormal;
 	if (hasPrimitive) {
 		methType = methPrimitive;
+	} else if (gCompilingMethod->name.us == s_nocomprendo) {
+		methType = methNormal;
 	} else {
 		int bodyType = node->body->classno;
 		if (bodyType == pn_ReturnNode) {
@@ -2257,7 +2259,7 @@ PyrPushKeyArgNode* newPyrPushKeyArgNode(PyrSlotNode* selector, PyrParseNode* exp
 
 void compilePyrPushKeyArgNode(PyrPushKeyArgNode* node, void *result)
 {
-	long dummy, index;
+	long dummy;
 	//postfl("->compilePyrPushKeyArgNode\n");
 	
 	compilePushConstant((PyrParseNode*)node, &node->selector->slot);

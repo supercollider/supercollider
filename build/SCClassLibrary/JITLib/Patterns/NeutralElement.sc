@@ -7,32 +7,27 @@ N  {
 	*new { ^super.new }
 	
 	//class
-	*doesNotUnderstand { arg selector, args;
-		this.emptyCall; //avoid crash
+	*doesNotUnderstand { arg selector ... args;
 		^this
 	}
-	
-	*emptyCall {}
-	
+		
 	*performBinaryOpOnSomething {
 		^this
 	}
 	
 	//instance
-	doesNotUnderstand { arg selector, args;
-		this.emptyCall; //avoid crash
+	doesNotUnderstand { arg selector ... args;
 		^this
 	}
 	performBinaryOpOnSomething {
 		^this
 	}
-	emptyCall {}
 	
 }
 
 Debug : N {
 	var <>end;
-	doesNotUnderstand { arg selector, args;
+	doesNotUnderstand { arg selector ... args;
 		if(end.notNil, {
 			end = end - 1;
 			if(end < 0, { this.halt })
