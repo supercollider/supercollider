@@ -226,13 +226,5 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	
-	newTextWindow { arg title="Untitled", makeListener=false;
-		Document.new(this, title, makeListener);
-	}
-	
-	openTextFile{ arg selectionStart=0, selectionLength=0;
-		var doc;
-		doc = Document.open(this, selectionStart, selectionLength);
-	}
 }
 
