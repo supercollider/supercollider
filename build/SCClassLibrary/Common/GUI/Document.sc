@@ -296,9 +296,8 @@ Document {
 	}
 	
 	initLast {
-		var doc;
-		doc = this.prGetLastIndex;
-		if(doc.isNil,{ this = nil; ^nil});
+		this.prGetLastIndex;
+		if(dataptr.isNil,{ this = nil; ^nil});
 		isListener = false;
 		this.prAdd;
 	}
@@ -308,11 +307,11 @@ Document {
 	}
 	//private open
 	initFromPath { arg apath, selectionStart, selectionLength;
-		var stpath, doc;
+		var stpath;
 		path = apath;
 		stpath = this.class.standardizePath(path);
-		doc = this.propen(stpath, selectionStart, selectionLength);
-		if(doc.isNil,{ this = nil; ^nil});
+		this.propen(stpath, selectionStart, selectionLength);
+		if(dataptr.isNil,{ this = nil; ^nil});
 		this.prAdd;
 	}
 	propen { arg path, selectionStart=0, selectionLength=0;
@@ -328,7 +327,8 @@ Document {
 		isListener = makeListener;
 		thelistener = this;
 		this.prinitByString(str, title, makeListener);
-		^this.prAdd;
+		if(dataptr.isNil,{ this = nil; ^nil});
+		this.prAdd;
 	
 	}
 	prinitByString { arg str, title, makeListener;
