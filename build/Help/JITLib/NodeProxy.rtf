@@ -2,8 +2,7 @@
 {\fonttbl\f0\fnil\fcharset77 Futura-Medium;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica;}
 {\colortbl;\red255\green255\blue255;\red163\green146\blue90;\red191\green0\blue0;\red0\green0\blue191;
-\red0\green115\blue0;\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;
-}
+\red0\green115\blue0;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs36 \cf0 NodeProxy		
@@ -12,11 +11,13 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b\fs24 superclass: BusPlug
+\f1\b\fs24 \cf0 superclass: BusPlug
 \fs26 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \
+\f2\b0\fs18 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -471,13 +472,15 @@ supported inputs
 s.boot;\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b\fs24 using node proxy with ugen functions
+\f1\b\fs24 \cf0 using node proxy with ugen functions
 \f2\b0\fs18 \
 \
 \
 a = \cf4 NodeProxy.audio\cf0 (s, 2);\
 a.play; \cf3 //play to hardware output, return a group with synths\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //setting the source\cf0 \
@@ -495,8 +498,8 @@ a.source = \{ \cf4 WhiteNoise\cf0 .ar([0.01,0.01]) \};\
 a.source = 0;\
 a.source = \cf5 \\default\cf0 ; \cf3 //synthDef on server\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 a.source = \cf4 SynthDef\cf0 (\cf6 "w"\cf0 , \{ \cf4 arg\cf0  out=0; \cf4 Ou\cf7 t.ar(out,\cf8 SinOsc\cf7 .ar([\cf8 Rand\cf7 (430, 600), 600], 0, 0.2)) \});\
-a.source = \cf8 nil\cf7 ; \cf9 // removes any object\cf0 \
+\cf0 a.source = \cf4 SynthDef\cf0 (\cf6 "w"\cf0 , \{ \cf4 arg\cf0  out=0; \cf4 Ou\cf0 t.ar(out,\cf4 SinOsc\cf0 .ar([\cf4 Rand\cf0 (430, 600), 600], 0, 0.2)) \});\
+a.source = \cf4 nil\cf0 ; \cf3 // removes any object\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //feedback\cf0 \
@@ -632,7 +635,7 @@ a.play;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 a.clock = \cf4 TempoClock\cf0 (2.0); \cf3 //round to every 2.0 seconds\
+\cf0 a.clock = \cf4 TempoClock\cf0 (2.0).permanent_(true); \cf3 //round to every 2.0 seconds\
 \cf0 a.source = \{ \cf4 Ringz\cf0 .ar(\cf4 Impulse\cf0 .ar(0.5, 0, 0.3), 3000, 0.01) \};\
 a[1] = \{ \cf4 Ringz\cf0 .ar(\cf4 Impulse\cf0 .ar([0.5, 1], 0, 0.3), 1000, 0.01) \};\
 a[2] = \{ \cf4 Ringz\cf0 .ar(\cf4 Impulse\cf0 .ar([3, 5]/2, 0, 0.3), 8000, 0.01) \};\
@@ -649,10 +652,10 @@ a.clear;\
 \f2\fs18 \cf3 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
-\cf9 // for more examples see: [ProxySpace] [jitlib_fading]\cf7 \
-\cf0 \
-(\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // for more examples see: [ProxySpace] [jitlib_fading]\cf0 \
+\
+(\
 \cf3 //must have 'out' or 'i_out' argument to work properly\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 SynthDef\cf0 (\cf6 "who"\cf0 , \{ \cf4 arg\cf0  freq, gate=1, out=0, ffreq=800, amp=0.1; \
@@ -735,6 +738,8 @@ c.source = \{ \cf4 XLine\cf0 .kr(1900, 10, 10) \};\
 a.clear; b.clear; c.clear; \cf3 //clear all, free bus\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 \
+ \
+\
 \
 \
 \
