@@ -53,8 +53,8 @@ extern PyrSymbol *s_closed;
         character = [characters characterAtIndex: 0];
     }
     //control tab/escape doesn't get passed here at all ?
-    NSLog(@"unicode %d  length:%d clength:%d mTopView %08X  modifiers %d %08X",
-		character,[characters length],[characters cStringLength], mTopView, modifiers, modifiers);
+    //NSLog(@"unicode %d  length:%d clength:%d mTopView %08X  modifiers %d %08X",
+	//	character,[characters length],[characters cStringLength], mTopView, modifiers, modifiers);
     
     if (mTopView) {
 		// for some reason modifiers becomes 256 on my machine with no keys pressed. So need to mask against known keys.
