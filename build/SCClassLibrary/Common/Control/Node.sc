@@ -343,6 +343,7 @@ Synth : Node {
 		server = target.server;
 		synth = this.prNew(defName, server);
 		server.sendBundle(server.latency, synth.perform(addAction,target,args));
+		^synth
 	}
 	*prNew { arg defName, server;
 		^super.prNew(server).defName_(defName.asDefName)
