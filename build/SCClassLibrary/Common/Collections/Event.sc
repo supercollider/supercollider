@@ -151,6 +151,7 @@ Event : Environment {
 					};
 									
 					if (freqs.isKindOf(Symbol).not) {
+						~finish.value;
 						~amp = ~amp.value;
 						server = ~server = ~server.value;
 						addAction = ~addAction;
