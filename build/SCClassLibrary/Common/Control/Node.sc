@@ -5,13 +5,10 @@ Node {
 	var <server;
 	var <>isPlaying = false, <>isRunning = false;
 	
-	free {  arg sendFlag=true;
-		if(sendFlag, {
-			server.sendBundle(server.latency, [11, nodeID]);  //"/n_free"
-		}, {
-			this.unregister;
-		});
+	free {  
+		server.sendBundle(server.latency, [11, nodeID]);  //"/n_free"
 	}
+	
 	run { arg flag=true;
 		server.sendBundle(server.latency, [12, nodeID,flag.binaryValue]); //"/n_run"
 	}
@@ -386,7 +383,7 @@ Synth : Node {
 RootNode : Group {
 	
 	classvar <roots;
-	var nodeWatcher, <connected;
+	var <nodeWatcher, <connected;
 	
 	*new { arg server, connected=true;
 		server = server ?? {Server.local};
@@ -400,34 +397,27 @@ RootNode : Group {
 		nodeID = 0;
 		isPlaying = isRunning = true;
 		group = this; // self
+		nodeWatcher = NodeWatcher(server);
 	}
 	register {}
 	*initClass {  roots = IdentityDictionary.new; }
 	nodeToServer {} // already running
 
 	connect { arg argFlag=true;
-			connected = argFlag;
-			if(nodeWatcher.notNil, { 
-				if(argFlag, {
+				connected = argFlag;
+			 	if(argFlag, {
 					nodeWatcher.startListen;
 					nodeWatcher.register(this); 
 				}, {
 					nodeWatcher.stopListen;
 					nodeWatcher.clear;
 				}) 
-			});
+			
 	 }
 	disconnect { 
 			this.connect(false);
 	}
 	
-	nodeWatcher { //lazy init
-		^nodeWatcher ?? {
-			nodeWatcher = NodeWatcher(server);
-			nodeWatcher.startListen;
-			nodeWatcher.register(this);
-		}
-	}
 	
 	registerNode { arg node;
 		if(connected && server.serverRunning, {
