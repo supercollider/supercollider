@@ -8,9 +8,9 @@ OSCBundle {
 	schedSend { arg server, time, clock;
 		SystemClock.sched(time ? 0, {
 			if(clock.isNil, {
-				this.send(server,time) 
+				this.send(server) 
 			}, {
-				clock.schedAbs(clock.elapsedBeats.ceil, { this.send(server,time) })
+				clock.schedAbs(clock.elapsedBeats.ceil, { this.send(server) })
 			});
 		})
 	}
@@ -41,6 +41,7 @@ MixedBundle : OSCBundle {
 	
 	var <functions; //functions to evaluate on send 
 	var <preparationMessages; //messages to send first on schedSend
+	var <>preparationTime=0.2; //time between preparation and action
 	
 	addFunction { arg func;
 		functions = functions.add(func);
@@ -62,49 +63,40 @@ MixedBundle : OSCBundle {
 		server.listSendBundle(latency, messages);
 	}
 	
-	sendPrepare {arg server, latency;
-		latency = latency ? server.latency;
+	sendPrepare { arg server, latency;
 		//preparationMessages.asCompileString.postln;
 		server.listSendBundle(latency, preparationMessages);
 	}
 	
-	schedSend { arg server, time, clock, onCompletion;
-			this.sendPrepare(server);
-			[\clock, clock].postln;
-			SystemClock.sched(time ? 0, {
-				if(clock.isNil, {
-						this.send(server,server.latency) 
-				}, {
-						clock.schedAbs(clock.elapsedBeats.ceil, { 
-							this.send(server,server.latency); 
-							nil 
-						})
+	schedSend { arg server, clock, onCompletion;
+			this.sendPrepare(server, server.latency);
+			if(clock.isNil, {
+					this.send(server, server.latency + preparationTime) 
+			}, {
+				clock.schedAbs(clock.elapsedBeats.ceil, { 
+					this.send(server, server.latency + preparationTime); 
+					nil 
 				});
 			})
 		
 	}
-	
-	schedSendRespond { arg server, time, clock, onCompletion;
-		var resp;
-			
-			resp = OSCresponderNode(server.addr, '/done', { 
-							SystemClock.sched(time ? 0, {
+	//todo
+	schedSendRespond { arg server, clock, onCompletion;
+			var resp;
+			resp = OSCresponderNode(server.addr, '/done', {
 								if(clock.isNil, {
-										this.send(server,time) 
+										this.send(server, server.latency) 
 									}, {
 										clock.schedAbs(clock.elapsedBeats.ceil, { 
-										this.send(server,time); nil 
+										this.send(server, server.latency); 
+										nil 
 									})
-								})
 							});
 							resp.remove;
 				}).add;
-			this.sendPrepare(server);
+			this.sendPrepare(server, server.latency);
 	}
-	
-	
-	
-
-		
 }
+
+
 
