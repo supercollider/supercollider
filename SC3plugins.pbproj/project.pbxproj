@@ -5,87 +5,87 @@
 	};
 	objectVersion = 38;
 	objects = {
-		920DAEAF04241E5B00A80067 = {
-			fileEncoding = 4;
+		920DAED20425A5D200A80067 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			name = SC_Altivec.h;
-			path = source/common/SC_Altivec.h;
-			refType = 2;
+			path = common/SC_Altivec.h;
+			refType = 4;
 		};
-		920DAEB004241E5B00A80067 = {
-			fileRef = 920DAEAF04241E5B00A80067;
+		920DAED30425A5D200A80067 = {
+			fileRef = 920DAED20425A5D200A80067;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		920DAEB104241E5B00A80067 = {
-			fileRef = 920DAEAF04241E5B00A80067;
+		920DAED40425A5D200A80067 = {
+			fileRef = 920DAED20425A5D200A80067;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		920DAEB204241E5B00A80067 = {
-			fileRef = 920DAEAF04241E5B00A80067;
+		920DAED50425A5D200A80067 = {
+			fileRef = 920DAED20425A5D200A80067;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		920DAEB304241E5B00A80067 = {
-			fileRef = 920DAEAF04241E5B00A80067;
+		920DAED60425A5D200A80067 = {
+			fileRef = 920DAED20425A5D200A80067;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		920DAEB404241E5B00A80067 = {
-			fileRef = 920DAEAF04241E5B00A80067;
+		920DAED70425A5D200A80067 = {
+			fileRef = 920DAED20425A5D200A80067;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		920DAEB504241E5B00A80067 = {
-			fileRef = 920DAEAF04241E5B00A80067;
+		920DAED80425A5D200A80067 = {
+			fileRef = 920DAED20425A5D200A80067;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		920DAEB604241E5B00A80067 = {
-			fileRef = 920DAEAF04241E5B00A80067;
+		920DAED90425A5D200A80067 = {
+			fileRef = 920DAED20425A5D200A80067;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		920DAEB704241E5B00A80067 = {
-			fileRef = 920DAEAF04241E5B00A80067;
+		920DAEDA0425A5D200A80067 = {
+			fileRef = 920DAED20425A5D200A80067;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		920DAEB804241E5B00A80067 = {
-			fileRef = 920DAEAF04241E5B00A80067;
+		920DAEDB0425A5D200A80067 = {
+			fileRef = 920DAED20425A5D200A80067;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		920DAEB904241E5B00A80067 = {
-			fileRef = 920DAEAF04241E5B00A80067;
+		920DAEDC0425A5D200A80067 = {
+			fileRef = 920DAED20425A5D200A80067;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		920DAEBA04241E5B00A80067 = {
-			fileRef = 920DAEAF04241E5B00A80067;
+		920DAEDD0425A5D200A80067 = {
+			fileRef = 920DAED20425A5D200A80067;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		920DAEBB04241E5B00A80067 = {
-			fileRef = 920DAEAF04241E5B00A80067;
+		920DAEDE0425A5D200A80067 = {
+			fileRef = 920DAED20425A5D200A80067;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		920DAEBC04241E5B00A80067 = {
-			fileRef = 920DAEAF04241E5B00A80067;
+		920DAEDF0425A5D200A80067 = {
+			fileRef = 920DAED20425A5D200A80067;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -706,7 +706,7 @@
 		F5B7408702E9455801CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
-				920DAEBB04241E5B00A80067,
+				920DAEDE0425A5D200A80067,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -813,7 +813,7 @@
 		F5B740A902E94E2001CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
-				920DAEB104241E5B00A80067,
+				920DAED40425A5D200A80067,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -889,7 +889,7 @@
 		F5B740CA02E94F7101CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
-				920DAEB804241E5B00A80067,
+				920DAEDB0425A5D200A80067,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -961,7 +961,7 @@
 		F5B740E902E9525E01CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
-				920DAEB204241E5B00A80067,
+				920DAED50425A5D200A80067,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1045,7 +1045,7 @@
 				F5959CFA0339983301A80099,
 				F5959CFB0339983301A80099,
 				F5959CFE03399CED01A80099,
-				920DAEB304241E5B00A80067,
+				920DAED60425A5D200A80067,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1124,7 +1124,7 @@
 			files = (
 				F5B7413002E9554601CA2799,
 				F5B7414F02E9567001CA2799,
-				920DAEB404241E5B00A80067,
+				920DAED70425A5D200A80067,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1227,7 +1227,7 @@
 		F5B7415302E9582B01CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
-				920DAEB504241E5B00A80067,
+				920DAED80425A5D200A80067,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1303,7 +1303,7 @@
 		F5B7417402E9BAE901CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
-				920DAEB604241E5B00A80067,
+				920DAED90425A5D200A80067,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1380,7 +1380,7 @@
 		F5B7419502E9BC6101CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
-				920DAEB704241E5B00A80067,
+				920DAEDA0425A5D200A80067,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1456,7 +1456,7 @@
 		F5B741B602E9BD8501CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
-				920DAEB004241E5B00A80067,
+				920DAED30425A5D200A80067,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1529,7 +1529,7 @@
 		F5B741D502E9CBFE01CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
-				920DAEBC04241E5B00A80067,
+				920DAEDF0425A5D200A80067,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1601,7 +1601,7 @@
 		F5B741F502E9D0C501CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
-				920DAEB904241E5B00A80067,
+				920DAEDC0425A5D200A80067,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1673,7 +1673,7 @@
 		F5B741FC02E9D32B01CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
-				920DAEBA04241E5B00A80067,
+				920DAEDD0425A5D200A80067,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1902,7 +1902,7 @@
 		F5D127DC03355EEC0164B34C = {
 			children = (
 				F5D127DA03355EE10164B34C,
-				920DAEAF04241E5B00A80067,
+				920DAED20425A5D200A80067,
 			);
 			isa = PBXGroup;
 			name = common;
