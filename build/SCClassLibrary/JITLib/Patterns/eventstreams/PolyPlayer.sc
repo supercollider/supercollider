@@ -1,6 +1,6 @@
 
 // decrepated.
-
+/*
 PolyPlayer : EventPlayer {
 
 	
@@ -63,6 +63,7 @@ PolyPlayer : EventPlayer {
 	}
 
 }
+*/
 
 MapNotePlayer : NotePlayer {
 	playOneEvent { arg desc, lag, msgArgs;
@@ -72,7 +73,7 @@ MapNotePlayer : NotePlayer {
 		mapping = ~mapping;
 		if(mapping.notNil) { mapping = [14, id] ++ mapping };
 		//send the note on bundle
-		server.sendBundle(lag, [9, desc.name, id, ~addAction ? 1, ~group] ++ msgArgs, mapping.debug); 
+		server.sendBundle(lag, [9, desc.name, id, ~addAction ? 1, ~group] ++ msgArgs, mapping); 
 		
 		if (desc.hasGate) {
 			// send note off bundle.
@@ -84,4 +85,6 @@ MapNotePlayer : NotePlayer {
 
 
 }
+
+PolyPlayer : MapNotePlayer {}
 
