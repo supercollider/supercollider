@@ -1,0 +1,80 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Ball
+\f1\b0\fs24 					
+\f0\b physical model of bouncing object
+\f1\b0 \
+\
+superclass: UGen\
+\
+\
+models the path of a bouncing object that is reflected by a vibrating surface \
+\
+
+\f0\b *ar(in, g, damp, friction)
+\f1\b0 \
+\
+	
+\f0\b in
+\f1\b0 		modulated surface level\
+	
+\f0\b g
+\f1\b0 		gravity\
+	
+\f0\b damp
+\f1\b0 	damping on impact\
+	
+\f0\b friction	
+\f1\b0 proximity from which on attraction to surface starts\
+	\
+\
+
+\f2\fs18 	\cf2 // examples\cf0 \
+	\
+	\cf2 // mouse x controls switch of level\cf0 \
+	(\
+	\{ \
+		\cf3 var\cf0  f, sf;\
+		sf = \cf3 K2A\cf0 .ar(\cf3 MouseX\cf0 .kr > 0.5) > 0;\
+		f = \cf3 Ball\cf0 .ar(sf, \cf3 MouseY\cf0 .kr(0.01, 20, 1), 0.01);\
+		f = f * 10 + 500;\
+		\cf3 SinOsc\cf0 .ar(f, 0, 0.2)\
+	\}.play;\
+	)\
+\
+	\
+	\cf2 // mouse x controls modulation rate\cf0 \
+	\cf2 // mouse y controls gravity\cf0 \
+	(\
+	\{ \
+		\cf3 var\cf0  f, sf, g;\
+		sf = \cf3 LFNoise0\cf0 .ar(\cf3 MouseX\cf0 .kr(1, 100, 1));\
+		g = \cf3 MouseY\cf0 .kr(0.1, 10, 1);\
+		f = \cf3 Ball\cf0 .ar(sf, g, 0.01, 0.01);\
+		f = f * 140 + 500;\
+		\cf3 SinOsc\cf0 .ar(f, 0, 0.2)\
+	\}.play;\
+	)\
+	\
+	\cf2 // the general german police choir\cf0 \
+	\cf2 // mouse x controls damping\cf0 \
+	\cf2 // mouse y controls gravity\cf0 \
+	(\
+	\{ \
+		\cf3 var\cf0  f, sf, g;\
+		sf = \cf3 LFPulse\cf0 .ar(0.6, 0.2, 0.5);\
+		g = \cf3 MouseY\cf0 .kr(0.1, 10, 1);\
+		d = \cf3 MouseX\cf0 .kr(0.0001, 1, 1);\
+		f = \cf3 Ball\cf0 .ar(sf, g, d);\
+		f = f * 140 + 400;\
+		\cf3 SinOsc\cf0 .ar(f, 0, 0.2)\
+	\}.play;\
+	)\
+	\
+	\
+\
+}
