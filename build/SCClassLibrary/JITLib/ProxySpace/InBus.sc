@@ -74,7 +74,7 @@ Monitor {
 	var <group, <vol, <out;
 	
 	play { arg fromIndex, fromNumChannels=2, toIndex=0, toNumChannels, 
-			target, multi=false, volume=1, fadeTime=0.1;
+			target, multi=false, volume=1, fadeTime=0.02;
 			
 		var server, inGroup, numChannels, bundle, divider;
 		inGroup = target.asGroup;
