@@ -31,25 +31,40 @@ drawRect_(boolean)\
 drawLines_(boolean)\
 	draw lines between the point\
 \
-thumbSize_(index, size)\
+setThumbSize(index, size)\
 	set the size of a point for the specified index, if the index is -1 set the size for all points\
 \
-thumbWidth_(index, width)	\
-	set the width of a point for the specified index, if the index is -1 set the width for all points\
+thumbSize_(size)\
+	set the size of all points\
 \
-thumbHeight_(index, heigth)	\
+setThumbWidth(index, width)	\
+	set the width of a point for the specified index, if the index is -1 set the width for all points\
+	\
+thumbWidth_( width)	\
+	set the width of all points\
+\
+setThumbHeight(index, heigth)	\
 	set the height of a point for the specified index, if the index is -1 set the height for all points\
 \
-editable_(index, boolean)\
+thumbHeight_(heigth)	\
+	set the height of all points\
+\
+setEditable(index, boolean)\
 	makes a specified point unmovable\
+		\
+editable_(boolean)\
+	makes all points unmovable\
 \
 selectionColor_(color)	\
 	set the color of the point when selected\
-	\
-fillColor_(index, color)	\
+\
+setFillColor(index, color)	\
 	set the point color\
+		\
+fillColor_(color)	\
+	set the color for all points\
 	\
-string_(index, string)\
+setString(index, string)\
 	give a point a string\
 	\
 connect_(index, arrayofpoints)\
@@ -73,7 +88,7 @@ b = \cf3 SCEnvelopeView\cf0 (a, \cf3 Rect\cf0 (0, 0, 230, 80))\
 	.drawRects_(\cf3 true\cf0 )\
 	.resize_(5)\
 	.action_(\{arg b; [b.index,b.value].postln\})\
-	.\cf5 thumbSize_\cf0 (-1,5)\
+	.\cf5 thumbSize_\cf0 (5)\
 	.value_([[0.0, 0.1, 0.5, 1.0],[0.1,1.0,0.8,0.0]]);\
 \
 a.front;\
@@ -81,7 +96,7 @@ a.front;\
 (\
 \cf2 //make the first point unmoveable\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 b.editable_(0,\cf3 false\cf0 );\
+\cf0 b.setEditable(0,\cf3 false\cf0 );\
 )\
 \
 (\
@@ -92,13 +107,13 @@ a.front;\
 a.view.decorator =  \cf3 FlowLayout\cf0 (a.view.bounds);\
 \
 b = \cf3 SCEnvelopeView\cf0 (a, \cf3 Rect\cf0 (0, 0, 350, 100))\
-	.thumbSize_(-1, 5)\
+	.thumbSize_(5)\
 	.drawLines_(\cf3 true\cf0 )\
-	.fillColor_(-1,\cf3 Color\cf0 .green)\
+	.fillColor_(\cf3 Color\cf0 .green)\
 	.selectionColor_(\cf3 Color\cf0 .red)\
 	.drawRects_(\cf3 true\cf0 )\
 	.value_([(0.0, 0.1 .. 1.0), (0.0, 0.1 .. 1.0)])\
-	.editable_(0,\cf3 false\cf0 );\
+	.setEditable(0,\cf3 false\cf0 );\
 \
 a.front;\
 )\
@@ -131,8 +146,8 @@ a = \cf3 SCWindow\cf0 (\cf4 "text-boxes"\cf0 , \cf3 Rect\cf0 (200 , 450, 450, 45
 a.view.decorator =  \cf3 FlowLayout\cf0 (a.view.bounds);\
 \
 b = \cf3 SCEnvelopeView\cf0 (a, \cf3 Rect\cf0 (0, 0, 440, 440))\
-	.\cf5 thumbWidth\cf0 _(-1,60.0)\
-	.\cf5 thumbHeight\cf0 _(-1,15.0)\
+	.\cf5 thumbWidth\cf0 _(60.0)\
+	.\cf5 thumbHeight\cf0 _(15.0)\
 	.drawLines_(\cf3 true\cf0 )\
 	.drawRects_(\cf3 true\cf0 )\
 	.selectionColor_(\cf3 Color\cf0 .red)\
@@ -141,8 +156,8 @@ b = \cf3 SCEnvelopeView\cf0 (a, \cf3 Rect\cf0 (0, 0, 440, 440))\
 \cf2 //b.setStatic(0,true);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 4.do(\{\cf3 arg\cf0  i;\
-	b.string_(i, [\cf4 "this"\cf0 , \cf4 "is"\cf0 , \cf4 "so much"\cf0 , \cf4 "fun"\cf0 ].at(i));\
-	b.fillColor_(i,[\cf3 Color\cf0 .yellow, \cf3 Color\cf0 .white, \cf3 Color\cf0 .green].choose);\
+	b.setString(i, [\cf4 "this"\cf0 , \cf4 "is"\cf0 , \cf4 "so much"\cf0 , \cf4 "fun"\cf0 ].at(i));\
+	b.setFillColor(i,[\cf3 Color\cf0 .yellow, \cf3 Color\cf0 .white, \cf3 Color\cf0 .green].choose);\
 \});\
 a.front;\
 )\
