@@ -237,7 +237,7 @@ NodeProxy : AbstractFunction {
 		nodeMap.performList(\set, args);
 		if(this.isPlaying, { group.performList(\set, args) }, { "not playing".inform });
 	}
-	
+	//to test
 	setn { arg ... args;
 		nodeMap.performList(\setn, args);
 		if(this.isPlaying, { group.performList(\setn, args) });
@@ -279,7 +279,7 @@ NodeProxy : AbstractFunction {
 	
 	pause { this.run(false) }
 	
-	//xfades, to test
+	//xfades
 	
 	xset { arg ... args;
 		this.xFadePerform(\set, args);
@@ -465,7 +465,7 @@ NodeProxy : AbstractFunction {
 	wakeUp { arg latency=0.0; //see for load 
 		var bundle, checkedAlready;
 		bundle = MixedBundle.new;
-		bundle.preparationTime = 0;
+		bundle.preparationTime = 0; //synthdefs are on server
 		checkedAlready = Set.new;
 		this.wakeUpToBundle(bundle, checkedAlready);
 		this.sendBundle(bundle);
@@ -484,14 +484,16 @@ NodeProxy : AbstractFunction {
 
 
 
-LibNodeProxy : NodeProxy {
+PlugDef : NodeProxy {
 	var key;
-	*new { arg server, key;
+	*new { arg key, object, server;
 		var res;
+		server = server ? Server.local;
 		res = this.at(server, key);
 		if(res.isNil, {
 			res = super.new(server).toLib(key);
 		});
+		if(object.notNil, { res.source = object });
 		^res;
 	}
 	toLib { arg key;
@@ -519,7 +521,7 @@ SharedNodeProxy : NodeProxy {
 		
 	prepareForPlayToBundle { arg bundle, freeAll=true;
 				postln("started new shared group" + constantGroupID);
-				group = Group.basicNew(constantGroupID, server);
+				group = Group.basicNew(server, constantGroupID);
 				group.isPlaying = true; //force isPlaying.
 				NodeWatcher.register(group);
 				bundle.add(["/g_new",constantGroupID,0,0]);
@@ -548,8 +550,8 @@ SharedNodeProxy : NodeProxy {
 		});
 		
 		localServer.waitForBoot({
-			bundle.sendPrepare(server);
-			bundle.send(localServer);
+			bundle.sendPrepare(server, server.latency);
+			bundle.send(localServer, localServer.latency);
 		});
 		
 		^playGroup
