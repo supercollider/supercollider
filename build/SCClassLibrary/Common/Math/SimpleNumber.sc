@@ -269,5 +269,35 @@ SimpleNumber : Number {
 	nextTimeOnGrid { arg clock;
 		^clock.nextTimeOnGrid(this, 0);
 	}
-		
+	
+	asFraction {|maxDenominator=100| 
+		var mediant, lower, upper;
+		var n,d;
+		if (this < 0) {
+			#n, d = this.neg.asFraction(maxDenominator); 
+			^[n.neg, d]
+		};  
+		lower = [0,1]; 
+		upper = [1,0];
+		loop {
+			mediant = [(lower[0] + upper[0]), (lower[1] + upper[1])];
+			
+			case 
+			{ (this * mediant[1]) > mediant[0] } 
+			{
+				if (maxDenominator < mediant[1]) {^upper};
+				lower = mediant;
+			}
+			{ (this * mediant[1]) == mediant[0] } 
+			{
+				if (maxDenominator >= mediant[1]) {^mediant};
+				if (lower[1] < upper[1]) {^lower};
+				^upper
+			}
+			{	
+				if (maxDenominator < mediant[1]) {^lower};
+				upper = mediant;
+			};				
+		}
+	}
 }
