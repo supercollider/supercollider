@@ -76,21 +76,15 @@ SynthDef("help-EnvGen",\{ arg out=0,bus=0;\
 	Out.ar(out,\
 		\cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .adsr,\cf2 In\cf0 .kr(bus) ) * \cf2 SinOsc\cf0 .ar(440,0,0.1)\
 	)\
-\}).play(s,[0,b.index]);\
+\}).play(s,[\\out,0,\\bus,b.index]);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // turn on\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b.value = 1.0;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // turn off\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b.value = 0.0;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // same as 1.0\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b.value = 0.2;\
 \
 )\

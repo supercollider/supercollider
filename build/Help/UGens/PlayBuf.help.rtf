@@ -2,7 +2,8 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
-\red96\green96\blue96;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;}
+\red96\green96\blue96;\red0\green115\blue0;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 PlayBuf		sample playback oscillator\
@@ -55,8 +56,8 @@ b = \cf4 Buffer\cf2 .read(s,\cf5 "sounds/a11wlk01.wav"\cf2 );\
 	\cf4 Out\cf2 .ar(0,\
 		\cf4 PlayBuf\cf2 .ar(1,bufnum, \cf4 BufRateScale\cf2 .kr(bufnum))\
 	)\
-\}).play(s,[0,b.bufnum]);\
-\cf0 \
+\cf0 \}).play(s,[\cf6 \\out\cf0 , 0, \cf6 \\bufnum\cf0 , b.bufnum]);\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 Note again that the number of channels must be fixed for the SynthDef, it cannot vary depending on which buffer you use.\
@@ -64,33 +65,33 @@ b = \cf4 Buffer\cf2 .read(s,\cf5 "sounds/a11wlk01.wav"\cf2 );\
 
 \f1\fs18 \cf0 \
 \
-\cf6 // loop is true\
-\cf7 SynthDef\cf0 (\cf8 "help-PlayBuf"\cf0 ,\{ \cf7 arg\cf0  out=0,bufnum=0;\
-	\cf7 Out\cf0 .ar(0,\
-		\cf7 PlayBuf\cf0 .ar(1,bufnum,\cf7 BufRateScale.kr\cf0 (bufnum),loop: 1.0)\
+\cf7 // loop is true\
+\cf8 SynthDef\cf0 (\cf9 "help-PlayBuf"\cf0 ,\{ \cf8 arg\cf0  out=0,bufnum=0;\
+	\cf8 Out\cf0 .ar(0,\
+		\cf8 PlayBuf\cf0 .ar(1,bufnum,\cf8 BufRateScale.kr\cf0 (bufnum),loop: 1.0)\
 	)\
-\}).play(s,[0,b.bufnum]);\
+\}).play(s,[\cf6 \\out\cf0 , 0, \cf6 \\bufnum\cf0 , b.bufnum]);\
 \
 \
 \
-\cf6 // trigger one shot on each pulse\
-\cf7 SynthDef\cf0 (\cf8 "help-PlayBuf"\cf0 ,\{ \cf7 arg\cf0  out=0,bufnum=0;\
-	\cf7 var\cf0  trig;\
-	trig = \cf7 Impulse\cf0 .kr(\cf7 1\cf0 );\
-	\cf7 Out\cf0 .ar(0,\
-		\cf7 PlayBuf\cf0 .ar(1,b.bufnum,\cf7 BufRateScale\cf0 .kr(bufnum),trig,0,0)\
+\cf7 // trigger one shot on each pulse\
+\cf8 SynthDef\cf0 (\cf9 "help-PlayBuf"\cf0 ,\{ \cf8 arg\cf0  out=0,bufnum=0;\
+	\cf8 var\cf0  trig;\
+	trig = \cf8 Impulse\cf0 .kr(\cf8 1\cf0 );\
+	\cf8 Out\cf0 .ar(0,\
+		\cf8 PlayBuf\cf0 .ar(1,b.bufnum,\cf8 BufRateScale\cf0 .kr(bufnum),trig,0,0)\
 	)\
-\}).play(s,[0,b.bufnum]);\
+\}).play(s,[\cf6 \\out\cf0 , 0, \cf6 \\bufnum\cf0 , b.bufnum]);\
 \
 \
-\cf6 // trigger one shot on each pulse\
-\cf7 SynthDef\cf0 (\cf8 "help-PlayBuf"\cf0 ,\{ \cf7 arg\cf0  out=0,bufnum=0;\
-	\cf7 var\cf0  trig;\
-	trig = \cf7 Impulse\cf0 .kr(\cf7 XLine\cf0 .kr(0.1,100,30));\
-	\cf7 Out\cf0 .ar(0,\
-		\cf7 PlayBuf\cf0 .ar(1,b.bufnum,\cf7 BufRateScale\cf0 .kr(bufnum),trig,5000,0)\
+\cf7 // trigger one shot on each pulse\
+\cf8 SynthDef\cf0 (\cf9 "help-PlayBuf"\cf0 ,\{ \cf8 arg\cf0  out=0,bufnum=0;\
+	\cf8 var\cf0  trig;\
+	trig = \cf8 Impulse\cf0 .kr(\cf8 XLine\cf0 .kr(0.1,100,30));\
+	\cf8 Out\cf0 .ar(0,\
+		\cf8 PlayBuf\cf0 .ar(1,b.bufnum,\cf8 BufRateScale\cf0 .kr(bufnum),trig,5000,0)\
 	)\
-\}).play(s,[0,b.bufnum]);\
+\}).play(s,[\cf6 \\out\cf0 , 0, \cf6 \\bufnum\cf0 , b.bufnum]);\
 \cf2 \
 \
 \cf3 // accelerating pitch\
@@ -100,8 +101,8 @@ b = \cf4 Buffer\cf2 .read(s,\cf5 "sounds/a11wlk01.wav"\cf2 );\
 	\cf4 Out\cf2 .ar(0, \
 		\cf4 PlayBuf\cf2 .ar(1, bufnum, rate, 1.0,0.0, 1.0)\
 	)\
-\}).play(s,[0,b.bufnum]);\
-\
+\cf0 \}).play(s,[\cf6 \\out\cf0 , 0, \cf6 \\bufnum\cf0 , b.bufnum]);\
+\cf2 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -112,12 +113,12 @@ b = \cf4 Buffer\cf2 .read(s,\cf5 "sounds/a11wlk01.wav"\cf2 );\
 	\cf4 Out\cf2 .ar(0,\
 		\cf4 PlayBuf\cf2 .ar(1,bufnum,\cf4 BufRateScale\cf2 .kr(bufnum)*rate,1,0,1)\
 	)\
-\}).play(s,[0,b.bufnum]);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\cf0 \}).play(s,[\cf6 \\out\cf0 , 0, \cf6 \\bufnum\cf0 , b.bufnum]);\
 \
 \
-\cf6 // zig zag around sound using offset\
+\cf2 \
+\cf3 // zig zag around sound using offset\
 /*  doesn't appear to work like that anymore ?\
 SynthDef("help-PlayBuf",\{ arg out=0,bufnum=0;\
 	var offset;\
@@ -125,10 +126,10 @@ SynthDef("help-PlayBuf",\{ arg out=0,bufnum=0;\
 	Out.ar(0,\
 		PlayBuf.ar(1,bufnum,0.0,offset, 1.0)\
 	)\
-\}).play(s,[0,b.bufnum]);\
-\
+\cf0 \}).play(s,[\cf6 \\out\cf0 , 0, \cf6 \\bufnum\cf0 , b.bufnum]);\
+\cf3 \
 Note that rate is 0.0, but the offset is changing.\
-*/\cf0 \
+*/\cf2 \
 \
 \
 }

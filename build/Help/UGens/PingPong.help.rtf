@@ -43,17 +43,16 @@ b = \cf2 Buffer\cf0 .new(s,44100 * 2, 2);\
 \
 SynthDef("help-PingPong",\{ arg out=0,bufnum=0; \
 	\cf2 var\cf0  left, right;\
-	left = \cf2 Decay2\cf0 .ar(\cf2 Impulse\cf0 .ar(0.6, 0.25), 0.01, 0.25, \
+	left = \cf2 Decay2\cf0 .ar(\cf2 Impulse\cf0 .ar(0.7, 0.25), 0.01, 0.25, \
 		\cf2 SinOsc\cf0 .ar(\cf2 SinOsc\cf0 .kr(3.7,0,200,500)));\
 	right = \cf2 Decay2\cf0 .ar(\cf2 Impulse\cf0 .ar(0.5, 0.25), 0.01, 0.25, \
 		\cf2 Resonz\cf0 .ar(\cf2 PinkNoise\cf0 .ar(4), \cf2 SinOsc\cf0 .kr(2.7,0,1000,2500), 0.2));\
 	Out.ar(0,\
-		\cf2 PingPong\cf0 .ar(bufnum, [left,right], 0.5, 0.7, 1)\
+		\cf2 PingPong\cf0 .ar(bufnum, [left,right], 0.5, 0.8, 1)\
 	)\
-\}).play(s,[0,b.bufnum]);\
+\}).play(s,[\\out, 0, \\bufnum, b.bufnum]);\
 \
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
 }
