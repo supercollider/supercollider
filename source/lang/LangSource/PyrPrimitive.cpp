@@ -3074,14 +3074,6 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 	//postfl("<-prRoutineResume %d %08X\n", g->level, g->thread);
-	//DumpBackTrace(g);
-	//Debugger();
-	g->gc->SanityCheck();
-    //if(! g->gc->SanityCheck()) {
-    //DumpBackTrace(g);
-          //  assert(g->gc->SanityCheck());
-    //    }    
-	//CallStackSanity(g);
 	return errNone;
 }
 
