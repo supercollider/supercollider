@@ -104,6 +104,7 @@ Server : Model {
 	var <audioBusAllocator;
 	var <bufferAllocator;
 	var <nodeWatcher;
+	var <syncThread, <syncTasks;
 
 	var <numUGens=0,<numSynths=0,<numGroups=0,<numSynthDefs=0;
 	var <avgCPU, <peakCPU;
@@ -189,6 +190,18 @@ Server : Model {
 		condition.test = false;
 		addr.sendBundle(nil, ["/sync"]);
 		condition.wait;
+	}
+	
+	schedSync { arg func;
+		syncTasks = syncTasks.add(func);
+		if(syncThread.isNil) { 
+			syncThread = Routine.run { 
+				var c; c = Condition.new;
+				while { syncTasks.notEmpty } { syncTasks.removeAt(0).value(c) };
+				syncThread = nil;
+		 	};
+		};
+		
 	}
 	
 	listSendMsg { arg msg;
@@ -401,7 +414,7 @@ Server : Model {
 		this.newNodeWatcher;
 	}
 	*quitAll {
-		set.do({ arg server; server.quit; })
+		set.do({ arg server; if(server.isLocal or: {server.inProcess} ) {server.quit}; })
 	}
 	*killAll {
 		// if you see Exception in World_OpenUDP: unable to bind udp socket
