@@ -61,6 +61,15 @@ Buffer {
 		server.performList(\sendMsg,["/b_fill",bufnum,startAt,numFrames,value]
 			 ++ more);
 	}
+	sine1 { arg amplitudes,normalize=false,asWavetable=false,clearFirst=false;
+		server.performList(\sendMsg,["/b_gen",bufnum,"sine1",
+			normalize.binaryValue 
+			+ (asWavetable.binaryValue * 2) 
+			+ (clearFirst.binaryValue * 4)]
+			++ amplitudes)
+	}
+	//sine2
+	//sine3
 	
 	// close a file, write header, after DiskOut usage
 	close {
