@@ -1,4 +1,45 @@
 
+PowerOfTwoBlock {
+	var <address, <size, <>next;
+	*new { arg address, size;
+		^super.newCopyArgs(address, size)
+	}
+}
+
+PowerOfTwoAllocator
+{
+	var size, array, freeLists, pos=0;
+	
+	*new { arg size;
+		^super.newCopyArgs(size, Array.newClear(size), Array.newClear(32), 0)
+	}
+	alloc { arg n;
+		var sizeClass, node, address;
+		n = n.nextPowerOfTwo;
+		sizeClass = n.log2Ceil;
+		
+		node = freeLists.at(sizeClass);
+		if (node.notNil, { 
+			freeLists.put(sizeClass, node.next);
+			^node.address
+		});
+		if (pos + n <= size, {
+			array.put(pos, PowerOfTwoBlock(pos, n));
+			address = pos;
+			pos = pos + n;
+			^address
+		});
+		^nil
+	}
+	free { arg address;
+		var node, sizeClass;
+		node = array.at(address);
+		sizeClass = node.size.log2Ceil;
+		node.next = freeLists.at(sizeClass);
+		freeLists.put(sizeClass, node);
+	}
+}
+
 StackNumberAllocator
 {
 	var lo, hi, freeList, next;
@@ -41,44 +82,3 @@ RingNumberAllocator
 	}
 }
 
-RangeAllocator
-{
-	var freeList;
-	
-	*new { arg range;
-		var freeList;
-		freeList = SortedList(32, { arg a, b; a.size < b.size });
-		freeList.add(range.copy);
-		^super.newCopyArgs(freeList)
-	}
-	alloc { arg n;
-		var index, newRange; 
-		index = freeList.indexForInserting(Range(0,n));
-		
-		for (index, freeList.size-1, {	
-			var range;
-			range = freeList.at(index);		
-			if (range.size == n, {
-				freeList.remove(range);				
-				^range;
-			});
-			if (range.size > n, {
-				freeList.remove(range);
-				newRange = range.split(n);
-				freeList.add(range);
-				^newRange;
-			});
-		});
-	}
-	free { arg range;
-		// does not do coalescing.
-		freeList.add(range);
-	}
-}
-
-//Engine
-//{
-//	var audioBusAllocator, bufAllocator, noteAllocator;
-//	init {
-//		audioBusAllocator = StackNumberAllocator(
-//}
