@@ -1,0 +1,272 @@
+{\rtf1\mac\ansicpg10001\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset78 HiraKakuPro-W6;\f2\fnil\fcharset77 Monaco;
+\f3\fnil\fcharset78 Osaka;\f4\fswiss\fcharset77 Helvetica;\f5\fnil\fcharset78 HiraKakuPro-W3;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green115\blue0;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 14.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 \'83\'4c\'83\'83\'83\'8a\'83\'41\'82\'c6\'83\'82\'83\'57\'83\'85\'83\'8c\'81\'5b\'83\'5e
+\f2\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3 \cf0 \'8d\'c5\'82\'e0\'83\'56\'83\'93\'83\'76\'83\'8b\'82\'c8\'8c\'60\'8e\'ae\'82\'c5\'82\'cd\'81\'411980\'94\'4e\'91\'e3\'82\'a9\'82\'e7\'97\'4c\'96\'bc\'82\'c5\'81\'41\'83\'84\'83\'7d\'83\'6e\'82\'ccDX7\'82\'e0\'8d\'cc\'97\'70\'82\'b5\'82\'bd\'8e\'fc\'94\'67\'90\'94\'95\'cf\'92\'b2\'81\'69FM\'81\'6a\'83\'56\'83\'93\'83\'5a\'83\'56\'83\'58\'82\'cd\'81\'41\'82\'50\'82\'c2\'82\'cc\'83\'49\'83\'56\'83\'8c\'81\'5b\'83\'5e\'82\'f0\'8e\'67\'82\'c1\'82\'c4\'91\'bc\'82\'cc\'83\'49\'83\'56\'83\'8c\'81\'5b\'83\'5e\'82\'cc\'8e\'fc\'94\'67\'90\'94\'82\'f0\'95\'cf\'92\'b2\'82\'b7\'82\'e9\'82\'c6\'82\'a2\'82\'a4\'82\'e0\'82\'cc\'82\'c5\'82\'b7\'81\'42FM\'83\'56\'83\'93\'83\'5a\'83\'56\'83\'58\'82\'c5\'82\'cc\'95\'cf\'92\'b2\'82\'f0\'82\'a9\'82\'af\'82\'e9\'82\'bd\'82\'df\'82\'cc\'83\'49\'83\'56\'83\'8c\'81\'5b\'83\'5e\'82\'cd\'81\'41\'92\'ca\'8f\'ed\'82\'cd\'83\'49\'81\'5b\'83\'66\'83\'42\'83\'49\'81\'45\'83\'8c\'81\'5b\'83\'67\'82\'c5\'93\'ae\'8d\'ec\'82\'b7\'82\'e9\'97\'6c\'82\'c9\'8e\'77\'92\'e8\'82\'b3\'82\'ea\'81\'41\'82\'bb\'82\'cc\'90\'55\'95\'9d\'82\'cd\'83\'47\'83\'93\'83\'78\'83\'8d\'81\'5b\'83\'76\'82\'e2\'91\'bc\'82\'cc\'83\'49\'83\'56\'83\'8c\'81\'5b\'83\'5e\'81\'41\'82\'b7\'82\'c8\'82\'ed\'82\'bf\'92\'e1\'8e\'fc\'94\'67\'82\'cc\'83\'49\'83\'56\'83\'8c\'81\'5b\'83\'5e\'81\'41\'82\'c9\'82\'e6\'82\'c1\'82\'c4\'8c\'60\'8d\'ec\'82\'e7\'82\'ea\'82\'dc\'82\'b7\'81\'42
+\f2 \
+\
+FM
+\f3 \'8d\'87\'90\'ac\'82\'c5\'82\'cd\'81\'41\'89\'b9\'90\'46\'82\'cd\'83\'4c\'83\'83\'83\'8a\'83\'41\'82\'c9\'91\'ce\'82\'b7\'82\'e9\'83\'82\'83\'57\'83\'85\'83\'8c\'81\'5b\'83\'5e\'82\'cc\'8c\'f8\'89\'ca\'82\'c9\'82\'e6\'82\'c1\'82\'c4\'88\'d9\'82\'c8\'82\'e8\'82\'dc\'82\'b7\'81\'42\'82\'b1\'82\'cc\'82\'bd\'82\'df\'81\'41\'83\'82\'83\'57\'83\'85\'83\'8c\'81\'5b\'83\'5e\'82\'cd\'92\'ca\'8f\'ed\'83\'49\'81\'5b\'83\'66\'83\'42\'83\'49\'83\'8c\'81\'5b\'83\'67\'82\'c5\'93\'ae\'8d\'ec\'82\'b7\'82\'e9\'97\'6c\'82\'c9\'8e\'77\'92\'e8\'82\'b3\'82\'ea\'82\'dc\'82\'b7\'81\'42
+\f2 \
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "fm1"\cf0 , \{ \cf2 arg\cf0  bus = 0, freq = 440, carPartial = 1, modPartial = 1, index = 3, mul = 0.05;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 	// 
+\f3 \cf4 \'83\'43\'83\'93\'83\'66\'83\'62\'83\'4e\'83\'58\'82\'cc\'92\'6c\'82\'cd\'92\'ca\'8f\'ed\'82\'cd0\'82\'a9\'82\'e724\'82\'dc\'82\'c5
+\f2 \cf0 \
+	\cf4 // carPartial :: modPartial => car/mod ratio\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\
+	\cf2 var\cf0  mod;\
+	\cf2 var\cf0  car;\
+	\
+	mod = \cf2 SinOsc\cf0 .ar(\
+		freq * modPartial, \
+		0, \
+		freq * index * \cf2 LFNoise1\cf0 .kr(5.reciprocal).abs\
+	);\
+		\
+	car = \cf2 SinOsc\cf0 .ar(\
+		(freq * carPartial) + mod, \
+		0, \
+		mul\
+	);\
+	\
+	\cf2 Out\cf0 .ar(\
+		bus,\
+		car\
+	)\
+\}).load(s);\
+)\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 (\cf3 "fm1"\cf0 , [\cf5 \\bus\cf0 , 0, \cf5 \\freq\cf0 , 440, \cf5 \\carPartial\cf0 , 1, \cf5 \\modPartial\cf0 , 2.4]);\
+\cf2 Synth\cf0 (\cf3 "fm1"\cf0 , [\cf5 \\bus\cf0 , 1, \cf5 \\freq\cf0 , 442, \cf5 \\carPartial\cf0 , 1, \cf5 \\modPartial\cf0 , 2.401]);\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 \
+////////////////////////////////////////////////////////////////////////////////////////////////////
+\f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs24 \cf0 \'8e\'fc\'94\'67\'90\'94\'95\'cf\'92\'b2\'82\'c6\'83\'8a\'83\'6f\'81\'5b\'83\'75
+\f0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // 
+\f3 \cf4 \'82\'b1\'82\'ea\'82\'cd\'81\'69SC2\'82\'cc\'94\'7a\'95\'7a\'95\'a8\'82\'cc\'92\'86\'82\'cc\'81\'6a"01 Why SuperCollider document"\'82\'a9\'82\'e7\'82\'cc\'83\'8a\'83\'6f\'81\'5b\'83\'75
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf6 (\
+\cf7 SynthDef\cf6 (\cf8 "preDelay"\cf6 , \{ \cf7 arg\cf6  inbus = 2;\
+	\cf7 Out\cf6 .ar(\
+		4,\
+		\cf7 DelayN\cf6 .ar(\cf7 In\cf6 .ar(inbus, 1), 0.048, 0.048)\
+	)\
+\}).load(s);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "combs"\cf0 , \{\
+	\cf2 Out\cf0 .ar(\
+		6,\
+		\cf2 Mix\cf0 .arFill(7, \{ \cf2 CombL\cf0 .ar(\cf2 In\cf0 .ar(4, 1), 0.1, \cf2 LFNoise1\cf0 .kr(\cf2 Rand\cf0 (0, 0.1), 0.04, 0.05), 15) \})\
+	)\
+\}).load(s);\
+\
+\cf2 SynthDef\cf0 (\cf3 "allpass"\cf0 , \{ \cf2 arg\cf0  gain = 0.2;\
+	\cf2 var\cf0  source;\
+	source = \cf2 In\cf0 .ar(6, 1);\
+	4.do(\{ source = \cf2 AllpassN\cf0 .ar(source, 0.050, [\cf2 Rand\cf0 (0, 0.05), \cf2 Rand\cf0 (0, 0.05)], 1) \});\
+	\cf2 Out\cf0 .ar(\
+		8,\
+		source * gain\
+	)\
+\}).load(s);\
+\
+\cf2 SynthDef\cf0 (\cf3 "theMixer"\cf0 , \{ arg gain = 1;\
+	\cf2 Out\cf0 .ar(\
+		0,\
+		\cf2 Mix\cf0 .ar([\cf2 In\cf0 .ar(2, 1), \cf2 In\cf0 .ar(8, 2)]) * gain\
+	)\
+\}).load(s);\
+)\
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 (\cf3 "fm1"\cf0 , [\cf5 \\bus\cf0 , 2, \cf5 \\freq\cf0 , 440, \cf5 \\carPartial\cf0 , 1, \cf5 \\modPartial\cf0 , 1.99, \cf5 \\mul\cf0 , 0.071]);\
+\cf2 Synth\cf0 (\cf3 "fm1"\cf0 , [\cf5 \\bus\cf0 , 2, \cf5 \\freq\cf0 , 442, \cf5 \\carPartial\cf0 , 1, \cf5 \\modPartial\cf0 , 2.401, \cf5 \\mul\cf0 , 0.071]);\
+\cf2 Synth\cf0 .tail(s, \cf3 "preDelay"\cf0 );\
+\cf2 Synth\cf0 .tail(s, \cf3 "combs"\cf0 );\
+\cf2 Synth\cf0 .tail(s, \cf3 "allpass"\cf0 );\
+\cf2 Synth\cf0 .tail(s, \cf3 "theMixer"\cf0 , [\cf5 \\gain\cf0 , 0.64]);\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 \
+////////////////////////////////////////////////////////////////////////////////////////////////////
+\f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs24 \cf0 \'83\'52\'83\'93\'83\'7c\'81\'5b\'83\'6c\'83\'93\'83\'67
+\f0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4 \cf0 "fm"
+\f5 \'82\'ccSynthDef\'82\'f0\'81\'411\'82\'c2\'82\'ccSynthDef\'82\'cd\'83\'82\'83\'57\'83\'85\'83\'8c\'81\'5b\'83\'5e\'81\'411\'82\'c2\'82\'ccSynthDef\'82\'cd\'83\'4c\'83\'83\'83\'8a\'83\'41\'82\'c6\'82\'a2\'82\'a42\'82\'c2\'82\'cc\'95\'94\'95\'aa\'82\'c9\'95\'aa\'8a\'84\'82\'b7\'82\'e9\'81\'41\'82\'b1\'82\'c6\'82\'c5\'82\'e6\'82\'e8\'8b\'40\'94\'5c\'90\'ab\'82\'aa\'8d\'82\'82\'dc\'82\'e9\'81\'42\'83\'4c\'83\'83\'83\'8a\'83\'41\'82\'cc\'83\'56\'83\'4f\'83\'69\'83\'8b\'82\'f02\'82\'c2\'82\'dc\'82\'bd\'82\'cd\'82\'bb\'82\'ea\'88\'c8\'8f\'e3\'82\'cc\'83\'82\'83\'57\'83\'85\'83\'8c\'81\'5b\'83\'5e\'82\'c5\'89\'c1\'8d\'48\'82\'b7\'82\'e9\'82\'b1\'82\'c6\'82\'aa\'82\'c5\'82\'ab\'82\'e9\'81\'42
+\f4 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "carrier"\cf0 , \{ \cf2 arg\cf0  inbus = 2, outbus = 0, freq = 440, carPartial = 1, index = 3, mul = 0.2;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 	// 
+\f3 \cf4 \'83\'43\'83\'93\'83\'66\'83\'62\'83\'4e\'83\'58\'82\'cc\'92\'6c\'82\'cd\'92\'ca\'8f\'ed\'82\'cd0\'82\'a9\'82\'e724\'82\'dc\'82\'c5
+\f2 \cf0 \
+	\cf4 // carPartial :: modPartial => car/mod ratio\cf0 \
+	\
+	\cf2 var\cf0  mod;\
+	\cf2 var\cf0  car;\
+	\
+	mod = \cf2 In\cf0 .ar(inbus, 1);\
+\
+	\cf2 Out\cf0 .ar(\
+		outbus,\
+		\cf2 SinOsc\cf0 .ar((freq * carPartial) + mod, 0, mul);\
+	)\
+\}).load(s);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "modulator"\cf0 , \{ \cf2 arg\cf0  outbus = 2, freq, modPartial = 1, index = 3;\
+	\cf2 Out\cf0 .ar(\
+		outbus,\
+		\cf2 SinOsc\cf0 .ar(freq * modPartial, 0, freq) \
+		* \
+		\cf2 LFNoise1\cf0 .kr(\cf2 Rand\cf0 (3, 6).reciprocal).abs \
+		* \
+		index\
+	)\
+\}).load(s);\
+)\
+\
+(\
+\cf2 var\cf0  freq = 440;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // 
+\f3 \cf4 \'8d\'b6\'83\'60\'83\'83\'83\'93\'83\'6c\'83\'8b\'82\'cc\'82\'bd\'82\'df\'82\'cc\'83\'82\'83\'57\'83\'85\'83\'8c\'81\'5b\'83\'5e
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 2, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 0.649, \cf5 \\index\cf0 , 2]);\
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 2, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 1.683, \cf5 \\index\cf0 , 2.31]);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // 
+\f3 \cf4 \'89\'45\'83\'60\'83\'83\'83\'93\'83\'6c\'83\'8b\'82\'cc\'82\'bd\'82\'df\'82\'cc\'83\'82\'83\'57\'83\'85\'83\'8c\'81\'5b\'83\'5e
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 4, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 0.729, \cf5 \\index\cf0 , 1.43]);\
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 4, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 2.19, \cf5 \\index\cf0 , 1.76]);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // 
+\f3 \cf4 \'8d\'b6\'82\'c6\'89\'45\'82\'cc\'83\'60\'83\'83\'83\'93\'83\'6c\'83\'8b\'82\'cc\'82\'bd\'82\'df\'82\'cc\'83\'4c\'83\'83\'83\'8a\'83\'41
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 .tail(s, \cf3 "carrier"\cf0 , [\cf5 \\inbus\cf0 , 2, \cf5 \\outbus\cf0 , 0, \cf5 \\freq\cf0 , freq, \cf5 \\carPartial\cf0 , 1]);\
+\cf2 Synth\cf0 .tail(s, \cf3 "carrier"\cf0 , [\cf5 \\inbus\cf0 , 4, \cf5 \\outbus\cf0 , 1, \cf5 \\freq\cf0 , freq, \cf5 \\carPartial\cf0 , 0.97]);\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf4 ////////////////////////////////////////////////////////////////////////////////////////////////////
+\f4 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs24 \cf0 \'83\'52\'83\'93\'83\'7c\'81\'5b\'83\'6c\'83\'93\'83\'67\'82\'c6\'83\'8a\'83\'6f\'81\'5b\'83\'75
+\f0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \
+
+\f3 \'82\'b1\'82\'cc\'97\'e1\'82\'cd\'91\'4f\'82\'c9\'92\'e8\'8b\'60\'82\'b3\'82\'ea\'82\'bd\'83\'8a\'83\'6f\'81\'5b\'83\'75\'82\'c6\'82\'51\'82\'c2\'82\'cc\'83\'56\'83\'93\'83\'5a\'92\'e8\'8b\'60\'81\'69\'83\'82\'83\'57\'83\'85\'83\'8c\'81\'5b\'83\'5e\'82\'aa\'82\'50\'82\'c2\'82\'ccSynthDef\'82\'c5\'91\'bc\'95\'fb\'82\'cd\'83\'4c\'83\'83\'83\'8a\'83\'41\'81\'6a\'82\'c5\'90\'e0\'96\'be\'82\'b5\'82\'bd\'83\'82\'83\'66\'83\'8b\'82\'f0\'91\'67\'82\'dd\'8d\'87\'82\'ed\'82\'b9\'82\'c4\'82\'a2\'82\'dc\'82\'b7\'81\'42
+\f2 \
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 var\cf0  freq;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // 
+\f3 \cf4 \'83\'4c\'83\'83\'83\'8a\'83\'41\'82\'c6\'83\'82\'83\'57\'83\'85\'83\'8c\'81\'5b\'83\'5e\'82\'cc\'82\'bd\'82\'df\'82\'cc\'83\'89\'83\'93\'83\'5f\'83\'80\'82\'c8\'8a\'ee\'96\'7b\'8e\'fc\'94\'67\'90\'94\'82\'f0\'90\'b6\'90\'ac\'82\'b7\'82\'e9
+\f2 \cf4 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 freq = 330.0.rrand(500);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // 
+\f3 \cf4 \'8d\'b6\'83\'60\'83\'83\'83\'93\'83\'6c\'83\'8b\'82\'cc\'82\'bd\'82\'df\'82\'cc\'83\'82\'83\'57\'83\'85\'83\'8c\'81\'5b\'83\'5e
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 60, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 0.649, \cf5 \\index\cf0 , 2]);\
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 60, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 1.683, \cf5 \\index\cf0 , 2.31]);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // 
+\f3 \cf4 \'89\'45\'83\'60\'83\'83\'83\'93\'83\'6c\'83\'8b\'82\'cc\'82\'bd\'82\'df\'82\'cc\'83\'82\'83\'57\'83\'85\'83\'8c\'81\'5b\'83\'5e
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 62, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 1.11, \cf5 \\index\cf0 , 1.43]);\
+\cf2 Synth\cf0 .head(s, \cf3 "modulator"\cf0 , [\cf5 \\outbus\cf0 , 62, \cf5 \\freq\cf0 , freq, \cf5 \\modPartial\cf0 , 0.729, \cf5 \\index\cf0 , 1.76]);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // 
+\f3 \cf4 \'8d\'b6\'82\'c6\'89\'45\'82\'cc\'83\'60\'83\'83\'83\'93\'83\'6c\'83\'8b\'82\'cc\'82\'bd\'82\'df\'82\'cc\'83\'4c\'83\'83\'83\'8a\'83\'41
+\f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Synth\cf0 .tail(s, \cf3 "carrier"\cf0 , [\cf5 \\inbus\cf0 , 60, \cf5 \\outbus\cf0 , 100, \cf5 \\freq\cf0 , freq, \cf5 \\carPartial\cf0 , 1]);\
+\cf2 Synth\cf0 .tail(s, \cf3 "carrier"\cf0 , [\cf5 \\inbus\cf0 , 62, \cf5 \\outbus\cf0 , 100, \cf5 \\freq\cf0 , freq+1, \cf5 \\carPartial\cf0 , 2.91]);
+\f4 \
+\
+
+\f2 \cf2 Synth\cf0 .tail(s, \cf3 "preDelay"\cf0 , [\cf5 \\inbus\cf0 , 100]);\
+\cf2 Synth\cf0 .tail(s, \cf3 "combs"\cf0 );\
+\cf2 Synth\cf0 .tail(s, \cf3 "allpass"\cf0 );\
+\cf2 Synth\cf0 .tail(s, \cf3 "theMixer"\cf0 , [\cf5 \\gain\cf0 , 0.2]);\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+}

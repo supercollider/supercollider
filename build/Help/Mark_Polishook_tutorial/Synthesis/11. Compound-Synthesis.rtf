@@ -1,0 +1,244 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+\f3\fswiss\fcharset77 Helvetica-Oblique;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red191\green0\blue0;\red0\green0\blue0;\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 11.\
+\
+Multiple synthdefs
+\f1\b0\fs18 \
+\
+
+\f2 Almost any synthesis processes can be specified within a single synthdef. However, complex examples often can be separated more clearly and efficiently into several synthdefs.\
+\
+Groups provide a mechanism through which to combine synths.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Groups are linked lists\
+
+\f2\b0\fs18 \
+The most important aspect of groups is that the nodes to which they refer are ordered. The idea of ordering is essential because it provides a means to insure that one synthesis process occurs before another.\
+\
+SupeCollider uses the mechanism of a linked list to put the nodes in order. A linked list is a dynamic data structure that makes it very easy to move nodes, such that the first node can become the last. Or a node in one position on the list can be repositioned arbitrarily anywhere on the list. The first item in a linked list is always the "head." The last item in a linked list is always the "tail."\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 The ability to put nodes where you want them is essential when feeding a source through a filter, such as a delay, or a reverb. In these circumstances, it's essential that the source synthesis process occurs before the effect process.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Rootnode
+\f2\b0 \
+
+\fs18 \
+The Rootnode is a group that always exists on a server. All nodes, whether synths or groups are connected to it as leaves or branches of a tree.\
+\
+If only one synth is running, it's attached to the Rootnode group, as in
+\f3\i \
+
+\f2\i0 \
+    Group (RootNode, ID 0)\
+      /\
+     / \
+Synth (ID 1000) \
+\
+The code to produce the diagram is\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 (\
+SynthDef\cf0 (\cf4 "ringModulation"\cf0 , \{ \
+	\cf3 Out\cf0 .ar(\
+		0,\
+		Mix.ar(\
+			\cf3 SinOsc\cf0 .ar([440.067, 441.013], 0, 1) \
+			* \
+			\cf3 SinOsc\cf0 .ar([111, 109], 0, 0.2) \
+		)\
+	)\
+\}).load(s);\
+)\
+\
+\cf3 Synth\cf0 (\cf4 "ringModulation"\cf0 );\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+A diagram for two synths attached to the rootnode is\
+\
+    Group (RootNode, ID 0)\
+      /\\\
+     /  \\\
+Synth    Synth\
+ (ID 1000)   (ID 1001)\
+ \
+The code to produce the diagram is\
+ \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 (\
+SynthDef\cf0 (\cf4 "pitchFromNoise"\cf0 , \{ arg out = 0;\
+	\cf3 Out\cf0 .ar(\
+		out,\
+		\cf3 Resonz\cf0 .ar(\
+			\cf3 WhiteNoise.ar(15)\cf0 ,\
+			LFNoise0.kr(2, 110, 660),\
+			0.005\
+		)\
+	)\
+\}).load(s);\
+)\
+\
+ \
+(\
+\cf3 Synth\cf0 (\cf4 "ringModulation"\cf0 );\
+\cf3 Synth\cf0 (\cf4 "pitchFromNoise", [\\out, 1]\cf0 );\
+)\
+ \
+ \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+ \
+It's the responsibility of the user to make sure that nodes are ordered properly. For this reason, the two synths below must be evaluated in the order in which they're given.\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "firstNode-source"\cf0 , \{\
+	\cf3 Out\cf0 .ar(\
+		0,\
+		\cf3 Saw\cf0 .ar([200, 201], 0.05)\
+	)\
+\}).load(s);\
+\
+\cf3 SynthDef\cf0 (\cf4 "secondNode-filter"\cf0 , \{\
+	\cf3 ReplaceOut\cf0 .ar(\
+		0,\
+		\cf3 LPF\cf0 .ar(\
+			\cf3 In\cf0 .ar(0, 2),\
+			\cf3 Lag\cf0 .kr(\
+				\cf3 LFNoise0\cf0 .kr([4, 4.001], 500, 1000),\
+				0.1\
+			)\
+		)\
+	)\
+\}).load(s);\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // "firstNode-source" must be executed first\cf0 \
+\cf2 // if "secondNode-filter" is evaluated first, the "firstNode-source" won't be processed through it\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 (\
+Synth\cf0 (\cf4 "firstNode-source"\cf0 );\
+\cf3 Synth\cf0 (\cf4 "secondNode-filter"\cf0 )\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+A safer way to write the 2 synths is\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 (\
+Synth.head\cf0 (s, \cf4 "firstNode-source"\cf0 );\
+\cf3 Synth.tail\cf0 (s, \cf4 "secondNode-filter"\cf0 )\
+)\
+\
+This example relies upon .head and a .tail messages to put the synths in the proper order, which here means that "firstNode-source" goes to the head of the rootnode group and "secondNode-filter" goes to the tail of the rootnode group.\
+\
+So "firstNode-source" is first item in the linked list that is the rootnode and "secondNode-filter", is the last item of the rootnode linked list structure. The ordering will hold even if the evaluation order of the two synths is changed.\
+\
+\cf3 (\
+Synth.tail\cf0 (s, \cf4 "secondNode-filter"\cf0 );\
+\cf3 Synth.head\cf0 (s, \cf4 "firstNode-source"\cf0 );\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+An even better way to write the previous example is to put each of the 2 synths in its own group.\
+\
+    Group (RootNode, ID 0)\
+      /\\\
+     /  \\\
+Group    Group\
+  |        |\
+  |        |\
+Synth   	 Synth\
+\
+(\
+~source = \cf3 Group\cf0 .head(s);	\cf2 // attach the group to the head of rootnode\cf0 \
+~effect = \cf3 Group\cf0 .tail(s);	\cf2 // attach the group to the tail of rootnode\cf0 \
+)\
+\
+(\
+\cf2 // add the synths to the appropriate groups\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Synth\cf0 .head(~effect, \cf4 "secondNode-filter"\cf0 );\
+\cf3 Synth\cf0 .head(~source, \cf4 "firstNode-source"\cf0 );\
+)\
+\
+The idea is that the groups, not the synths, are first attached to the rootnode in the desired order. Once the groups have been attached to the rootnode in the desired order, the synths can then be assigned to the appropriate groups.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+Groups also can be used for purposes other than making sure that synths run in the proper order. For example, set a control for all of the synths in the group by sending a message to the group, rather than to the individual synths.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // the synthdefs below all have a common control name (mul)\cf6 \
+\cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // build 3 synthdefs and a group\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "synthNumber1"\cf0 , \{ \cf3 arg\cf0  mul = 0.2;\
+	\cf3 Out\cf0 .ar(\
+		0, \
+		\cf3 BrownNoise\cf0 .ar(mul) * \cf3 LFNoise0\cf0 .kr([1, 1.01])\
+	) \
+	\}, [0.1]).load(s);\
+\cf3 SynthDef\cf0 (\cf4 "synthNumber2"\cf0 , \{ \cf3 arg\cf0  mul = 0.2;\
+	\cf3 Out\cf0 .ar(\
+		0, \
+		\cf3 WhiteNoise\cf0 .ar(mul) * \cf3 LFNoise1\cf0 .kr([2.99, 3])\
+	) \
+	\}, [0.1]).load(s);\
+\cf3 SynthDef\cf0 (\cf4 "synthNumber3"\cf0 , \{ \cf3 arg\cf0  mul = 0.2;\
+	\cf3 Out\cf0 .ar(\
+		0, \
+		\cf3 PinkNoise\cf0 .ar(mul) * \cf3 LFNoise2\cf0 .kr([0.79, 0.67])\
+	) \
+\}, [0.1]).load(s);\
+)\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // make a group\cf0 \
+~myGroup = \cf3 Group\cf0 .new;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // attach 3 synths\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Synth\cf0 .head(~myGroup, \cf4 "synthNumber1"\cf0 );\
+\cf3 Synth\cf0 .head(~myGroup, \cf4 "synthNumber2"\cf0 );\
+\cf3 Synth\cf0 .head(~myGroup, \cf4 "synthNumber3"\cf0 );\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // set the \\mul control of each of the 3 synths to a new (and same) value\cf0 \
+~myGroup.set(\cf7 \\mul\cf0 , 0.05)\
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+}

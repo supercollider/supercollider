@@ -1,0 +1,69 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 7. \
+\
+When to use 1 synthdef ... when to use 2 or more synthdefs 
+\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 Many synthesis processes, because they are simple, can be defined within a single synthdef. Other synthesis processes, because they are more complex, are best written with several synthdefs that collaborate as components in a group.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Functions and .scope messages\
+
+\f2\b0\fs18 \
+An easy way to try simple synthesis processes is to run them within a function, rather than defining them within a synthdef and then using them as engines within synths. When developing code in this way, code can then be transfered from the test function into a synthdef at some later point.\
+\
+In fact, .play and .scope messages can be sent to functions, which makes this approach an advantageous way of working, particularly since the .scope message plays code within a function and displays a visual representation of the waveform of the synthesis process.\
+\
+However, the .scope message ONLY works with the internal server. This means that the internal server must first be turned on. This can be done manually, by pressing the boot button on the internal server window, or through code, as in\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Server\cf0 .internal.boot;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+Run this example and look at the scope window.\
+\
+(\
+	\{ \
+	\cf3 	SinOsc\cf0 .ar([440.067, 441.013], 0, 1) \
+		* \
+		\cf3 SinOsc\cf0 .ar([111, 109], 0, 0.2) \
+	\}.scope;\
+)\
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+Here's the same synthesis process transfered to a synthdef. Notice that the code in the function in the example above simply becomes the second argument to the Out ugen, as shown below.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 (\
+SynthDef\cf0 (\cf4 "ringMod"\cf0 , \{ \
+	\cf3 Out\cf0 .ar(\
+		0,\
+		\cf3 SinOsc\cf0 .ar([440.067, 441.013], 0, 1) \
+		* \
+		\cf3 SinOsc\cf0 .ar([111, 109], 0, 0.2) \
+	)\
+\}).load(s);\
+)\
+\
+\cf3 Synth\cf0 (\cf4 "ringMod"\cf0 )\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+}
