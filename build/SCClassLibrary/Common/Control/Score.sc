@@ -49,6 +49,20 @@ Score {
 		);
 	}
 	
+	recordNRT { arg oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, headerFormat = 
+		"AIFF", sampleFormat = "int16", options;
+		this.write(oscFilePath);
+		unixCmd("./scsynth -N" + oscFilePath + (inputFilePath ? "_") + outputFilePath + 			sampleRate + headerFormat + sampleFormat + 
+			(options ? Server.default.options).asOptionsString);
+	}
+	
+	*recordNRT { arg list, oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, 
+		headerFormat = "AIFF", sampleFormat = "int16", options;
+		this.write(list, oscFilePath);
+		unixCmd("./scsynth -N" + oscFilePath + (inputFilePath ? "_") + outputFilePath + 			sampleRate + headerFormat + sampleFormat + 
+			(options ? Server.default.options).asOptionsString);
+	}
+	
 	stop {
 		isPlaying.if({routine.stop; isPlaying = false; routine = nil;}, {"Score not playing".warn;}
 		);
@@ -74,4 +88,5 @@ Score {
 	write {arg oscFilePath;
 		this.class.write(score, oscFilePath);
 	}
+	
 }	

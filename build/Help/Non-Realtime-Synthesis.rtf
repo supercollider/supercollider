@@ -65,15 +65,17 @@ If you do not need an input sound file, then put "_" for the file name as in the
 \
 This could be executed in SC as:\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 \cf3 "./scsynth -N Cmds.osc _ NRTout.aiff 44100 AIFF int16"\cf0 .unixCmd;\
+\f2\fs18 \cf3 "./scsynth -N Cmds.osc _ NRTout.aiff 44100 AIFF int16"\cf0 .unixCmd;
+\fs20 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
 Another option is to use the 
 \f0\b Score 
-\f1\b0 object, which has convenience methods to create OSC command files.\
+\f1\b0 object, which has convenience methods to create OSC command files and do nrt synthesis. See the 
+\f0\b Score 
+\f1\b0 helpfile for more details.\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -117,7 +119,20 @@ x = #[\
 \f2\fs18 \cf2 Score\cf0 .write(x, \cf3 "test.osc"\cf0 );
 \f1\fs24 \
 \
-Score also has a writeFromFile method. See the 
-\f0\b Score
-\f1\b0  helpfile for more details.\
+Score also provides methods to do nrt synthesis directly:\
+
+\f2\fs18 \
+(\
+\cf2 var\cf0  f, o;\
+g = [\
+	[0.1, [\cf5 \\s_new\cf0 , \cf5 \\helpscore\cf0 , 1000, 0, 0, \cf5 \\freq\cf0 , 440]],	[0.2, [\cf5 \\s_new\cf0 , \cf5 \\helpscore\cf0 , 1001, 0, 0, \cf5 \\freq\cf0 , 660]],\
+	[0.3, [\cf5 \\s_new\cf0 , \cf5 \\helpscore\cf0 , 1002, 0, 0, \cf5 \\freq\cf0 , 220]],\
+	[1, [\cf5 \\c_set\cf0 , 0, 0]]\
+	];
+\f1\fs24 \
+
+\f2\fs18 o = \cf2 ServerOptions\cf0 .new.numOutputBusChannels = 1; \cf4 // mono output\cf0 \
+\cf2 Score\cf0 .recordNRT(g, \cf3 "help-oscFile"\cf0 , \cf3 "helpNRT.aiff"\cf0 , options: o); \cf4 // synthesize\cf0 \
+)
+\f1\fs24 \
 }
