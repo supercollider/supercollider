@@ -116,11 +116,6 @@ Function : AbstractFunction {
 
 	cmdPeriod { this.value }	
 	
-	<> { arg that;
-		// function composition
-		//^{|...args| this.valueArray(that.valueArray(args)) }
-		^CompositeFunction.new(this, that)
-	}
 
 	bench { arg print = true;
 		var dt;

@@ -172,6 +172,12 @@ AbstractFunction {
 		^this.composeNAryOp('expexp', [inMin, inMax, outMin, outMax])
 	}
 	
+	// function composition
+	<> { arg that;
+		//^{|...args| this.valueArray(that.valueArray(args)) }
+		^CompositeFunction.new(this, that)
+	}
+	
 	// embed in ugen graph
 	asUGenInput {
 		^this.value
