@@ -449,7 +449,8 @@ Set contiguous ranges of sample indices to single values. For each range, the st
 	string - command name\
 	.. command arguments\
 \
-Plug-ins can define commands that operate on buffers. The arguments after the command name are defined by the command. \
+Plug-ins can define commands that operate on buffers. The arguments after the command name are defined by the command. The currently defined buffer fill commands are listed below in a separate section.\
+\
 \
 
 \f1\b /b_close\
@@ -694,9 +695,79 @@ The node ID is the node that is sending the trigger. The trigger ID and value ar
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs20 \cf0 copyright \'a9 2002 James McCartney\
+\fs20 \cf0 copyright \'a9 2002 James McCartney
+\f1\b\fs24 \
+
+\f0\b0\fs20 \
 \
 \
+
+\f1\b\fs28 Buffer Fill Commands\
+
+\f0\b0\fs24 \
+These are the currently defined fill routines for use with the 
+\f1\b /b_gen
+\f0\b0  command.\
+\
+
+\f1\b Sine Wave Fill Commands\
+
+\f0\b0\fs20 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+
+\fs24 \cf0 There are three defined fill routines for sine waves.\
+\
+	The flags are defined as follows:\
+		1 - normalize - Normalize peak amplitude of wave to 1.0.\
+		2 - wavetable - If set, then the buffer is written in wavetable format so that it can be read by interpolating oscillators.\
+		4 - clear - if set then the buffer is cleared before new partials are written into it. Otherwise the new partials are summed with the existing contents of the buffer.\
+\
+	
+\f1\b sine1
+\f0\b0 \
+		int - flags, see above\
+		[\
+			float - partial amplitude\
+		] * N\
+\
+	Fills a buffer with a series of sine wave partials. The first float value specifies the amplitude of the first partial, the second float value specifies the amplitude of the second partial, and so on.\
+\
+	
+\f1\b sine2
+\f0\b0 \
+		int - flags, see above\
+		[\
+			float - partial frequency (in cycles per buffer)\
+			float - partial amplitude\
+		] * N\
+\
+	Similar to sine1 except that each partial frequency is specified explicitly instead of being an integer series of partials. Non-integer partial frequencies are possible.\
+\
+	
+\f1\b sine3
+\f0\b0 \
+		int - flags, see above\
+		[\
+			float - partial frequency (in cycles per buffer)\
+			float - partial amplitude\
+			float - partial phase\
+		] * N\
+\
+	Similar to sine2 except that each partial may have a nonzero starting phase.\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 copyright \'a9 2002 James McCartney
+\f1\b\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+
+\f0\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
 
 \f1\b\fs24 Command Numbers\
 
