@@ -132,6 +132,7 @@ PyrSymbol *s_next;
 PyrSymbol *s_env;
 PyrSymbol *s_ugen, *s_outputproxy;
 PyrSymbol *s_new, *s_ref, *s_value, *s_at, *s_put;
+PyrSymbol *s_series, *s_copyseries;
 PyrSymbol *s_envirGet, *s_envirPut;
 PyrSymbol *s_synth, *s_spawn, *s_environment, *s_event;
 PyrSymbol *s_hardwaresetup, *s_shutdown;
@@ -247,6 +248,10 @@ void initSymbols()
 	s_value = getsym("value");
 	s_at = getsym("at");
 	s_put = getsym("put");
+	
+	s_series = getsym("series");
+	s_copyseries = getsym("copySeries");
+	
 	s_ugen = getsym("UGen");
 	s_outputproxy = getsym("OutputProxy");
 	s_env = getsym("Env");

@@ -461,9 +461,8 @@ start:
 				r = ELLIPSIS;
 				goto leave; 
 			} else {
+				r = DOTDOT;
 				unput(c); 
-				unput('.'); 
-				r = '.';
 				goto leave; 
 			}
 		} else {

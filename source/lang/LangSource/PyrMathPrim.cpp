@@ -953,6 +953,67 @@ int mathFoldSignal(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+	
+	int err, size;
+	
+	if (IsInt(a) && (IsInt(b) || IsNil(b)) && IsInt(c)) {
+		int first, second, last, step, val;
+		first = a->ui;
+		last = c->ui;
+		second = IsInt(b) ? b->ui : (first < last ? first + 1 : first - 1);
+		step = second - first;
+
+		size = ((last - first) / step) + 1;
+
+		PyrObject *obj = newPyrArray(g->gc, size, 0, true);
+		obj->size = size;
+		PyrSlot *slots = obj->slots;
+		val = first;
+		for (int i=0; i<size; ++i) {
+			SetInt(slots+i, val);
+			val += step;
+		}
+		SetObject(a, obj);
+	} else {
+		double first, second, last, step, val;
+		err = slotDoubleVal(a, &first);
+		if (err) return err;
+		err = slotDoubleVal(c, &last);
+		if (err) return err;
+		err = slotDoubleVal(b, &second);
+		if (err) {
+			if (first < last) second = first + 1.;
+			else second = first - 1.;
+		}
+		
+		step = second - first;
+		size = (int)floor((last - first) / step + 0.001) + 1;
+		PyrObject *obj = newPyrArray(g->gc, size, 0, true);
+		obj->size = size;
+		PyrSlot *slots = obj->slots;
+		val = first;
+		for (int i=0; i<size; ++i) {
+			val = first + step * i;
+			SetFloat(slots+i, val);
+		}
+		SetObject(a, obj);
+	}
+	return errNone;
+/*	series { arg second, last;
+		var step, size;
+		second = second ?? { if (this < last) { this + 1 } { this - 1 } };
+		step = second - this;
+		size = floor((last - this) / step).asInteger + 1;
+		^Array.series(size, this, step)
+	}*/
+
+}
+
 void initMathPrimitives()
 {
 	int base, index;
@@ -982,5 +1043,7 @@ void initMathPrimitives()
 	definePrimitive(base, index++, "_FoldInt", mathFoldInt, 3, 0);
 	definePrimitive(base, index++, "_FoldFloat", mathFoldFloat, 3, 0);
 	definePrimitive(base, index++, "_FoldSignal", mathFoldSignal, 3, 0);
+	
+	definePrimitive(base, index++, "_SimpleNumberSeries", prSimpleNumberSeries, 3, 0);
 }
 

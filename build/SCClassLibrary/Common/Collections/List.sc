@@ -18,6 +18,7 @@ List : SequenceableCollection {
 	asArray { ^array.copy }
 	copy { ^this.class.copyInstance(this) }
 	copyRange { arg start, end; ^this.class.newUsing(array.copyRange(start, end)) }
+	copySeries { arg first, second, last; ^this.class.newUsing(array.copySeries(first, second, last)) }
 	
 	grow { arg sizeIncrease; array = array.grow(sizeIncrease); }
 	size { ^array.size }

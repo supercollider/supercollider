@@ -105,6 +105,14 @@ ArrayedCollection : SequenceableCollection {
 		_ObjectCopyRange;
 		^this.primitiveFailed 
 	}
+	copySeries { arg first, second, last; 
+		// copies elements from first to last, stepping by (second-first)
+		// copySeries(3,5,11) copies elements 3,5,7,9,11
+		// if second is nil then the step is 1.
+		// copySeries(3,nil,11) copies elements 3,4,5,6,7,8,9,10,11
+		_ObjectCopySeries;
+		^this.primitiveFailed 
+	}
 
 	add { arg item; 
 		// add item to end of array.

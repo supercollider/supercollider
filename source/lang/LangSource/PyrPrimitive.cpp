@@ -2274,7 +2274,7 @@ int prDeepCopy(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	a = g->sp;
+	a = g->sp;	
 	PyrDeepCopier copier(g);
 	int err = copier.doDeepCopy(a);
 	return err;
@@ -2322,6 +2322,77 @@ int prObjectCopyRange(struct VMGlobals *g, int numArgsPushed)
 	if (c->utag != tagInt) return errWrongType;
 	a->uo = copyObjectRange(g->gc, a->uo, b->ui, c->ui, true);
 
+	return errNone;
+}
+
+
+int prObjectCopySeries(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b, *c, *d;
+	
+	a = g->sp - 3;
+	b = g->sp - 2;
+	c = g->sp - 1;
+	d = g->sp;
+	
+	PyrObject *inobj = a->uo;
+	PyrObject *newobj;
+	
+	int size = inobj->size;
+	
+	if (b->utag != tagInt && b->utag != tagNil) return errWrongType;
+	if (c->utag != tagInt && c->utag != tagNil) return errWrongType;
+	if (d->utag != tagInt && d->utag != tagNil) return errWrongType;
+	
+	int first  = b->utag == tagInt ? b->ui : 0;	
+	int last   = d->utag == tagInt ? d->ui : size - 1;
+	int second = c->utag == tagInt ? c->ui : (first < last ? b->ui + 1 : b->ui - 1);
+
+	int step = second - first;
+
+	first = sc_clip(first, 0, size-1);
+	last = sc_clip(last, 0, size-1);
+	
+	int elemsize = gFormatElemSize[inobj->obj_format];
+	
+	
+	if (step == 0) return errFailed;
+	if (step == 1) {
+		a->uo = copyObjectRange(g->gc, a->uo, first, last, true);
+	} else if (step > 0) {
+		int length = (last - first) / step + 1;
+		int numbytes = length * elemsize;
+		
+		int flags = ~(obj_immutable) & inobj->obj_flags;
+		
+		newobj = g->gc->New(numbytes, flags, inobj->obj_format, true);
+		newobj->size = length;
+		newobj->classptr = inobj->classptr;
+
+		for (int i=first, j=0; j<length; i+=step, ++j) {
+			PyrSlot slot;
+			getIndexedSlot(inobj, &slot, i);
+			putIndexedSlot(g, newobj, &slot, j);
+		}
+
+		a->uo = newobj;
+	} else if (step < 0) {
+		int length = (first - last) / -step + 1;
+		int numbytes = length * elemsize;
+
+		int flags = ~(obj_immutable) & inobj->obj_flags;
+		
+		newobj = g->gc->New(numbytes, flags, inobj->obj_format, true);
+		newobj->size = length;
+		newobj->classptr = inobj->classptr;
+	
+		for (int i=first, j=0; j<length; i+=step, ++j) {
+			PyrSlot slot;
+			getIndexedSlot(inobj, &slot, i);
+			putIndexedSlot(g, newobj, &slot, j);
+		}
+		a->uo = newobj;
+	}
 	return errNone;
 }
 
@@ -3763,6 +3834,7 @@ void initPrimitives()
 	definePrimitive(base, index++, "_ObjectShallowCopy", prObjectShallowCopy, 1, 0);	
 	definePrimitive(base, index++, "_ObjectCopyImmutable", prObjectCopyImmutable, 1, 0);	
 	definePrimitive(base, index++, "_ObjectCopyRange", prObjectCopyRange, 3, 0);	
+	definePrimitive(base, index++, "_ObjectCopySeries", prObjectCopySeries, 4, 0);	
 	definePrimitive(base, index++, "_ObjectPointsTo", prObjectPointsTo, 2, 0);	
 	definePrimitive(base, index++, "_ObjectRespondsTo", prObjectRespondsTo, 2, 0);	
 	definePrimitive(base, index++, "_ObjectIsMutable", prObjectIsMutable, 1, 0);

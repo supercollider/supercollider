@@ -19,14 +19,15 @@
 #define	INFINITUMOBJ	272
 #define	PSEUDOVAR	273
 #define	ELLIPSIS	274
-#define	PIE	275
-#define	BADTOKEN	276
-#define	INTERPRET	277
-#define	BINOP	278
-#define	KEYBINOP	279
-#define	READWRITEVAR	280
-#define	DOUBLEEQUAL	281
-#define	UMINUS	282
+#define	DOTDOT	275
+#define	PIE	276
+#define	BADTOKEN	277
+#define	INTERPRET	278
+#define	BINOP	279
+#define	KEYBINOP	280
+#define	READWRITEVAR	281
+#define	DOUBLEEQUAL	282
+#define	UMINUS	283
 
 
 extern YYSTYPE yylval;
