@@ -201,3 +201,16 @@ Select : UGen {
  	}
 }
 
+Vibrato : UGen {
+	*ar {
+		arg in = 440.0, freq = 6, depth = 0.02, delay = 0.0, onset = 0.0,
+				rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0;
+		^this.multiNew('audio', in, freq, depth, delay, onset, rateVariation, depthVariation, iphase)
+	}
+	*kr {
+		arg in = 440.0, freq = 6, depth = 0.02, delay = 0.0, onset = 0.0,
+				rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0;
+		^this.multiNew('control', in, freq, depth, delay, onset, rateVariation, depthVariation, iphase)
+	}
+}
+
