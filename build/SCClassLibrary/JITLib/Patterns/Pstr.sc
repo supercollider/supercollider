@@ -73,7 +73,7 @@ ResetStream : Pstr {
 
 Sfin : Stream { 
 	*new { arg count, pattern;
-		^Pfin(count.asStream, pattern.asStream).asStream
+		^Pfin(count.asStream, pattern.asStream)
 	}
 }
 
