@@ -12,7 +12,6 @@ Document {
 		num.do({arg i;
 			doc = this.newFromIndex(i);
 			doc.prisListener(false);
-			allDocuments = allDocuments.add(doc);
 		});
 		listenernum = this.prGetIndexOfListener;	
 		allDocuments.at(listenernum).prisListener(true);
@@ -28,11 +27,6 @@ Document {
 	}
 	
 //class:
-	//*current {
-//		var idx;
-//		idx = this.prcurrentDocument;
-//		^allDocuments.at(idx);
-//	}
 
 	*dir_ { arg path;  dir = path.standardizePath ++ "/"; }
 	*standardizePath { arg p;
@@ -261,10 +255,6 @@ Document {
 	}
 
 	
-	//*prcurrentDocument {
-//		_TextWindow_Current
-//	}
-	
 	//check if there is already a document with the same pointer
 	prAdd {
 		
@@ -288,7 +278,9 @@ Document {
 	}
 	initByIndex { arg idx;
 		//allDocuments = allDocuments.add(this);
+		
 		this.prinitByIndex(idx);
+		^this.prAdd;
 	}
 	prinitByIndex { arg idx;
 		_TextWindow_GetByIndex
