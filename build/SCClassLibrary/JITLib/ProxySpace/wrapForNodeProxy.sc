@@ -34,6 +34,15 @@
 
 }
 
++SoundDef {
+	
+	wrapForNodeProxy { arg proxy, channelOffset=0;
+		^SoundDefControl.new(synthDef, false) //assumes there is no gate in the def.
+	}
+
+}
+
+
 +AbstractPlayer {
 	 
 	wrapForNodeProxy { arg proxy, channelOffset=0;
@@ -89,11 +98,6 @@
 	}
 }
 
-+SoundDef {
-	wrapForNodeProxy { arg proxy, channelOffset=0;
-		^synthDef.wrapForNodeProxy(proxy, channelOffset);
-	}
-}
 
 +Pattern {
 	wrapForNodeProxy { arg proxy, channelOffset=0;
