@@ -15,8 +15,18 @@ MIDIClient {
 		this.list;
 		// might ask for 1 and get 2 if your device has it
 		if(sources.size < inports or: {destinations.size < outports},{
-			("MIDIClient init failed.  \nsources: "+sources+"destinations:"+destinations).warn;
+			"WARNING:".postln;
+			("MIDIClient-init requested " ++ inports ++ " inport(s) and " ++ outports
+				++ " outport(s),").postln;
+			("but found only " ++ sources.size ++ " inport(s) and " ++ destinations.size
+				++ " outport(s).").postln;
+			"Some expected MIDI devices may not be available.".postln;
 		});
+		("Sources: "
+			++ sources.collect({ |x| x.device ++ " : " ++ x.name })
+			++ "\nDestinations: "
+			++ destinations.collect({ |x| x.device ++ " : " ++ x.name })
+		).postln;
 	}
 	*list {
 		var list;
