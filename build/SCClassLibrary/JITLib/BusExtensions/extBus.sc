@@ -1,44 +1,32 @@
 + Bus {
 
-	gate { arg level=1.0, dur=0, target, latency;
-		^this.toServer(target.asTarget, "system_gate_"++rate, [\i_level,level, \i_dur, dur], latency);
+	gate { arg level=1.0, dur=0, target;
+		^this.toServer(target.asTarget, "system_gate_"++rate, level, dur);
 	}
 	
-		
-	line { arg level=1.0, dur=1.0, target, latency;
-		^this.toServer(target.asTarget, "system_line_"++rate, [ \i_end, level, \i_dur, dur ], latency);
+	line { arg level=1.0, dur=1.0, target;
+		^this.toServer(target.asTarget, "system_line_"++rate, level, dur);
 	}
 	
-	xline { arg level=1.0, dur=1.0, target, latency;
-		^this.toServer(target.asTarget, "system_xline_"++rate, [ \i_end, level, \i_dur, dur ], latency);
+	xline { arg level=1.0, dur=1.0, target;
+		^this.toServer(target.asTarget, "system_xline_"++rate, level, dur);
 	}
 		
-	toServer { arg target, defName, args, latency;
-			var bundle, resp, time;
+	toServer { arg target, defName, level, dur;
+			var bundle, args;
+			args = [\i_level, level, \i_dur, dur];
 			bundle = List.new;
-			latency = latency ? server.latency;
-			time = thisThread.time;
-			resp = OSCresponder(target.server.addr, "/c_set", { arg time, resp, msg;
-				msg.removeAt(0);
-				numChannels.do({ arg i;
-					var cArgs;
-					cArgs = args.add(\i_start);
-					cArgs = cArgs.add(msg.at(2*i+1));
-					this.gateSynthMsg(bundle, target, defName, cArgs, index+i);
-				});
-				time = (latency - time + thisThread.time).max(0);
-				bundle.asCompileString.postln;
-				server.listSendBundle(time, bundle);
-				resp.remove;
-				
-			}).add;
-			
-			server.listSendMsg(["/c_get"]++Array.series(numChannels, index, 1));
-			
+			numChannels.do({ arg i;
+				this.gateSynthMsg(bundle, target, defName, args, index+i);
+			});
+			server.listSendBundle(nil, bundle);
+						
 	}
 	gateSynthMsg { arg bundle, target, defName, args, index;
-			Synth.newMsg(bundle, defName, [\i_bus, index]++args, 
-				target.asTarget.group, \addToHead)
+			var synth;
+			synth = Synth.newMsg(bundle, defName, [\i_bus, index]++args, 
+				target.asTarget.group, \addToHead);
+			synth.addMsg(bundle, "/n_map", [\i_start, index]);
 	} 
 	
 
