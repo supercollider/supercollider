@@ -1,0 +1,1617 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
+\red96\green96\blue96;}
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0\b\fs32 \cf0 SIGNAL PROCESSING in SuperCollider\
+\
+1. A Tour of available Unit Generators.\
+
+\f1\b0 	SuperCollider has over 250 unit generators. \
+	If you count the unary and binary operators, there are over 300. \
+	This tour covers many, but not all of them.\
+	\
+	categories of unit generators: \
+		sources: periodic, aperiodic \
+		filters\
+		distortion \
+		panning\
+		delays and buffer ugens\
+		control: envelopes, triggers, counters, gates, lags, decays\
+		spectral \
+\
+
+\f0\b 2. Techniques		\
+
+\f1\b0 	broadening a sound: \
+		decorrelation, beat frequencies, delays.\
+	series and parallel structures.\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 (\
+s = \cf2 Server\cf0 .internal;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf2 Server\cf0 .default = s;\
+s.boot;\
+)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+
+\f0\b Periodic Sources: Oscillators.\
+
+\f1\b0 \
+
+\f0\b LF - "Low Frequency" Unit Generators.\
+
+\f1\b0 \
+LFPar, LFCub, LFTri, Impulse, LFSaw, LFPulse, VarSaw, SyncSaw\
+\
+geometric waveforms, not band limited.\
+will cause aliasing at higher frequencies.\
+\
+\
+LFPar, LFCub, LFTri, LFSaw, Impulse\
+arguments:  frequency, phase, mul, add\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf3 // parabolic approximation of sine\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \{ \cf2 LFPar\cf0 .ar(\cf2 LFPar\cf0 .kr(\cf2 LFPar\cf0 .kr(0.2,0,8,10),0, 400,800),0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFPar\cf0 .ar(\cf2 LFPar\cf0 .kr(0.2, 0, 400,800),0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFPar\cf0 .ar(800,0,0.1) \}.scope(1, zoom: 4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // since it is not band limited, there are aliasing artifacts\cf0 \
+\{ \cf2 LFPar\cf0 .ar(\cf2 XLine\cf0 .kr(100,15000,6),0,0.1) \}.scope(1, zoom: 4);\
+\
+\cf3 // cubic approximation of sine\cf0 \
+\{ \cf2 LFCub\cf0 .ar(\cf2 LFCub\cf0 .kr(\cf2 LFCub\cf0 .kr(0.2,0,8,10),0, 400,800),0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFCub\cf0 .ar(\cf2 LFCub\cf0 .kr(0.2, 0, 400,800),0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFCub\cf0 .ar(800,0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFCub\cf0 .ar(\cf2 XLine\cf0 .kr(100,15000,6),0,0.1) \}.scope(1, zoom: 4);\
+\
+\
+\{ \cf2 LFTri\cf0 .ar(\cf2 LFTri\cf0 .kr(\cf2 LFTri\cf0 .kr(0.2,0,8,10),0, 400,800),0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFTri\cf0 .ar(\cf2 LFTri\cf0 .kr(0.2, 0, 400,800),0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFTri\cf0 .ar(800,0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFTri\cf0 .ar(\cf2 XLine\cf0 .kr(100,15000,6),0,0.1) \}.scope(1, zoom: 4);\
+\
+\
+\{ \cf2 LFSaw\cf0 .ar(\cf2 LFSaw\cf0 .kr(\cf2 LFSaw\cf0 .kr(0.2,0,8,10),0, 400,800),0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFSaw\cf0 .ar(\cf2 LFSaw\cf0 .kr(0.2, 0, 400,800),0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFSaw\cf0 .ar(100,0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFSaw\cf0 .ar(\cf2 XLine\cf0 .kr(100,15000,6),0,0.1) \}.scope(1, zoom: 4);\
+\
+\
+\{ \cf2 Impulse\cf0 .ar(\cf2 LFTri\cf0 .kr(\cf2 LFTri\cf0 .kr(0.2,0,8,10),0, 400,800),0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 Impulse\cf0 .ar(\cf2 LFTri\cf0 .kr(0.2, 0, 400,800),0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 Impulse\cf0 .ar(100,0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 Impulse\cf0 .ar(\cf2 XLine\cf0 .kr(100,15000,6),0,0.1) \}.scope(1, zoom: 4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 LFPulse, VarSaw\
+arguments:  frequency, phase, width, mul, add\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \{ \cf2 LFPulse\cf0 .ar(\cf2 LFPulse\cf0 .kr(\cf2 LFPulse\cf0 .kr(0.2,0,0.5,8,10),0,0.5, 400,800),0,0.5,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFPulse\cf0 .ar(\cf2 LFPulse\cf0 .kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFPulse\cf0 .ar(\cf2 XLine\cf0 .kr(100,15000,6),0,0.5,0.1) \}.scope(1, zoom: 4);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // pulse width modulation\cf0 \
+\{ \cf2 LFPulse\cf0 .ar(100,0,\cf2 MouseY\cf0 .kr(0,1),0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 LFPulse\cf0 .ar(100,0,\cf2 LFTri\cf0 .kr(0.2,0,0.5,0.5),0.1) \}.scope(1, zoom: 4);\
+\
+\
+\{ \cf2 VarSaw\cf0 .ar(\cf2 VarSaw\cf0 .kr(\cf2 VarSaw\cf0 .kr(0.2,0,0.2,8,10),0,0.2, 400,800),0,0.2,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 VarSaw\cf0 .ar(\cf2 VarSaw\cf0 .kr(0.2, 0, 0.2, 400,800),0,0.2,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 VarSaw\cf0 .ar(\cf2 XLine\cf0 .kr(100,15000,6),0,0.2,0.1) \}.scope(1, zoom: 4);\
+\
+\cf3 // pulse width modulation\cf0 \
+\{ \cf2 VarSaw\cf0 .ar(100,0,\cf2 MouseY\cf0 .kr(0,1),0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 VarSaw\cf0 .ar(100,0,\cf2 LFTri\cf0 .kr(0.2,0,0.5,0.5),0.1) \}.scope(1, zoom: 4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 SyncSaw\
+arguments:  syncFreq, sawFreq, mul, add\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \{ \cf2 SyncSaw\cf0 .ar(100, \cf2 MouseX\cf0 .kr(100, 1000), 0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 SyncSaw\cf0 .ar(100, \cf2 Line\cf0 .kr(100, 800, 12), 0.1) \}.scope(1, zoom: 4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs32 \cf0 Band Limited Oscillators\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+SinOsc, FSinOsc, Blip, Saw, Pulse\
+will not alias. \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 SinOsc, FSinOsc\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 arguments:  frequency, phase, mul, add\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \{ \cf2 SinOsc\cf0 .ar(\cf2 SinOsc\cf0 .kr(\cf2 SinOsc\cf0 .kr(0.2,0,8,10),0, 400,800),0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 SinOsc\cf0 .ar(\cf2 SinOsc\cf0 .kr(0.2, 0, 400,800),0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 SinOsc\cf0 .ar(800,0,0.1) \}.scope(1, zoom: 4);\
+\{ \cf2 SinOsc\cf0 .ar(\cf2 XLine\cf0 .kr(100,15000,6),0,0.1) \}.scope(1, zoom: 4);\
+\
+\{ \cf2 FSinOsc\cf0 .ar(800,0,0.1) \}.scope(1, zoom: 4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // FSinOsc should not be frequency modulated. \cf0 \
+\cf3 // Since it is based on a filter at the edge of stability, it will blow up:\cf0 \
+\{ \cf2 FSinOsc\cf0 .ar(\cf2 FSinOsc\cf0 .kr(\cf2 FSinOsc\cf0 .kr(0.2,0,8,10),0, 400,800),0,0.1) \}.scope(1, zoom: 4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Blip\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 arguments:  frequency, numHarmonics, mul, add\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \{ \cf2 Blip\cf0 .ar(\cf2 XLine\cf0 .kr(20000,200,6),100,0.2) \}.scope(1);\
+\{ \cf2 Blip\cf0 .ar(\cf2 XLine\cf0 .kr(100,15000,6),100,0.2) \}.scope(1); \cf3 // no aliasing\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // modulate number of harmonics\cf0 \
+\{ \cf2 Blip\cf0 .ar(200,\cf2 Line\cf0 .kr(1,100,20),0.2) \}.scope(1);\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 Saw\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 arguments:  frequency, mul, add\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \{ \cf2 Saw\cf0 .ar(\cf2 XLine\cf0 .kr(20000,200,6),0.2) \}.scope(1);\
+\{ \cf2 Saw\cf0 .ar(\cf2 XLine\cf0 .kr(100,15000,6),0.2) \}.scope(1); \cf3 // no aliasing\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 Pulse\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 arguments:  frequency, width, mul, add\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \{ \cf2 Pulse\cf0 .ar(\cf2 XLine\cf0 .kr(20000,200,6),0.3,0.2) \}.scope(1);\
+\{ \cf2 Pulse\cf0 .ar(\cf2 XLine\cf0 .kr(100,15000,6),0.3,0.2) \}.scope(1); \cf3 // no aliasing\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // modulate pulse width\cf0 \
+\{ \cf2 Pulse\cf0 .ar(200, \cf2 Line\cf0 .kr(0.01,0.99,8), 0.2) \}.scope(1);\
+\
+\cf3 // two band limited square waves thru a resonant low pass filter\cf0 \
+\{ \cf2 RLPF\cf0 .ar(\cf2 Pulse\cf0 .ar([100,250],0.5,0.1), \cf2 XLine\cf0 .kr(8000,400,5), 0.05) \}.scope(1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Klang - sine oscillator bank\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 arguments:  `[ frequencies, amplitudes, phases ], mul, add\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \{ \cf2 Klang\cf0 .ar(`[ [800, 1000, 1200],[0.3, 0.3, 0.3],[pi,pi,pi]], 1, 0) * 0.4\}.scope(1);\
+\
+\{ \cf2 Klang\cf0 .ar(`[ \{exprand(400, 2000)\}.dup(16), \cf2 nil\cf0 , \cf2 nil\cf0  ], 1, 0) * 0.04 \}.scope(1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs32 \cf0 Table Oscillators\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+Osc, COsc, VOsc, VOsc3\
+Use a buffer allocated on the server.\
+\
+Osc\
+arguments: buffer number, frequency, phase, mul, add.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 (\
+b = \cf2 Buffer\cf0 .alloc(s, 2048, 1, bufnum: 80);\
+b.sine1(1.0/(1..6), \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
+)\
+\
+\{ \cf2 Osc\cf0 .ar(80, 100, 0, 0.1) \}.scope(1, zoom:4);\
+\
+b.sine1(1.0/(1..12));\
+b.sine1(1.0/(1..24));\
+b.sine1(1.0/(1..32));\
+b.sine1([1.0/(1,3..12), 0].flop.flat.postln);\
+b.sine1([1.0/(1,3..32).squared, 0].flop.flat.postln);\
+b.sine1((1.dup(4) ++ 0.dup(8)).scramble.postln);\
+b.sine1((1.dup(4) ++ 0.dup(8)).scramble.postln);\
+b.sine1((1.dup(4) ++ 0.dup(8)).scramble.postln);\
+b.sine1((1.dup(4) ++ 0.dup(8)).scramble.postln);\
+b.sine1(\{1.0.rand2.cubed\}.dup(8).round(1e-3).postln);\
+b.sine1(\{1.0.rand2.cubed\}.dup(12).round(1e-3).postln);\
+b.sine1(\{1.0.rand2.cubed\}.dup(16).round(1e-3).postln);\
+b.sine1(\{1.0.rand2.cubed\}.dup(24).round(1e-3).postln);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 COsc - two oscillators, detuned\
+arguments: buffer number, frequency, beat frequency, mul, add.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 b.sine1(1.0/(1..6), \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
+\
+\{ \cf2 COsc\cf0 .ar(80, 100, 1, 0.1) \}.scope(1, zoom:4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // change buffer as above.\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 VOsc - multiple wave table crossfade oscillators\
+arguments: buffer number, frequency, phase, mul, add.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // allocate tables 80 to 87\cf0 \
+8.do \{\cf2 |i|\cf0  s.sendMsg(\cf4 \\b_alloc\cf0 , 80+i, 1024); \};\
+)\
+\
+(\
+\cf3 // fill tables 80 to 87\cf0 \
+8.do(\{\cf2 |i|\cf0 \
+	\cf2 var\cf0  n, a;\
+	\cf3 // generate array of harmonic amplitudes\cf0 \
+	n = (i+1)**2; \cf3 // num harmonics for each table: [1,4,9,16,25,36,49,64]\cf0 \
+	a = \{\cf2 |j|\cf0  ((n-j)/n).squared \}.dup(n);\
+	\cf3 // fill table\cf0 \
+	s.listSendMsg([\cf4 \\b_gen\cf0 , 80+i, \cf4 \\sine1\cf0 , 7] ++ a);\
+\});\
+)\
+\
+\{ \cf2 VOsc\cf0 .ar(\cf2 MouseX\cf0 .kr(80,87), 120, 0, 0.3) \}.scope(1, zoom:4);\
+\
+(\
+\cf3 // allocate and fill tables 80 to 87\cf0 \
+8.do(\{\cf2 |i|\cf0 \
+	\cf3 // generate array of harmonic amplitudes\cf0 \
+	a = \{1.0.rand2.cubed \}.dup((i+1)*4);\
+	\cf3 // fill table\cf0 \
+	s.listSendMsg([\cf4 \\b_gen\cf0 , 80+i, \cf4 \\sine1\cf0 , 7] ++ a);\
+\});\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 VOsc3 - three VOscs summed.\
+arguments: buffer number, freq1, freq2, freq3, beat frequency, mul, add.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf3 // chorusing\cf0 \
+\{ \cf2 VOsc3\cf0 .ar(\cf2 MouseX\cf0 .kr(80,87), 120, 121.04, 119.37, 0.2) \}.scope(1, zoom:4);\
+\
+\cf3 // chords\cf0 \
+\{ \cf2 VOsc3\cf0 .ar(\cf2 MouseX\cf0 .kr(80,87), 120, 151.13, 179.42, 0.2) \}.scope(1, zoom:4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0\b\fs32 \cf0 Aperiodic Sources: Noise.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs20 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 LF "Low Frequency" Noise Generators.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 LFNoise0, LFNoise1, LFNoise2, LFClipNoise\
+arguments: frequency, mul, add\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \{ \cf2 LFClipNoise\cf0 .ar(\cf2 MouseX\cf0 .kr(200, 10000, 1), 0.125) \}.scope(1);\
+\{ \cf2 LFNoise0\cf0 .ar(\cf2 MouseX\cf0 .kr(200, 10000, 1), 0.25) \}.scope(1);\
+\{ \cf2 LFNoise1\cf0 .ar(\cf2 MouseX\cf0 .kr(200, 10000, 1), 0.25) \}.scope(1);\
+\{ \cf2 LFNoise2\cf0 .ar(\cf2 MouseX\cf0 .kr(200, 10000, 1), 0.25) \}.scope(1);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // used as controls\cf0 \
+\{ \cf2 LFPar\cf0 .ar(\cf2 LFClipNoise\cf0 .kr(\cf2 MouseX\cf0 .kr(0.5, 64, 1), 200, 400), 0, 0.2) \}.scope(1, zoom:8);\
+\{ \cf2 LFPar\cf0 .ar(\cf2 LFNoise0\cf0 .kr(\cf2 MouseX\cf0 .kr(0.5, 64, 1), 200, 400), 0, 0.2) \}.scope(1, zoom:8);\
+\{ \cf2 LFPar\cf0 .ar(\cf2 LFNoise1\cf0 .kr(\cf2 MouseX\cf0 .kr(0.5, 64, 1), 200, 400), 0, 0.2) \}.scope(1, zoom:8);\
+\{ \cf2 LFPar\cf0 .ar(\cf2 LFNoise2\cf0 .kr(\cf2 MouseX\cf0 .kr(0.5, 64, 1), 200, 400), 0, 0.2) \}.scope(1, zoom:8);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Broad Spectrum Noise Generators\
+\
+ClipNoise, WhiteNoise, PinkNoise, BrownNoise, GrayNoise\
+arguments: mul, add\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \{ \cf2 ClipNoise\cf0 .ar(0.2) \}.scope(1);\
+\{ \cf2 WhiteNoise\cf0 .ar(0.2) \}.scope(1);\
+\{ \cf2 PinkNoise\cf0 .ar(0.4) \}.scope(1);\
+\{ \cf2 BrownNoise\cf0 .ar(0.2) \}.scope(1);\
+\{ \cf2 GrayNoise\cf0 .ar(0.2) \}.scope(1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 \
+Impulse Noise Generators\
+\
+Dust, Dust2\
+arguments: density, mul, add\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \{ \cf2 Dust\cf0 .ar(\cf2 MouseX\cf0 .kr(1,10000,1), 0.4) \}.scope(1, zoom:4);\
+\{ \cf2 Dust2\cf0 .ar(\cf2 MouseX\cf0 .kr(1,10000,1), 0.4) \}.scope(1, zoom:4);\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Chaotic Noise Generators\
+\
+Crackle\
+arguments: chaosParam, mul, add\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\{ \cf2 Crackle\cf0 .ar(\cf2 MouseX\cf0 .kr(1,2), 0.5) \}.scope(1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Filters
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Low Pass, High Pass\
+\
+LPF, HPF - 12 dB / octave\
+arguments: in, freq, mul, add\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\{ \cf2 LPF\cf0 .ar(\cf2 WhiteNoise\cf0 .ar, \cf2 MouseX\cf0 .kr(1e2,2e4,1), 0.2) \}.scope(1);\
+\{ \cf2 HPF\cf0 .ar(\cf2 WhiteNoise\cf0 .ar, \cf2 MouseX\cf0 .kr(1e2,2e4,1), 0.2) \}.scope(1);\
+\{ \cf2 LPF\cf0 .ar(\cf2 Saw\cf0 .ar(100), \cf2 MouseX\cf0 .kr(1e2,2e4,1), 0.2) \}.scope(1);\
+\{ \cf2 HPF\cf0 .ar(\cf2 Saw\cf0 .ar(100), \cf2 MouseX\cf0 .kr(1e2,2e4,1), 0.2) \}.scope(1);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Band Pass, Band Cut\
+\
+BPF, BRF - 12 dB / octave\
+arguments: in, freq, rq, mul, add\
+rq is the reciprocal of the Q of the filter,\
+or in other words: the bandwidth in Hertz = rq * freq.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \{ \cf2 BPF\cf0 .ar(\cf2 WhiteNoise\cf0 .ar, \cf2 MouseX\cf0 .kr(1e2,2e4,1), 0.4, 0.4) \}.scope(1);\
+\{ \cf2 BRF\cf0 .ar(\cf2 WhiteNoise\cf0 .ar, \cf2 MouseX\cf0 .kr(1e2,2e4,1), 0.4, 0.2) \}.scope(1);\
+\{ \cf2 BPF\cf0 .ar(\cf2 Saw\cf0 .ar(100), \cf2 MouseX\cf0 .kr(1e2,2e4,1), 0.4, 0.4) \}.scope(1);\
+\{ \cf2 BRF\cf0 .ar(\cf2 Saw\cf0 .ar(100), \cf2 MouseX\cf0 .kr(1e2,2e4,1), 0.4, 0.2) \}.scope(1);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // modulating the bandwidth\cf0 \
+\{ \cf2 BPF\cf0 .ar(\cf2 WhiteNoise\cf0 .ar, \cf2 3000\cf0 , MouseX.kr(0.01,0.7,1), 0.4) \}.scope(1);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Resonant Low Pass, High Pass, Band Pass
+\f2\fs24 \
+\
+
+\f1\fs32 RLPF, RHPF - 12 dB / octave\
+arguments: in, freq, rq, mul, add\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\{ \cf2 RLPF\cf0 .ar(\cf2 WhiteNoise\cf0 .ar, \cf2 MouseX\cf0 .kr(1e2,2e4,1), 0.2, 0.2) \}.scope(1);\
+\{ \cf2 RHPF\cf0 .ar(\cf2 WhiteNoise\cf0 .ar, \cf2 MouseX\cf0 .kr(1e2,2e4,1), 0.2, 0.2) \}.scope(1);\
+\{ \cf2 RLPF\cf0 .ar(\cf2 Saw\cf0 .ar(100), \cf2 MouseX\cf0 .kr(1e2,2e4,1), 0.2, 0.2) \}.scope(1);\
+\{ \cf2 RHPF\cf0 .ar(\cf2 Saw\cf0 .ar(100), \cf2 MouseX\cf0 .kr(1e2,2e4,1), 0.2, 0.2) \}.scope(1);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Resonz - resonant band pass filter with uniform amplitude\
+arguments: in, freq, rq, mul, add\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // modulate frequency\cf0 \
+\{ \cf2 Resonz\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.5), \cf2 XLine\cf0 .kr(1000,8000,10), 0.05) \}.scope(1);\
+\
+\cf3 // modulate bandwidth\cf0 \
+\{ \cf2 Resonz\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.5), 2000, \cf2 XLine\cf0 .kr(1, 0.001, 8)) \}.scope(1);\
+\
+\cf3 // modulate bandwidth opposite direction\cf0 \
+\{ \cf2 Resonz\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.5), 2000, \cf2 XLine\cf0 .kr(0.001, 1, 8)) \}.scope(1);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Ringz - ringing filter.\
+Internally it is the same as Resonz but the bandwidth is expressed as a ring time.\
+arguments: in, frequency, ring time, mul, add\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\{ \cf2 Ringz\cf0 .ar(\cf2 Dust\cf0 .ar(3, 0.3), 2000, 2) \}.scope(1, zoom:4);\
+\
+\{ \cf2 Ringz\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.005), 2000, 0.5) \}.scope(1);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // modulate frequency\cf0 \
+\{ \cf2 Ringz\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.005), \cf2 XLine\cf0 .kr(100,3000,10), 0.5) \}.scope(1, zoom:4);\
+\
+\{ \cf2 Ringz\cf0 .ar(\cf2 Impulse\cf0 .ar(6, 0, 0.3),  \cf2 XLine\cf0 .kr(100,3000,10), 0.5) \}.scope(1, zoom:4);\
+\
+\cf3 // modulate ring time\cf0 \
+\{ \cf2 Ringz\cf0 .ar(\cf2 Impulse\cf0 .ar(6, 0, 0.3), 2000, \cf2 XLine\cf0 .kr(0.04, 4, 8)) \}.scope(1, zoom:4);\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Simpler Filters\
+6 dB / octave\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\{ \cf2 OnePole\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.5), \cf2 MouseX\cf0 .kr(-0.99, 0.99)) \}.scope(1);\
+\{ \cf2 OneZero\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.5), \cf2 MouseX\cf0 .kr(-0.49, 0.49)) \}.scope(1);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 NonLinear Filters\
+Median, Slew\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf3 // a signal with impulse noise.\cf0 \
+\{ \cf2 Saw\cf0 .ar(500, 0.1) + \cf2 Dust2\cf0 .ar(100, 0.9) \}.scope(1);\
+\cf3 // after applying median filter\cf0 \
+\{ \cf2 Median\cf0 .ar(3, \cf2 Saw\cf0 .ar(500, 0.1) + \cf2 Dust2\cf0 .ar(100, 0.9)) \}.scope(1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf3 // a signal with impulse noise.\cf0 \
+\{ \cf2 Saw\cf0 .ar(500, 0.1) + \cf2 Dust2\cf0 .ar(100, 0.9) \}.scope(1);\
+\cf3 // after applying slew rate limiter\cf0 \
+\{ \cf2 Slew\cf0 .ar(\cf2 Saw\cf0 .ar(500, 0.1) + \cf2 Dust2\cf0 .ar(100, 0.9),1000,1000) \}.scope(1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Formant Filter \
+Formlet - A filter whose impulse response is similar to a FOF grain.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\{ \cf2 Formlet\cf0 .ar(\cf2 Impulse\cf0 .ar(\cf2 MouseX\cf0 .kr(2,300,1), 0, 0.4), 800, 0.01, 0.1) \}.scope(1, zoom:4);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Klank - resonant filter bank\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 arguments:  `[ frequencies, amplitudes, ring times ], mul, add\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \{ \cf2 Klank\cf0 .ar(`[[200, 671, 1153, 1723], \cf2 nil\cf0 , [1, 1, 1, 1]], \cf2 Impulse\cf0 .ar(2, 0, 0.1)) \}.play;\
+\
+\{ \cf2 Klank\cf0 .ar(`[[200, 671, 1153, 1723], \cf2 nil\cf0 , [1, 1, 1, 1]], \cf2 Dust\cf0 .ar(8, 0.1)) \}.play;\
+\
+\{ \cf2 Klank\cf0 .ar(`[[200, 671, 1153, 1723], \cf2 nil\cf0 , [1, 1, 1, 1]], \cf2 PinkNoise\cf0 .ar(0.007)) \}.play;\
+\
+\{ \cf2 Klank\cf0 .ar(`[ \{exprand(200, 4000)\}.dup(12), \cf2 nil\cf0 , \cf2 nil\cf0  ], \cf2 PinkNoise\cf0 .ar(0.007)) \}.scope(1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \{ \cf2 Klank\cf0 .ar(`[ (1..13)*200, \cf2 1/\cf0 (1..13), \cf2 nil\cf0  ], \cf2 PinkNoise\cf0 .ar(0.01)) \}.scope(1);\
+\
+\{ \cf2 Klank\cf0 .ar(`[ (1,3..13)*200, \cf2 1/\cf0 (1,3..13), \cf2 nil\cf0  ], \cf2 PinkNoise\cf0 .ar(0.01)) \}.scope(1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0\b\fs32 \cf0 Distortion\
+\
+
+\f1\b0 abs, max, squared, cubed\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \{ \cf2 SinOsc\cf0 .ar(300, 0, \cf2 0.2\cf0 ) \}.scope(1);\
+\{ \cf2 SinOsc\cf0 .ar(300, 0, \cf2 0.2\cf0 ).abs \}.scope(1);\
+\{ \cf2 SinOsc\cf0 .ar(300, 0, \cf2 0.2\cf0 ).max(0) \}.scope(1);\
+\{ \cf2 SinOsc\cf0 .ar(300, 0).squared * 0.2 \}.scope(1);\
+\{ \cf2 SinOsc\cf0 .ar(300, 0).cubed * 0.2 \}.scope(1);\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 distort, softclip, clip2, fold2, wrap2, \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\{ \cf2 SinOsc\cf0 .ar(300, 0, \cf2 MouseX\cf0 .kr(0.1,80,1)).distort * 0.2 \}.scope(1);\
+\{ \cf2 SinOsc\cf0 .ar(300, 0, \cf2 MouseX\cf0 .kr(0.1,80,1)).softclip * 0.2 \}.scope(1);\
+\{ \cf2 SinOsc\cf0 .ar(300, 0, \cf2 MouseX\cf0 .kr(0.1,80,1)).clip2(1) * 0.2 \}.scope(1);\
+\{ \cf2 SinOsc\cf0 .ar(300, 0, \cf2 MouseX\cf0 .kr(0.1,80,1)).fold2(1) * 0.2 \}.scope(1);\
+\{ \cf2 SinOsc\cf0 .ar(300, 0, \cf2 MouseX\cf0 .kr(0.1,80,1)).wrap2(1) * 0.2 \}.scope(1);\
+\{ \cf2 SinOsc\cf0 .ar(300, 0, \cf2 MouseX\cf0 .kr(0.1,80,1)).wrap2(1) * 0.2 \}.scope(1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 scaleneg
+\f2\fs20 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \{ \cf2 SinOsc\cf0 .ar(200, 0, \cf2 0.2\cf0 ).scaleneg(\cf2 MouseX\cf0 .kr(-1,1)) \}.scope(1);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 waveshaping by phase modulating a 0 Hz sine oscillator\
+(currently there is a limit of 8pi)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+(\
+\{ \
+	\cf2 var\cf0  in;\
+	in = \cf2 SinOsc\cf0 .ar(300, 0, \cf2 MouseX\cf0 .kr(0.1,8pi,1));\
+	\cf2 SinOsc\cf0 .ar(0, in, 0.2); \cf3 // 0 Hz sine oscillator\cf0 \
+\}.scope(1);\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Shaper \
+input is used to look up a value in a table.\
+Chebyshev polynomials are typically used to fill the table.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 {{\NeXTGraphic chebyshevpolynomials.gif \width6800 \height4840
+}¬}\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+s.sendMsg(\cf4 \\b_alloc\cf0 , 80, 1024); \cf3 // allocate table\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // fill with chebyshevs\cf0 \
+s.listSendMsg([\cf4 \\b_gen\cf0 , 80, \cf4 \\cheby\cf0 , 7] ++ \{1.0.rand2.squared\}.dup(6));\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs8 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \{ \cf2 Shaper\cf0 .ar(80, \cf2 SinOsc\cf0 .ar(600, 0, \cf2 MouseX\cf0 .kr(0,1))) * 0.3; \}.scope(1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs8 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 s.listSendMsg([\cf4 \\b_gen\cf0 , 80, \cf4 \\cheby\cf0 , 7] ++ \{1.0.rand2.squared\}.dup(6));\
+s.listSendMsg([\cf4 \\b_gen\cf0 , 80, \cf4 \\cheby\cf0 , 7] ++ \{1.0.rand2.squared\}.dup(6));\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0\b\fs32 \cf0 Panning\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\b0\fs24 \cf0 (\
+s = \cf2 Server\cf0 .internal;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf2 Server\cf0 .default = s;\
+s.quit;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 s.options.numOutputBusChannels = 8;\
+s.options.numInputBusChannels = 8;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 s.boot;\
+)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+Pan2 - equal power stereo pan a mono source\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 arguments: in, pan position, level\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 pan controls typically range from -1 to +1\
+
+\f0\b \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\b0\fs24 \cf0 \{ \cf2 Pan2\cf0 .ar(\cf2 BrownNoise\cf0 .ar, \cf2 MouseX\cf0 .kr(-1,1), 0.3) \}.scope(2);\
+\{ \cf2 Pan2\cf0 .ar(\cf2 BrownNoise\cf0 .ar, \cf2 SinOsc\cf0 .kr(0.2), 0.3) \}.scope(2);\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 LinPan2 - linear pan a mono source (not equal power)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 arguments: in, pan position, level\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 \
+\{ \cf2 LinPan2\cf0 .ar(\cf2 BrownNoise\cf0 .ar, \cf2 MouseX\cf0 .kr(-1,1), 0.3) \}.scope(2);\
+\{ \cf2 LinPan2\cf0 .ar(\cf2 BrownNoise\cf0 .ar, \cf2 SinOsc\cf0 .kr(0.2), 0.3) \}.scope(2);\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 Balance2 - balance a stereo source\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 arguments: left in, right in, pan position, level\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 \
+\{ \cf2 Balance2\cf0 .ar(\cf2 BrownNoise\cf0 .ar, \cf2 BrownNoise\cf0 .ar, \cf2 MouseX\cf0 .kr(-1,1), 0.3) \}.scope(2);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Pan4 - equal power quad panner\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \{ \cf2 Pan4\cf0 .ar(\cf2 BrownNoise\cf0 .ar, \cf2 MouseX\cf0 .kr(-1,1), \cf2 MouseY\cf0 .kr(1,-1), 0.3) \}.scope(4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 PanAz - azimuth panner to any number of channels\
+arguments: num channels, in, pan position, level, width\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \{ \cf2 PanAz\cf0 .ar(5, \cf2 BrownNoise\cf0 .ar, \cf2 MouseX\cf0 .kr(-1,1), 0.3, 2) \}.scope(5);\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf3 // change width to 3\cf0 \
+\{ \cf2 PanAz\cf0 .ar(5, \cf2 BrownNoise\cf0 .ar, \cf2 MouseX\cf0 .kr(-1,1), 0.3, 3) \}.scope(5);\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 XFade2 - equal power cross fade between two inputs\
+arguments: in1, in2, crossfade, level\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 \
+\{ \cf2 XFade2\cf0 .ar(\cf2 BrownNoise\cf0 .ar, SinOsc.ar(500), \cf2 MouseX\cf0 .kr(-1,1), 0.3) \}.scope(1);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs8 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 PanB2 and DecodeB2 - 2D ambisonics panner and decoder\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+(\
+\{\
+	\cf2 var\cf0  w, x, y, p, lf, rf, rr, lr;\
+	\
+	p = \cf2 BrownNoise\cf0 .ar; \cf3 // source\cf0 \
+	\
+	\cf3 // B-format encode\cf0 \
+	#w, x, y = \cf2 PanB2\cf0 .ar(p, \cf2 MouseX\cf0 .kr(-1,1), 0.3); \
+	\
+	\cf3 // B-format decode to quad. outputs in clockwise order\cf0 \
+	#lf, rf, rr, lr = \cf2 DecodeB2\cf0 .ar(4, w, x, y);\
+	\
+	[lf, rf, lr, rr] \cf3 // reorder to my speaker arrangement: Lf Rf Lr Rr\cf0 \
+\}.scope(4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 )\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 Rotate2 - rotate a sound field of ambisonic or even stereo sound.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+(\
+\{\
+	\cf3 // rotation of stereo sound via mouse \cf0 \
+	\cf2 var\cf0  x, y;\
+	x = \cf2 Mix\cf0 .fill(4, \{ \cf2 LFSaw\cf0 .ar(200 + 2.0.rand2, 0, 0.1) \}); \cf3 // left in\cf0 \
+	y = \cf2 WhiteNoise\cf0 .ar * \cf2 LFPulse\cf0 .kr(3,0,0.7,0.2); \cf3 // right in\cf0 \
+	#x, y = \cf2 Rotate2\cf0 .ar(x, y, \cf2 MouseX\cf0 .kr(0,2));\
+	[x,y]\
+\}.scope(2);\
+)\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0\b\fs32 \cf0 Delays and Buffer UGens\
+\
+
+\f1\b0 DelayN, DelayL, DelayC\
+simple delays\
+N - no interpolation\
+L - linear interpolation\
+C - cubic interpolation\
+arguments: in, maximum delay time, current delay time, mul, add\
+
+\f0\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // Dust randomly triggers Decay to create an exponential \cf0 \
+\cf3 // decay envelope for the WhiteNoise input source\cf0 \
+\{\
+z = \cf2 Decay\cf0 .ar(\cf2 Dust\cf0 .ar(1,0.5), 0.3, \cf2 WhiteNoise\cf0 .ar);\
+\cf2 DelayN\cf0 .ar(z, 0.1, 0.1, 1, z); \cf3 // input is mixed with delay via the add input\cf0 \
+\}.scope(1, zoom: 4)\
+)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0\b\fs32 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 (\
+\{\
+z = \cf2 Decay\cf0 .ar(\cf2 Impulse\cf0 .ar(2,0,0.4), 0.3, \cf2 WhiteNoise\cf0 .ar);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 DelayL\cf0 .ar(z, 0.3, MouseX.kr(0,0.3), 1, z); \cf3 // input is mixed with delay via the add input\cf0 \
+\}.scope(1, zoom: 4)\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 CombN, CombL, CombC\
+feedback delays\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 arguments: in, maximum delay time, current delay time, echo decay time, mul, add\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs6 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf3 // used as an echo. \cf0 \
+\{ \cf2 CombN\cf0 .ar(\cf2 Decay\cf0 .ar(\cf2 Dust\cf0 .ar(1,0.5), 0.2, \cf2 WhiteNoise\cf0 .ar), 0.2, 0.2, 3) \}.scope(1, zoom:4);\
+\
+\cf3 // Comb used as a resonator. The resonant fundamental is equal to \cf0 \
+\cf3 // reciprocal of the delay time.\cf0 \
+\{ \cf2 CombN\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.02), 0.01, \cf2 XLine\cf0 .kr(0.0001, 0.01, 20), 0.2) \}.scope(1);\
+\
+\{ \cf2 CombL\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.02), 0.01, \cf2 XLine\cf0 .kr(0.0001, 0.01, 20), 0.2) \}.scope(1);\
+\
+\{ \cf2 CombC\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.02), 0.01, \cf2 XLine\cf0 .kr(0.0001, 0.01, 20), 0.2) \}.scope(1);\
+\
+\cf3 // with negative feedback:\cf0 \
+\{ \cf2 CombN\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.02), 0.01, \cf2 XLine\cf0 .kr(0.0001, 0.01, 20), -0.2) \}.scope(1);\
+\
+\{ \cf2 CombL\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.02), 0.01, \cf2 XLine\cf0 .kr(0.0001, 0.01, 20), -0.2) \}.scope(1);\
+\
+\{ \cf2 CombC\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.02), 0.01, \cf2 XLine\cf0 .kr(0.0001, 0.01, 20), -0.2) \}.scope(1);\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \{ \cf2 CombC\cf0 .ar(\cf2 Decay\cf0 .ar(\cf2 Dust\cf0 .ar(1,0.1), 0.2, \cf2 WhiteNoise\cf0 .ar), 1/100, 1/100, 3) \}.play;\
+\{ \cf2 CombC\cf0 .ar(\cf2 Decay\cf0 .ar(\cf2 Dust\cf0 .ar(1,0.1), 0.2, \cf2 WhiteNoise\cf0 .ar), 1/200, 1/200, 3) \}.play;\
+\{ \cf2 CombC\cf0 .ar(\cf2 Decay\cf0 .ar(\cf2 Dust\cf0 .ar(1,0.1), 0.2, \cf2 WhiteNoise\cf0 .ar), 1/300, 1/300, 3) \}.play;\
+\{ \cf2 CombC\cf0 .ar(\cf2 Decay\cf0 .ar(\cf2 Dust\cf0 .ar(1,0.1), 0.2, \cf2 WhiteNoise\cf0 .ar), 1/400, 1/400, 3) \}.scope(1, zoom:4);\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs32 \cf0 AllpassN, AllpassL, AllpassC\
+allpass delay\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 arguments: in, maximum delay time, current delay time, echo decay time, mul, add\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 (\
+\{\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\cf2 var\cf0  z;\
+	z = \cf2 Decay\cf0 .ar(\cf2 Dust\cf0 .ar(1,0.5), 0.1, \cf2 WhiteNoise\cf0 .ar);\
+	8.do \{ z = \cf2 AllpassL\cf0 .ar(z, 0.04, 0.04.rand, 2) \};\
+	z\
+\}.scope(1);\
+)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 PlayBuf\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 buffer playback\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 arguments: numChannels, buffer number, rate, trigger, start pos, loop\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf3 // read sound\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 b = \cf2 Buffer\cf0 .read(s, \cf5 "sounds/a11wlk01.wav"\cf0 );\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 \{ SinOsc.ar(800 + (700 * \cf2 PlayBuf\cf0 .ar(1,b.bufnum, \cf2 BufRateScale\cf0 .kr(b.bufnum),  loop:1)),0,0.3) \}.scope(1);\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf3 // loop is true\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \{ \cf2 PlayBuf\cf0 .ar(1,b.bufnum, \cf2 BufRateScale\cf0 .kr(b.bufnum), loop:1) \}.scope(1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs6 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // trigger one shot on each pulse\cf0 \
+(\
+\{\
+	\cf2 var\cf0  trig;\
+	trig = \cf2 Impulse\cf0 .kr(2.0);\
+	\cf2 PlayBuf\cf0 .ar(1,b.bufnum,\cf2 BufRateScale\cf0 .kr(b.bufnum),trig,0,0);\
+\}.scope(1);\
+)\
+\
+\cf3 // trigger one shot on each pulse\cf0 \
+(\
+\{\
+	\cf2 var\cf0  trig;\
+	trig = \cf2 Impulse\cf0 .kr(\cf2 XLine\cf0 .kr(0.1,100,30));\
+	\cf2 PlayBuf\cf0 .ar(1,b.bufnum,\cf2 BufRateScale\cf0 .kr(b.bufnum),trig,5000,0);\
+\}.scope(1);\
+)\
+\
+\cf3 // mouse control of trigger rate and startpos\cf0 \
+(\
+\{\
+	\cf2 var\cf0  trig;\
+	trig = \cf2 Impulse\cf0 .kr(\cf2 MouseY\cf0 .kr(0.5,200,1));\
+	\cf2 PlayBuf\cf0 .ar(1,b.bufnum,\cf2 BufRateScale\cf0 .kr(b.bufnum),trig,\cf2 MouseX\cf0 .kr(0,\cf2 BufFrames\cf0 .kr(b.bufnum)),1)\
+\}.scope(1);\
+)\
+\
+\cf3 // accelerating pitch\cf0 \
+(\
+\{\
+	\cf2 var\cf0  rate;\
+	rate = \cf2 XLine\cf0 .kr(0.1,100,60);\
+	\cf2 PlayBuf\cf0 .ar(1, b.bufnum, rate, 1.0,0.0, 1.0)\
+\}.scope(1);\
+)\
+\
+\cf3 // sine wave control of playback rate. negative rate plays backwards\cf0 \
+(\
+\{\
+	\cf2 var\cf0  rate;\
+	rate = \cf2 FSinOsc\cf0 .kr(\cf2 XLine\cf0 .kr(0.2,8,30), 0, 3, 0.6);\
+	\cf2 PlayBuf\cf0 .ar(1,b.bufnum,\cf2 BufRateScale\cf0 .kr(b.bufnum)*rate,1,0,1)\
+\}.scope(1);\
+)\
+\
+\cf3 // zig zag around sound \cf0 \
+(\
+\{\
+	\cf2 var\cf0  rate;\
+	rate = \cf2 LFNoise2\cf0 .kr(\cf2 XLine\cf0 .kr(1,20,60), 2);\
+	\cf2 PlayBuf\cf0 .ar(1,b.bufnum,\cf2 BufRateScale\cf0 .kr(b.bufnum) * rate,1,0,1)\
+\}.scope(1);\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs6 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf3 // free sound\cf0 \
+b.free;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs32 \cf0 TGrains\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 granulation of a buffer\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 arguments: numChannels, trigger, buffer number, rate, center pos, dur, pan, amp, interpolation\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf3 // read sound\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 b = \cf2 Buffer\cf0 .read(s, \cf5 "sounds/a11wlk01.wav"\cf0 );\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 (\
+\{\
+	\cf2 var\cf0  trate, dur;\
+	trate = \cf2 MouseY\cf0 .kr(2,200,1);\
+	dur = 4 / trate;\
+	\cf2 TGrains\cf0 .ar(2, \cf2 Impulse\cf0 .ar(trate), b.bufnum, 1, \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b.bufnum)), dur, 0, 0.1, 2);\
+\}.scope(2, zoom: 4);\
+)\
+\
+(\
+\{\
+	\cf2 var\cf0  trate, dur, clk, pos, pan;\
+	trate = \cf2 MouseY\cf0 .kr(8,120,1);\
+	dur = 12 / trate;\
+	clk = \cf2 Impulse\cf0 .kr(trate);\
+	pos = \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b.bufnum)) + \cf2 TRand\cf0 .kr(0, 0.01, clk);\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.6);\
+	\cf2 TGrains\cf0 .ar(2, clk, b.bufnum, 1, pos, dur, pan, 0.1);\
+\}.scope(2, zoom: 4);\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // 4 channels\cf0 \
+(\
+\{\
+	\cf2 var\cf0  trate, dur, clk, pos, pan;\
+	trate = \cf2 MouseY\cf0 .kr(8,120,1);\
+	dur = 12 / trate;\
+	clk = \cf2 Impulse\cf0 .kr(trate);\
+	pos = \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b.bufnum)) + \cf2 TRand\cf0 .kr(0, 0.01, clk);\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.6);\
+	\cf2 TGrains\cf0 .ar(4, clk, b.bufnum, 1, pos, dur, pan, 0.1);\
+\}.scope(4, zoom: 4);\
+)\
+\
+(\
+\{\
+	\cf2 var\cf0  trate, dur, clk, pos, pan;\
+	trate = \cf2 MouseY\cf0 .kr(8,120,1);\
+	dur = 4 / trate;\
+	clk = \cf2 Dust\cf0 .kr(trate);\
+	pos = \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b.bufnum)) + \cf2 TRand\cf0 .kr(0, 0.01, clk);\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.6);\
+	\cf2 TGrains\cf0 .ar(2, clk, b.bufnum, 1, pos, dur, pan, 0.1);\
+\}.scope(2, zoom: 4);\
+)\
+\
+\
+\
+(\
+\{\
+	\cf2 var\cf0  trate, dur, clk, pos, pan;\
+	trate = \cf2 LinExp\cf0 .kr(\cf2 LFTri\cf0 .kr(\cf2 MouseY\cf0 .kr(0.1,2,1)),-1,1,8,120);\
+	dur = 12 / trate;\
+	clk = \cf2 Impulse\cf0 .ar(trate);\
+	pos = \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b.bufnum));\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.6);\
+	\cf2 TGrains\cf0 .ar(2, clk, b.bufnum, 1, pos, dur, pan, 0.1);\
+\}.scope(2, zoom: 4);\
+)\
+\
+\
+(\
+\{\
+	\cf2 var\cf0  trate, dur, clk, pos, pan;\
+	trate = 12;\
+	dur = \cf2 MouseY\cf0 .kr(0.2,24,1) / trate;\
+	clk = \cf2 Impulse\cf0 .kr(trate);\
+	pos = \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b.bufnum)) + \cf2 TRand\cf0 .kr(0, 0.01, clk);\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.6);\
+	\cf2 TGrains\cf0 .ar(2, clk, b.bufnum, 1, pos, dur, pan, 0.1);\
+\}.scope(2, zoom: 4);\
+)\
+\
+(\
+\{\
+	\cf2 var\cf0  trate, dur, clk, pos, pan;\
+	trate = 100;\
+	dur = 8 / trate;\
+	clk = \cf2 Impulse\cf0 .kr(trate);\
+	pos = \cf2 Integrator\cf0 .kr(\cf2 BrownNoise\cf0 .kr(0.001));\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.6);\
+	\cf2 TGrains\cf0 .ar(2, clk, b.bufnum, 1, pos, dur, pan, 0.1);\
+\}.scope(2, zoom: 4);\
+)\
+\
+(\
+\{\
+	\cf2 var\cf0  trate, dur, clk, pos, pan;\
+	trate = \cf2 MouseY\cf0 .kr(1,400,1);\
+	dur = 8 / trate;\
+	clk = \cf2 Impulse\cf0 .kr(trate);\
+	pos = \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b.bufnum));\
+	pan = \cf2 WhiteNoise\cf0 .kr(0.8);\
+	\cf2 TGrains\cf0 .ar(2, clk, b.bufnum, 2 ** \cf2 WhiteNoise\cf0 .kr(2), pos, dur, pan, 0.1);\
+\}.scope(2, zoom: 4);\
+)\
+\
+\
+\
+\
+(\
+\{\
+	\cf2 var\cf0  trate, dur;\
+	trate = \cf2 MouseY\cf0 .kr(2,120,1);\
+	dur = 1.2 / trate;\
+	\cf2 TGrains\cf0 .ar(2, \cf2 Impulse\cf0 .ar(trate), b.bufnum, (1.2 ** \cf2 WhiteNoise\cf0 .kr(3).round(1)), \cf2 MouseX\cf0 .kr(0,\cf2 BufDur\cf0 .kr(b.bufnum)), dur, \cf2 WhiteNoise\cf0 .kr(0.6), 0.1);\
+\}.scope(2, zoom: 4);\
+)\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf3 // free sound\cf0 \
+b.free;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 	\
+
+\f0\b Control\
+\
+
+\f1\b0 Filters for Controls\
+
+\f0\b \
+
+\f1\b0 Decay\
+triggered exponential decay\
+arguments: in, decay time, mul, add\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 \{ \cf2 WhiteNoise\cf0 .ar * \cf2 Decay\cf0 .ar(\cf2 Impulse\cf0 .ar(1), 0.9, 0.2) \}.scope(1, zoom:4);\
+\{ \cf2 WhiteNoise\cf0 .ar * \cf2 Decay\cf0 .ar(\cf2 Dust\cf0 .ar(3), 0.9, 0.2) \}.scope(1, zoom:4);\
+\{ \cf2 SinOsc\cf0 .ar(\cf2 Decay\cf0 .ar(\cf2 Dust\cf0 .ar(4), 0.5, 1000, 400), 0, 0.2) \}.scope(1, zoom:4);\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+Decay2\
+triggered exponential attack and exponential decay \
+arguments: trigger, attack time, decay time, mul, add\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 \{ \cf2 WhiteNoise\cf0 .ar * \cf2 Decay2\cf0 .ar(\cf2 Impulse\cf0 .ar(1), 0.2, 0.9, 0.2) \}.scope(1, zoom:4);\
+\{ \cf2 WhiteNoise\cf0 .ar * \cf2 Decay2\cf0 .ar(\cf2 Dust\cf0 .ar(3), 0.2, 0.9, 0.2) \}.scope(1, zoom:4);\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+Lag\
+arguments: trigger, duration\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 \{ \cf2 SinOsc\cf0 .ar(\cf2 Lag\cf0 .ar(\cf2 LFPulse\cf0 .ar(2,0,0.5,800,400), \cf2 MouseX\cf0 .kr(0,0.5)), 0, 0.2) \}.scope(1, zoom:4);\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+Integrator\
+leaky integrator\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 \{ \cf2 SinOsc\cf0 .ar(\cf2 Integrator\cf0 .ar(\cf2 Dust2\cf0 .ar(8), 0.99999, 200, 800), 0, 0.2) \}.scope(1)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 \
+\
+Triggers\
+
+\f0\b \
+
+\f1\b0 Trig, Trig1\
+timed duration gate\
+arguments: trigger, duration\
+
+\f0\b \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\b0\fs24 \cf3 // amplitude determined by amplitude of trigger\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \{ \cf2 Trig\cf0 .ar(\cf2 Dust\cf0 .ar(2), 0.2) * \cf2 FSinOsc\cf0 .ar(800, 0, 0.4) \}.scope(1, zoom:4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // amplitude always the same.\cf0 \
+\{ \cf2 Trig1\cf0 .ar(\cf2 Dust\cf0 .ar(2), 0.2) * \cf2 FSinOsc\cf0 .ar(800, 0, 0.4) \}.scope(1, zoom:4)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0\b\fs32 \cf0 \
+
+\f1\b0 TDelay\
+delays a trigger. only delays one pending trigger at a time.\
+arguments: trigger, delay time\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 (\
+\{ \
+	\cf2 var\cf0  trig;\
+	trig = \cf2 Dust\cf0 .ar(2);\
+	[(\cf2 Trig1\cf0 .ar(trig, 0.05) * \cf2 FSinOsc\cf0 .ar(600, 0, 0.2)),\
+	(\cf2 Trig1\cf0 .ar(\cf2 TDelay\cf0 .ar(trig, 0.1), 0.05) * \cf2 FSinOsc\cf0 .ar(800, 0, 0.2))]\
+\}.scope(2, zoom:4);\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 )\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 Latch\
+sample and hold\
+arguments: in, trigger\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \{ \cf2 Blip\cf0 .ar(\cf2 Latch\cf0 .ar(\cf2 WhiteNoise\cf0 .ar, \cf2 Impulse\cf0 .ar(9)) * 400 + 500, 4, 0.2) \}.play;\
+\{ \cf2 Blip\cf0 .ar(\cf2 Latch\cf0 .ar(\cf2 SinOsc\cf0 .ar(0.3), \cf2 Impulse\cf0 .ar(9)) * 400 + 500, 4, 0.2) \}.play;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 Gate\
+pass or hold\
+arguments: in, trigger\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \{ \cf2 Blip\cf0 .ar(\cf2 Gate\cf0 .ar(\cf2 LFNoise2\cf0 .ar(40), \cf2 LFPulse\cf0 .ar(1)) * 400 + 500, 4, 0.2) \}.scope(1, zoom:4);\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 PulseCount\
+count triggers\
+arguments: trigger, reset
+\f2\fs24 \
+\
+(\
+\{\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SinOsc\cf0 .ar(\
+			\cf2 PulseCount\cf0 .ar(\cf2 Impulse\cf0 .ar(10), \cf2 Impulse\cf0 .ar(0.4)) * 200, \
+			0, 0.05\
+		)\
+\}.scope(2, zoom:4);\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 PulseDivider\
+arguments: trigger, div, start
+\f2\fs24 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 (\cf0 \
+\{	\
+	\cf2 var\cf0  p, a, b;\
+	p = \cf2 Impulse\cf0 .ar(8);\
+	a = \cf2 SinOsc\cf0 .ar(1200, 0, \cf2 Decay2\cf0 .ar(p, 0.005, 0.1));\
+	b = \cf2 SinOsc\cf0 .ar(600,  0, \cf2 Decay2\cf0 .ar(\cf2 PulseDivider\cf0 .ar(p, \cf2 MouseX\cf0 .kr(1,8).round(1)), 0.005, 0.5));\
+	\
+	[a, b] * 0.4\
+\}.scope(2, zoom:4);\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 )\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f1\fs32 \cf0 EnvGen\
+envelope generator\
+envelope is specified using an instance of the Env class.\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\fs24 \cf0 \
+\{ \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc, doneAction:2) * \cf2 SinOsc\cf0 .ar(880,0,0.2) \}.play;\
+\{ \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(1,0.005,1,4), doneAction:2) * \cf2 SinOsc\cf0 .ar(880,0,0.2) \}.play;\
+\
+\{ \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc, Impulse.kr(2)) * \cf2 SinOsc\cf0 .ar(880,0,0.2) \}.play;\
+\{ \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc, Dust.kr(3)) * \cf2 SinOsc\cf0 .ar(880,0,0.2) \}.play;\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf3 // for sustain envelopes a gate is required\cf0 \
+z = \{ \cf2 arg\cf0  gate=1; \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .adsr, gate, doneAction:2) * \cf2 SinOsc\cf0 .ar(880,0,0.2) \}.play;\
+z.release;
+\f0\b\fs32 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2\b0\fs24 \cf0 (\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf3 // randomly generated envelope\cf0 \
+z = \{ \cf2 arg\cf0  gate=1; \
+	\cf2 var\cf0  env, n=32;\
+	env = \cf2 Env\cf0 (\
+				[0]++\{1.0.rand.squared\}.dup(n-1) ++ [0], \
+				\{rrand(0.005,0.2)\}.dup(n),\
+				\cf4 \\lin\cf0 , n-8, 8 );\
+	\cf2 EnvGen\cf0 .kr(env, gate, doneAction: 2) * \cf2 LFTri\cf0 .ar(220,0,0.4) \
+\}.scope(1, zoom:4);\
+)\
+z.release;
+\f0\b\fs32 \
+\
+Spectral\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 FFT, IFFT and the phase vocoder ugens.\
+\
+FFT calculates the spectrum of a sound, puts it into a buffer, and outputs a trigger each time the\
+buffer is ready to process. The PV UGens process the spectrum when they receive the trigger.\
+IFFT converts the spectrum back into sound.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // alloc a buffer for the FFT\cf0 \
+b = \cf2 Buffer\cf0 .alloc(s,2048,1);\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf3 // read a sound\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 c = \cf2 Buffer\cf0 .read(s, \cf5 "sounds/a11wlk01.wav"\cf0 );\
+\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // do nothing\cf0 \
+\{\
+	\cf2 var\cf0  in, chain;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 	in = \cf2 PlayBuf\cf0 .ar(1,c.bufnum, \cf2 BufRateScale\cf0 .kr(c.bufnum), loop:1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	chain = \cf2 FFT\cf0 (b.bufnum, in);\
+	0.5 * \cf2 IFFT\cf0 (chain);\
+\}.scope(1);\
+)\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // pass only magnitudes above a threshold\cf0 \
+\{\
+	\cf2 var\cf0  in, chain;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 	in = \cf2 PlayBuf\cf0 .ar(1,c.bufnum, \cf2 BufRateScale\cf0 .kr(c.bufnum), loop:1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	chain = \cf2 FFT\cf0 (b.bufnum, in);\
+	chain = \cf2 PV_MagAbove\cf0 (chain, \cf2 MouseX\cf0 .kr(0.1,512,1)); \
+	0.5 * \cf2 IFFT\cf0 (chain);\
+\}.scope(1);\
+)\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // pass only magnitudes below a threshold\cf0 \
+\{\
+	\cf2 var\cf0  in, chain;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 	in = \cf2 PlayBuf\cf0 .ar(1,c.bufnum, \cf2 BufRateScale\cf0 .kr(c.bufnum), loop:1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	chain = \cf2 FFT\cf0 (b.bufnum, in);\
+	chain = \cf2 PV_MagBelow\cf0 (chain, \cf2 MouseX\cf0 .kr(0.1,512,1)); \
+	0.5 * \cf2 IFFT\cf0 (chain);\
+\}.scope(1);\
+)\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // brick wall filter.\cf0 \
+\{\
+	\cf2 var\cf0  in, chain;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 	in = \cf2 PlayBuf\cf0 .ar(1,c.bufnum, \cf2 BufRateScale\cf0 .kr(c.bufnum), loop:1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	chain = \cf2 FFT\cf0 (b.bufnum, in);\
+	chain = \cf2 PV_BrickWall\cf0 (chain, \cf2 MouseX\cf0 .kr(-1,1)); \
+	0.5 * \cf2 IFFT\cf0 (chain);\
+\}.scope(1);\
+)\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // pass random frequencies. Mouse controls how many to pass.\cf0 \
+\cf3 // trigger changes the frequencies periodically\cf0 \
+\{\
+	\cf2 var\cf0  in, chain;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 	in = \cf2 PlayBuf\cf0 .ar(1,c.bufnum, \cf2 BufRateScale\cf0 .kr(c.bufnum), loop:1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	chain = \cf2 FFT\cf0 (b.bufnum, in);\
+	chain = \cf2 PV_RandComb\cf0 (chain, \cf2 MouseX\cf0 .kr(0,1), \cf2 Impulse\cf0 .kr(0.4));\
+	0.5 * \cf2 IFFT\cf0 (chain);\
+\}.scope(1);\
+)\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // rectangular comb filter\cf0 \
+\{\
+	\cf2 var\cf0  in, chain;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 	in = \cf2 PlayBuf\cf0 .ar(1,c.bufnum, \cf2 BufRateScale\cf0 .kr(c.bufnum), loop:1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	chain = \cf2 FFT\cf0 (b.bufnum, in);\
+	chain = \cf2 PV_RectComb\cf0 (chain, 8, \cf2 MouseY\cf0 .kr(0,1), \cf2 MouseX\cf0 .kr(0,1));\
+	0.5 * \cf2 IFFT\cf0 (chain);\
+\}.scope(1);\
+)\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // freeze magnitudes\cf0 \
+\{\
+	\cf2 var\cf0  in, chain;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 	in = \cf2 PlayBuf\cf0 .ar(1,c.bufnum, \cf2 BufRateScale\cf0 .kr(c.bufnum), loop:1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	chain = \cf2 FFT\cf0 (b.bufnum, in);\
+	chain = \cf2 PV_MagFreeze\cf0 (chain, \cf2 LFPulse\cf0 .kr(1, 0.75));\
+	0.5 * \cf2 IFFT\cf0 (chain);\
+\}.scope(1);\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs32 \cf0 2. Techniques\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Artificial Space\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Building a sense of space into a sound by setting up phase differences between the speakers.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\{ \cf2 var\cf0  x; x = \cf2 BrownNoise\cf0 .ar(0.2); [x,x] \}.scope(2); \cf3 // correlated\cf0 \
+\{ \{\cf2 BrownNoise\cf0 .ar(0.2)\}.dup \}.scope(2); \cf3 // not correlated\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // correlated\cf0 \
+\{ \cf2 var\cf0  x; x = \cf2 LPF\cf0 .ar(\cf2 BrownNoise\cf0 .ar(0.2), \cf2 MouseX\cf0 .kr(100,10000)); [x,x] \}.scope(2);\
+\cf3 // not correlated\cf0 \
+\{ \cf2 LPF\cf0 .ar(\{\cf2 BrownNoise\cf0 .ar(0.2)\}.dup, \cf2 MouseX\cf0 .kr(100,10000)) \}.scope(2);\
+\
+\
+\cf3 // correlated\cf0 \
+(\
+\{ \cf2 var\cf0  x; \
+	x = \cf2 Klank\cf0 .ar(`[[200, 671, 1153, 1723], \cf2 nil\cf0 , [1, 1, 1, 1]], \cf2 PinkNoise\cf0 .ar(7e-3)); \
+	[x,x] \
+\}.scope(2))\
+\cf3 // not correlated\cf0 \
+\{ \cf2 Klank\cf0 .ar(`[[200, 671, 1153, 1723], \cf2 nil\cf0 , [1, 1, 1, 1]], \cf2 PinkNoise\cf0 .ar([7e-3,7e-3])) \}.scope(2);\
+\
+\cf3 // two waves mixed together coming out both speakers\cf0 \
+\{ \cf2 var\cf0  x; x = \cf2 Mix\cf0 .ar(\cf2 VarSaw\cf0 .ar([100,101], 0, 0.1, 0.2)); [x,x] \}.scope(2);\
+\cf3 // two waves coming out each speaker independantly\cf0 \
+\{ \cf2 VarSaw\cf0 .ar([100,101], 0, 0.1, 0.2 * 1.414) \}.scope(2); \cf3 // * 1.414 to compensate for power\cf0 \
+\
+\cf3 // delays as cues to direction\cf0 \
+\cf3 // mono\cf0 \
+\{ \cf2 var\cf0  x; x = \cf2 LFTri\cf0 .ar(1000,0,\cf2 Decay2\cf0 .ar(\cf2 Impulse\cf0 .ar(4,0,0.2),0.004,0.2)); [x,x]\}.scope(2);\
+\
+(\
+\cf3 // inter-speaker delays\cf0 \
+\{ \cf2 var\cf0  x; x = \cf2 LFTri\cf0 .ar(1000,0,\cf2 Decay2\cf0 .ar(\cf2 Impulse\cf0 .ar(4,0,0.2),0.004,0.2)); \
+	[\cf2 DelayC\cf0 .ar(x,0.01,0.01),\cf2 DelayC\cf0 .ar(x,0.02,\cf2 MouseX\cf0 .kr(0.02, 0))]\
+\}.scope(2);\
+)\
+\
+(\
+\cf3 // mixing two delays together\cf0 \
+\cf3 // you hear a phasing sound but the sound is still flat.\cf0 \
+\{ \cf2 var\cf0  x; x = \cf2 BrownNoise\cf0 .ar(0.2); \
+	x = \cf2 Mix\cf0 .ar([\cf2 DelayC\cf0 .ar(x,0.01,0.01),\cf2 DelayC\cf0 .ar(x,0.02,\cf2 MouseX\cf0 .kr(0,0.02))]);\
+	[x,x]\
+\}.scope(2);\
+)\
+\
+(\
+\cf3 // more spatial sounding. phasing causes you to perceive directionality\cf0 \
+\{ \cf2 var\cf0  x; x = \cf2 BrownNoise\cf0 .ar(0.2); \
+	[\cf2 DelayC\cf0 .ar(x,0.01,0.01),\cf2 DelayC\cf0 .ar(x,0.02,\cf2 MouseX\cf0 .kr(0.02, 0))]\
+\}.scope(2);\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs32 \cf0 Parallel Structures\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 \
+(\
+\{\
+	\cf3 // mixing sine oscillators in parallel\cf0 \
+	\cf2 var\cf0  n = 16; \cf3 // number of structures to make\cf0 \
+	\cf3 // mix together  parallel structures\cf0 \
+	\cf2 Mix\cf0 .fill(n, 		\
+			\cf3 // this function creates an oscillator at a random frequency\cf0 \
+			\{ \cf2 FSinOsc\cf0 .ar(200 + 1000.0.rand) \}\
+	) / (2*n)			\cf3 // scale amplitude\cf0 \
+\}.scope(1);\
+)\
+\
+(\
+\{\
+	\cf3 // mixing sine oscillators in parallel\cf0 \
+	\cf2 var\cf0  n = 16; \cf3 // number of structures to make\cf0 \
+	\cf3 // mix together  parallel structures\cf0 \
+	\cf2 Mix\cf0 .fill(n, 		\
+			\cf3 // this function creates an oscillator at a random frequency\cf0 \
+			\{ \cf2 FSinOsc\cf0 .ar(200 + 1000.0.rand + [0, 0.5]) \}\
+	) / (2*n)			\cf3 // scale amplitude\cf0 \
+\}.scope(2);\
+)\
+\
+(\
+\{\
+	\cf3 // mixing sine oscillators in parallel\cf0 \
+	\cf2 var\cf0  n = 16; \cf3 // number of structures to make\cf0 \
+	\cf3 // mix together  parallel structures\cf0 \
+	\cf2 Mix\cf0 .fill(n, 		\
+			\{ \
+				var amp;\
+				amp = \cf2 FSinOsc\cf0 .kr(exprand(0.1,1),2pi.rand).max(0);\
+				\cf2 Pan2\cf0 .ar(\
+					\cf2 FSinOsc\cf0 .ar(exprand(100,1000.0), 0, amp),\
+					1.0.rand2)\
+			\}\
+	) / (2*n)			\cf3 // scale amplitude\cf0 \
+\}.scope(2);\
+)\
+\
+\
+(\
+\{\
+	\cf2 var\cf0  n;\
+	n = 8; \cf3 // number of 'voices'\cf0 \
+	\cf2 Mix\cf0 .ar( \cf3 // mix all stereo pairs down.\cf0 \
+		\cf2 Pan2\cf0 .ar( \cf3 // pan the voice to a stereo position\cf0 \
+			\cf2 CombL\cf0 .ar( \cf3 // a comb filter used as a string resonator\cf0 \
+				\cf2 Dust\cf0 .ar( \cf3 // random impulses as an excitation function\cf0 \
+					\cf3 // an array to cause expansion of Dust to n channels\cf0 \
+					\cf3 // 1 means one impulse per second on average\cf0 \
+					1.dup(n), \
+					0.3 \cf3 // amplitude\cf0 \
+				), \
+				0.01, \cf3 // max delay time in seconds\cf0 \
+				\cf3 // array of different random lengths for each 'string'\cf0 \
+				\{0.004.rand+0.0003\}.dup(n), \
+				4 \cf3 // decay time in seconds\cf0 \
+			),\
+			\{1.0.rand2\}.dup(n) \cf3 // give each voice a different pan position\cf0 \
+		)\
+	)\
+\}.scope(2, zoom:4);\
+)\
+}
