@@ -4,7 +4,7 @@ Node {
 	var <>nodeID, <>server, <>group;
 	var <>isPlaying = false, <>isRunning = false;
 	
-	*basicNew { arg nodeID,server;
+	*basicNew { arg server, nodeID;
 		server = server ? Server.local;
 		^super.newCopyArgs(nodeID ?? {server.nextNodeID}, server)
 	}
@@ -26,15 +26,15 @@ Node {
 	
 	map { arg controlName, busIndex ... args;
 		server.sendBundle(nil, 
-			[14, nodeID,controlName, busIndex]++args); //"/n_map"
+			[14, nodeID, controlName, busIndex]++args); //"/n_map"
 	}
 	mapMsg {  arg controlName, busIndex ... args;
-			^[14, nodeID,controlName, busIndex]++args; //"/n_map"
+			^[14, nodeID, controlName, busIndex]++args; //"/n_map"
 	}
 	
 	set { arg controlName, value ... args;
 		server.sendBundle(nil, 
-			[15, nodeID,controlName, value] ++args); 	 //"/n_set"
+			[15, nodeID, controlName, value] ++args); 	 //"/n_set"
 	}
 	
 	setWithArray { arg args;
@@ -57,11 +57,11 @@ Node {
 	
 	fill { arg controlName, numControls, value ... args;
 		server.sendBundle(nil, 
-			[17, nodeID,controlName,numControls, value]++args); //"n_setn"
+			[17, nodeID, controlName, numControls, value]++args); //"n_setn"
 	}
 
 	release { arg releaseTime;
-		server.sendBundle(nil,this.releaseMsg(releaseTime))
+		server.sendBundle(nil, this.releaseMsg(releaseTime))
     	}
     	releaseMsg { arg releaseTime;
 		//assumes a control called 'gate' in the synth
@@ -93,23 +93,23 @@ Node {
 	
 	
 	// return messages for bundling
-	addToHead { arg arggroup,args; 
+	addToHead { arg arggroup, args; 
 		group = arggroup.asGroup;
 		^this.nodeToServerMsg(group.nodeID, 0, args);
 	}
-	addToTail { arg arggroup,args;
+	addToTail { arg arggroup, args;
 		group = arggroup.asGroup;
 		^this.nodeToServerMsg(group.nodeID, 1, args);
 	}
-	addAfter {  arg afterThisOne,args;
+	addAfter {  arg afterThisOne, args;
 		group = afterThisOne.group;
 		^this.nodeToServerMsg(afterThisOne.nodeID, 3, args);
 	}
-	addBefore {  arg beforeThisOne,args;
+	addBefore {  arg beforeThisOne, args;
 		group = beforeThisOne.group;
 		^this.nodeToServerMsg(beforeThisOne.nodeID, 2, args);
 	}
-	addReplace { arg removeThisOne,args;
+	addReplace { arg removeThisOne, args;
 		group = removeThisOne.group;
 		^this.nodeToServerMsg(removeThisOne.nodeID, 4, args);
 	}
@@ -152,9 +152,9 @@ Node {
 	prMoveBefore {  arg beforeThisOne;
 		this.group = beforeThisOne.group;
 	}
-	nodeToServer { arg addAction=\addToTail,target,args;
+	nodeToServer { arg addAction=\addToTail, target, args;
 		var msg;
-		msg = [this.perform(addAction,target,args)];
+		msg = [this.perform(addAction, target, args)];
 		target.asGroup.finishBundle(msg, this);
 		server.listSendBundle(nil, msg);
 	}
@@ -185,15 +185,13 @@ Node {
 
 Group : Node {
 	
-	var <>head,<>tail;
-	
 	/** immediately sends **/
-	*new { arg target,addAction=\addToTail;
+	*new { arg target, addAction=\addToTail;
 		var group, server;
 		target = target.asTarget;
 		server = target.server;
-		group = this.basicNew(nil,server);
-		group.nodeToServer(addAction,target);
+		group = this.basicNew(server);
+		group.nodeToServer(addAction, target);
 		^group
 	}
 	*after { arg aNode;    ^this.new(aNode, \addAfter) }
@@ -224,10 +222,10 @@ Group : Node {
 	}  
 	freeAll {
 		// free my children, but this node is still playing
-		server.sendBundle(nil,[24,nodeID]); //"/g_freeAll"
+		server.sendBundle(nil, [24, nodeID]); //"/g_freeAll"
 	}
 	deepFree {
-		server.sendBundle(nil,["/g_deepFree",nodeID])
+		server.sendBundle(nil, ["/g_deepFree", nodeID])
 	}
 
 	/*  return messages */
@@ -265,7 +263,7 @@ Group : Node {
 	*newToBundle { arg bundle, target, addAction=\addToTail;
 		var group;
 		target = target.asTarget;
-		group = this.basicNew(nil,target.server);
+		group = this.basicNew(target.server);
 		bundle.add(group.perform(addAction, target));
 		group.group.finishBundle(bundle, group);
 		^group
@@ -274,7 +272,9 @@ Group : Node {
 	nodeToServerMsg { arg targetID, addActionNum;
 		^[21, nodeID, addActionNum, targetID]  	 // "/g_new"
 	}
-	finishBundle { //overridden in a JIT subclass
+	
+	finishBundle { //override this to do modifications that are dependant
+				//on a synth's group. see: AbstractEnsemble-finishBundle
 	}	
 }
 
@@ -283,7 +283,7 @@ Synth : Node {
 	var <>defName;
 	
 	/** immediately sends **/
-	*new { arg defName,args,target,addAction=\addToTail;
+	*new { arg defName, args, target, addAction=\addToTail;
 		var synth, server;
 		target = target.asTarget;
 		server = target.server;
@@ -291,31 +291,31 @@ Synth : Node {
 		synth.nodeToServer(addAction, target, args);
 		^synth
 	}
-	*after { arg aNode,defName,args;	
+	*after { arg aNode, defName, args;	
 		^this.new(defName, args, aNode, \addAfter);
 	}
-	*before {  arg aNode,defName,args;
+	*before {  arg aNode, defName, args;
 		^this.new(defName, args, aNode, \addBefore); 
 	}
-	*head { arg aGroup,defName,args; 
+	*head { arg aGroup, defName, args; 
 		^this.new(defName, args, aGroup, \addToHead); 
 	}
-	*tail { arg aGroup,defName,args; 
+	*tail { arg aGroup, defName, args; 
 		^this.new(defName, args, aGroup, \addToTail);  
 	}
 	*replace { arg synthToReplace, defName, args;
 		^this.new(defName, args, synthToReplace, \addReplace)
 	}
 	// nodeID -1 
-	*grain { arg defName,args,target,addAction=\addToTail;
+	*grain { arg defName, args, target, addAction=\addToTail;
 		var synth, server;
 		target = target.asTarget;
 		server = target.server;
-		synth = this.basicNew(defName, server,-1);
+		synth = this.basicNew(defName, server, -1);
 		synth.nodeToServer(addAction, target, args);
 		^synth
 	}
-	*newLoad { arg defName,args,target,addAction=\addToTail,dir="synthdefs/";
+	*newLoad { arg defName, args, target, addAction=\addToTail, dir="synthdefs/";
 		var msg, synth;
 		target = target.asTarget;
 		synth = this.basicNew(defName, target.server);
@@ -323,10 +323,10 @@ Synth : Node {
 		synth.server.sendMsg(6, dir ++synth.defName++".scsyndef", msg); //"/d_load"
 		^synth
 	}	
-	*newPaused { arg defName,args,target,addAction=\addToTail;
+	*newPaused { arg defName, args, target, addAction=\addToTail;
 		var bundle, synth;
 		bundle = List.new;
-		synth = this.newToBundle(bundle, defName,args,target,addAction);
+		synth = this.newToBundle(bundle, defName,args, target, addAction);
 		synth.msgToBundle(bundle, 12, 0); //"/n_run"
 		synth.server.listSendBundle(nil, bundle);
 		^synth
@@ -334,8 +334,8 @@ Synth : Node {
 
 
 	/** does not send	(used for bundling) **/
-	*basicNew { arg defName,server,nodeID;
-		^super.basicNew(nodeID,server).defName_(defName.asDefName)
+	*basicNew { arg defName, server, nodeID;
+		^super.basicNew(nodeID, server).defName_(defName.asDefName)
 	}
 	*newToBundle { arg bundle, defName, args, target, addAction=\addToTail;
 		var synth;
@@ -346,30 +346,30 @@ Synth : Node {
 		^synth
 	}
 
-	addToHeadMsg { arg arggroup,args;
+	addToHeadMsg { arg arggroup, args;
 		group = arggroup;
 		^[9, defName, nodeID, 0, group.nodeID] ++ args // s_new
 	}
-	addToTailMsg { arg arggroup,args;
+	addToTailMsg { arg arggroup, args;
 		group = arggroup; 
 		^[9, defName, nodeID, 1, group.nodeID] ++ args
 	}
-	addAfterMsg {  arg afterThisOne,args;
+	addAfterMsg {  arg afterThisOne, args;
 		group = afterThisOne.group; 
 		^[9, defName, nodeID, 3, afterThisOne.nodeID] ++ args
 	}
-	addBeforeMsg {  arg beforeThisOne,args;
+	addBeforeMsg {  arg beforeThisOne, args;
 		group = beforeThisOne.group; 
 		^[9, defName, nodeID, 2, beforeThisOne.nodeID] ++ args
 	}
-	addReplaceMsg { arg removeThisOne,args;
+	addReplaceMsg { arg removeThisOne, args;
 		group = removeThisOne.group; 
 		^[9, defName, nodeID, 4, removeThisOne.nodeID] ++ args
 	}
 		
 	// private
 	*prNew { arg defName, server;
-		^this.basicNew(defName,server)
+		^this.basicNew(defName, server)
 	}
 	nodeToServerMsg { arg targetID, addActionNum, args;
 		^[9, defName, nodeID, addActionNum, targetID] ++ args
@@ -384,7 +384,7 @@ RootNode : Group {
 	*new { arg server;
 		server = server ?? {Server.local};
 		^(roots.at(server.name) ?? {
-			^super.basicNew(0,server).rninit
+			^super.basicNew(server, 0).rninit
 		})
 	}
 	rninit { 
