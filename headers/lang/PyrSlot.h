@@ -227,10 +227,10 @@ extern PyrSymbol *s_super; // "super"
 inline int slotFloatVal(PyrSlot *slot, float *value)
 {
 	if (IsFloat(slot)) {
-		*value = slot->uf;
+		*value = static_cast<float>(slot->uf);
 		return errNone;
 	} else if (IsInt(slot)) {
-		 *value = slot->ui;
+		 *value = static_cast<float>(slot->ui);
 		return errNone;
 	}
 	return errWrongType;
