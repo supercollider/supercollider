@@ -198,6 +198,32 @@ int prTextWindow_SetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
 		return errNone;
 }
 
+int prTextWindow_GetBackgroundColor(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_GetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+		// let the lang allocate the Color
+		// rtf seems not to save the backgroundcolor. set it in the lang first!
+		PyrSlot *a = g->sp-1;
+		PyrSlot *b = g->sp;
+		if (IsNil(b)) return errNone;
+		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		NSTextView * view = [doc initTextView];
+		if(!view) view = [doc textView];
+		if(!view) return errNone;
+		NSColor * color = [view backgroundColor];
+		if(!color) return errNone;
+		float red, green, blue, alpha;
+		[color getRed:&red green:&green blue:&blue alpha:&alpha];
+		PyrSlot *slots = b->uo->slots;
+		SetFloat(slots+0, red);
+		SetFloat(slots+1, green);
+		SetFloat(slots+2, blue);
+		SetFloat(slots+3, alpha);
+		return errNone;
+}
+
 int prTextWindow_SetTextColor(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_SetTextColor(struct VMGlobals *g, int numArgsPushed)
 {
@@ -236,7 +262,7 @@ int prTextWindow_SetTextColor(struct VMGlobals *g, int numArgsPushed)
 		}
 		int length = [[[doc textView] string] length];
 		if(rangeStart >= length) rangeStart = length - 1 ;
-		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart - 1;
+		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
 		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
 		
 		
@@ -513,17 +539,32 @@ int prTextWindow_InsertText(struct VMGlobals *g, int numArgsPushed)
         return errNone;
 }
 
-int prTextWindow_DisplayName(struct VMGlobals *g, int numArgsPushed);
-int prTextWindow_DisplayName(struct VMGlobals *g, int numArgsPushed)
+int prTextWindow_GetName(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_GetName(struct VMGlobals *g, int numArgsPushed)
 {
         if (!g->canCallOS) return errCantCallOS;
-
 		PyrSlot *a = g->sp;
-        
         MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
         if (!doc) return errFailed;
-        
-        const char * cstr = [[doc displayName] UTF8String];
+       // const char * cstr = [[doc displayName] UTF8String];
+		const char * cstr = [[[[doc textView] window] title] UTF8String];
+        PyrString *string = newPyrString(g->gc, cstr, 0, true);
+        SetObject(a, string);
+        return errNone;
+}
+
+int prTextWindow_GetFileName(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_GetFileName(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+		PyrSlot *a = g->sp;
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+        const char * cstr = [[doc fileName] UTF8String];
+		if(!cstr){
+			SetNil(a);
+			return errNone;			
+		}
         PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(a, string);
         return errNone;
@@ -759,7 +800,7 @@ int prTextWindow_RemoveUndo(struct VMGlobals *g, int numArgsPushed)
         
         MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
         if (!doc) return errFailed;
-		[doc updateChangeCount: NSChangeUndone];
+		[doc updateChangeCount: NSChangeCleared];
 		return errNone;
 }
 
@@ -2627,11 +2668,12 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_GetByIndex", prTextWindow_GetByIndex, 2, 0);
 	definePrimitive(base, index++, "_NumberOfOpenTextWindows", prNumberOfOpenTextWindows, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_GetLastIndex", prTextWindow_GetLastIndex, 1, 0);
-	definePrimitive(base, index++, "_TextWindow_DisplayName", prTextWindow_DisplayName, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_GetName", prTextWindow_GetName, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_IsEdited", prTextWindow_IsEdited, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_Close", prTextWindow_Close, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_Text", prTextWindow_Text, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_SetBackgroundColor", prTextWindow_SetBackgroundColor, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_GetBackgroundColor", prTextWindow_GetBackgroundColor, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_SetTextColor", prTextWindow_SetTextColor, 4, 0);
 	definePrimitive(base, index++, "_TextWindow_SyntaxColorize", prTextWindow_SyntaxColorize, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_SelectLine", prTextWindow_SelectLine, 2, 0);
@@ -2649,6 +2691,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_RemoveUndo", prTextWindow_RemoveUndo, 1, 0);	
 //	definePrimitive(base, index++, "_TextWindow_SelectToken", prTextWindow_SelectToken, 1, 0);	
 	definePrimitive(base, index++, "_TextWindow_SelectUnderlinedText", prTextWindow_SelectUnderlinedText, 2, 0);	
+	definePrimitive(base, index++, "_TextWindow_GetFileName", prTextWindow_GetFileName, 1, 0);	
 	
 	definePrimitive(base, index++, "_TextWindow_UnderlineSelection", prTextWindow_UnderlineSelection, 1, 0);	
 
