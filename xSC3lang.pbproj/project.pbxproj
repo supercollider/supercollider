@@ -419,6 +419,46 @@
 			settings = {
 			};
 		};
+		9286AE9E057D30B9000EBAEB = {
+			expectedFileType = sourcecode.cpp.objcpp;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = SCService.mm;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		9286AE9F057D30B9000EBAEB = {
+			fileRef = 9286AE9E057D30B9000EBAEB;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		9286AEA0057D30B9000EBAEB = {
+			fileRef = 9286AE9E057D30B9000EBAEB;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		9286AEA3057D30EC000EBAEB = {
+			expectedFileType = sourcecode.c.h;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = SCService.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		9286AEA4057D30EC000EBAEB = {
+			fileRef = 9286AEA3057D30EC000EBAEB;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		9286AEA5057D30EC000EBAEB = {
+			fileRef = 9286AEA3057D30EC000EBAEB;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		92B5F2D20547314E00496808 = {
 			containerPortal = F50D04F702E68E8201CA2799;
 			isa = PBXContainerItemProxy;
@@ -565,6 +605,7 @@
 				92B5F3A00547488200496808,
 				92B5F3A10547488200496808,
 				92B5F3A20547488200496808,
+				9286AEA5057D30EC000EBAEB,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1278,6 +1319,7 @@
 				92B5F3ED0547488200496808,
 				92B5F3EE0547488200496808,
 				92B5F3EF0547488200496808,
+				9286AEA0057D30B9000EBAEB,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1954,6 +1996,7 @@
 				C26BDCCE03D0B4FB00A87B78,
 				C21B4672046D847B00A87B78,
 				908DBC380507C65100000098,
+				9286AEA3057D30EC000EBAEB,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -2592,6 +2635,7 @@
 				C26BDCCC03D0B4E900A87B78,
 				C21B4673046D847B00A87B78,
 				908DBC360507C63D00000098,
+				9286AE9E057D30B9000EBAEB,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -3367,6 +3411,7 @@
 				6AB6FF76053898BC0000009F,
 				6AB6FF77053898BC0000009F,
 				6AB6FF78053898BC0000009F,
+				9286AEA4057D30EC000EBAEB,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3564,6 +3609,7 @@
 				6AB6FF73053898BC0000009F,
 				6AB6FF75053898BC0000009F,
 				6AB6FF84053898F00000009F,
+				9286AE9F057D30B9000EBAEB,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
