@@ -182,7 +182,6 @@ BusPlug : AbstractFunction {
 			if(monitorGroup.isPlaying.not, { 
 				monitorGroup = Group.newToBundle(bundle, group, \addToTail);
 				NodeWatcher.register(monitorGroup);
-				[monitorGroup, monitorGroup.group].postln;
 			});
 			
 			divider = if(nChan.even, 2, 1);
@@ -193,7 +192,6 @@ BusPlug : AbstractFunction {
 					]);
 			});
 			bundle.send(localServer, localServer.latency);
-			[monitorGroup, monitorGroup.group].postln;
 		^monitorGroup
 	}
 	
@@ -404,7 +402,7 @@ NodeProxy : BusPlug {
 	}
 	
 	build { 
-		this.initParents.debug;
+		this.initParents;
 		if(bus.notNil, { bus.realloc }); // if server was rebooted 
 		this.class.buildProxy = this;
 			objects.do({ arg item, i;
@@ -765,7 +763,7 @@ NodeProxy : BusPlug {
 	////////////behave like my group////////////
 	
 	isPlaying { ^group.isPlaying }
-	free {  	\free.debug;
+	free {
 		if(this.isPlaying, {	
 		
 			this.release;
