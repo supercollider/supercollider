@@ -188,11 +188,12 @@ PauseStream : Stream
 {
 	var <stream, originalStream, <clock;
 	
-	*new { arg argStream, argClock; 
-		^super.newCopyArgs(nil, argStream, argClock ? SystemClock) 
+	*new { arg argStream; 
+		^super.newCopyArgs(nil, argStream, TempoClock.default) 
 	}
 	
-	play { arg doReset = false;
+	play { arg argClock, doReset = false;
+		clock = argClock ? TempoClock.default;
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
 		stream = originalStream; 
@@ -202,9 +203,9 @@ PauseStream : Stream
 	stop { stream = nil }
 
 	pause { stream = nil }
-	resume { ^this.play(false) }
+	resume { ^this.play(clock, false) }
 	
-	start { ^this.play(true) }
+	start { ^this.play(clock, true) }
 		
 	stream_ { arg argStream; stream = originalStream = argStream; }
 	next { arg inval; 
@@ -222,23 +223,34 @@ PauseStream : Stream
 // Task is a PauseStream for wrapping a Routine
 
 Task : PauseStream {
-	*new { arg func, clock; 
-		^super.new(Routine(func), clock) 
+	*new { arg func; 
+		^super.new(Routine(func)) 
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////
 
 EventStream : PauseStream {
+	var <>muteCount = 0;
+	
 	*new { arg stream;
-		^super.new(stream, SystemClock);
+		^super.new(stream);
 	}
+	
+	mute { muteCount = muteCount + 1; }
+	unmute { muteCount = muteCount - 1; }
+	
 	next { arg inTime;
 		var event, nextTime;
-		event = stream.next(inTime);		
-		nextTime = event.play;
-		if (nextTime.isNil, { stream = nil });
-		^nextTime
+		event = stream.next(inTime);	
+		if (event.isNil, {	
+			stream = nil;
+			^nil
+		},{
+			if (muteCount > 0, { event.put(\freq, \rest) });
+			if ((nextTime = event.play).isNil, { stream = nil });
+			^nextTime
+		});
 	}
 }
 

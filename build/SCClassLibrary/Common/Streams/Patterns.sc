@@ -8,13 +8,13 @@ Pattern : AbstractFunction {
 	}	
 
 	play { arg clock;
-		^this.asEventStream.play
+		^this.asEventStream.play(clock)
 	}
 	
 	asStream {
 		^this.subclassResponsibility(thisMethod)
 	}
-	asEventStream {
+	asEventStream { 
 		^EventStream(this.asStream);
 	}
 	embedInStream { arg inval;
