@@ -67,13 +67,17 @@ AbstractPlayerGui : ObjectGui {
 		
 		durv= CXLabel(layout, "_______");
 
-		Updater(model,{  arg changed,changer;// any change to model at all
-			durv.label_(this.durationString);	
-		}).update.removeOnClose(layout);
+		layout.removeOnClose(
+			Updater(model,{  arg changed,changer;// any change to model at all
+				durv.label_(this.durationString);	
+			}).update;
+		);
 		
-		Updater(Tempo,{ // any change to Tempo
-			durv.label_(this.durationString);	
-		}).update.removeOnClose(layout);
+		layout.removeOnClose(
+			Updater(Tempo,{ // any change to Tempo
+				durv.label_(this.durationString);	
+			}).update;
+		);
 	}
 
 }
