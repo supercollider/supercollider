@@ -3353,7 +3353,7 @@ void Klang_next(Klang *unit, int inNumSamples)
 			break;
 		case 0 :
 			out = out0;
-			Clear(inNumSamples, out);
+			ZClear(inNumSamples, out);
 			break;
 	}
 	
