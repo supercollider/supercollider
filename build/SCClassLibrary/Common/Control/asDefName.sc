@@ -70,8 +70,12 @@
 			})
 		})
 	}
-	play {
-		^Synth(this)
+	play { arg key, mixToPresent=false, onComplete;
+		if(key.isNil,{ 
+			^Synth(this)
+		}, {
+			^this.send(key, mixToPresent, onComplete) //for now..
+		})
 	}
 }
 
