@@ -64,7 +64,6 @@ NodeProxy : AbstractFunction {
 		if(bus.isNil, {this.allocBus(\audio, nChan ? 2) });
 		this.wakeUpParents;
 		
-		
 		cmd = List.new;
 		playGroup = Group.newCommand(cmd, server);
 		nChan = nChan ? this.numChannels;
@@ -77,7 +76,7 @@ NodeProxy : AbstractFunction {
 	}
 	
 	send {
-			this.sendToServer(false);
+			this.sendToServer(false, true);
 	}
 	
 		
@@ -114,10 +113,15 @@ NodeProxy : AbstractFunction {
 			if(bus.isNil, {this.initFor(argObj) });
 			
 			synthDef = argObj.asProxySynthDef(this);
-			synthDef.writeDefFile;
-			
-			this.updateSynthDef;
-			if(send, { this.sendToServer(freeLast, completionFunc) });
+			if(synthDef.isNil, 
+				{ "writing synthDef failed".inform },
+				{
+					synthDef.writeDefFile;
+					if(send, 
+						{ this.sendToServer(freeLast, false, completionFunc) },
+						{ this.updateSynthDef } //only load def. maybe we are on server already? 
+					);
+			})
 		})
 	}
 	
@@ -174,37 +178,36 @@ NodeProxy : AbstractFunction {
 			
 	// server communications, updating
 	
-	sendToServer { arg freeLast=true, completionFunc;
-		var cmd;
+	sendToServer { arg freeLast=true, loaded=false, completionFunc;
+		var cmd, resp;
 		if( synthDef.notNil and: { server.serverRunning }, {
 				cmd = List.new;
 				this.sendSynthCommand(cmd, freeLast);
-				Routine({ 0.4.wait; 
-					server.sendCmdList(cmd);
-					completionFunc.value(this)
-				 }).play;
+				if(loaded.not, { 
+					this.updateSynthDef;
+					resp = OSCresponder(server.addr, '/done', {
+						server.sendCmdList(cmd);
+						completionFunc.value(this);
+						resp.remove;
+					}).add
+				}, { 
+						server.sendCmdList(cmd);
+						completionFunc.value(this)
+				});
 		});
 	}
 	
 	
 	updateSynthDef {
-		
 		if(synthDef.notNil, { 
-			server.sendSynthDef(synthDef.name);
-			/*
-			if(server.isLocal, {
-				server.loadSynthDef(def.name)
+			if(server.isLocal, {//maybe direct send would be better? server reboot would destroy them?
+				server.loadSynthDef(synthDef.name)
 			}, {
-				server.sendSynthDef(def.name)
+				server.sendSynthDef(synthDef.name)
 			}); 
-			*/
-			
-		}, { "writing synthDef failed".inform });
+		});
 	}
 	
-	
-	
-		
 	
 	sendSynthCommand { arg cmd, freeLast=true;
 		var synth;
@@ -246,14 +249,16 @@ NodeProxy : AbstractFunction {
 	}
 
 	getOutput { arg numChannels;
-		var out;
+		var out, n;
 		this.addToBuildSynthDef;
 		this.wakeUpParents;
+		n = bus.numChannels;
 		out = if(this.rate === 'audio', 
-				{ InFeedback.ar( bus.index, bus.numChannels) },
-				{ In.kr( bus.index, bus.numChannels) }
+				{ InFeedback.ar( bus.index, n) },
+				{ In.kr( bus.index, n) }
 			);
-		if(numChannels.notNil, {
+		//test that
+		if(numChannels.notNil and: { numChannels != n }, {
 			out = NumChannels.ar(out, numChannels, true)
 		}); 
 		^out
@@ -268,7 +273,7 @@ NodeProxy : AbstractFunction {
 	
 	wakeUp {
 		
-		if(this.isPlaying.not, { this.sendToServer });
+		if(this.isPlaying.not, { this.sendToServer(true, true) });
 	
 	}
 	
