@@ -3524,8 +3524,8 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(SOS);
 
 	DefineSimpleUnit(Compander);
-	DefineSimpleUnit(Limiter);
-	DefineSimpleUnit(Normalizer);
+	DefineDtorUnit(Limiter);
+	DefineDtorUnit(Normalizer);
 
 	DefineSimpleUnit(Amplitude);
 	DefineSimpleUnit(DetectSilence);
