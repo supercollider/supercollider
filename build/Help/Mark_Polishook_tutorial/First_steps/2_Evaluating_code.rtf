@@ -8,7 +8,7 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs18 \cf0 \
-To run (evaluate) one line of code, press the boot button on the server that you wish to use (either the localhost or the internal server). Then put the cursor anywhere on a line, such as the following, and press <enter>\
+To run (evaluate) one line of code, press the boot button on the localhost server. Then put the cursor anywhere on a line, such as the following, and press <enter>\
 \
 \{ \cf2 SinOsc\cf0 .ar([400, 401], 0, 0.1) * \cf2 Saw\cf0 .ar([11, 33], 1) * \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .sine(10)) \}.play\
 \
@@ -46,7 +46,7 @@ Press command-period (cmd-.) to stop synthesis.\
 \
 For example, run\
 \
-\{ \cf2 SinOsc\cf0 .ar([400, 401], 0, 0.5) * \cf2 Saw\cf0 .ar([11, 33], 1) \}.play\
+\{ \cf2 SinOsc\cf0 .ar([400, 401], 0, 0.5) * \cf2 Saw\cf0 .ar([11, 33], 0.6) \}.play\
 \
 4. then evaluate\
 \
@@ -56,7 +56,7 @@ which will produce a window with the title of "stethoscope."\
 \
 As a shortcut to the four steps just described, send the scope message directly to the example.\
 \
-\{ \cf2 SinOsc\cf0 .ar([400, 401], 0, 0.5) * \cf2 Saw\cf0 .ar([11, 33], 1) \}.scope\
+\{ \cf2 SinOsc\cf0 .ar([400, 401], 0, 0.5) * \cf2 Saw\cf0 .ar([11, 33], 0.6) \}.scope\
 \
 Press cmd-. to stop sound synthesis. \
 \
