@@ -169,7 +169,8 @@ TaskProxy : PatternProxy {
 				// this error handling only helps if error is not in substream
 				Prout { |inval|
 					try { 
-						if(inval.isNil) { obj.value } { inval.use { obj.valueEnvir } }
+						//if(inval.isNil) { obj.value } { inval.use { obj.valueEnvir } }
+						obj.value
 					} { |error|
 						player.removedFromScheduler;
 						error.throw; 
