@@ -29,7 +29,9 @@
 #include "SC_HiddenWorld.h"
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef _MSC_VER
 #include <dirent.h>
+#endif //_MSC_VER
 #include <stdexcept>
 #include "dlfcn.h"
 #include "ReadWriteMacros.h"
@@ -277,6 +279,7 @@ GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList)
 	return inList;
 }
 
+#ifndef SC_WIN32
 #include <glob.h>
 
 GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inList)
@@ -304,6 +307,31 @@ GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inLis
 	
 	return inList;
 }
+#else //#ifndef SC_WIN32
+
+GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inList)
+{
+  WIN32_FIND_DATA findData;
+  HANDLE hFind;
+
+  hFind = ::FindFirstFile(pattern, &findData);
+
+  if (hFind == INVALID_HANDLE_VALUE) 
+    return inList;
+
+  do {
+		char *filename = findData.cFileName;
+		int len = strlen(filename);
+    if ((len >= 9) && (strncmp(filename+len-9, ".scsyndef", 9) == 0)) {
+			inList = GraphDef_Load(inWorld, filename, inList);
+		}
+		GraphDef_Load(inWorld, filename, inList);
+  } while(FindNextFile(hFind, &findData));
+	return inList;
+}
+
+#endif //#ifndef SC_WIN32
+
 
 GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 {	
@@ -343,6 +371,7 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 # include <sys/types.h>
 #endif // SC_LINUX
 
+#ifndef SC_WIN32
 GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
 {
 	DIR *dir = opendir(dirname);	
@@ -395,6 +424,59 @@ GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
 	closedir(dir);
 	return inList;
 }
+#else //#ifndef SC_WIN32
+GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
+{
+  bool success = true;
+  std::string folderPath = std::string(dirname);
+  std::string allInFolder = folderPath; 
+  allInFolder += std::string("\\*.*");
+  WIN32_FIND_DATA findData;
+  HANDLE hFind = ::FindFirstFile(allInFolder.c_str( ), &findData);
+  for(;;) {
+    if (hFind == INVALID_HANDLE_VALUE) {
+  		scprintf("*** ERROR: ::FindFirstFile() failed '%s' GetLastError() = %d\n", dirname, ::GetLastError()); fflush(stdout);
+		  return false;
+    } 
+    else {
+      if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+        size_t pathLen = strlen(findData.cFileName);
+        if ( (pathLen >= 1) && (strncmp(findData.cFileName,".",1) == 0) ) {
+          // "." (current folder) -> don't do anything
+        }
+        else if ( (pathLen >= 2) && (strncmp(findData.cFileName,"..",1) == 0) ) {
+          // ".." (parent folder) -> don't do anything
+        }
+        else {
+          // it is a directory : let's process it
+          std::string childFolderPath = folderPath;
+          childFolderPath += "\\";
+          childFolderPath += findData.cFileName;
+          inList = GraphDef_LoadDir(inWorld, const_cast<char*>(childFolderPath.c_str()), inList);
+        }
+      } 
+      else {
+        // if it's not a folder, then it's a file.
+        // process it only if it has the correct extension
+        const char* relevantExt = ".scsyndef";
+        size_t extlen = strlen(relevantExt);
+        size_t filePathLen = strlen(findData.cFileName);
+        if (filePathLen >= extlen) {
+          if (strnicmp(findData.cFileName + filePathLen - extlen, relevantExt, extlen) == 0) {
+            inList = GraphDef_Load(inWorld, findData.cFileName, inList);
+          }
+        }
+      }
+      // retrieve next file/folder in this folder
+      BOOL nextFileFound = ::FindNextFile(hFind, &findData);
+      if (!nextFileFound)
+        return inList;
+    }
+  }
+  ::FindClose(hFind);
+  return inList;
+}
+#endif //#ifndef SC_WIN32
 
 void UnitSpec_Free(UnitSpec *inUnitSpec);
 void UnitSpec_Free(UnitSpec *inUnitSpec)

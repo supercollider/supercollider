@@ -25,7 +25,9 @@
 #include "SC_InterfaceTable.h"
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef _MSC_VER
 #include <dirent.h>
+#endif //_MSC_VER
 #include <string.h>
 #include "dlfcn.h"
 #include "SC_Prototypes.h"

@@ -29,7 +29,9 @@
 #include "SC_StringParser.h"
 #include "SC_InterfaceTable.h"
 #include <stdexcept>
+#ifndef _MSC_VER
 #include <dirent.h>
+#endif //_MSC_VER
 
 #ifdef SC_DARWIN
 # include "dlfcn.h"
@@ -91,8 +93,9 @@ bool PlugIn_Load(const char *filename)
     HINSTANCE hinstance = LoadLibrary( filename );
     if (!hinstance) {
         char *s;
+        DWORD lastErr = GetLastError();
         FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                0, GetLastError(), 0, (char*)&s, 1, 0 );
+                0, lastErr , 0, (char*)&s, 1, 0 );
         scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename, s);
         LocalFree( s );     
 		return false;
@@ -150,6 +153,7 @@ bool PlugIn_Load(const char *filename)
 #endif // SC_LINUX
 
 bool PlugIn_LoadDir(char *dirname);
+#ifndef SC_WIN32
 bool PlugIn_LoadDir(char *dirname)
 {
 	bool success = true;
@@ -208,4 +212,58 @@ bool PlugIn_LoadDir(char *dirname)
 	closedir(dir);
 	return success;
 }
-
+#else //#ifndef SC_WIN32
+bool PlugIn_LoadDir(char *dirname)
+{
+  bool success = true;
+  std::string folderPath = std::string(dirname);
+  folderPath += "\\";
+  std::string allInFolder = folderPath; 
+  allInFolder += std::string("*.*");
+  WIN32_FIND_DATA findData;
+  HANDLE hFind = ::FindFirstFile(allInFolder.c_str( ), &findData);
+  for(;;) {
+    if (hFind == INVALID_HANDLE_VALUE) {
+  		scprintf("*** ERROR: ::FindFirstFile() failed '%s' GetLastError() = %d\n", dirname, ::GetLastError()); fflush(stdout);
+		  return false;
+    } 
+    else {
+      if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+        size_t pathLen = strlen(findData.cFileName);
+        if ( (pathLen >= 1) && (strncmp(findData.cFileName,".",1) == 0) ) {
+          // "." -> don't do anything
+        }
+        else if ( (pathLen >= 2) && (strncmp(findData.cFileName,"..",1) == 0) ) {
+          // ".." -> don't do anything
+        }
+        else {
+          std::string childFolderPath = folderPath;
+          childFolderPath += "\\";
+          childFolderPath += findData.cFileName;
+          success = PlugIn_LoadDir(const_cast<char*>(childFolderPath.c_str()));
+        }
+      } 
+      else {
+        size_t extlen = strlen(SC_PLUGIN_EXT);
+        size_t filePathLen = strlen(findData.cFileName);
+        if (filePathLen >= extlen) {
+          if (strnicmp(findData.cFileName + filePathLen - extlen, SC_PLUGIN_EXT, extlen) == 0) {
+            std::string plugInPath = folderPath;
+            plugInPath += findData.cFileName;
+            success = PlugIn_Load(plugInPath.c_str());
+          }
+        }
+      }
+      BOOL nextFileFound = ::FindNextFile(hFind, &findData);
+      if (!nextFileFound) {
+        if (GetLastError() == ERROR_NO_MORE_FILES)
+          return true; 
+        else
+          return false;
+      }
+    }
+  }
+  ::FindClose(hFind);
+  return success;
+}
+#endif //#ifndef SC_WIN32

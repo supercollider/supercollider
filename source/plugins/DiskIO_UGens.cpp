@@ -91,15 +91,25 @@ struct DiskIOMsg
 	void Perform();
 };
 
+#ifndef SC_WIN32
 MsgFifoNoFree<DiskIOMsg, 256> gDiskFifo;
 SC_SyncCondition gDiskFifoHasData;
+#else #ifndef SC_WIN32
+MsgFifoNoFree<DiskIOMsg, 256>* pgDiskFifo;
+SC_SyncCondition* pgDiskFifoHasData;
+#endif #ifndef SC_WIN32
 
 void* disk_io_thread_func(void* arg);
 void* disk_io_thread_func(void* arg)
 {
 	while (true) {
-		gDiskFifoHasData.WaitEach();
+#ifndef SC_WIN32
+    gDiskFifoHasData.WaitEach();
 		gDiskFifo.Perform();
+#else //#ifndef SC_WIN32
+    pgDiskFifoHasData->WaitEach();
+		pgDiskFifo->Perform();
+#endif //#ifndef SC_WIN32
 	}
 	return 0;
 }
@@ -198,8 +208,13 @@ sendMessage:
 		msg.mPos = bufFrames2 - unit->m_framepos;
 		msg.mFrames = bufFrames2;
 		msg.mChannels = bufChannels;
+#ifndef SC_WIN32
 		gDiskFifo.Write(msg);
 		gDiskFifoHasData.Signal();
+#else //#ifndef SC_WIN32
+		pgDiskFifo->Write(msg);
+		pgDiskFifoHasData->Signal();
+#endif //#ifndef SC_WIN32
 	}
 }
 
@@ -267,8 +282,13 @@ sendMessage:
 		msg.mFrames = bufFrames2;
 		msg.mChannels = bufChannels;
 		//printf("sendMessage %d  %d %d %d\n", msg.mBufNum, msg.mPos, msg.mFrames, msg.mChannels);
+#ifndef SC_WIN32
 		gDiskFifo.Write(msg);
 		gDiskFifoHasData.Signal();
+#else //#ifndef SC_WIN32
+		pgDiskFifo->Write(msg);
+		pgDiskFifoHasData->Signal();
+#endif //#ifndef SC_WIN32
 	}
 }
 
@@ -304,7 +324,13 @@ void load(InterfaceTable *inTable)
 {
 	ft = inTable;
 	
-	pthread_t diskioThread;
+#ifdef SC_WIN32
+  pgDiskFifo = new MsgFifoNoFree<DiskIOMsg, 256>;
+  pgDiskFifoHasData = new SC_SyncCondition;
+  //$$$todo FIXME free those objects . (use a global std::auto_ptr)
+#endif //SC_WIN32
+
+  pthread_t diskioThread;
 	pthread_create (&diskioThread, NULL, disk_io_thread_func, (void*)0);
 	
 	DefineSimpleUnit(DiskIn);

@@ -122,6 +122,7 @@ int prStringHash(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+#ifndef SC_WIN32
 #include <glob.h>
 
 int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
@@ -159,6 +160,39 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 	
 	return errNone;
 }
+#else //#ifndef SC_WIN32
+int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
+int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+
+	char pattern[1024];
+	int err = slotStrVal(a, pattern, 1023);
+	if (err) return err;
+	
+  WIN32_FIND_DATA findData;
+  HANDLE hFind;
+  int nbPaths = 0;
+
+  hFind = ::FindFirstFile(pattern, &findData);
+  if (hFind == INVALID_HANDLE_VALUE) {
+    nbPaths = 0;
+  }
+
+	PyrObject* array = newPyrArray(g->gc, nbPaths , 0, true);
+	SetObject(a, array);
+	if (hFind == INVALID_HANDLE_VALUE) 
+    return errNone;
+    
+  do {
+		PyrObject *string = (PyrObject*)newPyrString(g->gc, findData.cFileName, 0, true);
+		SetObject(array->slots+i, string);
+		g->gc->GCWrite(array, string);
+		array->size++;
+  } while( ::FindNextFile(hFind, &findData);
+	return errNone;
+}
+#endif //#ifndef SC_WIN32
 
 int prString_Getenv(struct VMGlobals* g, int numArgsPushed);
 int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */)
