@@ -120,7 +120,12 @@ Order : SequenceableCollection {
 	do { arg function;
 		array.do(function)
 	}
-	
+	size { ^indices.size }
+	keysValuesDo { arg func;
+		indices.do { arg index, i;
+			func.value(index, array[i], i)
+		}
+	}
 		
 	collect { arg func;
 		var res;
