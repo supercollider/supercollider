@@ -9,8 +9,7 @@ AutoCompMethodBrowser {
 		skipThis,					// flag: do (this, xxx) or (xxx) in argList
 		dropMeta,				// flag: display Meta_ for metaclasses?
 		doc,					// document from which this was created
-		start, size,	// start and length of identifier in document
-		cursorAfterGui;	// where is the cursor after the gui pops up?
+		start, size;	// start and length of identifier in document
 
 		// prevent certain method selector strings from being gui'ed during typing
 		// assumes that selectors are spelled correctly!
@@ -104,10 +103,13 @@ AutoCompMethodBrowser {
 	*finish {
 		var	selectStart, selectSize, str;
 			// select the right text in the doc and replace with method template
-		doc.selectRange(start, size+1)	// must replace open paren which size doesn't include
-			.selectedString_(str = this.finishString(reducedList[listView.value]));
-		#selectStart, selectSize = this.finalSelection(str);
-		doc.selectRange(selectStart, selectSize);	// reposition cursor
+		(reducedList.size > 0).if({
+			doc.selectRange(start, size+1)	// must replace open paren which size doesn't include
+				.selectedString_(str = this.finishString(reducedList[listView.value]));
+			#selectStart, selectSize = this.finalSelection(str);
+			doc.selectRange(selectStart, selectSize);	// reposition cursor
+			textField.string_("");  // .free will do something bad if I don't clear this
+		});
 		this.free;
 	}
 	
@@ -193,7 +195,6 @@ AutoCompMethodBrowser {
 			.action_({ this.finish })
 			.focus;
 		w.front;
-		cursorAfterGui = doc.selectionStart;
 	}
 
 }
