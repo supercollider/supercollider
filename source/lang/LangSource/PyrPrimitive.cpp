@@ -119,17 +119,32 @@ int instVarAt(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	int index;
-	PyrObject *obj;
 	
 	a = g->sp - 1;
 	b = g->sp;
 	
 	if (a->utag != tagObj) return errWrongType;
-	if (b->utag != tagInt) return errIndexNotAnInteger;
-	obj = a->uo;
-	index = b->ui;
-	if (index < 0 || index >= obj->size) return errIndexOutOfRange;
-	a->ucopy = obj->slots[index].ucopy;
+
+	PyrObject *obj = a->uo;
+
+	if (IsInt(b)) {
+		index = b->ui;
+		if (index < 0 || index >= obj->size) return errIndexOutOfRange;
+		a->ucopy = obj->slots[index].ucopy;
+	} else if (IsSym(b)) {
+		PyrSlot *instVarNamesSlot = &obj->classptr->instVarNames;
+		if (!isKindOfSlot(instVarNamesSlot, class_symbolarray)) return errFailed;
+		PyrSymbolArray *instVarNames = instVarNamesSlot->uosym;
+		PyrSymbol **names = instVarNames->symbols;
+		PyrSymbol *name = b->us;
+		for (int i=0; i<instVarNames->size; ++i) {
+			if (names[i] == name) {
+				a->ucopy = obj->slots[i].ucopy;
+				return errNone;
+			}
+		}
+		return errFailed;
+	} else return errWrongType;
 	return errNone;
 }
 
@@ -144,14 +159,31 @@ int instVarPut(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp;
 	
 	if (a->utag != tagObj) return errWrongType;
-	if (b->utag != tagInt) return errIndexNotAnInteger;
 	obj = a->uo;
 	if (obj->obj_flags & obj_immutable) return errImmutableObject;
-	index = b->ui;
-	if (index < 0 || index >= obj->size) return errIndexOutOfRange;
-	slot = obj->slots + index;
-	slot->ucopy = c->ucopy;
-	g->gc->GCWrite(obj, slot);
+
+	if (IsInt(b)) {
+		index = b->ui;
+		if (index < 0 || index >= obj->size) return errIndexOutOfRange;
+		slot = obj->slots + index;
+		slot->ucopy = c->ucopy;
+		g->gc->GCWrite(obj, slot);
+	} else if (IsSym(b)) {
+		PyrSlot *instVarNamesSlot = &obj->classptr->instVarNames;
+		if (!IsObj(instVarNamesSlot)) return errFailed;
+		PyrSymbolArray *instVarNames = instVarNamesSlot->uosym;
+		PyrSymbol **names = instVarNames->symbols;
+		PyrSymbol *name = b->us;
+		for (int i=0; i<instVarNames->size; ++i) {
+			if (names[i] == name) {
+				slot = obj->slots + i;
+				slot->ucopy = c->ucopy;
+				g->gc->GCWrite(obj, slot);
+				return errNone;
+			}
+		}
+		return errFailed;
+	} else return errWrongType;
 	return errNone;
 }
 
