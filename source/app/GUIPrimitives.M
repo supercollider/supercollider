@@ -1158,6 +1158,9 @@ int prSCWindow_SetBounds(struct VMGlobals *g, int numArgsPushed)
     if (!view) return errNone;
 
     NSWindow *window = [view window];
+
+	bounds = [NSWindow frameRectForContentRect: bounds styleMask: [window styleMask]];
+
     //[window setFrame: bounds display: YES];
 
     SEL sel = @selector(setFrame:display:);
@@ -1188,7 +1191,10 @@ int prSCWindow_GetBounds(struct VMGlobals *g, int numArgsPushed)
     SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
     if (!view) return errNone;
 
-    NSRect bounds = [[view window] frame];
+	NSWindow *window = [view window];
+    NSRect bounds = [window frame];
+	bounds = [NSWindow contentRectForFrameRect: bounds styleMask: [window styleMask]];
+	
     PyrSlot *slots = b->uo->slots;
     SetFloat(slots+0, bounds.origin.x);
     SetFloat(slots+1, bounds.origin.y);
