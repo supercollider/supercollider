@@ -38,10 +38,6 @@ Pen {
 		_Pen_BeginPath
 		^this.primitiveFailed
 	}
-	*endPath {
-		_Pen_EndPath
-		^this.primitiveFailed
-	}
 	*moveTo { arg point;
 		_Pen_MoveTo
 		^this.primitiveFailed
@@ -50,22 +46,22 @@ Pen {
 		_Pen_LineTo
 		^this.primitiveFailed
 	}
-	*curveTo { arg point, cpoint1, cpoint2;
-		_Pen_CurveTo
-		^this.primitiveFailed
-	}
-	*quadCurveTo { arg point, cpoint1;
-		_Pen_QuadCurveTo
-		^this.primitiveFailed
-	}
-	*addArc { arg center, startAngle, arcAngle;
-		_Pen_AddArc
-		^this.primitiveFailed
-	}
-	*addRect { arg rect;
-		_Pen_AddRect
-		^this.primitiveFailed
-	}
+//	*curveTo { arg point, cpoint1, cpoint2;
+//		_Pen_CurveTo
+//		^this.primitiveFailed
+//	}
+//	*quadCurveTo { arg point, cpoint1;
+//		_Pen_QuadCurveTo
+//		^this.primitiveFailed
+//	}
+//	*addArc { arg center, startAngle, arcAngle;
+//		_Pen_AddArc
+//		^this.primitiveFailed
+//	}
+//	*addRect { arg rect;
+//		_Pen_AddRect
+//		^this.primitiveFailed
+//	}
 	*stroke {
 		_Pen_StrokePath
 		^this.primitiveFailed
