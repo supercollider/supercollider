@@ -56,18 +56,19 @@ PlayerSocket : AbstractPlayerProxy {
 	spawnToBundle { arg bundle;
 		if(source.notNil,{
 			super.spawnToBundle(bundle)
-		})
+		},{
+			bundle.addMessage(this,\didSpawn);
+		});
 	}
 	
 	// prepared sources only
 	setSource { arg s,atTime;
-		this.server.listSendBundle(atTime,
-			this.setSourceMsg(s)
-		)
-	}
-	setSourceMsg { arg s;
 		var bundle;
-		bundle = List.new;
+		bundle = CXBundle.new;
+		this.setSourceToBundle(s,bundle);
+		bundle.send(this.server,atTime);
+	}
+	setSourceToBundle { arg s,bundle;
 		// do replace, same bus
 		// set patchout of s ?
 		if(source.notNil,{
@@ -80,8 +81,8 @@ PlayerSocket : AbstractPlayerProxy {
 		});
 		source = s;
 		source.spawnOnToBundle(this.group,this.bus,bundle);
-		^bundle
 	}
+
 	trigger { arg player,newEnv;
 		isSleeping = false;
 		// ideally replace the same node, bus
@@ -90,15 +91,18 @@ PlayerSocket : AbstractPlayerProxy {
 	}
 	qtime { ^BeatSched.tdeltaTillNext(round) }
 	qtrigger { arg player,newEnv,onTrigger;
-		var t;
+		var t,bundle;
 		// should use a shared BeatSched
-		this.setSource(player,t = BeatSched.tdeltaTillNext(round));
-		AppClock.sched(t,{
+		bundle = CXBundle.new;
+		
+		this.setSourceToBundle(player,bundle);
+		bundle.addFunction({
 			isSleeping = false;
 			this.changed;
 			onTrigger.value;
 			nil
 		});
+		bundle.send(this.server, BeatSched.tdeltaTillNext(round) );
 	}
 	
 	preparePlayer { arg player;
@@ -122,7 +126,11 @@ PlayerSocket : AbstractPlayerProxy {
 		});
 		this.changed;
 	}
-
+	free {
+		isPlaying = false;
+		isSleeping = true;
+		super.free;
+	}
 }
 
 
@@ -152,7 +160,7 @@ PlayerEffectSocket : PlayerSocket {
 	}	
 	
 	setSource { arg aplayer;
-		aplayer.inputProxies.first.setInputBus(bus);
+		aplayer.inputProxies.first.insp("inputProxy").setInputBus(bus.insp("bus"));
 		super.setSource(aplayer);
 	}
 

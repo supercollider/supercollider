@@ -14,8 +14,7 @@ MIDIPlayer : SynthlessPlayer { // InterfacePlayer, Control
 		^control
 	}
 	
-	didSpawn { arg patchIn,synthi;
-		patchOut.connectTo(patchIn,false);
+	didSpawn {
 		this.initResponders;
 	}
 

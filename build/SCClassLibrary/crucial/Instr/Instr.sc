@@ -1,7 +1,7 @@
 
 Instr  { 
 
-	classvar <dir = "Instr/";
+	classvar <dir = "Instr/"; // set this in Main-startUp
 
 	var  <>name, <>func,<>specs,<outSpec;
 	

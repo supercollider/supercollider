@@ -21,6 +21,10 @@ Editor {
 			patchOut = ScalarPatchOut(this);
 		});
 	}
+	spawnToBundle { arg bundle;
+		bundle.addMessage(this,\didSpawn);
+	}
+	didSpawn {}
 	synthArg { ^this.poll }
 	instrArgFromControl { arg control;
 		^control
@@ -70,17 +74,29 @@ KrNumberEditor : Editor {
 //			^control
 //		})
 //	}
-	didSpawn { arg patchIn,synthi;
-		//patchOut.enable;
-		patchOut.connectTo(patchIn,false);
-		// am i already connected to this client ?
+//	didSpawn { arg patchIn,synthi;
+//		//patchOut.enable;
+//		
+//		// separate, nothing passed in
+//		//patchOut.connectTo(patchIn,false);
+//		
+//		// am i already connected to this client ?
+//		if(this.dependants.includes(patchOut.updater).not,{
+//			patchOut.updater = 
+//				Updater(this,{
+//					patchIn.value = value;
+//				});
+//		});
+//	}
+	connectToPatchIn { arg patchIn,needsValueSetNow = true;
 		if(this.dependants.includes(patchOut.updater).not,{
 			patchOut.updater = 
 				Updater(this,{
 					patchIn.value = value;
 				});
 		});
-	}
+		if(needsValueSetNow,{ patchIn.value = value });
+	}		
 	free {
 		//patchOut.free;
 		if(patchOut.notNil and: {patchOut.updater.notNil},{

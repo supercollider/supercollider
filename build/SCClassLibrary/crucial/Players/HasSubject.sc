@@ -12,10 +12,10 @@ HasSubject : AbstractPlayer {
 	
 	stop { super.stop; subject.stop }
 	children { ^[subject] }
-	didSpawn { arg patchIn,synthArgi;
-		super.didSpawn(patchIn,synthArgi);
-		subject.didSpawn;
-	}
+//	didSpawn { arg patchIn,synthArgi;
+//		super.didSpawn(patchIn,synthArgi);
+//		subject.didSpawn;
+//	}
 	numChannels { ^subject.tryPerform(\numChannels) ? 1 }
 	guiClass { ^HasSubjectGui }
 }
@@ -61,7 +61,7 @@ PlayerAmp : AbstractPlayerEffect {
 				)
 		})//.insp("synthdef",this)
 	}
-	// asks 3 times !
+	// asks 3 times ?
 	defName { ^this.class.name.asString ++ this.numChannels.asString }
 	synthDefArgs { ^[0,patchOut.synthArg,1,amp] }
 	amp_ { arg v; 
@@ -231,14 +231,10 @@ StreamKrDur : HasSubject { // Synthless, above player
 	loadDefFileToBundle {}
 	rate { ^\control }
 	children { ^[] } // inputs
-	spawnAtTime { arg atTime;
-		// depending on didSpawn to start for now
+	spawnToBundle { arg bundle;
+		bundle.addMessage(this,\didSpawn);
 	}
-	spawnToBundle {
-		this.spawnAtTime; // for now
-	}
-	didSpawn {	arg patchIn,synthi;
-		patchOut.connectTo(patchIn,false);
+	didSpawn {
 		bus = patchOut.bus;
 		routine.reset;
 		SystemClock.play(routine)

@@ -149,6 +149,7 @@ Patch : HasPatchIns  {
 				++ synthDef.secretDefArgs(args)
 			)
 		);
+		bundle.addMessage(this,\didSpawn);
 	}
 	synthDefArgs {
 		// not every arg makes it into the synth def
@@ -165,18 +166,12 @@ Patch : HasPatchIns  {
 	defName { ^defName } // NOT 'Patch' ever
 	
 	// has inputs
-	didSpawn { arg patchIn,synthArgi;
-		super.didSpawn(patchIn,synthArgi);
-		
+	didSpawn {
+		super.didSpawn;
 		//i know of the synth, i hand out the NodeControls
 		synthPatchIns.do({ arg synpatchIn,synthArgi;
 			synpatchIn.nodeControl_(NodeControl(synth,synthArgi));
-		});
-		this.children.do({ arg child,childi;
-			// some of the kids get a nil synth arg index
-			// that's okay, they won't talk to the synth anyway
-			child.didSpawn(patchIns.at(childi),
-					synthArgsIndices.at(childi));
+			argsForSynth.at(synthArgi).connectToPatchIn(synpatchIn,false);
 		});
 	}
 

@@ -19,10 +19,6 @@ PatchIn {
 	*scalar { arg nodeControl;
 		^ScalarPatchIn(nodeControl)
 	}
-//	connectTo { arg patchOut,needsValueSetNow=true;
-//		// break any previous ?
-//		patchOut.connectTo(this,needsValueSetNow);
-//	}
 	server { ^nodeControl.server }
 	group { ^nodeControl.group }
 }
@@ -159,7 +155,9 @@ AudioPatchOut : ControlPatchOut {
 	control { arg controlPatchIn,needsValueSetNow;
 		// A2K convertor needed ?
 		// how else can i get a .kr input to read from an .ar buss ?
-		thisMethod.notYetImplemented;
+		
+		// why is this running ?
+		//thisMethod.notYetImplemented;
 		
 	}
 	scalar { arg scalarPatchIn;

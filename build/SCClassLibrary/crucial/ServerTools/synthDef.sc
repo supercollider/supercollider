@@ -11,14 +11,12 @@
 	isPlaying { ^false }
 
 	prepareToBundle {  }
-	prepareForPlay { arg group;
+	prepareForPlay {	arg group;
 		var bundle;
-		bundle = List.new;
+		bundle = CXBundle.new;
 		group = group.asGroup;
 		this.prepareToBundle(group,bundle);
-		bundle.clump(5).do({ arg bundle,i;
-			group.server.listSendBundle(i * 0.001,bundle);
-		})
+		^bundle.clumpedSendNow(group.server)
 	}
 	spawnToBundle {}
 	loadDefFileToBundle {}
@@ -26,7 +24,7 @@
 	
 	stop {}
 	free {}
-	didSpawn {}
+	//didSpawn {}
 
 	addToSynthDef {  arg synthDef,name;
 		synthDef.addInstrOnlyArg(name,this.synthArg); // has to be an InstrSynthDef

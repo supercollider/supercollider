@@ -24,12 +24,12 @@ AbstractPlayer : AbstractFunction  {
 			// leave bus nil
 		});
 					
-		bundle = List.new;
+		bundle = CXBundle.new;
 		
 		if(readyForPlay,{
 			this.makePatchOut(group,false,bus,bundle);
 			this.spawnToBundle(bundle);
-			this.sendSpawnBundle(bundle);
+			bundle.send(this.server,atTime);
 		},{
 			Routine({
 				var limit = 100,bsize;
@@ -66,13 +66,11 @@ AbstractPlayer : AbstractFunction  {
 	}
 	prepareForPlay { arg group,private = false,bus;
 		var bundle;
-		bundle = List.new;
+		bundle = CXBundle.new;
+		group = group.asGroup;
 		this.prepareToBundle(group,bundle);
 		this.makePatchOut(group,private,bus,bundle);
-		bundle.clump(5).do({ arg bundle,i;
-			group.server.listSendBundle(i * 0.001,bundle);
-		});
-		^bundle.size
+		^bundle.clumpedSendNow(group.server)
 	}
 	prepareToBundle { arg group,bundle;
 		readyForPlay = false;
@@ -147,9 +145,9 @@ AbstractPlayer : AbstractFunction  {
 	spawn { this.spawnAtTime(nil) }
 	spawnAtTime { arg atTime;
 		var bundle;
-		bundle = List.new;
+		bundle = CXBundle.new;
 		this.spawnToBundle(bundle);
-		this.sendSpawnBundle(bundle,atTime);
+		bundle.send(this.server,atTime);
 	}
 	spawnToBundle { arg bundle;
 		this.children.do({ arg child;
@@ -161,23 +159,16 @@ AbstractPlayer : AbstractFunction  {
 		bundle.add(
 			synth.addToTailMsg(this.group,this.synthDefArgs)
 		);
+		bundle.addMessage(this,\didSpawn);
 	}
-	sendSpawnBundle { arg bundle,atTime;
-		//if(bundle.notEmpty,{})
-		this.server.listSendBundle( atTime, bundle);
-		SystemClock.sched(atTime ? 0.0, {
-			this.didSpawn;
-			nil
-		});
-	}		
 	spawnOnBus { arg bus,atTime;
 		this.spawnOn(bus.server.asGroup,true,bus);
 	}
 	spawnOn { arg group,bus, atTime;
 		var bundle;
-		bundle = List.new;
+		bundle = CXBundle.new;
 		this.spawnOnToBundle(group,bus,bundle);
-		this.sendSpawnBundle(bundle,atTime);
+		bundle.send(this.server,atTime);
 	}
 	spawnOnToBundle { arg group,bus,bundle;
 		if(patchOut.isNil,{
@@ -188,8 +179,8 @@ AbstractPlayer : AbstractFunction  {
 			if(patchOut.group != group,{ patchOut.group = group });
 		});
 		this.spawnToBundle(bundle);
-	}		
-		
+	}
+	
 
 	/*
 		if defName != classname
@@ -313,20 +304,12 @@ AbstractPlayer : AbstractFunction  {
 	defName {
 		^defName ?? {this.class.name.asString}
 	}
-	didSpawn { arg patchIn,synthArgi;
-		if(patchIn.notNil,{
-			patchIn.nodeControl_(NodeControl(synth,synthArgi));
-			patchOut.connectTo(patchIn,false);
-		});
-		if(synth.notNil,{
+	didSpawn {	
+		if(synth.notNil,{// should always have a synth
 			synth.isPlaying = true;
 			synth.isRunning = true;
 		});
 		// if i create groups, set them to isRunning
-		// best handled by subclass
-		//		this.children.do({ arg child;
-		//			child.didSpawn(     )
-		//		})
 	}
 	rate { ^\audio }
 	numChannels { ^1 }
@@ -350,6 +333,9 @@ AbstractPlayer : AbstractFunction  {
 			this.bus = Bus.alloc(this.rate,this.server,this.numChannels);
 		});
 		patchOut.connectTo( player.patchIns.at(inputIndex), this.isPlaying )
+	}
+	connectToPatchIn { arg patchIn,needsValueSetNow = true;
+		this.patchOut.connectTo(patchIn,needsValueSetNow)
 	}
 	disconnect {
 		patchOut.disconnect;
@@ -499,16 +485,12 @@ SynthlessPlayer : AbstractPlayer { // should be higher
 		this.children.do({ arg child;
 			child.spawnToBundle(bundle);
 		});
+		bundle.addMessage(this,\didSpawn);
 	}
-	
-	didSpawn { arg patchIn,synthArgi;
-		if(patchIn.notNil,{
-			patchOut.connectTo(patchIn,false); // we are connected now
-			patchIn.nodeControl_(NodeControl(synth,synthArgi));
-		});
+	didSpawn {
+		super.didSpawn;
 		isPlaying = true;
 	}
-	
 	free {
 		super.free;
 		isPlaying = false;
@@ -546,20 +528,6 @@ MultiplePlayers : SynthlessPlayer { // SynthlessAggregatePlayer
 			pl.setPatchOut(po.deepCopy);
 		})
 	}
-//	spawnAtTime { arg atTime;
-//		var bundle;
-//		bundle = List.new;
-//		// should voices be children ?
-//		this.voices.do({ arg pl;
-//			pl.spawnToBundle(bundle)
-//		});
-//		
-//		patchOut.server.listSendBundle( atTime, bundle);
-//		SystemClock.sched(atTime ? 0,{
-//			this.didSpawn;
-//			nil;
-//		})
-//	}
 	loadDefFileToBundle { arg bundle,server;
 		// but not self, has no synthdef
 		this.voices.do({ arg pl;
@@ -570,14 +538,15 @@ MultiplePlayers : SynthlessPlayer { // SynthlessAggregatePlayer
 		// but not self, has no synthdef
 		this.voices.do({ arg pl;
 			pl.spawnToBundle(bundle)
-		})
+		});
+		bundle.addMessage(this,\didSpawn);
 	}
-	didSpawn { arg patchIn,synthArgi;
-		super.didSpawn(patchIn,synthArgi);
-		this.voices.do({ arg pl;
-			pl.didSpawn(patchIn,synthArgi);
-		})
-	}
+//	didSpawn { arg patchIn,synthArgi;
+//		super.didSpawn(patchIn,synthArgi);
+//		this.voices.do({ arg pl;
+//			pl.didSpawn(patchIn,synthArgi);
+//		})
+//	}
 	free {
 		this.voices.do({ arg pl;
 			pl.free
@@ -638,10 +607,10 @@ AbstractPlayerProxy : AbstractPlayer {
 			source.setPatchOut(PatchOut(source,patchOut.group,patchOut.bus.copy));
 		});
 	}
-	didSpawn { arg patchIn,synthArgi;
-		super.didSpawn(patchIn,synthArgi);
-		source.didSpawn(patchIn,synthArgi);
-	}
+//	didSpawn { arg patchIn,synthArgi;
+//		super.didSpawn(patchIn,synthArgi);
+//		source.didSpawn(patchIn,synthArgi);
+//	}
 	//children { ^source.children }
 	children { ^[source] }
 	instrArgFromControl { arg control;

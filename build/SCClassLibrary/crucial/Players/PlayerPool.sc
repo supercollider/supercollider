@@ -1,5 +1,4 @@
-PlayerPool : PlayerSocket { 	// implements selectable interface	var <>selected, <>list,<>autostart=false;	var socket;
-		*new { arg list,selected=0,env,round=0.0;		^super.new(round)			.list_(loadDocument(list))			.selected_(selected)			.env_(env ?? {Env.new([ 0, 1.0, 0 ], [ 0.01, 0.7 ], -4, 1, nil)})	}	storeArgs { ^[list, selected ,env,round ]  }
+PlayerPool : PlayerSocket { 	// implements selectable interface	var <>selected, <>list,<>autostart=false;		*new { arg list,selected=0,env,round=0.0;		^super.new(round)			.list_(loadDocument(list))			.selected_(selected)			.env_(env ?? {Env.new([ 0, 1.0, 0 ], [ 0.01, 0.7 ], -4, 1, nil)})	}	storeArgs { ^[list, selected ,env,round ]  }
 	addPlayer { arg player;
 		var path;
 		player = loadDocument(player);
@@ -7,10 +6,10 @@
 		this.changed(\players);	
 	}
 
-	//selectable interface	select { arg i;		selected = i;		this.changed; // sched for time ?		if(this.isPlaying,{
+	//selectable interface	select { arg i;		selected = i;		if(this.isPlaying,{
 			this.qtrigger(list.at(i));
 		})
-	}	selectedItem { ^list.at(selected) }		selectedAsString {		^list.at(selected).asString	}	maxIndex { ^list.size }			choose {		this.select(list.size.rand)	}	rate { ^list.first.rate } // what else to do ?	numChannels { ^list.maxValue({ arg pl; pl.numChannels }) }	releaseAll { socket.release }	children { ^list }	
+	}	selectedItem { ^list.at(selected) }		selectedAsString {		^list.at(selected).asString	}	maxIndex { ^list.size }			choose {		this.select(list.size.rand)	}	rate { ^list.first.rate } // what else to do ?	numChannels { ^list.maxValue({ arg pl; pl.numChannels }) }	children { ^list }	
 	prepareToBundle { arg group,bundle;
 		group = group.asGroup;
 		list.do({ arg pl; pl.prepareToBundle(group,bundle) });
@@ -22,7 +21,7 @@
 		});
 	}
 
-	guiClass { ^PlayerPoolGui }}/*PatchSwitcher : PlayerPool {
+	guiClass { ^PlayerPoolGui }}PatchSwitcher : PlayerPool {
 
 	var <>inputs,ip,proxyMatches;
 	var connectedInputs,inputGroup;
@@ -70,7 +69,7 @@
 			player = list.at(i);
 
 			// set the initial value (maybe slightly wrong by qtrigger time)
-			bundle = List.new;
+			bundle = CXBundle.new;
 			proxyMatches.at(i).do({ arg inpinp;
 				var inputProxy,input;
 				# inputProxy , input = inpinp;
@@ -79,11 +78,8 @@
 				});
 				inputProxy.initValue = input.synthArg;
 			});
-			bundle.add( this.setSourceMsg(player) );
-			atTime = this.qtime;
-			this.server.listSendBundle( atTime, bundle);
-			// much better to have the connectTo actions as messages
-			SystemClock.sched(atTime,{
+			this.setSourceToBundle(player,bundle);
+			bundle.addFunction({
 				// on start, connectTo, set value
 				// matches connectTo(inProxy)
 				"connecting".postln;
@@ -93,6 +89,9 @@
 					input.connectTo( inputProxy )
 				});
 			});
+
+			atTime = this.qtime;
+			bundle.send(server,this.qtime);
 		})
 	}
 	prepareToBundle { arg group,bundle;
@@ -107,27 +106,11 @@
 	}
 	spawnAtTime { arg atTime; // undo super
 		var bundle;
-		bundle = List.new;
+		bundle = CXBundle.new;
 		this.spawnToBundle(bundle);
-		this.sendSpawnBundle(bundle,atTime);
-		if(atTime.isNumber,{
-			AppClock.sched(atTime,{ isPlaying = true; nil });
-		},{
-			isPlaying = true;
-		})
+		bundle.addFunction({ isPlaying = true });
+		bundle.send(this.server,atTime);
 	}
-//	spawnToBundle { arg bundle;
-//		inputs.do({ arg inp; inp.value.spawnToBundle(bundle) });
-//		super.spawnToBundle(bundle);
-//	}
-//	didSpawn { patchIn, synthArgi;
-//		super.didSpawn(patchIn, synthArgi);
-//		inputs.do({ arg inp,inpi; 
-//			// playing initially ?
-//			// use select
-//			inp.value.didSpawn
-//		})
-//	}
 }
 
-*/
+
