@@ -98,8 +98,9 @@ A plug-in can also define things other than unit generators such as buffer fill 
 \f0\fs42 \cf0 \CocoaLigature1 Adding a Target to Xcode
 \fs26 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs30 You will need to have the Developer Tools installed to do this.\
+\fs30 \cf0 You will need to have the Developer Tools installed to do this.\
 Each group of plugins shares a target in Xcode.  They create a file: eg. MyUGens.scx which is then copied into the plugins folder via a shell script.\
 \
 Create a new target, select type 'Legacy''Library'.\
@@ -658,7 +659,7 @@ void \cf3 MyDelay_next_notfull\cf0 (\cf3 MyDelay\cf0  *unit, int inNumSamples)\
 		\}\
 		\cf2 // if we have not yet wrapped, then z is garbage from the uninitialized \cf0 \
 		\cf2 // buffer, so output zero. If we have wrapped, then z is a good value.\cf0 \
-		out[i] = wrapped ? 0.f : z;\
+		out[i] = wrapped ? z : 0.f;\
 	\}\
 \
 	\cf2 // store the position back to the struct\cf0 \
