@@ -17,7 +17,11 @@ SCSoundFileView : SCScope{
 	}
 
 	read{|startframe=0, frames=0, block=64|
-		if(soundfile.isOpen.not){soundfile.openRead(soundfile.path)};
+		if(soundfile.isOpen.not){
+			if(soundfile.openRead.not){
+				^this
+			}
+		};
 		startFrame = startframe;
 		numFrames = frames;
 		this.readFile(soundfile, startframe, frames, block)
