@@ -130,6 +130,7 @@ int basicSwap(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int getIndexedInt(PyrObject *obj, int index, int *value);
 
 int basicAt(struct VMGlobals *g, int numArgsPushed)
 {
@@ -141,16 +142,34 @@ int basicAt(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 	
 	if (a->utag != tagObj) return errWrongType;
-	if (b->utag != tagInt) return errIndexNotAnInteger;
 	obj = a->uo;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
-	index = b->ui;
-	if (index < 0 || index >= obj->size) {
-		a->ucopy = o_nil.ucopy;
-	} else {
-		getIndexedSlot(obj, a, index);
-	}
+		
+	if (b->utag == tagInt) {
+		index = b->ui;
+		if (index < 0 || index >= obj->size) {
+			a->ucopy = o_nil.ucopy;
+		} else {
+			getIndexedSlot(obj, a, index);
+		}
+	} else if (isKindOfSlot(b, class_arrayed_collection)) {
+		PyrObject *indexArray = b->uo;
+		int size = indexArray->size;
+		PyrObject *outArray = newPyrArray(g->gc, size, 0, true);
+		PyrSlot *outArraySlots = outArray->slots;
+		for (int i=0; i<size; ++i) {
+			int err = getIndexedInt(indexArray, i, &index);
+			if (err) return err;
+			if (index < 0 || index >= obj->size) {
+				outArraySlots[i].ucopy = o_nil.ucopy;
+			} else {
+				getIndexedSlot(obj, outArraySlots + i, index);
+			}
+		}
+		outArray->size = size;
+		SetObject(a, outArray);
+	} else return errIndexNotAnInteger;
 	return errNone;
 }
 
@@ -306,13 +325,29 @@ int basicWrapAt(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 	
 	if (a->utag != tagObj) return errWrongType;
-	if (b->utag != tagInt) return errIndexNotAnInteger;
 	obj = a->uo;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
-	index = b->ui;
-	index = sc_mod((int)index, (int)obj->size);
-	getIndexedSlot(obj, a, index);
+		
+	if (b->utag == tagInt) {
+		index = b->ui;
+		index = sc_mod((int)index, (int)obj->size);
+		getIndexedSlot(obj, a, index);
+	} else if (isKindOfSlot(b, class_arrayed_collection)) {
+		PyrObject *indexArray = b->uo;
+		int size = indexArray->size;
+		PyrObject *outArray = newPyrArray(g->gc, size, 0, true);
+		PyrSlot *outArraySlots = outArray->slots;
+		for (int i=0; i<size; ++i) {
+			int err = getIndexedInt(indexArray, i, &index);
+			if (err) return err;
+			index = sc_mod((int)index, (int)obj->size);
+			getIndexedSlot(obj, outArraySlots + i, index);
+		}
+		outArray->size = size;
+		SetObject(a, outArray);
+	} else return errIndexNotAnInteger;
+
 	return errNone;
 }
 
@@ -325,13 +360,29 @@ int basicFoldAt(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 	
 	if (a->utag != tagObj) return errWrongType;
-	if (b->utag != tagInt) return errIndexNotAnInteger;
 	obj = a->uo;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
-	index = b->ui;
-	index = sc_fold(index, 0, obj->size);
-	getIndexedSlot(obj, a, index);
+		
+	if (b->utag == tagInt) {
+		index = b->ui;
+		index = sc_fold(index, 0, obj->size);
+		getIndexedSlot(obj, a, index);
+	} else if (isKindOfSlot(b, class_arrayed_collection)) {
+		PyrObject *indexArray = b->uo;
+		int size = indexArray->size;
+		PyrObject *outArray = newPyrArray(g->gc, size, 0, true);
+		PyrSlot *outArraySlots = outArray->slots;
+		for (int i=0; i<size; ++i) {
+			int err = getIndexedInt(indexArray, i, &index);
+			if (err) return err;
+			index = sc_fold(index, 0, obj->size);
+			getIndexedSlot(obj, outArraySlots + i, index);
+		}
+		outArray->size = size;
+		SetObject(a, outArray);
+	} else return errIndexNotAnInteger;
+
 	return errNone;
 }
 
@@ -344,13 +395,29 @@ int basicClipAt(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 	
 	if (a->utag != tagObj) return errWrongType;
-	if (b->utag != tagInt) return errIndexNotAnInteger;
 	obj = a->uo;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
-	index = b->ui;
-	index = sc_clip(index, 0, obj->size - 1);
-	getIndexedSlot(obj, a, index);
+		
+	if (b->utag == tagInt) {
+		index = b->ui;
+		index = sc_clip(index, 0, obj->size - 1);
+		getIndexedSlot(obj, a, index);
+	} else if (isKindOfSlot(b, class_arrayed_collection)) {
+		PyrObject *indexArray = b->uo;
+		int size = indexArray->size;
+		PyrObject *outArray = newPyrArray(g->gc, size, 0, true);
+		PyrSlot *outArraySlots = outArray->slots;
+		for (int i=0; i<size; ++i) {
+			int err = getIndexedInt(indexArray, i, &index);
+			if (err) return err;
+			index = sc_clip(index, 0, obj->size - 1);
+			getIndexedSlot(obj, outArraySlots + i, index);
+		}
+		outArray->size = size;
+		SetObject(a, outArray);
+	} else return errIndexNotAnInteger;
+
 	return errNone;
 }
 
