@@ -1,31 +1,32 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red191\green0\blue0;
+\red96\green96\blue96;\red0\green115\blue0;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
 \red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 PlayBuf		sample playback oscillator\
+\f0\b\fs36 \cf2 PlayBuf\cf3 		sample playback oscillator\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf0 \
+\f1\b0\fs18 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 Plays back a sample resident in memory.\
+\f2\fs24 \cf2 Plays\cf3  back a sample resident in memory.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 PlayBuf.ar(numChannels,bufnum,rate,trigger,startPos,loop)\
+\f0\b \cf2 PlayBuf\cf3 .ar(numChannels,bufnum,rate,trigger,startPos,loop)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 \
+\f2\b0 \cf3 \
 	
 \f0\b numChannels
 \f2\b0  - number of channels that the buffer will be.\
-			this must be a fixed integer. The architechture of the SynthDef\
+			\cf2 this\cf3  must be a fixed integer. \cf2 The\cf3  architechture of the \cf2 SynthDef\cf3 \
 			cannot change after it is compiled.\
 			warning: if you supply a bufnum of a buffer that has a different\
-			numChannels then you have specified to the PlayBuf, it will\
+			numChannels then you have specified to the \cf2 PlayBuf\cf3 , it will\
 			fail silently.\
 	
 \f0\b bufnum
@@ -37,116 +38,109 @@
 	
 \f0\b trigger
 \f2\b0  - a trigger causes a jump to the startPos. \
-		A trigger occurs when a signal changes from <= 0 to > 0.\
+		\cf2 A\cf3  trigger occurs when a signal changes from <= 0 to > 0.\
 	
 \f0\b startPos
 \f2\b0  - sample frame to start playback.\
 	
 \f0\b loop
-\f2\b0        - 1 means true, 0 means false.  this is modulate-able.\
+\f2\b0        - 1 means \cf2 true\cf3 , 0 means \cf2 false\cf3 .  \cf2 this\cf3  is modulate-able.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f1\fs18 \cf3 \
 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // read a whole sound into memory\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 s = \cf3 Server\cf0 .local;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // note: not *that* columbia, the first one\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 b = \cf3 Buffer\cf0 .read(s,\cf4 "sounds/a11wlk01.wav"\cf0 );\
+\cf4 // read a whole sound into memory\cf3 \
+s = \cf2 Server\cf3 .local;\
+\cf4 // note: not *that* columbia, the first one\cf3 \
+b = \cf2 Buffer\cf3 .read(s,\cf5 "sounds/a11wlk01.wav"\cf3 );\
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
-	\cf3 Out\cf0 .ar(out,\
-		\cf3 PlayBuf\cf0 .ar(1,bufnum, \cf3 BufRateScale\cf0 .kr(bufnum))\
+\cf2 SynthDef\cf3 (\cf5 "help-PlayBuf"\cf3 ,\{ \cf2 arg\cf3  out=0,bufnum=0;\
+	\cf2 Out\cf3 .ar(out,\
+		\cf2 PlayBuf\cf3 .ar(1,bufnum, \cf2 BufRateScale\cf3 .kr(bufnum))\
 	)\
-\}).play(s,[\cf5 \\out\cf0 , 0, \cf5 \\bufnum\cf0 , b.bufnum]);\
+\}).play(s,[\cf6 \\out\cf3 , 0, \cf6 \\bufnum\cf3 , b.bufnum]);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 Note again that the number of channels must be fixed for the SynthDef, it cannot vary depending on which buffer you use.\
+\f2\fs24 \cf2 Note\cf3  again that the number of channels must be fixed for the \cf2 SynthDef\cf3 , it cannot vary depending on which buffer you use.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f1\fs18 \cf3 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // loop is true\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
-	\cf3 Out\cf0 .ar(out,\
-		\cf3 PlayBuf\cf0 .ar(1,bufnum,\cf3 BufRateScale.kr\cf0 (bufnum),loop: 1.0)\
+\cf4 // loop is true\cf3 \
+\cf2 SynthDef\cf3 (\cf5 "help-PlayBuf"\cf3 ,\{ \cf2 arg\cf3  out=0,bufnum=0;\
+	\cf2 Out\cf3 .ar(out,\
+		\cf2 PlayBuf\cf3 .ar(1,bufnum,\cf2 BufRateScale\cf3 .kr(bufnum),loop: 1.0)\
 	)\
-\}).play(s,[\cf5 \\out\cf0 , 0, \cf5 \\bufnum\cf0 , b.bufnum]);\
+\}).play(s,[\cf6 \\out\cf3 , 0, \cf6 \\bufnum\cf3 , b.bufnum]);\
 \
+\cf0 \
 \
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // trigger one shot on each pulse\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
-	\cf3 var\cf0  trig;\
-	trig = \cf3 Impulse\cf0 .kr(\cf3 2.0\cf0 );\
-	\cf3 Out\cf0 .ar(out,\
-		\cf3 PlayBuf\cf0 .ar(1,b.bufnum,\cf3 BufRateScale\cf0 .kr(bufnum),trig,0,0)\
+\cf7 // trigger one shot on each pulse\cf0 \
+\cf8 SynthDef\cf0 (\cf9 "help-PlayBuf"\cf0 ,\{ \cf8 arg\cf0  out=0,bufnum=0;\
+	\cf8 var\cf0  trig;\
+	trig = \cf8 Impulse\cf0 .kr(2.0);\
+	\cf8 Out\cf0 .ar(out,\
+		\cf8 PlayBuf\cf0 .ar(1,b.bufnum,\cf8 BufRateScale\cf0 .kr(bufnum),trig,0,0)\
 	)\
-\}).play(s,[\cf5 \\out\cf0 , 0, \cf5 \\bufnum\cf0 , b.bufnum]);\
+\}).play(s,[\cf10 \\out\cf0 , 0, \cf10 \\bufnum\cf0 , b.bufnum]);\
+\cf3 \
 \
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // trigger one shot on each pulse\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
-	\cf3 var\cf0  trig;\
-	trig = \cf3 Impulse\cf0 .kr(\cf3 XLine\cf0 .kr(0.1,100,30));\
-	\cf3 Out\cf0 .ar(out,\
-		\cf3 PlayBuf\cf0 .ar(1,b.bufnum,\cf3 BufRateScale\cf0 .kr(bufnum),trig,5000,0)\
+\cf4 // trigger one shot on each pulse\cf3 \
+\cf2 SynthDef\cf3 (\cf5 "help-PlayBuf"\cf3 ,\{ \cf2 arg\cf3  out=0,bufnum=0;\
+	\cf2 var\cf3  trig;\
+	trig = \cf2 Impulse\cf3 .kr(\cf2 XLine\cf3 .kr(0.1,100,30));\
+	\cf2 Out\cf3 .ar(out,\
+		\cf2 PlayBuf\cf3 .ar(1,b.bufnum,\cf2 BufRateScale\cf3 .kr(bufnum),trig,5000,0)\
 	)\
-\}).play(s,[\cf5 \\out\cf0 , 0, \cf5 \\bufnum\cf0 , b.bufnum]);\
+\}).play(s,[\cf6 \\out\cf3 , 0, \cf6 \\bufnum\cf3 , b.bufnum]);\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // accelerating pitch\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
-	\cf3 var\cf0  rate;\
-	rate = \cf3 XLine\cf0 .kr(0.1,100,60);\
-	\cf3 Out\cf0 .ar(out, \
-		\cf3 PlayBuf\cf0 .ar(1, bufnum, rate, 1.0,0.0, 1.0)\
+\cf0 \
+\
+\cf7 // mouse control of trigger rate and startpos\cf0 \
+\cf8 SynthDef\cf0 (\cf9 "help-PlayBuf"\cf0 ,\{ \cf8 arg\cf0  out=0,bufnum=0;\
+	\cf8 var\cf0  trig;\
+	trig = \cf8 Impulse\cf0 .kr(MouseY.kr(0.5,200,1));\
+	\cf8 Out\cf0 .ar(out,\
+		\cf8 PlayBuf\cf0 .ar(1,b.bufnum,\cf8 BufRateScale\cf0 .kr(bufnum),trig,MouseX.kr(0,BufFrames.kr(bufnum)),1)\
 	)\
-\}).play(s,[\cf5 \\out\cf0 , 0, \cf5 \\bufnum\cf0 , b.bufnum]);\
+\}).play(s,[\cf10 \\out\cf0 , 0, \cf10 \\bufnum\cf0 , b.bufnum]);\
+\cf3 \
 \
 \
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // sine wave control of playback rate. negative rate plays backwards\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf4 "help-PlayBuf"\cf0 ,\{ \cf3 arg\cf0  out=0,bufnum=0;\
-	\cf3 var\cf0  rate;\
-	rate = \cf3 FSinOsc\cf0 .kr(\cf3 XLine\cf0 .kr(0.2,8,30), 0, 3, 0.6);\
-	\cf3 Out\cf0 .ar(out,\
-		\cf3 PlayBuf\cf0 .ar(1,bufnum,\cf3 BufRateScale\cf0 .kr(bufnum)*rate,1,0,1)\
+\cf4 // accelerating pitch\cf3 \
+\cf2 SynthDef\cf3 (\cf5 "help-PlayBuf"\cf3 ,\{ \cf2 arg\cf3  out=0,bufnum=0;\
+	\cf2 var\cf3  rate;\
+	rate = \cf2 XLine\cf3 .kr(0.1,100,60);\
+	\cf2 Out\cf3 .ar(out, \
+		\cf2 PlayBuf\cf3 .ar(1, bufnum, rate, 1.0,0.0, 1.0)\
 	)\
-\}).play(s,[\cf5 \\out\cf0 , 0, \cf5 \\bufnum\cf0 , b.bufnum]);\
+\}).play(s,[\cf6 \\out\cf3 , 0, \cf6 \\bufnum\cf3 , b.bufnum]);\
 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // zig zag around sound using offset\
-/*  doesn't appear to work like that anymore ?\
-SynthDef("help-PlayBuf",\{ arg out=0,bufnum=0;\
-	var offset;\
-	offset = LFNoise2.kr(Rand(2,20));\
-	Out.ar(0,\
-		PlayBuf.ar(1,bufnum,0.0,offset, 1.0)\
+\cf4 // sine wave control of playback rate. negative rate plays backwards\cf3 \
+\cf2 SynthDef\cf3 (\cf5 "help-PlayBuf"\cf3 ,\{ \cf2 arg\cf3  out=0,bufnum=0;\
+	\cf2 var\cf3  rate;\
+	rate = \cf2 FSinOsc\cf3 .kr(\cf2 XLine\cf3 .kr(0.2,8,30), 0, 3, 0.6);\
+	\cf2 Out\cf3 .ar(out,\
+		\cf2 PlayBuf\cf3 .ar(1,bufnum,\cf2 BufRateScale\cf3 .kr(bufnum)*rate,1,0,1)\
 	)\
-\}).play(s,[\\out, 0, \\bufnum, b.bufnum]);\
+\}).play(s,[\cf6 \\out\cf3 , 0, \cf6 \\bufnum\cf3 , b.bufnum]);\
 \
-Note that rate is 0.0, but the offset is changing.\
-*/\cf0 \
+\
+\cf4 // zig zag around sound \cf3 \
+\cf2 SynthDef\cf3 (\cf5 "help-PlayBuf"\cf3 ,\{ \cf2 arg\cf3  out=0,bufnum=0;\
+	\cf2 var\cf3  rate;\
+	rate = \cf2 LFNoise2\cf3 .kr(\cf2 XLine\cf3 .kr(1,20,60), 2);\
+	\cf2 Out\cf3 .ar(out,\
+		\cf2 PlayBuf\cf3 .ar(1,bufnum,\cf2 BufRateScale\cf3 .kr(bufnum)*rate,1,0,1)\
+	)\
+\}).play(s,[\cf6 \\out\cf3 , 0, \cf6 \\bufnum\cf3 , b.bufnum]);\
+\
 \
 \
 }
