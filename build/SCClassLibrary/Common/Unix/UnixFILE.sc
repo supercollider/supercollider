@@ -100,9 +100,11 @@ UnixFILE : IOStream {
 		this.putString(aString);
 	}
 	getPascalString {
-		var le;
-		le = this.getInt8;
-		^this.nextN(le);
+		var size, string;
+		size = this.getInt8;
+		string = String.newClear(size);
+		this.read(string);
+		^string
 	}
 	// PRIVATE
 	addOpenFile {
