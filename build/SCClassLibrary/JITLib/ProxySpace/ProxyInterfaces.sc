@@ -187,27 +187,23 @@ CXPlayerControl : AbstractPlayControl {
 	//here the lazy bus init happens and allocation of ressources
 	build { arg proxy;
 		var player;
-		source.prepareForPlay(proxy.group, false, proxy.bus.copy);
+		source.prepareForPlay(proxy.group, false, proxy.bus.as(SharedBus));
 		^proxy.initBus(source.rate, source.numChannels);
 	}
 	//this allocates the bus and plays it
 	playToBundle { arg bundle, extraArgs, proxy;
 		var bus, group;
-		//revisist this.
-		bus = if(channelOffset == 0, {
-				proxy.bus.copy; //needs a copy, otherwise player frees my bus when stopped
-		}, {
-				Bus.new(proxy.rate, proxy.index+channelOffset, source.numChannels, proxy.server)
-		});
-		group = proxy.group;
-		source.makePatchOut(group, false, bus, bundle);
+		//we'll need channel offset maybe.
+		
+		source.group = proxy.group;
+		source.bus = proxy.bus.as(SharedBus);
 		source.spawnToBundle(bundle);
 		^source.synth;
 	}
 	
 	stopToBundle { arg bundle;
-		source.stopSynthToBundle(bundle);
-		//bundle.addFunction({  });
+		source.stopToBundle(bundle);
+		//bundle.addAction(source, \free);
 	}
 	
 	stop {
