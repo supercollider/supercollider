@@ -99,15 +99,15 @@ SCView {  // abstract class
 	}
 
 	keyDown { arg char, modifiers, unicode,keycode;
-		globalKeyDownAction.value(this, char, modifiers, unicode,keycode); 
-		this.handleKeyDownBubbling(this, char, modifiers, unicode,keycode);
+		globalKeyDownAction.value(this, char, modifiers, unicode, keycode); 
+		this.handleKeyDownBubbling(this, char, modifiers, unicode, keycode);
 	}
 	defaultKeyDownAction { ^nil }
-	handleKeyDownBubbling { arg view, char, modifiers, unicode,keycode;
+	handleKeyDownBubbling { arg view, char, modifiers, unicode, keycode;
 		// nil from keyDownAction --> pass it on
-		if(keyDownAction.value(view, char, modifiers, unicode,keycode).isNil,{  
+		if(keyDownAction.value(view, char, modifiers, unicode, keycode).isNil,{  
 			// call keydown action of parent view
-			parent.handleKeyDownBubbling(view, char, modifiers, unicode,keycode);
+			parent.handleKeyDownBubbling(view, char, modifiers, unicode, keycode);
 		})
 	}
 	
@@ -115,8 +115,8 @@ SCView {  // abstract class
 	keyUp { arg char, modifiers, unicode,keycode; 
 		this.keyTyped = char;
 		// always call global keydown action first
-		globalKeyUpAction.value(this, char, modifiers, unicode,keycode);
-		this.handleKeyUpBubbling(this, char, modifiers, unicode,keycode);
+		globalKeyUpAction.value(this, char, modifiers, unicode, keycode);
+		this.handleKeyUpBubbling(this, char, modifiers, unicode, keycode);
 	}
 	defaultKeyUpAction { ^nil }
 	handleKeyUpBubbling { arg view, char, modifiers,unicode,keycode;
@@ -220,11 +220,11 @@ SCCompositeView : SCContainerView {
 
 SCTopView : SCCompositeView {
 	// created by SCWindow
-	handleKeyDownBubbling { arg view, key, modifiers, unicode;
-		keyDownAction.value(view, key, modifiers, unicode);
+	handleKeyDownBubbling { arg view, key, modifiers, unicode, keycode;
+		keyDownAction.value(view, key, modifiers, unicode, keycode);
 	}
-	handleKeyUpBubbling { arg view, key, modifiers, unicode;
-		keyUpAction.value(view, key, modifiers, unicode);
+	handleKeyUpBubbling { arg view, key, modifiers, unicode, keycode;
+		keyUpAction.value(view, key, modifiers, unicode, keycode);
 	}
 }
 
