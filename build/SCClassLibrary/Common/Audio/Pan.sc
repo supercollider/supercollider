@@ -78,7 +78,7 @@ PanB : MultiOutUGen {
 PanB2 : MultiOutUGen {
 	var channels;
 	
-	*ar { arg in, azimuth, gain;
+	*ar { arg in, azimuth, gain=1;
 		^this.multiNew('audio', in, azimuth, gain )
 	}
 	init { arg ... theInputs;
@@ -87,6 +87,27 @@ PanB2 : MultiOutUGen {
 					OutputProxy(\audio,this,2) ];
 		^channels
 	}
+}
+
+DecodeB2 : MultiOutUGen {
+	var channels;
+	
+	*ar { arg numChans, w, x, y, orientation = 0.5;
+		^this.multiNew('audio', numChans, w, x, y, orientation = 0.5 )
+	}
+	init { arg numChans ... theInputs;
+		inputs = theInputs;		
+		channels = Array.fill(numChans, { arg i; OutputProxy(\audio,this, i) });
+		^channels
+	}
+ 	checkInputs {
+ 		for(0, 2, { arg i;
+ 			if (inputs.at(i).rate != 'audio', {
+ 				^("input was not audio rate: " + inputs.at(i));
+			});
+ 		});
+ 		^nil
+ 	}
 }
 
 PanAz : MultiOutUGen {
