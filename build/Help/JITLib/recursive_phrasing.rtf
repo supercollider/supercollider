@@ -70,7 +70,7 @@ s.boot;\
 \cf4 Pdef\cf2 (\cf6 \\sweep3\cf2 , \{ \cf4 arg\cf2  freq=440;\
 	\cf4 Pbind\cf2 (\
 		\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
-		\cf6 \\instrument\cf2 , \cf6 \\sweep2\cf2 ,\
+		\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
 		\cf6 \\freq\cf2 , \cf4 Pfunc\cf2 (\{ rrand(0.8, 1.3)  \})  * freq.value,\
 		\cf6 \\dur\cf2 , 0.3,\
 		\cf6 \\legato\cf2 , 1.3,\
@@ -397,6 +397,33 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 ).play\
 )\
 \
+\
+\cf3 // crossfading instruments while they play\cf2 \
+\
+\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 ).fadeTime = 2;\
+\
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+	\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+	\cf6 \\n\cf2 , 3,\
+	\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ([0, 2b, 3, 4], \cf4 inf\cf2 ),\
+	\cf6 \\dur\cf2 , 2,\
+	\\legato, 2\
+).play\
+)\
+\
+\cf3 // change pattern definition while playing:\cf2 \
+(\
+\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 ,\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\instrument\cf2 , \cf6 \\pgrain\cf2 ,\
+		\cf6 \\dur\cf2 , exprand(0.01, 0.1),\
+		\cf6 \\legato\cf2 , \cf4 rrand(0.01, 2.0)\cf2 ,\
+		\cf6 \\octave\cf2 , rrand(5, 7)\
+	)\
+)\
+)\
 \
 \
 \
