@@ -510,6 +510,7 @@ Server : Model {
 			scopeWindow = nil; 
 			scopeBuffer = nil;
 		});
+		scopeSynth.notNil.if({ scopeSynth = nil; });
 		recordNode.notNil.if({ recordNode = nil; });
 		recordBuf.notNil.if({recordBuf.close({ arg buf; buf.free; }); recordBuf = nil;});
 		CmdPeriod.remove(this);
