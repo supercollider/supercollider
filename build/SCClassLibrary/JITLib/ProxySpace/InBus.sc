@@ -30,7 +30,7 @@ InBus {
 						{ XIn.kr(index, numChannels) }
 			};
 		^if(argRate === rate) {Êout } { // if not the same rate, convert rates
-			if(argRate === 'audio') { K2A.ar(out) } { LinLin.kr(out, -100.0, 100.0, -100.0, 100.0) }
+			if(argRate === 'audio') { K2A.ar(out) } { A2K.kr(out) }
 		};
 	
 	}
