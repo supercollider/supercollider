@@ -100,8 +100,19 @@ String[char] : RawArray {
 	
 	containsStringAt { arg index, string;
 		string.do({ arg char, i;
-			if(char != this.at(index + i), {  ^false })
+				if(char != this.at(index + i), { ^false })
 		});
+		^true
+	}
+	
+	// case insensitive
+	
+	icontainsStringAt { arg index, string;
+		string.do({ arg char, i;
+				var myChar;
+				myChar = this.at(index + i);
+				if((char.toLower != myChar) and: {char.toUpper != myChar}, {  ^false  })
+		})
 		^true
 	}
 	
@@ -115,26 +126,20 @@ String[char] : RawArray {
 		});
 		^false
 	}
+	
 	// case insensitive
 	containsi { arg string;
-		var completed=0;
-		
-		// could return false after end + completed - string.size
+		var firstChar;
+		firstChar = string.at(0);
 		this.do({	arg char,i;
-			var ch;
-			if(char.toLower == (ch = string.at(completed)) or: 
-				{ char.toUpper == ch }
-			,{
-				completed = completed + 1;
-				if(completed == string.size,{
-					^true
-				})
-			},{
-				completed = 0;
+			if((char.toLower == firstChar) or: (char.toUpper == firstChar),{
+				if(this.icontainsStringAt(i, string), { ^true });
 			})
 		});
 		^false
 	}
+	
+
 	escapeChar { arg charToEscape; // $"
 		^this.class.streamContents({ arg st;
 			this.do({ arg char;
