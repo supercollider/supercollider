@@ -8,7 +8,7 @@ BroadcastServer : Server {
 		^super.new
 				.localServer_(localServer)
 				.ninit(localServer.name.asString ++ "_broadcast")
-				.allAddr_(allAddr.add(localServer.addr))
+				.allAddr_(allAddr)
 				.newNodeWatcher
 				
 				
@@ -24,20 +24,37 @@ BroadcastServer : Server {
 	}
 	init {}
 	
+	addr { ^allAddr } //support NodeWatcher.register
+	
+	makeWindow {} //doesn't make sense, use Router for gui
+	
 	newNodeWatcher {
-		nodeWatcher = BasicNodeWatcher.new(allAddr);
-		//nodeWatcher.start;
+		nodeWatcher = NodeWatcher.new(allAddr, this.nodeAllocator);
+		nodeWatcher.start;
 		
 	}
 	boot {
 		nodeWatcher.start;
+		this.notify;
 		
 	}
 	quit {
 		nodeWatcher.stop;
 	}
-	serverRunning { ^true }
 	
+	serverRunning { ^true } //assume that.
+	
+	at { arg index;
+		^allAddr.clipAt(index)
+	}
+	
+	wrapAt { arg index;
+		^allAddr.wrapAt(index)
+	}
+	
+	do { arg function;
+		^allAddr.do(function)
+	}
 	
 	///message forwarding
 		
@@ -66,9 +83,6 @@ BroadcastServer : Server {
 		allAddr.do({ arg addr; addr.sendMsg("/notify", flag.binaryValue) });
 	}
 	
-	nodeIsPlaying_ { arg nodeID;
-		nodeWatcher.nodes.add(nodeID);
-	}
 	
 	
 		
@@ -81,65 +95,121 @@ BroadcastServer : Server {
 	bufferAllocator { ^localServer.bufferAllocator }
 	
 	nextNodeID { ^localServer.nodeAllocator.alloc }
-	nextStaticNodeID { ^localServer.staticNodeAllocator.alloc }
+	//nextStaticNodeID { ^localServer.staticNodeAllocator.alloc }
 	nextSharedNodeID { ^localServer.nextSharedNodeID }
 }
 
+
+DispatchServer : BroadcastServer {
+	var <>latencies;
+	
+	*newFrom { arg localServer, allAddr, latencies;
+		^super.newFrom(localServer, allAddr).latencies_(latencies ? #[])
+	}
+	
+	sendMsg { arg ... args;
+		allAddr.do({ arg addr, i; 
+				if(latencies.clipAt(i).notNil, {
+					addr.sendBundle(nil, args) 
+				});
+		})
+	}
+	
+	sendBundle { arg time ... messages;
+		allAddr.do({ arg addr, i; 
+				var time; 
+				time = latencies.clipAt(i);
+				if(time.notNil, {
+					addr.performList(\sendBundle, time, messages);
+				});
+		})
+	}
+	sendRaw { arg rawArray;
+		allAddr.do({ arg addr, i; 
+				if(latencies.clipAt(i).notNil, {
+					 addr.sendRaw(rawArray) 
+				});
+		})
+	}
+	
+	listSendMsg { arg msg;
+		allAddr.do({ arg addr, i; 
+				if(latencies.clipAt(i).notNil, {
+					 addr.sendBundle(nil,msg)
+				});
+		})
+	}
+	
+ 	listSendBundle { arg time,bundle;
+ 		allAddr.do({ arg addr, i; 
+				var time; 
+				time = latencies.clipAt(i);
+				if(time.notNil, {
+					addr.performList(\sendBundle, [time] ++ bundle)
+				});
+		})
+ 		
+	}
+
+
+}
 
 Router : Server {
 	
 	var <broadcast, <sharedNodeIDAllocator;
 	var <clientNumber=0; //for multi user dungeons
 	
-	*new { arg name, addr, options, clientNumber=0, allAddr;
-		^super.new(name, addr, options)
-			.setID(clientNumber)
-			.newAllocatorsForThisClient //move up later maybe
-			.initBroadcast(allAddr)
+	*new { arg name, addr, options, clientNumber=0, allAddr, latencies;
+		^super.new(name, addr, options, clientNumber).initBroadcast(allAddr, latencies)
 	}
+	
 	nextSharedNodeID {
 		^sharedNodeIDAllocator.alloc
 	}
+	
 	boot {
 		super.boot;
 		broadcast.boot;
 	}
+	
 	quit {
 		super.quit;
 		broadcast.quit;
 	}
 	
+	at { arg index;
+		^broadcast.allAddr.at(index)
+	}
+	
+	wrapAt { arg index;
+		^broadcast.allAddr.wrapAt(index)
+	}
+	
+	do { arg function;
+		broadcast.allAddr.do(function)
+	}
+	
 	//isLocal { ^false }
 	
-	initBroadcast { arg addresses;
-		broadcast = BroadcastServer.newFrom(this, addresses);
+	initBroadcast { arg addresses, latencies;
+		if(latencies.isNil, {
+			broadcast = BroadcastServer.newFrom(this, addresses);
+		}, {
+			broadcast = DispatchServer.newFrom(this, addresses, latencies);
+		});
 	}
 	
-	
-	setID { arg id;
-		clientNumber = id;
-	}
-	
-	newAllocators {}
-	
-	newAllocatorsForThisClient { 
-		var startID;
-		startID = clientNumber * (options.maxNodes * 2) + options.maxNodes  + 1000;
-		//this one is same for all
-		sharedNodeIDAllocator = RingNumberAllocator(1000, 1000 + options.maxNodes);
+	newAllocators {
+		var nodeIdOffset, n;
+		n = options.maxNodes;
+		nodeIdOffset = 1000 + (clientID * n);
+		nodeAllocator = LRUNumberAllocator(nodeIdOffset, nodeIdOffset + n);
+		sharedNodeIDAllocator = RingNumberAllocator(16, 800);
 		
-		nodeAllocator = RingNumberAllocator(startID  + 1 + options.maxNodes, 
-										startID + (2*options.maxNodes));
-		staticNodeAllocator = RingNumberAllocator(startID + 1 + (2*options.maxNodes), 
-										startID +  (3*options.maxNodes));
 		controlBusAllocator = PowerOfTwoAllocator(options.numControlBusChannels);
 		audioBusAllocator = PowerOfTwoAllocator(options.numAudioBusChannels, 
 		options.numInputBusChannels + options.numOutputBusChannels);
 		bufferAllocator = PowerOfTwoAllocator(options.numBuffers);
-	}
-	
-	nodeIsPlaying_ { arg nodeID;
-		nodeWatcher.nodes.add(nodeID);
 	}
 	
 
