@@ -469,8 +469,10 @@ struct BufColorAllocator
 	int16 *stack;
 	int16 stackPtr;
 	int16 nextIndex;
+	int16 refsMaxSize;
+	int16 stackMaxSize;
 	
-	BufColorAllocator(int maxsize);
+	BufColorAllocator();
 	~BufColorAllocator();
 	
 	int alloc(int count);
@@ -478,10 +480,12 @@ struct BufColorAllocator
 	int NumBufs() { return nextIndex; }
 };
 
-inline BufColorAllocator::BufColorAllocator(int maxsize)
+inline BufColorAllocator::BufColorAllocator()
 {
-	refs = (int16*)zalloc(maxsize, sizeof(int16));	
-	stack = (int16*)zalloc(maxsize, sizeof(int16));	
+	refsMaxSize = 32;
+	stackMaxSize = 32;
+	refs = (int16*)calloc(refsMaxSize, sizeof(int16));	
+	stack = (int16*)calloc(stackMaxSize, sizeof(int16));	
 	stackPtr = 0;
 	nextIndex = 0;
 }
@@ -500,6 +504,11 @@ inline int BufColorAllocator::alloc(int count)
 	} else {
 		outIndex = nextIndex++;
 	}
+	if (outIndex >= refsMaxSize) {
+		refs = (int16*)realloc(refs, refsMaxSize*2*sizeof(int16));
+		memset(refs + refsMaxSize, 0, refsMaxSize*sizeof(int16));
+		refsMaxSize *= 2;
+	}
 	refs[outIndex] = count;
 	return outIndex;
 }
@@ -507,12 +516,20 @@ inline int BufColorAllocator::alloc(int count)
 inline bool BufColorAllocator::release(int inIndex)
 {
 	if (refs[inIndex] == 0) return false;
-	if (--refs[inIndex] == 0) stack[stackPtr++] = inIndex;
+	if (--refs[inIndex] == 0) {
+		if (stackPtr >= stackMaxSize) {
+			stack = (int16*)realloc(stack, stackMaxSize*2*sizeof(int16));
+			memset(stack + stackMaxSize, 0, stackMaxSize*sizeof(int16));
+			stackMaxSize *= 2;
+		}
+		stack[stackPtr++] = inIndex;
+	}
 	return true;
 }
 
 void ReleaseInputBuffers(GraphDef *inGraphDef, UnitSpec *unitSpec, BufColorAllocator& bufColor)
 {
+	//scprintf("ReleaseInputBuffers %s numinputs %d\n", unitSpec->mUnitDef->mUnitDefName, unitSpec->mNumInputs);
 	for (int i=unitSpec->mNumInputs-1; i>=0; --i) {
 		InputSpec *inputSpec = unitSpec->mInputSpec + i;
 		if (inputSpec->mFromUnitIndex >= 0) {
@@ -524,7 +541,6 @@ void ReleaseInputBuffers(GraphDef *inGraphDef, UnitSpec *unitSpec, BufColorAlloc
 					scprintf("buffer coloring error: tried to release output with zero count\n");
 					scprintf("output: %d %s %d\n", inputSpec->mFromUnitIndex, 
 								outUnit->mUnitDef->mUnitDefName, inputSpec->mFromOutputIndex);
-					//scprintf("input: %d %s %d\n", j, unitSpec->mUnitDef->mUnitDefName, i);
 					scprintf("input: %s %d\n", unitSpec->mUnitDef->mUnitDefName, i);
 					throw std::runtime_error("buffer coloring error.");
 				}
@@ -537,6 +553,7 @@ void ReleaseInputBuffers(GraphDef *inGraphDef, UnitSpec *unitSpec, BufColorAlloc
 
 void AllocOutputBuffers(UnitSpec *unitSpec, BufColorAllocator& bufColor, int& wireIndexCtr)
 {
+	//scprintf("AllocOutputBuffers %s numoutputs %d\n", unitSpec->mUnitDef->mUnitDefName, unitSpec->mNumOutputs);
 	for (uint32 i=0; i<unitSpec->mNumOutputs; ++i) {
 		OutputSpec *outputSpec = unitSpec->mOutputSpec + i;
 		outputSpec->mWireIndex = wireIndexCtr++;
@@ -564,7 +581,7 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 
 	// buffer coloring
 	{
-		BufColorAllocator bufColor(inGraphDef->mNumUnitSpecs);
+		BufColorAllocator bufColor;
 		int wireIndexCtr = inGraphDef->mNumConstants;
 		for (uint32 j=0; j<inGraphDef->mNumUnitSpecs; ++j) {
 			UnitSpec *unitSpec = inGraphDef->mUnitSpecs + j;
