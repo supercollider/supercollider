@@ -880,6 +880,7 @@ void Interpret(VMGlobals *g)
 		case  97 : // push one and subtract
 			if (((PyrSlot*)sp)->utag == tagInt) {
 				((PyrSlot*)sp)->ui--;
+				g->tailCall = 0;
 			} else {
 				*++sp = gSpecialValues[svOne];
 				g->sp = (PyrSlot*)sp; g->ip = ip;
@@ -1635,7 +1636,6 @@ void Interpret(VMGlobals *g)
 			goto class_lookup;
 			
 		case 176 : // opcTailCallReturnFromFunction
-			//post("tailCall 2\n");
 			g->tailCall = 2;
 			break;
 		// opSuperMsg
@@ -1936,7 +1936,6 @@ void Interpret(VMGlobals *g)
 			sp = (double*)g->sp; ip = g->ip;
 			break;
 		case 255 : // opcTailCallReturnFromMethod
-			//post("tailCall 1\n");
 			g->tailCall = 1;
 			break;
 			
@@ -2085,7 +2084,6 @@ void Interpret(VMGlobals *g)
 						break;
 				} // switch (meth->methType)
 			} // end handle message
-			//if (g->tailCall) post("tailCall 0 A\n");
 			g->tailCall = 0;
 			continue;
 			
@@ -2228,7 +2226,6 @@ void Interpret(VMGlobals *g)
 				} // switch (meth->methType)
 			} // end handle message
 			numKeyArgsPushed = 0;
-			//if (g->tailCall) post("tailCall 0 B\n");
 			g->tailCall = 0;
 	} // switch(op1)
 	} // end while(true)
