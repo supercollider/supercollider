@@ -232,6 +232,8 @@ public:
 	
 	SCView *focusView() { return mFocusView; }
 
+	void forgetView(SCView *view);
+
 	void resetFocus();
 	void addDamage(SCRect inRect);
 	void beginDragCallback(SCPoint where, PyrSlot* slot);
@@ -244,13 +246,13 @@ public:
 	void tabNextFocus();
 	void tabPrevFocus();
 	void setDragView(SCView *inView);
-		
-		NSView* GetNSView() { return mNSView; }
-		void SetNSView(NSView* inView) { mNSView = inView; }
 	
-		bool ConstructionMode() { return mConstructionMode; }
-		void SetConstructionMode(bool inFlag) { mConstructionMode = inFlag; }
-		
+	NSView* GetNSView() { return mNSView; }
+	void SetNSView(NSView* inView) { mNSView = inView; }
+
+	bool ConstructionMode() { return mConstructionMode; }
+	void SetConstructionMode(bool inFlag) { mConstructionMode = inFlag; }
+	
 	virtual void drawFocus(SCRect inDamage);
 		
 protected:

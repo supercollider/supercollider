@@ -276,10 +276,14 @@ SCView::~SCView()
 {
 	stopAnimation();
 	makeFocus(false);
+	mTop->forgetView(this);
     if (mParent) mParent->remove(this);
     if (mObj) SetNil(mObj->slots+0);
-		
+
     delete mBackground;
+	
+	mTop = 0;
+	mParent = 0;
 }
 	
 void SCView::startAnimation()
@@ -747,11 +751,11 @@ void SCContainerView::remove(SCView *inChild)
 	while (child) {
 		SCView *next = child->mNext;
 		if (child == inChild) {
-                    if (prev) prev->mNext = child->mNext;
-                    else mChildren = child->mNext;
-                    child->mParent = 0;
-                    mNumChildren--;
-                    return;
+			if (prev) prev->mNext = child->mNext;
+			else mChildren = child->mNext;
+			child->mParent = 0;
+			mNumChildren--;
+			return;
 		}
 		prev = child;
 		child = next;
@@ -1156,6 +1160,12 @@ void SCTopView::resetFocus()
         focusIs(0);
         view->refreshFocus();
     }
+}
+
+void SCTopView::forgetView(SCView *view)
+{
+	if (view == mFocusView) mFocusView = 0;
+	if (view == mDragView) mDragView = 0;
 }
 
 void SCTopView::tabNextFocus()
@@ -4812,7 +4822,7 @@ int prSCView_Remove(struct VMGlobals *g, int numArgsPushed)
 
     PyrSlot *viewObjSlot = g->sp;
     SCView *view = (SCView*)viewObjSlot[0].uo->slots[0].ui;
-    if(!view) return errFailed;
+    if (!view) return errFailed;
     
 	// removes from parent, set mObj to nil
     delete view;
