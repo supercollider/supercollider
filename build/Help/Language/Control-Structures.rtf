@@ -59,7 +59,7 @@ x.postln;\
 )\
 \
 '
-\f1 If' expressions are optimized by the compiler if they do not contain variable declarations in the trueFunc and the falseFunc.\
+\f1 If' expressions are optimized (i.e. inlined) by the compiler if they do not contain variable declarations in the trueFunc and the falseFunc.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -179,11 +179,90 @@ collection.do(function)\
 \cf0 \
 \cf4 "you"\cf0 .do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // a String is a collection of characters\
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 'they'\cf0 .do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // a Symbol is a singular item\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 Other Control Structures\
+\f0\b\fs36 \cf0 Switch\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \
+Object implements a 
+\f0\b switch 
+\f1\b0 method which allows for conditional evaluation with multiple cases. These are implemented as pairs of test objects (tested using if this == test.value) and corresponding functions to be evaluated if true. Note that unlike 
+\f0\b case 
+\f1\b0 below, this is not inlined and is therefore less efficient than nested if statements.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\b0\fs20 \cf0 (\
+var x, z;\
+z = [0, 1, 1.1, 1.3, 1.5, 2];\
+switch (z.choose.postln,\
+	1,   \{ \\no \},\
+	1.1, \{ \\wrong \},\
+	1.3, \{ \\wrong \},\
+	1.5, \{ \\wrong \},\
+	2,   \{ \\wrong \},\
+	0,   \{ \\true \}\
+).postln;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 or:
+\f3\fs20 \
+		\
+(\
+var x, z;\
+z = [0, 1, 1.1, 1.3, 1.5, 2];\
+x = switch (z.choose)\
+	\{1\}   \{ \\no \}\
+	\{1.1\} \{ \\wrong \}\
+	\{1.3\} \{ \\wrong \}\
+	\{1.5\} \{ \\wrong \}\
+	\{2\}   \{ \\wrong \}\
+	\{0\}   \{ \\true \};\
+x.postln;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Case
+\f3\b0\fs20 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 Function implements a 
+\f0\b case 
+\f1\b0 method which allows for conditional evaluation with multiple cases. Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if true. Note that unlike 
+\f0\b switch 
+\f1\b0 above, this is inlined and is therefore just as efficient as nested if statements.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs20 \cf0 \
+(\
+var i, x, z;\
+z = [0, 1, 1.1, 1.3, 1.5, 2];\
+i = z.choose;\
+x = case\
+	\{ i == 1 \}   \{ \\no \}\
+	\{ i == 1.1 \} \{ \\wrong \}\
+	\{ i == 1.3 \} \{ \\wrong \}\
+	\{ i == 1.5 \} \{ \\wrong \}\
+	\{ i == 2 \}   \{ \\wrong \}\
+	\{ i == 0 \}   \{ \\true \};\
+x.postln;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 \
+\
+Other Control Structures\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
