@@ -2,6 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;\red96\green96\blue96;
 \red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -12,12 +13,9 @@
 \f0\b superclass: AbstractFunction\
 
 \f1\b0 \
-A Function is a reference to a FunctionDef and its defining context Frame.\
-When a FunctionDef is encountered in your code it is pushed on the stack as a Function.\
-A Function can be evaluated by using the 'value' method.\
+A Function is a reference to a FunctionDef and its defining context Frame. When a FunctionDef is encountered in your code it is pushed on the stack as a Function. A Function can be evaluated by using the 'value' method.\
 \
-Because it inherits from AbstractFunction, Functions can respond to math operations by \
-creating a new Function. For example:\
+Because it inherits from AbstractFunction, Functions can respond to math operations by creating a new Function. For example:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -46,7 +44,7 @@ Get the FunctionDef definition of the Function.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 Evaluation
+\f0\b\fs28 \cf0 \ul Evaluation
 \f1\b0\fs24 \ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -67,9 +65,7 @@ Evaluates the FunctionDef referred to by the Function. The Function is passed th
 \f0\b valueArray(..args..)\
 
 \f1\b0 \
-Evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, \
-then it is unpacked and appended to the other arguments (if any) to the Function. \
-If the last argument is not an Array or List then this is the same as the 'value' method.\
+Evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, then it is unpacked and appended to the other arguments (if any) to the Function. If the last argument is not an Array or List then this is the same as the 'value' method.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -104,6 +100,7 @@ As value above. Unsupplied argument names are looked up in the current
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Environment\cf0 .use(\{\
 ~a = 3;\
 ~b = 10;\
@@ -118,9 +115,7 @@ As value above. Unsupplied argument names are looked up in the current
 \f0\b valueArrayEnvir(..args..)\
 
 \f1\b0 \
-Evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, \
-then it is unpacked and appended to the other arguments (if any) to the Function. \
-If the last argument is not an Array or List then this is the same as the 'value' method. Unsupplied argument names are looked up in the current 
+Evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, then it is unpacked and appended to the other arguments (if any) to the Function. If the last argument is not an Array or List then this is the same as the 'value' method. Unsupplied argument names are looked up in the current 
 \f0\b Environment
 \f1\b0 .\
 \
@@ -170,7 +165,146 @@ x.postln;
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 Audio Support\
+\f0\b \cf0 bench(print)\
+\
+
+\f1\b0 Returns the amount of time this function takes to evaluate. 
+\f0\b print
+\f1\b0  is a boolean indicating whether the result is posted. The default is true.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \{ 1000000.do(\{ 1.0.rand \}); \}.bench;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 fork(clock, quant, stackSize)\
+\
+
+\f1\b0 Returns a Routine using the receiver as it's function, and plays it in a 
+\f0\b TempoClock
+\f1\b0 .\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \{ 4.do(\{ \cf4 "Threadin..."\cf0 .postln; 1.wait;\}) \}.fork;
+\f1\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 block
+\f1\b0 \
+\
+Break from a loop. Calls the receiver with an argument which is a function that returns from the method block. To exit the loop, call .value on the function passed in. You can pass a value to this function and that value will be returned from the block method.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf5 block \{\cf6 |break|\cf5 \
+	100.do \{\cf6 |i|\cf5 \
+		i.postln;\
+		if (i == 7) \{ break.value(999) \}\
+	\};\
+\}
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul Exception Handling\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \ulnone \
+For the following two methods a return ^ inside of the receiver itself cannot be caught. Returns in methods called by the receiver are OK.\
+\
+
+\f0\b try(handler)
+\f1\b0 \
+\
+Executes the receiver. If an exception is thrown the catch function 
+\f0\b handler
+\f1\b0  is executed with the error as an argument. 
+\f0\b handler
+\f1\b0  itself can rethrow the error if desired.\
+\
+
+\f0\b protect(handler)
+\f1\b0 \
+\
+Executes the receiver. The cleanup function 
+\f0\b handler 
+\f1\b0 is executed with an error as an argument, or nil if there was no error. The error continues to be in effect. \
+\
+Examples:
+\f2\fs18 \cf5 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf7 // no exception handler\cf5 \
+value \{ 8.zorg; \cf8 \\didnt_continue\cf5 .postln; \}\
+\
+try \{ 8.zorg \} \{\cf6 |error|\cf5  error.postln; \cf8 \\cleanup\cf5 .postln; \}; \cf8 \\continued\cf5 .postln;\
+\
+protect \{ 8.zorg \} \{\cf6 |error|\cf5  error.postln; \}; \cf8 \\didnt_continue\cf5 .postln;\
+\
+try \{ 123.postln; 456.throw; 789.postln \} \{\cf6 |error|\cf5  [\cf8 \\catch\cf5 , error].postln \};\
+\
+try \{ 123.postln; 789.postln \} \{\cf6 |error|\cf5  [\cf8 \\catch\cf5 , error].postln \};\
+\
+try \{ 123.postln; \cf6 nil\cf5 .throw; 789.postln \} \{\cf6 |error|\cf5  [\cf8 \\catch\cf5 , error].postln \};\
+\
+\
+protect \{ 123.postln; 456.throw; 789.postln \} \{\cf6 |error|\cf5  [\cf8 \\onExit\cf5 , error].postln \};\
+\
+protect \{ 123.postln; 789.postln \} \{\cf6 |error|\cf5  [\cf8 \\onExit\cf5 , error].postln \};\
+\
+(\
+try \{\
+	protect \{ 123.postln; 456.throw; 789.postln \} \{\cf6 |error|\cf5  [\cf8 \\onExit\cf5 , error].postln \};\
+\} \{\cf6 |error|\cf5  [\cf8 \\catch\cf5 , error].postln \};\
+)\
+\
+value \{ 123.postln; 456.throw; 789.postln \}\
+\
+value \{ 123.postln; \cf6 Error\cf5 (\cf9 "what happened?"\cf5 ).throw; 789.postln \}\
+\
+(\
+a = [\cf8 \\aaa\cf5 , \cf8 \\bbb\cf5 , \cf8 \\ccc\cf5 , \cf8 \\ddd\cf5 ];\
+a[1].postln;\
+a[\cf8 \\x\cf5 ].postln;\
+a[2].postln;\
+)\
+\
+(\
+try \{\
+	a = [\cf8 \\aaa\cf5 , \cf8 \\bbb\cf5 , \cf8 \\ccc\cf5 , \cf8 \\ddd\cf5 ];\
+	a[1].postln;\
+	a[\cf8 \\x\cf5 ].postln;\
+	a[2].postln;\
+\} \{\cf6 |error|\cf5  \cf8 \\caught\cf5 .postln; error.dump \}\
+)\
+\
+(\
+try \{\
+	a = [\cf8 \\aaa\cf5 , \cf8 \\bbb\cf5 , \cf8 \\ccc\cf5 , \cf8 \\ddd\cf5 ];\
+	a[1].postln;\
+	a[\cf8 \\x\cf5 ].postln;\
+	a[2].postln;\
+\} \{\cf6 |error|\cf5  \cf8 \\caught\cf5 .postln; error.dump; error.throw \}\
+)\
+\
+(\
+protect \{\
+	a = [\cf8 \\aaa\cf5 , \cf8 \\bbb\cf5 , \cf8 \\ccc\cf5 , \cf8 \\ddd\cf5 ];\
+	a[1].postln;\
+	a[\cf8 \\x\cf5 ].postln;\
+	a[2].postln;\
+\} \{\cf6 |error|\cf5  \cf8 \\caught\cf5 .postln; error.dump \}\
+)
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul \ulc0 \
+Audio Support\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs24 \cf0 \ulnone \
@@ -183,11 +317,13 @@ This is probably the simplest way to get audio in SC3. It wraps the Function in 
 \f0\b SynthDef
 \f1\b0  (adding an 
 \f0\b Out
-\f1\b0  ugen if needed and a 
-\f0\b Linen
-\f1\b0  to avoid clicks), creates and starts a new 
+\f1\b0  ugen if needed), creates and starts a new 
 \f0\b Synth
-\f1\b0  with it, and returns the Synth object.\
+\f1\b0  with it, and returns the Synth object. A 
+\f0\b Linen
+\f1\b0  is also added to avoid clicks, which is configured to allow the resulting Synth to have its 
+\f2\fs18 \cf10 \\gate 
+\f1\fs24 \cf0 argument set, or to respond to a release message.\
 
 \f0\b \
 target 
@@ -197,13 +333,13 @@ target
 \f1\b0 - the output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.\
 
 \f0\b fadeTime
-\f1\b0  - a fadein time. The default is 0.02 seconds, which is just enough to avoid a click.\
+\f1\b0  - a fadein time. The default is 0.02 seconds, which is just enough to avoid a click. This will also be the fadeout time for a release if you do not specify.\
 
 \f0\b addAction
 \f1\b0  - see 
 \f0\b Synth
 \f1\b0  for a list of valid addActions. The default is 
-\f2\fs18 \cf5 \\addToHead
+\f2\fs18 \cf10 \\addToHead
 \f0\b\fs24 \cf0 .
 \f1\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -212,16 +348,8 @@ target
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf0 x = \{ \cf2 SinOsc\cf0 .ar(440, 0, 0.3) \}.play; \cf3 // this returns a Synth object;\cf0 \
-x.defName; \cf3 // see the name of the resulting SynthDef (derived from the Functions hash value)\cf0 \
-x.free;
-\fs20 \
-\
-
-\fs18 \cf3 // with an explicit envelope
-\fs20 \cf0 \
-
-\fs18 d = \{ \cf2 arg\cf0  gate=1; \{\cf2 BrownNoise\cf0 .ar\}.dup * \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .asr, gate, doneAction:2) \}.play;\
-d.release(3);
+x.defName; \cf3 // the name of the resulting SynthDef (derived from the Functions hash value)\cf0 \
+x.release(4); \cf7 // fadeout over 4 seconds
 \fs20 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -238,6 +366,7 @@ Many of the examples in SC3 make use of the Function.play syntax. Note that reus
 
 \fs18 \cf3 // the following two lines produce equivalent results\cf0 \
 \{ \cf2 SinOsc\cf0 .ar(440, 0, 0.3) \}.play(fadeTime: 0.0); \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf4 "help-FuncPlay"\cf0 , \{ \cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(440, 0, 0.3))\}).play;
 \fs20 \
 \
@@ -246,7 +375,7 @@ Many of the examples in SC3 make use of the Function.play syntax. Note that reus
 \f1\fs24 \cf0 Function.play is often more convienent than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice. \
 \
 
-\f0\b scope(numChannels, outbus, fadeTime)\
+\f0\b scope(numChannels, outbus, fadeTime, bufsize, zoom)\
 
 \f1\b0 \
 As 
@@ -266,6 +395,13 @@ outbus
 
 \f0\b fadeTime
 \f1\b0  - a fadein time. The default is 0.02 seconds, which is just enough to avoid a click.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 bufsize 
+\f1\b0 - the size of the buffer for the ScopeView. The default is 4096.\
+
+\f0\b zoom
+\f1\b0  - a zoom value for the scope's X axis. Larger values show more. The default is 1.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -275,7 +411,7 @@ outbus
 \f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 Conversion\
+\f0\b\fs28 \cf0 \ul Conversion\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 \ulnone \
@@ -295,7 +431,7 @@ rates
 \f1\b0  for more details).\
 
 \f0\b outClass
-\f1\b0  - The class of the output ugen as a symbol. The default is \cf5 \\Out\cf0 .\
+\f1\b0  - The class of the output ugen as a symbol. The default is \cf10 \\Out\cf0 .\
 
 \f0\b fadeTime
 \f1\b0  - a fadein time. The default is 0.\
