@@ -132,6 +132,7 @@ ArrayedCollection : SequenceableCollection {
 		^this.primitiveFailed; 
 	}
 	addFirst { arg item; ^this.insert(0, item) }
+	addIfNotNil { arg item; if(item.notNil,{ ^this.add(item) }) }
 	pop { 
 		// remove and return last item in array
 		_ArrayPop 
