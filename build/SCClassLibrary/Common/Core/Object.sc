@@ -41,6 +41,7 @@ Object {
 	indexedSize { ^0 }
 			
 	do { arg function; function.value(this, 0) }
+	generate { arg function, state; this.do(function); ^state }
 	//reverseDo { arg function; function.value(this, 0) }
 	
 	// class membership
@@ -161,17 +162,6 @@ Object {
 	eventAt { ^nil }
 	finishEvent {}
 	atLimit { ^false }
-	generate { arg n = 16;
-		var list, stream;
-		stream = this.asStream;
-		n.do {
-			var item;
-			item = stream.next;
-			if (item.isNil) {^list};
-			list = list.add( item );
-		};
-		^list
-	}
 	
 	// testing
 	? { arg obj; ^this }
@@ -648,9 +638,8 @@ Object {
 
 	// archiving
 	writeTextArchive { arg pathname;
-		var file, text;
-		text = this.asTextArchive;
-		file = File(pathname, "w");
+		var text = this.asTextArchive;
+		var file = File(pathname, "w");
 		file.write(text);
 		file.close;
 	}

@@ -1,7 +1,6 @@
 Collection { 
 	*newFrom { | aCollection |
-		var newCollection;
-		newCollection = this.new(aCollection.size);
+		var newCollection = this.new(aCollection.size);
 		aCollection.do {| item | newCollection.add(item) };
 		^newCollection
 	}
@@ -34,8 +33,7 @@ Collection {
 		^true
 	}
 	hash { 
-		var hash;
-		hash = this.class.hash;
+		var hash = this.class.hash;
 		this.do { | item |
 			hash = hash bitXor: item.hash;
 		};
@@ -63,15 +61,12 @@ Collection {
 	remove { ^this.subclassResponsibility(thisMethod) }
 	removeAll { | list | list.do { | item | this.remove(item) } }
 	removeAllSuchThat { | function |
-		var removedItems, copy;
-		// changed:
-		removedItems = this.class.new;
-		copy = this.copy;
+		var removedItems = this.class.new;
+		var copy = this.copy;
 		copy.do { | item, i |
 			if ( function.value(item, i) )
 			{
 				this.remove(item);
-				// changed:
 				removedItems = removedItems.add(item);
 			}
 		};
@@ -114,20 +109,17 @@ Collection {
 		^this.rejectAs(function, this.species);
 	}
 	collectAs { | function, class |
-		var i, res;
-		res = class.new(this.size);
+		var res = class.new(this.size);
 		this.do {|elem, i| res.add(function.value(elem, i)) }
 		^res;
 	}
 	selectAs { | function, class |
-		var i, res;
-		res = class.new(this.size);
+		var res = class.new(this.size);
 		this.do {|elem, i| if (function.value(elem, i)) { res.add(elem) } }
 		^res;
 	}
 	rejectAs { | function, class |
-		var i, res;
-		res = class.new(this.size);
+		var res = class.new(this.size);
 		this.do {|elem, i| 
 			if (function.value(elem, i).not) {res.add(elem)} 
 		}
@@ -183,8 +175,7 @@ Collection {
 	}
 
 	inject { | thisValue, function |
-		var nextValue;
-		nextValue = thisValue;
+		var nextValue = thisValue;
 		this.do { | item, i | 
 			nextValue = function.value(nextValue, item, i);
 		};
@@ -209,7 +200,7 @@ Collection {
 		^true;
 	}
 	sum { | function |
-		var i, sum = 0;
+		var sum = 0;
 		if (function.isNil) { // optimized version if no function
 			this.do { | elem | sum = sum + elem; }
 		}{
@@ -221,7 +212,7 @@ Collection {
 		^this.sum(function) / this.size;
 	}
 	product { | function |
-		var i, product = 1;
+		var product = 1;
 		if (function.isNil) { // optimized version if no function
 			this.do { | elem | product = product * elem; }
 		}{
@@ -338,8 +329,7 @@ Collection {
 	}
 
 	sect { | that |
-		var result;
-		result = this.species.new;
+		var result = this.species.new;
 		this.do { | item |
 			if (that.includes(item)) {
 				result = result.add(item);
@@ -348,8 +338,7 @@ Collection {
 		^result
 	}
 	union { | that |
-		var result;
-		result = this.copy;
+		var result = this.copy;
 		that.do { | item |
 			if (result.includes(item).not) {
 				result = result.add(item);
@@ -361,8 +350,7 @@ Collection {
 		^this.copy.removeAll(that);
 	}
 	symmetricDifference { | that |
-		var result;
-		result = this.species.new;
+		var result = this.species.new;
 		this.do { | item |
 			if (that.includes(item).not) {
 				result = result.add(item);
@@ -446,8 +434,7 @@ Collection {
 
 	// Flow control
 	case { | default |
-		var out;
-		out = this.detect {|it| it.key.value;};
+		var out = this.detect {|it| it.key.value;};
 		if (out.notNil) {
 			^out.value.value
 		}{
@@ -457,8 +444,7 @@ Collection {
 	
 	// Event support
 	makeEnvirValPairs {
-		var res;
-		res = Array.new(this.size * 2);
+		var res = Array.new(this.size * 2);
 		this.do { |item| 
 			res.add(item); 
 			res.add(currentEnvironment[item]);

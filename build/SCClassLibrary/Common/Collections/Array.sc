@@ -38,9 +38,8 @@ Array[slot] : ArrayedCollection {
 		^this.primitiveFailed 
 	}
 	pyramidg { arg patternType=1;
-		var list, lastIndex;
-		list = [];
-		lastIndex = this.lastIndex;
+		var list = [];
+		var lastIndex = this.lastIndex;
 		if (patternType == 1) {
 			for (0,lastIndex) {|i| list = list.add(this[0..i]) };
 			^list
@@ -89,9 +88,9 @@ Array[slot] : ArrayedCollection {
 		};
 	}		
 	sputter { arg probability=0.25, maxlen = 100;
-		var list, i=0, size;
-		list = Array.new;
-		size = this.size;
+		var i=0;
+		var list = Array.new;
+		var size = this.size;
 		probability = 1.0 - probability;
 		while { (i < size) and: { list.size < maxlen }}{
 			list = list.add(this[i]);
@@ -147,25 +146,22 @@ Array[slot] : ArrayedCollection {
 		// from the current environment
 		var result;
 		this.do {|name| 
-			var value;
-			value = name.envirGet;
+			var value = name.envirGet;
 			value !? { result = result.add(name).add(value); };
 		};
 		^result
 	}
 
 	shift { arg n;
-		var fill, remain;
-		fill = Array.fill(n, 0.0);
-		remain = this.drop(n.neg);
+		var fill = Array.fill(n, 0.0);
+		var remain = this.drop(n.neg);
 		^if (n<0) { remain ++ fill } { fill ++ remain }
 	}
 	
 	// UGen support:
 	source {
-		var elem;
 		// returns the source UGen from an Array of OutputProxy(s)
-		elem = this.at(0);
+		var elem = this.at(0);
 		if (elem.isKindOf(OutputProxy), {
 			^elem.source
 		},{
@@ -212,10 +208,9 @@ Array[slot] : ArrayedCollection {
 	asSpec { ^ControlSpec( *this ) }
 
 	// threads
-	fork { arg join, clock, quant;
-		var count = 0, cond;
-		join = join ? this.size;
-		cond = Condition({ count >= join });
+	fork { arg join (this.size), clock, quant=0.0, stackSize=64;
+		var count = 0;
+		var cond = Condition({ count >= join });
 		this.do({ arg func; 
 			Routine({ arg time;
 				func.value(time);

@@ -17,15 +17,14 @@ LinkedList : SequenceableCollection {
 	
 	
 	copy {
-		var copy;
-		copy = LinkedList.new;
+		var copy = LinkedList.new;
 		this.do {|item| copy.add(item) }
 		^copy
 	}
 	species { ^this.class }
 	do { arg function;
-		var i = 0, node;
-		node = head;
+		var i = 0;
+		var node = head;
 		while ({ node.notNil },{
 			function.value(node.obj, i);
 			node = node.next;
@@ -33,9 +32,8 @@ LinkedList : SequenceableCollection {
 		});
 	}
 	reverseDo { arg function;
-		var i, node;
-		i = size - 1;
-		node = tail;
+		var i = size - 1;
+		var node = tail;
 		while ({ node.notNil },{
 			function.value(node.obj, i);
 			node = node.prev;
@@ -43,8 +41,7 @@ LinkedList : SequenceableCollection {
 		});
 	}
 	addFirst { arg obj;
-		var node;
-		node = LinkedListNode.new(obj);
+		var node = LinkedListNode.new(obj);
 		if (head.notNil, {
 			node.next_(head);
 			head.prev_(node);
@@ -56,8 +53,7 @@ LinkedList : SequenceableCollection {
 		size = size + 1;
 	}
 	add { arg obj;
-		var node;
-		node = LinkedListNode.new(obj);
+		var node = LinkedListNode.new(obj);
 		if (tail.notNil, {
 			node.prev_(tail);
 			tail.next_(node);
@@ -69,8 +65,7 @@ LinkedList : SequenceableCollection {
 		size = size + 1;
 	}
 	remove { arg obj;
-		var node;
-		node = this.findNodeOfObj(obj);
+		var node = this.findNodeOfObj(obj);
 		if ( node.notNil, {
 			if (head == node, { head = node.next; });
 			if (tail == node, { tail = node.prev; });
@@ -111,8 +106,7 @@ LinkedList : SequenceableCollection {
 	last  { if (tail.notNil, { ^tail.obj },{ ^nil }) }
 	
 	at { arg index;
-		var node;
-		node = this.nodeAt(index);
+		var node = this.nodeAt(index);
 		if (node.notNil, {
 			^node.obj
 		},{
@@ -120,15 +114,13 @@ LinkedList : SequenceableCollection {
 		})
 	}
 	put { arg index, item;
-		var node;
-		node = this.nodeAt(index);
+		var node = this.nodeAt(index);
 		if (node.notNil, {
 			node.obj_(item);
 		});
 	}
 	removeAt { arg index;
-		var node;
-		node = this.nodeAt(index);
+		var node = this.nodeAt(index);
 		if (node.notNil, {
 			if (head == node, { head = node.next; });
 			if (tail == node, { tail = node.prev; });
@@ -166,8 +158,7 @@ LinkedList : SequenceableCollection {
 	}
 	
 	findNodeOfObj { arg obj;
-		var node;
-		node = head;
+		var node = head;
 		while ({ node.notNil },{
 			if (node.obj == obj, { ^node });
 			node = node.next;

@@ -27,9 +27,9 @@ SortedList : List {
 	
 	// PRIVATE
 	indexForInserting { arg newObject;
-		var index, low, high;
-		low = 0;
-		high = this.size-1;
+		var index;
+		var low = 0;
+		var high = this.size-1;
 		while ({ 
 			index = high + low div: 2;
 			low <= high;

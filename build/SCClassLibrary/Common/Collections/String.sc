@@ -55,33 +55,29 @@ String[char] : RawArray {
 	ccatArgs { arg ... items; ^this.ccatList(items) }
 	catList { arg list; 
 		// concatenate this with a list as a string
-		var string;
-		string = this.copy;
+		var string = this.copy;
 		list.do({ arg item, i;
 			string = string ++ item;
 		});
 		^string
 	}
 	scatList { arg list; 
-		var string;
-		string = this.copy;
+		var string = this.copy;
 		list.do({ arg item, i;
 			string = string prCat: " " ++ item;
 		});
 		^string
 	}
 	ccatList { arg list; 
-		var string;
-		string = this.copy;
+		var string = this.copy;
 		list.do({ arg item, i;
 			string = string prCat: ", " ++ item;
 		});
 		^string
 	}
 	split { arg separator=$/;
-		var array,word;
-		word="";
-		array=[];
+		var word="";
+		var array=[];
 		separator=separator.ascii;
 		
 		this.do({arg let,i;
@@ -186,8 +182,7 @@ String[char] : RawArray {
 		^thisProcess.interpreter.executeFile(this);
 	}
 	loadPaths {
-		var paths;
-		paths = this.pathMatch;
+		var paths = this.pathMatch;
 		^paths.collect({ arg path;
 			thisProcess.interpreter.executeFile(path);
 		});

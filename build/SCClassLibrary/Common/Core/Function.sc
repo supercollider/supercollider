@@ -76,8 +76,7 @@ Function : AbstractFunction {
 	}
 			
 	dup { arg n = 2;
-		var array;
-		array = Array(n);
+		var array = Array(n);
 		n.do {|i| array.add(this.value(i)) };
 		^array
 	}
@@ -109,8 +108,7 @@ Function : AbstractFunction {
 	}
 	
 	awake { arg beats, seconds, clock;
-		var time;
-		time = seconds; // prevent optimization
+		var time = seconds; // prevent optimization
 		^this.value(beats, seconds, clock)
 	}
 
@@ -122,8 +120,8 @@ Function : AbstractFunction {
 	}
 
 	bench { arg print = true;
-		var t0, dt;
-		t0 = Main.elapsedTime;
+		var dt;
+		var t0 = Main.elapsedTime;
 		this.value;
 		dt = Main.elapsedTime - t0;
 		if (print) { Post << "time to run: " << dt << " seconds.\n"; }
@@ -131,8 +129,7 @@ Function : AbstractFunction {
 	}
 	
 	protect { arg handler;
-		var result;
-		result = this.prTry;
+		var result = this.prTry;
 		if (result.isException) {
 			handler.value(result);
 			result.throw;
@@ -143,13 +140,12 @@ Function : AbstractFunction {
 	}
 	
 	try { arg handler;
-		var result;
-		result = this.prTry;
+		var result = this.prTry;
 		if (result.isException) { ^handler.value(result); } { ^result }
 	}
 	prTry {
-		var next, result;
-		next = thisThread.exceptionHandler;
+		var result;
+		var next = thisThread.exceptionHandler;
 		thisThread.exceptionHandler = {|error| 
 			thisThread.exceptionHandler = next; // pop
 			^error 

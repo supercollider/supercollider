@@ -32,8 +32,7 @@ Set : Collection {
 		if ( array.at(index).isNil, { this.putCheck(index, item) });
 	}
 	remove { arg item;
-		var index;
-		index = this.scanFor(item);
+		var index = this.scanFor(item);
 		if ( array.at(index).notNil, {
 			array.put(index, nil);
 			size = size - 1;
@@ -65,8 +64,7 @@ Set : Collection {
 	}
 	
 	sect { arg that;
-		var result;
-		result = Set.new;
+		var result = Set.new;
 		this.do({ arg item;
 			if (that.includes(item), {
 				result.add(item);
@@ -75,8 +73,7 @@ Set : Collection {
 		^result
 	}
 	union { arg that;
-		var result;
-		result = Set.new;
+		var result = Set.new;
 		result.addAll(this);
 		result.addAll(that);
 		^result
@@ -85,8 +82,7 @@ Set : Collection {
 		^this.copy.removeAll(that);
 	}
 	symmetricDifference { arg that;
-		var result;
-		result = Set.new;
+		var result = Set.new;
 		this.do({ arg item;
 			if (that.includes(item).not, {
 				result.add(item);
@@ -118,8 +114,7 @@ Set : Collection {
 		if (array.size < (size * 2), { this.grow });
 	}
 	grow {
-		var oldElements;
-		oldElements = array;
+		var oldElements = array;
 		array = Array.newClear(array.size * 2);
 		size = 0;
 		oldElements.do({ arg item;
@@ -131,11 +126,11 @@ Set : Collection {
 		size = size + 1;
 	}
 	scanFor { arg obj;
-		var i, start, end, elem;
+		var elem;
+		var start = obj.hash % array.size;
+		var end = array.size;
+		var i = start;
 		
-		start = obj.hash % array.size;
-		end = array.size;
-		i = start;
 		while ({ i < end }, {
 			elem = array.at(i);
 			
@@ -155,10 +150,10 @@ Set : Collection {
 	}
 	
 	fixCollisionsFrom { arg index; 
-		var lastKeyIndex, oldIndex, newIndex, element;
-
-		oldIndex = index;
-		lastKeyIndex = array.size - 1;
+		var newIndex, element;
+		var oldIndex = index;
+		var lastKeyIndex = array.size - 1;
+		
 		while ({
 			if (oldIndex == lastKeyIndex, { oldIndex = 0 }, { oldIndex = oldIndex + 1 });
 			(element = this.keyAt(oldIndex)).notNil

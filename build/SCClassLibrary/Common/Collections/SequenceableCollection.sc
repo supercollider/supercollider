@@ -6,17 +6,16 @@ SequenceableCollection : Collection {
 
 	// fill with ramp of values
 	*series { arg size, start=0, step=1;
-		var i=0, obj;
-		obj = this.new(size);
-		size.do({ arg i;
+		var obj = this.new(size);
+		size.do {|i|
 			obj.add(start + (step * i));
-		});
+		};
 		^obj
 	}		
 	// fill with geometric series
 	*geom { arg size, start, grow;
-		var i=0, obj;
-		obj = this.new(size);
+		var i=0;
+		var obj = this.new(size);
 		while ({ i < size },{
 			obj.add(start);
 			start = start * grow;
@@ -26,8 +25,8 @@ SequenceableCollection : Collection {
 	}		
 	// fill with fibonacci series
 	*fib { arg size, a=0.0, b=1.0;
-		var i=0, obj, temp;
-		obj = this.new(size);
+		var i=0, temp;
+		var obj = this.new(size);
 		while { i < size }{
 			obj.add(b);
 			temp = b;
@@ -38,8 +37,8 @@ SequenceableCollection : Collection {
 		^obj
 	}		
 	*rand { arg size, minVal, maxVal;
-		var i=0, obj;
-		obj = this.new(size);
+		var i=0;
+		var obj = this.new(size);
 		while ({ i < size },{
 			obj.add(rrand(minVal, maxVal));
 			i = i + 1;
@@ -47,8 +46,8 @@ SequenceableCollection : Collection {
 		^obj
 	}
 	*exprand { arg size, minVal, maxVal;
-		var i=0, obj;
-		obj = this.new(size);
+		var i=0;
+		var obj = this.new(size);
 		while ({ i < size },{
 			obj.add(exprand(minVal, maxVal));
 			i = i + 1;
@@ -56,8 +55,8 @@ SequenceableCollection : Collection {
 		^obj
 	}
 	*rand2 { arg size, val;
-		var i=0, obj;
-		obj = this.new(size);
+		var i=0;
+		var obj = this.new(size);
 		while ({ i < size },{
 			obj.add(val.rand2);
 			i = i + 1;
@@ -65,9 +64,9 @@ SequenceableCollection : Collection {
 		^obj
 	}
 	*linrand { arg size, minVal, maxVal;
-		var i=0, obj, range;
-		range = maxVal - minVal;
-		obj = this.new(size);
+		var i=0;
+		var range = maxVal - minVal;
+		var obj = this.new(size);
 		while ({ i < size },{
 			obj.add(minVal + range.linrand);
 			i = i + 1;
@@ -76,8 +75,7 @@ SequenceableCollection : Collection {
 	}
 
 	++ { arg aSequenceableCollection; 
-		var newlist;
-		newlist = this.species.new(this.size + aSequenceableCollection.size);
+		var newlist = this.species.new(this.size + aSequenceableCollection.size);
 		newlist = newlist.addAll(this).addAll(aSequenceableCollection);
 		^newlist
 	}
@@ -108,8 +106,8 @@ SequenceableCollection : Collection {
 	}
 
 	copyRange { arg start, end;
-		var newColl, i;
-		i = start;
+		var newColl;
+		var i = start;
 		newColl = this.species.new(end - start);
 		while ({ i < end },{
 			newColl.add(this.at(i));
@@ -127,8 +125,7 @@ SequenceableCollection : Collection {
 		}
 	}
 	drop { arg n;
-		var size;
-		size = this.size;
+		var size = this.size;
 		if (n>=0) {
 			^this.copyRange(n, size-1)
 		}{
@@ -157,8 +154,8 @@ SequenceableCollection : Collection {
 	}
 	
 	indexIn { arg val; // collection is sorted, returns closest index
-		var i, j, a, b;
-		j = this.detectIndex { |item| item > val };
+		var i, a, b;
+		var j = this.detectIndex { |item| item > val };
 		if(j.isNil) { ^this.size - 1 };
 		if(j == 0) { ^j };
 		i = j - 1;
@@ -166,8 +163,8 @@ SequenceableCollection : Collection {
 	}
 	
 	indexInBetween { arg val; // collection is sorted, returns linearly interpolated index
-		var i, a, b;
-		i = this.detectIndex { |item| item > val };
+		var a, b;
+		var i = this.detectIndex { |item| item > val };
 		if(i.isNil) { ^this.size - 1 };
 		if(i == 0) { ^i };
 		a = this[i-1]; b = this[i];
@@ -175,8 +172,7 @@ SequenceableCollection : Collection {
 	}
 	
 	remove { arg item;
-		var index;
-		index = this.indexOf(item);
+		var index = this.indexOf(item);
 		^if ( index.notNil, {
 			this.removeAt(index);
 		},{
@@ -184,14 +180,12 @@ SequenceableCollection : Collection {
 		});
 	}
 	removing { arg item;
-		var coll;
-		coll = this.copy;
+		var coll = this.copy;
 		coll.remove(item);
 		^coll
 	}
 	take { arg item;
-		var index;
-		index = this.indexOf(item);
+		var index = this.indexOf(item);
 		^if ( index.notNil, {
 			this.takeAt(index);
 		},{
@@ -217,8 +211,11 @@ SequenceableCollection : Collection {
 	obtain { arg index, default; ^this[index] ? default }
 	
 	instill { arg index, item, default;
-		var res;
-		res = if(index >= this.size) { this.extend(index + 1, default) } { this }
+		var res = if (index >= this.size) { 
+			this.extend(index + 1, default) 
+		}{ 
+			this 
+		};
 		^res.put(index, item)
 	}
 
@@ -234,9 +231,8 @@ SequenceableCollection : Collection {
 		})
 	}
 	separate { arg function;
-		var list, sublist;
-		list = Array.new;
-		sublist = this.species.new;
+		var list = Array.new;
+		var sublist = this.species.new;
 		this.doAdjacentPairs({ arg a, b, i;
 			sublist = sublist.add(a);
 			if ( function.value(a, b, i), {

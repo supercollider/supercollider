@@ -2,8 +2,7 @@ Dictionary : Set {
 		
 	*new { arg n=8; ^super.new(n*2) }
 	*newFrom { arg aCollection;
-		var newCollection;
-		newCollection = this.new(aCollection.size);
+		var newCollection = this.new(aCollection.size);
 		aCollection.keysValuesDo({ arg k,v, i; newCollection.put(k,v) });
 		^newCollection
 	}
@@ -20,8 +19,8 @@ Dictionary : Set {
 		this.put(anAssociation.key, anAssociation.value);
 	}
 	put { arg key, obj;
-		var index, atKey;
-		index = this.scanFor(key);
+		var atKey;
+		var index = this.scanFor(key);
 		array.put(index+1, obj);
 		if ( array.at(index).isNil, {
 			array.put(index, key);
@@ -38,8 +37,7 @@ Dictionary : Set {
 	}
 	
 	associationAt { arg key;
-		var index, anAssociation;
-		index = this.scanFor(key);
+		var index = this.scanFor(key);
 		if (index >= 0, {
 			^Association.new(array.at(index), array.at(index+1));
 		},{
@@ -47,23 +45,18 @@ Dictionary : Set {
 		});
 	}
 	associationAtFail { arg argKey, function;
-		var index, key;
-		index = this.scanFor(argKey);
-		key = array.at(index);
+		var index = this.scanFor(argKey);
+		var key = array.at(index);
 		if ( key.isNil, { ^function.value }, { 
 			^Association.new(key, array.at(index+1)) });
 	}
-	keys {
-		arg species;
-		var set;
-		species = species ? Set;
-		set = species.new(size);
+	keys { arg species(Set);
+		var set = species.new(size);
 		this.keysDo({ arg key; set.add(key) });
 		^set
 	}
 	values {
-		var list;
-		list = List.new(size);
+		var list = List.new(size);
 		this.do({ arg value; list.add(value) });
 		^list
 	}
@@ -80,9 +73,9 @@ Dictionary : Set {
 	
 	// removing
 	removeAt { arg key;
-		var index, atKeyIndex, val;
-		index = this.scanFor(key);
-		atKeyIndex = array.at(index);
+		var val;
+		var index = this.scanFor(key);
+		var atKeyIndex = array.at(index);
 		if ( atKeyIndex.isNil, { ^nil });
 		val = array.at(index+1);
 		array.put(index, nil);
@@ -92,9 +85,9 @@ Dictionary : Set {
 		^val
 	}	
 	removeAtFail { arg key, function;
-		var index, atKeyIndex, val;
-		index = this.scanFor(key);
-		atKeyIndex = array.at(index);
+		var val;
+		var index = this.scanFor(key);
+		var atKeyIndex = array.at(index);
 		if ( atKeyIndex.isNil, { ^function.value });
 		val = array.at(index+1);
 		array.put(index, nil);
@@ -132,20 +125,17 @@ Dictionary : Set {
 		})
 	}
 	collect { arg function;
-		var i, res;
-		res = this.class.new(this.size);
+		var res = this.class.new(this.size);
 		this.keysValuesDo { arg key, elem; res.put(key, function.value(elem, key)) }
 		^res;
 	}
 	select { arg function;
-		var i, res;
-		res = this.class.new(this.size);
+		var res = this.class.new(this.size);
 		this.keysValuesDo { arg key, elem; if(function.value(elem, key)) { res.put(key, elem) } }
 		^res;
 	}
 	reject { arg function;
-		var i, res;
-		res = this.class.new(this.size);
+		var res = this.class.new(this.size);
 		this.keysValuesDo { arg key, elem; if(function.value(elem, key).not) 
 			{ res.put(key, elem) } }
 		^res;
@@ -160,11 +150,8 @@ Dictionary : Set {
 		^nil
 	}
 
-	sortedKeysValuesDo {
-		arg function, sortFunc;
-		var keys;
-
-		keys = this.keys(Array);
+	sortedKeysValuesDo { arg function, sortFunc;
+		var keys = this.keys(Array);
 		keys.sort(sortFunc);
 		
 		keys.do { arg key, i;
@@ -202,8 +189,8 @@ Dictionary : Set {
 	// PRIVATE IMPLEMENTATION
 	keysValuesArrayDo { arg argArray, function;
 		// special byte codes inserted by compiler for this method
-		var i=0, j=0, arraySize, key, val;
-		arraySize = argArray.size;			
+		var i=0, j=0, key, val;
+		var arraySize = argArray.size;			
 		while ({ i < arraySize },{
 			key = argArray.at(i);
 			if (key.notNil, {
@@ -215,8 +202,8 @@ Dictionary : Set {
 		});
 	}
 	grow {
-		var oldElements, index;
-		oldElements = array;
+		var index;
+		var oldElements = array;
 		array = Array.newClear(array.size * 2);
 		this.keysValuesArrayDo(oldElements, 
 		{ arg key, val;
@@ -226,10 +213,10 @@ Dictionary : Set {
 		});
 	}
 	fixCollisionsFrom { arg index; 
-		var lastKeyIndex, oldIndex, newIndex, key;
+		var newIndex, key;
 
-		oldIndex = index;
-		lastKeyIndex = array.size - 2;
+		var oldIndex = index;
+		var lastKeyIndex = array.size - 2;
 		while ({
 			if (oldIndex == lastKeyIndex, { oldIndex = 0 }, { oldIndex = oldIndex + 2 });
 			(key = array.at(oldIndex)).notNil
@@ -241,29 +228,26 @@ Dictionary : Set {
 			})
 		})
 	}
-	scanFor { arg argKey;
-		var i, start, end, key, maxHash;
-		
-		maxHash = array.size div: 2;
-		start = (argKey.hash % maxHash) * 2;
-		end = array.size-1;
-		i = start;
+	scanFor { arg argKey;		
+		var maxHash = array.size div: 2;
+		var start = (argKey.hash % maxHash) * 2;
+		var end = array.size-1;
+		var i = start;
 		forBy( start, end, 2, { arg i;
-			key = array.at(i);
+			var key = array.at(i);
 			if ( key.isNil or: { key == argKey }, { ^i });
 		});
 		end = start - 1;
 		forBy( 0, start-2, 2, { arg i;
-			key = array.at(i);
+			var key = array.at(i);
 			if ( key.isNil or: { key == argKey }, { ^i });
 		});
 		^-2
 	}
 	
 	storeItemsOn { arg stream, itemsPerLine = 5;
-		var last, itemsPerLinem1;
-		itemsPerLinem1 = itemsPerLine - 1;
-		last = this.size - 1;
+		var itemsPerLinem1 = itemsPerLine - 1;
+		var last = this.size - 1;
 		this.associationsDo({ arg item, i;
 			item.storeOn(stream);
 			if (i < last, { stream.comma.space;
@@ -272,9 +256,8 @@ Dictionary : Set {
 		});
 	}
 	printItemsOn { arg stream, itemsPerLine = 5;
-		var last, itemsPerLinem1;
-		itemsPerLinem1 = itemsPerLine - 1;
-		last = this.size - 1;
+		var itemsPerLinem1 = itemsPerLine - 1;
+		var last = this.size - 1;
 		this.associationsDo({ arg item, i;
 			item.printOn(stream);
 			if (i < last, { stream.comma.space;

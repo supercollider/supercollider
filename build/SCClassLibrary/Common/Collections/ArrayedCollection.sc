@@ -232,7 +232,7 @@ ArrayedCollection : SequenceableCollection {
 			j = j + 1;
 		})
 	}
-	reverse {		var i = 0, size1, halfsize, res;		res = this.copy;		size1 = res.size - 1;		halfsize = res.size div: 2;		halfsize.do({ arg i;			res.swap(i, size1 - i);		});		^res	}
+	reverse {		var i = 0;		var res = this.copy;		var size1 = res.size - 1;		var halfsize = res.size div: 2;		halfsize.do({ arg i;			res.swap(i, size1 - i);		});		^res	}
 	windex {
 		_ArrayWIndex
 		^this.primitiveFailed 
@@ -252,20 +252,18 @@ ArrayedCollection : SequenceableCollection {
 		^(this / this.sum)
 	}
 	normalize { arg min=0.0, max=1.0;
-		var minItem, maxItem;
-		minItem = this.minItem;
-		maxItem = this.maxItem;
+		var minItem = this.minItem;
+		var maxItem = this.maxItem;
 		^this.collect { |el| el.linlin(minItem, maxItem, min, max) };
 	}
 	
 	asciiPlot {
 		// draw the waveform down the page as asterisks
-		var lo, hi, scale, pt;
-		lo = this.minItem; 
-		hi = this.maxItem;
-		scale = 80 / (hi - lo);
+		var lo = this.minItem; 
+		var hi = this.maxItem;
+		var scale = 80 / (hi - lo);
 		this.size.do { |i|
-			pt = ((this[i] - lo) * scale).asInteger;
+			var pt = ((this[i] - lo) * scale).asInteger;
 			pt.do({ " ".post; });
 			"*\n".post;
 		};
@@ -287,9 +285,8 @@ ArrayedCollection : SequenceableCollection {
 		^[this.size] ++ this[0].shape
 	}
 	reshape { arg ... shape;
-		var result, size;
-		size = shape.product;
-		result = this.flat.wrapExtend(size);
+		var size = shape.product;
+		var result = this.flat.wrapExtend(size);
 		shape[1..].reverseDo {|n| result = result.clump(n) };
 		^result
 	}
@@ -301,11 +298,10 @@ ArrayedCollection : SequenceableCollection {
 		^this.collect {|item| item.deepCollect(depth, function) }
 	}
 	reshapeLike { arg another, indexing=\wrapAt;
-		var flat, index = 0;	
-		flat = this.flat;
+		var index = 0;	
+		var flat = this.flat;
 		^another.deepCollect(0x7FFFFFFF) {
-			var item;
-			item = flat.perform(indexing, index);
+			var item = flat.perform(indexing, index);
 			index = index + 1;
 			item;
 		};
@@ -345,11 +341,9 @@ ArrayedCollection : SequenceableCollection {
 		^(0..sizes.product-1).reshape(*sizes)
 	}
 	*fill2D { arg rows, cols, function;
-		var array;
-		array = this.new(rows);
+		var array = this.new(rows);
 		rows.do{|row|
-			var array2;
-			array2 = this.new(cols);
+			var array2 = this.new(cols);
 			cols.do{|col|
 				array2 = array2.add(function.(row, col))
 			};
@@ -358,14 +352,11 @@ ArrayedCollection : SequenceableCollection {
 		^array
 	}
 	*fill3D { arg planes, rows, cols, function;
-		var array;
-		array = this.new(planes);
+		var array = this.new(planes);
 		planes.do{|plane|
-			var array2;
-			array2 = this.new(rows);
+			var array2 = this.new(rows);
 			rows.do{|row|
-				var array3;
-				array3 = this.new(cols);
+				var array3 = this.new(cols);
 				cols.do{|col|
 					array3 = array3.add(function.(plane, row, col))
 				};
@@ -379,8 +370,8 @@ ArrayedCollection : SequenceableCollection {
 	// random distribution table
 	
 	asRandomTable {
-		var inc, a, b,res, sum=0, size;
-		size = this.size;
+		var inc, a, b,res, sum=0;
+		var size = this.size;
 		a = this.normalize.collect { |el| sum = sum + el }; // incrementally integrate
 		a = a / sum * size; // divide by sum (maximum value) and scale by new size
         	b = Array.fill(size, { arg i; a.indexInBetween(i) });  // flip array

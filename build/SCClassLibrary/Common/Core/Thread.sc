@@ -60,8 +60,7 @@ Thread : Stream {
 Routine : Thread {
 
 	*run { arg func, stackSize=64, clock, quant=0;
-		var routine;
-		routine = super.new(func, stackSize);
+		var routine = super.new(func, stackSize);
 		^routine.play(clock ? SystemClock, quant);
 	}
 		
@@ -105,8 +104,7 @@ Routine : Thread {
 		
 	// PRIVATE
 	awake { arg inBeats, inSeconds, inClock;
-		var temp;
-		temp = inBeats; // prevent optimization
+		var temp = inBeats; // prevent optimization
 		
 		^this.next(inBeats)
 	}

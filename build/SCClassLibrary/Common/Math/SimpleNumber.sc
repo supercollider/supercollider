@@ -130,9 +130,8 @@ SimpleNumber : Number {
 
 	
 	quantize { arg quantum = 1.0, tolerance = 0.05, strength = 1.0;
-		var diff, round;
-		round = round(this, quantum);
-		diff = round - this;
+		var round = round(this, quantum);
+		var diff = round - this;
 		if (abs(diff) < tolerance) {
 			^this + (strength * diff)
 		}{
@@ -167,7 +166,6 @@ SimpleNumber : Number {
 
 	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax;
 		// triangular linear mapping
-		var delta;
 		if (this <= inMin, { ^outMin });
 		if (this >= inMax, { ^outMax });
 		^if (this >= inCenter) {
@@ -179,7 +177,6 @@ SimpleNumber : Number {
 	
 	biexp { arg inCenter, inMin, inMax, outCenter, outMin, outMax;
 		// triangular exponential mapping
-		var delta;
 		if (this <= inMin, { ^outMin });
 		if (this >= inMax, { ^outMax });
 		^if (this >= inCenter) {
@@ -197,8 +194,7 @@ SimpleNumber : Number {
 	wait { ^this.yield }
 	waitUntil { ^(this - thisThread.beats).yield }
 	sleep {
-		var thread;
-		thread = thisThread;
+		var thread = thisThread;
 		thread.clock.sched(this, { thread.next; nil });
 		nil.yield;
 	}
@@ -215,8 +211,7 @@ SimpleNumber : Number {
 	
 	// support for writing synth defs
 	writeInputSpec { arg file, synth;
-		var constIndex;
-		constIndex = synth.constants.at(this.asFloat);
+		var constIndex = synth.constants.at(this.asFloat);
 		if (constIndex.isNil) {
 			Error("SimpleNumber-writeInputSpec constant not found: " ++ this.asFloat).throw;		};
 		//[\inpspc, this.class.name, constIndex, this].postln;
@@ -235,17 +230,15 @@ SimpleNumber : Number {
 	}
 	
 	degreeToKey { arg scale, stepsPerOctave=12;
-		var size, scaleDegree, accidental;
-		size = scale.size;
-		scaleDegree = this.round.asInteger;
-		accidental = ((this - scaleDegree) * 10.0) * (stepsPerOctave / 12.0);
+		var size = scale.size;
+		var scaleDegree = this.round.asInteger;
+		var accidental = ((this - scaleDegree) * 10.0) * (stepsPerOctave / 12.0);
 		^(stepsPerOctave * (scaleDegree div: size)) + scale.wrapAt(scaleDegree) + accidental
 	}
 			
 	keyToDegree { arg scale, stepsPerOctave=12;
-		var key, n;
-		n = this div: stepsPerOctave * scale.size;
-		key = this % stepsPerOctave;
+		var n = this div: stepsPerOctave * scale.size;
+		var key = this % stepsPerOctave;
 		^scale.indexInBetween(key) + n
 	}
 	
@@ -254,16 +247,14 @@ SimpleNumber : Number {
 	}
 	
 	nearestInScale { arg scale, stepsPerOctave=12; // collection is sorted
-		var key, root;
-		root = this.trunc(stepsPerOctave);
-		key = this % stepsPerOctave;
+		var root = this.trunc(stepsPerOctave);
+		var key = this % stepsPerOctave;
 		^key.nearestInList(scale) + root
 	}
 	
 	partition { arg parts=2, min=1;
-		var n;
 		// randomly partition a number into parts of at least min size :
-		n = this - (min - 1 * parts);		^(1..n-1).scramble.keep(parts-1).sort.add(n).differentiate + (min - 1)
+		var n = this - (min - 1 * parts);		^(1..n-1).scramble.keep(parts-1).sort.add(n).differentiate + (min - 1)
 	}
 	
 	nextTimeOnGrid { arg clock;

@@ -124,8 +124,7 @@ UGen : AbstractFunction {
  	}
  	
 	argNameForInputAt { arg i;
-		var method;
-		method = this.class.class.findMethod(this.methodSelectorForRate);
+		var method = this.class.class.findMethod(this.methodSelectorForRate);
 		if(method.isNil or: {method.argNames.isNil},{ ^nil });
 		^method.argNames.at(i + this.argNamesInputsOffset)
 	}

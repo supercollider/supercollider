@@ -57,10 +57,10 @@ SynthDef {
 		controlIndex = 0;
 	}
 	buildUgenGraph { arg func, rates, prependArgs;
-		var result, saveControlNames;
-		
+		var result;
 		// save/restore controls in case of *wrap
-		saveControlNames = controlNames;
+		var saveControlNames = controlNames;
+		
 		controlNames = nil;
 		
 		prependArgs = prependArgs.asArray;
@@ -136,17 +136,15 @@ SynthDef {
 			values.copy, controlNames.size));
 	}
 	buildControls {
-		var arguments;
-		var nonControlNames, irControlNames, krControlNames, trControlNames;
 		var controlUGens, index, values, lags, valsize;
 		var def, argNames;
 		
-		arguments = Array.newClear(controlNames.size);
+		var arguments = Array.newClear(controlNames.size);
 		
-		nonControlNames = controlNames.select {|cn| cn.rate == 'noncontrol' };
-		irControlNames = controlNames.select {|cn| cn.rate == 'scalar' };
-		krControlNames = controlNames.select {|cn| cn.rate == 'control' };
-		trControlNames = controlNames.select {|cn| cn.rate == 'trigger' };
+		var nonControlNames = controlNames.select {|cn| cn.rate == 'noncontrol' };
+		var irControlNames = controlNames.select {|cn| cn.rate == 'scalar' };
+		var krControlNames = controlNames.select {|cn| cn.rate == 'control' };
+		var trControlNames = controlNames.select {|cn| cn.rate == 'trigger' };
 
 		if (nonControlNames.size > 0) {
 			nonControlNames.do {|cn|
@@ -216,8 +214,7 @@ SynthDef {
 	}
 
 	asBytes {
-		var stream;
-		stream = CollStream.on(Int8Array.new(256));
+		var stream = CollStream.on(Int8Array.new(256));
 		this.asArray.writeDef(stream);
 		^stream.collection;
 	}
@@ -296,8 +293,7 @@ SynthDef {
 		}
 	}
 	writeConstants { arg file;
-		var array;
-		array = FloatArray.newClear(constants.size);
+		var array = FloatArray.newClear(constants.size);
 		constants.keysValuesDo { arg value, index;
 			array[index] = value;
 		};
@@ -433,13 +429,11 @@ SynthDef {
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
 		)
 	}
-	store { arg libname=\global, dir, completionMsg;
-		var lib, bytes, file, path;
-		dir = dir ? synthDefDir;
-		lib = SynthDescLib.all[libname];
-		if(lib.isNil) { Error("library" + libname  + "not found").throw };
-		path = dir ++ name ++ ".scsyndef";
-		file = File(path, "w");
+	store { arg libname=\global, dir(synthDefDir), completionMsg;
+		var bytes;
+		var lib = SynthDescLib.all[libname] ?? { Error("library" + libname  + "not found").throw };
+		var path = dir ++ name ++ ".scsyndef";
+		var file = File(path, "w");
 		protect {
 			bytes = this.asBytes;
 			file.putAll(bytes);

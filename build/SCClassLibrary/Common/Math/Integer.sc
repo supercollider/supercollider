@@ -30,6 +30,8 @@ Integer : SimpleNumber {
 		var i = 0;
 		while ({ i < this }, { function.value(i, i); i = i + 1; });
 	}
+	// override 'do'
+	generate { arg function; function.value(this) }
 
 	reverseDo { arg function;
 		// iterates function from 0 to this-1 
