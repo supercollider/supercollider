@@ -92,3 +92,27 @@ Routine : Thread {
 	}
 }
 
+// evaluate a routine within the context of a given environment
+
+
+EnvirRoutine : Routine {
+	var <>envir;
+	
+	*new { arg func, envir; 
+		^super.new(func).envir_(envir ? currentEnvironment)
+	}
+	
+	next { arg inval; 
+		var res;
+		envir.use({
+			res = super.next(inval);
+		});
+		^res
+	}
+	
+	value { arg inval;
+		^this.next(inval)
+	}
+		
+}
+
