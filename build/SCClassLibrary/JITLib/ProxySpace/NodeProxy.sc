@@ -257,7 +257,7 @@ NodeProxy : AbstractFunction {
 	}
 			
 	schedSendOSC { arg msg, onCompletion;
-					msg.asCompileString.postln;
+					//msg.asCompileString.postln;
 					if(clock.notNil, {
 						clock.sched(0, { 
 							server.listSendBundle(nil, msg); 
@@ -270,7 +270,6 @@ NodeProxy : AbstractFunction {
 	}
 	
 	prepareForPlayMsg { arg msg, freeAll=true;
-					["playing", this.isPlaying].postln;
 					if(this.isPlaying.not, {
 						group = Group.newMsg(msg, server, \addToHead);
 						group.prIsPlaying(true);
@@ -406,10 +405,10 @@ NodeProxy : AbstractFunction {
 		}, { "server not running".inform });
 	}
 	sendDef { arg def;
-		var msg;
-		msg = List.new;
-		this.sendDefMsg(msg, def);
-		server.listSendBundle(nil, msg);
+		//var msg;
+		//msg = List.new;
+		//this.sendDefMsg(msg, def);
+		server.sendMsg("/d_recv", def.asBytes);
 	}
 	
 	sendDefMsg { arg msg, def;
