@@ -31,7 +31,7 @@ Pdefn : Pattern {
 		^p
 	}
 	
-	*default { ^0 }
+	*default { ^1 } // safe for duration patterns
 	
 	constrainStream { arg str; ^pattern.asStream }
 	
