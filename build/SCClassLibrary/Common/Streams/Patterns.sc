@@ -50,7 +50,7 @@ Pattern : AbstractFunction {
 Pevent : Pattern {
 	var <>pattern, <>event;
 	*new { arg pattern, event;
-		^super.newCopyArgs(pattern, event);
+		^super.newCopyArgs(pattern, event ? Event.protoEvent);
 	}
 	asStream {
 		^EventStream(pattern.asStream, event);
