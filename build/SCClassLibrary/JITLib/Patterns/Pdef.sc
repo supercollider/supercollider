@@ -1,80 +1,81 @@
+
+
+//pattern reference for numerical (non-event) streams
+
 Pdefn : Pattern {
 	var <key, <pattern;
-	var <>last, <children, updated=false;
+	var <children, updated=false;
 	
-	classvar <>patterns, <>numericals, <>lastEdited;
+	classvar <>patterns, <>numericals;
+	
 	
 	*initClass { 
 		patterns = IdentityDictionary.new; 
 		numericals = IdentityDictionary.new; 
-		patterns.put(\rest,  
-			Pdef.make(\rest, Pbind(nil,
-				\freq, \rest, 
-				\dur, 1
-		 	 )));
-		numericals.put(\rest,  Pdefn.make(\rest, Pn(0, 1)));
-	
 	}
+	
+	*default { ^Pn(0, inf) }
 	
 	
 	*new { arg key, pattern;
 		var p;
+		if(pattern.isKindOf(this), { "cannot allow this".inform; ^nil });
 	 	p = this.at(key);
 	 	if(pattern.notNil, {
 			if(p.isNil, {
 				p = this.make(key, pattern);
 				this.put(key, p);
 			}, {
-				if(pattern.isNil, { pattern = this.at(\rest) });
 				p.pattern_(pattern);
 			});
-				p.changed;
-		}, { p = p ? this.at(\rest) })
+			
+		}, { 
+			if(p.isNil, {
+				p = this.make(key, this.default);
+				this.put(key, p);
+			});
+		})
 		^p
 	
 	}
 		
 	*make { arg key, pattern;
-		^if(pattern.notNil, {
-			super.newCopyArgs(key,pattern).clear;
-		}, { 
-			"this is no pattern".postln; 
-			this.at(\rest) 
-		})
+		^super.newCopyArgs(key,pattern).clear;
+	}
+	
+	asStream {
+		^DefStream(this).defaultValue_(0);
+	
 	}
 	
 	pattern_ { arg pat;
-		this.backup;
-		updated = false;
 		pattern = pat;
+		this.changed;
 	}
 
 	clear { children = IdentitySet.new  }	
 	
-	clock { ^nil }
-	
-	backup {
-		var lastPdef;
-		lastPdef = this.class.at(key);
-		lastEdited = key;
-		if(lastPdef.notNil, { last = lastPdef });
+	update {
+		children.do({ arg item; item.update });
 	}
 	
-	changed {
-			if(updated.not, {
-		 		children.do({ arg item; 
-								item.pattern = pattern; 
-								item.resetPat 
-				});
-				updated = true;
-			});
-	}
+	changed { this.update }
 	
-	asStream {
-		^DefStream(this)
+//	undo { //crashes
+//		var pat;
+//		pat = pattern;
+//		pattern = last;
+//		last = pat;
+//		this.changed;
+//	}
+////	
+//	backup {
+//		var lastPdef;
+//		lastPdef = this.class.at(key);
+//		lastEdited = key;
+//		if(lastPdef.notNil, { last = lastPdef });
+//	}
 	
-	}
-
 	*at { arg key;
 		^numericals.at(key);
 	}
@@ -86,11 +87,13 @@ Pdefn : Pattern {
 	
 }
 
+//pattern reference for event streams
 
 Pdef : Pdefn {
+	classvar <>playStreams;
 	
 	
-		
+	
 	*at { arg key;
 		^patterns.at(key);
 	}
@@ -98,26 +101,68 @@ Pdef : Pdefn {
 		patterns.put(key, pattern);
 	}
 	
-		
+	*default { 
+				^Pbind(nil,
+					\freq, \rest, 
+					\dur, 1
+		 	 	)
+	}
+	
+	//remove playing streams from me
+	
+	*initClass {
+		CmdPeriod.add(this)
+	}
+	
+	*cmdPeriod { this.clear }
+	
+	*clear {
+		playStreams.do({ arg item;
+			item.freeChain;
+			item.releaseDependant;
+		});
+		playStreams = nil;
+	}
+	
 	changed {
-		this.sched({ children.do({ arg item; 
-								item.pattern = pattern; 
-								item.resetPat 
-		}) });
-	
+		schedToCurrentBeat({ this.update });
+						
 	}
 	
-	sched { arg func;
-		var clock;
-		clock = currentEnvironment.tryPerform(\clock);
-		if(clock.isNil, func, {
-			clock.schedAbs(clock.elapsedBeats.ceil, { 
-							func.value;
-							nil 
-						})
-		})
-	}
+	play { arg clock;
+		var str;
+		str = super.play(clock);
+		this.class.playStreams = this.class.playStreams.add(str.stream);
+		^str
+		
+	}	
 	
+	asStream {
+		^DefStream(this).defaultValue_(Event.default);
+	
+	}
 	
 }
+
+//remove nils from stream
+
+Pnil {
+	var <>pattern, <>value;
+	*new { arg pattern, value=0; 
+		^super.newCopyArgs(pattern, value) 
+	}
+	
+	asStream {
+		^Routine({ arg inval;
+			var str, outval;
+			str = pattern.asStream;
+			inf.do({
+				if(inval.isNil, { inval = value });
+				outval = str.next(inval);
+				inval = outval.yield(inval);
+			});
+		});
+	}
+}
+
 

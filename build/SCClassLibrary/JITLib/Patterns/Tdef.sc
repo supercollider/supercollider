@@ -1,42 +1,75 @@
 //task definition
 
-Tdef : PauseStream {
-	var <key, <isPlaying=false;
+Tdef {
+	var <>task, <key;
 	
-	*new { arg key, function;
+	*new { arg key, function, clock;
 		var t;
 		key = key.asSymbol;
 		
 		t = this.at(key);
 		
 		if(t.isNil, { 
-			t = super.new.function_(function);
+			t = this.make(function, clock);
 			this.put(key, t);
 		}, { 
 			if(function.notNil, {
-				t.function_(function);
+				t.init(function, clock ? t.clock);
 			})
 		 });
 		 
 		^t
 	} 
-
-	function_ { arg function;
-		this.stream = Routine({ arg argList; 
-							function.valueArray(argList);
-					});
+	
+	*make { arg function, clock;
+		^super.new.init(function, clock);
 	}
+
+	init { arg function, clock;
+		var playing;
+		playing = task.isPlaying;
+		task.stop;
+		task = Task({ arg argList; 
+							function.valueArray(argList);
+					}, clock);
+		if(playing, { 
+			{ task.start }.schedToBeat 
+		});
+	}
+	
+	clock { ^task.clock }
 	
 	stream_ { arg argStream; 
-		if(stream.notNil, {
-			stream = argStream;
-		});
-		originalStream = argStream;
+			task.stream = argStream;
 	}
 	
+	
 	embed { arg inval;
-		originalStream.embed(inval)
+		task.embed(inval)
 	}
+	
+	play { arg doReset = false;
+		schedToCurrentBeat({
+					task.stop;
+					task.play(doReset)
+		})
+	}
+	
+	reset { ^task.reset }
+	stop { task.stop }
+
+	pause { task.pause }
+	resume { task.resume }
+	
+	start { task.start }
+	next { arg inval;
+		^task.next(inval)
+	}
+	awake { arg beats, seconds, inClock;
+		task.awake(beats, seconds, inClock);
+	}
+
+		
 	
 	///////global access
 	
