@@ -329,39 +329,74 @@ MultiLevelIdentityDictionary : Collection
 
 
 
-Library : MultiLevelIdentityDictionary 
+LibraryBase : MultiLevelIdentityDictionary 
+{	
+	*global {
+		^this.subclassResponsibility(thisMethod);
+	}
+	*global_ { arg obj;
+		^this.subclassResponsibility(thisMethod);
+	}
+	
+
+	*clear {
+		this.global = this.new;
+	}
+	*at { arg ... args;
+		^this.global.performList(\at, args);
+	}
+
+	*atList { arg args;
+		^this.global.performList(\at,args)
+	}
+	*putList { arg args;
+		^this.global.performList(\put,args)
+	}
+
+	*put { arg ... args;
+		this.global.performList(\put,args);
+	}
+	*create { arg ... args;
+		^this.global.performList(\create, args);
+	}
+
+	*postTree {
+		this.global.postTree
+	}
+
+}
+
+Library : LibraryBase 
 {
-	classvar <global;
+	classvar global;
+	
+	*global { ^global }
+	*global_ { arg obj; global = obj; }
+	
+	*initClass {
+		global = this.new;
+	}
+}
+
+Archive : LibraryBase 
+{
+	classvar global;
+	
+	*global { ^global }
+	*global_ { arg obj; global = obj; }
 	
 	*initClass {
 		global = this.new;
 	}
 
-	*clear {
-		global = this.new;
+	*read { arg filename = "archive.scar";
+		if (File.exists(filename)) {
+			global = this.readArchive(filename);
+		}
 	}
-	*at { arg ... args;
-		^global.performList(\at, args);
+	*write { arg filename = "archive.scar";
+		global.writeArchive(filename);
 	}
-
-	*atList { arg args;
-		^global.performList(\at,args)
-	}
-	*putList { arg args;
-		^global.performList(\put,args)
-	}
-
-	*put { arg ... args;
-		global.performList(\put,args);
-	}
-	*create { arg ... args;
-		^global.performList(\create, args);
-	}
-
-	*postTree {
-		global.postTree
-	}
-
 }
 
 

@@ -165,7 +165,7 @@ Process {
 	var <processID; // 0 = application, 1 = audio engine
 	var schedulerQueue;
 	
-	startUp {	
+	startup {	
 		var time;
 		
 		Class.initClassTree(AppClock); // AppClock first in case of error
@@ -176,6 +176,7 @@ Process {
 		
 		topEnvironment = Environment.new;
 		currentEnvironment = topEnvironment;
+		Archive.read;
 
 		// This method is called automatically right after compiling.
 		// Override in class 'Main' to do initialization stuff,
@@ -191,12 +192,13 @@ Process {
 		// This method is called when 'Stop Main' is chosen from the menu.
 		// Override in class 'Main' to do whatever you want.
 	}
-	shutDown {
+	shutdown {
 		// This method is called before recompiling or quitting.
 		// Override in class 'Main' to do whatever you want.
 		UI.shutdown;
 		//OSCPort.closeAll;
 		File.closeAll;
+		Archive.write;
 	}
 	tick { // called repeatedly by SCVirtualMachine::doPeriodicTask
 		AppClock.tick;
