@@ -266,8 +266,8 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
         [window setDelegate: scvm];
         [window setContentView: view];
         [view autorelease];
-
-/*        NSRect matrect = NSMakeRect(40,40,400,400);
+/*
+        NSRect matrect = NSMakeRect(40,40,400,400);
         NSSize cellsize = NSMakeSize(200,100);
         id mx = [[NSMatrix alloc] 
                     initWithFrame: matrect 
@@ -277,8 +277,8 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
                     numberOfColumns: 2 ];
         [mx setCellSize: cellsize];
         [view addSubview: mx];
-*/
 
+*/
         [window makeFirstResponder: view];
         [window setFrameOrigin: bounds.origin];
         [scvm addWindow: window];
@@ -549,6 +549,31 @@ int prSCWindow_GetBounds(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prSCWindow_GetScreenBounds(struct VMGlobals *g, int numArgsPushed);
+int prSCWindow_GetScreenBounds(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+
+    if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
+
+    NSRect bounds = [[NSScreen mainScreen] frame];
+    PyrSlot *slots = b->uo->slots;
+    SetFloat(slots+0, bounds.origin.x);
+    SetFloat(slots+1, bounds.origin.y);
+    SetFloat(slots+2, bounds.size.width);
+    SetFloat(slots+3, bounds.size.height);
+    a->ucopy = b->ucopy;
+    
+    return errNone;
+}
+
+
+
+
+//doesn't work as intended
 int prSCWindow_Show(struct VMGlobals *g, int numArgsPushed);
 int prSCWindow_Show(struct VMGlobals *g, int numArgsPushed)
 {
@@ -574,7 +599,7 @@ int prSCWindow_Show(struct VMGlobals *g, int numArgsPushed)
 
     return errNone;
 }
-
+//doesn't work as intended
 int prSCWindow_Hide(struct VMGlobals *g, int numArgsPushed);
 int prSCWindow_Hide(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1822,6 +1847,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_SCWindow_SetAlpha", prSCWindow_SetAlpha, 2, 0);	
 	definePrimitive(base, index++, "_SCWindow_SetBounds", prSCWindow_SetBounds, 2, 0);	
 	definePrimitive(base, index++, "_SCWindow_GetBounds", prSCWindow_GetBounds, 2, 0);	
+	definePrimitive(base, index++, "_SCWindow_GetScreenBounds", prSCWindow_GetScreenBounds, 2, 0);	
 
 	definePrimitive(base, index++, "_String_GetBounds", prString_GetBounds, 3, 0);	
 	definePrimitive(base, index++, "_String_DrawAtPoint", prString_DrawAtPoint, 4, 0);	
