@@ -45,6 +45,10 @@ Pattern : AbstractFunction {
 	composeNAryOp { arg selector, argList;
 		^thisMethod.notYetImplemented
 	}
+	
+	degreeToKey { arg scale, stepsPerOctave=12;
+		^PdegreeToKey(this,scale,stepsPerOctave)
+	}
 }
 
 
@@ -54,6 +58,7 @@ Pfunc : Pattern {
 	*new { arg nextFunc, resetFunc;	
 		^super.newCopyArgs(nextFunc, resetFunc)
 	}
+	storeArgs { ^[nextFunc,resetFunc] }
 	asStream {
 		^FuncStream.new(nextFunc, resetFunc)
 	}
@@ -64,6 +69,7 @@ Prout : Pattern {
 	*new { arg routineFunc;
 		^super.newCopyArgs(routineFunc)
 	}
+	storeArgs { ^[routineFunc] }
 	asStream {
 		^Routine.new(routineFunc)
 	}
@@ -74,6 +80,7 @@ Pfuncn : Pattern {
 	*new { arg func, repeats = 1;
 		^super.newCopyArgs(func, repeats)
 	}
+	storeArgs { ^[func,repeats] }
 	asStream { 
 		^Routine.new({ arg inval;
 			repeats.value.do({
@@ -89,6 +96,7 @@ Punop : Pattern {
 	*new { arg operator, a;
 		^super.newCopyArgs(operator, a)
 	}
+	storeArgs { ^[operator,a] }
 	asStream {
 		var stream;
 		stream = a.asStream;
@@ -101,6 +109,7 @@ Pbinop : Pattern {
 	*new { arg operator, a, b;
 		^super.newCopyArgs(operator, a, b)
 	}
+	storeArgs { ^[operator,a,b] }
 	asStream {
 		var streamA, streamB;
 		streamA = a.asStream;
@@ -115,6 +124,7 @@ Pevent : Pattern {
 	*new { arg pattern, event;
 		^super.newCopyArgs(pattern, event);
 	}
+	storeArgs { ^[pattern,event] }
 	asStream {
 		^Sevent(pattern.asStream, event);
 	}
@@ -138,6 +148,7 @@ Pbind : Pattern {
 		if (pairs.size.odd, { "Pbind should have even number of args.\n".error; this.halt });
 		^super.newCopyArgs(pairs)
 	}
+	storeArgs { ^patternpairs }
 	asStream {
 		var streampairs, endval;
 		
@@ -188,7 +199,8 @@ Pseries : Pattern {	// arithmetic series
 	var <>start=0, <>step=1, <>length=inf;
 	*new { arg start = 0, step = 1, length=inf;
 		^super.newCopyArgs(start, step, length)
-	}	
+	}
+	storeArgs { ^[start,step,length] }	
 	asStream {
 		var cur, counter = 0;
 		cur = start;
@@ -213,7 +225,8 @@ Pgeom : Pattern {	// geometric series
 	var <>start=1.0, <>grow=1.0, <>length=inf;
 	*new { arg start = 0, grow = 1, length=inf;
 		^super.newCopyArgs(start, grow, length)
-	}	
+	}
+	storeArgs { ^[start,grow,length] }
 	asStream {
 		var cur, counter = 0;
 		cur = start;
@@ -238,7 +251,8 @@ Pbrown : Pattern {
 	var <>lo, <>hi, <>step, <>length;
 	*new { arg lo, hi, step, length=inf;
 		^super.newCopyArgs(lo, hi, step, length)
-	}	
+	}
+	storeArgs { ^[lo,hi,step,length] }
 	asStream {
 		^Routine.new({
 			var cur;
@@ -255,7 +269,8 @@ Pwhite : Pattern {
 	var <>lo, <>hi, <>length;
 	*new { arg lo, hi, length=inf;
 		^super.newCopyArgs(lo, hi, length)
-	}	
+	}
+	storeArgs { ^[lo,hi,length] }
 	asStream {
 		^Routine.new({
 			length.do({
@@ -269,7 +284,8 @@ Pstep2add : Pattern {
 	var <>pattern1, <>pattern2;
 	*new { arg pattern1, pattern2;
 		^super.newCopyArgs(pattern1, pattern2)
-	}	
+	}
+	storeArgs { ^[pattern1,pattern2] }
 	asStream {
 		^Routine.new({ arg inval;
 			var stream1, stream2, val1, val2;
@@ -293,7 +309,9 @@ Pstep3add : Pattern {
 	var <>pattern1, <>pattern2, <>pattern3;
 	*new { arg pattern1, pattern2, pattern3;
 		^super.newCopyArgs(pattern1, pattern2, pattern3)
-	}	
+	}
+	storeArgs { ^[pattern1,pattern2,pattern3] }
+	
 	asStream {
 		^Routine.new({ arg inval;
 			var stream1, stream2, stream3, val1, val2, val3;
@@ -317,5 +335,6 @@ Pstep3add : Pattern {
 		})		
 	}
 }
+
 
 
