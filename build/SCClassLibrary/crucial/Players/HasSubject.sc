@@ -26,20 +26,26 @@ AbstractPlayerEffect : HasSubject {
 
 	var <childGroup,effectGroup;
 	
-	makePatchOut { arg group,private,bus;
-		childGroup = Group.head(group);
+	//two effect layers have problems with childGroup not yet created
+	makePatchOut { arg group,private,bus,bundle;
+		childGroup = Group.basicNew;
+		bundle.add( childGroup.addToHead(group) );
 		effectGroup = group;//Group.tail(group);
 		server = effectGroup.server;
-		this.topMakePatchOut(effectGroup,private,bus);
-		this.childrenMakePatchOut(childGroup,true);
+		this.topMakePatchOut(effectGroup,private,bus,bundle);
+		this.childrenMakePatchOut(childGroup,true,bundle);
 	}
 	
-	childrenMakePatchOut { arg argchildGroup,private;
+	childrenMakePatchOut { arg argchildGroup,private,bundle;
 		subject.setPatchOut(AudioPatchOut(subject,childGroup,patchOut.bus.copy));
 		// but children make their own
-		subject.childrenMakePatchOut(childGroup,true);
+		subject.childrenMakePatchOut(childGroup,true,bundle);
 	}
-	
+	free {
+		childGroup.free;
+		effectGroup.free;
+		super.free;
+	}
 }
 
 PlayerAmp : AbstractPlayerEffect {
@@ -60,22 +66,26 @@ PlayerAmp : AbstractPlayerEffect {
 	synthDefArgs { ^[0,patchOut.synthArg,1,amp] }
 	amp_ { arg v; 
 		amp = v; 
-		if(this.isPlaying,{
+		if(synth.isPlaying,{
 			synth.set(\amp,amp)
 		})
 	}
 	value_ { arg v;
 		amp = v; 
-		if(this.isPlaying,{
+		if(synth.isPlaying,{
 			synth.set(\amp,amp)
 		})
 	}		
 	guiClass { ^PlayerAmpGui }
 }
 
-//PlayerEffect : AbstractPlayerEffect {
+//PlayerEffectVoice : AbstractPlayerEffect {
 //
+///*
+//	start a playervoice, efx playervoice
 //	
+//	
+//*/
 //
 //}
 
