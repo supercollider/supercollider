@@ -1,11 +1,5 @@
 
 
-+Routine {
-	embed { arg inval;
-		func.value(inval)
-	}
-
-}
 
 +Task {
 	embed { arg inval;
