@@ -167,7 +167,7 @@ Server : Model {
 		if (condition.isNil) { condition = Condition.new };
 		cmdName = args[0].asString;
 		if (cmdName[0] != $/) { cmdName = cmdName.insert(0, $/) };
-		resp = OSCresponder(addr, "/done", {|time, resp, msg|
+		resp = OSCresponderNode(addr, "/done", {|time, resp, msg|
 			if (msg[1].asString == cmdName) {
 				resp.remove;
 				condition.test = true;
@@ -183,7 +183,7 @@ Server : Model {
 		var resp, id;
 		if (condition.isNil) { condition = Condition.new };
 		id = UniqueID.next;
-		resp = OSCresponder(addr, "/synced", {|time, resp, msg|
+		resp = OSCresponderNode(addr, "/synced", {|time, resp, msg|
 			if (msg[1] == id) {
 				resp.remove;
 				condition.test = true;

@@ -67,7 +67,7 @@ OSCMultiResponder : OSCresponder {
 	var <>nodes;
 	
 	value { arg time, msg;
-		nodes.do({ arg node; node.action.value(time, this, msg) });
+		nodes.do({ arg node; node.action.value(time, node, msg) });
 	}
 	isEmpty { ^nodes.size == 0 }
 	
