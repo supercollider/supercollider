@@ -1,6 +1,6 @@
 +Function {
 
-	send { arg key, server, freeAll=true, onComplete, latency;
+	send { arg key, server, mix=false, onComplete, latency;
 		var proxy;
 		server = server ? Server.local;
 		proxy = Library.at(\proxy, server, key);
@@ -8,7 +8,7 @@
 			proxy = NodeProxy(server);
 			Library.put(\proxy, server, key, proxy);
 		});
-		proxy.setObj(this, true, freeAll, onComplete, latency);
+		proxy.put(this, 0, true, mix.not, onComplete, latency);
 		^proxy
 	}
 	

@@ -1,5 +1,7 @@
 
 
+//lightweight objects that insulate different ways of playing/stopping
+
 EventStreamContainer  {
 	var <>pattern, <eventstream; 
 	
@@ -9,6 +11,7 @@ EventStreamContainer  {
 		
 		
 	sendDef {}
+	writeDef {}
 	
 	playToBundle { arg bundle, extraArgs, group; //mixedbundle
 		bundle.addFunction({ 
@@ -52,12 +55,15 @@ SynthDefContainer {
 	sendDef { arg server;
 		synthDef.send(server)
 	}
+	writeDef {
+		synthDef.writeDefFile
+	}
 	
 	playToBundle { arg bundle, extraArgs, group;
 		^Synth.newToBundle(bundle, synthDef.name, extraArgs, group, \addToTail); 
 	}
 	stopClientProcessToBundle {}
-	stop {}
+	stop {} //these are more efficiently done by group messages
 
 
 }

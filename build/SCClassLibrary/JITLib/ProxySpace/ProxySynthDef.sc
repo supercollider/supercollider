@@ -1,5 +1,5 @@
 ProxySynthDef : SynthDef {
-	var <>proxy, <channeloffset=0;
+	var <>proxy;
 	classvar <env;
 	
 	*initClass {
@@ -8,13 +8,13 @@ ProxySynthDef : SynthDef {
 		unixCmd("rm synthdefs/temp_proxy_def_*");
 	}
 	
-	*new { arg proxy, object;
+	*new { arg proxy, object, channelOffset=0;
 		var name;
 		name = "temp_proxy_def_" ++ proxy.generateUniqueName;
-		^super.prNew(name).proxy_(proxy).build(object);
+		^super.prNew(name).proxy_(proxy).build(object,channelOffset);
 	}
 	
-	build { arg object;
+	build { arg object,channelOffset;
 		var argNames, argValues, func;
 		argNames = object.argNames;
 		argValues = object.defArgs;
@@ -42,7 +42,7 @@ ProxySynthDef : SynthDef {
 					}, {
 					//if((rate === 'control') && (proxy.rate === 'audio'), 
 					//{ output = K2A.ar(output) }); //change in NodeProxy-initBus
-					Out.multiNewList([rate, proxy.outbus.index+channeloffset]++output)
+					Out.multiNewList([rate, proxy.outbus.index+channelOffset]++output)
 				})
 		};
 		

@@ -147,15 +147,15 @@ NodeProxy : AbstractFunction {
 	
 	// setting the source to anything that returns a valid ugen input
 	
-	add { arg obj, send=true;
-		this.setObj(obj, send, false)
+	add { arg obj, channelOffset=0, send=true;
+		this.put(obj, 0, send, false)
 	}
 	
 	source_ { arg obj; 
-		this.setObj(obj, true) 
+		this.put(obj, 0, true) 
 	}
 	
-	setObj { arg obj, send=false, freeAll=true, onCompletion, latency=0.3; 			var container, bundle;
+	put { arg obj, channelOffset=0, send=false, freeAll=true, onCompletion, latency=0.3; 			var container, bundle;
 				bundle = MixedBundle(server);
 				if(freeAll, { 
 					this.freeAllMsg(bundle);
@@ -163,13 +163,13 @@ NodeProxy : AbstractFunction {
 					this.initParents 
 				});
 				
-				container = obj.wrapForNodeProxy(this);
+				container = obj.wrapForNodeProxy(this,channelOffset);
 				if(container.notNil, {
 					objects = objects.add(container);
+					container.writeDef;
 					if(server.serverRunning, {
 						container.sendDef(server);
 						if(send, { 
-							this.prepareForPlayMsg(bundle, freeAll);
 							this.sendToServer(bundle, freeAll, latency, nil, onCompletion) 
 						});
 				 	});
@@ -177,7 +177,28 @@ NodeProxy : AbstractFunction {
 			
 	}
 	
+	load {
+		var bundle;
+		if(server.serverRunning, { 
+			bundle = MixedBundle(server);
+			this.loadMsg(bundle);
+			bundle.send; 
+		});
 	
+	}
+		
+	loadAll {
+		var bundle;
+		bundle = MixedBundle(server);
+		if(server.serverRunning, {
+			parents.do({ arg proxy; 
+				proxy.sendAllDefsMsg(bundle); 
+			});
+			this.sendAllDefsMsg(bundle);
+			bundle.send; 
+		}, { "server not running".inform });
+	}
+
 	
 	
 	////////////behave like my group////////////
@@ -240,7 +261,7 @@ NodeProxy : AbstractFunction {
 		
 		if(server.serverRunning, {
 				bundle = bundle ? MixedBundle(server);
-				
+				this.prepareForPlayMsg(bundle, freeAll);
 				this.sendSynthMsg(bundle, freeAll, extraArgs);
 				
 				if(latency.notNil, {
@@ -306,8 +327,7 @@ NodeProxy : AbstractFunction {
 							group.msgToBundle(bundle, 15, [\synthGate, 0.0]); //n_set
 						}, {
 							//if the object has its own envelope, try to free it.
-							group.msgToBundle(bundle, 15, [\gate, 0.0]); //n_set 
-						});
+							group.msgToBundle(bundle, 15, [\gate, 0.0, \synthGate, 0.0]); 						});
 					})
 
 	}
@@ -378,29 +398,7 @@ NodeProxy : AbstractFunction {
 		this.wakeUpParentsToBundle(bundle);
 		this.schedSendOSC(bundle);
 	}
-	
-	load {
-		var bundle;
-		if(server.serverRunning, { 
-			bundle = MixedBundle(server);
-			this.loadMsg(bundle);
-			bundle.send; 
-		});
-	
-	}
-		
-	loadAll {
-		var bundle;
-		bundle = MixedBundle(server);
-		if(server.serverRunning, {
-			parents.do({ arg proxy; 
-				proxy.sendAllDefsMsg(bundle); 
-			});
-			this.sendAllDefsMsg(bundle);
-			bundle.send; 
-		}, { "server not running".inform });
-	}
-		
+			
 	
 	sendAllDefsMsg { arg bundle;
 		objects.do({ arg item;

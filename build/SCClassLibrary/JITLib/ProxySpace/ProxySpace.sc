@@ -42,7 +42,7 @@
 			});
 			
 		});
-		proxy.setObj(obj, true, true);
+		proxy.put(obj, 0, true, true);
 		this.class.lastEdited = proxy;
 	}
 	
