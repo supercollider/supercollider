@@ -596,6 +596,45 @@ int prArrayPutEach(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+
+int prArrayIndexOf(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b;
+	PyrObject *obj;
+	bool found = false;
+	
+	a = g->sp - 1;
+	b = g->sp;
+	
+	obj = a->uo;
+
+	int size = obj->size;
+	if (obj->obj_format == obj_slot) {
+		PyrSlot *slots = obj->slots;
+		for (int i=0; i<size; ++i) {
+			if (SlotEq(slots+i, b)) {
+				SetInt(a, i);
+				found = true;
+				break;
+			}
+		}
+	} else {
+		PyrSlot slot;
+		for (int i=0; i<size; ++i) {
+			getIndexedSlot(obj, &slot, i);
+			if (SlotEq(&slot, b)) {
+				SetInt(a, i);
+				found = true;
+				break;
+			}
+		}
+	}
+	if (!found) SetNil(a);
+	
+	return errNone;
+}
+
+
 int prArrayPutSeries(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c, *d, *e;
@@ -1914,6 +1953,7 @@ void initArrayPrimitives()
 	definePrimitive(base, index++, "_ArrayAddAll", prArrayAddAll, 2, 0);
 	definePrimitive(base, index++, "_ArrayPutSeries", prArrayPutSeries, 5, 0);
 	definePrimitive(base, index++, "_ArrayOverwrite", prArrayOverwrite, 3, 0);	
+	definePrimitive(base, index++, "_ArrayIndexOf", prArrayIndexOf, 2, 0);	
 
 	definePrimitive(base, index++, "_ArrayNormalizeSum", prArrayNormalizeSum, 1, 0);
 	definePrimitive(base, index++, "_ArrayWIndex", prArrayWIndex, 1, 0);

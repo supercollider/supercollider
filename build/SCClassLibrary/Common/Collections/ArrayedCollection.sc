@@ -60,6 +60,11 @@ ArrayedCollection : SequenceableCollection {
 		_BasicTakeAt;
 		^this.primitiveFailed;
 	}
+	
+	indexOf { arg item;
+		_ArrayIndexOf
+		^this.primitiveFailed;
+	}
 
 	// see counterparts to these in Object 
 	slotSize {
