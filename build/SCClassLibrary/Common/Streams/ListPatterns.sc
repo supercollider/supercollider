@@ -218,7 +218,7 @@ Ppar : ListPattern {
 				
 				// if first event not at time zero
 				if (priorityQ.notEmpty and: { (nexttime = priorityQ.topPriority) > 0.0 }, {
-					outval = inval;
+					outval = inval.copy;
 					outval.put(\freq, \rest);					
 					outval.put(\delta, nexttime);
 					
@@ -235,7 +235,7 @@ Ppar : ListPattern {
 						nexttime = priorityQ.topPriority;
 						if (nexttime.notNil, {
 							// that child stream ended, so rest until next one
-							outval = inval;
+							outval = inval.copy;
 							outval.put(\freq, \rest);					
 							outval.put(\delta, nexttime - now);
 							
