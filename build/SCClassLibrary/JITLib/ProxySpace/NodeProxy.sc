@@ -2,12 +2,12 @@
 NodeProxy : AbstractFunction {
 
 
-	var <server, <group, <outbus; 		//server access, the group that has the inner synths
+	var <server, <group, <bus; 		//server access, the group that has the inner synths
 	var <objects, <parents; 			//playing templates
 	var <nodeMap, <>lags, <>prepend, <>clock; //lags might go into function annotation later
 
-	var <>freeSelf=true, <loaded=false;	//synthDef information
-	var <playGroup;					//the group that has the user output synth
+	var <loaded=false;					//synthDefs on server
+	var <monitorGroup;					//the group that has the user output synth
 	
 	classvar <>buildProxy;
 	
@@ -35,8 +35,8 @@ NodeProxy : AbstractFunction {
 		this.initParents;
 		this.free;
 		this.stop;
-		if(outbus.notNil, { outbus.free });
-		outbus = nil;
+		if(bus.notNil, { bus.free });
+		bus = nil;
 		group = nil;
 	}
 
@@ -49,8 +49,8 @@ NodeProxy : AbstractFunction {
 		var alloc, busIndex;
 		alloc = server.audioBusAllocator.alloc(numChannels);
 		if(alloc.isNil,{ "no channels left".error ^nil });
-		outbus = Bus.new(rate, alloc, numChannels, server);
-		busIndex = outbus.index;
+		bus = Bus.new(rate, alloc, numChannels, server);
+		busIndex = bus.index;
 		//set both, because patterns may have both.
 		nodeMap.set(\out, busIndex, \i_out, busIndex); 
 	}
@@ -63,12 +63,12 @@ NodeProxy : AbstractFunction {
 	// playing and access
 	
 	ar { arg numChannels;
-		if(outbus.isNil, { this.allocBus(\audio, numChannels ? 2) });
+		if(bus.isNil, { this.allocBus(\audio, numChannels ? 2) });
 		^this.getOutput(numChannels)
 	}
 	
 	kr { arg numChannels;
-		if(outbus.isNil, { this.allocBus(\control, numChannels ? 1) });
+		if(bus.isNil, { this.allocBus(\control, numChannels ? 1) });
 		^this.getOutput(numChannels)
 	}
 	
@@ -79,16 +79,19 @@ NodeProxy : AbstractFunction {
 	}
 	
 	stop {
-		playGroup.free;
-		playGroup = nil;
+		monitorGroup.free;
+		monitorGroup = nil;
 	}	
 		
 	play { arg busIndex=0, nChan;
 		var bundle, divider;
 		if(server.serverRunning.not, { "server not running".inform; ^nil });
 			bundle = MixedBundle.new;
-			if(playGroup.isPlaying.not, { playGroup = Group.newToBundle(bundle, server) });
-			if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
+			if(monitorGroup.isPlaying.not, { 
+				monitorGroup = Group.newToBundle(bundle, server);
+				NodeWatcher.register(monitorGroup);
+			});
+			if(bus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
 			nChan = nChan ? this.numChannels;
 			nChan = nChan.min(this.numChannels);
 		
@@ -97,12 +100,13 @@ NodeProxy : AbstractFunction {
 			divider = if(nChan.even, 2, 1);
 			(nChan div: divider).do({ arg i;
 			bundle.add([9, "proxyOut-linkDefAr-"++divider, 
-					server.nextNodeID, 1, playGroup.nodeID,
-					\i_busOut, busIndex+(i*divider), \i_busIn, outbus.index+(i*divider)]);
+					server.nextNodeID, 1, monitorGroup.nodeID,
+					\i_busOut, busIndex+(i*divider), \i_busIn, bus.index + (i*divider)
+					]);
 			});
 		
 			this.sendBundle(bundle);
-		^playGroup
+		^monitorGroup
 	}
 	
 	record { arg path, headerFormat="aiff", sampleFormat="int16", numChannels;
@@ -117,9 +121,9 @@ NodeProxy : AbstractFunction {
 	
 	///// access
 		
-	rate { ^outbus.tryPerform(\rate) }
-	numChannels { ^outbus.tryPerform(\numChannels) }
-	index { ^outbus.tryPerform(\index) }
+	rate { ^bus.tryPerform(\rate) }
+	numChannels { ^bus.tryPerform(\numChannels) }
+	index { ^bus.tryPerform(\index) }
 	
 	isPlaying { 
 		^group.isPlaying
@@ -201,28 +205,28 @@ NodeProxy : AbstractFunction {
 	//////////////behave like my bus/////////////
 	
 	gate { arg level=1.0, dur=0;
-		if(outbus.notNil && this.isPlaying, { outbus.gate(level, dur, group) }, 
+		if(bus.notNil && this.isPlaying, { bus.gate(level, dur, group) }, 
 		{ "not playing".inform });
 	}
 	
 	line { arg level=1.0, dur=1.0;
-		if(outbus.notNil && this.isPlaying, { outbus.line(level, dur, group) },
+		if(bus.notNil && this.isPlaying, { bus.line(level, dur, group) },
 		{ "not playing".inform });
 	}
 	
 	xline { arg level=1.0, dur=1.0;
-		if(outbus.notNil && this.isPlaying, { outbus.xline(level, dur, group) },
+		if(bus.notNil && this.isPlaying, { bus.xline(level, dur, group) },
 		{ "not playing".inform });
 	}
 	
 	env { arg env;
-		if(outbus.notNil && this.isPlaying, { outbus.env(env) },
+		if(bus.notNil && this.isPlaying, { bus.env(env) },
 		{ "not playing".inform });
 	}
 	
 	setBus { arg ... values;
-		if(outbus.notNil && this.isPlaying, { 
-			outbus.performList(\set, values) 
+		if(bus.notNil && this.isPlaying, { 
+			bus.performList(\set, values) 
 		},
 		{ "not playing".inform });
 	}
@@ -418,11 +422,11 @@ NodeProxy : AbstractFunction {
 	
 	initBus { arg rate, numChannels;
 				if((rate === 'scalar') || rate.isNil, { ^true }); //this is no problem
-				if(outbus.isNil, {
+				if(bus.isNil, {
 					this.allocBus(rate, numChannels);
 					^true
 				}, {
-					^(outbus.rate === rate) && (numChannels <= outbus.numChannels)
+					^(bus.rate === rate) && (numChannels <= bus.numChannels)
 				});
 	}
 
@@ -432,10 +436,10 @@ NodeProxy : AbstractFunction {
 		
 		parentPlaying = this.addToParentProxy;
 		if(parentPlaying, { this.wakeUp });
-		n = outbus.numChannels;
+		n = bus.numChannels;
 		out = if(this.rate === 'audio', 
-				{ InFeedback.ar( outbus.index, n) },
-				{ In.kr( outbus.index, n ) }
+				{ InFeedback.ar( bus.index, n) },
+				{ In.kr( bus.index, n ) }
 			);
 	
 		//test that
@@ -507,16 +511,17 @@ Ndef : NodeProxy {
 //the server needs to be a Broadcast.
 //this class takes care for a constant groupID.
 
+//do not add patterns for now.
 
 SharedNodeProxy : NodeProxy {
 	var <constantGroupID;
 	
-	*new { arg server;
-		^super.newCopyArgs(server).initGroupID.clear	
+	*new { arg server, groupID;
+		^super.newCopyArgs(server).initGroupID(groupID).clear	
 	}
 		
-	initGroupID {   
-		constantGroupID = server.nextSharedNodeID; 
+	initGroupID { arg groupID;  
+		constantGroupID = groupID ?? {server.nextSharedNodeID}; 
 	} 											
 		
 	prepareForPlayToBundle { arg bundle, freeAll=true;
@@ -524,40 +529,49 @@ SharedNodeProxy : NodeProxy {
 				group = Group.basicNew(server, constantGroupID);
 				group.isPlaying = true; //force isPlaying.
 				NodeWatcher.register(group);
-				bundle.add(["/g_new",constantGroupID,0,0]);
+				bundle.add(["/g_new", constantGroupID, 0, 0]);
 	}
+	
 	generateUniqueName {
 		^asString(constantGroupID) ++ objects.size
 	}
 	
 	play { arg busIndex=0, nChan;
-		var playGroup, bundle, divider, checkedAlready, localServer;
+		var bundle, localBundle, localServer, divider;
 		
 		localServer = server.localServer;
-		if(localServer.serverRunning, {
+		if(localServer.serverRunning.not, { "local server not running".inform; ^nil });
 			bundle = MixedBundle.new;
-			playGroup = Group.newToBundle(bundle, localServer);
-			if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
+			localBundle = MixedBundle.new;
+			
+			monitorGroup = Group.newToBundle(localBundle, localServer);
+			if(bus.isNil, { this.allocBus(\audio, nChan ? 2) }); //assumes audio
 			nChan = nChan ? this.numChannels;
 			nChan = nChan.min(this.numChannels);
-			checkedAlready = Set.new;
-			this.wakeUpToBundle(bundle, checkedAlready);
 		
 			divider = if(nChan.even, 2, 1);
 			(nChan div: divider).do({ arg i;
-			bundle.add([9, "proxyOut-linkDefAr-"++divider, 
-						localServer.nextNodeID, 1, playGroup.nodeID,
+			localBundle.add([9, "proxyOut-linkDefAr-"++divider, 
+						localServer.nextNodeID, 1, monitorGroup.nodeID,
 						\i_busOut, 	busIndex+(i*divider), 
-						\i_busIn,	 	outbus.index+(i*divider)
+						\i_busIn,	 	bus.index+(i*divider)
 					]);
 			});
-			
-			
-				bundle.sendPrepare(server, server.latency);
-				bundle.send(localServer, localServer.latency);
-		}, { "local server not running".inform });
+			this.wakeUpToBundle(bundle);
+			this.sendBundle(bundle);
+			localBundle.send(localServer, localServer.latency);
 		
-		^playGroup
+		
+		^monitorGroup
+	}
+	freeAllToBundle { arg bundle;
+				objects.do({ arg item;
+					item.stopClientToBundle(bundle);
+				});
+				
+				if(group.notNil, {
+					bundle.add(["/g_freeAll", group.nodeID]);
+				})
 	}
 
 }

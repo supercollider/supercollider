@@ -5,19 +5,19 @@
 	prepareForProxySynthDef {
 		^this
 	}
-	asProxySynthDef { arg proxy, channelOffset=0;
+	asProxySynthDef { arg proxy, channelOffset=0, makeFadeEnv=true;
 		^ProxySynthDef(
 			proxy.generateUniqueName, 
 			this.prepareForProxySynthDef(proxy),
 			proxy.lags, 
 			proxy.prepend, 
-			proxy.freeSelf, 
+			makeFadeEnv, 
 			channelOffset
 		); 
 	}	
-	wrapForNodeProxy { arg proxy, lags, channelOffset=0;
+	wrapForNodeProxy { arg proxy,  channelOffset=0;
 		var synthDef, ok;
-		synthDef = this.asProxySynthDef(proxy, lags, channelOffset);
+		synthDef = this.asProxySynthDef(proxy, channelOffset);
 		ok = proxy.initBus(synthDef.rate, synthDef.numChannels);
 		^if(ok && synthDef.notNil, {
 			SynthDefControl.new(synthDef)
@@ -55,7 +55,7 @@
 	 
 	wrapForNodeProxy { arg proxy, channelOffset=0;
 		var synthDef, ok;
-		this.prepareForPlay(proxy.group.asGroup, true, proxy.outbus);
+		this.prepareForPlay(proxy.group.asGroup, true, proxy.bus);
 		synthDef = this.asSynthDef;
 		ok = proxy.initBus(this.rate,this.numChannels);
 		^if(ok && synthDef.notNil, {
@@ -76,10 +76,10 @@
 		})
 	}
 //problem here: when there is a fade, the bus is still written to after setting.
-//	wrapForNodeProxy { arg proxy, lags, channelOffset=0;
+//	wrapForNodeProxy { arg proxy, channelOffset=0;
 //		var ok;
 //		ok = proxy.initBus('control',1);
-//		^if(ok, { NumericalControl(proxy.outbus, this) }, nil)
+//		^if(ok, { NumericalControl(proxy.bus, this) }, nil)
 //	}
 
 }
@@ -110,7 +110,7 @@
 +Pattern {
 	wrapForNodeProxy { arg proxy, channelOffset=0;
 		//assume audio rate event stream for now.
-		var pat, ok, outbus, argNames, msgFunc;
+		var pat, ok, bus, argNames, msgFunc;
 		ok = proxy.initBus('audio', 2);
 		
 		argNames = [\freq,\amp,\sustain,\pan];//more later
@@ -130,7 +130,7 @@
 
 		
 		^if(ok, {
-			outbus = proxy.index; //doesn't change
+			//bus = proxy.index; //done in bundle already
 			
 			pat = this.collect({ arg event;
 				event.use({ 

@@ -21,6 +21,11 @@ AbstractPlayControl {
 		bundle.addFunction({ this.stop });
 	}
 	
+	stopClientToBundle { arg bundle;
+		//used in shared node proxy
+		this.stopToBundle(bundle);
+	}
+	
 	play {
 		this.subclassResponsibility(thisMethod);
 	}
@@ -39,13 +44,15 @@ EventStreamControl : AbstractPlayControl {
 		
 	play {
 		stream.stop;
-		stream.play(true);
+		stream.play; //what to do with clock?
 	}
 	
 	stop {
 		stream.stop;
 	}
 }
+
+//not used presently
 
 NumericalControl : AbstractPlayControl {
 	var <>bus, <>value; 
@@ -63,7 +70,7 @@ NumericalControl : AbstractPlayControl {
 }
 
 
-SynthDefControl {
+SynthDefControl : AbstractPlayControl {
 	var <synthDef, <hasGate, <synth;
 	
 	*new { arg synthDef;
@@ -99,6 +106,7 @@ SynthDefControl {
 			})
 		});
 	}
+	stopClientToBundle { } //assumes that caller frees by group.freeAll
 	
 	stop { arg latency;
 		var bundle;
@@ -117,7 +125,7 @@ SoundDefControl : SynthDefControl {
 
 }
 
-//todo
+//todo maybe, but better use players directly
 AbstractPlayerControl  {
 	var <player;
 	*new { arg player;

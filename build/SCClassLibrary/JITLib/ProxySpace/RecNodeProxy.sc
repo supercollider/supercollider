@@ -50,7 +50,7 @@ RecNodeProxy : NodeProxy {
 		NodeWatcher.register(recGroup);
 		bundle.add([9, "system-diskout-"++n, 
 					server.nextNodeID, 1, recGroup.nodeID,
-					\i_in, outbus.index, \i_bufNum, buffer.bufnum
+					\i_in, bus.index, \i_bufNum, buffer.bufnum
 				]);
 		if(paused, { recGroup.msgToBundle(bundle, "/n_run", 0); "recording (paused)".inform }); 
 		bundle.schedSend(server);

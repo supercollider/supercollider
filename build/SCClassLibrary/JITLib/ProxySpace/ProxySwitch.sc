@@ -31,7 +31,7 @@ ProxySwitch : NodeProxy {
 		}
 	}
 	inputIndex {
-		^proxy.outbus.tryPerform(\index)
+		^proxy.bus.tryPerform(\index)
 	}
 
 }
