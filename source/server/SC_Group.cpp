@@ -124,6 +124,7 @@ void Group_DeepFreeGraphs(Group *inGroup)
 
 void Group_AddHead (Group *s, Node *child)
 {
+	if (!child->mParent) return; // failed
 	child->mPrev = 0;
 	child->mNext = s->mHead;
 	if (s->mHead) { s->mHead->mPrev = child; s->mHead = child; }
@@ -133,6 +134,7 @@ void Group_AddHead (Group *s, Node *child)
 
 void Group_AddTail (Group *s, Node *child)
 {
+	if (!child->mParent) return; // failed
 	child->mPrev = s->mTail;
 	child->mNext = 0;
 	if (s->mTail) { s->mTail->mNext = child; s->mTail = child; }
@@ -142,6 +144,7 @@ void Group_AddTail (Group *s, Node *child)
 
 void Group_Insert(Group *s, Node *child, int index)
 {
+	if (!child->mParent) return; // failed
 	if (index <= 0) Group_AddHead(s, child);
 	else {
 		Node *before = s->mHead;

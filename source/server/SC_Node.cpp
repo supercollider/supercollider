@@ -99,6 +99,7 @@ void Node_Remove(Node* s)
 // delete a node
 void Node_Delete(Node* inNode)
 {
+	if (!inNode->mParent) return;
 	if (inNode->mIsGroup) Group_Dtor((Group*)inNode);
 	else Graph_Dtor((Graph*)inNode);
 }
@@ -106,7 +107,7 @@ void Node_Delete(Node* inNode)
 // add a node after another one
 void Node_AddAfter(Node* s, Node *afterThisOne) 
 {
-	if (!afterThisOne->mParent) return; // failed
+	if (!afterThisOne->mParent || !s->mParent) return; // failed
 
 	s->mParent = afterThisOne->mParent;
 	s->mPrev = afterThisOne;
@@ -120,7 +121,7 @@ void Node_AddAfter(Node* s, Node *afterThisOne)
 // add a node before another one
 void Node_AddBefore(Node* s, Node *beforeThisOne) 
 {
-	if (!beforeThisOne->mParent) return; // failed
+	if (!beforeThisOne->mParent || !s->mParent) return; // failed
 	
 	s->mParent = beforeThisOne->mParent;
 	s->mPrev = beforeThisOne->mPrev;
@@ -136,6 +137,7 @@ void Node_Replace(Node* s, Node *replaceThisOne)
 	//scprintf("->Node_Replace\n");
 	Group *group = replaceThisOne->mParent;
 	if (!group) return; // failed
+	if (!s->mParent) return;
 	
 	s->mParent = group;
 	s->mPrev = replaceThisOne->mPrev;
