@@ -6,7 +6,8 @@
 PublicProxySpace : ProxySpace {
 
 	var <>sendingKeys, <>listeningKeys, <>public=true;
-	var <>addresses, <>channel, <>nickname, <>action, <>logSelf=true;
+	var <>addresses, <>channel, <>nickname;
+	var <>action, <>logSelf=true, <logAll=false;
 	
 	classvar <listeningSpaces, <resp;
 	
@@ -43,7 +44,14 @@ PublicProxySpace : ProxySpace {
 	}
 	
 	lurk { listeningKeys = \all; sendingKeys = nil; }
-	boss { listeningKeys = nil; sendingKeys = \all; } 
+	boss { listeningKeys = nil; sendingKeys = \all; }
+	merge {Ê listeningKeys = \all; sendingKeys = \all; }
+	 
+	logAll_ { arg flag; if(flag) {
+						if(sendingKeys === \all) { logAll = true } 
+						{ "please set sendingKeys to \\all first".postln }
+					} { logAll = false }
+	}
 	 
 	
 	makeLogWindow { arg bounds, color;
@@ -54,7 +62,7 @@ PublicProxySpace : ProxySpace {
 	 	d.string_("//" + Date.getDate.asString ++ "\n\n\n");
 	 	action = { arg ps, nickname, key, str;
 	 		defer { 
-	 			if(d.selectionSize > 0) { d.selectRange(d.text.size-1, 0) }; // deselect user
+	 			d.selectRange(d.text.size-1, 0); // deselect user
 	 			str = "~" ++ key ++ " = " ++ str;
 	 			if(str.last !== $;) { str = str ++ $; };
 	 			d.selectedString_(
@@ -89,6 +97,10 @@ PublicProxySpace : ProxySpace {
 					if(obj.notNil) {
 						proxyspace.localPut(key, obj);
 					};
+				} { 
+					if(proxyspace.logAll) {Ê
+						proxyspace.action.value(proxyspace, nickname, key, str) 
+					} 
 				};
 			};
 		
