@@ -63,7 +63,7 @@ struct LFTri : public Unit
 
 struct Impulse : public Unit
 {
-	double mPhase;
+	double mPhase, mPhaseOffset;
 	float mFreqMul;
 };
 
@@ -758,16 +758,50 @@ void Impulse_next_a(Impulse *unit, int inNumSamples)
 }
 
 /* phase mod - jrh 03 */
+
+void Impulse_next_ak(Impulse *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *freq = ZIN(0);
+	double phaseOffset =  ZIN0(1);
+	
+	float freqmul = unit->mFreqMul;
+	double phase = unit->mPhase;
+	double prev_phaseOffset = unit->mPhaseOffset;
+	double phaseSlope = CALCSLOPE(phaseOffset, prev_phaseOffset);
+	phase += prev_phaseOffset;
+	
+	LOOP(inNumSamples, 
+		float z;
+		phase += phaseSlope;
+		if (phase >= 1.f) {
+			phase -= 1.f;
+			z = 1.f;
+		} else {
+			z = 0.f;
+		}
+		phase += ZXP(freq) * freqmul;
+		ZXP(out) = z;
+	);
+
+	unit->mPhase = phase - phaseOffset;
+	unit->mPhaseOffset = phaseOffset;
+}
+
 void Impulse_next_kk(Impulse *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float freq = ZIN0(0) * unit->mFreqMul;
+	double phaseOffset =  ZIN0(1);
 	
 	double phase = unit->mPhase;
-	double phaseOffset =  ZIN0(1);
-	phase = phase + phaseOffset;
+	double prev_phaseOffset = unit->mPhaseOffset;
+	double phaseSlope = CALCSLOPE(phaseOffset, prev_phaseOffset);
+	phase += prev_phaseOffset;
+	
 	LOOP(inNumSamples, 
 		float z;
+		phase += phaseSlope;
 		if (phase >= 1.f) {
 			phase -= 1.f;
 			z = 1.f;
@@ -779,6 +813,7 @@ void Impulse_next_kk(Impulse *unit, int inNumSamples)
 	);
 
 	unit->mPhase = phase - phaseOffset;
+	unit->mPhaseOffset = phaseOffset;
 }
 
 
@@ -807,10 +842,14 @@ void Impulse_Ctor(Impulse* unit)
 {
 	
 	unit->mPhase = ZIN0(1);
-	unit->mFreqMul = unit->mRate->mSampleDur;
 	
 	if (INRATE(0) == calc_FullRate) {
-		SETCALC(Impulse_next_a);
+		if(INRATE(1) != calc_ScalarRate) {
+			SETCALC(Impulse_next_ak);
+			unit->mPhase = 1.f;
+		} else {
+			SETCALC(Impulse_next_a);
+		}
 	} else {
 		if(INRATE(1) != calc_ScalarRate) {
 			SETCALC(Impulse_next_kk);
@@ -821,6 +860,8 @@ void Impulse_Ctor(Impulse* unit)
 	}
 	
 	
+	unit->mPhaseOffset = 0.f;
+	unit->mFreqMul = unit->mRate->mSampleDur;
 	if (unit->mPhase == 0.f) unit->mPhase = 1.f;
 	
 	ZOUT0(0) = 0.f;
