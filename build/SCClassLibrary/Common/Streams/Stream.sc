@@ -235,7 +235,7 @@ Task : PauseStream {
 
 ////////////////////////////////////////////////////////////////////////
 
-EventStream : PauseStream {
+EventStreamPlayer : PauseStream {
 	var <>event, <>muteCount = 0;
 	
 	*new { arg stream, event;
