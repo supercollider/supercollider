@@ -83,22 +83,22 @@ there is a couple of other classes that are not specifically connected:\
 \f2\fs18 \
 	\
 	\
-\
-\
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 				\'a5\'a5\'a5\'a5\cf0 this is experimental and things may change.\cf2 \'a5\'a5\'a5\'a5\
+\cf2 \
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 \cf0 \
 \
 
 \f1\fs24 RECENT CHANGES:\
 \
-NodeProxy / ProxySpace:\
 	\
 2004\
-	\ul april\ulnone \
+	\ul may\
+	\ulnone loading large proxyspaces now works - no late messages anymore\
+	fixed bug in NodeProxy.clear when using patterns\
+	fixed group order\
 	\
+	\ul april\ulnone \
 	fixed bug on ProxySpace-reduce that caused infinite recursion in some cases\
 	fixed bug in BinaryOpPlug (account for function.rate returning \\stream)\
 	\
@@ -159,14 +159,11 @@ NodeProxy / ProxySpace:\
 	bin/unops work fully now again like any math op.\
 \
 \
-upload:\
 \
-Order.sc added meth\
-removed Function-rate bug. (operators.sc)\
 \
 	\
 TODO:	\
-	full post of proxyspace\
+	\
 	full test load from file\
 	check .lineAt\
 	check StreamClutch for bugs\
