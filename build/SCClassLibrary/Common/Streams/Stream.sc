@@ -180,6 +180,27 @@ Stream : AbstractFunction {
 		}
 			 
 	}
+	
+	constrain { arg sum, tolerance=0.001;
+		^Routine.new({
+			var delta, elapsed = 0.0, nextElapsed;
+			loop ({
+				delta = this.next;
+				if(delta.isNil) { 
+					(sum - elapsed).yield; 
+					nil.alwaysYield 
+				};
+				nextElapsed = elapsed + delta;
+				if (nextElapsed.round(tolerance) >= sum, {
+					(sum - elapsed).yield;
+					nil.alwaysYield;
+				},{
+					elapsed = nextElapsed;
+					delta.yield;
+				});
+			});
+		})
+	}
 }
 
 FuncStream : Stream {
