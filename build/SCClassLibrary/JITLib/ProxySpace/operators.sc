@@ -91,9 +91,11 @@ BinaryOpPlug : AbstractOpPlug  {
 	}
 	
 	isNeutral { ^a.isNeutral && b.isNeutral }
-		
+	
 	rate {
-		^if(a.isNeutral, { b.rate }, { a.rate })
+		if(a.isNeutral) { ^b.rate }; 
+		if(b.isNeutral) { ^a.rate };
+		^if(a.rate !== \control) { a.rate } { b.rate } // as function.rate is defined as \stream
 	}
 	
 	numChannels { arg max;
