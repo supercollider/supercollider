@@ -148,14 +148,22 @@ funretval	:
 			{ $$ = (long)newPyrReturnNode((PyrParseNode*)$2); }
 		;			
 
-blocklist	:	{ $$ = 0; }
-			| blocklist blockliteral
+blocklist1	: blockliteral
+			| blocklist1 blockliteral
 				{ 
 					$$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$2); 
 				}
 			;
 
-msgsend : name '(' arglist1 optkeyarglist ')' blocklist
+blocklist	:	{ $$ = 0; }
+			| blocklist1
+			;
+
+msgsend : name blocklist1
+			{ 
+				$$ = (long)newPyrCallNode((PyrSlotNode*)$1, (PyrParseNode*)$2, 0, 0); 
+			}
+		| name '(' arglist1 optkeyarglist ')' blocklist
 			{ 
 				$$ = (long)newPyrCallNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 
 						(PyrParseNode*)$4, (PyrParseNode*)$6); 
