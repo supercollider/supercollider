@@ -115,7 +115,7 @@ Server : Model {
 	var <sampleRate, <actualSampleRate;
 	
 	var alive = false, booting = false, aliveThread, statusWatcher;
-	var <>tree;
+	var <>tree, <>bundle;
 	
 	var <window, <>scopeWindow;
 	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float"; 	var <>recChannels=2;
@@ -159,12 +159,14 @@ Server : Model {
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
 		program = "./scsynth";
 	}
-	sendMsg { arg ... args;
-		addr.sendMsg(*args);
+	// bundling support added
+	sendMsg { arg ... msg;
+		if (bundle.notNil) { bundle = bundle.add(msg) } { addr.sendMsg(*msg); }
 	}
-	sendBundle { arg time ... messages;
-		addr.sendBundle(time, *messages);
+	sendBundle { arg time ... msgs;
+		if (bundle.notNil) { bundle = bundle.addAll(msgs) } { addr.sendBundle(time, *msgs); }
 	}
+	
 	sendRaw { arg rawArray;
 		addr.sendRaw(rawArray);
 	}
@@ -218,13 +220,14 @@ Server : Model {
 		
 	}
 	
+	// bundling support added
 	listSendMsg { arg msg;
-		addr.sendBundle(nil,msg);
+		if (bundle.notNil) { bundle = bundle.add(msg) } { addr.sendMsg(*msg); }
 	}
- 	listSendBundle { arg time, bundle;
-		addr.sendBundle(time, *bundle);
+ 	listSendBundle { arg time, msgs;
+		if (bundle.notNil) { bundle = bundle.addAll(msgs) } { addr.sendBundle(time, *msgs); }
 	}
-	
+
 	// load from disk locally, send remote
 	sendSynthDef { arg name,dir="synthdefs/";
 		var file, buffer;
@@ -454,7 +457,13 @@ Server : Model {
 			})
 		})
 	}
-
+	
+	// bundling support
+	openBundle { bundle = []; }
+	addMsgToBundle { arg ...msg; bundle = bundle ++ msg.flat; } 
+	addBundleToBundle { arg msgs; bundle = bundle.addAll(msgs); } 
+	closeBundle { var result; result = bundle; bundle = nil; ^result }
+	closeSendBundle { arg time; this.sendBundle(time, *this.closeBundle); }
 	
 	// internal server commands
 	bootInProcess {
@@ -520,6 +529,7 @@ Server : Model {
 	cmdPeriod {
 		recordNode.notNil.if({ recordNode = nil; });
 		recordBuf.notNil.if({recordBuf.close({ arg buf; buf.free; }); recordBuf = nil;});
+		bundle = nil;
 		this.changed(\cmdPeriod);
 		CmdPeriod.remove(this);
 	}
