@@ -556,6 +556,25 @@ NodeProxy : BusPlug {
 	
 	freeSpawn { awake = true; this.task = nil; }
 	
+	/////////// filtering within one proxy /////////////////
+	
+	filter { arg i, func;
+		var ok, ugen;
+		if(this.isNeutral) { 
+			ugen = func.value(Silent.ar);
+			ok = this.initBus(ugen.rate, ugen.numChannels);
+			if(ok.not) { ^nil }
+		};
+		
+		this.put(i) { arg out;
+			var e;
+			e = EnvGate.new;
+			if(this.rate === 'audio') {
+				XOut.ar(out, e, SynthDef.wrap(func, nil, [In.ar(out, this.numChannels)]))
+			} {
+				XOut.kr(out, e, SynthDef.wrap(func, nil, [In.kr(out, this.numChannels)]))			};
+		}
+	}
 	
 	/////////// shortcuts for efficient bus input //////////////
 	
