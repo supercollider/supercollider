@@ -1,37 +1,32 @@
 ProxySynthDef : SynthDef {
-	var <>proxy;
-	classvar <env;
+	var <rate, <numChannels;
 	
 	*initClass {
 		//clean up
-		env =  Env.linen(1.0, 1.0, 1.0);
 		unixCmd("rm synthdefs/temp_proxy_def_*");
 	}
 	
-	*new { arg proxy, object, channelOffset=0;
-		var name;
-		name = "temp_proxy_def_" ++ proxy.generateUniqueName;
-		^super.prNew(name).proxy_(proxy).build(object,channelOffset);
+	*new { arg name, object, makeFadeEnv=true, channelOffset=0;
+		name = "temp_proxy_def_" ++ name;
+		^super.prNew(name).build(object,makeFadeEnv,channelOffset);
 	}
 	
-	build { arg object,channelOffset;
+	build { arg object,makeFadeEnv,channelOffset;
 		var argNames, argValues, func;
 		argNames = object.argNames;
-		argValues = object.defArgs;
-		argValues = argNames.collect({ arg x,i; 
-					argValues.at(i) ? 0.0 
-		});
+		argValues = object.defArgs.asArray.extend(argNames.size);
+		argValues = argValues.collect({ arg x; x ? 0.0 }); 
+		
 		func = {
-			var synthGate, synthFadeTime, envgen, output, ctl, ok, rate;
+			var synthGate, synthFadeTime, envgen, output, ctl, ok, outCtl;
 				ctl = Control.names(argNames).kr(argValues);
 				output = object.valueArray(ctl).asArray;
 				rate = output.rate;
-				ok = proxy.initBus(rate, output.size);
-				if(ok.not, { ^nil });
+				numChannels = output.size;
 				
-				envgen = if(proxy.freeSelf, {
-					synthGate = Control.names(\synthGate).kr(1.0);
-					synthFadeTime = Control.names(\synthFadeTime).kr(0.02);
+				envgen = if(makeFadeEnv, {
+					synthGate = Control.names('__synthGate__').kr(1.0);
+					synthFadeTime = Control.names('__synthFadeTime__').kr(0.02);
 					Linen.kr(synthGate,synthFadeTime, 1.0, synthFadeTime, 2)	
 				}, { 
 					1.0 
@@ -40,9 +35,10 @@ ProxySynthDef : SynthDef {
 				if(rate === 'scalar', {
 					output
 					}, {
+					outCtl = Control.names(\outIndex).ir(0) + channelOffset;
 					//if((rate === 'control') && (proxy.rate === 'audio'), 
 					//{ output = K2A.ar(output) }); //change in NodeProxy-initBus
-					Out.multiNewList([rate, proxy.outbus.index+channelOffset]++output)
+					Out.multiNewList([rate, outCtl]++output)
 				})
 		};
 		

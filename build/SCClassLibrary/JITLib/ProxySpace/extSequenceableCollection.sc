@@ -10,5 +10,6 @@
 
 +Nil {
 	rate { ^nil }
+	numChannels { ^nil }
 }
 

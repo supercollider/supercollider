@@ -6,24 +6,44 @@
 		^this
 	}
 	asProxySynthDef { arg proxy, channelOffset=0;
-		^ProxySynthDef(proxy, this.prepareForProxySynthDef(proxy), channelOffset); 
+		^ProxySynthDef(
+			proxy.generateUniqueName, 
+			this.prepareForProxySynthDef(proxy), 
+			proxy.freeSelf, 
+			channelOffset
+		); 
 	}	
 	wrapForNodeProxy { arg proxy, channelOffset=0;
-		var synthDef;
+		var synthDef, ok;
 		synthDef = this.asProxySynthDef(proxy, channelOffset);
-		^if(synthDef.notNil, {
-			SynthDefContainer.new(synthDef)
+		ok = proxy.initBus(synthDef.rate, synthDef.numChannels);
+		^if(ok && synthDef.notNil, {
+			SynthDefControl.new(synthDef)
+		}, nil);
+	
+	}
+}
+
++AbstractPlayer {
+	 
+	wrapForNodeProxy { arg proxy, channelOffset=0;
+		var synthDef, ok;
+		synthDef = this.asSynthDef;
+		ok = proxy.initBus(this.rate,this.numChannels);
+		^if(ok && synthDef.notNil, {
+				AbstractPlayerControl.new(synthDef)
 		}, nil);
 	}
+
 }
 
 
 +SimpleNumber {
 	prepareForProxySynthDef { arg proxy;
 		^if(proxy.rate === 'audio', {
-			{Line.ar(1,1,0)} //??
+			{Line.ar(this,this,0)}
 		}, { 
-			{Control.names([\value]).kr([this])} 
+			{Line.kr(this,this,0)}
 		})
 	}
 }
@@ -40,8 +60,8 @@
 }
 
 +NodeProxy {
-	prepareForProxySynthDef {
-		^{ this.value }
+	prepareForProxySynthDef { arg proxy;
+		^{ this.value(proxy) }
 	}
 }
 
@@ -52,17 +72,23 @@
 
 }
 
+//maybe add Pevent.wrapForNodeProxy
+
 +Stream {
 	wrapForNodeProxy { arg proxy,channelOffset=0;
-		^EventStreamContainer.new(this.collect({ arg event;
-			event.copy.use({ 
-				~outIndex = proxy.outbus.index + channelOffset;
-				~nodeMap = proxy.nodeMap;
-				~argNames = [\freq,\amp,\sustain,\pan,\outIndex];//more later
-				//~group = proxy.group.nodeID;
+		//assume audio rate stream?
+		var ok;
+		ok = proxy.initBus('audio',2);
+		^if(ok, {
+			EventStreamControl.new(this.collect({ arg event;
+				event.copy.use({ 
+					~outIndex = proxy.outbus.index + channelOffset;
+					~nodeMap = proxy.nodeMap;
+					~argNames = [\freq,\amp,\sustain,\pan,\outIndex];//more later
 			})
 		
-		});)
+			}))
+		}, nil);
 	}
 }
 
@@ -82,20 +108,7 @@
 	}
 
 }
-*/
 
-/*
-+AbstractFunction {
-	prepareForProxySynthDef { 
-		^{this.value}
-	}
-}
-
-+Instr {
-	prepareForProxySynthDef { 
-		^this.func
-	}
-}
 
 +InstrE {
 	prepareForProxySynthDef { 

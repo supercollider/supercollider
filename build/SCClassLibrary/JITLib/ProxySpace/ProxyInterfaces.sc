@@ -2,13 +2,12 @@
 
 //lightweight objects that insulate different ways of playing/stopping
 
-EventStreamContainer  {
-	var <>pattern, <eventstream; 
+EventStreamControl  {
+	var <>pattern, <event, <eventstream; 
 	
-	*new { arg pattern;
-		^super.newCopyArgs(pattern)
+	*new { arg pattern, event;
+		^super.newCopyArgs(pattern, event)
 	}
-		
 		
 	sendDef {}
 	writeDef {}
@@ -22,7 +21,7 @@ EventStreamContainer  {
 	
 	play { arg extraArgs, group;
 		this.stop;
-		eventstream = Pevent(pattern).asStream;
+		eventstream = Pevent(pattern, event).asStream;
 		^eventstream.play(SystemClock);
 	}
 	
@@ -31,7 +30,7 @@ EventStreamContainer  {
 		
 	}
 	
-	stopClientProcessToBundle { arg bundle;
+	stopToBundle { arg bundle;
 		bundle.addFunction({ this.stop });
 	}
 
@@ -42,15 +41,15 @@ EventStreamContainer  {
 }
 
 
-SynthDefContainer {
-	var <synthDef;
+SynthDefControl {
+	var <synthDef, <synth;
 	
 	*new { arg synthDef;
 		^super.newCopyArgs(synthDef);
 	}
 	
 	sendDefToBundle { arg bundle;
-		bundle.add(["/d_recv", synthDef.asBytes])
+		bundle.addPrepare(["/d_recv", synthDef.asBytes])
 	}	
 	sendDef { arg server;
 		synthDef.send(server)
@@ -60,13 +59,31 @@ SynthDefContainer {
 	}
 	
 	playToBundle { arg bundle, extraArgs, group;
-		var synth;
 		synth = Synth.basicNew(synthDef.name,group.server,-1);
 		bundle.add(synth.newMsg(group,\addToTail,extraArgs));
 		^synth 
 	}
-	stopClientProcessToBundle {}
-	stop {} //these are more efficiently done by group messages
+	
+	//these are more efficiently done by group messages
 
+	stopToBundle { arg bundle;
+		//if(synth.isPlaying,{
+		//	bundle.add([15, synth.nodeID, \synthGate, 0.0, \gate, 0.0]);
+		//});
+	}
+	stop {} 
 
 }
+
+//todo
+AbstractPlayerControl : SynthDefControl {
+	
+	stop { }
+
+	stopToBundle { arg bundle;
+		  //todo?
+	}
+}
+
+
+
