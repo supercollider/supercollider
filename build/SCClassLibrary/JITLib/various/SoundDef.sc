@@ -1,38 +1,41 @@
 
 //globally referenceable wrapper for a SynthDef.
+//keeps servers updated.
 
 SoundDef {
-	var <obj, <synthDef, <servers;
-	classvar <all;
+	var <synthDef, <controlNames;
+	classvar <all, <>servers;
 	
-	*new { arg key, obj;
-		if(obj.isNil, { ^all.at(key) });
-		^super.newCopyArgs(obj, obj.asSynthDef).toLib(key.asSymbol) //add some preparation later
+	*new { arg key, func, lags, prependArgs;
+		var synthDef;
+		if(func.isNil, { ^all.at(key.asSymbol) });
+		if(servers.isNil, { servers = [Server.local] }); //lazy init for now
+		synthDef = SynthDef(key, func, lags, prependArgs);
+		^super.newCopyArgs(synthDef).toLib(key.asSymbol) //add some preparation later
 	}
 	
-	*initClass {
+	*initClass { 
 		all = IdentityDictionary.new;
 	}
 	
 	toLib { arg key;
 		var old, local;
-		if(synthDef.name.isNil,{ synthDef.name ? "soundDef_" ++ key });
-		servers = IdentitySet.new;
-		local = Server.local;
-		old = this.class.at(key);
-		if(old.notNil, {
-			//keep old servers updated
-			old.servers.do({ arg item; this.send(item) });
-		}, {
-			//send to local by default
-			if(local.serverRunning, {this.send(local)}, {this.load(local)});
-		});
-		this.class.all.put(key,this);
-		 
+		this.send;
+		this.class.all.put(key, this);
+		//cache control names to use with patterns
+		controlNames = synthDef.controlNames.collect({ arg item; item.name })
 	}
 	
 	*at { arg key;
 		^all.at(key)
+	}
+	
+	*sendAll {
+		all.do({ arg item; item.send });
+	}
+	
+	*loadAll {
+		all.do({ arg item; item.load });
 	}
 	
 	newMsg { arg args, target, addActionNumber=1;
@@ -42,22 +45,17 @@ SoundDef {
 	asDefName {
 		^synthDef.name
 	}
-	argNames {
-		^obj.eventArgNames
-	}
-	
-	send { arg server;
-		if(servers.includes(server).not, {
-			servers.add(server);
-		});
-		synthDef.send(server);
+		
+	send { 	
+		this.class.servers.do({ arg server;
+			synthDef.send(server);
+		})
 	}
 	
 	load { arg server;
-		if(servers.includes(server).not, {
-			servers.add(server);
-		});
-		synthDef.load(server);
+		this.class.servers.do({ arg server;
+			synthDef.load(server);
+		})
 	}
 	
 	play { arg args, target;
