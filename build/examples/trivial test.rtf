@@ -1,7 +1,7 @@
-{\rtf1\mac\ansicpg10000\cocoartf100
+{\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
-\red191\green0\blue0;}
+\red191\green0\blue0;\red0\green0\blue191;\red0\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs18 \cf0 send synth def to engine.\
@@ -72,8 +72,7 @@ clean window\
 	out = R\cf2 LPF\cf0 .ar(osc, fc, 0.1) * 0.3;\
 	\cf2 FreeSelfWhenDone\cf0 .kr(eg);\
 	\cf2 Out\cf0 .ar(0, out * eg);\
-\}).writeDefFile;\
-s.sendMsg(\cf3 "/d_load"\cf0 , \cf3 "synthdefs/env2.scsyndef"\cf0 );\
+\}).load(s);\
 )\
 \
 (\
@@ -87,7 +86,7 @@ s.sendMsg(\cf3 "/d_load"\cf0 , \cf3 "synthdefs/env2.scsyndef"\cf0 );\
 \}).writeDefFile;\
 )\
 \
-\cf2 Rand\cf0 (0.97,1.03).dup.inspect\
+\cf2 \{Rand\cf0 (0.97,1.03)\}.dup.inspect\
 \
 x = \cf2 SynthDef\cf0 (\cf3 "trivial"\cf0 , \{ \cf2 Out\cf0 .ar(0, \cf2 FSinOsc\cf0 .ar([800,801], 0, 0.1).abs) \}).writeDefFile;\
 \
@@ -187,7 +186,7 @@ x = \cf2 SynthDef\cf0 (\cf3 "noise"\cf0 , \{ \cf2 Out\cf0 .ar(0, \cf2 PinkNoise\
 \cf0 	d = 0.04;\
 	r = \cf2 Routine\cf0 (\{\
 		\cf2 var\cf0  server;\
-		server = \cf2 NetAddr\cf0 (\cf3 "127.0.0.1"\cf0 , 57110);	\
+		server = \cf2 Server\cf0 .local;	\
 		\
 		server.dump;\
 		3.postln.wait;\
@@ -234,7 +233,7 @@ x = \cf2 SynthDef\cf0 (\cf3 "noise"\cf0 , \{ \cf2 Out\cf0 .ar(0, \cf2 PinkNoise\
 \cf0 	d = 0.04;\
 	r = \cf2 Routine\cf0 (\{\
 		\cf2 var\cf0  server;\
-		server = \cf2 NetAddr\cf0 (\cf3 "127.0.0.1"\cf0 , 57110);	\
+		server = \cf2 Server\cf0 .local;	\
 		\
 		server.dump;\
 		3.postln.wait;\
@@ -297,7 +296,7 @@ x = \cf2 SynthDef\cf0 (\cf3 "noise"\cf0 , \{ \cf2 Out\cf0 .ar(0, \cf2 PinkNoise\
 	d = 0.04;\
 	r = \cf2 Routine\cf0 (\{\
 		\cf2 var\cf0  server;\
-		server = \cf2 NetAddr\cf0 (\cf3 "127.0.0.1"\cf0 , 57110);	\
+		server = \cf6 Server\cf7 .local\cf0 ;	\
 		\
 		server.dump;\
 		\cf5 //1.postln.wait;\
@@ -327,7 +326,7 @@ x = \cf2 SynthDef\cf0 (\cf3 "noise"\cf0 , \{ \cf2 Out\cf0 .ar(0, \cf2 PinkNoise\
 	d = 0.04;\
 	r = \cf2 Routine\cf0 (\{\
 		\cf2 var\cf0  server;\
-		server = \cf2 NetAddr\cf0 (\cf3 "127.0.0.1"\cf0 , 57110);	\
+		server = \cf2 Server\cf0 .local;	\
 		\
 		server.dump;\
 		\cf5 //1.postln.wait;\
@@ -350,7 +349,7 @@ x = \cf2 SynthDef\cf0 (\cf3 "noise"\cf0 , \{ \cf2 Out\cf0 .ar(0, \cf2 PinkNoise\
 	\cf2 SystemClock\cf0 .play(r);\
 )\
 \
-s = \cf2 NetAddr\cf0 (\cf3 "127.0.0.1"\cf0 , 57110);	\
+s = \cf2 Server\cf0 .local;	\
 c = \cf3 "!abc"\cf0 .copy.extend(9200, $A);\
 c.size;\
 s.sendRaw(c);\
@@ -371,6 +370,6 @@ s.sendRaw(c);\
 \
 (\
 var server;	\
-server = \cf2 NetAddr\cf0 (\cf3 "127.0.0.1"\cf0 , 57110);	\
+server = \cf2 Server\cf0 .local;	\
 server.sendMsg("def.loadDir", "engine/synthdefs");\
 )	}
