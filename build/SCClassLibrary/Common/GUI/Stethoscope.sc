@@ -71,6 +71,15 @@ Stethoscope {
 	
 	spec { ^if(rate === \audio) { audiospec } {Êcontrolspec } }
 	
+	setProperties { arg numChannels, index, bufsize=4096, zoom, rate;
+				
+				if(rate.notNil) { this.rate = rate };
+				if(index.notNil) { this.index = index };
+				if(numChannels.notNil) {Êthis.numChannels = numChannels };
+				if(this.bufsize != bufsize) { this.allocBuffer(bufsize) };
+				if(zoom.notNil) { this.zoom = zoom };
+	}
+	
 	allocBuffer { arg argbufsize;
 		bufsize = argbufsize ? bufsize;
 		if(buffer.notNil) { buffer.free };
@@ -121,6 +130,7 @@ Stethoscope {
 		spec = this.spec;
 		index = spec.constrain(val);
 		if(synth.isPlaying) { synth.set(\in, index) };
+		if(rate === \audio) { ai = index } { ki = index };
 		c.value = index;
 		sl.value = spec.unmap(index)
 	}
