@@ -189,15 +189,22 @@ NodeProxy : AbstractFunction {
 				if(loaded.not, { 
 					this.updateSynthDef;
 					resp = OSCresponder(server.addr, '/done', {
-						clock.sched({ server.sendCmdList(cmd) });
+						this.schedSendOSC(cmd, clock);
 						resp.remove;
 					}).add
 				}, { 
-						clock.sched({ server.sendCmdList(cmd) })
+						this.schedSendOSC(cmd, clock)
 				});
 		});
 	}
 	
+	schedSendOSC { arg cmd, clock;
+					if(clock.notNil, {
+						clock.sched(0, { server.sendCmdList(cmd) })
+					}, {
+						server.sendCmdList(cmd)
+					})
+	}
 	
 	updateSynthDef {
 		if(synthDef.notNil, { 

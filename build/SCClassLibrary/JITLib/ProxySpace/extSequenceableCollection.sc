@@ -8,9 +8,3 @@
 	}
 }
 
-//quantclock support
-+Nil {
-	sched { arg func;
-		^func.value
-	}
-}
