@@ -286,10 +286,10 @@ Document {
 		};
 	}
 		
-	mouseDown {		
+	mouseDown { arg clickPos;	
 		mouseDownAction.value(this);
 		
-		if (wikiBrowse and: { this.selectUnderlinedText }) {
+		if (wikiBrowse and: { this.selectUnderlinedText(clickPos) }) {
 			^this.openWikiPage
 		};		
 	}
@@ -331,7 +331,7 @@ Document {
 	selectedText {
 		_TextWindow_SelectedText
 	}
-	selectUnderlinedText {
+	selectUnderlinedText { arg clickPos;
 		_TextWindow_SelectUnderlinedText
 		^false
 	}

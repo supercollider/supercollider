@@ -113,10 +113,10 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
 
 - (void) mouseDown: (NSEvent*) event
 {
+	NSWindow *window = [self window];
+	NSPoint p = [window convertBaseToScreen: [event locationInWindow]];
+	int index = [self characterIndexForPoint: p];
     if ([event clickCount] == 2) {
-        NSWindow *window = [self window];
-        NSPoint p = [window convertBaseToScreen: [event locationInWindow]];
-        int index = [self characterIndexForPoint: p];
         NSString *string = [self string];
         int length = [string length];
         if (index < 0 || index > length) { goto below; }
@@ -144,13 +144,13 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
 below:
 
         [super mouseDown: event];
-        [self mouseDownAction];
+        [self mouseDownAction: index];
 
     }
 }
 
 extern PyrSymbol * s_mouseDown;
-- (void) mouseDownAction
+- (void) mouseDownAction: (int) index
 {
 		MyDocument * doc = [self delegate];
 		PyrObject * pobj = [doc getSCObject];
@@ -160,7 +160,8 @@ extern PyrSymbol * s_mouseDown;
 			VMGlobals *g = gMainVMGlobals;
 			g->canCallOS = true;
 			++g->sp;  SetObject(g->sp, pobj); 
-			runInterpreter(g, s_mouseDown, 1);
+			++g->sp;  SetInt(g->sp, index); 
+			runInterpreter(g, s_mouseDown, 2);
 			g->canCallOS = false;
 		}
 		pthread_mutex_unlock (&gLangMutex);
