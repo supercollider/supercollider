@@ -12,6 +12,7 @@ Pn : FilterPattern {
 	*new { arg pattern, repeats;
 		^super.new(pattern).repeats_(repeats)
 	}
+	storeArgs { ^[pattern,repeats] }
 	asStream {
 		^Routine.new({ arg inevent;
 			repeats.do({
@@ -28,6 +29,7 @@ FuncFilterPattern : FilterPattern {
 	*new { arg func, pattern;
 		^super.new(pattern).func_(func)
 	}
+	storeArgs { ^[func,pattern] }
 }
 
 Pcollect : FuncFilterPattern {
@@ -72,6 +74,7 @@ Pset : FilterPattern {
 	*new { arg name, value, pattern;
 		^super.new(pattern).name_(name).value_(value)
 	}
+	storeArgs { ^[name,value,pattern] }
 	filterEvent { arg event, val;
 		^event.put(name, val)
 	}
@@ -142,11 +145,14 @@ Pmulp : Pset {
 }
 
 
+
+
 Pfin : FilterPattern {
 	var <>count;
 	*new { arg count, pattern;
 		^super.new(pattern).count_(count)
 	}
+	storeArgs { ^[count,pattern] }
 	asStream { 
 		^Routine.new({ arg event;
 			var stream;
@@ -165,6 +171,7 @@ Pfindur : FilterPattern {
 	*new { arg dur, pattern, tolerance = 0.001;
 		^super.new(pattern).dur_(dur).tolerance_(tolerance)
 	}
+	storeArgs { ^[dur,pattern,tolerance] }
 	asStream { 
 		^Routine.new({ arg inevent;
 			var item, stream, delta, elapsed = 0.0, nextElapsed;
@@ -199,6 +206,7 @@ Plag : FilterPattern {
 	*new { arg lag, pattern;
 		^super.new(pattern).lag_(lag)
 	}
+	storeArgs { ^[lag,pattern] }
 	asStream {
 		var stream, item;
 		
@@ -224,6 +232,7 @@ Pbindf : FilterPattern {
 		if (pairs.size.odd, { "Pbindf should have odd number of args.\n".error; this.halt });
 		^super.new(pattern ? Event.default).patternpairs_(pairs)
 	}
+	storeArgs { ^[pattern] ++ patternpairs }
 	asStream {
 		var streampairs, endval, eventStream;
 		
@@ -282,6 +291,7 @@ Pstutter : FilterPattern {
 	*new { arg n, pattern;
 		^super.new(pattern).n_(n)
 	}
+	storeArgs { ^[n,pattern] }
 	asStream { 
 		^Routine.new({ arg inevent;
 			var event, stream;
@@ -297,7 +307,34 @@ Pstutter : FilterPattern {
 			});
 		});
 	}
-}	
+}
+
+
+PdurStutter : Pstutter { // float streams
+	
+	asStream {
+		^Routine.new({
+			var durs,stutts,dur,stut;
+			durs = pattern.asStream;
+			stutts = n.asStream;
+			while({
+				(dur = durs.next).notNil
+				and: {(stut = stutts.next).notNil}
+			},{
+				if(stut > 0,{ // 0 skips it
+					if(stut > 1,{
+						dur = dur / stut;
+						stut.do({
+							dur.yield;
+						})
+					},{
+						dur.yield
+					})
+				})
+			})		
+		})
+	}		
+}
 	
 Pwhile : FuncFilterPattern {
 	asStream {
@@ -306,6 +343,25 @@ Pwhile : FuncFilterPattern {
 				inval = pattern.embedInStream(inval);
 			});
 		});
+	}
+}
+
+Pwrap : FilterPattern {
+	var <>lo,<>hi;
+	*new { arg pattern,lo,hi;
+		^super.new(pattern).lo_(lo).hi_(hi)
+	}
+	storeArgs { ^[pattern,lo,hi] }
+	asStream {
+		^Routine({
+			var stream,next;
+			stream = pattern.asStream;
+			while({
+				(next = stream.next).notNil
+			},{
+				next.wrap(lo,hi).yield
+			})
+		})
 	}
 }
 
