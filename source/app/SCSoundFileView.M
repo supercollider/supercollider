@@ -176,9 +176,9 @@ int SCSoundFileView::readSndFile(SNDFILE *file, int startFrame, int frames, int 
 		mSndMinMax.isUsable=false;
 		free(mSndMinMax.min);
 		free(mSndMinMax.max);
-	} else {
-		bufAllocMinMax(&mSndMinMax, channels, (int)(mBounds.width ));
 	}
+	bufAllocMinMax(&mSndMinMax, channels, (int)(mBounds.width ));
+	
 		
 	if(startFrame>0) sf_seek(file, startFrame, SEEK_SET);
 	if(mResampleFactor>1){
@@ -223,6 +223,16 @@ int SCSoundFileView::findSelection(int frame)
 	return -1;
 }
 
+void SCSoundFileView::setBounds(SCRect inBounds)
+{
+	if(inBounds.width != mBounds.width){
+		if(mElasticMode) mZoom.x =  mSndBuf.frames/(inBounds.width-2.f);	
+ 		mSndMinMax.isUsable = false;
+		bufAllocMinMax(&mSndMinMax, mSndBuf.channels, (int)(inBounds.width ));
+	}	
+	mBounds = inBounds;
+}
+
 void SCSoundFileView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
 	//mPrevPoint = where;
@@ -263,41 +273,37 @@ void SCSoundFileView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else if (modifiers & NSShiftKeyMask) {
-            sendMessage(getsym("doAction"), 0, 0, 0);
+		sendMessage(getsym("doAction"), 0, 0, 0);
     } else if (modifiers & NSControlKeyMask) {
 	   // setSelection(where, false, true);
         sendMessage(getsym("doMetaAction"), 0, 0, 0);
 		refresh();
     } else {
 		int frame;
-
-	frame = (int)  (mStartFrame + (where.x - mBounds.x - 1) * mZoom.x * mResampleFactor );
-
-//	post("current frame is %d, bounds.x is %d, where is %d \n", frame, mBounds.x, where.x);
-	if(mMoveSelection)
-	{
-		int moveframes = frame - mLastFrame;
-		mLastFrame = frame;
-//		post(" frame:%i, moveframes:%i, mLastFrame:%i \n", frame, moveframes, mLastFrame);
-		mSelections[mCurrentSelection].start = mSelections[mCurrentSelection].start + moveframes;
-	} else {
-
-		[[NSCursor resizeRightCursor] set];
-		//[[NSCursor currentCursor] pop];
-		if(frame < mSelections[mCurrentSelection].start)
+		frame = (int)  (mStartFrame + (where.x - mBounds.x - 1) * mZoom.x * mResampleFactor );
+	//	post("current frame is %d, bounds.x is %d, where is %d \n", frame, mBounds.x, where.x);
+		if(mMoveSelection)
 		{
-			int endframe;
-			endframe = mSelections[mCurrentSelection].start;
-			mSelections[mCurrentSelection].start = frame;
-			mSelections[mCurrentSelection].size = endframe - mSelections[mCurrentSelection].start;
-//			post("current frame is %d, mSelectionStart is %d, where is %f \n", frame, mSelections[mCurrentSelection].start, where.x);
+			int moveframes = frame - mLastFrame;
+			mLastFrame = frame;
+	//		post(" frame:%i, moveframes:%i, mLastFrame:%i \n", frame, moveframes, mLastFrame);
+			mSelections[mCurrentSelection].start = mSelections[mCurrentSelection].start + moveframes;
+		} else {
 
-		} else mSelections[mCurrentSelection].size = frame - mSelections[mCurrentSelection].start;
-	}
-	refresh();
-//	post("size: %d \n", mSelections[mCurrentSelection].size);
-	
-	
+			[[NSCursor resizeRightCursor] set];
+			//[[NSCursor currentCursor] pop];
+			if(frame < mSelections[mCurrentSelection].start)
+			{
+				int endframe;
+				endframe = mSelections[mCurrentSelection].start;
+				mSelections[mCurrentSelection].start = frame;
+				mSelections[mCurrentSelection].size = endframe - mSelections[mCurrentSelection].start;
+	//			post("current frame is %d, mSelectionStart is %d, where is %f \n", frame, mSelections[mCurrentSelection].start, where.x);
+			} else mSelections[mCurrentSelection].size = frame - mSelections[mCurrentSelection].start;
+		}
+		sendMessage(getsym("doAction"), 0, 0, 0);
+		refresh();
+	//	post("size: %d \n", mSelections[mCurrentSelection].size);
 	}
 }
 
@@ -628,9 +634,9 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		err = slotGetSCRect(slot, &screct);
 		if (err) return err;
 		if(screct.width != mBounds.width){
-			if(mElasticMode) mZoom.x =   ((mSndBuf.frames/mResampleFactor)/(mBounds.width-2.f));	
-			bufAllocMinMax(&mSndMinMax, mSndBuf.channels, (int)(mBounds.width ));
+			if(mElasticMode) mZoom.x =  mSndBuf.frames/(screct.width-2.f);	
 			mSndMinMax.isUsable = false;
+			bufAllocMinMax(&mSndMinMax, mSndBuf.channels, (int)(screct.width ));
 		}
 		//pass on to SCView ...
 	}
