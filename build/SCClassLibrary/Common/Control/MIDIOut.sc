@@ -179,8 +179,8 @@ MIDIOut {
 	touch { arg chan, val=64;
 		this.write(2, 16rD0, chan, val);
 	}
-	bend { arg chan, val=64;
-		this.write(3, 16rE0, chan, val, 0);
+	bend { arg chan, val=8192;
+		this.write(3, 16rE0, chan, val bitAnd: 127, val >> 7);
 	}
 	allNotesOff { arg chan;
 		this.control(chan, 123, 0);
