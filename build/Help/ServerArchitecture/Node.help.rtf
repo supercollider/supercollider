@@ -6,9 +6,8 @@
 
 \f0\b\fs36 \cf0 Node					
 \fs24 Abstract super class of Synth and Group\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \
+\f1\b0 \
 superclass: Object\
 \
 See 
@@ -108,10 +107,16 @@ fill(controlNameOrIndex,numControls,value)
 		controlNameOrIndex3,busIndex3,\
 		...\
 		controlNameOrIndexN, busIndexN\
-		\
+
+\f0\b release
+\f1\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \
+\f0\b\fs28 \cf0 \ul 	
+\f1\b0\fs24 \ulnone causes synths to set the gate control to zero and release\
+	if they have an envelope defined.\
+	
+\f0\b\fs28 \ul \
 Moving the order of execution\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
