@@ -328,10 +328,9 @@ NodeProxy : BusPlug {
 	at { arg index;  ^objects.at(index) }
 	
 	
-	put { arg index, obj, channelOffset = 0, extraArgs; 			var container, bundle, orderIndex, instantSend;
+	put { arg index, obj, channelOffset = 0, extraArgs; 			var container, bundle, orderIndex;
 			
 			if(obj.isNil) { this.removeAt(index); ^this };
-			instantSend = awake and: { obj.class !== Ref }; obj.dereference;
 			
 			orderIndex = index ? 0;
 			if(obj.isSequenceableCollection)
@@ -365,7 +364,7 @@ NodeProxy : BusPlug {
 			if(server.serverRunning) {
 				container.loadToBundle(bundle);
 				loaded = true;
-				if(instantSend) {
+				if(awake) {
 					this.prepareToBundle(nil, bundle);
 					container.wakeUpParentsToBundle(bundle);
 					this.sendObjectToBundle(bundle, container, extraArgs, index);
@@ -706,7 +705,6 @@ NodeProxy : BusPlug {
 	//send single object
 	sendObjectToBundle { arg bundle, object, extraArgs, index;
 				var synthID, target, nodes;
-				[[extraArgs]].debug;
 				synthID = object.playToBundle(bundle, extraArgs.value, this);
 				if(synthID.notNil) {
 					if(index.notNil) { // if nil, all are sent anyway
@@ -837,7 +835,7 @@ NodeProxy : BusPlug {
 	
 	free { arg fadeTime, freeGroup = true;
 		var bundle;
-		if(this.isPlaying, {	
+		if(this.isPlaying) {	
 			bundle = MixedBundle.new;
 			if(fadeTime.notNil) { bundle.add(["/n_set", group.nodeID, "fadeTime", fadeTime]) };
 			this.stopAllToBundle(bundle);
@@ -846,7 +844,7 @@ NodeProxy : BusPlug {
 					(fadeTime ? this.fadeTime) + server.latency); 
 			};
 			bundle.send(server);
-		})
+		}
  	}
 	
 	release { arg fadeTime; this.free(fadeTime, false) }
@@ -945,13 +943,8 @@ NodeProxy : BusPlug {
 	}
 		
 	gateAt { arg key, level=1.0, dur=1.0;
-		var oldLevel;
-		oldLevel = nodeMap.at(key).value; // revisit: maybe simply set group?
-		this.set(key, level); 
-		SystemClock.sched(dur, {
-			if(oldLevel.notNil) { this.set(key, oldLevel) } { this.unset(key) }; 
-			nil;
-		});
+		this.group.set(key, level); 
+		SystemClock.sched(dur, { this.group.set(key, nodeMap.settings[key].value); nil });
 	}
 	
 	lineAt { arg key, level=1.0, dur;
