@@ -389,6 +389,28 @@ Plag : FilterPattern {
 	}
 }
 
+Pchain : FilterPattern {
+	var <>pattern1;
+	*new { arg pattern1, pattern2;
+		^super.new(pattern2).pattern1_(pattern1);
+	}
+	embedInStream { arg inval;
+		var stream1, event1, stream2, event2;
+
+		stream2 = pattern.asStream;
+		stream1 = pattern1.asStream;
+		loop {
+			event1 = stream1.next(inval);
+			if(event1.isNil) { ^inval };
+			inval = inval.copy;
+			inval.putAll(event1);
+			event2 = stream2.next(inval);
+			if (event2.isNil) { ^inval };
+			inval = yield(event2);
+		};
+	}
+}
+
 
 Pbindf : FilterPattern {
 	var <>patternpairs;
