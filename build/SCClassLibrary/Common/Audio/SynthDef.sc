@@ -368,7 +368,7 @@ SynthDef {
 		}
 	}
 
-	play { arg target,args,addAction=\addToTail;
+	play { arg target,args,addAction=\addToHead;
 		var synth, msg;
 		target = target.asTarget;
 		synth = Synth.basicNew(name,target.server);

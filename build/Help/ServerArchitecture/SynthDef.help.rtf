@@ -123,7 +123,7 @@ All constants, Controls, and UGens that will be used in synthesis are formatted 
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs26 \cf0 \ul Instance Methods
+\f0\b\fs26 \cf0 \ul \ulc0 Instance Methods
 \fs24 \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -175,7 +175,7 @@ All constants, Controls, and UGens that will be used in synthesis are formatted 
 \f1\b0  object.\
 			for a list of valid addActions see 
 \f0\b Synth
-\f1\b0 . The default is \cf2 \\addToTail\cf0 \
+\f1\b0 . The default is \cf2 \\addToHead\cf0 \
 		\
 	\
 see also basic introductions, like 
@@ -185,7 +185,7 @@ see also basic introductions, like
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs32 \cf0 \ul Examples
+\f0\b\fs32 \cf0 \ul \ulc0 Examples
 \f1\b0\fs24 \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -255,13 +255,12 @@ z.free; \cf3 //free the synth
 \cf4 SynthDef\cf0 (\cf2 \\synthDefTest\cf0 , \{ \cf4 arg\cf0  out, gate=1, freq=440; \
 		\cf4 Out\cf0 .ar(out, \cf4 SinOsc\cf0 .ar(freq) * \cf4 EnvGen\cf0 .kr(\cf4 Env\cf0 .asr(0.1, 0.3, 1.3), gate, doneAction:2));\
 \
-	\}).send(s); 		\
+	\}).store; 		\
 )\
 \
 x = \cf4 Synth\cf0 (\cf2 \\synthDefTest\cf0 , [\cf2 \\out\cf0 , 0]); \cf3 //play out through hardware output bus 0 (see Out.help)\cf0 \
 x.release;\cf3 //releases and frees the synth, if and only if doneAction is > 2\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //equivalent:\cf0 \
 \
 x = \cf4 Synth\cf0 (\cf2 \\synthDefTest\cf0 ); \cf3 // out defaults to zero, if no default arg is given.\cf0 \
@@ -289,7 +288,6 @@ x.set(\cf2 \\out\cf0 , 1); \cf3 //play through channel 1\
 \cf3 //also it can be used in an event stream:\cf0 \
 \cf3 //if the doneAction is 1 the synths pile up and do not get freed.\cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 Pbind\cf0 (\
 	\cf2 \\instrument\cf0 , \cf2 \\synthDefTest\cf0 ,\
 	\cf2 \\freq\cf0 , \cf4 Pseq\cf0 ([500, 600, \cf4 Prand\cf0 ([200, 456, 345],1)], \cf4 inf\cf0 ),\
