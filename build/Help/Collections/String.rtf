@@ -368,11 +368,11 @@ Add the escape character (\\) at the location of your choice.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 Replace from with to, else from.\
+\f1\b0 \cf0 Transliteration. Replace all instances of from with to.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 "(:(:(:".tr($:, $)).postln; //turn the happy faces around.\
+\f2 \cf0 ":-(:-(:-(".tr($(, $)).postln; //turn the frowns upside down.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -418,8 +418,9 @@ Post <<< "Store this on Post";\
 \f1\b0\fs24 \ul \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ulnone Where relevant, the current working directory is the same as the location of the SuperCollider app. Note that the cwd and indeed the shell itself, does not persist:\
-\ul \
+\cf0 \ulnone Where relevant, the current working directory is the same as the location of the SuperCollider app and the shell is the Bourne shell (sh). Note that the cwd, and indeed the shell itself, does not persist:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \ulnone "pwd".unixCmd;\
@@ -430,8 +431,19 @@ Post <<< "Store this on Post";\
 \f1 \cf0 \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \ulnone "setenv FISH mackerel".unixCmd; // for tcsh \
+\f2 \cf0 \ulnone "export FISH=mackerel".unixCmd;\
 "echo $FISH".unixCmd;
+\f1 \ul \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone It is however possible to execute complex commands:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 "pwd; cd Help/; pwd".unixCmd;
+\f1 \
+
+\f2 "export FISH=mackerel; echo $FISH".unixCmd;
 \f1 \ul \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -440,7 +452,7 @@ Post <<< "Store this on Post";\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 Execute the String on the command line using the default shell and send stdout to the post window. Personal configuration scripts are not run.\
+\f1\b0 \cf0 Execute the String on the command line using the Bourne shell (sh) and send stdout to the post window. See man sh for more details.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 \
@@ -467,7 +479,9 @@ pathMatch\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 Perform pathMatch (see above) on this String, then load and execute all paths in the resultant Array.\
+\f1\b0 \cf0 Perform pathMatch (see above) on this String, then load and execute all paths in the resultant 
+\f0\b Array
+\f1\b0 .\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -495,4 +509,19 @@ pathMatch\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 "Imaginary/Directory/fish.rtf".dirname;}
+\f2 \cf0 "Imaginary/Directory/fish.rtf".dirname;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 splitext\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 Split off the extension from a filename or path and return both in an 
+\f0\b Array 
+\f1\b0 as [path or filename, extension].\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 "fish.rtf".splitext;\
+"Imaginary/Directory/fish.rtf".splitext;}

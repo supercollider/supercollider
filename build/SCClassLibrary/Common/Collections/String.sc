@@ -152,7 +152,7 @@ String[char] : RawArray {
 	}
 	tr { arg from,to;
 		^this.collect({ arg char;
-			if(char == from,{to},{from})
+			if(char == from,{to},{char})
 		})
 	}
 	compile { ^thisProcess.interpreter.compile(this); }
@@ -192,7 +192,7 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	splitext {
-		arg n, m;
+		var n, m;
 		n = this.size;
 		n.do({
 			arg i;
