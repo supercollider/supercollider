@@ -5,10 +5,10 @@ Condition {
 	*new { arg test=false;
 		^super.newCopyArgs(test, Array(8))
 	}
-	wait { arg value;
+	wait {
 		if (test.value.not, {
 			waitingThreads = waitingThreads.add(thisThread);
-			value.yield;
+			nil.yield;
 		});
 	}
 	hang { arg value;
@@ -24,8 +24,7 @@ Condition {
 			tempWaitingThreads = waitingThreads;
 			waitingThreads = nil;
 			tempWaitingThreads.do({ arg thread; 
-				thread.seconds = time;
-				thread.resume;
+				thread.clock.sched(0, thread);
 			});
 		});
 	}
