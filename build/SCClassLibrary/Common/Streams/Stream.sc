@@ -197,12 +197,12 @@ PauseStream : Stream
 	play { arg argClock, doReset = false;
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
-		clock = argClock ? TempoClock.default;
+		clock = argClock ? clock ? TempoClock.default;
 		stream = originalStream; 
 		super.play(clock) 
 	}
 	reset { ^originalStream.reset }
-	stop { stream = nil }
+	stop {  stream = nil }
 
 	pause { stream = nil }
 	resume { ^this.play(clock, false) }
