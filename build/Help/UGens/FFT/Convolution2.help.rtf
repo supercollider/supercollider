@@ -81,7 +81,7 @@ threshhold = 0.02;	\cf6 // noise gating threshold\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 gate = \cf4 Lag\cf0 .kr(inputAmp > threshhold, 0.01);	\
 	\
-	\cf4 Out\cf0 .ar(0,\cf4 Convolution2\cf0 .ar(input*gate,g.bufnum, 2*a, 0.5));\
+	\cf4 Out\cf0 .ar(0,\cf4 Convolution2\cf0 .ar(input*gate,g.bufnum, a, 0.5));\
 	 \}.play;\
 \
 )\
