@@ -19,8 +19,8 @@ superclass: AbstractFunction\
 
 \fs24 \cf0 \
 	Pattern 
-\f1\b0 is an abstract class that is the base for library of classes that form a remarkably \
-rich and concise score language. The series of help files entitled 
+\f1\b0 is an abstract class that is the base for the Patterns library.  These classe form a  \
+rich and concise score language for music. The series of help files entitled 
 \f0\b Streams-Patterns-Events 
 \f1\b0 \
 gives a detailed introduction. This attemps a briefer characterization.\
@@ -60,21 +60,25 @@ respond to
 \
 	A 
 \f0\b Pattern 
-\f1\b0 defines the behavior of a Stream and creates such streams in response to \
-the messages 
+\f1\b0 is an object that responds to 
 \f2 asStream 
 \f1 and 
-\f2 embedInStream
-\f1 .  The difference between a Pattern and \
-a Stream is similar to the  difference between a score  and a performance of that score or \
-a class and an instance of that class.  All objects respond to this interface, most by returning \
-themselves.  So most objects are patterns that define streams that are an infinite sequence of \
-the object and embed as singleton streams of that object returned once.\
+\f2 embedInStream.  A 
+\f1 Pattern
+\f0\b \
+
+\f1\b0 defines the behavior of a Stream and creates such streams in response to the messages 
+\f2 asStream.\
+
+\f1 The difference between a Pattern and a Stream is similar to the  difference between a score  and a \
+performance of that score or a class and an instance of that class.  All objects respond to this interface, \
+most by returning themselves.  So most objects are patterns that define streams that are an infinite \
+sequence of the object and embed as singleton streams of that object returned once.\
 \
 	Patterns are defined in terms of other Patterns rather than in terms of specific \
-values.  This allows a Pattern of arbitrary complexity may be substituted for a \
-single value anywhere within a Pattern definition.  A comparison between the Pattern \
-class Pseq and the Stream class  will illustrate the difference:\
+values.  This allows a Pattern of arbitrary complexity to be substituted for a \
+single value anywhere within a Pattern definition.  A comparison between a Stream\
+definition and a Pattern will help illustrate the usefulness of Patterns.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -88,10 +92,11 @@ class Pseq and the Stream class  will illustrate the difference:\
 \fs28  
 \fs24 Pattern class 
 \f0\b Pseq(array, repetitions) 
-\f1\b0 defines a Pattern that will create a stream that iterates \
-an array.  In contrast, the class 
+\f1\b0 defines a Pattern that will create a Stream that iterates \
+an array. The class 
 \f0\b Routine(func, stackSize) 
-\f1\b0 defines a single Stream.  \
+\f1\b0 defines a single Stream, the function that runs within\
+that stream is defined to perform the array iteration. \
 \
 Below a stream is created with 
 \f0\b Pseq 
@@ -116,7 +121,6 @@ created directly using
 	5.do(\{ Post << Char.tab << r.next << " " << q.next << Char.nl; \});\
 )\
 \
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 example 2 - Nesting patterns\
@@ -126,8 +130,8 @@ created directly using
 	In example 1, there is little difference between using  Pseq and Routine.  But Pseq actually \
 iterates its array as  a collection of 
 \f3\i patterns to be embedded
-\f1\i0 . This allows any of the values in the \
-array a to be replaced by patterns.  The Routine, on the other hand,  needs to be completely \
+\f1\i0 , allowing another Pseq to replace any\
+of the values in the array.  The Routine, on the other hand,  needs to be completely \
 redefined.\
 \
 ( var routinesA;\
@@ -174,7 +178,7 @@ A Routine can perform a pattern simply by replacing calls to
 	10.do(\{ Post << Char.tab << r.next << " " << q.next << Char.nl; \});\
 )	\
 \
-However, there is no concise way to 
+Of course, there is no concise way to 
 \f3\i define
 \f1\i0  this stream without using Pseq. \
 \
