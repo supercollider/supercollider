@@ -107,14 +107,14 @@ Tdef : StreamPlayerReference {
 }
 
 Pdef : Tdef {
-	classvar <all, <>defaultEvent, <defaultStream;
+	classvar <all, <>defaultEvent;
 	
 	*initClass {
 		CmdPeriod.add(this);
 		this.clear;
-		defaultStream = Pbind(\freq, \rest).asStream;
 	}
 	*clear { all = () }
+	*defaultStream { ^Pbind(\freq, \rest).asStream }
 	
 	initPlayer { arg argList;
 		var pat, event, stream;
@@ -142,7 +142,7 @@ Pdef : Tdef {
 	unmute { player.unmute }
 	
 	constrainStream { arg argStream;
-		^Pfindur(this.timeToNextBeat, argStream)
+		^Pfindur(this.timeToNextBeat, argStream).asStream
 	}	
 }
 

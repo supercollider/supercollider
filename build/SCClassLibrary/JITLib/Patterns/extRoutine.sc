@@ -51,18 +51,7 @@
 			})
 		});
 	}
-	// to be tested
-	constrainEvent { arg sum, tolerance=0.001;
-			var deltaStream; // use delta?
-			deltaStream = this.collect({ arg event; event.dur }).constrain(sum, tolerance);
-			^this.collect({ arg event;
-				var nextTime;
-				nextTime = deltaStream.next;
-				if(nextTime.notNil)  
-					{ event.put(\dur, nextTime) }
-					{ nil }
-			});
-	}
+	
 }
 
 +Object {

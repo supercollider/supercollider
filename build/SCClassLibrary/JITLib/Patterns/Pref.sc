@@ -2,7 +2,7 @@
 	
 Pref : Pattern {
 	var <key, <>pattern, <>clock;
-	var <>changed = false, <>toBeChanged, <scheduledForChange=false;
+	var <>changed = false, toBeChanged, scheduledForChange=false;
 	
 	classvar <>patterns;
 	
@@ -65,11 +65,14 @@ Pref : Pattern {
 		if(scheduledForChange.not) { this.refresh }
 	}
 	
-	constrainStream { arg str;
+	timeToNextBeat { arg quant=1;
 		var t;
 		t = clock.elapsedBeats;
-		t = t.roundUp(1) - t;
-		^str.constrainEvent(t)
+		^t.roundUp(quant) - t
+	}
+	
+	constrainStream { arg str;
+		^Pfindur(this.timeToNextBeat, str).asStream
 	}
 	
 }
