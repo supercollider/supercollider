@@ -69,6 +69,13 @@ StreamControl : AbstractPlayControl {
 	
 	free { stream.stop; stream = nil }
 	
+	playToBundle { arg bundle, args, proxy; 
+		if(stream.isPlaying.not, {
+			bundle.addAction(this, \play, [proxy]); //no latency (latency is in stream already)
+		})
+		^nil //return a nil object instead of a synth
+	}
+	
 	mute {
 		stream.mute;
 	}
@@ -123,6 +130,11 @@ SynthControl : AbstractPlayControl {
 		
 
 	}
+	
+	freeToBundle { arg bundle;
+		this.stopToBundle(bundle);
+	}
+
 	play { arg group, extraArgs;
 		var bundle;
 		group = group.asGroup;
@@ -167,12 +179,7 @@ SynthDefControl : SynthControl {
 			synthDef = nil; 
 		})
 	}
-	
-	
-	free {
-		synth = nil;
-		synthDef = nil;
-	}
+
 	
 	sendDefToBundle { arg bundle, server;
 		bundle.addPrepare([5, synthDef.asBytes]); //"/d_recv"
@@ -210,25 +217,28 @@ CXPlayerControl : AbstractPlayControl {
 	
 	playToBundle { arg bundle, extraArgs, proxy;
 		var bus, group;
+		if(source.isPlaying.not, {
 		//we'll need channel offset maybe.
 		group = Group.newToBundle(bundle, proxy.group, \addToTail);
 //		if(source.readyForPlay, {
 //			source.prepareToBundle(group, bundle);
 //			source.bus = proxy.bus.as(SharedBus);
 //		}, {
-		
+			
 			source.prepareToBundle(group, bundle);
 			source.makePatchOut(group, true, proxy.asBus, bundle);
 //		});
 		source.spawnToBundle(bundle);
+		});
 		^source.synth;
+		
 	}
 	stopToBundle { arg bundle;
 		source.stopToBundle(bundle);
 	}
 	
 	stop {
-		source.stop; //release? proxy time
+		source.stop;
 	}
 	play {
 		source.play;
@@ -242,28 +252,12 @@ CXPlayerControl : AbstractPlayControl {
 
 CXSynthPlayerControl : CXPlayerControl {
 	
-	stopToBundle { arg bundle;
-			source.releaseToBundle(0.5, bundle);
-			//bundle.addFunction({ source.release })
+	stopToBundle { arg bundle, fadeTime=0.5;
+			source.releaseAndFreeToBundle(fadeTime, bundle); //free it each time for now.
+			 
 	}
-	free {} //need a releaseAndFreeToBundle
+	
+	freeToBundle { }
 	
 }
-
-
-//kr, ar, binop?
-/*
-NodeProxyControl : SynthControl {
-	hasGate { ^true }
-	playToBundle { arg bundle, extraArgs, proxy;
-		^super.playToBundle(
-			bundle, 
-			extraArgs ++ [\in, source.index, \out, proxy.index], 
-			proxy
-		)
-	}
-	name {//for now only 2 channels
-		^if(source.numChannels == 1, {'system-switch-1'}, {'system-switch-2'});	}
-}
-*/
 

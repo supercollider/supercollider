@@ -37,7 +37,7 @@
 			channelOffset
 		); 
 	}
-	prepareForProxySynthDef { }
+	prepareForProxySynthDef { ^this.subclassResponsibility(thisMethod) }
 	
 	argNames { ^nil }
 	numChannels { ^nil } 
@@ -45,7 +45,12 @@
 	//support for unop / binop proxy
 	isNeutral { ^true }
 	initBus { ^true }
+	wakeUp {}
 	
+}
+
++Function {
+	prepareForProxySynthDef { ^this }
 }
 
 +SequenceableCollection {
@@ -193,28 +198,33 @@
 
 ///////////////// cx players ////////////
 
-+AbstractPlayer {
++SynthlessPlayer {
 	
 	proxyControlClass {
 		^CXPlayerControl
 	}
 	
-	prepareToPlayWithProxy { arg proxy;
-		var tempBus, ok;
-		tempBus = proxy.asBus;
-		this.prepareForPlay(bus: tempBus); //to get the rate
-		[this.numChannels, tempBus].debug;
-		ok = proxy.initBus(this.rate ? 'audio', this.numChannels ? 2);
-		//source.free; 
-		tempBus.free;
-		^ok
-	}
+	wrapInFader {}
+	
+	
 }
 
-+Patch {
++AbstractPlayer {
 	
 	proxyControlClass {
 			^CXSynthPlayerControl
+	}
+	
+	prepareToPlayWithProxy { arg proxy;
+		var tempBus, ok, bundle;
+		bundle = MixedBundle.new;
+		tempBus = proxy.asBus;
+		this.prepareForPlay(bus: tempBus); 
+		//get the rate. there seems a bug in prepareForPlay: doesn't set the rate
+		//[this.numChannels, tempBus].debug;
+		ok = proxy.initBus(this.rate ? 'audio', this.numChannels ? 2); 
+		tempBus.free;
+		^ok
 	}
 	
 	makeProxyControl { arg channelOffset=0, proxy;
@@ -222,8 +232,14 @@
 			^this.proxyControlClass.new(this.wrapInFader(proxy), channelOffset); 
 	}
 	
-	wrapInFader { arg proxy;
-			^EnvelopedPlayer(this, Env.asr(0.5, 1, 0.5), proxy.numChannels);
+	wrapInFader { arg bus;
+			var n;
+			n = bus.numChannels;
+			^EnvelopedPlayer(
+				Patch({ arg input; NumChannels.ar(input, n, false) },[this]),
+				Env.asr(0.5, 1, 0.5), 
+				n
+			);
 			
 	}
 	
