@@ -11,11 +11,12 @@
 \f2\b0 \
 \
 \
-superclass: Server\
+superclass: Object (adaptor class)\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b 	*new(name, homeAddr, options, clientID)
+\f0\b \cf0 	*new(name, homeAddr, options, clientID)
 \f2\b0 \
 		create a new instance. name, homeAddr, options and clientID are used for the\
 		home server's properties. The other servers are represented by their addresses (allAddr)\
@@ -33,7 +34,8 @@ superclass: Server\
 	
 \f0\b addresses_(list of net addr)
 \f2\b0 \
-		set the addresses the server is supposed to broadcast to\
+		set the addresses the server is supposed to broadcast to.\
+		This usually should include the home address.\
 	\
 	
 \f0\b homeServer
@@ -84,7 +86,6 @@ b.boot;\
 a.makeWindow;\
 b.makeWindow;\
 )\
-\
 \
 \
 a.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "default"\cf0 , 1980); \cf2 // create 2 synths, one on each server\cf0 \
