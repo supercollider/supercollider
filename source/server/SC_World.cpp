@@ -404,6 +404,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 				if (nextOSCPacket(cmdFile, &packet, schedTime)) { run = false; break; }
 				if (schedTime < prevTime) {
 					scprintf("ERROR: Packet time stamps out-of-order.\n");
+					run = false;
 					goto Bail;
 				}
 				prevTime = schedTime;
