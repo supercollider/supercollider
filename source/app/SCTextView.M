@@ -69,25 +69,61 @@ extern bool compiledOK;
 - (void) keyUp: (NSEvent*) event
 {
     NSString *characters = [event characters];
+	if(compiledOK){
+		unsigned int modifiers = [event modifierFlags];
+		unichar character = 0;
+		if([characters length] > 0) {
+			character = [characters characterAtIndex: 0];
+		}
+		unsigned int keycode = [event keyCode];
+			
+		MyDocument * doc = [self delegate];			
+		PyrObject * pobj = [doc getSCObject];
+		PyrSymbol *method = getsym("keyUp");
+
+		if (pobj) {
+			pthread_mutex_lock (&gLangMutex);
+			if(NotNil(pobj->slots+2)){
+				VMGlobals *g = gMainVMGlobals;
+				g->canCallOS = true;
+				++g->sp;  SetObject(g->sp, pobj); 
+				++g->sp;  SetChar(g->sp, character); 
+				++g->sp;  SetInt(g->sp, modifiers); 
+				++g->sp;  SetInt(g->sp, character); 
+				++g->sp;  SetInt(g->sp, keycode); 
+				runInterpreter(g, method, 5);
+				g->canCallOS = false;
+			}
+			pthread_mutex_unlock (&gLangMutex);
+		}
+	}
     if ([characters isEqual: @"\03"]) {
     } else if (([characters isEqual: @"\n"] || [characters isEqual: @"\r"]) && !([event modifierFlags] & NSAlternateKeyMask)) {
     } else {
-        //call lang
-		if(compiledOK){
-			unsigned int modifiers = [event modifierFlags];
-			unichar character = 0;
-			if([characters length] > 0) {
-				character = [characters characterAtIndex: 0];
-			}
-			unsigned int keycode = [event keyCode];
-				
-			MyDocument * doc = [self delegate];			
-			PyrObject * pobj = [doc getSCObject];
-			PyrSymbol *method = getsym("keyUp");
+		[super keyUp: event];
+    }
+}
 
-			if (pobj) {
-				pthread_mutex_lock (&gLangMutex);
-				if(NotNil(pobj->slots+2)){
+- (void) keyDown: (NSEvent*) event
+{
+    NSString *characters = [event characters];
+	if(compiledOK){
+		unsigned int modifiers = [event modifierFlags];
+		unichar character = 0;
+		if([characters length] > 0) {
+			character = [characters characterAtIndex: 0];
+		}
+		unsigned int keycode = [event keyCode];
+			
+		MyDocument * doc = [self delegate];			
+		PyrObject * pobj = [doc getSCObject];
+
+		if (pobj) {
+			pthread_mutex_lock (&gLangMutex);
+			if (compiledOK) { // must test again inside the lock
+				PyrSymbol *method = getsym("keyDown");
+				if(NotNil(pobj->slots+1)){
+					//pthread_mutex_lock (&gLangMutex);
 					VMGlobals *g = gMainVMGlobals;
 					g->canCallOS = true;
 					++g->sp;  SetObject(g->sp, pobj); 
@@ -98,53 +134,16 @@ extern bool compiledOK;
 					runInterpreter(g, method, 5);
 					g->canCallOS = false;
 				}
-				pthread_mutex_unlock (&gLangMutex);
 			}
+			pthread_mutex_unlock (&gLangMutex);
 		}
-		[super keyUp: event];
-    }
-}
-
-- (void) keyDown: (NSEvent*) event
-{
-    NSString *characters = [event characters];
+	}
     if ([characters isEqual: @"\03"]) {
         [[self delegate] executeSelection: self];
     } else if (([characters isEqual: @"\n"] || [characters isEqual: @"\r"]) && !([event modifierFlags] & NSAlternateKeyMask)) {
         [self autoIndent: event];
     } else {
         //call lang
-		if(compiledOK){
-			unsigned int modifiers = [event modifierFlags];
-			unichar character = 0;
-			if([characters length] > 0) {
-				character = [characters characterAtIndex: 0];
-			}
-			unsigned int keycode = [event keyCode];
-				
-			MyDocument * doc = [self delegate];			
-			PyrObject * pobj = [doc getSCObject];
-
-			if (pobj) {
-				pthread_mutex_lock (&gLangMutex);
-				if (compiledOK) { // must test again inside the lock
-					PyrSymbol *method = getsym("keyDown");
-					if(NotNil(pobj->slots+1)){
-						//pthread_mutex_lock (&gLangMutex);
-						VMGlobals *g = gMainVMGlobals;
-						g->canCallOS = true;
-						++g->sp;  SetObject(g->sp, pobj); 
-						++g->sp;  SetChar(g->sp, character); 
-						++g->sp;  SetInt(g->sp, modifiers); 
-						++g->sp;  SetInt(g->sp, character); 
-						++g->sp;  SetInt(g->sp, keycode); 
-						runInterpreter(g, method, 5);
-						g->canCallOS = false;
-					}
-				}
-				pthread_mutex_unlock (&gLangMutex);
-			}
-		}
 		[super keyDown: event];
     }
 }
