@@ -76,6 +76,11 @@ ServerOptions
 	firstPrivateBus { // after the outs and ins
 		^numOutputBusChannels + numInputBusChannels
 	}
+
+	bootInProcess {
+		_BootInProcessServer
+		^this.primitiveFailed
+	}
 }
 
 Server : Model {
@@ -375,8 +380,7 @@ Server : Model {
 	
 	// internal server commands
 	bootInProcess {
-		_BootInProcessServer
-		^this.primitiveFailed
+		^options.bootInProcess;
 	}
 	quitInProcess {
 		_QuitInProcessServer

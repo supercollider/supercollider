@@ -671,15 +671,110 @@ extern "C" {
 int prBootInProcessServer(VMGlobals *g, int numArgsPushed);
 int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 {
-	//PyrSlot *a = g->sp;
+	PyrSlot *a = g->sp;
 	
 	if (!gInternalSynthServer.mWorld) {
 		SetPrintFunc(&vpost);
 		WorldOptions options = kDefaultWorldOptions;
+		
+		PyrObject *optionsObj = a->uo;
+		PyrSlot *optionsSlots = optionsObj->slots;
+
+/*
+
+	const char* mPassword;
+	uint32 mNumBuffers;
+	uint32 mMaxLogins;
+	uint32 mMaxNodes;
+	uint32 mMaxGraphDefs;
+	uint32 mMaxWireBufs;
+	uint32 mNumAudioBusChannels;
+	uint32 mNumInputBusChannels;
+	uint32 mNumOutputBusChannels;
+	uint32 mNumControlBusChannels;
+	uint32 mBufLength;
+	uint32 mRealTimeMemorySize;
+
+	int mNumSharedControls;
+	float *mSharedControls;
+	
+	bool mRealTime;
+	
+	char *mNonRealTimeCmdFilename;
+	char *mNonRealTimeInputFilename;
+	char *mNonRealTimeOutputFilename;
+	char *mNonRealTimeOutputHeaderFormat;
+	char *mNonRealTimeOutputSampleFormat;
+	
+	uint32 mPreferredSampleRate;
+	uint32 mNumRGens;
+	
+	uint32 mPreferredHardwareBufferFrameSize;
+	
+	uint32 mLoadGraphDefs;
+
+
+	var <>protocol = \udp;
+	var <>blockSize = 64;
+	var <>hardwareBufferSize = 0;
+	
+	var <>memSize = 2048;
+	var <>numRGens = 64;
+	var <>numWireBufs = 64;
+
+	var <>sampleRate = 0;
+	var <>loadDefs = true;
+
+*/
+		int err;
+		
+		err = slotIntVal(optionsSlots + 0, (int*)&options.mNumAudioBusChannels);
+		if (err) return err;
+		
+		err = slotIntVal(optionsSlots + 1, (int*)&options.mNumControlBusChannels);
+		if (err) return err;
+		
+		err = slotIntVal(optionsSlots + 2, (int*)&options.mNumInputBusChannels);
+		if (err) return err;
+		
+		err = slotIntVal(optionsSlots + 3, (int*)&options.mNumOutputBusChannels);
+		if (err) return err;
+		
+		err = slotIntVal(optionsSlots + 4, (int*)&options.mNumBuffers);
+		if (err) return err;
+		
+		err = slotIntVal(optionsSlots + 5, (int*)&options.mMaxNodes);
+		if (err) return err;
+		
+		err = slotIntVal(optionsSlots + 6, (int*)&options.mMaxGraphDefs);
+		if (err) return err;
+				
+		err = slotIntVal(optionsSlots + 8, (int*)&options.mBufLength);
+		if (err) return err;
+		
+		err = slotIntVal(optionsSlots + 9, (int*)&options.mPreferredHardwareBufferFrameSize);
+		if (err) return err;
+		
+		err = slotIntVal(optionsSlots + 10, (int*)&options.mRealTimeMemorySize);
+		if (err) return err;
+		
+		err = slotIntVal(optionsSlots + 11, (int*)&options.mNumRGens);
+		if (err) return err;
+		
+		err = slotIntVal(optionsSlots + 12, (int*)&options.mMaxWireBufs);
+		if (err) return err;
+		
+		err = slotIntVal(optionsSlots + 13, (int*)&options.mPreferredSampleRate);
+		if (err) return err;
+		
+		options.mLoadGraphDefs = IsTrue(optionsSlots + 14) ? 1 : 0;
+		
 		options.mNumSharedControls = gInternalSynthServer.mNumSharedControls;
 		options.mSharedControls = gInternalSynthServer.mSharedControls;
+		
 		gInternalSynthServer.mWorld = World_New(&options);
 	}
+	
 	return errNone;
 }
 
