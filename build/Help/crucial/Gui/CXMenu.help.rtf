@@ -19,11 +19,13 @@ each menu item, and with PopUp there is one action.\
 \f2\fs18 \cf0 (\
 m = \cf2 CXMenu\cf0 (\
 	\cf3 \\myName\cf0 ->\{ \cf4 "you hit myName"\cf0 .postln; \},\
-	\cf3 \\yourName\cf0 ->\{ \cf4 "you hit yourName"\cf0 .postln; \}\
+	\cf3 \\yourName\cf0 ->\{ \cf4 "you hit yourName"\cf0 .postln; \},\
+	\cf3 \\hisName\cf0 ->\{ \cf4 "you hit hisName"\cf0 .postln; \},\
+	\cf3 \\itsName\cf0 ->\{ \cf4 "you hit itsName"\cf0 .postln; \}\
 );\
 \
 \
-m.gui;\
+m.gui(nil);\
 \
 )\
 \
@@ -53,4 +55,6 @@ m.gui;\
 )\
 \
 \
+m.add(\\more->\{ "more".postln; \});\
+m.refresh;\
 }

@@ -31,9 +31,8 @@ all return the float value, not the editor itself.
 \f0\b spec
 \f2\b0   -   ControlSpec or StaticSpec.  see [Spec]\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs20 \cf0 \
+\f1\fs20 \
 \
 (
 \fs18 \
@@ -82,6 +81,14 @@ n.insp;\
 // programatically set it\
 n.value = 100\
 n.changed; // now the slider moves\
+	// and sends to the server !\
+\
+
+\f0\b\fs28 IMPORTANT
+\f1\b0\fs20 \
+
+\f2\fs24 if a KrNumberEditor is connected to a Patch playing on a server, the message to the server happens when the KrNumberEditor gets the .changed message and sends .update to all its depedants.  This includes any NumberEditorGui and also any UpdatingScalarPatchOut, which is what actually sends the message to the server.
+\f1\fs20 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -132,16 +139,14 @@ Putting them on a Sheet\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf0 w = Sheet(\{ arg h;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	c = Array.fill(10,\{ arg i;\
+	c = Array.fill(10,\{ arg i;\
 		var n;\
 		n = NumberEditor(0,\\amp);\
 		h.startRow;\
 		n.gui(h);\
 		n\
 	\});\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \});\
+\});\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs20 \cf0 \
