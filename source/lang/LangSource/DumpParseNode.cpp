@@ -29,6 +29,10 @@
 #include <stdarg.h>
 extern int textpos;
 
+extern "C" {
+	extern char *g_fmt(char *, double);
+}
+
 
 void dumpNodeList(PyrParseNode *node)
 {
@@ -329,8 +333,12 @@ void slotString(PyrSlot *slot, char *str)
 			sprintf(str, "RawPointer %X", slot->ui);
 			break;
 		default :
-			sprintf(str, "Float %.14g   %08X %08X", slot->uf, slot->utag, slot->ui);
+		{
+			char fstr[32];
+			g_fmt(fstr, slot->uf);
+			sprintf(str, "Float %s   %08X %08X", fstr, slot->utag, slot->ui);
 			break;
+		}
 	}
 }
 
@@ -583,7 +591,7 @@ int asCompileString(PyrSlot *slot, char *str)
 			strcpy(str, "/*Ptr*/ nil");
 			break;
 		default :
-			sprintf(str, "%.18g", slot->uf);
+			g_fmt(str, slot->uf);
 			break;
 	}
 	return errNone;

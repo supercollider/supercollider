@@ -1954,6 +1954,34 @@
 			settings = {
 			};
 		};
+		92FC9D7306EAFCE900AA3E95 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = dtoa.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		92FC9D7506EAFCE900AA3E95 = {
+			fileRef = 92FC9D7306EAFCE900AA3E95;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		92FC9DD806EB002800AA3E95 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = g_fmt.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		92FC9DD906EB002800AA3E95 = {
+			fileRef = 92FC9DD806EB002800AA3E95;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 //920
 //921
 //922
@@ -3020,6 +3048,8 @@
 				F59DF0C5030777A101CE0C16,
 				F59DF067030733E801CE0C16,
 				92B4EA66059399F300CA25E4,
+				92FC9D7306EAFCE900AA3E95,
+				92FC9DD806EB002800AA3E95,
 			);
 			isa = PBXGroup;
 			path = common;
@@ -3925,6 +3955,8 @@
 				9286AE9F057D30B9000EBAEB,
 				92B4EA5C059398FE00CA25E4,
 				92B4EA68059399F300CA25E4,
+				92FC9D7506EAFCE900AA3E95,
+				92FC9DD906EB002800AA3E95,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
