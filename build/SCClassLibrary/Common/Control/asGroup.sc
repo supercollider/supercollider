@@ -5,12 +5,12 @@
 
 + Nil {
 	asGroup {
-		^RootNode.new
+		^Group.basicNew(this, 1)
 	}
 }
 + Server {
 	asGroup {
-		^RootNode(this)
+		^Group.basicNew(this, 1)
 	}
 }
 + Synth {
