@@ -1633,13 +1633,16 @@ bool PyrVarDefNode::hasExpr(PyrSlot *result)
 	PyrPushLitNode *node = (PyrPushLitNode*)mDefVal;
 
 	if (node->mSlot.utag == tagPtr) {
-		PyrParseNode* literalObj = (PyrParseNode*)node->mSlot.uo;
-		if (literalObj->mClassno == pn_BlockNode) {
-			//post("hasExpr B %s-%s %s %d\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name, mVarName->mSlot.us->name, node->mClassno);	
-			return true;
+		PyrParseNode* litnode = (PyrParseNode*)node->mSlot.uo;
+		if (litnode) {
+			if (litnode->mClassno == pn_BlockNode) {
+				//post("hasExpr B %s-%s %s %d\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name, mVarName->mSlot.us->name, node->mClassno);	
+				return true;
+			} else {
+				if (result) node->compileLiteral(result);
+			}
 		}
-	}
-	if (result) *result = node->mSlot;
+	} else if (result) *result = node->mSlot;
 	if (node->mParens) return true;
 	return false;
 }
