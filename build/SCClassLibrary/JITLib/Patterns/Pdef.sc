@@ -46,6 +46,7 @@ Pdef : Pattern {
 	}
 	
 	*initClass {
+		/*
 		clock = QuantClock.new(1.0);
 		patterns = IdentityDictionary.new; 
 		numericals = IdentityDictionary.new; 
@@ -60,7 +61,7 @@ Pdef : Pattern {
 		
 		//numerical Pdef not.
 		//Pdefn(\rest, Pn(0, 1));
-		
+		*/
 	}
 	
 	changed {
