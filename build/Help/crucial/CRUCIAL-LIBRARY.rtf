@@ -1,6 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs48 \cf0 CrucialLibrary
@@ -11,59 +12,13 @@ This is in transition from the SC2 version.  Certain examples are commented out,
 \
 \
 This library offers:\
+\
 	complete compatibility with any and all Examples and other code libraries.\
 \
 	some simpler and higher level ways of working with sound functions (see [
 \f0\b AbstractPlayer]
 \f1\b0 )\
 \
-	many solutions for problems you may not realize exist yet\
-		while there is a learning curve with this lib, it is a lot easier than trying to figure out\
-		how to do this stuff "from scratch".  many people assume that this is some complex\
-		system that they should wait until they have mastered "normal" super collider.\
-		then they waste a month trying to get a Spawn to trigger from a button without getting yelled at \
-		because the synth is not yet started or its over or you have the wrong number of channels,\
-		and they never find out about [
-\f0\b MonoSpawn
-\f1\b0 ].\
-		many of these solutions incorporate bug/gotcha fixes that you still haven't found out about,\
-		and are soon going to post to the list asking if anyone knows why its doing that...\
-		I just found one yesterday and incorporated the fix into [
-\f0\b QuantizedScheduler
-\f1\b0 ].\
-		\
-	many simple classes to combine with any other SC code you are working on.\
-		any ugenFunction can be stuck inside a 
-\f0\b FunctionPlayer
-\f1\b0 , and you can play it with\
-		
-\f0\b PlayerPool
-\f1\b0 , sequence it with 
-\f0\b PlayerSeqTrack
-\f1\b0  or 
-\f0\b CyclePlayers
-\f1\b0 .  Process it with\
-		
-\f0\b Patch
-\f1\b0 , scale it with 
-\f0\b CCPlugProxy
-\f1\b0 .\
-		You don't have to be "inside" some "cult system" to take advantage of individual classes.\
-		It is very maleable and based on common and simple principles of functions.\
-		None of the classes are dependant on the gui, they are all pure audio classes.\
-		\
-	a fast, powerful, simple and completely optional windowing system \
-		see ([
-\f0\b gui
-\f1\b0 ] [
-\f0\b PageLayout
-\f1\b0 ], [
-\f0\b ObjectGui
-\f1\b0 ], [
-\f0\b AbstractPlayerGui
-\f1\b0 ]).\
-		you want to record ?  hit the record button.\
-	\
 	a Document like framework: 
 \f0\b AbstractPlayer
 \f1\b0 \
@@ -83,7 +38,9 @@ This library offers:\
 \f1\b0 \
 \
 
-\fs24 Under the Lang menu, choose RecompileLibrary.\
+\fs24 crucial is distributed with SC and should not needed further installation.\
+\
+\
 \
 It is not advisable to use "the whole library".  Don't think of it as a single entity.  Try out one\
 or two things and work them into what you are normally doing.  As time goes on, learn some more objects.\
@@ -93,39 +50,33 @@ or two things and work them into what you are normally doing.  As time goes on, 
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 gui\
-//inspect\
+\f0\b \cf2 gui\
+\cf3 //inspect\
+\cf2 \
+\cf4 SynthConsole\cf2 \
 \
-SynthConsole\
+\cf4 NumberEditor\cf2 \
 \
-NumberEditor\
+\cf4 Instr\cf2 \
+\cf4 Patch\cf2 \
 \
-Instr\
-Patch\
+\cf4 AbstractPlayer\cf2 \
 \
-AbstractPlayer\
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //Kr\
+\cf3 //Kr\
 //StreamKrDur\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 Tempo\
-TempoBus\
-TempoPlayer\
-BeatClockPlayer\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //Stream2Trig\
+\cf4 Tempo\cf2 \
+\cf4 TempoBus\cf2 \
+\cf4 TempoPlayer\cf2 \
+\cf4 BeatClockPlayer\cf2 \
+\cf3 //Stream2Trig\
 //PlayerEfxFunc\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //NumChannels\
+\cf2 \
+\cf3 //NumChannels\
 //MonoSpawn\
 //QuantizedScheduler\
 //PlayerPool\
 //[PatchBox example]\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
