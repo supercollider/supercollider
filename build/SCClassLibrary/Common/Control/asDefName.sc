@@ -68,6 +68,9 @@
 			})
 		})
 	}
+	play {
+		^Synth(this)
+	}
 }
 
 + SynthDef {
