@@ -377,6 +377,30 @@
 			settings = {
 			};
 		};
+		92EDF0B8055F01D50089A136 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = SCService.mm;
+			refType = 4;
+		};
+		92EDF0B9055F01D50089A136 = {
+			fileRef = 92EDF0B8055F01D50089A136;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		92EDF0BA055F01E80089A136 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = SCService.h;
+			refType = 4;
+		};
+		92EDF0BB055F01E80089A136 = {
+			fileRef = 92EDF0BA055F01E80089A136;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 //920
 //921
 //922
@@ -544,6 +568,7 @@
 				C26BDCCE03D0B4FB00A87B78,
 				C21B4672046D847B00A87B78,
 				908DBC380507C65100000098,
+				92EDF0BA055F01E80089A136,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -1033,6 +1058,7 @@
 				C26BDCCC03D0B4E900A87B78,
 				C21B4673046D847B00A87B78,
 				908DBC360507C63D00000098,
+				92EDF0B8055F01D50089A136,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -1567,7 +1593,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string></string>
+	<string>SuperCollider</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -1580,6 +1606,24 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSServices</key>
+	<array>
+		<dict>
+			<key>NSMenuItem</key>
+			<dict>
+				<key>default</key>
+				<string>Execute in SuperCollider</string>
+			</dict>
+			<key>NSMessage</key>
+			<string>doExecuteService</string>
+			<key>NSPortName</key>
+			<string>SuperCollider</string>
+			<key>NSSendTypes</key>
+			<array>
+				<string>NSStringPboardType</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
 ";
@@ -1681,6 +1725,7 @@
 				6AB6FF76053898BC0000009F,
 				6AB6FF77053898BC0000009F,
 				6AB6FF78053898BC0000009F,
+				92EDF0BB055F01E80089A136,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1878,6 +1923,7 @@
 				6AB6FF73053898BC0000009F,
 				6AB6FF75053898BC0000009F,
 				6AB6FF84053898F00000009F,
+				92EDF0B9055F01D50089A136,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

@@ -25,6 +25,7 @@
 
 // CR ADDED
 #import "RendezvousClient.h"
+#import "SCService.h"
 
 #include "PyrObject.h"
 #include "PyrKernel.h"
