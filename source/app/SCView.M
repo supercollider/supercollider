@@ -2553,6 +2553,7 @@ int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr);
 int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr)
 {
     int len;
+	int err;
     if (*arr) {
 		delete [] *arr;
 		*arr = 0;
@@ -2562,7 +2563,8 @@ int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr)
             *arr = new double[len];
            // memcpy(*arr, slot->uo->slots, len * sizeof(double));
 			for(int i =0; i<len; i++){
-				slotDoubleVal(slot->uo->slots+i, *arr+i);
+				err = slotDoubleVal(slot->uo->slots+i, *arr+i);
+				if (err) *(*arr+i) = 0.0;
 			}
             return errNone;
     }
@@ -2996,8 +2998,8 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			double val;
            // memcpy(mYValues, slot->uo->slots, len * sizeof(double));
 			for(int i =0; i<len; i++){
-				slotDoubleVal(slot->uo->slots+i, &val);
-				mYValues[i] = val;
+				err = slotDoubleVal(slot->uo->slots+i, &val);
+				if (err) mYValues[i] = 0.0; else mYValues[i] = val;
 			}
 			
         }
