@@ -3834,6 +3834,9 @@ void initSCViewPrimitives();
 
 void initMIDIPrimitives();
 		initMIDIPrimitives();
+
+void initSpeechPrimitives();
+		initSpeechPrimitives();     
                 
 void initCocoaFilePrimitives();
         initCocoaFilePrimitives();
