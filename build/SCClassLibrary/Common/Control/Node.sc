@@ -341,7 +341,7 @@ Synth : Node {
 		var cmd, synth;
 		cmd = List.new;
 		synth = this.newCommand(cmd, defName,args,target,addAction);
-		synth.server.sendMsg(6, "synthdefs/"++synth.defName++".scsyndef", cmd.at(0).postln); //"/d_load"
+		synth.server.sendMsg(6, "synthdefs/"++synth.defName++".scsyndef", cmd.at(0)); //"/d_load"
 		^synth
 	
 	} 
