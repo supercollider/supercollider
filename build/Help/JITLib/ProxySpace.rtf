@@ -1,19 +1,21 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl\f0\fnil\fcharset77 Futura-Medium;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica-Bold;
+{\fonttbl\f0\fnil\fcharset77 Futura-Medium;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica;\f4\fnil\fcharset77 LucidaGrande;}
 {\colortbl;\red255\green255\blue255;\red163\green146\blue90;\red191\green0\blue0;\red0\green0\blue191;
-\red96\green96\blue96;\red0\green115\blue0;\red0\green0\blue0;\red0\green0\blue191;}
+\red96\green96\blue96;\red0\green115\blue0;\red0\green0\blue0;\red191\green0\blue0;\red0\green115\blue0;
+\red0\green0\blue191;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs40 \cf0 ProxySpace
-\f1\fs18 \
+\f0\fs40 \cf0 ProxySpace 		
+\f1\b\fs24 an environment of references on a server 
+\f2\b0\fs18 \
+\
+
+\f1\b\fs24 superclass: EnvironmentRedirect \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b\fs24 \cf0 superclass: EnvironmentRedirect \
-\
-an environment of references on a server 
-\f1\b0\fs18 \
+\f2\b0\fs18 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -23,13 +25,13 @@ is something playing on a server that writes to a limited number of busses.\
 \
 \
 When accessed, ProxySpace returns a [
-\f2\b NodeProxy
+\f1\b NodeProxy
 \f3\b0 ]. \
 \
 The rate is determined in a lazy way from the first object put into this environment. \
 Once it is created it can only be set to a function that returns the same rate and a number \
 of channels equal to the intial one or smaller. (see 
-\f2\b the_lazy_proxy
+\f1\b the_lazy_proxy
 \f3\b0  
 \f4 )\
 
@@ -41,92 +43,145 @@ note that the two expressions are equivalent: \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 ~out = something; 
+\f2\fs18 \cf0 ~out = something; 
 \f3\fs24   \
 
-\f1\fs18 currentEnvironment.put(\\out, something);\
+\f2\fs18 currentEnvironment.put(\\out, something);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs24 \cf0 \
 a proxyspace can be created when its server is not running and played later.\
 \
+see also: [
+\f1\b NodeProxy
+\f3\b0 ][
+\f1\b jitlib_efficiency
+\f3\b0 ]\
+\
+\
+				
+\f2\fs18 \cf2 \'a5\'a5\'a5\'a5\cf0 this is experimental and things change.\cf2 \'a5\'a5\'a5\'a5\
+				\
+				
+\f3\fs24 \cf0 \
 Note:\
 The following examples can be executed line by line, usually in any order. \
 code that should be evaluated together is set in parentheses.
-\f1\fs18 \
+\f2\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
-\'a5\'a5\'a5\'a5\cf0 this is experimental and things change.\cf2 \'a5\'a5\'a5\'a5\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f3\fs24 \cf0 see also: [
-\f2\b NodeProxy
-\f3\b0 ][
-\f2\b jitlib_efficiency
-\f3\b0 ]
-\f1\fs18 \
-\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b\fs26 \cf0 *new(server, name, clock)
-\f1\b0\fs18 \
+\f3\fs26 \cf0 \ul class methods
+\f2\fs18 \ulnone \
+\
+\
+
+\f1\b\fs26 *new(server, name, clock)
+\f2\b0\fs18 \
+	\
 	
-\f0\fs24 server: a Server object. note that on remote computers the clock must be in sync\
-	name: a symbol (can be used for access)\
-	clock: for event-based or beat-sync playing use specific clocks (like TempoClock)
-\f1\fs18 \
+\f1\b\fs24 server
+\f3\b0 : 	a Server object. note that on remote computers the clock must be in sync\
+	
+\f1\b name
+\f3\b0 : 	a symbol. if a name is given, the proxy space is stored in ProxySpace.all under this name.\
+	
+\f1\b clock
+\f3\b0 : 	for event-based or beat-sync playing use specific clocks (like TempoClock)
+\f2\fs18 \
 	\
 
-\f2\b\fs26 *push(server, name, clock)
-\f1\b0\fs18 \
-	
-\f0\fs24 replace the currentEnvironment with a new ProxySpace. if it is current already, it is left where it is.
-\f1\fs18 \
+\f1\b\fs26 *push(server, name, clock)
+\f2\b0\fs18 \
 	\
+			
+\f3\fs24 replace the currentEnvironment with a new ProxySpace. \
+			if it is current already, it is left where it is.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b\fs26 *pop
-\f1\b0\fs18 \
-	
-\f0\fs24 restore the previous currentEnvironment\
+\f2\fs18 \cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs26 \cf0 *pop
+\f2\b0\fs18 \
+			
+\f3\fs24 restore the previous currentEnvironment
+\f0 \
+\
+\
 \
 
-\f2\b\fs26 play(key)
-\f1\b0\fs18 \
-	
-\f0\fs24 returns a group that plays the NodeProxy at that key. default key: \\out\
+\f3\fs26 \ul instance methods\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \ulnone \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 play(key)
+\f2\b0\fs18 \
+			
+\f3\fs24 returns a group that plays the NodeProxy at that key. \
+			default key: \\out
+\f0 \
 \
 
-\f2\b\fs26 record(key, path, headerFormat, sampleFormat)
-\f1\b0\fs18 \
-	
-\f0\fs24 returns a RecNodeProxy that records the NodeProxy at that key
-\f3\fs26 \
-\
+\f1\b record(key, path, headerFormat, sampleFormat)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b ar(key, numChannels)\
+\f2\b0\fs18 \cf0 	\
+			
+\f3\fs24 returns a RecNodeProxy that records the NodeProxy at that key
+\fs26 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs24 \cf0 ar(key, numChannels)\
 kr(key, numChannels)
-\f1\b0\fs18 \
-	
-\f0\fs24 returns a NodeProxy output that plays the NodeProxy at that key.\
+\f2\b0\fs18 \
+	\
+			
+\f3\fs24 returns a NodeProxy output that plays the NodeProxy at that key.
+\f0 \
 \
 
-\f2\b\fs26 wakeUp
-\f0\b0\fs24 	
+\f1\b wakeUp
+\f0\b0 	
 \f3\fs26 \
-	
-\f0\fs24 when the proxyspace is created without a running server this method can be used\
-	to run it (internally this is done by play(key) as well.\
+			
+\fs24 when the proxyspace is created without a running server this method can be used\
+			to run it (internally this is done by play(key) as well.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0 \cf0 	\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f1\b \cf0 fadeTime_
+\f3\b0 	set the fadetime of all proxies as well as the default fade time\
+\
+
+\f1\b free
+\f3\b0 			free all proxies\
+\
+
+\f1\b clear
+\f3\b0 		clear the node proxy and remove it from the environment\
+\
+
+\f1\b release
+\f3\b0 		release all proxies\
+\
+
+\f1\b *clearAll
+\f3\b0 		clear all registered spaces
+\f2\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs26 \cf0 ____________________________________________________
-\f1\fs18 \
+\f2\fs18 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -135,7 +190,7 @@ kr(key, numChannels)
 preparation of the environment\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf3 \ulnone \
+\f2\fs18 \cf3 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
 s = \cf4 Server\cf0 .local;\
@@ -147,14 +202,14 @@ s.boot;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul playing and monitoring
-\f1\fs18 \ulnone \
+\f2\fs18 \ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //play some output to the hardware busses, this could be any audio rate key.\cf0 \
 x = ~out.play; \cf3 //returns a group, store in interpreter variable x\cf0 \
 ~out = \{ \cf4 SinOsc\cf0 .ar([400, 500]*0.9, 0, 0.2) \};\
 \
-\cf3 //replacing the node\cf0 \
+\cf3 //replacing the node. the crossfade envelope is created internally.\cf0 \
 ~out = \{ \cf4 SinOsc\cf0 .ar([430, 600-Rand(0,200)], 0, 0.2) \};\
 ~out = \{ \cf4 Resonz\cf0 .ar(\cf4 Saw\cf0 .ar(30+[0,0.2], 1), [1200, 1600], 0.1) + \cf4 SinOsc\cf0 .ar(60*[1,1.1],0,0.2) \};\
 ~out = \{ \cf4 Pan2\cf0 .ar(\cf4 PinkNoise\cf0 .ar(0.1), \cf4 LFClipNoise\cf0 .kr(2)) \};\
@@ -165,7 +220,7 @@ x = ~out.play; \cf3 //returns a group, store in interpreter variable x\cf0 \
 \f0\fs24 \cf0 \ul using a synthdef as input\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \ulnone \
+\f2\fs18 \cf0 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //you have the responsibility for the right number of channels and output rate\cf0 \
 \cf3 //you have to supply an 'out' argument so it can be mapped to the right channel.\
@@ -174,9 +229,16 @@ x = ~out.play; \cf3 //returns a group, store in interpreter variable x\cf0 \
 ~out = \cf4 SynthDef\cf0 (\cf5 "w"\cf0 , \{ \cf4 arg\cf0  out=0; \cf4 Out\cf0 .ar(out,\cf4 SinOsc\cf0 .ar([\cf4 Rand\cf0 (430, 600), 600], 0, 0.2)) \});\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 //once the SynthDef is sent, it can be assigned by name:\
+\cf3 //once the SynthDef is sent, it can be assigned by name. \
+//using this method, a \ul gate argument\ulnone  should be \
+//provided that releases the synth. (doneAction:2)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 SynthDef\cf0 (\cf5 "\cf0 staub\cf5 "\cf0 , \{ \cf4 arg\cf0  out=0; \cf4 Out\cf0 .ar(out, \cf4 Ringz.ar(Dust.ar(15), 9000*[1,1], 0.001\cf0 )) \}).send(s);\
+\cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 SynthDef\cf0 (\cf5 "staub"\cf0 , \{ \cf4 arg\cf0  out, gate=1; \
+	\cf4 Out\cf0 .ar(out, \cf4 Ringz\cf0 .ar(\cf4 Dust\cf0 .ar(15), 9000*[1,1], 0.001) * \cf4 EnvGen\cf0 .kr(\cf4 Env\cf0 .asr, gate, doneAction:2)) \
+\}).send(s);\
+)\
 \
 ~out = \\staub;\
 \
@@ -207,7 +269,7 @@ x = ~out.play; \cf3 //returns a group, store in interpreter variable x\cf0 \
 \f0\fs24 \cf0 \ul setting the node controls\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \ulnone \
+\f2\fs18 \cf0 \ulnone \
 ~out = \{ \cf4 arg\cf0  rate=2; \cf4 Pan2\cf0 .ar(\cf4 PinkNoise\cf0 .ar(0.1), \cf4 LFClipNoise\cf0 .kr(rate)) \};\
 ~out.set(\cf6 \\rate\cf0 , 50);\
 ~out = \{ \cf4 arg\cf0  rate=2; \cf4 Pan2\cf0 .ar(\cf4 Dust\cf0 .ar(2000, 0.2), \cf4 LFClipNoise\cf0 .kr(rate)) \};\
@@ -218,7 +280,7 @@ x = ~out.play; \cf3 //returns a group, store in interpreter variable x\cf0 \
 \f0\fs24 \cf0 \ul mapping node controls\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \ulnone \
+\f2\fs18 \cf0 \ulnone \
 ~lfo = \{ \cf4 LFNoise2\cf0 .kr(30, 300, 500) \};\
 ~out = \{ \cf4 SinOsc\cf0 .ar(~lfo.kr, 0, 0.15)  \};\
 ~out = \{ \cf4 SinOsc\cf0 .ar(~lfo.kr * [1, 1.2], 0, 0.1) * \cf4 Pulse\cf0 .ar(~lfo.kr * [0.1, 0.125], 0.5) \};\
@@ -230,7 +292,7 @@ x = ~out.play; \cf3 //returns a group, store in interpreter variable x\cf0 \
 
 \f0\fs24 \cf0 \ul \
 math
-\f1\fs18 \ulnone \
+\f2\fs18 \ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //unary operators\cf0 \
@@ -256,7 +318,7 @@ currentEnvironment.free; \cf3 //free all node proxies\cf0 \
 \f3\fs26 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f2\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //hit cmd-. to stop all nodes\cf0 \
 \cf3 //start again\cf0 \
@@ -268,7 +330,7 @@ currentEnvironment.free; \cf3 //free all node proxies\cf0 \
 \f3\fs26 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f2\fs18 \cf0 \
 ~out = \{ \cf4 SinOsc\cf0 .ar([220, 330], ~out.ar(2).reverse * \cf4 LFNoise2\cf0 .kr(0.5, 2*pi), 0.4) \};\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -277,21 +339,21 @@ currentEnvironment.free; \cf3 //free all node proxies\cf0 \
 \cf0 \
 ~out = \{ \cf4 SinOsc\cf0 .ar(\cf4 Slope\cf0 .ar(~out.ar) * \cf4 MouseX\cf0 .kr(1000, 18000, 1)) * 0.1 + \cf4 SinOsc\cf0 .ar(500, 0, 0.1) \};\
 \
-\cf7 (\
-~out = \{ \cf8 var\cf7  z, zz;\
-	z = \cf8 Slope\cf7 .ar(~out.ar);\
-	zz = \cf8 Slope\cf7 .ar(z);\
-	\cf8 SinOsc\cf7 .ar(210, z) *\
-	\cf8 SinOsc\cf7 .ar(zz * 410) \
-	* 0.1 + \cf8 Decay2\cf7 .ar(Pan2.ar(\cf8 Dust\cf7 .ar(15), MouseX.kr(-1,1)), 0.01, 1.5);\
+(\
+~out = \{ \cf4 var\cf0  z, zz;\
+	z = \cf4 Slope\cf0 .ar(~out.ar);\
+	zz = \cf4 Slope\cf0 .ar(z);\
+	\cf4 SinOsc\cf0 .ar(210, z) *\
+	\cf4 SinOsc\cf0 .ar(zz * 410) \
+	* 0.1 + \cf4 Decay2\cf0 .ar(Pan2.ar(\cf4 Dust\cf0 .ar(15), MouseX.kr(-1,1)), 0.01, 1.5);\
 \}\
-)\cf0 \
+)\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul multiple control
-\f1\fs18 \ulnone \
+\f2\fs18 \ulnone \
 \
 (\
 ~out = \{ \cf4 arg\cf0  freqOffest;\
@@ -310,7 +372,7 @@ currentEnvironment.free; \cf3 //free all node proxies\cf0 \
 \
 
 \f0\fs24 \ul mixing
-\f1\fs18 \ulnone \
+\f2\fs18 \ulnone \
 \
 \
 ~out1 = \{ \cf4 SinOsc\cf0 .ar(600, 0, 0.1) \};\
@@ -333,15 +395,16 @@ currentEnvironment.free; \cf3 //free all node proxies\cf0 \
 \
 \
 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul restoring / erasing
 \f3\fs26 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f2\fs18 \cf0 \
 ~out.free; \cf3 //this frees the group, not the play synth x\cf0 \
-~out.send; \cf3 //this resends the last synth\
+~out.send; \cf3 //this resends the first synth\
 \cf0 ~out.free; \
 ~out.sendAll; \cf3 //this resends all synths\
 \
@@ -354,17 +417,20 @@ currentEnvironment.free; \cf3 //free all node proxies\cf0 \
 \
 \
 \
+\
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul execution order
 \f3\fs26 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f2\fs18 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //you can .play .kr or .ar also a name that is not yet used.\cf0 \
-\cf3 //the rate is guessed as far as possible.\cf0 \
+\cf3 //the rate is guessed as far as possible. on this topic see also: [the_lazy_proxy]\cf0 \
 \
 ~myOut.play; \cf3 //play some key (audio rate is assumed)\cf0 \
 \
@@ -377,30 +443,33 @@ currentEnvironment.free; \cf3 //free all node proxies\cf0 \
 \
 ~myOut = \{ \cf4 SinOsc\cf0 .ar(~otherFreq.ar * 2, 0, 0.1) \};\
 ~otherFreq = \{ \cf4 SinOsc\cf0 .ar(115, 0, 70, 220) \};\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf7 \
+currentEnvironment.clear; \cf8 //clear every  proxy in this environment.\cf7 \
 \
-currentEnvironment.clear;\
+\cf0 \
+\
 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul setting arguments and mapping
-\f1\fs18 \ulnone \
+\f2\fs18 \ulnone \
 \
 \
 ~out.play;\
 \
 ~out = \{ \cf4 arg\cf0  freq=500, ffreq=120; \cf4 SinOsc\cf0 .ar(freq*[1,1.1], \cf4 SinOsc\cf0 .ar(ffreq, 0, pi), 0.2) \};\
 ~out.set(\cf6 \\freq\cf0 , 400+100.rand2);\
-~out.set(\cf6 \\ffreq\cf0 , 3+10.rand2);\
+~out.set(\cf6 \\freq\cf0 , 400+100.rand2);\
+~out.set(\cf6 \\ffreq\cf0 , 30+20.rand2);\
 ~out.unset(\cf6 \\freq\cf0 , \cf6 \\ffreq\cf0 );  \cf3 //remove the setting\cf0 \
-~out.set(\cf6 \\ffreq\cf0 , 3+10.rand2, \cf6 \\freq\cf0 , 300);\
-~out = \{ \cf4 arg\cf0  t_trig; \cf4 Decay2\cf0 .kr(t_trig, 0.01, 0.2) * \cf4 Mix\cf0 (\cf4 SinOsc\cf0 .ar(7000*[1.2, 1.3, 0.2])) \}\
+~out.set(\cf6 \\ffreq\cf0 , 30+10.rand2, \cf6 \\freq\cf0 , 500 + 200.rand2);\
 \
-~out.group.set(\cf6 \\t_trig\cf0 , 0.1); \cf3 //set the group, so the node proxy does not store it\cf0 \
-~out.group.set(\cf6 \\t_trig\cf0 , 0.4);\
-~out.group.set(\cf6 \\t_trig\cf0 , 0.13);\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf7 \
+\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //argument settings and mappings are applied to every new function\cf0 \
 ~out = \{ \cf4 arg\cf0  freq=100, ffreq=20; \cf4 SinOsc\cf0 .ar(freq*[1,1.1], \cf4 SinOsc\cf0 .ar(ffreq, 0, pi), 0.2) \};\
@@ -420,62 +489,97 @@ currentEnvironment.clear;\
 ~out.fadeTime = 2;\
 ~out.xset(\cf6 \\freq\cf0 , 9000);\
 ~out.xset(\cf6 \\freq\cf0 , rrand(400, 700));\
+\
 ~lfo = \{ \cf4 FSinOsc\cf0 .kr(0.1, 0, 30, 100) \};\
 ~lfo2 = \{ \cf4 LFClipNoise\cf0 .kr(3, 100, 200) \};\
 ~lfo3 = \cf4 StreamKrDur\cf0 (\cf4 Pseq\cf0 ([\cf4 Prand\cf0 ([530, 600],1), 700, 400, 800, 500], \cf4 inf\cf0 ) / 3, 0.2);\
-\
 \
 ~out.xmap(\cf6 \\ffreq\cf0 , ~lfo2);\
 ~out.xmap(\cf6 \\ffreq\cf0 , ~lfo);\
 ~out.xmap(\cf6 \\ffreq\cf0 , ~lfo3);\
 \
+\cf3 //special argument names: trigger inputs\cf0 \
+~out = \{ \cf4 arg\cf0  t_trig, dt=1; \cf4 Decay2\cf0 .kr(t_trig, 0.01, dt) * \cf4 Mix\cf0 (\cf4 SinOsc\cf0 .ar(7000*[1.2, 1.3, 0.2])) \}\
+\
+\
+\cf3 //set the group, so the node proxy does not store it\cf0 \
+~out.group.set(\cf6 \\t_trig\cf0 , 0.1, \\dt, 0.1); \
+~out.group.set(\cf6 \\t_trig\cf0 , 0.4, \\dt, 0.31);\
+~out.group.set(\cf6 \\t_trig\cf0 , 0.13, \\dt, 2);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 //lagging controls:\cf7 \
+~out.lag(\cf9 \\xfreq\cf7 , 1);\
+(\
+~out = \{ \cf10 arg\cf7  t_trig, dt=1, xfreq=700; \
+	\cf10 Decay2\cf7 .kr(t_trig, 0.01, dt) * \cf10 Mix\cf7 (\cf10 SinOsc\cf7 .ar(xfreq*[1.2, 1.3, 0.2])) \
+\};\
+)\
+~out.group.set(\cf9 \\t_trig\cf7 , 0.1, \cf9 \\dt\cf7 , 1, \cf9 \\xfreq\cf7 , rrand(2000,9000)); \cf0 \
+~out.group.set(\cf6 \\t_trig\cf0 , 0.1, \cf6 \\dt\cf0 , 0.5, \cf6 \\xfreq\cf0 , rrand(2000,9000)); \
+~out.group.set(\cf6 \\t_trig\cf0 , 0.1, \cf6 \\dt\cf0 , 1, \cf6 \\xfreq\cf0 , rrand(2000,9000)); \
+\cf7 \
+\cf8 //changing the lag, the synth is reconstructed with the new lag:\
+\cf7 \
+~out.lag(\cf9 \\xfreq\cf7 , 0.1);\
+~out.group.set(\cf9 \\t_trig\cf7 , 0.1, \cf9 \\dt\cf7 , 1, \cf9 \\xfreq\cf7 , rrand(2000,9000)); \
+\cf0 \
+\
+\
+\
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul using instruments and players
-\f1\fs18 \ulnone \
+\f2\fs18 \ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //this is also useful for writing instruments\cf0 \
 (\
 ~out = \cf4 Instr\cf0 (\cf6 \\test\cf0 , \
-		\{ \cf4 arg\cf0  dens=520, ffreq=2000; \cf4 Ringz\cf0 .ar(\cf4 Dust\cf0 .ar(dens*[1,1], 0.1), ffreq * 5, 0.01) \}\
+		\{ \cf4 arg\cf0  dens=520, ffreq=2000; \cf4 Ringz\cf0 .ar(\cf4 Dust\cf0 .ar(dens, [1,1]*0.1), ffreq * 5, 0.01) \}\
 		);\
 )\
-~out.set(\cf6 \\dens\cf0 , 2);\
-~out.set(\\dens, 130);\
+~out.set(\cf6 \\dens\cf0 , 120);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf7 ~out.xset(\cf9 \\dens\cf7 , 1030); \cf8 //does not work yet.\cf0 \
 ~out.unmap(\\ffreq);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //wait for a more general interface with cx lib, this works already \cf0 \
 ~out = \cf4 Patch\cf0 ([\cf6 \\test\cf0 ], [10]);\
 \cf3 //set the unassigned parameter does not work currently.\cf0 \
 ~out.set(\cf6 \\ffreq\cf0 , 500);\
 \
 \
-\cf3 //problems here still (doesn't work yet)\
-//(\cf0 \
-\cf3 //~out = InstrSpawner(\{ arg freq=900,env,pan;\cf0 \
-\cf3 //	Pan2.ar(SinOsc.ar(freq, 0, 0.3) * EnvGen.kr(env,doneAction: 2), pan)\cf0 \
-\cf3 //\},[\cf0 \
-\cf3 //	Prand([1500, 700, 800, 700], inf),\cf0 \
-\cf3 //	Env.perc(0.02,0.04),\cf0 \
-\cf3 //	Prand([0,1],inf)\cf0 \
-\cf3 //],0.125)\cf0 \
-\cf3 //)\cf0 \
+//problems here still (doesn't work yet)\
+(\
+~out = \cf4 InstrSpawner\cf0 (\{ \cf4 arg\cf0  freq=900,env,pan;\
+	\cf4 Pan2\cf0 .ar(\cf4 SinOsc\cf0 .ar(freq, 0, 0.3) * \cf4 EnvGen\cf0 .kr(env,doneAction: 2), pan)\
+\},[\
+	\cf4 Prand\cf0 ([1500, 700, 800, 700], \cf4 inf\cf0 ),\
+	\cf4 Env\cf0 .perc(0.02,0.04),\
+	\cf4 Prand\cf0 ([0,1],\cf4 inf\cf0 )\
+],0.125)\
+)\
 \
+~out.clear;\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul setting the xfade time
-\f1\fs18 \ulnone \
+\f2\fs18 \ulnone \
 \
+~out.play;\
 ~out.fadeTime = 4;\
 ~out = \{ \cf4 SinOsc\cf0 .ar(Rand(800, 300.0)*[1,1.1], 0, 0.1) \};\
 ~out = \{ \cf4 SinOsc\cf0 .ar(Rand(800, 300.0)*[1,1.1], 0, 0.1) \};\
 ~out.fadeTime = 0.01;\
 ~out = \{ \cf4 SinOsc\cf0 .ar(Rand(800, 300.0)*[1,1.1], 0, 0.1) \};\
 ~out.fadeTime = 2;\
-~out.release;  //elease the synths in the group\
+~out.release;  //release the synths in the group\
 ~out.fadeTime = 0.01;\
 ~out.stop;\
 \
@@ -489,7 +593,7 @@ currentEnvironment.clear;\
 \f3\fs26 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f2\fs18 \cf0 \
 ~out.play;\
 ~out.awake = false; \cf3 //allow sound object assignment without immediate sending\cf0 \
 \
@@ -507,9 +611,10 @@ currentEnvironment.clear;\
 \
 \cf3 //create a task to repeatedly send grains\cf0 \
 (\
-t = \cf4 Task\cf0 (\{\
+t = Task.new(\{\
 	loop(\{\
-		~out.send([\cf6 \\pmf\cf0 , [1, 20, 300].choose]); \cf3 //starts a synth with the current synthdef\cf0 \
+		\cf3 //starts a synth with the current synthdef at index 0\cf0 \
+		~out.spawn([\cf6 \\pmf\cf0 , [1, 20, 300].choose]); \
 		[0.1, 0.01, 0.25].choose.wait;\
 	\})\
 \});\
@@ -554,11 +659,11 @@ x.free;
 \f3\fs26 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f2\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs24 \cf0 see also [jitlib_efficiency]
-\f1\fs18 \
+\f2\fs18 \
 \
 ~out.play;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -566,7 +671,7 @@ x.free;
 \f3\fs26 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 (\
+\f2\fs18 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 SynthDef\cf0 (\cf5 "grain"\cf0 , \{ \cf4 arg\cf0  i_out = 0;\
 	\cf4 var\cf0  env;\
@@ -577,7 +682,7 @@ x.free;
 \f3\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f2\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //a target for the grains\cf0 \
 ~someInput.ar(2);  \cf3 //initialize to 2 channels audio\cf0 \
@@ -636,11 +741,12 @@ currentEnvironment.clear;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \ulnone note that this can be done while the server is not running: with p.wakeUp or p.play\
 the environment can be played back.\ul \
-
-\f3\fs26 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f3\fs26 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
 p = \cf4 ProxySpace\cf0 (s);\
 q = \cf4 ProxySpace\cf0 (s);\
 \
@@ -670,7 +776,7 @@ y = q.play; \cf3 //out is the default output\cf0 \
 \f0\fs24 \cf0 \ul external access\ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f2\fs18 \cf0 \
 \
 q[\\in][1] = \{ Impulse.ar(2, 0, 0.5) \}; \cf3 //adding a synth at index 1\cf0 \
 \
@@ -682,13 +788,13 @@ q.at(\\in).put(1, \{ Impulse.ar(2, 0, 0.5) \});\
 \f0\fs24 \cf0 \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \ulnone \
+\f2\fs18 \cf0 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul connecting two spaces\ulnone  (must be on one server)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f2\fs18 \cf0 \
 \
 (\
 q.use(\{\
@@ -699,7 +805,7 @@ q.use(\{\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul recording output\ulnone  (see also: [RecNodeProxy])
-\f1\fs18 \
+\f2\fs18 \
 \
 \
 r = p.record(\cf6 \\out\cf0 , \cf5 "proxySpace12.aiff"\cf0 );\
@@ -723,7 +829,7 @@ r.close;\
 \f0\fs24 \cf0 \ul push/pop\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \ulnone \
+\f2\fs18 \cf0 \ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //make x the currentEnvironment\cf0 \
