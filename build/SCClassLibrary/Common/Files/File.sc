@@ -84,7 +84,11 @@ UnixFILE : IOStream {
 		var string;
 		string = String.newClear(maxSize);
 		this.prGetLine(string);
-		^string
+		if(string.at(string.size - 1) == $\n,{
+			^string.copyRange(0,string.size - 2)
+		},{
+			^string.copy		
+		});
 	}
 	prGetLine { arg argString;
 		// returns a string up to lesser of next newline 
