@@ -361,11 +361,11 @@ Synth : Node {
 	}
 
 	addToHeadMsg { arg arggroup, args;
-		group = arggroup;
+		group = arggroup.asGroup;
 		^["/s_new", defName, nodeID, 0, group.nodeID] ++ args // s_new
 	}
 	addToTailMsg { arg arggroup, args;
-		group = arggroup; 
+		group = arggroup.asGroup; 
 		^["/s_new", defName, nodeID, 1, group.nodeID] ++ args
 	}
 	addAfterMsg {  arg afterThisOne, args;
