@@ -28,7 +28,7 @@ For NRT synthesis the final event should a dummy event, after which synthesis wi
 \f0\b \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs28 \cf0 \ul \ulc0 Class Methods\
+\fs28 \cf0 \ul Class Methods\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 \ulnone \
@@ -115,7 +115,7 @@ For NRT synthesis the final event should a dummy event, after which synthesis wi
 \f1\b0 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 Instance Methods\
+\f0\b\fs28 \cf0 \ul Instance Methods\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -151,7 +151,7 @@ score_(list)
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 \ul \ulc0 NRT Examples:
+\f0\b\fs30 \cf0 \ul NRT Examples:
 \f1\b0\fs24 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -203,6 +203,7 @@ f.close;\
 
 \f2\fs18 \cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  f, o;\
 g = [\
 	[0.1, [\cf5 \\s_new\cf0 , \cf5 \\helpscore\cf0 , 1000, 0, 0, \cf5 \\freq\cf0 , 440]],	[0.2, [\cf5 \\s_new\cf0 , \cf5 \\helpscore\cf0 , 1001, 0, 0, \cf5 \\freq\cf0 , 660], \
@@ -211,24 +212,28 @@ g = [\
 	[1, [\cf5 \\c_set\cf0 , 0, 0]]\
 	];
 \f1\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 o = \cf3 ServerOptions\cf0 .new.numOutputBusChannels = 1; \cf2 // mono output\cf0 \
+\f2\fs18 \cf0 o = \cf3 ServerOptions\cf0 .new.numOutputBusChannels = 1; \cf2 // mono output\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Score\cf0 .recordNRT(g, \cf4 "help-oscFile"\cf0 , \cf4 "helpNRT.aiff"\cf0 , options: o); \cf2 // synthesize\cf0 \
 )
 \f1\fs24 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 Real-time Examples:
+\f0\b\fs28 \cf0 \ul Real-time Examples:
 \f1\b0\fs24 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs18 s.boot; \cf2 // boot the default server\
+\fs18 \cf0 s.boot; \cf2 // boot the default server\
 \
 // A sample synthDef\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 "helpscore"\cf0 ,\{ \cf3 arg\cf0  freq = 440;\
 	\cf3 Out\cf0 .ar(0,\
 		 \cf3 SinOsc\cf0 .ar(freq, 0, 0.2) * \cf3 Line\cf0 .kr(1, 0, 0.5, doneAction: 2)\
@@ -299,6 +304,50 @@ z.play;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SystemClock\cf0 .sched(1.0, \{z.stop;\});\
 )\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs26 \cf0 \ul creating Score from a pattern
+\f2\b0\fs18 \ulnone \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDescLib\cf0 .read;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // new pattern\cf0 \
+(\
+p = \cf3 Pbind\cf0 (\
+	\
+	\cf5 \\dur\cf0 , \cf3 Prand\cf0 ([0.3, 0.5], \cf3 inf\cf0 ),\
+	\cf5 \\freq\cf0 , \cf3 Prand\cf0 ([200, 300, 500],\cf3 inf\cf0 )\
+);\
+)\
+\
+\cf2 // make a score from the pattern, 2 sec long\cf0 \
+z = p.asScore(2.0);\
+\
+z.score.postcs;\
+z.play;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs26 \cf0 \ul rendering a pattern to sound file directly:
+\f2\b0\fs18 \ulnone \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // render the pattern to aiff\cf0 \
+\
+p.render(\cf4 "asScore-Help.aif"\cf0 , 3);\
+\
+\
+\cf2 // todo: remove the osc file after rendering.\cf0 \
+\
+\
+\
 \
 \
 }
