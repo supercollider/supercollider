@@ -497,7 +497,7 @@ Pstutter : FilterPattern {
 			(inevent = stream.next(event)).notNil
 		},{
 			(nn = nstream.next).notNil.if({
-				nn.do({
+				nn.abs.do({
 					event = inevent.copy.yield;
 				});
 			}, { ^event });
