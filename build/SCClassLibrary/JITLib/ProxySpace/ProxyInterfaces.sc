@@ -258,21 +258,26 @@ SynthDefControl : SynthControl {
 	}
 	
 	loadToBundle { arg bundle;
-		var bytes, size;
+		var bytes, size, path;
 		bytes = synthDef.asBytes;
 		size = bytes.size;
 		size = size + 4 - (size bitAnd: 3) + 4 + 16;
+		path = SynthDef.synthDefDir ++ synthDef.name ++  ".scsyndef";
 		if(size < 8192) {
 			bundle.addPrepare([5, bytes]); //"/d_recv"
-			if(writeDefs) { this.writeSynthDefFile }; // in case of server reboot
+			if(writeDefs) { this.writeSynthDefFile(path, bytes) }; // in case of server reboot
 			
 		}{
-			"SynthDef too large to be sent to remote server".warn;
-			this.writeSynthDefFile;
-			bundle.addPrepare([6, SynthDef.synthDefDir ++ synthDef.name ++  ".scsyndef"]); //"/d_load"
+			"SynthDef too large to be sent to remote server via udp".warn;
+			this.writeSynthDefFile(path, bytes);
+			bundle.addPrepare([6, path]); //"/d_load"
 		};
 	}
-	writeSynthDefFile { synthDef.writeDefFile }
+	writeSynthDefFile { arg path, bytes;
+		var file;
+		file = File(path, "w");
+		protect { file.putAll(bytes); file.close } { file.close }
+	}
 	
 	asDefName { ^synthDef.name }
 	
