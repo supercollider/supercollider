@@ -110,4 +110,23 @@ SCAutoCompleteTextField : SCTextField {
 */
 
 
+SCTabletView : SCView {
+
+	var <>mouseDownAction,<>mouseUpAction,<>mouseDraggedAction;
+	
+	mouseDown { arg x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
+		mouseDownAction.value(this,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
+	}
+	mouseUp { arg x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
+		mouseUpAction.value(this,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
+	}
+	mouseDragged { arg x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
+		mouseDraggedAction.value(this,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
+	}
+	doAction { arg x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
+		action.value(this,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
+	}
+}
+
+
 
