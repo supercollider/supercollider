@@ -43,8 +43,11 @@
  
 	[super keyDown: event];
 	range = [self selectedRange];
+	pos = range.location;
+	string = [self string];
+	c = [string characterAtIndex: pos-1]; // did a newline actually get inserted? (maybe not if using foreign language input mode)
 	
-	if (nspaces) {
+	if (nspaces && (c == '\r' || c == '\n')) {
 		spaces[nspaces] = 0;
 	
         // reverse the string
