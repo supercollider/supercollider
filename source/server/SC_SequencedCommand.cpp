@@ -59,9 +59,11 @@ void SndBuf_Init(SndBuf *buf)
 }
 
 SC_SequencedCommand::SC_SequencedCommand(World *inWorld, ReplyAddress *inReplyAddress)
-	: mNextStage(1), mReplyAddress(*inReplyAddress), mWorld(inWorld),
+	: mNextStage(1), mWorld(inWorld),
 	mMsgSize(0), mMsgData(0)
 {
+	if (inReplyAddress) mReplyAddress = *inReplyAddress;
+	else mReplyAddress.mReplyFunc = null_reply_func;
 }
 
 SC_SequencedCommand::~SC_SequencedCommand()
@@ -1104,7 +1106,7 @@ AsyncPlugInCmd::AsyncPlugInCmd(World *inWorld, ReplyAddress *inReplyAddress,
 			AsyncStageFn stage2, // stage2 is non real time
 			AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
 			AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
-			AsyncFreeFn cleanup,
+			AsyncFreeFn cleanup, // cleanup is called in real time
 			int completionMsgSize,
 			void* completionMsgData)
 	: SC_SequencedCommand(inWorld, inReplyAddress),
@@ -1112,13 +1114,17 @@ AsyncPlugInCmd::AsyncPlugInCmd(World *inWorld, ReplyAddress *inReplyAddress,
 	mStage2(stage2), mStage3(stage3), mStage4(stage4), 
 	mCleanup(cleanup)
 {
-	mMsgSize = completionMsgSize;
-	mMsgData = (char*)completionMsgData;
+	if (completionMsgSize && completionMsgData) {
+		mMsgSize = completionMsgSize;
+		mMsgData = (char*)World_Alloc(mWorld, mMsgSize);
+		memcpy(mMsgData, completionMsgData, mMsgSize);
+	}
 }
 
 AsyncPlugInCmd::~AsyncPlugInCmd()
 {
 	(mCleanup)(mWorld, mCmdData);
+	if (mMsgData) World_Free(mWorld, mMsgData);
 }
 
 void AsyncPlugInCmd::CallDestructor() 
@@ -1142,7 +1148,7 @@ bool AsyncPlugInCmd::Stage3()
 void AsyncPlugInCmd::Stage4()
 {
 	bool result = !mStage4 || (mStage4)(mWorld, mCmdData);
-	if (result) SendDone((char*)mCmdName);
+	if (result && mCmdName && mReplyAddress.mReplyFunc != null_reply_func) SendDone((char*)mCmdName);
 }
 
 
