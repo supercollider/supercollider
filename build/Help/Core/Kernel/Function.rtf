@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green115\blue0;}
+\red0\green115\blue0;\red0\green0\blue0;\red0\green115\blue0;\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Function
@@ -49,8 +49,9 @@ Get the FunctionDef definition of the Function.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 value(...args)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Evaluates the FunctionDef referred to by the Function. The Function is passed the args given.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -60,10 +61,12 @@ Evaluates the FunctionDef referred to by the Function. The Function is passed th
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b valueArray(..args..)\
+\f0\b \cf0 valueArray(..args..)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, then it is unpacked and appended to the other arguments (if any) to the Function. If the last argument is not an Array or List then this is the same as the 'value' method.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -84,14 +87,14 @@ Evaluates the FunctionDef referred to by the Function. If the last argument is a
 \
 \{ \cf2 arg\cf0  a, b, c, d; [a, b, c, d].postln \}.valueArray(9, 10, [1, 2, 3]);
 \fs20 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 \
+\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 valueEnvir(...args)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 As value above. Unsupplied argument names are looked up in the current 
 \f0\b Environment
 \f1\b0 .\
@@ -99,7 +102,6 @@ As value above. Unsupplied argument names are looked up in the current
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Environment\cf0 .use(\{\
 ~a = 3;\
 ~b = 10;\
@@ -110,16 +112,19 @@ As value above. Unsupplied argument names are looked up in the current
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b valueArrayEnvir(..args..)\
+\f0\b \cf0 valueArrayEnvir(..args..)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, then it is unpacked and appended to the other arguments (if any) to the Function. If the last argument is not an Array or List then this is the same as the 'value' method. Unsupplied argument names are looked up in the current 
 \f0\b Environment
 \f1\b0 .\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b loop
+\f0\b \cf0 loop
 \f1\b0 \
 \
 Repeat this function. Useful with 
@@ -136,8 +141,9 @@ t.stop;
 
 \f0\b \cf0 \
 defer(delta)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Delay the evaluation of this Function by 
 \f0\b delta
 \f1\b0  in seconds. Uses 
@@ -152,8 +158,9 @@ Delay the evaluation of this Function by
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 dup(n)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Return an Array consisting of the results of n evaluations of this Function.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -166,8 +173,9 @@ x.postln;
 
 \f0\b \cf0 bench(print)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Returns the amount of time this function takes to evaluate. 
+\f1\b0 \cf0 Returns the amount of time this function takes to evaluate. 
 \f0\b print
 \f1\b0  is a boolean indicating whether the result is posted. The default is true.\
 \
@@ -179,8 +187,9 @@ x.postln;
 
 \f0\b\fs24 \cf0 fork(clock, quant, stackSize)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Returns a Routine using the receiver as it's function, and plays it in a 
+\f1\b0 \cf0 Returns a Routine using the receiver as it's function, and plays it in a 
 \f0\b TempoClock
 \f1\b0 .\
 \
@@ -209,13 +218,13 @@ Break from a loop. Calls the receiver with an argument which is a function that 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 \ul Exception Handling\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \cf0 \ulnone \
+\f1\b0\fs24 \ulnone \
 For the following two methods a return ^ inside of the receiver itself cannot be caught. Returns in methods called by the receiver are OK.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b try(handler)
+\f0\b \cf0 try(handler)
 \f1\b0 \
 \
 Executes the receiver. If an exception is thrown the catch function 
@@ -308,8 +317,9 @@ Audio Support\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 play(target, outbus, fadetime, addAction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 This is probably the simplest way to get audio in SC3. It wraps the Function in a 
 \f0\b SynthDef
 \f1\b0  (adding an 
@@ -320,9 +330,10 @@ This is probably the simplest way to get audio in SC3. It wraps the Function in 
 \f0\b Linen
 \f1\b0  is also added to avoid clicks, which is configured to allow the resulting Synth to have its 
 \f2\fs18 \cf5 \\gate 
-\f1\fs24 \cf0 argument set, or to respond to a release message.\
+\f1\fs24 \cf0 argument set, or to respond to a release message. Args in the function become args in the resulting def.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
 target 
 \f1\b0 - a Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.\
 
@@ -342,9 +353,9 @@ target
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs18 \cf0 x = \{ \cf2 SinOsc\cf0 .ar(440, 0, 0.3) \}.play; \cf3 // this returns a Synth object;\cf0 \
+\fs18 x = \{ arg freq = 440; \cf2 SinOsc\cf0 .ar(freq, 0, 0.3) \}.play; \cf3 // this returns a Synth object;\cf0 \
+\cf6 x.set(\cf7 \\freq\cf6 , 880); \cf8 // note you can set the freq argument\cf0 \
 x.defName; \cf3 // the name of the resulting SynthDef (derived from the Functions hash value)\cf0 \
 x.release(4); \cf3 // fadeout over 4 seconds
 \fs20 \cf2 \
@@ -371,18 +382,21 @@ Many of the examples in SC3 make use of the Function.play syntax. Note that reus
 
 \f1\fs24 \cf0 Function.play is often more convienent than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice. \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b scope(numChannels, outbus, fadeTime, bufsize, zoom)\
+\f0\b \cf0 scope(numChannels, outbus, fadeTime, bufsize, zoom)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 As 
 \f0\b play 
 \f1\b0 above, but plays it on the internal 
 \f0\b Server
 \f1\b0 , and calls Server-scope to open a scope window in which to view the output. Currently only works on OSX.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b numChannels
+\f0\b \cf0 numChannels
 \f1\b0  - number of channels to display in the scope window, starting from 
 \f0\b outbus
 \f1\b0 . The default is 2.
@@ -405,22 +419,23 @@ outbus
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul Conversion\
+\f0\b\fs28 \ul Conversion\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 \ulnone \
 asSynthDef(rates, prependArgs, outClass, fadetime)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Returns a SynthDef based on this Function, adding a 
 \f0\b Linen 
 \f1\b0 and an 
 \f0\b Out
 \f1\b0  ugen if needed.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
 rates 
 \f1\b0 - An Array of rates and lagtimes for the function's arguments (see 
 \f0\b SynthDef
@@ -435,8 +450,9 @@ rates
 \f0\b \
 \
 asDefName\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Performs asSynthDef (see above), sends the resulting def to the local server and returns the SynthDefs name. This is asynchronous.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -451,7 +467,8 @@ y = \cf2 Synth\cf0 .new(x);
 
 \f0\b\fs24 \cf0 asRoutine\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Returns a 
+\f1\b0 \cf0 Returns a 
 \f0\b Routine
 \f1\b0  using this as its func argument.}
