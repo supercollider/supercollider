@@ -651,25 +651,21 @@ SCFuncUserView : SCUserView {
 }
 
 //by jt
-SCMultiSliderView : SCView { // abstract class
-	var <> points = nil;
-	var <> win;
-	
-	draw {
-	
-}
+SCMultiSliderView : SCView { 
 
+	var <>acceptDrag = true;
+	var < object;
+
+	draw {}
 	mouseBeginTrack { arg x, y, modifiers;
 		}
-	mouseTrack { arg x, y, modifiers; 
-	
+	mouseTrack { arg x, y, modifiers; 	
  	}
- 	
 	mouseEndTrack { arg x, y, modifiers;
 	
 	}
 	properties {
-		^super.properties ++ [\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines]
+		^super.properties ++ [\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \selectionSize]
 	}	
 	value {arg val; //returns array
 		^this.getProperty(\value, val)
@@ -677,16 +673,16 @@ SCMultiSliderView : SCView { // abstract class
 	value_ {arg val;
 		^this.setProperty(\value, val)
 	}
-	x {
+	index { //returns selected index
 		^this.getProperty(\x)
 	}
-	y {
+	currentvalue { //returns value of selected index
 		^this.getProperty(\y)
 	}
-	x_ {arg inx;
+	index_ {arg inx;
 		this.setProperty(\x, inx)
 	}
-	y_ {arg iny;
+	currentvalue_ {arg iny;
 		this.setProperty(\y, iny)
 	}
 	showIndex{arg abool;
@@ -700,7 +696,32 @@ SCMultiSliderView : SCView { // abstract class
 	}
 	thumbSize_{arg val;
 		this.setProperty(\thumbSize, val)
-	}	
+	}
+	isHorizontal_{arg val;
+		this.setProperty(\isHorizontal,val);	
+	}
+	selectionSize{
+		^this.setProperty(\selectionSize)
+	}
+	canReceiveDrag {
+		^acceptDrag.value(this);
+	}
+	receiveDrag {
+		this.object = currentDrag;
+		this.doAction;
+		currentDrag = nil;
+	}
+	beginDrag {
+	currentDrag = Array.new; 
+	this.value(currentDrag);
+	^currentDrag
+	}
+	object_ { arg obj;
+		object = obj;
+		this.value_(object.asArray);
+	}
+
+
 }
 
 
