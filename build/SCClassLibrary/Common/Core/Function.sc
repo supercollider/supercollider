@@ -39,6 +39,10 @@ Function : AbstractFunction {
 		// unsupplied argument names are looked up in the currentEnvironment
 		^this.primitiveFailed 
 	}
+	functionPerformList { arg selector, arglist;
+		_ObjectPerformList; 
+		^this.primitiveFailed 
+	}	
 	
 	loop {
 		// loop is supported magically by the compiler,

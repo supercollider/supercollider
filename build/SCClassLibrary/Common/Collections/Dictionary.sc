@@ -322,7 +322,7 @@ IdentityDictionary : Dictionary {
 		if (know) {
 			func = this[selector];
 			if (func.notNil) {
-				^func.performList(\value, this, args);
+				^func.functionPerformList(\value, this, args);
 			};
 			if (selector.isSetter) {
 				selector = selector.asGetter;
