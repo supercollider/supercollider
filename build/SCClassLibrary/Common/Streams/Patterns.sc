@@ -43,7 +43,7 @@ Pattern : AbstractFunction {
 		^Pbinop.new(operator, pattern, this)
 	}
 	composeNAryOp { arg selector, argList;
-		^this.notYetImplemented
+		^thisMethod.notYetImplemented
 	}
 }
 
