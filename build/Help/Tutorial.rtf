@@ -2,14 +2,12 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
-\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
-}
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 SuperCollider 3 Server Tutorial\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \cf0 \
+\f1\b0\fs24 \
 To follow this tutorial you should read \
 	
 \f0\b Server-Architecture\
@@ -53,16 +51,20 @@ The local server runs on the same machine as the SuperCollider application, but 
 \f1\fs24 \
 To boot the server you send it the boot message.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf3 s\cf0 .boot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 To quit the server send it the quit message.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf3 s\cf0 .quit;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 We can also create a server to run. To create a server object we need to provide the IP address or the server and a port number. Port numbers are somewhat arbitrary but they should not conflict with common protocols like telnet, ftp http, etc. The IP address 127.0.0.1 is defined to mean the local host. This is the IP address to use for running a server on your own machine.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -112,9 +114,11 @@ Create a SynthDef. A SynthDef is a description of a processing module that you w
 \
 
 \f2\fs18 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf5 "sine"\cf0 , \{ arg freq=800;\
 	\cf3 var\cf0  osc;\
 	osc = \cf3 SinOsc\cf0 .ar(freq, 0, 0.1); \cf2 // 800 Hz sine oscillator\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 Out\cf0 .ar(0, osc); \cf2 // send output to audio bus zero.\
 \cf0 \}).writeDefFile;\
 )\
@@ -164,9 +168,11 @@ Using Arguments\
 \f2\fs18 s.boot;\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf5 "sine"\cf0 , \{ arg freq;\
 	\cf3 var\cf0  osc;\
 	osc = \cf3 SinOsc\cf0 .ar(freq, 0, 0.1); \cf2 // 800 Hz sine oscillator\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 Out\cf0 .ar(0, osc); \cf2 // send output to audio bus zero.\
 \cf0 \}).writeDefFile;\
 )\
@@ -271,6 +277,7 @@ Adding an Effect Dynamically\
 	trg = \cf3 Decay2\cf0 .ar(\cf3 Impulse\cf0 .ar(rate,0,0.3), 0.01, 0.3);\
 	osc = \{\cf3 WhiteNoise\cf0 .ar(trg)\}.dup;\
 	\cf3 Out\cf0 .ar(0, osc); \cf2 // send output to audio bus zero.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \}).writeDefFile;\
 s.sendSynthDef(\cf5 "tish"\cf0 );\
 )\
@@ -287,6 +294,7 @@ s.sendSynthDef(\cf5 "tish"\cf0 );\
 	\cf3 var\cf0  in;\
 	in = \cf3 In\cf0 .ar(0,2);\
 	\cf2 // use ReplaceOut to overwrite the previous contents of the bus.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 ReplaceOut\cf0 .ar(0, \cf3 CombN\cf0 .ar(in, 0.5, delay, decay, 1, in));\
 \}).writeDefFile;\
 s.sendSynthDef(\cf5 "echo"\cf0 );\
@@ -449,24 +457,28 @@ space = \cf3 Buffer\cf0 .read(s,\cf5 "sounds/a11wlk01.wav"\cf0 );\
 saw=\cf3 Synth\cf0 (\cf5 "saw"\cf0 );\
 delay=\cf3 Synth.after\cf0 (saw,\cf5 "delay", [\\decay, 20]\cf0 );\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 timer.sched(0,\{\cf7 Routine\cf6 (\{ \cf7 var\cf6  wait, freq, cutoff,rezz;\
-	wait = \cf7 Pseq\cf6 ([2],\cf7 inf\cf6 ).asStream;\
-	freq = \cf7 Pseq\cf6 ([30,40,42,40],\cf7 inf\cf6 ).asStream;\
+timer.sched(0,\{\
+\cf3 	var r;\
+	r=Routine\cf0 (\{ \cf3 var\cf0  wait, freq, cutoff,rezz;\
+	wait = \cf3 Pseq\cf0 ([2],\cf3 inf\cf0 ).asStream;\
+	freq = \cf3 Pseq\cf0 ([30,40,42,40],\cf3 inf\cf0 ).asStream;\
 	cutoff = Pfunc(\{500.rand2+1000\}).asStream;\
 	rezz = 0.5;\
-	\cf7 inf\cf6 .do(\{saw.set(\cf8 "freq"\cf6 , freq.next.midicps, \cf8 "cutoff"\cf6 , cutoff.next, \cf8 "rezz"\cf6 , rezz, \cf8 "amp"\cf6 , 0.1, \cf8 "out"\cf6 , 0);\
-    (wait.next*offset).wait\});\}).play\});\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 timer.sched(0,\{\cf7 Routine\cf6 (\{ \cf7 var\cf6  wait, rate;\
-	wait = \cf7 Pseq\cf6 ([0.25],\cf7 inf\cf6 ).asStream;\
+	\cf3 inf\cf0 .do(\{saw.set(\cf5 "freq"\cf0 , freq.next.midicps, \cf5 "cutoff"\cf0 , cutoff.next, \cf5 "rezz"\cf0 , rezz, \cf5 "amp"\cf0 , 0.1, \cf5 "out"\cf0 , 0);\
+    (wait.next*offset).wait\});\});\
+    timer.sched(0,r); \
+\});\
+\
+timer.sched(0,\{\
+\cf3 	var r;\
+	r=Routine\cf0 (\{ \cf3 var\cf0  wait, rate;\
+	wait = \cf3 Pseq\cf0 ([0.25],\cf3 inf\cf0 ).asStream;\
 	rate = Pfunc(\{0.5.rand\}).asStream;\
-	\cf7 inf\cf6 .do(\{\cf7 Synth\cf6 .before(delay, \cf8 "sampler"\cf6 , [\cf9 \\bufnum\cf6 , space.bufnum, \cf9 \\trig\cf6 , 1, \cf9 \\amp\cf6 ,0.1, \cf9 \\rate\cf6 , \cf7 rate.next\cf6 , \cf9 \\dur\cf6 , wait.next]);    \
-    (wait.next*offset).wait\});\}).play\});\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+	\cf3 inf\cf0 .do(\{\cf3 Synth\cf0 .before(delay, \cf5 "sampler"\cf0 , [\cf4 \\bufnum\cf0 , space.bufnum, \cf4 \\trig\cf0 , 1, \cf4 \\amp\cf0 ,0.1, \cf4 \\rate\cf0 , \cf3 rate.next\cf0 , \cf4 \\dur\cf0 , wait.next]);    \
+    (wait.next*offset).wait\});\});\
+    timer.sched(0,r); \
+\});\
+\
 )
 \f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -479,6 +491,7 @@ Sequencing with Patterns\
 \f1\b0\fs24 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //sappy emo electronica example... \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Tempo\cf0 .bpm = 120;\
 \cf3 SynthDef\cf0 (\cf5 "patternefx_Ex"\cf0 , \{ \cf3 arg\cf0  out, in; \
 	\cf3 var\cf0  audio, efx;\
