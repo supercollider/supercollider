@@ -45,7 +45,7 @@ struct XFade2 : public Unit
 
 struct LinXFade2 : public Unit
 {
-	float m_pos, m_level, m_amp;
+	float m_pos, m_amp;
 };
 
 struct Pan2 : public Unit
@@ -406,9 +406,8 @@ void LinXFade2_Ctor(LinXFade2 *unit)
 		SETCALC(LinXFade2_next_k);
 	}
 	unit->m_pos = ZIN0(2);
-	unit->m_level = ZIN0(3);
 	unit->m_pos = sc_clip(unit->m_pos, -1.f, 1.f);
-	unit->m_amp = unit->m_level * (unit->m_pos * 0.5 + 0.5);
+	unit->m_amp = unit->m_pos * 0.5 + 0.5;
 	
 	LinXFade2_next_a(unit, 1);
 }
@@ -419,13 +418,12 @@ void LinXFade2_next_k(LinXFade2 *unit, int inNumSamples)
 	float *leftin = ZIN(0);
 	float *rightin = ZIN(1);
 	float pos = ZIN0(2);
-	float level = ZIN0(3);
 	float amp = unit->m_amp;
 
-	if (pos != unit->m_pos || unit->m_level != level) {
+	if (pos != unit->m_pos) {
 		pos = sc_clip(pos, -1.f, 1.f);
 		
-		float nextamp  = level * (pos * 0.5 + 0.5);
+		float nextamp  = (pos * 0.5 + 0.5);
 		float amp_slope  = (nextamp - amp) * unit->mRate->mSlopeFactor;
 
 		LOOP(inNumSamples, 
@@ -435,7 +433,6 @@ void LinXFade2_next_k(LinXFade2 *unit, int inNumSamples)
 			amp += amp_slope;
 		);
 		unit->m_pos = pos;
-		unit->m_level = level;
 		unit->m_amp = amp;
 	} else {
 		LOOP(inNumSamples, 
@@ -452,35 +449,15 @@ void LinXFade2_next_a(LinXFade2 *unit, int inNumSamples)
 	float *leftin = ZIN(0);
 	float *rightin = ZIN(1);
 	float *posp = ZIN(2);
-	float nextlevel = ZIN0(3);
-	float level = unit->m_level;
 
-	if (level != nextlevel) {
-		
-		float level_slope  = (nextlevel - level) * unit->mRate->mSlopeFactor;
-		float pos, amp;
-		LOOP(inNumSamples, 
-			pos = ZXP(posp);
-			pos = sc_clip(pos, -1.f, 1.f);
-			amp = level * (pos * 0.5 + 0.5);
-			float l = ZXP(leftin);
-			float r = ZXP(rightin);
-			ZXP(out) = l + amp * (r - l);
-			level += level_slope;
-		);
-		unit->m_pos = pos;
-		unit->m_level = level;
-		unit->m_amp = amp;
-	} else {
-		LOOP(inNumSamples, 
-			float pos = ZXP(posp);
-			pos = sc_clip(pos, -1.f, 1.f);
-			float amp = level * (pos * 0.5 + 0.5);
-			float l = ZXP(leftin);
-			float r = ZXP(rightin);
-			ZXP(out) = l + amp * (r - l);
-		);
-	}
+	LOOP(inNumSamples, 
+		float pos = ZXP(posp);
+		pos = sc_clip(pos, -1.f, 1.f);
+		float amp = pos * 0.5 + 0.5;
+		float l = ZXP(leftin);
+		float r = ZXP(rightin);
+		ZXP(out) = l + amp * (r - l);
+	);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -194,10 +194,10 @@ XFade2 : XFade {
 LinXFade2 : XFade {
 	// linear two channel cross fade
 	*ar { arg inA, inB = 0.0, pan = 0.0, level = 1.0;
-		^this.multiNew('audio', inA, inB, pan, level)
+		^this.multiNew('audio', inA, inB, pan) * level
 	}
 	*kr { arg inA, inB = 0.0, pan = 0.0, level = 1.0;
-		^this.multiNew('control', inA, inB, pan, level)
+		^this.multiNew('control', inA, inB, pan) * level
 	}
  	checkInputs { ^this.checkNInputs(2) }
 }
