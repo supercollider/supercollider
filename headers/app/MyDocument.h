@@ -66,6 +66,9 @@ extern PyrSymbol *s_closed;
 -(NSString*)pathOfHelpFileFor:(NSString*)selection;
 -(void)showHelpFor:(NSString*)selection;
 
+- (BOOL) textView: (NSTextView *) textView
+    clickedOnLink: (id) link
+    atIndex: (unsigned) charIndex;
 - (void)sendSelection: (char*) methodName;
 
 - (NSString *)windowNibName;

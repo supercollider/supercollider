@@ -584,6 +584,10 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			helpFilePath = helpFileWithName(fileManager, selection, @".help");
 			if (!helpFilePath) {
 				helpFilePath = helpFileWithName(fileManager, selection, @".sc");
+                                // special case for html files where link contains file suffix
+                                if (!helpFilePath) {
+                                        helpFilePath = helpFileWithName(fileManager, selection, @"");
+                                }
 				//if (!helpFilePath) {
 					//helpFilePath = helpFileWithName(fileManager, @"Help", @".help.rtf");
                     // possiblly == NULL
@@ -626,6 +630,25 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 }
 
 #endif
+
+//	Handle a click in a link.
+- (BOOL) textView: (NSTextView *) textView
+    clickedOnLink: (id) link
+    atIndex: (unsigned) charIndex
+{
+    if ([link isKindOfClass: [NSString class]])
+    {
+        [self showHelpFor: link];
+        return YES;
+        
+    } else if ([link isKindOfClass: [NSURL class]])
+    {
+        [self showHelpFor: [link path]];
+        return YES;
+    }
+    
+    return NO;
+}
 
 - (void)sendSelection: (char*) methodName
 {        
