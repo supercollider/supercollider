@@ -112,7 +112,7 @@ Event : Environment {
 			};
 			
 			~argNames = #[\freq, \amp, \pan];
-			~group = 0;
+			//~group = 0;
 			
 			~finish = {
 				// do final calculations
