@@ -4,6 +4,7 @@ SCView {  // abstract class
 	classvar <>globalKeyDownAction, <>globalKeyUpAction;
 
 	var dataptr, <parent, <>action, <background, <>keyDownAction, <>keyUpAction, <>keyTyped;
+	var <>beginDragAction;
 	
 	*new { arg parent, bounds;
 		^super.new.init(parent, bounds);
@@ -316,7 +317,11 @@ SCSlider : SCSliderBase
 	}
 	
 	beginDrag { 
-		currentDrag = this.value; 
+		currentDrag = if (beginDragAction.isNil, 
+			this.value, 
+		{
+			beginDragAction.value(this);
+		});
 	}
 	canReceiveDrag {
 		^currentDrag.isNumber;
@@ -405,8 +410,12 @@ SCRangeSlider : SCSliderBase {
 		if (unicode == 16rF702, { this.decrement; ^this });
 	}
 	beginDrag { 
-		currentDrag = Point(this.lo, this.hi); 
-	}
+		currentDrag = if (beginDragAction.isNil, 
+			Point(this.lo, this.hi);, 
+		{
+			beginDragAction.value(this);
+		});
+	}	
 	canReceiveDrag {
 		^currentDrag.isKindOf(Point);
 	}
@@ -452,7 +461,11 @@ SC2DSlider : SCSliderBase {
 		if (unicode == 16rF702, { this.decrementX; ^this });
 	}
 	beginDrag { 
-		currentDrag = Point(this.x, this.y); 
+		currentDrag = if (beginDragAction.isNil, 
+			Point(this.x, this.y), 
+		{
+			beginDragAction.value(this);
+		});
 	}
 	canReceiveDrag {
 		^currentDrag.isKindOf(Point);
@@ -527,9 +540,13 @@ SCButton : SCControlView {
 	properties {
 		^super.properties ++ #[\value, \font, \states]
 	}
-
+	
 	beginDrag { 
-		currentDrag = this.value; 
+		currentDrag = if (beginDragAction.isNil, 
+			this.value, 
+		{
+			beginDragAction.value(this);
+		});
 	}
 	canReceiveDrag {
 		^currentDrag.isNumber or: { currentDrag.isKindOf(Function) };
@@ -595,7 +612,11 @@ SCPopUpMenu : SCControlView {
 	}
 
 	beginDrag { 
-		currentDrag = this.value; 
+		currentDrag = if (beginDragAction.isNil, 
+			this.value, 
+		{
+			beginDragAction.value(this);
+		});
 	}
 	canReceiveDrag {
 		^currentDrag.isNumber;
@@ -714,8 +735,11 @@ SCNumberBox : SCStaticTextBase {
 		^super.properties ++ #[\boxColor]
 	}
 	beginDrag { 
-		currentDrag = object.asFloat; 
-		
+		currentDrag = if (beginDragAction.isNil, 
+			object.asFloat, 
+		{
+			beginDragAction.value(this);
+		});
 	}
 	canReceiveDrag {
 		^currentDrag.isNumber;
@@ -804,7 +828,11 @@ SCListView : SCControlView {
 	}
 
 	beginDrag { 
-		currentDrag = this.value; 
+		currentDrag = if (beginDragAction.isNil, 
+			this.value, 
+		{
+			beginDragAction.value(this);
+		});
 	}
 	canReceiveDrag {
 		^currentDrag.isNumber;
@@ -827,7 +855,6 @@ SCDragView : SCStaticTextBase {
 }
 
 SCDragSource : SCDragView {
-	var <>beginDragAction;
 	
 	beginDrag { 
 		currentDrag = if (beginDragAction.isNil, 
@@ -853,7 +880,6 @@ SCDragSink : SCDragView
 }
 
 SCDragBoth : SCDragSink {
-	var <>beginDragAction;
 	
 	beginDrag { 
 		currentDrag = if (beginDragAction.isNil, 
@@ -1008,23 +1034,30 @@ SCMultiSliderView : SCView {
 		this.doAction;
 		currentDrag = nil;
 	}
-	beginDrag {
-		var setsize, vals, rvals;
-		rvals = this.reference;
-		vals = this.value;
-		if(this.selectionSize > 1, {
-			vals = vals.copyRange(this.index, this.selectionSize + this.index);});
-		if(rvals.isNil, { 
-			currentDrag = vals 
-		},{
-		if(this.selectionSize > 1, {
-			rvals = rvals.copyRange(this.index, this.selectionSize + this.index);});
-			currentDrag = currentDrag.add(vals);
-			currentDrag = currentDrag.add(rvals);
+	beginDrag { 
+		currentDrag = if (beginDragAction.isNil, 
+			this.defaultDrag,{
+			beginDragAction.value(this);
 		});
-
-		^currentDrag
 	}
+	
+	defaultDrag {
+			var setsize, vals, rvals, outval;
+			rvals = this.reference;
+			vals = this.value;
+			if(this.selectionSize > 1, {
+				vals = vals.copyRange(this.index, this.selectionSize + this.index);});
+			if(rvals.isNil, { 
+				^vals 
+			},{
+			if(this.selectionSize > 1, {
+				rvals = rvals.copyRange(this.index, this.selectionSize + this.index);});
+				outval = outval.add(vals);
+				outval = outval.add(rvals);
+			});
+			^outval
+	}
+		
 	defaultKeyDownAction { arg key, modifiers, unicode;
 		//modifiers.postln; 16rF702
 		if (unicode == 16rF703, { this.index = this.index + 1; ^this });
@@ -1044,54 +1077,7 @@ SCMultiSliderView : SCView {
 SCEnvelopeView : SCMultiSliderView {
 	var connection, <>allConnections, doOnce;
 	var <>items;
-	setPdStyle{
-		connection = Array.newClear(3);
-		doOnce = true;
-		this.setProperty(\setGraphView, true);
-		allConnections = Array.newClear(this.size);
-		this.mouseEndTrackAction = {arg ab; 
-			ab.setProperty(\connectTo, -1);
-			ab.setProperty(\connectFrom, -1);
-			doOnce = true;
-			};
 
-		this.metaAction = {arg ab;
-			var from, to, nexti, in, out, toarr, outarr, inarr;
-			from = ab.getProperty(\connectFrom);
-			to = ab.getProperty(\connectTo);
-			//from.postln;
-			//to.postln;
-			if((from >= 0) && (to >= 0) && (doOnce),{
-				if((allConnections@from).notNil,{
-					connection = allConnections@from;
-					//connection.postln;
-					//"from ;".post; from.postln;
-				});
-				ab.select(from);
-				out =  ab.getProperty(\connectFromOutput);
-				in = ab.getProperty(\connectToInput);
-				toarr = connection@0;
-				outarr = connection@1;
-				inarr = connection@2;
-				toarr = toarr.add(to);
-				outarr = outarr.add(out);
-				inarr = inarr.add(in);
-				connection.put(0, toarr);
-				connection.put(1, outarr);
-				connection.put(2, inarr);
-				ab.connectToInputs(from,connection);
-				allConnections.put(from, connection);
-				connection = Array.newClear(3);
-				doOnce =false;
-				});
-			};
-	
-	}
-	connectToInputs{arg indx, aconn;
-		//[[toIndex..],[fromOutputs..],[toInputs..]]
-		this.select(indx);
-		this.setProperty(\connectToInputs,aconn.asFloat);
-	}
 	value_ { arg val;
 		if(val.at(1).size != val.at(0).size,{
 			// otherwise its a fatal crash
@@ -1175,8 +1161,12 @@ SCEnvelopeView : SCMultiSliderView {
 			this.value_(currentDrag);
 		});
 	}
-	beginDrag {
-		currentDrag = this.value;
+	beginDrag { 
+		currentDrag = if (beginDragAction.isNil, 
+			this.value, 
+		{
+			beginDragAction.value(this);
+		});
 	}
 	addValue{arg xval, yval;
 		var arr, arrx, arry, aindx;
