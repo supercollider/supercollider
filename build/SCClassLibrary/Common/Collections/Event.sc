@@ -317,7 +317,7 @@ Event : Environment {
 					bus: #{|server|
 						var lag, array;
 						lag = ~lag + server.latency;
-						array = ~array;
+						array = ~array.asArray;
 						server.sendBundle(lag, [\c_setn, ~out, array.size] ++ array);
 					},
 					
