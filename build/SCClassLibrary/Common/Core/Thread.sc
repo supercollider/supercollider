@@ -57,7 +57,7 @@ Routine : Thread {
 	*run { arg func, stackSize=512, clock, quant=0;
 		var routine;
 		routine = super.new(func, stackSize);
-		^routine.play(clock, quant);
+		^routine.play(clock ? SystemClock, quant);
 	}
 		
 	// resume, next, value, run are synonyms
