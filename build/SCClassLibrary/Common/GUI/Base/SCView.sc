@@ -681,8 +681,8 @@ SCNumberBox : SCStaticTextBase {
 		^v
 	}
 
-	increment { this.value = this.value + step; }
-	decrement { this.value = this.value - step; }
+	increment { this.valueAction = this.value + step; }
+	decrement { this.valueAction = this.value - step; }
 	
 	defaultKeyDownAction { arg char, modifiers, unicode;
 		// standard chardown
