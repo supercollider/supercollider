@@ -3339,14 +3339,14 @@ void Limiter_next(Limiter* unit, int inNumSamples)
 			pos = 0;
 			buf_remain = bufsize;
 			
-			long maxval2 = (long)sc_max(unit->m_prevmaxval, curmaxval);
+			float maxval2 = sc_max(unit->m_prevmaxval, curmaxval);
 			unit->m_prevmaxval = curmaxval;
 			unit->m_curmaxval = curmaxval = 0.f;
 			
 			float next_level;
 			if (maxval2 > amp) next_level = amp / maxval2;
 			else next_level = 1.0;
-
+			
 			slope = unit->m_slope = (next_level - level) * unit->m_slopefactor;
 			
 			float* temp = unit->m_xoutbuf;
