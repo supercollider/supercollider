@@ -722,7 +722,9 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
 		PyrSlot *b = g->sp - 1;
 		PyrSlot *c = g->sp;
 		
-        PyrString* string = a->uos;
+		if (!(isKindOfSlot(a, class_string))) return errWrongType;
+		PyrString* string = a->uos;
+        if(string->size == 0) return errFailed;
         int rangeStart, rangeSize;
         int err = slotIntVal(b, &rangeStart);
         if (err) return err;
