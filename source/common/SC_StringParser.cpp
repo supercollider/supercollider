@@ -19,7 +19,7 @@
 */
 
 #include "SC_StringParser.h"
-#include <algorithm>
+#include "SC_BoundsMacros.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -55,7 +55,7 @@ const char *SC_StringParser::NextToken()
 			end = mEnd;
 		}
 
-		size_t len = std::min(SC_MAX_TOKEN_LENGTH-1, end-mStart);
+		size_t len = sc_min(SC_MAX_TOKEN_LENGTH-1, end-mStart);
 		memcpy(mBuf, mStart, len);
 		mBuf[len] = '\0';
 
