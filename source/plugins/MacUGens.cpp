@@ -287,41 +287,146 @@ void KeyState_Ctor(UserInputUGen *unit)
 
 // example of implementing a plug in command with async execution.
 
+struct MyPluginData // data for the global instance of the plugin
+{
+	float a, b;
+};
+
+struct MyCmdData // data for each command
+{
+	MyPluginData* myPlugin;
+	float x, y;
+	char *name;
+};
+
+MyPluginData gMyPlugin; // global
+
 bool cmdStage2(World* world, void* inUserData)
 {
-	Print("cmdStage2 %08X\n", inUserData);
+	
+	// user data is the command.
+	MyCmdData* myCmdData = (MyCmdData*)inUserData;
+
+	// just print out the values
+	Print("cmdStage2 a %g  b %g  x %g  y %g  name %s\n", 
+		myCmdData->myPlugin->a, myCmdData->myPlugin->b, 
+		myCmdData->x, myCmdData->y,
+		myCmdData->name);
+		
 	return true;
 }
 
 bool cmdStage3(World* world, void* inUserData)
 {
-	Print("cmdStage3 %08X\n", inUserData);
+	
+	// user data is the command.
+	MyCmdData* myCmdData = (MyCmdData*)inUserData;
+
+	// just print out the values
+	Print("cmdStage3 a %g  b %g  x %g  y %g  name %s\n", 
+		myCmdData->myPlugin->a, myCmdData->myPlugin->b, 
+		myCmdData->x, myCmdData->y,
+		myCmdData->name);
+
+	// scsynth will perform completion message after this returns
 	return true;
 }
 
 bool cmdStage4(World* world, void* inUserData)
 {
-	Print("cmdStage4 %08X\n", inUserData);
+	
+	// user data is the command.
+	MyCmdData* myCmdData = (MyCmdData*)inUserData;
+
+	// just print out the values
+	Print("cmdStage4 a %g  b %g  x %g  y %g  name %s\n", 
+		myCmdData->myPlugin->a, myCmdData->myPlugin->b, 
+		myCmdData->x, myCmdData->y,
+		myCmdData->name);
+	
+	// scsynth will send /done after this returns
 	return true;
 }
 
 void cmdCleanup(World* world, void* inUserData)
 {
-	Print("cmdCleanup %08X\n", inUserData);
+	
+	// user data is the command.
+	MyCmdData* myCmdData = (MyCmdData*)inUserData;
+
+	Print("cmdCleanup a %g  b %g  x %g  y %g  name %s\n", 
+		myCmdData->myPlugin->a, myCmdData->myPlugin->b, 
+		myCmdData->x, myCmdData->y,
+		myCmdData->name);
+	
+	RTFree(world, myCmdData->name); // free the string
+	RTFree(world, myCmdData); // free command data
+	// scsynth will delete the completion message for you.
 }
 
 void cmdDemoFunc(World *inWorld, void* inUserData, struct sc_msg_iter *args, void *replyAddr)
 {
 	Print("->cmdDemoFunc %08X\n", inUserData);
 	
-	// ..get data from args..
+	// user data is the plug-in's user data.
+	MyPluginData* thePlugInData = (MyPluginData*)inUserData;
 	
-	DoAsynchronousCommand(inWorld, replyAddr, "cmdDemoFunc", inUserData,
+	// allocate command data, free it in cmdCleanup.
+	MyCmdData* myCmdData = (MyCmdData*)RTAlloc(inWorld, sizeof(MyCmdData));
+	myCmdData->myPlugin = thePlugInData;
+	
+	// ..get data from args..
+	myCmdData->x = 0.;
+	myCmdData->y = 0.;
+	myCmdData->name = 0;
+	
+	// float arguments
+	if (args->remain()) { // must check that arguments remain otherwise you can crash.
+		myCmdData->x = args->getf();
+	}
+	if (args->remain()) {
+		myCmdData->y = args->getf();
+	}
+	
+	if (args->remain()) {
+		// how to pass a string argument:
+		char *name = args->gets(); // get the string argument
+		
+		myCmdData->name = (char*)RTAlloc(inWorld, strlen(name)+1); // allocate space, free it in cmdCleanup.
+		strcpy(myCmdData->name, name); // copy the string
+	}
+	
+	char* msgData = 0;
+	int msgSize = 0;
+	if (args->remain()) {
+		// how to pass a completion message
+		msgSize = args->getbsize();
+		if (msgSize) {
+			// allocate space for completion message
+			// scsynth will delete the completion message for you.
+			msgData = (char*)RTAlloc(inWorld, msgSize);
+			args->getb(msgData, msgSize); // copy completion message.
+		}
+	}
+	
+	DoAsynchronousCommand(inWorld, replyAddr, "cmdDemoFunc", (void*)myCmdData,
 					cmdStage2, cmdStage3, cmdStage4, cmdCleanup,
-					0, 0);
+					msgSize, msgData);
 	
 	Print("<-cmdDemoFunc\n");
 }
+
+/*
+to test the above, send the server these commands:
+
+SynthDef(\sine, { Out.ar(0, SinOsc.ar(800,0,0.2)) }).load(s);
+s.sendMsg(\cmd, \pluginCmdDemo, 7, 9, \mno, [\s_new, \sine, 900, 0, 0]);
+s.sendMsg(\cmd, \pluginCmdDemo, 7, 9, \mno);
+s.sendMsg(\cmd, \pluginCmdDemo, 7, 9);
+s.sendMsg(\cmd, \pluginCmdDemo, 7);
+s.sendMsg(\cmd, \pluginCmdDemo);
+
+*/
 
 void load(InterfaceTable *inTable)
 {
@@ -335,5 +440,8 @@ void load(InterfaceTable *inTable)
 	DefineUnit("MouseButton", sizeof(UserInputUGen), (UnitCtorFunc)&MouseButton_Ctor, 0, 0);
 	DefineUnit("KeyState", sizeof(UserInputUGen), (UnitCtorFunc)&KeyState_Ctor, 0, 0);
 	
-	DefinePlugInCmd("pluginCmdDemo", cmdDemoFunc, (void*)0x00012345);
+	// define a plugin command - example code
+	gMyPlugin.a = 1.2;
+	gMyPlugin.b = 3.4;
+	DefinePlugInCmd("pluginCmdDemo", cmdDemoFunc, (void*)&gMyPlugin);
 }
