@@ -166,9 +166,9 @@ Stream : AbstractFunction {
 		^EventStreamPlayer(this, protoEvent);
 	}
 	
-	play { arg clock;
+	play { arg clock, quant=1.0;
 		clock = clock ? SystemClock;
-		clock.play(this);
+		clock.play(this, quant);
 	}
 	
 	trace { arg key;
@@ -207,12 +207,12 @@ PauseStream : Stream
 	}
 	
 	isPlaying { ^stream.notNil }
-	play { arg argClock, doReset = false;
+	play { arg argClock, doReset = false, quant=1.0;
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
 		clock = argClock ? clock ? TempoClock.default;
 		stream = originalStream; 
-		super.play(clock) 
+		super.play(clock, quant) 
 	}
 	reset { ^originalStream.reset }
 	stop {  stream = nil }

@@ -7,9 +7,7 @@ Pattern : AbstractFunction {
 		^Pseq.new([this, aPattern])
 	}	
 
-	play { arg clock, protoEvent;
-		^this.asEventStreamPlayer(protoEvent).play(clock)
-	}
+	play { arg clock, protoEvent, quant=1.0;		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)	}
 	
 	asStream {
 		^this.subclassResponsibility(thisMethod)
