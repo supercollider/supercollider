@@ -192,7 +192,9 @@ environment. \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf5 (\
+\f2\fs18 \cf5 s.boot;\
+\
+(\
 \cf6 var\cf5  a, b, c, orc;\
 \
 a = \{ \cf6 arg\cf5  freq, amp, pan;\
@@ -206,7 +208,7 @@ c =  \{ \cf6 arg\cf5  pan, freq, amp;\
 \};\
 orc = [a, b, c];\
 \cf7 // 'reverb'\cf5 \
-\{\cf6 var\cf5  in; in = \cf6 In\cf5 .ar(0, 2); \cf6 CombN\cf5 .ar(in, 0.2, 0.2, 3, 1, in);\}.play(addAction: \cf8 \\addToTail\cf5 );\
+\{ \cf6 var\cf5  in; in = \cf6 In\cf5 .ar(0, 2); \cf6 CombN\cf5 .ar(in, 0.2, 0.2, 3, 1, in); \}.play(addAction: \cf8 \\addToTail\cf5 );\
 \
 \{ loop(\{\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
