@@ -2,12 +2,11 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
-\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;}
+\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 play
 \f1\b0\fs18 \
-\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -20,7 +19,7 @@ this message is of common use in sc. Different objects respond to it in various\
 ways, but the simple meaning is: start a process.\
 It is usually implemented by objects in contributed libraries as well.\
 \
-play  usually returns the playing object which might not be the same as the one\
+play usually returns the playing object which might not be the same as the one\
 the message was sent to.\
 \
 opposite: 
@@ -56,9 +55,8 @@ returns: the routine\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 stream.play(clock)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 returns the stream
+\f2\b0 returns the stream
 \f1\fs18 \
 	
 \f2\fs24 the stream will loop until it returns nil\
@@ -67,13 +65,11 @@ returns: the routine\
 	\cf2 FuncStream\cf0 (\{ \cf3 "ok, that was it"\cf0 .postln; 1 \}).play;\
 	\
 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 pausestream.play(clock) / task.play(clock)
+\f0\b\fs24 pausestream.play(clock) / task.play(clock)
 \f1\b0\fs18 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 returns the stream\
+\f2\fs24 returns the stream\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -92,7 +88,9 @@ returns: the routine\
 
 \f0\b\fs24 \cf0 pattern.play(clock, protoEvent)
 \f2\b0 \
-returns: an EventStreamPlayer\
+returns: an 
+\f0\b EventStreamPlayer
+\f2\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -109,7 +107,9 @@ ______________________________________________________\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 The following play messages both cause synthdef to be written, send it to the server \
+\f2\fs24 \cf0 The following play messages both cause a 
+\f0\b SynthDef
+\f2\b0  to be written, send it to the server \
 and start a synth with it there.\
 \
 they should not be used in quickly running automated processes,\
@@ -125,7 +125,9 @@ as there are more efficient alternatives (see
 
 \f0\b\fs24 \cf0 synthDef.play(target, args, addAction)
 \f2\b0 \
-returns: a synth\
+returns: a 
+\f0\b Synth
+\f2\b0 \
 	\
 	note that you need an 
 \f0\b out ugen
@@ -136,9 +138,8 @@ returns: a synth\
 \f2\b0 , whereas you find different examples\
 	of how to write to the busses in the helpfiles: 
 \f0\b Out / ReplaceOut / XOut / OffsetOut\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 	as what is audible through the hardware busses must be written on them, one way or another\
+\f2\b0 	as what is audible through the hardware busses must be written on them, one way or another\
 	an out ugen is always needed.\
 	some operations provide an out ugen 
 \f0\b internally
@@ -168,15 +169,16 @@ x.free;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 note
-\f2\b0 : Synth.play(function), is synonymous. for backwards compatibility from sc2
+\f2\b0 : Synth.play(function), is synonymous. for backwards compatibility with sc2
 \f1\fs18 \
 \
 \
 
 \f0\b\fs24 function.play(target, outbus, fadeTime)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 returns: a synth\
+\f2\b0 returns: a 
+\f0\b Synth
+\f2\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 	
@@ -212,19 +214,21 @@ x.free;
 \
 which this is equivalent to:\
 
-\f1\fs18 \cf6 (\
-x = \cf7 SynthDef\cf6 (\cf8 "nextrandomname"\cf6 , \{ \cf7 arg\cf6  freq=900; \
-	\cf7 Out\cf6 .ar(0, \cf7 Resonz\cf6 .ar(\cf7 PinkNoise\cf6 .ar([1,1]), freq, 0.01))\
+\f1\fs18 (\
+x = \cf2 SynthDef\cf0 (\cf3 "nextrandomname"\cf0 , \{ \cf2 arg\cf0  freq=900; \
+	\cf2 Out\cf0 .ar(0, \cf2 Resonz\cf0 .ar(\cf2 PinkNoise\cf0 .ar([1,1]), freq, 0.01))\
 \}).play(s);\
-)\cf0 \
+)\
 x.set(\cf4 \\freq\cf0 , 1400);\
 x.free;
 \f2\fs24 \
 \
 \
-more modularitycan be achieved by using 
-\f0\b [Instr]
-\f2\b0 \
+more modularity can be achieved by using 
+\f0\b [Instr] 
+\f2\b0 from the 
+\f0\b CRUCIAL-LIBRARY
+\f2\b0 .\
 \
 \
 \
