@@ -51,6 +51,22 @@ s.notify(false);\
 \}).play;\
 )\
 \
+RootNode(s).connect;\
+s.notify(true);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 //pb333: 3.2 % avg ca 4.4% peak\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Routine\cf0 (\{\
+	loop(\{\
+			s.sendMsg(\cf3 "/s_new"\cf0 , \cf3 "help-sinegrain"\cf0 , \cf2 UniqueID\cf0 .next, 1, 0, \cf5 \\freq\cf0 , rrand(9000.0, 18000.0));\
+			0.005.wait;\
+	\})\
+\}).play;\
+)\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 ////////////////////////////\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -68,24 +84,24 @@ s.notify(false);\
 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //pb333: avg cpu: 21.5 % (32 UGens, 8 synths)\
+\cf4 //pb333: avg cpu: 22.2 % (128 UGens, 32 synths)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 8.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
+\cf0 32.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //pb333: avg cpu: 42.5 % (64 UGens, 16 synths)\
+\cf4 //pb333: avg cpu: 43.5 % (256 UGens, 64 synths)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 8.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
+\cf0 32.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //pb333: avg cpu: 63 % (64 UGens, 24 synths)\
+\cf4 //pb333: avg cpu: 64 % (384 UGens, 96 synths)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 8.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
+\cf0 32.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //pb333: avg cpu: 74 % (112 UGens, 28 synths) (GUI gets slow)\
+\cf4 //pb333: avg cpu: 81 % (448 UGens, 112 synths) (GUI gets slow)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 4.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
+\cf0 16.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -97,13 +113,13 @@ s.notify(false);\
 \cf2 SynthDef\cf0 (\cf3 "help-sinebechmark2"\cf0 , \
 	\{\
 		\cf2 Out\cf0 .ar(0, \
-			\cf2 Mix\cf0 .fill(16, \{ \cf2 SinOsc\cf0 .ar(rrand(200.0, 700), 0, 0.01) \})\
+			\cf2 Mix\cf0 .fill(64, \{ \cf2 SinOsc\cf0 .ar(rrand(200.0, 700), 0, 0.01) \})\
 		)\
 	\}).load(s);\
 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //pb333: avg cpu: 38.8 % (33 UGens, 1 synth)\
+\cf4 //pb333: avg cpu: 43 % (129 UGens, 1 synth)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark2"\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -113,7 +129,7 @@ s.notify(false);\
 
 \fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //pb333: avg cpu: 77 % (66 UGens, 2 synth) (GUI gets slow)\
+\cf4 //pb333: avg cpu: 80 % (258 UGens, 2 synth) (GUI gets slow)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark2"\cf0 );
 \fs24 \
