@@ -30,7 +30,7 @@ BusPlug : AbstractFunction {
 		2.do({ arg i; i = i + 1;
 			SynthDef("system_link_audio_" ++ i, { arg out=0, in=16, vol=1;
 				var env;
-				env = EnvGate.new(vol);
+				env = EnvGate.new * vol;
 				Out.ar(out, InFeedback.ar(in, i) * env) 
 			}, [\ir, \ir]).writeDefFile;
 		});
