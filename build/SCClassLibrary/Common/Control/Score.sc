@@ -20,6 +20,11 @@ Score {
 	*write { arg file, oscfile;
 		var osccmd, eventList, f;
 		eventList = thisProcess.interpreter.executeFile(file);
+		this.writeList(eventList, oscfile);
+	}
+	
+	*writeList {arg eventList, oscfile;
+		var osccmd, f;
 		f = File(oscfile, "w");
 		eventList.size.do { |i|
 			osccmd = eventList[i].asRawOSC;
@@ -27,5 +32,4 @@ Score {
 		};
 		f.close;
 		"done".postln;
-	}
-}
+}		
