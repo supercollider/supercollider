@@ -51,7 +51,9 @@ extern pthread_mutex_t gLangMutex;
     [aTextView setAllowsUndo: YES];
     [aTextView setRichText: YES];
     [aTextView setSmartInsertDeleteEnabled: NO];
+    [aTextView setImportsGraphics: YES];
     [aTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
+	isRichText = YES;
     return aTextView;
 }
 
@@ -571,6 +573,7 @@ extern bool compiledOK;
 
 - (BOOL)writeToFile:(NSString*) path ofType:(NSString *)aType
 {
+	//post("type '%s'\n", [aType cString]);
     // Insert code here to write your document from the given data.  You can also choose to override -fileWrapperRepresentationOfType: or -writeToFile:ofType: instead.
     //NSString* string = [textView string];
     
@@ -584,7 +587,9 @@ extern bool compiledOK;
     BOOL success;
 
 	NSString* extension = [path pathExtension];
-	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"txt"]) {
+	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"txt"] 
+			|| [aType isEqualToString: @"NSStringPboardType"]) 
+	{
 		NSString *text = [textView string];
 		success = [text writeToFile: path atomically: YES];
 	} else {
@@ -592,10 +597,12 @@ extern bool compiledOK;
 	
 		NSRange range = NSMakeRange(0, [textStorage length]);
 		NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+	//post(">path '%s'\n", [path cString]);
 		if ([textStorage containsAttachments]) {
-			if ([extension isEqualToString: @""]) {
-				path = [path stringByAppendingPathExtension: @"rtfd"];
+			if (![extension isEqualToString: @"rtfd"]) {
+				path = [[path stringByDeletingPathExtension] stringByAppendingPathExtension: @"rtfd"];
 			}
+	//post("<path '%s'\n", [path cString]);
 			NSFileWrapper *wrapper = [textStorage RTFDFileWrapperFromRange: range documentAttributes: dict];
 			success = wrapper ? [wrapper writeToFile: path atomically:YES updateFilenames: YES] : NO;
 		} else {
@@ -606,6 +613,7 @@ extern bool compiledOK;
 			success = data ? [data writeToFile: path atomically: YES] : NO;
 		}
 	}
+	//post("success %d\n", success);
 	if (!success) return NO;
     
 	NSFileManager *fmgr = [NSFileManager defaultManager];
@@ -643,7 +651,7 @@ extern bool compiledOK;
     NSTextStorage* text = [initTextView textStorage];
     
     [options setObject:url forKey:@"BaseURL"];
-    //[options setObject:[NSNumber numberWithUnsignedInt:UnknownStringEncoding] forKey:@"CharacterEncoding"];
+    //[options setObject:[NSNumber numberWithUnsignedInt:NoStringEncoding] forKey:@"CharacterEncoding"];
     
     // Insert code here to read your document from the given data.  You can also choose to override -loadFileWrapperRepresentation:ofType: or -readFromFile:ofType: instead.
 
@@ -664,7 +672,7 @@ extern bool compiledOK;
 
 - (BOOL) shouldRunSavePanelWithAccessoryView
 {
-    return NO;
+    return YES;
 }
 
 - (NSTextView*) textView;
@@ -691,6 +699,99 @@ extern bool compiledOK;
 {
 	if (textView == gPostView) return false;
 	return [super isDocumentEdited];
+}
+
+//////////////////////////////////////
+
+- (void)doToggleRich {
+    [self setRichText:!isRichText];
+    //[self setEncoding:NoStringEncoding];
+    //[self setConverted:NO];
+    if ([[textView textStorage] length] > 0) [[textView window] setDocumentEdited: YES];
+    //[self setDocumentName:nil];
+}
+
+/* toggleRich: puts up an alert before ultimately calling doToggleRich
+*/
+- (void)toggleRich:(id)sender {
+    int length = [[textView textStorage] length];
+    NSRange range;
+    NSDictionary *attrs;
+	[self doToggleRich];
+/*
+    // If we are rich and any ofthe text attrs have been changed from the default, then put up an alert first...
+    if (isRichText && (length > 0) && (attrs = [[textView textStorage] attributesAtIndex:0 effectiveRange:&range]) && ((attrs == nil) || (range.length < length) || ![[self defaultTextAttributes:YES] isEqual:attrs])) {
+        NSBeginAlertSheet(NSLocalizedString(@"Convert document to plain text?", @"Title of alert confirming Make Plain Text"),
+                        NSLocalizedString(@"OK", @"OK"), NSLocalizedString(@"Cancel", @"Button choice allowing user to cancel."), nil, [textView window], 
+                        self, NULL, @selector(didEndToggleRichSheet:returnCode:contextInfo:), NULL,
+                        NSLocalizedString(@"Converting will lose fonts, colors, and other text styles in the document.", @"Subtitle of alert confirming Make Plain Text"));
+    } else {
+        [self doToggleRich];
+    }
+*/
+}
+
+/*
+- (void)didEndToggleRichSheet:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo {
+    if (returnCode == NSAlertDefaultReturn) [self doToggleRich];
+}
+*/
+
+/* Doesn't check to see if the prev value is the same --- Otherwise the first time doesn't work...
+*/
+- (void)setRichText:(BOOL)flag {
+    NSTextView *view = textView;
+
+    isRichText = flag;
+
+    //if (!isRichText) [self removeAttachments];
+    
+    [view setRichText:isRichText];
+    [view setUsesRuler:isRichText];	/* If NO, this correctly gets rid of the ruler if it was up */
+    //if (isRichText && [[Preferences objectForKey:ShowRuler] boolValue]) [view setRulerVisible:YES];	/* Show ruler if rich, and desired */
+    [view setImportsGraphics:isRichText];
+
+	if (!isRichText) {
+		NSMutableDictionary *textAttributes = [NSMutableDictionary dictionary];
+		[textAttributes setObject: [NSFont fontWithName: @"Monaco" size: 9] forKey: NSFontAttributeName ];
+	
+		if ([[textView textStorage] length]) {
+			[[textView textStorage] setAttributes:textAttributes range: NSMakeRange(0, [[textView textStorage] length])];
+		}
+
+		[view setTypingAttributes:textAttributes];
+	}
+}
+
+
+/* Menu validation: Arbitrary numbers to determine the state of the menu items whose titles change. Speeds up the validation... Not zero. */   
+#define TagForFirst 42
+#define TagForSecond 43
+
+static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first, NSString *second) {
+    if (useFirst) {
+        if ([aCell tag] != TagForFirst) {
+            [aCell setTitleWithMnemonic:first];
+            [aCell setTag:TagForFirst];
+        }
+    } else {
+        if ([aCell tag] != TagForSecond) {
+            [aCell setTitleWithMnemonic:second];
+            [aCell setTag:TagForSecond];
+        }
+    }
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)aCell {
+    SEL action = [aCell action];
+    if (action == @selector(toggleRich:)) {
+	validateToggleItem(aCell, isRichText, NSLocalizedString(@"&Make Plain Text", @"Menu item to make the current document plain text"), NSLocalizedString(@"&Make Rich Text", @"Menu item to make the current document rich text"));
+        //if (![textView isEditable] || [self hasSheet]) return NO;
+    } else {
+		return [super validateMenuItem: aCell];
+	}
+	
+	return YES;
 }
 
 @end

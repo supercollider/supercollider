@@ -52,15 +52,17 @@ struct UnitDef
 	HashTable<UnitCmd, Malloc>* mCmds;
 };
 
+extern "C" {
 bool UnitDef_Create(char *inName, size_t inAllocSize, 
 	UnitCtorFunc inCtor, UnitDtorFunc inDtor);
+bool UnitDef_AddCmd(char *inUnitDefName, char *inCmdName, UnitCmdFunc inFunc);
+bool PlugIn_DefineCmd(char *inCmdName, PlugInCmdFunc inFunc, void *inUserData);
+}
 
+int Unit_DoCmd(World *inWorld, int inSize, char *inData);
 
 inline int32* GetKey(UnitCmd *inCmd) { return inCmd->mCmdName; }
 inline int32 GetHash(UnitCmd *inCmd) { return inCmd->mHash; }
 
-bool UnitDef_AddCmd(char *inUnitDefName, char *inCmdName, UnitCmdFunc inFunc);
-bool PlugIn_DefineCmd(char *inCmdName, PlugInCmdFunc inFunc, void *inUserData);
-int Unit_DoCmd(World *inWorld, int inSize, char *inData);
 
 #endif

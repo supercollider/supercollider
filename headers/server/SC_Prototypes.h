@@ -31,18 +31,28 @@ void World_Start(World *inWorld);
 void World_Cleanup(World *inWorld);
 void World_SetSampleRate(struct World *inWorld, double inSampleRate);
 
+extern "C" {
 void* World_Alloc(struct World *inWorld, size_t inByteSize);
 void* World_Realloc(struct World *inWorld, void *inPtr, size_t inByteSize);
 void World_Free(struct World *inWorld, void *inPtr);
+void World_NRTLock(World *world);
+void World_NRTUnlock(World *world);
+}
+
 size_t World_TotalFree(struct World *inWorld);
 size_t World_LargestFreeChunk(struct World *inWorld);
+
 
 int32 GetKey(struct Node *inNode);
 int32 GetHash(struct Node *inNode);
 bool World_AddNode(struct World *inWorld, struct Node* inNode);
 bool World_RemoveNode(struct World *inWorld, struct Node* inNode);
+
+extern "C" {
 struct Node* World_GetNode(struct World *inWorld, int32 inID);
 struct Graph* World_GetGraph(struct World *inWorld, int32 inID);
+}
+
 struct Group* World_GetGroup(struct World *inWorld, int32 inID);
 
 int32 *GetKey(struct UnitDef *inUnitDef);
@@ -106,12 +116,15 @@ void Node_AddAfter(struct Node* s, struct Node *afterThisOne);
 void Node_AddBefore(struct Node* s, struct Node *beforeThisOne);
 void Node_SetControl(Node* inNode, int inIndex, float inValue);
 void Node_SetControl(Node* inNode, int32 *inName, int inIndex, float inValue);
-void Node_SetRun(Node* inNode, int inRun);
 void Node_MapControl(Node* inNode, int inIndex, int inBus);
 void Node_MapControl(Node* inNode, int32 *inName, int inIndex, int inBus);
-void Node_SendTrigger(Node* inNode, int triggerID, float value);
 void Node_StateMsg(Node* inNode, int inState);
+
+extern "C" {
+void Node_SetRun(Node* inNode, int inRun);
+void Node_SendTrigger(Node* inNode, int triggerID, float value);
 void Node_End(struct Node* inNode);
+}
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -130,11 +143,14 @@ void Group_MapControl(Group* inGroup, int32 *inName, int inIndex, int inBus);
 ////////////////////////////////////////////////////////////////////////
 
 struct Unit* Unit_New(struct World *inWorld, struct UnitSpec *inUnitSpec, char*& memory);
-void Unit_ZeroOutputs(struct Unit *inUnit, int inNumSamples);
 void Unit_EndCalc(struct Unit *inUnit, int inNumSamples);
 void Unit_End(struct Unit *inUnit);
 
 void Unit_Dtor(struct Unit *inUnit);
+
+extern "C" {
+void Unit_ZeroOutputs(struct Unit *inUnit, int inNumSamples);
+}
 
 ////////////////////////////////////////////////////////////////////////
 

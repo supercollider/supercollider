@@ -32,7 +32,9 @@ struct BufGen
 
 	BufGenFunc mBufGenFunc;
 };
-	
+
+extern "C" {
 bool BufGen_Create(char *inName, BufGenFunc inFunc);
+}
 
 #endif

@@ -16,6 +16,7 @@
                 shiftRight = id; 
                 stopMain = id; 
                 syntaxColorize = id; 
+                toggleRich = id; 
                 uncommentCode = id; 
             }; 
             CLASS = FirstResponder; 

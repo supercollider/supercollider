@@ -173,12 +173,45 @@ struct AllpassC : public FeedbackDelay
 {
 };
 
+struct BufInfoUnit : public Unit
+{
+	float m_fbufnum;
+	SndBuf *m_buf;
+};
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 extern "C"
 {
 	void load(InterfaceTable *inTable);
+
+	void SampleRate_next(Unit *unit, int inNumSamples);
+	void SampleRate_Ctor(Unit *unit, int inNumSamples);
+
+	void ControlRate_next(Unit *unit, int inNumSamples);
+	void ControlRate_Ctor(Unit *unit, int inNumSamples);
+
+	void SampleDur_next(Unit *unit, int inNumSamples);
+	void SampleDur_Ctor(Unit *unit, int inNumSamples);
+
+	void RadiansPerSample_next(Unit *unit, int inNumSamples);
+	void RadiansPerSample_Ctor(Unit *unit, int inNumSamples);
+
+	void BufSampleRate_next(BufInfoUnit *unit, int inNumSamples);
+	void BufSampleRate_Ctor(BufInfoUnit *unit, int inNumSamples);
+
+	void BufFrames_next(BufInfoUnit *unit, int inNumSamples);
+	void BufFrames_Ctor(BufInfoUnit *unit, int inNumSamples);
+
+	void BufChannels_next(BufInfoUnit *unit, int inNumSamples);
+	void BufChannels_Ctor(BufInfoUnit *unit, int inNumSamples);
+
+	void BufSamples_next(BufInfoUnit *unit, int inNumSamples);
+	void BufSamples_Ctor(BufInfoUnit *unit, int inNumSamples);
+
+	void BufRateScale_next(BufInfoUnit *unit, int inNumSamples);
+	void BufRateScale_Ctor(BufInfoUnit *unit, int inNumSamples);
 
 	void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples);
 	void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples);
@@ -282,6 +315,116 @@ extern "C"
 	void AllpassC_next_z(AllpassC *unit, int inNumSamples);
 
 }
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void SampleRate_Ctor(Unit *unit, int inNumSamples)
+{
+	ZOUT0(0) = unit->mWorld->mSampleRate;
+}
+
+
+void ControlRate_Ctor(Unit *unit, int inNumSamples)
+{
+	ZOUT0(0) = unit->mWorld->mBufRate.mSampleRate;
+}
+
+
+void SampleDur_Ctor(Unit *unit, int inNumSamples)
+{
+	ZOUT0(0) = unit->mWorld->mFullRate.mSampleDur;
+}
+
+
+void RadiansPerSample_Ctor(Unit *unit, int inNumSamples)
+{
+	ZOUT0(0) = unit->mWorld->mFullRate.mRadiansPerSample;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define SIMPLE_GET_BUF \
+	float fbufnum  = ZIN0(0); \
+	if (fbufnum != unit->m_fbufnum) { \
+		int bufnum = (int)fbufnum; \
+		World *world = unit->mWorld; \
+		if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0; \
+		unit->m_fbufnum = fbufnum; \
+		unit->m_buf = world->mSndBufs + bufnum; \
+	} \
+	SndBuf *buf = unit->m_buf; \
+
+void BufSampleRate_next(BufInfoUnit *unit, int inNumSamples)
+{
+	SIMPLE_GET_BUF
+	ZOUT0(0) = buf->samplerate;
+}
+
+void BufSampleRate_Ctor(BufInfoUnit *unit, int inNumSamples)
+{
+	unit->m_fbufnum = -1.f;
+	SIMPLE_GET_BUF
+	ZOUT0(0) = buf->samplerate;
+}
+
+
+void BufFrames_next(BufInfoUnit *unit, int inNumSamples)
+{
+	SIMPLE_GET_BUF
+	ZOUT0(0) = buf->samplerate;
+}
+
+void BufFrames_Ctor(BufInfoUnit *unit, int inNumSamples)
+{
+	unit->m_fbufnum = -1.f;
+	SIMPLE_GET_BUF
+	ZOUT0(0) = buf->samplerate;
+}
+
+
+void BufChannels_next(BufInfoUnit *unit, int inNumSamples)
+{
+	SIMPLE_GET_BUF
+	ZOUT0(0) = buf->samplerate;
+}
+
+void BufChannels_Ctor(BufInfoUnit *unit, int inNumSamples)
+{
+	unit->m_fbufnum = -1.f;
+	SIMPLE_GET_BUF
+	ZOUT0(0) = buf->samplerate;
+}
+
+
+void BufSamples_next(BufInfoUnit *unit, int inNumSamples)
+{
+	SIMPLE_GET_BUF
+	ZOUT0(0) = buf->samplerate;
+}
+
+void BufSamples_Ctor(BufInfoUnit *unit, int inNumSamples)
+{
+	unit->m_fbufnum = -1.f;
+	SIMPLE_GET_BUF
+	ZOUT0(0) = buf->samplerate;
+}
+
+
+void BufRateScale_next(BufInfoUnit *unit, int inNumSamples)
+{
+	SIMPLE_GET_BUF
+	ZOUT0(0) = buf->samplerate;
+}
+
+void BufRateScale_Ctor(BufInfoUnit *unit, int inNumSamples)
+{
+	unit->m_fbufnum = -1.f;
+	SIMPLE_GET_BUF
+	ZOUT0(0) = buf->samplerate;
+}
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4384,6 +4527,23 @@ void AllpassC_next_z(AllpassC *unit, int inNumSamples)
 void load(InterfaceTable *inTable)
 {
 	ft = inTable;
+
+#define DefineInfoUnit(name) \
+	(*ft->fDefineUnit)(#name, sizeof(Unit), (UnitCtorFunc)&name##_Ctor, 0);
+
+	DefineInfoUnit(ControlRate);
+	DefineInfoUnit(SampleRate);
+	DefineInfoUnit(SampleDur);
+	DefineInfoUnit(RadiansPerSample);
+
+#define DefineBufInfoUnit(name) \
+	(*ft->fDefineUnit)(#name, sizeof(BufInfoUnit), (UnitCtorFunc)&name##_Ctor, 0);
+
+	DefineBufInfoUnit(BufSampleRate);
+	DefineBufInfoUnit(BufRateScale);
+	DefineBufInfoUnit(BufSamples);
+	DefineBufInfoUnit(BufFrames);
+	DefineBufInfoUnit(BufChannels);
 
 	DefineSimpleUnit(PlayBuf);
 	DefineSimpleUnit(RecordBuf);

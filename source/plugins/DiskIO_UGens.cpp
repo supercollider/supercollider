@@ -69,12 +69,6 @@ extern "C"
 
 	void DiskOut_next(DiskOut *unit, int inNumSamples);
 	void DiskOut_Ctor(DiskOut* unit);
-
-	void DiskIn_Start(DiskIn *unit, sc_msg_iter *msg);
-	void DiskIn_Setup(DiskIn *unit, sc_msg_iter *msg);
-	void DiskOut_Setup(DiskOut *unit, sc_msg_iter *msg);
-	void DiskOut_Start(DiskOut *unit, sc_msg_iter *msg);
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,7 +130,7 @@ void* disk_io_thread_func(void* arg)
 	for (int i=0; i<bufChannels; ++i) out[i] = OUT(i+offset); 
 
 #define SETUP_IN(offset) \
-	if (unit->mNumInputs != bufChannels) { \
+	if (unit->mNumInputs - offset != bufChannels) { \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
@@ -148,12 +142,13 @@ void DiskIn_Ctor(DiskIn* unit)
 	unit->m_fbufnum = -1.f;
 	unit->m_buf = unit->mWorld->mSndBufs;
 	unit->m_framepos = 0;
+	SETCALC(DiskIn_next);
 }
 
 void DiskIn_next(DiskIn *unit, int inNumSamples)
 {
 	GET_BUF
-	if (!bufData || !buf->sndfile || (bufFrames % (unit->mWorld->mBufLength<<1) != 0)) {
+	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
 		unit->m_framepos = 0;
 		ClearUnitOutputs(unit, inNumSamples);
 		return;
@@ -196,11 +191,14 @@ void DiskIn_next(DiskIn *unit, int inNumSamples)
 sendMessage:
 		// send a message to read
 		DiskIOMsg msg;
+		msg.mWorld = unit->mWorld;
 		msg.mCommand = kDiskCmd_Read;
 		msg.mBufNum = (int)fbufnum;
 		msg.mPos = bufFrames2 - unit->m_framepos;
 		msg.mFrames = bufFrames2;
 		msg.mChannels = bufChannels;
+		gDiskFifo.Write(msg);
+		gDiskFifoHasData.Signal();
 	}
 }
 
@@ -211,17 +209,19 @@ void DiskOut_Ctor(DiskOut* unit)
 	unit->m_fbufnum = -1.f;
 	unit->m_buf = unit->mWorld->mSndBufs;
 	unit->m_framepos = 0;
+	SETCALC(DiskOut_next);
 }
 
 
 void DiskOut_next(DiskOut *unit, int inNumSamples)
 {
 	GET_BUF
-	if (!bufData || !buf->sndfile || (bufFrames % (unit->mWorld->mBufLength<<1) != 0)) {
+
+	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
 		unit->m_framepos = 0;
 		return;
 	}
-	SETUP_IN(0)
+	SETUP_IN(1)
 	
 	if (unit->m_framepos >= bufFrames) {
 		unit->m_framepos = 0;
@@ -251,6 +251,7 @@ void DiskOut_next(DiskOut *unit, int inNumSamples)
 	
 	unit->m_framepos += inNumSamples;
 	int32 bufFrames2 = bufFrames >> 1;
+	//printf("pos %d  %d %d\n", unit->m_framepos, bufFrames, bufFrames2);
 	if (unit->m_framepos == bufFrames) {
 		unit->m_framepos = 0;
 		goto sendMessage;
@@ -258,11 +259,13 @@ void DiskOut_next(DiskOut *unit, int inNumSamples)
 sendMessage:
 		// send a message to write
 		DiskIOMsg msg;
+		msg.mWorld = unit->mWorld;
 		msg.mCommand = kDiskCmd_Write;
 		msg.mBufNum = (int)fbufnum;
 		msg.mPos = bufFrames2 - unit->m_framepos;
 		msg.mFrames = bufFrames2;
 		msg.mChannels = bufChannels;
+		//printf("sendMessage %d  %d %d %d\n", msg.mBufNum, msg.mPos, msg.mFrames, msg.mChannels);
 		gDiskFifo.Write(msg);
 		gDiskFifoHasData.Signal();
 	}
@@ -270,8 +273,8 @@ sendMessage:
 
 void DiskIOMsg::Perform()
 {
-	mWorld->mNRTLock->Lock();
-	
+	NRTLock(mWorld);
+
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufNum);
 	if (mPos > buf->frames || mPos + mFrames > buf->frames || buf->channels != mChannels) goto leave;
 
@@ -284,13 +287,14 @@ void DiskIOMsg::Perform()
 			}
 		break;
 		case kDiskCmd_Write :
+			//printf("kDiskCmd_Write %d %08X\n", mBufNum, buf->sndfile);
 			if (!buf->sndfile) goto leave;
 			count = sf_writef_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames);
 		break;
 	}
 	
 leave:
-	mWorld->mNRTLock->Unlock();
+	NRTUnlock(mWorld);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,16 +1,27 @@
 
 DiskOut : UGen {
-	*ar { arg channelsArray;
-		^this.multiNewList('audio', channelsArray)
+	*ar { arg bufnum, channelsArray;
+		this.multiNewList(['audio', bufnum] ++ channelsArray.asArray)
+		^0.0		// DiskOut has no output
 	}
+	numOutputs { ^0 }
+	writeOutputSpecs {}
+ 	checkInputs {
+ 		if (rate == 'audio', {
+ 			for(1, inputs.size - 1, { arg i;
+ 				if (inputs.at(i).rate != 'audio', { ^false });
+ 			});
+ 		});
+ 		^true
+ 	}
 }
 
 DiskIn : MultiOutUGen {
-	*ar { arg numChannels;
-		^this.multiNew('audio', numChannels)
+	*ar { arg numChannels, bufnum;
+		^this.multiNew('audio', numChannels, bufnum)
 	}
-	init { arg numChannels;
-		inputs = [];
+	init { arg numChannels, bufnum;
+		inputs = [bufnum];
 		^this.initOutputs(numChannels, rate)
 	}
 }

@@ -40,9 +40,7 @@ int OSCstrlen(char *strin);
 SCErr meth_bufAlloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_bufAlloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {	
-	//printf("data %08X size %d\n", inData, inSize);
 	CallSequencedCommand(BufAllocCmd, inWorld, inSize, inData, inReply);
-	
 	return kSCErr_None;
 }
 
@@ -59,6 +57,14 @@ SCErr meth_bufFree(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 SCErr meth_bufFree(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	CallSequencedCommand(BufFreeCmd, inWorld, inSize, inData, inReply);
+	
+	return kSCErr_None;
+}
+
+SCErr meth_bufClose(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_bufClose(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+{
+	CallSequencedCommand(BufCloseCmd, inWorld, inSize, inData, inReply);
 	
 	return kSCErr_None;
 }
@@ -785,6 +791,7 @@ void initMiscCommands()
 		
 // async
 	NewCommand("b_free", meth_bufFree);		
+	NewCommand("b_close", meth_bufClose);		
 	
 // async
 	NewCommand("b_zero", meth_bufZero);		

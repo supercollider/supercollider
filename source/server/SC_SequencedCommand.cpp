@@ -175,12 +175,10 @@ BufAllocCmd::BufAllocCmd(World *inWorld, ReplyAddress *inReplyAddress)
 
 int BufAllocCmd::Init(char *inData, int inSize)
 {
-	//printf("data %08X size %d\n", inData, inSize);
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
 	mNumFrames = msg.geti();
 	mNumChannels = msg.geti(1);
-	//printf("BufAllocCmd::Init %d %d %d\n", mBufIndex, mNumFrames, mNumChannels);
 	return kSCErr_None;
 }
 
@@ -194,9 +192,8 @@ bool BufAllocCmd::Stage2()
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	mFreeData = buf->data;
 	bufAlloc(buf, mNumChannels, mNumFrames);
+	buf->samplerate = mWorld->mSampleRate;
 	mSndBuf = *buf;
-	//printf("BufAllocCmd::Stage2 %08X\n", buf);
-	//printf("buf %d %d %d\n", buf->frames, buf->channels, buf->samples);
 	return true;
 }
 
@@ -204,7 +201,6 @@ bool BufAllocCmd::Stage3()
 {
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
 	*buf = mSndBuf;
-	//printf("BufAllocCmd::Stage3 %08X\n", buf);
 	return true;
 }
 
@@ -414,6 +410,8 @@ bool BufAllocReadCmd::Stage2()
 	// alloc data size
 	mFreeData = buf->data;
 	SCErr err = bufAlloc(buf, fileinfo.channels, mNumFrames);
+	buf->samplerate = fileinfo.samplerate;
+	buf->ratescale = fileinfo.samplerate / mWorld->mSampleRate;
 	//printf("bufAlloc err %d\n", err);
 	if (err) goto leave;
 	//printf("chan %d\n", buf->channels);
@@ -521,14 +519,18 @@ void BufReadCmd::Stage4()
 ///////////////////////////////////////////////////////////////////////////
 
 BufWriteCmd::BufWriteCmd(World *inWorld, ReplyAddress *inReplyAddress)
-	: SC_SequencedCommand(inWorld, inReplyAddress)
+	: SC_SequencedCommand(inWorld, inReplyAddress), mFilename(0)
 {
+	//printf("BufWriteCmd::BufWriteCmd\n");
 }
 
+extern "C" {
 int sndfileFormatInfoFromStrings(SF_INFO *info, const char *headerFormatString, const char *sampleFormatString);
+}
 
 int BufWriteCmd::Init(char *inData, int inSize)
 {
+	//printf("BufWriteCmd::Init\n");
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
 	
@@ -543,6 +545,7 @@ int BufWriteCmd::Init(char *inData, int inSize)
 	mBufOffset = msg.geti();
 	mLeaveFileOpen = msg.geti();
 
+	memset(&mFileInfo, 0, sizeof(mFileInfo));
 	return sndfileFormatInfoFromStrings(&mFileInfo, headerFormatString, sampleFormatString);
 }
 
@@ -558,13 +561,18 @@ void BufWriteCmd::CallDestructor()
 
 bool BufWriteCmd::Stage2()
 {
+	//printf("BufWriteCmd::Stage2\n");
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	int samplesToEnd = buf->frames - mBufOffset;
 	if (samplesToEnd < 0) samplesToEnd = 0;
+	mFileInfo.samplerate = (int)buf->samplerate;
+	mFileInfo.channels = buf->channels;
 
 	SNDFILE* sf = sf_open(mFilename, SFM_WRITE, &mFileInfo);
 	if (!sf) {
-		printf("File '%s' could not be opened.\n", mFilename);
+		char sferr[256];
+		sf_error_str(NULL, sferr, 256);
+		printf("File '%s' could not be opened. '%s'\n", mFilename, sferr);
 		return true;
 	}
 
@@ -576,6 +584,7 @@ bool BufWriteCmd::Stage2()
 		sf_writef_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
 	}
 	
+	//printf("mLeaveFileOpen %d %08X %08X\n", mLeaveFileOpen, buf->sndfile, sf);
 	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
 	else sf_close(sf);
 
@@ -637,7 +646,6 @@ void BufCloseCmd::Stage4()
 AudioQuitCmd::AudioQuitCmd(World *inWorld, ReplyAddress *inReplyAddress)
 	: SC_SequencedCommand(inWorld, inReplyAddress)
 {
-	printf("AudioQuitCmd::AudioQuitCmd\n");
 }
 
 void AudioQuitCmd::CallDestructor() 
@@ -647,21 +655,17 @@ void AudioQuitCmd::CallDestructor()
 
 bool AudioQuitCmd::Stage2()
 {
-	printf("AudioQuitCmd::Stage2\n");
 	return true;
 }
 
 bool AudioQuitCmd::Stage3()
 {
-	printf("AudioQuitCmd::Stage3\n");
 	return true;
 }
 
 void AudioQuitCmd::Stage4()
 {
-	printf("AudioQuitCmd::Stage4\n");
 	SendDone("/quit");
-	printf("mWorld->hw->mQuitProgram->Release\n");
 	mWorld->hw->mQuitProgram->Release();
 }
 
@@ -670,12 +674,10 @@ void AudioQuitCmd::Stage4()
 AudioStatusCmd::AudioStatusCmd(World *inWorld, ReplyAddress *inReplyAddress)
 	: SC_SequencedCommand(inWorld, inReplyAddress)
 {
-	//printf("AudioStatusCmd::AudioStatusCmd\n");
 }
 
 void AudioStatusCmd::CallDestructor() 
 {
-	//printf("AudioStatusCmd::CallDestructor\n");
 	this->~AudioStatusCmd();
 }
 
@@ -683,7 +685,6 @@ int64 oscTimeNow();
 
 bool AudioStatusCmd::Stage2()
 {
-	//printf("->AudioStatusCmd::Stage2\n");
 	scpacket packet;
 	packet.adds("status.reply");
 	packet.maketags(5);
@@ -703,7 +704,6 @@ bool AudioStatusCmd::Stage2()
 
 	SendReply(&mReplyAddress, packet.data(), packet.size());
 
-	//printf("<-AudioStatusCmd::Stage2\n");
 	return false;
 }
 
@@ -809,7 +809,7 @@ int RecvSynthDefCmd::Init(char *inData, int inSize)
 	sc_msg_iter msg(inSize, inData);
 	
 	int size = msg.getbsize();
-	printf("b size %d\n", size);
+	//printf("b size %d\n", size);
 	mBuffer = (char*)World_Alloc(mWorld, size);
 	msg.getb(mBuffer, size);
 	
@@ -830,14 +830,14 @@ void RecvSynthDefCmd::CallDestructor()
 bool RecvSynthDefCmd::Stage2()
 {
 	mDefs = GraphDef_Recv(mWorld, mBuffer, mDefs);
-	printf("2 mDefs %08X\n", mDefs);
+	//printf("2 mDefs %08X\n", mDefs);
 	
 	return true;
 }
 
 bool RecvSynthDefCmd::Stage3()
 {
-	printf("3 mDefs %08X\n", mDefs);
+	//printf("3 mDefs %08X\n", mDefs);
 	GraphDef_Define(mWorld, mDefs);
 	return true;
 }

@@ -90,6 +90,9 @@ struct InterfaceTable
 	struct Node* (*fGetNode)(World *inWorld, int inID);
 	struct Graph* (*fGetGraph)(World *inWorld, int inID);
 	
+	void (*fNRTLock)(World *inWorld);
+	void (*fNRTUnlock)(World *inWorld);
+	
 };
 typedef struct InterfaceTable InterfaceTable;
 
@@ -116,6 +119,9 @@ typedef struct InterfaceTable InterfaceTable;
 
 #define GetNode (*ft->fGetNode)
 #define GetGraph (*ft->fGetGraph)
+
+#define NRTLock (*ft->fNRTLock)
+#define NRTUnlock (*ft->fNRTUnlock)
 
 #define SndFileFormatInfoFromStrings (*ft->fSndFileFormatInfoFromStrings)
 

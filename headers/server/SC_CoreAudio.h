@@ -91,7 +91,7 @@ public:
 	bool Active() const { return mActive; }
 	int NumSamples() const { return mNumSamples; }
 	int SafetyOffset() const { return mSafetyOffset; }
-	
+
 	bool SendMsgToEngine(FifoMsg& inMsg);
 	bool SendMsgFromEngine(FifoMsg& inMsg);
 	

@@ -466,7 +466,7 @@ void* SC_CoreAudioDriver::RunThread()
 		// send /tr messages
 		trigfifo->Perform();		
 		
-		// send /n.end messages
+		// send node status messages
 		nodeendfifo->Perform();
 		
 		// free GraphDefs

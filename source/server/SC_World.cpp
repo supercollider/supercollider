@@ -42,16 +42,16 @@ extern HashTable<struct UnitDef, Malloc> *gUnitDefLib;
 extern HashTable<struct BufGen, Malloc> *gBufGenLib;
 extern HashTable<PlugInCmd, Malloc> *gPlugInCmds;
 
+extern "C" {
 int sndfileFormatInfoFromStrings(struct SF_INFO *info, 
 	const char *headerFormatString, const char *sampleFormatString);
-
+bool SendMsgToEngine(World *inWorld, FifoMsg& inMsg);
+bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
 int32 timeseed();
-
-bool SendMsgToEngine(World *inWorld, FifoMsg& inMsg);
-bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 
 void InterfaceTable_Init();
 void InterfaceTable_Init()
@@ -96,6 +96,9 @@ void InterfaceTable_Init()
 	
 	ft->fGetNode = &World_GetNode;
 	ft->fGetGraph = &World_GetGraph;
+	
+	ft->fNRTLock = &World_NRTLock;
+	ft->fNRTUnlock = &World_NRTUnlock;
 }
 
 void initialize_library();
@@ -519,6 +522,16 @@ void World_Cleanup(World *world)
 }
 
 
+void World_NRTLock(World *world)
+{
+	world->mNRTLock->Lock();
+}
+
+void World_NRTUnlock(World *world)
+{
+	world->mNRTLock->Unlock();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -597,6 +610,7 @@ int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char *headerFormatS
 	if (!sampleFormat) return kSCErr_Failed;
 	
 	info->format = (unsigned int)(headerFormat | sampleFormat);
+	printf("sndfileFormatInfoFromStrings info->format %08X\n", info->format);
 	return kSCErr_None;
 }
 

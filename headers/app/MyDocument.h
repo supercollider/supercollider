@@ -25,6 +25,7 @@
     IBOutlet NSTextView* initTextView;
     IBOutlet NSTextView* textView;
     IBOutlet NSScrollView* scrollView;
+	Boolean isRichText;
 }
     - (NSTextView*) textView;
     - (IBAction) executeSelection: (id) sender;
@@ -41,4 +42,6 @@
     - (void) sendSelection: (char*) methodName;
     - (void) insertText: (char*) text length: (int)length;
 	- (BOOL) isDocumentEdited;
+
+	- (void)setRichText:(BOOL)flag ;
 @end

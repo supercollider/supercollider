@@ -1067,13 +1067,9 @@
 				<string>sc</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>rtf.icns</string>
+			<string>txt.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>SuperCollider document</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>RTF </string>
-			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>NSDocumentClass</key>
