@@ -20,20 +20,29 @@
 
 
 #include "SC_PlugIn.h"
+
+#if SC_DARWIN
 #include <Carbon/Carbon.h>
+#else
+#include <time.h>
+#include <X11/Intrinsic.h>
+#endif
 
 static InterfaceTable *ft;
 
-
-struct MacUGenGlobalState {
+struct UserInputUGenGlobalState {
 	float mouseX, mouseY;
 	bool mouseButton;
+#if SC_DARWIN
 	uint8 keys[16];
-} gMacUGenGlobals;
+#else
+	uint8 keys[32];
+#endif
+} gUserInputUGenGlobals;
 
-struct MacUGen : public Unit
+struct UserInputUGen : public Unit
 {
-	MacUGenGlobalState* gstate;
+	UserInputUGenGlobalState* gstate;
 	float m_y1, m_b1, m_lag;
 };
 
@@ -43,20 +52,22 @@ extern "C"
 {
 	void load(InterfaceTable *inTable);
 
-	void MouseX_next(MacUGen *unit, int inNumSamples);
-	void MouseY_next(MacUGen *unit, int inNumSamples);
-	void MouseButton_next(MacUGen *unit, int inNumSamples);
+	void MouseX_next(UserInputUGen *unit, int inNumSamples);
+	void MouseY_next(UserInputUGen *unit, int inNumSamples);
+	void MouseButton_next(UserInputUGen *unit, int inNumSamples);
 
-	void MouseX_Ctor(MacUGen *unit);
-	void MouseY_Ctor(MacUGen *unit);
-	void MouseButton_Ctor(MacUGen *unit);
+	void MouseX_Ctor(UserInputUGen *unit);
+	void MouseY_Ctor(UserInputUGen *unit);
+	void MouseButton_Ctor(UserInputUGen *unit);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+#if SC_DARWIN
+
 void* gstate_update_func(void* arg)
 {
-	MacUGenGlobalState* gstate = &gMacUGenGlobals;
+	UserInputUGenGlobalState* gstate = &gUserInputUGenGlobals;
 	RgnHandle rgn = GetGrayRgn();
 	Rect screenBounds;
 	GetRegionBounds(rgn, &screenBounds);
@@ -75,9 +86,60 @@ void* gstate_update_func(void* arg)
 	return 0;
 }
 
+#else
+
+void* gstate_update_func(void* arg)
+{
+  UserInputUGenGlobalState* gstate ;
+  Display *d ;		
+  Window r ;			
+  Window rep_root , rep_child ;
+  XWindowAttributes attributes ;
+  int rep_rootx , rep_rooty ;
+  unsigned int rep_mask ;
+  int dx , dy ;
+  float r_width ;
+  float r_height ;
+  struct timespec requested_time , remaining_time ;
+
+  requested_time.tv_sec = 0 ;
+  requested_time.tv_nsec = 17000 * 1000 ;
+
+  d = XOpenDisplay ( NULL ) ;
+  
+  r = DefaultRootWindow ( d ) ;
+  XGetWindowAttributes ( d , r , &attributes ) ;
+  r_width = 1.0 / (float)attributes.width ;
+  r_height = 1.0 / (float)attributes.height ;
+  
+  gstate = &gUserInputUGenGlobals ;
+	
+  for (;;) {
+    
+    XQueryPointer ( d , r , 
+		    &rep_root , &rep_child ,
+		    &rep_rootx , &rep_rooty , 
+		    &dx , &dy ,
+		    &rep_mask ) ;
+    
+    gstate->mouseX = (float)dx * r_width ;
+    gstate->mouseY = 1.0 - ( (float)dy * r_height ) ;
+    
+    gstate->mouseButton = (bool) ( rep_mask & Button1Mask ) ;
+
+    XQueryKeymap ( d , (char *) (gstate->keys) ) ;
+
+    nanosleep ( &requested_time , &remaining_time ) ;
+  }
+  
+  return 0;
+}
+
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MouseX_next(MacUGen *unit, int inNumSamples)
+void MouseX_next(UserInputUGen *unit, int inNumSamples)
 {	
 	// minval, maxval, warp, lag
 
@@ -103,17 +165,17 @@ void MouseX_next(MacUGen *unit, int inNumSamples)
 	unit->m_y1 = zapgremlins(y1);
 }
 
-void MouseX_Ctor(MacUGen *unit)
+void MouseX_Ctor(UserInputUGen *unit)
 {	
 	SETCALC(MouseX_next);
-	unit->gstate = &gMacUGenGlobals;
+	unit->gstate = &gUserInputUGenGlobals;
 	unit->m_b1 = 0.f;
 	unit->m_lag = 0.f;
 	MouseX_next(unit, 1);
 }
 
 
-void MouseY_next(MacUGen *unit, int inNumSamples)
+void MouseY_next(UserInputUGen *unit, int inNumSamples)
 {	
 	// minval, maxval, warp, lag
 
@@ -139,10 +201,10 @@ void MouseY_next(MacUGen *unit, int inNumSamples)
 	unit->m_y1 = zapgremlins(y1);
 }
 
-void MouseY_Ctor(MacUGen *unit)
+void MouseY_Ctor(UserInputUGen *unit)
 {	
 	SETCALC(MouseY_next);
-	unit->gstate = &gMacUGenGlobals;
+	unit->gstate = &gUserInputUGenGlobals;
 	unit->m_b1 = 0.f;
 	unit->m_lag = 0.f;
 	MouseY_next(unit, 1);
@@ -150,7 +212,7 @@ void MouseY_Ctor(MacUGen *unit)
 
 
 
-void MouseButton_next(MacUGen *unit, int inNumSamples)
+void MouseButton_next(UserInputUGen *unit, int inNumSamples)
 {	
 	// minval, maxval, warp, lag
 
@@ -170,22 +232,26 @@ void MouseButton_next(MacUGen *unit, int inNumSamples)
 	unit->m_y1 = zapgremlins(y1);
 }
 
-void MouseButton_Ctor(MacUGen *unit)
+void MouseButton_Ctor(UserInputUGen *unit)
 {	
 	SETCALC(MouseButton_next);
-	unit->gstate = &gMacUGenGlobals;
+	unit->gstate = &gUserInputUGenGlobals;
 	unit->m_b1 = 0.f;
 	unit->m_lag = 0.f;
 	MouseButton_next(unit, 1);
 }
 
 
-void KeyState_next(MacUGen *unit, int inNumSamples)
+void KeyState_next(UserInputUGen *unit, int inNumSamples)
 {	
 	// minval, maxval, warp, lag
 	uint8 *keys = unit->gstate->keys;
 	int keynum = (int)ZIN0(0);
+#if SC_DARWIN
 	int byte = (keynum >> 3) & 15;
+#else
+	int byte = (keynum >> 3) & 31;
+#endif
 	int bit = keynum & 7;
 	int val = keys[byte] & (1 << bit);
 		
@@ -205,10 +271,10 @@ void KeyState_next(MacUGen *unit, int inNumSamples)
 	unit->m_y1 = zapgremlins(y1);
 }
 
-void KeyState_Ctor(MacUGen *unit)
+void KeyState_Ctor(UserInputUGen *unit)
 {	
 	SETCALC(KeyState_next);
-	unit->gstate = &gMacUGenGlobals;
+	unit->gstate = &gUserInputUGenGlobals;
 	unit->m_b1 = 0.f;
 	unit->m_lag = 0.f;
 	KeyState_next(unit, 1);
@@ -224,8 +290,8 @@ void load(InterfaceTable *inTable)
 	pthread_t macThread;
 	pthread_create (&macThread, NULL, gstate_update_func, (void*)0);
 
-	DefineUnit("MouseX", sizeof(MacUGen), (UnitCtorFunc)&MouseX_Ctor, 0, 0);
-	DefineUnit("MouseY", sizeof(MacUGen), (UnitCtorFunc)&MouseY_Ctor, 0, 0);
-	DefineUnit("MouseButton", sizeof(MacUGen), (UnitCtorFunc)&MouseButton_Ctor, 0, 0);
-	DefineUnit("KeyState", sizeof(MacUGen), (UnitCtorFunc)&KeyState_Ctor, 0, 0);
+	DefineUnit("MouseX", sizeof(UserInputUGen), (UnitCtorFunc)&MouseX_Ctor, 0, 0);
+	DefineUnit("MouseY", sizeof(UserInputUGen), (UnitCtorFunc)&MouseY_Ctor, 0, 0);
+	DefineUnit("MouseButton", sizeof(UserInputUGen), (UnitCtorFunc)&MouseButton_Ctor, 0, 0);
+	DefineUnit("KeyState", sizeof(UserInputUGen), (UnitCtorFunc)&KeyState_Ctor, 0, 0);
 }

@@ -97,7 +97,7 @@ SCErr bufAlloc(struct SndBuf* buf, int numChannels, int numFrames);
 
 void Rate_Init(struct Rate *inRate, double inSampleRate, int inBufLength);
 
-void Dimension_Init(struct Dimension *inDimension, int inWidth, int inHeight);
+void Dimension_Init(struct SC_Dimension *inDimension, int inWidth, int inHeight);
 
 ////////////////////////////////////////////////////////////////////////
 

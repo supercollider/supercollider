@@ -13,6 +13,7 @@ libcommoninclude_HEADERS =	\
 	dlfcn.h			\
 	fftlib.h		\
 	SC_AllocPool.h		\
+	SC_Altivec.h		\
 	SC_Endian.h		\
         SC_Sem.h                \
 	SC_StringParser.h	\

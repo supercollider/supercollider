@@ -42,7 +42,7 @@ struct Unit
 	
 	struct Wire **mInput, **mOutput;
 	struct Rate *mRate;
-	struct Dimension *mDimension;
+	struct SC_Dimension *mDimension;
 	float **mInBuf, **mOutBuf;
 	
 	UnitCalcFunc mCalcFunc;

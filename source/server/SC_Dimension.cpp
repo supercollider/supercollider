@@ -22,7 +22,7 @@
 #include "SC_Dimension.h"
 #include "SC_Prototypes.h"
 
-void Dimension_Init(Dimension *inDimension, int inWidth, int inHeight)
+void Dimension_Init(SC_Dimension *inDimension, int inWidth, int inHeight)
 {
 	inDimension->mWidth = inWidth;
 	inDimension->mHeight = inHeight;

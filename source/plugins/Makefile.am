@@ -7,6 +7,12 @@
 
 MAINTAINERCLEANFILES = Makefile.in
 
+if HAVE_X11
+MACUGENS_LA = MacUGens.la
+else
+MACUGENS_LA =
+endif
+
 AM_CXXFLAGS		= -I$(top_srcdir)/headers/common \
 			-I$(top_srcdir)/headers/plugin_interface \
 			-I$(top_srcdir)/headers/server
@@ -19,6 +25,7 @@ plugin_LTLIBRARIES = 		\
 	FilterUGens.la		\
 	IOUGens.la		\
 	LFUGens.la		\
+	$(MACUGENS_LA)		\
 	MulAddUGens.la		\
 	NoiseUGens.la		\
 	OscUGens.la		\
@@ -55,6 +62,10 @@ IOUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 # LFUGens
 LFUGens_la_SOURCES		= LFUGens.cpp
 LFUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
+
+# MacUGens
+MacUGens_la_SOURCES		= MacUGens.cpp
+MacUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 
 # MulAddUGens
 MulAddUGens_la_SOURCES		= MulAddUGens.cpp

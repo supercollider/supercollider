@@ -18,14 +18,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _Dimension_
-#define _Dimension_
+#ifndef _SC_Dimension_
+#define _SC_Dimension_
 
-struct Dimension
+struct SC_Dimension
 {
 	long mWidth, mHeight, mNumPixels;
 	float mXSlopeFactor, mYSlopeFactor;
 };
-typedef struct Dimension Dimension;
+typedef struct SC_Dimension SC_Dimension;
 
 #endif
