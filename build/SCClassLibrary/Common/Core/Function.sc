@@ -118,7 +118,8 @@ Function : AbstractFunction {
 	
 	<> { arg that;
 		// function composition
-		^{|...args| this.valueArray(that.valueArray(args)) }
+		//^{|...args| this.valueArray(that.valueArray(args)) }
+		^CompositeFunction.new(this, that)
 	}
 
 	bench { arg print = true;

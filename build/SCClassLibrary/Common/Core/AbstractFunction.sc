@@ -193,7 +193,7 @@ UnaryOpFunction : AbstractFunction {
 		^a.valueArray(args).perform(selector)
 	}
 	valueEnvir { arg ... args; 
-		^a.valueEnvir(*args).perform(selector)
+		^a.valueArrayEnvir(args).perform(selector)
 	}
 	valueArrayEnvir { arg ... args; 
 		^a.valueArrayEnvir(args).perform(selector)
@@ -221,7 +221,7 @@ BinaryOpFunction : AbstractFunction {
 		^a.valueArray(args).perform(selector, b.valueArray(args), adverb)
 	}
 	valueEnvir { arg ... args; 
-		^a.valueEnvir(*args).perform(selector, b.valueEnvir(*args), adverb)
+		^a.valueArrayEnvir(args).perform(selector, b.valueArrayEnvir(args), adverb)
 	}
 	valueArrayEnvir { arg ... args; 
 		^a.valueArrayEnvir(args).perform(selector, b.valueArrayEnvir(args), adverb)
@@ -234,6 +234,32 @@ BinaryOpFunction : AbstractFunction {
 		if(adverb.notNil) { stream << "." << adverb };
 		stream << " " <<< b << ")"
 	
+	}
+}
+
+CompositeFunction : AbstractFunction {
+	var a, b;
+	
+	*new { arg a, b; 
+		^super.newCopyArgs(a, b) 
+	}
+	value { arg ... args;
+		^a.valueArray(b.valueArray(args))
+	}
+	valueArray { arg args;
+		^a.valueArray(b.valueArray(args))
+	}
+	valueEnvir { arg ... args; 
+		^a.valueArrayEnvir(b.valueArrayEnvir(args))
+	}
+	valueArrayEnvir { arg ... args; 
+		^a.valueArrayEnvir(b.valueArrayEnvir(args))
+	}
+	functionPerformList { arg selector, arglist;
+		^this.performList(selector, arglist)
+	}
+	storeOn { arg stream;
+		stream << "(" <<< a << " <> " <<< b << ")"
 	}
 }
 
@@ -250,7 +276,7 @@ NAryOpFunction : AbstractFunction {
 		^a.valueArray(args).performList(selector, arglist.collect(_.valueArray(args)))
 	}
 	valueEnvir { arg ... args; 
-		^a.valueEnvir(*args).performList(selector, arglist.collect(_.valueEnvir(*args)))
+		^a.valueArrayEnvir(args).performList(selector, arglist.collect(_.valueArrayEnvir(args)))
 	}
 	valueArrayEnvir { arg ... args; 
 		^a.valueArrayEnvir(args).performList(selector, arglist.collect(_.valueArrayEnvir(args)))
