@@ -31,7 +31,7 @@ This file contains the definitions of the core objects that implement the class 
 
 #define classClassNumInstVars 16
 
-enum { classIsIntrinsic = 1, classHasIndexableInstances = 2, classCompileUGen = 4 };
+enum { classIsIntrinsic = 1, classHasIndexableInstances = 2 };
 
 struct PyrClass : public PyrObjectHdr 
 {
