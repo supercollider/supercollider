@@ -14,8 +14,9 @@ superclass: UGen\
 \
 models the impacts of a bouncing object that is reflected by a vibrating surface \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b *ar(in, g, damp, friction)
+\f0\b \cf0 *ar(in, g, damp, friction)
 \f1\b0 \
 \
 	
@@ -115,7 +116,7 @@ models the impacts of a bouncing object that is reflected by a vibrating surface
 			in = \cf3 Mix\cf0 (in);\
 			f = \cf3 TBall\cf0 .ar(in * 10, g, d, 0.001);\
 			\
-			in + Mix(Ringz.ar(f, u * \cf3 Array\cf0 .fill(4, \{ |i| (i+1) + 0.3.rand2 \}), 0.1))\
+			in + Mix(Ringz.ar(f, u * \cf3 Array\cf0 .fill(4, \{ |i| (i+1) + 0.3.rand2 \}) * 2, 0.1))\
 		\};\
 		\cf3 Splay\cf0 .ar(z) * 0.8\
 		\}.play;\
