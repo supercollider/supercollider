@@ -173,10 +173,19 @@ msgsend : name blocklist1
 			{ 
 				$$ = (long)newPyrCallNode((PyrSlotNode*)$1, (PyrParseNode*)$2, 0, 0); 
 			}
+		| '(' binop2 ')' blocklist1
+			{ 
+				$$ = (long)newPyrCallNode((PyrSlotNode*)$2, (PyrParseNode*)$4, 0, 0); 
+			}
 		| name '(' arglist1 optkeyarglist ')' blocklist
 			{ 
 				$$ = (long)newPyrCallNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 
 						(PyrParseNode*)$4, (PyrParseNode*)$6); 
+			}
+		| '(' binop2 ')' '(' arglist1 optkeyarglist ')' blocklist
+			{
+				$$ = (long)newPyrCallNode((PyrSlotNode*)$2, (PyrParseNode*)$5, 
+						(PyrParseNode*)$6, (PyrParseNode*)$8); 
 			}
 		| name '(' arglistv1 optkeyarglist ')'
 			{
@@ -195,6 +204,19 @@ msgsend : name blocklist1
 					(PyrParseNode*)$3,
 					newPyrPushLitNode((PyrSlotNode*)$1, NULL));
 				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$4, 0); 
+			}
+		| '(' binop2 ')' '(' arglistv1 optkeyarglist ')'
+			{
+				PyrSlotNode *selectornode;
+				PyrSlot slot;
+				PyrParseNode* args;
+				
+				SetSymbol(&slot, s_performList);
+				selectornode = newPyrSlotNode(&slot);
+				args = linkAfterHead(
+					(PyrParseNode*)$5,
+					newPyrPushLitNode((PyrSlotNode*)$2, NULL));
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$6, 0); 
 			}
 		| classname '[' arrayelems ']'
 			{ $$ = (long)newPyrDynListNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
