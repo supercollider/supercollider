@@ -411,18 +411,20 @@ Server : Model {
 			("booting " ++ addr.port.asString).inform;
 		});
 	}
-	reboot {
-		var resp;
-		if (isLocal.not, { "can't reboot a remote server".inform; ^this });
-		if(serverRunning, {
-			resp = OSCresponderNode(addr, '/done', {
+	
+	reboot { arg func; // func is evaluated when server is off
+		if (isLocal.not) { "can't reboot a remote server".inform; ^this };
+		if(serverRunning) {
+			Routine.run {
+				this.quit;
+				this.wait(\done);
+				func.value;
 				this.boot;
-				resp.remove;
-			}).add;
-			this.quit;
-		}, {
+			}
+		} {
+			func.value;
 			this.boot
-		})
+		}
 	}
 	
 	status {
