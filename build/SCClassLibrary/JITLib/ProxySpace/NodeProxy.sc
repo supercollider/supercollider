@@ -56,7 +56,7 @@ NodeProxy : AbstractFunction {
 		^this.getOutput(numChannels)
 	}
 	
-	value { ^this.ar }
+	value { ^this.kr  }
 	
 	
 	play { arg outBus=0, nChan, clock;
@@ -186,14 +186,17 @@ NodeProxy : AbstractFunction {
 		if( synthDef.notNil and: { server.serverRunning }, {
 				cmd = List.new;
 				this.sendSynthCommand(cmd, freeLast, extraArgs);
+				
 				if(loaded.not, { 
 					this.updateSynthDef;
-					resp = OSCresponder(server.addr, '/done', {
-						this.schedSendOSC(cmd, clock, onCompletion);
-						resp.remove;
-					}).add
+					//resp = OSCresponder(server.addr, '/done', {
+//						this.schedSendOSC(cmd, clock, onCompletion);
+//						resp.remove;
+//					}).add
+					//doesn't work when several defs are sent at once.
+					Routine({ 0.3.wait; this.schedSendOSC(cmd, clock, onCompletion); }).play;
 				}, { 
-						this.schedSendOSC(cmd, clock, onCompletion)
+					this.schedSendOSC(cmd, clock, onCompletion)
 				});
 		});
 	}
@@ -250,9 +253,10 @@ NodeProxy : AbstractFunction {
 					numChannels = obj.numChannels
 				},{
 					array = obj.value.asArray;
-					rate = array.rate ? 'control'; 
+					rate = array.rate;
 					numChannels = array.size;
 				});
+				if(rate !== 'audio', { rate = 'control' });
 				bus = Bus.perform(rate, server, numChannels);
 				nodeMap = ProxyNodeMap.new;
 				this.initParents;
