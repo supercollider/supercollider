@@ -149,8 +149,20 @@ SimpleNumber : Number {
 		// exponential to exponential mapping
 		if (this <= inMin, { ^outMin });
 		if (this >= inMax, { ^outMax });
-		pow(outMax/outMin, log(this/inMin)) / (log(inMax/inMin)) * outMin;
+		^pow(outMax/outMin, log(this/inMin)) / (log(inMax/inMin)) * outMin;
 	}
+	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax;
+		var ratio;
+		if (this <= inMin, { ^outMin });
+		if (this >= inMax, { ^outMax });
+		^if (this >= inCenter) {
+			ratio = (this - inCenter) / (inMax - inCenter);
+			(outMax - outCenter) * ratio + outCenter
+		} {
+			ratio = (this - inCenter) / (inMin - inCenter);
+			(outCenter - outCenter) * ratio + outCenter
+		}
+	} 
 
 	asPoint { ^Point.new(this, this) }
 
