@@ -138,6 +138,12 @@ struct LeastChange : public Unit
 	int mRecent;
 };
 
+struct LastValue : public Unit
+{
+	float mPrev;
+	float mCurr;
+};
+
 struct Done : public Unit
 {
 	Unit *m_src;
@@ -243,6 +249,10 @@ void LeastChange_Ctor(LeastChange *unit);
 void LeastChange_next_ak(LeastChange *unit, int inNumSamples);
 void LeastChange_next_ka(LeastChange *unit, int inNumSamples);
 void LeastChange_next_aa(LeastChange *unit, int inNumSamples);
+
+void LastValue_Ctor(LastValue *unit);
+void LastValue_next_ak(LastValue *unit, int inNumSamples);
+void LastValue_next_kk(LastValue *unit, int inNumSamples);
 
 void Done_Ctor(Done *unit);
 void Done_next(Done *unit, int inNumSamples);
@@ -1350,6 +1360,61 @@ void LeastChange_next_ka(LeastChange *unit, int inNumSamples)
 }
 
 
+////////////////////
+
+void LastValue_Ctor(LastValue *unit)
+{
+	if (INRATE(0) == calc_FullRate) {
+			SETCALC(LastValue_next_ak);
+		} else {
+			SETCALC(LastValue_next_kk);
+		}
+	
+	unit->mPrev = ZIN0(0);
+	unit->mCurr = ZIN0(0);
+	LastValue_next_kk(unit, 1);
+}
+
+void LastValue_next_kk(LastValue *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float inval = ZIN0(0);
+	float delta = ZIN0(1);
+	float diff = fabs(inval - unit->mCurr);
+	if(diff >= delta) { 
+		unit->mPrev = unit->mCurr; 
+		unit->mCurr = inval;
+	}
+	float level = unit->mPrev;
+	LOOP(inNumSamples, ZXP(out) = level; );
+	
+}
+
+
+void LastValue_next_ak(LastValue *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float delta = ZIN0(1);
+	float prev = unit->mPrev;
+	float curr = unit->mCurr;
+	
+	LOOP(inNumSamples,
+		float inval = ZXP(in);
+		float diff = fabs(inval - curr);
+		if(diff >= delta) { 
+				prev = curr; 
+				curr = inval;
+		}
+		ZXP(out) = prev
+	);
+	unit->mPrev = prev;
+	unit->mCurr = curr;
+
+}
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////////
 
 void Done_Ctor(Done *unit)
@@ -1549,6 +1614,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Peak);
 	DefineSimpleUnit(MostChange);
 	DefineSimpleUnit(LeastChange);
+	DefineSimpleUnit(LastValue);
 	DefineSimpleUnit(Done);
 	DefineSimpleUnit(Pause);
 	DefineSimpleUnit(FreeSelf);
