@@ -103,7 +103,11 @@ SharedProxySpace  : ProxySpace {
 	makeSharedProxy { arg key, rate;
 			var proxy, srv;
 			srv = server.broadcast;
-			proxy = if(rate.isNil, {SharedNodeProxy(srv)},{SharedNodeProxy.perform(rate,srv)});
+			proxy = if(rate.isNil, {
+				SharedNodeProxy(srv)
+			},{
+				SharedNodeProxy.perform(rate,srv)
+			});
 			proxy.clock = clock;
 			this.prPut(key, proxy);
 			^proxy

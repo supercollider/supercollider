@@ -35,7 +35,6 @@ NodeProxy : AbstractFunction {
 		if(outbus.notNil, { outbus.free });
 		outbus = nil;
 		group = nil;
-		if(server.nodeWatcher.isWatching.not, { server.nodeWatcher.start }); //to be sure.
 	}
 
 	initParents {
@@ -444,8 +443,6 @@ LibNodeProxy : NodeProxy {
 //the server needs to be a Router.
 //this class takes care for a constant groupID.
 
-//doesn't work yet.
-
 
 SharedNodeProxy : NodeProxy {
 	var <constantGroupID;
@@ -457,21 +454,12 @@ SharedNodeProxy : NodeProxy {
 	initGroupID { arg id; constantGroupID = server.nextSharedNodeID } 											
 		
 	prepareForPlayToBundle { arg bundle, freeAll=true;
-				postln("start new shared group"+constantGroupID);
+				postln("started new shared group"+constantGroupID);
 				group = Group.basicNew(constantGroupID, server);
 				bundle.add(["/g_new",constantGroupID,0,0]);
 				server.nodeIsPlaying_(constantGroupID); //force isPlaying.
 	}
 	
-	sendToServer { arg bundle, freeAll=true, latency=0.3, extraArgs, onCompletion;
-		
-				//do it always for now.
-				this.prepareForPlayToBundle(bundle, freeAll);
-				this.sendSynthToBundle(bundle, freeAll, extraArgs);
-				this.sendBundle(bundle, latency=0.3, clock, onCompletion);
-		
-	}
-
 
 }
 
