@@ -82,7 +82,11 @@ AbstractFunction {
 	isPositive { ^this.composeUnaryOp('isPositive') }
 	isNegative { ^this.composeUnaryOp('isNegative') }
 	isStrictlyPositive { ^this.composeUnaryOp('isStrictlyPositive') }
-
+	
+	rho {  ^this.composeUnaryOp('rho') }
+	theta {  ^this.composeUnaryOp('theta') }
+	rotate { arg function; ^this.composeBinaryOp('rotate', function) }
+	dist { arg function; ^this.composeBinaryOp('dist', function) }
 	
 	+ { arg function; ^this.composeBinaryOp('+', function) }
 	- { arg function; ^this.composeBinaryOp('-', function) }
