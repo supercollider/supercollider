@@ -10,7 +10,7 @@ BusPlug : AbstractFunction {
 	
 	
 	*new { arg server;
-		^super.newCopyArgs(server ? Server.default).init;
+		^super.newCopyArgs(server ? Server.default);
 	}
 	
 	*for { arg bus;
@@ -43,13 +43,11 @@ BusPlug : AbstractFunction {
 		})
 	}
 	
-	init {
+	
+	clear { 
 		this.free;
 		this.stop;
 		this.freeBus;
-	}
-	clear { 
-		this.init;
 		this.doOnClear; 
 	}
 	doOnClear {
@@ -70,14 +68,14 @@ BusPlug : AbstractFunction {
 	
 	//returns boolean
 	initBus { arg rate, numChannels;
-				if((rate === 'scalar') || rate.isNil, { ^true }); //this is no problem
-				if(this.isNeutral, {
+				if(rate.isNil or: { rate === 'scalar' }) { ^true }; //this is no problem
+				if(this.isNeutral) {
 					this.defineBus(rate, numChannels);
 					^true
-				}, {
+				} {
 					numChannels = numChannels ? this.numChannels;
-					^(bus.rate === rate) && (numChannels <= bus.numChannels)
-				});
+					^(bus.rate === rate) and: { numChannels <= bus.numChannels }
+				};
 	}
 	
 	defineBus { arg rate=\audio, numChannels;
@@ -242,6 +240,7 @@ BusPlug : AbstractFunction {
 			bundle.send(localServer, localServer.latency);
 		^monitorGroup
 	}
+	fadeTime Ê{ ^0.02 }
 	vol_ { arg invol;
 		monitorVol = invol ? monitorVol;
 		monitorGroup.set(\vol, monitorVol);
@@ -302,7 +301,8 @@ NodeProxy : BusPlug {
 	
 	*new { arg server, rate, numChannels, inputs;
 		var res;
-		res = super.new(server).initBus(rate, numChannels);
+		res = super.new(server).init;
+		res.initBus(rate, numChannels);
 		inputs.do({ arg o; res.add(o) });
 		^res
 	}
