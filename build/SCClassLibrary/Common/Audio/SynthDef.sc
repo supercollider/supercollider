@@ -322,11 +322,27 @@ SynthDef {
 	}
 	load { arg server, completionMsg,dir="synthdefs/";
 		// i should remember what dir i was written to
+		var path;
 		this.writeDefFile(dir);
 		server.listSendMsg(
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
 		)
 	}
+	store { arg libname=\global, path="synthdefs/";
+		var lib;
+		
+		lib = SynthDescLib.all.at(libname);
+		if(lib.isNil) { "library" + libname  + "not found".error; ^nil };
+		this.writeDefFile(path);
+		path = path ++ name ++ ".scsyndef";
+		lib.read(path);
+		lib.servers.do { arg server;
+			server.listSendMsg(
+				["/d_load", path ]
+			)
+		}
+	}
+
 	play { arg target,args,addAction=\addToTail;
 		var synth, msg;
 		target = target.asTarget;
