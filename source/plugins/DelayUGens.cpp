@@ -577,6 +577,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 
 #define CHECK_BUF \
 	if (!bufData) { \
+                unit->mDone = true; \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	}
@@ -584,6 +585,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 #define SETUP_OUT \
 	uint32 numOutputs = unit->mNumOutputs; \
 	if (numOutputs > bufChannels) { \
+                unit->mDone = true; \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
@@ -593,6 +595,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 #define SETUP_IN(offset) \
 	uint32 numInputs = unit->mNumInputs - (uint32)offset; \
 	if (numInputs != bufChannels) { \
+                unit->mDone = true; \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
