@@ -826,7 +826,7 @@ void VarSaw_next_a(VarSaw *unit, int inNumSamples)
 void VarSaw_next_k(VarSaw *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
-	float freq = ZIN0(0);
+	float freq = ZIN0(0) * unit->mFreqMul;
 	float nextDuty = ZIN0(2);
 	float duty = unit->mDuty;
 	float invduty = unit->mInvDuty;
@@ -859,7 +859,10 @@ void VarSaw_Ctor(VarSaw* unit)
 
 	unit->mFreqMul = unit->mRate->mSampleDur;
 	unit->mPhase = ZIN0(1);
-	unit->mDuty = ZIN0(2);
+	float duty = ZIN0(2);
+	duty = unit->mDuty = sc_clip(duty, 0.001, 0.999);
+	unit->mInvDuty = 2.f / duty;
+	unit->mInv1Duty = 2.f / (1.f - duty);
 	
 	ZOUT0(0) = 0.f;
 }
