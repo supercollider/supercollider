@@ -64,7 +64,7 @@
 		def = this.asSynthDef(fadeTime:fadeTime);
 		synth = Synth.basicNew(def.name,server);
 		bytes = def.asBytes;
-		synthMsg = synth.newMsg(target, addAction, [\i_out, outbus, \out, outbus]);
+		synthMsg = synth.newMsg(target, [\i_out, outbus, \out, outbus], addAction);
 		if(bytes.size > 8192) {
 			def.load(server, synthMsg);
 		} {

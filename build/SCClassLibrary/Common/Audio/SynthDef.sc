@@ -393,7 +393,7 @@ SynthDef {
 		var synth, msg;
 		target = target.asTarget;
 		synth = Synth.basicNew(name,target.server);
-		msg = synth.newMsg(target, addAction, args);
+		msg = synth.newMsg(target, args, addAction);
 		this.send(target.server, msg);
 		^synth
 	}
