@@ -439,6 +439,21 @@ SC2DSlider : SCSliderBase {
 	}
 }
 
+SC2DTabletSlider : SC2DSlider {
+
+	var <>mouseDownAction,<>mouseUpAction;
+	
+	mouseDown { arg pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
+		mouseDownAction.value(this,	pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
+	}
+	mouseUp { arg pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
+[this,	pressure,tiltx,tilty,deviceID, buttonNumber,clickCount].postln;		mouseUpAction.value(this,	pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
+	}
+	doAction { arg pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
+[this,	pressure,tiltx,tilty,deviceID, buttonNumber,clickCount].postln;		action.value(this,	pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
+	}
+	
+}
 
 SCButton : SCControlView {
 	var <font, <states;
