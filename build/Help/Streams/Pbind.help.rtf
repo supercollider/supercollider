@@ -1,7 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
-\red96\green96\blue96;\red0\green0\blue191;\red0\green0\blue0;\red0\green115\blue0;}
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs36 \cf0 Pbind\cf2 \
@@ -192,7 +192,7 @@ efx's input bus.  The effect Synth must also be created.  Synth.new is one way o
 \cf0 	var audio, efx;\
 	audio = \cf2 In\cf0 .ar([20,21],2);\
 	efx=\cf2 CombN\cf0 .ar(audio, 0.5, [0.25,0.5], 10, 1, audio);  \cf3 //if you don't like the beats change to 0.4,0.24\cf0 \
-	\cf2 Out\cf0 .ar([0,1], \cf2 efx\cf0 );\
+	\cf2 Out\cf0 .ar(out, \cf2 efx\cf0 );\
 	\}).load(s);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //create efx synth\cf0 \
@@ -212,12 +212,10 @@ efx's input bus.  The effect Synth must also be created.  Synth.new is one way o
 \
 \
 \
-\cf6 Pbind\cf7 (\cf8 \\instrument\cf7 ,\cf8 \\acid\cf7 , \cf8 \\out\cf7 , 20, \cf8 \\dur\cf7 ,\cf6 Pseq\cf7 ([0.25,0.5,0.25],\cf6 inf\cf7 ), \cf8 \\root\cf7 ,[-24,-17], \cf8 \\degree\cf7 ,\cf6 Pseq\cf7 ([0,3,5,7,9,11,5,1],\cf6 inf\cf7 ), 	\cf8 \\pan\cf7 ,\cf6 Pfunc\cf7 (\{1.0.rand2\}),\cf8 \\cut\cf7 ,\cf6 Pxrand\cf7 ([1000,500,2000,300],\cf6 inf\cf7 ), \cf8 \\rez\cf7 ,\cf6 Pfunc\cf7 (\{0.7.rand +0.3\}), \cf8 \\amp\cf7 ,0.12).play;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\out\cf0 , 20, \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],\cf2 inf\cf0 ), \cf4 \\root\cf0 ,[-24,-17], \cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0,3,5,7,9,11,5,1],\cf2 inf\cf0 ), 	\cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),\cf4 \\cut\cf0 ,\cf2 Pxrand\cf0 ([1000,500,2000,300],\cf2 inf\cf0 ), \cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}), \cf4 \\amp\cf0 ,0.12).play;\
+\
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //
 \f1\b UGens as Event values.
 \f0\b0 \cf0 \
