@@ -96,20 +96,19 @@ AbstractPlayer : AbstractFunction  {
 	
 	// these always call children
 	stop {
-		this.freeSynth;
-		this.freePatchOut;
-		this.children.do({ arg child;
-			child.stop;
-		});
+		var b;
+		b = CXBundle.new;
+		this.stopToBundle(b);
+		b.clumpedSendNow(this.server);
 	}
 	stopToBundle { arg b;
+		this.children.do({ arg child;
+			child.stopToBundle(b);
+		});
 		if(synth.isPlaying,{
 			b.add(synth.freeMsg);
 		});
 		b.addAction(this,\freePatchOut);
-		this.children.do({ arg child;
-			child.stopToBundle(b);
-		});
 	}
 	free {
 		this.stop;
@@ -153,15 +152,10 @@ AbstractPlayer : AbstractFunction  {
 		});
 		if(releaseTime ? 0.0 > 0.01,{
 			bundle.addFunction({
-				//if(releaseTime.notNil,{
-					SystemClock.sched(releaseTime,{ this.stop; nil; })
-				//},{
-				//	this.stop; // happening before the gate gets there !
-				//})
+				SystemClock.sched(releaseTime,{ this.stop; nil; })
 			});
 		},{
 			this.stopToBundle(bundle);
-			// is same thing...
 		});
 	}
 		
@@ -232,24 +226,42 @@ AbstractPlayer : AbstractFunction  {
 	}
 	topMakePatchOut { arg group,private = false,bus;
 		if(patchOut.notNil,{
-			if(bus.notNil and: {patchOut.bus != bus},{
-				//frees the previous bus it had
-				//[this,patchOut.bus,"freeing previous bus :" ].insp;
-				patchOut.bus.free;
-				patchOut.bus = bus;
-			});
 			if(group.notNil and: {patchOut.group != group},{
 				patchOut.group = group;
 			});
-			if(private,{
-				if(patchOut.bus.isAudioOut,{
+			if(bus.notNil,{
+				if(patchOut.bus != bus,{
+					if(bus.numChannels != this.numChannels,{
+						warn("numChannels mismatch ! " + this + this.numChannels + "vs" + patchOut.bus);
+					});
+					patchOut.bus.free;
+					patchOut.bus = bus;
+				});
+				^patchOut
+			});
+			if(this.rate == \audio,{
+				//check private status changed
+				if(private,{
+					if(patchOut.bus.notNil,{
+						if(patchOut.bus.isAudioOut,{
+							patchOut.bus.free;
+						},{
+							^patchOut
+						});
+					});
 					patchOut.bus = Bus.audio(group.server,this.numChannels);
+				},{
+					if(patchOut.bus.notNil,{
+						if(patchOut.bus.isAudioOut,{
+							patchOut.bus.free;
+						},{
+							^patchOut
+						})
+					});
+					patchOut.bus = Bus(\audio,0,this.numChannels,group.server);
 				})
-			}/*,{
-				if(patchOut.bus.isAudioOut.not,{
-					patchOut.bus = Bus(\audio,0,this.numChannels,group.server)
-				})
-			}*/)
+			});
+			^patchOut
 		},{
 			//Patch doesn't know its numChannels or rate until after it makes the synthDef
 			if(this.rate == \audio,{// out yr speakers
@@ -271,6 +283,9 @@ AbstractPlayer : AbstractFunction  {
 								bus ?? {Bus.control(group.server,this.numChannels)})
 							)
 				},{
+					if(this.rate.isNil,{
+						die("Nil rate :",this);
+					});
 					this.setPatchOut(
 						ScalarPatchOut(this,group,bus)
 					)
@@ -539,6 +554,18 @@ AbstractPlayer : AbstractFunction  {
 		}) 
 	}
 
+	didSaveAs { arg apath;
+		path = apath;
+		NotificationCenter.notify(AbstractPlayer,\saveAs,[this,path]);
+		/* to receive this:
+			NotificationCenter.register(AbstractPlayer,\saveAs,you,
+			{ arg model,path;
+				// do any saveAs handlers you wish
+			});
+		*/
+	}
+	
+	
 	// structural utilities
 	children { ^#[] }
 	deepDo { arg function;// includes self
@@ -565,7 +592,7 @@ AbstractPlayer : AbstractFunction  {
 	}
 	storeParamsOn { arg stream;
 		// anything with a path gets stored as abreviated
-		var args,tabs=0;
+		var args;
 		args = this.storeArgs;
 		if(args.notEmpty,{
 			if(stream.isKindOf(PrettyPrintStream),{
@@ -582,18 +609,6 @@ AbstractPlayer : AbstractFunction  {
 		});
 	}
 
-	gui { arg  ... args; 
-		^this.guiClass.new(this).performList(\gui,args);
-	}
-	
-	topGui { arg ... args; 
-		^this.guiClass.new(this).performList(\topGui,args);
-	}
-	
-	smallGui { arg  ... args;
-		^this.guiClass.new(this).performList(\smallGui,args);
-	}
-	
 	guiClass { ^AbstractPlayerGui }
 
 }
@@ -619,8 +634,11 @@ SynthlessPlayer : AbstractPlayer { // should be higher
 		super.free;
 		isPlaying = false;
 	}
-	stop {
-		super.stop;
+	stopToBundle { arg b;
+		super.stopToBundle(b);
+		b.addAction(this,\didStop);
+	}
+	didStop {		
 		isPlaying = false;
 	}
 	releaseToBundle { arg releaseTime = 0.1,bundle;
@@ -647,12 +665,6 @@ MultiplePlayers : AbstractPlayer { // abstract
 		});
 		super.free;
 	}
-	stop {
-		this.voices.do({ arg pl;
-			pl.stop;
-		});
-		super.stop;
-	}
 	releaseToBundle { arg releaseTime = 0.1,bundle;
 		this.voices.do({ arg pl;
 			pl.releaseToBundle(releaseTime,bundle)
@@ -670,6 +682,7 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 
 	asSynthDef { ^source.asSynthDef }
 	synthDefArgs { ^source.synthDefArgs }
+	synthArg { ^source.synthArg }
 	rate { ^source.rate }
 	numChannels { ^source.numChannels }
 	defName { ^source.defName }
@@ -696,14 +709,18 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 		isPlaying = false;
 		isSleeping = true;
 	}
-	stop {
+	stopToBundle { arg b;
+		super.stopToBundle(b);
+		b.addAction(this,'didStop');
+	}
+	didStop {
 		isPlaying = false;
 		isSleeping = true;
-		super.stop;
 	}
-	releaseToBundle { arg releaseTime=0.2,bundle;
-		source.releaseToBundle(releaseTime,bundle)
-	}
+//	releaseToBundle { arg releaseTime=0.2,bundle;
+//		super.releaseToBundle(0.2,bundle);
+//		source.releaseToBundle(releaseTime,bundle);
+//	}
 	children { ^[source] }
 	
 	makePatchOut { arg group,private,bus;

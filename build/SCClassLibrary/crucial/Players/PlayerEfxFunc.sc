@@ -33,7 +33,6 @@ PlayerEfxFunc : AbstractSinglePlayerEffect {
 		effect.spawnToBundle(bundle);
 		subject.spawnToBundle(bundle);
 	}
-	stop { effect.stop; subject.stop; super.stop;  }
 
 	children { ^[subject,effect] }
 	guiClass { ^PlayerEffectGui }

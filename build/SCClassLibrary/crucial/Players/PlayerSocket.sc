@@ -68,6 +68,7 @@ PlayerSocket : AbstractPlayerProxy {
 	}
 	qspawnPlayer { arg player,releaseTime=0.0;
 		isWaking = true;
+		// TODO switch to TempoClock
 		this.spawnPlayer(player,releaseTime,sched.deltaTillNext(round))
 	}
 	
@@ -83,7 +84,7 @@ PlayerSocket : AbstractPlayerProxy {
 				bundle = CXBundle.new;
 				source.releaseToBundle(releaseTime,bundle);
 				bundle.addFunction({ isSleeping = true; });
-				sched.xschedCXBundle(0.0,this.server,bundle);
+				bundle.clumpedSendNow(this.server);
 			});
 		});
 	}
@@ -133,6 +134,7 @@ PlayerSocket : AbstractPlayerProxy {
 			})
 		})
 	}
+	//addToSynthDef 
 
 	// prepared sources only
 	setSource { arg s,atTime;

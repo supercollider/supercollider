@@ -42,10 +42,6 @@ AbstractPlayerGui : ObjectGui {
 		})
 	}	
 	
-	smallGui { arg layout,bounds;
-		layout=this.guify(layout,bounds);
-		Tile(model,layout); // writes name
-	}
 	writeName { arg layout,big=false; 
 			//color it based on whether it has a .path 
 							// (was loaded from disk)
@@ -79,7 +75,7 @@ AbstractPlayerGui : ObjectGui {
 	saveConsole { arg layout;
 		^SaveConsole(model,model.path,layout).save
 			.saveAs({arg path;
-				model.path = path;
+				model.didSaveAs(path)
 			})
 			.printPath
 			.print;

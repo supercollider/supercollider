@@ -8,7 +8,7 @@ PlayerUnop : AbstractPlayer {
 		^super.new.a_(loadDocument(a)).operator_(operator)
 	}
 	asSynthDef {
-		^this.notYetImplemented(thisMethod)
+		^thisMethod.notYetImplemented
 		//^a.value.perform(operator,b.value)
 	}
 	/*
@@ -58,3 +58,4 @@ PlayerBinop : AbstractPlayer{
 
 	guiClass { ^PlayerBinopGui }
 }
+

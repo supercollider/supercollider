@@ -10,7 +10,10 @@ HasSubject : AbstractPlayer {
 
 	ar { ^subject.ar }
 	
-	stop { super.stop; subject.stop }
+	stopToBundle { arg b;
+		super.stopToBundle(b);
+		subject.stopToBundle(b); 
+	}
 	children { ^this.inputs }
 	inputs { ^[subject] }
 	

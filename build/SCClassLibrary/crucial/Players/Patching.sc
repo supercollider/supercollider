@@ -18,6 +18,9 @@ PatchIn {
 	*scalar { arg nodeControl;
 		^ScalarPatchIn(nodeControl)
 	}
+	*stream { arg nodeControl;
+		^ScalarPatchIn(nodeControl)
+	}
 	server { ^nodeControl.server }
 	group { ^nodeControl.group }
 }
