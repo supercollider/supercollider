@@ -29,6 +29,7 @@ Klang : UGen {
 				].flop.flat;
 		^this.multiNewList(['audio', freqscale, freqoffset] ++ specs )
 	}
+	argNamesInputsOffset { ^2 }
 }
 
 Klank : UGen {	
@@ -47,6 +48,7 @@ Klank : UGen {
 		^super.new.rate_(rate).addToSynth.performList(\init, 
 				[input,freqscale,freqoffset,decayscale] ++ specs); 
 	}
+	argNamesInputsOffset { ^2 }
 }
 
 

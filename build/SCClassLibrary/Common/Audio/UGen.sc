@@ -74,13 +74,9 @@ UGen : AbstractFunction {
 	checkInputs { 
 		inputs.do({arg in,i;
 			var argName;
-			if(in.isNil,{
-				argName = this.argNameForInputAt(i);
-				if(argName.isNil,{
-					^"has nil input at index:" + i;
-				},{
-					^"has nil input for:" + argName;
-				});
+			if(in.isValidUGenInput.not,{
+				argName = this.argNameForInputAt(i) ? i;
+				^"arg: '" ++ argName ++ "' has bad input:" + in;
 			})
 		});
 		^nil 
