@@ -30,7 +30,7 @@ Pan4 : MultiOutUGen {
 }
 
 
-PanB : UGen {
+PanB : MultiOutUGen {
 	var channels;
 	
 	*ar { arg in, azimuth, elevation, gain;
