@@ -102,7 +102,7 @@ OSCpathResponder : OSCresponder {
 	}
 		
 	== { arg that;
-		^(this.class == that.class) and: { path == that.path }
+		^path == that.path
 	}
 }		
 
