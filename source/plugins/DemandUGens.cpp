@@ -18,8 +18,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
 #include "SC_PlugIn.h"
+
+#ifndef MAXFLOAT
+# include <float.h>
+# define MAXFLOAT FLT_MAX
+#endif
 
 static InterfaceTable *ft;
 
