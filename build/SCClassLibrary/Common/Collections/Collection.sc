@@ -373,6 +373,10 @@ Collection {
 		
 		this.do { | item | item.writeDef(file); }
 	}
+	
+	writeInputSpec { | file, synthDef |
+		this.do { | item | item.writeInputSpec(file, synthDef) };
+	}
 
 	// graphical support
 	draw { | args |
