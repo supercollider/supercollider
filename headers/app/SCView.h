@@ -118,6 +118,10 @@ public:
         
         SCView* next() { return mNext; }
         SCContainerView* parent() { return mParent; }
+	
+	virtual NSMenu* contextMenu(SCPoint inPoint);
+	
+	virtual void setMenuItemChosen(int inItem) {}
         
 protected:
 	friend class SCContainerView;
@@ -226,6 +230,9 @@ public:
         void tabNextFocus();
         void tabPrevFocus();
         void setDragView(SCView *inView);
+		
+		NSView* GetNSView() { return mNSView; }
+		void SetNSView(NSView* inView) { mNSView = inView; }
         
 protected:
         friend class SCView;
@@ -236,6 +243,7 @@ protected:
         void *mHostData;
         SCView *mFocusView;
         SCView *mDragView;
+		NSView *mNSView;
 };
 
 inline bool SCView::isFocus() const { return mTop->focusView() == this; }
@@ -405,6 +413,34 @@ protected:
         bool mPushed;
 };
 SCView* NewSCButton(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+
+
+class SCPopUpMenu : public SCView
+{
+public:	
+	SCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+        virtual ~SCPopUpMenu();
+
+	virtual void draw(SCRect inDamage);
+	virtual void mouseBeginTrack(SCPoint where, int modifiers);
+	
+	bool setValue(int inValue, bool send);
+	virtual void setMenuItemChosen(int inItem) { setValue(inItem, true); }
+
+	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+
+protected:
+	
+	int mValue;
+	MenuHandle mMenuH;
+	char mFontName[kFontNameSize];
+	float mFontSize;
+	SCColor mStringColor;
+};
+SCView* NewSCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+
+
 
 class SCUserView : public SCView
 {

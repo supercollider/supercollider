@@ -59,8 +59,9 @@ void Node_Dtor(Node *inNode)
 {
 	Node_StateMsg(inNode, kNode_End);
 	Node_Remove(inNode);
-	inNode->mWorld->hw->mNodeLib->Remove(inNode);
-	World_Free(inNode->mWorld, inNode);
+	World *world = inNode->mWorld;
+	world->hw->mNodeLib->Remove(inNode);
+	World_Free(world, inNode);
 }
 
 // remove a node from a group

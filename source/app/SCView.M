@@ -259,6 +259,11 @@ void SCView::keyDown(int character, int modifiers)
     pthread_mutex_unlock (&gLangMutex);
 }
 
+NSMenu* SCView::contextMenu(SCPoint inPoint)
+{
+	return 0;
+}
+
 void SCView::mouseBeginTrack(SCPoint where, int modifiers)
 {
 	mouseTrack(where, modifiers);
@@ -1620,6 +1625,202 @@ int SCButton::getProperty(PyrSymbol *symbol, PyrSlot *slot)
         return SCView::getProperty(symbol, slot);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+SCView* NewSCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCPopUpMenu(inParent, inObj, inBounds);
+}
+
+SCPopUpMenu::SCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+	: SCView(inParent, inObj, inBounds), mMenuH(0), mValue(0)
+{
+	mStringColor = SCMakeColor(0,0,0,1);
+	//mButtonColor = SCMakeColor(0,0,0,0);
+	strcpy(mFontName, "Helvetica");
+	mFontSize = 12.;
+}
+
+SCPopUpMenu::~SCPopUpMenu()
+{
+    if (mMenuH) DisposeMenu(mMenuH);
+}
+
+int stringDrawCenteredInRect(char *cString, SCRect rect, char *cFontName, float size, SCColor sccolor);
+
+void SCPopUpMenu::draw(SCRect inDamage)
+{    
+    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+    CGContextSaveGState(cgc);
+
+    CGRect rect = SCtoCGRect(mBounds);
+    if (mBackground) mBackground->draw(cgc, rect);
+    
+    CGRect bounds = SCtoCGRect(mBounds);
+    QDDrawBevelRect(cgc, bounds, 1, false);
+
+	CGContextSetRGBFillColor(cgc, 0, 0, 0, 1);
+	
+	int vc = bounds.origin.y + bounds.size.height/2;
+	int hc = bounds.origin.x + 7;
+    CGContextMoveToPoint(cgc, hc-3, vc-3);
+	
+    CGContextAddLineToPoint(cgc, hc+3, vc-3);
+    CGContextAddLineToPoint(cgc, hc, vc+3);
+    CGContextAddLineToPoint(cgc, hc-3, vc-3);
+    CGContextFillPath(cgc);	
+	
+    CGContextRestoreGState(cgc);
+
+    if (mMenuH) {
+		int numberOfItems = CountMenuItems(mMenuH);
+		if (numberOfItems) {
+			Str255 name;
+			GetMenuItemText(mMenuH, mValue+1, name);
+			char cstring[256];
+			p2cstrcpy(cstring, name);
+			SCRect innerBounds = mBounds;
+			int inset = 2;
+			innerBounds.x += inset + 10;
+			innerBounds.y += inset;
+			innerBounds.width -= inset * 2 + 10;
+			innerBounds.height -= inset * 2;
+			stringDrawCenteredInRect(cstring, innerBounds, mFontName, mFontSize, mStringColor);
+		}
+    }
+}
+
+bool SCPopUpMenu::setValue(int inValue, bool send)
+{
+	if (!mMenuH) return false;
+	
+    bool changed = inValue != mValue;
+	int numberOfItems = CountMenuItems(mMenuH);
+    if (inValue < 0 || inValue >= numberOfItems) inValue = 0;
+    if (inValue != mValue || numberOfItems < 2) {
+        mValue = inValue;
+        refresh();
+        if (send) sendMessage(s_doaction, 0, 0, 0);
+    }
+    return changed;
+}
+
+
+void SCPopUpMenu::mouseBeginTrack(SCPoint where, int modifiers)
+{	
+
+/*
+FUNCTION NewMenu (menuID: Integer; menuTitle: Str255): MenuHandle;
+PROCEDURE AppendMenu (menu: MenuHandle; data: Str255); 
+PROCEDURE DisposeMenu (theMenu: MenuHandle); 
+PopUpMenuSelect (menu: MenuHandle;
+                           Top: Integer; Left: Integer; 
+                           PopUpItem: Integer)
+                           : LongInt;
+*/
+	if (!mMenuH) return;
+	
+	[mTop->GetNSView() startMenuTracking: this];
+
+	int numberOfItems = CountMenuItems(mMenuH);
+	for (int i=0; i<numberOfItems; ++i) {
+		MacCheckMenuItem(mMenuH, i+1, mValue == i);
+	}
+
+	NSPoint p = NSMakePoint(mBounds.x, mBounds.y);
+	NSView *view = mTop->GetNSView();
+	p = [view convertPoint: p toView: nil];
+	p = [[view window] convertBaseToScreen: p];
+	
+	// cocoa to carbon y flip
+	float screenHeight = [[NSScreen mainScreen] frame].size.height;
+	p.y = screenHeight - p.y;
+	
+	int val = PopUpMenuSelect(mMenuH, p.y, p.x, mValue + 1);
+	if (val == 0) return;
+	val = (val & 0xFFFF) - 1;
+	setValue(val, true);	
+}
+
+int SCPopUpMenu::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	int err;
+	if (symbol == s_value) {
+            int value;
+            err = slotIntVal(slot, &value);
+            if (err) return err;
+            bool changed = setValue(value, false);
+            SetBool(slot, changed);
+            return errNone;
+	}
+	char *name = symbol->name;
+	if (strcmp(name, "font")==0) {
+            if (!isKindOfSlot(slot, getsym("Font")->u.classobj)) return errWrongType;
+            PyrSlot *slots = slot->uo->slots;
+        
+            float fontSize; 
+            err = slotFloatVal(slots+1, &fontSize);
+            if (err) return err;
+            
+            err = slotStrVal(slots+0, mFontName, kFontNameSize);
+            if (err) return err;
+            
+            mFontSize = fontSize;
+            return errNone;
+        }
+	if (strcmp(name, "items")==0) {
+            if (!isKindOfSlot(slot, class_array)) return errWrongType;
+            
+            // wipe out old
+            if (mMenuH) DisposeMenu(mMenuH);
+			
+            PyrObject *array = slot->uo;
+            int numItems = array->size;
+			
+			mMenuH = NewMenu(1, "\p");
+			
+            for (int i=0; i<numItems; ++i) {
+                PyrSlot *slot = array->slots + i;
+
+				if (!isKindOfSlot(slot, class_string)) return errWrongType;
+				PyrString* string = slot->uos;
+				
+				Str255 pstr;
+				int len = sc_min(255, string->size);
+				pstr[0] = len;
+				memcpy(pstr+1, string->s, len);
+
+				AppendMenu(mMenuH, pstr);
+            }
+			refresh();
+            return errNone;
+	}
+	if (strcmp(name, "stringColor")==0) {
+		err = slotColorVal(slot, &mStringColor);
+                if (err) return err;
+                refresh();
+		return errNone;
+	}
+
+        return SCView::setProperty(symbol, slot);
+}
+
+int SCPopUpMenu::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+	if (symbol == s_value) {
+            SetInt(slot, mValue);
+            return errNone;
+	}
+	char* name = symbol->name;
+	if (strcmp(name, "stringColor")==0) {
+            return setSlotColor(slot, &mStringColor);
+	}
+
+        return SCView::getProperty(symbol, slot);
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 
 SCView* NewSCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
@@ -2050,6 +2251,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCDragSink", NewSCDragSink);
     new SCViewMaker("SCDragBoth", NewSCDragBoth);
     new SCViewMaker("SCUserView", NewSCUserView);
+    new SCViewMaker("SCPopUpMenu", NewSCPopUpMenu);
 }
 
 

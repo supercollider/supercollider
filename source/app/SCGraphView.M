@@ -86,9 +86,20 @@ static NSString *sSCObjType = @"SuperCollider object address";
     [super initWithFrame: frame];
     [self registerForDraggedTypes: [NSArray arrayWithObject: sSCObjType]];
 	mDragStarted = NO;
+	mMenuView = 0;
 	mWindowObj = 0;
 	mTopView = 0;
     return self;
+}
+
+- (NSMenu*) menuForEvent:(NSEvent*)theEvent;
+{
+    NSPoint mouseLoc;
+    mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+    SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
+    SCView *view = mTopView->findView(scpoint);
+    if (!view) return 0;
+	return view->contextMenu(scpoint);
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
@@ -103,12 +114,13 @@ static NSString *sSCObjType = @"SuperCollider object address";
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
     if (view) {
-		mDragStarted = false;
+		mDragStarted = NO;
+		mMenuView = 0;
         view->makeFocus(true);
         view->mouseBeginTrack(scpoint, modifiers);
         [self displayIfNeeded];
         
-        while (keepOn && !mDragStarted) {
+        while (keepOn && !mDragStarted && !mMenuView) {
             theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask |
                     NSLeftMouseDraggedMask];
             mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
@@ -133,6 +145,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
             flushPostBuf();
         }
     }
+	mMenuView = 0;
     return;
 }
 
@@ -170,6 +183,7 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, void* inData)
     mTopView = inView;
     mTopView->setDamageCallback(damageFunc, (void*)self);
     mTopView->setDragCallback(dragFunc);
+	mTopView->SetNSView(self);
 }
 
 /*- (void)dealloc
@@ -293,7 +307,7 @@ const int circDiam = 20;
     where.y += circDiam / 4;
     
     NSSize dragOffset = NSMakeSize(0.0, 0.0);
-    mDragStarted = true;
+    mDragStarted = YES;
     [self dragImage: image at: where offset: dragOffset event: [NSApp currentEvent]
     pasteboard: pboard source: self slideBack: YES];
 }
@@ -635,5 +649,9 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout)
     CGContextFillPath(cgc);    
 }
 
+- (void)startMenuTracking: (SCView*) inView
+{
+	mMenuView = inView;
+}
 
 @end

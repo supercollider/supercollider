@@ -320,6 +320,40 @@ SCButton : SCControlView {
 	}
 }
 
+SCPopUpMenu : SCControlView {
+	var <font, <items;
+	
+	value {
+		^this.getProperty(\value)
+	}
+	value_ { arg val;
+		this.setPropertyWithAction(\value, val);
+	}	
+
+	keyDown { arg key, modifiers;
+		if (key == $ , { this.value = this.value + 1; ^this });
+		if (key == $\r, { this.value = this.value + 1; ^this });
+	}
+	font_ { arg argFont;
+		font = argFont;
+		this.setProperty(\font, font)
+	}
+	items_ { arg array;
+		items = array;
+		this.setProperty(\items, items);
+	}
+	stringColor {
+		^this.getProperty(\stringColor, Color.new)
+	}
+	stringColor_ { arg color;
+		this.setProperty(\stringColor, color)
+	}
+	
+	properties {
+		^super.properties ++ [\value, \font, \items, \stringColor]
+	}
+}
+
 
 SCStaticText : SCView {
 	var <string, <font, <object;

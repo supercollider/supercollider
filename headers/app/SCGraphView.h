@@ -26,6 +26,7 @@
     struct PyrObject *mWindowObj;
     SCTopView *mTopView;
     bool mDragStarted;
+    SCView* mMenuView;
 }
 
 - (void)drawRect: (NSRect)bounds;
@@ -40,5 +41,9 @@
 //- (void)dealloc;
 - (void)closeWindow;
 - (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot;
+- (void)menuAction:(id)sender;
+
+- (NSMenu*) menuForEvent:(NSEvent*)event;
+- (void)startMenuTracking: (SCView*) inView;
 
 @end
