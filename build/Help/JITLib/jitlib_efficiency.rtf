@@ -45,7 +45,7 @@ though fine for slower use (esp.hand-use) for automatisation it is better to bui
 	~a.rebuild\
 	\
 	\cf4 //this rebuild is also used when setting one of the following properties:\cf0 \
-	server, bus, lags, prepend (these might vanish)\
+	server, bus, setRates\
 	\
 
 \f3\b\fs24 B) starting synths and tasks
@@ -74,7 +74,7 @@ and depends on the characteristics of the synthdef:
 	~a.nodeMap_(a map) \
 	~a.fadeToMap(a map)\
 	\
-	\cf4 //synthdef for these things are on the server already.\cf0 \
+	\cf4 //synthdefs for these things are on the server already.\cf0 \
 	\
 	~a.gate, ~a.env, ~a.line, ~a.xline\
 	\
@@ -100,12 +100,7 @@ and depends on the characteristics of the synthdef:
 	\cf4 //this setting will not be kept when you exchange the synth\cf0 \
 	~a.group.set(\\freq, 500);\
 	 \
-	\cf4 //these forward to the group:\cf0 \
-	~a.pause\
-	~a.run\
-	~a.free\
-	~a.freeAll\
-	~a.isPlaying\
+	\
 	\
 	\
 	\
@@ -130,6 +125,7 @@ and depends on the characteristics of the synthdef:
 s = \cf2 Server\cf0 .local;\
 p = \cf2 ProxySpace\cf0 .push(s.boot);\
 )\
+\
 \
 ~out.play;\
 \
@@ -186,9 +182,9 @@ t.play(\cf2 SystemClock\cf0 );\
 t.stop;\
 	\
 \cf4 //note that when restarting ~out, the inputs have to be woken up.\cf0 \
-\cf4 //to avoid this, you can add the inputs to the mix parents:\cf0 \
+\cf4 //to avoid this, you can add the inputs to the mix nodeMap parents:\cf0 \
 \
-~mix.parents.addAll([~s1, ~s2, ~s3]);\
+~mix.nodeMap.parents.putAll( (s1: ~s1, s2: ~s2, s3: ~s3) );\
 \
 \cf4 //also the task can be added to the proxy:\cf0 \
 (\
