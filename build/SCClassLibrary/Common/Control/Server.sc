@@ -250,7 +250,7 @@ Server : Model {
 	
 	
 	
-	boot {
+	boot { arg withAliveThread=true;
 		var resp;
 		if (serverRunning, { "server already running".inform; ^this });
 		if (serverBooting, { "server already booting".inform; ^this });
@@ -258,7 +258,7 @@ Server : Model {
 		
 		
 		serverBooting = true;
-		this.startAliveThread;
+		if(withAliveThread, { this.startAliveThread });
 		this.doWhenBooted({ 
 				if(notified, { 
 					nodeWatcher.start;
