@@ -98,6 +98,7 @@ Out : UGen {
 
 
 ReplaceOut : Out {}
+OffsetOut : Out {}
 
 
 XOut : UGen {
