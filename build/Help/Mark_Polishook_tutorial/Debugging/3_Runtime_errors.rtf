@@ -1,15 +1,15 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green115\blue0;\red0\green0\blue191;
-\red96\green96\blue96;}
+\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 Runtime errors\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf0 \
+\f1\b0\fs18 \
 Runtime errors occur while a program is executing.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////
 \f0\b\fs24 \cf0 \
 \
@@ -66,6 +66,7 @@ CALL STACK:\
 	Process-interpretPrintCmdLine\
 		arg this = <instance of Main>\
 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
 The ERROR section explains what went wrong. The RECEIVER section names the the class of the object to which the message was sent. The ARGS section says how many arguments were included in the message. Read the CALL STACK from the bottom to the top to see where the error happened. Reading from bottom to top means going from\
@@ -115,6 +116,7 @@ $a * $b\
 \
 to create another runtime error message. \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
 The ERROR, RECEIVER, ARGS, and CALL STACK headers in the post window explain the problem: Instances of class Char have no knowledge of multiplication.\
@@ -154,29 +156,28 @@ CALL STACK:\
 
 \f0\b\fs24 \cf0 Unitialized variable (binary operation fails)\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf0 Here, the variable a is initialized to an integer and the variable b isn't Multiplying a by b (nil) will create a runtime error.\
+\f1\b0\fs18 Here, the variable a is initialized to an integer and the variable b isn't initialized. Multiplying a (the integer 10)  by b (nil, the value that SuperCollider uses for unitialized data) will create a runtime error.\
 \
-(\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 var\cf0  a = 10;	\cf2 // a is declared and initialized\cf0 \
-\cf4 var\cf0  b;		\cf2 // b declared but defaults to nil ... this will cause a runtime error\
-			// in the case of a * b\cf0 \
-t = \cf4 Task\cf0 (\{\
+(\cf5 \
+\cf6 var\cf5  a = 10;	\cf7 // a is declared and initialized\cf5 \
+\cf6 var\cf5  b;		\cf7 // b declared but not initialized, so it defaults to nil\cf5 \
 \
-	4.do(\{ \cf4 arg\cf0  item, i;\
+t = \cf6 Task\cf5 (\{\
+\
+	4.do(\{ \cf6 arg\cf5  item, i;\
 	\
-		\cf2 // print the value of i if as long as it doesn't equal 3\
-		// when i equals 3, then multiply a * b ... but this is a problem if b is nil\cf0 \
-		if(i != 3) \{ i.postln \} \{ (a * b).postln \};\
+		if(i != 3) \
+			\{ i.postln \} 			\cf7 // print the value of i if it doesn't equal 3\cf5 \
+			\{ (a * b).postln \};	\cf7 // when i equals 3, do a * b\cf5 \
+								\cf7 // ... which is a problem if b is nil\cf5 \
 		1.wait;\
 		\
 	\})\
 	\
 \});\
 t.start;\
-)\
+\cf0 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
@@ -232,12 +233,11 @@ CALL STACK:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 True, false, or other\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf0 \
+\f1\b0\fs18 \
 A value other than true or false in a boolean test, as in\
 \
-if(x=4) \{ \cf5 "this is ok"\cf0 \};\
+if(x=4) \{ \cf8 "this is ok"\cf0 \};\
 \
 produces\
 \
@@ -262,11 +262,12 @@ CALL STACK:\
 	Process-interpretPrintCmdLine\
 		arg this = <instance of Main>\
 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
 Correcting the test clause fixes the problem.\
 \
-if(x==4) \{ \cf5 "this is ok"\cf0 \};\
+if(x==4) \{ \cf8 "this is ok"\cf0 \};\
 \
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
@@ -274,11 +275,10 @@ if(x==4) \{ \cf5 "this is ok"\cf0 \};\
 
 \f0\b\fs24 \cf0 Primitive fails\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf0 Asking for the length of a non-existent file creates a runtime error. The notification shows what went wrong (a C code primitive failed).\
+\f1\b0\fs18 Asking for the length of a non-existent file creates a runtime error. The notification shows what went wrong (a C code primitive failed).\
 \
-f = \cf4 File\cf0 (\cf5 "i_don't_exist"\cf0 , \cf5 "r"\cf0 );\
+f = \cf4 File\cf0 (\cf8 "i_don't_exist"\cf0 , \cf8 "r"\cf0 );\
 f.length;\
 \
 ERROR: Primitive '_FileLength' failed.\
@@ -308,5 +308,6 @@ CALL STACK:\
 	Process-interpretPrintCmdLine\
 		arg this = <instance of Main>\
 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\
 }
