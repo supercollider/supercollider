@@ -49,7 +49,7 @@ bool docCreatedFromLang = false; //if this is true addDocument is not called
 - (NSTextView*)makeTextView
 {
     NSTextView* aTextView = [[SCTextView alloc] initWithFrame: 
-                    NSMakeRect(0,0,512,512)];
+                    NSMakeRect(0,0,612,512)];
     [aTextView setAutoresizingMask: 63];
     [[aTextView textContainer] setWidthTracksTextView: YES];
     [aTextView setDelegate: self];
