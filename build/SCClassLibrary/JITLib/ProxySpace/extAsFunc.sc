@@ -43,7 +43,7 @@
 		ok = proxy.initBus(this.rate,this.numChannels);
 		^if(ok && synthDef.notNil, {
 				//AbstractPlayerControl.new(synthDef)
-				SynthDefControl(synthDef)
+				SynthDefControl(synthDef, false)
 		}, nil);
 	}
 

@@ -7,8 +7,8 @@ ProxyNodeMap : NodeMap {
 			parents = IdentityDictionary.new;
 		}
 		
-		wakeUpParentsToBundle { arg bundle;
-			parents.do({ arg item; item.wakeUpParentsToBundle(bundle) });
+		wakeUpParentsToBundle { arg bundle, checkedAlready;
+			parents.do({ arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) });
 		}
 		
 		unmapProxy { arg keys;
@@ -45,10 +45,7 @@ ProxyNodeMap : NodeMap {
 			this.performList(\map, mapArgs.postln);		
 		}
 		
-		/*
-		translate { arg proxy; 
-			^proxy.outbus.tryPerform(\index); 				}
-		*/
+	
 }
 
 
