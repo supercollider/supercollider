@@ -45,6 +45,7 @@ NumberEditorGui : EditorGui {
 			if(changer !== slv and: {slv.notNil},{
 				slv.value_(model.spec.unmap(model.poll));
 			});
+			nil
 		}.defer;
 	}
 	background { ^Color(0.0,0.2,0.2,0.3) }
