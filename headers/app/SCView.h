@@ -573,7 +573,9 @@ protected:
 	float mXOffset ; //space between points
 	bool mReadOnly, mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsHorizontal, mIsFilled;
 	int mResamp;
-		SCPoint mPrevPoint;
+	SCPoint mPrevPoint;
+	void resizeThumbsToFit ();
+			
 };
 SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 ////

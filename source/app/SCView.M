@@ -2612,6 +2612,7 @@ void SCMultiSliderView::draw(SCRect inDamage)
     CGContextClipToRect(cgc, rect);
     double * vals;
     vals = mYValues;
+	if(mLayout.mHResize == 0) resizeThumbsToFit();
 	setVisibleSize();
     int xpixels = mVisibleSize;
     int xstart = mStartIndex;
@@ -2625,7 +2626,7 @@ void SCMultiSliderView::draw(SCRect inDamage)
     CGRect drawRect;
     float yval = 0;
     float tsize = mXOffset;  
-    
+    	//test resize behaviour
      //draw dots for multislider
     if(mDrawRectsActive)
     {
@@ -2793,6 +2794,15 @@ SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, float xoffset
         thumby = mThumbSize;
     }
     return SCMakeRect( x, y, thumbx, thumby);   
+}
+
+void SCMultiSliderView::resizeThumbsToFit()
+{
+	int size = mTabSize - mStartIndex;
+	int thumbsize = (int) sc_round((mBounds.width - (size * mXOffset))/size, 1.0f);
+	if(thumbsize < 1) thumbsize = 1;
+	mThumbSize = thumbsize;
+	//setVisibleSize();	
 }
 
 void SCMultiSliderView::setSelection(SCPoint where)
