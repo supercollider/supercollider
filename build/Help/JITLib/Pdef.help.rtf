@@ -74,7 +74,7 @@ Pdef(key) returns the instance, Pdef(key, pat) stores the pattern and returns th
 			as soon as a new one is assigned to it.\
 	\
 	
-\f0\b pause / unpause / reset / mute / unmute\
+\f0\b pause / resume / reset / mute / unmute\
 			
 \f2\b0 perform player method 
 \f1\fs18 \
@@ -110,10 +110,14 @@ e.use(\{\
 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 ); \cf2 // creates a Pdef with a default pattern.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 ).event = e;\
 \cf3 Pdef\cf0 (\cf5 \\y\cf0 ).event = e;\
 \
@@ -132,8 +136,8 @@ e.use(\{\
 \cf3 Pdef\cf0 (\cf5 \\y\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, 4, 5, 6]-1, \cf3 inf\cf0 )));\
 \cf3 Pdef\cf0 (\cf5 \\y\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, 4, 5]-2, \cf3 inf\cf0 )));\
 \
-\cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25 / 4, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, 4, \cf3 Prand\cf0 ([8, 8, 9, 10],1) - 5, 6]+1, \cf3 inf\cf0 )));\
-\cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, 4, 5, 6]+1, \cf3 inf\cf0 )));\
+\cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 1 / 6, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, 4, \cf3 Prand\cf0 ([8, 2, 3, 9, 10],1) - 5, 6]+1, \cf3 inf\cf0 )));\
+\cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, 4, \cf3 Prand\cf0 ([8, 2, 3, 9, 10],1), 6], \cf3 inf\cf0 )));\
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 ).stop;\
 \
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 ).play;\
@@ -151,14 +155,14 @@ e.use(\{\
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, [7,4], 5, 6]-2)));\
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.125, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, [7,4], 5, 4]-3)));\
 \cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.35, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, [7,4], 5, 4, 3]-3)));\
+\cf3 Pdef\cf0 (\cf5 \\x\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25, \cf5 \\degree\cf0 , \cf3 Pshuf\cf0 ([3, [7,4], 5, 6]-2)));\
 \
-\cf3 Pdef\cf0 (\cf5 \\y\cf0 , \cf3 Pbind\cf0 (\cf5 \\dur\cf0 , 0.25, \cf5 \\degree\cf0 , \cf3 Pseq\cf0 ([3, 4, 5, 6]+1, \cf3 inf\cf0 )));\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // clear all.\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Pdef\cf0 .remove(\cf5 \\x\cf0 );\
 \cf3 Pdef\cf0 .remove(\cf5 \\y\cf0 );\
-\
+\cf3 TempoClock\cf0 .default.tempo = 1;\
 \
 }
