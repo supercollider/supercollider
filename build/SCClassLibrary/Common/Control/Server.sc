@@ -132,7 +132,7 @@ Server : Model {
 		this.newNodeWatcher;
 	}
 	newNodeWatcher {
-		nodeWatcher = NodeIDWatcher.new(this);
+		if(nodeWatcher.isNil) {  nodeWatcher = NodeIDWatcher.new(this) };
 	}
 	newAllocators {
 		var nodeIdOffset;
