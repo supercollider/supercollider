@@ -19,13 +19,13 @@ Pseed : FilterPattern {
 				seed.notNil
 				}, {
 				thisThread.randSeed = seed;
-				pattern.embedInStream(inval);
+				inval = pattern.embedInStream(inval);
 			})
 		});
 	}
 }
 
-// temporarily putting this here
+// cx: temporarily putting this here
 
 PdegreeToKey : FilterPattern {
 	
