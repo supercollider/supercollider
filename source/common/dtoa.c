@@ -34,6 +34,8 @@
 //////>>> added for SC
 #include "SC_Endian.h"
 
+#define Honor_FLT_ROUNDS 1
+ 
 #if BYTE_ORDER == LITTLE_ENDIAN
 #define IEEE_8087 1
 #else
