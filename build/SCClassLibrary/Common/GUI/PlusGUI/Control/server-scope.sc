@@ -1,42 +1,37 @@
 + Server {
 
-	scope {arg numChannels, startingChannel = 0, bufsize = 4096, zoom = 1;
-		var numChan, scope;
-		if((this === Server.internal) and: scopeWindow.isNil ) {
+	scope { arg numChannels = 2, startingChannel = 0, bufsize = 4096, zoom;
+		var numChan;
 			numChan = numChannels ? this.options.numOutputBusChannels;
-			scopeBuffer = Buffer.alloc(this, bufsize, numChan);
-			scopeWindow = SCWindow("Internal Server", Rect(300, 10, 660, 280));
-			scope = SCScope(scopeWindow, Rect(10,10,640,256));
-			scope.bufnum = scopeBuffer.bufnum;
-			scope.background = Color.black;
-			scope.resize = 5;
-			scope.xZoom = zoom;
-			scopeSynth = SynthDef("server-scope",{ 
-					ScopeOut.ar(InFeedback.ar(startingChannel, numChan), scopeBuffer.bufnum);  
-			}).play(this, addAction: \addToTail);
+			if(scopeWindow.isNil) {
+				scopeWindow = Stethoscope.new(this, bufsize, numChannels, zoom)
+			} {
+				scopeWindow.index = startingChannel;
+				scopeWindow.numChannels = numChannels;
+				if(scopeWindow.numFrames != bufsize) { scopeWindow.allocBuffer(bufsize) };
+				if(zoom.notNil) { scopeWindow.zoom = zoom };
+				scopeWindow.run;
 				
-			// free synth and buffer when window is closed
-			scopeWindow.onClose = { 
-			scopeSynth.free; 
-			scopeBuffer.free; 
-			scopeWindow = scopeBuffer = nil; 
+				scopeWindow.window.front;
+				
 			};
-			scopeWindow.front;
-			CmdPeriod.add(this);
-		} { 
-			if(scopeWindow.isNil) {"Server-scope only works with the Internal Server".warn }
-		}
+			^scopeWindow
 	}
 	
 }
 
-// Function support
++ Bus {
+	scope { arg bufsize = 4096, zoom;
+		^server.scope(numChannels, index, bufsize, zoom)
+	}
+}
+
 
 + Function {
-	scope { arg numChannels, outbus = 0, fadeTime=0.05, bufsize = 4096, zoom = 1;
+	scope { arg numChannels = 2, outbus = 0, fadeTime=0.05, bufsize = 4096, zoom;
 		var synth;
-		synth = this.play(Server.internal, outbus, fadeTime);
-		synth.postln;
-		synth.notNil.if({Server.internal.scope(numChannels, outbus, bufsize, zoom); ^synth;});
+		synth = this.play(Server.internal, outbus, fadeTime, \addToHead);
+		synth.notNil.if { Server.internal.scope(numChannels, outbus, bufsize, zoom) };
+		^synth
 	}
 }
