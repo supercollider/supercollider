@@ -294,15 +294,15 @@ Object {
 	}
 	
 	// coroutine support
-	yield { arg val;
+	yield {
 		_RoutineYield
 		^this.primitiveFailed
 	}
-	alwaysYield { arg val;
+	alwaysYield {
 		_RoutineAlwaysYield
 		^this.primitiveFailed
 	}
-	yieldAndReset { arg val, reset = true;
+	yieldAndReset { arg reset = true;
 		_RoutineYieldAndReset
 		^this.primitiveFailed
 	}
