@@ -51,8 +51,10 @@ Dictionary : Set {
 			^Association.new(key, array.at(index+1)) });
 	}
 	keys {
+		arg species;
 		var set;
-		set = Set.new(size);
+		species = species ? Set;
+		set = species.new(size);
 		this.keysDo({ arg key; set.add(key) });
 		^set
 	}
@@ -133,7 +135,20 @@ Dictionary : Set {
 		});
 		^nil
 	}
-	
+
+	sortedKeysValuesDo {
+		arg function, sortFunc;
+		var keys;
+
+		keys = this.keys(Array);
+		keys.sort(sortFunc);
+		
+		keys.do({
+			arg key;
+			function.value(key, this.at(key));
+		});
+	}
+
     choose {
         var index, key, val;
         if (this.size <= 0, { ^nil }); // empty dictionary
