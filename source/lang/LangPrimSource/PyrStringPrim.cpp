@@ -189,6 +189,9 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 }
 #else //#ifndef SC_WIN32
 int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
+extern void win32_ReplaceCharInString(char* string, int len, char src, char dst);
+extern void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars);
+
 int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
@@ -196,10 +199,31 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 	char pattern[1024];
 	int err = slotStrVal(a, pattern, 1023);
 	if (err) return err;
-	
+
+  win32_ReplaceCharInString(pattern,1024,'/','\\');
+	// extract the containing folder, including backslash
+  char folder[1024];
+  win32_ExtractContainingFolder(folder,pattern,1024);
+
+  ///////// PASS 1
+
   WIN32_FIND_DATA findData;
   HANDLE hFind;
   int nbPaths = 0;
+
+  hFind = ::FindFirstFile(pattern, &findData);
+  if (hFind == INVALID_HANDLE_VALUE) {
+    nbPaths = 0;
+  }
+
+	if (hFind == INVALID_HANDLE_VALUE) 
+    return errNone;
+    
+  do {
+    nbPaths++;
+  } while( ::FindNextFile(hFind, &findData));
+  ::FindClose(hFind);
+// PASS 2
 
   hFind = ::FindFirstFile(pattern, &findData);
   if (hFind == INVALID_HANDLE_VALUE) {
@@ -213,12 +237,16 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
     
   int i = 0;
   do {
-		PyrObject *string = (PyrObject*)newPyrString(g->gc, findData.cFileName, 0, true);
+    std::string strPath(folder);
+    strPath += std::string(findData.cFileName);
+    const char* fullPath = strPath.c_str();
+		PyrObject *string = (PyrObject*)newPyrString(g->gc, fullPath, 0, true);
 		SetObject(array->slots+i, string);
 		g->gc->GCWrite(array, string);
 		array->size++;
     i++;
   } while( ::FindNextFile(hFind, &findData));
+  ::FindClose(hFind);
 	return errNone;
 }
 #endif //#ifndef SC_WIN32
