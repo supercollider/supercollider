@@ -23,6 +23,9 @@ Node {
 		server.sendBundle(nil, 
 			[14, nodeID,controlName, busIndex]++args); //"/n_map"
 	}
+	mapMsg {  arg controlName, busIndex ... args;
+		^[14, nodeID,controlName, busIndex]++args; //"/n_map"
+	}
 	set { arg controlName, value ... args;
 		server.sendBundle(nil, 
 			[15, nodeID,controlName, value]++args); //"/n_set"
