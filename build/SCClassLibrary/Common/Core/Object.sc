@@ -427,7 +427,8 @@ Object {
 		^blend(this.at(iMin), this.clipAt(iMin+1), index - iMin);
 	}
 
-	fuzzyEqual { arg that; ^max(0.0, abs(1.0 - (this - that))) }		
+	fuzzyEqual { arg that, precision=1.0; ^max(0.0, 1.0 - (abs(this - that)/precision)) }
+		
 	isUGen { ^false }
 
 	// scheduling
