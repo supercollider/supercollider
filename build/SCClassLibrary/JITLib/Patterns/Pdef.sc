@@ -3,7 +3,7 @@
 
 Pdefn : Pattern {
 	var <key, <pattern;
-	var <>clock, <>quant, <>offset=0; 	// quant new pattern insertion
+	var <>clock, <>quant; 	// quant new pattern insertion
 	classvar <all, <>defaultQuant, <>action;
 	
 	*initClass { 
@@ -66,12 +66,12 @@ Pdefn : Pattern {
 	timeToNextBeat {
 		var t;
 		t = clock.elapsedBeats;
-		^t.roundUp(quant) - t + offset
+		^t.roundUp(quant) - t
 	}
 
 	clear { all.removeAt(key) }
 	sched { arg task;
-		clock.schedAbs(clock.elapsedBeats.roundUp(quant) + offset, task)
+		clock.schedAbs(clock.elapsedBeats.roundUp(quant), task)
 	}
 	doInTime { arg func;
 		if(quant.isNil) { func.value } { this.sched({ func.value; nil }) }
@@ -131,9 +131,7 @@ Tdef : Pdefn {
 	}
 	
 	playOnce { arg argClock, doReset = false, quant;
-		var str;
-		str = if(offset == 0, {Êthis }, { Pseq([offset, this]) }).asStream;
-		^PauseStream.new(str).play(argClock ? clock, doReset, quant ? this.quant)
+		^PauseStream.new(this.asStream).play(argClock ? clock, doReset, quant ? this.quant)
 	}
 	play { arg argClock, doReset = false, quant;
 		isPlaying = true;
@@ -212,10 +210,8 @@ Pdef : Tdef {
 	// playing one instance //
 	
 	playOnce { arg argClock, protoEvent, quant;
-		var str;
-		str = if(offset == 0, { this }, { Pseq([Event.silent(offset), this]) }).asStream;
-		^EventStreamPlayer(str, protoEvent)
-			.play(argClock ? clock, true, quant ? this.quant) 
+		^EventStreamPlayer(this.asStream, protoEvent)
+				.play(argClock ? clock, true, quant ? this.quant) 
 	}
 	
 	play { arg argClock, protoEvent, quant;
