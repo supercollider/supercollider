@@ -21,6 +21,14 @@ Buffer {
 						numFrames,
 						numChannels).alloc(completionMessage)
 	}
+	allocMsg { arg completionMessage;
+		^["/b_alloc", bufnum, numFrames, numChannels, completionMessage.value(this)]
+	}
+	allocReadMsg { arg argpath,startFrame,completionMessage;
+		path = argpath;
+		^["/b_allocRead",bufnum, path,startFrame,numFrames, completionMessage.value(this)]
+	}
+
 	// read whole file into memory for PlayBuf etc.
 	*read { arg server,path,startFrame = 0,numFrames = -1, completionMessage;
 		server = server ? Server.local;
@@ -29,14 +37,6 @@ Buffer {
 						numFrames)
 					.allocRead(path,startFrame,completionMessage)
 	}
-	// preload a buffer for use with DiskIn
-	*cueSoundFile { arg server,path,startFrame = 0,numChannels= 2,
-			 bufferSize=32768,completionMessage;
-		^this.alloc(server,bufferSize,numChannels,{ arg buffer;
-						buffer.readMsg(path,startFrame,bufferSize,0,true,completionMessage)
-					})
-	}
-	
 	read { arg argpath, fileStartFrame = 0, numFrames = -1, 
 					bufStartFrame = 0, leaveOpen = false, completionMessage;
 		server.listSendMsg(
@@ -53,12 +53,20 @@ Buffer {
 		// doesn't set my numChannels etc.
 	}
 	
+	// preload a buffer for use with DiskIn
+	*cueSoundFile { arg server,path,startFrame = 0,numChannels= 2,
+			 bufferSize=32768,completionMessage;
+		^this.alloc(server,bufferSize,numChannels,{ arg buffer;
+						buffer.readMsg(path,startFrame,bufferSize,0,true,completionMessage)
+					})
+	}
 	cueSoundFile { arg path,startFrame = 0, bufferSize=32768,completionMessage;
 		server.listSendMsg(
 			this.cueSoundFileMsg(path,startFrame,bufferSize,completionMessage)
 		)
 	}
 	cueSoundFileMsg { arg path,startFrame,bufferSize=32768,completionMessage;
+		numFrames = bufferSize;
 		^["/b_read", bufnum,path,startFrame,bufferSize,0,1,completionMessage.value(this) ]
 	}
 	
@@ -117,6 +125,7 @@ Buffer {
 		^["/b_fill",bufnum,startAt,numFrames,value]
 			 ++ more;
 	}
+	
 	sine1 { arg amplitudes,normalize=false,asWavetable=false,clearFirst=false;
 		server.listSendMsg(["/b_gen",bufnum,"sine1",
 			normalize.binaryValue 
@@ -140,14 +149,6 @@ Buffer {
 	}
 	closeMsg { arg completionMessage;
 		^["/b_close", bufnum, completionMessage.value(this) ];
-	}
-	
-	allocMsg { arg completionMessage;
-		^["/b_alloc", bufnum, numFrames, numChannels, completionMessage.value(this)]
-	}
-	allocReadMsg { arg argpath,startFrame,completionMessage;
-		path = argpath;
-		^["/b_allocRead",bufnum, path,startFrame,numFrames, completionMessage.value(this)]
 	}
 	
 	//private	
