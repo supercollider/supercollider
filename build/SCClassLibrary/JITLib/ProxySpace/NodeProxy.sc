@@ -85,8 +85,8 @@ BusPlug : AbstractFunction {
 	}
 	
 	freeBus {
-		if(bus.notNil, { 
-			bus.setAll(0); // clean up
+		if(bus.notNil, {
+			if(bus.rate === \control) { bus.setAll(0) }; // clean up
 			bus.free;
 		});
 		bus = nil;
@@ -275,6 +275,7 @@ NodeProxy : BusPlug {
 	
 	clear {
 		this.free(0, true); // free group and objects
+		this.removeAll; //      take out all objects
 		this.stop(0);		// stop any monitor
 		this.task = nil;
 		this.freeBus;	 // free the bus from the server allocator 
@@ -303,6 +304,7 @@ NodeProxy : BusPlug {
 	fadeTime {
 		^nodeMap.at(\fadeTime).value ? 0.02;
 	}
+	prFadeTime { ^nodeMap.at(\fadeTime).value }
 	
 	asGroup { ^group.asGroup }
 	asTarget { ^group.asGroup }
@@ -329,13 +331,15 @@ NodeProxy : BusPlug {
 			orderIndex = index ? 0;
 			if(obj.isSequenceableCollection)
 				{Ê
-					obj.do { |item, i| this.put(i + orderIndex, item) }; 
+					channelOffset = channelOffset.asArray;
+					obj.do { |item, i| this.put(i + orderIndex, item, channelOffset.wrapAt(i)) }; 
 					^this 
 				};
 			if(index.isSequenceableCollection)
 				{ 
-					obj = obj.asArray; 
-					index.do { |index, i| this.put(index, obj.wrapAt(i)) } 
+					obj = obj.asArray;
+					channelOffset = channelOffset.asArray;
+					index.do { |index, i| this.put(index, obj.wrapAt(i),channelOffset.wrapAt(i))} 
 					^this	
 				};
 		
@@ -607,7 +611,6 @@ NodeProxy : BusPlug {
 	
 	getBundle {
 		var bundle;
-		nodeMap.updateBundle;
 		bundle = 	MixedBundle.new; 
 		this.prepareToBundle(nil, bundle);
 		^bundle
@@ -620,6 +623,7 @@ NodeProxy : BusPlug {
 				i = this.index;
 				bundle = this.getBundle;
 				obj.spawnToBundle(bundle, extraArgs, this);
+				nodeMap.updateBundle;
 				nodeMap.setToBundle(bundle, -1);
 				nodeMap.mapToBundle(bundle, -1);
 				bundle.schedSend(server);
@@ -820,10 +824,13 @@ NodeProxy : BusPlug {
 	addToChild {
 		var child;
 		child = buildProxyControl;
-		if(child.notNil and: { child !== this }) { child.addParent(this) };
+		if(child.notNil) { child.addParent(this) };
 		^child.isPlaying;
 	}
-	
+
+ 	
+ 	
+	////////////behave like my group////////////
 	
 	isPlaying { ^group.isPlaying }
 	
@@ -840,10 +847,6 @@ NodeProxy : BusPlug {
 			bundle.send(server);
 		})
  	}
- 	
- 	
-	////////////behave like my group////////////
-	
 	
 	release { arg fadeTime; this.free(fadeTime, false) }
 	
