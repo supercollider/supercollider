@@ -72,6 +72,7 @@ currentEnvironment = \cf4 ProxySpace\cf0 (s);\
 ~out = \{ \cf4 SinOsc\cf0 .ar(~lfo.kr, 0, 0.1)  \};\
 ~out = \{ SinOsc.ar(~lfo.kr, 0, 0.1) * Pulse.ar(~lfo.kr * 0.06, 0.5) \};\
 ~lfo = \{ \cf4 LFNoise1\cf0 .kr(30, 30, 900) \};\
+~out = \{ \cf4 SinOsc\cf0 .ar(~lfo.kr, 0, 0.1)  \};\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
 //math\
@@ -177,16 +178,18 @@ x = ~out.play;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs26 \cf0 using instruments
+\f2\fs26 \cf0 using instruments and players
 \f1\fs18 \cf3 \
 \
 //this is also useful for writing instruments\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 ~out = \cf4 Instr\cf0 (\cf2 \\test\cf0 , \
-		\{ \cf4 arg\cf0  dens=20; \cf4 Dust\cf0 .ar(dens) \}\
+		\{ \cf4 arg\cf0  dens=20, freq=2000; Ringz.ar(\cf4 Dust\cf0 .ar(dens), freq, 0.01) \}\
 		);\
-~out.set(\cf2 \\dens\cf0 , 2);\cf3 \
+~out.set(\cf2 \\dens\cf0 , 2);\
+\
+~out = \cf4 Patch\cf0 ([\cf2 \\test\cf0 ], [100, 6000]);\cf3 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -201,10 +204,12 @@ x = ~out.play;\
 ~out = \{ \cf4 SinOsc\cf0 .ar(rrand(800, 300.0)*[1,1.1], 0, 0.1) \};\
 \
 ~out.release;\
-~out.fadeTime = 0.1;\cf3 \
+~out.fadeTime = 0.01;\cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs26 \cf0 \
+\
+\
 \
 playing multiple synths (much more efficient than creating new defs)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -258,33 +263,33 @@ using multiple proxy spaces\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
-x = \cf4 ProxySpace\cf0 (s);\
-y = \cf4 ProxySpace\cf0 (s);\
+p = \cf4 ProxySpace\cf0 (s);\
+q = \cf4 ProxySpace\cf0 (s);\
 \
 (\
-x.use(\{\
+p.use(\{\
 	~out = \{ \cf4 Resonz\cf0 .ar(~in.ar, ~freq.kr, 0.01) \};\
 	~in = \{ \cf4 WhiteNoise\cf0 .ar(0.5) \};\
 	~freq = \{ \cf4 LFNoise2\cf0 .kr(1, 1000, 2000) \};\
 \});\
 )\
 \
-a = x.play(\cf2 \\out\cf0 ); \cf3 //play the proxy at \\out\
+x = p.play(\cf2 \\out\cf0 ); \cf3 //play the proxy at \\out\
 \cf0 \
 (\
-y.use(\{\
-	~out = \{ \cf4 Ringz\cf0 .ar(~in.ar, ~freq.kr, 0.1) \};\
-	~in = \{ \cf4 Dust\cf0 .ar(20, 0.5) \};\
-	~freq = \{ \cf4 LFNoise2\cf0 .kr(1, 100, 200) \};\
+q.use(\{\
+	~out = \{ \cf4 Ringz\cf0 .ar(~in.ar, ~freq.kr, 0.5) \};\
+	~in = \{ \cf4 Dust\cf0 .ar(20, 0.1) \};\
+	~freq = \{ \cf4 LFNoise2\cf0 .kr(1, 100, 2000) \};\
 \});\
 )\
 \
-b = y.play; \cf3 //out is the default output\
+y = q.play; \cf3 //out is the default output\
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //record output\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 r = y.record(\cf2 \\out\cf0 , \cf5 "proxySpace.aif"\cf0 ); \cf3 //starts record after 1 sec\
+\cf0 r = q.record(\cf2 \\out\cf0 , \cf5 "proxySpace.aif"\cf0 ); \cf3 //starts record after 1 sec\
 \
 //pause recording\
 \cf0 r.pause;\cf3 \
@@ -296,34 +301,39 @@ b = y.play; \cf3 //out is the default output\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //patch two spaces together (must be on one server)\
 //doesn't work anymore. why is a riddle.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 /////y.put(\\freq, x.at(\\freq));\
+/////y.put(\\freq, x.at(\\freq));\
 //c = x.at(\\freq);\
 //y.use(\{\
 //	~freq = c;\
 //\})\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf6 //\
+//g = q.at(\\freq);\
+//h = p.at(\\freq);\
+//q.at(\\freq).source = p.at(\\freq);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //make x the currentEnvironment\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 x.push; \
+\cf0 p.push; \
 \
 ~freq = 700;\
 ~freq = 400;\
 \
-x.pop; \cf3 //restore environment\
+p.pop; \cf3 //restore environment\
 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //make y the currentEnvironment\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 y.push; \
+\cf0 q.push; \
 \
 ~freq = 1000;\
 ~in = \{ \cf4 WhiteNoise\cf0 .ar(0.01) \};\
 \
-y.pop; \cf3 //restore environment\cf0 \
+q.pop; \cf3 //restore environment\cf0 \
 \
 \
 \
