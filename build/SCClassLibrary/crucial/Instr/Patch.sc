@@ -126,7 +126,7 @@ Patch : AbstractPlayer  {
 		// ISSUE: if you change a static, nobody notices to rebuild the synth def
 		synthDef = nil;
 		readyForPlay = false;
-		this.patchOut = nil;
+		this.setPatchOut(nil);
 	}
 
 	/*

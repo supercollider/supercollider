@@ -5,7 +5,7 @@ AbstractPlayer : AbstractFunction  {
 	
 	var <path,name,<>dirty=true; 
 	
-	var <synth,<>patchOut,<>readyForPlay = false,defName;
+	var <synth,<patchOut,<>readyForPlay = false,defName;
 		
 	play { arg group,atTime;
 		var server,bundle;
@@ -55,7 +55,6 @@ AbstractPlayer : AbstractFunction  {
 					0.3.wait;
 					
 					this.makePatchOut(group,false);// public
-					this.childrenMakePatchOut(group,true); // private
 					
 					this.spawnAtTime(atTime);
 				});
@@ -79,21 +78,26 @@ AbstractPlayer : AbstractFunction  {
 		readyForPlay = true;
 	}
 
+	setPatchOut { arg po; patchOut = po; }
 	makePatchOut { arg group,private = false;
+		this.topMakePatchOut(group,private);
+		this.childrenMakePatchOut(group,true);
+	}
+	topMakePatchOut { arg group,private;
 		//Patch doesn't know its numChannels or rate until after it makes the synthDef
 		if(this.rate == \audio,{// out yr speakers
 			if(private,{
-				this.patchOut_(
+				this.setPatchOut(
 					AudioPatchOut(this,group,Bus.audio(group.server,this.numChannels))
 					)
 			},{			
-				this.patchOut_(
+				this.setPatchOut(
 					AudioPatchOut(this,group,Bus(\audio,0,this.numChannels,group.server))
 							)
 			})
 		},{
 			if(this.rate == \control,{
-				this.patchOut_(
+				this.setPatchOut(
 					ControlPatchOut(this,group,
 							Bus.control(group.server,this.numChannels))
 						)
@@ -118,8 +122,10 @@ AbstractPlayer : AbstractFunction  {
 		// atTime.asDeltaTime
 		patchOut.server.listSendBundle( atTime, bundle);
 		// schedule atTime:
-		synth.isPlaying = true;
-		synth.isRunning = true;
+		if(synth.notNil,{
+			synth.isPlaying = true;
+			synth.isRunning = true;
+		});
 		this.didSpawn;
 	}
 	spawnToBundle { arg bundle;
@@ -343,7 +349,6 @@ AbstractPlayer : AbstractFunction  {
 
 	path_ { arg p; path = PathName(p).asRelativePath }
 
-
 	// structural utilities
 	children { ^[] }
 	deepDo { arg function;// includes self
@@ -357,7 +362,6 @@ AbstractPlayer : AbstractFunction  {
 		^all
 		// includes self
 	}
-
 	
 	asCompileString { // support arg sensitive formatting
 		var stream;
@@ -372,6 +376,148 @@ AbstractPlayer : AbstractFunction  {
 
 
 
+MultiplePlayers : AbstractPlayer {
+
+	// manages multiple players sharing the same bus
+	// doesn't make a synth
+
+	voices { this.subclassResponsiblity(thisMethod) }
+	
+	rate { ^this.voices.first.rate }
+	numChannels { ^this.voices.first.numChannels }
+	
+	// prepare  :  making a single bus, may override in subclasses
+
+	childrenMakePatchOut { arg group,private = false;
+		this.voices.do({ arg vo;
+			// use mine
+			vo.setPatchOut(AudioPatchOut(vo,patchOut.group,patchOut.bus.copy));
+			// but children make their own
+			vo.childrenMakePatchOut(group,false);
+		})
+	}
+	setPatchOut { arg po;
+		patchOut = po;
+		//everybody plays onto same bus
+		this.voices.do({ arg pl;
+			// ISSUE if rate is not mine, throw an error
+			pl.setPatchOut(po.deepCopy);
+		})
+	}
+	spawnAtTime { arg atTime;
+		var bundle;
+		bundle = List.new;
+		this.voices.do({ arg pl;
+			pl.spawnToBundle(bundle)
+		});
+		
+		// atTime.asDeltaTime
+		patchOut.server.listSendBundle( atTime, bundle);
+		//isPlaying = true;
+		this.didSpawn;
+	}
+	spawnToBundle { arg bundle;
+		this.voices.do({ arg pl;
+			pl.spawnToBundle(bundle)
+		})
+	}
+	didSpawn { arg patchIn,synthArgi;
+		super.didSpawn(patchIn,synthArgi);
+		// right ? everybody gets connected.
+		this.voices.do({ arg pl;
+			pl.didSpawn(patchIn,synthArgi);
+		})
+	}
+	loadDefFileToBundle { arg bundle,server;
+		this.voices.do({ arg pl;
+			pl.loadDefFileToBundle(bundle,server)
+		})
+	}		
+	free {
+		this.voices.do({ arg pl;
+			pl.free
+		});
+		super.free;
+	}
+}
+
+
+
+AbstractPlayerProxy : AbstractPlayer {
+
+	// like  a voice, holds a source that does the actual playing
+	// should be switchable
+	// duplicates the Patch and Bus to the source
+	
+	var source;
+
+
+	prepareForPlay { arg group,bundle;
+		if(source.notNil,{
+			super.prepareForPlay(group,bundle)
+		})
+	}
+	makePatchOut { arg group,public;
+		if(source.notNil,{
+			super.makePatchOut(group,public)
+		})
+	}
+	childrenMakePatchOut { arg group,public;
+		if(source.notNil,{
+			super.childrenMakePatchOut(group,public)
+		})
+	}
+	spawnAtTime { arg atTime;
+		if(source.notNil,{
+			super.spawnAtTime(atTime)
+		})
+	}
+	loadDefFileToBundle { arg bundle,server;
+		if(source.notNil,{
+			super.loadDefFileToBundle(bundle,server)
+		})
+	}
+	spawnToBundle { arg bundle;
+		if(source.notNil,{
+			super.spawnToBundle(bundle)
+		})
+	}
+
+	
+	
+	
+	asSynthDef { ^source.asSynthDef }
+	rate { ^source.rate }
+	numChannels { ^source.numChannels }
+	defName { ^source.defName }
+	setPatchOut { arg po;
+		super.setPatchOut(po);
+		// a copy to the source
+		source.setPatchOut(PatchOut(source,patchOut.group,patchOut.bus.copy));
+	}
+	didSpawn { arg patchIn,synthArgi;
+		super.didSpawn(patchIn,synthArgi);
+		source.didSpawn(patchIn,synthArgi);
+	}
+	synthDefArgs { ^source.synthDefArgs }
+	children { ^source.children }
+	instrArgFromControl { arg control;
+		^source.instrArgFromControl(control)
+	}
+	free {
+		source.free;
+		super.free;
+	}
+	
+	setSource { arg s,atTime;
+		// do replace, same bus
+		if(source.notNil,{
+			source.free; // atTime
+		});
+		source = s;
+		this.spawnAtTime(atTime);
+	}
+}
 
 
 

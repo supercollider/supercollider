@@ -1,35 +1,4 @@
 
-AbstractPlayerProxy : AbstractPlayer {
-
-	// like  a voice, holds a source that does the actual playing
-	// should be switchable
-	// duplicates the Patch and Bus to the source
-	
-	var source;
-
-	rate { ^source.rate }
-	numChannels { ^source.numChannels }
-	asSynthDef { ^source.asSynthDef }
-	defName { ^source.defName }
-	patchOut_ { arg po;
-		super.patchOut_(po);
-		// a copy to the source
-		source.patchOut_(PatchOut(source,patchOut.group,patchOut.bus.copy));
-	}
-	didSpawn { arg patchIn,synthArgi;
-		super.didSpawn(patchIn,synthArgi);
-		source.didSpawn(patchIn,synthArgi);
-	}
-	synthDefArgs { ^source.synthDefArgs }
-	children { ^source.children }
-	instrArgFromControl { arg control;
-		^source.instrArgFromControl(control)
-	}
-	free {
-		source.free;
-		super.free;
-	}
-}
 
 ModalFreq : AbstractPlayerProxy {
 

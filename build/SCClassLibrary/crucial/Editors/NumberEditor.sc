@@ -1,7 +1,7 @@
 
 Editor {
 	var  <>action, // { arg value,theEditor; }
-		<>value, <>patchOut;
+		<>value, <patchOut;
 	
 	guiClass { ^ObjectGui }
 
@@ -12,6 +12,8 @@ Editor {
 	next { ^this.value }// Object would return this
 	poll { ^value }
 	
+	setPatchOut { arg po; patchOut = po }
+
 //	editWithCallback { arg callback;
 //		ModalDialog({ arg layout;
 //			this.gui(layout);

@@ -1,7 +1,7 @@
 
 BufferProxy { // blank space for delays, loopers etc.
 
-	var <buffer,<>patchOut,<readyForPlay = false;
+	var <buffer,<patchOut,<readyForPlay = false;
 
 	var size=0,<end=0,<>numChannels=1,<>sampleRate=44100.0;
 
@@ -41,13 +41,14 @@ BufferProxy { // blank space for delays, loopers etc.
 		patchOut = ScalarPatchOut(this);
 	}
 
-
+	setPatchOut { arg po; patchOut = po }
 	free {  
 		buffer.free; 
 		buffer = nil;
 		patchOut = nil;
 		readyForPlay = false;
 	}
+	
 	// each synth def, multiple usage in a synth def ok
 	initForSynthDef { arg synthDef,argi;
 		forArgi = argi;// for buffer etc. to build a control
