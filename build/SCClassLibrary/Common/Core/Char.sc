@@ -52,12 +52,14 @@ Char : Magnitude {
 	isVowel {	
 		^"AEIOU".includes(this.toUpper);
 	}
-	
 	isDecDigit {
 		// is a decimal digit 0-9
 		_IsDecDigit
 	}
-	
+	isFileSafe {
+		if(this.isPrint.not,{ ^false });
+		^this.ascii != 47 and: {this.ascii != 58}
+	}
 	< { arg aChar;
 		^this.ascii < aChar.ascii
 	}

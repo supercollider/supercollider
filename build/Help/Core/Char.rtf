@@ -1,5 +1,6 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;}
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -80,4 +81,21 @@ answers whether the char is white space.\
 \f1\b0 \
  \
  answers whether the char is a decimal digit $0 to $9.\
+ \
+ 
+\f0\b isFileSafe
+\f1\b0 \
+ \
+ answers whether the char is safe for use as in a filename.\
+ excludes the path separators / and : \
+ \
+ \
+ 
+\f2\fs18 for(0,255,\{ arg i;\
+	var a;\
+	[i,a = i.asAscii,a.isAlphaNum,a.isPrint,a.isPunct,a.isControl].postln;\
+\});\
+\
+
+\f1\fs24 \
  }
