@@ -6,8 +6,9 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 SuperCollider 3 Server Tutorial\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \
+\f1\b0\fs24 \cf0 \
 To follow this tutorial you should read \
 	
 \f0\b Server-Architecture\
@@ -33,7 +34,6 @@ The internal server runs in the same process as the SuperCollider application.  
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 // set the interpreter variable s to the internal server object.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s = \cf3 Server\cf0 .internal;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -45,10 +45,10 @@ The local server runs on the same machine as the SuperCollider application, but 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 // set the interpreter variable s to the local server object.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s = \cf3 Server\cf0 .local;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 To boot the server you send it the boot message.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -70,12 +70,12 @@ We can also create a server to run. To create a server object we need to provide
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 // create a server object that will run on the local host using port #58009\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s = \cf3 Server\cf0 (\cf4 \\myServer\cf0 , \cf3 NetAddr\cf0 (\cf5 "127.0.0.1"\cf0 , 58009)); \
 \
 s.boot; \cf2 //start the server\
 \cf0 \
 s.quit; \cf2 // quit the server\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
 It is not possible to boot a server on a remote machine, but if you have one running already or you know of one running, you can send messages to it. You create the server object using the IP address of the machine running the server and the port it is using.\
@@ -84,10 +84,10 @@ It is not possible to boot a server on a remote machine, but if you have one run
 
 \f2\fs18 \cf2 // create a server object for talking to the server running on a machine having \
 // IP address 192.168.0.47 using port #57110\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s = \cf3 Server\cf0 (\cf4 \\myServer\cf0 , \cf3 NetAddr\cf0 (\cf5 "192.168.0.47"\cf0 , 57110)); \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 Making Sound\
@@ -100,41 +100,48 @@ It is not possible to boot a server on a remote machine, but if you have one run
 \
 Now lets make some audio. \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 s = \cf3 Server\cf0 .local; \cf2 // assign it to interpreter variable 's' \
+\f2\fs18 \cf0 s = \cf3 Server\cf0 .local; \cf2 // assign it to interpreter variable 's' \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
 Boot it.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 s.boot;\
+\f2\fs18 \cf0 s.boot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 Create a SynthDef. A SynthDef is a description of a processing module that you want to run on the server. It can read audio from the server's audio buses, read control from the control buses and write control or audio back to buses. Here we will create a sine oscillator and send it to audio bus zero.\
 \
-
-\f2\fs18 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (\
 \cf3 SynthDef\cf0 (\cf5 "sine"\cf0 , \{ arg freq=800;\
 	\cf3 var\cf0  osc;\
 	osc = \cf3 SinOsc\cf0 .ar(freq, 0, 0.1); \cf2 // 800 Hz sine oscillator\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 Out\cf0 .ar(0, osc); \cf2 // send output to audio bus zero.\
 \cf0 \}).writeDefFile;\
 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 Send the SynthDef to the server.  \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 s.sendSynthDef(\cf5 "sine"\cf0 );\
+\f2\fs18 \cf0 s.sendSynthDef(\cf5 "sine"\cf0 );\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 Start the sound. The 
+\f1\fs24 \cf0 Start the sound. The 
 \f0\b /s_new
 \f1\b0  command creates a new Synth which is an instance of the "sine" SynthDef. Each synth running on the server needs to have a unique ID. Here we give it an ID of 1000. Each synth needs to be installed in a Group. We install it in group zero which is the top level group.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
 s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "sine"\cf0 , 1000, 1, 0);
 \f1\fs24 \
 \
@@ -143,10 +150,12 @@ Stop the sound.\
 \f2\fs18 \
 s.sendMsg(\cf5 "/n_free"\cf0 , 1000);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 Stop the server.\
+\f1\fs24 \cf0 Stop the server.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
 s.quit;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -160,19 +169,20 @@ Using Arguments\
 \f0\b\fs28 \
 
 \f1\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 s = \cf3 Server\cf0 .local; // assign it to interpreter variable 's' \
+\f2\fs18 \cf0 s = \cf3 Server\cf0 .local; // assign it to interpreter variable 's' \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 s.boot;\
+\f2\fs18 \cf0 s.boot;\
 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf5 "sine"\cf0 , \{ arg freq;\
 	\cf3 var\cf0  osc;\
 	osc = \cf3 SinOsc\cf0 .ar(freq, 0, 0.1); \cf2 // 800 Hz sine oscillator\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 Out\cf0 .ar(0, osc); \cf2 // send output to audio bus zero.\
 \cf0 \}).writeDefFile;\
 )\
@@ -180,32 +190,42 @@ Using Arguments\
 s.sendSynthDef(\cf5 "sine"\cf0 );\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 Play a 900 Hz sine wave.\
+\f1\fs24 \cf0 Play a 900 Hz sine wave.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
 s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "sine"\cf0 , 1000, 1, 0, "freq", 900);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 s.sendMsg(\cf5 "/n_free"\cf0 , 1000);\
+\f2\fs18 \cf0 s.sendMsg(\cf5 "/n_free"\cf0 , 1000);\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 Play a 1000 Hz sine wave.\
+\f1\fs24 \cf0 Play a 1000 Hz sine wave.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
 s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "sine"\cf0 , 1001, 1, 0, "freq", 1000);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 s.sendMsg(\cf5 "/n_free"\cf0 , 1001);\
+\f2\fs18 \cf0 s.sendMsg(\cf5 "/n_free"\cf0 , 1001);\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 Playing three voices at once\
+\f1\fs24 \cf0 Playing three voices at once\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
 (\
 s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "sine"\cf0 , 1000, 1, 0, \cf5 "freq"\cf0 , 800);\
 s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "sine"\cf0 , 1001, 1, 0, \cf5 "freq"\cf0 , 1001);\
@@ -223,8 +243,9 @@ s.sendMsg(\cf5 "/n_free"\cf0 , 1002);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 Playing three voices at once using bundles. Bundles allow you to send multiple messages with a time stamp. The messages in the bundle will be scheduled to be performed together. The time argument to sendBundle is an offset into the future from the current thread's logical time.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
 (\
 s.sendBundle(0.2, \
 	[\cf5 "/s_new"\cf0 , \cf5 "sine"\cf0 , 1000, 1, 0, \cf5 "freq"\cf0 , 800],\
@@ -236,20 +257,24 @@ s.sendBundle(1.2, [\cf5 "/n_free"\cf0 , 1000],[\cf5 "/n_free"\cf0 , 1001],[\cf5 
 \
 Controlling a Synth\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 You can send messages to update the values of a Synth's arguments.\
+\f1\b0\fs24 \cf0 You can send messages to update the values of a Synth's arguments.\
 \
 Play a 900 Hz sine wave.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
 s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "sine"\cf0 , 1000, 1, 0, "freq", 900);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 Change the frequency using the 
 \f0\b /n_set
 \f1\b0  command. You send the node ID, the parameter name and the value.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
 s.sendMsg(\cf5 "/n_set"\cf0 , 1000, "freq", 800);\
 \
 s.sendMsg(\cf5 "/n_set"\cf0 , 1000, "freq", 700);\
@@ -269,15 +294,12 @@ Adding an Effect Dynamically\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // define a noise pulse\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf5 "tish"\cf0 , \{ \cf3 arg\cf0  freq = 1200, rate = 2;\
 	\cf3 var\cf0  osc, trg;\
 	trg = \cf3 Decay2\cf0 .ar(\cf3 Impulse\cf0 .ar(rate,0,0.3), 0.01, 0.3);\
 	osc = \{\cf3 WhiteNoise\cf0 .ar(trg)\}.dup;\
 	\cf3 Out\cf0 .ar(0, osc); \cf2 // send output to audio bus zero.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \}).writeDefFile;\
 s.sendSynthDef(\cf5 "tish"\cf0 );\
 )\
@@ -287,47 +309,32 @@ s.sendSynthDef(\cf5 "tish"\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // define an echo effect\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf5 "echo"\cf0 , \{ \cf3 arg\cf0  delay = 0.2, decay = 4;\
 	\cf3 var\cf0  in;\
 	in = \cf3 In\cf0 .ar(0,2);\
 	\cf2 // use ReplaceOut to overwrite the previous contents of the bus.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 ReplaceOut\cf0 .ar(0, \cf3 CombN\cf0 .ar(in, 0.5, delay, decay, 1, in));\
 \}).writeDefFile;\
 s.sendSynthDef(\cf5 "echo"\cf0 );\
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // start the pulse\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "tish"\cf0 , 1001, 1, 0, \cf4 \\freq\cf0 , 200, \cf4 \\rate\cf0 , 1.2);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // add an effect\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "echo"\cf0 , 1002, 1, 0);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // stop the effect\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf5 "/n_free"\cf0 , 1002);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // add an effect (time has come today.. hey!)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "echo"\cf0 , 1003, 1, 0, \cf4 \\delay\cf0 , 0.1, \cf4 \\decay\cf0 , 4);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // stop the effect\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf5 "/n_free"\cf0 , 1003);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // stop the pulse\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendMsg(\cf5 "/n_free"\cf0 , 1001);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -348,9 +355,7 @@ Mapping an Argument to a Control Bus\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // define a control\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf5 "line"\cf0 , \{ \cf3 arg\cf0  i_bus=10, i_start=1000, i_end=500, i_time=1;\
 	\cf3 ReplaceOut\cf0 .kr(i_bus, \cf3 Line\cf0 .kr(i_start, i_end, i_time, doneAction: 2));\
 \}).writeDefFile;\
@@ -362,40 +367,51 @@ s.sendSynthDef(\cf5 "line"\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 Play a 900 Hz sine wave.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
 s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "sine"\cf0 , 1000, 1, 0, "freq", 900);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 Put a frequency value on the control bus.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 s.sendMsg(\cf5 "/c_set"\cf0 , \cf5 10, 1000\cf0 );\
+\f2\fs18 \cf0 s.sendMsg(\cf5 "/c_set"\cf0 , \cf5 10, 1000\cf0 );\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 Map the node's freq argument to read from control bus #10.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 s.sendMsg(\cf5 "/n_map"\cf0 , \cf5 1000, \\freq, 10\cf0 );\
+\f2\fs18 \cf0 s.sendMsg(\cf5 "/n_map"\cf0 , \cf5 1000, \\freq, 10\cf0 );\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 Change the value on the control bus.\
+\f1\fs24 \cf0 Change the value on the control bus.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
 s.sendMsg(\cf5 "/c_set"\cf0 , \cf5 10, 1200\cf0 );\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 Start a control process that writes to bus #10. \
+\f1\fs24 \cf0 Start a control process that writes to bus #10. \
 The EnvGen doneAction will free this node automatically when it finishes.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "line"\cf0 , 1001, 0, 0);\
+\f2\fs18 \cf0 s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "line"\cf0 , 1001, 0, 0);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 Free the node.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 s.sendMsg(\cf5 "/n_free"\cf0 , 1000);\
+\f2\fs18 \cf0 s.sendMsg(\cf5 "/n_free"\cf0 , 1000);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -415,9 +431,7 @@ Sequencing with Routines\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs24 \cf3 var\cf0  space,offset,timer, saw, envsaw, sampler, delay;\
+\cf3 var\cf0  space,offset,timer, saw, envsaw, sampler, delay;\
 \
 \cf3 SynthDef\cf0 (\cf5 "saw"\cf0 ,\{ \cf3 arg\cf0  out=100, pan=0, trig=0.0, freq=500, amp=1, cutoff=10000, rezz=1;\
 	freq = Lag.kr(freq,0.1);\
@@ -479,19 +493,16 @@ timer.sched(0,\{\
     timer.sched(0,r); \
 \});\
 \
-)
-\f0\b \
+)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs28 \cf0 \
+\f0\b\fs28 \cf0 \
 \
 Sequencing with Patterns\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\b0\fs18 \cf0 (\
 \cf2 //sappy emo electronica example... \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Tempo\cf0 .bpm = 120;\
 \cf3 SynthDef\cf0 (\cf5 "patternefx_Ex"\cf0 , \{ \cf3 arg\cf0  out, in; \
 	\cf3 var\cf0  audio, efx;\
@@ -544,7 +555,8 @@ Sequencing with Patterns\
 \
 ]).play;\
 \
-)
-\f0\b\fs28 \
-\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \
 }
