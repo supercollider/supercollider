@@ -2529,65 +2529,65 @@ int prObjectCopySeries(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 2;
 	c = g->sp - 1;
 	d = g->sp;
-	
+		
 	PyrObject *inobj = a->uo;
 	PyrObject *newobj;
 	
 	int size = inobj->size;
+	int flags = ~(obj_immutable) & inobj->obj_flags;
 	
-	if (b->utag != tagInt && b->utag != tagNil) return errWrongType;
-	if (c->utag != tagInt && c->utag != tagNil) return errWrongType;
-	if (d->utag != tagInt && d->utag != tagNil) return errWrongType;
+	int first, second, last;
 	
-	int first  = b->utag == tagInt ? b->ui : 0;	
-	int last   = d->utag == tagInt ? d->ui : size - 1;
-	int second = c->utag == tagInt ? c->ui : (first < last ? b->ui + 1 : b->ui - 1);
+	if (IsInt(b)) first = b->ui;
+	else if (IsNil(b)) first = 0;
+	else return errWrongType;
+
+	if (IsInt(d)) {
+		last = d->ui;
+		if (last < 0 && IsNil(b)) {
+zerolength:
+			newobj = g->gc->New(0, flags, inobj->obj_format, true);
+			newobj->size = 0;
+			newobj->classptr = inobj->classptr;
+			a->uo = newobj;
+			return errNone;
+		}
+	} else if (IsNil(d)) {
+		if (first >= size) goto zerolength;
+		last = size - 1;
+	} else return errWrongType;
+
+	if (IsInt(c)) second = c->ui;
+	else if (IsNil(c)) second = first < last ? b->ui + 1 : b->ui - 1;
+	else return errWrongType;
 
 	int step = second - first;
-
-	first = sc_clip(first, 0, size-1);
-	last = sc_clip(last, 0, size-1);
 	
 	int elemsize = gFormatElemSize[inobj->obj_format];
+	int length;
 	
-	
-	if (step == 0) return errFailed;
-	if (step == 1) {
-		a->uo = copyObjectRange(g->gc, a->uo, first, last, true);
-	} else if (step > 0) {
-		int length = (last - first) / step + 1;
-		int numbytes = length * elemsize;
-		
-		int flags = ~(obj_immutable) & inobj->obj_flags;
-		
-		newobj = g->gc->New(numbytes, flags, inobj->obj_format, true);
-		newobj->size = length;
-		newobj->classptr = inobj->classptr;
-
-		for (int i=first, j=0; j<length; i+=step, ++j) {
-			PyrSlot slot;
-			getIndexedSlot(inobj, &slot, i);
-			putIndexedSlot(g, newobj, &slot, j);
-		}
-
-		a->uo = newobj;
+	if (step > 0) {
+		length = (last - first) / step + 1;
 	} else if (step < 0) {
-		int length = (first - last) / -step + 1;
-		int numbytes = length * elemsize;
+		length = (first - last) / -step + 1;
+	} else return errFailed;
 
-		int flags = ~(obj_immutable) & inobj->obj_flags;
-		
-		newobj = g->gc->New(numbytes, flags, inobj->obj_format, true);
-		newobj->size = length;
-		newobj->classptr = inobj->classptr;
+	int numbytes = length * elemsize;
 	
-		for (int i=first, j=0; j<length; i+=step, ++j) {
-			PyrSlot slot;
+	newobj = g->gc->New(numbytes, flags, inobj->obj_format, true);
+	newobj->size = 0;
+	newobj->classptr = inobj->classptr;
+
+	for (int i=first, j=0; j<length; i+=step, ++j) {
+		PyrSlot slot;
+		if (i >= 0 && i < inobj->size) {
 			getIndexedSlot(inobj, &slot, i);
-			putIndexedSlot(g, newobj, &slot, j);
+			int err = putIndexedSlot(g, newobj, &slot, newobj->size++);
+			if (err) return err;
 		}
-		a->uo = newobj;
 	}
+
+	a->uo = newobj;
 	return errNone;
 }
 
