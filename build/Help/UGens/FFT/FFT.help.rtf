@@ -28,11 +28,11 @@
 
 \f1\fs18 \cf0 \
 \
-s = \cf3 Server\cf0 .local; \
+s = \cf3 Server\cf0 .local.boot; \
 \
 b = \cf3 Buffer.alloc\cf0 (s,2048,1);\
 \
-\
+(\
 \cf3 SynthDef\cf0 (\cf4 "help-noopFFT"\cf0 , \{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 var\cf0  in, chain;\
 	in = \cf3 WhiteNoise\cf0 .ar(0.01);\
@@ -42,16 +42,18 @@ b = \cf3 Buffer.alloc\cf0 (s,2048,1);\
 		\cf3 IFFT\cf0 (chain) \cf2 // inverse FFT\
 \cf0 	);\
 \}).play(s,[\\out,0,\\bufnum,b.bufnum]);\
+)\
 \
-\
+(\
 \cf3 SynthDef\cf0 (\cf4 "help-sineFFT"\cf0 , \{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 var\cf0  in, chain;\
 	in = \cf3 SinOsc\cf0 .ar(\cf3 SinOsc\cf0 .kr(\cf3 SinOsc\cf0 .kr(0.08,0,6,6.2).squared, 0, 100,800));\
 	chain = \cf3 FFT\cf0 (bufnum, in);\
 	\cf3 Out\cf0 .ar(out, \cf3 IFFT\cf0 (chain));\
 \}).play(s,[\\out,0,\\bufnum,b.bufnum]);\
+)\
 \
-\
+(\
 \cf3 SynthDef\cf0 (\cf4 "help-magAbove"\cf0 , \{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 var\cf0  in, chain;\
 	in = \cf3 SinOsc\cf0 .ar(\cf3 SinOsc\cf0 .kr(\cf3 SinOsc\cf0 .kr(0.08,0,6,6.2).squared, 0, 100,800));\
@@ -60,8 +62,9 @@ b = \cf3 Buffer.alloc\cf0 (s,2048,1);\
 	chain = \cf3 PV_MagAbove\cf0 (chain, 310); \
 	\cf3 Out\cf0 .ar(out, 0.5 * \cf3 IFFT\cf0 (chain));\
 \}).play(s,[\\out,0,\\bufnum,b.bufnum]);\
+)\
 \
-\
+(\
 \cf3 SynthDef\cf0 (\cf4 "help-brick"\cf0 , \{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 var\cf0  in, chain;\
 	in = \{\cf3 WhiteNoise\cf0 .ar(0.2)\}.dup;\
@@ -69,8 +72,9 @@ b = \cf3 Buffer.alloc\cf0 (s,2048,1);\
 	chain = \cf3 PV_BrickWall\cf0 (chain, \cf3 SinOsc\cf0 .kr(0.1)); \
 	\cf3 Out\cf0 .ar(out, \cf3 IFFT\cf0 (chain));\
 \}).play(s,[\\out,0,\\bufnum,b.bufnum]);\
+)\
 \
-\
+(\
 \cf3 SynthDef\cf0 (\cf4 "help-randcomb"\cf0 , \{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 var\cf0  in, chain;\
 	in = \{\cf3 WhiteNoise\cf0 .ar(0.8)\}.dup;\
@@ -78,8 +82,9 @@ b = \cf3 Buffer.alloc\cf0 (s,2048,1);\
 	chain = \cf3 PV_RandComb\cf0 (chain, 0.95, \cf3 Impulse\cf0 .kr(0.4)); \
 	\cf3 Out\cf0 .ar(out, \cf3 IFFT\cf0 (chain));\
 \}).play(s,[\\out,0,\\bufnum,b.bufnum]);\
+)\
 \
-\
+(\
 \cf3 SynthDef\cf0 (\cf4 "help-rectcomb"\cf0 , \{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 var\cf0  in, chain;\
 	in = \{\cf3 WhiteNoise\cf0 .ar(0.2)\}.dup;\
@@ -88,8 +93,9 @@ b = \cf3 Buffer.alloc\cf0 (s,2048,1);\
 		\cf3 LFTri\cf0 .kr(0.24,0,-0.5,0.5)); \
 	\cf3 Out\cf0 .ar(out, \cf3 IFFT\cf0 (chain));\
 \}).play(s,[\\out,0,\\bufnum,b.bufnum]);\
+)\
 \
-\
+(\
 \cf3 SynthDef\cf0 (\cf4 "help-magFreeze"\cf0 , \{ \cf3 arg\cf0  out=0,bufnum=0;\
 	\cf3 var\cf0  in, chain;\
 	in = \cf3 SinOsc\cf0 .ar(\cf3 LFNoise1\cf0 .kr(\cf3 5.2,250,400\cf0 ));\
@@ -98,5 +104,5 @@ b = \cf3 Buffer.alloc\cf0 (s,2048,1);\
 	chain = \cf3 PV_MagFreeze\cf0 (chain, \cf3 SinOsc\cf0 .kr(0.2) ); \
 	\cf3 Out\cf0 .ar(out, 0.5 * \cf3 IFFT\cf0 (chain));\
 \}).play(s,[\\out,0,\\bufnum,b.bufnum]);\
-\
+)\
 }
