@@ -50,6 +50,15 @@ collect ((1..10)) \{ \cf3 arg\cf0  n; n.squared \}; \cf2 // function call syntax
 (1..10) collect: \{ \cf3 arg\cf0  n; n.squared \}; \cf2 // binary operator syntax\cf0 \
 \
 \
+\cf2 // partial application syntax\cf0 \
+\
+(1..10).collect( _.squared ); \cf2 // receiver syntax\cf0 \
+\
+collect((1..10), _.squared ); \cf2 // function call syntax\cf0 \
+\
+(1..10) collect: _.squared ; \cf2 // binary operator syntax\cf0 \
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 You could even start expanding out the equivalent of 
@@ -58,7 +67,7 @@ collect ((1..10)) \{ \cf3 arg\cf0  n; n.squared \}; \cf2 // function call syntax
 \f2 series(1, nil, 10)
 \f1 . This could also be written 
 \f2 1.series(nil,10)
-\f1 . This adds another 20 variations to the 10 variations above.\
+\f1 . This adds another 26 variations to the 13 variations above.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -405,6 +414,31 @@ a.copyFromStart(4)						a[..4]\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 object.performList(\\method, a, b, array)		object.method(a, b, *array)\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0\b\fs28 \cf0 			partial application\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 instead of writing:									you can write:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \{|x| object.msg(a, x, b) \}						object.msg(a, _, b)\
+\
+\{|x,y| object.msg(a, x, y) \}					object.msg(a, _, _)\
+\
+\{|x| a + x \}									a + _\
+\
+\{|x| [a, b, x] \}								[a, b, _]\
+\
+\{|x| (a: x) \}									(a: _)\
 \
 \
 \
