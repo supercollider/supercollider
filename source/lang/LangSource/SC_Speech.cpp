@@ -52,9 +52,9 @@ SpeechChannel fCurSpeechChannel[kMaxSpeechChannels];
 pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon );
 pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon )
 {
-  //call action here;
-//  post("text done");
-  pthread_mutex_lock (&gLangMutex); 
+    //call action here;
+    // post("text done");
+    pthread_mutex_lock (&gLangMutex); 
 	VMGlobals *g = gMainVMGlobals;
 	g->canCallOS = true;
 	++g->sp; SetObject(g->sp, s_speech->u.classobj); // Set the class MIDIIn
@@ -62,49 +62,45 @@ pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRe
 	++g->sp;SetInt(g->sp, (int) inRefCon); //src
 	runInterpreter(g, s_speechdoneAction, 2);
 
-		g->canCallOS = false;
+    g->canCallOS = false;
 	pthread_mutex_unlock (&gLangMutex); 
-
 }
-pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, long inWordPos, short inWordLen );
-pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, long inWordPos, short inWordLen ){
-//post("word done");
+
+pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, long inWordPos, short inWordLen);
+pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, long inWordPos, short inWordLen) {
+    //post("word done");
 	pthread_mutex_lock (&gLangMutex); 
 	VMGlobals *g = gMainVMGlobals;
 	g->canCallOS = true;
 	++g->sp; SetObject(g->sp, s_speech->u.classobj); 
-        //set arguments: 
-	++g->sp;SetInt(g->sp, (int) inRefCon); //src
+    //set arguments: 
+	++g->sp; SetInt(g->sp, (int) inRefCon); //src
 	runInterpreter(g, s_speechwordAction, 2);
 
-		g->canCallOS = false;
+    g->canCallOS = false;
 	pthread_mutex_unlock (&gLangMutex); 
-
-
 }
+
 int prInitSpeech(struct VMGlobals *g, int numArgsPushed);
 int prInitSpeech(struct VMGlobals *g, int numArgsPushed){
 
 	OSErr theErr = noErr;
 	//PyrSlot *a = g->sp-1;
 	PyrSlot *b = g->sp;
-        int chan;
-        slotIntVal(b, &chan);
+    int chan;
+    slotIntVal(b, &chan);
 	if (chan < 0 || chan >= kMaxSpeechChannels) return errIndexOutOfRange;
-	//char *theTextToSpeak = (char*)malloc(a->uo->size + 1);
-	//slotStrVal(a, theTextToSpeak, a->uo->size+1);
+	
 	for (int i=0; i<chan; ++i) {
-	NewSpeechChannel( NULL, fCurSpeechChannel+i );
-	theErr = SetSpeechInfo (fCurSpeechChannel[i], soSpeechDoneCallBack, OurSpeechDoneCallBackProc);
-	theErr = SetSpeechInfo (fCurSpeechChannel[i], soWordCallBack, OurWordCallBackProc);
-	theErr = SetSpeechInfo (fCurSpeechChannel[i], soRefCon, (void*) i);
-
+        NewSpeechChannel( NULL, fCurSpeechChannel+i );
+        theErr = SetSpeechInfo (fCurSpeechChannel[i], soSpeechDoneCallBack, OurSpeechDoneCallBackProc);
+        theErr = SetSpeechInfo (fCurSpeechChannel[i], soWordCallBack, OurWordCallBackProc);
+        theErr = SetSpeechInfo (fCurSpeechChannel[i], soRefCon, (void*) i);
 	}
-        return errNone;
-
+    return errNone;
 }
-//NewSpeechDoneUPP(SpeechDoneProcPtr userRoutine);
 
+//NewSpeechDoneUPP(SpeechDoneProcPtr userRoutine);
 //theErr = SetSpeechInfo (fCurSpeechChannel, soSpeechDoneCallBack, OurSpeechDoneCallBackProc);
 
 int prSpeakText(struct VMGlobals *g, int numArgsPushed);
@@ -124,8 +120,8 @@ int prSpeakText(struct VMGlobals *g, int numArgsPushed){
 	theErr = SpeakText( fCurSpeechChannel[chan], theTextToSpeak, strlen(theTextToSpeak));
 	pyr_pool_compile->Free(theTextToSpeak);
 	return errNone;
-
 }
+
 int prSetSpeechRate(struct VMGlobals *g, int numArgsPushed);
 int prSetSpeechRate(struct VMGlobals *g, int numArgsPushed){
 
@@ -141,8 +137,8 @@ int prSetSpeechRate(struct VMGlobals *g, int numArgsPushed){
 //	if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
     theErr = SetSpeechInfo (fCurSpeechChannel[chan], soRate, &newRate);
 	return errNone;
-
 }
+
 int prSetSpeechPitch(struct VMGlobals *g, int numArgsPushed);
 int prSetSpeechPitch(struct VMGlobals *g, int numArgsPushed){
 
@@ -158,7 +154,8 @@ int prSetSpeechPitch(struct VMGlobals *g, int numArgsPushed){
 	//if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
     theErr = SetSpeechPitch (fCurSpeechChannel[chan], newVal);
 	return errNone;
-}  
+}
+
 int prSetSpeechPitchMod(struct VMGlobals *g, int numArgsPushed);
 int prSetSpeechPitchMod(struct VMGlobals *g, int numArgsPushed){
 
@@ -177,7 +174,7 @@ int prSetSpeechPitchMod(struct VMGlobals *g, int numArgsPushed){
 }
 
 int prSetSpeechVolume(struct VMGlobals *g, int numArgsPushed);
-int prSetSpeechVolume(struct VMGlobals *g, int numArgsPushed){
+int prSetSpeechVolume(struct VMGlobals *g, int numArgsPushed) {
 
 	OSErr theErr = noErr;
 	PyrSlot *a = g->sp-2;
@@ -192,6 +189,7 @@ int prSetSpeechVolume(struct VMGlobals *g, int numArgsPushed){
     theErr = SetSpeechInfo (fCurSpeechChannel[chan], soVolume, &newVal);
 	return errNone;
 }
+
 //		theErr = PauseSpeechAt (fCurSpeechChannel, kImmediate);
 //		theErr = ContinueSpeech (fCurSpeechChannel);
 int prSetSpeechPause(struct VMGlobals *g, int numArgsPushed);
@@ -207,13 +205,13 @@ int prSetSpeechPause(struct VMGlobals *g, int numArgsPushed){
 	slotIntVal(c, &val);
 	//Fixed newVal = val * 65536.0;
 	if(val) {
-	theErr = ContinueSpeech(fCurSpeechChannel[chan] );
+        theErr = ContinueSpeech(fCurSpeechChannel[chan] );
 	} else {
-	theErr = PauseSpeechAt(fCurSpeechChannel[chan], kImmediate);
-	
+        theErr = PauseSpeechAt(fCurSpeechChannel[chan], kImmediate);
 	}
 	return errNone;
 }
+
 int prSetSpeechVoice(struct VMGlobals *g, int numArgsPushed);
 int prSetSpeechVoice(struct VMGlobals *g, int numArgsPushed){
 
@@ -232,6 +230,7 @@ int prSetSpeechVoice(struct VMGlobals *g, int numArgsPushed){
 
 	return errNone;
 }
+
 void initSpeechPrimitives ()
 {
 	int base, index;
