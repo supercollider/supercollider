@@ -2824,11 +2824,14 @@ void compilePyrDynDictNode(PyrDynDictNode* node, void* result)
 	//postfl("compilePyrDynDictNode\n");
 	numItems = nodeListLength(node->elems) >> 1;
 
-        compilePushVar((PyrParseNode*)node, s_event);
+	compilePushVar((PyrParseNode*)node, s_event);
 
 	compilePushInt(numItems);
-	
-	compileOpcode(opSendSpecialMsg, 2);
+	compileByte(110); // push nil for proto
+	compileByte(110); // push nil for parent
+	compileByte(108); // push true for know
+	compileOpcode(opSendSpecialMsg, 5);
+
 	compileByte(opmNew);
 	
 	inode = node->elems;
