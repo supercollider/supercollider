@@ -8,6 +8,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 sceldir = $(pkgdatadir)/SCClassLibrary/Emacs
-scel_DATA = Emacs.sc homeContext.sc storeLispOn.sc
+scel_DATA = Emacs.sc EmacsDocument.sc extDocument.sc homeContext.sc storeLispOn.sc
 
 ## EOF ================================================================

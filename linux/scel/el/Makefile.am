@@ -9,6 +9,7 @@ MAINTAINERCLEANFILES = Makefile.in elisp-comp
 
 lisp_LISP = \
 	sclang-browser.el \
+	sclang-document.el \
 	sclang-help.el \
 	sclang-interp.el \
 	sclang-keys.el \
