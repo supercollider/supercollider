@@ -14,17 +14,17 @@ Demand : MultiOutUGen {
 
 Duty : UGen {
 	
-	*ar { arg dur, reset, level, doneAction=0;
+	*ar { arg dur=1.0, reset=0.0, level=1.0, doneAction=0;
 		^this.multiNew('audio', dur, reset, doneAction, level)
 	}
-	*kr { arg dur, reset, level, doneAction=0;
+	*kr { arg dur=1.0, reset=0.0, level=1.0, doneAction=0;
 		^this.multiNew('control', dur, reset, doneAction, level)
 	}
 	checkInputs {
 		^if(inputs.at(0).rate === \demand) {
 			if (inputs.at(1).rate !== \demand and: { inputs.at(1).rate !== \scalar } and: 
 				{ inputs.at(1).rate !== rate }) { 
- 				("first input is not" + rate + "rate: " + inputs.at(1) + inputs.at(1).rate);
+ 				("reset input is not" + rate + "rate: " + inputs.at(1) + inputs.at(1).rate);
  			}
 		} {
 			this.checkValidInputs
