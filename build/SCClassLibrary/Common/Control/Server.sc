@@ -115,7 +115,7 @@ Server : Model {
 	var <sampleRate, <actualSampleRate;
 	
 	var alive = false, booting = false, aliveThread, statusWatcher;
-	var <>tree, <>bundle;
+	var <>tree;
 	
 	var <window, <>scopeWindow;
 	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float"; 	var <>recChannels=2;
@@ -161,10 +161,10 @@ Server : Model {
 	}
 	// bundling support added
 	sendMsg { arg ... msg;
-		if (bundle.notNil) { bundle = bundle.add(msg) } { addr.sendMsg(*msg); }
+		addr.sendMsg(*msg);
 	}
 	sendBundle { arg time ... msgs;
-		if (bundle.notNil) { bundle = bundle.addAll(msgs) } { addr.sendBundle(time, *msgs); }
+		addr.sendBundle(time, *msgs)
 	}
 	
 	sendRaw { arg rawArray;
@@ -222,10 +222,10 @@ Server : Model {
 	
 	// bundling support added
 	listSendMsg { arg msg;
-		if (bundle.notNil) { bundle = bundle.add(msg) } { addr.sendMsg(*msg); }
+		addr.sendMsg(*msg);
 	}
  	listSendBundle { arg time, msgs;
-		if (bundle.notNil) { bundle = bundle.addAll(msgs) } { addr.sendBundle(time, *msgs); }
+		addr.sendBundle(time, *msgs);
 	}
 
 	// load from disk locally, send remote
@@ -459,11 +459,27 @@ Server : Model {
 	}
 	
 	// bundling support
-	openBundle { bundle = []; }
-	addMsgToBundle { arg ...msg; bundle = bundle ++ msg.flat; } 
-	addBundleToBundle { arg msgs; bundle = bundle.addAll(msgs); } 
-	closeBundle { var result; result = bundle; bundle = nil; ^result }
-	closeSendBundle { arg time; this.sendBundle(time, *this.closeBundle); }
+	openBundle { arg bundle;  // pass in a bundle that you want to continue adding to, or nil for a new bundle.
+		addr = BundleNetAddr.copyFrom(addr, bundle);
+	}
+	closeBundle { arg time; // set time to false if you don't want to send.
+		var bundle;
+		bundle = addr.bundle;
+		addr = addr.saveAddr;
+		if (time != false) { this.sendBundle(time, bundle); }
+		^bundle;
+	}
+	makeBundle { arg time, func, bundle;
+		this.openBundle(bundle);
+		try {
+			func.value(this);
+			bundle = this.closeBundle(time);
+		}{|error|
+			addr = addr.saveAddr; // on error restore the normal NetAddr
+			error.throw
+		}
+		^bundle
+	}
 	
 	// internal server commands
 	bootInProcess {
@@ -527,9 +543,9 @@ Server : Model {
 	
 	// CmdPeriod support for Server-scope and Server-record
 	cmdPeriod {
-		recordNode.notNil.if({ recordNode = nil; });
-		recordBuf.notNil.if({recordBuf.close({ arg buf; buf.free; }); recordBuf = nil;});
-		bundle = nil;
+		if(recordNode.notNil) { recordNode = nil; };
+		if(recordBuf.notNil) { recordBuf.close {|buf| buf.free; }; recordBuf = nil; };
+		addr = addr.recover;
 		this.changed(\cmdPeriod);
 		CmdPeriod.remove(this);
 	}

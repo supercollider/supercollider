@@ -95,4 +95,28 @@ NetAddr {
 			connections.remove(this);
 		};
 	}
+	recover { ^this }
 }
+
+BundleNetAddr : NetAddr {
+	var <saveAddr, <>bundle;
+
+	*copyFrom { arg addr, bundle;
+		^super.newCopyArgs(addr.addr, addr.port, addr.hostname, addr.socket, addr, bundle);
+	}
+
+	sendRaw { arg rawArray;
+		bundle = bundle.add( rawArray );
+	}
+	sendMsg { arg ... args;
+		bundle = bundle.add( args );
+	}
+	sendBundle { arg time ... args;
+		bundle = bundle.addAll( args );
+	}
+	
+	recover {
+		^saveAddr.recover
+	}
+}
+
