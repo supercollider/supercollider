@@ -338,11 +338,16 @@ bool SC_CoreAudioDriver::Setup()
 	count = sizeof(mOutputDevice);		// it is required to pass the size of the data to be returned
 	//get the output device:
 	err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &count, (void *) & mOutputDevice);
+	if (err != kAudioHardwareNoError) {
+		fprintf(stdout, "get kAudioHardwarePropertyDefaultOutputDevice error %c%c%c%c\n", (err>>24)&255,(err>>16)&255,(err>>8)&255,(err)&255);
+		return false;
+	}
+
 	//get the input device
 	err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &count, (void *) & mInputDevice);
 
 	if (err != kAudioHardwareNoError) {
-		fprintf(stdout, "get kAudioHardwarePropertyDefaultOutputDevice error %c%c%c%c\n", (err>>24)&255,(err>>16)&255,(err>>8)&255,(err)&255);
+		fprintf(stdout, "get kAudioHardwarePropertyDefaultInputDevice error %c%c%c%c\n", (err>>24)&255,(err>>16)&255,(err>>8)&255,(err)&255);
 		return false;
 	}
 
@@ -355,21 +360,23 @@ bool SC_CoreAudioDriver::Setup()
 	}
 	//fprintf(stdout, "mHardwareBufferSize = %ld\n", mHardwareBufferSize);
 
-	// get a description of the data format used by the default input device
-	count = sizeof(AudioStreamBasicDescription);	// it is required to pass the size of the data to be returned
-	err = AudioDeviceGetProperty(mInputDevice, 0, true, kAudioDevicePropertyStreamFormat, &count, &inputStreamDesc);
-	if (err != kAudioHardwareNoError) {
-		fprintf(stdout, "get kAudioDevicePropertyStreamFormat error %c%c%c%c\n", (err>>24)&255,(err>>16)&255,(err>>8)&255,(err)&255);
-		return false;
+	if (mInputDevice != kAudioDeviceUnknown) {
+		// get a description of the data format used by the default input device
+		count = sizeof(AudioStreamBasicDescription);	// it is required to pass the size of the data to be returned
+		err = AudioDeviceGetProperty(mInputDevice, 0, true, kAudioDevicePropertyStreamFormat, &count, &inputStreamDesc);
+		if (err != kAudioHardwareNoError) {
+			fprintf(stdout, "get kAudioDevicePropertyStreamFormat error %c%c%c%c\n", (err>>24)&255,(err>>16)&255,(err>>8)&255,(err)&255);
+			return false;
+		}
+	
+		count = sizeof(AudioStreamBasicDescription);	// it is required to pass the size of the data to be returned
+		err = AudioDeviceGetProperty(mInputDevice, 0, true, kAudioDevicePropertyStreamFormat, &count, &inputStreamDesc);
+		if (err != kAudioHardwareNoError) {
+			fprintf(stdout, "get kAudioDevicePropertyStreamFormat error %c%c%c%c\n", (err>>24)&255,(err>>16)&255,(err>>8)&255,(err)&255);
+			return false;
+		}
 	}
-
-	count = sizeof(AudioStreamBasicDescription);	// it is required to pass the size of the data to be returned
-	err = AudioDeviceGetProperty(mInputDevice, 0, true, kAudioDevicePropertyStreamFormat, &count, &inputStreamDesc);
-	if (err != kAudioHardwareNoError) {
-		fprintf(stdout, "get kAudioDevicePropertyStreamFormat error %c%c%c%c\n", (err>>24)&255,(err>>16)&255,(err>>8)&255,(err)&255);
-		return false;
-	}
-
+	
 	// get a description of the data format used by the default output device
 	count = sizeof(AudioStreamBasicDescription);	// it is required to pass the size of the data to be returned
 	err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyStreamFormat, &count, &outputStreamDesc);
@@ -531,8 +538,8 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 		float* outputBuses = mWorld->mAudioBus;
 		int32* inputTouched = mWorld->mAudioBusTouched + mWorld->mNumOutputs;
 		int32* outputTouched = mWorld->mAudioBusTouched;
-		int numInputStreams = inInputData->mNumberBuffers;
-		int numOutputStreams = outOutputData->mNumberBuffers;
+		int numInputStreams = inInputData ? inInputData->mNumberBuffers : 0;
+		int numOutputStreams = outOutputData ? outOutputData->mNumberBuffers : 0;
 		
 		//static int go = 0;
 		
@@ -544,7 +551,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 			int32 bufCounter = mWorld->mBufCounter;
 			
 			// de-interleave input
-			if (inInputData->mBuffers) {
+			if (inInputData && inInputData->mBuffers) {
 				for (int s = 0, b = 0; b<numInputBuses && s < numInputStreams; s++) {
 					const AudioBuffer* buf = inInputData->mBuffers + s;
 					int nchan = buf->mNumberChannels;

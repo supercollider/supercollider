@@ -95,7 +95,8 @@ public:
 	
 	void AddEvent(SC_ScheduledEvent& event) { mScheduler.Add(event); }
 
-	bool UseSeparateIO() { return mInputDevice != mOutputDevice; }
+	bool UseInput() { return mInputDevice != kAudioDeviceUnknown; }
+	bool UseSeparateIO() { return UseInput() && mInputDevice != mOutputDevice; }
 	AudioDeviceID InputDevice() { return mInputDevice; }
 	AudioDeviceID OutputDevice() { return mOutputDevice; }
 	
