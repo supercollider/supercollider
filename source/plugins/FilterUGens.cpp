@@ -3440,37 +3440,49 @@ void DetectSilence_Ctor(DetectSilence* unit)
 	
 	unit->mThresh = ZIN0(1);
 	unit->mEndCounter = (int32)(SAMPLERATE * ZIN0(2));
-	unit->mCounter = -1;
-		 
-	ZOUT0(0) = ZIN0(0);
+	unit->mCounter = -1;		 
 }
 
 
 void DetectSilence_next(DetectSilence* unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-	float *in = ZIN(0);
 	float thresh = unit->mThresh;
 	int counter = unit->mCounter;
+
+	// I thought of a better way to do this...
+	/*
 	for (int i=0; i<inNumSamples; ++i) {
 		float val = fabs(ZXP(in)); 
 		if (val >= thresh) counter = 0;
 		else if (counter >= 0) {
-			int doneAction = (int)ZIN0(3);
 			if (++counter >= unit->mEndCounter && doneAction) {
+				int doneAction = (int)ZIN0(3);
 				DoneAction(doneAction, unit);
 				SETCALC(DetectSilence_done);
 			}
 		}
 		ZXP(out) = 0.f;
 	}
+	*/
+	float *in = IN(0);
+	for (int i=0; i<inNumSamples; ++i) {
+		float val = fabs(*in++); 
+		if (val > thresh) {
+			counter = 0;
+			break;
+		} else if (counter >= 0) {
+			if (++counter >= unit->mEndCounter) {
+				int doneAction = (int)ZIN0(3);
+				DoneAction(doneAction, unit);
+				SETCALC(DetectSilence_done);
+			}
+		}
+	}
 	unit->mCounter = counter;
 }
 
 void DetectSilence_done(DetectSilence* unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-	Fill(inNumSamples, out, 1.f);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
