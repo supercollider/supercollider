@@ -77,6 +77,7 @@ private:
 			
 	void recurse(PyrObject *obj, int n)
 		{	
+			//post("recurse %s %08X\n", obj->classptr->name.us->name, obj);
 			PyrSlot *slot = obj->slots;
 			for (int i=0; i<n; ++i, ++slot) {
 				if (IsObj(slot)) constructObjectArray(slot->uo);
@@ -119,11 +120,14 @@ private:
 			
 			// add a shallow copy to object array
 			PyrObject *copy = copyObject(g->gc, obj, false);
+			copy->ClearMark();
+			
 			objectArray[numObjects++] = copy;
 		}
 
 	void constructObjectArray(PyrObject *obj)
 		{
+			//post("constructObjectArray %s %08X\n", obj->classptr->name.us->name, obj);
 			if (!obj->IsMarked()) {
 				if (isKindOf(obj, class_class)) {
 					putSelf(obj);
@@ -151,12 +155,13 @@ private:
 
 	void fixObjSlot(PyrSlot* slot) 
 		{
+			//post("fixObjSlot %s %08X %08X\n", slot->uo->classptr->name.us->name, slot->uo, objectArray[slot->uo->scratch1]);
 			slot->uo = objectArray[slot->uo->scratch1];
 		}
 	
 	void fixSlots(PyrObject *obj)
 		{
-			//postfl("writeSlots %s\n", obj->classptr->name.us->name);
+			//post("fixSlots %s %08X %d\n", obj->classptr->name.us->name, obj, obj->IsMarked());
 			if (!obj->IsMarked() && obj->obj_format <= obj_slot) { // it is a copy
 				PyrSlot *slot = obj->slots;
 				for (int i=0; i<obj->size; ++i, ++slot) {
