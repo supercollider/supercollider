@@ -27,7 +27,7 @@
 struct Wire 
 {
 	struct Unit *mFromUnit;
-	int16 mCalcRate;
+	int32 mCalcRate;
 	float32 *mBuffer;
 	float32 mScalarValue;
 };

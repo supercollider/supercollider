@@ -39,22 +39,22 @@ Unit* Unit_New(World *inWorld, UnitSpec *inUnitSpec, char*& memory)
 	
 	unit->mWorld = inWorld;
 	unit->mUnitDef = def;
-	unit->mParent = 0;
-	unit->mParentIndex = 0;
-	unit->mNumInputs = inUnitSpec->mNumInputs;
-	unit->mNumOutputs = inUnitSpec->mNumOutputs;
-	int numPorts = unit->mNumInputs + unit->mNumOutputs;
+	
+	int numInputs = inUnitSpec->mNumInputs;
+	int numOutputs = inUnitSpec->mNumOutputs;
+	unit->mNumInputs = numInputs;
+	unit->mNumOutputs = numOutputs;
+	int numPorts = numInputs + numOutputs;
 
 	unit->mInput = (Wire**)memory; 
 	memory += numPorts * sizeof(Wire*);
 	
-	unit->mOutput = unit->mInput + unit->mNumInputs;
+	unit->mOutput = unit->mInput + numInputs;
 
 	unit->mInBuf = (float**)memory; 
 	memory += numPorts * sizeof(float*);
 
-	unit->mOutBuf = unit->mInBuf + unit->mNumInputs;
-	
+	unit->mOutBuf = unit->mInBuf + numInputs;
 
 	unit->mCalcRate = inUnitSpec->mCalcRate;
 	unit->mSpecialIndex = inUnitSpec->mSpecialIndex;
@@ -62,7 +62,6 @@ Unit* Unit_New(World *inWorld, UnitSpec *inUnitSpec, char*& memory)
 	unit->mBufLength = rateInfo->mBufLength;
 	
 	unit->mDimension = 0;
-	//unit->mCalcFunc = 0;
 	unit->mDone = false;
 	
 	return unit;

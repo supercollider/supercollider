@@ -38,6 +38,7 @@ struct Unit
 	int16 mCalcRate;
 	int16 mSpecialIndex;		// used by unary and binary ops
 	int16 mParentIndex;
+	int16 mDone;
 	
 	struct Wire **mInput, **mOutput;
 	struct Rate *mRate;
@@ -46,7 +47,6 @@ struct Unit
 	
 	UnitCalcFunc mCalcFunc;
 	int mBufLength;
-	bool mDone;
 };
 typedef struct Unit Unit;
 
