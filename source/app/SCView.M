@@ -1874,7 +1874,7 @@ SCMultiSliderView::SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj
         //mCurrentX = 0.0;
         mYValues = new double [mTabSize];
         mReadOnly = mShowIndex = false;
-       // mResamp = 1; //used for zooming out
+        mResamp = 1; //used for zooming out
         mFillColor = SCMakeColor(0,0,0,1); // black
         mStrokeColor = SCMakeColor(0,0,0,1); // black
         mDrawLinesActive = false;
@@ -1910,37 +1910,39 @@ void SCMultiSliderView::draw(SCRect inDamage)
     
     CGRect drawRect;
     float yval = 0;
-    float tsize = 1.0;  
+    float tsize = mXOffset;  
     
      //draw dots for multislider
     if(mDrawRectsActive)
-        
-        for(int i = xstart; i < xpixels; i++){
+    {
+        int j = 0;
+        for(int i = xstart; i < xpixels; i++, j++){
             yval = vals[i];
-            drawRect = SCtoCGRect(calcThumbRect(i, yval, mXOffset));
+            drawRect = SCtoCGRect(calcThumbRect(j, yval, mXOffset));
             CGContextFillRect (cgc, drawRect);
             CGContextStrokeRect(cgc,drawRect);
         }
-
+    }
     //draw lines
     if (mDrawLinesActive) {
-                //no resample detection ...
-        tsize = mXOffset;
         float xadd, gcx, gcy;
         if(mThumbSize > 1) xadd =  mThumbSize * 0.5; 
-        else xadd = 0;      
+        else xadd = 0;  
+        int j = 0;    
        // CGContextMoveToPoint(cgc, mBounds.x, mBounds.height * 0.5);
-            for(int i = xstart; i < xpixels; i++){
+            for(int i = xstart; i < xpixels; i++, j++){
             yval = vals[i];
             //mIsHorizontal
-            drawRect = SCtoCGRect(calcThumbRect(i, yval, tsize));
+            drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
             gcx =  drawRect.origin.x + xadd;
             gcy =  drawRect.origin.y + xadd;
             CGContextAddLineToPoint(cgc, gcx, gcy);
             CGContextMoveToPoint(cgc, gcx, gcy);
+            
             }
         //these are fixed values: used for the max of soundfiles
         if (mSecYValues != NULL) {
+        j = 0;
             if(mIsHorizontal){
                 CGContextAddLineToPoint(cgc, gcx, mBounds.height * 0.5);
                 CGContextMoveToPoint(cgc, mBounds.x, mBounds.height * 0.5);
@@ -1948,9 +1950,9 @@ void SCMultiSliderView::draw(SCRect inDamage)
                 CGContextAddLineToPoint(cgc, mBounds.width * 0.5, gcy);
                 CGContextMoveToPoint(cgc, mBounds.width * 0.5, mBounds.y);
         }        
-            for(int i = xstart; i < xpixels; i++){
+            for(int i = xstart; i < xpixels; i++, j++){
             yval = mSecYValues[i];
-            drawRect = SCtoCGRect(calcThumbRect(i, yval, tsize));
+            drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
             gcx =  drawRect.origin.x + xadd;
             gcy =  drawRect.origin.y + xadd;
             CGContextAddLineToPoint(cgc, gcx, gcy);
@@ -2102,8 +2104,7 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         } 
         if (strcmp(name, "xOffset")==0) {
             err = slotFloatVal(slot, &mXOffset);
-            if(mXOffset < 1.0 && mXOffset != 0.0) {
-                mXOffset = 0.0; //mResamp = (int) 1.0 / mXOffset;
+            if(mXOffset < 1.0) mXOffset = 0.0; //mResamp = (int) 1.0 / mXOffset;
             setVisibleSize();
             refresh();
             return errNone;
@@ -2220,6 +2221,11 @@ int SCMultiSliderView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
                 }
             return errNone;
 	}
+        if (strcmp(name, "selectionSize")==0) {
+            SetInt(slot, mSelectionSize);
+            return errNone;
+        }
+
 
         return SCView::getProperty(symbol, slot);
 }
