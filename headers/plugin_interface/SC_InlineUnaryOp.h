@@ -53,7 +53,7 @@ inline float32 zapgremlins(float32 x)
 
 inline float32 sc_log2(float32 x)
 {
-	return log(fabs(x)) * rlog2;
+	return static_cast<float32>(log(fabs(x)) * rlog2);
 }
 
 inline float32 sc_log10(float32 x)
@@ -120,13 +120,13 @@ inline float32 sc_sqrt(float32 x)
 inline float32 sc_hanwindow(float32 x)
 {
 	if (x < (float32)0. || x > (float32)1.) return (float32)0.;
-	return (float32)0.5 - (float32)0.5 * cos(x * twopi);
+	return (float32)0.5 - (float32)0.5 * static_cast<float32>(cos(x * twopi));
 }
 
 inline float32 sc_welwindow(float32 x)
 {
 	if (x < (float32)0. || x > (float32)1.) return (float32)0.;
-	return sin(x * pi);
+	return static_cast<float32>(sin(x * pi));
 }
 
 inline float32 sc_triwindow(float32 x)
@@ -186,13 +186,13 @@ inline float32 sc_softclip(float32 x)
 inline float32 taylorsin(float32 x)
 {
 	// valid range from -pi/2 to +3pi/2
-	x = pi2 - fabs(pi2 - x);
+	x = static_cast<float32>(pi2 - fabs(pi2 - x));
 	float32 x2 = x * x;
-  	return x*(x2*(x2*(x2*(x2*(1.0/362880.0) 
+  	return static_cast<float32>(x*(x2*(x2*(x2*(x2*(1.0/362880.0) 
   			- (1.0/5040.0))
             + (1.0/120.0))
             - (1.0/6.0))
-            + 1.0);
+            + 1.0));
 }
 
 inline float32 sc_trunc(float32 x)
@@ -229,9 +229,9 @@ inline float32 sc_CalcFeedback(float32 delaytime, float32 decaytime)
 	if (delaytime == 0.f) {
 		return 0.f;
 	} else if (decaytime > 0.f) {
-		return exp(log001 * delaytime / decaytime);
+		return static_cast<float32>(exp(log001 * delaytime / decaytime));
 	} else if (decaytime < 0.f) {
-		return -exp(log001 * delaytime / -decaytime);
+		return static_cast<float32>(-exp(log001 * delaytime / -decaytime));
 	} else {
 		return 0.f;
 	}

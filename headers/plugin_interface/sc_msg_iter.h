@@ -146,10 +146,10 @@ inline float32 sc_msg_iter::getf(float32 defaultValue)
 			value = OSCfloat(rdpos);
 			rdpos += sizeof(float32);
 		} else if (tags[count] == 'd') {
-			value = static_cast<float64>(OSCdouble(rdpos));
+			value = static_cast<float32>(OSCdouble(rdpos));
 			rdpos += sizeof(float64);
 		} else if (tags[count] == 'i') {
-			value = (float32)OSCint(rdpos);
+			value = static_cast<float32>(OSCint(rdpos));
 			rdpos += sizeof(int32);
 /*		} else if (tags[count] == 's') {
 			value = atof(rdpos);
