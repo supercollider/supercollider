@@ -44,10 +44,11 @@ SynthDef {
 		UGen.buildSynthDef = this;
 		constants = Dictionary.new;
 		constantSet = Set.new;
+		controlNames = nil;
+		controls = nil;
 	}
 	buildUgenGraph { arg func, rates, prependArgs;
 		// restart controls in case of *wrap
-		controlNames = nil;
 		prependArgs = prependArgs.asArray;
 		this.addControlsFromArgsOfFunc(func, rates, prependArgs.size);
 		^func.valueArray(prependArgs ++ this.buildControls);
@@ -59,7 +60,6 @@ SynthDef {
 		argNames = def.argNames;
 		if(argNames.isNil,{ ^nil }); 
 		names = def.argNames[skipArgs..];
-		controls = nil;
 		// OK what we do here is separate the ir, tr and kr rate arguments,
 		// create one Control ugen for all of each rate, 
 		// and then construct the argument array from combining 
