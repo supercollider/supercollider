@@ -3,10 +3,10 @@
 PlayerUnopGui : AbstractPlayerGui {
 
 	guiBody {  arg layout;
-		Label(layout,"(");
+		CXLabel(layout,"(");
 		model.operator.gui(layout);
 		model.a.gui(layout);
-		Label(layout,")");
+		CXLabel(layout,")");
 	}
 }
 
@@ -14,11 +14,11 @@ PlayerUnopGui : AbstractPlayerGui {
 PlayerBinopGui : AbstractPlayerGui {
 
 	guiBody { arg layout;
-		Label(layout,"(");
+		CXLabel(layout,"(");
 		model.a.gui(layout);
 		model.operator.gui(layout);
 		model.b.gui(layout);
-		Label(layout,")");
+		CXLabel(layout,")");
 	}
 
 }

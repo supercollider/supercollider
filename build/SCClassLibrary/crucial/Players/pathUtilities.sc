@@ -38,9 +38,17 @@
 		^obj
 	}
 	loadDocument { arg warnIfNotFound=true;
-		^Document.standardizePath(this).loadPath(warnIfNotFound)
+		var path;
+		path = Document.standardizePath(this);
+		^path.loadPath(warnIfNotFound)
+			?? {ObjectNotFound.new(path)}
 	}
-			
+	enpath {
+		^Document.abrevPath(this)
+	}
+	openDocument {
+		^Document(this).showWindow
+	}
 }
 
 + AbstractPlayer {
@@ -59,7 +67,7 @@
 
 // old style
 	*load { arg obj, warnIfNotFound=true;
-		^obj.loadDocument;
+		^obj.loadDocument(warnIfNotFound);
 	}
 	*enpath { arg obj;
 		^obj.enpath // document enpath
