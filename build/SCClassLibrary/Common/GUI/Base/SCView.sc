@@ -921,7 +921,7 @@ SCFuncUserView : SCUserView {
 SCMultiSliderView : SCView { 
 
 	var <>acceptDrag = true;
-	var <>metaAction, <>mouseEndTrackAction;
+	var <>metaAction, <>mouseUpAction;
 	var <>size ;
 	var <gap;
 	var < editable = true;
@@ -931,7 +931,7 @@ SCMultiSliderView : SCView {
 	mouseBeginTrack { arg x, y, modifiers;}
 	mouseTrack { arg x, y, modifiers; 	}
 	mouseEndTrack { arg x, y, modifiers;
-		mouseEndTrackAction.value(this);
+		mouseUpAction.value(this);
 	}
 	properties {
 		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \thumbWidth, \absoluteX, \isFilled]
