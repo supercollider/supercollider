@@ -43,9 +43,11 @@ added prRestartMIDI
 #include "SC_InlineUnaryOp.h"
 #include "SC_InlineBinaryOp.h"
 #include "PyrSched.h"
+#include "GC.h"
 
 PyrSymbol* s_domidiaction;
-PyrSymbol* s_midiNoteAction;
+PyrSymbol* s_midiNoteOnAction;
+PyrSymbol* s_midiNoteOffAction;
 PyrSymbol* s_midiTouchAction;
 PyrSymbol* s_midiControlAction;
 PyrSymbol* s_midiPolyTouchAction;
@@ -86,13 +88,13 @@ static void midiProcessPacket(MIDIPacket *pkt, int uid)
 			switch (status) {
 			case 0x80 : //noteOff
 				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-				++g->sp; SetInt(g->sp, 0); //val2 handle noteOff as a noteOn with velocity 0
-				runInterpreter(g, s_midiNoteAction, 5);
+				++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
+				runInterpreter(g, s_midiNoteOffAction, 5);
 				break;
-			case 0x90 : //noteOn s_midiNoteAction
+			case 0x90 : //noteOn 
 				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
 				++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
-				runInterpreter(g, s_midiNoteAction, 5);
+				runInterpreter(g, pkt->data[2] ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
 				break;
 			case 0xA0 : //polytouch
 				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
@@ -502,7 +504,8 @@ void initMIDIPrimitives()
         
 	s_midiin = getsym("MIDIIn");
     s_domidiaction = getsym("doAction");
-    s_midiNoteAction = getsym("doNoteAction");
+    s_midiNoteOnAction = getsym("doNoteOnAction");
+    s_midiNoteOffAction = getsym("doNoteOffAction");
     s_midiTouchAction = getsym("doTouchAction");
     s_midiControlAction = getsym("doControlAction");
     s_midiPolyTouchAction = getsym("doPolyTouchAction");
