@@ -167,7 +167,7 @@ Stream : AbstractFunction {
 	}
 	
 	play { arg clock, quant=1.0;
-		clock = clock ? SystemClock;
+		clock = clock ? TempoClock.default;
 		clock.play(this, quant);
 	}
 	
