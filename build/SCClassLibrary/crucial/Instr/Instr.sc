@@ -116,8 +116,8 @@ Instr  {
 
 	maxArgs { ^this.argsSize }
 	argsSize { ^func.def.argNames.size }
-	argNames { ^(func.def.argNames ?? {[]}).asList }
-	defArgs { ^(func.def.prototypeFrame ?? {[]}).asList }
+	argNames { ^(func.def.argNames ? []).asList }
+	defArgs { ^(func.def.prototypeFrame ? []).asList }
 
 	argNameAt { arg i; 
 		var nn;
@@ -288,8 +288,10 @@ UGenInstr { // make a virtual Instr by reading the *ar and *kr method def
 
 
 InstrSynthDef : SynthDef {
-
-	var fixedNames,fixedValues,fixedPositions;
+	
+	classvar watchedServers;
+	
+	var <fixedNames,<fixedValues,<fixedPositions;
 
 	// secret because the function doesn't see them
 	// but they are needed to pass into the synth
@@ -430,24 +432,16 @@ InstrSynthDef : SynthDef {
 //			this.addSecretKr('__tempo__',Tempo.tempo, ... )
 //		}
 //	}
-
-	*initClass {
-		// TODO make this only start when first put
-		Class.initClassTree(Server);
-		SimpleController(Server.local)
-			.put(\serverRunning,{
-				//if(Server.local.serverRunning,{
+	*initClass { watchedServers = IdentityDictionary.new }
+	*watchServer { arg server;
+		if(watchedServers.at(server).isNil,{
+			SimpleController(server)
+				.put(\serverRunning,{
 					"Clearing AbstractPlayer SynthDef cache".inform;
-					Library.put(SynthDef,Server.local,nil)
-				//})
-			});
-		SimpleController(Server.internal)
-			.put(\serverRunning,{
-				//if(Server.local.serverRunning,{
-					Library.put(SynthDef,Server.internal,nil)
-				//})
-			});
-		//will fail with other servers
+					Library.put(SynthDef,server,nil)
+				});
+			watchedServers.put(server,true);
+		});
 	}
 }
 

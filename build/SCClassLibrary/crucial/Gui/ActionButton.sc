@@ -22,7 +22,7 @@ SCViewAdapter { // SCViewHolder
 	refresh { view.refresh }
 	background_ { arg b; view.background_(b) }
 	focus { arg flag=true; view.focus(flag) }
-
+	visible_ { arg boo; view.visible = boo }
 
 	// move lower
 	font_ { arg f;

@@ -48,9 +48,7 @@ have to bundle it
 Patch : HasPatchIns  {
 		
 	var <>args,<instr;
-	var synthPatchIns,argsForSynth;
-	
-	var synthArgsIndices;
+	var synthPatchIns,<argsForSynth,<synthArgsIndices;
 	
 	var synthDef;
 	var <numChannels,<rate; // determined after making synthdef

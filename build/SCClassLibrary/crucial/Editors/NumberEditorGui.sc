@@ -23,7 +23,6 @@ NumberEditorGui : EditorGui {
 	box { arg layout;
 		var r;
 		layout=this.guify(layout);
-		//r = layout.layRight(40,17);
 		numv = SCNumberBox(layout,Rect(0,0,40,17))
 			.object_(model.poll)
 			.action_({ arg nb;
@@ -38,7 +37,6 @@ NumberEditorGui : EditorGui {
 	
 	slider { arg layout, x=100,y=15;
 		var slv,r;
-		//r = layout.layRight(x,y);
 		slv = SCSlider(layout, Rect(0,0,100,15));
 		slv.setProperty(\value,model.spec.unmap(model.poll));
 		slv.action_({arg th; 

@@ -6,6 +6,7 @@
 		var f,comp;
 		f = FlowView(this,bounds ?? { this.bounds });
 		func.value(f);
+		f.resizeToFit;
 		^f
 	}
 
@@ -32,7 +33,7 @@
 	}
 	
 	wouldExceedBottom { arg aBounds;
-		^top + aBounds.height > bounds.bottom
+		^(top + aBounds.height + margin.y) > bounds.bottom
 	}
 
 }

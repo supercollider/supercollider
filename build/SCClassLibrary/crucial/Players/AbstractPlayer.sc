@@ -266,6 +266,7 @@ AbstractPlayer : AbstractFunction  {
 			defName = def.name;
 			("loading def:" + defName).postln;
 			// InstrSynthDef watches \serverRunning to clear this
+			InstrSynthDef.watchServer(server);
 			Library.put(SynthDef,server,defName.asSymbol,true);
 		});
 	}

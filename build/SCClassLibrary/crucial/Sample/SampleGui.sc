@@ -7,7 +7,7 @@ SampleGui : ObjectGui {
 	guiBody { arg layout;
 		var xfade,r;
 
-		layout = this.guify(layout,"sample",700,500);
+		layout = this.guify(layout,Rect(0,0,700,500),"sample");
 		//layout.startRow;
 		nameG = ActionButton(layout,"pathname",{
 			this.loadDialog

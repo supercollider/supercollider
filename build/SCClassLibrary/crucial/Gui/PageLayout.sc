@@ -4,25 +4,23 @@ MultiPageLayout  {
 	classvar <>screenWidth = 900, <>screenHeight = 700; // tibook
 	classvar <>bgcolor;
 	
-	var windows,views;
+	var windows,views,margin;
 	var onBoundsExceeded='newWindow',metal;
 	var <>isClosed=false;
 	
 	var autoRemoves;
 	
-	*new { arg title,width,height ,posx,posy,hspacer,vspacer,metal=true;
-		^super.new.init(title,width ,height ,
-							posx ,posy ,hspacer ,vspacer , 
-							metal)
+	*new { arg title,bounds,margin,metal=true;
+		^super.new.init(title,bounds,margin,metal)
 	}
 	
-	init { arg title,width,height,posx,posy,arghspacer=3,argvspacer=3,argmetal=true;
-		var w;
+	init { arg title,bounds,argmargin,argmetal=true;
+		var w,v;
 		windows=windows.add
 		(	
 			w=SCWindow.new("< " ++ title.asString ++ " >",
-				Rect.new( posx ? 20, posy ? 20, width ? screenWidth, height ? screenHeight) )
-			.onClose_({  	
+						bounds ?? {Rect(20,20,screenWidth,screenHeight)})
+				.onClose_({  	
 						this.close; // close all windows in this layout
 					})
 		);
@@ -31,26 +29,43 @@ MultiPageLayout  {
 			w.view.background_(bgcolor);
 		});
 		isClosed = false;
-		views = views.add( FlowView(w ) );
+		v =  FlowView(w );
+		margin = argmargin;
+		if(margin.notNil,{
+			v.decorator.margin_(margin);
+		});
+		views = views.add(v );
 		autoRemoves = IdentitySet.new;
+	}
+	*on { arg parent,bounds,margin,metal=true;
+		^super.new.initon(parent,bounds,margin,metal)
+	}
+	initon { arg parent,bounds,argmargin,argmetal=true;
+		var r,v;
+		windows = []; // first window not under my control
+		v = FlowView(parent,bounds);
+		margin = argmargin;
+		if(margin.notNil,{
+			v.decorator.margin_(margin);
+		});
+		views = [v];
+		metal = argmetal;
+		onBoundsExceeded = \warnError;
 	}
 	
 	window { ^windows.last }
 	view { ^views.last }
 	asView { ^this.view }
-	//asView {}
 	add { arg view;
 		if(this.view.wouldExceedBottom(view.bounds),{
-			this.newWindow;
+			this.perform(onBoundsExceeded);
 		});
 		this.view.add(view);
 	}
-	asPageLayout { arg name,width,height,x,y;
+	asPageLayout { arg name,bounds;
 		if(isClosed,{
-			^this.class.new(name,width,height,x,y)
-		},{
-			^this
-		})
+			^this.class.new(name,bounds)
+		})// else this
 	}
 	startRow { 
 		this.view.startRow;
@@ -65,17 +80,15 @@ MultiPageLayout  {
 	// act like a GUIWindow 
 	checkNotClosed { ^isClosed.not }
 	front {
-		//windows.do({ arg w; w.unhide });
 		windows.reverseDo({arg w; w.front }); 
 	}
 	hide {
-		// for now
 		windows.do({ arg w; w.alpha = 0.0; })
 		//windows.do({ arg w; w.hide })
 	}
 	show {
-		//windows.do({ arg w; w.show })
 		windows.do({ arg w; w.alpha = 1.0;  })
+		//windows.do({ arg w; w.show })
 	}
 	close { // called when the GUIWindow closes
 		if(isClosed.not,{
@@ -94,16 +107,10 @@ MultiPageLayout  {
 	hr { arg color,height=8,borderStyle=1; // html joke
 		this.view.hr;
 	}
-//	tab {
-//		this.layRight(10,10);
-//	}
 	indent { arg by = 1;
 		//tabs = max(0,tabs + by);
 	}
 	layRight { arg w,h; ^Rect(0,0,w,h) }
-//	width {
-//		^margin.width - (tabs * 10)
-//	}
 
 	focus { arg index=0;
 		var first;
@@ -114,20 +121,15 @@ MultiPageLayout  {
 	//TODO remove
 	backColor { ^this.view.background }
 	backColor_ { arg c; this.view.background_(c) }
-	
 	background_ { arg b; this.view.background_(b) }
-	
 	
 	removeOnClose { arg dependant;
 		autoRemoves = autoRemoves.add(dependant);
 	}
 	
 	resizeToFit { 
-		// cascade all open windows and shrink them to contents
-		// margin is still set large
 		views.reverse.do({ arg v,vi;
 			v.resizeToFit;
-			// backwards 
 			windows.at(vi).setInnerExtent(v.bounds.width, v.bounds.height );
 		});
 	}
@@ -141,18 +143,14 @@ MultiPageLayout  {
 		windows.do({ arg w; w.endFullScreen })
 	}
 	warnError {
-		"PageLayout within a PageLayout exceeded bounds !!".warn;
+		"MultiPageLayout exceeded bounds !!".warn;
 	}
 
 	newWindow {
 		var ow;
 		ow = this.window;
 		this.init("..." ++ ow.name,
-				nil,
-				nil,
-				(ow.bounds.left + 100).wrap(0,900),
-				(ow.bounds.top+10).wrap(0,300),
-				nil,
+				ow.bounds.moveBy(50,10),
 				nil,
 				metal);
 		this.window.front;
@@ -162,13 +160,10 @@ MultiPageLayout  {
 	}
 }
 
-
-
-
 Sheet {
 	*new { arg buildDialog,name="",x=100,y=100,width=600,height=600;
 		var layout;
-		layout = MultiPageLayout(name,width,height,x,y);
+		layout = MultiPageLayout(name,Rect(x,y,width,height));
 		//layout = FlowView(nil,Rect(x,y,width,height));
 		buildDialog.value(layout);
 		layout.resizeToFit;

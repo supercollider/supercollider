@@ -7,8 +7,8 @@
 		^this.guiClass.new(this).performList(\gui,[lay] ++ args);
 	}
 	
-	topGui { arg lay; 
-		^this.guiClass.new(this).topGui(lay);
+	topGui { arg lay ... args; 
+		^this.guiClass.new(this).performList(\topGui,[lay] ++ args);
 	}
 	
 	smallGui { arg lay;
@@ -39,15 +39,31 @@
 
 + Nil {
 
-	asPageLayout { arg name,width,height,x,y,metal=false;
-		^PageLayout(name.asString,width,height,x, y, metal: metal )
+	asPageLayout { arg name,bounds,metal=false;
+		^MultiPageLayout(name.asString,bounds, metal: metal )
 	}
 	asFlowView { arg bounds;
 		^FlowView(nil,bounds)
 	}
 }
 
-
++ SCWindow {
+	asPageLayout { arg title,bounds;
+		^MultiPageLayout.on(this.asView,bounds)
+	}
+}	
++ SCContainerView {
+	asPageLayout { arg title,bounds;
+		// though it won't go multi page
+		// FlowView better ?
+		^MultiPageLayout.on(this,bounds)
+	}
+}
++ SCViewAdapter {
+	asPageLayout { arg title,bounds;
+		^MultiPageLayout.on(this,bounds)
+	}
+}	
 + SCCompositeView {
 	asFlowView { arg bounds;
 		^FlowView(this,bounds ?? {this.bounds})
@@ -59,9 +75,7 @@
 
 + FlowView {
 	asFlowView {}
-	asPageLayout {
-	
-	} // should be compatible ?
+	asPageLayout {} // should be compatible
 }
 
 + MultiPageLayout {

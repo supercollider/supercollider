@@ -1,59 +1,48 @@
 
 AbstractPlayerGui : ObjectGui { 
 	
-	gui { arg lay;
+	gui { arg lay,bounds ... args;
 		var layout;
-		if(lay.isNil,{ ^this.topGui });
-		layout=this.guify(lay);
+		layout=this.guify(lay,bounds);
+		if(lay.isNil,{ 
+			// top level controls
+			this.synthConsole(layout);
+			this.saveConsole(layout);
+			layout.startRow;
+		});
 		layout.flow({ arg layout;
 			view = layout;
 			this.writeName(layout);
 			this.guiBody(layout);
-		}).background_(Color.blue(0.5,0.1));
+		}).background_(Color.blue(0.5,0.15));
 		this.enableKeyDowns;
+		if(lay.isNil,{
+			layout.resizeToFit.front;
+			view.focus;
+		})
 	}
-	topGui { arg layout;
-		layout = this.guify(layout);
-		// top level controls
-		this.synthConsole(layout);
-		this.saveConsole(layout);
-		layout.startRow;
-		layout.flow({ arg layout;
-			view = layout;
-			this.writeName(layout,true);
-			this.guiBody(layout);
-		}).background_(Color.blue(0.5,0.1));
-		this.enableKeyDowns;
-		layout.resizeToFit.front;
-		view.focus;
-	}
+	//deprec
+	topGui { arg layout,bounds ... args;
+		^this.performList(\gui,[layout,bounds] ++ args);
+	}	
 	
-//	guify { arg layout,title,width,height;
-//		layout = layout ?? {
-//			FlowView(nil,nil ); //title ?? {model.asString.copyRange(0,50)},width,height);
-//		};
-//		layout.background = 
-//		layout.removeOnClose(this);
-//		^layout
-//	}
-
-	smallGui { arg layout;
-		layout=this.guify(layout);
+	smallGui { arg layout,bounds;
+		layout=this.guify(layout,bounds);
 		Tile(model,layout); // writes name
 	}
 	writeName { arg layout,big=false; 
 			//color it based on whether it has a .path 
 							// (was loaded from disk)
+		if(big,{
+			InspectorLink.big(model,layout);
+		},{
+			InspectorLink.new(model,layout);
+		});
 		if(model.path.notNil,{
 			ActionButton(layout,"edit",{
 				model.path.openTextFile;
 			});
 		});
-		if(big,{
-			InspectorLink.big(model,layout);
-		},{
-			InspectorLink.new(model,layout);
-		})		
 	}
 //	keyDowns {
 //		view.keyDownAction = this.keyDownResponder;

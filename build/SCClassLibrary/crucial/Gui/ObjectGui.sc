@@ -17,11 +17,13 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		model.addDependant(new);
 		^new
 	}
-	guify { arg layout,title,width,height;
-		layout = layout ?? {
+	guify { arg layout,bounds,title;
+		if(layout.isNil,{
 			//FlowView.new(nil,Rect(10,10,width,height));
-			MultiPageLayout(title ?? {model.asString.copyRange(0,50)},width,height);
-		};
+			layout = MultiPageLayout(title ?? {model.asString.copyRange(0,50)},bounds);
+		},{
+			layout = layout.asPageLayout(title,bounds);
+		});
 		layout.removeOnClose(this);
 		^layout
 	}
@@ -29,18 +31,16 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		model.removeDependant(this);
 	}
 
-	gui { arg lay ... args;
+	gui { arg lay, bounds ... args;
 		var layout;
-		layout=this.guify(lay);
+		layout=this.guify(lay,bounds);
 		this.writeName(layout);
 		this.performList(\guiBody,[layout] ++ args);
 		//if you created it, front it
-		if(lay.isNil,{ layout.front });
+		if(lay.isNil,{ layout.resizeToFit.front });
 	}
 	topGui { arg layout ... args;
-		layout=this.guify(layout);
 		this.performList(\gui,[layout] ++ args);
-		layout.resizeToFit.front;
 	}
 	
 	writeName { arg layout;

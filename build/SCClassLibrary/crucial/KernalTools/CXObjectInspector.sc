@@ -1,10 +1,8 @@
 
 CXObjectInspector : ObjectGui {
 
-	
-	guify { arg layout,title,width,height;
-		^super.guify(layout,title,width ? 800,height ? 800)
-	}
+	// guify, set bigger size
+		
 	writeName { arg layout;
 		ClassNameLabel.newBig(model.class,layout);
 		CXLabel(layout,model.asString,300,30)
