@@ -140,12 +140,18 @@ content:\
 	by sharing a common server, using SharedNodeProxy and exchanging code and comments \
 	in a chat (see Client)\
 	networking classes:	\
+			experimental:\
 			
-\f0\b [\ul PublicProxySpace\ulnone ]
-\f1\b0 	\
+\f0\b [\ul Public\ulnone ]
+\f1\b0  distribute environments over networks.\
+			
+\f0\b [\ul public_proxy_space\ulnone ] 
+\f1\b0 how to distribute a ProxySpace	\
 			[
 \f0\b \ul Client\ulnone ] 
-\f1\b0 simplifies client-to-client networking\
+\f1\b0 simplifies client-to-client networking. \
+			\
+			stable:\
 			[
 \f0\b \ul BroadcastServer
 \f1\b0 \ulnone ]\
@@ -233,7 +239,13 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 \f0\b\fs24 \cf0 RECENT CHANGES:
 \f1\b0 \
 \
-2005	march\
+2005	april\
+	networking: 	removed PublicProxySpace, added a Dispatcher class (
+\f0\b \ul Public
+\f1\b0 \ulnone )  that \
+			does the same for any EnvironmentRedirect.\
+	\
+	march\
 	pattern proxies: all can have an environment, and take functions as arguments as well.\
 		Tdef/TaskProxy take also a pattern as argument (for time streams).\
 		Tdef .
