@@ -5,8 +5,9 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 Runtime errors\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \
+\f1\b0\fs18 \cf0 \
 Runtime errors occur while a program is executing.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -37,7 +38,7 @@ Execute the following line\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 Neither the Integer class of which 3 is an instance or any of the superclasses from which Integer inherits knows what to do with a .createRuntimeError message. Obviously, .createRuntimeError isn't defined in the system. \
+\cf0 Neither the Integer class of which 3 is an instance or any of the superclasses from which Integer inherits knows what to do with a .createRuntimeError message. Obviously, .createRuntimeError isn't defined anywhere in the system. \
 \
 When an object doesn't know how to respond to a message, SuperCollider executes a .doesNotUnderstand message which leads, eventually, to a four-part error notification. The parts of the notification are ERROR, RECEIVER, ARGS, and CALL STACK, as in\
 \
@@ -120,7 +121,7 @@ is the mechanism that prints the error notification to the transcript window. Se
 \
 $a * $b\
 \
-The error is simple; characters can't be multiplied.\
+The error: Characters can't be multiplied.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
@@ -194,12 +195,14 @@ to see the classes from which Char inherits. Messages to those classes can also 
 
 \f0\b\fs24 \cf0 Unitialized variable (binary operation fails)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 The next example shows that the variable a is initialized to an integer and the variable b isn't initialized to anything. When a variable in SuperCollider isn't initialized, it defaults to nil. Which is to say that all variables, once declared, are initialized to nil unless otherwise specified. \
+\f1\b0\fs18 \cf0 The next example shows that the variable 'a' is initialized to an integer and the variable 'b' isn't initialized to anything. When a variable in SuperCollider isn't initialized, it defaults to nil. Which is to say that all variables, once declared, are initialized to nil unless otherwise specified. \
 \
-Multiplying the variable a, an integer, by the variable b, nil, produces a runtime error.\
+Multiplying the variable 'a', an integer, by the variable 'b', nil, produces a runtime error.\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 var\cf0  a = 10;	\cf2 // a is declared and initialized\cf0 \
 \cf4 var\cf0  b;		\cf2 // b declared but defaults to nil ... this will cause a runtime error\
 			// in the case of a * b\cf0 \
@@ -221,7 +224,7 @@ t.start;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
-Here's the printout that shows the program ran successfully until the index, i, reached 3, which is when a * b happened.\
+Here's the printout that shows the program ran until the index, 'i', reached 3, which is when a * b happened.\
 \
 a Task\
 0\
@@ -277,8 +280,9 @@ DoesNotUnderstandError-reportError\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 True, false, or other\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \
+\f1\b0\fs18 \cf0 \
 A runtime error happens when something that tests for a boolean receives a value other than true or false.\
 \
 For example\
@@ -332,8 +336,9 @@ if(x==4) \{ \cf5 "this is ok"\cf0 \};\
 
 \f0\b\fs24 \cf0 Primitive fails\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 Trying to determine the length of a non-existent file creates a runtime error. In this case, _FileLength, a C code primitive, fails.\
+\f1\b0\fs18 \cf0 Trying to determine the length of a non-existent file creates a runtime error. In this case, _FileLength, a C code primitive, fails.\
 \
 f = \cf4 File\cf0 (\cf5 "i_don't_exist"\cf0 , \cf5 "r"\cf0 );\
 f.length;\
