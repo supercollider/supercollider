@@ -22,6 +22,7 @@
 #import "MyDocument.h"
 #import "SCTextView.h"
 #import "SCVirtualMachine.h"
+#import "GoToPanel.h"
 #include "SCBase.h"
 
 #include <unistd.h>
@@ -38,6 +39,10 @@ bool firstWindow = true;
 bool needBlankWindow = true;
 extern NSTextView *gPostView;
 extern pthread_mutex_t gLangMutex;
+extern bool compiledOK;
+
+
+bool docCreatedFromLang = false; //if this is true addDocument is not called
 
 @implementation MyDocument
 
@@ -57,6 +62,11 @@ extern pthread_mutex_t gLangMutex;
     return aTextView;
 }
 
+- (void)addDocument
+{
+    [self sendSelection: "addDocument"];
+}
+
 - (void)windowControllerDidLoadNib:(NSWindowController*) aController
 {
     [super windowControllerDidLoadNib:aController];
@@ -68,7 +78,6 @@ extern pthread_mutex_t gLangMutex;
     } else {
         textView = [self makeTextView];
     }
-    [textView setFrameSize: contentSize];
     [scrollView setDocumentView: textView];
     [textView release];
     [textView setSelectedRange: NSMakeRange(0,0)];
@@ -90,6 +99,8 @@ extern pthread_mutex_t gLangMutex;
     NSWindow *window = [textView window];
     [window makeKeyWindow];
     [window makeFirstResponder: textView];
+	//jt: call lang..
+	if(!docCreatedFromLang)[self addDocument];
 }
 
 
@@ -508,28 +519,30 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     [localTextView setSelectedRange: range];
     [localTextView scrollRangeToVisible: range];
 }
-/*
+
 -(void)selectLine:(int)linenum
 {
     NSTextView *localTextView = [self textView];
+    NSLayoutManager *layoutManager = [localTextView layoutManager];
+    unsigned numberOfLines, index, numberOfGlyphs = [layoutManager numberOfGlyphs];
+    NSRange lineRange;
+    for (numberOfLines = 0, index = 0; index < numberOfGlyphs && numberOfLines<linenum; numberOfLines++){
     
-    unsigned int lineStart, lineEnd;
-    //count the lines ??
-    // what separator ?
-    
-    range.length = 0;
-    NSString *nsstring = [localTextView string];
-    if (!nsstring) {
-        post("text view has no string\n");
-        return errFailed;
+        (void) [layoutManager lineFragmentRectForGlyphAtIndex:index effectiveRange:&lineRange];
+            index = NSMaxRange(lineRange);
     }
-    [nsstring getLineStart: &lineStart end: &lineEnd contentsEnd: nil forRange: range];
-    range = NSMakeRange(lineStart, lineEnd - lineStart);
 
-    [localTextView setSelectedRange: range];
-    [localTextView scrollRangeToVisible: range];   
+    [localTextView setSelectedRange: lineRange];
+    [localTextView scrollRangeToVisible: lineRange];
 }
-*/
+
+//call from menu
+- (IBAction)selectLineWindow: (id) sender
+{
+	[[GoToPanel sharedInstance] orderFrontGotoLinePanel:nil];
+	
+}
+
 
 - (IBAction) showHelp: (id) sender;
 {
@@ -594,8 +607,6 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 #endif
 
-extern bool compiledOK;
-
 - (void)sendSelection: (char*) methodName
 {        
     if (!compiledOK) {
@@ -605,7 +616,7 @@ extern bool compiledOK;
 	NSRange selectedRange;
 	NSString* selection = [self currentlySelectedTextOrLine: &selectedRange];
     const char *text = [selection UTF8String];
-    
+
     [[SCVirtualMachine sharedInstance] setCmdLine: text length: selectedRange.length];
     
     NSRange newSelectedRange = NSMakeRange(selectedRange.location + selectedRange.length, 0);
@@ -614,6 +625,7 @@ extern bool compiledOK;
     pthread_mutex_lock(&gLangMutex);
     runLibrary(getsym(methodName));
     pthread_mutex_unlock(&gLangMutex);
+    
 }
 
 - (NSString *)windowNibName
@@ -720,10 +732,43 @@ extern bool compiledOK;
 {
     return (textView != gPostView);
 }
-
+extern PyrSymbol * s_didBecomeKey;
+- (void) windowDidBecomeKey:(NSNotification *)aNotification
+{
+	
+	if(!docCreatedFromLang){
+	
+	pthread_mutex_lock (&gLangMutex);
+    struct PyrObject *scobj = [self getSCObject];
+    if (scobj) {
+        SetPtr(scobj->slots + 0, self);
+        VMGlobals *g = gMainVMGlobals;
+        g->canCallOS = true;
+        ++g->sp;  SetObject(g->sp, scobj); // push window obj
+        runInterpreter(g, s_didBecomeKey, 1);
+        g->canCallOS = false;
+    }
+    pthread_mutex_unlock (&gLangMutex);
+	}
+	
+}
 - (void)windowWillClose:(NSNotification *)aNotification
 {
     if (textView == gPostView) gPostView = nil;
+	
+	pthread_mutex_lock (&gLangMutex);
+    struct PyrObject *scobj = [self getSCObject];
+    if (scobj) {
+        SetPtr(scobj->slots + 0, self);
+        VMGlobals *g = gMainVMGlobals;
+        g->canCallOS = true;
+        ++g->sp;  SetObject(g->sp, scobj); // push window obj
+        runInterpreter(g, s_closed, 1);
+        g->canCallOS = false;
+        [self setSCObject: nil];
+    }
+    pthread_mutex_unlock (&gLangMutex);
+	
 }
 
 - (IBAction) becomePostWindow: (id) sender
@@ -731,9 +776,10 @@ extern bool compiledOK;
     gPostView = textView;
 }
 
+
 - (BOOL) isDocumentEdited
 {
-	if (textView == gPostView) return false;
+	if ([self textView] == gPostView) return false;
 	return [super isDocumentEdited];
 }
 
@@ -828,6 +874,39 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 	}
 	
 	return YES;
+}
+
+- (void)setSCObject: (struct PyrObject*)inObject
+{
+    mWindowObj = inObject;
+}
+    
+- (struct PyrObject*)getSCObject
+{
+    return mWindowObj;
+}
+
+- (void) closeWindow
+{
+	[self close];
+}
+
+- (NSScrollView*) scrollView;
+{
+    return scrollView;
+}
+- (NSTextView*) initTextView;
+{
+    return initTextView;
+}
+
+- (void)setBackgroundColor:(NSColor *)color
+{
+	[[self textView] setBackgroundColor: color];
+	[[self initTextView] setBackgroundColor: color];
+	//[[self scrollView] setBackgroundColor: color];
+	[[[self textView] window] setAlphaValue: [color alphaComponent]];
+	//[window setAlphaValue: 0.0f];
 }
 
 @end
