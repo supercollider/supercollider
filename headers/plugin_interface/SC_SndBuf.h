@@ -34,7 +34,7 @@ struct SndBuf
 	int coord;	// used by fft ugens
 	void *sndfile; // used by disk i/o
 	double samplerate;
-	double ratescale; // = samplerate / world_samplerate
+	double sampledur; // = 1/ samplerate
 };
 typedef struct SndBuf SndBuf;
 

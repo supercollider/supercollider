@@ -204,6 +204,9 @@ extern "C"
 	void BufFrames_next(BufInfoUnit *unit, int inNumSamples);
 	void BufFrames_Ctor(BufInfoUnit *unit, int inNumSamples);
 
+	void BufDur_next(BufInfoUnit *unit, int inNumSamples);
+	void BufDur_Ctor(BufInfoUnit *unit, int inNumSamples);
+
 	void BufChannels_next(BufInfoUnit *unit, int inNumSamples);
 	void BufChannels_Ctor(BufInfoUnit *unit, int inNumSamples);
 
@@ -355,6 +358,7 @@ void RadiansPerSample_Ctor(Unit *unit, int inNumSamples)
 	} \
 	SndBuf *buf = unit->m_buf; \
 
+
 void BufSampleRate_next(BufInfoUnit *unit, int inNumSamples)
 {
 	SIMPLE_GET_BUF
@@ -372,56 +376,70 @@ void BufSampleRate_Ctor(BufInfoUnit *unit, int inNumSamples)
 void BufFrames_next(BufInfoUnit *unit, int inNumSamples)
 {
 	SIMPLE_GET_BUF
-	ZOUT0(0) = buf->samplerate;
+	ZOUT0(0) = buf->frames;
 }
 
 void BufFrames_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
 	unit->m_fbufnum = -1.f;
 	SIMPLE_GET_BUF
-	ZOUT0(0) = buf->samplerate;
+	ZOUT0(0) = buf->frames;
+}
+
+
+void BufDur_next(BufInfoUnit *unit, int inNumSamples)
+{
+	SIMPLE_GET_BUF
+	ZOUT0(0) = buf->frames * buf->sampledur;
+}
+
+void BufDur_Ctor(BufInfoUnit *unit, int inNumSamples)
+{
+	unit->m_fbufnum = -1.f;
+	SIMPLE_GET_BUF
+	ZOUT0(0) = buf->frames * buf->sampledur;
 }
 
 
 void BufChannels_next(BufInfoUnit *unit, int inNumSamples)
 {
 	SIMPLE_GET_BUF
-	ZOUT0(0) = buf->samplerate;
+	ZOUT0(0) = buf->channels;
 }
 
 void BufChannels_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
 	unit->m_fbufnum = -1.f;
 	SIMPLE_GET_BUF
-	ZOUT0(0) = buf->samplerate;
+	ZOUT0(0) = buf->channels;
 }
 
 
 void BufSamples_next(BufInfoUnit *unit, int inNumSamples)
 {
 	SIMPLE_GET_BUF
-	ZOUT0(0) = buf->samplerate;
+	ZOUT0(0) = buf->samples;
 }
 
 void BufSamples_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
 	unit->m_fbufnum = -1.f;
 	SIMPLE_GET_BUF
-	ZOUT0(0) = buf->samplerate;
+	ZOUT0(0) = buf->samples;
 }
 
 
 void BufRateScale_next(BufInfoUnit *unit, int inNumSamples)
 {
 	SIMPLE_GET_BUF
-	ZOUT0(0) = buf->samplerate;
+	ZOUT0(0) = buf->samplerate * unit->mWorld->mFullRate.mSampleDur;
 }
 
 void BufRateScale_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
 	unit->m_fbufnum = -1.f;
 	SIMPLE_GET_BUF
-	ZOUT0(0) = buf->samplerate;
+	ZOUT0(0) = buf->samplerate * unit->mWorld->mFullRate.mSampleDur;
 }
 
 
@@ -4544,6 +4562,7 @@ void load(InterfaceTable *inTable)
 	DefineBufInfoUnit(BufSamples);
 	DefineBufInfoUnit(BufFrames);
 	DefineBufInfoUnit(BufChannels);
+	DefineBufInfoUnit(BufDur);
 
 	DefineSimpleUnit(PlayBuf);
 	DefineSimpleUnit(RecordBuf);

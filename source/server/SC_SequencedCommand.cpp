@@ -192,7 +192,8 @@ bool BufAllocCmd::Stage2()
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	mFreeData = buf->data;
 	bufAlloc(buf, mNumChannels, mNumFrames);
-	buf->samplerate = mWorld->mSampleRate;
+	buf->samplerate = mWorld->mFullRate.mSampleRate;
+	buf->sampledur = mWorld->mFullRate.mSampleDur;
 	mSndBuf = *buf;
 	return true;
 }
@@ -411,7 +412,7 @@ bool BufAllocReadCmd::Stage2()
 	mFreeData = buf->data;
 	SCErr err = bufAlloc(buf, fileinfo.channels, mNumFrames);
 	buf->samplerate = fileinfo.samplerate;
-	buf->ratescale = fileinfo.samplerate / mWorld->mSampleRate;
+	buf->sampledur = 1. / fileinfo.samplerate;
 	//printf("bufAlloc err %d\n", err);
 	if (err) goto leave;
 	//printf("chan %d\n", buf->channels);
