@@ -47,6 +47,7 @@ void Usage()
 		"   -d <max-number-of-synth-defs>       (default %d)\n"
 		"   -m <real-time-memory-size>          (default %d)\n"
 		"   -w <number-of-wire-buffers>         (default %d)\n"
+		"   -r <number-of-random-seeds>         (default %d)\n"
 		"   -l <max-logins>                  (default %d)\n"
 		"          maximum number of named return addresses stored\n"
 		"          also maximum number of tcp connections accepted\n"
@@ -65,6 +66,7 @@ void Usage()
 		kDefaultWorldOptions.mMaxGraphDefs,
 		kDefaultWorldOptions.mRealTimeMemorySize,
 		kDefaultWorldOptions.mMaxWireBufs,
+		kDefaultWorldOptions.mNumRGens,
 		kDefaultWorldOptions.mMaxLogins
 	);
 	exit(0);

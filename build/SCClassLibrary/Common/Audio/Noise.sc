@@ -21,20 +21,24 @@
 
 RandSeed : UGen {
 	*kr { arg trig = 0.0, seed=56789;
-		^this.multiNew('control', trig, seed)
+		this.multiNew('control', trig, seed)
+		^0.0		// RandSeed has no output
 	}
 	*ir { arg trig = 0.0, seed=56789;
-		^this.multiNew('scalar', trig, seed)
+		this.multiNew('scalar', trig, seed)
+		^0.0		// RandSeed has no output
 	}
 }
 
 RandID : UGen {
 	// choose which random number generator to use for this synth .
 	*kr { arg id=0;
-		^this.multiNew('control', id)
+		this.multiNew('control', id)
+		^0.0		// RandID has no output
 	}
 	*ir { arg id=0;
-		^this.multiNew('scalar', id)
+		this.multiNew('scalar', id)
+		^0.0		// RandID has no output
 	}
 }
 
