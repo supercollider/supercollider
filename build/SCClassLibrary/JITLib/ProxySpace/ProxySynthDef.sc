@@ -2,11 +2,11 @@ ProxySynthDef : SynthDef {
 	var <>proxy;
 	*initClass {
 		//clean up
-		unixCmd("rm synthdefs/temp_proxy_def*");
+		unixCmd("rm synthdefs/temp_proxy_def_*");
 	}
 	*new { arg proxy, ugenGraphFunc;
 		var func, name, argNames, argValues;
-		name = "temp_proxy_def" + proxy.identityHash.abs + proxy.synthDefs.size;
+		name = "temp_proxy_def_" ++ proxy.identityHash.abs ++ proxy.synthDefs.size;
 		argNames = ugenGraphFunc.def.argNames;
 		argValues = ugenGraphFunc.def.prototypeFrame;
 		
