@@ -40,6 +40,10 @@ String[char] : RawArray {
 	post { _PostString }
 	postcln { "// ".post; this.postln; }
 	postc { "// ".post; this.post; }
+	
+	postf { arg ... items;  ^this.prFormat( items.collect(_.asString) ).post }
+	format { arg ... items; ^this.prFormat( items.collect(_.asString) ) }
+	prFormat { arg items; _String_Format ^this.primitiveFailed }
 
 	die { arg ... culprits; 
 		culprits.do({ arg c; c.dump });

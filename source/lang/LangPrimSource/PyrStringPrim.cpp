@@ -104,6 +104,60 @@ int prString_AsCompileString(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prString_Format(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+	
+	if (!isKindOfSlot(b, class_array)) return errWrongType;
+	
+	char *fmt = a->uos->s;
+	
+	int asize = a->uo->size;
+	int bsize = b->uo->size;
+	int csize = asize;
+	
+	PyrSlot *slots = b->uo->slots;
+	for (int i=0; i<bsize; ++i) {
+		PyrSlot *slot = slots + i;
+		if (!isKindOfSlot(slot, class_string)) return errWrongType; 
+		csize += slot->uos->size;
+	}
+	PyrString *newString = newPyrStringN(g->gc, csize, 0, true);
+	char* buf = newString->s;
+	
+	int k=0;
+	int index = 0;
+	for (int i=0; i<asize;) {
+		char ch = fmt[i++];
+		if (ch == '%') {
+			if (index < bsize) {
+				PyrString* bstring = slots[index].uos;
+				memcpy(buf+k, bstring->s, bstring->size);
+				k += bstring->size;
+				index++;
+			}
+		} else if (ch == '\\') {
+			if (i >= asize) break;
+			ch = fmt[i++];
+			switch (ch) {
+				case 'n' : ch = '\n';
+				case 'r' : ch = '\r';
+				case 't' : ch = '\t';
+				case 'f' : ch = '\f';
+				case 'v' : ch = '\v';
+			}
+			buf[k++] = ch;
+		} else {
+			buf[k++] = ch;
+		}
+	}
+	newString->size = k;
+	SetObject(a, newString);
+	return errNone;
+};
+
+
 int memcmpi(char *a, char *b, int len)
 {
 	for (int i=0; i<len; ++i) {
@@ -380,6 +434,7 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_String_Getenv", prString_Getenv, 1, 0);
     definePrimitive(base, index++, "_String_Setenv", prString_Setenv, 2, 0);
     definePrimitive(base, index++, "_String_Find", prString_Find, 4, 0);
+    definePrimitive(base, index++, "_String_Format", prString_Format, 2, 0);
 }
 
 #if _SC_PLUGINS_
