@@ -24,25 +24,21 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		layout.removeOnClose(this);
 		^layout
 	}
-	prClose {
-		[this,model].debug("prClose");
-		this.remove(false);
-	}
 	remove { arg removeView=false;
 		model.removeDependant(this);
 		if(removeView,{
-			view.remove;
+			view.remove(true);
 			view = nil;		
 		});
 	}
-	removeView {
+	/*removeView {
 		var parent;
-		this.remove;
+		this.remove(true);
 		parent = view.parent;
 		view.remove;
 		parent.refresh;
 		view = nil;
-	}
+	}*/
 
 	gui { arg lay, bounds ... args;
 		var layout;
@@ -75,12 +71,6 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 	
 	saveConsole { arg layout;
 		^SaveConsole(model,"",layout).save.saveAs.print;
-	}
-	
-	// a smaller format gui, defaults to the tileGui
-	smallGui { arg layout;
-		this.guify(layout);
-		Tile(model,layout);
 	}
 	
 }

@@ -42,5 +42,16 @@ MLIDbrowser { // MultiLevelIdentityDictionary browser
 			menu.focusOn(0);
 		})
 	}
-
+	*tree { arg ... args;
+		var onSelect;
+		if(args.size > 1,{
+			onSelect = args.pop;
+		});
+		^super.new
+			.onSelect_(onSelect ? { arg item;  item.topGui })
+			.tree
+	}
+	tree { arg layout;
+		
+	}
 }

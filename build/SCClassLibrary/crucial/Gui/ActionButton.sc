@@ -81,12 +81,30 @@ FlowView : SCLayoutView {
 		});
 	}
 	innerBounds { ^decorator.innerBounds }
-	resizeToFit {
+	resizeToFit { arg reflow = false,tryParent = false;
 		var used,new;
+
+		if(reflow,{ this.reflowAll; });
+
 		used = decorator.used;
-		super.bounds = new = this.bounds.resizeTo(used.width,used.height);
-		decorator.bounds = new;
-		// don't reflow unless asked
+		/*used = this.children.first.bounds;
+		this.children.do({ arg c;
+			used = used.union(c.bounds);
+		});
+		//new = this.clipSetBounds(used);
+		*/
+		// should respect any settings
+		//used.width = used.width.clip(this.getProperty(\minWidth),this.getProperty(\maxWidth));
+		//used.height = used.height.clip(this.getProperty(\minHeight),this.getProperty(\maxHeight));
+		
+		new = this.bounds.resizeTo(used.width,used.height);
+		super.bounds = new;
+
+		decorator.bounds = new; // if the left/top moved this buggers it
+		if(reflow,{ this.reflowAll; });
+		if(tryParent,{
+			this.parent.tryPerform(\resizeToFit,reflow,tryParent);
+		});
 		^new
 	}
 	bounds_ { arg b;
@@ -99,6 +117,15 @@ FlowView : SCLayoutView {
 		});
 	}
 	wouldExceedBottom { arg aBounds; ^decorator.wouldExceedBottom(aBounds) }
+	anyChildExceeds {
+		var r;
+		r = this.bounds;
+		^this.children.any({ arg c;
+			//[r,c.bounds,r.containsRect( c.bounds )].debug;
+			r.containsRect( c.bounds ).not
+		});
+	}
+			
 	// to replace PageLayout
 	layRight { arg x,y;
 		^Rect(0,0,x,y)
@@ -115,8 +142,10 @@ FlowView : SCLayoutView {
 		autoRemoves = nil;
 		super.prClose; // close the view		
 	}
-	indent {
-	
+	remove {
+		autoRemoves.do({ arg u; u.remove });
+		autoRemoves = nil;
+		super.remove;
 	}
 	hr { arg color,height=3,borderStyle=1; // html joke
 		this.startRow;
@@ -214,7 +243,7 @@ PopUp : ActionButton { // change to use SCPopUp
 						?? {list.value.at(initIndex).asString},
 			{b.doAction},
 			maxx,
-			13
+			17
 			)
 			.title_(title)
 			.list_(list)
@@ -259,8 +288,8 @@ ToggleButton : SCButtonAdapter {
 		offc=Color.new255(154, 205, 50);
 		onc=Color.new255(245, 222, 179);
 		view.states = [
-			[title,Color.black,onc],
-			[title,Color.black,offc]
+			[title,Color.black,layout.asView.background],
+			[title,Color.black,onc]
 		];
 		state=init;
 		view.setProperty(\value,state.binaryValue);

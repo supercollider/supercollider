@@ -13,7 +13,11 @@
 	}
 	
 	smallGui { arg  ... args;
-		^this.guiClass.new(this).performList(\smallGui,args);
+		if(this.guiClass.findMethod(\smallGui).notNil,{
+			^this.guiClass.new(this).performList(\smallGui,args);
+		},{
+			^Tile(this,args.first.asPageLayout)
+		});
 	}
 	
 	insp { arg  ... args;
@@ -137,3 +141,11 @@
 		this.which.gui(layout);
 	}
 }
+
++ Pstutter {
+	guiBody { arg layout;
+		pattern.gui(layout);
+		n.gui(layout.startRow);
+	}
+}
+
