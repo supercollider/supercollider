@@ -116,34 +116,39 @@ Server : Model {
 		set = Set.new;
 		internal = Server.new(\internal, NetAddr.new);
 		local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
-		// moved to Main-startUp
-		//local.makeWindow;
-		//internal.makeWindow;
 	}
 	sendMsg { arg ... args;
 		addr.sendBundle(nil, args);
 	}
-	sendBundle { arg time ... args;
-		addr.performList(\sendBundle, time, args);
+	sendBundle { arg time ... messages;
+		addr.performList(\sendBundle, time, messages);
+	}
+	listSendMsg { arg msg;
+		addr.sendBundle(nil,msg);
+	}
+ 	listSendBundle { arg bundle,time;
+		addr.performList(\sendBundle, [time ? this.latency] ++ bundle);
 	}
 	
+	// same as listSendBundle, but this has an extra performList call
 	sendMsgList { arg msgList, latency;
 		//"sent to server: ".post; msgList.asCompileString.postln;
 		this.performList(\sendBundle, [latency ? this.latency ] ++ msgList) 
 	}
-	// 
-	sendSynthDef { arg name;
+	
+	
+	sendSynthDef { arg name,dir="synthdefs/";
 		var file, buffer;
-		file = File("synthdefs/" ++ name ++ ".scsyndef","r");
+		file = File(dir ++ name ++ ".scsyndef","r");
 		if (file.isNil, { ^nil });
 		buffer = Int8Array.newClear(file.length);
 		file.read(buffer);
 		file.close;
 		this.sendMsg("/d_recv", buffer);
 	}
-	loadSynthDef { arg name, completionMsg;
-		this.sendMsg("/d_load", "synthdefs/" ++ name ++ ".scsyndef", 
-			completionMsg);
+	loadSynthDef { arg name, completionMsg,dir="synthdefs/";
+		this.listSendMsg(["/d_load", dir ++ name ++ ".scsyndef"]
+					.addIfNotNil(completionMsg)) 
 	}
 	//loadDir
 	
@@ -154,10 +159,12 @@ Server : Model {
 		});
 	}
 	
-	wait { arg cmdName;
+	wait { arg responseName;
 		var resp, routine;
 		routine = thisThread;
-		resp = OSCresponder(addr, cmdName, { resp.remove; routine.resume(true); });
+		resp = OSCresponder(addr, responseName, { 
+			resp.remove; routine.resume(true); 
+		});
 		resp.add;
 	}
 	addStatusWatcher {
@@ -209,7 +216,7 @@ Server : Model {
 		if (serverRunning, { "server already running".inform; ^this });
 		if (isLocal.not, { "can't boot a remote server".inform; ^this });
 		if (inProcess, { 
-			"boot in process".inform;
+			"booting internal".inform;
 			this.bootInProcess; 
 			//alive = true;
 			//this.serverRunning = true;
@@ -244,7 +251,7 @@ Server : Model {
 	}
 	*killAll {
 		// if you see Exception in World_OpenUDP: unable to bind udp socket
-		// its probably because you have  multiple servers running, left
+		// its because you have multiple servers running, left
 		// over from crashes, unexpected quits etc.
 		// you can't cause them to quit via OSC (the boot button)
 
@@ -307,12 +314,6 @@ Server : Model {
 			w.view.decorator = FlowLayout(w.view.bounds);
 		});
 		
-//		active = SCButton(w, Rect(0,0, 80, 24));
-//		active.states = [["Stopped", Color.white, Color.red(0.1)],
-//					["Booting...",Color.black,Color.yellow(0.5)],
-//					["Running", Color.black, Color.red(0.9)]];
-//		active.setProperty(\enabled,false);	
-//		if(serverRunning,{ active.setProperty(\value,2); });
 		if(isLocal,{
 			booter = SCButton(w, Rect(0,0, 50, 24));
 			booter.states = [["Boot", Color.black, Color.clear],
@@ -378,7 +379,7 @@ Server : Model {
 		w.view.decorator.nextLine;
 
 		countsViews = 
-		[
+		#[
 			"Avg CPU :", "Peak CPU :", 
 			"UGens :", "Synths :", "Groups :", "SynthDefs :"
 		].collect({ arg name, i;
