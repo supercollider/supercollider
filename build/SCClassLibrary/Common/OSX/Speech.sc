@@ -1,26 +1,28 @@
 
-Speech{
-	classvar <> wordAction, <> doneAction;
-	classvar <> initialized = false;
+Speech {
+	classvar <>wordAction, <>doneAction;
+	classvar <>initialized = false;
 
+	*setSpeechVoice { arg chan,voice;
+		_SetSpeechVoice
+	}
 	*setSpeechRate { arg chan,rate;
 		_SetSpeechRate
 	}
-	*setSpeechPitch { arg chan,rate;
+	*setSpeechPitch { arg chan,pitch;
 		_SetSpeechPitch
 	}
-	*setSpeechPitchMod { arg chan,rate;
+	*setSpeechPitchMod { arg chan,pitchMod;
 		_SetSpeechPitchMod
 	}
-	*setSpeechVoice { arg chan,rate;
-		_SetSpeechVoice
-	}
-	*setSpeechVolume { arg chan,rate;
+	*setSpeechVolume { arg chan,volume;
 		_SetSpeechVolume
 	}
 	*pause { arg chan, paused=0;
 		_SetSpeechPause
 	}
+
+	//private
 	*init { arg num= 1;
 		initialized = true;
 		this.prInitSpeech	
