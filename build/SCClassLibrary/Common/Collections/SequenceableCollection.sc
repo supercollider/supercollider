@@ -671,6 +671,7 @@ SequenceableCollection : Collection {
 	wrap { arg lo, hi; ^this.collect {|item| item.wrap(lo,hi) }  }
 	fold { arg lo, hi; ^this.collect {|item| item.fold(lo,hi) }  }
 	
+	
 	linlin { arg inMin, inMax, outMin, outMax; 
 		^this.collect {|item| item.linlin(inMin, inMax, outMin, outMax) }  
 	}
@@ -704,6 +705,12 @@ SequenceableCollection : Collection {
 		hi = hi.asCollection;
 		^this.collect({ arg ugen, i; ugen.range(lo.wrapAt(i), hi.wrapAt(i)) })
 	}
+	
+	// UGen support
+	
+	lag { arg lagTime=0.1; ^this.collect { arg item; item.lag(lagTime) } }
+	lag2 { arg lagTime=0.1; ^this.collect { arg item; item.lag2(lagTime) } }
+	lag3 { arg lagTime=0.1; ^this.collect { arg item; item.lag3(lagTime) } }
 	
 	// sorting
 	sort { arg function; 
