@@ -192,7 +192,7 @@ SimpleNumber : Number {
 //		var step, size;
 //		second = second ?? { if (this < last) { this + 1 } { this - 1 } };
 //		step = second - this;
-//		size = floor((last - this) / step).asInteger + 1;
+//		size = floor((last - this) / step + 0.001).asInteger + 1;
 //		^Array.series(size, this, step)
 	}
 }
