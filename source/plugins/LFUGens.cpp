@@ -230,44 +230,6 @@ extern "C"
 	void ADSR_Ctor(ADSR *unit);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-void DoneAction(int doneAction, Unit *unit)
-{
-	switch (doneAction) 
-	{
-		case 1 :
-			NodeRun(&unit->mParent->mNode, 0);
-			break;
-		case 2 :
-			NodeEnd(&unit->mParent->mNode);
-			break;
-		case 3 :
-		{
-			NodeEnd(&unit->mParent->mNode);
-			Node* prev = unit->mParent->mNode.mPrev;
-			if (prev) NodeEnd(prev);
-		} break;
-		case 4 : 
-		{
-			NodeEnd(&unit->mParent->mNode);
-			Node* next = unit->mParent->mNode.mNext;
-			if (next) NodeEnd(next);
-		} break;
-		case 5 : 
-		{
-			NodeEnd(&unit->mParent->mNode);
-			Node* prev = unit->mParent->mNode.mPrev;
-			if (prev && prev->mIsGroup) GroupDeleteAll((Group*)prev);
-		} break;
-		case 6 : 
-		{
-			NodeEnd(&unit->mParent->mNode);
-			Node* next = unit->mParent->mNode.mNext;
-			if (next && next->mIsGroup) GroupDeleteAll((Group*)next);
-		} break;
-	}
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -104,6 +104,22 @@ struct ZeroCrossing : public Unit
 	int32 mCounter;
 };
 
+struct Timer : public Unit
+{
+	float mLevel, m_prevfrac, m_previn;
+	int32 mCounter;
+};
+
+struct Sweep : public Unit
+{
+	float mLevel, m_previn;
+};
+
+struct Phasor : public Unit
+{
+	float mLevel, m_previn;
+};
+
 struct Peak : public Unit
 {
 	float mLevel;
@@ -200,6 +216,18 @@ void TDelay_next(TDelay *unit, int inNumSamples);
 
 void ZeroCrossing_Ctor(ZeroCrossing *unit);
 void ZeroCrossing_next_a(ZeroCrossing *unit, int inNumSamples);
+
+void Timer_Ctor(Timer *unit);
+void Timer_next_a(Timer *unit, int inNumSamples);
+
+void Sweep_Ctor(Sweep *unit);
+void Sweep_next_k(Sweep *unit, int inNumSamples);
+void Sweep_next_a(Sweep *unit, int inNumSamples);
+
+void Phasor_Ctor(Phasor *unit);
+void Phasor_next_kk(Phasor *unit, int inNumSamples);
+void Phasor_next_ak(Phasor *unit, int inNumSamples);
+void Phasor_next_aa(Phasor *unit, int inNumSamples);
 
 void Peak_Ctor(Peak *unit);
 void Peak_next_ak(Peak *unit, int inNumSamples);
@@ -401,13 +429,12 @@ void Trig_next_k(Trig *unit, int inNumSamples)
 
 void SendTrig_Ctor(SendTrig *unit)
 {
-	
-        if (INRATE(2) == calc_FullRate) {
-                    SETCALC(SendTrig_next_aka);
-		} else {
-                    SETCALC(SendTrig_next);
-        }
-        unit->m_prevtrig = 0.f;
+	if (INRATE(2) == calc_FullRate) {
+		SETCALC(SendTrig_next_aka);
+	} else {
+		SETCALC(SendTrig_next);
+	}
+	unit->m_prevtrig = 0.f;
 }
 
 void SendTrig_next(SendTrig *unit, int inNumSamples)
@@ -822,6 +849,222 @@ void ZeroCrossing_next_a(ZeroCrossing *unit, int inNumSamples)
 	unit->m_prevfrac = prevfrac;
 	unit->mLevel = level;
 	unit->mCounter = counter;	
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Timer_Ctor(Timer *unit)
+{
+	SETCALC(Timer_next_a);
+
+	unit->m_prevfrac = 0.f;
+	unit->m_previn = ZIN0(0);
+	ZOUT0(0) = unit->mLevel = 0.f;
+	unit->mCounter = 0;
+}
+
+void Timer_next_a(Timer *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float previn = unit->m_previn;
+	float prevfrac = unit->m_prevfrac;
+	float level = unit->mLevel;
+	long counter = unit->mCounter;
+	
+	LOOP(inNumSamples,
+		counter++;
+		float curin = ZXP(in);
+		if (previn <= 0.f && curin > 0.f) {
+			float frac = -previn/(curin-previn);
+			level = unit->mRate->mSampleDur * (frac + counter - prevfrac);
+			prevfrac = frac;
+			counter = 0;
+		}
+		ZXP(out) = level;
+		previn = curin;
+	);
+	
+	unit->m_previn = previn;
+	unit->m_prevfrac = prevfrac;
+	unit->mLevel = level;
+	unit->mCounter = counter;	
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Sweep_Ctor(Sweep *unit)
+{
+	if (INRATE(1) == calc_FullRate) {
+		SETCALC(Sweep_next_a);
+	} else {
+		SETCALC(Sweep_next_k);
+	}
+
+	unit->m_previn = ZIN0(0);
+	ZOUT0(0) = unit->mLevel = 0.f;
+}
+
+void Sweep_next_k(Sweep *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float rate = ZIN0(1);
+	float previn = unit->m_previn;
+	float level = unit->mLevel;
+	
+	LOOP(inNumSamples,
+		float curin = ZXP(in);
+		if (previn <= 0.f && curin > 0.f) {
+			float frac = -previn/(curin-previn);
+			level = frac * rate;
+		} else {
+			level += rate;
+		}
+		ZXP(out) = level;
+		previn = curin;
+	);
+	
+	unit->m_previn = previn;
+	unit->mLevel = level;
+}
+
+void Sweep_next_a(Sweep *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float *rate = ZIN(1);
+	float previn = unit->m_previn;
+	float level = unit->mLevel;
+	
+	LOOP(inNumSamples,
+		float curin = ZXP(in);
+		float zrate = *rate++;
+		if (previn <= 0.f && curin > 0.f) {
+			float frac = -previn/(curin-previn);
+			level = frac * zrate;
+		} else {
+			level += zrate;
+		}
+		ZXP(out) = level;
+		previn = curin;
+	);
+	
+	unit->m_previn = previn;
+	unit->mLevel = level;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Phasor_Ctor(Phasor *unit)
+{
+	if (unit->mCalcRate == calc_FullRate) {
+		if (INRATE(0) == calc_FullRate) {
+			if (INRATE(1) == calc_FullRate) {
+				SETCALC(Phasor_next_aa);
+			} else {
+				SETCALC(Phasor_next_ak);
+			}
+		} else {
+			SETCALC(Phasor_next_kk);
+		}
+	} else {
+		SETCALC(Phasor_next_ak);
+	}
+
+	unit->m_previn = ZIN0(0);
+	ZOUT0(0) = unit->mLevel = 0.f;
+}
+
+void Phasor_next_kk(Phasor *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	
+	float in        = ZIN0(0);
+	float rate      = ZIN0(1) * SAMPLEDUR;
+	float start     = ZIN0(2);
+	float end       = ZIN0(3);
+	float resetPos  = ZIN0(4);
+	
+	float previn = unit->m_previn;
+	float level  = unit->mLevel;
+	
+	if (previn <= 0.f && in > 0.f) {
+		level = resetPos;
+	}
+	LOOP(inNumSamples,
+		level = sc_wrap(level, start, end);
+		
+		ZXP(out) = level;
+		level += rate;
+	);
+	
+	unit->m_previn = in;
+	unit->mLevel = level;
+}
+
+void Phasor_next_ak(Phasor *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	
+	float *in       = ZIN(0);
+	float rate      = ZIN0(1) * SAMPLEDUR;
+	float start     = ZIN0(2);
+	float end       = ZIN0(3);
+	float resetPos  = ZIN0(4);
+	
+	float previn = unit->m_previn;
+	float level  = unit->mLevel;
+	
+	LOOP(inNumSamples,
+		float curin = ZXP(in);
+		if (previn <= 0.f && curin > 0.f) {
+			float frac = -previn/(curin-previn);
+			level = resetPos + frac * rate;
+		} else {
+			level += rate;
+		}
+		level = sc_wrap(level, start, end);
+		
+		ZXP(out) = level;
+		previn = curin;
+	);
+	
+	unit->m_previn = previn;
+	unit->mLevel = level;
+}
+
+void Phasor_next_aa(Phasor *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in       = ZIN(0);
+	float *rate     = ZIN(1);
+	float start     = ZIN0(2);
+	float end       = ZIN0(3);
+	float resetPos  = ZIN0(4);
+	
+	float previn = unit->m_previn;
+	float level = unit->mLevel;
+	float sampleDur = SAMPLEDUR;
+	
+	LOOP(inNumSamples,
+		float curin = ZXP(in);
+		float zrate = *rate++ * sampleDur;
+		if (previn <= 0.f && curin > 0.f) {
+			float frac = -previn/(curin-previn);
+			level = resetPos + frac * zrate;
+		} else {
+			level += zrate;
+		}
+		level = sc_wrap(level, start, end);
+
+		ZXP(out) = level;
+		previn = curin;
+	);
+	
+	unit->m_previn = previn;
+	unit->mLevel = level;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1301,6 +1544,9 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(PulseCount);
 	DefineSimpleUnit(TDelay);
 	DefineSimpleUnit(ZeroCrossing);
+	DefineSimpleUnit(Timer);
+	DefineSimpleUnit(Sweep);
+	DefineSimpleUnit(Phasor);
 	DefineSimpleUnit(Peak);
 	DefineSimpleUnit(MostChange);
 	DefineSimpleUnit(LeastChange);

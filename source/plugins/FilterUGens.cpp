@@ -3456,8 +3456,9 @@ void DetectSilence_next(DetectSilence* unit, int inNumSamples)
 		float val = fabs(ZXP(in)); 
 		if (val >= thresh) counter = 0;
 		else if (counter >= 0) {
-			if (++counter >= unit->mEndCounter) {
-				NodeEnd(&unit->mParent->mNode);
+			int doneAction = (int)ZIN0(3);
+			if (++counter >= unit->mEndCounter && doneAction) {
+				DoneAction(doneAction, unit);
 				SETCALC(DetectSilence_done);
 			}
 		}
