@@ -27,7 +27,7 @@ PatternProxy : Pattern {
 	source_ { arg obj; 
 		var pat;
 		pat = if(obj.isKindOf(Function)) {
-			Proutine { arg inval; loop { inval = yield(obj.valueEnvir) } };
+			Proutine { arg inval; loop { inval = embedInStream(obj.valueEnvir) } };
 		} { obj };
 		if(envir.notNil) { pat = Penvir(envir, pat, envir[\isolate] ? false) };
 		
