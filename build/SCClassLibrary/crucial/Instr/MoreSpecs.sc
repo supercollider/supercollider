@@ -252,4 +252,10 @@ ObjectSpec : Spec {
 	*new { |obj|
 		^super.newCopyArgs(obj)
 	}
+	
+	storeOn { |stream|
+		stream << "ObjectSpec(";
+		defaultControl.storeOn(stream);
+		stream << ")";
+	}
 }
