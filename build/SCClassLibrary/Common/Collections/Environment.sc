@@ -74,10 +74,7 @@ Event : Environment {
 	}
 	
 	*silent { arg time;
-		var res;
-		res = this.default;
-		res.use({ ~freq = \rest; ~delta = time });
-		^res
+		^this.default.make { ~freq = \rest; ~delta = time };
 	}
 	
 	*initClass {
