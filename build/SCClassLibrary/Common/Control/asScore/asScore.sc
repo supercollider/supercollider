@@ -5,9 +5,9 @@
 
 	}
 	
-	asScore{|numberOfEvents=100, protoEvent|
+	asScore{|maxTime=1.0, protoEvent|
 
-	^this.asScoreStreamPlayer(protoEvent).read(numberOfEvents)
+	^this.asScoreStreamPlayer(protoEvent).read(maxTime)
 	}
 }
 
