@@ -1,9 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red191\green0\blue0;
-\red0\green115\blue0;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;\red0\green0\blue255;
-}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
+\red0\green0\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs40 \cf0 Notes on MIDI support in SuperCollider
@@ -87,9 +86,10 @@ To assign a response to a particular kind of MIDI message, assign a function to 
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
-\f2\fs18 \cf2 MIDIIn\cf3 .connect;\
-\cf2 MIDIIn\cf3 .noteOn = \{ \cf2 |port, chan, note, vel|\cf3  [port, chan, note, vel].postln \}; \
-\cf2 MIDIIn\cf3 .noteOn = \cf2 nil\cf3 ;  \cf4 // stop responding\cf3 \
+\f2\fs18 \cf2 MIDIIn\cf0 .connect;\
+\cf2 MIDIIn\cf0 .noteOn = \{ \cf2 |port, chan, note, vel|\cf0  [port, chan, note, vel].postln \}; \
+\cf2 MIDIIn\cf0 .noteOn = \cf2 nil\cf0 ;  \cf3 // stop responding\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
 \f1\fs24 \cf0 \
 MIDIIn provides the responding functions with all the information coming in from CoreMIDI:\
@@ -108,12 +108,13 @@ Because these are class variables, you can have only one function assigned at on
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
-\f2\fs18 \cf3 ~noteOn = \cf2 Array\cf3 .fill(16, \cf2 IdentityDictionary\cf3 .new);\
-\cf2 MIDIIn\cf3 .noteOn = \{ \cf2 |port, chan, num, vel|\cf3  ~noteOn[chan].do(\cf2 _\cf3 .value(port, chan, num, vel)) \};\
+\f2\fs18 \cf0 ~noteOn = \cf2 Array\cf0 .fill(16, \cf2 IdentityDictionary\cf0 .new);\
+\cf2 MIDIIn\cf0 .noteOn = \{ \cf2 |port, chan, num, vel|\cf0  ~noteOn[chan].do(\cf2 _\cf0 .value(port, chan, num, vel)) \};\
 \
-   \cf4 // this function will respond only on channel 0\cf3 \
-~noteOn[0].put(\cf5 \\postNoteOn\cf3 , \{ \cf2 |port, chan, num, vel|\cf3  [port, chan, note, vel].postln \});\
-~noteOn[0].removeAt(\cf5 \\postNoteOn\cf3 );  \cf4 // stop responding\cf3 \
+   \cf3 // this function will respond only on channel 0\cf0 \
+~noteOn[0].put(\cf4 \\postNoteOn\cf0 , \{ \cf2 |port, chan, num, vel|\cf0  [port, chan, note, vel].postln \});\
+~noteOn[0].removeAt(\cf4 \\postNoteOn\cf0 );  \cf3 // stop responding\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
 \f1\fs24 \cf0 \
 The advantage of this approach over using "if" or "case" statements in the response function is that you can add and remove responses without having to change the MIDIIn function. The MIDIIn function can serve as a "hook" into another structure that distributes the MIDI events to the real responders.\
@@ -130,17 +131,17 @@ As of December 2004, there is an alternate technique to supply multiple response
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5760\tx7200\ql\qnatural
 
-\f2\fs18 \cf3 r = \cf2 Routine\cf3 (\{\
-	\cf2 var\cf3 	event;\
+\f2\fs18 \cf0 r = \cf2 Routine\cf0 (\{\
+	\cf2 var\cf0 	event;\
 	loop \{\
-		event = \cf2 MIDIIn\cf3 .waitNoteOn;\
+		event = \cf2 MIDIIn\cf0 .waitNoteOn;\
 		[event.status, event.b, event.c].postln;\
 	\}\
 \});\
-\cf0 \
-\cf3 r.stop;		\cf4 // stop responding \cf3 \
+\
+r.stop;		\cf3 // stop responding \cf0 \
 
-\f1\fs24 \cf0 \
+\f1\fs24 \
 Supported MIDI event waiting methods are:\
 \
 waitNoteOn\
@@ -153,12 +154,12 @@ waitPoly\
 You can have multiple routines assigned to the same MIDI event type. The MIDI wait method lets you specify conditions for the routine to fire based on the arguments of the corresponding MIDI responder function:\
 \
 
-\f2\fs18 \cf3 event = \cf2 MIDIIn\cf3 .waitNoteOn(\cf2 nil\cf3 , [2, 7], (0, 2..126), \{ \cf2 |vel|\cf3  vel > 50 \});\
+\f2\fs18 event = \cf2 MIDIIn\cf0 .waitNoteOn(\cf2 nil\cf0 , [2, 7], (0, 2..126), \{ \cf2 |vel|\cf0  vel > 50 \});\
 
-\f1\fs24 \cf0 \
+\f1\fs24 \
 This would respond to note on messages from any port, channels 2 and 7 only, even numbered note numbers only, and only velocity values greater than 50. \
 \
-Use caution when creating a large number of MIDI response routines with very specific conditions. For each incoming MIDI event, SuperCollider will carry over the entire list for that event type, which incurs a CPU cost. If you have 500 MIDI controller routines, and an incoming event should trigger only 2, all 500 sets of conditions have to be evaluated anyway. \
+Use caution when creating a large number of MIDI response routines with very specific conditions. For each incoming MIDI event, SuperCollider will iterate over the entire list for that event type, which incurs a CPU cost. If you have 500 MIDI controller routines, and an incoming event should trigger only 2, all 500 sets of conditions have to be evaluated. \
 \
 In that case it may be more efficient to create a smaller number of routines and evaluate some of the conditions inside routines, either using branching statements or by looking up functions inside collections.\
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
@@ -174,29 +175,29 @@ The technical problem is that every note on needs to save its synth object so th
 \f2\fs18 \cf0 s.boot;\
 \
 (\
-\cf6 var\cf0  notes, on, off;\
+\cf2 var\cf0  notes, on, off;\
 \
-\cf6 MIDIIn\cf0 .connect;\
+\cf2 MIDIIn\cf0 .connect;\
 \
-\cf3 notes = \cf2 Array\cf3 .newClear(128);  \cf4 // array has one slot per possible MIDI note\cf3 \
-\cf0 \
-on = \cf6 Routine\cf0 (\{\
-	\cf6 var\cf0  event, newNode;\
+notes = \cf2 Array\cf0 .newClear(128);  \cf3 // array has one slot per possible MIDI note\cf0 \
+\
+on = \cf2 Routine\cf0 (\{\
+	\cf2 var\cf0  event, newNode;\
 	loop \{\
-		event = \cf6 MIDIIn\cf0 .waitNoteOn;	\cf7 // all note-on events\cf0 \
-			\cf7 // play the note\cf0 \
-		newNode = \cf6 Synth\cf0 (\cf8 \\default\cf0 , [\cf8 \\freq\cf0 , event.b.midicps,\
-\cf3 			\cf5 \\amp\cf3 , event.c * 0.00315]);  \cf4 // 0.00315 approx. == 1 / 127 * 0.4\cf3 \
-\cf0 		notes.put(event.b, newNode);	\cf7 // save it to free later\cf0 \
+		event = \cf2 MIDIIn\cf0 .waitNoteOn;	\cf3 // all note-on events\cf0 \
+			\cf3 // play the note\cf0 \
+		newNode = \cf2 Synth\cf0 (\cf4 \\default\cf0 , [\cf4 \\freq\cf0 , event.b.midicps,\
+			\cf4 \\amp\cf0 , event.c * 0.00315]);  \cf3 // 0.00315 approx. == 1 / 127 * 0.4\cf0 \
+		notes.put(event.b, newNode);	\cf3 // save it to free later\cf0 \
 	\}\
 \}).play;\
 \
-off = \cf6 Routine\cf0 (\{\
-	\cf6 var\cf0  event;\
+off = \cf2 Routine\cf0 (\{\
+	\cf2 var\cf0  event;\
 	loop \{\
-		event = \cf6 MIDIIn\cf0 .waitNoteOff;\
-\cf3 			\cf4 // look up the node currently playing on this slot, and release it\cf3 \
-\cf0 		notes[event.b].set(\cf8 \\gate\cf0 , 0);\
+		event = \cf2 MIDIIn\cf0 .waitNoteOff;\
+			\cf3 // look up the node currently playing on this slot, and release it\cf0 \
+		notes[event.b].set(\cf4 \\gate\cf0 , 0);\
 	\}\
 \}).play;\
 )
@@ -249,7 +250,7 @@ There are significant limitations, discussed in the helpfile. This is not really
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
 \f3\i \cf0 dewdrop_lib
-\f1\i0  is a third party library providing a number of useful performance features, available from <\cf9 \ul http://www.dewdrop-world.net\cf0 \ulnone >. The library provides a user-extensible framework of MIDI responder classes designed for multiport, multichannel applications. \
+\f1\i0  is a third party library providing a number of useful performance features, available from <\cf5 \ul http://www.dewdrop-world.net\cf0 \ulnone >. The library provides a user-extensible framework of MIDI responder classes designed for multiport, multichannel applications. \
 \
 Among its features:\
 \
