@@ -107,7 +107,7 @@ static RendezvousClient* sharedRendezvousClient = nil;
 
 - (OSCService*)oscServiceAtIndex:(unsigned)index
 {
-	if (!(index < [oscServices count]))
+	if ((index < [oscServices count]))
 		return nil;
 	return [oscServices objectAtIndex: index];
 }
