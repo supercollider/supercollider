@@ -320,7 +320,7 @@ NodeProxy : AbstractFunction {
 	
 	sendSynthToBundle { arg bundle, sendAll=true, extraArgs;
 				var synth;
-				extraArgs = [\outIndex, outbus.index]++extraArgs;
+				extraArgs = [\out, outbus.index]++extraArgs;
 				if(sendAll, {
 					objects.do({ arg item;
 						item.playToBundle(bundle, extraArgs, group);
@@ -424,3 +424,28 @@ NodeProxy : AbstractFunction {
 	
 	
 }
+
+
+
+LibNodeProxy : NodeProxy {
+	var key;
+	*new { arg server, key;
+		var res;
+		res = this.at(server, key);
+		if(res.isNil, {
+			res = super.new(server).toLib(key);
+		});
+		^res;
+	}
+	toLib { arg key;
+		Library.put(this.class, server, key, this);
+	}
+	*at { arg server, key;
+		^Library.at(this, server, key)
+	}
+}
+
+
+
+
+
