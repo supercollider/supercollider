@@ -565,7 +565,6 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 #define GET_BUF \
 	float fbufnum  = ZIN0(0); \
 	if (fbufnum != unit->m_fbufnum) { \
-        //printf("changing buf : %f  to %f \n",unit->m_fbufnum,fbufnum); \
 		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
 		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
