@@ -133,6 +133,15 @@ MultiPageLayout  {
 			windows.at(vi).setInnerExtent(v.bounds.width, v.bounds.height );
 		});
 	}
+	fullScreen {
+		windows.reverse.do({ arg w;
+			w.bounds = SCWindow.screenBounds;
+				// .fullScreen   issues
+		});
+	}
+	endFullScreen {
+		windows.do({ arg w; w.endFullScreen })
+	}
 	warnError {
 		"PageLayout within a PageLayout exceeded bounds !!".warn;
 	}
