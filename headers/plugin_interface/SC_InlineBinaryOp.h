@@ -298,7 +298,7 @@ inline double sc_amclip(double a, double b)
 	return a * 0.5 * (b + fabs(b));
 }
 
-const float kFSQRT2M1 = sqrt(2.) - 1.;
+const float kFSQRT2M1 = static_cast<float32>(sqrt(2.) - 1.);
 const double kDSQRT2M1 = sqrt(2.) - 1.;
 
 inline float sc_hypotx(float x, float y)
@@ -325,7 +325,9 @@ inline double sc_hypotx(double x, double y)
 	return x + y - kDSQRT2M1 * minxy;
 }
 
+#ifndef SC_WIN32
 #pragma mark -
+#endif //SC_WIN32
 
 
 inline int sc_div(int a, int b) 
@@ -466,7 +468,9 @@ inline int sc_trunc(int x, int quant)
 	return quant==0 ? x : sc_div(x, quant) * quant;
 }
 
+#ifndef SC_WIN32
 #pragma mark -
+#endif //SC_WIN32
 
 #if 0
 
