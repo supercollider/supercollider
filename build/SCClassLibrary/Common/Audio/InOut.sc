@@ -136,7 +136,7 @@ AbstractOut : UGen {
  		numZeroes = array.count({ arg item; item == 0.0 });
  		if (numZeroes == 0, { ^array });
  		
- 		silentChannels = Silent.ar(numZeroes);
+ 		silentChannels = Silent.ar(numZeroes).asCollection;
  		array.do({ arg item, i; 
  			if (item == 0.0, { 
  				array.put(i, silentChannels.at(pos)); 
