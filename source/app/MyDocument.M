@@ -470,16 +470,16 @@ void SyntaxColorize(NSTextView* textView);
 
 #else
 
-NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile, NSString* extension)
+NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile, NSString* extension, NSString* helpFolderPath)
 {
     // The place to start looking
-    NSString* helpFolderPath = [NSString stringWithFormat: @"%@/Help/",
+    if(!helpFolderPath) { helpFolderPath = [NSString stringWithFormat: @"%@/Help/",
 		    [fileManager currentDirectoryPath]];
-
+	}
     // the name of the help file we are looking for 
     NSString* helpFileName;
        
-    // substitute for - or /
+    // substitute for - or / as these are not valid UNIX filenames
     if([desiredHelpFile isEqual: @"-"]) {
     	helpFileName = [NSString stringWithFormat: @"%@%@", @"subtraction", extension];
     } else if([desiredHelpFile isEqual: @"/"]) {
@@ -492,15 +492,23 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     NSString* helpFilePath = nil;
     NSDirectoryEnumerator* dirEnumerator = [fileManager enumeratorAtPath:helpFolderPath];
     NSString* candidate;
+	NSString* fullName;
     while (candidate = [dirEnumerator nextObject]) {
-        if([[candidate lastPathComponent] isEqualToString:helpFileName]) {
-            helpFilePath = [helpFolderPath stringByAppendingString: candidate];
+		fullName = [helpFolderPath stringByAppendingString: candidate];
+		if([[candidate lastPathComponent] isEqualToString:helpFileName]) {
+            helpFilePath = fullName;
             break;
-        }
+        } else if // if that didn't work, check if this is a directory symlink
+		(([[fileManager fileAttributesAtPath: fullName traverseLink: NO] objectForKey:@"NSFileType"] == NSFileTypeSymbolicLink) && ([[candidate pathExtension] isEqualToString: @""])){
+			// if so traverse the link and call helpFileWithName() recursively
+			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, [[fullName stringByResolvingSymlinksInPath] stringByAppendingString: @"/"]);
+			if(helpFilePath) break;
+		}
     }
 
     return helpFilePath;
 }
+
 
 - (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange
 {
@@ -973,30 +981,30 @@ NSString* pathOfHelpFileFor(NSString* selection)
     NSFileManager* fileManager = [NSFileManager defaultManager];
     if (!fileManager) return helpFilePath; // == NULL
 
-    helpFilePath = helpFileWithName(fileManager, selection, @".help.rtf");
+    helpFilePath = helpFileWithName(fileManager, selection, @".help.rtf", nil);
 	if (helpFilePath) return helpFilePath;
 	
-	helpFilePath = helpFileWithName(fileManager, selection, @".rtf");
+	helpFilePath = helpFileWithName(fileManager, selection, @".rtf", nil);
 	if (helpFilePath) return helpFilePath;
 
-	helpFilePath = helpFileWithName(fileManager, selection, @".help");
+	helpFilePath = helpFileWithName(fileManager, selection, @".help", nil);
 	if (helpFilePath) return helpFilePath;
 	
-	helpFilePath = helpFileWithName(fileManager, selection, @".sc");
+	helpFilePath = helpFileWithName(fileManager, selection, @".sc", nil);
 	if (helpFilePath) return helpFilePath;
 
-	helpFilePath = helpFileWithName(fileManager, selection, @".rtfd");
+	helpFilePath = helpFileWithName(fileManager, selection, @".rtfd", nil);
 	if (helpFilePath) return helpFilePath;
 
         
         // support for html help files
-        helpFilePath = helpFileWithName(fileManager, selection, @".htm");
+        helpFilePath = helpFileWithName(fileManager, selection, @".htm", nil);
 	if (helpFilePath) return helpFilePath;
         
-        helpFilePath = helpFileWithName(fileManager, selection, @".html");
+        helpFilePath = helpFileWithName(fileManager, selection, @".html", nil);
 	if (helpFilePath) return helpFilePath;
                                 // special case for html files where link contains file suffix
-	helpFilePath = helpFileWithName(fileManager, selection, @"");
+	helpFilePath = helpFileWithName(fileManager, selection, @"", nil);
 	if (helpFilePath) return helpFilePath;
 
     return helpFilePath; // possibly == NULL
@@ -1010,7 +1018,7 @@ void showHelpFor(NSString* selection)
 	
     NSString *helpFilePath = pathOfHelpFileFor(selection);
     if(!helpFilePath) { // none found
-        helpFilePath = helpFileWithName([NSFileManager defaultManager], @"Help", @".help.rtf");
+        helpFilePath = helpFileWithName([NSFileManager defaultManager], @"Help", @".help.rtf", nil);
         if(!helpFilePath) { // not even Help.help ?
             post("\nCan't find help for '%s'\n", [selection cString]);
             return;
