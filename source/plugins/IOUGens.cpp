@@ -40,6 +40,7 @@ struct XOut : public IOUnit
 struct OffsetOut : public IOUnit
 {
 	float *m_saved;
+	bool m_empty;
 };
 
 const int kMaxLags = 16;
@@ -969,10 +970,21 @@ void OffsetOut_next_a(OffsetOut *unit, int inNumSamples)
 	for (int i=0; i<numChannels; ++i, out+=bufLength, saved += offset) {
 		float *in = IN(i+1);
 		if (touched[i] == bufCounter) {
-			Accum(offset, out, saved);
+			if (unit->m_empty) {
+				unit->m_empty = false;
+				Print("touched offset %d\n", offset);
+			} else {
+				Accum(offset, out, saved);
+			}
 			Accum(remain, out + offset, in);
 		} else {
-			Copy(offset, out, saved);
+			if (unit->m_empty) {
+				Clear(offset, out);
+				unit->m_empty = false;
+				Print("untouched offset %d\n", offset);
+			} else {
+				Copy(offset, out, saved);
+			}
 			Copy(remain, out + offset, in);
 			touched[i] = bufCounter;
 		}
@@ -994,6 +1006,7 @@ void OffsetOut_Ctor(OffsetOut* unit)
 	int numChannels = unit->mNumInputs - 1;
 
 	unit->m_saved = (float*)RTAlloc(unit->mWorld, offset * numChannels * sizeof(float));
+	unit->m_empty = true;
 	//Print("<-Out_Ctor\n");
 }
 
