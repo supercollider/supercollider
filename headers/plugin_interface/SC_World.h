@@ -73,6 +73,12 @@ struct World
 	int mSampleOffset; // offset in the buffer of current event time.
 	
 	SC_Lock* mNRTLock;
+	
+	int mNumScopeBufs;
+	struct ScopeBuf *mScopeBufs;
+	
+	int mNumSharedControls;
+	float *mSharedControls;
 };
 
 inline SndBuf* World_GetBuf(struct World *inWorld, int index)

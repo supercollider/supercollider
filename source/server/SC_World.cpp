@@ -35,6 +35,7 @@
 #include "SC_Prototypes.h"
 #include "SC_Samp.h"
 #include "SC_ComPort.h"
+#include "SC_ScopeBuf.h"
 
 InterfaceTable gInterfaceTable;
 extern HashTable<struct UnitDef, Malloc> *gUnitDefLib;
@@ -99,6 +100,7 @@ void InterfaceTable_Init()
 
 void initialize_library();
 void initializeScheduler();
+void World_InitScopeBufs(World *world);
 
 World* World_New(WorldOptions *inOptions)
 {	
@@ -114,12 +116,11 @@ World* World_New(WorldOptions *inOptions)
 		}
 	
 		
-		world = (World*)malloc(sizeof(World));
-		memset(world, 0, sizeof(World));
+		world = (World*)calloc(sizeof(World), 1);
 		
 		printf("World_Init %08X\n", (int)world);
-		world->hw = (HiddenWorld*)malloc(sizeof(HiddenWorld));
-		memset(world->hw, 0, sizeof(HiddenWorld));
+		world->hw = (HiddenWorld*)calloc(sizeof(HiddenWorld), 1);
+
 		world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
 		world->hw->mQuitProgram = new SC_Semaphore(0);
 	
@@ -128,7 +129,7 @@ World* World_New(WorldOptions *inOptions)
 		HiddenWorld *hw = world->hw;
 		hw->mGraphDefLib = new HashTable<GraphDef, Malloc>(&gMalloc, inOptions->mMaxGraphDefs, false);
 		hw->mNodeLib = new IntHashTable<Node, AllocPool>(hw->mAllocPool, inOptions->mMaxNodes, false);
-		hw->mUsers = (ReplyAddress*)malloc(inOptions->mMaxLogins * sizeof(ReplyAddress));
+		hw->mUsers = (ReplyAddress*)calloc(inOptions->mMaxLogins * sizeof(ReplyAddress), 1);
 		hw->mNumUsers = 0;
 		hw->mMaxUsers = inOptions->mMaxLogins;
 		
@@ -143,27 +144,26 @@ World* World_New(WorldOptions *inOptions)
 		world->mNumControlBusChannels = inOptions->mNumControlBusChannels;
 		world->mNumInputs = inOptions->mNumInputBusChannels;
 		world->mNumOutputs = inOptions->mNumOutputBusChannels;
+		
+		world->mNumScopeBufs = inOptions->mNumScopeBufs;
+		world->mScopeBufs = inOptions->mScopeBufs;
+		
+		world->mNumSharedControls = inOptions->mNumSharedControls;
+		world->mSharedControls = inOptions->mSharedControls;
 
 		int numsamples = world->mBufLength * world->mNumAudioBusChannels;
-		size_t audiobussize = numsamples * sizeof(float);
-		world->mAudioBus = (float*)malloc(audiobussize);
+		world->mAudioBus = (float*)calloc(numsamples, sizeof(float));
 
-		size_t controlbussize = world->mNumControlBusChannels * sizeof(float);
-		world->mControlBus = (float*)malloc(controlbussize);
+		world->mControlBus = (float*)calloc(world->mNumControlBusChannels, sizeof(float));
+		world->mSharedControls = (float*)calloc(world->mNumSharedControls, sizeof(float));
 		
-		world->mAudioBusTouched = (int32*)malloc(inOptions->mNumAudioBusChannels * sizeof(int32));
-		world->mControlBusTouched = (int32*)malloc(inOptions->mNumControlBusChannels * sizeof(int32));
+		world->mAudioBusTouched = (int32*)calloc(inOptions->mNumAudioBusChannels, sizeof(int32));
+		world->mControlBusTouched = (int32*)calloc(inOptions->mNumControlBusChannels, sizeof(int32));
 		
 		world->mNumSndBufs = inOptions->mNumBuffers;
-		size_t sndbufsize = world->mNumSndBufs * sizeof(SndBuf);
-		world->mSndBufs = (SndBuf*)malloc(sndbufsize);
-		world->mSndBufsNonRealTimeMirror = (SndBuf*)malloc(sndbufsize);
-		
-		memset(world->mAudioBus, 0, audiobussize);
-		memset(world->mControlBus, 0, controlbussize);
-		memset(world->mSndBufs, 0, sndbufsize);
-		memset(world->mSndBufsNonRealTimeMirror, 0, sndbufsize);
-		
+		world->mSndBufs = (SndBuf*)calloc(world->mNumSndBufs, sizeof(SndBuf));
+		world->mSndBufsNonRealTimeMirror = (SndBuf*)calloc(world->mNumSndBufs, sizeof(SndBuf));
+				
 		GroupNodeDef_Init();
 		
 		world->mTopGroup = Group_New(world, 0);
@@ -250,6 +250,8 @@ void World_SetSampleRate(World *inWorld, double inSampleRate)
 	Rate_Init(&inWorld->mFullRate, inSampleRate, inWorld->mBufLength);
 	Rate_Init(&inWorld->mBufRate, inSampleRate / inWorld->mBufLength, 1);
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -531,9 +533,8 @@ SCErr bufAlloc(SndBuf* buf, int numChannels, int numFrames)
 	size_t size = numSamples * sizeof(float);
 	//printf("bufAlloc b %ld  s %ld  f %d  c %d\n", size, numSamples, numFrames, numChannels);
 	
-	buf->data = (float*)malloc(size);
+	buf->data = (float*)calloc(size, 1);
 	if (!buf->data) return kSCErr_Failed;
-	memset(buf->data, 0, size);
 	
 	buf->channels = numChannels;
 	buf->frames   = numFrames;

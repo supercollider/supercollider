@@ -36,21 +36,27 @@ struct WorldOptions
 	int mNumControlBusChannels;
 	int mBufLength;
 	int mRealTimeMemorySize;
+	
+	int mNumScopeBufs;
+	struct ScopeBuf *mScopeBufs;
+
+	int mNumSharedControls;
+	float *mSharedControls;
 };
 
 const WorldOptions kDefaultWorldOptions = 
 {
-	0,1024,64,1024,1024,64,128,2,2,4096,64,2048
+	0,1024,64,1024,1024,64,128,2,2,4096,64,2048, 0,0,0,0
 };
 
 #include "SC_Reply.h"
 
 extern "C" {
-struct World* World_New(WorldOptions *inOptions);
-void World_OpenUDP(struct World *inWorld, int inPort);
-void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
-void World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
-void World_WaitForQuit(struct World *inWorld);
+	struct World* World_New(WorldOptions *inOptions);
+	void World_OpenUDP(struct World *inWorld, int inPort);
+	void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
+	void World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
+	void World_WaitForQuit(struct World *inWorld);
 }
 
 #endif

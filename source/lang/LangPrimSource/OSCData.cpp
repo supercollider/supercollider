@@ -38,8 +38,17 @@
 #include "sc_msg_iter.h"
 #include "SC_ComPort.h"
 #include "SC_WorldOptions.h"
+#include "SC_ScopeBuf.h"
 
-struct World *gLocalSynthServer = 0;
+struct LocalSynthServerGlobals
+{
+	struct World *mWorld;
+	int mNumScopeBufs;
+	ScopeBuf *mScopeBufs;
+	int mNumSharedControls;
+	float *mSharedControls;
+};
+LocalSynthServerGlobals gLocalSynthServer = { 0, 0, 0, 0, 0 };
 
 SC_UdpInPort* gUDPport = 0;
 
@@ -232,8 +241,8 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr)
 		if (err) return err;
 		
 		if (addr == 0) {
-			if (gLocalSynthServer) {
-				World_SendPacket(gLocalSynthServer, msglen, bufptr, &localServerReplyFunc);
+			if (gLocalSynthServer.mWorld) {
+				World_SendPacket(gLocalSynthServer.mWorld, msglen, bufptr, &localServerReplyFunc);
 			}
 			return errNone;
 		}
@@ -556,11 +565,11 @@ int prExit(VMGlobals *g, int numArgsPushed)
 int prBootInProcessServer(VMGlobals *g, int numArgsPushed);
 int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp;
+	//PyrSlot *a = g->sp;
 	
-	if (!gLocalSynthServer) {
+	if (!gLocalSynthServer.mWorld) {
 		WorldOptions options = kDefaultWorldOptions;
-		gLocalSynthServer = World_New(&options);
+		gLocalSynthServer.mWorld = World_New(&options);
 	}
 	return errNone;
 }
@@ -578,9 +587,9 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	
-	if (gLocalSynthServer) {
-		World *world = gLocalSynthServer;
-		gLocalSynthServer = 0;
+	if (gLocalSynthServer.mWorld) {
+		World *world = gLocalSynthServer.mWorld;
+		gLocalSynthServer.mWorld = 0;
 		
         pthread_t thread;
         pthread_create(&thread, NULL, wait_for_quit, (void*)world);
@@ -591,6 +600,116 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 }
 
 
+int prAllocScopeBufs(VMGlobals *g, int numArgsPushed);
+int prAllocScopeBufs(VMGlobals *g, int numArgsPushed)
+{
+	//PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+	
+	if (gLocalSynthServer.mWorld) {
+		post("can't allocate while internal server is running\n");
+		return errNone;
+	}
+	if (gLocalSynthServer.mScopeBufs) {
+		for (int i=0; i<gLocalSynthServer.mNumScopeBufs; ++i) {
+			free(gLocalSynthServer.mScopeBufs[i].data);
+		}
+		free(gLocalSynthServer.mScopeBufs);
+		gLocalSynthServer.mNumScopeBufs = 0;
+		gLocalSynthServer.mScopeBufs = 0;
+	}
+	int numScopeBufs;
+	int err = slotIntVal(b, &numScopeBufs);
+	if (err) return err;
+
+	int numScopeFrames;
+	err = slotIntVal(c, &numScopeFrames);
+	if (err) return err;
+
+	if (numScopeBufs <= 0 || numScopeFrames <= 0) {
+		return errNone;
+	}
+	gLocalSynthServer.mNumScopeBufs = numScopeBufs;
+	gLocalSynthServer.mScopeBufs = (ScopeBuf*)calloc(gLocalSynthServer.mNumScopeBufs, sizeof(ScopeBuf));
+	int scopeDataSize = numScopeFrames * sizeof(ScopeFrame);
+	for (int i=0; i<gLocalSynthServer.mNumScopeBufs; ++i) {
+		ScopeBuf *buf = gLocalSynthServer.mScopeBufs + i;
+		buf->zoom = 1.;
+		buf->width = 256;
+		buf->size = numScopeFrames;
+		buf->data = calloc(numScopeFrames, sizeof(ScopeFrame));
+	}
+	
+	return errNone;
+}
+
+int prAllocSharedControls(VMGlobals *g, int numArgsPushed);
+int prAllocSharedControls(VMGlobals *g, int numArgsPushed)
+{
+	//PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+	
+	if (gLocalSynthServer.mWorld) {
+		post("can't allocate while internal server is running\n");
+		return errNone;
+	}
+	if (gLocalSynthServer.mSharedControls) {
+		free(gLocalSynthServer.mSharedControls);
+		gLocalSynthServer.mNumSharedControls = 0;
+		gLocalSynthServer.mSharedControls = 0;
+	}
+	int numSharedControls;
+	int err = slotIntVal(b, &numSharedControls);
+	if (err) return err;
+	if (numSharedControls <= 0) return errNone;
+	
+	gLocalSynthServer.mNumSharedControls = numSharedControls;
+	gLocalSynthServer.mSharedControls = (float*)calloc(numSharedControls, sizeof(float));
+	
+	return errNone;
+}
+
+
+int prGetSharedControl(VMGlobals *g, int numArgsPushed);
+int prGetSharedControl(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+	
+	int index;
+	int err = slotIntVal(b, &index);
+	if (err) return err;
+	if (index < 0 || index >= gLocalSynthServer.mNumSharedControls) {
+		SetFloat(a, 0.);
+		return errNone;
+	}
+	float val = gLocalSynthServer.mSharedControls[index];
+	SetFloat(a, val);
+	return errNone;
+}
+
+int prSetSharedControl(VMGlobals *g, int numArgsPushed);
+int prSetSharedControl(VMGlobals *g, int numArgsPushed)
+{
+	//PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+	
+	int index;
+	int err = slotIntVal(b, &index);
+	if (err) return err;
+	
+	float val;
+	err = slotFloatVal(c, &val);
+	if (err) return err;
+	
+	if (index < 0 || index >= gLocalSynthServer.mNumSharedControls) {
+		return errNone;
+	}
+	gLocalSynthServer.mSharedControls[index] = val;
+	return errNone;
+}
 
 void init_OSC_primitives();
 void init_OSC_primitives()
@@ -608,7 +727,12 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);	
 	definePrimitive(base, index++, "_Exit", prExit, 1, 0);	
 	definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);	
-	definePrimitive(base, index++, "_QuitInProcessServer", prQuitInProcessServer, 1, 0);	
+	definePrimitive(base, index++, "_QuitInProcessServer", prQuitInProcessServer, 1, 0);
+		
+	definePrimitive(base, index++, "_AllocScopeBufs", prAllocScopeBufs, 3, 0);	
+	definePrimitive(base, index++, "_AllocSharedControls", prAllocSharedControls, 2, 0);	
+	definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);	
+	definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);	
 
 	//post("initOSCRecs###############\n");
 	s_call = getsym("call");
@@ -617,4 +741,5 @@ void init_OSC_primitives()
 	s_recvoscbndl = getsym("recvOSCbundle");
 	s_netaddr = getsym("NetAddr");
 }
+
 

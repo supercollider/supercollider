@@ -72,16 +72,6 @@ Server : Model {
 		resp = OSCresponder(addr, cmdName, { resp.remove; routine.resume(true); });
 		resp.add;
 	}
-		
-	
-	bootInProcess {
-		_BootInProcessServer
-		^this.primitiveFailed
-	}
-	quitInProcess {
-		_QuitInProcessServer
-		^this.primitiveFailed
-	}
 	
 	cmdLineOptions {
 		var o;
@@ -146,6 +136,34 @@ Server : Model {
 	firstPrivateBus { // after the outs and ins
 		^this.numOutputBusChannels + this.numInputBusChannels
 	}
+
+		
+	// internal server commands
+	bootInProcess {
+		_BootInProcessServer
+		^this.primitiveFailed
+	}
+	quitInProcess {
+		_QuitInProcessServer
+		^this.primitiveFailed
+	}
+	allocSharedControls { arg numControls;
+		_AllocSharedControls
+		^this.primitiveFailed
+	}
+	allocScopeBufs { arg numScopeBufs=16, size=1024;
+		_AllocSharedControls
+		^this.primitiveFailed
+	}
+	setSharedControl { arg num, value;
+		_SetSharedControl
+		^this.primitiveFailed
+	}
+	getSharedControl { arg num;
+		_GetSharedControl
+		^this.primitiveFailed
+	}
+	////
 	
 	makeWindow {
 		var w, b0, b1, b2, b3, aliveThread;

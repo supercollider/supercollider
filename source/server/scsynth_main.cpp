@@ -37,7 +37,6 @@ void Usage()
 		"supercollider_synth  options:\n"
 		"   -u <udp-port-number>    a port number 0-65535\n"
 		"   -t <tcp-port-number>    a port number 0-65535\n"
-		//"   -v <name-of-output-device>         a device name\n"
 		"   -c <number-of-control-bus-channels> (default %d)\n"
 		"   -a <number-of-audio-bus-channels>   (default %d)\n"
 		"   -i <number-of-input-bus-channels>   (default %d)\n"
