@@ -14,8 +14,7 @@ ProxySynthDef : SynthDef {
 	
 	*new { arg name, func, rates, prependArgs, makeFadeEnv=true, channelOffset=0, chanConstraint;
 		var def, rate, numChannels, output, isScalar, envgen, canFree, hasOwnGate;
-		var hasGateArg=false, hasOutArg=false;
-		name = "temp__" ++ name;		
+		var hasGateArg=false, hasOutArg=false;		
 		def = super.new(name, { 
 			var  out, outCtl;
 			
