@@ -160,7 +160,7 @@ SimpleNumber : Number {
 			(outMax - outCenter) * ratio + outCenter
 		} {
 			ratio = (this - inCenter) / (inMin - inCenter);
-			(outCenter - outCenter) * ratio + outCenter
+			(outMin - outCenter) * ratio + outCenter
 		}
 	} 
 
