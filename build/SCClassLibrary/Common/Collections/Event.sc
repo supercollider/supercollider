@@ -12,8 +12,11 @@ Event : Environment {
 	*default {
 		^Event.new(8, nil, defaultParentEvent, true);
 	}
-	*silent { arg time;
-		^Event.new(8, nil, parentEvents.silentEvent, true).put(\dur, time);
+	*silent { arg time = 1.0;
+		var res;
+		res = Event.new(8, nil, parentEvents.silentEvent, true);
+		res.use { ~dur = time; ~play = #{} };
+		^res
 	}
 	
 	next { ^this.copy }
