@@ -357,6 +357,13 @@ SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 			if (!graph) return kSCErr_NodeNotFound;
 			Node_AddAfter(&graph->mNode, afterThisNode);
 		} break;
+		case 4 : {
+			Node *replaceThisNode = World_GetNode(inWorld, addTargetID);
+			if (!replaceThisNode) return kSCErr_NodeNotFound;
+			graph = (Graph*)Node_New(inWorld, &def->mNodeDef, nodeID, &msg);
+			if (!graph) return kSCErr_NodeNotFound;
+			Node_Replace(&graph->mNode, replaceThisNode);
+		} break;
 		default: return kSCErr_Failed;
 	}
 	Node_StateMsg(&graph->mNode, kNode_Go);
@@ -403,6 +410,13 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 				newGroup = Group_New(inWorld, newGroupID);
 				if (!newGroup) return kSCErr_Failed;
 				Node_AddAfter(&newGroup->mNode, afterThisNode);
+			} break;
+			case 4 : {
+				Node *replaceThisNode = World_GetNode(inWorld, addTargetID);
+				if (!replaceThisNode) return kSCErr_NodeNotFound;
+				newGroup = Group_New(inWorld, newGroupID);
+				if (!newGroup) return kSCErr_Failed;
+				Node_Replace(&newGroup->mNode, replaceThisNode);
 			} break;
 			default: return kSCErr_Failed;
 		}

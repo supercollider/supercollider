@@ -113,6 +113,7 @@ void Node_Remove(struct Node* s);
 void Node_Delete(struct Node* inNode);
 void Node_AddAfter(struct Node* s, struct Node *afterThisOne);
 void Node_AddBefore(struct Node* s, struct Node *beforeThisOne);
+void Node_Replace(struct Node* s, struct Node *replaceThisOne);
 void Node_SetControl(Node* inNode, int inIndex, float inValue);
 void Node_SetControl(Node* inNode, int32 *inName, int inIndex, float inValue);
 void Node_MapControl(Node* inNode, int inIndex, int inBus);

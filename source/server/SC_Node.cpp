@@ -114,6 +114,23 @@ void Node_AddBefore(Node* s, Node *beforeThisOne)
 	beforeThisOne->mPrev = s;
 }
 
+void Node_Replace(Node* s, Node *replaceThisOne) 
+{
+	if (!replaceThisOne->mParent) return; // failed
+	
+	s->mParent = replaceThisOne->mParent;
+	s->mPrev = replaceThisOne->mPrev;
+	s->mNext = replaceThisOne->mNext;
+	
+	if (!replaceThisOne->mPrev) s->mParent->mHead = s;
+	if (!replaceThisOne->mNext) s->mParent->mTail = s;
+	
+    replaceThisOne->mPrev = replaceThisOne->mNext = 0;
+    replaceThisOne->mParent = 0;
+
+	Node_Delete(replaceThisOne);
+}
+
 // set a node's control so that it reads from a control bus - index argument
 void Node_MapControl(Node* inNode, int inIndex, int inBus)
 {

@@ -62,6 +62,9 @@ void Graph_Dtor(Graph *inGraph)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+void Graph_FirstCalc(Graph *inGraph);
+
+
 void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter *msg)
 {	
 	//scprintf("->Graph_Ctor\n");
@@ -79,7 +82,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	memory += inGraphDef->mUnitsAllocSize;
 
 	// set calc func
-	graph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_Calc;
+	graph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_FirstCalc;
 	
 	// allocate wires
 	graph->mNumWires = inGraphDef->mNumWires;
@@ -138,7 +141,6 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	//scprintf("initialize units\n");
 	float *bufspace = inWorld->hw->mWireBufSpace;
 	int wireCtr=inGraphDef->mNumConstants;
-	int calcCtr=0;
 	for (int i=0; i<graph->mNumUnits; ++i) {
 		// construct unit from spec
 		UnitSpec *unitSpec = inGraphDef->mUnitSpecs + i;
@@ -180,13 +182,41 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 			unit->mOutput[j] = wire;
 			unit->mOutBuf[j] = wire->mBuffer;
 		}
-		
-		(*unit->mUnitDef->mUnitCtorFunc)(unit);
-		if (unit->mCalcRate != calc_Scalar) {
-			graph->mCalcUnits[calcCtr++] = unit;
-		}
 	}
 	inGraphDef->mRefCount ++ ;
+}
+
+void Graph_FirstCalc(Graph *inGraph)
+{
+	//scprintf("->Graph_FirstCalc\n");
+	int calcCtr=0;
+	for (int i=0; i<inGraph->mNumUnits; ++i) {
+		Unit *unit = inGraph->mUnits[i];
+		/*scprintf("  unit %d %s  i", i, unit->mUnitDef->mUnitDefName);
+		for (int j=0; j<unit->mNumInputs; ++j) {
+			scprintf(" %g", ZIN0(j));
+		}
+		scprintf("\n");*/
+		
+		// call constructor
+		(*unit->mUnitDef->mUnitCtorFunc)(unit);
+		
+		// insert into calc list
+		if (unit->mCalcRate != calc_Scalar) {
+			inGraph->mCalcUnits[calcCtr++] = unit;
+		}
+		
+		/*scprintf("    o");
+		for (int j=0; j<unit->mNumOutputs; ++j) {
+			scprintf(" %g", ZOUT0(j));
+		}
+		scprintf("\n");*/
+	}
+	//scprintf("<-Graph_FirstCalc\n");
+	
+	inGraph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_Calc;
+	// now do actual graph calculation
+	Graph_Calc(inGraph);
 }
 
 void Graph_Calc(Graph *inGraph)
@@ -231,7 +261,9 @@ void Graph_CalcTrace(Graph *inGraph)
 
 void Graph_Trace(Graph *inGraph)
 {
-	inGraph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_CalcTrace;
+	if (inGraph->mNode.mCalcFunc == (NodeCalcFunc)&Graph_Calc) {
+		inGraph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_CalcTrace;
+	}
 }
 
 
