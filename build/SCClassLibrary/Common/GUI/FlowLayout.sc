@@ -34,6 +34,10 @@ FlowLayout {
 		top = top + maxHeight + gap.y;
 		maxHeight = 0;
 	}
+	shift { arg x=0, y=0;
+		left = left + x;
+		top = top + y;
+	}
 	innerBounds {
 		^bounds.insetBy(margin.x * 2,margin.y * 2)
 	}

@@ -1,0 +1,119 @@
++ SynthDescLib {
+	browse {
+		var w;
+		var synthDescLib;
+		var synthDescLibListView;
+		var synthDescListView;
+		var ugensListView;
+		var controlsListView;
+		var inputsListView;
+		var outputsListView;
+		var synthDescList;
+		var hvBold12;
+		var updateViews;
+		
+		hvBold12 = Font("Helvetica-Bold", 12);		
+		
+		w = SCWindow("SynthDef browser", Rect(128, 320, 700, 580));
+		w.view.decorator = FlowLayout(w.view.bounds);
+		
+		SCStaticText(w, Rect(0,0,220,24)).string_("SynthDescLibs").font_(hvBold12);
+		SCStaticText(w, Rect(0,0,220,24)).string_("SynthDefs").font_(hvBold12);
+		SCStaticText(w, Rect(0,0,220,24)).string_("UGens").font_(hvBold12);
+		w.view.decorator.nextLine;
+		
+		synthDescLibListView = SCListView(w, Rect(0,0, 220, 320)).focus;
+		synthDescListView = SCListView(w, Rect(0,0, 220, 320));
+		ugensListView = SCListView(w, Rect(0,0, 220, 320));
+		
+		w.view.decorator.nextLine;
+		SCStaticText(w, Rect(0,0,240,24)).string_("SynthDef Controls")
+			.font_(hvBold12).align_(\center);
+		SCStaticText(w, Rect(0,0,200,24)).string_("SynthDef Inputs")
+			.font_(hvBold12).align_(\center);
+		SCStaticText(w, Rect(0,0,200,24)).string_("SynthDef Outputs")
+			.font_(hvBold12).align_(\center);
+		w.view.decorator.nextLine;
+		
+		controlsListView = SCListView(w, Rect(0,0, 240, 160));
+		inputsListView = SCListView(w, Rect(0,0, 200, 160));
+		outputsListView = SCListView(w, Rect(0,0, 200, 160));
+		
+		// this is a trick to not show hilighting.
+		controlsListView.hiliteColor = Color.clear;
+		inputsListView.hiliteColor = Color.clear;
+		outputsListView.hiliteColor = Color.clear;
+		controlsListView.selectedStringColor = Color.black;
+		inputsListView.selectedStringColor = Color.black;
+		outputsListView.selectedStringColor = Color.black;
+		
+		controlsListView.font = Font("Monaco", 10);
+		inputsListView.font = Font("Monaco", 10);
+		outputsListView.font = Font("Monaco", 10);
+		
+		w.view.decorator.nextLine;
+		
+		synthDescLibListView.items = SynthDescLib.all.keys.asArray.sort;
+		synthDescLibListView.action = {
+			synthDescListView.value = 0;
+			updateViews.value;
+		};
+		
+		synthDescListView.items = [];
+		synthDescListView.action = {
+			updateViews.value;
+		};
+		
+		updateViews = {
+			var libName, synthDesc;
+			
+			libName = synthDescLibListView.item;
+			synthDescLib = SynthDescLib.all[libName];
+			synthDescList = synthDescLib.synthDescs.values.sort {|a,b| a.name <= b.name };
+			synthDescListView.items = synthDescList.collect {|desc| desc.name.asString };
+				
+			synthDesc = synthDescList[synthDescListView.value];
+			
+			if (synthDesc.isNil) {
+				ugensListView.items = [];
+				inputsListView.items = [];
+				outputsListView.items = [];
+				controlsListView.items = [];
+			}{
+				ugensListView.items = synthDesc.def.children.collect { |x, i|
+					i.asString.extend(7, $ ) ++ x.class.name.asString;
+				};
+				
+				inputsListView.items = synthDesc.inputs.collect { |x|
+					var string;
+					string = x.rate.asString;
+					string = string.extend(9, $ ) ++ " " ++ x.startingChannel;
+					string = string.extend(19, $ ) ++ " " ++ x.numberOfChannels;
+				};
+				outputsListView.items = synthDesc.outputs.collect { |x|
+					var string;
+					string = x.rate.asString;
+					string = string.extend(9, $ ) ++ " " ++ x.startingChannel;
+					string = string.extend(19, $ ) ++ " " ++ x.numberOfChannels;
+				};
+				controlsListView.items = synthDesc.controls.collect { |x|
+					var string;
+					string = if (x.name.notNil) { x.name.asString; }{ "" };
+					if (x.rate.notNil) 
+					{ 
+						string = string.extend(12, $ ) ++ " " ++ x.rate; 
+					};
+					if (x.defaultValue.notNil) 
+					{ 
+						string = string.extend(22, $ ) ++ " " 
+							++ x.defaultValue.asStringPrec(6); 
+					};
+				};
+			};
+		};
+
+		updateViews.value;
+		
+		w.front;
+	}
+}

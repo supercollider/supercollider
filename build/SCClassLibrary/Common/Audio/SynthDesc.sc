@@ -186,20 +186,25 @@ SynthDesc {
 			};
 		};
 		string = string ++ " ]] }";
-		msgFunc = string.postln.interpret;
+		msgFunc = string.interpret;
 	}
 }
 
 SynthDescLib {
-	classvar <>global;
-	var <>synthDescs, <>servers;
+	classvar <>all, <>global;
+	var <>name, <>synthDescs, <>servers;
 
-	*new { arg servers;
-		^super.new.servers_(servers ? Server.default)
+	*new { arg name, servers;
+		if (name.isNil) { "SynthDescLib must have a name".error; ^nil }
+		^super.new.name_(name).servers_(servers ? Server.default).init;
+	}
+	init {
+		all.put(name.asSymbol, this);
 	}
 	*initClass {
 		Class.initClassTree(Server);
-		global = this.new;
+		all = IdentityDictionary.new;
+		global = this.new(\global);
 	}
 
 	*send {

@@ -721,7 +721,10 @@ SCListView : SCControlView {
 		v.items = #["linear","exponential","sine","welch","squared","cubed"];
 		^v
 	}
-		
+	
+	item {
+		^items[this.value]
+	}
 	value {
 		^this.getProperty(\value)
 	}
