@@ -31,7 +31,7 @@ SystemClock : Clock {
 
 
 TempoClock : Clock {
-	classvar all, <default;
+	classvar all, <>default;
 
 	var queue, ptr;
 	
@@ -105,8 +105,8 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.primitiveFailed
 	}
 	clear {
-		_TempoClock_Clear
-		^this.primitiveFailed
+		queue.pairsDo { arg time, item; item.stop };
+		^this.prClear;
 	}
 
 		
@@ -167,6 +167,10 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	}
 	prStop {
 		_TempoClock_Free
+		^this.primitiveFailed
+	}
+	prClear {
+		_TempoClock_Clear
 		^this.primitiveFailed
 	}
 	setTempoAtBeat { arg newTempo, beats;
