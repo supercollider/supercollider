@@ -170,11 +170,11 @@
 				event.use({
 					
 					~channelOffset = channelOffset; // default value
-					~addAction = 1;
+					//~addAction = 1;
 					~finish = {
-						~group = proxy.group.nodeID;
 						~out = ~channelOffset % numChannels + index;
 						~server = server;
+						~group = proxy.group.asNodeID;
 						~freq = ~freq.value + ~detune;
 						~amp = ~amp.value;
 						~sustain = ~sustain.value;

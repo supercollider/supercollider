@@ -88,12 +88,14 @@ PatternControl : StreamControl {
 	stopStreams { arg streams;
 		var dt;
 		dt = fadeTime.value;
-		if(dt <= 0.02) { streams.do { arg item; item.stop } } 
+		if(dt <= 0.02) { 
+			streams.do { arg item; item.stop  }; 
+		} 
 		{
 			dt = dt / clock.beatDur;
 			streams.do { arg item; item.xstop(dt) };
 			// make sure it is stopped, in case next is never called
-			SystemClock.sched(dt, { streams.do { arg item; item.stop } }) 
+			SystemClock.sched(dt, { streams.do { arg item; item.stop; } });
 		};
 	}
 		
@@ -118,16 +120,19 @@ PatternControl : StreamControl {
 		paused=false 
 	}
 	
-	playToBundle { arg bundle, args, proxy; // maybe use args to add them in Event?
-		if(paused.not and: { stream.isPlaying.not }, {
+	playToBundle { arg bundle, args, proxy, addAction=1; // maybe use args to add them in Event?
+		var event;
+		if(paused.not and: { stream.isPlaying.not })
+		{
 			//no latency (latency is in stream already)
 			bundle.addFunction({
 				var str;
 				str = source.buildForProxy(proxy, channelOffset);
-				if(args.notNil) { args.pairsDo { arg key, val; str.event[key] = val } };
+				event = str.event;
+				if(args.notNil) { args.pairsDo { arg key, val; event[key] = val } };
 				this.playStream(str) 
 			}); 		
-		})
+		}
 		^nil //return a nil object instead of a synth
 	}
 	
