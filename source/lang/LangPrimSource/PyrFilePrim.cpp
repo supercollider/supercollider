@@ -251,6 +251,7 @@ int prFileWrite(struct VMGlobals *g, int numArgsPushed)
 	#if BYTE_ORDER != BIG_ENDIAN
 				switch (elemSize) {
 					case 1:
+						fwrite(ptr, elemSize, numElems, file);
 						break;
 					case 2:
 					{
@@ -353,6 +354,7 @@ int prFileWriteLE(struct VMGlobals *g, int numArgsPushed)
 #if BYTE_ORDER == BIG_ENDIAN
 				switch (elemSize) {
 					case 1:
+						fwrite(ptr, elemSize, numElems, file);
 						break;
 					case 2:
 					{
