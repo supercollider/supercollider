@@ -29,6 +29,8 @@
 #include "VMGlobals.h"
 #include "SC_RGen.h"
 #include "SC_BoundsMacros.h"
+#include "SC_InlineBinaryOp.h"
+
 
 #include "SCView.h"
 
@@ -1924,7 +1926,7 @@ bool SCPopUpMenu::setValue(int inValue, bool send)
 	
     bool changed = inValue != mValue;
 	int numberOfItems = CountMenuItems(mMenuH);
-    if (inValue < 0 || inValue >= numberOfItems) inValue = 0;
+	inValue = sc_mod(inValue, numberOfItems);
     if (inValue != mValue || numberOfItems < 2) {
         mValue = inValue;
         refresh();
