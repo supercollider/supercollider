@@ -159,7 +159,7 @@ EZSlider
 
 		numberView = SCNumberBox(window, numberWidth @ dimensions.y);
 		numberView.action = {
-			value = numberView.value;
+			numberView.value = value = controlSpec.constrain(numberView.value);
 			sliderView.value = controlSpec.unmap(value);
 			action.value(this);
 		};
