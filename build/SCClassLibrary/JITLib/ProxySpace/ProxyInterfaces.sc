@@ -123,10 +123,11 @@ SynthControl : AbstractPlayControl {
 	}
 	
 	playToBundle { arg bundle, extraArgs, target, addAction=1;
-		target = target.asTarget;
+		var group;
 		server = target.server;
+		group = target.asTarget;
 		nodeID = server.nextNodeID;
-		bundle.add([9, this.name, nodeID, addAction, target.nodeID]++extraArgs);
+		bundle.add([9, this.name, nodeID, addAction, group.nodeID]++extraArgs);
 		if(paused) { bundle.add(["/n_run", nodeID, 0]) };
 		^nodeID
 	}
@@ -231,13 +232,6 @@ SynthDefControl : SynthControl {
 	controlValues { ^source.def.prototypeFrame }
 	
 	
-}
-
-SoundDefControl : SynthDefControl {
-	
-	writeDef { }
-	build { synthDef = source.synthDef; ^true }
-	loadToBundle {} //assumes that SoundDef does send to the same server 
 }
 
 
