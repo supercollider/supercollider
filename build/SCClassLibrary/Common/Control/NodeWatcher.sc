@@ -87,6 +87,7 @@ BasicNodeWatcher : AbstractNodeWatcher {
 		nodes = IdentitySet.new;
 		
 	}
+	cmds {  ^#["/n_go", "/n_end"] }
 		
 	n_end { arg nodeID;
 		nodes.remove(nodeID);
@@ -102,7 +103,7 @@ BasicNodeWatcher : AbstractNodeWatcher {
 
 ///////////////////////////////////
 //watches registered nodes and sets their isPlaying/isRunning flag. 
-//a node needs to be  registered to be linked, other nodes are ignored.
+//a node needs to be  registered to be adressed, other nodes are ignored.
 
 NodeWatcher : BasicNodeWatcher {
 	
@@ -138,22 +139,14 @@ NodeWatcher : BasicNodeWatcher {
 
 	cmds { ^#["/n_go", "/n_end", "/n_off", "/n_on"] }
 	respond { arg method, msg;
-						//msg.postln;
-						msg.removeAt(0);
-						if(nodes.at(msg.at(0)).notNil, {//for speed
-							msg = this.lookUp(msg);
-							if(msg.notNil, {
-								this.performList(method, msg)
-							})
+						var node, group;
+						node = nodes.at(msg.at(1));
+						if(node.notNil, {
+								group = nodes.at(msg.at(2));
+								this.performList(method, node, group)
 						})
 	}
 	
-	lookUp { arg msg;
-		var res;
-		res = msg.collect({ arg nodeID; nodes.at(nodeID) });
-		^if(res.at(0).notNil, { res }, { nil });
-		//todo: remote creation scheme
-	}
 	
 	clear {
 		nodes = IdentityDictionary.new 
@@ -173,7 +166,7 @@ NodeWatcher : BasicNodeWatcher {
 	
 	//////////////private implementation//////////////
 	
-	n_go { arg node, group, prev, next;
+	n_go { arg node, group;
 		
 		node.group = group;
 		node.isPlaying = true;
@@ -189,12 +182,12 @@ NodeWatcher : BasicNodeWatcher {
 		node.isRunning = false;
 	}
 
-	n_off { arg node, group, prev, next;
+	n_off { arg node, group;
 		
 		node.isRunning = false;
 	}	
 
-	n_on { arg node, group, prev, next;
+	n_on { arg node, group;
 		
 		node.isRunning = true;
 	}
