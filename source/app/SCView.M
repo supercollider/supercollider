@@ -4775,6 +4775,8 @@ SCView* MakeSCView(PyrObject* inObj, SCContainerView *inParent, SCRect inBounds,
 }
 
 static bool sRegisteredSCViewClasses = false;
+extern SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+extern SCView* NewSCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
 void registerSCViewClasses()
 {
@@ -4802,7 +4804,9 @@ void registerSCViewClasses()
     new SCViewMaker("SCTabletView", NewSCTabletView);
     new SCViewMaker("SCScope", NewSCScope);
     new SCViewMaker("SCListView", NewSCListView);
-
+	//these can be found in SCCocoaView.M
+    new SCViewMaker("SCTextView", NewSCCocoaTextView);
+    new SCViewMaker("SCMovieView", NewSCMovieView);
 }
 
 
