@@ -7,15 +7,9 @@
 				scopeWindow = 
 					Stethoscope.new(this, numChannels, index, bufsize, zoom, rate)
 			} {
-				if(index.notNil) { scopeWindow.index = index };
-				if(rate.notNil) { scopeWindow.rate = rate };
-				if(numChannels.notNil) {ÊscopeWindow.numChannels = numChannels };
-				if(scopeWindow.bufsize != bufsize) { scopeWindow.allocBuffer(bufsize) };
-				if(zoom.notNil) { scopeWindow.zoom = zoom };
+				scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
 				scopeWindow.run;
-				
 				scopeWindow.window.front;
-				
 			};
 			^scopeWindow
 	}
