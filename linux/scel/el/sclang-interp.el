@@ -332,24 +332,35 @@ Change this if \"cat\" has a non-standard name or location."
   (put symbol 'sclang-command-handler function))
 
 (defun sclang-perform-command (symbol &rest args)
-  (and (functionp (get symbol 'sclang-command-handler))
-       (not (eq ?_ (aref (symbol-name symbol) 0)))
-       (sclang-eval-string
-	(sclang-format
-	 "Emacs.lispPerformCommand(%o, %o)"
-	 symbol args))))
+;;   (and (functionp (get symbol 'sclang-command-handler))
+;;        (not (eq ?_ (aref (symbol-name symbol) 0)))
+  (sclang-eval-string (sclang-format
+		       "Emacs.lispPerformCommand(%o, %o, true)"
+		       symbol args)))
 
-(defun sclang--handle-command-result (assoc)
+(defun sclang-perform-command-no-result (symbol &rest args)
+;;   (and (functionp (get symbol 'sclang-command-handler))
+;;        (not (eq ?_ (aref (symbol-name symbol) 0)))
+  (sclang-eval-string (sclang-format
+		       "Emacs.lispPerformCommand(%o, %o, false)"
+		       symbol args)))
+
+(defun sclang--handle-command-result (list)
   (save-excursion
-    (condition-case e
-	(let ((fun (get (car assoc) 'sclang-command-handler)))
+    (condition-case nil
+	(let ((fun (get (nth 0 list) 'sclang-command-handler))
+	      (arg (nth 1 list))
+	      (id  (nth 2 list)))
 	  (when (functionp fun)
-	    (funcall fun (cdr assoc))
-	    t))
-      (error (if sclang-debug-command-handler
-		 ;; debug the sucker
-		 (progn (debug e) nil)
-	       (message "SCLang: Error in command handler") nil)))))
+	    (let ((res (condition-case nil
+			   (funcall fun arg)
+			 (error (if sclang-debug-command-handler
+				    (debug e)
+				  (message "SCLang: Error in command handler") nil)))))
+	      (when id
+		(sclang-eval-string
+		 (sclang-format "Emacs.lispHandleCommandResult(%o, %o)" id res))))))
+      (error nil))))
 
 ;; =====================================================================
 ;; code evaluation
@@ -466,14 +477,9 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 
 (sclang-set-command-handler
  '_eval
- (lambda (assoc)
-   (let ((id (car assoc))
-	 (expr (cdr assoc)))
-     (when (stringp expr)
-       (let ((res (eval (read expr))))
-	 (when id
-	   (sclang-eval-string
-	    (sclang-format "Emacs.lispHandleCommandResult(%o, %o)" id res))))))))
+ (lambda (expr)
+   (when (stringp expr)
+     (eval (read expr)))))
 
 ;; =====================================================================
 ;; module setup

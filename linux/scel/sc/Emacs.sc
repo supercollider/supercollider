@@ -16,104 +16,121 @@
 // USA
 
 EmacsInterface {
-	symbolTable {
-		var result;
+	classvar handlers;
 
-		"Emacs: Building symbol table ...".post;
+	*initClass {
+		handlers = IdentityDictionary.new;
+		this.initDefaultHandlers;
+	}
 
-		result = IdentitySet.new;
+	*put { | name, function |
+		handlers.put(name.asSymbol, function);
+	}
+	*at { | name |
+		^handlers.at(name)
+	}
 
-		Class.allClasses.do { | class |
-			result.add(class.name);
-			class.methods.do { | method |
-				result.add(method.name);
+	*performCommand { | name, args |
+		^handlers.atFail(name, { ^nil }).valueArray(args)
+	}
+
+	*initDefaultHandlers {
+		this
+		.put(\symbolTable, {
+			var result;
+
+			"Emacs: Building symbol table ...".post;
+
+			result = IdentitySet.new;
+			
+			Class.allClasses.do { | class |
+				result.add(class.name);
+				class.methods.do { | method |
+					result.add(method.name);
+				};
 			};
-		};
 
-		result = result.collectAs({ | symbol | symbol.asString }, Array);
+			result = result.collectAs({ | symbol | symbol.asString }, Array);
+			
+			" done.".postln;
 
-		" done.".postln;
+			result
+		})
+		.put(\classDefinitions, { | name |
+			var result, class, files;
 
-		^result
-	}
-
-	classDefinitions { | name |
-		var result, class, files;
-
-		if ((class = name.asSymbol.asClass).notNil) {
-			files = IdentitySet.new;
-			result = result.add([
-				"  " ++ name,
-				class.filenameSymbol.asString,
-				class.charPos + 1
-			]);
-			files.add(class.filenameSymbol);
-			class.methods.do { | method |
-				if (files.includes(method.filenameSymbol).not) {
-					result = result.add([
-						"+ " ++ name,
-						method.filenameSymbol.asString,
-						method.charPos + 1
-					]);
-					files.add(method.filenameSymbol);
+			if ((class = name.asSymbol.asClass).notNil) {
+				files = IdentitySet.new;
+				result = result.add([
+					"  " ++ name,
+					class.filenameSymbol.asString,
+					class.charPos + 1
+				]);
+				files.add(class.filenameSymbol);
+				class.methods.do { | method |
+					if (files.includes(method.filenameSymbol).not) {
+						result = result.add([
+							"+ " ++ name,
+							method.filenameSymbol.asString,
+							method.charPos + 1
+						]);
+						files.add(method.filenameSymbol);
+					}
 				}
-			}
-		};
+			};
 		
-		^name -> result
-	}
-
-	methodDefinitions { | name |
-		var result, symbol, getter, setter;
+			name -> result
+		})
+		.put(\methodDefinitions, { | name |
+			var result, symbol, getter, setter;
 		
-		symbol = name.asSymbol;
+			symbol = name.asSymbol;
 
-		Class.allClasses.do { | class |
-			class.methods.do { | method |
-				if (method.name === symbol) {
+			Class.allClasses.do { | class |
+				class.methods.do { | method |
+					if (method.name === symbol) {
+						result = result.add([
+							class.name ++ "-" ++ name,
+							method.filenameSymbol.asString,
+							method.charPos + 1
+						])
+					}
+				}
+			};
+		
+			name -> result
+		})
+		.put(\methodReferences, { | name |
+			var references, methods, result;
+
+			references = Class.findAllReferences(name.asSymbol);
+			if (references.notNil) {
+				methods = IdentitySet.new;
+				references.do { | funcDef |
+					methods.add(funcDef.homeContext);
+				};
+				methods.do { | method |
 					result = result.add([
-						class.name ++ "-" ++ name,
+						method.ownerClass.name ++ "-" ++ method.name,
 						method.filenameSymbol.asString,
 						method.charPos + 1
 					])
 				}
-			}
-		};
-		
-		^name -> result
-	}
-
-	methodReferences { | name |
-		var references, methods, result;
-
-		references = Class.findAllReferences(name.asSymbol);
-		if (references.notNil) {
-			methods = IdentitySet.new;
-			references.do { | funcDef |
-				methods.add(funcDef.homeContext);
 			};
-			methods.do { | method |
-				result = result.add([
-					method.ownerClass.name ++ "-" ++ method.name,
-					method.filenameSymbol.asString,
-					method.charPos + 1
-				])
-			}
-		};
 
-		^name -> result
+			name -> result
+		})
 	}
 }
 
 Emacs {
-	classvar outFile, <interface;
-	classvar requestHandlers, requestAllocator;
+	classvar outFile, requestHandlers, requestAllocator;
 	classvar <menu, <>keys;
 
 	// initialization
 	*initClass {
 		var outFileName;
-		interface = EmacsInterface.new;
+		Class.initClassTree(EmacsInterface);
 		requestHandlers = IdentityDictionary.new;
 		requestAllocator = LRUNumberAllocator(0, 1024);
 		keys = IdentityDictionary.new;
@@ -134,12 +151,12 @@ Emacs {
 	}
 
 	// lisp interface
-	*lispPerformCommand { | cmdName, args |
+	*lispPerformCommand { | cmdName, args, send |
 		var result;
-		if (interface.respondsTo(cmdName)) {
-			result = interface.performList(cmdName, args);
+		result = EmacsInterface.performCommand(cmdName, args);
+		if (send) {
 			this.sendToLisp(cmdName, result);
-		}
+		};
 		^result
 	}
 	*lispHandleCommandResult { | id, obj |
@@ -152,24 +169,23 @@ Emacs {
 	}
 
 	// sclang interface
-	*sendToLisp { | cmdName, obj |
-		var str;
+	*sendToLisp { | cmdName, obj, handler=nil |
+		var id, str;
 		if (outFile.notNil) {
-			str = (cmdName.asSymbol -> obj).asLispString;
+			if (handler.notNil) {
+				id = requestAllocator.alloc;
+				if (id.notNil) {
+					requestHandlers.put(id, handler);
+				};
+			};
+			str = [cmdName.asSymbol, obj, id].asLispString;
 			outFile.putInt32(str.size);
 			outFile.write(str);
 			outFile.flush;
 		}
 	}
 	*evalLispExpression { | expression, handler |
-		var id;
-		if (handler.notNil) {
-			id = requestAllocator.alloc;
-			if (id.notNil) {
-				requestHandlers.put(id, handler);
-			}
-		};
-		this.sendToLisp('_eval', (id -> expression));
+		this.sendToLisp('_eval', expression, handler);
 	}
 
 	// utilities

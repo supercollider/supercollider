@@ -37,6 +37,7 @@
 (load "sclang-browser")
 (load "sclang-interp")
 (load "sclang-language")
+(load "sclang-document")
 ;; (load "sclang-server")
 ;; (load "sclang-menu")
 ;; (load "sclang-keys")
