@@ -11,7 +11,7 @@ Thread : Stream {
 	var <state=0, func, stack, method, block, frame, ip=0, sp=0;
 	var numpop=0, receiver, numArgsPushed=0;
 	var parent, terminalValue;
-	var <primitiveError=0, <primitiveIndex=0, <randData=0;
+	var <primitiveError=0, <primitiveIndex=0, randData=0;
 	var <beats=0.0, <seconds=0.0, <clock, <nextBeat, <>endBeat;
 	var environment;
 	var <>exceptionHandler;
@@ -41,6 +41,13 @@ Thread : Stream {
 		// Normally Threads inherit the randData state vector from the Thread that created it.
 		_Thread_RandSeed
 		^this.primitiveFailed;
+	}
+	randData_ { arg data;
+		_Thread_SetRandData
+		^this.primitiveFailed;
+	}
+	randData {
+		_Thread_GetRandData
 	}
 	failedPrimitiveName { _PrimName }
 	

@@ -195,6 +195,10 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 		SetObject(&proc->mainThread, thread);
 		PyrInt32Array *rgenArray = newPyrInt32Array(gc, 4, 0, false);
 		rgenArray->size = 4;
+		rgenArray->i[0] = 0;
+		rgenArray->i[1] = 0;
+		rgenArray->i[2] = 0;
+		rgenArray->i[3] = 0;
 		((RGen*)(rgenArray->i))->init(timeseed());
 
 		PyrSlot clockSlot;

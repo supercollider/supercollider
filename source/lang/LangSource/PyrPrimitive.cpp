@@ -2997,15 +2997,51 @@ int prThreadRandSeed(struct VMGlobals *g, int numArgsPushed)
 	int err = slotIntVal(b, &seed);
 	if (err) return err;
 
-	PyrInt32Array *rgenArray = newPyrInt32Array(g->gc, 4, 0, true);
-	rgenArray->size = 4;
-	((RGen*)(rgenArray->i))->init(seed);
+	RGen* rgen = (RGen*)thread->randData.uo->slots;
+	rgen->init(seed);
 
-	if (thread == g->thread) {
-		g->rgen = (RGen*)(rgenArray->i);
-	}
-	SetObject(&thread->randData, rgenArray);
-	g->gc->GCWrite(thread, rgenArray);
+	return errNone;
+}
+
+int prThreadGetRandData(struct VMGlobals *g, int numArgsPushed);
+int prThreadGetRandData(struct VMGlobals *g, int numArgsPushed)
+{	
+	PyrSlot *a = g->sp;	// thread
+	
+	PyrThread *thread = a->uot;
+
+	RGen* rgen = (RGen*)thread->randData.uo->slots;
+
+	PyrInt32Array *rgenArray = newPyrInt32Array(g->gc, 4, 0, false);
+	rgenArray->size = 3;
+
+	rgenArray->i[0] = rgen->s1;
+	rgenArray->i[1] = rgen->s2;
+	rgenArray->i[2] = rgen->s3;
+
+	SetObject(a, rgenArray);
+	return errNone;
+}
+
+int prThreadSetRandData(struct VMGlobals *g, int numArgsPushed);
+int prThreadSetRandData(struct VMGlobals *g, int numArgsPushed)
+{	
+	PyrSlot *a = g->sp - 1;	// thread
+	PyrSlot *b = g->sp;		// rand data array
+	
+	if (!isKindOfSlot(b, class_int32array)) return errWrongType;
+	if (b->uo->size < 3) return errWrongType;
+	
+	PyrThread *thread = a->uot;
+
+	RGen* rgen = (RGen*)thread->randData.uo->slots;
+
+	PyrInt32Array *rgenArray = (PyrInt32Array*)b->uo;
+
+	rgen->s1 = rgenArray->i[0];
+	rgen->s2 = rgenArray->i[1];
+	rgen->s3 = rgenArray->i[2];
+
 	return errNone;
 }
 
@@ -3852,6 +3888,8 @@ void initPrimitives()
 
 	definePrimitive(base, index++, "_Thread_Init", prThreadInit, 3, 0);	
 	definePrimitive(base, index++, "_Thread_RandSeed", prThreadRandSeed, 2, 0);	
+	definePrimitive(base, index++, "_Thread_GetRandData", prThreadGetRandData, 1, 0);	
+	definePrimitive(base, index++, "_Thread_SetRandData", prThreadSetRandData, 2, 0);	
 //	definePrimitive(base, index++, "_ThreadRun", prThreadRun, 2, 0);	
 //	definePrimitive(base, index++, "_RunNextThread", prRunNextThread, 1, 0);	
 	definePrimitive(base, index++, "_RoutineYield", prRoutineYield, 1, 0);	
