@@ -2,7 +2,7 @@
 {\fonttbl\f0\fnil\fcharset77 Futura-Medium;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
-\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;}
+\red96\green96\blue96;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs36 \cf0 NodeProxy		
@@ -476,29 +476,37 @@ a.source = \cf3 nil\cf0 ; \cf2 //  removes any object\cf0 \
 \cf2 // feedback\cf0 \
 a.source = \{ \cf3 SinOsc\cf0 .ar(a.ar * 7000 * \cf3 LFNoise1\cf0 .kr(1, 0.3, 0.6) + 200, 0, 0.1) \};\
 a.source = \{ \cf3 SinOsc\cf0 .ar(a.ar * 6000 * \cf3 MouseX.kr(0, 2)\cf0  + [100, 104], 0, 0.1) \};\
-\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf6 \
+\cf7 // fadeTime\cf6 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf6 a.fadeTime = 2.0;\
+a.source = \{ \cf8 SinOsc\cf6 .ar([390, 286] * \cf8 ExpRand\cf6 (1, 3), 0, 0.2) \};\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf6 \
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // adding nodes\cf0 \
 a.add(\{ \cf3 SinOsc\cf0 .ar([50, 390]*1.25, 0, 0.1) \});\
 a.add(\{ \cf3 BrownNoise\cf0 .ar([0.02,0.02]) \});\
 \
-\cf2 // setting nodes at in\cf6 dices:\
-a[0] = \{ \cf7 SinOsc\cf6 .ar( 700 * \cf7 LFNoise1\cf6 .kr(1, 0.3, 0.6) + 200, 0, 0.1) \};\
-a[1] = \{ \cf7 LFPulse\cf6 .kr(3, 0.3) * \cf7 SinOsc\cf6 .ar(500, 0, 0.1) \};\
-a[2] = \{ \cf7 LFPulse\cf6 .kr(3.5, 0.3) * \cf7 SinOsc\cf6 .ar(600, 0, 0.1) \};\
-a[3] = \{ \cf7 SinOsc\cf6 .ar([1,1.25] * 840, 0, 0.1) \};\
-\
-\cf8 // replacing input\cf6 \
-a[2] = \{ \cf7 arg\cf6  out; \cf7 ReplaceOut\cf6 .ar(out, \cf7 In\cf6 .ar(out,2) * \cf7 SinOsc\cf6 .ar(\cf7 Rand\cf6 (100,1000)) * \cf7 EnvGate\cf6 .new) \};\
-a[2] = \{ \cf7 arg\cf6  out; \cf7 ReplaceOut\cf6 .ar(out, \cf7 In\cf6 .ar(out,2) * \cf7 MouseY\cf6 .kr(0,1) * \cf7 EnvGate\cf6 .new) \};\
-a[2] = \{ \cf7 arg\cf6  out; \cf7 ReplaceOut\cf6 .ar(out, \cf7 In\cf6 .ar(out,2) * \cf7 MouseX\cf6 .kr(0,1) * \cf7 EnvGate\cf6 .new) \};\
-a[4] = \{ \cf7 arg\cf6  out; \cf7 ReplaceOut\cf6 .ar(out, \cf7 In\cf6 .ar(out,2) * \cf7 SinOsc\cf6 .ar(\cf7 Rand\cf6 (1,2)).max(0) * \cf7 EnvGate\cf6 .new) \};\
-\
-\
-a.group\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 a.objects.collect \{ arg u; u.nodeID \}\
+\cf7 // setting nodes at indices:\cf6 \
+a[0] = \{ \cf8 SinOsc\cf6 .ar( 700 * \cf8 LFNoise1\cf6 .kr(1, 0.3, 0.6) + 200, 0, 0.1) \};\
+a[1] = \{ \cf8 LFPulse\cf6 .kr(3, 0.3) * \cf8 SinOsc\cf6 .ar(500, 0, 0.1) \};\
+a[2] = \{ \cf8 LFPulse\cf6 .kr(3.5, 0.3) * \cf8 SinOsc\cf6 .ar(600, 0, 0.1) \};\
+a[3] = \{ \cf8 SinOsc\cf6 .ar([1,1.25] * 840, 0, 0.1) \};\
+\
+\cf7 // replacing input\cf6 \
+a[2] = \{ \cf8 arg\cf6  out; \cf8 XOut\cf6 .ar(out, \cf8 EnvGate\cf6 .new, \cf8 In\cf6 .ar(out,2) * \cf8 SinOsc\cf6 .ar(\cf8 Rand\cf6 (100,1000))) \};\
+a[2] = \{ \cf8 arg\cf6  out; \cf8 XOut\cf6 .ar(out, \cf8 EnvGate\cf6 .new, \cf8 In\cf6 .ar(out,2) * \cf8 MouseY\cf6 .kr(0,1)) \};\
+a[2] = \{ \cf8 arg\cf6  out; \cf8 XOut\cf6 .ar(out, \cf8 EnvGate\cf6 .new, \cf8 In\cf6 .ar(out,2) * \cf8 MouseX\cf6 .kr(0,1)) \};\
+a[4] = \{ \cf8 arg\cf6  out; \cf8 XOut\cf6 .ar(out, \cf8 EnvGate\cf6 .new, \cf8 In\cf6 .ar(out,2) * \cf8 SinOsc\cf6 .ar(\cf8 ExpRand\cf6 (1,5)).max(0)) \};\
+\
+\cf0 a.group\
+a.objects.collect \{ arg u; u.nodeID \}\
 a[4].nodeID\
+a[4].synthDef.canReleaseSynth\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // setting controls\cf0 \
