@@ -9,56 +9,34 @@ FilterPattern : Pattern {
 
 Pn : FilterPattern {
 	var <>repeats;
-	*new { arg pattern, repeats;
+	*new { arg pattern, repeats=inf;
 		^super.new(pattern).repeats_(repeats)
 	}
 	storeArgs { ^[pattern,repeats] }
 	asStream {
 		^Routine.new({ arg inevent;
-			repeats.do({
-				inevent = pattern.embedInStream(inevent);
-			});
+			var stream, outval;
+			if(inf === repeats)
+			{
+				loop {
+					outval = stream.next(inevent);
+					if(outval.isNil, { 
+						stream = pattern.asStream;
+						outval = stream.next(inevent);
+					});
+					inevent = outval.yield(inevent)
+				}
+			} {
+				repeats.do {
+					inevent = pattern.embedInStream(inevent);
+				};
+			}
 		});
 	}
 }
 
-// works somewhat similar to Pn, but counts how many times the first arg returns nil.
-// this solves the problem with Pn so when a stream returns always nil, it will not crash. 
-// note that Ploop(5, 1) will loop forever, as 5 never returns nil.
-
-Ploop : Pn {
-	asStream {
-		^Routine.new({ arg inevent;
-			var res, str, count;
-			str = pattern.asStream;
-			if(inf === repeats, {
-				inf.do({
-					res = str.next(inevent);
-					if(res.isNil, { 
-						str = pattern.asStream;
-						res = str.next(inevent);
-					});
-					inevent = res.yield(inevent)
-				})
-			}, {
-				count = repeats;
-				inf.do({
-					res = str.next(inevent);
-					if(res.isNil, { 
-						str = pattern.asStream;
-						res = str.next(inevent);
-						count = count - 1;  
-					});
-					if(count > 0, {
-						inevent = res.yield(inevent)
-					}, {
-						nil.alwaysYield 
-					});
-				})
-			})
-		});
-	}
-}
+// will be removed
+Ploop : Pn {}
 
 
 FuncFilterPattern : FilterPattern {
