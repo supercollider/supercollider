@@ -68,9 +68,6 @@ else
     SC_CFLAGS="$SC_CFLAGS $SC_CFLAGS_OPT"
 fi
 
-CFLAGS="$SC_CFLAGS"
-CXXFLAGS="$CFLAGS"
-
 # generate output files
 AC_OUTPUT(
 Makefile

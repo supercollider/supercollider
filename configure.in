@@ -24,6 +24,8 @@ AC_SUBST(SC_LANG_SHARED_VERSION_INFO)
 
 SC_AUDIO_API=SC_AUDIO_API_JACK
 AC_SUBST(SC_AUDIO_API)
+AC_SUBST(SC_AUDIO_API_CFLAGS)
+AC_SUBST(SC_AUDIO_API_LIBS)
 
 SC_PLUGIN_DIR='"$(pkglibdir)/plugins"'
 AC_SUBST(SC_PLUGIN_DIR)
@@ -56,6 +58,9 @@ AC_HELP_STRING([--enable-debug],[enable debugging features]))
 AC_ARG_WITH(dmalloc,
 AC_HELP_STRING([--with-dmalloc],[use dmalloc (http://www.dmalloc.com) when debugging is enabled]))
 
+AC_ARG_WITH(audio-api,
+AC_HELP_STRING([--with-audio-api],[audio api to link against (jack, portaudio, default: jack)]))
+
 dnl NOTE: config.h is not included by any file, so we can as well omit the
 dnl checks.
 
@@ -79,11 +84,6 @@ pkg_modules="sndfile >= 1.0.0"
 PKG_CHECK_MODULES(SNDFILE, [$pkg_modules])
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
-
-pkg_modules="jack >= 0.40"
-PKG_CHECK_MODULES(JACK, [$pkg_modules])
-AC_SUBST(JACK_CFLAGS)
-AC_SUBST(JACK_LIBS)
 
 # check for libraries
 AC_CHECK_LIB(pthread,pthread_create,lib_pthread="-lpthread",lib_pthread="")
@@ -116,15 +116,42 @@ if test "x$enable_debug" = "xyes" ; then
 	AC_MSG_NOTICE([compiling with dmalloc support])
 	SC_CPPFLAGS="$SC_CPPFLAGS -DUSE_DMALLOC"
 	DMALLOC_LIBS="-ldmallocthcxx"
+	AC_SUBST(DMALLOC_LIBS)
     fi
 else
     SC_CPPFLAGS="$SC_CPPFLAGS -DNDEBUG"
     SC_CFLAGS="$SC_CFLAGS $SC_CFLAGS_OPT"
 fi
 
+# audio api
+if test "x$with_audio_api" = "x"; then
+    with_audio_api="jack"
+fi
+
+case "$with_audio_api" in
+     jack)
+     pkg_modules="jack >= 0.40"
+     PKG_CHECK_MODULES(JACK, [$pkg_modules])
+
+     SC_AUDIO_API="SC_AUDIO_API_JACK"
+     SC_AUDIO_API_CFLAGS="$JACK_CFLAGS"
+     SC_AUDIO_API_LIBS="$JACK_LIBS"
+     ;;
+
+     portaudio)
+     SC_AUDIO_API="SC_AUDIO_API_PORTAUDIO"
+     SC_AUDIO_API_CFLAGS=""
+     SC_AUDIO_API_LIBS="-lportaudio -ljack -lasound"
+     ;;
+
+     *)
+     AC_MSG_ERROR([unknown audio api \"$with_audio_api\"])
+esac
+
+AC_MSG_NOTICE([audio api: $with_audio_api])
+
 AC_SUBST(SC_CPPFLAGS)
 AC_SUBST(SC_CFLAGS)
-AC_SUBST(DMALLOC_LIBS)
 
 # generate output files
 AC_OUTPUT(

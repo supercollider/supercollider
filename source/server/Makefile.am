@@ -14,14 +14,14 @@ AM_CPPFLAGS		= $(SC_CPPFLAGS) -DSC_AUDIO_API=$(SC_AUDIO_API) \
 			-DSC_PLUGIN_DIR=\"$(SC_PLUGIN_DIR)\" \
 			-DSC_PLUGIN_EXT=\"$(SC_PLUGIN_EXT)\" \
 			-DSC_PLUGIN_LOAD_SYM=\"$(SC_PLUGIN_LOAD_SYM)\"
-AM_CFLAGS		= $(SC_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS)
+AM_CFLAGS		= $(SC_CFLAGS) $(SC_AUDIO_API_CFLAGS) $(SNDFILE_CFLAGS)
 AM_CXXFLAGS		= $(AM_CFLAGS)
 
 lib_LTLIBRARIES		= libscsynth.la
 libscsynth_la_LDFLAGS	= -export-dynamic -version-info $(SC_SYNTH_SHARED_VERSION_INFO)
 libscsynth_la_LIBADD	= $(top_builddir)/source/common/libcommon.la \
 			-lm -lpthread -ldl \
-			$(SNDFILE_LIBS) $(JACK_LIBS) $(DMALLOC_LIBS)
+			$(SC_AUDIO_API_LIBS) $(SNDFILE_LIBS) $(DMALLOC_LIBS)
 
 libscsynth_la_SOURCES	=		\
 	Samp.cpp			\

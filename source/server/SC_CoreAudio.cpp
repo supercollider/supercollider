@@ -28,6 +28,11 @@
 #include "SC_HiddenWorld.h"
 #include "SC_Endian.h"
 
+#ifdef SC_LINUX
+# include <sys/time.h>
+# include <unistd.h>
+#endif // SC_LINUX
+
 const double kMicrosToOSCunits = 4294.967296; // pow(2,32)/1e6
 const double kNanosToOSCunits  = 4.294967296; // pow(2,32)/1e9
 int64 gOSCoffset = 0; 
@@ -45,8 +50,6 @@ double gSampleRate, gSampleDur;
 
 #if SC_AUDIO_API == SC_AUDIO_API_JACK
 #include <pthread.h>
-#include <sys/time.h>
-#include <unistd.h>
 
 struct SC_JackGlobalState
 {
