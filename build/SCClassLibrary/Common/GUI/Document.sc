@@ -146,7 +146,6 @@ Document {
 	}
 	
 	selectLine {arg line;
-		line = line - 1;
 		this.prselectLine(line);
 	}
 	
@@ -184,7 +183,7 @@ Document {
 	}
 	
 	font_ {arg font, rangestart = -1, rangesize;
-		this.setFont(font.name, font.size, rangestart, rangesize)
+		this.setFont(font, rangestart, rangesize)
 	}
 		 
 	selectedString_ {arg txt;
