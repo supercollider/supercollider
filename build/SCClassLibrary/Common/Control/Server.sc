@@ -437,7 +437,7 @@ Server : Model {
 			DiskOut.ar(bufnum, In.ar(0, numChannels)) 
 		}).send(this, {});
 		// cmdPeriod support
-		CmdPeriod.objects.includes(this).not.if({ CmdPeriod.add(this); });
+		CmdPeriod.add(this);
 	}
 	
 	// CmdPeriod support for Server-scope and Server-record
@@ -451,7 +451,7 @@ Server : Model {
 		});
 		recordNode.notNil.if({ recordNode = nil; });
 		recordBuf.notNil.if({recordBuf.close({ arg buf; buf.free; }); recordBuf = nil;});
-		CmdPeriod.objects.includes(this).if({ CmdPeriod.remove(this); });
+		CmdPeriod.remove(this);
 	}
 
 	
