@@ -265,5 +265,8 @@ SimpleNumber : Number {
 		n = this - (min - 1 * parts);		^(1..n-1).scramble.keep(parts-1).sort.add(n).differentiate + (min - 1)
 	}
 	
+	nextTimeOnGrid { arg clock;
+		^clock.nextTimeOnGrid(this, 0);
+	}
 		
 }

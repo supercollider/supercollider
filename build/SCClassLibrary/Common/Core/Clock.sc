@@ -39,7 +39,7 @@ TempoClock : Clock {
 	var queue, ptr;
 	
 	var <beatsPerBar=4.0, barsPerBeat=0.25;
-	var baseBarBeat=0.0, baseBar=0.0;
+	var <baseBarBeat=0.0, <baseBar=0.0;
 	var <>permanent=false;
 
 /*
@@ -80,7 +80,9 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		this.prStop;
 	}
 	
-	play { arg task, quant=1.0; this.schedAbs(this.beats.roundUp(quant), task) }
+	play { arg task, quant = 1; 
+		this.schedAbs(quant.nextTimeOnGrid(this), task) 
+	}
 	
 	playNextBar { arg task; this.schedAbs(this.nextBar, task) }
 	
@@ -157,12 +159,22 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.primitiveFailed
 	}
 	
+	nextTimeOnGrid { arg quant = 1, phase = 0;
+		var offset;
+		if (quant < 0) { quant = beatsPerBar * quant.neg };
+		offset = baseBarBeat + phase;
+		^roundUp(this.beats - offset, quant) + offset;
+	}
 	
 	beats2bars { arg beats;
 		^(beats - baseBarBeat) * barsPerBeat + baseBar;
 	}
 	bars2beats { arg bars;
 		^(bars - baseBar) * beatsPerBar + baseBarBeat;
+	}
+	bar {
+		// return the current bar.
+		^this.beats2bars(this.beats).floor;
 	}
 	nextBar { arg beat;
 		// given a number of beats, determine number beats at the next bar line.
