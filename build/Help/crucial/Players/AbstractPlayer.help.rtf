@@ -1,8 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green112\blue0;
-\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs42 \cf0 AbstractPlayer			
@@ -32,21 +31,6 @@ somePlayer.play;\
 
 \f1\b0\fs24 somePlayer = \cf2 SomePlayerClass\cf0 .new(param, param2, param3);\
 somePlayer.topGui;\
-\
-
-\f0\b\fs22 3.  create the object and use .ar\
-
-\f1\b0\fs24 somePlayer = \cf2 SomePlayerClass\cf0 .new(param, param2, param3);\
-\{\
-	somePlayer.ar  \cf3 // combine it with UGens etc.\
-\cf0 \}.play\
-\
-
-\f0\b\fs22 4. use the class method *ar in the style of normal UGens \
-
-\f1\b0\fs24 \{\
-	\cf2 SomePlayerClass\cf0 .ar(param, param2, param3); \cf3 // combine it with UGens etc.\
-\cf0 \}.play\
 \
 \
 
@@ -82,23 +66,19 @@ somePlayer.topGui;\
 \f1\b0  				\
 		- plays sound files	\
 	
-\f0\b Ar
-\f1\b0  or 
-\f0\b EventStreamPlayer
-\f1\b0  	\
-		- plays standard patterns (Pbind etc.)\
-	
-\f0\b Kr StreamKr StreamKrDur
+\f0\b StreamKr StreamKrDur
 \f1\b0  
 \f0\b Stream2Trig
 \f1\b0  \
 		- renders a number stream to a .kr signal\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 Gui
+\f0\b\fs30 \cf0 Gui
 \f1\b0\fs20 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 AbstractPlayer also comes with a powerful gui class framework.  Because of this, many people make the mistake of assuming that AbstractPlayer is primarily a way to get pretty windows.  It has nothing to do with that.\
+\fs24 \cf0 AbstractPlayer also comes with a powerful gui class framework.  Because of this, many people make the mistake of assuming that AbstractPlayer is primarily a way to get pretty windows.  It has nothing to do with that.\
 \
 But it is very nice  to:\
 	hit the play button and have your sound play.\
@@ -110,10 +90,12 @@ But it is very nice  to:\
 
 \fs18 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs28 \ul Methods\
+\fs28 \cf0 \ul Methods\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs18 \ulnone \
+\fs18 \cf0 \ulnone \
 
 \fs24 ar    	- do your thing,  make audio\
 value 	- same as .ar\
@@ -134,47 +116,17 @@ delta - (beats) this is duration converted to beats\
 \
 path -  if loaded or saved, the player knows its path\
 name - an explicit name if it has been set or the filename ( if path is known)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs20 \
+\fs20 \cf0 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul Path Utilities
-\f1\b0\fs20 \ulnone \
-\
-*
-\f0\b load
-\f1\b0  ( object) - \
-	useful in the constructor.	\
-
-\fs24 	strings - load from disk from this path\
-	collections - recursively do *load on each item\
-	anything else - passes thru \
-
-\fs20 	\
-	( \cf3 // you can't execute this, as it will try to load things you haven't got\
-\cf0 		\cf2 Patch\cf0 ([\cf4 \\some\cf0 ,\cf4 \\instr\cf0 ],\
-			\cf3 //args\
-\cf0 			[ \cf3 // args is a collection, so each item gets sent thru *load\
-\cf0 				440, \cf3 // passes thru\
-\cf0 				\cf5 ":patches:freaker"\cf0 , \cf3 // load from disk from this path\
-\cf0 				\cf2 Patch\cf0 ([\cf4 \\controls\cf0 ,\cf4 \\wobbly\cf0 ],[0.3]), \cf3 // passes thru\
-\cf0 				\cf2 nil\cf0  \cf3 // passes thru\
-\cf0 			])\
-	)\
-	\
-
-\f0\b\fs24 enpath
-\f1\b0  (object) -  the opposite of 
-\f0\b *load
-\f1\b0 \
-	if object responds to 'path' and has a path set,\
-	returns that path, otherwise returns the object itself.\
-	this is used in storeParamsOn to reduced items to path references where possible\
-	\
+\fs24 \cf0 	\
 
 \f0\b children
-\f1\b0  - for composites, return your children\
+\f1\b0  - for players that hold other players or objects, return those children\
 	player classes should implement where appropriate.\
 	a 
 \f0\b Patch
@@ -200,22 +152,30 @@ name - an explicit name if it has been set or the filename ( if path is known)\
 \f0\b\fs22 deepDo(function)
 \f1\b0  - do to allChildren
 \fs26 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs20 \
+\fs20 \cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \
+\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \ul playing in patterns:\ulnone \
+\f0\b \cf0 \ul playing in patterns:\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 		\
+\f1\b0 \cf0 		\
 Players can be put inside of standard patterns:\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 /*\
 (
 \f2\fs18 \
 \
-p = \cf2 CropPlayer\cf0 (\
-		\cf2 Patch\cf0 .new(\{ \cf2 arg\cf0  freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;\
-				\cf2 PMOsc\cf0 .ar(freq,freq2,pmindex,phasemod,amp)\
+p = CropPlayer(\
+		Patch.new(\{ arg freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;\
+				PMOsc.ar(freq,freq2,pmindex,phasemod,amp)\
 		\},[\
 			150.06, \
 		  	27.7707, \
@@ -224,9 +184,9 @@ p = \cf2 CropPlayer\cf0 (\
 		  	0.616317\
 		 ]),0,4);\
 		 \
-y = \cf2 CropPlayer\cf0 (\
-		\cf2 Patch\cf0 .new(\{ \cf2 arg\cf0  freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;\
-				\cf2 PMOsc\cf0 .ar(freq,freq2,pmindex,phasemod,amp)\
+y = CropPlayer(\
+		Patch.new(\{ arg freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;\
+				PMOsc.ar(freq,freq2,pmindex,phasemod,amp)\
 		\},[\
 			200, \
 		  	97.7707, \
@@ -236,18 +196,23 @@ y = \cf2 CropPlayer\cf0 (\
 		 ]),0,4);\
 		 \
 \
-	\cf2 Pseq\cf0 ([ p,y,p,y ],2).play\
+	Pseq([ p,y,p,y ],2).play\
 \
 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs20 	\
+\f1\fs20 \cf3 */\cf0 \
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 each player will embed itself in the stream, making itself a single event.\
+\fs24 \cf0 each player will embed itself in the stream, making itself a single event.\
 	see AbstractPlayer::embedInStream\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs20 \
+\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 Note that each player must have a finite duration or it will play infinitely, and the\
+\fs24 \cf0 Note that each player must have a finite duration or it will play infinitely, and the\
 sequence will not progress ! A Patch does not have a finite duration.  You can use CropPlayer to impose a finite duration  (and an envelope) on any player.  This does result in an extra layer of envelope. PlayerSeqTrack is more flexible if you want simple sequencing.  Patterns are more flexible if you want to use Prand,Pswitch etc.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -263,21 +228,26 @@ any player could even respond itself as an event\
 				... that yields a player object each time\
 			\})\
 		).ar\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs18 \
+\fs18 \cf0 \
 \
 	\
 \
 
 \fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs32 Subclassing AbstractPlayer\
+\f0\b\fs32 \cf0 Subclassing AbstractPlayer\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \
-	
-\fs26 The only thing your class needs to implement is the .ar method\
-	\
+\f1\b0\fs24 \cf0 \
+	see [
+\f0\b playerServerSupport
+\f1\b0 ] for a basic rundown of the complexities involved\
+
+\fs26 \
 	After that you would usually write a gui class for it.\
 	\
 	Then implement the 
@@ -285,25 +255,32 @@ any player could even respond itself as an event\
 \f1\b0  method which enables you \
 		to load and save your object.\
 	\
+	\
+	\
+	\
 	
 \f0\b \
 
 \f1\b0\fs24 \
 
 \f0\b\fs28 Players to come\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \ul \
+\fs24 \cf0 \ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \ulnone possible futures:\
+\f1\b0 \cf0 \ulnone possible futures:\
 	Stream2Midi - renders a number stream to midi ( controllers etc.)\
 	EventStream2Midi - renders note/freq,amp/velocity, duration to midi note events\
 
 \fs22 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \ul \
-\ulnone TimelineEventPlayer\
+\f0\b\fs24 \cf0 \ul \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone TimelineEventPlayer\
 	
 \f1\b0 timecode based events.  (rather than delta based event streams where each event\
 	is responsible for determing when the one succeeding it will happen).\

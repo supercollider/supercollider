@@ -8,6 +8,8 @@
 \f0\b\fs36 \cf0 Sample
 \f1\b0\fs18 \
 \
+superclass: BufferProxy\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 This class can be used as an argument to a Patch.  It will take care of all the troubles of loading, allocating, measuring, and even beat synchronizing of a small sound file.  It will not clear the copyright.\
@@ -25,6 +27,7 @@ It will not play by itself, but it holds all the intelligence to allow other thi
 \
 (\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 p = Patch\cf0 (\{ \cf2 arg\cf0  sample;\
 \
 	\cf2 PlayBuf\cf0 .ar(sample.numChannels,\
@@ -128,13 +131,16 @@ p.play;\
 
 \f1\fs18 \cf0 (\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Instr\cf0 (\cf3 "help-Sample"\cf0 ,\{ \cf2 arg\cf0  sample,pchRatio=0.50;\
 	\cf2 PlayBuf\cf0 .ar(sample.numChannels,\
 				sample.bufnumIr, \cf4 // finds the buffer number when the synth starts\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 				sample.bufRateScaleKr * pchRatio,\
 				1.0,0.0,1.0);\
 \});\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 p = Patch\cf0 (\cf3 "help-Sample"\cf0 ,[\
 	\cf2 Sample\cf0 (\cf3 "a11wlk01.wav"\cf0 )\
 ]);\
@@ -159,6 +165,7 @@ p.topGui\
 \f1\fs18 \cf2 Instr\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\{ \cf2 arg\cf0  sample,pchRatio=1.0,start=0.0;\
 	\cf2 PlayBuf\cf0 .ar(sample.numChannels,\
 				sample.bufnumIr, \cf4 // finds the buffer number when the synth starts\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 				sample.sampleRateKr / 44100 * pchRatio,\
 				1.0,\
 				start * sample.bufFramesKr,\
@@ -259,6 +266,7 @@ beatsize\
 
 \f1\fs18 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 /***\
 \
 ( \

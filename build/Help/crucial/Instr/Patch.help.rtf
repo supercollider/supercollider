@@ -136,31 +136,7 @@ p.topGui;\
 \
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b\fs24 \cf0 Fixed Arguments\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\b0 \cf0 \
-Floats and other scalar values including Envelopes, are transparently dealt with by Patch.  These items are passed to the Instr function, but not to the SynthDef or the Synth.  They are not modulateable.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs18 \cf5 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 ( \cf4 // fixing arguments\
-\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Instr\cf0 ([\cf5 \\jmcExamples\cf0 ,\cf5 'moto-rev'\cf0 ],\{ \cf2 arg\cf0  lfo=0.2,freq=1000,rq=0.1;\
-	\cf2 RLPF\cf0 .ar(\cf2 LFPulse\cf0 .ar(\cf2 SinOsc\cf0 .kr(lfo, 0, 10, 21), [0,0.1], 0.1), freq, rq).clip2(0.4);\
-\});\
 \
-q = \cf2 Patch\cf0 ([\cf5 \\jmcExamples\cf0 ,\cf5 'moto-rev'\cf0 ],[\
-	0.2\
-]);\
-\
-q.topGui;\
-\
-)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -266,6 +242,33 @@ q.insp;\
 p.topGui;\
 \
 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Fixed Arguments\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 \
+Floats and other scalar values including Envelopes, are transparently dealt with by Patch.  These items are passed to the Instr function, but not to the SynthDef or the Synth.  They are not modulateable.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf5 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 ( \cf4 // fixing arguments\
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Instr\cf0 ([\cf5 \\jmcExamples\cf0 ,\cf5 'moto-rev'\cf0 ],\{ \cf2 arg\cf0  lfo=0.2,freq=1000,rq=0.1;\
+	\cf2 RLPF\cf0 .ar(\cf2 LFPulse\cf0 .ar(\cf2 SinOsc\cf0 .kr(lfo, 0, 10, 21), [0,0.1], 0.1), freq, rq).clip2(0.4);\
+\});\
+\
+q = \cf2 Patch\cf0 ([\cf5 \\jmcExamples\cf0 ,\cf5 'moto-rev'\cf0 ],[\
+	0.2\
+]);\
+\
+q.topGui;\
+\
+)\
 \
 \
 }
