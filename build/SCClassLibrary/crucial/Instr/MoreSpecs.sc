@@ -243,3 +243,13 @@ PlayerSpec : HasItemSpec {
 	}
 }
 
+
+// for generic object input to a Patch
+
+ObjectSpec : Spec {
+	var	<>defaultControl;
+
+	*new { |obj|
+		^super.newCopyArgs(obj)
+	}
+}
