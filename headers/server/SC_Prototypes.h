@@ -22,6 +22,8 @@
 #ifndef _SC_Prototypes_
 #define _SC_Prototypes_
 
+#include <ctype> // for size_t
+
 #include "SC_Types.h"
 
 ////////////////////////////////////////////////////////////////////////
