@@ -177,17 +177,17 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 				break;
 			case SND_SEQ_EVENT_PGMCHANGE:		// program
 				++g->sp; SetInt(g->sp, evt->data.control.channel);
-				++g->sp; SetInt(g->sp, evt->data.control.param);
+				++g->sp; SetInt(g->sp, evt->data.control.value);
 				runInterpreter(g, s_midiProgramAction, 4);
 				break;
 			case SND_SEQ_EVENT_CHANPRESS:		// touch
 				++g->sp; SetInt(g->sp, evt->data.control.channel);
-				++g->sp; SetInt(g->sp, evt->data.control.param);
+				++g->sp; SetInt(g->sp, evt->data.control.value);
 				runInterpreter(g, s_midiTouchAction, 4);
 				break;
 			case SND_SEQ_EVENT_PITCHBEND:		// bend	
 				++g->sp; SetInt(g->sp, evt->data.control.channel);
-				++g->sp; SetInt(g->sp, evt->data.control.value + 8191);
+				++g->sp; SetInt(g->sp, evt->data.control.value + 8192);
 				runInterpreter(g, s_midiBendAction, 4);
 				break;
 			case SND_SEQ_EVENT_SONGPOS:			// song ptr
