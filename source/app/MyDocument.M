@@ -296,15 +296,54 @@ void SyntaxColorize(NSTextView* textView);
 }
 
 
+- (void)wrapParensBegin:(NSString*)begStr end:(NSString*)endStr
+{
+	NSTextStorage *textStorage = [textView textStorage];
+    NSRange selectedRange = [textView selectedRange];
+    NSAttributedString *originalSelection = [textStorage attributedSubstringFromRange: selectedRange];
+    NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithAttributedString: originalSelection];
+	[newString autorelease];
+	
+	[newString replaceCharactersInRange: NSMakeRange([newString length],0) withString: endStr];
+	[newString replaceCharactersInRange: NSMakeRange(0,0) withString: begStr];
+    
+    if ([textView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
+        [textStorage replaceCharactersInRange: selectedRange withAttributedString: newString];
+		NSRange newSelectedRange = selectedRange;
+		newSelectedRange.length += [begStr length] + [endStr length];
+        [textView setSelectedRange: newSelectedRange];
+		SyntaxColorize(textView);
+        [textView didChangeText];
+    }
+}
+
+- (void)wrapParens: (int)sender
+{
+	[self wrapParensBegin: @"(" end: @")"];
+}
+
+- (void)wrapSquareBrackets: (int)sender
+{
+	[self wrapParensBegin: @"[" end: @"]"];
+}
+
+- (void)wrapCurlyBrackets: (int)sender
+{
+	[self wrapParensBegin: @"{" end: @"}"];
+}
+
+- (void)wrapComments: (int)sender
+{
+	[self wrapParensBegin: @"/*" end: @"*/"];
+}
+
+
 - (void)shiftLeft: (id)sender
 {
    NSTextStorage *textStorage = [textView textStorage];
     NSRange selectedRange = [textView selectedRange];
     if (selectedRange.length <= 0) return;
     NSAttributedString *originalSelection = [textStorage attributedSubstringFromRange: selectedRange];
-
-    NSAttributedString *tabStr = [[NSAttributedString alloc] initWithString: @"\t"];
-    [tabStr autorelease];
 
     NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithAttributedString: originalSelection];
     [newString autorelease];
@@ -316,10 +355,11 @@ void SyntaxColorize(NSTextView* textView);
     [string getCharacters: buffer];
     
     
+    int j = 1;
     if (buffer[0] == NSTabCharacter) {
         [newString deleteCharactersInRange: NSMakeRange(0,1)];
+		j -= 1;
     }
-    int j = 0;
     for (int i=0; i<length-1; ++i, ++j) {
         unichar c = buffer[i];
         unichar d = buffer[i+1];
@@ -345,7 +385,7 @@ void SyntaxColorize(NSTextView* textView);
     if (selectedRange.length <= 0) return;
     NSAttributedString *originalSelection = [textStorage attributedSubstringFromRange: selectedRange];
 
-    NSAttributedString *tabStr = [[NSAttributedString alloc] initWithString: @"\t"];
+    NSString *tabStr = [[NSString alloc] initWithString: @"\t"];
     [tabStr autorelease];
 
     NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithAttributedString: originalSelection];
@@ -357,12 +397,12 @@ void SyntaxColorize(NSTextView* textView);
     unichar* buffer = (unichar*)malloc((length+1) * sizeof(unichar));
     [string getCharacters: buffer];
     
-    [newString insertAttributedString: tabStr atIndex: 0];
+	[newString replaceCharactersInRange: NSMakeRange(0,0) withString: tabStr];
     int j = 1;
     for (int i=0; i<length-1; ++i, ++j) {
         unichar c = buffer[i];
         if (c == NSNewlineCharacter || c == NSCarriageReturnCharacter) {
-            [newString insertAttributedString: tabStr atIndex: j+1];
+			[newString replaceCharactersInRange: NSMakeRange(j+1,0) withString: tabStr];
             j += 1;
         }
     }    
@@ -383,7 +423,7 @@ void SyntaxColorize(NSTextView* textView);
     if (selectedRange.length <= 0) return;
     NSAttributedString *originalSelection = [textStorage attributedSubstringFromRange: selectedRange];
 
-    NSAttributedString *commentChars = [[NSAttributedString alloc] initWithString: @"//"];
+    NSString *commentChars = [[NSString alloc] initWithString: @"//"];
     [commentChars autorelease];
 
     NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithAttributedString: originalSelection];
@@ -395,12 +435,12 @@ void SyntaxColorize(NSTextView* textView);
     unichar* buffer = (unichar*)malloc((length+1) * sizeof(unichar));
     [string getCharacters: buffer];
     
-    [newString insertAttributedString: commentChars atIndex: 0];
+	[newString replaceCharactersInRange: NSMakeRange(0,0) withString: commentChars];
     int j = 2;
     for (int i=0; i<length-1; ++i, ++j) {
         unichar c = buffer[i];
         if (c == NSNewlineCharacter || c == NSCarriageReturnCharacter) {
-            [newString insertAttributedString: commentChars atIndex: j+1];
+			[newString replaceCharactersInRange: NSMakeRange(j+1,0) withString: commentChars];
             j += 2;
         }
     }    
@@ -422,9 +462,6 @@ void SyntaxColorize(NSTextView* textView);
     NSRange selectedRange = [textView selectedRange];
     if (selectedRange.length <= 0) return;
     NSAttributedString *originalSelection = [textStorage attributedSubstringFromRange: selectedRange];
-
-    NSAttributedString *tabStr = [[NSAttributedString alloc] initWithString: @"\t"];
-    [tabStr autorelease];
 
     NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithAttributedString: originalSelection];
     [newString autorelease];

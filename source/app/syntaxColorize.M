@@ -327,7 +327,7 @@ void SyntaxColorize(NSTextView* textView)
 			} else if (c == '*' && prevc == '/') clevel++;
 			prevc = c;
 		} while (c != 0);
-		if (c == 0 || textpos >= textlen) {
+		if (textpos > textlen) {
 			goto error2;
 		} else {
 			endrun = textpos;

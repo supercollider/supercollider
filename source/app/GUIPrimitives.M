@@ -626,6 +626,15 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 				underlineRange.length --;
 			}
 			
+			// include square brackets in selection
+			start = underlineRange.location - 1;
+			end = underlineRange.location + underlineRange.length + 1;
+			if (start >= 0 && [string characterAtIndex: start] == '['
+				&& end < limitRange.length && [string characterAtIndex: end] == ']') {
+				underlineRange.location --;
+				underlineRange.length += 2;
+			}
+			
 			if ((int)underlineRange.length > 0) {
 				[doc selectRangeStart: underlineRange.location size: underlineRange.length];
 				SetTrue(a);
