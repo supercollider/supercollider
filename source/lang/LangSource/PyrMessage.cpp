@@ -1127,7 +1127,6 @@ void returnFromBlock(VMGlobals *g)
 	PyrMethod *meth;
 	PyrMethodRaw *methraw;
 	PyrMethodRaw *blockraw;
-	PyrSlot *resultSlot;
 	
 	//if (gTraceInterpreter) postfl("->returnFromBlock\n");
 	//printf("->returnFromBlock\n");
@@ -1178,10 +1177,9 @@ void returnFromBlock(VMGlobals *g)
 
 void returnFromMethod(VMGlobals *g)
 {
-	PyrFrame *returnFrame, *curframe, *frame, *homeContext;
+	PyrFrame *returnFrame, *curframe, *homeContext;
 	PyrMethod *meth;
 	PyrMethodRaw *methraw;
-	PyrSlot *resultSlot;
 	curframe = g->frame;
 	
 	//assert(curframe->context.uof == NULL);
@@ -1216,7 +1214,6 @@ void returnFromMethod(VMGlobals *g)
 		
 		// make sure homeContext is a caller and find earliest stack frame
 		{
-			// there seems to be an optimizer bug unless we use a block
 			PyrFrame *tempFrame = curframe; 
 			while (tempFrame != homeContext) {
 				tempFrame = tempFrame->caller.uof;
@@ -1232,7 +1229,6 @@ void returnFromMethod(VMGlobals *g)
 		}
 		
 		{
-			// there seems to be an optimizer bug unless we use a block
 			PyrFrame *tempFrame = curframe;
 			while (tempFrame != homeContext) {
 				meth = tempFrame->method.uom;
