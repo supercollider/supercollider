@@ -115,6 +115,11 @@ ProxySpace : EnvironmentRedirect {
 		super.clear;
 	}
 	
+	end { arg fadeTime;
+		this.do({ arg proxy; proxy.end(fadeTime) });
+		tempoProxy.free;
+	}
+	
 	release { arg fadeTime;
 		this.do({ arg proxy; proxy.release(fadeTime) });
 		tempoProxy.free;
