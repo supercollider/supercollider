@@ -364,6 +364,7 @@
 		F50D069402E6A1C601CA2799 = {
 			children = (
 				F5D127DE03383D340164B34C,
+				F5499A1103A3023A01BA7E76,
 			);
 			isa = PBXGroup;
 			name = Frameworks;
@@ -375,6 +376,90 @@
 			isa = PBXGroup;
 			name = Resources;
 			refType = 4;
+		};
+		F5499A1103A3023A01BA7E76 = {
+			isa = PBXFrameworkReference;
+			name = vecLib.framework;
+			path = /System/Library/Frameworks/vecLib.framework;
+			refType = 0;
+		};
+		F5499A1F03A3023A01BA7E76 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5499A2003A3023A01BA7E76 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5499A2103A3023A01BA7E76 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5499A2203A3023A01BA7E76 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5499A2303A3023A01BA7E76 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5499A2403A3023A01BA7E76 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5499A2503A3023A01BA7E76 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5499A2603A3023A01BA7E76 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5499A2703A3023A01BA7E76 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5499A2803A3023A01BA7E76 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5499A2903A3023A01BA7E76 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5499A2A03A3023A01BA7E76 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5499A2B03A3023A01BA7E76 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		F5959CF80339983301A80099 = {
 			isa = PBXFileReference;
@@ -497,6 +582,7 @@
 		F5B7408902E9455801CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5499A2703A3023A01BA7E76,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -603,6 +689,7 @@
 		F5B740AB02E94E2001CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5499A2403A3023A01BA7E76,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -677,6 +764,7 @@
 		F5B740CC02E94F7101CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5499A2003A3023A01BA7E76,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -747,6 +835,7 @@
 		F5B740EB02E9525E01CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5499A2803A3023A01BA7E76,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -836,6 +925,7 @@
 		F5B7412902E9544701CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5499A2603A3023A01BA7E76,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -926,6 +1016,7 @@
 		F5B7414C02E9554601CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5499A2503A3023A01BA7E76,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1013,6 +1104,7 @@
 		F5B7416E02E9582B01CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5499A2A03A3023A01BA7E76,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1082,6 +1174,7 @@
 		F5B7417602E9BAE901CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5499A1F03A3023A01BA7E76,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1157,6 +1250,7 @@
 		F5B7419702E9BC6101CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5499A2103A3023A01BA7E76,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1238,6 +1332,7 @@
 		F5B741D102E9BD8501CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5499A2903A3023A01BA7E76,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1303,6 +1398,7 @@
 		F5B741D702E9CBFE01CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5499A2B03A3023A01BA7E76,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1373,6 +1469,7 @@
 		F5B741F702E9D0C501CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5499A2303A3023A01BA7E76,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1443,6 +1540,7 @@
 		F5B741FE02E9D32B01CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				F5499A2203A3023A01BA7E76,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
