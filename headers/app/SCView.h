@@ -451,7 +451,7 @@ class SCMultiSliderView : public SCView
 {
 public:	
 	SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-
+        virtual ~SCMultiSliderView();
 	virtual void draw(SCRect inDamage);
 	virtual void mouseTrack(SCPoint where, int modifiers);
 	
@@ -471,17 +471,17 @@ protected:
         SCColor mFillColor;
         SCColor mStrokeColor;
 	SCRect mThumbRect;
-	double mCurrentY;
+	double mCurrentY, mCurrentX;
         int mCurrentIndex;
         double mStepSize, mStepScale;
         double * mYValues;
         DrawBackground* mKnob;
         float mXOffset ; //space between points
-        bool mReadOnly;
+        bool mReadOnly, mDrawLines, mShowIndex;
         int mResamp;
-       // CGRect * mCGRects;
 };
 SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+
 
 
 
