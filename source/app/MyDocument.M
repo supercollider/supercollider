@@ -519,21 +519,22 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 		return;
 	}
 	int maxlength  = [nsstring length];
-    
-	if (rangeSize < 0) {
-        unsigned int lineStart, lineEnd;
-        range.length = 0;
-        [nsstring getLineStart: &lineStart end: &lineEnd contentsEnd: nil forRange: range];
-        range = NSMakeRange(lineStart, lineEnd - lineStart);
-    }
-	if(rangeSize + rangeStart >=  maxlength) {
-		range.length = maxlength - rangeStart;
+	if(maxlength < 1) range = NSMakeRange(0, 0);
+	else{
+		if (rangeSize < 0) {
+			unsigned int lineStart, lineEnd;
+			range.length = 0;
+			[nsstring getLineStart: &lineStart end: &lineEnd contentsEnd: nil forRange: range];
+			range = NSMakeRange(lineStart, lineEnd - lineStart);
+		}
+		if(rangeStart >= maxlength) range.location = maxlength - 1;
+		if(rangeSize + rangeStart >=  maxlength) {
+			range.length = maxlength - rangeStart;
+		}
 	}
-	
     [localTextView setSelectedRange: range];
     [localTextView scrollRangeToVisible: range];
 }
-
 -(void)selectLine:(int)linenum
 {
     NSTextView *localTextView = [self textView];
