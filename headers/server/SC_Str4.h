@@ -25,6 +25,7 @@
 
 #include "Hash.h"
 #include <stdio.h>
+#include <limits.h>
 
 #ifndef _LASTCHAR_
 #define _LASTCHAR_
@@ -86,5 +87,17 @@ inline void str4cpy(int32 *dst, const int32 *src)
 		*dst++ = c = *src++;
 	} while (c & kLASTCHAR);
 }
+
+inline int sc_atoi(char *string)
+{
+	int value = 0;
+	if (*string == 0) return -1;
+	uint32 c;
+	while ((c = *string++ - '0') <= 9) {
+		value = value * 10 + c;
+	}
+	return value;
+}
+
 
 #endif

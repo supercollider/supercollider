@@ -85,6 +85,7 @@ int Graph_New(struct World *inWorld, struct GraphDef *inGraphDef, int32 inID,
 	return err;
 }
 
+
 void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter *msg)
 {	
 	//scprintf("->Graph_Ctor\n");
@@ -140,11 +141,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 			if (msg->nextTag('f') == 's') {
 				char* string = msg->gets();
 				if (*string == 'c') {
-					int bus = 0, c;
-					string++;
-					while ((c = *string++) != 0) {
-						if (c >= '0' && c <= '9') bus = bus * 10 + c - '0';
-					}
+					int bus = sc_atoi(string+1);
 					Graph_MapControl(graph, hash, name, 0, bus);
 				}
 			} else {
@@ -156,11 +153,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 			if (msg->nextTag('f') == 's') {
 				char* string = msg->gets();
 				if (*string == 'c') {
-					int bus = 0, c;
-					string++;
-					while ((c = *string++) != 0) {
-						if (c >= '0' && c <= '9') bus = bus * 10 + c - '0';
-					}
+					int bus = sc_atoi(string+1);
 					Graph_MapControl(graph, index, bus);
 				}
 			} else {
@@ -400,7 +393,7 @@ void Graph_MapControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
 {
 	if (inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
 	World *world = inGraph->mNode.mWorld;
-	if (inBus == 0xFFFFFFFF) {
+	if (inBus >= 0x80000000) {
 		inGraph->mMapControls[inIndex] = inGraph->mControls + inIndex;
 	} else if (inBus < world->mNumControlBusChannels) {
 		inGraph->mMapControls[inIndex] = world->mControlBus + inBus;
