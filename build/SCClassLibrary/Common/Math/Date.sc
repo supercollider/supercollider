@@ -55,7 +55,17 @@ Date {
 			s <<  second.asString;
 		})
 	}
+
+	asctime {
+		_AscTime
+		^this.primitiveFailed
+	}
+	asString {
+		^this.asctime
+	}
+	format {
+		arg format;
+		_prStrFTime;
+		^this.primitiveFailed
+	}
 }
-
-
-
