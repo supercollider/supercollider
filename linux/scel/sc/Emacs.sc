@@ -15,7 +15,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 // USA
 
-EmacsInterface {
+EmacsInterface
+{
 	classvar handlers;
 
 	*initClass {
@@ -73,19 +74,19 @@ EmacsInterface {
 					result.add(method.name);
 				};
 			};
-
+			
 			file = File(fileName, "w");
 			result.collectAs({ |s| s.asString }, Array).storeLispOn(file);
 			file.close;
 
 			t = Main.elapsedTime - t;
 			("Emacs: Built symbol table in" + t.asString + "seconds").postln;
-
+			
 			true
 		})
 		.put(\classDefinitions, { | name |
 			var result, class, files;
-
+			
 			if ((class = name.asSymbol.asClass).notNil) {
 				files = IdentitySet.new;
 				result = result.add([
@@ -147,10 +148,46 @@ EmacsInterface {
 
 			name -> result
 		})
+		.put(\methodArgs, { | className, methodName |
+			var class, method, stream, varArgs, lastIndex;
+			class = className.asSymbol.asClass;
+			stream = CollStream.new;
+			while ({ class.notNil }, {
+				methodName = methodName.asSymbol;
+				method = class.class.methods.detect({ | method | method.name === methodName });
+				if (method.notNil) {
+// 					stream << className << $. << methodName;
+					if (method.argNames.notNil) {
+// 						stream << $(;
+						varArgs = method.varArgs;
+						lastIndex = method.argNames.size - 2;
+						method.argNames.copyToEnd(1).do({ | name, i |
+							var default;
+							if (varArgs and: { i == lastIndex }) {
+								stream << " ... ";
+							}{
+								if (i != 0) { stream << ", " };
+							};
+							stream << name;
+							default = method.prototypeFrame[i];
+							if (default.notNil) {
+								stream << "=" << default;
+							};
+						});
+// 						stream << $);
+					};
+					class = nil;
+				}{
+					class = class.superclass;
+				}
+			});
+			stream.collection
+		})
 	}
 }
 
-Emacs {
+Emacs
+{
 	classvar outFile, requestHandlers, requestAllocator;
 	classvar <menu, <>keys;
 
@@ -197,7 +234,7 @@ Emacs {
 	}
 
 	// sclang interface
-	*sendToLisp { | cmdName, obj, handler=nil |
+	*sendToLisp { | cmd, obj, handler=nil |
 		var id, str;
 		if (outFile.notNil) {
 			if (handler.notNil) {
@@ -206,7 +243,7 @@ Emacs {
 					requestHandlers.put(id, handler);
 				};
 			};
-			str = [cmdName.asSymbol, obj, id].asLispString;
+			str = [cmd.asSymbol, obj, id].asLispString;
 			outFile.putInt32(str.size);
 			outFile.write(str);
 			outFile.flush;

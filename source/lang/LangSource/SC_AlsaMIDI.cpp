@@ -35,6 +35,7 @@
 #include "PyrSched.h"
 #include "GC.h"
 
+PyrSymbol* s_midiin;
 PyrSymbol* s_domidiaction;
 PyrSymbol* s_midiNoteOnAction;
 PyrSymbol* s_midiNoteOffAction;
@@ -46,11 +47,10 @@ PyrSymbol* s_midiBendAction;
 PyrSymbol* s_midiSysexAction;
 PyrSymbol* s_midiSysrtAction;
 PyrSymbol* s_midiSMPTEAction;
-PyrSymbol* s_midiin;
-PyrSymbol* s_numMIDIDev;
-PyrSymbol* s_midiclient;
+
+static int g_ivx_MIDIOut_port;
+
 const int kMaxMidiPorts = 16;
-int gNumMIDIInPorts = 0, gNumMIDIOutPorts = 0;
 bool gMIDIInitialized = false;
 
 extern bool compiledOK;
@@ -63,10 +63,13 @@ static int initMIDI(int numIn, int numOut);
 static int disposeMIDI();
 static int restartMIDI();
 static void cleanUpMIDI();
-static int sendMIDI(int port, int destId, int length, int hiStatus, int loStatus, int aval, int bval, float late);
+
 static int listMIDIEndpoints(struct VMGlobals *g, PyrSlot *a);
 static int connectMIDIIn(int inputIndex, int uid);
 static int disconnectMIDIIn(int inputIndex, int uid);
+
+static int sendMIDI(int port, int destId, int length, int hiStatus, int loStatus, int aval, int bval, float late);
+static int sendMIDISysex(int port, int destId, int length, uint8* data);
 
 // =====================================================================
 // Platform declarations (ALSA)
@@ -74,10 +77,6 @@ static int disconnectMIDIIn(int inputIndex, int uid);
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
-#else
-# ifndef HAVE_ALSA
-#  define HAVE_ALSA 0
-# endif
 #endif
 
 #if HAVE_ALSA
@@ -100,7 +99,9 @@ struct SC_AlsaMidiClient
 {
 	snd_seq_t*			mHandle;
 	int					mQueue;
+	int					mNumInPorts;
 	int					mInPorts[kMaxMidiPorts];
+	int					mNumOutPorts;
 	int					mOutPorts[kMaxMidiPorts];
 	snd_midi_event_t*	mEventToMidi;
 	snd_midi_event_t*	mMidiToEvent;
@@ -109,6 +110,9 @@ struct SC_AlsaMidiClient
 
 	static void* inputThreadFunc(void*);
 	void processEvent(snd_seq_event_t* evt);
+
+	int connectInput(int inputIndex, int uid, int (*action)(snd_seq_t*, snd_seq_port_subscribe_t*), const char* actionName);
+	int sendEvent(int outputIndex, int uid, snd_seq_event_t* evt, float late=0.f);
 };
 
 static SC_AlsaMidiClient gMIDIClient;
@@ -127,33 +131,6 @@ struct SC_AlsaMidiPort
 // =====================================================================
 // Platform implementation (ALSA)
 // =====================================================================
-
-void* SC_AlsaMidiClient::inputThreadFunc(void* arg)
-{
-	SC_AlsaMidiClient* client = (SC_AlsaMidiClient*)arg;
-	snd_seq_t* handle = client->mHandle;
-	int npfd = snd_seq_poll_descriptors_count(handle, POLLIN);
-	struct pollfd pfd[npfd];
-
-	snd_seq_poll_descriptors(handle, pfd, npfd, POLLIN);
-
-	while (client->mShouldBeRunning) {
-		if (poll(pfd, npfd, 2000) > 0) { // 2s timeout
-			for (int i=0; i < npfd; i++) {
-				if (pfd[i].revents > 0) {
-					do {
-						snd_seq_event_t* evt;
-						snd_seq_event_input(handle, &evt);
-						client->processEvent(evt);
-						snd_seq_free_event(evt);
-					} while (snd_seq_event_input_pending(handle, 0) > 0);
-				}
-			}
-		}
-	}
-
-	return 0;
-}
 
 // TODO: SMPTE
 
@@ -250,22 +227,113 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 				++g->sp; SetObject(g->sp, (PyrObject*)sysexArray);
 				runInterpreter(g, s_midiSysexAction, 3);
 				break;
-// 			default :
-// 				// convert to midi packet
-// 				snd_midi_event_reset_decode(mEventToMidi);
-// 				memset(pkt.data, 0, kAlsaMaxPacketSize);
-// 				if (snd_midi_event_decode(mEventToMidi, pkt.data, kAlsaMaxPacketSize, evt) > 0) {
-// 					processPacket(&pkt);
-// 				} else {
-// 					g->sp -= 2;
-// 				}
-// 				break;
 			default:
-				g->sp -= 2;
+				// convert to midi packet
+				snd_midi_event_reset_decode(mEventToMidi);
+				memset(pkt.data, 0, kAlsaMaxPacketSize);
+				if (snd_midi_event_decode(mEventToMidi, pkt.data, kAlsaMaxPacketSize, evt) > 0) {
+					for (size_t i=0; i < kAlsaMaxPacketSize; i++) {
+						++g->sp; SetInt(g->sp, pkt.data[i]);
+					}
+					runInterpreter(g, s_domidiaction, 2+kAlsaMaxPacketSize);
+				} else {
+					g->sp -= 2;
+				}
+// 			default:
+// 				g->sp -= 2;
 		}
 		g->canCallOS = false;
 	}
 	pthread_mutex_unlock (&gLangMutex);
+}
+
+void* SC_AlsaMidiClient::inputThreadFunc(void* arg)
+{
+	SC_AlsaMidiClient* client = (SC_AlsaMidiClient*)arg;
+	snd_seq_t* handle = client->mHandle;
+	int npfd = snd_seq_poll_descriptors_count(handle, POLLIN);
+	struct pollfd pfd[npfd];
+
+	snd_seq_poll_descriptors(handle, pfd, npfd, POLLIN);
+
+	while (client->mShouldBeRunning) {
+		if (poll(pfd, npfd, 2000) > 0) { // 2s timeout
+			for (int i=0; i < npfd; i++) {
+				if (pfd[i].revents > 0) {
+					do {
+						snd_seq_event_t* evt;
+						snd_seq_event_input(handle, &evt);
+						client->processEvent(evt);
+						snd_seq_free_event(evt);
+					} while (snd_seq_event_input_pending(handle, 0) > 0);
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+int SC_AlsaMidiClient::connectInput(int inputIndex, int uid, int (*action)(snd_seq_t*, snd_seq_port_subscribe_t*), const char* actionName)
+{
+	snd_seq_t* seq = mHandle;
+	snd_seq_client_info_t* cinfo;
+	snd_seq_port_subscribe_t* subs;
+	snd_seq_addr_t src, dst;
+
+	if ((inputIndex < 0) || (inputIndex >= mNumInPorts)) return errIndexOutOfRange;
+
+	snd_seq_client_info_alloca(&cinfo);
+	if (snd_seq_get_client_info(seq, cinfo) < 0) {
+		post("MIDI (ALSA): could not get client info: %s\n", snd_strerror(errno));
+		return errFailed;
+	}
+
+	dst.client = snd_seq_client_info_get_client(cinfo);
+	dst.port = mInPorts[inputIndex];
+	src.client = uid >> 16;
+	src.port = uid & 0xFFFF;
+
+	//post("MIDI (ALSA): connect ndx %d uid %u dst %d:%d src %d:%d\n", inputIndex, uid, dst.client, dst.port, src.client, src.port);
+
+	snd_seq_port_subscribe_alloca(&subs);	
+	snd_seq_port_subscribe_set_sender(subs, &src);
+	snd_seq_port_subscribe_set_dest(subs, &dst);
+
+	if ((*action)(seq, subs) < 0) {
+		post("MIDI (ALSA): %s failed (%s)\n", actionName, snd_strerror(errno));
+		return errFailed;
+	}
+
+	return errNone;
+}
+
+int SC_AlsaMidiClient::sendEvent(int outputIndex, int uid, snd_seq_event_t* evt, float late)
+{
+	snd_seq_real_time time;
+	
+	if ((outputIndex < 0) || (outputIndex >= mNumOutPorts)) return errIndexOutOfRange;
+
+	snd_seq_ev_set_source(evt, mOutPorts[outputIndex]);
+	if (uid == 0) {
+		// send to all subscribed ports
+		snd_seq_ev_set_subs(evt);
+	} else {
+		// send to specific port
+		snd_seq_ev_set_dest(evt, uid >> 16, uid & 0xFFFF);
+	}
+
+	if (late > 0.f) {
+		time.tv_sec = (unsigned)(late * 1.0e-6f);
+		time.tv_nsec = (unsigned)(late * 1.0e3f);
+	} else {
+		time.tv_sec = time.tv_nsec = 0;
+	}
+
+	snd_seq_ev_schedule_real(evt, mQueue, 1, &time);
+	snd_seq_event_output_direct(mHandle, evt);
+
+	return errNone;
 }
 
 int initMIDI(int numIn, int numOut)
@@ -307,7 +375,7 @@ int initMIDI(int numIn, int numOut)
 		client->mInPorts[i] = port;
     }
 
-    gNumMIDIInPorts = i;
+    client->mNumInPorts = i;
     
     for (i=0; i < numOut; i++) {
         char str[32];
@@ -321,7 +389,6 @@ int initMIDI(int numIn, int numOut)
             SND_SEQ_PORT_TYPE_APPLICATION);
 
 		if (port < 0) {
-            gNumMIDIOutPorts = i;
             post("MIDI (ALSA): could not create MIDI out port %d: %s\n", i, snd_strerror(errno));
 			break;
         }
@@ -329,7 +396,7 @@ int initMIDI(int numIn, int numOut)
 		client->mOutPorts[i] = port;
     }
 
-    gNumMIDIOutPorts = i;
+    client->mNumOutPorts = i;
 
 	// initialize queue
 	client->mQueue = snd_seq_alloc_queue(client->mHandle);
@@ -403,48 +470,6 @@ void cleanUpMIDI()
 		snd_seq_close(client->mHandle);
 		client->mHandle = 0;
 	}
-}
-
-int sendMIDI(int port, int uid, int length, int hiStatus, int loStatus, int aval, int bval, float late)
-{
-	SC_AlsaMidiClient* client = &gMIDIClient;
-
-	//post("MIDI (ALSA): send %x %x %d %d\n", hiStatus>>4, loStatus, aval, bval);
-
-	if (client->mHandle) {
-		snd_seq_event_t evt;
-		snd_seq_real_time time;
-		SC_AlsaMidiPacket pkt;
-
-		snd_seq_ev_clear(&evt);
-		pkt.data[0] = (hiStatus & 0xF0) | (loStatus & 0x0F);
-		pkt.data[1] = (uint8)aval;
-		pkt.data[2] = (uint8)bval;
-		
-		snd_midi_event_reset_encode(client->mMidiToEvent);
-
-		if (snd_midi_event_encode(client->mMidiToEvent, pkt.data, length, &evt) < 0) {
-			post("MIDI (ALSA): could not encode midi data: %s\n", snd_strerror(errno));
-			return errFailed;
-		}
-
-		snd_seq_ev_set_source(&evt, client->mOutPorts[port]);
-		if (uid == 0) {
-			// send to all subscribed ports
-			snd_seq_ev_set_subs(&evt);
-		} else {
-			// send to specific port
-			snd_seq_ev_set_dest(&evt, uid >> 16, uid & 0xFFFF);
-		}
-		time.tv_sec = (unsigned)(late * 1.0e-6f);
-		time.tv_nsec = (unsigned)(late * 1.0e3f);
-		snd_seq_ev_schedule_real(&evt, client->mQueue, 1, &time);
-		snd_seq_event_output_direct(client->mHandle, &evt);
-
-		return errNone;
-	}
-
-	return errFailed;
 }
 
 inline static bool SC_AlsaCheckPerm(snd_seq_port_info_t* pinfo, int bits)
@@ -576,48 +601,48 @@ int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* a)
 	return errNone;
 }
 
-static int SC_AlsaMidiDoConnectIn(int inputIndex, int uid, int (*action)(snd_seq_t*, snd_seq_port_subscribe_t*), const char* actionName)
-{
-	if (!gMIDIClient.mHandle) return errFailed;
-
-	snd_seq_t* seq = gMIDIClient.mHandle;
-	snd_seq_client_info_t* cinfo;
-	snd_seq_port_subscribe_t* subs;
-	snd_seq_addr_t src, dst;
-
-	snd_seq_client_info_alloca(&cinfo);
-	if (snd_seq_get_client_info(seq, cinfo) < 0) {
-		post("MIDI (ALSA): could not get client info: %s\n", snd_strerror(errno));
-		return errFailed;
-	}
-
-	dst.client = snd_seq_client_info_get_client(cinfo);
-	dst.port = gMIDIClient.mInPorts[inputIndex];
-	src.client = uid >> 16;
-	src.port = uid & 0xFFFF;
-
-	//post("MIDI (ALSA): connect ndx %d uid %u dst %d:%d src %d:%d\n", inputIndex, uid, dst.client, dst.port, src.client, src.port);
-
-	snd_seq_port_subscribe_alloca(&subs);	
-	snd_seq_port_subscribe_set_sender(subs, &src);
-	snd_seq_port_subscribe_set_dest(subs, &dst);
-
-	if ((*action)(seq, subs) < 0) {
-		post("MIDI (ALSA): %s failed (%s)\n", actionName, snd_strerror(errno));
-		return errFailed;
-	}
-
-	return errNone;
-}
-
 int connectMIDIIn(int inputIndex, int uid)
 {
-	return SC_AlsaMidiDoConnectIn(inputIndex, uid, &snd_seq_subscribe_port, "connect");
+	if (!gMIDIClient.mHandle) return errFailed;
+	return gMIDIClient.connectInput(inputIndex, uid, &snd_seq_subscribe_port, "connect");
 }
 
 int disconnectMIDIIn(int inputIndex, int uid)
 {
-	return SC_AlsaMidiDoConnectIn(inputIndex, uid, &snd_seq_unsubscribe_port, "disconnect");
+	if (!gMIDIClient.mHandle) return errFailed;
+	return gMIDIClient.connectInput(inputIndex, uid, &snd_seq_unsubscribe_port, "disconnect");
+}
+
+int sendMIDI(int port, int uid, int length, int hiStatus, int loStatus, int aval, int bval, float late)
+{
+	if (!gMIDIClient.mHandle) return errFailed;
+
+	//post("MIDI (ALSA): send %x %x %d %d\n", hiStatus>>4, loStatus, aval, bval);
+
+	snd_seq_event_t evt;
+	SC_AlsaMidiPacket pkt;
+
+	snd_seq_ev_clear(&evt);
+	pkt.data[0] = (hiStatus & 0xF0) | (loStatus & 0x0F);
+	pkt.data[1] = (uint8)aval;
+	pkt.data[2] = (uint8)bval;
+		
+	snd_midi_event_reset_encode(gMIDIClient.mMidiToEvent);
+
+	if (snd_midi_event_encode(gMIDIClient.mMidiToEvent, pkt.data, length, &evt) < 0) {
+		post("MIDI (ALSA): could not encode midi data: %s\n", snd_strerror(errno));
+		return errFailed;
+	}
+
+	return gMIDIClient.sendEvent(port, uid, &evt, late);
+}
+
+int sendMIDISysex(int port, int uid, int length, uint8* data)
+{
+	if (!gMIDIClient.mHandle) return errFailed;
+	snd_seq_event_t evt;
+	snd_seq_ev_set_variable(&evt, length, data);
+	return gMIDIClient.sendEvent(port, uid, &evt, 0.f);
 }
 #endif // HAVE_ALSA
 
@@ -645,11 +670,6 @@ void cleanUpMIDI()
 {
 }
 
-int sendMIDI(int port, int destId, int length, int hiStatus, int loStatus, int aval, int bval, float late)
-{
-	return errNone;
-}
-
 int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* dst)
 {
 	SetNil(dst);
@@ -665,54 +685,20 @@ int disconnectMIDIIn(int inputIndex, int uid)
 {
 	return errNone;
 }
+
+int sendMIDI(int port, int destId, int length, int hiStatus, int loStatus, int aval, int bval, float late)
+{
+	return errNone;
+}
+
+int sendMIDISysex(int port, int destId, int length, uint8* data)
+{
+	return errNone;
+}
 #endif // !HAVE_ALSA
 
 // =====================================================================
 // Primitives
-// =====================================================================
-
-int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed);
-int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
-{
-	return listMIDIEndpoints(g, g->sp);
-}
-
-int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed);
-int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
-{
-	//PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
-        
-	int err, inputIndex, uid;
-	err = slotIntVal(b, &inputIndex);
-	if (err) return errWrongType;
-	if (inputIndex < 0 || inputIndex >= gNumMIDIInPorts) return errIndexOutOfRange;
-	
-	err = slotIntVal(c, &uid);
-	if (err) return errWrongType;
-
-	return connectMIDIIn(inputIndex, uid);
-}
-
-int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed);
-int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
-{
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
-        
-	int err, inputIndex, uid;
-	err = slotIntVal(b, &inputIndex);
-	if (err) return err;
-	if (inputIndex < 0 || inputIndex >= gNumMIDIInPorts) return errIndexOutOfRange;
-	err = slotIntVal(c, &uid);
-	if (err) return err;
-
-	return disconnectMIDIIn(inputIndex, uid);
-}
-
-// =====================================================================
-// Primitives (all platforms)
 // =====================================================================
 
 int prInitMIDI(struct VMGlobals *g, int numArgsPushed);
@@ -744,6 +730,45 @@ int prRestartMIDI(VMGlobals *g, int numArgsPushed)
 	return restartMIDI();
 }
 
+int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed);
+int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
+{
+	return listMIDIEndpoints(g, g->sp);
+}
+
+int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed);
+int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
+{
+	//PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+        
+	int err, inputIndex, uid;
+	err = slotIntVal(b, &inputIndex);
+	if (err) return err;
+	
+	err = slotIntVal(c, &uid);
+	if (err) return err;
+
+	return connectMIDIIn(inputIndex, uid);
+}
+
+int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed);
+int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+        
+	int err, inputIndex, uid;
+	err = slotIntVal(b, &inputIndex);
+	if (err) return err;
+
+	err = slotIntVal(c, &uid);
+	if (err) return err;
+
+	return disconnectMIDIIn(inputIndex, uid);
+}
+
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed);
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 {
@@ -761,12 +786,10 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b = g->sp - 1;
     PyrSlot *plat = g->sp;
 
-        
 	int err, outputIndex, uid, length, hiStatus, loStatus, aval, bval;
     float late;
 	err = slotIntVal(p, &outputIndex);
 	if (err) return err;
-	if (outputIndex < 0 || outputIndex >= gNumMIDIOutPorts) return errIndexOutOfRange;
 	
 	err = slotIntVal(u, &uid);
 	if (err) return err;
@@ -792,14 +815,35 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
     return sendMIDI(outputIndex, uid, length, hiStatus, loStatus, aval, bval, late);
 }
 
+int prSendSysex(VMGlobals *g, int numArgsPushed);
+int prSendSysex(VMGlobals *g, int numArgsPushed)
+{	
+    int err, uid, outputIndex;
+	PyrInt8Array* packet;
+
+	// rcvr, uid, packet
+	PyrSlot* args = g->sp - 2;
+
+	err = slotIntVal(args->uo->slots + g_ivx_MIDIOut_port, &outputIndex);
+	if (err) return err;
+
+    err = slotIntVal(args+1, &uid);
+    if (err) return err;
+    
+    packet = args[2].uob;
+
+	return sendMIDISysex(outputIndex, uid, packet->size, packet->b);
+}
+
 void initMIDIPrimitives()
 {
 	int base, index;
         
 	base = nextPrimitiveIndex();
 	index = 0;
-        
+
 	s_midiin = getsym("MIDIIn");
+
     s_domidiaction = getsym("doAction");
     s_midiNoteOnAction = getsym("doNoteOnAction");
     s_midiNoteOffAction = getsym("doNoteOffAction");
@@ -811,15 +855,17 @@ void initMIDIPrimitives()
     s_midiSysexAction = getsym("doSysexAction");
     s_midiSysrtAction = getsym("doSysrtAction");
     s_midiSMPTEAction = getsym("doSMPTEaction");
-    s_numMIDIDev = getsym("prSetNumberOfDevices");
-    s_midiclient = getsym("MIDIClient");
-	definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
+
+	g_ivx_MIDIOut_port = instVarOffset("MIDIOut", "port");
+
 	definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);	
+	definePrimitive(base, index++, "_RestartMIDI", prRestartMIDI, 1, 0);        
+	definePrimitive(base, index++, "_DisposeMIDIClient", prDisposeMIDIClient, 1, 0);
+
+	definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
 	definePrimitive(base, index++, "_ConnectMIDIIn", prConnectMIDIIn, 3, 0);
 	definePrimitive(base, index++, "_DisconnectMIDIIn", prDisconnectMIDIIn, 3, 0);
-	definePrimitive(base, index++, "_DisposeMIDIClient", prDisposeMIDIClient, 1, 0);
-	definePrimitive(base, index++, "_RestartMIDI", prRestartMIDI, 1, 0);
-        
+
     definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
 
     cleanUpMIDI();

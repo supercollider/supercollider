@@ -36,36 +36,31 @@
 	    (delete-char 1)
 	  (forward-line 1))))))
 
-(defconst sclang-rtf-doc-regexp "{\\\\rtf")
-(defconst sclang-rtf-table-regexp (concat
-				   "{\\\\\\("
-				   (regexp-opt '("colortbl" "filetbl" "fonttbl" "stylesheet")) 
-				   "\\)"))
-(defconst sclang-rtf-control-regexp "\\\\\\(\\([{}\\\t\n]\\)\\|\\(\\(par\\|tab\\)?[^\\ \n]+ ?\\)\\)")
+(eval-when-compile
+  (defmacro sclang-save-buffer-state (varlist &rest body)
+    "Bind variables according to VARLIST and eval BODY restoring buffer state."
+    `(let* ,(append varlist
+		    '((modified (buffer-modified-p)) (buffer-undo-list t)
+		      (inhibit-read-only t) (inhibit-point-motion-hooks t)
+		      (inhibit-modification-hooks t)
+		      deactivate-mark buffer-file-name buffer-file-truename))
+       (unwind-protect
+	   ,@body
+	 (when (and (not modified) (buffer-modified-p))
+	   (set-buffer-modified-p nil))))))
 
-(defun sclang-un-rtfify-buffer (&optional buffer)
-  (with-current-buffer (or buffer (current-buffer))
-    (let ((doc-regexp sclang-rtf-doc-regexp)
-	  (table-regexp sclang-rtf-table-regexp)
-	  (control-regexp sclang-rtf-control-regexp)
-	  (case-fold-search nil))
-      (save-excursion
-	(goto-char (point-min))
-	(when (looking-at doc-regexp)
-	  (while (re-search-forward "[{}\\\n]" nil t)
-	    (goto-char (match-beginning 0))
-	    (cond ((looking-at table-regexp)
-		   (let ((beg (point)))
-		     (forward-list 1)
-		     (delete-region beg (point))))
-		  ((looking-at control-regexp)
-		   (replace-match
-		    (or (match-string 2)	;; escape
-			(let ((control (match-string 4)))
-			  (cond ((string= control "par") "\n")
-				((string= control "tab") "\t")
-				(t ""))))
-		    'fixedcase 'literal))
-		  (t (delete-char 1)))))))))
+;; (defun sclang-create-image (file-name &rest props)
+;;   (when (file-exists-p file-name)
+;;     (let ((coding-system-for-read 'no-conversion)
+;; 	  (coding-system-for-write 'no-conversion)
+;; 	  (inhibit-quit t))
+;;       (with-temp-buffer
+;; 	(when (equal 0 (call-process "anytopnm" file-name (list (current-buffer) nil)))
+;; 	  (apply
+;; 	   'create-image
+;; 	   (buffer-substring-no-properties (point-min) (point-max))
+;; 	   nil t props))))))
+
+(provide 'sclang-util)
 
 ;; EOF

@@ -15,9 +15,22 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ;; USA
 
+(eval-when-compile
+  (require 'cl))
+
+(eval-when-compile
+  (let ((load-path
+	 (if (and (boundp 'byte-compile-dest-file)
+		  (stringp byte-compile-dest-file))
+	     (cons (file-name-directory byte-compile-dest-file) load-path)
+	   load-path)))
+    (require 'sclang-util)))
+
 ;; =====================================================================
 ;; post buffer access
 ;; =====================================================================
+
+;; FIXME: everything will fail when renaming the post buffer!
 
 (defconst sclang-post-buffer "*SCLang*"
   "Name of the SuperCollider process output buffer.")
@@ -80,7 +93,8 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   (get-buffer-create sclang-post-buffer)
   (with-sclang-post-buffer
    (sclang-mode)
-   (setq font-lock-defaults nil))
+   (set (make-local-variable 'font-lock-fontify-region-function)
+	(lambda (&rest args))))
 ;;   (sclang-clear-post-buffer)
   (sclang-show-post-buffer))
 
@@ -384,6 +398,12 @@ Change this if \"cat\" has a non-standard name or location."
 
 (defvar sclang-debug-command-handler nil)
 
+(defun sclang-debug-command-handler ()
+  (interactive)
+  (setq sclang-debug-command-handler (not sclang-debug-command-handler))
+  (sclang-message "Command handler debugging %s."
+		  (if sclang-debug-command-handler "enabled" "disabled")))
+
 (defun sclang-set-command-handler (symbol function)
   (put symbol 'sclang-command-handler function))
 
@@ -408,7 +428,7 @@ Change this if \"cat\" has a non-standard name or location."
 	      (arg (nth 1 list))
 	      (id  (nth 2 list)))
 	  (when (functionp fun)
-	    (let ((res (condition-case nil
+	    (let ((res (condition-case e
 			   (funcall fun arg)
 			 (error (if sclang-debug-command-handler
 				    (debug e)

@@ -15,8 +15,6 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ;; USA
 
-(require 'cl)
-
 (defgroup sclang nil
   "IDE for working with the SuperCollider language."
   :group 'languages)
@@ -41,16 +39,19 @@
   (interactive)
   (customize-group 'sclang))
 
-(load "sclang-util")
-(load "sclang-browser")
-(load "sclang-interp")
-(load "sclang-language")
-(load "sclang-document")
-;; (load "sclang-server")
-;; (load "sclang-menu")
-;; (load "sclang-keys")
-(load "sclang-help")
-(load "sclang-mode")
+(eval-and-compile
+  (let ((load-path
+	 (if (and (boundp 'byte-compile-dest-file)
+		  (stringp byte-compile-dest-file))
+	     (cons (file-name-directory byte-compile-dest-file) load-path)
+	   load-path)))
+    (require 'sclang-util)
+    (require 'sclang-browser)
+    (require 'sclang-interp)
+    (require 'sclang-language)
+    (require 'sclang-document)
+    (require 'sclang-mode)
+    (require 'sclang-help)))
 
 (provide 'sclang)
 

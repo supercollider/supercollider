@@ -17,30 +17,42 @@
 
 EmacsDocument : Document
 {
-	var <>isEdited=false;
+	classvar documentMap;
+	var <isEdited, <isListener, <envir;
 
 	*initClass {
+		documentMap = IdentityDictionary.new;
 		Class.initClassTree(EmacsInterface);
 		EmacsInterface
-		.put(\documentNew, { | name, path |
-			this.prNewFromLisp(name, path);
+		.put(\documentNew, { | id, makeEnvir |
+			var doc;
+			if (documentMap.includesKey(id).not) {
+// 				[\documentNew, id, makeEnvir].postln;
+				doc = this.prBasicNew.prInitFromLisp(id);
+				if (makeEnvir.notNil) {
+					doc.envir = Environment.new;
+				};
+			};
 			nil
 		})
-		.put(\documentClosed, { | name |
-			this.documentDo(name, { | doc |
+		.put(\documentClosed, { | id |
+// 			[\documentClosed, id].postln;
+			this.documentDo(id, { | doc |
 				doc.closed;
 			});
 			nil
 		})
-		.put(\documentEdited, { | name, flag |
-			this.documentDo(name, { | doc |
-				doc.isEdited = (flag === true);
-			});
-			nil
-		})
-		.put(\documentBecomeKey, { | name, flag |
-			this.documentDo(name, { | doc |
-				if (flag === true) {
+// 		.put(\documentEdited, { | id, flag |
+// 			this.documentDo(id, { | doc |
+// // 				[\documentEdited, id, flag].postln;
+// 				doc.isEdited = flag.notNil;
+// 			});
+// 			nil
+// 		})
+		.put(\documentBecomeKey, { | id, flag |
+			this.documentDo(id, { | doc |
+// 				[\documentBecomeKey, doc, flag].postln;
+				if (flag.notNil) {
 					doc.didBecomeKey;
 				}{
 					doc.didResignKey;
@@ -48,23 +60,41 @@ EmacsDocument : Document
 			});
 			nil
 		})
+// 		.put(\documentRenamed, { | id, name |
+// 			this.documentDo(id, { | doc |
+// 				[\documentRenamed, id, name].postln;
+// 				doc.prSetName(name);
+// 			});
+// 			nil
+// 		})
+// 		.put(\documentSetEdited, { | id, flag |
+// 			this.documentDo(id, { | doc |
+// 				[\documentEdited, id, flag].postln;
+// 				doc.prSetEdited(flag.notNil);
+// 			});
+// 			nil
+// 		})
+		.put(\documentSetProperty, { | id, msg, value |
+			this.documentDo(id, { | doc |
+// 				[\documentSetProperty, doc, msg, value].postln;
+				doc.perform(msg, value);
+			});
+			nil
+		});
 	}
 
 	*listenerName { ^"*SCLang*" }
 
-	*findDocument { | name |
-		^allDocuments.detect({ | doc | doc.dataptr == name })
-	}
-	*documentDo { | name, function |
+	*documentDo { | id, function |
 		var doc;
-		doc = this.findDocument(name);
+		doc = documentMap.at(id);
 		^if (doc.notNil) {
 			function.value(doc);
 		}
 	}
-	*documentDoMsg { | name, selector ... args |
+	*documentDoMsg { | id, selector ... args |
 		var doc;
-		doc = this.findDocument(name);
+		doc = documentMap.at(id);
 		^if (doc.notNil) {
 			doc.performList(selector, args);
 		}
@@ -75,7 +105,22 @@ EmacsDocument : Document
 		dataptr.storeLispOn(stream)
 	}
 
-	//document setup	
+	// printing
+	printOn { | stream |
+		super.printOn(stream);
+		stream << $( << this.title << $);
+	}
+
+	//document setup
+	title {
+		^title
+	}
+	title_ { | name, completionFunc |
+		Emacs.sendToLisp(\_documentRename, [this, name], {
+			completionFunc.value(this);
+		})
+	}
+
 	background_ {arg color, rangestart= -1, rangesize = 0;
 	}	
 	stringColor_ {arg color, rangeStart = -1, rangeSize = 0;
@@ -91,144 +136,133 @@ EmacsDocument : Document
 	}
 	
 	syntaxColorize {
-		//_TextWindow_SyntaxColorize
-		// toggle font lock
+		Emacs.sendToLisp(\_documentSyntaxColorize, this);
 	}
 	
 	selectRange { arg start=0, length=0;
 		//_TextWindow_SelectRange
 	}
-	prisEditable_{ arg editable=true;
-		//_TextWindow_SetEditable
+	prisEditable_{ | flag = true |
+		Emacs.sendToLisp(\_documentSetEditable, [this, flag]);
 	}
 	removeUndo{
-		//_TextWindow_RemoveUndo
+		Emacs.sendToLisp(\_documentRemoveUndo, this);
 	}
-	
+
 	string {arg rangestart, rangesize = 1;
-// 		if(rangestart.isNil,{
-// 		^this.text;
-// 		});
-// 		^this.rangeText(rangestart, rangesize);
 		^""
 	}
 	
 	currentLine {
-// 		var start, end, str, max;
-// 		str = this.string;
-// 		max = str.size;
-// 		end = start = this.selectionStart;
-// 		while { 
-// 			str[start] !== Char.nl and: { start >= 0 }
-// 		} { start = start - 1 };
-// 		while { 
-// 			str[end] !== Char.nl and: { end < max }
-// 		} { end = end + 1 };
-// 		^str.copyRange(start + 1, end);
 		^""
 	}
 	
-	// PRIVATE
-	*prNewFromLisp { | name, path |
-		^super.new.prInitFromLisp(name, path);
+	// environment support
+	envir_ { | environment |
+		envir = environment;
+		if (this === current) {
+			envir.push;
+		}
 	}
-	prInitFromLisp { | argName, argPath |
-		dataptr = argName;
-		path = argPath;
-		this.prisListener(argName == this.class.listenerName);
-		if (this.isListener) {
-			thelistener = this;
+
+	didBecomeKey {
+		if (envir.notNil) {
+			envir.push;
 		};
+		super.didBecomeKey;
+	}
+
+	didResignKey {
+		if (envir === currentEnvironment) {
+			envir.pop;
+		};
+		super.didBecomeKey;
+	}	
+
+	// PRIVATE
+	*prNewFromPath { | argPath, selectionStart, selectionLength, completionFunc |
+		argPath = this.standardizePath(argPath);
+		Emacs.sendToLisp(
+			\_documentOpen,
+			[argPath, selectionStart + 1, selectionLength],
+			{ | id |
+				if (id.isNil) {
+					"Couldn't create document".warn;
+				}{
+					this.documentDo(id, completionFunc);
+				}
+			});
+	}
+	*prNewFromString { | name, str, makeListener, completionFunc |
+		Emacs.sendToLisp(
+			\_documentNew,
+			[name, str, makeListener],
+			{ | id |
+				if (id.isNil) {
+					"Couldn't create document".warn;
+				}{
+					this.documentDo(id, completionFunc);
+				}
+			});
+	}
+	prInitFromLisp { | id |
+		dataptr = id;
 		this.prAdd;
+	}
+	prclose {
+		if (dataptr.notNil) {
+			Emacs.sendToLisp(\_documentClose, this);
+		}
+	}
+	prAdd {
+		allDocuments = allDocuments.add(this);
+		documentMap.put(dataptr, this);
+		initAction.value(this);
 	}
 	prRemove {
 		allDocuments.remove(this);
+		documentMap.removeAt(dataptr);
 		dataptr = nil;
 	}
-	prSetName { arg argName;
-		this.prRemove;
-		Emacs.sendToLisp(\_documentSetName, this, argName, {
-			dataptr = argName;
-			this.prAdd
-		});
+
+	prSetName { | argName |
+		title = argName;
 	}
-	prGetBounds { arg argBounds;
-		// return like what, width x height in characters?
-		^argBounds
+	prSetPath { | argPath |
+		path = argPath;
+		if (path.notNil) {
+			path = this.class.standardizePath(path);
+		}
 	}
-	prSetBounds { arg argBounds;
+	prSetIsListener { | flag |
+		isListener = flag.notNil;
+	}
+	prSetEditable { | flag |
+		editable = flag.notNil;
+	}
+	prSetEdited { | flag |
+		isEdited = flag.notNil;
 	}
 
-	// if range is -1 apply to whole doc
-	setFont {arg font, rangeStart= -1, rangeSize=100;
-	}
-	setTextColor { arg color,  rangeStart = -1, rangeSize = 0;
-	}
+	// unimplemented methods
+	prGetBounds { | bounds | ^bounds }
+	prSetBounds { }
+	setFont { }
+	setTextColor { }
 	text {
 		^""
 	}
 	selectedText {
 		^""
-	}	
+	}
 	rangeText { arg rangestart=0, rangesize=1; 
 		^""
-	}
-	prclose {
-		Emacs.sendToLisp(\_documentClose, this);
 	}
 	prinsertText { arg dataptr, txt;
 	}
 	insertTextRange { arg string, rangestart, rangesize;
 	}
-	initByIndex { arg idx;
-		^this.shouldNotImplement
-	}
-	prinitByIndex { arg idx;
-		^this.shouldNotImplement
-	}	
-	initLast {
-		^this.shouldNotImplement
-	}
-	prGetLastIndex {
-		^this.shouldNotImplement
-	}
-	//private open
-	initFromPath { arg apath, selectionStart, selectionLength;
-// 		var stpath;
-// 		path = apath;
-// 		stpath = this.class.standardizePath(path);
-// 		this.propen(stpath, selectionStart, selectionLength);
-// 		if(dataptr.isNil,{ this = nil; ^nil});
-// 		isListener = false;
-// 		this.prAdd;
-	}
-	propen { arg path, selectionStart=0, selectionLength=0;
-// 		_OpenTextFile
-	}
-	//private newTextWindow
-	initByString{arg argTitle, str, makeListener;
-// 		title = argTitle;
-// 		if(makeListener, {
-// 			allDocuments.do({arg doc; doc.prisListener(false)})
-// 			});
-// 		isListener = makeListener;
-// 		thelistener = this;
-// 		this.prinitByString(title, str, makeListener);
-// 		if(dataptr.isNil,{ this = nil; ^nil});
-// 		this.prAdd;	
-	}
-	prinitByString { arg title, str, makeListener;
-		if (makeListener) {
-			// there's only one post buffer
-			^this.class.listener
-		};
-		^nil
-	}
-	prgetTitle {
-		^dataptr ? "Untitled"
-	}
-	setBackgroundColor { arg color;
-	}	
+	setBackgroundColor { }	
 	selectedRangeLocation {
 		^0
 	}
@@ -236,6 +270,21 @@ EmacsDocument : Document
 		^0
 	}
 	prselectLine { arg line;
-		^""
+	}
+
+	// invalid methods
+	initByIndex {
+		^this.shouldNotImplement(thisMethod)
+	}
+	prinitByIndex {
+		^this.shouldNotImplement(thisMethod)
+	}	
+	initLast {
+		^this.shouldNotImplement(thisMethod)
+	}
+	prGetLastIndex {
+		^this.shouldNotImplement(thisMethod)
 	}
 }
+
+// EOF

@@ -15,13 +15,26 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ;; USA
 
+(eval-when-compile
+  (require 'cl)
+  (require 'font-lock))
+
+(eval-when-compile
+  (let ((load-path
+	 (if (and (boundp 'byte-compile-dest-file)
+		  (stringp byte-compile-dest-file))
+	     (cons (file-name-directory byte-compile-dest-file) load-path)
+	   load-path)))
+    (require 'sclang-interp)
+    (require 'sclang-language)))
+
 (defvar sclang-running-xemacs (string-match "XEmacs\\|Lucid" emacs-version)
   "Set if running on XEmacs.")
 
 (defun sclang-fill-syntax-table (table)
   ;; string
   (modify-syntax-entry ?\" "\"" table)
-  (modify-syntax-entry ?\' "\"" table) ; no string systax class for single quotes
+  (modify-syntax-entry ?\' "\"" table) ; no string syntax class for single quotes
   ;; expression prefix
   (modify-syntax-entry ?~ "'" table)
   ;; escape
@@ -84,6 +97,7 @@
      ["Find Definitions ..."	sclang-find-definitions]
      ["Find References ..."	sclang-find-references]
      ["Pop Mark"		sclang-pop-definition-mark]
+     ["Show Method Arguments"	sclang-show-method-args]
      ["Dump Interface"		sclang-dump-interface]
      "-"
      ["Index Help Topics"	sclang-index-help-topics]
@@ -111,12 +125,20 @@
   (define-key map "\C-c:"	'sclang-find-definitions)
   (define-key map "\C-c;"	'sclang-find-references)
   (define-key map "\C-c}"	'sclang-pop-definition-mark)
+  (define-key map "\C-c\C-m"	'sclang-show-method-args)
   (define-key map "\C-c{"	'sclang-dump-interface)
   ;; documentation access
   (define-key map "\C-c\C-h"	'sclang-find-help)
   ;; language control
   (define-key map "\C-c\C-r"	'sclang-main-run)
   (define-key map "\C-c\C-s"	'sclang-main-stop)
+  ;; electric characters
+  (define-key map "}"		'sclang-electric-brace)
+  (define-key map "("		'sclang-electric-brace)
+  (define-key map ")"		'sclang-electric-brace)
+  (define-key map "]"		'sclang-electric-brace)
+  (define-key map "/"		'sclang-electric-slash)
+  (define-key map "*"		'sclang-electric-star)
   ;; menu
   (let ((title "SCLang"))
     (define-key map [menu-bar sclang] (cons title (sclang-mode-make-menu title))))
@@ -135,6 +157,7 @@
     "super"
     "this"
     "thisContext"
+    "thisFunction"
     "thisMethod"
     "thisProcess"
     )
@@ -147,6 +170,7 @@
     "false"
     "inf"
     "pi"
+    "2pi"
     )
   "*List of builtins to highlight in SCLang mode.")
 
@@ -157,9 +181,17 @@
     )
   "*List of methods to highlight in SCLang mode.")
 
-(defvar sclang-font-lock-class-keywords nil
-  "Regular expression matching class names in font-lock-mode.")
-
+(defvar sclang-font-lock-error-list
+  '(
+    "die"
+    "error"
+    "exit"
+    "halt"
+    "verboseHalt"
+    "warn"
+    )
+  "*List of methods signalling errors or warnings.")
+  
 (defvar sclang-font-lock-keywords-1 nil
   "Subdued level highlighting for SCLang mode.")
 
@@ -182,24 +214,6 @@
 				      beginning-of-defun
 				      ))
 
-(defun sclang-set-font-lock-class-keywords ()
-  (setq sclang-font-lock-class-keywords
-	(concat
-	 "\\<"
-	 (or (and sclang-symbol-table
-		  (condition-case nil
-		      (concat
-		       "\\(Meta_\\)?"
-		       (regexp-opt
-			(remove-if-not (lambda (name)
-					 (and (sclang-class-name-p name)
-					      (not (match-string 1 name))))
-				       sclang-symbol-table)
-			t))
-		    (error nil)))
-	     sclang-class-name-regexp)
-	 "\\>")))
-
 (defun sclang-font-lock-syntactic-face (state)
   (cond ((eq (nth 3 state) ?')
 	 ;; symbol
@@ -211,9 +225,20 @@
 	 ;; comment
 	 'font-lock-comment-face)))
 
+(defun sclang-font-lock-class-keyword-matcher (limit)
+  "Find all occurrences of class symbols defined in the library."
+  (let ((regexp (concat "\\<" sclang-class-name-regexp "\\>"))
+	(case-fold-search nil)
+	success)
+    (while (and (not success) (re-search-forward regexp limit t))
+      (save-excursion
+	(goto-char (match-beginning 0))
+	(setq success (save-match-data (sclang-get-symbol (sclang-symbol-at-point))))))
+    success))
+
 (defun sclang-set-font-lock-keywords ()
-  (unless sclang-font-lock-class-keywords
-    (sclang-set-font-lock-class-keywords))
+;;   (unless sclang-font-lock-class-keywords
+;;     (sclang-set-font-lock-class-keywords))
 
   (setq
    ;; level 1
@@ -246,6 +271,9 @@
      ;; methods
      (cons (regexp-opt (sort (copy-list sclang-font-lock-method-list) 'string<) 'words)
 	   'font-lock-function-name-face)
+     ;; errors
+     (cons (regexp-opt (sort (copy-list sclang-font-lock-error-list) 'string<) 'words)
+	   'font-lock-warning-face)
      ))
    ;; level 3
    sclang-font-lock-keywords-3
@@ -253,23 +281,18 @@
     sclang-font-lock-keywords-2
     (list
      ;; classes
-     (cons sclang-font-lock-class-keywords
-	   'font-lock-type-face)
+     (cons 'sclang-font-lock-class-keyword-matcher 'font-lock-type-face)
      ))
    ;; default level
    sclang-font-lock-keywords sclang-font-lock-keywords-1
    ))
 
 (defun sclang-update-font-lock ()
-  "Update font-lock information in all buffers displaying SCLang code."
-  (sclang-set-font-lock-class-keywords)
+  "Update font-lock information in all sclang-mode buffers."
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
-      (when (eq major-mode 'sclang-mode)
-	(sclang-set-font-lock-keywords)
-	(when font-lock-mode
-	  (font-lock-mode)
-	  (font-lock-mode))))))
+      (and (eq major-mode 'sclang-mode)
+	   (font-lock-fontify-buffer)))))
 
 ;; =====================================================================
 ;; indentation
@@ -289,13 +312,6 @@ Return the amount the indentation changed by."
 	(pos (- (point-max) (point))))
     (beginning-of-line)
     (setq beg (point))
-    ;;     (cond ((eq indent nil)
-    ;; 	   (setq indent (current-indentation)))
-    ;; 	  (t
-    ;; 	   (skip-chars-forward " \t")
-    ;; 	   (if (listp indent) (setq indent (car indent)))
-    ;; 	   (if (memq (following-char) '(?} ?\) ?\]))
-    ;; 	       (setq indent (- indent sclang-indent-level)))))
     (skip-chars-forward " \t")
     (setq shift-amt (- indent (current-column)))
     (if (zerop shift-amt)
@@ -303,8 +319,8 @@ Return the amount the indentation changed by."
 	    (goto-char (- (point-max) pos)))
       (delete-region beg (point))
       (indent-to indent)
-      ;; If initial point was within line's indentation,
-      ;; position after the indentation.  Else stay at same point in text.
+      ;; if initial point was within line's indentation, position
+      ;; after the indentation, else stay at same point in text.
       (if (> (- (point-max) pos) (point))
 	  (goto-char (- (point-max) pos))))
     shift-amt))
@@ -326,31 +342,289 @@ Returns the column to indent to."
 	     (inside-string-p (nth 3 state))
 	     (inside-comment-p (nth 4 state)))
 	(cond (inside-string-p
-	       ;; inside string; don't change indentation
+	       ;; inside string: no change
 	       (current-indentation))
 	      ((integerp inside-comment-p)
 	       ;; inside comment
-	       (let ((base 0)
-		     (offset sclang-indent-level))
-		 (if containing-sexp
-		     (save-excursion
-		       (goto-char containing-sexp)
-		       (setq base (current-indentation))))
-		 (if (and (= inside-comment-p 1)
-			  (save-excursion
-			    (back-to-indentation)
-			    (looking-at "\\*/")))
-		     (setq offset 0))
-		 (+ base sclang-indent-level offset)))
+	       (let ((base (if containing-sexp
+			       (save-excursion
+				 (goto-char containing-sexp)
+				 (+ (current-indentation) sclang-indent-level))
+			     0))
+		     (offset (* sclang-indent-level
+				(- inside-comment-p
+				   (if (save-excursion
+					 (back-to-indentation)
+					 (looking-at "\\*/"))
+				       1 0)))))
+		 (+ base offset)))
 	      ((null containing-sexp)
+	       ;; top-level: no indentation
 	       0)
 	      (t
 	       (back-to-indentation)
-	       (let ((inc (if (looking-at "\\s)")
-			      0 sclang-indent-level)))
+	       (let ((open-paren (and (looking-at "\\s)")
+				      (matching-paren (char-after))))
+		     (indent (current-indentation)))
 		 (goto-char containing-sexp)
-		 ;; add indent-level to indentation of containing sexp
-		 (+ (current-indentation) inc))))))))
+		 (if (or (not open-paren) (eq open-paren (char-after)))
+		     (cond ((progn (beginning-of-line) (looking-at sclang-block-regexp)) 0)
+			   (open-paren (current-indentation))
+			   (t (+ (current-indentation) sclang-indent-level)))
+		   ;; paren mismatch: do nothing
+		   indent))))))))
+
+;; =====================================================================
+;; electric character commands
+;; =====================================================================
+
+(defun sclang-electric-brace (arg)
+  (interactive "*P")
+  (self-insert-command (prefix-numeric-value arg))
+  (indent-according-to-mode)
+  (when (eq (char-before) ?\()
+    (sclang-show-method-args)))
+
+(defun sclang-electric-slash (arg)
+  (interactive "*P")
+  (let* ((char (char-before))
+	 (indent-p (or (eq char ?/)
+		       (eq char ?*))))
+    (self-insert-command (prefix-numeric-value arg))
+    (if indent-p (indent-according-to-mode))))
+
+(defun sclang-electric-star (arg)
+  (interactive "*P")
+  (let ((indent-p (eq (char-before) ?/)))
+    (self-insert-command (prefix-numeric-value arg))
+    (if indent-p (indent-according-to-mode))))
+
+;; =====================================================================
+;; document interface
+;; =====================================================================
+
+(defvar sclang-document-id nil)
+(defvar sclang-document-state nil)
+(defvar sclang-document-envir nil)
+
+(defvar sclang--document-counter 0)
+(defvar sclang--document-list nil)
+(defvar sclang--current-document nil
+  "Currently active document.")
+
+(defvar sclang--document-idle-timer nil)
+
+(defmacro sclang-next-document-id ()
+  `(incf sclang--document-counter))
+
+(defun sclang-document-list ()
+  sclang--document-list)
+
+(defun sclang-document-id (buffer)
+  (cdr (assq 'sclang-document-id (buffer-local-variables buffer))))
+
+(defun sclang-document-p (buffer)
+  (integerp (sclang-document-id buffer)))
+
+(defmacro with-sclang-document (buffer &rest body)
+  `(when (sclang-document-p buffer)
+     (with-current-buffer buffer
+       ,@body)))
+
+(defun sclang-get-document (id)
+  (find-if (lambda (doc) (eq id (sclang-document-id doc)))
+	   (sclang-document-list)))
+
+(defun sclang-init-document ()
+  (setq sclang-document-id (sclang-next-document-id))
+  (pushnew (current-buffer) sclang--document-list))
+
+(defconst sclang-document-state-keys
+  '((prSetName . buffer-name)
+    (prSetPath . buffer-file-name)
+    (prSetIsListener . (lambda () (eq (current-buffer) (sclang-get-post-buffer))))
+    (prSetEditable . (lambda () (not buffer-read-only)))
+    (prSetEdited . buffer-modified-p)))
+
+(defun sclang-document-set-property (msg value)
+  (sclang-perform-command-no-result
+   'documentSetProperty sclang-document-id msg value))
+
+(defun sclang-document-update-properties (&optional force)
+  (let ((keys sclang-document-state-keys)
+	(prev-state sclang-document-state)
+	next-state)
+    (dolist (assoc keys)
+      (let ((prev-value (car prev-state))
+	    (next-value (funcall (cdr assoc))))
+	(setq next-state (append next-state (list next-value)))
+	(when (or force (not (equal prev-value next-value)))
+	  (sclang-document-set-property (car assoc) next-value))
+	(setq prev-state (cdr prev-state))))
+    (setq sclang-document-state next-state)))
+
+(defun sclang-make-document (buffer)
+  (with-sclang-document
+   buffer
+   (sclang-perform-command-no-result 'documentNew sclang-document-id)
+   (sclang-document-update-properties t)))
+
+(defun sclang-close-document (buffer)
+  (with-sclang-document
+   buffer
+   (setq sclang--document-list (delq buffer sclang--document-list))
+   (sclang-perform-command-no-result
+    'documentClosed sclang-document-id)))
+
+(defun sclang-make-buffer-current (buffer)
+  (unless (eq buffer sclang--current-document)
+    ;;       (message "%s %s %s %s" prev (sclang-document-id prev) buffer id)
+    (when sclang--current-document
+      (sclang-perform-command-no-result
+       'documentBecomeKey (sclang-document-id sclang--current-document) nil))
+    (let ((id (sclang-document-id buffer)))
+      (setq sclang--current-document
+	    (when id
+	      (sclang-perform-command-no-result
+	       'documentBecomeKey id t)
+	      buffer)))))
+
+;; (defun sclang-set-document-modified-p (buffer flag)
+;;   (let ((id (sclang-document-id buffer)))
+;;     (when (integerp id)
+;;       (sclang-perform-command-no-result
+;;        'documentSetEdited id flag))))
+
+(defun sclang--document-idle-function ()
+  (dolist (buffer (sclang-document-list))
+    (with-current-buffer buffer
+      (sclang-document-update-properties))))
+
+(defun sclang--document-library-shutdown-hook-function ()
+  (if sclang--document-idle-timer (cancel-timer sclang--document-idle-timer)))
+  
+(defun sclang--document-library-startup-hook-function ()
+  (dolist (buffer (sclang-document-list))
+    (sclang-make-document buffer))
+  (sclang-make-buffer-current (current-buffer))
+  (sclang--document-library-shutdown-hook-function)
+  (setq sclang--document-idle-timer (run-with-idle-timer 0.5 t 'sclang--document-idle-function)))
+
+(defun sclang--document-kill-buffer-hook-function ()
+  (sclang-close-document (current-buffer)))
+
+(defun sclang--document-post-command-hook-function ()
+  (sclang-make-buffer-current (current-buffer)))
+
+(defun sclang--document-change-major-mode-hook-function ()
+  (sclang-close-document (current-buffer)))
+
+;; (defun sclang--document-first-change-hook-function ()
+;;   (sclang-set-document-modified-p (current-buffer) t))
+
+;; (defun sclang--document-after-save-hook-function ()
+;;   (sclang-set-document-modified-p (current-buffer) (buffer-modified-p)))
+
+;; (defun sclang--document-idle-function ()
+;;   (dolist (buffer (sclang-document-list))
+;;     (with-current-buffer buffer
+;;       (let ((prev-state sclang-document-state)
+;; 	    (cur-state (list (list 'name (buffer-name))
+;; 			     (list 'path (buffer-file-name))
+;; 			     (list 'editable (not buffer-read-only))
+;; 			     (list 'edited (buffer-modified-p))))
+;; 	    changed)
+;; 	(dolist (assoc cur-state)
+;; 	  (unless (equal assoc (car prev-state))
+;; 	    (push assoc changed))
+;; 	  (setq prev-state (cdr prev-state)))
+;; 	(when changed
+;; 	  (sclang-perform-command-no-result
+;; 	   'documentPropertiesChanged sclang-document-id changed)
+;; 	  (setq sclang-document-state cur-state))))))
+
+;; (defadvice rename-buffer (after sclang-rename-document last activate compile)
+;;   "Propagate buffer name changes to SuperCollider process."
+;;   (let ((id (sclang-document-id (current-buffer))))
+;;     (when id
+;;       (sclang-perform-command-no-result
+;;        'documentRenamed
+;;        id (buffer-name)))))
+
+;; (defadvice set-buffer-modified-p (around sclang-set-buffer-modified-p last activate compile)
+;;   (let ((flag (not (buffer-modified-p))))
+;;     ad-do-it
+;;     (when (eq flag (buffer-modified-p))
+;;       (sclang-set-document-modified-p (current-buffer) flag))))
+
+;; (defadvice set-buffer-modified-p (after sclang-set-buffer-modified-p last activate compile)
+;;   (sclang-set-document-modified-p (current-buffer) (buffer-modified-p)))
+
+;; =====================================================================
+;; command handlers
+;; =====================================================================
+
+(sclang-set-command-handler
+ '_documentOpen
+ (lambda (arg)
+   (multiple-value-bind (file-name region-start region-length) arg
+     (let ((buffer (get-file-buffer file-name)))
+       (unless buffer
+	 (setf buffer (find-file-noselect file-name)))
+       (when buffer
+	 (unless (sclang-document-p buffer)
+	   (with-current-buffer buffer (sclang-mode)))
+	 (goto-char (max (point-min) (min (point-max) region-start)))
+	 ;; TODO: how to activate region in transient-mark-mode?
+	 (sclang-document-id buffer))))))
+
+(sclang-set-command-handler
+ '_documentNew
+ (lambda (arg)
+   (multiple-value-bind (name str make-listener) arg
+     (let ((buffer (generate-new-buffer name)))
+       (with-current-buffer buffer
+	 (insert str)
+	 (set-buffer-modified-p nil)
+	 (sclang-mode))
+       (sclang-document-id buffer)))))
+
+(sclang-set-command-handler
+ '_documentClose
+ (lambda (arg)
+   (let ((doc (and (integerp arg) (sclang-get-document arg))))
+     (and doc (kill-buffer doc)))))
+
+(sclang-set-command-handler
+ '_documentRename
+ (lambda (arg)
+   (multiple-value-bind (id name) arg
+     (when (stringp name)
+       (let ((doc (and (integerp id) (sclang-get-document id))))
+	 (when doc
+	   (with-current-buffer doc
+	     (rename-buffer name t))))))))
+
+(sclang-set-command-handler
+ '_documentSetEditable
+ (lambda (arg)
+   (multiple-value-bind (id flag) arg
+     (let ((doc (and (integerp id) (sclang-get-document id))))
+       (when doc
+	 (with-current-buffer doc
+	   (setq buffer-read-only (not flag))))))))
+
+(sclang-set-command-handler
+ '_documentSwitchTo
+ (lambda (arg)
+   (let ((doc (and (integerp arg) (sclang-get-document arg))))
+     (and doc (switch-to-buffer doc)))))
+
+(sclang-set-command-handler
+ '_documentPopTo
+ (lambda (arg)
+   (let ((doc (and (integerp arg) (sclang-get-document arg))))
+     (and doc (display-buffer doc)))))
 
 ;; =====================================================================
 ;; sclang-mode
@@ -379,16 +653,22 @@ Returns the column to indent to."
   ;; paragraph formatting
   ;;   (set (make-local-variable 'paragraph-start) (concat "$\\|" page-delimiter))
   ;; mostly copied from c++-mode, seems to work
-  (set (make-local-variable 'paragraph-start) "[ 	]*\\(//+\\|\\**\\)[ 	]*$\\|^")
+  (set (make-local-variable 'paragraph-start)
+       "[ \t]*\\(//+\\|\\**\\)[ \t]*$\\|^")
   (set (make-local-variable 'paragraph-separate) paragraph-start)
   (set (make-local-variable 'paragraph-ignore-fill-prefix) t)
   (set (make-local-variable 'adaptive-fille-mode) t)
-  (set (make-local-variable 'adaptive-fill-regexp) "[ 	]*\\(//+\\|\\**\\)[ 	]*\\([ 	]*\\([-|#;>*]+[ 	]*\\|(?[0-9]+[.)][ 	]*\\)*\\)")
+  (set (make-local-variable 'adaptive-fill-regexp)
+       "[ \t]*\\(//+\\|\\**\\)[ \t]*\\([ \t]*\\([-|#;>*]+[ \t]*\\|(?[0-9]+[.)][ \t]*\\)*\\)")
   ;; font lock
   (set (make-local-variable 'font-lock-syntactic-face-function)
        'sclang-font-lock-syntactic-face)
   (set (make-local-variable 'font-lock-defaults)
        sclang-font-lock-defaults)
+  ;; document interface
+  (set (make-local-variable 'sclang-document-id) nil)
+  (set (make-local-variable 'sclang-document-state) nil)
+  (set (make-local-variable 'sclang-document-envir) nil)
   ;; ---
   nil)
 
@@ -404,8 +684,7 @@ Returns the column to indent to."
   :type 'hook)
 
 (defun sclang-mode ()
-  "Major mode for editing SuperCollider language (SCLang) code.
-
+  "Major mode for editing SuperCollider language code.
 \\{sclang-mode-map}
 "
   (interactive)
@@ -416,6 +695,8 @@ Returns the column to indent to."
   (setq major-mode 'sclang-mode)
   (sclang-mode-set-local-variables)
   (sclang-set-font-lock-keywords)
+  (sclang-init-document)
+  (sclang-make-document (current-buffer))
   (run-hooks 'sclang-mode-hook))
 
 ;; =====================================================================
@@ -424,6 +705,15 @@ Returns the column to indent to."
 
 (add-to-list 'auto-mode-alist '("\\.sc$" . sclang-mode))
 (add-to-list 'interpreter-mode-alist '("sclang" . sclang-mode))
+
+(add-hook 'sclang-library-startup-hook 'sclang--document-library-startup-hook-function)
+(add-hook 'sclang-library-shutdown-hook 'sclang--document-library-shutdown-hook-function)
+(add-hook 'kill-buffer-hook 'sclang--document-kill-buffer-hook-function)
+(add-hook 'post-command-hook 'sclang--document-post-command-hook-function)
+(add-hook 'post-command-hook 'sclang--document-idle-function)
+(add-hook 'change-major-mode-hook 'sclang--document-change-major-mode-hook-function)
+;; (add-hook 'first-change-hook 'sclang--document-first-change-hook-function)
+;; (add-hook 'after-save-hook 'sclang--document-after-save-hook-function)
 
 (provide 'sclang-mode)
 
