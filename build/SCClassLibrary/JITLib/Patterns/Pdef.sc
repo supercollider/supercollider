@@ -167,8 +167,10 @@ TaskProxy : PatternProxy {
 	source_ { arg obj;
 			pattern = if(obj.isKindOf(Function)) {
 				// this error handling only helps if error is not in substream
-				Prout { arg x;
-					try { obj.value(x) } { |error|
+				Prout { |inval|
+					try { 
+						if(inval.isNil) { obj.value } { inval.use { obj.valueEnvir } }
+					} { |error|
 						player.removedFromScheduler;
 						error.throw; 
 					}
@@ -363,7 +365,7 @@ Pdef : EventPatternProxy {
 				pat = all.at(~instrument);
 				if(pat.notNil and: { embeddingLevel < 8 })
 				{
-					// preserve information from outer pattern
+					// preserve information from outer pattern, but not delta.
 					outerEvent = currentEnvironment.copy;
 					recursionLevel = ~recursionLevel;
 					if(recursionLevel.notNil) {
@@ -387,8 +389,8 @@ Pdef : EventPatternProxy {
 						outerEvent.put(\embeddingLevel, embeddingLevel + 1);
 						outerEvent.parent_(Event.parentEvents.default);
 					};
-					
 					pat = Pfindur(~sustain.value, pat);
+					outerEvent.put(\delta, nil); // block delta modification by Ppar
 					pat.play(thisThread.clock, outerEvent, 0.0);
 				} {
 					~type = \note;
