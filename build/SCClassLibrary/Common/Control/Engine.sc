@@ -35,10 +35,11 @@ PowerOfTwoAllocator
 	}
 	free { arg address;
 		var node, sizeClass;
-		node = array.at(address);
-		sizeClass = node.size.log2Ceil;
-		node.next = freeLists.at(sizeClass);
-		freeLists.put(sizeClass, node);
+		if((node = array.at(address)).notNil,{
+			sizeClass = node.size.log2Ceil;
+			node.next = freeLists.at(sizeClass);
+			freeLists.put(sizeClass, node);
+		});
 	}
 }
 		
