@@ -1517,11 +1517,15 @@ bool SCButton::setValue(int inValue, bool send)
 
 void SCButton::mouseTrack(SCPoint where, int modifiers)
 {
-    bool inside = hit(where);
-    if (inside != mPushed) {
-        mPushed = inside;
-        refresh();
-    }
+	if (modifiers & NSCommandKeyMask) {
+        beginDrag(where);
+    } else {    
+		bool inside = hit(where);
+		if (inside != mPushed) {
+			mPushed = inside;
+			refresh();
+		}
+	}
 }
 
 void SCButton::mouseEndTrack(SCPoint where, int modifiers)
@@ -1625,6 +1629,18 @@ int SCButton::getProperty(PyrSymbol *symbol, PyrSlot *slot)
         return SCView::getProperty(symbol, slot);
 }
 
+bool SCButton::canReceiveDrag()
+{
+    PyrSlot result;
+    sendMessage(s_canReceiveDrag, 0, 0, &result);
+    return IsTrue(&result);
+}
+
+void SCButton::receiveDrag()
+{
+    sendMessage(s_receiveDrag, 0, 0, 0);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1709,28 +1725,32 @@ bool SCPopUpMenu::setValue(int inValue, bool send)
 
 void SCPopUpMenu::mouseBeginTrack(SCPoint where, int modifiers)
 {	
-	if (!mMenuH) return;
+	if (modifiers & NSCommandKeyMask) {
+        beginDrag(where);
+    } else {    
+		if (!mMenuH) return;
+		
+		[mTop->GetNSView() startMenuTracking: this];
 	
-	[mTop->GetNSView() startMenuTracking: this];
-
-	int numberOfItems = CountMenuItems(mMenuH);
-	for (int i=0; i<numberOfItems; ++i) {
-		MacCheckMenuItem(mMenuH, i+1, mValue == i);
+		int numberOfItems = CountMenuItems(mMenuH);
+		for (int i=0; i<numberOfItems; ++i) {
+			MacCheckMenuItem(mMenuH, i+1, mValue == i);
+		}
+	
+		NSPoint p = NSMakePoint(mBounds.x, mBounds.y);
+		NSView *view = mTop->GetNSView();
+		p = [view convertPoint: p toView: nil];
+		p = [[view window] convertBaseToScreen: p];
+		
+		// cocoa to carbon y flip
+		float screenHeight = [[NSScreen mainScreen] frame].size.height;
+		p.y = screenHeight - p.y;
+		
+		int val = PopUpMenuSelect(mMenuH, p.y, p.x, mValue + 1);
+		if (val == 0) return;
+		val = (val & 0xFFFF) - 1;
+		setValue(val, true);	
 	}
-
-	NSPoint p = NSMakePoint(mBounds.x, mBounds.y);
-	NSView *view = mTop->GetNSView();
-	p = [view convertPoint: p toView: nil];
-	p = [[view window] convertBaseToScreen: p];
-	
-	// cocoa to carbon y flip
-	float screenHeight = [[NSScreen mainScreen] frame].size.height;
-	p.y = screenHeight - p.y;
-	
-	int val = PopUpMenuSelect(mMenuH, p.y, p.x, mValue + 1);
-	if (val == 0) return;
-	val = (val & 0xFFFF) - 1;
-	setValue(val, true);	
 }
 
 int SCPopUpMenu::setProperty(PyrSymbol *symbol, PyrSlot *slot)
@@ -1804,6 +1824,19 @@ int SCPopUpMenu::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 
         return SCView::getProperty(symbol, slot);
+}
+
+
+bool SCPopUpMenu::canReceiveDrag()
+{
+    PyrSlot result;
+    sendMessage(s_canReceiveDrag, 0, 0, &result);
+    return IsTrue(&result);
+}
+
+void SCPopUpMenu::receiveDrag()
+{
+    sendMessage(s_receiveDrag, 0, 0, 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////

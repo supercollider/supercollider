@@ -403,6 +403,9 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 
+        virtual bool canReceiveDrag();
+        virtual void receiveDrag();
+
 protected:
 	
 	int mValue;
@@ -429,6 +432,9 @@ public:
 
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+
+        virtual bool canReceiveDrag();
+        virtual void receiveDrag();
 
 protected:
 	

@@ -318,6 +318,17 @@ SCButton : SCControlView {
 	properties {
 		^super.properties ++ [\value, \font, \states]
 	}
+
+	beginDrag { 
+		currentDrag = this.value; 
+	}
+	canReceiveDrag {
+		^currentDrag.isNumber;
+	}
+	receiveDrag {
+		this.value = currentDrag;
+		currentDrag = nil;
+	}
 }
 
 SCPopUpMenu : SCControlView {
@@ -351,6 +362,17 @@ SCPopUpMenu : SCControlView {
 	
 	properties {
 		^super.properties ++ [\value, \font, \items, \stringColor]
+	}
+
+	beginDrag { 
+		currentDrag = this.value; 
+	}
+	canReceiveDrag {
+		^currentDrag.isNumber;
+	}
+	receiveDrag {
+		this.value = currentDrag;
+		currentDrag = nil;
 	}
 }
 
