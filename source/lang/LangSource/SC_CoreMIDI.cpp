@@ -114,9 +114,8 @@ static void midiProcessPacket(MIDIPacket *pkt, int uid)
 				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
 				runInterpreter(g, s_midiTouchAction, 4);
 				break;
-			case 0xE0 : //bend	this does not work correctly
-				///pkt->data[2]
-				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+			case 0xE0 : //bend	
+				++g->sp; SetInt(g->sp,  (pkt->data[2] << 7) | pkt->data[1]); //val1
 				runInterpreter(g, s_midiBendAction, 4);
 				break;
 			case 0xF0 :// ?
@@ -142,7 +141,6 @@ static void midiReadProc(const MIDIPacketList *pktlist, void* readProcRefCon, vo
         midiProcessPacket(pkt, uid);
         pkt = MIDIPacketNext(pkt);
     }
-    
 }
 
 void midiCleanUp();
