@@ -593,7 +593,7 @@ void GC::Finalize(PyrObject *finalizer)
 	
 	ObjFuncPtr func = (ObjFuncPtr)finalizer->slots[0].ui;
 	PyrObject *obj = finalizer->slots[1].uo;
-	post("FINALIZE %s %08X\n", obj->classptr->name.us->name, obj);
+	//post("FINALIZE %s %08X\n", obj->classptr->name.us->name, obj);
 	(func)(mVMGlobals, obj);
 	
 	SetNil(obj->slots+0);
