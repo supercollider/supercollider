@@ -76,10 +76,12 @@ Server : Model {
 	var <isLocal, <inProcess;
 	var <serverRunning = false;
 	var <>options,<>latency = 0.2,<dumpMode=0;
-	var <nodeAllocator;
+	var <nodeAllocator; 
+	var <grainAllocator;
 	var <controlBusAllocator;
 	var <audioBusAllocator;
 	var <bufferAllocator;
+	var <>nodeWatcher;
 
 	var <numUGens=0,<numSynths=0,<numGroups=0,<numSynthDefs=0;
 	var <avgCPU, <peakCPU;
@@ -101,13 +103,16 @@ Server : Model {
 		serverRunning = false;
 		named.put(name, this);
 		set.add(this);
-		this.newAllocators;		
+		this.newAllocators;	
+		nodeWatcher = NodeWatcher.new(this);
 	}
 	newAllocators {
-		nodeAllocator = LRUNumberAllocator(1000, 1000 + options.maxNodes);
+		nodeAllocator = RingNumberAllocator(1000, 1000 + options.maxNodes);
+		grainAllocator = RingNumberAllocator(1000 + options.maxNodes, 
+										1001 + (2*options.maxNodes));
 		controlBusAllocator = PowerOfTwoAllocator(options.numControlBusChannels);
 		audioBusAllocator = PowerOfTwoAllocator(options.numAudioBusChannels, 
-			options.numInputBusChannels + options.numOutputBusChannels);
+		options.numInputBusChannels + options.numOutputBusChannels);
 		bufferAllocator = PowerOfTwoAllocator(options.numBuffers);
 	}
 	
@@ -146,6 +151,22 @@ Server : Model {
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
 		) 
 	}
+	
+	nextNodeID {
+		^grainAllocator.alloc
+	}
+	
+	registerNode { arg node;
+		node.prSetNodeID(nodeAllocator.alloc);
+		if(nodeWatcher.notNil, { 
+			nodeWatcher.register(node);
+		});
+	}
+	unregisterNode { arg node;
+		if(nodeWatcher.notNil, { nodeWatcher.unregister(node) });
+	}
+	
+	
 	//loadDir
 	
 	serverRunning_ { arg val;
@@ -221,7 +242,9 @@ Server : Model {
 			unixCmd("./scsynth" ++ options.asOptionsString(addr.port));
 			("booting " ++ addr.port.asString).inform;
 		});
-		this.notify(true);
+		SystemClock.sched(1.0, { this.notify(true) });
+		if(nodeWatcher.notNil, { nodeWatcher.startListen });
+		
 	}
 	
 	reboot {
@@ -266,6 +289,8 @@ Server : Model {
 		alive = false;
 		this.serverRunning = false;
 		this.newAllocators;
+		RootNode(this).freeAll;
+		if(nodeWatcher.notNil, { nodeWatcher.stopListen });
 	}
 	*quitAll {
 		set.do({ arg server; server.quit; })
@@ -282,6 +307,8 @@ Server : Model {
 	}
 	freeAll {
 		this.sendMsg("/g_freeAll",0);
+		RootNode.freeAll;
+		if(nodeWatcher.notNil, { nodeWatcher.clear });
 	}
 	*freeAll {
 		set.do({ arg server;
