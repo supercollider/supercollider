@@ -1,18 +1,18 @@
 Line : UGen {	
-	*ar { arg start=0.0, end = 1.0, dur = 1.0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', start, end, dur).madd(mul, add)
+	*ar { arg start=0.0, end = 1.0, dur = 1.0, mul = 1.0, add = 0.0, doneAction = 0;
+		^this.multiNew('audio', start, end, dur, doneAction).madd(mul, add)
 	}
-	*kr { arg start=0.0, end = 1.0, dur = 1.0, mul = 1.0, add = 0.0;
-		^this.multiNew('control',  start, end, dur).madd(mul, add)
+	*kr { arg start=0.0, end = 1.0, dur = 1.0, mul = 1.0, add = 0.0, doneAction = 0;
+		^this.multiNew('control',  start, end, dur, doneAction).madd(mul, add)
 	}
 }
 
 XLine : UGen {	
-	*ar { arg start=1.0, end = 2.0, dur = 1.0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', start, end, dur).madd(mul, add)
+	*ar { arg start=1.0, end = 2.0, dur = 1.0, mul = 1.0, add = 0.0, doneAction = 0;
+		^this.multiNew('audio', start, end, dur, doneAction).madd(mul, add)
 	}
-	*kr { arg start=1.0, end = 2.0, dur = 1.0, mul = 1.0, add = 0.0;
-		^this.multiNew('control',  start, end, dur).madd(mul, add)
+	*kr { arg start=1.0, end = 2.0, dur = 1.0, mul = 1.0, add = 0.0, doneAction = 0;
+		^this.multiNew('control',  start, end, dur, doneAction).madd(mul, add)
 	}
 }
 

@@ -232,6 +232,34 @@ extern "C"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+void DoneAction(int doneAction, Unit *unit)
+{
+	switch (doneAction) 
+	{
+		case 1 :
+			NodeRun(&unit->mParent->mNode, 0);
+			break;
+		case 2 :
+			NodeEnd(&unit->mParent->mNode);
+			break;
+		case 3 :
+		{
+			NodeEnd(&unit->mParent->mNode);
+			Node* prev = unit->mParent->mNode.mPrev;
+			if (prev) NodeEnd(prev);
+		} break;
+		case 4 : 
+		{
+			NodeEnd(&unit->mParent->mNode);
+			Node* next = unit->mParent->mNode.mNext;
+			if (next) NodeEnd(next);
+		} break;
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void LFPulse_next_a(LFPulse *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -704,7 +732,11 @@ void Line_next(Line *unit, int inNumSamples)
 				ZXP(out) = level;
 				level += slope;
 			);
-			if (counter == 0) unit->mDone = true;
+			if (counter == 0) {
+				unit->mDone = true;
+				int doneAction = (int)ZIN0(3);
+				DoneAction(doneAction, unit);
+			}
 		}
 	} while (remain);
 	unit->mCounter = counter;
@@ -758,7 +790,11 @@ void XLine_next(XLine *unit, int inNumSamples)
 				ZXP(out) = level;
 				level *= grow;
 			);
-			if (counter == 0) unit->mDone = true;
+			if (counter == 0) {
+				unit->mDone = true;
+				int doneAction = (int)ZIN0(3);
+				DoneAction(doneAction, unit);
+			}
 		}
 	} while (remain);
 	unit->mCounter = counter;
@@ -1089,25 +1125,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 			level = unit->m_endLevel;
 			unit->mDone = true;
 			int doneAction = (int)ZIN0(kEnvGen_doneAction);
-			if (doneAction) {
-				if (doneAction == 1) {
-					NodeRun(&unit->mParent->mNode, 0);
-				} else if (doneAction == 2) {
-					NodeEnd(&unit->mParent->mNode);
-				} else if (doneAction == 3) {
-					NodeEnd(&unit->mParent->mNode);
-					Node* prev = unit->mParent->mNode.mPrev;
-					if (prev) {
-						NodeEnd(prev);
-					}
-				} else if (doneAction == 4) {
-					NodeEnd(&unit->mParent->mNode);
-					Node* next = unit->mParent->mNode.mNext;
-					if (next) {
-						NodeEnd(next);
-					}
-				}
-			}
+			DoneAction(doneAction, unit);
 		} else if (unit->m_stage == ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
 			int loopNode = (int)ZIN0(kEnvGen_loopNode);
 			if (loopNode >= 0 && loopNode < numstages) {
@@ -1310,25 +1328,7 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 				level = unit->m_endLevel;
 				unit->mDone = true;
 				int doneAction = (int)ZIN0(kEnvGen_doneAction);
-				if (doneAction) {
-					if (doneAction == 1) {
-						NodeRun(&unit->mParent->mNode, 0);
-					} else if (doneAction == 2) {
-						NodeEnd(&unit->mParent->mNode);
-					} else if (doneAction == 3) {
-						NodeEnd(&unit->mParent->mNode);
-						Node* prev = unit->mParent->mNode.mPrev;
-						if (prev) {
-							NodeEnd(prev);
-						}
-					} else if (doneAction == 4) {
-						NodeEnd(&unit->mParent->mNode);
-						Node* next = unit->mParent->mNode.mNext;
-						if (next) {
-							NodeEnd(next);
-						}
-					}
-				}
+				DoneAction(doneAction, unit);
 			} else if (unit->m_stage == ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
 				int loopNode = (int)ZIN0(kEnvGen_loopNode);
 				if (loopNode >= 0 && loopNode < numstages) {
@@ -1559,25 +1559,7 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 				level = unit->m_endLevel;
 				unit->mDone = true;
 				int doneAction = (int)ZIN0(kEnvGen_doneAction);
-				if (doneAction) {
-					if (doneAction == 1) {
-						NodeRun(&unit->mParent->mNode, 0);
-					} else if (doneAction == 2) {
-						NodeEnd(&unit->mParent->mNode);
-					} else if (doneAction == 3) {
-						NodeEnd(&unit->mParent->mNode);
-						Node* prev = unit->mParent->mNode.mPrev;
-						if (prev) {
-							NodeEnd(prev);
-						}
-					} else if (doneAction == 4) {
-						NodeEnd(&unit->mParent->mNode);
-						Node* next = unit->mParent->mNode.mNext;
-						if (next) {
-							NodeEnd(next);
-						}
-					}
-				}
+				DoneAction(doneAction, unit);
 			} else if (unit->m_stage == ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
 				int loopNode = (int)ZIN0(kEnvGen_loopNode);
 				if (loopNode >= 0 && loopNode < numstages) {
@@ -2549,26 +2531,8 @@ void Linen_next_k(Linen *unit, int inNumSamples)
 			unit->mDone = true;
 			unit->m_stage++;
 			int doneAction = (int)ZIN0(4);
-			if (doneAction) {
-				if (doneAction == 1) {
-					NodeRun(&unit->mParent->mNode, 0);
-				} else if (doneAction == 2) {
-					NodeEnd(&unit->mParent->mNode);
-				} else if (doneAction == 3) {
-					NodeEnd(&unit->mParent->mNode);
-					Node* prev = unit->mParent->mNode.mPrev;
-					if (prev) {
-						NodeEnd(prev);
-					}
-				} else if (doneAction == 4) {
-					NodeEnd(&unit->mParent->mNode);
-					Node* next = unit->mParent->mNode.mNext;
-					if (next) {
-						NodeEnd(next);
-					}
-				}
-			}
-			} break;
+			DoneAction(doneAction, unit);
+		} break;
 		case 4 :
 			*out = 0.f;
 			break;
@@ -2737,25 +2701,7 @@ void ADSR_next_k(ADSR *unit, int inNumSamples)
 				*out = 0.f;
 				unit->m_stage++;
 				int doneAction = (int)ZIN0(6);
-				if (doneAction) {
-					if (doneAction == 1) {
-						NodeRun(&unit->mParent->mNode, 0);
-					} else if (doneAction == 2) {
-						NodeEnd(&unit->mParent->mNode);
-					} else if (doneAction == 3) {
-						NodeEnd(&unit->mParent->mNode);
-						Node* prev = unit->mParent->mNode.mPrev;
-						if (prev) {
-							NodeEnd(prev);
-						}
-					} else if (doneAction == 4) {
-						NodeEnd(&unit->mParent->mNode);
-						Node* next = unit->mParent->mNode.mNext;
-						if (next) {
-							NodeEnd(next);
-						}
-					}
-				}
+				DoneAction(doneAction, unit);
 			} break;
 		case 5 : // done
 			*out = 0.f;
