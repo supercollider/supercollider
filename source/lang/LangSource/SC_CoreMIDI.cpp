@@ -235,8 +235,9 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 { 
     PyrSlot *a = g->sp;
     int numSrc = MIDIGetNumberOfSources();
+    int numDst = MIDIGetNumberOfDestinations();
     //post("numSrc %d\n",  numSrc);
-    if(numSrc == 0){SetNil(a); return errNone;}
+    if(numSrc && numDst == 0){SetNil(a); return errNone;}
  
     PyrObject* idarraySo = newPyrArray(g->gc, numSrc * sizeof(SInt32), 0 , true);
     PyrObject* namearraySo = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
@@ -279,7 +280,7 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 
     }
         
-    int numDst = MIDIGetNumberOfDestinations();
+   
 
 //	post("numDst %d\n",  numDst);
     for (int i=0; i<numDst; ++i) {
