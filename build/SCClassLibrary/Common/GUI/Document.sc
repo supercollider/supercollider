@@ -10,7 +10,7 @@ Document {
 	var unused;
 	var <editable;
 	
-	*initClass {
+	*startup {
 		var num, doc;
 		num = this.numberOfOpen;
 		num.do({arg i;
@@ -91,7 +91,7 @@ Document {
 		^allDocuments[this.prGetIndexOfListener];
 	}
 	isListener {
-		^allDocuments.indexOf(this) == this.prGetIndexOfListener
+		^allDocuments.indexOf(this) == this.class.prGetIndexOfListener
 	}
 	
 //document setup	
