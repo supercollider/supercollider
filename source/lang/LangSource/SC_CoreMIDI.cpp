@@ -229,18 +229,21 @@ void midiListEndpoints()
 }
 
 
+
 int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed);
 int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 { 
-
+    char *x, *y;
     PyrSlot *a = g->sp;
-    PyrSlot *slots = a->uo->slots;
-  
+    x = (char*) malloc(1280);
+    y = (char *)malloc(1280);
+    sprintf(x, "");
     int numSrc = MIDIGetNumberOfSources();
-    ++g->sp; SetObject(g->sp, s_midiclient->u.classobj);
-    ++g->sp; SetInt(g->sp, numSrc);
-    runInterpreter(g, getsym("prSetNumberOfSources"), 2);
-    
+	post("numSrc %d\n",  numSrc);
+
+        sprintf(y, "[ [ ");
+        strcat(x,y);
+
     for (int i=0; i<numSrc; ++i) {
         MIDIEndpointRef src = MIDIGetSource(i);
 		MIDIEntityRef ent;
@@ -252,39 +255,23 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
         MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
         MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
         SInt32 id;
-        SInt32 lng;
         MIDIObjectGetIntegerProperty(src, kMIDIPropertyUniqueID, &id);
 		char cendname[1024], cdevname[1024];
 		CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
 		CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
-                lng = CFStringGetLength(devname);
   //             post("in %3d   uid %8d   dev '%s'   endpt '%s'\n", i, id, cdevname, cendname);
         CFRelease(devname);
         CFRelease(endname);
-    ++g->sp; SetObject(g->sp, s_midiclient->u.classobj);
-    ++g->sp; SetInt(g->sp, i);
-    ++g->sp; SetObject(g->sp,newPyrString(g->gc, cdevname, 0, true) );
-    runInterpreter(g, getsym("prSetSourceDeviceName"), 3);
-    
-    ++g->sp; SetObject(g->sp,s_midiclient->u.classobj);
-    ++g->sp; SetInt(g->sp, i);
-    ++g->sp; SetObject(g->sp,newPyrString(g->gc, cendname, 0, true) );
-    runInterpreter(g, getsym("prSetSourcePortName"), 3);
-    
-   
-    ++g->sp; SetObject(g->sp,s_midiclient->u.classobj);
-    ++g->sp; SetInt(g->sp, i);
-    ++g->sp; SetInt(g->sp, id);
-    runInterpreter(g, getsym("prSetSourceUID"), 3);
-
+        if (i + 1 == numSrc) sprintf(y," '%s %s', %8d ", cdevname, cendname,id);
+        else sprintf(y," '%s %s', %8d, ", cdevname, cendname, id);
+        strcat(x,y);
     }
- 
+        sprintf(y, "], [ ");
+        strcat(x,y);
 
 
         int numDst = MIDIGetNumberOfDestinations();
-    ++g->sp; SetObject(g->sp, s_midiclient->u.classobj);
-    ++g->sp; SetInt(g->sp, numSrc);
-    runInterpreter(g, getsym("prSetNumberOfDestinations"), 2);
+
 //	post("numDst %d\n",  numDst);
 
     for (int i=0; i<numDst; ++i) {
@@ -305,26 +292,19 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 //		post("out %3d   uid %8d   dev '%s'   endpt '%s'\n", i, id, cdevname, cendname);
         CFRelease(devname);
         CFRelease(endname);
-        SetObject(slots,newPyrString(g->gc, cdevname, 0, true) );
-        ++g->sp; SetObject(g->sp, s_midiclient->u.classobj);
-        ++g->sp; SetInt(g->sp, i);
-        ++g->sp; SetObject(g->sp,newPyrString(g->gc, cdevname, 0, true) );
-        runInterpreter(g, getsym("prSetDestinationDeviceName"), 3);
-        
-        ++g->sp; SetObject(g->sp, s_midiclient->u.classobj);
-        ++g->sp; SetInt(g->sp, i);
-        ++g->sp; SetObject(g->sp,newPyrString(g->gc, cendname, 0, true) );
-        runInterpreter(g, getsym("prSetDestinationPortName"), 3);
-        
-        ++g->sp; SetObject(g->sp,s_midiclient->u.classobj);
-        ++g->sp; SetInt(g->sp, i);
-        ++g->sp; SetInt(g->sp, id);
-        runInterpreter(g, getsym("prSetDestinationUID"), 3);
-  
+        if (i + 1 == numDst) sprintf(y," '%s %s', %8d ", cdevname, cendname,id);
+        else sprintf(y," '%s %s', %8d, ", cdevname, cendname, id);
+         strcat(x,y);
      }
-    
+        sprintf(y, "] ] ");
+        strcat(x,y);
+       SetObject( a,newPyrString(g->gc, x, 0, true) ); // push string onto return stack
+
+        free(x);
+        free(y);
 	return errNone;
 }
+
 
 int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed);
 int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
