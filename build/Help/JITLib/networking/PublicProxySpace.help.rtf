@@ -1,8 +1,9 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
-\f3\fswiss\fcharset77 Helvetica-BoldOblique;}
+\f3\fswiss\fcharset77 Helvetica-BoldOblique;\f4\fswiss\fcharset77 Helvetica-Oblique;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
-\red0\green115\blue0;\red96\green96\blue96;\red0\green115\blue0;\red0\green0\blue191;}
+\red0\green115\blue0;\red96\green96\blue96;\red0\green115\blue0;\red0\green0\blue191;\red191\green0\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 PublicProxySpace
@@ -26,14 +27,15 @@ experimental.\
 \f2\i0\b0 \
 \
 	
-\f0\b *new(server, name, clock) 
+\f0\b *new(server, name, 
+\f2\b0 clock
+\f0\b ) 
 \f2\b0 \
 						create a new instance. a name should be given.\
 	\
 	
 \f0\b *all
-\f2\b0 					a dictionary of all available spaces. spaces with the same name send to and 						recieve from each other\
-	\
+\f2\b0 					a dictionary of all available spaces. spaces with the same name send to and 						recieve from each other (alternative: provide a sendToName)\
 	\
 	
 \f0\b *startListen(addr)
@@ -72,6 +74,7 @@ experimental.\
 \f0\b \\all
 \f2\b0 , send to all.\
 	\
+	\
 	
 \f0\b put(key, obj)
 \f2\b0 			put an object in the proxyspace (see superclass).\
@@ -84,13 +87,43 @@ experimental.\
 \f0\b at(key)				
 \f2\b0 get an object from the proxyspace (see superclass).\
 	\
+	
+\f0\b public_(bool)	
+\f2\b0 		if public is set to 
+\f0\b false
+\f2\b0 , the public proxy space acts like a normal proxy space\
 	\
+	\
+	\
+
+\f3\i\b optional:\
+\
+	
+\f0\i0 destination_(name)
+\f2\b0 		name of proxyspace to which it sends (default: own name)\
+						
+\f0\b note:
+\f2\b0  when on multiple clients, this is not necessarily necessary.\
+						on one client, there is only one proxyspace per name.
+\f3\i\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\i0\b0 \cf0 \
+	
+\f0\b nickname_(string)
+\f2\b0 		sender nickname (optional)\
+	\
+	
+\f0\b action_(func
+\f2\b0 )			action to be evaluated when receiving a message (optional)						function args: 
+\f4\i proxyspace, nickname,  key, receivedString
+\f2\i0 \
 	\
 \
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf2 // example\cf3 \
+\f1\fs18 \cf2 // example\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 	\
@@ -98,40 +131,61 @@ experimental.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
-(\
-a = \cf4 PublicProxySpace\cf0 .new(s, \cf5 \\p1\cf0 );\
-b = \cf4 PublicProxySpace\cf0 .new(s, \cf5 \\p1\cf0 );\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 PublicProxySpace\cf0 .startListen;\
-\cf4 PublicProxySpace\cf0 .resp;\
-a.addressList = [\cf4 NetAddr\cf0 (\cf6 "127.0.0.1"\cf0 , 57120)];\
-b.addressList = [\cf4 NetAddr\cf0 (\cf6 "127.0.0.1"\cf0 , 57120)];\
+(\cf3 \
+a = \cf4 PublicProxySpace\cf3 .new(s, \cf5 \\harry\cf3 );\
+b = \cf4 PublicProxySpace\cf3 .new(s, \cf5 \\eliza\cf3 );\
+a.destination = \cf5 \\eliza\cf3 ;\
+b.\cf0 destination\cf3  = \cf5 \\harry\cf3 ;\
+\cf4 PublicProxySpace\cf3 .startListen;\
+\cf4 PublicProxySpace\cf3 .resp;\
+a.addressList = [\cf4 NetAddr\cf3 (\cf6 "127.0.0.1"\cf3 , 57120)];\
+b.addressList = [\cf4 NetAddr\cf3 (\cf6 "127.0.0.1"\cf3 , 57120)];\
 \
+\cf0 )\
+\
+\
+\
+\cf2 // now you can type into both of them:\cf0 \
+(\
+a.sendingKeys = \cf7 \\all\cf0 ;\
+b.sendingKeys = \cf7 \\all\cf0 ;\
+a.listeningKeys = \cf7 \\all\cf0 ;\
+b.listeningKeys = \cf7 \\all\cf0 ;\
+\
+\cf8 EnvirDocument\cf0 (a);\
+\cf8 EnvirDocument\cf0 (b);\
 )\
 \
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // now you can type into both of them:\cf3 \
-(\
-a.sendingKeys = \cf7 \\all\cf3 ;\
-b.sendingKeys = \cf7 \\all\cf3 ;\
-a.listeningKeys = \cf7 \\all\cf3 ;\
-b.listeningKeys = \cf7 \\all\cf3 ;\
-\
-\cf8 EnvirDocument\cf3 (a);\
-\cf8 EnvirDocument\cf3 (b);\
-)\cf0 \
+\cf9 // add an action to recieve notivications:\cf3 \
+a.action = \{\cf4 |...args|\cf3  args.drop(1).postln \};\
+b.action = \{\cf4 |...args|\cf3  args.drop(1).postln \};\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf2 // or add objects from here\
-\cf3 \
-a[\cf7 \\out\cf3 ].play; \cf2 // play here \cf3 \
-b[\cf7 \\out\cf3 ] = #\{ \cf8 PinkNoise\cf3 .ar(0.1 ! 2) \}; \cf2 // add here\cf3 \
+\cf0 \
+s.boot;\
+a[\cf7 \\out\cf0 ].play; \cf2 // play here \cf0 \
+b[\cf7 \\out\cf0 ] = #\{ \cf8 PinkNoise\cf0 .ar(0.1 ! 2) \}; \cf2 // set here\cf0 \
+b[\\out].play; // play here too\
+b[\\out] = #\{\'caSinOsc.ar(rrand(300, 400)) ! 2 * 0.1 \}; // two different tones\
+b[\\out] = #\{\'caSinOsc.ar(300) \cf3 ! 2 * 0.1 \}; \cf9 // same tone\cf3 \
+a.public = \cf4 false\cf3 ; \cf9 // be private\cf3 \
+b[\cf5 \\out\cf3 ] = #\{ \cf4 PinkNoise\cf3 .ar(0.1 ! 2) \}; \
+a.public = \cf4 true\cf3 ;\
+\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs24 \cf0 \
+a.push;\
+\
+~out.free;\
+\
+a.pop;\
+\
+\
+PublicProxySpace.clearAll;\
+\
+\
+\
 }
