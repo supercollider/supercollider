@@ -237,6 +237,12 @@ SCView::~SCView()
     delete mBackground;
 }
 
+void SCView::remove()
+{
+    if (mParent) mParent->remove(this);
+    if (mObj) SetNil(mObj->slots+0);
+}
+    
 bool SCView::hit(SCPoint where) const
 {
 	return SCPointInRect(where, mBounds);
@@ -2135,18 +2141,16 @@ void SCMultiSliderView::draw(SCRect inDamage)
             yval = vals[i];
             drawRect = SCtoCGRect(calcThumbRect(j, yval, mXOffset));
             CGContextFillRect (cgc, drawRect);
-            if (mThumbSize > 1)
-            CGContextStrokeRect(cgc,drawRect);
+            if (mThumbSize > 1)	CGContextStrokeRect(cgc,drawRect);
         }
         if (mSecYValues != NULL) {
-        j = 0;
-        for(int i = xstart; i < xpixels; i++, j++){
-            yval = mSecYValues[i];
-            drawRect = SCtoCGRect(calcThumbRect(j, yval, mXOffset));
-            CGContextFillRect (cgc, drawRect);
-            if (mThumbSize > 1)
-            CGContextStrokeRect(cgc,drawRect);
-        }
+            j = 0;
+            for(int i = xstart; i < xpixels; i++, j++){
+                yval = mSecYValues[i];
+                drawRect = SCtoCGRect(calcThumbRect(j, yval, mXOffset));
+                CGContextFillRect (cgc, drawRect);
+                if (mThumbSize > 1)	CGContextStrokeRect(cgc,drawRect);
+            }
         }
 
     }
@@ -2154,17 +2158,18 @@ void SCMultiSliderView::draw(SCRect inDamage)
     if (mDrawLinesActive) {
         float xadd, gcx, gcy;
         if(mThumbSize > 1) xadd =  mThumbSize * 0.5; 
-        else xadd = 0;  
+            else xadd = 0;  
         int j = 0; 
 		for(int i = xstart; i < xpixels; i++, j++){
             yval = vals[i];
             drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
             gcx =  drawRect.origin.x + xadd;
             gcy =  drawRect.origin.y + xadd;
-			if( i == xstart) CGContextMoveToPoint(cgc,  gcx, gcy);
+			if( i == xstart) 
+                CGContextMoveToPoint(cgc,  gcx, gcy);
 			else
-            CGContextAddLineToPoint(cgc, gcx, gcy);            
-            }
+                CGContextAddLineToPoint(cgc, gcx, gcy);            
+        }
         //these are fixed values: used for the max of soundfiles
         if (mSecYValues != NULL) {
             int j = xpixels - 1 - xstart;
@@ -2177,28 +2182,26 @@ void SCMultiSliderView::draw(SCRect inDamage)
             }
         }
         if(mIsFilled) CGContextEOFillPath(cgc);
-        else CGContextStrokePath(cgc);
+            else CGContextStrokePath(cgc);
     }
     //draw selection:
     if(mShowIndex) {
         if(mCurrentIndex + mSelectionSize >= xstart){
-        
-        int currentI, selsize;
-        if(mCurrentIndex < xstart) { 
-        currentI = 0;
-        selsize = sc_clip(mSelectionSize - (xstart - mCurrentIndex), 1, mTabSize);
-        }
-        else {
-        currentI =  mCurrentIndex - xstart;
-        selsize = mSelectionSize;
-        }
-            if(mIsHorizontal){
-            drawRect = CGRectMake(mBounds.x + 1 + (currentI * ( mXOffset + mThumbSize)), mBounds.y + 1, selsize * ( mXOffset + mThumbSize), mBounds.height);
+            int currentI, selsize;
+            if(mCurrentIndex < xstart) { 
+                currentI = 0;
+                selsize = sc_clip(mSelectionSize - (xstart - mCurrentIndex), 1, mTabSize);
             } else {
-            drawRect = CGRectMake( mBounds.x + 1, mBounds.y + 1 + (currentI * ( mXOffset + mThumbSize)), mBounds.width, selsize * ( mXOffset + mThumbSize));
+                currentI =  mCurrentIndex - xstart;
+                selsize = mSelectionSize;
             }
-        CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, 0.4);
-        CGContextFillRect (cgc, drawRect); 
+            if(mIsHorizontal){
+                drawRect = CGRectMake(mBounds.x + 1 + (currentI * ( mXOffset + mThumbSize)), mBounds.y + 1, selsize * ( mXOffset + mThumbSize), mBounds.height);
+            } else {
+                drawRect = CGRectMake( mBounds.x + 1, mBounds.y + 1 + (currentI * ( mXOffset + mThumbSize)), mBounds.width, selsize * ( mXOffset + mThumbSize));
+            }
+            CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, 0.4);
+            CGContextFillRect (cgc, drawRect); 
         }   
     }
     CGContextRestoreGState(cgc);
@@ -2238,8 +2241,7 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
 
         if (send) sendMessage(s_doaction, 0, 0, 0); 
         //post("readOnly: x: %d \n", mCurrentIndex);
-        if(mShowIndex)
-        refresh();
+        if(mShowIndex)	refresh();
     }
     return changed;
 
@@ -2304,13 +2306,15 @@ void SCMultiSliderView::setSelection(SCPoint where)
     int wx;
     int visiIn = mCurrentIndex - mStartIndex;
     int maxSize = mTabSize - mCurrentIndex;
-    if(mIsHorizontal) wx = (int) ((where.x - mBounds.x - 1) /( mXOffset + mThumbSize));
-    else wx = (int) ((where.y - mBounds.y - 1)/( mXOffset + mThumbSize));
+    if(mIsHorizontal) 
+        wx = (int) ((where.x - mBounds.x - 1) /( mXOffset + mThumbSize));
+    else 
+        wx = (int) ((where.y - mBounds.y - 1)/( mXOffset + mThumbSize));
     if(wx > visiIn) mSelectionSize = (int) wx - visiIn;
-    else {
-    setValueFromPoint(where);
-    mSelectionSize = (int) mCurrentIndex - wx;
-    }
+        else {
+            setValueFromPoint(where);
+            mSelectionSize = (int) mCurrentIndex - wx;
+        }
     if(mSelectionSize > maxSize) mSelectionSize = maxSize;
     refresh();
 }
@@ -2332,7 +2336,7 @@ void SCMultiSliderView::mouseTrack(SCPoint where, int modifiers)
         if(mShowIndex) {
             setSelection(where);
             sendMessage(getsym("doAction"), 0, 0, 0);
-            }
+        }
     } else if (modifiers & NSControlKeyMask) {
         if(mIsHorizontal) mCurrentX = where.x; //absolute y mouse position
         else mCurrentX = where.y;
@@ -2387,146 +2391,140 @@ void SCMultiSliderView::setVisibleSize()
 int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {	
 	int err;
-        char *name = symbol->name;
-        if (strcmp(name, "step")==0) {
-            err = slotDoubleVal(slot, &mStepSize);
-            if (!err) {
-                mStepScale = 1. / mStepSize;
-		//bool changed = setValue(mX, mY, false);
-                //SetBool(slot, changed);
-            }
-            return errNone;
+    char *name = symbol->name;
+    if (strcmp(name, "step")==0) {
+        err = slotDoubleVal(slot, &mStepSize);
+        if (!err) {
+            mStepScale = 1. / mStepSize;
+            //bool changed = setValue(mX, mY, false);
+            //SetBool(slot, changed);
         }
-        //
-        if (strcmp(name, "thumbSize")==0) {
-            err = slotIntVal(slot, &mThumbSize);
-            setVisibleSize();
-            refresh();
-            return errNone;
-        } 
-        if (strcmp(name, "thumbWidth")==0) {
-            err = slotIntVal(slot, &mThumbSizeY);
-            //setVisibleSize();
-            refresh();
-            return errNone;
-        } 
-        //
-        if (strcmp(name, "indexThumbSize")==0) {
-            err = slotIntVal(slot, &mThumbSize);
-            setVisibleSize();
-            refresh();
-            return errNone;
-        } 
-        if (strcmp(name, "valueThumbSize")==0) {
-            err = slotIntVal(slot, &mThumbSizeY);
-            //setVisibleSize();
-            refresh();
-            return errNone;
-        } 
-        if (strcmp(name, "xOffset")==0) {
-            err = slotFloatVal(slot, &mXOffset);
-            if(mXOffset < 1.0) mXOffset = 0.0; //mResamp = (int) 1.0 / mXOffset;
-            setVisibleSize();
-            refresh();
-            return errNone;
-        }
-        if (strcmp(name, "fillColor")==0) {
-            err = slotColorVal(slot, &mFillColor);
-            refresh();
-            return errNone;
-        }
-        if (strcmp(name, "strokeColor")==0) {
-            err = slotColorVal(slot, &mStrokeColor);
-            refresh();
-            return errNone;
-        }
-        if (strcmp(name, "startIndex")==0) {
-            err = slotIntVal(slot, &mStartIndex);
-           
-            refresh();
-            return errNone;
-        }
-        if (strcmp(name, "readOnly")==0) {
-            mReadOnly = IsTrue(slot); 
-            refresh();
-            return errNone;
-        }
-        if (strcmp(name, "isHorizontal")==0) {
-            mIsHorizontal = IsTrue(slot); 
-            refresh();
-            return errNone;
-        }
-        
-        if (strcmp(name, "drawLines")==0) {
-            mDrawLinesActive = IsTrue(slot); 
-            refresh();
-            return errNone;
-        }
-        if (strcmp(name, "drawRects")==0) {
-            mDrawRectsActive = IsTrue(slot); 
-            refresh();
-            return errNone;
-        }
-        if (strcmp(name, "isFilled")==0) {
-            mIsFilled = IsTrue(slot); 
-            refresh();
-            return errNone;
-        }
-        if (strcmp(name, "showIndex")==0) {
-            mShowIndex = IsTrue(slot); 
-            refresh();
-            return errNone;
-        }
-        if (symbol == s_x) {
-            slotIntVal(slot, &mCurrentIndex);
-            mCurrentIndex  = sc_clip(mCurrentIndex, 0, mTabSize - 1);
-            int maxSize = mTabSize - mCurrentIndex;
-            if(mSelectionSize > maxSize) mSelectionSize = maxSize;
-            refresh();
-            return errNone;
+        return errNone;
+    }
+    if (strcmp(name, "thumbSize")==0) {
+        err = slotIntVal(slot, &mThumbSize);
+        setVisibleSize();
+        refresh();
+        return errNone;
+    } 
+    if (strcmp(name, "thumbWidth")==0) {
+        err = slotIntVal(slot, &mThumbSizeY);
+        //setVisibleSize();
+        refresh();
+        return errNone;
+    } 
+    if (strcmp(name, "indexThumbSize")==0) {
+        err = slotIntVal(slot, &mThumbSize);
+        setVisibleSize();
+        refresh();
+        return errNone;
+    } 
+    if (strcmp(name, "valueThumbSize")==0) {
+        err = slotIntVal(slot, &mThumbSizeY);
+        //setVisibleSize();
+        refresh();
+        return errNone;
+    } 
+    if (strcmp(name, "xOffset")==0) {
+        err = slotFloatVal(slot, &mXOffset);
+        if(mXOffset < 1.0) mXOffset = 0.0; //mResamp = (int) 1.0 / mXOffset;
+        setVisibleSize();
+        refresh();
+        return errNone;
+    }
+    if (strcmp(name, "fillColor")==0) {
+        err = slotColorVal(slot, &mFillColor);
+        refresh();
+        return errNone;
+    }
+    if (strcmp(name, "strokeColor")==0) {
+        err = slotColorVal(slot, &mStrokeColor);
+        refresh();
+        return errNone;
+    }
+    if (strcmp(name, "startIndex")==0) {
+        err = slotIntVal(slot, &mStartIndex);
+        refresh();
+        return errNone;
+    }
+    if (strcmp(name, "readOnly")==0) {
+        mReadOnly = IsTrue(slot); 
+        refresh();
+        return errNone;
+    }
+    if (strcmp(name, "isHorizontal")==0) {
+        mIsHorizontal = IsTrue(slot); 
+        refresh();
+        return errNone;
+    }
+    if (strcmp(name, "drawLines")==0) {
+        mDrawLinesActive = IsTrue(slot); 
+        refresh();
+        return errNone;
+    }
+    if (strcmp(name, "drawRects")==0) {
+        mDrawRectsActive = IsTrue(slot); 
+        refresh();
+        return errNone;
+    }
+    if (strcmp(name, "isFilled")==0) {
+        mIsFilled = IsTrue(slot); 
+        refresh();
+        return errNone;
+    }
+    if (strcmp(name, "showIndex")==0) {
+        mShowIndex = IsTrue(slot); 
+        refresh();
+        return errNone;
+    }
+    if (symbol == s_x) {
+        slotIntVal(slot, &mCurrentIndex);
+        mCurrentIndex  = sc_clip(mCurrentIndex, 0, mTabSize - 1);
+        int maxSize = mTabSize - mCurrentIndex;
+        if(mSelectionSize > maxSize) mSelectionSize = maxSize;
+        refresh();
+        return errNone;
 	}
 	if (symbol == s_y) {
-            slotDoubleVal(slot, &mCurrentY);
-            mCurrentY = sc_clip(mCurrentIndex, 0.0, 1.0);
-            mYValues[mCurrentIndex] = mCurrentY;
-            refresh();
-            return errNone;
+        slotDoubleVal(slot, &mCurrentY);
+        mCurrentY = sc_clip(mCurrentIndex, 0.0, 1.0);
+        mYValues[mCurrentIndex] = mCurrentY;
+        refresh();
+        return errNone;
 	}
-        if (symbol == s_value) {
-            
-            if (!isKindOfSlot(slot, class_array)) return errWrongType;
-            if(slot->uo->size != mTabSize) {
-                err = allocSlotDoubleArrayVal(slot, &mYValues);
-                mTabSize = slot->uo->size;
-            } else {
-                int len = slot->uo->size;
-                memcpy(mYValues, slot->uo->slots, len * sizeof(double));
-            }
-            setVisibleSize();
-            refresh();
-            return errNone;
-	}
-        if (strcmp(name, "referenceValues")==0) {
-            
-            if (!isKindOfSlot(slot, class_array)) return errWrongType;
-            if(slot->uo->size == mTabSize && mSecYValues != NULL) {
-            //int len = slot->uo->size;
-                //memcpy(mSecYValues, slot->uo->slots, len * sizeof(double));
-                //mTabSize = slot->uo->size;
-                err = allocSlotDoubleArrayVal(slot, &mSecYValues);    
-            } else {
-                 err = allocSlotDoubleArrayVal(slot, &mSecYValues);
-            }
-            refresh();
-            return errNone;
-	}
-        if (strcmp(name, "selectionSize")==0) {
-            slotIntVal(slot, &mSelectionSize);
-            refresh();
-            return errNone;
+    if (symbol == s_value) {
+        if (!isKindOfSlot(slot, class_array)) return errWrongType;
+        if(slot->uo->size != mTabSize) {
+            err = allocSlotDoubleArrayVal(slot, &mYValues);
+            mTabSize = slot->uo->size;
+        } else {
+            int len = slot->uo->size;
+            memcpy(mYValues, slot->uo->slots, len * sizeof(double));
         }
-	
-        return SCView::setProperty(symbol, slot);
+        setVisibleSize();
+        refresh();
+        return errNone;
+	}
+    if (strcmp(name, "referenceValues")==0) {
+        if (!isKindOfSlot(slot, class_array)) return errWrongType;
+        if(slot->uo->size == mTabSize && mSecYValues != NULL) {
+        //int len = slot->uo->size;
+            //memcpy(mSecYValues, slot->uo->slots, len * sizeof(double));
+            //mTabSize = slot->uo->size;
+            err = allocSlotDoubleArrayVal(slot, &mSecYValues);    
+        } else {
+                err = allocSlotDoubleArrayVal(slot, &mSecYValues);
+        }
+        refresh();
+        return errNone;
+	}
+    if (strcmp(name, "selectionSize")==0) {
+        slotIntVal(slot, &mSelectionSize);
+        refresh();
+        return errNone;
+    }
+
+    return SCView::setProperty(symbol, slot);
 }
 
 int SCMultiSliderView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
@@ -3895,6 +3893,15 @@ int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prSCView_Remove(struct VMGlobals *g, int numArgsPushed);
+int prSCView_Remove(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+
+	SCView *view = (SCView*)(g->sp)[0].uo->slots[0].ui;
+    view->remove();
+	return errNone;
+}
 
 void initSCViewPrimitives()
 {
@@ -3923,6 +3930,7 @@ void initSCViewPrimitives()
 	definePrimitive(base, index++, "_SCView_GetProperty", prSCView_GetProperty, 3, 0);	
 	definePrimitive(base, index++, "_SCView_Focus", prSCView_Focus, 2, 0);	
 	definePrimitive(base, index++, "_SCView_Refresh", prSCView_Refresh, 1, 0);	
+	definePrimitive(base, index++, "_SCView_Remove", prSCView_Remove, 1, 0);	
 }
 
 void initGUI();
@@ -3939,18 +3947,13 @@ drag/drop views
 background color / pic
 
 new views
-    text view
-    button view
+    larger text view
     scope view
-    envelope view
-    popup menu
     plot view
         graph limits
         grid on/off
         data 1d, 2d
             color
-    hlayoutview
-    vlayoutview
     hdivider
     vdivider
     overlay view

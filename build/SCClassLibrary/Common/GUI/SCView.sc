@@ -64,6 +64,10 @@ SCView {  // abstract class
 		_SCView_Refresh
 		^this.primitiveFailed
 	}
+	remove {
+		parent.prRemoveChild(this);
+		this.prRemove;
+	}
 	/*
 	resize behaviour in an SCCompositeView:
 		1  2  3
@@ -101,11 +105,10 @@ SCView {  // abstract class
 	defaultKeyDownAction { ^nil }
 	handleKeyDownBubbling { arg view, char, modifiers, unicode,keycode;
 		// nil from keyDownAction --> pass it on
-		keyDownAction.value(view, char, modifiers, unicode,keycode) ??  
-		{
+		if(keyDownAction.value(view, char, modifiers, unicode,keycode).isNil,{  
 			// call keydown action of parent view
 			parent.handleKeyDownBubbling(view, char, modifiers, unicode,keycode);
-		}
+		})
 	}
 	
 	// sc.solar addition
@@ -118,11 +121,10 @@ SCView {  // abstract class
 	defaultKeyUpAction { ^nil }
 	handleKeyUpBubbling { arg view, char, modifiers,unicode,keycode;
 		// nil from keyUpAction --> pass it on
-		keyUpAction.value(view, char, modifiers,unicode,keycode) ??  
-		{
+		if(keyUpAction.value(view, char, modifiers,unicode,keycode).isNil,{
 			// call local keyUp action of parent view
 			parent.handleKeyUpBubbling(view, char, modifiers,unicode,keycode);
-		};
+		});
 	}
 
 	canReceiveDrag {
@@ -165,8 +167,10 @@ SCView {  // abstract class
 		^this.primitiveFailed
 	}
 	prClose { dataptr = nil; }
-	// prRemove
-	
+	prRemove {
+		_SCView_Remove
+		^this.primitiveFailed
+	}
 	setProperty { arg key, value;
 		_SCView_SetProperty
 		^this.primitiveFailed
@@ -197,14 +201,12 @@ SCContainerView : SCView { // abstract class
 		children = children.add(child);
 		if (decorator.notNil, { decorator.place(child); });
 	}
-//	remove { arg child;
-//		children.remove(child);
-//		// decorator replace
-//	}
 	
+	prRemoveChild { arg child;
+		children.remove(child);
+		// decorator replace
+	}
 	//bounds_  replace children
-		// needs the StartRow view
-
 
 	// private
 	prClose {
@@ -274,7 +276,7 @@ SCSlider : SCSliderBase
 	increment { ^this.value = this.value + this.bounds.width.reciprocal }
 	decrement { ^this.value = this.value - this.bounds.width.reciprocal }
 	
-	defaultKeyDownAction { arg key, modifiers, unicode;
+	defaultKeyDownAction { arg key, modifiers, unicode,keycode;
 		// standard keydown
 		if (key == $r, { this.value = 1.0.rand; });
 		if (key == $n, { this.value = 0.0; });
@@ -740,7 +742,7 @@ SCMultiSliderView : SCView {
 
 	var <>acceptDrag = true;
 	var <>metaAction, <>mouseEndTrackAction;
-	var <> size ;
+	var <>size ;
 	var <gap;
 
 	draw {}
@@ -748,7 +750,6 @@ SCMultiSliderView : SCView {
 	mouseTrack { arg x, y, modifiers; 	}
 	mouseEndTrack { arg x, y, modifiers;
 		mouseEndTrackAction.value(this);
-		 //"hi".postln; 
 	}
 	properties {
 		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \thumbWidth, \absoluteX, \isFilled]
@@ -775,10 +776,10 @@ SCMultiSliderView : SCView {
 	}
 	isFilled_{arg abool;
 		^this.setProperty(\isFilled, abool);
-		}
+	}
 	xOffset_{arg aval;
 		^this.setProperty(\xOffset, aval);
-		}
+	}
 	gap_ {arg inx;
 		gap = inx;
 		this.setProperty(\xOffset, inx)
@@ -795,14 +796,14 @@ SCMultiSliderView : SCView {
 	}
 	fillColor_{arg acolor;
 		^this.setProperty(\fillColor, acolor)
-		}
+	}
 	strokeColor_{arg acolor;
 		^this.setProperty(\strokeColor, acolor)
-		}
+	}
 	colors_{arg strokec, fillc;
 		this.strokeColor_(strokec);
 		this.fillColor_(fillc);
-		}
+	}
 	currentvalue_ {arg iny;
 		this.setProperty(\y, iny)
 	}
@@ -811,13 +812,13 @@ SCMultiSliderView : SCView {
 		}
 	drawLines{arg abool;
 		this.setProperty(\drawLines, abool)
-		}
+	}
 	drawLines_{arg abool;
 		this.drawLines(abool)
-		}
+	}
 	drawRects_{arg abool;
 		this.setProperty(\drawRects, abool)
-		}
+	}
 	readOnly_{arg val;
 		this.setProperty(\readOnly, val);
 	}
@@ -870,8 +871,7 @@ SCMultiSliderView : SCView {
 		if (unicode == 16rF702, { this.index = this.index - 1; ^this });
 		if (unicode == 16rF700, { this.gap = this.gap + 1; ^this });
 		if (unicode == 16rF701, { this.gap = this.gap - 1; ^this });
-
-		}
+	}
 	doMetaAction{ 
 		var ax;
 		if(this.metaAction.isNil,{
