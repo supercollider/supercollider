@@ -545,7 +545,7 @@ void Index_next_1(Index *unit, int inNumSamples)
 		float *table = bufData;
 		int32 maxindex = tableSize - 1;
 	
-	int32 index = (int32)ZIN0(0);
+	int32 index = (int32)ZIN0(1);
 	index = sc_clip(index, 0, maxindex);
 	ZOUT0(0) = table[index];
 
@@ -561,6 +561,7 @@ void Index_next_k(Index *unit, int inNumSamples)
 	float *out = ZOUT(0);
 
 	int32 index = (int32)ZIN0(1);
+
 	index = sc_clip(index, 0, maxindex);
 	float val = table[index];
 	LOOP(inNumSamples,
