@@ -9,15 +9,15 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 A scheduler for sending OSC messages to servers.  \
+\fs24 \cf0 A scheduler for sending OSC bundles to servers.  \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
-The message is kept on the client until the last possible moment, and then actually sent to the server in a time stamped bundle, just before it is due to be executed.\
+The bundle is kept on the client until the last possible moment, and then actually sent to the server in a time stamped bundle, just before it is due to be executed.\
 \
-Messages can be scheduled for precise execution using relative seconds, relative beats, absolute seconds or absolute beats.  Messages can be scheduled on multiple servers, with exact simultaneous execution times.\
+Bundles can be scheduled for precise execution using relative seconds, relative beats, absolute seconds or absolute beats.  Bundles can be scheduled on multiple servers, with exact simultaneous execution times.\
 \
-Messages can be easily cancelled up until the time they are sent to the server.  They are sent to the server just before execution.\
+Bundles can be easily cancelled up until the time they are sent to the server.  They are sent to the server just before execution.\
 \
 The Tempo class is used to specify what the tempo is, and is used for all beat <-> second calculations. A default global Tempo object is used, or you can create a specific Tempo instance if y'all got your own separate grooves.\
 \
@@ -25,9 +25,7 @@ There is a default global OSCSched that can be addressed through class methods. 
 \
 The default clock used is the SystemClock, but you may also specify to use the AppClock.\
 \
-The OSC message may be a single message or a bundle.  \
-\
-An optional clientSideFunction can also be supplied that will be evaluated on the client at the exact time as the OSC message is scheduled to happen.  This could be used to show a change in the gui or to update some setting on a client side object.\
+An optional clientSideFunction can also be supplied that will be evaluated on the client at the exact time as the OSC bundle is scheduled to happen.  This could be used to show a change in the gui or to update some setting on a client side object.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -35,14 +33,14 @@ An optional clientSideFunction can also be supplied that will be evaluated on th
 	class (the default global scheduler) \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \cf0 		\cf2 OSCSched\cf0 .tsched(seconds,server,message,clientSideFunction)\
+\f2\b0\fs18 \cf0 		\cf2 OSCSched\cf0 .tsched(seconds,server,bundle,clientSideFunction)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 	and instance methods (a specific scheduler). \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 		oscSched = \cf2 OSCSched\cf0 .new;\
-		oscSched.tsched(seconds,server,message,clientSideFunction)\
+		oscSched.tsched(seconds,server,bundle,clientSideFunction)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 \
@@ -50,65 +48,66 @@ An optional clientSideFunction can also be supplied that will be evaluated on th
 		
 \f1\b0 \
 
-\f0\b tsched(seconds,server,message,clientSideFunction)\
+\f0\b tsched(seconds,server,bundle,clientSideFunction)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0        time based scheduling\
         delta specified in seconds\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 xtsched( seconds,server,message,clientSideFunction)\
+\f0\b \cf0 xtsched( seconds,server,bundle,clientSideFunction)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 	exclusive time based schedule\
-	any previous messages scheduling using xtsched, xsched or xqsched will \
-	be cancelled. this is incredibly useful in situations where several messages \
+	any previous bundles scheduled using xtsched, xsched or xqsched will \
+	be cancelled. this is incredibly useful in situations where several bundles \
 	might be sent and you only want the last one to be used as the final answer.\
 	example:  a monkey is hitting many buttons, changing his mind about which \
-	sound to play next. this would result in many messages being stacked up all \
+	sound to play next. this would result in many bundles being stacked up all \
 	at the same time, and the server would choke trying to execute them all.  \
-	this is a kind of enforced monophony.\
-	another example:  a sequence plays successive notes.  \
-	you switch to a different sequence.  	you don't want the note that was \
+	so this forces a kind of monophony of bundles.\
+	another example:  a sequence plays successive notes, scheduling each one\
+	when it plays the previous one.\
+	you then switch to a different sequence.  	you don't want the note that was \
 	scheduled from the previous sequence to happen.  	using one of the \
-	x-methods, you don't have to worry about it.\
+	x-methods, you don't have to worry about it, it will just be cancelled.\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 sched(beats,server,message,clientSideFunction)\
+\f0\b \cf0 sched(beats,server,bundle,clientSideFunction)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0         delta specified in beats\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 xsched(beats,server,message,clientSideFunction)\
+\f0\b \cf0 xsched(beats,server,bundle,clientSideFunction)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 	exclusive beat based scheduling\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 	\
-qsched(quantize,server,message,clientSideFunction)\
+qsched(quantize,server,bundle,clientSideFunction)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0         will happen at the next even division ( 4.0 means on the downbeat of a 4/4 bar ),\
         or immediately if you happen to be exactly on a division.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 xqsched(quantize,server,message,clientSideFunction)\
+\f0\b \cf0 xqsched(quantize,server,bundle,clientSideFunction)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 	exclusive quantized beat based scheduling\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 	\
-tschedAbs(time,server,message,clientSideFunction)\
+tschedAbs(time,server,bundle,clientSideFunction)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0         will happen at the time specified in seconds\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 schedAbs(beat,server,message,clientSideFunction)\
+\f0\b \cf0 schedAbs(beat,server,bundle,clientSideFunction)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0         will happen at the beat specified.  this uses TempoClock for scheduling\
@@ -118,7 +117,7 @@ tschedAbs(time,server,message,clientSideFunction)\
 \f0\b \cf0 xblock\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 	blocks any and all pending x-scheduled messages.\
+\f1\b0 \cf0 	blocks any and all pending x-scheduled bundles.\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 

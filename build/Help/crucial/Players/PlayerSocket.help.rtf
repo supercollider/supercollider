@@ -1,7 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 PlayerSocket
@@ -65,11 +65,11 @@ p.prepareAndSpawn(r,0.1);\
 \
 (\
 p.prepareAndSpawn(\
-	Patch(\{ arg freq=400,gate=1.0;\
-		Saw.ar(freq) * EnvGen.kr(Env.adsr(0.1,2.0,0.3,2.0),gate)\
+	\cf2 Patch\cf0 (\{ \cf2 arg\cf0  freq=400,gate=1.0;\
+		\cf2 Saw\cf0 .ar(freq) * \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .adsr(0.1,2.0,0.3,2.0),gate)\
 	\},[\
 		rrand(38,70).midicps,\
-		KrNumberEditor(1.0,\\gate)\
+		\cf2 KrNumberEditor\cf0 (1.0,\cf3 \\gate\cf0 )\
 	]),\
 	1.0\
 )\
@@ -93,6 +93,7 @@ p.isPlaying;\
 see PlayerPool which is a subclass of this\
 \
 \
+As an input to a Patch\
 (\
 q = \cf2 Patch\cf0 (\{ \cf2 Saw\cf0 .ar * 0.2 \});\
 r = \cf2 Patch\cf0 (\{ \cf2 Saw\cf0 .ar(800) * 0.2 \});\
@@ -110,7 +111,7 @@ p.prepareAndSpawn(q);\
 \
 p.prepareAndSpawn(r);\
 \
-// after you have prepared it\
+// if you know that you have prepared it\
 p.spawnPlayer(q);\
 \
 p.spawnPlayer(r);\

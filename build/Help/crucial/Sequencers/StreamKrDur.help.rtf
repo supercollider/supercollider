@@ -12,16 +12,21 @@
 
 \fs24 \cf0 superclass: StreamKr ... AbstractPlayer\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b StreamKrDur.new(pattern,durations,lagTime)\
+\f0\b \cf0 StreamKrDur.new(pattern,durations,lagTime)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
-Takes a float-returning stream (ie. pattern) and renders it to  a .kr rate signal.\
-This is the way to make use of Patterns in 'normal' synthesis functions.\
+\f1\b0 \cf0 \
+This plays a pattern in real time on the client, and sends those values as /c_set messages to its bus on the server.
+\f0\b \
+
+\f1\b0 Durations are specified in beats by a second pattern.\
 \
-This plays the pattern in real time on the client, and sends messages to the server.
-\f0\b  It is not very efficient. 
-\f1\b0  Under SC2 this was very efficient, because it used Sequencer.\
+Its timing are exact, its messages are sent to the server with a small latency period before they should be played.  That is to say when you start playing a StreamKrDur, it will run slightly and exactly ahead of time.\
+It is cancellable and stoppable within the value of Server-latency.\
+\
+It is extremely efficient in CPU usage on the client, using less than it takes to switch from one text window to another.\
 \
 	
 \f0\b pattern\
@@ -55,7 +60,7 @@ This plays the pattern in real time on the client, and sends messages to the ser
 			\cf3 Prand\cf0 (\cf3 Array\cf0 .fill(rrand(4,16),\{ rrand(20,80).midicps \}),\cf3 inf\cf0 ),\
 			 0.25,
 \fs20 \cf2 // a float
-\fs18 \
+\fs18 \cf2 \
 \cf0 			 0.1)
 \fs20 ;\
 \
@@ -98,7 +103,8 @@ This plays the pattern in real time on the client, and sends messages to the ser
 	\cf3 Tempo\cf0 .bpm = 100; \cf2 // times are in beats\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	Patch(\{ arg freq=440;\
-			
+		SinOsc.ar(freq,SinOsc.ar(600,0,0.3))\
+		//
 \fs18 \cf3 PMOsc\cf0 .ar(freq,100,1.0,0,0.3)\
 	\},[\
 		freq\
@@ -125,7 +131,7 @@ This plays the pattern in real time on the client, and sends messages to the ser
 			\cf3 Prand\cf0 (\cf3 Array\cf0 .fill(rrand(4,16),\{ rrand(20,80).midicps \}),\cf3 inf\cf0 ),\
 			 0.25,
 \fs20 \cf2 // a float
-\fs18 \
+\fs18 \cf2 \
 \cf0 			 0.1)
 \fs20 ;\
 			 \
@@ -176,7 +182,7 @@ This plays the pattern in real time on the client, and sends messages to the ser
 			\cf3 Prand\cf0 (\cf3 Array\cf0 .fill(rrand(4,16),\{ rrand(20,80).midicps \}),\cf3 inf\cf0 ),\
 			 0.25,
 \fs20 \cf2 // a float
-\fs18 \
+\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 			 0.1)
 \fs20 ,\

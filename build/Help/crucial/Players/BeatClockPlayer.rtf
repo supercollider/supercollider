@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
-}
+\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 BeatClockPlayer
@@ -10,8 +10,9 @@
 \fs26 tempo synched trigger
 \f1\b0\fs18 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 superclass:  KrPlayer\
+\fs24 \cf0 superclass:  KrPlayer\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -60,6 +61,48 @@ p.stop;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 BeatClockPlayer is actually just an Impulse ugen with its frequency driven by the tempo setting.  When used at the same time as a Stream2Trig, StreamKrDur or other client-side scheduling driven device, it is possible for inaccuracies in the accounting methods to build up to noticeable loss of sync.\
+\
+Even clicking on different windows is leading to disturbances.  This is TempoClock's inaccuracy, it is lagging.\
+\
+Try changing the tempo or dragging windows.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 (
+\f2 \cf5 \
+	\cf6 Instr\cf5 (\cf7 \\beatClockPlayerTest\cf5 ,\{ \cf6 arg\cf5  gate=0.0,freq=300;\
+		\cf6 var\cf5  a,t;\
+\
+		t = gate;\
+		a = \cf6 Decay2\cf5 .kr(t,0.01,0.1).clip2(1.0);\
+		a * \cf6 SinOsc\cf5 .ar(freq);\
+	\},[\
+		\cf7 \\gate\cf5 \
+	]);\
+	\
+	\cf6 PlayerMixer\cf5 ([\
+		\cf6 Patch\cf5 .new(\cf7 \\beatClockPlayerTest\cf5 ,\
+		[\
+			\cf6 BeatClockPlayer\cf5 (4), \cf8 // trig / gate \cf5 \
+			300\
+		]),\
+		\cf6 Patch\cf5 .new(\cf7 \\beatClockPlayerTest\cf5 ,\
+		[\
+			\cf6 Stream2Trig\cf5 (\cf6 1.0\cf5 ,1.0),\
+			600\
+		])\
+	]).play;\
+\
+	\cf6 Tempo\cf5 .default.gui\
+
+\f1 \cf0 )\
+\
+\
+\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural

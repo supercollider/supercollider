@@ -41,7 +41,7 @@ It will not play by itself, but it holds all the intelligence to allow other thi
 	\cf2 Sample\cf0 ("a11wlk01.wav")\
 ]);\
 \
-p.play;\
+p.gui;\
 \
 )\
 \
@@ -126,7 +126,7 @@ p.play;\
 \
 \
 
-\f2\fs24 You can swap the samples while playing.  Since most of the samples you have are stereo, before playing this example, click on the name of the sample (in black font) and browse for a different stereo sample.  Then start play, and you can browse for more and change it while playing.\
+\f2\fs24 You can swap the samples while playing.  Click on the name of the sample (in black font) and browse for a  stereo sample.  Then start play, and you can browse for more and change it while playing.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 (\
@@ -142,10 +142,10 @@ p.play;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 p = Patch\cf0 (\cf3 "help-Sample"\cf0 ,[\
-	\cf2 Sample\cf0 (\cf3 "a11wlk01.wav"\cf0 )\
+	\cf2 Sample\cf0 (\cf3 "pick a stereo sample..."\cf0 )\
 ]);\
 \
-p.topGui\
+p.gui\
 \
 )\
 \
@@ -160,6 +160,7 @@ p.topGui\
 
 \f2\fs24 \cf0 You can build up a library of Instr functions and exploit them with Patch.\
 \
+(\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf2 Instr\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\{ \cf2 arg\cf0  sample,pchRatio=1.0,start=0.0;\
@@ -173,19 +174,21 @@ p.topGui\
 \cf0 \});\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 \
+\f2\fs24 \cf0 )\
 \
 Patch object:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
+(\
 	p = \cf2 Patch\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\
 	[\
 		\cf2 Sample\cf0 (\cf3 "a11wlk01.wav"\cf0 )\
 	]);\
 	\
 	\cf4 // edit controls on the gui\
-\cf0 	p.topGui\
+\cf0 	p.gui\
+)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 \
@@ -194,11 +197,12 @@ save it,  and this will fully restore the complete sound.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
+(\
 	\cf2 Patch\cf0 .new(\
 		[ \cf5 'help'\cf0 , \cf5 'Sample'\cf0  ], [ \cf2 Sample\cf0 .new(\cf3 "a11wlk01.wav"\cf0 , 1.6347258775994), \
 			0.46511627906977, 0.17441860465116 ]\
 	).play\
-	\
+)	\
 \
 \
 \
@@ -225,7 +229,7 @@ save it,  and this will fully restore the complete sound.\
 	]);\
 	\
 	// move the tempo slider\
-	p.topGui\
+	p.gui\
 	\
 	)\
 \

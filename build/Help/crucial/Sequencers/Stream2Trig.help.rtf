@@ -8,22 +8,28 @@
 \f0\b\fs36 \cf0 Stream2Trig			
 \fs28 generate a trigger signal from a stream
 \fs36 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \
+\f1\b0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b superclass: StreamKrDur\
+\f0\b \cf0 superclass: StreamKrDur\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b Stream2Trig(levels,durations)\
+\f0\b \cf0 Stream2Trig(levels,durations)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Take a pattern and use it as a stream of values for a trigger.  This plays the pattern in real time on the client, and sends messages to the server.
-\f0\b  It is not very efficient. 
-\f1\b0  Under SC2 this was very efficient, because it used ImpulseSequencer.  \
-\
+\f0\b \
 
-\f0\b levels
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 levels
 \f1\b0  - A stream of values for the level of each trigger \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -38,8 +44,9 @@ Take a pattern and use it as a stream of values for a trigger.  This plays the p
 \f1\fs24 \cf0 	\
 	\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b duration
+\f0\b \cf0 duration
 \f1\b0  - A stream of values for the duration in beats between each trigger. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -57,7 +64,6 @@ Take a pattern and use it as a stream of values for a trigger.  This plays the p
 \f2\fs18 \cf0 \
 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Instr\cf0 (\\Stream2Trig, \{\cf2 arg\cf0  gate=0.0,freq=440,env;\
 	p = \cf2 Pulse\cf0 .ar(freq,LFNoise1.kr(0.1).abs,0.5);\
 	\cf2 Enveloper2\cf0 .ar(p,gate,env,2,2);\
