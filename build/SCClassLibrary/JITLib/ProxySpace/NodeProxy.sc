@@ -163,7 +163,7 @@ NodeProxy : AbstractFunction {
 						if(send, { 
 							this.sendToServer(bundle, freeAll, latency, nil, onCompletion);
 						}, { 
-							bundle.sendPrepare 
+							bundle.sendPrepare(server)
 						});
 						loaded = true;
 				 	}, {
