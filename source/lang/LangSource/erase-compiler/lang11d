@@ -1,4 +1,4 @@
-%token	NAME INTEGER FLOAT SYMBOL STRING ASCII PRIMITIVENAME CLASSNAME
+%token	NAME INTEGER FLOAT ACCIDENTAL SYMBOL STRING ASCII PRIMITIVENAME CLASSNAME
 %token  VAR ARG CLASSVAR CONST 
 %token	NILOBJ TRUEOBJ FALSEOBJ INFINITUMOBJ
 %token	PSEUDOVAR
@@ -931,7 +931,7 @@ rwspec	:  { $$ = rwPrivate; }
 		;
 		
 integer	: INTEGER { $$ = zzval; }
-		| '-' INTEGER %prec UMINUS 
+		| '-'INTEGER %prec UMINUS 
 			{
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
@@ -950,10 +950,23 @@ floatr	: FLOAT { $$ = zzval; }
 			} 
 	;
 
+accidental : ACCIDENTAL { $$ = zzval; }
+			| '-' ACCIDENTAL %prec UMINUS 
+				{
+					PyrSlotNode *node; 
+					double intval, fracval;
+					node = (PyrSlotNode*)zzval;
+					intval = floor(node->slot.uf + 0.5);
+					fracval = node->slot.uf - intval;
+					node->slot.uf = -intval + fracval;
+					$$ = zzval;
+				} 
+
 pie		: PIE { $$ = zzval; }
 	;
 	
 floatp	: floatr
+		| accidental
 		| floatr pie
 			{
 				PyrSlotNode *node; 

@@ -57,6 +57,9 @@
 #include "SC_LibraryConfig.h"
 
 int yyparse();
+int processaccidental1(char *s);
+int processaccidental2(char *s);
+
 
 extern bool gFullyFunctional;
 double compileStartTime;
@@ -621,6 +624,27 @@ digits_1:	/* number started with digits */
 			goto leave;
 		}
 	} 
+	else if (c == 'b' || c == 's') {
+		d = input();
+		if (d >= '0' && d <= '9') goto accidental1;
+		if (d == c) goto accidental2;
+		goto accidental3;
+accidental1:
+		d = input();
+		if (d >= '0' && d <= '9') goto accidental1;
+		unput(d);
+		yytext[yylen] = 0;
+		r = processaccidental1(yytext); 
+		goto leave;
+accidental2:
+		d = input();
+		if (d == c) goto accidental2;
+accidental3:
+		unput(d);
+		yytext[yylen] = 0;
+		r = processaccidental2(yytext); 
+		goto leave;
+	}
 	else if (c == 'x') {
 		yylen = 0; 
 		goto hexdigits;
@@ -1077,6 +1101,78 @@ int processfloat(char *s, int sawpi)
 	node = newPyrSlotNode(&slot);
 	zzval = (int)node;
 	return FLOAT;
+}
+
+
+int processaccidental1(char *s) 
+{
+	PyrSlot slot;
+	PyrSlotNode *node;
+	char *c;
+	double degree=0.;
+	double cents=0.;
+	double centsdiv=1000.;
+#if 0
+	printf("processaccidental1: '%s'\n",s);
+#endif
+
+	c = s;
+	while (*c) {
+		if (*c >= '0' && *c <= '9') degree = degree*10. + *c - '0';
+		else break;
+		c++;
+	}
+	
+	if (*c == 'b') centsdiv = -1000.;
+	else if (*c == 's') centsdiv = 1000.;
+	c++;
+		
+	while (*c) {
+		if (*c >= '0' && *c <= '9') {
+			cents = cents*10. + *c - '0';
+		}
+		else break;
+		c++;
+	}
+	
+	if (cents > 499.) cents = 499.;
+
+	SetFloat(&slot, degree + cents/centsdiv);
+	node = newPyrSlotNode(&slot);
+	zzval = (int)node;
+	return ACCIDENTAL;
+}
+
+int processaccidental2(char *s) 
+{
+	PyrSlot slot;
+	PyrSlotNode *node;
+	char *c;
+	double degree=0.;
+	double semitones=0.;
+#if 0
+	printf("processaccidental2: '%s'\n",s);
+#endif
+
+	c = s;
+	while (*c) {
+		if (*c >= '0' && *c <= '9') degree = degree*10. + *c - '0';
+		else break;
+		c++;
+	}
+	
+	while (*c) {
+		if (*c == 'b') semitones -= 1.;
+		else if (*c == 's') semitones += 1.;
+		c++;
+	}
+
+	if (semitones > 4.) semitones = 4.;
+	
+	SetFloat(&slot, degree + semitones/10.);
+	node = newPyrSlotNode(&slot);
+	zzval = (int)node;
+	return ACCIDENTAL;
 }
 
 int processsymbol(char *s) 

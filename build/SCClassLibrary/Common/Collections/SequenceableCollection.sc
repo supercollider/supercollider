@@ -337,8 +337,7 @@ SequenceableCollection : Collection {
 		var size;
 		size = scale.size;
 		^this.collect({ arg scaleDegree;
-			scaleDegree = scaleDegree.asInteger;
-			(stepsPerOctave * (scaleDegree div: size)) + scale.wrapAt(scaleDegree)
+			scaleDegree.degreeToKey(scale, stepsPerOctave);
 		});
 	}
 	keyToDegree { arg scale, stepsPerOctave=12;

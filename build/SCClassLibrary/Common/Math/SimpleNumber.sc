@@ -222,10 +222,11 @@ SimpleNumber : Number {
 	}
 	
 	degreeToKey { arg scale, stepsPerOctave=12;
-		var size, scaleDegree;
+		var size, scaleDegree, accidental;
 		size = scale.size;
-		scaleDegree = this.asInteger;
-		^(stepsPerOctave * (scaleDegree div: size)) + scale.wrapAt(scaleDegree)
+		scaleDegree = this.round.asInteger;
+		accidental = ((this - scaleDegree) * 10.0) * (stepsPerOctave / 12.0);
+		^(stepsPerOctave * (scaleDegree div: size)) + scale.wrapAt(scaleDegree) + accidental
 	}
 			
 	keyToDegree { arg scale, stepsPerOctave=12;
