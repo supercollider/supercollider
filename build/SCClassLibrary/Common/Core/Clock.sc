@@ -31,8 +31,8 @@ SystemClock : Clock {
 
 
 TempoClock : Clock {
-	classvar all;
-	
+	classvar all, <default;
+
 	var queue, ptr;
 	
 	var <beatsPerBar=4.0, barsPerBeat=0.25;
@@ -55,7 +55,10 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	*new { arg tempo, beats, seconds;
 		^super.new.init(tempo, beats, seconds)
 	}
-	
+	*initClass {
+		default = this.new;
+	}	
+
 	init { arg tempo, beats, seconds;
 		queue = Array.new(256);
 		this.prStart(tempo, beats, seconds);
