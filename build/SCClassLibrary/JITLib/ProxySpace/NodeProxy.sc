@@ -288,13 +288,11 @@ NodeProxy : AbstractFunction {
 	// server communications, updating
 	
 	sendToServer { arg bundle, freeAll=true, latency=0.3, extraArgs, onCompletion;
-		var resp;
 		
-		//if(server.serverRunning, {
 				if(this.isPlaying.not, { this.prepareForPlayToBundle(bundle, freeAll) });
 				this.sendSynthToBundle(bundle, freeAll, extraArgs);
 				this.sendBundle(bundle, latency=0.3, clock, onCompletion);
-		//});
+		
 	}
 	
 	sendBundle { arg bundle, latency=0.3, clock, onCompletion;
@@ -310,7 +308,7 @@ NodeProxy : AbstractFunction {
 	
 	prepareForPlayToBundle { arg bundle, freeAll=true;
 				//group = Group.newToBundle(bundle, server, \addToHead);
-				group = Group.prNew(server);
+				group = Group.basicNew(server.nextStaticNodeID, server);
 				//add the message to the preparation part
 				bundle.addPrepare(group.newMsg(server,\addToHead)); 
 				server.nodeWatcher.nodes.add(group.nodeID); //force isPlaying.
@@ -441,6 +439,40 @@ LibNodeProxy : NodeProxy {
 	*at { arg server, key;
 		^Library.at(this, server, key)
 	}
+}
+
+//the server needs to be a Router.
+//this class takes care for a constant groupID.
+
+//doesn't work yet.
+
+
+SharedNodeProxy : NodeProxy {
+	var <constantGroupID;
+	
+	*new { arg server;
+		^super.newCopyArgs(server).initGroupID.clear	
+	}
+		
+	initGroupID { arg id; constantGroupID = server.nextSharedNodeID } 											
+		
+	prepareForPlayToBundle { arg bundle, freeAll=true;
+				postln("start new shared group"+constantGroupID);
+				group = Group.basicNew(constantGroupID, server);
+				bundle.add(["/g_new",constantGroupID,0,0]);
+				server.nodeIsPlaying_(constantGroupID); //force isPlaying.
+	}
+	
+	sendToServer { arg bundle, freeAll=true, latency=0.3, extraArgs, onCompletion;
+		
+				//do it always for now.
+				this.prepareForPlayToBundle(bundle, freeAll);
+				this.sendSynthToBundle(bundle, freeAll, extraArgs);
+				this.sendBundle(bundle, latency=0.3, clock, onCompletion);
+		
+	}
+
+
 }
 
 

@@ -90,6 +90,7 @@
 
 SharedProxySpace  : ProxySpace {
 	
+
 	einit { arg srv, argName, argClock, controlKeys, audioKeys;
 		super.einit(srv,argName, argClock); 
 		//initialize single letters as shared busses: xyz are audio busses, the rest control
@@ -102,7 +103,7 @@ SharedProxySpace  : ProxySpace {
 	makeSharedProxy { arg key, rate;
 			var proxy, srv;
 			srv = server.broadcast;
-			proxy = if(rate.isNil, {NodeProxy(srv)},{NodeProxy.perform(rate,srv)});
+			proxy = if(rate.isNil, {SharedNodeProxy(srv)},{SharedNodeProxy.perform(rate,srv)});
 			proxy.clock = clock;
 			this.prPut(key, proxy);
 			^proxy
