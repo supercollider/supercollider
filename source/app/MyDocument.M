@@ -534,9 +534,9 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			[nsstring getLineStart: &lineStart end: &lineEnd contentsEnd: nil forRange: range];
 			range = NSMakeRange(lineStart, lineEnd - lineStart);
 		}
-		if(rangeStart >= maxlength) range.location = maxlength - 1;
+		if(rangeStart >= maxlength) range.location = maxlength;
 		if(rangeSize + rangeStart >=  maxlength) {
-			range.length = maxlength - rangeStart;
+			range.length = maxlength - range.location;
 		}
 	}
     [localTextView setSelectedRange: range];
