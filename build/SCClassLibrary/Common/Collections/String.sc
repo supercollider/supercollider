@@ -51,10 +51,10 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	
-	*fromUser { arg prompt="Enter string :", default="";
-		_GetStringFromUser
-		^this.primitiveFailed
-	}
+//	*fromUser { arg prompt="Enter string :", default="";
+//		_GetStringFromUser
+//		^this.primitiveFailed
+//	}
 	
 	die { "FATAL ERROR:\n".post;  this.postln;  this.halt; }
 	error { "ERROR:\n".post; this.postln; }

@@ -29,12 +29,14 @@ Library : MultiLevelIdentityDictionary
 	*create { arg ... args;
 		^global.performList(\create, args);
 	}
+	/*
 	*localPut { arg ... args;
 		^global.performList(\put, args);
 	}
 	*localCreate { arg ... args;
 		^global.performList(\create, args);
 	}
+	*/
 	
 	*postTree {
 		global.postTree
