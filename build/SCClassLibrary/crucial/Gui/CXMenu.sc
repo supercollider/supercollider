@@ -1,36 +1,37 @@
 
-CXMenu { // multiple actions
+CXMenu : SCViewAdapter { // multiple actions
 
-	var <>nameFuncs,<layout,<>backColor,<>closeOnSelect=true,lastButton,buttonWidth=150;
+	var <nameFuncs,<layout,<>backColor,<>stringColor,
+			<>closeOnSelect=true,lastButton,buttonWidth=150,view,focus = 0;
 
 	*new { arg ... nameFuncs;
 		^super.new.nameFuncs_(nameFuncs)
 	}
 	*newWith { arg nameFuncs;
-		^super.new.nameFuncs_(nameFuncs)
+		^super.newCopyArgs(nameFuncs)
 	}
 	gui { arg lay,windowWidth=150,height=400,argbuttonWidth=120,title="CXMenu";
 		
 		buttonWidth = argbuttonWidth;
-		height = max(height,nameFuncs.size * 20);
+		//height = max(height,nameFuncs.size * 20);
 		//layout=lay.asPageLayout(title,windowWidth,height,metal: true);
-		layout=lay.asFlowView(Rect(20,20,windowWidth,height));
-
+		//layout=lay.asFlowView(Rect(20,20,windowWidth,height));
+		layout= lay ?? {MultiPageLayout.new};
+		view = SCVLayoutView.new(layout,Rect(0,0,buttonWidth,24 * nameFuncs.size));
+		this.guiBody;
+		if(lay.isNil,{ layout.front.resizeToFit });
+	}
+	guiBody {
 		nameFuncs.do({arg nf;
 			this.add(nf);
 		});
-		// if we are not on somebody else's page...
-		if(lay.isNil,{
-			layout.resizeToFit;//front;
-		});
-	}		
-	
+	}
 	add { arg nf;
 		var ab;
-		ab = ActionButton(layout.startRow,nf.key,{
+		ab = ActionButton(view,nf.key,{
 				nf.value.value; 
 				if(closeOnSelect,{ 
-					layout.close 
+					layout.close
 				},{
 					if(lastButton.notNil,{ 
 						lastButton.backColor_(backColor ? Color.white);
@@ -41,11 +42,43 @@ CXMenu { // multiple actions
 					lastButton = ab;
 				});
 			},buttonWidth)
-			.backColor_(backColor ? Color.white);
+			.backColor_(backColor ? Color.new255(112, 128, 144))
+			.labelColor_(stringColor ? Color.white);
 	}
 	resize {
 		layout.resizeToFit;
 	}
+	nameFuncs_ { arg nf;
+		nameFuncs = nf;
+		if(view.notNil,{
+			//view.children.do({ arg c; view.bounds_(Rect(0,0,1,1)).visible_(false) });
+			//view.removeAll;
+			//view.visible = false;
+			//view.bounds = Rect(0,0,0,0);
+			//view.parent.resizeToFit;
+			view.bounds = Rect(0,0,buttonWidth,24 * nameFuncs.size);
+			focus = focus.clip(0,nameFuncs.size - 1);
+			this.guiBody;
+		})
+	}
+	doAction {
+		view.children.at(focus).doAction
+	}
+	keyDownResponder {
+		var kdr;
+		kdr = KeyCodeResponder.new;
+		kdr.registerKeycode(0,126,{ 
+			this.focusOn(focus + 1);
+		});
+		kdr.registerKeycode(0,125,{ 
+			this.focusOn(focus - 1);
+		});
+		^kdr
+	}
+	focusOn { arg f;
+		focus = f.clip(0,view.children.size - 1);
+		view.children.at( f ).focus;
+	}	
 }
 
 /*

@@ -1,7 +1,7 @@
 
 MLIDbrowser { // MultiLevelIdentityDictionary
 
-	var <>onSelect;
+	var <>onSelect,menu,kdr;
 	
 	*new { arg ... args;
 		var onSelect;
@@ -14,15 +14,29 @@ MLIDbrowser { // MultiLevelIdentityDictionary
 	}
 	
 	browse { arg item,parent;
+		if(kdr.isNil,{
+			kdr = KeyCodeResponder.new;
+			kdr.registerKeycode(262144,126,{
+				// go up
+				this.browse(parent); // find parent's parent
+			});
+			kdr.registerKeycode(262144,125,{
+				// go down on selected
+				menu.doAction;
+			});
+		});
 		if(item.isKindOf(IdentityDictionary).not,{
 			onSelect.value(item);
 		},{
-			CXMenu.newWith(
+			menu = nil;
+			if(menu.isNil,{ menu = CXMenu.new });
+			menu.nameFuncs = 
 				item.keys.asList.collect({ arg key;
 					key->{ this.browse(item.at(key),item) }
-				})
-			)
-			.gui
+				});
+			menu.gui;
+			menu.keyDownAction = (menu.keyDownResponder ++ kdr).insp;
+			menu.focusOn(0);
 		})
 	}
 

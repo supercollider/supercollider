@@ -196,3 +196,159 @@ SynthConsole : AbstractConsole  {
 }
 
 
+
+
+SaveConsole : AbstractConsole {
+
+	var <>object;
+	var <path,<>defaultPath; // defaultPath may be a function
+	var <>onSaveAs; // arg path
+	
+	*new { arg object, path,layout;
+		^super.new.object_(object).path_(path)
+			.layout_(layout.asPageLayout(object))
+	}
+	
+	print {
+		ActionButton(layout,"#",{ object.asCompileString.postln }); 
+	}
+	printPath {
+		ActionButton(layout,"#path",{ path.value.asCompileString.postln })
+	}
+	//dirtyAwareSave
+	save { arg title="save",maxx=100;
+	 	/*
+		ActionButton(layout,title,{
+			if(path.value.isNil,{
+		 		this.getPathThen(\doSaveAs);
+		 	},{	
+		 		this.doSave 
+		 	})
+	 	},maxx).backColor_(
+	 		if(path.value.isNil,{ // virgin
+	 			Color(202,255,161) 
+	 		},{
+	 			Color(255,242,89)
+	 		})
+	 	);
+	 	*/
+	}
+	saveAs { arg onSaveF,default;
+		/*
+		defaultPath = default ? defaultPath;
+		onSaveAs = onSaveF ? onSaveAs;
+		ActionButton(layout,"save as",{
+			this.getPathThen(\doSaveAs,default);
+	 	});
+	 	*/
+	}
+	load {
+		//ActionButton(layout,"load",{ this.doLoad });
+	}	
+			
+	getPathThen {  arg then ... args;
+		/*
+		var defPath;
+		defPath=(defaultPath.value ? object).asString;
+		defPath = defPath.copyRange(0,30); // mac beeps if path is too long
+		File.saveDialog("Filename..." ++ then.asString, defPath, { arg  argpath;
+			this.path = argpath;
+			this.performList(then,[path] ++ args)
+		});
+		*/
+	}
+	
+	doSave {
+		var clobber,vpath;
+		vpath = path.value;
+		clobber=File.new(vpath,"r");
+		if(clobber.length.notNil,{
+			clobber.contents.write("~"++vpath);
+		});
+		clobber.close;	
+		object.asCompileString.write(vpath);
+	}
+	doSaveAs {
+		var clobber,vpath;
+		vpath = path.value;
+		clobber=File.new(vpath,"r");
+		if(clobber.length.notNil,{
+			clobber.contents.write("~"++vpath);
+		});
+		clobber.close;	
+		object.asCompileString.write(vpath);
+		onSaveAs.value(vpath);
+	}
+
+	doLoad { arg onLoad; // optional func
+		/*
+		File.openDialog("Load...",{ arg apath;
+			this.path = apath;
+			object=thisProcess.interpreter.executeFile(apath);
+			onLoad.value(object,this)
+		})
+		*/
+	}
+	path_ { arg p; 
+		if(p.notNil,{
+			path = PathName(p).asRelativePath 
+		})
+	}
+	
+}
+
+
+
+SoundFileFormats { // an interface
+
+	var format='32float';
+
+	gui { arg layout;
+		SelectButtonSet(layout,20,16,['32float','16aiff','16SD2','24SD2'],{arg i,th; format = th.selectedLabel },
+			Color(245, 245, 245),Color(255, 99, 71))
+	}
+
+	headerFormat {
+	
+		if(format=='16aiff',{
+			^'AIFF'
+		});
+		
+		if(format=='16SD2',{
+			^'SD2'
+		});
+		
+		if(format=='32float',{
+			^'Sun'
+		});
+		
+		if(format=='24SD2',{
+			^'SD2'
+		});
+		
+		^nil 
+		
+	}
+	sampleFormat {
+	
+		if(format=='16aiff',{
+			^'16 big endian signed'
+		});
+		
+		if(format=='16SD2',{
+			^'16 big endian signed'
+		});
+		
+		if(format=='32float',{
+			^'32 big endian float'
+		});
+		
+		if(format=='24SD2',{
+			^'24 big endian signed'
+		});
+		
+		^nil 
+		
+	}
+}
+

@@ -167,10 +167,48 @@ MultiPageLayout  {
 
 
 
+Sheet {
+	*new { arg buildDialog,name="",x=100,y=100,width=600,height=600;
+		var layout;
+		layout = MultiPageLayout(name,width,height,x,y);
+		//layout = FlowView(nil,Rect(x,y,width,height));
+		buildDialog.value(layout);
+		layout.resizeToFit;
+		layout.front;
+		^layout
+	}
+}
+
+ModalDialog { // hit ok or cancel
+
+	*new { arg buildDialog,okFunc,name="?",cancelFunc;
+	
+		Sheet({ arg layout;
+			var returnObjects;
+
+			returnObjects=buildDialog.value(layout);
+		
+			layout.startRow;
+			ActionButton(layout,"OK",{
+				okFunc.value(returnObjects);
+				layout.close;
+			});
+			
+			ActionButton(layout,"Cancel",{
+				cancelFunc.value(returnObjects);
+				layout.close;
+			});
+		
+		},name);
+	}
+
+}
+
+
 
 
 // for old usage
-
+// to be deprec
 PageLayout  {
 
 	// should get these from Cocoa
@@ -199,7 +237,6 @@ PageLayout  {
 	
 	//asPageLayout
 	*guify { arg lay,title,width,height,metal=false;
-		if(lay.class === GUIPlacement,{ ^lay });
 		if(lay.notNil,{// and: {lay.checkNotClosed},{
 			// if its a GUIWindow we return a flow layout on it
 			if(lay.isKindOf(SCWindow),{
@@ -369,24 +406,6 @@ PageLayout  {
 		autoRemoves = autoRemoves.add(dependant);
 	}
 	
-	// place the code posted by gui builder onto flow layout
-//	placeCode { arg function;
-//		var win,lastView,newViews,rect;
-//		win = this.window;
-//		lastView = win.views.size;
-//		function.value(win);
-//		newViews = win.views.copyRange(lastView,win.views.size - 1);
-//		
-//		rect = this.layRight(
-//			newViews.maxValue({ arg v; v.bounds.right }),
-//			newViews.maxValue({ arg v; v.bounds.bottom })
-//		);
-//		newViews.do({ arg v;
-//			v.bounds_(v.bounds.moveBy(rect.left,rect.top));
-//			//v.prSetBounds(v.bounds.moveBy(rect.left,rect.top));
-//		});
-//		win.refresh;
-//	}
 
 	// create a layout within the current layout
 	within { arg x,y,func;  		
@@ -395,18 +414,7 @@ PageLayout  {
 		l=this.class.newWithin(this.window,r);
 		func.value(l);
 	}
-	
-//	withinBox { arg x,y,func; // experimental
-//		var l,r,w;
-//		w = this.window;
-//		r=this.layRight(x,y);
-//	
-//		StringView(w,r,"").prSetBorderStyle(3);
-//
-//		l=this.class.newWithin(w,r.insetAll(hspacer,vspacer,hspacer,vspacer));
-//	
-//		func.value(l);
-//	}
+
 
 	initWithin { arg w,rect;
 		windows=windows.add(w);
@@ -480,17 +488,6 @@ PageLayout  {
 		}); //  its all set if there are no views yet
 	}
 
-	
-	// making PageLayout compat with LayoutView
-//	add { arg view;
-//		view.bounds = this.layRight(view.bounds.width,view.bounds.height);
-//		// view.window
-//		// items = items.add(view);
-//		// if view.window != this.window, move it
-//		
-//		^true
-//	}
-
 	remaining {
 		^this.view.bounds.insetAll(0,curry,0,0)
 	}
@@ -503,17 +500,5 @@ PageLayout  {
 
 }
 
-// please kill me
-GUIPlacement { // this adapts flowLayout code so that it can work with gui builder positioned objects
-	var <>window,<>bounds;
-	*new { arg window,bounds;
-		^super.new.window_(window).bounds_(bounds)
-	}
-	layRight {  ^bounds } // liar
-	margin { ^window.bounds }
-	storeParamsOn { arg stream;
-		stream << "( w," <<< bounds << ")";
-	}
-}
 
 
