@@ -261,6 +261,8 @@ Server : Model {
 		
 		serverBooting = true;
 		if(startAliveThread, { this.startAliveThread });
+		this.newAllocators;	
+		this.newNodeWatcher;
 		this.doWhenBooted({ 
 			if(notified, { 
 				nodeWatcher.start;
