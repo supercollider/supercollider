@@ -116,6 +116,7 @@ PyrSymbol *s_prstart;
 PyrSymbol *s_interpreter;
 PyrSymbol *s_finalizer;
 PyrSymbol *s_awake;
+PyrSymbol *s_appclock;
 PyrSymbol *s_systemclock;
 
 PyrSymbol *s_nocomprendo;
@@ -213,6 +214,7 @@ void initSymbols()
 	s_interpreter = getsym("Interpreter");
 	s_finalizer = getsym("Finalizer");
 	s_awake = getsym("awake");
+	s_appclock = getsym("AppClock");
 	s_systemclock = getsym("SystemClock");
 	
 	s_linear = getsym("linear");

@@ -3278,6 +3278,39 @@ int prThreadRandSeed(struct VMGlobals *g, int numArgsPushed)
 }
 
 
+int32 timeseed();
+
+int transformMainThreadToRoutine(VMGlobals *g)
+{
+	PyrProcess* process = g->process;
+	if (g->thread != process->mainThread.uot) return errFailed;
+	//if (g->thread != process->curThread.uot) return errFailed;
+	
+	PyrThread* curthread = (PyrThread*)process->mainThread.uo;
+	
+	// create a new main thread
+	PyrThread* newthread = (PyrThread*)instantiateObject(g->gc, class_thread, 0, true, false);
+	
+	PyrInt32Array *rgenArray = newPyrInt32Array(g->gc, 4, 0, false);
+	rgenArray->size = 4;
+	((RGen*)(rgenArray->i))->init(timeseed());
+
+	PyrSlot clockSlot;
+	SetObject(&clockSlot, s_systemclock->u.classobj);
+	initPyrThread(g, newthread, &o_nil, EVALSTACKDEPTH, rgenArray, 0., 0., &clockSlot, false);
+	newthread->sp.ui = (int)newthread->stack.uo->slots - 1;
+	SetObject(&process->mainThread, newthread);
+	g->gc->GCWrite(process, newthread);
+
+	curthread->classptr = class_routine;
+	PyrSlot *cmdFunc = &process->interpreter.uoi->cmdFunc;
+	curthread->func.ucopy = cmdFunc->ucopy;
+	g->gc->GCWrite(curthread, cmdFunc);
+	
+	return errNone;
+}
+
+void schedAdd(VMGlobals *g, PyrObject* inQueue, double inSeconds, PyrSlot* inTask);
 
 int prRoutineYield(struct VMGlobals *g, int numArgsPushed);
 int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
@@ -3288,16 +3321,53 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g);
 	//postfl("->numArgsPushed %d\n", numArgsPushed);
+
+	value.ucopy = g->sp->ucopy;
+
+//	post("thread %08X  mainThread %08X %d  curThread %08X %d\n",
+//		g->thread, 
+//		g->process->mainThread.uo, isKindOf(g->process->mainThread.uo, class_routine),
+//		g->process->curThread.uo, isKindOf(g->process->curThread.uo, class_routine));
+//	
+
 	if (!isKindOf((PyrObject*)g->thread, class_routine)) {
-		//debugf ("yield was called outside of a Routine.\n");
 		error ("yield was called outside of a Routine.\n");
 		return errFailed;
+/*		
+		transformMainThreadToRoutine(g);
+
+		double delta, seconds;
+		int err = slotDoubleVal(&value, &delta);
+		if (!err) {
+			err = slotDoubleVal(&g->thread->seconds, &seconds);
+			if (!err) {
+				seconds += delta;
+//				post("seconds %g  delta %g\n", seconds, delta);
+				PyrObject* inQueue = g->process->sysSchedulerQueue.uo;
+				schedAdd(g, inQueue, seconds, &g->process->curThread);
+			}
+		}
+		
+		switchToThread(g, g->process->mainThread.uot, tYieldToParent, &numArgsPushed);
+		
+		//post("MAIN THREAD\n");
+		//dumpObject(g->process->mainThread.uo);
+		
+		(++g->sp)->ucopy = value.ucopy;
+		//(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
+
+		g->returnLevels = LONG_MAX;
+		//SetNil(g->sp);
+		//hmm need to fix this to work only on main thread. //!!!
+		//g->sp = g->gc->Stack()->slots - 1;
+		
+		return errReturn;
+*/
 	}
 	/*if (!g->thread->parent.uot) {
 		error ("yield was called from a thread with no parent.\n");
 		return errFailed;
 	}*/
-	value.ucopy = g->sp->ucopy;
 
 	//debugf("yield from thread %08X to parent %08X\n", g->thread, g->thread->parent.uot);
 	switchToThread(g, g->thread->parent.uot, tYieldToParent, &numArgsPushed);

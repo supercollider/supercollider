@@ -137,12 +137,36 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 		if (msg->nextTag('i') == 's') {
 			int32* name = msg->gets4();
 			int32 hash = Hash(name);
-			float32 value = msg->getf();
-			Graph_SetControl(graph, hash, name, 0, value);
+			if (msg->nextTag('f') == 's') {
+				char* string = msg->gets();
+				if (*string == 'c') {
+					int bus = 0, c;
+					string++;
+					while ((c = *string++) != 0) {
+						if (c >= '0' && c <= '9') bus = bus * 10 + c - '0';
+					}
+					Graph_MapControl(graph, hash, name, 0, bus);
+				}
+			} else {
+				float32 value = msg->getf();
+				Graph_SetControl(graph, hash, name, 0, value);
+			}
 		} else {
 			int32 index = msg->geti();
-			float32 value = msg->getf();
-			Graph_SetControl(graph, index, value);
+			if (msg->nextTag('f') == 's') {
+				char* string = msg->gets();
+				if (*string == 'c') {
+					int bus = 0, c;
+					string++;
+					while ((c = *string++) != 0) {
+						if (c >= '0' && c <= '9') bus = bus * 10 + c - '0';
+					}
+					Graph_MapControl(graph, index, bus);
+				}
+			} else {
+				float32 value = msg->getf();
+				Graph_SetControl(graph, index, value);
+			}
 		}
 	}
 

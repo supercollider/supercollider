@@ -381,6 +381,9 @@ bool initAwakeMessage(VMGlobals *g)
 
 bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 {
+	g->process->curThread.ucopy = g->process->mainThread.ucopy;
+	g->thread = g->process->mainThread.uot;
+	
 	// these will be set up when the run method is called
 	g->method = NULL;
 	g->block = NULL;
@@ -718,7 +721,7 @@ void Interpret(VMGlobals *g)
 		case 30 : *++sp = g->receiver.uo->slots[14].uf; break;
 		case 31 : *++sp = g->receiver.uo->slots[15].uf; break;
 		
-		// opPushTempVar, levels 0..15
+		// opPushTempVar, levels 0..7
 		case 32 : *++sp = g->frame->vars[-ip[1]].uf; ip++; break;
 		case 33 : *++sp = g->frame->context.uof->vars[-ip[1]].uf; ip++; break;
 		case 34 : *++sp = g->frame->context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
@@ -777,36 +780,6 @@ void Interpret(VMGlobals *g)
 			break;
 
 
-/*
-		case 40 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->
-					context.uof->vars[-ip[1]].uf; ip++; break;
-		case 41 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
-		case 42 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
-		case 43 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
-		case 44 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->
-					context.uof->vars[-ip[1]].uf; ip++; break;
-		case 45 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
-		case 46 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
-		case 47 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
-*/					
 		// opPushTempZeroVar
 		case 48 : *++sp = g->frame->vars[  0].uf; break;
 		case 49 : *++sp = g->frame->vars[ -1].uf; break;

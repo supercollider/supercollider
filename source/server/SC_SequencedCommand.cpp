@@ -179,6 +179,40 @@ void SC_SequencedCommand::Stage4()
 #include "sc_msg_iter.h"
 #include <string.h>
 
+SyncCmd::SyncCmd(World *inWorld, ReplyAddress *inReplyAddress)
+	: SC_SequencedCommand(inWorld, inReplyAddress)
+{
+}
+
+int SyncCmd::Init(char *inData, int inSize)
+{
+	return kSCErr_None;
+}
+
+void SyncCmd::CallDestructor() 
+{
+	this->~SyncCmd();
+}
+
+bool SyncCmd::Stage2()
+{
+	return true;
+}
+
+bool SyncCmd::Stage3()
+{
+	return true;
+}
+
+void SyncCmd::Stage4()
+{
+	scpacket packet;
+	packet.adds("/synced");
+	SendReply(&mReplyAddress, packet.data(), packet.size());
+}
+
+///////////////////////////////////////////////////////////////////////////
+
 BufAllocCmd::BufAllocCmd(World *inWorld, ReplyAddress *inReplyAddress)
 	: SC_SequencedCommand(inWorld, inReplyAddress)
 {

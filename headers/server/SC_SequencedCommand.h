@@ -83,6 +83,24 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////
 
+class SyncCmd : public SC_SequencedCommand
+{
+public:
+	SyncCmd(World *inWorld, ReplyAddress *inReplyAddress);
+	
+	virtual int Init(char *inData, int inSize);
+
+	virtual bool Stage2();	// non real time
+	virtual bool Stage3();	//     real time
+	virtual void Stage4();	// non real time
+	
+protected:
+	virtual void CallDestructor();
+	
+};
+
+///////////////////////////////////////////////////////////////////////////
+
 class BufGenCmd : public SC_SequencedCommand
 {
 public:

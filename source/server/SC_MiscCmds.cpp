@@ -97,6 +97,13 @@ SCErr meth_none(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 	return kSCErr_None;
 }
 
+SCErr meth_sync(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_sync(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+{		
+	CallSequencedCommand(SyncCmd, inWorld, inSize, inData, inReply);
+	return kSCErr_None;
+}
+
 SCErr meth_b_alloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_b_alloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {		
@@ -1338,6 +1345,7 @@ void initMiscCommands()
 	NEW_COMMAND(b_query);
 			
 	NEW_COMMAND(s_noid);		
+	NEW_COMMAND(sync);		
 }
 
 
