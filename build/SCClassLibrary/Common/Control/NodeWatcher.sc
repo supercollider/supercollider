@@ -167,9 +167,8 @@ NodeWatcher : BasicNodeWatcher {
 	
 	//////////////private implementation//////////////
 	
-	n_go { arg node, group;
-		
-		node.group = group;
+	n_go { arg node;
+	
 		node.isPlaying = true;
 		node.isRunning = true;
 		
