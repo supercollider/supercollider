@@ -2,6 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
 }
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -18,34 +19,50 @@
 \f1\fs18 \cf2 \
 	In\cf0 .ar(busNumber,numChannels);\cf2 \
 	In\cf0 .kr(busNumber,numChannels);\cf2 \
-	\
-\
-	SynthDef\cf0 (\cf3 "echo"\cf0 , \{ \cf2 arg\cf0  busNumber=0, delay = 0.2, decay = 4;\
-		\cf2 var\cf0  in;\
-\
-		\cf4 // read 2 channels from busNumber and busNumber + 1\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 		in = \cf2 In\cf0 .ar(busNumber,2);\
-\
-		\cf4 // use ReplaceOut to overwrite the previous contents of the bus.\
-\cf0 		\cf2 ReplaceOut\cf0 .ar(busNumber, \cf2 CombN\cf0 .ar(in, 0.5, delay, decay, 1, in));\
-\
-	\}).writeDefFile;\
-\
-\
-\
-\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 b = Bus.control;\
-b.set(0.0); // set to 0.0\
-\{\
-	In.kr(b.index) * SinOsc.ar\
-\}.play\
+\f2\fs24 \cf0 read from an audio bus\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf2 \
+	\cf0 s = \cf2 Server\cf0 .local;\cf2 \
+	SynthDef\cf0 (\cf3 "help-PinkNoise"\cf0 , \{ \cf2 arg\cf0  busNumber=0; \
+		\cf2 Out\cf0 .ar(busNumber, \cf3 PinkNoise\cf0 .ar(0.1)) \
+	\}).load(s);\
+	\cf2 SynthDef\cf0 (\cf3 "help-In"\cf0 , \{ \cf2 arg\cf0  busNumber=0, busInNumber=0;\
+		\cf2 var\cf0  in;\
+			in = \cf2 In.ar(\cf0 busInNumber, 1);\cf4 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 			\cf2 Out\cf0 .ar(busNumber, in);\
 \
-// set the float value of the bus\
-b.set(0.2);\
-b.set(0.1);\
-b.set(0.0);\
-}
+	\}).load(s);\
+	\
+	\cf5 //play noise on the right channel\
+\cf6 	\cf7 Synth\cf6 (\cf8 "\cf3 help-PinkNoise\cf8 "\cf6 , [\cf9 \\busNumber\cf6 , 1]); \
+	\cf5 //read the input and play it out on the left channel\
+\cf6 	\cf7 Synth\cf6 (\cf8 "\cf3 help-In\cf8 "\cf6 , [\cf9 \\busNumber\cf6 , 0, \cf9 \\busInNumber\cf6 , 1]); \
+									\
+\cf0 \
+
+\f2\fs24 read from a  control bus
+\f1\fs18 \
+\
+	\cf2 SynthDef\cf0 (\cf3 "help-InKr"\cf0 ,\{ \cf2 arg\cf0  out=0, busnum=0;\
+		\cf2 Out\cf0 .ar(out,\
+			\cf2 SinOsc\cf0 .ar(In.kr(busnum, 1), 0, 0.1)\
+		)\
+	\}).load(s);\
+	\
+	b = \cf2 Bus\cf0 .control(s,1);\
+	b.set(800);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 	\cf0 \
+	Synth(\cf3 "help-InKr",\cf0 [\\busnum, b.index]);\cf3  \cf0 \
+	b.set(400);\
+	b.set(300);\
+	\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 	}
