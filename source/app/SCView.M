@@ -2108,7 +2108,10 @@ SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, float xoffset
         thumbx = mThumbSizeY;
         y = (double) indexIn * ( xoffset + mThumbSize);
         x = valIn * (mBounds.width - thumbx - 2);
-        x = mBounds.x + x + 1;
+        //x = mBounds.x + mBounds.width - x - 1 - thumby; 
+
+		x = mBounds.x + x + 1;
+		y = mBounds.y + y + 1;
         if(mIsFilled){
             thumbx += x -  mBounds.x;
             x = mBounds.x;
@@ -2190,8 +2193,13 @@ void SCMultiSliderView::setVisibleSize()
         if(mXOffset < 1.0) offset = 0;
         else offset = mXOffset;
         scaledsize = (float) (mTabSize - mStartIndex) * mThumbSize;
-        if (scaledsize <= mBounds.width) mVisibleSize = mTabSize;
-        else mVisibleSize = (int) mBounds.width / mThumbSize;
+		if(mIsHorizontal){
+			if (scaledsize <= mBounds.width) mVisibleSize = mTabSize;
+			else mVisibleSize = (int) mBounds.width / mThumbSize;
+		} else {
+			if (scaledsize <= mBounds.height) mVisibleSize = mTabSize;
+			else mVisibleSize = (int) mBounds.height / mThumbSize;
+		}
     } else {
         mVisibleSize = 0;
     }
