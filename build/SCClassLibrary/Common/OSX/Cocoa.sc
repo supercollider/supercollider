@@ -33,3 +33,13 @@ CocoaDialog {
 	}
 }
 
+Cocoa {
+
+	*getPathsInDirectory { arg directoryPath,extension;
+		^this.prGetPathsInDirectory(directoryPath,extension,Array.new(16));
+	}
+	*prGetPathsInDirectory { arg dir,ext,arr;
+		_Cocoa_GetPathsInDirectory;
+		^this.primitiveFailed
+	}
+}

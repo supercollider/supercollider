@@ -14,7 +14,9 @@ Pattern : AbstractFunction {
 	asStream {
 		^this.subclassResponsibility(thisMethod)
 	}
-	
+	asEventStream { arg protoEvent;
+		^EventStream(this,protoEvent);
+	}
 	embedInStream { arg inval;
 		^this.asStream.embedInStream(inval);
 	}

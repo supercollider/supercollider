@@ -1,7 +1,7 @@
 
 NodeControl {
 
-	var <node,index;
+	var <node,index,<>name;
 
 	*new { arg node,index;
 		^super.newCopyArgs(node,index)

@@ -130,7 +130,7 @@ Server : Model {
 		addr.performList(\sendBundle, [time ? this.latency] ++ bundle);
 	}
 	
-	
+	// load from disk locally, send remote
 	sendSynthDef { arg name,dir="synthdefs/";
 		var file, buffer;
 		file = File(dir ++ name ++ ".scsyndef","r");
@@ -140,6 +140,7 @@ Server : Model {
 		file.close;
 		this.sendMsg("/d_recv", buffer);
 	}
+	// tell server to load from disk
 	loadSynthDef { arg name, completionMsg,dir="synthdefs/";
 		this.listSendMsg(
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]

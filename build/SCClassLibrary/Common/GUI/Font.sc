@@ -14,5 +14,8 @@ Font {
 		_Font_AvailableFonts
 		^this.primitiveFailed
 	}
+	storeParamsOn { arg stream;
+		stream << "(" <<< name << "," <<< size << ")";
+	}
 }
 

@@ -488,7 +488,7 @@ SCPopUpMenu : SCControlView {
 	}
 	value_ { arg val;
 		this.setPropertyWithAction(\value, val);
-	}	
+	}
 
 	defaultKeyDownAction { arg key, modifiers, unicode;
 		if (key == $ , { this.value = this.value + 1; ^this });

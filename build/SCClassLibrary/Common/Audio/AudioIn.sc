@@ -1,5 +1,5 @@
 
-
+// chad kirby / felix
 AudioIn  {
 
 	*ar { arg channel = 1, mul=1.0, add=0.0;

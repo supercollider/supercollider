@@ -2,7 +2,7 @@
 + Object {
 
 	asSynthDef {
-		error("Cannot convert this object to a SynthDef");
+		error("Cannot convert this object to a SynthDef:" + this);
 		this.dump;
 		^nil
 	}
@@ -11,6 +11,7 @@
 	}
 
 }
+
 	
 + String {
 	asDefName { ^this }
@@ -83,6 +84,6 @@
 
 	asSynthDef { ^this }
 	asDefName {	^name	}
-	
+
 }
 
