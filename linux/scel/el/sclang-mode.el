@@ -453,8 +453,8 @@ Returns the column to indent to."
 (defvar sclang--document-idle-timer nil)
 
 (defconst sclang-document-property-map
-  '((sclang-document-name . (prSetName (buffer-name)))
-    (sclang-document-path . (prSetPath (buffer-file-name)))
+  '((sclang-document-name . (prSetTitle (buffer-name)))
+    (sclang-document-path . (prSetFileName (buffer-file-name)))
     (sclang-document-listener-p . (prSetIsListener (eq (current-buffer) (sclang-get-post-buffer))))
     (sclang-document-editable-p . (prSetEditable (not buffer-read-only)))
     (sclang-document-edited-p . (prSetEdited (buffer-modified-p)))))
