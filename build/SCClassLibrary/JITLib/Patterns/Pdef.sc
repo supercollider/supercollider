@@ -258,7 +258,7 @@ Pdef : Tdef {
 						};
 					} {	// avoid recursion, if instrument not set.
 						event.put(\instrument, ~synthDef);
-						event.parent_(Event.parentEvents.noteEvent);
+						outerEvent.parent_(Event.parentEvents.noteEvent);
 					};
 					
 					
