@@ -1,5 +1,7 @@
 Integer : SimpleNumber {
 	isInteger { ^true }	
+	
+	hash { ^this.asFloat.hash }
 		
 	+ { arg aNumber, adverb; _AddInt; ^aNumber.performBinaryOpOnSimpleNumber('+', this, adverb) }
 	- { arg aNumber, adverb; _SubInt; ^aNumber.performBinaryOpOnSimpleNumber('-', this, adverb) }
