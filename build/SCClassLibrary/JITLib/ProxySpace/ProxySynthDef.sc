@@ -35,7 +35,7 @@ ProxySynthDef : SynthDef {
 				if(rate === 'scalar', {
 					output
 					}, {
-					outCtl = Control.names(\outIndex).ir(0) + channelOffset;
+					outCtl = Control.names(\out).ir(0) + channelOffset;
 					//if((rate === 'control') && (proxy.rate === 'audio'), 
 					//{ output = K2A.ar(output) }); //change in NodeProxy-initBus
 					Out.multiNewList([rate, outCtl]++output)
