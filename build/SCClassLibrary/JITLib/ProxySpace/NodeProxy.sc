@@ -196,8 +196,8 @@ BusPlug : AbstractFunction {
 		
 		localServer = this.localServer; // multi client support
 		if(localServer.serverRunning.not, { "server not running".inform; ^nil });
-		ok = this.initBus(\audio, numChannels);
-		if(ok.not) { Error("can't monitor a" + bus.rate + "proxy" + "with" + numChannels).throw };
+		this.initBus(\audio, numChannels);
+		if(this.rate !== 'audio') { Error("can't monitor a control rate proxy").throw };
 		this.wakeUp;
 		if(monitor.isNil) { monitor = Monitor.new };
 		group = (group ? localServer).asGroup;
