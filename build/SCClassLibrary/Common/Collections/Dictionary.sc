@@ -289,8 +289,8 @@ IdentityDictionary : Dictionary {
 	// if know is set to true then not understood messages will look in the dictionary
 	// for that selector and send the value message to them.
 	
-	*new { arg n=8, parent, know=false; 
-		^super.new(n).parent_(parent).know_(know)
+	*new { arg n=8, proto, parent, know=false; 
+		^super.new(n).proto_(proto).parent_(parent).know_(know)
 	}
 	
 	at { arg key, value;
