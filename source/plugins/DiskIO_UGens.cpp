@@ -114,6 +114,7 @@ void* disk_io_thread_func(void* arg)
 		int bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
 		if (bufnum < 0 || bufnum >= world->mNumSndBufs) bufnum = 0; \
+		unit->m_fbufnum = fbufnum; \
 		unit->m_buf = world->mSndBufs + bufnum; \
 	} \
 	SndBuf *buf = unit->m_buf; \
