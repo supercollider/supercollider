@@ -101,7 +101,8 @@ void vposttext(const char *str, int length)
         pthread_mutex_lock(&mainPostBuf.mutex);
 	for (int i=0; i<length && str[i]; ++i) {
 		if (((mainPostBuf.wrpos+1) & POSTBUFMASK) == mainPostBuf.rdpos) {
-			mainPostBuf.Flush();
+			break;
+			//mainPostBuf.Flush(); CANNOT DO THIS FROM OTHER THAN COCOA'S THREAD!
 		}
 		if (str[i] == '\n') mainPostBuf.buf[mainPostBuf.wrpos] = '\r';
 		else mainPostBuf.buf[mainPostBuf.wrpos] = str[i];

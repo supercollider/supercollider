@@ -1011,12 +1011,10 @@ void GC::DumpInfo()
 			post("%2d  bgwfr t sz: %3d %3d %3d %3d  %3d   %3d   %8d\n", i, 
 				numblack, numgrey, numwhite, numfree, numref, settotal, setsiztotal);
 #endif
-			//flushPostBuf();
 		}
 	}
 	post("tot bgwfr t sz: %3d %3d %3d %3d  %3d   %3d   %8d\n", 
 		totblack, totgrey, totwhite, totfree, totref, total, siztotal);
-	//flushPostBuf();
 }
 
 void GC::DumpEverything()
@@ -1052,7 +1050,6 @@ void GC::DumpEverything()
 			obj = obj->next;
 		}
 	}
-	//flushPostBuf();
 }
 
 void GC::ClearMarks()
@@ -1088,7 +1085,6 @@ void GC::ClearMarks()
 			obj = obj->next;
 		}
 	}
-	//flushPostBuf();
 }
 
 

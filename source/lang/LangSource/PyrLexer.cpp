@@ -1862,7 +1862,6 @@ void runLibrary(PyrSymbol* selector)
 		} else {
 			postfl("Library has not been compiled successfully.\n");
 		}
-		//flushPostBuf();
 	} catch (std::exception &ex) {
 		PyrMethod *meth = g->method;
 		if (meth) {
@@ -1905,7 +1904,6 @@ void interpretCmdLine(const char *textbuf, int textlen, char *methodname)
 	} else {
 		postfl("Library has not been compiled successfully.\n");
 	}
-	//flushPostBuf();
 }
 
 void init_SuperCollider()

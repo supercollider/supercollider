@@ -1680,7 +1680,6 @@ void dumpObject(PyrObject *obj)
 		}
 	}
 	post("}\n");
-	//flushPostBuf();
 }
 
 void dumpBadObject(PyrObject *obj)
@@ -1777,7 +1776,6 @@ void dumpBadObject(PyrObject *obj)
 		}
 	}
 	postfl("}\n");
-	//flushPostBuf();
 }
 
 void dumpObjectSlot(PyrSlot *slot)
@@ -1812,12 +1810,10 @@ bool FrameSanity(PyrFrame *frame)
 	bool failed = false;
 	if (frame==NULL) return false;
 	if (frame->method.utag != tagObj) {
-		//flushPostBuf();
 		postfl("Frame %X method tag wrong %X\n", frame, frame->method.utag);
 		failed = true;
 	//} else if (!isKindOf((PyrObject*)frame->method.uo->classptr, class_fundef)) {
 	} else if (frame->method.uo->classptr != class_method && frame->method.uo->classptr != class_fundef) {
-		//flushPostBuf();
 		postfl("Frame %X method class wrong %X\n", frame, frame->method.uo->classptr);
 		failed = true;
 		//if (frame->method.uo->classptr->classptr == class_class) {
@@ -1826,7 +1822,6 @@ bool FrameSanity(PyrFrame *frame)
 		//	postfl("not even a class\n");
 		//}
 	} else if (frame->method.uoblk->code.utag != tagObj) {
-		//flushPostBuf();
 		postfl("Method %X code tag wrong %X\n", frame->method.uoblk, frame->method.uoblk->code.utag);
 		failed = true;
 	} else if (frame->method.uoblk->code.uo->classptr != class_int8array) {
@@ -1835,22 +1830,18 @@ bool FrameSanity(PyrFrame *frame)
 		failed = true;
 	}
 	if (frame->caller.utag != tagHFrame && frame->caller.utag != tagSFrame && frame->caller.utag != tagNil) {
-		//flushPostBuf();
 		postfl("Frame %X caller tag wrong %X\n", frame, frame->caller.utag);
 		failed = true;
 	}
 	if (frame->context.utag != tagHFrame && frame->context.utag != tagSFrame && frame->context.utag != tagNil) {
-		//flushPostBuf();
 		postfl("Frame %X context tag wrong %X\n", frame, frame->context.utag);
 		failed = true;
 	}
 	if (frame->homeContext.utag != tagHFrame && frame->homeContext.utag != tagSFrame && frame->homeContext.utag != tagNil) {
-		//flushPostBuf();
 		postfl("Frame %X homeContext tag wrong %X\n", frame, frame->homeContext.utag);
 		failed = true;
 	}
 	if (frame->ip.utag != tagInt) {
-		//flushPostBuf();
 		postfl("Frame %X ip tag wrong %X\n", frame, frame->ip.utag);
 		failed = true;
 	}
