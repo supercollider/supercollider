@@ -2,9 +2,9 @@
 NodeProxy : AbstractFunction {
 
 	var <server, <group, <outbus;
-	var <synthDefs, <loaded=false, <parents;
+	var <objects, <loaded=false, <parents;
 	
-	var <nodeMap, <>clock, <env, <>autoRelease=true;
+	var <nodeMap, <>clock, <>freeSelf=true;
 	
 	
 	*new { arg server;
@@ -26,11 +26,12 @@ NodeProxy : AbstractFunction {
 		SynthDef("proxyOut-linkDefAr", { arg i_busOut=0, i_busIn=16; 
 			Out.ar(i_busOut, InFeedback.ar(i_busIn, 1)) 
 		}).writeDefFile;
+		
 	}
 	
 	clear {
 		nodeMap = ProxyNodeMap.new;
-		synthDefs = Array.new;
+		objects = Array.new;
 		this.initParents;
 		this.free;
 		if(outbus.notNil, { outbus.free });
@@ -68,43 +69,40 @@ NodeProxy : AbstractFunction {
 	value { ^if(this.rate == 'audio', {this.ar}, {this.kr})  }
 	
 	
-	env_ { arg argEnv;
-		this.release;
-		env = argEnv;
-	}
 	
 	nodeMap_ { arg map;
 		nodeMap = map;
-		map.send(group);
+		map.sendToNode(group);
 	}
 	
 		
-	play { arg outBus=0, nChan;
-		var playGroup, msg;
+	play { arg busIndex=0, nChan;
+		var playGroup, bundle;
+		if(server.serverRunning.not, { "server not running".inform; ^nil });
 		if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
 		
-		msg = List.new;
-		playGroup = Group.newToBundle(msg, server);
+		bundle = MixedBundle(server);
+		playGroup = Group.newToBundle(bundle, server);
 		nChan = nChan ? this.numChannels;
 		nChan = nChan.min(this.numChannels);
-		this.wakeUpParentsToBundle(msg);
+		this.wakeUpParentsToBundle(bundle);
 		
 		nChan.do({ arg i;
-			msg.add([9, "proxyOut-linkDefAr", server.nextNodeID, 1,group.asNodeID,
-				\i_busOut, outBus+i, \i_busIn, outbus.index+i]);
+			bundle.add([9, "proxyOut-linkDefAr", server.nextNodeID, 1,playGroup.nodeID,
+				\i_busOut, busIndex+i, \i_busIn, outbus.index+i]);
 		});
 		
-		this.schedSendOSC(msg)
+		this.schedSendOSC(bundle)
 		^playGroup
 	}
 	
 	send { arg extraArgs;
 			//latency is 0, def is on server
-			this.sendToServer(false, 0.0, extraArgs);
+			this.sendToServer(nil, false, 0.0, extraArgs);
 	}
 	sendAll { arg extraArgs;
 			//latency is 0, def is on server
-			this.sendToServer(true, 0.0, extraArgs);
+			this.sendToServer(nil, true, 0.0, extraArgs);
 	}
 	
 	record { arg path, headerFormat="aiff", sampleFormat="int16", numChannels;
@@ -122,10 +120,10 @@ NodeProxy : AbstractFunction {
 	}
 	
 	refresh {
-		var msg;
-		msg = List.new;
-		this.sendSynthMsg(msg, true);
-		this.schedSendOSC(msg)
+		var bundle;
+		bundle = MixedBundle(server);
+		this.sendSynthMsg(bundle, true);
+		this.schedSendOSC(bundle)
 	}
 	
 	rate { ^outbus.tryPerform(\rate) }
@@ -135,14 +133,17 @@ NodeProxy : AbstractFunction {
 	}
 	
 	isPlaying { 
-		//^(group.notNil and: group.isPlaying)
-		^(group.notNil and: {group.isPlaying} and: {server.nodeIsPlaying(group.nodeID)})
+		//^(group.notNil and: {group.isPlaying})
+		^server.nodeIsPlaying(group.asNodeID)
 	}
 	
 	printOn { arg stream;
 		stream << "NodeProxy." << this.rate << "(" << server << ", " << this.numChannels <<")";
 	}
 	
+	generateUniqueName {
+		^asString(this.identityHash.abs) ++ objects.size
+	}
 	
 	// setting the source to anything that returns a valid ugen input
 	
@@ -154,24 +155,25 @@ NodeProxy : AbstractFunction {
 		this.setObj(obj, true) 
 	}
 	
-	setObj { arg obj, send=false, freeAll=true, onCompletion, latency=0.3; 			var def;
-			def = obj.asProxySynthDef(this);
-			if(def.isNil, { "rate/numChannels must match".inform; }, {
-				
+	setObj { arg obj, send=false, freeAll=true, onCompletion, latency=0.3; 			var container, bundle;
+				bundle = MixedBundle(server);
 				if(freeAll, { 
-					synthDefs = Array.new; 
+					this.freeAllMsg(bundle);
+					objects = Array.new;
 					this.initParents 
 				});
-				synthDefs = synthDefs.add(def);
-				def.writeDefFile;
-				loaded = false;
 				
-				if(server.serverRunning, { 
-					this.sendDef(def);//for now.
-					if(send, { this.sendToServer(freeAll, latency, nil, onCompletion) });
-				 });
-				
-			}, { "rate/numChannels must match".inform })
+				container = obj.wrapForNodeProxy(this);
+				if(container.notNil, {
+					objects = objects.add(container);
+					if(server.serverRunning, {
+						container.sendDef(server);
+						if(send, { 
+							this.prepareForPlayMsg(bundle, freeAll);
+							this.sendToServer(bundle, freeAll, latency, nil, onCompletion) 
+						});
+				 	});
+				},  { "rate/numChannels must match".inform })
 			
 	}
 	
@@ -187,7 +189,7 @@ NodeProxy : AbstractFunction {
 	
 	set { arg ... args;
 		nodeMap.performList(\set, args);
-		if(this.isPlaying, { group.performList(\set, args) }, {"not playing".postln });
+		if(this.isPlaying, { group.performList(\set, args) }, { "not playing".inform });
 	}
 	
 	setn { arg ... args;
@@ -202,7 +204,7 @@ NodeProxy : AbstractFunction {
 			args = [key, proxy]; //++args;
 			nodeMap.performList(\map, args);
 			parents.add(proxy);
-			if(this.isPlaying, { nodeMap.send(group) })
+			if(this.isPlaying, { nodeMap.sendToNode(group) })
 		}, {
 			"can only map to control bus".inform
 		})
@@ -214,14 +216,14 @@ NodeProxy : AbstractFunction {
 	
 	unmap { arg ... args;
 		nodeMap.performList(\unmap, args);
-		if(this.isPlaying, { nodeMap.send(group) });
+		if(this.isPlaying, { nodeMap.sendToNode(group) });
 	}
-	release {
-		var msg;
-		msg = List.new;
+	release { arg latency;
+		var bundle;
+		bundle = MixedBundle(server);
 		if(this.isPlaying, { 
-			this.freeAllMsg(msg);
-			server.listSendBundle(nil, msg)
+			this.freeAllMsg(bundle);
+			bundle.send;
 		});
 	}
 	run { arg flag=true;
@@ -233,19 +235,21 @@ NodeProxy : AbstractFunction {
 	
 	// server communications, updating
 	
-	sendToServer { arg freeAll=true, latency=0.3, extraArgs, onCompletion;
-		var msg, resp;
-		if( synthDefs.isEmpty.not and: { server.serverRunning }, {
-				msg = List.new;
-				this.prepareForPlayMsg(msg, freeAll);
-				this.sendSynthMsg(msg, freeAll, extraArgs);
+	sendToServer { arg bundle, freeAll=true, latency=0.3, extraArgs, onCompletion;
+		var resp;
+		
+		if(server.serverRunning, {
+				bundle = bundle ? MixedBundle(server);
+				
+				this.sendSynthMsg(bundle, freeAll, extraArgs);
+				
 				if(latency.notNil, {
 					SystemClock.sched(latency, {
-								this.schedSendOSC(msg, onCompletion); 
+								this.schedSendOSC(bundle, onCompletion); 
 					})
 				}, {
 					resp = OSCresponder(server.addr, '/done', { 
-						this.schedSendOSC(msg, onCompletion);
+						this.schedSendOSC(bundle, onCompletion);
 						resp.remove;
 					}).add;
 				
@@ -253,52 +257,57 @@ NodeProxy : AbstractFunction {
 		});
 	}
 			
-	schedSendOSC { arg msg, onCompletion;
-					msg.asCompileString.postln;
+	schedSendOSC { arg bundle, onCompletion;
+					//bundle.asCompileString.postln;
 					if(clock.notNil, {
 						clock.sched(0, { 
-							server.listSendBundle(nil, msg); 
+							bundle.send; 
 							onCompletion.value(this) 
 						})
 					}, {
-						server.listSendBundle(nil, msg); 
+						bundle.send;
 						onCompletion.value(this)
 					})
 	}
 	
-	prepareForPlayMsg { arg msg, freeAll=true;
+	prepareForPlayMsg { arg bundle, freeAll=true;
 					if(this.isPlaying.not, {
-						group = Group.newToBundle(msg, server, \addToHead);
+						group = Group.newToBundle(bundle, server, \addToHead);
 						group.prIsPlaying(true);
-					}, {
-						if(freeAll, {
-							this.freeAllMsg(msg);
-						});
-					});
+						//RootNode(server).prAddHead(group);//manually link the node
+						server.nodeWatcher.nodes.add(group); //force isPlaying					
+						})
 	}
 	
-	sendSynthMsg { arg msg, freeAll=true, extraArgs;
+	sendSynthMsg { arg bundle, freeAll=true, extraArgs;
 				var synth;
-				
 				if(freeAll, {
-					synthDefs.do({ arg synthDef;
-						Synth.newToBundle(msg, synthDef.name, extraArgs, group); 
+					objects.do({ arg item;
+						item.playToBundle(bundle, extraArgs, group);
 					});
-					nodeMap.updateMsg(msg, group);
-					
+					nodeMap.updateMsg(bundle, group);
 				}, {
-					synth = Synth.newToBundle(msg, synthDefs.last.name, extraArgs, group); 
-					nodeMap.updateMsg(msg, synth);
-				});	
+						synth = objects.last.playToBundle(bundle, extraArgs, group);
+						if(synth.notNil, {nodeMap.updateMsg(bundle, synth)});
+				});
+					
+				
 	}
 	
-	freeAllMsg { arg msg;//revist
-					if(autoRelease, {
-							group.msgToBundle(msg, 15, [\synthGate, 0.0]); //n_set
-							//group.freeAll(false);
+	
+	freeAllMsg { arg bundle;
+					objects.do({ arg item;
+						item.stopClientProcessToBundle(bundle);
 					});
-					//group.msgToBundle(msg, 24); //g_freeAll
-					//	}, {
+					if(this.isPlaying, {
+						if(freeSelf, {
+							group.msgToBundle(bundle, 15, [\synthGate, 0.0]); //n_set
+						}, {
+							//if the object has its own envelope, try to free it.
+							group.msgToBundle(bundle, 15, [\gate, 0.0]); //n_set 
+						});
+					})
+
 	}
 	
 	
@@ -307,7 +316,7 @@ NodeProxy : AbstractFunction {
 	
 	
 	initBus { arg rate, numChannels;
-				if(rate === 'scalar', { ^true }); //just exit
+				if((rate === 'scalar') || rate.isNil, { ^true }); //just exit
 				if(outbus.isNil, {
 					this.allocBus(rate,numChannels);
 					^true
@@ -352,11 +361,10 @@ NodeProxy : AbstractFunction {
 		
 	}
 	
-	wakeUpParentsToBundle { arg bundle; //see for synthDefs
-		
+	wakeUpParentsToBundle { arg bundle; //see for objects
 		
 		if(this.isPlaying.not, {
-			if(loaded.not, { this.loadAll }); //change later maybe to defsToBundle in sendSynthMsg
+			if(loaded.not, { this.loadAll });
 			parents.do({ arg item; item.wakeUpParentsToBundle(bundle) });
 			this.wakeUpToBundle(bundle);
 		});
@@ -364,48 +372,39 @@ NodeProxy : AbstractFunction {
 	
 	wakeUpParents { 
 		var bundle;
-		bundle = List.new;
+		bundle = MixedBundle(server);
 		this.wakeUpParentsToBundle(bundle);
 		this.schedSendOSC(bundle);
 	}
 	
 	load {
-		var msg;
-		msg = List.new;
-		this.loadMsg(msg);
+		var bundle;
 		if(server.serverRunning, { 
-			server.listSendBundle(nil, msg);
+			bundle = MixedBundle(server);
+			this.loadMsg(bundle);
+			bundle.send; 
 		});
 	
 	}
 		
 	loadAll {
-		var msg;
-		msg = List.new;
+		var bundle;
+		bundle = MixedBundle(server);
 		if(server.serverRunning, {
 			parents.do({ arg proxy; 
-				proxy.sendAllDefsMsg(msg); 
+				proxy.sendAllDefsMsg(bundle); 
 			});
-			this.sendAllDefsMsg(msg);
-			server.listSendBundle(nil, msg);
+			this.sendAllDefsMsg(bundle);
+			bundle.send; 
 		}, { "server not running".inform });
 	}
-	sendDef { arg def;
-		//var msg;
-		//msg = List.new;
-		//this.sendDefMsg(msg, def);
-		server.sendMsg("/d_recv", def.asBytes);
-	}
+		
 	
-	sendDefMsg { arg msg, def;
-			msg.add(["/d_recv", def.asBytes]);
-	}
-	
-	sendAllDefsMsg { arg msg;
-		synthDefs.do({ arg def;
-			msg.add(["/d_recv", def.asBytes]);
+	sendAllDefsMsg { arg bundle;
+		objects.do({ arg item;
+			item.sendDefToBundle(bundle)
 		});
-		//loaded = true; //remember to send;
+		loaded = true; //remember to send;
 	}	
 	
 	

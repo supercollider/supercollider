@@ -6,9 +6,15 @@
 		^this
 	}
 	asProxySynthDef { arg proxy;
-		^ProxySynthDef(proxy, this.prepareForProxySynthDef); 
+		^ProxySynthDef(proxy, this.prepareForProxySynthDef(proxy)); 
 	}	
-	
+	wrapForNodeProxy { arg proxy;
+		var synthDef;
+		synthDef = this.asProxySynthDef(proxy);
+		^if(synthDef.notNil, {
+			SynthDefContainer.new(synthDef)
+		}, nil);
+	}
 }
 
 
@@ -34,6 +40,34 @@
 		^{ this.value }
 	}
 }
+
++Pattern {
+	wrapForNodeProxy { arg proxy;
+		^this.asStream.wrapForNodeProxy(proxy);
+	}
+
+}
+
++Stream {
+	wrapForNodeProxy { arg proxy;
+		^EventStreamContainer.new(this.collect({ arg event;
+			event.copy.use({ 
+				~out = proxy.outbus.index;
+				~nodeMap = proxy.nodeMap;
+				~argNames = [\freq,\amp,\sustain,\pan,\out];//more later
+				//~group = proxy.group.nodeID;
+			})
+		
+		});)
+	}
+}
+
+
+
+
+
+
+
 
 /*
 //for now:
@@ -82,31 +116,7 @@
 }
 */
 
-+ ProxySynthDef {
-	asProxySynthDef { arg proxy;
-		^this; 
-	}
-}
 
-+ SynthDef {
-	asProxySynthDef { 
-		"cannot use a normal synthDef as input".inform;
-		^nil; 
-	}
-}
-
-
-+ Pattern {
-	prepareForProxySynthDef { arg proxy;
-		var eventStream;
-		eventStream = Pevent(
-			this.collect({ arg item; item.put(\bus, proxy.outbus) }), 
-			Event.protoEvent
-		);
-			eventStream.play;
-		^0.0
-	}
-}
 
 
 

@@ -1,7 +1,7 @@
 ProxySpace : EnvironmentRedirect {	classvar <>lastEdited;//undo support
 		var <group, <server, <>clock;
 	var <>defaultNumChannels=2; //default values for numChannels 
-	var <>defaultEnv;
+	
 		*new { arg target, clock;
 		^super.new.einit(target, clock)
 	}
@@ -18,7 +18,6 @@
 			var proxy;
 			proxy = NodeProxy(server);
 			proxy.clock = clock;
-			proxy.env = defaultEnv;
 			this.prPut(key, proxy);
 			^proxy
 	}
@@ -43,7 +42,7 @@
 			});
 			
 		});
-		proxy.setObj(obj, true, true, clock);
+		proxy.setObj(obj, true, true);
 		this.class.lastEdited = proxy;
 	}
 	
@@ -65,7 +64,6 @@
 			
 	*undo {		lastEdited.tryPerform(\undo)	}
 	postln {
-	 "______".post;
 	 lastEdited.postln;
 	}
 		}

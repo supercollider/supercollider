@@ -1,17 +1,16 @@
 ProxySynthDef : SynthDef {
-	var <>proxy;
-	classvar <defaultEnvelope;
+	var <>proxy, <channeloffset=0;
+	classvar <env;
 	
 	*initClass {
-		defaultEnvelope = Env.linen(1.0, 1.0, 1.0);
 		//clean up
+		env =  Env.linen(1.0, 1.0, 1.0);
 		unixCmd("rm synthdefs/temp_proxy_def_*");
 	}
 	
 	*new { arg proxy, object;
 		var name;
-		name = "temp_proxy_def_" 
-		++ proxy.identityHash.abs ++ proxy.synthDefs.size;
+		name = "temp_proxy_def_" ++ proxy.generateUniqueName;
 		^super.prNew(name).proxy_(proxy).build(object);
 	}
 	
@@ -30,11 +29,10 @@ ProxySynthDef : SynthDef {
 				ok = proxy.initBus(rate, output.size);
 				if(ok.not, { ^nil });
 				
-				envgen = if(proxy.autoRelease, {
+				envgen = if(proxy.freeSelf, {
 					synthGate = Control.names(\synthGate).kr(1.0);
 					synthFadeTime = Control.names(\synthFadeTime).kr(0.02);
-					EnvGen.kr(proxy.env ? this.class.defaultEnvelope, 
-						synthGate, 1.0, 0.0, synthFadeTime, 2);
+					Linen.kr(synthGate,synthFadeTime, 1.0, synthFadeTime, 2)	
 				}, { 
 					1.0 
 				});
@@ -44,7 +42,7 @@ ProxySynthDef : SynthDef {
 					}, {
 					//if((rate === 'control') && (proxy.rate === 'audio'), 
 					//{ output = K2A.ar(output) }); //change in NodeProxy-initBus
-					Out.multiNewList([rate, proxy.outbus.index]++output)
+					Out.multiNewList([rate, proxy.outbus.index+channeloffset]++output)
 				})
 		};
 		
