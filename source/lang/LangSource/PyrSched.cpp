@@ -30,6 +30,8 @@
 
 #define SANITYCHECK 0
 
+void runAwakeMessage(VMGlobals *g);
+
 void addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task) 
 {
 	short mom;	/* parent and sibling in the heap, not in the task hierarchy */
@@ -407,8 +409,6 @@ void doubleToTimespec(double secs, struct timespec *spec)
 	spec->tv_nsec = (long)floor(1000000000. * (secs - isecs));
 }
 
-void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed);
-
 void schedStop();
 void schedStop()
 {
@@ -512,7 +512,7 @@ void* schedRunFunc(void* arg)
 			(++g->sp)->uf = schedtime;
 			++g->sp;	SetObject(g->sp, s_systemclock->u.classobj);
 			
-			runInterpreter(g, s_awake, 4);
+			runAwakeMessage(g);
 			long err = slotDoubleVal(&g->result, &delta);
 			if (!err) {
 				// add delta time and reschedule
@@ -853,7 +853,7 @@ void* TempoClock::Run()
 			(++g->sp)->uf = BeatsToSecs(mBeats);
 			++g->sp;	SetObject(g->sp, mTempoClockObj);
 			
-			runInterpreter(g, s_awake, 4);
+			runAwakeMessage(g);
 			long err = slotDoubleVal(&g->result, &delta);
 			if (!err) {
 				// add delta time and reschedule

@@ -119,6 +119,16 @@ void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 
 }
 
+bool initAwakeMessage(VMGlobals *g);
+
+void runAwakeMessage(VMGlobals *g)
+{
+	if (initAwakeMessage(g)) {
+		if (g->execMethod) Interpret(g);
+	}
+	endInterpreter(g);		
+}
+
 void initPyrThread(class GC *gc, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
 	double beats, double seconds, PyrSlot* clock, bool collect);
 int32 timeseed();
@@ -341,6 +351,31 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool, int processID)
 #endif
 	
 	return true;
+}
+
+bool initAwakeMessage(VMGlobals *g)
+{
+	// these will be set up when the run method is called
+	g->method = NULL;
+	g->block = NULL;
+	g->frame = NULL;
+	g->ip = NULL;	
+	g->returnLevels = 0;
+        g->execMethod = 0;
+	
+	// set process as the receiver
+	PyrSlot *slot = g->sp - 3;
+	g->receiver.ucopy = slot->ucopy;
+
+	g->thread->beats.uf = slot[1].uf;
+	g->thread->seconds.uf = slot[2].uf;
+	g->thread->clock.ucopy = slot[3].ucopy;
+	g->gc->GCWrite(g->thread, slot+3);
+
+	// start it
+	sendMessage(g, s_awake, 4);
+	
+	return g->method != NULL;
 }
 
 bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
