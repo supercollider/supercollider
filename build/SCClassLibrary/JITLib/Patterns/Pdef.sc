@@ -22,24 +22,15 @@ StreamPlayerReference {
 		isPlaying = true;
 	}
 	
-	clock { ^player.clock }
 	stop {  player.stop; isPlaying = false; }
-	pause { this.stop }
+	pause { player.stop; isPlaying = false; }
+	reset { player.reset }
 	
 	*put { this.subclassResponsibility(thisMethod) }
 	*at { this.subclassResponsibility(thisMethod) }
 	setProperties { this.subclassResponsibility(thisMethod) }
 	initPlayer { this.subclassResponsibility(thisMethod) }
-	
-	sched { arg func;
-		var clock;
-		clock = this.clock;
-		if(clock.isKindOf(TempoClock), { 
-			clock.play({ 	
-				func.value; nil 
-			}, quant) 
-		}, func);
-	}
+	sched { arg func; player.clock.sched({ func.value; nil }, quant) }
 
 }
 
@@ -82,7 +73,7 @@ Tdef : StreamPlayerReference {
 			if(isPlaying)
 				{ 
 					if(player.isPlaying)
-					 { this.sched({ player.stream = str })  }
+					 { player.clock.play({ player.stream = str; nil })  }
 			 		 { player.stream = str; player.play(quant: quant) }
 				}
 			 	{ 
@@ -121,33 +112,8 @@ Pdef : Tdef {
 	}
 	
 	event_ { arg inEvent; player.event = inEvent }
-	
-	// use like a stream
-	
-	asStream {
-		^Routine.new({ arg inval;
-			var val;
-			player.refresh;
-			while({
-				val = player.stream.next(inval);
-				val.notNil;
-			}, {
-				val.yield;
-			})
-		
-		})
-	}
-	
 	mute { player.mute }
 	unmute { player.unmute }
-	
-	embedInStream { arg stream;
-		^this.asStream.embedInStream(stream)
-	}
-	
-	collect { arg func;
-		^this.asStream.collect(func)
-	}
 	
 }
 
