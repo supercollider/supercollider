@@ -74,3 +74,60 @@
 }
 
 
+/** addToDefName **/
+
+
+
+/** building the Instr def name **/
++ SynthDef {
+	longName { ^name }
+}
+
++ Editor {
+	addToDefName { arg stream;
+		^value.addToDefName(stream)
+	}
+}
++ KrNumberEditor {
+	addToDefName { arg stream;
+		^1
+	}
+}
++ IrNumberEditor {
+	addToDefName { arg stream;
+		^0
+	}
+}
++ SimpleNumber {
+	addToDefName { arg stream;
+		stream << this.asFileSafeString;
+		^2
+	}
+}
++ Sample {
+	addToDefName { arg stream;
+		// beatsizek
+		var sum;
+		sum = numChannels - 1; // assumes no quad samples
+		if(beatsizek.notNil,{ sum = sum + 2 });
+		stream << sum;
+		^2
+	}
+}
++ AbstractPlayer {
+	addToDefName {
+		^0
+	}
+}
+
+// the big one, espec. Env
++ Object {
+	addToDefName { arg stream;
+		stream << this.asCompileString.hash.asFileSafeString;
+		^2
+	}
+}
+
+
+
+
