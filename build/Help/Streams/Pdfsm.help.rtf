@@ -173,11 +173,11 @@ p = \cf2 Pdfsm\cf0 (\
 (\
 \cf2 SynthDef\cf0 (\cf4 'Help-Pdfsm2'\cf0 , \
 	\{ \cf2 arg\cf0  freq, gate=1;\
-		\cf2 var\cf0  n=8, env, osc, vib;\
+		\cf2 var\cf0  n=8, env, osc;\
 		env = \cf2 Linen\cf0 .kr( gate, 0.01, 1, 0.03, 2 );\
 		osc = \{\cf2 Mix\cf0 .fill( n, \{ \cf2 arg\cf0  i;\
-			(\cf2 FSinOsc\cf0 .ar(freq + \cf2 Rand\cf0 (-2.0,2.0), \cf2 Rand\cf0 (0, 0.05pi)) ring4:\
-			\cf2 FSinOsc\cf0 .ar(freq * (i+1))) ;\
+			\cf2 FSinOsc\cf0 .ar(freq + \cf2 Rand\cf0 (-2.0,2.0), \cf2 Rand\cf0 (0, 0.05pi)) ring4:\
+			\cf2 FSinOsc\cf0 .ar(freq * (i+1));\
 		\})\}.dup * \cf2 FSinOsc\cf0 .kr(\cf2 Rand\cf0 (1.5,4.5),\{\cf2 Rand\cf0 (-0.1pi,0.1pi)\}.dup,0.6,env*0.4);\
 		\cf2 Out\cf0 .ar(0, env * osc / (n*4)  )\
 	\}).send(s);\
