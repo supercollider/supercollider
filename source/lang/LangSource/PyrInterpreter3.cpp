@@ -1270,8 +1270,7 @@ void Interpret(VMGlobals *g)
 					break;
 				case 6 :
 					vars = g->frame->vars;
-					if (vars[1].ui == 0x7FFFFFFF 
-							|| (vars[5].ui > 0 && vars[3].ui <= vars[1].ui)
+					if ((vars[5].ui > 0 && vars[3].ui <= vars[1].ui)
 							|| (vars[5].ui < 0 && vars[3].ui >= vars[1].ui)) 
 					{
 						*++sp = vars[2].uf; // push function
@@ -1317,8 +1316,7 @@ void Interpret(VMGlobals *g)
 					break;
 				case 8 :
 					vars = g->frame->vars;
-					if (vars[1].ui == 0x7FFFFFFF 
-							|| (vars[2].ui >= 0 && vars[4].ui <= vars[1].ui)
+					if ((vars[2].ui >= 0 && vars[4].ui <= vars[1].ui)
 							|| (vars[2].ui < 0 && vars[4].ui >= vars[1].ui)) {
 						*++sp = vars[3].uf; // push function
 						*++sp = vars[4].uf; // push i
