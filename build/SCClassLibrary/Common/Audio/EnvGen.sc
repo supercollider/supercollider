@@ -68,6 +68,7 @@ EnvGen : UGen { // envelope generator
 		^this.multiNewList(['control', gate, levelScale, levelBias, timeScale, doneAction] 
 			++ envelope.asArray)
 	}
+	argNamesInputsOffset { ^2 }
 }
 
 Linen : UGen {
