@@ -22,7 +22,7 @@ Finalizer {
 	
 	// no *new method! Create in a primitive.
 	
-	finalize { _Finalize }
+	//finalize { _Finalize }
 	notFinalized { ^cFunction.notNil }
 	isFinalized { ^cFunction.isNil }
 }
