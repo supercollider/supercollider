@@ -27,10 +27,14 @@ Primitives for Unix.
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "VMGlobals.h"
+#include "GC.h"
 #include "SC_RGen.h"
 #include <unistd.h>
 #include <errno.h>
 #include <pthread.h>
+#ifdef __linux
+#include <libgen.h>
+#endif
 
 int prString_System(struct VMGlobals *g, int numArgsPushed);
 int prString_System(struct VMGlobals *g, int numArgsPushed)
@@ -46,6 +50,47 @@ int prString_System(struct VMGlobals *g, int numArgsPushed)
 	
 	return errNone;
 }
+
+int prString_Basename(struct VMGlobals *g, int numArgsPushed);
+int prString_Basename(struct VMGlobals *g, int numArgsPushed)
+{
+        PyrSlot *a = g->sp;
+
+        char path[PATH_MAX];
+        int err = slotStrVal(a, path, PATH_MAX);
+        if (err) return err;
+
+        char *basename0 = basename(path);
+
+        int size = strlen(basename0);
+        PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
+        memcpy(strobj->s, basename0, size);
+
+        SetObject(a, strobj);
+
+        return errNone;
+}
+
+int prString_Dirname(struct VMGlobals *g, int numArgsPushed);
+int prString_Dirname(struct VMGlobals *g, int numArgsPushed)
+{
+        PyrSlot *a = g->sp;
+
+        char path[PATH_MAX];
+        int err = slotStrVal(a, path, PATH_MAX);
+        if (err) return err;
+
+        char *dirname0 = dirname(path);
+
+        int size = strlen(dirname0);
+        PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
+        memcpy(strobj->s, dirname0, size);
+
+        SetObject(a, strobj);
+
+        return errNone;
+}
+
 
 void* string_popen_thread_func(void *data);
 void* string_popen_thread_func(void *data)
@@ -155,6 +200,80 @@ int prGMTime(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prAscTime(struct VMGlobals *g, int numArgsPushed);
+int prAscTime(struct VMGlobals *g, int numArgsPushed)
+{
+        PyrSlot *a = g->sp;
+        PyrSlot *slots = a->uo->slots;
+
+        if (IsNil(slots + 0)) {
+          SetNil(a);
+          return errNone;
+        }
+
+        struct tm tm0;
+
+        if (slotIntVal(slots+0, &tm0.tm_year)) return errWrongType;
+        tm0.tm_year -= 1900;
+        if (slotIntVal(slots+1, &tm0.tm_mon)) return errWrongType;
+        if (slotIntVal(slots+2, &tm0.tm_mday)) return errWrongType;
+        if (slotIntVal(slots+3, &tm0.tm_hour)) return errWrongType;
+        if (slotIntVal(slots+4, &tm0.tm_min)) return errWrongType;
+        if (slotIntVal(slots+5, &tm0.tm_sec)) return errWrongType;
+        if (slotIntVal(slots+6, &tm0.tm_wday)) return errWrongType;
+
+        const char *text = asctime(&tm0);
+
+        int size = strlen(text) - 1; // Discard trailing newline
+        PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
+        memcpy(strobj->s, text, size);
+
+        SetObject(a, strobj);
+
+        return errNone;
+}
+
+int prStrFTime(struct VMGlobals *g, int numArgsPushed);
+int prStrFTime(struct VMGlobals *g, int numArgsPushed)
+{
+        PyrSlot *a = g->sp - 1;
+        PyrSlot *b = g->sp;
+
+        PyrSlot *slots = a->uo->slots;
+
+        if (IsNil(slots + 0)) {
+          SetNil(a);
+          return errNone;
+        }
+
+        struct tm tm0;
+
+        if (slotIntVal(slots+0, &tm0.tm_year)) return errWrongType;
+        tm0.tm_year -= 1900;
+        if (slotIntVal(slots+1, &tm0.tm_mon)) return errWrongType;
+        if (slotIntVal(slots+2, &tm0.tm_mday)) return errWrongType;
+        if (slotIntVal(slots+3, &tm0.tm_hour)) return errWrongType;
+        if (slotIntVal(slots+4, &tm0.tm_min)) return errWrongType;
+        if (slotIntVal(slots+5, &tm0.tm_sec)) return errWrongType;
+        if (slotIntVal(slots+6, &tm0.tm_wday)) return errWrongType;
+
+        char format[1024];
+        if (slotStrVal(b, format, 1024)) return errWrongType;
+
+        char buffer[1024];
+        if (strftime(buffer, 1024, format, &tm0) != 0) {
+          int size = strlen(buffer);
+          PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
+          memcpy(strobj->s, buffer, size);
+
+          SetObject(a, strobj);
+        } else {
+          error("could not convert the date to string with the give format");
+          return errFailed;
+        }
+        return errNone;
+}
+
 int32 timeseed();
 
 int prTimeSeed(struct VMGlobals *g, int numArgsPushed);
@@ -173,10 +292,14 @@ void initUnixPrimitives()
 	base = nextPrimitiveIndex();
 	
 	definePrimitive(base, index++, "_String_System", prString_System, 1, 0);
+        definePrimitive(base, index++, "_String_Basename", prString_Basename, 1, 0);
+        definePrimitive(base, index++, "_String_Dirname", prString_Dirname, 1, 0);
 	definePrimitive(base, index++, "_String_POpen", prString_POpen, 1, 0);
 	definePrimitive(base, index++, "_Unix_Errno", prUnix_Errno, 1, 0);
 	definePrimitive(base, index++, "_LocalTime", prLocalTime, 1, 0);
 	definePrimitive(base, index++, "_GMTime", prGMTime, 1, 0);
+       definePrimitive(base, index++, "_AscTime", prAscTime, 1, 0);
+        definePrimitive(base, index++, "_prStrFTime", prStrFTime, 2, 0);
 	definePrimitive(base, index++, "_TimeSeed", prTimeSeed, 1, 0);
 }
 
