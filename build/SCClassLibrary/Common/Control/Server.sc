@@ -71,7 +71,6 @@ Server : Model {
 		routine = thisThread;
 		resp = OSCresponder(addr, cmdName, { resp.remove; routine.resume(true); });
 		resp.add;
-		true.yield;
 	}
 		
 	
