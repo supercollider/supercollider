@@ -18,8 +18,7 @@
 \
 keeps a reference to a stream that can be replaced while playing, just like its superclass.\
 It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.\
-\
-it is very similar to [
+It is very similar to [
 \f0\b \ul EventPatternProxy\ulnone ], 
 \f2\b0 but handles the storing of global instances:\
 \
@@ -30,12 +29,14 @@ it is very similar to [
 \f0\b Pdef(key, pat)
 \f2\b0  stores the pattern and returns the instance, like Tdef and Ndef.\
 \
-it can be used to store event Patterns globally. Changes in this global library have effect immediately, or if quant/offset values are given, at the next time step.\
-\
-For value patterns (numerical, non event patterns) [
+It can be used to store event Patterns globally. Changes in this global library have effect immediately, or if quant/offset values are given, at the next time step. For value patterns (numerical, non event patterns) \
+[
 \f0\b \ul Pdefn\ulnone ]
 \f2\b0  is used.\
 \
+	\
+	note that exchanging the source of a Pdef while playing does not work with Pmono and Pfx yet,\
+	due to their incopatibility with Pfindur.\
 \
 \
 	
@@ -205,11 +206,13 @@ s.boot;\
 \
 \cf2 Pdef\cf0 (\cf4 \\metronom\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 1, \cf4 \\degree\cf0 , 16, \cf4 \\legato\cf0 , 0.1)).play;\
 \
+x = \cf2 Pseq\cf0 ([\cf2 Pdef\cf0 (\cf4 \\a\cf0 ), \cf2 Pdef\cf0 (\cf4 \\b\cf0 ), \cf2 Pdef\cf0 (\cf4 \\c\cf0 )], \cf2 inf\cf0 ).play;\
+\
 \cf2 Pdef\cf0 (\cf4 \\a\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 (#[0, 5, 4, 3])));\
 \cf2 Pdef\cf0 (\cf4 \\b\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 0.125, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 (#[7, 8, 7, 8])));\
 \cf2 Pdef\cf0 (\cf4 \\c\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 (#[0, 1, 2], 2)));\
 \
-x = \cf2 Pseq\cf0 ([\cf2 Pdef\cf0 (\cf4 \\a\cf0 ), \cf2 Pdef\cf0 (\cf4 \\b\cf0 ), \cf2 Pdef\cf0 (\cf4 \\c\cf0 )], \cf2 inf\cf0 ).play;\
+\
 \
 \
 \cf2 Pdef\cf0 (\cf4 \\c\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 (#[4, 3, 1, 2]*3)));\
@@ -230,7 +233,7 @@ x.stop;\
 \cf2 Pdef\cf0 (\cf4 \\metronom\cf0 ).stop;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 // Pdef can be used in multiple patterns: think global, play local\cf0 \
+\cf5 // Pdef can be used in multiple patterns:\cf0 \
 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -449,7 +452,7 @@ note
 \f2\b0  \
 \
 this fast forwarding might create a cpu peak if the pattern is very complex/fast or\
-quant is very long. This is hard to avoid currently, so it simply has to be taken into account.\
+quant is very long. This is hard to avoid, so it simply has to be taken into account.\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
