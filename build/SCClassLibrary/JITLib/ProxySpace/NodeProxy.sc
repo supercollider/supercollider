@@ -251,15 +251,13 @@ BusPlug : AbstractFunction {
 		if(monitorGroup.isPlaying, { this.stop }, { this.play });
 	}
 
-	stop { arg fadeTime;
+	stop { arg fadeTime=0.1;
 		if(monitorGroup.isPlaying, {
 			monitorGroup.release(fadeTime);
-			SystemClock.sched(fadeTime ? this.fadeTime, { 
+			SystemClock.sched(fadeTime, { 
 				monitorGroup.free;
 				monitorGroup = nil;
 			}); // revisit
-						// simplify by using only one monitor, maybe. check recording though
-			
 		})
 	}
 	
