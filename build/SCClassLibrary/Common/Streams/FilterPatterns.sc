@@ -18,6 +18,7 @@ Pn : FilterPattern {
 			var stream, outval;
 			if(inf === repeats)
 			{
+				stream = pattern.asStream;
 				loop {
 					outval = stream.next(inevent);
 					if(outval.isNil, { 
@@ -27,7 +28,7 @@ Pn : FilterPattern {
 					inevent = outval.yield(inevent)
 				}
 			} {
-				repeats.do {
+				repeats.value.do {
 					inevent = pattern.embedInStream(inevent);
 				};
 			}
