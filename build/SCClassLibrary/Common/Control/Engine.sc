@@ -1,5 +1,6 @@
 
-PowerOfTwoBlock {
+PowerOfTwoBlock 
+{
 	var <address, <size, <>next;
 	*new { arg address, size;
 		^super.newCopyArgs(address, size)
@@ -48,16 +49,11 @@ StackNumberAllocator
 		^super.newCopyArgs(lo, hi).init
 	}
 	init {
-		next = lo;
+		next = lo - 1;
 	}
 	alloc {
-		var out;
 		if (freeList.size > 0, { ^freeList.pop });
-		if (next < hi, { 
-			out = next;
-			next = next + 1;
-			^out
-		});
+		if (next < hi, { ^next = next + 1; });
 		^nil
 	}
 	free { arg inIndex; 
@@ -73,12 +69,10 @@ RingNumberAllocator
 		^super.newCopyArgs(lo, hi).init
 	}
 	init {
-		next = lo;
+		next = hi;
 	}
-	alloc { var out; 
-		out = next; 
-		next = (next + 1).wrap(lo,hi); 
-		^out 
+	alloc {
+		^next = (next + 1).wrap(lo,hi)
 	}
 }
 
