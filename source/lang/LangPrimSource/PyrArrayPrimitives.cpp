@@ -1267,11 +1267,13 @@ int prArrayAddAll(struct VMGlobals *g, int numArgsPushed)
 		SetObject(a, obj);
 	} else {
 		obj = aobj;
+		if (format == obj_slot && !g->gc->ObjIsGrey(obj)) {
+			g->gc->ToGrey(obj);
+		}
 	}
 	obj->size = newindexedsize;
 	memcpy((char*)obj->slots + asize * elemsize, 
 		b->uo->slots, bsize * elemsize);
-
 	return errNone;
 }
 
@@ -1309,6 +1311,9 @@ int prArrayOverwrite(struct VMGlobals *g, int numArgsPushed)
 		SetObject(a, obj);
 	} else {
 		obj = aobj;
+		if (format == obj_slot && !g->gc->ObjIsGrey(obj)) {
+			g->gc->ToGrey(obj);
+		}
 	}
 	obj->size = newindexedsize;
 	memcpy((char*)(obj->slots) + pos * elemsize, 
