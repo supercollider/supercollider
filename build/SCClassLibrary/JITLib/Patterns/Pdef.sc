@@ -72,16 +72,31 @@ Tdef : StreamPlayerReference {
 			this.stream = Routine.new(func);
 		})
 	}
-	 
-	stream_ { arg str;
+	
+	constrainStream { arg argStream;
+		var t;
+		t = player.clock.elapsedBeats;
+		^argStream.constrain(t.roundUp(quant) - t)
+	}
+	
+	
+	stream_ { arg argStream;
+			var oldstr, str;
 			if(isPlaying)
 				{ 
 					if(player.isPlaying)
-					 { player.clock.play({ player.stream = str; nil })  }
-			 		 { player.stream = str; player.play(quant: quant) }
+					 { 
+					 	oldstr = player.stream;
+					 	str = Routine.new({ arg inval;
+					 			this.constrainStream(oldstr).embedInStream(inval);
+					 			argStream.embedInStream(inval) 
+					 	});
+					 	player.stream = str;
+					  }
+			 		 { player.stream = argStream; player.play(quant: quant) }
 				}
 			 	{ 
-			 		player.stream = str
+			 		player.stream = argStream
 			 	}
 	}
 
@@ -123,5 +138,10 @@ Pdef : Tdef {
 	mute { player.mute }
 	unmute { player.unmute }
 	
+	constrainStream { arg argStream;
+		var t;
+		t = player.clock.elapsedBeats;
+		^Pfindur(t.roundUp(quant) - t, argStream)
+	}	
 }
 
