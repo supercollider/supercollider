@@ -1,6 +1,6 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
-}
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 LucidaGrande-Bold;
+\f3\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green115\blue0;\red0\green0\blue191;\red96\green96\blue96;
 \red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -8,9 +8,18 @@
 \f0\b\fs36 \cf0 Synth
 \f1\b0\fs24 \
 \
-superclass: Node\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 superclass: Node
+\f1\b0 \
 \
 A Synth is a single sound producing unit.  A SynthDef specifies what UGens are used and how they are patched together.  It also specifies what inputs the Synth will have.  It writes a synthDef file which the server can read, and a Synth can then be created by specifying the synthDefName.  The Synth plays the sound that the SynthDef has defined.\
+\
+see also: [
+\f2\b NodeMessaging
+\f1\b0 ] help file.\
+\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -85,7 +94,7 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 \f0\b \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \cf0 	
+\f3\b0\fs18 \cf0 	
 \f0\b\fs24 Synth.head(aTarget,synthDefName,[ index1,arg1,... indexN,argN  ])\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -103,7 +112,7 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 				\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 	
+\f3\fs18 \cf0 	
 \f0\b\fs24 Synth.tail(aTarget,synthDefName,[ index1,arg1,... indexN,argN  ])\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -120,7 +129,7 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 				\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 	
+\f3\fs18 \cf0 	
 \f0\b\fs24 Synth.grain(synthDefName,[ index1,arg1,... indexN,argN  ],target,addAction)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -154,13 +163,13 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 		\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 			
+\f3\fs18 \cf0 			
 \f0\b\fs24 target\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 				using the method asTarget, the argument will be converted\
 				to a Node.
-\f2\fs18 \
+\f3\fs18 \
 
 \f1\fs24 					nil :  the RootNode of the defaultServer\
 						this is the top level group.\
@@ -171,13 +180,13 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 					\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 			
+\f3\fs18 \cf0 			
 \f0\b\fs24 addAction:  
 \f1\b0 a symbol
-\f2\fs18 \
+\f3\fs18 \
 				\cf2 \\addToHead
 \f1\fs24 \cf0  (default)
-\f2\fs18 \cf2 \
+\f3\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 					if the target is \
@@ -187,7 +196,7 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 							add to the head of that synth's group\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 				\cf2 \\addToTail\cf0 \
+\f3\fs18 \cf0 				\cf2 \\addToTail\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 					if the target is \
@@ -197,7 +206,7 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 							add to the tail of that synth's group\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 				\cf2 \\addAfter\
+\f3\fs18 \cf0 				\cf2 \\addAfter\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 					add immediately after the target, \
@@ -205,14 +214,14 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 					on the same server \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 				\cf2 \\addBefore\
+\f3\fs18 \cf0 				\cf2 \\addBefore\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 					add immediately before the target, \
 					in the same group,\
 					on the same server\
 				
-\f2\fs18 \cf2 \\addReplace\
+\f3\fs18 \cf2 \\addReplace\
 
 \f1\fs24 \cf0 					replace the target,\
 					in the same group,\
@@ -239,7 +248,7 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 \f1\b0 				creates a Synth with the run flag set to false.\
 				use synth.run to start it.\
 	
-\f2\fs18 \
+\f3\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -257,7 +266,7 @@ trace
 \f1\b0  : /s_trace	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 \
+\f3\fs18 \cf0 \
 \
 \
 (\
@@ -319,7 +328,7 @@ y.run(\cf3 true\cf0 );\
 \f0\b\fs28 \cf0 \ul Moving the order of execution\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \cf0 \ulnone \
+\f3\b0\fs18 \cf0 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 	See [Node]\
@@ -328,7 +337,7 @@ y.run(\cf3 true\cf0 );\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \cf0 s.boot;\
+\f3\b0\fs18 \cf0 s.boot;\
 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
