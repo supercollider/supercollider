@@ -125,6 +125,7 @@ Pdef : Pdefn {
 }
 
 
+
 Tdef : Pdef {
 	classvar <>all, <>defaultQuant=1.0;
 	
@@ -135,7 +136,11 @@ Tdef : Pdef {
 	
 	*new { arg key, func;
 		var pattern;
-		if(func.notNil) { pattern = Prout(func) };
+		if(func.notNil) { 
+			pattern = Prout({ arg x; 
+				protect { func.value(x) } { this.at(key).player.removedFromScheduler } 
+			}) 
+		};
 		^super.new(key, pattern)
 	}
 
