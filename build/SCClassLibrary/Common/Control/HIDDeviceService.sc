@@ -9,7 +9,7 @@ HIDDevice {
 	}
 
 	value{arg elementNum=0;
-		^HIDDeviceService.getValue(locID,elements.at(elementNum).cookie)
+		^HIDDeviceService.value(locID,elements.at(elementNum).cookie)
 	}
 	
 	queueDevice{
