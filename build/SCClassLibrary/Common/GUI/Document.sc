@@ -254,7 +254,6 @@ Document {
 	
 	setTextColor { arg color,  rangeStart = -1, rangeSize = 0;
 		_TextWindow_SetTextColor
-		^this.primitiveFailed
 	}
 	
 	text {
