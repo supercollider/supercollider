@@ -223,20 +223,22 @@ Document {
 	}
 	
 	makeWikiPage { arg filename, wikiWord;
-		var file, doc;
+		var file, doc, string;
 		
 		file = File(filename, "w");
 		if (file.isOpen) {
-			file.write(
-				"{\\rtf1\\mac\\ansicpg10000\\cocoartf102\\n{\\fonttbl}\n"
+			string = "{\\rtf1\\mac\\ansicpg10000\\cocoartf102\\n{\\fonttbl}\n"
 				"{\\colortbl;\\red255\\green255\\blue255;}\n"
-				"Write about " ++ wikiWord ++ " here.\n}"
-			);
+				"Write about " ++ wikiWord ++ " here.\n}";
+			file.write(string);
 			file.close;
 			
 			doc = this.class.open(filename);
 			doc.path = filename;
 			doc.selectRange(0,0x7FFFFFFF);
+			doc.onClose = {
+				if(doc.string == ("Write about " ++ wikiWord ++ " here.")) {Ê\ok.postln; unixCmd("rm" + filename) };
+			};
 		};
 	}
 	openWikiPage {
