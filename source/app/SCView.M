@@ -2963,7 +2963,7 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 	if (symbol == s_y) {
         slotDoubleVal(slot, &mCurrentY);
-        mCurrentY = sc_clip(mCurrentIndex, 0.0, 1.0);
+        mCurrentY = sc_clip(mCurrentY, 0.0, 1.0);
         mYValues[mCurrentIndex] = mCurrentY;
         refresh();
         return errNone;
