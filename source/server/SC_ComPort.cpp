@@ -231,7 +231,7 @@ void set_real_time_priority(pthread_t thread)
 
 	pthread_getschedparam (thread, &policy, &param);
 #ifdef SC_LINUX
-	policy = SCHED_RR;
+	policy = SCHED_FIFO;
 	const char* env = getenv("SC_SCHED_PRIO");
 	// jack uses a priority of 10 in realtime mode, so this is a good default
 	const int defprio = 5;

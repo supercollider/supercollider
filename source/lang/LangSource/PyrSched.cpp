@@ -532,7 +532,7 @@ static void SC_LinuxSetRealtimePriority(pthread_t thread, int priority)
 
 	pthread_getschedparam(thread, &policy, &param);
 
-	policy = SCHED_RR;
+	policy = SCHED_FIFO;
 	const int minprio = sched_get_priority_min(policy);
 	const int maxprio = sched_get_priority_max(policy);
 	param.sched_priority = sc_clip(priority, minprio, maxprio);
