@@ -147,7 +147,7 @@ Pdefn : PatternProxy {
 	*put { arg key, pattern;
 		all.put(key, pattern);
 	}
-	map {Êarg ... args;
+	map { arg ... args;
 		if(envir.isNil) { this.envir = () };
 		args.pairsDo { |key, name| envir.put(key, Pdefn(name)) }
 	}
@@ -351,7 +351,7 @@ Pdef : EventPatternProxy {
 	*put { arg key, pattern;
 		all.put(key, pattern);
 	}
-	map {Êarg ... args;
+	map { arg ... args;
 		if(envir.isNil) { this.envir = () };
 		args.pairsDo { |key, name| envir.put(key, Pdefn(name)) }
 	}
