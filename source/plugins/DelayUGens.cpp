@@ -599,7 +599,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 #define LOOP_BODY_4 \
 		phase = sc_loop((Unit*)unit, phase, bufFrames, loop); \
 		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase * bufChannels; \
+		float* table1 = bufData + iphase; \
 		float* table0 = table1 - bufChannels; \
 		float* table2 = table1 + bufChannels; \
 		float* table3 = table2 + bufChannels; \
@@ -627,7 +627,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 #define LOOP_BODY_2 \
 		phase = sc_loop((Unit*)unit, phase, bufFrames, loop); \
 		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase * bufChannels; \
+		float* table1 = bufData + iphase; \
 		float* table2 = table1 + bufChannels; \
 		if (iphase > guardFrame) { \
 			table2 -= bufSamples; \
@@ -644,7 +644,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 #define LOOP_BODY_1 \
 		phase = sc_loop((Unit*)unit, phase, bufFrames, loop); \
 		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase * bufChannels; \
+		float* table1 = bufData + iphase; \
 		int32 index = 0; \
 		for (int i=0; i<bufChannels; ++i) { \
 			*++(out[i]) = table1[index++]; \
@@ -732,7 +732,7 @@ void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples)
 	float rate     = ZIN0(1);
 	float trig     = ZIN0(2);
 	int32 loop     = (int32)ZIN0(4);
-	
+
 	GET_BUF
 	CHECK_BUF
 	SETUP_OUT	
