@@ -9,11 +9,12 @@
 \fs24 pattern definition that references a numerical (non-event) pattern
 \f1\b0\fs18 \
 \
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 superclass: PatternProxy
 \f1\fs18 \
+\
+\
 \
 \
 
@@ -21,27 +22,38 @@
 \
 keeps a reference to a task that can be replaced while playing.\
 \
-Tdef(key) returns the instance, Tdef(key, pat) defines the pattern \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Pdefn(key)
+\f2\b0  returns the instance, 
+\f0\b Pdefn(key, pat) 
+\f2\b0 defines the pattern \
 and returns the instance, like Pdef, Tdef and Ndef.\
+it is very similar to 
+\f0\b PatternProxy
+\f2\b0 \
 \
 it can be used to store numerical Patterns globally.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 	*new(key, function)
+\f0\b\fs24 \cf0 	*new(key, pattern)
 \f2\b0 \
 			store the pattern in a global dictionary under key.\
+			the pattern can be anything that embeds in a stream by returning numbers\
+			\
 	
 \f0\b *new(key)
 \f2\b0 \
-			acess the pattern at that key (if none is there, a 
-\f0\b default
-\f2\b0  pattern is created, 
-\f0\b returning the value 1
-\f2\b0 )\
-			\
+			acess the pattern at that key (if none is there, a default pattern is created)\
+		\
+	
+\f0\b *default
+\f2\b0 \
+		a default source, if none is given. the default is 1.0 (it is not 0.0 in order to make it safe for durations)		\
 	
 \f0\b *removeAll
 \f2\b0 \
@@ -60,10 +72,9 @@ it can be used to store numerical Patterns globally.\
 \f0\b defaultQuant_(beats)
 \f2\b0 \
 			set the default quantisation for new instances (default: nil)\
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ul \ulc0 using as stream reference\
-	\
+\cf0 \
+	\ul \
 	
 \f0\b \ulnone source_	\
 			
@@ -72,12 +83,6 @@ it can be used to store numerical Patterns globally.\
 			(
 \f0\b pattern_
 \f2\b0 (..) is equivalent)\
-			\ul \
-	
-\f0\b \ulnone asStream
-\f2\b0 \
-			returns an instance of RefStream, which updates its stream as soon as the pattern\
-			is changed.\
 	\
 	
 \f0\b embedInStream(inval)\

@@ -15,11 +15,15 @@
 \f2\fs24 \cf0 superclass: TaskProxy\
 \
 \
+\
+\
 keeps a reference to a task that can be replaced while playing.\
 It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.\
 \
 Tdef(key) returns the instance, Tdef(key, pat) defines the pattern and returns the instance, like Pdef and Ndef.\
-\
+it is very similar to 
+\f0\b TaskProxy
+\f2\b0 \
 \
 \
 	\
@@ -33,7 +37,12 @@ Tdef(key) returns the instance, Tdef(key, pat) defines the pattern and returns t
 \f0\b *new(key)
 \f2\b0 \
 			acess the task at that key (if none is there, a default task is created)\
-	\
+			\
+	
+\f0\b *default
+\f2\b0 \
+			a default source, if none is given. the default is a loop that does nothing with a 1.0 beat wait time\
+		\
 	
 \f0\b *removeAll
 \f2\b0 \
@@ -53,24 +62,25 @@ Tdef(key) returns the instance, Tdef(key, pat) defines the pattern and returns t
 \f2\b0 \
 			set the default quantisation for new instances (default: 1.0)\
 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ul \ulc0 using as stream reference\
-	\
-	\
-	
-\f0\b \ulnone asStream
+
+\f0\b \cf0 a) using it as stream reference
 \f2\b0 \
-			returns an instance of RefStream, which updates its stream as soon as the pattern\
-			is changed.\
+	\
 	\
 	
 \f0\b embedInStream(inval)\
 			
 \f2\b0 just like any stream, embeds itself in stream.\
-			see example for use.\
+			see example for usage.\
 	\
-\ul using as Task\
-\ulnone \
+	\
+	\
+
+\f0\b b) using it as Task
+\f2\b0 \
+\
 	
 \f0\b play(clock, doReset, quant)
 \f2\b0 \
@@ -108,12 +118,10 @@ Tdef(key) returns the instance, Tdef(key, pat) defines the pattern and returns t
 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 \ul a) using as a task player
-\f1\b0\fs18 \ul \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ulnone \
+\f0\b\fs24 a) using as a task player
+\f1\b0\fs18 \
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Tdef\cf0 (\cf3 \\x\cf0 ).play; \cf4 // create an empty Tdef and play it.\cf0 \
@@ -141,13 +149,11 @@ Tdef(key) returns the instance, Tdef(key, pat) defines the pattern and returns t
 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // sound example\cf0 \
 \
 (\
 \cf4 // load a synthdef\cf0 \
 s.boot;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf5 "pdef_grainlet"\cf0 , \
 	\{ \cf2 arg\cf0  out=0, freq=440, dur=0.05;\
 		\cf2 var\cf0  env;\
@@ -188,15 +194,11 @@ s.boot;\
 \})\
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // metronome\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Tdef\cf0 (\cf3 \\y\cf0 , \{ loop(\{ s.sendMsg(\cf5 "/s_new"\cf0 , \cf5 "pdef_grainlet"\cf0 , -1,0,0, \cf3 \\freq\cf0 , 1500); 1.wait; \}) \}).play;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // play ending stream once\cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Tdef\cf0 (\cf3 \\x\cf0 , \{ \
 	\cf2 var\cf0  x, dt;\
 	dt = [0.1, 0.125, 0.05].choose;\
@@ -217,8 +219,8 @@ s.boot;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 \ul b) embedding Tdef into other Tasks / Routines
-\f1\b0\fs18 \ulnone \
+\f0\b\fs24 \cf0 b) embedding Tdef into other Tasks / Routines
+\f1\b0\fs18 \
 \
 \
 (\
@@ -242,10 +244,8 @@ r.play; \cf4 // play a stream\cf0 \
 r.reset;\
 r.play;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // of course Tdefs can be used in other Tdefs:\cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Tdef\cf0 (\cf3 \\b\cf0 , \{\
 	\cf5 "counting..."\cf0 .postln;\
 	2.wait;\
@@ -257,11 +257,9 @@ r.play;\
 )\
 \cf2 Tdef\cf0 (\cf3 \\b\cf0 ).asStream.play;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // if one wants to branch off a stream in a separate thread, asStream is used.\
 // also the method playOnce can be used\cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Routine\cf0 (\{\
 	\cf2 Tdef\cf0 (\cf3 \\c\cf0 ).asStream.play;\
 	0.1.wait;\
