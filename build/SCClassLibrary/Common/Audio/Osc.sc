@@ -70,6 +70,14 @@ LFSaw : UGen {
 	}
 }
 
+LFPar : LFSaw
+{
+}
+
+LFCub : LFSaw
+{
+}
+
 LFTri : LFSaw
 {
 }
