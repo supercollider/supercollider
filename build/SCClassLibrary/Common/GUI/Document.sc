@@ -179,6 +179,23 @@ Document {
 		});
 		^this.rangeText(rangestart, rangesize);
 	}
+	
+	string_ {arg string, rangestart = -1, rangesize = 1;
+		this.insertTextRange(string, rangestart, rangesize);
+	}
+	selectedString {
+		^this.selectedText
+	}
+	
+	
+	font_ {arg font, rangestart = -1, rangesize;
+		this.setFont(font, rangestart, rangesize)
+	}
+		 
+	selectedString_ {arg txt;
+		this.prinsertText(txt)
+	}
+	
 	currentLine {
 		var start, end, str, max;
 		str = this.string;
@@ -191,20 +208,6 @@ Document {
 			str[end] !== Char.nl and: { end < max }
 		} { end = end + 1 };
 		^str.copyRange(start + 1, end);
-	}
-	string_ {arg string, rangestart = -1, rangesize = 1;
-		this.insertTextRange(string, rangestart, rangesize);
-	}
-	selectedString {
-		^this.selectedText
-	}
-	
-	font_ {arg font, rangestart = -1, rangesize;
-		this.setFont(font, rangestart, rangesize)
-	}
-		 
-	selectedString_ {arg txt;
-		this.prinsertText(txt)
 	}
 	
 //actions:	
