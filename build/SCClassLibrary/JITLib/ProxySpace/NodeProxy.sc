@@ -630,10 +630,10 @@ NodeProxy : BusPlug {
 	/////// send and spawn //////////
 	
 	
-	getBundle { arg prepTime=0.0;//default: def is on server, time required is 0
+	getBundle {
 		var bundle;
 		nodeMap.updateBundle;
-		bundle = 	MixedBundle.new.preparationTime_(prepTime); 
+		bundle = 	MixedBundle.new; 
 		this.prepareToBundle(nil, bundle);
 		^bundle
 	}
@@ -685,14 +685,14 @@ NodeProxy : BusPlug {
 	/////// append to bundle commands
 	
 	
-	defaultGroupID { ^nil } //shared proxy support
+	defaultGroupID { ^server.nextNodeID } //shared proxy support
 	
 	prepareToBundle { arg argGroup, bundle;
 		if(this.isPlaying.not) {
 				group = Group.basicNew(server, this.defaultGroupID);
 				NodeWatcher.register(group);
 				group.isPlaying = server.serverRunning;
-				bundle.add(group.newMsg(argGroup ? server, \addToHead));
+				bundle.add(group.newMsg(argGroup ? server.asGroup, \addToHead));
 				if(task.notNil, { this.playTaskToBundle(bundle) });
 		}
 	}
@@ -762,12 +762,7 @@ NodeProxy : BusPlug {
 		if(checkedAlready.includes(this).not, {
 			checkedAlready.add(this);
 			this.wakeUpParentsToBundle(bundle, checkedAlready);
-			if(loaded.not, { 
-				this.loadToBundle(bundle);
-				bundle.preparationTime = 0.2;
-			}, { 
-				bundle.preparationTime = 0;
-			});
+			if(loaded.not) { this.loadToBundle(bundle) };
 			if(this.isPlaying.not, { 
 				this.prepareToBundle(nil, bundle);
 				if(awake, { this.sendAllToBundle(bundle) });
