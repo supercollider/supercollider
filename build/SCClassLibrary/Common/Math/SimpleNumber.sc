@@ -276,11 +276,16 @@ SimpleNumber : Number {
 		if (this < 0) {
 			#n, d = this.neg.asFraction(maxDenominator); 
 			^[n.neg, d]
-		};  
-		lower = [0,1]; 
-		upper = [1,0];
+		};
+		if (this < 1.0) {
+			lower = [0,1]; 
+			upper = [1,1];
+		}{
+			lower = [this.floor, 1]; 
+			upper = [lower[0]+1, 1];
+		};
 		loop {
-			mediant = [lower[0] + upper[0], lower[1] + upper[1]];
+			mediant = [lower[0] + upper[0], lower[1] + upper[1]].postln;
 			
 			case 
 			{ (this * mediant[1]) > mediant[0] } 
