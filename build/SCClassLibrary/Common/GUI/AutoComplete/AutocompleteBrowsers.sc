@@ -55,7 +55,9 @@ AutoCompMethodBrowser {
 		skipThis = dropMeta = false;
 		selector = argDoc.string(argStart, argSize);
 		(selector.size == 0).if({
-			selector = "value";
+			(argDoc.string(argStart-1, 1) == ".").if({
+				selector = "value";
+			}, { ^nil })	// if no string and prev char was not a ., then abort
 		});
 			// if it's part of a class name, 
 		(selector[0] >= $A and: selector[0] <= $Z).if({
