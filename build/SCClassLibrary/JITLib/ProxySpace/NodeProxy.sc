@@ -144,6 +144,8 @@ BusPlug : AbstractFunction {
 		^InBus.kr(bus, numChannels ? bus.numChannels, offset)
 	}
 	
+	
+	
 	//////////// embedding bus in event streams, myself if within a normal stream
 	
 	embedInStream { arg inval;
@@ -163,13 +165,14 @@ BusPlug : AbstractFunction {
 	}
 	
 	
-	///// lazy  math support  /////////
+	/////  math support  /////////
 	
 	value { arg something; 
 		var n;
 		n = something.numChannels;
 		^if(something.rate == 'audio') { this.ar(n) } { this.kr(n) }  
 	}
+	
 	composeUnaryOp { arg aSelector;
 		^UnaryOpPlug.new(aSelector, this)
 	}
@@ -184,28 +187,30 @@ BusPlug : AbstractFunction {
 		//^NAryOpPlug.new(aSelector, [this]++anArgList) // nary op ugens are not yet implemented
 	}
 	
-	// error catch
+	// user error catch
 	
 	writeInputSpec { Error("use .ar or .kr to use within a synth.").throw }
 	isValidUGenInput { Error("use ar. or kr. within Synth definitions").throw }
+	checkInputs { ^nil }
+	
 	
 	///// monitoring //////////////
 	
 	
 	play { arg out=0, numChannels, group, multi=false, vol;  
-		var ok, localServer, bundle;
+		var ok, homeServer, bundle;
 		
-		localServer = this.localServer; // multi client support
-		if(localServer.serverRunning.not, { "server not running".inform; ^nil });
+		homeServer = this.homeServer; // multi client support: monitor only locally
+		if(homeServer.serverRunning.not, { "server not running".inform; ^nil });
 		bundle = MixedBundle.new;
 		this.initBus(\audio, numChannels);
 		if(this.rate !== 'audio') { Error("can't monitor a control rate proxy").throw };
 		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
 		if(monitor.isNil) { monitor = Monitor.new };
-		group = (group ? localServer).asGroup;
+		group = (group ? homeServer).asGroup;
 		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, 
 				group, multi, vol);
-		bundle.schedSend(localServer, this.clock)
+		bundle.schedSend(homeServer, this.clock)
 		^monitor.group
 	}
 	
@@ -237,7 +242,7 @@ BusPlug : AbstractFunction {
 	// shared node proxy support
 	
 	shared { ^false } 
-	localServer { ^server }
+	homeServer { ^server }
 	
 	printOn { arg stream;
 		stream 	<< this.class.name << "." << bus.rate << "(" 
@@ -345,7 +350,7 @@ NodeProxy : BusPlug {
 					index.do { |index, i| this.put(index, obj.wrapAt(i),channelOffset.wrapAt(i))} 
 					^this	
 				};
-		
+			
 			container = obj.makeProxyControl(channelOffset, this);
 			container.build(this, orderIndex); // bus allocation happens here
 			
@@ -356,7 +361,7 @@ NodeProxy : BusPlug {
 					{ this.removeToBundle(bundle, index) };
 				objects = objects.put(orderIndex, container);
 			} { 
-				"failed to add object to node proxy.".inform;
+				Error("failed to add object to node proxy.").throw;
 				^this 
 			};
 			
@@ -568,6 +573,7 @@ NodeProxy : BusPlug {
 	
 	send { arg extraArgs, index, freeLast=true;
 			var bundle, obj;
+			if(objects.isEmpty) { ^this };
 			if(index.isNil) { 
 				bundle = this.getBundle;
 				if(freeLast) { this.stopAllToBundle(bundle) };
@@ -586,7 +592,7 @@ NodeProxy : BusPlug {
 			}
 	}
 	
-	sendAll { arg extraArgs, freeLast=true; // better use send.
+	sendAll { arg extraArgs, freeLast=true;
 		this.send(extraArgs, nil, freeLast);
 	}
 	
@@ -686,7 +692,7 @@ NodeProxy : BusPlug {
 	}
 	
 	reallocBus {
-		if(bus.notNil) { bus.realloc };
+		if(bus.notNil) { bus.realloc }; // might cause troubles. revisit!
 	}
 	
 	loadToBundle { arg bundle;
@@ -979,33 +985,28 @@ Ndef : NodeProxy {
 
 
 
-// the server needs to be a BroadcastServer.
-// this class takes care for a constant groupID.
-
-
-SharedNodeProxy : NodeProxy { // should pass in a bus index/numChannels.
+SharedNodeProxy : NodeProxy { // todo: should pass in a bus index/numChannels.
 	var <constantGroupID;
 	
-	*new { arg server, groupID;
-		^super.newCopyArgs(server).initGroupID(groupID).init	}
+	*new { arg broadcastServer, groupID; // keep fixed group id (< 999)
+		^super.newCopyArgs(broadcastServer).initGroupID(groupID).init	}
 	
 	shared { ^true }
 	
 	initGroupID { arg groupID;  
-		constantGroupID = groupID ?? { server.nextSharedNodeID };
+		constantGroupID = groupID;
 		awake = true;
 	}
 	
 	reallocBus {} // for now: just don't. server shouldn't be rebooted.
 		
-	localServer { ^server.localServer }
+	homeServer { ^server.homeServer }
 	
 	generateUniqueName {
 		^asString(constantGroupID)
 	}
 	
 	shouldAddObject { arg obj, index;
-	
 			^if(index.notNil and: { index > 0 }) {
 				"only one object per proxy in shared node proxy possible".inform;
 				^false
@@ -1035,7 +1036,7 @@ SharedNodeProxy : NodeProxy { // should pass in a bus index/numChannels.
 	// use shared node proxy only with functions that can release the synth.
 	// this is checked and throws an error in addObj
 	stopAllToBundle { arg bundle;
-			bundle.add([15, constantGroupID, "gate", 0])
+			bundle.add([ 15, constantGroupID, "gate", 0, "fadeTime", this.fadeTime ])
 	}
 	
 	removeToBundle { arg bundle, index;
@@ -1051,6 +1052,9 @@ SharedNodeProxy : NodeProxy { // should pass in a bus index/numChannels.
 		objects.makeEmpty;
 	}
 	
+	clear { this.free; }
+	
+	reallyClear { super.clear; }
 	
 	group_ {}
 	bus_ {}
@@ -1062,19 +1066,14 @@ SharedNodeProxy : NodeProxy { // should pass in a bus index/numChannels.
 	prepareToBundle { arg argGroup, bundle; // ignore ingroup
 		if(this.isPlaying.not) {
 				group = Group.basicNew(
-					this.localServer,   // NodeWatcher should know when local group stopped
+					this.homeServer,   // NodeWatcher should know when local group stopped
 					this.constantGroupID // but not care about any remote groups
 				);
 				group.isPlaying = true;
 				NodeWatcher.register(group);
 		};
-		bundle.add([21, constantGroupID]); // duplicate sending is no problem
+		bundle.add([21, constantGroupID, 0, 1]); // duplicate sending is no problem
 	}
-	
-
-	
-	
-
 
 }
 
