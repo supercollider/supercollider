@@ -62,7 +62,7 @@ Rotate2 : MultiOutUGen {
 
 
 PanB : MultiOutUGen {
-	var channels;
+	//var channels;
 	
 	*ar { arg in, azimuth, elevation, gain;
 		^this.multiNew('audio', in, azimuth, elevation, gain )
@@ -76,7 +76,7 @@ PanB : MultiOutUGen {
 }
 
 PanB2 : MultiOutUGen {
-	var channels;
+	//var channels;
 	
 	*ar { arg in, azimuth, gain=1;
 		^this.multiNew('audio', in, azimuth, gain )
@@ -90,7 +90,7 @@ PanB2 : MultiOutUGen {
 }
 
 BiPanB2 : MultiOutUGen {
-	var channels;
+	//var channels;
 	
 	*ar { arg inA, inB, azimuth, gain=1;
 		^this.multiNew('audio', inA, inB, azimuth, gain )
@@ -104,7 +104,7 @@ BiPanB2 : MultiOutUGen {
 }
 
 DecodeB2 : MultiOutUGen {
-	var channels;
+	//var channels;
 	
 	*ar { arg numChans, w, x, y, orientation = 0.5;
 		^this.multiNew('audio', numChans, w, x, y, orientation = 0.5 )
