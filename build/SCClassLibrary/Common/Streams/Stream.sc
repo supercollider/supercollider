@@ -220,6 +220,25 @@ FuncStream : Stream {
 }
 
 
+CleanupStream : Stream {
+	var <stream, <>cleanup;
+	
+	*new { arg stream, cleanup;
+		^super.newCopyArgs(stream, cleanup)
+	}
+	next { arg val;
+		val = stream.next(val);
+		if (val.isNil) {
+			cleanup.value(this);
+			cleanup = nil;
+		}
+		^val
+	}
+	reset {
+		stream.reset
+	}
+}
+
 // PauseStream is a stream wrapper that can be started and stopped.
 
 PauseStream : Stream
