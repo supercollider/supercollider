@@ -1,3 +1,6 @@
+SC3lang.build
+SC3plugins.build
+SC3synth.build
 *.scx
 sclang
 scsynth
