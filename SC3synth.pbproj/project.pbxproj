@@ -41,7 +41,7 @@
 			settings = {
 			};
 		};
-		92828C5503B906A90001D27C = {
+		928FEE1503CBC6AE00CA27E6 = {
 			fileRef = F50D06C002E7F29001CA2799;
 			isa = PBXBuildFile;
 			settings = {
@@ -881,6 +881,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = STATIC;
 				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = libscsynth.a;
@@ -1426,6 +1427,7 @@
 				F5CDE9140319620001CA2799,
 				F58C3E0D034AAEAF01CA2799,
 				F53F797003B2842E011C068F,
+				928FEE1503CBC6AE00CA27E6,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1563,7 +1565,6 @@
 				F5CDE912031959DB01CA2799,
 				F5CDE9170319677401CA2799,
 				F53F797103B28442011C068F,
-				92828C5503B906A90001D27C,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
