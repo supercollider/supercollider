@@ -7,7 +7,7 @@ Function : AbstractFunction {
 	
 	isClosed { ^def.sourceCode.notNil }
 
-	storeOn { arg stream; stream << def.sourceCode }
+	storeOn { arg stream; stream << (def.sourceCode ? "{ \"open Function\" }"); }
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
 	checkCanArchive { if (def.sourceCode.isNil) { "cannot archive open Functions".warn } }

@@ -78,6 +78,10 @@ NetAddr {
 		super.printOn(stream);
 		stream << $( << this.ip << ", " << port << $)
 	}
+	storeOn { | stream |
+		super.storeOn(stream);
+		stream << $( << this.ip << ", " << port << $)
+	}
 
 	// PRIVATE
 	prConnect {

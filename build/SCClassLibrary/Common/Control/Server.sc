@@ -632,5 +632,10 @@ Server : Model {
 			probe.value(0);
 
 		
-	}	
+	}
+	storeOn { arg stream;
+		stream << "(Server.named[" << name.asCompileString << "] ?? { Server(" <<<* [name, addr] << ") })" ;
+	}
+	archiveAsCompileString { ^true }
+	archiveAsObject { ^true }
 }
