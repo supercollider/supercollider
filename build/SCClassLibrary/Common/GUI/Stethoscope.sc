@@ -1,7 +1,7 @@
 Stethoscope {
 	var <server, <numChannels, <rate, <index;
 	var <bufsize, buffer, <window, synth;
-	var b, n, c, d, sl, zx, zy, spec, <size=200;
+	var b, n, c, d, sl, zx, zy, ai=0, ki=0, audiospec, controlspec, <size=200;
 	
 
 	*new { arg server, numChannels = 2, index, bufsize = 4096, zoom, rate;
@@ -24,14 +24,17 @@ Stethoscope {
 				if(char === $o) { this.toOutputBus }; 
 				if(char === $ ) { this.run };
 				if(char === $s) { n.style = style = (style + 1) % 2 };
-				if(char === $S) { n.style = style = (style + 1) % 2 + 1  };
+				if(char === $S) { n.style = 2 };
 				if(char === $j or: { char.ascii === 0 }) { this.index = index - 1 };
 				if(char === $k) { this.switchRate };
 				if(char === $l or: { char.ascii === 1 }) { this.index = index + 1 };
 				if(char === $-) {  zx = zx + 0.25; n.xZoom = 2 ** zx };
 				if(char === $+) {  zx = zx - 0.25; n.xZoom = 2 ** zx };				if(char === $*) {  zy = zy + 0.25; n.yZoom = 2 ** zy };
 				if(char === $_) {  zy = zy - 0.25; n.yZoom = 2 ** zy };
+				if(char === $A) {  this.adjustBufferSize };
+				if(char === $m) {  this.size = if(size > 222) { 222 } { 500 } };
 			};
+			
 		});
 		
 		n = SCScope(w, Rect(0,0, size, size));
@@ -39,16 +42,20 @@ Stethoscope {
 		zx = n.xZoom.log2;
 		zy = n.yZoom.log2;
 		
-		spec = ControlSpec.specs.at(\audiobus);
+		audiospec = ControlSpec.specs.at(\audiobus);
+				//ControlSpec(0, server.options.numAudioBusChannels, step:1);
+		controlspec = ControlSpec.specs.at(\controlbus);
+				//ControlSpec(0, server.options.numControlBusChannels, step:1);
+						
 		
 		sl = SCSlider(w, Rect(10, 10, w.view.bounds.width - 100, 20));
 		sl.action = { arg x;
 				var i; 
-				i = spec.map(x.value);
+				i = this.spec.map(x.value);
 				this.index = i;
 			};
 		sl.resize = 8;
-		c = SCNumberBox(w, Rect(10,10, 25,20)).value_(0);
+		c = SCNumberBox(w, Rect(10,10, 30,20)).value_(0);
 		c.action = { this.index = c.value;  };
 		c.resize = 9;
 		d = SCNumberBox(w, Rect(10,10, 25,20)).value_(numChannels);
@@ -64,6 +71,8 @@ Stethoscope {
 		b.valueAction = 0;
 		this.updateColors;
 	}
+	
+	spec { ^if(rate === \audio) { audiospec } {Êcontrolspec } }
 	
 	allocBuffer { arg argbufsize;
 		bufsize = argbufsize ? bufsize;
@@ -112,10 +121,12 @@ Stethoscope {
 	}
 	
 	index_ { arg val=0;
+		var spec;
+		spec = this.spec;
 		index = spec.constrain(val);
 		if(synth.isPlaying) { synth.set(\in, index) };
 		c.value = index;
-		sl.value = spec.unmap(index);
+		sl.value = spec.unmap(index)
 	}
 	
 	rate_ { arg argRate=\audio;
@@ -126,12 +137,16 @@ Stethoscope {
 				if(synth.isPlaying) { synth.set(\switch, 0) };
 				rate = \audio;
 				this.updateColors;
+				ki = index;
+				this.index = ai;
 		}
 		{
 				b.value = 1;
 				if(synth.isPlaying) { synth.set(\switch, 1) };
 				rate = \control;
 				this.updateColors;
+				ai = index;
+				this.index = ki;
 		}
 	}
 	size_ { arg val;
@@ -162,5 +177,9 @@ Stethoscope {
 		this.index = 0;
 		this.numChannels = server.options.numOutputBusChannels;
 	}
+	adjustBufferSize {
+		this.allocBuffer(max(128,nextPowerOfTwo(asInteger(n.bounds.width * n.xZoom))))
+	}
+	
 
 }
