@@ -265,7 +265,7 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 {	
 	FILE *file = fopen(filename, "r");
 	if (!file) {
-		scprintf("*** ERROR: fopen '%s' err '%s'\n", filename, dlerror());
+		scprintf("*** ERROR: can't fopen '%s'\n", filename);
 		return 0;
 	}
 
