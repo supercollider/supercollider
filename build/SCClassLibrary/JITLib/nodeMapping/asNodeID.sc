@@ -7,9 +7,9 @@
 }
 
 +Integer {
-	asNodeID { ^this }
+	asNodeID {}
 }
 
 +Nil {
-	asNodeID { ^nil }
+	asNodeID {}
 }
