@@ -2636,8 +2636,8 @@ void SCMultiSliderView::draw(SCRect inDamage)
 	int xpixels = mTabSize;
     int xstart = mStartIndex;
 	if(mElasticMode) {
-		if(mIsHorizontal) mElasticIndexStep = (1.0/(mTabSize-mStartIndex-1)) * (mBounds.width - mThumbSize - 2);
-		else mElasticIndexStep = (1.0/(mTabSize-mStartIndex-1)) * (mBounds.height - mThumbSize - 2);
+		if(mIsHorizontal) mElasticIndexStep =  (mBounds.width - 2)/(mTabSize-mStartIndex);
+		else mElasticIndexStep = (mBounds.height - 2)/(mTabSize-mStartIndex);
 	} else mElasticIndexStep = 0.0;
 	double step = mElasticIndexStep;
 	
@@ -2668,14 +2668,18 @@ void SCMultiSliderView::draw(SCRect inDamage)
     //draw lines
     if (mDrawLinesActive) {
         float xadd, gcx, gcy;
-        if(mThumbSize > 1) xadd =  mThumbSize * 0.5;
-            else xadd = 0;
+		if(mElasticMode){
+			xadd = (step > mThumbSize) ? (mThumbSize * 0.5) : (step>1.0) ? (step* 0.5) : 1;
+		}else{
+			if(mThumbSize > 1) xadd =  mThumbSize * 0.5;
+			else xadd = 0;
+		}
 		int j = 0;
 		for(int i = xstart; i < xpixels; i++, j++){
             yval = vals[i];
             drawRect = SCtoCGRect(calcThumbRect(j, yval, step));
             gcx =  drawRect.origin.x + xadd;
-            gcy =  drawRect.origin.y + xadd;
+            gcy =  drawRect.origin.y;
 			if( i == xstart)
                 CGContextMoveToPoint(cgc,  gcx, gcy);
 			else
