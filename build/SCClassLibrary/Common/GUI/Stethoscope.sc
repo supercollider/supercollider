@@ -1,6 +1,6 @@
 Stethoscope {
 	var <server, <numChannels, <rate,  <index;
-	var <bufsize, buffer, <window, synth, size;
+	var <bufsize, buffer, <window, synth;
 	var n, c, d, sl, zx, zy, ai=0, ki=0, audiospec, controlspec;
 	
 
@@ -8,23 +8,20 @@ Stethoscope {
 		if(server.inProcess.not, { "scope works only with internal server".error; ^nil });		^super.newCopyArgs(server, numChannels, rate ? \audio).makeWindow(view)
 		.index_(index ? 0).zoom_(zoom).allocBuffer(bufsize).run;
 	}
-	
-	windowBounds { ^Rect(10 + 20  + 256, 0 + 10, size + 10 , size + 40) }
+	makeBounds { arg size=212; ^Rect(322, 10, size, size) }
 	
 	makeWindow { arg view;
-		var style=0, external, w;
-		external = view.isNil;
-		if(external) 
+		var style=0, sizeToggle=0;
+		if(view.isNil) 
 		{
-			size = 200;
-			window = w = SCWindow("stethoscope", this.windowBounds);
-			w.view.decorator = FlowLayout(w.view.bounds);
-			w.front;
-			w.onClose = { this.free };
-			view = w.view;
+			window = SCWindow("stethoscope", this.makeBounds);
+			view = window.view;
+			view.decorator = FlowLayout(window.view.bounds);
+			window.front;
+			window.onClose = { this.free };
 			
-		} { size = view.bounds.width - 10 };
-		n = SCScope(view, Rect(0,0, size, size));
+		};
+		n = SCScope(view, Rect(0,0, view.bounds.width - 10, view.bounds.height - 40));
 		n.background = Color.black;
 		n.resize = 5;
 		view.keyDownAction = 
@@ -41,7 +38,9 @@ Stethoscope {
 				if(char === $+) {  zx = zx - 0.25; n.xZoom = 2 ** zx };				if(char === $*) {  zy = zy + 0.25; n.yZoom = 2 ** zy };
 				if(char === $_) {  zy = zy - 0.25; n.yZoom = 2 ** zy };
 				if(char === $A) {  this.adjustBufferSize };
-				if(char === $m) {  this.size = if(size > 222) { 222 } { 500 } };
+				if(char === $m) { if(sizeToggle == 0) { sizeToggle = 1; this.size_(500) }
+												{ sizeToggle = 0; this.size_ }};
+				if(char === $.) {  if(synth.isPlaying) { synth.free } };
 			};
 			
 		zx = n.xZoom.log2;
@@ -50,22 +49,22 @@ Stethoscope {
 		audiospec = ControlSpec(0, server.options.numAudioBusChannels, step:1);
 		controlspec = ControlSpec(0, server.options.numControlBusChannels, step:1);
 						
-		sl = SCSlider(view, Rect(10, 10, size - 100, 20));
+		sl = SCSlider(view, Rect(10, 10, view.bounds.width - 100, 20));
 		sl.action = { arg x;
 				var i; 
 				i = this.spec.map(x.value);
 				this.index = i;
 			};
 		sl.resize = 8;
-		c = SCNumberBox(view, Rect(10,10, 30,20)).value_(0);
+		c = SCNumberBox(view, Rect(10, 10, 30, 20)).value_(0);
 		c.action = { this.index = c.value;  };
 		c.resize = 9;
 		c.font = Font("Monaco", 9);
-		d = SCNumberBox(view, Rect(10,10, 25,20)).value_(numChannels);
+		d = SCNumberBox(view, Rect(10, 10, 25, 20)).value_(numChannels);
 		d.action = { this.numChannels = d.value.asInteger  };
 		d.resize = 9;
 		d.font = Font("Monaco", 9);
-		SCStaticText(view, Rect(10,10, 20,20)).visible_(false);
+		SCStaticText(view, Rect(10, 10, 20, 20)).visible_(false);
 		this.updateColors;
 	}
 	
@@ -122,6 +121,7 @@ Stethoscope {
 			d.value = n;
 			this.allocBuffer;
 			if(isPlaying) {Êthis.run };
+			this.updateColors;
 		};
 	}
 	
@@ -153,9 +153,9 @@ Stethoscope {
 				this.index = ki;
 		}
 	}
-	size_ { arg val;
-		if(window.notNil) { size = val; window.bounds = this.windowBounds; }
-	}
+	
+	size_ { arg val=212; window.bounds = this.makeBounds(val) }
+	
 	zoom_ { arg val;
 		val = val ? 1;
 		zx = val.log2;
@@ -163,13 +163,8 @@ Stethoscope {
 	}
 	
 	updateColors {
-		var no, ni, c;
-		no = server.options.numOutputBusChannels;
-		ni = server.options.numInputBusChannels;
 		n.waveColors = if(\audio === rate) { 
-			c = Array.fill(numChannels, { rgb(255, 218, 000) }); 
-			//ni.do { arg i; c.tryPut(index+i+no, rgb(255, 000, 000)) };
-			//c
+			Array.fill(numChannels, { rgb(255, 218, 000) }); 
 		} { 
 			Array.fill(numChannels, { rgb(125, 255, 205) }); 
 		}
