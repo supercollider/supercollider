@@ -1,21 +1,26 @@
 //task definition
 
 Tdef {
-	var <>task, <key;
+	var <>task, <key, <isPlaying=false;
 	
 	*new { arg key, function, clock;
 		var t;
 		key = key.asSymbol;
 		
 		t = this.at(key);
-		
-		if(t.isNil, { 
-			t = this.make(function, clock);
-			this.put(key, t);
-		}, { 
-			if(function.notNil, {
+		if(function.notNil, {
+			if(t.isNil, { 
+				t = this.make(function, clock);
+				this.put(key, t);
+			}, { 
+				
 				t.init(function, clock ? t.clock);
 			})
+		 }, {
+		 	if(t.isNil, {
+				t = this.make(this.default, TempoClock.default);
+				this.put(key, t);
+			});
 		 });
 		 
 		^t
@@ -26,17 +31,17 @@ Tdef {
 	}
 
 	init { arg function, clock;
-		var playing;
-		playing = task.isPlaying;
-		task.stop;
+		var oldTask;
+		oldTask = task;
 		task = Task({ arg argList; 
+							oldTask.stop;
 							function.valueArray(argList);
 					}, clock);
-		if(playing, { 
-			{ task.start }.schedToBeat 
-		});
+					
+		if(isPlaying, { task.start });
 	}
 	
+	*default { ^{} }
 	clock { ^task.clock }
 	
 	stream_ { arg argStream; 
@@ -48,20 +53,21 @@ Tdef {
 		task.embed(inval)
 	}
 	
-	play { arg doReset = false;
+	play { arg inclock, doReset = false;
 		schedToCurrentBeat({
 					task.stop;
-					task.play(doReset)
+					isPlaying = true;
+					task.play(inclock, doReset)
 		})
 	}
 	
 	reset { ^task.reset }
-	stop { task.stop }
+	stop { task.stop; isPlaying = false; }
 
 	pause { task.pause }
 	resume { task.resume }
 	
-	start { task.start }
+	start { task.start; isPlaying = true; }
 	next { arg inval;
 		^task.next(inval)
 	}
@@ -81,6 +87,9 @@ Tdef {
 		item.prSetKey(key);
 		Library.put(this, key, item);
 	}
+	
+	//////private implementation
+	
 	
 	prSetKey { arg argKey;
 		key = argKey;
