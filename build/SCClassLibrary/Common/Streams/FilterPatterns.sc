@@ -146,7 +146,7 @@ Pmul : Pset {
 Psetp : Pset {
 	embedInStream { arg event;
 		var evtStream, val, inevent;
-		var valStream = value.asStream;
+		var valStream = value.iter;
 		
 		while {
 			val = valStream.next;
@@ -255,6 +255,29 @@ Pplayer : FilterPattern {
 	}
 }
 
+
+
+Pdrop : FilterPattern {
+	var <>count;
+	*new { arg count, pattern;
+		^super.new(pattern).count_(count)
+	}
+	storeArgs { ^[count,pattern] }
+	embedInStream { arg event;
+		var inevent;
+		var stream = pattern.asStream;
+		
+		count.value.do {
+			inevent = stream.next(event);
+			if (inevent.isNil, { ^event });
+		};
+		loop {
+			inevent = stream.next(event);
+			if (inevent.isNil, { ^event });
+			event = inevent.yield;
+		};
+	}
+}	
 
 
 Pfin : FilterPattern {
@@ -573,3 +596,53 @@ Ptrace : FilterPattern {
 	}
 
 }
+
+Pclump : FilterPattern {
+	var <>n;
+	*new { arg n, pattern;
+		^super.newCopyArgs(pattern, n) 
+	}
+	embedInStream { arg event;
+		var next, list, nval;
+		var stream = pattern.asStream;
+		var nstream = n.asStream;
+		loop {
+			list = [];
+			nval = nstream.next;
+			if (nval.isNil) { ^event };
+			nval.do {
+				next = stream.next(event);
+				if (next.isNil) {
+					if (list.size > 0) { event = list.yield };
+					^event 
+				};
+				list = list ++ next;
+			};
+			event = list.yield;
+		}
+	}
+}
+
+Pflatten : FilterPattern {
+	var <>n;
+	*new { arg n, pattern;
+		^super.newCopyArgs(pattern, n) 
+	}
+	embedInStream { arg event;
+		var next;
+		var stream = pattern.asStream;
+		while {
+			next = stream.next(event);
+			next.notNil;
+		}{
+			if (next.isKindOf(Collection)) {
+				next = next.flatten(n);
+				next.do {|item| event = item.yield };
+			}{
+				event = next.yield;
+			}
+		}
+		^event
+	}
+}
+

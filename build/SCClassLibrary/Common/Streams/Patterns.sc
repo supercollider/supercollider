@@ -53,6 +53,33 @@ Pattern : AbstractFunction {
 	}
 	
 	trace { arg key, printStream; ^Ptrace(this, key, printStream) }
+	
+	//////////////////////
+	
+	mtranspose { arg n; ^Paddp(\mtranspose, n, this) }
+	ctranspose { arg n; ^Paddp(\ctranspose, n, this) }
+	gtranspose { arg n; ^Paddp(\gtranspose, n, this) }
+	detune { arg n; ^Paddp(\detune, n, this) }
+
+	scaleDur { arg x; ^Pmulp(\dur, x, this) }
+	addDur { arg x; ^Paddp(\dur, x, this) }
+	stretch { arg x; ^Pmulp(\stretch, x, this) }
+	lag { arg t; ^Plag(t, this) }
+
+	legato { arg x; ^Pmulp(\legato, x, this) }
+
+	db { arg db; ^Paddp(\db, db, this) }
+	
+	clump { arg n; ^Pclump(n, this) }
+	flatten { arg n = 1; ^Pflatten(n, this) }
+	
+	repeat { arg n; ^Pn(this, n) }
+	keep { arg n; ^Pfin(n, this) }
+	drop { arg n; ^Pdrop(n, this) }
+	stutter { arg n; ^Pstutter(n, this) }
+	finDur { arg dur, tolerance = 0.001; ^Pfindur(dur, this, tolerance) }
+	
+	
 }
 
 Pfunc : Pattern {
