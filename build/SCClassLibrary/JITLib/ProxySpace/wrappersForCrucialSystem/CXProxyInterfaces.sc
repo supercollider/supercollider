@@ -20,10 +20,15 @@ CXPlayerControl : AbstractPlayControl {
 		^ok
 	}
 	
-	playToBundle { arg bundle;
+	playToBundle { arg bundle, extraArgs, target, addAction=\addToTail;
+		//var group;
+		var f;
 		if(paused.not) {
 			// we'll need channel offset maybe.
-			source.prepareToBundle(nil, bundle); //proxy.group
+			//group = Group.newToBundle(bundle, target, addAction);
+			source.prepareToBundle(nil, bundle);
+			f = {ÊCmdPeriod.remove(f); source.free; };
+			CmdPeriod.add(f); 
 			if(source.readyForPlay.not) {
 				source.makePatchOut(nil, true, bus, bundle);
 				"made new patch out for player".debug;
@@ -38,16 +43,16 @@ CXPlayerControl : AbstractPlayControl {
 	 
 	stopToBundle { arg bundle, fadeTime=0.02;
 		source.releaseToBundle(fadeTime, bundle);
-		//bundle.addSchedFunction({ source.free }, 
 	}
 	
-	// freeToBundle { arg bundle, fadeTime;
-	// } // maybe should free after fadeTime
-	
-	
-	free { 
-		// source.stop;
+	freeToBundle { arg bundle, fadeTime;
+//		bundle.addSchedFunction({ source.freeHeavyResources }, fadeTime);
+//		source.freeToBundle(bundle);
+		bundle.addSchedFunction({ source.free }, fadeTime);
+
 	}
+	
+	
 	pause { source.stop }
 	resume { source.play }
 	// moveToGroupToBundle {}
