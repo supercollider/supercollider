@@ -143,6 +143,15 @@ Buffer {
 	//sine2
 	//sine3
 	
+	copyTo { arg buf, dstStartAt = 0, srcStartAt = 0, numSamples = -1;
+		server.listSendMsg(
+			this.copyToMsg(buf, dstStartAt, srcStartAt, numSamples)
+		)
+	}
+	copyToMsg { arg buf, dstStartAt = 0, srcStartAt = 0, numSamples = -1;
+		^["/b_gen", buf.bufnum, "copy", dstStartAt, bufnum, srcStartAt, numSamples]
+	}
+
 	// close a file, write header, after DiskOut usage
 	close { arg completionMessage;
 		server.listSendMsg( this.closeMsg(completionMessage)  );

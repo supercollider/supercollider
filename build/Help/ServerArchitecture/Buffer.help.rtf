@@ -341,6 +341,49 @@ instance methods:
 		additional triplets may be included in the same message.\
 	\
 
+\f0\b 	copyTo(buf, numSamples, dstSamplePos, srcSamplePos)\
+	copyToMsg(buf, numSamples, dstSamplePos, srcSamplePos)\
+
+\f1\b0 		\
+		starting at the sample index srcSamplePos, copy numSamples samples\
+		from this to the destination buffer buf starting at dstSamplePos.\
+		if numSamples is negative, the maximum number of samples possible is\
+		copied.\
+\
+		
+\f2\fs18 (\
+			\cf2 SynthDef\cf0 (\cf3 "help-Buffer"\cf0 , \{ \cf2 arg\cf0  out=0, buf;\
+				\cf2 Line\cf0 .ar(0, 0, dur: \cf2 BufDur\cf0 .kr(buf), doneAction: 2);\
+				\cf2 Out\cf0 .ar(out, \cf2 PlayBuf\cf0 .ar(1, buf, 0.25));\
+			\}).load(s);\
+		)\
+		\
+		(\
+			s = \cf2 Server\cf0 .local;\
+			b = \cf2 Buffer\cf0 .read(s, \cf3 "sounds/a11wlk01.wav"\cf0 );\
+			c = \cf2 Buffer\cf0 .alloc(s, 120000);\
+		)\
+\
+		\cf2 Synth\cf0 (\cf3 "help-Buffer"\cf0 , [\cf4 \\buf\cf0 , b.bufnum]);		\
+		\
+		c.zero;								\cf5 // copy the whole buffer\cf0 \
+		b.copyTo(c);\
+		\cf2 Synth\cf0 (\cf3 "help-Buffer"\cf0 , [\cf4 \\buf\cf0 , c.bufnum]);\
+		\
+		c.zero;								\cf5 // copy some samples\cf0 \
+		b.copyTo(c, numSamples: 4410);\
+		\cf2 Synth\cf0 (\cf3 "help-Buffer"\cf0 , [\cf4 \\buf\cf0 , c.bufnum]);\
+		\
+		c.zero;								\cf5 // buffer "compositing"\cf0 \
+		b.copyTo(c, numSamples: 4410);\
+		b.copyTo(c, dstStartAt: 4410, numSamples: 15500);\
+		\cf2 Synth\cf0 (\cf3 "help-Buffer"\cf0 , [\cf4 \\buf\cf0 , c.bufnum]);\
+
+\f1\fs24 \
+		b.free;\
+		c.free;\
+\
+
 \f0\b 	close(completionMessage)\
 	closeMsg(completionMessage)\
 	\
