@@ -9,3 +9,7 @@
 +Integer {
 	asNodeID { ^this }
 }
+
++Nil {
+	asNodeID { ^nil }
+}
