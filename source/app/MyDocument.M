@@ -761,7 +761,6 @@ extern PyrSymbol * s_didBecomeKey;
 	pthread_mutex_lock (&gLangMutex);
     struct PyrObject *scobj = [self getSCObject];
     if (scobj) {
-        SetPtr(scobj->slots + 0, self);
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
         ++g->sp;  SetObject(g->sp, scobj); // push window obj
@@ -781,7 +780,6 @@ extern PyrSymbol * s_didResignKey;
 	pthread_mutex_lock (&gLangMutex);
     struct PyrObject *scobj = [self getSCObject];
     if (scobj) {
-        SetPtr(scobj->slots + 0, self);
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
         ++g->sp;  SetObject(g->sp, scobj); // push window obj
