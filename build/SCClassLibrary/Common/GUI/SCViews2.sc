@@ -1,9 +1,10 @@
 
 SCViewAdapter { // SCViewHolder
 	
-	// SCView classes can't be subclassed
-	// this makes it possible to wrap more capabilities
-	// alternative is to pass in the name of the c++ view to pr
+	// SCView classes can't be subclassed.
+	// SCViewAdapter makes it possible to wrap more capabilities by holding, not subclassing
+	// has a , not is a
+	// alternative is for SCView to pass in the name of the c++ view to prInit primitive
 	
 	var <>view;
 	
@@ -14,6 +15,11 @@ SCViewAdapter { // SCViewHolder
 	keyDownAction_ { arg f;
 		view.keyDownAction_(f);
 	}
+	asView { ^view }
+	bounds { ^view.bounds }
+	resize_ { arg r; view.resize_(r) }
+	refresh { view.refresh }
+	background_ { arg b; view.background_(b) }
 }
 
 
