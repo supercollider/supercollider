@@ -561,7 +561,34 @@ Return the receiver. aNumber is ignored.\
 		l = [0, 1, 5, 9, 11]; \cf2 // pentatonic scale\cf0 \
 		(60, 61..75).postln.collect \{ \cf3 |i|\cf0  i.keyToDegree(l, 12).degreeToKey(l) \}\
 	)\
+	\
+
+\f0\b\fs24 nearestInList(list)
+\f1\b0 \
+\
+	returns the value in the collection closest to this\
+	\
+	
+\f2\fs18 (\
+		l = [0, 0.5, 0.9, 1];\
+		(0, 0.05..1).collect \{ |i| i.nearestInList(l) \}\
+	)\
 
 \f1\fs24 \
+\
+
+\f0\b nearestInScale(scale, stepsPerOctave)
+\f1\b0 \
+\
+	returns the value in the collection closest to this, assuming an octave repeating table of note values.\
+	stepsPerOctave is 12 by default\
+	\
+	
+\f2\fs18 (\
+		l = [0, 1, 5, 9, 11]; \cf2 // pentatonic scale\cf0 \
+		(60, 61..76).collect \{ |i| i.nearestInScale(l, 12) \}\
+	)
+\f1\fs24 \
+	\
  \
 }
