@@ -24,6 +24,15 @@
 #include "SC_Types.h"
 #include "SC_Constants.h"
 
+///////////////////////////////////////////////////////////////////////////////////////
+
+inline bool sc_isnan(float x)
+{
+	return (!(x >= 0.f || x <= 0.f));
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+
 // versions provided for float32 and float64
 // did not supply template because do not want to instantiate for integers.
 // all constants explicitly cast to prevent PowerPC frsp instruction generation.

@@ -29,6 +29,7 @@
 #include "SC_InlineBinaryOp.h"
 #include "SC_BoundsMacros.h"
 #include "SC_RGen.h"
+#include "SC_DemandUnit.h"
 #include "clz.h"
 #include "sc_msg_iter.h"
 #include "SC_Altivec.h"

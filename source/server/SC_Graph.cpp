@@ -250,7 +250,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 					unitOutput[j] = wire;
 					unitOutBuf[j] = wire->mBuffer;
 				}
-				if (unitCalcRate != calc_ScalarRate) {
+				if (unitCalcRate == calc_BufRate) {
 					calcUnits[calcCtr++] = unit;
 				}
 			}

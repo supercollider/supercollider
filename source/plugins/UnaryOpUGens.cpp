@@ -103,6 +103,7 @@ extern "C"
 	void load(InterfaceTable *inTable);
 
 	void UnaryOpUGen_Ctor(UnaryOpUGen *unit);
+
 	void invert_a(UnaryOpUGen *unit, int inNumSamples);
 	void not_a(UnaryOpUGen *unit, int inNumSamples);
 	void zero_a(UnaryOpUGen *unit, int inNumSamples);
@@ -147,9 +148,51 @@ extern "C"
 	void ramp_a(UnaryOpUGen *unit, int inNumSamples);
 	void scurve_a(UnaryOpUGen *unit, int inNumSamples);
 
-}
+	void invert_d(UnaryOpUGen *unit, int inNumSamples);
+	void not_d(UnaryOpUGen *unit, int inNumSamples);
+	void zero_d(UnaryOpUGen *unit, int inNumSamples);
+	void thru_d(UnaryOpUGen *unit, int inNumSamples);
+	void abs_d(UnaryOpUGen *unit, int inNumSamples);
+	void recip_d(UnaryOpUGen *unit, int inNumSamples);
+	void floor_d(UnaryOpUGen *unit, int inNumSamples);
+	void ceil_d(UnaryOpUGen *unit, int inNumSamples);
+	void sin_d(UnaryOpUGen *unit, int inNumSamples);
+	void cos_d(UnaryOpUGen *unit, int inNumSamples);
+	void tan_d(UnaryOpUGen *unit, int inNumSamples);
+	void asin_d(UnaryOpUGen *unit, int inNumSamples);
+	void acos_d(UnaryOpUGen *unit, int inNumSamples);
+	void atan_d(UnaryOpUGen *unit, int inNumSamples);
+	void sinh_d(UnaryOpUGen *unit, int inNumSamples);
+	void cosh_d(UnaryOpUGen *unit, int inNumSamples);
+	void tanh_d(UnaryOpUGen *unit, int inNumSamples);
+	void log_d(UnaryOpUGen *unit, int inNumSamples);
+	void log2_d(UnaryOpUGen *unit, int inNumSamples);
+	void log10_d(UnaryOpUGen *unit, int inNumSamples);
+	void exp_d(UnaryOpUGen *unit, int inNumSamples);
+	void sqrt_d(UnaryOpUGen *unit, int inNumSamples);
+	void ampdb_d(UnaryOpUGen *unit, int inNumSamples);
+	void dbamp_d(UnaryOpUGen *unit, int inNumSamples);
+	void midicps_d(UnaryOpUGen *unit, int inNumSamples);
+	void cpsmidi_d(UnaryOpUGen *unit, int inNumSamples);
+	void midiratio_d(UnaryOpUGen *unit, int inNumSamples);
+	void ratiomidi_d(UnaryOpUGen *unit, int inNumSamples);
+	void cpsoct_d(UnaryOpUGen *unit, int inNumSamples);
+	void octcps_d(UnaryOpUGen *unit, int inNumSamples);
+	void frac_d(UnaryOpUGen *unit, int inNumSamples);
+	void squared_d(UnaryOpUGen *unit, int inNumSamples);
+	void cubed_d(UnaryOpUGen *unit, int inNumSamples);
+	void sign_d(UnaryOpUGen *unit, int inNumSamples);
+	void distort_d(UnaryOpUGen *unit, int inNumSamples);
+	void distortneg_d(UnaryOpUGen *unit, int inNumSamples);
+	void softclip_d(UnaryOpUGen *unit, int inNumSamples);
+	void rectwindow_d(UnaryOpUGen *unit, int inNumSamples);
+	void hanwindow_d(UnaryOpUGen *unit, int inNumSamples);
+	void welwindow_d(UnaryOpUGen *unit, int inNumSamples);
+	void triwindow_d(UnaryOpUGen *unit, int inNumSamples);
+	void ramp_d(UnaryOpUGen *unit, int inNumSamples);
+	void scurve_d(UnaryOpUGen *unit, int inNumSamples);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
 
 void ChooseOperatorFunc(UnaryOpUGen *unit);
 
@@ -158,6 +201,9 @@ void UnaryOpUGen_Ctor(UnaryOpUGen *unit)
 	ChooseOperatorFunc(unit);
 	(unit->mCalcFunc)(unit, 1);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 void invert_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -744,6 +790,443 @@ void ramp_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void invert_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : -(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void not_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : (x > 0.f ? 0.f : 1.f);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void zero_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : 0.f;
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void thru_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : (x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void abs_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : fabs(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void recip_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : 1.f / x;
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void floor_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : floor(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void ceil_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : ceil(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void sin_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sin(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void cos_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : cos(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void tan_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : tan(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void asin_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : asin(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void acos_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : acos(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void atan_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : atan(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void sinh_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sinh(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void cosh_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : cosh(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void tanh_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : tanh(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void log_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : log(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void log2_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_log2(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void log10_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_log10(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void exp_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : exp(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void sqrt_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_sqrt(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void ampdb_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_ampdb(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void dbamp_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_dbamp(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void midicps_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_midicps(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void cpsmidi_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_cpsmidi(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void midiratio_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_midiratio(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void ratiomidi_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_ratiomidi(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void cpsoct_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_cpsoct(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void octcps_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_octcps(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void frac_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_frac(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void squared_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : x*x;
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void cubed_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : x*x*x;
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void sign_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : (x < 0.f ? -1.f : (x > 0.f ? 1.f : 0.f));
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void distort_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_distort(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void distortneg_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : (x < 0.f ? x/(1.f-x) : x);
+	} else {
+		RESETINPUT(0);
+	}
+}		
+		
+void softclip_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_softclip(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void rectwindow_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_rectwindow(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void hanwindow_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_hanwindow(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void welwindow_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_welwindow(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void triwindow_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_triwindow(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void ramp_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_ramp(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void scurve_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT(0);
+		OUT0(0) = sc_isnan(x) ? NAN : sc_scurve(x);
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 
 UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
@@ -799,6 +1282,64 @@ UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
 		case opRamp : func = &ramp_a; break;
 		
 		default : func = &thru_a; break;
+	}
+	return func;
+}
+
+
+UnaryOpFunc ChooseDemandFunc(UnaryOpUGen *unit)
+{
+	void (*func)(UnaryOpUGen *unit, int inNumSamples);
+	
+	switch (unit->mSpecialIndex) {
+		case opSilence : func = &zero_d; break;
+		case opThru : func = &thru_d; break;
+		case opNeg : func = &invert_d; break;
+		case opNot : func = &not_d; break;
+		case opAbs : func = &abs_d; break;
+		case opCeil : func = &ceil_d; break;
+		case opFloor : func = &floor_d; break;
+		case opFrac : func = &frac_d; break;
+		case opSign : func = &sign_d; break;
+		case opSquared : func = &squared_d; break;
+		case opCubed : func = &cubed_d; break;
+		case opSqrt : 		func = &sqrt_d; break;
+		case opExp : func = &exp_d; break;
+		case opRecip : func = &recip_d; break;
+		case opMIDICPS : func = &midicps_d; break;
+		case opCPSMIDI : func = &cpsmidi_d; break;
+
+		case opMIDIRatio : func = &midiratio_d; break;
+		case opRatioMIDI : func = &ratiomidi_d; break;	
+		case opDbAmp : func = &dbamp_d; break;
+		case opAmpDb : 	func = &ampdb_d; break;
+		case opOctCPS : func = &octcps_d; break;
+		case opCPSOct : func = &cpsoct_d; break;
+		case opLog : func = &log_d; break;
+		case opLog2 : func = &log2_d; break;
+		case opLog10 : func = &log10_d; break;
+		case opSin : func = &sin_d; break;
+		case opCos : func = &cos_d; break;
+		case opTan : func = &tan_d; break;
+		case opArcSin : func = &asin_d; break;
+		case opArcCos : func = &acos_d; break;
+		case opArcTan : func = &atan_d; break;
+		case opSinH : func = &sinh_d; break;
+		case opCosH : func = &cosh_d; break;
+		case opTanH : func = &tanh_d; break;
+
+		case opDistort : func = &distort_d; break;
+		case opSoftClip : func = &softclip_d; break;
+
+		case opRectWindow : func = &rectwindow_d; break;
+		case opHanWindow : func = &hanwindow_d; break;
+		case opWelchWindow : func = &welwindow_d; break;
+		case opTriWindow : func = &triwindow_d; break;
+
+		case opSCurve : func = &scurve_d; break;
+		case opRamp : func = &ramp_d; break;
+		
+		default : func = &thru_d; break;
 	}
 	return func;
 }
@@ -867,7 +1408,9 @@ void ChooseOperatorFunc(UnaryOpUGen *unit)
 	//Print("->ChooseOperatorFunc %d\n", unit->mSpecialIndex);
 	UnaryOpFunc func;
 	
-	if (BUFLENGTH == 1) {
+	if (unit->mCalcRate == calc_DemandRate) {
+		func = ChooseDemandFunc(unit);
+	} else if (BUFLENGTH == 1) {
 		func = ChooseNormalFunc(unit);
 #if __VEC__
 	} else if (USEVEC) {

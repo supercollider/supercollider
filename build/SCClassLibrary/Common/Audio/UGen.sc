@@ -141,7 +141,8 @@ UGen : AbstractFunction {
 	rateNumber {
 		if (rate == \audio, { ^2 });
 		if (rate == \control, { ^1 });
-		^0
+		if (rate == \demand, { ^3 });
+		^0 // scalar
 	}
 	methodSelectorForRate {
 		if(rate == \audio,{ ^\ar });
@@ -153,6 +154,7 @@ UGen : AbstractFunction {
 				^\new
 			});
 		});
+		if(rate == \demand, { ^\new });
 		^nil
 	}
 	writeInputSpec { arg file, synthDef;

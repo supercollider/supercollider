@@ -113,48 +113,58 @@ extern "C"
 
 	void BinaryOpUGen_Ctor(BinaryOpUGen *unit);
 
+	void zero_d(BinaryOpUGen *unit, int inNumSamples);
 	void zero_1(BinaryOpUGen *unit, int inNumSamples);
 	void zero_aa(BinaryOpUGen *unit, int inNumSamples);
+	void firstarg_d(BinaryOpUGen *unit, int inNumSamples);
 	void firstarg_1(BinaryOpUGen *unit, int inNumSamples);
 	void firstarg_aa(BinaryOpUGen *unit, int inNumSamples);
+	void secondarg_d(BinaryOpUGen *unit, int inNumSamples);
 	void secondarg_1(BinaryOpUGen *unit, int inNumSamples);
 	void secondarg_aa(BinaryOpUGen *unit, int inNumSamples);
+	void add_d(BinaryOpUGen *unit, int inNumSamples);
 	void add_1(BinaryOpUGen *unit, int inNumSamples);
 	void add_aa(BinaryOpUGen *unit, int inNumSamples);
 	void add_ak(BinaryOpUGen *unit, int inNumSamples);
 	void add_ka(BinaryOpUGen *unit, int inNumSamples);
 	void add_ai(BinaryOpUGen *unit, int inNumSamples);
 	void add_ia(BinaryOpUGen *unit, int inNumSamples);
+	void sub_d(BinaryOpUGen *unit, int inNumSamples);
 	void sub_1(BinaryOpUGen *unit, int inNumSamples);
 	void sub_aa(BinaryOpUGen *unit, int inNumSamples);
 	void sub_ak(BinaryOpUGen *unit, int inNumSamples);
 	void sub_ka(BinaryOpUGen *unit, int inNumSamples);
 	void sub_ai(BinaryOpUGen *unit, int inNumSamples);
 	void sub_ia(BinaryOpUGen *unit, int inNumSamples);
+	void mul_d(BinaryOpUGen *unit, int inNumSamples);
 	void mul_1(BinaryOpUGen *unit, int inNumSamples);
 	void mul_aa(BinaryOpUGen *unit, int inNumSamples);
 	void mul_ak(BinaryOpUGen *unit, int inNumSamples);
 	void mul_ka(BinaryOpUGen *unit, int inNumSamples);
 	void mul_ai(BinaryOpUGen *unit, int inNumSamples);
 	void mul_ia(BinaryOpUGen *unit, int inNumSamples);
+	void div_d(BinaryOpUGen *unit, int inNumSamples);
 	void div_1(BinaryOpUGen *unit, int inNumSamples);
 	void div_aa(BinaryOpUGen *unit, int inNumSamples);
 	void div_ak(BinaryOpUGen *unit, int inNumSamples);
 	void div_ka(BinaryOpUGen *unit, int inNumSamples);
 	void div_ai(BinaryOpUGen *unit, int inNumSamples);
 	void div_ia(BinaryOpUGen *unit, int inNumSamples);
+	void mod_d(BinaryOpUGen *unit, int inNumSamples);
 	void mod_1(BinaryOpUGen *unit, int inNumSamples);
 	void mod_aa(BinaryOpUGen *unit, int inNumSamples);
 	void mod_ak(BinaryOpUGen *unit, int inNumSamples);
 	void mod_ka(BinaryOpUGen *unit, int inNumSamples);
 	void mod_ai(BinaryOpUGen *unit, int inNumSamples);
 	void mod_ia(BinaryOpUGen *unit, int inNumSamples);
+	void max_d(BinaryOpUGen *unit, int inNumSamples);
 	void max_1(BinaryOpUGen *unit, int inNumSamples);
 	void max_aa(BinaryOpUGen *unit, int inNumSamples);
 	void max_ak(BinaryOpUGen *unit, int inNumSamples);
 	void max_ka(BinaryOpUGen *unit, int inNumSamples);
 	void max_ai(BinaryOpUGen *unit, int inNumSamples);
 	void max_ia(BinaryOpUGen *unit, int inNumSamples);
+	void min_d(BinaryOpUGen *unit, int inNumSamples);
 	void min_1(BinaryOpUGen *unit, int inNumSamples);
 	void min_aa(BinaryOpUGen *unit, int inNumSamples);
 	void min_ak(BinaryOpUGen *unit, int inNumSamples);
@@ -162,6 +172,7 @@ extern "C"
 	void min_ai(BinaryOpUGen *unit, int inNumSamples);
 	void min_ia(BinaryOpUGen *unit, int inNumSamples);
 
+	void and_d(BinaryOpUGen *unit, int inNumSamples);
 	void and_1(BinaryOpUGen *unit, int inNumSamples);
 	void and_aa(BinaryOpUGen *unit, int inNumSamples);
 	void and_ak(BinaryOpUGen *unit, int inNumSamples);
@@ -169,6 +180,7 @@ extern "C"
 	void and_ai(BinaryOpUGen *unit, int inNumSamples);
 	void and_ia(BinaryOpUGen *unit, int inNumSamples);
 
+	void or_d(BinaryOpUGen *unit, int inNumSamples);
 	void or_1(BinaryOpUGen *unit, int inNumSamples);
 	void or_aa(BinaryOpUGen *unit, int inNumSamples);
 	void or_ak(BinaryOpUGen *unit, int inNumSamples);
@@ -176,6 +188,7 @@ extern "C"
 	void or_ai(BinaryOpUGen *unit, int inNumSamples);
 	void or_ia(BinaryOpUGen *unit, int inNumSamples);
 
+	void xor_d(BinaryOpUGen *unit, int inNumSamples);
 	void xor_1(BinaryOpUGen *unit, int inNumSamples);
 	void xor_aa(BinaryOpUGen *unit, int inNumSamples);
 	void xor_ak(BinaryOpUGen *unit, int inNumSamples);
@@ -183,174 +196,203 @@ extern "C"
 	void xor_ai(BinaryOpUGen *unit, int inNumSamples);
 	void xor_ia(BinaryOpUGen *unit, int inNumSamples);
 
+	void amclip_d(BinaryOpUGen *unit, int inNumSamples);
 	void amclip_1(BinaryOpUGen *unit, int inNumSamples);
 	void amclip_aa(BinaryOpUGen *unit, int inNumSamples);
 	void amclip_ak(BinaryOpUGen *unit, int inNumSamples);
 	void amclip_ka(BinaryOpUGen *unit, int inNumSamples);
 	void amclip_ai(BinaryOpUGen *unit, int inNumSamples);
 	void amclip_ia(BinaryOpUGen *unit, int inNumSamples);
+	void scaleneg_d(BinaryOpUGen *unit, int inNumSamples);
 	void scaleneg_1(BinaryOpUGen *unit, int inNumSamples);
 	void scaleneg_aa(BinaryOpUGen *unit, int inNumSamples);
 	void scaleneg_ak(BinaryOpUGen *unit, int inNumSamples);
 	void scaleneg_ka(BinaryOpUGen *unit, int inNumSamples);
 	void scaleneg_ai(BinaryOpUGen *unit, int inNumSamples);
 	void scaleneg_ia(BinaryOpUGen *unit, int inNumSamples);
+	void pow_d(BinaryOpUGen *unit, int inNumSamples);
 	void pow_1(BinaryOpUGen *unit, int inNumSamples);
 	void pow_aa(BinaryOpUGen *unit, int inNumSamples);
 	void pow_ak(BinaryOpUGen *unit, int inNumSamples);
 	void pow_ka(BinaryOpUGen *unit, int inNumSamples);
 	void pow_ai(BinaryOpUGen *unit, int inNumSamples);
 	void pow_ia(BinaryOpUGen *unit, int inNumSamples);
+	void ring1_d(BinaryOpUGen *unit, int inNumSamples);
 	void ring1_1(BinaryOpUGen *unit, int inNumSamples);
 	void ring1_aa(BinaryOpUGen *unit, int inNumSamples);
 	void ring1_ak(BinaryOpUGen *unit, int inNumSamples);
 	void ring1_ka(BinaryOpUGen *unit, int inNumSamples);
 	void ring1_ai(BinaryOpUGen *unit, int inNumSamples);
 	void ring1_ia(BinaryOpUGen *unit, int inNumSamples);
+	void ring2_d(BinaryOpUGen *unit, int inNumSamples);
 	void ring2_1(BinaryOpUGen *unit, int inNumSamples);
 	void ring2_aa(BinaryOpUGen *unit, int inNumSamples);
 	void ring2_ak(BinaryOpUGen *unit, int inNumSamples);
 	void ring2_ka(BinaryOpUGen *unit, int inNumSamples);
 	void ring2_ai(BinaryOpUGen *unit, int inNumSamples);
 	void ring2_ia(BinaryOpUGen *unit, int inNumSamples);
+	void ring3_d(BinaryOpUGen *unit, int inNumSamples);
 	void ring3_1(BinaryOpUGen *unit, int inNumSamples);
 	void ring3_aa(BinaryOpUGen *unit, int inNumSamples);
 	void ring3_ak(BinaryOpUGen *unit, int inNumSamples);
 	void ring3_ka(BinaryOpUGen *unit, int inNumSamples);
 	void ring3_ai(BinaryOpUGen *unit, int inNumSamples);
 	void ring3_ia(BinaryOpUGen *unit, int inNumSamples);
+	void ring4_d(BinaryOpUGen *unit, int inNumSamples);
 	void ring4_1(BinaryOpUGen *unit, int inNumSamples);
 	void ring4_aa(BinaryOpUGen *unit, int inNumSamples);
 	void ring4_ak(BinaryOpUGen *unit, int inNumSamples);
 	void ring4_ka(BinaryOpUGen *unit, int inNumSamples);
 	void ring4_ai(BinaryOpUGen *unit, int inNumSamples);
 	void ring4_ia(BinaryOpUGen *unit, int inNumSamples);
+	void thresh_d(BinaryOpUGen *unit, int inNumSamples);
 	void thresh_1(BinaryOpUGen *unit, int inNumSamples);
 	void thresh_aa(BinaryOpUGen *unit, int inNumSamples);
 	void thresh_ak(BinaryOpUGen *unit, int inNumSamples);
 	void thresh_ka(BinaryOpUGen *unit, int inNumSamples);
 	void thresh_ai(BinaryOpUGen *unit, int inNumSamples);
 	void thresh_ia(BinaryOpUGen *unit, int inNumSamples);
+	void clip2_d(BinaryOpUGen *unit, int inNumSamples);
 	void clip2_1(BinaryOpUGen *unit, int inNumSamples);
 	void clip2_aa(BinaryOpUGen *unit, int inNumSamples);
 	void clip2_ak(BinaryOpUGen *unit, int inNumSamples);
 	void clip2_ka(BinaryOpUGen *unit, int inNumSamples);
 	void clip2_ai(BinaryOpUGen *unit, int inNumSamples);
 	void clip2_ia(BinaryOpUGen *unit, int inNumSamples);
+	void fold2_d(BinaryOpUGen *unit, int inNumSamples);
 	void fold2_1(BinaryOpUGen *unit, int inNumSamples);
 	void fold2_aa(BinaryOpUGen *unit, int inNumSamples);
 	void fold2_ak(BinaryOpUGen *unit, int inNumSamples);
 	void fold2_ka(BinaryOpUGen *unit, int inNumSamples);
 	void fold2_ai(BinaryOpUGen *unit, int inNumSamples);
 	void fold2_ia(BinaryOpUGen *unit, int inNumSamples);
+	void wrap2_d(BinaryOpUGen *unit, int inNumSamples);
 	void wrap2_1(BinaryOpUGen *unit, int inNumSamples);
 	void wrap2_aa(BinaryOpUGen *unit, int inNumSamples);
 	void wrap2_ak(BinaryOpUGen *unit, int inNumSamples);
 	void wrap2_ka(BinaryOpUGen *unit, int inNumSamples);
 	void wrap2_ai(BinaryOpUGen *unit, int inNumSamples);
 	void wrap2_ia(BinaryOpUGen *unit, int inNumSamples);
+	void excess_d(BinaryOpUGen *unit, int inNumSamples);
 	void excess_1(BinaryOpUGen *unit, int inNumSamples);
 	void excess_aa(BinaryOpUGen *unit, int inNumSamples);
 	void excess_ak(BinaryOpUGen *unit, int inNumSamples);
 	void excess_ka(BinaryOpUGen *unit, int inNumSamples);
 	void excess_ai(BinaryOpUGen *unit, int inNumSamples);
 	void excess_ia(BinaryOpUGen *unit, int inNumSamples);
+	void lt_d(BinaryOpUGen *unit, int inNumSamples);
 	void lt_1(BinaryOpUGen *unit, int inNumSamples);
 	void lt_aa(BinaryOpUGen *unit, int inNumSamples);
 	void lt_ak(BinaryOpUGen *unit, int inNumSamples);
 	void lt_ka(BinaryOpUGen *unit, int inNumSamples);
 	void lt_ai(BinaryOpUGen *unit, int inNumSamples);
 	void lt_ia(BinaryOpUGen *unit, int inNumSamples);
+	void le_d(BinaryOpUGen *unit, int inNumSamples);
 	void le_1(BinaryOpUGen *unit, int inNumSamples);
 	void le_aa(BinaryOpUGen *unit, int inNumSamples);
 	void le_ak(BinaryOpUGen *unit, int inNumSamples);
 	void le_ka(BinaryOpUGen *unit, int inNumSamples);
 	void le_ai(BinaryOpUGen *unit, int inNumSamples);
 	void le_ia(BinaryOpUGen *unit, int inNumSamples);
+	void gt_d(BinaryOpUGen *unit, int inNumSamples);
 	void gt_1(BinaryOpUGen *unit, int inNumSamples);
 	void gt_aa(BinaryOpUGen *unit, int inNumSamples);
 	void gt_ak(BinaryOpUGen *unit, int inNumSamples);
 	void gt_ka(BinaryOpUGen *unit, int inNumSamples);
 	void gt_ai(BinaryOpUGen *unit, int inNumSamples);
 	void gt_ia(BinaryOpUGen *unit, int inNumSamples);
+	void ge_d(BinaryOpUGen *unit, int inNumSamples);
 	void ge_1(BinaryOpUGen *unit, int inNumSamples);
 	void ge_aa(BinaryOpUGen *unit, int inNumSamples);
 	void ge_ak(BinaryOpUGen *unit, int inNumSamples);
 	void ge_ka(BinaryOpUGen *unit, int inNumSamples);
 	void ge_ai(BinaryOpUGen *unit, int inNumSamples);
 	void ge_ia(BinaryOpUGen *unit, int inNumSamples);
+	void eq_d(BinaryOpUGen *unit, int inNumSamples);
 	void eq_1(BinaryOpUGen *unit, int inNumSamples);
 	void eq_aa(BinaryOpUGen *unit, int inNumSamples);
 	void eq_ak(BinaryOpUGen *unit, int inNumSamples);
 	void eq_ka(BinaryOpUGen *unit, int inNumSamples);
 	void eq_ai(BinaryOpUGen *unit, int inNumSamples);
 	void eq_ia(BinaryOpUGen *unit, int inNumSamples);
+	void neq_d(BinaryOpUGen *unit, int inNumSamples);
 	void neq_1(BinaryOpUGen *unit, int inNumSamples);
 	void neq_aa(BinaryOpUGen *unit, int inNumSamples);
 	void neq_ak(BinaryOpUGen *unit, int inNumSamples);
 	void neq_ka(BinaryOpUGen *unit, int inNumSamples);
 	void neq_ai(BinaryOpUGen *unit, int inNumSamples);
 	void neq_ia(BinaryOpUGen *unit, int inNumSamples);
+	void sumsqr_d(BinaryOpUGen *unit, int inNumSamples);
 	void sumsqr_1(BinaryOpUGen *unit, int inNumSamples);
 	void sumsqr_aa(BinaryOpUGen *unit, int inNumSamples);
 	void sumsqr_ak(BinaryOpUGen *unit, int inNumSamples);
 	void sumsqr_ka(BinaryOpUGen *unit, int inNumSamples);
 	void sumsqr_ai(BinaryOpUGen *unit, int inNumSamples);
 	void sumsqr_ia(BinaryOpUGen *unit, int inNumSamples);
+	void difsqr_d(BinaryOpUGen *unit, int inNumSamples);
 	void difsqr_1(BinaryOpUGen *unit, int inNumSamples);
 	void difsqr_aa(BinaryOpUGen *unit, int inNumSamples);
 	void difsqr_ak(BinaryOpUGen *unit, int inNumSamples);
 	void difsqr_ka(BinaryOpUGen *unit, int inNumSamples);
 	void difsqr_ai(BinaryOpUGen *unit, int inNumSamples);
 	void difsqr_ia(BinaryOpUGen *unit, int inNumSamples);
+	void sqrsum_d(BinaryOpUGen *unit, int inNumSamples);
 	void sqrsum_1(BinaryOpUGen *unit, int inNumSamples);
 	void sqrsum_aa(BinaryOpUGen *unit, int inNumSamples);
 	void sqrsum_ak(BinaryOpUGen *unit, int inNumSamples);
 	void sqrsum_ka(BinaryOpUGen *unit, int inNumSamples);
 	void sqrsum_ai(BinaryOpUGen *unit, int inNumSamples);
 	void sqrsum_ia(BinaryOpUGen *unit, int inNumSamples);
+	void sqrdif_d(BinaryOpUGen *unit, int inNumSamples);
 	void sqrdif_1(BinaryOpUGen *unit, int inNumSamples);
 	void sqrdif_aa(BinaryOpUGen *unit, int inNumSamples);
 	void sqrdif_ak(BinaryOpUGen *unit, int inNumSamples);
 	void sqrdif_ka(BinaryOpUGen *unit, int inNumSamples);
 	void sqrdif_ai(BinaryOpUGen *unit, int inNumSamples);
 	void sqrdif_ia(BinaryOpUGen *unit, int inNumSamples);
+	void absdif_d(BinaryOpUGen *unit, int inNumSamples);
 	void absdif_1(BinaryOpUGen *unit, int inNumSamples);
 	void absdif_aa(BinaryOpUGen *unit, int inNumSamples);
 	void absdif_ak(BinaryOpUGen *unit, int inNumSamples);
 	void absdif_ka(BinaryOpUGen *unit, int inNumSamples);
 	void absdif_ai(BinaryOpUGen *unit, int inNumSamples);
 	void absdif_ia(BinaryOpUGen *unit, int inNumSamples);
+	void round_d(BinaryOpUGen *unit, int inNumSamples);
 	void round_1(BinaryOpUGen *unit, int inNumSamples);
 	void round_aa(BinaryOpUGen *unit, int inNumSamples);
 	void round_ak(BinaryOpUGen *unit, int inNumSamples);
 	void round_ka(BinaryOpUGen *unit, int inNumSamples);
 	void round_ai(BinaryOpUGen *unit, int inNumSamples);
 	void round_ia(BinaryOpUGen *unit, int inNumSamples);
+	void roundUp_d(BinaryOpUGen *unit, int inNumSamples);
 	void roundUp_1(BinaryOpUGen *unit, int inNumSamples);
 	void roundUp_aa(BinaryOpUGen *unit, int inNumSamples);
 	void roundUp_ak(BinaryOpUGen *unit, int inNumSamples);
 	void roundUp_ka(BinaryOpUGen *unit, int inNumSamples);
 	void roundUp_ai(BinaryOpUGen *unit, int inNumSamples);
 	void roundUp_ia(BinaryOpUGen *unit, int inNumSamples);
+	void trunc_d(BinaryOpUGen *unit, int inNumSamples);
 	void trunc_1(BinaryOpUGen *unit, int inNumSamples);
 	void trunc_aa(BinaryOpUGen *unit, int inNumSamples);
 	void trunc_ak(BinaryOpUGen *unit, int inNumSamples);
 	void trunc_ka(BinaryOpUGen *unit, int inNumSamples);
 	void trunc_ai(BinaryOpUGen *unit, int inNumSamples);
 	void trunc_ia(BinaryOpUGen *unit, int inNumSamples);
+	void atan2_d(BinaryOpUGen *unit, int inNumSamples);
 	void atan2_1(BinaryOpUGen *unit, int inNumSamples);
 	void atan2_aa(BinaryOpUGen *unit, int inNumSamples);
 	void atan2_ak(BinaryOpUGen *unit, int inNumSamples);
 	void atan2_ka(BinaryOpUGen *unit, int inNumSamples);
 	void atan2_ai(BinaryOpUGen *unit, int inNumSamples);
 	void atan2_ia(BinaryOpUGen *unit, int inNumSamples);
+	void hypot_d(BinaryOpUGen *unit, int inNumSamples);
 	void hypot_1(BinaryOpUGen *unit, int inNumSamples);
 	void hypot_aa(BinaryOpUGen *unit, int inNumSamples);
 	void hypot_ak(BinaryOpUGen *unit, int inNumSamples);
 	void hypot_ka(BinaryOpUGen *unit, int inNumSamples);
 	void hypot_ai(BinaryOpUGen *unit, int inNumSamples);
 	void hypot_ia(BinaryOpUGen *unit, int inNumSamples);
+	void hypotx_d(BinaryOpUGen *unit, int inNumSamples);
 	void hypotx_1(BinaryOpUGen *unit, int inNumSamples);
 	void hypotx_aa(BinaryOpUGen *unit, int inNumSamples);
 	void hypotx_ak(BinaryOpUGen *unit, int inNumSamples);
@@ -369,7 +411,518 @@ void BinaryOpUGen_Ctor(BinaryOpUGen *unit)
 	ChooseOperatorFunc(unit);
 	unit->mPrevA = ZIN0(0);
 	unit->mPrevB = ZIN0(1);
-	(unit->mCalcFunc)(unit, 1);
+	if (unit->mCalcRate == calc_DemandRate) {
+		OUT0(0) = 0.f;
+	} else {
+		(unit->mCalcFunc)(unit, 1);
+	}
+}
+
+
+void zero_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : 0.f;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void firstarg_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void secondarg_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : b;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void add_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a + b;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void sub_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a - b;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void mul_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * b;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void div_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a / b;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void mod_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_mod(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void max_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_max(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void min_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_min(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void and_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_andt(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void or_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_ort(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void xor_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_xort(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void amclip_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_amclip(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void scaleneg_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_scaleneg(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void pow_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a < 0.f ? -pow(-a, b) : pow(a, b));
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void ring1_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * b + a;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void ring2_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * b + a + b;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void ring3_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * a * b;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void ring4_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * a * b - a * b * b;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void thresh_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_thresh(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void clip2_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_clip2(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void excess_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_excess(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void lt_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a < b ? 1.f : 0.f);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void gt_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a > b ? 1.f : 0.f);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void le_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a <= b ? 1.f : 0.f);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void ge_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a >= b ? 1.f : 0.f);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void eq_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a == b ? 1.f : 0.f);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void neq_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a != b ? 1.f : 0.f);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void sumsqr_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * a + b * b;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void difsqr_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : a * a - b * b;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void sqrsum_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		float z;
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (z = a + b, z * z);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void sqrdif_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		float z;
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (z = a - b, z * z);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void absdif_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : fabs(a - b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void round_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_round(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void roundUp_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_roundUp(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void trunc_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_trunc(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void fold2_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_fold2(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void wrap2_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_wrap2(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void atan2_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : atan2(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void hypot_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : hypot(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void hypotx_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT(0);
+		float b = DEMANDINPUT(1);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_hypotx(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
 }
 
 
@@ -5451,7 +6004,61 @@ BinaryOpFunc ChooseOneSampleFunc(BinaryOpUGen *unit)
 		case opExcess : func = &excess_1; break;
 		case opFirstArg : func = &firstarg_1; break;
 		//case opSecondArg : func = &secondarg_1; break;
-		default : func = &add_aa; break;
+		default : func = &add_1; break;
+	}
+	return func;
+}
+
+
+BinaryOpFunc ChooseDemandFunc(BinaryOpUGen *unit);
+BinaryOpFunc ChooseDemandFunc(BinaryOpUGen *unit)
+{		
+	BinaryOpFunc func = &zero_1;
+	
+	switch (unit->mSpecialIndex) {
+		//case opSilence2 : func = &zero_d; break;
+		case opAdd : func = &add_d; break;
+		case opSub : func = &sub_d; break;
+		case opMul : func = &mul_d; break;
+		case opFDiv : func = &div_d; break;
+		case opMod : func = &mod_d; break;
+		case opEQ  : func = &eq_d; break;
+		case opNE  : func = &neq_d; break;
+		case opLT  : func = &lt_d; break;
+		case opGT  : func = &gt_d; break;
+		case opLE  : func = &le_d; break;
+		case opGE  : func = &ge_d; break;
+		case opMin : func = &min_d; break;
+		case opMax : func = &max_d; break;
+		case opBitAnd : func = &and_d; break;
+		case opBitOr : func = &or_d; break;
+		case opBitXor : func = &xor_d; break;
+		case opRound : func = &round_d; break;
+		case opRoundUp : func = &roundUp_d; break;
+		case opTrunc : func = &trunc_d; break;
+		case opAtan2 : func = &atan2_d; break;
+		case opHypot : func = &hypot_d; break;
+		case opHypotx : func = &hypotx_d; break;
+		case opPow   : func = &pow_d; break;
+		case opRing1 : func = &ring1_d; break;
+		case opRing2 : func = &ring2_d; break;
+		case opRing3 : func = &ring3_d; break;
+		case opRing4 : func = &ring4_d; break;
+		case opDifSqr : func = &difsqr_d; break;
+		case opSumSqr : func = &sumsqr_d; break;
+		case opSqrSum : func = &sqrsum_d; break;
+		case opSqrDif : func = &sqrdif_d; break;
+		case opAbsDif : func = &absdif_d; break;
+		case opThresh : func = &thresh_d; break;
+		case opAMClip : func = &amclip_d; break;
+		case opScaleNeg : func = &scaleneg_d; break;
+		case opClip2 : func = &clip2_d; break;
+		case opFold2 : func = &fold2_d; break;
+		case opWrap2 : func = &wrap2_d; break;
+		case opExcess : func = &excess_d; break;
+		case opFirstArg : func = &firstarg_d; break;
+		//case opSecondArg : func = &secondarg_d; break;
+		default : func = &add_d; break;
 	}
 	return func;
 }
@@ -5991,7 +6598,11 @@ void ChooseOperatorFunc(BinaryOpUGen *unit)
 	BinaryOpFunc func = &zero_aa;
 	
 	if (BUFLENGTH == 1) {
-		func = ChooseOneSampleFunc(unit);
+		if (unit->mCalcRate == calc_DemandRate) {
+			func = ChooseDemandFunc(unit);
+		} else {
+			func = ChooseOneSampleFunc(unit);
+		}
 #if __VEC__
 	} else if (USEVEC) {
 		func = ChooseVectorFunc(unit);

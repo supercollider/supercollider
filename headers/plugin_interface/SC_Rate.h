@@ -22,7 +22,7 @@
 #ifndef _Rate_
 #define _Rate_
 
-enum { calc_ScalarRate, calc_BufRate, calc_FullRate };
+enum { calc_ScalarRate, calc_BufRate, calc_FullRate, calc_DemandRate };
 
 struct Rate
 {

@@ -42,6 +42,8 @@ BinaryOpUGen : BasicOpUGen {
 	}
 	
 	determineRate { arg a, b;
+		if (a.rate == \demand, { ^\demand });
+		if (b.rate == \demand, { ^\demand });
 		if (a.rate == \audio, { ^\audio });
 		if (b.rate == \audio, { ^\audio });
 		if (a.rate == \control, { ^\control });
@@ -91,25 +93,25 @@ BinaryOpUGen : BasicOpUGen {
 			if (a.isKindOf(BinaryOpUGen) && { a.operator == '*' }
 				&& { a.descendants.size == 1 }, 
 			{
-				if (MulAdd.canBeMulAdd(a.inputs.at(0), a.inputs.at(1), b), {
+				if (MulAdd.canBeMulAdd(a.inputs[0], a.inputs[1], b), {
 					buildSynthDef.removeUGen(a);
-					muladd = MulAdd.new(a.inputs.at(0), a.inputs.at(1), b);
+					muladd = MulAdd.new(a.inputs[0], a.inputs[1], b);
 				},{
-				if (MulAdd.canBeMulAdd(a.inputs.at(1), a.inputs.at(0), b), {
+				if (MulAdd.canBeMulAdd(a.inputs[1], a.inputs[0], b), {
 					buildSynthDef.removeUGen(a);
-					muladd = MulAdd.new(a.inputs.at(1), a.inputs.at(0), b)
+					muladd = MulAdd.new(a.inputs[1], a.inputs[0], b)
 				})});
 			},{
 			if (b.isKindOf(BinaryOpUGen) && { b.operator == '*' }
 				&& { b.descendants.size == 1 }, 
 			{
-				if (MulAdd.canBeMulAdd(b.inputs.at(0), b.inputs.at(1), a), {
+				if (MulAdd.canBeMulAdd(b.inputs[0], b.inputs[1], a), {
 					buildSynthDef.removeUGen(b);
-					muladd = MulAdd.new(b.inputs.at(0), b.inputs.at(1), a)
+					muladd = MulAdd.new(b.inputs[0], b.inputs[1], a)
 				},{
-				if (MulAdd.canBeMulAdd(b.inputs.at(1), b.inputs.at(0), a), {
+				if (MulAdd.canBeMulAdd(b.inputs[1], b.inputs[0], a), {
 					buildSynthDef.removeUGen(b);
-					muladd = MulAdd.new(b.inputs.at(1), b.inputs.at(0), a)
+					muladd = MulAdd.new(b.inputs[1], b.inputs[0], a)
 				})});
 			})});
 			if (muladd.notNil, {
@@ -148,8 +150,8 @@ MulAdd : UGen {
 		// see if these inputs satisfy the constraints of a MulAdd ugen.
 		if (in.rate == \audio, { ^true });
 		if (in.rate == \control 
-			&& { mul.rate != \audio } 
-			&& { add.rate != \audio }, 
+			&& { mul.rate == \control || { mul.rate == \scalar }} 
+			&& { add.rate == \control || { add.rate == \scalar }}, 
 		{ 
 			^true 
 		});

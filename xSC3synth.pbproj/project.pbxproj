@@ -6,9 +6,9 @@
 	objectVersion = 39;
 	objects = {
 		920DAEAD0423E08200A80067 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_Carbon.cpp;
 			refType = 4;
 			sourceTree = "<group>";
@@ -87,9 +87,9 @@
 //AA3
 //AA4
 		AA527442045D9A5B00F39DA0 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_Endian.h;
 			refType = 4;
@@ -102,9 +102,9 @@
 			};
 		};
 		AA527445045D9A6D00F39DA0 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_StringParser.h;
 			refType = 4;
@@ -117,9 +117,9 @@
 			};
 		};
 		AA79AED2045EFF5C002875C2 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = SC_StringParser.cpp;
 			refType = 4;
@@ -227,41 +227,41 @@
 			sourceTree = "<group>";
 		};
 		F50D050B02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = dfftlib.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050C02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = dlfcn.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050D02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = fftlib.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050E02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_AllocPool.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050F02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = scsynthsend.h;
 			refType = 4;
@@ -299,198 +299,198 @@
 			sourceTree = "<group>";
 		};
 		F50D054602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = clz.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = Hash.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_BoundsMacros.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_BufGen.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054A02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Constants.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054B02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_Dimension.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054C02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_FifoMsg.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054D02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_Graph.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054E02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_InlineBinaryOp.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054F02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_InlineUnaryOp.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_InterfaceTable.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = sc_msg_iter.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_Node.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_PlugIn.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055402E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_Rate.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_RGen.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_SndBuf.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Types.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_Unit.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_Wire.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055A02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_World.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055B02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_WorldOptions.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055D02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = Unroll.h;
 			refType = 4;
@@ -533,221 +533,221 @@
 			sourceTree = "<group>";
 		};
 		F50D055F02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = HashTable.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = IntFifo.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = MsgFifo.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PriorityQueue.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ReadWriteMacros.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_Complex.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_ComPort.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_CoreAudio.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Errors.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_GraphDef.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056A02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_Group.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056B02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_HiddenWorld.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056C02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Lib.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056D02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Lib_Cintf.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056E02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_List.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D056F02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Lock.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D057102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_Reply.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D057202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_Prototypes.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D057302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Samp.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D057502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_SequencedCommand.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D057602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_Str4.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D057702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_SyncCondition.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D057902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_SynthDef.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D057A02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_UnitDef.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D057B02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_UnitSpec.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D057C02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = SC_WireSpec.h;
 			refType = 4;
@@ -809,187 +809,187 @@
 			sourceTree = "<group>";
 		};
 		F50D05E902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = Samp.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05EB02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = SC_BufGen.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05EC02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = SC_Complex.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05ED02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_ComPort.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05EE02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_CoreAudio.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05EF02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = SC_Dimension.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05F002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_Errors.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05F102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = SC_Graph.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05F202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = SC_GraphDef.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05F302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = SC_Group.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05F402E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_Lib.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05F502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_Lib_Cintf.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05F702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_MiscCmds.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05F802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_Node.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05F902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = SC_Rate.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05FB02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = SC_SequencedCommand.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05FC02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_Str4.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05FD02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_SyncCondition.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05FE02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_Unit.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05FF02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = SC_UnitDef.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D060002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = SC_World.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D060202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = scsynth_main.cpp;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1017,9 +1017,9 @@
 			sourceTree = "<group>";
 		};
 		F50D069902E6A1C601CA2799 = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = CoreAudio.framework;
 			path = /System/Library/Frameworks/CoreAudio.framework;
 			refType = 0;
@@ -1034,25 +1034,25 @@
 			sourceTree = "<group>";
 		};
 		F50D06BE02E7F11301CA2799 = {
-			expectedFileType = archive.ar;
 			isa = PBXFileReference;
+			lastKnownFileType = archive.ar;
 			name = "libstdc++.a";
 			path = "/usr/lib/libstdc++.a";
 			refType = 0;
 			sourceTree = "<absolute>";
 		};
 		F50D06C002E7F29001CA2799 = {
-			expectedFileType = archive.ar;
 			isa = PBXFileReference;
+			lastKnownFileType = archive.ar;
 			name = libsndfile.a;
 			path = /usr/local/lib/libsndfile.a;
 			refType = 0;
 			sourceTree = "<absolute>";
 		};
 		F53F78F103B28353011C068F = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = Rendezvous.cpp;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1064,9 +1064,9 @@
 			};
 		};
 		F53F78F503B2842D011C068F = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = CoreServices.framework;
 			path = /System/Library/Frameworks/CoreServices.framework;
 			refType = 0;
@@ -1085,9 +1085,9 @@
 			};
 		};
 		F53F797C03B28832011C068F = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = Rendezvous.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1099,9 +1099,9 @@
 			};
 		};
 		F561BDB4033536A801C816AC = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Sem.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1113,32 +1113,32 @@
 			};
 		};
 		F59DF065030733E801CE0C16 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = dlopen.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F59DF066030733E801CE0C16 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_AllocPool.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F59DF067030733E801CE0C16 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = scsynthsend.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F59DF07103073A6001CE0C16 = {
-			expectedFileType = archive.ar;
+			explicitFileType = "compiled.mach-o.dylib";
 			fallbackIsa = PBXFileReference;
 			isa = PBXLibraryReference;
 			path = libscsynth.a;
@@ -1720,9 +1720,9 @@
 			targetProxy = 92B5F3080547315500496808;
 		};
 		F59DF0C5030777A101CE0C16 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_Sem.cpp;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1788,7 +1788,7 @@
 			};
 		};
 		F5CA8D2502E8041801CA2799 = {
-			expectedFileType = "compiled.mach-o.executable";
+			explicitFileType = "compiled.mach-o.executable";
 			fallbackIsa = PBXFileReference;
 			isa = PBXExecutableFileReference;
 			path = scsynth;
@@ -1895,9 +1895,9 @@
 			};
 		};
 		F5EB7BDB031805D701CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = OSC_Packet.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1914,9 +1914,9 @@
 			targetProxy = 92B5F30A0547315500496808;
 		};
 		F5EB7BE503184B8C01CA2799 = {
-			expectedFileType = text;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = text;
 			path = scsynthlib_exp;
 			refType = 4;
 			sourceTree = "<group>";

@@ -190,10 +190,23 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 		UnitSpec *unitSpec = graphDef->mUnitSpecs + i;
 		UnitSpec_Read(unitSpec, buffer);
 		
-		if (unitSpec->mCalcRate != calc_ScalarRate) graphDef->mNumCalcUnits++;
-		
-		if (unitSpec->mCalcRate == calc_FullRate) unitSpec->mRateInfo = &inWorld->mFullRate;
-		else unitSpec->mRateInfo = &inWorld->mBufRate;
+		switch (unitSpec->mCalcRate)
+		{
+			case calc_ScalarRate :
+				unitSpec->mRateInfo = &inWorld->mBufRate;
+				break;
+			case calc_BufRate :
+				graphDef->mNumCalcUnits++;
+				unitSpec->mRateInfo = &inWorld->mBufRate;
+				break;
+			case calc_FullRate :
+				graphDef->mNumCalcUnits++;
+				unitSpec->mRateInfo = &inWorld->mFullRate;
+				break;
+			case calc_DemandRate :
+				unitSpec->mRateInfo = &inWorld->mBufRate;
+				break;
+		}
 		
 		graphDef->mNodeDef.mAllocSize += unitSpec->mAllocSize;
 		graphDef->mNumWires += unitSpec->mNumOutputs;
