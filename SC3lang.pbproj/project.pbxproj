@@ -5,6 +5,42 @@
 	};
 	objectVersion = 38;
 	objects = {
+		908DBC360507C63D00000098 = {
+			fileEncoding = "-2147483619";
+			isa = PBXFileReference;
+			path = GoToPanel.M;
+			refType = 4;
+		};
+		908DBC370507C63D00000098 = {
+			fileRef = 908DBC360507C63D00000098;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		908DBC380507C65100000098 = {
+			fileEncoding = "-2147483619";
+			isa = PBXFileReference;
+			path = GoToPanel.h;
+			refType = 4;
+		};
+		908DBC390507C65100000098 = {
+			fileRef = 908DBC380507C65100000098;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		908DBC3A0507C66500000098 = {
+			isa = PBXFileReference;
+			name = GoToLinePanel.nib;
+			path = resources/GoToLinePanel.nib;
+			refType = 4;
+		};
+		908DBC3B0507C66500000098 = {
+			fileRef = 908DBC3A0507C66500000098;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		90A4CDA0044D5AF2000000AF = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -230,6 +266,7 @@
 				F50D050902E69B6B01CA2799,
 				C26BDCCE03D0B4FB00A87B78,
 				C21B4672046D847B00A87B78,
+				908DBC380507C65100000098,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -717,6 +754,7 @@
 				F5889A2C0397F2F801A87B78,
 				C26BDCCC03D0B4E900A87B78,
 				C21B4673046D847B00A87B78,
+				908DBC360507C63D00000098,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -1355,6 +1393,7 @@
 				920F883E0443F54D00A80088,
 				C21B4674046D847B00A87B78,
 				AAE9248D048143A400A8010B,
+				908DBC390507C65100000098,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1479,6 +1518,7 @@
 				F50D06BC02E6A60F01CA2799,
 				F50D06BD02E6A60F01CA2799,
 				F50D06C302E7F64801CA2799,
+				908DBC3B0507C66500000098,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1545,6 +1585,7 @@
 				920F88410443F59700A80088,
 				90A4CDA1044D5AF2000000AF,
 				C21B4675046D847B00A87B78,
+				908DBC370507C63D00000098,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2251,6 +2292,7 @@
 		};
 		F50D069D02E6A1C601CA2799 = {
 			children = (
+				908DBC3A0507C66500000098,
 				F50D06A602E6A60F01CA2799,
 				F50D06A802E6A60F01CA2799,
 				F50D06AA02E6A60F01CA2799,
