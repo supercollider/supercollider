@@ -104,6 +104,18 @@ Node {
 	//in some cases these need to be set.
 	prSetPlaying { arg flag=true; isPlaying = flag }
 	freeNodeID {  server.nodeAllocator.free(nodeID); nodeID = nil  }
+	
+	register { arg argServer;
+		server = argServer;
+		this.prSetNodeID;
+		RootNode(server).registerNode(this);
+	}
+	unregister {
+		RootNode(server).unregisterNode(this);
+		this.freeNodeID;
+	}
+	
+	
 	convertAddAction { arg symbol;
 		^#[\addToHead, \addToTail, \addBefore, \addAfter,\addBefore,\addReplace].indexOf(symbol) ? 1
 	}
@@ -180,15 +192,7 @@ Node {
 		group = next = prev = nil;
 	}
 	
-	register { arg argServer;
-		server = argServer;
-		this.prSetNodeID;
-		RootNode(server).registerNode(this);
-	}
-	unregister {
-		RootNode(server).unregisterNode(this);
-		this.freeNodeID;
-	}
+	
 	
 	hash {  ^server.hash bitXor: nodeID.hash	}
 	printOn { arg stream; stream << this.class.name << "(" << nodeID <<")" }
@@ -314,7 +318,7 @@ Synth : Node {
 		^this.prNew(defName, target.server).perform(addAction,target,args)
 	}
 	*prNew { arg defName, server;
-		^super.new.defName_(defName.asDefName).register(server)
+		^super.prNew(server).defName_(defName.asDefName)
 	}
 	
 	*newLoad { arg defName,args,target,addAction=\addToTail,dir="synthdefs/";
@@ -384,8 +388,8 @@ RootNode : Group {
 	*new { arg server, connected=true;
 		server = server ?? {Server.local};
 		^(roots.at(server.name) ?? {
-			^super.prNew.rninit(server)
-		}).connect(connected)
+			^super.prNew.rninit(server).connect(connected)
+		})
 	}
 	rninit { arg s;
 		server = s;
@@ -398,8 +402,21 @@ RootNode : Group {
 	*initClass {  roots = IdentityDictionary.new; }
 	nodeToServer {} // already running
 
-	connect { connected = true; if(nodeWatcher.notNil, { nodeWatcher.startListen }); }
-	disconnect { connected = false; if(nodeWatcher.notNil, { nodeWatcher.stopListen }); }
+	connect { arg argFlag=true;
+			connected = argFlag;
+			if(nodeWatcher.notNil, { 
+				if(argFlag, {
+					nodeWatcher.startListen;
+					nodeWatcher.register(this); 
+				}, {
+					nodeWatcher.stopListen;
+					nodeWatcher.clear;
+				}) 
+			});
+	 }
+	disconnect { 
+			this.connect(false);
+	}
 	
 	nodeWatcher { //lazy init
 		^nodeWatcher ?? {
@@ -410,7 +427,7 @@ RootNode : Group {
 	}
 	
 	registerNode { arg node;
-		if(connected and: {server.serverRunning}, {
+		if(connected && server.serverRunning, {
 			this.nodeWatcher.register(node);
 		})
 	}

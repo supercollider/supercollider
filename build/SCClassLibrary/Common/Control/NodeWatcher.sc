@@ -29,7 +29,7 @@ NodeWatcher {
 	lookUp { arg msg;
 		var res;
 		res = msg.collect({ arg nodeID; nodes.at(nodeID) });
-		^if(res.first.notNil, { res }, { nil });
+		^if(res.at(0).notNil, { res }, { nil });
 		//todo: remote creation scheme
 	}
 	
@@ -43,6 +43,7 @@ NodeWatcher {
 	stopListen {
 		if(isListening, {
 			responders.do({ arg item; item.remove });
+			this.clear;
 			isListening = false;
 		})
 	}
