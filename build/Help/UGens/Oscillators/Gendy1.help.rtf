@@ -1,8 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
-\red191\green0\blue0;\red0\green0\blue191;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs44 \cf0 Gendy1
@@ -17,12 +16,14 @@ The distributions are hard-coded in C but there is an option to have new amplitu
 Technical notes- X's plan as described in chapter 13 allows the 12 segments in the period to be successively modified with each new period. Yet the period is allowed to vary as the sum of the segment durations, as figure 1 demonstrates. We can setup some memory of n (conventionally 12) points, or even simply vary sucessively a single point's ordinate and duration. There are thus various schemes available to us. In one, fix period T and only move the (ti, Ei) within the period. In another, have a memory of 12 segments but allow continuous modification of the inter point intervals and the amplitudes. In yet another, just have one point and random walk its amplitude and duration based on the probability distribution. In this implementation I allow the user to initialise a certain number of memory points which is up to them. To restrict the period to be unchanging, you must set rate variation to zero (dscale=0).\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \ul Class Methods
+\f0\b \cf0 \ul \ulc0 Class Methods
 \f1\b0 \ulnone \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b *ar(ampdist=1, durdist=1, adparam=1.0, ddparam=1.0, minfreq=20, maxfreq=1000, ampscale= 0.5, durscale=0.5, initCPs=12, knum=12, mul=1.0, add=0.0)\
+\f0\b \cf0 *ar(ampdist=1, durdist=1, adparam=1.0, ddparam=1.0, minfreq=20, maxfreq=1000, ampscale= 0.5, durscale=0.5, initCPs=12, knum=12, mul=1.0, add=0.0)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
@@ -87,168 +88,168 @@ Where the sinus (Xenakis' name) is in this implementation taken as sampling from
 
 \f3\i0\fs18 \cf0 	\
 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs26 //warning- if you have lots of CPs and you have fast frequencies, the CPU cost goes up a lot because a new CP move happens every sample!
+\fs26 \cf0 //warning- if you have lots of CPs and you have fast frequencies, the CPU cost goes up a lot because a new CP move happens every sample!
 \fs18 	\
 \
 	\
-\cf2 //defaults	\cf3 \
-\{\cf4 Pan2\cf3 .ar(\cf4 Gendy1\cf3 .ar)\}.play\
+\cf2 //defaults	\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar)\}.play\
 \
-\cf2 //wandering bass/ powerline\cf3 \
-\{\cf4 Pan2\cf3 .ar(\cf4 Gendy1\cf3 .ar(1,1,1.0,1.0,30,100,0.3,0.05,5))\}.play\
+\cf2 //wandering bass/ powerline\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(1,1,1.0,1.0,30,100,0.3,0.05,5))\}.play\
 \
-\cf2 //play me	\cf3 \
-\{\cf4 Pan2\cf3 .ar(\cf4 RLPF\cf3 .ar(\cf4 Gendy1\cf3 .ar(2,3,minfreq:20, maxfreq:MouseX.kr(100,1000), durscale:0.0, initCPs:40), 500,0.3, 0.2), 0.0)\}.play\
+\cf2 //play me	\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 RLPF\cf0 .ar(\cf3 Gendy1\cf0 .ar(2,3,minfreq:20, maxfreq:MouseX.kr(100,1000), durscale:0.0, initCPs:40), 500,0.3, 0.2), 0.0)\}.play\
 \
-\cf2 //scream! - careful with your ears for this one!\cf3 \
+\cf2 //scream! - careful with your ears for this one!\cf0 \
 (\
 \{\
-\cf4 var\cf3  mx, my;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 var\cf0  mx, my;\
 \
-mx= \cf4 MouseX\cf3 .kr(220,440);\
-my= \cf4 MouseY\cf3 .kr(0.0,1.0);\
+mx= \cf3 MouseX\cf0 .kr(220,440);\
+my= \cf3 MouseY\cf0 .kr(0.0,1.0);\
 \
-\cf4 Pan2\cf3 .ar(\cf4 Gendy1\cf3 .ar(2,3,1,1,minfreq:mx, maxfreq:8*mx, ampscale:my, durscale:my, initCPs:7, mul:0.3), 0.0)\}.play\
+\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(2,3,1,1,minfreq:mx, maxfreq:8*mx, ampscale:my, durscale:my, initCPs:7, mul:0.3), 0.0)\}.play\
 )\
 \
 \
-\cf2 //1 CP = random noise effect\cf3 \
-\{\cf4 Pan2\cf3 .ar(\cf4 Gendy1\cf3 .ar(initCPs:1))\}.play\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //1 CP = random noise effect\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(initCPs:1))\}.play\
 \
-\cf2 //2 CPs = suudenly an oscillator (though a fast modulating one here)\cf3 \
-\{\cf4 Pan2\cf3 .ar(\cf4 Gendy1\cf3 .ar(initCPs:2))\}.play\
+\cf2 //2 CPs = suudenly an oscillator (though a fast modulating one here)\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(initCPs:2))\}.play\
 \
 \
-\cf2 //used as an LFO	\cf3 \
+\cf2 //used as an LFO	\cf0 \
 (\
-\{\cf4 Pan2\cf3 .ar(\cf4 SinOsc\cf3 .ar(\cf4 Gendy1\cf3 .kr(2,4,\cf4 SinOsc\cf3 .kr(0.1,0,0.49,0.51),\cf4 SinOsc\cf3 .kr(0.13,0,0.49,0.51), 3.4,3.5, \cf4 SinOsc\cf3 .kr(0.17,0,0.49,0.51), \cf4 SinOsc\cf3 .kr(0.19,0,0.49,0.51),10,10,50, 350), 0, 0.3), 0.0)\}.play\
+\{\cf3 Pan2\cf0 .ar(\cf3 SinOsc\cf0 .ar(\cf3 Gendy1\cf0 .kr(2,4,\cf3 SinOsc\cf0 .kr(0.1,0,0.49,0.51),\cf3 SinOsc\cf0 .kr(0.13,0,0.49,0.51), 3.4,3.5, \cf3 SinOsc\cf0 .kr(0.17,0,0.49,0.51), \cf3 SinOsc\cf0 .kr(0.19,0,0.49,0.51),10,10,50, 350), 0, 0.3), 0.0)\}.play\
 )\
 	\
-\cf2 //wasp\cf3 \
-\{\cf4 Pan2\cf3 .ar(\cf4 Gendy1\cf3 .ar(0, 0, \cf4 SinOsc\cf3 .kr(0.1, 0, 0.1, 0.9),1.0, 50,1000, 1,0.005, 12, 12, 0.2), 0.0)\}.play\
+\cf2 //wasp\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(0, 0, \cf3 SinOsc\cf0 .kr(0.1, 0, 0.1, 0.9),1.0, 50,1000, 1,0.005, 12, 12, 0.2), 0.0)\}.play\
 \
 \
-\cf2 //modulate distributions\cf3 \
-\cf2 //change of pitch as distributions change the duration structure and spectrum\cf3 \
-\{\cf4 Pan2\cf3 .ar(\cf4 Gendy1\cf3 .ar(\cf4 MouseX\cf3 .kr(0,7),\cf4 MouseY\cf3 .kr(0,7),mul:0.2), 0.0)\}.play\
+\cf2 //modulate distributions\cf0 \
+\cf2 //change of pitch as distributions change the duration structure and spectrum\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(\cf3 MouseX\cf0 .kr(0,7),\cf3 MouseY\cf0 .kr(0,7),mul:0.2), 0.0)\}.play\
 \
 \
-\cf2 //modulate num of CPs\cf3 \
-\{\cf4 Pan2\cf3 .ar(\cf4 Gendy1\cf3 .ar(knum:\cf4 MouseX\cf3 .kr(1,13),mul:0.2), 0.0)\}.play\
+\cf2 //modulate num of CPs\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(knum:\cf3 MouseX\cf0 .kr(1,13),mul:0.2), 0.0)\}.play\
 \
 \
-\cf2 //Gendy into Gendy...with cartoon side effects\cf3 \
-\{\cf4 Pan2\cf3 .ar(\cf4 Gendy1\cf3 .ar(maxfreq:\cf4 Gendy1\cf3 .kr(5,4,0.3, 0.7, 0.1, \cf4 MouseY\cf3 .kr(0.1,10), 1.0, 1.0, 5,5, 500, 600), knum:\cf4 MouseX\cf3 .kr(1,13),mul:0.2), 0.0)\}.play\
+\cf2 //Gendy into Gendy...with cartoon side effects\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(maxfreq:\cf3 Gendy1\cf0 .kr(5,4,0.3, 0.7, 0.1, \cf3 MouseY\cf0 .kr(0.1,10), 1.0, 1.0, 5,5, 500, 600), knum:\cf3 MouseX\cf0 .kr(1,13),mul:0.2), 0.0)\}.play\
 \
 \
-\cf2 //use SINUS to track any oscillator and take CP positions from it, use adparam and ddparam as the inputs to sample \cf3 \
-\{\cf4 Pan2\cf3 .ar(\cf4 Gendy1\cf3 .ar(6,6,\cf4 LFPulse\cf3 .kr(100, 0, 0.4, 1.0), \cf4 SinOsc\cf3 .kr(30, 0, 0.5),mul:0.2), 0.0)\}.play\
+\cf2 //use SINUS to track any oscillator and take CP positions from it, use adparam and ddparam as the inputs to sample \cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(6,6,\cf3 LFPulse\cf0 .kr(100, 0, 0.4, 1.0), \cf3 SinOsc\cf0 .kr(30, 0, 0.5),mul:0.2), 0.0)\}.play\
 \
 \
-\cf2 //try out near the corners especially\cf3 \
-\{\cf4 Pan2\cf3 .ar(\cf4 Gendy1\cf3 .ar(6,6,\cf4 LFPulse\cf3 .kr(\cf4 MouseX\cf3 .kr(0,200), 0, 0.4, 1.0), \cf4 SinOsc\cf3 .kr(\cf4 MouseY\cf3 .kr(0,200), 0, 0.5),mul:0.2), 0.0)\}.play\
+\cf2 //try out near the corners especially\cf0 \
+\{\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(6,6,\cf3 LFPulse\cf0 .kr(\cf3 MouseX\cf0 .kr(0,200), 0, 0.4, 1.0), \cf3 SinOsc\cf0 .kr(\cf3 MouseY\cf0 .kr(0,200), 0, 0.5),mul:0.2), 0.0)\}.play\
 \
 \
-\cf2 //texture\cf3 \
+\cf2 //texture\cf0 \
 (\
 \{\
-\cf4 Mix\cf3 .arFill(10,\{\
-\cf4 var\cf3  freq;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Mix\cf0 .arFill(10,\{\
+\cf3 var\cf0  freq;\
 \
 freq= rrand(130,160.3);\
-\cf4 Pan2\cf3 .ar(\cf4 SinOsc\cf3 .ar(\cf4 Gendy1\cf3 .ar(6.rand,6.rand,\cf4 SinOsc\cf3 .kr(0.1,0,0.49,0.51),\cf4 SinOsc\cf3 .kr(0.13,0,0.49,0.51),freq ,freq, \cf4 SinOsc\cf3 .kr(0.17,0,0.49,0.51), \cf4 SinOsc\cf3 .kr(0.19,0,0.49,0.51), 12, 12, 200, 400), 0, 0.1), 1.0.rand2)\
+\cf3 Pan2\cf0 .ar(\cf3 SinOsc\cf0 .ar(\cf3 Gendy1\cf0 .ar(6.rand,6.rand,\cf3 SinOsc\cf0 .kr(0.1,0,0.49,0.51),\cf3 SinOsc\cf0 .kr(0.13,0,0.49,0.51),freq ,freq, \cf3 SinOsc\cf0 .kr(0.17,0,0.49,0.51), \cf3 SinOsc\cf0 .kr(0.19,0,0.49,0.51), 12, 12, 200, 400), 0, 0.1), 1.0.rand2)\
 \});\
 \}.play\
 )\
 \
-\cf2 //wahhhhhhhh\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //wahhhhhhhh\cf0 \
 (\
-\{\cf4 Pan2\cf3 .ar(\
-\cf4 CombN\cf3 .ar(\
-\cf4 Resonz\cf3 .ar(\
-\cf4 Gendy1\cf3 .ar(2,3,minfreq:1, maxfreq:\cf4 MouseX\cf3 .kr(10,700), scaled:0.0, initCPs:10),\
-\cf4 MouseY\cf3 .kr(50,1000), 0.1)\
+\{\cf3 Pan2\cf0 .ar(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 CombN\cf0 .ar(\
+\cf3 Resonz\cf0 .ar(\
+\cf3 Gendy1\cf0 .ar(2,3,minfreq:1, maxfreq:\cf3 MouseX\cf0 .kr(10,700), scaled:0.0, initCPs:10),\
+\cf3 MouseY\cf0 .kr(50,1000), 0.1)\
 ,0.1,0.1,5, 0.6\
 )\
 , 0.0)\}.play\
 )\
 \
 \
-\cf2 //overkill\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //overkill\cf0 \
 (\
 \{\
-\cf4 var\cf3  n;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 var\cf0  n;\
 n=10;\
 \
-\cf4 Mix\cf3 .arFill(n,\{\
-\cf4 var\cf3  freq, numcps;\
+\cf3 Mix\cf0 .arFill(n,\{\
+\cf3 var\cf0  freq, numcps;\
 \
 freq= rrand(130,160.3);\
 numcps= rrand(2,20);\
-\cf4 Pan2\cf3 .ar(\cf4 Gendy1\cf3 .ar(6.rand,6.rand,1.0.rand,1.0.rand,freq ,freq, 1.0.rand, 1.0.rand, numcps, \cf4 SinOsc\cf3 .kr(exprand(0.02,0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)\
+\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(6.rand,6.rand,1.0.rand,1.0.rand,freq ,freq, 1.0.rand, 1.0.rand, numcps, \cf3 SinOsc\cf0 .kr(exprand(0.02,0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)\
 \});\
 \}.play\
 )\
 \
 \
 \
-\cf0 \
 \
-\cf5 //another traffic moment\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //another traffic moment\cf0 \
 (\
 \{\
-\cf6 var\cf0  n;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 var\cf0  n;\
 n=10;\
 \
 Resonz.ar(\
-\cf6 Mix\cf0 .arFill(n,\{\
-\cf6 var\cf0  freq, numcps;\
+\cf3 Mix\cf0 .arFill(n,\{\
+\cf3 var\cf0  freq, numcps;\
 \
 freq= rrand(50,560.3);\
 numcps= rrand(2,20);\
-\cf6 Pan2\cf0 .ar(\cf6 Gendy1\cf0 .ar(6.rand,6.rand,1.0.rand,1.0.rand,freq ,freq, 1.0.rand, 1.0.rand, numcps, \cf6 SinOsc\cf0 .kr(exprand(0.02,0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)\
+\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(6.rand,6.rand,1.0.rand,1.0.rand,freq ,freq, 1.0.rand, 1.0.rand, numcps, \cf3 SinOsc\cf0 .kr(exprand(0.02,0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)\
 \})\
 ,MouseX.kr(100,2000), MouseY.kr(0.01,1.0))\
 ;\
 \}.play\
-)\cf3 \
+)\
 \
 \
 \
 \
-\cf2 //xenacut\cf3 \
-\cf2 //me first\cf3 \
 (\
 \{\
-\cf4 var\cf3  n;\
+\cf3 var\cf0  n;\
 n=15;\
 \
-\cf4 Out\cf3 .ar(17,\
-\cf4 Resonz\cf3 .ar(\
-\cf4 Mix\cf3 .arFill(n,\{\
-\cf4 var\cf3  freq, numcps;\
+\cf3 Out\cf0 .ar(0,\
+\cf3 Resonz\cf0 .ar(\
+\cf3 Mix\cf0 .arFill(n,\{\
+\cf3 var\cf0  freq, numcps;\
 \
 freq= rrand(330,460.3);\
 numcps= rrand(2,20);\
-\cf4 Pan2\cf3 .ar(\cf4 Gendy1\cf3 .ar(6.rand,6.rand,1.0.rand,1.0.rand,freq,\cf4 MouseX\cf3 .kr(freq,2*freq), 1.0.rand, 1.0.rand, numcps, \cf4 SinOsc\cf3 .kr(exprand(0.02,0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)\
+\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(6.rand,6.rand,1.0.rand,1.0.rand,freq,\cf3 MouseX\cf0 .kr(freq,2*freq), 1.0.rand, 1.0.rand, numcps, \cf3 SinOsc\cf0 .kr(exprand(0.02,0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)\
 \})\
-,\cf4 MouseX\cf3 .kr(100,2000), \cf4 MouseY\cf3 .kr(0.01,1.0))\
+,\cf3 MouseX\cf0 .kr(100,2000), \cf3 MouseY\cf0 .kr(0.01,1.0))\
 )\
 \
 \}.play;\
 )\
 \
 \
-\cf2 //now me\cf3 \
-(\
-\cf4 BBCut\cf3 ([\cf4 BBCSFinal\cf3 (0.7,0,\{\cf4 arg\cf3  in; \cf4 Gendy1\cf3 .kr(3,5,0.7,0.8,0.2,0.3,mul:in)\}),\cf4 BBCSAudioIn\cf3 .newOnBus([17,18], pbsfunc:\cf4 SQPushFXPitch\cf3 .new(\{rrand(0.97,0.99)\},pbchance:0.99),atkprop:0.1, relprop:0.1, curve: -16)]\
-,\cf4 ChooseCutProc\cf3 (\{[0.75,1.5].choose\},4)).tempo_(1.4).go;\
-\
-\cf4 BBCut\cf3 ([\cf4 BBCSFinal\cf3 (0.5,0,\{\cf4 arg\cf3  in; \cf4 CombN\cf3 .ar(in, 0.1785,0.1784,1.48*4, in)\}),\cf4 BBCSAudioIn\cf3 .newOnBus([17,18], ampfunc:\{[1,1,1,1,0].choose\},atkprop:0.1, relprop:0.1, curve: -16)], \cf4 ChooseCutProc\cf3 (\{[0.25,0.125].wchoose([0.9,0.1])\},2)).tempo_(2.8).go;\
-\
-\{\cf4 SinOsc\cf3 .ar((2.8.reciprocal)/16)*\cf4 In\cf3 .ar(17,2)\}.play\
-)\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //SuperCollider implementation by Nick Collins (sicklincoln.org)}
