@@ -28,6 +28,13 @@ Color {
 	blend { arg that, blend;
 		^Color.fromArray(blend(this.asArray, that.asArray, blend));
 	}
+	vary { arg val=0.1, alphaVal=0; 
+		^Color.new(
+			(red + val.rand2).clip(0,1), (green + val.rand2).clip(0,1), (blue + val.rand2).clip(0,1), 
+			(alpha + alphaVal.rand2).clip(0,1)
+		) 
+	}
+	
 	asArray { ^[red, green, blue, alpha] }
 
 	printOn { arg stream;
