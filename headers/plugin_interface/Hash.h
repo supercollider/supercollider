@@ -23,6 +23,7 @@
 #define _Hash_
 
 #include "SC_Types.h"
+#include <machine/endian.h>
 
 // These hash functions are among the best there are in terms of both speed and quality.
 // A good hash function makes a lot of difference.

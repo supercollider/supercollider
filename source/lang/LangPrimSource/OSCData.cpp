@@ -138,10 +138,12 @@ void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
 				packet->addb(arrayObj->b, arrayObj->size);
 			} else if (isKindOf(slot->uo, class_array)) {
 				PyrObject *arrayObj = slot->uo;
-				packet->addtag('b');
-				scpacket packet2;
-				makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);				
-				packet->addb((uint8*)packet2.data(), packet2.size());
+				if (arrayObj->size) {
+					packet->addtag('b');
+					scpacket packet2;
+					makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);				
+					packet->addb((uint8*)packet2.data(), packet2.size());
+				}
 			}
 			break;
 		case tagNil :

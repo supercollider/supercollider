@@ -67,6 +67,7 @@ struct sc_msg_iter
 	int32 *gets4(char* defaultValue = 0);
 	size_t getbsize();
 	void getb(char* outData, size_t inSize);
+	void skipb();
 	int remain() { return endpos - rdpos; }
         
     char nextTag(char defaultTag = 'f') { return tags ? tags[count] : defaultTag; }
@@ -200,6 +201,15 @@ inline void sc_msg_iter::getb(char* outArray, size_t size)
 	rdpos += sizeof(int32);
 	size_t len4 = (len + 4) & -4;
 	memcpy(outArray, rdpos, size);
+	rdpos += len4;
+	count ++;
+}
+
+inline void sc_msg_iter::skipb()
+{
+	size_t len = OSCint(rdpos);
+	rdpos += sizeof(int32);
+	size_t len4 = (len + 4) & -4;
 	rdpos += len4;
 	count ++;
 }

@@ -38,9 +38,124 @@ int sendall(int socket, const void *msg, size_t len);
 
 void ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket);
 
+void dumpOSCmsg(int inSize, char* inData)
+{
+	int size;
+	char *data;
+	
+	if (inData[0]) {
+		char *addr = inData;
+		data = OSCstrskip(inData);
+		size = inSize - (data - inData);
+		scprintf("[ \"%s\",", addr);
+	}
+	else
+	{
+		scprintf("[ %d,", *(int32*)inData);
+		data = inData + 4;
+		size = inSize - 4;
+	}
+	
+	sc_msg_iter msg(size, data);
+				
+	while (msg.remain())
+	{
+		char c = msg.nextTag('i');
+		switch(c)
+		{
+			case 'i' :
+				scprintf(" %d", msg.geti());
+				break;
+			case 'f' :
+				scprintf(" %g", msg.getf());
+				break;
+			case 's' :
+				scprintf(" \"%s\"", msg.gets());
+				break;
+			case 'b' :
+				scprintf(" DATA[%d]", msg.getbsize());
+				msg.skipb();
+				break;
+			default :
+				scprintf(" !unknown tag '%c' 0x%02x !", isprint(c)?c:'?', (unsigned char)c & 255);
+				goto leave;
+		}
+		if (msg.remain()) scprintf(",");
+	}
+leave:
+	scprintf(" ]\n");
+}
+
+void hexdump(int size, char* data)
+{
+	char ascii[20];
+	int padsize = (size + 15) & -16;
+	scprintf("size %d\n", size);
+	for (int i=0; i<padsize; ++i)
+	{
+		if ((i&15)==0)
+		{
+			scprintf("%4d   ", i);
+		}
+		if (i >= size) 
+		{
+			scprintf("   ");
+			ascii[i&15] = 0;
+		}
+		else 
+		{
+			scprintf("%02x ", (unsigned char)data[i] & 255);
+			
+			if (isprint(data[i])) ascii[i&15] = data[i];
+			else ascii[i&15] = '.';
+		}
+		if ((i&15)==15)
+		{
+			ascii[16] = 0;
+			scprintf("  |%s|\n", ascii);
+		}
+		else if ((i&3)==3)
+		{
+			scprintf(" ");
+		}
+	}
+	scprintf("\n");
+}
+
+void dumpOSC(int mode, int size, char* inData)
+{
+	if (mode & 1)
+	{
+		if (strcmp(inData, "#bundle") == 0) 
+		{
+			char* data = inData + 8;
+			scprintf("[ \"#bundle\", %lld, ", *(int64*)data);
+			data += 8;
+			char* dataEnd = inData + size;
+			while (data < dataEnd) {
+				int32 msgSize = *(int32*)data;
+				data += sizeof(int32);
+				scprintf("\n    ");
+				dumpOSCmsg(msgSize, data);
+				data += msgSize;
+				if (data < dataEnd) scprintf(",");
+			}
+			scprintf("]\n");
+		}
+		else 
+		{
+			dumpOSCmsg(size, inData);
+		}
+	}
+	
+	if (mode & 2) hexdump(size, inData);
+}
+
 void World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc)
 {
 	if (inSize > 0) {
+		if (inWorld->mDumpOSC) dumpOSC(inWorld->mDumpOSC, inSize, inData);
+
 		OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 		char *data = (char*)malloc(inSize);
 		packet->mReplyAddr.mSockAddr.sin_addr.s_addr = 0;
@@ -223,6 +338,8 @@ void* SC_UdpInPort::Run()
 								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, &packet->mReplyAddr.mSockAddrLen);
 		
 		if (size > 0) {
+			if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, size, data);
+			
 			data = (char*)realloc(data, size); // give back unused portion - a smart malloc should coalesce in place
 			packet->mReplyAddr.mReplyFunc = udp_reply_func;
 			packet->mSize = size;
@@ -375,6 +492,8 @@ void* SC_TcpConnectionPort::Run()
 			char *data = (char*)malloc(msglen);
 			size = recvall(mSocket, data, msglen);
 			if (size < msglen) goto leave;
+			
+			if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, size, data);
 			
 			packet->mReplyAddr.mReplyFunc = tcp_reply_func;
 			packet->mSize = msglen;

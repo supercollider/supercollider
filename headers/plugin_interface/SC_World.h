@@ -83,6 +83,7 @@ struct World
 	
 	bool mRealTime;
 	bool mRunning;
+	int mDumpOSC;
 };
 
 extern "C" {

@@ -595,6 +595,14 @@ SCErr meth_quit(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 	return kSCErr_None;
 }
 
+SCErr meth_dumpOSC(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_dumpOSC(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+{
+	sc_msg_iter msg(inSize, inData);
+	inWorld->mDumpOSC = msg.geti();
+	return kSCErr_None;
+}
+
 SCErr meth_b_set(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_b_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
@@ -839,7 +847,9 @@ void initMiscCommands()
 
 	NEW_COMMAND(c_set);		
 	NEW_COMMAND(c_setn);		
-	NEW_COMMAND(c_fill);					
+	NEW_COMMAND(c_fill);	
+					
+	NEW_COMMAND(dumpOSC);					
 }
 
 
