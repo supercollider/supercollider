@@ -99,22 +99,17 @@ String[char] : RawArray {
 	}
 	
 	containsStringAt { arg index, string;
+		if (string.size > (this.size - index), { ^false });
 		string.do({ arg char, i;
 				if(char != this.at(index + i), { ^false })
 		});
 		^true
 	}
 	
+	
 	// case insensitive
 	
-	icontainsStringAt { arg index, string;
-		string.do({ arg char, i;
-				var myChar;
-				myChar = this.at(index + i);
-				if((char.toLower != myChar) and: {char.toUpper != myChar}, {  ^false  })
-		})
-		^true
-	}
+	icontainsStringAt { arg index, string;		if (string.size > (this.size - index), { ^false });		string.do({ arg char, i;			if (this.at(index + i).toLower != char.toLower, { ^false });		})		^true	}
 	
 	contains { arg string;
 		var firstChar;
@@ -204,23 +199,7 @@ String[char] : RawArray {
 		_String_Dirname;
 		^this.primitiveFailed
 	}
-	splitext {
-		var n, m;
-		n = this.size;
-		n.do({
-			arg i;
-			m = n - i - 1;
-
-			if (this.at(m) == $\., {
-				^[this.copyFromStart(m - 1), this.copyToEnd(m + 1)]
-			});
-
-			if (this.at(m) == $/, {
-				^[this.copy, nil]
-			});
-		});
-		^[this.copy, nil]
-	}
+	splitext {		this.reverseDo({ arg char, i;			if (char == $\., {				^[this.copyFromStart(this.size - 2 - i), this.copyToEnd(this.size - i)]			});		});		^[this, nil]	}
 	
 	// runs a unix command and returns the result code.
 	//unixCmd { _String_System ^this.primitiveFailed }
