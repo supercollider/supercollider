@@ -74,6 +74,13 @@ Function : AbstractFunction {
 	// ControlView support
 	set { arg ... args; ^this.valueArray(args) }
 	get { arg prevVal; ^prevVal }
+	
+	
+	awake { arg inTime;
+		var time;
+		time = inTime; // prevent optimization
+		^this.value(inTime)
+	}
 }
 
 

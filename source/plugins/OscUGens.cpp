@@ -3069,6 +3069,137 @@ void Klank_next(Klank *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void normalize_samples(int size, float* data, float peak)
+{
+	float maxamp = 0.0;
+	for (int i=0; i<size; ++i) {
+		float absamp = fabs(data[i]);
+		if (absamp > maxamp) maxamp = absamp;
+	}
+	if (maxamp > 0.0) {
+		float ampfac = peak / maxamp;
+		for (int i=0; i<size; ++i) {
+			data[i] *= ampfac;
+		}
+	}
+}
+
+void normalize_wsamples(int size, float* data, float peak)
+{
+	float maxamp = 0.0;
+	for (int i=0; i<size; i+=2) {
+		float absamp = fabs(data[i] + data[i+1]);
+		if (absamp > maxamp) maxamp = absamp;
+	}
+	if (maxamp > 0.0) {
+		float ampfac = peak / maxamp;
+		for (int i=0; i<size; ++i) {
+			data[i] *= ampfac;
+		}
+	}
+}
+
+void add_partial(int size, float *data, double partial, double amp, double phase)
+{
+	if (amp == 0.0) return;
+	double w = (partial * 2.0 * 3.1415926535897932384626433832795) / (double)size;
+	for (int i=0; i<size; ++i) {
+		data[i] += amp * sin(phase);
+		phase += w;
+	}
+}
+
+void add_wpartial(int size, float *data, double partial, double amp, double phase)
+{
+	if (amp == 0.0) return;
+	int size2 = size >> 1;
+	double w = (partial * 2.0 * 3.1415926535897932384626433832795) / (double)size2;
+	double cur = amp * sin(phase);
+	phase += w;
+	for (int i=0; i<size; i+=2) {
+		double next = amp * sin(phase);
+		data[i] += 2 * cur - next;
+		data[i+1] += next - cur;
+		cur = next;
+		phase += w;
+	}
+}
+
+
+enum {
+	flag_Normalize = 1,
+	flag_Wavetable = 2,
+	flag_Clear = 4
+};
+
+void SineFill1(struct SndBuf *buf, struct sc_msg_iter *msg)
+{
+	if (buf->channels != 1) return;
+	
+	int flags = msg->geti();
+	
+	float *data = buf->data;
+	int size = buf->samples;
+	
+	if (flags & flag_Clear) Fill(size, data, 0.);
+	for (int partial=1; msg->remain(); partial++) {
+		double amp = msg->getf();
+		if (flags & flag_Wavetable) add_wpartial(size, data, partial, amp, 0.);
+		else add_partial(size, data, partial, amp, 0.);
+	}
+	
+	if (flags & flag_Normalize) {
+		if (flags & flag_Wavetable) normalize_wsamples(size, data, 1.);
+		else normalize_samples(size, data, 1.);
+	}
+}
+
+void SineFill2(struct SndBuf *buf, struct sc_msg_iter *msg)
+{
+	if (buf->channels != 1) return;
+	
+	int flags = msg->geti();
+	
+	float *data = buf->data;
+	int size = buf->samples;
+	
+	if (flags & flag_Clear) Fill(size, data, 0.);
+	
+	while (msg->remain()) {
+		double partial = msg->getf();
+		double amp = msg->getf();
+		if (flags & flag_Wavetable) add_wpartial(size, data, partial, amp, 0.);
+		else add_partial(size, data, partial, amp, 0.);
+	}
+	if (flags & flag_Normalize) {
+		if (flags & flag_Wavetable) normalize_wsamples(size, data, 1.);
+		else normalize_samples(size, data, 1.);
+	}
+}
+
+void SineFill3(struct SndBuf *buf, struct sc_msg_iter *msg)
+{
+	if (buf->channels != 1) return;
+	
+	int flags = msg->geti();
+	
+	float *data = buf->data;
+	int size = buf->samples;
+	
+	if (flags & flag_Clear) Fill(size, data, 0.);
+	
+	while (msg->remain()) {
+		double partial = msg->getf();
+		double amp = msg->getf();
+		double phase = msg->getf();
+		if (flags & flag_Wavetable) add_wpartial(size, data, partial, amp, phase);
+		else add_partial(size, data, partial, amp, phase);
+	}
+	if (flags & flag_Normalize) {
+		if (flags & flag_Wavetable) normalize_wsamples(size, data, 1.);
+		else normalize_samples(size, data, 1.);
+	}
+}
 
 
 
@@ -3099,6 +3230,10 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Pulse);
 	DefineDtorUnit(Klang);
 	DefineDtorUnit(Klank);
+
+	DefineBufGen("sine1", SineFill1);
+	DefineBufGen("sine2", SineFill2);
+	DefineBufGen("sine3", SineFill3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

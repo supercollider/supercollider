@@ -21,6 +21,7 @@ Thread : Stream {
 		_Thread_Init
 		^this.primitiveFailed
 	}
+	copy { ^this } // sorry cannot copy
 	
 	randSeed_ { arg seed;
 		// You supply an integer seed.
@@ -70,7 +71,7 @@ Routine : Thread {
 		_RoutineStop
 		^this.primitiveFailed
 	}
-	
+		
 	// PRIVATE
 	awake { arg inTime;
 		time = inTime;

@@ -418,7 +418,9 @@ Object {
 
 	// scheduling
 	awake { arg inTime;
-		^this.value(inTime)
+		var time;
+		time = inTime; // prevent optimization
+		^this.next(inTime)
 	}
 
 	// catch binary operators failure
