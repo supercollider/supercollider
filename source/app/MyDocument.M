@@ -500,7 +500,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
         NSString *nsstring = [textView string];
         if (!nsstring) {
             post("text view has no string\n");
-            return errFailed;
+            return;
         }
         [nsstring getLineStart: &lineStart end: &lineEnd contentsEnd: nil forRange: range];
         range = NSMakeRange(lineStart, lineEnd - lineStart);
@@ -540,7 +540,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     NSString* helpFilePath = nil;
 
     NSFileManager* fileManager = [NSFileManager defaultManager];
-    if (!fileManager) helpFilePath; // == NULL
+    if (!fileManager) return helpFilePath; // == NULL
 
     helpFilePath = helpFileWithName(fileManager, selection, @".help.rtf");
     if (!helpFilePath) {
