@@ -1,3 +1,4 @@
+
 Inspector {
 	classvar <allInspectors;
 	
@@ -40,20 +41,15 @@ ObjectInspector : Inspector {
 	var stringView, slotInspectors;
 	
 	numLines {
-		^min(20, object.slotSize); // don't display too many lines
+		^min(30, object.slotSize); // don't display too many lines
 	}
 	
 	init {		
-		allInspectors = allInspectors.add(this);
-						
+		allInspectors = allInspectors.add(this);		
 		this.makeWindow;
-		
 		vpos = 4;
-		
 		this.makeHead;
-		
 		this.makeBody;
-				
 		window.refresh;
 	}
 	
@@ -196,7 +192,7 @@ SlotInspector {
 		slotKeyView = SCStaticText(w, Rect(8, vpos, 110, this.buttonHeight));
 		slotKeyView.align = \right;
 		slotKeyView.font = Font("Palatino", 12);
-		slotKeyView.background = Color.grey(0.85);
+		//slotKeyView.background = Color.grey(0.85);
 		
 		if (key.isKindOf(Symbol), {
 			hasGetter = class.findMethod(key).notNil;
@@ -205,6 +201,12 @@ SlotInspector {
 			hasGetter = true;
 			hasSetter = object.mutable;
 		});
+		if(hasGetter,{
+			slotKeyView.background = Color.white(0.85)
+		},{
+			slotKeyView.background = Color.grey(0.85);
+		});
+		
 		vbounds = Rect(122, vpos, 218, this.buttonHeight);
 		if (hasSetter, {
 			if (hasGetter, {
