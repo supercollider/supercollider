@@ -147,6 +147,8 @@ public:
 
 	double GetAvgCPU() const { return mAvgCPU; }
 	double GetPeakCPU() const { return mPeakCPU; }
+	double GetSampleRate() const { return mSampleRate; }
+	double GetActualSampleRate() const { return mSmoothSampleRate; }	
 };
 
 

@@ -766,13 +766,15 @@ bool AudioStatusCmd::Stage2()
 {
 	scpacket packet;
 	packet.adds("status.reply");
-	packet.maketags(8);
+	packet.maketags(10);
 	packet.addtag(',');
 	packet.addtag('i');
 	packet.addtag('i');
 	packet.addtag('i');
 	packet.addtag('i');
 	packet.addtag('i');
+	packet.addtag('f');
+	packet.addtag('f');
 	packet.addtag('f');
 	packet.addtag('f');
 
@@ -785,6 +787,8 @@ bool AudioStatusCmd::Stage2()
 	SC_AudioDriver *driver = mWorld->hw->mAudioDriver;
 	packet.addf(driver->GetAvgCPU());
 	packet.addf(driver->GetPeakCPU());
+	packet.addf(driver->GetSampleRate());
+	packet.addf(driver->GetActualSampleRate());
 
 	SendReply(&mReplyAddress, packet.data(), packet.size());
 

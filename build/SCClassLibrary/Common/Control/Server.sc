@@ -107,6 +107,7 @@ Server : Model {
 
 	var <numUGens=0,<numSynths=0,<numGroups=0,<numSynthDefs=0;
 	var <avgCPU, <peakCPU;
+	var <sampleRate, <actualSampleRate;
 	
 	var alive = false, booting = false, aliveThread, statusWatcher;
 	var <>tree;
@@ -292,13 +293,10 @@ Server : Model {
 	addStatusWatcher {
 		statusWatcher = 
 			OSCresponder(addr, 'status.reply', { arg time, resp, msg;
+				var cmd, one;
 				alive = true;
-				numUGens = msg.at(2);
-				numSynths = msg.at(3);
-				numGroups = msg.at(4);
-				numSynthDefs = msg.at(5);
-				avgCPU = msg.at(6);
-				peakCPU = msg.at(7);
+				#cmd, one, numUGens, numSynths, numGroups, numSynthDefs, 
+					avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
 				{
 					this.serverRunning_(true);
 					this.changed(\counts);
