@@ -34,194 +34,14 @@ File utilties that depend on the Cocoa framework.
 
 #import "SCDialog.h"
 
-//#import "PyrNSconversions.M"
-
 inline NSString* nsStringFromPyrSlot(PyrSlot *slot)
 {
     PyrString* pyrString = slot->uos;
     return [NSString stringWithCString: pyrString->s length: pyrString->size];
 }
 
-id nsCodableFromPyrSlot(PyrSlot* b)
-{
-    if(IsFloat(b)) { // floats don't have tags, check for them first
-        return [NSNumber numberWithFloat: b->uf];
-    }
-    if( ( classOfSlot(b) )->name.us == s_string ) {
-        return nsStringFromPyrSlot(b);
-    }
-    
-    // !! WARNING :  will break if array is not first instance variable in the Dictionary SC class
-    // identity dictionary doesn't work this way
-    // maybe better to have a primitive for dictionaries that passes in keys, values
-    if(  ( classOfSlot(b) )->name.us == s_dictionary ) {
-        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-        PyrSlot *array = &(b->uo->slots[0]); 
-        int i = 0;
-        PyrSlot *key;
-        for(;i < array->uo->size; i += 2) {
-            key = &( array->uo->slots[i] );
-            if( NotNil( key )) {
-                [dict 
-                    setObject: nsCodableFromPyrSlot( &(array->uo->slots[i+1]) ) 
-                    forKey: [(NSObject*)nsCodableFromPyrSlot(key) description] // symbol, string, number, or ?
-                ];
-            }
-        }
-        return dict;
-    }
-    
-    switch (b->utag) {
-            case tagInt :
-                return [NSNumber numberWithInt: b->ui];
-                break;
-            case tagSym :
-                return [NSString stringWithCString: b->us->name];
-                break;
-            case tagChar :
-                return [NSString stringWithFormat: @"%c",b->uc];
-                break;
-            case tagNil :
-                return [NSNull null];
-                break;
-            case tagFalse :
-                return [NSNumber numberWithBool: NO];
-                break;
-            case tagTrue :
-                return [NSNumber numberWithBool: YES];
-                break;
-            case tagPtr:
-                return [NSNull null];
-                break;
-            case tagObj:
-                    if (! isSubclassOf( b->uo->classptr, class_sequenceable_collection )) {
-                        post("Cannot convert object for PropertyList:\n");
-                        dumpObjectSlot(b);
-                        return [NSNull null];
-                    } else { // sequenceable collections
-                        if(b->uo->size) {
-                            NSMutableArray *array = [NSMutableArray arrayWithCapacity: b->uo->size];
-                            int i;
-                            for(i = 0; i < b->uo->size; i++) {
-                                [array insertObject: nsCodableFromPyrSlot(&(b->uo->slots[i])) atIndex: i];
-                            }
-                            return array;
-                        } else {
-                            return [NSArray array];
-                        }
-                    }
-                    break;
-                
-    /*   
-            //dict must do values
-                NSNumber with infinity
-            NaN
-                NSNumber with NaN
-                
-            default : // object asString
-    */    
-    }
-    
-    // can't happen ?
-    NSLog( @"writeAsPlist failed to determine type of object");
-    return [NSNull null];
-}
-
-#if 0
-commenting out because it has compile errors on new compiler and it is not used anyway.
-void setInvocationArgFromPyrSlot(NSInvocation *invocation,int i,PyrSlot* slot) 
-{
-    if(IsFloat(slot)) { // floats don't have tags, check for them first
-        [invocation setArgument: &slot->uf atIndex: i];
-        return;
-    }
-    if( ( classOfSlot(slot) )->name.us == s_string ) {
-        [invocation setArgument: nsStringFromPyrSlot(slot) atIndex: i];
-        return;
-    }
-    
-    // !! WARNING :  will break if array is not first instance variable in the SC class
-    // identity dictionary doesn't work this way
-    // maybe better to have a primitive for dictionaries that passes in keys, values
-    if(  ( classOfSlot(slot) )->name.us == s_dictionary ) {
-        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-        PyrSlot *array = &(slot->uo->slots[0]); 
-        int i = 0;
-        PyrSlot *key;
-        for(;i < array->uo->size; i += 2) {
-            key = &( array->uo->slots[i] );
-            if( NotNil( key )) {
-                [dict 
-                    setObject: nsCodableFromPyrSlot( &(array->uo->slots[i+1]) ) 
-                    forKey: [(NSObject*)nsCodableFromPyrSlot(key) description] // symbol, string, number, or ?
-                ];
-            }
-        }
-        [invocation setArgument: dict atIndex: i];
-        return;
-    }
-    
-    switch (slot->utag) {
-            case tagInt :
-                [invocation setArgument: &slot->ui atIndex: i];
-                return;
-            case tagSym :
-                [invocation setArgument: [NSString stringWithCString: slot->us->name] atIndex: i];
-                return ;
-            case tagChar :
-                [invocation setArgument: &slot->uc atIndex: i];
-                return;
-            case tagNil :
-                [invocation setArgument: nil atIndex: i];
-                return;
-            case tagFalse :
-                [invocation setArgument: NO atIndex: i];
-                return;
-            case tagTrue :
-                [invocation setArgument: YES atIndex: i];
-                return;
-            case tagPtr:
-                post("!!! notYetImplemented: get ptr from Ptr object\n");
-                [invocation setArgument: NULL atIndex: i];
-                return;
-            case tagObj:
-                    if (! isSubclassOf( slot->uo->classptr, class_sequenceable_collection )) {
-                        post("Cannot convert object for setInvocationArgFromPyrSlot:\n");
-                        [invocation setArgument: NULL atIndex: i];
-                        return;
-                    } else { // sequenceable collections
-                        if(slot->uo->size) {
-                            NSMutableArray *array = [NSMutableArray arrayWithCapacity: slot->uo->size];
-                            int i;
-                            for(i = 0; i < slot->uo->size; i++) {
-                                [array insertObject: nsCodableFromPyrSlot(&(slot->uo->slots[i])) atIndex: i];
-                            }
-                            [invocation setArgument: array atIndex: i];
-                        } else {
-                            [invocation setArgument: [NSArray array] atIndex: i];
-                        }
-                        return;
-                    }
-                    break;
-                
-    /*   
-            //dict must do values
-                NSNumber with infinity
-            NaN
-                NSNumber with NaN
-                
-            default : // object asString
-    */    
-    }
-    
-    // can't happen ?
-    NSLog( @"setInvocationArgFromPyrSlot failed to determine type of object");
-    [invocation setArgument: NULL atIndex: i];
-}
-#endif
 
 /** PRIMITIVES **/
-
 int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed);
 int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
 {
@@ -252,21 +72,6 @@ int prSavePanel(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-int prSaveAsPlist(struct VMGlobals *g, int numArgsPushed);
-int prSaveAsPlist(struct VMGlobals *g, int numArgsPushed)
-{
-    if (!g->canCallOS) return errCantCallOS;
-    
-    PyrSlot *object = g->sp - 1;
-    PyrSlot *path = g->sp;
-    
-    if([NSKeyedArchiver archiveRootObject:nsCodableFromPyrSlot(object) toFile: nsStringFromPyrSlot(path) ]) {
-        return errNone;
-    } else {
-        post("prSaveAsPlist failed !!\n");
-        return errFailed;
-    }
-}
 
 int prStandardizePath(struct VMGlobals *g, int numArgsPushed);
 int prStandardizePath(struct VMGlobals *g, int numArgsPushed)
@@ -275,10 +80,14 @@ int prStandardizePath(struct VMGlobals *g, int numArgsPushed)
     
     PyrSlot *string = g->sp;
     PyrString *pyrString;
-    NSString *path = nsStringFromPyrSlot(string);
-    path = [path stringByStandardizingPath];
-    pyrString = newPyrString(g->gc, [path fileSystemRepresentation], 0, true);
-    SetObject(string, pyrString);
+	NSString *path = nsStringFromPyrSlot(string);
+	if([path length] != 0) {
+		path = [path stringByStandardizingPath];
+		pyrString = newPyrString(g->gc, [path fileSystemRepresentation], 0, true);
+	} else {
+		pyrString = newPyrString(g->gc, [path cString],0,true);
+	}
+	SetObject(string, pyrString);
     return errNone;
 }
 
@@ -381,6 +190,7 @@ messages.
 		_ObjC_dealloc;		
 	}
 */
+/*
 int prAllocInit(struct VMGlobals *g, int numArgsPushed);
 int prAllocInit(struct VMGlobals *g, int numArgsPushed)
 {
@@ -458,7 +268,7 @@ int prDealloc(struct VMGlobals *g, int numArgsPushed)
     [(id)dataptr->ui release];
     return errNone;
 }
-
+*/
 
 void initCocoaFilePrimitives()
 {
@@ -469,14 +279,14 @@ void initCocoaFilePrimitives()
 
     definePrimitive(base, index++, "_Cocoa_GetPathsDialog", prGetPathsDialog, 2, 0);	
     definePrimitive(base, index++, "_Cocoa_SavePanel", prSavePanel, 2, 0);	
-    definePrimitive(base, index++, "_Cocoa_SaveAsPlist", prSaveAsPlist, 2, 0);	
+    //definePrimitive(base, index++, "_Cocoa_SaveAsPlist", prSaveAsPlist, 2, 0);	
     definePrimitive(base, index++, "_Cocoa_StandardizePath", prStandardizePath, 1, 0);	
     definePrimitive(base, index++, "_Cocoa_GetPathsInDirectory", prGetPathsInDirectory, 4, 0);	
     definePrimitive(base, index++, "_Cocoa_HelpFileForString_", prHelpFileForString, 1, 0);	
 
-    definePrimitive(base, index++, "_ObjC_AllocInit", prAllocInit, 4, 0);	
+  /*  definePrimitive(base, index++, "_ObjC_AllocInit", prAllocInit, 4, 0);	
     definePrimitive(base, index++, "_ObjC_Dealloc", prDealloc, 2, 0);	
-    definePrimitive(base, index++, "_ObjC_objectDo", prObjDo, 4, 0);	
+    definePrimitive(base, index++, "_ObjC_objectDo", prObjDo, 4, 0);	*/
 
 }
 
