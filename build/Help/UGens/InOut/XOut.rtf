@@ -9,9 +9,8 @@
 \fs28 			
 \fs24 send signal to a bus, crossfading with previous contents
 \fs28 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 \
+\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs26 \cf0 superclass: 
@@ -32,7 +31,7 @@
 \f1\b0 - the index of the bus to write out to. The lowest numbers are written to the audio hardware.\
 		
 \f0\b xfade 
-\f1\b0 - crossfade time in seconds.\
+\f1\b0 - crossfade level.\
 		
 \f0\b channelsArray 
 \f1\b0 - an Array of channels to write out.
@@ -40,7 +39,15 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 See the 
+\f1\b0 \cf0 xfade is a level for the crossfade between what is on the bus and what you are sending.\
+The algorithm is equivalent to this:\
+\
+bus_signal = (input_signal * xfade) + (bus_signal * (1 - xfade));\
+
+\f0\b \
+\
+
+\f1\b0 See the 
 \f0\b Server-Architecture
 \f1\b0  and 
 \f0\b Bus
