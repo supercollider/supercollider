@@ -9,9 +9,8 @@
 \f1\b0\fs18 				
 \f0\b\fs24 distributed system
 \f1\b0\fs18 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 \
+\f0\b\fs24 \
 \
 experimental.\
 \
@@ -19,6 +18,14 @@ experimental.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0 \cf0 superclass: ProxySpace\
+\
+PublicProxySpace acts like a normal ProxySpace, but can be connected to other proxy spaces on\
+the network (or, of course on the local computer). Changes of proxies key that are in the list of sendingKeys\
+are made public within the channel. These changes affect all shared proxy spaces that hve this key in the list \
+of listeningKeys. The behaviour can be dynamically changed. \
+\
+The change is transmitted by code and is compiled on each computer. This is very flexible and leightweight but it also means that one has to be careful not to do harm to other systems. Code is only sent if it interprets without error on the sender side. Timing is still not yet synchronized, although it works pretty well for not too costly code.\
+\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -117,14 +124,14 @@ experimental.\
 \f3\i\b \
 	
 \f0\i0 channel_(name)
-\f2\b0 		set/get channel name
+\f2\b0 		set / get channel name
 \f3\i\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\i0\b0 \cf0 \
 	
 \f0\b nickname_(string)
-\f2\b0 		set/get nickname\
+\f2\b0 		set / get nickname\
 	\
 	
 \f0\b action_(func
@@ -190,12 +197,12 @@ s.boot; \cf2 // boot server\cf0 \
 \
 \
 a[\cf5 \\out\cf0 ].play; \cf2 // play here \cf0 \
-a[\cf5 \\out\cf0 ] = #\{ \cf3 PinkNoise\cf0 .ar(0.1 ! 2) \}; \cf2 // set here\cf0 \
+a[\cf5 \\out\cf0 ] = \{ \cf3 PinkNoise\cf0 .ar(0.1 ! 2) \}; \cf2 // set here\cf0 \
 b[\cf5 \\out\cf0 ].play; \cf2 // play here too\cf0 \
-b[\cf5 \\out\cf0 ] = #\{\'ca\cf3 SinOsc\cf0 .ar(rrand(300, 400)) ! 2 * 0.1 \}; \cf2 // two different tones\cf0 \
-b[\cf5 \\out\cf0 ] = #\{\'ca\cf3 SinOsc\cf0 .ar(300) ! 2 * 0.1 \}; \cf2 // same tone\cf0 \
+b[\cf5 \\out\cf0 ] = \{\'ca\cf3 SinOsc\cf0 .ar(rrand(300, 400)) ! 2 * 0.1 \}; \cf2 // two different tones\cf0 \
+b[\cf5 \\out\cf0 ] = \{\'ca\cf3 SinOsc\cf0 .ar(300) ! 2 * 0.1 \}; \cf2 // same tone\cf0 \
 a.public = \cf3 false\cf0 ; \cf2 // be private\cf0 \
-b[\cf5 \\out\cf0 ] = #\{ \cf3 PinkNoise\cf0 .ar(0.1 ! 2) \}; \
+b[\cf5 \\out\cf0 ] = \{ \cf3 PinkNoise\cf0 .ar(0.1 ! 2) \}; \
 a.public = \cf3 true\cf0 ;\
 \
 \cf2 // you can also enter the space:\cf0 \
@@ -208,7 +215,7 @@ a.pop; \cf2 // exit\cf0 \
 \cf2 // now you can type into both of them, just as in examples in ProxySpace.help:\cf0 \
 (\
 \cf3 var\cf0  str;\
-str = \cf4 "\\n ~out = #\{ LFNoise2.ar(3000 + exprand(1.0, 2000), 0.1) \}; "\cf0 ; \cf2 // example string\cf0 \
+str = \cf4 "\\n ~out = \{ LFNoise2.ar(3000 + exprand(1.0, 2000), 0.1) \}; "\cf0 ; \cf2 // example string\cf0 \
 \cf3 EnvirDocument\cf0 (a, "a", str);\
 \cf3 EnvirDocument\cf0 (b, "b", str);\
 )\
