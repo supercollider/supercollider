@@ -189,9 +189,7 @@ a.add(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar([3, 5]/2, 0, 0.3), 8000, 0.01) 
 \cf2 //using patterns:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf5 "par"\cf0 , \{ \cf3 arg\cf0  freq, outIndex=0, sustain=0.1; \cf2 //must have 'outIndex' argument to work properly\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 Out\cf0 .ar(outIndex, Pan2.ar(\cf3 LFCub\cf0 .ar(freq,0,\cf3 Line\cf0 .kr(0.1,0,sustain, doneAction:2)), Rand(-1.0,1.0)))\
 \}).send(s);\
 \
@@ -201,9 +199,8 @@ a.source = \{  b.ar * \cf3 SinOsc\cf0 .ar(\cf3 SinOsc\cf0 .kr(0.2, 300, 330))  \
 \cf0 \
 b.source = \cf3 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\par\cf0 , \cf4 \\freq\cf0 , Pseq([600, 400],inf), \cf4 \\doneAction\cf0 , 2, \cf4 \\dur\cf0 , 0.2);\
 a.source = \{  b.ar * \cf3 WhiteNoise.ar(0.1, 1)\cf0   \}; \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
-\
+b.source = \{ SinOsc.ar(600,0,0.1) \};\
 \
 \
 _\cf0 _\cf3 __\cf0 _\cf3 ___\cf0 __\cf3 __\cf0 _____\cf3 ___\cf0 __\cf3 __\cf0 ___\cf3 _\cf0 _\
@@ -215,5 +212,5 @@ presently, as a suggestion, NodeProxy can be used implicitly using the following
 \\out.play;\
 \
 \{ \cf3 SinOsc\cf0 .ar([350, 390]+20, 0, 0.1) \}.play(\\out);\
-\
+Library.at(\\proxy,s,\\out).play\
 }
