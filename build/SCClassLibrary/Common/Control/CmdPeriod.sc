@@ -12,7 +12,8 @@ CmdPeriod {
 	}
 	
 	*clear {
-		objects.do({ arg item; item.cmdPeriod });
+		
+		objects.copy.do({ arg item; item.cmdPeriod;  });
 	}
 
 
