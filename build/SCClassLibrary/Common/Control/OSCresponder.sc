@@ -3,7 +3,7 @@ OSCresponder {
 	var <>addr, <>cmdName, <>action;
 	
 	*new { arg addr, cmdName, action;
-		^super.newCopyArgs(addr, cmdName, action);
+		^super.newCopyArgs(addr, cmdName.asSymbol, action);
 	}
 	
 	*initClass {
