@@ -2,7 +2,6 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;\red96\green96\blue96;
 \red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -189,8 +188,7 @@ x.postln;
 
 \f2\fs18 \cf0 \{ 4.do(\{ \cf4 "Threadin..."\cf0 .postln; 1.wait;\}) \}.fork;
 \f1\fs24 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 block
@@ -200,15 +198,14 @@ Break from a loop. Calls the receiver with an argument which is a function that 
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf5 block \{\cf6 |break|\cf5 \
-	100.do \{\cf6 |i|\cf5 \
+\f2\fs18 \cf0 block \{\cf2 |break|\cf0 \
+	100.do \{\cf2 |i|\cf0 \
 		i.postln;\
 		if (i == 7) \{ break.value(999) \}\
 	\};\
 \}
-\f1\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\f1\fs24 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 \ul Exception Handling\
@@ -236,74 +233,74 @@ Executes the receiver. The cleanup function
 \f1\b0 is executed with an error as an argument, or nil if there was no error. The error continues to be in effect. \
 \
 Examples:
-\f2\fs18 \cf5 \
+\f2\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf7 // no exception handler\cf5 \
-value \{ 8.zorg; \cf8 \\didnt_continue\cf5 .postln; \}\
+\cf3 // no exception handler\cf0 \
+value \{ 8.zorg; \cf5 \\didnt_continue\cf0 .postln; \}\
 \
-try \{ 8.zorg \} \{\cf6 |error|\cf5  error.postln; \cf8 \\cleanup\cf5 .postln; \}; \cf8 \\continued\cf5 .postln;\
+try \{ 8.zorg \} \{\cf2 |error|\cf0  error.postln; \cf5 \\cleanup\cf0 .postln; \}; \cf5 \\continued\cf0 .postln;\
 \
-protect \{ 8.zorg \} \{\cf6 |error|\cf5  error.postln; \}; \cf8 \\didnt_continue\cf5 .postln;\
+protect \{ 8.zorg \} \{\cf2 |error|\cf0  error.postln; \}; \cf5 \\didnt_continue\cf0 .postln;\
 \
-try \{ 123.postln; 456.throw; 789.postln \} \{\cf6 |error|\cf5  [\cf8 \\catch\cf5 , error].postln \};\
+try \{ 123.postln; 456.throw; 789.postln \} \{\cf2 |error|\cf0  [\cf5 \\catch\cf0 , error].postln \};\
 \
-try \{ 123.postln; 789.postln \} \{\cf6 |error|\cf5  [\cf8 \\catch\cf5 , error].postln \};\
+try \{ 123.postln; 789.postln \} \{\cf2 |error|\cf0  [\cf5 \\catch\cf0 , error].postln \};\
 \
-try \{ 123.postln; \cf6 nil\cf5 .throw; 789.postln \} \{\cf6 |error|\cf5  [\cf8 \\catch\cf5 , error].postln \};\
+try \{ 123.postln; \cf2 nil\cf0 .throw; 789.postln \} \{\cf2 |error|\cf0  [\cf5 \\catch\cf0 , error].postln \};\
 \
 \
-protect \{ 123.postln; 456.throw; 789.postln \} \{\cf6 |error|\cf5  [\cf8 \\onExit\cf5 , error].postln \};\
+protect \{ 123.postln; 456.throw; 789.postln \} \{\cf2 |error|\cf0  [\cf5 \\onExit\cf0 , error].postln \};\
 \
-protect \{ 123.postln; 789.postln \} \{\cf6 |error|\cf5  [\cf8 \\onExit\cf5 , error].postln \};\
+protect \{ 123.postln; 789.postln \} \{\cf2 |error|\cf0  [\cf5 \\onExit\cf0 , error].postln \};\
 \
 (\
 try \{\
-	protect \{ 123.postln; 456.throw; 789.postln \} \{\cf6 |error|\cf5  [\cf8 \\onExit\cf5 , error].postln \};\
-\} \{\cf6 |error|\cf5  [\cf8 \\catch\cf5 , error].postln \};\
+	protect \{ 123.postln; 456.throw; 789.postln \} \{\cf2 |error|\cf0  [\cf5 \\onExit\cf0 , error].postln \};\
+\} \{\cf2 |error|\cf0  [\cf5 \\catch\cf0 , error].postln \};\
 )\
 \
 value \{ 123.postln; 456.throw; 789.postln \}\
 \
-value \{ 123.postln; \cf6 Error\cf5 (\cf9 "what happened?"\cf5 ).throw; 789.postln \}\
+value \{ 123.postln; \cf2 Error\cf0 (\cf4 "what happened?"\cf0 ).throw; 789.postln \}\
 \
 (\
-a = [\cf8 \\aaa\cf5 , \cf8 \\bbb\cf5 , \cf8 \\ccc\cf5 , \cf8 \\ddd\cf5 ];\
+a = [\cf5 \\aaa\cf0 , \cf5 \\bbb\cf0 , \cf5 \\ccc\cf0 , \cf5 \\ddd\cf0 ];\
 a[1].postln;\
-a[\cf8 \\x\cf5 ].postln;\
+a[\cf5 \\x\cf0 ].postln;\
 a[2].postln;\
 )\
 \
 (\
 try \{\
-	a = [\cf8 \\aaa\cf5 , \cf8 \\bbb\cf5 , \cf8 \\ccc\cf5 , \cf8 \\ddd\cf5 ];\
+	a = [\cf5 \\aaa\cf0 , \cf5 \\bbb\cf0 , \cf5 \\ccc\cf0 , \cf5 \\ddd\cf0 ];\
 	a[1].postln;\
-	a[\cf8 \\x\cf5 ].postln;\
+	a[\cf5 \\x\cf0 ].postln;\
 	a[2].postln;\
-\} \{\cf6 |error|\cf5  \cf8 \\caught\cf5 .postln; error.dump \}\
+\} \{\cf2 |error|\cf0  \cf5 \\caught\cf0 .postln; error.dump \}\
 )\
 \
 (\
 try \{\
-	a = [\cf8 \\aaa\cf5 , \cf8 \\bbb\cf5 , \cf8 \\ccc\cf5 , \cf8 \\ddd\cf5 ];\
+	a = [\cf5 \\aaa\cf0 , \cf5 \\bbb\cf0 , \cf5 \\ccc\cf0 , \cf5 \\ddd\cf0 ];\
 	a[1].postln;\
-	a[\cf8 \\x\cf5 ].postln;\
+	a[\cf5 \\x\cf0 ].postln;\
 	a[2].postln;\
-\} \{\cf6 |error|\cf5  \cf8 \\caught\cf5 .postln; error.dump; error.throw \}\
+\} \{\cf2 |error|\cf0  \cf5 \\caught\cf0 .postln; error.dump; error.throw \}\
 )\
 \
 (\
 protect \{\
-	a = [\cf8 \\aaa\cf5 , \cf8 \\bbb\cf5 , \cf8 \\ccc\cf5 , \cf8 \\ddd\cf5 ];\
+	a = [\cf5 \\aaa\cf0 , \cf5 \\bbb\cf0 , \cf5 \\ccc\cf0 , \cf5 \\ddd\cf0 ];\
 	a[1].postln;\
-	a[\cf8 \\x\cf5 ].postln;\
+	a[\cf5 \\x\cf0 ].postln;\
 	a[2].postln;\
-\} \{\cf6 |error|\cf5  \cf8 \\caught\cf5 .postln; error.dump \}\
+\} \{\cf2 |error|\cf0  \cf5 \\caught\cf0 .postln; error.dump \}\
 )
-\f1\fs24 \cf0 \
+\f1\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 \
+\f0\b\fs28 \cf0 \ul \
 Audio Support\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -322,7 +319,7 @@ This is probably the simplest way to get audio in SC3. It wraps the Function in 
 \f1\b0  with it, and returns the Synth object. A 
 \f0\b Linen
 \f1\b0  is also added to avoid clicks, which is configured to allow the resulting Synth to have its 
-\f2\fs18 \cf10 \\gate 
+\f2\fs18 \cf5 \\gate 
 \f1\fs24 \cf0 argument set, or to respond to a release message.\
 
 \f0\b \
@@ -339,7 +336,7 @@ target
 \f1\b0  - see 
 \f0\b Synth
 \f1\b0  for a list of valid addActions. The default is 
-\f2\fs18 \cf10 \\addToHead
+\f2\fs18 \cf5 \\addToHead
 \f0\b\fs24 \cf0 .
 \f1\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -349,7 +346,7 @@ target
 
 \fs18 \cf0 x = \{ \cf2 SinOsc\cf0 .ar(440, 0, 0.3) \}.play; \cf3 // this returns a Synth object;\cf0 \
 x.defName; \cf3 // the name of the resulting SynthDef (derived from the Functions hash value)\cf0 \
-x.release(4); \cf7 // fadeout over 4 seconds
+x.release(4); \cf3 // fadeout over 4 seconds
 \fs20 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -388,16 +385,15 @@ As
 \f0\b numChannels
 \f1\b0  - number of channels to display in the scope window, starting from 
 \f0\b outbus
-\f1\b0 . The default is the number of output channels of the internal server. (Server.internal.options.numOutputBusChannels)
+\f1\b0 . The default is 2.
 \f0\b \
 outbus 
 \f1\b0 - the output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.\
 
 \f0\b fadeTime
 \f1\b0  - a fadein time. The default is 0.02 seconds, which is just enough to avoid a click.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 bufsize 
+\f0\b bufsize 
 \f1\b0 - the size of the buffer for the ScopeView. The default is 4096.\
 
 \f0\b zoom
@@ -431,7 +427,7 @@ rates
 \f1\b0  for more details).\
 
 \f0\b outClass
-\f1\b0  - The class of the output ugen as a symbol. The default is \cf10 \\Out\cf0 .\
+\f1\b0  - The class of the output ugen as a symbol. The default is \cf5 \\Out\cf0 .\
 
 \f0\b fadeTime
 \f1\b0  - a fadein time. The default is 0.\
