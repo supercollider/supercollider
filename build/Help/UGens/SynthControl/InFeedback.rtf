@@ -6,8 +6,9 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 InFeedback
-\fs28 				read signal from a bus without erasing it\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\fs28 			
+\fs26 read signal from a bus without erasing it
+\fs28 \
 
 \f1\b0\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -55,21 +56,23 @@ audio feedback modulation:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf2 \
-	SynthDef\cf0 (\cf3 "help-InFeedback"\cf0 , \{ \cf2 arg\cf0  busNumber=0, busInNumber=0;\
-		\cf2 var\cf0  in, sound;\
-			in = \cf2 InFeedback.ar(\cf0 busInNumber, 1);\
-			sound = SinOsc.ar(in * 1300 + 300, 0, 0.4);\cf4 \
+	(\
+	SynthDef\cf0 (\cf3 "help-InFeedback"\cf0 , \{ \cf2 arg\cf0  out=0, in=0;\
+		\cf2 var\cf0  input, sound;\
+			input = \cf2 InFeedback.ar(\cf0 in, 1);\
+			sound = SinOsc.ar(input * 1300 + 300, 0, 0.4);\cf4 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 			\cf2 Out\cf0 .ar(busNumber, sound);\
+\cf0 			\cf2 Out\cf0 .ar(out, sound);\
 \
 	\}).play;\
-	\
+	)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 this shows how a node can read audio from a following bus:
+\f2\fs24 \cf0 this shows how a node can read audio from a bus that is being written to by a synth following it:
 \f1\fs18 \cf2 \
 \
+	(\
 	SynthDef\cf0 (\cf3 "help-InFeedback"\cf0 , \{ \cf2 arg\cf0  out=0, in=0;\
 		\cf2 Out\cf0 .ar(out,\
 			\cf2 InFeedback\cf0 .ar(in, 1)\
@@ -78,8 +81,9 @@ audio feedback modulation:\
 	\cf2 SynthDef\cf0 (\cf3 "help-SinOsc"\cf0 , \{ \cf2 arg\cf0  out=0, freq=440;\
 		\cf2 Out\cf0 .ar(out, \cf2 SinOsc\cf0 .ar(freq, 0, 0.1))\
 	\}).send(s);\
+	)\
 \
-	\cf4 //read from bus 10 play to bus 0\
+	\cf4 //read from bus 10 play to bus 0 (silent)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	a = \cf2 Synth\cf0 (\cf3 "help-InFeedback"\cf0 ,[\cf5 \\in\cf0 , 10, \cf5 \\out\cf0 , 0]);\
 \
