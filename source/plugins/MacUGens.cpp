@@ -381,32 +381,24 @@ void cmdDemoFunc(World *inWorld, void* inUserData, struct sc_msg_iter *args, voi
 	myCmdData->name = 0;
 	
 	// float arguments
-	if (args->remain()) { // must check that arguments remain otherwise you can crash.
-		myCmdData->x = args->getf();
-	}
-	if (args->remain()) {
-		myCmdData->y = args->getf();
-	}
+	myCmdData->x = args->getf();
+	myCmdData->y = args->getf();
 	
-	if (args->remain()) {
-		// how to pass a string argument:
-		char *name = args->gets(); // get the string argument
-		
+	// how to pass a string argument:
+	char *name = args->gets(); // get the string argument
+	if (name) {
 		myCmdData->name = (char*)RTAlloc(inWorld, strlen(name)+1); // allocate space, free it in cmdCleanup.
 		strcpy(myCmdData->name, name); // copy the string
 	}
 	
+	// how to pass a completion message
+	int msgSize = args->getbsize();
 	char* msgData = 0;
-	int msgSize = 0;
-	if (args->remain()) {
-		// how to pass a completion message
-		msgSize = args->getbsize();
-		if (msgSize) {
-			// allocate space for completion message
-			// scsynth will delete the completion message for you.
-			msgData = (char*)RTAlloc(inWorld, msgSize);
-			args->getb(msgData, msgSize); // copy completion message.
-		}
+	if (msgSize) {
+		// allocate space for completion message
+		// scsynth will delete the completion message for you.
+		msgData = (char*)RTAlloc(inWorld, msgSize);
+		args->getb(msgData, msgSize); // copy completion message.
 	}
 	
 	DoAsynchronousCommand(inWorld, replyAddr, "cmdDemoFunc", (void*)myCmdData,
@@ -419,8 +411,10 @@ void cmdDemoFunc(World *inWorld, void* inUserData, struct sc_msg_iter *args, voi
 /*
 to test the above, send the server these commands:
 
+
 SynthDef(\sine, { Out.ar(0, SinOsc.ar(800,0,0.2)) }).load(s);
 s.sendMsg(\cmd, \pluginCmdDemo, 7, 9, \mno, [\s_new, \sine, 900, 0, 0]);
+s.sendMsg(\n_free, 900);
 s.sendMsg(\cmd, \pluginCmdDemo, 7, 9, \mno);
 s.sendMsg(\cmd, \pluginCmdDemo, 7, 9);
 s.sendMsg(\cmd, \pluginCmdDemo, 7);
