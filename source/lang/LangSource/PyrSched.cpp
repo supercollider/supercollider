@@ -747,8 +747,14 @@ public:
 	volatile bool mRun;
 	pthread_t mThread;
 	pthread_cond_t mCondition; 
+	TempoClock *mPrev, *mNext;
+	
+	static TempoClock *sAll;
 	
 };
+
+TempoClock *TempoClock::sAll = 0;
+
 
 void* TempoClock_run_func(void* p)
 {
@@ -767,11 +773,29 @@ void* TempoClock_stop_func(void* p)
 	return 0;
 }
 
+void TempoClock_stopAll(void)
+{
+	printf("->TempoClock_stopAll %08X\n", TempoClock::sAll);
+	TempoClock *clock = TempoClock::sAll;
+	while (clock) {
+		TempoClock* next = clock->mNext;
+		clock->Stop();
+		//printf("delete\n");
+		delete clock;
+		clock = next;
+	}
+	printf("<-TempoClock_stopAll %08X\n", TempoClock::sAll);
+	TempoClock::sAll = 0;
+}
+
 TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj, 
 							double inTempo, double inBaseBeats, double inBaseSeconds)
 	: g(inVMGlobals), mTempoClockObj(inTempoClockObj), mTempo(inTempo), mBeatDur(1./inTempo),
-	mBaseSeconds(inBaseSeconds), mBaseBeats(inBaseBeats), mRun(true)
+	mBaseSeconds(inBaseSeconds), mBaseBeats(inBaseBeats), mRun(true), mPrev(0), mNext(sAll)
 {
+	if (sAll) sAll->mPrev = this;
+	sAll = this;
+	
 	mQueue = mTempoClockObj->slots[0].uo;
 	pthread_cond_init (&mCondition, NULL);
 	pthread_create (&mThread, NULL, TempoClock_run_func, (void*)this);
@@ -793,6 +817,12 @@ void TempoClock::Stop()
 	//printf("Stop mRun %d\n", mRun);
 	if (mRun) {
 		mRun = false;
+		
+		// unlink
+		if (mPrev) mPrev->mNext = mNext;
+		else sAll = mNext;
+		if (mNext) mNext->mPrev = mPrev;
+		
 		//printf("Stop pthread_cond_signal\n");
 		pthread_cond_signal (&mCondition);
 		//printf("Stop pthread_mutex_unlock\n");

@@ -1870,6 +1870,7 @@ void aboutToCompileLibrary()
 }
 
 void closeAllGUIScreens();
+void TempoClock_stopAll(void);
 
 bool compileLibrary();
 bool compileLibrary() 
@@ -1878,6 +1879,7 @@ bool compileLibrary()
 	closeAllGUIScreens();
 	aboutToCompileLibrary();
 	schedStop();
+	TempoClock_stopAll();
 	
 	pthread_mutex_lock (&gLangMutex);
 	gNumCompiledFiles = 0;
