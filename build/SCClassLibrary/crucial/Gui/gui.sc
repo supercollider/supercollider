@@ -33,7 +33,9 @@
 	guiClass { ^DictionaryGui }		
 }
 
-
++ Server {
+	guiClass { ^ServerGui }
+}
 
 + Nil {
 
@@ -50,6 +52,9 @@
 	asFlowView { arg bounds;
 		^FlowView(this,bounds ?? {this.bounds})
 	}
+}
++ SCLayoutView {
+	asFlowView {}
 }
 
 + FlowView {
