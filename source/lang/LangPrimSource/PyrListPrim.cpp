@@ -59,7 +59,7 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 	obj1 = a->uo;
 	size = obj1->size;
 	slots1 = obj1->slots;
-	maxlen = -1;
+	maxlen = 1;
 	for (j=0; j<size; ++j) {
 		slot = slots1 + j;
 		if (slot->utag == tagObj) {
@@ -69,7 +69,6 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 			}
 		}
 	}
-	if (maxlen > 0) {
 		obj2 = newPyrArray(g->gc, maxlen, 0, true);
 		obj2->size = maxlen;
 		slots2 = obj2->slots;
@@ -94,10 +93,9 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 				}
 			}
 		}
-		SetObject(a, obj2);
-	} else {
-		SetNil(a);
-	}
+	
+	SetObject(a, obj2);
+
 	return errNone;
 }
 
