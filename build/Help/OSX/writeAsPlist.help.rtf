@@ -1,0 +1,90 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+\f3\fmodern\fcharset77 Courier-Oblique;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 writeAsPlist
+\f1\b0\fs24 \
+\
+
+\f0\b Object method\
+
+\f1\b0 \
+
+\f2\fs18 \cf2 object.writeAsPlist(path);
+\f1\fs24 \
+\cf0 \
+Write the object to disk as a PropertyList.  It is used commonly in OS X to store data.  \
+\
+This is an XML format that may be read from easily from Objective-C, Java or any language that uses the CoreFoundation(Cocoa) framework.  \
+\
+Objective-C:\
+\
+
+\f2\fs18 \cf2 id rootObject = [\cf3 NSKeyedUnarchiver\cf2   unarchiveObjectWithFile: path ];\
+
+\f1\fs24 \cf0 \
+The file may be double-clicked to open it in Property List Editor.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i\fs20 \cf0  
+\f1\i0\fs24 \
+When opening the PropertyList:\
+\
+your SC objects are converted to Foundation objects in this fashion:\
+\
+SimpleNumber -> NSNumber.\
+SequenceableCollections -> NSArray with each item converted\
+Strings -> NSString\
+Symbols -> NSString\
+Char -> NSString\
+Nil -> NSNull\
+Boolean ->NSNumber (numberWithBool:) equivalent to a CFBoolean\
+Dictionary ->NSDictionary (each item converted)\
+	\
+Other objects  -> NSNull\
+\
+Most commonly the root object is an NSDictionary or NSArray.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+
+\f2\fs18 4.0.writeAsPlist(\cf4 "testWritePlist.plist"\cf2 );\
+\
+4.writeAsPlist(\cf4 "testWritePlist.plist"\cf2 );\
+\
+\cf4 "string"\cf2 .writeAsPlist(\cf4 "testWritePlist.plist"\cf2 );\
+\
+\cf5 'symbol'\cf2 .writeAsPlist(\cf4 "testWritePlist.plist"\cf2 );\
+\
+$c.writeAsPlist(\cf4 "testWritePlist.plist"\cf2 );\
+\
+\cf3 nil\cf2 .writeAsPlist(\cf4 "testWritePlist.plist"\cf2 );\
+\
+\cf3 true\cf2 .writeAsPlist(\cf4 "testWritePlist.plist"\cf2 );\
+\
+\cf3 false\cf2 .writeAsPlist(\cf4 "testWritePlist.plist"\cf2 );\
+\
+[1,\cf3 false\cf2 ,\cf5 'symbol'\cf2 ].writeAsPlist(\cf4 "testWritePlist.plist"\cf2 );\
+\
+\cf6 // cannot convert these objects\
+\cf2 [\cf3 Ref\cf2 (pi),\cf3 Pbind\cf2 .new].writeAsPlist(\cf4 "testWritePlist.plist"\cf2 );\
+\
+\cf3 Dictionary\cf2 [\
+	\cf5 \\a\cf2  -> \cf4 "a"\cf2 ,\
+	\cf4 "b"\cf2  -> \cf5 \\b\cf2 ,\
+	3 -> 3.0\
+	].writeAsPlist(\cf4 "testWritePlist.plist"\cf2 );\
+\
+\
+\cf3 IdentityDictionary\cf2 [\
+	\cf5 \\a\cf2  -> \cf4 "a"\cf2 ,\
+	\cf4 "b"\cf2  -> \cf5 \\b\cf2 ,\
+	3 -> 3.0\
+	].writeAsPlist(\cf4 "testWritePlist.plist"\cf2 );\
+	\
+	\cf0 \
+}
