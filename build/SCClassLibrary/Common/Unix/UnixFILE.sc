@@ -9,6 +9,7 @@ UnixFILE : IOStream {
 		if (openFiles.notNil, {
 			openFiles.copy.do({ arg file; file.close; });
 		});
+		openFiles = nil;
 	}
 	isOpen {
 		^fileptr.notNil
