@@ -16,9 +16,6 @@ finalize method to finalize on demand.
 You should put your C function pointer into cFunction, and the finalizable object into 'object'.
 
 */
-/*
-
-this was from SC3d5. no longer implemented.
 
 Finalizer {
 	var cFunction, object; // no getters or setters!
@@ -30,5 +27,4 @@ Finalizer {
 	isFinalized { ^cFunction.isNil }
 }
 
-*/
 
