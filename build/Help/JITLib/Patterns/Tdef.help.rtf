@@ -17,7 +17,9 @@
 \
 \
 \
-keeps a reference to a task (time pattern) that can be replaced while playing.\
+keeps a reference to a task (
+\f3\i\b time pattern
+\f2\i0\b0 ) that can be replaced while playing.\
 It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.\
 \
 Tdef(key) returns the instance, Tdef(key, pat) defines the pattern and returns the instance, like Pdef and Ndef.\
@@ -303,5 +305,55 @@ r.play;\
 \
 \}).play;\
 )\
+\
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i\b\fs24 \cf0 Tdef as a time pattern
+\f1\i0\b0\fs18 \
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // load a synthdef\cf0 \
+s.boot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf5 "pdef_grainlet"\cf0 , \
+	\{ \cf2 arg\cf0  out=0, freq=440, dur=0.05;\
+		\cf2 var\cf0  env;\
+		env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.01, dur, 0.3), doneAction:2);\
+		\cf2 Out\cf0 .ar(out, \cf2 SinOsc\cf0 .ar(freq, 0, env))\
+	\}).store;\
+)\
+\
+\
+\
+\
+\cf2 Tdef\cf0 (\cf3 \\z\cf0 , \cf2 Pseq\cf0 ([1, 1, 1, 0.5, 0.5], \cf2 inf\cf0 ));\
+\
+(\
+	\cf2 Pset\cf0 (\cf3 \\instrument\cf0 , \cf3 \\pdef_grainlet\cf0 , \
+		\cf2 Ppar\cf0 ([\
+			\cf2 Pbind\cf0 (\
+				\cf3 \\dur\cf0 , \cf2 Tdef\cf0 (\cf3 \\z\cf0 ),\
+				\cf3 \\note\cf0 , \cf2 Pseq\cf0 ([1, 3, 2, 1, 0], \cf2 inf\cf0 )\
+				//\\x, Pfunc \{\'caTempoClock.default.elapsedBeats.postln \}\
+			),\
+			\cf2 Pbind\cf0 (\
+				\cf3 \\dur\cf0 , 4, \cf4 // reference beat\cf0 \
+				\cf3 \\sustain\cf0 , 0.1,\
+				\cf3 \\note\cf0 , 8\
+			)\
+		])\
+	).play(quant:1);\
+)\
+\
+\
+\cf2 Tdef\cf0 (\cf3 \\z\cf0 , \cf2 Prand\cf0 ([1, 1, 0.23, 0.5, 0.5], \cf2 inf\cf0 )); \cf4 // exchange time pattern\cf0 \
+\cf2 Tdef\cf0 (\cf3 \\z\cf0 , \cf2 Pseq\cf0 ([1, 1, 1, 1], \cf2 inf\cf0 )); \cf4 // pattern stays in sync.\cf0 \
+\
 \
 }
