@@ -237,7 +237,7 @@ protected:
     
 public:
     SC_PortAudioDriver(struct World *inWorld);
-	~SC_PortAudioDriver();
+	virtual ~SC_PortAudioDriver();
 
     int PortAudioCallback( const void *input, void *output,
             unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
