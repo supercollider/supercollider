@@ -54,14 +54,14 @@
 	asSynthDef { arg lags, prependArgs, outClass=\Out, fadeTime;
 		^GraphBuilder.wrapOut(this.hash.asString, this, lags, prependArgs, outClass, fadeTime);	}
 		
-	play { arg target, fadeTime=0.02;
+	play { arg target, outbus = 0, fadeTime=0.02;
 		var def, synth, server;
 		target = target.asTarget;
 		server = target.server;
 		def = this.asSynthDef(fadeTime:fadeTime);
 		synth = Synth.basicNew(def.name,server);
 		server.waitForBoot({
-			def.send(server, synth.newMsg(target));
+			def.send(server, synth.newMsg(target, \addToTail, [\i_out, outbus, \out, outbus]));
 		});
 		^synth
 	}
