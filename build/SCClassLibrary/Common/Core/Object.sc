@@ -36,8 +36,6 @@ Object {
 	postcln { this.asString.postcln; }
 	totalFree { _TotalFree }
 	largestFreeBlock { _LargestFreeBlock }
-	macTotalFree { _MacTotalFree }
-	macLargestFreeBlock { _MacLargestFreeBlock }
 	gcAll { _GCAll }
 	gcInfo { _GCInfo }
 	gcSanity { _GCSanity }
@@ -111,6 +109,9 @@ Object {
 		_ObjectDeepCopy
 		^this.primitiveFailed
 	}
+	dup { arg n = 2;
+		^Array.fill(n, { this.copy });
+	}
 			
 	// evaluation
 	poll { ^this.value }
@@ -126,8 +127,6 @@ Object {
 	basicHash { _ObjectHash; ^this.primitiveFailed }
 	hash { _ObjectHash; ^this.primitiveFailed }
 	identityHash { _ObjectHash; ^this.primitiveFailed }
-	//uniqueID { _ObjectID; ^this.primitiveFailed }
-	//objPtr { _ObjectPtr; ^this.primitiveFailed }
 		
 	// create an association
 	-> { arg obj; ^Association.new(this, obj) }
