@@ -1,24 +1,21 @@
 Document {
 
-	classvar <dir="", <allDocuments, thelistener, <>current;
+	classvar <dir="", <allDocuments, <>current;
 	classvar <>globalKeyDownAction, <>initAction;
 
 	//don't change the order of these vars:
 	var <dataptr, <>keyDownAction, <>mouseDownAction, <>toFrontAction, <>endFrontAction;
 	
 	var path, title, visible, <background, <stringColor, <>onClose;
-	var <isListener;
+	var unused;
 	var <editable;
 	
 	*initClass {
-		var num, listenernum, doc;
+		var num, doc;
 		num = this.numberOfOpen;
 		num.do({arg i;
 			doc = this.newFromIndex(i);
 		});
-		listenernum = this.prGetIndexOfListener;	
-		allDocuments.at(listenernum).prisListener(true);
-		thelistener = allDocuments.at(listenernum);
 	}
 	
 	*open { arg path, selectionStart=0, selectionLength=0;
@@ -91,12 +88,10 @@ Document {
 	}
 	
 	*listener {
-		var listenernum;
-		if(thelistener.isNil,{
-			listenernum = this.prGetIndexOfListener;
-			thelistener = allDocuments.at(listenernum);
-		});
-		^thelistener
+		^allDocuments[this.prGetIndexOfListener];
+	}
+	isListener {
+		^allDocuments.indexOf(this) == this.prGetIndexOfListener
 	}
 	
 //document setup	
@@ -308,7 +303,6 @@ Document {
 		var doc;
 		doc = this.prinitByIndex(idx);
 		if(doc.isNil,{this = nil; ^nil});
-		doc.prisListener(false);
 		this.prAdd;
 	}
 	prinitByIndex { arg idx;
@@ -323,7 +317,6 @@ Document {
 	initLast {
 		this.prGetLastIndex;
 		if(dataptr.isNil,{ this = nil; ^nil});
-		isListener = false;
 		this.prAdd;
 	}
 	
@@ -337,7 +330,6 @@ Document {
 		stpath = this.class.standardizePath(path);
 		this.propen(stpath, selectionStart, selectionLength);
 		if(dataptr.isNil,{ this = nil; ^nil});
-		isListener = false;
 		this.prAdd;
 	}
 	propen { arg path, selectionStart=0, selectionLength=0;
@@ -347,11 +339,6 @@ Document {
 	initByString{arg argTitle, str, makeListener;
 	
 		title = argTitle;
-		if(makeListener, {
-			allDocuments.do({arg doc; doc.prisListener(false)})
-			});
-		isListener = makeListener;
-		thelistener = this;
 		this.prinitByString(title, str, makeListener);
 		if(dataptr.isNil,{ this = nil; ^nil});
 		this.prAdd;
@@ -380,10 +367,6 @@ Document {
 	prselectLine { arg line;
 		_TextWindow_SelectLine;
 		^this.primitiveFailed
-	}
-	
-	prisListener { arg makeListener;
-		isListener = makeListener;
 	}
 	
 	*prGetIndexOfListener {
