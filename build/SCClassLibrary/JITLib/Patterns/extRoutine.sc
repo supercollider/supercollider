@@ -21,10 +21,10 @@
 
 +Pattern {
 	
-	loop { ^this.asStream.loop  }
+	loop { ^this.repeat(inf)  }
 
 	repeat { arg repeats = inf;
-		^this.asStream.repeat(repeats)
+		^Ploop(this, repeats)
 	}
 
 }
@@ -85,6 +85,18 @@
 		^Lag3.multiNew(this.rate, this, lagTime)
 	}
 
+}
+
++SequenceableCollection {
+	lag { arg lagTime=0.1;
+		^this.collect({ arg item; item.lag(lagTime) })
+	}
+	lag2 { arg lagTime=0.1;
+		^this.collect({ arg item; item.lag2(lagTime) })
+	}
+	lag3 { arg lagTime=0.1;
+		^this.collect({ arg item; item.lag3(lagTime) })
+	}
 }
 
 
