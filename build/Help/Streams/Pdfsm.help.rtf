@@ -33,7 +33,7 @@ based on the fsm described by Minsky in 'Computation, Finite and Infinite Machin
 \f0\b repeats -
 \f1\b0  		an integer giving the number of times the pattern should cycle.\
 			a cycle ends when the 
-\f0\b signalStream
+\f0\b signal stream
 \f1\b0  ends or \cf2 nil\cf0  is given for the destination \
 			state to a signal value, see below. defaults to 1\
 \
@@ -83,10 +83,7 @@ any number of states can be given, and are indexed by the order in which they ar
 if the fsm is in state x and it receives a 
 \f0\b signal value
 \f1\b0  y it looks up y in the state dictionary \
-supplied for x, if there is no y entry, it looks for a \cf4 \\default\cf0  entry and uses that. if there is no \
-
-\f0\b signal value
-\f1\b0  given for a signal, and no \cf4 \\default\cf0  is supplied, you will get a runtime error.\
+supplied for x, if there is no y entry, it looks for a \cf4 \\default\cf0  entry and uses that. \
 the next state is then set to 
 \f0\b destination state
 \f1\b0 , and the stream yielded is given by 
@@ -94,20 +91,21 @@ the next state is then set to
 
 \f1\b0 that is unless the 
 \f0\b destination state
-\f1\b0  is given as \cf2 nil\cf0  in which case the cycle ends and any repeats left are\
-then executed. the fsm will also halt a given cycle if a 
+\f1\b0  is given as \cf2 nil\cf0 , or if a 
 \f0\b destination state
 \f1\b0  is given for which you have
-\f0\b \
-
-\f1\b0 not supplied a dictionary.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs18 \cf0 \
+\f0\b  
+\f1\b0 not \
+supplied a dictionary - in both cases the current cycle ends and any remaining repeats are executed.\
+if there is no 
+\f0\b signal value
+\f1\b0  given for a particular signal, and no \cf4 \\default\cf0   is supplied then upi will get a runtime error.
+\f2\fs18 \
+\
 (\cf5 \
 	p = \cf6 Pdfsm\cf5 (\
 		[\
-			\cf6 Pseq\cf5 ( [\cf7 \\foo\cf5 ,\cf7 \\bar\cf5 ], 1 ), \cf8 // foobar signals	\cf5 \
+			\cf6 Pseq\cf5 ( [\cf7 \\foo\cf5 ,\cf7 \\bar\cf5 ], 2 ), \cf8 // foobar signals	\cf5 \
 			( \cf8 // state 0\cf5 \
 				\cf7 \\foo\cf5  : [ 1, \cf6 Pseq\cf5 ([ 0, 1 ], 2 ) ]\
 			),\
@@ -120,6 +118,7 @@ then executed. the fsm will also halt a given cycle if a
 	).asStream;\
 	\
 	11.do(\{ p.next.postln \});\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 )
 \f1\fs24 \
 \
