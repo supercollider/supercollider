@@ -240,7 +240,8 @@ PauseStream : Stream
 	}
 	reset { ^originalStream.reset }
 	stop {  stream = nil }
-	free { this.stop }
+	removeFromScheduler { this.stop }
+	
 	pause { stream = nil }
 	resume { arg argClock, quant=1.0; 
 		^this.play(clock ? argClock, false, quant) 
