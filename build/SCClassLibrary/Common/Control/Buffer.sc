@@ -144,22 +144,62 @@ Buffer {
 			+ (clearFirst.binaryValue * 4)]
 			++ genArgs)
 	}
-	sine1 { arg amplitudes,normalize=false,asWavetable=false,clearFirst=false;
+	sine1 { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
 		server.listSendMsg(["/b_gen",bufnum,"sine1",
 			normalize.binaryValue 
 			+ (asWavetable.binaryValue * 2) 
 			+ (clearFirst.binaryValue * 4)]
 			++ amplitudes)
 	}
-	sine1Msg { arg amplitudes,normalize=false,asWavetable=false,clearFirst=false;
+	sine2 { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
+		server.listSendMsg(["/b_gen",bufnum,"sine2",
+			normalize.binaryValue 
+			+ (asWavetable.binaryValue * 2) 
+			+ (clearFirst.binaryValue * 4)]
+			++ amplitudes)
+	}
+	sine3 { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
+		server.listSendMsg(["/b_gen",bufnum,"sine3",
+			normalize.binaryValue 
+			+ (asWavetable.binaryValue * 2) 
+			+ (clearFirst.binaryValue * 4)]
+			++ amplitudes)
+	}
+	cheby { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
+		server.listSendMsg(["/b_gen",bufnum,"cheby",
+			normalize.binaryValue 
+			+ (asWavetable.binaryValue * 2) 
+			+ (clearFirst.binaryValue * 4)]
+			++ amplitudes)
+	}
+	sine1Msg { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
 		^["/b_gen",bufnum,"sine1",
 			normalize.binaryValue 
 			+ (asWavetable.binaryValue * 2) 
 			+ (clearFirst.binaryValue * 4)]
 			++ amplitudes
 	}
-	//sine2
-	//sine3
+	sine2Msg { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
+		^["/b_gen",bufnum,"sine2",
+			normalize.binaryValue 
+			+ (asWavetable.binaryValue * 2) 
+			+ (clearFirst.binaryValue * 4)]
+			++ amplitudes
+	}
+	sine3Msg { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
+		^["/b_gen",bufnum,"sine3",
+			normalize.binaryValue 
+			+ (asWavetable.binaryValue * 2) 
+			+ (clearFirst.binaryValue * 4)]
+			++ amplitudes
+	}
+	chebyMsg { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
+		^["/b_gen",bufnum,"cheby",
+			normalize.binaryValue 
+			+ (asWavetable.binaryValue * 2) 
+			+ (clearFirst.binaryValue * 4)]
+			++ amplitudes
+	}
 	
 	copyTo { arg buf, dstStartAt = 0, srcStartAt = 0, numSamples = -1;
 		server.listSendMsg(
