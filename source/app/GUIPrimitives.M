@@ -29,6 +29,7 @@
 #import "SCGraphView.h"
 #import "SCVirtualMachine.h"
 #import "ChangeCounter.h"
+#import "GC.h"
 
 extern ChangeCounter gUIChangeCounter;
 extern NSTextView* gPostView;
@@ -676,6 +677,32 @@ int addFontColorAttribute(NSMutableDictionary *dict, PyrSlot *colorSlot)
                             alpha: rgb.alpha];    
     [dict setObject: color forKey: NSForegroundColorAttributeName ];
     
+    return errNone;
+}
+
+int prFont_AvailableFonts(struct VMGlobals *g, int numArgsPushed);
+int prFont_AvailableFonts(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+	
+	PyrSlot *a = g->sp;
+	
+	NSFontManager *fontManager = [NSFontManager sharedFontManager];
+	NSArray *fonts = [fontManager availableFonts];
+
+	int size = [fonts count];
+	PyrObject* array = newPyrArray(g->gc, size, 0, true);
+	SetObject(a, array);
+	
+	for (int i=0; i<size; ++i) {
+		NSString *name = [fonts objectAtIndex: i];
+		//if (!name) continue;
+		PyrString *string = newPyrString(g->gc, [name UTF8String], 0, true);
+		SetObject(array->slots + array->size, string);
+		array->size++;
+		g->gc->GCWrite(array, string);
+	}
+	
     return errNone;
 }
 
@@ -1818,5 +1845,6 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_BevelRect_Draw", prBevelRect_Draw, 3, 0);
 	definePrimitive(base, index++, "_Button_Draw", prButton_Draw, 6, 0);
 	definePrimitive(base, index++, "_Arc_Draw", prArc_Draw, 3, 0);
+	definePrimitive(base, index++, "_Font_AvailableFonts", prFont_AvailableFonts, 1, 0);
 }
 
