@@ -1405,7 +1405,9 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 
 bool SC_CoreAudioDriver::DriverStart()
 {
-	assert(mClient);
+	if (!mClient) {
+		return false;
+	}
 
 	int err;
 	SC_StringParser sp;
