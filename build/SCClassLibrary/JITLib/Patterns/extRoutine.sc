@@ -1,3 +1,5 @@
+
+
 +Routine {
 	embed { arg inval;
 		func.value(inval)
@@ -18,24 +20,56 @@
 }
 
 +Pattern {
-	loop {
-		^Pn(this, inf)
+	
+	loop { ^this.asStream.loop  }
+
+	repeat { arg repeats = inf;
+		^this.asStream.repeat(repeats)
 	}
 
 }
 
 +Stream {
-	loop {
+	loop { 
 		^Routine.new({ arg inevent;
+			var res;
 			inf.do({
-				inevent = this.embedInStream(inevent);
-			});
+				res = this.next(inevent);
+				if(res.isNil, { res = this.reset.next(inevent) });
+				inevent = res.yield(inevent)
+			})
+		});  
+	}
+	
+	repeat { arg repeats = inf;
+		
+		^Routine.new({ arg inevent;
+			var res;
+			inf.do({
+				res = this.next(inevent);
+				if(res.isNil, { 
+					res = this.reset.next(inevent);
+					repeats = repeats - 1;  
+				});
+				if(repeats > 0, {
+					inevent = res.yield(inevent)
+				}, {
+					nil.alwaysYield 
+				});
+			})
 		});
 	}
 }
 
 +Object {
 	loop {}
+	repeat { arg repeats = inf;
+		^Routine.new({ repeats.do({ arg inval; inval = this.yield(inval) }) })
+	}
+}
+
++Nil {
+	repeat {}
 }
 
 
