@@ -1,7 +1,7 @@
 
 InfoUGenBase : UGen {
 	*ir { 
-		^this.multiNew('control')
+		^this.multiNew('scalar')
 	}
 }
 
