@@ -1,53 +1,34 @@
 
 // contains numerical patterns
 
-Pdefn : Pattern {
-	var <key, <pattern;
-	var <>clock, <>quant; 	// quant new pattern insertion
-	classvar <all, <>defaultQuant, <>action;
+PatternProxy : Pattern {
+	var <pattern;
+	var <>clock, <>quant; 	// quant new pattern insertion. quant should be larger than dur for now
 	
-	*initClass { 
-		all = IdentityDictionary.new;
-	}
+	classvar <>defaultQuant, <>action;
 	
-	*at { arg key;
-		^this.all.at(key);
+	*basicNew {Êarg source;
+		^super.new.init(source)
 	}
-	*put { arg key, pattern;
-		this.all.put(key, pattern);
-	}
-	
-	*new { arg key, pattern;
-		var p;
-	 	p = this.at(key);
-	 	if(p.notNil) {
-	 		if(pattern.notNil) { p.pattern_(pattern) };
-	 	} {
-	 		if(pattern.isNil) { pattern = this.default };
-	 		p = this.newCopyArgs(key).pattern_(pattern)
-	 			.clock_(TempoClock.default).quant_(this.defaultQuant);
-			this.put(key, p);
-		};
-		^p
-	}
-	
+		
 	*default { ^1 } // safe for duration patterns
+	
+	init { arg src;
+		clock = TempoClock.default; 
+		quant = this.class.defaultQuant;
+		this.source = src ?? { this.class.default }
+	}
 	
 	constrainStream { arg str; ^pattern.asStream }
 	
-	pattern_ { arg pat;
-		if(quant.isNil) {
-			pattern = pat
-		} {
-			this.sched { pattern = pat; nil }
-		}
-	}
+	source_ { arg pat; this.sched { pattern = pat } }
+	source {Ê^pattern }
+	pattern_ { arg pat; this.source_(pat) }
 		
 	embedInStream {Êarg inval;
 		var pat, stream, outval;
 		pat = pattern;
 		stream = pattern.asStream;
-		action.value(this, stream);
 		while {
 			if((pat !== pattern)) {
 					pat = pattern;
@@ -61,28 +42,46 @@ Pdefn : Pattern {
 		^inval
 	}
 	
-	storeArgs { ^[key] } // assume it was created globally
-	
-	timeToNextBeat {
-		var t;
-		t = clock.elapsedBeats;
-		^t.roundUp(quant) - t
+	sched { arg func;
+		if(quant.isNil) 
+			{ func.value } 
+			{ clock.schedAbs(quant.nextTimeOnGrid(clock), { func.value; nil }) }
 	}
 
-	clear { all.removeAt(key) }
-	sched { arg task;
-		clock.schedAbs(clock.elapsedBeats.roundUp(quant), task)
+	storeArgs { ^[pattern] }
+	
+	/////////////////////////
+	// these following methods are factored out for the benefit of subclasses
+	// they only work for Pdef/Tdef/Pdefn
+	
+	*new { arg key, item;
+		var res;
+		res = this.at(key);
+		if(res.isNil) {
+				res = this.basicNew(item).key_(key);
+				this.put(key, res);
+		} {
+				if(item.notNil) { res.source = item }
+		}
+		^res
+	
 	}
-	doInTime { arg func;
-		if(quant.isNil) { func.value } { this.sched({ func.value; nil }) }
+
+	
+	*cmdPeriod { this.all.do { arg item; item.stop } }
+	
+	*removeAll { 
+		this.all.do { arg pat; pat.stop }; 
+		this.all = IdentityDictionary.new; 
 	}
 	
-	*removeAll { all = IdentityDictionary.new; }
+	*at { ^nil }
+	*put {}
+	key_ {}
 	
-	// posting stream usage //
+	clear { this.class.all.removeAt(this.key).stop }
 	
-	*startPost { action = { arg str; ("----" + str.parent.key).postln } }
-	*stopPost { action = nil }
+	
 	*postRepository { arg keys, stream;
 		keys = keys ?? { this.all.keys };
 		stream = stream ? Post;
@@ -95,48 +94,59 @@ Pdefn : Pattern {
 			};
 		};
 	}
+	////////////////
+	
+}
+
+Pdefn : PatternProxy {
+	var <>key;
+	classvar <>all;
+	
+	*initClass { 
+		all = IdentityDictionary.new;
+	}
+	*at { arg key;
+		^all.at(key);
+	}
+	*put { arg key, pattern;
+		all.put(key, pattern);
+	}
+	storeArgs { ^[key] } // assume it was created globally
 	
 }
 
 
-Tdef : Pdefn {
-	var <isPlaying=false, <player;
-	classvar <all, <>defaultQuant=1.0;
+
+
+TaskProxy : PatternProxy {
+	var <isPlaying=false, <source;
+	var <player, <>playQuant;
+	classvar <>defaultQuant=1.0;
 	
-	*initClass { 
-		all = IdentityDictionary.new;
-		CmdPeriod.add(this); 
-	}
-	*cmdPeriod { this.all.do { arg item; item.stop } }
-	
-	*new { arg key, func;
-		var pattern;
-		if(func.notNil) { 
-			pattern = Prout({ arg x; 
+		
+	source_ { arg function;
+			pattern = Prout { arg x; 
 				protect { 	// this error handling only helps if error is not in substream
-					func.value(x);
+					function.value(x);
 					nil.alwaysYield; // prevent from calling handler
 				} { 
-					this.at(key).player.removedFromScheduler 
+					player.removedFromScheduler 
 				} 
-			}) 
-		};
-		^super.new(key, pattern)
+			};
+			this.wakeUp;
+			source = function;
 	}
 	
-	pattern_ { arg pat;
-		pattern = pat;
-		if(isPlaying and: { player.isPlaying.not }) { this.play }
-	}
+	wakeUp { if(isPlaying and: { player.isPlaying.not }) { this.play(quant:playQuant) } }
+	
 
-
-	*default { ^Routine({ loop { 1.wait } }) }
+	*default { ^#{ loop { 1.wait } } }
 	
 	
 	constrainStream { arg str;
 		^if(quant.notNil and: { str.notNil }) {
 			Pseq([
-				Pconst(this.timeToNextBeat, str, 0.001),
+				Pconst(clock.timeToNextBeat(quant), str, 0.001),
 				pattern
 			])
 		} { pattern }.asStream
@@ -146,58 +156,66 @@ Tdef : Pdefn {
 		clock = clock ? argClock;
 		^PauseStream.new(this.asStream).play(clock, doReset, quant ? this.quant)
 	}
+	
 	play { arg argClock, doReset = false, quant;
 		isPlaying = true;
+		playQuant = quant;
 		if(player.isPlaying.not) { player = this.playOnce(argClock, doReset, quant) }
 	}
 	
 	stop { player.stop; isPlaying = false }
+	
+	// maybe doInTime should use playQuant
 	pause { if(player.notNil) { this.doInTime { player.pause } } }
 	resume { if(player.notNil) { this.doInTime { player.resume } } }
 
-	clear { this.class.all.removeAt(key).stop }
-	*removeAll { 
-		this.all.do { arg pat; pat.stop }; 
-		all = IdentityDictionary.new; 
-	}
+	
+		
+	storeArgs { ^[source] }
 }
+
+
+
+Tdef : TaskProxy {
+	var <>key;
+	classvar <>all;
+	
+	
+	*initClass { 
+		all = IdentityDictionary.new;
+		CmdPeriod.add(this); 
+	}
+	*at { arg key;
+		^all.at(key);
+	}
+	*put { arg key, pattern;
+		all.put(key, pattern);
+	}
+
+	storeArgs { ^[key] }
+	}
 
 
 
 // contains event patterns
 
-Pdef : Tdef {
+EventPatternProxy : TaskProxy {
 	var <>fadeTime;
+	classvar <>defaultQuant=1.0;
 	
-	classvar <all, <>defaultQuant=1.0;
-
-	*new { arg key, pattern; // this is a copy from Pdefn, to avoid a redirection
-		var p;
-	 	p = this.at(key);
-	 	if(p.notNil) {
-	 		if(pattern.notNil) { p.pattern_(pattern) };
-	 	} {
-	 		if(pattern.isNil) { pattern = this.default };
-	 		p = this.newCopyArgs(key).pattern_(pattern)
-	 			.clock_(TempoClock.default).quant_(this.defaultQuant);
-			this.put(key, p);
-		};
-		^p
+	source_ { arg item;
+		if(item.isKindOf(Function)) // allow functions to be passed in
+			{Êsource = item; pattern = PlazyEnvir(item) } 
+			{ pattern = source = item };
+		this.wakeUp;
 	}
 	
-	pattern_ { arg item; 
-		pattern = if(item.isKindOf(Function)) // allow functions to be passed in
-		{ÊPlazyEnvir(item) } { item };
-		if(isPlaying and: { player.isPlaying.not }) { this.play }
-	}
-		
 	*default { ^Pbind(\freq, \rest) }
-	
 	
 	constrainStream { arg str;
 		var dt, tolerance;
 		^if(quant.notNil) {
-			dt = this.timeToNextBeat;
+			dt = clock.timeToNextBeat(quant);
 			tolerance = quant % dt % 0.125;
 			if(fadeTime.isNil) {
 				if(dt < 0.01) { 
@@ -228,11 +246,30 @@ Pdef : Tdef {
 				.play(clock, true, quant ? this.quant) 
 	}
 	
+	// start playing //
+	
 	play { arg argClock, protoEvent, quant;
 		isPlaying = true;
 		if(player.isPlaying.not) { player = this.playOnce(argClock, protoEvent, quant) }
 	}
 	
+	storeArgs { ^[source] }
+	
+}
+
+Pdef : EventPatternProxy {
+	var <>key;
+	
+	classvar <>all;	
+				
+	storeArgs { ^[key] }
+	
+	*at { arg key;
+		^all.at(key);
+	}
+	*put { arg key, pattern;
+		all.put(key, pattern);
+	}
 	*initClass {
 		var phraseEvent;
 		
@@ -272,12 +309,11 @@ Pdef : Tdef {
 							outerEvent.put(\instrument, ~synthDef);
 						};
 					} {	// avoid recursion, if instrument not set.
-						//outerEvent.put(\instrument, ~synthDef);
 						outerEvent.put(\embeddingLevel, embeddingLevel + 1);
 						outerEvent.parent_(Event.parentEvents.noteEvent);
 					};
 					
-					pat = Pfindur(~sustain.value + 0.01, pat); // avoid cutting off last event
+					pat = Pfindur(~sustain.value, pat, 0.0); // avoid cutting off last event
 					pat.play(thisThread.clock, outerEvent, 0.0);
 				} {
 					~prPlay.value;
@@ -288,6 +324,98 @@ Pdef : Tdef {
 		Event.parentEvents.put(\phraseEvent, phraseEvent);
 	}
 	
+}
+
+
+
+PbindProxy : Pattern {
+	var <>pairs, <source;
+	
+	*new { arg ... pairs;
+		^super.newCopyArgs(pairs).init
+	}
+	init {
+		forBy(0, pairs.size-1, 2) { arg i;
+			pairs[i+1] = PatternProxy.basicNew(pairs[i+1])
+		};
+		source = EventPatternProxy.basicNew(Pbind(*pairs));
+	}
+	embedInStream { arg inval;
+		^source.embedInStream(inval)
+	}
+	find { arg key; // optimize later maybe.
+		pairs.pairsDo {Ê|u,x,i| if(u === key) {Ê^i } }; ^nil
+	}
+	quant_ { arg val;
+		pairs.pairsDo { arg key, item; item.quant = val }; // maybe use ref later
+		source.quant = val;
+	}
+	quant { ^source.quant }
+	
+	at { arg key; var i; i = this.find(key); ^if(i.notNil) { pairs[i+1] } {Ênil } }
+	
+	// does not yet work with adding arrayed keys/values
+	set { arg ... args; // key, val ...
+		var changedPairs=false, quant;
+		quant = this.quant;
+		args.pairsDo { |key, val|
+			var i, remove;
+			i = this.find(key);
+			if(i.notNil)
+			{ 
+				if(val.isNil) {
+					pairs.removeAt(i);
+					pairs.removeAt(i);
+					changedPairs = true;
+				}{
+					pairs[i+1].source = val
+				};
+			}{ 
+				pairs = pairs ++ [key, PatternProxy.basicNew(val).quant_(quant)];
+				changedPairs = true;
+			};
+		
+		};
+		if(changedPairs) { source.source =  Pbind(*pairs) };
+		
+	}
+	
+	//source_ { arg pat; source.source = pat }
+	storeArgs { ^pairs.collect(_.source) }
+}
+
+
+Pbindef : Pdef {
+	*new { arg ... pairs;
+		var key, pat, src;
+		key = pairs.removeAt(0);
+		pat = super.new(key);
+		src = pat.source;
+		if(pairs.isEmpty.not) {
+			if(src.class === PbindProxy) {
+				src.set(*pairs);
+				pat.wakeUp;
+			} {
+				if(src.class === Pbind and: {Êsrc.patternpairs != #[\freq, \rest]}) 
+				{
+					src.patternpairs.pairsDo { |key, pat|
+						if(pairs.includes(key).not) { 
+							pairs = pairs.add(key); 
+							pairs = pairs.add(pat);
+						}
+					}
+				};
+				
+				src = PbindProxy.new(*pairs).quant_(pat.quant);
+				pat.source = src
+			};
+		};
+		
+		^pat
+		
+	}
+	storeArgs { ^[key]++pattern.storeArgs }
+	quant_ { arg val; super.quant = val; source.quant = val }
 }
 
 
@@ -312,5 +440,6 @@ Pdict : Pattern {
 		^inval
 	}
 }
+
 
 
