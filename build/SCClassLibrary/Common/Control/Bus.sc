@@ -129,6 +129,7 @@ Bus {
 		and: { aBus.rate == rate
 		and: { aBus.server === server }}}}
 	}
+	hash { ^index.hash bitXor: numChannels.hash bitXor: rate.hash bitXor: server.hash }
 	
 	isAudioOut { // audio interface
 		^(rate === \audio and: {index < server.options.firstPrivateBus})

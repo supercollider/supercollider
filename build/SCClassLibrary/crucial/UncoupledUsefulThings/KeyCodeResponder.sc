@@ -232,9 +232,10 @@ SimpleKDRUnit { // exact single modifier match only
 		if((modifier & requireMask) == requireMask,{function.value(char,modifier,unicode,keycode)})
 	}
 	== { arg that;
-		^(this.class == that.class) and:
-			{ that.requireMask == requireMask }
+		^that respondsTo: \requireMask 
+			and: { that.requireMask == requireMask }
 	}
+	hash { ^requireMask.hash }
 }
 
 
@@ -258,12 +259,13 @@ KDRMaskTester : SimpleKDRUnit {
 		})
 	}
 	== { arg aResponder;
-		^(this.class === aResponder.class) and: {
-			(aResponder.requireMask == requireMask and: {
+		^aResponder respondsTo: #[\requireMask, \denyMask]
+			and: { aResponder.requireMask == requireMask and: {
 				aResponder.denyMask == denyMask
-			})
-		}
+			}}
 	}
+	hash { ^requireMask.hash bitXor: denyMask.hash }
+	
 }
 
 

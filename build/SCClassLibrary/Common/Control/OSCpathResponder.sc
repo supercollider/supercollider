@@ -104,6 +104,7 @@ OSCpathResponder : OSCresponder {
 	== { arg that;
 		^that respondsTo: \path and: { path == that.path }
 	}
+	hash { ^path.hash }
 }		
 
 /*

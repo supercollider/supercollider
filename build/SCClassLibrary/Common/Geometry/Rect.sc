@@ -135,6 +135,8 @@ Rect {
 			and: { width == that.width
 			and: { height == that.height }}}}
 	}
+	hash { ^left.hash bitXor: top.hash bitXor: width.hash bitXor: height.hash }
+	
 	layout { arg argBounds; 
 		this.set(argBounds.left, argBounds.top, argBounds.width, argBounds.height);
 	}
