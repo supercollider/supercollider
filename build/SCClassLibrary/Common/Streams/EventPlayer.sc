@@ -149,7 +149,11 @@ TempoEventPlayer : EventPlayer {
 		});
 	}
 	playEvent { arg event;
-		thisThread.clock.tempo = event[\tempo];
+		var tempo;
+		tempo = event[\tempo];
+		if (tempo.notNil) {
+			thisThread.clock.tempo = tempo;
+		};
 	}
 }
 
