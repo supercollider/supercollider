@@ -51,7 +51,8 @@ Node {
 	release { //assumes a control called 'gate' in the synth
 		server.sendBundle(server.latency, [15, nodeID, \gate, 0]) //"/n_set"
 	}	       
-
+	
+	asStream { ^Ref(this) } //insulate next
 	
 	
 	/**  message and bundle creation **/
@@ -61,6 +62,13 @@ Node {
 	}
 	addMsg { arg bundle, cmdName, argList;
 		^bundle.add([cmdName, nodeID] ++ (argList ? #[]));
+	}
+	newMsg { arg target, addAction=\addToTail, args;
+		var bundle, addActionNum;
+		target = target.asTarget;
+		addActionNum = this.convertAddAction(addAction);
+		this.group = if(addActionNum < 2, {target},{target.group}); 
+		^this.nodeToServerMsg(target.nodeID, addActionNum, args);
 	}
 	
 	moveBeforeMsg { arg  bundle, aNode;
@@ -87,13 +95,13 @@ Node {
 	
 	
 	/** PRIVATE IMPLEMENTATION  **/	
-	*prNew {
-		^super.new //just return the instance, gets called by RootNode
+	*prNew { arg server;
+		^super.new.register(server)
 	}
-	//remote node creation needs to set id. normally it is not passed in
+	//remote node creation needs to set id. 
+	//normally it should not be passed in
 	prSetNodeID { arg id;  nodeID = id ?? {server.nodeAllocator.alloc}  }
 	//in some cases these need to be set.
-	prSetServer { arg s; server = s ?? {Server.local} }
 	prSetPlaying { arg flag=true; isPlaying = flag }
 	freeNodeID {  server.nodeAllocator.free(nodeID); nodeID = nil  }
 	convertAddAction { arg symbol;
@@ -104,7 +112,14 @@ Node {
 		group = g;
 		server = group.server;
 	}
-	nodeToServer { arg addActionNum,targetID,args;
+	nodeToServer { arg addActionNum,targetID, args;
+		var msg;
+		msg = [this.nodeToServerMsg(targetID, addActionNum, args)];
+		group.finishBundle(msg, this);
+		server.listSendBundle(nil, msg);
+		  
+	}
+	nodeToServerMsg { 
 		 ^this.subclassResponsibility(thisMethod)       
 	}
 	
@@ -186,7 +201,8 @@ Group : Node {
 	var <>head, <>tail;
 	
 	*new { arg target,addAction=\addToTail;
-		^super.new.perform(addAction,target.asTarget)
+		target = target.asTarget;
+		^this.prNew(target.server).perform(addAction,target)
 	}
 	*after { arg aNode;     ^this.prNew.addAfter(aNode) }
 	*before {  arg aNode; ^this.prNew.addBefore(aNode) }
@@ -216,27 +232,9 @@ Group : Node {
 			[19, movedNode.nodeID, aNode.nodeID]); //"/n_after"
 	}       
 	
-	nodeToServer { arg addActionNum,targetID;
-		group.sendGroupToServer(this, addActionNum,targetID);   
-	}
 	
-	sendGroupToServer { arg arggroup, addActionNum,targetID;
-		if(server.serverRunning, {
-			arggroup.register(server);
-			server.sendBundle(server.latency,
-				[21, arggroup.nodeID, addActionNum, targetID] //"/g_new"
-			);
-		}, { "Server not running".inform });
-	}
-	
-	sendSynthToServer { arg argsynth, addActionNum,targetID,args;
-		if(server.serverRunning, {
-			argsynth.register(server);
-			server.sendBundle(server.latency,
-				([9, argsynth.defName, argsynth.nodeID, //"/s_new"
-					addActionNum, targetID] 
-				++ args));
-		}, { "Server not running".inform });
+	nodeToServerMsg { arg targetID, addActionNum;
+		^[21, nodeID, addActionNum, targetID] 
 	}
 	
 	freeAll {       
@@ -267,18 +265,13 @@ Group : Node {
 
 	*newMsg { arg bundle, target, addAction;
 		var group;
-		group = this.prNew;
+		target = target.asTarget;
+		group = this.prNew(target.server);
 		bundle.add(group.newMsg(target, addAction));
+		group.group.finishBundle(bundle, group);
 		^group
 	}
-	newMsg { arg target, addAction;
-		var addActionNum;
-		target = target.asTarget;
-		this.register(target.server);
-		addActionNum = this.convertAddAction(addAction);
-		^[21, nodeID, addActionNum, target.nodeID]; //"/g_new"
-	}
-
+	
 	moveNodeToHeadMsg { arg aNode;
 		^[22, nodeID, aNode.nodeID]; //"/g_head"
 	}
@@ -286,7 +279,8 @@ Group : Node {
 	moveNodeToTailMsg { arg aNode;
 		^[23, nodeID, aNode.nodeID];//g_tail
 	}
-	
+	finishBundle { arg msg, target;
+	}
 
 	//private
 	prAddHead { arg node;
@@ -316,15 +310,17 @@ Synth : Node {
 	var <>defName;
 	
 	*new { arg defName,args,target,addAction=\addToTail;
-		^this.prNew(defName).perform(addAction,target.asTarget,args ? (#[]))
+		target = target.asTarget;
+		^this.prNew(defName, target.server).perform(addAction,target,args)
 	}
-	*prNew { arg defName;
-		^super.new.defName_(defName.asDefName)
+	*prNew { arg defName, server;
+		^super.new.defName_(defName.asDefName).register(server)
 	}
 	
 	*newLoad { arg defName,args,target,addAction=\addToTail,dir="synthdefs/";
 		var msg, synth;
-		synth = this.prNew(defName);
+		target = target.asTarget;
+		synth = this.prNew(defName, target.server);
 		msg = synth.newMsg(target,args,addAction);
 		synth.server.sendMsg(6, dir ++synth.defName++".scsyndef", msg); //"/d_load"
 		^synth
@@ -342,34 +338,24 @@ Synth : Node {
 		synth.server.listSendBundle(nil, bundle);
 		^synth
 	}
-	//no linking, only use for self releasing nodes
-	*newUnlinked { arg defName,args,target,addAction=\addToTail;
-		var synth, server;
-		target = target.asTarget;
-		server = target.server;
-		synth = this.prNew(defName).register(server);
-		addAction = synth.convertAddAction(addAction ?? { this.defaultAddAction });	     server.sendBundle(server.latency, 
-		 	[9, synth.defName, synth.nodeID, addAction, target.nodeID] ++ (args ? #[]));
-		^synth
-	}
-	
+		
 	*after { arg aNode,defName,args;	
-		^this.prNew(defName).addAfter(aNode,args) 
+		^this.prNew(defName, aNode.server).addAfter(aNode,args) 
 	}
 	*before {  arg aNode,defName,args;
-		^this.prNew(defName).addBefore(aNode,args) 
+		^this.prNew(defName, aNode.server).addBefore(aNode,args) 
 	}
 	*head { arg aGroup,defName,args; 
-		^this.prNew(defName).addToHead(aGroup.asGroup,args) 
+		^this.prNew(defName, aGroup.server).addToHead(aGroup.asGroup,args) 
 	}
 	*tail { arg aGroup,defName,args; 
-		^this.prNew(defName).addToTail(aGroup.asGroup,args) 
+		^this.prNew(defName, aGroup.server).addToTail(aGroup.asGroup,args) 
 	}
 	
-	nodeToServer { arg addActionNum,targetID,args;
-		group.sendSynthToServer(this, addActionNum,targetID,args);      
+	
+	nodeToServerMsg { arg targetID, addActionNum, args;
+		^[9, defName, nodeID, addActionNum, targetID] ++ args
 	}
-
 	trace {
 		server.sendMsg(10, nodeID);//"/s_trace"
 	}
@@ -380,19 +366,14 @@ Synth : Node {
 	// bundle should be a List
 	*newMsg { arg bundle, defName, args, target, addAction=\addToTail;
 		var synth;
-		synth = this.prNew(defName);
+		target = target.asTarget;
+		synth = this.prNew(defName, target.server);
 		bundle.add(synth.newMsg(target, addAction, args));
+		synth.group.finishBundle(bundle, synth);
 		^synth
 	}
 	
-	newMsg { arg target, addAction=\addToTail, args;
-		var bundle, addActionNum;
-		target = target.asTarget;
-		addActionNum = this.convertAddAction(addAction);
-		this.register(target.server);
-		bundle = [9, defName, nodeID, addActionNum, target.nodeID]; //"/s_new"
-		^if(args.notNil,{ bundle ++ args }, { bundle });
-	}
+	
 }
 
 RootNode : Group {
@@ -406,14 +387,14 @@ RootNode : Group {
 			^super.prNew.rninit(server)
 		}).connect(connected)
 	}
-	rninit { arg s; 
+	rninit { arg s;
 		server = s;
 		roots.put(s.name, this);
 		nodeID = 0;
 		isPlaying = isRunning = true;
 		group = this; // self
 	}
-	
+	register {}
 	*initClass {  roots = IdentityDictionary.new; }
 	nodeToServer {} // already running
 
