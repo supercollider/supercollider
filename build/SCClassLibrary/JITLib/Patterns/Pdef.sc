@@ -328,9 +328,10 @@ EventPatternProxy : TaskProxy {
 	
 	play { arg argClock, protoEvent, quant;
 		isPlaying = true;
-		if(player.isPlaying.not) { 
-			player = this.fork(argClock, quant ? this.quant, protoEvent);
-			argClock !? { clock = argClock };
+		if(player.isPlaying.not) {
+			clock = argClock ? TempoClock.default;
+			player = EventStreamPlayer(this.asStream, protoEvent);
+			player.play(clock, true, quant ? this.quant)
 		}
 	}
 	
