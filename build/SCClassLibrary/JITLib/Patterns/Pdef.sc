@@ -2,12 +2,12 @@
 // contains numerical patterns
 
 Pdefn : Pattern {
-	var <key, <pattern, <>clock;
-	var <>quant; 	// quant new pattern insertion
+	var <key, <pattern;
+	var <>clock, <>quant, <>offset=0; 	// quant new pattern insertion
 	classvar <>all, <>defaultQuant;
 	
 	*initClass { 
-		all = ();
+		all = IdentityDictionary.new;
 	}
 	
 	*at { arg key;
@@ -39,10 +39,7 @@ Pdefn : Pattern {
 		if(quant.isNil) {
 			pattern = pat
 		} {
-			clock.play({ 
-				pattern = pat;
-				nil 
-			}, quant)
+			this.sched { pattern = pat; nil }
 		}
 	}
 	
@@ -55,16 +52,17 @@ Pdefn : Pattern {
 	timeToNextBeat {
 		var t;
 		t = clock.elapsedBeats;
-		^(t.roundUp(quant) - t); // + offset
+		^t.roundUp(quant) - t + offset
 	}
 
 	clear { all.removeAt(key) }
-//	sched { arg task;
-//		clock.schedAbs(clock.elapsedBeats.roundUp(quant) + offset, task) }
-//	}
+	sched { arg task;
+		clock.schedAbs(clock.elapsedBeats.roundUp(quant) + offset, task)
+	}
 	
-	*removeAll { this.initClass }
-		// posting stream usage //
+	*removeAll { all = IdentityDictionary.new; }
+	
+	// posting stream usage //
 	
 	*startPost { RefStream.action = { arg str; ("----" + str.parent.key).postln } }
 	*stopPost { RefStream.action = nil }
@@ -79,7 +77,11 @@ Pdef : Pdefn {
 	var <player;
 	classvar <>all, <>defaultQuant=1.0;
 	
-	*initClass { all = () }
+	*initClass { 
+		all = IdentityDictionary.new; 
+		CmdPeriod.add(this); 
+	}
+	*cmdPeriod { all.do { arg item; item.stop } }
 		
 	*default { ^Pbind(\freq, \rest) }
 	
@@ -87,18 +89,6 @@ Pdef : Pdefn {
 		pattern = pat;
 		if(isPlaying and: { player.isPlaying.not }) { this.play }
 	}
-	
-	/*
-	
-	pattern_ { arg pat;
-		if(min.notNil or: { max.notNil }) { pat = Psync(pat, min, max) };
-		pattern = pat;
-		if(isPlaying and: { this.streamIsPlaying.not }) { this.play }
-	}
-
-	
-	
-	*/
 
 	constrainStream { arg str;
 		^if(quant.notNil) {
@@ -108,9 +98,8 @@ Pdef : Pdefn {
 			])
 		} { pattern }.asStream
 	}
-	// playing one instance //
 	
-	*cmdPeriod { all.do { arg item; item.stop } }
+	// playing one instance //
 	
 	playOnce { arg argClock, protoEvent, quant;
 		^EventStreamPlayer(this.asStream, protoEvent)
@@ -119,7 +108,6 @@ Pdef : Pdefn {
 	
 	play { arg argClock, protoEvent, quant;
 		isPlaying = true;
-		CmdPeriod.add(this.class);
 		if(player.isPlaying.not) { player = this.playOnce(argClock, protoEvent, quant) }
 	}
 	stop { player.stop; isPlaying = false }
@@ -127,7 +115,10 @@ Pdef : Pdefn {
 	resume { if(player.notNil) { player.resume } }
 
 	clear { this.class.all.removeAt(key).stop }
-	*removeAll { this.all.do { arg pat; pat.stop }; this.initClass; }
+	*removeAll { 
+		this.all.do { arg pat; pat.stop }; 
+		all = IdentityDictionary.new; 
+	}
 
 	
 }
@@ -136,7 +127,10 @@ Pdef : Pdefn {
 Tdef : Pdef {
 	classvar <>all, <>defaultQuant=1.0;
 	
-	*initClass { all = () }
+	*initClass { 
+		all = IdentityDictionary.new;
+		CmdPeriod.add(this); 
+	}
 	
 	*new { arg key, func;
 		var pattern;
@@ -149,7 +143,7 @@ Tdef : Pdef {
 	storeArgs { ^[key,pattern.routineFunc] }
 	
 	constrainStream { arg str;
-		^if(quant.notNil) {
+		^if(quant.notNil and: { str.notNil }) {
 			Pseq([
 				Pconst(this.timeToNextBeat, str, 0.001),
 				pattern
@@ -164,54 +158,26 @@ Tdef : Pdef {
 
 }
 
-//create an addressable and resetable single instance of a stream
-
-Pstr : Stream {
-	var <>stream, <>pattern;
-	
-	*new { arg pattern; 
-		^this.basicNew(pattern).resetPat;
-	}
-	
-	*basicNew { arg pattern;
-		^super.new.pattern_(pattern)
-	}
-	
-	next { arg inval; ^stream.next(inval) }
-	
-	reset { stream.reset }
-	
-	resetPat { stream = pattern.asStream }
-	
-	refresh { arg pat;
-		if(pat.notNil, { pattern = pat; this.resetPat }, { this.reset });
-	}
-	
-}
 
 // created by Pdef, Pdefn and Tdef
 
-RefStream : Pstr {
+RefStream : Stream {
 	classvar <>action;
-	var <parent, <changed; 
+	var <>stream, <>pattern; 
+	var <parent; 
 	
 	*new { arg parent;
-		^super.new.makeDependant(parent);
+		^super.new.parent_(parent);
 	}
 	
-	makeDependant { arg argParent;
+	parent_ { arg argParent;
 		parent = argParent;
-		pattern = argParent.pattern;
 		action.value(this);
-		this.resetPat;
-		
 	}
-
-	key { ^parent.key }
 	
 	next { arg inval;
 		var outval;
-		if((parent.pattern !== pattern) and: { changed.not }) {
+		if((parent.pattern !== pattern)) {
 			pattern = parent.pattern;
 			stream = parent.constrainStream(stream);
 		};
@@ -219,9 +185,6 @@ RefStream : Pstr {
 		^outval
 	}
 	
-	resetPat {  stream = pattern.asStream; changed = false }
-	
-
 }
 
 
