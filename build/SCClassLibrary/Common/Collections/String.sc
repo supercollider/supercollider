@@ -97,17 +97,20 @@ String[char] : RawArray {
 		});
 		^array.add(word);
 	}
+	
+	containsStringAt { arg index, string;
+		string.do({ arg char, i;
+			if(char != this.at(index + i), {  ^false })
+		});
+		^true
+	}
+	
 	contains { arg string;
-		var completed=0,size;
-		size = string.size;
+		var firstChar;
+		firstChar = string.at(0);
 		this.do({	arg char,i;
-			if(char == string.at(completed),{
-				completed = completed + 1;
-				if(completed == size,{
-					^true
-				})
-			},{
-				completed = 0;
+			if(char == firstChar,{
+				if(this.containsStringAt(i, string), { ^true });
 			})
 		});
 		^false
@@ -215,6 +218,15 @@ String[char] : RawArray {
 	}
 	ugenCodeString { arg ugenIndex, isDecl, inputNames=#[], inputStrings=#[];
 		_UGenCodeString
+		^this.primitiveFailed
+	}
+	
+	newTextWindow { arg title="Untitled", makeListener=false;
+		_NewTextWindow 
+		^this.primitiveFailed
+	}
+	openTextFile { arg selectionStart=0, selectionLength=0;
+		_OpenTextFile 
 		^this.primitiveFailed
 	}
 }
