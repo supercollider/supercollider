@@ -1126,6 +1126,8 @@ void installByteCodes(PyrBlock *block)
 	}
 }
 
+PyrMethod* initPyrMethod(PyrMethod* method);
+
 void compilePyrMethodNode(PyrMethodNode* node, void *result)
 {
 	PyrMethod *method, *oldmethod;
@@ -1145,6 +1147,7 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 		gCompilingClass = gCurrentClass;
 		oldmethod = classFindDirectInstMethod(gCompilingClass, node->methodName->slot.us);
 	}
+	
 	if (oldmethod && !node->extension) {
 		error("Method %s-%s already defined.\n", 
 			oldmethod->ownerclass.uoc->name.us->name, oldmethod->name.us->name);
@@ -1152,6 +1155,7 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 		compileErrors++;
 		return;
 	}
+	
 	if (oldmethod) {
 		method = oldmethod;
 		freePyrSlot(&method->code);
@@ -1159,10 +1163,11 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 		freePyrSlot(&method->prototypeFrame);
 		freePyrSlot(&method->argNames);
 		freePyrSlot(&method->varNames);
+		initPyrMethod(method);
 	} else {
 		method = newPyrMethod();
-		SetObject(&method->ownerclass, gCompilingClass);
 	}
+	SetObject(&method->ownerclass, gCompilingClass);
 	//method->flags = node->isClassMethod;
 	
 	methraw = METHRAW(method);
@@ -1280,7 +1285,6 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 				*slot = litval;
 			}
 			if (funcVarArgs) {
-				//SetNil(&method->prototypeFrame.uo->slots[numArgs]);
 				method->prototypeFrame.uo->slots[numArgs].ucopy = o_emptyarray.ucopy;
 			}
 		}
@@ -1509,7 +1513,7 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 		installByteCodes((PyrBlock*)method);
 	}
 
-	if (!node->extension || !oldmethod) {
+	if (!oldmethod) {
 		addMethod(gCompilingClass, method);
 	}
 

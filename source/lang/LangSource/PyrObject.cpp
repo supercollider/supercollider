@@ -515,7 +515,7 @@ void objAddIndexedSlotGrow(PyrSlot *arraySlot, PyrSlot *addSlot)
 {
 	PyrObject *obj = arraySlot->uo;
 	if (obj->size >= ARRAYMAXINDEXSIZE(obj)) {
-		post("objAddIndexedSlotGrow\n");
+		//post("objAddIndexedSlotGrow\n");
 		PyrObject *newobj = (PyrObject*)newPyrArray(NULL, obj->size * 2, obj_permanent | obj_immutable, false);
 		memcpy(newobj->slots, obj->slots, obj->size * sizeof(PyrSlot));
 		newobj->size = obj->size;
@@ -2266,15 +2266,13 @@ struct VMGlobals* scGlobals()
 	return gMainVMGlobals;
 }
 
-PyrMethod* newPyrMethod() 
+PyrMethod* initPyrMethod(PyrMethod* method) 
 {
-	PyrMethod* method;
 	PyrMethodRaw* methraw;
 	
 	int32 numbytes = sizeof(PyrMethod) - sizeof(PyrObjectHdr);
 	int32 numSlots = numbytes / sizeof(PyrSlot);
 
-	method = (PyrMethod*)GC::NewPermanent(numbytes, obj_permanent | obj_immutable, obj_notindexed);
 	method->classptr = class_method;
 	method->size = 0;
 	method->size = numSlots;
@@ -2303,13 +2301,23 @@ PyrMethod* newPyrMethod()
 	return method;
 }
 
+PyrMethod* newPyrMethod() 
+{
+	int32 numbytes = sizeof(PyrMethod) - sizeof(PyrObjectHdr);
+	PyrMethod* method = (PyrMethod*)GC::NewPermanent(numbytes, obj_permanent | obj_immutable, obj_notindexed);
+	return initPyrMethod(method);
+}
+
 void freePyrSlot(PyrSlot *slot) 
 {
 	if (NotNil(slot)) {
 		PyrObject *obj;
 		obj = slot->uo;
-		if (obj && obj->IsPermanent()) {
-			pyr_pool_runtime->Free((void*)obj);
+		if (obj && obj->IsPermanent()) { 
+			// don't deallocate these
+			if (obj != o_emptyarray.uo && obj != o_onenilarray.uo && obj != o_argnamethis.uo) {
+				pyr_pool_runtime->Free((void*)obj);
+			}
 			SetNil(slot);
 		}
 	}
