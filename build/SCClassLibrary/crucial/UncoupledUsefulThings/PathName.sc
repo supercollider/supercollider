@@ -149,4 +149,77 @@ PathName { 	// this class by originally by AdC
 		);
 		^number
 	}
+	
+	/* additional methods jrh */
+	
+	entries {
+		var path;
+		path = fullPath;
+		if(path.last != $/, { path = path ++ "/" });
+		^pathMatch(path ++ "*").collect({ arg item; PathName(item) });
+	}
+	
+	pathMatch {
+		^pathMatch(fullPath)
+	}
+	
+	isFolder {
+		var path;
+		path = this.pathMatch;
+		^if(path.notEmpty, {
+			path.at(0).last == $/
+		}, { false });
+	}
+	isFile {
+		var path;
+		path = this.pathMatch;
+		^if(path.notEmpty, {
+			path.at(0).last != $/
+		}, { false });
+	}
+	
+	files {
+		^this.entries.select({ arg item; item.isFile })
+	}
+	folders {
+		^this.entries.select({ arg item; item.isFolder })
+	}
+	foldersWithoutCVS { arg path;
+		^this.folders(path).reject({ arg item; item.isCVS })
+	}
+	isCVS {
+		^this.fileName == "CVS";
+	}
+	streamTree { arg str, tabs=0;
+		str << this.fullPath << Char.nl;
+		this.files.do({ arg item; 
+				tabs.do({ str << Char.tab });
+				str << item.fileNameWithoutExtension  << Char.nl
+		});
+		this.foldersWithoutCVS.do({ arg item; 
+						item.streamTree(str, tabs + 1);
+		});
+	}
+	
+	dumpTree {
+		this.streamTree(Post)
+	}
+		
+	printOn { arg stream;
+		stream << "PathName(" << fullPath <<")"
+	}
+	
+	dumpToDoc { arg title="Untitled";
+		var str, doc;
+		doc = Document.new("", title);
+		str = CollStream.new;
+		this.streamTree(str);
+		doc.string = str.collection;
+		^doc
+	}
+	
+	*helpIndex {
+		^this.new("Help/").dumpToDoc("HelpIndex");
+	}
+
 }
