@@ -329,8 +329,9 @@ Server : Model {
 		serverBooting = false;
 		this.serverRunning = false;
 		nodeWatcher.stop;
-		this.newAllocators;
 		RootNode(this).freeAll;
+		this.newAllocators;
+		this.newNodeWatcher;
 	}
 	*quitAll {
 		set.do({ arg server; server.quit; })
