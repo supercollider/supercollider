@@ -114,10 +114,6 @@ BrownNoise : WhiteNoise {
 
 PinkNoise : WhiteNoise {
 }
-/* not installed
-PinkerNoise : WhiteNoise {
-}
-*/
 
 ClipNoise : WhiteNoise {
 }
