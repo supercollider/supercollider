@@ -1,6 +1,6 @@
 Document {
 
-	classvar <dir="", <allDocuments, <>current;
+	classvar <dir="", <wikiDir="", <allDocuments, <>current;
 	classvar <>globalKeyDownAction, <>initAction;
 	
 	classvar <>autoRun = true;
@@ -33,11 +33,15 @@ Document {
 //class:
 
 	*dir_ { arg path;  dir = path.standardizePath ++ "/"; }
+	
+	*wikiDir_ { arg path;  wikiDir = path.standardizePath ++ "/"; }
+	
 	*standardizePath { arg p;
 		var pathName;
 		pathName = PathName.fromOS9(p.standardizePath);
+		pathName.fullPath.postln;
 		^if(pathName.isRelativePath,{
-			dir ++ pathName.fullPath
+			dir  ++ pathName.fullPath
 		},{
 			pathName.fullPath
 		})
@@ -254,7 +258,7 @@ Document {
 			// execute file
 			selectedText = selectedText.drop(1);
 			extensions.do {|ext|
-				filename = this.class.standardizePath(selectedText ++ ext);
+				filename = this.class.standardizePath(wikiDir ++ selectedText ++ ext);
 				if (File.exists(filename)) {
 					// open existing wiki page
 					filename.load;
@@ -275,7 +279,7 @@ Document {
 		}
 		{
 			extensions.do {|ext|
-				filename = this.class.standardizePath(selectedText ++ ext);
+				filename = this.class.standardizePath(wikiDir ++ selectedText ++ ext);
 				if (File.exists(filename)) {
 					// open existing wiki page
 					this.class.open(filename);
@@ -283,7 +287,7 @@ Document {
 				}
 			};
 			// make a new wiki page
-			filename = this.class.standardizePath(selectedText ++ ".rtf");
+			filename = this.class.standardizePath(wikiDir ++ selectedText ++ ".rtf");
 			this.makeWikiPage(filename, selectedText);
 		};
 	}
