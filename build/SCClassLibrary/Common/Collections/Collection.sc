@@ -421,7 +421,7 @@ Collection {
 	}
 	
 	writeInputSpec { | file, synthDef |
-		this.do { | item | item.writeInputSpec(file, synthDef) };
+		this.do { | item | item.debug.writeInputSpec(file, synthDef) };
 	}
 
 	// graphical support
@@ -441,5 +441,16 @@ Collection {
 		}{
 			^default.value;
 		}
+	}
+	
+	// Event support
+	makeEnvirValPairs {
+		var res;
+		res = Array.new(this.size * 2);
+		this.do { |item| 
+			res.add(item); 
+			res.add(currentEnvironment[item]);
+		};
+		^res
 	}
 }
