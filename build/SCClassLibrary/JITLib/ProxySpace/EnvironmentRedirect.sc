@@ -77,8 +77,8 @@ EnvironmentRedirect {
         ^envir.choose
      }
      
-     makeDocument { arg string="", title;
-     	^EnvirDocument.new(this, string, title);
+     makeDocument { arg title, string="";
+     	^EnvirDocument.new(this, title, string);
 	}
      
      linkDoc { arg doc, instantPush=true;
