@@ -1022,21 +1022,20 @@ int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp;
 	double delta, beats;
 	int err;
+
+	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
 	
 	if (!SlotEq(&g->thread->clock, a)) {
-		TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
 		beats = clock->ElapsedBeats();
 		//post("shouldn't call TempoClock-sched from a different clock. Use schedAbs.\n");
 		//return errFailed;
 	} else {
 		err = slotDoubleVal(&g->thread->beats, &beats);
 		if (err) return errNone; // return nil OK, just don't schedule
-	}
-
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
-	if (!clock) {
-		error("clock is not running.\n");
-		return errFailed;
 	}
 	
 	err = slotDoubleVal(b, &delta);
