@@ -139,7 +139,8 @@ Process {
 	var schedulerQueue;
 	
 	startUp {
-		AppClock.initClass; // if something fails during initClassTree we still have a clock to tick
+                // if something fails during initClassTree we still have a clock to tick
+		AppClock.initClass; 
 		Object.initClassTree;
 		
 		topEnvironment = Environment.new;
