@@ -1,7 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Stethoscope
@@ -67,7 +68,7 @@ works only with internal server\
 \
 \
 	
-\f0\b *new(server, numChannels, index, bufsize, zoom, rate)
+\f0\b *new(server, numChannels, index, bufsize, zoom, rate, view)
 \f2\b0 \
 		returns a new instance of Stethoscope.\
 		\
@@ -142,14 +143,12 @@ instance methods:\ulnone \
 \cf2 // examples:\cf0 \
 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Server\cf0 .default = \cf3 Server\cf0 .internal;\
 s = \cf3 Server\cf0 .default;\
 s.boot;\
 )\
-\{ \cf3 SinOsc\cf0 .ar([500, 600, 900], 0, 0.1) \}.scope;\
+\{ \cf3 SinOsc\cf0 .ar([225, 450, 900] * 1024 / 1000, 0, 0.1) + LFPulse.ar(501,[0,0.1,0.1],0.2,0.2) \}.scope;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // server.scope only changes the properies explicitly given:\cf0 \
 \
 s.scope(numChannels:5);\
@@ -173,5 +172,19 @@ c.scope;\
 \
 \cf2 // note that scoping control rate buses shows block size interpolation (this is due to the\
 // fact that ScopeOut.kr doesn't work yet.)\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \ul \
+external use: you can pass your own view in to add a stethoscope to it;
+\f1\fs18 \ulnone \
+\
+\
+w = \cf3 SCWindow\cf0 .new(\cf4 "my own scope"\cf0 , \cf3 Rect\cf0 (20, 20, 400, 500));\
+w.view.decorator = \cf3 FlowLayout\cf0 (w.view.bounds);\
+c = \cf3 Stethoscope\cf0 .new(s, view:w.view);\
+w.onClose = \{ c.free \}; \cf2 // don't forget this\cf0 \
+w.front;\
+\
 \
 }
