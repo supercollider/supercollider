@@ -11,28 +11,38 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 Used for patch parameters, in patterns, anytime an editable number box is needed on screen.\
-\
-like all editors, \
-	.value \
-	.asCompileString \
-	.next\
-all return the float value, not the editor itself.
-\f1\fs20 \
-\
-\
+\f0\b\fs24 \cf0 NumberEditor.new(value,spec)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 NumberEditor.new(value,spec)\
-
-\f2\b0 	
+\f2\b0 \cf0 	
 \f0\b value
 \f2\b0  -   initial value\
 	
 \f0\b spec
 \f2\b0   -   ControlSpec or StaticSpec.  see [Spec]\
 \
-
+like all editors, \
+	.value \
+	.asCompileString \
+	.next\
+	\
+all return the float value, not the editor itself.
 \f1\fs20 \
+\
+
+\f2\fs24 This is the default control view for a StaticSpec.  \
+\
+If used in a Patch, it will return its initial value when the patch starts, but will not be modulateable after that.  See KrNumberEditor for modulateable.\
+\
+NumberEditor can also be used in Pbind, since it returns its float value in response to .next or .value\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs20 \cf0 \
+\
+\
 \
 (
 \fs18 \
@@ -83,28 +93,12 @@ n.value = 100\
 n.changed; // now the slider moves\
 	// and sends to the server !\
 \
-
-\f0\b\fs28 IMPORTANT
-\f1\b0\fs20 \
-
-\f2\fs24 if a KrNumberEditor is connected to a Patch playing on a server, the message to the server happens when the KrNumberEditor gets the .changed message and sends .update to all its depedants.  This includes any NumberEditorGui and also any UpdatingScalarPatchOut, which is what actually sends the message to the server.
-\f1\fs20 \
-\
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 /*\
-s.boot;\
-(\
-// works as a stream .. convienient for patterns\
-	n=NumberEditor(440.0,\\freq);\
-	n.gui;\
-	\
-	Pbind(\
-		\\freq,n\
-	).play\
-)\
-*/\cf0 \
-\
+
+\f0\b\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs20 \cf0 \
 \
 // controlling the display\
 (\
