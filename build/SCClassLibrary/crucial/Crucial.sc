@@ -150,7 +150,6 @@ Crucial {
 		a = ActionButton(menu.startRow,"     Library Menu Items...     ",{
 			MLIDbrowser(\menuItems)
 				.onSelect_({ arg f; f.value })
-				.browse
 		},maxx: 250)
 		.background_(Color.new255(112, 128, 144))
 		.labelColor_(Color.white);
