@@ -343,22 +343,27 @@ Pfindur : FilterPattern {
 	}
 }
 
-Pfit : FilterPattern {
-	var <>mindur, <>maxdur, <>tolerance;
-	*new { arg pattern, mindur, maxdur, tolerance = 0.001;
-		^super.new(pattern).mindur_(mindur).maxdur_(maxdur).tolerance_(tolerance)
+Psync : FilterPattern {
+	var <>quant, <>maxdur, <>tolerance;
+	*new { arg pattern, quant, maxdur, tolerance = 0.001;
+		^super.new(pattern).quant_(quant).maxdur_(maxdur).tolerance_(tolerance)
 	}
-	storeArgs { ^[pattern,mindur,maxdur,tolerance] }
+	storeArgs { ^[pattern,quant,maxdur,tolerance] }
 	asStream { 
 		^Routine.new({ arg inevent;
-			var item, stream, delta, elapsed = 0.0, nextElapsed;
+			var item, stream, delta, elapsed = 0.0, nextElapsed, clock;
 		
 			stream = pattern.asStream;
-			
+			/*
+			clock = inevent[\clock].debug ? TempoClock.default;
+			elapsed = clock.elapsedBeats;
+			elapsed = elapsed.roundUp(quant ? 1) - elapsed;
+			if(elapsed > tolerance) { Event.silent(elapsed).yield };
+			*/
 			loop {
 				inevent = stream.next(inevent);
 				if(inevent.isNil) {
-					if(mindur.notNil) { Event.silent(elapsed.roundUp(mindur) - elapsed).yield };
+					if(quant.notNil) { Event.silent(elapsed.roundUp(quant) - elapsed).yield };
 					nil.alwaysYield
 				};
 				delta = inevent.delta;
