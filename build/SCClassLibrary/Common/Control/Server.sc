@@ -151,12 +151,12 @@ Server : Model {
 		_QuitInProcessServer
 		^this.primitiveFailed
 	}
-	allocSharedControls { arg numControls;
+	allocSharedControls { arg numControls=1024;
 		_AllocSharedControls
 		^this.primitiveFailed
 	}
 	allocScopeBufs { arg numScopeBufs=16, size=1024;
-		_AllocSharedControls
+		_AllocScopeBufs
 		^this.primitiveFailed
 	}
 	setSharedControl { arg num, value;
