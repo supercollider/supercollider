@@ -131,7 +131,7 @@ BusPlug : AbstractFunction {
 			this.defineBus(\audio, numChannels) 
 		};
 		this.prepareOutput;
-		^InBus.ar(bus, numChannels ? this.class.defaultNumAudio, offset)
+		^InBus.ar(bus, numChannels ? bus.numChannels, offset)
 	}
 	
 	kr { arg numChannels, offset=0;
@@ -139,7 +139,7 @@ BusPlug : AbstractFunction {
 			this.defineBus(\control, numChannels) 
 		};
 		this.prepareOutput;
-		^InBus.kr(bus, numChannels ? this.class.defaultNumControl, offset)
+		^InBus.kr(bus, numChannels ? bus.numChannels, offset)
 	}
 	
 	//////////// embedding bus in event streams, myself if within a normal stream
@@ -191,7 +191,7 @@ BusPlug : AbstractFunction {
 	///// monitoring //////////////
 	
 	
-	play { arg out=0, numChannels, group, multi=false, vol=1.0;  
+	play { arg out=0, numChannels, group, multi=false, vol;  
 		var ok, localServer;
 		
 		localServer = this.localServer; // multi client support
