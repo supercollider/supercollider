@@ -23,15 +23,9 @@ Klang : UGen {
 	var freqs, amps, phases;
 	
 	*ar { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
-		var freqs, amps, phases;
-			
-		# freqs, amps, phases = specificationsArrayRef.value;
-		if ((freqs.size != amps.size) || (freqs.size != phases.size), { 
-			"Klank freqs, amps, times not same size.".error;
-			^this.halt 
-		});
-
-		^this.multiNewList(['audio', freqscale, freqoffset] ++ freqs ++ amps ++ phases )
+		var specs;
+		specs = specificationsArrayRef.value.flop.flat;
+		^this.multiNewList(['audio', freqscale, freqoffset] ++ specs )
 	}
 }
 
@@ -39,15 +33,9 @@ Klank : UGen {
 	var freqs, amps, times;
 	
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
-		var freqs, amps, times;
-		
-		# freqs, amps, times = specificationsArrayRef.value;
-		if ((freqs.size != amps.size) || (freqs.size != times.size), { 
-			"Klank freqs, amps, times not same size.".error;
-			^this.halt 
-		});
-		
-		^this.multiNewList(['audio', input, freqscale, freqoffset, decayscale] ++ freqs ++ amps ++ times )
+		var specs;
+		specs = specificationsArrayRef.value.flop.flat;
+		^this.multiNewList(['audio', input, freqscale, freqoffset, decayscale] ++ specs )
 	}
 }
 

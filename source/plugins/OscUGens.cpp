@@ -176,6 +176,7 @@ struct Klang : public Unit
 struct Klank : public Unit
 {
 	float *m_coefs;
+	float *m_buf;
 	float m_x1, m_x2;
 	int32 m_numpartials;
 };
@@ -2629,8 +2630,8 @@ float Klang_SetCoefs(Klang *unit)
 {
 	unit->m_numpartials = (unit->mNumInputs - 2)/3;
 
-	//RTFree(unit->mWorld, unit->m_coefs);
-	unit->m_coefs = (float*)RTAlloc(unit->mWorld, unit->m_numpartials * 3 * sizeof(float));
+	int numcoefs = unit->m_numpartials * 3;
+	unit->m_coefs = (float*)RTAlloc(unit->mWorld, numcoefs * sizeof(float));
 
 	float freqscale = ZIN0(0) * unit->mRate->mRadiansPerSample;
 	float freqoffset = ZIN0(1) * unit->mRate->mRadiansPerSample;
@@ -2813,10 +2814,9 @@ void Klang_next(Klang *unit, int inNumSamples)
 
 
 
-
 void Klank_Dtor(Klank *unit)
 {
-	RTFree(unit->mWorld, unit->m_coefs);
+	RTFree(unit->mWorld, unit->m_buf);
 }
 
 void Klank_Ctor(Klank *unit)
@@ -2829,10 +2829,12 @@ void Klank_Ctor(Klank *unit)
 
 void Klank_SetCoefs(Klank *unit)
 {
-	unit->m_numpartials = (unit->mNumInputs - 4) / 3;
+	int numpartials = (unit->mNumInputs - 4) / 3;
+	unit->m_numpartials = numpartials;
 	
-	//RTFree(unit->mWorld, unit->m_coefs);
-	unit->m_coefs = (float*)RTAlloc(unit->mWorld, unit->m_numpartials * 5 * sizeof(float));
+	int numcoefs = unit->m_numpartials * 5;
+	unit->m_buf = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
+	unit->m_coefs = unit->m_buf + unit->mWorld->mBufLength;
 
 	float freqscale = ZIN0(1) * unit->mRate->mRadiansPerSample;
 	float freqoffset = ZIN0(2) * unit->mRate->mRadiansPerSample;
@@ -2841,8 +2843,8 @@ void Klank_SetCoefs(Klank *unit)
 	float* coefs = unit->m_coefs - 1;
 
 	float sampleRate = SAMPLERATE;
-		
-	for (int i=0,j=4; i<unit->m_numpartials; ++i,j+=3) {
+	
+	for (int i=0,j=4; i<numpartials; ++i,j+=3) {
 		float w = ZIN0(j) * freqscale + freqoffset;
 		float level = ZIN0(j+1);
 		float time = ZIN0(j+2) * decayscale;
@@ -2884,7 +2886,7 @@ void Klank_next(Klank *unit, int inNumSamples)
 			y1_2 = *++coefs;	y2_2 = *++coefs;	b1_2 = *++coefs;	b2_2 = *++coefs;	a0_2 = *++coefs;
 			
 			in = in0;
-			out = out0;
+			out = unit->m_buf - 1;
 			LOOP(unit->mRate->mFilterLoops, 
 				inf = *++in;
 				y0_0 = inf + b1_0 * y1_0 + b2_0 * y2_0; 
@@ -2924,7 +2926,7 @@ void Klank_next(Klank *unit, int inNumSamples)
 			y1_1 = *++coefs;	y2_1 = *++coefs;	b1_1 = *++coefs;	b2_1 = *++coefs;	a0_1 = *++coefs;
 			
 			in = in0;
-			out = out0;
+			out = unit->m_buf - 1;
 			LOOP(unit->mRate->mFilterLoops, 
 				inf = *++in;
 				y0_0 = inf + b1_0 * y1_0 + b2_0 * y2_0; 
@@ -2958,7 +2960,7 @@ void Klank_next(Klank *unit, int inNumSamples)
 			
 			//postbuf("rcoefs %g %g %g %g %g\n", y1_0, y2_0, b1_0, b2_0, a0_0);
 			in = in0;
-			out = out0;
+			out = unit->m_buf - 1;
 			LOOP(unit->mRate->mFilterLoops, 
 				inf = *++in;
 				y0_0 = inf + b1_0 * y1_0 + b2_0 * y2_0; 
@@ -2984,13 +2986,12 @@ void Klank_next(Klank *unit, int inNumSamples)
 			*++coefs = y1_0;	*++coefs = y2_0;	coefs += 3;	
 			break;
 		case 0 :
-			out = out0;
+			out = unit->m_buf - 1;
 			LOOP(inNumSamples, *++out = 0.f;);
 			break;
 	}
 
 	int32 imax = numpartials >> 2;
-	
 	for (int i=0; i<imax; ++i) {
 		y1_0 = *++coefs;	y2_0 = *++coefs;	b1_0 = *++coefs;	b2_0 = *++coefs;	a0_0 = *++coefs;
 		y1_1 = *++coefs;	y2_1 = *++coefs;	b1_1 = *++coefs;	b2_1 = *++coefs;	a0_1 = *++coefs;
@@ -2998,7 +2999,7 @@ void Klank_next(Klank *unit, int inNumSamples)
 		y1_3 = *++coefs;	y2_3 = *++coefs;	b1_3 = *++coefs;	b2_3 = *++coefs;	a0_3 = *++coefs;
 		
 		in = in0;
-		out = out0;
+		out = unit->m_buf - 1;
 		LOOP(unit->mRate->mFilterLoops, 
 			inf = *++in;
 			y0_0 = inf + b1_0 * y1_0 + b2_0 * y2_0; 
@@ -3043,26 +3044,26 @@ void Klank_next(Klank *unit, int inNumSamples)
 	float x0;
 	float x1 = unit->m_x1;
 	float x2 = unit->m_x2;
-
+	
+	in = unit->m_buf - 1;
 	out = out0;
 	LOOP(unit->mRate->mFilterLoops, 
-		x0 = *++out;
-		*out = x0 - x2;
-		x2 = *++out;
-		*out = x2 - x1;
-		x1 = *++out;
-		*out = x1 - x0;
+		x0 = *++in;
+		*++out = x0 - x2;
+		x2 = *++in;
+		*++out = x2 - x1;
+		x1 = *++in;
+		*++out = x1 - x0;
 	);
 	LOOP(unit->mRate->mFilterRemain, 
-		x0 = *++out;
-		*out = x0 - x2;
+		x0 = *++in;
+		*++out = x0 - x2;
 		x2 = x1;	
 		x1 = x0;
 	);
 	
 	unit->m_x1 = x1;
 	unit->m_x2 = x2;
-
 }
 
 
