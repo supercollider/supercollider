@@ -1,7 +1,7 @@
 
 + Server {
 	makeWindow { arg w;
-		var active,booter,killer,running,booting,stopped;
+		var active, booter, killer, makeDefault, running, booting, stopped;
 		var countsViews, ctlr;
 		
 		if (window.notNil, { ^window.front });
@@ -40,6 +40,15 @@
 		active.font = Font("Helvetica-Bold", 16);
 		active.background = Color.black;
 		if(serverRunning,running,stopped);		
+
+		makeDefault = SCButton(w, Rect(0,0, 68, 24));
+		makeDefault.states = [["-> default", Color.black, Color.clear]];
+		makeDefault.action = {
+			thisProcess.interpreter.s = this;
+			Server.default = this;
+		};
+		
+		killer.action = { Server.killAll };	
 		
 		if (isLocal, {
 			
