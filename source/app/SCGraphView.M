@@ -250,12 +250,14 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, void* inData)
 
 - (void)closeWindow
 {
-	//printf("closeWindow %08X mTopView %08X\n", self, mTopView);
 	[[self window] close];
 }
 
 - (void)willClose
 {    
+	[[SCVirtualMachine sharedInstance] removeDeferredOperationsFor: self];
+	[[SCVirtualMachine sharedInstance] removeDeferredOperationsFor: [self window]];
+	
     pthread_mutex_lock (&gLangMutex);
     if (mWindowObj) {
         SetPtr(mWindowObj->slots + 0, self);
@@ -268,10 +270,8 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, void* inData)
     }
     pthread_mutex_unlock (&gLangMutex);
     
-    //printf("willClose %08X mTopView %08X\n", self, mTopView);
     delete mTopView;
 	mTopView = 0;
-
 }
 
 /*  from command-w, scvm is the delegate */

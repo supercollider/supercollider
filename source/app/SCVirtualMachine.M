@@ -211,11 +211,30 @@ extern NSTextView *gPostView;
     [deferredOperations addObject: action];
 }
 
+
+- (void)removeDeferredOperationsFor:(id) object
+{
+	NSMutableArray *newArray = [NSMutableArray arrayWithCapacity: 8];
+	[newArray retain];
+	for (unsigned int i=0; i<[deferredOperations count]; ++i) {
+		NSInvocation* action = (NSInvocation*)[deferredOperations objectAtIndex: i];
+		if ([action target] != object) {
+			[newArray addObject: action];
+		}
+	}
+	[deferredOperations release];
+	deferredOperations = newArray;
+}
+
 - (void)performDeferredOperations
 {
-    if ([deferredOperations count]) {
-        [deferredOperations makeObjectsPerformSelector: @selector(invoke)];
-        [deferredOperations removeAllObjects];
+    while ([deferredOperations count]) {
+		NSInvocation* action = (NSInvocation*)[deferredOperations objectAtIndex: 0];
+		[action retain];
+        [deferredOperations removeObjectAtIndex: 0];
+		///NSLog(@"%d %@ %08X\n", [deferredOperations count], action, [action target]);
+		[action invoke];
+		[action release];
     }
 }
 
