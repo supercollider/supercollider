@@ -14,17 +14,19 @@ Allocates and supplies a buffer for use in Patches.  The buffer is unfilled, sui
 \f2 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs18 \cf0 ( // not quite working ?\
+\fs18 \cf0 (\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Instr\cf0 ([\cf3 \\recordPlay\cf0 ,\cf3 \\JemAudioIn\cf0 ], \{\cf2 arg\cf0  buffer, input, trigRate = 0.5,offOn = 1, pitch = 1, start = 0;\
-	\cf2 var\cf0  offset;\
-\
-	\cf2 RecordBuf\cf0 .ar(input,buffer.bufnumIr, run: offOn);\
-	offset = start * buffer.bufFramesIr;\
-	\cf2 PlayBuf\cf0 .ar(buffer.numChannels,buffer.bufnumIr,pitch,\cf2 Impulse\cf0 .kr(trigRate),offset,loop: 1);\
+	\cf2 var\cf0  offset,trig;\
+	trig = \cf2 Impulse\cf0 .kr(trigRate);\
+	\cf2 RecordBuf\cf0 .ar(input,buffer.bufnumIr, run: offOn,trigger: trig);\
+	offset = start * buffer.bufFramesKr;\
+	\cf2 PlayBuf\cf0 .ar(buffer.numChannels,buffer.bufnumIr,pitch,\cf2 trig\cf0 ,offset,loop: 1);\
 \
 \},#[\
 	\cf3 \\buffer\cf0 , \cf4 // == BufferProxySpec(BufferProxy(44100,2))\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 \\stereo\cf0 , \cf4 // == AudioSpec.new(2),\
 \cf0 	[0.25,10,\cf3 \\linear\cf0 ],\
 	\cf3 \\unipolar\cf0 ,\
@@ -33,13 +35,14 @@ Allocates and supplies a buffer for use in Patches.  The buffer is unfilled, sui
 ]);\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Patch\cf0 ([\cf3 \\recordPlay\cf0 ,\cf3 \\JemAudioIn\cf0 ],[\
-	\cf2 BufferProxy\cf0 (44100 * 4, 2),\
+	\cf2 BufferProxy\cf0 (44100 * 4, 2), // 4 secs in stereo\
 	\cf2 AudioInPlayer\cf0 .new\
-]).topGui\
+]).gui\
 \
 )
 \fs24 \
-\
-\\buffer.asSpec.insp\
-\\stereo.asSpec.insp}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf0 Make sure your audio input and buffer numChannels match.}

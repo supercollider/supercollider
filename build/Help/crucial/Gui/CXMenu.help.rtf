@@ -44,10 +44,9 @@ m.gui;\
 (\
 \
 m = \cf2 CXMenu.newWith\cf0 (\
-	[\
-	\cf3 \\myName\cf0 ->\{ \cf4 "you hit myName"\cf0 .postln; \},\
-	\cf3 \\yourName\cf0 ->\{ \cf4 "you hit yourName"\cf0 .postln; \}\
-	]\
+	Array.fill(15,\{ arg i;\
+		i.asString.asSymbol -> \{ i.postln \}\
+	\})\
 );\
 \
 m.gui;\

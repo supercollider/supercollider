@@ -13,10 +13,21 @@ Plays the first two channels of your Audio input.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 	AudioInPlayer.new.play\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \
+\f1\b0 \
 \
 watch the feedback\
 \
-todo: add numChannels, start channel}
+todo: add numChannels, start channel\
+\
+(\
+\
+Instr([\\audioIn,\\filter],\{ arg audio,ffreq=400,rq=0.1,amp=0.1;\
+	RLPF.ar( audio, ffreq, rq) * amp\
+\});\
+\
+Patch([\\audioIn,\\filter],[\
+	AudioInPlayer.new\
+]).gui\
+\
+)}
