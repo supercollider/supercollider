@@ -15,7 +15,7 @@ NodeWatcher {
 				method = cmd.asString.copyToEnd(1).asSymbol;
 				OSCresponder(server.addr, cmd, 
 					{ arg time, resp, msg;
-						msg.postln;
+						//msg.postln;
 						msg.removeAt(0);
 						msg = this.lookUp(msg);
 						if(msg.notNil, {
@@ -97,7 +97,7 @@ NodeWatcher {
 	
 	n_end { arg node;
 		node.remove;
-		(node.asString ++ " was freed").postln;
+		//(node.asString ++ " was freed").postln;
 
 		this.unregister(node);
 				
