@@ -3773,7 +3773,7 @@ int SCEnvelopeView::allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
 				(scenv+i)->mString = 0;
 				(scenv+i)->mConnections = 0;
 				(scenv+i)->mColor = mFillColor;
-                (scenv+i)->mIsStatic = false;
+                (scenv+i)->mEditable = true;
                 (scenv+i)->mIsSelected = false;
 				(scenv+i)->mNumConnection = 0;
 				(scenv+i)->mRect.height = mThumbSizeY;
@@ -3792,7 +3792,7 @@ int SCEnvelopeView::allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
 			(scenv+i)->mString = 0;
 			(scenv+i)->mConnections = 0;
 			(scenv+i)->mColor = mFillColor;
-			(scenv+i)->mIsStatic = false;
+			(scenv+i)->mEditable = true;
 			(scenv+i)->mIsSelected = false;
 			(scenv+i)->mNumConnection = 0;
 			(scenv+i)->mRect.height = mThumbSizeY;
@@ -3902,7 +3902,7 @@ bool SCEnvelopeView::setValue(SCEnvObject * envob,  double xIn, double yIn, bool
     xIn = sc_clip(xIn, 0., 1.);
     yIn = sc_clip(yIn, 0., 1.);
 
-    if(!envob->mIsStatic){
+    if(!envob->mEditable) return false;
     if (mStepSize > 0.) {
         xIn = floor(xIn * mStepScale + 0.5) * mStepSize;
         yIn = floor(yIn * mStepScale + 0.5) * mStepSize;
@@ -3916,7 +3916,6 @@ bool SCEnvelopeView::setValue(SCEnvObject * envob,  double xIn, double yIn, bool
     mCurrentX = xIn;
     if (send) sendMessage(s_doaction, 0, 0, 0); 
     //refresh();
-    }
     return changed;
        // }
 }
@@ -4075,7 +4074,7 @@ void SCEnvelopeView::setVisibleSize()
 
 int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {	
-	int err;
+		int err;
         char *name = symbol->name;
         if (strcmp(name, "step")==0) {
 		err = slotDoubleVal(slot, &mStepSize);
@@ -4093,33 +4092,72 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			if(changedout) refresh();
 			SetBool(slot, changedout);
 		}
-		return errNone;
-	}
-        if (strcmp(name, "thumbSize")==0) {
-            err = slotIntVal(slot, &mThumbSize);
-            if(mSelectedIndex < 0) return errNone;
-            (&mEnvObj[mSelectedIndex])->mRect.width = mThumbSize;
-            (&mEnvObj[mSelectedIndex])->mRect.height = mThumbSize;
-            
-           // setVisibleSize();
-            refresh();
-            return errNone;
-        } 
-        if (strcmp(name, "thumbWidth")==0) {
-            err = slotIntVal(slot, &mThumbSize);
-            if(mSelectedIndex < 0) return errNone;
-            (&mEnvObj[mSelectedIndex])->mRect.width = mThumbSize;
-           // setVisibleSize();
+			return errNone;
+		}
+		
+		if (strcmp(name, "thumbSize")==0) {
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;
+		    PyrSlot *slots = slot->uo->slots;
+			int err, idx;
+			err = slotIntVal(slots+0, &idx);
+			if (err) return err;
+			err = slotIntVal(slots+1, &mThumbSize);
+			mThumbSizeY = mThumbSize;
+			if (err) return err;
+			if(idx >= mTabSize) return errNone;
+            if(idx < 0) {
+				for(int i=0; i<mTabSize; i++){
+					(mEnvObj+i)->mRect.width = mThumbSize;
+					(mEnvObj+i)->mRect.height = mThumbSize;
+				}
+			} else {
+				(mEnvObj+idx)->mRect.width = mThumbSize;
+				(mEnvObj+idx)->mRect.height = mThumbSize;
+			}
             refresh();
             return errNone;
         }
-        if (strcmp(name, "thumbHeight")==0) {
-            err = slotIntVal(slot, &mThumbSizeY);
-            if(mSelectedIndex < 0) return errNone;
-            (&mEnvObj[mSelectedIndex])->mRect.height = mThumbSizeY;
+
+        if (strcmp(name, "thumbWidth")==0) {
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;
+		    PyrSlot *slots = slot->uo->slots;
+			int err, idx;
+			err = slotIntVal(slots+0, &idx);
+			if (err) return err;
+			err = slotIntVal(slots+1, &mThumbSize);
+			if (err) return err;
+			if(idx >= mTabSize) return errNone;
+            if(idx < 0) {
+				for(int i=0; i<mTabSize; i++){
+					(mEnvObj+i)->mRect.width = mThumbSize;
+				}
+			}
+			else
+				(&mEnvObj[idx])->mRect.width = mThumbSize;
             refresh();
             return errNone;
-        } 
+        }
+		
+        if (strcmp(name, "thumbHeight")==0) {
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;
+		    PyrSlot *slots = slot->uo->slots;
+			int err, idx;
+			err = slotIntVal(slots+0, &idx);
+			if (err) return err;
+			err = slotIntVal(slots+1, &mThumbSizeY);
+			if (err) return err;
+			if(idx >= mTabSize) return errNone;
+            if(idx < 0) {
+				for(int i=0; i<mTabSize; i++){
+					(mEnvObj+i)->mRect.height = mThumbSizeY;
+				}
+			}
+			else
+				(&mEnvObj[idx])->mRect.height = mThumbSizeY;
+            refresh();
+            return errNone;
+        }
+
         if (strcmp(name, "selectedIndex")==0) {
             err = slotIntVal(slot, &mSelectedIndex);
 			if(mSelectedIndex >= 0)
@@ -4135,13 +4173,23 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             return errNone;
         }
 		if (strcmp(name, "connect")==0) { //if this is set all connection start in the middle of the rect
+		
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;	
+			PyrSlot *slots = slot->uo->slots;
+			
+			int err, idx;
+			err = slotIntVal(slots+0, &idx);
+			if (err) return err;
+			if(idx >= mTabSize || idx < 0) return errIndexOutOfRange;
 			SCEnvObject * envobj;
-			if (!isKindOfSlot(slot, class_array)) return errWrongType;				
-			if(mSelectedIndex < 0) return errNone;
-			envobj = (mEnvObj + mSelectedIndex);
-			err = allocSlotDoubleArrayVal(slot, &envobj->mConnections);
+		    PyrSlot *connections;
+			connections = slots+1;
+			if (!isKindOfSlot(connections, class_array)) return errWrongType;	
+			
+			envobj = (mEnvObj + idx);
+			err = allocSlotDoubleArrayVal(connections, &envobj->mConnections);
 			//err = allocSlotIntArrayVal(slot, &(&mEnvObj[mSelectedIndex])->mConnections); //int array crashes sc
-			envobj->mNumConnection = slot->uo->size;
+			envobj->mNumConnection = connections->uo->size;
 		//	envobj->deltax = 0;
 		//	envobj->mConnectionInputs = 0;
 		//	envobj->mConnectionOutputs = 0;
@@ -4152,10 +4200,24 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         }
 
         if (strcmp(name, "fillColor")==0) {
-            err = slotColorVal(slot, &mFillColor);
-			if(mSelectedIndex < 0) return errNone;
-            (mEnvObj +mSelectedIndex)->mColor = mFillColor;
-			(mEnvObj +mSelectedIndex)->mObjectColor = mFillColor ;
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;	
+			PyrSlot *slots = slot->uo->slots;
+			
+			int err, idx;
+			err = slotIntVal(slots+0, &idx);
+			if (err) return err;
+			if(idx >= mTabSize) return errIndexOutOfRange;
+            err = slotColorVal(slot+1, &mFillColor);
+			if (err) return err;
+			
+			if(idx < 0) {
+				for(int i=0; i<mTabSize; i++){
+					(mEnvObj+i)->mColor = (mEnvObj+i)->mObjectColor = mFillColor;
+				}
+			}
+			else
+				(mEnvObj+idx)->mColor = (mEnvObj+idx)->mObjectColor = mFillColor;
+
             refresh();
             return errNone;
         }
@@ -4175,10 +4237,22 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             refresh();
             return errNone;
         }
-        if (strcmp(name, "isStatic")==0) {
-            if(mSelectedIndex >= 0)
-           (mEnvObj + mSelectedIndex)->mIsStatic = IsTrue(slot); 
-            refresh();
+        if (strcmp(name, "editable")==0) {
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;	
+			PyrSlot *slots = slot->uo->slots;
+			
+			int err, idx, editable;
+			err = slotIntVal(slots+0, &idx);
+			if (err) return err;
+			if(idx >= mTabSize) return errIndexOutOfRange;
+			editable = IsTrue(slots+1);
+			if(idx < 0) {
+				for(int i=0; i<mTabSize; i++){
+					(mEnvObj + i)->mEditable = editable; 
+				}
+			}
+			else
+				(mEnvObj + idx)->mEditable = editable; 
             return errNone;
         }
         if (strcmp(name, "drawLines")==0) {
@@ -4192,8 +4266,16 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             return errNone;
         }
 		if (strcmp(name, "string")==0) {
-			if(mSelectedIndex >= 0)
-            err = allocSlotStrVal(slot,  &(&mEnvObj[mSelectedIndex])->mString);
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;	
+			PyrSlot *slots = slot->uo->slots;
+			
+			int err, idx;
+			err = slotIntVal(slots+0, &idx);
+			if (err) return err;
+			if(idx >= mTabSize || idx < 0) return errIndexOutOfRange;
+			PyrSlot *string = slots+1;
+			
+            err = allocSlotStrVal(string,  &(&mEnvObj[idx])->mString);
             if (err) return err;
             refresh();
             return errNone;
