@@ -1,39 +1,22 @@
 
-OSCBundle {
-	var <messages;
-		
-	send { arg server, delta;
-		if(messages.notNil,{
-			server.listSendBundle(delta, messages);
-		});
-	}
-	
-	add { arg msg;
-		messages = messages.add(msg);
-	}
-	addAll { arg mgs;
-		messages = messages.addAll(mgs)
-	}
-	
-	printOn { arg stream;
-		stream << this.class.name << ": " <<< messages;
-	}
-	
-	storeOn { arg stream;//for now
-		stream << this.class.name << ": " <<< messages;
-	}
-}
-
 /*
 	this bundle is offset by preparationTime at all times.
 
 */
 
-MixedBundle : OSCBundle {
+MixedBundle {
 	
-	var <functions; //functions to evaluate on send 
+	var <messages, <functions; //functions to evaluate on send 
 	var <preparationMessages; //messages to send first on schedSend
 	var <>preparationTime=0.3; //time between preparation and action
+	
+	add { arg msg;
+		messages = messages.add(msg);
+	}
+	
+	addAll { arg mgs;
+		messages = messages.addAll(mgs)
+	}
 	
 	addFunction { arg func;
 		functions = functions.add(func);
@@ -97,46 +80,19 @@ MixedBundle : OSCBundle {
 	}
 	
 	// offset by preparation time.
+	
 	sendAtTime { arg server, atTime, timeOfRequest;
 		atTime.schedCXBundle(this,server,timeOfRequest ?? {Main.elapsedTime});
 	}
 	
+	printOn { arg stream;
+		stream << this.class.name << ": " <<< messages;
+	}
 	
-	//need to wait for id in async messages
-	//schedSendRespond { arg server, clock;
-//			var msg, prep, func;
-//			func = {
-//								if(clock.isNil, {
-//										this.send(server, server.latency) 
-//									}, {
-//										clock.schedAbs(clock.elapsedBeats.ceil, { 
-//											this.send(server, server.latency); 
-//											nil 
-//									})
-//							});
-//				};
-//			if(preparationMessages.notNil, {
-//				msg = AsyncResponder.nextMsg(server, func);
-//				prep = preparationMessages.last.add(msg);
-//				preparationMessages.put(preparationMessages.size-1, prep).debug;				this.sendPrepare(server, server.latency);
-//			}, func);
-//	}
-	//todo
-	//schedSendRespond { arg server, clock;
-//			var resp;
-//			resp = OSCresponderNode(server.addr, '/done', {
-//								if(clock.isNil, {
-//										this.send(server, server.latency) 
-//									}, {
-//										clock.schedAbs(clock.elapsedBeats.ceil, { 
-//											this.send(server, server.latency); 
-//											nil 
-//									})
-//							});
-//							resp.remove;
-//				}).add;
-//			this.sendPrepare(server, server.latency);
-//	}
+	storeOn { arg stream;//for now
+		stream << this.class.name << ": " <<< messages;
+	}
+	
 }
 
 DebugBundle : MixedBundle {
