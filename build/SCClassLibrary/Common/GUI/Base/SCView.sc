@@ -194,7 +194,7 @@ SCView {  // abstract class
 		_SCView_New
 		^this.primitiveFailed
 	}
-	prClose { dataptr = nil; onClose.value(this) }
+	prClose { dataptr = nil; onClose.value(this); }
 	prRemove {
 		_SCView_Remove
 		^this.primitiveFailed
@@ -261,6 +261,7 @@ SCTopView : SCCompositeView {
 	handleKeyUpBubbling { arg view, char, modifiers, unicode, keycode;
 		keyUpAction.value(view, char, modifiers, unicode, keycode);
 	}
+//	remove { this.removeAll }
 }
 
 SCLayoutView : SCContainerView {
@@ -394,8 +395,8 @@ SCRangeSlider : SCSliderBase {
 			inc = 1 - this.hi;
 			val = 1;
 		});
-		this.lo = this.lo + inc;
-		this.hi = val;
+		this.activeLo_(this.lo + inc);
+		this.activeHi_(val);
 	}
 	decrement { 
 		var inc, val; 
@@ -405,8 +406,8 @@ SCRangeSlider : SCSliderBase {
 			inc = this.lo;
 			val = 0;
 		});
-		this.lo = val;
-		this.hi = this.hi - inc;
+		this.activeLo_(val);
+		this.activeHi_(this.hi - inc);
 	}
 
 	defaultKeyDownAction { arg char, modifiers, unicode;
@@ -415,13 +416,13 @@ SCRangeSlider : SCSliderBase {
 		if (char == $r, { 
 			a = 1.0.rand; 
 			b = 1.0.rand; 
-			this.lo = min(a, b);
-			this.hi = max(a, b);
+			this.activeLo_(min(a, b));
+			this.activeHi_(max(a, b));
 		});
-		if (char == $n, { this.lo = 0.0; this.hi = 0.0; });
-		if (char == $x, { this.lo = 1.0; this.hi = 1.0; });
-		if (char == $c, { this.lo = 0.5; this.hi = 0.5; });
-		if (char == $a, { this.lo = 0.0; this.hi = 1.0; });
+		if (char == $n, { this.activeLo_(0.0); this.activeHi_(0.0); });
+		if (char == $x, { this.activeLo_(1.0); this.activeHi_(1.0); });
+		if (char == $c, { this.activeLo_(0.5); this.activeHi_(0.5); });
+		if (char == $a, { this.activeLo_(0.0); this.activeHi_(1.0); });
 		if (unicode == 16rF700, { this.increment; ^this });
 		if (unicode == 16rF703, { this.increment; ^this });
 		if (unicode == 16rF701, { this.decrement; ^this });
