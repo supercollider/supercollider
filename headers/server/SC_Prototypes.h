@@ -26,6 +26,12 @@
 
 ////////////////////////////////////////////////////////////////////////
 
+// replacement for calloc. 
+// calloc lazily zeroes memory on first touch. This is good for most purposes, but bad for realtime audio.
+void* zalloc(size_t n, size_t size);
+
+////////////////////////////////////////////////////////////////////////
+
 void World_Run(struct World *inWorld);
 void World_Start(World *inWorld);
 void World_Cleanup(World *inWorld);

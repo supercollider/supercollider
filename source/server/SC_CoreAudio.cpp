@@ -476,7 +476,7 @@ bool SC_CoreAudioDriver::Setup()
 		scprintf("mNumberBuffers %lu\n", mInputBufList->mNumberBuffers);
 		for (uint32 i=0; i<mInputBufList->mNumberBuffers; ++i) {
 			scprintf("  mDataByteSize %d %lu\n", i, mInputBufList->mBuffers[i].mDataByteSize);
-			mInputBufList->mBuffers[i].mData = calloc(1, mInputBufList->mBuffers[i].mDataByteSize);
+			mInputBufList->mBuffers[i].mData = zalloc(1, mInputBufList->mBuffers[i].mDataByteSize);
 		}
 	
 	

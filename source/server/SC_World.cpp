@@ -52,6 +52,17 @@ bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// replacement for calloc. 
+// calloc lazily zeroes memory on first touch. This is good for most purposes, but bad for realtime audio.
+void *zalloc(size_t n, size_t size)
+{
+	void* ptr = malloc(n * size);
+	memset(ptr, 0, size);
+	return ptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 void InterfaceTable_Init();
 void InterfaceTable_Init()
 {
@@ -122,9 +133,9 @@ World* World_New(WorldOptions *inOptions)
 			gLibInitted = true;
 		}
 	
-		world = (World*)calloc(sizeof(World), 1);
+		world = (World*)zalloc(1, sizeof(World));
 		
-		world->hw = (HiddenWorld*)calloc(sizeof(HiddenWorld), 1);
+		world->hw = (HiddenWorld*)zalloc(1, sizeof(HiddenWorld));
 
 		world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
 		world->hw->mQuitProgram = new SC_Semaphore(0);
@@ -134,7 +145,7 @@ World* World_New(WorldOptions *inOptions)
 		HiddenWorld *hw = world->hw;
 		hw->mGraphDefLib = new HashTable<GraphDef, Malloc>(&gMalloc, inOptions->mMaxGraphDefs, false);
 		hw->mNodeLib = new IntHashTable<Node, AllocPool>(hw->mAllocPool, inOptions->mMaxNodes, false);
-		hw->mUsers = (ReplyAddress*)calloc(inOptions->mMaxLogins * sizeof(ReplyAddress), 1);
+		hw->mUsers = (ReplyAddress*)zalloc(inOptions->mMaxLogins, sizeof(ReplyAddress));
 		hw->mNumUsers = 0;
 		hw->mMaxUsers = inOptions->mMaxLogins;
 		hw->mHiddenID = -8;
@@ -160,17 +171,17 @@ World* World_New(WorldOptions *inOptions)
 		world->mSharedControls = inOptions->mSharedControls;
 
 		int numsamples = world->mBufLength * world->mNumAudioBusChannels;
-		world->mAudioBus = (float*)calloc(numsamples, sizeof(float));
+		world->mAudioBus = (float*)zalloc(numsamples, sizeof(float));
 
-		world->mControlBus = (float*)calloc(world->mNumControlBusChannels, sizeof(float));
-		world->mSharedControls = (float*)calloc(world->mNumSharedControls, sizeof(float));
+		world->mControlBus = (float*)zalloc(world->mNumControlBusChannels, sizeof(float));
+		world->mSharedControls = (float*)zalloc(world->mNumSharedControls, sizeof(float));
 		
-		world->mAudioBusTouched = (int32*)calloc(inOptions->mNumAudioBusChannels, sizeof(int32));
-		world->mControlBusTouched = (int32*)calloc(inOptions->mNumControlBusChannels, sizeof(int32));
+		world->mAudioBusTouched = (int32*)zalloc(inOptions->mNumAudioBusChannels, sizeof(int32));
+		world->mControlBusTouched = (int32*)zalloc(inOptions->mNumControlBusChannels, sizeof(int32));
 		
 		world->mNumSndBufs = inOptions->mNumBuffers;
-		world->mSndBufs = (SndBuf*)calloc(world->mNumSndBufs, sizeof(SndBuf));
-		world->mSndBufsNonRealTimeMirror = (SndBuf*)calloc(world->mNumSndBufs, sizeof(SndBuf));
+		world->mSndBufs = (SndBuf*)zalloc(world->mNumSndBufs, sizeof(SndBuf));
+		world->mSndBufsNonRealTimeMirror = (SndBuf*)zalloc(world->mNumSndBufs, sizeof(SndBuf));
 				
 		GroupNodeDef_Init();
 		
@@ -599,9 +610,8 @@ inline int32 BUFMASK(int32 x)
 SCErr bufAlloc(SndBuf* buf, int numChannels, int numFrames)
 {		
 	long numSamples = numFrames * numChannels;
-	size_t size = numSamples * sizeof(float);
 	
-	buf->data = (float*)calloc(size, 1);
+	buf->data = (float*)zalloc(numSamples, sizeof(float));
 	if (!buf->data) return kSCErr_Failed;
 	
 	buf->channels = numChannels;
@@ -620,23 +630,23 @@ int sampleFormatFromString(const char* name)
 	if (len < 1) return 0;
 	
 	if (name[0] == 'u') {
-		if (len < 4) return 0;
-		if (name[4] == '8') return SF_FORMAT_PCM_U8;
+		if (len < 5) return 0;
+		if (name[4] == '8') return SF_FORMAT_PCM_U8; // uint8
 		return 0;
 	} else if (name[0] == 'i') {
 		if (len < 4) return 0;
-		if (name[3] == '8') return SF_FORMAT_PCM_S8;
-		else if (name[3] == '1') return SF_FORMAT_PCM_16;
-		else if (name[3] == '2') return SF_FORMAT_PCM_24;
-		else if (name[3] == '3') return SF_FORMAT_PCM_32;
+		if (name[3] == '8') return SF_FORMAT_PCM_S8;      // int8
+		else if (name[3] == '1') return SF_FORMAT_PCM_16; // int16
+		else if (name[3] == '2') return SF_FORMAT_PCM_24; // int24
+		else if (name[3] == '3') return SF_FORMAT_PCM_32; // int32
 	} else if (name[0] == 'f') {
-		return SF_FORMAT_FLOAT;
+		return SF_FORMAT_FLOAT; // float
 	} else if (name[0] == 'd') {
-		return SF_FORMAT_DOUBLE;
-	} else if (name[0] == 'm') {
-		return SF_FORMAT_ULAW;
+		return SF_FORMAT_DOUBLE; // double
+	} else if (name[0] == 'm' || name[0] == 'u') {
+		return SF_FORMAT_ULAW; // mulaw ulaw
 	} else if (name[0] == 'a') {
-		return SF_FORMAT_ALAW;
+		return SF_FORMAT_ALAW; // alaw
 	}
 	return 0;
 }
@@ -713,23 +723,38 @@ void NodeEndMsg::Perform()
 			packet.adds("/n_info");
 			break;
 	}
-	packet.maketags(8);
-	packet.addtag(',');
-	packet.addtag('i');
-	packet.addtag('i');
-	packet.addtag('i');
-	packet.addtag('i');
-	packet.addtag('i');
-	packet.addtag('i');
-	packet.addtag('i');
-	packet.addi(mNodeID);
-	packet.addi(mGroupID);
-	packet.addi(mPrevNodeID);
-	packet.addi(mNextNodeID);
-	packet.addi(mIsGroup);
-	packet.addi(mHeadID);
-	packet.addi(mTailID);
-
+	if (mIsGroup) {
+		packet.maketags(8);
+		packet.addtag(',');
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addi(mNodeID);
+		packet.addi(mGroupID);
+		packet.addi(mPrevNodeID);
+		packet.addi(mNextNodeID);
+		packet.addi(mIsGroup);
+		packet.addi(mHeadID);
+		packet.addi(mTailID);
+	} else {
+		packet.maketags(6);
+		packet.addtag(',');
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addi(mNodeID);
+		packet.addi(mGroupID);
+		packet.addi(mPrevNodeID);
+		packet.addi(mNextNodeID);
+		packet.addi(mIsGroup);
+	}
+	
 	ReplyAddress *users = mWorld->hw->mUsers;
 	int numUsers = mWorld->hw->mNumUsers;
 	for (int i=0; i<numUsers; ++i) {

@@ -429,8 +429,8 @@ struct BufColorAllocator
 
 inline BufColorAllocator::BufColorAllocator(int maxsize)
 {
-	refs = (int16*)calloc(maxsize, sizeof(int16));	
-	stack = (int16*)calloc(maxsize, sizeof(int16));	
+	refs = (int16*)zalloc(maxsize, sizeof(int16));	
+	stack = (int16*)zalloc(maxsize, sizeof(int16));	
 	stackPtr = 0;
 	nextIndex = 0;
 }
