@@ -488,6 +488,48 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	if (outRange) *outRange = selectedRange;
     return [string substringWithRange: selectedRange];
 }
+-(void)selectRangeStart:(int)rangeStart size:(int)rangeSize
+{
+    NSTextView *textView = [self textView];
+    
+    NSRange range = NSMakeRange(rangeStart, rangeSize);
+    
+    if (rangeSize < 0) {
+        unsigned int lineStart, lineEnd;
+        range.length = 0;
+        NSString *nsstring = [textView string];
+        if (!nsstring) {
+            post("text view has no string\n");
+            return errFailed;
+        }
+        [nsstring getLineStart: &lineStart end: &lineEnd contentsEnd: nil forRange: range];
+        range = NSMakeRange(lineStart, lineEnd - lineStart);
+    }
+    [textView setSelectedRange: range];
+    [textView scrollRangeToVisible: range];
+}
+/*
+-(void)selectLine:(int)linenum
+{
+    NSTextView *textView = [self textView];
+    
+    unsigned int lineStart, lineEnd;
+    //count the lines ??
+    // what separator ?
+    
+    range.length = 0;
+    NSString *nsstring = [textView string];
+    if (!nsstring) {
+        post("text view has no string\n");
+        return errFailed;
+    }
+    [nsstring getLineStart: &lineStart end: &lineEnd contentsEnd: nil forRange: range];
+    range = NSMakeRange(lineStart, lineEnd - lineStart);
+
+    [textView setSelectedRange: range];
+    [textView scrollRangeToVisible: range];   
+}
+*/
 
 - (IBAction) showHelp: (id) sender;
 {

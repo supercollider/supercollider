@@ -48,6 +48,7 @@
 
 - (IBAction) executeSelection: (id) sender;
 - (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange;
+-(void)selectRangeStart:(int)rangeStart size:(int)rangeSize;
 
 - (IBAction) showHelp: (id) sender;
 -(NSString*)pathOfHelpFileFor:(NSString*)selection;

@@ -115,8 +115,14 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
             return errFailed;
         }
         [window makeKeyAndOrderFront: nil];
+        
+        // select 
+        [doc selectRangeStart: rangeStart size: rangeSize];
+        /*
         NSTextView *textView = [doc textView];
+        
         NSRange range = NSMakeRange(rangeStart, rangeSize);
+        
         if (rangeSize < 0) {
             unsigned int lineStart, lineEnd;
             range.length = 0;
@@ -130,7 +136,7 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
         }
         [textView setSelectedRange: range];
         [textView scrollRangeToVisible: range];
-        
+        */
 	return errNone;
 }
 

@@ -55,5 +55,7 @@
 - (void)endFullScreen: (NSWindow*)window;
 - (void)loadUserPanel:(NSString*)filename SCObject: (void*)scobj;
 
+-(IBAction)showHelp:(id)sender;
+
 
 @end

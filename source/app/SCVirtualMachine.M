@@ -152,6 +152,7 @@ static id sharedSCVM = nil;
 
 - (void)compileLibrary:(id)sender
 {
+    // if not and user pref, open first error file to that line
     compileLibrary();
 }
 
@@ -336,7 +337,10 @@ bool gIsFullScreen = false;
     pthread_mutex_unlock (&gLangMutex);
 }
 
-
+-(IBAction)showHelp:(id)sender {
+    // a useless waste of a search to get the main page
+    [[[NSDocument sharedDocumentController] currentDocument] showHelpFor: @"Help"];
+}
 
 
 @end
