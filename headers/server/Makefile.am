@@ -16,7 +16,6 @@ libscsynthinclude_HEADERS =	\
 	PriorityQueue.h		\
 	ReadWriteMacros.h	\
 	Rendezvous.h		\
-	SC_BufSpec.h		\
 	SC_Complex.h		\
 	SC_ComPort.h		\
 	SC_CoreAudio.h		\
