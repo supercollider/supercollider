@@ -1,0 +1,102 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Presented in Living Stereo
+\f1\b0\fs24 \
+\
+Okay, but what about our first, unsimplified example? Remember:\
+\
+	
+\f2\fs18 \{ [\cf2 SinOsc\cf0 .ar(440, 0, 0.2), \cf2 SinOsc\cf0 .ar(442, 0, 0.2)] \}.play;\
+	
+\f1\fs24 \
+This also has two SinOscs, but in a different arrangement, between two square brackets 
+\f2\fs18 []
+\f1\fs24 , and with a comma in between. Just like the curly brackets indicate a Function, square brackets define something called an Array. An Array is a type of Collection, which is (you guessed it) a collection of Objects. Collections themselves are Objects, and most types of Collections can hold any types of objects, mixed together, including other Collections! There are many different types of Collections in SC, and you will come to learn that they are one of the SC's most powerful features.\
+\
+An Array is a particular type of Collection: An ordered collection of limited maximum size. You can make one as we have above, by putting objects in between two square brackets, with commas in between. You can get the different elements of an Array using the method 'at', which takes an index as an argument. Indices correspond to the order of objects in the Array, and start from 0.\
+\
+	
+\f2\fs18 a = [\cf3 "foo"\cf0 , \cf3 "bar"\cf0 ];	\cf4 // "foo" is at index 0; "bar" is at index 1\cf0 \
+	a.at(0);\
+	a.at(1);\
+	a.at(2);				\cf4 // returns "nil", as there is no object at index 2\
+	\
+	// there's a shorthand for at that you'll see sometimes:\
+	\cf0 a[0];				\cf5 // same as a.at(0);
+\f1\fs24 \cf0 \
+ \
+In addition to being used to hold collections of objects, Arrays also have a special use in SC: They are used to implement multichannel audio! If your Function returns an Array of UGens (remember that Functions return the result of their last line of code) then the output will be a number of channels. How many depends on the size of the Array, and each channel will correspond to an element of the Array. So in our example:\
+\
+	
+\f2\fs18 \{ [\cf2 SinOsc\cf0 .ar(440, 0, 0.2), \cf2 SinOsc\cf0 .ar(442, 0, 0.2)] \}.play;
+\f1\fs24 \
+\
+What we end up with is stereo output, with a SinOsc at 440Hz in the left channel, and a SinOsc at 442Hz in the right channel. We could have even more channels of output by having a larger array.\
+\
+Now watch carefully, because this next bit involves a little slight of hand, but shows another way in which SC makes things very interchangeable. Because the arguments for phase and mul are the same for both SinOscs, we can rewrite the code for our example like this:\
+\
+	
+\f2\fs18 \{ \cf2 SinOsc\cf0 .ar([440, 442], 0, 0.2) \}.play;
+\f1\fs24 \
+\
+We've replaced the frequency argument with an Array. This causes something called 'multichannel expansion', which means that if you plug an Array into one of a UGen's arguments, you get an Array of that UGen instead of a single one. Now consider this:\
+\
+	
+\f2\fs18 (\
+	\{ var freq;\
+		freq = [[660, 880], [440, 660], 1320, 880].choose;\
+		\cf2 SinOsc\cf0 .ar(freq, 0, 0.2); \
+	\}.play;\
+	)
+\f1\fs24 \
+\
+Try executing it several times, and you'll get different results. 'choose' is just a method which randomly selects one of the elements of the Array. In this case the result may be a single number or another Array. In the case of the latter you'll get stereo output, in the case of the former, monophonic. This sort of thing can make your code very flexible.\
+\
+But what if you want to 'pan' something, crossfading it between channels? SC has a number of UGens which do this in various ways, but for now I'll just introduce you to one: Pan2. Pan2 takes an input and a position as arguments and returns an Array of two elements, the left and right or first and second channels. The position arg goes between -1 (left) and 1 (right). Take a look at this example:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 	\{ \cf2 Pan2\cf0 .ar(\cf2 PinkNoise\cf0 .ar(0.2), \cf2 SinOsc\cf0 .kr(0.5)) \}.play;
+\f1\fs24 \
+\
+This uses a SinOsc to control the position (remember it outputs values from -1 to 1, or left to right), but uses a different UGen as the input to the Pan2, something called PinkNoise. This is just a kind of noise generator, and it has a single argument: mul. You can of course also used fixed values for the position arg.\
+\
+
+\f2\fs18 	\{ \cf2 Pan2\cf0 .ar(\cf2 PinkNoise\cf0 .ar(0.2), -0.3) \}.play; \cf4 // slightly to the left\cf0 \
+	
+\f1\fs24 \
+For more information see:
+\f0\b  \
+\
+[\ul MultiChannel\ulnone ] [\ul Collections\ulnone ] [\ul Pan2\ulnone ]\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Suggested Exercise:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 Experiment with altering the Functions in the text above. For instance try changing the frequencies of the SinOsc, or making multi-channel versions of things.
+\f0\b \
+
+\f1\b0 \
+____________________\
+\
+This document is part of the tutorial 
+\f0\b Getting Started With SuperCollider
+\f1\b0 .\
+\
+Click here to go on to the next section: 
+\f0\b [\ul Mix it Up\ulnone ]
+\f1\b0 \
+\
+Click here to return to the table of Contents: 
+\f0\b [\ul Getting Started With SC\ulnone ]\
+}
