@@ -3831,11 +3831,11 @@ void initUnixPrimitives();
 void init_OSC_primitives();
 	 init_OSC_primitives();
 
+/*  these probably should be moved out of the Lang code
+into an App init primitives section */
 void initGUIPrimitives();
         initGUIPrimitives();
 
-/*  these probably should be moved out of the Lang code
-into an App init primitives section */
 void initSCViewPrimitives();
         initSCViewPrimitives();
 

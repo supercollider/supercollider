@@ -13,130 +13,163 @@
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "VMGlobals.h"
-#include "SC_RGen.h"
 #include "GC.h"
 
+#import "SCDialog.h"
+//#import "SCVirtualMachine.h"
 
 
-int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed);
-int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
-{
-        if (!g->canCallOS) return errCantCallOS;
-
-        //PyrSlot *receiver = g->sp - 1; // a cocoa
-        PyrSlot *array = g->sp; // an array
-
-        NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
-        if (!docctl) {
-            NSLog(@"No NSDocumentController");
-            return errNone;
-        }
-        
-        NSArray *urls = [docctl URLsFromRunningOpenPanel];
-        if(urls) {
-        
-            int i;
-            int count = [urls count];
-            
-            // TODO: limit at max size of array
-            for (i = 0; i < count; i++)
-            {
-                PyrString* pyrPathString = newPyrString(g->gc,[[[urls objectAtIndex: i ] path] cString],0,true);
-                
-                PyrSlot slot;
-                SetObject(&slot, pyrPathString);
-                
-                array->uo->slots[i].ucopy = slot.ucopy;
-
-                g->gc->GCWrite(array->uo,pyrPathString);
-                // have to set size field each time in order that gc can find the created objects
-                array->uo->size = i+1;
-            }
-        }
-        return errNone;
-}
-
-
-/**
-//works fine
-NSString* pyrSlotToNSString(PyrSlot *slot)
+inline NSString* pyrSlotToNSString(PyrSlot *slot)
 {
     PyrString* pyrString = slot->uos;
     return [NSString stringWithCString: pyrString->s length: pyrString->size];
 }
 
-
-//not done
-id slotAsNSStringKey(PyrSlot* slot)
+id convertSCSlot(PyrSlot* b);
+id convertSCSlot(PyrSlot* b)
 {
-    // PyrClass *classOfSlot = classOfSlot(slot); 
-    if(classOfSlot == class_symbol) {
-        printf("symbol key\n");
-        return [NSString stringWithCString: slot->us->name ];
+    if(IsFloat(b)) { // floats don't have tags, check for them first
+        return [NSNumber numberWithFloat: b->uf];
     }
-    // string stringFromPyrString
-    if (slot->uo->classptr == class_string) {
-        return pyrSlotToNSString(slot);
+    if( ( classOfSlot(b) )->name.us == s_string ) {
+        return pyrSlotToNSString(b);
     }
-    return @"this type not yet implemented";
-}
-**/
+    
+    // !! WARNING :  will break if array is not first instance variable in the SC class
+    // identity dictionary doesn't work this way
+    // maybe better to have a primitive for dictionaries that passes in keys, values
+    if(  ( classOfSlot(b) )->name.us == s_dictionary ) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        PyrSlot *array = &(b->uo->slots[0]); 
+        int i = 0;
+        PyrSlot *key;
+        for(;i < array->uo->size; i += 2) {
+            key = &( array->uo->slots[i] );
+            if( NotNil( key )) {
+                [dict 
+                    setObject: convertSCSlot( &(array->uo->slots[i+1]) ) 
+                    forKey: [(NSObject*)convertSCSlot(key) description] // symbol, string, number, or ??
+                ];
+            }
+        }
+        return dict;
+    }
+    
+    switch (b->utag) {
+            case tagInt :
+                return [NSNumber numberWithInt: b->ui];
+                break;
+            case tagSym :
+                return [NSString stringWithCString: b->us->name];
+                break;
+            case tagChar :
+                return [NSString stringWithFormat: @"%c",b->uc];
+                break;
+            case tagNil :
+                return [NSNull null];
+                break;
+            case tagFalse :
+                return [NSNumber numberWithBool: NO];
+                break;
+            case tagTrue :
+                return [NSNumber numberWithBool: YES];
+                break;
+            case tagPtr:
+                return [NSNull null];
+                break;
+            case tagObj:
+                    if (! isSubclassOf( b->uo->classptr, class_sequenceable_collection )) {
+                        post("Cannot convert object for PropertyList:\n");
+                        dumpObjectSlot(b);
+                        return [NSNull null];
+                    } else { // sequenceable collections
+                        if(b->uo->size) {
+                            NSMutableArray *array = [NSMutableArray arrayWithCapacity: b->uo->size];
+                            int i;
+                            for(i = 0; i < b->uo->size; i++) {
+                                [array insertObject: convertSCSlot(&(b->uo->slots[i])) atIndex: i];
+                            }
+                            return array;
+                        } else {
+                            return [NSArray array];
+                        }
+                    }
+                    break;
+                
+    /*            
+            case tagInf :
+            //dict must do values
+                NSNumber with infinity
+            NaN
+                NSNumber with NaN
+                
 
-/*
+            default : // object asString
+                    break;
+    */
+    
+    }
+    
+    // can't happen ?
+    NSLog( @"writeAsPlist failed to determine type of object");
+    return [NSNull null];
+}
+    
+
+
+
+
+/** PRIMITIVES **/
+
+int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed);
+int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *receiver = g->sp - 1; // CocoaDialog class
+    PyrSlot *array = g->sp; // an array
+    
+    SCDialog *dialog = [SCDialog receiver: receiver->uo returnSlot: array->uo ];
+    [dialog detachThreadWithSelector:@selector(getPaths) ];
+  //  NSLog(@"thread detached, my priority: %f",[NSThread threadPriority]);
+    return errNone;
+}
+
+
+
 int prSaveAsPlist(struct VMGlobals *g, int numArgsPushed);
 int prSaveAsPlist(struct VMGlobals *g, int numArgsPushed)
 {
-        if (!g->canCallOS) return errCantCallOS;//if its deferred, does this matter ?
+    if (!g->canCallOS) return errCantCallOS;//if its deferred, does this matter ?
 
-        PyrSlot *receiver = g->sp - 2; // Cocoa.sc
-        PyrSlot *object = g->sp - 1;
-        PyrSlot *path = g->sp;
-        
-      //  dumpObjectSlot(object);
-       // dumpObjectSlot(path);
-       // dumpObjectSlot(receiver);
-
-       PListConvertor *pconv =  [[PListConvertor alloc] init];
-       [pconv convertSCSlot: object];
+    PyrSlot *object = g->sp - 1;
+    PyrSlot *path = g->sp;
+    
+    //NSLog(@"Plist converted: %@ ",convertSCSlot(object) );
+    if([NSKeyedArchiver archiveRootObject:convertSCSlot(object) toFile: pyrSlotToNSString(path) ]) {
         return errNone;
-}
-*/
-
-
-/*
-this is the start of an NSTask interface that returns stdout to SC
-
-- (void)readTaskData:(id)sender
-{
-    NSTask *pipeTask = [[NSTask alloc] init];
-    NSPipe *newPipe = [NSPipe pipe];
-    NSFileHandle *readHandle = [newPipe fileHandleForReading];
-    NSData *inData = nil;
-
-    // write handle is closed to this process
-    [pipeTask setStandardOutput:newPipe]; 
-    [pipeTask setLaunchPath:[NSHomeDirectory()
-            stringByAppendingPathComponent:
-                    @"PipeTask.app/Contents/MacOS/PipeTask"]];
-    [pipeTask launch];
-	
-    while ((inData = [readHandle availableData]) && [inData length]) {
-        [self processData:inData];
+    } else {
+        post("prSaveAsPlist failed !!\n");
+        return errFailed;
     }
-    [pipeTask release];
 }
 
-*/
+
 
 void initCocoaFilePrimitives()
 {
-	int base, index;
-	
-	base = nextPrimitiveIndex();
-	index = 0;
+    int base, index;
+    
+    base = nextPrimitiveIndex();
+    index = 0;
 
-	definePrimitive(base, index++, "_Cocoa_GetPathsDialog", prGetPathsDialog, 2, 0);	
-	//definePrimitive(base, index++, "_Cocoa_SaveAsPlist", prSaveAsPlist, 3, 0);	
-
+    definePrimitive(base, index++, "_Cocoa_GetPathsDialog", prGetPathsDialog, 2, 0);	
+    definePrimitive(base, index++, "_Cocoa_SaveAsPlist", prSaveAsPlist, 2, 0);	
 }
+
+
+
+
+
+
 

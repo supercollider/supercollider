@@ -3174,7 +3174,7 @@ int conjureLiteralSlotIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot)
 	// otherwise add it to the literals table
 	
 	if (literals->size+1 >= 256) { 
-		error("Literal table too big. Simplify the function.\n");
+		error("Literal table too big (>256). Simplify the function.\n");
 		post("Next literal was:\n");
 		dumpPyrSlot(slot); 
 		nodePostErrorLine(node);
