@@ -315,13 +315,13 @@ NodeProxy : BusPlug {
 		^if(ok, { container }, { nil });
 	}
 	
-	replaceToBundle { arg bundle, obj, index;
-		var rep;
-		rep = objects.at(index);
-		if(rep.notNil, { rep.stopToBundle(bundle) });
-		objects = objects.putExtend(index, obj); [\index, index].debug;
-		obj.index = index;
-	}
+	//replaceToBundle { arg bundle, obj, index;
+//		var rep;
+//		rep = objects.at(index);
+//		if(rep.notNil, { rep.stopToBundle(bundle) });
+//		objects = objects.putExtend(index, obj); [\index, index].debug;
+//		obj.index = index;
+//	}
 	
 	
 	defineBus { arg rate=\audio, numChannels;
