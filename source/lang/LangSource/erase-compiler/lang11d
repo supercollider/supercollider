@@ -552,7 +552,7 @@ expr1	: pushliteral
 		|	'(' valrange2 ')'
 			{ $$ = $2; }
 		|	'(' ':' valrange3 ')'
-			{ $$ = $2; }
+			{ $$ = $3; }
 		|	'(' dictslotlist ')'
 			{ $$ = (long)newPyrDynDictNode((PyrParseNode*)$2); }
 		| pseudovar
@@ -964,7 +964,7 @@ valrange3	: DOTDOT exprseq
 				SetNil(&nilSlot);
 				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				
-				SetSymbol(&selectorSlot, s_series);
+				SetSymbol(&selectorSlot, getsym("seriesIter"));
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)$1, nilnode);
 				args = linkNextNode(args, (PyrParseNode*)$3);
@@ -981,7 +981,7 @@ valrange3	: DOTDOT exprseq
 				SetNil(&nilSlot);
 				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				
-				SetSymbol(&selectorSlot, s_series);
+				SetSymbol(&selectorSlot, getsym("seriesIter"));
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3);
 				args = linkNextNode(args, nilnode);

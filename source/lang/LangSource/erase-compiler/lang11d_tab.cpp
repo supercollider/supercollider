@@ -1983,7 +1983,7 @@ case 89:
     break;}
 case 90:
 #line 555 "lang11d"
-{ yyval = yyvsp[-2]; ;
+{ yyval = yyvsp[-1]; ;
     break;}
 case 91:
 #line 557 "lang11d"
@@ -2422,7 +2422,7 @@ case 112:
 				SetNil(&nilSlot);
 				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				
-				SetSymbol(&selectorSlot, s_series);
+				SetSymbol(&selectorSlot, getsym("seriesIter"));
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)yyvsp[-2], nilnode);
 				args = linkNextNode(args, (PyrParseNode*)yyvsp[0]);
@@ -2440,7 +2440,7 @@ case 113:
 				SetNil(&nilSlot);
 				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				
-				SetSymbol(&selectorSlot, s_series);
+				SetSymbol(&selectorSlot, getsym("seriesIter"));
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1]);
 				args = linkNextNode(args, nilnode);

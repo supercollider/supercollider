@@ -228,6 +228,38 @@ SimpleNumber : Number {
 //		size = floor((last - this) / step + 0.001).asInteger + 1;
 //		^Array.series(size, this, step)
 	}
+	seriesIter { arg second, last;
+		var step, size;
+		if (second.isNil) { 
+			last = last ? inf; 
+			second = if (this < last) { this + 1 } { this - 1 }
+		}{
+			last ?? { last = if (second < this) { -inf } { inf } }
+		};
+		step = second - this;
+		^if (step < 0) {
+			r {
+				var val = this;
+				while {
+					val >= last;
+				}{
+					val.yield;
+					val = val + step;
+				};
+			}
+		}{
+			r {
+				var val = this;
+				while {
+					val <= last;
+				}{
+					val.yield;
+					val = val + step;
+				};
+			}
+		}
+	}
+	
 	
 	degreeToKey { arg scale, stepsPerOctave=12;
 		var size = scale.size;
