@@ -1383,7 +1383,7 @@ void initClasses()
 	class_absfunc = makeIntrinsicClass(s_absfunc, s_object, 0, 0); 
 	class_stream = makeIntrinsicClass(s_stream, s_absfunc, 0, 0); 
 
-	class_thread = makeIntrinsicClass(s_thread, s_stream, 25, 0);
+	class_thread = makeIntrinsicClass(s_thread, s_stream, 24, 0);
 		addIntrinsicVar(class_thread, "state", &o_nil);
 		addIntrinsicVar(class_thread, "func", &o_nil);
 		addIntrinsicVar(class_thread, "stack", &o_nil);
@@ -1394,7 +1394,6 @@ void initClasses()
 		addIntrinsicVar(class_thread, "ip", &o_zero);
 		addIntrinsicVar(class_thread, "sp", &o_zero);
 		addIntrinsicVar(class_thread, "numpop", &o_zero);
-		addIntrinsicVar(class_thread, "returnLevels", &o_zero);
 		addIntrinsicVar(class_thread, "receiver", &o_nil);
 		addIntrinsicVar(class_thread, "numArgsPushed", &o_zero);
 		addIntrinsicVar(class_thread, "parent", &o_nil);

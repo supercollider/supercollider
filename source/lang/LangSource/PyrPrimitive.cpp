@@ -2313,8 +2313,15 @@ void switchToThread(struct VMGlobals *g, struct PyrThread *newthread, int oldsta
 int haltInterpreter(struct VMGlobals *g, int numArgsPushed)
 {
 	switchToThread(g, g->process->mainThread.uot, tDone, &numArgsPushed);
-	g->returnLevels = LONG_MAX;
+	// return all the way out.
+	//PyrSlot *bottom = g->gc->Stack()->slots;
+	//bottom->ucopy = g->sp->ucopy;
+	//g->sp = bottom; // ??!! pop everybody
+	g->method = NULL;
+	g->block = NULL;
+	g->frame = NULL;
 	SetNil(g->sp);
+	longjmp(g->escapeInterpreter, 3);
 	//hmm need to fix this to work only on main thread. //!!!
 	//g->sp = g->gc->Stack()->slots - 1;
 	
@@ -2839,11 +2846,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		oldthread->receiver.ucopy = g->receiver.ucopy;
 		oldthread->numArgsPushed.ui = *numArgsPushed;
 		oldthread->numpop.ui = g->numpop;
-		
-		// these are perhaps unecessary because a thread may not 
-		// legally block within a C primitive
-		oldthread->returnLevels.ui = g->returnLevels;
-			
+					
 		//gc->ToGrey(oldthread);
 		if (gc->ObjIsBlack(oldthread)) {
 			gc->GCWriteBlack(gc->Stack());
@@ -2880,16 +2883,12 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	// these are perhaps unecessary because a thread may not 
 	// legally block within a C primitive
 	g->numpop = newthread->numpop.ui;
-	g->returnLevels = newthread->returnLevels.ui;
 	
-	//if (g->ip == (unsigned char *)-1) g->returnLevels = 1;
-	//else g->execMethod = 1; //??
 	g->execMethod = 99;
 	
 	//post("switchToThread ip %08X\n", g->ip);
 	//post("switchToThread newthread->ip.ui %d\n", newthread->ip.ui);
 	//post("switchToThread oldthread->ip.ui %d\n", oldthread->ip.ui);
-	//post("switchToThread returnLevels %d\n", g->returnLevels);
 	
 	// wipe out values which will become stale as new thread executes:
 	SetNil(&newthread->method);
@@ -3124,7 +3123,7 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot value;
 	
-	//postfl("->prRoutineAlwaysYield ip %08X  rl %d\n", g->ip, g->returnLevels);
+	//postfl("->prRoutineAlwaysYield ip %08X\n", g->ip);
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "prRoutineAlwaysYield");
 	if (!isKindOf((PyrObject*)g->thread, class_routine)) {
@@ -3142,7 +3141,7 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
 	(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
 	
-	//postfl("<-prRoutineAlwaysYield ip %08X  rl %d\n", g->ip, g->returnLevels);
+	//postfl("<-prRoutineAlwaysYield ip %08X\n", g->ip);
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "<prRoutineAlwaysYield");
 	return errNone;

@@ -1183,8 +1183,8 @@ again:
 		g->method = NULL;
 		g->block = NULL;
 		g->frame = NULL;
-		g->returnLevels = LONG_MAX;
 		g->sp = g->gc->Stack()->slots - 1;
+		longjmp(g->escapeInterpreter, 1);
 	}
 	//if (gTraceInterpreter) postfl("<-returnFromBlock\n");
 #if SANITYCHECK
@@ -1244,7 +1244,7 @@ void returnFromMethod(VMGlobals *g)
 		g->method = NULL;
 		g->block = NULL;
 		g->frame = NULL;
-		g->returnLevels = LONG_MAX;
+		longjmp(g->escapeInterpreter, 2);
 	} else {
 		returnFrame = homeContext->caller.uof;
 		

@@ -104,7 +104,7 @@ struct PyrThread : public PyrObjectHdr
 {
 		
 	PyrSlot state, func, stack, stackSize, method, block, frame, ip, sp;
-	PyrSlot numpop, returnLevels, receiver, numArgsPushed;
+	PyrSlot numpop, receiver, numArgsPushed;
 	PyrSlot parent, terminalValue;
 	PyrSlot primitiveError;
 	PyrSlot primitiveIndex;

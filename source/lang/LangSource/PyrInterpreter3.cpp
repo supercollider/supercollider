@@ -362,7 +362,6 @@ bool initAwakeMessage(VMGlobals *g)
 	g->block = NULL;
 	g->frame = NULL;
 	g->ip = NULL;	
-	g->returnLevels = 0;
         g->execMethod = 0;
 	
 	// set process as the receiver
@@ -393,7 +392,6 @@ bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 	g->block = NULL;
 	g->frame = NULL;
 	g->ip = NULL;	
-	g->returnLevels = 0;
         g->execMethod = 0;
 	g->thread->beats.uf = g->thread->seconds.uf = elapsedTime();
 	SetObject(&g->thread->clock, s_systemclock->u.classobj);
@@ -499,10 +497,11 @@ void Interpret(VMGlobals *g)
 	sp = (double*)g->sp;
 	ip = g->ip;
 	
-	g->returnLevels = 0;
 	numKeyArgsPushed = 0;
 
-
+	if (setjmp(g->escapeInterpreter) != 0) {
+		return;
+	}
 	while (true) {  // not going to indent body to save line space
 
 #if CHECK_MAX_STACK_USE
@@ -687,7 +686,6 @@ void Interpret(VMGlobals *g)
 #if TAILCALLOPTIMIZE
 			g->tailCall = 0;
 #endif
-			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip;
 			break;
 		case 14 :  // opExtended, opSendSpecialBinaryArithMsg
@@ -695,7 +693,6 @@ void Interpret(VMGlobals *g)
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			g->primitiveIndex = op2;
 			doSpecialBinaryArithMsg(g, 2, false);
-			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip;
 			break;
 		case 15 : // opExtended, opSpecialOpcode (none yet)
@@ -876,7 +873,6 @@ void Interpret(VMGlobals *g)
 				g->sp = (PyrSlot*)sp; g->ip = ip;
 				g->primitiveIndex = opSub;
 				prSubNum(g, -1); 
-				if (g->returnLevels) { --g->returnLevels; return; }
 				sp = (double*)g->sp; ip = g->ip; 
 			}
 			break;
@@ -900,7 +896,6 @@ void Interpret(VMGlobals *g)
 				g->sp = (PyrSlot*)sp; g->ip = ip; 
 				g->primitiveIndex = opAdd;
 				prAddNum(g, -1); 
-				if (g->returnLevels) { --g->returnLevels; return; }
 				sp = (double*)g->sp; ip = g->ip; 
 			}
 			break;
@@ -1221,7 +1216,6 @@ void Interpret(VMGlobals *g)
 						*++sp = g->receiver.uf; 
 						g->sp = (PyrSlot*)sp; g->ip = ip; 
 						returnFromMethod(g); 
-						if (g->returnLevels) { --g->returnLevels; return; }
 						sp = (double*)g->sp; ip = g->ip; 
 					}
 				break;
@@ -1251,7 +1245,6 @@ void Interpret(VMGlobals *g)
 						*++sp = g->receiver.uf; 
 						g->sp = (PyrSlot*)sp; g->ip = ip; 
 						returnFromMethod(g); 
-						if (g->returnLevels) { --g->returnLevels; return; }
 						sp = (double*)g->sp; ip = g->ip; 
 					}
 					break;
@@ -1310,7 +1303,6 @@ void Interpret(VMGlobals *g)
 						*++sp = g->receiver.uf; 
 						g->sp = (PyrSlot*)sp; g->ip = ip; 
 						returnFromMethod(g); 
-						if (g->returnLevels) { --g->returnLevels; return; }
 						sp = (double*)g->sp; ip = g->ip; 
 					}
 					break;
@@ -1355,7 +1347,6 @@ void Interpret(VMGlobals *g)
 						*++sp = g->receiver.uf; 
 						g->sp = (PyrSlot*)sp; g->ip = ip; 
 						returnFromMethod(g); 
-						if (g->returnLevels) { --g->returnLevels; return; }
 						sp = (double*)g->sp; ip = g->ip; 
 					}
 					break;
@@ -1386,7 +1377,6 @@ void Interpret(VMGlobals *g)
 						*++sp = g->receiver.uf; 
 						g->sp = (PyrSlot*)sp; g->ip = ip; 
 						returnFromMethod(g); 
-						if (g->returnLevels) { --g->returnLevels; return; }
 						sp = (double*)g->sp; ip = g->ip; 
 					}
 					break;
@@ -1411,7 +1401,6 @@ void Interpret(VMGlobals *g)
 						*++sp = g->receiver.uf; 
 						g->sp = (PyrSlot*)sp; g->ip = ip; 
 						returnFromMethod(g); 
-						if (g->returnLevels) { --g->returnLevels; return; }
 						sp = (double*)g->sp; ip = g->ip; 
 					}
 					break;
@@ -1449,7 +1438,6 @@ void Interpret(VMGlobals *g)
 						*++sp = g->receiver.uf; 
 						g->sp = (PyrSlot*)sp; g->ip = ip; 
 						returnFromMethod(g); 
-						if (g->returnLevels) { --g->returnLevels; return; }
 						sp = (double*)g->sp; ip = g->ip; 
 					}
 					break;
@@ -1487,7 +1475,6 @@ void Interpret(VMGlobals *g)
 						*++sp = g->receiver.uf; 
 						g->sp = (PyrSlot*)sp; g->ip = ip; 
 						returnFromMethod(g); 
-						if (g->returnLevels) { --g->returnLevels; return; }
 						sp = (double*)g->sp; ip = g->ip; 
 					}
 					break;
@@ -1517,7 +1504,6 @@ void Interpret(VMGlobals *g)
 						*++sp = g->receiver.uf; 
 						g->sp = (PyrSlot*)sp; g->ip = ip; 
 						returnFromMethod(g); 
-						if (g->returnLevels) { --g->returnLevels; return; }
 						sp = (double*)g->sp; ip = g->ip; 
 					}
 					break;
@@ -1658,7 +1644,6 @@ void Interpret(VMGlobals *g)
 							*++sp = g->receiver.uf; 
 							g->sp = (PyrSlot*)sp; g->ip = ip; 
 							returnFromMethod(g); 
-							if (g->returnLevels) { --g->returnLevels; return; }
 							sp = (double*)g->sp; ip = g->ip; 
 						}
 					} else {
@@ -1677,7 +1662,6 @@ void Interpret(VMGlobals *g)
 							*++sp = g->receiver.uf; 
 							g->sp = (PyrSlot*)sp; g->ip = ip; 
 							returnFromMethod(g); 
-							if (g->returnLevels) { --g->returnLevels; return; }
 							sp = (double*)g->sp; ip = g->ip; 
 						}
 					}
@@ -1842,7 +1826,6 @@ void Interpret(VMGlobals *g)
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			g->primitiveIndex = op1 & 15;
 			doSpecialUnaryArithMsg(g, -1);
-			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip;
 			break;
 			
@@ -1858,14 +1841,12 @@ void Interpret(VMGlobals *g)
 					g->sp = (PyrSlot*)sp; g->ip = ip; 
 					g->primitiveIndex = opAdd;
 					prAddInt(g, -1); 
-					if (g->returnLevels) { --g->returnLevels; return; }
 					sp = (double*)g->sp; ip = g->ip; 
 				}
 			} else {
 				g->sp = (PyrSlot*)sp; g->ip = ip; 
 				g->primitiveIndex = opAdd;
 				prAddNum(g, -1); 
-				if (g->returnLevels) { --g->returnLevels; return; }
 				sp = (double*)g->sp; ip = g->ip; 
 			}
 			break;
@@ -1880,14 +1861,12 @@ void Interpret(VMGlobals *g)
 					g->sp = (PyrSlot*)sp; g->ip = ip; 
 					g->primitiveIndex = opSub;
 					prSubInt(g, -1); 
-					if (g->returnLevels) { --g->returnLevels; return; }
 					sp = (double*)g->sp; ip = g->ip; 
 				}
 			} else {
 				g->sp = (PyrSlot*)sp; g->ip = ip; 
 				g->primitiveIndex = opSub;
 				prSubNum(g, -1); 
-				if (g->returnLevels) { --g->returnLevels; return; }
 				sp = (double*)g->sp; ip = g->ip; 
 			}
 			break;
@@ -1902,14 +1881,12 @@ void Interpret(VMGlobals *g)
 					g->sp = (PyrSlot*)sp; g->ip = ip; 
 					g->primitiveIndex = opMul;
 					prMulInt(g, -1); 
-					if (g->returnLevels) { --g->returnLevels; return; }
 					sp = (double*)g->sp; ip = g->ip; 
 				}
 			} else {
 				g->sp = (PyrSlot*)sp; g->ip = ip; 
 				g->primitiveIndex = opMul;
 				prMulNum(g, -1); 
-				if (g->returnLevels) { --g->returnLevels; return; }
 				sp = (double*)g->sp; ip = g->ip; 
 			}
 			break;
@@ -1921,7 +1898,6 @@ void Interpret(VMGlobals *g)
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			g->primitiveIndex = op1 & 15;
 			doSpecialBinaryArithMsg(g, 2, false);
-			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip;
 			break;
 		
@@ -1932,41 +1908,35 @@ void Interpret(VMGlobals *g)
 		case 242 : // opcFunctionReturn
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			returnFromBlock(g); 
-			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip; 
 			break;	
 		case 243 : // opcReturn
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			returnFromMethod(g); 
-			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip; 
 			break;	
 		case 244 : // opcReturnSelf
 		*++sp = g->receiver.uf; 
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			returnFromMethod(g); 
-			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip; 
 			break; 
 		case 245 : // opcReturnTrue
 			*++sp = gSpecialValues[svTrue]; 
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			returnFromMethod(g); 
-			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip; 
 			break; 
 		case 246 : // opcReturnFalse
 			*++sp = gSpecialValues[svFalse]; 
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			returnFromMethod(g); 
-			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip; 
 			break; 
 		case 247 : // opcReturnNil
 			*++sp = gSpecialValues[svNil]; 
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			returnFromMethod(g); 
-			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip; 
 			break; 
 		
@@ -2051,7 +2021,6 @@ void Interpret(VMGlobals *g)
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			g->primitiveIndex = op2;
 			doSpecialBinaryArithMsg(g, 3, false);
-			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip;
 			break;
 		case 255 : // opcTailCallReturnFromMethod
@@ -2074,7 +2043,6 @@ void Interpret(VMGlobals *g)
 			if (meth->name.us != selector) {
 				g->sp = (PyrSlot*)sp; g->ip = ip;
 				doesNotUnderstand(g, selector, numArgsPushed);
-				if (g->returnLevels) { --g->returnLevels; return; }
 				sp = (double*)g->sp; ip = g->ip; 
 			} else {
 				PyrMethodRaw *methraw;
@@ -2083,7 +2051,6 @@ void Interpret(VMGlobals *g)
 					case methNormal : /* normal msg send */
 						g->sp = (PyrSlot*)sp; g->ip = ip;
 						executeMethod(g, meth, numArgsPushed);
-						if (g->returnLevels) { --g->returnLevels; return; }
 						sp = (double*)g->sp; ip = g->ip; 
 						break;
 					case methReturnSelf : /* return self */
@@ -2193,7 +2160,6 @@ void Interpret(VMGlobals *g)
 					case methPrimitive : /* primitive */
 						g->sp = (PyrSlot*)sp; g->ip = ip;
 						doPrimitive(g, meth, numArgsPushed);
-						if (g->returnLevels) { --g->returnLevels; return; }
 						sp = (double*)g->sp; ip = g->ip; 
 						break;
 				} // switch (meth->methType)
@@ -2217,7 +2183,6 @@ void Interpret(VMGlobals *g)
 			if (meth->name.us != selector) {
 				g->sp = (PyrSlot*)sp; g->ip = ip;
 				doesNotUnderstandWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
-				if (g->returnLevels) { --g->returnLevels; return; }
 				sp = (double*)g->sp; ip = g->ip; 
 			} else {
 				PyrMethodRaw *methraw;
@@ -2226,7 +2191,6 @@ void Interpret(VMGlobals *g)
 					case methNormal : /* normal msg send */
 						g->sp = (PyrSlot*)sp; g->ip = ip;
 						executeMethodWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
-						if (g->returnLevels) { --g->returnLevels; return; }
 						sp = (double*)g->sp; ip = g->ip; 
 						break;
 					case methReturnSelf : /* return self */
@@ -2328,7 +2292,6 @@ void Interpret(VMGlobals *g)
 					case methPrimitive : /* primitive */
 						g->sp = (PyrSlot*)sp; g->ip = ip;
 						doPrimitiveWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
-						if (g->returnLevels) { --g->returnLevels; return; }
 						sp = (double*)g->sp; ip = g->ip; 
 						break;
 				} // switch (meth->methType)

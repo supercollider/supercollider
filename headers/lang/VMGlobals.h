@@ -29,6 +29,7 @@ Each virtual machine has a copy of VMGlobals, which contains the state of the vi
 #include "PyrSlot.h"
 #include "SC_AllocPool.h"
 #include "SC_RGen.h"
+#include <setjmp.h>
 
 #define TAILCALLOPTIMIZE 1
 
@@ -70,10 +71,10 @@ struct VMGlobals {
 	PyrSlot receiver;	// the receiver
 	PyrSlot result;
 	int numpop; // number of args to pop for primitive
-	long returnLevels;
 	long primitiveIndex;
 	RGen *rgen;
-	
+	jmp_buf escapeInterpreter;
+
 	// scratch context
 	long execMethod;
 } ;
