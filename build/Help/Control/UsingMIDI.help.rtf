@@ -1,0 +1,210 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+\f3\fswiss\fcharset77 Helvetica-Oblique;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+\red0\green0\blue0;\red0\green0\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs40 \cf0 Notes on MIDI support in SuperCollider
+\f1\b0\fs24 \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 \
+
+\f0\b\fs28 Contents
+\fs24 \
+
+\f1\b0 \
+Introduction\
+Receiving MIDI input: MIDIIn\
+Multiple responses to MIDI messages\
+dewdrop_lib MIDI framework\
+Playing notes on your MIDI keyboard 
+\fs20 \
+
+\fs24 Sending MIDI out
+\fs20 \
+
+\fs24 MIDI synchronization
+\fs20 \
+
+\fs24 \
+
+\f0\b\fs28 Introduction
+\f1\b0\fs24 \
+\
+SuperCollider's out of the box MIDI support is fairly thorough (although not as complete as you'll find in commercial sequencers). All MIDI devices accessible to CoreMIDI are accessible to SuperCollider. \
+\
+
+\f0\b Note:
+\f1\b0  This document is written from an OSX perspective. The essential behavior of the MIDI interface classes should be the same on other platforms, despite my continual reference to CoreMIDI here.\
+\
+SuperCollider does not impose much higher-level structure on MIDI functionality. The core classes are little more than hardware abstractions (see also the 
+\f0\b [MIDI]
+\f1\b0  helpfile):\
+\
+
+\f0\b MIDIClient:
+\f1\b0  represents SuperCollider's communications with CoreMIDI\
+
+\f0\b MIDIIn:
+\f1\b0  receives MIDI messages and executes functions in response to those messages\
+
+\f0\b MIDIOut:
+\f1\b0  sends MIDI messages out to a specific port and channel\
+
+\f0\b MIDIEndPoint:
+\f1\b0  a client-side representation of a CoreMIDI device, containing three variables (name, device and uid, which is a unique identifier assigned by the system) \
+\
+In most cases, each physical MIDI connection (pair of in/out jacks on the MIDI interface) has one MIDIEndPoint object to represent it in the client. \
+\
+
+\f0\b\fs28 Receiving MIDI input: MIDIIn
+\f1\b0\fs24 \
+\
+See the 
+\f0\b [MIDIIn]
+\f1\b0  helpfile for implementation details.\
+\
+MIDIIn provides the responding functions with all the information coming in from CoreMIDI:\
+\
+
+\f0\b source (src):
+\f1\b0  corresponds to the uid of the MIDIEndPont from which the message is coming.\
+
+\f0\b channel (chan):
+\f1\b0  integer 0-15 representing the channel bits of the MIDI status byte\
+\
+... with subsequent arguments representing the data bytes. The MIDIIn help file details all the supported messages along with the arguments of the responding function for the message.\
+\
+
+\f0\b\fs28 Multiple responses to MIDI messages
+\f1\b0\fs24 \
+\
+MIDIIn has the drawback that you can never have more than one function responding to a message. If you want to take different actions based on the channel or MIDI controller number, you will need a structure to manage multiple responders. This structure also needs to populate the MIDIIn functions with code that will distribute the incoming messages appropriately. \
+\
+For this reason, it's generally too much trouble to work with MIDIIn directly for regular use (note on/off, controller messages). It's better to wrap the core functionality within higher-level classes that handle the internals for you.\
+\
+Third-party wrappers already exist. One of them is in the standard distribution as part of the crucial library (NoteOnResponder, NoteOffResponder, CCResponder). To use these classes, you would simply write the same kind of function you would put into MIDIIn, but use it in the corresponding class instead. \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 MIDIPort\cf0 .init\
+\
+~on = \cf2 NoteOnResponder\cf0 (\{ \cf2 |num, vel|\cf0  [\cf3 'on '\cf0 , num, vel].postln \});\
+~off = \cf2 NoteOffResponder\cf0 (\{ \cf2 |num, vel|\cf0  [\cf3 'off'\cf0 , num, vel].postln \});\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 // play your keyboard; see note on/off in the post window\cf5 \
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 NoteOnResponder\cf0 .remove(~on);\
+\cf2 NoteOffResponder\cf0 .remove(~off);
+\f1\fs24 \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 \
+Note, however, that the function will receive only the data bytes. The source and channel arguments are stripped out. 
+\f0\b All responders will respond to all messages, regardless of source or channel.
+\f1\b0  Thus, the crucial library MIDI classes are unsuitable for any application where different MIDI channels need to trigger  different responses. \
+\
+
+\f0\b\fs28 dewdrop_lib MIDI framework 
+\f1\b0\fs24 \
+\
+
+\f3\i dewdrop_lib
+\f1\i0  is a third party library providing a number of useful performance features, available from <\cf6 \ul http://www.dewdrop-world.net\cf0 \ulnone >. (I must admit some bias, as I am the library's author.) The library provides a user-extensible framework of MIDI responder classes designed for multiport, multichannel applications.\
+\
+It is not necessary to initialize MIDIClient or MIDIIn when using the ddw_lib MIDI framework. Creating a MIDI object automatically initializes the system classes.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 k = \cf2 BasicMIDISocket\cf0 (0,\
+	\{ \cf2 |num, vel|\cf0  [\cf3 'on '\cf0 , num, vel].postln \}, \
+	\{ \cf2 |num, vel|\cf0  [\cf3 'off'\cf0 , num, vel].postln \}\
+);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf7 \
+// play your keyboard; see note on/off in the post window\cf0 \
+\
+k.free;  // release the responder
+\f1\fs24 \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 \
+The functions are identical to those you would use in NoteOnResponder etc., but the socket's "address" within the MIDI hierarchy corresponds to its source and channel. This BasicMIDISocket will respond only to channel 0 on your default MIDI port. (Either function, note on or off, may be left nil if you want to ignore note on or off messages respectively.)\
+\
+See the help files for 
+\f0\b [BasicMIDISocket]
+\f1\b0  and 
+\f0\b [BasicMIDIControl]
+\f1\b0  for more details, and the syntax to address specific MIDI ports and channels.\
+\
+More complex MIDI responses can be written as subclasses of 
+\f3\i AbstractMIDISocket
+\f1\i0  and 
+\f3\i AbstractMIDIControl
+\f1\i0 , for custom actions you expect to use frequently. The aforementioned help files explain how to do this also. \
+\
+
+\f0\b\fs28 Playing notes on your MIDI keyboard 
+\f1\b0\fs24 \
+\
+The technical problem with this is that every note on needs to save its synth object so that the note off message can end the right server-side node. The MIDIIn help file contains an example of one way to do this. \
+\
+That's a lot of code for elementary functionality. So, dewdrop_lib provides a convenient way to do this with just a couple of simple commands.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 v = \cf2 Voicer\cf0 (10, \cf3 \\default\cf0 );\
+k = \cf2 VoicerMIDISocket\cf0 (0, v);\
+\
+\cf4 // play your keyboard\cf0 \
+\
+v.free;	\cf7 // when done; also frees the midi socket
+\f1\fs24 \cf0 \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 \
+VoicerMIDISocket also allows you to route MIDI controllers to specific synthdef arguments:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 v = \cf2 Voicer\cf0 (10, \cf3 \\default\cf0 );\
+k = \cf2 VoicerMIDISocket\cf0 (0, v);\
+  \cf7 // controller number (mod wheel), argument name (filter cutoff), initial value\cf0 \
+k.addControl(1, \cf3 \\ffreq\cf0 , 2000);\
+\
+v.free;	\cf7 // when done; also frees the midi socket
+\f1\fs24 \cf0 \
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+\cf0 \
+Keyboard splits are easy also:  
+\f2\fs18 \cf8 VoicerMIDISocket\cf5 (channel, \cf9 \\defName\cf5 , low_note_num, high_note_num);
+\f1\fs24 \cf0 \
+\
+See the 
+\f0\b [VoicerMIDISocket]
+\f1\b0  help file for details on additional functionality.\
+\
+Voicer expects certain things of the synthdef (which are very typical practice anyway). See the 
+\f0\b [Voicer]
+\f1\b0  helpfile.\
+\
+
+\f0\b\fs28 Sending MIDI out
+\f1\b0\fs24 \
+\
+See the 
+\f0\b [MIDIOut]
+\f1\b0  helpfile. Unlike MIDIIn, with MIDIOut you create an instance of the MIDIOut class with a port and uid. You can have multiple MIDIOut objects to send MIDI to different physical devices.\
+\
+Many users have reported timing issues with MIDIOut. When the CPU is busy, especially during graphics updates, outgoing MIDI messages may be delayed. Use with caution in a performance situation.\
+\
+
+\f0\b\fs28 MIDI synchronization
+\f1\b0\fs24 \
+\
+dewdrop_lib includes a class, MIDISyncClock, that receives MIDI clock messages and allows events to be scheduled to keep time with an external MIDI device. See the 
+\f0\b [MIDISyncClock]
+\f1\b0  helpfile for details.\
+\
+There are significant limitations, discussed in the helpfile. This is not really a fully supported class, but it's there for users who are desperate for the functionality.}
