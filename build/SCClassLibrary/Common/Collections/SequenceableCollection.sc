@@ -533,6 +533,7 @@ SequenceableCollection : Collection {
 	
 	// sorting
 	sort { arg function; 
+		if (function.isNil) { function = { arg a, b; a <= b }; }; 
 		^this.mergeSort(function)
 	}
 	sortBy { arg key;
@@ -540,7 +541,6 @@ SequenceableCollection : Collection {
 	}
 	
 	quickSort { arg function; 
-		if (function.isNil) { function = { arg a, b; a <= b }; }; 
 		this.quickSortRange(0, this.size - 1, function) 
 	}
 	
@@ -611,19 +611,20 @@ SequenceableCollection : Collection {
 	mergeSort { arg function;
 		var tempArray;
 		tempArray = this.class.newClear(this.size);
-		if (function.isNil) { function = { arg a, b; a <= b }; }; 
 		this.mergeSortTemp(function, tempArray, 0, this.size - 1);
 	}
 	
 	mergeSortTemp { arg function, tempArray, left, right;
-		var mid;
-		if (right > left) 
-		{
-			mid = (right + left) >> 1;
-			this.mergeSortTemp(function, tempArray, left, mid);
-			this.mergeSortTemp(function, tempArray, mid+1, right);
-			this.mergeTemp(function, tempArray, left, mid+1, right);
-		};
+		var mid, size;
+		
+		size = right - left;
+		if (size <= 0) { ^this };
+		if (size <= 8) { ^this.insertionSortRange(function, left, right) };
+		
+		mid = (right + left) >> 1;
+		this.mergeSortTemp(function, tempArray, left, mid);
+		this.mergeSortTemp(function, tempArray, mid+1, right);
+		this.mergeTemp(function, tempArray, left, mid+1, right);
 	}
 	
 	mergeTemp { arg function, tempArray, left, mid, right;
@@ -663,6 +664,25 @@ SequenceableCollection : Collection {
 		};
 	}
 	
+	insertionSort { arg function;
+		^this.insertionSortRange(function, 0, this.size - 1)
+	}
+	insertionSortRange { arg function, left, right;
+		var i, j, test;
+		i = left + 1;
+		while { i <= right }
+		{
+			test = this[i];
+			j = i;
+			while { (j > left) && { function.value(this[j-1], test).not } }
+			{
+				this[j] = this[j-1];
+				j = j - 1;
+			};
+			this[j] = test;
+			i = i + 1;
+		}
+	}
 
 	// mirror image of String-split
 	join { arg joiner;
