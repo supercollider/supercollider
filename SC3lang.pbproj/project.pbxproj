@@ -179,6 +179,7 @@
 		};
 		F50D050F02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = scsynthsend.h;
 			refType = 4;
 		};
@@ -2425,6 +2426,7 @@
 		};
 		F53D4650030B905201E9DD5D = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = sc_msg_iter.h;
 			refType = 4;
 		};
@@ -2486,6 +2488,7 @@
 		};
 		F59DF067030733E801CE0C16 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = scsynthsend.cpp;
 			refType = 4;
 		};
@@ -2590,6 +2593,7 @@
 		};
 		F5C7B150033D5B4801A80099 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			name = SC_World.h;
 			path = headers/plugin_interface/SC_World.h;
 			refType = 2;
@@ -2602,6 +2606,7 @@
 		};
 		F5C7B154033D5EDC01A80099 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			name = SC_WorldOptions.h;
 			path = headers/plugin_interface/SC_WorldOptions.h;
 			refType = 2;

@@ -97,6 +97,7 @@
 		};
 		F50D050F02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = scsynthsend.h;
 			refType = 4;
 		};
@@ -147,6 +148,7 @@
 		};
 		F50D054902E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_BufGen.h;
 			refType = 4;
 		};
@@ -157,16 +159,19 @@
 		};
 		F50D054B02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Dimension.h;
 			refType = 4;
 		};
 		F50D054C02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_FifoMsg.h;
 			refType = 4;
 		};
 		F50D054D02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Graph.h;
 			refType = 4;
 		};
@@ -182,16 +187,19 @@
 		};
 		F50D055002E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_InterfaceTable.h;
 			refType = 4;
 		};
 		F50D055102E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = sc_msg_iter.h;
 			refType = 4;
 		};
 		F50D055202E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Node.h;
 			refType = 4;
 		};
@@ -202,6 +210,7 @@
 		};
 		F50D055402E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Rate.h;
 			refType = 4;
 		};
@@ -212,6 +221,7 @@
 		};
 		F50D055602E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_SndBuf.h;
 			refType = 4;
 		};
@@ -222,26 +232,31 @@
 		};
 		F50D055802E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Unit.h;
 			refType = 4;
 		};
 		F50D055902E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Wire.h;
 			refType = 4;
 		};
 		F50D055A02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_World.h;
 			refType = 4;
 		};
 		F50D055B02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_WorldOptions.h;
 			refType = 4;
 		};
 		F50D055D02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = Unroll.h;
 			refType = 4;
 		};
@@ -287,6 +302,7 @@
 		};
 		F50D056002E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = IntFifo.h;
 			refType = 4;
 		};
@@ -307,11 +323,13 @@
 		};
 		F50D056402E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_BufSpec.h;
 			refType = 4;
 		};
 		F50D056502E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Complex.h;
 			refType = 4;
 		};
@@ -332,16 +350,19 @@
 		};
 		F50D056902E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_GraphDef.h;
 			refType = 4;
 		};
 		F50D056A02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Group.h;
 			refType = 4;
 		};
 		F50D056B02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_HiddenWorld.h;
 			refType = 4;
 		};
@@ -382,11 +403,13 @@
 		};
 		F50D057502E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_SequencedCommand.h;
 			refType = 4;
 		};
 		F50D057602E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Str4.h;
 			refType = 4;
 		};
@@ -397,21 +420,25 @@
 		};
 		F50D057902E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_SynthDef.h;
 			refType = 4;
 		};
 		F50D057A02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_UnitDef.h;
 			refType = 4;
 		};
 		F50D057B02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_UnitSpec.h;
 			refType = 4;
 		};
 		F50D057C02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_WireSpec.h;
 			refType = 4;
 		};
@@ -471,11 +498,13 @@
 		};
 		F50D05EB02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_BufGen.cpp;
 			refType = 4;
 		};
 		F50D05EC02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Complex.cpp;
 			refType = 4;
 		};
@@ -491,6 +520,7 @@
 		};
 		F50D05EF02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Dimension.cpp;
 			refType = 4;
 		};
@@ -501,16 +531,19 @@
 		};
 		F50D05F102E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Graph.cpp;
 			refType = 4;
 		};
 		F50D05F202E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_GraphDef.cpp;
 			refType = 4;
 		};
 		F50D05F302E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Group.cpp;
 			refType = 4;
 		};
@@ -536,11 +569,13 @@
 		};
 		F50D05F902E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Rate.cpp;
 			refType = 4;
 		};
 		F50D05FB02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_SequencedCommand.cpp;
 			refType = 4;
 		};
@@ -561,11 +596,13 @@
 		};
 		F50D05FF02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_UnitDef.cpp;
 			refType = 4;
 		};
 		F50D060002E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_World.cpp;
 			refType = 4;
 		};
@@ -641,6 +678,7 @@
 		};
 		F59DF067030733E801CE0C16 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = scsynthsend.cpp;
 			refType = 4;
 		};
