@@ -655,8 +655,9 @@ void Interpret(VMGlobals *g)
 			slot = g->sp - numArgsPushed + 1;
 			classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
 
-			goto key_msg_lookup;
-
+			if (numKeyArgsPushed) goto key_msg_lookup;
+			else goto msg_lookup;
+			
 		case 12 :  // opExtended, opSendSpecialMsg
 			numArgsPushed = ip[1]; // get num args
 			numKeyArgsPushed = ip[2]; // get num keyword args
