@@ -80,12 +80,13 @@ NotePlayer : EventPlayer {
 				~freq = ~freq.value + ~detune;
 				~amp = ~amp.value;
 				~sustain = ~sustain.value;
+				~server = ~server.value;
 			};
 									
 			~player = NotePlayer.new;
 			~synthLib = SynthDescLib.global;
 
-			~server = Server.default;
+			~server = { Server.default };
 		});
 	}
 	playOneEvent { arg server, addAction, group, desc, lag, sustain, msgArgs;
