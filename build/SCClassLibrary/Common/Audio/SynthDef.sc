@@ -226,9 +226,9 @@ SynthDef {
 		});
 	}
 	
-	load { arg server;
+	load { arg server, completionMsg;
 		this.writeDefFile;
-		server.loadSynthDef(name);
+		server.loadSynthDef(name, completionMsg);
 	}
 	
 	play { arg target,args,addAction=\addToTail;

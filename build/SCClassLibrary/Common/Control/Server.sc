@@ -112,8 +112,9 @@ Server : Model {
 		file.close;
 		this.sendMsg("/d_recv", buffer);
 	}
-	loadSynthDef { arg name;
-		this.sendMsg("/d_load", "synthdefs/" ++ name ++ ".scsyndef");
+	loadSynthDef { arg name, completionMsg;
+		this.sendMsg("/d_load", "synthdefs/" ++ name ++ ".scsyndef", 
+			completionMsg ? []);
 	}
 	//loadDir
 	
