@@ -622,7 +622,11 @@ Server : Model {
 		if(recordBuf.notNil) { recordBuf.close {|buf| buf.free; }; recordBuf = nil; };
 		addr = addr.recover;
 		this.changed(\cmdPeriod);
-		if(scopeWindow.notNil, { scopeWindow.run; }, { CmdPeriod.remove(this); });
+		if(scopeWindow.notNil) {
+			fork { 0.5.wait; scopeWindow.run } // wait until synth is freed
+		}{
+			CmdPeriod.remove(this)
+		};
 	}
 	
 	defaultGroup { ^Group.basicNew(this, 1) }
