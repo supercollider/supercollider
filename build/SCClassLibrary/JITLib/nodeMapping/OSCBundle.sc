@@ -21,22 +21,28 @@ OSCBundle {
 	
 	server { ^target.server }
 	
-	*newSynth { arg defName, args, target, addAction;
+}
+
+
+
+SynthBundle : OSCBundle {
+	*new { arg defName, args, target, addAction;
 		var synth, bundle;
-		synth = Synth.prNew(defName);
-		bundle = super.new.tinit(synth);
+		target = target.asTarget;
+		synth = Synth.prNew(defName, target.server);
+		bundle = super.new(synth);
 		bundle.messages.add(synth.newMsg(target, addAction, args));
 		^bundle
 	}
-	
-	*newGroup { arg target, addAction;
+}
+
+GroupBundle : OSCBundle {
+	*new { arg target, addAction;
 		var group, bundle;
-		group = Group.prNew;
-		bundle = super.new.tinit(group);
+		target = target.asTarget;
+		group = Group.prNew(target.server);
+		bundle = super.new(group);
 		bundle.messages.add(group.newMsg(target, addAction));
 		^bundle
 	}
-
-
 }
-
