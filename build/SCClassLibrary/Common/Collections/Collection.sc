@@ -208,6 +208,9 @@ Collection {
 		}
 		^sum;
 	}
+	mean { | function |
+		^this.sum(function) / this.size;
+	}
 	product { | function |
 		var i, product = 1;
 		if (function.isNil) { // optimized version if no function
