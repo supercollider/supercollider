@@ -139,6 +139,9 @@ String[char] : RawArray {
 			})
 		})
 	}
+	quote {
+		^"\"" ++ this ++ "\"" 
+	}
 	tr { arg from,to;
 		^this.collect({ arg char;
 			if(char == from,{to},{char})
