@@ -22,6 +22,21 @@ PlazyEnvir : Plazy {
 	}
 }
 
+Penvir : Pattern {
+	var <>envir, <>pattern, <>independent;
+	*new { arg envir, pattern, independent=true;
+		^super.newCopyArgs(envir, pattern, independent)
+	}
+	embedInStream { arg inval;
+		if(independent) 
+			{ Event.new(8, nil, envir) }
+			{ envir }
+		.use { pattern.embedInStream(inval) }; 
+		^inval
+	}
+}
+
+
 Ppatmod : Pattern {
 	var <>pattern, <>func, <>repeats=1;
 	*new { arg pattern, func, repeats;
