@@ -10,6 +10,9 @@ FuncProxy : Ref {
 	
 	source_ { arg obj; if(obj !== this) {  this.value = obj } } // catch at least identity
 	clear { value = nil }
+	functionPerformList { arg selector, arglist; // allow use for prototyping
+		^this.performList(selector, arglist)
+	}
 	
 }
 
