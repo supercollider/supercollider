@@ -11,17 +11,15 @@ NotePlayer : EventPlayer {
 		
 		
 		server = ~server ? Server.local;
-		id = if(~doneAction == 2, -1, { server.nextNodeID });
+		id = server.nextNodeID;
 		msg = List.new;
 		args = Array.new(~argNames.size*2);
 		~argNames.do({ arg name;
 			args.add(name);
 			args.add(currentEnvironment.at(name));
 		});
-		msg.add([9,~instrument.asString, id, 1, ~group ? 0]++args);
+		msg.add([9,~instrument.asString, id, 1, ~group]++args);
 		
-		//here any additions to the bundle can be done	
-		~finishBundle.value(msg, id);
 		
 		//send the bundle
 		server.listSendBundle(~latency, msg); 
@@ -33,9 +31,9 @@ NotePlayer : EventPlayer {
 		dur = ~dur / ~tempo;
 		
 		// send note off. maybe use oscScheduler?
-		if(~doneAction != 2, {
-			server.sendBundle(~latency + dur, ["/n_set", id, "gate", 0], ["/s_noid", id]);
-		});
+	
+		server.sendBundle(~latency + dur, ["/n_set", id, "gate", 0]);
+		
 		
 	}
 	playEvent { arg event;
@@ -57,25 +55,6 @@ NotePlayer : EventPlayer {
 		});
 	}
 	
-	playSetNodeEvent { arg event;
-		var freqs, id, msg, args;
-		event.use({
-			~finish.value; // finish the event
-			freqs = ~freq;
-			msg = List.new;
-			args = Array.new(~argNames.size*2);
-			~argNames.do({ arg name;
-				args.add(name);
-				args.add(currentEnvironment.at(name));
-			});
-			id = ~target.asNodeID;
-			msg.add([15, id]++args);
-			~finishBundle.value(msg, id);
-		
-			//send the bundle
-			~server.listSendBundle(~latency, msg); 
-		});
-	}
 }
 
 /*
