@@ -1,7 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green115\blue0;\red0\green0\blue0;\red96\green96\blue96;}
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs18 \cf0 Server.local.boot;\
@@ -17,7 +17,6 @@ s = \cf2 Server\cf0 .local; \cf3 // get the default server\
 \cf0 s = \cf2 Server\cf0 .internal; \cf3 // get the default server\
 \cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf4 "pink"\cf0 , \{\
 	\cf2 Out\cf0 .ar(0, \cf2 PinkNoise\cf0 .ar(0.1));\
 \}).writeDefFile;\
@@ -69,30 +68,30 @@ s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/ring.scsyndef"\cf0 );\
 s = Server.local;\
 s = Server.internal;\
 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "pink"\cf0 , 2002, 0);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "pink"\cf0 , 2002, 1, 0);\
 s.sendMsg(\cf4 "/n_free"\cf0 , 2002);\
 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "white"\cf0 , 2002, 0);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "white"\cf0 , 2002, 1, 0);\
 s.sendMsg(\cf4 "/n_free"\cf0 , 2002);\
 \
-Server.internal.sendBundle(0, [\cf4 "/s_new"\cf0 , \cf4 "white"\cf0 , 2002, 0]);\
+Server.internal.sendBundle(0, [\cf4 "/s_new"\cf0 , \cf4 "white"\cf0 , 2002, 1, 0]);\
 Server.internal.sendBundle(1, [\cf4 "/n_free"\cf0 , 2002]);\
 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "brown"\cf0 , 2002, 0);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "brown"\cf0 , 2002, 1, 0);\
 s.sendMsg(\cf4 "/n_free"\cf0 , 2002);\
 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "gray"\cf0 , 2002, 0);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "gray"\cf0 , 2002, 1, 0);\
 s.sendMsg(\cf4 "/n_free"\cf0 , 2002);\
 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "clipnoise"\cf0 , 2002, 0);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "clipnoise"\cf0 , 2002, 1, 0);\
 s.sendMsg(\cf4 "/s_trace"\cf0 , 2002);\
 s.sendMsg(\cf4 "/n_free"\cf0 , 2002);\
 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "thru"\cf0 , 2002, 0);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "thru"\cf0 , 2002, 1, 0);\
 s.sendMsg(\cf4 "/s_trace"\cf0 , 2002);\
 s.sendMsg(\cf4 "/n_free"\cf0 , 2002);\
 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "ring"\cf0 , 2002, 0);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "ring"\cf0 , 2002, 1, 0);\
 s.sendMsg(\cf4 "/n_free"\cf0 , 2002);\
 \
 \
@@ -100,18 +99,16 @@ s.sendMsg(\cf4 "/n_free"\cf0 , 2002);\
 \cf2 SynthDef\cf0 (\cf4 "bubbles"\cf0 , \{\
 	\cf2 var\cf0  f, zout;\
 	f = \cf2 LFSaw\cf0 .kr(0.4, 0, 24, \cf2 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps; \cf3 // glissando function\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	zout = \cf2 CombN\cf0 .ar(\cf2 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4); \cf3 // echoing sine wave\
 \cf0 	\cf2 Out\cf0 .ar(0, zout.postln);\
 \}).writeDefFile;\
 s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/bubbles.scsyndef"\cf0 );\
 )\
 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "bubbles"\cf0 , 2003, 0);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "bubbles"\cf0 , 2003, 1, 0);\
 s.sendMsg(\cf4 "/n_free"\cf0 , 2003);\
 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf4 "moto-rev"\cf0 , \{\
 	\cf2 var\cf0  x;\
 	x = \cf2 RLPF\cf0 .ar(\cf2 LFPulse\cf0 .ar(\cf2 SinOsc\cf0 .kr(0.2, 0, 10, 21), [0,0.1], 0.1), 100, 0.1).clip2(0.4);\
@@ -119,7 +116,7 @@ s.sendMsg(\cf4 "/n_free"\cf0 , 2003);\
 \}).writeDefFile;\
 s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/moto-rev.scsyndef"\cf0 );\
 )\
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "moto-rev"\cf0 , 2004, 0);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "moto-rev"\cf0 , 2004, 1, 0);\
 s.sendMsg(\cf4 "/n_free"\cf0 , 2004);\
 \
 s.sendMsg(\cf4 "/g_freeAll"\cf0 , 0);\
@@ -147,7 +144,7 @@ s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/glissine2.scsyndef"\cf0 );\
 )\
 \
 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "glissine2"\cf0 , 2003, 0);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "glissine2"\cf0 , 2003, 1, 0);\
 s.sendMsg(\cf4 "/n_free"\cf0 , 2003);\
 \
 s = Server.local;\
@@ -165,13 +162,13 @@ s = Server.local;\
 s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/env2.scsyndef"\cf0 );\
 )\
 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "env2"\cf0 , 2003, 0, \cf5 \\freq\cf0 , 400);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "env2"\cf0 , 2003, 1, 0, \cf5 \\freq\cf0 , 400);\
 s.sendMsg(\cf4 "/n_set"\cf0 , 2003, \cf5 \\gate\cf0 , 0);\
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "env2"\cf0 , 2004, 0, \cf5 \\freq\cf0 , 500);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "env2"\cf0 , 2004, 1, 0, \cf5 \\freq\cf0 , 500);\
 s.sendMsg(\cf4 "/n_set"\cf0 , 2004, \cf5 \\gate\cf0 , 0);\
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "env2"\cf0 , 2005, 0, \cf5 \\freq\cf0 , 600);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "env2"\cf0 , 2005, 1, 0, \cf5 \\freq\cf0 , 600);\
 s.sendMsg(\cf4 "/n_set"\cf0 , 2005, \cf5 \\gate\cf0 , 0);\
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "env2"\cf0 , 2006, 0, \cf5 \\freq\cf0 , 800);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "env2"\cf0 , 2006, 1, 0, \cf5 \\freq\cf0 , 800);\
 s.sendMsg(\cf4 "/n_set"\cf0 , 2006, \cf5 \\gate\cf0 , 0);\
 \
 \
@@ -189,7 +186,7 @@ s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/busy.scsyndef"\cf0 );\
 (\
 r = \cf2 Routine\cf0 (\{\
 	10.do(\{ \cf2 arg\cf0  i;\
-		s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "busy"\cf0 , 2100+i, 0);\
+		s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "busy"\cf0 , 2100+i, 1, 0);\
 		s.sendBundle(5, [\cf4 "/n_free"\cf0 , 2100+i]);\
 		1.wait;\
 	\});\
@@ -211,19 +208,23 @@ s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/playbuf.scsyndef"\cf0 );\
 \
 (\
 \cf3 // define a synth\
-\cf2 SynthDef\cf0 (\cf4 "playbuf"\cf0 , \{ \cf2 arg\cf0  rate = 1;\
+\cf2 SynthDef\cf0 (\cf4 "playbuf"\cf0 , \{ \cf2 arg\cf0  rate = 1, trig = 0;\
 	\cf2 var\cf0  out;\
-	out = \cf2 Mix\cf0 (\cf2 PlayBuf\cf0 .ar(1, 0, rate*0.25, loop: 0)) * 0.3;\
+	out = \cf2 Mix\cf0 (\cf2 PlayBuf\cf0 .ar(1, 0, rate*0.25, trig, 10000, loop: 0)) * 0.3;\
 	\cf2 Out\cf0 .ar(0, out);\
 \}).writeDefFile;\
 s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/playbuf.scsyndef"\cf0 );\
 )\
 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "playbuf"\cf0 , 2003, 0, \cf5 \\rate\cf0 , 1);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "playbuf"\cf0 , 2003, 1, 0, \cf5 \\rate\cf0 , 1);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 s.sendMsg(\cf7 "/b_allocRead"\cf6 , 0, \cf7 "sounds\cf4 /a11wlk01.wav\cf7 "\cf6 );\
-\cf0 \
+s.sendMsg(\cf4 "/n_set"\cf0 , 2003, \cf5 \\trig\cf0 , 1);\
+s.sendMsg(\cf4 "/n_set"\cf0 , 2003, \cf5 \\trig\cf0 , 0);\
+s.sendMsg(\cf4 "/n_set"\cf0 , 2003, \cf5 \\trig\cf0 , 1);\
+s.sendMsg(\cf4 "/n_set"\cf0 , 2003, \cf5 \\trig\cf0 , 0);\
+\
+s.sendMsg(\cf4 "/b_allocRead"\cf0 , 0, \cf4 "sounds/a11wlk01.wav"\cf0 );\
+\
 s.sendMsg(\cf4 "/b_alloc"\cf0 , 0, 100000, 2);\
 \
 s.sendMsg(\cf4 "/b_read"\cf0 , 0, \cf4 "/System/Library/Sounds/Submarine.aiff"\cf0 );\
