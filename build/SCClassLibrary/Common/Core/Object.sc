@@ -34,6 +34,7 @@ Object {
 	postln { this.asString.postln; }
 	postc { this.asString.postc }
 	postcln { this.asString.postcln; }
+	postcs { this.asCompileString.postln }
 	totalFree { _TotalFree }
 	largestFreeBlock { _LargestFreeBlock }
 	gcAll { _GCAll }
@@ -434,12 +435,14 @@ Object {
 	blendAt { arg index;
 		var iMin;
 		iMin = index.asInteger;
-		^blend(this.at(iMin), this.clipAt(iMin+1), index - iMin);
+		^blend(this.clipAt(iMin), this.clipAt(iMin+1), index - iMin);
 	}
 
 	fuzzyEqual { arg that, precision=1.0; ^max(0.0, 1.0 - (abs(this - that)/precision)) }
-		
+	
 	isUGen { ^false }
+	
+	
 
 	// scheduling
 	awake { arg beats, seconds, clock;
