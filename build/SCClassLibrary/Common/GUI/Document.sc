@@ -32,9 +32,13 @@ Document {
 	
 //class:
 
-	*dir_ { arg path;  dir = path.standardizePath ++ "/"; }
+	*dir_ { arg path; path = path.standardizePath ++ "/";
+		if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln }Ê{Êdir = path }
+	}
 	
-	*wikiDir_ { arg path;  wikiDir = path.standardizePath ++ "/"; }
+	*wikiDir_ { arg path; path = path.standardizePath ++ "/";
+		if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln }Ê{ÊwikiDir = path }
+	}
 	
 	*standardizePath { arg p;
 		var pathName;
@@ -258,7 +262,7 @@ Document {
 			// execute file
 			selectedText = selectedText.drop(1);
 			extensions.do {|ext|
-				filename = this.class.standardizePath(wikiDir ++ selectedText ++ ext);
+				filename = wikiDir ++ selectedText ++ ext;
 				if (File.exists(filename)) {
 					// open existing wiki page
 					filename.load;
@@ -279,7 +283,7 @@ Document {
 		}
 		{
 			extensions.do {|ext|
-				filename = this.class.standardizePath(wikiDir ++ selectedText ++ ext);
+				filename = wikiDir ++ selectedText ++ ext;
 				if (File.exists(filename)) {
 					// open existing wiki page
 					this.class.open(filename);
@@ -287,7 +291,7 @@ Document {
 				}
 			};
 			// make a new wiki page
-			filename = this.class.standardizePath(wikiDir ++ selectedText ++ ".rtf");
+			filename = wikiDir ++ selectedText ++ ".rtf";
 			this.makeWikiPage(filename, selectedText);
 		};
 	}
