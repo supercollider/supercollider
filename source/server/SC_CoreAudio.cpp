@@ -500,7 +500,7 @@ OSStatus appIOProc2 (AudioDeviceID /*inDevice*/, const AudioTimeStamp* inNow,
 	
 	AudioDeviceRead(def->InputDevice(), &readTime, def->GetInputBufferList());
 	
-	def->Run(inInputData, outOutputData, oscTime);
+	def->Run(def->GetInputBufferList(), outOutputData, oscTime);
 
 	return kAudioHardwareNoError;
 }
