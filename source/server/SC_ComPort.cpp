@@ -460,8 +460,8 @@ SC_TcpConnectionPort::~SC_TcpConnectionPort()
 void tcp_reply_func(struct ReplyAddress *addr, char* msg, int size);
 void tcp_reply_func(struct ReplyAddress *addr, char* msg, int size)
 {
-    uint32_t u ;
-    // Write size as 32bit signed network-order integer
+    uint32 u ;
+    // Write size as 32bit unsigned network-order integer
 	u = size;
     u = htonl ( u ) ;
     sendall ( addr->mSocket , &u , 4 ) ;
