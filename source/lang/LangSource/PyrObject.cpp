@@ -786,27 +786,51 @@ void findDiscrepancy()
 	}
 }
 
+
+static void indent(int n)
+{
+	for (int i=0; i<n; ++i) {
+		post("  ");
+	}
+}
+
 void postClassTree(PyrClass *classobj, int level)
 {
 	PyrObject *subclasses;
 	int i;
 	
 	//post("%4d  ", classobj->classIndex.ui);
-	for (i=0; i<level; ++i) {
-		post("  ");
-	}
+	indent(level);
 	post("%s\n", classobj->name.us->name);
 	
 	if (classobj == class_class) {
-		for (i=0; i<level+1; ++i) {
-			post("  ");
-		}
-		post("      .. all metaclasses ..\n");
+		indent(level+1);
+		post("      [.. all metaclasses ..]\n");
 	} else {
 		subclasses = classobj->subclasses.uo;
 		if (subclasses) {
-			for (i=0; i<subclasses->size; ++i) {
-				postClassTree(subclasses->slots[i].uoc, level+1);
+			// determine if can put on one line
+			bool oneline = subclasses->size <= 5;
+			for (i=0; oneline && i<subclasses->size; ++i) {
+				PyrClass *subclassobj = subclasses->slots[i].uoc;
+				if (subclassobj->subclasses.uo) oneline = false;				
+			}
+			if (oneline) {
+				indent(level+1);
+				post("[");
+				for (i=0; i<subclasses->size; ++i) {
+					PyrClass *subclassobj = subclasses->slots[i].uoc;
+					post(" %s", subclassobj->name.us->name);
+				}
+				post(" ]\n");
+			} else {
+				indent(level);
+				post("[\n");
+				for (i=0; i<subclasses->size; ++i) {
+					postClassTree(subclasses->slots[i].uoc, level+1);
+				}
+				indent(level);
+				post("]\n");
 			}
 		}
 	}
