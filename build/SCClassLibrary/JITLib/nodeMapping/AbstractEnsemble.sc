@@ -9,63 +9,72 @@ AbstractEnsemble : Group  {
 			^super.new(target,addAction);
 	}
 	
-	//here any updating commands can be implemented
-	updateCommand { 
+	//here any updating messages can be implemented
+	updateMsg { arg msgList;
 		^this.subclassResponsibility(thisMethod)
 	}
 	
-	sendUpdatedCommand { arg cmd, reciever;
+	sendUpdatedMsg { arg msgList, reciever;
 		
-		this.updateCommand(cmd, reciever);
-		server.sendCmdList(cmd);
+		this.updateMsg(msgList, reciever);
+		server.sendMsgList(msgList);
 	}
+	/*
+	*newMsg { arg msgList, target, addAction=\addToHead;
+		var res;
+		res = super.newMsg(msgList, target,addAction);
+		res.updateMsg(msgList);
+		^res
+	}
+	*/
+	
 	
 	moveNodeToHead { arg aNode;
-		var cmd;
-		cmd = List.new;
-		cmd.add(["/g_head", nodeID, aNode.nodeID]);
-		this.sendUpdatedCommand(cmd, aNode);
+		var msg;
+		msg = List.new;
+		msg.add(["/g_head", nodeID, aNode.nodeID]);
+		this.sendUpdatedMsg(msg, aNode);
 	
 	}
 	
 	moveNodeToTail { arg aNode;
-		var cmd;
-		cmd = List.new;
-		cmd.add(["/g_tail", nodeID, aNode.nodeID]);
+		var msg;
+		msg = List.new;
+		msg.add(["/g_tail", nodeID, aNode.nodeID]);
 		
-		this.sendUpdatedCommand(cmd, aNode);
+		this.sendUpdatedMsg(msg, aNode);
 	
 	}
 	
 	moveNodeBefore { arg movedNode, aNode;
-		var cmd;
-		cmd = List.new;
-		cmd.add(["/n_before", movedNode.nodeID, aNode.nodeID]);
+		var msg;
+		msg = List.new;
+		msg.add(["/n_before", movedNode.nodeID, aNode.nodeID]);
 		
-		this.sendUpdatedCommand(cmd, movedNode);
+		this.sendUpdatedMsg(msg, movedNode);
 
 	}
 	
 	moveNodeAfter { arg movedNode, aNode;
-		var cmd;
-		cmd = List.new;
-		cmd.add(["/n_after", movedNode.nodeID, aNode.nodeID]);
+		var msg;
+		msg = List.new;
+		msg.add(["/n_after", movedNode.nodeID, aNode.nodeID]);
 	
-		this.sendUpdatedCommand(cmd, movedNode);
+		this.sendUpdatedMsg(msg, movedNode);
 	}	
 	
 	sendGroupToServer { arg arggroup, addActionNum,targetID;
-		var cmd;
+		var msg;
 		
 		if(server.serverRunning, {
 			
 			
 			arggroup.register(server);
 			
-			cmd = List.new;
-			cmd.add(["/g_new", arggroup.nodeID, addActionNum, targetID]);
+			msg = List.new;
+			msg.add(["/g_new", arggroup.nodeID, addActionNum, targetID]);
 		
-			this.sendUpdatedCommand(cmd, arggroup);
+			this.sendUpdatedMsg(msg, arggroup);
 		
 			//arggroup.isPlaying = true;
 			//arggroup.isRunning = true;
@@ -74,15 +83,15 @@ AbstractEnsemble : Group  {
 	}
 	
 	sendSynthToServer { arg argsynth, addActionNum,targetID,args;
-		var cmd;
+		var msg;
 		if(server.serverRunning, {
 			
 			argsynth.register(server);
 			
-			cmd = List.new;
-			cmd.add(["/s_new", argsynth.defName,argsynth.nodeID, addActionNum, targetID]++ args);
+			msg = List.new;
+			msg.add(["/s_new", argsynth.defName,argsynth.nodeID, addActionNum, targetID]++ args);
 		
-			this.sendUpdatedCommand(cmd, argsynth);
+			this.sendUpdatedMsg(msg, argsynth);
 			//argsynth.isPlaying = true;
 			//argsynth.isRunning = true;
 		}, { "Server not running".inform });
@@ -98,9 +107,9 @@ ModelGroup : AbstractEnsemble {
 			^super.new(target,addAction).updateFunc_(updateFunc);
 	}
 	
-	//see bundled commands for how to use these
-	updateCommand { arg cmdList, reciever;
-		updateFunc.value(cmdList, reciever);
+	//see bundled messages for how to use these
+	updateMsg { arg msgList, reciever;
+		updateFunc.value(msgList, reciever);
 	}
 
 }

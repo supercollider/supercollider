@@ -9,16 +9,18 @@ Ensemble : AbstractEnsemble {
 	}
 	*prNew { ^super.new.ginit }
 	ginit { arg map;
-		nodeMap=map ?? { NodeMap.new };
+		nodeMap = map ?? { NodeMap.new };
 	}
 	nodeMap_ { arg map;
 		nodeMap = map;
-		nodeMap.send(this);
+		if(this.isPlaying, {nodeMap.send(this)});
 	}
 	map { arg ... args;
 		nodeMap.performList(\map, args);
+		if(this.isPlaying,{
 		server.sendBundle(server.latency, 
 			["/n_map", nodeID]++args);
+		});
 	}
 	
 	unmap { arg ... args;
@@ -33,8 +35,10 @@ Ensemble : AbstractEnsemble {
 	
 	set { arg ... args;
 		nodeMap.performList(\set, args);
+		if(this.isPlaying,{
 		server.sendBundle(server.latency, 
 			[15, nodeID]++args);
+		})
 	}
 	
 	unset { arg ... keys;
@@ -43,26 +47,33 @@ Ensemble : AbstractEnsemble {
 	
 	setn { arg controlName,  values ... args;
 		nodeMap.performList(\setn, [controlName,  values]++ args);
-		args = args.collect({ arg cnv;
-			[cnv.at(0), cnv.at(1).size, cnv.at(1)];
-		}).flat;
-		server.sendBundle(server.latency, [16, nodeID, controlName, values.size, values] ++ args);
+		if(this.isPlaying,{
+			args = args.collect({ arg cnv;
+				[cnv.at(0), cnv.at(1).size, cnv.at(1)];
+			}).flat;
+			server.sendBundle(server.latency, [16, nodeID, controlName, values.size, values] ++ args);
+		})
 	}
 	
 	fill { arg controlName, numControls, value ... args;
-		this.addCommand(["/n_fill"]++[numControls, value]++args);
+		this.addMsg(["/n_fill"]++[numControls, value]++args);
 		server.sendBundle(server.latency, 
 			[17, nodeID,controlName,numControls, value]++args); //"n_setn"
 	}	
-	addCommand { arg cmdArray;
-		nodeMap.addCommand(cmdArray)
+	addMsg { arg cmdArray;
+		nodeMap.addMsg(cmdArray)
 	}
 	
-	newCommand { arg cmdList, target, addAction=\addToTail;
-		^super.newCommand(cmdList, target, addAction).ginit
+	newMsg { arg msgList, target, addAction=\addToTail, nodeMap;
+		var res;
+		res = super.prNew;
+		msgList.add(res.newMsg(target, addAction));
+		res.nodeMap_(nodeMap); 
+		nodeMap.updateMsg(msgList, res);//not needed?
+		^res
 	}
-	updateCommand { arg cmdList, reciever;
-		^nodeMap.updateCommand(cmdList, reciever);
+	updateMsg { arg cmdList, reciever;
+		^nodeMap.updateMsg(cmdList, reciever);
 	}
 	
 	

@@ -1,5 +1,5 @@
 NodeMap {
-	var <values, <mappings, <>commands;
+	var <values, <mappings, <>msgs;
 	
 	*new {
 		^super.new.clear
@@ -10,13 +10,13 @@ NodeMap {
 		values = IdentityDictionary.new;
 	}
 	
-	addCommand { arg cmd;
-		if(commands.isNil, { this.clearCommands });
-		commands.add(cmd);
+	addMsg { arg msg;
+		if(msgs.isNil, { this.clearMsgs });
+		msgs.add(msg);
 	}
 	
-	clearCommands {
-		commands = List.new;
+	clearMsgs {
+		msgs = List.new;
 	}
 	
 	map { arg ... args;
@@ -58,11 +58,11 @@ NodeMap {
 	}
 	
 	send { arg targetNode, latency;
-		var cmd;
-		cmd = List.new;
+		var msg;
+		msg = List.new;
 		targetNode = targetNode.asTarget;
-		this.updateCommand(cmd, targetNode);
-		targetNode.server.sendCmdList(cmd, latency);
+		this.updateMsg(msg, targetNode);
+		targetNode.server.sendMsgList(msg, latency);
 	}
 	
 	mapArgs {	
@@ -110,7 +110,7 @@ NodeMap {
 				^valArgs
 	}
 	
-	updateCommand { arg cmdList, target;
+	updateMsg { arg msgList, target;
 		var mapArgs, valArgs, multiValArgs;
 			target = target.asTarget;
 				mapArgs = this.mapArgs;
@@ -118,17 +118,19 @@ NodeMap {
 				multiValArgs = this.multiValArgs;
 										
 				if(mapArgs.isEmpty.not, {
-					target.addCommand(cmdList, 14, mapArgs);
+					msgList.add(target.getMsg(14, mapArgs));
 				});
 				if(valArgs.isEmpty.not, {
-					target.addCommand(cmdList, 15, valArgs);
+					msgList.add(target.getMsg(15, valArgs));
 				});
 				if(multiValArgs.isEmpty.not, {
-					target.addCommand(cmdList, 16, multiValArgs);
+					msgList.add(target.getMsg(16, multiValArgs));
 				});
 				
-				commands.do({ arg item;
-					target.addCommand(cmdList, item.first, item.copyToEnd(1)) 
+				msgs.do({ arg item;
+					msgList.add(
+						target.getMsg(item.first, item.copyToEnd(1))
+					);
 				});
 	}
 
