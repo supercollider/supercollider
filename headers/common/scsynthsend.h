@@ -145,7 +145,7 @@ inline void scpacket::addb(uint8 *src, size_t len)
 	if (wrpos + (len4 + 1) > endpos) BUFFEROVERFLOW;
 	wrpos[len4 - 1] = 0;
 	int32 swaplen = len;
-	printf("addb len %d  len4 %d\n", len, len4);
+	//printf("addb len %d  len4 %d\n", len, len4);
 	*wrpos++ = HTONL(swaplen);	
 	memcpy(wrpos, src, (size_t)len);
 	wrpos += len4;
