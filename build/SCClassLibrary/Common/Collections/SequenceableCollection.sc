@@ -682,7 +682,9 @@ SequenceableCollection : Collection {
 	expexp { arg inMin, inMax, outMin, outMax; 
 		^this.collect {|item| item.expexp(inMin, inMax, outMin, outMax) }  
 	}
-	asFraction { ^this.collect { |item| item.asFraction } }
+	asFraction { arg denominator=100, fasterBetter=true; 
+		^this.collect { |item| item.asFraction(denominator, fasterBetter) } 
+	}
 		
 	// support UGen rate access
 	

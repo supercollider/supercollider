@@ -270,10 +270,11 @@ SimpleNumber : Number {
 		^clock.nextTimeOnGrid(this, 0);
 	}
 	
-	asFraction {|denominator=100| 
+	asFraction {|denominator=100, fasterBetter=true| 
 		_AsFraction
 		// asFraction will return a fraction that is the best approximation up to the given
-		// denominator, but it may find a much closer approximation than that.
+		// denominator.
+		// if fasterBetter is true it may find a much closer approximation and do it faster.
 		^this.primitiveFailed
 	}
 }

@@ -1101,8 +1101,9 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 
 int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp - 1;
-	PyrSlot *b = g->sp;
+	PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
 
 	double mediant_num, lower_num, upper_num, temp_num;
 	double mediant_den, lower_den, upper_den, temp_den;
@@ -1117,6 +1118,8 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 	
 	err = slotIntVal(b, &maxDenominator);
 	if (err) return err;
+
+	bool faster = IsTrue(c);
 
 	PyrObject *obj = newPyrArray(g->gc, 2, 0, true);
 	obj->size = 2;
@@ -1143,6 +1146,7 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 	while (true) {
 		mediant_num = lower_num + upper_num;
 		mediant_den = lower_den + upper_den;
+		//post("  md %g %g    %g %g    %g %g\n", mediant_num, mediant_den, lower_num, lower_den, upper_num, upper_den);
 
 		if (x * mediant_den > mediant_num) {
 			d = upper_num - (x * upper_den);
@@ -1154,14 +1158,18 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 			}
 			lower_num = mediant_num;
 			lower_den = mediant_den;
-			k = (int)floor(((x * lower_den) - lower_num) / d);
-			k1 = k + 1;
-			temp_num = lower_num + (k1 * upper_num);
-			temp_den = lower_den + (k1 * upper_den);
-			lower_num = lower_num + (k * upper_num);
-			lower_den = lower_den + (k * upper_den);
-			upper_num = temp_num;
-			upper_den = temp_den;
+			if (faster) {
+				k = (int)floor(((x * lower_den) - lower_num) / d);
+				if (k < 10000) {
+					k1 = k + 1;
+					temp_num = lower_num + (k1 * upper_num);
+					temp_den = lower_den + (k1 * upper_den);
+					lower_num = lower_num + (k * upper_num);
+					lower_den = lower_den + (k * upper_den);
+					upper_num = temp_num;
+					upper_den = temp_den;
+				}
+			}
 		} else if (x * mediant_den == mediant_num) {
 			if (maxDenominator >= mediant_den) {
 				if (neg) mediant_num = -mediant_num;
@@ -1189,14 +1197,18 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 			}
 			upper_num = mediant_num;
 			upper_den = mediant_den;
-			k = (int)floor(((x * upper_den) - upper_num) / d);
-			k1 = k + 1;
-			temp_num = (k1 * lower_num) + upper_num;
-			temp_den = (k1 * lower_den) + upper_den;
-			upper_num = (k * lower_num) + upper_num;
-			upper_den = (k * lower_den) + upper_den;
-			lower_num = temp_num;
-			lower_den = temp_den;
+			if (faster) {
+				k = (int)floor(((x * upper_den) - upper_num) / d);
+				if (k < 10000) {
+					k1 = k + 1;
+					temp_num = (k1 * lower_num) + upper_num;
+					temp_den = (k1 * lower_den) + upper_den;
+					upper_num = (k * lower_num) + upper_num;
+					upper_den = (k * lower_den) + upper_den;
+					lower_num = temp_num;
+					lower_den = temp_den;
+				}
+			}
 		}
 	}
 }
@@ -1232,6 +1244,6 @@ void initMathPrimitives()
 	definePrimitive(base, index++, "_FoldSignal", mathFoldSignal, 3, 0);
 	
 	definePrimitive(base, index++, "_SimpleNumberSeries", prSimpleNumberSeries, 3, 0);
-	definePrimitive(base, index++, "_AsFraction", prAsFraction, 2, 0);
+	definePrimitive(base, index++, "_AsFraction", prAsFraction, 3, 0);
 }
 
