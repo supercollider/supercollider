@@ -7,6 +7,7 @@ PatternProxy : Pattern {
 	
 	classvar <>defaultQuant, <>action;
 	
+	// basicNew should be used for instantiation: *new is used in Pdef/Tdef/Pdefn
 	*basicNew {Êarg source;
 		^super.new.init(source)
 	}
@@ -166,9 +167,8 @@ TaskProxy : PatternProxy {
 	
 	stop { player.stop; isPlaying = false }
 	
-	// maybe doInTime should use playQuant
-	pause { if(player.notNil) { this.doInTime { player.pause } } }
-	resume { if(player.notNil) { this.doInTime { player.resume } } }
+	pause { if(player.notNil) { this.sched { player.pause } } }
+	resume { if(player.notNil) { this.sched { player.resume } } }
 
 	
 		
