@@ -307,34 +307,12 @@ Collection {
 		};
 		^minValue;
 	}
-	
-//	// set theory methods by Fredrik Olofsson <f@fredrikolofsson.com>
-//	// union - the set of all elements that are either in A or in B or in both
-//	union { | aCollection | 
-//		^if(aCollection.size > this.size) {
-//			aCollection.reject({ | item | this.includes(item) }).addAll(this) 
-//		}{
-//			this.reject({ | item | 
-//				aCollection.includes(item) 
-//			}).addAll(aCollection) 
-//		}
-//	}
-//	//   in both sets A and B
-//	intersection { | aCollection | 
-//		^this.select { | item | aCollection.includes(item) }
-//	}
-//	//  in A but not in B
-//	difference { | aCollection | ^this.removeAll(aCollection) }
-//	//  in either A or B but not in both
-//	symmetricDifference { | aCollection | 
-//		var c; 
-//		c=this.copy; 
-//		this.removeAll(aCollection); 
-//		aCollection.removeAll(c); 
-//		^this.addAll(aCollection) 
-//	}
-//	//  true if every element in A is also contained in B
-//	isSubset { | aCollection | ^aCollection.includesAll(this) }
+
+	invert { 
+		// can be used to invert a pitch list about its registral center
+		//  [3, 2, 9, 7].invert  becomes  [ 8, 9, 2, 4 ]
+		^this.minItem + this.maxItem - this
+	}
 
 	sect { | that |
 		var result;

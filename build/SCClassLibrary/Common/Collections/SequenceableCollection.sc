@@ -168,8 +168,12 @@ SequenceableCollection : Collection {
 	
 	// accessing
 	lastIndex { ^this.size - 1 }
+	middleIndex { ^(this.size + 1) div: 2 }
+
 	first { if (this.size > 0, { ^this.at(0) }, { ^nil }) }
 	last { if (this.size > 0, { ^this.at(this.size - 1) }, { ^nil }) }
+	middle { if (this.size > 0, { ^this.at((this.size + 1) div: 2) }, { ^nil }) }
+	
 	top { ^this.last }
 	putFirst { arg obj; if (this.size > 0, { ^this.put(0, obj) }) }
 	putLast { arg obj; if (this.size > 0, { ^this.put(this.size - 1, obj) }) }
@@ -560,6 +564,19 @@ SequenceableCollection : Collection {
 	wrap { arg lo, hi; ^this.collect {|item| item.wrap(lo,hi) }  }
 	fold { arg lo, hi; ^this.collect {|item| item.fold(lo,hi) }  }
 	
+	linlin { arg inMin, inMax, outMin, outMax; 
+		^this.collect {|item| item.linlin(inMin, inMax, outMin, outMax) }  
+	}
+	linexp { arg inMin, inMax, outMin, outMax; 
+		^this.collect {|item| item.linexp(inMin, inMax, outMin, outMax) }  
+	}
+	explin { arg inMin, inMax, outMin, outMax; 
+		^this.collect {|item| item.explin(inMin, inMax, outMin, outMax) }  
+	}
+	expexp { arg inMin, inMax, outMin, outMax; 
+		^this.collect {|item| item.expexp(inMin, inMax, outMin, outMax) }  
+	}
+	
 	// support UGen clock division arguments.
 	cdiv { ^this.collect({ arg item; item.cdiv; }); }
 	minDiv {
@@ -601,6 +618,7 @@ SequenceableCollection : Collection {
 	sortBy { arg key;
 		^this.sort({| a, b | a[key] <= b[key] })
 	}
+	median { arg function;  ^this.sort(function).middle }
 	
 	quickSort { arg function; 
 		this.quickSortRange(0, this.size - 1, function) 
