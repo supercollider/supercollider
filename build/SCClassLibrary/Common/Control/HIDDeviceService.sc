@@ -63,7 +63,7 @@ HIDDeviceService{
 			});
 			devices = devices.add(newdev);
 		})
-	
+		initialized = true;
 	}
 	*prbuildDeviceList{arg usagePage=1, usage;
 		_HIDBuildDeviceList
@@ -75,8 +75,10 @@ HIDDeviceService{
 	}
 	*releaseDeviceList{
 		//must be called before closing the program..
-		this.prreleaseDeviceList;
-		devices = nil;
+		if(initialized,{
+			this.prreleaseDeviceList;
+			devices = nil;
+		});
 	}	
 	*prreleaseDeviceList{
 		//must be called before closing the program..
