@@ -34,6 +34,7 @@ MixedBundle : OSCBundle {
 		server = srv;
 		messages = Array.new;
 		functions = Array.new;
+		preparationMessages = Array.new;
 	}
 	
 	schedSend { arg time=0, clock, useResponder=false, onCompletion;
