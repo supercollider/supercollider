@@ -234,7 +234,7 @@ ProxyNodeMap : NodeMap {
 			upToDate = false;
 		}
 		
-		mapEnvir { arg keys;
+		mapEnvir { arg ... keys;
 			var args;
 			keys = keys ? settings.keys;
 			args = Array.new(keys.size*2);

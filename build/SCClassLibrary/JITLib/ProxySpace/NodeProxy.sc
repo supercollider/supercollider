@@ -839,8 +839,8 @@ NodeProxy : BusPlug {
 	
 	
 	// map to current environment
-	mapEnvir { arg keys;
-		nodeMap.mapEnvir(keys);
+	mapEnvir { arg ... keys;
+		nodeMap.mapEnvir(*keys);
 		if(this.isPlaying) { 
 			nodeMap.sendToNode(group);
 		}
