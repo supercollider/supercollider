@@ -2,8 +2,8 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
-\red191\green0\blue0;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
-\red96\green96\blue96;}
+\red191\green0\blue0;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Pdef	
@@ -79,7 +79,7 @@ For value patterns (numerical, non event patterns)
 \f0\b quant_(beats)
 \f2\b0 \
 			set the quantisation time for beat accurate scheduling.\
-			can be a pair [offset, quant]\
+			can be an array [offset, quant, outset]\
 	\
 	*
 \f0\b defaultQuant_(beats)
@@ -228,12 +228,12 @@ x.stop;\
 \
 \cf2 Pdef\cf0 (\cf4 \\a\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 0.1, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 (#[0, 1b, 1, 2b, 2, 3, 4b, 4, 5], \cf2 inf\cf0 )));\
 \
-\cf6 // using a fade time, the above changes are crossfaded\cf7 \
-\cf8 Pdef\cf7 (\cf9 \\a\cf7 ).fadeTime = 10;\cf0 \
+\cf5 // using a fade time, the above changes are crossfaded\cf0 \
+\cf2 Pdef\cf0 (\cf4 \\a\cf0 ).fadeTime = 10;\
 \
 \cf2 Pdef\cf0 (\cf4 \\a\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 0.2, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([0, 4, Prand([6, 8b],2)], \cf2 inf\cf0 )));\
-\cf7 \
-\cf6 // ...\cf0 \
+\
+\cf5 // ...\cf0 \
 \
 x.stop;\
 \cf5 \
@@ -346,58 +346,95 @@ but the following would crash, because .embedInStream is called recursively with
 \
 \
 \
-pre roll (experimental, might change)\
+outset\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 Pdef has a class variable that allows to change the insertion behaviour.\
-preRoll is set to the quant value at which patterns will be "fast forwarded", so\
-the change is happening immediately even if the quant is very high.\
+\f2\b0 \cf0 When quantizing to a larger number of beats, the changes become very slow if one has to wait for the next beat. Providing an outset quant value is a way to make the change so that it appears as if it had been done at the previous grid point already. The stream is fast forwarded to the current position relative to the quant grid.\
+Providing a number larger than zero, the next possible quant point is used as outset.\cf5 \
+\cf0 \
+For example, if quant is 32, and one has just missed the first beat when changing the pattern,\
+one has to wait for 32 beats until the change happens. Using an outset of 1, it is assumed that you had already\
+changed the pattern at the first beat, the stream is fast forwarded to the time it would be at now if you had done so. The new pattern is isnerted at the next beat.\
 \
-for example, if quant is 32, and one has just missed the first beat when changing the pattern,\
-one has to wait for 32 beats until the change happens. Using pre roll, it is assumed that you had already\
-changed the pattern at the first beat, the stream is fast forwarded to the time it would be at now if you had done so.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \
+\f0\b \cf0 quant can be: [quant, offset, outset]
+\f2\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf6 // some testing\cf7 \
-(\
-\cf8 var\cf7  quant = 8;\
-\cf8 Pdef\cf7 .preRoll_(2); \cf6 // from 2 on, start to preRoll.\cf7 \
-\cf8 Pdef\cf7 (\cf9 \\x\cf7 ).quant_(quant);\
-\cf8 Pdef\cf7 (\cf9 \\x\cf7 ).play;\
-\cf8 Routine\cf7  \{ loop \{ 8.do \{ \cf8 |i|\cf7 \'ca(\cf10 "uhr:"\cf7 +i).postln; 1.wait \} \} \}.play(quant:quant);\
-\cf8 Pbind\cf7 (\cf9 \\degree\cf7 , \cf8 Pseq\cf7 ((0..7), \cf8 inf\cf7 )).play(quant:quant);\
+\f1\fs18 \cf6 \
+\cf7 // examples\
+\cf6 (\
+\cf8 Pdef\cf6 (\cf9 \\x\cf6 ).quant_([8, 0, 1]);\
+\cf8 Pdef\cf6 (\cf9 \\y\cf6 ).quant_([8, 0.5, 1]); \cf7 // offset by half a beat\cf6 \
+\cf8 Pdef\cf6 (\cf9 \\x\cf6 ).play;\
+\cf8 Pdef\cf6 (\cf9 \\y\cf6 ).play;\
 )\
 \
-\cf8 Pdef\cf7 (\cf9 \\x\cf7 , \cf8 Pbind\cf7 (\cf9 \\degree\cf7 , \cf8 Pseq\cf7 ((0..7)+2, \cf8 inf\cf7 )).trace(\cf9 \\degree\cf7 ));\
-\cf8 Pdef\cf7 (\cf9 \\x\cf7 , \cf8 Pbind\cf7 (\cf9 \\degree\cf7 , \cf8 Pseq\cf7 ((0..7), \cf8 inf\cf7 ) + [0, 3]).trace(\cf9 \\degree\cf7 ));\
-\cf8 Pdef\cf7 (\cf9 \\x\cf7 , \cf8 Pbind\cf7 (\cf9 \\degree\cf7 , \cf8 Pseq\cf7 ((0..7), \cf8 inf\cf7 ) + [0, 6], \cf9 \\dur\cf7 , 0.5).trace(\cf9 \\degree\cf7 ));\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ((0..7)+2, \cf2 inf\cf0 )));\cf6 \
+\cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ((0..7)-2, \cf2 inf\cf0 )));\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ((0..7)+2, \cf2 inf\cf0 ), \cf4 \\dur\cf0 , 0.5));\
+\cf2 Pdef\cf0 (\cf9 \\y\cf6 , \cf8 Pbind\cf6 (\cf9 \\degree\cf6 , \cf8 Pseq\cf6 ((0..7).scramble-2, \cf8 inf\cf6 ), \cf9 \\dur\cf6 , 0.25, \cf9 \\legato\cf6 , 0.3)\cf0 );\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ((0..7), \cf2 inf\cf0 )));\
+\cf6 \
+\cf8 Pdef\cf6 (\cf9 \\x\cf6 , \cf8 Pbind\cf6 (\cf9 \\degree\cf6 , \cf8 Pseq\cf6 ([ 1, 5, 6, 7, 0, 3, 2, 4 ], \cf8 inf\cf6 ), \cf9 \\dur\cf6 , 1));\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([ 0, 2, 2, 4, 0, 4, 0, 4 ], \cf2 inf\cf0 ), \cf4 \\dur\cf0 , 1));\
+\cf6 \
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 ).quant_([8, 1/3, 1]); \cf7 // offset by 1/6 beat relative to y\cf0 \
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([ 1, 1, 1, 7, 0, 2, 2, 4 ], \cf2 inf\cf0 ), \cf4 \\legato\cf0 , 0.1));\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([ 3, 3, 3, 4b ], \cf2 inf\cf0 ), \cf4 \\legato\cf0 , 0.1));\
+\cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ((0..7).scramble-4, \cf2 inf\cf0 ), \cf4 \\dur\cf0 , 0.25, \cf4 \\legato\cf0 , 0.3));\
 \
 \
-\cf8 Pdef\cf7 (\cf9 \\x\cf7 ).fadeTime = 8;\
 \
-\cf8 Pdef\cf7 (\cf9 \\x\cf7 , \cf8 Pbind\cf7 (\cf9 \\degree\cf7 , \cf8 Pseq\cf7 ((0..7), \cf8 inf\cf7 )).trace(\cf9 \\degree\cf7 ));\
-\
-\cf8 Pdef\cf7 (\cf9 \\x\cf7 ).fadeTime = \cf8 nil\cf7 ;\
-\cf8 Pdef\cf7 (\cf9 \\x\cf7 ).quant = 1;\
-\
-\cf8 Pdef\cf7 (\cf9 \\x\cf7 , \cf8 Pbind\cf7 (\cf9 \\degree\cf7 , \cf8 Pseq\cf7 ((0..7), \cf8 inf\cf7 )).trace(\cf9 \\degree\cf7 ));\
-\
-\cf8 Pdef\cf7 (\cf9 \\x\cf7 ).quant = 8;\
-\cf8 Pdef\cf7 (\cf9 \\x\cf7 , \cf8 Pbind\cf7 (\cf9 \\degree\cf7 , \cf8 Pseq\cf7 ((0..7), \cf8 inf\cf7 )).trace(\cf9 \\degree\cf7 ));\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 \
-\
-\
 note
 \f2\b0  \
 \
 this fast forwarding might create a cpu peak if the pattern is very complex/fast or\
-quant is very long. This is hard to avoid, so it simply has to be taken into account.\
+quant is very long. This is hard to avoid currently, so it simply has to be taken into account.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\cf5 // some testing\cf0 \
+(\
+\cf2 var\cf0  quant = #[8, 0, 1]; \cf5 // quantise to 8 beats, no offset, insert quant to 1 beat\cf0 \
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 ).quant_(quant);\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 ).play;\
+\cf2 Routine\cf0  \{ loop \{ 8.do \{ \cf2 |i|\cf0 \'ca(\cf3 "uhr:"\cf0 +i).postln; 1.wait \} \} \}.play(quant:quant);\
+\cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ((0..7), \cf2 inf\cf0 )).play(quant:quant);\
+)\
+\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ((0..7)+2, \cf2 inf\cf0 )).trace(\cf4 \\degree\cf0 ));\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ((0..7), \cf2 inf\cf0 ) + [0, 3]).trace(\cf4 \\degree\cf0 ));\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ((0..7), \cf2 inf\cf0 ) + [0, 6], \cf4 \\dur\cf0 , 0.5).trace(\cf4 \\degree\cf0 ));\
+\
+\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 ).fadeTime = 8;\
+\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ((0..7), \cf2 inf\cf0 )).trace(\cf4 \\degree\cf0 ));\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ((0..7).reverse, \cf2 inf\cf0 ) + [0, 6], \cf4 \\dur\cf0 , 0.5));\
+\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 ).fadeTime = \cf2 nil\cf0 ;\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 ).quant = 1;\
+\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ((0..7), \cf2 inf\cf0 )).trace(\cf4 \\degree\cf0 ));\
+\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 ).quant = 8;\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ((0..7), \cf2 inf\cf0 )).trace(\cf4 \\degree\cf0 ));\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 \
 \
 \
 \
