@@ -121,8 +121,7 @@ ProxyNodeMap : NodeMap {
 			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
 		}
 		
-		unmapProxy { arg keys;
-			keys = keys.asArray;
+		unmap { arg ... keys;
 			if(keys.at(0).isNil, { keys = this.mappingKeys });
 			this.performList(\unmap, keys);
 			keys.do({ arg key; 
@@ -134,7 +133,7 @@ ProxyNodeMap : NodeMap {
 			^settings.select({ arg item; item.bus.notNil }).collect({ arg item; item.key })
 		}
 						
-		map { arg args;
+		map { arg ... args;
 			var mapArgs, playing;
 			mapArgs = [];
 			playing = proxy.isPlaying;
