@@ -531,6 +531,8 @@ OSStatus appIOProc (AudioDeviceID /*inDevice*/, const AudioTimeStamp* inNow,
 void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData, 
 					AudioBufferList* outOutputData, int64 oscTime)
 {
+	World *world = mWorld;
+	
 	try {
 		int numSamples = NumSamples();
 		mOSCbuftime = oscTime;
@@ -541,31 +543,33 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 		}*/
 		mToEngine.Perform();
 		
-		int bufFrames = mWorld->mBufLength;
+		int bufFrames = world->mBufLength;
 		int numBufs = numSamples / bufFrames;
 		
-		int numInputBuses = mWorld->mNumInputs;
-		int numOutputBuses = mWorld->mNumOutputs;
-		float* inputBuses = mWorld->mAudioBus + mWorld->mNumOutputs * bufFrames;
-		float* outputBuses = mWorld->mAudioBus;
-		int32* inputTouched = mWorld->mAudioBusTouched + mWorld->mNumOutputs;
-		int32* outputTouched = mWorld->mAudioBusTouched;
-		int numInputStreams = inInputData ? inInputData->mNumberBuffers : 0;
+		int numInputBuses    = world->mNumInputs;
+		int numOutputBuses   = world->mNumOutputs;
+		float* inputBuses    = world->mAudioBus + world->mNumOutputs * bufFrames;
+		float* outputBuses   = world->mAudioBus;
+		int32* inputTouched  = world->mAudioBusTouched + world->mNumOutputs;
+		int32* outputTouched = world->mAudioBusTouched;
+		int numInputStreams  = inInputData ? inInputData->mNumberBuffers : 0;
 		int numOutputStreams = outOutputData ? outOutputData->mNumberBuffers : 0;
 		
 		//static int go = 0;
 		
 		int64 oscInc = mOSCincrement;
+		double oscToSamples = mOSCtoSamples;
 	
 		int bufFramePos = 0;
 		
-		for (int i = 0; i < numBufs; ++i, mWorld->mBufCounter++, bufFramePos += bufFrames) {
-			int32 bufCounter = mWorld->mBufCounter;
+		for (int i = 0; i < numBufs; ++i, world->mBufCounter++, bufFramePos += bufFrames) {
+			int32 bufCounter = world->mBufCounter;
 			
 			// de-interleave input
-			if (inInputData && inInputData->mBuffers) {
+			if (inInputData) {
+				AudioBuffer* inInputDataBuffers = inInputData->mBuffers;
 				for (int s = 0, b = 0; b<numInputBuses && s < numInputStreams; s++) {
-					const AudioBuffer* buf = inInputData->mBuffers + s;
+					const AudioBuffer* buf = inInputDataBuffers + s;
 					int nchan = buf->mNumberChannels;
 					if (buf->mData) {
 						float *busdata = inputBuses;
@@ -596,44 +600,43 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 			}*/
 			
 			int64 schedTime;
-			int64 nextTime = mOSCbuftime + oscInc;
+			int64 nextTime = oscTime + oscInc;
 			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
-				mWorld->mSampleOffset = (int)((double)(schedTime - mOSCbuftime) * mOSCtoSamples);
+				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
 				SC_ScheduledEvent event = mScheduler.Remove();
 				event.Perform();
-				mWorld->mSampleOffset = 0;
+				world->mSampleOffset = 0;
 			}
 			
-			World_Run(mWorld);
+			World_Run(world);
 	
 			// interleave output
-			if (outOutputData->mBuffers) {
-				for (int s = 0, b = 0; b<numOutputBuses && s < numOutputStreams; s++) {
-					AudioBuffer* buf = outOutputData->mBuffers + s;
-					int nchan = buf->mNumberChannels;
-					if (buf->mData) {
-						float *busdata = outputBuses;
-						float *bufdata = (float*)buf->mData + bufFramePos * nchan;
-						if (nchan == 1) {
-							if (outputTouched[b] == bufCounter) {
-								for (int k=0; k<bufFrames; ++k) {
-									bufdata[k] = busdata[k];
+			AudioBuffer* outOutputDataBuffers = outOutputData->mBuffers;
+			for (int s = 0, b = 0; b<numOutputBuses && s < numOutputStreams; s++) {
+				AudioBuffer* buf = outOutputDataBuffers + s;
+				int nchan = buf->mNumberChannels;
+				if (buf->mData) {
+					float *busdata = outputBuses;
+					float *bufdata = (float*)buf->mData + bufFramePos * nchan;
+					if (nchan == 1) {
+						if (outputTouched[b] == bufCounter) {
+							for (int k=0; k<bufFrames; ++k) {
+								bufdata[k] = busdata[k];
+							}
+						} 
+					} else {
+						int minchan = sc_min(nchan, numOutputBuses - b);
+						for (int j=0; j<minchan; ++j, busdata += bufFrames) {
+							if (outputTouched[b+j] == bufCounter) {
+								for (int k=0, m=j; k<bufFrames; ++k, m += nchan) {
+									bufdata[m] = busdata[k];
 								}
 							} 
-						} else {
-							int minchan = sc_min(nchan, numOutputBuses - b);
-							for (int j=0; j<minchan; ++j, busdata += bufFrames) {
-								if (outputTouched[b+j] == bufCounter) {
-									for (int k=0, m=j; k<bufFrames; ++k, m += nchan) {
-										bufdata[m] = busdata[k];
-									}
-								} 
-							}
 						}
 					}
-					b += nchan;
-				}	
-			}
+				}
+				b += nchan;
+			}	
 			mOSCbuftime = nextTime;
 		}
 	} catch (std::exception& exc) {
