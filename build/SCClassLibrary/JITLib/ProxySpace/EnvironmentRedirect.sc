@@ -7,9 +7,12 @@ EnvironmentRedirect {
 	*new { arg name, envir;
 		^super.newCopyArgs(nil, name).init(envir)
 	}
-	init { arg argEnvir; if(argEnvir.notNil) {Êenvir = argEnvir }Ê{ this.clear } }
 	
-	clear { arg size=32; envir = Environment.new(size, Environment.new)  }
+	init { arg argEnvir, size=32;
+		envir = argEnvir ?? { Environment.new(size, Environment.new) } 
+	}
+	
+	clear { this.init }
 	
 	*push { arg name;
 		^this.new(name).push;
