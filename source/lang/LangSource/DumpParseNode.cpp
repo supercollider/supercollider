@@ -18,6 +18,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifdef SC_WIN32
+# define PATH_MAX _MAX_PATH
+#endif
 #include "SCBase.h"
 #include "PyrParseNode.h"
 #include "PyrLexer.h"

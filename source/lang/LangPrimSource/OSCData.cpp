@@ -30,9 +30,17 @@
 #include <math.h>
 #include <stdexcept>
 #include <new.h>
-#include <sys/socket.h>
-#include <netinet/tcp.h>
-#include <netdb.h>
+
+#ifdef SC_WIN32
+# include <winsock2.h>
+typedef int socklen_t;
+# define bzero( ptr, count ) memset( ptr, 0, count )
+#else
+# include <sys/socket.h>
+# include <netinet/tcp.h>
+# include <netdb.h>
+#endif
+
 #include <pthread.h>
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
@@ -42,7 +50,9 @@
 #include "SC_Endian.h"
 
 #ifndef SC_DARWIN
-# include <unistd.h>
+# ifndef SC_WIN32
+#  include <unistd.h>
+# endif
 #endif
 
 struct InternalSynthServerGlobals
@@ -304,9 +314,13 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 		if (err) return err;
 		
 		if (addr == 0) {
+#ifdef SC_WIN32
+      // no internal server under SC_WIN32 yet
+#else
 			if (gInternalSynthServer.mWorld) {
 				World_SendPacket(gInternalSynthServer.mWorld, msglen, bufptr, &localServerReplyFunc);
 			}
+#endif
 			return errNone;
 		}
 
@@ -380,9 +394,17 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 	}
 	
 	const int on = 1;
-	if (setsockopt( aSocket, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on)) != 0) {
-        post("\nCould not setsockopt TCP_NODELAY\n");
+#ifdef SC_WIN32
+	if (setsockopt( aSocket, IPPROTO_TCP, TCP_NODELAY, (const char*)&on, sizeof(on)) != 0) {
+#else
+  if (setsockopt( aSocket, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on)) != 0) {
+#endif
+    post("\nCould not setsockopt TCP_NODELAY\n");
+#ifdef SC_WIN32
+		closesocket(aSocket);
+#else
 		close(aSocket);
+#endif
 		return errFailed;
 	};
 	
@@ -390,7 +412,11 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
     if(connect(aSocket,(struct sockaddr*)&toaddr,sizeof(toaddr)) != 0)
     {
         post("\nCould not connect socket\n");
-		close(aSocket);
+#ifdef SC_WIN32
+		    closesocket(aSocket);
+#else
+    		close(aSocket);
+#endif
         return errFailed;
     }
 	
@@ -712,6 +738,7 @@ extern "C" {
 	int vpost(const char *fmt, va_list vargs);
 }
 
+#ifndef SC_WIN32
 int prBootInProcessServer(VMGlobals *g, int numArgsPushed);
 int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 {
@@ -810,7 +837,8 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 	
 	return errNone;
 }
-
+#endif
+//#ifndef SC_WIN32
 
 inline int32 BUFMASK(int32 x)
 {
@@ -903,9 +931,10 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);	
 	definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);	
 	definePrimitive(base, index++, "_Exit", prExit, 1, 0);	
-	definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);	
+#ifndef SC_WIN32
+  definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);	
 	definePrimitive(base, index++, "_QuitInProcessServer", prQuitInProcessServer, 1, 0);
-		
+#endif
 	definePrimitive(base, index++, "_AllocSharedControls", prAllocSharedControls, 2, 0);	
 	definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);	
 	definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);	

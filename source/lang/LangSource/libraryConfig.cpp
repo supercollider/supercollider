@@ -2,8 +2,14 @@
 #include <string.h>
 #include <limits.h>
 
-#include <sys/param.h>
-#include <unistd.h>
+#ifndef SC_WIN32
+# include <sys/param.h>
+# include <unistd.h>
+#else
+# include <stdlib.h>
+# define MAXPATHLEN _MAX_PATH
+# include "win32_utils.h"
+#endif
 
 #include "SCBase.h"
 #include "libraryConfig.h"
@@ -100,6 +106,7 @@ void LibraryConfig::addExcludedDirectory(char *path) {
 	}
 }
 
+#ifndef SC_WIN32
 // sk: slightly improved robustness for path lengths exceeding MAXPATHLEN
 //     newpath2 should be a buffer of size MAXPATHLEN
 
@@ -112,7 +119,12 @@ char *unixStandardizePath(const char *path, char *newpath2) {
 	size_t pathLen = strlen(path);
 
 	if ((pathLen >= 2) && (path[0] == '~') && (path[1] == '/')) {
-		const char *home = getenv("HOME");
+#ifndef SC_WIN32
+    const char *home = getenv("HOME");
+#else
+    char home[_MAX_PATH];
+    win32_GetHomeFolder(home, _MAX_PATH);
+#endif
 
 		if (home != 0) {
 			if ((pathLen - 1 + strlen(home)) >= MAXPATHLEN) {
@@ -140,3 +152,4 @@ char *unixStandardizePath(const char *path, char *newpath2) {
 
 	return newpath2;
 }
+#endif

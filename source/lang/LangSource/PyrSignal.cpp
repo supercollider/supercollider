@@ -985,6 +985,11 @@ PyrObject* signal_log(VMGlobals *g, PyrObject *inPyrSignal)
 	return outc;
 }
 
+#ifdef SC_WIN32
+// in PyrMathSupport.cpp
+double log2(double x);
+#endif
+
 PyrObject* signal_log2(VMGlobals *g, PyrObject *inPyrSignal)
 {
 	float *in = (float*)(inPyrSignal->slots) - 1;

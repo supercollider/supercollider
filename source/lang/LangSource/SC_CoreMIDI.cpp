@@ -638,7 +638,6 @@ void initMIDIPrimitives()
 	definePrimitive(base, index++, "_DisconnectMIDIIn", prDisconnectMIDIIn, 3, 0);
 	definePrimitive(base, index++, "_DisposeMIDIClient", prDisposeMIDIClient, 1, 0);
 	definePrimitive(base, index++, "_RestartMIDI", prRestartMIDI, 1, 0);
-        
     definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
     definePrimitive(base, index++, "_SendSysex", prSendSysex, 3, 0);
     if(gMIDIClient) midiCleanUp();

@@ -1532,6 +1532,7 @@ hexnan
 #endif /*No_Hex_NaN*/
 #endif /* INFNAN_CHECK */
 
+#ifndef SC_WIN32
  double
 strtod
 #ifdef KR_headers
@@ -2421,6 +2422,7 @@ strtod
 		*se = (char *)s;
 	return sign ? -dval(rv) : dval(rv);
 	}
+#endif //SC_WIN32
 
  static int
 quorem

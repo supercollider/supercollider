@@ -37,7 +37,12 @@ Primitives for File i/o.
 #include <Navigation.h>
 #endif
 
-#include <unistd.h>
+#ifndef SC_WIN32
+# include <unistd.h>
+#else
+# include <direct.h>
+#endif
+
 #include <fcntl.h>
 #include <math.h>
 
@@ -686,7 +691,8 @@ int prFileGetInt32(struct VMGlobals *g, int numArgsPushed)
 	
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
-	if (file == NULL) return errFailed;
+	if (file == NULL) 
+    return errFailed;
 	
 	if (feof(file)) SetNil(a);
 	else {
@@ -774,7 +780,7 @@ int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
 
 ////////
 
-
+#ifndef SC_WIN32
 int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
@@ -828,7 +834,7 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	return errNone;
 }
-
+#endif 
 
 ////////
 
@@ -1225,8 +1231,10 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_SFSeek", prSFSeek, 3, 0);	
 	definePrimitive(base, index++, "_SFHeaderInfoString", prSFHeaderInfoString, 1, 0);	
         
-	definePrimitive(base, index++, "_PipeOpen", prPipeOpen, 3, 0);	
+#ifndef SC_WIN32
+  definePrimitive(base, index++, "_PipeOpen", prPipeOpen, 3, 0);	
 	definePrimitive(base, index++, "_PipeClose", prPipeClose, 1, 0);	
+#endif
 	
 	definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);	
 	definePrimitive(base, index++, "_FileOpen", prFileOpen, 3, 0);

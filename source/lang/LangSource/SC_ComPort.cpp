@@ -25,7 +25,10 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <stdarg.h>
-#include <unistd.h>
+
+#ifndef SC_WIN32
+# include <unistd.h>
+#endif
 
 #ifdef SC_DARWIN
 typedef int socklen_t;
@@ -188,7 +191,11 @@ SC_ComPort::SC_ComPort(int inPortNum)
 
 SC_ComPort::~SC_ComPort()
 {
+#ifdef SC_WIN32
+    if (mSocket != -1) closesocket(mSocket);
+#else
     if (mSocket != -1) close(mSocket);
+#endif                  
 }
 
 void* com_thread_func(void* arg);
@@ -230,7 +237,11 @@ SC_UdpInPort::SC_UdpInPort(int inPortNum)
 
 SC_UdpInPort::~SC_UdpInPort()
 {
+#ifdef SC_WIN32
+	if (mSocket != -1) closesocket(mSocket);
+#else
 	if (mSocket != -1) close(mSocket);
+#endif                  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -382,7 +393,11 @@ SC_TcpConnectionPort::SC_TcpConnectionPort(SC_TcpInPort *inParent, int inSocket)
 
 SC_TcpConnectionPort::~SC_TcpConnectionPort()
 {
+#ifdef SC_WIN32
+	closesocket(mSocket);
+#else
 	close(mSocket);
+#endif                  
     mParent->ConnectionTerminated();
 }
 
@@ -434,13 +449,19 @@ leave:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include <sys/select.h>
+#ifndef SC_WIN32
+# include <sys/select.h>
+#endif 
+//SC_WIN32
 
 SC_TcpClientPort::SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc, void *clientData)
 	: SC_ComPort(0),
 	  mClientNotifyFunc(notifyFunc),
 	  mClientData(clientData)
 {
+#ifdef SC_WIN32
+  throw 0;
+#endif;
 	mSocket = inSocket;
 	socklen_t sockAddrLen = sizeof(mReplySockAddr);
 
@@ -456,18 +477,25 @@ SC_TcpClientPort::SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc, vo
 	setsockopt(mSocket, SOL_SOCKET, SO_NOSIGPIPE, &sockopt, sizeof(sockopt));
 #endif // HAVE_SO_NOSIGPIPE
 
+#ifndef SC_WIN32
 	if (pipe(mCmdFifo) == -1) {
 		mCmdFifo[0] = mCmdFifo[1] = -1;
 	}
-
+#endif
     Start();
 }
 
 SC_TcpClientPort::~SC_TcpClientPort()
 {
+#ifdef SC_WIN32
+	closesocket(mCmdFifo[0]);
+	closesocket(mCmdFifo[1]);
+	closesocket(mSocket);
+#else
 	close(mCmdFifo[0]);
 	close(mCmdFifo[1]);
 	close(mSocket);
+#endif
 }
 
 void* SC_TcpClientPort::Run()
@@ -534,7 +562,11 @@ leave:
 void SC_TcpClientPort::Close()
 {
 	char cmd = 0;
+#ifdef SC_WIN32
+  throw 0;
+#else
 	write(mCmdFifo[1], &cmd, sizeof(cmd));
+#endif
 }
 
 ReplyFunc SC_TcpClientPort::GetReplyFunc()
@@ -549,7 +581,11 @@ int recvall(int socket, void *msg, size_t len)
 	size_t total = 0;
 	while (total < len)
 	{
-		int numbytes = recv(socket, msg, len - total, 0);
+#ifdef SC_WIN32
+    int numbytes = recv(socket, reinterpret_cast<char*>(msg), len - total, 0);
+#else
+    int numbytes = recv(socket, msg, len - total, 0);
+#endif
 		if (numbytes <= 0) return total;
 		total += numbytes;
 		msg = (void*)((char*)msg + numbytes);
@@ -563,7 +599,11 @@ int recvallfrom(int socket, void *msg, size_t len, struct sockaddr *fromaddr, in
 	while (total < len)
 	{
 		socklen_t addrlen2 = addrlen;
+#ifdef SC_WIN32
+		int numbytes = recvfrom(socket, reinterpret_cast<char*>(msg), len - total, 0, fromaddr, &addrlen2);
+#else
 		int numbytes = recvfrom(socket, msg, len - total, 0, fromaddr, &addrlen2);
+#endif
 		if (numbytes < 0) return total;
 		total += numbytes;
 		msg = (void*)((char*)msg + numbytes);
@@ -576,7 +616,11 @@ int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, 
 	size_t total = 0;
 	while (total < len)
 	{
+#ifdef SC_WIN32
+		int numbytes = sendto(socket, reinterpret_cast<const char*>(msg), len - total, 0, toaddr, addrlen);
+#else
 		int numbytes = sendto(socket, msg, len - total, 0, toaddr, addrlen);
+#endif
 		//printf("numbytes %d  total %d  len %d\n", numbytes, total, len);
 		if (numbytes < 0) {
 			printf("******* errno %d %s\n", errno, strerror(errno));
@@ -598,7 +642,11 @@ int sendall(int socket, const void *msg, size_t len)
 #else
 		int flags = 0;
 #endif // HAVE_MSG_NOSIGNAL
+#ifdef SC_WIN32
+    int numbytes = send(socket, reinterpret_cast<const char*>(msg), len - total, flags);
+#else
 		int numbytes = send(socket, msg, len - total, flags);
+#endif
 		if (numbytes < 0) return total;
 		total += numbytes;
 		msg = (void*)((char*)msg + numbytes);

@@ -21,8 +21,15 @@
 #ifndef _SC_ComPort_
 #define _SC_ComPort_
 
+#ifdef SC_WIN32
+# include <winsock2.h>
+typedef int socklen_t;
+# define bzero( ptr, count ) memset( ptr, 0, count )
+#else
 #include <sys/types.h>
 #include <sys/socket.h>
+#endif                  
+
 #include "SC_Msg.h"
 #include "SC_Sem.h"
 

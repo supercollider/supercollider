@@ -335,7 +335,11 @@ GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inLis
 
 GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 {	
-	FILE *file = fopen(filename, "r");
+#ifdef SC_WIN32
+  FILE *file = fopen(filename, "rb");
+#else
+  FILE *file = fopen(filename, "r");
+#endif
 	if (!file) {
 		scprintf("*** ERROR: can't fopen '%s'\n", filename);
 		return inList;
@@ -349,9 +353,14 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 		return inList;
 	}
 	fseek(file, 0, SEEK_SET);
-	fread(buffer, 1, size, file);
+#ifdef SC_WIN32
+        size_t readSize = fread(buffer, 1, size, file);
+        if (readSize!= size)
+          *((int*)0) = 0;
+#else
+      	fread(buffer, 1, size, file);
+#endif
 	fclose(file);
-	
 	
 	try {
 		inList = GraphDefLib_Read(inWorld, buffer, inList);
@@ -463,7 +472,11 @@ GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
         size_t filePathLen = strlen(findData.cFileName);
         if (filePathLen >= extlen) {
           if (strnicmp(findData.cFileName + filePathLen - extlen, relevantExt, extlen) == 0) {
-            inList = GraphDef_Load(inWorld, findData.cFileName, inList);
+            std::string filePath = folderPath;
+            filePath += "\\";
+            filePath += findData.cFileName;
+            const char* szFilePath = filePath.c_str();
+            inList = GraphDef_Load(inWorld, const_cast<char*>(szFilePath), inList);
           }
         }
       }

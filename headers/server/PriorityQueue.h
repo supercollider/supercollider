@@ -47,7 +47,7 @@ public:
 			long mom = mSize++;
 			long me = mom;
 			for (; mom>0;) {	/* percolate up heap */
-				mom = mom - 1 >> 1;
+				mom = (mom - 1) >> 1;
 				if (inEvent.mTime < mEvents[mom].mTime) {
 					mEvents[me] = mEvents[mom];
 					me = mom;

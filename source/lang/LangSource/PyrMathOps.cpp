@@ -352,8 +352,12 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 							res.utag = tagInt;
 						} break;
 						case opUnsignedShift : {
-							ulong ia = a->ui;
-							long ib = b->ui;
+#ifdef SC_WIN32
+              unsigned long ia = a->ui;
+#else
+              ulong ia = a->ui;
+#endif
+              long ib = b->ui;
 							if (ib>0) ia >>= ib;
 							else if (ib<0) ia <<= -ib; 
 							res.ui = ia;
@@ -482,7 +486,11 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opAtan2 : res.uf = atan2(a->ui, b->uf); break;
 						case opHypot : res.uf = hypot(a->ui, b->uf); break;
 						case opHypotx : res.uf = hypotx(a->ui, b->uf); break;
-						case opPow   : res.uf = pow(a->ui, b->uf); break;
+#ifdef SC_WIN32
+            case opPow   : res.uf = pow(static_cast<double>(a->ui), static_cast<double>(b->uf)); break;
+#else
+            case opPow   : res.uf = pow(a->ui, b->uf); break;
+#endif
 						case opRing1 : res.uf = a->ui * b->uf + a->ui; break;
 						case opRing2 : res.uf = a->ui * b->uf + a->ui + b->uf; break;
 						case opRing3 : res.uf = a->ui * a->ui * b->uf; break;

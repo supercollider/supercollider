@@ -24,7 +24,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <netinet/in.h>
+
+#ifdef SC_WIN32
+#else
+# include <netinet/in.h>
+#endif
 #include "sc_msg_iter.h"
 
 class SC_Msg;

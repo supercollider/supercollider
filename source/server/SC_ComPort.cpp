@@ -18,8 +18,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifndef SC_WIN32
+# include "SC_ComPort.h"
+#else
+# include "../../headers/server/SC_ComPort.h"
+#endif
 
-#include "SC_ComPort.h"
 #include "SC_Endian.h"
 #include "SC_Lock.h"
 #include "SC_HiddenWorld.h"

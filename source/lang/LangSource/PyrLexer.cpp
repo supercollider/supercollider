@@ -25,10 +25,19 @@
 #include <new.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <sys/param.h>
+
+#ifdef SC_WIN32
+//# include <wx/wx.h>
+# include <direct.h>
+#else
+# include <sys/param.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "lang11d_tab.h"
+#ifdef SC_WIN32
+#else
+# include "lang11d_tab.h"
+#endif
 #include "SCBase.h"
 #include "PyrObject.h"
 #include "PyrObjectProto.h"
@@ -51,10 +60,20 @@
 #include "InitAlloc.h"
 #include "bullet.h"
 #include "PredefinedSymbols.h"
-#include "dirent.h"
+#ifdef SC_WIN32
+#else
+# include "dirent.h"
+#endif
 #include <string.h>
 
 #include "SC_LibraryConfig.h"
+
+
+#ifdef SC_WIN32
+# include <stdio.h>
+# define MAXPATHLEN _MAX_PATH
+# include "erase-compiler/lang11d_tab.h"
+#endif
 
 int yyparse();
 int processaccidental1(char *s);
@@ -137,15 +156,30 @@ bool getFileText(char* filename, char **text, int *length)
         char *ltext;
         int llength;
 	
+#ifdef SC_WIN32
+	file = fopen(filename, "rb");
+#else
 	file = fopen(filename, "r");
-	if (!file) return false;
+#endif
+  if (!file) return false;
         
         fseek(file, 0L, SEEK_END);
         llength = ftell(file);
         fseek(file, 0L, SEEK_SET);
         ltext = (char*)pyr_pool_compile->Alloc((llength+1) * sizeof(char));
+#ifdef SC_WIN32
+        // win32 isprint( ) doesn't like the 0xcd after the end of file when
+        // there is a mismatch in lengths due to line endings....
+        memset(ltext,0,(llength+1) * sizeof(char));
+#endif //SC_WIN32
         MEMFAIL(ltext);
+#ifdef SC_WIN32
+        size_t size = fread(ltext, 1, llength, file);
+        if (size != llength)
+          ::MessageBox(NULL,"size != llength", "Error", MB_OK);
+#else
         fread(ltext, 1, llength, file);
+#endif
         ltext[llength] = 0;
         //ltext[llength] = 0;
         *length = llength;
@@ -163,8 +197,9 @@ int stripNonAscii(char *txt)
 	int c = 0;
 	do {
 		c = txt[rdpos++];
-		if (isprint(c) || isspace(c) || c == 0) txt[wrpos++] = c;
-	} while(c);
+    if (isprint(c) || isspace(c) || c == 0) 
+      txt[wrpos++] = c;
+  } while(c);
 	return wrpos;
 }
 
@@ -975,7 +1010,13 @@ int processident(char *token)
 		return NILOBJ; 
 	}
 	if (strcmp("inf",token) ==0) {
-		SetFloat(&slot, INFINITY);
+#ifdef SC_WIN32
+    double a = 0.0;
+    double b = 1.0/a;
+    SetFloat(&slot, b);
+#else
+    SetFloat(&slot, INFINITY);
+#endif
 		node = newPyrSlotNode(&slot);
 		zzval = (int)node;
 		return FLOAT; 
@@ -1882,6 +1923,7 @@ void finiPassOne()
 }
 
 bool passOne_ProcessDir(char *dirname, int level);
+#ifndef SC_WIN32
 bool passOne_ProcessDir(char *dirname, int level)
 {
 	bool success = true;
@@ -1940,10 +1982,58 @@ bool passOne_ProcessDir(char *dirname, int level)
 	closedir(dir);
 	return success;
 }
+#else
+bool passOne_ProcessDir(char *dirname, int level)
+{
+	bool success = true;
 
-#include <unistd.h>
-#include <sys/param.h>
+#ifdef ENABLE_LIBRARY_CONFIGURATOR
+ 	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
+ 	  post("\texcluding dir: '%s'\n", dirname);
+ 	  return success;
+ 	}
+#endif
 
+ 	if (level == 0) 
+    post("\tcompiling dir: '%s'\n", dirname);
+
+	char allInDir[_MAX_PATH];
+  sprintf(allInDir,"%s\\*.*",dirname);
+  
+  WIN32_FIND_DATA findData;
+  HANDLE hFind = ::FindFirstFile(allInDir, &findData);
+  if (hFind == INVALID_HANDLE_VALUE) {
+		error("open directory failed '%s'\n", dirname); fflush(stdout);
+		return false;
+	}
+  
+	do {
+    if ((strcmp(findData.cFileName, ".") == 0) || (strcmp(findData.cFileName, "..") == 0))
+      continue;
+		
+    char *entrypathname = (char*)malloc(strlen(dirname) + strlen(findData.cFileName) + 2);
+		strcpy(entrypathname, dirname);
+		strcat(entrypathname, "\\");
+		strcat(entrypathname, findData.cFileName);
+
+    if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+      success = passOne_ProcessDir(entrypathname, level + 1);
+    } else {
+      success = passOne_ProcessOneFile(entrypathname, level + 1);
+    }
+
+		free(entrypathname);
+		if (!success) 
+      break;
+  } while (::FindNextFile(hFind, &findData));
+	return success;
+}
+#endif
+
+#ifndef SC_WIN32
+# include <unistd.h>
+# include <sys/param.h>
+#endif
 
 bool passOne()
 {
@@ -1955,8 +2045,11 @@ bool passOne()
 
 	if (!gLibraryConfig) {
 		getcwd(gCompileDir, MAXPATHLEN-32);
-		strcat(gCompileDir, "/SCClassLibrary");
-    
+#ifndef SC_WIN32
+    strcat(gCompileDir, "/SCClassLibrary");
+#else
+    strcat(gCompileDir, "\\SCClassLibrary");
+#endif
 		success = passOne_ProcessDir(gCompileDir, 0);
 		if (!success) return false;
 	} else {
@@ -2023,7 +2116,8 @@ bool passOne_ProcessOneFile(char *filename, int level)
 			success = false;
 		}
 	} else {
-		// check if this is a symlink
+#ifndef SC_WIN32
+    // check if this is a symlink
 		char realpathname[MAXPATHLEN];
 		realpath(filename, realpathname);
 		if (strncmp(filename, realpathname, strlen(filename))) {
@@ -2031,12 +2125,15 @@ bool passOne_ProcessOneFile(char *filename, int level)
 			if ((stat(realpathname, &stat_buf) == 0) && S_ISDIR(stat_buf.st_mode))
 				success = passOne_ProcessDir(realpathname, level);
 		}
-	}
+#else
+    // under window, we're sure it's a file so wer don't do anything...
+    // maybe processing .lnk files could be interesting...
+    // $$$todo fixme add .lnk file parsing...
+    // (see http://www.thecodeproject.com/managedcpp/mcppshortcuts.asp)
+#endif
+  }
 	return success;
 }
-
-
-
 
 void InitSynthGlobals(VMGlobals *g, int inNumInputs, int inNumOutputs);
 void InitSynthGlobals(VMGlobals *g, int inNumInputs, int inNumOutputs)

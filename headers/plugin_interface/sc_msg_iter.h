@@ -146,7 +146,7 @@ inline float32 sc_msg_iter::getf(float32 defaultValue)
 			value = OSCfloat(rdpos);
 			rdpos += sizeof(float32);
 		} else if (tags[count] == 'd') {
-			value = (float64)OSCdouble(rdpos);
+			value = static_cast<float64>(OSCdouble(rdpos));
 			rdpos += sizeof(float64);
 		} else if (tags[count] == 'i') {
 			value = (float32)OSCint(rdpos);

@@ -1,7 +1,16 @@
 #include "SC_LanguageClient.h"
 #include "SC_LibraryConfig.h"
 
-#include <unistd.h>
+#ifdef SC_WIN32
+# include <stdio.h>
+# include <direct.h>
+# define snprintf _snprintf
+# ifndef PATH_MAX
+#  define PATH_MAX _MAX_PATH
+# endif
+#else
+# include <unistd.h>
+#endif
 
 #include "PyrObject.h"
 #include "PyrKernel.h"
@@ -81,6 +90,7 @@ bool SC_LanguageClient::readLibraryConfig(const char* filePath, const char* file
 
 bool SC_LanguageClient::readDefaultLibraryConfig()
 {
+#ifndef SC_WIN32
 	char* paths[3] = { ".sclang.cfg", "~/.sclang.cfg", "/etc/sclang.cfg" };
 
 	char ipath[PATH_MAX];
@@ -98,6 +108,11 @@ bool SC_LanguageClient::readDefaultLibraryConfig()
 	}
 
 	return false;
+#else
+// $$$todo rewrite for win32 (home folder ?)
+  assert(0);
+  return false;
+#endif
 }
 
 void SC_LanguageClient::compileLibrary()
@@ -105,7 +120,11 @@ void SC_LanguageClient::compileLibrary()
 	::compileLibrary();
 }
 
+#ifdef SC_WIN32
+extern void shutdownLibrary();
+#else
 extern void ::shutdownLibrary();
+#endif
 void SC_LanguageClient::shutdownLibrary()
 {
 	::shutdownLibrary();

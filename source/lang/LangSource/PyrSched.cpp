@@ -30,6 +30,11 @@
 #include <stdlib.h>
 #include <math.h>
 
+#ifdef SC_WIN32
+typedef __int32 int32_t;
+#include "win32_utils.h"
+#endif
+
 #define SANITYCHECK 0
 
 void runAwakeMessage(VMGlobals *g);
@@ -171,13 +176,22 @@ const double fSECONDS_FROM_1900_to_1970 = 2208988800.; /* 17 leap years */
 void syncOSCOffsetWithTimeOfDay();
 void* resyncThread(void* arg);
 #else // !SC_DARWIN
-#include <sys/time.h>
+
+#ifdef SC_WIN32
+
+#else
+# include <sys/time.h>
+#endif
 
 inline double GetTimeOfDay();
 double GetTimeOfDay()
 {
 	struct timeval tv;
-	gettimeofday(&tv, 0);
+#ifdef SC_WIN32
+  win32_gettimeofday(&tv, 0);
+#else
+  gettimeofday(&tv, 0);
+#endif
 	return (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
 }
 #endif // SC_DARWIN

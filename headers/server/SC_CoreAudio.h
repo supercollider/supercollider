@@ -34,7 +34,11 @@
 #define SC_AUDIO_API_PORTAUDIO  3
 
 #ifdef SC_WIN32
-# define SC_AUDIO_API SC_AUDIO_API_PORTAUDIO
+# ifndef SC_INNERSC
+#  define SC_AUDIO_API SC_AUDIO_API_PORTAUDIO
+# else
+#  define SC_AUDIO_API SC_AUDIO_API_INNERSC_VST
+# endif
 #endif
 
 #ifndef SC_AUDIO_API
@@ -259,5 +263,39 @@ inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 }
 #endif // SC_AUDIO_API_PORTAUDIO
 
+#if SC_AUDIO_API == SC_AUDIO_API_INNERSC_VST
+
+struct VstTimeInfo;
+
+class SC_VSTAudioDriver : public SC_AudioDriver
+{
+
+    int   mInputChannelCount, mOutputChannelCount;
+    bool  mIsStreaming;
+
+protected:
+    // Driver interface methods
+	virtual bool  DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
+	virtual bool  DriverStart();
+	virtual bool  DriverStop();
+  void          Callback( 
+                  const void *input, void *output,
+                  unsigned long frameCount, const VstTimeInfo* timeInfo );
+    
+public:
+              SC_VSTAudioDriver(struct World *inWorld);
+  	virtual  ~SC_VSTAudioDriver();
+
+//    int PortAudioCallback( const void *input, void *output,
+//            unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
+//            PaStreamCallbackFlags statusFlags );
+};
+
+inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
+{
+  // This is called from "World* World_New(WorldOptions *inOptions)" in "SC_World.cpp"
+  return new SC_VSTAudioDriver(inWorld); //This gets saved in inWorld->hw->mAudioDriver
+}
+#endif // SC_AUDIO_API == SC_AUDIO_API_INNERSC_VST
 
 #endif

@@ -28,6 +28,10 @@ Contains the most common definitions.
 
 #include <limits.h>
 #include <stdio.h>
+#ifdef SC_WIN32
+# include <stdlib.h>
+# define PATH_MAX _MAX_PATH
+#endif
 
 #include "SC_BoundsMacros.h"
 #include "SC_Types.h"

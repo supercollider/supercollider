@@ -207,12 +207,14 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 	if (hFind == INVALID_HANDLE_VALUE) 
     return errNone;
     
+  int i = 0;
   do {
 		PyrObject *string = (PyrObject*)newPyrString(g->gc, findData.cFileName, 0, true);
 		SetObject(array->slots+i, string);
 		g->gc->GCWrite(array, string);
 		array->size++;
-  } while( ::FindNextFile(hFind, &findData);
+    i++;
+  } while( ::FindNextFile(hFind, &findData));
 	return errNone;
 }
 #endif //#ifndef SC_WIN32
@@ -252,12 +254,20 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */)
 	if (err) return err;
 	
 	if (IsNil(args+1)) {
+#ifdef SC_WIN32
+		SetEnvironmentVariable(key,NULL);
+#else
 		unsetenv(key);
+#endif
 	} else {
 		char value[1024];
 		err = slotStrVal(args+1, value, 1024);
 		if (err) return err;
-		setenv(key, value, 1);
+#ifdef SC_WIN32
+		SetEnvironmentVariable(key, value);
+#else
+		setenv(key, value, 1); 
+#endif
 	}
 	
 	return errNone;

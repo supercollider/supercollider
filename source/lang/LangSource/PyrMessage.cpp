@@ -42,7 +42,11 @@ bool gKeywordError = true;
 extern bool gTraceInterpreter;
 
 long cvxUniqueMethods;
+#ifdef SC_WIN32
+extern int ivxIdentDict_array;
+#else
 extern long ivxIdentDict_array;
+#endif
 
 void StoreToImmutableB(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip);
 
@@ -711,7 +715,11 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	//postfl("<-sendMessage\n");
 }
 
+#ifdef SC_WIN32
+int arrayAtIdentityHashInPairs(PyrObject *array, PyrSlot *key); // this is the implementation prototype
+#else
 long arrayAtIdentityHashInPairs(PyrObject *array, PyrSlot *key);
+#endif
 
 extern PyrClass *class_identdict;
 void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector, 

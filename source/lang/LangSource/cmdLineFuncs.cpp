@@ -17,6 +17,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+#ifndef SC_WIN32
 
 #ifdef SC_DARWIN
 # define USE_SC_TERMINAL_CLIENT 0
@@ -171,3 +172,4 @@ int main()
 }
 
 #endif // USE_SC_TERMINAL_CLIENT
+#endif //SC_WIN32

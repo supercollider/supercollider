@@ -29,10 +29,21 @@ Primitives for Unix.
 #include "VMGlobals.h"
 #include "GC.h"
 #include "SC_RGen.h"
-#include <unistd.h>
+
+#ifdef SC_WIN32
+#include <stdio.h>
+#include "win32_utils.h"
+#else
+# include <unistd.h>
+#endif
+
 #include <errno.h>
 #include <pthread.h>
-#include <libgen.h>
+
+#ifdef SC_WIN32
+#else
+# include <libgen.h>
+#endif
 
 int prString_System(struct VMGlobals *g, int numArgsPushed);
 int prString_System(struct VMGlobals *g, int numArgsPushed)
@@ -49,6 +60,7 @@ int prString_System(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+#ifndef SC_WIN32
 int prString_Basename(struct VMGlobals *g, int numArgsPushed);
 int prString_Basename(struct VMGlobals *g, int numArgsPushed)
 {
@@ -88,8 +100,10 @@ int prString_Dirname(struct VMGlobals *g, int numArgsPushed)
 
         return errNone;
 }
+#endif
 
 
+#ifndef SC_WIN32
 void* string_popen_thread_func(void *data);
 void* string_popen_thread_func(void *data)
 {
@@ -118,9 +132,13 @@ void* string_popen_thread_func(void *data)
     return 0;
 }   
 
+#endif
 int prString_POpen(struct VMGlobals *g, int numArgsPushed);
 int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 {
+#ifdef SC_WIN32
+  return errNone; // $$$todo fixme : implement prString_POpen please....
+#else
 	PyrSlot *a = g->sp;
 	
         if (!isKindOfSlot(a, class_string)) return errWrongType;
@@ -132,6 +150,7 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
         pthread_create(&thread, NULL, string_popen_thread_func, (void*)cmdline);
  	pthread_detach(thread);
 	return errNone;
+#endif
 }
 
 int prUnix_Errno(struct VMGlobals *g, int numArgsPushed);
@@ -145,9 +164,14 @@ int prUnix_Errno(struct VMGlobals *g, int numArgsPushed)
 }
 
 #include <time.h>
+
+#ifndef SC_WIN32
 #include <sys/time.h>
+#endif
+
 double bootSeconds();
 
+#ifndef SC_WIN32
 int prLocalTime(struct VMGlobals *g, int numArgsPushed);
 int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 {
@@ -197,6 +221,7 @@ int prGMTime(struct VMGlobals *g, int numArgsPushed)
 	
 	return errNone;
 }
+#endif
 
 int prAscTime(struct VMGlobals *g, int numArgsPushed);
 int prAscTime(struct VMGlobals *g, int numArgsPushed)
@@ -316,14 +341,18 @@ void initUnixPrimitives()
 	base = nextPrimitiveIndex();
 	
 	definePrimitive(base, index++, "_String_System", prString_System, 1, 0);
-        definePrimitive(base, index++, "_String_Basename", prString_Basename, 1, 0);
-        definePrimitive(base, index++, "_String_Dirname", prString_Dirname, 1, 0);
-	definePrimitive(base, index++, "_String_POpen", prString_POpen, 1, 0);
+#ifndef SC_WIN32
+  definePrimitive(base, index++, "_String_Basename", prString_Basename, 1, 0);
+  definePrimitive(base, index++, "_String_Dirname", prString_Dirname, 1, 0);
+#endif
+  definePrimitive(base, index++, "_String_POpen", prString_POpen, 1, 0);
 	definePrimitive(base, index++, "_Unix_Errno", prUnix_Errno, 1, 0);
+#ifndef SC_WIN32
 	definePrimitive(base, index++, "_LocalTime", prLocalTime, 1, 0);
 	definePrimitive(base, index++, "_GMTime", prGMTime, 1, 0);
-       definePrimitive(base, index++, "_AscTime", prAscTime, 1, 0);
-        definePrimitive(base, index++, "_prStrFTime", prStrFTime, 2, 0);
+#endif
+  definePrimitive(base, index++, "_AscTime", prAscTime, 1, 0);
+  definePrimitive(base, index++, "_prStrFTime", prStrFTime, 2, 0);
 	definePrimitive(base, index++, "_TimeSeed", prTimeSeed, 1, 0);
 #ifdef SC_LINUX
 	definePrimitive(base, index++, "_Cocoa_StandardizePath", prString_StandardizePath, 1, 0);

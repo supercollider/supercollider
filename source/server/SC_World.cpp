@@ -20,8 +20,8 @@
 
 
 #ifdef SC_WIN32
-#include <string.h>
-#define strcasecmp( s1, s2 ) stricmp( (s1), (s2) )
+# include <string.h>
+# define strcasecmp( s1, s2 ) stricmp( (s1), (s2) )
 #endif
 #include "SC_World.h"
 #include "SC_WorldOptions.h"
@@ -38,7 +38,11 @@
 #include <stdio.h>
 #include "SC_Prototypes.h"
 #include "SC_Samp.h"
-#include "SC_ComPort.h"
+#ifdef SC_WIN32
+# include "../../headers/server/SC_ComPort.h"
+#else
+# include "SC_ComPort.h"
+#endif
 #include "SC_StringParser.h"
 
 InterfaceTable gInterfaceTable;
@@ -177,7 +181,7 @@ void InterfaceTable_Init()
 	
 	ft->fPrint = &scprintf;
 	
-	ft->fRanSeed = &timeseed;
+	ft->fRanSeed = &server_timeseed;
 
 	ft->fNodeEnd = &Node_End;
 	
@@ -312,7 +316,7 @@ World* World_New(WorldOptions *inOptions)
 		world->mNumRGens = inOptions->mNumRGens;
 		world->mRGen = new RGen[world->mNumRGens];
 		for (uint32 i=0; i<world->mNumRGens; ++i) {
-			world->mRGen[i].init(timeseed());
+			world->mRGen[i].init(server_timeseed());
 		}
 		
 		world->mNRTLock = new SC_Lock();

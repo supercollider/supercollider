@@ -74,8 +74,13 @@ const WorldOptions kDefaultWorldOptions =
 #endif
 };
 
+#ifdef SC_WIN32
+#include "../../headers/server/SC_Reply.h"
+#else //SC_WIN32
 #include "SC_Reply.h"
+#endif //SC_WIN32
 
+#ifndef SC_WIN32
 extern "C" {
 	void SetPrintFunc(PrintFunc func);
 	struct World* World_New(WorldOptions *inOptions);
@@ -86,6 +91,21 @@ extern "C" {
 	int World_CopySndBuf(World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool &didChange);
 	int scprintf(const char *fmt, ...);
 }
+#else //SC_WIN32
+extern "C" {
+__declspec(dllexport) 	void SetPrintFunc(PrintFunc func);
+__declspec(dllexport) 	struct World* World_New(WorldOptions *inOptions);
+__declspec(dllexport) 	void World_OpenUDP(struct World *inWorld, int inPort);
+__declspec(dllexport) 	void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
+__declspec(dllexport) 	void World_WaitForQuit(struct World *inWorld);
+__declspec(dllexport) 	bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
+__declspec(dllexport) 	int World_CopySndBuf(World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool &didChange);
+__declspec(dllexport)   int scprintf(const char *fmt, ...);
+}
+#endif //SC_WIN32
+
+
+
 
 #endif
 

@@ -36,7 +36,13 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/time.h>
+
+#ifdef SC_WIN32
+# include "win32_utils.h"
+#else
+# include <sys/time.h>
+#endif
+
 #include <new.h>
 #include "InitAlloc.h"
 #include "bullet.h"
@@ -49,8 +55,12 @@ int32 timeseed();
 int32 timeseed()
 {
 	struct timeval tv;
-	gettimeofday(&tv, 0);
-	return tv.tv_sec ^ tv.tv_usec;
+#ifdef SC_WIN32
+  win32_gettimeofday(&tv, 0);
+#else
+  gettimeofday(&tv, 0);
+#endif
+  return tv.tv_sec ^ tv.tv_usec;
 }
 
 VMGlobals gVMGlobals[kNumProcesses];

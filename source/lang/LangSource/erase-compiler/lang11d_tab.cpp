@@ -2,6 +2,18 @@
 /*  A Bison parser, made from lang11d
     by GNU Bison version 1.28  */
 
+#ifdef SC_WIN32
+#include <stdlib.h>
+#include <string.h>
+#include "PyrLexer.h"
+#include "PyrParseNode.h"
+#include "SC_Constants.h"
+#include "SC_InlineUnaryOp.h"
+#include "SC_InlineBinaryOp.h"
+#include "InitAlloc.h"
+#include "PredefinedSymbols.h"
+#endif
+
 #define YYBISON 1  /* Identify Bison output.  */
 
 #define	NAME	257
@@ -36,6 +48,7 @@
 #line 15 "lang11d"
 
 
+#ifndef SC_WIN32
 #include <stdlib.h>
 #include <string.h>
 #include "PyrLexer.h"
@@ -45,6 +58,7 @@
 #include "SC_InlineBinaryOp.h"
 #include "InitAlloc.h"
 #include "PredefinedSymbols.h"
+#endif
 
 void *alloca(unsigned long size); 
 void bcopy(void *src, void *dst, size_t size) ;

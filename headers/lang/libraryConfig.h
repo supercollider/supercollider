@@ -26,6 +26,7 @@ class LibraryConfig {
   char **m_excludedDirectories;
 };
 
+#ifndef SC_WIN32
 extern char *unixStandardizePath(const char *path, char *newpath);
-
+#endif
 #endif // _Supercollider_libraryConfig_h_

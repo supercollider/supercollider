@@ -40,7 +40,15 @@
 #endif
 
 #ifndef SC_PLUGIN_DIR
-# define SC_PLUGIN_DIR "plugins"
+# ifndef SC_WIN32
+#  define SC_PLUGIN_DIR "plugins"
+# else
+#  ifdef _DEBUG
+#   define SC_PLUGIN_DIR "plugins_debug"
+#  else
+#   define SC_PLUGIN_DIR "plugins"
+#  endif
+# endif
 #endif
 
 #ifndef SC_PLUGIN_EXT
@@ -216,12 +224,11 @@ bool PlugIn_LoadDir(char *dirname)
 bool PlugIn_LoadDir(char *dirname)
 {
   bool success = true;
-  std::string folderPath = std::string(dirname);
-  folderPath += "\\";
-  std::string allInFolder = folderPath; 
-  allInFolder += std::string("*.*");
+  
+	char allInDir[_MAX_PATH];
+  sprintf(allInDir,"%s\\*.*",dirname);
   WIN32_FIND_DATA findData;
-  HANDLE hFind = ::FindFirstFile(allInFolder.c_str( ), &findData);
+  HANDLE hFind = ::FindFirstFile(allInDir, &findData);
   for(;;) {
     if (hFind == INVALID_HANDLE_VALUE) {
   		scprintf("*** ERROR: ::FindFirstFile() failed '%s' GetLastError() = %d\n", dirname, ::GetLastError()); fflush(stdout);
@@ -237,10 +244,9 @@ bool PlugIn_LoadDir(char *dirname)
           // ".." -> don't do anything
         }
         else {
-          std::string childFolderPath = folderPath;
-          childFolderPath += "\\";
-          childFolderPath += findData.cFileName;
-          success = PlugIn_LoadDir(const_cast<char*>(childFolderPath.c_str()));
+          char fullPath[_MAX_PATH];
+          sprintf(fullPath,"%s\\%s",dirname,findData.cFileName);
+          success = PlugIn_LoadDir(fullPath);
         }
       } 
       else {
@@ -248,9 +254,9 @@ bool PlugIn_LoadDir(char *dirname)
         size_t filePathLen = strlen(findData.cFileName);
         if (filePathLen >= extlen) {
           if (strnicmp(findData.cFileName + filePathLen - extlen, SC_PLUGIN_EXT, extlen) == 0) {
-            std::string plugInPath = folderPath;
-            plugInPath += findData.cFileName;
-            success = PlugIn_Load(plugInPath.c_str());
+            char fullPath[_MAX_PATH];
+            sprintf(fullPath,"%s\\%s",dirname,findData.cFileName);
+            success = PlugIn_Load(fullPath);
           }
         }
       }

@@ -32,7 +32,14 @@
    Requests are `small' if both the corresponding and the next bin are small
 */
 
-#define DEBUG 0
+#ifdef SC_WIN32
+# ifdef _DEBUG
+#  define DEBUG 0
+//#  define DEBUG 1
+# else
+#  define DEBUG 0
+# endif
+#endif
 
 #if DEBUG
 #define check_pool()  DoCheckPool()

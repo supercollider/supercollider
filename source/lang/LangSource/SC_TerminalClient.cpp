@@ -19,9 +19,17 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/param.h>
-#include <sys/poll.h>
-#include <unistd.h>
+
+#ifdef SC_WIN32
+# include "getopt.h"
+# include "win32_utils.h"
+# include <io.h>
+#else
+# include <sys/param.h>
+# include <sys/poll.h>
+# include <unistd.h>
+#endif
+
 #include <string.h>
 #include <time.h>
 
@@ -280,11 +288,12 @@ void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmd
 
 void SC_TerminalClient::commandLoop()
 {
+#ifndef SC_WIN32
 	const int fd = 0;
 	struct pollfd pfds[1] = { fd, POLLIN, 0 };
 	SC_StringBuffer cmdLine;
 
-	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
+  if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
 		perror(getName());
 		quit(1);
 		return;
@@ -301,6 +310,9 @@ void SC_TerminalClient::commandLoop()
 			return;
 		}
 	}
+#else
+  assert(0);
+#endif
 }
 
 void SC_TerminalClient::daemonLoop()
@@ -309,7 +321,11 @@ void SC_TerminalClient::daemonLoop()
 
 	while (shouldBeRunning()) {
 		tick(); // also flushes post buffer
-		if (nanosleep(&tv, 0) == -1) {
+#ifdef SC_WIN32
+    if (win32_nanosleep(&tv, 0) == -1) {
+#else
+    if (nanosleep(&tv, 0) == -1) {
+#endif
 			perror(getName());
 			quit(1);
 			break;

@@ -32,13 +32,23 @@ AllocPool *pyr_pool_runtime = 0;
 void* pyr_new_area(size_t size);
 void* pyr_new_area(size_t size)
 {
+#ifdef SC_WIN32
+  size += kAlign;
+  char* ptr = (char*)malloc(size);
+  return (ptr + kAlign);
+#else
 	return (char*)HOST_ALLOC(size);
+#endif
 }
 
 void pyr_free_area(void *ptr);
 void pyr_free_area(void *ptr)
 {
+#ifdef SC_WIN32
+  free((void*)((char*)ptr - kAlign));
+#else
 	HOST_FREE(ptr);
+#endif
 }
 
 void* pyr_new_area_from_runtime(size_t size);

@@ -85,7 +85,10 @@ struct World
 };
 
 extern "C" {
-	int scprintf(const char *fmt, ...);
+#ifdef SC_WIN32
+  __declspec(dllexport)
+#endif //SC_WIN32
+  int scprintf(const char *fmt, ...);
 }
 
 inline SndBuf* World_GetBuf(struct World *inWorld, uint32 index)

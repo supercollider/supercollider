@@ -8,9 +8,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include <sys/param.h>
-#include <unistd.h>
-#include <libgen.h>
+#ifdef SC_WIN32
+# include "win32_utils.h"
+# define MAXPATHLEN _MAX_PATH
+#else
+# include <sys/param.h>
+# include <unistd.h>
+# include <libgen.h>
+#endif
 
 // =====================================================================
 // SC_LibraryConfig
@@ -134,6 +139,7 @@ void SC_LibraryConfig::freeLibraryConfig()
 	}	
 }
 
+#ifndef SC_WIN32
 // sk: slightly improved robustness for path lengths exceeding MAXPATHLEN
 //     newpath2 should be a buffer of size MAXPATHLEN
 
@@ -146,7 +152,12 @@ char *unixStandardizePath(const char *path, char *newpath2) {
 	size_t pathLen = strlen(path);
 
 	if ((pathLen >= 2) && (path[0] == '~') && (path[1] == '/')) {
-		const char *home = getenv("HOME");
+  #ifndef SC_WIN32
+      const char *home = getenv("HOME");
+  #else
+      char* home[_PATH_MAX];
+      win32_GetHomeFolder(home, _PATH_MAX);
+  #endif
 
 		if (home != 0) {
 			if ((pathLen - 1 + strlen(home)) >= MAXPATHLEN) {
@@ -174,6 +185,7 @@ char *unixStandardizePath(const char *path, char *newpath2) {
 
 	return newpath2;
 }
+#endif
 
 // =====================================================================
 // SC_LibraryConfigFile
@@ -327,12 +339,20 @@ bool SC_LibraryConfigFile::parseLine(int depth, const char* fileName, int lineNu
 	}
 
 	path.finish();
-	char realPath[MAXPATHLEN];
+  char realPath[MAXPATHLEN];
+
+#ifdef SC_WIN32
+  if (strlen(path.getData()) + 1 > MAXPATHLEN) {
+		(*mErrorFunc)("%s,%d: couldn't resolve path %s\n", fileName, lineNumber, path.getData());
+		return false;
+	}
+  strcpy(realPath,path.getData());
+#else
 	if (unixStandardizePath(path.getData(), realPath) == 0) {
 		(*mErrorFunc)("%s,%d: couldn't resolve path %s\n", fileName, lineNumber, path.getData());
 		return false;
 	}
-
+#endif
 	if (action == ':') {
 		if (++depth > kMaxIncludeDepth) {
 			(*mErrorFunc)("%s,%d: maximum include depth of %d exceeded\n", fileName, lineNumber, kMaxIncludeDepth);
@@ -340,8 +360,12 @@ bool SC_LibraryConfigFile::parseLine(int depth, const char* fileName, int lineNu
 		}
 		SC_LibraryConfigFile file(mErrorFunc);
 		if (!file.open(realPath)) return true;
-		const char* fileName = basename(realPath);
-		bool success = file.read(depth, fileName, libConf);
+#ifdef SC_WIN32
+    const char* fileName = win32_basename(realPath);
+#else
+    const char* fileName = basename(realPath);
+#endif
+    bool success = file.read(depth, fileName, libConf);
 		file.close();
 		return success;
 	}

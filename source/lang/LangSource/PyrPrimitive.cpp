@@ -3980,6 +3980,7 @@ void initSCViewPrimitives();
 void initSchedPrimitives();
         initSchedPrimitives();
 
+#ifndef SC_WIN32
 void initMIDIPrimitives();
 		initMIDIPrimitives();
 
@@ -3991,6 +3992,7 @@ void initSpeechPrimitives();
                 
 void initCocoaFilePrimitives();
         initCocoaFilePrimitives();
+#endif
 
 // CR ADDED
 void initRendezvousPrimitives();

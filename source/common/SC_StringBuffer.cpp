@@ -24,6 +24,12 @@
 #include <string.h>
 #include <stdexcept>
 
+#ifdef SC_WIN32
+# define vsnprintf _vsnprintf
+# include <stdio.h>
+# include <stdarg.h>
+#endif
+
 SC_StringBuffer::SC_StringBuffer(size_t initialSize)
 	: mCapacity(0), mPtr(0), mData(0)
 {

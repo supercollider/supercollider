@@ -491,7 +491,7 @@ SCErr meth_d_loadDir(World *inWorld, int inSize, char *inData, ReplyAddress *inR
 }
 
 SCErr meth_d_freeAll(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_d_freeAll(World *inWorld, int /*inSize*/, char */*inData*/, ReplyAddress* /*inReply*/)
+SCErr meth_d_freeAll(World *inWorld, int /*inSize*/, char * /*inData*/, ReplyAddress* /*inReply*/)
 {
 	World_FreeAllGraphDefs(inWorld);
 	return kSCErr_None;

@@ -280,7 +280,15 @@ void initSymbols()
 	SetInt(&o_one, 1);
 	SetInt(&o_two, 2);
 	SetSymbol(&o_none, s_none);
-	SetFloat(&o_inf, INFINITY);
+#ifdef SC_WIN32
+  {
+    double a = 0.0;
+    double b = 1.0/a;
+    SetFloat(&o_inf, b);
+  }
+#else
+ 	SetFloat(&o_inf, INFINITY);
+#endif
 	
 	gSpecialValues[svNil] = o_nil.uf;
 	gSpecialValues[svFalse] = o_false.uf;
@@ -1142,11 +1150,12 @@ bool funcFindVar(PyrBlock* func, PyrSymbol *name, int *index)
 PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 	int numInstVars, int numClassVars)
 {
-	PyrClass *superClass;
-	PyrClass *metaSuperClass;
-	PyrSymbol *metaClassName;
-	PyrSymbol *metaSuperClassName;
-	PyrClass *classobj, *metaclassobj;
+	PyrClass *superClass = NULL;
+  PyrClass *metaSuperClass = NULL;
+	PyrSymbol *metaClassName = NULL;
+	PyrSymbol *metaSuperClassName = NULL;
+	PyrClass *classobj = NULL; 
+  PyrClass *metaclassobj = NULL;
 	int superInstVars;
 	
 	//postfl("makeIntrinsicClass '%s'\n", className->name);
