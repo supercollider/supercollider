@@ -913,7 +913,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 		SetInt(&caller->ip, (long)g->ip);
 		SetObject(&frame->caller, caller);
 	} else {
-		SetNil(&frame->caller);
+		SetInt(&frame->caller, 0);
 	}
 	SetInt(&frame->ip,  0);
 	g->method = meth;
@@ -1068,7 +1068,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 		SetInt(&caller->ip, (long)g->ip);
 		SetObject(&frame->caller, caller);
 	} else {
-		SetNil(&frame->caller);
+		SetInt(&frame->caller, 0);
 	}
 	SetInt(&frame->ip,  0);
 	g->method = meth;
@@ -1201,8 +1201,10 @@ void returnFromMethod(VMGlobals *g)
 	
 	//assert(curframe->context.uof == NULL);
 	
-	//if (gTraceInterpreter) 
-	//post("returnFromMethod %s-%s\n", g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
+	/*if (gTraceInterpreter) {
+		post("returnFromMethod %s-%s\n", g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
+		post("tailcall %d\n", g->tailCall);
+	}*/
 #if SANITYCHECK
 	g->gc->SanityCheck();
 #endif
@@ -1212,13 +1214,27 @@ void returnFromMethod(VMGlobals *g)
 #if TAILCALLOPTIMIZE
 		if (g->tailCall) return; // do nothing.
 #endif
-		/*
-		post("return all the way out. sd %d\n", g->sp - g->gc->Stack()->slots);
-		postfl("%s-%s\n", 
-			g->method->ownerclass.uoc->name.us->name, g->method->name.us->name
-		);
-		DumpStack(g, g->sp);
-		*/
+
+	/*
+		static bool once = true;
+		if (once || gTraceInterpreter) 
+		{
+			once = false;
+			post("return all the way out. sd %d\n", g->sp - g->gc->Stack()->slots);
+			postfl("%s-%s\n", 
+				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name
+			);
+			post("tailcall %d\n", g->tailCall);
+			post("homeContext %08X\n", homeContext);
+			post("returnFrame %08X\n", returnFrame);
+			dumpObjectSlot(&homeContext->caller);
+			DumpStack(g, g->sp);
+			DumpBackTrace(g);
+		}
+		gTraceInterpreter = false;
+	*/
+		if (IsNil(&homeContext->caller)) return; // do nothing.
+	
 		// return all the way out.
 		PyrSlot *bottom = g->gc->Stack()->slots;
 		bottom->ucopy = g->sp->ucopy;

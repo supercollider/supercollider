@@ -230,7 +230,7 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 		frame->size = FRAMESIZE + proto->size; /// <- IS THIS WRONG ??
 		SetObject(&frame->method, meth);
 		SetObject(&frame->homeContext, frame);
-		SetNil(&frame->caller);
+		SetInt(&frame->caller, 0);
 		SetNil(&frame->context);
 		SetInt(&frame->ip,  0);
 		SetObject(&frame->vars[0], interpreter);

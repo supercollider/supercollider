@@ -874,7 +874,7 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 		SetInt(&caller->ip, (int)g->ip);
 		SetObject(&frame->caller, g->frame);
 	} else {
-		SetNil(&frame->caller);
+		SetInt(&frame->caller, 0);
 	}
 	SetInt(&frame->ip,  0);
 
@@ -1009,7 +1009,7 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 		SetInt(&caller->ip, (int)g->ip);
 		SetObject(&frame->caller, g->frame);
 	} else {
-		SetNil(&frame->caller);
+		SetInt(&frame->caller, 0);
 	}
 	SetInt(&frame->ip,  0);
 
@@ -1170,7 +1170,7 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 		SetInt(&caller->ip, (int)g->ip);
 		SetObject(&frame->caller, g->frame);
 	} else {
-		SetNil(&frame->caller);
+		SetInt(&frame->caller, 0);
 	}
 	SetInt(&frame->ip,  0);
 
@@ -1319,7 +1319,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 		SetInt(&caller->ip, (int)g->ip);
 		SetObject(&frame->caller, g->frame);
 	} else {
-		SetNil(&frame->caller);
+		SetInt(&frame->caller, 0);
 	}
 	SetInt(&frame->ip,  0);
 

@@ -30,17 +30,7 @@ Each virtual machine has a copy of VMGlobals, which contains the state of the vi
 #include "SC_AllocPool.h"
 #include "SC_RGen.h"
 
-#define TAILCALLOPTIMIZE 0
-/*
-	tail call optimize has a bug which happens when a non local return occurs from a method inside of a tail call optimized return. 
-	here's a simple example but there are more subtle variations:
-	mymethod {
-		^{ ^'ouch' }.value
-	}
-	the method gets returned from and then the .value method is called, but that then also wants to return and it doesn't realize that
-	the caller has been blown away already, so it tries to return to an even higher place on the stack.
-	so tail call optimization is turned off for now.
-*/
+#define TAILCALLOPTIMIZE 1
 
 typedef void (*FifoMsgFunc)(struct VMGlobals*, struct FifoMsg*);
 
