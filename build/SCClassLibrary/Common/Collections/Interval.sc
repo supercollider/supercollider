@@ -6,6 +6,7 @@ Range : Collection {
 	*new { arg start, size; 
 		^super.newCopyArgs(start, size);
 	}
+	end { ^start + size }
 	do { arg function;
 		for(start, start+size-1, function);
 	}
@@ -14,6 +15,9 @@ Range : Collection {
 		var val;
 		if (index < 0 or: { index >= size }, { ^nil });
 		^start + index;
+	}
+	includes { arg val;
+		^(val >= start) and: { (val < this.end)  and: { val.frac == 0 }}
 	}
 	
 	add { ^this.shouldNotImplement }
