@@ -12,9 +12,6 @@ AbstractPlayControl {
 		^super.newCopyArgs(source, channelOffset);
 	}
 	
-	
-	writeDef {}
-	prepareForPlay {}
 	build { ^true }
 	pause { this.stop } 
 	resume { this.start }
@@ -26,28 +23,18 @@ AbstractPlayControl {
 	distributable {Ê^false } // shared proxy support
 
 	loadToBundle {}
-	spawnToBundle {}
-	freeToBundle {}
+	spawnToBundle {} // only active in synthcontrols
+
 	
 	playToBundle { arg bundle, args; 
 		bundle.addAction(this, \play); //no latency (latency is in stream already)
 		^nil //return a nil object instead of a synth
 	}
 	
-	
-	
-	resumeToBundle { arg bundle, args;
-		bundle.addAction(this, \resume);
-	}
-	
 	stopToBundle { arg bundle;
 		bundle.addAction(this, \stop);
 	}
 	
-	stopClientToBundle { arg bundle;
-		//used in shared node proxy
-		this.stopToBundle(bundle);
-	}
 	controlNames { ^[] }
 	controlValues { ^[] }
 	
@@ -86,11 +73,12 @@ StreamControl : AbstractPlayControl {
 			SystemClock.sched(dt, { stream.stop }) 
 		}; 
 	}
+	
 	pause { stream.pause; paused=true }
 	resume { arg clock, quant=1.0; stream.resume(clock, quant); paused=false }
 	
 	isPlaying { ^stream.isPlaying }
-	//free { stream.stop; stream = nil }
+
 	cmdPeriod { stream.stop }
 	
 	playToBundle { arg bundle; 
@@ -108,9 +96,6 @@ StreamControl : AbstractPlayControl {
 		^stream.notNil;
 	}
 	readyForPlay { ^stream.notNil }
-	clear {
-		stream = nil;
-	}
 	
 }
 
@@ -119,12 +104,12 @@ SynthControl : AbstractPlayControl {
 	var >canReleaseSynth=true, >canFreeSynth=true;
 	
 	
-	writeDef { }
 	
 	loadToBundle {} //assumes that SynthDef is loaded in the server 
 	name { ^source }
-	clear { nodeID = nil }
 	distributable { ^canReleaseSynth } // n_free not implemented in shared node proxy
+	isPlaying { ^nodeID.notNil }
+	canReleaseSynth { ^canReleaseSynth } // maybe get this from synthdesclib
 	
 	build { arg proxy; // assumes audio, if proxy is not initialized
 		var rate, desc;
@@ -158,9 +143,7 @@ SynthControl : AbstractPlayControl {
 			});
 			nodeID = nil;
 		});
-	}	
-			
-	stopClientToBundle { }  // used in shared node proxy
+	}
 	
 	pause { arg clock, quant=1;
 		this.run(clock, quant, false); 
@@ -177,8 +160,7 @@ SynthControl : AbstractPlayControl {
 			}, quant)
 		} { paused = flag.not; }
 	}
-	isPlaying { ^nodeID.notNil }
-	canReleaseSynth { ^canReleaseSynth } // maybe get this from synthdesclib
+	
 	synthDesc { var dict;
 		dict = SynthDescLib.global.synthDescs;
 		^if(dict.notNil) { dict.at(source) } {Ênil }; // source is symbol: synth def name
@@ -217,22 +199,15 @@ SynthDefControl : SynthControl {
 			// schedule to avoid hd sleep latency. 
 			// def writing is only for server boot.
 			if(writeDefs, {
-				AppClock.sched(rrand(0.01, 0.3), { this.writeDef; nil });
+				AppClock.sched(rrand(0.01, 0.3), { synthDef.writeDefFile; nil });
 			}); 
 		}, { 
 			synthDef = nil; 
 		})
 	}
 	
-	free {ÊsynthDef = nil }
-	
 	loadToBundle { arg bundle;
 		bundle.addPrepare([5, synthDef.asBytes]); //"/d_recv"
-	}
-	
-
-	writeDef {
-		synthDef.writeDefFile;
 	}
 	
 	name { ^synthDef.name }
