@@ -62,6 +62,7 @@ int gNumCompiledFiles;
 thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 */
 
+#undef ENABLE_LIBRARY_CONFIGURATOR
 LibraryConfig *gLibraryConfig = 0;
 
 PyrSymbol *gCompilingFileSym = 0;
@@ -1712,11 +1713,13 @@ bool passOne_ProcessDir(char *dirname, int level)
 {
 	bool success = true;
 
+#ifdef ENABLE_LIBRARY_CONFIGURATOR
  	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
  	  post("\texcluding dir: '%s'\n", dirname);
  	  return success;
  	}
- 
+#endif
+
  	if (level == 0) post("\tcompiling dir: '%s'\n", dirname);
 
 	DIR *dir = opendir(dirname);	
@@ -1768,9 +1771,11 @@ bool passOne()
 	success = passOne_ProcessDir(gCompileDir, 0);
 	if (!success) return false;
 
+#ifdef ENABLE_LIBRARY_CONFIGURATOR
  	if (gLibraryConfig)
  	  if (!gLibraryConfig->forEachIncludedDirectory(passOne_ProcessDir))
  	    return false;
+#endif
 
 	finiPassOne();
 	return true;
@@ -1810,10 +1815,12 @@ bool passOne_ProcessOneFile(char *filename, int level)
 {
 	bool success = true;
 
+#ifdef ENABLE_LIBRARY_CONFIGURATOR
  	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(filename)) {
  	  post("\texcluding file: '%s'\n", filename);
  	  return success;
  	}
+#endif
 
 	PyrSymbol *fileSym;
 	if (isValidSourceFileName(filename)) {
