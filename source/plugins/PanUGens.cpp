@@ -68,6 +68,11 @@ struct PanB2 : public Unit
 	float m_azimuth, m_level, m_W_amp, m_X_amp, m_Y_amp;
 };
 
+struct BiPanB2 : public Unit
+{
+	float m_azimuth, m_level, m_W_amp, m_X_amp, m_Y_amp;
+};
+
 struct PanAz : public Unit
 {
 	float m_chanamp[16];
@@ -114,6 +119,9 @@ extern "C"
 
 	void PanB2_next(PanB2 *unit, int inNumSamples);
 	void PanB2_Ctor(PanB2* unit);
+
+	void BiPanB2_next(BiPanB2 *unit, int inNumSamples);
+	void BiPanB2_Ctor(BiPanB2* unit);
 
 	void DecodeB2_next(DecodeB2 *unit, int inNumSamples);
 	void vDecodeB2_next(DecodeB2 *unit, int inNumSamples);
@@ -849,11 +857,11 @@ void PanB2_Ctor(PanB2 *unit)
 	int kSineSize = ft->mSineSize;
 	int kSineMask = kSineSize - 1;
 	
-	long iazimuth = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
-	float sina = -ft->mSine[iazimuth];
+	long isinpos = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
+	float sina = -ft->mSine[isinpos];
 	
-	iazimuth = kSineMask & (iazimuth + (kSineSize>>2));
-	float cosa = ft->mSine[iazimuth];
+	long icospos = kSineMask & (isinpos + (kSineSize>>2));
+	float cosa = ft->mSine[icospos];
 	
 	unit->m_W_amp = rsqrt2 * level;
 	unit->m_X_amp = cosa * level;
@@ -881,12 +889,12 @@ void PanB2_next(PanB2 *unit, int inNumSamples)
 	if (azimuth != unit->m_azimuth || level != unit->m_level) {
 		unit->m_azimuth = azimuth;
 		unit->m_level = level;
+
+		long isinpos = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
+		float sina = -ft->mSine[isinpos];
 		
-		long iazimuth = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
-		float sina = -ft->mSine[iazimuth];
-		
-		iazimuth   = kSineMask & (iazimuth + (kSineSize>>2));
-		float cosa = ft->mSine[iazimuth];
+		long icospos = kSineMask & (isinpos + (kSineSize>>2));
+		float cosa = ft->mSine[icospos];
 		
 		float next_W_amp = rsqrt2 * level;
 		float next_X_amp = cosa * level;
@@ -918,6 +926,106 @@ void PanB2_next(PanB2 *unit, int inNumSamples)
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void BiPanB2_next(BiPanB2 *unit, int inNumSamples)
+{
+	float *Wout = ZOUT(0);
+	float *Xout = ZOUT(1);
+	float *Yout = ZOUT(2);
+	
+	float *inA = ZIN(0);
+	float *inB = ZIN(1);
+	float azimuth = ZIN0(2);
+	float level = ZIN0(3);
+
+	float W_amp = unit->m_W_amp;
+	float X_amp = unit->m_X_amp;
+	float Y_amp = unit->m_Y_amp;
+
+	int kSineSize = ft->mSineSize;
+	int kSineMask = kSineSize - 1;
+	if (azimuth != unit->m_azimuth || level != unit->m_level) {
+		unit->m_azimuth = azimuth;
+		unit->m_level = level;
+
+		long isinpos = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
+		float sina = -ft->mSine[isinpos];
+		
+		long icospos = kSineMask & (isinpos + (kSineSize>>2));
+		float cosa = ft->mSine[icospos];
+		
+		float next_W_amp = rsqrt2 * level;
+		float next_X_amp = cosa * level;
+		float next_Y_amp = sina * level;
+				
+		float W_slope = CALCSLOPE(next_W_amp, W_amp);
+		float X_slope = CALCSLOPE(next_X_amp, X_amp);
+		float Y_slope = CALCSLOPE(next_Y_amp, Y_amp);
+		
+		if (W_slope == 0.f) {
+			LOOP(inNumSamples, 
+				float a = ZXP(inA);
+				float b = ZXP(inB);
+				float abdiff = a - b;
+				ZXP(Wout) = (a + b) * W_amp;
+				ZXP(Xout) = abdiff * X_amp;
+				ZXP(Yout) = abdiff * Y_amp;
+				X_amp += X_slope;
+				Y_amp += Y_slope;
+			);
+		} else {
+			LOOP(inNumSamples, 
+				float a = ZXP(inA);
+				float b = ZXP(inB);
+				float abdiff = a - b;
+				ZXP(Wout) = (a + b) * W_amp;
+				ZXP(Xout) = abdiff * X_amp;
+				ZXP(Yout) = abdiff * Y_amp;
+				W_amp += W_slope;
+				X_amp += X_slope;
+				Y_amp += Y_slope;
+			);
+			unit->m_W_amp = W_amp;
+		}
+		unit->m_X_amp = X_amp;
+		unit->m_Y_amp = Y_amp;
+	} else {
+		LOOP(inNumSamples, 
+			float a = ZXP(inA);
+			float b = ZXP(inB);
+			float abdiff = a - b;
+			ZXP(Wout) = (a + b) * W_amp;
+			ZXP(Xout) = abdiff * X_amp;
+			ZXP(Yout) = abdiff * Y_amp;
+		);
+	}
+}
+
+void BiPanB2_Ctor(BiPanB2 *unit)
+{	
+	SETCALC(BiPanB2_next);
+
+	float azimuth = unit->m_azimuth = ZIN0(2);
+	float level = unit->m_level = ZIN0(3);
+
+	int kSineSize = ft->mSineSize;
+	int kSineMask = kSineSize - 1;
+	
+	long iazimuth = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
+	float sina = -ft->mSine[iazimuth];
+	
+	iazimuth = kSineMask & (iazimuth + (kSineSize>>2));
+	float cosa = ft->mSine[iazimuth];
+	
+	unit->m_W_amp = rsqrt2 * level;
+	unit->m_X_amp = cosa * level;
+	unit->m_Y_amp = sina * level;
+	
+	BiPanB2_next(unit, 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void PanAz_Ctor(PanAz *unit)
@@ -993,8 +1101,11 @@ void Rotate2_next_ak(Rotate2 *unit, int inNumSamples)
 	float cost = unit->m_cost;	
 
 	if (pos != unit->m_pos) {
-		int32 isinpos = 8191 & (int32)(4096.f * pos);
-		int32 icospos = 8191 & (2048 + isinpos);
+		int kSineSize = ft->mSineSize;
+		int kSineMask = kSineSize - 1;
+		
+		int32 isinpos = kSineMask & (int32)(pos * (float)(kSineSize >> 1));
+		int32 icospos = kSineMask & ((kSineSize>>2) + isinpos);
 	
 		float nextsint = unit->m_sint = ft->mSine[isinpos];
 		float nextcost = unit->m_cost = ft->mSine[icospos];
@@ -1147,8 +1258,9 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(LinXFade2);
 	DefineSimpleUnit(PanB);
 	DefineSimpleUnit(PanB2);
-	DefineUnit("PanAz", sizeof(PanAz), (UnitCtorFunc)&PanAz_Ctor, 0, kUnitDef_CantAliasInputsToOutputs);
-	DefineUnit("DecodeB2", sizeof(DecodeB2), (UnitCtorFunc)&DecodeB2_Ctor, 0, kUnitDef_CantAliasInputsToOutputs);
+	DefineSimpleUnit(BiPanB2);
+	DefineSimpleCantAliasUnit(PanAz);
+	DefineSimpleCantAliasUnit(DecodeB2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
