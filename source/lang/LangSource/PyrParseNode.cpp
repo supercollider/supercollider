@@ -60,6 +60,7 @@ PyrBlock *gPartiallyAppliedFunction = NULL;
 
 bool gIsTailCodeBranch = false;
 bool gTailIsMethodReturn = false;
+bool gFunctionHasExternalRefs = false;
 #if TAILCALLOPTIMIZE
 bool gGenerateTailCallByteCodes = true;
 #else
@@ -216,6 +217,7 @@ void compilePushVar(PyrParseNode *node, PyrSymbol *varName)
 			}
 		}
 	} else if (varName == s_this || varName == s_super) {
+		gFunctionHasExternalRefs = true;
 		compileOpcode(opPushSpecialValue, opsvSelf);
 	} else if (varName == s_true) {
 		compileOpcode(opPushSpecialValue, opsvTrue);
@@ -1775,6 +1777,7 @@ void PyrCallNode::compileCall(PyrSlot *result)
 	} else if (isSuper) {
 		if (numArgs == 1) {
 			// pushes this as well, don't compile arg
+			gFunctionHasExternalRefs = true;
 			compileTail();
 			compileOpcode(opSendSuper, numArgs);
 			compileByte(index);
@@ -1792,6 +1795,9 @@ void PyrCallNode::compileCall(PyrSlot *result)
 			varname = ((PyrPushNameNode*)argnode)->mSlot.us;
 		} else {
 			varname = NULL;
+		}
+		if (varname == s_this) {
+			gFunctionHasExternalRefs = true;
 		}
 		switch (selType) {
 			case selNormal :
@@ -3116,7 +3122,9 @@ void PyrReturnNode::compile(PyrSlot *result)
 	PyrSlot dummy;
 	
 	//post("->compilePyrReturnNode\n");
+	gFunctionHasExternalRefs = true;
 	if (!mExpr) {
+		gFunctionHasExternalRefs = true;
 		compileOpcode(opSpecialOpcode, opcReturnSelf);
 	} else if (mExpr->mClassno == pn_PushLitNode) {
 		lit = (PyrPushLitNode*)mExpr;
@@ -3601,6 +3609,7 @@ void PyrLitDictNode::compile(PyrSlot* result)
 
 
 extern LongStack closedFuncCharNo;
+extern int lastClosedFuncCharNo;
 
 PyrBlockNode* newPyrBlockNode(PyrArgListNode *arglist, PyrVarListNode *varlist, PyrParseNode *body, bool isTopLevel)
 {
@@ -3611,15 +3620,7 @@ PyrBlockNode* newPyrBlockNode(PyrArgListNode *arglist, PyrVarListNode *varlist, 
 	node->mBody = body;
 	node->mIsTopLevel = isTopLevel;
 	
-	if (isTopLevel) {
-		if (emptyls(&closedFuncCharNo)) {
-			node->mBeginCharNo = 0;
-		} else {
-			node->mBeginCharNo = popls(&closedFuncCharNo);
-		}
-	} else {
-		node->mBeginCharNo = 0;
-	}
+	node->mBeginCharNo = lastClosedFuncCharNo;
 
 	return node;
 }
@@ -3645,7 +3646,11 @@ void PyrBlockNode::compile(PyrSlot* result)
 	block = newPyrBlock(flags);
 	SetObject(slotResult, block);
 	
+	bool prevFunctionHasExternalRefs = gFunctionHasExternalRefs;
+	gFunctionHasExternalRefs = false;
 	prevBlock = gCompilingBlock;
+	PyrClass* prevClass = gCompilingClass;
+
 	gCompilingBlock = block;
 	PyrBlock* prevPartiallyAppliedFunction = gPartiallyAppliedFunction;
 	gPartiallyAppliedFunction = NULL;
@@ -3653,20 +3658,16 @@ void PyrBlockNode::compile(PyrSlot* result)
 	methraw = METHRAW(block);
 	methraw->unused1 = 0;
 	methraw->unused2 = 0;
+	
+	int endCharNo = linestarts[mLineno] + mCharno;
+	int stringLength = endCharNo - mBeginCharNo;
+	int lastChar = text[mBeginCharNo + stringLength - 1];
+	if (lastChar == 0) stringLength--;
 
 	methraw->needsHeapContext = 0;
-	
 	if (mIsTopLevel) {
+		gCompilingClass = class_interpreter;
 		SetNil(&block->contextDef);
-		
-		int endCharNo = linestarts[mLineno] + mCharno;
-		int stringLength = endCharNo - mBeginCharNo;
-		int lastChar = text[mBeginCharNo + stringLength - 1];
-		if (lastChar == 0) stringLength--;
-		
-		PyrString* string = newPyrStringN(compileGC(), stringLength, flags, false);
-		memcpy(string->s, text+mBeginCharNo, stringLength);
-		SetObject(&block->sourceCode, string);
 	} else {
 		SetObject(&block->contextDef, prevBlock);
 	}
@@ -3819,7 +3820,7 @@ void PyrBlockNode::compile(PyrSlot* result)
 	initByteCodes();
 	if (mBody->mClassno == pn_BlockReturnNode) {
 		compileOpcode(opPushSpecialValue, opsvNil);
-	} else {
+	} else {		
 		SetTailBranch branch(true);
 		/*if (compilingCmdLine) {
 			post("block %d\n", gIsTailCodeBranch);
@@ -3831,8 +3832,18 @@ void PyrBlockNode::compile(PyrSlot* result)
 	compileOpcode(opSpecialOpcode, opcFunctionReturn);
 	installByteCodes(block);
 
+	if (!gFunctionHasExternalRefs) {
+			SetNil(&block->contextDef);
+			
+			PyrString* string = newPyrStringN(compileGC(), stringLength, flags, false);
+			memcpy(string->s, text+mBeginCharNo, stringLength);
+			SetObject(&block->sourceCode, string);
+	}
+
 	gCompilingBlock = prevBlock;
+	gCompilingClass = prevClass;
 	gPartiallyAppliedFunction = prevPartiallyAppliedFunction;
+	gFunctionHasExternalRefs = gFunctionHasExternalRefs || prevFunctionHasExternalRefs;
 }
 
 
@@ -4075,17 +4086,21 @@ int conjureConstantIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot)
 	return constants->size-1;
 }
 
-bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name, 
+bool findVarName(PyrBlock* inFunc, PyrClass **classobj, PyrSymbol *name, 
 	int *varType, int *level, int *index, PyrBlock** tempfunc)
 {
 	int i, j, k;
 	int numargs;
 	PyrSymbol *argname, *varname;
 	PyrMethodRaw *methraw;
+	PyrBlock* func = inFunc;
 	
 	//postfl("->findVarName %s\n", name->name);
 	// find var in enclosing blocks, instance, class
-	if (name == s_super) name = s_this;
+	if (name == s_super) {
+		gFunctionHasExternalRefs = true;
+		name = s_this;
+	}
 	if (name->name[0] >= 'A' && name->name[0] <= 'Z') return false;
 	for (j=0; func; func = func->contextDef.uoblk, ++j) {
 		methraw = METHRAW(func);
@@ -4098,6 +4113,7 @@ bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name,
 				*index = i;
 				*varType = varTemp;
 				if (tempfunc) *tempfunc = func;
+				if (func != inFunc) gFunctionHasExternalRefs = true;
 				return true;
 			}
 		}
@@ -4109,6 +4125,7 @@ bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name,
 				*index = k;
 				*varType = varTemp;
 				if (tempfunc) *tempfunc = func;
+				if (func != inFunc) gFunctionHasExternalRefs = true;
 				return true;
 			}
 		}
@@ -4117,10 +4134,12 @@ bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name,
 	if (classFindInstVar(*classobj, name, index)) {
 		*level = 0;
 		*varType = varInst;
+		if (gCompilingClass != class_interpreter) gFunctionHasExternalRefs = true;
 		return true;
 	}
 	if (classFindClassVar(classobj, name, index)) {
 		*varType = varClass;
+		if (gCompilingClass != class_interpreter) gFunctionHasExternalRefs = true;
 		return true;
 	}
 	if (name == s_curProcess) {
@@ -4148,22 +4167,6 @@ bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name,
 		*index = opgFunction;
 		return true;
 	}
-	/*
-	if (name == s_sampleRate) {
-		*varType = varPseudo;
-		*index = opgSampleRate;
-		return true;
-	}
-	if (name == s_logicalClock) {
-		*varType = varPseudo;
-		*index = opgLogicalClock;
-		return true;
-	}
-	if (name == s_audioClock) {
-		*varType = varPseudo;
-		*index = opgAudioClock;
-		return true;
-	}*/
 	return false;
 }
 

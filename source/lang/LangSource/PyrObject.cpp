@@ -68,6 +68,7 @@ PyrClass *class_doublearray;
 PyrClass *class_func, *class_absfunc;
 PyrClass *class_stream;
 PyrClass *class_process;
+PyrClass *class_interpreter;
 PyrClass *class_thread;
 PyrClass *class_routine;
 PyrClass *class_finalizer;
@@ -908,6 +909,8 @@ int compareColDescs(const void *va, const void *vb)
 	return diff;
 }
 
+double elapsedTime();
+
 void buildBigMethodMatrix()
 {
 	PyrMethod **bigTable, **temprow, **row;
@@ -920,6 +923,8 @@ void buildBigMethodMatrix()
 	int numSelectors = gNumSelectors;
 	int numClasses = gNumClasses;
 	//post("allocate arrays\n");
+	
+	double t0 = elapsedTime();
 	
 	// pyrmalloc: 
 	// lifetime: kill after compile
@@ -939,6 +944,14 @@ void buildBigMethodMatrix()
 	}
 	
 	fillClassRow(class_object, bigTable);
+	
+	{
+		int numentries = 0;
+		for (int z = 0; z<bigTableSize; ++z) {
+			if (bigTable[z] != NULL) numentries ++ ;
+		}
+		post("numentries = %d / %d = %.2g\n", numentries, bigTableSize, (double)numentries/(double)bigTableSize);
+	}
 	
 	// fill selector table
 	//post("fill selector table\n");
@@ -1062,7 +1075,8 @@ void buildBigMethodMatrix()
 	//post("freeIndex %d\n", freeIndex);
 	//post("widthSum %d\n", widthSum);
 	//post("popSum %d\n", popSum);
-#if 0
+#if 1
+	post("building table took %.3g seconds\n", elapsedTime() - t0);
 	{
 		int numFilled = 0;
 		for (i=0; i<rowTableSize/sizeof(PyrMethod*); ++i) {
@@ -1075,7 +1089,7 @@ void buildBigMethodMatrix()
 	post("\tMethod Table Size %d bytes\n", rowTableSize);
 	post("\tNumber of Method Selectors %d\n", numSelectors);
 	post("\tNumber of Classes %d\n", numClasses);
-	//post("big table size %d\n", numSelectors * numClasses * sizeof(PyrMethod*));
+	post("\tbig table size %d\n", numSelectors * numClasses * sizeof(PyrMethod*));
 	//postfl("%08X %08X %08X\n", classes, bigTable, sels);
 /*	
 	// not necessary since the entire pool will be freed..
@@ -1345,6 +1359,17 @@ void initClasses()
 		addIntrinsicVar(class_process, "curThread", &o_nil);
 		addIntrinsicVar(class_process, "mainThread", &o_nil);
 		addIntrinsicVar(class_process, "schedulerQueue", &o_nil);
+		
+	class_interpreter = makeIntrinsicClass(s_interpreter, s_object, 29, 0); 
+		addIntrinsicVar(class_interpreter, "cmdLine", &o_nil);
+		addIntrinsicVar(class_interpreter, "context", &o_nil);
+		for (int i=0; i<26; ++i) {
+			char name[2];
+			name[0] = 'a' + i;
+			name[1] = 0;
+			addIntrinsicVar(class_interpreter, name, &o_nil);
+		}
+		addIntrinsicVar(class_interpreter, "codeDump", &o_nil);
 
 	class_absfunc = makeIntrinsicClass(s_absfunc, s_object, 0, 0); 
 	class_stream = makeIntrinsicClass(s_stream, s_absfunc, 0, 0); 

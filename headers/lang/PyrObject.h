@@ -161,6 +161,7 @@ extern struct PyrClass *class_doublearray;
 extern struct PyrClass *class_func, *class_absfunc;
 extern struct PyrClass *class_stream;
 extern struct PyrClass *class_process;
+extern struct PyrClass *class_interpreter;
 extern struct PyrClass *class_thread;
 extern struct PyrClass *class_routine;
 extern struct PyrClass *class_finalizer;

@@ -154,7 +154,7 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 {
 	PyrProcess *proc;
 	PyrInterpreter *interpreter;
-	PyrClass *classobj, *class_interpreter;
+	PyrClass *classobj;
 	PyrObject *classVars;
 	PyrObject *classVarArray;
 	PyrThread *thread;
@@ -208,43 +208,37 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 		error("Class Thread not found.\n");
 	}
 	
-	class_interpreter = s_interpreter->u.classobj;
-	if (class_interpreter) {
-		PyrSymbol *contextsym;
-		int index;
-		PyrMethod *meth;
-		
-		contextsym = getsym("functionCompileContext");
-		index = class_interpreter->classIndex.ui + contextsym->u.index;
-		meth = gRowTable[index];
-		if (!meth || meth->name.us != contextsym) {
-			error("compile context method 'functionCompileContext' not found.\n");
-			//SetNil(&proc->interpreter);
-		} else {
-			PyrObject *proto;
-			PyrFrame *frame;
-			PyrMethodRaw *methraw;
-			
-			interpreter = (PyrInterpreter*)instantiateObject(gc, class_interpreter, 0, true, false);
-			SetObject(&proc->interpreter, interpreter);
-			proto = meth->prototypeFrame.uo;
-		
-			methraw = METHRAW(meth);
-			frame = (PyrFrame*)gc->New(methraw->frameSize, 0, obj_slot, false);
-			frame->classptr = class_frame;
-			frame->size = FRAMESIZE + proto->size; /// <- IS THIS WRONG ??
-			SetObject(&frame->method, meth);
-			SetObject(&frame->homeContext, frame);
-			SetNil(&frame->caller);
-			SetNil(&frame->context);
-			SetInt(&frame->ip,  0);
-			SetObject(&frame->vars[0], interpreter);
-			
-			SetObject(&interpreter->context, frame);
-		}
-	} else {
-		error("Class Interpreter not found.\n");
+	PyrSymbol *contextsym;
+	int index;
+	PyrMethod *meth;
+	
+	contextsym = getsym("functionCompileContext");
+	index = class_interpreter->classIndex.ui + contextsym->u.index;
+	meth = gRowTable[index];
+	if (!meth || meth->name.us != contextsym) {
+		error("compile context method 'functionCompileContext' not found.\n");
 		//SetNil(&proc->interpreter);
+	} else {
+		PyrObject *proto;
+		PyrFrame *frame;
+		PyrMethodRaw *methraw;
+		
+		interpreter = (PyrInterpreter*)instantiateObject(gc, class_interpreter, 0, true, false);
+		SetObject(&proc->interpreter, interpreter);
+		proto = meth->prototypeFrame.uo;
+	
+		methraw = METHRAW(meth);
+		frame = (PyrFrame*)gc->New(methraw->frameSize, 0, obj_slot, false);
+		frame->classptr = class_frame;
+		frame->size = FRAMESIZE + proto->size; /// <- IS THIS WRONG ??
+		SetObject(&frame->method, meth);
+		SetObject(&frame->homeContext, frame);
+		SetNil(&frame->caller);
+		SetNil(&frame->context);
+		SetInt(&frame->ip,  0);
+		SetObject(&frame->vars[0], interpreter);
+		
+		SetObject(&interpreter->context, frame);
 	}
 	
 	return proc;

@@ -105,6 +105,7 @@ bool gDebugLexer = false;
 bool gShowWarnings = false;
 LongStack brackets;
 LongStack closedFuncCharNo;
+int lastClosedFuncCharNo = 0;
 
 char *binopchars = "!@%&*-+=|<>?/";
 char yytext[MAXYYLEN];
@@ -267,6 +268,7 @@ bool startLexer(char* filename)
 	
 	initLongStack(&brackets);
 	initLongStack(&closedFuncCharNo);
+	lastClosedFuncCharNo = 0;
 	textpos = 0;
 	linepos = 0;
 	lineno = 1;
@@ -304,6 +306,7 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 		
 	initLongStack(&brackets);
 	initLongStack(&closedFuncCharNo);
+	lastClosedFuncCharNo = 0;
 	textpos = 0;
 	linepos = 0;
 	lineno = 1;
@@ -441,6 +444,9 @@ start:
 	else if (c >= '0' && c <= '9') goto digits_1;
 	else if (c == OPENPAREN || c == OPENSQUAR || c == OPENCURLY) {
 		pushls(&brackets, (int)c);
+		if (c == OPENCURLY) {
+			pushls(&closedFuncCharNo, linestarts[lineno] + charno - 1);
+		}
 		r = c;
 		goto leave;
 	}
@@ -481,6 +487,7 @@ start:
 				post("opening bracket was a '%c', but found a '%c'\n",d,c);
 				goto error2;
 			}
+			lastClosedFuncCharNo = popls(&closedFuncCharNo);
 		} else {
 			fatal();
 			post("unmatched '%c'\n",c);
@@ -515,10 +522,9 @@ start:
 			
 	}
 	else if (c == '#') { 
-		int charno1 = linestarts[lineno] + charno - 1;
 		if ((c = input()) == OPENCURLY) {
 			pushls(&brackets, OPENCURLY);
-			pushls(&closedFuncCharNo, charno1);
+			pushls(&closedFuncCharNo, linestarts[lineno] + charno - 2);
 			r = BEGINCLOSEDFUNC;
 		} else {
 			unput(c); 
