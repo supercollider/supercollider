@@ -103,7 +103,15 @@ SCSoundFileView : SCScope{
 	setSelectionSize{|index,frame|
 		this.setProperty(\selectionSize, [index,frame]);
 	}
-
+	
+	setEditableSelectionStart{|index, bool|
+		this.setProperty(\selectionStartIsEditable, [index, bool]);
+	}
+	
+	setEditableSelectionSize{|index, bool|
+		this.setProperty(\selectionSizeIsEditable, [index, bool]);
+	}
+		
 	setSelectionColor{|index,color|
 		this.setProperty(\selectionColor, [index, color]);
 	}
@@ -174,6 +182,7 @@ SCSoundFileView : SCScope{
 		elasticMode =mode;
 		this.setProperty(\elasticResizeMode, mode);
 	}	
+	
 	drawsWaveForm_{|bool|
 		drawsWaveForm = bool;
 		this.setProperty(\drawsWaveForm, bool);
@@ -190,8 +199,6 @@ SCSoundFileView : SCScope{
 	timeCursorColor_{|color|
 		this.setProperty(\timeCursorColor, color)		
 	}
-	
-	
 	
 }
 
