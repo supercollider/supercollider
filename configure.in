@@ -131,9 +131,10 @@ SC_LANG_PKG_CFLAGS="$sc_os_cflags $sc_common_includes $sc_lang_includes $sc_serv
 # ======================================================================
 
 AC_ARG_ENABLE(debug,
-AC_HELP_STRING([--enable-debug],[enable debugging features]))
+AC_HELP_STRING([--enable-debug],[enable debugging features]),
+[enable_debug=$enableval],[enable_debug=no])
 
-if test "x$enable_debug" = "xyes" ; then
+if test "$enable_debug" = "yes" ; then
 	feat_debug=yes
 	# add debugging flags
 	AC_MSG_NOTICE([enabling debugging symbols])
@@ -152,11 +153,8 @@ dnl appropriate alignment value
 SC_MEMORY_ALIGNMENT=1
 
 AC_ARG_ENABLE(altivec,
-AC_HELP_STRING([--disable-altivec],[disable altivec optimizations]))
-
-if test "x$enable_altivec" = "x"; then
-	enable_altivec="yes"
-fi
+AC_HELP_STRING([--disable-altivec],[disable altivec optimizations]),
+[enable_altivec=$enableval],[enable_altivec=yes])
 
 # ======================================================================
 # target cpu specific
@@ -206,7 +204,10 @@ esac
 # defines dependent on previous checks
 # ======================================================================
 
-AC_DEFINE_UNQUOTED([SC_MEMORY_ALIGNMENT],[$SC_MEMORY_ALIGNMENT],[Memory alignment for audio buffers])
+AC_DEFINE_UNQUOTED(
+[SC_MEMORY_ALIGNMENT],
+[$SC_MEMORY_ALIGNMENT],
+[Memory alignment for audio buffers])
 
 if test $SC_MEMORY_ALIGNMENT != 1; then
 	AC_CHECK_FUNC(
@@ -235,17 +236,13 @@ AC_SUBST(SC_AUDIO_API_CFLAGS)
 AC_SUBST(SC_AUDIO_API_LIBS)
 
 AC_ARG_WITH(audio-api,
-AC_HELP_STRING([--with-audio-api],[audio api to use (jack, portaudio, default=jack)]))
+AC_HELP_STRING([--with-audio-api],[audio api to use (jack, portaudio, default=jack)]),
+[feat_audio_api=$withval],[feat_audio_api=jack])
 
 dnl needed?
 AC_ARG_WITH(portaudio-libs,
 AC_HELP_STRING([--with-portaudio-libs],[additional libraries required for libportaudio, e.g. "-ljack -lasound"]))
 
-if test "x$with_audio_api" = "x"; then
-	feat_audio_api="jack"
-else
-	feat_audio_api="$with_audio_api"
-fi
 case "$feat_audio_api" in
 	jack)
 		jack_pkg="jack >= 0.40"
@@ -307,11 +304,9 @@ AC_SUBST(SC_X11_LIBS)
 
 # wether to build the language
 AC_ARG_WITH(sclang,
-AC_HELP_STRING([--without-sclang],[do not build the language application]))
+AC_HELP_STRING([--without-sclang],[do not build the language application]),
+[with_sclang=$withval],[with_sclang=yes])
 
-if test "x$with_sclang" = "x"; then
-	with_sclang="yes"
-fi
 if test "$with_sclang" = "yes"; then
 	WITH_SCLANG=true
 	feat_sclang="yes"
@@ -351,11 +346,9 @@ fi
 
 # linux input layer support
 AC_ARG_ENABLE(lid,
-AC_HELP_STRING([--enable-lid],[enable linux input device support]))
+AC_HELP_STRING([--enable-lid],[enable linux input device support]),
+[enable_lid=$enableval],[enable_lid=no])
 
-if test "x$enable_lid" = "x"; then
-	enable_lid="no"
-fi
 if test "$enable_lid" = "yes"; then
 	AC_CHECK_HEADER(
 	[linux/input.h],
@@ -373,11 +366,9 @@ fi
 
 # class library
 AC_ARG_ENABLE(library,
-AC_HELP_STRING([--disable-library],[do not install the class library]))
+AC_HELP_STRING([--disable-library],[do not install the class library]),
+[enable_library=$enableval],[enable_library=yes])
 
-if test "x$enable_library" = "x"; then
-	enable_library="yes"
-fi
 if test "$enable_library" = "yes"; then
 	WITH_LIBRARY=true
 	feat_library="yes"
@@ -389,11 +380,9 @@ AM_CONDITIONAL(WITH_LIBRARY, $WITH_LIBRARY)
 
 # scel emacs interface
 AC_ARG_ENABLE(scel,
-AC_HELP_STRING([--disable-scel],[disable emacs interface]))
+AC_HELP_STRING([--disable-scel],[disable emacs interface]),
+[enable_scel=$enableval],[enable_scel=yes])
 
-if test "x$enable_scel" = "x"; then
-	enable_scel="yes"
-fi
 if $WITH_SCLANG && test "$enable_scel" = "yes"; then
 	feat_scel=yes
 	WITH_SCEL=true

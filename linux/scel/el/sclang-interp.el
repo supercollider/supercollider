@@ -42,6 +42,13 @@ Zero means no limit."
   :version "21.3"
   :type 'integer)
 
+(defcustom sclang-auto-scroll-post-buffer nil
+  "*Automatically scroll post buffer on output regardless of point position.
+Default behavior is to only scroll when point is not at end of buffer."
+  :group 'sclang-interface
+  :version "21.3"
+  :type 'boolean)
+
 (defun sclang-get-post-buffer ()
   (get-buffer-create sclang-post-buffer))
 
@@ -222,23 +229,26 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   (when (memq (process-status proc) '(exit signal))
     (sclang--on-library-shutdown)))
 
-(defun sclang--process-filter (proc string)
-  (let ((buffer (process-buffer proc)))
+(defun sclang--process-filter (process string)
+  (let ((buffer (process-buffer process)))
     (with-current-buffer buffer
       (when (and (> sclang-max-post-buffer-size 0)
 		 (> (buffer-size) sclang-max-post-buffer-size))
 	(erase-buffer))
-      (let ((moving (= (point) (process-mark proc))))
+      (let ((move-point (or sclang-auto-scroll-post-buffer
+			    (= (point) (process-mark process)))))
 	(save-excursion
 	  ;; Insert the text, advancing the process marker.
-	  (goto-char (process-mark proc))
+	  (goto-char (process-mark process))
 	  (insert string)
-	  (set-marker (process-mark proc) (point)))
-	(when moving
-	  (goto-char (process-mark proc))
-	  (dolist (window (window-list))
-	    (when (eq buffer (window-buffer window))
-	      (set-window-point window (process-mark proc)))))))))
+	  (set-marker (process-mark process) (point)))
+	(when move-point
+	  (goto-char (process-mark process))
+	  (walk-windows
+	   (lambda (window)
+	     (when (eq buffer (window-buffer window))
+	       (set-window-point window (process-mark process))))
+	   nil t))))))
 
 ;; =====================================================================
 ;; process startup/shutdown
@@ -286,7 +296,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 		       sclang-program (sclang-make-options))))
       (set-process-sentinel proc 'sclang--process-sentinel)
       (set-process-filter proc 'sclang--process-filter)
-      (set-process-coding-system proc 'latin-1-unix 'latin-1-unix)
+      (set-process-coding-system proc 'mule-utf-8 'mule-utf-8)
       (process-kill-without-query proc)
       proc)))
 
