@@ -1,0 +1,53 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 AbstractPlayerGui
+\f1\b0\fs24 \
+\
+superclass: 
+\f0\b ObjectGui
+\f1\b0 \
+\
+This is the parent class for all gui classes of AbstractPlayer subclasses.\
+Usually the only method you need to implement in your subclass is 
+\f0\b guiBody
+\f1\b0 \
+\
+to the ObjectGui implementation it adds\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 topGui
+\f1\b0 \
+	does\
+		synthConsole\
+		saveConsole\
+	does writeName\
+	does guiBody\
+	then shrinks the window to fit\
+
+\f0\b writeName
+\f1\b0 \
+	the color of the name label is different if the object has a path (was loaded from disk)\
+
+\f0\b saveConsole
+\f1\b0 \
+	standard save controls. you can override this method in subclasses to customise.\
+
+\f0\b synthConsole
+\f1\b0 \
+	standard play/record/etc. controls.   you can override this method in \
+	subclasses to customise.\
+
+\f0\b durationString
+\f1\b0 \
+	returns a formatted string representing the minutes:seconds duration of the player\
+
+\f0\b durationGui
+\f1\b0 (layout)\
+	subclasses can call this to add a display of the duration of the player.  it will\
+	update itself when the player changes and also when the Tempo (global) changes.\
+\
+	}

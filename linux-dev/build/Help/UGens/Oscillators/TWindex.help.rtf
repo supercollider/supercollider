@@ -1,0 +1,82 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green0\blue0;
+\red0\green0\blue191;\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 TWindex				
+\fs24 triggered windex
+\f1\b0\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+	TWindex.kr(trig,array,normalize)\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 When triggered, returns a random index value based on array as a list of probabilities.\
+by default the list of probabilities should sum to 1.0, when the normalize flag is set to 1,\
+the values get normalized by the ugen (less efficient)
+\f0\b \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf2 \
+\cf3 //assuming normalized values\
+\cf4 (\
+\
+a = \cf5 SynthDef\cf4 (\cf6 "help-TWindex"\cf4 ,\{ \cf5 arg\cf4  w1=0.0, w2=0.5, w3=0.5;\
+\
+	\cf5 var\cf4  trig, index;\
+	trig = \cf5 Impulse\cf4 .kr(6);\
+	index = \cf5 TWindex\cf4 .kr(trig, [w1, w2, w3]);\
+	\
+	\cf5 Out\cf4 .ar(0,\
+		\cf5 SinOsc\cf4 .ar(\
+			\cf5 Select\cf4 .kr(index,[400, 500, 600]),\
+			0, 0.2\
+		)\
+	)\
+\}).play;\
+\
+)\
+\
+a.setn(0, [0,0,1].normalizeSum);\
+a.setn(0, [1,1,1]\cf0 .normalizeSum\cf4 );\
+a.setn(0, [1,0,1].normalizeSum);\
+\
+\
+\cf3 //modulating probability values\
+\cf4 (\
+\
+a = \cf5 SynthDef\cf4 (\cf6 "help-TWindex"\cf4 ,\{ \cf5 arg\cf4  w1=0.0, w2=0.5;\
+\
+	\cf5 var\cf4  trig, index;\
+	trig = \cf5 Impulse\cf4 .kr(6);\
+	index = \cf5 TWindex\cf4 .kr(\
+					trig, \
+					[w1, w2, \cf5 SinOsc\cf4 .kr(0.3, 0, 0.5, 0.5)],\cf3 //modulate probability\
+\cf4 					1 \cf3 //do normalisation\
+\cf4 		); \
+	\
+	\cf5 Out\cf4 .ar(0,\
+		\cf5 SinOsc\cf4 .ar(\
+			\cf5 Select\cf4 .kr(index,[400, 500, 600]),\
+			0, 0.2\
+		)\
+	)\
+\}).play;\
+\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+a.setn(0, [0,0]);\
+a.setn(0, [1,1]);\
+a.setn(0, [1,0]);\
+a.setn(0, [0,1]);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+}

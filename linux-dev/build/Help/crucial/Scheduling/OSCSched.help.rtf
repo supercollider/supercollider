@@ -1,0 +1,309 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
+\red191\green0\blue0;}
+\vieww9000\viewh9000\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 OSCSched \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 A scheduler for sending OSC messages to servers.  \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+The message is kept on the client until the last possible moment, and then actually sent to the server in a time stamped bundle, just before it is due to be executed.\
+\
+Messages can be scheduled for precise execution using relative seconds, relative beats, absolute seconds or absolute beats.  Messages can be scheduled on multiple servers, with exact simultaneous execution times.\
+\
+Messages can be easily cancelled up until the time they are sent to the server.  They are sent to the server just before execution.\
+\
+The Tempo class is used to specify what the tempo is, and is used for all beat <-> second calculations. A default global Tempo object is used, or you can create a specific Tempo instance if y'all got your own separate grooves.\
+\
+There is a default global OSCSched that can be addressed through class methods.  It uses the SystemClock and the default global Tempo.  You may also create individual instances that maintain their own scheduling queues, tempii, and time epochs.\
+\
+The default clock used is the SystemClock, but you may also specify to use the AppClock.\
+\
+The OSC message may be a single message or a bundle.  \
+\
+An optional clientSideFunction can also be supplied that will be evaluated on the client at the exact time as the OSC message is scheduled to happen.  This could be used to show a change in the gui or to update some setting on a client side object.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 All of these methods exist as both \
+	class (the default global scheduler) \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 		\cf2 OSCSched\cf0 .tsched(seconds,server,message,clientSideFunction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 	and instance methods (a specific scheduler). \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 		oscSched = \cf2 OSCSched\cf0 .new;\
+		oscSched.tsched(seconds,server,message,clientSideFunction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 \
+\
+		
+\f1\b0 \
+
+\f0\b tsched(seconds,server,message,clientSideFunction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0        time based scheduling\
+        delta specified in seconds\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 xtsched( seconds,server,message,clientSideFunction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	exclusive time based schedule\
+	any previous messages scheduling using xtsched, xsched or xqsched will \
+	be cancelled. this is incredibly useful in situations where several messages \
+	might be sent and you only want the last one to be used as the final answer.\
+	example:  a monkey is hitting many buttons, changing his mind about which \
+	sound to play next. this would result in many messages being stacked up all \
+	at the same time, and the server would choke trying to execute them all.  \
+	this is a kind of enforced monophony.\
+	another example:  a sequence plays successive notes.  \
+	you switch to a different sequence.  	you don't want the note that was \
+	scheduled from the previous sequence to happen.  	using one of the \
+	x-methods, you don't have to worry about it.\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 sched(beats,server,message,clientSideFunction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0         delta specified in beats\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 xsched(beats,server,message,clientSideFunction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	exclusive beat based scheduling\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 	\
+qsched(quantize,server,message,clientSideFunction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0         will happen at the next even division ( 4.0 means on the downbeat of a 4/4 bar ),\
+        or immediately if you happen to be exactly on a division.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 xqsched(quantize,server,message,clientSideFunction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	exclusive quantized beat based scheduling\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 	\
+tschedAbs(time,server,message,clientSideFunction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0         will happen at the time specified in seconds\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 schedAbs(beat,server,message,clientSideFunction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0         will happen at the beat specified.  changing the Tempo before this occurs\
+        will cause unpredictable results.  actually, its quite predictable:  you're screwed. \
+        for now.  an SC2 style solution to this is pending.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 xblock\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	blocks any and all pending x-scheduled messages.\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 time\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0         get the scheduler's time\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 time_(seconds)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0         set the scheduler's time        \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 beat\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0         get the scheduler's current beat\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 beat_(beat)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0         set the scheduler's current beat.\
+        this is also used to start a "song":  zero the beat, and all absolute times\
+        previously scheduled events will be unpredictable\
+ 
+\f0\b deltaTillNext(quantizeDivision)\
+
+\f1\b0  	returns the number of seconds untiil the next quantizeDivision.\
+ 	4.0 means the next even bar\
+ 	16.0 means the next 4 bar cycle\
+ 	0.25 means the next 16th note\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0  	
+\f1\b0 \
+        \
+
+\f0\b clear\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0         clear all scheduled events. \
+        \
+ \
+All of the x-methods establish a block such that a subsequent schedule using another x-method will cause the previous one to be cancelled.  This is particularily useful when you are controlling something from a gui or process, and change your mind before the event you have triggered comes due.  Another example is a pattern that returns delta beat values, repeatedly scheduling its next note at the time of playing the current one.  To switch the pattern with another or abruptly start it over, simply do so: if you used xsched, then the previously scheduled event will be cancelled.\
+In most cases, you will wish to create a private instance of OSCSched when using this technique.\
+\
+\
+warning: older examples, not tested recently\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 load all of these for use in all following examples\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 s = \cf2 Server\cf0 .local;\
+s.boot;\
+(\
+\cf2 SynthDef\cf0 (\cf3 "bubbles"\cf0 , \{\
+	\cf2 var\cf0  f, zout;\
+	f = \cf2 LFSaw\cf0 .kr(0.4, 0, 24, \cf2 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps;\
+	zout = \cf2 CombN\cf0 .ar(\cf2 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4);\
+	\cf2 Out\cf0 .ar(0, zout);\
+\}).send(s);\
+\
+i = [ \cf4 '/s_new'\cf0 , \cf3 "bubbles"\cf0 , 1002, 1, 0 ];\
+o = [ \cf4 '/n_free'\cf0 , 1002 ];\
+\
+c = \cf2 OSCSched\cf0 .new;\
+)\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // unitialised, the scheduler's time is number of seconds \
+// since SC itself started up\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 c.time.postln;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // defaults to 1.0 beats per second\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Tempo\cf0 .tempo.postln;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // number of beats since SC itself started up\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 c.beat.postln;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // set the default global Tempo\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Tempo\cf0 .bpm = 96;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // how many of those beats since time started\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 c.beat.postln;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // tell the scheduler what beat we think it is\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 c.beat = 0.0;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // how beats since time started\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 c.beat.postln;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // start in 2.0 beats\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 c.sched(2.0,s,i,\{\
+	\cf3 "starting"\cf0 .postln;\
+\});\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // free the synth on the next even bar\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 c.qsched(4.0,s,o,\{\
+	c.beat.postln; \cf5 // note the floating point imprecision\
+\cf0 \});\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // start in 4.0 seconds\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 c.tsched(4.0,s,i,\{\
+	\cf3 "starting"\cf0 .postln;\
+\});\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Absolute Beat / Time scheduling\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \
+c.clear;\
+\
+\
+(\
+c.beat = 32.0; \cf5 // we are starting at beat 32\cf0 \
+c.schedAbs(36.0,s,i); \cf5 // in\
+\cf0 c.schedAbs(39.0,s,o);	\cf5 // out\
+\cf0 c.schedAbs(41.0,s,o); \cf5 // out\
+\cf0 c.schedAbs(40.0,s,i); \cf5 // but first in\cf0 \
+c.schedAbs(43.0,s,i,\{\
+	c.schedAbs(42.0,s,o,\{\
+		\cf3 "this will never happen, its in the past"\cf0 .postln;\
+	\});\cf5 \
+\cf0 	c.schedAbs(46.0,s,o);\
+\});\
+)\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 Exclusive \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 \
+(\
+c.xsched(4.0,s,i,\{\
+	\cf3 "4.0"\cf0 .postln;	\
+\});\
+c.sched(8.0,s,o); \cf5 // not affected\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // changed my mind...\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 c.xsched(3.0,s,i,\{ \cf5 // the x-methods are exclusive\
+\cf0 	\cf3 "3.0"\cf0 .postln;	\
+\});\
+)\
+\
+\
+\
+}

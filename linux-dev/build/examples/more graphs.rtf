@@ -1,0 +1,240 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red191\green0\blue0;\red0\green115\blue0;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs18 \cf2 (\
+\
+\cf3 SynthDef\cf2 (\cf4 "bubbles"\cf2 , \{\
+	\cf3 var\cf2  f, zout;\
+	f = \cf3 LFSaw\cf2 .kr(0.4, 0, 24, \cf3 LFSaw\cf2 .kr([8,7.23], 0, 3, 80)).midicps; \cf5 // glissando function\
+\cf2 	zout = \cf3 CombN\cf2 .ar(\cf3 SinOsc\cf2 .ar(f, 0, 0.04), 0.2, 0.2, 4); \cf5 // echoing sine wave\
+\cf2 	\cf3 Out\cf2 .ar(0, zout.postln);\
+\}).writeDefFile;\
+\
+\cf3 SynthDef\cf2 (\cf4 "moto-rev"\cf2 , \{\
+	\cf3 var\cf2  x;\
+	x = \cf3 RLPF\cf2 .ar(\cf3 LFPulse\cf2 .ar(\cf3 SinOsc\cf2 .kr(0.2, 0, 10, 21), [0,0.1], 0.1), 100, 0.1).clip2(0.4);\
+	\cf3 Out\cf2 .ar(0, x);\
+\}).writeDefFile;\
+\
+\cf3 SynthDef\cf2 (\cf4 "thru"\cf2 , \{ \cf3 arg\cf2  out, gate=1;\
+	\cf3 var\cf2  zin, zout, env;\
+	env = \cf3 Linen\cf2 .kr(gate, 2, 1, 2);\
+	\cf3 XOut\cf2 .ar(out, env, \cf3 ClipNoise\cf2 .ar([0.1,0.1]));\
+	\cf3 FreeSelfWhenDone\cf2 .kr(env);\
+\}).writeDefFile;\
+\
+\cf3 SynthDef\cf2 (\cf4 "wah"\cf2 , \{ \cf3 arg\cf2  out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq=0.1, wet=1, gate=1;\
+	\cf3 var\cf2  zin, zout, env;\
+	zin = \cf3 In\cf2 .ar(out, 2);\
+	cfreq = \cf3 Lag3\cf2 .kr(cfreq, 0.1);\
+	mfreq = \cf3 Lag3\cf2 .kr(mfreq, 0.1);\
+	env = \cf3 Linen\cf2 .kr(gate, 1, 1, 1);\
+	wet  = \cf3 Ramp\cf2 .kr(wet, 0.1);\
+	rq   = \cf3 Ramp\cf2 .kr(rq, 0.1);\
+	zout = \cf3 RLPF\cf2 .ar(zin, \cf3 LFNoise1\cf2 .kr(rate, mfreq, cfreq), rq, 10).distort * 0.15;\
+	\cf3 XOut\cf2 .ar(out, wet * env, zout);\
+	\cf3 FreeSelfWhenDone\cf2 .kr(env);\
+\}).writeDefFile;\
+\
+\cf3 SynthDef\cf2 (\cf4 "combdist"\cf2 , \{ \cf3 arg\cf2  out, freq = 400, decay=2, wet=1, gate=1;\
+	\cf3 var\cf2  zin, zout, env;\
+	zin = \cf3 In\cf2 .ar(out, 2);\
+	freq = \cf3 Lag3\cf2 .kr(freq, 0.1);\
+	env = \cf3 Linen\cf2 .kr(gate, 1, 1, 1);\
+	wet  = \cf3 Ramp\cf2 .kr(wet, 0.1);\
+	zout = \cf3 CombN\cf2 .ar(zin, 24.midicps.reciprocal, freq.reciprocal, decay).distort.reverse; \
+	\cf3 XOut\cf2 .ar(out, wet * env, zout);\
+	\cf3 FreeSelfWhenDone\cf2 .kr(env);\
+\}).writeDefFile;\
+\
+\cf3 SynthDef\cf2 (\cf4 "echo"\cf2 , \{ \cf3 arg\cf2  out, maxdelay = 0.5, delay = 0.4, decay=3, wet=1, gate=1;\
+	\cf3 var\cf2  zin, zout, env;\
+	zin = \cf3 In\cf2 .ar(out, 2);\
+	delay = \cf3 Lag3\cf2 .kr(delay, 0.1);\
+	env = \cf3 Linen\cf2 .kr(gate, 1, 1, 1);\
+	wet  = \cf3 Ramp\cf2 .kr(wet, 0.1);\
+	zout = \cf3 CombN\cf2 .ar(zin * env, maxdelay, delay, decay).reverse; \
+	\cf3 XOut\cf2 .ar(out, wet * env, zout);\
+	\cf3 FreeSelfWhenDone\cf2 .kr(env);\
+\}).writeDefFile;\
+\
+\cf3 SynthDef\cf2 (\cf4 "reverb"\cf2 , \{ \cf3 arg\cf2  out, decay=6, wet=1, gate=1;\
+	\cf3 var\cf2  zin, zout, env;\
+	zout = \cf3 In\cf2 .ar(out, 2);\
+	env = \cf3 Linen\cf2 .kr(gate, 0.1, 1, 0.1);\
+	wet = \cf3 Ramp\cf2 .kr(wet, 0.1);\
+	decay = \cf3 Ramp\cf2 .kr(decay, 0.1);\
+	8.do(\{ \
+		zout = \cf3 AllpassN\cf2 .ar(zout, 0.04, \{\cf3 Rand\cf2 (0.001,0.04)\}.dup, decay) \
+	\});\
+	\cf3 XOut\cf2 .ar(out, wet * env, zout);\
+	\cf3 FreeSelfWhenDone\cf2 .kr(env);\
+\}).writeDefFile;\
+\
+\cf3 SynthDef\cf2 (\cf4 "ring-mod"\cf2 , \{ \cf3 arg\cf2  out, freq=800, wet=1, gate=1;\
+	\cf3 var\cf2  zin, zout, env;\
+	freq = \cf3 Ramp\cf2 .kr(freq, 0.1);\
+	env = \cf3 Linen\cf2 .kr(gate, 1, 1, 1);\
+	wet  = \cf3 Ramp\cf2 .kr(wet, 0.1);\
+	zin = \cf3 In\cf2 .ar(out, 2);\
+	zout = zin * \cf3 SinOsc\cf2 .ar(freq, [0,0.5pi]);\
+	\cf3 XOut\cf2 .ar(out, wet * env, zout);\
+	\cf3 FreeSelfWhenDone\cf2 .kr(env);\
+\}).writeDefFile;\
+\
+\
+\cf5 /*\
+\
+a = sqrt(1 - b.squared);\
+XFadeOut.ar(chan, xfade, outs)\
+\
+fade in an effect, fade out an effect.\
+\
+simple mix architecture:\
+8 stereo inputs with gain & balance.\
+4 insert fx per input with 4 params each.\
+4*4*8\
+\
+groups:\
+	control group\
+	voice group\
+	fx group\
+	mixer\
+\
+*/\cf2 \
+\
+\cf3 SynthDef\cf2 (\cf4 "mixer3"\cf2 , \{\
+	\cf3 var\cf2  channels, faders, master;\
+	channels = \cf3 In\cf2 .ar(4, 16).clump(2);\
+	master = \cf3 Ramp\cf2 .kr(\cf3 In\cf2 .kr(0, 1), 0.05);\
+	faders = \cf3 Ramp\cf2 .kr(\cf3 In\cf2 .kr(1, 8), 0.05);\
+	\cf3 Out\cf2 .ar(0, \cf3 Mix\cf2 (channels * faders) * master);\
+\}).writeDefFile;\
+\
+\cf3 SynthDef\cf2 (\cf4 "line"\cf2 , \{ \cf3 arg\cf2  out, start=1, end=0, dur=3;\
+	\cf3 var\cf2  line;\
+	line = \cf3 Line\cf2 .kr(start, end, dur);\
+	\cf3 ReplaceOut\cf2 .kr(out, line);\
+	\cf3 FreeSelfWhenDone\cf2 .kr(line);\
+\}).writeDefFile;\
+\
+\cf3 SynthDef\cf2 (\cf4 "xline"\cf2 , \{ \cf3 arg\cf2  out, start=1, end=0.0001, dur=3;\
+	\cf3 var\cf2  line;\
+	line = \cf3 XLine\cf2 .kr(start, end, dur);\
+	\cf3 Out\cf2 .kr(out, line);\
+	\cf3 FreeSelfWhenDone\cf2 .kr(line);\
+\}).writeDefFile;\
+\
+	\
+)\
+\
+\cf3 Server\cf2 .local.boot;\
+\
+\cf3 Server\cf2 .local.sendMsg(\cf4 "/d_loadDir"\cf2 , \cf4 "synthdefs/"\cf2 );\
+\
+\
+patch a control to read from a bus.\
+\
+gradually change a parameter over some period.\
+\
+\
+(\
+	\cf3 var\cf2  server;\
+	server = \cf3 Server\cf2 .local;	\
+\
+	d = 0.04;\
+	r = \cf3 Routine\cf2 (\{\
+		\
+		3.do(\{	\
+					\
+		0.5.postln.wait;\
+		\
+		server.sendBundle(d, [\cf4 "/s_new"\cf2 , \cf4 "moto-rev"\cf2 , 1000, 0]);\
+		\
+		3.wait;\
+\
+		\cf5 //server.sendBundle(d, ["nod.free", 1000]);\
+\cf2 		\
+		\
+		server.sendMsg(\cf4 "/n_free"\cf2 , 1000);\
+		1.wait;\
+		\});\
+						\
+	\});\
+	\cf3 SystemClock\cf2 .play(r);\
+)\
+\
+(\
+	d = 0.05;\
+	r = \cf3 Routine\cf2 (\{\
+		\cf3 var\cf2  server;\
+		server = \cf3 Server\cf2 .local;	\
+		\
+		1.do(\{\
+						\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 			0.5.postln.wait;\
+			\
+			server.sendBundle(d, [\cf4 "/s_new"\cf2 , \cf4 "bubbles"\cf2 , 1000, 0].postln);\
+	\
+			\cf5 // add effects, each one (processing order) after the previous one\
+\cf2 			4.wait;\
+			server.sendBundle(d, [\cf4 "/s_new"\cf2 , \cf4 "combdist"\cf2 , 1004, 3,1000, \cf6 \\freq\cf2 , rrand(24,60).midicps].postln);\
+			4.wait;\
+			server.sendBundle(d, [\cf4 "/s_new"\cf2 , \cf4 "wah"\cf2 , 1001, 3,1004].postln);\
+	\
+			4.wait;\
+			server.sendBundle(d, [\cf4 "/s_new"\cf2 , \cf4 "echo"\cf2 , 1002, 3, 1001,\cf6 \\delay\cf2 , 0.2, \cf6 \\decay\cf2 , 4].postln);\
+	\
+			4.wait;\
+			server.sendBundle(d, [\cf4 "/s_new"\cf2 , \cf4 "ring-mod"\cf2 , 1003, 3,1002, \cf6 \\delay\cf2 , 0.2, \cf6 \\decay\cf2 , 4].postln);\
+			\
+			12.wait;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+			\cf7 // release the gates by setting them to 0, allowing synths to die\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 			server.sendBundle(d, [\cf4 "/n_set"\cf2 , 1004, \cf4 "gate"\cf2 , 0].postln);\
+			\
+			4.wait;\
+			server.sendBundle(d, [\cf4 "/n_set"\cf2 , 1001, \cf4 "gate"\cf2 , 0].postln);\
+	\
+			4.wait;\
+			server.sendBundle(d, [\cf4 "/n_set"\cf2 , 1002, \cf4 "gate"\cf2 , 0].postln);\
+	\
+			4.wait;\
+			server.sendBundle(d, [\cf4 "/n_set"\cf2 , 1003, \cf4 "gate"\cf2 , 0].postln);\
+	\
+			4.wait;			\
+			server.sendBundle(d, [\cf4 "/n_free"\cf2 , 1000].postln);\
+			1.wait;			\
+	\
+			server.sendBundle(d, [\cf4 "/g_freeAll"\cf2 , 0].postln);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 		\});\
+					\
+		1.wait;\
+		\
+	\});\
+	\cf3 SystemClock\cf2 .play(r);\
+)\
+\
+// default node def not written\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 //f = \{ arg o; Pbind(\\note, Pxrand([0,2,3,5,7,9,10,12],inf), \\octave, o, \\dur, 0.25) \};\
+//Ppar([f.value(7),f.value(6), f.value(5)]).play(Event.protoEvent)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+\cf3 Server\cf2 .default.sendMsg(\cf4 "/notify"\cf2 , 1);\
+\
+\cf3 SynthDef\cf2 (\cf4 "default"\cf2 , \{ \cf3 arg\cf2  freq=440, gate=1, amp=0.2;\
+	\cf3 var\cf2  e, s;\
+	e = \cf3 EnvGen\cf2 .kr(\cf3 Env\cf2 .linen(0.004,amp,0.5), gate);\
+	\cf3 FreeSelfWhenDone\cf2 .kr(e);\
+	s = \cf3 SinOsc\cf2 .ar(freq,0, e);\
+	\cf3 Out\cf2 .ar(0, s);\
+\}).writeDefFile;\
+}

@@ -1,0 +1,87 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;
+\red96\green96\blue96;\red0\green0\blue191;\red0\green112\blue0;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 SynthConsole
+\f1\b0\fs18 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 *new( object, layout)
+\f2\b0 \
+\
+convenient buttons for common utilities:\
+	play, record, stop, tempo etc.\
+	\
+each method adds another button.\
+\
+This may be used on its own and it is also a component used in AbstractPlayerGui for all Players.\
+\
+
+\f0\b An easy way to use it:
+\f2\b0 \
+\
+(\cf2 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf2 	\cf3 Sheet\cf2 (\{ \cf3 arg\cf2  f;\
+	\
+		\cf3 SynthConsole\cf2 (\{ \cf3 arg\cf2  synth;\
+			 \cf3 SinOsc\cf2 .ar(300,0,0.3) \
+		\},f) \cf4 // if no layout provided it will create one\
+\cf2 		.play\
+		.scope\
+		.fftScope\
+		.record(\cf5 "SoundFiles/testy.aiff"\cf2 ) \cf4 // sets defaultPath for the prompt dialog\
+\cf2 		.write(20) \cf4 // 20 seconds\
+\cf2 		.pauseableRecord	\cf4 // |,|  toggle recording on and off while you play\
+\cf2 		.stop\
+		.formats\
+		.tempo \cf4 // gui the default Tempo \
+\cf2 		\
+	\})	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 certain controls are not yet enabled in sc3, so the button will not appear.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 note:  the play button sends the .play message to your object.\
+\
+\
+see also [
+\f0\b FunctionPlayer
+\f2\b0 ]\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 SynthConsole sends notifications that you can register to recieve through NotificationCenter:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 	\
+\
+	\cf6 NotificationCenter\cf0 .register(yourSynthConsole,\cf7 \\didStop\cf0 ,you,\{ \
+		\cf8 // do something like\
+\cf0 		\cf6 true\cf0 .tabletTracking; \cf8 // turn back on the wacom mouse\
+\cf0 	\});\
+	\
+	\cf6 NotificationCenter\cf0 .register(yourSynthConsole,\cf7 \\didRecordOrWrite\cf0 ,you,\{ \
+		arg path; // path is passed in with the notification\
+		savedTo = path;\
+	\});\
+	\
+\
+\
+\
+	\
+}

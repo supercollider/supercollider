@@ -1,0 +1,367 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green115\blue0;}
+\vieww18680\viewh14260\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs72 \cf0 SuperCollider Server, a new architecture for SC.\
+
+\f1\b0\fs48 \
+	the language and synth engine are two separate applications.\
+	\
+	server runs from the MacOS X command line.\
+	\
+	language runs as a Cocoa application.\
+	\
+	communication via Open Sound Control over UDP or TCP\
+\cf2 		http://www.cnmat.berkeley.edu/OSC\
+\cf0 	\
+	the synth engine can be controlled by things other than the SC language\
+	
+\fs36 	\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+
+\f0\b\fs72 SuperCollider language editor in OS X.\
+
+\f1\b0\fs48 \
+Many new features just come for free with the Cocoa text system:\
+	Multilevel Undo/Redo.\
+	Rulers.\
+	Copy the current ruler settings with cmd-1\
+	Paste ruler setttings to the current selection with cmd-2\
+	Copy the current font style with cmd-3\
+	Paste font style to the current selection with cmd-4\
+	New Find dialog.\
+	export to pdf.\
+\
+
+\f0\b Differences from OS9.\
+
+\f1\b0 \
+Text is now saved in Rich Text format instead of SimpleText format. The compiler strips this down to ASCII for compiling. \
+\
+The text editor wraps the text instead of the nonwrapping behaviour on OS9.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+\
+\
+\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs36 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs72 \cf0 synth engine\
+
+\fs48 \
+
+\f1\b0 	no dependence on, or knowlege of the SuperCollider language.\
+	\
+	controlled via Open Sound Control\
+		managing buffers, starting stopping events, setting controls, routing.\
+	\
+	loads unit generators as dynamic libraries (plug-ins)\
+	\
+	communication between synths via global buses, not wires.\
+\
+\
+
+\f0\b\fs72 language engine\
+
+\fs48 \
+
+\f1\b0 	can run threads to control one or more synth engines\
+		Threads can run algorithms ahead of time for accurate scheduling.\
+
+\f0\b \
+
+\f1\b0 	can create synth definition files for loading by synth engine.\
+		Synth code is much the same as before.\
+\
+\
+\
+
+\f0\b\fs72 SC2 features lost with this architecture:\
+
+\fs48 \
+	running high level code synchronously in response to an audio trigger.\
+
+\f1\b0 		in SC terms this means that things done previously with the Sequencer \
+		& TSpawn ugens in response to audio triggers will have some latency.\
+		\
+
+\f0\b 	Per event programmatic patch generation. \
+
+\f1\b0 		This version only loads pregenerated synth definitions. \
+		The SC code to define synths looks much the same as before.\
+		A major feature of SC2 is lost, but this feature made small buffers difficult.\
+\
+
+\f0\b \
+\
+\
+
+\f1\b0 \
+
+\fs36 \
+\
+\
+\
+\
+\
+\
+\
+\
+----\
+
+\f0\b\fs72 Things gained with this architecture:\
+
+\fs48 \
+
+\f1\b0 	If the language crashes the synthesizer still runs and vice versa.\
+	\
+	Multiple synth engines are easily supported on multiprocessor \
+		machines and/or distributed across a network.\
+		\
+	Decoupling the control from the synthesis makes for less bursty CPU \
+		usage in the synth and lets the scheduler run ahead.\
+	\
+	Spawning new events is very much faster and is more real time friendly.\
+	\
+	Spawned synths can insert themselves into a graph via global buses.\
+		\
+	You don't need to use the SC language.\
+			You can write your own :\
+					unit generators.\
+					synth definition files.\
+					program for controlling the synth via OSC.  \
+		\
+\
+
+\fs36 \
+---\
+
+\f0\b\fs72 Synth Engine Design Concepts.\
+
+\fs48 \
+Tree of synthesis nodes
+\f1\b0 .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 {{\NeXTGraphic pastedGraphic.tiff \width9040 \height4720
+}¬}\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs48 \cf0 \
+	Groups are internal nodes, Synths are leaf nodes.\
+\
+	Every node has an ID. Top group is always ID zero.\
+\
+	Tree defines the order of execution: 0( 1(1000, 1001), 2(1002, 1003))\
+\
+	Groups: \
+		groups are nestable.\
+		add/remove synth from a group.\
+		turn entire group on and off.\
+		move synths or groups from one group to another.\
+
+\fs36 \
+
+\f0\b\fs48 Global Buses
+\f1\b0 \
+\
+	Signal routing via single array of global control and audio buses.\
+\
+	Using buses instead of direct connections between modules:\
+			allows faster creation and destruction of nodes.\
+			nodes need not know about each other's presence.\
+			resembles a studio mixing setup.\
+\
+	Nodes can mix, replace, or cross fade to the bus.\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+	\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 {{\NeXTGraphic 1__#$!@%!#__pastedGraphic.tiff \width15740 \height11120
+}¬}\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs48 \cf0 \
+\
+
+\fs36 \
+
+\f0\b\fs48 Server Command Summary:\
+
+\f1\b0 \
+
+\f0\b 	Master Controls\
+
+\f1\b0 		start/stop audio, get status, turn on/off notifications\
+\
+
+\f0\b 	Synth Definition Commands\
+
+\f1\b0 		load, loadDir, freeAll\
+\
+
+\f0\b 	Node Commands\
+
+\f1\b0 		set control values, set run state, remove, free, add before, add after\
+\
+
+\f0\b 	Synth Commands\
+
+\f1\b0 		new\
+\
+
+\f0\b 	Group Commands\
+
+\f1\b0 		new, add head, add tail, remove all, free all\
+\
+
+\f0\b 	Buffer Commands\
+
+\f1\b0 		allocate, free, read, write, set values\
+\
+
+\f0\b 	Control Bus Commands\
+
+\f1\b0 		set values\
+		\
+
+\f0\b\fs72 using the SC language with the server\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs36 \cf0 s = \cf2 Server\cf0 .local;\
+\cf2 \
+SynthDef\cf0 (\cf3 "sine"\cf0 ,  \{ \cf2 arg\cf0  out = 0, freq = 440.0, amp = 0.1;\
+	\cf2 Out\cf0 .ar(out, \cf2 SinOsc\cf0 .ar(freq, 0, amp));\
+\}).load(s);\
+
+\fs28 \
+
+\fs36 s.boot; \cf4 // start synth server program\
+\cf0 \
+s.sendMsg(\cf3 "/s_new"\cf0 , \cf3 "sine"\cf0 , 1001, 1, 0, \cf5 'freq'\cf0 , 700); \cf4 // create new synth node\
+\cf0 s.sendMsg(\cf3 "/n_set"\cf0 , 1001, \cf5 'freq'\cf0 , 1400); \cf4 // set frequency parameter\
+\cf0 s.sendMsg(\cf3 "/n_free"\cf0 , 1001); \cf4 // free synth node\
+\cf0 \
+\cf2 SynthDef\cf0 (\cf3 "white"\cf0 ,  \{ \cf2 arg\cf0  out = 0, amp = 0.1;\
+	\cf2 Out\cf0 .ar(out, \cf2 WhiteNoise\cf0 .ar(amp));\
+\}).load(s);\
+\
+s.sendMsg(\cf3 "/s_new"\cf0 , \cf3 "white"\cf0 , 1002, 1, 0); \cf4 // create new synth node\
+\cf0 s.sendMsg(\cf3 "/n_set"\cf0 , 1002, \cf5 \\out\cf0 , 1); \cf4 // change to output bus channel 1\
+\cf0 s.sendMsg(\cf3 "/n_set"\cf0 , 1002, \cf5 \\out\cf0 , 0); \cf4 // change to output bus channel 0\
+\cf0 s.sendMsg(\cf3 "/n_free"\cf0 , 1002); \cf4 // free synth node\
+\cf0 \
+s.quit; \cf4 // quit server program\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf4 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs48 \cf0 Scheduling\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs36 \cf0 s.boot; \cf4 // start synth server program\
+\cf2 s\cf0 .sendMsg(\cf3 "/g_new"\cf0 , 1, 1, 0); \cf4 // create group 1\
+\cf2 s\cf0 .sendMsg(\cf3 "/g_new"\cf0 , 2, 1, 0); \cf4 // create group 2\
+\cf0 (\
+\cf2 SynthDef\cf0 (\cf3 "lfpulse"\cf0 , \{ \cf2 arg\cf0  iout = 0, freq = 400, gate = 1.0; \
+	\cf2 var\cf0  env;\
+	env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .linen(0.01,0.1,0.7,-2), gate);\
+	\cf2 FreeSelfWhenDone\cf0 .kr(env);\
+	\cf2 Out\cf0 .ar(iout, \cf2 RLPF\cf0 .ar(\cf2 Pulse\cf0 .ar(freq+[0,1],0.2,env), freq*\cf2 LinRand\cf0 (2,16), 0.2)) \
+\}).load(s))\
+(\
+\cf2 	var\cf0  l, r;\
+	l = 0.05; \cf4 // scheduling latency\
+\cf0 	r = \cf2 Routine\cf0 (\{\
+		200.do(\{ \cf2 arg\cf0  i;\
+			\cf2 var\cf0  dur, freq;\
+			dur = [0.15, 0.2, 0.3].choose;\
+			freq = rrand(48, 72).midicps;\
+			s.sendBundle(l, [\cf3 "/s_new"\cf0 , \cf3 "lfpulse"\cf0 , 1000+i, 1, 1, \cf5 'freq'\cf0 , freq]);\
+			s.sendBundle(l+dur, [\cf3 "/n_set"\cf0 , 1000+i, \cf5 'gate'\cf0 , 0]);\
+			dur.wait;\
+		\});		\
+	\});\
+	\cf2 SystemClock\cf0 .play(r))\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs48 \cf0 Dynamically patching an effect\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs36 \cf0 \
+(\
+\cf2 SynthDef\cf0 (\cf3 "echo"\cf0 , \{ \cf2 arg\cf0  iout = 0, gate = 1; \
+	\cf2 var\cf0  env, in;\
+	env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .linen(0.5,1,0.5), gate);\
+	\cf2 FreeSelfWhenDone\cf0 .kr(env);\
+	in = \cf2 CombN\cf0 .ar(\cf2 In\cf0 .ar(iout,2), 0.1, 0.1, 4).distort;\
+	\cf2 XOut\cf0 .ar(iout, env, in) \
+\}).load(s);\
+)\
+\
+(\
+	\cf2 var\cf0  l, r;\
+	l = 0.05; \cf4 // scheduling latency\
+\cf0 	r = \cf2 Routine\cf0 (\{\
+		5.do(\{ \cf2 arg\cf0  i;\
+			s.sendBundle(l, [\cf3 "/s_new"\cf0 .postln, \cf3 "echo"\cf0 , 2000+i, 1, 2]);\
+			s.sendBundle(l+6, [\cf3 "/n_set"\cf0 .postln, 2000+i, \cf5 'gate'\cf0 , 0]);\
+			9.wait;\
+		\});		\
+	\});\
+	\cf2 SystemClock\cf0 .play(r);\
+)\
+\
+s.quit; \cf4 // quit server program\
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs48 \cf0 Further work\
+
+\f1\b0 \
+	Incorporate scheduling into Pattern library.\
+\
+	Automate GUI creation from synth definitions.\
+\
+	Non real time synthesis\
+}

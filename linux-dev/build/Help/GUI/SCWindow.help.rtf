@@ -1,0 +1,151 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 SCWindow
+\f1\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 	SCWindow(name,bounds,resizable,border);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+(\
+\
+	SCWindow.new.front;\
+)\
+\
+	bounds:	Rect( distance from left,\
+				distance from bottom,\
+				width,\
+				height)\
+				\
+\
+				\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 front
+\f1\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 	display the window, bring it to the front.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 (\
+\
+var\cf0  w;\
+w = \cf2 SCWindow\cf0 (\cf3 "my name is... panel"\cf0 , \cf2 Rect\cf0 (128, 64, 340, 360));\
+\
+32.do(\{ \cf2 arg\cf0  i;\
+	b = \cf2 SCButton\cf0 (w, \cf2 Rect\cf0 (rrand(20,300),rrand(20,300), 75, 24));\
+	b.states = [[\cf3 "Start "\cf0 ++i, \cf2 Color\cf0 .black, \cf2 Color\cf0 .rand],\
+		[\cf3 "Stop "\cf0 ++i, \cf2 Color\cf0 .white, \cf2 Color\cf0 .red]];\
+\});\
+\
+w.front; \
+\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 view
+\f1\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 	every window has an SCTopView instance, which contains all the other views.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 (\
+\
+var\cf0  w;\
+w = \cf2 SCWindow\cf0 (\cf3 "my name is... panel"\cf0 , \cf2 Rect\cf0 (128, 64, 340, 360));\
+\
+w.view.decorator = \cf2 FlowLayout\cf0 (w.view.bounds);\
+w.view.background = \cf2 Color\cf0 (0.6,0.8,0.8);\
+w.front;\
+\
+32.do(\{ \cf2 arg\cf0  i;\
+	b = \cf2 SCButton\cf0 (w, \cf2 Rect\cf0 (rrand(20,300),rrand(20,300), 75, 24));\
+	b.states = [[\cf3 "Start "\cf0 ++i, \cf2 Color\cf0 .black, \cf2 Color\cf0 .rand],\
+		[\cf3 "Stop "\cf0 ++i, \cf2 Color\cf0 .white, \cf2 Color\cf0 .red]];\
+\});\
+\
+w.front; \
+\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 bounds_(aRect)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 	set the bounds of the window\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 (\
+\
+x = \cf2 SCWindow\cf0 .new;\
+x.front;\
+\
+x.bounds_(\cf2 Rect\cf0 (10,10,100,30));\
+\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Note that the setting of the bounds doesn't happen until the application finishes its current application event cycle. Thus, if you check the bounds in the same chunk of code, the SCWindow will not yet have it updated.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+	\cf4 // execute this all at once\
+\cf0 	w = \cf2 SCWindow\cf0 .new(\cf3 "test"\cf0 );\
+	w.front;\
+	w.bounds = \cf2 Rect\cf0 (50, 50, 50, 50);\
+	w.bounds.postln;\
+	\{ w.bounds.postln; \cf2 nil\cf0  \}.defer(0.1); \cf4 // next application event cycle\
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 setInnerExtent(width,height)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Changes the size of the window while keeping the top left corner fixed.  This is the usual desired behavior, but quick draw and Rect have flipped coordinate systems.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 userCanClose_(boolean)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 \
+Set this to true to prevent command-w from closing the window.  window.close will still close it, and it will still close on recompiling the library.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\
+\
+\
+// broken				\
+//	SCWindow.new(border:false).front;\
+\
+\
+\
+}

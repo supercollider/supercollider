@@ -1,0 +1,60 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+\f3\fmodern\fcharset77 Courier;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 \
+Ringz			ringing filter
+\f1\b0\fs24 \
+\
+
+\f0\b Ringz.ar(in, freq, decaytime, mul, add)\
+
+\f1\b0 \
+This is the same as Resonz, except that instead of a resonance parameter, the bandwidth is\
+specified in a 60dB ring decay time. One Ringz is equivalent to one component of the Klank UGen.\
+
+\f0\b in
+\f1\b0  - input signal to be processed\
+
+\f0\b freq
+\f1\b0  - resonant frequency in Hertz\
+
+\f0\b decaytime
+\f1\b0  - the 60 dB decay time of the filter\
+\
+
+\f2 \{ \cf2 Ringz\cf0 .ar(\cf2 Dust\cf0 .ar(3, 0.3), 2000, 2) \}.play\
+
+\f1 \
+
+\f2 \{ \cf2 Ringz\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.005), 2000, 0.5) \}.play\
+\
+\cf3 // modulate frequency\
+\cf0 \{ \cf2 Ringz\cf0 .ar(\cf2 WhiteNoise\cf0 .ar(0.005), \cf2 XLine\cf0 .kr(100,3000,10), 0.5) \}.play\
+\
+\{ \cf2 Ringz\cf0 .ar(\cf2 Impulse\cf0 .ar(6, 0.3),  \cf2 XLine\cf0 .kr(100,3000,10), 0.5) \}.play\
+\
+\cf3 // modulate ring time\
+\cf0 \{ \cf2 Ringz\cf0 .ar(\cf2 Impulse\cf0 .ar(6, 0.3),  2000, \cf2 XLine\cf0 .kr(4, 0.04, 8)) \}.play\
+\
+\cf3 // modulate ring time opposite direction\
+\cf0 \{ \cf2 Ringz\cf0 .ar(\cf2 Impulse\cf0 .ar(6, 0.3), 2000, \cf2 XLine\cf0 .kr(0.04, 4, 8)) \}.play\
+
+\f3 \
+
+\f1 \
+(\
+
+\f2 \{ \
+	\cf2 var\cf0  exciter;\
+	exciter = \cf2 WhiteNoise\cf0 .ar(0.001);\
+	\cf2 Mix\cf0 .arFill(10, \{\
+		\cf2 Ringz\cf0 .ar(exciter, \
+			\cf2 XLine\cf0 .kr(exprand(100.0,5000.0), exprand(100.0,5000.0), 20),\
+			0.5)\
+	\})\
+\}.play\
+)\
+}

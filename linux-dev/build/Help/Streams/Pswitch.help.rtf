@@ -1,0 +1,73 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red0\green0\blue191;
+\red96\green96\blue96;\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Pswitch
+\f1\b0\fs24  \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 Pswitch(list, which)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+chooses elements from the 
+\f0\b list
+\f1\b0  by a stream of indices (
+\f0\b which
+\f1\b0 ).\
+the elements are embedded in the stream and as soon as one\
+ends, the next element is embedded.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf2 (\
+\cf3 var\cf2  a, b;\
+a = \cf3 Pseq\cf2 (#[1, 2, 3], 2);\
+b = \cf3 Pseq\cf2 (#[65, 76]);\
+c = \cf3 Pswitch\cf2 ([a, b, 800], \cf3 Pseq\cf2 ([2, 2, 0, 1], \cf3 inf\cf2 ));\
+x = c.asStream;\
+24.do(\{ x.next.postln; \});\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+
+\f2 \
+
+\f1 Pswitch used as a sequence of pitches:\
+
+\f2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 SynthDef\cf0 (\cf5 "help-sinegrain"\cf0 , \
+	\{ \cf4 arg\cf0  out=0, freq=440, dur=0.05;\
+		\cf4 var\cf0  env;\
+		env = \cf4 EnvGen\cf0 .kr(\cf4 Env\cf0 .perc(0.01, dur, 0.2), doneAction:2);\
+		\cf4 Out\cf0 .ar(out, \cf4 SinOsc\cf0 .ar(freq, 0, env))\
+	\}).load(s);\
+)\
+\
+\
+(\
+a = \cf4 Pseq\cf0 (#[73, 71, 69], 2);\
+b = \cf4 Pseq\cf0 (#[0, 0, 0, 4, 0]+64);\
+c = \cf4 Pswitch\cf0 ([a, b, 75], \cf4 Pseq\cf0 ([2, 2, 0, 1], \cf4 inf\cf0 ));\
+x = c.asStream;\
+\cf4 Routine\cf0 (\{\
+	loop(\{\
+	\cf4 Synth\cf0 (\cf5 "help-sinegrain"\cf0 , [\cf6 \\freq\cf0 , x.next.midicps]);\
+	0.18.wait;\
+	\})\
+\}).play;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+}
