@@ -162,15 +162,16 @@ BPF : Filter {
 
 BRF : BPF {}
 
-ParEQ : Filter {
-	
-	*ar { arg in = 0.0, freq = 440.0, rq = 1.0, db = 0.0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', in, freq, rq, db).madd(mul, add)
-	}
-	*kr { arg in = 0.0, freq = 440.0, rq = 1.0, db = 0.0, mul = 1.0, add = 0.0;
-		^this.multiNew('control', in, freq, rq, db).madd(mul, add)
-	}
-}
+//exception in GrafDef_Load: UGen 'ParEQ' not installed.
+//ParEQ : Filter {
+//	
+//	*ar { arg in = 0.0, freq = 440.0, rq = 1.0, db = 0.0, mul = 1.0, add = 0.0;
+//		^this.multiNew('audio', in, freq, rq, db).madd(mul, add)
+//	}
+//	*kr { arg in = 0.0, freq = 440.0, rq = 1.0, db = 0.0, mul = 1.0, add = 0.0;
+//		^this.multiNew('control', in, freq, rq, db).madd(mul, add)
+//	}
+//}
 
 LPZ1 : Filter {
 	
@@ -217,17 +218,25 @@ Median : Filter {
 	*kr { arg length=3, in = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('control', length, in).madd(mul, add)
 	}
+	checkInputs {
+ 		if (rate == 'audio', {
+ 			if (inputs.at(1).rate != 'audio', { ^false });
+ 		});
+ 		^true
+ 	}
+
 }
 
-AvgAbsAmp : Filter {
-	
-	*ar { arg in = 0.0, coef = 0.999, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', in, coef).madd(mul, add)
-	}
-	*kr { arg in = 0.0, coef = 0.999, mul = 1.0, add = 0.0;
-		^this.multiNew('control', in, coef).madd(mul, add)
-	}
-}
+//exception in GrafDef_Load: UGen 'AvgAbsAmp' not installed.
+//AvgAbsAmp : Filter {
+//	
+//	*ar { arg in = 0.0, coef = 0.999, mul = 1.0, add = 0.0;
+//		^this.multiNew('audio', in, coef).madd(mul, add)
+//	}
+//	*kr { arg in = 0.0, coef = 0.999, mul = 1.0, add = 0.0;
+//		^this.multiNew('control', in, coef).madd(mul, add)
+//	}
+//}
 
 Slew : Filter {
 	*ar { arg in = 0.0, up = 1.0, dn = 1.0, mul = 1.0, add = 0.0;
@@ -238,12 +247,13 @@ Slew : Filter {
 	}
 }
 
-RLPF4 : Filter {
-	
-	*ar { arg in = 0.0, freq = 0.5, res = 0.5, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', in, freq, res).madd(mul, add)
-	}
-}
+// not installed
+//RLPF4 : Filter {
+//	
+//	*ar { arg in = 0.0, freq = 0.5, res = 0.5, mul = 1.0, add = 0.0;
+//		^this.multiNew('audio', in, freq, res).madd(mul, add)
+//	}
+//}
 
 FOS : Filter {
 	*ar { arg in = 0.0, a0 = 0.0, a1 = 0.0, b1 = 0.0, mul = 1.0, add = 0.0;
@@ -278,24 +288,25 @@ Formlet : Filter {
 	}
 }
 
+//exception in GrafDef_Load: UGen 'EndThresh' not installed.
+//EndThresh : Filter {
+//
+//	*ar { arg in = 0.0, amp = 0.00001, time = 0.2;
+//		^this.multiNew('audio', in, amp, time)
+//	}
+//	*kr { arg in = 0.0, amp = 0.00001, time = 0.2;
+//		^this.multiNew('control', in, amp, time)
+//	}
+//}
 
-EndThresh : Filter {
-
-	*ar { arg in = 0.0, amp = 0.00001, time = 0.2;
-		^this.multiNew('audio', in, amp, time)
-	}
-	*kr { arg in = 0.0, amp = 0.00001, time = 0.2;
-		^this.multiNew('control', in, amp, time)
-	}
-}
-
-FlagNaN : Filter {
-
-	*ar { arg in = 0.0;
-		^this.multiNew('audio', in)
-	}
-	*kr { arg in = 0.0;
-		^this.multiNew('control', in)
-	}
-}
+//exception in GrafDef_Load: UGen 'FlagNaN' not installed.
+//FlagNaN : Filter {
+//
+//	*ar { arg in = 0.0;
+//		^this.multiNew('audio', in)
+//	}
+//	*kr { arg in = 0.0;
+//		^this.multiNew('control', in)
+//	}
+//}
 
