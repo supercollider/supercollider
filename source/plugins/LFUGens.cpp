@@ -149,6 +149,11 @@ struct K2A : public Unit
 	float mLevel;
 };
 
+struct A2K : public Unit
+{
+
+};
+
 struct Silent : public Unit
 {
 };
@@ -229,6 +234,9 @@ extern "C"
 
 	void K2A_next(K2A *unit, int inNumSamples);
 	void K2A_Ctor(K2A* unit);
+	
+	void A2K_next(A2K *unit, int inNumSamples);
+	void A2K_Ctor(A2K* unit);
 
 	void Silent_next(Silent *unit, int inNumSamples);
 	void Silent_Ctor(Silent* unit);
@@ -1098,6 +1106,21 @@ void K2A_Ctor(K2A* unit)
 	ZOUT0(0) = unit->mLevel;
 
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void A2K_next(A2K *unit, int inNumSamples)
+{
+	ZOUT0(0) = ZIN0(0); // return first sample in block
+}
+
+void A2K_Ctor(A2K* unit)
+{
+	SETCALC(A2K_next);
+	A2K_next(unit, 1);
+	
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Silent_Ctor(Unit* unit)
@@ -3357,6 +3380,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(VarSaw);
 	DefineSimpleUnit(SyncSaw);
 	DefineSimpleUnit(K2A);
+	DefineSimpleUnit(A2K);
 	DefineSimpleUnit(Silent);
 	DefineSimpleUnit(Line);
 	DefineSimpleUnit(XLine);

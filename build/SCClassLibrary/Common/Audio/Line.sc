@@ -40,6 +40,12 @@ K2A : UGen { // control rate to audio rate converter
 	}
 }
 
+A2K : UGen { // audio rate to control rate converter. only needed in specific cases
+	*kr { arg in = 0.0;
+		^this.multiNew('control', in)
+	}
+}
+
 Silent : MultiOutUGen {
 	*ar { arg numChannels = 1;
 		^this.multiNew('audio', numChannels)
