@@ -30,6 +30,7 @@
 #import "SCVirtualMachine.h"
 #import "ChangeCounter.h"
 #import "GC.h"
+#import "SCTextView.h"
 
 
 extern ChangeCounter gUIChangeCounter;
@@ -569,7 +570,20 @@ int prTextWindow_GetFileName(struct VMGlobals *g, int numArgsPushed)
         SetObject(a, string);
         return errNone;
 }
-
+int prTextWindow_SetFileName(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SetFileName(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+		PyrSlot *a = g->sp-1;
+		PyrSlot *b = g->sp;
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		PyrString* filenmae = b->uos;
+		NSString *nsname = [NSString stringWithCString: filenmae->s length: filenmae->size];
+		if(!nsname) return errFailed;
+        [doc setFileName: nsname];
+        return errNone;
+}
 int prTextWindow_GetSelectedRangeLocation(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_GetSelectedRangeLocation(struct VMGlobals *g, int numArgsPushed)
 {
@@ -734,7 +748,7 @@ int prTextWindow_SelectedText(struct VMGlobals *g, int numArgsPushed)
         MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
         if (!doc) return errFailed;
         
-        NSString* str = [doc currentlySelectedTextOrLine:NULL];
+        NSString* str = [[doc textView] currentlySelectedTextOrLine:NULL];
         const char * cstr = [str UTF8String];
         PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(a, string);
@@ -2769,6 +2783,7 @@ void initGUIPrimitives()
 //	definePrimitive(base, index++, "_TextWindow_SelectToken", prTextWindow_SelectToken, 1, 0);	
 	definePrimitive(base, index++, "_TextWindow_SelectUnderlinedText", prTextWindow_SelectUnderlinedText, 2, 0);	
 	definePrimitive(base, index++, "_TextWindow_GetFileName", prTextWindow_GetFileName, 1, 0);	
+	definePrimitive(base, index++, "_TextWindow_SetFileName", prTextWindow_SetFileName, 2, 0);	
 	
 	definePrimitive(base, index++, "_TextWindow_UnderlineSelection", prTextWindow_UnderlineSelection, 1, 0);	
 	definePrimitive(base, index++, "_TextWindow_AlwaysOnTop", prTextWindow_AlwaysOnTop, 2, 0);	
