@@ -3622,12 +3622,71 @@ void add_wpartial(int size, float *data, double partial, double amp, double phas
 	}
 }
 
+void add_chebyshev(int size, float *data, double partial, double amp)
+{
+	if (amp == 0.0) return;
+	double w = 2.0 / (double)size;
+	double phase = -1.0;
+	double offset = -amp * cos (partial * pi2);
+	for (int i=0; i<size; ++i) {
+		data[i] += amp * cos (partial * acos (phase)) - offset;
+		phase += w;
+	}
+}
+
+void add_wchebyshev(int size, float *data, double partial, double amp)
+{
+	if (amp == 0.0) return;
+	int size2 = size >> 1;
+	double w = 2.0 / (double)size2;
+	double phase = -1.0;
+	double offset = -amp * cos (partial * pi2);
+	double cur = amp * cos (partial * acos (phase));
+	phase += w;
+	for (int i=0; i<size; i+=2) {
+		double next = amp * cos (partial * acos (phase)) - offset;
+		data[i] += 2 * cur - next;
+		data[i+1] += next - cur;
+		cur = next;
+		phase += w;
+	}
+}
+
 
 enum {
 	flag_Normalize = 1,
 	flag_Wavetable = 2,
 	flag_Clear = 4
 };
+
+void ChebyFill(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
+{
+	if (buf->channels != 1) return;
+	
+	int flags = msg->geti();
+	
+	int size = buf->samples;
+	int byteSize = size * sizeof(float);
+	float *data = (float*)malloc(byteSize);
+	
+	if (flags & flag_Clear) Fill(size, data, 0.);
+	else memcpy(data, buf->data, byteSize);
+	
+	for (int partial=1; msg->remain(); partial++) {
+		double amp = msg->getf();
+		if (flags & flag_Wavetable) add_wchebyshev(size, data, partial, amp);
+		else add_chebyshev(size, data, partial, amp);
+	}
+	
+	if (flags & flag_Normalize) {
+		if (flags & flag_Wavetable) normalize_wsamples(size, data, 1.);
+		else normalize_samples(size, data, 1.);
+	}
+	
+	memcpy(buf->data, data, byteSize);
+	free(data);
+}
+
 
 void SineFill1(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 {
@@ -3790,6 +3849,7 @@ void load(InterfaceTable *inTable)
 	DefineDtorUnit(Klang);
 	DefineDtorUnit(Klank);
 
+	DefineBufGen("cheby", ChebyFill);
 	DefineBufGen("sine1", SineFill1);
 	DefineBufGen("sine2", SineFill2);
 	DefineBufGen("sine3", SineFill3);
