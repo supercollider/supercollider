@@ -292,34 +292,34 @@ released in order for it or its dependants to get garbage collected.\
 \f1\b0\fs24 \ulnone \
 \
 
-\f0\b yield(outval)\
+\f0\b yield\
 
 \f1\b0 \
 Must be called from inside a 
 \f0\b Routine. 
-\f1\b0 Yields control to the calling thread. The outval is the result\
+\f1\b0 Yields control to the calling thread. The receiver is the result\
 passed to the calling thread's method. The result of yield will be the value passed to the Routine's 
 \f0\b next
 \f1\b0 \
 method the next time it is called.\
 \
 
-\f0\b yieldAndReset(outval)
+\f0\b yieldAndReset
 \f1\b0 \
 \
 Must be called from inside a 
 \f0\b Routine. 
-\f1\b0 Yields control to the calling thread. The outval is the result\
+\f1\b0 Yields control to the calling thread. The receiver is the result\
 passed to the calling thread's method. The Routine is reset so that the next time it is called, it will\
 start from the beginning. yieldAndReset never returns within the Routine.\
 \
 
-\f0\b alwaysYield(outval)\
+\f0\b alwaysYield\
 \
 
 \f1\b0 Must be called from inside a 
 \f0\b Routine. 
-\f1\b0 Yields control to the calling thread. The outval is the result\
+\f1\b0 Yields control to the calling thread. The receiver is the result\
 passed to the calling thread's method. The Routine, when called subsequently\
-will always yield outval until it is reset. alwaysYield never returns within the Routine.\
+will always yield the receiver until it is reset. alwaysYield never returns within the Routine.\
 }
