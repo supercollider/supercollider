@@ -2239,6 +2239,22 @@ int prPen_FillPath(struct VMGlobals *g, int numArgsPushed)
 }
 
 
+int prPen_ClipPath(struct VMGlobals *g, int numArgsPushed);
+int prPen_ClipPath(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    //PyrSlot *a = g->sp;
+ 
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+    CGContextClip(cgc);
+    
+    return errNone;
+}
+
+
 
 int prPen_Translate(struct VMGlobals *g, int numArgsPushed);
 int prPen_Translate(struct VMGlobals *g, int numArgsPushed)
@@ -2364,6 +2380,39 @@ int prPen_SetMatrix(struct VMGlobals *g, int numArgsPushed)
     if (err) return err;
     err = getIndexedFloat(mobj, 5, &afx.ty);
     if (err) return err;
+
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+    CGContextConcatCTM(cgc, afx);
+
+    return errNone;
+}
+
+int prPen_Skew(struct VMGlobals *g, int numArgsPushed);
+int prPen_Skew(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+    
+    //PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp - 1;
+    PyrSlot *c = g->sp;
+
+    float x;
+    int err = slotFloatVal(b, &x);		
+    if (err) return err;
+
+    float y;
+    err = slotFloatVal(c, &y);		
+    if (err) return err;
+
+    CGAffineTransform afx;
+    afx.a = 1.0;
+	afx.b = y;
+	afx.c = x;
+	afx.d = 1.0;
+	afx.tx = 0.0;
+	afx.ty = 0.0;
 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
@@ -2834,6 +2883,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_Pen_Push", prPen_Push, 1, 0);	
 	definePrimitive(base, index++, "_Pen_Pop", prPen_Pop, 1, 0);	
 	definePrimitive(base, index++, "_Pen_Translate", prPen_Translate, 3, 0);	
+	definePrimitive(base, index++, "_Pen_Skew", prPen_Skew, 3, 0);	
 	definePrimitive(base, index++, "_Pen_Scale", prPen_Scale, 3, 0);	
 	definePrimitive(base, index++, "_Pen_Rotate", prPen_Rotate, 4, 0);	
 	definePrimitive(base, index++, "_Pen_SetWidth", prPen_SetWidth, 2, 0);	
@@ -2847,6 +2897,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_Pen_LineTo", prPen_LineTo, 2, 0);	
 	definePrimitive(base, index++, "_Pen_StrokePath", prPen_StrokePath, 1, 0);	
 	definePrimitive(base, index++, "_Pen_FillPath", prPen_FillPath, 1, 0);	
+	definePrimitive(base, index++, "_Pen_ClipPath", prPen_ClipPath, 1, 0);	
         
 	definePrimitive(base, index++, "_Pen_DrawAquaButton", prPen_DrawAquaButton, 5, 0);	
         

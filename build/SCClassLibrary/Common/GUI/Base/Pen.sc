@@ -15,6 +15,10 @@ Pen {
 		_Pen_Scale	
 		^this.primitiveFailed
 	}
+	*skew { arg x=0, y=0;
+		_Pen_Skew	
+		^this.primitiveFailed
+	}
 	*rotate { arg angle=0, x=0, y=0;
 		_Pen_Rotate	
 		^this.primitiveFailed
@@ -79,6 +83,10 @@ Pen {
 	}
 	*fill {
 		_Pen_FillPath
+		^this.primitiveFailed
+	}
+	*clip {
+		_Pen_ClipPath
 		^this.primitiveFailed
 	}
 	*matrix_ { arg array;
