@@ -11,7 +11,7 @@ AbstractPlayControl {
 		^super.newCopyArgs(source, channelOffset);
 	}
 	
-	sendDef {}
+	
 	writeDef {}
 	prepareForPlay {}
 	build { ^true }
@@ -98,10 +98,10 @@ StreamControl : AbstractPlayControl {
 SynthControl : AbstractPlayControl {
 	var <synth, >canReleaseSynth=true, >canFreeSynth=true;
 	
-	sendDef { } //assumes that SoundDef does send to the same server 
+	
 	writeDef { }
 	build { ^true }
-	sendDefToBundle {}
+	sendDefToBundle {} //assumes that SynthDef is loaded in the server 
 	name { ^source }
 	clear { synth = nil }
 	
@@ -149,7 +149,7 @@ SynthControl : AbstractPlayControl {
 		synth.server.listSendBundle(latency, bundle)
 	} 
 			
-	stopClientToBundle { }
+	stopClientToBundle { }  // used in shared node proxy
 	
 	pause { synth.run(false) }
 	unpause { synth.run(true) }
@@ -158,7 +158,7 @@ SynthControl : AbstractPlayControl {
 
 
 SynthDefControl : SynthControl {
-	classvar <>writeDefs=false;
+	classvar <>writeDefs=true;
 	var <synthDef;
 	
 	readyForPlay { ^synthDef.notNil }
@@ -167,12 +167,14 @@ SynthDefControl : SynthControl {
 	
 	build { arg proxy, index=0; 
 		var ok;
-		synthDef = source.buildForProxy(proxy, channelOffset, index);//channelOffest
+		synthDef = source.buildForProxy(proxy, channelOffset, index);
 		ok = proxy.initBus(synthDef.rate, synthDef.numChannels);
+		
 		if(ok && synthDef.notNil, { 
-			//schedule to avoid hd sleep latency. def writing is only for server reboot
+			// schedule to avoid hd sleep latency. 
+			// def writing is only for server boot.
 			if(writeDefs, {
-				AppClock.sched(rrand(0.2, 1), { this.writeDef; \write.debug; nil });
+				AppClock.sched(rrand(0.01, 0.3), { this.writeDef; nil });
 			}); 
 		}, { 
 			synthDef = nil; 
@@ -184,9 +186,6 @@ SynthDefControl : SynthControl {
 		bundle.addPrepare([5, synthDef.asBytes]); //"/d_recv"
 	}
 	
-	sendDef { arg server;
-		synthDef.send(server);
-	}
 
 	writeDef {
 		synthDef.writeDefFile;
@@ -198,10 +197,10 @@ SynthDefControl : SynthControl {
 }
 
 SoundDefControl : SynthDefControl {
-	sendDef { } //assumes that SoundDef does send to the same server 
+	
 	writeDef { }
 	build { synthDef = source.synthDef; ^true }
-	sendDefToBundle {}
+	sendDefToBundle {} //assumes that SoundDef does send to the same server 
 }
 
 
@@ -216,13 +215,17 @@ CXPlayerControl : AbstractPlayControl {
 	
 	playToBundle { arg bundle, extraArgs, proxy, addAction=\addToTail;
 		var group;
-		if(source.isPlaying, { source.stopToBundle(bundle) });
-			//we'll need channel offset maybe.
-		group = Group.newToBundle(bundle, proxy.asTarget, addAction);
+		// if(source.isPlaying, { source.stopToBundle(bundle) });
+		// we'll need channel offset maybe.
 		
+		// analog to AbstractPlayer-prepareForPlay :
+		//group = Group.newToBundle(bundle, proxy.asTarget, addAction);
+		
+		group = proxy.group;
 		source.prepareToBundle(group, bundle);
-		if(source.patchOut.isNil, { source.makePatchOut(group,true,proxy.asBus,bundle) });
-		source.spawnToBundle(bundle);
+		
+		// spawn
+		source.spawnOnToBundle(group, proxy.asBus, bundle);
 		^source.synth;
 		
 	}
@@ -246,8 +249,8 @@ CXPlayerControl : AbstractPlayControl {
 CXSynthPlayerControl : CXPlayerControl {
 	
 	stopToBundle { arg bundle, fadeTime=0.5;
-			source.releaseAndFreeToBundle(fadeTime, bundle); //free it each time for now.
-			 
+		//	source.releaseAndFreeToBundle(fadeTime, bundle); //free it each time for now.
+		source.releaseToBundle(fadeTime, bundle); //free it each time for now.	 
 	}
 	
 	freeToBundle { }

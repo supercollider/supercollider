@@ -501,7 +501,7 @@ NodeProxy : BusPlug {
 	
 	///////////////////// tasks ////////////////////////
 	
-		
+	//sends all objects, frees the last ones first.
 	
 	spawner { arg beats=1, argFunc;
 		var dt;
@@ -522,6 +522,8 @@ NodeProxy : BusPlug {
 		awake = false;
 	}
 	
+	// spawns synth at index, assumes fixed time envelope
+	
 	gspawner { arg beats=1, argFunc, index=0;
 		var dt;
 		dt = beats.asStream;
@@ -541,12 +543,8 @@ NodeProxy : BusPlug {
 		awake = false;
 	}
 	
-	taskFunc_ { arg func;
-		var envir;
-		envir = currentEnvironment;
-		this.task = Routine({ 
-			envir.use({ func.value(this) }); 
-		})
+	taskFunc_ { arg func; 
+		this.task = EnvirRoutine.new({ func.value(this) })
 	}
 	
 	readFromBus { arg busses;

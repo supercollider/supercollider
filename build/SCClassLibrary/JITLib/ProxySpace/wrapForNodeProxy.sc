@@ -214,6 +214,7 @@
 	}
 	
 	prepareToPlayWithProxy { arg proxy;
+		/*
 		var tempBus, ok;
 		tempBus = proxy.asBus;
 		this.prepareForPlay(bus: tempBus); 
@@ -224,6 +225,9 @@
 		this.prepareForPlay(bus: proxy.asBus);
 		
 		^ok
+		*/
+		this.prepareForPlay;
+		^proxy.initBus(this.rate ? 'audio', this.numChannels ? 2); 
 	}
 	
 	makeProxyControl { arg channelOffset=0, proxy;
