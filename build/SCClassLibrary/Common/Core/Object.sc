@@ -294,7 +294,6 @@ Object {
 		if (levels <= 1) { ^[this] };
 		^[this.bubble(depth,levels-1)]
 	}
-	isolate { ^this }
 	
 	// osc message support
 	msgArgSize { ^4 } // float assumed, objects are interpreted as nil, which counts as 0
