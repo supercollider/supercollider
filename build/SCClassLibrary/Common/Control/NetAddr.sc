@@ -1,4 +1,4 @@
-{\rtf1\mac\ansicpg10000\cocoartf100
+{\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
 }
@@ -6,9 +6,11 @@
 
 \f0\fs18 \cf0 \
 \cf2 NetAddr\cf0  \{\
-	\cf2 var\cf0  <addr, <>port, <hostname, <socket = -1;\
-	*new \{ \cf2 arg\cf0  hostname, port;\
-		^\cf2 super\cf0 .newCopyArgs(hostname.gethostbyname, port, hostname);\
+	\cf2 var\cf0  <addr=0, <>port=0, <hostname, <socket = -1;\
+	*new \{ \cf2 arg\cf0  hostname, port=0;\
+		var addr;\
+		addr = if (hostname.notNil, \{ hostname.gethostbyname \},\{0\});\
+		^\cf2 super\cf0 .newCopyArgs(addr, port, hostname);\
 	\}\
 	hostname_ \{ \cf2 arg\cf0  inHostname;\
 		hostname = inHostname;\
