@@ -19,6 +19,10 @@
 */
 
 
+#ifdef SC_WIN32
+#include <string.h>
+#define strcasecmp( s1, s2 ) stricmp( (s1), (s2) )
+#endif
 #include "SC_World.h"
 #include "SC_WorldOptions.h"
 #include "SC_HiddenWorld.h"
