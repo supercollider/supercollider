@@ -36,15 +36,17 @@ c.source = \{ \cf3 FSinOsc\cf0 .ar(500, 0, 0.1) \};\
 x.input = b;\
 x.input = c;\
 \
+//switch between the inputs\
+(\
 t = \cf3 Task\cf0 (\{\
 	loop(\{\
 		x.input = [a,b,c].choose;\
 		0.1.wait;\
 	\})\
 \
-\});\
+\}).start;\
+)\
 \
-t.start;\
 \
 b.source = \{ \cf3 SinOsc\cf0 .ar(400, \cf3 SinOsc\cf0 .ar(300, 0, pi), 0.1) \};\
 \
