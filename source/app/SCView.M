@@ -3431,6 +3431,7 @@ int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 				CFRelease(mArray);
 				mArray = NULL;
 			}
+			refresh();
 			return errNone;
 		}
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
