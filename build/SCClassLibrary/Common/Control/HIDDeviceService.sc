@@ -62,7 +62,7 @@ HIDDeviceService{
 				newdev.prAddElement(ele.at(0), ele.at(1), ele.at(2), ele.at(3), ele.at(4));
 			});
 			devices = devices.add(newdev);
-		})
+		});
 		initialized = true;
 	}
 	*prbuildDeviceList{arg usagePage=1, usage;
