@@ -21,7 +21,7 @@ SCTextField : SCNumberBox {
 				},{
 					keyString = String.new;
 				});
-				this.string = keyString.asString;
+				this.string = keyString;
 				this.stringColor = Color.red;
 			},{
 				keyString = String.new;
