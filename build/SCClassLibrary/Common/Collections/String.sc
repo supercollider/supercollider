@@ -155,6 +155,15 @@ String[char] : RawArray {
 			if(char == from,{to},{char})
 		})
 	}
+	
+	insert { arg index, string;
+		^this.keep(index) ++ string ++ this.drop(index)
+	}
+	
+	zeroPad { 
+		^" " ++ this ++ " "
+	}
+
 	compile { ^thisProcess.interpreter.compile(this); }
 	interpret { ^thisProcess.interpreter.interpret(this); } 
 	interpretPrint { ^thisProcess.interpreter.interpretPrint(this); }
