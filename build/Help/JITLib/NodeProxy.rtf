@@ -136,6 +136,7 @@ a = \cf3 NodeProxy.audio\cf0 (s, 2);\
 x = a.play; \cf2 //play to hardware output, return a group with synths\
 \cf0 a.source = \{ \cf3 SinOsc\cf0 .ar([350, 390], 0, 0.1) \};\
 a.source = \{ \cf3 SinOsc\cf0 .ar([390, 290]*1.5, 0, 0.1) \};\
+a.source = \{ \cf3 WhiteNoise\cf0 .ar([0.01,0.01]) \};\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -189,9 +190,9 @@ a.add(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar([3, 5]/2, 0, 0.3), 8000, 0.01) 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf5 "par"\cf0 , \{ \cf3 arg\cf0  freq, out=0, sustain=0.1; \cf2 //must have 'out' argument to work properly\
+\cf3 SynthDef\cf0 (\cf5 "par"\cf0 , \{ \cf3 arg\cf0  freq, outIndex=0, sustain=0.1; \cf2 //must have 'outIndex' argument to work properly\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	\cf3 Out\cf0 .ar(out, Pan2.ar(\cf3 LFCub\cf0 .ar(freq,0,\cf3 Line\cf0 .kr(0.1,0,sustain, doneAction:2)), Rand(-1.0,1.0)))\
+\cf0 	\cf3 Out\cf0 .ar(outIndex, Pan2.ar(\cf3 LFCub\cf0 .ar(freq,0,\cf3 Line\cf0 .kr(0.1,0,sustain, doneAction:2)), Rand(-1.0,1.0)))\
 \}).send(s);\
 \
 b = \cf3 NodeProxy\cf0 .audio(s,2);//we su\
