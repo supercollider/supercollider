@@ -75,7 +75,23 @@ InTrig : MultiOutUGen {
 	}
 }
 
-Out : UGen {
+AbstractOut : UGen {
+	numOutputs { ^0 }
+	writeOutputSpecs {}
+ 	checkInputs {
+ 		if (rate == 'audio', {
+ 			for(1, inputs.size - 1, { arg i;
+ 				if (inputs.at(i).rate != 'audio', { 
+ 					^(" input at index " + i + 
+ 						"(" + inputs.at(i) + ") is not audio rate");
+ 				});
+ 			});
+ 		});
+ 		^nil
+ 	}
+}
+
+Out : AbstractOut {
 	*ar { arg bus, channelsArray;
 		this.multiNewList(['audio', bus] ++ channelsArray.asArray)
 		^0.0		// Out has no output
@@ -84,24 +100,13 @@ Out : UGen {
 		this.multiNewList(['control', bus] ++ channelsArray.asArray)
 		^0.0		// Out has no output
 	}
-	numOutputs { ^0 }
-	writeOutputSpecs {}
- 	checkInputs {
- 		if (rate == 'audio', {
- 			for(1, inputs.size - 1, { arg i;
- 				if (inputs.at(i).rate != 'audio', { ^false });
- 			});
- 		});
- 		^true
- 	}
 }
 
 
 ReplaceOut : Out {}
 OffsetOut : Out {}
 
-
-XOut : UGen {
+XOut : AbstractOut {
 	*ar { arg bus, xfade, channelsArray;
 		this.multiNewList(['audio', bus, xfade] ++ channelsArray.asArray)
 		^0.0		// Out has no output
@@ -110,15 +115,5 @@ XOut : UGen {
 		this.multiNewList(['control', bus, xfade] ++ channelsArray.asArray)
 		^0.0		// Out has no output
 	}
-	numOutputs { ^0 }
-	writeOutputSpecs {}
- 	checkInputs {
- 		if (rate == 'audio', {
- 			for(2, inputs.size - 1, { arg i;
- 				if (inputs.at(i).rate != 'audio', { ^false });
- 			});
- 		});
- 		^true
- 	}
 }
 

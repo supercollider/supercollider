@@ -23,12 +23,7 @@ SendTrig : UGen {
 		this.multiNew('control', in, id, value);
 		^0.0		// SendTrig has no output
 	}
- 	checkInputs {
- 		if (rate == 'audio', {
- 			if (inputs.at(0).rate != 'audio', { ^false });
- 		});
- 		^true
- 	}
+ 	checkInputs { ^this.checkSameRateAsFirstInput }
 	numOutputs { ^0 }
 	writeOutputSpecs {}
 }

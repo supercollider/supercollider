@@ -94,9 +94,8 @@ SynthDef {
 	}
 	finishBuild {
 		this.optimizeGraph;
-
-		if (this.checkInputs.not, { ^nil });
 		this.collectConstants;
+		this.checkInputs;// will die on error
 		
 		// re-sort graph. reindex.
 		this.topologicalSort;
@@ -155,13 +154,15 @@ SynthDef {
 	}
 	
 	checkInputs {
-		children.do({ arg ugen; 
-			if (ugen.checkInputs.not, { 
-				Post << ugen.class << " has bad inputs: " 
-					<< ugen.inputs << ".\n";
-				^false 
+		var seenErr = false;
+		children.do({ arg ugen;
+			var err;
+			if ((err = ugen.checkInputs).notNil, { 
+				seenErr = true;
+				(ugen.class.asString + err).postln;
 			});
 		});
+		if(seenErr,{ ("SynthDef" + this.name + "build failed").die });
 		^true
 	}
 

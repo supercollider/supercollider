@@ -71,12 +71,12 @@ UGen : AbstractFunction {
 	source { ^this }
 	isValidUGenInput { ^true }
 	numChannels { ^1 }
-	checkInputs { ^true }
+	checkInputs { ^nil }
 	checkSameRateAsFirstInput {
- 		if (rate == 'audio', {
- 			if (inputs.at(0).rate != 'audio', { ^false });
+ 		if (rate == 'audio' and: {inputs.at(0).rate != 'audio'}, { 
+ 			^("first input is not audio rate: " + inputs.at(0) + inputs.at(0).rate);
  		});
- 		^true
+ 		^nil
  	}
 
 	degreeToKey { arg scale, stepsPerOctave=12;

@@ -9,10 +9,12 @@ DiskOut : UGen {
  	checkInputs {
  		if (rate == 'audio', {
  			for(1, inputs.size - 1, { arg i;
- 				if (inputs.at(i).rate != 'audio', { ^false });
+ 				if (inputs.at(i).rate != 'audio', {
+ 					^("input was not audio rate: " + inputs.at(i));
+ 				});
  			});
  		});
- 		^true
+ 		^nil
  	}
 }
 

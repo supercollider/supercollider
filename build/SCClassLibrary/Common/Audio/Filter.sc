@@ -187,9 +187,11 @@ Median : Filter {
 	}
 	checkInputs {
  		if (rate == 'audio', {
- 			if (inputs.at(1).rate != 'audio', { ^false });
+ 			if (inputs.at(1).rate != 'audio', { 
+ 				^"input was not audio rate";
+ 			});
  		});
- 		^true
+ 		^nil
  	}
 
 }
