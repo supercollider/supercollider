@@ -393,8 +393,7 @@ Archive : LibraryBase
 		if (File.exists(filename)) {
 			global = this.readArchive(filename);
 			if (global.isNil) {
-				// there is an archive but it is not readable.
-				File.delete(filename);
+				global = this.new;
 			}
 		}
 	}
