@@ -54,7 +54,7 @@ Thread : Stream {
 
 Routine : Thread {
 
-	*run { arg func, stackSize=512, clock, quant;
+	*run { arg func, stackSize=512, clock, quant=0;
 		var routine;
 		routine = super.new(func, stackSize);
 		^routine.play(clock, quant);
