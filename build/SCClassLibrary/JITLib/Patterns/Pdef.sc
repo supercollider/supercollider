@@ -227,6 +227,8 @@ EventPatternProxy : TaskProxy {
 			if(quant.isSequenceableCollection) {
 				quantVal = quant[0];
 				catchUp = quant[2];
+			} {
+				quantVal = quant;
 			};
 			
 			delta = clock.timeToNextBeat(quant);
