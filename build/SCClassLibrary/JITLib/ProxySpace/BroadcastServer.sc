@@ -62,7 +62,7 @@ BroadcastServer : Server {
 	///message forwarding
 		
 	sendMsg { arg ... args;
-		allAddr.do({ arg addr; addr.sendBundle(nil, args) });
+		allAddr.do({ arg addr; addr.sendMsg(*args) });
 	}
 	sendBundle { arg time ... messages;
 		allAddr.do({ arg addr; addr.sendBundle(time, *messages); });
@@ -72,7 +72,7 @@ BroadcastServer : Server {
 	}
 	
 	listSendMsg { arg msg;
-		allAddr.do({ arg addr; addr.sendBundle(nil,msg) });
+		allAddr.do({ arg addr; addr.sendMsg(msg) });
 	}
  	listSendBundle { arg time,bundle;
  		allAddr.do({ arg addr; addr.sendBundle(time ? this.latency, *bundle) })
@@ -161,7 +161,7 @@ Router : Server {
 	var <broadcast, <sharedNodeIDAllocator;
 	
 	
-	addr_ { arg list, latencies; //change this args.
+	addr_ { arg list;
 		broadcast = BroadcastServer.for(this, list);
 	}
 	
