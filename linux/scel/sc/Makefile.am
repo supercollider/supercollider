@@ -5,14 +5,14 @@
 ## CVS:         $Id$
 ## ====================================================================
 
-MAINTAINERCLEANFILES = Makefile.in
+MAINTAINERCLEANFILES	= Makefile.in
 
-sceldir		= $(pkgdatadir)/SCClassLibrary/Emacs
-scel_DATA	= \
-		Emacs.sc \
-		EmacsDocument.sc \
-		extDocument.sc \
-		homeContext.sc \
-		storeLispOn.sc
+sceldir			= $(pkgdatadir)/SCClassLibrary/Emacs
+scel_DATA		= \
+	Emacs.sc \
+	EmacsDocument.sc \
+	extDocument.sc \
+	homeContext.sc \
+	storeLispOn.sc
 
 ## EOF ================================================================

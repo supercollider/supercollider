@@ -5,23 +5,7 @@
 ## CVS:         $Id$
 ## ====================================================================
 
-MAINTAINERCLEANFILES =	\
-	Makefile.in	\
-	aclocal.m4	\
-	config.cache	\
-	config.guess	\
-	config.h.in	\
-	config.h.in~	\
-	config.log      \
-	config.sub	\
-	configure	\
-	depcomp         \
-	install-sh	\
-	ltmain.sh	\
-	missing		\
-	mkinstalldirs	\
-	stamp-h.in	\
-        stamp-h
+MAINTAINERCLEANFILES	= Makefile.in
 
 INCLUDES		= $(SC_PLUGIN_INCLUDES)
 AM_CPPFLAGS		= $(SC_CPPFLAGS)
@@ -36,24 +20,28 @@ endif
 
 plugindir		= $(SC_PLUGIN_DIR)
 plugin_LTLIBRARIES	= \
-			BinaryOpUGens.la \
-			DelayUGens.la \
-			DemandUGens.la \
-			DiskIO_UGens.la \
-			FFT_UGens.la \
-			FilterUGens.la \
-			GendynUGens.la \
-			IOUGens.la \
-			LFUGens.la \
-			$(MACUGENS_LA) \
-			MulAddUGens.la \
-			NoiseUGens.la \
-			OscUGens.la \
-			PV_ThirdParty.la \
-			PanUGens.la \
-			PhysicalModelingUGens.la \
-			TriggerUGens.la \
-			UnaryOpUGens.la
+	BinaryOpUGens.la \
+	DelayUGens.la \
+	DemandUGens.la \
+	DiskIO_UGens.la \
+	FFT_UGens.la \
+	FilterUGens.la \
+	GendynUGens.la \
+	IOUGens.la \
+	LFUGens.la \
+	$(MACUGENS_LA) \
+	MulAddUGens.la \
+	NoiseUGens.la \
+	OscUGens.la \
+	PV_ThirdParty.la \
+	PanUGens.la \
+	PhysicalModelingUGens.la \
+	TriggerUGens.la \
+	UnaryOpUGens.la
+
+# libfft
+noinst_LTLIBRARIES		= libfft.la
+libfft_la_SOURCES		= fftlib.c SCComplex.cpp fftlib.h SCComplex.h
 
 # BinaryOpUGens
 BinaryOpUGens_la_SOURCES	= BinaryOpUGens.cpp
@@ -72,10 +60,9 @@ DiskIO_UGens_la_SOURCES		= DiskIO_UGens.cpp
 DiskIO_UGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 
 # FFT_UGens
-FFT_UGens_la_SOURCES		= FFT_UGens.cpp \
-				fftlib.c fftlib.h \
-				SCComplex.cpp SCComplex.h
+FFT_UGens_la_SOURCES		= FFT_UGens.cpp FFT_UGens.h
 FFT_UGens_la_LDFLAGS		= -module -no-undefined -avoid-version
+FFT_UGens_la_LIBADD		= libfft.la
 
 # FilterUGens
 FilterUGens_la_SOURCES		= FilterUGens.cpp
@@ -113,12 +100,11 @@ OscUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 
 # PV_ThirdParty
 PV_ThirdParty_la_SOURCES	= Convolution.cpp \
-				fftlib.c fftlib.h \
-				SCComplex.cpp SCComplex.h \
 				FFT2InterfaceTable.cpp \
 				FeatureDetection.cpp \
 				PV_ThirdParty.cpp
 PV_ThirdParty_la_LDFLAGS	= -module -no-undefined -avoid-version
+PV_ThirdParty_la_LIBADD		= libfft.la
 
 # PanUGens
 PanUGens_la_SOURCES		= PanUGens.cpp

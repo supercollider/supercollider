@@ -161,7 +161,7 @@ Padd : Pset {
 
 Pmul : Pset {
 	filterEvent { arg event, val;
-		^event[name] = (event[name] * val).postln;
+		^event[name] = (event[name] * val);
 	}
 }
 

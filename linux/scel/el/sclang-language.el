@@ -81,7 +81,9 @@
   (concat "^\\s *\\*?\\(" sclang-method-name-regexp "\\)\\s *{"))
 
 (defconst sclang-block-regexp 
-  "^\\s *\\((\\)\\s *\\(?:/[/*]?.*\\)?"
+  "Regular expression matching the beginning of a block of code enclosed by parentheses."
+  ;; '(' must be at the beginning of a line to avoid ambiguities with normal code
+  "^\\((\\)\\s *\\(?:/[/*]?.*\\)?"
   )
 
 (defconst sclang-beginning-of-defun-regexp
@@ -180,9 +182,9 @@ low-resource systems."
 (sclang-set-command-handler
  'symbolTable
  (lambda (arg)
-   (when sclang-use-symbol-table
+   (when (and sclang-use-symbol-table arg)
      (let ((file sclang--symbol-table-file))
-       (when (and arg file (file-exists-p file))
+       (when (and file (file-exists-p file))
 	 (with-current-buffer (get-buffer-create "*SCLang Symbols*")
 	   (erase-buffer)
 	   (unwind-protect
@@ -275,7 +277,7 @@ Use font-lock information if font-lock-mode is enabled."
 
 (defun sclang-point-in-defun-p ()
   "Return non-nil if point is inside a defun.
-Return value is nil or (values beg end) of defun."
+Return value is nil or (beg end) of defun."
   (save-excursion
     (let ((orig (point))
 	  beg end)
@@ -284,7 +286,7 @@ Return value is nil or (values beg end) of defun."
 	   (condition-case nil (forward-list 1) (error nil))
 	   (setq end (point))
 	   (> (point) orig)
-	   (values beg end)))))
+	   (list beg end)))))
 
 (defun sclang-end-of-defun (&optional arg)
   (interactive "p")
@@ -403,12 +405,11 @@ are considered."
 	      (insert (format "Completions for '%s':\n\n" pattern))
 	      (dolist (x list)
 		(insert (sclang-browser-make-link x (cons buffer (cons beg x))))
-		(insert " \n"))
-	      ))
+		(insert " \n"))))
 	   (message "Making completion list...%s" "done")))))
 
 ;; =====================================================================
-;; browsing definitions
+;; introspection
 ;; =====================================================================
 
 (defcustom sclang-definition-marker-ring-length 32

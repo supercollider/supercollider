@@ -64,8 +64,6 @@ EmacsDocument : Document
 		});
 	}
 
-	*listenerName { ^"*SCLang*" }
-
 	*documentDo { | id, function |
 		var doc;
 		doc = documentMap.at(id);

@@ -223,8 +223,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
     (sclang--on-library-shutdown)))
 
 (defun sclang--process-filter (proc string)
-  (let* ((buffer (process-buffer proc))
-	 (window (display-buffer buffer)))
+  (let ((buffer (process-buffer proc)))
     (with-current-buffer buffer
       (when (and (> sclang-max-post-buffer-size 0)
 		 (> (buffer-size) sclang-max-post-buffer-size))
@@ -237,7 +236,9 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 	  (set-marker (process-mark proc) (point)))
 	(when moving
 	  (goto-char (process-mark proc))
-	  (set-window-point window (process-mark proc)))))))
+	  (dolist (window (window-list))
+	    (when (eq buffer (window-buffer window))
+	      (set-window-point window (process-mark proc)))))))))
 
 ;; =====================================================================
 ;; process startup/shutdown
@@ -412,14 +413,6 @@ Change this if \"cat\" has a non-standard name or location."
 
 ;; symbol property: sclang-command-handler
 
-(defvar sclang-debug-command-handler nil)
-
-(defun sclang-debug-command-handler ()
-  (interactive)
-  (setq sclang-debug-command-handler (not sclang-debug-command-handler))
-  (sclang-message "Command handler debugging %s."
-		  (if sclang-debug-command-handler "enabled" "disabled")))
-
 (defun sclang-set-command-handler (symbol function)
   (put symbol 'sclang-command-handler function))
 
@@ -433,6 +426,28 @@ Change this if \"cat\" has a non-standard name or location."
 		       "Emacs.lispPerformCommand(%o, %o, false)"
 		       symbol args)))
 
+(defun sclang--default-command-handler (fun arg)
+  (condition-case nil
+      (funcall fun arg)
+    (error (sclang-message "Error in command handler") nil)))
+
+(defun sclang--debug-command-handler (fun arg)
+  (let ((debug-on-error t)
+	(debug-on-signal t))
+    (funcall fun arg)))
+
+(defvar sclang--command-handler 'sclang--default-command-handler)
+
+(defun sclang-debug-command-handler (&optional arg)
+  (interactive "P")
+  (setq sclang--command-handler (if arg
+				    'sclang--default-command-handler
+				  'sclang--debug-command-handler))
+  (sclang-message "Command handler debugging %s."
+		  (if (eq sclang--command-handler 'sclang--debug-command-handler)
+		      "enabled"
+		    "disabled")))
+
 (defun sclang--handle-command-result (list)
   (save-excursion
     (condition-case nil
@@ -440,11 +455,7 @@ Change this if \"cat\" has a non-standard name or location."
 	      (arg (nth 1 list))
 	      (id  (nth 2 list)))
 	  (when (functionp fun)
-	    (let ((res (condition-case e
-			   (funcall fun arg)
-			 (error (if sclang-debug-command-handler
-				    (debug e)
-				  (message "SCLang: Error in command handler") nil)))))
+	    (let ((res (funcall sclang--command-handler fun arg)))
 	      (when id
 		(sclang-eval-string
 		 (sclang-format "Emacs.lispHandleCommandResult(%o, %o)" id res))))))
@@ -557,6 +568,10 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
   (interactive)
   (sclang-eval-string "thisProcess.stop"))
 
+(defun sclang-show-server-panels ()
+  (interactive)
+  (sclang-eval-string "thisProcess.makeServerWindows"))
+
 ;; =====================================================================
 ;; default command handlers
 ;; =====================================================================
@@ -581,6 +596,11 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 	     (cons "sclang"
 		   (lambda (switch)
 		     (sclang-start))))
+
+(add-to-list 'command-switch-alist
+	     (cons "sclang-debug"
+		   (lambda (switch)
+		     (sclang-debug-command-handler))))
 
 (add-to-list 'command-switch-alist
 	     (cons "scmail"

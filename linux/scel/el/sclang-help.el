@@ -37,9 +37,16 @@
   :type 'directory
   :options '(:must-match))
 
+(defcustom sclang-help-fill-column fill-column
+  "*Column beyond which automatic line-wrapping in RTF help files should happen."
+  :group 'sclang-interface
+  :version "21.3"
+  :type 'integer)
+
 (defcustom sclang-rtf-editor-program "ted"
   "*Name of an RTF editor program used to edit SuperCollider help files."
   :group 'sclang-programs
+  :version "21.3"
   :type 'string)
 
 (defvar sclang-help-topic-alist nil
@@ -233,7 +240,7 @@
 
 (defun sclang-convert-rtf-buffer (output)
   (let ((case-fold-search nil)
-	(fill-column 80))
+	(fill-column sclang-help-fill-column))
     (save-excursion
       (goto-char (point-min))
       (when (looking-at "{\\\\rtf1")

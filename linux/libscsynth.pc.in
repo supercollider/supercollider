@@ -5,7 +5,7 @@ includedir=@includedir@/SuperCollider
 
 Name: libscsynth
 Version: @VERSION@
-Description: libscsynth, SuperCollider synthesis server library
-Requires: jack >= 0.40.1, sndfile >= 1.0.0
-Libs: -L${libdir} -lscsynth -lm -lpthread
-Cflags: -I${includedir}/common -I${includedir}/plugin_interface -I${includedir}/server
+Description: SuperCollider synthesis server library
+Requires: @SC_SYNTH_PKG_REQUIRES@
+Libs: @SC_SYNTH_PKG_LIBS@
+Cflags: @SC_SYNTH_PKG_CFLAGS@

@@ -17,11 +17,15 @@
 
 EmacsInterface
 {
-	classvar handlers;
+	classvar handlers, showClassMethods;
 
 	*initClass {
 		handlers = IdentityDictionary.new;
 		this.initDefaultHandlers;
+		showClassMethods = IdentitySet.new;
+		showClassMethods.addAll(#[
+			\new, \ar, \kr
+		]);
 	}
 
 	*put { | name, function |
@@ -80,8 +84,8 @@ EmacsInterface
 			file.close;
 
 			t = Main.elapsedTime - t;
-			("Emacs: Built symbol table in" + t.asString + "seconds").postln;
-			
+			Post << "Emacs: Built symbol table in " << t << " seconds\n";
+
 			true
 		})
 		.put(\classDefinitions, { | name |
@@ -149,39 +153,36 @@ EmacsInterface
 			name -> result
 		})
 		.put(\methodArgs, { | className, methodName |
-			var class, method, stream, varArgs, lastIndex;
-			class = className.asSymbol.asClass;
+			var stream, class, method;
+			var args, varArgs, lastIndex;
+
 			stream = CollStream.new;
-			while ({ class.notNil }, {
-				methodName = methodName.asSymbol;
-				method = class.class.methods.detect({ | method | method.name === methodName });
-				if (method.notNil) {
-// 					stream << className << $. << methodName;
-					if (method.argNames.notNil) {
-// 						stream << $(;
-						varArgs = method.varArgs;
-						lastIndex = method.argNames.size - 2;
-						method.argNames.copyToEnd(1).do({ | name, i |
-							var default;
-							if (varArgs and: { i == lastIndex }) {
-								stream << " ... ";
-							}{
-								if (i != 0) { stream << ", " };
-							};
-							stream << name;
-							default = method.prototypeFrame[i];
-							if (default.notNil) {
-								stream << "=" << default;
-							};
-						});
-// 						stream << $);
-					};
-					class = nil;
-				}{
-					class = class.superclass;
+			class = className.asSymbol.asClass;
+
+			if (class.notNil) {
+				method = class.class.findRespondingMethodFor(methodName.asSymbol);
+				if (method.notNil and: { method.argNames.notNil }) {
+					args = method.argNames.copyToEnd(1);
+					varArgs = method.varArgs;
+					lastIndex = args.lastIndex;
+					
+					args.do({ | name, i |
+						var default;
+						if (varArgs and: { i == lastIndex }) {
+							stream << " ... ";
+						}{
+							if (i != 0) { stream << ", " };
+						};
+						stream << name;
+						default = method.prototypeFrame[i+1];
+						if (default.notNil) {
+							stream << "=" << default;
+						};
+					});
 				}
-			});
-			stream.collection
+			};
+
+			stream.collection;
 		})
 	}
 }

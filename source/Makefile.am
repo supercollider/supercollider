@@ -8,9 +8,9 @@
 MAINTAINERCLEANFILES	= Makefile.in
 
 if WITH_SCLANG
-LANG = lang
+LANG			= lang
 else
-LANG = 
+LANG			=
 endif
 
 SUBDIRS			= common server plugins $(LANG)

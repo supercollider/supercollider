@@ -17,6 +17,7 @@
 
 (eval-when-compile
   (require 'cl)
+  (load "cl-seq" nil t)
   (require 'font-lock))
 
 (eval-when-compile
@@ -105,6 +106,7 @@
      "-"
      ["Run Main"		sclang-main-run]
      ["Stop Main"		sclang-main-stop]
+     ["Show Server Panels"	sclang-show-server-panels]
      )))
 
 (defun sclang-fill-mode-map (map)
@@ -132,6 +134,7 @@
   ;; language control
   (define-key map "\C-c\C-r"	'sclang-main-run)
   (define-key map "\C-c\C-s"	'sclang-main-stop)
+  (define-key map "\C-c\C-p"	'sclang-show-server-panels)
   ;; electric characters
 ;;   (define-key map "{"		'sclang-electric-brace)
   (define-key map "}"		'sclang-electric-brace)
@@ -160,8 +163,10 @@
     "this"
     "thisContext"
     "thisFunction"
+    "thisFunctionDef"
     "thisMethod"
     "thisProcess"
+    "thisThread"
     )
   "*List of keywords to highlight in SCLang mode.")
 
@@ -171,8 +176,6 @@
     "true"
     "false"
     "inf"
-    "pi"
-    "2pi"
     )
   "*List of builtins to highlight in SCLang mode.")
 
@@ -266,6 +269,8 @@
     ;; builtins
     (cons (regexp-opt sclang-font-lock-builtin-list 'words)
 	  'font-lock-builtin-face)
+    ;; pi is a special case
+    (cons "\\<\\([0-9]+\\(\\.\\)\\)pi\\>" 'font-lock-builtin-face)
     ;; constants
     (cons "\\s/\\s\\?." 'font-lock-constant-face) ; characters
     (cons (concat "\\\\\\(" sclang-symbol-regexp "\\)")
@@ -313,7 +318,7 @@
 					   (sclang-string-match "^Meta_" x)))
 			   sclang-symbol-table))
 		    ;; need to set this for large numbers of classes
-		    (max-specpdl-size (length list)))
+		    (max-specpdl-size (* (length list) 2)))
 	       (condition-case nil
 		   (concat "\\<\\(?:Meta_\\)?\\(?:" (regexp-opt list) "\\)\\>")
 		 (error nil)))))
@@ -416,11 +421,7 @@ Returns the column to indent to."
   (and (save-excursion
 	 (beginning-of-line)
 	 (looking-at "\\s *\\s)"))
-       (indent-according-to-mode))
-  ;; too expensive
-  ;;   (when (eq (char-before) ?\()
-  ;;     (sclang-show-method-args))
-  )
+       (indent-according-to-mode)))
 
 (defun sclang-electric-slash (arg)
   (interactive "*P")

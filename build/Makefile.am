@@ -7,14 +7,14 @@
 
 MAINTAINERCLEANFILES	= Makefile.in
 EXTRA_DIST		= \
-			Help \
-			SCClassLibrary \
-			TestingAndToDo \
-			examples \
-			plugins \
-			server \
-			sounds \
-			synthdefs
+	Help \
+	SCClassLibrary \
+	TestingAndToDo \
+	examples \
+	plugins \
+	server \
+	sounds \
+	synthdefs
 
 # install class library
 install-data-local:

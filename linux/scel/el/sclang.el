@@ -39,6 +39,9 @@
   (interactive)
   (customize-group 'sclang))
 
+(eval-when-compile
+  (require 'cl))
+
 (eval-and-compile
   (let ((load-path
 	 (if (and (boundp 'byte-compile-dest-file)

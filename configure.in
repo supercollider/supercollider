@@ -12,7 +12,6 @@ AC_CANONICAL_TARGET
 
 # initialize automake
 AM_INIT_AUTOMAKE(SuperCollider,3.0)
-# config.h is not currently used
 AM_CONFIG_HEADER(config.h)
 
 # shared library versions
@@ -33,8 +32,6 @@ AC_PROG_MAKE_SET
 dnl AC_PROG_YACC
 
 AM_PROG_LIBTOOL
-
-# emacs lisp handling
 AM_PATH_LISPDIR
 
 dnl NOTE: config.h is not included by any file, so we can as well omit the
@@ -59,10 +56,6 @@ dnl AC_CHECK_FUNCS([bzero ftruncate gettimeofday memmove memset socket strcasecm
 # compiler flags
 # ======================================================================
 
-AC_SUBST(SC_CPPFLAGS)
-AC_SUBST(SC_CFLAGS)
-AC_SUBST(SC_LIBS)
-
 # libraries needed for all targets except plugins
 AC_CHECK_LIB(pthread,pthread_create,lib_pthread="-lpthread",lib_pthread="")
 if test "x$lib_pthread" = "x" ; then
@@ -74,28 +67,64 @@ if test "x$lib_dl" = "x" ; then
 	AC_MSG_ERROR([libdl (dynamic link support) required])
 fi
 
-SC_LIBS="$LIBS $lib_pthread $lib_dl"
+AC_SUBST(SC_LIBS)
+SC_LIBS="-lm $lib_pthread $lib_dl"
 
 # common packages
-PKG_CHECK_MODULES(SNDFILE,[sndfile >= 1.0.0])
-AC_SUBST(SNDFILE_CFLAGS)
-AC_SUBST(SNDFILE_LIBS)
+sc_sndfile_pkg="sndfile >= 1.0.0"
+PKG_CHECK_MODULES(SC_SNDFILE,[$sc_sndfile_pkg])
+AC_SUBST(SC_SNDFILE_CFLAGS)
+AC_SUBST(SC_SNDFILE_LIBS)
 
 # common compiler flags
-SC_CPPFLAGS="-Wall -Wno-unknown-pragmas -DSC_LINUX -D_REENTRANT"
+sc_os_cflags="-DSC_LINUX"
+
+AC_SUBST(SC_CPPFLAGS)
+SC_CPPFLAGS="$sc_os_cflags -D_REENTRANT -Wall -Wno-unknown-pragmas"
+
+AC_SUBST(SC_CFLAGS)
 SC_CFLAGS=""
 
 # include paths
-AC_SUBST(SC_SYNTH_INCLUDES)
-AC_SUBST(SC_PLUGIN_INCLUDES)
-AC_SUBST(SC_LANG_INCLUDES)
+sc_common_includes='-I$(top_srcdir)/headers/common -I$(top_srcdir)/headers/plugin_interface'
+sc_server_includes='-I$(top_srcdir)/headers/server'
+sc_lang_includes='-I$(top_srcdir)/headers/lang'
 
-SC_SYNTH_INCLUDES=\
-'-I$(top_srcdir)/headers/common -I$(top_srcdir)/headers/plugin_interface -I$(top_srcdir)/headers/server'
-SC_PLUGIN_INCLUDES=\
-'-I$(top_srcdir)/headers/common -I$(top_srcdir)/headers/plugin_interface -I$(top_srcdir)/headers/server'
-SC_LANG_INCLUDES=\
-'-I$(top_srcdir)/headers/common -I$(top_srcdir)/headers/plugin_interface -I$(top_srcdir)/headers/lang -I$(top_srcdir)/headers/server'
+AC_SUBST(SC_SYNTH_INCLUDES)
+SC_SYNTH_INCLUDES="$sc_common_includes $sc_server_includes"
+
+AC_SUBST(SC_PLUGIN_INCLUDES)
+SC_PLUGIN_INCLUDES="$sc_common_includes $sc_server_includes"
+
+AC_SUBST(SC_LANG_INCLUDES)
+SC_LANG_INCLUDES="$sc_common_includes $sc_lang_includes $sc_server_includes"
+
+# ======================================================================
+# pkg-config variables
+# ======================================================================
+
+sc_common_includes='-I${includedir}/common -I${includedir}/plugin_interface'
+sc_server_includes='-I${includedir}/server'
+sc_lang_includes='-I${includedir}/lang'
+
+AC_SUBST(SC_SYNTH_PKG_REQUIRES)
+SC_SYNTH_PKG_REQUIRES="$sc_sndfile_pkg"
+
+AC_SUBST(SC_SYNTH_PKG_LIBS)
+SC_SYNTH_PKG_LIBS="-L\${libdir} -lscsynth $SC_LIBS"
+
+AC_SUBST(SC_SYNTH_PKG_CFLAGS)
+SC_SYNTH_PKG_CFLAGS="$sc_os_cflags $sc_common_includes $sc_server_includes"
+
+
+AC_SUBST(SC_LANG_PKG_REQUIRES)
+SC_LANG_PKG_REQUIRES="${sc_sndfile_pkg}, libscsynth"
+
+AC_SUBST(SC_LANG_PKG_LIBS)
+SC_LANG_PKG_LIBS="-L\${libdir} -lsclang $SC_LIBS"
+
+AC_SUBST(SC_LANG_PKG_CFLAGS)
+SC_LANG_PKG_CFLAGS="$sc_os_cflags $sc_common_includes $sc_lang_includes $sc_server_includes"
 
 # ======================================================================
 # debugging
@@ -104,22 +133,11 @@ SC_LANG_INCLUDES=\
 AC_ARG_ENABLE(debug,
 AC_HELP_STRING([--enable-debug],[enable debugging features]))
 
-# We need a multithreaded dmalloc for C++, so AM_WITH_DMALLOC is not
-# appropriate.
-AC_ARG_ENABLE(dmalloc,
-AC_HELP_STRING([--enable-dmalloc],[use dmalloc (http://www.dmalloc.com) when debugging is enabled]))
 if test "x$enable_debug" = "xyes" ; then
 	feat_debug=yes
 	# add debugging flags
 	AC_MSG_NOTICE([enabling debugging symbols])
 	SC_CFLAGS="$SC_CFLAGS -g"
-	if test "x$enable_dmalloc" = "xyes"; then
-		# add dmalloc support
-		AC_MSG_NOTICE([compiling with dmalloc support])
-		SC_CPPFLAGS="$SC_CPPFLAGS -DUSE_DMALLOC"
-		DMALLOC_LIBS="-ldmallocthcxx"
-		AC_SUBST(DMALLOC_LIBS)
-    	fi
 else
 	feat_debug=no
 	SC_CPPFLAGS="$SC_CPPFLAGS -DNDEBUG"
@@ -230,10 +248,10 @@ else
 fi
 case "$feat_audio_api" in
 	jack)
-		PKG_CHECK_MODULES(JACK,[jack >= 0.40])
+		jack_pkg="jack >= 0.40"
+		PKG_CHECK_MODULES(SC_AUDIO_API,[$jack_pkg])
 		SC_AUDIO_API="SC_AUDIO_API_JACK"
-		SC_AUDIO_API_CFLAGS="$JACK_CFLAGS"
-		SC_AUDIO_API_LIBS="$JACK_LIBS"
+		SC_SYNTH_PKG_REQUIRES="${SC_SYNTH_PKG_REQUIRES}, ${jack_pkg}"
 		;;
 
 	portaudio)
@@ -248,6 +266,7 @@ case "$feat_audio_api" in
 		SC_AUDIO_API="SC_AUDIO_API_PORTAUDIO"
 		SC_AUDIO_API_CFLAGS=""
 		SC_AUDIO_API_LIBS="${lib_portaudio} ${with_portaudio_libs}"
+		SC_SYNTH_PKG_LIBS="${SC_SYNTH_PKG_LIBS} ${SC_AUDIO_API_LIBS}"
 		;;
 
 	*)
@@ -307,26 +326,27 @@ AC_SUBST(SC_LIB_DIR)
 SC_LIB_DIR='$(pkgdatadir)/SCClassLibrary'
 
 # alsa sequencer support
-AC_SUBST(ALSA_LIBS)
+AC_SUBST(SC_ALSA_LIBS)
 
 if $WITH_SCLANG; then
 	AC_CHECK_LIB(
 	[asound],
 	[snd_seq_open],
 	[HAVE_ALSA="true"
-        ALSA_LIBS="-lasound"],
+        SC_ALSA_LIBS="-lasound"],
 	[HAVE_ALSA="false"
-	ALSA_LIBS=""],
+	SC_ALSA_LIBS=""],
 	[-lm])
 	if $HAVE_ALSA; then
 		feat_aseq=yes
 		AC_DEFINE([HAVE_ALSA],[1],[Define when ALSA libs are available])
+		SC_LANG_PKG_LIBS="${SC_LANG_PKG_LIBS} ${SC_ALSA_LIBS}"
 	else
 		feat_aseq=no
 	fi
 else
 	feat_aseq=no
-	ALSA_LIBS=""
+	SC_ALSA_LIBS=""
 fi
 
 # scel emacs interface
