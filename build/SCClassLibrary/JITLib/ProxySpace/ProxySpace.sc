@@ -171,7 +171,7 @@ ProxySpace : EnvironmentRedirect {
 	// global clearing up
 	
 	*clearAll {
-		all.do({ arg item; item.clear });
+		this.all.do({ arg item; item.clear });
 	}
 	
 	

@@ -5,8 +5,10 @@
 
 PublicProxySpace : ProxySpace {
 
-	var <>sendingKeys, <>listeningKeys;
-	var <>addressList, <>sendToName;
+	var <>sendingKeys, <>listeningKeys, <>public=true;
+	var <>addressList, <>nickname="Anybody", <>action;
+	var <>destination;
+	
 	classvar <>all, <resp;
 	
 	*initClass { all = IdentityDictionary.new }
@@ -24,7 +26,6 @@ PublicProxySpace : ProxySpace {
 			this.at(key).put(nil, obj);
 			this.broadcast(name, key, obj) 
 		};
-		try { this.at(key).put(nil, obj) }; // test
 		if(notCurrent) { this.pop };
 	}
 	
@@ -33,7 +34,6 @@ PublicProxySpace : ProxySpace {
 				this.at(key).put(nil, obj);
 		} {
 			this.use {
-				key.envirGet.postln;
 				this.at(key).put(nil, obj);
 			}
 		}
@@ -42,12 +42,12 @@ PublicProxySpace : ProxySpace {
 	broadcast { arg name, key, obj;
 		var str, b;
 		str = obj.asCompileString;
-		if(str.size > 8125) {Ê"string too large to publish".postln; ^this };		b = ['/proxyspace', sendToName ? name, key, str];
+		if(str.size > 8125) {Ê"string too large to publish".postln; ^this };		b = ['/proxyspace', nickname, destination ? name, key, str];
 		addressList.do { arg addr; addr.sendBundle(nil, b) };
 	}
 	
 	sendsTo { arg key;
-		^sendingKeys.notNil and: 
+		^public and: {sendingKeys.notNil} and: 
 			{ 
 				sendingKeys === \all 
 				or: 
@@ -55,7 +55,7 @@ PublicProxySpace : ProxySpace {
 			} 
 	}
 	listensTo {Êarg key;
-		^listeningKeys.notNil and: 
+		^public and: {listeningKeys.notNil} and: 
 			{
 				listeningKeys === \all 
 				or:
@@ -66,12 +66,12 @@ PublicProxySpace : ProxySpace {
 	*startListen { arg addr; // normally nil
 		resp.remove;
 		resp = OSCresponderNode(addr, '/proxyspace', { arg time, resp, msg;
-			var name, key, str, proxyspace, obj, listeningKeys;
-			#name, key, str = msg[1..3];
-			[name, key, str].postln;
+			var name, nickname, key, str, proxyspace, obj, listeningKeys;
+			#nickname, name, key, str = msg[1..4];
 			proxyspace = all[name];
 			if(proxyspace.notNil) {
 				if(proxyspace.listensTo(key)) {
+					proxyspace.action.value(proxyspace, nickname, key, str);
 					obj = str.asString.interpret;
 					if(obj.notNil) {
 						proxyspace.remotePut(key, obj);
@@ -88,6 +88,11 @@ PublicProxySpace : ProxySpace {
 	*stopListen {
 		resp.remove;
 		resp = nil;
+	}
+	
+	*clearAll {
+		this.stopListen;
+		super.clearAll;
 	}
 
 }
