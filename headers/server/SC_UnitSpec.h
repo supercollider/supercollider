@@ -21,7 +21,7 @@
 #ifndef _SC_UnitSpec_
 #define _SC_UnitSpec_
 
-#include <ctype> // for size_t
+#include <ctype.h> // for size_t
 
 #include "SC_Unit.h"
 
