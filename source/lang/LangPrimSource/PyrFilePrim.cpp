@@ -851,6 +851,7 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 	memcpy(filename, b->uos->s, b->uo->size);
 	filename[b->uos->size] = 0;
 	
+	info.format = 0;
 	file = sf_open(filename, SFM_READ, &info);
         
         
