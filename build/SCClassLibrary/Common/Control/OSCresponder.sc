@@ -43,7 +43,8 @@ OSCresponder {
 		action.value(time, this, msg, addr);
 	}
 	== { arg that;
-		^ (cmdName == that.cmdName) and: (addr == that.addr) 
+		^that respondsTo: #[\cmdName, \addr]
+			and: { cmdName == that.cmdName and: { addr == that.addr }}
 	}
 	hash {
 		^addr.hash bitXor: cmdName.hash

@@ -6,7 +6,15 @@ Node {
 	classvar addActions;
 
 	*initClass {
-		addActions = (addToHead: 0, addToTail: 1, addBefore: 2, addAfter: 3, addReplace: 4)
+		addActions = (
+			addToHead: 0, 
+			addToTail: 1, 
+			addBefore: 2, 
+			addAfter: 3, 
+			addReplace: 4,
+			h: 0,
+			t: 1
+		);
 	}
 
 	
@@ -157,7 +165,8 @@ Node {
 	hash {  ^server.hash bitXor: nodeID.hash	}
 	
 	== { arg aNode;
-		^(aNode.tryPerform(\nodeID) == nodeID) and: {aNode.tryPerform(\server) === server}
+		^aNode respondsTo: #[\nodeID, \server] 
+			and: { aNode.nodeID == nodeID and: { aNode.server === server }}
 	}
 	printOn { arg stream; stream << this.class.name << "(" << nodeID <<")" }
 

@@ -129,11 +129,11 @@ Rect {
 	asRect { ^this }
 	bounds { ^Rect.new(left, top, width, height) }
 	== { arg that; 
-		^(this.class == that.class 
-			and: {left == that.left }
-			and: {(top == that.top)} 
-			and: {(width == that.width)} 
-			and: {(height == that.height)})
+		^that respondsTo: #[\left, \top, \width, \height] 
+			and: { left == that.left
+			and: { top == that.top
+			and: { width == that.width
+			and: { height == that.height }}}}
 	}
 	layout { arg argBounds; 
 		this.set(argBounds.left, argBounds.top, argBounds.width, argBounds.height);

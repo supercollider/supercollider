@@ -17,7 +17,7 @@ Point {
 	asRect { ^Rect.new(0,0,x,y) }
 	
 	== { arg aPoint;
-		^(this.class == aPoint.class) and: { (x == aPoint.x) and: (y == aPoint.y) }
+		^aPoint respondsTo: #[\x, \y] and: { x == aPoint.x and: { y == aPoint.y } }
 	}
 	hash { ^ (x.hash << 1) bitXor: y.hash }
 		

@@ -6,8 +6,7 @@ Association : Magnitude {
 	}
 	
 	== { arg anAssociation;
-		if (anAssociation.class === this.class, { ^false });
-		^key == anAssociation.key
+		^anAssociation respondsTo: \key and: { key == anAssociation.key }
 	}
 	
 	hash {

@@ -102,7 +102,7 @@ OSCpathResponder : OSCresponder {
 	}
 		
 	== { arg that;
-		^path == that.path
+		^that respondsTo: \path and: { path == that.path }
 	}
 }		
 

@@ -123,10 +123,11 @@ Bus {
 	}
 	
 	== { arg aBus;
-		aBus.index == index
-		and: {aBus.numChannels == numChannels}
-		and: {aBus.rate == rate}
-		and: {aBus.server === server}
+		^aBus respondsTo: #[\index, \numChannels, \rate, \server]
+		and: { aBus.index == index 
+		and: { aBus.numChannels == numChannels
+		and: { aBus.rate == rate
+		and: { aBus.server === server }}}}
 	}
 	
 	isAudioOut { // audio interface
