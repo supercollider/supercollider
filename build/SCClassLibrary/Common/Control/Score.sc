@@ -1,7 +1,13 @@
 Score {
-	*play { arg server, file;
-		var size, osccmd, timekeep, eventList;
-		eventList = thisProcess.interpreter.executeFile(file);
+	*play { arg path, server;
+		var eventList;
+		eventList = thisProcess.interpreter.executeFile(path);
+		this.playList(eventList, server);
+	}
+	
+	*playList { arg eventList, server;
+		var size, osccmd, timekeep, inserver;
+		inserver = server ? Server.default;
 		size = eventList.size;
 		timekeep = 0;
 		Routine({
@@ -11,15 +17,15 @@ Score {
 				deltatime = osccmd[0];
 				msg = osccmd[1];
 				(deltatime-timekeep).wait;
-				server.sendBundle(server.latency, msg);
+				inserver.sendBundle(inserver.latency, msg);
 				timekeep = deltatime;
 			}
 		}).play;
 	}
 		
-	*write { arg file, oscfile;
+	*write { arg path, oscfile;
 		var osccmd, eventList, f;
-		eventList = thisProcess.interpreter.executeFile(file);
+		eventList = thisProcess.interpreter.executeFile(path);
 		this.writeList(eventList, oscfile);
 	}
 	
@@ -33,4 +39,4 @@ Score {
 		f.close;
 		"done".postln;
 	}
-}		
+}	
