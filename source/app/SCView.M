@@ -59,6 +59,12 @@ PyrSymbol* s_mouseUp;
 
 extern pthread_mutex_t gLangMutex;
 
+int stringDrawCenteredInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
+int stringDrawLeftInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
+int stringDrawRightInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
+
+int nsStringDrawInRectAlign(NSString *nsstring, SCRect screct, char *cFontName, float fontSize, SCColor sccolor, int hAlign, int vAlign, NSSize *outSize);
+
 RGBColor SCtoQDColor(SCColor sccolor)
 {
     RGBColor qdcolor;
@@ -850,11 +856,12 @@ void SCCompositeView::setBounds(SCRect inBounds)
                 break;
             case layout_HElastic :
                 offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
-                bounds.width = sc_clip(
+               /* bounds.width = sc_clip(
                                     (inBounds.width) - (bounds.x + offset),
                                     layout.mMinWidth ,
                                     sc_min(layout.mMaxWidth,right - bounds.x)
-                                );
+                                );*/
+                bounds.width = (inBounds.width) - (bounds.x + offset);
         }
         switch (layout.mVResize) {
             case layout_FixedTop : 
@@ -865,11 +872,12 @@ void SCCompositeView::setBounds(SCRect inBounds)
                 break;
             case layout_VElastic :
                 offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
-                bounds.height = sc_clip(
+                /*bounds.height = sc_clip(
                                     (inBounds.height) - (bounds.y + offset),
                                     layout.mMinHeight ,
                                     sc_min(layout.mMaxHeight,bottom - bounds.y)
-                                );
+                                );*/
+                bounds.height = (inBounds.height) - (bounds.y + offset);
         }
         child->setBounds(bounds);
         //bounds = child->getBounds();
@@ -1813,7 +1821,7 @@ void SCScope::draw0(CGContextRef cgc)
 		chanRect.size.height = chanHeight;
 		
 	//post("width %d\n", width);
-		for (int i = 0; i < width; i++)
+		for (int i = 0; i < width && isample < samples; i++)
 		{
 			float ymin, ymax;
 			ymin = ymax = val;
@@ -2171,8 +2179,6 @@ SCButton::~SCButton()
     delete [] mStates;
 }
 
-int stringDrawCenteredInRect(char *cString, SCRect rect, char *cFontName, float size, SCColor sccolor);
-
 void SCButton::draw(SCRect inDamage)
 {
     SCColor buttonColor;
@@ -2363,8 +2369,6 @@ SCPopUpMenu::~SCPopUpMenu()
 {
     if (mMenuH) DisposeMenu(mMenuH);
 }
-
-int stringDrawCenteredInRect(char *cString, SCRect rect, char *cFontName, float size, SCColor sccolor);
 
 void SCPopUpMenu::draw(SCRect inDamage)
 {    
@@ -3152,10 +3156,6 @@ bool SCStaticText::shouldDim()
     return false;
 }
 
-int stringDrawCenteredInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
-int stringDrawLeftInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
-int stringDrawRightInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
-
 void SCStaticText::draw(SCRect inDamage)
 {
     if (mString) {
@@ -3256,6 +3256,304 @@ int SCStaticText::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 
         return SCView::getProperty(symbol, slot);
 }
+
+
+
+////////////////////////////////////////////////
+
+SCView* NewSCListView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCListView(inParent, inObj, inBounds);
+}
+
+SCListView::SCListView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+	: SCView(inParent, inObj, inBounds), mArray(0), mScroll(0), mAlignment(kSCAlignLeft)
+{
+        strcpy(mFontName, "Helvetica");
+        mFontSize = 12.;
+        mStringColor = SCMakeColor(0,0,0,1);
+		mSelectedStringColor = SCMakeColor(1,1,1,1);
+        mHiliteColor = SCMakeColor(0,0,0,1);
+		mValue = 0;
+}
+
+SCListView::~SCListView()
+{
+    CFRelease(mArray);
+}
+
+NSSize nsStringSize(NSString *nsstring, char *cFontName, float fontSize, SCColor sccolor);
+NSRect SCtoNSRect(SCRect screct);
+
+void SCListView::draw(SCRect inDamage)
+{
+    if (mArray) {
+        SCView::draw(inDamage);
+        SCRect bounds = mBounds;
+        CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+		CGContextSaveGState(cgc);
+		
+		CGRect bevelRect = SCtoCGRect(bounds);
+		QDDrawBevelRect(cgc, bevelRect, 1, true);
+
+		int numItems = mArray ? CFArrayGetCount(mArray) : 0;
+
+		mStrSize = nsStringSize((NSString*)CFSTR("XWYjpgy"), mFontName, mFontSize, mStringColor);
+		
+		float itemHeight = mStrSize.height + 3.f;
+		//float totalHeight = itemHeight * numItems;
+		float visibleItems = bounds.height / itemHeight;
+		float fraction = visibleItems / (float)numItems;
+
+		float totalHeight = itemHeight * numItems;
+					
+		float maxScroll = totalHeight - mBounds.height;
+		if (maxScroll < 0) maxScroll = 0;
+		mScroll = sc_clip(mScroll, 0, maxScroll);
+		
+		SCRect itemBounds = bounds;
+		itemBounds.x += 4; 
+		itemBounds.y += 2 - mScroll; 
+		itemBounds.width -= 6; itemBounds.height -= 4;
+		
+		itemBounds.height = itemHeight;
+		
+		if (fraction < 1.f) 
+		{
+			
+			itemBounds.width -= 16;
+			
+			// draw slider
+			SCRect sliderBounds = mBounds;
+			sliderBounds.x = mBounds.x + mBounds.width - 16;
+			sliderBounds.width = 15;
+			sliderBounds.y += 1;
+			sliderBounds.height -= 2;
+			bevelRect = SCtoCGRect(sliderBounds);
+			QDDrawBevelRect(cgc, bevelRect, 1, true);
+
+			float travel = (1.f - fraction) * (mBounds.height - 4);
+			SCRect thumbBounds = sliderBounds;
+			thumbBounds.y = 1.f + sliderBounds.y + travel * (mScroll / maxScroll);
+			thumbBounds.height = (sliderBounds.height - 2) * fraction;
+			thumbBounds.x += 1;
+			thumbBounds.width -= 2;
+			bevelRect = SCtoCGRect(thumbBounds);
+			QDDrawBevelRect(cgc, bevelRect, 2, false);
+		}
+		
+		
+		CGRect clipRect = SCtoCGRect(bounds);
+		clipRect.origin.y += 1;
+		clipRect.size.height -= 2;
+		CGContextClipToRect(cgc, clipRect);
+		
+		int minIndex = (mScroll - (int)itemHeight + 1) / (int)itemHeight;
+		int maxIndex = minIndex + 1 + (bounds.height + (int)itemHeight - 1) / (int)itemHeight;
+		if (maxIndex > numItems - 1) maxIndex = numItems - 1;
+		itemBounds.y += minIndex * itemHeight;
+		
+		for (int i = minIndex; i <= maxIndex; ++i) 
+		{
+			NSString* nsstring = (NSString*)CFArrayGetValueAtIndex(mArray, i);
+			NSSize size;
+			if (i == mValue) {
+				CGContextSetRGBFillColor(cgc, mHiliteColor.red, mHiliteColor.green, mHiliteColor.blue, mHiliteColor.alpha);
+				CGRect drawRect = SCtoCGRect(itemBounds);
+				CGContextFillRect (cgc, drawRect);
+				nsStringDrawInRectAlign(nsstring, itemBounds, mFontName, mFontSize, mSelectedStringColor, mAlignment, -1, &size);
+			} else {
+				nsStringDrawInRectAlign(nsstring, itemBounds, mFontName, mFontSize, mStringColor, mAlignment, -1, &size);
+			}
+			itemBounds.y += itemBounds.height;
+		}
+		CGContextRestoreGState(cgc);
+    }
+}
+
+bool SCListView::setValue(int inValue, bool send)
+{
+    bool changed = inValue != mValue;
+	int numItems = mArray ? CFArrayGetCount(mArray) : 0;
+	if (inValue < 0) inValue = numItems - 1;
+    else if (inValue >= numItems) inValue = 0;
+    if (inValue != mValue || numItems < 2) {
+        mValue = inValue;
+        refresh();
+        if (send) sendMessage(s_doaction, 0, 0, 0);
+    }
+    return changed;
+}
+
+int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	int err;
+
+	if (symbol == s_value) {
+		int value;
+		err = slotIntVal(slot, &value);
+		if (err) return err;
+		bool changed = setValue(value, false);
+		SetBool(slot, changed);
+		return errNone;
+	}
+
+	char *name = symbol->name;
+	if (strcmp(name, "items")==0) {
+		if (!isKindOfSlot(slot, class_array)) return errWrongType;
+		
+		// wipe out old
+		if (mArray) CFRelease(mArray);
+		
+		PyrObject *array = slot->uo;
+		int numItems = array->size;
+		
+		mArray = (CFMutableArrayRef)CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
+		
+		for (int i=0; i<numItems; ++i) {
+			PyrSlot *slot = array->slots + i;
+
+			char cstr[1024];
+			CFStringRef cfstr;
+			int err = slotStrVal(slot, cstr, 1023);
+			if (err) return err;
+
+			cfstr = CFStringCreateWithCString(kCFAllocatorDefault, cstr, kCFStringEncodingUTF8);
+
+			CFArrayAppendValue(mArray, cfstr);
+		}
+		refresh();
+		return errNone;
+	}
+	if (strcmp(name, "font")==0) {
+		if (!isKindOfSlot(slot, getsym("Font")->u.classobj)) return errWrongType;
+		PyrSlot *slots = slot->uo->slots;
+	
+		float fontSize; 
+		err = slotFloatVal(slots+1, &fontSize);
+		if (err) return err;
+		
+		err = slotStrVal(slots+0, mFontName, kFontNameSize);
+		if (err) return err;
+		
+		mFontSize = fontSize;
+		refresh();
+		return errNone;
+	}
+	if (strcmp(name, "stringColor")==0) {
+		err = slotColorVal(slot, &mStringColor);
+		if (err) return err;
+		refresh();
+		return errNone;
+	}
+	if (strcmp(name, "selectedStringColor")==0) {
+		err = slotColorVal(slot, &mSelectedStringColor);
+		if (err) return err;
+		refresh();
+		return errNone;
+	}
+	if (strcmp(name, "hiliteColor")==0) {
+		err = slotColorVal(slot, &mHiliteColor);
+		if (err) return err;
+		refresh();
+		return errNone;
+	}
+	if (strcmp(name, "align")==0) {
+		int align;
+		if (IsSym(slot)) {
+			if (slot->us->name[0] == 'l') mAlignment = -1;
+			else if (slot->us->name[0] == 'r') mAlignment = 1;
+			else if (slot->us->name[0] == 'c') mAlignment = 0;
+			else return errFailed;
+		} else {
+			err = slotIntVal(slot, &align);
+			if (err) return err;
+			mAlignment = align;
+		}
+		refresh();
+		return errNone;
+	}
+	return SCView::setProperty(symbol, slot);
+}
+
+int SCListView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+	if (symbol == s_value) {
+            SetInt(slot, mValue);
+            return errNone;
+	}
+	char *name = symbol->name;
+
+	if (strcmp(name, "stringColor")==0) {
+            return setSlotColor(slot, &mStringColor);
+	}
+
+	return SCView::getProperty(symbol, slot);
+}
+
+
+bool SCListView::canReceiveDrag()
+{
+    PyrSlot result;
+    sendMessage(s_canReceiveDrag, 0, 0, &result);
+    return IsTrue(&result);
+}
+
+void SCListView::receiveDrag()
+{
+    sendMessage(s_receiveDrag, 0, 0, 0);
+}
+
+void SCListView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+{	
+	mAnchor = where;
+	mAnchorScroll = mScroll;
+
+	mStrSize = nsStringSize((NSString*)CFSTR("XWYjpgy"), mFontName, mFontSize, mStringColor);
+	int numItems = mArray ? CFArrayGetCount(mArray) : 0;
+	
+	float itemHeight = mStrSize.height + 3.f;
+	float visibleItems = mBounds.height / itemHeight;
+	float fraction = visibleItems / (float)numItems;
+	
+	mScrolling = fraction < 1.f && where.x >= mBounds.x + mBounds.width - 16;
+	if (!mScrolling) {
+		int value = (where.y - mBounds.y - 2 + mScroll) / itemHeight;
+		setValue(value, true);
+	}
+}
+
+void SCListView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+    if (modifiers & NSCommandKeyMask) {
+        beginDrag(where);
+	} else {
+		if (mScrolling) {
+			int numItems = mArray ? CFArrayGetCount(mArray) : 0;
+			
+			float itemHeight = mStrSize.height + 3.f;
+			float visibleItems = mBounds.height / itemHeight;
+			float fraction = visibleItems / (float)numItems;
+			float totalHeight = itemHeight * numItems;
+			float travel = (1.f - fraction) * (mBounds.height - 4);
+						
+			float maxScroll = totalHeight - mBounds.height;
+			if (maxScroll < 0) maxScroll = 0;
+			float sliderOffset = travel * (mAnchorScroll / maxScroll);
+
+			float change = where.y - mAnchor.y;
+			float newSliderOffset = sliderOffset + change;
+			mScroll = maxScroll * newSliderOffset / travel;
+			
+			mScroll = sc_clip(mScroll, 0, maxScroll);
+			
+			refresh();
+		}
+    }
+}
+
+////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -4356,6 +4654,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCEnvelopeView", NewSCEnvelopeView);
     new SCViewMaker("SCTabletView", NewSCTabletView);
     new SCViewMaker("SCScope", NewSCScope);
+    new SCViewMaker("SCListView", NewSCListView);
 
 }
 

@@ -494,6 +494,43 @@ protected:
 };
 SCView* NewSCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
+
+class SCListView : public SCView
+{
+public:	
+	SCListView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+	virtual ~SCListView();
+
+	virtual void draw(SCRect inDamage);
+	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent);
+	
+	bool setValue(int inValue, bool send);
+
+	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+
+	virtual bool canReceiveDrag();
+	virtual void receiveDrag();
+
+protected:
+	
+	int mValue;
+	CFMutableArrayRef mArray;
+	char mFontName[kFontNameSize];
+	float mFontSize;
+	float mScroll;
+	float mAnchorScroll;
+	SCPoint mAnchor;
+	SCColor mStringColor;
+	SCColor mSelectedStringColor;
+	SCColor mHiliteColor;
+    int mAlignment;
+	NSSize mStrSize;
+	bool mScrolling;
+};
+SCView* NewSCListView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+
 //by jan trutzschler (jt@kandos.de)
 class SCMultiSliderView : public SCView
 {

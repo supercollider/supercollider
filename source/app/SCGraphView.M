@@ -543,35 +543,47 @@ NSDictionary *makeFontAttrDict(char *cFontName, float fontSize, SCColor sccolor)
     return dict;
 }
 
-int stringDrawInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
+int nsStringDrawInRect(NSString *nsstring, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
 {
     NSDictionary* dict = makeFontAttrDict(cFontName, fontSize, sccolor);
     if (!dict) return errFailed;
-    NSString *nsstring = [NSString stringWithCString: cString];
     
     [nsstring drawInRect: SCtoNSRect(screct) withAttributes: dict];
 
     return errNone;
 }
 
-int stringDrawCenteredInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
+NSSize nsStringSize(NSString *nsstring, char *cFontName, float fontSize, SCColor sccolor)
+{
+    NSDictionary* dict = makeFontAttrDict(cFontName, fontSize, sccolor);
+	return [nsstring sizeWithAttributes: dict];
+}
+
+int nsStringDrawInRectAlign(NSString *nsstring, SCRect screct, char *cFontName, float fontSize, SCColor sccolor, 
+	int hAlign, int vAlign, NSSize *outSize)
 {
     NSDictionary* dict = makeFontAttrDict(cFontName, fontSize, sccolor);
     if (!dict) return errFailed;
-
-    NSString *nsstring = [NSString stringWithCString: cString];
     
     NSSize size = [nsstring sizeWithAttributes: dict];
-    
+    if (outSize) *outSize = size;
+	
     NSRect drawBounds = SCtoNSRect(screct);
 
     float hdiff = drawBounds.size.width - size.width;
     float vdiff = drawBounds.size.height - size.height;
     
-    drawBounds.origin.x += hdiff * .5;
-    drawBounds.origin.y += vdiff * .5;
-    drawBounds.size.width -= hdiff;
-    drawBounds.size.height -= vdiff;
+	if (hAlign == 0) {
+	    drawBounds.origin.x += hdiff * .5;
+	} else if (hAlign > 0) {
+ 	   drawBounds.origin.x += hdiff;
+	}
+    
+	if (vAlign == 0) {
+	    drawBounds.origin.y += vdiff * .5;
+	} else if (vAlign > 0) {
+ 	   drawBounds.origin.y += vdiff;
+	}
     
     CGRect cgrect = *(CGRect*)&screct;
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
@@ -582,65 +594,31 @@ int stringDrawCenteredInRect(char *cString, SCRect screct, char *cFontName, floa
     
     CGContextRestoreGState(cgc);
     return errNone;
+}
+
+
+int stringDrawInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
+{
+	NSString *nsstring = [NSString stringWithCString: cString];
+	return nsStringDrawInRect(nsstring, screct, cFontName, fontSize, sccolor);
+}
+
+int stringDrawCenteredInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
+{
+	NSString *nsstring = [NSString stringWithCString: cString];
+	return nsStringDrawInRectAlign(nsstring, screct, cFontName, fontSize, sccolor, 0, 0, NULL);
 }
 
 int stringDrawLeftInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
 {
-    NSDictionary* dict = makeFontAttrDict(cFontName, fontSize, sccolor);
-    if (!dict) return errFailed;
-
-    NSString *nsstring = [NSString stringWithCString: cString];
-    
-    NSSize size = [nsstring sizeWithAttributes: dict];
-    
-    NSRect drawBounds = SCtoNSRect(screct);
-
-    //float hdiff = drawBounds.size.width - size.width;
-    float vdiff = drawBounds.size.height - size.height;
-    
-    drawBounds.origin.y += vdiff * .5;
-    drawBounds.size.width = size.width;
-    drawBounds.size.height -= vdiff;
-    
-    CGRect cgrect = *(CGRect*)&screct;
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-    CGContextSaveGState(cgc);
-    CGContextClipToRect(cgc, cgrect);
-    
-    [nsstring drawInRect: drawBounds withAttributes: dict];
-        
-    CGContextRestoreGState(cgc);
-    return errNone;
+	NSString *nsstring = [NSString stringWithCString: cString];
+	return nsStringDrawInRectAlign(nsstring, screct, cFontName, fontSize, sccolor, -1, 0, NULL);
 }
 
 int stringDrawRightInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
 {
-    NSDictionary* dict = makeFontAttrDict(cFontName, fontSize, sccolor);
-    if (!dict) return errFailed;
-
-    NSString *nsstring = [NSString stringWithCString: cString];
-    
-    NSSize size = [nsstring sizeWithAttributes: dict];
-    
-    NSRect drawBounds = SCtoNSRect(screct);
-
-    float hdiff = drawBounds.size.width - size.width;
-    float vdiff = drawBounds.size.height - size.height;
-    
-    drawBounds.origin.x += hdiff;
-    drawBounds.origin.y += vdiff * .5;
-    drawBounds.size.width = size.width;
-    drawBounds.size.height -= vdiff;
-    
-    CGRect cgrect = *(CGRect*)&screct;
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-    CGContextSaveGState(cgc);
-    CGContextClipToRect(cgc, cgrect);
-    
-    [nsstring drawInRect: drawBounds withAttributes: dict];
-    
-    CGContextRestoreGState(cgc);
-    return errNone;
+	NSString *nsstring = [NSString stringWithCString: cString];
+	return nsStringDrawInRectAlign(nsstring, screct, cFontName, fontSize, sccolor, 1, 0, NULL);
 }
 
 SCColor blendColor(float blend, SCColor a, SCColor b)

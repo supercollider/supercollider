@@ -16,6 +16,9 @@ String[char] : RawArray {
 	
 	compare { arg aString; _StringCompare }
 	< { arg aString; ^this.compare(aString) < 0 }
+	> { arg aString; ^this.compare(aString) > 0 }
+	<= { arg aString; ^this.compare(aString) <= 0 }
+	>= { arg aString; ^this.compare(aString) >= 0 }
 	== { arg aString; ^this.compare(aString) == 0 }
 	!= { arg aString; ^this.compare(aString) != 0 }
 	hash { _StringHash }

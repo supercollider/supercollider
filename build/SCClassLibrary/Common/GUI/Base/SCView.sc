@@ -700,6 +700,82 @@ SCNumberBox : SCStaticTextBase {
 	}
 }
 
+
+
+SCListView : SCControlView {
+	var <font, <items;
+	
+	*paletteExample { arg parent, bounds;
+		var v;
+		v = this.new(parent, bounds);
+		v.items = #["linear","exponential","sine","welch","squared","cubed"];
+		^v
+	}
+		
+	value {
+		^this.getProperty(\value)
+	}
+	value_ { arg val;
+		this.setProperty(\value, val);
+	}	
+	valueAction_ { arg val;
+		this.setPropertyWithAction(\value, val);
+	}	
+
+	defaultKeyDownAction { arg char, modifiers, unicode;
+		if (char == $ , { this.valueAction = this.value + 1; ^this });
+		if (char == $\r, { this.valueAction = this.value + 1; ^this });
+		if (unicode == 16rF700, { this.valueAction = this.value - 1; ^this });
+		if (unicode == 16rF703, { this.valueAction = this.value + 1; ^this });
+		if (unicode == 16rF701, { this.valueAction = this.value + 1; ^this });
+		if (unicode == 16rF702, { this.valueAction = this.value - 1; ^this });
+	}
+	font_ { arg argFont;
+		font = argFont;
+		this.setProperty(\font, font)
+	}
+	items_ { arg array;
+		items = array;
+		this.setProperty(\items, items);
+	}
+	stringColor {
+		^this.getProperty(\stringColor, Color.new)
+	}
+	stringColor_ { arg color;
+		this.setProperty(\stringColor, color)
+	}
+	
+	selectedStringColor {
+		^this.getProperty(\selectedStringColor, Color.new)
+	}
+	selectedStringColor_ { arg color;
+		this.setProperty(\selectedStringColor, color)
+	}
+	
+	hiliteColor {
+		^this.getProperty(\hiliteColor, Color.new)
+	}
+	hiliteColor_ { arg color;
+		this.setProperty(\hiliteColor, color)
+	}
+	
+	properties {
+		^super.properties ++ #[\value, \font, \items, \stringColor]
+	}
+
+	beginDrag { 
+		currentDrag = this.value; 
+	}
+	canReceiveDrag {
+		^currentDrag.isNumber;
+	}
+	receiveDrag {
+		this.valueAction = currentDrag;
+		currentDrag = nil;
+	}
+}
+
+
 SCDragView : SCStaticTextBase {
 	
 	*paletteExample { arg parent, bounds;
