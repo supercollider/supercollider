@@ -3,9 +3,11 @@ Document {
 	classvar <dir="", <allDocuments, thelistener, <>current;
 	classvar <>globalKeyDownAction, <>initAction;
 
-	var <dataptr, path, title, visible, <background, <stringColor;
-	var <>keyDownAction, <>onClose;
-	var <isListener, <>toFrontAction, <>endFrontAction, <>mouseDownAction;
+	//don't change the order of these vars:
+	var <dataptr, <>keyDownAction, <>mouseDownAction, <>toFrontAction, <>endFrontAction;
+	
+	var path, title, visible, <background, <stringColor, <>onClose;
+	var <isListener;
 	var <editable;
 	
 	*initClass {
