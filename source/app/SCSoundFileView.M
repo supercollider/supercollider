@@ -281,7 +281,6 @@ void SCSoundFileView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent
     } else if (modifiers & NSControlKeyMask) {
 	   // setSelection(where, false, true);
         sendMessage(getsym("doMetaAction"), 0, 0, 0);
-		refresh();
     } else {
 		int frame;
 		frame = (int)  (mStartFrame + (where.x - mBounds.x - 1) * mZoom.x * mResampleFactor );
@@ -549,7 +548,7 @@ void SCSoundFileView::draw2(SCRect inDamage, CGContextRef cgc)
 
 void SCSoundFileView::draw(SCRect inDamage)
 {
-
+	post("drawing\n");
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(mBounds);
@@ -807,18 +806,23 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if(err) return err;
 		err = slotIntVal(slots+2, &mStartFrame);
 		if(err) return err;
-
+		int channels, samplerate;
+		err = slotIntVal(slots+3, &channels);
+		if(err) return err;
+		err = slotIntVal(slots+4, &samplerate);
+		if(err) return err;
 		if (!isKindOfSlot(slots+0, class_array)) return errWrongType;
-		int size = (slots+0)->uo->size;			
-		int frames = (int) size/mSndBuf.channels;
-		if(frames ==  mSndBuf.frames){
+		int size = (slots+0)->uo->size;	
+				
+		if(size ==  mSndBuf.samples && mSndBuf.data && mSndBuf.channels==channels && mSndBuf.samplerate == samplerate){
 			PyrDoubleArray * arr;
 			arr = (PyrDoubleArray*) (slots+0)->uo;
 			for(int i=0; i<size; i++){
 			   mSndBuf.data[i] = arr->d[i];
 			}
 		} else {
-			int err = bufAlloc(&mSndBuf, mSndBuf.channels, frames, mSndBuf.samplerate);
+			int frames = (int) size/channels;		
+			int err = bufAlloc(&mSndBuf, channels, frames, samplerate);
 			if(err) return err;
 			PyrDoubleArray * arr;
 			arr = (PyrDoubleArray*) (slots+0)->uo;
@@ -827,10 +831,13 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			}
 		}
 		if(mElasticMode){
-			mZoom.x =  ((mSndBuf.frames/mResampleFactor)/(mBounds.width-2.f));	
+//			mZoom.x =  ((mSndBuf.frames/mResampleFactor)/(mBounds.width-2.f));	
+			mZoom.x =  mSndBuf.frames/(mBounds.width-2.f);	
+
 		}
 		mSndMinMax.isUsable = false;
 		err = bufAllocMinMax(&mSndMinMax, mSndBuf.channels, (int)(mBounds.width ));
+		refresh();
 		return errNone;
 	}
 	if (strcmp(name, "showTimeCursor")==0) {	
