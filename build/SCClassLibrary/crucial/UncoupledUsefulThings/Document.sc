@@ -3,7 +3,15 @@ Document {
 
 	classvar <>dir="";
 	
-	// var path;
+	var path;
+
+	*new { arg path;
+		^super.newCopyArgs(path)
+	}
+
+	showWindow {
+		this.class.standardizePath(path).openTextFile
+	}
 	
 	*standardizePath { arg p;
 		var pathName;
