@@ -320,6 +320,46 @@ int prArray_AtIdentityHashInPairs(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+bool identDict_lookupNonNil(PyrObject *dict, PyrSlot *key, PyrSlot *result);
+bool identDict_lookupNonNil(PyrObject *dict, PyrSlot *key, PyrSlot *result)
+{
+	bool found = false;
+again:	
+	PyrSlot *dictslots = dict->slots;
+	PyrSlot *arraySlot = dictslots + ivxIdentDict_array;
+	
+	if (isKindOfSlot(arraySlot, class_array)) {
+		PyrObject *array = arraySlot->uo;
+		int index = arrayAtIdentityHashInPairs(array, key);
+		PyrSlot *valueSlot = array->slots + (index + 1);
+		if (NotNil(valueSlot)) {
+			result->ucopy = valueSlot->ucopy;
+			found = true;
+		}
+	}
+	
+	if (!found) {
+		PyrClass *identDictClass = s_identitydictionary->u.classobj;
+		PyrSlot *parentSlot = dictslots + ivxIdentDict_parent;
+		PyrSlot * protoSlot = dictslots + ivxIdentDict_proto;
+		if (isKindOfSlot(parentSlot, identDictClass)) {
+			if (isKindOfSlot(protoSlot, identDictClass)) {
+				// recursive call.
+				found = identDict_lookupNonNil(protoSlot->uo, key, result);
+				if (found) return true;
+			}
+		
+			dict = parentSlot->uo;
+			goto again; // tail call
+		} else {
+			if (isKindOfSlot(protoSlot, identDictClass)) {
+				dict = protoSlot->uo;
+				goto again; // tail call
+			}
+		}
+	}
+	return found;
+}
 
 void identDict_lookup(PyrObject *dict, PyrSlot *key, PyrSlot *result);
 void identDict_lookup(PyrObject *dict, PyrSlot *key, PyrSlot *result)
@@ -435,62 +475,6 @@ int prSymbol_envirPut(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-void identDictAt(PyrObject *dict, PyrSlot *inKey, PyrSlot *outValue);
-void identDictAt(PyrObject *dict, PyrSlot *inKey, PyrSlot *outValue)
-{
-	PyrObject* array = dict->slots[ivxIdentDict_array].uo;
-	//if (!ISKINDOF(array, class_array_index, class_array_maxsubclassindex)) return errFailed;
-	
-	int32 index = arrayAtIdentityHashInPairs(array, inKey);
-	outValue->ucopy = array->slots[index + 1].ucopy;
-}
-
-void envirArray(PyrSlot *dictSlot, int &listSize, PyrObject **arrayList);
-void envirArray(PyrSlot *dictSlot, int &listSize, PyrObject **arrayList)
-{
-	PyrObject *array;
-	int objClassIndex;
-
-	int numArrays = 0;
-	for (int i=0; i<listSize; ++i) {
-		if (!IsObj(dictSlot)) 
-			break;
-		PyrObject *dict = dictSlot->uo;
-		if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) 
-			break;
-		PyrSlot *arraySlot = dict->slots + ivxIdentDict_array;
-		if (!IsObj(arraySlot)) break;
-		array = arraySlot->uo;
-		 if (array->classptr != class_array) break;
-		arrayList[numArrays++] = array;
-		dictSlot = dict->slots + ivxIdentDict_parent;
-	}
-	listSize = numArrays;
-}
-
-bool envirArrayAt(int listSize, PyrObject **arrayList, PyrSlot *key, PyrSlot *res);
-bool envirArrayAt(int listSize, PyrObject **arrayList, PyrSlot *key, PyrSlot *res)
-{
-	PyrSlot *slot;
-	int i;
-	int hash = calcHash(key);
-	
-	for (int j=0; j<listSize; ++j) {
-		PyrObject* array = arrayList[j];
-		i = arrayAtIdentityHashInPairsWithHash(array, key, hash);
-		
-		if (i >= 0) {
-			slot = array->slots + i;
-			if (NotNil(slot)) {
-				slot ++;
-				res->ucopy = slot->ucopy;
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
 
 int prEvent_Delta(struct VMGlobals *g, int numArgsPushed);
 int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
@@ -498,28 +482,24 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, key, dur, stretch, delta;
 	double fdur, fstretch;
 	int err;
-	
-	const int kMaxEnvirDepth = 32;
-	int arrayListSize = kMaxEnvirDepth;
-	PyrObject *arrayList[kMaxEnvirDepth];
-	
+		
 	a = g->sp;  // dict
 	
-	envirArray(a, arrayListSize, arrayList);
-	
 	SetSymbol(&key, s_delta);
-	
-	if (envirArrayAt(arrayListSize, arrayList, &key, &delta)) {
+	identDict_lookup(a->uo, &key, &delta);
+	if (NotNil(&delta)) {
 		a->ucopy = delta.ucopy;
 	} else {
 		SetSymbol(&key, s_dur);
-		if (!envirArrayAt(arrayListSize, arrayList, &key, &dur)) return errWrongType;
+		identDict_lookup(a->uo, &key, &dur);
+		if (IsNil(&dur)) return errWrongType;
 		
 		err = slotDoubleVal(&dur, &fdur);
 		if (err) return err;
 		
 		SetSymbol(&key, s_stretch);
-		if(!envirArrayAt(arrayListSize, arrayList, &key, &stretch)) return errWrongType;
+		identDict_lookup(a->uo, &key, &stretch);
+		if (IsNil(&stretch)) return errWrongType;
 		
 		err = slotDoubleVal(&stretch, &fstretch);
 		if (err) return err;
