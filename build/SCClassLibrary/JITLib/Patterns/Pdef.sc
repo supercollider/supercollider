@@ -2,12 +2,11 @@ Pdefn : Pattern {
 	var <key, <pattern;
 	var <>last, <children, updated=false;
 	
-	classvar <>patterns, <>numericals, <>lastEdited, <>clock;
+	classvar <>patterns, <>numericals, <>lastEdited;
 	
 	*initClass { 
 		patterns = IdentityDictionary.new; 
 		numericals = IdentityDictionary.new; 
-		//clock = TempoClock.new(1.0);
 		patterns.put(\rest,  
 			Pdef.make(\rest, Pbind(nil,
 				\freq, \rest, 
@@ -91,15 +90,7 @@ Pdefn : Pattern {
 Pdef : Pdefn {
 	
 	
-	var <>clock;
-	
-	*new { arg key, pattern, argClock;
-		var p;
-		p = super.new(key, pattern);
-	 	p.clock = argClock ? clock;
-		^p
-	}
-	
+		
 	*at { arg key;
 		^patterns.at(key);
 	}
@@ -117,12 +108,16 @@ Pdef : Pdefn {
 	}
 	
 	sched { arg func;
+		var clock;
+		clock = currentEnvironment.tryPerform(\clock);
 		if(clock.isNil, func, {
-			clock.schedToBeat(0, func);
+			clock.schedAbs(clock.elapsedBeats.ceil, { 
+							func.value;
+							nil 
+						})
 		})
 	}
 	
-	storeArgs { ^[key,pattern,clock] }
 	
 }
 
