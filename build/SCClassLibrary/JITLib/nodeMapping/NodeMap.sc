@@ -81,11 +81,11 @@ NodeMap {
 	mapArgs {	
 				var mapArgs;
 				if(mappings.isEmpty, { ^#[] });
-				mapArgs = List.new;
+				mapArgs = Array.new;
 				mappings.keysValuesDo({ arg key, value;
 										if(value.notNil, {
-											mapArgs.add(key); 
-											mapArgs.add(value);
+											mapArgs = mapArgs.add(key); 
+											mapArgs = mapArgs.add(value);
 										})
 				});
 				^mapArgs
@@ -96,12 +96,12 @@ NodeMap {
 	valArgs {
 				var valArgs;
 				if(values.isEmpty, { ^#[] });
-				valArgs = List.new;
+				valArgs = Array.new;
 				values.keysValuesDo({ arg key, value;
 								if(value.isSequenceableCollection.not, {
 									if(mappings.at(key).isNil, {
-										valArgs.add(key); 
-										valArgs.add(value);
+										valArgs = valArgs.add(key); 
+										valArgs = valArgs.add(value);
 									});
 								});
 				});
@@ -111,14 +111,14 @@ NodeMap {
 	
 	multiValArgs {
 				var valArgs;
-				valArgs = List.new;
 				if(values.isEmpty, { ^#[] });
+				valArgs = Array.new;
 				values.keysValuesDo({ arg key, value;
 								if(value.isSequenceableCollection, {
 									if(mappings.at(key).isNil, {
-										valArgs.add(key); 
-										valArgs.add(value.size);
-										valArgs.addAll(value);
+										valArgs = valArgs.add(key); 
+										valArgs = valArgs.add(value.size);
+										valArgs = valArgs.addAll(value);
 									});
 								});
 				});
@@ -130,7 +130,7 @@ NodeMap {
 			
 			if(upToDate, {
 				bundle.do({ arg item;
-					item.put(1, nodeID);
+					item.put(1, nodeID); //the nodeID is always number two in a message
 				});
 			}, {
 				bundle = List.new;
