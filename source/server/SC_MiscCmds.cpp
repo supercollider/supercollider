@@ -200,14 +200,14 @@ SCErr meth_n_mapn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 			int bus = msg.geti();
 			int n = msg.geti();
 			for (int i=0; i<n; ++i) {
-				Node_MapControl(node, name, i, bus+i);
+				Node_MapControl(node, name, i, bus == -1 ? -1 : bus+i);
 			}
 		} else {
 			int32 index = msg.geti();
 			int32 bus = msg.geti();
 			int n = msg.geti();
 			for (int i=0; i<n; ++i) {
-				Node_MapControl(node, index+i, bus+i);
+				Node_MapControl(node, index+i, bus == -1 ? -1 : bus+i);
 			}
 		}
 	}
