@@ -866,6 +866,7 @@ SCMultiSliderView : SCView {
 	var <>metaAction, <>mouseEndTrackAction;
 	var <>size ;
 	var <gap;
+	var <> editable = true;
 
 	draw {}
 	mouseBeginTrack { arg x, y, modifiers;}
@@ -942,6 +943,7 @@ SCMultiSliderView : SCView {
 		this.setProperty(\drawRects, abool)
 	}
 	readOnly_ { arg val;
+		editable = val.not;
 		this.setProperty(\readOnly, val);
 	}
 	thumbSize_ { arg val;
