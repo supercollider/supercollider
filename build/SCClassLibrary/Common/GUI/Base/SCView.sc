@@ -1084,14 +1084,14 @@ SCEnvelopeView : SCMultiSliderView {
 			"SCEnvelopeView got mismatched times/levels arrays".die;
 		});
 		this.size = val.at(0).size;
-		^this.setProperty(\value, val)
+		this.setProperty(\value, val)
 	}
 	string_ { arg astring;
 		items =items.add(astring);
-		^this.setProperty(\string, astring)
+		this.setProperty(\string, astring)
 	}
 	prString_ { arg astring;
-		^this.setProperty(\string, astring)
+		this.setProperty(\string, astring)
 	}
 	strings_ { arg astrings;
 		astrings.do({arg str,i;
@@ -1109,7 +1109,7 @@ SCEnvelopeView : SCMultiSliderView {
 	}
 	thumbHeight_ { arg index, height;
 		this.select(index);
-		this.setProperty(\thumbWidth, height);
+		this.setProperty(\thumbHeight, height);
 		this.select(-1);
 	}
 	thumbWidth_ { arg index, width;
@@ -1118,13 +1118,13 @@ SCEnvelopeView : SCMultiSliderView {
 		this.select(-1);
 	}
 	connect { arg aconnections; //draw a connection between the selected index 
-		^this.setProperty(\connect, aconnections.asFloat);
+		this.setProperty(\connect, aconnections.asFloat);
 	}
 	select { arg index; //this means no refresh;
-		^this.setProperty(\setIndex, index);
+		this.setProperty(\setIndex, index);
 	}
 	selectIndex { arg index; //this means that the view will be refreshed
-		^this.setProperty(\selectedIndex, index);
+		this.setProperty(\selectedIndex, index);
 	}
 	x { 						//returns selected x
 		^this.getProperty(\x);
@@ -1133,10 +1133,10 @@ SCEnvelopeView : SCMultiSliderView {
 		^this.getProperty(\y);
 	}
 	x_ { arg ax;
-		^this.setProperty(\x, ax);
+		this.setProperty(\x, ax);
 	}
 	y_ { arg ay;
-		^this.setProperty(\y, ay);
+		this.setProperty(\y, ay);
 	}
 	index {
 		^this.getProperty(\selectedIndex)
@@ -1150,7 +1150,7 @@ SCEnvelopeView : SCMultiSliderView {
 		this.select(-1); //unselect
 	}
 	selectionColor_ { arg acolor;
-		^this.setProperty(\selectionColor, acolor)
+		this.setProperty(\selectionColor, acolor)
 	}
 	receiveDrag {
 		if(currentDrag.isKindOf(String), {
