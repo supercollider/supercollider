@@ -78,8 +78,8 @@ Node {
 		^[cmdName, nodeID]++argList??{[]};
 	}
 	
-	addMsg { arg msgList, cmdName, argList;
-		^msgList.add([cmdName, nodeID]++argList??{[]});
+	addMsg { arg bundle, cmdName, argList;
+		^bundle.add([cmdName, nodeID]++argList??{[]});
 	}
 	
 	//your responsibility to send these messages.
@@ -87,21 +87,21 @@ Node {
 	//gets out of sync with the server.
 	
 	
-	moveBeforeMsg { arg  msgList, aNode;
-		^msgList.add([18, nodeID, aNode.nodeID]);//"/n_after"
+	moveBeforeMsg { arg  bundle, aNode;
+		^bundle.add([18, nodeID, aNode.nodeID]);//"/n_after"
 	}
 	
-	moveAfterMsg { arg msgList, aNode;
-		^msgList.add([19, nodeID, aNode.nodeID]); //"/n_after"
+	moveAfterMsg { arg bundle, aNode;
+		^bundle.add([19, nodeID, aNode.nodeID]); //"/n_after"
 		
 	}
 	
-	moveToHeadMsg { arg msgList, aGroup;
-		^(aGroup ? group).moveNodeToHeadMsg(msgList, this);
+	moveToHeadMsg { arg bundle, aGroup;
+		^(aGroup ? group).moveNodeToHeadMsg(bundle, this);
 	}
 	
-	moveToTailMsg { arg msgList, aGroup;
-		^(aGroup ? group).moveNodeToTailMsg(msgList, this);
+	moveToTailMsg { arg bundle, aGroup;
+		^(aGroup ? group).moveNodeToTailMsg(bundle, this);
 	}
 	
 	/** PRIVATE IMPLEMENTATION  **/
@@ -282,13 +282,16 @@ Group : Node {
 		
 	// bundle messages //
 
-	
+	*newMsg { arg bundle, target, addAction;
+		var group;
+		group = this.prNew;
+		bundle.add(group.newMsg(target, addAction));
+		^group
+	}
 	newMsg { arg target, addAction;
-		var msg, addActionNum;
+		var addActionNum;
 		target = target.asTarget;
-		
 		this.register(target.server);
-		
 		addActionNum = this.convertAddAction(addAction);
 		^[21, nodeID, addActionNum, target.nodeID]; //"/g_new"
 	}
@@ -338,9 +341,9 @@ Synth : Node {
 	
 	*newLoad { arg defName,args,target,addAction=\addToTail;
 		var msg, synth;
-		msg = List.new;
-		synth = this.newMsg(msg, defName,args,target,addAction);
-		synth.server.sendMsg(6, "synthdefs/"++synth.defName++".scsyndef", msg.at(0)); //"/d_load"
+		synth = this.prNew(defName);
+		msg = synth.newMsg(target,args,addAction);
+		synth.server.sendMsg(6, "synthdefs/"++synth.defName++".scsyndef", msg); //"/d_load"
 		^synth
 	
 	} 
@@ -349,11 +352,11 @@ Synth : Node {
 	}
 	
 	*newPaused {arg defName,args,target,addAction=\addToTail;
-		var msg, synth;
-		msg = List.new;
-		synth = this.newMsg(msg, defName,args,target,addAction);
-		msg.add(synth.getMsg(12, 0)); //"/n_run"
-		synth.server.sendMsgList(msg);
+		var bundle, synth;
+		bundle = List.new;
+		synth = this.newMsg(bundle, defName,args,target,addAction);
+		synth.addMsg(bundle, 12, 0); //"/n_run"
+		synth.server.sendMsgList(bundle);
 		^synth
 	}
 	//no linking, only use for self releasing nodes
@@ -361,10 +364,9 @@ Synth : Node {
 		var synth, server;
 		target = target.asTarget;
 		server = target.server;
-		//synth = this.prNew(defName).prSetServer(server).prSetNodeID;
 		synth = this.prNew(defName).register(server);
 		addAction = synth.convertAddAction(addAction ?? { this.defaultAddAction });		server.sendBundle(server.latency, 
-		 [9, synth.defName, synth.nodeID, addAction, target.nodeID] ++ args??{[]});
+		 [9, synth.defName, synth.nodeID, addAction, target.nodeID] ++ args??{#[]});
 		^synth
 	}
 	
@@ -390,17 +392,22 @@ Synth : Node {
 	
 	
 	///  bundle messages  ///
-	//this adds the message to the messagelist and returns the synth.
-	//the synth is created first with prNew
+	//this adds the message to the bundle and returns the synth.
 	
-	newMsg { arg target, args, addAction=\addToTail;
-		var msg, addActionNum;
+	*newMsg { arg bundle, defName, args, target, addAction=\addToTail;
+		var synth;
+		synth = this.prNew(defName);
+		bundle.add(synth.newMsg(target, addAction, args));
+		^synth
+	}
+	
+	newMsg { arg target, addAction=\addToTail, args;
+		var bundle, addActionNum;
 		target = target.asTarget;
-		addAction = addAction ?? {target.defaultAddAction};
 		addActionNum = this.convertAddAction(addAction);
 		this.register(target.server);
-		msg = [9, defName, nodeID, addActionNum, target.nodeID]; //"/s_new"
-		^if(args.notNil,{ msg ++ args }, { msg });
+		bundle = [9, defName, nodeID, addActionNum, target.nodeID]; //"/s_new"
+		^if(args.notNil,{ bundle ++ args }, { bundle });
 	}
 }
 
