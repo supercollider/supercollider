@@ -42,7 +42,6 @@ inline NSString* nsStringFromPyrSlot(PyrSlot *slot)
     return [NSString stringWithCString: pyrString->s length: pyrString->size];
 }
 
-//id nsCodableFromPyrSlot(PyrSlot* b);
 id nsCodableFromPyrSlot(PyrSlot* b)
 {
     if(IsFloat(b)) { // floats don't have tags, check for them first
@@ -52,7 +51,7 @@ id nsCodableFromPyrSlot(PyrSlot* b)
         return nsStringFromPyrSlot(b);
     }
     
-    // !! WARNING :  will break if array is not first instance variable in the SC class
+    // !! WARNING :  will break if array is not first instance variable in the Dictionary SC class
     // identity dictionary doesn't work this way
     // maybe better to have a primitive for dictionaries that passes in keys, values
     if(  ( classOfSlot(b) )->name.us == s_dictionary ) {
@@ -129,24 +128,128 @@ id nsCodableFromPyrSlot(PyrSlot* b)
     return [NSNull null];
 }
 
+void setInvocationArgFromPyrSlot(NSInvocation *invocation,int i,PyrSlot* slot) 
+{
+    if(IsFloat(slot)) { // floats don't have tags, check for them first
+        [invocation setArgument: &slot->uf atIndex: i];
+        return;
+    }
+    if( ( classOfSlot(slot) )->name.us == s_string ) {
+        [invocation setArgument: nsStringFromPyrSlot(slot) atIndex: i];
+        return;
+    }
+    
+    // !! WARNING :  will break if array is not first instance variable in the SC class
+    // identity dictionary doesn't work this way
+    // maybe better to have a primitive for dictionaries that passes in keys, values
+    if(  ( classOfSlot(slot) )->name.us == s_dictionary ) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        PyrSlot *array = &(slot->uo->slots[0]); 
+        int i = 0;
+        PyrSlot *key;
+        for(;i < array->uo->size; i += 2) {
+            key = &( array->uo->slots[i] );
+            if( NotNil( key )) {
+                [dict 
+                    setObject: nsCodableFromPyrSlot( &(array->uo->slots[i+1]) ) 
+                    forKey: [(NSObject*)nsCodableFromPyrSlot(key) description] // symbol, string, number, or ?
+                ];
+            }
+        }
+        [invocation setArgument: dict atIndex: i];
+        return;
+    }
+    
+    switch (slot->utag) {
+            case tagInt :
+                [invocation setArgument: &slot->ui atIndex: i];
+                return;
+            case tagSym :
+                [invocation setArgument: [NSString stringWithCString: slot->us->name] atIndex: i];
+                return ;
+            case tagChar :
+                [invocation setArgument: &slot->uc atIndex: i];
+                return;
+            case tagNil :
+                [invocation setArgument: nil atIndex: i];
+                return;
+            case tagFalse :
+                [invocation setArgument: NO atIndex: i];
+                return;
+            case tagTrue :
+                [invocation setArgument: YES atIndex: i];
+                return;
+            case tagPtr:
+                post("!!! notYetImplemented: get ptr from Ptr object\n");
+                [invocation setArgument: NULL atIndex: i];
+                return;
+            case tagObj:
+                    if (! isSubclassOf( slot->uo->classptr, class_sequenceable_collection )) {
+                        post("Cannot convert object for setInvocationArgFromPyrSlot:\n");
+                        [invocation setArgument: NULL atIndex: i];
+                        return;
+                    } else { // sequenceable collections
+                        if(slot->uo->size) {
+                            NSMutableArray *array = [NSMutableArray arrayWithCapacity: slot->uo->size];
+                            int i;
+                            for(i = 0; i < slot->uo->size; i++) {
+                                [array insertObject: nsCodableFromPyrSlot(&(slot->uo->slots[i])) atIndex: i];
+                            }
+                            [invocation setArgument: array atIndex: i];
+                        } else {
+                            [invocation setArgument: [NSArray array] atIndex: i];
+                        }
+                        return;
+                    }
+                    break;
+                
+    /*   
+            case tagInf :
+            //dict must do values
+                NSNumber with infinity
+            NaN
+                NSNumber with NaN
+                
+            default : // object asString
+    */    
+    }
+    
+    // can't happen ?
+    NSLog( @"setInvocationArgFromPyrSlot failed to determine type of object");
+    [invocation setArgument: NULL atIndex: i];
+}
 
 /** PRIMITIVES **/
 
 int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed);
 int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
 {
-    if (!g->canCallOS) return errCantCallOS;
+    //if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *receiver = g->sp - 1; // CocoaDialog class
     PyrSlot *array = g->sp; // an array
     
-    SCDialog *dialog = [SCDialog receiver: receiver->uo resultArray: array->uo ];
+    SCDialog *dialog = [SCDialog receiver: receiver->uo result: array->uo ];
 
     [dialog scvmDeferWithSelector:@selector(getPaths) ];
 
     return errNone;
 }
 
+int prSavePanel(struct VMGlobals *g, int numArgsPushed);
+int prSavePanel(struct VMGlobals *g, int numArgsPushed)
+{
+    //if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *receiver = g->sp - 1; // CocoaDialog class
+    PyrSlot *string = g->sp; // a string
+    
+    SCDialog *dialog = [SCDialog receiver: receiver->uo result: string->uo ];
+    
+    [dialog scvmDeferWithSelector:@selector(savePanel) ];
+
+    return errNone;
+}
 
 int prSaveAsPlist(struct VMGlobals *g, int numArgsPushed);
 int prSaveAsPlist(struct VMGlobals *g, int numArgsPushed)
@@ -167,7 +270,7 @@ int prSaveAsPlist(struct VMGlobals *g, int numArgsPushed)
 int prStandardizePath(struct VMGlobals *g, int numArgsPushed);
 int prStandardizePath(struct VMGlobals *g, int numArgsPushed)
 {
-    if (!g->canCallOS) return errCantCallOS;
+    //if (!g->canCallOS) return errCantCallOS;
     
     PyrSlot *string = g->sp;
     PyrString *pyrString;
@@ -178,7 +281,6 @@ int prStandardizePath(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-//still buggy
 int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed);
 int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
 {
@@ -190,13 +292,6 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *returnArray  = g->sp;
     
     if(IsNil(directoryPath)) return errWrongType;
-    
-   /*
-    dumpPyrSlot(receiver);
-    dumpPyrSlot(returnArray);
-    dumpPyrSlot(extension);
-    dumpPyrSlot(directoryPath);
-   */
     
     PyrObject *returnObject = returnArray->uo;
     
@@ -273,6 +368,96 @@ int prHelpFileForString(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+/*
+these are a still experimental cocoa <-> sc bridge
+an sc class: NSObjectHolder holds cocoa objects and lets you send and receive
+messages.
+
+	prAllocInit { arg classname, initname,args;
+		_ObjC_allocinit;
+		^this.primitiveFailed;
+	}
+	prDealloc {
+		_ObjC_dealloc;		
+	}
+*/
+int prAllocInit(struct VMGlobals *g, int numArgsPushed);
+int prAllocInit(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot *receiver = g->sp - 3;
+    PyrSlot *classname = g->sp - 2;
+    PyrSlot *initname = g->sp - 1;
+    PyrSlot *args  = g->sp;
+    
+    // have to put them in a specific pool so they can be released on command
+
+    // must defer in case of large loads and gui
+    id newThing = [[NSClassFromString( nsStringFromPyrSlot(classname) ) class] alloc];
+    [newThing init];
+    if(newThing) {
+        [newThing retain];
+    } else {
+        return errFailed;
+    }
+    //receiver set dataptr
+    SetInt( receiver, newThing );
+    return errNone;
+}
+
+int prObjDo(struct VMGlobals *g, int numArgsPushed);
+int prObjDo(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot *receiver = g->sp - 3;
+    PyrSlot *dataptr = g->sp - 2;
+    PyrSlot *methodname = g->sp - 1;
+    PyrSlot *args = g->sp;
+    
+    dumpObjectSlot(receiver);
+    dumpObjectSlot(dataptr);
+    dumpObjectSlot(methodname);
+    dumpObjectSlot(args);
+    
+    // have to put them in a specific pool so they can be released on command
+    if(! IsInt(dataptr) ) return errWrongType;
+    
+    // check retain count and return in case
+    SEL selector = NSSelectorFromString(nsStringFromPyrSlot(methodname));
+    //err if not found
+    
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:
+                                        [(id)dataptr->ui methodSignatureForSelector: selector]];
+    [invocation setTarget:(id)dataptr->ui];
+    [invocation setSelector: selector];
+    // check number of args is right
+
+    if (!isSubclassOf( args->uo->classptr, class_sequenceable_collection )) 
+        return errWrongType;
+        
+    int i;
+    for(i = 0; i < args->uo->size; i++) {
+        [invocation setArgument: nsCodableFromPyrSlot(&(args->uo->slots[i])) atIndex: i + 2];
+        //setInvocationArgFromPyrSlot(invocation,i + 2,&(args->uo->slots[i]));
+    }
+    [invocation retainArguments];
+    NSLog(@"invocation: %@",invocation);
+    [[SCVirtualMachine sharedInstance] defer: invocation];
+
+    return errNone;
+}
+
+int prDealloc(struct VMGlobals *g, int numArgsPushed);
+int prDealloc(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot *receiver = g->sp - 1;
+    PyrSlot *dataptr = g->sp;
+    
+    // have to put them in a specific pool so they can be released on command
+    if(! IsInt(dataptr) ) return errWrongType;
+    
+    // check retain count and return in case
+    [(id)dataptr->ui release];
+    return errNone;
+}
 
 
 void initCocoaFilePrimitives()
@@ -283,10 +468,15 @@ void initCocoaFilePrimitives()
     index = 0;
 
     definePrimitive(base, index++, "_Cocoa_GetPathsDialog", prGetPathsDialog, 2, 0);	
+    definePrimitive(base, index++, "_Cocoa_SavePanel", prSavePanel, 2, 0);	
     definePrimitive(base, index++, "_Cocoa_SaveAsPlist", prSaveAsPlist, 2, 0);	
     definePrimitive(base, index++, "_Cocoa_StandardizePath", prStandardizePath, 1, 0);	
     definePrimitive(base, index++, "_Cocoa_GetPathsInDirectory", prGetPathsInDirectory, 4, 0);	
     definePrimitive(base, index++, "_Cocoa_HelpFileForString_", prHelpFileForString, 1, 0);	
+
+    definePrimitive(base, index++, "_ObjC_AllocInit", prAllocInit, 4, 0);	
+    definePrimitive(base, index++, "_ObjC_Dealloc", prDealloc, 2, 0);	
+    definePrimitive(base, index++, "_ObjC_objectDo", prObjDo, 4, 0);	
 
 }
 

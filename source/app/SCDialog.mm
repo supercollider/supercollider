@@ -24,16 +24,16 @@
 
 @implementation SCDialog
 
-+(id)receiver:(PyrObject*)argReceiver resultArray:(PyrObject*)argResultArray
++(id)receiver:(PyrObject*)argReceiver result:(PyrObject*)argResult
 {
-    return [[super alloc] initWithReceiver: argReceiver resultArray: argResultArray];
+    return [[super alloc] initWithReceiver: argReceiver result: argResult];
 }
 
--(id)initWithReceiver:(PyrObject*)argReceiver resultArray:(PyrObject*)argResultArray
+-(id)initWithReceiver:(PyrObject*)argReceiver result:(PyrObject*)argResult
 {	
     if(self == [super init]) {
         receiver = argReceiver;
-        resultArray = argResultArray;
+        result = argResult;
 	}
     return self;
 }
@@ -56,18 +56,29 @@
     
     NSArray *urls = [docctl URLsFromRunningOpenPanel];
     if(urls) {
-        temp = [urls retain];
-        [self returnPaths];
+        [self returnPaths: urls];
     } else {
         [self cancel];
     }
 }
+
+
+/*-(void)getPath
+{
+    NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
+    
+    if(NSOkButton == [docctl runModalOpenPanel:[NSOpenPanel openPanel] forTypes:]) {
+        //temp = [urls retain];
+        [self returnPath:   ];
+    } else {
+        [self cancel];
+    }
+}*/
+
         
--(void)returnPaths
+-(void)returnPaths:(NSArray*)urls
 {
     int i;
-    NSArray *urls = (NSArray*) temp;
-    [temp release];
     int count = [urls count];
     
     VMGlobals *g = gMainVMGlobals;
@@ -79,21 +90,62 @@
         PyrSlot slot;
         SetObject(&slot, pyrPathString);
         
-        resultArray->slots[i].ucopy = slot.ucopy;
+        result->slots[i].ucopy = slot.ucopy;
 
-        g->gc->GCWrite(resultArray,pyrPathString);
+        g->gc->GCWrite(result,pyrPathString);
         // have to set size field each time in order that gc can find the created objects
-        resultArray->size = i+1;
+        result->size = i+1;
     }
     pthread_mutex_unlock (&gLangMutex);
 
     [self ok];
 }
 
+-(void)savePanel
+{
+    NSSavePanel *savePanel = [NSSavePanel savePanel];
+    if([savePanel runModal] == NSFileHandlingPanelOKButton) {
+        [self returnPath: [savePanel filename]];
+    } else {
+        [self cancel];
+    }
+}
 
+-(void)returnPath:(NSString*)path
+{
+    // check if greater than 512
+    int size = [path cStringLength];
+    if(size > 512) {
+        [self error];
+        return;
+    }
+    
+    pthread_mutex_lock (&gLangMutex);    
+    memcpy(result->slots,[path cString], size);
+    result->size = size;
+    pthread_mutex_unlock (&gLangMutex);
 
+    [self ok];
+}
 
+/*  better done using SCTextField
+-(void)getStringPrompt:(NSString*)prompt defaultString:(NSString*)defaultString
+{
+}
+- (void)loadGetStringUI {
+    if (!textField) {
+        if (![NSBundle loadNibNamed:@"GetStringDlg" owner:self])  {
+            NSLog(@"Failed to load GetStringDlg.nib");
+        }
+        //if (self == sharedGetStringObject) 
+        [[textField window] setFrameAutosaveName:@"GetString"];
+    }
+}
+*/
 
+// get color dialog
+
+// all responses
 -(void)ok
 {
     pthread_mutex_lock (&gLangMutex);
@@ -110,6 +162,18 @@
 {
     pthread_mutex_lock (&gLangMutex);
 		PyrSymbol *method = getsym("cancel");
+        VMGlobals *g = gMainVMGlobals;
+        g->canCallOS = true;
+        ++g->sp;  SetObject(g->sp, receiver ); 
+        runInterpreter(g, method, 1);
+        g->canCallOS = false;
+    pthread_mutex_unlock (&gLangMutex);
+}
+
+-(void)error
+{
+    pthread_mutex_lock (&gLangMutex);
+		PyrSymbol *method = getsym("errir");
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
         ++g->sp;  SetObject(g->sp, receiver ); 
