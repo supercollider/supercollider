@@ -48,7 +48,7 @@ Pdefn : Pattern {
 		pat = pattern;
 		stream = pattern.asStream;
 		action.value(this, stream);
-		while { 
+		while {
 			if((pat !== pattern)) {
 					pat = pattern;
 					stream = this.constrainStream(stream);
@@ -131,7 +131,8 @@ Tdef : Pdefn {
 	}
 	
 	playOnce { arg argClock, doReset = false, quant;
-		^PauseStream.new(this.asStream).play(argClock ? clock, doReset, quant ? this.quant)
+		clock = clock ? argClock;
+		^PauseStream.new(this.asStream).play(clock, doReset, quant ? this.quant)
 	}
 	play { arg argClock, doReset = false, quant;
 		isPlaying = true;
@@ -210,8 +211,9 @@ Pdef : Tdef {
 	// playing one instance //
 	
 	playOnce { arg argClock, protoEvent, quant;
+		clock = clock ? argClock;
 		^EventStreamPlayer(this.asStream, protoEvent)
-				.play(argClock ? clock, true, quant ? this.quant) 
+				.play(clock, true, quant ? this.quant) 
 	}
 	
 	play { arg argClock, protoEvent, quant;
@@ -231,10 +233,12 @@ Pdef : Tdef {
 			~library = all;
 			~prPlay = ~play;
 			~synthDef = \default;
+			~embeddingLevel = 0; // infinite recursion catch
 			~play = #{
-				var pat, event, outerEvent, recursionLevel, instrument;
+				var pat, event, outerEvent, recursionLevel, instrument, embeddingLevel;
 				pat = ~library.at(~instrument);
-				if(pat.notNil) {
+				if(pat.notNil and: { (embeddingLevel = ~embeddingLevel) < 8 })
+				{
 					// preserve information from outer pattern
 					outerEvent = currentEnvironment.copy;
 					recursionLevel = ~recursionLevel;
@@ -256,11 +260,12 @@ Pdef : Tdef {
 							outerEvent.put(\instrument, ~synthDef);
 						};
 					} {	// avoid recursion, if instrument not set.
-						outerEvent.put(\instrument, ~synthDef);
+						//outerEvent.put(\instrument, ~synthDef);
+						outerEvent.put(\embeddingLevel, embeddingLevel + 1);
 						outerEvent.parent_(Event.parentEvents.noteEvent);
 					};
 					
-					pat = Pfindur(~sustain.value, pat);
+					pat = Pfindur(~sustain.value + 0.01, pat); // avoid cutting off last event
 					pat.play(thisThread.clock, outerEvent, 0.0);
 				} {
 					~prPlay.value;
