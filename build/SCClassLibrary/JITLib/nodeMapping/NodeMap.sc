@@ -1,5 +1,5 @@
 //used to store and cache set, map setn commands
-//todo:  more optimization
+
 
 NodeMap {
 	var <>settings;
@@ -15,11 +15,7 @@ NodeMap {
 	
 	map { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			var key, val;
-			key = args.at(i);
-			val = args.at(i+1);
-			if(upToDate, { this.quickUpdate(key, val, 14) });
-			this.at(key).bus_(val);
+			this.at(args.at(i)).bus_(args.at(i+1));
 		});
 		upToDate = false;
 	}
@@ -39,22 +35,16 @@ NodeMap {
 	
 	setn { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			var key, val;
-			key = args.at(i);
-			val = args.at(i+1);
-			if(upToDate, { this.quickUpdate(key, val, 16) });
-			this.at(key).value_(val);
+			this.at(args.at(i)).value_(args.at(i+1).asCollection);
 		});
+		upToDate = false;
 	}
 	
 	set { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			var key, val;
-			key = args.at(i);
-			val = args.at(i+1).asCollection;
-			if(upToDate, { this.quickUpdate(key, val, 15) });
-			this.at(key).value_(val);
+			this.at(args.at(i)).value_(args.at(i+1));
 		});
+		upToDate = false;
 		
 	}
 	
@@ -101,38 +91,29 @@ NodeMap {
 		^settings.at(key).value
 	}
 	
+	emptyBundle { ^#[[15, nil],[16, nil], [14, nil]].copy } //set, setn, map
+	
 	updateBundle { arg nodeID;
-		
-		if(upToDate, {
-				bundle.do({ arg item;
-					item.put(1, nodeID); //the nodeID is always second in a synth message
-				});
-			}, {
-				bundle = List.new; //maybe later for efficiency concatenate.
-				settings.do({ arg item; item.addToBundle(bundle, nodeID) });
+			
+			if(upToDate.not, {
+				bundle = this.emptyBundle;
+				settings.do({ arg item; item.addToBundle(bundle) });
+				bundle = bundle.reject({ arg item; item.size == 2 }); //remove unused
 				upToDate = true;
-		});
+			});
+			
+			bundle.do({ arg item;
+					item.put(1, nodeID); //the nodeID is always second in a synth message
+			});
 	}
 	
-	quickUpdate { arg key, val, command;
-				var bundleIndex;
-				bundleIndex = bundle.detectIndex({ arg item; 
-					item.at(0) == command and: { item.at(2) == key } 
-				});
-				if(bundleIndex.notNil, { 
-					bundle.at(bundleIndex).put(3, val) 
-				}, {
-					upToDate = false;
-				})
-	}
 	
 	addToBundle { arg inBundle, target;
-		var mapArgs, valArgs, multiValArgs;
 			target = target.asNodeID;
 			this.updateBundle(target);
 			inBundle.addAll(bundle);
 	}
-	
+	/*
 	copy {
 		var res, nset;
 		res = this.class.new;
@@ -140,7 +121,7 @@ NodeMap {
 		settings.keysValuesDo({ arg key, val; nset.put(key, val.copy) });
 		^res
 	}
-
+	*/
 
 }
 

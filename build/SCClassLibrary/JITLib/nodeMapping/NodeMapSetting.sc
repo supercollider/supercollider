@@ -4,21 +4,21 @@ NodeMapSetting {
 	*new { arg key, value, bus;
 		^super.newCopyArgs(key, value, bus)
 	}
-	
-	addToBundle { arg bundle, nodeID;
+	//assumes order of bundles: [[set, setn, map]
+	addToBundle { arg bundle;
 		if(bus.notNil, {
-			this.addBusToBundle(bundle, nodeID)
+			this.addBusToBundle(bundle)
 		}, {
 			if(value.isSequenceableCollection, {
-				bundle.add([16, nodeID, key, value.size]++value)
+				bundle[1] = bundle[1].addAll([key, value.size]++value)
 			}, {
-				bundle.add([15, nodeID, key, value])
+				bundle[0] = bundle[0].addAll([key, value])
 			})
 		})
 	}
 	
 	addBusToBundle { arg bundle, nodeID;
-		bundle.add([14, nodeID, key, bus])
+		bundle[2] = bundle[2].addAll([key, bus])
 	}
 	
 	copy {
@@ -32,9 +32,9 @@ NodeMapSetting {
 ProxyNodeMapSetting : NodeMapSetting {
 	var <>channelOffset=0, <>lag;
 	
-	addBusToBundle { arg bundle, nodeID;
+	addBusToBundle { arg bundle;
 		if(bus.index.notNil, {
-			bundle.add([14, nodeID, key, bus.index + channelOffset])
+			bundle[2] = bundle[2].addAll([ key, bus.index + channelOffset])
 		})
 	}
 	isEmpty {
