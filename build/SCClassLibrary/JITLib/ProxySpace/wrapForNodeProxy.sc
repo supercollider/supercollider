@@ -25,11 +25,11 @@
 	
 	
 	//this method is called from within the Control
-	buildForProxy { arg proxy, channelOffset=0, nameEnd;
+	buildForProxy { arg proxy, channelOffset=0, index;
 		var argNames;
 		argNames = this.argNames;
 		^ProxySynthDef(
-			proxy.generateUniqueName ++ nameEnd,
+			proxy.generateUniqueName ++ index,
 			this.prepareForProxySynthDef(proxy),
 			proxy.nodeMap.ratesFor(argNames),
 			nil, 
@@ -105,17 +105,6 @@
 	}
 }
 
-
-+AbstractPlayControl {
-	makeProxyControl { ^this.deepCopy } //already wrapped, but needs to be copied
-}
-
-
-
-
-
-
-
 ///////////////////////////// Pattern - Streams ///////////////////////////////////
 
 +Stream { // assumes event stream
@@ -184,6 +173,53 @@
 }
 
 
+/////////// pluggable associations //////////////
+
+
++Association {
+	buildForProxy { arg proxy, channelOffset=0, index;
+		^AbstractPlayControl.buildMethods[key].value(value, proxy, channelOffset, index)
+	}
+	proxyControlClass {
+		^AbstractPlayControl.proxyControlClasses[key] ? SynthDefControl
+	}
+}
+
++AbstractPlayControl {
+	makeProxyControl { ^this.deepCopy } //already wrapped, but needs to be copied
+	
+	/* these adverbial extendible interfaces are for supporting different preparation schemes.
+	it is called by Association, so ~out = \filter -> ... will call this */
+
+	*initClass {
+		proxyControlClasses = (filter: SynthDefControl);
+		buildMethods = ( 		
+		filter: #{ arg func, proxy, channelOffset=0, index;
+			var ok, ugen;
+			if(proxy.isNeutral) { 
+				ugen = func.value(Silent.ar);
+				ok = proxy.initBus(ugen.rate, ugen.numChannels);
+				if(ok.not) { Error("wrong rate/numChannels").throw }
+			};
+			
+			{ arg out;
+				var e;
+				e = EnvGate.new * Control.names(["wet"++(index ? 0)]).kr(1.0);
+				if(proxy.rate === 'audio') {
+					XOut.ar(out, e, SynthDef.wrap(func, nil, [In.ar(out, proxy.numChannels)]))
+				} {
+					XOut.kr(out, e, SynthDef.wrap(func, nil, [In.kr(out, proxy.numChannels)]))				};
+			}.buildForProxy( proxy, channelOffset, index )
+		
+		}
+		
+		)
+	
+	}
+}
+
+
+
 
 
 
@@ -218,6 +254,12 @@
 	canFreeSynth {
 		^(inputs.at(4) > 1) and: { inputs.at(0).isNumber.not }
 	}
+}
++ Line {
+	canFreeSynth { ^inputs.at(3) > 1 }
+}
++ XLine {
+	canFreeSynth { ^inputs.at(3) > 1 }
 }
 
 + Free {

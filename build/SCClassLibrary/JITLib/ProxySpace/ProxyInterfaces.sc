@@ -7,6 +7,7 @@
 AbstractPlayControl {
 	var <source, <>channelOffset;
 	var <paused=false;
+	classvar <>buildMethods, <>proxyControlClasses; // see wrapForNodeProxy for methods
 	
 	*new { arg source, channelOffset=0;
 		^super.newCopyArgs(source, channelOffset);
@@ -30,7 +31,7 @@ AbstractPlayControl {
 	}
 	
 	stopToBundle { arg bundle;
-		bundle.addAction(this, \stop);
+		bundle.addMessage(this, \stop);
 	}
 	
 	freeToBundle {}
@@ -48,19 +49,20 @@ AbstractPlayControl {
 }
 
 StreamControl : AbstractPlayControl {
-	var stream, clock; // stream is a pause stream
+	var stream, clock; // stream is a pause stream. 
+					// this is meant for running in the proxy to control inner properties
+					// so it is stopped when removed.
 	
 	playToBundle { arg bundle;
-		if(paused.not and: { stream.isPlaying.not }, {
-			bundle.addMessage(this, \play); //no latency (latency is in stream already)
-		})
-		^nil //return a nil object instead of a synth
+		// no latency (latency is in stream already)
+		if(paused.not) { bundle.addMessage(this, \play) } 
+		^nil // return a nil object instead of a synth
 	}
 	
 	build { arg proxy;
 		clock = proxy.clock;
 		paused = proxy.paused;
-		stream = source.buildForProxy;
+		stream = source.buildForProxy(proxy);
 		^true;
 	}
 	
@@ -69,8 +71,13 @@ StreamControl : AbstractPlayControl {
 	
 	readyForPlay { ^stream.notNil }
 
-	play { stream.play(clock, false, 0.0) }
-	stop { stream.stop }
+	play { 
+		if(stream.isPlaying.not)Ê{ 
+			stream.stop; stream = stream.copy; stream.play(clock, false, 0.0)
+		} 
+	}
+	stop { }
+	freeToBundle { arg bundle; bundle.addMessage(stream, \stop) }
 	
 }
 
@@ -145,7 +152,7 @@ PatternControl : StreamControl {
 
 SynthControl : AbstractPlayControl {
 	var <server, <>nodeID;
-	var canReleaseSynth=true, canFreeSynth=true;
+	var <canReleaseSynth=true, <canFreeSynth=true;
 	
 	
 	loadToBundle {} //assumes that SynthDef is loaded in the server 
