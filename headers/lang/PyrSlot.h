@@ -72,11 +72,9 @@ struct RGBColor8 {
 typedef union pyrslot {
 	double f;
 	struct {
-// #if BYTE_ORDER == BIG_ENDIAN
-// FIXME: need to swap on intel?! <sk>
-#if 1
+#if BYTE_ORDER == BIG_ENDIAN
 		int tag;
-#endif
+#endif // BIG_ENDIAN
 		union {
 			int c; /* char */
 			int i;
@@ -100,10 +98,10 @@ typedef union pyrslot {
 			struct PyrInterpreter *oi;
 			struct PyrPlug *plug;
 		} u;
-// #if BYTE_ORDER == LITTLE_ENDIAN
-#if 0
+#if BYTE_ORDER == LITTLE_ENDIAN
+		// need to swap on intel <sk>
 		int tag;
-#endif
+#endif // LITTLE_ENDIAN
 	} s;
 } PyrSlot;
 
