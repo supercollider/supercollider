@@ -1,11 +1,7 @@
 
 AutoCompMethodBrowser {
 	classvar	<>wWidth = 400, <>wHeight = 360;
-	classvar	methDict;	// note, not the same as Class-methods
-					// this is a dictionary: selector -> [method, method, method...]
-					// with this, I can look up method selectors almost instantly
-					// otherwise, every time I would have to search the whole class tree (slow)
-	classvar	methodExclusions, classExclusions;
+	classvar	<methodExclusions, <classExclusions;
 
 	classvar	w, textField, listView,		// gui objects
 		masterList,				// a list of all methods with that selector
@@ -15,18 +11,6 @@ AutoCompMethodBrowser {
 		doc,					// document from which this was created
 		start, size;	// start and length of identifier in document
 
-	*initClass {
-		methDict = IdentityDictionary.new;
-		Class.allClasses.do({ |class|
-			class.methods.do({ |meth|
-					// if this selector hasn't been initialized, make a new set
-				methDict[meth.name].isNil.if({ methDict.put(meth.name, Set.new); });
-				methDict[meth.name].add(meth);
-			});
-		});
-		methodExclusions = [];
-	}
-	
 		// prevent certain method selector strings from being gui'ed during typing
 		// assumes that selectors are spelled correctly!
 		// startup.rtf should include AutoCompMethodBrowser.exclude([\value, \if, ...]);
@@ -35,7 +19,7 @@ AutoCompMethodBrowser {
 	}
 	
 	*new { arg start, size, doc;
-			// may only open a browsere if there isn't one open already
+			// may only open a browser if there isn't one open already
 		(w.isNil and: { this.newCondition(start, size, doc) }).if({
 			^this.init(start, size, doc)
 		}, {
@@ -51,7 +35,7 @@ AutoCompMethodBrowser {
 	}
 	
 	*init { arg argStart, argSize, argDoc;
-		var	selector, temp;
+		var	selector, temp, initString;
 		skipThis = dropMeta = false;
 		selector = argDoc.string(argStart, argSize);
 		(selector.size == 0).if({
@@ -65,30 +49,36 @@ AutoCompMethodBrowser {
 			masterList = Class.allClasses.select({ |cl|
 				cl.isMetaClass and: { cl.name.asString.containsi(selector) }
 			}).collect({ |cl|	// then grab their *new method
-				[cl, cl.findRespondingMethodFor(\new)]
+				[cl, cl.findRespondingMethodFor(\new), cl.name]  // cl.name used for sorting
 			}).reject({ |item| item[1].isNil });
+			initString = selector;
 			selector = "new";
 			skipThis = dropMeta = true;
 		}, {
-			masterList = [];
-			methDict.keysValuesDo({ |k, v|
-				k.asString.containsi(selector).if({
-					masterList = masterList ++ v.collect({ |meth| [meth.ownerClass, meth] });
+			masterList = IdentitySet.new;
+			Class.allClasses.do({ |class|
+				class.methods.do({ |method|
+					method.name.asString.containsi(selector).if({
+						masterList.add([class, method,
+							class.name ++ "-" ++ method.name
+						]);
+					});
 				});
 			});
+			initString = "";
 		});
 		(masterList.size > 0).if({
 				// this sort will sort both of them (desired)
 				// [0] is the ownerclass, [1] the method
-			reducedList = masterList.sort({ |a, b|
-				(a[0].name ++ "-" ++ a[1].name) < (b[0].name ++ "-" ++ b[1].name)
-			});
+			masterList = masterList.asArray.sort({ |a, b| a[2] < b[2] });
 				// if previous char is a ., then class should not be displayed in argList
 			(argDoc.string(argStart-1, 1)[0] == $.).if({ skipThis = true });
 			doc = argDoc;
 			start = argStart;
 			size = argSize;
 			this.prInit("." ++ selector);
+			textField.string_(initString);
+			this.restrictList;
 		}, {
 			^nil
 		});
@@ -99,7 +89,7 @@ AutoCompMethodBrowser {
 			// close the window only if it isn't closed
 		(w.tryPerform(\isClosed) ? true).not.if({ w.close; });
 			// garbage; also, w = nil allows next browser to succeed
-		w = masterList = reducedList = doc = nil;
+		w = masterList = reducedList = nil;
 	}
 	
 	*finish {
@@ -168,7 +158,7 @@ AutoCompMethodBrowser {
 		textField = SCTextField(w, Rect(5, 50, wWidth - 10, 20)).resize_(2);
 		listView = SCListView(w, Rect(5, 75, wWidth - 10, wHeight - 80))
 			.resize_(5)
-			.items_(this.itemList(masterList))
+//			.items_(this.itemList(masterList))
 			.keyDownAction_({ |listV, char, modifiers, keycode|
 				[{ (modifiers bitAnd: 10485760 > 0) and: (keycode == 63232) }
 					-> { listView.value = (listView.value - 1) % reducedList.size },
@@ -230,6 +220,7 @@ AutoCompClassBrowser : AutoCompMethodBrowser {
 		start = argStart;
 		size = argSize;
 		this.prInit(savedClass.name);
+		this.restrictList;
 	}
 	
 	*getMethods { arg class;
@@ -282,6 +273,8 @@ AutoCompClassSearch : AutoCompClassBrowser {
 		start = argStart;
 		size = argSize;
 		this.prInit("Open a class browser");
+		textField.string_(selector);
+		this.restrictList;
 	}
 	
 	*finish {
@@ -293,10 +286,10 @@ AutoCompClassSearch : AutoCompClassBrowser {
 		classBrowser.methodView.focus
 			.enterKeyAction_({
 				var str, newstart, newsize;
-				Document.listener.selectRange(start, size)
+				doc.selectRange(start, size)
 					.selectedString_(str = this.finishString);
 				#newstart, newsize = this.finalSelection(str);
-				Document.listener.selectRange(newstart, newsize);
+				doc.selectRange(newstart, newsize);
 				classBrowser.methodView.enterKeyAction = classBrowser.normalMethodEnterKey;
 				classBrowser.close;
 			})
