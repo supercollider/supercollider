@@ -74,7 +74,9 @@ HIDDeviceService{
 			elelist = this.prbuildElementList(newdev.locID,
 				Array.newClear(HIDDeviceService.prGetElementListSize(newdev.locID)));
 			elelist.do({arg ele;
-				newdev.prAddElement(ele.at(0), ele.at(1), ele.at(2), ele.at(3), ele.at(4));
+				if(ele.notNil){
+					newdev.prAddElement(ele.at(0), ele.at(1), ele.at(2), ele.at(3), ele.at(4));
+				};
 			});
 			devices = devices.add(newdev);
 		});
