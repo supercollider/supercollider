@@ -122,7 +122,7 @@
 			
 			pat = this.collect({ arg event;
 				event.use({ 
-					~nodeID = proxy.asNodeID; //in case of Pmono. see.
+					~nodeID = proxy.group.asNodeID; //in case of Pmono. see.
 					~argNames = argNames;
 					~msgFunc = msgFunc;
 				});
