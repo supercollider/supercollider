@@ -119,7 +119,7 @@ Server : Model {
 	}
 	loadSynthDef { arg name, completionMsg;
 		this.sendMsg("/d_load", "synthdefs/" ++ name ++ ".scsyndef", 
-			completionMsg ? []);
+			completionMsg);
 	}
 	//loadDir
 	
