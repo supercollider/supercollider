@@ -1,10 +1,54 @@
 
-// : HasInputs
+HasPatchIns : AbstractPlayer {
 
-Patch : AbstractPlayer  {
+	var <patchIns;
+
+	mapInputToBus { arg i,bus;
+		var patchOut;
+		bus = bus.asBus;
+		patchOut = PatchOut.performList(bus.rate,[nil,bus.server.asGroup,bus]);
+		patchOut.connectTo(patchIns.at(i), this.isPlaying );
+	}
+/*
+have to bundle it
+	connectInputToPlayer { arg i,player;
+		// does it have patchOut
+		if(player.patchOut.isNil,{
+			// always uncomfortable to not have patchOut decided
+			player.makePatchOut(this.group,true);
+		});
+		player.patchOut.connectTo(patchIns.at(i), this.isPlaying);
+	}
+*/				
+	/*
+	setInput { arg i,newarg;
+		var old,newargpatchOut;
+		old = args.at(i);
+		args.put(i,newarg);
+		if(this.isPlaying,{
+			old.free; // release old  thru some manager ?
+			newarg
+			
+			//old.patchOut.releaseConnection;
+			newargpatchOut = newarg.play(Destination.newByRate(this.instr.specs.at(i).rate,
+								NodeControl(patchOut.synth,i + 1)));
+			newargpatchOut.retainConnection;
+			newargpatchOut.connectTo(patchIns.at(i));
+		});
+	}
+	*/
+	
+	//inputs subclassResponsibility // players, floats etc.
+	inputProxies { 
+		^this.inputs.select({ arg a; a.isKindOf(PlayerInputProxy) })
+	}
+	
+}
+
+Patch : HasPatchIns  {
 		
 	var <>args,<instr;
-	var <patchIns,synthPatchIns,argsForSynth;
+	var synthPatchIns,argsForSynth;
 	
 	var synthArgsIndices;
 	
@@ -139,22 +183,8 @@ Patch : AbstractPlayer  {
 		this.children.do({ arg child; child.stop });
 	}
 
-	/*
-	setInput { arg i,newarg;
-		var old,newargpatchOut;
-		old = args.at(i);
-		args.put(i,newarg);
-		if(this.isPlaying,{
-			// release old  thru some manager ?
-			//old.patchOut.releaseConnection;
-			newargpatchOut = newarg.play(Destination.newByRate(this.instr.specs.at(i).rate,
-								NodeControl(patchOut.synth,i + 1)));
-			newargpatchOut.retainConnection;
-			newargpatchOut.connectTo(patchIns.at(i));
-		});
-	}
-	*/
 
+	inputs { ^args }
 
 	//act like a simple ugen function
 	ar { 	arg ... overideArgs;	^this.valueArray(overideArgs) }
