@@ -45,8 +45,8 @@ Pan4 : Panner {
 	}
 	init { arg ... theInputs;
 		inputs = theInputs;		
-		channels = [ OutputProxy(\audio,this, 0), OutputProxy(\audio,this, 1),
-					OutputProxy(\audio,this, 2), OutputProxy(\audio,this, 3) ];
+		channels = [ OutputProxy(rate,this, 0), OutputProxy(rate,this, 1),
+					OutputProxy(rate,this, 2), OutputProxy(rate,this, 3) ];
 		^channels
 	}
 }
@@ -161,7 +161,7 @@ PanAz : Panner {
 	}
 	init { arg numChans ... theInputs;
 		inputs = theInputs;		
-		channels = Array.fill(numChans, { arg i; OutputProxy(\audio,this, i) });
+		channels = Array.fill(numChans, { arg i; OutputProxy(rate,this, i) });
 		^channels
 	}
 }
