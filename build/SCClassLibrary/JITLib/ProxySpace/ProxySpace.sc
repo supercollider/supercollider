@@ -44,13 +44,7 @@
 	}
 	
 	record { arg key, path, headerFormat="aif", sampleFormat="int16";
-		var rec;
-		rec = RecNodeProxy.newFrom(this.at(key));
-		Routine({
-			1.0.wait;
-			rec.record(path, headerFormat, sampleFormat);
-		}).play;
-		^rec 
+		^this.at(key).record(path, headerFormat="aif", sampleFormat);
 	}
 	
 	free {

@@ -25,11 +25,11 @@ RecNodeProxy : NodeProxy {
 		cmd = List.new;
 		n = this.numChannels;
 		if(this.isPlaying && recSynth.isNil, {
-			buffer = Buffer(server, 65536, n);
+			buffer = Buffer.alloc(server, 65536, n);
 			if(n <= 2, {
 				recSynth = Synth.prNew("system-diskout"++n.asString);
-				recSynth.newMsg(group,
-					[\i_in, bus.index, \i_bufNum, buffer.bufnum],\addAfter);
+				cmd = recSynth.newMsg(group,\addAfter,
+					[\i_in, bus.index, \i_bufNum, buffer.bufnum]);
 			}, {
 				"multichannel rec doesn't work yet (no completion command bundles)".inform;
 				^this;
@@ -41,7 +41,7 @@ RecNodeProxy : NodeProxy {
 				})
 				*/
 			});
-			buffer.write(path, headerFormat="aiff", sampleFormat="int16", 0, 0, true, cmd.at(0));
+			buffer.write(path, headerFormat="aiff", sampleFormat="int16", 0, 0, true, cmd);
 		}, { "cannot record".inform })
 	}
 	

@@ -82,6 +82,16 @@ NodeProxy : AbstractFunction {
 			this.sendToServer(false, 0.0, extraArgs);
 	}
 	
+	record { arg path, headerFormat="aiff", sampleFormat="int16";
+		var rec;
+		rec = RecNodeProxy.newFrom(this);
+		Routine({
+			1.0.wait;//must wait.
+			rec.record(path, headerFormat, sampleFormat);
+		}).play;
+		^rec
+	}
+	
 		
 	load {
 		if(server.serverRunning, {
