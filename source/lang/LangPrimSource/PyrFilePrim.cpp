@@ -1254,7 +1254,9 @@ int headerFormatToString(struct SF_INFO *info, const char **string){
 
 				break ;
 */
-		default : break ;
+		default : 
+			*string = " ";		
+		break ;
 		}
 return errNone;
 }
