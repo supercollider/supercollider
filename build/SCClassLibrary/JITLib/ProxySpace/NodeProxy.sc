@@ -484,7 +484,7 @@ NodeProxy : AbstractFunction {
 
 
 
-PlugDef : NodeProxy {
+Ndef : NodeProxy {
 	var key;
 	*new { arg key, object, server;
 		var res;
