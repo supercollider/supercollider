@@ -6,31 +6,47 @@
 \f0\b\fs36 \cf0 Class
 \f1\b0\fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b superclass: Object\
+\f0\b \cf0 superclass: Object\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 A Class describes the structure and implementation of a set objects which are its instances.\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul Utilities
+\f0\b\fs28 \cf0 \ul Utilities
 \f1\b0\fs24 \ulnone \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b findMethod(methodName)\
+\f0\b \cf0 findMethod(methodName)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Find the Method referred to by name. If not found, return nil.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b dumpByteCodes(methodName)\
+\f0\b \cf0 findRespondingMethodFor(methodName)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+As above, but climb the class tree to see if the method is inherited from a superclass. If not found, return nil.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Dump the byte codes of the named method.\
+\f0\b \cf0 dumpByteCodes(methodName)\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b dumpClassSubtree
+\f1\b0 \cf0 Dump the byte codes of the named method.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 dumpClassSubtree
 \f1\b0 \
 \
 Post the tree of all Classes that inherit from this class.\
@@ -42,12 +58,14 @@ Post the tree of all Classes that inherit from this class.\
 Post all the methods defined by this Class and their arguments.\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul Conversion
+\f0\b\fs28 \cf0 \ul Conversion
 \f1\b0\fs24 \ulnone \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b asClass
+\f0\b \cf0 asClass
 \f1\b0 \
 \
 Return this.\
@@ -59,12 +77,14 @@ Return this.\
 Return the name of the class as a String.\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul Accessing
+\f0\b\fs28 \cf0 \ul Accessing
 \f1\b0\fs24 \ulnone \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b name
+\f0\b \cf0 name
 \f1\b0 \
 \
 A Symbol that is the name of the class.\
@@ -79,7 +99,13 @@ The next class in a linked list of all classes.\
 \f0\b superclass
 \f1\b0 \
 \
-The Class from which this class inherits.\
+The Class from which this class directly inherits.\
+\
+
+\f0\b superclass
+\f1\b0 \
+\
+An Array of this class's superclasses, going back to Object.\
 \
 
 \f0\b subclasses
