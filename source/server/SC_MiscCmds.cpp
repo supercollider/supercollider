@@ -497,6 +497,16 @@ SCErr meth_d_freeAll(World *inWorld, int /*inSize*/, char * /*inData*/, ReplyAdd
 	return kSCErr_None;
 }
 
+SCErr meth_d_free(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_d_free(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
+{
+	sc_msg_iter msg(inSize, inData);	
+	while (msg.remain()) {
+		GraphDef_Remove(inWorld, msg.gets4());
+	}	
+	return kSCErr_None;
+}
+
 
 SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
@@ -1375,6 +1385,7 @@ void initMiscCommands()
 	NEW_COMMAND(d_load);		
 	NEW_COMMAND(d_loadDir);	
 	NEW_COMMAND(d_freeAll);	
+	NEW_COMMAND(d_free);	
 
 	NEW_COMMAND(s_new);	
 			

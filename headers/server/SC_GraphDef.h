@@ -72,6 +72,7 @@ GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList);
 GraphDef* GraphDef_Load(struct World *inWorld, const char *filename, GraphDef* inList);
 GraphDef* GraphDef_LoadDir(struct World *inWorld, char *dirname, GraphDef* inList);
 GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inList);
+void GraphDef_Remove(World *inWorld, int32 *inName);
 void GraphDef_DeleteMsg(struct World *inWorld, GraphDef *inDef);
 void GraphDef_Dump(GraphDef *inGraphDef);
 int32 GetHash(ParamSpec* inParamSpec);

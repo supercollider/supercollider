@@ -113,8 +113,10 @@ enum {
 	cmd_clearSched = 51,
 
 	cmd_sync = 52,
+	
+	cmd_d_free = 53,
 
-	NUMBER_OF_COMMANDS = 53
+	NUMBER_OF_COMMANDS = 54
 };
 
 extern SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
