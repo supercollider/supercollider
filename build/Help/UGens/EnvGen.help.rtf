@@ -172,25 +172,26 @@ s.sendMsg(\cf10 \\n_free\cf0 , 1001);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs24 \cf0 \
-If you set the gate of an EnvGen to -1 or below, then the envelope will cutoff immediately. The time for it to cutoff is the amount less than -1, with -1 being as fast as possible, -1.5 being a cutoff in 0.5 seconds, etc. The cutoff shape is linear.\
+	If the gate of an EnvGen is set to -1 or below, then the envelope will cutoff immediately. The time for it to 	cutoff is the amount less than -1, with -1 being as fast as possible, -1.5 being a cutoff in 0.5 seconds, etc. 	The cutoff shape is linear.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf7 SynthDef\cf0 (\cf8 "stealMe"\cf0 , \{ \cf7 arg\cf0  gate = 1;\
-	\cf7 Out\cf0 .ar(0, \{\cf7 BrownNoise\cf0 .ar\}.dup * \cf7 EnvGen\cf0 .kr(\cf7 Env\cf0 .linen(2, 4, 2, 0.3), gate, doneAction:2))\
-\}).send(s);\
-\
-s.sendMsg(\cf10 \\s_new\cf0 , \cf10 \\stealMe\cf0 , 1001, 1, 0);\
-\
-s.sendMsg(\cf10 \\n_set\cf0 , 1001, \cf10 \\gate\cf0 , -1.1); \cf9 // cutoff in 0.1 seconds\
-\
+\f1\fs18 \cf3 	SynthDef\cf2 (\cf5 "stealMe"\cf2 , \{ \cf3 arg\cf2  gate = 1;\
+		\cf3 Out\cf2 .ar(0, \{\cf3 BrownNoise\cf2 .ar\}.dup * \cf3 EnvGen\cf2 .kr(\cf3 Env\cf2 .linen(2, 4, 2, 0.3), gate, doneAction:2))\
+	\}).send(s);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs24 \cf7 If\cf0  your synthDef has an \cf7 arg\cf0  named \cf8 "gate"\cf0 , you can use the convienience method of Node:\
+\cf0 	\cf2 \
+\cf0 	\cf2 s.sendMsg(\cf6 \\s_new\cf2 , \cf6 \\stealMe\cf2 , 1001, 1, 0);\
+\cf0 	\cf2 \
+\cf0 	\cf2 s.sendMsg(\cf6 \\n_set\cf2 , 1001, \cf6 \\gate\cf2 , -1.1); \cf4 // cutoff in 0.1 seconds\cf0 \
+	\
+	
+\f2\fs24 If the synthDef has an arg named "gate", the convienience method of Node can be used:\
+	
+\f1\fs18 \
+	Node-release(releaseTime)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs18 \cf0 	\cf7 Node\cf0 -release(releaseTime)\
-\
+\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -199,32 +200,29 @@ s.sendMsg(\cf10 \\n_set\cf0 , 1001, \cf10 \\gate\cf0 , -1.1); \cf9 // cutoff in 
 
 \f2\b0 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs18 \cf0 (\
-	\cf7 SynthDef\cf0 (\cf8 "help-EnvGen"\cf0 ,\{ \cf7 arg\cf0  out=0;		\
-		\cf7 Out\cf0 .ar(out,	\
-			\cf7 EnvGen\cf0 .kr(\
-				Env.new([ 0, 1, 0.5, 0 ], [ 0.01, 0.3, 1 ], -4, 2, nil),\
-				Impulse.kr(100)\
+\cf0 	
+\f1\fs18 (\
+		\cf7 \{\
+\cf0 	\cf7 		EnvGen\cf0 .kr(\
+					Env.new([ 0.001, 1, 0.5, 0 ], [ 0.01, 0.3, 1 ], -4, 2, nil),\
+					Impulse.kr(10)\
 			) * \cf7 SinOsc\cf0 .ar(440,0,0.1)		\
-		)\
-	\}).play;\
-)\
-\
-(\
-	\cf7 SynthDef\cf0 (\cf8 "help-EnvGen"\cf0 ,\{ \cf7 arg\cf0  out=0;		\
-		\cf7 Out\cf0 .ar(out,	\
-			\cf7 EnvGen\cf0 .kr(\
-				\cf7 Env\cf0 .perc( 0.1, 0.0, 0.5, 1, \cf10 \\welch\cf0  ),\
-				Impulse.kr(100),\
-				timeScale: 0.1\
-			) * \cf7 SinOsc\cf0 .ar(440,0,0.3)		\
-		)\
-	\}).play;\
-)\
-\
-\
-\
+		\}.play;\
+	)\
+	\
+	(\
+		\cf7 \{ \
+\cf0 	\cf7 		EnvGen\cf0 .kr(\
+					\cf7 Env\cf0 .perc( 0.1, 0.0, 0.5, 1, \cf10 \\welch\cf0  ),\
+					Impulse.kr(100),\
+					timeScale: 0.1\
+				) * \cf7 SinOsc\cf0 .ar(440,0,0.3)\
+		\}.play;\
+	)\
+	\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 \
 			
 \f2\fs24 \
