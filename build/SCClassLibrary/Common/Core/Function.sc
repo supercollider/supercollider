@@ -77,7 +77,8 @@ Function : AbstractFunction {
 			
 	dup { arg n = 2;
 		var array;
-		n.do {|i| array = array.add(this.value(i)) };
+		array = Array(n);
+		n.do {|i| array.add(this.value(i)) };
 		^array
 	}
 	sum { arg n = 2;
