@@ -2,8 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
-\red0\green0\blue255;\red0\green0\blue191;\red0\green0\blue0;\red0\green115\blue0;\red191\green0\blue0;
-}
+\red0\green0\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs40 \cf0 Notes on MIDI support in SuperCollider
@@ -89,9 +88,7 @@ Third-party wrappers already exist. One of them is in the standard distribution 
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf2 MIDIPort\cf0 .init\
-\
-~on = \cf2 NoteOnResponder\cf0 (\{ \cf2 |num, vel|\cf0  [\cf3 'on '\cf0 , num, vel].postln \});\
+\f2\fs18 \cf0 ~on = \cf2 NoteOnResponder\cf0 (\{ \cf2 |num, vel|\cf0  [\cf3 'on '\cf0 , num, vel].postln \});\
 ~off = \cf2 NoteOffResponder\cf0 (\{ \cf2 |num, vel|\cf0  [\cf3 'off'\cf0 , num, vel].postln \});\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -170,21 +167,21 @@ VoicerMIDISocket also allows you to route MIDI controllers to specific synthdef 
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf6 SynthDef\cf7 (\cf8 \\rlpf\cf7 , \{ \cf6 |freq, gate = 1, ffreq = 2000, rq = 0.4, out = 0|\cf7 \
-	\cf6 var\cf7 	sig;\
-	sig = \cf6 RLPF\cf7 .ar(\
-		\cf6 Saw\cf7 .ar(freq, \cf6 Latch\cf7 .kr(gate, gate)),  \cf9 // Latch is to grab velocity and hold it\cf7 \
+\f2\fs18 \cf2 SynthDef\cf0 (\cf3 \\rlpf\cf0 , \{ \cf2 |freq, gate = 1, ffreq = 2000, rq = 0.4, out = 0|\cf0 \
+	\cf2 var\cf0 	sig;\
+	sig = \cf2 RLPF\cf0 .ar(\
+		\cf2 Saw\cf0 .ar(freq, \cf2 Latch\cf0 .kr(gate, gate)),  \cf4 // Latch is to grab velocity and hold it\cf0 \
 		ffreq, rq, 0.2\
-	) * \cf6 EnvGen\cf7 .kr(\cf6 Env\cf7 .adsr, gate, doneAction:2);\
-	\cf6 Out\cf7 .ar(out, [sig, sig])\
+	) * \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .adsr, gate, doneAction:2);\
+	\cf2 Out\cf0 .ar(out, [sig, sig])\
 \}).send(s);\
-\cf0 \
+\
 v = \cf2 Voicer\cf0 (10, \cf3 \\rlpf\cf0 );\
 k = \cf2 VoicerMIDISocket\cf0 (0, v);\
   \cf4 // controller number (mod wheel), argument name (filter cutoff), initial value\
   // and spec, describing how 0-127 should map to actual synth values\cf0 \
-\cf7 k.addControl(1, \cf8 \\ffreq\cf7 , 2000, \cf8 \\freq\cf7 );\
-\cf0 \
+k.addControl(1, \cf3 \\ffreq\cf0 , 2000, \cf3 \\freq\cf0 );\
+\
 v.free;	\cf4 // when done; also frees the midi socket
 \f1\fs24 \cf0 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
