@@ -137,7 +137,7 @@ SynthDef {
 		irControlNames = controlNames.select {|cn| cn.rate == 'scalar' };
 		krControlNames = controlNames.select {|cn| cn.rate == 'control' };
 		trControlNames = controlNames.select {|cn| cn.rate == 'trigger' };
-		
+
 		if (nonControlNames.size > 0) {
 			nonControlNames.do {|cn|
 				arguments[cn.argNum] = cn.defaultValue;
@@ -216,7 +216,8 @@ SynthDef {
 	}
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.
-		
+		var allControlNamesTemp;
+
 		file.putPascalString(name);
 		
 		this.writeConstants(file);
@@ -225,16 +226,17 @@ SynthDef {
 		file.putInt16(controls.size);
 		controls.do({ arg item;
 			file.putFloat(item);
-		});
-				
-		file.putInt16(allControlNames.size);
-		allControlNames.do({ arg item;
+		});		
+
+		allControlNamesTemp = allControlNames.reject({ |cn| cn.rate == \noncontrol });
+		file.putInt16(allControlNamesTemp.size);
+		allControlNamesTemp.do({ arg item;
 			if (item.name.notNil, {
 				file.putPascalString(item.name.asString);
 				file.putInt16(item.index);
 			});
 		});
-
+	
 		file.putInt16(children.size);
 		children.do({ arg item;
 			item.writeDef(file);
