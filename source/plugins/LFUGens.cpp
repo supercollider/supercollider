@@ -1297,7 +1297,8 @@ void Clip_next(Clip* unit, int inNumSamples)
 	float hi = unit->m_hi;
 	
 	LOOP(inNumSamples, 
-		ZXP(out) = sc_clip(ZXP(in), lo, hi);
+		float zin = ZXP(in);
+		ZXP(out) = sc_clip(zin, lo, hi);
 	);
 }
 
