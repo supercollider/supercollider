@@ -634,7 +634,7 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 			
 			// include square brackets in selection
 			start = underlineRange.location - 1;
-			end = underlineRange.location + underlineRange.length + 1;
+			end = underlineRange.location + underlineRange.length;
 			if (start >= 0 && [string characterAtIndex: start] == '['
 				&& end < (int)limitRange.length && [string characterAtIndex: end] == ']') {
 				underlineRange.location --;
