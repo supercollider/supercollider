@@ -242,7 +242,7 @@ bool SCView::hit(SCPoint where) const
 	return SCPointInRect(where, mBounds);
 }
 
-void SCView::keyDown(int character, int modifiers)
+void SCView::keyDown(int character, int modifiers,unsigned short keycode)
 {
     PyrSymbol *method = getsym("keyDown");
     pthread_mutex_lock (&gLangMutex);
@@ -253,13 +253,14 @@ void SCView::keyDown(int character, int modifiers)
         ++g->sp;  SetChar(g->sp, character); 
         ++g->sp;  SetInt(g->sp, modifiers); 
         ++g->sp;  SetInt(g->sp, character); 
-        runInterpreter(g, method, 4);
+        ++g->sp;  SetInt(g->sp, keycode); 
+        runInterpreter(g, method, 5);
         g->canCallOS = false;
     }
     pthread_mutex_unlock (&gLangMutex);
 }
 
-void SCView::keyUp(int character, int modifiers)
+void SCView::keyUp(int character, int modifiers,unsigned short keycode)
 {
     PyrSymbol *method = getsym("keyUp");
     pthread_mutex_lock (&gLangMutex);
@@ -270,7 +271,8 @@ void SCView::keyUp(int character, int modifiers)
         ++g->sp;  SetChar(g->sp, character); 
         ++g->sp;  SetInt(g->sp, modifiers); 
         ++g->sp;  SetInt(g->sp, character); 
-        runInterpreter(g, method, 4);
+        ++g->sp;  SetInt(g->sp, keycode); 
+        runInterpreter(g, method, 5);
         g->canCallOS = false;
     }
     pthread_mutex_unlock (&gLangMutex);

@@ -47,20 +47,26 @@ extern PyrSymbol *s_scview;
 {
     NSString *characters = [event characters];
     unsigned int modifiers = [event modifierFlags];
-    unichar character = [characters characterAtIndex: 0];
+    unichar character = 0;
+    if([characters cStringLength] > 0) {
+        character = [characters characterAtIndex: 0];
+    }
+    //control tab/escape doesn't get passed here at all ?
+    //NSLog(@"unicode %d",character);
     
     if (mTopView) {
-        if (character == '\t') {
+        if(character == 9 && (modifiers == 0)) {
             mTopView->tabPrevFocus();
-        } else if (character == 25) {
-            mTopView->tabNextFocus();
+            return;
+        } else if (character == 25 && (modifiers == NSShiftKeyMask)) {
+                mTopView->tabNextFocus();
+                return;
+        } // other tab keys avail for user 
+        SCView *view = mTopView->focusView();
+        if (view) {
+            view->keyDown(character, modifiers,[event keyCode]);
         } else {
-            SCView *view = mTopView->focusView();
-            if (view) {
-                view->keyDown(character, modifiers);
-            } else {
-                mTopView->keyDown(character,modifiers);
-            }
+            mTopView->keyDown(character,modifiers,[event keyCode]);
         }
     }
 /*    
@@ -77,17 +83,15 @@ extern PyrSymbol *s_scview;
 - (void) keyUp: (NSEvent*) event
 {
     NSString *characters = [event characters];
-    unsigned int modifiers = [event modifierFlags];
-    unichar character = [characters characterAtIndex: 0];
-    
+    unichar character = 0;
+    if([characters cStringLength] > 0) {
+        character = [characters characterAtIndex: 0];
+    }
+
     if (mTopView) {
-        if (character == '\t') {
-        } else if (character == 25) {
-        } else {
-            SCView *view = mTopView->focusView();
-            if (view) {
-                view->keyUp(character, modifiers);
-            }
+        SCView *view = mTopView->focusView();
+        if (view) {
+            view->keyUp(character, [event modifierFlags],[event keyCode]);
         }
     }
 }
