@@ -34,7 +34,7 @@ PowerOfTwoAllocator
 		^nil
 	}
 	free { arg address;
-		var node, sizeClass;
+		var node, sizeClass,next;
 		if((node = array.at(address)).notNil,{
 			sizeClass = node.size.log2Ceil;
 			node.next = freeLists.at(sizeClass);
