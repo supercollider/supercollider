@@ -575,7 +575,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 						case opGT  : res = o_true; break;
 						case opLE  : res = o_false; break;
 						case opGE  : res = o_true; break;
-						case opMin : res.uf = a->uf; break;
+						case opMin : res.uf = b->uf; break;
 						case opMax : res.uf = o_inf.uf; break;
 						default : goto send_normal_2;
 					}
