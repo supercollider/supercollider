@@ -195,7 +195,7 @@ a.add(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar([3, 5]/2, 0, 0.3), 8000, 0.01) 
 \cf0 	\cf3 Out\cf0 .ar(outIndex, Pan2.ar(\cf3 LFCub\cf0 .ar(freq,0,\cf3 Line\cf0 .kr(0.1,0,sustain, doneAction:2)), Rand(-1.0,1.0)))\
 \}).send(s);\
 \
-b = \cf3 NodeProxy\cf0 .audio(s,2);//we su\
+b = \cf3 NodeProxy\cf0 .audio(s,2);\
 b.source = \cf3 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\par\cf0 , \cf4 \\freq\cf0 , 600, \cf4 \\doneAction\cf0 , 2);\
 a.source = \{  b.ar * \cf3 SinOsc\cf0 .ar(\cf3 SinOsc\cf0 .kr(0.2, 300, 330))  \}; \cf2 //filter the input of the pattern\
 \cf0 \
