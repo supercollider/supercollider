@@ -67,6 +67,18 @@ ArrayedCollection : SequenceableCollection {
 		^this.primitiveFailed;
 	}
 
+	takeThese { arg func;
+		var i = 0;
+		while { i < this.size }
+		{
+			if (func.value(this[i], i)) {
+				this.takeAt(i)
+			}{ 
+				i = i + 1 
+			}
+		}
+	}
+
 	// see counterparts to these in Object 
 	slotSize {
 		^this.size;

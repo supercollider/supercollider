@@ -100,6 +100,9 @@ Collection {
 		aCollection.do { | item | if (this.includes(item).not) {^false} };
 		^true 
 	}
+	matchItem { | item |
+		^this.includes(item)
+	}
 	
 	collect { | function |
 		^this.collectAs(function, this.species);

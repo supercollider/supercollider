@@ -63,6 +63,8 @@ Nil {
 		stream.putAll("nil");
 	}
 	
+	matchItem { ^true } // nil matches anything
+	
 	// Array support
 	add { arg value; 
 		// This makes it unecessary to check for array.isNil when doing:

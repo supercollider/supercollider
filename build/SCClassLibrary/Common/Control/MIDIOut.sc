@@ -58,6 +58,30 @@ MIDIClient {
 	}
 }
 
+
+MIDIEvent {
+	var <>status, <>port, <>chan, <>b, <>c, <>thread;
+	
+	*new { arg status, port, chan, b, c, thread;
+		^super.newCopyArgs(status, port, chan, b, c, thread)
+	}
+	set { arg inStatus, inPort, inChan, inB, inC, inThread;
+		status = inStatus;
+		port = inPort;
+		chan = inChan;
+		b = inB;
+		c = inC;
+		inThread !? { thread = inThread };
+	}
+	match { arg inPort, inChan, inB, inC;
+		^port.matchItem(inPort) and: {
+			chan.matchItem(inChan) and: {
+			b.matchItem(inB) and: {
+			c.matchItem(inC)
+		}}}
+	}
+}
+
 MIDIIn {
 	var <>port;
 	classvar <>action, 
@@ -66,31 +90,88 @@ MIDIIn {
 	<> touch, <> bend, 
 	<> sysex, sysexPacket, <> sysrt, <> smpte;	
 	
+	classvar 
+	<> noteOnList, <> noteOffList, <> polyList, 
+	<> controlList, <> programList, 
+	<> touchList, <> bendList;
+	
+	
+	*waitNoteOn { arg port, chan, note, veloc;
+		var event;
+		event = MIDIEvent(\noteOn, port, chan, note, veloc, thisThread);
+		noteOnList = noteOnList.add(event); // add to waiting list
+		nil.yield; // pause the thread.
+		^event
+	}
+	*waitNoteOff { arg port, chan, note, veloc;
+		var event;
+		event = MIDIEvent(\noteOff, port, chan, note, veloc, thisThread);
+		noteOffList = noteOffList.add(event); // add to waiting list
+		nil.yield; // pause the thread.
+		^event
+	}
+	*waitPoly { arg port, chan, note, veloc;
+		var event;
+		event = MIDIEvent(\poly, port, chan, note, veloc, thisThread);
+		polyList = polyList.add(event); // add to waiting list
+		nil.yield; // pause the thread.
+		^event
+	}
+	*waitTouch { arg port, chan, val;
+		var event;
+		event = MIDIEvent(\touch, port, chan, val, nil, thisThread);
+		touchList = touchList.add(event); // add to waiting list
+		nil.yield; // pause the thread.
+		^event
+	}
+	*waitControl { arg port, chan, num, val;
+		var event;
+		event = MIDIEvent(\control, port, chan, num, val, thisThread);
+		controlList = controlList.add(event); // add to waiting list
+		nil.yield; // pause the thread.
+		^event
+	}
+	*waitBend { arg port, chan, val;
+		var event;
+		event = MIDIEvent(\control, port, chan, val, nil, thisThread);
+		bendList = bendList.add(event); // add to waiting list
+		nil.yield; // pause the thread.
+		^event
+	}
+
 	
 	*doAction { arg src, status, a, b, c;
 		action.value(src, status, a, b, c);
 	}
 	*doNoteOnAction { arg src, chan, num, veloc;
 		noteOn.value(src, chan, num, veloc);
+		this.prDispatchEvent(noteOnList, \noteOn, src, chan, num, veloc);
 	}
 	*doNoteOffAction { arg src, chan, num, veloc;
 		noteOff.value(src, chan, num, veloc);
+		this.prDispatchEvent(noteOffList, \noteOff, src, chan, num, veloc);
 	}
 	*doPolyTouchAction { arg src, chan, num, val;
 		polytouch.value(src, chan, num, val);
+		this.prDispatchEvent(polyList, \poly, src, chan, num, val);
 	}
 	*doControlAction { arg src, chan, num, val;
 		control.value(src, chan, num, val);
+		this.prDispatchEvent(controlList, \control, src, chan, num, val);
 	}
 	*doProgramAction { arg src, chan, val;
 		program.value(src, chan, val);
+		this.prDispatchEvent(programList, \program, src, chan, val);
 	}
 	*doTouchAction { arg src, chan, val;
 		touch.value(src, chan, val);
+		this.prDispatchEvent(touchList, \touch, src, chan, val);
 	}
 	*doBendAction { arg src, chan, val;
 		bend.value(src, chan, val);
+		this.prDispatchEvent(bendList, \bend, src, chan, val);
 	}
+	
 	*doSysexAction { arg src,  packet;
 		sysexPacket = sysexPacket ++ packet;
 		if (packet.last == -9, {
@@ -148,6 +229,20 @@ MIDIIn {
 		^super.new.port_(port)
 	}
 	
+	*prDispatchEvent { arg eventList, status, port, chan, b, c;
+		eventList ?? {^this};
+		eventList.takeThese {| event |
+			var thread;
+			if (event.match(port, chan, b, c)) 
+			{
+				thread = event.thread;
+				event.set(status, port, chan, b, c);
+				thread.clock.sched(0, thread);
+				true
+			}
+			{ false };
+		}
+	}
 }
 	
 MIDIOut {

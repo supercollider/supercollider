@@ -177,7 +177,7 @@ Object {
 	? { arg obj; ^this }
 	?? { arg obj; ^this }
 	!? { arg obj; ^obj.value }
-	
+
 	isNil { ^false }
 	notNil { ^true }
 	isNumber { ^false }
@@ -188,6 +188,9 @@ Object {
 	isString { ^false }
 	isValidUGenInput { ^false }
 	isException { ^false }
+
+	matchItem {|item| ^this === item }
+
 	pointsTo { arg obj; _ObjectPointsTo; ^this.primitiveFailed }
 	mutable { _ObjectIsMutable; ^this.primitiveFailed }
 	frozen { _ObjectIsPermanent; ^this.primitiveFailed }

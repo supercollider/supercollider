@@ -173,6 +173,10 @@ Function : AbstractFunction {
 	}
 
 	r { ^Routine(this) }
+	
+	matchItem { arg item;
+		^this.value(item)
+	}
 }
 
 
