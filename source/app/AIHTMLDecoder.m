@@ -16,6 +16,7 @@
 /*
     A quick and simple HTML to Attributed string converter
 */
+// Modified by Scott Wilson 2003
 
 #import "AIHTMLDecoder.h"
 #import "AITextAttributes.h"
@@ -58,7 +59,8 @@ int HTMLEquivalentForFontSize(int fontSize);
     BOOL		openFontTag = NO;
 
     //Setup the destination HTML string
-    NSMutableString	*string = [NSMutableString stringWithString:(includeHeaders ? @"<HTML>" : @"")];
+    //Include <PRE> to preserve tab formatting
+    NSMutableString	*string = [NSMutableString stringWithString:(includeHeaders ? @"<HTML><PRE>" : @"")];
 
     //Setup the incoming message as a regular string, and it's length
     NSString		*inMessageString = [inMessage string];
@@ -224,7 +226,8 @@ int HTMLEquivalentForFontSize(int fontSize);
     if(includeStyleTags && currentUnderline) [string appendString:@"</U>"];
     if(includeFontTags && closeFontTags && openFontTag) [string appendString:@"</FONT>"];	//Close any open font tag
     if(includeHeaders && pageColor) [string appendString:@"</BODY>"];				//Close the body tag
-    if(includeHeaders) [string appendString:@"</HTML>"];					//Close the HTML
+    if(includeHeaders) [string appendString:@"</PRE></HTML>"];					//Close the HTML
+        //Close the PRE
 
     return(string);
 }
