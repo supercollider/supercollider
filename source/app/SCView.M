@@ -2739,7 +2739,7 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
     } else {
         int xindx, lastindx, maxSize;
         lastindx = mCurrentIndex;
-        changed = true;
+        changed = false;
         xindx = (int) xIn ;
         xindx = sc_clip(xindx, 0, mTabSize - 1);
         mCurrentIndex = xindx + mStartIndex;
@@ -2890,14 +2890,19 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	int err;
     char *name = symbol->name;
     if (strcmp(name, "step")==0) {
-        err = slotDoubleVal(slot, &mStepSize);
-        if (!err) {
-            mStepScale = 1. / mStepSize;
-            //bool changed = setValue(mX, mY, false);
-            //SetBool(slot, changed);
-        }
-        return errNone;
-    }
+		err = slotDoubleVal(slot, &mStepSize);
+		if (!err) {
+			mStepScale = 1. / mStepSize;
+			bool changed = false;
+			bool changedout = false;			
+			for(int i=0; i< mTabSize; ++i){
+				changed = setValue(i, mYValues[i], false);
+				if(changed) changedout = changed;
+			}
+			SetBool(slot, changedout);
+		}
+		return errNone;
+	}
     if (strcmp(name, "thumbSize")==0) {
         err = slotIntVal(slot, &mThumbSize);
         //setVisibleSize();
@@ -3837,6 +3842,7 @@ bool SCEnvelopeView::setValue(SCEnvObject * envob,  double xIn, double yIn, bool
 
     if(!envob->mIsStatic){
     if (mStepSize > 0.) {
+        xIn = floor(xIn * mStepScale + 0.5) * mStepSize;
         yIn = floor(yIn * mStepScale + 0.5) * mStepSize;
     }
     //mCurrentIndex = indx;
@@ -4010,14 +4016,23 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	int err;
         char *name = symbol->name;
         if (strcmp(name, "step")==0) {
-            err = slotDoubleVal(slot, &mStepSize);
-            if (!err) {
-                mStepScale = 1. / mStepSize;
-		//bool changed = setValue(mX, mY, false);
-                //SetBool(slot, changed);
+		err = slotDoubleVal(slot, &mStepSize);
+		if (!err) {
+			mStepScale = 1. / mStepSize;
+			bool changed = false;
+			bool changedout = false;			
+
+			SCEnvObject * envob;
+            for(int i=0; i<mTabSize; ++i){
+                envob = mEnvObj+i;
+				changed = setValue(envob,envob->x,envob->y, false);
+				if(changed) changedout = changed;
             }
-            return errNone;
-        }
+			if(changedout) refresh();
+			SetBool(slot, changedout);
+		}
+		return errNone;
+	}
         if (strcmp(name, "thumbSize")==0) {
             err = slotIntVal(slot, &mThumbSize);
             if(mSelectedIndex < 0) return errNone;
