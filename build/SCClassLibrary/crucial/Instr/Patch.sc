@@ -34,21 +34,19 @@ Patch : AbstractPlayer  {
 					proto
 				};
 				
-//			patchIn = PatchIn.newByRate(instr.specs.at(i).rate);
-//			patchIns = patchIns.add(patchIn);
-//
-//			// although input is control, arg could overide that
-//			if(instr.specs.at(i).rate != \scalar
-//				and: {ag.instrArgRate != \scalar}
-//			,{
-//				argsForSynth = argsForSynth.add(ag);
-//				synthPatchIns = synthPatchIns.add(patchIn);
-//			});
+			patchIn = PatchIn.newByRate(instr.specs.at(i).rate);
+			patchIns = patchIns.add(patchIn);
+
+			// although input is control, arg could overide that
+			if(instr.specs.at(i).rate != \scalar
+				and: {ag.instrArgRate != \scalar}
+			,{
+				argsForSynth = argsForSynth.add(ag);
+				synthPatchIns = synthPatchIns.add(patchIn);
+			});
 			
 			ag		
 		});
-		this.dump;
-		this.halt;
 	}
 	
 	numChannels { ^instr.numChannels }

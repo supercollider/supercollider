@@ -20,7 +20,7 @@ AudioSpec : Spec {
 			];
 		)
 	}
-	default { ^0.0 }
+	defaultControl { ^0.0 }
 	storeParamsOn { arg stream;
 		stream << "(" <<< numChannels << ")"
 	}
@@ -91,7 +91,7 @@ EnvSpec : ScalarSpec { // this is dodgy, not fully worked out
 		^super.new.prototype_(prototype)
 	}
 
-	default { ^prototype.deepCopy }
+	defaultControl { ^prototype.deepCopy }
 	
 	*initClass {
 		specs.putAll(
@@ -122,7 +122,7 @@ SymbolSetSpec : ScalarSpec {
 		^super.new.symbols_(symbols)
 	}
 
-	default { ^symbols.first }
+	defaultControl { ^symbols.first }
 	*initClass {}
 	storeParamsOn { arg stream;
 		stream << "(" <<< symbols << ")"
@@ -139,7 +139,7 @@ SampleSpec : ScalarSpec {
 			];
 		)
 	}
-	default { ^Sample.newClear(16) } // silent sample
+	defaultControl { ^Sample.newClear(16) } // silent sample
 
 }
 

@@ -18,7 +18,6 @@
 
 	rate { ^\control }
 
-
 }
 
 + StaticSpec { // how do i stop the attempt to set a control ?
