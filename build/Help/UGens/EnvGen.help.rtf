@@ -2,8 +2,8 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
-\red0\green115\blue0;\red0\green0\blue191;\red0\green0\blue0;\red96\green96\blue96;\red0\green115\blue0;
-\red191\green0\blue0;}
+\red0\green115\blue0;}
+\vieww9000\viewh9000\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 EnvGen
@@ -30,7 +30,7 @@ See the
 \f2\b0  - an instance of Env.\
 
 \f0\b gate    
-\f2\b0  -    a control signal that holds the EnvGen open
+\f2\b0  -    a control signal that holds the EnvGen open (except Env.linen)
 \f0\b \
 levelScale
 \f2\b0  - scales the levels of the breakpoints.\
@@ -145,13 +145,15 @@ see also [InTrig]\
 \
 If you set the gate of an EnvGen to -1 or below, then the envelope will cutoff immediately. The time for it to cutoff is the amount less than -1, with -1 being as fast as possible, -1.5 being a cutoff in 0.5 seconds, etc. The cutoff shape is linear.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf6 SynthDef\cf7 (\cf8 "stealMe"\cf7 , \{ \cf6 arg\cf7  gate = 1;\
-	\cf6 Out\cf7 .ar(0, \{\cf6 BrownNoise\cf7 .ar\}.dup * \cf6 EnvGen\cf7 .kr(\cf6 Env\cf7 .linen(2, 4, 2, 0.3), gate, doneAction:2))\
+\f1\fs18 \cf2 SynthDef\cf0 (\cf3 "stealMe"\cf0 , \{ \cf2 arg\cf0  gate = 1;\
+	\cf2 Out\cf0 .ar(0, \{\cf2 BrownNoise\cf0 .ar\}.dup * \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .linen(2, 4, 2, 0.3), gate, doneAction:2))\
 \}).load(s);\
 \
-s.sendMsg(\cf9 \\s_new\cf7 , \cf9 \\stealMe\cf7 , 1001, 1, 0);\
+s.sendMsg(\cf5 \\s_new\cf0 , \cf5 \\stealMe\cf0 , 1001, 1, 0);\
 \
-s.sendMsg(\cf9 \\n_set\cf7 , 1001, \cf9 \\gate\cf7 , -1.1); \cf10 // cutoff in 0.1 seconds\
-\cf7 \
+s.sendMsg(\cf5 \\n_set\cf0 , 1001, \cf5 \\gate\cf0 , -1.1); \cf4 // cutoff in 0.1 seconds\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 }
