@@ -16,7 +16,7 @@ SoundDef {
 	*initClass { 
 		Class.initClassTree(Server);
 		all = IdentityDictionary.new;
-		servers = [Server.local]
+		servers = [Server.default]
 	}
 	
 	toLib { arg key;
