@@ -29,6 +29,10 @@ Node {
 		server.sendMsg(12, nodeID,flag.binaryValue); //"/n_run"
 	}
 	
+	runMsg { arg flag=true;
+		^[12, nodeID,flag.binaryValue]; //"/n_run"
+	}
+	
 	map { arg controlName, index ... args;
 		server.sendMsg(14, nodeID, controlName, index, *args); //"/n_map"
 	}
