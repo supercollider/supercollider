@@ -136,6 +136,28 @@ Integer : SimpleNumber {
 	}
 	fib { arg a=0.0, b=1.0;
 		^Array.fib(this, a, b);
-	}		
+	}
+	
+	factors {
+		var num, array, prime;
+		num = this.abs;
+		// there are 6542 16 bit primes from 2 to 65521
+		6542.do {|i|
+			prime = i.nthPrime;
+			while { (num mod: prime) == 0 }{
+				array = array.add(prime);
+				num = num div: prime;
+				if (num == 1) {^array}
+			};
+			if (prime.squared > num) {
+				array = array.add(num);
+				^array
+			};
+		};
+		// because Integer is 32 bit, and we have tested all 16 bit primes,
+		// any remaining number must be a prime.
+		array = array.add(num);
+		^array
+	}
 }
 
