@@ -67,8 +67,7 @@
 
 + Class {
 	metaclass {
-		this.isMetaClass.if({ ^this },
-			{ ^("Meta_" ++ name).asSymbol.asClass });
+		this.isMetaClass.if({ ^this },{ ^this.class });
 	}
 }
 
