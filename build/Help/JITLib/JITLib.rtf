@@ -34,9 +34,9 @@ can be also useful:\
 \f0\b \cf0 \
 \
 placeholders: 		[NodeProxy][RecNodeProxy]\
-			[Pdef][Tdef][Ndef]\
+			[Pdef][Pdefn][Tdef][Ndef]\
 			\
-other topics:		[jitlib_efficiency][the_lazy_proxy][jitlib_fading]\
+other topics:		[jitlib_efficiency][the_lazy_proxy][jitlib_fading][jitlib_asCompileString]\
 \
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
@@ -54,8 +54,6 @@ there is a couple of other classes that are not specifically connected:\
 
 \f0\b \cf0 Patterns\
 	Pdict\
-	Pref\
-	Prefn\
 	StreamClutch
 \f1\b0 \
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
@@ -98,6 +96,15 @@ there is a couple of other classes that are not specifically connected:\
 \
 NodeProxy / ProxySpace:\
 	\
+2004\
+	\ul april\ulnone \
+	//added .storeOn, .document methods for ProxySpace. see [jitlib_asCompileString] (not yet)\
+	fixed bug on ProxySpace-reduce that caused infinite recursion in some cases\
+	fixed bug in BinaryOpPlug (account for function.rate returning \\stream)\
+	\
+	new version of Pdef/Pdefn/Tdef\
+	\
+	\
 	\ul march\ulnone \
 	fixed Pattern support for NodeProxy/ProxySpace due to change in Event implementation\
 	fixed Prefn\
@@ -109,7 +116,7 @@ NodeProxy / ProxySpace:\
 	fixed unmap\
 	control rate proxies do not wrap channels anymore.\
 	\
-	\ul jan 10\
+	\ul jan \
 	\ulnone Pref / Prefn are tested, update properly. I'm thinking of merging them with Pdef.\
 	fixed wakeUp bug in NodeProxy.\
 	fixed bug in load when no server is present\
@@ -118,12 +125,13 @@ NodeProxy / ProxySpace:\
 	added possibility to use \\offset key in event streams to have offset index in multichannel proxy\
 	fixed bug in lazy init\
 	\
+2003\
 	\
-	\ul nov. 15\
+	\ul nov\
 	\ulnone Pdef, Tdef work now, also with NodeProxy.\
 	NodeProxy-releaseAndFree is replaced by .end.\
 	\
-	\ul oct 19:\ulnone \
+	\ul oct\ulnone \
 	symbol input is assumed to represent a synthdef that has a gate and frees.\
 	functions and synthdefs are searched for their inner envelopes and the appropriate\
 	method of freeing / releasing is chosen accordingly.\
@@ -147,9 +155,14 @@ NodeProxy / ProxySpace:\
 	\
 	bin/unops work fully now again like any math op.\
 \
-TODO:\
+\
+upload:\
+\
+Order.sc added meth\
+removed Function-rate bug. (operators.sc)\
+\
 	\
-	\
+TODO:	\
 	full post of proxyspace\
 	full test load from file\
 	check .lineAt\
