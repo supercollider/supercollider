@@ -87,6 +87,7 @@ Preject : FuncFilterPattern {
 }
 
 
+
 Pfset : FuncFilterPattern {
 	asStream {
 		var stream, envir;
@@ -401,3 +402,13 @@ Pwrap : FilterPattern {
 	}
 }
 
+Ptrace : FilterPattern {
+	var <>key, printStream;
+	*new { arg pattern, key, printStream; 
+		^super.newCopyArgs(pattern, key, printStream) 
+	}
+	asStream {
+		^pattern.asStream.trace(key, printStream)
+	}
+
+}

@@ -171,11 +171,12 @@ Stream : AbstractFunction {
 		clock.play(this, quant);
 	}
 	
-	trace { arg key;
+	trace { arg key, printStream;
+		printStream = printStream ? Post;
 		^if(key.isNil) {
-			this.collect { arg item; item.postln }
+			this.collect { arg item; printStream << item << Char.nl; item }
 		} {
-			this.collect { arg item; item.at(key).postln }
+			this.collect { arg item; printStream << item.at(key) << Char.nl; item }
 		}
 			 
 	}
