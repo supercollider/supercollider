@@ -22,17 +22,17 @@ SCTextField : SCNumberBox {
 					keyString = String.new;
 				});
 				this.string = keyString;
-				this.stringColor = Color.red;
+				this.stringColor = typingColor;
 			},{
 				keyString = String.new;
 				this.string = keyString;
-				this.stringColor = Color.red;
+				this.stringColor = typingColor;
 			});
 			^this
 		});
 		if (keyString.isNil, { 
 			keyString = this.string;
-			this.stringColor = Color.red;
+			this.stringColor = typingColor;
 		});
 		keyString = keyString.add(key);
 		this.string = keyString;
