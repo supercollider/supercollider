@@ -126,6 +126,7 @@ Object {
 	next { ^this }
 	reset { ^this }
 	stop { ^this }
+	free { ^this }
 	isPlaying { ^false }
 	embedInStream { ^this.yield; }
 	asStream { ^this }
