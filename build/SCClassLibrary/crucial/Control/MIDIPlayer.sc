@@ -10,6 +10,10 @@ MIDIPlayer : SynthlessPlayer { // InterfacePlayer, Control
 		patchOut = UpdatingScalarPatchOut(this);
 	}
 	synthArg { ^this.poll }
+	addToSynthDef {  arg synthDef,name;
+		// value doesn't matter so much, we are going to pass in a real live one
+		synthDef.addKr(name,this.synthArg ? 0);
+	}
 	instrArgFromControl { arg control;
 		^control
 	}
@@ -25,6 +29,7 @@ MIDIPlayer : SynthlessPlayer { // InterfacePlayer, Control
 	freeToBundle { arg bundle;
 		bundle.addAction(this,\removeResponders);
 	}
+	rate { ^\control }
 }
 
 MIDIGatePlayer : MIDIPlayer {
@@ -63,7 +68,7 @@ MIDIFreqPlayer : MIDIPlayer {
 	}
 }
 
-// MIDINotePlayer(spec)
+// MIDINotePlayer(spec,scale)
 // MIDIVelocityPlayer(spec)
 
 
