@@ -66,10 +66,8 @@ item - one of the following: \
 	Char, \
 	Color, \
 	Symbol - writes the name of the Symbol as a C string.\
-	any object - writes the indexable part of any non Slot format indexable object.\
+	RawArray - write the bytes from any RawArray in big endian.\
 \
-NOTE: write is asynchronous, so you should not modify an object after you\
-have issued a write of it because it may not have been written yet. \
 
 \f0\b \
 \
