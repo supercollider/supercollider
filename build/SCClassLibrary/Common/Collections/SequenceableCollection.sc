@@ -179,6 +179,11 @@ SequenceableCollection : Collection {
 	putLast { arg obj; if (this.size > 0, { ^this.put(this.size - 1, obj) }) }
 
 	// ordering
+	pairsDo { arg function;
+		forBy(0,this.lastIndex,2) {|i|
+			function.value(this.at(i), this.at(i+1), i);
+		}
+	}
 	doAdjacentPairs { arg function;
 		(this.size - 1).do({ arg i;
 			function.value(this.at(i), this.at(i+1), i);
@@ -536,15 +541,14 @@ SequenceableCollection : Collection {
 	}
 
 	performBinaryOp { arg aSelector, theOperand;
-		var i, minSize, newList;
-		^theOperand.performBinaryOpOnSeqColl(aSelector, this);
+ 		^theOperand.performBinaryOpOnSeqColl(aSelector, this);
 	}
 	performBinaryOpOnSeqColl { arg aSelector, theOperand;
-		var minSize, newList;
-		minSize = this.size min: theOperand.size;
-		newList = this.species.new(minSize);
-		minSize.do({ arg i;
-			newList.add(theOperand.at(i).perform(aSelector, this.at(i)));
+		var maxSize, newList;
+		maxSize = this.size max: theOperand.size;
+		newList = this.species.new(maxSize);
+		maxSize.do({ arg i;
+			newList.add(theOperand.wrapAt(i).perform(aSelector, this.wrapAt(i)));
 		});
 		^newList
 	}
@@ -798,5 +802,12 @@ SequenceableCollection : Collection {
 		^stream.contents
 	}
 	
-	
+	wrapAt { arg index;
+		index = index % this.size;
+		^this.at(index)
+	}
+	wrapPut { arg index, value;
+		index = index % this.size;
+		^this.put(index, value)
+	}
 }
