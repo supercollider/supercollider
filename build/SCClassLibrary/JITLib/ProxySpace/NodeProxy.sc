@@ -125,6 +125,7 @@ BusPlug : AbstractFunction {
 	}
 	
 	prepareOutput { } // see subclass
+	clock { ^nil  }
 
 	ar { arg numChannels, offset=0;
 		if(this.isNeutral) { 
@@ -192,16 +193,19 @@ BusPlug : AbstractFunction {
 	
 	
 	play { arg out=0, numChannels, group, multi=false, vol;  
-		var ok, localServer;
+		var ok, localServer, bundle;
 		
 		localServer = this.localServer; // multi client support
 		if(localServer.serverRunning.not, { "server not running".inform; ^nil });
+		bundle = MixedBundle.new;
 		this.initBus(\audio, numChannels);
 		if(this.rate !== 'audio') { Error("can't monitor a control rate proxy").throw };
-		this.wakeUp;
+		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
 		if(monitor.isNil) { monitor = Monitor.new };
 		group = (group ? localServer).asGroup;
-		monitor.play(bus.index, bus.numChannels, out, numChannels, group, multi, vol)
+		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, 
+				group, multi, vol);
+		bundle.schedSend(localServer, this.clock)
 		^monitor.group
 	}
 	
@@ -324,9 +328,10 @@ NodeProxy : BusPlug {
 	at { arg index;  ^objects.at(index) }
 	
 	
-	put { arg index, obj, channelOffset = 0, extraArgs; 			var container, bundle, orderIndex;
+	put { arg index, obj, channelOffset = 0, extraArgs; 			var container, bundle, orderIndex, instantSend;
 			
 			if(obj.isNil) { this.removeAt(index); ^this };
+			instantSend = awake and: { obj.class !== Ref }; obj.dereference;
 			
 			orderIndex = index ? 0;
 			if(obj.isSequenceableCollection)
@@ -360,7 +365,7 @@ NodeProxy : BusPlug {
 			if(server.serverRunning) {
 				container.loadToBundle(bundle);
 				loaded = true;
-				if(awake) { // revisit for tasks!
+				if(instantSend) {
 					this.prepareToBundle(nil, bundle);
 					container.wakeUpParentsToBundle(bundle);
 					this.sendObjectToBundle(bundle, container, extraArgs, index);
@@ -535,7 +540,6 @@ NodeProxy : BusPlug {
 						t.wait; 
 						}
 					};
-		awake = false;
 	}
 	
 	// spawns synth at index, assumes fixed time envelope
@@ -546,7 +550,6 @@ NodeProxy : BusPlug {
 		dt = beats.asStream;
 		argFunc = if(argFunc.notNil) { argFunc.asArgStream } { #[] };
 		index = index.loop.asStream;
-		awake = true;
 		this.task = Task.new { 
 					inf.do { arg i;	
 						var t;
@@ -558,11 +561,8 @@ NodeProxy : BusPlug {
 						t.wait; 
 						}
 					};
-		awake = false;
 	}
-	
-	freeSpawn { awake = true; this.task = nil; }
-	
+		
 	/////////// filtering within one proxy /////////////////
 	
 	filter { arg i, func;
@@ -664,7 +664,7 @@ NodeProxy : BusPlug {
 	
 	}
 	
-	wakeUp { 	if(this.isPlaying.not) { this.deepWakeUp } }
+	wakeUp { 	if(this.isPlaying.not) { this.deepWakeUp } } // do not touch internal state if playing
 	
 	deepWakeUp {
 				var bundle;
