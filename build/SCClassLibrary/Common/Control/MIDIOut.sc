@@ -1,42 +1,50 @@
+
 MIDIEndPoint {
-var <> device, <> name, <>uid;
-	*new{arg device, name, uid;
+	var <>device, <>name, <>uid;
+	*new{ arg device, name, uid;
 		^super.newCopyArgs(device, name, uid)
-		}
+	}
 }
 
 MIDIClient {
-	classvar < sources, < destinations;
-	classvar < initialized=false;
-	*init {arg inports=1, outports=1;
-		initialized = true;
+	classvar <sources, <destinations;
+	classvar <initialized=false;
+	*init { arg inports=1, outports=1;
 		this.prInit(inports,outports);
+		initialized = true;
 		this.list;
+		// might ask for 1 and get 2 if your device has it
+		if(sources.size < inports or: {destinations.size < outports},{
+			("MIDIClient init failed.  \nsources: "+sources+"destinations:"+destinations).die;
+		});
 	}
-	*list{
-		var out, arr, endp, soIds, soNames, soDevs, devIds;
-		out = this.prList;
-		if(out.notNil, {
-		out.at(0).do({arg id, i;
-			sources = sources.add(MIDIEndPoint(out.at(1).at(i), out.at(2).at(i),id))
+	*list {
+		var list;
+		list = this.prList;
+		if(list.notNil, {
+			sources = list.at(0).collect({ arg id,i;
+				MIDIEndPoint(list.at(1).at(i), list.at(2).at(i), id)
 			});
-		out.at(3).do({arg id, i;
-			destinations = destinations.add(MIDIEndPoint(out.at(4).at(i), out.at(4).at(i), id))
+			destinations = list.at(3).collect({arg id, i;
+				MIDIEndPoint(list.at(4).at(i), list.at(4).at(i), id)
 			});
 		});
-		
 	}
-	*prInit {arg inports, outports;
-		_InitMIDI;
+	*prInit { arg inports, outports;
+		_InitMIDI
+		^this.primitiveFailed
 	}
 	*prList {
 		_ListMIDIEndpoints
+		^this.primitiveFailed
 	}
-	*disposeClient{
+	*disposeClient {
 		_DisposeMIDIClient
+		^this.primitiveFailed
 	}
-	*restart{
+	*restart {
 		_RestartMIDI
+		^this.primitiveFailed
 	}
 }
 
@@ -48,61 +56,65 @@ MIDIIn {
 	<> touch, <> bend;	
 	
 	
-	*new { arg port;
-		^super.new.port_(port)
-	}
-	
-	*doAction{arg src, status, a, b, c;
+	*doAction { arg src, status, a, b, c;
 		action.value(src, status, a, b, c);
-		}
-	*doNoteOnAction{arg src, chan, num, veloc;
+	}
+	*doNoteOnAction { arg src, chan, num, veloc;
 		noteOn.value(src, chan, num, veloc);
 	}
-	*doNoteOffAction{arg src, chan, num, veloc;
+	*doNoteOffAction { arg src, chan, num, veloc;
 		noteOff.value(src, chan, num, veloc);
 	}
-	*doPolyTouchAction{arg src, chan, num, val;
+	*doPolyTouchAction { arg src, chan, num, val;
 		polytouch.value(src, chan, num, val);
 	}
-	*doControlAction{arg src, chan, num, val;
+	*doControlAction { arg src, chan, num, val;
 		control.value(src, chan, num, val);
 	}
-	*doProgramAction{arg src, chan, val;
+	*doProgramAction { arg src, chan, val;
 		program.value(src, chan, val);
 	}
-	*doTouchAction{arg src, chan, val;
+	*doTouchAction { arg src, chan, val;
 		touch.value(src, chan, val);
 	}
-	*doBendAction{arg src, chan, val;
+	*doBendAction { arg src, chan, val;
 		bend.value(src, chan, val);
 	}
-	*connect{arg inport, device;
+	*connect { arg inport=0, device=0;
 		var uid;
-		if(device.isKindOf(MIDIEndPoint), {uid = device.uid});
-		if(device.isKindOf(SimpleNumber), {
-			if(device>=0, { 
+		if(device.isNumber, {
+			if(device.isPositive, {
+				if(MIDIClient.initialized.not,{ MIDIClient.init });
 				uid = MIDIClient.sources.at(device).uid
 			},{
-				uid = device;});
+				uid = device;
 			});
+		},{
+			if(device.isKindOf(MIDIEndPoint), {uid = device.uid}); // else error
+		});
 		this.connectByUID(inport,uid);
-		}
-	*disconnect{arg inport, device;
+	}
+	*disconnect { arg inport=0, device=0;
 		var uid;
 		if(device.isKindOf(MIDIEndPoint), {uid = device.uid});
-		if(device.isKindOf(SimpleNumber), {
-			if(device>=0, { 
+		if(device.isNumber, {
+			if(device.isPositive, { 
 				uid = MIDIClient.sources.at(device).uid
 			},{
-				uid = device;});
+				uid = device;
 			});
+		});
 		this.disconnectByUID(inport,uid);
-		}
+	}
 	*connectByUID {arg inport, uid;
 		_ConnectMIDIIn		
 	}
 	*disconnectByUID {arg inport, uid;
 		_DisconnectMIDIIn		
+	}
+	
+	*new { arg port;
+		^super.new.port_(port)
 	}
 	
 }
@@ -146,4 +158,3 @@ MIDIOut {
 		_SendMIDIOut		
 	}
 }
-	
