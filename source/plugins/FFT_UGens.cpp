@@ -1447,7 +1447,7 @@ void PV_BinScramble_next(PV_BinScramble *unit, int inNumSamples)
 	}
 	q->dc = p->dc;
 	q->nyq = p->nyq;
-	
+	memcpy(p->bin, q->bin, numbins * sizeof(SCComplex));
 }
 
 
