@@ -80,7 +80,8 @@ Stethoscope {
 				z = Select.ar(switch, [In.ar(in, numChannels), K2A.ar(In.kr(in, numChannels))]); 
 				ScopeOut.ar(z, bufnum);
 			}).play(server, [\bufnum, buffer.bufnum, \in, index, \switch] 
-				++ if('audio' === rate) { 0 } { 1 }
+				++ if('audio' === rate) { 0 } { 1 },
+				\addAfter
 			);
 			synth.isPlaying = true;
 			NodeWatcher.register(synth);
