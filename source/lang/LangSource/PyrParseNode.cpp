@@ -3725,8 +3725,6 @@ void initSpecialSelectors()
 	
 	sel[opmValueList] = getsym("valueList");
 	sel[opmAddFirst] = getsym("addFirst");
-	sel[opmIn] = getsym("in");
-	sel[opmOut] = getsym("out");
 	
 	sel[opmPrimitiveFailed] = getsym("primitiveFailed");	
 	sel[opmSubclassResponsibility] = getsym("subclassResponsibility");

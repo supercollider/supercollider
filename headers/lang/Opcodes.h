@@ -263,8 +263,6 @@ enum {
 	opmChoose,
 	opmValueList,
 	opmAddFirst,
-	opmIn,
-	opmOut,
 	opmPrimitiveFailed,
 	opmSubclassResponsibility,
 	opmShouldNotImplement,

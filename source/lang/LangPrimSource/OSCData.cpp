@@ -71,6 +71,13 @@ extern bool compiledOK;
 
 ///////////
 
+inline bool IsBundle(char* ptr) 
+{ 
+	return strcmp(ptr, "#bundle") == 0; 
+}
+
+///////////
+
 scpacket gSynthPacket;
 
 const int ivxNetAddr_Hostaddr = 0;
@@ -226,25 +233,22 @@ int makeSynthMsgWithTags(scpacket *packet, PyrSlot *slots, int size)
 	return errNone;
 }
 
-void PerformOSCBundle(OSC_Packet* inPacket);
-void PerformOSCMessage(int inSize, char *inData, ReplyAddress *inReply);
+void PerformOSCBundle(int inSize, char *inData, PyrObject *inReply);
+void PerformOSCMessage(int inSize, char *inData, PyrObject *inReply);
+PyrObject* ConvertReplyAddress(ReplyAddress *inReply);
 
 void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize);
 void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
 {
-    bool isBundle = strcmp(inBuf, "#bundle") == 0;
+    bool isBundle = IsBundle(inBuf);
     
     pthread_mutex_lock (&gLangMutex);
 	if (compiledOK) {
+		PyrObject *replyObj = ConvertReplyAddress(inReplyAddr);
 		if (isBundle) {
-			OSC_Packet packet;
-			packet.mIsBundle = true;
-			packet.mData = inBuf;
-			packet.mSize = inSize;
-			packet.mReplyAddr = *inReplyAddr;
-			PerformOSCBundle(&packet);
+			PerformOSCBundle(inSize, inBuf, replyObj);
 		} else {
-			PerformOSCMessage(inSize, inBuf, inReplyAddr);
+			PerformOSCMessage(inSize, inBuf, replyObj);
 		}
 	}
     pthread_mutex_unlock (&gLangMutex);
@@ -321,13 +325,6 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr)
 
 
 ///////////
-///////////
-
-inline bool IsBundle(char* ptr) 
-{ 
-	return strcmp(ptr, "#bundle") == 0; 
-}
-
 
 inline int OSCStrLen(char *str) 
 {
@@ -496,7 +493,7 @@ int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
 
 PyrObject* ConvertOSCMessage(int inSize, char *inData)
 {
-        char *cmdName = inData;
+	char *cmdName = inData;
 	int cmdNameLen = OSCstrlen(cmdName);
 	sc_msg_iter msg(inSize - cmdNameLen, inData + cmdNameLen);
         
@@ -556,12 +553,11 @@ PyrObject* ConvertReplyAddress(ReplyAddress *inReply)
     return obj;
 }
 
-void PerformOSCBundle(OSC_Packet* inPacket)
+void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj)
 {
-    PyrObject *replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
     // convert all data to arrays
     
-    int64 oscTime = OSCtime(inPacket->mData + 8);
+    int64 oscTime = OSCtime(inData + 8);
     double seconds = OSCToElapsedTime(oscTime);
 
     VMGlobals *g = gMainVMGlobals;
@@ -569,9 +565,34 @@ void PerformOSCBundle(OSC_Packet* inPacket)
     ++g->sp; SetFloat(g->sp, seconds);
     ++g->sp; SetObject(g->sp, replyObj);
     
+    PyrSlot *stackBase = g->sp;
+    char *data = inData + 16;
+    char* dataEnd = inData + inSize;
+    while (data < dataEnd) {
+        int32 msgSize = OSCint(data);
+        data += sizeof(int32);
+        PyrObject *arrayObj = ConvertOSCMessage(msgSize, data);
+        ++g->sp; SetObject(g->sp, arrayObj);
+        data += msgSize;
+    }
+	
+	int numMsgs = g->sp - stackBase;
+	
+    runInterpreter(g, s_recvoscbndl, 3+numMsgs);
+}
+
+void ConvertOSCBundle(int inSize, char* inData, PyrObject *replyObj)
+{
+    // convert all data to arrays
+    
+    int64 oscTime = OSCtime(inData + 8);
+    double seconds = OSCToElapsedTime(oscTime);
+
+    VMGlobals *g = gMainVMGlobals;
+    
     int numMsgs = 0;
-    char *data = inPacket->mData + 16;
-    char* dataEnd = inPacket->mData + inPacket->mSize;
+    char *data = inData + 16;
+    char* dataEnd = inData + inSize;
     while (data < dataEnd) {
         int32 msgSize = OSCint(data);
         data += sizeof(int32);
@@ -580,14 +601,11 @@ void PerformOSCBundle(OSC_Packet* inPacket)
         numMsgs++;
         data += msgSize;
     }
-
-    runInterpreter(g, s_recvoscbndl, 3+numMsgs);
 }
 
-void PerformOSCMessage(int inSize, char *inData, ReplyAddress *inReply)
+void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj)
 {
     
-    PyrObject *replyObj = ConvertReplyAddress(inReply);
     PyrObject *arrayObj = ConvertOSCMessage(inSize, inData);
     
     // call virtual machine to handle message
@@ -613,14 +631,17 @@ void FreeOSCPacket(OSC_Packet *inPacket)
 void ProcessOSCPacket(OSC_Packet* inPacket)
 {
     //post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
-    inPacket->mIsBundle = strcmp(inPacket->mData, "#bundle") == 0;
+	inPacket->mIsBundle = IsBundle(inPacket->mData);
     
     pthread_mutex_lock (&gLangMutex);
 	if (compiledOK) {
-		if (inPacket->mIsBundle) {
-			PerformOSCBundle(inPacket);
-		} else {
-			PerformOSCMessage(inPacket->mSize, inPacket->mData, &inPacket->mReplyAddr);
+		PyrObject *replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
+		if (compiledOK) {
+			if (inPacket->mIsBundle) {
+				PerformOSCBundle(inPacket->mSize, inPacket->mData, replyObj);
+			} else {
+				PerformOSCMessage(inPacket->mSize, inPacket->mData, replyObj);
+			}
 		}
 	}
     pthread_mutex_unlock (&gLangMutex);
