@@ -22,12 +22,11 @@ BusNodeMap
 	setn(key1, valueArray1, ...) 	set ranges of controls\
 	addCommand(anArray)		save a command that is applied to the node\
 \
-	send(aTarget, latency)				apply a setting to a node by sending a bundle\
+	send(aTarget, latency)		apply a setting to a node by sending a bundle\
 	\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b \cf0 BusNodeMap
+the subclass 
+\f0\b BusNodeMap
 \f2\b0  stores the buses as objects\
 	map(key, bus1, ...) \
 	\
@@ -35,6 +34,7 @@ BusNodeMap
 
 \f1\fs18 \cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "modsine"\cf0 , \
 	\{ \cf2 arg\cf0  freq=320, amp=0.1;\
 		\cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(freq, 0, amp));\
@@ -45,14 +45,18 @@ BusNodeMap
 	\}).load(s);\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //start nodes\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
 b = \cf2 Bus\cf0 .control(s,1);\
 x = \cf2 Synth\cf0 (\cf3 "modsine"\cf0 );\
 y = \cf2 Synth\cf0 .before(x, \cf3 "lfo"\cf0 , [\cf5 \\busNum\cf0 , b.index]);\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //create some node maps\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
 h = \cf2 NodeMap\cf0 .new;\
 h.set(\cf5 \\freq\cf0 , 800);\
@@ -66,7 +70,9 @@ e = \cf2 NodeMap\cf0 .new;\
 e.addCommand([\cf3 "/n_free"\cf0 ]);\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //apply the maps\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 h.send(x);\
 \
@@ -76,7 +82,7 @@ h.set(\cf5 \\freq\cf0 , 600);\
 \
 h.send(x);\
 \
-e.send(x); \cf4 //free the node by sending the map to it\
+e.send(x); \cf4 //free the node by sending the map to it (just an example..)\
 \cf0 e.send(y);\
 \
 }

@@ -1,0 +1,114 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
+\red0\green0\blue0;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 NodeProxy\
+
+\f1\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs26 \cf0 superclass: AbstractFunction\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs26 \cf0 objects that reference nodes on a server which can be replaced,\
+mapped and patched.
+\f1\fs18 \
+\
+\
+
+\f2\fs26 \
+	
+\f0\b NodeProxy.new(server)\
+	NodeProxy.audio(server, numChannels)\
+	NodeProxy.control(server, numChannels)\
+\
+___________________________________________________\
+\
+	source_(anObject)\
+		
+\f2\b0 play a new synth through me, release old one.\
+		anObject can be a Function, an Instr, any valid UGen input
+\f0\b \
+	setObj(anObject, sendFlag, replaceFlag)\
+		
+\f2\b0 set the source without sending\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 	\
+	send\
+		
+\f2\b0 send a new synth without releasing the old one 
+\f0\b \
+	\
+	free\
+		
+\f2\b0 free all my running synths and the group
+\f0\b \
+	\
+	release\
+		
+\f2\b0 fade out my running synths
+\f0\b \
+	\
+	set(key, val, ...)\
+		
+\f2\b0 I behave like my nodeMap: see [NodeMap]\
+		set, setn, map, unset, unmap
+\f0\b \
+	\
+	play(index, numChannels)\
+		
+\f2\b0 play output on the hardware buses
+\f0\b \
+	\
+	ar(numChannels) / kr(numChannels)\
+		
+\f2\b0 return a link to my output, which is limited by [NumChannels]
+\f0\b \
+	\
+	fadeTime_(time)\
+		
+\f2\b0 set the attack/release time\
+		\
+_________________________________________________________	\
+		
+\f1\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //examples\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+a = \cf3 NodeProxy.audio\cf0 (s);\
+x = a.play; \cf2 //play to hardware output, return a group with synths\
+\cf0 a.source = \{ \cf3 SinOsc\cf0 .ar([350, 390], 0, 0.1) \};\
+a.fadeTime = 2.0;\
+a.source = \{ \cf3 arg\cf0  f=400; \cf3 SinOsc\cf0 .ar(f, 0, 0.1) \};\
+a.set(\cf4 \\f\cf0 , 700);\
+a.source = \{ \cf3 arg\cf0  f=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f, 0.5, 0.1), f*2) \};\
+\
+b = \cf3 NodeProxy.audio\cf0 (s);\
+b.source =  \{ \cf3 arg\cf0  f=400; \cf3 SinOsc\cf0 .ar(f*2, 0, 0.1) \};\
+a.source = b;\
+\
+\
+c = \cf3 NodeProxy.control\cf0 (s,1);\
+c.source = \{ \cf3 SinOsc\cf0 .kr(20, 0, 100, 300) \};\
+b.map(\cf4 \\f\cf0 , c);\
+b.source = \{ \cf3 arg\cf0  f=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f, 0.5, 0.1), f*3) \};\
+\
+\cf5 \
+\cf6 //stop synthesis, then wake up proxies:\
+\cf5 \
+x = a.p\cf0 lay;\
+a.release;\
+a.free;\
+x.free;\
+\
+\
+}

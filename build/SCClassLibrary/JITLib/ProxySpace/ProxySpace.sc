@@ -7,12 +7,12 @@
 		^super.push.einit(server);
 	}
 	
-	//todo add group to target	einit { arg target; server = target.asTarget.server; group = target }
+	//todo add group to target	einit { arg target; server = target.asTarget.server;  }
 		at { arg key;
 		var proxy;
 		proxy = super.at(key);
 		if(proxy.isNil, {
-			proxy = this.makeProxy(nil, key);
+			proxy = NodeProxy(server);
 			this.prPut(key, proxy);
 		});
 		^proxy
@@ -20,14 +20,19 @@
 	play { arg key=\out;
 		this.at(key).play;
 	}
-		
+	free {
+		this.do({ arg proxy; proxy.free });
+	}
+	release {
+		this.do({ arg proxy; proxy.release });
+	}
 		put { arg key, obj;		var proxy;
 		proxy = this.prAt(key);
 		if(proxy.isNil, {
-			proxy = this.makeProxy(obj, key);
+			proxy = NodeProxy(server);
 			this.prPut(key, proxy);
 		}, {
-			if(obj.isNil, { this.removeAt(key); proxy.free });
+			if(obj.isNil, { this.removeAt(key);  });
 			
 		});
 		proxy.setObj(obj, true);
@@ -35,23 +40,4 @@
 	
 		
 	*undo {		lastEdited.tryPerform(\undo)	}
-		///private///
-	
-	makeProxy { arg obj, key;
-		var rate, array, n;
-		^if(obj.notNil, {
-			
-			array = obj.value.asArray;
-			array.do({ arg item; rate = item.tryPerform(\rate).postln; });
-			if(rate === 'audio', {
-				AudioProxy
-			}, {
-				ControlProxy
-			}).new(server, array.size, key)
-		}, {
-			//ControlProxy.new(server, defaultNumChannels, key)
-			NeutralProxy(this, key, defaultNumChannels);
-		})
-		
-	}
-	}
+		}

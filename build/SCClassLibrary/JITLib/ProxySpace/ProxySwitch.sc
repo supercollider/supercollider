@@ -1,68 +1,37 @@
-ProxySwitch : AudioProxy {
-	*new { arg proxy, numChannels;
-		^if(proxy.rate === 'audio', {
-			AudioProxySwitch.new(proxy, numChannels)
-		}, {
-			ControlProxySwitch.new(proxy, numChannels)
-		})
-	}
-}
 
 
-AudioProxySwitch : AudioProxy {
+ProxySwitch : NodeProxy {
 	var <proxy;
 	
-	*new { arg proxy, numChannels;
-		^super.new(proxy.server.postln, numChannels ?? {proxy.numChannels}).pinit(proxy)
+	*new { arg proxy;
+		^super.new(proxy.server).initProxy(proxy)
 	}
 	
-	pinit { arg prx;
+	initProxy { arg prx;
 		proxy = prx;
-		this.obj_(this.outFunc);
+		this.source_(this.outFunc).input_(prx);
 	}
 	
-	proxy_ { arg prx;
+	input_ { arg prx;
+		var i;
+		
 		if(prx.rate === proxy.rate, { 
 			proxy = prx;
-			this.set(\inputIndex, this.index)
-		})
+			i = this.inputIndex;
+			if(i.notNil, {this.set(\inputIndex, i)})
+		}, { "incompatible rates".inform })
 	}
 	outFunc {
 		var i;
-		i = this.index;
+		i = this.inputIndex;
 		^{
 			var ctl;
-			ctl = Control.names(\inputIndex).kr(i);
-			In.ar(ctl, this.numChannels)
+			ctl = Control.names(\inputIndex).kr(i?67);
+			In.ar(ctl, proxy.numChannels ? 2)
 		}
 	}
-	index {
-		^proxy.bus.index
+	inputIndex {
+		^proxy.bus.tryPerform(\index)
 	}
-
-}
-
-ControlProxySwitch : AudioProxySwitch {
-	outFunc {
-		var i;
-		i = this.index;
-		^{
-			var ctl;
-			ctl = Control.names(\inputIndex).kr(i);
-			In.kr(ctl, this.numChannels)
-		}
-	}
-	//get ControlProxy behaviour: redesign AudioProxy as neutral?
-	
-	*rate { ^\control }
-	getOutput {
-		var out;
-		this.wakeUpParents;
-		this.addToBuildSynthDef;
-		^In.kr(bus.index, bus.numChannels);
-	}
-		
-	value { ^this.kr }
-	
 
 }
