@@ -77,7 +77,7 @@ MixedBundle : OSCBundle {
 		//array = asRawOSC([nil,messages]).postln;
 		latency = server.latency;
 		functions.do({ arg item; item.value(latency) });
-		server.listSendBundle(latency, messages);
+		server.listSendBundle(latency, messages.postln);
 		//server.sendRaw(array);
 		
 	}
@@ -88,3 +88,4 @@ MixedBundle : OSCBundle {
 
 		
 }
+
