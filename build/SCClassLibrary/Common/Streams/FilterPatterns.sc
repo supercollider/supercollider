@@ -22,6 +22,42 @@ Pn : FilterPattern {
 	}
 }
 
+//same as Pn, but avoids crash when inner pattern returns nil
+
+Ploop : Pn {
+	asStream {
+		^Routine.new({ arg inevent;
+			var res, str, count;
+			str = pattern.asStream;
+			if(inf === repeats, {
+				inf.do({
+					res = str.next(inevent);
+					if(res.isNil, { 
+						str = pattern.asStream;
+						res = str.next(inevent);
+					});
+					inevent = res.yield(inevent)
+				})
+			}, {
+				count = repeats;
+				inf.do({
+					res = str.next(inevent);
+					if(res.isNil, { 
+						str = pattern.asStream;
+						res = str.next(inevent);
+						count = count - 1;  
+					});
+					if(count > 0, {
+						inevent = res.yield(inevent)
+					}, {
+						nil.alwaysYield 
+					});
+				})
+			})
+		});
+	}
+}
+
 
 FuncFilterPattern : FilterPattern {
 	var <>func;
