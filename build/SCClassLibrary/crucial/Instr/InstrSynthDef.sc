@@ -80,7 +80,7 @@ InstrSynthDef : SynthDef {
 			})
 		});
 		name = name ++ fixedID.hash.asFileSafeString;
-		("InstrSynthDef built:" + name ).postln;
+		("InstrSynthDef building:" + name ).postln;
 	}
 	
 	// passed to Instr function but not to synth
@@ -142,5 +142,23 @@ InstrSynthDef : SynthDef {
 //			this.addSecretKr('__tempo__',Tempo.tempo, ... )
 //		}
 //	}
+
+	*initClass {
+		Class.initClassTree(Server);
+		SimpleController(Server.local)
+			.put(\serverRunning,{
+				//if(Server.local.serverRunning,{
+					"CLEARING".postln;
+					Library.put(SynthDef,Server.local,nil)
+				//})
+			});
+		SimpleController(Server.internal)
+			.put(\serverRunning,{
+				//if(Server.local.serverRunning,{
+					Library.put(SynthDef,Server.internal,nil)
+				//})
+			});
+		//will fail with other servers
+	}
 }
 
