@@ -362,7 +362,7 @@ NodeProxy : BusPlug {
 			});
 			
 			if(server.serverRunning, {
-				container.sendDefToBundle(bundle, server);
+				container.loadToBundle(bundle);
 				loaded = true;
 				if(awake, {
 					this.prepareToBundle(nil, bundle);
@@ -391,7 +391,7 @@ NodeProxy : BusPlug {
 		var rep;
 		
 		if(freeAll, { 
-			if(this.isPlaying, { this.stopAllToBundle(bundle) }); 
+			if(this.isPlaying, { this.stopAllToBundle(bundle); \stop.debug; }); 
 			objects.do({ arg item; item.freeToBundle(bundle);  });
 			objects = Order.with(obj);
 		}, {
@@ -419,18 +419,7 @@ NodeProxy : BusPlug {
 		nodeMap.set(\out, index, \i_out, index);
 	}
 	
-	build { 
-		this.initParents;
-		if(bus.notNil, { bus.realloc }); // if server was rebooted 
-		this.class.buildProxy = this;
-			objects.do({ arg item, i;
-				item.build(this, i);
-			});
-			objects.selectInPlace({ arg item; item.readyForPlay }); //clean up
-		this.class.buildProxy = nil;
 		
-	}
-	
 	freeTask { this.task = nil;  }
 	
 	task_ { arg argTask;
@@ -498,6 +487,18 @@ NodeProxy : BusPlug {
 		if(this.isPlaying, { this.sendEach(nil,true) });
 	}
 	
+	loadToBundle { arg bundle;
+		this.initParents;
+		if(bus.notNil) { bus.realloc }; // if server was rebooted 
+		this.class.buildProxy = this;
+		objects.do { arg item, i;
+			item.build(this, i);
+			item.loadToBundle(bundle);
+		};
+		this.class.buildProxy = nil;
+		loaded = true;
+	}
+
 	rebuild {
 		var bundle;
 		if(this.isPlaying, {
@@ -505,8 +506,7 @@ NodeProxy : BusPlug {
 			this.stopAllToBundle(bundle);
 			bundle.schedSend(server, clock);
 			bundle = MixedBundle.new;
-			this.build;
-			objects.do({ arg item; item.sendDefToBundle(bundle, server) });
+			this.loadToBundle(bundle);
 			this.sendAllToBundle(bundle);
 			bundle.schedSend(server, clock);
 		}, {
@@ -767,15 +767,6 @@ NodeProxy : BusPlug {
 	wakeUpParentsToBundle { arg bundle, checkedAlready;
 			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
 			nodeMap.wakeUpParentsToBundle(bundle, checkedAlready);
-	}
-			
-	
-	loadToBundle { arg bundle;
-		this.build;
-		objects.do({ arg item;
-			item.sendDefToBundle(bundle, server)
-		});
-		loaded = true;
 	}	
 		
 	

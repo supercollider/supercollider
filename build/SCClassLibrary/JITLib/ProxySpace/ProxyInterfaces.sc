@@ -25,7 +25,7 @@ AbstractPlayControl {
 	synthDef { ^nil }
 	distributable {Ê^false } // shared proxy support
 
-	sendDefToBundle {}
+	loadToBundle {}
 	spawnToBundle {}
 	
 	playToBundle { arg bundle, args; 
@@ -104,13 +104,18 @@ SynthControl : AbstractPlayControl {
 	
 	writeDef { }
 	
-	sendDefToBundle {} //assumes that SynthDef is loaded in the server 
+	loadToBundle {} //assumes that SynthDef is loaded in the server 
 	name { ^source }
 	clear { nodeID = nil }
 	distributable { ^true }
-	build { arg proxy;
-		^proxy.initBus(proxy.rate ? \audio, proxy.numChannels ? 2);
+	
+	build { arg proxy; // assumes audio, if proxy is not initialized
+		var rate, desc;
+		desc = this.synthDesc; // might be false assumption:
+		if(desc.notNil) { canFreeSynth = canReleaseSynth = desc.hasGate }; 		if(proxy.isNeutral) { rate = \audio }
+		^proxy.initBus(rate, proxy.numChannels ? 2);
 	}
+	
 	spawnToBundle { arg bundle, extraArgs, target, addAction=0; //assumes self freeing
 		var synthMsg;
 		synthMsg = [9, this.name, -1, addAction, target.asTarget.nodeID]++extraArgs;
@@ -169,10 +174,17 @@ SynthControl : AbstractPlayControl {
 		} { paused = flag.not; }
 	}
 	
-	canReleaseSynth { ^canReleaseSynth }
-	// todo: get from SynthDescLib
-	controlNames { ^[] }
-	controlValues { ^[] }
+	canReleaseSynth { ^canReleaseSynth } // maybe get this from synthdesclib
+	synthDesc { var dict;
+		dict = SynthDescLib.global.synthDescs;
+		^if(dict.notNil) { dict.at(source) } {Ênil }; // source is symbol: synth def name
+	}
+	controlNames { var desc; desc = this.synthDesc; 
+					^if(desc.notNil) { desc.controls.collect { |u| u.name } } { [] } 
+	}
+	controlValues {  var desc; desc = this.synthDesc; 
+					^if(desc.notNil) { desc.controls.collect { |u| u.defaultValue } } { [] } 
+	}
 }
 
 
@@ -205,7 +217,7 @@ SynthDefControl : SynthControl {
 	
 	free {ÊsynthDef = nil }
 	
-	sendDefToBundle { arg bundle, server;
+	loadToBundle { arg bundle;
 		bundle.addPrepare([5, synthDef.asBytes]); //"/d_recv"
 	}
 	
@@ -225,48 +237,7 @@ SoundDefControl : SynthDefControl {
 	
 	writeDef { }
 	build { synthDef = source.synthDef; ^true }
-	sendDefToBundle {} //assumes that SoundDef does send to the same server 
-}
-
-DiskInControl : SynthControl {
-	var buffer, numChannels, oldFadeTime, proxy;
-	classvar <>defaultBufferSize = 65536;
-	*initClass {
-		2.do { |i|
-			i = i + 1;
-			SynthDef("system_diskin_" ++ i, { arg out, gate=1, bufnum;
-				var env;
-				env = EnvGen.kr(Env.asr(0.01, 1, 0.02), gate, doneAction:2);
-				Out.ar(out, DiskIn.ar(i, bufnum) * env);
-			}).writeDefFile;
-		}
-	}
-	
-	build { arg argProxy;
-		var ok, server, i, sf;
-		server = proxy.server;
-		ok = proxy.initBus(proxy.rate ? \audio, proxy.numChannels ? 2);
-		numChannels = proxy.numChannels.min(2);
-		proxy = argProxy;
-		// sf = proxy.nodeMap[\startFrame].value;
-		oldFadeTime = proxy.fadeTime; //remember to add it back after
-		proxy.fadeTime = 0.0; 
-		if(ok) { 
-			buffer = Buffer.cueSoundFile(
-						server, source, 0, numChannels, this.class.defaultBufferSize
-			)
-		}
-	}
-	
-	name  { ^"system_diskin_" ++ numChannels }
-		
-	free { 
-		buffer.close; 
-		buffer.free; 
-		buffer = nil; 
-		numChannels = nil; 
-		proxy.fadeTime = oldFadeTime;
-	}
+	loadToBundle {} //assumes that SoundDef does send to the same server 
 }
 
 
@@ -298,7 +269,8 @@ CXPlayerControl : AbstractPlayControl {
 			// we'll need channel offset maybe.
 			source.prepareToBundle(nil, bundle); //proxy.group
 			if(source.readyForPlay.not) {
-				source.makePatchOut(nil, true, bus, bundle)
+				source.makePatchOut(nil, true, bus, bundle);
+				"made new patch out for player".debug;
 			};
 			source.spawnOnToBundle(nil, bus, bundle); //proxy.group
 			// this.moveToGroupToBundle(bundle, proxy.group);
@@ -313,7 +285,8 @@ CXPlayerControl : AbstractPlayControl {
 		//bundle.addSchedFunction({ source.free }, 
 	}
 	
-	freeToBundle {} // maybe should free after fadeTime
+	freeToBundle { arg bundle, fadeTime;
+	} // maybe should free after fadeTime
 	
 	stop {
 		source.stop;
