@@ -1,6 +1,11 @@
 
 QuantClock : Clock  {
 	var <>period, <>late, <>clock;
+	classvar <>global;
+	
+	*initClass {
+		global = this.new;
+	}
 	
 	*new { arg period=1.0, late=0.0, clock; 
 		^super.newCopyArgs(period, late, clock ? SystemClock)
@@ -14,10 +19,15 @@ QuantClock : Clock  {
 		dt = (hq + delta + this.time).round(quant);
 		clock.schedAbs(dt, func);
 	}
+	
 	time {
 		^thisThread.time
 		// Main.elapsedTime;
-	}		
+	}	
+	
+	*sched { arg delta, func, divisions=1;
+		global.sched(delta, func, divisions)
+	}	
 	
 
 }
