@@ -108,6 +108,7 @@ Env {
 			loopNode
 		)
 	}
+	/*
 	plot {
 		var timeScale;
 		timeScale = 0.01 / times.sum;
@@ -116,13 +117,12 @@ Env {
 			EnvGen.ar(this, 1, 0, 1, 0, timeScale)
 		}, 0.01)
 	}
-	/*test { arg releaseTime = 3.0;
-		Synth.play({ arg synth;
-			synth.releaseTime = releaseTime;
-			EnvGen.ar(this, FSinOsc.ar(800, 0.3))
-		})
-	}*/
+	*/
 	
+	isSustained {
+		^releaseNode.notNil
+	}
+		
 	shapeNumber { arg shapeName;
 		^shapeNames.at(shapeName) ? 5
 	}
@@ -144,11 +144,30 @@ Env {
 		});	
 		^contents
 	}
+	
 //	send { arg netAddr, bufnum;
 //		var array;
 //		array = this.asArray;
 //		netAddr.performList(\sendMsg, "buf.setn", bufnum, 0, array.size, array);
 //	}
+
+	test { arg releaseTime = 3.0;
+		var id, name, s;
+		s = Server.default;
+		id = s.nextNodeID;
+		name = "env_test_" ++ id;
+		SynthDef(name, { arg gate=1;
+			Out.ar(0,
+				FSinOsc.ar(800, 0, 0.3) * EnvGen.ar(this, gate, doneAction:2)
+			)
+		}).send(s);
+		SystemClock.sched(0.2, {
+			s.sendBundle(s.latency, [9, name, id]);
+			if(this.isSustained) { s.sendBundle(s.latency + releaseTime, [15, id, 0, 0]) };
+			nil
+		});
+	}
+
 
 	storeArgs { ^[levels, times, curves, releaseNode, loopNode] }
 
