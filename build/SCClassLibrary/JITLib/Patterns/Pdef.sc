@@ -51,6 +51,7 @@ PatternProxy : Pattern {
 
 	storeArgs { ^[pattern] }
 	
+	
 	/////////////////////////
 	// these following methods are factored out for the benefit of subclasses
 	// they only work for Pdef/Tdef/Pdefn
@@ -73,7 +74,7 @@ PatternProxy : Pattern {
 	
 	*removeAll { 
 		this.all.do { arg pat; pat.stop }; 
-		this.all = IdentityDictionary.new; 
+		this.all.makeEmpty; 
 	}
 	
 	*at { ^nil }
@@ -194,7 +195,8 @@ Tdef : TaskProxy {
 	}
 
 	storeArgs { ^[key] }
-	}
+
+}
 
 
 
@@ -311,7 +313,7 @@ Pdef : EventPatternProxy {
 						};
 					} {	// avoid recursion, if instrument not set.
 						outerEvent.put(\embeddingLevel, embeddingLevel + 1);
-						outerEvent.parent_(Event.parentEvents.noteEvent);
+						outerEvent.parent_(Event.parentEvents.default);
 					};
 					
 					pat = Pfindur(~sustain.value, pat, 0.0); // avoid cutting off last event
