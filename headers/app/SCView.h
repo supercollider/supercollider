@@ -462,6 +462,7 @@ public:
         virtual ~SCMultiSliderView();
 	virtual void draw(SCRect inDamage);
 	virtual void mouseBeginTrack(SCPoint where, int modifiers);
+        virtual void mouseEndTrack(SCPoint where, int modifiers);
 	virtual void mouseTrack(SCPoint where, int modifiers);
 	void setSelection(SCPoint where);
 	bool setValue(int inX, double inY, bool send);
@@ -509,17 +510,19 @@ class SCEnvelopeView : public SCView
 {
 public:	
 	SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-        virtual ~SCEnvelopeView();
+	virtual ~SCEnvelopeView();
 	virtual void draw(SCRect inDamage);
 	virtual void mouseBeginTrack(SCPoint where, int modifiers);
+	virtual void mouseEndTrack(SCPoint where, int modifiers);
+
 	virtual void mouseTrack(SCPoint where, int modifiers);
-	void setSelection(SCPoint where);
+	void setSelection(SCPoint where, bool fixed);
 	bool setValue(int indx, double x, double y, bool send);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
-        void setVisibleSize();
-        virtual bool canReceiveDrag();
-        virtual void receiveDrag();
+	void setVisibleSize();
+	virtual bool canReceiveDrag();
+	virtual void receiveDrag();
 
 protected:
 
@@ -527,22 +530,24 @@ protected:
 	//SCRect calcThumbRect(int xIn, double valIn, float xoffset);
 	void setEnvRect(double valX, double valY, SCEnvObject * envobIn);
 	int mThumbSize, mThumbSizeY; // size of the rect
-        int mTabSize, mVisibleSize, mActiveSize; // size of the table
-        SCColor mFillColor, mSelectedColor;
-        SCColor mStrokeColor;
+	int mTabSize, mVisibleSize, mActiveSize; // size of the table
+	SCColor mFillColor, mSelectedColor;
+	SCColor mStrokeColor;
 	SCRect mThumbRect;
 	double mCurrentY, mCurrentX, mAbsoluteX;
-        int mCurrentIndex, mStartIndex, mSelectionSize;
-        double mStepSize, mStepScale;
-        SCEnvObject * mEnvObj;
+	int mCurrentIndex, mStartIndex, mSelectionSize, mLastIndex;
+	double mStepSize, mStepScale;
+	SCEnvObject * mEnvObj;
         //DrawBackground* mKnob;
-        float mXOffset ; //space between points
-        bool mReadOnly, mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsHorizontal, mIsFilled;
-        int mSelectedIndex;
-        SCPoint mPrevPoint;
+	float mXOffset ; //space between points
+	bool mReadOnly, mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsFilled, mIsFixedSelection;
+	int mSelectedIndex;
+	SCPoint mPrevPoint;
+        
     
 };
 SCView* NewSCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+
 
 //
 

@@ -710,7 +710,7 @@ SCFuncUserView : SCUserView {
 SCMultiSliderView : SCView { 
 
 	var <>acceptDrag = true;
-	var <> metaAction;
+	var <> metaAction, <> mouseEndTrackAction;
 	var <> size ;
 	var < gap;
 
@@ -721,6 +721,9 @@ SCMultiSliderView : SCView {
  	}
 	mouseEndTrack { arg x, y, modifiers;
 	
+	 mouseEndTrackAction.value(this);
+	 //"hi".postln;
+	 
 	}
 	properties {
 		^super.properties ++ [\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \thumbWidth, \absoluteX, \isFilled]
@@ -894,6 +897,9 @@ SCEnvelopeView : SCMultiSliderView {
 	index {
 		^this.getProperty(\selectedIndex)
 		}
+	lastIndex {
+		^this.getProperty(\lastIndex)
+		}
 	setStatic {arg index, abool;
 		this.select(index);
 		this.setProperty(\isStatic, abool);
@@ -903,9 +909,33 @@ SCEnvelopeView : SCMultiSliderView {
 		^this.setProperty(\selectionColor, acolor)
 		}
 	receiveDrag {
-		
+		this.value_(currentDrag);
 	}
 	beginDrag {
+		currentDrag = this.value;
+	}
+	addValue{arg xval, yval;
+		var arr, arrx, arry, aindx;
+			aindx = this.lastIndex;
+			aindx.postln;
+			if(xval.isNil && yval.isNil, {
+			arr = this.value;
+			arrx = arr@0;
+			arry = arr@1;
+			xval = arrx.at(aindx) + 0.05;
+			yval = arry.at(aindx);
+			});
+			if(aindx < (arrx.size - 1), {
+			arrx = arrx.insert(aindx + 1 , xval);
+			arry = arry.insert(aindx + 1, yval);
+			},{
+			arrx = arrx.add( xval );
+			arry = arry.add( yval);
+			});
+			arr.put(0,arrx);
+			arr.put(1,arry);
+			this.value_(arr);
+	
 	}
 
 }

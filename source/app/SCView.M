@@ -2142,7 +2142,10 @@ void SCMultiSliderView::mouseBeginTrack(SCPoint where, int modifiers)
 	mPrevPoint = where;
 	mouseTrack(where, modifiers);
 }
-
+void SCMultiSliderView::mouseEndTrack(SCPoint where, int modifiers){
+    sendMessage(getsym("mouseEndTrack"), 0, 0, 0);
+    mouseTrack(where, modifiers);
+}
 void SCMultiSliderView::mouseTrack(SCPoint where, int modifiers)
 {
     if (modifiers & NSCommandKeyMask) {
@@ -2404,6 +2407,7 @@ void SCMultiSliderView::receiveDrag()
     sendMessage(s_receiveDrag, 0, 0, 0);
 }
 //////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //SCEnvelopeView by jan trutzschler feb.02.03
 int allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr);
 int allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
@@ -2436,6 +2440,7 @@ SCEnvelopeView::SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRe
         mSelectionSize = 1;
         mCurrentY = 0.0;
         mCurrentX = 0.0;
+        mLastIndex = 0;
         mEnvObj = new SCEnvObject [mTabSize];
         memset(mEnvObj, 0, mTabSize * sizeof(SCEnvObject));
 
@@ -2445,8 +2450,9 @@ SCEnvelopeView::SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRe
         mIsFilled = mDrawLinesActive = false;
         mDrawRectsActive = true;
         setVisibleSize();
-        mSelectedIndex = 0;
+        mSelectedIndex = -1;
         mAbsoluteX = 0.0;
+        mIsFixedSelection = false;
 
 }
 SCEnvelopeView::~SCEnvelopeView()
@@ -2480,6 +2486,7 @@ void SCEnvelopeView::draw(SCRect inDamage)
         float  gcx, gcy;
         for(int i = xstart; i < xpixels; i++){
             envobj = &mEnvObj[i];
+            setEnvRect(envobj->x, envobj->y, envobj);
             if(envobj->mIsVisible){
                 gcx = envobj->mDrawPoint.x;
                 gcy =  envobj->mDrawPoint.y;
@@ -2522,15 +2529,15 @@ bool SCEnvelopeView::setValue(int indx,  double xIn, double yIn, bool send)
     if (mStepSize > 0.) {
         yIn = floor(yIn * mStepScale + 0.5) * mStepSize;
     }
-        mCurrentIndex = indx;
+    mCurrentIndex = indx;
        // if (changed) {
-        envob = &mEnvObj[indx];
+    envob = &mEnvObj[indx];
         //changed = valXIn != envob->x || valYIn != envob->y;
-        setEnvRect(xIn, yIn, envob);
-        mCurrentY = yIn;
-        mCurrentX = xIn;
-        if (send) sendMessage(s_doaction, 0, 0, 0); 
-        refresh();
+    setEnvRect(xIn, yIn, envob);
+    mCurrentY = yIn;
+    mCurrentX = xIn;
+    if (send) sendMessage(s_doaction, 0, 0, 0); 
+    refresh();
     }
     return changed;
        // }
@@ -2572,7 +2579,7 @@ void SCEnvelopeView::setEnvRect(double valXIn, double valYIn, SCEnvObject * envo
         }
   //  return SCMakeRect( x, y, thumbx, thumby);   
 }
-void SCEnvelopeView::setSelection(SCPoint where)
+void SCEnvelopeView::setSelection(SCPoint where, bool fixed)
 {
     SCEnvObject * envo;
     bool sel = false;
@@ -2581,6 +2588,8 @@ void SCEnvelopeView::setSelection(SCPoint where)
         (&mEnvObj[mSelectedIndex])->mIsSelected = false;
         (&mEnvObj[mSelectedIndex])->mColor = mFillColor;
         mSelectedIndex = -1;
+        if(fixed) mIsFixedSelection = false;
+
     }
     //
     
@@ -2592,6 +2601,8 @@ void SCEnvelopeView::setSelection(SCPoint where)
             envo->mIsSelected = false;
             envo->mColor = mSelectedColor;
             mSelectedIndex = i;
+            mLastIndex = i;
+            if(fixed) mIsFixedSelection = true;
             return;
         } 
     }
@@ -2605,7 +2616,23 @@ void SCEnvelopeView::setSelection(SCPoint where)
     */ 
     refresh();
 }
+void SCEnvelopeView::mouseEndTrack(SCPoint where, int modifiers){
+    sendMessage(getsym("mouseEndTrack"), 0, 0, 0);
+    if (modifiers & NSShiftKeyMask) {
+        mouseTrack(where, modifiers);
+    }
+    if(!mIsFixedSelection){
+     if(mSelectedIndex >= 0){
+        (&mEnvObj[mSelectedIndex])->mIsSelected = false;
+        (&mEnvObj[mSelectedIndex])->mColor = mFillColor;
+        mSelectedIndex = -1;
+        refresh();
 
+    }
+    }
+    setValueFromPoint(where);
+   // mouseTrack(where, modifiers);
+}
 void SCEnvelopeView::mouseBeginTrack(SCPoint where, int modifiers)
 {
 	//mPrevPoint = where;
@@ -2617,7 +2644,8 @@ void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers)
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else if (modifiers & NSShiftKeyMask) {
-            setSelection(where);
+           
+            setSelection(where, true);
            /* mActiveSize++;
             if(mActiveSize < mTabSize) {
                 mSelectedIndex = mActiveSize - 1;
@@ -2635,6 +2663,8 @@ void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers)
         mAbsoluteX = where.x; //absolute y mouse position
         sendMessage(getsym("doMetaAction"), 0, 0, 0);
     } else {
+    if(!mIsFixedSelection && mSelectedIndex < 0)
+        setSelection(where, false);
         setValueFromPoint(where);
     }
 }
@@ -2822,6 +2852,10 @@ int SCEnvelopeView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
         if (strcmp(name, "selectedIndex")==0) {
             SetInt(slot, (int) mSelectedIndex);
+            return errNone;
+        }
+           if (strcmp(name, "lastIndex")==0) {
+            SetInt(slot, (int) mLastIndex);
             return errNone;
         }
 
