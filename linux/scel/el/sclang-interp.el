@@ -138,8 +138,10 @@ If EOB-P is non-nil, positions cursor at end of buffer."
        sclang--library-initialized-p))
 
 (defun sclang--on-library-startup ()
+  (message "SCLang: Initializing library ...")
   (setq sclang--library-initialized-p t)
-  (run-hooks 'sclang-library-startup-hook))
+  (run-hooks 'sclang-library-startup-hook)
+  (message "SCLang: Initializing library ... Done"))
 
 (defun sclang--on-library-shutdown ()
   (run-hooks 'sclang-library-shutdown-hook)
@@ -283,6 +285,7 @@ Change this if \"cat\" has a non-standard name or location."
       (unless (= 0 (call-process sclang-mkfifo-program
 				 nil nil nil
 				 sclang--command-fifo))
+	(message "SCLang: Couldn't create command fifo")
 	(setq sclang--command-fifo nil)))))
 
 (defun sclang--command-process-sentinel (proc msg)
@@ -320,7 +323,9 @@ Change this if \"cat\" has a non-standard name or location."
 				 sclang-cat-program sclang--command-fifo)))
 	(set-process-sentinel proc 'sclang--command-process-sentinel)
 	(set-process-filter proc 'sclang--command-process-filter)
-	(process-kill-without-query proc)))))
+	(process-kill-without-query proc))))
+  (unless (get-process sclang--command-process)
+    (message "SCLang: Couldn't start command process")))
 
 (defun sclang--stop-command-process ()
   (when (get-process sclang--command-process)
@@ -371,7 +376,7 @@ Change this if \"cat\" has a non-standard name or location."
 	(when (functionp fun)
 	  (funcall fun (cdr assoc))
 	  t))
-    (error (debug "sclang--handle-command-result") nil)))
+    (error (message "SCLang: Error in command handler") nil)))
 
 ;; =====================================================================
 ;; default command handlers

@@ -5,7 +5,7 @@
 ## CVS:         $Id$
 ## ====================================================================
 
-MAINTAINERCLEANFILES = Makefile.in
+MAINTAINERCLEANFILES = Makefile.in elisp-comp
 
 lisp_LISP = \
 	sclang-browser.el \

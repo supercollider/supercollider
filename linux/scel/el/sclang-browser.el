@@ -15,7 +15,7 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ;; USA
 
-(eval-when-compile (require 'view nil t))
+(require 'view nil t)
 
 ;; TODO: better factoring
 ;; derive from view mode, make mode-map pluggable
@@ -83,7 +83,7 @@
     (when (functionp fun)
       (condition-case nil
 	  (funcall fun arg)
-	(error (message "Error in link function") nil)))))
+	(error (message "SCLang: Error in link function") nil)))))
 
 (defun sclang-browser-mouse-follow-link (event)
   (interactive "e")

@@ -15,7 +15,7 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ;; USA
 
-(eval-when-compile (require 'cl))
+(require 'cl)
 
 (defgroup sclang nil
   "IDE for working with the SuperCollider language."
@@ -33,15 +33,15 @@
   (interactive)
   (customize-group 'sclang))
 
-(eval-when-compile (load "sclang-util"))
-(eval-when-compile (load "sclang-browser"))
-(eval-when-compile (load "sclang-interp"))
-(eval-when-compile (load "sclang-language"))
-(eval-when-compile (load "sclang-server"))
-(eval-when-compile (load "sclang-menu"))
-(eval-when-compile (load "sclang-keys"))
-(eval-when-compile (load "sclang-help"))
-(eval-when-compile (load "sclang-mode"))
+(load "sclang-util")
+(load "sclang-browser")
+(load "sclang-interp")
+(load "sclang-language")
+(load "sclang-server")
+(load "sclang-menu")
+(load "sclang-keys")
+(load "sclang-help")
+(load "sclang-mode")
 
 (provide 'sclang)
 

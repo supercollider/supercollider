@@ -33,6 +33,9 @@ EmacsSlot {
 EmacsInterface {
 	symbolTable {
 		var result;
+
+		"Emacs: Building symbol table ...".post;
+
 		result = IdentitySet.new;
 		Class.allClasses.do { arg class;
 			result.add(class.name);
@@ -40,6 +43,9 @@ EmacsInterface {
 				result.add(method.name);
 			};
 		};
+
+		" done.".postln;
+
 		^result.collectAs({ arg symbol; symbol.asString }, Array)
 	}
 
@@ -155,6 +161,7 @@ Emacs {
 
 	// Lisp interface
 	*lispInit { arg outFileName;
+		"Emacs: Initializing lisp interface.".postln;
 		outFile = File(outFileName, "w");
 		this.sendToLisp(\_init);
 		// this.initMenu;

@@ -15,6 +15,8 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ;; USA
 
+(eval-when-compile (require 'cl))
+
 (defcustom sclang-help-directory "~/SuperCollider/Help"
   "*Directory where the SuperCollider help files are kept."
   :group 'sclang-interface
@@ -39,16 +41,16 @@
 			      ((string-match "\\(\\(\\.help\\)?\\.\\(rtf\\|sc\\)\\)$" file)
 			       (push (cons (file-name-nondirectory (replace-match "" nil nil file 1)) file)
 				     result))))))
-	  (message "Indexing help topics ...")
+	  (message "SCLang: Indexing help topics ...")
 	  (index sclang-help-directory)
 	  (let ((list (sort result (lambda (a b) (string< (car a) (car b))))))
 	    (setq sclang-help-topic-alist list
 		  sclang-help-topic-regexp (concat "\\(\\s \\|\\s.\\)+"
 						   (regexp-opt (mapcar 'car list) t)
 						   "\\(\\s \\|\\s.\\)+")))
-	  (message "Indexing help topics ... Done")))
+	  (message "SCLang: Indexing help topics ... Done")))
     (setq sclang-help-topic-alist nil)
-    (message "Help directory is unset")))
+    (message "SCLang: Help directory is unset")))
 
 (defun sclang-help-file (topic)
   (cdr (assoc topic sclang-help-topic-alist)))
