@@ -50,7 +50,8 @@ Control : MultiOutUGen {
 TrigControl : Control {}
 
 LagControl : Control {	
-	*kr { arg values, lags, outputs;
+	*kr { arg values, lags;
+		var outputs;
 		values = values.asArray;
 		lags = lags.asArray;
 		if (values.size != lags.size, {
