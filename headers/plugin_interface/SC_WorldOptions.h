@@ -41,9 +41,6 @@ struct WorldOptions
 	uint32 mNumControlBusChannels;
 	uint32 mBufLength;
 	uint32 mRealTimeMemorySize;
-	
-	uint32 mNumSharedSndBufs;
-	struct SndBuf *mSharedSndBufs;
 
 	int mNumSharedControls;
 	float *mSharedControls;
@@ -63,7 +60,7 @@ struct WorldOptions
 
 const WorldOptions kDefaultWorldOptions = 
 {
-	0,1024,64,1024,1024,64,128,2,2,4096,64,2048, 0,0,0,0, 1, 0,0,0,0,0, 0, 64, 0
+	0,1024,64,1024,1024,64,128,2,2,4096,64,2048, 0,0, 1, 0,0,0,0,0, 0, 64, 0
 };
 
 #include "SC_Reply.h"
@@ -75,6 +72,7 @@ extern "C" {
 	void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
 	void World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
 	void World_WaitForQuit(struct World *inWorld);
+	int World_CopySndBuf(World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool &didChange);
 	int scprintf(const char *fmt, ...);
 }
 

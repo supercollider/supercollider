@@ -37,6 +37,7 @@
 void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 
 SCViewMaker *gSCViewMakers = 0;
+SCView *gAnimatedViews = 0;
 
 extern PyrSymbol* s_color;
 extern PyrSymbol* s_doaction;
@@ -254,7 +255,8 @@ Layout::Layout()
 }
 
 SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: mNext(0), mParent(0), mTop(0), mObj(inObj), mBounds(inBounds), 
+	: mNext(0), mNextAnimatedView(0), mPrevAnimatedView(0),
+		mParent(0), mTop(0), mObj(inObj), mBounds(inBounds), 
 		mBackground(0), mVisible(true), mEnabled(true),
         mCanFocus(true), mDragHilite(false)
 {
@@ -266,11 +268,32 @@ SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 
 SCView::~SCView()
 {
-    makeFocus(false);
+	stopAnimation();
+	makeFocus(false);
     if (mParent) mParent->remove(this);
     if (mObj) SetNil(mObj->slots+0);
+		
     delete mBackground;
 }
+	
+void SCView::startAnimation()
+{
+	mNextAnimatedView = gAnimatedViews;
+	if (mNextAnimatedView) mNextAnimatedView->mPrevAnimatedView = this;
+	mPrevAnimatedView = 0;
+	gAnimatedViews = this;
+}
+
+void SCView::stopAnimation()
+{
+	SCView *nextAnim = mNextAnimatedView;
+	SCView *prevAnim = mPrevAnimatedView;
+	if (nextAnim) nextAnim->mPrevAnimatedView = prevAnim;
+	if (prevAnim) prevAnim->mNextAnimatedView = nextAnim;
+	else if (gAnimatedViews == this) gAnimatedViews = nextAnim;
+	mPrevAnimatedView = mNextAnimatedView = 0;
+}
+
 
 bool SCView::hit(SCPoint where) const
 {
@@ -1719,6 +1742,225 @@ bool SC2DSlider::canReceiveDrag()
 void SC2DSlider::receiveDrag()
 {
     sendMessage(s_receiveDrag, 0, 0, 0);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+
+SCView* NewSCScope(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCScope(inParent, inObj, inBounds);
+}
+
+SCScope::SCScope(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+	: SCView(inParent, inObj, inBounds), mBufNum(0), mStyle(0), mGridOn(true)
+{
+	mZoom = mInvZoom = SCMakePoint(1.,1.);
+	mScroll = SCMakePoint(0.,0.);
+	memset(&mSndBuf, 0, sizeof(SndBuf));
+	mGridColor = SCMakeColor(0.2,0.2,1.0, 1.0);	
+    mBackground = new SolidColorBackground(
+                    SCMakeColor(0.,0.,0., 1.0));
+	SCColor waveColor = SCMakeColor(1.0,1.0,0.0, 1.0);	
+	for (int i=0; i<kMaxScopeChannels; ++i) mWaveColors[i] = waveColor;
+	startAnimation();
+}
+
+SCScope::~SCScope()
+{
+	stopAnimation();
+	free(mSndBuf.data);
+}
+
+static int frameCount = 0;
+int getScopeBuf(uint32 index, SndBuf *buf, bool& didChange);
+
+void SCScope::animate()
+{
+	bool didChange;
+	int err = getScopeBuf(mBufNum, &mSndBuf, didChange);
+	if (didChange) refresh();
+}
+
+void SCScope::draw(SCRect inDamage)
+{
+	bool didChange;
+	int err = getScopeBuf(mBufNum, &mSndBuf, didChange);
+	
+    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+    CGContextSaveGState(cgc);
+    CGRect rect = SCtoCGRect(mBounds);
+    if (mBackground) mBackground->draw(cgc, rect);
+    QDDrawBevelRect(cgc, rect, 1, true);
+
+	int width = mBounds.width - 2;
+	float *data = mSndBuf.data;
+	// draw grid.
+	
+	if (data)
+	{
+		// draw scope.
+		int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
+		//post("channels %d\n", channels);
+		float chanHeight = (rect.size.height - 2.) / channels;
+		float chanHeight2 = 0.5 * chanHeight;
+		float yScale = mZoom.y * chanHeight2;
+		
+		for (int j=0; j<channels; ++j)
+		{
+			CGContextSetRGBFillColor(cgc, mWaveColors[j].red, mWaveColors[j].green, mWaveColors[j].blue, mWaveColors[j].alpha);
+			float fframe = mScroll.x;
+			float hzoom = mZoom.x;
+			int iframe = (int)floor(fframe);
+			int isample = iframe * channels;
+			float val = data[isample + j];
+			
+			CGRect chanRect;
+			chanRect.origin.x = rect.origin.x + 1.;
+			chanRect.origin.y = rect.origin.y + 1. + chanHeight * j + chanHeight2;
+			chanRect.size.width = rect.size.width - 2.;
+			chanRect.size.height = chanHeight;
+			
+		//post("width %d\n", width);
+			for (int i = 0; i < width; i++)
+			{
+				float ymin, ymax;
+				ymin = ymax = val;
+				float nextfframe = fframe + hzoom;
+				int nextiframe = (int)floor(nextfframe);
+				int nscan = nextiframe - iframe;
+				for (int k=0; k<nscan; ++k)
+				{
+					val = data[isample + j];
+					if (val < ymin) ymin = val;
+					else if (val > ymax) ymax = val;
+					isample += channels;
+				}
+				iframe = nextiframe;
+				fframe = nextfframe;
+				
+				CGRect wrect;
+				wrect.origin.x = rect.origin.x + 1. + i;
+				wrect.size.width = 1.; 
+				wrect.origin.y = chanRect.origin.y + ymin * yScale;
+				wrect.size.height = (ymax - ymin) * yScale + 1.;
+				
+				//if (i == 64) post("%g %g    %g   %g %g\n", ymin, ymin, wrect.origin.x, wrect.origin.y, wrect.size.height);
+				
+				CGContextFillRect(cgc, wrect);
+			}
+		}
+	}
+    CGContextRestoreGState(cgc);
+}
+
+
+void SCScope::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+}
+
+int SCScope::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	int err;
+	if (symbol == s_x) {
+		double x;
+		err = slotDoubleVal(slot, &x);
+		if (err) return err;
+		mScroll.x = x; 
+		return errNone;
+	}
+	if (symbol == s_y) {
+		double y;
+		err = slotDoubleVal(slot, &y);
+		if (err) return err;
+		mScroll.y = y; 
+		return errNone;
+	}
+	char *name = symbol->name;
+	if (strcmp(name, "xZoom")==0) {
+		double x;
+		err = slotDoubleVal(slot, &x);
+		if (err) return err;
+		mZoom.x = x; 
+		mInvZoom.x = 1./x;
+		return errNone;
+	}
+	if (strcmp(name, "yZoom")==0) {
+		double y;
+		err = slotDoubleVal(slot, &y);
+		if (err) return err;
+		mZoom.y = y; 
+		mInvZoom.y = 1./y;
+		refresh();
+		return errNone;
+	}
+	if (strcmp(name, "bufnum")==0) {
+		err = slotIntVal(slot, &mBufNum);
+		if (err) return err;
+		refresh();
+		return errNone;
+	}
+	if (strcmp(name, "gridColor")==0) {
+		err = slotColorVal(slot, &mGridColor);
+		if (err) return err;
+		refresh();
+		return errNone;
+	}
+	if (strcmp(name, "waveColors")==0) {
+		if (!isKindOfSlot(slot, class_array)) return errWrongType;
+		PyrSlot *slots = slot->uo->slots;
+		for (int i=0; i<slot->uo->size; ++i)
+		{
+			err = slotColorVal(slots+i, mWaveColors+i);
+			if (err) return err;
+		}
+		refresh();
+		return errNone;
+	}
+	
+	return SCView::setProperty(symbol, slot);
+}
+
+int SCScope::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+	if (symbol == s_x) {
+		SetFloat(slot, mScroll.x);
+		return errNone;
+	}
+	if (symbol == s_y) {
+		SetFloat(slot, mScroll.y);
+		return errNone;
+	}
+
+	char *name = symbol->name;
+	if (strcmp(name, "xZoom")==0) {
+		SetFloat(slot, mZoom.x);
+		return errNone;
+	}
+	if (strcmp(name, "yZoom")==0) {
+		SetFloat(slot, mZoom.y);
+		return errNone;
+	}
+	if (strcmp(name, "bufnum")==0) {
+		SetInt(slot, mBufNum);
+		return errNone;
+	}
+	if (strcmp(name, "gridColor")==0) {
+		return setSlotColor(slot, &mGridColor);
+	}
+	if (strcmp(name, "waveColors")==0) {
+		if (!isKindOfSlot(slot, class_array)) return errWrongType;
+		PyrSlot *slots = slot->uo->slots;
+		for (int i=0; i<slot->uo->size; ++i)
+		{
+			int err = setSlotColor(slots+i, mWaveColors+i);
+			if (err) return err;
+		}
+		refresh();
+		return errNone;
+	}
+
+	return SCView::getProperty(symbol, slot);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -3995,6 +4237,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCMultiSliderView", NewSCMultiSliderView);
     new SCViewMaker("SCEnvelopeView", NewSCEnvelopeView);
     new SCViewMaker("SCTabletView", NewSCTabletView);
+    new SCViewMaker("SCScope", NewSCScope);
 
 }
 

@@ -32,14 +32,19 @@ struct SndBuf
 	int channels;
 	int samples;
 	int frames;
-	int readFrame, writeFrame; // for ring buffers.
 	int mask;	// for delay lines
 	int mask1;	// for interpolating oscillators.
 	int coord;	// used by fft ugens
 	SNDFILE *sndfile; // used by disk i/o
-	bool shared;
 };
 typedef struct SndBuf SndBuf;
+
+struct SndBufUpdates
+{
+	int reads;
+	int writes;
+};
+typedef struct SndBufUpdates SndBufUpdates;
 
 enum { coord_None, coord_Complex, coord_Polar };
 

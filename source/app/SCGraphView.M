@@ -221,23 +221,24 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, void* inData)
 	mTopView->SetNSView(self);
 }
 
-/*- (void)dealloc
-{
-    //post("******graph view dealloc**********\n");
-}
-*/
-
-- (void)closeWindow
+- (void)dealloc
 {
     delete mTopView;
 	mTopView = 0;
+}
+
+
+- (void)closeWindow
+{
 	[[self window] close];
 }
+
 /*  from command-w, scvm is the delegate */
 - (void)setWindowShouldClose:(BOOL)boo
 {
     windowShouldClose = boo;
 }
+
 - (BOOL)windowShouldClose
 {
     return windowShouldClose;

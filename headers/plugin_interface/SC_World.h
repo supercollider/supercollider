@@ -62,7 +62,8 @@ struct World
 	uint32 mNumSndBufs;
 	SndBuf *mSndBufs;
 	SndBuf *mSndBufsNonRealTimeMirror;
-
+	SndBufUpdates *mSndBufUpdates;
+	
 	struct Group *mTopGroup;
 
 	Rate mFullRate, mBufRate;
@@ -74,9 +75,6 @@ struct World
 	int mSampleOffset; // offset in the buffer of current event time.
 	
 	SC_Lock* mNRTLock;
-	
-	uint32 mNumSharedSndBufs;
-	struct SndBuf *mSharedSndBufs;
 	
 	uint32 mNumSharedControls;
 	float *mSharedControls;	

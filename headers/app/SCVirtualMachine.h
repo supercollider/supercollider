@@ -39,6 +39,7 @@
 
 - (void)defer: (NSInvocation*) action;
 - (void)performDeferredOperations;
+- (void)doAnimatedViews;
 
 - (void)addWindow: (NSWindow*)window;
 - (void)closeAllGUIWindows;

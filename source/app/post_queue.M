@@ -212,18 +212,21 @@ void PostBuf::Flush()
 			}
 					
 			if (gPostView) {
-                                NSString* string;
-                                NSRange range = [gPostView selectedRange];
-
-                                if ([gPostView shouldChangeTextInRange: range replacementString: nil]) {
-                                    string = [NSString stringWithCString: buf + rdpos length: firstpart];
-                                    [gPostView replaceCharactersInRange: range withString: string];
-    
-                                    string = [NSString stringWithCString: buf length: secondpart];
-                                    range = [gPostView selectedRange];
-                                    [gPostView replaceCharactersInRange: range withString: string];
-                                    [gPostView didChangeText];
-                                }
+				NSString* string;
+				NSRange range = [gPostView selectedRange];
+	
+				if ([gPostView shouldChangeTextInRange: range replacementString: nil]) {
+					string = [NSString stringWithCString: buf + rdpos length: firstpart];
+					[gPostView replaceCharactersInRange: range withString: string];
+	
+					string = [NSString stringWithCString: buf length: secondpart];
+					range = [gPostView selectedRange];
+					[gPostView replaceCharactersInRange: range withString: string];
+					[gPostView didChangeText];
+					
+					range = [gPostView selectedRange];
+					[gPostView scrollRangeToVisible: range];
+				}
 			}
 			rdpos = endpos;
 		} else {
@@ -232,13 +235,16 @@ void PostBuf::Flush()
 				fflush(postfile);
 			}
 			if (gPostView) {
-                                NSString* string = [NSString stringWithCString: buf + rdpos length: numtoread];
-                                NSRange range = [gPostView selectedRange];
-                                
-                                if ([gPostView shouldChangeTextInRange: range replacementString: string]) {
-                                    [gPostView replaceCharactersInRange: range withString: string];
-                                    [gPostView didChangeText];
-                                }
+				NSString* string = [NSString stringWithCString: buf + rdpos length: numtoread];
+				NSRange range = [gPostView selectedRange];
+				
+				if ([gPostView shouldChangeTextInRange: range replacementString: string]) {
+					[gPostView replaceCharactersInRange: range withString: string];
+					[gPostView didChangeText];
+					
+					range = [gPostView selectedRange];
+					[gPostView scrollRangeToVisible: range];
+				}
 			}
 			if (endpos == POSTBUFLEN) rdpos = 0;
 			else rdpos = endpos;

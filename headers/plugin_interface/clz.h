@@ -160,5 +160,29 @@ inline uint32 ZEROES(uint32 x)
 	return ONES(~x);
 }
 
+
+// reverse bits in a word
+inline uint32 BitReverse(uint32 x)
+{
+  x = ((x & 0xAAAAAAAA) >>  1) | ((x & 0x55555555) <<  1);
+  x = ((x & 0xCCCCCCCC) >>  2) | ((x & 0x33333333) <<  2);
+  x = ((x & 0xF0F0F0F0) >>  4) | ((x & 0x0F0F0F0F) <<  4);
+  x = ((x & 0xFF00FF00) >>  8) | ((x & 0x00FF00FF) <<  8);
+  return (x >> 16) | (x << 16);
+}
+
+// barrel shifts
+inline uint32 RotateRight (uint32 x, uint32 s)
+{
+	s = s & 31;
+	return (x << 32-s) | (x >> s);
+}
+   
+inline uint32 RotateLeft (uint32 x, uint32 s)
+{
+	s = s & 31;
+	return (x >> 32-s) | (x << s);
+}
+
 #endif
 

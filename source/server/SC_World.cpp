@@ -190,9 +190,6 @@ World* World_New(WorldOptions *inOptions)
 		world->mNumInputs = inOptions->mNumInputBusChannels;
 		world->mNumOutputs = inOptions->mNumOutputBusChannels;
 		
-		world->mNumSharedSndBufs = inOptions->mNumSharedSndBufs;
-		world->mSharedSndBufs = inOptions->mSharedSndBufs;
-		
 		world->mNumSharedControls = inOptions->mNumSharedControls;
 		world->mSharedControls = inOptions->mSharedControls;
 
@@ -207,7 +204,8 @@ World* World_New(WorldOptions *inOptions)
 		world->mNumSndBufs = inOptions->mNumBuffers;
 		world->mSndBufs = (SndBuf*)zalloc(world->mNumSndBufs, sizeof(SndBuf));
 		world->mSndBufsNonRealTimeMirror = (SndBuf*)zalloc(world->mNumSndBufs, sizeof(SndBuf));
-				
+		world->mSndBufUpdates = (SndBufUpdates*)zalloc(world->mNumSndBufs, sizeof(SndBufUpdates));
+		
 		GroupNodeDef_Init();
 		
 		int err = Group_New(world, 0, &world->mTopGroup);
@@ -262,6 +260,59 @@ World* World_New(WorldOptions *inOptions)
 	} catch (...) {
 	}
 	return world;
+}
+
+int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChanged, bool &didChange)
+{
+	if (index > world->mNumSndBufs) return kSCErr_IndexOutOfRange;
+
+	SndBufUpdates *updates = world->mSndBufUpdates + index;
+	didChange = updates->reads != updates->writes;
+	
+	if (!onlyIfChanged || didChange)
+	{
+
+		world->mNRTLock->Lock();
+	
+		SndBuf *buf = world->mSndBufsNonRealTimeMirror + index;
+	
+		if (buf->data && buf->samples)
+		{
+			uint32 bufSize = buf->samples * sizeof(float);
+			if (buf->samples != outBuf->samples)
+			{
+				free(outBuf->data);
+				outBuf->data = (float*)malloc(bufSize);
+			}
+			memcpy(outBuf->data, buf->data, bufSize);
+			outBuf->channels 	= buf->channels;
+			outBuf->samples 	= buf->samples;
+			outBuf->frames 		= buf->frames;
+			outBuf->mask 		= buf->mask;
+			outBuf->mask1 		= buf->mask1;
+		}
+		else 
+		{
+			free(outBuf->data);
+			outBuf->data = 0;
+			outBuf->channels 	= 0;
+			outBuf->samples 	= 0;
+			outBuf->frames 		= 0;
+			outBuf->mask 		= 0;
+			outBuf->mask1 		= 0;
+		}
+		
+		outBuf->samplerate 	= buf->samplerate;
+		outBuf->sampledur 	= buf->sampledur;
+		outBuf->coord 		= buf->coord;
+		outBuf->sndfile 	= 0;
+		
+		updates->reads = updates->writes;
+		
+		world->mNRTLock->Unlock();
+	}
+	
+	return kSCErr_None;
 }
 
 bool nextOSCPacket(FILE *file, OSC_Packet *packet, int64& outTime)

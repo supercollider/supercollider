@@ -48,8 +48,6 @@
 struct InternalSynthServerGlobals
 {
 	struct World *mWorld;
-	int mNumSharedSndBufs;
-	SndBuf *mSharedSndBufs;
 	int mNumSharedControls;
 	float *mSharedControls;
 };
@@ -57,7 +55,7 @@ struct InternalSynthServerGlobals
 const int kNumDefaultSharedControls = 1024;
 float gDefaultSharedControls[kNumDefaultSharedControls];
 
-InternalSynthServerGlobals gInternalSynthServer = { 0, 0, 0, kNumDefaultSharedControls, gDefaultSharedControls };
+InternalSynthServerGlobals gInternalSynthServer = { 0, kNumDefaultSharedControls, gDefaultSharedControls };
 
 SC_UdpInPort* gUDPport = 0;
 
@@ -659,13 +657,21 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 		WorldOptions options = kDefaultWorldOptions;
 		options.mNumSharedControls = gInternalSynthServer.mNumSharedControls;
 		options.mSharedControls = gInternalSynthServer.mSharedControls;
-		options.mNumSharedSndBufs = gInternalSynthServer.mNumSharedSndBufs;
-		options.mSharedSndBufs = gInternalSynthServer.mSharedSndBufs;
 		gInternalSynthServer.mWorld = World_New(&options);
 	}
 	return errNone;
 }
 
+int getScopeBuf(uint32 index, SndBuf *buf, bool& didChange)
+{	
+	if (gInternalSynthServer.mWorld) {
+		int serverErr = World_CopySndBuf(gInternalSynthServer.mWorld, index, buf, true, didChange);
+		if (serverErr) return errFailed;
+	} else {
+		didChange = false;
+	}
+	return errNone;
+}
 void* wait_for_quit(void* thing);
 void* wait_for_quit(void* thing)
 {
@@ -695,58 +701,6 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 inline int32 BUFMASK(int32 x)
 {
 	return (1 << (31 - CLZ(x))) - 1;
-}
-
-int prAllocSharedSndBufs(VMGlobals *g, int numArgsPushed);
-int prAllocSharedSndBufs(VMGlobals *g, int numArgsPushed)
-{
-	//PyrSlot *a = g->sp - 3;
-	PyrSlot *b = g->sp - 2;
-	PyrSlot *c = g->sp - 1;
-	PyrSlot *d = g->sp;
-	
-	if (gInternalSynthServer.mWorld) {
-		post("can't allocate while internal server is running\n");
-		return errNone;
-	}
-	if (gInternalSynthServer.mSharedSndBufs) {
-		for (int i=0; i<gInternalSynthServer.mNumSharedSndBufs; ++i) {
-			free(gInternalSynthServer.mSharedSndBufs[i].data);
-		}
-		free(gInternalSynthServer.mSharedSndBufs);
-		gInternalSynthServer.mNumSharedSndBufs = 0;
-		gInternalSynthServer.mSharedSndBufs = 0;
-	}
-	int numSharedSndBufs;
-	int err = slotIntVal(b, &numSharedSndBufs);
-	if (err) return err;
-
-	int numFrames;
-	err = slotIntVal(c, &numFrames);
-	if (err) return err;
-
-	int numChannels = 1;
-	err = slotIntVal(d, &numChannels);
-	
-	if (numSharedSndBufs <= 0 || numFrames <= 0 || numChannels <= 0) {
-		return errNone;
-	}
-
-	int numSamples = numFrames * numChannels;
-	gInternalSynthServer.mNumSharedSndBufs = numSharedSndBufs;
-	gInternalSynthServer.mSharedSndBufs = (SndBuf*)calloc(gInternalSynthServer.mNumSharedSndBufs, sizeof(SndBuf));
-	for (int i=0; i<gInternalSynthServer.mNumSharedSndBufs; ++i) {
-		SndBuf *buf = gInternalSynthServer.mSharedSndBufs + i;
-		buf->channels = numChannels;
-		buf->frames   = numFrames;
-		buf->samples  = numSamples;
-		buf->mask     = BUFMASK(numSamples); // for delay lines
-		buf->mask1    = buf->mask - 1;	// for oscillators
-		buf->samples = numSamples;
-		buf->data = (float*)calloc(numSamples, sizeof(float));
-	}
-	
-	return errNone;
 }
 
 int prAllocSharedControls(VMGlobals *g, int numArgsPushed);
@@ -837,7 +791,6 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);	
 	definePrimitive(base, index++, "_QuitInProcessServer", prQuitInProcessServer, 1, 0);
 		
-	definePrimitive(base, index++, "_AllocSharedSndBufs", prAllocSharedSndBufs, 4, 0);	
 	definePrimitive(base, index++, "_AllocSharedControls", prAllocSharedControls, 2, 0);	
 	definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);	
 	definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);	

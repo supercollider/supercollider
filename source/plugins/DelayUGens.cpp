@@ -26,10 +26,9 @@ static InterfaceTable *ft;
 struct ScopeOut : public Unit
 {
 	SndBuf *m_buf;
+	SndBufUpdates *m_bufupdates;
 	float m_fbufnum;
-	float m_min, m_max, m_previn;
-	uint32 m_pos;
-	int m_zoom, m_zoomphase;
+	uint32 m_framepos;
 };
 
 struct PlayBuf : public Unit
@@ -1111,7 +1110,6 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 		}
 		if (writepos >= (int32)bufSamples) unit->mDone = true;
 	}
-	buf->writeFrame = writepos;
 	unit->m_prevtrig = trig;
 	unit->m_writepos = writepos;
 	unit->m_recLevel = recLevel;
@@ -1250,7 +1248,6 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 		}
 		if (writepos >= (int32)bufSamples) unit->mDone = true;
 	}
-	buf->writeFrame = writepos;
 	unit->m_prevtrig = trig;
 	unit->m_writepos = writepos;
 }
@@ -4888,77 +4885,82 @@ void SimpleLoopBuf_Ctor(SimpleLoopBuf *unit)
 	float fbufnum  = ZIN0(0); \
 	if (fbufnum != unit->m_fbufnum) { \
 		World *world = unit->mWorld; \
-		if (!world->mNumSharedSndBufs) { \
+		if (!world->mNumSndBufs) { \
 			ClearUnitOutputs(unit, inNumSamples); \
 			return; \
 		} \
 		uint32 bufnum = (int)fbufnum; \
-		if (bufnum >= world->mNumSharedSndBufs) bufnum = 0; \
+		if (bufnum >= world->mNumSndBufs) bufnum = 0; \
 		unit->m_fbufnum = fbufnum; \
-		unit->m_buf = world->mSharedSndBufs + bufnum; \
+		unit->m_buf = world->mSndBufs + bufnum; \
+		unit->m_bufupdates = world->mSndBufUpdates + bufnum; \
 	} \
 	SndBuf *buf = unit->m_buf; \
+	SndBufUpdates *bufupdates = unit->m_bufupdates; \
 	float *bufData __attribute__((__unused__)) = buf->data; \
 	uint32 bufChannels __attribute__((__unused__)) = buf->channels; \
-	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \
-
+	uint32 bufFrames __attribute__((__unused__)) = buf->frames; \
 
 void ScopeOut_next(ScopeOut *unit, int inNumSamples)
 {
 	GET_SCOPEBUF
-	CHECK_BUF
-	if (buf->readFrame != buf->writeFrame) return;
+	//Print("reads %d  writes %d\n", bufupdates->reads, bufupdates->writes);
+	if (bufupdates->reads != bufupdates->writes) return;
+
+	if (!bufData) {
+		unit->m_framepos = 0;
+		return;
+	}
 	
-	float *in = ZIN(1);
-	float xmin = unit->m_min;
-	float xmax = unit->m_max;
-	int zoom = unit->m_zoom;
-	int zoomphase = unit->m_zoomphase;
-	int remain = inNumSamples;
-	uint32 pos = unit->m_pos;
-	float previn = unit->m_previn;
-	while (remain)
-	{
-		
-		float x = ZXP(in);
-		if (zoomphase == 0) {
-			xmin = xmax = 0.5f * (previn + x);
-		}
-		previn = x;
-		if (x < xmin) xmin = x;
-		if (x > xmax) xmax = x;
-		if (++zoomphase >= zoom)
-		{
-			zoomphase = 0;
-			buf->data[pos  ] = xmin;
-			buf->data[pos+1] = xmax;
-			pos += 2;
-			if (pos >= bufSamples) 
-			{
-				zoom = (int)ZIN0(2);
-				if (zoom < 1) zoom = 1;
-				unit->m_zoom = zoom;
-				buf->writeFrame++;
-				pos = 0;
-				break;
+	//Print("bufData %08X\n", bufData); 
+	//Print("unit->mNumInputs %d  bufChannels %d\n", unit->mNumInputs, bufChannels);
+	
+	SETUP_IN(1)
+	
+	uint32 framepos = unit->m_framepos;
+	if (framepos >= bufFrames) {
+		unit->m_framepos = 0;
+	}
+	
+	bufData += framepos * bufChannels;
+
+	int remain = sc_min((uint32)inNumSamples, bufFrames - framepos);
+	if (bufChannels > 2) {
+		for (int j=0; j<remain; ++j) {
+			for (uint32 i=0; i<bufChannels; ++i) {
+				*bufData++ = *++(in[i]);
 			}
 		}
-		remain--;
+	} else if (bufChannels == 2) {
+		float *in0 = in[0];
+		float *in1 = in[1];
+		for (int j=0; j<remain; ++j) {
+			*bufData++ = *++in0;
+			*bufData++ = *++in1;
+		}
+	} else {
+		float *in0 = in[0];
+		for (int j=0; j<remain; ++j) {
+			*bufData++ = *++in0;
+		}
 	}
-	unit->m_pos = pos;
-	unit->m_zoomphase = zoomphase;
-	unit->m_previn = previn;
+	
+	unit->m_framepos += remain;
+	//Print("scop %d %d %d    %d %d\n", 
+	//	bufFrames, unit->m_framepos, remain, bufupdates->reads, bufupdates->writes);
+		
+	if (unit->m_framepos >= bufFrames) {
+		bufupdates->writes++;
+		unit->m_framepos = 0;
+	}
 }
+
 
 
 void ScopeOut_Ctor(ScopeOut *unit)
 {	
 	unit->m_fbufnum = -1e9;
-	unit->m_min = 0.f;
-	unit->m_max = 0.f;
-	unit->m_pos = 0;
-	unit->m_zoom = (int)ZIN0(2);
-	unit->m_zoomphase = 0;
+	unit->m_framepos = 0;
 	SETCALC(ScopeOut_next);
 }
 
@@ -5791,6 +5793,7 @@ void load(InterfaceTable *inTable)
 	
 	DefineDtorUnit(PitchShift);
 	DefineSimpleUnit(GrainTap);
+	DefineSimpleUnit(ScopeOut);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

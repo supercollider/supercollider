@@ -22,7 +22,6 @@
 #import "SCVirtualMachine.h"
 #import "SCGraphView.h"
 #include "ChangeCounter.h"
-#include "SCGraphView.h"
 
 // CR ADDED
 #import "RendezvousClient.h"
@@ -86,7 +85,7 @@ static id sharedSCVM = nil;
 - (void)start
 {
 	deferredTaskTimer = 
-			[NSTimer scheduledTimerWithTimeInterval: 0.047 target: self selector:
+			[NSTimer scheduledTimerWithTimeInterval: 0.038 target: self selector:
 				@selector(doPeriodicTask:) userInfo: nil repeats: YES];        
         
 	appClockTimer = 
@@ -95,6 +94,12 @@ static id sharedSCVM = nil;
 				       
 	[deferredTaskTimer retain];
 	[appClockTimer retain];
+	
+	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer 
+		forMode: NSModalPanelRunLoopMode];
+	
+	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer 
+		forMode: NSEventTrackingRunLoopMode];
 	
 	[[NSRunLoop currentRunLoop] addTimer: appClockTimer 
 		forMode: NSModalPanelRunLoopMode];
@@ -119,6 +124,7 @@ static id sharedSCVM = nil;
 - (void)doPeriodicTask: (NSTimer*) timer
 {
     [self performDeferredOperations];
+    [self doAnimatedViews];
     flushPostBuf();
 }
 
@@ -213,6 +219,16 @@ extern NSTextView *gPostView;
         [deferredOperations makeObjectsPerformSelector: @selector(invoke)];
         [deferredOperations removeAllObjects];
     }
+}
+
+- (void)doAnimatedViews
+{
+    SCView* view = gAnimatedViews;
+	while (view)
+	{
+		view->animate();
+		view = view->NextAnimatedView();
+	}
 }
 
 - (void)closeAllGUIWindows

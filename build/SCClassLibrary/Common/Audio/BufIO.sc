@@ -60,12 +60,12 @@ RecordBuf : UGen {
 
 
 ScopeOut : UGen {
-	*ar { arg bufnum=0, in=0.0, zoom=1.0;
-		this.multiNew('audio', bufnum, in, zoom);
+	*ar { arg inputArray , bufnum=0;
+		this.multiNewList(['audio', bufnum] ++ inputArray.asArray);
 		^0.0
 	}
-	*kr { arg bufnum=0, in=0.0, zoom=1.0;
-		this.multiNew('control', bufnum, in, zoom);
+	*kr { arg inputArray , bufnum=0;
+		this.multiNewList(['control', bufnum] ++ inputArray.asArray);
 		^0.0
 	}
 }

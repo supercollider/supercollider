@@ -82,13 +82,13 @@ Node* Msg_GetNode(World *inWorld, sc_msg_iter& msg)
 Group* Msg_GetGroup(World *inWorld, sc_msg_iter& msg)
 {
 	Node* node = Msg_GetNode(inWorld, msg);
-	return node->mIsGroup ? (Group*)node : 0;
+	return node && node->mIsGroup ? (Group*)node : 0;
 }
 
 Graph* Msg_GetGraph(World *inWorld, sc_msg_iter& msg)
 {
 	Node* node = Msg_GetNode(inWorld, msg);
-	return node->mIsGroup ? 0 : (Graph*)node;
+	return !node || node->mIsGroup ? 0 : (Graph*)node;
 }
 
 SCErr meth_none(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);

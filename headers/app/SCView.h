@@ -71,6 +71,7 @@ struct SCViewMaker
 };
 
 extern SCViewMaker *gSCViewMakers;
+extern SCView *gAnimatedViews;
 
 class SCView
 {
@@ -126,11 +127,18 @@ public:
 	virtual void setMenuItemChosen(int inItem) {}
 	
 	PyrObject* GetSCObj() { return mObj; }
+	SCView* NextAnimatedView() const { return mNextAnimatedView; }
+	
+	void startAnimation();
+	void stopAnimation();
+	virtual void animate() { refresh(); }
 	
 protected:
 	friend class SCContainerView;
 
 	SCView *mNext;
+	SCView *mNextAnimatedView;
+	SCView *mPrevAnimatedView;
 	SCContainerView *mParent;
 	SCTopView *mTop;
 	PyrObject* mObj;
@@ -372,44 +380,48 @@ protected:
 SCView* NewSC2DTabletSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
 
-/*
-class SCCartesianView : public SCView
+#include "SC_SndBuf.h"
+
+const int kMaxScopeChannels = 16;
+class SCScope : public SCView
 {
 public:	
-	SCCartesianView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
-
+	SCScope(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+	virtual ~SCScope();
+	
 	virtual void draw(SCRect inDamage);
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+	virtual void animate();
 	
-	bool setValue(double inLo, double inHi, bool send);
-
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 
-	SCPoint pixelToUnits(SCPoint p) 
+	SCPoint pixelToUnits(SCPoint p, SCRect r) 
             { 
                 return SCMakePoint(
-                    (p.x - mBounds.x) * mZoom.x + mScroll.x,
-                    (p.y - mBounds.y) * mZoom.y + mScroll.y);
+                    (p.x - r.x) * mZoom.x + mScroll.x,
+                    (p.y - r.y) * mZoom.y + mScroll.y);
             }
-	SCPoint unitsToPixel(SCPoint u) 
+	SCPoint unitsToPixel(SCPoint u, SCRect r) 
             {
                 return SCMakePoint(
-                    (u.x - mScroll.x) * mInvZoom.x + mBounds.x,
-                    (u.y - mScroll.y) * mInvZoom.y + mBounds.y);
+                    (u.x - mScroll.x) * mInvZoom.x + r.x,
+                    (u.y - mScroll.y) * mInvZoom.y + r.y);
             }
-            
+
 protected:
 	
-	SCRect mLimits;
+	int mBufNum;
+	SndBuf mSndBuf;
 	SCPoint mZoom, mInvZoom, mScroll;
+	int mStyle; // 0 = separate, 1 = overlay, 2 = x,y.
+	SCColor mWaveColors[kMaxScopeChannels];
 	SCColor mGridColor;
 	bool mGridOn;
 };
-SCView* NewSCCartesianView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+SCView* NewSCScope(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
 
-*/
 
 const int kLabelSize = 64;
 struct SCButtonState

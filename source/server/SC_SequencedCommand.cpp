@@ -52,8 +52,6 @@ void SndBuf_Init(SndBuf *buf)
 	buf->channels = 0;
 	buf->samples = 0;
 	buf->frames = 0;
-	buf->readFrame = 0;
-	buf->writeFrame = 0;
 	buf->mask = 0;
 	buf->mask1 = 0;
 	buf->coord = 0;
@@ -218,6 +216,7 @@ bool BufAllocCmd::Stage3()
 {
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
 	*buf = mSndBuf;
+	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
 	return true;
 }
@@ -278,6 +277,7 @@ bool BufGenCmd::Stage2()
 
 bool BufGenCmd::Stage3()
 {
+	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	return true;
 }
 
@@ -327,6 +327,7 @@ bool BufFreeCmd::Stage3()
 	SndBuf *buf = World_GetBuf(mWorld, mBufIndex);
 	
 	SndBuf_Init(buf);
+	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
 	
 	return true;
@@ -369,6 +370,7 @@ bool BufZeroCmd::Stage2()
 
 bool BufZeroCmd::Stage3()
 {
+	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
 	return true;
 }
@@ -451,6 +453,7 @@ bool BufAllocReadCmd::Stage3()
 {
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);	
 	*buf = mSndBuf;
+	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
 	
 	return true;
@@ -533,6 +536,7 @@ bool BufReadCmd::Stage2()
 
 bool BufReadCmd::Stage3()
 {
+	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
 	return true;
 }
