@@ -16,3 +16,9 @@
 		^Group.basicNew(Server.default, 1)
 	}
 }
+
++Integer {
+	asTarget {
+		^Group.basicNew(Server.default, this)
+	}
+}		
