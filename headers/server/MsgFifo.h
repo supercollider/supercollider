@@ -21,6 +21,10 @@
 #ifndef _MsgFifo_
 #define _MsgFifo_
 
+#ifdef SC_DARWIN
+# include <CoreServices/CoreServices.h>
+#endif
+
 /////////////////////////////////////////////////////////////////////
 
 template <class MsgType, int N>
@@ -41,7 +45,13 @@ public:
 		long next = NextPos(mWriteHead);
 		if (next == mFreeHead) return false; // fifo is full
 		mItems[next] = data;
+#ifdef SC_DARWIN
+		// we don't really need a compare and swap, but this happens to call 
+		// the PowerPC memory barrier instruction lwsync.
+		CompareAndSwap(mWriteHead, next, &mWriteHead);
+#else
 		mWriteHead = next;
+#endif
 		return true;
 	}
 
@@ -50,7 +60,13 @@ public:
 		while (HasData()) {
 			long next = NextPos(mReadHead);
 			mItems[next].Perform();
+#ifdef SC_DARWIN
+			// we don't really need a compare and swap, but this happens to call 
+			// the PowerPC memory barrier instruction lwsync.
+			CompareAndSwap(mReadHead, next, &mReadHead);
+#else
 			mReadHead = next;
+#endif
 		}
 	}
 	void Free() // reclaim messages
@@ -58,14 +74,24 @@ public:
 		while (NeedsFree()) {
 			long next = NextPos(mFreeHead);
 			mItems[next].Free();
+#ifdef SC_DARWIN
+			// we don't really need a compare and swap, but this happens to call 
+			// the PowerPC memory barrier instruction lwsync.
+			CompareAndSwap(mFreeHead, next, &mFreeHead);
+#else
 			mFreeHead = next;
+#endif
 		}
 	}
 
 private:
 	int NextPos(int inPos) { return (inPos + 1) & (N - 1); }
 
+#ifdef SC_DARWIN
+	UInt32 mReadHead, mWriteHead, mFreeHead;
+#else
 	volatile int mReadHead, mWriteHead, mFreeHead;
+#endif
 	MsgType mItems[N];
 };
 
@@ -89,7 +115,13 @@ public:
 		long next = NextPos(mWriteHead);
 		if (next == mReadHead) return false; // fifo is full
 		mItems[next] = data;
-		mWriteHead = next;
+#ifdef SC_DARWIN
+			// we don't really need a compare and swap, but this happens to call 
+			// the PowerPC memory barrier instruction lwsync.
+			CompareAndSwap(mWriteHead, next, &mWriteHead);
+#else
+			mWriteHead = next;
+#endif
 		return true;
 	}
 
@@ -98,14 +130,24 @@ public:
 		while (HasData()) {
 			long next = NextPos(mReadHead);
 			mItems[next].Perform();
+#ifdef SC_DARWIN
+			// we don't really need a compare and swap, but this happens to call 
+			// the PowerPC memory barrier instruction lwsync.
+			CompareAndSwap(mReadHead, next, &mReadHead);
+#else
 			mReadHead = next;
+#endif
 		}
 	}
 
 private:
 	int NextPos(int inPos) { return (inPos + 1) & (N - 1); }
 
+#ifdef SC_DARWIN
+	UInt32 mReadHead, mWriteHead;
+#else
 	volatile int mReadHead, mWriteHead;
+#endif
 	MsgType mItems[N];
 };
 

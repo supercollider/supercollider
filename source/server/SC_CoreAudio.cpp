@@ -231,10 +231,9 @@ void Free_ToEngine_Msg(FifoMsg *inMsg);
 struct IsBundle
 {
 	IsBundle() { str4cpy(s, "#bundle"); }
-	bool check(int32 *in) { return in[0] == s[0] && in[1] == s[1]; }
+	bool checkIsBundle(int32 *in) { return in[0] == s[0] && in[1] == s[1]; }
 	int32 s[2];
 };
-
 IsBundle gIsBundle;
 
 bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
@@ -242,7 +241,7 @@ bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 	//scprintf("ProcessOSCPacket %d, '%s'\n", inPacket->mSize, inPacket->mData);
 	if (!inPacket) return false;	
 	SC_AudioDriver *driver = AudioDriver(inWorld);	
-	inPacket->mIsBundle = gIsBundle.check((int32*)inPacket->mData);
+	inPacket->mIsBundle = gIsBundle.checkIsBundle((int32*)inPacket->mData);
 	driver->Lock();
 		FifoMsg fifoMsg;
 		fifoMsg.Set(inWorld, Perform_ToEngine_Msg, Free_ToEngine_Msg, (void*)inPacket);
@@ -330,7 +329,7 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 void PerformCompletionMsg(World *inWorld, OSC_Packet *inPacket);
 void PerformCompletionMsg(World *inWorld, OSC_Packet *inPacket)
 {
-	bool isBundle = gIsBundle.check((int32*)inPacket->mData);
+	bool isBundle = gIsBundle.checkIsBundle((int32*)inPacket->mData);
 	
 	if (isBundle) {
 		PerformOSCBundle(inWorld, inPacket);

@@ -21,6 +21,10 @@
 #ifndef _IntFifo_
 #define _IntFifo_
 
+#ifdef SC_DARWIN
+# include <CoreServices/CoreServices.h>
+#endif
+
 template <int N>
 class IntFifo
 {
@@ -38,7 +42,13 @@ public:
 		long next = NextPos(mWriteHead);
 		if (next == mReadHead) return false; // fifo is full
 		mItems[next] = data;
+#ifdef SC_DARWIN
+		// we don't really need a compare and swap, but this happens to call 
+		// the PowerPC memory barrier instruction lwsync.
+		CompareAndSwap(mWriteHead, next, &mWriteHead);
+#else
 		mWriteHead = next;
+#endif
 		return true;
 	}
 
@@ -47,14 +57,24 @@ public:
 		//assert(HasData());
 		long next = NextPos(mReadHead);
 		out = mItems[next].Perform();
+#ifdef SC_DARWIN
+		// we don't really need a compare and swap, but this happens to call 
+		// the PowerPC memory barrier instruction lwsync.
+		CompareAndSwap(mReadHead, next, &mReadHead);
+#else
 		mReadHead = next;
+#endif
 	}
 
 private:
 	int NextPos(int inPos) { return (inPos + 1) & mMask; }
 
 	long mMask;
-	volatile long mReadHead, mWriteHead;
+#ifdef SC_DARWIN
+	UInt32 mReadHead, mWriteHead;
+#else
+	volatile int mReadHead, mWriteHead;
+#endif
 	int32 mItems[N];
 };
 
