@@ -98,12 +98,23 @@ ExpRand : UGen {
 	}
 }
 
-TCoin : UGen {
+CoinGate : UGen {
 	*ar { arg prob, in;
 		^this.multiNew('audio', prob, in)
 	}
 	*kr { arg prob, in;
 		^this.multiNew('control', prob, in)
+	}
+}
+
+TWindex : UGen {
+	*ar {
+		arg in, array;
+		^this.multiNewList(['audio', in] ++ array)
+	}
+	*kr {
+		arg in, array;
+		^this.multiNewList(['control', in] ++ array)
 	}
 }
 
