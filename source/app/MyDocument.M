@@ -904,9 +904,8 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 {
 	[[self textView] setBackgroundColor: color];
 	[[self initTextView] setBackgroundColor: color];
-	//[[self scrollView] setBackgroundColor: color];
+	[[self scrollView] setBackgroundColor: color];
 	[[[self textView] window] setAlphaValue: [color alphaComponent]];
-	//[window setAlphaValue: 0.0f];
 }
 
 @end
