@@ -526,7 +526,7 @@ c.source = \{ \cf4 Line\cf0 .kr(300, 1500, 10) + \cf4 SinOsc\cf0 .kr(20 * [1,2],
 a[1] = \{ \cf4 arg\cf0  f; \cf4 LFPar\cf0 .ar(f % \cf4 MouseX\cf0 .kr(1, 40, 1) * 4 + 360, 0, 0.2) \};\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 //map to multiple node proxies\cf0 \
+\cf3 //map multiple channels of one proxy to multiple controls of another\cf0 \
 a.source = \{ \cf4 arg\cf0  f=400, f2=400; \cf4 LPF\cf0 .ar(\cf4 Pulse\cf0 .ar(f * [0.4,1], 0.2, 0.2), f2 * 3) \};\
 a.map([\cf5 \\f\cf0 ,\cf5 \\f2\cf0 ], c); \cf3 //same as a.map([0,1], c); \cf0 \
 a.source = \{ \cf4 arg\cf0  f=400, f2=400; \cf4 LPF\cf0 .ar(\cf4 Pulse\cf0 .ar([f, f2], 0.2, 0.2), f2) \};\
