@@ -101,11 +101,11 @@ ZeroCrossing : UGen {
 
 Timer : UGen {
 	// output is the time between two triggers
-	*ar { arg in = 0.0;
-		^this.multiNew('audio', in)
+	*ar { arg trig = 0.0;
+		^this.multiNew('audio', trig)
 	}
-	*kr { arg in = 0.0;
-		^this.multiNew('control', in)
+	*kr { arg trig = 0.0;
+		^this.multiNew('control', trig)
 	}
  	checkInputs { ^this.checkSameRateAsFirstInput }
 }
@@ -113,23 +113,21 @@ Timer : UGen {
 Sweep : UGen {
 	// output sweeps up in value at rate per second
 	// the trigger resets to zero
-	*ar { arg in = 0.0, rate = 1.0;
-		^this.multiNew('audio', in, rate)
+	*ar { arg trig = 0.0, rate = 1.0;
+		^this.multiNew('audio', trig, rate)
 	}
-	*kr { arg in = 0.0, rate = 1.0;
-		^this.multiNew('control', in, rate)
+	*kr { arg trig = 0.0, rate = 1.0;
+		^this.multiNew('control', trig, rate)
 	}
- 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 Phasor : UGen {
-	*ar { arg in = 0.0, rate = 1.0, start = 0.0, end = 1.0, resetPos = 0.0;
-		^this.multiNew('audio', in, rate, start, end, resetPos)
+	*ar { arg trig = 0.0, rate = 1.0, start = 0.0, end = 1.0, resetPos = 0.0;
+		^this.multiNew('audio', trig, rate, start, end, resetPos)
 	}
-	*kr { arg in = 0.0, rate = 1.0, start = 0.0, end = 1.0, resetPos = 0.0;
-		^this.multiNew('control', in, rate, start, end, resetPos)
+	*kr { arg trig = 0.0, rate = 1.0, start = 0.0, end = 1.0, resetPos = 0.0;
+		^this.multiNew('control', trig, rate, start, end, resetPos)
 	}
- 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 PeakFollower : UGen { // not installed
