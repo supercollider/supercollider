@@ -231,7 +231,9 @@ Scheduler {
 		},{ 
 			item = queue.pop;
 			delta = item.awake( beats, seconds, clock );
-			this.sched(delta, item); 
+			if (delta.isNumber, {
+				this.sched(delta, item); 
+			});
 		});
 		seconds = newSeconds;
 		beats = clock.secs2beats(newSeconds);
