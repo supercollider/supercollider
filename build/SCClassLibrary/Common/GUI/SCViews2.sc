@@ -3,23 +3,26 @@ SCViewAdapter { // SCViewHolder
 	
 	// SCView classes can't be subclassed.
 	// SCViewAdapter makes it possible to wrap more capabilities by holding, not subclassing
-	// has a , not is a
+	// has a  not is a
 	// alternative is for SCView to pass in the name of the c++ view to prInit primitive
 	
 	var <>view;
 	
 	action_ { arg f; view.action_(f) }
-	font_ { arg f;
-		view.font = f;
-	}
 	keyDownAction_ { arg f;
 		view.keyDownAction_(f);
 	}
 	asView { ^view }
 	bounds { ^view.bounds }
+	bounds_ { arg b; view.bounds_(b) }
 	resize_ { arg r; view.resize_(r) }
 	refresh { view.refresh }
 	background_ { arg b; view.background_(b) }
+	focus { arg flag=true; view.focus(flag) }
+	// move lower
+	font_ { arg f;
+		view.font = f;
+	}
 }
 
 
@@ -66,7 +69,7 @@ SCTextField : SCViewAdapter {
 		keyString = keyString.add(key);
 		view.string = keyString;
 	}
-	string_ { arg s; view.string = s; }
+	string_ { arg s; view.string = s.as(String); }
 	string { ^view.string }
 
 }

@@ -32,6 +32,16 @@ FlowLayout {
 		top = top + maxHeight + gap.y;
 		maxHeight = 0;
 	}
+	innerBounds {
+		^bounds.insetBy(margin.x,margin.y)
+	}
+	used { //round up to nearest rect
+		^Rect(bounds.left,bounds.top,bounds.width,(top + maxHeight) - bounds.top + margin.y)
+	}
+	remaining {// round down to nearest rect
+		var t;
+		^Rect(bounds.left,t = top + maxHeight,bounds.width,bounds.height - t)
+	}
 }
 
 

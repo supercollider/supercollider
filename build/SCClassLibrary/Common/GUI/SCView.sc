@@ -16,17 +16,15 @@ SCView {  // abstract class
 	init { arg argParent, argBounds;
 		parent = argParent.asView;
 		this.prInit(parent, argBounds);
-		if (parent.notNil, { parent.add(this); });
-		// init default keydown & keyup
-		this.keyDownAction_({ arg view, key, modifiers, unicode;
-			this.defaultKeyDownAction(key, modifiers, unicode);
+		parent.add(this);
+		this.keyDownAction_({ arg view,char,modifiers,unicode,keycode;
+			this.defaultKeyDownAction(char,modifiers,unicode,keycode);
+			nil // default DOESN't consume it
+		});
+		this.keyUpAction_({ arg view,char,modifiers,unicode,keycode;
+			this.defaultKeyUpAction(char,modifiers,unicode,keycode);
 			nil
 		});
-		this.keyUpAction_({ arg view, key, modifiers, unicode;
-			this.defaultKeyUpAction(key, modifiers, unicode);
-			nil
-		});
-
 	}
 	
 	asView { ^this }
@@ -96,36 +94,35 @@ SCView {  // abstract class
 		this.setProperty(\background, color)
 	}
 
-	keyDown { arg key, modifiers, unicode;
-		globalKeyDownAction.value(this, key, modifiers, unicode); 
-		this.handleKeyDownBubbling(this, key, modifiers, unicode);
+	keyDown { arg char, modifiers, unicode,keycode;
+		globalKeyDownAction.value(this, char, modifiers, unicode,keycode); 
+		this.handleKeyDownBubbling(this, char, modifiers, unicode,keycode);
 	}
-	
-	defaultKeyDownAction { arg key, modifiers, unicode;}
-		
-	handleKeyDownBubbling { arg view, key, modifiers, unicode;
+	defaultKeyDownAction { ^nil }
+	handleKeyDownBubbling { arg view, char, modifiers, unicode,keycode;
 		// nil from keyDownAction --> pass it on
-		if (this.keyDownAction.value(view, key, modifiers, unicode).isNil, {
-			// call local keydown action of parent view
-			this.parent.handleKeyDownBubbling(view, key, modifiers, unicode);
-		});
+		keyDownAction.value(view, char, modifiers, unicode,keycode) ??  
+		{
+			// call keydown action of parent view
+			parent.handleKeyDownBubbling(view, char, modifiers, unicode,keycode);
+		}
 	}
 	
 	// sc.solar addition
-	keyUp { arg key, modifiers, unicode; 
-		this.keyTyped = key;
+	keyUp { arg char, modifiers, unicode,keycode; 
+		this.keyTyped = char;
 		// always call global keydown action first
-		globalKeyUpAction.value(this, key, modifiers, unicode);
-		this.handleKeyUpBubbling(this, key, modifiers, unicode);
+		globalKeyUpAction.value(this, char, modifiers, unicode,keycode);
+		this.handleKeyUpBubbling(this, char, modifiers, unicode,keycode);
 	}
-	defaultKeyUpAction { arg key, modifiers, unicode; }
-		
-	handleKeyUpBubbling { arg view, key, modifiers;
+	defaultKeyUpAction { ^nil }
+	handleKeyUpBubbling { arg view, char, modifiers,unicode,keycode;
 		// nil from keyUpAction --> pass it on
-		if (this.keyUpAction.value(view, key, modifiers).isNil, {
+		keyUpAction.value(view, char, modifiers,unicode,keycode) ??  
+		{
 			// call local keyUp action of parent view
-			this.parent.handleKeyUpBubbling(view, key, modifiers);
-		});
+			parent.handleKeyUpBubbling(view, char, modifiers,unicode,keycode);
+		};
 	}
 
 	canReceiveDrag {
@@ -137,7 +134,7 @@ SCView {  // abstract class
 		var parents, view;
 		view = this;
 		parents = List.new;
-		while({view.parent.notNil},{view = view.parent; parents.add(view)});
+		while({(view = view.parent).notNil},{ parents.add(view)});
 		^parents
 	}
 	
@@ -211,20 +208,19 @@ SCCompositeView : SCContainerView {
 SCTopView : SCCompositeView {
 	// created by SCWindow
 	handleKeyDownBubbling { arg view, key, modifiers, unicode;
-		this.keyDownAction.value(view, key, modifiers, unicode);
+		keyDownAction.value(view, key, modifiers, unicode);
 	}
 	handleKeyUpBubbling { arg view, key, modifiers, unicode;
-		this.keyUpAction.value(view, key, modifiers, unicode);
+		keyUpAction.value(view, key, modifiers, unicode);
 	}
 }
 
 SCLayoutView : SCContainerView {
-
+	properties { ^super.properties.add(\spacing) }
 }
 
-SCHLayoutView : SCLayoutView {
-	
-}
+SCHLayoutView : SCLayoutView {}
+SCVLayoutView : SCLayoutView {}
 
 
 SCControlView : SCView { // abstract class
@@ -406,12 +402,12 @@ SC2DSlider : SCSliderBase {
 	incrementX { ^this.x = this.x + this.bounds.width.reciprocal }
 	decrementX { ^this.x = this.x - this.bounds.width.reciprocal }
 
-	defaultKeyDownAction { arg key, modifiers, unicode;
+	defaultKeyDownAction { arg char, modifiers, unicode,keycode;
 		// standard keydown
-		if (key == $r, { this.x = 1.0.rand; this.y = 1.0.rand; });
-		if (key == $n, { this.x = 0.0; this.y = 0.0; });
-		if (key == $x, { this.x = 1.0; this.y = 1.0; });
-		if (key == $c, { this.x = 0.5; this.y = 0.5; });
+		if (char == $r, { this.x = 1.0.rand; this.y = 1.0.rand; ^this });
+		if (char == $n, { this.x = 0.0; this.y = 0.0; ^this });
+		if (char == $x, { this.x = 1.0; this.y = 1.0; ^this });
+		if (char == $c, { this.x = 0.5; this.y = 0.5; ^this });
 		if (unicode == 16rF700, { this.incrementY; ^this });
 		if (unicode == 16rF703, { this.incrementX; ^this });
 		if (unicode == 16rF701, { this.decrementY; ^this });

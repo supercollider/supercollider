@@ -9,7 +9,7 @@ SCWindow {
 	}
 	initSCWindow { arg argName, argBounds, resizable, border;
 		name = argName.asString;
-		argBounds = argBounds ? Rect(128, 64, 400, 400);
+		argBounds = argBounds ?? {Rect(128, 64, 400, 400)};
 		allWindows = allWindows.add(this);
 		view = SCTopView(nil, argBounds.moveTo(0,0));
 		this.prInit(name, argBounds, resizable, border, view);
