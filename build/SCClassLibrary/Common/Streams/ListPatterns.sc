@@ -1,3 +1,28 @@
+Pindex : Pattern {
+	var listPat, indexPat, repeats;
+	*new { arg listPat, indexPat, repeats=1;
+		^super.newCopyArgs(listPat, indexPat, repeats)
+	}
+	asStream {
+		^Routine.new({ arg inval;
+			var listStream, indexStream, list, index, item;
+			listStream = listPat.asStream;
+			repeats.do {
+				list = listStream.next;
+				if (list.isNil) { nil.alwaysYield };
+				indexStream = indexPat.asStream;
+				while {
+					index = indexStream.next;
+					index.notNil
+				}{
+					item = list.wrapAt(index);
+					inval = item.embedInStream(inval);
+				};
+			}
+		})
+	}
+}
+
 ListPattern : Pattern {
 	var <>list, <>repeats=1;
 	
