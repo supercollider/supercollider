@@ -14,10 +14,10 @@ bool HasAltivec()
 #if __VEC__
 	long response;
 	Gestalt(gestaltPowerPCProcessorFeatures, &response);
-	printf("HasAltivec %08X %d\n", response, response & (1<<gestaltPowerPCHasVectorInstructions));
+	//printf("HasAltivec %08X %d\n", response, response & (1<<gestaltPowerPCHasVectorInstructions));
 	return response & (1<<gestaltPowerPCHasVectorInstructions);
 #else
-	printf("HasAltivec false\n");
+	//printf("HasAltivec false\n");
 	return false;
 #endif
 }

@@ -26,6 +26,7 @@
 #define define_vtemp vfloat32 vtemp; float *vtempptr = (float*)&vtemp;
 #define define_vones vfloat32 vones = vec_ctf(vec_splat_s32(1),0);
 #define define_vzero vfloat32 vzero = (vfloat32)vec_splat_s32(0);
+#define vi0123 (vec_unpackh(vec_unpackh((vector signed char)vec_lvsl(0,(int*)0))))
 #define v0123 (vec_ctf(vec_unpackh(vec_unpackh((vector signed char)vec_lvsl(0,(int*)0))), 0))
 #define v0123_4ths (vec_ctf(vec_unpackh(vec_unpackh((vector signed char)vec_lvsl(0,(int*)0))), 2))
 #define vstart(x, vslope) (vec_madd(vslope, v0123_4ths, vload(x)))
@@ -41,7 +42,8 @@
 typedef union vec_union {
         int32		i[4];
         float32		f[4];
-        vfloat32	v;
+        vint32		vi;
+        vfloat32	vf;
 } vec_union;
 
 inline vfloat32 vload( float f )
@@ -49,6 +51,23 @@ inline vfloat32 vload( float f )
         vec_union temp;
         temp.f[0] = f;
         return vec_splat( vec_lde( 0, temp.f ), 0 );
+}
+
+inline vint32 vload( int32 i )
+{
+        vec_union temp;
+        temp.i[0] = i;
+        return vec_splat( vec_lde( 0, temp.i ), 0 );
+}
+
+inline vint32 vload( int32 a, int32 b, int32 c, int32 d )
+{
+        vec_union temp;
+        temp.i[0] = a;
+        temp.i[1] = b;
+        temp.i[2] = c;
+        temp.i[3] = d;
+        return temp.vi;
 }
 
 // seed = ((seed & mask) << shift1) ^ (((seed << shift2) ^ seed) >> shift3);
