@@ -47,6 +47,9 @@ Bus {
 		server.sendBundle(nil,
 			["/c_setn",index,values.size] ++ values);
 	}
+	setnMsg { arg values;
+		^["/c_setn",index,values.size] ++ values;
+	}
 	get { arg action;
 		OSCpathResponder(server.addr,['/c_set',index], { arg time, r, msg; 
 			action.value(msg.at(2)); r.remove }).add;
@@ -56,6 +59,12 @@ Bus {
 		OSCpathResponder(server.addr,['/c_setn',index],{arg time, r, msg; 
 			action.value(msg.copyToEnd(3)); r.remove } ).add; 
 		server.listSendMsg(["/c_getn",index, count]);
+	}
+	getMsg {
+		^["/c_get",index];
+	}
+	getnMsg { arg count, action;
+		^["/c_getn",index, count ? numChannels]);
 	}
 
 	fill { arg value,numChans;
@@ -104,6 +113,7 @@ Bus {
 	value_ { arg value;
 		this.fill(value,numChannels);
 	}
+	
 	printOn { arg stream; stream << this.class.name << "(" <<* [server.name,rate,index,numChannels]  <<")" }
 	== { arg aBus;
 		^(aBus.class === this.class 
