@@ -1,3 +1,4 @@
+/*
 +Function {
 	asArgStream {
 		^FuncStream.new(this)
@@ -42,5 +43,6 @@
 	}
 
 }
+*/
 
 
