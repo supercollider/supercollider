@@ -62,11 +62,25 @@ UGen : AbstractFunction {
  		^MulAdd(this, mul, add);
  	}
  	clip { arg lo,hi;
- 		if(rate == \audio,{
+ 		if(rate == \audio) {
  			^Clip.ar(lo,hi)
- 		},{
+ 		}{
  			^Clip.kr(lo,hi)
- 		})
+ 		}
+ 	}
+ 	fold { arg lo,hi;
+ 		if(rate == \audio) {
+ 			^Fold.ar(lo,hi)
+ 		}{
+ 			^Fold.kr(lo,hi)
+ 		}
+ 	}
+ 	wrap { arg lo,hi;
+ 		if(rate == \audio) {
+ 			^Wrap.ar(lo,hi)
+ 		}{
+ 			^Wrap.kr(lo,hi)
+ 		}
  	}
 	signalRange { ^\bipolar }
 	@ { arg y; ^Point.new(this, y) } // dynamic geometry support
