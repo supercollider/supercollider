@@ -9,7 +9,10 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
-Control structures in SuperCollider are implemented via message sends.Here are a few of those available. \
+Control structures in SuperCollider are implemented via message sends. Here are a few of those available. \
+See [\ul Syntax-Shortcuts\ulnone ] for the various ways expressions can be written.\
+\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -37,6 +40,11 @@ expr.if (trueFunc, falseFunc);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
+\
+see also: the
+\f0\b  [\ul if\ulnone ] helpfile
+\f1\b0 \
+\
 examples:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -61,6 +69,10 @@ x.postln;\
 \
 '
 \f1 If' expressions are optimized (i.e. inlined) by the compiler if they do not contain variable declarations in the trueFunc and the falseFunc.\
+\
+\
+\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -97,6 +109,8 @@ while ( \{ i < 5 \}, \{ i = i + 1; \cf4 "boing"\cf0 .postln \});\
 '
 \f1 While' expressions are optimized by the compiler if they do not contain variable declarations in the testFunc and the bodyFunc.\
 \
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 For\
@@ -122,9 +136,10 @@ example:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs18 \cf0 for (3, 7, \{ \cf2 arg\cf0  i; i.postln \}); \cf3 // prints values 3 through 7
-\fs24 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\fs24 \cf3 \
 \cf0 \
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 ForBy\
@@ -151,10 +166,12 @@ example:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs18 \cf0 forBy (0, 8, 2, \{ \cf2 arg\cf0  i; i.postln \}); \cf3 // prints values 0 through 8 by 2's
-\fs24 \
+\fs24 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Do\
@@ -184,15 +201,22 @@ collection.do(function)\
 \
 5.do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // iterates from zero to four\
 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 "you"\cf0 .do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // a String is a collection of characters\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 'they'\cf0 .do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // a Symbol is a singular item
-\fs24 \
+\cf5 'they'\cf0 .do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // a Symbol is a singular item\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 (8..20).do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // iterates from eight to twenty \
+\
+\cf0 (8,10..20).do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // iterates from eight to twenty, with stepsize two\
+\
+\cf2 Routine\cf0 (\{ \cf2 var\cf0  i=10; while \{ i > 0 \} \{ i.yield; i = i - 5.0.rand \} \}).do(\{ \cf2 arg\cf0  item; item.postln \});
+\fs24 \cf3 \
 \cf0 \
+\
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Switch\
