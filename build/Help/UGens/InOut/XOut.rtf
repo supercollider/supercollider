@@ -19,38 +19,41 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs18 \cf0 \
-	
+
 \f0\b\fs24 *ar(bus, xfade, channelsArray) 
 \f2\b0 - crossfade an audio bus.
 \f0\b \
-	*kr(bus, xfade, channelsArray) 
+*kr(bus, xfade, channelsArray) 
 \f2\b0 - crossfade an control bus.\
 	\
-	
-\f0\b 	bus 
+
+\f0\b bus 
 \f2\b0 - the index of the bus to write out to. The lowest numbers are written to the audio hardware.\
-		
+
 \f0\b xfade 
 \f2\b0 - crossfade level.\
-		
-\f0\b channelsArray 
-\f2\b0 - an Array of channels or single output to write out.
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li280\fi-280\ql\qnatural
+
+\f0\b \cf0 channelsArray 
+\f2\b0 - an Array of channels or single output to write out. You cannot change the size of this once a SynthDef has been built.
 \f0\b \
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0 \cf0 xfade is a level for the crossfade between what is on the bus and what you are sending.\
 The algorithm is equivalent to this:\
 \
 bus_signal = (input_signal * xfade) + (bus_signal * (1 - xfade));\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
-\
+\f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 See the 
-\f0\b Server-Architecture
+\f2\b0 \cf0 See the 
+\f0\b [\ul Server-Architecture\ulnone ]
 \f2\b0  and 
-\f0\b Bus
+\f0\b [\ul Bus\ulnone ]
 \f2\b0  helpfiles for more information on buses and how they are used.
 \f0\b 	
 \f1\b0\fs18 \

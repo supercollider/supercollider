@@ -12,18 +12,20 @@
 \f1\b0\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 	superclass: MultiOutUGen
-\f1\fs18 \cf2 \
+\f0\b\fs24 \cf0 superclass: MultiOutUGen
+\f1\b0\fs18 \cf2 \
 	\
-	
+
 \f0\b\fs24 \cf0 *ar(bus, numChannels)\
 	\
-		bus 
+bus 
 \f2\b0 - the index of the bus to read in from.\
-		
-\f0\b numChannels 
-\f2\b0 - the number of channels (i.e. adjacent buses) to read in. The default is 1.\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li280\fi-280\ql\qnatural
+
+\f0\b \cf0 numChannels 
+\f2\b0 - the number of channels (i.e. adjacent buses) to read in. The default is 1. You cannot modulate this number by assigning it to an argument in a SynthDef.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 When the various output ugens (
 \f0\b Out
 \f2\b0 , 
@@ -89,12 +91,10 @@ audio feedback modulation:\
 	\}).play;\
 	)\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 this shows how a node can read audio from a bus that is being written to by a synth following it:
+\f2\fs24 this shows how a node can read audio from a bus that is being written to by a synth following it:
 \f1\fs18 \cf2 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	(\
 	\cf2 SynthDef\cf0 (\cf3 "help-InFeedback"\cf0 , \{ \cf2 arg\cf0  out=0, in=0;\
 		\cf2 Out\cf0 .ar(out,\
@@ -124,9 +124,8 @@ audio feedback modulation:\
 	\
 	a.free; b.free;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 The example below implements a resonator. Note that you must subtract the blockSize in order for the tuning to be correct. See 
+\f2\fs24 The example below implements a resonator. Note that you must subtract the blockSize in order for the tuning to be correct. See 
 \f0\b LocalIn
 \f2\b0  for an equivalent example.\
 	

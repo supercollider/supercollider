@@ -12,23 +12,25 @@
 \f1\b0\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 superclass: AbstractOut\
+\f0\b\fs24 \cf0 superclass: AbstractOut
+\f2\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 	
-\f0\b\fs24 *ar(channelsArray) 
+
+\f0\b\fs24 \cf0 *ar(channelsArray) 
 \f2\b0 - write a signal to an audio bus local to the SynthDef.
 \f0\b \
-	*kr(channelsArray) 
+*kr(channelsArray) 
 \f2\b0 -
 \f0\b  
 \f2\b0 write a signal to a control bus local to the SynthDef.\
 \
-		
-\f0\b channelsArray 
-\f2\b0 - an Array of channels or single output to write out.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li280\fi-280\ql\qnatural
+
+\f0\b \cf0 channelsArray 
+\f2\b0 - an Array of channels or single output to write out. You cannot change the size of this once a SynthDef has been built.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf2 \
@@ -41,7 +43,7 @@
 \f0\b channelsArray
 \f2\b0  must be the same number of channels as were declared in the LocalIn. These are like the global buses, but are more convenient if you want to implement a self contained effect that uses a feedback processing loop.\
 See 
-\f0\b LocalIn
+\f0\b [\ul LocalIn\ulnone ]
 \f2\b0 .\
 \
 
@@ -50,9 +52,8 @@ See
 \f0\b LocalIn
 \f2\b0  until the next cycle, i.e. one block size of samples later. Because of this it is important to take this additional delay into account when using LocalIn to create feedback delays with delay times shorter than the threshold of pitch (i.e. < 0.05 seconds or > 20Hz), or where sample accurate alignment is required. See the resonator example below.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 (\
+\f1\fs18 (\
 \{\
 	\cf2 var\cf0  source, local;\
 	\

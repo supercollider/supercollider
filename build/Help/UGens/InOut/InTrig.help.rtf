@@ -7,26 +7,31 @@
 
 \f0\b\fs36 \cf0 InTrig
 \fs28 				generate a trigger anytime a bus is set\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 superclass: MultiOutUGen\
+\f0\b\fs24 \cf0 superclass: MultiOutUGen
+\f2\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf2 \
-	
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
 \f0\b\fs24 \cf0 *kr(bus, numChannels)
 \f2\b0 \
 \
-	
-\f0\b 	bus 
+
+\f0\b bus 
 \f2\b0 - the index of the bus to read in from.\
-		
-\f0\b numChannels 
-\f2\b0 - the number of channels (i.e. adjacent buses) to read in. The default is 1.
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li280\fi-280\ql\qnatural
+
+\f0\b \cf0 numChannels 
+\f2\b0 - the number of channels (i.e. adjacent buses) to read in. The default is 1. You cannot modulate this number by assigning it to an argument in a SynthDef.
 \f1\fs18 \cf2 \
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 Any time the bus is "touched" ie. has its value set (using "/c_set" etc.), a single impulse trigger will be generated.  Its amplitude is the value that the bus was set to.\
