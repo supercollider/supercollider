@@ -1,8 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Georgia-Bold;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica;\f4\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green0\blue0;
-\red0\green0\blue191;\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs30 \cf0 some placeholders in supercollider  		
@@ -31,7 +30,7 @@ with supercollider and proxy space.\
 \f0\b\fs24 \cf0 a) What is a proxy?
 \f3\b0 \
 \
-A proxy is a place holder that is often used  to operate on something that is not yet there.\
+A proxy is a place holder that is often used  to operate on something that does not yet exist.\
 For example, an 
 \f4\i OutputProxy 
 \f3\i0 is used to represent multiple outputs of a ugen, even if only\
@@ -79,6 +78,7 @@ z = y + 10; \cf2 // this fails.\
 \
 // an environment without sufficient defaults has the same problem:\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 currentEnvironment.postln; \cf2 // anEnvironment\cf0 \
 ~x; \cf2 // access the enironment: there is nothing stored: nil\cf0 \
 ~x = 9; \cf2 // store something\cf0 \
@@ -145,10 +145,12 @@ y = \cf3 NodeProxy\cf0 .audio(s, 2);\
 z = \cf3 NodeProxy\cf0 .audio(s, 2);\
 \
 \cf2 // use them in calculation\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 z.play;\
 z.source = y.sin * 0.2;\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // set its source now.\cf0 \
 y.source = \{\'ca\cf3 Saw\cf0 .ar([300, 301], 4*pi) \};\
 \
@@ -169,9 +171,9 @@ So the above reads like this:
 \f2\fs18 \
 \
 \
+p = \cf3 ProxySpace\cf0 .push(s.boot); \cf2 // store proxy space in p so it can be accessed easily.
+\f3\fs24 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 p = \cf5 ProxySpace\cf4 .push(s.boot); \cf6 // store proxy space in p so it can be accessed easily.
-\f3\fs24 \cf4 \
 
 \f2\fs18 \cf0 ~z.play;\
 \
@@ -182,6 +184,7 @@ So the above reads like this:
 ~y = \{\'ca\cf3 Saw\cf0 .ar([300, 301], 4*pi) \};\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // clear the space (all proxies)\cf0 \
 p.clear;\
 \

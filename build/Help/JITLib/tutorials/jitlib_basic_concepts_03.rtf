@@ -40,6 +40,7 @@ a client side representation, in which the source objects are stored (see [\ul O
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // make new space\cf0 \
 p = \cf3 ProxySpace\cf0 .push(s.boot);\
 ~z.play; ~y.ar; \cf2 // explicitly initialize proxies\cf0 \
@@ -65,8 +66,10 @@ p = \cf3 ProxySpace\cf0 .push(s.boot);\
 \cf2 // other slot numbers are accessed by positive integers:\cf0 \
 \
 ~y[1] = \{\'ca\cf3 Saw\cf0 .ar([400, 401.3], 0.4) \};\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 ~y[0] = \{\'ca\cf3 Saw\cf0 .ar([300, 301], 0.4) \}; \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // to remove one of them, nil is used:\cf0 \
 \
 ~y[0] = \cf3 nil\cf0 ;\
@@ -74,6 +77,7 @@ p = \cf3 ProxySpace\cf0 .push(s.boot);\
 \cf2 // what is to be found at index 1?\cf0 \
 ~y[1] \cf2 // a playing interface\cf0 \
 ~y[1].source.postcs \cf2 // the function that was put in.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 ~y.source; \cf2 // this returns objects in the slots.\
 \
 \
@@ -104,6 +108,7 @@ b) fade time:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // setting the fadeTime will allow cross fades.\cf0 \
 \cf2 // in case of an audio rate proxy the fade is pseudo-gaussian\cf0 \
 \cf2 // in case of a control rate proxy it is linear.\cf0 \
@@ -372,6 +377,17 @@ the parameter context also can keep bus mappings. a control can be mapped to any
 	~y = \{ \cf3 arg\cf0  freq=500; \cf3 Formant\cf0 .ar(4, freq * [1, 1.1], 70) * 0.1 \};\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
+\f0\b\fs24 \cf0 \
+\
+xmap 
+\f3\b0 is a variant of map, to crossfade the change using the current fadeTime:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 	\
+	~y.set(\cf4 \\freq\cf0 , 440);\
+	~y.xmap(\cf4 \\freq\cf0 , ~c);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
 \f3\fs24 \cf0 \
 \
 to remove a setting or a mapping, use 
@@ -381,6 +397,7 @@ to remove a setting or a mapping, use
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 	~y.unmap;\
+	\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
