@@ -27,6 +27,7 @@ Contains the most common definitions.
 #define _SCBASE_
 
 #include <limits.h>
+#include <stdio.h>
 
 #include "SC_BoundsMacros.h"
 #include "SC_Types.h"
