@@ -140,27 +140,27 @@ Crucial {
 		
 		Server.default.gui(menu);
 		menu.startRow;
-		rec = ToggleButton(menu,"*",{
-			if(Server.default.recordNode.isNil,{
-				File.saveDialog("Record file...",{ arg path;
-					Server.prepareForRecord(path,'aiff','int24',2);
-				},{
-					rec.passiveToggle(false).changed;
-				});
-			},{
-				Server.default.stopRecording;
-			})
-		});
-		pause = ToggleButton(menu,"||",{
-			if(Server.default.recordNode.notNil,{
-				Server.default.record;
-			},{
-				pause.passiveToggle(false);
-			});
-		},{
-			Server.default.pause;
-		});
-		
+//		rec = ToggleButton(menu,"*",{
+//			if(Server.default.recordNode.isNil,{
+//				File.saveDialog("Record file...",{ arg path;
+//					Server.prepareForRecord(path,'aiff','int24',2);
+//				},{
+//					rec.passiveToggle(false).changed;
+//				});
+//			},{
+//				Server.default.stopRecording;
+//			})
+//		});
+//		pause = ToggleButton(menu,"||",{
+//			if(Server.default.recordNode.notNil,{
+//				Server.default.record;
+//			},{
+//				pause.passiveToggle(false);
+//			});
+//		},{
+//			Server.default.pause;
+//		});
+//		
 
 
 		a = ActionButton(menu.startRow,"     Library Menu Items...     ",{

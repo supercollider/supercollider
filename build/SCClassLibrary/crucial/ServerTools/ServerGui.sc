@@ -1,7 +1,7 @@
 
 
 ServerGui : ObjectGui {
-	var status,running,stopped,booting;
+	var status,running,stopped,booting,recorder;
 	
 	writeName {}
 	guiBody { arg layout;
@@ -39,10 +39,12 @@ ServerGui : ObjectGui {
 			running = {
 				active.stringColor_(Color.red);
 				booter.setProperty(\value,1);
+				recorder.enabled = true;
 			};
 			stopped = {
 				active.stringColor_(Color.grey(0.3));
 				booter.setProperty(\value,0);
+				recorder.enabled = false;
 			};
 			booting = {
 				active.stringColor_(Color.yellow(0.9));
@@ -52,15 +54,16 @@ ServerGui : ObjectGui {
 		},{	
 			running = {
 				active.background = Color.red;
+				recorder.enabled = true;
 			};
 			stopped = {
 				active.background = Color.black;
+				recorder.enabled = false;
 			};
 			booting = {
 				active.background = Color.yellow;
 			};
 		});
-		if(model.serverRunning,running,stopped);
 			
 		status = CXLabel(layout,"               ");
 		status.font = Font("Helvetica",9);
@@ -70,6 +73,23 @@ ServerGui : ObjectGui {
 		if(model.dumpMode == 0,{
 			model.startAliveThread(0.0,1.0);
 		});
+		
+		recorder = SCButton(layout, Rect(0,0, 72, 17));
+		recorder.states = [
+			["prepare rec", Color.black, Color.clear],
+			["record >", Color.red, Color.gray(0.1)],
+			["stop []", Color.black, Color.red]
+		];
+		recorder.action = {
+			if (recorder.value == 1) {
+				model.prepareForRecord;
+			}{
+				if (recorder.value == 2) { model.record } { model.stopRecording };
+			};
+		};
+		recorder.enabled = false;
+
+		if(model.serverRunning,running,stopped);
 	}
 	update { arg changer,what;
 		if(what == \serverRunning,{
