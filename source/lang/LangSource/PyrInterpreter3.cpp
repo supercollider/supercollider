@@ -984,6 +984,7 @@ void Interpret(VMGlobals *g)
 			break;
 		
 		case 133 : case 134 : case 135 :
+			op2 = op1 & 15;
 			op3 = *++ip; // get temp var index
 			for (tframe = g->frame; op2--; tframe = tframe->context.uof) { /* noop */ }
 			slot = tframe->vars - op3;
