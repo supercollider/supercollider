@@ -10,7 +10,7 @@ Amplitude : UGen {
 
 Compander : UGen {
 	*ar { arg in = 0.0, control = 0.0, thresh = 0.5, slopeBelow = 1.0, slopeAbove = 1.0,
-		clampTime = 0.01, relaxTime = 0.01, mul = 1.0, add = 0.0;
+		clampTime = 0.01, relaxTime = 0.1, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, control, thresh, slopeBelow, slopeAbove,
 			clampTime, relaxTime).madd(mul, add)
 	}

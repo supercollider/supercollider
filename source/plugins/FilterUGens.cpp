@@ -3112,35 +3112,40 @@ void Compander_next(Compander* unit, int inNumSamples)
 	float relax = ZIN0(6);
 	
 	if (clamp != unit->m_clamp) {
-		unit->m_clampcoef  = clamp == 0.0 ? 0.0 : exp(log1/(clamp * unit->mRate->mBufRate));
+		unit->m_clampcoef  = clamp == 0.0 ? 0.0 : exp(log1/(clamp * SAMPLERATE));
 		unit->m_clamp = clamp;
 	}
 	if (relax != unit->m_relax) {
-		unit->m_relaxcoef = relax == 0.0 ? 0.0 : exp(log1/(relax *  unit->mRate->mBufRate));
+		unit->m_relaxcoef = relax == 0.0 ? 0.0 : exp(log1/(relax *  SAMPLERATE));
 		unit->m_relax = relax;
 	}
 	
 	float gain = unit->m_gain;
-	float prevmaxval = unit->m_prevmaxval;
-	float newmaxval = 0.f;
 
-	LOOP(inNumSamples, 
-		float val = fabs(ZXP(control)); 
-		if (val > newmaxval) newmaxval = val;
+	float relaxcoef = unit->m_relaxcoef;
+	float clampcoef = unit->m_clampcoef;
+
+	float prevmaxval = unit->m_prevmaxval;
+	
+	float val;
+	LOOP(inNumSamples,
+		val = fabs(ZXP(control)); 
+		if (val < prevmaxval) {
+			val = val + (prevmaxval - val) * relaxcoef;
+		} else {
+			val = val + (prevmaxval - val) * clampcoef;
+		}
+		prevmaxval = val;
 	);
-    
-	if (newmaxval < prevmaxval) {
-		newmaxval = newmaxval - unit->m_relaxcoef * (prevmaxval - newmaxval);
-	} else {
-		newmaxval = newmaxval - unit->m_clampcoef * (prevmaxval - newmaxval);
-	}
+	
+	unit->m_prevmaxval = prevmaxval;
 
 	float next_gain;//,absx;
-	if (newmaxval < thresh) {
+	if (prevmaxval < thresh) {
 		if (slope_below == 1.f) {
 			next_gain = 1.f;
 		} else {
-			next_gain = pow(newmaxval / thresh, slope_below - 1.f);
+			next_gain = pow(prevmaxval / thresh, slope_below - 1.f);
             //blows up here
             float32 absx = fabs(next_gain);
             //zap gremlins, but returns 1. on failure
@@ -3150,13 +3155,12 @@ void Compander_next(Compander* unit, int inNumSamples)
 		if (slope_above == 1.f) {
 			next_gain = 1.f;
 		} else {
-			next_gain = pow(newmaxval / thresh, slope_above - 1.f);
+			next_gain = pow(prevmaxval / thresh, slope_above - 1.f);
 		}
 	}
-	
+		
 	float gain_slope = CALCSLOPE(next_gain, gain);
 	LOOP(inNumSamples, ZXP(out) = ZXP(in) * gain; gain += gain_slope;);
-	unit->m_prevmaxval = newmaxval;
 	unit->m_gain = gain;
 	
 }
