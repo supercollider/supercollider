@@ -127,3 +127,63 @@ SCTabletView : SCView {
 
 
 
+EZSlider 
+{
+	var <>labelView, <>sliderView, <>numberView, <>controlSpec, <>action, <value;
+	var <>round = 0.001;
+	
+	*new { arg window, dimensions, label, controlSpec, action, initVal, 
+			initAction=false, labelWidth=80, numberWidth = 80;
+		^super.new.init(window, dimensions, label, controlSpec, action, initVal, 
+			initAction, labelWidth, numberWidth);
+	}
+	init { arg window, dimensions, label, argControlSpec, argAction, initVal, 
+			initAction, labelWidth, numberWidth;
+		labelView = SCStaticText(window, labelWidth @ dimensions.y);
+		labelView.string = label;
+		labelView.align = \right;
+		
+		controlSpec = argControlSpec.asSpec;
+		initVal = initVal ? controlSpec.default;
+		action = argAction;
+		
+		sliderView = SCSlider(window, (dimensions.x - labelWidth - numberWidth) @ dimensions.y);
+		sliderView.action = {
+			value = controlSpec.map(sliderView.value);
+			numberView.value = value.round(round);
+			action.value(this);
+		};
+		if (controlSpec.step != 0) {
+			sliderView.step = (controlSpec.step / (controlSpec.maxval - controlSpec.minval));
+		};
+
+		numberView = SCNumberBox(window, numberWidth @ dimensions.y);
+		numberView.action = {
+			value = numberView.value;
+			sliderView.value = controlSpec.unmap(value);
+			action.value(this);
+		};
+		
+		if (initAction) {
+			this.value = initVal;
+		}{
+			value = initVal;
+			sliderView.value = controlSpec.unmap(value);
+			numberView.value = value.round(round);
+		};
+	}
+	value_ { arg value; numberView.valueAction = value }
+	set { arg label, spec, argAction, initVal, initAction=false;
+		labelView.string = label;
+		controlSpec = spec.asSpec;
+		action = argAction;
+		initVal = initVal ? controlSpec.default;
+		if (initAction) {
+			this.value = initVal;
+		}{
+			value = initVal;
+			sliderView.value = controlSpec.unmap(value);
+			numberView.value = value.round(round);
+		};
+	}
+}
