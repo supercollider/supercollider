@@ -9,7 +9,7 @@ ProxySynthDef : SynthDef {
 		unixCmd("rm synthdefs/temp__*");
 	}	
 	
-	*new { arg name, func, lags, prependArgs, makeFadeEnv=true, channelOffset=0, chanConstraint;
+	*new { arg name, func, rates, prependArgs, makeFadeEnv=true, channelOffset=0, chanConstraint;
 		var def, rate, numChannels, output, isScalar, envgen, canFree, hasOwnGate;
 		name = "temp__" ++ name;		
 		def = super.new(name, { 
@@ -18,7 +18,7 @@ ProxySynthDef : SynthDef {
 			
 			
 			// build the controls from args
-			output = SynthDef.wrap(func, lags, prependArgs);
+			output = SynthDef.wrap(func, rates, prependArgs);
 			
 			// determine rate and numChannels of ugen func
 			rate = output.rate;

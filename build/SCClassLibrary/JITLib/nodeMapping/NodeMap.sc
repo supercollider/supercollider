@@ -166,27 +166,27 @@ ProxyNodeMap : NodeMap {
 			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
 		}
 		
-		lag { arg args;
+		putRates { arg args;
 			forBy(0, args.size-1, 2, { arg i;
-				this.at(args.at(i)).lag_(args.at(i+1));
+				this.at(args.at(i)).rate_(args.at(i+1));
 			});
 		}
-		unlag { arg args;
+		removeRates { arg args;
 			args.do({ arg key;
 				var s;
 				s = settings.at(key); 
 				if(s.notNil, { 
-					s.lag_(nil); 
+					s.rate_(nil); 
 					if(s.isEmpty, { settings.removeAt(key) })
 				});
 			});
 		}
 		
-		lagsFor { arg keys;
+		ratesFor { arg keys;
 			^keys.collect({ arg key;
 				var res;
 				res = settings.at(key);
-				if(res.notNil, { res.lag }, { nil })
+				if(res.notNil, { res.rate }, { nil })
 			})
 		}
 				
