@@ -28,6 +28,12 @@
 #include <stdio.h>
 #include "SC_Prototypes.h"
 
+#ifdef SC_WIN32
+// workaround for IN/OUT conflict with Win32 headers. see SC_Unit.h for details
+#define IN SC_IN
+#define OUT SC_OUT
+#endif
+
 void Unit_ChooseMulAddFunc(Unit* unit);
 
 Unit* Unit_New(World *inWorld, UnitSpec *inUnitSpec, char*& memory)

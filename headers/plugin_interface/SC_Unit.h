@@ -55,8 +55,23 @@ enum {
 };
 
 // easy macros, the unit variable must be named 'unit'.
+#ifndef SC_WIN32
+
 #define IN(index)  (unit->mInBuf[index])
 #define OUT(index) (unit->mOutBuf[index])
+
+#else
+
+// Win32 headers (included by C std library headers) define IN and OUT macros
+// for their own purposes. To avoid problems we don't define IN and OUT here
+// but define SC_IN and SC_OUT instead. Source files that use IN and OUT need
+// to include definitions of IN, and OUT referencing SC_IN and SC_OUT after
+// all headers have been included.
+#define SC_IN(index)  (unit->mInBuf[index])
+#define SC_OUT(index) (unit->mOutBuf[index])
+
+#endif
+
 #define INRATE(index) (unit->mInput[index]->mCalcRate)
 #define SETCALC(func) (unit->mCalcFunc = (UnitCalcFunc)&func)
 

@@ -33,3 +33,16 @@
 #include "sc_msg_iter.h"
 #include "SC_Altivec.h"
 
+
+#ifdef SC_WIN32
+
+// temporarily override __attribute__ for (unused), later we'll remove it
+#ifndef __GCC__
+#define __attribute__(x)
+#endif
+
+// workaround for IN/OUT conflict with Win32 headers. see SC_Unit.h for details
+#define IN SC_IN
+#define OUT SC_OUT
+
+#endif
