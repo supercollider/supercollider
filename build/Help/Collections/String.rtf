@@ -535,7 +535,9 @@ setenv(value)\
 
 \f1\b0 \cf0 Set the environment variable indicated in the string to equal the String 
 \f0\b value
-\f1\b0 . This value will persist until it is changed or SC is quit.\
+\f1\b0 . This value will persist until it is changed or SC is quit. Note that if 
+\f0\b value
+\f1\b0  is a path you may need to call standardizePath on it (see below).\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
