@@ -123,8 +123,7 @@ Bus {
 	}
 	
 	== { arg aBus;
-		^aBus.class === this.class 
-		and: {aBus.index == index} 
+		aBus.index == index
 		and: {aBus.numChannels == numChannels}
 		and: {aBus.rate == rate}
 		and: {aBus.server === server}
