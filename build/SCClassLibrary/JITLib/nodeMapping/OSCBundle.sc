@@ -70,12 +70,14 @@ MixedBundle : OSCBundle {
 	
 	schedSend { arg server, time, clock, onCompletion;
 			this.sendPrepare(server);
+			[\clock, clock].postln;
 			SystemClock.sched(time ? 0, {
 				if(clock.isNil, {
-						this.send(server,time) 
+						this.send(server,server.latency) 
 				}, {
 						clock.schedAbs(clock.elapsedBeats.ceil, { 
-							this.send(server,time); nil 
+							this.send(server,server.latency); 
+							nil 
 						})
 				});
 			})
