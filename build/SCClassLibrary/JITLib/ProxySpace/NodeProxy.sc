@@ -506,32 +506,36 @@ NodeProxy : BusPlug {
 	
 	spawner { arg beats=1, argFunc;
 		var dt;
-		dt = beats.loop.asStream;
-		if(argFunc.isSequenceableCollection, { argFunc = argFunc.asArrayStream });
+		dt = beats.asStream;
+		argFunc = argFunc.hatchArray;
 		this.task = Routine.new({ 
 					inf.do({ arg i;
+						var t;
+						if((t = dt.next).isNil, { nil.alwaysYield });
 						this.sendAll(
 							argFunc.value(i, beats) ++ [\i, i, \beats, thisThread.beats],
 							true
 						); 
-						dt.next.wait; 
+						t.wait; 
 						}) 
 					})
 	}
 	
 	gspawner { arg beats=1, argFunc, index=0;
 		var dt;
-		dt = beats.loop.asStream;
-		if(argFunc.isSequenceableCollection, { argFunc = argFunc.asArrayStream });
+		dt = beats.asStream;
+		if(argFunc.notNil, { argFunc = argFunc.hatchArray });
 		index = index.loop.asStream;
 		this.task = Routine.new({ 
-					inf.do({ arg i;
+					inf.do({ arg i;	
+						var t;
+						if((t = dt.next).isNil, { nil.alwaysYield });
 						this.send(
 							argFunc.value(i, beats) ++ [\i, i, \beats, thisThread.beats], 
 							index.next
 						); 
-						dt.next.wait; 
-						}) 
+						t.wait; 
+						})
 					})
 	}
 	
@@ -569,7 +573,7 @@ NodeProxy : BusPlug {
 
 	sendAllToBundle { arg bundle, extraArgs;
 				objects.do({ arg item;
-						item.playToBundle(bundle, extraArgs, this);
+						item.playToBundle(bundle, extraArgs.value, this);
 				});
 				//apply the node map settings to the entire group
 				if(objects.notEmpty, { nodeMap.addToBundle(bundle, group) });
@@ -577,14 +581,14 @@ NodeProxy : BusPlug {
 	
 	sendObjectToBundle { arg bundle, object, extraArgs;
 				var synth;
-				synth = object.playToBundle(bundle, extraArgs, this);
+				synth = object.playToBundle(bundle, extraArgs.value, this);
 				if(synth.notNil, { nodeMap.addToBundle(bundle, synth) });
 	}
 
 	sendEachToBundle { arg bundle, extraArgs;
 				//apply the node map settings to each synth separately
 				objects.do({ arg item;
-					this.sendObjectToBundle(bundle, item, extraArgs)
+					this.sendObjectToBundle(bundle, item, extraArgs.value)
 				});
 	}
 	
