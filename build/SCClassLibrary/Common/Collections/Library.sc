@@ -39,7 +39,23 @@ Library : MultiLevelIdentityDictionary
 	*postTree {
 		this.global.postTree
 	}
-
+	postTree {
+		this.doPostTree(dictionary)		
+	}
+	doPostTree { arg obj,tabs=0;
+		if(obj.isKindOf(IdentityDictionary),{
+			"".postln;
+			obj.keysValuesDo({ arg k,v;
+				tabs.do({ Char.tab.post });
+				k.post;
+				": ".post;
+				this.doPostTree(v,tabs + 1)
+			});
+		},{
+			Char.tab.post;
+			obj.asString.postln;
+		})
+	}
 }
 
 
