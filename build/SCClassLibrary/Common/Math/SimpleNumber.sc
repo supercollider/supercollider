@@ -151,19 +151,31 @@ SimpleNumber : Number {
 		if (this >= inMax, { ^outMax });
 		^pow(outMax/outMin, log(this/inMin)) / (log(inMax/inMin)) * outMin;
 	}
+
 	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax;
-		var ratio;
+		// triangular linear mapping
+		var delta;
 		if (this <= inMin, { ^outMin });
 		if (this >= inMax, { ^outMax });
 		^if (this >= inCenter) {
-			ratio = (this - inCenter) / (inMax - inCenter);
-			(outMax - outCenter) * ratio + outCenter
+			this.linlin(inCenter, inMax, outCenter, outMax);
 		} {
-			ratio = (this - inCenter) / (inMin - inCenter);
-			(outMin - outCenter) * ratio + outCenter
+			this.linlin(inMin, inCenter, outMin, outCenter);
 		}
-	} 
-
+	}
+	
+	biexp { arg inCenter, inMin, inMax, outCenter, outMin, outMax;
+		// triangular exponential mapping
+		var delta;
+		if (this <= inMin, { ^outMin });
+		if (this >= inMax, { ^outMax });
+		^if (this >= inCenter) {
+			this.explin(inCenter, inMax, outCenter, outMax);
+		} {
+			this.explin(inMin, inCenter, outMin, outCenter);
+		}
+	}
+	 
 	asPoint { ^Point.new(this, this) }
 
 	asWarp { arg spec; ^CurveWarp.new(spec, this) }
