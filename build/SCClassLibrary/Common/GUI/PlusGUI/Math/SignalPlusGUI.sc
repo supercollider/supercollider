@@ -123,3 +123,15 @@
 }
 
 
++ SoundFile{
+	plot{ arg bounds;
+		var win, view;
+		bounds = bounds ?  Rect(200 , 140, 705, 410);
+		win = SCWindow(this.path.split.last, bounds).front;
+		view = SCSoundFileView(win, win.bounds.width@win.bounds.height).resize_(5);
+		view.soundfile_(this);
+		view.readWithTask;
+		view.elasticMode_(1);
+	}
+}
+
