@@ -3208,10 +3208,11 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         if (symbol == s_value) {
             if (!isKindOfSlot(slot, class_array)) return errWrongType;
             int size = (slot->uo->slots[0]).uo->size;
-
+			bool wasVisible = true;
             if(size != mTabSize) {
                 err = allocSlotEnvObjArray(slot, &mEnvObj);
                 mTabSize = size;
+				wasVisible = false;
             } 
             double x, y;
             PyrDoubleArray * xarr;
@@ -3223,7 +3224,7 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
                 envob = &mEnvObj[i];
                 x = xarr->d[i];
                 y = yarr->d[i];
-                envob->mIsVisible = false;
+                envob->mIsVisible = wasVisible;
                 envob->mIsStatic = false;
                 envob->mIsSelected = false;
 				setValue(i,x,y, false);
