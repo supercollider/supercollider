@@ -3679,6 +3679,7 @@ void Klank_next(Klank *unit, int inNumSamples)
 
 #if __VEC__
 
+#if 0
 void vKlank_next(Klank *unit, int inNumSamples)
 {
 	float *out0 = ZOUT(0);
@@ -3881,6 +3882,7 @@ void vKlank_next(Klank *unit, int inNumSamples)
 	unit->m_x1 = x1;
 	unit->m_x2 = x2;
 }
+#endif
 
 #endif
 

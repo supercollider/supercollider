@@ -209,8 +209,8 @@
 			float *out = ZOUT(0);
 			
 			//distribution choices for amp and dur and constants of distribution
-			int whichamp= ZIN0(0);
-			int whichdur= ZIN0(1);
+			int whichamp= (int)ZIN0(0);
+			int whichdur= (int)ZIN0(1);
 			float aamp = ZIN0(2);
 			float adur = ZIN0(3);
 			float minfreq = ZIN0(4);
@@ -379,8 +379,8 @@
 			float *out = ZOUT(0);
 			
 			//distribution choices for amp and dur and constants of distribution
-			int whichamp= ZIN0(0);
-			int whichdur= ZIN0(1);
+			int whichamp= (int)ZIN0(0);
+			int whichdur= (int)ZIN0(1);
 			float aamp = ZIN0(2);
 			float adur = ZIN0(3);
 			float minfreq = ZIN0(4);
@@ -531,8 +531,8 @@
 			float *out = ZOUT(0);
 			
 			//distribution choices for amp and dur and constants of distribution
-			int whichamp= ZIN0(0);
-			int whichdur= ZIN0(1);
+			int whichamp= (int)ZIN0(0);
+			int whichdur= (int)ZIN0(1);
 			float aamp = ZIN0(2);
 			float adur = ZIN0(3);
 			float freq = ZIN0(4);
@@ -544,7 +544,7 @@
 			float nextamp= unit->mNextAmp;
 			float speed= unit->mSpeed;
 			int index= unit->mIndex;  
-			int interpmult= unit->mInterpMult;
+			int interpmult= (int)unit->mInterpMult;
 			double lastphase= unit->mLastPhase;
 			double nextphase= unit->mNextPhase;
 			
@@ -637,7 +637,7 @@
 					nextphase=lastphase+phaselist[index];
 					nextamp=amplist[index+1]; 
 										
-					interpmult= 1.0/(nextphase-lastphase);
+					interpmult= (int)(1.0/(nextphase-lastphase));
 					
 				}	
 					

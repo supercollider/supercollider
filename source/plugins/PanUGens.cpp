@@ -628,7 +628,7 @@ void Pan2_Ctor(Pan2 *unit)
 void Pan4_Ctor(Pan4 *unit)
 {	
 	SETCALC(Pan4_next);
-	float *in = ZIN(0);
+	//float *in = ZIN(0);
 	float xpos = ZIN0(1);
 	float ypos = ZIN0(2);
 	float level = ZIN0(3);
