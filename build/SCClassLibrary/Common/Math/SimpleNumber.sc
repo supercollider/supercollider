@@ -178,7 +178,9 @@ SimpleNumber : Number {
 	// support for writing synth defs
 	writeInputSpec { arg file, synth;
 		var constIndex;
-		constIndex = synth.constants.at(this.asFloat);
+		constIndex = synth.constants.at(this.asFloat ?? { 
+			"SimpleNumber-writeInputSpec constant not found".die(synth.constants);
+		});
 		//[\inpspc, this.class.name, constIndex, this].postln;
 		file.putInt16(-1);
 		file.putInt16(constIndex);
