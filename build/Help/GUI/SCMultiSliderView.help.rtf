@@ -6,9 +6,11 @@
 
 \f0\b\fs36 \cf0 SCMultiSliderView
 \f1\b0\fs18 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //use as table\
 \cf2 var\cf0  size;\
 size = 350 / 6;\
@@ -32,6 +34,7 @@ a.front;\
 \
 (\
 \cf3 //flip by 90 degree\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b.background_(\cf2 Color\cf0 .black);\
 b.strokeColor_(\cf2 Color\cf0 .white);\
 b.fillColor_(\cf2 Color\cf0 .white);\
@@ -42,6 +45,7 @@ a.front;\
 )\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //use as multislider\
 \cf2 var\cf0  size;\
 size = 12;\
@@ -66,6 +70,7 @@ a.front;\
 \
 (\
 \cf3 // read only mode returns the xIndex and its y value\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b.readOnly_(\cf2 true\cf0 );\
 b.setProperty(\cf5 \\showIndex\cf0 , \cf2 true\cf0 );\
 b.index_(4);\
@@ -74,7 +79,9 @@ a.front;\
 b.index;\
 b.selectionSize;\
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //use it as sequencer\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b.setProperty(\cf5 \\showIndex\cf0 , \cf2 true\cf0 );\
 \
 r = \cf2 Routine\cf0 (\{\
@@ -90,6 +97,7 @@ r = \cf2 Routine\cf0 (\{\
 		b.index_(b.size.rand);\
 	\});\
 \});\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 AppClock\cf0 .play(r);\
 	\
 \
@@ -105,6 +113,7 @@ a.view.decorator =  \cf2 FlowLayout\cf0 (a.view.bounds);\
 b = \cf2 SCMultiSliderView\cf0 (a, \cf2 Rect\cf0 (0, 0, size * 17, 50));\
 a.view.decorator.nextLine;\
 \cf3 //e = SCDragBoth(a , Rect(0, 0, size * 17, 50));\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 e = \cf2 SCMultiSliderView\cf0 (a, \cf2 Rect\cf0 (0, 0, size * 17, 50));\
 c = \cf2 Array\cf0 .new;\
 size.do(\{\cf2 arg\cf0  i;\
@@ -129,6 +138,7 @@ c.size;\
 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //press shift to extend the selection\
 //use as waveView: scrubbing over the view returns index\
 //if showIndex(false) the view is not refreshed (faster);\
@@ -154,6 +164,7 @@ file.openRead(\cf4 "sounds/a11wlk01.wav"\cf0 );\
 file.numFrames.postln;\
 file.readData(c);\
 \cf3 //file.inspect;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 file.close;\
 minval = 0;\
 maxval = 0;\
@@ -163,7 +174,9 @@ c.do(\{\cf2 arg\cf0  fi, i;\
 	if(fi < minval, \{minval = fi\});\
 	if(fi > maxval, \{maxval = fi\});\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 	//f.postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	if(i % 256 == 0,\{\
 		d = d.add((1 + maxval ) * 0.5 );\
 		f = f.add((1 + minval ) * 0.5 );\
@@ -179,7 +192,9 @@ b.reference_(d); \cf3 //this is used to draw the upper part of the table\
 e = \cf2 SCSlider\cf0 ( a, \cf2 Rect\cf0 (0, 0, size, 12));\
 e.action = \{\cf2 arg\cf0  ex; b.setProperty(\cf5 \\startIndex\cf0 , ex.value *f.size )\};\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //b.enabled_(false);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 b.action = \{\cf2 arg\cf0  xb; (\cf4 "index: "\cf0  ++ xb.index).postln\};\
 b.drawLines_(\cf2 true\cf0 );\
 b.drawRects_(\cf2 false\cf0 );\

@@ -56,21 +56,27 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 If you return nil from your function, or you have no function registered, the event will bubble up to the parent view which may then respond.  It will continue to bubble up unless something responds or it hits the topView of the window.  You may register a function in the window's topView to respond to all unhandled events for the window.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 There are default keyDownActions for some views, which will be overridden when you set a keydown action.\
+\f2\fs24 \cf0 There are default keyDownActions for some views, which will be overridden when you set a keydown action.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 char
+\f0\b\fs24 \cf0 char
 \f1\b0\fs18 \
 
 \f2\fs24 	the character, possibly unprintable.  character sequences (par example \'8e) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e).  this will also vary depending on the nationality the keyboard is set to.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 modifiers
+\f0\b\fs24 \cf0 modifiers
 \f3\b0 \
 
 \f2 	an integer bit field indicating the modifier keys in effect. You can examine individual flag settings \
@@ -129,7 +135,7 @@
 	\
 	arrow keys have an extra modifier value of 
 \f1\fs18 10485760\
-	so for a shift arrow key bitwise or with the shift mask:\
+	so for a shift arrow key do a bitwise 'or' with the shift mask:\
 		10485760 | 131072
 \f5\fs20 \
 	= 
@@ -153,18 +159,19 @@
 \f0\b\fs24 \cf0 keycode
 \f5\b0\fs20 \
 
-\f2\fs24 	the hardware dependent keycode indicating the physical key.  this will vary from machine to machine, but is useful for building musical interfaces using the computer keyboard.\
+\f2\fs24 	the hardware dependent keycode indicating the physical key.  this will vary from machine to machine, but is useful for building musical interfaces using the computer keyboard.  in order to play little melodies, this code will identify which key you consider to be special.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 	function key modifier may change keycode.\
+\f1\fs18 \cf0 \
+	warning: function key modifier may change keycode.\
 \
 \
 for various reasons these don't make it through cocoa:\
-	most command \
+	most command modifiers\
 	 cntl-tab\
 	 cntl-escape\
-	 tab and shift tab are currently trapped by SC itself (could change this)\
-	 \
-\
+	 tab and shift tab are currently trapped by SC itself for cycling the focus through the views.\
+	 	(we could change this)\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
