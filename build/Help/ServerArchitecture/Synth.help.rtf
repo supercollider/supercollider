@@ -260,21 +260,22 @@ trace
 \f2\fs18 \cf0 \
 \
 \
-( // boot the server, load synth defs\
+(\
+// boot the server\
 s = \cf3 Server\cf0 .local;\
 s.boot;\
+)\
 \
+(\
+// send synth def to server\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 "tpulse"\cf0 , \{ \cf3 arg\cf0  out=0,freq=700,sawFreq=440.0; \
 	\cf3 Out\cf0 .ar(out, \cf3 SyncSaw\cf0 .ar(freq,  sawFreq,0.1) ) \
-\}).writeDefFile;\
-\
-s.loadSynthDef(\cf4 "tpulse"\cf0 );\
-\
+\}).send(s);\
 )\
 \
 \
-(\
+\
 // make a new synth\
 y = \cf3 Synth\cf0 (\cf4 "tpulse"\cf0 );\
 \
@@ -325,16 +326,20 @@ y.run(\cf3 true\cf0 );\
 	\
 	\
 	\
-	
-\f2\b0\fs18 \
-( \cf5 // first collect some things to play with\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 s.boot;\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // first collect some things to play with\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 "moto-rev"\cf0 , \{ \cf3 arg\cf0  out=0;\
 	\cf3 var\cf0  x;\
 	x = \cf3 RLPF\cf0 .ar(\cf3 LFPulse\cf0 .ar(\cf3 SinOsc\cf0 .kr(0.2, 0, 10, 21), [0,0.1], 0.1), \
 		100, 0.1).clip2(0.4);\
 	\cf3 Out\cf0 .ar(out, x);\
-\}).writeDefFile;\
+\}).send(s);\
 \
 \cf3 SynthDef\cf0 (\cf4 "bubbles"\cf0 , \{ \cf3 arg\cf0  out=0;\
 	\cf3 var\cf0  f, zout;\
@@ -342,13 +347,13 @@ y.run(\cf3 true\cf0 );\
 	zout = \cf3 CombN\cf0 .ar(\cf3 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4); \cf5 // echoing sine wave\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 Out\cf0 .ar(out, zout);\
-\}).writeDefFile;\
+\}).send(s);\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 "rlpf"\cf0 ,\{ \cf3 arg\cf0  out=0,ffreq=600,rq=0.1;\
 	\cf3 ReplaceOut\cf0 .ar( out, \cf3 RLPF\cf0 .ar( \cf3 In\cf0 .ar(out), ffreq,rq) )\
-\}).writeDefFile;\
+\}).send(s);\
 \
 \
 \cf3 SynthDef\cf0 (\cf4 "wah"\cf0 , \{ \cf3 arg\cf0  out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq=0.1;\
@@ -365,16 +370,14 @@ y.run(\cf3 true\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 ReplaceOut\cf0 .ar( out , zout ); \
 	\
-\}).writeDefFile;\
-\
-s.loadSynthDef(\cf4 "moto-rev"\cf0 );\
-s.loadSynthDef(\cf4 "bubbles"\cf0 );\
-s.loadSynthDef(\cf4 "rlpf"\cf0 );\
-s.loadSynthDef(\cf4 "wah"\cf0 );\
+\}).send(s);\
 \
 )\
 \
-( \cf5 // execute these one at a time\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // execute these one at a time\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // y is playing on bus 0\
@@ -434,7 +437,7 @@ r.free;\
 \cf0 t.free;\
 \
 \
-)\
+\
 \
 \
 \

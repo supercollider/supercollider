@@ -9,6 +9,12 @@
 \f1\b0\fs18 \
 \
 
+\f0\b\fs24 superclass: SCView\
+
+\f1\b0\fs18 \
+An otherwise featureless view that receives extended wacom tablet data.  It can also be used with a normal mouse but with less resolution.\
+\
+
 \f0\b\fs24 action - 
 \f2\b0 dragging the mouse inside the view
 \f1\fs18 \
@@ -49,6 +55,24 @@ Each of the three actions are passed the following wacom tablet values:\
 		most relevant for the mouseDown, but still valid for the dragged and mouseUp
 \f1\fs18 \
 \
+\
+
+\f2\fs24 If using a mouse (even a wacom) rather than a pen, the x and y will be integer pixel values, rather than subpixel floats.  Wacom stylus devices have higher resolution than the screen.  Pressure will be 1 for mouse down, 0 for mouse up.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 \ul Properties
+\f2\b0\fs24 \ulnone \
+	
+\f0\b clipToBounds
+\f2\b0  - by default the x y values are clipped to the bounds of the view.\
+		it set to 0, it is possible to drag from inside to outside the view, and the x y values will \
+		exceed the bounds accordingly.\
+\
+\
+	\
+	
+\f1\fs18 \
 (\
 w = \cf2 SCWindow\cf0 .new;\
 t = \cf2 SCTabletView\cf0 (w,\cf2 Rect\cf0 (40,40,300,300));\
@@ -70,7 +94,11 @@ t.mouseUpAction = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature
 \
 )\
 \
-(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Assign the same function to each action\
+
+\f1\b0\fs18 (\
 w = \cf2 SCWindow\cf0 .new;\
 t = \cf2 SCTabletView\cf0 (w,\cf2 Rect\cf0 (40,40,300,300));\
 t.background = \cf2 Color\cf0 .white;\
@@ -89,37 +117,15 @@ t.mouseUpAction = f;\
 \
 \
 \
-\
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b\fs28 \cf0 move the box\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\b0\fs18 \cf0 (\
-w = \cf2 SCWindow\cf0 .new;\
-t = \cf2 SCTabletView\cf0 (w,\cf2 Rect\cf0 (40,40,30,30));\
-t.background = \cf2 Color\cf0 .white;\
-w.front;\
-\
-t.mouseDraggedAction = \{ \cf2 arg\cf0  view,x,y;\
-	\cf2 var\cf0  b;\
-	b = t.bounds;\
-	b.left = (b.left + x).clip(5,t.parent.bounds.width - 35);\
-	t.bounds = b;\
-\};\
-\
-)\
 
 \f2\fs24 \
-If dragging from inside to outside the view, the x y values will also be out of bounds, but will still be sent.  So you should clip the value to the bounds of the view if you need to.\
-\
-If using a mouse rather than a pen, the x and y will be integer pixel values, rather than subpixel floats.  Wacom stylus devices have higher resolution than the screen.  Pressure will be 1 for mouse down, 0 for mouse up.\
-\
-\
-\
-(
+	\
+
+\f0\b An example using crucial library\
+
+\f2\b0 (
 \f1\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Instr\cf0 ([\cf3 \\minimoog\cf0 ,\cf3 \\loose\cf0 ],\{ \cf2 arg\cf0  freq=440,int1=5,int2 = -5,\
 			ffreqInterval=0,rq=0.4,gate=0.0;\
 	\cf2 var\cf0  p,c,d,f;\
@@ -166,6 +172,36 @@ p = \cf2 Patch\cf0 .new([ \cf3 'minimoog'\cf0 , \cf3 'loose'\cf0  ],[\
 	\};\
 \});\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 )\
+\f2\fs24 \cf0 )\
+\
+\
+
+\f1\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 move the box\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 ( buggy )\
+
+\f1\fs18 (\
+w = \cf2 SCWindow\cf0 .new;\
+t = \cf2 SCTabletView\cf0 (w,\cf2 Rect\cf0 (40,40,30,30));\
+t.background = \cf2 Color\cf0 .white;\
+w.front;\
+\
+t.action = \{ \cf2 arg\cf0  view,x,y;\
+	\cf2 var\cf0  b;\
+	b = t.bounds;\
+	b.left = b.left + x;\
+	//b.top = y - b.top;\
+	t.bounds = b;\
+\};\
+\
+)\
+
+\f2\fs24 \
 }

@@ -10,7 +10,7 @@
 
 \f0\b\fs24 superclass: SC2DSlider\
 \
-a 2D slider with support for extra wacom data\
+a 2D slider with support for extended wacom data\
 
 \f1\b0\fs18 \
 (\
@@ -30,15 +30,15 @@ window.front;\
 	\};\
 	slider.mouseUpAction = \{ \cf2 arg\cf0  view,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;\
 		["up",view,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount].postln;\
-	\}\
+	\};\
+	slider.setProperty(\\clipInBounds,0)\
 )\
 \
 
 \f0\b\fs24 <>x 0..1 value\
 <>y 0..1 value\
 
-\f2\b0 	always clipped to 0..1 range\
-\
+\f2\b0 \
 \
 
 \f0\b action
@@ -56,10 +56,10 @@ all actions are passed the following wacom tablet values:\
 \f2\b0  - the view\
 	
 \f0\b x
-\f2\b0  - 0..1 value within the bounds of the view, exceeding as you exceed the bounds\
+\f2\b0  - 0..1 value\
 	
 \f0\b y
-\f2\b0  - 0..1 value within the bounds of the view
+\f2\b0  - 0..1 value
 \f0\b \
 	pressure - 
 \f2\b0 0..1
@@ -83,10 +83,18 @@ all actions are passed the following wacom tablet values:\
 \
 \
 
-\f2\fs24 the x/y that is given inside the action will exceed the 0..1 range as you drag off of the view.  this is useful in that you can have a small view in which to start your movement and then go all over as long as you don't lift the pen.\
-clip to 0..1 or the desired range.\
+\f0\b\fs28 \ul Properties
+\f1\b0\fs18 \ulnone \
+	
+\f0\b\fs24 clipInBounds
+\f1\b0\fs18  
+\f2\fs24 - 0 or 1\
+		by default the x/y values are clipped to 0..1\
+		by setting this to 0, the values will exceed this as you drag from \
+		inside the view to outside.  This is useful in that you can have a small view \
+		in which to start your movement and then go all over as long as you don't lift the pen.\
 \
-note that SCTabletView returns pixel values for its x/y\
+\
 
 \f1\fs18 \
 
