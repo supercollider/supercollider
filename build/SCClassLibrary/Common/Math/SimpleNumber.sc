@@ -229,5 +229,16 @@ SimpleNumber : Number {
 		^scale.indexInBetween(key) + n
 	}
 	
+	nearestInList { arg list;  // collection is sorted
+		^list.at(list.indexIn(this))
+	}
+	
+	nearestInScale { arg scale, stepsPerOctave=12; // collection is sorted
+		var key, root;
+		root = this.trunc(stepsPerOctave);
+		key = this % stepsPerOctave;
+		^key.nearestInList(scale) + root
+	}
+	
 		
 }
