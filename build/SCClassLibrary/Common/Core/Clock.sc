@@ -62,6 +62,8 @@ Scheduler {
 		});
 	}
 	clear { queue.clear }
+	isEmpty { ^queue.isEmpty }
+	
 	advance { arg delta;
 		this.time = time + delta;
 	}
