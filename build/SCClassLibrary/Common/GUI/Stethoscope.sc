@@ -20,7 +20,7 @@ Stethoscope {
 			w.onClose = { this.free };
 			w.view.keyDownAction = 
 			{ arg view, char; 
-				if(char === $i) { this.setIndexToFirstHardwareBus; this.rate = \audio }; 
+				if(char === $i) { this.setIndexToFirstHardwareBus }; 
 				if(char === $ ) { this.run };
 				if(char === $s) { n.style = style = (style + 1) % 2 };
 				if(char === $S) { n.style = style = (style + 1) % 2 + 1  };
@@ -154,8 +154,8 @@ Stethoscope {
 	switchRate { if(rate === \control) { this.rate = \audio } {  this.rate = \control } }
 	
 	setIndexToFirstHardwareBus {
-		this.index = server.options.numInputBusChannels;
-		this.rate = \audio;
+		this.index = server.options.numOutputBusChannels;
+		this.numChannels = server.options.numInputBusChannels;
 	}
 
 }
