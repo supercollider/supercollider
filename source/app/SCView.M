@@ -35,6 +35,7 @@
 
 #include "SCView.h"
 
+
 void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 
 SCViewMaker *gSCViewMakers = 0;
@@ -4176,6 +4177,12 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             refresh();
             return errNone;
         }
+
+        if (strcmp(name, "setFixedSelection")==0) {
+			mIsFixedSelection = IsTrue(slot);
+            return errNone;
+        }
+
 		if (strcmp(name, "setIndex")==0) { //index selection without refresh() and color change.
             err = slotIntVal(slot, &mSelectedIndex);
 			if(mSelectedIndex >= 0)
@@ -4774,8 +4781,10 @@ SCView* MakeSCView(PyrObject* inObj, SCContainerView *inParent, SCRect inBounds,
 }
 
 static bool sRegisteredSCViewClasses = false;
+extern SCView* NewSCSoundFileView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 extern SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 extern SCView* NewSCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+
 
 void registerSCViewClasses()
 {
@@ -4803,6 +4812,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCTabletView", NewSCTabletView);
     new SCViewMaker("SCScope", NewSCScope);
     new SCViewMaker("SCListView", NewSCListView);
+    new SCViewMaker("SCSoundFileView", NewSCSoundFileView);
 	//these can be found in SCCocoaView.M
     new SCViewMaker("SCTextView", NewSCCocoaTextView);
     new SCViewMaker("SCMovieView", NewSCMovieView);
@@ -4918,6 +4928,19 @@ int prSCView_Focus(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prSCView_HasFocus(struct VMGlobals *g, int numArgsPushed);
+int prSCView_HasFocus(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+
+	PyrSlot *viewObjSlot = g->sp;	
+	SCView *view = (SCView*)viewObjSlot[0].uo->slots[0].ui;
+    
+	if (!view) return errFailed;
+    SetBool(viewObjSlot, view->isFocus());
+	return errNone;
+}
+
 int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed);
 int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed)
 {
@@ -4971,6 +4994,7 @@ void initSCViewPrimitives()
 	definePrimitive(base, index++, "_SCView_GetProperty", prSCView_GetProperty, 3, 0);	
 	definePrimitive(base, index++, "_SCView_FindByID", prSCView_FindByID, 2, 0);	
 	definePrimitive(base, index++, "_SCView_Focus", prSCView_Focus, 2, 0);	
+	definePrimitive(base, index++, "_SCView_HasFocus", prSCView_HasFocus, 1, 0);		
 	definePrimitive(base, index++, "_SCView_Refresh", prSCView_Refresh, 1, 0);	
 	definePrimitive(base, index++, "_SCView_Remove", prSCView_Remove, 1, 0);	
 }
@@ -4981,6 +5005,7 @@ void initGUI()
 	ivxSCDragSource_object = instVarOffset("SCDragSource", "object");
 	ivxSCDragBoth_object = instVarOffset("SCDragBoth", "object");
 }
+
 
 
 /*
