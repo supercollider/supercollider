@@ -1391,8 +1391,8 @@ void buildDepTree()
 					sym->classdep->superClassName->classdep->subclasses = sym->classdep;
 					sym->classdep->next = next;
 				} else if (sym->classdep->superClassName != s_none) {
-					error("Superclass '%s' of class '%s' is not defined in any file.\n",
-						sym->classdep->superClassName->name, sym->classdep->className->name);
+					error("Superclass '%s' of class '%s' is not defined in any file.\n%s\n",
+						sym->classdep->superClassName->name, sym->classdep->className->name,sym->classdep->fileSym->name);
 				}
 			}
 		}
