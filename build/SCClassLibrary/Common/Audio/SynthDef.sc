@@ -379,6 +379,7 @@ SynthDef {
 	load { arg server, completionMsg,dir;
 		// i should remember what dir i was written to
 		var path;
+		dir = dir ? synthDefDir;
 		this.writeDefFile(dir);
 		server.listSendMsg(
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
