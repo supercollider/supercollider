@@ -39,11 +39,11 @@
 		); 
 	}
 	prepareForProxySynthDef { ^this.subclassResponsibility(thisMethod) }
+	clear { "Object-clear will be removed..".warn; ^this }
 	
-	argNames { ^nil }
 	defaultArgs { ^nil }
-	numChannels { ^1 } 
-	clear { }
+	argNames { ^nil }
+	
 	//support for unop / binop proxy
 	isNeutral { ^true }
 	initBus { ^true }
