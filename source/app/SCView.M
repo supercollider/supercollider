@@ -2505,8 +2505,8 @@ void SCMultiSliderView::setVisibleSize()
 			if (scaledsize <= mBounds.width) mVisibleSize = mTabSize - mStartIndex;
 			else mVisibleSize = (int) (mStartIndex + (mBounds.width / mThumbSize));
 		} else {
-			if (scaledsize <= mBounds.height) mVisibleSize = mTabSize - mStartIndex
-			else mVisibleSize = (int) (mStartIndex +  (mBounds.height / mThumbSize));
+		    if (scaledsize <= mBounds.height) mVisibleSize = mTabSize - mStartIndex;
+		    else mVisibleSize = (int) (mStartIndex +  (mBounds.height / mThumbSize));
 		}
     } else {
         mVisibleSize = 0;
@@ -2570,7 +2570,7 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
     }
     if (strcmp(name, "startIndex")==0) {
         err = slotIntVal(slot, &mStartIndex);
-		SetVisibleSize()
+	 setVisibleSize();
         refresh();
         return errNone;
     }
