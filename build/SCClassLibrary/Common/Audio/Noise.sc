@@ -75,9 +75,10 @@ BrownNoise : WhiteNoise {
 
 PinkNoise : WhiteNoise {
 }
-
+/* not installed
 PinkerNoise : WhiteNoise {
 }
+*/
 
 ClipNoise : WhiteNoise {
 }
@@ -108,7 +109,7 @@ Logistic : UGen {
 		^this.multiNew('control', chaosParam, freq).madd(mul, add)
 	}
 }
-
+/* not installed
 Rossler : UGen {
 	
 	*ar { arg chaosParam=1.5, dt = 0.04, mul = 1.0, add = 0.0;
@@ -118,6 +119,7 @@ Rossler : UGen {
 		^this.multiNew('control', chaosParam, dt).madd(mul, add)
 	}
 }
+*/
 
 LFNoise0 : UGen {
 	
@@ -159,7 +161,7 @@ Dust2 : UGen {
 		^this.multiNew('control', density).madd(mul, add)
 	}
 }
-
+/* not installed
 LinCong : UGen {
 	var iseed, imul, iadd, imod;
 	
@@ -177,6 +179,7 @@ LinCong : UGen {
  		imod = jmod;
  	}
 }
+*/
 
 Latoocarfian : UGen {
 	
