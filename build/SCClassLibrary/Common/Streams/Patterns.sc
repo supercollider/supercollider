@@ -335,4 +335,46 @@ Pstep3add : Pattern {
 }
 
 
+PstepNfunc : Pattern {
+	var <function, <>patterns;
+	*new { arg func, patterns;
+		^super.newCopyArgs(func, patterns)
+	}
+	
+	asStream {
+		var f, streams, vals, size, max;
+		size = patterns.size;
+		max = size - 1;
+		streams = Array.newClear(size);
+		vals = Array.newClear(size);
+		
+		f = { arg inval, level=0;
+				var val;
+				streams[level] = patterns[level].asStream;
+				while({
+					vals[level] = val = streams[level].next(inval);
+					val.notNil;
+				}, {
+					if(level < max, {
+						f.value(inval, level + 1)
+					}, {
+						inval = yield(function.value(vals));
+					})
+				});
+		
+		};
+		
+		^Routine.new({ arg inval; f.value(inval, 0) })		}
+	
+}
+
+PstepNadd : PstepNfunc {
+	*new { arg ... patterns;
+		^super.new({ arg vals; vals.sum }, patterns)
+	}
+	storeArgs { ^patterns }
+}
+
+
+
 
