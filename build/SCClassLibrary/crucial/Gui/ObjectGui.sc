@@ -29,13 +29,17 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 	}
 	remove {
 		model.removeDependant(this);
+		super.remove;
 	}
 
 	gui { arg lay, bounds ... args;
 		var layout;
 		layout=this.guify(lay,bounds);
-		this.writeName(layout);
-		this.performList(\guiBody,[layout] ++ args);
+		layout.flow({ arg layout;
+			view = layout;
+			this.writeName(layout);
+			this.performList(\guiBody,[layout] ++ args);
+		}).background_(Color.yellow(0.2,0.15));
 		//if you created it, front it
 		if(lay.isNil,{ layout.resizeToFit.front });
 	}

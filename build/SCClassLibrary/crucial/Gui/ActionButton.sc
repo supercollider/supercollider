@@ -28,6 +28,7 @@ SCViewAdapter { // SCViewHolder
 	font_ { arg f;
 		view.font = f;
 	}
+	remove { view.remove }
 	prClose { 
 		view.prClose 
 	}
