@@ -312,7 +312,6 @@ PyrObject* signal_ring1_xf(VMGlobals *g, PyrObject* ina, float inb)
 	PyrObject *outc = newPyrSignal(g, ina->size);
 	float *a = (float*)(ina->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr = c + outc->size;
 	UNROLL_CODE(outc->size, c, ++a; *++c = *a * inb + *a;)
 	return outc;
 }
@@ -322,7 +321,6 @@ PyrObject* signal_ring2_xf(VMGlobals *g, PyrObject* ina, float inb)
 	PyrObject *outc = newPyrSignal(g, ina->size);
 	float *a = (float*)(ina->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr = c + outc->size;
 	UNROLL_CODE(outc->size, c, ++a; *++c = *a * inb + *a + inb;)
 	return outc;
 }
@@ -332,7 +330,6 @@ PyrObject* signal_ring3_xf(VMGlobals *g, PyrObject* ina, float inb)
 	PyrObject *outc = newPyrSignal(g, ina->size);
 	float *a = (float*)(ina->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr = c + outc->size;
 	UNROLL_CODE(outc->size, c, ++a; *++c = *a * *a * inb;)
 	return outc;
 }
@@ -342,7 +339,6 @@ PyrObject* signal_ring4_xf(VMGlobals *g, PyrObject* ina, float inb)
 	PyrObject *outc = newPyrSignal(g, ina->size);
 	float *a = (float*)(ina->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr = c + outc->size;
 	float inb2 = inb * inb;
 	UNROLL_CODE(outc->size, c, ++a; *++c = *a * *a * inb + *a * inb2;)
 	return outc;
@@ -388,7 +384,6 @@ PyrObject* signal_difsqr_xf(VMGlobals *g, PyrObject* ina, float inb)
 	PyrObject *outc = newPyrSignal(g, ina->size);
 	float *a = (float*)(ina->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
 	inb = inb * inb;
 	UNROLL_CODE(outc->size, c, ++a; *++c = *a * *a - inb;)
 	return outc;
@@ -399,7 +394,6 @@ PyrObject* signal_sumsqr_xf(VMGlobals *g, PyrObject* ina, float inb)
 	PyrObject *outc = newPyrSignal(g, ina->size);
 	float *a = (float*)(ina->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
 	inb = inb * inb;
 	UNROLL_CODE(outc->size, c, ++a; *++c = *a * *a + inb;)
 	return outc;
@@ -410,7 +404,6 @@ PyrObject* signal_sqrsum_xf(VMGlobals *g, PyrObject* ina, float inb)
 	PyrObject *outc = newPyrSignal(g, ina->size);
 	float *a = (float*)(ina->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
 	float temp;
 	UNROLL_CODE(outc->size, c, ++a; temp = *a + inb; *++c = temp * temp;)
 	return outc;
@@ -421,7 +414,6 @@ PyrObject* signal_sqrdif_xf(VMGlobals *g, PyrObject* ina, float inb)
 	PyrObject *outc = newPyrSignal(g, ina->size);
 	float *a = (float*)(ina->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
 	float temp;
 	UNROLL_CODE(outc->size, c, ++a; temp = *a - inb; *++c = temp * temp;)
 	return outc;
@@ -432,8 +424,6 @@ PyrObject* signal_absdif_xf(VMGlobals *g, PyrObject* ina, float inb)
 	PyrObject *outc = newPyrSignal(g, ina->size);
 	float *a = (float*)(ina->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
-	float temp;
 	UNROLL_CODE(outc->size, c, ++a; *++c = fabs(*a - inb); )
 	return outc;
 }
@@ -443,7 +433,6 @@ PyrObject* signal_ring1_fx(VMGlobals *g, float ina, PyrObject* inb)
 	PyrObject *outc = newPyrSignal(g, inb->size);
 	float *b = (float*)(inb->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
 	UNROLL_CODE(outc->size, c, *++c = ina * *++b + ina;)
 	return outc;
 }
@@ -453,7 +442,6 @@ PyrObject* signal_ring2_fx(VMGlobals *g, float ina, PyrObject* inb)
 	PyrObject *outc = newPyrSignal(g, inb->size);
 	float *b = (float*)(inb->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
 	UNROLL_CODE(outc->size, c, ++b; *++c = ina * *b + ina + *b;)
 	return outc;
 }
@@ -463,7 +451,6 @@ PyrObject* signal_ring3_fx(VMGlobals *g, float ina, PyrObject* inb)
 	PyrObject *outc = newPyrSignal(g, inb->size);
 	float *b = (float*)(inb->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
 	float ina2 = ina * ina;
 	UNROLL_CODE(outc->size, c, *++c = ina2 * *++b;)
 	return outc;
@@ -474,7 +461,6 @@ PyrObject* signal_ring4_fx(VMGlobals *g, float ina, PyrObject* inb)
 	PyrObject *outc = newPyrSignal(g, inb->size);
 	float *b = (float*)(inb->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
 	float ina2 = ina * ina;
 	UNROLL_CODE(outc->size, c, ++b; *++c = ina2 * *b - ina * *b * *b;)
 	return outc;
@@ -521,7 +507,6 @@ PyrObject* signal_difsqr_fx(VMGlobals *g, float ina, PyrObject* inb)
 	PyrObject *outc = newPyrSignal(g, inb->size);
 	float *b = (float*)(inb->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
 	ina = ina * ina;
 	UNROLL_CODE(outc->size, c, ++b; *++c = ina - *b * *b;)
 	return outc;
@@ -532,7 +517,6 @@ PyrObject* signal_sumsqr_fx(VMGlobals *g, float ina, PyrObject* inb)
 	PyrObject *outc = newPyrSignal(g, inb->size);
 	float *b = (float*)(inb->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
 	ina = ina * ina;
 	UNROLL_CODE(outc->size, c, ++b; *++c = ina + *b * *b;)
 	return outc;
@@ -544,7 +528,6 @@ PyrObject* signal_sqrsum_fx(VMGlobals *g, float ina, PyrObject* inb)
 	float temp;
 	float *b = (float*)(inb->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
 	UNROLL_CODE(outc->size, c, ++b; temp = ina + *b; *++c = temp * temp;)
 	return outc;
 }
@@ -555,7 +538,6 @@ PyrObject* signal_sqrdif_fx(VMGlobals *g, float ina, PyrObject* inb)
 	float temp;
 	float *b = (float*)(inb->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
 	UNROLL_CODE(outc->size, c, ++b; temp = ina - *b; *++c = temp * temp;)
 	return outc;
 }
@@ -563,10 +545,8 @@ PyrObject* signal_sqrdif_fx(VMGlobals *g, float ina, PyrObject* inb)
 PyrObject* signal_absdif_fx(VMGlobals *g, float ina, PyrObject* inb)
 {
 	PyrObject *outc = newPyrSignal(g, inb->size);
-	float temp;
 	float *b = (float*)(inb->slots) - 1;
 	float *c = (float*)(outc->slots) - 1;
-	float *endptr;
 	UNROLL_CODE(outc->size, c, ++b; *++c = fabs(ina - *b);)
 	return outc;
 }

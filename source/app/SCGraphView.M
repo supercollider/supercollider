@@ -328,10 +328,10 @@ const int circDiam = 20;
                             green: 0 
                             blue: 1 
                             alpha: alpha];
-    NSColor *colorTransLtBlue = [NSColor colorWithCalibratedRed: 0.8
+    /*NSColor *colorTransLtBlue = [NSColor colorWithCalibratedRed: 0.8
                             green: 0.8 
                             blue: 1 
-                            alpha: alpha];
+                            alpha: alpha];*/
     NSColor *colorTransWhite = [NSColor colorWithCalibratedRed: 1
                             green: 1 
                             blue: 1 

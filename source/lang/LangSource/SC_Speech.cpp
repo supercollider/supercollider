@@ -93,8 +93,8 @@ int prInitSpeech(struct VMGlobals *g, int numArgsPushed){
 	
 	for (int i=0; i<chan; ++i) {
         NewSpeechChannel( NULL, fCurSpeechChannel+i );
-        theErr = SetSpeechInfo (fCurSpeechChannel[i], soSpeechDoneCallBack, OurSpeechDoneCallBackProc);
-        theErr = SetSpeechInfo (fCurSpeechChannel[i], soWordCallBack, OurWordCallBackProc);
+        theErr = SetSpeechInfo (fCurSpeechChannel[i], soSpeechDoneCallBack, (const void*)OurSpeechDoneCallBackProc);
+        theErr = SetSpeechInfo (fCurSpeechChannel[i], soWordCallBack, (const void*)OurWordCallBackProc);
         theErr = SetSpeechInfo (fCurSpeechChannel[i], soRefCon, (void*) i);
 	}
     return errNone;
@@ -126,14 +126,14 @@ int prSetSpeechRate(struct VMGlobals *g, int numArgsPushed);
 int prSetSpeechRate(struct VMGlobals *g, int numArgsPushed){
 
 	OSErr theErr = noErr;
-	PyrSlot *a = g->sp-2;
+	//PyrSlot *a = g->sp-2;
 	PyrSlot *b = g->sp-1;
 	PyrSlot *c = g->sp;
 	double val;
 	int chan;
 	slotIntVal(b, &chan);
 	slotDoubleVal(c, &val);
-	Fixed newRate = val * 65536.0;
+	Fixed newRate = (Fixed)(val * 65536.0);
 //	if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
     theErr = SetSpeechInfo (fCurSpeechChannel[chan], soRate, &newRate);
 	return errNone;
@@ -143,14 +143,14 @@ int prSetSpeechPitch(struct VMGlobals *g, int numArgsPushed);
 int prSetSpeechPitch(struct VMGlobals *g, int numArgsPushed){
 
 	OSErr theErr = noErr;
-	PyrSlot *a = g->sp-2;
+	//PyrSlot *a = g->sp-2;
 	PyrSlot *b = g->sp-1;
 	PyrSlot *c = g->sp;
 	double val;
 	int chan;
 	slotIntVal(b, &chan);
 	slotDoubleVal(c, &val);
-	Fixed newVal = val * 65536.0;
+	Fixed newVal = (Fixed)(val * 65536.0);
 	//if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
     theErr = SetSpeechPitch (fCurSpeechChannel[chan], newVal);
 	return errNone;
@@ -160,14 +160,14 @@ int prSetSpeechPitchMod(struct VMGlobals *g, int numArgsPushed);
 int prSetSpeechPitchMod(struct VMGlobals *g, int numArgsPushed){
 
 	OSErr theErr = noErr;
-	PyrSlot *a = g->sp-2;
+	//PyrSlot *a = g->sp-2;
 	PyrSlot *b = g->sp-1;
 	PyrSlot *c = g->sp;
 	double val;
 	int chan;
 	slotIntVal(b, &chan);
 	slotDoubleVal(c, &val);
-	Fixed newVal = val * 65536.0;
+	Fixed newVal = (Fixed)(val * 65536.0);
 //	if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
     theErr = SetSpeechInfo (fCurSpeechChannel[chan], soPitchMod, &newVal);
 	return errNone;
@@ -177,14 +177,14 @@ int prSetSpeechVolume(struct VMGlobals *g, int numArgsPushed);
 int prSetSpeechVolume(struct VMGlobals *g, int numArgsPushed) {
 
 	OSErr theErr = noErr;
-	PyrSlot *a = g->sp-2;
+	//PyrSlot *a = g->sp-2;
 	PyrSlot *b = g->sp-1;
 	PyrSlot *c = g->sp;
 	double val;
 	int chan;
 	slotIntVal(b, &chan);
 	slotDoubleVal(c, &val);
-	Fixed newVal = val * 65536.0;
+	Fixed newVal = (Fixed)(val * 65536.0);
 //	if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
     theErr = SetSpeechInfo (fCurSpeechChannel[chan], soVolume, &newVal);
 	return errNone;
@@ -196,14 +196,14 @@ int prSetSpeechPause(struct VMGlobals *g, int numArgsPushed);
 int prSetSpeechPause(struct VMGlobals *g, int numArgsPushed){
 
 	OSErr theErr = noErr;
-	PyrSlot *a = g->sp-2;
+	//PyrSlot *a = g->sp-2;
 	PyrSlot *b = g->sp-1;
 	PyrSlot *c = g->sp;
 	int val;
 	int chan;
 	slotIntVal(b, &chan);
 	slotIntVal(c, &val);
-	//Fixed newVal = val * 65536.0;
+	//Fixed newVal = (Fixed)(val * 65536.0);
 	if(val) {
         theErr = ContinueSpeech(fCurSpeechChannel[chan] );
 	} else {
@@ -216,7 +216,7 @@ int prSetSpeechVoice(struct VMGlobals *g, int numArgsPushed);
 int prSetSpeechVoice(struct VMGlobals *g, int numArgsPushed){
 
 	OSErr theErr = noErr;
-	PyrSlot *a = g->sp-2;
+	//PyrSlot *a = g->sp-2;
 	PyrSlot *b = g->sp-1;
 	PyrSlot *c = g->sp;
 	int val;

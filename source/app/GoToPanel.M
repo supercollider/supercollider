@@ -35,14 +35,16 @@
 
 static id sharedSelectLineObject = nil;
 
-+ (id)sharedInstance {
++ (id)sharedInstance 
+{
     if (!sharedSelectLineObject) {
         [[self allocWithZone:[[NSApplication sharedApplication] zone]] init];
     }
     return sharedSelectLineObject;
 }
 
-- (id)init {
+- (id)init 
+{
     if (sharedSelectLineObject) {
         [super dealloc];
         return sharedSelectLineObject;
@@ -56,46 +58,58 @@ static id sharedSelectLineObject = nil;
     return self;
 }
 
-- (void)appDidActivate:(NSNotification *)notification {
+- (void)appDidActivate:(NSNotification *)notification 
+{
    // [self loadFindStringFromPasteboard];
 }
 
 - (void) loadUI
 {
-if (![NSBundle loadNibNamed:@"GoToLinePanel" owner:self]){
+if (![NSBundle loadNibNamed:@"GoToLinePanel" owner:self]) {
     post("could not load GoToPanel.nib");
     }
     if (self == sharedSelectLineObject) [[findTextField window] setFrameAutosaveName:@"Find"];
 
 }
-- (NSPanel *)gotoLinePanel {
+
+- (NSPanel *)gotoLinePanel 
+{
     if (!findTextField) [self loadUI];
     return (NSPanel *)[findTextField window];
 }
-- (void)dealloc {
+
+- (void)dealloc 
+{
     if (self != sharedSelectLineObject) {
         [[NSNotificationCenter defaultCenter] removeObserver:self];
         [super dealloc];
     }
 }
 
-- (NSTextView *)textObjectToSelectIn {
+- (NSTextView *)textObjectToSelectIn 
+{
     id obj = [[NSApp mainWindow] firstResponder];
     return (obj && [obj isKindOfClass:[NSTextView class]]) ? obj : nil;
 }
-- (void)orderFrontGotoLinePanel:(id)sender {
+
+- (void)orderFrontGotoLinePanel:(id)sender 
+{
     NSPanel *panel = [self gotoLinePanel];
     [findTextField selectText:nil];
     [panel makeKeyAndOrderFront:nil];
 }
-- (void)selectLine:(id)sender{
+
+- (void)selectLine:(id)sender
+{
     int linenum = [findTextField intValue];
     linenum = linenum;
     if(!linenum)[self getAndDisplayCurrentLine];
     else
     [self prselectLine: linenum];
 }
-- (void) getAndDisplayCurrentLine {
+
+- (void) getAndDisplayCurrentLine 
+{
     NSTextView *localTextView = [self textObjectToSelectIn];
 	NSRange range = [localTextView selectedRange];
 	unsigned select = range.location + 1;
@@ -112,13 +126,15 @@ if (![NSBundle loadNibNamed:@"GoToLinePanel" owner:self]){
 	[localTextView setSelectedRange: lineRange];
     [localTextView scrollRangeToVisible: lineRange];
 }
-- (void)prselectLine:(int)linenum{
+
+- (void)prselectLine:(int)linenum
+{
           	
     NSTextView *localTextView = [self textObjectToSelectIn];
     NSLayoutManager *layoutManager = [localTextView layoutManager];
     unsigned numberOfLines, index, numberOfGlyphs = [layoutManager numberOfGlyphs];
     NSRange lineRange;
-    for (numberOfLines = 0, index = 0; index < numberOfGlyphs && numberOfLines<linenum; numberOfLines++){
+    for (numberOfLines = 0, index = 0; index < numberOfGlyphs && (int)numberOfLines < linenum; numberOfLines++) {
     
         (void) [layoutManager lineFragmentRectForGlyphAtIndex:index effectiveRange:&lineRange];
             index = NSMaxRange(lineRange);

@@ -598,6 +598,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     [localTextView setSelectedRange: range];
     [localTextView scrollRangeToVisible: range];
 }
+
 -(void)selectLine:(int)linenum
 {
     NSTextView *localTextView = [self textView];
@@ -608,7 +609,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     unsigned numberOfLines, index, numberOfGlyphs = [layoutManager numberOfGlyphs];
     NSRange lineRange;
 	if(linenum <= 0) linenum = 1;
-    for (numberOfLines = 0, index = 0; index < numberOfGlyphs && numberOfLines<linenum; numberOfLines++){
+    for (numberOfLines = 0, index = 0; index < numberOfGlyphs && (int)numberOfLines < linenum; numberOfLines++) {
     
         (void) [layoutManager lineFragmentRectForGlyphAtIndex:index effectiveRange:&lineRange];
             index = NSMaxRange(lineRange);

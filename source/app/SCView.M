@@ -30,6 +30,7 @@
 #include "SC_RGen.h"
 #include "SC_BoundsMacros.h"
 #include "SC_InlineBinaryOp.h"
+#include "SCGraphView.h"
 
 
 #include "SCView.h"
@@ -1854,7 +1855,7 @@ void SCScope::draw0(CGContextRef cgc)
 	
 	// draw scope.
     CGRect rect = SCtoCGRect(mBounds);
-	int width = mBounds.width - 2;
+	int width = (int)mBounds.width - 2;
 	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
 	//post("channels %d\n", channels);
 	float chanHeight = (mBounds.height - 2.) / channels;
@@ -1916,7 +1917,7 @@ void SCScope::draw1(CGContextRef cgc)
 	
 	// draw scope.
     CGRect rect = SCtoCGRect(mBounds);
-	int width = mBounds.width - 2;
+	int width = (int)mBounds.width - 2;
 	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
 	//post("channels %d\n", channels);
 	float chanHeight = mBounds.height - 2.;
@@ -2493,7 +2494,7 @@ void SCPopUpMenu::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEven
     } else {    
 		if (!mMenuH) return;
 		
-		[mTop->GetNSView() startMenuTracking: this];
+		[(SCGraphView*)mTop->GetNSView() startMenuTracking: this];
 	
 		int numberOfItems = CountMenuItems(mMenuH);
 		for (int i=0; i<numberOfItems; ++i) {
@@ -3433,8 +3434,8 @@ void SCListView::draw(SCRect inDamage)
 		clipRect.size.height -= 2;
 		CGContextClipToRect(cgc, clipRect);
 		
-		int minIndex = (mScroll - (int)itemHeight + 1) / (int)itemHeight;
-		int maxIndex = minIndex + 1 + (bounds.height + (int)itemHeight - 1) / (int)itemHeight;
+		int minIndex = (int)((mScroll - itemHeight + 1) / itemHeight);
+		int maxIndex = (int)(minIndex + 1 + (bounds.height + itemHeight - 1) / itemHeight);
 		if (maxIndex > numItems - 1) maxIndex = numItems - 1;
 		itemBounds.y += minIndex * itemHeight;
 
@@ -3461,8 +3462,8 @@ void SCListView::scrollToValue()
 	int numItems = mArray ? CFArrayGetCount(mArray) : 0;
 	
 	float itemHeight = mStrSize.height + 3.f;
-	float visibleItems = mBounds.height / itemHeight;
-	float fraction = visibleItems / (float)numItems;
+	//float visibleItems = mBounds.height / itemHeight;
+	//float fraction = visibleItems / (float)numItems;
 	float totalHeight = itemHeight * numItems;
 				
 	float maxScroll = totalHeight - mBounds.height;
@@ -3642,7 +3643,7 @@ void SCListView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent
 	
 	mScrolling = fraction < 1.f && where.x >= mBounds.x + mBounds.width - 16;
 	if (!mScrolling) {
-		int value = (where.y - mBounds.y - 2 + mScroll) / itemHeight;
+		int value = (int)((where.y - mBounds.y - 2 + mScroll) / itemHeight);
 		setValue(value, true);
 	}
 }

@@ -40,7 +40,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 	PyrSlot *slot;
 	PyrSymbol *selector;
 	char str[256];
-	long op1, op2, op3, op4, op5, op6;
+	long op1, op2, op3, op4, op5;
 	long i, n, ival, jmplen;
 	long numArgNames, numVarNames, numTemps;
 	unsigned char *ipbeg;

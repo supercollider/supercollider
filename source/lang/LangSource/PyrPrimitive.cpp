@@ -346,7 +346,7 @@ int prObjectString(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrString *string;
-	char str[256], *strp;
+	char str[256];
 	
 	a = g->sp;
 	if (IsSym(a)) {
@@ -2363,9 +2363,9 @@ int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed);
 int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
 {
 	//PyrSlot *a = g->sp - 1;
-	PyrSlot *b = g->sp;
 	
 #if TAILCALLOPTIMIZE
+	PyrSlot *b = g->sp;
 	if (IsTrue(b)) {
 		gGenerateTailCallByteCodes = true;
 	} else if (IsFalse(b)) {

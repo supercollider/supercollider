@@ -2174,13 +2174,10 @@ int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
 					break;
 				case shape_Welch :
 				{
-					double pos1 = 1. - pos;
 					if (begLevel < endLevel)
 						level = begLevel + (endLevel - begLevel) * sin(pi2 * pos);
-						//level = endLevel - (endLevel - begLevel) * (pos1 * pos1);
 					else 
 						level = endLevel - (endLevel - begLevel) * sin(pi2 - pi2 * pos);
-						//level = begLevel + (endLevel - begLevel) * (pos * pos);
 					break;
 				}
 				case shape_Curve :

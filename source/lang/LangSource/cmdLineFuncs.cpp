@@ -64,7 +64,7 @@ extern "C" {
 
 int vpost(const char *fmt, va_list vargs)
 {
-	vfprintf(postfile, fmt, vargs);
+	return vfprintf(postfile, fmt, vargs);
         fflush(postfile);
 }
 

@@ -289,7 +289,7 @@ void slotString(PyrSlot *slot, char *str)
 				} else if (slot->uo->classptr == class_method) {
 					sprintf(str, "instance of Method %s-%s (%08X)", 
 						slot->uom->ownerclass.uoc->name.us->name,
-						slot->uom->name.us->name, slot->uom);
+						slot->uom->name.us->name, (uint32)slot->uom);
 				} else if (slot->uo->classptr == class_fundef) {
 					PyrSlot *context, *nextcontext;
 					// find function's method
@@ -320,9 +320,9 @@ void slotString(PyrSlot *slot, char *str)
 						sprintf(str, "Frame (%0X) of Function", slot->ui);
 					}
 				} else {
-					sprintf(str, "instance of %s (%08X, size=%ld, set=%02X)", 
+					sprintf(str, "instance of %s (%08lX, size=%d, set=%d)", 
 						slot->uo->classptr->name.us->name, 
-						slot->uo, slot->uo->size,
+						(unsigned long)slot->uo, slot->uo->size,
 						slot->uo->obj_sizeclass);
 				}
 			} else {

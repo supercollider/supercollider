@@ -38,11 +38,6 @@ static bool streq(char *cstr, unichar *ustr)
     return false;
 }
 
-static bool streq(unichar *ustr, char *cstr)
-{
-    return streq(cstr, ustr);
-}
-
 static unichar input() 
 {
 	unichar c;
@@ -336,7 +331,6 @@ void SyntaxColorize(NSTextView* textView)
 			continue;
 		}
 	}
-error1:
 	
 error2:
 	

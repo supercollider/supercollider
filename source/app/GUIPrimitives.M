@@ -656,7 +656,7 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 				underlineRange.length += 2;
 			}
 			
-			if ((int)underlineRange.length > 0 && underlineRange.location <= clickLoc && clickLoc < (underlineRange.location + underlineRange.length)) {
+			if ((int)underlineRange.length > 0 && (int)underlineRange.location <= clickLoc && clickLoc < (int)(underlineRange.location + underlineRange.length)) {
 				[doc selectRangeStart: underlineRange.location size: underlineRange.length];
 				SetTrue(a);
 			} else {
@@ -2617,9 +2617,6 @@ void initGUIPrimitives()
 		int num = [[docctl documents] count];
         for(int i=0; i<num; i++){
 			MyDocument * doc = [[docctl documents] objectAtIndex: i];
-			PyrObject * pobj = [doc getSCObject];
-//			if(pobj)
-//			[doc setSCKeyDownAction: (pobj->slots+1)->uo];
 			[doc setSCObject: nil];
 		}
 	}

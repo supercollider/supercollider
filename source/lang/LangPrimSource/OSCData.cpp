@@ -663,8 +663,8 @@ void ConvertOSCBundle(int inSize, char* inData, PyrObject *replyObj)
 {
     // convert all data to arrays
     
-    int64 oscTime = OSCtime(inData + 8);
-    double seconds = OSCToElapsedTime(oscTime);
+    //int64 oscTime = OSCtime(inData + 8);
+    //double seconds = OSCToElapsedTime(oscTime);
 
     VMGlobals *g = gMainVMGlobals;
     

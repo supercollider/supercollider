@@ -48,23 +48,6 @@ extern double sineIndexToPhase;
 
 PyrObject* newPyrSignal(VMGlobals *g, long size);
 
-#if 0
-#define UNROLL8_CODE(size,var,stmt)		\
-	endptr = var + size;		\
-	switch (size & 7) {			\
-		while (var < endptr) {	\
-			         stmt;		\
-			case 7 : stmt;		\
-			case 6 : stmt;		\
-			case 5 : stmt;		\
-			case 4 : stmt;		\
-			case 3 : stmt;		\
-			case 2 : stmt;		\
-			case 1 : stmt;		\
-			case 0 : ;			\
-		}						\
-	}
-#else
 #define UNROLL8_CODE(size,var,stmt)		\
 	{	int tempi, tempend;						\
 		tempend = size>>3;							\
@@ -77,21 +60,7 @@ PyrObject* newPyrSignal(VMGlobals *g, long size);
 			stmt;								\
 		}										\
 	}
-#endif
 	
-#if 0
-#define UNROLL4_CODE(size,var,stmt)		\
-	endptr = var + size;	\
-	switch (size & 3) {	\
-		while (var < endptr) {	\
-			         stmt;		\
-			case 3 : stmt;		\
-			case 2 : stmt;		\
-			case 1 : stmt;		\
-			case 0 : ;			\
-		}						\
-	}	
-#else
 #define UNROLL4_CODE(size,var,stmt)		\
 	{	int tempi, tempend;						\
 		tempend = size>>2;							\
@@ -103,21 +72,7 @@ PyrObject* newPyrSignal(VMGlobals *g, long size);
 			stmt;								\
 		}										\
 	}
-#endif
 
-#if 0
-#define FILTER_LOOP(size,var,stmt,stmt2)		\
-	endptr = var + size;						\
-	switch (size & 3) {							\
-		case 0 : while (var < endptr) {			\
-			         stmt;		\
-			case 3 : stmt;		\
-			case 2 : stmt;		\
-			case 1 : stmt;		\
-			stmt2;				\
-		}						\
-	}	
-#else
 #define FILTER_LOOP(size,var,stmt,stmt2)		\
 	{	int tempi, tempend;						\
 		tempend = size>>2;						\
@@ -130,7 +85,6 @@ PyrObject* newPyrSignal(VMGlobals *g, long size);
 			stmt;								\
 		}										\
 	}
-#endif
 
 #define UNROLL1_CODE(size,var,stmt)				\
 	{	int tempi, tempend;						\

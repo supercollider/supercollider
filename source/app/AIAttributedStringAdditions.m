@@ -19,6 +19,7 @@
 
 #import "AIAttributedStringAdditions.h"
 #import "AITextAttributes.h"
+#import "AIColorAdditions.h"
 
 NSAttributedString *_safeString(NSAttributedString *inString);
 

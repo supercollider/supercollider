@@ -77,7 +77,7 @@ int prHIDBuildElementList(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1; //class
 	PyrSlot *b = g->sp; //locID device
-	int locID, cookieNum;
+	int locID;
 	int err = slotIntVal(b, &locID);
 	if (err) return err;
 	//look for the right device: 
@@ -91,7 +91,7 @@ int prHIDBuildElementList(VMGlobals *g, int numArgsPushed)
 
 		PyrObject* devAllElementsArray = newPyrArray(g->gc, numElements * sizeof(PyrObject), 0 , true);
 		
-		for(int i=0; i<numElements; i++){
+		for(UInt32 i=0; i<numElements; i++) {
 			
 			char cstrElementName [256];
 			PyrObject* devElementArray = newPyrArray(g->gc, 5 * sizeof(PyrObject), 0 , true);
@@ -164,7 +164,6 @@ int prHIDBuildDeviceList(VMGlobals *g, int numArgsPushed)
 	char cstrDeviceName [256];
 		
     pRecDevice  pCurrentHIDDevice = HIDGetFirstDevice ();
-	pRecElement devElement;
 	PyrObject* allDevsArray = newPyrArray(g->gc, numdevs * sizeof(PyrObject), 0 , true);
 	for(int i=0; i<numdevs; i++){
 		//device:
@@ -354,7 +353,7 @@ void callback  (void * target, IOReturn result, void * refcon, void * sender)
 int prHIDRunEventLoop(VMGlobals *g, int numArgsPushed);
 int prHIDRunEventLoop(VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp - 1; //class
+	//PyrSlot *a = g->sp - 1; //class
 
 	InstallEventLoopTimer (GetCurrentEventLoop(), 0, 0.001, GetTimerUPP (), 0, &gTimer);
 
@@ -366,9 +365,9 @@ int prHIDQueueDevice(VMGlobals *g, int numArgsPushed);
 int prHIDQueueDevice(VMGlobals *g, int numArgsPushed)
 {
 	
-	PyrSlot *a = g->sp - 1; //class
+	//PyrSlot *a = g->sp - 1; //class
 	PyrSlot *b = g->sp; //locID device
-	int locID, cookieNum;
+	int locID;
 	int err = slotIntVal(b, &locID);
 	if (err) return err;
 	//look for the right device: 
@@ -384,7 +383,7 @@ int prHIDQueueElement(VMGlobals *g, int numArgsPushed);
 int prHIDQueueElement(VMGlobals *g, int numArgsPushed)
 {
 	
-	PyrSlot *a = g->sp - 2; //class
+	//PyrSlot *a = g->sp - 2; //class
 	PyrSlot *b = g->sp - 1; //locID device
 	PyrSlot *c = g->sp; //element cookie
 	int locID, cookieNum;
@@ -412,7 +411,7 @@ int prHIDDequeueElement(VMGlobals *g, int numArgsPushed);
 int prHIDDequeueElement(VMGlobals *g, int numArgsPushed)
 {
 	
-	PyrSlot *a = g->sp - 2; //class
+	//PyrSlot *a = g->sp - 2; //class
 	PyrSlot *b = g->sp - 1; //locID device
 	PyrSlot *c = g->sp; //element cookie
 	int locID, cookieNum;
@@ -439,9 +438,9 @@ int prHIDDequeueDevice(VMGlobals *g, int numArgsPushed);
 int prHIDDequeueDevice(VMGlobals *g, int numArgsPushed)
 {
 	
-	PyrSlot *a = g->sp - 1; //class
+	//PyrSlot *a = g->sp - 1; //class
 	PyrSlot *b = g->sp; //locID device
-	int locID, cookieNum;
+	int locID;
 	int err = slotIntVal(b, &locID);
 	if (err) return err;
 	//look for the right device: 

@@ -109,6 +109,8 @@ g_fmt(register char *b, double x)
 		}
  done0:
 	freedtoa(s0);
+#ifdef IGNORE_ZERO_SIGN
  done:
+#endif
 	return b0;
 	}

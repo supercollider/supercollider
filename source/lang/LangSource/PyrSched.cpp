@@ -700,7 +700,7 @@ void* TempoClock_stop_func(void* p)
 
 void TempoClock_stopAll(void)
 {
-	printf("->TempoClock_stopAll %08X\n", TempoClock::sAll);
+	//printf("->TempoClock_stopAll %08X\n", TempoClock::sAll);
 	TempoClock *clock = TempoClock::sAll;
 	while (clock) {
 		TempoClock* next = clock->mNext;
@@ -709,7 +709,7 @@ void TempoClock_stopAll(void)
 		delete clock;
 		clock = next;
 	}
-	printf("<-TempoClock_stopAll %08X\n", TempoClock::sAll);
+	//printf("<-TempoClock_stopAll %08X\n", TempoClock::sAll);
 	TempoClock::sAll = 0;
 }
 
