@@ -8,6 +8,7 @@ dnl ===================================================================
 # initialize autoconf
 AC_PREREQ(2.52)
 AC_INIT(source/server/scsynth_main.cpp)
+AC_CANONICAL_TARGET
 
 # initialize automake
 AM_INIT_AUTOMAKE(SuperCollider,3.0)
@@ -58,40 +59,29 @@ dnl AC_CHECK_FUNCS([bzero ftruncate gettimeofday memmove memset socket strcasecm
 
 AC_SUBST(SC_CPPFLAGS)
 AC_SUBST(SC_CFLAGS)
+AC_SUBST(SC_LIBS)
 
 # libraries needed for all targets except plugins
 AC_CHECK_LIB(pthread,pthread_create,lib_pthread="-lpthread",lib_pthread="")
 if test "x$lib_pthread" = "x" ; then
-    AC_MSG_ERROR([libpthread (POSIX threads) required])
+	AC_MSG_ERROR([libpthread (POSIX threads) required])
 fi
 
 AC_CHECK_LIB(dl,dlopen,lib_dl="-ldl",lib_dl="")
 if test "x$lib_dl" = "x" ; then
-    AC_MSG_ERROR([libdl (dynamic link support) required])
+	AC_MSG_ERROR([libdl (dynamic link support) required])
 fi
 
 SC_LIBS="$LIBS $lib_pthread $lib_dl"
-AC_SUBST(SC_LIBS)
 
-# packages
+# common packages
 PKG_CHECK_MODULES(SNDFILE,[sndfile >= 1.0.0])
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
 
-# assemble compiler flags
-SC_CPPFLAGS="-Wall -DSC_LINUX -D_REENTRANT"
-
-# add platform dependent default flags
-cpu="${build_cpu}"
-test -n "${cpu}" || cpu="${target_cpu}"
-test -n "${cpu}" || cpu="${host_cpu}"
-
-case $cpu in
-    powerpc*|ppc*)
-	SC_CFLAGS="-fsigned-char"
-	SC_CFLAGS_OPT="-maltivec -mabi=altivec"
-	;;
-esac
+# common compiler flags
+SC_CPPFLAGS="-Wall -Wno-unknown-pragmas -DSC_LINUX -D_REENTRANT"
+SC_CFLAGS=""
 
 # ======================================================================
 # debugging
@@ -105,21 +95,92 @@ AC_HELP_STRING([--enable-debug],[enable debugging features]))
 AC_ARG_ENABLE(dmalloc,
 AC_HELP_STRING([--enable-dmalloc],[use dmalloc (http://www.dmalloc.com) when debugging is enabled]))
 if test "x$enable_debug" = "xyes" ; then
-    feat_debug=yes
-    # add debugging flags
-    AC_MSG_NOTICE([enabling debugging symbols])
-    SC_CFLAGS="-O0 -g $SC_CFLAGS"
-    if test "x$enable_dmalloc" = "xyes"; then
-	# add dmalloc support
-	AC_MSG_NOTICE([compiling with dmalloc support])
-	SC_CPPFLAGS="$SC_CPPFLAGS -DUSE_DMALLOC"
-	DMALLOC_LIBS="-ldmallocthcxx"
-	AC_SUBST(DMALLOC_LIBS)
-    fi
+	feat_debug=yes
+	# add debugging flags
+	AC_MSG_NOTICE([enabling debugging symbols])
+	SC_CFLAGS="$SC_CFLAGS -g"
+	if test "x$enable_dmalloc" = "xyes"; then
+		# add dmalloc support
+		AC_MSG_NOTICE([compiling with dmalloc support])
+		SC_CPPFLAGS="$SC_CPPFLAGS -DUSE_DMALLOC"
+		DMALLOC_LIBS="-ldmallocthcxx"
+		AC_SUBST(DMALLOC_LIBS)
+    	fi
 else
-    feat_debug=no
-    SC_CPPFLAGS="$SC_CPPFLAGS -DNDEBUG"
-    SC_CFLAGS="$SC_CFLAGS $SC_CFLAGS_OPT"
+	feat_debug=no
+	SC_CPPFLAGS="$SC_CPPFLAGS -DNDEBUG"
+fi
+
+# ======================================================================
+# vectorization
+# ======================================================================
+
+dnl this needs to be redefined for each platform/vector unit to an
+dnl appropriate alignment value
+SC_MEMORY_ALIGNMENT=1
+
+AC_ARG_ENABLE(altivec,
+AC_HELP_STRING([--disable-altivec],[disable altivec optimizations]))
+
+if test "x$enable_altivec" = "x"; then
+	enable_altivec="yes"
+fi
+
+# ======================================================================
+# target cpu specific
+# ======================================================================
+
+case $target_cpu in
+	powerpc*|ppc*)
+		feat_altivec=no
+		altivec_cflags="-maltivec -mabi=altivec"
+		SC_CFLAGS="$SC_CFLAGS -fsigned-char"
+		if test $enable_altivec = yes; then
+			AC_CHECK_HEADER(
+			[altivec.h],
+			[HAVE_ALTIVEC=true],
+			[HAVE_ALTIVEC=false])
+			if $HAVE_ALTIVEC; then
+				save_cflags="$CFLAGS"
+				CFLAGS="$CFLAGS $altivec_cflags"
+				AC_MSG_CHECKING([for altivec compiler support])
+	                	AC_COMPILE_IFELSE(
+				[AC_LANG_SOURCE([[
+					#include <altivec.h>
+					void dummy() {
+					vector float v1, v2, v3;
+					v1 = vec_add(v2, v3);
+					}
+				]])],
+				[HAVE_ALTIVEC=true],
+				[HAVE_ALTIVEC=false])
+				if $HAVE_ALTIVEC; then
+					AC_MSG_RESULT([yes])
+				else
+					AC_MSG_RESULT([no])
+				fi
+				CFLAGS="$save_cflags"
+			fi
+			if $HAVE_ALTIVEC; then
+				feat_altivec=yes
+				SC_CFLAGS="$SC_CFLAGS $altivec_cflags"
+				SC_MEMORY_ALIGNMENT=16
+			fi
+		fi
+		;;
+esac
+
+# ======================================================================
+# defines dependent on previous checks
+# ======================================================================
+
+AC_DEFINE_UNQUOTED([SC_MEMORY_ALIGNMENT],[$SC_MEMORY_ALIGNMENT],[Memory alignment for audio buffers])
+
+if test $SC_MEMORY_ALIGNMENT != 1; then
+	AC_CHECK_FUNC(
+	[posix_memalign],
+	[],
+	[AC_MSG_ERROR([posix_memalign not found in libc])])
 fi
 
 # ======================================================================
@@ -149,30 +210,34 @@ AC_ARG_WITH(portaudio-libs,
 AC_HELP_STRING([--with-portaudio-libs],[additional libraries required for libportaudio, e.g. "-ljack -lasound"]))
 
 if test "x$with_audio_api" = "x"; then
-    feat_audio_api="jack"
+	feat_audio_api="jack"
 else
-    feat_audio_api="$with_audio_api"
+	feat_audio_api="$with_audio_api"
 fi
 case "$feat_audio_api" in
-    jack)
-        PKG_CHECK_MODULES(JACK,[jack >= 0.40])
-        SC_AUDIO_API="SC_AUDIO_API_JACK"
-        SC_AUDIO_API_CFLAGS="$JACK_CFLAGS"
-        SC_AUDIO_API_LIBS="$JACK_LIBS"
-        ;;
+	jack)
+		PKG_CHECK_MODULES(JACK,[jack >= 0.40])
+		SC_AUDIO_API="SC_AUDIO_API_JACK"
+		SC_AUDIO_API_CFLAGS="$JACK_CFLAGS"
+		SC_AUDIO_API_LIBS="$JACK_LIBS"
+		;;
 
-    portaudio)
-	AC_CHECK_LIB(portaudio,Pa_GetVersion,lib_portaudio="-lportaudio",lib_portaudio="")
-	if test "x$lib_portaudio" = "x" ; then
-	    AC_MSG_ERROR([libportaudio not found])
-	fi
-        SC_AUDIO_API="SC_AUDIO_API_PORTAUDIO"
-        SC_AUDIO_API_CFLAGS=""
-        SC_AUDIO_API_LIBS="${lib_portaudio} ${with_portaudio_libs}"
-        ;;
+	portaudio)
+		AC_CHECK_LIB(
+		[portaudio],
+		[Pa_GetVersion],
+		[lib_portaudio="-lportaudio"],
+		[lib_portaudio=""])
+		if test "x$lib_portaudio" = "x" ; then
+			AC_MSG_ERROR([libportaudio not found])
+		fi
+		SC_AUDIO_API="SC_AUDIO_API_PORTAUDIO"
+		SC_AUDIO_API_CFLAGS=""
+		SC_AUDIO_API_LIBS="${lib_portaudio} ${with_portaudio_libs}"
+		;;
 
-    *)
-        AC_MSG_ERROR([unknown audio api \"${feat_audio_api}\"])
+	*)
+		AC_MSG_ERROR([unknown audio api \"${feat_audio_api}\"])
 esac
 
 # ======================================================================
@@ -182,22 +247,22 @@ esac
 # X11 support
 AC_PATH_XTRA
 if test "$with_x" = no || test "$no_x" = yes; then
-    HAVE_X11=false
+	HAVE_X11=false
 else
-    if test -z "$X_DISPLAY_MISSING"; then
-        HAVE_X11=true
-        AC_CHECK_HEADERS(X11/Intrinsic.h)
-        AC_CHECK_LIB(X11, XQueryPointer)
-        SC_X11_CFLAGS="$X_CFLAGS"
-        SC_X11_LIBS="$X_LIBS $X_PRE_LIBS $X_EXTRA_LIBS -lX11"
-    else
-        HAVE_X11=false
-    fi
+	if test -z "$X_DISPLAY_MISSING"; then
+		HAVE_X11=true
+		AC_CHECK_HEADERS(X11/Intrinsic.h)
+		AC_CHECK_LIB(X11, XQueryPointer)
+		SC_X11_CFLAGS="$X_CFLAGS"
+		SC_X11_LIBS="$X_LIBS $X_PRE_LIBS $X_EXTRA_LIBS -lX11"
+	else
+		HAVE_X11=false
+	fi
 fi
 if $HAVE_X11; then
-    feat_x11_ugens=yes
+	feat_x11_ugens=yes
 else
-    feat_x11_ugens=no
+	feat_x11_ugens=no
 fi
 AM_CONDITIONAL(HAVE_X11, $HAVE_X11)
 AC_SUBST(SC_X11_CFLAGS)
@@ -212,14 +277,14 @@ AC_ARG_WITH(sclang,
 AC_HELP_STRING([--without-sclang],[do not build the language application]))
 
 if test "x$with_sclang" = "x"; then
-    with_sclang="yes"
+	with_sclang="yes"
 fi
 if test "$with_sclang" = "yes"; then
-    WITH_SCLANG=true
-    feat_sclang="yes"
+	WITH_SCLANG=true
+	feat_sclang="yes"
 else
-    WITH_SCLANG=false
-    feat_sclang="no"
+	WITH_SCLANG=false
+	feat_sclang="no"
 fi
 AM_CONDITIONAL(WITH_SCLANG, $WITH_SCLANG)
 
@@ -231,27 +296,23 @@ SC_LIB_DIR='$(pkgdatadir)/SCClassLibrary'
 AC_SUBST(ALSA_LIBS)
 
 if $WITH_SCLANG; then
-    AC_CHECK_LIB(
-    asound,
-    snd_pcm_drop,
-    [
-        HAVE_ALSA="true"
-        ALSA_LIBS="-lasound"
-    ],
-    [
-        HAVE_ALSA="false"
-        ALSA_LIBS=""
-    ],
-    [-lm])
-    if $HAVE_ALSA; then
-        feat_aseq=yes
-        AC_DEFINE([HAVE_ALSA],[1],[wether ALSA libs are available])
-    else
-        feat_aseq=no
-    fi
+	AC_CHECK_LIB(
+	[asound],
+	[snd_seq_open],
+	[HAVE_ALSA="true"
+        ALSA_LIBS="-lasound"],
+	[HAVE_ALSA="false"
+	ALSA_LIBS=""],
+	[-lm])
+	if $HAVE_ALSA; then
+		feat_aseq=yes
+		AC_DEFINE([HAVE_ALSA],[1],[Define when ALSA libs are available])
+	else
+		feat_aseq=no
+	fi
 else
-    feat_aseq=no
-    ALSA_LIBS=""
+	feat_aseq=no
+	ALSA_LIBS=""
 fi
 
 # scel emacs interface
@@ -259,14 +320,14 @@ AC_ARG_ENABLE(scel,
 AC_HELP_STRING([--disable-scel],[disable emacs interface]))
 
 if test "x$enable_scel" = "x"; then
-    enable_scel="yes"
+	enable_scel="yes"
 fi
 if $WITH_SCLANG && test "$enable_scel" = "yes"; then
-    feat_scel=yes
-    WITH_SCEL=true
+	feat_scel=yes
+	WITH_SCEL=true
 else
-    feat_scel=no
-    WITH_SCEL=false
+	feat_scel=no
+	WITH_SCEL=false
 fi
 AM_CONDITIONAL(WITH_SCEL, $WITH_SCEL)
 
@@ -309,6 +370,7 @@ SuperCollider $VERSION feature summary:
 common
 ------------------------------------------------------------
  debugging support                 $feat_debug
+ altivec optimizations             $feat_altivec
 ------------------------------------------------------------
 scsynth
 ------------------------------------------------------------

@@ -27,7 +27,6 @@ added prRestartMIDI
 19/9 call different actions,disconnect midiInPort, midiout: sendmidi
 04/feb/03 prListMIDIEndpoints modification by Ron Kuivila added jt.
 */
-#ifdef SC_DARWIN
 #include <CoreAudio/HostTime.h>
 #include <Carbon/Carbon.h>
 #include <CoreMIDI/CoreMIDI.h>
@@ -644,9 +643,3 @@ void initMIDIPrimitives()
     definePrimitive(base, index++, "_SendSysex", prSendSysex, 3, 0);
     if(gMIDIClient) midiCleanUp();
 }
-#else // !SC_DARWIN
-void initMIDIPrimitives()
-{
-	// sk: TODO: implement primitives
-}
-#endif // SC_DARWIN

@@ -402,8 +402,11 @@ void cmdDemoFunc(World *inWorld, void* inUserData, struct sc_msg_iter *args, voi
 	}
 	
 	DoAsynchronousCommand(inWorld, replyAddr, "cmdDemoFunc", (void*)myCmdData,
-					cmdStage2, cmdStage3, cmdStage4, cmdCleanup,
-					msgSize, msgData);
+						  (AsyncStageFn)cmdStage2,
+						  (AsyncStageFn)cmdStage3,
+						  (AsyncStageFn)cmdStage4,
+						  cmdCleanup,
+						  msgSize, msgData);
 	
 	Print("<-cmdDemoFunc\n");
 }

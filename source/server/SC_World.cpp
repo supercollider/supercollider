@@ -57,27 +57,50 @@ bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#if defined(SC_LINUX)
+#if SC_LINUX
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #define _XOPEN_SOURCE 600
 #include <stdlib.h>
+#include <errno.h>
 
-#define SC_MEMORY_ALIGNMENT 16
+#ifndef SC_MEMORY_ALIGNMENT
+# error SC_MEMORY_ALIGNMENT undefined
+#endif
 #define SC_DEBUG_MEMORY 0
 
 inline void* sc_malloc(size_t size)
 {
+#if SC_MEMORY_ALIGNMENT > 1
 	void* ptr;
-	if (posix_memalign(&ptr, SC_MEMORY_ALIGNMENT, size) != 0)
+	int err = posix_memalign(&ptr, SC_MEMORY_ALIGNMENT, size);
+	if (err) {
+		if (err != ENOMEM) {
+			perror("sc_malloc");
+			abort();
+		}
 		return 0;
+	}
 	return ptr;
+#else
+	return malloc(size);
+#endif
 }
 
 void* sc_dbg_malloc(size_t size, const char* tag, int line)
 {
 	void* ptr = sc_malloc(size);
 	fprintf(stderr, "sc_dbg_malloc [%s:%d] %p %u\n", tag, line, ptr, size);
-	if (((int)ptr % SC_MEMORY_ALIGNMENT) != 0) abort();
+#if SC_MEMORY_ALIGNMENT > 1
+	if (((int)ptr % SC_MEMORY_ALIGNMENT) != 0) {
+		fprintf(stderr, "sc_dbg_malloc [%s:%d] %p %u: memory alignment error\n",
+				tag, line, ptr, size);
+		abort();
+	}
+#endif
 	return ptr;
 }
 
