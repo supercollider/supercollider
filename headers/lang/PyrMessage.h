@@ -34,6 +34,9 @@ void initUniqueMethods();
 void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, 
 		long numArgsPushed, long numKeyArgsPushed);
 void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed);
+void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, 
+		long numArgsPushed, long numKeyArgsPushed);
+void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed);
 void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector, 
 		long numArgsPushed, long numKeyArgsPushed);
 void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector, 
