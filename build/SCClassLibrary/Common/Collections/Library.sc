@@ -69,7 +69,7 @@ MultiLevelIdentityDictionary : Collection
 		if(start.isEmpty,{
 			item = dictionary;
 		},{
-			item = this.performList(\at,start);
+			item = this.at(*start);
 			if(item.isNil,{
 				("Library-choose start address not found:" + start).die;
 			});
@@ -136,7 +136,7 @@ MultiLevelIdentityDictionary : Collection
 			key = items.at(i);
 			item = items.at(i + 1);
 			if(item.isKindOf(Function),{
-				this.performList(\put,keys ++ [key,item]);
+				this.put(* keys ++ [key,item]);
 			},{
 				//array
 				this.prPutTree(keys ++ [key],item);
@@ -147,7 +147,7 @@ MultiLevelIdentityDictionary : Collection
 		if(startAt.isNil,{
 			startAt = dictionary;
 		},{
-			startAt = this.performList(\at,startAt);
+			startAt = this.at(*startAt);
 		});
 		^this.prNestedValuesFromDict(startAt);
 	}
@@ -343,21 +343,21 @@ LibraryBase : MultiLevelIdentityDictionary
 		this.global = this.new;
 	}
 	*at { arg ... args;
-		^this.global.performList(\at, args);
+		^this.global.at(*args);
 	}
 
 	*atList { arg args;
-		^this.global.performList(\at,args)
+		^this.global.at(*args)
 	}
 	*putList { arg args;
-		^this.global.performList(\put,args)
+		^this.global.put(*args)
 	}
 
 	*put { arg ... args;
-		this.global.performList(\put,args);
+		^this.global.put(*args)
 	}
 	*create { arg ... args;
-		^this.global.performList(\create, args);
+		^this.global.create(*args)
 	}
 
 	*postTree {

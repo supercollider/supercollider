@@ -122,7 +122,7 @@ Array[slot] : ArrayedCollection {
 		^this.primitiveFailed 
 	}
 
-	asSpec { ^ControlSpec.performList(\new, this) }
+	asSpec { ^ControlSpec( *this ) }
 	
 	printOn { arg stream;
 		if (stream.atLimit, { ^this });

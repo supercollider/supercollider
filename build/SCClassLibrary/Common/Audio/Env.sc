@@ -148,7 +148,7 @@ Env {
 //	send { arg netAddr, bufnum;
 //		var array;
 //		array = this.asArray;
-//		netAddr.performList(\sendMsg, "buf.setn", bufnum, 0, array.size, array);
+//		netAddr.sendMsg("buf.setn", bufnum, 0, array.size, *array);
 //	}
 
 	test { arg releaseTime = 3.0;

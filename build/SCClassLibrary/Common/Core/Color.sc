@@ -8,7 +8,7 @@ Color {
 		^super.newCopyArgs(red/255, green/255, blue/255, alpha/255);
 	}
 	*fromArray { arg array;
-		^this.performList(\new, array)
+		^this.new(*array)
 	}
 	*black { ^Color.new(0.0, 0.0, 0.0) }
 	*white { ^Color.new(1.0, 1.0, 1.0) }

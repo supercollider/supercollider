@@ -27,7 +27,7 @@ NetAddr {
 	}
 	
 	sendArray { arg array;
-		this.performList(\send, array);
+		this.send(*array);
 	}
 
 ///////////////

@@ -152,7 +152,7 @@ Server : Model {
 		addr.sendBundle(nil, args);
 	}
 	sendBundle { arg time ... messages;
-		addr.performList(\sendBundle, time, messages);
+		addr.sendBundle(time, *messages);
 	}
 	sendRaw { arg rawArray;
 		addr.sendRaw(rawArray);
@@ -207,7 +207,7 @@ Server : Model {
 		addr.sendBundle(nil,msg);
 	}
  	listSendBundle { arg time, bundle;
-		addr.performList(\sendBundle, time, bundle);
+		addr.sendBundle(time, *bundle);
 	}
 	
 	// load from disk locally, send remote

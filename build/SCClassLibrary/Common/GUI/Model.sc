@@ -3,7 +3,7 @@ Model {
 	
 	changed { arg what ... moreArgs;
 		dependants.do({ arg item;
-			item.performList(\update, this, what, moreArgs);
+			item.update(this, what, *moreArgs);
 		});
 	}
 	addDependant { arg dependant;

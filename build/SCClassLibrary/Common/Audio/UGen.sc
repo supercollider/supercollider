@@ -11,7 +11,7 @@ UGen : AbstractFunction {
 	
 	// instance creation
 	*new1 { arg rate ... args;
-		^super.new.rate_(rate).addToSynth.performList(\init, args); 
+		^super.new.rate_(rate).addToSynth.init( *args ) 
 	}
 	*newFromDesc { arg rate, numOutputs, inputs, specialIndex;
 		^super.new.rate_(rate).inputs_(inputs).specialIndex_(specialIndex)
@@ -25,7 +25,7 @@ UGen : AbstractFunction {
 		args.do({ arg item; 
 			(item.class == Array).if({ size = max(size, item.size) });
 		});
-		if (size == 0, { ^this.performList(\new1, args) });
+		if (size == 0) { ^this.new1( *args ) };
 		newArgs = Array.newClear(args.size);
 		results = Array.newClear(size);
 		size.do({ arg i;
