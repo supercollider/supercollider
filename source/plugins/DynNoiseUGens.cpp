@@ -50,6 +50,12 @@ struct LFDNoise3 : public Unit
 	float mLevelA, mLevelB, mLevelC, mLevelD;
 };
 
+struct LFDClipNoise : public Unit
+{
+	float mLevel;
+	float mPhase;
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -70,6 +76,8 @@ extern "C"
 	void LFDNoise3_next_k(LFDNoise3 *unit, int inNumSamples);
 	void LFDNoise3_Ctor(LFDNoise3 *unit);
 
+	void LFDClipNoise_next(LFDClipNoise *unit, int inNumSamples);
+	void LFDClipNoise_Ctor(LFDClipNoise *unit);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -319,6 +327,75 @@ void LFDNoise3_Ctor(LFDNoise3* unit)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+void LFDClipNoise_next(LFDClipNoise *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *freq = ZIN(0);
+	float level = unit->mLevel;
+	float phase = unit->mPhase;
+	float smpdur = SAMPLEDUR;	
+	RGET
+
+	LOOP(inNumSamples,
+		phase -= ZXP(freq) * smpdur;
+		if (phase <= 0) {
+			phase = sc_wrap(phase, 0.f, 1.f);
+			level = fcoin(s1,s2,s3);
+		}
+		ZXP(out) = level;
+	)
+	
+	unit->mLevel = level;
+	unit->mPhase = phase;
+	RPUT
+		
+}
+
+void LFDClipNoise_next_k(LFDClipNoise *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float freq = ZIN0(0);
+	float level = unit->mLevel;
+	float phase = unit->mPhase;
+	float smpdur = SAMPLEDUR;
+	float dphase = smpdur * freq;
+	
+	RGET
+	
+	LOOP(inNumSamples,
+		phase -= dphase;
+		if (phase <= 0) {
+			phase = sc_wrap(phase, 0.f, 1.f);
+			level = fcoin(s1,s2,s3);
+		}
+		ZXP(out) = level;
+	)
+	unit->mLevel = level;
+	unit->mPhase = phase;
+	RPUT
+		
+}
+
+void LFDClipNoise_Ctor(LFDClipNoise* unit)
+{
+	if (INRATE(0) == calc_FullRate) {
+		SETCALC(LFDClipNoise_next);
+	} else {
+		SETCALC(LFDClipNoise_next_k);
+	}
+
+	unit->mPhase = 0.f; 
+	unit->mLevel = 0.f; 
+	
+	LFDClipNoise_next(unit, 1);
+}
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 void load(InterfaceTable *inTable)
 {
@@ -327,7 +404,9 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(LFDNoise0);
 	DefineSimpleUnit(LFDNoise1);
 	DefineSimpleUnit(LFDNoise3);
+	DefineSimpleUnit(LFDClipNoise);
 
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
