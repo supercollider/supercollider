@@ -12,7 +12,7 @@ ProxySpace : EnvironmentRedirect {
 	}
 	
 	*push { arg server, name, clock;
-		if(name.isNil and: { currentEnvironment.isKindOf(this) }) { currentEnvironment.clear };
+		if(name.isNil and: { currentEnvironment.isKindOf(this) }) { currentEnvironment.clear.pop };
 		^this.new(server, name, clock).push;
 	}
 	
