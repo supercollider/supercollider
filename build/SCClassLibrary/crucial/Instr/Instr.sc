@@ -347,6 +347,7 @@ UGenInstr { // make a virtual Instr by reading the *ar and *kr method def
 
 }
 
+// see Interface
 InterfaceDef : Instr {
 
 	var <>onLoad,

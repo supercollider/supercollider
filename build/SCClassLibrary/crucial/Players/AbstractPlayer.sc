@@ -80,13 +80,13 @@ AbstractPlayer : AbstractFunction  {
 	prepareToBundle { arg agroup,bundle;
 		group = agroup.asGroup;
 		server = group.server;
-		bundle.addFunction({ 
+		bundle.addFunction({
 			readyForPlay = true;
 		});
 		this.children.do({ arg child;
 			child.prepareToBundle(group,bundle);
 		});
-		this.loadDefFileToBundle(bundle);	
+		this.loadDefFileToBundle(bundle,server);	
 	}
 
 	isPlaying { ^synth.isPlaying ? false }
@@ -360,12 +360,12 @@ AbstractPlayer : AbstractFunction  {
 		});
 	}
 	
-	loadDefFileToBundle { arg bundle;
+	loadDefFileToBundle { arg bundle,server;
 		var def,bytes,dn;
 
 		// can't assume the children are unchanged
 		this.children.do({ arg child;
-			child.loadDefFileToBundle(bundle);
+			child.loadDefFileToBundle(bundle,server);
 		});
 
 		dn = this.defName;
@@ -374,30 +374,24 @@ AbstractPlayer : AbstractFunction  {
 			if(Library.at(SynthDef,server,dn).isNil,{
 				true
 			},{
-				//("already loaded:"+dn).debug;
 				false
 			})
 		},{
 			// save it in the archive of the player or at least the name.
 			// Patches cannot know their defName until they have built
-			( "building:" + (this.path ? this) ).debug;
+			//( "building:" + (this.path ? this) ).debug;
 			def = this.asSynthDef;
 			defName = def.name;
 			dn = defName.asSymbol;
-			// for Patch: maybe after building and getting name its already there
-			//if(Library.at(SynthDef,server,dn).notNil,{
-			//	("already loaded:" + defName).debug;
-			//},{			
-				bytes = def.asBytes;
-				bundle.add(["/d_recv", bytes]);
-				// even if name was nil before (Patch), its set now
-				("loading def:" + defName).debug;
-				// InstrSynthDef watches \serverRunning to clear this
-				InstrSynthDef.watchServer(server);
-				Library.put(SynthDef,server,dn,true);
-				// write for next time
-				// def.writeDefFile;
-			//});
+			bytes = def.asBytes;
+			bundle.add(["/d_recv", bytes]);
+			// even if name was nil before (Patch), its set now
+			//("loading def:" + defName).debug;
+			// InstrSynthDef watches \serverRunning to clear this
+			InstrSynthDef.watchServer(server);
+			Library.put(SynthDef,server,dn,true);
+			// write for next time
+			//def.writeDefFile;
 		});
 	}
 	//for now:  always sending, not writing
@@ -409,7 +403,8 @@ AbstractPlayer : AbstractFunction  {
 	}
 	addToSynthDef {  arg synthDef,name;
 		// value doesn't matter so much, we are going to pass in a real live one
-		synthDef.addIr(name,this.synthArg ? 0); // \out is an .ir bus index
+		//this.synthArg
+		synthDef.addIr(name, 0); // \out is an .ir bus index
 	}
 
 	synthArg { ^patchOut.synthArg }
@@ -731,9 +726,9 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 	synthArg { ^this.source.synthArg }
 	rate { ^this.source.rate }
 	numChannels { ^this.source.numChannels }
-	loadDefFileToBundle { arg b;
+	loadDefFileToBundle { arg b,server;
 		if(this.source.notNil,{
-			this.source.loadDefFileToBundle(b)
+			this.source.loadDefFileToBundle(b,server)
 		})
 	}
 	defName { ^this.source.defName }

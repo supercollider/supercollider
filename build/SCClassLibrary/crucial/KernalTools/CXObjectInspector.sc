@@ -291,32 +291,7 @@ MethodGui : ObjectGui {
 		});
 	
 		
-		layout.hr;
-		ClassNameLabel(model.ownerClass,layout.startRow,maxx:200);
-		MethodLabel(model,layout,maxx:200);
-
-		// argNames
-		prototypeFrame = model.prototypeFrame ?? {[]};
-		
-		CXLabel(layout.startRow,"args and defaults:",maxx:160).bold;
-		(model.numArgs - 1).do({ arg i;// first arg is 'this'
-			// TODO ellipsis ... 
-			if(model.argNames.notNil,{
-				ArgNameLabel(model.argNames.at(i + 1),layout.startRow);
-				CXLabel(layout,prototypeFrame.at(i ));
-			});
-		});
-		
-		if(model.primitiveName.notNil,{
-			CXLabel(layout.startRow,"primitiveName:",maxx:160).bold;
-			CXLabel(layout,model.primitiveName);
-		});
-		
-
-		layout.hr;
-		
-		// link to superclass implementations
-		CXLabel(layout,"Superclass implementations");
+		// from Object down...		
 		layout.startRow;
 		supers = model.ownerClass.superclasses;
 		if(supers.notNil,{
@@ -332,27 +307,29 @@ MethodGui : ObjectGui {
 			})
 		});	
 		
-		
+		//layout.hr;
+		ClassNameLabel(model.ownerClass,layout.startRow,maxx:300);
+		MethodLabel(model,layout,maxx:300);
+
 		// show subclass implementations
-		// other class implementations of this message
-		layout.hr;
+		// other class implementations of this message (command-y)
 		
+		// would rather look at the source code for this...
 		
-
+		// argNames
+		//prototypeFrame = model.prototypeFrame ?? {[]};
+		
+		/*CXLabel(layout.startRow,"args and defaults:",maxx:160).bold;
+		(model.numArgs - 1).do({ arg i;// first arg is 'this'
+			// TODO ellipsis ... 
+			if(model.argNames.notNil,{
+				ArgNameLabel(model.argNames.at(i + 1),layout.startRow);
+				CXLabel(layout,prototypeFrame.at(i ));
+			});
+		});
+		//if(model.primitiveName.notNil,{
+		//	CXLabel(layout.startRow,"primitiveName:",maxx:160).bold;
+		//	CXLabel(layout,model.primitiveName);
+		//});*/	
 	}
-
 }
-
-//
-//DictionaryGui : ObjectGui {
-//
-//	guiBody { arg layout;
-//		model.keysValuesDo({ arg k,v,i;
-//			CXLabel(layout.startRow,k,maxx: 100);
-//			Tile(v,layout,200);
-//		})
-//	}
-//
-//}
-//
-

@@ -11,7 +11,7 @@ PlayerSocket : AbstractPlayerProxy {
 	var <>round,<>rate,<>numChannels;
 	var <>env,socketGroup,sched;
 	var isWaking = false;
-	var <lastPlayer,envdSource;
+	var <lastPlayer,envdSource,dee,dum;
 	
 	*new { arg rate=\audio,numChannels=2,round=0.0,env;
 		^super.new.round_(round)
@@ -57,8 +57,8 @@ PlayerSocket : AbstractPlayerProxy {
 	}
 	qspawnPlayer { arg player,releaseTime=0.0;
 		isWaking = true;
-		// TODO switch to TempoClock
-		// needs xblock for now
+		// TODO switch to TempoClock so tempo can change after qspawn sent
+		// for now it still needs xblock
 		this.spawnPlayer(player,releaseTime,sched.deltaTillNext(round))
 	}
 	
@@ -82,24 +82,29 @@ PlayerSocket : AbstractPlayerProxy {
 		^(isSleeping and: isWaking.not)
 	}
 	
-	prepareToBundle { arg group,bundle;
-		group = group.asGroup;
+	prepareToBundle { arg agroup,bundle;
+		group = agroup.asGroup;
 		server = group.server;
 		
 		socketGroup = Group.basicNew(server: server);
+		this.annotate(socketGroup,"socketGroup");
 		NodeWatcher.register(socketGroup);
 		bundle.add( socketGroup.addToTailMsg(group) );
 
+		dee = EnvelopedPlayer(Patch(SinOsc),env,this.numChannels);
+		dum = EnvelopedPlayer(Patch(SinOsc),env,this.numChannels);
+		dee.prepareToBundle(socketGroup,bundle);
+		dum.prepareToBundle(socketGroup,bundle);
+		envdSource = dee;
+		
 		// children should be taken care of
 		super.prepareToBundle(group,bundle);
 	}
 	// no synth of my own
-	loadDefFileToBundle { arg bundle;
+	loadDefFileToBundle { arg bundle,server;
 		this.children.do({ arg child;
-			child.loadDefFileToBundle(bundle);
+			child.loadDefFileToBundle(bundle,server);
 		});
-		// load once		
-		EnvelopedPlayer(Patch(SinOsc),env,this.numChannels).loadDefFileToBundle(bundle);
 	}
 	
 	instrArgFromControl { arg control;
@@ -138,13 +143,19 @@ PlayerSocket : AbstractPlayerProxy {
 	setSourceToBundle { arg s,bundle,releaseTime;
 		if(envdSource.isPlaying,{
 			envdSource.releaseToBundle(releaseTime,bundle);
+			if(envdSource === dee,{
+				envdSource = dum;
+			},{
+				envdSource = dee;
+			});
 		});
 		source = s;
-		envdSource = EnvelopedPlayer(source,env,this.numChannels);
+		envdSource.subject = source;
 		if(sharedBus.rate != source.rate,{
 			("PlayerSocket-setSourceToBundle sharedBus.rate + source.rate:" 
 				+ sharedBus.rate + source.rate).error(this,source);
 		});
+		
 		envdSource.spawnOnToBundle(socketGroup,sharedBus,bundle);
 		bundle.addFunction({
 			isSleeping = isWaking = false;

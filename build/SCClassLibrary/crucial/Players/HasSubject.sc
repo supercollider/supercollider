@@ -17,7 +17,8 @@ HasSubject : AbstractPlayer {
 	guiClass { ^HasSubjectGui }
 }
 
-AbstractPlayerEffect : HasSubject { // has two groups so the subject and effect can respawn at will
+AbstractPlayerEffect : HasSubject { 
+	// has two groups so the subject and effect can both respawn at will
 
 	var subjectGroup,effectGroup;
 	
@@ -46,6 +47,19 @@ AbstractPlayerEffect : HasSubject { // has two groups so the subject and effect 
 		effectGroup.freeToBundle(bundle);
 		subjectGroup = effectGroup = nil;
 		super.freePatchOut(bundle);
+	}
+	
+	spawnToBundle { arg bundle;
+		this.children.do({ arg child;
+			child.spawnToBundle(bundle);
+		});
+		synth = Synth.basicNew(this.defName,server);
+		this.annotate(synth,"synth");
+		NodeWatcher.register(synth);
+		bundle.add(
+			synth.addToTailMsg(effectGroup,this.synthDefArgs)
+		);
+		bundle.addAction(this,\didSpawn);
 	}
 }
 

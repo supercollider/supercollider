@@ -4,10 +4,11 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 	var <>selected, <>list, <>autostart=false;
 	
 	*new { arg list,selected=0,env,round=0.0;
-		^super.new(round)
+		^super.new
 			.list_(loadDocument(list))
 			.selected_(selected)
 			.env_(env ?? {Env.new([ 0, 1.0, 0 ], [ 0.01, 0.7 ], -4, 1, nil)})
+			.round_(round)
 			//.select(selected)
 	}
 	storeArgs { ^[list, selected ,env,round ]  }
@@ -46,15 +47,28 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 	// PlayerSocket doesn't prepare children
 	prepareToBundle { arg group,bundle;
 		group = group.asGroup;
-		list.do({ arg pl; pl.prepareToBundle(group,bundle) });
+		list.do({ arg pl; pl.prepareToBundle(socketGroup,bundle) });
 		super.prepareToBundle(group,bundle);
 	}
 	spawnToBundle { arg bundle;
 		if(autostart,{
-			this.setSourceToBundle(this.selectedItem,bundle);
+			if(round == 0.0,{
+				this.setSourceToBundle(this.selectedItem,bundle);
+			},{
+				bundle.addFunction({
+					// xblock on these too !
+					this.qspawnPlayer(list.at(selected));
+				})
+			});
 		},{
-			if(source.notNil,{		
-				source.spawnToBundle(bundle)
+			if(source.notNil,{
+				// if you select while play is starting
+				// source is set, then gets started here
+				// which may not be on the 'round'
+				bundle.addFunction({
+					// xblock on these too !
+					this.qspawnPlayer(list.at(selected));
+				})
 			})
 		});
 		bundle.addAction(this,\didSpawn);
