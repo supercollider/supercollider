@@ -7,7 +7,7 @@ PublicProxySpace : ProxySpace {
 
 	var <>sendingKeys, <>listeningKeys, <>public=true;
 	var <>addresses, <>channel, <>nickname;
-	var <>action, <>logSelf=true, <logAll=false;
+	var <>action, <>logSelf=true, <logAll=false, <>basicSafety=true;
 	
 	classvar <listeningSpaces, <resp;
 	
@@ -79,7 +79,7 @@ PublicProxySpace : ProxySpace {
 	 	^listeningSpaces.select { |p| 
 	 		p.channel === channelName
 	 		and:
-	 		{ p.nickname !== nickname }
+	 		{ p.nickname !== nickname }  // don't listen to myself
 	 	};
 	 }
 	 
@@ -89,14 +89,18 @@ PublicProxySpace : ProxySpace {
 			var channel, nickname, key, str, proxyspaces, obj, listeningKeys;
 			#nickname, channel, key, str = msg[1..4];
 			proxyspaces = this.getListening(channel, nickname);
-			proxyspaces.do { arg proxyspace; // don't listen to myself
+			proxyspaces.do { arg proxyspace;
 				if(proxyspace.listensTo(key))
 				{
-					proxyspace.action.value(proxyspace, nickname, key, str);
-					obj = str.asString.interpret;
-					if(obj.notNil) {
-						proxyspace.localPut(key, obj);
-					};
+					str = str.asString;
+					if(proxyspace.avoidTheWorst(str)) { 
+						obj = str.interpret;
+						proxyspace.action.value(proxyspace, nickname, key, str);
+					
+						if(obj.notNil) {
+							proxyspace.localPut(key, obj);
+						};
+					}
 				} { 
 					if(proxyspace.logAll) {Ê
 						proxyspace.action.value(proxyspace, nickname, key, str) 
@@ -106,10 +110,7 @@ PublicProxySpace : ProxySpace {
 		
 		});
 		resp.add;
-		//addresses.do { arg addr; 
-//			addr.sendMsg('/proxyspace', nickname, channel, key, nickname + "has joined" + channel);
-//		
-//		}
+
 	}
 	
 	
@@ -143,8 +144,10 @@ PublicProxySpace : ProxySpace {
 		addresses.do { arg addr; addr.sendBundle(nil, b) };
 	}
 	
+	// in future: use a function to allow more flexibility.
+	
 	sendsTo { arg key;
-		^public and: { sendingKeys.notNil} and: 
+		^public and: { sendingKeys.notNil } and: 
 			{ 
 				sendingKeys === \all 
 				or: 
@@ -152,12 +155,21 @@ PublicProxySpace : ProxySpace {
 			} 
 	}
 	listensTo { arg key;
-		^public and: { listeningKeys.notNil} and: 
+		^public and: { listeningKeys.notNil } and: 
 			{
 				listeningKeys === \all 
 				or:
 				{ listeningKeys.includes(key) }
 			}
+	}
+	
+	avoidTheWorst { arg str;
+		^(basicSafety.not) or: {
+			str.find("unixCmd").isNil 
+			and: { str.find("File").isNil } 
+			and: { str.find("Pipe").isNil }
+			and: { str.find("PublicProxySpace").isNil }
+		}
 	}
 	
 	
