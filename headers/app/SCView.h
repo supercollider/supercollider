@@ -685,6 +685,8 @@ public:
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	
 protected:
+	virtual void drawString(SCRect bounds);
+
     char *mString;
     char mFontName[kFontNameSize];
     float mFontSize;

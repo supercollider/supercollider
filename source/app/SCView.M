@@ -3171,13 +3171,13 @@ bool SCStaticText::shouldDim()
 
 void SCStaticText::draw(SCRect inDamage)
 {
-    if (mString) {
-        SCView::draw(inDamage);
-        SCRect bounds = mBounds;
+	SCView::draw(inDamage);
+	drawString(mBounds);
+}
 
-        //bounds.x += 4; bounds.y += 4; 
-		//bounds.width -= 8; bounds.height -= 8;
-		//bounds.width -= 4; bounds.height -= 4;
+void SCStaticText::drawString(SCRect bounds)
+{
+    if (mString) {
         if (mAlignment < 0) {
             stringDrawLeftInRect(mString, bounds, mFontName, mFontSize, mStringColor);
         } else if (mAlignment > 0) {
@@ -4309,7 +4309,9 @@ bool SCNumberBox::shouldDim()
 
 void SCNumberBox::draw(SCRect inDamage)
 {
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	SCView::draw(inDamage);
+    
+	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(mBounds);
     if (mBackground) mBackground->draw(cgc, rect);
@@ -4323,7 +4325,11 @@ void SCNumberBox::draw(SCRect inDamage)
     CGContextRestoreGState(cgc);
 
     //drawBevelRect(SCtoQDRect(mBounds), 1, 1, SCtoQDColor(mBackColor), 2);
-    SCStaticText::draw(inDamage);
+	SCRect bounds = mBounds;
+
+	bounds.x += 2;
+	bounds.width -= 4;
+    drawString(bounds);
 }
 
 int SCNumberBox::setProperty(PyrSymbol *symbol, PyrSlot *slot)
@@ -4387,6 +4393,8 @@ SCDragSource::~SCDragSource()
 
 void SCDragSource::draw(SCRect inDamage)
 {
+	SCView::draw(inDamage);
+
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(mBounds);
@@ -4395,7 +4403,7 @@ void SCDragSource::draw(SCRect inDamage)
     CGContextRestoreGState(cgc);
         
     //drawBevelRect(SCtoQDRect(mBounds), 1, 0, SCtoQDColor(mBackColor), 2);
-    SCStaticText::draw(inDamage);
+    drawString(mBounds);
 }
 
 bool SCDragSource::shouldDim()
@@ -4430,6 +4438,8 @@ SCDragSink::~SCDragSink()
 
 void SCDragSink::draw(SCRect inDamage)
 {
+	SCView::draw(inDamage);
+
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(mBounds);
@@ -4438,7 +4448,7 @@ void SCDragSink::draw(SCRect inDamage)
     CGContextRestoreGState(cgc);
 
     //drawBevelRect(SCtoQDRect(mBounds), 1, 1, SCtoQDColor(mBackColor), 2);
-    SCStaticText::draw(inDamage);
+    drawString(mBounds);
 }
 
 bool SCDragSink::shouldDim()
@@ -4474,6 +4484,8 @@ SCDragBoth::SCDragBoth(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 
 void SCDragBoth::draw(SCRect inDamage)
 {
+	SCView::draw(inDamage);
+
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(mBounds);
@@ -4488,7 +4500,7 @@ void SCDragBoth::draw(SCRect inDamage)
     //SCRect bounds = mBounds;
     //bounds.x += 2; bounds.y += 2; bounds.width -= 4; bounds.height -= 4;
     //drawBevelRect(SCtoQDRect(bounds), 1, 0, SCtoQDColor(mBackColor), 2);
-    SCStaticText::draw(inDamage);
+    drawString(mBounds);
 }
 
 int ivxSCDragBoth_object;
