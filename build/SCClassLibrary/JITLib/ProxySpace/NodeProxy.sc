@@ -196,7 +196,7 @@ BusPlug : AbstractFunction {
 	///// monitoring //////////////
 	
 	
-	play { arg out=0, numChannels, group, multi=false, vol;  
+	play { arg out, numChannels, group, multi=false, vol;  
 		var ok, homeServer, bundle;
 		
 		homeServer = this.homeServer; // multi client support: monitor only locally
@@ -338,19 +338,20 @@ NodeProxy : BusPlug {
 			if(obj.isNil) { this.removeAt(index); ^this };
 			
 			orderIndex = index ? 0;
-			if(obj.isSequenceableCollection)
-				{
-					channelOffset = channelOffset.asArray;
-					obj.do { |item, i| this.put(i + orderIndex, item, channelOffset.wrapAt(i)) }; 
-					^this 
-				};
-			if(index.isSequenceableCollection)
-				{ 
-					obj = obj.asArray;
-					channelOffset = channelOffset.asArray;
-					index.do { |index, i| this.put(index, obj.wrapAt(i),channelOffset.wrapAt(i))} 
-					^this	
-				};
+			if(obj.isSequenceableCollection) {
+				channelOffset = channelOffset.asArray;
+				if(index.isSequenceableCollection) {
+					obj.do { |item, i| this.put(index.wrapAt(i), item, channelOffset.wrapAt(i)) } 
+				}{
+					obj.do { |item, i| this.put(i + orderIndex, item, channelOffset.wrapAt(i)) }				}
+				^this 
+			};
+			if(index.isSequenceableCollection) { 
+				obj = obj.asArray;
+				channelOffset = channelOffset.asArray;
+				index.do { |index, i| this.put(index, obj.wrapAt(i),channelOffset.wrapAt(i)) } 
+				^this	
+			};
 			
 			container = obj.makeProxyControl(channelOffset, this);
 			container.build(this, orderIndex); // bus allocation happens here
@@ -381,7 +382,10 @@ NodeProxy : BusPlug {
 
 	}
 	
-	putSeries { arg first, second, last, value; this.put((first, second..last), value) }
+	putSeries { arg first, second, last, value;
+		last = last ?? {objects.size - 1};
+		this.put((first, second..last), value) 
+	}
 	
 	shouldAddObject { arg obj; ^obj.readyForPlay } // shared node proxy overrides this
 	
