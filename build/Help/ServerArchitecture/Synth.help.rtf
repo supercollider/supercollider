@@ -126,9 +126,8 @@ For other instance variables see
 \f0\b default_group
 \f1\b0  of that server. If it is nil, to the 
 \f0\b default_group
-\f1\b0  of the default 
-\f0\b Server
-\f1\b0 . 
+\f1\b0  of the default Server. If it is an integer, it is created relative to a group with that id. \
+			
 \f0\b Note: 
 \f1\b0 A Synth is not a valid target for 
 \f2\fs18 \cf2 \\addToHead
@@ -139,9 +138,8 @@ For other instance variables see
 		
 \f0\b addAction
 \f1\b0  - one of the following Symbols:		\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1700\fi-1700\ql\qnatural
 
-\f2\fs18 \cf0 			\cf2 \\addToHead 	
+\f2\fs18 			\cf2 \\addToHead 	
 \f1\fs24 \cf0 - (the default) add at the head of the group specified by 
 \f0\b target
 \f1\b0 \
@@ -213,8 +211,9 @@ The following convenience methods correspond to the add actions of
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
 
 \f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
 
-\f0\b\fs24 	*after(aNode, defName, args)\
+\f0\b\fs24 \cf0 	*after(aNode, defName, args)\
 		\
 		
 \f1\b0 Create and return a Synth and add it immediately after 
@@ -230,8 +229,9 @@ The following convenience methods correspond to the add actions of
 \f1\b0 \
 
 \f0\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
 
-\f2\b0\fs18 	
+\f2\b0\fs18 \cf0 	
 \f0\b\fs24 *head(aGroup, defName, args)\
 	\
 		
@@ -245,9 +245,9 @@ The following convenience methods correspond to the add actions of
 \f0\b default_group
 \f1\b0  of that server. If it is nil, add it at the head of the 
 \f0\b default_group
-\f1\b0  of the default 
-\f0\b Server.
-\f1\b0 \
+\f1\b0  of the default server
+\f0\b . 
+\f1\b0 If it is an integer, it is created relative to a group with that id. \
 				\
 
 \f2\fs18 	
@@ -264,8 +264,10 @@ The following convenience methods correspond to the add actions of
 \f0\b default_group
 \f1\b0  of that server. If it is nil, add it at the tail of the 
 \f0\b default_group
-\f1\b0  of the default 
-\f0\b Server.\
+\f1\b0  of the the default server
+\f0\b . 
+\f1\b0 If it is an integer, it is created relative to a group with that id. 
+\f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
 
 \f1\b0 \cf0 		\
@@ -498,6 +500,7 @@ For further methods of controlling Synths (set, map, busMap, etc.), see the
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // boot the default server\cf0 \
 s = \cf4 Server\cf0 .default; \cf3 // just to be sure\cf0 \
 s.boot;\
