@@ -53,7 +53,8 @@ MIDIIn {
 	classvar <>action, 
 	<> noteOn, <> noteOff, <> polytouch, 
 	<> control, <> program, 
-	<> touch, <> bend;	
+	<> touch, <> bend, 
+	<> sysex, sysexPacket, <> sysrt, <> smpte;	
 	
 	
 	*doAction { arg src, status, a, b, c;
@@ -80,6 +81,21 @@ MIDIIn {
 	*doBendAction { arg src, chan, val;
 		bend.value(src, chan, val);
 	}
+	*doSysexAction { arg src,  packet;
+		sysexPacket = sysexPacket ++ packet;
+		if (packet.last == -9, {
+			sysex.value(src, sysexPacket);
+			sysexPacket = nil
+		});
+	}
+	*doSysrtAction { arg src, index, val;
+		sysrt.value(src, index, val);
+	}
+	
+	*doSMPTEaction { arg src, frameRate, timecode;
+		smpte.value(src, frameRate, timecode);
+	}
+	
 	*connect { arg inport=0, device=0;
 		var uid,source;
 		if(device.isNumber, {
@@ -159,17 +175,41 @@ MIDIOut {
 	allNotesOff { arg chan;
 		this.control(chan, 123, 0);
 	}
+	smpte	{ arg frames=0, seconds=0, minutes=0, hours=0, frameRate = 3;
+	var packet;
+		packet = [frames, seconds, minutes, hours]
+			.collect({ arg v, i; [(i * 2 << 4) | (v & 16rF), (i * 2 + 1 << 4) | (v >> 4) ] });
+		packet = packet.flat;
+		packet.put(7, packet.at(7) | ( frameRate << 1 ) );
+		packet.do({ arg v; this.write(2, 16rF0, 16r01, v); });
+	}
+	songPtr { arg songPtr;
+		this.write(4, 16rF0, 16r02, songPtr & 16r7f, songPtr >> 7 & 16r7f);
+	}
+	songSelect { arg song;
+		this.write(3, 16rF0, 16r03, song);
+	}	
 	midiClock { 
 		this.write(1, 16rF0, 16r08);
 	}
-	startClock {
+	start {
 		this.write(1, 16rF0, 16r0A);
 	}
-	stopClock {
+	continue {
+		this.write(1, 16rF0, 16r0B);
+	}
+	stop {
 		this.write(1, 16rF0, 16r0C);
+	}
+	reset {
+		this.write(1, 16rF0, 16r0F);
 	}
 	
 	send {arg outport, uid, len, hiStatus, loStatus, a=0, b=0, latency=0.1; //in ms
 		_SendMIDIOut		
+	}
+	
+	sysex { arg uid, packet;
+		_SendSysex
 	}
 }
