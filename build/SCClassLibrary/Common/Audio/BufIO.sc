@@ -8,7 +8,7 @@ PlayBuf : MultiOutUGen {
 	}
 	
 	init { arg argNumChannels ... theInputs;
-		inputs = theInputs.insp;
+		inputs = theInputs;
 		^this.initOutputs(argNumChannels, rate);
 	}
 	argNamesInputsOffset { ^2 }
