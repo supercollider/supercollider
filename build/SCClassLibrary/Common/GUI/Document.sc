@@ -327,7 +327,7 @@ Document {
 			});
 		isListener = makeListener;
 		thelistener = this;
-		this.prinitByString(str, title, makeListener);
+		this.prinitByString(title, str, makeListener);
 		if(dataptr.isNil,{ this = nil; ^nil});
 		this.prAdd;
 	
