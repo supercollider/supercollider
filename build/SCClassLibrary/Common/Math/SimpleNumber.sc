@@ -270,39 +270,10 @@ SimpleNumber : Number {
 		^clock.nextTimeOnGrid(this, 0);
 	}
 	
-	asFraction {|maxDenominator=100| 
-		var mediant, lower, upper;
-		var n,d;
-		if (this < 0) {
-			#n, d = this.neg.asFraction(maxDenominator); 
-			^[n.neg, d]
-		};
-		if (this < 1.0) {
-			upper = [1, this.reciprocal.floor]; 
-			lower = [1, upper[1]+1];
-		}{
-			lower = [this.floor, 1]; 
-			upper = [lower[0]+1, 1];
-		};
-		loop {
-			mediant = [lower[0] + upper[0], lower[1] + upper[1]];
-			
-			case 
-			{ (this * mediant[1]) > mediant[0] } 
-			{
-				if (maxDenominator < mediant[1]) {^upper};
-				lower = mediant;
-			}
-			{ (this * mediant[1]) == mediant[0] } 
-			{
-				if (maxDenominator >= mediant[1]) {^mediant};
-				if (lower[1] < upper[1]) {^lower};
-				^upper
-			}
-			{	
-				if (maxDenominator < mediant[1]) {^lower};
-				upper = mediant;
-			};				
-		}
+	asFraction {|denominator=100| 
+		_AsFraction
+		// asFraction will return a fraction that is the best approximation up to the given
+		// denominator, but it may find a much closer approximation than that.
+		^this.primitiveFailed
 	}
 }
