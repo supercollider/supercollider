@@ -142,6 +142,7 @@ GC::GC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long poolSiz
 	mGreyColor = 3<<2;
 	mBlackColor = 2<<2;
 	mWhiteColor = 1<<2;
+	mFreeColor = 0;
 	
 	mProcessID = g->processID;
 	mRunning = false;
@@ -354,7 +355,7 @@ PyrObject *GC::NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, bool i
 	obj->classptr = class_finalizer;
 	obj->gc_color = mWhiteColor;
 	
-	SetPtr(obj->slots+0, finalizeFunc);
+	SetPtr(obj->slots+0, (void*)finalizeFunc);
 	SetObject(obj->slots+1, inObject);
 		
 #if SANITYCHECK
@@ -611,10 +612,6 @@ void GC::ScanFinalizers()
 	}
 }
 
-#define GCTHROW(str)
-//#define GCTHROW(str) throw std::runtime_error(str)
-//#define GCTHROW(str) fatalerror(str)
-
 bool GC::SanityCheck2()
 {
 	int numgrey = 0;
@@ -644,19 +641,16 @@ bool GC::SanityCheck()
 	//&& SanityClearObj((PyrObject*)mProcess,0) && SanityClearObj(mStack,0)
 	;
 	//if (!res) DumpInfo();
-	if (!res) Debugger();
+	//if (!res) Debugger();
 	return res;
 }
 
 bool GC::ListSanity()
 {
 	bool found;
-	char str[256];
 	
 	if (StackDepth() < 0) {
-		sprintf(str, "stack underflow %ld\n", StackDepth());
-		postfl(str);
-		GCTHROW(str);
+		fprintf(stderr, "stack underflow %ld\n", StackDepth());
 		return false;
 	}
 
@@ -669,10 +663,10 @@ bool GC::ListSanity()
 		obj = &set->mBlack;
 		if (!IsMarker(obj)) {
 			//debugf("set %d black marker color wrong %d %0X\n", i, obj->gc_color, obj);
-			sprintf(str, "set %d black marker color wrong %d %0X\n", i, obj->gc_color, obj);
-			fprintf(stderr, str);
-			GCTHROW(str);
-			//dumpObject((PyrObject*)obj);
+			fprintf(stderr, "set %d black marker color wrong %d %0X\n", i, obj->gc_color, obj);
+			setPostFile(stderr);
+			DumpBackTrace(mVMGlobals);
+			dumpBadObject((PyrObject*)obj);
 			return false;
 		}
 		
@@ -680,10 +674,10 @@ bool GC::ListSanity()
 		obj = &set->mWhite;
 		if (!IsMarker(obj)) {
 			//debugf("set %d white marker color wrong %d %0X\n", i, obj->gc_color, obj);
-			sprintf(str, "set %d white marker color wrong %d %0X\n", i, obj->gc_color, obj);
-			fprintf(stderr, str);
-			GCTHROW(str);
-			//dumpObject((PyrObject*)obj);
+			fprintf(stderr, "set %d white marker color wrong %d %0X\n", i, obj->gc_color, obj);
+			setPostFile(stderr);
+			DumpBackTrace(mVMGlobals);
+			dumpBadObject((PyrObject*)obj);
 			return false;
 		}
 				
@@ -697,12 +691,27 @@ bool GC::ListSanity()
 			}
 			if (!found) {
 				//debugf("set %d free pointer not between white and black\n", i);
-				sprintf(str, "set %d free pointer not between white and black\n", i);
-				fprintf(stderr, str);
+				fprintf(stderr, "set %d free pointer not between white and black\n", i);
 				fprintf(stderr, "set->mFree %08X\n", set->mFree);
+				fprintf(stderr, "set->mWhite %08X\n", &set->mWhite);
+				fprintf(stderr, "set->mBlack %08X\n", &set->mBlack);
+				setPostFile(stderr);
 				DumpBackTrace(mVMGlobals);
-				dumpBadObject(set->mFree);
-				GCTHROW(str);
+				dumpBadObject((PyrObject*)set->mFree);
+				
+				fprintf(stderr, "black %d white %d grey %d\n", mBlackColor, mWhiteColor, mGreyColor);
+				
+				obj = &set->mWhite;
+				int count = 0;
+				do {
+					if (obj == set->mFree) fprintf(stderr, "%4d %08X %3d %d FREE\n", count, obj, obj->gc_color, obj->obj_sizeclass);
+					else if (obj == &set->mWhite) fprintf(stderr, "%4d %08X %3d %d WHITE\n", count, obj, obj->gc_color, obj->obj_sizeclass);
+					else if (obj == &set->mBlack) fprintf(stderr, "%4d %08X %3d %d BLACK\n", count, obj, obj->gc_color, obj->obj_sizeclass);
+					else fprintf(stderr, "%4d %08X %3d %d\n", count, obj, obj->gc_color, obj->obj_sizeclass);
+					obj = obj->next; 
+					count++;
+				} while (obj != &set->mWhite);
+
 				return false;
 			}
 		}
@@ -713,27 +722,25 @@ bool GC::ListSanity()
 			if (obj->gc_color != mBlackColor) {
 				//debugf("set %d black list obj color wrong %d (%d, %d, %d) %0X\n", 
 				//	i, obj->gc_color, mBlackColor, mGreyColor, mWhiteColor, obj);
-				sprintf(str, "set %d black list obj color wrong %d (%d, %d, %d) %0X\n", 
+				fprintf(stderr, "set %d black list obj color wrong %d (%d, %d, %d) %0X\n", 
 					i, obj->gc_color, mBlackColor, mGreyColor, mWhiteColor, obj);
-				fprintf(stderr, str);
-				dumpObject((PyrObject*)obj);
-				GCTHROW(str);
-				//dumpObject((PyrObject*)obj);
+				setPostFile(stderr);
+				DumpBackTrace(mVMGlobals);
+				dumpBadObject((PyrObject*)obj);
 				return false;
 			}
 			if (GetGCSet(obj) != set) {
 				//debugf("set %d black obj gcset wrong %d %0X\n", i, obj->obj_sizeclass, obj);
-				sprintf(str, "set %d black obj gcset wrong %d %0X\n", i, obj->obj_sizeclass, obj);
-				fprintf(stderr, str);
-				GCTHROW(str);
-				//dumpObject((PyrObject*)obj);
+				fprintf(stderr, "set %d black obj gcset wrong %d %0X\n", i, obj->obj_sizeclass, obj);
+				setPostFile(stderr);
+				dumpBadObject((PyrObject*)obj);
 				return false;
 			}
 			if (obj->next->prev != obj) {
-				sprintf(str, "set %d black obj->next->prev != obj\n", i);
-				fprintf(stderr, str);
-				GCTHROW(str);
-				//dumpObject((PyrObject*)obj);
+				fprintf(stderr, "set %d black obj->next->prev != obj\n", i);
+				setPostFile(stderr);
+				DumpBackTrace(mVMGlobals);
+				dumpBadObject((PyrObject*)obj);
 			}
 			
 			// scan for refs to white.
@@ -749,27 +756,27 @@ bool GC::ListSanity()
 				//debugf("set %d white list obj color wrong %d (%d, %d, %d) %0X\n", 
 				//	i, obj->gc_color, mBlackColor, mGreyColor, mWhiteColor, obj);
 				//debugf("hmmm free %0X  black %0X\n", set->mFree, set->black);
-				sprintf(str, "set %d white list obj color wrong %d (%d, %d, %d) %0X\n", 
+				fprintf(stderr, "set %d white list obj color wrong %d (%d, %d, %d) %0X\n", 
 					i, obj->gc_color, mBlackColor, mGreyColor, mWhiteColor, obj);
 				fprintf(stderr, "hmmm free %0X  black %0X\n", set->mFree, &set->mBlack);
-				fprintf(stderr, str);
-				GCTHROW(str);
-				//dumpObject((PyrObject*)obj);
+				setPostFile(stderr);
+				DumpBackTrace(mVMGlobals);
+				dumpBadObject((PyrObject*)obj);
 				return false;
 			}
 			if (GetGCSet(obj) != set) {
 				//debugf("set %d white obj gcset wrong %d %0X\n", i, obj->obj_sizeclass, obj);
-				sprintf(str, "set %d white obj gcset wrong %d %0X\n", i, obj->obj_sizeclass, obj);
-				fprintf(stderr, str);
-				GCTHROW(str);
-				//dumpObject((PyrObject*)obj);
+				fprintf(stderr, "set %d white obj gcset wrong %d %0X\n", i, obj->obj_sizeclass, obj);
+				setPostFile(stderr);
+				DumpBackTrace(mVMGlobals);
+				dumpBadObject((PyrObject*)obj);
 				return false;
 			}
 			if (obj->next->prev != obj) {
-				sprintf(str, "set %d white obj->next->prev != obj\n", i);
-				//dumpObject((PyrObject*)obj);
-				fprintf(stderr, str);
-				GCTHROW(str);
+				fprintf(stderr, "set %d white obj->next->prev != obj\n", i);
+				setPostFile(stderr);
+				DumpBackTrace(mVMGlobals);
+				dumpBadObject((PyrObject*)obj);
 			}
 			obj = obj->next;
 		}
@@ -779,9 +786,7 @@ bool GC::ListSanity()
 		while (!IsMarker(obj)) {
 			/*if (obj->gc_color == mGreyColor) {
 				//debugf("grey obj on free list\n");
-				sprintf(str, "grey obj on free list\n");
-				fprintf(stderr, str);
-				GCTHROW(str);
+				fprintf(stderr, "grey obj on free list\n");
 				return false;
 			}*/
 			//post("FREE\n");
@@ -789,16 +794,12 @@ bool GC::ListSanity()
 			obj->gc_color = mFreeColor;
 			if (GetGCSet(obj) != set) {
 				//debugf("set %d free obj gcset wrong %d %0X\n", i, obj->obj_sizeclass, obj);
-				sprintf(str, "set %d free obj gcset wrong %d %0X\n", i, obj->obj_sizeclass, obj);
-				fprintf(stderr, str);
-				GCTHROW(str);
+				fprintf(stderr, "set %d free obj gcset wrong %d %0X\n", i, obj->obj_sizeclass, obj);
 				//dumpObject((PyrObject*)obj);
 				return false;
 			}
 			if (obj->next->prev != obj) {
-				sprintf(str, "set %d free obj->next->prev != obj\n", i);
-				fprintf(stderr, str);
-				GCTHROW(str);
+				fprintf(stderr, "set %d free obj->next->prev != obj\n", i);
 				//dumpObject((PyrObject*)obj);
 			}
 			obj = obj->next;
@@ -810,19 +811,15 @@ bool GC::ListSanity()
 	while (!IsMarker(grey)) {
 		numgrey++;
 		if (!IsGrey(grey)) {
-			sprintf(str, "sc Object on grey list not grey  %d %d   %d\n", grey->gc_color, mGreyColor, numgrey);
-			fprintf(stderr, str);
+			fprintf(stderr, "sc Object on grey list not grey  %d %d   %d\n", grey->gc_color, mGreyColor, numgrey);
 			fprintf(stderr, "%08X <- %08X -> %08X grey %08X process %08X\n", mGrey.prev, &mGrey, mGrey.next, grey, mProcess);
-			GCTHROW(str);
 			return false;
 		}
 		grey = grey->next;
 	}
 	
 	if (numgrey != mNumGrey) {
-		sprintf(str, "grey count off %d %d\n", numgrey, mNumGrey);
-		fprintf(stderr, str);
-		GCTHROW(str);
+		fprintf(stderr, "grey count off %d %d\n", numgrey, mNumGrey);
 		DumpInfo();
 		fprintf(stderr, ".");
 		return false;
@@ -832,7 +829,6 @@ bool GC::ListSanity()
 
 bool GC::LinkSanity()
 {
-	char str[256];
 	//postfl("GC::LinkSanity\n");
 	for (int i=0; i<kNumGCSets; ++i) {
 		GCSet* set = mSets + i;
@@ -841,16 +837,12 @@ bool GC::LinkSanity()
 		PyrObjectHdr* obj = &set->mBlack;
 		do {
 			if (obj->next->prev != obj) {
-				sprintf(str, "set %d black obj->next->prev != obj\n", i);
-				fprintf(stderr, str);
-				GCTHROW(str);
+				fprintf(stderr, "set %d black obj->next->prev != obj\n", i);
 				//dumpObject((PyrObject*)obj);
 				return false;
 			}
 			if (obj->prev->next != obj) {
-				sprintf(str, "set %d black obj->prev->next != obj\n", i);
-				fprintf(stderr, str);
-				GCTHROW(str);
+				fprintf(stderr, "set %d black obj->prev->next != obj\n", i);
 				//dumpObject((PyrObject*)obj);
 				return false;
 			}
@@ -867,7 +859,6 @@ bool GC::BlackToWhiteCheck(PyrObject *objA)
 	int j, size, tag;
 	PyrSlot *slot;
 	PyrObject *objB;
-	char str[256];
 
 	if (objA->obj_format > obj_slot) return true;
 	// scan it
@@ -883,23 +874,19 @@ bool GC::BlackToWhiteCheck(PyrObject *objA)
 				objB = slot->uo;
 			}
 			if (objB && (long)objB < 100) {
-				sprintf(str, "weird obj ptr\n");
-				fprintf(stderr, str);
-				GCTHROW(str);
+				fprintf(stderr, "weird obj ptr\n");
 				return false;
 			}
 			if (objB) {
 				if (objA == mStack) {
 				} else if (objA->gc_color == mBlackColor && objA != mPartialScanObj) {
 					if (objB->gc_color == mWhiteColor) { 
-						sprintf(str, "black to white ref %0X %0X\n", objA, objB);
-						fprintf(stderr, str);
+						fprintf(stderr, "black to white ref %0X %0X\n", objA, objB);
 #if DUMPINSANITY
 						dumpBadObject(objA);
 						dumpBadObject(objB);
 						fprintf(stderr, "\n");
 #endif
-						GCTHROW(str);
 						return false;
 					}
 				}
@@ -914,14 +901,11 @@ bool GC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
 	int j, size, tag;
 	PyrSlot *slot;
 	PyrObject *objB;
-	char str[256];
 	
 	if (objA->IsPermanent()) return true;
 	if (objA->IsMarked()) return true;
 	if (objA->size > MAXINDEXSIZE(objA)) {
-		sprintf(str, "obj indexed size larger than max: %d > %d\n", objA->size, MAXINDEXSIZE(objA));
-		fprintf(stderr, str);
-		GCTHROW(str);
+		fprintf(stderr, "obj indexed size larger than max: %d > %d\n", objA->size, MAXINDEXSIZE(objA));
 		//dumpObject((PyrObject*)objA);
 		return false;
 	}
@@ -940,9 +924,7 @@ bool GC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
 					objB = slot->uo;
 				}
 				if (objB && (long)objB < 100) {
-					sprintf(str, "weird obj ptr\n");
-					fprintf(stderr, str);
-					GCTHROW(str);
+					fprintf(stderr, "weird obj ptr\n");
 					return false;
 				}
 				if (objB) {
@@ -954,9 +936,7 @@ bool GC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
 							//debugf("sizeclass %d %d\n",  objA->obj_sizeclass, objB->obj_sizeclass);
 							//debugf("class %s %s\n",  objA->classptr->name.us->name, objB->classptr->name.us->name);
 							
-							sprintf(str, "black to white ref %0X %0X\n", objA, objB);
-							fprintf(stderr, str);
-							GCTHROW(str);
+							fprintf(stderr, "black to white ref %0X %0X\n", objA, objB);
 	#if DUMPINSANITY
 							dumpBadObject(objA);
 							dumpBadObject(objB);
