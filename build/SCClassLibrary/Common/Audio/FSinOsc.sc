@@ -21,14 +21,23 @@ FSinOsc : UGen {
 
 Klang : UGen {
 	*ar { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
+			^this.multiNewList(['audio', freqscale, 
+						freqoffset, specificationsArrayRef] )
+	}
+	*new1 { arg rate, freqscale, freqoffset, arrayRef;
 		var specs, freqs, amps, phases;
-		# freqs, amps, phases = specificationsArrayRef.value;
+		# freqs, amps, phases = arrayRef.dereference;
 		specs = [freqs, 
 				amps ?? {Array.fill(freqs.size,1.0)}, 
 				phases ?? {Array.fill(freqs.size,0.0)}
 				].flop.flat;
-		^this.multiNewList(['audio', freqscale, freqoffset] ++ specs )
+
+		^super.new.rate_(rate).addToSynth.init([freqscale,freqoffset] ++ specs); 
 	}
+ 	init { arg theInputs;
+ 		// store the inputs as an array
+ 		inputs = theInputs;
+ 	}
 	argNamesInputsOffset { ^2 }
 }
 
@@ -45,9 +54,12 @@ Klank : UGen {
 				times ?? {Array.fill(freqs.size,1.0)}
 				].flop.flat;
 
-		^super.new.rate_(rate).addToSynth.performList(\init, 
-				[input,freqscale,freqoffset,decayscale] ++ specs); 
+		^super.new.rate_(rate).addToSynth.init([input,freqscale,freqoffset,decayscale] ++ specs); 
 	}
+ 	init { arg theInputs;
+ 		// store the inputs as an array
+ 		inputs = theInputs;
+ 	}
 	argNamesInputsOffset { ^2 }
 }
 
