@@ -217,6 +217,7 @@ extern PyrSymbol *s_put;
 extern PyrSymbol *s_series, *s_copyseries, *s_putseries;
 extern PyrSymbol *s_value;
 extern PyrSymbol *s_performList;
+extern PyrSymbol *s_superPerformList;
 extern PyrSymbol *s_ugen, *s_outputproxy;
 extern PyrSymbol *s_new, *s_ref;
 extern PyrSymbol *s_synth, *s_spawn, *s_environment, *s_event;

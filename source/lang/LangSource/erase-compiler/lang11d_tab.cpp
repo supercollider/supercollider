@@ -1,5 +1,5 @@
 
-/*  A Bison parser, made from lang11d
+/*  A Bison parser, made from source/lang/LangSource/erase-compiler/lang11d
     by GNU Bison version 1.28  */
 
 #define YYBISON 1  /* Identify Bison output.  */
@@ -33,7 +33,7 @@
 #define	READWRITEVAR	283
 #define	UMINUS	284
 
-#line 15 "lang11d"
+#line 15 "source/lang/LangSource/erase-compiler/lang11d"
 
 
 #include <stdlib.h>
@@ -221,26 +221,26 @@ static const short yyrline[] = { 0,
     71,    72,    75,    76,    80,    81,    85,    87,    91,    92,
     96,    99,   102,   105,   110,   111,   114,   115,   118,   119,
    123,   125,   127,   131,   132,   136,   137,   141,   143,   147,
-   149,   153,   154,   160,   161,   164,   168,   173,   186,   195,
-   200,   213,   228,   234,   247,   253,   254,   255,   256,   257,
-   259,   269,   271,   273,   275,   277,   288,   301,   317,   319,
-   332,   335,   362,   380,   407,   435,   454,   482,   509,   527,
-   552,   580,   599,   627,   646,   663,   679,   680,   681,   682,
-   695,   697,   711,   716,   720,   731,   736,   746,   751,   765,
-   781,   782,   783,   784,   787,   788,   794,   797,   798,   802,
-   803,   805,   810,   812,   819,   827,   828,   832,   834,   838,
-   839,   843,   847,   848,   851,   853,   857,   858,   863,   864,
-   865,   866,   867,   868,   869,   870,   871,   872,   875,   878,
-   881,   882,   883,   884,   885,   886,   887,   888,   889,   890,
-   893,   894,   895,   896,   897,   898,   899,   900,   901,   902,
-   905,   908,   913,   914,   918,   919,   923,   927,   928,   932,
-   936,   940,   947,   948,   951,   952,   956,   958,   962,   964,
-   971,   972,   976,   977,   980,   981,   985,   987,   993,   995,
-   999,  1001,  1005,  1006,  1009,  1010,  1014,  1015,  1017,  1019,
-  1023,  1024,  1033,  1034,  1043,  1044,  1055,  1058,  1059,  1060,
-  1066,  1074,  1081,  1090,  1093,  1096,  1099,  1102,  1105,  1108,
-  1111,  1114,  1117,  1120,  1123,  1124,  1125,  1126,  1127,  1128,
-  1129,  1130,  1133,  1136,  1137
+   149,   153,   154,   160,   161,   164,   168,   173,   191,   200,
+   205,   218,   238,   244,   262,   268,   269,   270,   271,   272,
+   274,   284,   286,   288,   290,   292,   303,   316,   337,   339,
+   352,   355,   382,   400,   427,   455,   474,   502,   529,   547,
+   572,   600,   619,   647,   666,   683,   699,   700,   701,   702,
+   715,   717,   731,   736,   740,   751,   756,   766,   771,   785,
+   801,   802,   803,   804,   807,   808,   814,   817,   818,   822,
+   823,   825,   830,   832,   839,   847,   848,   852,   854,   858,
+   859,   863,   867,   868,   871,   873,   877,   878,   883,   884,
+   885,   886,   887,   888,   889,   890,   891,   892,   895,   898,
+   901,   902,   903,   904,   905,   906,   907,   908,   909,   910,
+   913,   914,   915,   916,   917,   918,   919,   920,   921,   922,
+   925,   928,   933,   934,   938,   939,   943,   947,   948,   952,
+   956,   960,   967,   968,   971,   972,   976,   978,   982,   984,
+   991,   992,   996,   997,  1000,  1001,  1005,  1007,  1013,  1015,
+  1019,  1021,  1025,  1026,  1029,  1030,  1034,  1035,  1037,  1039,
+  1043,  1044,  1053,  1054,  1063,  1064,  1075,  1078,  1079,  1080,
+  1086,  1094,  1101,  1110,  1113,  1116,  1119,  1122,  1125,  1128,
+  1131,  1134,  1137,  1140,  1143,  1144,  1145,  1146,  1147,  1148,
+  1149,  1150,  1153,  1156,  1157
 };
 #endif
 
@@ -1229,179 +1229,184 @@ yyreduce:
   switch (yyn) {
 
 case 1:
-#line 37 "lang11d"
+#line 37 "source/lang/LangSource/erase-compiler/lang11d"
 { gRootParseNode = (PyrParseNode*)yyvsp[0]; gParserResult = 1; ;
     break;}
 case 2:
-#line 39 "lang11d"
+#line 39 "source/lang/LangSource/erase-compiler/lang11d"
 { gRootParseNode = (PyrParseNode*)yyvsp[0]; gParserResult = 1; ;
     break;}
 case 3:
-#line 41 "lang11d"
+#line 41 "source/lang/LangSource/erase-compiler/lang11d"
 { gRootParseNode = (PyrParseNode*)yyvsp[0]; gParserResult = 2; ;
     break;}
 case 4:
-#line 44 "lang11d"
+#line 44 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 5:
-#line 46 "lang11d"
+#line 46 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 7:
-#line 51 "lang11d"
+#line 51 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 8:
-#line 55 "lang11d"
+#line 55 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrClassNode((PyrSlotNode*)yyvsp[-5], (PyrSlotNode*)yyvsp[-4], 
 					(PyrVarListNode*)yyvsp[-2], (PyrMethodNode*)yyvsp[-1], 0); 
 				;
     break;}
 case 9:
-#line 59 "lang11d"
+#line 59 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrClassNode((PyrSlotNode*)yyvsp[-8], (PyrSlotNode*)yyvsp[-4], 
 					(PyrVarListNode*)yyvsp[-2], (PyrMethodNode*)yyvsp[-1], 
 					(PyrSlotNode*)yyvsp[-6]); 
 				;
     break;}
 case 10:
-#line 66 "lang11d"
+#line 66 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 					yyval = (long)newPyrClassExtNode((PyrSlotNode*)yyvsp[-3], (PyrMethodNode*)yyvsp[-1]); 
 				;
     break;}
 case 11:
-#line 71 "lang11d"
+#line 71 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 13:
-#line 75 "lang11d"
+#line 75 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 14:
-#line 77 "lang11d"
+#line 77 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = yyvsp[0]; ;
     break;}
 case 15:
-#line 80 "lang11d"
+#line 80 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 16:
-#line 82 "lang11d"
+#line 82 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 17:
-#line 86 "lang11d"
+#line 86 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrVarListNode((PyrVarDefNode*)yyvsp[-1], varClass); ;
     break;}
 case 18:
-#line 88 "lang11d"
+#line 88 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrVarListNode((PyrVarDefNode*)yyvsp[-1], varInst); ;
     break;}
 case 19:
-#line 91 "lang11d"
+#line 91 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 20:
-#line 93 "lang11d"
+#line 93 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 21:
-#line 97 "lang11d"
+#line 97 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrMethodNode((PyrSlotNode*)yyvsp[-6], (PyrSlotNode*)yyvsp[-2], 
 					(PyrArgListNode*)yyvsp[-4], (PyrVarListNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1], 0); ;
     break;}
 case 22:
-#line 100 "lang11d"
+#line 100 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrMethodNode((PyrSlotNode*)yyvsp[-6], (PyrSlotNode*)yyvsp[-2], 
 					(PyrArgListNode*)yyvsp[-4], (PyrVarListNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1], 1); ;
     break;}
 case 23:
-#line 103 "lang11d"
+#line 103 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrMethodNode((PyrSlotNode*)yyvsp[-6], (PyrSlotNode*)yyvsp[-2], 
 					(PyrArgListNode*)yyvsp[-4], (PyrVarListNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1], 0); ;
     break;}
 case 24:
-#line 106 "lang11d"
+#line 106 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrMethodNode((PyrSlotNode*)yyvsp[-6], (PyrSlotNode*)yyvsp[-2], 
 					(PyrArgListNode*)yyvsp[-4], (PyrVarListNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1], 1); ;
     break;}
 case 30:
-#line 120 "lang11d"
+#line 120 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrDropNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 31:
-#line 124 "lang11d"
+#line 124 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrBlockNode(NULL, (PyrVarListNode*)yyvsp[-2], (PyrParseNode*)yyvsp[-1], false); ;
     break;}
 case 32:
-#line 126 "lang11d"
+#line 126 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrBlockNode(NULL, (PyrVarListNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0], false); ;
     break;}
 case 33:
-#line 128 "lang11d"
+#line 128 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrBlockNode(NULL, NULL, (PyrParseNode*)yyvsp[0], false); ;
     break;}
 case 35:
-#line 133 "lang11d"
+#line 133 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrDropNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 36:
-#line 136 "lang11d"
+#line 136 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 37:
-#line 138 "lang11d"
+#line 138 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = yyvsp[-1]; ;
     break;}
 case 38:
-#line 142 "lang11d"
+#line 142 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrReturnNode(NULL); ;
     break;}
 case 39:
-#line 144 "lang11d"
+#line 144 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrReturnNode((PyrParseNode*)yyvsp[-1]); ;
     break;}
 case 40:
-#line 148 "lang11d"
+#line 148 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrBlockReturnNode(); ;
     break;}
 case 41:
-#line 150 "lang11d"
+#line 150 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrReturnNode((PyrParseNode*)yyvsp[-1]); ;
     break;}
 case 43:
-#line 155 "lang11d"
+#line 155 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 					yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); 
 				;
     break;}
 case 44:
-#line 160 "lang11d"
+#line 160 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 46:
-#line 165 "lang11d"
+#line 165 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				yyval = (long)newPyrCallNode((PyrSlotNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0], 0, 0); 
 			;
     break;}
 case 47:
-#line 169 "lang11d"
+#line 169 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				yyval = (long)newPyrCallNode((PyrSlotNode*)yyvsp[-5], (PyrParseNode*)yyvsp[-3], 
 						(PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); 
 			;
     break;}
 case 48:
-#line 174 "lang11d"
+#line 174 "source/lang/LangSource/erase-compiler/lang11d"
 {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
 				
-				SetSymbol(&slot, s_performList);
+				if (isSuperObjNode((PyrParseNode*)yyvsp[-2])) {
+					((PyrPushNameNode*)yyvsp[-2])->varName.us == s_this;
+					SetSymbol(&slot, s_superPerformList);
+				} else {
+					SetSymbol(&slot, s_performList);
+				}
 				selectornode = newPyrSlotNode(&slot);
 				args = linkAfterHead(
 					(PyrParseNode*)yyvsp[-2],
@@ -1410,7 +1415,7 @@ case 48:
 			;
     break;}
 case 49:
-#line 187 "lang11d"
+#line 192 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -1421,14 +1426,14 @@ case 49:
 			;
     break;}
 case 50:
-#line 196 "lang11d"
+#line 201 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				yyval = (long)newPyrCallNode((PyrSlotNode*)yyvsp[-4], (PyrParseNode*)yyvsp[-6], 
 					(PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); 
 			;
     break;}
 case 51:
-#line 201 "lang11d"
+#line 206 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -1443,13 +1448,18 @@ case 51:
 			;
     break;}
 case 52:
-#line 214 "lang11d"
+#line 219 "source/lang/LangSource/erase-compiler/lang11d"
 {
 				PyrSlotNode *selectornode;
 				PyrSlot slot, slot2;
 				PyrParseNode* args;
 				
-				SetSymbol(&slot, s_performList);
+				if (isSuperObjNode((PyrParseNode*)yyvsp[-5])) {
+					((PyrPushNameNode*)yyvsp[-5])->varName.us == s_this;
+					SetSymbol(&slot, s_superPerformList);
+				} else {
+					SetSymbol(&slot, s_performList);
+				}
 				SetSymbol(&slot2, s_value);
 				selectornode = newPyrSlotNode(&slot);
 				args = linkNextNode(
@@ -1460,7 +1470,7 @@ case 52:
 			;
     break;}
 case 53:
-#line 229 "lang11d"
+#line 239 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrParseNode* args;
 				args = linkNextNode((PyrParseNode*)yyvsp[-7], (PyrParseNode*)yyvsp[-3]);
@@ -1468,13 +1478,18 @@ case 53:
 			;
     break;}
 case 54:
-#line 235 "lang11d"
+#line 245 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
 				
-				SetSymbol(&slot, s_performList);
+				if (isSuperObjNode((PyrParseNode*)yyvsp[-6])) {
+					((PyrPushNameNode*)yyvsp[-6])->varName.us == s_this;
+					SetSymbol(&slot, s_superPerformList);
+				} else {
+					SetSymbol(&slot, s_performList);
+				}
 				selectornode = newPyrSlotNode(&slot);
 
 				args = linkNextNode((PyrParseNode*)yyvsp[-6], newPyrPushLitNode((PyrSlotNode*)yyvsp[-4], NULL));
@@ -1483,17 +1498,17 @@ case 54:
 			;
     break;}
 case 55:
-#line 248 "lang11d"
+#line 263 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				yyval = (long)newPyrCallNode((PyrSlotNode*)yyvsp[-1], (PyrParseNode*)yyvsp[-3], 0, (PyrParseNode*)yyvsp[0]); 
 			;
     break;}
 case 60:
-#line 258 "lang11d"
+#line 273 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = yyvsp[-1]; ;
     break;}
 case 61:
-#line 260 "lang11d"
+#line 275 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrParseNode* argnode;
 				PyrSlotNode* selectornode;
@@ -1505,23 +1520,23 @@ case 61:
 			;
     break;}
 case 62:
-#line 270 "lang11d"
+#line 285 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrDynListNode(0, (PyrParseNode*)yyvsp[-1]); ;
     break;}
 case 63:
-#line 272 "lang11d"
+#line 287 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = yyvsp[-1]; ;
     break;}
 case 64:
-#line 274 "lang11d"
+#line 289 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrDynDictNode((PyrParseNode*)yyvsp[-1]); ;
     break;}
 case 65:
-#line 276 "lang11d"
+#line 291 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushNameNode((PyrSlotNode*)yyvsp[0]); ;
     break;}
 case 66:
-#line 278 "lang11d"
+#line 293 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -1534,7 +1549,7 @@ case 66:
 			;
     break;}
 case 67:
-#line 289 "lang11d"
+#line 304 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -1549,13 +1564,18 @@ case 67:
 			;
     break;}
 case 68:
-#line 302 "lang11d"
+#line 317 "source/lang/LangSource/erase-compiler/lang11d"
 {
 				PyrSlotNode *selectornode, *selectornode2;
 				PyrSlot slot, slot2;
 				PyrParseNode* args;
 				
-				SetSymbol(&slot, s_performList);
+				if (isSuperObjNode((PyrParseNode*)yyvsp[-4])) {
+					((PyrPushNameNode*)yyvsp[-4])->varName.us == s_this;
+					SetSymbol(&slot, s_superPerformList);
+				} else {
+					SetSymbol(&slot, s_performList);
+				}
 				SetSymbol(&slot2, s_new);
 				selectornode = newPyrSlotNode(&slot);
 				selectornode2 = newPyrSlotNode(&slot2);
@@ -1567,11 +1587,11 @@ case 68:
 			;
     break;}
 case 69:
-#line 318 "lang11d"
+#line 338 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrDynListNode((PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1]); ;
     break;}
 case 70:
-#line 320 "lang11d"
+#line 340 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -1586,7 +1606,7 @@ case 70:
 			;
     break;}
 case 72:
-#line 336 "lang11d"
+#line 356 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -1615,7 +1635,7 @@ case 72:
 			;
     break;}
 case 73:
-#line 363 "lang11d"
+#line 383 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -1635,7 +1655,7 @@ case 73:
 			;
     break;}
 case 74:
-#line 381 "lang11d"
+#line 401 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
@@ -1662,7 +1682,7 @@ case 74:
 			;
     break;}
 case 75:
-#line 408 "lang11d"
+#line 428 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -1692,7 +1712,7 @@ case 75:
 			;
     break;}
 case 76:
-#line 436 "lang11d"
+#line 456 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -1713,7 +1733,7 @@ case 76:
 			;
     break;}
 case 77:
-#line 455 "lang11d"
+#line 475 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
@@ -1741,7 +1761,7 @@ case 77:
 			;
     break;}
 case 78:
-#line 483 "lang11d"
+#line 503 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -1770,7 +1790,7 @@ case 78:
 			;
     break;}
 case 79:
-#line 510 "lang11d"
+#line 530 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -1790,7 +1810,7 @@ case 79:
 			;
     break;}
 case 80:
-#line 528 "lang11d"
+#line 548 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
@@ -1817,7 +1837,7 @@ case 80:
 			;
     break;}
 case 81:
-#line 553 "lang11d"
+#line 573 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -1847,7 +1867,7 @@ case 81:
 			;
     break;}
 case 82:
-#line 581 "lang11d"
+#line 601 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -1868,7 +1888,7 @@ case 82:
 			;
     break;}
 case 83:
-#line 600 "lang11d"
+#line 620 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
@@ -1896,7 +1916,7 @@ case 83:
 			;
     break;}
 case 84:
-#line 628 "lang11d"
+#line 648 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode, *zeronode;
@@ -1916,7 +1936,7 @@ case 84:
 			;
     break;}
 case 85:
-#line 647 "lang11d"
+#line 667 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode;
@@ -1934,7 +1954,7 @@ case 85:
 			;
     break;}
 case 86:
-#line 664 "lang11d"
+#line 684 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrSlot selectorSlot;
@@ -1950,7 +1970,7 @@ case 86:
 			;
     break;}
 case 90:
-#line 683 "lang11d"
+#line 703 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -1965,11 +1985,11 @@ case 90:
 			;
     break;}
 case 91:
-#line 696 "lang11d"
+#line 716 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushNameNode((PyrSlotNode*)yyvsp[0]); ;
     break;}
 case 92:
-#line 698 "lang11d"
+#line 718 "source/lang/LangSource/erase-compiler/lang11d"
 {
 				PyrParseNode *node, *args;
 				PyrSlotNode *slotnode;
@@ -1985,20 +2005,20 @@ case 92:
 			;
     break;}
 case 93:
-#line 712 "lang11d"
+#line 732 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				yyval = (long)newPyrBinopCallNode((PyrSlotNode*)yyvsp[-2], 
 						(PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[0], (PyrParseNode*)yyvsp[-1]); 
 			;
     break;}
 case 94:
-#line 717 "lang11d"
+#line 737 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				yyval = (long)newPyrAssignNode((PyrSlotNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0], 0); 
 			;
     break;}
 case 95:
-#line 721 "lang11d"
+#line 741 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrParseNode *argnode, *args;
 				PyrSlotNode* selectornode;
@@ -2011,14 +2031,14 @@ case 95:
 			;
     break;}
 case 96:
-#line 732 "lang11d"
+#line 752 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				yyval = (long)newPyrSetterNode((PyrSlotNode*)yyvsp[-2], 
 						(PyrParseNode*)yyvsp[-4], (PyrParseNode*)yyvsp[0]); 
 			;
     break;}
 case 97:
-#line 737 "lang11d"
+#line 757 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				if (yyvsp[-3] != 0) {
 					error("Setter method called with keyword arguments.\n");
@@ -2030,14 +2050,14 @@ case 97:
 			;
     break;}
 case 98:
-#line 747 "lang11d"
+#line 767 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				yyval = (long)newPyrMultiAssignNode((PyrMultiAssignVarListNode*)yyvsp[-2], 
 					(PyrParseNode*)yyvsp[0], 0); 
 			;
     break;}
 case 99:
-#line 752 "lang11d"
+#line 772 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2053,7 +2073,7 @@ case 99:
 			;
     break;}
 case 100:
-#line 766 "lang11d"
+#line 786 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2069,52 +2089,52 @@ case 100:
 			;
     break;}
 case 101:
-#line 781 "lang11d"
+#line 801 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 102:
-#line 782 "lang11d"
+#line 802 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushLitNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 103:
-#line 783 "lang11d"
+#line 803 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushLitNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 104:
-#line 784 "lang11d"
+#line 804 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = yyvsp[-1]; ;
     break;}
 case 106:
-#line 789 "lang11d"
+#line 809 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 				yyval = (long)newPyrDropNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); 
 			;
     break;}
 case 108:
-#line 797 "lang11d"
+#line 817 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 109:
-#line 799 "lang11d"
+#line 819 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = yyvsp[-1]; ;
     break;}
 case 111:
-#line 804 "lang11d"
+#line 824 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 112:
-#line 806 "lang11d"
+#line 826 "source/lang/LangSource/erase-compiler/lang11d"
 {
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)yyvsp[-1], NULL);
 					yyval = (long)linkNextNode(key, (PyrParseNode*)yyvsp[0]); 
 				;
     break;}
 case 113:
-#line 811 "lang11d"
+#line 831 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 114:
-#line 813 "lang11d"
+#line 833 "source/lang/LangSource/erase-compiler/lang11d"
 {
 					PyrParseNode* elems;
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)yyvsp[-1], NULL);
@@ -2123,7 +2143,7 @@ case 114:
 				;
     break;}
 case 115:
-#line 820 "lang11d"
+#line 840 "source/lang/LangSource/erase-compiler/lang11d"
 {
 					PyrParseNode* elems;
 					elems = (PyrParseNode*)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); 
@@ -2131,320 +2151,320 @@ case 115:
 				;
     break;}
 case 117:
-#line 829 "lang11d"
+#line 849 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 118:
-#line 833 "lang11d"
+#line 853 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = yyvsp[0]; ;
     break;}
 case 119:
-#line 835 "lang11d"
+#line 855 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 121:
-#line 840 "lang11d"
+#line 860 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 122:
-#line 844 "lang11d"
+#line 864 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushKeyArgNode((PyrSlotNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 123:
-#line 847 "lang11d"
+#line 867 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 124:
-#line 848 "lang11d"
+#line 868 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = yyvsp[0]; ;
     break;}
 case 125:
-#line 852 "lang11d"
+#line 872 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrMultiAssignVarListNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 126:
-#line 854 "lang11d"
+#line 874 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrMultiAssignVarListNode((PyrSlotNode*)yyvsp[-2], (PyrSlotNode*)yyvsp[0]); ;
     break;}
 case 128:
-#line 859 "lang11d"
+#line 879 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 129:
-#line 863 "lang11d"
+#line 883 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 130:
-#line 864 "lang11d"
+#line 884 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 131:
-#line 865 "lang11d"
+#line 885 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 132:
-#line 866 "lang11d"
+#line 886 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 133:
-#line 867 "lang11d"
+#line 887 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 134:
-#line 868 "lang11d"
+#line 888 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 135:
-#line 869 "lang11d"
+#line 889 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 136:
-#line 870 "lang11d"
+#line 890 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 137:
-#line 871 "lang11d"
+#line 891 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 138:
-#line 872 "lang11d"
+#line 892 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode(NULL, (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 139:
-#line 875 "lang11d"
+#line 895 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushLitNode(NULL, (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 140:
-#line 878 "lang11d"
+#line 898 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushNameNode((PyrSlotNode*)yyvsp[0]); ;
     break;}
 case 141:
-#line 881 "lang11d"
+#line 901 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushLitNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 142:
-#line 882 "lang11d"
+#line 902 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushLitNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 143:
-#line 883 "lang11d"
+#line 903 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushLitNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 144:
-#line 884 "lang11d"
+#line 904 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushLitNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 145:
-#line 885 "lang11d"
+#line 905 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushLitNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 146:
-#line 886 "lang11d"
+#line 906 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushLitNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 147:
-#line 887 "lang11d"
+#line 907 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushLitNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 148:
-#line 888 "lang11d"
+#line 908 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushLitNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 149:
-#line 889 "lang11d"
+#line 909 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushLitNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 150:
-#line 890 "lang11d"
+#line 910 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrPushLitNode(NULL, (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 151:
-#line 893 "lang11d"
+#line 913 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 152:
-#line 894 "lang11d"
+#line 914 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 153:
-#line 895 "lang11d"
+#line 915 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 154:
-#line 896 "lang11d"
+#line 916 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 155:
-#line 897 "lang11d"
+#line 917 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 156:
-#line 898 "lang11d"
+#line 918 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 157:
-#line 899 "lang11d"
+#line 919 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 158:
-#line 900 "lang11d"
+#line 920 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 159:
-#line 901 "lang11d"
+#line 921 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode((PyrSlotNode*)yyvsp[0], NULL); ;
     break;}
 case 160:
-#line 902 "lang11d"
+#line 922 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLiteralNode(NULL, (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 161:
-#line 906 "lang11d"
+#line 926 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrBlockNode((PyrArgListNode*)yyvsp[-3], (PyrVarListNode*)yyvsp[-2], 
 					(PyrParseNode*)yyvsp[-1], false); ;
     break;}
 case 162:
-#line 909 "lang11d"
+#line 929 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrBlockNode((PyrArgListNode*)yyvsp[-3], (PyrVarListNode*)yyvsp[-2], 
 					(PyrParseNode*)yyvsp[-1], true); ;
     break;}
 case 163:
-#line 913 "lang11d"
+#line 933 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 164:
-#line 915 "lang11d"
+#line 935 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 166:
-#line 920 "lang11d"
+#line 940 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-1], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 167:
-#line 924 "lang11d"
+#line 944 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrArgListNode((PyrVarDefNode*)yyvsp[-1], NULL); ;
     break;}
 case 168:
-#line 927 "lang11d"
+#line 947 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 169:
-#line 929 "lang11d"
+#line 949 "source/lang/LangSource/erase-compiler/lang11d"
 {
 					yyval = (long)newPyrArgListNode((PyrVarDefNode*)yyvsp[-1], NULL); 
 				;
     break;}
 case 170:
-#line 933 "lang11d"
+#line 953 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 					yyval = (long)newPyrArgListNode((PyrVarDefNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1]); 
 				;
     break;}
 case 171:
-#line 937 "lang11d"
+#line 957 "source/lang/LangSource/erase-compiler/lang11d"
 {
 					yyval = (long)newPyrArgListNode((PyrVarDefNode*)yyvsp[-1], NULL); 
 				;
     break;}
 case 172:
-#line 941 "lang11d"
+#line 961 "source/lang/LangSource/erase-compiler/lang11d"
 { 
 					yyval = (long)newPyrArgListNode((PyrVarDefNode*)yyvsp[-3], (PyrSlotNode*)yyvsp[-1]); 
 				;
     break;}
 case 173:
-#line 947 "lang11d"
+#line 967 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 176:
-#line 953 "lang11d"
+#line 973 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 177:
-#line 957 "lang11d"
+#line 977 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrVarDefNode((PyrSlotNode*)yyvsp[0], NULL, 0); ;
     break;}
 case 178:
-#line 959 "lang11d"
+#line 979 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrVarDefNode((PyrSlotNode*)yyvsp[-2], (PyrLiteralNode*)yyvsp[0], 0); ;
     break;}
 case 179:
-#line 963 "lang11d"
+#line 983 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 180:
-#line 965 "lang11d"
+#line 985 "source/lang/LangSource/erase-compiler/lang11d"
 {
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)yyvsp[-1], NULL);
 					yyval = (long)linkNextNode(key, (PyrParseNode*)yyvsp[0]); 
 				;
     break;}
 case 182:
-#line 973 "lang11d"
+#line 993 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 183:
-#line 976 "lang11d"
+#line 996 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 186:
-#line 982 "lang11d"
+#line 1002 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 187:
-#line 986 "lang11d"
+#line 1006 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrVarDefNode((PyrSlotNode*)yyvsp[0], NULL, yyvsp[-1]); ;
     break;}
 case 188:
-#line 988 "lang11d"
+#line 1008 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrVarDefNode((PyrSlotNode*)yyvsp[-2], (PyrLiteralNode*)yyvsp[0], yyvsp[-3]); ;
     break;}
 case 189:
-#line 994 "lang11d"
+#line 1014 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLitListNode(0, (PyrParseNode*)yyvsp[-1]); ;
     break;}
 case 190:
-#line 996 "lang11d"
+#line 1016 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLitListNode((PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1]); ;
     break;}
 case 191:
-#line 1000 "lang11d"
+#line 1020 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLitListNode(0, (PyrParseNode*)yyvsp[-1]); ;
     break;}
 case 192:
-#line 1002 "lang11d"
+#line 1022 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)newPyrLitListNode((PyrParseNode*)yyvsp[-3], (PyrParseNode*)yyvsp[-1]); ;
     break;}
 case 193:
-#line 1005 "lang11d"
+#line 1025 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = 0; ;
     break;}
 case 196:
-#line 1011 "lang11d"
+#line 1031 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); ;
     break;}
 case 197:
-#line 1014 "lang11d"
+#line 1034 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = rwPrivate; ;
     break;}
 case 198:
-#line 1016 "lang11d"
+#line 1036 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = rwReadOnly; ;
     break;}
 case 199:
-#line 1018 "lang11d"
+#line 1038 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = rwReadWrite; ;
     break;}
 case 200:
-#line 1020 "lang11d"
+#line 1040 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = rwWriteOnly; ;
     break;}
 case 201:
-#line 1023 "lang11d"
+#line 1043 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 202:
-#line 1025 "lang11d"
+#line 1045 "source/lang/LangSource/erase-compiler/lang11d"
 {
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
@@ -2453,11 +2473,11 @@ case 202:
 			;
     break;}
 case 203:
-#line 1033 "lang11d"
+#line 1053 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 204:
-#line 1035 "lang11d"
+#line 1055 "source/lang/LangSource/erase-compiler/lang11d"
 {
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
@@ -2466,11 +2486,11 @@ case 204:
 			;
     break;}
 case 205:
-#line 1043 "lang11d"
+#line 1063 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 206:
-#line 1045 "lang11d"
+#line 1065 "source/lang/LangSource/erase-compiler/lang11d"
 {
 					PyrSlotNode *node; 
 					double intval, fracval;
@@ -2482,11 +2502,11 @@ case 206:
 				;
     break;}
 case 207:
-#line 1055 "lang11d"
+#line 1075 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 210:
-#line 1061 "lang11d"
+#line 1081 "source/lang/LangSource/erase-compiler/lang11d"
 {
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)yyvsp[-1];
@@ -2494,7 +2514,7 @@ case 210:
 			;
     break;}
 case 211:
-#line 1067 "lang11d"
+#line 1087 "source/lang/LangSource/erase-compiler/lang11d"
 {
 				PyrSlotNode *node; 
 				double ival;
@@ -2504,7 +2524,7 @@ case 211:
 			;
     break;}
 case 212:
-#line 1075 "lang11d"
+#line 1095 "source/lang/LangSource/erase-compiler/lang11d"
 {
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
@@ -2513,7 +2533,7 @@ case 212:
 			;
     break;}
 case 213:
-#line 1082 "lang11d"
+#line 1102 "source/lang/LangSource/erase-compiler/lang11d"
 {
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
@@ -2522,83 +2542,83 @@ case 213:
 			;
     break;}
 case 214:
-#line 1090 "lang11d"
+#line 1110 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 215:
-#line 1093 "lang11d"
+#line 1113 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 216:
-#line 1096 "lang11d"
+#line 1116 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 217:
-#line 1099 "lang11d"
+#line 1119 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 218:
-#line 1102 "lang11d"
+#line 1122 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 219:
-#line 1105 "lang11d"
+#line 1125 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 220:
-#line 1108 "lang11d"
+#line 1128 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 221:
-#line 1111 "lang11d"
+#line 1131 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 222:
-#line 1114 "lang11d"
+#line 1134 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 223:
-#line 1117 "lang11d"
+#line 1137 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 224:
-#line 1120 "lang11d"
+#line 1140 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 225:
-#line 1123 "lang11d"
+#line 1143 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 226:
-#line 1124 "lang11d"
+#line 1144 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 227:
-#line 1125 "lang11d"
+#line 1145 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 228:
-#line 1126 "lang11d"
+#line 1146 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 229:
-#line 1127 "lang11d"
+#line 1147 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 230:
-#line 1128 "lang11d"
+#line 1148 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 231:
-#line 1129 "lang11d"
+#line 1149 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 232:
-#line 1130 "lang11d"
+#line 1150 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 case 233:
-#line 1133 "lang11d"
+#line 1153 "source/lang/LangSource/erase-compiler/lang11d"
 { yyval = zzval; ;
     break;}
 }
@@ -2823,4 +2843,4 @@ yyerrhandle:
     }
   return 1;
 }
-#line 1140 "lang11d"
+#line 1160 "source/lang/LangSource/erase-compiler/lang11d"

@@ -176,7 +176,12 @@ msgsend : name blocklist1
 				PyrSlot slot;
 				PyrParseNode* args;
 				
-				SetSymbol(&slot, s_performList);
+				if (isSuperObjNode((PyrParseNode*)$3)) {
+					((PyrPushNameNode*)$3)->varName.us == s_this;
+					SetSymbol(&slot, s_superPerformList);
+				} else {
+					SetSymbol(&slot, s_performList);
+				}
 				selectornode = newPyrSlotNode(&slot);
 				args = linkAfterHead(
 					(PyrParseNode*)$3,
@@ -216,7 +221,12 @@ msgsend : name blocklist1
 				PyrSlot slot, slot2;
 				PyrParseNode* args;
 				
-				SetSymbol(&slot, s_performList);
+				if (isSuperObjNode((PyrParseNode*)$1)) {
+					((PyrPushNameNode*)$1)->varName.us == s_this;
+					SetSymbol(&slot, s_superPerformList);
+				} else {
+					SetSymbol(&slot, s_performList);
+				}
 				SetSymbol(&slot2, s_value);
 				selectornode = newPyrSlotNode(&slot);
 				args = linkNextNode(
@@ -237,7 +247,12 @@ msgsend : name blocklist1
 				PyrSlot slot;
 				PyrParseNode* args;
 				
-				SetSymbol(&slot, s_performList);
+				if (isSuperObjNode((PyrParseNode*)$1)) {
+					((PyrPushNameNode*)$1)->varName.us == s_this;
+					SetSymbol(&slot, s_superPerformList);
+				} else {
+					SetSymbol(&slot, s_performList);
+				}
 				selectornode = newPyrSlotNode(&slot);
 
 				args = linkNextNode((PyrParseNode*)$1, newPyrPushLitNode((PyrSlotNode*)$3, NULL));
@@ -304,7 +319,12 @@ expr1	: pushliteral
 				PyrSlot slot, slot2;
 				PyrParseNode* args;
 				
-				SetSymbol(&slot, s_performList);
+				if (isSuperObjNode((PyrParseNode*)$1)) {
+					((PyrPushNameNode*)$1)->varName.us == s_this;
+					SetSymbol(&slot, s_superPerformList);
+				} else {
+					SetSymbol(&slot, s_performList);
+				}
 				SetSymbol(&slot2, s_new);
 				selectornode = newPyrSlotNode(&slot);
 				selectornode2 = newPyrSlotNode(&slot2);
