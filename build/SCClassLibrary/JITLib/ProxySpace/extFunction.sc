@@ -1,29 +1,31 @@
 +Function {
 
-	send { arg key, add=false, onComplete;
+	send { arg key, server, freeAll=true, onComplete, latency;
 		var proxy;
-		proxy = Library.at(\proxy, key);
+		server = server ? Server.local;
+		proxy = Library.at(\proxy, server, key);
 		if(proxy.isNil, {
-			proxy = NodeProxy(Library.at(\defaultServer) ? Server.local);
-			Library.put(\proxy, key, proxy);
+			proxy = NodeProxy(server);
+			Library.put(\proxy, server, key, proxy);
 		});
-		proxy.setObj(this, true, add.not, add, onComplete, nil);
+		proxy.setObj(this, true, freeAll, onComplete, latency);
 		^proxy
 	}
 	
-	sendAdd { arg key;
-		^this.send(key, true)
+	sendAdd { arg key, server;
+		^this.send(key, server, true)
 	}
 
 }
 
 +Symbol {
-	play { arg outBus=0, nChan=2;
+	play { arg outBus=0, nChan=2, server;
 		var proxy;
-		proxy = Library.at(\proxy, this);
+		server = server ? Server.local;
+		proxy = Library.at(\proxy, server, this);
 		if(proxy.isNil, {
-			proxy = NodeProxy(Library.at(\defaultServer) ? Server.local);
-			Library.put(\proxy, this, proxy);
+			proxy = NodeProxy(server);
+			Library.put(\proxy, server, this, proxy);
 		});
 		^proxy.play(outBus, nChan);
 	}
