@@ -44,7 +44,7 @@ SynthDef {
 	*writeOnce { arg name, func, rates, prependArgs, dir;
 		^pathMatch(dir ++ name ++ ".scsyndef").isEmpty.if({
 			this.new(name, func, rates, prependArgs).writeDefFile(dir)
-		}, nil);
+		});
 	}
 	
 	
