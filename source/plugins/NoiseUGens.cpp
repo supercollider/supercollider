@@ -302,9 +302,9 @@ void PinkNoise_next(PinkNoise *unit, int inNumSamples)
 	uint32 *dice = unit->mDice;
 	LOOP(inNumSamples, 
 		uint32 counter = trand(s1,s2,s3); // Magnus Jonsson's suggestion.
+		uint32 newrand = counter >> 13;
 		int k = (CTZ(counter)) & 15; 
 		uint32 prevrand = dice[k]; 
-		uint32 newrand = trand(s1,s2,s3) >> 13;
 		dice[k] = newrand; 
 		total += (newrand - prevrand); 
 		newrand = trand(s1,s2,s3) >> 13;
