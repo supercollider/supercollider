@@ -386,6 +386,7 @@ ArrayedCollection : SequenceableCollection {
 }
 
 RawArray : ArrayedCollection {
+	species { ^this.class }
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
 }
