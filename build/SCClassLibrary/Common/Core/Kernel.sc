@@ -390,7 +390,6 @@ Interpreter {
 	
 	var <>cmdLine; // place holder for text executed from a worksheet
 	var context; // faked interpreter context frame. Don't mess with it.
-	var <>codeDump;
 	
 	// a-z are predefined variables for use by the interactive context.
 	// They are read+write so that programmatic methods can
@@ -398,24 +397,21 @@ Interpreter {
 	var <>a, <>b, <>c, <>d, <>e, <>f, <>g, <>h, <>i, <>j;
 	var <>k, <>l, <>m, <>n, <>o, <>p, <>q, <>r, <>s, <>t;
 	var <>u, <>v, <>w, <>x, <>y, <>z;
+
+	var <>codeDump;
 	
 	*new { ^this.shouldNotImplement(thisMethod) }
 	*newClear { ^this.shouldNotImplement(thisMethod) }
-	
-	//interpretCmdLine { ^this.interpret(cmdLine) }
-	//interpretPrintCmdLine { ^this.interpretPrint(cmdLine) }
 	
 	interpretCmdLine {
 		^this.compile(cmdLine).value;
 	}
 	interpretPrintCmdLine {
 		var res;
-		res = this.compile(cmdLine).value;
-         //if (cmdLine.last != $\n , { "\n".post; });
 		"\n".post;
+		res = this.compile(cmdLine).value;
 		codeDump.value(cmdLine, res);
-		^res.postln;
-      
+		res.postln;
 	}
 	
 	interpret { arg string;

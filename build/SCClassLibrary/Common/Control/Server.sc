@@ -154,6 +154,34 @@ Server : Model {
 		addr.sendRaw(rawArray);
 	}
 	
+	sendMsgSync { arg condition ... args;
+		var cmdName, resp;
+		cmdName = args[0].asString;
+		if (cmdName[0] != $/) { cmdName = cmdName.insert(0, $/) };
+		resp = OSCresponder(addr, "/done", {|time, resp, msg|
+			if (msg[1].asString == cmdName) {
+				resp.remove;
+				condition.test = true;
+				condition.signal;
+			};
+		}).add;
+		condition.test = false;
+		addr.sendBundle(nil, args);
+		condition.wait;
+	}
+	
+	sync { arg condition;
+		var resp;
+		resp = OSCresponder(addr, "/synced", {|time, resp, msg|
+			resp.remove;
+			condition.test = true;
+			condition.signal;
+		}).add;
+		condition.test = false;
+		addr.sendBundle(nil, ["/sync"]);
+		condition.wait;
+	}
+	
 	listSendMsg { arg msg;
 		addr.sendBundle(nil,msg);
 	}
@@ -185,7 +213,7 @@ Server : Model {
 	serverRunning_ { arg val;
 		if (val != serverRunning, {
 			serverRunning = val;
-			this.changed(\serverRunning);
+			{ this.changed(\serverRunning); }.defer;
 		});
 	}
 	
@@ -218,6 +246,16 @@ Server : Model {
 				"server failed to start".error;
 			}, onComplete);
 		}).play(AppClock);
+	}
+
+	bootSync { arg condition;
+		condition.test = false;
+		this.waitForBoot({
+			// Setting func to true indicates that our condition has become true and we can go when signaled.
+			condition.test = true;
+			condition.signal
+		});
+		condition.wait;
 	}
 	
 	addStatusWatcher {

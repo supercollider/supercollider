@@ -53,8 +53,12 @@ Thread : Stream {
 }
 
 Routine : Thread {
-	
-	// resume, next and value are synonyms
+
+	*run { arg func, stackSize=512;
+		^super.new(func, stackSize).value;
+	}
+		
+	// resume, next, value, run are synonyms
 	next { arg inval;
 		_RoutineResume
 		^this.primitiveFailed
@@ -67,6 +71,11 @@ Routine : Thread {
 		_RoutineResume
 		^this.primitiveFailed
 	}
+	run { arg inval;
+		_RoutineResume
+		^this.primitiveFailed
+	}
+	
 	valueArray { arg inval;
 		^this.value(inval) 
 	}
@@ -94,6 +103,4 @@ Routine : Thread {
 		nil.alwaysYield;
 	}
 }
-
-
 

@@ -1,19 +1,25 @@
 
 Condition {
-	var <>func, waitingThreads;
+	var <>test, waitingThreads;
 	
-	*new { arg func=false;
-		^super.newCopyArgs(func)
+	*new { arg test=false;
+		^super.newCopyArgs(test, Array(8))
 	}
 	wait { arg value;
-		if (func.value.not, {
+		if (test.value.not, {
 			waitingThreads = waitingThreads.add(thisThread);
 			value.yield;
 		});
 	}
+	hang { arg value;
+		// ignore the test, just wait
+		waitingThreads = waitingThreads.add(thisThread);
+		value.yield;
+	}
+	
 	signal {
 		var tempWaitingThreads, time;
-		if (func.value, {		
+		if (test.value, {		
 			time = thisThread.seconds;
 			tempWaitingThreads = waitingThreads;
 			waitingThreads = nil;
@@ -25,7 +31,7 @@ Condition {
 	}
 	unhang {
 		var tempWaitingThreads, time;
-		// ignore the function, just resume all waiting threads
+		// ignore the test, just resume all waiting threads
 		time = thisThread.seconds;
 		tempWaitingThreads = waitingThreads;
 		waitingThreads = nil;
@@ -36,51 +42,4 @@ Condition {
 	}
 }
 
-
-Wait {
-	var waitingThreads;
-	
-	wait { arg value;
-		waitingThreads = waitingThreads.add(thisThread);
-		value.yield;
-	}
-	signal {
-		var tempWaitingThreads, time;
-		time = thisThread.seconds;
-		tempWaitingThreads = waitingThreads;
-		waitingThreads = nil;
-		tempWaitingThreads.do({ arg thread; 
-			thread.seconds = time;
-			thread.resume;
-		});
-	}
-}
-
-
-WaitFor {
-	var waitingThreads;
-	
-	wait { arg func, value;
-		if (func.value.not, {
-			waitingThreads = waitingThreads.add([thisThread, func]);
-			value.yield;
-		});
-	}
-	signal {
-		var tempWaitingThreads, time;
-		time = thisThread.seconds;
-		tempWaitingThreads = waitingThreads;
-		waitingThreads = nil;
-		tempWaitingThreads.do({| pair |
-			var thread, condition;
-			# thread, condition = pair;
-			if (condition.value) {
-				thread.seconds = time;
-				thread.resume;
-			}{
-				waitingThreads = waitingThreads.add(pair);
-			};
-		});
-	}
-}
 
