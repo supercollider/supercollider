@@ -5,19 +5,19 @@ Buffer {
 	var <path;
 	
 	// doesn't send
-	*new { arg server,numFrames = -1,numChannels=1;
+	*new { arg server, numFrames = -1, numChannels=1, bufnum;
 		server = server ? Server.default;
 		^super.newCopyArgs(server,
-						server.bufferAllocator.alloc(1),
+						bufnum ?? { server.bufferAllocator.alloc(1) },
 						numFrames,
 						numChannels)
 	}
 	
 
-	*alloc { arg server,numFrames,numChannels=1,completionMessage;
+	*alloc { arg server, numFrames, numChannels=1, completionMessage, bufnum;
 		server = server ? Server.default;
 		^super.newCopyArgs(server,
-						server.bufferAllocator.alloc(1),
+						bufnum ?? { server.bufferAllocator.alloc(1) },
 						numFrames,
 						numChannels).alloc(completionMessage)
 	}
@@ -30,10 +30,10 @@ Buffer {
 	}
 
 	// read whole file into memory for PlayBuf etc.
-	*read { arg server,path,startFrame = 0,numFrames = -1, completionMessage;
+	*read { arg server,path,startFrame = 0,numFrames = -1, completionMessage, bufnum;
 		server = server ? Server.default;
 		^super.newCopyArgs(server,
-						server.bufferAllocator.alloc(1),
+						bufnum ?? { server.bufferAllocator.alloc(1) },
 						numFrames)
 					.allocRead(path,startFrame,completionMessage)
 	}
@@ -250,10 +250,10 @@ Buffer {
 		stream << this.class.name << "(" <<* [bufnum,numFrames,numChannels,path] <<")";
 	}
 
-	*loadDialog { arg server,startFrame = 0,numFrames = -1;
+	*loadDialog { arg server,startFrame = 0,numFrames = -1, bufnum;
 		server = server ? Server.default;
 		^super.newCopyArgs(server,
-						server.bufferAllocator.alloc(1),
+						bufnum ?? { server.bufferAllocator.alloc(1) },
 						numFrames).loadDialog(startFrame)
 	}
 	loadDialog { arg startFrame, completionMessage;
