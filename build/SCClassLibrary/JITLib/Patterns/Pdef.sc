@@ -25,7 +25,7 @@ Tdef : Task {
 
 }
 
-Pdef : EventStream {
+Pdef : EventStreamPlayer {
 
 	*new { arg key, pat, event;
 		var res, stream;
