@@ -9,6 +9,7 @@ Clock {
 		beats = this.secs2beats(seconds);
 		this.sched(task.value(beats, seconds, this), task)
 	}
+	seconds { ^thisThread.seconds }
 }
 
 SystemClock : Clock {
@@ -27,6 +28,7 @@ SystemClock : Clock {
 	
 	*beats2secs { arg beats; ^beats }
 	*secs2beats { arg secs; ^secs }
+	beats { ^thisThread.seconds }
 }
 
 
@@ -64,7 +66,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	
 	*cmdPeriod {
 		all.do({ arg item; item.clear });
-		all.do({ arg item; if(item.permanent.not, { item.stop })  })
+		all.do({ arg item; if (item.permanent.not, { item.stop })  })
 	}	
 
 	init { arg tempo, beats, seconds;
@@ -77,7 +79,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		this.prStop;
 	}
 	
-	play { arg task, quant=1.0; this.schedAbs(this.elapsedBeats.roundUp(quant), task) }
+	play { arg task, quant=1.0; this.schedAbs(this.beats.roundUp(quant), task) }
 	
 	playNextBar { arg task; this.schedAbs(this.nextBar, task) }
 	
@@ -94,6 +96,18 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	elapsedBeats {
 		_TempoClock_ElapsedBeats
 		^this.primitiveFailed
+		/* primitive does this:
+			^this.secs2beats(Main.elapsedTime).
+		*/
+	}
+	beats {
+		// returns the appropriate beats for this clock from any thread
+		_TempoClock_Beats
+		^this.primitiveFailed
+		/* primitive does this:
+			if (thisThread.clock == this) { ^thisThread.beats }
+			^this.secs2beats(thisThread.seconds)
+		*/
 	}
 
 	sched { arg delta, item;
@@ -113,18 +127,14 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	// for setting the tempo at the current logical time 
 	// (even another TempoClock's logical time).
 	tempo_ { arg newTempo;
-		if (thisThread.clock == this) {
-			this.setTempoAtBeat(newTempo, thisThread.beats);
-		}{
-			this.setTempoAtSec(newTempo, thisThread.seconds);
-		};
+		this.setTempoAtBeat(newTempo, this.beats);
 	}
 	beatsPerBar_ { arg newBeatsPerBar;
 		if (thisThread.clock != this) { 
 			"should only change beatsPerBar within the scheduling thread.".error;
-		}{
-			this.setMeterAtBeat(newBeatsPerBar, thisThread.beats);
+			^this
 		};
+		this.setMeterAtBeat(newBeatsPerBar, thisThread.beats);
 	}
 
 	// for setting the tempo at the current elapsed time .
@@ -155,7 +165,8 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	}
 	nextBar { arg beat;
 		// given a number of beats, determine number beats at the next bar line.
-		^this.bars2beats(this.beats2bars(beat ? this.elapsedBeats).ceil);
+		if (beat.isNil) { beat = this.beats };
+		^this.bars2beats(this.beats2bars(beat).ceil);
 	}
 	
 	
@@ -210,6 +221,7 @@ AppClock : Clock {
 	
 	*beats2secs { arg beats; ^beats }
 	*secs2beats { arg secs; ^secs }
+	beats { ^thisThread.seconds }
 }
 
 

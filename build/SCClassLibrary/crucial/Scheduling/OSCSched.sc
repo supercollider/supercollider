@@ -99,12 +99,12 @@ BeatSched {
 	}
 		
 	sched { arg beats,function;
-		tempoClock.dsched(beats,function)
+		tempoClock.sched(beats,function)
 		//this.tsched(tempo.beats2secs(beats),function)
 	}
 	xsched { arg beats,function;
 		var thsTask,notCancelled;
-		tempoClock.dsched(beats,
+		tempoClock.sched(beats,
 			thsTask = nextTask = {
 				if(thsTask === nextTask,function);
 				nil
@@ -221,25 +221,25 @@ OSCSched : BeatSched {
 	}
 		
 	sched { arg beats,server,bundle,clientSideFunction;
-		tempoClock.dsched(beats - server.latency,{ // lazily using the seconds as beats
+		tempoClock.sched(beats - server.latency,{ // lazily using the seconds as beats
 			// inaccurate final delivery if tempo is changing quickly
 			server.listSendBundle(tempo.beats2secs(server.latency),bundle);
 			nil
 		});
 		if(clientSideFunction.notNil,{
-			tempoClock.dsched(beats,{ clientSideFunction.value; nil })
+			tempoClock.sched(beats,{ clientSideFunction.value; nil })
 		});
 	}
 	xsched { arg beats,server,bundle,clientSideFunction;
 		var thTask,notCancelled;
-		tempoClock.dsched(beats - server.latency,thTask = nextTask = {
+		tempoClock.sched(beats - server.latency,thTask = nextTask = {
 			if(notCancelled = (thTask === nextTask),{
 				server.listSendBundle(tempo.beats2secs(server.latency),bundle)
 			});
 			nil
 		});
 		if(clientSideFunction.notNil,{
-			tempoClock.dsched(beats,{ if(notCancelled,clientSideFunction); nil })
+			tempoClock.sched(beats,{ if(notCancelled,clientSideFunction); nil })
 		});
 	}
 	

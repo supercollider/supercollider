@@ -948,7 +948,10 @@ int prTempoClock_Tempo(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
-	if (!clock) return errFailed;
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
 	
 	SetFloat(a, clock->mTempo);
 
@@ -960,7 +963,10 @@ int prTempoClock_BeatDur(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
-	if (!clock) return errFailed;
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
 	
 	SetFloat(a, clock->mBeatDur);
 
@@ -972,10 +978,39 @@ int prTempoClock_ElapsedBeats(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
-	if (!clock) return errFailed;
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
 	
 	SetFloat(a, clock->ElapsedBeats());
 
+	return errNone;
+}
+
+int prTempoClock_Beats(struct VMGlobals *g, int numArgsPushed);
+int prTempoClock_Beats(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	double beats, seconds;
+	
+	if (SlotEq(&g->thread->clock, a)) {
+		double beats;
+		int err = slotDoubleVal(&g->thread->beats, &beats);
+		if (err) return errWrongType; 
+	} else {
+		TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+		if (!clock) {
+			error("clock is not running.\n");
+			return errFailed;
+		}
+		
+		int err = slotDoubleVal(&g->thread->seconds, &seconds);
+		if (err) return errWrongType; 
+		
+		beats = clock->SecsToBeats(seconds);
+	}
+	SetFloat(a, beats);
 	return errNone;
 }
 
@@ -985,20 +1020,26 @@ int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
+	double delta, beats;
+	int err;
 	
 	if (!SlotEq(&g->thread->clock, a)) {
-		post("shouldn't call TempoClock-sched from a different clock. Use schedAbs.\n");
-		return errFailed;
+		TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+		beats = clock->ElapsedBeats();
+		//post("shouldn't call TempoClock-sched from a different clock. Use schedAbs.\n");
+		//return errFailed;
+	} else {
+		err = slotDoubleVal(&g->thread->beats, &beats);
+		if (err) return errNone; // return nil OK, just don't schedule
 	}
 
 	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
-	if (!clock) return errFailed;
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
 	
-	double delta, beats;
-	int err = slotDoubleVal(b, &delta);
-	if (err) return errNone; // return nil OK, just don't schedule
-	
-	err = slotDoubleVal(&g->thread->beats, &beats);
+	err = slotDoubleVal(b, &delta);
 	if (err) return errNone; // return nil OK, just don't schedule
 	beats += delta;
 	
@@ -1015,7 +1056,10 @@ int prTempoClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp;
 
 	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
-	if (!clock) return errFailed;
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
 
 	double beats;
 	int err = slotDoubleVal(b, &beats);
@@ -1034,7 +1078,10 @@ int prTempoClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp;
 
 	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
-	if (!clock) return errFailed;
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
 
 	double tempo, beat;
 	int err = slotDoubleVal(b, &tempo);
@@ -1061,7 +1108,10 @@ int prTempoClock_SetAll(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *d = g->sp;
 
 	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
-	if (!clock) return errFailed;
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
 
 	double tempo, beat, secs;
 	int err = slotDoubleVal(b, &tempo);
@@ -1086,7 +1136,10 @@ int prTempoClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp;
 
 	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
-	if (!clock) return errFailed;
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
 
 	double tempo, sec;
 	int err = slotDoubleVal(b, &tempo);
@@ -1109,7 +1162,10 @@ int prTempoClock_BeatsToSecs(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b = g->sp;
 
 	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
-	if (!clock) return errFailed;
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
 
 	double beats;
 	int err = slotDoubleVal(b, &beats);
@@ -1127,7 +1183,10 @@ int prTempoClock_SecsToBeats(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b = g->sp;
 
 	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
-	if (!clock) return errFailed;
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
 
 	double secs;
 	int err = slotDoubleVal(b, &secs);
@@ -1206,6 +1265,7 @@ void initSchedPrimitives()
 	definePrimitive(base, index++, "_TempoClock_Tempo", prTempoClock_Tempo, 1, 0);	
 	definePrimitive(base, index++, "_TempoClock_BeatDur", prTempoClock_BeatDur, 1, 0);	
 	definePrimitive(base, index++, "_TempoClock_ElapsedBeats", prTempoClock_ElapsedBeats, 1, 0);	
+	definePrimitive(base, index++, "_TempoClock_Beats", prTempoClock_Beats, 1, 0);	
 	definePrimitive(base, index++, "_TempoClock_SetTempoAtBeat", prTempoClock_SetTempoAtBeat, 3, 0);	
 	definePrimitive(base, index++, "_TempoClock_SetTempoAtTime", prTempoClock_SetTempoAtTime, 3, 0);	
 	definePrimitive(base, index++, "_TempoClock_SetAll", prTempoClock_SetAll, 4, 0);	

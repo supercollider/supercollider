@@ -10,13 +10,16 @@
 \fs24 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 TempoClock is a scheduler like SystemClock, but it schedules relative to a tempo in beats per second.\
+\f1\b0 \cf0 TempoClock is a scheduler like SystemClock, but it schedules relative to a tempo in beats per second.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b *new(tempo, beats, seconds)\
+\f0\b \cf0 *new(tempo, beats, seconds)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	Create a new TempoClock scheduler with the given tempo and starting times.\
+\f1\b0 \cf0 	Create a new TempoClock scheduler with the given tempo and starting times.\
 	\
 If not given, 
 \f0\b tempo
@@ -26,8 +29,9 @@ If not given,
 \f0\b seconds
 \f1\b0  defaults to the current elapsed time.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b stop
+\f0\b \cf0 stop
 \f1\b0 \
 	destroy the scheduler. releases the OS thread running the scheduler.\
 \
@@ -39,13 +43,15 @@ If not given,
 	\
 
 \f0\b tempo_(beatsPerSecond)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	set the current tempo.\
+\f1\b0 \cf0 	set the current tempo.\
 	t.tempo = 2.0;\
 	or\
 	t.tempo_(2.0);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
 beatDur
 \f1\b0 \
 	get the current beat duration in seconds.\
@@ -53,38 +59,59 @@ beatDur
 
 \f0\b \
 elapsedBeats\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	get the current elapsed time in beats.\
+\f1\b0 \cf0 	get the current elapsed time in beats.\
 	This is equivalent to:   tempoClock.secs2beats(Main.elapsedTime).\
-	\
+	It is often preferrable to use 
+\f0\b beats
+\f1\b0  instead of 
+\f0\b elapsedBeats 
+\f1\b0 because 
+\f0\b beats
+\f1\b0  uses a thread's logical time.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 beats
+\f1\b0 \
+	Returns the appropriate beat time of the clock from any thread. If the receiver is the clock of the current thread, this returns the current logical time: thisThread.beats. If the receiver is not the current thread's clock then this translates the current thread's logical time in seconds to this clock's logical time in beats. \
 	\
 
 \f0\b schedAbs(beat,function)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	Schedule a function to be evaluated at a particular beat.\
+\f1\b0 \cf0 	Schedule a function to be evaluated at a particular beat.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b sched(delta,function)\
+\f0\b \cf0 sched(delta,function)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	Schedule a function to be evaluated delta beats from the current logical time in this clock. The receiver must be the clock of the current thread.\
+\f1\b0 \cf0 	Schedule a function to be evaluated delta beats from the current logical time in this clock. If the receiver is the clock of the current thread, the delta is applied to the current logical time. If the receiver is not the current thread's clock then the delta is applied to the clock's elapsed time.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b clear
+\f0\b \cf0 clear
 \f1\b0 \
 	remove all tasks from the scheduling queue.\
 \
 \
 
 \f0\b beats2secs(beats)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	convert absolute beats to absolute seconds. Only works for times in the current tempo. If the tempo changes any computed time in future will be wrong.\
+\f1\b0 \cf0 	convert absolute beats to absolute seconds. Only works for times in the current tempo. If the tempo changes any computed time in future will be wrong.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b 	\
+\f0\b \cf0 	\
 secs2beats(seconds)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	convert absolute seconds to absolute beats. Only works for times in the current tempo. If the tempo changes any computed time in future will be wrong.\
+\f1\b0 \cf0 	convert absolute seconds to absolute beats. Only works for times in the current tempo. If the tempo changes any computed time in future will be wrong.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
 \
 Example:\
 \
@@ -95,19 +122,18 @@ Example:\
 \cf0 \
 t = \cf3 TempoClock\cf0 (1); \cf2 // create a TempoClock\cf0 \
 \
-...\
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // schedule an event at next whole beat\cf0 \
-t.schedAbs(t.elapsedBeats.ceil, \{ \cf3 arg\cf0  beat, sec; [beat, sec].postln; 1 \});\
+t.schedAbs(t.beats.ceil, \{ \cf3 arg\cf0  beat, sec; [beat, sec].postln; 1 \});\
 \
 t.tempo = 2;\
+t.tempo = 4;\
 t.tempo = 0.5;\
 t.tempo = 1;\
 \
 t.clear;\
 \
-t.schedAbs(t.elapsedBeats.ceil, \{ \cf3 arg\cf0  beat, sec; [beat, sec].postln; 1 \});\
+t.schedAbs(t.beats.ceil, \{ \cf3 arg\cf0  beat, sec; [beat, sec].postln; 1 \});\
 \
 t.stop;\
 \
