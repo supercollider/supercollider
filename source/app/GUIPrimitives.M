@@ -419,11 +419,14 @@ int prTextWindow_InsertTextInRange(struct VMGlobals *g, int numArgsPushed)
 		PyrSlot *c = g->sp - 1;
 		PyrSlot *d = g->sp;
 		
+		if (!(isKindOfSlot(b, class_string))) return errWrongType;
+
 		int rangeStart, rangeSize;
 		int err = slotIntVal(c, &rangeStart); //if -1 do not use range
         if (err) return err;
 		err = slotIntVal(d, &rangeSize);
         if (err) return err;
+
 		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
         if (!doc) return errFailed;
 		PyrString* pstring = b->uos;
@@ -435,7 +438,7 @@ int prTextWindow_InsertTextInRange(struct VMGlobals *g, int numArgsPushed)
 		
                 if(rangeStart<0) selectedRange =	NSMakeRange(0, length);
 		else selectedRange =	NSMakeRange(rangeStart, rangeSize);
-		
+
 		
 		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
 		if ([[doc textView]  shouldChangeTextInRange: selectedRange replacementString: string]) {
@@ -454,7 +457,8 @@ int prTextWindow_InsertText(struct VMGlobals *g, int numArgsPushed)
         if (!g->canCallOS) return errCantCallOS;
 		PyrSlot *b = g->sp - 1; 
         PyrSlot *c = g->sp; //the text
-        
+		if (!(isKindOfSlot(c, class_string))) return errWrongType;
+
         MyDocument* doc = (MyDocument*) b->uo->slots[0].ui;
         if (!doc) return errFailed;
         PyrString* string = c->uos;
@@ -630,8 +634,8 @@ int prNewTextWindow(struct VMGlobals *g, int numArgsPushed)
 		PyrSlot *b = g->sp - 1;
 		PyrSlot *c = g->sp;
         
-		
-		
+		if (!(isKindOfSlot(a, class_string))) return errWrongType;
+
         PyrString* string = a->uos;
         NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
         if (!docctl) return errFailed;
