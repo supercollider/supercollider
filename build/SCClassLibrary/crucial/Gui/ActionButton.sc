@@ -216,17 +216,23 @@ ActionButton : SCButtonAdapter { // one state
 		^super.new.init(layout,title,function,maxx,maxy,color,backcolor,font)
 	}
 	init { arg layout,title,function,maxx=20,maxy,color,backcolor,font;
+		var environment;
 		title = title.asString;
 		this.makeViewWithStringSize(layout,title.size,maxx,maxy);
 		view.states_([[title,color ?? {Color.black}, 
 			backcolor ?? {Color.new255(205, 201, 201)}]]);
 		this.font_(font ?? {Font("Helvetica",12.0)});
-		view.action_(function);
+		environment = currentEnvironment; // the one we are in while building it
+		if(environment.notNil,{
+			view.action_({environment.use(function)});
+		},{
+			view.action_(function);
+		})	
 	}
 }
 
 // CXPopUp
-PopUp : ActionButton { // change to use SCPopUp
+PopUp : ActionButton { // change to use SCPopUpMenu
 	
 	var <>title,<>list,<>menuLabelsFunc,<>onSelect,index=0;
 	

@@ -19,21 +19,50 @@
 			^Tile(this,args.first.asPageLayout)
 		});
 	}
-	
+	dependantGuis {
+		^this.dependants.select({ arg d; d.isKindOf(this.guiClass) })
+	}
 	insp { arg  ... args;
 		Insp(this,args);
 	}
 	debug { arg caller;
 		// by using this rather than just postln
 		// you can command-shift-y on debug and find every one you left
-		if(caller.notNil,{ 
-			(caller.asString + ":" + this).postln;
+		if(caller.notNil,{
+			Post << caller << ": " << this << Char.nl;
 		},{
-			this.postln;	
+			Post << this << Char.nl;
 		});
 	}
-	
 }
+
++ Collection {
+	debug { arg caller;
+		// by using this rather than just postln
+		// you can command-shift-y on debug and find every one you left
+		if(caller.notNil,{
+			if(this.size < 10,{
+				Post << caller << ": " << this << Char.nl;
+			},{
+				Post << caller << ": " <<* this << Char.nl;
+			});				
+		},{
+			Post <<* this << Char.nl;
+		});
+	}
+}
++ RawArray { // string, signal
+	debug { arg caller;
+		// by using this rather than just postln
+		// you can command-shift-y on debug and find every one you left
+		if(caller.notNil,{
+			Post << caller << ": " << this << Char.nl;
+		},{
+			Post << this << Char.nl;
+		});
+	}
+}
+
 
 + Class {
 	guiClass { ^ClassGui }

@@ -203,7 +203,7 @@ SampleSpec : ScalarSpec {
 			];
 		)
 	}
-	defaultControl { ^Sample.newClear(16) } // silent sample
+	defaultControl { ^Sample.new } // silent sample
 	canAccept { arg ting; ^ting.isKindOf(Sample) }
 
 }
@@ -233,6 +233,7 @@ StreamSpec : HasItemSpec {
 		^(ting.rate == \stream or: {itemSpec.canAccept(ting) })
 	}
 	rate { ^\stream }
+	defaultControl {  arg val; ^IrNumberEditor(val ? itemSpec.default, itemSpec) }
 }
 
 PlayerSpec : HasItemSpec {

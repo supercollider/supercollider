@@ -69,28 +69,32 @@ CXMenu : SCViewAdapter { // multiple actions
 	}
 	keyDownResponder {
 		var kdr;
-		kdr = KeyCodeResponder.new;
-		kdr.registerKeycode(10485760,125,{ 
+		kdr = UnicodeResponder.new;
+		kdr.registerUnicode(KeyCodeResponder.functionKeyModifier , 63233, { 
 			this.focusOn(focus + 1);
 		});
-		kdr.registerKeycode(10485760,126,{ 
+		kdr.registerUnicode(KeyCodeResponder.functionKeyModifier , 63232 ,{ 
 			this.focusOn(focus - 1);
 		});
 		// enter
-		kdr.registerKeycode(0,52,{
+		kdr.registerUnicode(KeyCodeResponder.normalModifier,3,{
 			this.doAction
 		});
 		// return
-		kdr.registerKeycode(0,36,{
+		kdr.registerUnicode(KeyCodeResponder.normalModifier,13,{
 			this.doAction
 		});
 		^kdr
 	}
 	focus { this.focusOn(0) }
 	focusOn { arg f=0;
-		focus = f.clip(0,view.children.size - 1);
+		focus = f.wrap(0,view.children.size - 1);
 		view.children.at( focus ).focus;
-	}	
+	}
+//	focusNext { arg by=1;
+//		focus = (focus + by).clip(0,view.children.size - 1);
+//		view.children.at( focus ).focus;
+//	}	
 }
 
 /*

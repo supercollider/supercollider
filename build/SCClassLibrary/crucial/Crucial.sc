@@ -133,12 +133,35 @@ Crucial {
 	
 		// this is just everything in Library(\menuItems) functions put up on a menu
 		
-		var a;
+		var a,rec,pause;
 		if(menu.notNil,{ menu.close });
 		
 		menu = MultiPageLayout.new("-Library-");
 		
-		Server.local.gui(menu);
+		Server.default.gui(menu);
+		menu.startRow;
+		rec = ToggleButton(menu,"*",{
+			if(Server.default.recordNode.isNil,{
+				File.saveDialog("Record file...",{ arg path;
+					Server.prepareForRecord(path,'aiff','int24',2);
+				},{
+					rec.passiveToggle(false).changed;
+				});
+			},{
+				Server.default.stopRecording;
+			})
+		});
+		pause = ToggleButton(menu,"||",{
+			if(Server.default.recordNode.notNil,{
+				Server.default.record;
+			},{
+				pause.passiveToggle(false);
+			});
+		},{
+			Server.default.pause;
+		});
+		
+
 
 		a = ActionButton(menu.startRow,"     Library Menu Items...     ",{
 			MLIDbrowser(\menuItems)
@@ -148,16 +171,16 @@ Crucial {
 		.labelColor_(Color.white);
 
 		ToggleButton(menu.startRow,"Server dumpOSC",{
-			Server.local.stopAliveThread;
-			Server.local.dumpOSC(1)
+			Server.default.stopAliveThread;
+			Server.default.dumpOSC(1)
 		},{
-			Server.local.startAliveThread;
-			Server.local.dumpOSC(0)
-		},Server.local.dumpMode != 0 ,maxx: 250);
+			Server.default.startAliveThread;
+			Server.default.dumpOSC(0)
+		},Server.default.dumpMode != 0 ,maxx: 250);
 		
 		
 		if(debugNodeWatcher.isNil,{
-			debugNodeWatcher = DebugNodeWatcher(Server.local);
+			debugNodeWatcher = DebugNodeWatcher(Server.default);
 		});
 		ToggleButton(menu.startRow,"DebugNodeWatcher",{
 			debugNodeWatcher.start;
@@ -464,18 +487,18 @@ Crucial {
 			Sheet({ arg f;
 				CXLabel(f.startRow,"address");
 				CXLabel(f,"numChannels");
-				Server.local.audioBusAllocator.blocks.do({ arg block;
+				Server.default.audioBusAllocator.blocks.do({ arg block;
 					CXLabel(f.startRow,block.address);
 					CXLabel(f,block.size);
 				});
-			},"AudioBusses on local")
+			},"AudioBusses on default")
 		});
 		
 		Library.put(\menuItems,\tools,'Server Node Report',{
 			var probe,probing,resp,nodes,server,report,indent = 0,order=0;
 			var nodeWatcher;
 			
-			server = Server.local;
+			server = Server.default;
 			nodeWatcher = NodeWatcher.newFrom(server);
 			
 			nodes = IdentityDictionary.new;
@@ -487,12 +510,18 @@ Crucial {
 			};
 			
 			report = { arg nodeID=0;
-				var child,synth;
+				var child,node;
 				indent.do({ " ".post });
 				nodes.at(nodeID).use({
 					~order = order;
 					if(~isGroup,{ 
-						("Group(" ++ nodeID ++ ")").postln;
+						node = nodeWatcher.nodes.at(nodeID);
+						if(node.notNil,{
+							Post << node << " " << AbstractPlayer.getAnnotation(node)  << Char.nl;
+						},{
+							("Group(" ++ nodeID ++ ")").postln;
+						});
+	
 						child = ~head;
 						indent = indent + 8;
 						while({
@@ -504,11 +533,11 @@ Crucial {
 						});
 						indent = indent - 8;
 					},{
-						synth = nodeWatcher.nodes.at(nodeID);
-						if(synth.notNil,{ // get defName if available
-							synth.asString.postln;
+						node = nodeWatcher.nodes.at(nodeID);
+						if(node.notNil,{ // get defName if available
+							Post << node << " " << AbstractPlayer.getAnnotation(node) << Char.nl;
 						},{
-							("Synth" + nodeID).postln;
+							("Synth(" + nodeID + ")").postln;
 						});
 					});
 				});

@@ -82,7 +82,8 @@ InstrSpawner : Patch {
 
 		spawnGroup = Group.basicNew;
 		NodeWatcher.register(spawnGroup);
-		bundle.add( spawnGroup.addToTail(group) );
+		this.annotate(spawnGroup,"spawnGroup");
+		bundle.add( spawnGroup.addToTailMsg(group) );
 		this.childrenMakePatchOut(spawnGroup,true,bundle);
 
 		streams.do({ arg s,i;
@@ -111,6 +112,7 @@ InstrSpawner : Patch {
 			this.asSynthDef;// make sure it exists
 			
 			this.children.do({ arg child;
+				//child.group = spawnGroup;
 				child.spawnToBundle(bundle);
 			});
 
@@ -123,7 +125,6 @@ InstrSpawner : Patch {
 		super.didSpawn;
 		this.startTask;
 	}
-
 	startTask {
 		clock = SystemClock;
 		clock.sched((delta - latency).max(0.0),spawnTask);

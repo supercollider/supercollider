@@ -8,6 +8,7 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 			.list_(loadDocument(list))
 			.selected_(selected)
 			.env_(env ?? {Env.new([ 0, 1.0, 0 ], [ 0.01, 0.7 ], -4, 1, nil)})
+			//.select(selected)
 	}
 	storeArgs { ^[list, selected ,env,round ]  }
 	addPlayer { arg player;

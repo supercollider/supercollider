@@ -85,7 +85,7 @@ SampleGui : ObjectGui {
 		var file,c,minval=0,maxval=0;
 		maxs = Array.new;
 		mins = Array.new;
-		
+		if(model.soundFilePath.isNil, { ^this });
 		lastSoundFilePath = model.soundFilePath;
 		file = model.soundFile;
 		file.openRead(lastSoundFilePath);

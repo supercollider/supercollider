@@ -1,12 +1,13 @@
 
 /*
 	to do 
+		change to triple buffering (rather than buffers for each segment)
 		play commands to locate within
 */
 AbstractSFP  : AbstractPlayer {
 
 
-	classvar <>dir="SoundFiles/";
+	classvar <dir="SoundFiles/";
 
 	var <>file;
 
@@ -25,6 +26,9 @@ AbstractSFP  : AbstractPlayer {
 		},{
 			pathName.fullPath
 		})
+	}
+	*dir_ { arg path;
+		dir = path.standardizePath ++ "/";
 	}
 	// each subclass should implement timeDuration
 	numFrames { ^file.numFrames }
@@ -93,10 +97,19 @@ AbstractSFP  : AbstractPlayer {
 		// start playing the sequence
 		// send all the commands now to OSCSched
 		var cursor = 0;
+		super.didSpawn;
 		segmentBuffers.do({ arg sb,i;
-			if(i > 0,{
+			if(i == 0,{
+				lastSynth = synth; // the one we started play with
+				if(segmentBuffers.size > 1,{
+					// the one we will use for the next segment
+					nextSynth = Synth.basicNew(this.defName,this.server);
+					this.annotate(nextSynth,"synth for segment" + i.asString);
+					NodeWatcher.register(nextSynth);
+				});
+			},{
 				sched.xtsched(cursor,this.server,
-					[// release last synth
+					[// release previous synth
 					[ "/n_set", lastSynth.nodeID,\gate,0],
 					// start new synth
 					[ nextSynth.addToTailMsg(patchOut.group, 
@@ -105,15 +118,16 @@ AbstractSFP  : AbstractPlayer {
 						// this stepped
 						synth = nextSynth;
 						synth.isPlaying = true;
-					});
-					lastSynth = nextSynth;
-					nextSynth = Synth.basicNew(this.defName,this.server);
-			},{
-				lastSynth = synth; // the one we start with
+				});
+				lastSynth = nextSynth;
 				nextSynth = Synth.basicNew(this.defName,this.server);
+				this.annotate(nextSynth,"synth for segment" + i.asString);
+				NodeWatcher.register(nextSynth);
 			});
-			NodeWatcher.register(nextSynth);
-		});	
+		});
+		// ISSUE
+		// if we stop before the end, the synths aren't used but they sucked
+		// up nodeIDs
 	}
 
 
@@ -155,17 +169,19 @@ SFP : AbstractSFP  {
 	init { arg sfilePath;
 		if(sfilePath.isNil,{
 			file = SoundFile.new("no soundfile specified...",numChannels:2);
-			filePath = "no soundfile specified";
+			name = filePath = "no soundfile specified";
 		},{
 			// we don't have to check actually
 			if(sfilePath.isString,{
 				file = SoundFile.new;
 				filePath = this.class.standardizePath(sfilePath);
+				name = PathName(filePath).fileName;
 				found = file.openRead(filePath);
 			},{
 				if(sfilePath.isKindOf(CXSoundFile),{
 					file=sfilePath;
 					filePath = file.path = this.class.standardizePath(file.path);
+					name = PathName(filePath).fileName;
 					found = file.openRead(file.path);
 				},{
 					die("SFP-init : not a path or a SoundFile " + sfilePath)
@@ -225,7 +241,7 @@ SFP : AbstractSFP  {
 //		})			
 //	}
 	
-	name { ^this.fileName }
+	//name { ^this.fileName }
 	fileName { 
 		^PathName(filePath).fileName 
 	}

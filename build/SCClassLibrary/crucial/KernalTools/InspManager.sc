@@ -13,7 +13,9 @@ Insp {
 			name = subject.asString;
 		});
 		if(name.size > 20,{ name = name.copyRange(0,19) ++ "..."});
-		InspManager.global.watch(this)
+		if(InspManager.global.notNil,{
+			InspManager.global.watch(this)
+		});
 	}
 	show { arg inspView;
 		hidden = false;

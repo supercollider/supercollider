@@ -63,7 +63,7 @@ AbstractPlayerGui : ObjectGui {
 	keyDownResponder {
 		var k;
 		k = KeyCodeResponder.new;
-		k.registerKeycode(0,49,{
+		k.registerKeycode(KeyCodeResponder.normalModifier,49,{
 			if(model.isPlaying,{
 				model.stop
 			},{

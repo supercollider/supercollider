@@ -3,10 +3,15 @@
 + Instr {
 	asInstr {}
 }
-
++ InterfaceDef {
+	asInterfaceDef {}
+}
 + SequenceableCollection {
 	asInstr {
 		^Instr.at(this)
+	}
+	asInterfaceDef {
+		^InterfaceDef.at(this)
 	}
 }
 
@@ -14,11 +19,17 @@
 	asInstr {
 		^Instr.at(this)
 	}
+	asInterfaceDef {
+		^InterfaceDef.at(this)
+	}
 }
 
 + String {
 	asInstr {
 		^Instr.at(this.asSymbol)
+	}
+	asInterfaceDef {
+		^InterfaceDef.at(this)
 	}
 }
 
@@ -33,11 +44,15 @@
 	asInstr {
 		^Instr("f" ++ this.hash,this)
 	}
+	asInterfaceDef {
+		^InterfaceDef("f" ++ this.hash,this)
+	}
 }
 
 
 
 
+/**  asSpec **/
 
 + Nil {
 	asSpec {
@@ -47,13 +62,7 @@
 
 + Spec {
 	rate { ^\scalar }
-	asPropertyList {
-		^Dictionary[
-			"class" -> this.class.name
-		]	
-	}
 }
-
 
 + ControlSpec 	{
 
@@ -62,102 +71,6 @@
 	}
 
 	rate { ^\control }
-	asPropertyList {
-		^Dictionary[
-			"class" -> this.class.name,
-			"minval" -> this.minval,
-			"maxval" -> this.maxval,
-			"warp" -> this.warp.asPropertyList,
-			"step" -> this.step,
-			"default" -> this.default
-		]
-	}
 }
-
-+ Warp {
-	asPropertyList {
-		^Dictionary[
-			"class" -> this.class.name
-		]
-	}
-}
-
-// CurveWarp
-
-+ AudioSpec {
-	
-	asPropertyList {
-		^Dictionary[
-			"class" -> this.class.name,
-			"numChannels" -> this.numChannels
-		]	
-	}
-}
-
-
-+ MultiTrackAudioSpec {
-	asPropertyList {
-		^Dictionary[
-			"class" -> this.class.name,
-			"numTracks" -> this.tracks,
-			"numChannels" -> this.numChannels
-		]	
-	}
-}
-
-// EnvSpec
-
-
-
-+ SynthDef {
-	longName { ^name }
-}
-
-+ Editor {
-	addToDefName { arg stream;
-		^value.addToDefName(stream)
-	}
-}
-+ KrNumberEditor {
-	addToDefName { arg stream;
-		^1
-	}
-}
-+ IrNumberEditor {
-	addToDefName { arg stream;
-		^0
-	}
-}
-+ SimpleNumber {
-	addToDefName { arg stream;
-		stream << this.asFileSafeString;
-		^2
-	}
-}
-+ Sample {
-	addToDefName { arg stream;
-		// beatsizek
-		var sum;
-		sum = numChannels - 1; // assumes no quad samples
-		if(beatsizek.notNil,{ sum = sum + 2 });
-		stream << sum;
-		^2
-	}
-}
-+ AbstractPlayer {
-	addToDefName {
-		^0
-	}
-}
-
-// the big one, espec. Env
-+ Object {
-	addToDefName { arg stream;
-		stream << this.asCompileString.hash.asFileSafeString;
-		^2
-	}
-}
-
-
 
 

@@ -17,18 +17,29 @@ HasSubject : AbstractPlayer {
 	guiClass { ^HasSubjectGui }
 }
 
-AbstractPlayerEffect : HasSubject { // has two groups
+AbstractPlayerEffect : HasSubject { // has two groups so the subject and effect can respawn at will
 
 	var subjectGroup,effectGroup;
 	
 	makePatchOut { arg agroup,private = false,bus,bundle;
+		group = agroup.asGroup;
+		server = group.server;
+		this.topMakePatchOut(group,private,bus);
+
+		//move to children make patch out ?
 		subjectGroup = Group.basicNew;
+		this.annotate(subjectGroup,"subjectGroup");
 		effectGroup = Group.basicNew;
+		this.annotate(effectGroup,"effectGroup");
+	
 		NodeWatcher.register(subjectGroup);
 		NodeWatcher.register(effectGroup);
-		bundle.add( subjectGroup.addToTail(group) );
+
+		bundle.add( subjectGroup.addToTailMsg(group) );
 		bundle.add( effectGroup.addAfterMsg(subjectGroup) );
-		super.makePatchOut(agroup,private,bus,bundle);
+
+		this.childrenMakePatchOut(group,true,bundle);
+		//super.makePatchOut(agroup,private,bus,bundle);
 	}
 	freePatchOut { arg bundle;
 		subjectGroup.freeToBundle(bundle);
@@ -38,6 +49,8 @@ AbstractPlayerEffect : HasSubject { // has two groups
 	}
 }
 
+// should inherit differently
+// should not bother with the effectGroup
 AbstractSinglePlayerEffect : AbstractPlayerEffect {
 
 	var sharedBus;
@@ -49,11 +62,11 @@ AbstractSinglePlayerEffect : AbstractPlayerEffect {
 	}
 	freePatchOut { arg bundle;
 		super.freePatchOut(bundle);
-		if(sharedBus.notNil,{
-			bundle.addFunction({
+		bundle.addFunction({
+			if(sharedBus.notNil,{
 				sharedBus.releaseBus(this);
-				sharedBus = nil;
-			})
+			});
+			sharedBus = nil;
 		})
 	}	
 }
@@ -110,7 +123,9 @@ EnvelopedPlayer : AbstractSinglePlayerEffect {
 			ReplaceOut.ar(i_bus,in)
 		})
 	}
-	defName { ^this.class.name.asString ++ numChannels.asString ++ env.asCompileString.hash.asFileSafeString }
+	defName { ^this.class.name.asString ++ numChannels.asString ++ 
+				env.asCompileString.hash.asFileSafeString 
+	}
 	synthDefArgs { ^[\i_bus,patchOut.synthArg,\gate,1.0] }
 	releaseToBundle { arg releaseTime,bundle;
 		if(releaseTime.isNil,{ releaseTime = env.releaseTime; });

@@ -1,6 +1,8 @@
 
 // see MIDIResponder help for all classes on this page
 
+// rather than hog the midi inputs here, make a global hog for all to suckle from
+
 MIDIResponder {
 	var <>function;
 	init {
@@ -11,19 +13,6 @@ MIDIResponder {
 		this.class.remove(this)
 	}
 	*removeAll { this.init }
-	/* *remove { arg resp;
-		this.responders.do({ arg r,i;
-			if(r === resp,{
-				this.responders.put(i,nil)
-			},{
-				if(r.isKindOf(ResponderArray),{
-					if(r.remove(resp) == 0,{
-						this.responders.put(i,nil); // all cleared
-					})
-				})
-			})
-		})
-	} */
 }
 
 ResponderArray {

@@ -65,6 +65,8 @@ Tempo  {
 	destroy {
 		CmdPeriod.remove(this);	
 	}
+	
+	
 	// not using this because the clocks get killed by command-.
 	// making them dangerous to hold onto
 	*makeClock { arg owner;
@@ -86,7 +88,6 @@ Tempo  {
 		owners.do({ arg o; o.clockDidClear });
 	}
 	clockDidClear {}
-	
 
 }
 

@@ -98,7 +98,7 @@ PatchOut {
 		})
 	}*/
 	server { ^group.server }
-
+	isPlaying { ^group.isPlaying }
 	bus_ { arg b;
 		bus = b.asBus;
 		connectedTo.do({ arg pti;

@@ -84,8 +84,9 @@ PlayerSocket : AbstractPlayerProxy {
 	
 	prepareToBundle { arg group,bundle;
 		group = group.asGroup;
-
-		socketGroup = Group.basicNew(server: group.server);
+		server = group.server;
+		
+		socketGroup = Group.basicNew(server: server);
 		NodeWatcher.register(socketGroup);
 		bundle.add( socketGroup.addToTailMsg(group) );
 
@@ -93,12 +94,12 @@ PlayerSocket : AbstractPlayerProxy {
 		super.prepareToBundle(group,bundle);
 	}
 	// no synth of my own
-	loadDefFileToBundle { arg bundle,server;
+	loadDefFileToBundle { arg bundle;
 		this.children.do({ arg child;
-			child.loadDefFileToBundle(bundle,server);
+			child.loadDefFileToBundle(bundle);
 		});
 		// load once		
-		EnvelopedPlayer(Patch(SinOsc),env,this.numChannels).loadDefFileToBundle(bundle,server);
+		EnvelopedPlayer(Patch(SinOsc),env,this.numChannels).loadDefFileToBundle(bundle);
 	}
 	
 	instrArgFromControl { arg control;

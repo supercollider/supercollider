@@ -5,7 +5,7 @@ InstrSynthDef : SynthDef {
 	
 	var <longName;
 	
-	var <fixedNames,<fixedValues,<fixedPositions;
+	//var <fixedNames,<fixedValues,<fixedPositions;
 
 	// secret because the function doesn't see them
 	// but they are needed to pass into the synth
@@ -35,15 +35,10 @@ InstrSynthDef : SynthDef {
 		controlNames = nil;
 		controls = nil;
 		
-		fixedNames = fixedValues = fixedPositions = nil;
+		/*fixedNames = fixedValues = fixedPositions = nil;*/
 		
 		// OutputProxy In InTrig Float etc.		
 		outputProxies = this.buildControlsWithObjects(instr,args);
-		/*
-			not all of the controls are Controls,
-			some are what the object chose to add
-			in addToSynthDef
-		*/
 
 		result = instr.valueArray(outputProxies);
 		rate = result.rate;
@@ -81,14 +76,13 @@ InstrSynthDef : SynthDef {
 		});
 		name = name ++ outClass.name.asString.first.toUpper;
 
-//		fixedValues.do({ arg fa,i;
-//			if(fa.notNil,{
-//				fixedID = fixedID ++ i ++ fa.asCompileString;
-//			})
-//		});
-//		name = name ++ fixedID.hash.asFileSafeString;
+		/* fixedValues.do({ arg fa,i;
+			if(fa.notNil,{
+				fixedID = fixedID ++ i ++ fa.asCompileString;
+			})
+		});
+		name = name ++ fixedID.hash.asFileSafeString; */
 
-// 		more correct, but too long.
 		longName = name ++ this.class.defNameFromObjects(args);
 		name = longName.hash.asFileSafeString;
 		("InstrSynthDef built:" + name + longName).debug;
@@ -96,12 +90,12 @@ InstrSynthDef : SynthDef {
 	
 	// passed to Instr function but not to synth
 	addInstrOnlyArg { arg name,value;
-		fixedNames = fixedNames.add(name);
+		/*fixedNames = fixedNames.add(name);
 		fixedValues = fixedValues.add(value);
-		fixedPositions = fixedPositions.add(controls.size);
-		// ?? fixedNames, fixedValues, etc. are never used. - JMc
+		fixedPositions = fixedPositions.add(controls.size);*/
 		this.addNonControl(name, value);
 	}
+	
 	
 	// to cache this def, this info needs to be saved
 	// argi points to the slot in objects (as supplied to secretDefArgs)
@@ -185,7 +179,6 @@ InstrSynthDef : SynthDef {
 		(dir++"*").pathMatch.do({ arg p;
 			var defName;
 			defName = PathName(p).fileNameWithoutExtension;
-			//defName.debug;
 			Library.put(SynthDef,server,defName.asSymbol,\assumedLoaded);
 		})
 	}

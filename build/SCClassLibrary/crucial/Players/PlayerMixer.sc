@@ -17,7 +17,7 @@ PlayerMixer : MultiplePlayers {  // will become a HasPatchIns
 							.ir(Array.fill(players.size,0))
 							.collect({ arg in; In.ar(in,this.numChannels) });
 				Out.ar(out,
-					Mix.ar(
+					Mix.new(
 						inputBusses
 					)
 				)
@@ -45,6 +45,7 @@ PlayerMixer : MultiplePlayers {  // will become a HasPatchIns
 		});
 		synth = Synth.basicNew(this.defName,server);
 		NodeWatcher.register(synth);
+		this.annotate(synth,"synth,respawned");
 
 		dn = this.defName.asSymbol;
 		if(Library.at(SynthDef,this.server,dn).isNil,{
@@ -70,7 +71,7 @@ PlayerMixer : MultiplePlayers {  // will become a HasPatchIns
 			
 			
 			
-			//must do   prepareToBundle
+			//TODO   prepareToBundle
 			
 			
 			

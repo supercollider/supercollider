@@ -51,8 +51,11 @@ PlayerBinop : AbstractPlayer{
 		^super.new.a_(a).b_(b).operator_(operator)
 	}
 	asSynthDef {
-		^this.notYetImplemented(thisMethod)
+		^this.notYetImplemented(thisMethod).die
 		//^a.value.perform(operator,b.value)
+		/*^SynthDef(this.defName,{ arg a,b;
+			a.perform(operator,b)
+		})*/
 	}
 	storeArgs { ^[operator,a,b] }
 

@@ -99,12 +99,12 @@ BeatSched {
 	}
 		
 	sched { arg beats,function;
-		tempoClock.sched(beats,function)
+		tempoClock.dsched(beats,function)
 		//this.tsched(tempo.beats2secs(beats),function)
 	}
 	xsched { arg beats,function;
 		var thsTask,notCancelled;
-		tempoClock.sched(beats,
+		tempoClock.dsched(beats,
 			thsTask = nextTask = {
 				if(thsTask === nextTask,function);
 				nil
@@ -171,43 +171,43 @@ OSCSched : BeatSched {
 	*initClass { global = this.new; }
 
 	/** global scheduler **/
-	*tsched { arg seconds,server,bundle,clientSideFunction;
-		^global.tsched(seconds,server,bundle,clientSideFunction);
+	*tsched { arg seconds,server,bundle,onArrival;
+		^global.tsched(seconds,server,bundle,onArrival);
 	}
-	*xtsched { arg seconds,server,bundle,clientSideFunction;
-		^global.xtsched(seconds,server,bundle,clientSideFunction);
+	*xtsched { arg seconds,server,bundle,onArrival;
+		^global.xtsched(seconds,server,bundle,onArrival);
 	}		
-	*sched { arg beats,server,bundle,clientSideFunction;
-		^global.sched(beats,server,bundle,clientSideFunction)
+	*sched { arg beats,server,bundle,onArrival;
+		^global.sched(beats,server,bundle,onArrival)
 	}
-	*xsched { arg beats,server,bundle,clientSideFunction;
-		^global.xsched(beats,server,bundle,clientSideFunction)
+	*xsched { arg beats,server,bundle,onArrival;
+		^global.xsched(beats,server,bundle,onArrival)
 	}
-	*qsched { arg quantize,server,bundle,clientSideFunction;
-		^global.qsched(quantize,server,bundle,clientSideFunction)
+	*qsched { arg quantize,server,bundle,onArrival;
+		^global.qsched(quantize,server,bundle,onArrival)
 	}
-	*xqsched { arg quantize,server,bundle,clientSideFunction;
-		^global.xqsched(quantize,server,bundle,clientSideFunction )
+	*xqsched { arg quantize,server,bundle,onArrival;
+		^global.xqsched(quantize,server,bundle,onArrival )
 	}
-	*tschedAbs { arg time,server,bundle,clientSideFunction;
-		^global.tschedAbs(time,server,bundle,clientSideFunction)
+	*tschedAbs { arg time,server,bundle,onArrival;
+		^global.tschedAbs(time,server,bundle,onArrival)
 	}		
 	// xtschedAbs
-	*schedAbs { arg beat,server,bundle,clientSideFunction;
-		^global.tschedAbs(beat,server,bundle,clientSideFunction)
+	*schedAbs { arg beat,server,bundle,onArrival;
+		^global.tschedAbs(beat,server,bundle,onArrival)
 	}
 	
 	/**  instance methods **/
-	tsched { arg seconds,server,bundle,clientSideFunction;
+	tsched { arg seconds,server,bundle,onArrival;
 		clock.sched(seconds - server.latency,{
 			server.listSendBundle(server.latency,bundle);
 			nil
 		});
-		if(clientSideFunction.notNil,{
-			clock.sched(seconds,{ clientSideFunction.value; nil })
+		if(onArrival.notNil,{
+			clock.sched(seconds,{ onArrival.value; nil })
 		});
 	}
-	xtsched { arg seconds,server,bundle,clientSideFunction;
+	xtsched { arg seconds,server,bundle,onArrival;
 		var thTask,notCancelled;
 		clock.sched(seconds - server.latency,thTask = nextTask = {
 			if(notCancelled = (thTask === nextTask),{
@@ -215,45 +215,50 @@ OSCSched : BeatSched {
 			});
 			nil
 		});
-		if(clientSideFunction.notNil,{
-			clock.sched(seconds,{ if(notCancelled,clientSideFunction); nil })
+		if(onArrival.notNil,{
+			clock.sched(seconds,{ if(notCancelled,onArrival); nil })
 		});
 	}
+	xtschedFunc { arg seconds, function;
+		var thTask;
+		clock.sched(seconds,thTask = nextTask = { if(thTask === nextTask,function); nil })
+	}
 		
-	sched { arg beats,server,bundle,clientSideFunction;
-		tempoClock.sched(beats - server.latency,{ // lazily using the seconds as beats
+	sched { arg beats,server,bundle,onArrival,onSend;
+		tempoClock.dsched(beats - server.latency,{ // lazily using the seconds as beats
+			onSend.value;
 			// inaccurate final delivery if tempo is changing quickly
 			server.listSendBundle(tempo.beats2secs(server.latency),bundle);
 			nil
 		});
-		if(clientSideFunction.notNil,{
-			tempoClock.sched(beats,{ clientSideFunction.value; nil })
+		if(onArrival.notNil,{
+			tempoClock.dsched(beats,{ onArrival.value; nil })
 		});
 	}
-	xsched { arg beats,server,bundle,clientSideFunction;
+	xsched { arg beats,server,bundle,onArrival;
 		var thTask,notCancelled;
-		tempoClock.sched(beats - server.latency,thTask = nextTask = {
+		tempoClock.dsched(beats - server.latency,thTask = nextTask = {
 			if(notCancelled = (thTask === nextTask),{
 				server.listSendBundle(tempo.beats2secs(server.latency),bundle)
 			});
 			nil
 		});
-		if(clientSideFunction.notNil,{
-			tempoClock.sched(beats,{ if(notCancelled,clientSideFunction); nil })
+		if(onArrival.notNil,{
+			tempoClock.dsched(beats,{ if(notCancelled,onArrival); nil })
 		});
 	}
 	
-	qsched { arg quantize,server,bundle,clientSideFunction;
-		this.sched(this.deltaTillNext(quantize),server,bundle,clientSideFunction)
+	qsched { arg quantize,server,bundle,onArrival;
+		this.sched(this.deltaTillNext(quantize),server,bundle,onArrival)
 
 	}
-	xqsched { arg quantize,server,bundle,clientSideFunction;
-		this.xsched(this.deltaTillNext(quantize),server,bundle,clientSideFunction )
+	xqsched { arg quantize,server,bundle,onArrival;
+		this.xsched(this.deltaTillNext(quantize),server,bundle,onArrival )
 	}
 	
-	tschedAbs { arg time,server,bundle,clientSideFunction;
+	tschedAbs { arg time,server,bundle,onArrival;
 		if(time >= this.time,{ // in the future ?
-			pq.put(time,[server,bundle,clientSideFunction]);
+			pq.put(time,[server,bundle,onArrival]);
 			// was something else already scheduled before me ?
 			if(nextAbsTime.notNil,{
 				if(time == pq.topPriority ,{ // i'm next
@@ -266,10 +271,10 @@ OSCSched : BeatSched {
 		})			
 	}
 	// xtschedAbs
-	schedAbs { arg beat,server,bundle,clientSideFunction;
+	schedAbs { arg beat,server,bundle,onArrival;
 		/*  to do...
 		if(time >= this.time,{ // in the future ?
-			pq.put(time,[server,bundle,clientSideFunction]);
+			pq.put(time,[server,bundle,onArrival]);
 			// was something else already scheduled before me ?
 			if(nextAbsTime.notNil,{
 				if(time == pq.topPriority ,{ // i'm next
@@ -281,7 +286,7 @@ OSCSched : BeatSched {
 			});
 		})	
 		*/
-		this.tschedAbs(tempo.beats2secs(beat),server,bundle,clientSideFunction)
+		this.tschedAbs(tempo.beats2secs(beat),server,bundle,onArrival)
 	}
 
 	xschedCXBundle { arg beatDelta,server,cxbundle;

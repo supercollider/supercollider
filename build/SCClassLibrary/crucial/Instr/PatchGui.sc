@@ -60,7 +60,6 @@ PatchGui : AbstractPlayerGui {
 }
  
 InstrSpawnerGui : PatchGui {
-
 	guiBody { arg layout;
 		super.guiBody(layout);
 		layout.startRow;
@@ -68,3 +67,11 @@ InstrSpawnerGui : PatchGui {
 		model.deltaPattern.gui(layout);
 	}
 }
+
+InterfaceGui : AbstractPlayerGui {
+	guiBody { arg ... args;
+		model.performList(\guiBody,args);
+	}
+	writeName {}
+}
+

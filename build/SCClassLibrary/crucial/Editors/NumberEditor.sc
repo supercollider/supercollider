@@ -8,9 +8,11 @@ Editor {
 	storeOn { arg stream;
 		value.storeOn(stream)
 	}
-
+	
 	next { ^this.value }// Object would return this
 	poll { ^value }
+	embedInStream { arg inval; ^this.asStream.embedInStream(inval); }
+	asStream { ^FuncStream(this) }
 	
 	setPatchOut { arg po; patchOut = po }
 	makePatchOut {
@@ -49,6 +51,13 @@ NumberEditor : Editor {
 		spec = aspec.asSpec;
 		value = spec.constrain(value);
 		this.changed(\spec);
+	}
+	setUnmappedValue { arg unipolar;
+		value = spec.map(unipolar);
+		this.changed;
+	}
+	unmappedValue {
+		^spec.unmap(value)
 	}
 	numChannels { ^1 }
 

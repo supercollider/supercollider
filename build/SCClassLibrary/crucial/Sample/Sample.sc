@@ -123,7 +123,7 @@ BufferProxy { // blank space for delays, loopers etc.
 
 AbstractSample : BufferProxy {
 
-	classvar <soundsDir="sounds/";
+	classvar <dir="sounds/";
 
 	var <soundFilePath,<>name,<>startFrame,<>endFrame= -1;
 	
@@ -136,22 +136,22 @@ AbstractSample : BufferProxy {
 		})	
 	}
 	
-	*soundsDir_ { arg dir;
-		soundsDir = dir.standardizePath ++ "/";
+	*dir_ { arg p;
+		dir = p.standardizePath ++ "/";
 	}
 	*standardizePath { arg path;
 		var pathName;
-		pathName = PathName.fromOS9(path); // you can drop the os9 if you like
+		pathName = PathName.fromOS9(path);
 		^if(pathName.isRelativePath,{
-			soundsDir ++ pathName.fullPath;
+			dir ++ pathName.fullPath;
 		},{
 			pathName.fullPath
 		})
 	}
 	*abrevPath { arg path;
-		if(path.size < soundsDir.size,{ ^path });
-		if(path.copyRange(0,soundsDir.size - 1) == soundsDir,{
-			^path.copyRange(soundsDir.size, path.size - 1)
+		if(path.size < dir.size,{ ^path });
+		if(path.copyRange(0,dir.size - 1) == dir,{
+			^path.copyRange(dir.size, path.size - 1)
 		});
 		^path
 	}
@@ -203,21 +203,17 @@ AbstractSample : BufferProxy {
 	
 }
 
-
 Sample : AbstractSample { // a small sound loaded from disk
 	
-	
 	var <>soundFile,<beats=4.0,<tempo=1.0;
-
 	var <beatsize,pchk,beatsizek,tempoi;
-	
 	var <end=0; // last possible frame for looping
 		
 	*new { arg soundFilePath,tempo,startFrame=0,endFrame = -1;
 		var new;
 		new = super.new;
 		new.load(soundFilePath,tempo);
-		// backassward sc2 translation
+		// backassward sc2 Sample support
 		if(endFrame.isKindOf(Boolean), { startFrame = 0; endFrame = -1; }); 
 		new.startFrame_(startFrame).endFrame_(endFrame);
 		^new
@@ -236,15 +232,15 @@ Sample : AbstractSample { // a small sound loaded from disk
 								max(endFrame - startFrame, -1))
 					}); // else check if its allocated yet
 			},{
+				//"Sample buffer already on server; new file loaded selected but numChannels or size mismatch".warn;
 				//discard
 				buffer.free;
-				buffer = Buffer.read(buffer.server,this.soundFilePath,startFrame);
+				buffer = Buffer.read(buffer.server,this.soundFilePath,startFrame,max(endFrame - startFrame, -1));
 			});
 		});// else wait till prepare
 	}
 	prLoad { arg thing,t;
 		var pathName;
-		
 		if(thing.isNil,{ // a blank holder till you load something by gui
 			this.soundFile_(SoundFile.new);
 			// channels, numFrames...
@@ -324,8 +320,12 @@ Sample : AbstractSample { // a small sound loaded from disk
 		if(tempo > 3.0,{ this.beats_(beats / 2.0) });
 		if(tempo > 3.0,{ this.beats_(beats / 2.0) });
 		if(tempo > 3.0,{ this.beats_(beats / 2.0) });
+		if(tempo > 3.0,{ this.beats_(beats / 2.0) });
+		if(tempo > 3.0,{ this.beats_(beats / 2.0) });
 		if(tempo < 0.5,{ this.beats_(beats * 2.0) });
 		if(tempo < 0.5,{ this.beats_(beats * 2.0) });			if(tempo < 0.5,{ this.beats_(beats * 2.0) });
+		if(tempo < 0.5,{ this.beats_(beats * 2.0) });
+		if(tempo < 0.5,{ this.beats_(beats * 2.0) });
 	}
 	initForSynthDef { arg synthDef,argi;
 		super.initForSynthDef(synthDef,argi);
@@ -410,4 +410,3 @@ ArrayBuffer : BufferProxy {
 	}
 	// gui: show it
 }
-	

@@ -26,7 +26,7 @@ TempoBus   {
 	prepareToBundle { arg group,bundle;
 		// for now setting duplicate setMsg in there
 		bundle.add( bus.setMsg(tempo.tempo) );
-		// will trap by isReady later
+		// will trap by isReady later when that is fully dependable
 	}
 	addToSynthDef {  arg synthDef,name;
 		synthDef.addIr(name,this.synthArg);

@@ -217,10 +217,11 @@ Patch : HasPatchIns  {
 				argargs.at(i) // explictly specified
 				?? 
 				{ //  or auto-create a suitable control...
-					proto = spec.defaultControl;
 					darg = instr.initAt(i);
 					if(darg.isNumber,{
-						proto.tryPerform('value_',darg);
+						proto = spec.defaultControl(darg);
+					},{
+						proto = spec.defaultControl;
 					});
 					proto
 				};
@@ -271,6 +272,7 @@ Patch : HasPatchIns  {
 			child.spawnToBundle(bundle);
 		});
 		synth = Synth.basicNew(this.defName,this.server);
+		this.annotate(synth,"synth");
 		NodeWatcher.register(synth);
 		bundle.add(
 			synth.addToTailMsg(patchOut.group,
@@ -294,7 +296,7 @@ Patch : HasPatchIns  {
 		});
 		^args
 	}
-	defName { ^defName } // NOT 'Patch' ever
+	defName { ^defName.debug("defName thanks for asking") } // super would say 'Patch'
 	
 	stopToBundle { arg bundle;
 		super.stopToBundle(bundle);
@@ -304,7 +306,7 @@ Patch : HasPatchIns  {
 		// ISSUE: if you change a static non-synth input 
 		// nobody notices to rebuild the synth def
 		// so for now, wipe it out
-		// the Instr knows if it came from a file, can check the moddate
+		// the Instr knows if it came from a file, could check the moddate
 		
 		synthDef = nil;
 		defName = nil;

@@ -54,7 +54,7 @@ ObjectNotFound : Silence {
 	*new { arg path;
 		somethingMissing = path;
 		(path ++ " NOT FOUND !! ").warn;
-		^super.new(0.0).missing_(path)
+		^super.new(0.0).missing_(path).path_(path)
 	}
 	storeArgs { ^[missing] }
 

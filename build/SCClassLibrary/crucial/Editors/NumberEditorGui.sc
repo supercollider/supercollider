@@ -38,14 +38,12 @@ NumberEditorGui : EditorGui {
 		});
 	}
 	update {arg changed,changer; // always has a number box
-		{
-			if(changer !== numv,{
-				numv.value_(model.poll);
-			});
-			if(changer !== slv and: {slv.notNil},{
-				slv.value_(model.spec.unmap(model.poll));
-			});
-		}.defer;
+		if(changer !== numv,{
+			numv.value_(model.poll);
+		});
+		if(changer !== slv and: {slv.notNil},{
+			slv.value_(model.spec.unmap(model.poll));
+		});
 	}
 	background { ^Color(0.0,0.2,0.2,0.3) }
 }
@@ -70,7 +68,7 @@ PopUpEditorGui : EditorGui {
 	}
 	update { arg changed,changer;
 		if(changer !== this,{
-			{ popV.setProperty(\value,model.selectedIndex) }.defer;
+			popV.setProperty(\value,model.selectedIndex)
 		});
 	}	
 }
@@ -90,7 +88,7 @@ BooleanEditorGui : EditorGui {
 	}
 	update { arg changed,changer;
 		if(changer !== this,{
-			{ cb.setProperty(\value,model.value.binaryValue); }.defer;
+			cb.setProperty(\value,model.value.binaryValue);
 		});
 	}
 }

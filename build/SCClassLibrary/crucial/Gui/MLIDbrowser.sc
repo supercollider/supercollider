@@ -15,18 +15,20 @@ MLIDbrowser { // MultiLevelIdentityDictionary browser
 	
 	browse { arg item,parent;
 		if(kdr.isNil,{
-			kdr = KeyCodeResponder.new;
-			kdr.registerKeycode(262144,126,{ //cntl up
-				// go up
-				this.browse(parent); // find parent's parent
-			});
-			kdr.registerKeycode(262144,125,{ // cntl down
-				// go down on selected
-				menu.doAction;
-			});
-			kdr.registerKeycode(0,53,{
-				this.browse(parent);
-			})
+			kdr = UnicodeResponder.new;
+			kdr.registerUnicode( 
+				KeyCodeResponder.controlModifier | KeyCodeResponder.functionKeyModifier, 
+				63232 , // cntrl up
+				{
+					this.browse(parent); // find parent's parent
+				});
+			kdr.registerUnicode( 
+				KeyCodeResponder.controlModifier | KeyCodeResponder.functionKeyModifier , 
+				63233 , // cntrl down
+				{
+					// go down on selected
+					menu.doAction;
+				});
 		});
 		if(item.isKindOf(IdentityDictionary).not,{
 			onSelect.value(item);

@@ -1,7 +1,7 @@
 
 Instr  { 
 
-	classvar <dir; // set this in Main-startUp
+	classvar <dir;
 
 	var  <>name, <>func,<>specs,<>outSpec,>path;
 	
@@ -153,7 +153,11 @@ Instr  {
 		nn=func.def.prototypeFrame;
 		^nn.at(i)
 	}
-	initAt { arg i;  ^(this.defArgAt(i) ?? {this.specs.at(i).defaultControl}) }
+	initAt { arg i;  ^(this.defArgAt(i) ?? {this.specs.at(i).tryPerform(\default)})
+		// value or control ?
+		/*?? {this.specs.at(i).defaultControl})*/ 
+		// sample spec has no default, but has a defaultControl
+	}
 	
 	/*  server support */
 	defName {
@@ -183,18 +187,7 @@ Instr  {
 		var synthDef;
 		synthDef = this.asSynthDef;
 		synthDef.writeDefFile;
-		this.writePropertyList(synthDef);
-	}
-	writePropertyList { arg synthDef;
-		Dictionary[
-			"name" -> this.name.collect({ arg item; item.asString }),
-			"defName" -> synthDef.name,
-			"argNames" -> this.argNames.asArray,
-			"inputSpecs" -> specs.collect({ arg sp,i;
-								sp.asPropertyList
-							}),
-			"outputSpec" -> outSpec.asPropertyList
-		].writeAsPlist("synthdefs/" ++ synthDef.name ++ ".plist");
+		//this.writePropertyList(synthDef);
 	}
 
 	test { arg ... args;
@@ -354,5 +347,27 @@ UGenInstr { // make a virtual Instr by reading the *ar and *kr method def
 
 }
 
+InterfaceDef : Instr {
 
+	var <>onLoad,
+		<>onPlay,
+		<>onStop,
+		<>onFree,
+		
+		<>onNoteOn,
+		<>onNoteOff,
+		<>onPitchBend,
+		<>onCC,
+
+		<guiBodyFunction,
+		<>keyDownAction,
+		<>keyUpAction;
+		
+		// do your own views to handle these
+		//<>beginDragAction,
+		//<>mouseDownAction,
+		//<>mouseUpAction,
+	gui_ { arg function; guiBodyFunction = function; }
+
+}
 

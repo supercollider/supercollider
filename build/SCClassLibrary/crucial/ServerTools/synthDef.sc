@@ -2,8 +2,6 @@
 
 + Object {
 	
-	
-	
 	stopToBundle {}
 	freeHeavyResources {}
 	freeToBundle {}
@@ -12,6 +10,7 @@
 	
 	makePatchOut {}
 	patchOut { ^ScalarPatchOut(this) }
+	discardPatchOut {}
 	connectToPatchIn {}
 
 	prepareToBundle {  }

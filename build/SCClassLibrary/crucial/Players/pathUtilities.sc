@@ -34,9 +34,9 @@
 		},{
 			if(warnIfNotFound,{
 				warn("String-loadPath file not found " + this + path);
-			})
+			});
 		});
-		^obj
+		if(obj.notNil,{ ^obj },{^ObjectNotFound.new(path)});
 	}
 	loadDocument { arg warnIfNotFound=true;
 		var path,obj;

@@ -65,6 +65,15 @@
 		//this.reflowAll;
 		^comp
 	}
+	vert { arg func,bounds;
+		var comp;
+		comp = SCVLayoutView(this,bounds ?? 
+					{ decorator.indentedRemaining });
+		func.value(comp);
+		//comp.resizeToFit;
+		//this.reflowAll;
+		^comp
+	}
 }
 
 + MultiPageLayout {

@@ -1,12 +1,12 @@
 
-+ Nil {
++ Nil { // now
 	schedCXBundle { arg bundle,server,timeOfRequest;
 		bundle.send(server,0.0);
 	}
 }
 
 
-+ Float {
++ Float { // relative seconds
 	schedCXBundle {  arg bundle,server,timeOfRequest;
 		var now;
 		if(timeOfRequest.notNil,{
@@ -22,7 +22,7 @@
 	}
 }
 
-+ Integer {
++ Integer { // at the next N beat
 	schedCXBundle { arg bundle,server,timeOfRequest;
 		var now,nowRound,tdelta;
 		now = TempoClock.default.elapsedBeats;
@@ -40,7 +40,9 @@
 	}
 }
 
-+ Date { // raw seconds has to be set correctly !
++ Date {
+	// Date raw seconds has to be set correctly !
+	// *new won't do this for you
 	schedCXBundle { arg bundle,server,timeOfRequest;
 		var delta;
 		delta = rawSeconds - this.class.localtime.rawSeconds;
