@@ -55,7 +55,10 @@ Thread : Stream {
 Routine : Thread {
 
 	*run { arg func, stackSize=512;
-		^super.new(func, stackSize).value;
+		var res; 
+		res = super.new(func, stackSize);
+		res.value;
+		^res;
 	}
 		
 	// resume, next, value, run are synonyms
@@ -88,6 +91,8 @@ Routine : Thread {
 		_RoutineStop
 		^this.primitiveFailed
 	}
+	
+	storeArgs { ^[func] }
 	
 		
 	// PRIVATE
