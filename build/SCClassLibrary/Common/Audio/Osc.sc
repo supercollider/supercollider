@@ -131,12 +131,12 @@ VarSaw : UGen {
 
 Impulse : UGen {
 	*ar {
-		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', freq, iphase).madd(mul, add)
+		arg freq = 440.0, phase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', freq, phase).madd(mul, add)
 	}
 	*kr {
-		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
-		^this.multiNew('control', freq, iphase).madd(mul, add)
+		arg freq = 440.0, phase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', freq, phase).madd(mul, add)
 	}
 	signalRange { ^\unipolar }
 }
@@ -194,14 +194,6 @@ DegreeToKey : UGen {
 		^this.multiNew('control', bufnum, in, octave).madd(mul, add)
 	}
 }
-
-//TWindex : UGen {
-//	
-//	*kr {
-//		arg in, array, normalize=0;
-//		^this.multiNewList(['control', in, normalize] ++ array)
-//	}
-//}
 
 Select : UGen {
 	*ar {
