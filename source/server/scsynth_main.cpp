@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
 				checkNumArgs(2);
 				options.mNumAudioBusChannels = atoi(argv[j+1]);
 				break;
-			case 'j' :
+			case 'i' :
 				checkNumArgs(2);
 				options.mNumInputBusChannels = atoi(argv[j+1]);
 				break;
