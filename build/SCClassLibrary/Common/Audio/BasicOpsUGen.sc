@@ -20,6 +20,9 @@ BasicOpUGen : UGen {
 	
 	argNamesInputsOffset { ^1 }
 
+	dumpName {
+		^synthIndex.asString ++ "_" ++ this.operator
+	}
 }
 
 UnaryOpUGen : BasicOpUGen {	

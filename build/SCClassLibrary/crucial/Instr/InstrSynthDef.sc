@@ -30,11 +30,11 @@ InstrSynthDef : SynthDef {
 		var result,fixedID="";
 		var isScalarOut;
 		var outputProxies;
-		
+
 		// restart controls in case of *wrap
-		irnames = irvalues = ircontrols = irpositions = nil;
-		krnames = krvalues = krcontrols = krpositions = krlags = nil;
-		trnames = trvalues = trcontrols = trpositions = nil;
+		controlNames = nil;
+		controls = nil;
+		
 		fixedNames = fixedValues = fixedPositions = nil;
 		
 		// OutputProxy In InTrig Float etc.		
@@ -58,12 +58,10 @@ InstrSynthDef : SynthDef {
 			});
 				
 			if(rate == \audio,{
-				this.addIr(\out,0);
 				result = outClass.ar(Control.names([\out]).ir([0]) , result);
 				// can still add Out controls if you always use \out, not index
 			},{
 				if(rate == \control,{
-					this.addIr(\out,0);
 					result = outClass.kr(Control.names([\out]).ir([0]) , result);
 				},{
 					("InstrSynthDef: scalar rate ? result of your function:" + result).error;
@@ -98,11 +96,11 @@ InstrSynthDef : SynthDef {
 	
 	// passed to Instr function but not to synth
 	addInstrOnlyArg { arg name,value;
-		[\addInstrOnlyArg, name, value].postln;
 		fixedNames = fixedNames.add(name);
 		fixedValues = fixedValues.add(value);
-		fixedPositions = fixedPositions.add(controlsSize);
-		controlsSize = controlsSize + 1;
+		fixedPositions = fixedPositions.add(controls.size);
+		// ?? fixedNames, fixedValues, etc. are never used. - JMc
+		this.addNonControl(name, value);
 	}
 	
 	// to cache this def, this info needs to be saved

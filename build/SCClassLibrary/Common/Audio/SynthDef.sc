@@ -2,12 +2,7 @@
 SynthDef {	
 	var <>name;
 	
-	var controlsSize=0;
-	var irnames, irvalues, ircontrols, irpositions;
-	var krnames, krvalues, krcontrols, krpositions, krlags;
-	var trnames, trvalues, trcontrols, trpositions;
-
-	var <>controls,<>controlNames; // ugens add to this
+	var <>controls, <>controlNames; // ugens add to this
 	var <>children;
 		
 	var <>constants;
@@ -52,35 +47,31 @@ SynthDef {
 	}
 	buildUgenGraph { arg func, rates, prependArgs;
 		// restart controls in case of *wrap
-		irnames = irvalues = ircontrols = irpositions = nil;
-		krnames = krvalues = krcontrols = krpositions = krlags = nil;
-		trnames = trvalues = trcontrols = trpositions = nil;
-
+		controlNames = nil;
 		prependArgs = prependArgs.asArray;
 		this.addControlsFromArgsOfFunc(func, rates, prependArgs.size);
 		^func.valueArray(prependArgs ++ this.buildControls);
 	}
 	addControlsFromArgsOfFunc { arg func, rates, skipArgs=0;
 		var def, names, values,argNames;
-		\addControlsFromArgsOfFunc.postln;
 		
 		def = func.def;
 		argNames = def.argNames;
 		if(argNames.isNil,{ ^nil }); 
-		names = def.argNames.copyToEnd(skipArgs);
-		controlsSize = 0;
-		// OK what we do here is separate the ir and kr rate arguments,
-		// create one Control ugen for all of the ir and one for all of 
-		// the kr, and then construct the argument array from combining 
+		names = def.argNames[skipArgs..];
+		controls = nil;
+		// OK what we do here is separate the ir, tr and kr rate arguments,
+		// create one Control ugen for all of each rate, 
+		// and then construct the argument array from combining 
 		// the OutputProxies of these two Control ugens in the original order.
-		values = def.prototypeFrame.copyToEnd(skipArgs).extend(names.size);
-		values = values.collect({ arg value; value ? 0.0 });
-		rates = rates.asArray.extend(names.size, 0).collect({ arg lag; lag ? 0.0 });
+		values = def.prototypeFrame[skipArgs..].extend( names.size );
+		values = values.collect {|value| value ? 0.0 };
+		rates = rates.asArray.extend(names.size, 0).collect {|lag| lag ? 0.0 };
 		names.do({ arg name, i; 
 			var c, c2, value, lag;
 			#c, c2 = name.asString;
-			value = values.at(i);
-			lag = rates.at(i);
+			value = values[i];
+			lag = rates[i];
 			if ((lag == \ir) or: { c == $i and: { c2 == $_ }}, {
 				if (lag.isNumber and: { lag != 0 }, {
 					Post << "WARNING: lag value "<< lag <<" for i-rate arg '"
@@ -101,59 +92,92 @@ SynthDef {
 	}
 	
 	// allow incremental building of controls
-	addIr { arg name, value;
-		irnames = irnames.add(name);
-		irvalues = irvalues.add(value);
-		irpositions = irpositions.add(controlsSize);
-		controlsSize = controlsSize + 1;
-		[\addIr, name, value, controlsSize, irnames, irvalues, irpositions].postln;
+	addNonControl { arg name, values;
+		controlNames = controlNames.add(ControlName(name, nil, 'noncontrol', 
+			values.copy, controlNames.size));
 	}
-	addKr { arg name, value, lag=0;
-		krnames = krnames.add(name);
-		krvalues = krvalues.add(value);
-		krpositions = krpositions.add(controlsSize);
-		krlags = krlags.add(lag);
-		controlsSize = controlsSize + 1;
-		[\addKr, name, value, controlsSize, krnames, krvalues, krpositions].postln;
+	addIr { arg name, values;
+		controlNames = controlNames.add(ControlName(name, controls.size, 'scalar', 
+			values.copy, controlNames.size));
 	}
-	addTr { arg name, value;
-		trnames = trnames.add(name);
-		trvalues = trvalues.add(value);
-		trpositions = trpositions.add(controlsSize);
-		controlsSize = controlsSize + 1;
-		[\addTr, name, value, controlsSize, trnames, trvalues, trpositions].postln;
+	addKr { arg name, values, lags;
+		controlNames = controlNames.add(ControlName(name, controls.size, 'control', 
+			values.copy, controlNames.size, lags.copy));
+	}
+	addTr { arg name, values;
+		controlNames = controlNames.add(ControlName(name, controls.size, 'trigger', 
+			values.copy, controlNames.size));
 	}
 	buildControls {
-		var outputProxies;
-		\buildControls.postln;
-		controls.postln;
+		var arguments;
+		var nonControlNames, irControlNames, krControlNames, trControlNames;
+		var controlUGens, values, lags, valsize;
+		var def, argNames, controlIndex = 0;
 		
-		// the Controls add themselves to my controls
-		if (irnames.size > 0, {
-			ircontrols = Control.names(irnames).ir(irvalues);
-		});
-		if (trnames.size > 0, {
-			trcontrols = TrigControl.names(trnames).kr(trvalues);
-		});
-		if (krnames.size > 0, {
-			if (krlags.any({ arg lag; lag != 0 }), {
-				krcontrols = LagControl.names(krnames).kr(krvalues, krlags);
-			},{
-				krcontrols = Control.names(krnames).kr(krvalues);
-			});
-		});
-		outputProxies = Array.newClear(controlsSize);
-		ircontrols.asArray.do({ arg control, i; 
-			outputProxies.put(irpositions.at(i), control);
-		});
-		trcontrols.asArray.do({ arg control, i; 
-			outputProxies.put(trpositions.at(i), control);
-		});
-		krcontrols.asArray.do({ arg control, i; 
-			outputProxies.put(krpositions.at(i), control);
-		});
-
-		^outputProxies
+		arguments = Array.newClear(controlNames.size);
+		
+		nonControlNames = controlNames.select {|cn| cn.rate == 'noncontrol' };
+		irControlNames = controlNames.select {|cn| cn.rate == 'scalar' };
+		krControlNames = controlNames.select {|cn| cn.rate == 'control' };
+		trControlNames = controlNames.select {|cn| cn.rate == 'trigger' };
+		
+		if (nonControlNames.size > 0) {
+			irControlNames.do {|cn|
+				arguments[cn.argNum] = cn.defaultValue;
+			};
+		};
+		if (irControlNames.size > 0) {
+			values = nil;
+			irControlNames.do {|cn| 
+				values = values.addAll(cn.defaultValue);
+			};
+			controlUGens = Control.ir(values).asArray;
+			irControlNames.do {|cn|
+				valsize = cn.defaultValue.asArray.size;
+				cn.index = controlIndex;
+				controlIndex = controlIndex + valsize;
+				arguments[cn.argNum] = controlUGens.keep(valsize).unbubble;
+				controlUGens = controlUGens.drop(valsize);
+			};
+		};
+		if (trControlNames.size > 0) {
+			values = nil;
+			trControlNames.do {|cn| 
+				values = values.addAll(cn.defaultValue);
+			};
+			controlUGens = TrigControl.kr(values).asArray;
+			trControlNames.do {|cn|
+				valsize = cn.defaultValue.asArray.size;
+				cn.index = controlIndex;
+				controlIndex = controlIndex + valsize;
+				arguments[cn.argNum] = controlUGens.keep(valsize).unbubble;
+				controlUGens = controlUGens.drop(valsize);
+			};
+		};
+		if (krControlNames.size > 0) {
+			values = nil;
+			lags = nil;
+			krControlNames.do {|cn| 
+				valsize = cn.defaultValue.asArray.size;
+				values = values.addAll(cn.defaultValue);
+				lags = lags.addAll(cn.lag.asArray.wrapExtend(valsize));
+			};
+			if (lags.any {|lag| lag != 0 }) {
+				controlUGens = LagControl.kr(values, lags).asArray;
+			}{
+				controlUGens = Control.kr(values).asArray;
+			};
+			krControlNames.do {|cn|
+				valsize = cn.defaultValue.asArray.size;
+				cn.index = controlIndex;
+				controlIndex = controlIndex + valsize;
+				arguments[cn.argNum] = controlUGens.keep(valsize).unbubble;
+				controlUGens = controlUGens.drop(valsize);
+			};
+		};
+		controlNames = controlNames.reject {|cn| cn.rate == 'noncontrol' };
+		
+		^arguments
 	}
 	finishBuild {
 
@@ -164,11 +188,7 @@ SynthDef {
 		// re-sort graph. reindex.
 		this.topologicalSort;
 		this.indexUGens;
-		UGen.buildSynthDef = nil;
-		
-		[\sz, controlsSize, controls.size].postln;
-		controls.postln;
-		this.dumpUGens;
+		UGen.buildSynthDef = nil;		
 	}
 
 	
@@ -191,7 +211,6 @@ SynthDef {
 		this.writeConstants(file);
 
 		//controls have been added by the Control UGens
-		[\writeDef, controls].postln;
 		file.putInt16(controls.size);
 		controls.do({ arg item;
 			file.putFloat(item);
@@ -200,7 +219,7 @@ SynthDef {
 		file.putInt16(controlNames.size);
 		controlNames.do({ arg item;
 			if (item.name.notNil, {
-				file.putPascalString(item.name);
+				file.putPascalString(item.name.asString);
 				file.putInt16(item.index);
 			});
 		});
@@ -214,7 +233,7 @@ SynthDef {
 		var array;
 		array = FloatArray.newClear(constants.size);
 		constants.keysValuesDo({ arg value, index;
-			array.put(index, value);
+			array[index] = value;
 		});
 
 		file.putInt16(constants.size);
@@ -251,17 +270,17 @@ SynthDef {
 		children.remove(b);
 		children.do({ arg item, i;
 			if (item === a and: { b.isKindOf(UGen) }, { 
-				children.put(i, b) 
+				children[i] = b; 
 			});
 			item.inputs.do({ arg input, j;
-				if (input === a, { item.inputs.put(j, b) });
+				if (input === a, { item.inputs[j] = b });
 			});
 		});
 	}
 	addConstant { arg value;
 		if (constantSet.includes(value).not, {
 			constantSet.add(value);
-			constants.put(value, constants.size);
+			constants[value] = constants.size;
 		});
 	}
 
@@ -316,15 +335,15 @@ SynthDef {
 	
 	dumpUGens {
 		name.postln;
-		children.do({ arg ugen, i;
-			var inputs;
-			if (ugen.inputs.notNil, {
-				inputs = ugen.inputs.collect({ arg in; 
-					if (in.isKindOf(UGen), { in.source },{ in })
-				});
-			});
-			[i, ugen, ugen.rate, ugen.synthIndex, inputs].postln;
-		});
+		children.do { arg ugen, i;
+			var inputs, ugenName;
+			if (ugen.inputs.notNil) {
+				inputs = ugen.inputs.collect {|in|
+					if (in.respondsTo(\dumpName)) { in.dumpName }{ in };
+				};
+			};
+			[ugen.dumpName, ugen.rate, inputs].postln;
+		};
 	}
 	
 	
@@ -343,7 +362,7 @@ SynthDef {
 	store { arg libname=\global, path="synthdefs/", completionMsg;
 		var lib;
 		
-		lib = SynthDescLib.all.at(libname);
+		lib = SynthDescLib.all[libname];
 		if(lib.isNil) { "library" + libname  + "not found".error; ^nil };
 		this.writeDefFile(path);
 		path = path ++ name ++ ".scsyndef";
@@ -363,8 +382,5 @@ SynthDef {
 		this.send(target.server, msg);
 		^synth
 	}
-	
-	
-
 }
 

@@ -224,6 +224,9 @@ UGen : AbstractFunction {
 		
 	optimizeGraph {}
 	
+	dumpName {
+		^synthIndex.asString ++ "_" ++ this.class.name.asString
+	}
 }
 
 MultiOutUGen : UGen {
@@ -252,6 +255,7 @@ MultiOutUGen : UGen {
 		synthIndex = index;
 		channels.do({ arg output; output.synthIndex_(index); });
 	}
+
 }	
 
 OutputProxy : UGen {
@@ -266,5 +270,9 @@ OutputProxy : UGen {
 		source = argSource;
 		outputIndex = argIndex;
 		synthIndex = source.synthIndex;
+	}
+	
+	dumpName {
+		^this.source.dumpName ++ "[" ++ outputIndex ++ "]"
 	}
 }

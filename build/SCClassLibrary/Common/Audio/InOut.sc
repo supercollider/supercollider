@@ -1,11 +1,10 @@
 
 ControlName
 {
-	var <>name, <>index, <>rate, <>defaultValue;
+	var <>name, <>index, <>rate, <>defaultValue, <>argNum, <>lag;
 	
-	*new { arg name, index, rate, defaultValue;
-		[\ControlName, name, index, rate, defaultValue].postln;
-		^super.newCopyArgs(name, index, rate, defaultValue)
+	*new { arg name, index, rate, defaultValue, argNum, lag;
+		^super.newCopyArgs(name.asSymbol, index, rate, defaultValue, argNum, lag ? 0.0)
 	}
 
 	printOn { arg stream;
@@ -23,14 +22,13 @@ Control : MultiOutUGen {
 	
 	*names { arg names;
 		var synthDef, index;
-		[\names, names].postln;
 		synthDef = UGen.buildSynthDef;
 		index = synthDef.controls.size;
-		names.asArray.do({ arg name, i; 
+		names.asArray.do { |name, i|
 			synthDef.controlNames = synthDef.controlNames.add(
 				ControlName(name.asString, index + i)
 			);
-		});
+		};
 	}
 	*kr { arg values;
 		^this.multiNewList(['control'] ++ values.asArray)
@@ -38,13 +36,12 @@ Control : MultiOutUGen {
 	*ir { arg values;
 		^this.multiNewList(['scalar'] ++ values.asArray)
 	}
-	init { arg ... argValues;
+	init { arg ... argValues;		
 		values = argValues;
-		if (synthDef.notNil, { 
+		if (synthDef.notNil) { 
 			specialIndex = synthDef.controls.size;
 			synthDef.controls = synthDef.controls.addAll(values);
-		});
-		[\cinit, rate, specialIndex, values].postln;
+		};
 		^this.initOutputs(values.size, rate)
 	}
 	*isControlUGen { ^true }
@@ -55,6 +52,7 @@ TrigControl : Control {}
 LagControl : Control {	
 	*kr { arg values, lags;
 		var outputs;
+
 		values = values.asArray;
 		lags = lags.asArray;
 		if (values.size != lags.size, {

@@ -68,7 +68,7 @@ Nil {
 		// array = array.add(thing);     Instead, it just works.
 		^[value] 
 	}
-	addAll { arg array; ^array }
+	addAll { arg array; ^array.asArray }
 	++ { arg array; ^array }
 	asCollection { ^[] }
 
