@@ -614,7 +614,7 @@ void Interpret(VMGlobals *g)
 		case 7 : // opExtended, opStoreInstVar
 			op2 = ip[1]; ip++; // get inst var index
 			obj = g->receiver.uo;
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + op2;
 				slot->uf = *sp;
@@ -889,7 +889,7 @@ void Interpret(VMGlobals *g)
 #if 1
 		case 112 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots;	
 				slot->uf = *sp--;	
@@ -898,7 +898,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 113 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 1;	
 				slot->uf = *sp--;	
@@ -907,7 +907,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 114 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 2;	
 				slot->uf = *sp--;	
@@ -916,7 +916,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 115 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 3;	
 				slot->uf = *sp--;	
@@ -925,7 +925,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 116 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 4;	
 				slot->uf = *sp--;	
@@ -934,7 +934,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 117 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 5;	
 				slot->uf = *sp--;	
@@ -943,7 +943,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 118 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 6;	
 				slot->uf = *sp--;	
@@ -952,7 +952,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 119 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 7;	
 				slot->uf = *sp--;	
@@ -961,7 +961,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 120 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 8;	
 				slot->uf = *sp--;	
@@ -970,7 +970,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 121 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 9;	
 				slot->uf = *sp--;	
@@ -979,7 +979,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 122 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 10;	
 				slot->uf = *sp--;	
@@ -988,7 +988,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 123 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 11;	
 				slot->uf = *sp--;	
@@ -997,7 +997,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 124 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 12;	
 				slot->uf = *sp--;	
@@ -1006,7 +1006,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 125 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 13;	
 				slot->uf = *sp--;	
@@ -1015,7 +1015,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 126 :  
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 14;	
 				slot->uf = *sp--;	
@@ -1024,7 +1024,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 127 :						
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 15;	
 				slot->uf = *sp--;	
@@ -1037,7 +1037,7 @@ void Interpret(VMGlobals *g)
 		case 120 :  case 121 :  case 122 :  case 123 :  
 		case 124 :  case 125 :  case 126 :  case 127 :
 			obj = g->receiver.uo;		
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*)sp, ip); }
+			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + (op1 & 15);	
 				slot->uf = *sp--;	
@@ -1956,7 +1956,7 @@ void Interpret(VMGlobals *g)
 						sp -= numArgsPushed - 1;
 						index = methraw->specialIndex;
 						obj = slot->uo;
-						if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, (PyrSlot*)sp, ip); }
+						if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, (PyrSlot*&)sp, ip); }
 						else {
 							if (numArgsPushed >= 2) {
 								obj->slots[index].uf = sp[1];
@@ -2108,7 +2108,7 @@ void Interpret(VMGlobals *g)
 						numArgsPushed -= numKeyArgsPushed << 1;
 						index = methraw->specialIndex;
 						obj = slot->uo;
-						if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, (PyrSlot*)sp, ip); }
+						if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, (PyrSlot*&)sp, ip); }
 						else {
 							if (numArgsPushed >= 2) {
 								obj->slots[index].uf = sp[1];
