@@ -25,7 +25,8 @@
 #define	BINOP	278
 #define	KEYBINOP	279
 #define	READWRITEVAR	280
-#define	UMINUS	281
+#define	DOUBLEEQUAL	281
+#define	UMINUS	282
 
 
 extern YYSTYPE yylval;

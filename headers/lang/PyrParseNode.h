@@ -221,6 +221,12 @@ struct PyrDynListNode : public PyrParseNode {
 } ;
 
 extern PyrParseNodeClass *pyrDynListNodeClass;
+		
+struct PyrDynDictNode : public PyrParseNode {
+	struct PyrParseNode *elems;
+} ;
+
+extern PyrParseNodeClass *pyrDynDictNodeClass;
 	
 struct PyrLitListNode : public PyrParseNode {
 	struct PyrParseNode *classname;
@@ -247,6 +253,7 @@ enum {
 	/* variable declarations */
 	pn_VarListNode,
 	pn_VarDefNode,
+	pn_DynDictNode,
 	pn_DynListNode,
 	pn_LitListNode,
 	
@@ -311,6 +318,7 @@ PyrSetterNode* newPyrSetterNode(PyrSlotNode* varName,
 PyrMultiAssignNode* newPyrMultiAssignNode(PyrMultiAssignVarListNode* varList, 
 	PyrParseNode* expr, int flags);
 PyrPushNameNode* newPyrPushNameNode(PyrSlotNode *slotNode);
+PyrDynDictNode* newPyrDynDictNode(PyrParseNode *elems);
 PyrDynListNode* newPyrDynListNode(PyrParseNode *classname, PyrParseNode *elems);
 PyrLitListNode* newPyrLitListNode(PyrParseNode *classname, PyrParseNode *elems);
 PyrMultiAssignVarListNode* newPyrMultiAssignVarListNode(PyrSlotNode* varNames, 
@@ -334,6 +342,7 @@ void compilePyrAssignNode(PyrAssignNode* node, void *result);
 void compilePyrSetterNode(PyrSetterNode* node, void* result);
 void compilePyrMultiAssignNode(PyrMultiAssignNode* node, void *result);
 void compilePyrMultiAssignVarListNode(PyrMultiAssignVarListNode* node, void *result);
+void compilePyrDynDictNode(PyrDynDictNode* node, void *result);
 void compilePyrDynListNode(PyrDynListNode* node, void *result);
 void compilePyrLitListNode(PyrLitListNode* node, void *result);
 void compilePyrBlockNode(PyrBlockNode* node, void *result);
@@ -358,6 +367,7 @@ void dumpPyrAssignNode(PyrAssignNode* node, int level);
 void dumpPyrSetterNode(PyrSetterNode* node, int level);
 void dumpPyrMultiAssignNode(PyrMultiAssignNode* node, int level);
 void dumpPyrMultiAssignVarListNode(PyrMultiAssignVarListNode* node, int level);
+void dumpPyrDynDictNode(PyrDynDictNode* node, int level);
 void dumpPyrDynListNode(PyrDynListNode* node, int level);
 void dumpPyrLitListNode(PyrLitListNode* node, int level);
 void dumpPyrBlockNode(PyrBlockNode* node, int level);

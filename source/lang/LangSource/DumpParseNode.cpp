@@ -197,6 +197,13 @@ void dumpPyrMultiAssignVarListNode(PyrMultiAssignVarListNode* node, int level)
 	DUMPNODE(node->next, level);
 }
 
+void dumpPyrDynDictNode(PyrDynDictNode* node, int level)
+{
+	postfl("%2d DynDict\n", level);
+	DUMPNODE(node->elems, level+1);
+	DUMPNODE(node->next, level);
+}
+
 void dumpPyrDynListNode(PyrDynListNode* node, int level)
 {
 	postfl("%2d DynList\n", level);

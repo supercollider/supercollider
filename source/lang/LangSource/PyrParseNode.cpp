@@ -145,6 +145,8 @@ void initParseNodes()
 		(PyrCompileNodeFunc)compilePyrArgListNode, (PyrDumpNodeFunc)dumpPyrArgListNode);
 	newParseNodeClass(pn_DynListNode, 
 		(PyrCompileNodeFunc)compilePyrDynListNode, (PyrDumpNodeFunc)dumpPyrDynListNode);
+	newParseNodeClass(pn_DynDictNode, 
+		(PyrCompileNodeFunc)compilePyrDynDictNode, (PyrDumpNodeFunc)dumpPyrDynDictNode);
 	newParseNodeClass(pn_LitListNode, 
 		(PyrCompileNodeFunc)compilePyrLitListNode, (PyrDumpNodeFunc)dumpPyrLitListNode);
 }
@@ -2728,6 +2730,50 @@ void compilePyrMultiAssignVarListNode(PyrMultiAssignVarListNode* node, void* res
 	}
 }
 
+
+PyrDynDictNode* newPyrDynDictNode(PyrParseNode *elems)
+{
+	PyrDynDictNode* node;
+	
+	//if (compilingCmdLine) post("newPyrDynDictNode\n");
+	node = ALLOCNODE(PyrDynDictNode);
+	node->classno = pn_DynDictNode;
+	node->next = 0;
+	node->tail = (PyrParseNode*)node;
+	node->charno = charno;
+	node->lineno = lineno;
+	node->elems = elems;
+	return node;
+}
+
+void compilePyrDynDictNode(PyrDynDictNode* node, void* result)
+{
+	int i, numItems;
+	PyrParseNode *inode;
+	long dummy;
+	
+	//postfl("compilePyrDynDictNode\n");
+	numItems = nodeListLength(node->elems) >> 1;
+
+        compilePushVar((PyrParseNode*)node, s_identitydictionary);
+
+	compileOpcode(opSpecialOpcode, opcPushPosInt);
+	compileNumber(numItems);
+	
+	compileOpcode(opSendSpecialMsg, 2);
+	compileByte(opmNew);
+	
+	inode = node->elems;
+	for (i=0; i<numItems; ++i) {
+            //if (compilingCmdLine) post("+ %d %d\n", i, gCompilingByteCodes->size);
+            COMPILENODE(inode, &dummy);
+            inode = (PyrParseNode*)inode->next;
+            COMPILENODE(inode, &dummy);
+            inode = (PyrParseNode*)inode->next;
+            compileOpcode(opSendSpecialMsg, 3);
+            compileByte(opmPut);
+	}
+}
 
 PyrDynListNode* newPyrDynListNode(PyrParseNode *classname, PyrParseNode *elems)
 {

@@ -6,106 +6,116 @@ Terminals which are not used:
    BADTOKEN
 
 
-Conflict in state 69 between rule 68 and token BINOP resolved as reduce.
-Conflict in state 69 between rule 68 and token KEYBINOP resolved as reduce.
-Conflict in state 69 between rule 68 and token '-' resolved as reduce.
-Conflict in state 69 between rule 68 and token '<' resolved as reduce.
-Conflict in state 69 between rule 68 and token '>' resolved as reduce.
-Conflict in state 69 between rule 68 and token '*' resolved as reduce.
-Conflict in state 69 between rule 68 and token '+' resolved as reduce.
-Conflict in state 69 between rule 68 and token '|' resolved as reduce.
-Conflict in state 69 between rule 68 and token READWRITEVAR resolved as reduce.
-Conflict in state 69 between rule 68 and token '.' resolved as reduce.
-Conflict in state 158 between rule 69 and token BINOP resolved as reduce.
-Conflict in state 158 between rule 69 and token KEYBINOP resolved as reduce.
-Conflict in state 158 between rule 69 and token '-' resolved as reduce.
-Conflict in state 158 between rule 69 and token '<' resolved as reduce.
-Conflict in state 158 between rule 69 and token '>' resolved as reduce.
-Conflict in state 158 between rule 69 and token '*' resolved as reduce.
-Conflict in state 158 between rule 69 and token '+' resolved as reduce.
-Conflict in state 158 between rule 69 and token '|' resolved as reduce.
-Conflict in state 158 between rule 69 and token READWRITEVAR resolved as reduce.
-Conflict in state 158 between rule 69 and token '.' resolved as shift.
-Conflict in state 159 between rule 70 and token BINOP resolved as reduce.
-Conflict in state 159 between rule 70 and token KEYBINOP resolved as reduce.
-Conflict in state 159 between rule 70 and token '-' resolved as reduce.
-Conflict in state 159 between rule 70 and token '<' resolved as reduce.
-Conflict in state 159 between rule 70 and token '>' resolved as reduce.
-Conflict in state 159 between rule 70 and token '*' resolved as reduce.
-Conflict in state 159 between rule 70 and token '+' resolved as reduce.
-Conflict in state 159 between rule 70 and token '|' resolved as reduce.
-Conflict in state 159 between rule 70 and token READWRITEVAR resolved as reduce.
-Conflict in state 159 between rule 70 and token '.' resolved as shift.
-Conflict in state 161 between rule 71 and token BINOP resolved as shift.
-Conflict in state 161 between rule 71 and token KEYBINOP resolved as shift.
-Conflict in state 161 between rule 71 and token '-' resolved as shift.
-Conflict in state 161 between rule 71 and token '<' resolved as shift.
-Conflict in state 161 between rule 71 and token '>' resolved as shift.
-Conflict in state 161 between rule 71 and token '*' resolved as shift.
-Conflict in state 161 between rule 71 and token '+' resolved as shift.
-Conflict in state 161 between rule 71 and token '|' resolved as shift.
-Conflict in state 161 between rule 71 and token READWRITEVAR resolved as shift.
-Conflict in state 161 between rule 71 and token '.' resolved as shift.
-Conflict in state 195 between rule 72 and token BINOP resolved as shift.
-Conflict in state 195 between rule 72 and token KEYBINOP resolved as shift.
-Conflict in state 195 between rule 72 and token '-' resolved as shift.
-Conflict in state 195 between rule 72 and token '<' resolved as shift.
-Conflict in state 195 between rule 72 and token '>' resolved as shift.
-Conflict in state 195 between rule 72 and token '*' resolved as shift.
-Conflict in state 195 between rule 72 and token '+' resolved as shift.
-Conflict in state 195 between rule 72 and token '|' resolved as shift.
-Conflict in state 195 between rule 72 and token READWRITEVAR resolved as shift.
-Conflict in state 195 between rule 72 and token '.' resolved as shift.
-Conflict in state 202 between rule 75 and token BINOP resolved as shift.
-Conflict in state 202 between rule 75 and token KEYBINOP resolved as shift.
-Conflict in state 202 between rule 75 and token '-' resolved as shift.
-Conflict in state 202 between rule 75 and token '<' resolved as shift.
-Conflict in state 202 between rule 75 and token '>' resolved as shift.
-Conflict in state 202 between rule 75 and token '*' resolved as shift.
-Conflict in state 202 between rule 75 and token '+' resolved as shift.
-Conflict in state 202 between rule 75 and token '|' resolved as shift.
-Conflict in state 202 between rule 75 and token READWRITEVAR resolved as shift.
-Conflict in state 202 between rule 75 and token '.' resolved as shift.
-Conflict in state 241 between rule 73 and token BINOP resolved as shift.
-Conflict in state 241 between rule 73 and token KEYBINOP resolved as shift.
-Conflict in state 241 between rule 73 and token '-' resolved as shift.
-Conflict in state 241 between rule 73 and token '<' resolved as shift.
-Conflict in state 241 between rule 73 and token '>' resolved as shift.
-Conflict in state 241 between rule 73 and token '*' resolved as shift.
-Conflict in state 241 between rule 73 and token '+' resolved as shift.
-Conflict in state 241 between rule 73 and token '|' resolved as shift.
-Conflict in state 241 between rule 73 and token READWRITEVAR resolved as shift.
-Conflict in state 241 between rule 73 and token '.' resolved as shift.
-Conflict in state 261 between rule 76 and token BINOP resolved as shift.
-Conflict in state 261 between rule 76 and token KEYBINOP resolved as shift.
-Conflict in state 261 between rule 76 and token '-' resolved as shift.
-Conflict in state 261 between rule 76 and token '<' resolved as shift.
-Conflict in state 261 between rule 76 and token '>' resolved as shift.
-Conflict in state 261 between rule 76 and token '*' resolved as shift.
-Conflict in state 261 between rule 76 and token '+' resolved as shift.
-Conflict in state 261 between rule 76 and token '|' resolved as shift.
-Conflict in state 261 between rule 76 and token READWRITEVAR resolved as shift.
-Conflict in state 261 between rule 76 and token '.' resolved as shift.
-Conflict in state 282 between rule 77 and token BINOP resolved as shift.
-Conflict in state 282 between rule 77 and token KEYBINOP resolved as shift.
-Conflict in state 282 between rule 77 and token '-' resolved as shift.
-Conflict in state 282 between rule 77 and token '<' resolved as shift.
-Conflict in state 282 between rule 77 and token '>' resolved as shift.
-Conflict in state 282 between rule 77 and token '*' resolved as shift.
-Conflict in state 282 between rule 77 and token '+' resolved as shift.
-Conflict in state 282 between rule 77 and token '|' resolved as shift.
-Conflict in state 282 between rule 77 and token READWRITEVAR resolved as shift.
-Conflict in state 282 between rule 77 and token '.' resolved as shift.
-Conflict in state 286 between rule 74 and token BINOP resolved as shift.
-Conflict in state 286 between rule 74 and token KEYBINOP resolved as shift.
-Conflict in state 286 between rule 74 and token '-' resolved as shift.
-Conflict in state 286 between rule 74 and token '<' resolved as shift.
-Conflict in state 286 between rule 74 and token '>' resolved as shift.
-Conflict in state 286 between rule 74 and token '*' resolved as shift.
-Conflict in state 286 between rule 74 and token '+' resolved as shift.
-Conflict in state 286 between rule 74 and token '|' resolved as shift.
-Conflict in state 286 between rule 74 and token READWRITEVAR resolved as shift.
-Conflict in state 286 between rule 74 and token '.' resolved as shift.
+Conflict in state 69 between rule 69 and token BINOP resolved as reduce.
+Conflict in state 69 between rule 69 and token KEYBINOP resolved as reduce.
+Conflict in state 69 between rule 69 and token '-' resolved as reduce.
+Conflict in state 69 between rule 69 and token '<' resolved as reduce.
+Conflict in state 69 between rule 69 and token '>' resolved as reduce.
+Conflict in state 69 between rule 69 and token '*' resolved as reduce.
+Conflict in state 69 between rule 69 and token '+' resolved as reduce.
+Conflict in state 69 between rule 69 and token '|' resolved as reduce.
+Conflict in state 69 between rule 69 and token READWRITEVAR resolved as reduce.
+Conflict in state 69 between rule 69 and token DOUBLEEQUAL resolved as reduce.
+Conflict in state 69 between rule 69 and token '.' resolved as reduce.
+Conflict in state 168 between rule 70 and token BINOP resolved as reduce.
+Conflict in state 168 between rule 70 and token KEYBINOP resolved as reduce.
+Conflict in state 168 between rule 70 and token '-' resolved as reduce.
+Conflict in state 168 between rule 70 and token '<' resolved as reduce.
+Conflict in state 168 between rule 70 and token '>' resolved as reduce.
+Conflict in state 168 between rule 70 and token '*' resolved as reduce.
+Conflict in state 168 between rule 70 and token '+' resolved as reduce.
+Conflict in state 168 between rule 70 and token '|' resolved as reduce.
+Conflict in state 168 between rule 70 and token READWRITEVAR resolved as reduce.
+Conflict in state 168 between rule 70 and token DOUBLEEQUAL resolved as reduce.
+Conflict in state 168 between rule 70 and token '.' resolved as shift.
+Conflict in state 169 between rule 71 and token BINOP resolved as reduce.
+Conflict in state 169 between rule 71 and token KEYBINOP resolved as reduce.
+Conflict in state 169 between rule 71 and token '-' resolved as reduce.
+Conflict in state 169 between rule 71 and token '<' resolved as reduce.
+Conflict in state 169 between rule 71 and token '>' resolved as reduce.
+Conflict in state 169 between rule 71 and token '*' resolved as reduce.
+Conflict in state 169 between rule 71 and token '+' resolved as reduce.
+Conflict in state 169 between rule 71 and token '|' resolved as reduce.
+Conflict in state 169 between rule 71 and token READWRITEVAR resolved as reduce.
+Conflict in state 169 between rule 71 and token DOUBLEEQUAL resolved as reduce.
+Conflict in state 169 between rule 71 and token '.' resolved as shift.
+Conflict in state 171 between rule 72 and token BINOP resolved as shift.
+Conflict in state 171 between rule 72 and token KEYBINOP resolved as shift.
+Conflict in state 171 between rule 72 and token '-' resolved as shift.
+Conflict in state 171 between rule 72 and token '<' resolved as shift.
+Conflict in state 171 between rule 72 and token '>' resolved as shift.
+Conflict in state 171 between rule 72 and token '*' resolved as shift.
+Conflict in state 171 between rule 72 and token '+' resolved as shift.
+Conflict in state 171 between rule 72 and token '|' resolved as shift.
+Conflict in state 171 between rule 72 and token READWRITEVAR resolved as shift.
+Conflict in state 171 between rule 72 and token DOUBLEEQUAL resolved as shift.
+Conflict in state 171 between rule 72 and token '.' resolved as shift.
+Conflict in state 208 between rule 73 and token BINOP resolved as shift.
+Conflict in state 208 between rule 73 and token KEYBINOP resolved as shift.
+Conflict in state 208 between rule 73 and token '-' resolved as shift.
+Conflict in state 208 between rule 73 and token '<' resolved as shift.
+Conflict in state 208 between rule 73 and token '>' resolved as shift.
+Conflict in state 208 between rule 73 and token '*' resolved as shift.
+Conflict in state 208 between rule 73 and token '+' resolved as shift.
+Conflict in state 208 between rule 73 and token '|' resolved as shift.
+Conflict in state 208 between rule 73 and token READWRITEVAR resolved as shift.
+Conflict in state 208 between rule 73 and token DOUBLEEQUAL resolved as shift.
+Conflict in state 208 between rule 73 and token '.' resolved as shift.
+Conflict in state 215 between rule 76 and token BINOP resolved as shift.
+Conflict in state 215 between rule 76 and token KEYBINOP resolved as shift.
+Conflict in state 215 between rule 76 and token '-' resolved as shift.
+Conflict in state 215 between rule 76 and token '<' resolved as shift.
+Conflict in state 215 between rule 76 and token '>' resolved as shift.
+Conflict in state 215 between rule 76 and token '*' resolved as shift.
+Conflict in state 215 between rule 76 and token '+' resolved as shift.
+Conflict in state 215 between rule 76 and token '|' resolved as shift.
+Conflict in state 215 between rule 76 and token READWRITEVAR resolved as shift.
+Conflict in state 215 between rule 76 and token DOUBLEEQUAL resolved as shift.
+Conflict in state 215 between rule 76 and token '.' resolved as shift.
+Conflict in state 254 between rule 74 and token BINOP resolved as shift.
+Conflict in state 254 between rule 74 and token KEYBINOP resolved as shift.
+Conflict in state 254 between rule 74 and token '-' resolved as shift.
+Conflict in state 254 between rule 74 and token '<' resolved as shift.
+Conflict in state 254 between rule 74 and token '>' resolved as shift.
+Conflict in state 254 between rule 74 and token '*' resolved as shift.
+Conflict in state 254 between rule 74 and token '+' resolved as shift.
+Conflict in state 254 between rule 74 and token '|' resolved as shift.
+Conflict in state 254 between rule 74 and token READWRITEVAR resolved as shift.
+Conflict in state 254 between rule 74 and token DOUBLEEQUAL resolved as shift.
+Conflict in state 254 between rule 74 and token '.' resolved as shift.
+Conflict in state 274 between rule 77 and token BINOP resolved as shift.
+Conflict in state 274 between rule 77 and token KEYBINOP resolved as shift.
+Conflict in state 274 between rule 77 and token '-' resolved as shift.
+Conflict in state 274 between rule 77 and token '<' resolved as shift.
+Conflict in state 274 between rule 77 and token '>' resolved as shift.
+Conflict in state 274 between rule 77 and token '*' resolved as shift.
+Conflict in state 274 between rule 77 and token '+' resolved as shift.
+Conflict in state 274 between rule 77 and token '|' resolved as shift.
+Conflict in state 274 between rule 77 and token READWRITEVAR resolved as shift.
+Conflict in state 274 between rule 77 and token DOUBLEEQUAL resolved as shift.
+Conflict in state 274 between rule 77 and token '.' resolved as shift.
+Conflict in state 295 between rule 78 and token BINOP resolved as shift.
+Conflict in state 295 between rule 78 and token KEYBINOP resolved as shift.
+Conflict in state 295 between rule 78 and token '-' resolved as shift.
+Conflict in state 295 between rule 78 and token '<' resolved as shift.
+Conflict in state 295 between rule 78 and token '>' resolved as shift.
+Conflict in state 295 between rule 78 and token '*' resolved as shift.
+Conflict in state 295 between rule 78 and token '+' resolved as shift.
+Conflict in state 295 between rule 78 and token '|' resolved as shift.
+Conflict in state 295 between rule 78 and token READWRITEVAR resolved as shift.
+Conflict in state 295 between rule 78 and token DOUBLEEQUAL resolved as shift.
+Conflict in state 295 between rule 78 and token '.' resolved as shift.
+Conflict in state 299 between rule 75 and token BINOP resolved as shift.
+Conflict in state 299 between rule 75 and token KEYBINOP resolved as shift.
+Conflict in state 299 between rule 75 and token '-' resolved as shift.
+Conflict in state 299 between rule 75 and token '<' resolved as shift.
+Conflict in state 299 between rule 75 and token '>' resolved as shift.
+Conflict in state 299 between rule 75 and token '*' resolved as shift.
+Conflict in state 299 between rule 75 and token '+' resolved as shift.
+Conflict in state 299 between rule 75 and token '|' resolved as shift.
+Conflict in state 299 between rule 75 and token READWRITEVAR resolved as shift.
+Conflict in state 299 between rule 75 and token DOUBLEEQUAL resolved as shift.
+Conflict in state 299 between rule 75 and token '.' resolved as shift.
 
 Grammar
 rule 1    root -> classes
@@ -167,339 +177,355 @@ rule 56   expr1 -> msgsend
 rule 57   expr1 -> '(' exprseq ')'
 rule 58   expr1 -> '~' name
 rule 59   expr1 -> '[' arglistc ']'
-rule 60   expr1 -> pseudovar
-rule 61   expr1 -> classname '(' keyarglist1 ')'
-rule 62   expr1 -> classname '(' arglist1 optkeyarglist ')'
-rule 63   expr1 -> classname '[' arglistc ']'
-rule 64   expr1 -> expr1 '[' arglist1 ']'
-rule 65   expr -> expr1
-rule 66   expr -> expr '.' '[' arglist1 ']'
-rule 67   expr -> classname
-rule 68   expr -> '`' expr
-rule 69   expr -> expr binop expr
-rule 70   expr -> expr keybinop expr
-rule 71   expr -> name '=' expr
-rule 72   expr -> '~' name '=' expr
-rule 73   expr -> expr '.' name '=' expr
-rule 74   expr -> name '(' arglist1 optkeyarglist ')' '=' expr
-rule 75   expr -> '#' mavars '=' expr
-rule 76   expr -> expr1 '[' arglist1 ']' '=' expr
-rule 77   expr -> expr '.' '[' arglist1 ']' '=' expr
-rule 78   exprn -> expr
-rule 79   exprn -> exprn ';' expr
-rule 80   exprseq -> exprn optsemi
-rule 81   arglistc ->		/* empty */
-rule 82   arglistc -> arglist1 optcomma
-rule 83   arglist1 -> exprseq
-rule 84   arglist1 -> arglist1 ',' exprseq
-rule 85   keyarglist1 -> keyarg
-rule 86   keyarglist1 -> keyarglist1 ',' keyarg
-rule 87   keyarg -> keybinop exprseq
-rule 88   optkeyarglist ->		/* empty */
-rule 89   optkeyarglist -> ',' keyarglist1
-rule 90   mavars -> mavarlist
-rule 91   mavars -> mavarlist ELLIPSIS name
-rule 92   mavarlist -> name
-rule 93   mavarlist -> mavarlist ',' name
-rule 94   slotliteral -> integer
-rule 95   slotliteral -> floatp
-rule 96   slotliteral -> ascii
-rule 97   slotliteral -> string
-rule 98   slotliteral -> symbol
-rule 99   slotliteral -> trueobj
-rule 100  slotliteral -> falseobj
-rule 101  slotliteral -> nilobj
-rule 102  slotliteral -> infobj
-rule 103  slotliteral -> listlit
-rule 104  blockliteral -> block
-rule 105  pushname -> name
-rule 106  pushliteral -> integer
-rule 107  pushliteral -> floatp
-rule 108  pushliteral -> ascii
-rule 109  pushliteral -> string
-rule 110  pushliteral -> symbol
-rule 111  pushliteral -> trueobj
-rule 112  pushliteral -> falseobj
-rule 113  pushliteral -> nilobj
-rule 114  pushliteral -> infobj
-rule 115  pushliteral -> listlit
-rule 116  listliteral -> integer
-rule 117  listliteral -> floatp
-rule 118  listliteral -> ascii
-rule 119  listliteral -> string
-rule 120  listliteral -> symbol
-rule 121  listliteral -> trueobj
-rule 122  listliteral -> falseobj
-rule 123  listliteral -> nilobj
-rule 124  listliteral -> infobj
-rule 125  listliteral -> listlit2
-rule 126  block -> '{' argdecls funcvardecls funcbody '}'
-rule 127  block -> '#' '{' argdecls funcvardecls funcbody '}'
-rule 128  funcvardecls ->		/* empty */
-rule 129  funcvardecls -> funcvardecls funcvardecl
-rule 130  funcvardecls1 -> funcvardecl
-rule 131  funcvardecls1 -> funcvardecls1 funcvardecl
-rule 132  funcvardecl -> VAR slotdeflist ';'
-rule 133  argdecls ->		/* empty */
-rule 134  argdecls -> ARG slotdeflist ';'
-rule 135  argdecls -> ARG slotdeflist0 ELLIPSIS name ';'
-rule 136  argdecls -> '|' slotdeflist '|'
-rule 137  argdecls -> '|' slotdeflist0 ELLIPSIS name '|'
-rule 138  slotdeflist0 ->		/* empty */
-rule 139  slotdeflist0 -> slotdeflist
-rule 140  slotdeflist -> slotdef
-rule 141  slotdeflist -> slotdeflist ',' slotdef
-rule 142  slotdef -> name
-rule 143  slotdef -> name '=' slotliteral
-rule 144  rwslotdeflist -> rwslotdef
-rule 145  rwslotdeflist -> rwslotdeflist ',' rwslotdef
-rule 146  rwslotdef -> rwspec name
-rule 147  rwslotdef -> rwspec name '=' slotliteral
-rule 148  listlit -> '#' '[' literallistc ']'
-rule 149  listlit -> '#' classname '[' literallistc ']'
-rule 150  listlit2 -> '[' literallistc ']'
-rule 151  listlit2 -> classname '[' literallistc ']'
-rule 152  literallistc ->		/* empty */
-rule 153  literallistc -> literallist1 optcomma
-rule 154  literallist1 -> listliteral
-rule 155  literallist1 -> literallist1 ',' listliteral
-rule 156  rwspec ->		/* empty */
-rule 157  rwspec -> '<'
-rule 158  rwspec -> READWRITEVAR
-rule 159  rwspec -> '>'
-rule 160  integer -> INTEGER
-rule 161  integer -> '-' INTEGER
-rule 162  floatr -> FLOAT
-rule 163  floatr -> '-' FLOAT
-rule 164  pie -> PIE
-rule 165  floatp -> floatr
-rule 166  floatp -> floatr pie
-rule 167  floatp -> integer pie
-rule 168  floatp -> pie
-rule 169  floatp -> '-' pie
-rule 170  name -> NAME
-rule 171  classname -> CLASSNAME
-rule 172  primname -> PRIMITIVENAME
-rule 173  trueobj -> TRUEOBJ
-rule 174  falseobj -> FALSEOBJ
-rule 175  nilobj -> NILOBJ
-rule 176  infobj -> INFINITUMOBJ
-rule 177  ascii -> ASCII
-rule 178  symbol -> SYMBOL
-rule 179  string -> string1
-rule 180  string -> string string1
-rule 181  string1 -> STRING
-rule 182  pseudovar -> PSEUDOVAR
-rule 183  binop -> BINOP
-rule 184  binop -> READWRITEVAR
-rule 185  binop -> '<'
-rule 186  binop -> '>'
-rule 187  binop -> '-'
-rule 188  binop -> '*'
-rule 189  binop -> '+'
-rule 190  binop -> '|'
-rule 191  keybinop -> KEYBINOP
+rule 60   expr1 -> '(' dictslotlist ')'
+rule 61   expr1 -> pseudovar
+rule 62   expr1 -> classname '(' keyarglist1 ')'
+rule 63   expr1 -> classname '(' arglist1 optkeyarglist ')'
+rule 64   expr1 -> classname '[' arglistc ']'
+rule 65   expr1 -> expr1 '[' arglist1 ']'
+rule 66   expr -> expr1
+rule 67   expr -> expr '.' '[' arglist1 ']'
+rule 68   expr -> classname
+rule 69   expr -> '`' expr
+rule 70   expr -> expr binop expr
+rule 71   expr -> expr keybinop expr
+rule 72   expr -> name '=' expr
+rule 73   expr -> '~' name '=' expr
+rule 74   expr -> expr '.' name '=' expr
+rule 75   expr -> name '(' arglist1 optkeyarglist ')' '=' expr
+rule 76   expr -> '#' mavars '=' expr
+rule 77   expr -> expr1 '[' arglist1 ']' '=' expr
+rule 78   expr -> expr '.' '[' arglist1 ']' '=' expr
+rule 79   exprn -> expr
+rule 80   exprn -> exprn ';' expr
+rule 81   exprseq -> exprn optsemi
+rule 82   arglistc ->		/* empty */
+rule 83   arglistc -> arglist1 optcomma
+rule 84   arglist1 -> exprseq
+rule 85   arglist1 -> arglist1 ',' exprseq
+rule 86   keyarglist1 -> keyarg
+rule 87   keyarglist1 -> keyarglist1 ',' keyarg
+rule 88   keyarg -> keybinop exprseq
+rule 89   optkeyarglist ->		/* empty */
+rule 90   optkeyarglist -> ',' keyarglist1
+rule 91   mavars -> mavarlist
+rule 92   mavars -> mavarlist ELLIPSIS name
+rule 93   mavarlist -> name
+rule 94   mavarlist -> mavarlist ',' name
+rule 95   slotliteral -> integer
+rule 96   slotliteral -> floatp
+rule 97   slotliteral -> ascii
+rule 98   slotliteral -> string
+rule 99   slotliteral -> symbol
+rule 100  slotliteral -> trueobj
+rule 101  slotliteral -> falseobj
+rule 102  slotliteral -> nilobj
+rule 103  slotliteral -> infobj
+rule 104  slotliteral -> listlit
+rule 105  blockliteral -> block
+rule 106  pushname -> name
+rule 107  pushliteral -> integer
+rule 108  pushliteral -> floatp
+rule 109  pushliteral -> ascii
+rule 110  pushliteral -> string
+rule 111  pushliteral -> symbol
+rule 112  pushliteral -> trueobj
+rule 113  pushliteral -> falseobj
+rule 114  pushliteral -> nilobj
+rule 115  pushliteral -> infobj
+rule 116  pushliteral -> listlit
+rule 117  listliteral -> integer
+rule 118  listliteral -> floatp
+rule 119  listliteral -> ascii
+rule 120  listliteral -> string
+rule 121  listliteral -> symbol
+rule 122  listliteral -> trueobj
+rule 123  listliteral -> falseobj
+rule 124  listliteral -> nilobj
+rule 125  listliteral -> infobj
+rule 126  listliteral -> listlit2
+rule 127  block -> '{' argdecls funcvardecls funcbody '}'
+rule 128  block -> '#' '{' argdecls funcvardecls funcbody '}'
+rule 129  funcvardecls ->		/* empty */
+rule 130  funcvardecls -> funcvardecls funcvardecl
+rule 131  funcvardecls1 -> funcvardecl
+rule 132  funcvardecls1 -> funcvardecls1 funcvardecl
+rule 133  funcvardecl -> VAR slotdeflist ';'
+rule 134  argdecls ->		/* empty */
+rule 135  argdecls -> ARG slotdeflist ';'
+rule 136  argdecls -> ARG slotdeflist0 ELLIPSIS name ';'
+rule 137  argdecls -> '|' slotdeflist '|'
+rule 138  argdecls -> '|' slotdeflist0 ELLIPSIS name '|'
+rule 139  slotdeflist0 ->		/* empty */
+rule 140  slotdeflist0 -> slotdeflist
+rule 141  slotdeflist -> slotdef
+rule 142  slotdeflist -> slotdeflist ',' slotdef
+rule 143  slotdef -> name
+rule 144  slotdef -> name '=' slotliteral
+rule 145  dictslotdef -> expr ':' expr
+rule 146  dictslotdef -> keybinop expr
+rule 147  dictslotlist1 -> dictslotdef
+rule 148  dictslotlist1 -> dictslotlist1 ',' dictslotdef
+rule 149  dictslotlist ->		/* empty */
+rule 150  dictslotlist -> dictslotlist1
+rule 151  rwslotdeflist -> rwslotdef
+rule 152  rwslotdeflist -> rwslotdeflist ',' rwslotdef
+rule 153  rwslotdef -> rwspec name
+rule 154  rwslotdef -> rwspec name '=' slotliteral
+rule 155  listlit -> '#' '[' literallistc ']'
+rule 156  listlit -> '#' classname '[' literallistc ']'
+rule 157  listlit2 -> '[' literallistc ']'
+rule 158  listlit2 -> classname '[' literallistc ']'
+rule 159  literallistc ->		/* empty */
+rule 160  literallistc -> literallist1 optcomma
+rule 161  literallist1 -> listliteral
+rule 162  literallist1 -> literallist1 ',' listliteral
+rule 163  rwspec ->		/* empty */
+rule 164  rwspec -> '<'
+rule 165  rwspec -> READWRITEVAR
+rule 166  rwspec -> '>'
+rule 167  integer -> INTEGER
+rule 168  integer -> '-' INTEGER
+rule 169  floatr -> FLOAT
+rule 170  floatr -> '-' FLOAT
+rule 171  pie -> PIE
+rule 172  floatp -> floatr
+rule 173  floatp -> floatr pie
+rule 174  floatp -> integer pie
+rule 175  floatp -> pie
+rule 176  floatp -> '-' pie
+rule 177  name -> NAME
+rule 178  classname -> CLASSNAME
+rule 179  primname -> PRIMITIVENAME
+rule 180  trueobj -> TRUEOBJ
+rule 181  falseobj -> FALSEOBJ
+rule 182  nilobj -> NILOBJ
+rule 183  infobj -> INFINITUMOBJ
+rule 184  ascii -> ASCII
+rule 185  symbol -> SYMBOL
+rule 186  string -> string1
+rule 187  string -> string string1
+rule 188  string1 -> STRING
+rule 189  pseudovar -> PSEUDOVAR
+rule 190  binop -> BINOP
+rule 191  binop -> READWRITEVAR
+rule 192  binop -> DOUBLEEQUAL
+rule 193  binop -> '<'
+rule 194  binop -> '>'
+rule 195  binop -> '-'
+rule 196  binop -> '*'
+rule 197  binop -> '+'
+rule 198  binop -> '|'
+rule 199  keybinop -> KEYBINOP
 
 Terminals, with rules where they appear
 
 $ (-1)
-'#' (35) 75 127 148 149
-'(' (40) 31 47 48 49 50 51 57 61 62 74
-')' (41) 31 47 48 49 50 51 57 61 62 74
-'*' (42) 22 24 188
-'+' (43) 10 189
-',' (44) 28 84 86 89 93 141 145 155
-'-' (45) 161 163 169 187
-'.' (46) 48 49 50 51 52 66 73 77
-':' (58) 14
-';' (59) 17 18 26 79 132 134 135
-'<' (60) 157 185
-'=' (61) 71 72 73 74 75 76 77 143 147
-'>' (62) 159 186
-'[' (91) 9 59 63 64 66 76 77 148 149 150 151
-']' (93) 9 59 63 64 66 76 77 148 149 150 151
+'#' (35) 76 128 155 156
+'(' (40) 31 47 48 49 50 51 57 60 62 63 75
+')' (41) 31 47 48 49 50 51 57 60 62 63 75
+'*' (42) 22 24 196
+'+' (43) 10 197
+',' (44) 28 85 87 90 94 142 148 152 162
+'-' (45) 168 170 176 195
+'.' (46) 48 49 50 51 52 67 74 78
+':' (58) 14 145
+';' (59) 17 18 26 80 133 135 136
+'<' (60) 164 193
+'=' (61) 72 73 74 75 76 77 78 144 154
+'>' (62) 166 194
+'[' (91) 9 59 64 65 67 77 78 155 156 157 158
+']' (93) 9 59 64 65 67 77 78 155 156 157 158
 '^' (94) 39 41
-'`' (96) 68
-'{' (123) 8 9 10 21 22 23 24 126 127
-'|' (124) 136 137 190
-'}' (125) 8 9 10 21 22 23 24 126 127
-'~' (126) 58 72
+'`' (96) 69
+'{' (123) 8 9 10 21 22 23 24 127 128
+'|' (124) 137 138 198
+'}' (125) 8 9 10 21 22 23 24 127 128
+'~' (126) 58 73
 error (256)
-NAME (257) 170
-INTEGER (258) 160 161
-FLOAT (259) 162 163
-SYMBOL (260) 178
-STRING (261) 181
-ASCII (262) 177
-PRIMITIVENAME (263) 172
-CLASSNAME (264) 171
-VAR (265) 18 132
-ARG (266) 134 135
+NAME (257) 177
+INTEGER (258) 167 168
+FLOAT (259) 169 170
+SYMBOL (260) 185
+STRING (261) 188
+ASCII (262) 184
+PRIMITIVENAME (263) 179
+CLASSNAME (264) 178
+VAR (265) 18 133
+ARG (266) 135 136
 CLASSVAR (267) 17
 CONST (268)
-NILOBJ (269) 175
-TRUEOBJ (270) 173
-FALSEOBJ (271) 174
-INFINITUMOBJ (272) 176
-PSEUDOVAR (273) 182
-ELLIPSIS (274) 91 135 137
-PIE (275) 164
+NILOBJ (269) 182
+TRUEOBJ (270) 180
+FALSEOBJ (271) 181
+INFINITUMOBJ (272) 183
+PSEUDOVAR (273) 189
+ELLIPSIS (274) 92 136 138
+PIE (275) 171
 BADTOKEN (276)
 INTERPRET (277) 3
-BINOP (278) 183
-KEYBINOP (279) 191
-READWRITEVAR (280) 158 184
-UMINUS (281)
+BINOP (278) 190
+KEYBINOP (279) 199
+READWRITEVAR (280) 165 191
+DOUBLEEQUAL (281) 192
+UMINUS (282)
 
 Nonterminals, with rules where they appear
 
-root (49)
+root (50)
     on left: 1 2 3
-classes (50)
+classes (51)
     on left: 4 5, on right: 1 5
-classextensions (51)
+classextensions (52)
     on left: 6 7, on right: 2 7
-classdef (52)
+classdef (53)
     on left: 8 9, on right: 5
-classextension (53)
+classextension (54)
     on left: 10, on right: 6 7
-optname (54)
+optname (55)
     on left: 11 12, on right: 9
-superclass (55)
+superclass (56)
     on left: 13 14, on right: 8 9
-classvardecls (56)
+classvardecls (57)
     on left: 15 16, on right: 8 9 16
-classvardecl (57)
+classvardecl (58)
     on left: 17 18, on right: 16
-methods (58)
+methods (59)
     on left: 19 20, on right: 8 9 10 20
-methoddef (59)
+methoddef (60)
     on left: 21 22 23 24, on right: 20
-optsemi (60)
-    on left: 25 26, on right: 37 39 41 80
-optcomma (61)
-    on left: 27 28, on right: 82 153
-funcbody (62)
-    on left: 29 30, on right: 31 32 33 126 127
-cmdlinecode (63)
+optsemi (61)
+    on left: 25 26, on right: 37 39 41 81
+optcomma (62)
+    on left: 27 28, on right: 83 160
+funcbody (63)
+    on left: 29 30, on right: 31 32 33 127 128
+cmdlinecode (64)
     on left: 31 32 33, on right: 3
-methbody (64)
+methbody (65)
     on left: 34 35, on right: 21 22 23 24
-primitive (65)
+primitive (66)
     on left: 36 37, on right: 21 22 23 24
-retval (66)
+retval (67)
     on left: 38 39, on right: 34 35
-funretval (67)
+funretval (68)
     on left: 40 41, on right: 29 30
-blocklist1 (68)
+blocklist1 (69)
     on left: 42 43, on right: 43 45 46
-blocklist (69)
+blocklist (70)
     on left: 44 45, on right: 47 48 49 50 51 52
-msgsend (70)
+msgsend (71)
     on left: 46 47 48 49 50 51 52, on right: 56
-expr1 (71)
-    on left: 53 54 55 56 57 58 59 60 61 62 63 64, on right: 64 65 76
-expr (72)
-    on left: 65 66 67 68 69 70 71 72 73 74 75 76 77,
-    on right: 39 41 48 49 50 51 52 66 68 69 70 71 72 73 74 75 76 77
-    78 79
-exprn (73)
-    on left: 78 79, on right: 79 80
-exprseq (74)
-    on left: 80, on right: 30 35 57 83 84 87
-arglistc (75)
-    on left: 81 82, on right: 59 63
-arglist1 (76)
-    on left: 83 84, on right: 47 50 51 62 64 66 74 76 77 82 84
-keyarglist1 (77)
-    on left: 85 86, on right: 48 49 61 86 89
-keyarg (78)
-    on left: 87, on right: 85 86
-optkeyarglist (79)
-    on left: 88 89, on right: 47 50 51 62 74
-mavars (80)
-    on left: 90 91, on right: 75
-mavarlist (81)
-    on left: 92 93, on right: 90 91 93
-slotliteral (82)
-    on left: 94 95 96 97 98 99 100 101 102 103, on right: 143 147
-blockliteral (83)
-    on left: 104, on right: 42 43 54
-pushname (84)
-    on left: 105, on right: 55
-pushliteral (85)
-    on left: 106 107 108 109 110 111 112 113 114 115,
+expr1 (72)
+    on left: 53 54 55 56 57 58 59 60 61 62 63 64 65,
+    on right: 65 66 77
+expr (73)
+    on left: 66 67 68 69 70 71 72 73 74 75 76 77 78,
+    on right: 39 41 48 49 50 51 52 67 69 70 71 72 73 74 75 76 77 78
+    79 80 145 146
+exprn (74)
+    on left: 79 80, on right: 80 81
+exprseq (75)
+    on left: 81, on right: 30 35 57 84 85 88
+arglistc (76)
+    on left: 82 83, on right: 59 64
+arglist1 (77)
+    on left: 84 85, on right: 47 50 51 63 65 67 75 77 78 83 85
+keyarglist1 (78)
+    on left: 86 87, on right: 48 49 62 87 90
+keyarg (79)
+    on left: 88, on right: 86 87
+optkeyarglist (80)
+    on left: 89 90, on right: 47 50 51 63 75
+mavars (81)
+    on left: 91 92, on right: 76
+mavarlist (82)
+    on left: 93 94, on right: 91 92 94
+slotliteral (83)
+    on left: 95 96 97 98 99 100 101 102 103 104, on right: 144 154
+blockliteral (84)
+    on left: 105, on right: 42 43 54
+pushname (85)
+    on left: 106, on right: 55
+pushliteral (86)
+    on left: 107 108 109 110 111 112 113 114 115 116,
     on right: 53
-listliteral (86)
-    on left: 116 117 118 119 120 121 122 123 124 125,
-    on right: 154 155
-block (87)
-    on left: 126 127, on right: 104
-funcvardecls (88)
-    on left: 128 129, on right: 21 22 23 24 126 127 129
-funcvardecls1 (89)
-    on left: 130 131, on right: 31 32 131
-funcvardecl (90)
-    on left: 132, on right: 129 130 131
-argdecls (91)
-    on left: 133 134 135 136 137, on right: 21 22 23 24 126 127
-slotdeflist0 (92)
-    on left: 138 139, on right: 135 137
-slotdeflist (93)
-    on left: 140 141, on right: 132 134 136 139 141
-slotdef (94)
-    on left: 142 143, on right: 140 141
-rwslotdeflist (95)
-    on left: 144 145, on right: 17 18 145
-rwslotdef (96)
-    on left: 146 147, on right: 144 145
-listlit (97)
-    on left: 148 149, on right: 103 115
-listlit2 (98)
-    on left: 150 151, on right: 125
-literallistc (99)
-    on left: 152 153, on right: 148 149 150 151
-literallist1 (100)
-    on left: 154 155, on right: 153 155
-rwspec (101)
-    on left: 156 157 158 159, on right: 146 147
-integer (102)
-    on left: 160 161, on right: 94 106 116 167
-floatr (103)
-    on left: 162 163, on right: 165 166
-pie (104)
-    on left: 164, on right: 166 167 168 169
-floatp (105)
-    on left: 165 166 167 168 169, on right: 95 107 117
-name (106)
-    on left: 170, on right: 12 21 22 46 47 49 51 52 58 71 72 73 74
-    91 92 93 105 135 137 142 143 146 147
-classname (107)
-    on left: 171, on right: 8 9 10 14 61 62 63 67 149 151
-primname (108)
-    on left: 172, on right: 37
-trueobj (109)
-    on left: 173, on right: 99 111 121
-falseobj (110)
-    on left: 174, on right: 100 112 122
-nilobj (111)
-    on left: 175, on right: 101 113 123
-infobj (112)
-    on left: 176, on right: 102 114 124
-ascii (113)
-    on left: 177, on right: 96 108 118
-symbol (114)
-    on left: 178, on right: 98 110 120
-string (115)
-    on left: 179 180, on right: 97 109 119 180
-string1 (116)
-    on left: 181, on right: 179 180
-pseudovar (117)
-    on left: 182, on right: 60
-binop (118)
-    on left: 183 184 185 186 187 188 189 190, on right: 23 24 69
-keybinop (119)
-    on left: 191, on right: 70 87
+listliteral (87)
+    on left: 117 118 119 120 121 122 123 124 125 126,
+    on right: 161 162
+block (88)
+    on left: 127 128, on right: 105
+funcvardecls (89)
+    on left: 129 130, on right: 21 22 23 24 127 128 130
+funcvardecls1 (90)
+    on left: 131 132, on right: 31 32 132
+funcvardecl (91)
+    on left: 133, on right: 130 131 132
+argdecls (92)
+    on left: 134 135 136 137 138, on right: 21 22 23 24 127 128
+slotdeflist0 (93)
+    on left: 139 140, on right: 136 138
+slotdeflist (94)
+    on left: 141 142, on right: 133 135 137 140 142
+slotdef (95)
+    on left: 143 144, on right: 141 142
+dictslotdef (96)
+    on left: 145 146, on right: 147 148
+dictslotlist1 (97)
+    on left: 147 148, on right: 148 150
+dictslotlist (98)
+    on left: 149 150, on right: 60
+rwslotdeflist (99)
+    on left: 151 152, on right: 17 18 152
+rwslotdef (100)
+    on left: 153 154, on right: 151 152
+listlit (101)
+    on left: 155 156, on right: 104 116
+listlit2 (102)
+    on left: 157 158, on right: 126
+literallistc (103)
+    on left: 159 160, on right: 155 156 157 158
+literallist1 (104)
+    on left: 161 162, on right: 160 162
+rwspec (105)
+    on left: 163 164 165 166, on right: 153 154
+integer (106)
+    on left: 167 168, on right: 95 107 117 174
+floatr (107)
+    on left: 169 170, on right: 172 173
+pie (108)
+    on left: 171, on right: 173 174 175 176
+floatp (109)
+    on left: 172 173 174 175 176, on right: 96 108 118
+name (110)
+    on left: 177, on right: 12 21 22 46 47 49 51 52 58 72 73 74 75
+    92 93 94 106 136 138 143 144 153 154
+classname (111)
+    on left: 178, on right: 8 9 10 14 62 63 64 68 156 158
+primname (112)
+    on left: 179, on right: 37
+trueobj (113)
+    on left: 180, on right: 100 112 122
+falseobj (114)
+    on left: 181, on right: 101 113 123
+nilobj (115)
+    on left: 182, on right: 102 114 124
+infobj (116)
+    on left: 183, on right: 103 115 125
+ascii (117)
+    on left: 184, on right: 97 109 119
+symbol (118)
+    on left: 185, on right: 99 111 121
+string (119)
+    on left: 186 187, on right: 98 110 120 187
+string1 (120)
+    on left: 188, on right: 186 187
+pseudovar (121)
+    on left: 189, on right: 61
+binop (122)
+    on left: 190 191 192 193 194 195 196 197 198, on right: 23 24 70
+keybinop (123)
+    on left: 199, on right: 71 88 146
 
 
 state 0
@@ -509,7 +535,7 @@ state 0
 
     $default	reduce using rule 4 (classes)
 
-    root	go to state 325
+    root	go to state 338
     classes	go to state 3
     classextensions	go to state 4
     classextension	go to state 5
@@ -625,63 +651,63 @@ state 5
 
 state 6
 
-    name  ->  NAME .   (rule 170)
+    name  ->  NAME .   (rule 177)
 
-    $default	reduce using rule 170 (name)
+    $default	reduce using rule 177 (name)
 
 
 
 state 7
 
-    integer  ->  INTEGER .   (rule 160)
+    integer  ->  INTEGER .   (rule 167)
 
-    $default	reduce using rule 160 (integer)
+    $default	reduce using rule 167 (integer)
 
 
 
 state 8
 
-    floatr  ->  FLOAT .   (rule 162)
+    floatr  ->  FLOAT .   (rule 169)
 
-    $default	reduce using rule 162 (floatr)
+    $default	reduce using rule 169 (floatr)
 
 
 
 state 9
 
-    symbol  ->  SYMBOL .   (rule 178)
+    symbol  ->  SYMBOL .   (rule 185)
 
-    $default	reduce using rule 178 (symbol)
+    $default	reduce using rule 185 (symbol)
 
 
 
 state 10
 
-    string1  ->  STRING .   (rule 181)
+    string1  ->  STRING .   (rule 188)
 
-    $default	reduce using rule 181 (string1)
+    $default	reduce using rule 188 (string1)
 
 
 
 state 11
 
-    ascii  ->  ASCII .   (rule 177)
+    ascii  ->  ASCII .   (rule 184)
 
-    $default	reduce using rule 177 (ascii)
+    $default	reduce using rule 184 (ascii)
 
 
 
 state 12
 
-    classname  ->  CLASSNAME .   (rule 171)
+    classname  ->  CLASSNAME .   (rule 178)
 
-    $default	reduce using rule 171 (classname)
+    $default	reduce using rule 178 (classname)
 
 
 
 state 13
 
-    funcvardecl  ->  VAR . slotdeflist ';'   (rule 132)
+    funcvardecl  ->  VAR . slotdeflist ';'   (rule 133)
 
     NAME	shift, and go to state 6
 
@@ -693,57 +719,57 @@ state 13
 
 state 14
 
-    nilobj  ->  NILOBJ .   (rule 175)
+    nilobj  ->  NILOBJ .   (rule 182)
 
-    $default	reduce using rule 175 (nilobj)
+    $default	reduce using rule 182 (nilobj)
 
 
 
 state 15
 
-    trueobj  ->  TRUEOBJ .   (rule 173)
+    trueobj  ->  TRUEOBJ .   (rule 180)
 
-    $default	reduce using rule 173 (trueobj)
+    $default	reduce using rule 180 (trueobj)
 
 
 
 state 16
 
-    falseobj  ->  FALSEOBJ .   (rule 174)
+    falseobj  ->  FALSEOBJ .   (rule 181)
 
-    $default	reduce using rule 174 (falseobj)
+    $default	reduce using rule 181 (falseobj)
 
 
 
 state 17
 
-    infobj  ->  INFINITUMOBJ .   (rule 176)
+    infobj  ->  INFINITUMOBJ .   (rule 183)
 
-    $default	reduce using rule 176 (infobj)
+    $default	reduce using rule 183 (infobj)
 
 
 
 state 18
 
-    pseudovar  ->  PSEUDOVAR .   (rule 182)
+    pseudovar  ->  PSEUDOVAR .   (rule 189)
 
-    $default	reduce using rule 182 (pseudovar)
+    $default	reduce using rule 189 (pseudovar)
 
 
 
 state 19
 
-    pie  ->  PIE .   (rule 164)
+    pie  ->  PIE .   (rule 171)
 
-    $default	reduce using rule 164 (pie)
+    $default	reduce using rule 171 (pie)
 
 
 
 state 20
 
-    integer  ->  '-' . INTEGER   (rule 161)
-    floatr  ->  '-' . FLOAT   (rule 163)
-    floatp  ->  '-' . pie   (rule 169)
+    integer  ->  '-' . INTEGER   (rule 168)
+    floatr  ->  '-' . FLOAT   (rule 170)
+    floatp  ->  '-' . pie   (rule 176)
 
     INTEGER	shift, and go to state 65
     FLOAT	shift, and go to state 66
@@ -755,7 +781,7 @@ state 20
 
 state 21
 
-    expr  ->  '`' . expr   (rule 68)
+    expr  ->  '`' . expr   (rule 69)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -806,12 +832,12 @@ state 21
 
 state 22
 
-    block  ->  '{' . argdecls funcvardecls funcbody '}'   (rule 126)
+    block  ->  '{' . argdecls funcvardecls funcbody '}'   (rule 127)
 
     ARG 	shift, and go to state 70
     '|' 	shift, and go to state 71
 
-    $default	reduce using rule 133 (argdecls)
+    $default	reduce using rule 134 (argdecls)
 
     argdecls	go to state 72
 
@@ -842,7 +868,7 @@ state 23
     '~' 	shift, and go to state 26
     '#' 	shift, and go to state 27
 
-    $default	reduce using rule 81 (arglistc)
+    $default	reduce using rule 82 (arglistc)
 
     msgsend	go to state 31
     expr1	go to state 32
@@ -878,6 +904,7 @@ state 24
 
     cmdlinecode  ->  '(' . funcvardecls1 funcbody ')'   (rule 31)
     expr1  ->  '(' . exprseq ')'   (rule 57)
+    expr1  ->  '(' . dictslotlist ')'   (rule 60)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -893,6 +920,7 @@ state 24
     INFINITUMOBJ	shift, and go to state 17
     PSEUDOVAR	shift, and go to state 18
     PIE 	shift, and go to state 19
+    KEYBINOP	shift, and go to state 76
     '-' 	shift, and go to state 20
     '`' 	shift, and go to state 21
     '{' 	shift, and go to state 22
@@ -901,17 +929,22 @@ state 24
     '~' 	shift, and go to state 26
     '#' 	shift, and go to state 27
 
+    $default	reduce using rule 149 (dictslotlist)
+
     msgsend	go to state 31
     expr1	go to state 32
-    expr	go to state 33
+    expr	go to state 77
     exprn	go to state 34
-    exprseq	go to state 76
+    exprseq	go to state 78
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
     block	go to state 39
-    funcvardecls1	go to state 77
+    funcvardecls1	go to state 79
     funcvardecl	go to state 41
+    dictslotdef	go to state 80
+    dictslotlist1	go to state 81
+    dictslotlist	go to state 82
     listlit	go to state 42
     integer	go to state 43
     floatr	go to state 44
@@ -928,6 +961,7 @@ state 24
     string	go to state 55
     string1	go to state 56
     pseudovar	go to state 57
+    keybinop	go to state 83
 
 
 
@@ -958,7 +992,7 @@ state 25
 
     msgsend	go to state 31
     expr1	go to state 32
-    expr	go to state 78
+    expr	go to state 84
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -985,30 +1019,30 @@ state 25
 state 26
 
     expr1  ->  '~' . name   (rule 58)
-    expr  ->  '~' . name '=' expr   (rule 72)
+    expr  ->  '~' . name '=' expr   (rule 73)
 
     NAME	shift, and go to state 6
 
-    name	go to state 79
+    name	go to state 85
 
 
 
 state 27
 
-    expr  ->  '#' . mavars '=' expr   (rule 75)
-    block  ->  '#' . '{' argdecls funcvardecls funcbody '}'   (rule 127)
-    listlit  ->  '#' . '[' literallistc ']'   (rule 148)
-    listlit  ->  '#' . classname '[' literallistc ']'   (rule 149)
+    expr  ->  '#' . mavars '=' expr   (rule 76)
+    block  ->  '#' . '{' argdecls funcvardecls funcbody '}'   (rule 128)
+    listlit  ->  '#' . '[' literallistc ']'   (rule 155)
+    listlit  ->  '#' . classname '[' literallistc ']'   (rule 156)
 
     NAME	shift, and go to state 6
     CLASSNAME	shift, and go to state 12
-    '{' 	shift, and go to state 80
-    '[' 	shift, and go to state 81
+    '{' 	shift, and go to state 86
+    '[' 	shift, and go to state 87
 
-    mavars	go to state 82
-    mavarlist	go to state 83
-    name	go to state 84
-    classname	go to state 85
+    mavars	go to state 88
+    mavarlist	go to state 89
+    name	go to state 90
+    classname	go to state 91
 
 
 
@@ -1046,13 +1080,13 @@ state 31
 
 state 32
 
-    expr1  ->  expr1 . '[' arglist1 ']'   (rule 64)
-    expr  ->  expr1 .   (rule 65)
-    expr  ->  expr1 . '[' arglist1 ']' '=' expr   (rule 76)
+    expr1  ->  expr1 . '[' arglist1 ']'   (rule 65)
+    expr  ->  expr1 .   (rule 66)
+    expr  ->  expr1 . '[' arglist1 ']' '=' expr   (rule 77)
 
-    '[' 	shift, and go to state 86
+    '[' 	shift, and go to state 92
 
-    $default	reduce using rule 65 (expr)
+    $default	reduce using rule 66 (expr)
 
 
 
@@ -1063,41 +1097,42 @@ state 33
     msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
     msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
-    exprn  ->  expr .   (rule 78)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
+    exprn  ->  expr .   (rule 79)
 
-    BINOP	shift, and go to state 87
-    KEYBINOP	shift, and go to state 88
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 92
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '.' 	shift, and go to state 96
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
 
-    $default	reduce using rule 78 (exprn)
+    $default	reduce using rule 79 (exprn)
 
-    binop	go to state 97
-    keybinop	go to state 98
+    binop	go to state 103
+    keybinop	go to state 104
 
 
 
 state 34
 
-    exprn  ->  exprn . ';' expr   (rule 79)
-    exprseq  ->  exprn . optsemi   (rule 80)
+    exprn  ->  exprn . ';' expr   (rule 80)
+    exprseq  ->  exprn . optsemi   (rule 81)
 
-    ';' 	shift, and go to state 99
+    ';' 	shift, and go to state 105
 
     $default	reduce using rule 25 (optsemi)
 
-    optsemi	go to state 100
+    optsemi	go to state 106
 
 
 
@@ -1109,7 +1144,7 @@ state 35
 
     $default	reduce using rule 40 (funretval)
 
-    funretval	go to state 101
+    funretval	go to state 107
 
 
 
@@ -1139,16 +1174,16 @@ state 38
 
 state 39
 
-    blockliteral  ->  block .   (rule 104)
+    blockliteral  ->  block .   (rule 105)
 
-    $default	reduce using rule 104 (blockliteral)
+    $default	reduce using rule 105 (blockliteral)
 
 
 
 state 40
 
     cmdlinecode  ->  funcvardecls1 . funcbody   (rule 32)
-    funcvardecls1  ->  funcvardecls1 . funcvardecl   (rule 131)
+    funcvardecls1  ->  funcvardecls1 . funcvardecl   (rule 132)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -1175,7 +1210,7 @@ state 40
 
     $default	reduce using rule 40 (funretval)
 
-    funcbody	go to state 102
+    funcbody	go to state 108
     funretval	go to state 30
     msgsend	go to state 31
     expr1	go to state 32
@@ -1186,7 +1221,7 @@ state 40
     pushname	go to state 37
     pushliteral	go to state 38
     block	go to state 39
-    funcvardecl	go to state 103
+    funcvardecl	go to state 109
     listlit	go to state 42
     integer	go to state 43
     floatr	go to state 44
@@ -1208,59 +1243,59 @@ state 40
 
 state 41
 
-    funcvardecls1  ->  funcvardecl .   (rule 130)
+    funcvardecls1  ->  funcvardecl .   (rule 131)
 
-    $default	reduce using rule 130 (funcvardecls1)
+    $default	reduce using rule 131 (funcvardecls1)
 
 
 
 state 42
 
-    pushliteral  ->  listlit .   (rule 115)
+    pushliteral  ->  listlit .   (rule 116)
 
-    $default	reduce using rule 115 (pushliteral)
+    $default	reduce using rule 116 (pushliteral)
 
 
 
 state 43
 
-    pushliteral  ->  integer .   (rule 106)
-    floatp  ->  integer . pie   (rule 167)
+    pushliteral  ->  integer .   (rule 107)
+    floatp  ->  integer . pie   (rule 174)
 
     PIE 	shift, and go to state 19
 
-    $default	reduce using rule 106 (pushliteral)
+    $default	reduce using rule 107 (pushliteral)
 
-    pie 	go to state 104
+    pie 	go to state 110
 
 
 
 state 44
 
-    floatp  ->  floatr .   (rule 165)
-    floatp  ->  floatr . pie   (rule 166)
+    floatp  ->  floatr .   (rule 172)
+    floatp  ->  floatr . pie   (rule 173)
 
     PIE 	shift, and go to state 19
 
-    $default	reduce using rule 165 (floatp)
+    $default	reduce using rule 172 (floatp)
 
-    pie 	go to state 105
+    pie 	go to state 111
 
 
 
 state 45
 
-    floatp  ->  pie .   (rule 168)
+    floatp  ->  pie .   (rule 175)
 
-    $default	reduce using rule 168 (floatp)
+    $default	reduce using rule 175 (floatp)
 
 
 
 state 46
 
-    pushliteral  ->  floatp .   (rule 107)
+    pushliteral  ->  floatp .   (rule 108)
 
-    $default	reduce using rule 107 (pushliteral)
+    $default	reduce using rule 108 (pushliteral)
 
 
 
@@ -1268,111 +1303,111 @@ state 47
 
     msgsend  ->  name . blocklist1   (rule 46)
     msgsend  ->  name . '(' arglist1 optkeyarglist ')' blocklist   (rule 47)
-    expr  ->  name . '=' expr   (rule 71)
-    expr  ->  name . '(' arglist1 optkeyarglist ')' '=' expr   (rule 74)
-    pushname  ->  name .   (rule 105)
+    expr  ->  name . '=' expr   (rule 72)
+    expr  ->  name . '(' arglist1 optkeyarglist ')' '=' expr   (rule 75)
+    pushname  ->  name .   (rule 106)
 
-    '=' 	shift, and go to state 106
+    '=' 	shift, and go to state 112
     '{' 	shift, and go to state 22
-    '(' 	shift, and go to state 107
-    '#' 	shift, and go to state 108
+    '(' 	shift, and go to state 113
+    '#' 	shift, and go to state 114
 
-    $default	reduce using rule 105 (pushname)
+    $default	reduce using rule 106 (pushname)
 
-    blocklist1	go to state 109
-    blockliteral	go to state 110
+    blocklist1	go to state 115
+    blockliteral	go to state 116
     block	go to state 39
 
 
 
 state 48
 
-    expr1  ->  classname . '(' keyarglist1 ')'   (rule 61)
-    expr1  ->  classname . '(' arglist1 optkeyarglist ')'   (rule 62)
-    expr1  ->  classname . '[' arglistc ']'   (rule 63)
-    expr  ->  classname .   (rule 67)
+    expr1  ->  classname . '(' keyarglist1 ')'   (rule 62)
+    expr1  ->  classname . '(' arglist1 optkeyarglist ')'   (rule 63)
+    expr1  ->  classname . '[' arglistc ']'   (rule 64)
+    expr  ->  classname .   (rule 68)
 
-    '[' 	shift, and go to state 111
-    '(' 	shift, and go to state 112
+    '[' 	shift, and go to state 117
+    '(' 	shift, and go to state 118
 
-    $default	reduce using rule 67 (expr)
+    $default	reduce using rule 68 (expr)
 
 
 
 state 49
 
-    pushliteral  ->  trueobj .   (rule 111)
-
-    $default	reduce using rule 111 (pushliteral)
-
-
-
-state 50
-
-    pushliteral  ->  falseobj .   (rule 112)
+    pushliteral  ->  trueobj .   (rule 112)
 
     $default	reduce using rule 112 (pushliteral)
 
 
 
-state 51
+state 50
 
-    pushliteral  ->  nilobj .   (rule 113)
+    pushliteral  ->  falseobj .   (rule 113)
 
     $default	reduce using rule 113 (pushliteral)
 
 
 
-state 52
+state 51
 
-    pushliteral  ->  infobj .   (rule 114)
+    pushliteral  ->  nilobj .   (rule 114)
 
     $default	reduce using rule 114 (pushliteral)
 
 
 
+state 52
+
+    pushliteral  ->  infobj .   (rule 115)
+
+    $default	reduce using rule 115 (pushliteral)
+
+
+
 state 53
 
-    pushliteral  ->  ascii .   (rule 108)
+    pushliteral  ->  ascii .   (rule 109)
 
-    $default	reduce using rule 108 (pushliteral)
+    $default	reduce using rule 109 (pushliteral)
 
 
 
 state 54
 
-    pushliteral  ->  symbol .   (rule 110)
+    pushliteral  ->  symbol .   (rule 111)
 
-    $default	reduce using rule 110 (pushliteral)
+    $default	reduce using rule 111 (pushliteral)
 
 
 
 state 55
 
-    pushliteral  ->  string .   (rule 109)
-    string  ->  string . string1   (rule 180)
+    pushliteral  ->  string .   (rule 110)
+    string  ->  string . string1   (rule 187)
 
     STRING	shift, and go to state 10
 
-    $default	reduce using rule 109 (pushliteral)
+    $default	reduce using rule 110 (pushliteral)
 
-    string1	go to state 113
+    string1	go to state 119
 
 
 
 state 56
 
-    string  ->  string1 .   (rule 179)
+    string  ->  string1 .   (rule 186)
 
-    $default	reduce using rule 179 (string)
+    $default	reduce using rule 186 (string)
 
 
 
 state 57
 
-    expr1  ->  pseudovar .   (rule 60)
+    expr1  ->  pseudovar .   (rule 61)
 
-    $default	reduce using rule 60 (expr1)
+    $default	reduce using rule 61 (expr1)
 
 
 
@@ -1380,7 +1415,7 @@ state 58
 
     classextension  ->  '+' classname . '{' methods '}'   (rule 10)
 
-    '{' 	shift, and go to state 114
+    '{' 	shift, and go to state 120
 
 
 
@@ -1397,12 +1432,12 @@ state 60
     classdef  ->  classname . superclass '{' classvardecls methods '}'   (rule 8)
     classdef  ->  classname . '[' optname ']' superclass '{' classvardecls methods '}'   (rule 9)
 
-    '[' 	shift, and go to state 115
-    ':' 	shift, and go to state 116
+    ':' 	shift, and go to state 121
+    '[' 	shift, and go to state 122
 
     $default	reduce using rule 13 (superclass)
 
-    superclass	go to state 117
+    superclass	go to state 123
 
 
 
@@ -1416,60 +1451,61 @@ state 61
 
 state 62
 
-    funcvardecl  ->  VAR slotdeflist . ';'   (rule 132)
-    slotdeflist  ->  slotdeflist . ',' slotdef   (rule 141)
+    funcvardecl  ->  VAR slotdeflist . ';'   (rule 133)
+    slotdeflist  ->  slotdeflist . ',' slotdef   (rule 142)
 
-    ';' 	shift, and go to state 118
-    ',' 	shift, and go to state 119
+    ';' 	shift, and go to state 124
+    ',' 	shift, and go to state 125
 
 
 
 state 63
 
-    slotdeflist  ->  slotdef .   (rule 140)
+    slotdeflist  ->  slotdef .   (rule 141)
 
-    $default	reduce using rule 140 (slotdeflist)
+    $default	reduce using rule 141 (slotdeflist)
 
 
 
 state 64
 
-    slotdef  ->  name .   (rule 142)
-    slotdef  ->  name . '=' slotliteral   (rule 143)
+    slotdef  ->  name .   (rule 143)
+    slotdef  ->  name . '=' slotliteral   (rule 144)
 
-    '=' 	shift, and go to state 120
+    '=' 	shift, and go to state 126
 
-    $default	reduce using rule 142 (slotdef)
+    $default	reduce using rule 143 (slotdef)
 
 
 
 state 65
 
-    integer  ->  '-' INTEGER .   (rule 161)
+    integer  ->  '-' INTEGER .   (rule 168)
 
-    $default	reduce using rule 161 (integer)
+    $default	reduce using rule 168 (integer)
 
 
 
 state 66
 
-    floatr  ->  '-' FLOAT .   (rule 163)
+    floatr  ->  '-' FLOAT .   (rule 170)
 
-    $default	reduce using rule 163 (floatr)
+    $default	reduce using rule 170 (floatr)
 
 
 
 state 67
 
-    floatp  ->  '-' pie .   (rule 169)
+    floatp  ->  '-' pie .   (rule 176)
 
-    $default	reduce using rule 169 (floatp)
+    $default	reduce using rule 176 (floatp)
 
 
 
 state 68
 
     expr1  ->  '(' . exprseq ')'   (rule 57)
+    expr1  ->  '(' . dictslotlist ')'   (rule 60)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -1484,6 +1520,7 @@ state 68
     INFINITUMOBJ	shift, and go to state 17
     PSEUDOVAR	shift, and go to state 18
     PIE 	shift, and go to state 19
+    KEYBINOP	shift, and go to state 76
     '-' 	shift, and go to state 20
     '`' 	shift, and go to state 21
     '{' 	shift, and go to state 22
@@ -1492,15 +1529,20 @@ state 68
     '~' 	shift, and go to state 26
     '#' 	shift, and go to state 27
 
+    $default	reduce using rule 149 (dictslotlist)
+
     msgsend	go to state 31
     expr1	go to state 32
-    expr	go to state 33
+    expr	go to state 77
     exprn	go to state 34
-    exprseq	go to state 76
+    exprseq	go to state 78
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
     block	go to state 39
+    dictslotdef	go to state 80
+    dictslotlist1	go to state 81
+    dictslotlist	go to state 82
     listlit	go to state 42
     integer	go to state 43
     floatr	go to state 44
@@ -1517,6 +1559,7 @@ state 68
     string	go to state 55
     string1	go to state 56
     pseudovar	go to state 57
+    keybinop	go to state 83
 
 
 
@@ -1527,32 +1570,32 @@ state 69
     msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
     msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  '`' expr .   (rule 68)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  '`' expr .   (rule 69)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
 
 
-    $default	reduce using rule 68 (expr)
+    $default	reduce using rule 69 (expr)
 
-    binop	go to state 97
-    keybinop	go to state 98
+    binop	go to state 103
+    keybinop	go to state 104
 
 
 
 state 70
 
-    argdecls  ->  ARG . slotdeflist ';'   (rule 134)
-    argdecls  ->  ARG . slotdeflist0 ELLIPSIS name ';'   (rule 135)
+    argdecls  ->  ARG . slotdeflist ';'   (rule 135)
+    argdecls  ->  ARG . slotdeflist0 ELLIPSIS name ';'   (rule 136)
 
     NAME	shift, and go to state 6
 
-    $default	reduce using rule 138 (slotdeflist0)
+    $default	reduce using rule 139 (slotdeflist0)
 
-    slotdeflist0	go to state 121
-    slotdeflist	go to state 122
+    slotdeflist0	go to state 127
+    slotdeflist	go to state 128
     slotdef	go to state 63
     name	go to state 64
 
@@ -1560,15 +1603,15 @@ state 70
 
 state 71
 
-    argdecls  ->  '|' . slotdeflist '|'   (rule 136)
-    argdecls  ->  '|' . slotdeflist0 ELLIPSIS name '|'   (rule 137)
+    argdecls  ->  '|' . slotdeflist '|'   (rule 137)
+    argdecls  ->  '|' . slotdeflist0 ELLIPSIS name '|'   (rule 138)
 
     NAME	shift, and go to state 6
 
-    $default	reduce using rule 138 (slotdeflist0)
+    $default	reduce using rule 139 (slotdeflist0)
 
-    slotdeflist0	go to state 123
-    slotdeflist	go to state 124
+    slotdeflist0	go to state 129
+    slotdeflist	go to state 130
     slotdef	go to state 63
     name	go to state 64
 
@@ -1576,19 +1619,19 @@ state 71
 
 state 72
 
-    block  ->  '{' argdecls . funcvardecls funcbody '}'   (rule 126)
+    block  ->  '{' argdecls . funcvardecls funcbody '}'   (rule 127)
 
-    $default	reduce using rule 128 (funcvardecls)
+    $default	reduce using rule 129 (funcvardecls)
 
-    funcvardecls	go to state 125
+    funcvardecls	go to state 131
 
 
 
 state 73
 
-    arglist1  ->  exprseq .   (rule 83)
+    arglist1  ->  exprseq .   (rule 84)
 
-    $default	reduce using rule 83 (arglist1)
+    $default	reduce using rule 84 (arglist1)
 
 
 
@@ -1596,35 +1639,78 @@ state 74
 
     expr1  ->  '[' arglistc . ']'   (rule 59)
 
-    ']' 	shift, and go to state 126
+    ']' 	shift, and go to state 132
 
 
 
 state 75
 
-    arglistc  ->  arglist1 . optcomma   (rule 82)
-    arglist1  ->  arglist1 . ',' exprseq   (rule 84)
+    arglistc  ->  arglist1 . optcomma   (rule 83)
+    arglist1  ->  arglist1 . ',' exprseq   (rule 85)
 
-    ',' 	shift, and go to state 127
+    ',' 	shift, and go to state 133
 
     $default	reduce using rule 27 (optcomma)
 
-    optcomma	go to state 128
+    optcomma	go to state 134
 
 
 
 state 76
 
-    expr1  ->  '(' exprseq . ')'   (rule 57)
+    keybinop  ->  KEYBINOP .   (rule 199)
 
-    ')' 	shift, and go to state 129
+    $default	reduce using rule 199 (keybinop)
 
 
 
 state 77
 
+    msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
+    msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
+    msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
+    msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
+    msgsend  ->  expr . '.' name blocklist   (rule 52)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
+    exprn  ->  expr .   (rule 79)
+    dictslotdef  ->  expr . ':' expr   (rule 145)
+
+    ':' 	shift, and go to state 135
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
+
+    $default	reduce using rule 79 (exprn)
+
+    binop	go to state 103
+    keybinop	go to state 104
+
+
+
+state 78
+
+    expr1  ->  '(' exprseq . ')'   (rule 57)
+
+    ')' 	shift, and go to state 136
+
+
+
+state 79
+
     cmdlinecode  ->  '(' funcvardecls1 . funcbody ')'   (rule 31)
-    funcvardecls1  ->  funcvardecls1 . funcvardecl   (rule 131)
+    funcvardecls1  ->  funcvardecls1 . funcvardecl   (rule 132)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -1651,7 +1737,7 @@ state 77
 
     $default	reduce using rule 40 (funretval)
 
-    funcbody	go to state 130
+    funcbody	go to state 137
     funretval	go to state 30
     msgsend	go to state 31
     expr1	go to state 32
@@ -1662,7 +1748,7 @@ state 77
     pushname	go to state 37
     pushliteral	go to state 38
     block	go to state 39
-    funcvardecl	go to state 103
+    funcvardecl	go to state 109
     listlit	go to state 42
     integer	go to state 43
     floatr	go to state 44
@@ -1682,7 +1768,85 @@ state 77
 
 
 
-state 78
+state 80
+
+    dictslotlist1  ->  dictslotdef .   (rule 147)
+
+    $default	reduce using rule 147 (dictslotlist1)
+
+
+
+state 81
+
+    dictslotlist1  ->  dictslotlist1 . ',' dictslotdef   (rule 148)
+    dictslotlist  ->  dictslotlist1 .   (rule 150)
+
+    ',' 	shift, and go to state 138
+
+    $default	reduce using rule 150 (dictslotlist)
+
+
+
+state 82
+
+    expr1  ->  '(' dictslotlist . ')'   (rule 60)
+
+    ')' 	shift, and go to state 139
+
+
+
+state 83
+
+    dictslotdef  ->  keybinop . expr   (rule 146)
+
+    NAME	shift, and go to state 6
+    INTEGER	shift, and go to state 7
+    FLOAT	shift, and go to state 8
+    SYMBOL	shift, and go to state 9
+    STRING	shift, and go to state 10
+    ASCII	shift, and go to state 11
+    CLASSNAME	shift, and go to state 12
+    NILOBJ	shift, and go to state 14
+    TRUEOBJ	shift, and go to state 15
+    FALSEOBJ	shift, and go to state 16
+    INFINITUMOBJ	shift, and go to state 17
+    PSEUDOVAR	shift, and go to state 18
+    PIE 	shift, and go to state 19
+    '-' 	shift, and go to state 20
+    '`' 	shift, and go to state 21
+    '{' 	shift, and go to state 22
+    '[' 	shift, and go to state 23
+    '(' 	shift, and go to state 68
+    '~' 	shift, and go to state 26
+    '#' 	shift, and go to state 27
+
+    msgsend	go to state 31
+    expr1	go to state 32
+    expr	go to state 140
+    blockliteral	go to state 36
+    pushname	go to state 37
+    pushliteral	go to state 38
+    block	go to state 39
+    listlit	go to state 42
+    integer	go to state 43
+    floatr	go to state 44
+    pie 	go to state 45
+    floatp	go to state 46
+    name	go to state 47
+    classname	go to state 48
+    trueobj	go to state 49
+    falseobj	go to state 50
+    nilobj	go to state 51
+    infobj	go to state 52
+    ascii	go to state 53
+    symbol	go to state 54
+    string	go to state 55
+    string1	go to state 56
+    pseudovar	go to state 57
+
+
+
+state 84
 
     funretval  ->  '^' expr . optsemi   (rule 41)
     msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
@@ -1690,59 +1854,60 @@ state 78
     msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
     msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
 
-    BINOP	shift, and go to state 87
-    KEYBINOP	shift, and go to state 88
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 92
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '.' 	shift, and go to state 96
-    ';' 	shift, and go to state 131
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
+    ';' 	shift, and go to state 141
 
     $default	reduce using rule 25 (optsemi)
 
-    optsemi	go to state 132
-    binop	go to state 97
-    keybinop	go to state 98
+    optsemi	go to state 142
+    binop	go to state 103
+    keybinop	go to state 104
 
 
 
-state 79
+state 85
 
     expr1  ->  '~' name .   (rule 58)
-    expr  ->  '~' name . '=' expr   (rule 72)
+    expr  ->  '~' name . '=' expr   (rule 73)
 
-    '=' 	shift, and go to state 133
+    '=' 	shift, and go to state 143
 
     $default	reduce using rule 58 (expr1)
 
 
 
-state 80
+state 86
 
-    block  ->  '#' '{' . argdecls funcvardecls funcbody '}'   (rule 127)
+    block  ->  '#' '{' . argdecls funcvardecls funcbody '}'   (rule 128)
 
     ARG 	shift, and go to state 70
     '|' 	shift, and go to state 71
 
-    $default	reduce using rule 133 (argdecls)
+    $default	reduce using rule 134 (argdecls)
 
-    argdecls	go to state 134
+    argdecls	go to state 144
 
 
 
-state 81
+state 87
 
-    listlit  ->  '#' '[' . literallistc ']'   (rule 148)
+    listlit  ->  '#' '[' . literallistc ']'   (rule 155)
 
     INTEGER	shift, and go to state 7
     FLOAT	shift, and go to state 8
@@ -1756,71 +1921,71 @@ state 81
     INFINITUMOBJ	shift, and go to state 17
     PIE 	shift, and go to state 19
     '-' 	shift, and go to state 20
-    '[' 	shift, and go to state 135
+    '[' 	shift, and go to state 145
 
-    $default	reduce using rule 152 (literallistc)
+    $default	reduce using rule 159 (literallistc)
 
-    listliteral	go to state 136
-    listlit2	go to state 137
-    literallistc	go to state 138
-    literallist1	go to state 139
-    integer	go to state 140
+    listliteral	go to state 146
+    listlit2	go to state 147
+    literallistc	go to state 148
+    literallist1	go to state 149
+    integer	go to state 150
     floatr	go to state 44
     pie 	go to state 45
-    floatp	go to state 141
-    classname	go to state 142
-    trueobj	go to state 143
-    falseobj	go to state 144
-    nilobj	go to state 145
-    infobj	go to state 146
-    ascii	go to state 147
-    symbol	go to state 148
-    string	go to state 149
+    floatp	go to state 151
+    classname	go to state 152
+    trueobj	go to state 153
+    falseobj	go to state 154
+    nilobj	go to state 155
+    infobj	go to state 156
+    ascii	go to state 157
+    symbol	go to state 158
+    string	go to state 159
     string1	go to state 56
 
 
 
-state 82
+state 88
 
-    expr  ->  '#' mavars . '=' expr   (rule 75)
+    expr  ->  '#' mavars . '=' expr   (rule 76)
 
-    '=' 	shift, and go to state 150
-
-
-
-state 83
-
-    mavars  ->  mavarlist .   (rule 90)
-    mavars  ->  mavarlist . ELLIPSIS name   (rule 91)
-    mavarlist  ->  mavarlist . ',' name   (rule 93)
-
-    ELLIPSIS	shift, and go to state 151
-    ',' 	shift, and go to state 152
-
-    $default	reduce using rule 90 (mavars)
+    '=' 	shift, and go to state 160
 
 
 
-state 84
+state 89
 
-    mavarlist  ->  name .   (rule 92)
+    mavars  ->  mavarlist .   (rule 91)
+    mavars  ->  mavarlist . ELLIPSIS name   (rule 92)
+    mavarlist  ->  mavarlist . ',' name   (rule 94)
 
-    $default	reduce using rule 92 (mavarlist)
+    ELLIPSIS	shift, and go to state 161
+    ',' 	shift, and go to state 162
 
-
-
-state 85
-
-    listlit  ->  '#' classname . '[' literallistc ']'   (rule 149)
-
-    '[' 	shift, and go to state 153
+    $default	reduce using rule 91 (mavars)
 
 
 
-state 86
+state 90
 
-    expr1  ->  expr1 '[' . arglist1 ']'   (rule 64)
-    expr  ->  expr1 '[' . arglist1 ']' '=' expr   (rule 76)
+    mavarlist  ->  name .   (rule 93)
+
+    $default	reduce using rule 93 (mavarlist)
+
+
+
+state 91
+
+    listlit  ->  '#' classname . '[' literallistc ']'   (rule 156)
+
+    '[' 	shift, and go to state 163
+
+
+
+state 92
+
+    expr1  ->  expr1 '[' . arglist1 ']'   (rule 65)
+    expr  ->  expr1 '[' . arglist1 ']' '=' expr   (rule 77)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -1848,7 +2013,7 @@ state 86
     expr	go to state 33
     exprn	go to state 34
     exprseq	go to state 73
-    arglist1	go to state 154
+    arglist1	go to state 164
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -1872,151 +2037,100 @@ state 86
 
 
 
-state 87
-
-    binop  ->  BINOP .   (rule 183)
-
-    $default	reduce using rule 183 (binop)
-
-
-
-state 88
-
-    keybinop  ->  KEYBINOP .   (rule 191)
-
-    $default	reduce using rule 191 (keybinop)
-
-
-
-state 89
-
-    binop  ->  '-' .   (rule 187)
-
-    $default	reduce using rule 187 (binop)
-
-
-
-state 90
-
-    binop  ->  '<' .   (rule 185)
-
-    $default	reduce using rule 185 (binop)
-
-
-
-state 91
-
-    binop  ->  '>' .   (rule 186)
-
-    $default	reduce using rule 186 (binop)
-
-
-
-state 92
-
-    binop  ->  '*' .   (rule 188)
-
-    $default	reduce using rule 188 (binop)
-
-
-
 state 93
 
-    binop  ->  '+' .   (rule 189)
-
-    $default	reduce using rule 189 (binop)
-
-
-
-state 94
-
-    binop  ->  '|' .   (rule 190)
+    binop  ->  BINOP .   (rule 190)
 
     $default	reduce using rule 190 (binop)
 
 
 
+state 94
+
+    binop  ->  '-' .   (rule 195)
+
+    $default	reduce using rule 195 (binop)
+
+
+
 state 95
 
-    binop  ->  READWRITEVAR .   (rule 184)
+    binop  ->  '<' .   (rule 193)
 
-    $default	reduce using rule 184 (binop)
+    $default	reduce using rule 193 (binop)
 
 
 
 state 96
+
+    binop  ->  '>' .   (rule 194)
+
+    $default	reduce using rule 194 (binop)
+
+
+
+state 97
+
+    binop  ->  '*' .   (rule 196)
+
+    $default	reduce using rule 196 (binop)
+
+
+
+state 98
+
+    binop  ->  '+' .   (rule 197)
+
+    $default	reduce using rule 197 (binop)
+
+
+
+state 99
+
+    binop  ->  '|' .   (rule 198)
+
+    $default	reduce using rule 198 (binop)
+
+
+
+state 100
+
+    binop  ->  READWRITEVAR .   (rule 191)
+
+    $default	reduce using rule 191 (binop)
+
+
+
+state 101
+
+    binop  ->  DOUBLEEQUAL .   (rule 192)
+
+    $default	reduce using rule 192 (binop)
+
+
+
+state 102
 
     msgsend  ->  expr '.' . '(' keyarglist1 ')' blocklist   (rule 48)
     msgsend  ->  expr '.' . name '(' keyarglist1 ')' blocklist   (rule 49)
     msgsend  ->  expr '.' . '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
     msgsend  ->  expr '.' . name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr '.' . name blocklist   (rule 52)
-    expr  ->  expr '.' . '[' arglist1 ']'   (rule 66)
-    expr  ->  expr '.' . name '=' expr   (rule 73)
-    expr  ->  expr '.' . '[' arglist1 ']' '=' expr   (rule 77)
+    expr  ->  expr '.' . '[' arglist1 ']'   (rule 67)
+    expr  ->  expr '.' . name '=' expr   (rule 74)
+    expr  ->  expr '.' . '[' arglist1 ']' '=' expr   (rule 78)
 
     NAME	shift, and go to state 6
-    '[' 	shift, and go to state 155
-    '(' 	shift, and go to state 156
+    '[' 	shift, and go to state 165
+    '(' 	shift, and go to state 166
 
-    name	go to state 157
-
-
-
-state 97
-
-    expr  ->  expr binop . expr   (rule 69)
-
-    NAME	shift, and go to state 6
-    INTEGER	shift, and go to state 7
-    FLOAT	shift, and go to state 8
-    SYMBOL	shift, and go to state 9
-    STRING	shift, and go to state 10
-    ASCII	shift, and go to state 11
-    CLASSNAME	shift, and go to state 12
-    NILOBJ	shift, and go to state 14
-    TRUEOBJ	shift, and go to state 15
-    FALSEOBJ	shift, and go to state 16
-    INFINITUMOBJ	shift, and go to state 17
-    PSEUDOVAR	shift, and go to state 18
-    PIE 	shift, and go to state 19
-    '-' 	shift, and go to state 20
-    '`' 	shift, and go to state 21
-    '{' 	shift, and go to state 22
-    '[' 	shift, and go to state 23
-    '(' 	shift, and go to state 68
-    '~' 	shift, and go to state 26
-    '#' 	shift, and go to state 27
-
-    msgsend	go to state 31
-    expr1	go to state 32
-    expr	go to state 158
-    blockliteral	go to state 36
-    pushname	go to state 37
-    pushliteral	go to state 38
-    block	go to state 39
-    listlit	go to state 42
-    integer	go to state 43
-    floatr	go to state 44
-    pie 	go to state 45
-    floatp	go to state 46
-    name	go to state 47
-    classname	go to state 48
-    trueobj	go to state 49
-    falseobj	go to state 50
-    nilobj	go to state 51
-    infobj	go to state 52
-    ascii	go to state 53
-    symbol	go to state 54
-    string	go to state 55
-    string1	go to state 56
-    pseudovar	go to state 57
+    name	go to state 167
 
 
 
-state 98
+state 103
 
-    expr  ->  expr keybinop . expr   (rule 70)
+    expr  ->  expr binop . expr   (rule 70)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -2041,7 +2155,7 @@ state 98
 
     msgsend	go to state 31
     expr1	go to state 32
-    expr	go to state 159
+    expr	go to state 168
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -2065,10 +2179,61 @@ state 98
 
 
 
-state 99
+state 104
+
+    expr  ->  expr keybinop . expr   (rule 71)
+
+    NAME	shift, and go to state 6
+    INTEGER	shift, and go to state 7
+    FLOAT	shift, and go to state 8
+    SYMBOL	shift, and go to state 9
+    STRING	shift, and go to state 10
+    ASCII	shift, and go to state 11
+    CLASSNAME	shift, and go to state 12
+    NILOBJ	shift, and go to state 14
+    TRUEOBJ	shift, and go to state 15
+    FALSEOBJ	shift, and go to state 16
+    INFINITUMOBJ	shift, and go to state 17
+    PSEUDOVAR	shift, and go to state 18
+    PIE 	shift, and go to state 19
+    '-' 	shift, and go to state 20
+    '`' 	shift, and go to state 21
+    '{' 	shift, and go to state 22
+    '[' 	shift, and go to state 23
+    '(' 	shift, and go to state 68
+    '~' 	shift, and go to state 26
+    '#' 	shift, and go to state 27
+
+    msgsend	go to state 31
+    expr1	go to state 32
+    expr	go to state 169
+    blockliteral	go to state 36
+    pushname	go to state 37
+    pushliteral	go to state 38
+    block	go to state 39
+    listlit	go to state 42
+    integer	go to state 43
+    floatr	go to state 44
+    pie 	go to state 45
+    floatp	go to state 46
+    name	go to state 47
+    classname	go to state 48
+    trueobj	go to state 49
+    falseobj	go to state 50
+    nilobj	go to state 51
+    infobj	go to state 52
+    ascii	go to state 53
+    symbol	go to state 54
+    string	go to state 55
+    string1	go to state 56
+    pseudovar	go to state 57
+
+
+
+state 105
 
     optsemi  ->  ';' .   (rule 26)
-    exprn  ->  exprn ';' . expr   (rule 79)
+    exprn  ->  exprn ';' . expr   (rule 80)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -2095,7 +2260,7 @@ state 99
 
     msgsend	go to state 31
     expr1	go to state 32
-    expr	go to state 160
+    expr	go to state 170
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -2119,15 +2284,15 @@ state 99
 
 
 
-state 100
+state 106
 
-    exprseq  ->  exprn optsemi .   (rule 80)
+    exprseq  ->  exprn optsemi .   (rule 81)
 
-    $default	reduce using rule 80 (exprseq)
+    $default	reduce using rule 81 (exprseq)
 
 
 
-state 101
+state 107
 
     funcbody  ->  exprseq funretval .   (rule 30)
 
@@ -2135,7 +2300,7 @@ state 101
 
 
 
-state 102
+state 108
 
     cmdlinecode  ->  funcvardecls1 funcbody .   (rule 32)
 
@@ -2143,33 +2308,33 @@ state 102
 
 
 
-state 103
+state 109
 
-    funcvardecls1  ->  funcvardecls1 funcvardecl .   (rule 131)
+    funcvardecls1  ->  funcvardecls1 funcvardecl .   (rule 132)
 
-    $default	reduce using rule 131 (funcvardecls1)
-
-
-
-state 104
-
-    floatp  ->  integer pie .   (rule 167)
-
-    $default	reduce using rule 167 (floatp)
+    $default	reduce using rule 132 (funcvardecls1)
 
 
 
-state 105
+state 110
 
-    floatp  ->  floatr pie .   (rule 166)
+    floatp  ->  integer pie .   (rule 174)
 
-    $default	reduce using rule 166 (floatp)
+    $default	reduce using rule 174 (floatp)
 
 
 
-state 106
+state 111
 
-    expr  ->  name '=' . expr   (rule 71)
+    floatp  ->  floatr pie .   (rule 173)
+
+    $default	reduce using rule 173 (floatp)
+
+
+
+state 112
+
+    expr  ->  name '=' . expr   (rule 72)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -2194,7 +2359,7 @@ state 106
 
     msgsend	go to state 31
     expr1	go to state 32
-    expr	go to state 161
+    expr	go to state 171
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -2218,10 +2383,10 @@ state 106
 
 
 
-state 107
+state 113
 
     msgsend  ->  name '(' . arglist1 optkeyarglist ')' blocklist   (rule 47)
-    expr  ->  name '(' . arglist1 optkeyarglist ')' '=' expr   (rule 74)
+    expr  ->  name '(' . arglist1 optkeyarglist ')' '=' expr   (rule 75)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -2249,7 +2414,7 @@ state 107
     expr	go to state 33
     exprn	go to state 34
     exprseq	go to state 73
-    arglist1	go to state 162
+    arglist1	go to state 172
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -2273,30 +2438,30 @@ state 107
 
 
 
-state 108
+state 114
 
-    block  ->  '#' . '{' argdecls funcvardecls funcbody '}'   (rule 127)
+    block  ->  '#' . '{' argdecls funcvardecls funcbody '}'   (rule 128)
 
-    '{' 	shift, and go to state 80
+    '{' 	shift, and go to state 86
 
 
 
-state 109
+state 115
 
     blocklist1  ->  blocklist1 . blockliteral   (rule 43)
     msgsend  ->  name blocklist1 .   (rule 46)
 
     '{' 	shift, and go to state 22
-    '#' 	shift, and go to state 108
+    '#' 	shift, and go to state 114
 
     $default	reduce using rule 46 (msgsend)
 
-    blockliteral	go to state 163
+    blockliteral	go to state 173
     block	go to state 39
 
 
 
-state 110
+state 116
 
     blocklist1  ->  blockliteral .   (rule 42)
 
@@ -2304,9 +2469,9 @@ state 110
 
 
 
-state 111
+state 117
 
-    expr1  ->  classname '[' . arglistc ']'   (rule 63)
+    expr1  ->  classname '[' . arglistc ']'   (rule 64)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -2329,14 +2494,14 @@ state 111
     '~' 	shift, and go to state 26
     '#' 	shift, and go to state 27
 
-    $default	reduce using rule 81 (arglistc)
+    $default	reduce using rule 82 (arglistc)
 
     msgsend	go to state 31
     expr1	go to state 32
     expr	go to state 33
     exprn	go to state 34
     exprseq	go to state 73
-    arglistc	go to state 164
+    arglistc	go to state 174
     arglist1	go to state 75
     blockliteral	go to state 36
     pushname	go to state 37
@@ -2361,10 +2526,10 @@ state 111
 
 
 
-state 112
+state 118
 
-    expr1  ->  classname '(' . keyarglist1 ')'   (rule 61)
-    expr1  ->  classname '(' . arglist1 optkeyarglist ')'   (rule 62)
+    expr1  ->  classname '(' . keyarglist1 ')'   (rule 62)
+    expr1  ->  classname '(' . arglist1 optkeyarglist ')'   (rule 63)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -2379,7 +2544,7 @@ state 112
     INFINITUMOBJ	shift, and go to state 17
     PSEUDOVAR	shift, and go to state 18
     PIE 	shift, and go to state 19
-    KEYBINOP	shift, and go to state 88
+    KEYBINOP	shift, and go to state 76
     '-' 	shift, and go to state 20
     '`' 	shift, and go to state 21
     '{' 	shift, and go to state 22
@@ -2393,9 +2558,9 @@ state 112
     expr	go to state 33
     exprn	go to state 34
     exprseq	go to state 73
-    arglist1	go to state 165
-    keyarglist1	go to state 166
-    keyarg	go to state 167
+    arglist1	go to state 175
+    keyarglist1	go to state 176
+    keyarg	go to state 177
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -2416,29 +2581,39 @@ state 112
     string	go to state 55
     string1	go to state 56
     pseudovar	go to state 57
-    keybinop	go to state 168
+    keybinop	go to state 178
 
 
 
-state 113
+state 119
 
-    string  ->  string string1 .   (rule 180)
+    string  ->  string string1 .   (rule 187)
 
-    $default	reduce using rule 180 (string)
+    $default	reduce using rule 187 (string)
 
 
 
-state 114
+state 120
 
     classextension  ->  '+' classname '{' . methods '}'   (rule 10)
 
     $default	reduce using rule 19 (methods)
 
-    methods	go to state 169
+    methods	go to state 179
 
 
 
-state 115
+state 121
+
+    superclass  ->  ':' . classname   (rule 14)
+
+    CLASSNAME	shift, and go to state 12
+
+    classname	go to state 180
+
+
+
+state 122
 
     classdef  ->  classname '[' . optname ']' superclass '{' classvardecls methods '}'   (rule 9)
 
@@ -2446,51 +2621,41 @@ state 115
 
     $default	reduce using rule 11 (optname)
 
-    optname	go to state 170
-    name	go to state 171
+    optname	go to state 181
+    name	go to state 182
 
 
 
-state 116
-
-    superclass  ->  ':' . classname   (rule 14)
-
-    CLASSNAME	shift, and go to state 12
-
-    classname	go to state 172
-
-
-
-state 117
+state 123
 
     classdef  ->  classname superclass . '{' classvardecls methods '}'   (rule 8)
 
-    '{' 	shift, and go to state 173
+    '{' 	shift, and go to state 183
 
 
 
-state 118
+state 124
 
-    funcvardecl  ->  VAR slotdeflist ';' .   (rule 132)
+    funcvardecl  ->  VAR slotdeflist ';' .   (rule 133)
 
-    $default	reduce using rule 132 (funcvardecl)
+    $default	reduce using rule 133 (funcvardecl)
 
 
 
-state 119
+state 125
 
-    slotdeflist  ->  slotdeflist ',' . slotdef   (rule 141)
+    slotdeflist  ->  slotdeflist ',' . slotdef   (rule 142)
 
     NAME	shift, and go to state 6
 
-    slotdef	go to state 174
+    slotdef	go to state 184
     name	go to state 64
 
 
 
-state 120
+state 126
 
-    slotdef  ->  name '=' . slotliteral   (rule 143)
+    slotdef  ->  name '=' . slotliteral   (rule 144)
 
     INTEGER	shift, and go to state 7
     FLOAT	shift, and go to state 8
@@ -2503,71 +2668,71 @@ state 120
     INFINITUMOBJ	shift, and go to state 17
     PIE 	shift, and go to state 19
     '-' 	shift, and go to state 20
-    '#' 	shift, and go to state 175
+    '#' 	shift, and go to state 185
 
-    slotliteral	go to state 176
-    listlit	go to state 177
-    integer	go to state 178
+    slotliteral	go to state 186
+    listlit	go to state 187
+    integer	go to state 188
     floatr	go to state 44
     pie 	go to state 45
-    floatp	go to state 179
-    trueobj	go to state 180
-    falseobj	go to state 181
-    nilobj	go to state 182
-    infobj	go to state 183
-    ascii	go to state 184
-    symbol	go to state 185
-    string	go to state 186
+    floatp	go to state 189
+    trueobj	go to state 190
+    falseobj	go to state 191
+    nilobj	go to state 192
+    infobj	go to state 193
+    ascii	go to state 194
+    symbol	go to state 195
+    string	go to state 196
     string1	go to state 56
 
 
 
-state 121
+state 127
 
-    argdecls  ->  ARG slotdeflist0 . ELLIPSIS name ';'   (rule 135)
+    argdecls  ->  ARG slotdeflist0 . ELLIPSIS name ';'   (rule 136)
 
-    ELLIPSIS	shift, and go to state 187
-
-
-
-state 122
-
-    argdecls  ->  ARG slotdeflist . ';'   (rule 134)
-    slotdeflist0  ->  slotdeflist .   (rule 139)
-    slotdeflist  ->  slotdeflist . ',' slotdef   (rule 141)
-
-    ';' 	shift, and go to state 188
-    ',' 	shift, and go to state 119
-
-    $default	reduce using rule 139 (slotdeflist0)
+    ELLIPSIS	shift, and go to state 197
 
 
 
-state 123
+state 128
 
-    argdecls  ->  '|' slotdeflist0 . ELLIPSIS name '|'   (rule 137)
+    argdecls  ->  ARG slotdeflist . ';'   (rule 135)
+    slotdeflist0  ->  slotdeflist .   (rule 140)
+    slotdeflist  ->  slotdeflist . ',' slotdef   (rule 142)
 
-    ELLIPSIS	shift, and go to state 189
+    ';' 	shift, and go to state 198
+    ',' 	shift, and go to state 125
 
-
-
-state 124
-
-    argdecls  ->  '|' slotdeflist . '|'   (rule 136)
-    slotdeflist0  ->  slotdeflist .   (rule 139)
-    slotdeflist  ->  slotdeflist . ',' slotdef   (rule 141)
-
-    '|' 	shift, and go to state 190
-    ',' 	shift, and go to state 119
-
-    $default	reduce using rule 139 (slotdeflist0)
+    $default	reduce using rule 140 (slotdeflist0)
 
 
 
-state 125
+state 129
 
-    block  ->  '{' argdecls funcvardecls . funcbody '}'   (rule 126)
-    funcvardecls  ->  funcvardecls . funcvardecl   (rule 129)
+    argdecls  ->  '|' slotdeflist0 . ELLIPSIS name '|'   (rule 138)
+
+    ELLIPSIS	shift, and go to state 199
+
+
+
+state 130
+
+    argdecls  ->  '|' slotdeflist . '|'   (rule 137)
+    slotdeflist0  ->  slotdeflist .   (rule 140)
+    slotdeflist  ->  slotdeflist . ',' slotdef   (rule 142)
+
+    '|' 	shift, and go to state 200
+    ',' 	shift, and go to state 125
+
+    $default	reduce using rule 140 (slotdeflist0)
+
+
+
+state 131
+
+    block  ->  '{' argdecls funcvardecls . funcbody '}'   (rule 127)
+    funcvardecls  ->  funcvardecls . funcvardecl   (rule 130)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -2594,7 +2759,7 @@ state 125
 
     $default	reduce using rule 40 (funretval)
 
-    funcbody	go to state 191
+    funcbody	go to state 201
     funretval	go to state 30
     msgsend	go to state 31
     expr1	go to state 32
@@ -2605,7 +2770,7 @@ state 125
     pushname	go to state 37
     pushliteral	go to state 38
     block	go to state 39
-    funcvardecl	go to state 192
+    funcvardecl	go to state 202
     listlit	go to state 42
     integer	go to state 43
     floatr	go to state 44
@@ -2625,7 +2790,7 @@ state 125
 
 
 
-state 126
+state 132
 
     expr1  ->  '[' arglistc ']' .   (rule 59)
 
@@ -2633,10 +2798,10 @@ state 126
 
 
 
-state 127
+state 133
 
     optcomma  ->  ',' .   (rule 28)
-    arglist1  ->  arglist1 ',' . exprseq   (rule 84)
+    arglist1  ->  arglist1 ',' . exprseq   (rule 85)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -2665,98 +2830,7 @@ state 127
     expr1	go to state 32
     expr	go to state 33
     exprn	go to state 34
-    exprseq	go to state 193
-    blockliteral	go to state 36
-    pushname	go to state 37
-    pushliteral	go to state 38
-    block	go to state 39
-    listlit	go to state 42
-    integer	go to state 43
-    floatr	go to state 44
-    pie 	go to state 45
-    floatp	go to state 46
-    name	go to state 47
-    classname	go to state 48
-    trueobj	go to state 49
-    falseobj	go to state 50
-    nilobj	go to state 51
-    infobj	go to state 52
-    ascii	go to state 53
-    symbol	go to state 54
-    string	go to state 55
-    string1	go to state 56
-    pseudovar	go to state 57
-
-
-
-state 128
-
-    arglistc  ->  arglist1 optcomma .   (rule 82)
-
-    $default	reduce using rule 82 (arglistc)
-
-
-
-state 129
-
-    expr1  ->  '(' exprseq ')' .   (rule 57)
-
-    $default	reduce using rule 57 (expr1)
-
-
-
-state 130
-
-    cmdlinecode  ->  '(' funcvardecls1 funcbody . ')'   (rule 31)
-
-    ')' 	shift, and go to state 194
-
-
-
-state 131
-
-    optsemi  ->  ';' .   (rule 26)
-
-    $default	reduce using rule 26 (optsemi)
-
-
-
-state 132
-
-    funretval  ->  '^' expr optsemi .   (rule 41)
-
-    $default	reduce using rule 41 (funretval)
-
-
-
-state 133
-
-    expr  ->  '~' name '=' . expr   (rule 72)
-
-    NAME	shift, and go to state 6
-    INTEGER	shift, and go to state 7
-    FLOAT	shift, and go to state 8
-    SYMBOL	shift, and go to state 9
-    STRING	shift, and go to state 10
-    ASCII	shift, and go to state 11
-    CLASSNAME	shift, and go to state 12
-    NILOBJ	shift, and go to state 14
-    TRUEOBJ	shift, and go to state 15
-    FALSEOBJ	shift, and go to state 16
-    INFINITUMOBJ	shift, and go to state 17
-    PSEUDOVAR	shift, and go to state 18
-    PIE 	shift, and go to state 19
-    '-' 	shift, and go to state 20
-    '`' 	shift, and go to state 21
-    '{' 	shift, and go to state 22
-    '[' 	shift, and go to state 23
-    '(' 	shift, and go to state 68
-    '~' 	shift, and go to state 26
-    '#' 	shift, and go to state 27
-
-    msgsend	go to state 31
-    expr1	go to state 32
-    expr	go to state 195
+    exprseq	go to state 203
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -2782,184 +2856,15 @@ state 133
 
 state 134
 
-    block  ->  '#' '{' argdecls . funcvardecls funcbody '}'   (rule 127)
+    arglistc  ->  arglist1 optcomma .   (rule 83)
 
-    $default	reduce using rule 128 (funcvardecls)
-
-    funcvardecls	go to state 196
+    $default	reduce using rule 83 (arglistc)
 
 
 
 state 135
 
-    listlit2  ->  '[' . literallistc ']'   (rule 150)
-
-    INTEGER	shift, and go to state 7
-    FLOAT	shift, and go to state 8
-    SYMBOL	shift, and go to state 9
-    STRING	shift, and go to state 10
-    ASCII	shift, and go to state 11
-    CLASSNAME	shift, and go to state 12
-    NILOBJ	shift, and go to state 14
-    TRUEOBJ	shift, and go to state 15
-    FALSEOBJ	shift, and go to state 16
-    INFINITUMOBJ	shift, and go to state 17
-    PIE 	shift, and go to state 19
-    '-' 	shift, and go to state 20
-    '[' 	shift, and go to state 135
-
-    $default	reduce using rule 152 (literallistc)
-
-    listliteral	go to state 136
-    listlit2	go to state 137
-    literallistc	go to state 197
-    literallist1	go to state 139
-    integer	go to state 140
-    floatr	go to state 44
-    pie 	go to state 45
-    floatp	go to state 141
-    classname	go to state 142
-    trueobj	go to state 143
-    falseobj	go to state 144
-    nilobj	go to state 145
-    infobj	go to state 146
-    ascii	go to state 147
-    symbol	go to state 148
-    string	go to state 149
-    string1	go to state 56
-
-
-
-state 136
-
-    literallist1  ->  listliteral .   (rule 154)
-
-    $default	reduce using rule 154 (literallist1)
-
-
-
-state 137
-
-    listliteral  ->  listlit2 .   (rule 125)
-
-    $default	reduce using rule 125 (listliteral)
-
-
-
-state 138
-
-    listlit  ->  '#' '[' literallistc . ']'   (rule 148)
-
-    ']' 	shift, and go to state 198
-
-
-
-state 139
-
-    literallistc  ->  literallist1 . optcomma   (rule 153)
-    literallist1  ->  literallist1 . ',' listliteral   (rule 155)
-
-    ',' 	shift, and go to state 199
-
-    $default	reduce using rule 27 (optcomma)
-
-    optcomma	go to state 200
-
-
-
-state 140
-
-    listliteral  ->  integer .   (rule 116)
-    floatp  ->  integer . pie   (rule 167)
-
-    PIE 	shift, and go to state 19
-
-    $default	reduce using rule 116 (listliteral)
-
-    pie 	go to state 104
-
-
-
-state 141
-
-    listliteral  ->  floatp .   (rule 117)
-
-    $default	reduce using rule 117 (listliteral)
-
-
-
-state 142
-
-    listlit2  ->  classname . '[' literallistc ']'   (rule 151)
-
-    '[' 	shift, and go to state 201
-
-
-
-state 143
-
-    listliteral  ->  trueobj .   (rule 121)
-
-    $default	reduce using rule 121 (listliteral)
-
-
-
-state 144
-
-    listliteral  ->  falseobj .   (rule 122)
-
-    $default	reduce using rule 122 (listliteral)
-
-
-
-state 145
-
-    listliteral  ->  nilobj .   (rule 123)
-
-    $default	reduce using rule 123 (listliteral)
-
-
-
-state 146
-
-    listliteral  ->  infobj .   (rule 124)
-
-    $default	reduce using rule 124 (listliteral)
-
-
-
-state 147
-
-    listliteral  ->  ascii .   (rule 118)
-
-    $default	reduce using rule 118 (listliteral)
-
-
-
-state 148
-
-    listliteral  ->  symbol .   (rule 120)
-
-    $default	reduce using rule 120 (listliteral)
-
-
-
-state 149
-
-    listliteral  ->  string .   (rule 119)
-    string  ->  string . string1   (rule 180)
-
-    STRING	shift, and go to state 10
-
-    $default	reduce using rule 119 (listliteral)
-
-    string1	go to state 113
-
-
-
-state 150
-
-    expr  ->  '#' mavars '=' . expr   (rule 75)
+    dictslotdef  ->  expr ':' . expr   (rule 145)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -2984,7 +2889,7 @@ state 150
 
     msgsend	go to state 31
     expr1	go to state 32
-    expr	go to state 202
+    expr	go to state 204
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -3008,29 +2913,197 @@ state 150
 
 
 
-state 151
+state 136
 
-    mavars  ->  mavarlist ELLIPSIS . name   (rule 91)
+    expr1  ->  '(' exprseq ')' .   (rule 57)
+
+    $default	reduce using rule 57 (expr1)
+
+
+
+state 137
+
+    cmdlinecode  ->  '(' funcvardecls1 funcbody . ')'   (rule 31)
+
+    ')' 	shift, and go to state 205
+
+
+
+state 138
+
+    dictslotlist1  ->  dictslotlist1 ',' . dictslotdef   (rule 148)
 
     NAME	shift, and go to state 6
+    INTEGER	shift, and go to state 7
+    FLOAT	shift, and go to state 8
+    SYMBOL	shift, and go to state 9
+    STRING	shift, and go to state 10
+    ASCII	shift, and go to state 11
+    CLASSNAME	shift, and go to state 12
+    NILOBJ	shift, and go to state 14
+    TRUEOBJ	shift, and go to state 15
+    FALSEOBJ	shift, and go to state 16
+    INFINITUMOBJ	shift, and go to state 17
+    PSEUDOVAR	shift, and go to state 18
+    PIE 	shift, and go to state 19
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 20
+    '`' 	shift, and go to state 21
+    '{' 	shift, and go to state 22
+    '[' 	shift, and go to state 23
+    '(' 	shift, and go to state 68
+    '~' 	shift, and go to state 26
+    '#' 	shift, and go to state 27
 
-    name	go to state 203
+    msgsend	go to state 31
+    expr1	go to state 32
+    expr	go to state 206
+    blockliteral	go to state 36
+    pushname	go to state 37
+    pushliteral	go to state 38
+    block	go to state 39
+    dictslotdef	go to state 207
+    listlit	go to state 42
+    integer	go to state 43
+    floatr	go to state 44
+    pie 	go to state 45
+    floatp	go to state 46
+    name	go to state 47
+    classname	go to state 48
+    trueobj	go to state 49
+    falseobj	go to state 50
+    nilobj	go to state 51
+    infobj	go to state 52
+    ascii	go to state 53
+    symbol	go to state 54
+    string	go to state 55
+    string1	go to state 56
+    pseudovar	go to state 57
+    keybinop	go to state 83
 
 
 
-state 152
+state 139
 
-    mavarlist  ->  mavarlist ',' . name   (rule 93)
+    expr1  ->  '(' dictslotlist ')' .   (rule 60)
+
+    $default	reduce using rule 60 (expr1)
+
+
+
+state 140
+
+    msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
+    msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
+    msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
+    msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
+    msgsend  ->  expr . '.' name blocklist   (rule 52)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
+    dictslotdef  ->  keybinop expr .   (rule 146)
+
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
+
+    $default	reduce using rule 146 (dictslotdef)
+
+    binop	go to state 103
+    keybinop	go to state 104
+
+
+
+state 141
+
+    optsemi  ->  ';' .   (rule 26)
+
+    $default	reduce using rule 26 (optsemi)
+
+
+
+state 142
+
+    funretval  ->  '^' expr optsemi .   (rule 41)
+
+    $default	reduce using rule 41 (funretval)
+
+
+
+state 143
+
+    expr  ->  '~' name '=' . expr   (rule 73)
 
     NAME	shift, and go to state 6
+    INTEGER	shift, and go to state 7
+    FLOAT	shift, and go to state 8
+    SYMBOL	shift, and go to state 9
+    STRING	shift, and go to state 10
+    ASCII	shift, and go to state 11
+    CLASSNAME	shift, and go to state 12
+    NILOBJ	shift, and go to state 14
+    TRUEOBJ	shift, and go to state 15
+    FALSEOBJ	shift, and go to state 16
+    INFINITUMOBJ	shift, and go to state 17
+    PSEUDOVAR	shift, and go to state 18
+    PIE 	shift, and go to state 19
+    '-' 	shift, and go to state 20
+    '`' 	shift, and go to state 21
+    '{' 	shift, and go to state 22
+    '[' 	shift, and go to state 23
+    '(' 	shift, and go to state 68
+    '~' 	shift, and go to state 26
+    '#' 	shift, and go to state 27
 
-    name	go to state 204
+    msgsend	go to state 31
+    expr1	go to state 32
+    expr	go to state 208
+    blockliteral	go to state 36
+    pushname	go to state 37
+    pushliteral	go to state 38
+    block	go to state 39
+    listlit	go to state 42
+    integer	go to state 43
+    floatr	go to state 44
+    pie 	go to state 45
+    floatp	go to state 46
+    name	go to state 47
+    classname	go to state 48
+    trueobj	go to state 49
+    falseobj	go to state 50
+    nilobj	go to state 51
+    infobj	go to state 52
+    ascii	go to state 53
+    symbol	go to state 54
+    string	go to state 55
+    string1	go to state 56
+    pseudovar	go to state 57
 
 
 
-state 153
+state 144
 
-    listlit  ->  '#' classname '[' . literallistc ']'   (rule 149)
+    block  ->  '#' '{' argdecls . funcvardecls funcbody '}'   (rule 128)
+
+    $default	reduce using rule 129 (funcvardecls)
+
+    funcvardecls	go to state 209
+
+
+
+state 145
+
+    listlit2  ->  '[' . literallistc ']'   (rule 157)
 
     INTEGER	shift, and go to state 7
     FLOAT	shift, and go to state 8
@@ -3044,45 +3117,283 @@ state 153
     INFINITUMOBJ	shift, and go to state 17
     PIE 	shift, and go to state 19
     '-' 	shift, and go to state 20
-    '[' 	shift, and go to state 135
+    '[' 	shift, and go to state 145
 
-    $default	reduce using rule 152 (literallistc)
+    $default	reduce using rule 159 (literallistc)
 
-    listliteral	go to state 136
-    listlit2	go to state 137
-    literallistc	go to state 205
-    literallist1	go to state 139
-    integer	go to state 140
+    listliteral	go to state 146
+    listlit2	go to state 147
+    literallistc	go to state 210
+    literallist1	go to state 149
+    integer	go to state 150
     floatr	go to state 44
     pie 	go to state 45
-    floatp	go to state 141
-    classname	go to state 142
-    trueobj	go to state 143
-    falseobj	go to state 144
-    nilobj	go to state 145
-    infobj	go to state 146
-    ascii	go to state 147
-    symbol	go to state 148
-    string	go to state 149
+    floatp	go to state 151
+    classname	go to state 152
+    trueobj	go to state 153
+    falseobj	go to state 154
+    nilobj	go to state 155
+    infobj	go to state 156
+    ascii	go to state 157
+    symbol	go to state 158
+    string	go to state 159
     string1	go to state 56
+
+
+
+state 146
+
+    literallist1  ->  listliteral .   (rule 161)
+
+    $default	reduce using rule 161 (literallist1)
+
+
+
+state 147
+
+    listliteral  ->  listlit2 .   (rule 126)
+
+    $default	reduce using rule 126 (listliteral)
+
+
+
+state 148
+
+    listlit  ->  '#' '[' literallistc . ']'   (rule 155)
+
+    ']' 	shift, and go to state 211
+
+
+
+state 149
+
+    literallistc  ->  literallist1 . optcomma   (rule 160)
+    literallist1  ->  literallist1 . ',' listliteral   (rule 162)
+
+    ',' 	shift, and go to state 212
+
+    $default	reduce using rule 27 (optcomma)
+
+    optcomma	go to state 213
+
+
+
+state 150
+
+    listliteral  ->  integer .   (rule 117)
+    floatp  ->  integer . pie   (rule 174)
+
+    PIE 	shift, and go to state 19
+
+    $default	reduce using rule 117 (listliteral)
+
+    pie 	go to state 110
+
+
+
+state 151
+
+    listliteral  ->  floatp .   (rule 118)
+
+    $default	reduce using rule 118 (listliteral)
+
+
+
+state 152
+
+    listlit2  ->  classname . '[' literallistc ']'   (rule 158)
+
+    '[' 	shift, and go to state 214
+
+
+
+state 153
+
+    listliteral  ->  trueobj .   (rule 122)
+
+    $default	reduce using rule 122 (listliteral)
 
 
 
 state 154
 
-    expr1  ->  expr1 '[' arglist1 . ']'   (rule 64)
-    expr  ->  expr1 '[' arglist1 . ']' '=' expr   (rule 76)
-    arglist1  ->  arglist1 . ',' exprseq   (rule 84)
+    listliteral  ->  falseobj .   (rule 123)
 
-    ']' 	shift, and go to state 206
-    ',' 	shift, and go to state 207
+    $default	reduce using rule 123 (listliteral)
 
 
 
 state 155
 
-    expr  ->  expr '.' '[' . arglist1 ']'   (rule 66)
-    expr  ->  expr '.' '[' . arglist1 ']' '=' expr   (rule 77)
+    listliteral  ->  nilobj .   (rule 124)
+
+    $default	reduce using rule 124 (listliteral)
+
+
+
+state 156
+
+    listliteral  ->  infobj .   (rule 125)
+
+    $default	reduce using rule 125 (listliteral)
+
+
+
+state 157
+
+    listliteral  ->  ascii .   (rule 119)
+
+    $default	reduce using rule 119 (listliteral)
+
+
+
+state 158
+
+    listliteral  ->  symbol .   (rule 121)
+
+    $default	reduce using rule 121 (listliteral)
+
+
+
+state 159
+
+    listliteral  ->  string .   (rule 120)
+    string  ->  string . string1   (rule 187)
+
+    STRING	shift, and go to state 10
+
+    $default	reduce using rule 120 (listliteral)
+
+    string1	go to state 119
+
+
+
+state 160
+
+    expr  ->  '#' mavars '=' . expr   (rule 76)
+
+    NAME	shift, and go to state 6
+    INTEGER	shift, and go to state 7
+    FLOAT	shift, and go to state 8
+    SYMBOL	shift, and go to state 9
+    STRING	shift, and go to state 10
+    ASCII	shift, and go to state 11
+    CLASSNAME	shift, and go to state 12
+    NILOBJ	shift, and go to state 14
+    TRUEOBJ	shift, and go to state 15
+    FALSEOBJ	shift, and go to state 16
+    INFINITUMOBJ	shift, and go to state 17
+    PSEUDOVAR	shift, and go to state 18
+    PIE 	shift, and go to state 19
+    '-' 	shift, and go to state 20
+    '`' 	shift, and go to state 21
+    '{' 	shift, and go to state 22
+    '[' 	shift, and go to state 23
+    '(' 	shift, and go to state 68
+    '~' 	shift, and go to state 26
+    '#' 	shift, and go to state 27
+
+    msgsend	go to state 31
+    expr1	go to state 32
+    expr	go to state 215
+    blockliteral	go to state 36
+    pushname	go to state 37
+    pushliteral	go to state 38
+    block	go to state 39
+    listlit	go to state 42
+    integer	go to state 43
+    floatr	go to state 44
+    pie 	go to state 45
+    floatp	go to state 46
+    name	go to state 47
+    classname	go to state 48
+    trueobj	go to state 49
+    falseobj	go to state 50
+    nilobj	go to state 51
+    infobj	go to state 52
+    ascii	go to state 53
+    symbol	go to state 54
+    string	go to state 55
+    string1	go to state 56
+    pseudovar	go to state 57
+
+
+
+state 161
+
+    mavars  ->  mavarlist ELLIPSIS . name   (rule 92)
+
+    NAME	shift, and go to state 6
+
+    name	go to state 216
+
+
+
+state 162
+
+    mavarlist  ->  mavarlist ',' . name   (rule 94)
+
+    NAME	shift, and go to state 6
+
+    name	go to state 217
+
+
+
+state 163
+
+    listlit  ->  '#' classname '[' . literallistc ']'   (rule 156)
+
+    INTEGER	shift, and go to state 7
+    FLOAT	shift, and go to state 8
+    SYMBOL	shift, and go to state 9
+    STRING	shift, and go to state 10
+    ASCII	shift, and go to state 11
+    CLASSNAME	shift, and go to state 12
+    NILOBJ	shift, and go to state 14
+    TRUEOBJ	shift, and go to state 15
+    FALSEOBJ	shift, and go to state 16
+    INFINITUMOBJ	shift, and go to state 17
+    PIE 	shift, and go to state 19
+    '-' 	shift, and go to state 20
+    '[' 	shift, and go to state 145
+
+    $default	reduce using rule 159 (literallistc)
+
+    listliteral	go to state 146
+    listlit2	go to state 147
+    literallistc	go to state 218
+    literallist1	go to state 149
+    integer	go to state 150
+    floatr	go to state 44
+    pie 	go to state 45
+    floatp	go to state 151
+    classname	go to state 152
+    trueobj	go to state 153
+    falseobj	go to state 154
+    nilobj	go to state 155
+    infobj	go to state 156
+    ascii	go to state 157
+    symbol	go to state 158
+    string	go to state 159
+    string1	go to state 56
+
+
+
+state 164
+
+    expr1  ->  expr1 '[' arglist1 . ']'   (rule 65)
+    expr  ->  expr1 '[' arglist1 . ']' '=' expr   (rule 77)
+    arglist1  ->  arglist1 . ',' exprseq   (rule 85)
+
+    ']' 	shift, and go to state 219
+    ',' 	shift, and go to state 220
+
+
+
+state 165
+
+    expr  ->  expr '.' '[' . arglist1 ']'   (rule 67)
+    expr  ->  expr '.' '[' . arglist1 ']' '=' expr   (rule 78)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -3110,7 +3421,7 @@ state 155
     expr	go to state 33
     exprn	go to state 34
     exprseq	go to state 73
-    arglist1	go to state 208
+    arglist1	go to state 221
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -3134,7 +3445,7 @@ state 155
 
 
 
-state 156
+state 166
 
     msgsend  ->  expr '.' '(' . keyarglist1 ')' blocklist   (rule 48)
     msgsend  ->  expr '.' '(' . arglist1 optkeyarglist ')' blocklist   (rule 50)
@@ -3152,7 +3463,7 @@ state 156
     INFINITUMOBJ	shift, and go to state 17
     PSEUDOVAR	shift, and go to state 18
     PIE 	shift, and go to state 19
-    KEYBINOP	shift, and go to state 88
+    KEYBINOP	shift, and go to state 76
     '-' 	shift, and go to state 20
     '`' 	shift, and go to state 21
     '{' 	shift, and go to state 22
@@ -3166,9 +3477,9 @@ state 156
     expr	go to state 33
     exprn	go to state 34
     exprseq	go to state 73
-    arglist1	go to state 209
-    keyarglist1	go to state 210
-    keyarg	go to state 167
+    arglist1	go to state 222
+    keyarglist1	go to state 223
+    keyarg	go to state 177
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -3189,156 +3500,158 @@ state 156
     string	go to state 55
     string1	go to state 56
     pseudovar	go to state 57
-    keybinop	go to state 168
+    keybinop	go to state 178
 
 
 
-state 157
+state 167
 
     msgsend  ->  expr '.' name . '(' keyarglist1 ')' blocklist   (rule 49)
     msgsend  ->  expr '.' name . '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr '.' name . blocklist   (rule 52)
-    expr  ->  expr '.' name . '=' expr   (rule 73)
+    expr  ->  expr '.' name . '=' expr   (rule 74)
 
-    '=' 	shift, and go to state 211
+    '=' 	shift, and go to state 224
     '{' 	shift, and go to state 22
-    '(' 	shift, and go to state 212
-    '#' 	shift, and go to state 108
+    '(' 	shift, and go to state 225
+    '#' 	shift, and go to state 114
 
     $default	reduce using rule 44 (blocklist)
 
-    blocklist1	go to state 213
-    blocklist	go to state 214
-    blockliteral	go to state 110
+    blocklist1	go to state 226
+    blocklist	go to state 227
+    blockliteral	go to state 116
     block	go to state 39
 
 
 
-state 158
+state 168
 
     msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
     msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
     msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
     msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr binop expr .   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr binop expr .   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
 
-    '.' 	shift, and go to state 96
-
-    $default	reduce using rule 69 (expr)
-
-    binop	go to state 97
-    keybinop	go to state 98
-
-
-
-state 159
-
-    msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
-    msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
-    msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
-    msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
-    msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  expr keybinop expr .   (rule 70)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
-
-    '.' 	shift, and go to state 96
+    '.' 	shift, and go to state 102
 
     $default	reduce using rule 70 (expr)
 
-    binop	go to state 97
-    keybinop	go to state 98
+    binop	go to state 103
+    keybinop	go to state 104
 
 
 
-state 160
-
-    msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
-    msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
-    msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
-    msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
-    msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
-    exprn  ->  exprn ';' expr .   (rule 79)
-
-    BINOP	shift, and go to state 87
-    KEYBINOP	shift, and go to state 88
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 92
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '.' 	shift, and go to state 96
-
-    $default	reduce using rule 79 (exprn)
-
-    binop	go to state 97
-    keybinop	go to state 98
-
-
-
-state 161
+state 169
 
     msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
     msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
     msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
     msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  name '=' expr .   (rule 71)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr keybinop expr .   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
 
-    BINOP	shift, and go to state 87
-    KEYBINOP	shift, and go to state 88
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 92
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '.' 	shift, and go to state 96
+    '.' 	shift, and go to state 102
 
     $default	reduce using rule 71 (expr)
 
-    binop	go to state 97
-    keybinop	go to state 98
+    binop	go to state 103
+    keybinop	go to state 104
 
 
 
-state 162
+state 170
+
+    msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
+    msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
+    msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
+    msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
+    msgsend  ->  expr . '.' name blocklist   (rule 52)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
+    exprn  ->  exprn ';' expr .   (rule 80)
+
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
+
+    $default	reduce using rule 80 (exprn)
+
+    binop	go to state 103
+    keybinop	go to state 104
+
+
+
+state 171
+
+    msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
+    msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
+    msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
+    msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
+    msgsend  ->  expr . '.' name blocklist   (rule 52)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  name '=' expr .   (rule 72)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
+
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
+
+    $default	reduce using rule 72 (expr)
+
+    binop	go to state 103
+    keybinop	go to state 104
+
+
+
+state 172
 
     msgsend  ->  name '(' arglist1 . optkeyarglist ')' blocklist   (rule 47)
-    expr  ->  name '(' arglist1 . optkeyarglist ')' '=' expr   (rule 74)
-    arglist1  ->  arglist1 . ',' exprseq   (rule 84)
+    expr  ->  name '(' arglist1 . optkeyarglist ')' '=' expr   (rule 75)
+    arglist1  ->  arglist1 . ',' exprseq   (rule 85)
 
-    ',' 	shift, and go to state 215
+    ',' 	shift, and go to state 228
 
-    $default	reduce using rule 88 (optkeyarglist)
+    $default	reduce using rule 89 (optkeyarglist)
 
-    optkeyarglist	go to state 216
+    optkeyarglist	go to state 229
 
 
 
-state 163
+state 173
 
     blocklist1  ->  blocklist1 blockliteral .   (rule 43)
 
@@ -3346,48 +3659,48 @@ state 163
 
 
 
-state 164
+state 174
 
-    expr1  ->  classname '[' arglistc . ']'   (rule 63)
+    expr1  ->  classname '[' arglistc . ']'   (rule 64)
 
-    ']' 	shift, and go to state 217
-
-
-
-state 165
-
-    expr1  ->  classname '(' arglist1 . optkeyarglist ')'   (rule 62)
-    arglist1  ->  arglist1 . ',' exprseq   (rule 84)
-
-    ',' 	shift, and go to state 215
-
-    $default	reduce using rule 88 (optkeyarglist)
-
-    optkeyarglist	go to state 218
+    ']' 	shift, and go to state 230
 
 
 
-state 166
+state 175
 
-    expr1  ->  classname '(' keyarglist1 . ')'   (rule 61)
-    keyarglist1  ->  keyarglist1 . ',' keyarg   (rule 86)
+    expr1  ->  classname '(' arglist1 . optkeyarglist ')'   (rule 63)
+    arglist1  ->  arglist1 . ',' exprseq   (rule 85)
 
-    ',' 	shift, and go to state 219
-    ')' 	shift, and go to state 220
+    ',' 	shift, and go to state 228
 
+    $default	reduce using rule 89 (optkeyarglist)
 
-
-state 167
-
-    keyarglist1  ->  keyarg .   (rule 85)
-
-    $default	reduce using rule 85 (keyarglist1)
+    optkeyarglist	go to state 231
 
 
 
-state 168
+state 176
 
-    keyarg  ->  keybinop . exprseq   (rule 87)
+    expr1  ->  classname '(' keyarglist1 . ')'   (rule 62)
+    keyarglist1  ->  keyarglist1 . ',' keyarg   (rule 87)
+
+    ',' 	shift, and go to state 232
+    ')' 	shift, and go to state 233
+
+
+
+state 177
+
+    keyarglist1  ->  keyarg .   (rule 86)
+
+    $default	reduce using rule 86 (keyarglist1)
+
+
+
+state 178
+
+    keyarg  ->  keybinop . exprseq   (rule 88)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -3414,7 +3727,7 @@ state 168
     expr1	go to state 32
     expr	go to state 33
     exprn	go to state 34
-    exprseq	go to state 221
+    exprseq	go to state 234
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -3438,45 +3751,30 @@ state 168
 
 
 
-state 169
+state 179
 
     classextension  ->  '+' classname '{' methods . '}'   (rule 10)
     methods  ->  methods . methoddef   (rule 20)
 
     NAME	shift, and go to state 6
-    BINOP	shift, and go to state 87
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 222
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '}' 	shift, and go to state 223
+    BINOP	shift, and go to state 93
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 235
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '}' 	shift, and go to state 236
 
-    methoddef	go to state 224
-    name	go to state 225
-    binop	go to state 226
-
-
-
-state 170
-
-    classdef  ->  classname '[' optname . ']' superclass '{' classvardecls methods '}'   (rule 9)
-
-    ']' 	shift, and go to state 227
+    methoddef	go to state 237
+    name	go to state 238
+    binop	go to state 239
 
 
 
-state 171
-
-    optname  ->  name .   (rule 12)
-
-    $default	reduce using rule 12 (optname)
-
-
-
-state 172
+state 180
 
     superclass  ->  ':' classname .   (rule 14)
 
@@ -3484,195 +3782,244 @@ state 172
 
 
 
-state 173
-
-    classdef  ->  classname superclass '{' . classvardecls methods '}'   (rule 8)
-
-    $default	reduce using rule 15 (classvardecls)
-
-    classvardecls	go to state 228
-
-
-
-state 174
-
-    slotdeflist  ->  slotdeflist ',' slotdef .   (rule 141)
-
-    $default	reduce using rule 141 (slotdeflist)
-
-
-
-state 175
-
-    listlit  ->  '#' . '[' literallistc ']'   (rule 148)
-    listlit  ->  '#' . classname '[' literallistc ']'   (rule 149)
-
-    CLASSNAME	shift, and go to state 12
-    '[' 	shift, and go to state 81
-
-    classname	go to state 85
-
-
-
-state 176
-
-    slotdef  ->  name '=' slotliteral .   (rule 143)
-
-    $default	reduce using rule 143 (slotdef)
-
-
-
-state 177
-
-    slotliteral  ->  listlit .   (rule 103)
-
-    $default	reduce using rule 103 (slotliteral)
-
-
-
-state 178
-
-    slotliteral  ->  integer .   (rule 94)
-    floatp  ->  integer . pie   (rule 167)
-
-    PIE 	shift, and go to state 19
-
-    $default	reduce using rule 94 (slotliteral)
-
-    pie 	go to state 104
-
-
-
-state 179
-
-    slotliteral  ->  floatp .   (rule 95)
-
-    $default	reduce using rule 95 (slotliteral)
-
-
-
-state 180
-
-    slotliteral  ->  trueobj .   (rule 99)
-
-    $default	reduce using rule 99 (slotliteral)
-
-
-
 state 181
 
-    slotliteral  ->  falseobj .   (rule 100)
+    classdef  ->  classname '[' optname . ']' superclass '{' classvardecls methods '}'   (rule 9)
 
-    $default	reduce using rule 100 (slotliteral)
+    ']' 	shift, and go to state 240
 
 
 
 state 182
 
-    slotliteral  ->  nilobj .   (rule 101)
+    optname  ->  name .   (rule 12)
 
-    $default	reduce using rule 101 (slotliteral)
+    $default	reduce using rule 12 (optname)
 
 
 
 state 183
 
-    slotliteral  ->  infobj .   (rule 102)
+    classdef  ->  classname superclass '{' . classvardecls methods '}'   (rule 8)
 
-    $default	reduce using rule 102 (slotliteral)
+    $default	reduce using rule 15 (classvardecls)
+
+    classvardecls	go to state 241
 
 
 
 state 184
 
-    slotliteral  ->  ascii .   (rule 96)
+    slotdeflist  ->  slotdeflist ',' slotdef .   (rule 142)
 
-    $default	reduce using rule 96 (slotliteral)
+    $default	reduce using rule 142 (slotdeflist)
 
 
 
 state 185
 
-    slotliteral  ->  symbol .   (rule 98)
+    listlit  ->  '#' . '[' literallistc ']'   (rule 155)
+    listlit  ->  '#' . classname '[' literallistc ']'   (rule 156)
 
-    $default	reduce using rule 98 (slotliteral)
+    CLASSNAME	shift, and go to state 12
+    '[' 	shift, and go to state 87
+
+    classname	go to state 91
 
 
 
 state 186
 
-    slotliteral  ->  string .   (rule 97)
-    string  ->  string . string1   (rule 180)
+    slotdef  ->  name '=' slotliteral .   (rule 144)
 
-    STRING	shift, and go to state 10
-
-    $default	reduce using rule 97 (slotliteral)
-
-    string1	go to state 113
+    $default	reduce using rule 144 (slotdef)
 
 
 
 state 187
 
-    argdecls  ->  ARG slotdeflist0 ELLIPSIS . name ';'   (rule 135)
+    slotliteral  ->  listlit .   (rule 104)
 
-    NAME	shift, and go to state 6
-
-    name	go to state 229
+    $default	reduce using rule 104 (slotliteral)
 
 
 
 state 188
 
-    argdecls  ->  ARG slotdeflist ';' .   (rule 134)
+    slotliteral  ->  integer .   (rule 95)
+    floatp  ->  integer . pie   (rule 174)
 
-    $default	reduce using rule 134 (argdecls)
+    PIE 	shift, and go to state 19
+
+    $default	reduce using rule 95 (slotliteral)
+
+    pie 	go to state 110
 
 
 
 state 189
 
-    argdecls  ->  '|' slotdeflist0 ELLIPSIS . name '|'   (rule 137)
+    slotliteral  ->  floatp .   (rule 96)
 
-    NAME	shift, and go to state 6
-
-    name	go to state 230
+    $default	reduce using rule 96 (slotliteral)
 
 
 
 state 190
 
-    argdecls  ->  '|' slotdeflist '|' .   (rule 136)
+    slotliteral  ->  trueobj .   (rule 100)
 
-    $default	reduce using rule 136 (argdecls)
+    $default	reduce using rule 100 (slotliteral)
 
 
 
 state 191
 
-    block  ->  '{' argdecls funcvardecls funcbody . '}'   (rule 126)
+    slotliteral  ->  falseobj .   (rule 101)
 
-    '}' 	shift, and go to state 231
+    $default	reduce using rule 101 (slotliteral)
 
 
 
 state 192
 
-    funcvardecls  ->  funcvardecls funcvardecl .   (rule 129)
+    slotliteral  ->  nilobj .   (rule 102)
 
-    $default	reduce using rule 129 (funcvardecls)
+    $default	reduce using rule 102 (slotliteral)
 
 
 
 state 193
 
-    arglist1  ->  arglist1 ',' exprseq .   (rule 84)
+    slotliteral  ->  infobj .   (rule 103)
 
-    $default	reduce using rule 84 (arglist1)
+    $default	reduce using rule 103 (slotliteral)
 
 
 
 state 194
+
+    slotliteral  ->  ascii .   (rule 97)
+
+    $default	reduce using rule 97 (slotliteral)
+
+
+
+state 195
+
+    slotliteral  ->  symbol .   (rule 99)
+
+    $default	reduce using rule 99 (slotliteral)
+
+
+
+state 196
+
+    slotliteral  ->  string .   (rule 98)
+    string  ->  string . string1   (rule 187)
+
+    STRING	shift, and go to state 10
+
+    $default	reduce using rule 98 (slotliteral)
+
+    string1	go to state 119
+
+
+
+state 197
+
+    argdecls  ->  ARG slotdeflist0 ELLIPSIS . name ';'   (rule 136)
+
+    NAME	shift, and go to state 6
+
+    name	go to state 242
+
+
+
+state 198
+
+    argdecls  ->  ARG slotdeflist ';' .   (rule 135)
+
+    $default	reduce using rule 135 (argdecls)
+
+
+
+state 199
+
+    argdecls  ->  '|' slotdeflist0 ELLIPSIS . name '|'   (rule 138)
+
+    NAME	shift, and go to state 6
+
+    name	go to state 243
+
+
+
+state 200
+
+    argdecls  ->  '|' slotdeflist '|' .   (rule 137)
+
+    $default	reduce using rule 137 (argdecls)
+
+
+
+state 201
+
+    block  ->  '{' argdecls funcvardecls funcbody . '}'   (rule 127)
+
+    '}' 	shift, and go to state 244
+
+
+
+state 202
+
+    funcvardecls  ->  funcvardecls funcvardecl .   (rule 130)
+
+    $default	reduce using rule 130 (funcvardecls)
+
+
+
+state 203
+
+    arglist1  ->  arglist1 ',' exprseq .   (rule 85)
+
+    $default	reduce using rule 85 (arglist1)
+
+
+
+state 204
+
+    msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
+    msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
+    msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
+    msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
+    msgsend  ->  expr . '.' name blocklist   (rule 52)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
+    dictslotdef  ->  expr ':' expr .   (rule 145)
+
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
+
+    $default	reduce using rule 145 (dictslotdef)
+
+    binop	go to state 103
+    keybinop	go to state 104
+
+
+
+state 205
 
     cmdlinecode  ->  '(' funcvardecls1 funcbody ')' .   (rule 31)
 
@@ -3680,42 +4027,83 @@ state 194
 
 
 
-state 195
+state 206
 
     msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
     msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
     msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
     msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  '~' name '=' expr .   (rule 72)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
+    dictslotdef  ->  expr . ':' expr   (rule 145)
 
-    BINOP	shift, and go to state 87
-    KEYBINOP	shift, and go to state 88
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 92
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '.' 	shift, and go to state 96
+    ':' 	shift, and go to state 135
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
 
-    $default	reduce using rule 72 (expr)
-
-    binop	go to state 97
-    keybinop	go to state 98
+    binop	go to state 103
+    keybinop	go to state 104
 
 
 
-state 196
+state 207
 
-    block  ->  '#' '{' argdecls funcvardecls . funcbody '}'   (rule 127)
-    funcvardecls  ->  funcvardecls . funcvardecl   (rule 129)
+    dictslotlist1  ->  dictslotlist1 ',' dictslotdef .   (rule 148)
+
+    $default	reduce using rule 148 (dictslotlist1)
+
+
+
+state 208
+
+    msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
+    msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
+    msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
+    msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
+    msgsend  ->  expr . '.' name blocklist   (rule 52)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  '~' name '=' expr .   (rule 73)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
+
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
+
+    $default	reduce using rule 73 (expr)
+
+    binop	go to state 103
+    keybinop	go to state 104
+
+
+
+state 209
+
+    block  ->  '#' '{' argdecls funcvardecls . funcbody '}'   (rule 128)
+    funcvardecls  ->  funcvardecls . funcvardecl   (rule 130)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -3742,7 +4130,7 @@ state 196
 
     $default	reduce using rule 40 (funretval)
 
-    funcbody	go to state 232
+    funcbody	go to state 245
     funretval	go to state 30
     msgsend	go to state 31
     expr1	go to state 32
@@ -3753,7 +4141,7 @@ state 196
     pushname	go to state 37
     pushliteral	go to state 38
     block	go to state 39
-    funcvardecl	go to state 192
+    funcvardecl	go to state 202
     listlit	go to state 42
     integer	go to state 43
     floatr	go to state 44
@@ -3773,26 +4161,26 @@ state 196
 
 
 
-state 197
+state 210
 
-    listlit2  ->  '[' literallistc . ']'   (rule 150)
+    listlit2  ->  '[' literallistc . ']'   (rule 157)
 
-    ']' 	shift, and go to state 233
-
-
-
-state 198
-
-    listlit  ->  '#' '[' literallistc ']' .   (rule 148)
-
-    $default	reduce using rule 148 (listlit)
+    ']' 	shift, and go to state 246
 
 
 
-state 199
+state 211
+
+    listlit  ->  '#' '[' literallistc ']' .   (rule 155)
+
+    $default	reduce using rule 155 (listlit)
+
+
+
+state 212
 
     optcomma  ->  ',' .   (rule 28)
-    literallist1  ->  literallist1 ',' . listliteral   (rule 155)
+    literallist1  ->  literallist1 ',' . listliteral   (rule 162)
 
     INTEGER	shift, and go to state 7
     FLOAT	shift, and go to state 8
@@ -3806,39 +4194,39 @@ state 199
     INFINITUMOBJ	shift, and go to state 17
     PIE 	shift, and go to state 19
     '-' 	shift, and go to state 20
-    '[' 	shift, and go to state 135
+    '[' 	shift, and go to state 145
 
     $default	reduce using rule 28 (optcomma)
 
-    listliteral	go to state 234
-    listlit2	go to state 137
-    integer	go to state 140
+    listliteral	go to state 247
+    listlit2	go to state 147
+    integer	go to state 150
     floatr	go to state 44
     pie 	go to state 45
-    floatp	go to state 141
-    classname	go to state 142
-    trueobj	go to state 143
-    falseobj	go to state 144
-    nilobj	go to state 145
-    infobj	go to state 146
-    ascii	go to state 147
-    symbol	go to state 148
-    string	go to state 149
+    floatp	go to state 151
+    classname	go to state 152
+    trueobj	go to state 153
+    falseobj	go to state 154
+    nilobj	go to state 155
+    infobj	go to state 156
+    ascii	go to state 157
+    symbol	go to state 158
+    string	go to state 159
     string1	go to state 56
 
 
 
-state 200
+state 213
 
-    literallistc  ->  literallist1 optcomma .   (rule 153)
+    literallistc  ->  literallist1 optcomma .   (rule 160)
 
-    $default	reduce using rule 153 (literallistc)
+    $default	reduce using rule 160 (literallistc)
 
 
 
-state 201
+state 214
 
-    listlit2  ->  classname '[' . literallistc ']'   (rule 151)
+    listlit2  ->  classname '[' . literallistc ']'   (rule 158)
 
     INTEGER	shift, and go to state 7
     FLOAT	shift, and go to state 8
@@ -3852,100 +4240,101 @@ state 201
     INFINITUMOBJ	shift, and go to state 17
     PIE 	shift, and go to state 19
     '-' 	shift, and go to state 20
-    '[' 	shift, and go to state 135
+    '[' 	shift, and go to state 145
 
-    $default	reduce using rule 152 (literallistc)
+    $default	reduce using rule 159 (literallistc)
 
-    listliteral	go to state 136
-    listlit2	go to state 137
-    literallistc	go to state 235
-    literallist1	go to state 139
-    integer	go to state 140
+    listliteral	go to state 146
+    listlit2	go to state 147
+    literallistc	go to state 248
+    literallist1	go to state 149
+    integer	go to state 150
     floatr	go to state 44
     pie 	go to state 45
-    floatp	go to state 141
-    classname	go to state 142
-    trueobj	go to state 143
-    falseobj	go to state 144
-    nilobj	go to state 145
-    infobj	go to state 146
-    ascii	go to state 147
-    symbol	go to state 148
-    string	go to state 149
+    floatp	go to state 151
+    classname	go to state 152
+    trueobj	go to state 153
+    falseobj	go to state 154
+    nilobj	go to state 155
+    infobj	go to state 156
+    ascii	go to state 157
+    symbol	go to state 158
+    string	go to state 159
     string1	go to state 56
 
 
 
-state 202
+state 215
 
     msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
     msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
     msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
     msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  '#' mavars '=' expr .   (rule 75)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  '#' mavars '=' expr .   (rule 76)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
 
-    BINOP	shift, and go to state 87
-    KEYBINOP	shift, and go to state 88
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 92
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '.' 	shift, and go to state 96
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
 
-    $default	reduce using rule 75 (expr)
+    $default	reduce using rule 76 (expr)
 
-    binop	go to state 97
-    keybinop	go to state 98
-
-
-
-state 203
-
-    mavars  ->  mavarlist ELLIPSIS name .   (rule 91)
-
-    $default	reduce using rule 91 (mavars)
+    binop	go to state 103
+    keybinop	go to state 104
 
 
 
-state 204
+state 216
 
-    mavarlist  ->  mavarlist ',' name .   (rule 93)
+    mavars  ->  mavarlist ELLIPSIS name .   (rule 92)
 
-    $default	reduce using rule 93 (mavarlist)
-
-
-
-state 205
-
-    listlit  ->  '#' classname '[' literallistc . ']'   (rule 149)
-
-    ']' 	shift, and go to state 236
+    $default	reduce using rule 92 (mavars)
 
 
 
-state 206
+state 217
 
-    expr1  ->  expr1 '[' arglist1 ']' .   (rule 64)
-    expr  ->  expr1 '[' arglist1 ']' . '=' expr   (rule 76)
+    mavarlist  ->  mavarlist ',' name .   (rule 94)
 
-    '=' 	shift, and go to state 237
-
-    $default	reduce using rule 64 (expr1)
+    $default	reduce using rule 94 (mavarlist)
 
 
 
-state 207
+state 218
 
-    arglist1  ->  arglist1 ',' . exprseq   (rule 84)
+    listlit  ->  '#' classname '[' literallistc . ']'   (rule 156)
+
+    ']' 	shift, and go to state 249
+
+
+
+state 219
+
+    expr1  ->  expr1 '[' arglist1 ']' .   (rule 65)
+    expr  ->  expr1 '[' arglist1 ']' . '=' expr   (rule 77)
+
+    '=' 	shift, and go to state 250
+
+    $default	reduce using rule 65 (expr1)
+
+
+
+state 220
+
+    arglist1  ->  arglist1 ',' . exprseq   (rule 85)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -3972,7 +4361,7 @@ state 207
     expr1	go to state 32
     expr	go to state 33
     exprn	go to state 34
-    exprseq	go to state 193
+    exprseq	go to state 203
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -3996,43 +4385,43 @@ state 207
 
 
 
-state 208
+state 221
 
-    expr  ->  expr '.' '[' arglist1 . ']'   (rule 66)
-    expr  ->  expr '.' '[' arglist1 . ']' '=' expr   (rule 77)
-    arglist1  ->  arglist1 . ',' exprseq   (rule 84)
+    expr  ->  expr '.' '[' arglist1 . ']'   (rule 67)
+    expr  ->  expr '.' '[' arglist1 . ']' '=' expr   (rule 78)
+    arglist1  ->  arglist1 . ',' exprseq   (rule 85)
 
-    ']' 	shift, and go to state 238
-    ',' 	shift, and go to state 207
+    ']' 	shift, and go to state 251
+    ',' 	shift, and go to state 220
 
 
 
-state 209
+state 222
 
     msgsend  ->  expr '.' '(' arglist1 . optkeyarglist ')' blocklist   (rule 50)
-    arglist1  ->  arglist1 . ',' exprseq   (rule 84)
+    arglist1  ->  arglist1 . ',' exprseq   (rule 85)
 
-    ',' 	shift, and go to state 215
+    ',' 	shift, and go to state 228
 
-    $default	reduce using rule 88 (optkeyarglist)
+    $default	reduce using rule 89 (optkeyarglist)
 
-    optkeyarglist	go to state 239
+    optkeyarglist	go to state 252
 
 
 
-state 210
+state 223
 
     msgsend  ->  expr '.' '(' keyarglist1 . ')' blocklist   (rule 48)
-    keyarglist1  ->  keyarglist1 . ',' keyarg   (rule 86)
+    keyarglist1  ->  keyarglist1 . ',' keyarg   (rule 87)
 
-    ',' 	shift, and go to state 219
-    ')' 	shift, and go to state 240
+    ',' 	shift, and go to state 232
+    ')' 	shift, and go to state 253
 
 
 
-state 211
+state 224
 
-    expr  ->  expr '.' name '=' . expr   (rule 73)
+    expr  ->  expr '.' name '=' . expr   (rule 74)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -4057,7 +4446,7 @@ state 211
 
     msgsend	go to state 31
     expr1	go to state 32
-    expr	go to state 241
+    expr	go to state 254
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -4081,7 +4470,7 @@ state 211
 
 
 
-state 212
+state 225
 
     msgsend  ->  expr '.' name '(' . keyarglist1 ')' blocklist   (rule 49)
     msgsend  ->  expr '.' name '(' . arglist1 optkeyarglist ')' blocklist   (rule 51)
@@ -4099,7 +4488,7 @@ state 212
     INFINITUMOBJ	shift, and go to state 17
     PSEUDOVAR	shift, and go to state 18
     PIE 	shift, and go to state 19
-    KEYBINOP	shift, and go to state 88
+    KEYBINOP	shift, and go to state 76
     '-' 	shift, and go to state 20
     '`' 	shift, and go to state 21
     '{' 	shift, and go to state 22
@@ -4113,9 +4502,9 @@ state 212
     expr	go to state 33
     exprn	go to state 34
     exprseq	go to state 73
-    arglist1	go to state 242
-    keyarglist1	go to state 243
-    keyarg	go to state 167
+    arglist1	go to state 255
+    keyarglist1	go to state 256
+    keyarg	go to state 177
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -4136,26 +4525,26 @@ state 212
     string	go to state 55
     string1	go to state 56
     pseudovar	go to state 57
-    keybinop	go to state 168
+    keybinop	go to state 178
 
 
 
-state 213
+state 226
 
     blocklist1  ->  blocklist1 . blockliteral   (rule 43)
     blocklist  ->  blocklist1 .   (rule 45)
 
     '{' 	shift, and go to state 22
-    '#' 	shift, and go to state 108
+    '#' 	shift, and go to state 114
 
     $default	reduce using rule 45 (blocklist)
 
-    blockliteral	go to state 163
+    blockliteral	go to state 173
     block	go to state 39
 
 
 
-state 214
+state 227
 
     msgsend  ->  expr '.' name blocklist .   (rule 52)
 
@@ -4163,10 +4552,10 @@ state 214
 
 
 
-state 215
+state 228
 
-    arglist1  ->  arglist1 ',' . exprseq   (rule 84)
-    optkeyarglist  ->  ',' . keyarglist1   (rule 89)
+    arglist1  ->  arglist1 ',' . exprseq   (rule 85)
+    optkeyarglist  ->  ',' . keyarglist1   (rule 90)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -4181,7 +4570,7 @@ state 215
     INFINITUMOBJ	shift, and go to state 17
     PSEUDOVAR	shift, and go to state 18
     PIE 	shift, and go to state 19
-    KEYBINOP	shift, and go to state 88
+    KEYBINOP	shift, and go to state 76
     '-' 	shift, and go to state 20
     '`' 	shift, and go to state 21
     '{' 	shift, and go to state 22
@@ -4194,9 +4583,9 @@ state 215
     expr1	go to state 32
     expr	go to state 33
     exprn	go to state 34
-    exprseq	go to state 193
-    keyarglist1	go to state 244
-    keyarg	go to state 167
+    exprseq	go to state 203
+    keyarglist1	go to state 257
+    keyarg	go to state 177
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -4217,86 +4606,87 @@ state 215
     string	go to state 55
     string1	go to state 56
     pseudovar	go to state 57
-    keybinop	go to state 168
+    keybinop	go to state 178
 
 
 
-state 216
+state 229
 
     msgsend  ->  name '(' arglist1 optkeyarglist . ')' blocklist   (rule 47)
-    expr  ->  name '(' arglist1 optkeyarglist . ')' '=' expr   (rule 74)
+    expr  ->  name '(' arglist1 optkeyarglist . ')' '=' expr   (rule 75)
 
-    ')' 	shift, and go to state 245
-
-
-
-state 217
-
-    expr1  ->  classname '[' arglistc ']' .   (rule 63)
-
-    $default	reduce using rule 63 (expr1)
+    ')' 	shift, and go to state 258
 
 
 
-state 218
+state 230
 
-    expr1  ->  classname '(' arglist1 optkeyarglist . ')'   (rule 62)
+    expr1  ->  classname '[' arglistc ']' .   (rule 64)
 
-    ')' 	shift, and go to state 246
-
-
-
-state 219
-
-    keyarglist1  ->  keyarglist1 ',' . keyarg   (rule 86)
-
-    KEYBINOP	shift, and go to state 88
-
-    keyarg	go to state 247
-    keybinop	go to state 168
+    $default	reduce using rule 64 (expr1)
 
 
 
-state 220
+state 231
 
-    expr1  ->  classname '(' keyarglist1 ')' .   (rule 61)
+    expr1  ->  classname '(' arglist1 optkeyarglist . ')'   (rule 63)
 
-    $default	reduce using rule 61 (expr1)
-
-
-
-state 221
-
-    keyarg  ->  keybinop exprseq .   (rule 87)
-
-    $default	reduce using rule 87 (keyarg)
+    ')' 	shift, and go to state 259
 
 
 
-state 222
+state 232
+
+    keyarglist1  ->  keyarglist1 ',' . keyarg   (rule 87)
+
+    KEYBINOP	shift, and go to state 76
+
+    keyarg	go to state 260
+    keybinop	go to state 178
+
+
+
+state 233
+
+    expr1  ->  classname '(' keyarglist1 ')' .   (rule 62)
+
+    $default	reduce using rule 62 (expr1)
+
+
+
+state 234
+
+    keyarg  ->  keybinop exprseq .   (rule 88)
+
+    $default	reduce using rule 88 (keyarg)
+
+
+
+state 235
 
     methoddef  ->  '*' . name '{' argdecls funcvardecls primitive methbody '}'   (rule 22)
     methoddef  ->  '*' . binop '{' argdecls funcvardecls primitive methbody '}'   (rule 24)
-    binop  ->  '*' .   (rule 188)
+    binop  ->  '*' .   (rule 196)
 
     NAME	shift, and go to state 6
-    BINOP	shift, and go to state 87
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 92
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
+    BINOP	shift, and go to state 93
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
 
-    $default	reduce using rule 188 (binop)
+    $default	reduce using rule 196 (binop)
 
-    name	go to state 248
-    binop	go to state 249
+    name	go to state 261
+    binop	go to state 262
 
 
 
-state 223
+state 236
 
     classextension  ->  '+' classname '{' methods '}' .   (rule 10)
 
@@ -4304,7 +4694,7 @@ state 223
 
 
 
-state 224
+state 237
 
     methods  ->  methods methoddef .   (rule 20)
 
@@ -4312,116 +4702,116 @@ state 224
 
 
 
-state 225
+state 238
 
     methoddef  ->  name . '{' argdecls funcvardecls primitive methbody '}'   (rule 21)
 
-    '{' 	shift, and go to state 250
+    '{' 	shift, and go to state 263
 
 
 
-state 226
+state 239
 
     methoddef  ->  binop . '{' argdecls funcvardecls primitive methbody '}'   (rule 23)
 
-    '{' 	shift, and go to state 251
+    '{' 	shift, and go to state 264
 
 
 
-state 227
+state 240
 
     classdef  ->  classname '[' optname ']' . superclass '{' classvardecls methods '}'   (rule 9)
 
-    ':' 	shift, and go to state 116
+    ':' 	shift, and go to state 121
 
     $default	reduce using rule 13 (superclass)
 
-    superclass	go to state 252
+    superclass	go to state 265
 
 
 
-state 228
+state 241
 
     classdef  ->  classname superclass '{' classvardecls . methods '}'   (rule 8)
     classvardecls  ->  classvardecls . classvardecl   (rule 16)
 
-    VAR 	shift, and go to state 253
-    CLASSVAR	shift, and go to state 254
+    VAR 	shift, and go to state 266
+    CLASSVAR	shift, and go to state 267
 
     $default	reduce using rule 19 (methods)
 
-    classvardecl	go to state 255
-    methods	go to state 256
+    classvardecl	go to state 268
+    methods	go to state 269
 
 
 
-state 229
+state 242
 
-    argdecls  ->  ARG slotdeflist0 ELLIPSIS name . ';'   (rule 135)
+    argdecls  ->  ARG slotdeflist0 ELLIPSIS name . ';'   (rule 136)
 
-    ';' 	shift, and go to state 257
-
-
-
-state 230
-
-    argdecls  ->  '|' slotdeflist0 ELLIPSIS name . '|'   (rule 137)
-
-    '|' 	shift, and go to state 258
+    ';' 	shift, and go to state 270
 
 
 
-state 231
+state 243
 
-    block  ->  '{' argdecls funcvardecls funcbody '}' .   (rule 126)
+    argdecls  ->  '|' slotdeflist0 ELLIPSIS name . '|'   (rule 138)
 
-    $default	reduce using rule 126 (block)
-
-
-
-state 232
-
-    block  ->  '#' '{' argdecls funcvardecls funcbody . '}'   (rule 127)
-
-    '}' 	shift, and go to state 259
+    '|' 	shift, and go to state 271
 
 
 
-state 233
+state 244
 
-    listlit2  ->  '[' literallistc ']' .   (rule 150)
+    block  ->  '{' argdecls funcvardecls funcbody '}' .   (rule 127)
 
-    $default	reduce using rule 150 (listlit2)
-
-
-
-state 234
-
-    literallist1  ->  literallist1 ',' listliteral .   (rule 155)
-
-    $default	reduce using rule 155 (literallist1)
+    $default	reduce using rule 127 (block)
 
 
 
-state 235
+state 245
 
-    listlit2  ->  classname '[' literallistc . ']'   (rule 151)
+    block  ->  '#' '{' argdecls funcvardecls funcbody . '}'   (rule 128)
 
-    ']' 	shift, and go to state 260
-
-
-
-state 236
-
-    listlit  ->  '#' classname '[' literallistc ']' .   (rule 149)
-
-    $default	reduce using rule 149 (listlit)
+    '}' 	shift, and go to state 272
 
 
 
-state 237
+state 246
 
-    expr  ->  expr1 '[' arglist1 ']' '=' . expr   (rule 76)
+    listlit2  ->  '[' literallistc ']' .   (rule 157)
+
+    $default	reduce using rule 157 (listlit2)
+
+
+
+state 247
+
+    literallist1  ->  literallist1 ',' listliteral .   (rule 162)
+
+    $default	reduce using rule 162 (literallist1)
+
+
+
+state 248
+
+    listlit2  ->  classname '[' literallistc . ']'   (rule 158)
+
+    ']' 	shift, and go to state 273
+
+
+
+state 249
+
+    listlit  ->  '#' classname '[' literallistc ']' .   (rule 156)
+
+    $default	reduce using rule 156 (listlit)
+
+
+
+state 250
+
+    expr  ->  expr1 '[' arglist1 ']' '=' . expr   (rule 77)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -4446,7 +4836,7 @@ state 237
 
     msgsend	go to state 31
     expr1	go to state 32
-    expr	go to state 261
+    expr	go to state 274
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -4470,224 +4860,225 @@ state 237
 
 
 
-state 238
+state 251
 
-    expr  ->  expr '.' '[' arglist1 ']' .   (rule 66)
-    expr  ->  expr '.' '[' arglist1 ']' . '=' expr   (rule 77)
+    expr  ->  expr '.' '[' arglist1 ']' .   (rule 67)
+    expr  ->  expr '.' '[' arglist1 ']' . '=' expr   (rule 78)
 
-    '=' 	shift, and go to state 262
+    '=' 	shift, and go to state 275
 
-    $default	reduce using rule 66 (expr)
+    $default	reduce using rule 67 (expr)
 
 
 
-state 239
+state 252
 
     msgsend  ->  expr '.' '(' arglist1 optkeyarglist . ')' blocklist   (rule 50)
 
-    ')' 	shift, and go to state 263
+    ')' 	shift, and go to state 276
 
 
 
-state 240
+state 253
 
     msgsend  ->  expr '.' '(' keyarglist1 ')' . blocklist   (rule 48)
 
     '{' 	shift, and go to state 22
-    '#' 	shift, and go to state 108
+    '#' 	shift, and go to state 114
 
     $default	reduce using rule 44 (blocklist)
 
-    blocklist1	go to state 213
-    blocklist	go to state 264
-    blockliteral	go to state 110
+    blocklist1	go to state 226
+    blocklist	go to state 277
+    blockliteral	go to state 116
     block	go to state 39
 
 
 
-state 241
+state 254
 
     msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
     msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
     msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
     msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  expr '.' name '=' expr .   (rule 73)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr '.' name '=' expr .   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
 
-    BINOP	shift, and go to state 87
-    KEYBINOP	shift, and go to state 88
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 92
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '.' 	shift, and go to state 96
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
 
-    $default	reduce using rule 73 (expr)
+    $default	reduce using rule 74 (expr)
 
-    binop	go to state 97
-    keybinop	go to state 98
+    binop	go to state 103
+    keybinop	go to state 104
 
 
 
-state 242
+state 255
 
     msgsend  ->  expr '.' name '(' arglist1 . optkeyarglist ')' blocklist   (rule 51)
-    arglist1  ->  arglist1 . ',' exprseq   (rule 84)
+    arglist1  ->  arglist1 . ',' exprseq   (rule 85)
 
-    ',' 	shift, and go to state 215
-
-    $default	reduce using rule 88 (optkeyarglist)
-
-    optkeyarglist	go to state 265
-
-
-
-state 243
-
-    msgsend  ->  expr '.' name '(' keyarglist1 . ')' blocklist   (rule 49)
-    keyarglist1  ->  keyarglist1 . ',' keyarg   (rule 86)
-
-    ',' 	shift, and go to state 219
-    ')' 	shift, and go to state 266
-
-
-
-state 244
-
-    keyarglist1  ->  keyarglist1 . ',' keyarg   (rule 86)
-    optkeyarglist  ->  ',' keyarglist1 .   (rule 89)
-
-    ',' 	shift, and go to state 219
+    ',' 	shift, and go to state 228
 
     $default	reduce using rule 89 (optkeyarglist)
 
+    optkeyarglist	go to state 278
 
 
-state 245
+
+state 256
+
+    msgsend  ->  expr '.' name '(' keyarglist1 . ')' blocklist   (rule 49)
+    keyarglist1  ->  keyarglist1 . ',' keyarg   (rule 87)
+
+    ',' 	shift, and go to state 232
+    ')' 	shift, and go to state 279
+
+
+
+state 257
+
+    keyarglist1  ->  keyarglist1 . ',' keyarg   (rule 87)
+    optkeyarglist  ->  ',' keyarglist1 .   (rule 90)
+
+    ',' 	shift, and go to state 232
+
+    $default	reduce using rule 90 (optkeyarglist)
+
+
+
+state 258
 
     msgsend  ->  name '(' arglist1 optkeyarglist ')' . blocklist   (rule 47)
-    expr  ->  name '(' arglist1 optkeyarglist ')' . '=' expr   (rule 74)
+    expr  ->  name '(' arglist1 optkeyarglist ')' . '=' expr   (rule 75)
 
-    '=' 	shift, and go to state 267
+    '=' 	shift, and go to state 280
     '{' 	shift, and go to state 22
-    '#' 	shift, and go to state 108
+    '#' 	shift, and go to state 114
 
     $default	reduce using rule 44 (blocklist)
 
-    blocklist1	go to state 213
-    blocklist	go to state 268
-    blockliteral	go to state 110
+    blocklist1	go to state 226
+    blocklist	go to state 281
+    blockliteral	go to state 116
     block	go to state 39
 
 
 
-state 246
+state 259
 
-    expr1  ->  classname '(' arglist1 optkeyarglist ')' .   (rule 62)
+    expr1  ->  classname '(' arglist1 optkeyarglist ')' .   (rule 63)
 
-    $default	reduce using rule 62 (expr1)
-
-
-
-state 247
-
-    keyarglist1  ->  keyarglist1 ',' keyarg .   (rule 86)
-
-    $default	reduce using rule 86 (keyarglist1)
+    $default	reduce using rule 63 (expr1)
 
 
 
-state 248
+state 260
+
+    keyarglist1  ->  keyarglist1 ',' keyarg .   (rule 87)
+
+    $default	reduce using rule 87 (keyarglist1)
+
+
+
+state 261
 
     methoddef  ->  '*' name . '{' argdecls funcvardecls primitive methbody '}'   (rule 22)
 
-    '{' 	shift, and go to state 269
+    '{' 	shift, and go to state 282
 
 
 
-state 249
+state 262
 
     methoddef  ->  '*' binop . '{' argdecls funcvardecls primitive methbody '}'   (rule 24)
 
-    '{' 	shift, and go to state 270
+    '{' 	shift, and go to state 283
 
 
 
-state 250
+state 263
 
     methoddef  ->  name '{' . argdecls funcvardecls primitive methbody '}'   (rule 21)
 
     ARG 	shift, and go to state 70
     '|' 	shift, and go to state 71
 
-    $default	reduce using rule 133 (argdecls)
+    $default	reduce using rule 134 (argdecls)
 
-    argdecls	go to state 271
+    argdecls	go to state 284
 
 
 
-state 251
+state 264
 
     methoddef  ->  binop '{' . argdecls funcvardecls primitive methbody '}'   (rule 23)
 
     ARG 	shift, and go to state 70
     '|' 	shift, and go to state 71
 
-    $default	reduce using rule 133 (argdecls)
+    $default	reduce using rule 134 (argdecls)
 
-    argdecls	go to state 272
+    argdecls	go to state 285
 
 
 
-state 252
+state 265
 
     classdef  ->  classname '[' optname ']' superclass . '{' classvardecls methods '}'   (rule 9)
 
-    '{' 	shift, and go to state 273
+    '{' 	shift, and go to state 286
 
 
 
-state 253
+state 266
 
     classvardecl  ->  VAR . rwslotdeflist ';'   (rule 18)
 
-    '<' 	shift, and go to state 274
-    '>' 	shift, and go to state 275
-    READWRITEVAR	shift, and go to state 276
+    '<' 	shift, and go to state 287
+    '>' 	shift, and go to state 288
+    READWRITEVAR	shift, and go to state 289
 
-    $default	reduce using rule 156 (rwspec)
+    $default	reduce using rule 163 (rwspec)
 
-    rwslotdeflist	go to state 277
-    rwslotdef	go to state 278
-    rwspec	go to state 279
+    rwslotdeflist	go to state 290
+    rwslotdef	go to state 291
+    rwspec	go to state 292
 
 
 
-state 254
+state 267
 
     classvardecl  ->  CLASSVAR . rwslotdeflist ';'   (rule 17)
 
-    '<' 	shift, and go to state 274
-    '>' 	shift, and go to state 275
-    READWRITEVAR	shift, and go to state 276
+    '<' 	shift, and go to state 287
+    '>' 	shift, and go to state 288
+    READWRITEVAR	shift, and go to state 289
 
-    $default	reduce using rule 156 (rwspec)
+    $default	reduce using rule 163 (rwspec)
 
-    rwslotdeflist	go to state 280
-    rwslotdef	go to state 278
-    rwspec	go to state 279
+    rwslotdeflist	go to state 293
+    rwslotdef	go to state 291
+    rwspec	go to state 292
 
 
 
-state 255
+state 268
 
     classvardecls  ->  classvardecls classvardecl .   (rule 16)
 
@@ -4695,95 +5086,97 @@ state 255
 
 
 
-state 256
+state 269
 
     classdef  ->  classname superclass '{' classvardecls methods . '}'   (rule 8)
     methods  ->  methods . methoddef   (rule 20)
 
     NAME	shift, and go to state 6
-    BINOP	shift, and go to state 87
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 222
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '}' 	shift, and go to state 281
+    BINOP	shift, and go to state 93
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 235
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '}' 	shift, and go to state 294
 
-    methoddef	go to state 224
-    name	go to state 225
-    binop	go to state 226
-
-
-
-state 257
-
-    argdecls  ->  ARG slotdeflist0 ELLIPSIS name ';' .   (rule 135)
-
-    $default	reduce using rule 135 (argdecls)
+    methoddef	go to state 237
+    name	go to state 238
+    binop	go to state 239
 
 
 
-state 258
+state 270
 
-    argdecls  ->  '|' slotdeflist0 ELLIPSIS name '|' .   (rule 137)
+    argdecls  ->  ARG slotdeflist0 ELLIPSIS name ';' .   (rule 136)
 
-    $default	reduce using rule 137 (argdecls)
-
-
-
-state 259
-
-    block  ->  '#' '{' argdecls funcvardecls funcbody '}' .   (rule 127)
-
-    $default	reduce using rule 127 (block)
+    $default	reduce using rule 136 (argdecls)
 
 
 
-state 260
+state 271
 
-    listlit2  ->  classname '[' literallistc ']' .   (rule 151)
+    argdecls  ->  '|' slotdeflist0 ELLIPSIS name '|' .   (rule 138)
 
-    $default	reduce using rule 151 (listlit2)
+    $default	reduce using rule 138 (argdecls)
 
 
 
-state 261
+state 272
+
+    block  ->  '#' '{' argdecls funcvardecls funcbody '}' .   (rule 128)
+
+    $default	reduce using rule 128 (block)
+
+
+
+state 273
+
+    listlit2  ->  classname '[' literallistc ']' .   (rule 158)
+
+    $default	reduce using rule 158 (listlit2)
+
+
+
+state 274
 
     msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
     msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
     msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
     msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  expr1 '[' arglist1 ']' '=' expr .   (rule 76)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr1 '[' arglist1 ']' '=' expr .   (rule 77)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
 
-    BINOP	shift, and go to state 87
-    KEYBINOP	shift, and go to state 88
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 92
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '.' 	shift, and go to state 96
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
 
-    $default	reduce using rule 76 (expr)
+    $default	reduce using rule 77 (expr)
 
-    binop	go to state 97
-    keybinop	go to state 98
+    binop	go to state 103
+    keybinop	go to state 104
 
 
 
-state 262
+state 275
 
-    expr  ->  expr '.' '[' arglist1 ']' '=' . expr   (rule 77)
+    expr  ->  expr '.' '[' arglist1 ']' '=' . expr   (rule 78)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -4808,7 +5201,7 @@ state 262
 
     msgsend	go to state 31
     expr1	go to state 32
-    expr	go to state 282
+    expr	go to state 295
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -4832,23 +5225,23 @@ state 262
 
 
 
-state 263
+state 276
 
     msgsend  ->  expr '.' '(' arglist1 optkeyarglist ')' . blocklist   (rule 50)
 
     '{' 	shift, and go to state 22
-    '#' 	shift, and go to state 108
+    '#' 	shift, and go to state 114
 
     $default	reduce using rule 44 (blocklist)
 
-    blocklist1	go to state 213
-    blocklist	go to state 283
-    blockliteral	go to state 110
+    blocklist1	go to state 226
+    blocklist	go to state 296
+    blockliteral	go to state 116
     block	go to state 39
 
 
 
-state 264
+state 277
 
     msgsend  ->  expr '.' '(' keyarglist1 ')' blocklist .   (rule 48)
 
@@ -4856,33 +5249,33 @@ state 264
 
 
 
-state 265
+state 278
 
     msgsend  ->  expr '.' name '(' arglist1 optkeyarglist . ')' blocklist   (rule 51)
 
-    ')' 	shift, and go to state 284
+    ')' 	shift, and go to state 297
 
 
 
-state 266
+state 279
 
     msgsend  ->  expr '.' name '(' keyarglist1 ')' . blocklist   (rule 49)
 
     '{' 	shift, and go to state 22
-    '#' 	shift, and go to state 108
+    '#' 	shift, and go to state 114
 
     $default	reduce using rule 44 (blocklist)
 
-    blocklist1	go to state 213
-    blocklist	go to state 285
-    blockliteral	go to state 110
+    blocklist1	go to state 226
+    blocklist	go to state 298
+    blockliteral	go to state 116
     block	go to state 39
 
 
 
-state 267
+state 280
 
-    expr  ->  name '(' arglist1 optkeyarglist ')' '=' . expr   (rule 74)
+    expr  ->  name '(' arglist1 optkeyarglist ')' '=' . expr   (rule 75)
 
     NAME	shift, and go to state 6
     INTEGER	shift, and go to state 7
@@ -4907,7 +5300,7 @@ state 267
 
     msgsend	go to state 31
     expr1	go to state 32
-    expr	go to state 286
+    expr	go to state 299
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -4931,7 +5324,7 @@ state 267
 
 
 
-state 268
+state 281
 
     msgsend  ->  name '(' arglist1 optkeyarglist ')' blocklist .   (rule 47)
 
@@ -4939,126 +5332,126 @@ state 268
 
 
 
-state 269
+state 282
 
     methoddef  ->  '*' name '{' . argdecls funcvardecls primitive methbody '}'   (rule 22)
 
     ARG 	shift, and go to state 70
     '|' 	shift, and go to state 71
 
-    $default	reduce using rule 133 (argdecls)
+    $default	reduce using rule 134 (argdecls)
 
-    argdecls	go to state 287
+    argdecls	go to state 300
 
 
 
-state 270
+state 283
 
     methoddef  ->  '*' binop '{' . argdecls funcvardecls primitive methbody '}'   (rule 24)
 
     ARG 	shift, and go to state 70
     '|' 	shift, and go to state 71
 
-    $default	reduce using rule 133 (argdecls)
+    $default	reduce using rule 134 (argdecls)
 
-    argdecls	go to state 288
+    argdecls	go to state 301
 
 
 
-state 271
+state 284
 
     methoddef  ->  name '{' argdecls . funcvardecls primitive methbody '}'   (rule 21)
 
-    $default	reduce using rule 128 (funcvardecls)
+    $default	reduce using rule 129 (funcvardecls)
 
-    funcvardecls	go to state 289
+    funcvardecls	go to state 302
 
 
 
-state 272
+state 285
 
     methoddef  ->  binop '{' argdecls . funcvardecls primitive methbody '}'   (rule 23)
 
-    $default	reduce using rule 128 (funcvardecls)
+    $default	reduce using rule 129 (funcvardecls)
 
-    funcvardecls	go to state 290
+    funcvardecls	go to state 303
 
 
 
-state 273
+state 286
 
     classdef  ->  classname '[' optname ']' superclass '{' . classvardecls methods '}'   (rule 9)
 
     $default	reduce using rule 15 (classvardecls)
 
-    classvardecls	go to state 291
+    classvardecls	go to state 304
 
 
 
-state 274
+state 287
 
-    rwspec  ->  '<' .   (rule 157)
+    rwspec  ->  '<' .   (rule 164)
 
-    $default	reduce using rule 157 (rwspec)
-
-
-
-state 275
-
-    rwspec  ->  '>' .   (rule 159)
-
-    $default	reduce using rule 159 (rwspec)
+    $default	reduce using rule 164 (rwspec)
 
 
 
-state 276
+state 288
 
-    rwspec  ->  READWRITEVAR .   (rule 158)
+    rwspec  ->  '>' .   (rule 166)
 
-    $default	reduce using rule 158 (rwspec)
+    $default	reduce using rule 166 (rwspec)
 
 
 
-state 277
+state 289
+
+    rwspec  ->  READWRITEVAR .   (rule 165)
+
+    $default	reduce using rule 165 (rwspec)
+
+
+
+state 290
 
     classvardecl  ->  VAR rwslotdeflist . ';'   (rule 18)
-    rwslotdeflist  ->  rwslotdeflist . ',' rwslotdef   (rule 145)
+    rwslotdeflist  ->  rwslotdeflist . ',' rwslotdef   (rule 152)
 
-    ';' 	shift, and go to state 292
-    ',' 	shift, and go to state 293
-
-
-
-state 278
-
-    rwslotdeflist  ->  rwslotdef .   (rule 144)
-
-    $default	reduce using rule 144 (rwslotdeflist)
+    ';' 	shift, and go to state 305
+    ',' 	shift, and go to state 306
 
 
 
-state 279
+state 291
 
-    rwslotdef  ->  rwspec . name   (rule 146)
-    rwslotdef  ->  rwspec . name '=' slotliteral   (rule 147)
+    rwslotdeflist  ->  rwslotdef .   (rule 151)
+
+    $default	reduce using rule 151 (rwslotdeflist)
+
+
+
+state 292
+
+    rwslotdef  ->  rwspec . name   (rule 153)
+    rwslotdef  ->  rwspec . name '=' slotliteral   (rule 154)
 
     NAME	shift, and go to state 6
 
-    name	go to state 294
+    name	go to state 307
 
 
 
-state 280
+state 293
 
     classvardecl  ->  CLASSVAR rwslotdeflist . ';'   (rule 17)
-    rwslotdeflist  ->  rwslotdeflist . ',' rwslotdef   (rule 145)
+    rwslotdeflist  ->  rwslotdeflist . ',' rwslotdef   (rule 152)
 
-    ';' 	shift, and go to state 295
-    ',' 	shift, and go to state 293
+    ';' 	shift, and go to state 308
+    ',' 	shift, and go to state 306
 
 
 
-state 281
+state 294
 
     classdef  ->  classname superclass '{' classvardecls methods '}' .   (rule 8)
 
@@ -5066,39 +5459,40 @@ state 281
 
 
 
-state 282
+state 295
 
     msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
     msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
     msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
     msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
-    expr  ->  expr '.' '[' arglist1 ']' '=' expr .   (rule 77)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
+    expr  ->  expr '.' '[' arglist1 ']' '=' expr .   (rule 78)
 
-    BINOP	shift, and go to state 87
-    KEYBINOP	shift, and go to state 88
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 92
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '.' 	shift, and go to state 96
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
 
-    $default	reduce using rule 77 (expr)
+    $default	reduce using rule 78 (expr)
 
-    binop	go to state 97
-    keybinop	go to state 98
+    binop	go to state 103
+    keybinop	go to state 104
 
 
 
-state 283
+state 296
 
     msgsend  ->  expr '.' '(' arglist1 optkeyarglist ')' blocklist .   (rule 50)
 
@@ -5106,23 +5500,23 @@ state 283
 
 
 
-state 284
+state 297
 
     msgsend  ->  expr '.' name '(' arglist1 optkeyarglist ')' . blocklist   (rule 51)
 
     '{' 	shift, and go to state 22
-    '#' 	shift, and go to state 108
+    '#' 	shift, and go to state 114
 
     $default	reduce using rule 44 (blocklist)
 
-    blocklist1	go to state 213
-    blocklist	go to state 296
-    blockliteral	go to state 110
+    blocklist1	go to state 226
+    blocklist	go to state 309
+    blockliteral	go to state 116
     block	go to state 39
 
 
 
-state 285
+state 298
 
     msgsend  ->  expr '.' name '(' keyarglist1 ')' blocklist .   (rule 49)
 
@@ -5130,106 +5524,107 @@ state 285
 
 
 
-state 286
+state 299
 
     msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
     msgsend  ->  expr . '.' name '(' keyarglist1 ')' blocklist   (rule 49)
     msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
     msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  name '(' arglist1 optkeyarglist ')' '=' expr .   (rule 74)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  name '(' arglist1 optkeyarglist ')' '=' expr .   (rule 75)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
 
-    BINOP	shift, and go to state 87
-    KEYBINOP	shift, and go to state 88
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 92
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '.' 	shift, and go to state 96
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
 
-    $default	reduce using rule 74 (expr)
+    $default	reduce using rule 75 (expr)
 
-    binop	go to state 97
-    keybinop	go to state 98
+    binop	go to state 103
+    keybinop	go to state 104
 
 
 
-state 287
+state 300
 
     methoddef  ->  '*' name '{' argdecls . funcvardecls primitive methbody '}'   (rule 22)
 
-    $default	reduce using rule 128 (funcvardecls)
+    $default	reduce using rule 129 (funcvardecls)
 
-    funcvardecls	go to state 297
+    funcvardecls	go to state 310
 
 
 
-state 288
+state 301
 
     methoddef  ->  '*' binop '{' argdecls . funcvardecls primitive methbody '}'   (rule 24)
 
-    $default	reduce using rule 128 (funcvardecls)
+    $default	reduce using rule 129 (funcvardecls)
 
-    funcvardecls	go to state 298
+    funcvardecls	go to state 311
 
 
 
-state 289
+state 302
 
     methoddef  ->  name '{' argdecls funcvardecls . primitive methbody '}'   (rule 21)
-    funcvardecls  ->  funcvardecls . funcvardecl   (rule 129)
+    funcvardecls  ->  funcvardecls . funcvardecl   (rule 130)
 
-    PRIMITIVENAME	shift, and go to state 299
+    PRIMITIVENAME	shift, and go to state 312
     VAR 	shift, and go to state 13
 
     $default	reduce using rule 36 (primitive)
 
-    primitive	go to state 300
-    funcvardecl	go to state 192
-    primname	go to state 301
+    primitive	go to state 313
+    funcvardecl	go to state 202
+    primname	go to state 314
 
 
 
-state 290
+state 303
 
     methoddef  ->  binop '{' argdecls funcvardecls . primitive methbody '}'   (rule 23)
-    funcvardecls  ->  funcvardecls . funcvardecl   (rule 129)
+    funcvardecls  ->  funcvardecls . funcvardecl   (rule 130)
 
-    PRIMITIVENAME	shift, and go to state 299
+    PRIMITIVENAME	shift, and go to state 312
     VAR 	shift, and go to state 13
 
     $default	reduce using rule 36 (primitive)
 
-    primitive	go to state 302
-    funcvardecl	go to state 192
-    primname	go to state 301
+    primitive	go to state 315
+    funcvardecl	go to state 202
+    primname	go to state 314
 
 
 
-state 291
+state 304
 
     classdef  ->  classname '[' optname ']' superclass '{' classvardecls . methods '}'   (rule 9)
     classvardecls  ->  classvardecls . classvardecl   (rule 16)
 
-    VAR 	shift, and go to state 253
-    CLASSVAR	shift, and go to state 254
+    VAR 	shift, and go to state 266
+    CLASSVAR	shift, and go to state 267
 
     $default	reduce using rule 19 (methods)
 
-    classvardecl	go to state 255
-    methods	go to state 303
+    classvardecl	go to state 268
+    methods	go to state 316
 
 
 
-state 292
+state 305
 
     classvardecl  ->  VAR rwslotdeflist ';' .   (rule 18)
 
@@ -5237,33 +5632,33 @@ state 292
 
 
 
-state 293
+state 306
 
-    rwslotdeflist  ->  rwslotdeflist ',' . rwslotdef   (rule 145)
+    rwslotdeflist  ->  rwslotdeflist ',' . rwslotdef   (rule 152)
 
-    '<' 	shift, and go to state 274
-    '>' 	shift, and go to state 275
-    READWRITEVAR	shift, and go to state 276
+    '<' 	shift, and go to state 287
+    '>' 	shift, and go to state 288
+    READWRITEVAR	shift, and go to state 289
 
-    $default	reduce using rule 156 (rwspec)
+    $default	reduce using rule 163 (rwspec)
 
-    rwslotdef	go to state 304
-    rwspec	go to state 279
-
-
-
-state 294
-
-    rwslotdef  ->  rwspec name .   (rule 146)
-    rwslotdef  ->  rwspec name . '=' slotliteral   (rule 147)
-
-    '=' 	shift, and go to state 305
-
-    $default	reduce using rule 146 (rwslotdef)
+    rwslotdef	go to state 317
+    rwspec	go to state 292
 
 
 
-state 295
+state 307
+
+    rwslotdef  ->  rwspec name .   (rule 153)
+    rwslotdef  ->  rwspec name . '=' slotliteral   (rule 154)
+
+    '=' 	shift, and go to state 318
+
+    $default	reduce using rule 153 (rwslotdef)
+
+
+
+state 308
 
     classvardecl  ->  CLASSVAR rwslotdeflist ';' .   (rule 17)
 
@@ -5271,7 +5666,7 @@ state 295
 
 
 
-state 296
+state 309
 
     msgsend  ->  expr '.' name '(' arglist1 optkeyarglist ')' blocklist .   (rule 51)
 
@@ -5279,47 +5674,47 @@ state 296
 
 
 
-state 297
+state 310
 
     methoddef  ->  '*' name '{' argdecls funcvardecls . primitive methbody '}'   (rule 22)
-    funcvardecls  ->  funcvardecls . funcvardecl   (rule 129)
+    funcvardecls  ->  funcvardecls . funcvardecl   (rule 130)
 
-    PRIMITIVENAME	shift, and go to state 299
+    PRIMITIVENAME	shift, and go to state 312
     VAR 	shift, and go to state 13
 
     $default	reduce using rule 36 (primitive)
 
-    primitive	go to state 306
-    funcvardecl	go to state 192
-    primname	go to state 301
+    primitive	go to state 319
+    funcvardecl	go to state 202
+    primname	go to state 314
 
 
 
-state 298
+state 311
 
     methoddef  ->  '*' binop '{' argdecls funcvardecls . primitive methbody '}'   (rule 24)
-    funcvardecls  ->  funcvardecls . funcvardecl   (rule 129)
+    funcvardecls  ->  funcvardecls . funcvardecl   (rule 130)
 
-    PRIMITIVENAME	shift, and go to state 299
+    PRIMITIVENAME	shift, and go to state 312
     VAR 	shift, and go to state 13
 
     $default	reduce using rule 36 (primitive)
 
-    primitive	go to state 307
-    funcvardecl	go to state 192
-    primname	go to state 301
+    primitive	go to state 320
+    funcvardecl	go to state 202
+    primname	go to state 314
 
 
 
-state 299
+state 312
 
-    primname  ->  PRIMITIVENAME .   (rule 172)
+    primname  ->  PRIMITIVENAME .   (rule 179)
 
-    $default	reduce using rule 172 (primname)
+    $default	reduce using rule 179 (primname)
 
 
 
-state 300
+state 313
 
     methoddef  ->  name '{' argdecls funcvardecls primitive . methbody '}'   (rule 21)
 
@@ -5341,19 +5736,19 @@ state 300
     '{' 	shift, and go to state 22
     '[' 	shift, and go to state 23
     '(' 	shift, and go to state 68
-    '^' 	shift, and go to state 308
+    '^' 	shift, and go to state 321
     '~' 	shift, and go to state 26
     '#' 	shift, and go to state 27
 
     $default	reduce using rule 38 (retval)
 
-    methbody	go to state 309
-    retval	go to state 310
+    methbody	go to state 322
+    retval	go to state 323
     msgsend	go to state 31
     expr1	go to state 32
     expr	go to state 33
     exprn	go to state 34
-    exprseq	go to state 311
+    exprseq	go to state 324
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -5377,19 +5772,19 @@ state 300
 
 
 
-state 301
+state 314
 
     primitive  ->  primname . optsemi   (rule 37)
 
-    ';' 	shift, and go to state 131
+    ';' 	shift, and go to state 141
 
     $default	reduce using rule 25 (optsemi)
 
-    optsemi	go to state 312
+    optsemi	go to state 325
 
 
 
-state 302
+state 315
 
     methoddef  ->  binop '{' argdecls funcvardecls primitive . methbody '}'   (rule 23)
 
@@ -5411,19 +5806,19 @@ state 302
     '{' 	shift, and go to state 22
     '[' 	shift, and go to state 23
     '(' 	shift, and go to state 68
-    '^' 	shift, and go to state 308
+    '^' 	shift, and go to state 321
     '~' 	shift, and go to state 26
     '#' 	shift, and go to state 27
 
     $default	reduce using rule 38 (retval)
 
-    methbody	go to state 313
-    retval	go to state 310
+    methbody	go to state 326
+    retval	go to state 323
     msgsend	go to state 31
     expr1	go to state 32
     expr	go to state 33
     exprn	go to state 34
-    exprseq	go to state 311
+    exprseq	go to state 324
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -5447,39 +5842,40 @@ state 302
 
 
 
-state 303
+state 316
 
     classdef  ->  classname '[' optname ']' superclass '{' classvardecls methods . '}'   (rule 9)
     methods  ->  methods . methoddef   (rule 20)
 
     NAME	shift, and go to state 6
-    BINOP	shift, and go to state 87
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 222
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '}' 	shift, and go to state 314
+    BINOP	shift, and go to state 93
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 235
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '}' 	shift, and go to state 327
 
-    methoddef	go to state 224
-    name	go to state 225
-    binop	go to state 226
-
-
-
-state 304
-
-    rwslotdeflist  ->  rwslotdeflist ',' rwslotdef .   (rule 145)
-
-    $default	reduce using rule 145 (rwslotdeflist)
+    methoddef	go to state 237
+    name	go to state 238
+    binop	go to state 239
 
 
 
-state 305
+state 317
 
-    rwslotdef  ->  rwspec name '=' . slotliteral   (rule 147)
+    rwslotdeflist  ->  rwslotdeflist ',' rwslotdef .   (rule 152)
+
+    $default	reduce using rule 152 (rwslotdeflist)
+
+
+
+state 318
+
+    rwslotdef  ->  rwspec name '=' . slotliteral   (rule 154)
 
     INTEGER	shift, and go to state 7
     FLOAT	shift, and go to state 8
@@ -5492,26 +5888,26 @@ state 305
     INFINITUMOBJ	shift, and go to state 17
     PIE 	shift, and go to state 19
     '-' 	shift, and go to state 20
-    '#' 	shift, and go to state 175
+    '#' 	shift, and go to state 185
 
-    slotliteral	go to state 315
-    listlit	go to state 177
-    integer	go to state 178
+    slotliteral	go to state 328
+    listlit	go to state 187
+    integer	go to state 188
     floatr	go to state 44
     pie 	go to state 45
-    floatp	go to state 179
-    trueobj	go to state 180
-    falseobj	go to state 181
-    nilobj	go to state 182
-    infobj	go to state 183
-    ascii	go to state 184
-    symbol	go to state 185
-    string	go to state 186
+    floatp	go to state 189
+    trueobj	go to state 190
+    falseobj	go to state 191
+    nilobj	go to state 192
+    infobj	go to state 193
+    ascii	go to state 194
+    symbol	go to state 195
+    string	go to state 196
     string1	go to state 56
 
 
 
-state 306
+state 319
 
     methoddef  ->  '*' name '{' argdecls funcvardecls primitive . methbody '}'   (rule 22)
 
@@ -5533,19 +5929,19 @@ state 306
     '{' 	shift, and go to state 22
     '[' 	shift, and go to state 23
     '(' 	shift, and go to state 68
-    '^' 	shift, and go to state 308
+    '^' 	shift, and go to state 321
     '~' 	shift, and go to state 26
     '#' 	shift, and go to state 27
 
     $default	reduce using rule 38 (retval)
 
-    methbody	go to state 316
-    retval	go to state 310
+    methbody	go to state 329
+    retval	go to state 323
     msgsend	go to state 31
     expr1	go to state 32
     expr	go to state 33
     exprn	go to state 34
-    exprseq	go to state 311
+    exprseq	go to state 324
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -5569,7 +5965,7 @@ state 306
 
 
 
-state 307
+state 320
 
     methoddef  ->  '*' binop '{' argdecls funcvardecls primitive . methbody '}'   (rule 24)
 
@@ -5591,19 +5987,19 @@ state 307
     '{' 	shift, and go to state 22
     '[' 	shift, and go to state 23
     '(' 	shift, and go to state 68
-    '^' 	shift, and go to state 308
+    '^' 	shift, and go to state 321
     '~' 	shift, and go to state 26
     '#' 	shift, and go to state 27
 
     $default	reduce using rule 38 (retval)
 
-    methbody	go to state 317
-    retval	go to state 310
+    methbody	go to state 330
+    retval	go to state 323
     msgsend	go to state 31
     expr1	go to state 32
     expr	go to state 33
     exprn	go to state 34
-    exprseq	go to state 311
+    exprseq	go to state 324
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -5627,7 +6023,7 @@ state 307
 
 
 
-state 308
+state 321
 
     retval  ->  '^' . expr optsemi   (rule 39)
 
@@ -5654,7 +6050,7 @@ state 308
 
     msgsend	go to state 31
     expr1	go to state 32
-    expr	go to state 318
+    expr	go to state 331
     blockliteral	go to state 36
     pushname	go to state 37
     pushliteral	go to state 38
@@ -5678,15 +6074,15 @@ state 308
 
 
 
-state 309
+state 322
 
     methoddef  ->  name '{' argdecls funcvardecls primitive methbody . '}'   (rule 21)
 
-    '}' 	shift, and go to state 319
+    '}' 	shift, and go to state 332
 
 
 
-state 310
+state 323
 
     methbody  ->  retval .   (rule 34)
 
@@ -5694,19 +6090,19 @@ state 310
 
 
 
-state 311
+state 324
 
     methbody  ->  exprseq . retval   (rule 35)
 
-    '^' 	shift, and go to state 308
+    '^' 	shift, and go to state 321
 
     $default	reduce using rule 38 (retval)
 
-    retval	go to state 320
+    retval	go to state 333
 
 
 
-state 312
+state 325
 
     primitive  ->  primname optsemi .   (rule 37)
 
@@ -5714,15 +6110,15 @@ state 312
 
 
 
-state 313
+state 326
 
     methoddef  ->  binop '{' argdecls funcvardecls primitive methbody . '}'   (rule 23)
 
-    '}' 	shift, and go to state 321
+    '}' 	shift, and go to state 334
 
 
 
-state 314
+state 327
 
     classdef  ->  classname '[' optname ']' superclass '{' classvardecls methods '}' .   (rule 9)
 
@@ -5730,31 +6126,31 @@ state 314
 
 
 
-state 315
+state 328
 
-    rwslotdef  ->  rwspec name '=' slotliteral .   (rule 147)
+    rwslotdef  ->  rwspec name '=' slotliteral .   (rule 154)
 
-    $default	reduce using rule 147 (rwslotdef)
+    $default	reduce using rule 154 (rwslotdef)
 
 
 
-state 316
+state 329
 
     methoddef  ->  '*' name '{' argdecls funcvardecls primitive methbody . '}'   (rule 22)
 
-    '}' 	shift, and go to state 322
+    '}' 	shift, and go to state 335
 
 
 
-state 317
+state 330
 
     methoddef  ->  '*' binop '{' argdecls funcvardecls primitive methbody . '}'   (rule 24)
 
-    '}' 	shift, and go to state 323
+    '}' 	shift, and go to state 336
 
 
 
-state 318
+state 331
 
     retval  ->  '^' expr . optsemi   (rule 39)
     msgsend  ->  expr . '.' '(' keyarglist1 ')' blocklist   (rule 48)
@@ -5762,33 +6158,34 @@ state 318
     msgsend  ->  expr . '.' '(' arglist1 optkeyarglist ')' blocklist   (rule 50)
     msgsend  ->  expr . '.' name '(' arglist1 optkeyarglist ')' blocklist   (rule 51)
     msgsend  ->  expr . '.' name blocklist   (rule 52)
-    expr  ->  expr . '.' '[' arglist1 ']'   (rule 66)
-    expr  ->  expr . binop expr   (rule 69)
-    expr  ->  expr . keybinop expr   (rule 70)
-    expr  ->  expr . '.' name '=' expr   (rule 73)
-    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 77)
+    expr  ->  expr . '.' '[' arglist1 ']'   (rule 67)
+    expr  ->  expr . binop expr   (rule 70)
+    expr  ->  expr . keybinop expr   (rule 71)
+    expr  ->  expr . '.' name '=' expr   (rule 74)
+    expr  ->  expr . '.' '[' arglist1 ']' '=' expr   (rule 78)
 
-    BINOP	shift, and go to state 87
-    KEYBINOP	shift, and go to state 88
-    '-' 	shift, and go to state 89
-    '<' 	shift, and go to state 90
-    '>' 	shift, and go to state 91
-    '*' 	shift, and go to state 92
-    '+' 	shift, and go to state 93
-    '|' 	shift, and go to state 94
-    READWRITEVAR	shift, and go to state 95
-    '.' 	shift, and go to state 96
-    ';' 	shift, and go to state 131
+    BINOP	shift, and go to state 93
+    KEYBINOP	shift, and go to state 76
+    '-' 	shift, and go to state 94
+    '<' 	shift, and go to state 95
+    '>' 	shift, and go to state 96
+    '*' 	shift, and go to state 97
+    '+' 	shift, and go to state 98
+    '|' 	shift, and go to state 99
+    READWRITEVAR	shift, and go to state 100
+    DOUBLEEQUAL	shift, and go to state 101
+    '.' 	shift, and go to state 102
+    ';' 	shift, and go to state 141
 
     $default	reduce using rule 25 (optsemi)
 
-    optsemi	go to state 324
-    binop	go to state 97
-    keybinop	go to state 98
+    optsemi	go to state 337
+    binop	go to state 103
+    keybinop	go to state 104
 
 
 
-state 319
+state 332
 
     methoddef  ->  name '{' argdecls funcvardecls primitive methbody '}' .   (rule 21)
 
@@ -5796,7 +6193,7 @@ state 319
 
 
 
-state 320
+state 333
 
     methbody  ->  exprseq retval .   (rule 35)
 
@@ -5804,7 +6201,7 @@ state 320
 
 
 
-state 321
+state 334
 
     methoddef  ->  binop '{' argdecls funcvardecls primitive methbody '}' .   (rule 23)
 
@@ -5812,7 +6209,7 @@ state 321
 
 
 
-state 322
+state 335
 
     methoddef  ->  '*' name '{' argdecls funcvardecls primitive methbody '}' .   (rule 22)
 
@@ -5820,7 +6217,7 @@ state 322
 
 
 
-state 323
+state 336
 
     methoddef  ->  '*' binop '{' argdecls funcvardecls primitive methbody '}' .   (rule 24)
 
@@ -5828,7 +6225,7 @@ state 323
 
 
 
-state 324
+state 337
 
     retval  ->  '^' expr optsemi .   (rule 39)
 
@@ -5836,18 +6233,18 @@ state 324
 
 
 
-state 325
+state 338
 
-    $   	go to state 326
-
-
-
-state 326
-
-    $   	go to state 327
+    $   	go to state 339
 
 
 
-state 327
+state 339
+
+    $   	go to state 340
+
+
+
+state 340
 
     $default	accept

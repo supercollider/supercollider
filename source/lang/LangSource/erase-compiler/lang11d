@@ -4,8 +4,9 @@
 %token	PSEUDOVAR
 %token  ELLIPSIS PIE
 %token  BADTOKEN INTERPRET
+%left	':'
 %right  '='
-%left	BINOP KEYBINOP '-' '<' '>' '*' '+' '|' READWRITEVAR
+%left	BINOP KEYBINOP '-' '<' '>' '*' '+' '|' READWRITEVAR DOUBLEEQUAL
 %left	'.'
 %right  '`'
 %right  UMINUS
@@ -225,6 +226,8 @@ expr1	: pushliteral
 			}
 		|  '[' arglistc ']'
 			{ $$ = (long)newPyrDynListNode(0, (PyrParseNode*)$2); }
+		|	'(' dictslotlist ')'
+			{ $$ = (long)newPyrDynDictNode((PyrParseNode*)$2); }
 		| pseudovar
 			{ $$ = (long)newPyrPushNameNode((PyrSlotNode*)$1); }
 		| classname '(' keyarglist1 ')'
@@ -500,6 +503,7 @@ argdecls	: { $$ = 0; }
 				}
 			;
 				
+								
 slotdeflist0 	: { $$ = 0; }
 				| slotdeflist
 				;
@@ -514,6 +518,24 @@ slotdef		: name
 			| name '=' slotliteral
 				{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, (PyrLiteralNode*)$3, 0); }
 			;
+				
+dictslotdef	: expr ':' expr
+				{ $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
+			| keybinop expr
+				{
+					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)$1, NULL);
+					$$ = (long)linkNextNode(key, (PyrParseNode*)$2); 
+				}
+			;
+				
+dictslotlist1	: dictslotdef
+				| dictslotlist1 ',' dictslotdef
+					{ $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
+				;
+				
+dictslotlist	: { $$ = 0; }
+				| dictslotlist1
+				;
 				
 rwslotdeflist	: rwslotdef
 				| rwslotdeflist ',' rwslotdef
@@ -674,6 +696,7 @@ pseudovar	: PSEUDOVAR { $$ = zzval; }
 		
 binop	: BINOP { $$ = zzval; }	
 		| READWRITEVAR { $$ = zzval; }
+		| DOUBLEEQUAL { $$ = zzval; }
 		| '<'  { $$ = zzval; }	
 		| '>'  { $$ = zzval; }	
 		| '-'  { $$ = zzval; }	
