@@ -60,21 +60,55 @@ Score {
 		);
 	}
 	
-	recordNRT { arg oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, headerFormat = 
-		"AIFF", sampleFormat = "int16", options, completionString="";
-		this.class.recordNRT(
-			score, oscFilePath, outputFilePath, inputFilePath, 
-			sampleRate, headerFormat, sampleFormat, options, completionString
-		);
+	endTime { ^score.last[0] }
+	startTime { ^score.first[0] }
+			
+	section { arg start = 0, end, configevents;
+		var sectionlist;
+		if(end.isNil) { end =  this.endTime };
+		sectionlist = Array.new;
+		score.do { arg item;
+			if(item[0].inclusivelyBetween(start, end)) {
+			item = item.copy;
+			item[0] = item[0] - start;
+			sectionlist = sectionlist.add(item);
+			}
+		};
+		//sectionlist = sectionlist.add([end - start, [\c_set, 0, 0]]);
+		if(configevents.notNil, 
+			{if(configevents.isArray, 
+				{if(configevents[0] == 0.0,
+					{sectionlist = sectionlist.addFirst(configevents)},
+					{"Configuration events should have a timestamp of 0.0".warn; ^nil})},
+				{"Configuration events need to be a bundle array: [time, [events]]".warn;
+					^nil})});
+		^this.new(sectionlist);	
 	}
 	
-	*recordNRT { arg list, oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, 
-		headerFormat = "AIFF", sampleFormat = "int16", options, completionString="";
-		this.write(list, oscFilePath);
+	writeOSCFile { arg path, from, to;
+		if(to.notNil or: {from.notNil}) {Ê
+			from = from ? 0.0;
+			to = to ? this.endTime;
+			this.section(from, to).write(path) 
+		} { 
+			this.write(path) 
+		};
+	}
+		
+	recordNRT { arg oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, headerFormat = 
+		"AIFF", sampleFormat = "int16", options, completionString="", duration = nil;
+		this.writeOSCFile(oscFilePath, 0, duration);
 		unixCmd(program + " -N" + oscFilePath + (inputFilePath ? "_") + outputFilePath + 			sampleRate + headerFormat + sampleFormat + 
 			(options ?? {ServerOptions.new}).asOptionsString  
 			+ completionString);
 	}
+	
+	*recordNRT { arg list, oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, 
+		headerFormat = "AIFF", sampleFormat = "int16", options, completionString="", duration = nil;
+		this.new(list).recordNRT(oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, 
+		headerFormat, sampleFormat, options, completionString, duration);
+	}
+	
 	
 	stop {
 		isPlaying.if({routine.stop; isPlaying = false; routine = nil;}, {"Score not playing".warn;}
@@ -87,7 +121,7 @@ Score {
 		this.write(list, oscFilePath);
 	}
 	
-	*write {arg list, oscFilePath;
+	*write { arg list, oscFilePath;
 		var osccmd, f;
 		f = File(oscFilePath, "w");
 		protect {
@@ -101,7 +135,7 @@ Score {
 		"done".postln;
 	}
 	
-	write {arg oscFilePath;
+	write { arg oscFilePath;
 		this.class.write(score, oscFilePath);
 	}
 	
@@ -110,3 +144,4 @@ Score {
 	}
 	
 }	
+
