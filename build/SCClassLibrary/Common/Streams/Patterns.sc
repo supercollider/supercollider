@@ -8,7 +8,7 @@ Pattern : AbstractFunction {
 	}	
 
 	play { arg protoEvent, clock;
-		Pevent(this, protoEvent).play(clock)
+		^Pevent(this, protoEvent).play(clock)
 	}
 	
 	asStream {
@@ -56,7 +56,7 @@ Pevent : Pattern {
 		^EventStream(pattern.asStream, event);
 	}
 	play { arg clock;
-		this.asStream.play(clock ? SystemClock)
+		^this.asStream.play(clock ? SystemClock)
 	}
 }
 

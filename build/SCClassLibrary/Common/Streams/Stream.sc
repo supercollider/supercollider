@@ -193,7 +193,7 @@ PauseStream : Stream
 	}
 	
 	play { stream = originalStream; super.play(clock) }
-	reset { ^stream.reset }
+	reset { ^originalStream.reset }
 	stop { stream = nil }
 
 	// pause and resume are synonyms of stop and play
@@ -220,16 +220,14 @@ Task : PauseStream {
 
 ////////////////////////////////////////////////////////////////////////
 
-EventStream : Stream {
-	var <>stream, <>protoEvent;
+EventStream : PauseStream {
+	var <>protoEvent;
 	*new { arg stream, protoEvent;
-		^super.newCopyArgs(stream, protoEvent);
+		^super.new(stream, SystemClock).protoEvent_(protoEvent);
 	}
 	next {
 		var event;
-		event = stream.next( protoEvent.copy );
-		if (event.isNil, { ^nil });
-		
+		event = stream.next( protoEvent.copy );		
 		^event.play;
 	}
 }

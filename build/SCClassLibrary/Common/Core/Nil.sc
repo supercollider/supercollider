@@ -45,6 +45,7 @@ Nil {
 		^event
 	}
 	awake {}
+	play {}
 	
 	swapThisGroup{}
 	

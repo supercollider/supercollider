@@ -1,6 +1,6 @@
 
 Environment : IdentityDictionary {
-
+	
 	*new { arg size=8; ^super.new(size) }
 	*make { arg function;
 		^this.new.make(function)
@@ -68,14 +68,11 @@ Event : Environment {
 			~sustain = { ~dur * ~legato * ~stretch };
 			~lag = 0.0;
 			~strum = 0.0;
-			~fxIndex = 0;
-			~monoIndex = 0;
 			
 			~amp = { ~db.dbamp };
 			~db = -20.0;
 			~velocity = 64; 		// MIDI units 0-127
 			~pan = 0.0; 			// pan center
-			~channels = 2;
 			
 			~mtranspose = 0;
 			~gtranspose = 0.0;
@@ -100,20 +97,21 @@ Event : Environment {
 			~freq = {
 				(~midinote.value + ~ctranspose).midicps;
 			};
-			
-			
 
-			~chanOffset = 0;
 			~instrument = \default;
-			~wavetable = Wavetable.sineFill(1024, 1/[1,2,3,4,5,6]);
 			
-			
-			~argNames = #[\freq, \amp, \pan, \gate, \out];
+			~argNames = #[\amp, \pan, \out];
 			~group = 0;
 			~out = 0;
-			~doneAction = 2;
-			~releaseValue = 0; // sent to gate on release
-			~gate = 1.0;
+
+			// I don't see the point of these.
+			// doneAction should be built into the patch.
+			// releaseValue should be zero. a negative value would only be for a voice stealer, not a normal note off.
+			// why should gate be any value other than 1 ? gate should just be an argument defaulting to one, but not
+			// passed in the s_new message.
+			//~doneAction = 2;
+			//~releaseValue = 0; // sent to gate on release
+			//~gate = 1.0;
 			
 			~finish = {
 				// do final calculations
@@ -123,7 +121,7 @@ Event : Environment {
 			};
 						
 			~player = NotePlayer.new;
-			~latency = 0.05;
+			~server = Server.local;
 		});
 	}
 }

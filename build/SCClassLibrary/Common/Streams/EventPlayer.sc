@@ -6,57 +6,67 @@ EventPlayer {
 }
 
 NotePlayer : EventPlayer {
-	playOneEvent {
-		var msg,  dur, args, server, id;
+	playOneEvent { arg lag, dur, freq;
+		var msg, server, id;
 		
-		
-		server = ~server ? Server.local;
+		server = ~server;
 		id = server.nextNodeID;
-		msg = List.new;
-		args = Array.new(~argNames.size*2);
-		~argNames.do({ arg name;
-			args.add(name);
-			args.add(currentEnvironment.at(name));
-		});
-		msg.add([9,~instrument.asString, id, 1, ~group]++args);
-		
-		
-		//send the bundle
-		server.listSendBundle(~latency, msg); 
-		
+
 		// create note on event
+		msg = [9, ~instrument, id, 1, ~group, \freq, freq];
+		~argNames.do({ arg name;
+			msg = msg.add(name);
+			msg = msg.add(currentEnvironment.at(name));
+		});
 		
-		// if tempo changes this will be inaccurate.
-		// another way must be found to do this. but for now..
-		dur = ~dur / ~tempo;
-		
-		// send note off. maybe use oscScheduler?
-	
-		server.sendBundle(~latency + dur, ["/n_set", id, "gate", 0]);
-		
-		
+		//send the note on bundle
+		server.sendBundle(lag, msg); 
+				
+		// send note off bundle. 
+		server.sendBundle(lag + dur, [15, id, \gate, 0]); //15 == n_set
 	}
 	playEvent { arg event;
-		var freqs;
+		var freqs, lag, dur, strum;
 		event.use({
 			~finish.value; // finish the event
+			// if tempo changes this will be inaccurate.
+			// another way must be found to do this. but for now..
+			dur = ~dur / ~tempo;
+			lag = ~lag + ~server.latency;
 			freqs = ~freq;
-			if (freqs.isKindOf(Symbol), nil ,{
+			strum = ~strum;
+			if (freqs.isKindOf(Symbol), { nil },{
 				if (freqs.isSequenceableCollection, {
-					freqs.do({ arg freq;
-						~freq = freq;
-						this.playOneEvent;
+					freqs.do({ arg freq, i;
+						this.playOneEvent(i * strum + lag, dur, freq);
 					});
 						
 				},{	
-					this.playOneEvent;
+					this.playOneEvent(lag, dur, freqs);
 				});
 			});
 		});
 	}
-	
 }
 
+NoteDurPlayer : NotePlayer {
+	playOneEvent { arg lag, dur, freq;
+		var msg, server, id;
+		
+		server = ~server;
+		id = server.nextNodeID;
+
+		// create note on event
+		msg = [9, ~instrument, id, 1, ~group, \freq, freq, \dur, dur];
+		~argNames.do({ arg name;
+			msg = msg.add(name);
+			msg = msg.add(currentEnvironment.at(name));
+		});
+		
+		//send the note on bundle
+		server.sendBundle(lag, msg); 
+	}
+}
 /*
 
 delta time is in beats.
