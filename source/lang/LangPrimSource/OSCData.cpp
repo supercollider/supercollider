@@ -486,7 +486,7 @@ void PerformOSCMessage(int inSize, char *inData, ReplyAddress *inReply)
     // call virtual machine to handle message
     VMGlobals *g = gMainVMGlobals;
     ++g->sp; SetObject(g->sp, g->process);
-    ++g->sp; SetNil(g->sp);	// time
+    ++g->sp; SetFloat(g->sp, elapsedTime());	// time
     ++g->sp; SetObject(g->sp, replyObj);
     ++g->sp; SetObject(g->sp, arrayObj);
     runInterpreter(g, s_recvoscmsg, 4);
