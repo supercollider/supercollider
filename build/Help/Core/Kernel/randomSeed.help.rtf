@@ -8,21 +8,25 @@
 \f0\b\fs36 \cf0 random generator seed
 \f1\b0\fs18 \
 \
+\
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs26 \cf0 Every Thread in sclang has a (pseudo-) random number generator\
-that is responsible for all randomization within this thread.\
-Each randgen has its own seed (starting point) from which the \
-series of values is generated. This seed can be set and after\
-that, the randgen (being strictly deterministic) produces\
-exactly the same numbers again. So in order to save diskspace, you can reproduce any sequence of randomized data just by one integer number\
-that you can write down in your notebook.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\fs24 \cf0 	Every Thread in sclang has a (pseudo-) random number generator that is responsible for all 	randomization within this thread. Each randgen has its own seed (starting point) from which the series of 	values is generated. This seed can be set and after that, the randgen (being strictly deterministic) 	produces exactly the same numbers again.
+\fs26  \
+\
 
-\fs24 \cf0 see also: [
+\fs24 	In order to save diskspace, you can reproduce any sequence of randomized data just by one integer 	number that you can write down in your notebook..\
+\
+	see also: [
 \f0\b RandSeed
+\f2\b0 ][
+\f0\b Pseed
 \f2\b0 ]
 \f1\fs18 \
+\
+\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -53,10 +57,17 @@ r.randSeed = 1923;\
 \
 \
 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs26 \cf0 Also you can set the seed of the running thread that \
-all threads started within will inherit.\
+\f0\b\fs24 \cf0 \ul Inheriting Seeds
+\f1\b0\fs18 \ulnone \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 	Also it is possible to set the seed of the running thread that \
+	all threads started within will inherit.
+\fs26 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
