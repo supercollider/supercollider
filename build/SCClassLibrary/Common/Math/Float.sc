@@ -24,6 +24,15 @@ Float : SimpleNumber {
 	high32Bits { _High32Bits } 
 	low32Bits { _Low32Bits } 
 	
+	*from32Bits { arg word;
+		_From32Bits
+		^this.primitiveFailed
+	}
+	*from64Bits { arg hiWord, loWord;
+		_From64Bits
+		^this.primitiveFailed
+	}
+	
 	// iteration
 	do { arg function;
 		// iterates function from 0 to this-1 

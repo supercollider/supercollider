@@ -746,6 +746,48 @@ int prLow32Bits(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prFrom32Bits(VMGlobals *g, int numArgsPushed);
+int prFrom32Bits(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+	int err, word;
+	
+	err = slotIntVal(b, &word);
+	if (err) return err;
+	
+	union { float f; int32 i; } u;	
+	u.i = word;
+	SetFloat(a, u.f);
+	
+	return errNone;
+}
+
+int prFrom64Bits(VMGlobals *g, int numArgsPushed);
+int prFrom64Bits(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+	int err, hi, lo;
+
+	err = slotIntVal(b, &hi);
+	if (err) return err;
+	
+	err = slotIntVal(c, &lo);
+	if (err) return err;
+	
+#if BYTE_ORDER == BIG_ENDIAN
+	union { struct { uint32 hi, lo; } i; double f; } du;
+#else
+	union { struct { uint32 lo, hi; } i; double f; } du;
+#endif
+	du.i.hi = hi;
+	du.i.lo = lo;
+	SetFloat(a, du.f);
+	
+	return errNone;
+}
 
 int mathClipInt(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1232,6 +1274,8 @@ void initMathPrimitives()
 	definePrimitive(base, index++, "_As32Bits", prAs32Bits, 1, 0);
 	definePrimitive(base, index++, "_High32Bits", prHigh32Bits, 1, 0);
 	definePrimitive(base, index++, "_Low32Bits", prLow32Bits, 1, 0);
+	definePrimitive(base, index++, "_From32Bits", prFrom32Bits, 2, 0);
+	definePrimitive(base, index++, "_From64Bits", prFrom64Bits, 3, 0);
 	
 	definePrimitive(base, index++, "_ClipInt", mathClipInt, 3, 0);
 	definePrimitive(base, index++, "_ClipFloat", mathClipFloat, 3, 0);
