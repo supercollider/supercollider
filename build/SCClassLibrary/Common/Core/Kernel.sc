@@ -228,6 +228,27 @@ Process {
 		});
 	}
 
+	openWinCodeFile {
+		var string, class, method, words;
+		string = interpreter.cmdLine;
+		if (string.includes($-), {
+			words = string.delimit({ arg c; c == $- });
+			class = words.at(0).asSymbol.asClass;
+			if (class.notNil, {
+				method = class.findMethod(words.at(1).asSymbol);
+				if (method.notNil, {
+					method.filenameSymbol.asString.openWinTextFile(method.charPos, -1);
+				});
+			});
+		},{
+			class = string.asSymbol.asClass;
+			if (class.notNil, {
+				class.filenameSymbol.asString.openWinTextFile(class.charPos, -1);
+			});
+		});
+	}
+
+
 	methodReferences {
 		// this will not find method calls that are compiled with special byte codes such as 'value'.
 		var name, out, references;
