@@ -1957,6 +1957,7 @@ void SCMultiSliderView::draw(SCRect inDamage)
             yval = vals[i];
             drawRect = SCtoCGRect(calcThumbRect(j, yval, mXOffset));
             CGContextFillRect (cgc, drawRect);
+            if (mThumbSize > 1)
             CGContextStrokeRect(cgc,drawRect);
         }
         if (mSecYValues != NULL) {
@@ -1965,6 +1966,7 @@ void SCMultiSliderView::draw(SCRect inDamage)
             yval = mSecYValues[i];
             drawRect = SCtoCGRect(calcThumbRect(j, yval, mXOffset));
             CGContextFillRect (cgc, drawRect);
+            if (mThumbSize > 1)
             CGContextStrokeRect(cgc,drawRect);
         }
         }
@@ -2110,7 +2112,7 @@ SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, float xoffset
         thumby = mThumbSizeY;
         x = (double) indexIn * ( xoffset + mThumbSize);
         y = valIn * (mBounds.height - thumby - 2);
-        y = (mBounds.height - y) + 3 - thumby;
+        y = mBounds.y + mBounds.height - y - 1 - thumby; 
         x = mBounds.x + x + 1;
         if(mIsFilled) thumby = mBounds.width - y;
         thumbx = mThumbSize;
