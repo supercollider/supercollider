@@ -230,8 +230,19 @@ void set_real_time_priority(pthread_t thread)
 	struct sched_param param;
 
 	pthread_getschedparam (thread, &policy, &param);
+#ifdef SC_LINUX
+	policy = SCHED_RR;
+	const char* env = getenv("SC_SCHED_PRIO");
+	// jack uses a priority of 10 in realtime mode, so this is a good default
+	const int defprio = 5;
+	const int minprio = sched_get_priority_min(policy);
+	const int maxprio = sched_get_priority_max(policy);
+	const int prio = env ? atoi(env) : defprio;
+	param.sched_priority = sc_clip(prio, minprio, maxprio);
+#else
 	policy = SCHED_RR;         // round-robin, AKA real-time scheduling
 	param.sched_priority = 63; // you'll have to play with this to see what it does
+#endif
 	pthread_setschedparam (thread, policy, &param);
 }
 

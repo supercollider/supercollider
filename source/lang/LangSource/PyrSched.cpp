@@ -522,11 +522,35 @@ kern_return_t  RescheduleStdThread( mach_port_t    machThread,
 }
 #endif // SC_DARWIN
 
+#ifdef SC_LINUX
+#include <string.h>
+
+static void SC_LinuxSetRealtimePriority(pthread_t thread, int priority)
+{
+	int policy;
+	struct sched_param param;
+
+	pthread_getschedparam(thread, &policy, &param);
+
+	policy = SCHED_RR;
+	const int minprio = sched_get_priority_min(policy);
+	const int maxprio = sched_get_priority_max(policy);
+	param.sched_priority = sc_clip(priority, minprio, maxprio);
+
+	int err = pthread_setschedparam(thread, policy, &param);
+	if (err != 0) {
+		post("Couldn't set realtime scheduling priority %d: %s\n",
+			 param.sched_priority, strerror(err));
+	}
+}
+#endif // SC_LINUX
+
 void schedRun();
 void schedRun()
 {
 	pthread_create (&gSchedThread, NULL, schedRunFunc, (void*)0);
 
+#ifdef SC_DARWIN
         int policy;
         struct sched_param param;
         
@@ -536,7 +560,6 @@ void schedRun()
         policy = SCHED_RR;         // round-robin, AKA real-time scheduling
         //post("param.sched_priority %d\n", param.sched_priority);
         
-#ifdef SC_DARWIN
         int machprio;
         boolean_t timeshare;
         GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread), &machprio, &timeshare);
@@ -551,11 +574,15 @@ void schedRun()
 
         //param.sched_priority = 70; // you'll have to play with this to see what it does
         //pthread_setschedparam (gSchedThread, policy, &param);
-#endif // SC_DARWIN
 
         pthread_getschedparam (gSchedThread, &policy, &param);
         
         //post("param.sched_priority %d\n", param.sched_priority);
+#endif // SC_DARWIN
+
+#ifdef SC_LINUX
+		SC_LinuxSetRealtimePriority(gSchedThread, 1);
+#endif // SC_LINUX
 }
 
 
@@ -690,6 +717,9 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
         //pthread_setschedparam (mThread, policy, &param);
 #endif // SC_DARWIN
 
+#ifdef SC_LINUX
+		SC_LinuxSetRealtimePriority(mThread, 1);
+#endif // SC_LINUX
 }
 
 void TempoClock::StopReq()
