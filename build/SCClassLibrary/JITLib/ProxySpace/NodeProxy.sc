@@ -827,21 +827,22 @@ NodeProxy : BusPlug {
 	
 	prepareOutput {
 		var parentPlaying;
-		parentPlaying = this.addToParentProxy;
+		parentPlaying = this.addToChildProxy;
 		if(parentPlaying, { this.deepWakeUp });
 	}
 	
-	addToParentProxy {
-		var parentProxy;
-		parentProxy = this.class.buildProxy;
-		if(parentProxy.notNil && (parentProxy !== this), { parentProxy.parents.add(this) });
-		^parentProxy.isPlaying;
+	addToChildProxy {
+		var child;
+		child = this.class.buildProxy;
+		if(child.notNil and: { child !== this }, { child.parents.add(this) });
+		^child.isPlaying;
 	}
 	
 	
 	////////////behave like my group////////////
 	
 	isPlaying { ^group.isPlaying }
+	
 	free { arg fadeTime, freeGroup = true;
 		var bundle;
 		if(this.isPlaying, {	
@@ -1006,7 +1007,7 @@ NodeProxy : BusPlug {
 			ctlBus.perform(action, levels, durs);
 			ctlBus.free;
 			
-			setArgs = [keys, levels].flopn.flat;
+			setArgs = [keys, levels].flop.flat;
 			nodeMap.performList(\set, setArgs);
 			
 			server.sendBundle(server.latency + durs.maxItem, 
@@ -1058,7 +1059,7 @@ SharedNodeProxy : NodeProxy {
 	var <constantGroupID;
 	
 	*new { arg server, groupID;
-		^super.newCopyArgs(server).initGroupID(groupID).clear	}
+		^super.newCopyArgs(server).initGroupID(groupID).init	}
 	
 	shared { ^true }
 	
@@ -1076,7 +1077,7 @@ SharedNodeProxy : NodeProxy {
 	generateUniqueName {
 		^asString(constantGroupID)
 	}
-	// problem: parents are lost
+	// problem: parents are lost if failed
 	addObject { arg bundle, obj, index, freeAll;
 		if(obj.distributable) {
 			super.addObject(bundle, obj, index, freeAll);
@@ -1114,7 +1115,10 @@ SharedNodeProxy : NodeProxy {
 	
 	prepareToBundle { arg argGroup, bundle; // ignore ingroup
 		if(this.isPlaying.not) {
-				group = Group.basicNew(this.localServer, this.defaultGroupID);
+				group = Group.basicNew(
+					this.localServer,   // NodeWatcher should know when local group stopped
+					this.defaultGroupID // but not care about any remote groups
+				);
 				group.isPlaying = true;
 				NodeWatcher.register(group);
 				// this happens in sendAll and sendEach, should implement in sendObj
