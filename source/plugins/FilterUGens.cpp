@@ -804,18 +804,18 @@ void Integrator_next(Integrator* unit, int inNumSamples)
 		} else {
 			LOOP(inNumSamples, 
 				float y0 = ZXP(in); 
-				ZXP(out) = y1 = y0 + b1 * y1;
+				ZXP(out) = y1 = y0 + b1 * (y1 - y0);
 			);
 		}
 	} else {
 		float b1_slope = CALCSLOPE(unit->m_b1, b1);
-		if (b1 >= 0.f && unit->m_b1 >= 0) {
+		if (b1 >= 0.f && unit->m_b1 >= 0.f) {
 			LOOP(inNumSamples, 
 				float y0 = ZXP(in); 
 				ZXP(out) = y1 = y0 + b1 * (y1 - y0);
 				b1 += b1_slope;
 			);
-		} else if (b1 <= 0.f && unit->m_b1 <= 0) {
+		} else if (b1 <= 0.f && unit->m_b1 <= 0.f) {
 			LOOP(inNumSamples, 
 				float y0 = ZXP(in); 
 				ZXP(out) = y1 = y0 + b1 * (y1 + y0);
