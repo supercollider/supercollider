@@ -109,12 +109,12 @@ CoinGate : UGen {
 
 TWindex : UGen {
 	*ar {
-		arg in, array;
-		^this.multiNewList(['audio', in] ++ array)
+		arg in, array, normalize=0;
+		^this.multiNewList(['audio', in, normalize] ++ array)
 	}
 	*kr {
-		arg in, array;
-		^this.multiNewList(['control', in] ++ array)
+		arg in, array, normalize=0;
+		^this.multiNewList(['control', in, normalize] ++ array)
 	}
 }
 
