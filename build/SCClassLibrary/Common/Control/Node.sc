@@ -67,7 +67,7 @@ Node {
 	
 	/** PRIVATE IMPLEMENTATION  **/
 	*prNew {
-		^super.new //just return the instance
+		^super.new //just return the instance, gets called by RootNode
 	}
 	
 	initNodeID {  nodeID = server.nodeAllocator.alloc  }
