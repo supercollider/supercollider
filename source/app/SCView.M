@@ -1773,13 +1773,9 @@ int SCPopUpMenu::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             for (int i=0; i<numItems; ++i) {
                 PyrSlot *slot = array->slots + i;
 
-				if (!isKindOfSlot(slot, class_string)) return errWrongType;
-				PyrString* string = slot->uos;
-				
 				Str255 pstr;
-				int len = sc_min(255, string->size);
-				pstr[0] = len;
-				memcpy(pstr+1, string->s, len);
+				int err = slotPStrVal(slot, pstr);
+				if (err) return err;
 
 				AppendMenu(mMenuH, pstr);
             }
@@ -1910,6 +1906,10 @@ void SCStaticText::draw(SCRect inDamage)
 int allocSlotStrVal(PyrSlot *slot, char **str)
 {
     int len;
+	if (*str) {
+		delete [] *str;
+		*str = 0;
+	}
     if (IsSym(slot)) {
             len = strlen(slot->us->name);
             *str = new char[len+1];
