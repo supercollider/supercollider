@@ -274,21 +274,30 @@ expr1	: pushliteral
 		| valrangex1
 		;
 
-valrangex1	: expr1 '[' exprseq DOTDOT ']'
+valrangex1	: expr1 '[' arglist1 DOTDOT ']'
 			{ 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
 				PyrSlot selectorSlot, nilSlot;
 				PyrParseNode* args;
 
+				int arglen = nodeListLength((PyrParseNode*)$3);
+				if (arglen > 2) {
+					error("ArrayedCollection subrange has too many arguments.\n");
+					nodePostErrorLine((PyrParseNode*)$3);
+					compileErrors++;
+				}
+
 				SetNil(&nilSlot);
-				nilnode1 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				nilnode2 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				
 				SetSymbol(&selectorSlot, s_copyseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3);
-				args = linkNextNode(args, nilnode1);
+				if (arglen < 2) {
+					nilnode1 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
+					args = linkNextNode(args, nilnode1);
+				}
 				args = linkNextNode(args, nilnode2);
 				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
 			}
@@ -310,70 +319,57 @@ valrangex1	: expr1 '[' exprseq DOTDOT ']'
 				args = linkNextNode(args, (PyrParseNode*)$4);
 				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
 			}
-		| expr1 '[' exprseq DOTDOT exprseq ']'
+		| expr1 '[' arglist1 DOTDOT exprseq ']'
 			{ 
 				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode;
+				PyrPushLitNode *nilnode1;
 				PyrSlot selectorSlot, nilSlot;
 				PyrParseNode* args;
 
-				SetNil(&nilSlot);
-				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
+				int arglen = nodeListLength((PyrParseNode*)$3);
+				if (arglen > 2) {
+					error("ArrayedCollection subrange has too many arguments.\n");
+					nodePostErrorLine((PyrParseNode*)$3);
+					compileErrors++;
+				}
 				
 				SetSymbol(&selectorSlot, s_copyseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3);
-				args = linkNextNode(args, nilnode);
+				if (arglen < 2) {
+					SetNil(&nilSlot);
+					nilnode1 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
+					args = linkNextNode(args, nilnode1);
+				}
 				args = linkNextNode(args, (PyrParseNode*)$5);
-				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
-			}
-		| expr1 '[' exprseq ',' exprseq DOTDOT ']'
-			{ 
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				SetNil(&nilSlot);
-				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
-				SetSymbol(&selectorSlot, s_copyseries);
-				selectornode = newPyrSlotNode(&selectorSlot);
-				args = linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3);
-				args = linkNextNode(args, (PyrParseNode*)$5);
-				args = linkNextNode(args, nilnode);
-				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
-			}
-		| expr1 '[' exprseq ',' exprseq DOTDOT exprseq ']'
-			{ 
-				PyrSlotNode *selectornode;
-				PyrSlot selectorSlot;
-				PyrParseNode* args;
-				
-				SetSymbol(&selectorSlot, s_copyseries);
-				selectornode = newPyrSlotNode(&selectorSlot);
-				args = linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3);
-				args = linkNextNode(args, (PyrParseNode*)$5);
-				args = linkNextNode(args, (PyrParseNode*)$7);
 				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
 			}
 	;
 
-valrangexd	: expr '.' '[' exprseq DOTDOT ']'
+valrangexd	: expr '.' '[' arglist1 DOTDOT ']'
 			{ 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
 				PyrSlot selectorSlot, nilSlot;
 				PyrParseNode* args;
-
+				
+				int arglen = nodeListLength((PyrParseNode*)$4);
+				if (arglen > 2) {
+					error("ArrayedCollection subrange has too many arguments.\n");
+					nodePostErrorLine((PyrParseNode*)$3);
+					compileErrors++;
+				}
+				
 				SetNil(&nilSlot);
-				nilnode1 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				nilnode2 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				
 				SetSymbol(&selectorSlot, s_copyseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$4);
-				args = linkNextNode(args, nilnode1);
+				if (arglen < 2) {
+					nilnode1 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
+					args = linkNextNode(args, nilnode1);
+				}
 				args = linkNextNode(args, nilnode2);
 				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
 			}
@@ -395,51 +391,29 @@ valrangexd	: expr '.' '[' exprseq DOTDOT ']'
 				args = linkNextNode(args, (PyrParseNode*)$5);
 				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
 			}
-		| expr '.' '[' exprseq DOTDOT exprseq ']'
+		| expr '.' '[' arglist1 DOTDOT exprseq ']'
 			{ 
 				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode;
+				PyrPushLitNode *nilnode1;
 				PyrSlot selectorSlot, nilSlot;
 				PyrParseNode* args;
-
-				SetNil(&nilSlot);
-				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
+				
+				int arglen = nodeListLength((PyrParseNode*)$4);
+				if (arglen > 2) {
+					error("ArrayedCollection subrange has too many arguments.\n");
+					nodePostErrorLine((PyrParseNode*)$3);
+					compileErrors++;
+				}
 				
 				SetSymbol(&selectorSlot, s_copyseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$4);
-				args = linkNextNode(args, nilnode);
+				if (arglen < 2) {
+					SetNil(&nilSlot);
+					nilnode1 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
+					args = linkNextNode(args, nilnode1);
+				}
 				args = linkNextNode(args, (PyrParseNode*)$6);
-				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
-			}
-		| expr '.' '[' exprseq ',' exprseq DOTDOT ']'
-			{ 
-				PyrSlotNode *selectornode;
-				PyrPushLitNode *nilnode;
-				PyrSlot selectorSlot, nilSlot;
-				PyrParseNode* args;
-
-				SetNil(&nilSlot);
-				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
-				SetSymbol(&selectorSlot, s_copyseries);
-				selectornode = newPyrSlotNode(&selectorSlot);
-				args = linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$4);
-				args = linkNextNode(args, (PyrParseNode*)$6);
-				args = linkNextNode(args, nilnode);
-				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
-			}
-		| expr '.' '[' exprseq ',' exprseq DOTDOT exprseq ']'
-			{ 
-				PyrSlotNode *selectornode;
-				PyrSlot selectorSlot;
-				PyrParseNode* args;
-				
-				SetSymbol(&selectorSlot, s_copyseries);
-				selectornode = newPyrSlotNode(&selectorSlot);
-				args = linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$4);
-				args = linkNextNode(args, (PyrParseNode*)$6);
-				args = linkNextNode(args, (PyrParseNode*)$8);
 				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
 			}
 	;
