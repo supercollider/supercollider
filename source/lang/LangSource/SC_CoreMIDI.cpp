@@ -62,66 +62,69 @@ void midiNotifyProc(const MIDINotification *msg, void* refCon)
 {
 }
 
+extern bool compiledOK;
+
 static void midiProcessPacket(MIDIPacket *pkt, int uid)
 {
  //jt
     if(pkt) {
      pthread_mutex_lock (&gLangMutex); //dont know if this is really needed/seems to be more stable..
 		// it is needed  -jamesmcc
-
-      VMGlobals *g = gMainVMGlobals;
-      uint8 status = pkt->data[0] & 0xF0;
-        g->canCallOS = true;
-        
-        ++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the class MIDIIn
-        //set arguments: 
-        ++g->sp;SetInt(g->sp,  uid); //src
-            // ++g->sp;  SetInt(g->sp, status); //status
-        ++g->sp;  SetInt(g->sp, pkt->data[0] - (status & 0xF0)); //chan
-        switch (status) {
-        case 0x80 : //noteOff
-            ++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-            ++g->sp; SetInt(g->sp, 0); //val2 handle noteOff as a noteOn with velocity 0
-            runInterpreter(g, s_midiNoteAction, 5);
-            break;
-        case 0x90 : //noteOn s_midiNoteAction
-            ++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-            ++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
-            runInterpreter(g, s_midiNoteAction, 5);
-            break;
-        case 0xA0 : //polytouch
-            ++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-            ++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
-            runInterpreter(g, s_midiPolyTouchAction, 5);
-            break;
-        case 0xB0 : //control
-            ++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-            ++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
-            runInterpreter(g, s_midiControlAction, 5);
-            break;
-        case 0xC0 : //program
-            ++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-            runInterpreter(g, s_midiProgramAction, 4);
-            break;
-        case 0xD0 : //touch
-            ++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-            runInterpreter(g, s_midiTouchAction, 4);
-            break;
-        case 0xE0 : //bend	this does not work correctly
-            ///pkt->data[2]
-            ++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-            runInterpreter(g, s_midiBendAction, 4);
-            break;
-        case 0xF0 :// ?
-            break;  
-        default :
-            ++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-            ++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
-            runInterpreter(g, s_domidiaction, 5);
-            break;
-            
-    }
-    g->canCallOS = false;
+	if (compiledOK) {
+			VMGlobals *g = gMainVMGlobals;
+			uint8 status = pkt->data[0] & 0xF0;
+			g->canCallOS = false; // cannot call the OS
+			
+			++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the class MIDIIn
+			//set arguments: 
+			++g->sp;SetInt(g->sp,  uid); //src
+				// ++g->sp;  SetInt(g->sp, status); //status
+			++g->sp;  SetInt(g->sp, pkt->data[0] - (status & 0xF0)); //chan
+			switch (status) {
+			case 0x80 : //noteOff
+				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+				++g->sp; SetInt(g->sp, 0); //val2 handle noteOff as a noteOn with velocity 0
+				runInterpreter(g, s_midiNoteAction, 5);
+				break;
+			case 0x90 : //noteOn s_midiNoteAction
+				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+				++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
+				runInterpreter(g, s_midiNoteAction, 5);
+				break;
+			case 0xA0 : //polytouch
+				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+				++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
+				runInterpreter(g, s_midiPolyTouchAction, 5);
+				break;
+			case 0xB0 : //control
+				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+				++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
+				runInterpreter(g, s_midiControlAction, 5);
+				break;
+			case 0xC0 : //program
+				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+				runInterpreter(g, s_midiProgramAction, 4);
+				break;
+			case 0xD0 : //touch
+				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+				runInterpreter(g, s_midiTouchAction, 4);
+				break;
+			case 0xE0 : //bend	this does not work correctly
+				///pkt->data[2]
+				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+				runInterpreter(g, s_midiBendAction, 4);
+				break;
+			case 0xF0 :// ?
+				break;  
+			default :
+				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+				++g->sp; SetInt(g->sp,  pkt->data[2]); //val2
+				runInterpreter(g, s_domidiaction, 5);
+				break;
+				
+		}
+		g->canCallOS = false;
+	}
     pthread_mutex_unlock (&gLangMutex); 
     }
 }

@@ -112,16 +112,16 @@ static id sharedSCVM = nil;
 		return;
 	}
 	pthread_mutex_lock(&gLangMutex);
+	if (compiledOK) {
+		VMGlobals *g = gMainVMGlobals;
+		
+			int textlen = length;
+		PyrString* strobj = newPyrStringN(g->gc, textlen, 0, true);
+		memcpy(strobj->s, (char*)text, textlen);
 	
-	VMGlobals *g = gMainVMGlobals;
-	
-        int textlen = length;
-	PyrString* strobj = newPyrStringN(g->gc, textlen, 0, true);
-	memcpy(strobj->s, (char*)text, textlen);
-
-	SetObject(&g->process->interpreter.uoi->cmdLine, strobj);
-	g->gc->GCWrite(g->process->interpreter.uo, strobj);
-        
+		SetObject(&g->process->interpreter.uoi->cmdLine, strobj);
+		g->gc->GCWrite(g->process->interpreter.uo, strobj);
+	}
 	pthread_mutex_unlock(&gLangMutex);
 }
 

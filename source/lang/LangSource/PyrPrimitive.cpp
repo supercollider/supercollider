@@ -3189,7 +3189,7 @@ int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 
-        schedClearUnsafe();
+	schedClearUnsafe();
 
 	return errNone;
 }

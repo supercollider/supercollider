@@ -2300,34 +2300,6 @@ void freePyrObject(PyrObject *obj)
 	}
 }
 
-
-bool IsSharableObject(PyrObject *obj)
-{
-	if (isKindOf(obj, class_rawarray)) {
-		return obj->obj_format != obj_double;
-	} else if (obj->classptr == class_fundef) {
-		return IsNil(&((PyrBlock*)obj)->context);
-	/*} else if (obj->classptr == class_func) {
-		PyrSlot *fundef = &((PyrClosure*)obj)->block;
-		return IsObj(fundef) && IsNil(&fundef->uoblk->context);*/
-	} else {
-		return obj->obj_flags & obj_immutable;
-	}
-}
-
-bool IsSharableSlot(PyrSlot *slot)
-{
-	if (IsObj(slot)) return IsSharableObject(slot->uo); 
-	return !IsFrame(slot);
-}
-
-bool IsPermanentSlot(PyrSlot *slot)
-{
-	if (IsObj(slot)) return slot->uo->gc_color == obj_permanent; 
-	return !IsFrame(slot);
-}
-
-
 int getIndexedFloat(PyrObject *obj, int index, float *value)
 {
 	PyrSlot *slot;

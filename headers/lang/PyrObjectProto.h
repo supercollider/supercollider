@@ -37,10 +37,6 @@ bool objAddIndexedObject(PyrObject *obj, PyrObject *obj2);
 void CallStackSanity(struct VMGlobals *g);
 bool FrameSanity(struct PyrFrame *frame);
 
-bool IsSharableObject(PyrObject *obj);
-bool IsSharableSlot(PyrSlot *slot);
-bool IsPermanentSlot(PyrSlot *slot);
-
 void dumpBadObject(PyrObject *obj);
 void initRawRegistry();
 

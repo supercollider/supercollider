@@ -47,6 +47,7 @@ PyrString* newPyrString(VMGlobals *g, char *s, int flags, bool collect);
 
 PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr;
 const char* gPassword;
+extern bool compiledOK;
 
 #define USE_SCHEDULER 1
 
@@ -170,16 +171,18 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
     bool isBundle = strcmp(inBuf, "#bundle") == 0;
     
     pthread_mutex_lock (&gLangMutex);
-    if (isBundle) {
-		OSC_Packet packet;
-		packet.mIsBundle = true;
-		packet.mData = inBuf;
-		packet.mSize = inSize;
-		packet.mReplyAddr = *inReplyAddr;
-        PerformOSCBundle(&packet);
-    } else {
-        PerformOSCMessage(inSize, inBuf, inReplyAddr);
-    }
+	if (compiledOK) {
+		if (isBundle) {
+			OSC_Packet packet;
+			packet.mIsBundle = true;
+			packet.mData = inBuf;
+			packet.mSize = inSize;
+			packet.mReplyAddr = *inReplyAddr;
+			PerformOSCBundle(&packet);
+		} else {
+			PerformOSCMessage(inSize, inBuf, inReplyAddr);
+		}
+	}
     pthread_mutex_unlock (&gLangMutex);
 	
 }
@@ -496,11 +499,13 @@ void ProcessOSCPacket(OSC_Packet* inPacket)
     inPacket->mIsBundle = strcmp(inPacket->mData, "#bundle") == 0;
     
     pthread_mutex_lock (&gLangMutex);
-    if (inPacket->mIsBundle) {
-        PerformOSCBundle(inPacket);
-    } else {
-        PerformOSCMessage(inPacket->mSize, inPacket->mData, &inPacket->mReplyAddr);
-    }
+	if (compiledOK) {
+		if (inPacket->mIsBundle) {
+			PerformOSCBundle(inPacket);
+		} else {
+			PerformOSCMessage(inPacket->mSize, inPacket->mData, &inPacket->mReplyAddr);
+		}
+	}
     pthread_mutex_unlock (&gLangMutex);
 
     FreeOSCPacket(inPacket);
