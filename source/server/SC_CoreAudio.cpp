@@ -764,65 +764,47 @@ OSStatus	hardwareListenerProc (	AudioHardwarePropertyID	inPropertyID,
         case kAudioHardwarePropertyDefaultOutputDevice:
             fprintf(stdout, "%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultOutputDevice\r");
             err =  AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDefaultOutputDevice,  &outSize, &outWritable);
-            if (err == noErr)
-            {
-                err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &outSize, &deviceID);
-                if (err == noErr)
-                {
-                    err =  AudioDeviceGetPropertyInfo(deviceID, 0, false, kAudioDevicePropertyDeviceName,  &outSize, &outWritable);
-                    if (err == noErr)
-                    {
-                        err = AudioDeviceGetProperty(deviceID, 0, false, kAudioDevicePropertyDeviceName, &outSize, cStr);
-                        if (err == noErr)
-                        {
-							// do something
-                        }
-                    }
-                }
-            }
+			if (err) break;
+			err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &outSize, &deviceID);
+			if (err) break;
+			err =  AudioDeviceGetPropertyInfo(deviceID, 0, false, kAudioDevicePropertyDeviceName,  &outSize, &outWritable);
+			if (err) break;
+			err = AudioDeviceGetProperty(deviceID, 0, false, kAudioDevicePropertyDeviceName, &outSize, cStr);
+			if (err) break;
+
+			// do something
             
             break;
        
         case kAudioHardwarePropertyDefaultInputDevice:
             fprintf(stdout, "%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultInputDevice\r");
             err =  AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDefaultInputDevice,  &outSize, &outWritable);
-            if (err == noErr)
-            {
-                err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &outSize, &deviceID);
-                if (err == noErr)
-                {
-                    err =  AudioDeviceGetPropertyInfo(deviceID, 0, false, kAudioDevicePropertyDeviceName,  &outSize, &outWritable);
-                    if (err == noErr)
-                    {
-                        err = AudioDeviceGetProperty(deviceID, 0, false, kAudioDevicePropertyDeviceName, &outSize, cStr);
-                        if (err == noErr)
-                        {
-							// do something
-                        }
-                    }
-                }
-            }
-           break;
+			if (err) break;
+			err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &outSize, &deviceID);
+			if (err) break;
+			err =  AudioDeviceGetPropertyInfo(deviceID, 0, false, kAudioDevicePropertyDeviceName,  &outSize, &outWritable);
+			if (err) break;
+			err = AudioDeviceGetProperty(deviceID, 0, false, kAudioDevicePropertyDeviceName, &outSize, cStr);
+			if (err) break;
+
+			// do something
+            
+            break;
             
         case kAudioHardwarePropertyDefaultSystemOutputDevice:
             fprintf(stdout, "%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultSystemOutputDevice\r");
             err =  AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDefaultSystemOutputDevice,  &outSize, &outWritable);
-            if (err == noErr)
-            {
-                err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultSystemOutputDevice, &outSize, &deviceID);
-                if (err == noErr)
-                {
-                    err =  AudioDeviceGetPropertyInfo(deviceID, 0, false, kAudioDevicePropertyDeviceName,  &outSize, &outWritable);
-                    if (err == noErr)
-                    {
-                        err = AudioDeviceGetProperty(deviceID, 0, false, kAudioDevicePropertyDeviceName, &outSize, cStr);
-                        if (err == noErr)
-                        {
-							// do something
-                        }
-                    }
-                }
-            }
+			if (err) break;
+			err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultSystemOutputDevice, &outSize, &deviceID);
+			if (err) break;
+			err =  AudioDeviceGetPropertyInfo(deviceID, 0, false, kAudioDevicePropertyDeviceName,  &outSize, &outWritable);
+			if (err) break;
+			err = AudioDeviceGetProperty(deviceID, 0, false, kAudioDevicePropertyDeviceName, &outSize, cStr);
+			if (err) break;
+
+			// do something
+            
+            break;
 
         case kAudioHardwarePropertyDevices:
         {
