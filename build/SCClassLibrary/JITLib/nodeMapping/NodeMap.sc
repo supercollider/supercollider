@@ -1,5 +1,6 @@
 NodeMap {
 	var <values, <mappings, <>msgs;
+	var <currentMsg;
 	
 	*new {
 		^super.new.clear
@@ -8,6 +9,7 @@ NodeMap {
 	clear {
 		mappings = IdentityDictionary.new;
 		values = IdentityDictionary.new;
+		currentMsg = List.new;
 	}
 	
 	addMsg { arg msg;
@@ -29,8 +31,8 @@ NodeMap {
 		forBy(0, args.size-1, 2, { arg i;
 			var key, oldval;
 			key = args.at(i).asSymbol;
-			//mappings.removeAt(key);
-			mappings.put(key, -1); //what is better?
+			mappings.removeAt(key);
+			//mappings.put(key, -1); //what is better?
 			oldval = values.at(key);
 			if(oldval.notNil, {
 				this.set(key, oldval) 
@@ -39,17 +41,17 @@ NodeMap {
 		
 	}
 	
-	get { arg target ... args;
-		var resp, server;
-		server = target.asTarget.server;
-		if(args.isEmpty, { args = mappings.keys });
-		resp = OSCresponder(server.addr, '/c_set', { arg ... msg;
-			msg.postln;
-			resp.remove;
-		}).add;
-		server.sendBundle(nil, ["/c_get"]++args);
-		
-	}
+//	get { arg target ... args;
+//		var resp, server;
+//		server = target.asTarget.server;
+//		if(args.isEmpty, { args = mappings.keys });
+//		resp = OSCresponder(server.addr, '/c_set', { arg ... msg;
+//			msg.postln;
+//			resp.remove;
+//		}).add;
+//		server.sendBundle(nil, ["/c_get"]++args);
+//		
+//	}
 	
 	setn { arg ... args;
 		this.performList(\set, args);
@@ -69,16 +71,21 @@ NodeMap {
 		
 	}
 	
-	send { arg targetNode, latency;
+	send { arg server, nodeID, latency;
 		var msg;
 		msg = List.new;
-		targetNode = targetNode.asTarget;
-		this.updateMsg(msg, targetNode);
-		targetNode.server.listSendBundle(latency, msg);
+		this.updateMsg(msg, nodeID);
+		server.listSendBundle(latency, msg);
+	}
+	
+	sendToNode { arg node, latency;
+		node = node.asTarget;
+		this.send(node.server, node.nodeID, latency)
 	}
 	
 	mapArgs {	
 				var mapArgs;
+				if(mappings.isEmpty, { ^#[] });
 				mapArgs = List.new;
 				mappings.keysValuesDo({ arg key, value;
 										value = this.translate(value);
@@ -95,6 +102,7 @@ NodeMap {
 	
 	valArgs {
 				var valArgs;
+				if(values.isEmpty, { ^#[] });
 				valArgs = List.new;
 				values.keysValuesDo({ arg key, value;
 								if(value.isSequenceableCollection.not, {
@@ -110,6 +118,7 @@ NodeMap {
 	multiValArgs {
 				var valArgs;
 				valArgs = List.new;
+				if(values.isEmpty, { ^#[] });
 				values.keysValuesDo({ arg key, value;
 								if(value.isSequenceableCollection, {
 									if(mappings.at(key).isNil, {
@@ -122,27 +131,26 @@ NodeMap {
 				^valArgs
 	}
 	
+	
 	updateMsg { arg msgList, target;
 		var mapArgs, valArgs, multiValArgs;
-			target = target.asTarget;
+			target = target.asNodeID;
 				mapArgs = this.mapArgs;
 				valArgs = this.valArgs;
 				multiValArgs = this.multiValArgs;
 										
 				if(mapArgs.isEmpty.not, {
-					msgList.add(target.getMsg(14, mapArgs));
+					msgList.add([14, target]++mapArgs);
 				});
 				if(valArgs.isEmpty.not, {
-					msgList.add(target.getMsg(15, valArgs));
+					msgList.add([15, target]++valArgs);
 				});
 				if(multiValArgs.isEmpty.not, {
-					msgList.add(target.getMsg(16, multiValArgs));
+					msgList.add([16, target]++multiValArgs);
 				});
 				
 				msgs.do({ arg item;
-					msgList.add(
-						target.getMsg(item.first, item.copyToEnd(1))
-					);
+					msgList.add(item.insert(1, target));
 				});
 	}
 

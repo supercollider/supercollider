@@ -13,7 +13,7 @@ Ensemble : AbstractEnsemble {
 	}
 	nodeMap_ { arg map;
 		nodeMap = map;
-		if(this.isPlaying ?? nodeMap.notNil, {nodeMap.send(this)});
+		if(this.isPlaying ?? nodeMap.notNil, {nodeMap.sendToNode(this)});
 	}
 	map { arg ... args;
 		nodeMap.performList(\map, args);
@@ -64,9 +64,9 @@ Ensemble : AbstractEnsemble {
 		nodeMap.addMsg(cmdArray)
 	}
 	
-	*newMsg { arg msgList, target, addAction=\addToTail, nodeMap;
+	*newToBundle { arg msgList, target, addAction=\addToTail, nodeMap;
 		var res;
-		res = super.newMsg(msgList, target, addAction);
+		res = super.newToBundle(msgList, target, addAction);
 		res.nodeMap_(nodeMap); 
 		nodeMap.updateMsg(msgList, res);
 		^res
