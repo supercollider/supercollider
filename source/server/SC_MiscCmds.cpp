@@ -37,6 +37,59 @@
 // returns number of bytes in an OSC string.
 int OSCstrlen(char *strin);
 
+Node* Msg_GetNode(World *inWorld, sc_msg_iter& msg)
+{
+	Node *node;
+	if (msg.nextTag('i') == 's')
+	{
+		char* loc = msg.gets();
+		int32 nodeID = msg.geti();
+		node = World_GetNode(inWorld, nodeID);
+		while (*loc)
+		{
+			if (!node) return 0;
+			switch (*loc)
+			{
+				case 'h' :
+					if (!node->mIsGroup) return 0;
+					node = ((Group*)node)->mHead;
+					break;
+				case 't' :
+					if (!node->mIsGroup) return 0;
+					node = ((Group*)node)->mTail;
+					break;
+				case 'u' :
+					node = &node->mParent->mNode;
+					break;
+				case 'p' :
+					node = node->mPrev;
+					break;
+				case 'n' :
+					node = node->mNext;
+					break;
+			}
+			loc++;
+		}
+	}
+	else 
+	{
+		int32 nodeID = msg.geti();
+		node = World_GetNode(inWorld, nodeID);
+	}
+	return node;
+}
+
+Group* Msg_GetGroup(World *inWorld, sc_msg_iter& msg)
+{
+	Node* node = Msg_GetNode(inWorld, msg);
+	return node->mIsGroup ? (Group*)node : 0;
+}
+
+Graph* Msg_GetGraph(World *inWorld, sc_msg_iter& msg)
+{
+	Node* node = Msg_GetNode(inWorld, msg);
+	return node->mIsGroup ? 0 : (Graph*)node;
+}
 
 SCErr meth_none(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_none(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
@@ -117,8 +170,7 @@ SCErr meth_n_cmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply
 SCErr meth_n_cmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
 	sc_msg_iter msg(inSize, inData);	
-	int32 nodeID = msg.geti();
-	Node *node = World_GetNode(inWorld, nodeID);
+	Node *node = Msg_GetNode(inWorld, msg);
 	if (!node) return kSCErr_NodeNotFound;
 		
 	char *args = msg.rdpos;
@@ -135,8 +187,7 @@ SCErr meth_n_trace(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 {
 	sc_msg_iter msg(inSize, inData);	
 	while (msg.remain()) {
-		int32 nodeID = msg.geti();
-		Node *node = World_GetNode(inWorld, nodeID);
+		Node *node = Msg_GetNode(inWorld, msg);
 		if (!node) return kSCErr_NodeNotFound;
 		
 		Node_Trace(node);
@@ -151,8 +202,7 @@ SCErr meth_n_run(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	sc_msg_iter msg(inSize, inData);	
 	
 	while (msg.remain()) {
-		int32 nodeID = msg.geti();
-		Node *node = World_GetNode(inWorld, nodeID);
+		Node *node = Msg_GetNode(inWorld, msg);
 		if (!node) return kSCErr_NodeNotFound;
 			
 		int32 run = msg.geti();
@@ -167,8 +217,7 @@ SCErr meth_n_map(World *inWorld, int inSize, char *inData, ReplyAddress *inReply
 SCErr meth_n_map(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	int id = msg.geti();	
-	Node *node = World_GetNode(inWorld, id);
+	Node *node = Msg_GetNode(inWorld, msg);
 	if (!node) return kSCErr_NodeNotFound;
 	
 	while (msg.remain() >= 8) {
@@ -189,8 +238,7 @@ SCErr meth_n_mapn(World *inWorld, int inSize, char *inData, ReplyAddress *inRepl
 SCErr meth_n_mapn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	int id = msg.geti();	
-	Node *node = World_GetNode(inWorld, id);
+	Node *node = Msg_GetNode(inWorld, msg);
 	if (!node) return kSCErr_NodeNotFound;
 	
 	while (msg.remain() >= 12) {
@@ -218,8 +266,7 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress *inReply
 SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	int id = msg.geti();
-	Node *node = World_GetNode(inWorld, id);
+	Node *node = Msg_GetNode(inWorld, msg);
 	if (!node) return kSCErr_NodeNotFound;
 	
 	while (msg.remain() >= 8) {
@@ -240,8 +287,7 @@ SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress *inRepl
 SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	int id = msg.geti();
-	Node *node = World_GetNode(inWorld, id);
+	Node *node = Msg_GetNode(inWorld, msg);
 	if (!node) return kSCErr_NodeNotFound;
 
 	while (msg.remain()) {
@@ -269,8 +315,7 @@ SCErr meth_n_fill(World *inWorld, int inSize, char *inData, ReplyAddress *inRepl
 SCErr meth_n_fill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	int id = msg.geti();
-	Node *node = World_GetNode(inWorld, id);
+	Node *node = Msg_GetNode(inWorld, msg);
 	if (!node) return kSCErr_NodeNotFound;
 
 	while (msg.remain() >= 12) 
@@ -305,8 +350,7 @@ SCErr meth_n_query(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 	sc_msg_iter msg(inSize, inData);	
 	
 	while (msg.remain()) {
-		int id = msg.geti();
-		Node *node = World_GetNode(inWorld, id);
+		Node *node = Msg_GetNode(inWorld, msg);
 		if (!node) return kSCErr_NodeNotFound;
 	
 		Node_StateMsg(node, kNode_Info);
@@ -393,7 +437,6 @@ SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	
 	int32 nodeID = msg.geti();
 	int32 addAction = msg.geti();
-	int32 addTargetID = msg.geti();
 
 	GraphDef *def = World_GetGraphDef(inWorld, defname);
 	if (!def) return kSCErr_SynthDefNotFound;
@@ -402,7 +445,7 @@ SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	Graph *graph = 0;
 	switch (addAction) {
 		case 0 : {
-			Group *group = World_GetGroup(inWorld, addTargetID);
+			Group *group = Msg_GetGroup(inWorld, msg);
 			if (!group) return kSCErr_GroupNotFound;
 			err = Graph_New(inWorld, def, nodeID, &msg, &graph);
 			if (err) return err;
@@ -410,31 +453,28 @@ SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 			Group_AddHead(group, &graph->mNode);
 		} break;
 		case 1 : {
-			Group *group = World_GetGroup(inWorld, addTargetID);
+			Group *group = Msg_GetGroup(inWorld, msg);
 			if (!group) return kSCErr_GroupNotFound;
 			err = Graph_New(inWorld, def, nodeID, &msg, &graph);
 			if (err) return err;
 			Group_AddTail(group, &graph->mNode);
 		} break;
 		case 2 : {
-			if (addTargetID == 0) return kSCErr_Failed;
-			Node *beforeThisNode = World_GetNode(inWorld, addTargetID);
+			Node *beforeThisNode = Msg_GetNode(inWorld, msg);
 			if (!beforeThisNode) return kSCErr_NodeNotFound;
 			err = Graph_New(inWorld, def, nodeID, &msg, &graph);
 			if (err) return err;
 			Node_AddBefore(&graph->mNode, beforeThisNode);
 		} break;
 		case 3 : {
-			if (addTargetID == 0) return kSCErr_Failed;
-			Node *afterThisNode = World_GetNode(inWorld, addTargetID);
+			Node *afterThisNode = Msg_GetNode(inWorld, msg);
 			if (!afterThisNode) return kSCErr_NodeNotFound;
 			err = Graph_New(inWorld, def, nodeID, &msg, &graph);
 			if (err) return err;
 			Node_AddAfter(&graph->mNode, afterThisNode);
 		} break;
 		case 4 : {
-			if (addTargetID == 0) return kSCErr_Failed;
-			Node *replaceThisNode = World_GetNode(inWorld, addTargetID);
+			Node *replaceThisNode = Msg_GetNode(inWorld, msg);
 			if (!replaceThisNode) return kSCErr_NodeNotFound;
 			err = Graph_New(inWorld, def, nodeID, &msg, &graph);
 			if (err) return err;
@@ -455,39 +495,37 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	while (msg.remain()) {
 		int32 newGroupID = msg.geti();
 		int32 addAction = msg.geti();
-		int32 addTargetID = msg.geti();
 			
 		Group *newGroup = 0;
 		switch (addAction) {
 			case 0 : {
-				Group *group = World_GetGroup(inWorld, addTargetID);
+				Group *group = Msg_GetGroup(inWorld, msg);
 				if (!group) return kSCErr_GroupNotFound;
 				err = Group_New(inWorld, newGroupID, &newGroup);
 				if (err) {
 					if (err == kSCErr_DuplicateNodeID) {
 						newGroup = World_GetGroup(inWorld, newGroupID);
-						if (!newGroup || !newGroup->mNode.mParent || newGroup->mNode.mParent->mNode.mID != addTargetID)
+						if (!newGroup || !newGroup->mNode.mParent || newGroup->mNode.mParent != group)
 							return err;
 					} else return err;
 				}
 				Group_AddHead(group, &newGroup->mNode);
 			} break;
 			case 1 : {
-				Group *group = World_GetGroup(inWorld, addTargetID);
+				Group *group = Msg_GetGroup(inWorld, msg);
 				if (!group) return kSCErr_GroupNotFound;
 				err = Group_New(inWorld, newGroupID, &newGroup);
 				if (err) {
 					if (err == kSCErr_DuplicateNodeID) {
 						newGroup = World_GetGroup(inWorld, newGroupID);
-						if (!newGroup || !newGroup->mNode.mParent || newGroup->mNode.mParent->mNode.mID != addTargetID)
+						if (!newGroup || !newGroup->mNode.mParent || newGroup->mNode.mParent != group)
 							return err;
 					} else return err;
 				}
 				Group_AddTail(group, &newGroup->mNode);
 			} break;
 			case 2 : {
-				if (addTargetID == 0) return kSCErr_Failed;
-				Node *beforeThisNode = World_GetNode(inWorld, addTargetID);
+				Node *beforeThisNode = Msg_GetNode(inWorld, msg);
 				if (!beforeThisNode) return kSCErr_TargetNodeNotFound;
 				err = Group_New(inWorld, newGroupID, &newGroup);
 				if (err) {
@@ -500,8 +538,7 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 				Node_AddBefore(&newGroup->mNode, beforeThisNode);
 			} break;
 			case 3 : {
-				if (addTargetID == 0) return kSCErr_Failed;
-				Node *afterThisNode = World_GetNode(inWorld, addTargetID);
+				Node *afterThisNode = Msg_GetNode(inWorld, msg);
 				if (!afterThisNode) return kSCErr_TargetNodeNotFound;
 				err = Group_New(inWorld, newGroupID, &newGroup);
 				if (err) {
@@ -514,8 +551,7 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 				Node_AddAfter(&newGroup->mNode, afterThisNode);
 			} break;
 			case 4 : {
-				if (addTargetID == 0) return kSCErr_Failed;
-				Node *replaceThisNode = World_GetNode(inWorld, addTargetID);
+				Node *replaceThisNode = Msg_GetNode(inWorld, msg);
 				if (!replaceThisNode) return kSCErr_TargetNodeNotFound;
 				err = Group_New(inWorld, newGroupID, &newGroup);
 				if (err) return err;
@@ -537,8 +573,7 @@ SCErr meth_n_free(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 	sc_msg_iter msg(inSize, inData);	
 
 	while (msg.remain()) {
-		int32 nodeID = msg.geti();
-		Node *node = World_GetNode(inWorld, nodeID);
+		Node *node = Msg_GetNode(inWorld, msg);
 		if (!node) return kSCErr_NodeNotFound;
 	
 		Node_Delete(node);
@@ -552,11 +587,10 @@ SCErr meth_n_before(World *inWorld, int inSize, char *inData, ReplyAddress* /*in
 {
 	sc_msg_iter msg(inSize, inData);	
 	while (msg.remain()) {
-		int32 nodeID = msg.geti();
-		Node *node = World_GetNode(inWorld, nodeID);
+		Node *node = Msg_GetNode(inWorld, msg);
 		if (!node) return kSCErr_NodeNotFound;
 	
-		Node *beforeThisOne = World_GetNode(inWorld, msg.geti());
+		Node *beforeThisOne = Msg_GetNode(inWorld, msg);
 		if (!beforeThisOne) return kSCErr_NodeNotFound;
 	
 		//Group *prevGroup = node->mParent;
@@ -576,11 +610,10 @@ SCErr meth_n_after(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 {
 	sc_msg_iter msg(inSize, inData);	
 	while (msg.remain()) {
-		int32 nodeID = msg.geti();
-		Node *node = World_GetNode(inWorld, nodeID);
+		Node *node = Msg_GetNode(inWorld, msg);
 		if (!node) return kSCErr_NodeNotFound;
 	
-		Node *afterThisOne = World_GetNode(inWorld, msg.geti());
+		Node *afterThisOne = Msg_GetNode(inWorld, msg);
 		if (!afterThisOne) return kSCErr_NodeNotFound;
 	
 		Group *prevGroup = node->mParent;
@@ -600,11 +633,10 @@ SCErr meth_g_head(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 {
 	sc_msg_iter msg(inSize, inData);	
 	while (msg.remain()) {
-		Group *group = World_GetGroup(inWorld, msg.geti());
+		Group *group = Msg_GetGroup(inWorld, msg);
 		if (!group) return kSCErr_GroupNotFound;
 	
-		int32 nodeID = msg.geti();
-		Node *node = World_GetNode(inWorld, nodeID);
+		Node *node = Msg_GetNode(inWorld, msg);
 		if (!node) return kSCErr_NodeNotFound;
 	
 		Group *prevGroup = node->mParent;
@@ -625,11 +657,10 @@ SCErr meth_g_tail(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 {
 	sc_msg_iter msg(inSize, inData);	
 	while (msg.remain()) {
-		Group *group = World_GetGroup(inWorld, msg.geti());
+		Group *group = Msg_GetGroup(inWorld, msg);
 		if (!group) return kSCErr_GroupNotFound;
 	
-		int32 nodeID = msg.geti();
-		Node *node = World_GetNode(inWorld, nodeID);
+		Node *node = Msg_GetNode(inWorld, msg);
 		if (!node) return kSCErr_NodeNotFound;
 	
 		//Group *prevGroup = node->mParent;
@@ -649,11 +680,10 @@ SCErr meth_g_insert(World *inWorld, int inSize, char *inData, ReplyAddress* /*in
 {
 	sc_msg_iter msg(inSize, inData);	
 	while (msg.remain()) {
-		Group *group = World_GetGroup(inWorld, msg.geti());
+		Group *group = Msg_GetGroup(inWorld, msg);
 		if (!group) return kSCErr_GroupNotFound;
 	
-		int32 nodeID = msg.geti();
-		Node *node = World_GetNode(inWorld, nodeID);
+		Node *node = Msg_GetNode(inWorld, msg);
 		if (!node) return kSCErr_NodeNotFound;
 	
 		Group *prevGroup = node->mParent;
@@ -675,7 +705,7 @@ SCErr meth_g_freeAll(World *inWorld, int inSize, char *inData, ReplyAddress* /*i
 {
 	sc_msg_iter msg(inSize, inData);	
 	while (msg.remain()) {
-		Group *group = World_GetGroup(inWorld, msg.geti());
+		Group *group = Msg_GetGroup(inWorld, msg);
 		if (!group) return kSCErr_GroupNotFound;
 	
 		Group_DeleteAll(group);
@@ -688,7 +718,7 @@ SCErr meth_g_deepFree(World *inWorld, int inSize, char *inData, ReplyAddress* /*
 {
 	sc_msg_iter msg(inSize, inData);	
 	while (msg.remain()) {
-		Group *group = World_GetGroup(inWorld, msg.geti());
+		Group *group = Msg_GetGroup(inWorld, msg);
 		if (!group) return kSCErr_GroupNotFound;
 	
 		Group_DeepFreeGraphs(group);
@@ -1094,8 +1124,8 @@ SCErr meth_s_get(World *inWorld, int inSize, char *inData, ReplyAddress *inReply
 SCErr meth_s_get(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
 {
 	sc_msg_iter msg(inSize, inData);
-	int id = msg.geti();
-	Graph *graph = World_GetGraph(inWorld, id);
+
+	Graph *graph = Msg_GetGraph(inWorld, msg);
 	if (!graph) return kSCErr_NodeNotFound;
 			
 	int numheads = msg.remain() >> 2;
@@ -1105,7 +1135,7 @@ SCErr meth_s_get(World *inWorld, int inSize, char *inData, ReplyAddress* inReply
 	packet.maketags(numheads * 2 + 1);
 	packet.addtag(',');
 	packet.addtag('i');
-	packet.addi(id);
+	packet.addi(graph->mNode.mID);
 	
 	while (msg.remain() >= 4) {
 		if (msg.nextTag('i') == 's') {
@@ -1139,8 +1169,8 @@ SCErr meth_s_getn(World *inWorld, int inSize, char *inData, ReplyAddress *inRepl
 SCErr meth_s_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
 {		
 	sc_msg_iter msg(inSize, inData);
-	int id = msg.geti();
-	Graph *graph = World_GetGraph(inWorld, id);
+
+	Graph *graph = Msg_GetGraph(inWorld, msg);
 	if (!graph) return kSCErr_NodeNotFound;
 	
 	// figure out how many tags to allocate   
@@ -1163,7 +1193,7 @@ SCErr meth_s_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inRepl
 	msg.geti(); // skip buf index
 
 	packet.addtag('i');
-	packet.addi(id);
+	packet.addi(graph->mNode.mID);
 	
 	while (msg.remain()) {
 		if (msg.nextTag('i') == 's') {
@@ -1210,8 +1240,8 @@ SCErr meth_s_noid(World *inWorld, int inSize, char *inData, ReplyAddress* inRepl
 {		
 	sc_msg_iter msg(inSize, inData);
 	while (msg.remain()) {
-		int id = msg.geti();
-		Graph *graph = World_GetGraph(inWorld, id);
+
+		Graph *graph = Msg_GetGraph(inWorld, msg);
 		if (!graph) continue;
 		
 		Graph_RemoveID(inWorld, graph);
