@@ -61,6 +61,13 @@ Array[slot] : ArrayedCollection {
 		_ArrayContainsSeqColl 
 		^this.primitiveFailed 
 	}
+
+	shift { arg n;
+		var fill, remain;
+		fill = Array.fill(n, 0.0);
+		remain = this.drop(n.neg);
+		^if (n<0) { remain ++ fill } { fill ++ remain }
+	}
 	
 	// UGen support:
 	multiChannelExpand {
