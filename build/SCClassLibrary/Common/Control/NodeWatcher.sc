@@ -17,9 +17,11 @@ NodeWatcher {
 					{ arg time, resp, msg;
 						//msg.postln;
 						msg.removeAt(0);
-						msg = this.lookUp(msg);
-						if(msg.notNil, {
-							this.performList(method, msg)
+						if(nodes.at(msg.at(0)).notNil, {//for speed
+							msg = this.lookUp(msg);
+							if(msg.notNil, {
+								this.performList(method, msg)
+							})
 						})
 						
 					})
@@ -43,7 +45,6 @@ NodeWatcher {
 	stopListen {
 		if(isListening, {
 			responders.do({ arg item; item.remove });
-			this.clear;
 			isListening = false;
 		})
 	}
@@ -68,15 +69,20 @@ NodeWatcher {
 	
 	n_go { arg node, group, prev, next;
 		//group is set in the prMove calls
+		//this needs to be revisited, as group respond might 
+		//come back from server after its synth respond.
+		
 		if(prev.notNil, {
 			node.prMoveAfter(prev);
 		}, {
 			if(next.notNil, {
 				node.prMoveBefore(next);
 			}, {
-				group.prAddTail(node); 
+				group.asGroup.prAddTail(node); 
 			})
 		});
+		
+		
 		node.isPlaying = true;
 		node.isRunning = true;
 		
@@ -101,7 +107,7 @@ NodeWatcher {
 		//(node.asString ++ " was freed").postln;
 
 		this.unregister(node);
-				
+		node.group = nil;
 		node.isPlaying = false;
 		node.isRunning = false;
 	}
