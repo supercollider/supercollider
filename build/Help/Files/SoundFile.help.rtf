@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 \f3\fmodern\fcharset77 Courier;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 SoundFile
@@ -16,36 +16,43 @@
 This class is used to check the size, format, channels etc. when the client needs this information about a Soundfile.\
 \
 Some manipulation of the sound file data is possible with files small enough to fit into memory.  Writing of arrays back to the sound file is possible.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \
-\cf2 \
+\f1\fs18 \cf0 \
+\
 (\
 \
-s = \cf3 SoundFile\cf2 .new;\
+s = \cf2 SoundFile\cf0 .new;\
 \
-s.openRead(\cf4 "sounds/a11wlk01.wav"\cf2 );\
+s.openRead(\cf3 "sounds/a11wlk01.wav"\cf0 );\
 \
 s.inspect;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 \
+\
+s.close;\
+\
+\
 )
-\f2\fs24 \cf0 \
+\f2\fs24 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul Creating\
+\f0\b\fs28 \cf0 \ul Creating\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs24 \ulnone \
+\f2\b0\fs24 \cf0 \ulnone \
 
 \f0\b new\
 
 \f2\b0 \
 Creates a new SoundFile instance. \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul Read/Write\
+\f0\b\fs28 \cf0 \ul Read/Write\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs24 \ulnone \
+\f2\b0\fs24 \cf0 \ulnone \
 
 \f0\b openRead(inPathname)\
 
@@ -92,12 +99,14 @@ closes the file\
 \f2\b0 \
 the duration in seconds of the file\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \ul Instance Variables
+\f0\b\fs28 \cf0 \ul Instance Variables
 \f2\b0\fs24 \ulnone \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b <path
+\f0\b \cf0 <path
 \f2\b0 \
 \
 Get the pathname of the file. This variable is set via the openRead or openWrite calls.\
@@ -108,7 +117,7 @@ Get the pathname of the file. This variable is set via the openRead or openWrite
 \
 This is a Symbol indicating the header format which was read by openRead and will be written by openWrite. In order to write a file with a certain header format you set this variable.\
 \
-\cf2 	Sound File Format symbols:\
+	Sound File Format symbols:\
 		header formats:\
 			read/write formats:\
 				'AIFF', 	- Apple's AIFF\
@@ -118,32 +127,38 @@ This is a Symbol indicating the header format which was read by openRead and wil
 				'IRCAM', 	- old IRCAM format\
 				'none'	- no header = raw data\
 			A huge number of other formats are supported read only.
-\f1\fs18 \cf5 \
+\f1\fs18 \cf4 \
 			\
 
 \f2\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3 \
+\f3 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b <>sampleFormat
+\f0\b \cf0 <>sampleFormat
 \f2\b0 \
 \
 A Symbol indicating the format of the sample data which was read by openRead and will be written by openWrite. Not all header formats support all sample formats. The possible header formats are:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3 \cf2 \
+\f3 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf2 		sample formats:\
+\f2 \cf0 		sample formats:\
 			'int8', 'int16', 'int24', 'int32'\
 			'mulaw', 'alaw',\
 			'float32'\
 			\
 		not all header formats support all sample formats.
-\f1\fs18 \cf5 \
+\f1\fs18 \cf4 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs24 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b <numFrames
+\f0\b \cf0 <numFrames
 \f2\b0 \
 \
 The number of sample frames in the file.\
