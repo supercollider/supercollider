@@ -235,8 +235,8 @@ When we give the 'root' argument an array, we should hear a chord....\
 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\buckyball\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],\cf2 inf\cf0 ), \cf4 \\root\cf0 ,[-24,-17], \
-	\cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0,3,5,7,9,11,5,1],\cf2 inf\cf0 ), \cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),\
-	\cf4 \\cut\cf0 ,\cf2 Pxrand\cf0 ([1000,500,2000,300],\cf2 inf\cf0 ), \cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}), \cf4 \\amp\cf0 ,0.2));\
+	\cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0,3,5,7,9,11,[5,17],1],\cf2 inf\cf0 ), \cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{[1.0.rand2,1.0.rand2]\}),\
+	\cf4 \\cut\cf0 ,\cf2 Pxrand\cf0 ([1000,500,2000,300],\cf2 inf\cf0 ), \cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}), \cf4 \\amp\cf0 ,[0.15,0.22]));\
 )\
 (\
 \cf2 Pdef\cf0 (\cf4 \\buckyball\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],\cf2 inf\cf0 ), \cf4 \\root\cf0 ,[-24,-17], \
