@@ -23,7 +23,7 @@
 @interface UserPanel : NSObject
 {
     IBOutlet id window;
-    void *scobject;
+    struct PyrObject* scobject;
 }
 
 + (void)closeAll;
@@ -32,8 +32,8 @@
 - (NSWindow*)window;
 - (void)close;
 - (void)windowWillClose:(NSNotification *)aNotification;
-- (void)setSCObject: (void*)inObject;
-- (void*) getSCObject;
+- (void)setSCObject: (struct PyrObject*)inObject;
+- (struct PyrObject*) getSCObject;
     
 - (IBAction) panelAction: (id) sender;
 

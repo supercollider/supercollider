@@ -77,9 +77,9 @@ extern pthread_mutex_t gLangMutex;
     pthread_mutex_unlock (&gLangMutex);
 }
 
-- (void)setSCObject: (void*)inObject { scobject = inObject; }
+- (void)setSCObject: (struct PyrObject*)inObject { scobject = inObject; }
 
-- (void*) getSCObject { return scobject; }
+- (struct PyrObject*) getSCObject { return scobject; }
 
 void post(const char *fmt, ...);
 
