@@ -12,7 +12,11 @@
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "VMGlobals.h"
+#include "GC.h"
+#include "PyrSched.h"
 #import "SCVirtualMachine.h"
+
+
 
 
 

@@ -21,14 +21,6 @@
 
 #import "SCDialog.h"
 
-#include "PyrPrimitive.h"
-#include "PyrObject.h"
-#include "PyrKernel.h"
-#include "VMGlobals.h"
-#include "GC.h"
-#include "PyrSched.h"
-
-
 
 @implementation SCDialog
 
