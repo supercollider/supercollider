@@ -13,6 +13,7 @@ s.boot;
 \
 
 \fs18 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "help-sinegrain"\cf0 , \
 	\{ \cf2 arg\cf0  out=0, freq=440, i_dur=0.005;\
 		\cf2 var\cf0  env;\
@@ -28,6 +29,7 @@ s.boot;
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Routine\cf0 (\{\
 	loop(\{\
 			\cf2 Synth\cf0 (\cf3 "help-sinegrain"\cf0 , [\cf5 \\freq\cf0 , rrand(9000.0, 8000.0)], s);\
@@ -41,6 +43,7 @@ s.boot;
 \cf4 //pb333: ca. 30%\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Routine\cf0 (\{\
 	loop(\{\
 			s.sendBundle(s.latency,[\cf3 "/s_new"\cf0 , \cf3 "help-sinegrain"\cf0 , \cf2 UniqueID\cf0 .next, 1, 0, \cf5 \\freq\cf0 , rrand(9000.0, 18000.0)]);\
@@ -54,6 +57,7 @@ s.boot;
 \cf4 //pb333: 40 % \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Routine\cf0 (\{\
 	loop(\{\
 			s.sendMsg(\cf3 "/s_new"\cf0 , \cf3 "help-sinegrain"\cf0 , \cf2 UniqueID\cf0 .next, 1, 0, \cf5 \\freq\cf0 , rrand(9000.0, 18000.0));\
@@ -67,6 +71,7 @@ s.boot;
 \cf4 //pb333: 40% peak\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Routine\cf0 (\{\
 	var synth;\
 	loop(\{\
@@ -88,6 +93,7 @@ s.boot;
 //server cpu values\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "help-sinebechmark"\cf0 , \
 	\{\
 		\cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(\cf2 Rand\cf0 (200, 700), 0, 0.01))\
@@ -102,17 +108,17 @@ s.boot;
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //pb333: avg cpu: 43.5 % (256 UGens, 64 synths)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 32.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
+\cf0 64.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //pb333: avg cpu: 64 % (384 UGens, 96 synths)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 32.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
+\cf0 96.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //pb333: avg cpu: 81 % (448 UGens, 112 synths) (GUI gets slow)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 16.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
+\cf0 112.do(\{ \cf2 Synth\cf0 .new(\cf3 "help-sinebechmark"\cf0 ); \});\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -120,6 +126,7 @@ s.boot;
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "help-sinebechmark2"\cf0 , \
 	\{\
 		\cf2 Out\cf0 .ar(0, \
