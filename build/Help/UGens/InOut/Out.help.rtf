@@ -26,7 +26,6 @@
 \f2\b0 write a signal to a control bus.
 \f1\fs18 \cf2 \
 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 	
 \f0\b 	bus 
@@ -37,7 +36,13 @@
 		\
 Note that using the 
 \f0\b Bus
-\f2\b0  class to create a multichannel bus simply reserves a series of adjacent bus indices. There is nothing to stop you from outputting a channelsArray larger than that range. You are responsible for making sure that the number of channels match and that there are no conflicts.\
+\f2\b0  class to allocate a multichannel bus simply reserves a series of adjacent bus indices with the 
+\f0\b Server
+\f2\b0  object's bus allocators. abus.index simply returns the first of those indices. When using a Bus with an 
+\f0\b In
+\f2\b0  or 
+\f0\b Out
+\f2\b0  ugen there is nothing to stop you from reading to or writing from a larger range, or from hardcoding to a bus that has been allocated. You are responsible for making sure that the number of channels match and that there are no conflicts.\
 \
 See the 
 \f0\b Server-Architecture

@@ -6,10 +6,8 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 OffsetOut
-\fs28 				\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs24 \cf0 \
+\fs28 			write a signal to a bus with sample accurate timing		
+\fs24 \
 superclass: Out
 \f1\b0 \
 \
@@ -29,7 +27,6 @@ this ugen is used where sample accurate output is needed.\
 \f1\b0 write a signal to a control bus.
 \f2\fs18 \cf2 \
 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 	
 \f0\b 	bus 
@@ -39,7 +36,13 @@ this ugen is used where sample accurate output is needed.\
 \f1\b0 - an Array of channels to write out.
 \f2\fs18 \
 	\
-	\
+
+\f1\fs24 See the 
+\f0\b Server-Architecture
+\f1\b0  and 
+\f0\b Bus
+\f1\b0  helpfiles for more information on buses and how they are used.
+\f2\fs18 \
 	\
 	(\
 	\cf2 SynthDef\cf0 (\cf3 "help-OffsetOut"\cf0 , \{ \cf2 arg\cf0  i_busNumber=0, rate=1;\
