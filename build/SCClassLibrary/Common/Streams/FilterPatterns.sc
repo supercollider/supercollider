@@ -217,7 +217,10 @@ Pfindur : FilterPattern {
 			
 			loop ({
 				inevent = stream.next(inevent);
-				if(inevent.isNil) { nil.alwaysYield };
+				if(inevent.isNil) { 
+					Event.silent(dur - elapsed).yield;
+					nil.alwaysYield 
+				};
 				delta = inevent.delta;
 				nextElapsed = elapsed + delta;
 				if (nextElapsed.round(tolerance) >= dur, {
@@ -237,7 +240,8 @@ Pfindur : FilterPattern {
 			});
 		});
 	}
-}	
+}
+
 
 Plag : FilterPattern {
 	var <>lag;
