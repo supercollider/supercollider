@@ -6,7 +6,7 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs38 \cf0 NumberEditor   			
-\fs34 edit a float on a gui
+\fs34 holds a float for editing
 \f1\b0\fs30 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -20,9 +20,12 @@ like all editors, \
 all return the float value, not the editor itself.
 \f1\fs20 \
 \
-*new(value,spec)\
+\
+NumberEditor.new(value,spec)\
 	value -   initial value\
 	spec  -   ControlSpec or StaticSpec.  see [Spec]\
+\
+\
 \
 (
 \fs18 \
@@ -30,9 +33,8 @@ n = \cf2 NumberEditor\cf0 (2.3,[0,10]);\
 n.value = 5.6;\
 n.asCompileString.postln;\
 5.6\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs20 \cf0 )\
+\fs20 )\
 \
 \
 (\
@@ -63,8 +65,9 @@ n.inspect;\
 	\});\
 )\
 \
-// programatically set it, the slider moves\
+// programatically set it\
 n.value = 100\
+n.changed; // now the slider moves\
 \
 \
 (\cf3 // works as a stream .. convienient for patterns\
