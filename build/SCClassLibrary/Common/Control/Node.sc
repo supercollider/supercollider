@@ -1,12 +1,16 @@
 
 Node {
 	
-	var <nodeID, <group, <>prev, <>next;
+	var <nodeID, <>group, <>prev, <>next;
 	var <server;
 	var <>isPlaying = false, <>isRunning = false;
 	
-	free {  
-		server.sendBundle(server.latency, [11, nodeID]);  //"/n_free"
+	
+	free { arg sendFlag=true;
+		if(sendFlag, {
+			server.sendBundle(server.latency, [11, nodeID]);  //"/n_free"
+		});
+		this.remove;
 	}
 	
 	run { arg flag=true;
@@ -54,20 +58,23 @@ Node {
 	
 	/**  message and bundle creation **/
 	// create messages but don't send them or add them to parent node objects
+		
 	getMsg { arg cmdName, argList;
 		^[cmdName, nodeID] ++ (argList ? #[]);
 	}
 	addMsg { arg bundle, cmdName, argList;
 		^bundle.add([cmdName, nodeID] ++ (argList ? #[]));
 	}
-	newMsg { arg target, addAction=\addToTail, args;
+	newMsg { arg target, addAction=\addToTail, args;//does not link nodes!
 		var bundle, addActionNum;
 		target = target.asTarget;
-		addActionNum = this.convertAddAction(addAction);
-		this.group = if(addActionNum < 2, {target},{target.group}); 
-		^this.nodeToServerMsg(target.nodeID, addActionNum, args);
+		^this.perform(addAction, target, args);
 	}
-	
+	freeMsg {
+		this.remove;
+		^[11, nodeID]
+	}
+
 	moveBeforeMsg { arg  bundle, aNode;
 		^bundle.add([18, nodeID, aNode.nodeID]);//"/n_after"
 	}
@@ -97,33 +104,19 @@ Node {
 	}
 	//remote node creation needs to set id. 
 	//normally it should not be passed in
-	prSetNodeID { arg id;  nodeID = id ?? {server.nodeAllocator.alloc}  }
+	prSetNodeID { arg id;  nodeID = id ?? {server.nextNodeID}  }
 	//in some cases these need to be set.
-	prSetPlaying { arg flag=true; isPlaying = flag }
-	freeNodeID {  server.nodeAllocator.free(nodeID); nodeID = nil  }
+	prSetPlaying { arg flag=true; isPlaying = flag; isRunning = flag }
 	
 	register { arg argServer;
 		server = argServer;
-		this.prSetNodeID;
-		RootNode(server).registerNode(this);
-	}
-	unregister {
-		RootNode(server).unregisterNode(this);
-		this.freeNodeID;
+		nodeID = server.nextNodeID;
 	}
 	
 	
-	convertAddAction { arg symbol;
-		^#[\addToHead, \addToTail, \addBefore, \addAfter,\addBefore,\addReplace].indexOf(symbol) ? 1
-	}
-
-	group_ { arg g;
-		group = g;
-		server = group.server;
-	}
-	nodeToServer { arg addActionNum,targetID, args;
+	nodeToServer { arg addAction,targetID, args;
 		var msg;
-		msg = [this.nodeToServerMsg(targetID, addActionNum, args)];
+		msg = [this.perform(addAction,targetID,args)];
 		group.finishBundle(msg, this);
 		server.listSendBundle(nil, msg);
 		  
@@ -132,26 +125,36 @@ Node {
 		 ^this.subclassResponsibility(thisMethod)       
 	}
 	
-	addToHead { arg arggroup,args;
+	//these now return messages
+	
+	addToHead { arg arggroup,args,linked;
 		group = arggroup; 
-		this.nodeToServer(0,arggroup.nodeID,args);
+		group.prAddHead(this);
+		^this.nodeToServerMsg(arggroup.nodeID, 0, args);
 	}
 	addToTail { arg arggroup,args;
 		group = arggroup; 
-		this.nodeToServer(1,arggroup.nodeID,args);
+		group.prAddTail(this);
+		^this.nodeToServerMsg(arggroup.nodeID, 1, args);
 	}
 	addAfter {  arg afterThisOne,args;
 		group = afterThisOne.group; 
-		this.nodeToServer(3,afterThisOne.nodeID,args);
+		this.prMoveAfter(afterThisOne);
+		^this.nodeToServerMsg(afterThisOne.nodeID, 3, args);
 	}
 	addBefore {  arg beforeThisOne,args;
-		group = beforeThisOne.group; 
-		this.nodeToServer(2,beforeThisOne.nodeID,args);
+		group = beforeThisOne.group;
+		this.prMoveBefore(beforeThisOne);
+		^this.nodeToServerMsg(beforeThisOne.nodeID, 2, args);
 	}
 	addReplace { arg removeThisOne,args;
 		group = removeThisOne.group; 
-		this.nodeToServer(4,removeThisOne.nodeID,args);
+		//this.prMoveAfter(removeThisOne);
+		removeThisOne.remove;
+		^this.nodeToServerMsg(removeThisOne.nodeID, 4, args);
 	}
+	
+	
 	
 	prMoveAfter {  arg afterThisOne;
 		this.group = afterThisOne.group;
@@ -187,6 +190,8 @@ Node {
 			if(group.notNil, { group.head = next });
 		});
 		group = next = prev = nil;
+		isPlaying = false;
+		isRunning = false;
 	}
 	
 	
@@ -202,16 +207,18 @@ Group : Node {
 	var <>head, <>tail;
 	
 	*new { arg target,addAction=\addToTail;
+		var group, server;
 		target = target.asTarget;
-		^this.prNew(target.server).perform(addAction,target)
+		server = target.server;
+		group = this.prNew(server);
+		server.sendBundle(server.latency, group.perform(addAction,target))
+		^group
 	}
-	*after { arg aNode;     ^this.prNew.addAfter(aNode) }
-	*before {  arg aNode; ^this.prNew.addBefore(aNode) }
-	*head { arg aGroup; ^this.prNew.addToHead(aGroup.asGroup) }
-	*tail { arg aGroup; ^this.prNew.addToTail(aGroup.asGroup) }
-	*replace { arg groupToReplace;
-		^this.new(groupToReplace, \addReplace)
-	}
+	*after { arg aNode;     ^this.new(aNode, \addAfter) }
+	*before {  arg aNode; ^this.new(aNode, \addBefore) }
+	*head { arg aGroup; ^this.new(aGroup.asGroup, \addToHead) }
+	*tail { arg aGroup; ^this.new(aGroup.asGroup, \addToTail) }
+	*replace { arg groupToReplace; ^this.new(groupToReplace, \addReplace) }
 	
 	moveNodeToHead { arg aNode;
 		server.sendBundle(server.latency,
@@ -238,9 +245,27 @@ Group : Node {
 		^[21, nodeID, addActionNum, targetID] 
 	}
 	
-	freeAll {       
-		server.sendBundle(server.latency,[24,nodeID]); //"/g_freeAll"
+	free {arg sendFlag=true;
+		this.freeAll(sendFlag);
+		super.free(sendFlag);
+	}
+	
+	freeAll { arg sendFlag=true;
 		// free my children, but this node is still playing
+		this.deepDo({ arg item; item.free(false) });
+		if(sendFlag, {
+			server.sendBundle(server.latency,[24,nodeID]); //"/g_freeAll"
+		});
+		
+	}
+	
+	freeAllMsg { 
+		this.do({ arg item; item.free(false) });
+		^[24,nodeID]
+	}
+	freeMsg {
+		this.freeAll(false);
+		^[11, nodeID]
 	}
 	
 	do { arg function;
@@ -266,11 +291,11 @@ Group : Node {
 		
 	// bundle messages //
 
-	*newMsg { arg bundle, target, addAction;
+	*newMsg { arg bundle, target, addAction=\addToTail;
 		var group;
 		target = target.asTarget;
 		group = this.prNew(target.server);
-		bundle.add(group.newMsg(target, addAction));
+		bundle.add(group.perform(addAction, target));
 		group.group.finishBundle(bundle, group);
 		^group
 	}
@@ -282,7 +307,7 @@ Group : Node {
 	moveNodeToTailMsg { arg aNode;
 		^[23, nodeID, aNode.nodeID];//g_tail
 	}
-	finishBundle { arg msg, target;
+	finishBundle { //overridden in subclass
 	}
 
 	//private
@@ -313,8 +338,11 @@ Synth : Node {
 	var <>defName;
 	
 	*new { arg defName,args,target,addAction=\addToTail;
+		var synth, server;
 		target = target.asTarget;
-		^this.prNew(defName, target.server).perform(addAction,target,args)
+		server = target.server;
+		synth = this.prNew(defName, server);
+		server.sendBundle(server.latency, synth.perform(addAction,target,args));
 	}
 	*prNew { arg defName, server;
 		^super.prNew(server).defName_(defName.asDefName)
@@ -324,7 +352,7 @@ Synth : Node {
 		var msg, synth;
 		target = target.asTarget;
 		synth = this.prNew(defName, target.server);
-		msg = synth.newMsg(target,args,addAction);
+		msg = synth.newMsg(target,addAction,args);
 		synth.server.sendMsg(6, dir ++synth.defName++".scsyndef", msg); //"/d_load"
 		^synth
 	}
@@ -341,7 +369,7 @@ Synth : Node {
 		synth.server.listSendBundle(nil, bundle);
 		^synth
 	}
-
+	
 		
 	*after { arg aNode,defName,args;	
 		^this.prNew(defName, aNode.server).addAfter(aNode,args) 
@@ -383,54 +411,27 @@ Synth : Node {
 RootNode : Group {
 	
 	classvar <roots;
-	var <nodeWatcher, <connected;
 	
-	*new { arg server, connected=true;
+	
+	*new { arg server, connected=false;
 		server = server ?? {Server.local};
 		^(roots.at(server.name) ?? {
-			^super.prNew.rninit(server).connect(connected)
+			^super.prNew(server).rninit//.connect(connected)
 		})
 	}
-	rninit { arg s;
-		server = s;
-		roots.put(s.name, this);
-		nodeID = 0;
+	rninit { 
+		roots.put(server.name, this);
 		isPlaying = isRunning = true;
 		group = this; // self
-		nodeWatcher = NodeWatcher(server);
 	}
-	register {}
+	register { arg srv; 
+			server = srv;
+			nodeID = 0; 
+	}
 	*initClass {  roots = IdentityDictionary.new; }
+	
 	nodeToServer {} // already running
-
-	connect { arg argFlag=true;
-				connected = argFlag;
-			 	if(argFlag, {
-					nodeWatcher.startListen;
-					nodeWatcher.register(this); 
-				}, {
-					nodeWatcher.stopListen;
-					nodeWatcher.clear;
-				}) 
-			
-	 }
-	disconnect { 
-			this.connect(false);
-	}
 	
-	
-	registerNode { arg node;
-		if(connected && server.serverRunning, {
-			this.nodeWatcher.register(node);
-		})
-	}
-	
-	unregisterNode { arg node;
-		if(connected, {
-			nodeWatcher.unregister(node);
-		})
-	}
-
 	remove {
 		if (next.notNil, { 
 			next.prev = prev; 
@@ -440,6 +441,7 @@ RootNode : Group {
 		});
 		next = prev = nil;
 	}
+	
 
 	// post warning ?
 	run {}
@@ -449,15 +451,8 @@ RootNode : Group {
 	moveToHead {}
 	moveToTail{}
 	
-	
-	stop { this.freeAll;	}
-	*stop { arg server;
-		var r;
-		if (server.isNil, {
-			roots.do({ arg rn; rn.stop; });
-		}, {
-			r = roots.at(server.name);
-			if(r.notNil, { r.stop });
-		});
+
+	*freeAll {
+		roots.do({ arg rn; rn.freeAll; });
 	}
 }
