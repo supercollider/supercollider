@@ -12,7 +12,8 @@ Thread : Stream {
 	var top=0, numpop=0, returnLevels=0, receiver, numArgsPushed=0;
 	var parent, terminalValue;
 	var <primitiveError=0, <primitiveIndex=0, <randData=0;
-	var <beats=0.0, <seconds=0.0, <clock, <environment;
+	var <beats=0.0, <seconds=0.0, <clock;
+	var environment;
 
 	*new { arg func, stackSize=512;
 		^super.new.init(func, stackSize)
