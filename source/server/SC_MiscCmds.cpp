@@ -508,8 +508,9 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 						if (!newGroup || !newGroup->mNode.mParent || newGroup->mNode.mParent != group)
 							return err;
 					} else return err;
+				} else {
+					Group_AddHead(group, &newGroup->mNode);
 				}
-				Group_AddHead(group, &newGroup->mNode);
 			} break;
 			case 1 : {
 				Group *group = Msg_GetGroup(inWorld, msg);
@@ -521,8 +522,9 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 						if (!newGroup || !newGroup->mNode.mParent || newGroup->mNode.mParent != group)
 							return err;
 					} else return err;
+				} else {
+					Group_AddTail(group, &newGroup->mNode);
 				}
-				Group_AddTail(group, &newGroup->mNode);
 			} break;
 			case 2 : {
 				Node *beforeThisNode = Msg_GetNode(inWorld, msg);
@@ -534,8 +536,9 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 						if (!newGroup || !newGroup->mNode.mParent || newGroup->mNode.mParent->mNode.mID != beforeThisNode->mParent->mNode.mID)
 							return err;
 					} else return err;
+				} else {
+					Node_AddBefore(&newGroup->mNode, beforeThisNode);
 				}
-				Node_AddBefore(&newGroup->mNode, beforeThisNode);
 			} break;
 			case 3 : {
 				Node *afterThisNode = Msg_GetNode(inWorld, msg);
@@ -547,8 +550,9 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 						if (!newGroup || !newGroup->mNode.mParent || newGroup->mNode.mParent->mNode.mID != afterThisNode->mParent->mNode.mID)
 							return err;
 					} else return err;
+				} else {
+					Node_AddAfter(&newGroup->mNode, afterThisNode);
 				}
-				Node_AddAfter(&newGroup->mNode, afterThisNode);
 			} break;
 			case 4 : {
 				Node *replaceThisNode = Msg_GetNode(inWorld, msg);
