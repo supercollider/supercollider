@@ -19,14 +19,14 @@
 			numChannels.do({ arg i;
 				this.gateSynthMsg(bundle, target, defName, args, index+i);
 			});
-			server.listSendBundle(nil, bundle);
+			server.listSendBundle(server.latency, bundle);
 						
 	}
 	
 	gateSynthMsg { arg bundle, target, defName, args, index;
 			var synth;
 			synth = Synth.newToBundle(bundle, defName, [\i_bus, index]++args, 
-				target.asTarget.group, \addToHead);
+				target.asGroup, \addToHead);
 			if(rate === 'control', {
 				synth.msgToBundle(bundle, "/n_map", [\i_start, index]) 
 			});
