@@ -331,7 +331,7 @@ NodeProxy : BusPlug {
 					});
 					
 				});
-				this.sendBundle(bundle);
+				bundle.schedSend(server, clock);
 				loaded = true;
 			}, {
 				loaded = false;
@@ -404,7 +404,8 @@ NodeProxy : BusPlug {
 		awake = true;
 		task = argTask;
 		if(this.isPlaying, {  this.playTaskToBundle(bundle) });//clock
-		this.sendBundle(bundle);
+		bundle.schedSend(server, clock);
+
 	}
 	
 	lag { arg ... args;
@@ -437,7 +438,7 @@ NodeProxy : BusPlug {
 		var bundle;
 		bundle = MixedBundle.new;
 		nodeMap.addToBundle(bundle, group);
-		this.sendBundle(bundle);
+		bundle.schedSend(server, clock);
 	}
 	
 	nodeMap_ { arg map; //keep fadeTime?
@@ -465,12 +466,12 @@ NodeProxy : BusPlug {
 		if(this.isPlaying, {
 			bundle = MixedBundle.new;
 			this.stopAllToBundle(bundle);
-			this.sendBundle(bundle);
+			bundle.schedSend(server, clock);
 			bundle = MixedBundle.new;
 			this.build;
 			objects.do({ arg item; item.sendDefToBundle(bundle, server) });
 			this.sendAllToBundle(bundle);
-			this.sendBundle(bundle);
+			bundle.schedSend(server, clock);
 		}, {
 			loaded = false;
 		});
@@ -489,7 +490,7 @@ NodeProxy : BusPlug {
 		this.loadToBundle(bundle);
 		this.sendAllToBundle(bundle);
 		if(this.isPlaying, {
-			this.sendBundle(bundle);
+			bundle.schedSend(server, clock);
 		});
 		this.fadeTime = dt;
 	}
@@ -517,7 +518,7 @@ NodeProxy : BusPlug {
 							true
 						); 
 						t.wait; 
-						}) 
+						})
 					});
 		awake = false;
 	}
@@ -586,7 +587,7 @@ NodeProxy : BusPlug {
 				bundle = this.getBundle;
 				obj.spawnToBundle(bundle, [\out, i, \i_out, i] ++ extraArgs, this);
 				nodeMap.mapToBundle(bundle, -1);
-				this.sendBundle(bundle);
+				bundle.schedSend(server);
 			})
 	}
 	
@@ -598,7 +599,7 @@ NodeProxy : BusPlug {
 				bundle = this.getBundle;
 				if(freeLast, { obj.stopToBundle(bundle) });
 				this.sendObjectToBundle(bundle, obj, extraArgs);
-				this.sendBundle(bundle);
+				bundle.schedSend(server);
 			})
 	}
 	
@@ -607,7 +608,7 @@ NodeProxy : BusPlug {
 			bundle = this.getBundle;
 			if(freeLast, { this.stopAllToBundle(bundle) });
 			this.sendAllToBundle(bundle, extraArgs);
-			this.sendBundle(bundle);
+			bundle.schedSend(server);
 	}
 	
 	sendEach { arg extraArgs, freeLast=false;
@@ -615,14 +616,12 @@ NodeProxy : BusPlug {
 			bundle = this.getBundle;
 			if(freeLast, { this.stopAllToBundle(bundle) });
 			this.sendEachToBundle(bundle, extraArgs);
-			this.sendBundle(bundle);
+			bundle.schedSend(server);
 	
 	}
 	
 	
-	sendBundle { arg bundle;
-			bundle.schedSend(server, clock)
-	}
+
 	
 		
 	/////// append to bundle commands
@@ -640,7 +639,7 @@ NodeProxy : BusPlug {
 	
 	playTaskToBundle { arg bundle; //revisit
 				bundle.addFunction({ 
-					SystemClock.sched(server.latency, { task.reset; task.play; nil; })
+					SystemClock.sched(server.latency, { task.reset; task.play(clock); nil; })
 				}) 
 	}
 
@@ -686,7 +685,7 @@ NodeProxy : BusPlug {
 				if(this.isPlaying.not, {
 					bundle = MixedBundle.new;
 					this.wakeUpToBundle(bundle);
-					this.sendBundle(bundle);
+					bundle.schedSend(server, clock)
 				})
 	}
 	
@@ -810,7 +809,8 @@ NodeProxy : BusPlug {
 		bundle = MixedBundle.new;
 		if(this.isPlaying, { 
 			this.stopAllToBundle(bundle);
-			this.sendBundle(bundle);
+			bundle.schedSend(server, clock)
+
 		});
 	}
 	
