@@ -982,6 +982,10 @@ NSString* pathOfHelpFileFor(NSString* selection)
 	
 	helpFilePath = helpFileWithName(fileManager, selection, @".sc");
 	if (helpFilePath) return helpFilePath;
+
+	helpFilePath = helpFileWithName(fileManager, selection, @".rtfd");
+	if (helpFilePath) return helpFilePath;
+
         
         // support for html help files
         helpFilePath = helpFileWithName(fileManager, selection, @".htm");
