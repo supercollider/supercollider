@@ -205,6 +205,7 @@ static RendezvousClient* sharedRendezvousClient = nil;
 			[oscServices removeObjectAtIndex: i];
 			[service->hostName release];
 			[service release];
+			return;
 		}
 	}
 }
