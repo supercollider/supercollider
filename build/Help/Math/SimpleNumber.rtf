@@ -589,34 +589,10 @@ Return the receiver. aNumber is ignored.\
 	
 \f2\fs18 \cf2 (\
 		l = [0, 1, 5, 9, 11]; \cf3 // pentatonic scale\cf2 \
-		(60, 61..76).collect \{ \cf4 |i|\cf2  i.roundToScale(l, 12, 5) \}\
+		(60, 61..76).collect \{ \cf4 |i|\cf2  i.roundToScale(l, 12) \}\
 	)
 \f1\fs24 \cf0 \
 	\
-
-\f0\b asIndex(list)
-\f1\b0 \
-	\
-	returns the closest index of the value in the list (list must be sorted)\
-	\
-	
-\f2\fs18 5.2.asIndex([2, 3, 5, 6])\
-	
-\f1\fs24 \
-
-\f0\b asIndex2(list)
-\f1\b0 \
 \
-	returns a float index for the value (list must be sorted)\
-	inverse operation is 
-\f0\b blendAt
-\f1\b0 \
-	\
-	
-\f2\fs18 x = 5.2.asIndex2([2, 3, 5, 6]);\
-	[2, 3, 5, 6].blendAt(x)
-\f1\fs24 \
-\
-	\
 	\
 }
