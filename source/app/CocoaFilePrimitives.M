@@ -190,10 +190,12 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
     
     if(IsNil(directoryPath)) return errWrongType;
     
+   /*
     dumpPyrSlot(receiver);
     dumpPyrSlot(returnArray);
     dumpPyrSlot(extension);
     dumpPyrSlot(directoryPath);
+   */
     
     PyrObject *returnObject = returnArray->uo;
     
