@@ -144,6 +144,9 @@ Env {
 			loopNode
 		)
 	}
+	
+	// delay the onset of the envelope	delay { arg delay;		^Env([0] ++ levels,			[delay] ++ times,			if (curves.isArray) {[\lin] ++ curves} {curves},			if(releaseNode.notNil) {releaseNode = releaseNode + 1},			if(loopNode.notNil) {loopNode = loopNode + 1}		)	}
+	
 	/*
 	plot {
 		var timeScale;
