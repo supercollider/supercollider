@@ -4,19 +4,18 @@ Plazy : Pattern {
 	*new { arg func;
 		^super.new.func_(func)
 	}
-	asStream { arg ... args;
-		^func.valueArray(args).asStream
-	}
+	//asStream { arg ... args;
+//		^func.valueArray(args).asStream
+//	}
 	embedInStream { arg inval;				
 		^func.value.embedInStream(inval)
 	}
 }
 
 PlazyEnvir : Plazy {
-	asStream {	
-		^func.valueEnvir.asStream
-	}
+	
 	embedInStream { arg inval;
+		inval.debug;
 		^if(inval.isNil) { func.value } {
 			inval.use {Êfunc.valueEnvir }
 		}.embedInStream(inval)
