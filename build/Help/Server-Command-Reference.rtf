@@ -1,7 +1,6 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;}
 {\colortbl;\red255\green255\blue255;\red255\green3\blue3;}
-\vieww13540\viewh12700\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f0\fs36 \cf0 SuperCollider Server Synth Engine Command Reference\
@@ -447,6 +446,13 @@ Set contiguous ranges of sample indices to single values. For each range, the st
 	.. command arguments\
 \
 Plug-ins can define commands that operate on buffers. The arguments after the command name are defined by the command. \
+\
+
+\f1\b /b_close\
+
+\f0\b0 	int - buffer number\
+	\
+After using a buffer with DiskOut, close the soundfile and write header information.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
