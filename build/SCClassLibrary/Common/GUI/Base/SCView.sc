@@ -925,6 +925,7 @@ SCMultiSliderView : SCView {
 	var <>size ;
 	var <gap;
 	var < editable = true;
+	
 
 	draw {}
 	mouseBeginTrack { arg x, y, modifiers;}
@@ -1065,12 +1066,9 @@ SCMultiSliderView : SCView {
 		if (unicode == 16rF700, { this.gap = this.gap + 1; ^this });
 		if (unicode == 16rF701, { this.gap = this.gap - 1; ^this });
 	}
+	
 	doMetaAction{ 
-		var ax;
-		if(this.metaAction.isNil,{
-			ax = this.getProperty(\absoluteX);
-			this.bounds = this.bounds.moveTo(ax,this.bounds.top );
-		},{	this.metaAction.value(this);} );
+		metaAction.value(this)
 	} //when ctrl click
 }
 
