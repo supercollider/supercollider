@@ -452,7 +452,7 @@ void Ramp_next_1(Ramp *unit, int inNumSamples)
 		float in = ZIN0(0);
 		float period = ZIN0(1);
 		int counter = (int)(period * SAMPLERATE);
-		unit->m_counter = sc_max(1, counter);
+		unit->m_counter = counter = sc_max(1, counter);
 		unit->m_slope = (in - unit->m_level) / counter;
 	}
 		

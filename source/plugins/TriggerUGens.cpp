@@ -91,13 +91,6 @@ struct Stepper : public Unit
 	float m_prevtrig, m_prevreset;
 };
 
-struct Ramp : public Unit
-{
-	double mLevel;
-	float m_prevtrig;
-	// slope, trig, start
-};
-
 struct TDelay : public Unit
 {
 	long mCounter;
