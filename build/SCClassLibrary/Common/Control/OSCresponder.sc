@@ -68,7 +68,9 @@ OSCMultiResponder : OSCresponder {
 	var <>nodes;
 	
 	value { arg time, msg;
-		nodes.do({ arg node; node.action.value(time, node, msg) });
+		var iterlist;
+		iterlist = nodes.copy;
+		iterlist.do({ arg node; node.action.value(time, node, msg) });
 	}
 	isEmpty { ^nodes.size == 0 }
 	
