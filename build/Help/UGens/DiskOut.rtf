@@ -98,7 +98,7 @@ s.sendMsg(\cf4 "/b_alloc"\cf0 , 0, 65536, 2); \cf2 // Buffer number is 0\cf0 \
 s.sendMsg(\cf4 "/b_write"\cf0 , 0, \cf4 "recordings/diskouttest.aiff"\cf0 , \cf4 "aiff"\cf0 , \cf4 "int16"\cf0 , 0, 0, 1);\
 \
 \cf2 // create the diskout node\cf0 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "help-Diskout"\cf0 , 2004, 3, 2003, [\cf4 "bufnum"\cf0 , 0]);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "help-Diskout"\cf0 , 2004, 3, 2003, \cf4 "bufnum"\cf0 , 0);\
 \
 s.sendMsg(\cf4 "/n_free"\cf0 , 2004); \cf2 // stop recording\cf0 \
 s.sendMsg(\cf4 "/n_free"\cf0 , 2003); \cf2 // stop the bubbles\cf0 \
