@@ -87,8 +87,8 @@ public:
 	virtual void mouseTrack(SCPoint where, int modifiers);
 	virtual void mouseEndTrack(SCPoint where, int modifiers);
 	virtual void mouseOver(SCPoint where);
-	virtual void keyDown(int character, int modifiers);
-	virtual void keyUp(int character, int modifiers);
+	virtual void keyDown(int character, int modifiers, unsigned short keycode);
+	virtual void keyUp(int character, int modifiers, unsigned short keycode);
         virtual bool shouldDim();
         void beginDrag(SCPoint where);
         
