@@ -713,9 +713,9 @@ NodeProxy : BusPlug {
 					nodes = Array(8);
 					objects.doFrom({ arg obj, i; 
 						var id; id = obj.nodeID;
-						if(id.notNil) { nodes = nodes ++ synthID ++ id };
+						if(id.notNil) { nodes = nodes ++ id ++ synthID };
 					}, index + 1);
-					if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes) };
+					if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes.reverse) };
 				};
 				nodeMap.addToBundle(bundle, synthID)
 				};
