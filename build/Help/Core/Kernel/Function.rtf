@@ -72,27 +72,4 @@ If the last argument is not an Array or List then this is the same as the 'value
 \f2 \{ arg a, b, c, d; [a, b, c, d].postln \}.valueArray(9, [1, 2, 3]);\
 \
 \{ arg a, b, c, d; [a, b, c, d].postln \}.valueArray(9, 10, [1, 2, 3]);\
-
-\f1 \
-
-\f0\b kr(lagTime)\
-
-\f1\b0 \
-Wraps the Function in a Plug object. The Function will be evaluated every\
-control period and its result becomes the signal for the Plug object.\
-The lagTime is used by the Plug object to smooth the signal. See Plug.\
-\
-(\
-
-\f2 Synth.scope(\
-	SinOsc.ar(\
-		\{ (MouseX.new(0,1).value.coin.binaryValue + 1) * 800 \}.kr(0), \
-		0, \
-		0.1\
-	)\
-))\
-\
-Synth.play(SinOsc.ar(\{ (10.rand + 1) * 200 \}.kr(MouseX.kr(0,1)), 0, 0.2))\
-
-\f1\fs18 \
 }
