@@ -22,8 +22,8 @@ Document {
 		^super.new.initFromPath(path, selectionStart, selectionLength)
 	}
 	
-	*new { arg str="", title="Untitled", makeListener=false;
-		^super.new.initByString(str, title, makeListener);
+	*new { arg title="Untitled", string="", makeListener=false;
+		^super.new.initByString(title, string, makeListener);
 	}
 	
 //class:
