@@ -641,7 +641,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 					const AudioBuffer* buf = inInputDataBuffers + s;
 					int nchan = buf->mNumberChannels;
 					if (buf->mData) {
-						float *busdata = inputBuses;
+						float *busdata = inputBuses + b * bufFrames;
 						float *bufdata = (float*)buf->mData + bufFramePos * nchan;
 						if (nchan == 1) {
 							for (int k=0; k<bufFrames; ++k) {
@@ -690,7 +690,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 				AudioBuffer* buf = outOutputDataBuffers + s;
 				int nchan = buf->mNumberChannels;
 				if (buf->mData) {
-					float *busdata = outputBuses;
+					float *busdata = outputBuses + b * bufFrames;
 					float *bufdata = (float*)buf->mData + bufFramePos * nchan;
 					if (nchan == 1) {
 						if (outputTouched[b] == bufCounter) {
