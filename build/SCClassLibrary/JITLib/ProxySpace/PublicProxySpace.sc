@@ -39,6 +39,9 @@ PublicProxySpace : ProxySpace {
 		if(notCurrent) { this.pop };
 	}
 	
+	lurk {ÊlisteningKeys = \all; sendingKeys = nil; }
+	boss {ÊlisteningKeys = nil; sendingKeys = \all; } 
+	
 	makeLogWindow { arg bounds, color;
 	 	var d; 
 	 	d = Document(name.asString);
