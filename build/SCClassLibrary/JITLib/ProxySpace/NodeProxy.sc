@@ -96,7 +96,7 @@ BusPlug : AbstractFunction {
 	makeBusArg { 	
 			var index, numChannels;
 			busArg = if(bus.isNil or: {Êbus.rate === 'audio' }) // audio buses can't be 
-					{Ê\ } {						// used for control mapping
+					{Ê"" } {						// used for control mapping
 						index = this.index;
 						numChannels = this.numChannels;
 						if(numChannels == 1) 
@@ -104,7 +104,8 @@ BusPlug : AbstractFunction {
 							{
 							Array.fill(numChannels, { arg i; "\c" ++ (index + i) })
 							}
-					}          
+					};
+				busArg = busArg.asSymbol;   // for now..       
 	}
 	wakeUpToBundle {}
 	wakeUp {}
@@ -577,7 +578,7 @@ NodeProxy : BusPlug {
 				obj = objects.at(index);
 				if(obj.notNil) {
 					bundle = this.getBundle;
-					if(freeLast) { this.stopToBundle(bundle, index) };
+					if(freeLast) { obj.stopToBundle(bundle) };
 					
 					this.sendObjectToBundle(bundle, obj, extraArgs, index);
 					bundle.schedSend(server);
@@ -655,12 +656,6 @@ NodeProxy : BusPlug {
 				};
 	}
 	
-	stopToBundle {Êarg bundle, index;
-		var obj;
-		obj = objects.at(index);
-		if(obj.notNil) { obj.stopToBundle(bundle, this.fadeTime) };
-	}
-	
 	removeToBundle { arg bundle, index;
 		var obj, dt, playing;
 		playing = this.isPlaying;
@@ -690,9 +685,12 @@ NodeProxy : BusPlug {
 		if(this.isPlaying) { objects.do { arg obj; obj.stopToBundle(bundle, dt) } };
 	}
 	
+	reallocBus {
+		if(bus.notNil) { bus.realloc };
+	}
 	
 	loadToBundle { arg bundle;
-		if(bus.notNil) { bus.realloc }; // if server was rebooted 
+		this.reallocBus; // if server was rebooted 
 		objects.do { arg item, i;
 			item.build(this, i);
 			item.loadToBundle(bundle, server);
@@ -987,8 +985,6 @@ Ndef : NodeProxy {
 
 SharedNodeProxy : NodeProxy { // should pass in a bus index/numChannels.
 	var <constantGroupID;
-	var <>allowMultipleObjects=true; // in larger groups this is better set to false
-								// to limit node not found messages
 	
 	*new { arg server, groupID;
 		^super.newCopyArgs(server).initGroupID(groupID).init	}
@@ -1000,8 +996,8 @@ SharedNodeProxy : NodeProxy { // should pass in a bus index/numChannels.
 		awake = true;
 	}
 	
-	// todo: rebuild! (bus identity needs to be fix)
-	
+	reallocBus {} // for now: just don't. server shouldn't be rebooted.
+		
 	localServer { ^server.localServer }
 	
 	generateUniqueName {
@@ -1010,7 +1006,7 @@ SharedNodeProxy : NodeProxy { // should pass in a bus index/numChannels.
 	
 	shouldAddObject { arg obj, index;
 	
-			^if(allowMultipleObjects.not and: {index.notNil} and: {Êindex > 0 }) { 
+			^if(index.notNil and: { index > 0 }) {
 				"only one object per proxy in shared node proxy possible".inform;
 				^false
 			} {
@@ -1041,11 +1037,21 @@ SharedNodeProxy : NodeProxy { // should pass in a bus index/numChannels.
 	stopAllToBundle { arg bundle;
 			bundle.add([15, constantGroupID, "gate", 0])
 	}
-	stopToBundle { arg bundle, index;
-				if(allowMultipleObjects) 
-					{ super.stopToBundle(bundle, index) } 
-					{ bundle.add([15, constantGroupID, "gate", 0]) }
+	
+	removeToBundle { arg bundle, index;
+		this.removeAllToBundle(bundle);
 	}
+	
+	removeAllToBundle { arg bundle;
+		var dt, playing;
+		dt = this.fadeTime;
+		playing = this.isPlaying;
+		if(playing) { this.stopAllToBundle(bundle) };
+		objects.do { arg obj; obj.freeToBundle(bundle, dt) };
+		objects.makeEmpty;
+	}
+	
+	
 	group_ {}
 	bus_ {}
 	
@@ -1064,6 +1070,9 @@ SharedNodeProxy : NodeProxy { // should pass in a bus index/numChannels.
 		};
 		bundle.add([21, constantGroupID]); // duplicate sending is no problem
 	}
+	
+
+	
 	
 
 
