@@ -2475,6 +2475,12 @@
 			settings = {
 			};
 		};
+		F5709AEE033E525101A80099 = {
+			fileRef = F5C7B14E033D595901A80099;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		F59DF065030733E801CE0C16 = {
 			isa = PBXFileReference;
 			path = dlopen.c;
@@ -2639,7 +2645,7 @@
 			);
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /Users/jamesmcc/Dev/newdev/test6/SuperCollider3/build;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -2784,6 +2790,7 @@
 				F5ED526602FBB0110195E057,
 				F5ED526702FBB0110195E057,
 				F5ED526802FBB0110195E057,
+				F5709AEE033E525101A80099,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
