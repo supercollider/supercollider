@@ -5,6 +5,7 @@ SCView {  // abstract class
 
 	var dataptr, <parent, <>action, <background, <>keyDownAction, <>keyUpAction, <>keyTyped;
 	var <>beginDragAction;
+	var <>onClose;
 	
 	*new { arg parent, bounds;
 		^super.new.init(parent, bounds);
@@ -193,7 +194,7 @@ SCView {  // abstract class
 		_SCView_New
 		^this.primitiveFailed
 	}
-	prClose { dataptr = nil; }
+	prClose { dataptr = nil; onClose.value(this) }
 	prRemove {
 		_SCView_Remove
 		^this.primitiveFailed
