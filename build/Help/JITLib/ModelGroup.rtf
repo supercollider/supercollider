@@ -48,9 +48,11 @@ for all synths that get moved or created within this group.\
 \cf2 SynthDef\cf0 (\cf3 "sine"\cf0 , \
 	\{ \cf2 arg\cf0  freq=320, amp=0.2;\
 		\cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(freq+Rand(0, 10), 0, amp));\
-	\}).load(s);\
+	\}).send(s);\
 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //evaluate a function when a node is moved into the model\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 g = \cf2 ModelGroup\cf0 (\{ \cf2 arg\cf0  cmdList, node; node.nodeID.post; \cf3 " says: hi! I was changed"\cf0 .postln \});\
 \
@@ -60,7 +62,9 @@ a.moveToHead(g);\
 \
 g.free;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //add something to the bundle that should be sent to the server\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 g = \cf2 ModelGroup\cf0 (\{ \cf2 arg\cf0  bundle, node; \
 			bundle.add([\cf3 "/n_set"\cf0 , node.nodeID, \cf5 \\freq\cf0 , 1000]);\

@@ -1,0 +1,132 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;
+\red0\green115\blue0;\red191\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs36 \cf0 the lazy proxy
+\fs24 \
+\
+NodeProxy (and BusPlug) uses a lazy evaluation scheme to derive its appropriate\
+rate and numChannels from the first meaningful input that is assigned to it.\
+see [NodeProxy] and [ProxySpace] helpfiles for basic info.\
+So as long as the source is not set, the proxy is 
+\f1\b neutral
+\f0\b0 :
+\f2\fs18 \cf2 \
+\
+\
+p = \cf3 ProxySpace\cf2 .push;\
+~x.isNeutral;\
+\
+
+\f0\fs24 \cf2 as soon as the first time the source is set, it derives its bus arguments from that input\
+
+\f2\fs18 \cf2 \
+~x = \{\'ca\cf3 Array\cf2 .fill(14, \{\'ca\cf3 SinOsc\cf2 .kr(1.0.rand, 0, 100) \}) \}; \cf4 //~x is now 14 channels control rate\cf2 \
+\
+
+\f0\fs24 \cf2 in order to reset these properties, clear is used:\
+
+\f2\fs18 \cf2 \
+~x.clear; \
+\cf4 //note that no other proxy should be reading from ~x when this is done:\cf2 \
+\cf4 //for simplicity nodeproxy currently does not care for its children, only for its parents.\cf2 \
+\
+
+\f0\fs24 \cf0 for a quick initialisation, also defineBus can be used:\
+
+\f2\fs18 \cf2 \
+~x.defineBus(\cf5 \\control\cf2 , 5);\
+\
+
+\f0\fs24 \cf0 the properties are also set when some other proxy reads from it:\
+
+\f2\fs18 \cf2 \
+~x = \{ \cf3 LFPulse\cf2 .kr * ~b.kr(7) \}; \cf4 //the first arg to kr / ar is the default number of channels\cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 if no number of channels is passed in, the default value is used:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 ~test.ar; \cf6 //2\cf0 \
+~krtest.kr; \cf6 //1\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 the default can be set in the class NodeProxy:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\cf7 NodeProxy\cf0 .defaultNumAudio = 3;\
+\cf7 NodeProxy\cf0 .defaultNumControl = 13;\
+\
+~test3.ar; \cf6 //3\cf0 \
+~krtest3.kr; \cf6 // 13\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+\
+
+\f0\fs24 \cf0 also if a proxy is used as a map source, control rate is assumed:\
+
+\f2\fs18 \cf2 \
+~u;\
+~x.map(\cf5 \\zzz\cf2 , ~u);\
+~u;\
+\
+
+\f0\fs24 \cf0 when unary or binary operations are performed, the highest rate / numChannels is used\
+to initialize all uninitialized proxies:
+\f2\fs18 \cf2 \
+\
+~x.clear;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ~x.defineBus(\cf5 \\control\cf2 , 5);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ~x = ~e + ~f;\
+\
+~x.clear; ~e.clear; ~f.clear;\
+~e.defineBus(\cf5 \\audio\cf2 , 1);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ~x = ~e + ~f.squared + ~r;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+
+\f0\fs24 \cf0 if a rate1 proxy is used as rate2 input, the rate is converted\
+and the channels are expanded in the ususal multichannel expansion pattern:
+\f2\fs18 \cf2 \
+\
+~f.defineBus(\cf5 \\control\cf2 );\
+~f.ar(2);\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ~f.defineBus(\cf5 \\audio\cf2 );\
+~f.kr(2);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+if the number of channels passed in is less, it only uses the first n channels\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ~f.defineBus(\cf5 \\audio\cf2 , 8);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ~f.ar(2);\
+\
+\
+
+\f0\fs24 \cf0 an offset can be passed in as second argument to ar/kr\
+
+\f2\fs18 \cf2 \
+\cf4 //modulate offset:\cf2 \
+s.boot;\
+~out.play;\
+~src = \{ \cf3 SinOsc\cf2 .ar(\cf3 Array\cf2 .rand(5, 400, 500.0), \cf3 SinOsc\cf2 .ar(\cf3 Array\cf2 .rand(5, 400, 500.0)), 0.1) \};\
+~out = \{ ~src.ar(1, \cf3 MouseX\cf2 .kr(0, 5)) \};\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ~out = \{ \cf3 Mix\cf2 (~src.ar(7, \cf3 MouseX\cf2 .kr(0, 5))) \}; \cf4 //the wrapping offset is moved accordingly\cf2 \
+\
+\
+\
+\
+}
