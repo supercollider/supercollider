@@ -27,6 +27,6 @@
 		^signal;
 	}
 	
-	plot { arg size; this.asSignal(size).plot; }
+	plot { arg size = 400; this.asSignal(size).plot; }
 
 }
