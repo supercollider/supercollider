@@ -24,6 +24,19 @@ SequenceableCollection : Collection {
 		});
 		^obj
 	}		
+	// fill with fibonacci series
+	*fib { arg size, a=0.0, b=1.0;
+		var i=0, obj, temp;
+		obj = this.new(size);
+		while { i < size }{
+			obj.add(b);
+			temp = b;
+			b = a + b;
+			a = temp;
+			i = i + 1;
+		};
+		^obj
+	}		
 	*rand { arg size, minVal, maxVal;
 		var i=0, obj;
 		obj = this.new(size);
@@ -895,5 +908,10 @@ SequenceableCollection : Collection {
 			};
 		};
 		^result
+	}
+
+	// TempoClock play quantization
+	nextTimeOnGrid { arg clock;
+		^clock.nextTimeOnGrid(*this);
 	}
 }

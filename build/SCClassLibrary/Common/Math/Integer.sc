@@ -128,5 +128,12 @@ Integer : SimpleNumber {
 	}
 
 	archiveAsCompileString { ^true }
+	
+	geom { arg start, grow;
+		^Array.geom(this, start, grow);
+	}
+	fib { arg a=0.0, b=1.0;
+		^Array.fib(this, a, b);
+	}		
 }
 
