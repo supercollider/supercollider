@@ -592,7 +592,7 @@ Object {
 	writeTextArchive { arg pathname;
 		var file, text;
 		text = this.asTextArchive;
-		file = File.open(pathname, "w");
+		file = File(pathname, "w");
 		file.write(text);
 		file.close;
 	}
