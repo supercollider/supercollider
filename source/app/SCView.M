@@ -237,7 +237,9 @@ int slotBackgroundVal(PyrSlot *slot, DrawBackground **ioPtr)
         SetInt(++g->sp,[theEvent deviceID]); \
         SetInt(++g->sp,[theEvent buttonNumber]); \
         SetInt(++g->sp,[theEvent clickCount]); \
-        runInterpreter(g, METHOD, 9); \
+        SetInt(++g->sp,[theEvent absoluteZ]); \
+        SetFloat(++g->sp,[theEvent rotationInDegrees]); \
+        runInterpreter(g, METHOD, 11); \
         g->canCallOS = false; \
         pthread_mutex_unlock (&gLangMutex); \
     } \

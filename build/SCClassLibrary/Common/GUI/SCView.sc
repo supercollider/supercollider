@@ -222,7 +222,9 @@ SCContainerView : SCView { // abstract class
 
 	// private
 	prClose {
+		//("SCContainerView-prClose" + this).debug(this);
 		super.prClose;
+		//children.dump;
 		children.do({ arg item; item.prClose });
 	}
 }
@@ -455,16 +457,21 @@ SC2DTabletSlider : SC2DSlider {
 
 	var <>mouseDownAction,<>mouseUpAction;
 	
-	mouseDown { arg x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
-		mouseDownAction.value(this,	x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
+	mouseDown { arg x,y,pressure,tiltx,tilty,deviceID,
+			 buttonNumber,clickCount,absoluteZ,rotation;
+		mouseDownAction.value(this,x,y,pressure,tiltx,tilty,deviceID, 
+			buttonNumber,clickCount,absoluteZ,rotation);
 	}
-	mouseUp { arg x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
-		mouseUpAction.value(this,x,y,	pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
+	mouseUp { arg x,y,pressure,tiltx,tilty,deviceID, 
+			buttonNumber,clickCount,absoluteZ,rotation;
+		mouseUpAction.value(this,x,y,pressure,tiltx,tilty,deviceID, 
+			buttonNumber,clickCount,absoluteZ,rotation);
 	}
-	doAction { arg x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
-		action.value(this,x,y,	pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
+	doAction { arg x,y,pressure,tiltx,tilty,deviceID, 
+			buttonNumber,clickCount,absoluteZ,rotation;
+		action.value(this,x,y,pressure,tiltx,tilty,deviceID, 
+			buttonNumber,clickCount,absoluteZ,rotation);
 	}
-	
 }
 
 SCButton : SCControlView {

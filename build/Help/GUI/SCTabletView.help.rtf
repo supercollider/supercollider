@@ -52,7 +52,14 @@ Each of the three actions are passed the following wacom tablet values:\
 \f0\b \
 	clickCount - 
 \f2\b0 double click, triple click ...\
-		most relevant for the mouseDown, but still valid for the dragged and mouseUp
+		most relevant for the mouseDown, but still valid for the dragged and mouseUp\
+	
+\f0\b absoluteZ
+\f2\b0  - the wheel on the side of some mice\
+	
+\f0\b rotation
+\f2\b0  - in degrees, only on the 4d mice \
+	
 \f1\fs18 \
 \
 \
@@ -79,17 +86,17 @@ t = \cf2 SCTabletView\cf0 (w,\cf2 Rect\cf0 (40,40,300,300));\
 t.background = \cf2 Color\cf0 .white;\
 w.front;\
 \
-t.mouseDownAction = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ;\
-	["down",x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ].postln;\
+t.mouseDownAction = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ,absoluteZ,rotation;\
+	["down",x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ,absoluteZ,rotation].postln;\
 \};\
 \
-t.action = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ;\
-	["dragging", x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ].postln;\
+t.action = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ,absoluteZ,rotation;\
+	["dragging", x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ,absoluteZ,rotation].postln;\
 	t.background = \cf2 Color\cf0 (x / 300,y / 300,tiltx,pressure);\
 \};\
 \
-t.mouseUpAction = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ;\
-	["up",x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ].postln;\
+t.mouseUpAction = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ,absoluteZ,rotation;\
+	["up",x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ,absoluteZ,rotation].postln;\
 \};\
 \
 )\
@@ -175,7 +182,6 @@ p = \cf2 Patch\cf0 .new([ \cf3 'minimoog'\cf0 , \cf3 'loose'\cf0  ],[\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 )\
-\
 \
 
 \f1\fs18 \
