@@ -128,7 +128,7 @@ Sample : BufferProxy { // a small sound loaded from disk
 		var new;
 		new = super.new;
 		new.load(soundFilePath);
-		new.tempo_(tempo ? Tempo.tempo);
+		new.tempo_(tempo ? TempoClock.default.tempo);
 		if(endFrame.isKindOf(Boolean), { startFrame = 0; endFrame = -1; }); // temp
 		new.startFrame_(startFrame).endFrame_(endFrame);
 		^new

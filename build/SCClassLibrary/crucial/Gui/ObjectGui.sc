@@ -24,17 +24,16 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		},{
 			layout = layout.asPageLayout(title,bounds);
 		});
+		// i am not really a view in the hierarchy
 		layout.removeOnClose(this);
 		^layout
 	}
 	prClose {
-		//"ObjectGui-prClose".debug(this);
 		this.remove(false);
 	}
 	remove { arg removeView=true;
 		model.removeDependant(this);
-		if(removeView,{
-			//"ObjectGui-remove".debug(this);
+		if(removeView and: {view.notNil},{
 			super.remove;
 		});
 	}
@@ -69,4 +68,5 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 	}
 	
 }
+
 

@@ -7,27 +7,33 @@ NumberEditorGui : EditorGui {
 
 	var numv,slv;
 	
-	guiBody { arg layout,slider=true;
-		layout=this.guify(layout);
-		this.box(layout);
-		if(slider,{
-			this.slider(layout);
-		});
-	}
 	smallGui { arg layout;
 		var l;
 		l=this.guify(layout);
 		this.box(l);
 		if(layout.isNil,{ l.front });
 	}
+	guiBody { arg layout,slider=true;
+		this.box(layout);
+		if(slider,{
+			this.slider(layout);
+		});
+	}
 	box { arg layout;
 		var r;
-		layout=this.guify(layout);
 		numv = SCNumberBox(layout,Rect(0,0,40,17))
 			.object_(model.poll)
 			.action_({ arg nb;
 				model.activeValue_(nb.value).changed(numv);
 			});		
+	}
+	slider { arg layout, x=100,y=15;
+		var r;
+		slv = SCSlider(layout, Rect(0,0,100,15));
+		slv.setProperty(\value,model.spec.unmap(model.poll));
+		slv.action_({arg th; 
+			model.activeValue_(model.spec.map(th.value)).changed(slv)
+		});
 	}
 	update {arg changed,changer; // always has a number box
 		if(changer !== numv,{
@@ -35,15 +41,6 @@ NumberEditorGui : EditorGui {
 		});
 		if(changer !== slv and: {slv.notNil},{
 			slv.value_(model.spec.unmap(model.poll));
-		});
-	}
-	
-	slider { arg layout, x=100,y=15;
-		var r;
-		slv = SCSlider(layout, Rect(0,0,100,15));
-		slv.setProperty(\value,model.spec.unmap(model.poll));
-		slv.action_({arg th; 
-			model.activeValue_(model.spec.map(th.value)).changed(slv)
 		});
 	}
 }

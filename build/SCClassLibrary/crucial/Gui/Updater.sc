@@ -15,6 +15,7 @@ Updater {
 		updateFunc.valueArray(args)
 	}
 	remove {
+		"Updater-remove".debug(this);
 		model.removeDependant(this);
 	}
 	removeOnClose { arg window;

@@ -6,7 +6,7 @@ Silence : SynthlessPlayer {
 
 PlayerInputProxy : Silence { // audio
 
-	var <>spec,<>initValue;
+	var <>spec,<>initValue,>numChannels;
 	var <patchIn;
 	var inBus,nullBus;
 	
@@ -35,7 +35,7 @@ PlayerInputProxy : Silence { // audio
 		super.prepareToBundle(group,bundle);
 	}
 	rate { ^spec.rate }
-	numChannels { ^spec.tryPerform(\numChannels) ? 1 }
+	numChannels { ^(numChannels ?? {spec.tryPerform(\numChannels) ? 1}) }
 }
 
 

@@ -104,9 +104,9 @@ MultiPageLayout  {
 				windows=views=nil;
 			});
 			NotificationCenter.notify(this,\didClose);
-		},{
+		}/*,{
 			"MultiPageLayout-close : is closed already".debug(this);
-		});
+		}*/);
 	}
 
 	hr { arg color,height=8,borderStyle=1; // html joke

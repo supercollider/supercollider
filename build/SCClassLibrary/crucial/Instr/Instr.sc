@@ -378,7 +378,7 @@ InstrSynthDef : SynthDef {
 			})
 		});
 		name = name ++ fixedID.hash.asFileSafeString;
-		("InstrSynthDef building:" + name ).postln;
+		("InstrSynthDef built:" + name ).debug;
 	}
 	
 	// passed to Instr function but not to synth

@@ -54,7 +54,7 @@ AbstractPlayer : AbstractFunction  {
 					if(server.dumpMode != 0,{
 						server.stopAliveThread;
 					});
-					bsize = this.prepareForPlay(group,false,bus) / 25.0;
+					bsize = this.prepareForPlay(group,false,bus) / 15.0;
 					// need some way to track all the preps completion
 					// also in some cases the prepare can have a completion
 					// tacked on and we might combine with the spawn message
@@ -665,17 +665,28 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 		source.releaseToBundle(releaseTime,bundle)
 	}
 	children { ^[source] }
+	
+//	makePatchOut { arg group,private,bus;
+//		//super.topMakePatchOut(group,private,bus);
+//		// a copy to the source
+//		if(source.notNil,{
+//			source.makePatchOut(group,private,bus);
+//			// double freeing problems ?
+//			
+//			//source.setPatchOut(PatchOut(source,patchOut.group,patchOut.bus.copy));
+//		});
+//	}
 	//called by topMakePatchOut
-	setPatchOut { arg po;
-		super.setPatchOut(po);
-		// a copy to the source
-		if(source.notNil,{
-			source.setPatchOut(PatchOut(source,patchOut.group,patchOut.bus.copy));
-		});
-	}
-	childrenMakePatchOut { arg group,private;
-		source.childrenMakePatchOut(group,private);
-	}
+        setPatchOut { arg po;
+                super.setPatchOut(po);
+                // a copy to the source
+                if(source.notNil,{
+                        source.setPatchOut(PatchOut(source,patchOut.group,patchOut.bus.copy));
+                });
+        }
+        childrenMakePatchOut { arg group,private;
+                source.childrenMakePatchOut(group,private);
+        }
 	
 }
 

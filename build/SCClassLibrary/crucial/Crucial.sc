@@ -130,7 +130,9 @@ Crucial {
 			//'delay'->ControlSpec.new(0.005, 1, 'lin', 0, 0.5025),
 			\in->AudioSpec.new,
 			\k->ControlSpec(-6.0,6.0),
-			\stepsPerOctave->ControlSpec(0.5,128.0)
+			\stepsPerOctave->ControlSpec(0.5,128.0),
+			\mul -> ControlSpec(0,1),
+			\add -> ControlSpec(0,1)
 		  ]
 		);
 	}	

@@ -31,12 +31,15 @@ SCViewAdapter { // SCViewHolder
 	remove { 
 		if(view.notNil,{
 			view.remove;
+			view = nil;
 		},{
-			"SCViewAdapter-remove : already removed !".debug;
+			("SCViewAdapter-remove : already removed !" + this).debug(this);
 		});
 	}
 	prClose { 
-		view.prClose 
+		"SCViewAdapter-prClose".debug(this);
+		view.prClose;
+		view = nil;
 	}
 }
 
