@@ -1,147 +1,140 @@
-{\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl\f0\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
-}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs18 \cf0 \
-\cf2 // These Unit Generators are instantiated by math operations on UGens\
-\cf0 \
-\cf3 BasicOpUGen\cf0  : \cf3 UGen\cf0  \{\
-	\cf3 var\cf0  <operator;\
-\
-\cf2 //	writeName \{ arg file;\
-//		var name, opname;\
-//		name = this.class.name.asString;\
-//		opname = operator.asString;\
-//		file.putInt8(name.size + opname.size + 1);\
-//		file.putString(name);\
-//		file.putInt8(0);\
-//		file.putString(opname);\
-//	\}\
-\cf0 	specialIndex \{ ^operator.specialIndex \}\
-\}\
-\
-\cf3 UnaryOpUGen\cf0  : \cf3 BasicOpUGen\cf0  \{	\
-	\
-	*new \{ \cf3 arg\cf0  selector, a;\
-		^\cf3 this\cf0 .multiNew(\cf4 'audio'\cf0 , selector, a)\
-	\}\
-	\
-	init \{ \cf3 arg\cf0  theOperator, theInput;\
-		operator = theOperator;\
-		rate = theInput.rate;\
-		inputs = theInput.asArray;\
-	\}\
-\
-\}\
-\
-\cf3 BinaryOpUGen\cf0  : \cf3 BasicOpUGen\cf0  \{		\
-	*new \{ \cf3 arg\cf0  selector, a, b;\
-		^\cf3 this\cf0 .multiNew(\cf4 'audio'\cf0 , selector, a, b)\
-	\}\
-	\
-	determineRate \{ \cf3 arg\cf0  a, b;\
-		if (a.rate == \cf4 \\audio\cf0 , \{ ^\cf4 \\audio\cf0  \});\
-		if (b.rate == \cf4 \\audio\cf0 , \{ ^\cf4 \\audio\cf0  \});\
-		if (a.rate == \cf4 \\control\cf0 , \{ ^\cf4 \\control\cf0  \});\
-		if (b.rate == \cf4 \\control\cf0 , \{ ^\cf4 \\control\cf0  \});\
-		^\cf4 \\scalar\cf0 \
-	\}\
-	*new1 \{ \cf3 arg\cf0  rate, selector, a, b;\
-	\
-		\cf2 // eliminate degenerate cases\
-\cf0 		if (selector == \cf4 '*'\cf0 , \{\
-			if (a == 0.0, \{ ^0.0 \});\
-			if (b == 0.0, \{ ^0.0 \});\
-			if (a == 1.0, \{ ^b \});\
-			if (a == -1.0, \{ ^b.neg \});\
-			if (b == 1.0, \{ ^a \});\
-			if (b == -1.0, \{ ^a.neg \});\
-		\},\{\
-		if (selector == \cf4 '+'\cf0 , \{\
-			if (a == 0.0, \{ ^b \});\
-			if (b == 0.0, \{ ^a \});\
-			\
-			\cf2 // create a MulAdd if possible.\
-\cf0 			if (a.isKindOf(\cf3 BinaryOpUGen\cf0 ) && \{ a.operator == \cf4 '*'\cf0  \}, \{\
-				if (\cf3 MulAdd\cf0 .canMulAdd(a.inputs.at(0), a.inputs.at(1), b), \{\
-					buildSynthDef.removeUGen(a);\
-					^\cf3 MulAdd\cf0 .new(a.inputs.at(0), a.inputs.at(1), b)\
-				\});\
-				if (\cf3 MulAdd\cf0 .canMulAdd(a.inputs.at(1), a.inputs.at(0), b), \{\
-					buildSynthDef.removeUGen(a);\
-					^\cf3 MulAdd\cf0 .new(a.inputs.at(1), a.inputs.at(0), b)\
-				\});\
-			\});\
-			if (b.isKindOf(\cf3 BinaryOpUGen\cf0 ) && \{ b.operator == \cf4 '*'\cf0  \}, \{\
-				if (\cf3 MulAdd\cf0 .canMulAdd(b.inputs.at(0), b.inputs.at(1), a), \{\
-					buildSynthDef.removeUGen(b);\
-					^\cf3 MulAdd\cf0 .new(b.inputs.at(0), b.inputs.at(1), a)\
-				\});\
-				if (\cf3 MulAdd\cf0 .canMulAdd(b.inputs.at(1), b.inputs.at(0), a), \{\
-					buildSynthDef.removeUGen(b);\
-					^\cf3 MulAdd\cf0 .new(b.inputs.at(1), b.inputs.at(0), a)\
-				\});\
-			\});\
-		\},\{\
-		if (selector == \cf4 '-'\cf0 , \{\
-			if (a == 0.0, \{ ^b.neg \});\
-			if (b == 0.0, \{ ^a \});\
-		\},\{\
-		if (selector == \cf4 '/'\cf0 , \{\
-			if (b == 1.0, \{ ^a \});\
-			if (b == -1.0, \{ ^a.neg \});\
-			if (b.rate == \cf4 'scalar'\cf0 , \{ ^a * b.reciprocal \});\
-		\})\})\})\});\
-		\
- 		^\cf3 super\cf0 .new1(rate, selector, a, b)\
-	\}\
-	\
-	init \{ \cf3 arg\cf0  theOperator, a, b;\
-		operator = theOperator;\
-		rate = \cf3 this\cf0 .determineRate(a, b);\
-		inputs = [a, b];\
-	\}\
-\}\
-\
-\cf3 MulAdd\cf0  : \cf3 UGen\cf0  \{\
-	*new \{ \cf3 arg\cf0  in, mul = 1.0, add = 0.0;\
-		^\cf3 this\cf0 .multiNew(\cf4 'audio'\cf0 , in, mul, add)\
-	\}\
-	*new1 \{ \cf3 arg\cf0  rate, in, mul, add;\
-		\cf3 var\cf0  minus, nomul, noadd;\
-\
-		\cf2 // eliminate degenerate cases\
-\cf0  		if (mul == 0.0, \{ ^add \});\
-		minus = mul == -1.0;\
-		nomul = mul == 1.0;\
-		noadd = add == 0.0;\
- 		if (nomul && noadd, \{ ^in \});\
- 		if (minus && noadd, \{ ^in.neg \});\
- 		if (noadd, \{ ^in * mul \});\
-  		if (minus, \{ ^add - in \});\
-		if (nomul, \{ ^in + add \});\
- 		\
- 		^\cf3 super\cf0 .new1(rate, in, mul, add)\
-	\}\
-	init \{ \cf3 arg\cf0  in, mul, add;\
-		rate = in.rate;\
-		inputs = [in, mul, add];\
-	\}\
-	\
-	*canBeMulAdd \{ \cf3 arg\cf0  in, mul, add;\
-		\cf2 // see if these inputs satisfy the constraints of a MulAdd ugen.\
-\cf0 		if (in.rate == \cf4 \\audio\cf0 , \{ ^\cf3 true\cf0  \});\
-		if (in.rate == \cf4 \\control\cf0  \
-			&& \{ mul.rate != \cf4 \\audio\cf0  \} \
-			&& \{ add.rate != \cf4 \\audio\cf0  \}, \
-		\{ \
-			^\cf3 true\cf0  \
-		\});\
-		^\cf3 false\cf0 \
-	\}\
-\}\
-\
-\
+// These Unit Generators are instantiated by math operations on UGens
+
+BasicOpUGen : UGen {
+	var <operator;
+
+//	writeName { arg file;
+//		var name, opname;
+//		name = this.class.name.asString;
+//		opname = operator.asString;
+//		file.putInt8(name.size + opname.size + 1);
+//		file.putString(name);
+//		file.putInt8(0);
+//		file.putString(opname);
+//	}
+	specialIndex { ^operator.specialIndex }
 }
+
+UnaryOpUGen : BasicOpUGen {	
+	
+	*new { arg selector, a;
+		^this.multiNew('audio', selector, a)
+	}
+	
+	init { arg theOperator, theInput;
+		operator = theOperator;
+		rate = theInput.rate;
+		inputs = theInput.asArray;
+	}
+
+}
+
+BinaryOpUGen : BasicOpUGen {		
+	*new { arg selector, a, b;
+		^this.multiNew('audio', selector, a, b)
+	}
+	
+	determineRate { arg a, b;
+		if (a.rate == \audio, { ^\audio });
+		if (b.rate == \audio, { ^\audio });
+		if (a.rate == \control, { ^\control });
+		if (b.rate == \control, { ^\control });
+		^\scalar
+	}
+	*new1 { arg rate, selector, a, b;
+	
+		// eliminate degenerate cases
+		if (selector == '*', {
+			if (a == 0.0, { ^0.0 });
+			if (b == 0.0, { ^0.0 });
+			if (a == 1.0, { ^b });
+			if (a == -1.0, { ^b.neg });
+			if (b == 1.0, { ^a });
+			if (b == -1.0, { ^a.neg });
+		},{
+		if (selector == '+', {
+			if (a == 0.0, { ^b });
+			if (b == 0.0, { ^a });
+			
+			// create a MulAdd if possible.
+			if (a.isKindOf(BinaryOpUGen) && { a.operator == '*' }, {
+				if (MulAdd.canMulAdd(a.inputs.at(0), a.inputs.at(1), b), {
+					buildSynthDef.removeUGen(a);
+					^MulAdd.new(a.inputs.at(0), a.inputs.at(1), b)
+				});
+				if (MulAdd.canMulAdd(a.inputs.at(1), a.inputs.at(0), b), {
+					buildSynthDef.removeUGen(a);
+					^MulAdd.new(a.inputs.at(1), a.inputs.at(0), b)
+				});
+			});
+			if (b.isKindOf(BinaryOpUGen) && { b.operator == '*' }, {
+				if (MulAdd.canMulAdd(b.inputs.at(0), b.inputs.at(1), a), {
+					buildSynthDef.removeUGen(b);
+					^MulAdd.new(b.inputs.at(0), b.inputs.at(1), a)
+				});
+				if (MulAdd.canMulAdd(b.inputs.at(1), b.inputs.at(0), a), {
+					buildSynthDef.removeUGen(b);
+					^MulAdd.new(b.inputs.at(1), b.inputs.at(0), a)
+				});
+			});
+		},{
+		if (selector == '-', {
+			if (a == 0.0, { ^b.neg });
+			if (b == 0.0, { ^a });
+		},{
+		if (selector == '/', {
+			if (b == 1.0, { ^a });
+			if (b == -1.0, { ^a.neg });
+			if (b.rate == 'scalar', { ^a * b.reciprocal });
+		})})})});
+		
+ 		^super.new1(rate, selector, a, b)
+	}
+	
+	init { arg theOperator, a, b;
+		operator = theOperator;
+		rate = this.determineRate(a, b);
+		inputs = [a, b];
+	}
+}
+
+MulAdd : UGen {
+	*new { arg in, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', in, mul, add)
+	}
+	*new1 { arg rate, in, mul, add;
+		var minus, nomul, noadd;
+
+		// eliminate degenerate cases
+ 		if (mul == 0.0, { ^add });
+		minus = mul == -1.0;
+		nomul = mul == 1.0;
+		noadd = add == 0.0;
+ 		if (nomul && noadd, { ^in });
+ 		if (minus && noadd, { ^in.neg });
+ 		if (noadd, { ^in * mul });
+  		if (minus, { ^add - in });
+		if (nomul, { ^in + add });
+ 		
+ 		^super.new1(rate, in, mul, add)
+	}
+	init { arg in, mul, add;
+		rate = in.rate;
+		inputs = [in, mul, add];
+	}
+	
+	*canBeMulAdd { arg in, mul, add;
+		// see if these inputs satisfy the constraints of a MulAdd ugen.
+		if (in.rate == \audio, { ^true });
+		if (in.rate == \control 
+			&& { mul.rate != \audio } 
+			&& { add.rate != \audio }, 
+		{ 
+			^true 
+		});
+		^false
+	}
+}
+
+

@@ -1,121 +1,114 @@
-{\rtf1\mac\ansicpg10000\cocoartf100
-{\fonttbl\f0\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red191\green0\blue0;
-}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+Pen {
+	*use { arg function;
+		var res;
+		this.push;
+		res = function.value;
+		this.pop;
+		^res
+	}
 
-\f0\fs18 \cf2 Pen\cf3  \{\
-	*use \{ \cf2 arg\cf3  function;\
-		\cf2 var\cf3  res;\
-		\cf2 this\cf3 .push;\
-		res = function.value;\
-		\cf2 this\cf3 .pop;\
-		^res\
-	\}\
-\
-	*translate \{ \cf2 arg\cf3  x=0, y=0;\
-		\cf2 _Pen_Translate\cf3 	\
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*scale \{ \cf2 arg\cf3  x=0, y=0;\
-		\cf2 _Pen_Scale\cf3 	\
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*rotate \{ \cf2 arg\cf3  angle=0, x=0, y=0;\
-		\cf2 _Pen_Rotate\cf3 	\
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-\
-	\
-	*width_ \{ \cf2 arg\cf3  width=1;\
-		\cf2 _Pen_SetWidth\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-\
-	\cf4 // Paths:\
-\cf3 	*path \{ \cf2 arg\cf3  function;\
-		\cf2 var\cf3  res;\
-		\cf2 this\cf3 .beginPath;\
-		res = function.value;\
-		\cf2 this\cf3 .endPath;\
-		^res\
-	\}\
-	*beginPath \{\
-		\cf2 _Pen_BeginPath\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*endPath \{\
-		\cf2 _Pen_EndPath\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*moveTo \{ \cf2 arg\cf3  point;\
-		\cf2 _Pen_MoveTo\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*lineTo \{ \cf2 arg\cf3  point;\
-		\cf2 _Pen_LineTo\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*curveTo \{ \cf2 arg\cf3  point, cpoint1, cpoint2;\
-		\cf2 _Pen_CurveTo\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*quadCurveTo \{ \cf2 arg\cf3  point, cpoint1;\
-		\cf2 _Pen_QuadCurveTo\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*addArc \{ \cf2 arg\cf3  center, startAngle, arcAngle;\
-		\cf2 _Pen_AddArc\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*addRect \{ \cf2 arg\cf3  rect;\
-		\cf2 _Pen_AddRect\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*stroke \{\
-		\cf2 _Pen_StrokePath\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*fill \{\
-		\cf2 _Pen_FillPath\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*matrix_ \{ \cf2 arg\cf3  array;\
-		\cf2 _Pen_SetMatrix\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	\
-	*strokeRect \{ \cf2 arg\cf3  rect;\
-		\cf2 _Pen_StrokeRect\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*fillRect \{ \cf2 arg\cf3  rect;\
-		\cf2 _Pen_FillRect\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*strokeOval \{ \cf2 arg\cf3  rect;\
-		\cf2 _Pen_StrokeOval\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*fillOval \{ \cf2 arg\cf3  rect;\
-		\cf2 _Pen_FillOval\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	\
-	*drawAquaButton \{ \cf2 arg\cf3  rect, type=0, down=\cf2 false\cf3 , on=\cf2 false\cf3 ;\
-		\cf2 _Pen_DrawAquaButton\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-\
-	\cf4 //PRIVATE:\
-\cf3 	*push \{\
-		\cf2 _Pen_Push\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-	*pop \{\
-		\cf2 _Pen_Pop\cf3 \
-		^\cf2 this\cf3 .primitiveFailed\
-	\}\
-\}\
-\
+	*translate { arg x=0, y=0;
+		_Pen_Translate	
+		^this.primitiveFailed
+	}
+	*scale { arg x=0, y=0;
+		_Pen_Scale	
+		^this.primitiveFailed
+	}
+	*rotate { arg angle=0, x=0, y=0;
+		_Pen_Rotate	
+		^this.primitiveFailed
+	}
+
+	
+	*width_ { arg width=1;
+		_Pen_SetWidth
+		^this.primitiveFailed
+	}
+
+	// Paths:
+	*path { arg function;
+		var res;
+		this.beginPath;
+		res = function.value;
+		this.endPath;
+		^res
+	}
+	*beginPath {
+		_Pen_BeginPath
+		^this.primitiveFailed
+	}
+	*endPath {
+		_Pen_EndPath
+		^this.primitiveFailed
+	}
+	*moveTo { arg point;
+		_Pen_MoveTo
+		^this.primitiveFailed
+	}
+	*lineTo { arg point;
+		_Pen_LineTo
+		^this.primitiveFailed
+	}
+	*curveTo { arg point, cpoint1, cpoint2;
+		_Pen_CurveTo
+		^this.primitiveFailed
+	}
+	*quadCurveTo { arg point, cpoint1;
+		_Pen_QuadCurveTo
+		^this.primitiveFailed
+	}
+	*addArc { arg center, startAngle, arcAngle;
+		_Pen_AddArc
+		^this.primitiveFailed
+	}
+	*addRect { arg rect;
+		_Pen_AddRect
+		^this.primitiveFailed
+	}
+	*stroke {
+		_Pen_StrokePath
+		^this.primitiveFailed
+	}
+	*fill {
+		_Pen_FillPath
+		^this.primitiveFailed
+	}
+	*matrix_ { arg array;
+		_Pen_SetMatrix
+		^this.primitiveFailed
+	}
+	
+	*strokeRect { arg rect;
+		_Pen_StrokeRect
+		^this.primitiveFailed
+	}
+	*fillRect { arg rect;
+		_Pen_FillRect
+		^this.primitiveFailed
+	}
+	*strokeOval { arg rect;
+		_Pen_StrokeOval
+		^this.primitiveFailed
+	}
+	*fillOval { arg rect;
+		_Pen_FillOval
+		^this.primitiveFailed
+	}
+	
+	*drawAquaButton { arg rect, type=0, down=false, on=false;
+		_Pen_DrawAquaButton
+		^this.primitiveFailed
+	}
+
+	//PRIVATE:
+	*push {
+		_Pen_Push
+		^this.primitiveFailed
+	}
+	*pop {
+		_Pen_Pop
+		^this.primitiveFailed
+	}
 }
+
