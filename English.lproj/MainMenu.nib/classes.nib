@@ -6,6 +6,7 @@
                 becomePostWindow = id; 
                 commentCode = id; 
                 compileLibrary = id; 
+                createLink = id; 
                 executeSelection = id; 
                 methodReferences = id; 
                 methodTemplates = id; 
@@ -37,16 +38,22 @@
                 balanceParens = id; 
                 becomePostWindow = id; 
                 commentCode = id; 
+                createLink = id; 
                 executeSelection = id; 
+                methodReferences = id; 
                 methodTemplates = id; 
                 openCode = id; 
+                selectLineWindow = id; 
                 shiftLeft = id; 
                 shiftRight = id; 
+                showHelp = id; 
+                syntaxColorize = id; 
+                toggleRich = id; 
                 uncommentCode = id; 
             }; 
             CLASS = MyDocument; 
             LANGUAGE = ObjC; 
-            OUTLETS = {initTextView = id; scrollView = id; textView = id; }; 
+            OUTLETS = {initTextView = NSTextView; scrollView = NSScrollView; textView = NSTextView; }; 
             SUPERCLASS = NSDocument; 
         }, 
         {
