@@ -106,7 +106,6 @@ Where the sinus (Xenakis' name) is in this implementation taken as sampling from
 \cf2 //scream! - careful with your ears for this one!\cf0 \
 (\
 \{\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  mx, my;\
 \
 mx= \cf3 MouseX\cf0 .kr(220,440);\
@@ -116,7 +115,6 @@ my= \cf3 MouseY\cf0 .kr(0.0,1.0);\
 )\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //1 CP = random noise effect\cf0 \
 \{\cf3 Pan2\cf0 .ar(\cf3 Gendy1\cf0 .ar(initCPs:1))\}.play\
 \
@@ -157,7 +155,6 @@ my= \cf3 MouseY\cf0 .kr(0.0,1.0);\
 \cf2 //texture\cf0 \
 (\
 \{\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Mix\cf0 .arFill(10,\{\
 \cf3 var\cf0  freq;\
 \
@@ -167,14 +164,12 @@ freq= rrand(130,160.3);\
 \}.play\
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //wahhhhhhhh\cf0 \
+\cf2 //wahhhhhhhh- try durscale 10.0 and 0.0 too\cf0 \
 (\
 \{\cf3 Pan2\cf0 .ar(\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 CombN\cf0 .ar(\
 \cf3 Resonz\cf0 .ar(\
-\cf3 Gendy1\cf0 .ar(2,3,minfreq:1, maxfreq:\cf3 MouseX\cf0 .kr(10,700), scaled:0.0, initCPs:10),\
+\cf3 Gendy1\cf0 .ar(2,3,minfreq:1, maxfreq:\cf3 MouseX\cf0 .kr(10,700), durscale:0.1, initCPs:10),\
 \cf3 MouseY\cf0 .kr(50,1000), 0.1)\
 ,0.1,0.1,5, 0.6\
 )\
@@ -182,11 +177,9 @@ freq= rrand(130,160.3);\
 )\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //overkill\cf0 \
 (\
 \{\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  n;\
 n=10;\
 \
@@ -204,11 +197,9 @@ numcps= rrand(2,20);\
 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //another traffic moment\cf0 \
 (\
 \{\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  n;\
 n=10;\
 \
@@ -251,5 +242,4 @@ numcps= rrand(2,20);\
 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //SuperCollider implementation by Nick Collins (sicklincoln.org)}
