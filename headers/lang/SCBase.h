@@ -49,7 +49,9 @@ void setPostFile(FILE *file); // If file is not NULL, causes all posted text to 
 void debugf(char *fmt, ...);
 void pprintf(unsigned char *str, char *fmt, ...);
 
+#ifndef SC_WIN32
 #pragma export on
+#endif //SC_WIN32
 
 extern "C" {
 void schedInit();
@@ -67,6 +69,8 @@ struct PyrSymbol* getsym(const char *inName);
 struct PyrSymbol* findsym(const char *name);
 }
 
+#ifndef SC_WIN32
 #pragma export off
+#endif //SC_WIN32
 
 #endif
