@@ -627,6 +627,10 @@ void pstringFromPyrString(PyrString *obj, unsigned char *str, int maxlength)
 		memcpy(str+1, obj->s, len);
 		str[0] = len;
 	} else {
+#ifdef SC_DARWIN
 		pstrncpy(str, (unsigned char*)"\pnot a string", maxlength-1);
+#else
+		strncpy((char*)str, "not a string", maxlength-1);
+#endif
 	}
 }

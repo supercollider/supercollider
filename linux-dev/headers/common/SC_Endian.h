@@ -18,48 +18,35 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SC_Types_
-#define _SC_Types_
+#ifndef _SC_ENDIAN_
+#define _SC_ENDIAN_
 
-#include <sys/types.h>
-
-typedef int SCErr;
-
-typedef long long int64;
-typedef unsigned long long uint64;
-
-typedef int int32;
-typedef unsigned int uint32;
 #ifdef SC_DARWIN
-typedef unsigned int ulong;
+# include <machine/endian.h>
+#else
+# include <endian.h>
+# include <netinet/in.h>
 #endif
 
-typedef short int16;
-typedef unsigned short uint16;
+#ifndef HTONL
+# define HTONL(x)	htonl(x)
+#endif // HTONL
 
-typedef signed char int8;
-typedef unsigned char uint8;
+#ifndef NTOHL
+# define NTOHL(x)	ntohl(x)
+#endif // NTOHL
 
-typedef float float32;
-typedef double float64;
+#ifndef BYTE_ORDER
+# error BYTE_ORDER undefined, check __FILE__
+#endif // BYTE_ORDER
 
-typedef union { 
-	uint32 u;
-	int32 i;
-	float32 f;
-} elem32;
+#ifndef BIG_ENDIAN
+# error BIG_ENDIAN undefined, check __FILE__
+#endif // BIG_ENDIAN
 
-const unsigned int kSCNameLen = 8;
-const unsigned int kSCNameByteLen = kSCNameLen * sizeof(int32);
+#ifndef LITTLE_ENDIAN
+# error LITTLE_ENDIAN undefined, check __FILE__
+#endif // LITTLE_ENDIAN
 
-#if __VEC__
-
-typedef vector signed int vint32;
-typedef vector unsigned int vuint32;
-typedef vector float vfloat32;
-
-#endif
-
-
-#endif
+#endif // _SC_ENDIAN_
 

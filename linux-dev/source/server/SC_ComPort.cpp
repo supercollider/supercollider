@@ -28,6 +28,15 @@
 #include <stdarg.h>
 #include <netinet/tcp.h>
 
+#ifdef SC_DARWIN
+typedef int socklen_t;
+#endif
+
+#ifdef SC_LINUX
+# include <errno.h>
+# include <unistd.h>
+#endif
+
 #ifdef USE_RENDEZVOUS
 #include "Rendezvous.h"
 #endif
@@ -277,7 +286,9 @@ void DumpReplyAddress(ReplyAddress *inReplyAddress)
 {
 	scprintf("mSockAddrLen %d\n", inReplyAddress->mSockAddrLen);
 	scprintf("mSocket %d\n", inReplyAddress->mSocket);
+#ifdef SC_DARWIN
 	scprintf("mSockAddr.sin_len %d\n", inReplyAddress->mSockAddr.sin_len);
+#endif
 	scprintf("mSockAddr.sin_family %d\n", inReplyAddress->mSockAddr.sin_family);
 	scprintf("mSockAddr.sin_port %d\n", inReplyAddress->mSockAddr.sin_port);
 	scprintf("mSockAddr.sin_addr.s_addr %d\n", inReplyAddress->mSockAddr.sin_addr.s_addr);
@@ -307,7 +318,9 @@ bool operator==(const ReplyAddress& a, const ReplyAddress& b)
 	return a.mSockAddr.sin_addr.s_addr == b.mSockAddr.sin_addr.s_addr
 		&& a.mSockAddr.sin_family == b.mSockAddr.sin_family
 		&& a.mSockAddr.sin_port == b.mSockAddr.sin_port
+#ifdef SC_DARWIN
 		&& a.mSockAddr.sin_len == b.mSockAddr.sin_len
+#endif
 		&& a.mSocket == b.mSocket;
 }
 
@@ -336,7 +349,7 @@ void* SC_UdpInPort::Run()
 		
 		packet->mReplyAddr.mSockAddrLen = sizeof(sockaddr_in);
 		int size = recvfrom(mSocket, data, kPacketBufSize , 0,
-								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, &packet->mReplyAddr.mSockAddrLen);
+								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, (socklen_t*)&packet->mReplyAddr.mSockAddrLen);
 		
 		if (size > 0) {
 			if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, size, data);
@@ -398,7 +411,7 @@ void* SC_TcpInPort::Run()
     {
         mConnectionAvailable.Acquire();
         struct sockaddr_in address; /* Internet socket address stuct */
-        int addressSize=sizeof(struct sockaddr_in);
+        socklen_t addressSize=sizeof(struct sockaddr_in);
         int socket = accept(mSocket,(struct sockaddr*)&address,&addressSize);
         if (socket < 0) {
         	mConnectionAvailable.Release();

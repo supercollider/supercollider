@@ -26,9 +26,27 @@
 #include "SC_UnitDef.h"
 #include "SC_BufGen.h"
 #include "SC_World.h"
+#include "SC_StringParser.h"
 #include <stdexcept>
 #include <dirent.h>
-#include "dlfcn.h"
+
+#ifdef SC_DARWIN
+# include "dlfcn.h"
+#else
+# include <dlfcn.h>
+#endif
+
+#ifndef SC_PLUGIN_DIR
+# define SC_PLUGIN_DIR "plugins"
+#endif
+
+#ifndef SC_PLUGIN_EXT
+# define SC_PLUGIN_EXT ".scx"
+#endif
+
+#ifndef SC_PLUGIN_LOAD_SYM
+# define SC_PLUGIN_LOAD_SYM "_load"
+#endif
 
 Malloc gMalloc;
 HashTable<SC_LibCmd, Malloc> *gCmdLib;
@@ -50,7 +68,14 @@ void initialize_library()
 
 	initMiscCommands();
 
-	PlugIn_LoadDir("plugins");
+	// load default plugin directory
+	PlugIn_LoadDir(SC_PLUGIN_DIR);
+
+	// load user plugin directories
+	SC_StringParser sp(getenv("SC_PLUGIN_PATH"), ':');
+	while (!sp.AtEnd()) {
+		PlugIn_LoadDir(const_cast<char *>(sp.NextToken()));
+	}
 }
 
 
@@ -70,9 +95,9 @@ bool PlugIn_Load(const char *filename)
 	
 	void *ptr;
 	
-	ptr = dlsym(handle, "_load");
+	ptr = dlsym(handle, SC_PLUGIN_LOAD_SYM);
 	if (!ptr) {
-		scprintf("*** ERROR: dlsym _load err '%s'\n", dlerror());
+		scprintf("*** ERROR: dlsym %s err '%s'\n", SC_PLUGIN_LOAD_SYM, dlerror());
 		dlclose(handle);
 		return false;
 	}		
@@ -109,12 +134,15 @@ bool PlugIn_LoadDir(char *dirname)
 			success = PlugIn_LoadDir(entrypathname);
 		} else {
 			int dnamelen = strlen(de->d_name);
-			if (strncmp(de->d_name+dnamelen-4, ".scx", 4)==0) {
+			int extlen = strlen(SC_PLUGIN_EXT);
+			char *extptr = de->d_name+dnamelen-extlen;
+			if (strncmp(extptr, SC_PLUGIN_EXT, extlen)==0) {
 				success = PlugIn_Load(entrypathname);
 			}
 		}
 		free(entrypathname);
-		if (!success) break;
+		// sk: process rest of directory if load failed
+		if (!success) continue /* break */;
 	}
 	closedir(dir);
 	return success;

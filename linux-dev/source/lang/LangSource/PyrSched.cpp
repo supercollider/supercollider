@@ -23,7 +23,9 @@
 #include "PyrSched.h"
 #include "GC.h"
 #include "PyrPrimitive.h"
-#include <CoreAudio/HostTime.h>
+#ifdef SC_DARWIN
+# include <CoreAudio/HostTime.h>
+#endif
 #include <stdarg.h>
 #include <stdlib.h>
 #include <math.h>
@@ -282,27 +284,46 @@ pthread_t gResyncThread;
 pthread_cond_t gSchedCond; 
 pthread_mutex_t gLangMutex;
 
+#ifdef SC_DARWIN
 int64 gHostOSCoffset = 0; 
 int64 gHostStartNanos = 0;
+#endif
+
 int64 gElapsedOSCoffset = 0;
 
 const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800UL; /* 17 leap years */
 const double fSECONDS_FROM_1900_to_1970 = 2208988800.; /* 17 leap years */
 
+#ifdef SC_DARWIN
 void syncOSCOffsetWithTimeOfDay();
 void* resyncThread(void* arg);
+#else // !SC_DARWIN
+#include <sys/time.h>
 
+inline double GetTimeOfDay();
+double GetTimeOfDay()
+{
+	struct timeval tv;
+	gettimeofday(&tv, 0);
+	return (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
+}
+#endif // SC_DARWIN
 
 void schedInit();
 void schedInit()
 {
 	pthread_cond_init (&gSchedCond, NULL);
 	pthread_mutex_init (&gLangMutex, NULL);
+
+#ifdef SC_DARWIN
 	syncOSCOffsetWithTimeOfDay();
 	pthread_create (&gResyncThread, NULL, resyncThread, (void*)0);
 
 	gHostStartNanos = AudioConvertHostTimeToNanos(AudioGetCurrentHostTime());
 	gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
+#else
+	gElapsedOSCoffset = (int64)kSECONDS_FROM_1900_to_1970 << 32;
+#endif
 }
 
 void schedCleanup();
@@ -315,13 +336,21 @@ void schedCleanup()
 double bootSeconds();
 double bootSeconds()
 {
+#ifdef SC_DARWIN
 	return 1e-9 * (double)AudioConvertHostTimeToNanos(AudioGetCurrentHostTime());
+#else
+	return GetTimeOfDay();
+#endif
 }
 
 double elapsedTime();
 double elapsedTime()
 {
+#ifdef SC_DARWIN
 	return 1e-9 * (double)(AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) - gHostStartNanos);
+#else
+	return GetTimeOfDay();
+#endif
 }
 
 int64 ElapsedTimeToOSC(double elapsed)
@@ -348,6 +377,7 @@ int64 OSCTime()
 	return ElapsedTimeToOSC(elapsedTime());
 }
 
+#ifdef SC_DARWIN
 void syncOSCOffsetWithTimeOfDay()
 {
 	// generate a value gHostOSCoffset such that  
@@ -384,7 +414,7 @@ void syncOSCOffsetWithTimeOfDay()
 	gHostOSCoffset = newOffset;
 	//postfl("gHostOSCoffset %016llX\n", gHostOSCoffset);
 }
-
+#endif
 
 void schedAdd(VMGlobals *g, PyrObject* inQueue, double inTime, PyrSlot* inTask);
 void schedAdd(VMGlobals *g, PyrObject* inQueue, double inTime, PyrSlot* inTask)
@@ -449,7 +479,7 @@ void schedClearUnsafe()
 
 void post(const char *fmt, ...);
 
-
+#ifdef SC_DARWIN
 void* resyncThread(void* arg)
 {
 	while (true) {
@@ -458,6 +488,7 @@ void* resyncThread(void* arg)
 		gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
 	}
 }
+#endif
 
 extern bool gTraceInterpreter;
 
@@ -473,14 +504,14 @@ void* schedRunFunc(void* arg)
 		
 	gRunSched = true;
 	while (true) {
-	//postfl("wait until there is something in scheduler\n");
+		//postfl("wait until there is something in scheduler\n");
 		// wait until there is something in scheduler
 		while (inQueue->size == 0) {
 			//postfl("wait until there is something in scheduler\n");
 			pthread_cond_wait (&gSchedCond, &gLangMutex);
 			if (!gRunSched) goto leave;
 		}
-	//postfl("wait until an event is ready\n");
+		//postfl("wait until an event is ready\n");
 		
 		// wait until an event is ready
 		double elapsed;
@@ -495,7 +526,8 @@ void* schedRunFunc(void* arg)
 			if (!gRunSched) goto leave;
 			//postfl("time diff %g\n", elapsedTime() - inQueue->slots->uf);
 		}
-	//postfl("perform all events that are ready %d %.9f\n", inQueue->size, elapsed);
+		
+		//postfl("perform all events that are ready %d %.9f\n", inQueue->size, elapsed);
 		
 		// perform all events that are ready
 		//postfl("perform all events that are ready\n");
@@ -518,7 +550,7 @@ void* schedRunFunc(void* arg)
 				schedAdd(g, inQueue, time, &task);
 			}
 		}
-	//postfl("loop\n");
+		//postfl("loop\n");
 	}
 	//postfl("exitloop\n");
 leave:
@@ -526,6 +558,7 @@ leave:
 	return 0;
 }
 
+#ifdef SC_DARWIN
 #include <mach/mach.h>
 #include <mach/thread_policy.h>
 
@@ -613,7 +646,7 @@ kern_return_t  RescheduleStdThread( mach_port_t    machThread,
                                 THREAD_PRECEDENCE_POLICY_COUNT );
 
 }
-
+#endif // SC_DARWIN
 
 void schedRun();
 void schedRun()
@@ -628,7 +661,8 @@ void schedRun()
         
         policy = SCHED_RR;         // round-robin, AKA real-time scheduling
         post("param.sched_priority %d\n", param.sched_priority);
-        
+
+#ifdef SC_DARWIN
         int machprio;
         boolean_t timeshare;
         GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread), &machprio, &timeshare);
@@ -643,6 +677,7 @@ void schedRun()
 
         //param.sched_priority = 70; // you'll have to play with this to see what it does
         //pthread_setschedparam (gSchedThread, policy, &param);
+#endif // SC_DARWIN
 
         pthread_getschedparam (gSchedThread, &policy, &param);
         

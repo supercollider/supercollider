@@ -40,6 +40,10 @@
 #include "SC_WorldOptions.h"
 #include "SC_SndBuf.h"
 
+#ifndef SC_DARWIN
+# include <unistd.h>
+#endif
+
 struct LocalSynthServerGlobals
 {
 	struct World *mWorld;
@@ -528,9 +532,16 @@ void PerformOSCBundle(OSC_Packet* inPacket)
     // convert all data to arrays
     
     int64 oscTime;
-    memcpy(&oscTime, inPacket->mData + 8, sizeof(int64)); 
-    // need to byte swap oscTime if host is little endian..
-    
+
+#if BYTE_ORDER == BIG_ENDIAN
+    // memcpy(&oscTime, inPacket->mData + 8, sizeof(int64)); 
+    oscTime = *(int64*)(inPacket->mData + 8);
+#else
+    // need to byte swap oscTime if host is little endian
+    oscTime = ((int64)NTOHL(*(uint32*)(inPacket->mData + 8)) << 32)
+	    + (NTOHL(*(uint32*)(inPacket->mData + 12)));
+#endif // BYTE_ORDER
+
     double seconds = OSCToElapsedTime(oscTime);
 
     VMGlobals *g = gMainVMGlobals;

@@ -69,6 +69,35 @@
 //922
 //923
 //924
+//AA0
+//AA1
+//AA2
+//AA3
+//AA4
+		AA799F05045EF885002875C2 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lineEnding = 0;
+			path = SC_Endian.h;
+			refType = 4;
+		};
+		AA799F06045EF885002875C2 = {
+			fileRef = AA799F05045EF885002875C2;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AA799F07045EF885002875C2 = {
+			fileRef = AA799F05045EF885002875C2;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//AA0
+//AA1
+//AA2
+//AA3
+//AA4
 //C20
 //C21
 //C22
@@ -258,6 +287,7 @@
 				F50D050E02E69B6B01CA2799,
 				F50D050F02E69B6B01CA2799,
 				F561BDB50335370801C816AC,
+				AA799F05045EF885002875C2,
 			);
 			isa = PBXGroup;
 			path = common;
@@ -1078,7 +1108,7 @@
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
 				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = SuperCollider;
@@ -1302,6 +1332,7 @@
 				F5BAFADF037F805101CA27E6,
 				C26BDCCF03D0B4FB00A87B78,
 				920F883E0443F54D00A80088,
+				AA799F06045EF885002875C2,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2786,7 +2817,7 @@
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
 				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = sclang;
@@ -2868,6 +2899,7 @@
 				F53D4655030B934D01E9DD5D,
 				F5BAFAE0037F805101CA27E6,
 				920F883F0443F54D00A80088,
+				AA799F07045EF885002875C2,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

@@ -27,6 +27,8 @@
  *
  */
 
+#ifdef SC_DARWIN
+
 #include <Carbon/Carbon.h>
 
 bool HasAltivec()
@@ -42,3 +44,12 @@ bool HasAltivec()
 #endif
 }
 
+#else // !SC_DARWIN
+
+bool HasAltivec()
+{
+	// sk: how to do this on ppc linux?
+	return false;
+}
+
+#endif // SC_DARWIN

@@ -26,6 +26,7 @@
 #include "SC_SequencedCommand.h"
 #include "SC_Prototypes.h"
 #include "SC_HiddenWorld.h"
+#include "SC_Endian.h"
 
 const double kMicrosToOSCunits = 4294.967296; // pow(2,32)/1e6
 const double kNanosToOSCunits  = 4.294967296; // pow(2,32)/1e9
@@ -33,7 +34,14 @@ int64 gOSCoffset = 0;
 int64 gStartupOSCTime;
 
 const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800UL; /* 17 leap years */
+const double kOSCtoSecs = 2.328306436538696e-10;
 
+void set_real_time_priority(pthread_t thread);
+
+// =====================================================================
+// Timing (CoreAudio)
+
+#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
 int32 timeseed()
 {
 	static int32 count = 0;
@@ -51,9 +59,6 @@ int64 oscTimeNow()
 {
 	return CoreAudioHostTimeToOSC(AudioGetCurrentHostTime());
 }
-
-const double kOSCtoSecs = 2.328306436538696e-10;
-
 
 void syncOSCOffsetWithTimeOfDay();
 void syncOSCOffsetWithTimeOfDay()
@@ -105,8 +110,6 @@ void* resyncThreadFunc(void* /*arg*/)
 
 
 void initializeScheduler();
-void set_real_time_priority(pthread_t thread);
-
 void initializeScheduler()
 {
 	syncOSCOffsetWithTimeOfDay();
@@ -115,8 +118,48 @@ void initializeScheduler()
 	pthread_create (&resyncThread, NULL, resyncThreadFunc, (void*)0);
 	set_real_time_priority(resyncThread);
 }
+#endif // SC_AUDIO_API_COREAUDIO
+
+
+// =====================================================================
+// Timing (JACK)
+
+#if SC_AUDIO_API == SC_AUDIO_API_JACK
+#include <sys/time.h>
+
+static inline int64 GetCurrentOSCTime()
+{
+	struct timeval tv;
+	uint64 s, f;
+	gettimeofday(&tv, 0); 
+
+	s = (uint64)tv.tv_sec + (uint64)kSECONDS_FROM_1900_to_1970;
+	f = (uint64)((double)tv.tv_usec * kMicrosToOSCunits);
+
+	return (s << 32) + f;
+}
+
+int32 timeseed()
+{
+	int64 time = GetCurrentOSCTime();
+	return Hash((int32)(time >> 32) + Hash((int32)time));
+}
+
+int64 oscTimeNow()
+{
+	return GetCurrentOSCTime();
+}
+
+void initializeScheduler()
+{
+}
+#endif // SC_AUDIO_API_JACK
 
 double gSampleRate, gSampleDur;
+
+
+// =====================================================================
+// Packets (Common)
 
 #include "SC_Lib_Cintf.h"
 #include <stdlib.h>
@@ -186,7 +229,7 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket)
 	char *data = inPacket->mData + 16;
 	char* dataEnd = inPacket->mData + inPacket->mSize;
 	while (data < dataEnd) {
-		int32 msgSize = *(int32*)data;
+		int32 msgSize = NTOHL(*(int32*)data);
 		data += sizeof(int32);
 		//scprintf("msgSize %d\n", msgSize);
 		PerformOSCMessage(inWorld, msgSize, data, &inPacket->mReplyAddr);
@@ -210,7 +253,12 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 	} else {
 	
 		// in real time engine, schedule the packet
+#if BYTE_ORDER == BIG_ENDIAN
 		int64 time = *(int64*)(packet->mData + 8);
+#else
+		char* data = packet->mData + 8;
+		int64 time = ((int64)NTOHL(*(uint32*)data) << 32) + (NTOHL(*(uint32*)(data + 4)));
+#endif // BYTE_ORDER
 
 		if (time == 0 || time == 1) {
 			PerformOSCBundle(world, packet);
@@ -272,6 +320,10 @@ void DoneWithPacket(FifoMsg *inMsg)
 	FreeOSCPacket(packet);
 }
 
+
+// =====================================================================
+// Audio driver (Common)
+
 SC_AudioDriver::SC_AudioDriver(struct World *inWorld)
 		: mWorld(inWorld), mSampleTime(0)
 {
@@ -281,7 +333,7 @@ SC_CoreAudioDriver::SC_CoreAudioDriver(struct World *inWorld)
 		: SC_AudioDriver(inWorld), mNumSamplesPerCallback(0)
 {
 	mProcessPacketLock = new SC_Lock();
-	mInputBufList = 0;
+	DriverInitialize();
 }
 
 SC_CoreAudioDriver::~SC_CoreAudioDriver()
@@ -291,9 +343,8 @@ SC_CoreAudioDriver::~SC_CoreAudioDriver()
 	pthread_join(mThread, 0);
 	
 	delete mProcessPacketLock;
-	delete mInputBufList;
+	DriverRelease();
 }
-
 
 void* core_audio_thread_func(void* arg);
 void* core_audio_thread_func(void* arg)
@@ -303,8 +354,127 @@ void* core_audio_thread_func(void* arg)
 	return result;
 }
 
+void* SC_CoreAudioDriver::RunThread()
+{
+	MsgFifoNoFree<TriggerMsg, 1024> *trigfifo = &mWorld->hw->mTriggers;
+	MsgFifoNoFree<NodeEndMsg, 1024> *nodeendfifo = &mWorld->hw->mNodeEnds;
+	MsgFifoNoFree<DeleteGraphDefMsg, 512> *deletegraphfifo = &mWorld->hw->mDeleteGraphDefs;
+
+	while (mRunThreadFlag) {
+		// wait for sync
+		mAudioSync.WaitNext();
+		
+		mWorld->mNRTLock->Lock();
+		
+		// send /tr messages
+		trigfifo->Perform();		
+		
+		// send node status messages
+		nodeendfifo->Perform();
+		
+		// free GraphDefs
+		deletegraphfifo->Perform();
+		
+		// perform messages
+		mFromEngine.Perform();
+
+		mWorld->mNRTLock->Unlock();
+	}
+	return 0;
+}	
+
+bool SC_CoreAudioDriver::SendMsgFromEngine(FifoMsg& inMsg)
+{
+	return mFromEngine.Write(inMsg);
+}
+
+
+bool SC_CoreAudioDriver::SendMsgToEngine(FifoMsg& inMsg)
+{
+	mToEngine.Free();
+	return mToEngine.Write(inMsg);
+}
+
+void SC_ScheduledEvent::Perform()
+{
+	PerformOSCBundle(mWorld, mPacket); 
+	FifoMsg msg;
+	msg.Set(mWorld, DoneWithPacket, 0, (void*)mPacket);
+	mWorld->hw->mAudioDriver->SendMsgFromEngine(msg);
+}
 
 bool SC_CoreAudioDriver::Setup()
+{
+	mRunThreadFlag = true;
+	pthread_create (&mThread, NULL, core_audio_thread_func, (void*)this);
+	set_real_time_priority(mThread);
+
+	int numSamples;
+	double sampleRate;
+
+	if (!DriverSetup(&numSamples, &sampleRate)) return false;
+
+	mNumSamplesPerCallback = numSamples;
+	scprintf("mNumSamplesPerCallback %d\n", mNumSamplesPerCallback);
+	scprintf("mHardwareBufferSize %lu\n", mHardwareBufferSize);
+
+	// compute a per sample increment to the OpenSoundControl Time
+	mOSCincrementNumerator = (double)mWorld->mBufLength * pow(2.,32.);
+	mOSCincrement = (int64)(mOSCincrementNumerator / sampleRate);
+	mOSCtoSamples = sampleRate / pow(2.,32.);
+
+	World_SetSampleRate(mWorld, sampleRate);
+	mSampleRate = mSmoothSampleRate = sampleRate;
+	mBuffersPerSecond = sampleRate / mNumSamplesPerCallback;
+	mMaxPeakCounter = (int)mBuffersPerSecond;
+	
+#ifndef NDEBUG
+	scprintf("SC_CoreAudioDriver: numSamples=%d, sampleRate=%f\n", mNumSamplesPerCallback, sampleRate);
+#endif
+
+	return true;
+}
+
+bool SC_CoreAudioDriver::Start()
+{
+	mAvgCPU = 0.;
+	mPeakCPU = 0.;
+	mPeakCounter = 0;
+	
+	mStartHostSecs = 0.;
+	mPrevHostSecs = 0.;
+	mStartSampleTime = 0.;
+	mPrevSampleTime = 0.;
+
+	World_Start(mWorld);
+	gStartupOSCTime = oscTimeNow();
+
+	return DriverStart();
+}
+
+bool SC_CoreAudioDriver::Stop()
+{
+	printf("SC_CoreAudioDriver::Stop\n");
+	if (!DriverStop()) return false;
+	return true;
+}
+
+
+// =====================================================================
+// Audio driver (CoreAudio)
+
+#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
+void SC_CoreAudioDriver::DriverInitialize()
+{
+	mInputBufList = 0;
+}
+
+void SC_CoreAudioDriver::DriverRelease()
+{
+	delete mInputBufList;
+}
+
+bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate)
 {
 	OSStatus	err = kAudioHardwareNoError;
 	UInt32	count;
@@ -363,10 +533,6 @@ bool SC_CoreAudioDriver::Setup()
 	}*/
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
-
-	mRunThreadFlag = true;
-	pthread_create (&mThread, NULL, core_audio_thread_func, (void*)this);
-	set_real_time_priority(mThread);
 
 	// get the default output device for the HAL
 	count = sizeof(mOutputDevice);		// it is required to pass the size of the data to be returned
@@ -472,51 +638,11 @@ bool SC_CoreAudioDriver::Setup()
 		}
 	}
 
-	mNumSamplesPerCallback = mHardwareBufferSize / outputStreamDesc.mBytesPerFrame;
-	scprintf("mNumSamplesPerCallback %d\n", mNumSamplesPerCallback);
-	scprintf("mHardwareBufferSize %lu\n", mHardwareBufferSize);
-	  
-	// compute a per sample increment to the OpenSoundControl Time
-	mOSCincrementNumerator = (double)mWorld->mBufLength * pow(2.,32.);
-	mOSCincrement = (int64)(mOSCincrementNumerator / outputStreamDesc.mSampleRate);
-	mOSCtoSamples = outputStreamDesc.mSampleRate / pow(2.,32.);
+	*outNumSamplesPerCallback = mHardwareBufferSize / outputStreamDesc.mBytesPerFrame;
+	*outSampleRate = outputStreamDesc.mSampleRate;
 
-	World_SetSampleRate(mWorld, outputStreamDesc.mSampleRate);
-	mSampleRate = mSmoothSampleRate = outputStreamDesc.mSampleRate;
-	mBuffersPerSecond = outputStreamDesc.mSampleRate / mNumSamplesPerCallback;
-	mMaxPeakCounter = (int)mBuffersPerSecond;
 	return true;
 }
-
-void* SC_CoreAudioDriver::RunThread()
-{
-	MsgFifoNoFree<TriggerMsg, 1024> *trigfifo = &mWorld->hw->mTriggers;
-	MsgFifoNoFree<NodeEndMsg, 1024> *nodeendfifo = &mWorld->hw->mNodeEnds;
-	MsgFifoNoFree<DeleteGraphDefMsg, 512> *deletegraphfifo = &mWorld->hw->mDeleteGraphDefs;
-
-	while (mRunThreadFlag) {
-		// wait for sync
-		mAudioSync.WaitNext();
-		
-		mWorld->mNRTLock->Lock();
-		
-		// send /tr messages
-		trigfifo->Perform();		
-		
-		// send node status messages
-		nodeendfifo->Perform();
-		
-		// free GraphDefs
-		deletegraphfifo->Perform();
-		
-		// perform messages
-		mFromEngine.Perform();
-
-		mWorld->mNRTLock->Unlock();
-	}
-	return 0;
-}	
-
 
 // this is the audio processing callback for two separate devices.
 OSStatus appIOProc2 (AudioDeviceID inDevice, const AudioTimeStamp* inNow, 
@@ -731,22 +857,10 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 	mAudioSync.Signal();
 }
 
-bool SC_CoreAudioDriver::Start()
+bool SC_CoreAudioDriver::DriverStart()
 {
 	OSStatus	err = kAudioHardwareNoError;
 
-	mAvgCPU = 0.;
-	mPeakCPU = 0.;
-	mPeakCounter = 0;
-	
-	mStartHostSecs = 0.;
-	mPrevHostSecs = 0.;
-	mStartSampleTime = 0.;
-	mPrevSampleTime = 0.;
-
-	World_Start(mWorld);
-	gStartupOSCTime = oscTimeNow();
-	
 	scprintf("start   UseSeparateIO?: %d\n", UseSeparateIO());
 	
 	if (UseSeparateIO()) {
@@ -781,15 +895,12 @@ bool SC_CoreAudioDriver::Start()
 			return false;
 		}
 	}
-	mSampleTime = 0;
 
 	return true;
 }
 
-
-bool SC_CoreAudioDriver::Stop()
+bool SC_CoreAudioDriver::DriverStop()
 {
-	scprintf("SC_CoreAudioDriver::Stop\n");
 	OSStatus err = kAudioHardwareNoError;
 
 	if (UseSeparateIO()) {
@@ -808,27 +919,6 @@ bool SC_CoreAudioDriver::Stop()
 	return true;
 }
 
-
-
-bool SC_CoreAudioDriver::SendMsgFromEngine(FifoMsg& inMsg)
-{
-	return mFromEngine.Write(inMsg);
-}
-
-
-bool SC_CoreAudioDriver::SendMsgToEngine(FifoMsg& inMsg)
-{
-	mToEngine.Free();
-	return mToEngine.Write(inMsg);
-}
-
-void SC_ScheduledEvent::Perform()
-{
-	PerformOSCBundle(mWorld, mPacket); 
-	FifoMsg msg;
-	msg.Set(mWorld, DoneWithPacket, 0, (void*)mPacket);
-	mWorld->hw->mAudioDriver->SendMsgFromEngine(msg);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1167,5 +1257,323 @@ OSStatus	AddStreamListeners (AudioDeviceID inDevice, AudioDevicePropertyID	inPro
 
     return (noErr);
 }    
+#endif // SC_AUDIO_API_COREAUDIO
 
 
+// =====================================================================
+// Audio driver (JACK)
+
+#if SC_AUDIO_API == SC_AUDIO_API_JACK
+#include "SC_StringParser.h"
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <unistd.h>
+
+static int sc_jack_process_cb(jack_nframes_t numFrames, void *arg);
+static int sc_jack_bufsize_cb(jack_nframes_t numSamples, void *arg);
+static int sc_jack_srate_cb(jack_nframes_t sampleRate, void *arg);
+
+struct SC_JackPortList
+{
+	int		mSize;
+	jack_port_t	**mPorts;
+	float		**mBuffers;
+
+	SC_JackPortList(jack_client_t *client, int numPorts, int type);
+	~SC_JackPortList();
+};
+
+// =====================================================================
+// SC_JackPortList
+
+SC_JackPortList::SC_JackPortList(jack_client_t *client, int numPorts, int type)
+	: mSize(numPorts), mPorts(0), mBuffers(0)
+{
+	int i;
+	char *fmt, portname[32];
+
+	mPorts = new jack_port_t*[mSize];
+	mBuffers = new float*[mSize];
+
+	if (type == JackPortIsInput) {
+		fmt = "in_%d";
+	} else {
+		fmt = "out_%d";
+	}
+
+	for (i = 0; i < mSize; i++) {
+		sprintf(portname, fmt, i+1);
+		mPorts[i] = jack_port_register(
+					client, portname,
+					JACK_DEFAULT_AUDIO_TYPE,
+					type, 0
+				);
+		mBuffers[i] = 0;
+	}
+}
+
+SC_JackPortList::~SC_JackPortList()
+{
+	delete [] mPorts;
+	delete [] mBuffers;
+}
+
+// =====================================================================
+// JACK callbacks
+
+int sc_jack_process_cb(jack_nframes_t numFrames, void *arg)
+{
+	((SC_CoreAudioDriver*)arg)->JackRun(GetCurrentOSCTime());
+	return 0;
+}
+
+int sc_jack_bufsize_cb(jack_nframes_t numSamples, void *arg)
+{
+	((SC_CoreAudioDriver*)arg)->JackBufferSizeChanged((int)numSamples);
+	return 0;
+}
+
+int sc_jack_srate_cb(jack_nframes_t sampleRate, void *arg)
+{
+	((SC_CoreAudioDriver*)arg)->JackSampleRateChanged((double)sampleRate);
+	return 0;
+}
+
+// =====================================================================
+// SC_CoreAudioDriver (JACK)
+
+void SC_CoreAudioDriver::DriverInitialize()
+{
+	mClient = 0;
+	mInputList = mOutputList = 0;
+}
+
+void SC_CoreAudioDriver::DriverRelease()
+{
+	if (mClient) jack_client_close(mClient);
+	delete mInputList;
+	delete mOutputList;
+}
+
+// ====================================================================
+// NOTE: for now, in lieu of a mechanism that passes generic options to
+// the platform driver, we rely on environment variables:
+//
+// 	SC_JACK_INPUTS:			number of jack inputs created default=2
+// 	SC_JACK_OUTPUTS:		number of jack outputs created default=2
+// 	SC_JACK_DEFAULT_INPUTS:		which outports to connect to
+// 	SC_JACK_DEFAULT_OUTPUTS:	which inports to connect to
+//
+// e.g.
+// 	SC_JACK_INPUTS=4
+// 	SC_JACK_OUTPUTS=4
+// 	SC_JACK_DEFAULT_INPUTS=alsa:in_1,alsa:in_2
+// 	SC_JACK_DEFAULT_OUTPUTS=alsa:out_1,alsa:out_2
+//
+// will create four jack in/out ports and connect the first two in/out
+// ports to the respective ports of the alsa driver client, up to the
+// number of ports actually available.
+
+bool SC_CoreAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
+{
+	char *env;
+	int n;
+
+	// create jack client
+	mClient = jack_client_new("SuperCollider");
+	if (mClient == 0) return false;
+
+	// create inputs according to SC_JACK_INPUTS (default 2)
+	env = getenv("SC_JACK_INPUTS");
+	if (env == 0) env = "2";
+	n = std::max(2, atoi(env));
+	mInputList = new SC_JackPortList(mClient, n, JackPortIsInput);
+
+	// create outputs according to SC_JACK_OUTPUTS (default 2)
+	env = getenv("SC_JACK_OUTPUTS");
+	if (env == 0) env = "2";
+	n = std::max(2, atoi(env));
+	mOutputList = new SC_JackPortList(mClient, n, JackPortIsOutput);
+
+	// register callbacks
+	jack_set_process_callback(mClient, sc_jack_process_cb, this);
+	jack_set_buffer_size_callback(mClient, sc_jack_bufsize_cb, this);
+	jack_set_sample_rate_callback(mClient, sc_jack_srate_cb, this);
+
+	*outNumSamples = (int)jack_get_buffer_size(mClient);
+	*outSampleRate = (double)jack_get_sample_rate(mClient);
+
+	return true;
+}
+
+bool SC_CoreAudioDriver::DriverStart()
+{
+	assert(mClient);
+
+	int err;
+	SC_StringParser sp;
+	jack_port_t **ports;
+	int numPorts;
+
+	// activate client
+	err = jack_activate(mClient);
+	if (err) {
+		scprintf("SC_CoreAudioDriver: couldn't activate jack client\n");
+		return false;
+	}
+
+	// connect default inputs
+	sp = SC_StringParser(getenv("SC_JACK_DEFAULT_INPUTS"), ',');
+	ports = mInputList->mPorts;
+	numPorts = mInputList->mSize;
+	for (int i = 0; !sp.AtEnd() && (i < numPorts); i++) {
+		const char *thisPortName = jack_port_name(ports[i]);
+		const char *thatPortName = sp.NextToken();
+		if (thisPortName && thatPortName) {
+			err = jack_connect(mClient, thatPortName, thisPortName);
+			scprintf("SC_CoreAudioDriver: %s %s to %s\n",
+				 err ? "couldn't connect " : "connected ",
+				 thatPortName, thisPortName);
+		}
+	}
+
+	// connect default outputs
+	sp = SC_StringParser(getenv("SC_JACK_DEFAULT_OUTPUTS"), ',');
+	ports = mOutputList->mPorts;
+	numPorts = mOutputList->mSize;
+	for (int i = 0; !sp.AtEnd() && (i < numPorts); i++) {
+		const char *thisPortName = jack_port_name(ports[i]);
+		const char *thatPortName = sp.NextToken();
+		if (thisPortName && thatPortName) {
+			err = jack_connect(mClient, thisPortName, thatPortName);
+			scprintf("SC_CoreAudioDriver: %s %s to %s\n",
+				 err ? "couldn't connect " : "connected ",
+				 thisPortName, thatPortName);
+		}
+	}
+
+	return true;
+}
+
+bool SC_CoreAudioDriver::DriverStop()
+{
+	int err = 0;
+	if (mClient) err = jack_deactivate(mClient);
+	return err == 0;
+}
+
+void SC_CoreAudioDriver::JackRun(int64 oscTime)
+{
+	World *world = mWorld;
+	
+	try {
+		mOSCbuftime = oscTime;
+		
+		mFromEngine.Free();
+		mToEngine.Perform();
+		
+		int numInputs = mInputList->mSize;
+		int numOutputs = mOutputList->mSize;
+		jack_port_t **inPorts = mInputList->mPorts;
+		jack_port_t **outPorts = mOutputList->mPorts;
+		float **inBuffers = mInputList->mBuffers;
+		float **outBuffers = mOutputList->mBuffers;
+
+		int numSamples = NumSamplesPerCallback();
+		int bufFrames = mWorld->mBufLength;
+		int numBufs = numSamples / bufFrames;
+
+		float *inBuses = mWorld->mAudioBus + mWorld->mNumOutputs * bufFrames;
+		float *outBuses = mWorld->mAudioBus;
+		int32 *inTouched = mWorld->mAudioBusTouched + mWorld->mNumOutputs;
+		int32 *outTouched = mWorld->mAudioBusTouched;
+
+		int minInputs = std::min(numInputs, mWorld->mNumInputs);
+		int minOutputs = std::min(numOutputs, mWorld->mNumOutputs);
+
+		int bufFramePos = 0;
+
+		// cache I/O buffers, blindly assuming
+		// jack_default_audio_sample_t is float
+
+		for (int i = 0; i < minInputs; ++i) {
+			inBuffers[i] = (float *)jack_port_get_buffer(inPorts[i], numSamples);
+		}
+
+		for (int i = 0; i < minOutputs; ++i) {
+			outBuffers[i] = (float *)jack_port_get_buffer(outPorts[i], numSamples);
+		}
+
+		int64 oscInc = mOSCincrement;
+		double oscToSamples = mOSCtoSamples;
+	
+		// main loop
+		for (int i = 0; i < numBufs; ++i, mWorld->mBufCounter++, bufFramePos += bufFrames)
+		{
+			int32 bufCounter = mWorld->mBufCounter;
+			int32 *tch;
+			
+			// copy+touch inputs
+			tch = inTouched;
+			for (int k = 0; k < minInputs; ++k)
+			{
+				float *src = inBuffers[k] + bufFramePos;
+				float *dst = inBuses + k * bufFrames;
+				for (int n = 0; n < bufFrames; ++n) *dst++ = *src++;
+				*tch++ = bufCounter;
+			}
+
+			// run engine
+			int64 schedTime;
+			int64 nextTime = oscTime + oscInc;
+			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
+				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
+				SC_ScheduledEvent event = mScheduler.Remove();
+				event.Perform();
+				world->mSampleOffset = 0;
+			}
+			
+			World_Run(world);
+
+			// copy touched outputs
+			tch = outTouched;
+			for (int k = 0; k < minOutputs; ++k) {
+				float *dst = outBuffers[k] + bufFramePos;
+				if (*tch++ == bufCounter) {
+					float *src = outBuses + k * bufFrames;
+					for (int n = 0; n < bufFrames; ++n) *dst++ = *src++;
+				} else {
+					for (int n = 0; n < bufFrames; ++n) *dst++ = 0.0f;
+				}
+			}
+
+			// update buffer time
+			mOSCbuftime = nextTime;
+		}
+	} catch (std::exception& exc) {
+		scprintf("SC_CoreAudioDriver: exception in real time: %s\n", exc.what());
+	} catch (...) {
+		scprintf("SC_CoreAudioDriver: unknown exception in real time\n");
+	}
+	mAudioSync.Signal();
+}
+
+// ====================================================================
+// TODO: do something more appropriate later
+
+void SC_CoreAudioDriver::JackBufferSizeChanged(int numSamples)
+{
+#ifndef NDEBUG
+	std::cerr << "SC_CoreAudioDriver::JackBufferSizeChanged " << numSamples << '\n';
+#endif
+}
+
+void SC_CoreAudioDriver::JackSampleRateChanged(double sampleRate)
+{
+#ifndef NDEBUG
+	std::cerr << "SC_CoreAudioDriver::JackSampleRateChanged " << sampleRate << '\n';
+#endif
+}
+#endif // SC_AUDIO_API_JACK

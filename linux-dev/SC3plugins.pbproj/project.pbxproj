@@ -144,8 +144,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				LIBRARY_STYLE = BUNDLE;
-				OPTIMIZATION_CFLAGS = "";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -201,6 +200,30 @@
 //922
 //923
 //924
+//AA0
+//AA1
+//AA2
+//AA3
+//AA4
+		AA527658045DAED600F39DA0 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lineEnding = 0;
+			name = SC_Endian.h;
+			path = common/SC_Endian.h;
+			refType = 4;
+		};
+		AA527659045DAED600F39DA0 = {
+			fileRef = AA527658045DAED600F39DA0;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//AA0
+//AA1
+//AA2
+//AA3
+//AA4
 //F50
 //F51
 //F52
@@ -797,7 +820,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -904,7 +927,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -925,6 +948,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				920DAED40425A5D200A80067,
+				AA527659045DAED600F39DA0,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -980,7 +1004,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1052,7 +1076,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1133,7 +1157,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1213,7 +1237,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1318,7 +1342,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1395,6 +1419,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1471,7 +1496,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1548,6 +1573,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1620,7 +1646,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1692,7 +1718,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1764,7 +1790,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1962,7 +1988,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/OscUGens.scx build/plugins";
+			shellScript = "cp build/OSCUGens.scx build/plugins";
 		};
 		F5B7421202EA304001CA2799 = {
 			buildActionMask = 2147483647;
@@ -2014,6 +2040,7 @@
 			children = (
 				F5D127DA03355EE10164B34C,
 				920DAED20425A5D200A80067,
+				AA527658045DAED600F39DA0,
 			);
 			isa = PBXGroup;
 			name = common;

@@ -53,12 +53,14 @@ double log2(double x)
 	return log(x) * rlog2;
 }
 
+#ifndef SC_LINUX
 double hypot(double x, double y);
 double hypot(double x, double y)
 {
 	return sqrt(x*x + y*y);
 }
-#endif
+#endif // !SC_LINUX
+#endif // !__APPLE__
 
 #define SQRT2M1 0.41421356f
 

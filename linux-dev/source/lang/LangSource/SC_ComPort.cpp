@@ -25,6 +25,15 @@
 #include <stdexcept>
 #include <stdarg.h>
 
+#ifdef SC_DARWIN
+typedef int socklen_t;
+#endif
+
+#ifdef SC_LINUX
+# include <errno.h>
+# include <unistd.h>
+#endif
+
 int recvall(int socket, void *msg, size_t len);
 int recvallfrom(int socket, void *msg, size_t len, struct sockaddr *fromaddr, int addrlen);
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
@@ -98,7 +107,9 @@ void DumpReplyAddress(ReplyAddress *inReplyAddress)
 {
 	printf("mSockAddrLen %d\n", inReplyAddress->mSockAddrLen);
 	printf("mSocket %d\n", inReplyAddress->mSocket);
+#ifdef SC_DARWIN
 	printf("mSockAddr.sin_len %d\n", inReplyAddress->mSockAddr.sin_len);
+#endif
 	printf("mSockAddr.sin_family %d\n", inReplyAddress->mSockAddr.sin_family);
 	printf("mSockAddr.sin_port %d\n", inReplyAddress->mSockAddr.sin_port);
 	printf("mSockAddr.sin_addr.s_addr %d\n", inReplyAddress->mSockAddr.sin_addr.s_addr);
@@ -145,7 +156,7 @@ void* SC_UdpInPort::Run()
 		}
 		packet->mReplyAddr.mSockAddrLen = sizeof(sockaddr_in);
 		int size = recvfrom(mSocket, buf, kTextBufSize , 0,
-								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, &packet->mReplyAddr.mSockAddrLen);
+								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, (socklen_t*)&packet->mReplyAddr.mSockAddrLen);
 		
 		if (size > 0) {
 			char *data = (char*)malloc(size);
@@ -197,7 +208,7 @@ void* SC_TcpInPort::Run()
         mConnectionAvailable.Acquire();
         struct sockaddr_in address; /* Internet socket address stuct */
         int addressSize=sizeof(struct sockaddr_in);
-        int socket = accept(mSocket,(struct sockaddr*)&address,&addressSize);
+        int socket = accept(mSocket,(struct sockaddr*)&address,(socklen_t*)&addressSize);
         if (socket < 0) {
         	mConnectionAvailable.Release();
         } else {
@@ -301,7 +312,7 @@ int recvallfrom(int socket, void *msg, size_t len, struct sockaddr *fromaddr, in
 	int total = 0;
 	while (total < len)
 	{
-		int addrlen2 = addrlen;
+		socklen_t addrlen2 = addrlen;
 		int numbytes = recvfrom(socket, msg, len - total, 0, fromaddr, &addrlen2);
 		if (numbytes < 0) return total;
 		total += numbytes;

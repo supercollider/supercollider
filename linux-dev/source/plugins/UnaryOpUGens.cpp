@@ -169,6 +169,7 @@ void invert_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+#if __VEC__
 void vinvert_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
@@ -181,6 +182,7 @@ void vinvert_a(UnaryOpUGen *unit, int inNumSamples)
 		vec_st((vfloat32)vec_xor(neg, (vint32)vec_ld(i, a)), i, out);
 	}
 }
+#endif // __VEC__
 
 void not_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -217,6 +219,7 @@ void abs_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+#if __VEC__
 void vabs_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
@@ -229,6 +232,7 @@ void vabs_a(UnaryOpUGen *unit, int inNumSamples)
 		vec_st((vfloat32)vec_and(mask, (vint32)vec_ld(i, a)), i, out);
 	}
 }
+#endif // __VEC__
 
 void recip_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -240,6 +244,7 @@ void recip_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+#if __VEC__
 void vrecip_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
@@ -250,6 +255,7 @@ void vrecip_a(UnaryOpUGen *unit, int inNumSamples)
 		vec_st(vec_reciprocal(vec_ld(i, a)), i, out);
 	}
 }
+#endif // __VEC__
 
 void floor_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -261,6 +267,7 @@ void floor_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+#if __VEC__
 void vfloor_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
@@ -271,6 +278,7 @@ void vfloor_a(UnaryOpUGen *unit, int inNumSamples)
 		vec_st(vec_floor(vec_ld(i, a)), i, out);
 	}
 }
+#endif // __VEC__
 
 void ceil_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -282,6 +290,7 @@ void ceil_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+#if __VEC__
 void vceil_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
@@ -292,6 +301,7 @@ void vceil_a(UnaryOpUGen *unit, int inNumSamples)
 		vec_st(vec_ceil(vec_ld(i, a)), i, out);
 	}
 }
+#endif // __VEC__
 
 void sin_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -524,6 +534,7 @@ void frac_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+#if __VEC__
 void vfrac_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
@@ -535,6 +546,7 @@ void vfrac_a(UnaryOpUGen *unit, int inNumSamples)
 		vec_st(vec_sub(z, vec_floor(z)), i, out);
 	}
 }
+#endif // __VEC__
 
 void squared_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -547,6 +559,7 @@ void squared_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+#if __VEC__
 void vsquared_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
@@ -559,6 +572,7 @@ void vsquared_a(UnaryOpUGen *unit, int inNumSamples)
 		vec_st(vec_mul(z, z), i, out);
 	}
 }
+#endif // __VEC__
 
 void cubed_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -571,6 +585,7 @@ void cubed_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+#if __VEC__
 void vcubed_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
@@ -583,6 +598,7 @@ void vcubed_a(UnaryOpUGen *unit, int inNumSamples)
 		vec_st(vec_mul(z, vec_mul(z, z)), i, out);
 	}
 }
+#endif // __VEC__
 
 void sign_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -612,7 +628,7 @@ void distort_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
-
+#if __VEC__
 void vdistort_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
@@ -627,7 +643,7 @@ void vdistort_a(UnaryOpUGen *unit, int inNumSamples)
 		vec_st(vec_div(z, vec_add(vones, (vfloat32)vec_and(mask, (vint32)z))), i, out);
 	}
 }
-
+#endif // __VEC__
 
 void distortneg_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -787,8 +803,7 @@ UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
 	return func;
 }
 
-	
-
+#if __VEC__
 UnaryOpFunc ChooseVectorFunc(UnaryOpUGen *unit)
 {
 	void (*func)(UnaryOpUGen *unit, int inNumSamples);
@@ -845,7 +860,7 @@ UnaryOpFunc ChooseVectorFunc(UnaryOpUGen *unit)
 	}
 	return func;
 }
-
+#endif // __VEC__
 
 void ChooseOperatorFunc(UnaryOpUGen *unit)
 {

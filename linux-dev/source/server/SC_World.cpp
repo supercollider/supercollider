@@ -35,6 +35,7 @@
 #include "SC_Prototypes.h"
 #include "SC_Samp.h"
 #include "SC_ComPort.h"
+#include "SC_StringParser.h"
 
 InterfaceTable gInterfaceTable;
 PrintFunc gPrint = 0;
@@ -120,6 +121,22 @@ bool HasAltivec();
 void initialize_library();
 void initializeScheduler();
 void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions);
+
+static void World_LoadGraphDefs(World* world);
+void World_LoadGraphDefs(World* world)
+{
+	GraphDef *list = 0;
+	list = GraphDef_LoadDir(world, "synthdefs", list);
+	GraphDef_Define(world, list);
+		
+	SC_StringParser sp(getenv("SC_SYNTHDEF_PATH"), ':');
+	while (!sp.AtEnd()) {
+		GraphDef *list = 0;
+		char *path = const_cast<char *>(sp.NextToken());
+		list = GraphDef_LoadDir(world, path, list);
+		GraphDef_Define(world, list);
+	}
+}
 
 World* World_New(WorldOptions *inOptions)
 {	
@@ -216,10 +233,8 @@ World* World_New(WorldOptions *inOptions)
 					inOptions->mPreferredHardwareBufferFrameSize
 			);
 			
-			GraphDef *list = 0;
-			list = GraphDef_LoadDir(world, "synthdefs", list);
-			GraphDef_Define(world, list);
-		
+			World_LoadGraphDefs(world);
+
 			if (!hw->mAudioDriver->Setup()) {
 				scprintf("could not initialize audio.\n");
 				return 0;
@@ -262,9 +277,7 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket);
 
 void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 {
-	GraphDef *list = 0;
-	list = GraphDef_LoadDir(world, "synthdefs", list);
-	GraphDef_Define(world, list);
+	World_LoadGraphDefs(world);
 	const int kFileBufFrames = 8192;
 	const int kBufMultiple = kFileBufFrames / world->mBufLength;
 

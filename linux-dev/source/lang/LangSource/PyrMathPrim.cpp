@@ -27,11 +27,11 @@
 #include "PyrSignal.h"
 #include "PyrParseNode.h"
 #include "PyrMessage.h"
-#include "CLZ.h"
+#include "clz.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <machine/endian.h>
+#include "SC_Endian.h"
 
 
 inline bool IsSignal(PyrSlot* slot) { return ((slot)->utag == tagObj && (slot)->uo->classptr == class_signal); }

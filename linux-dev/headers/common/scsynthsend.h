@@ -21,9 +21,9 @@
 #ifndef _scpacket_
 #define _scpacket_
 
-#include <stdexcept>
-#include <machine/endian.h>
+#include "SC_Endian.h"
 #include "SC_Types.h"
+#include <stdexcept>
 
 struct netaddr {
 	int socket;
@@ -173,7 +173,7 @@ inline void scpacket::BeginMsg()
 inline void scpacket::EndMsg()
 {
 	if (inbundle) {
-		*msgsizepos = ((wrpos - msgsizepos) - 1) * sizeof(int32);
+		*msgsizepos = HTONL(((wrpos - msgsizepos) - 1) * sizeof(int32));
 	}
 }
 

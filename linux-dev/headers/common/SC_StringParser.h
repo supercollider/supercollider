@@ -18,48 +18,24 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SC_Types_
-#define _SC_Types_
 
-#include <sys/types.h>
+#ifndef _SC_StringParser_
+#define _SC_StringParser_
 
-typedef int SCErr;
+#define SC_MAX_TOKEN_LENGTH 256
 
-typedef long long int64;
-typedef unsigned long long uint64;
+class SC_StringParser
+{
+	char	*mSpec, *mStart, *mEnd;
+	char	mSep, mBuf[SC_MAX_TOKEN_LENGTH];
 
-typedef int int32;
-typedef unsigned int uint32;
-#ifdef SC_DARWIN
-typedef unsigned int ulong;
-#endif
+public:
+	SC_StringParser();
+	SC_StringParser(char *spec, char sep);
 
-typedef short int16;
-typedef unsigned short uint16;
-
-typedef signed char int8;
-typedef unsigned char uint8;
-
-typedef float float32;
-typedef double float64;
-
-typedef union { 
-	uint32 u;
-	int32 i;
-	float32 f;
-} elem32;
-
-const unsigned int kSCNameLen = 8;
-const unsigned int kSCNameByteLen = kSCNameLen * sizeof(int32);
-
-#if __VEC__
-
-typedef vector signed int vint32;
-typedef vector unsigned int vuint32;
-typedef vector float vfloat32;
-
-#endif
-
+	bool AtEnd() const;
+	const char *NextToken();
+};
 
 #endif
 

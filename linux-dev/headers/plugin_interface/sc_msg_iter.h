@@ -22,6 +22,7 @@
 #ifndef _sc_msg_iter_
 #define _sc_msg_iter_
 
+#include "SC_Endian.h"
 #include "SC_Types.h"
 #include <string.h>
 
@@ -44,13 +45,14 @@ inline int OSCstrlen(char *strin)
 inline float32 OSCfloat(char* inData)
 {
 	elem32* elem = (elem32*)inData;
+	elem->i = NTOHL(elem->u);
 	return elem->f;
 }
 
 inline int32 OSCint(char* inData)
 {
 	elem32* elem = (elem32*)inData;
-	return elem->i;
+	return NTOHL(elem->u);
 }
 
 struct sc_msg_iter 

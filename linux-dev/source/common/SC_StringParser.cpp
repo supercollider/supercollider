@@ -18,48 +18,57 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SC_Types_
-#define _SC_Types_
+#include "SC_StringParser.h"
+#include <algorithm>
+#include <string.h>
+#include <stdlib.h>
 
-#include <sys/types.h>
+SC_StringParser::SC_StringParser()
+	: mSpec(0), mStart(0), mEnd(0), mSep(0)
+{
+}
 
-typedef int SCErr;
+SC_StringParser::SC_StringParser(char *spec, char sep)
+	: mSpec(spec), mStart(0), mEnd(0), mSep(sep)
+{
+	if (mSpec) {
+		size_t len = strlen(mSpec);
+		if (len > 0) {
+			mStart = mSpec;
+			mEnd = mStart + len;
+		} else {
+			mSpec = 0;
+		}
+	}
+}
 
-typedef long long int64;
-typedef unsigned long long uint64;
+bool SC_StringParser::AtEnd() const
+{
+	return mSpec == 0;
+}
 
-typedef int int32;
-typedef unsigned int uint32;
-#ifdef SC_DARWIN
-typedef unsigned int ulong;
-#endif
+const char *SC_StringParser::NextToken()
+{
+	if (mSpec) {
+		char *end = strchr(mStart, mSep);
+		if (end == 0) {
+			end = mEnd;
+		}
 
-typedef short int16;
-typedef unsigned short uint16;
+		size_t len = std::min(SC_MAX_TOKEN_LENGTH-1, end-mStart);
+		memcpy(mBuf, mStart, len);
+		mBuf[len] = '\0';
 
-typedef signed char int8;
-typedef unsigned char uint8;
+		if (end == mEnd) {
+			mSpec = 0;
+		} else {
+			mStart = end+1;
+		}
 
-typedef float float32;
-typedef double float64;
+		return mBuf;
+	}
 
-typedef union { 
-	uint32 u;
-	int32 i;
-	float32 f;
-} elem32;
+	return 0;
+}
 
-const unsigned int kSCNameLen = 8;
-const unsigned int kSCNameByteLen = kSCNameLen * sizeof(int32);
-
-#if __VEC__
-
-typedef vector signed int vint32;
-typedef vector unsigned int vuint32;
-typedef vector float vfloat32;
-
-#endif
-
-
-#endif
-
+// EOF
