@@ -53,9 +53,9 @@
 	
 	asSynthDef { arg rates, prependArgs, outClass=\Out, fadeTime;
 		^GraphBuilder.wrapOut(this.hash.asString, this, rates, prependArgs, outClass, fadeTime);	}
-		
-	play { arg target, outbus = 0, fadeTime=0.02;
-		var def, synth, server;
+	
+	play { arg target, outbus = 0, fadeTime=0.02, addAction=\addToTail;
+		var def, synth, server, bytes, synthMsg;
 		target = target.asTarget;
 		server = target.server;
 		if(server.serverRunning.not) { 
@@ -63,7 +63,13 @@
 		};
 		def = this.asSynthDef(fadeTime:fadeTime);
 		synth = Synth.basicNew(def.name,server);
-		def.send(server, synth.newMsg(target, \addToTail, [\i_out, outbus, \out, outbus]));
+		bytes = def.asBytes;
+		synthMsg = synth.newMsg(target, addAction, [\i_out, outbus, \out, outbus]);
+		if(bytes.size.debug > 8192) {
+			def.load(server, synthMsg);
+		} {
+			server.sendMsg("/d_recv", bytes, synthMsg)
+		};
 		^synth
 	}
 	
