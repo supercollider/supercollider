@@ -109,7 +109,7 @@ struct PyrThread : public PyrObjectHdr
 	PyrSlot primitiveError;
 	PyrSlot primitiveIndex;
 	PyrSlot randData;
-	PyrSlot beats, seconds, clock;
+	PyrSlot beats, seconds, clock, nextBeat, endBeat;
 	PyrSlot environment;
 	PyrSlot exceptionHandler;
 };

@@ -9,14 +9,8 @@ Pattern : AbstractFunction {
 
 	play { arg clock, protoEvent, quant=1.0;
 		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)	}
-	
-//	asStream {
-//		^this.subclassResponsibility(thisMethod)
-//	}
 
-	asStream {^VTRoutine({ arg inval; this.embedInStream(inval) }) }
-//	a VTRoutine is a Routine with an additional instance variable to support
-//	concatenating Env's
+	asStream { ^Routine({ arg inval; this.embedInStream(inval) }) }
 
 	asEventStreamPlayer { arg protoEvent;
 		^EventStreamPlayer(this.asStream, protoEvent);

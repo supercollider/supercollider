@@ -1343,7 +1343,7 @@ void initClasses()
 	class_absfunc = makeIntrinsicClass(s_absfunc, s_object, 0, 0); 
 	class_stream = makeIntrinsicClass(s_stream, s_absfunc, 0, 0); 
 
-	class_thread = makeIntrinsicClass(s_thread, s_stream, 23, 0);
+	class_thread = makeIntrinsicClass(s_thread, s_stream, 25, 0);
 		addIntrinsicVar(class_thread, "state", &o_nil);
 		addIntrinsicVar(class_thread, "func", &o_nil);
 		addIntrinsicVar(class_thread, "stack", &o_nil);
@@ -1366,6 +1366,8 @@ void initClasses()
 		addIntrinsicVar(class_thread, "beats", &o_fzero);
 		addIntrinsicVar(class_thread, "seconds", &o_fzero);
 		addIntrinsicVar(class_thread, "clock", &o_nil);
+		addIntrinsicVar(class_thread, "nextBeat", &o_nil);
+		addIntrinsicVar(class_thread, "endBeat", &o_nil);
 
 		addIntrinsicVar(class_thread, "environment", &o_nil);
 		addIntrinsicVar(class_thread, "exceptionHandler", &o_nil);
@@ -2191,20 +2193,29 @@ PyrMethod* initPyrMethod(PyrMethod* method)
 	method->size = 0;
 	method->size = numSlots;
 	
+	/*
 	// clear out raw area
 	methraw = METHRAW(method);
 	//post("newPyrMethod %08X %08X %08X %d\n", method, methraw, (char*)method + sizeof(PyrMethod), (PyrSlot*)methraw - (PyrSlot*)method);
 	
+	methraw->unused1 = 0;
 	methraw->specialIndex = 0;
 	methraw->methType = 0;
 	methraw->needsHeapContext = 0;
 	methraw->frameSize = 0;
-	methraw->varargs = 0;
+	
+	methraw->unused2 = 0;
 	methraw->numargs = 0;
+	methraw->varargs = 0;
 	methraw->numvars = 0;
 	methraw->numtemps = 0;
-
-	nilSlots(&method->rawData1,  numSlots);
+	methraw->needsHeapContext = 0;
+	methraw->popSize = 0;
+	methraw->posargs = 0;
+*/
+	method->rawData1.uf = 0.0;
+	method->rawData2.uf = 0.0;
+	nilSlots(&method->code,  numSlots-2);
 	//method->byteMeter.ucopy = o_zero.ucopy;
 	//method->callMeter.ucopy = o_zero.ucopy;
 	//post("<- newPyrMethod %08X %08X\n", method, methraw);

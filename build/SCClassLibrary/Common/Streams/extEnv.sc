@@ -6,20 +6,16 @@
 
 	embedInStream { arg inval;
 		var startTime;
-		if (thisThread.isKindOf(VTRoutine)) {
-			startTime = thisThread.endTime ? thisThread.beats;
-			thisThread.endTime = this.times.sum + startTime;
-			while 
-				{ thisThread.beats < thisThread.endTime }
-				{ inval = yield(this.at(thisThread.beats - startTime))};
-			^inval	
-		} {
-			^this.asStream.embedInStream(inval);
-		}
+		startTime = thisThread.endBeat ? thisThread.beats;
+		thisThread.endBeat = this.times.sum + startTime;
+		while 
+			{ thisThread.beats < thisThread.endBeat }
+			{ inval = yield(this.at(thisThread.beats - startTime))};
+		^inval	
 	}	
 	
 	asStream {
-		^VTRoutine({ arg inval; this.embedInStream(inval) }) 
+		^Routine({ arg inval; this.embedInStream(inval) }) 
 	}
 	
 }
