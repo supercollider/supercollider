@@ -5,7 +5,7 @@ ServerOptions
 	var <>numControlBusChannels=4096;
 	var <>numInputBusChannels=8;
 	var <>numOutputBusChannels=8;
-	var <>numBuffers=1024;
+	var numBuffers=1026;
 	
 	var <>maxNodes=1024;
 	var <>maxSynthDefs=1024;
@@ -26,6 +26,11 @@ ServerOptions
 // max logins
 // session-password
 
+	// prevent buffer conflicts in Server-prepareForRecord and Server-scope by
+	// ensuring reserved buffers
+	numBuffers { ^(numBuffers -2) }
+	numBuffers_ { | argNumBuffers | numBuffers = argNumBuffers + 2; }
+	
 	asOptionsString { arg port=57110;
 		var o;
 		o = if (protocol == \tcp, " -t ", " -u ");
@@ -499,9 +504,11 @@ Server : Model {
 	}
 	
 	prepareForRecord { arg path;
-		if (path.isNil) { path = "recordings/SC_" ++ Date.localtime.stamp ++ "." ++ recHeaderFormat; };
+		if (path.isNil) { path = "recordings/SC_" ++ Date.localtime.stamp ++ "." ++ 
+			recHeaderFormat; };
 		recordBuf = Buffer.alloc(this, 65536, recChannels,
-			{arg buf; buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true);});
+			{arg buf; buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true);},
+			this.options.numBuffers + 1); // prevent buffer conflicts by using reserved bufnum
 		SynthDef("server-record", { arg bufnum;
 			DiskOut.ar(bufnum, In.ar(0, recChannels)) 
 		}).send(this);

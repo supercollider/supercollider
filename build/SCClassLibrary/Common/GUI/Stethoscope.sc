@@ -4,9 +4,9 @@ Stethoscope {
 	var n, c, d, sl, style=0, sizeToggle=0, zx, zy, ai=0, ki=0, audiospec, controlspec;
 	
 
-	*new { arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view;
+	*new { arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view, bufnum;
 		if(server.inProcess.not, { "scope works only with internal server".error; ^nil });		^super.newCopyArgs(server, numChannels, rate ? \audio).makeWindow(view)
-		.index_(index ? 0).zoom_(zoom).allocBuffer(bufsize).run;
+		.index_(index ? 0).zoom_(zoom).allocBuffer(bufsize, bufnum).run;
 	}
 	
 	makeBounds { arg size=212; ^Rect(322, 10, size, size) }
@@ -79,10 +79,10 @@ Stethoscope {
 				if(zoom.notNil) { this.zoom = zoom };
 	}
 	
-	allocBuffer { arg argbufsize;
+	allocBuffer { arg argbufsize, argbufnum;
 		bufsize = argbufsize ? bufsize;
 		if(buffer.notNil) { buffer.free };
-		buffer = Buffer.alloc(server, bufsize, numChannels);
+		buffer = Buffer.alloc(server, bufsize, numChannels, nil, argbufnum);
 		n.bufnum = buffer.bufnum;
 		if(synth.isPlaying) { synth.set(\bufnum, buffer.bufnum) };
 	}
