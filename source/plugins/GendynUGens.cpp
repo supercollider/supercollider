@@ -18,7 +18,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-//Gendy1 UGen implemented by Nick Collins (sicklincoln.org)
+//Gendyn UGens implemented by Nick Collins (sicklincoln.org)
 
 #include "SC_PlugIn.h"
     
@@ -33,12 +33,39 @@
 			float* mMemoryDur;
         };
 
+		//following Hoffmann paper from CMJ- primary and secondary random walks
+		struct Gendy2 : public Unit
+        {
+			double mPhase;
+			float mFreqMul, mAmp, mNextAmp, mSpeed, mDur;      
+			int mMemorySize, mIndex;
+			float* mMemoryAmp;
+			float* mMemoryAmpStep;
+			float* mMemoryDur;
+			float* mMemoryDurStep;
+        };
+		
+		
+		//works out all breakpoints per cycle and normalises time intervals to desired frequency
+		struct Gendy3 : public Unit
+        {
+			double mPhase;
+			float mFreqMul, mAmp, mNextAmp, mSpeed, mDur;      
+			int mMemorySize, mIndex;
+			float* mMemoryAmp; 	//could hard code as 12
+			float* mMemoryDur;
+        };
+		
         extern "C" {  
   
             void Gendy1_next_k(Gendy1 *unit, int inNumSamples);
             void Gendy1_Ctor(Gendy1* unit);
             void Gendy1_Dtor(Gendy1* unit);
-            void Gendy1_distribution( Gendy1 *unit, int which);
+			
+			void Gendy2_next_k(Gendy2 *unit, int inNumSamples);
+            void Gendy2_Ctor(Gendy2* unit);
+            void Gendy2_Dtor(Gendy2* unit);
+            
         }
     
         void Gendy1_Ctor( Gendy1* unit ) {
@@ -77,11 +104,11 @@
         }
     
     
+		float Gendyn_distribution(int which, float a, float f);
+			
         //called once per period so OK to work out constants in here
-        float Gendy1_distribution( Gendy1 *unit, int which, float a) {
+        float Gendyn_distribution( int which, float a, float f) {
         
-			RGen& rgen = *unit->mParent->mRGen;
-			float f= rgen.frand(); //linear distribution 0.0 to 1.0
 			float temp, c;
 			
 			if(a>1.0) a=1.0;       //a must be in range 0 to 1
@@ -192,9 +219,10 @@
 			float nextamp= unit->mNextAmp;
 
 			float speed= unit->mSpeed;
-		  
-			//RGen& rgen = *unit->mParent->mRGen;
-
+			
+			RGen& rgen = *unit->mParent->mRGen;
+			//linear distribution 0.0 to 1.0 using rgen.frand()
+			
 			LOOP(inNumSamples, 
 			float z;
 					
@@ -213,7 +241,7 @@
 					
 				   //Gendy dist gives value [-1,1], then use scaleamp
 				   //first term was amp before, now must check new memory slot
-					nextamp= (unit->mMemoryAmp[index])+(scaleamp*Gendy1_distribution(unit, whichamp, aamp));
+					nextamp= (unit->mMemoryAmp[index])+(scaleamp*Gendyn_distribution(whichamp, aamp,rgen.frand()));
 				
 					//mirroring for bounds- safe version 
 					if(nextamp>1.0 || nextamp<-1.0) {
@@ -238,7 +266,7 @@
 					unit->mMemoryAmp[index]= nextamp;
 					
 					//Gendy dist gives value [-1,1]
-					rate= (unit->mMemoryDur[index])+(scaledur*Gendy1_distribution(unit, whichdur, adur));
+					rate= (unit->mMemoryDur[index])+(scaledur*Gendyn_distribution(whichdur, adur, rgen.frand()));
 				 
 					if(rate>1.0 || rate<0.0)
 					{
@@ -275,12 +303,186 @@
 			unit->mDur = rate;
         }
 
+
+
+
+        void Gendy2_Ctor( Gendy2* unit ) {
+                         
+			SETCALC(Gendy2_next_k);
+	 
+			unit->mFreqMul = unit->mRate->mSampleDur;
+			unit->mPhase = 1.f;	//should immediately decide on new target 
+			unit->mAmp = 0.0; 
+			unit->mNextAmp = 0.0;
+			unit->mSpeed = 100; 
+			
+			unit->mMemorySize= (int) ZIN0(8);	//default is 12
+			//printf("memsize %d %f", unit->mMemorySize, ZIN0(8));
+			if(unit->mMemorySize<1) unit->mMemorySize=1;
+			unit->mIndex=0;
+			unit->mMemoryAmp= (float*)RTAlloc(unit->mWorld, unit->mMemorySize * sizeof(float));
+			unit->mMemoryDur= (float*)RTAlloc(unit->mWorld, unit->mMemorySize * sizeof(float));
+			unit->mMemoryAmpStep= (float*)RTAlloc(unit->mWorld, unit->mMemorySize * sizeof(float));
+			unit->mMemoryDurStep= (float*)RTAlloc(unit->mWorld, unit->mMemorySize * sizeof(float));
+			
+			RGen& rgen = *unit->mParent->mRGen;
+			
+			//initialise to zeroes and separations
+			int i=0;
+			for(i=0; i<unit->mMemorySize;++i) {
+				unit->mMemoryAmp[i]=2*rgen.frand() - 1.0;
+				unit->mMemoryDur[i]=rgen.frand();
+				unit->mMemoryAmpStep[i]=2*rgen.frand() - 1.0;
+				unit->mMemoryDurStep[i]=2*rgen.frand() - 1.0;
+			}
+			
+        }
+    
+        void Gendy2_Dtor(Gendy2 *unit)
+        {
+			RTFree(unit->mWorld, unit->mMemoryAmp);
+			RTFree(unit->mWorld, unit->mMemoryDur);
+        	RTFree(unit->mWorld, unit->mMemoryAmpStep);
+			RTFree(unit->mWorld, unit->mMemoryDurStep);
+		}
+		
+		float Gendyn_mirroring (float lower, float upper, float in);
+		
+		float Gendyn_mirroring (float lower, float upper, float in)
+		{
+			//mirroring for bounds- safe version 
+			if(in>upper || in<lower) {
+			
+			float range= (upper-lower);
+			
+			if(in<lower) in= (2*upper-lower)-in;
+			
+			in=fmod(in-upper,2*range);
+			
+			if(in<range) in=upper-in;
+			else in=in- (range);
+			}
+			
+			return in;
+		}
+		
+		 void Gendy2_next_k( Gendy2 *unit, int inNumSamples ) {
+        
+			float *out = ZOUT(0);
+			
+			//distribution choices for amp and dur and constants of distribution
+			int whichamp= ZIN0(0);
+			int whichdur= ZIN0(1);
+			float aamp = ZIN0(2);
+			float adur = ZIN0(3);
+			float minfreq = ZIN0(4);
+			float maxfreq = ZIN0(5);
+			float scaleamp = ZIN0(6);
+			float scaledur = ZIN0(7); 
+			
+			float rate= unit->mDur;
+			
+			//phase gives proportion for linear interpolation automatically
+			double phase = unit->mPhase;
+		
+			float amp= unit->mAmp;
+			float nextamp= unit->mNextAmp;
+
+			float speed= unit->mSpeed;
+		  
+			RGen& rgen = *unit->mParent->mRGen;
+
+			LOOP(inNumSamples, 
+			float z;
+					
+			if (phase >= 1.f) {
+					phase -= 1.f;
+	
+					int index= unit->mIndex;
+					int num= (int)(ZIN0(9));//(unit->mMemorySize);(((int)ZIN0(9))%(unit->mMemorySize))+1;
+					if((num>(unit->mMemorySize)) || (num<1)) num=unit->mMemorySize;
+					
+					//new code for indexing
+					index=(index+1)%num;
+					
+					//using last amp value as seed
+					//random values made using a lehmer number generator xenakis style
+					float a= ZIN0(10); 
+					float c= ZIN0(11);
+					
+					float lehmerxen= fmod(((amp)*a)+c,1.0);  
+					
+					//printf("lehmer %f \n", lehmerxen);
+
+					amp=nextamp;
+				   
+					unit->mIndex=index;
+					
+				    //Gendy dist gives value [-1,1], then use scaleamp
+				    //first term was amp before, now must check new memory slot
+				   
+				    float ampstep= (unit->mMemoryAmpStep[index])+ Gendyn_distribution(whichamp, aamp, fabs(lehmerxen));
+				    ampstep= Gendyn_mirroring(-1.0,1.0,ampstep);
+				   
+				    unit->mMemoryAmpStep[index]= ampstep;
+					
+					nextamp= (unit->mMemoryAmp[index])+(scaleamp*ampstep);
+					
+					nextamp= Gendyn_mirroring(-1.0,1.0,nextamp);
+					
+					unit->mMemoryAmp[index]= nextamp;
+					
+				    float durstep= (unit->mMemoryDurStep[index])+ Gendyn_distribution(whichdur, adur, rgen.frand());
+				    durstep= Gendyn_mirroring(-1.0,1.0,durstep);
+				   
+				    unit->mMemoryDurStep[index]= durstep;
+					
+					rate= (unit->mMemoryDur[index])+(scaledur*durstep);
+					
+					rate= Gendyn_mirroring(0.0,1.0,rate);
+					
+					unit->mMemoryDur[index]= rate;
+					
+					//printf("nextamp %f rate %f \n", nextamp, rate);
+	
+					//define range of speeds (say between 20 and 1000 Hz)
+					//can have bounds as fourth and fifth inputs
+					speed=  (minfreq+((maxfreq-minfreq)*rate))*(unit->mFreqMul);
+					
+					//if there are 12 control points in memory, that is 12 per cycle
+					//the speed is multiplied by 12
+					//(I don't store this because updating rates must remain in range [0,1]
+					speed *= num;
+			} 
+					
+			//linear interpolation could be changed
+			z = ((1.0-phase)*amp) + (phase*nextamp);
+			
+			phase +=  speed;
+			ZXP(out) = z;
+			);
+
+			unit->mPhase = phase;
+			unit->mAmp =  amp;      
+			unit->mNextAmp = nextamp;
+			unit->mSpeed = speed;
+			unit->mDur = rate;
+        }
+
+
+
+
+
+
+
     
         extern "C" void load(InterfaceTable *inTable) {
                 
 						ft = inTable;
 
 						DefineDtorUnit(Gendy1);
+						
+						DefineDtorUnit(Gendy2);
                     }
         
         
