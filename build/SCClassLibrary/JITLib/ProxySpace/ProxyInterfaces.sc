@@ -71,7 +71,8 @@ StreamControl : AbstractPlayControl {
 			stream.xstop(dt);  
 			// make sure it is stopped, in case next is never called
 			SystemClock.sched(dt, { stream.stop }) 
-		}; 
+		};
+		CmdPeriod.remove(this);
 	}
 	
 	pause { stream.pause; paused=true }
@@ -79,7 +80,7 @@ StreamControl : AbstractPlayControl {
 	
 	isPlaying { ^stream.isPlaying }
 
-	cmdPeriod { stream.stop }
+	cmdPeriod { stream.stop; CmdPeriod.remove(this); }
 	
 	playToBundle { arg bundle; 
 		if(paused.not and: { stream.isPlaying.not }, {
