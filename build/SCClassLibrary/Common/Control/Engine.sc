@@ -51,43 +51,31 @@ LRUNumberAllocator
 	// THIS IS THE RECOMMENDED ALLOCATOR FOR NODE ID'S
 	// implements a least recently used ID allocator.
 	
-	var lo, hi, freeList, next;
+	var lo, hi;
+	var array, size, head=0, tail=0;
 	
 	*new { arg lo, hi;
 		^super.newCopyArgs(lo, hi).init
 	}
 	init {
-		next = lo - 1;
-		freeList = RingBuffer.new(hi-lo);
+		size = hi-lo+1;
+		array = Array.newClear(size);
+		for(lo, hi-1, { arg i, j; array.put(j, i) });
+		head = size-1;
 	}
-	alloc {
-		if (next < hi, { ^next = next + 1; });
-		^freeList.pop;
-	}
-	free { arg inIndex; 
-		freeList.add(inIndex); 
-	}
-}
-
-RingBuffer
-{
-	// used by LRUNumberAllocator
-	var array, size, head=0, tail=0;
-	*new { arg size;
-		^super.newCopyArgs(Array.newClear(size+1), size+1);
-	}
-	add { arg item;
-		var nextIndex;
+	free { arg id;
+		var nextIndex;		
 		nextIndex = (head+1) % size;
 		if ( nextIndex == tail, { ^nil }); // full
-		array.put(head, item);
+		array.put(head, id);
 		head = nextIndex;
 	}
-	pop { var item;
+	alloc { 
+		var id;
 		if (head == tail, { ^nil }); // empty
-		item = array.at(tail);
+		id = array.at(tail);
 		tail = (tail+1) % size;
-		^item
+		^id
 	}
 }
 
