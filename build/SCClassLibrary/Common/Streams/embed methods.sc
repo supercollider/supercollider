@@ -84,7 +84,7 @@
 		loop {
 			outval = stream.next(inval);
 			if (outval.isNil) { ^inval };
-			inval = yield(func.value(outval));
+			inval = yield(outval);
 		}
 	}
 }
@@ -99,7 +99,7 @@
 				if (outval.isNil) { ^inval };
 				func.value(outval).not 
 			});
-			inval = yield(func.value(outval));
+			inval = yield(outval);
 		}
 	}
 }
@@ -114,7 +114,7 @@
 				if (outval.isNil) { ^inval };
 				func.value(outval); 
 			});
-			inval = yield(func.value(outval));
+			inval = yield(outval);
 		}
 	}
 }
@@ -153,11 +153,9 @@
 		keyStream = which.asStream;
 		repeats.value.do({
 			key = keyStream.next;
-			if(key.notNil) {
-				inval = (dict.at(key) ? default).embedInStream(inval);
-			} {
-				nil.alwaysYield
-			}
-		})
+			if(key.isNil) { ^inval };
+			inval = (dict.at(key) ? default).embedInStream(inval);
+		});
+		^inval
 	}
 }	
