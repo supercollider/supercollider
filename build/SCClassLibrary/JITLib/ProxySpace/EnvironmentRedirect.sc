@@ -103,7 +103,14 @@ EnvironmentRedirect {
      
      clear { envir.clear }
      
-     
+     know_ { arg flag; envir.know = flag }
+     know { ^envir.know }
+    	
+    	doesNotUnderstand { arg selector ... args;
+     	var func;
+     	if(envir.know) { ^envir.performList(\doesNotUnderstand, selector, args) };
+		^this.superPerformList(\doesNotUnderstand, selector, args);     
+     }
           
      //// this should maybe go in Environment
      
@@ -164,5 +171,6 @@ LazyEnvir : EnvironmentRedirect {
 	localPut { arg key, obj;
      	this.at(key).source_(obj);
      }
+     
+     
 }
-
