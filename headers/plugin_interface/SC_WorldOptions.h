@@ -70,8 +70,8 @@ extern "C" {
 	struct World* World_New(WorldOptions *inOptions);
 	void World_OpenUDP(struct World *inWorld, int inPort);
 	void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
-	void World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
 	void World_WaitForQuit(struct World *inWorld);
+	bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
 	int World_CopySndBuf(World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool &didChange);
 	int scprintf(const char *fmt, ...);
 }

@@ -53,7 +53,7 @@ int recvall(int socket, void *msg, size_t len);
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
 int sendall(int socket, const void *msg, size_t len);
 
-void ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket);
+bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket);
 
 void dumpOSCmsg(int inSize, char* inData)
 {
@@ -169,8 +169,9 @@ void dumpOSC(int mode, int size, char* inData)
 	if (mode & 2) hexdump(size, inData);
 }
 
-void World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc)
+bool World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc)
 {
+	bool result = false;
 	if (inSize > 0) {
 		if (inWorld->mDumpOSC) dumpOSC(inWorld->mDumpOSC, inSize, inData);
 
@@ -184,8 +185,9 @@ void World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc
 		packet->mReplyAddr.mSocket = 0;
 		memcpy(data, inData, inSize);
 
-		ProcessOSCPacket(inWorld, packet);
+		result = ProcessOSCPacket(inWorld, packet);
 	}
+	return result;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -376,7 +378,12 @@ void* SC_UdpInPort::Run()
 			packet->mData = data;
 			packet->mReplyAddr.mSocket = mSocket;
 
-			ProcessOSCPacket(mWorld, packet);
+			if (!ProcessOSCPacket(mWorld, packet))
+			{
+				scprintf("command FIFO full\n");
+				free(data);
+				free(packet);
+			}
 			packet = 0;
 			data = 0;
 		}
@@ -545,7 +552,11 @@ void* SC_TcpConnectionPort::Run()
 			packet->mSize = msglen;
 			packet->mData = data;
 			packet->mReplyAddr.mSocket = mSocket;
-			ProcessOSCPacket(mWorld, packet);
+			if (!ProcessOSCPacket(mWorld, packet)) {
+				scprintf("command FIFO full\n");
+				free(data);
+				free(packet);
+			}
 			packet = 0;
 		}
 	}

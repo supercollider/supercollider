@@ -219,7 +219,7 @@ void initializeScheduler()
 ////////////////////////////////////////////////////////////////////////////
 
 
-void ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket);
+bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket);
 void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket);
 int PerformOSCMessage(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 
@@ -235,19 +235,18 @@ struct IsBundle
 
 IsBundle gIsBundle;
 
-void ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
+bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 {
 	//scprintf("ProcessOSCPacket %d, '%s'\n", inPacket->mSize, inPacket->mData);
-	
-	if (inPacket) {	
-		SC_AudioDriver *driver = AudioDriver(inWorld);	
-		inPacket->mIsBundle = gIsBundle.check((int32*)inPacket->mData);
-		driver->Lock();
-			FifoMsg fifoMsg;
-			fifoMsg.Set(inWorld, Perform_ToEngine_Msg, Free_ToEngine_Msg, (void*)inPacket);
-			driver->SendMsgToEngine(fifoMsg);
-		driver->Unlock();
-	}
+	if (!inPacket) return false;	
+	SC_AudioDriver *driver = AudioDriver(inWorld);	
+	inPacket->mIsBundle = gIsBundle.check((int32*)inPacket->mData);
+	driver->Lock();
+		FifoMsg fifoMsg;
+		fifoMsg.Set(inWorld, Perform_ToEngine_Msg, Free_ToEngine_Msg, (void*)inPacket);
+		bool result = driver->SendMsgToEngine(fifoMsg);
+	driver->Unlock();
+	return result;
 }
 
 int PerformOSCMessage(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
