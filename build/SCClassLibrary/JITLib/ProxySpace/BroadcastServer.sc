@@ -1,100 +1,94 @@
 
+
 BroadcastServer : Server {
 
-	var <>localServer, <>allAddr;
-	
-	
-	*for { arg localServer, allAddr; //local server is a router
-		^super.new
-				.localServer_(localServer)
-				.ninit(localServer.name.asString ++ "_broadcast")
-				.allAddr_(allAddr)
+	var <>homeServer, <>addressList;
+Ê
+	init { arg argName, argAddr, options, clientID;
+		homeServer = Server.new(argName.asSymbol, argAddr, options, clientID ? 0);
+		name = (argName ++ "_broadcast").asSymbol;
+		addr = argAddr;
+		inProcess = homeServer.inProcess;
 	}
 	
-	autoConfigure { arg getAnyApplication=false;
-		var addr;
-		addr = Set.new;
-		OSCService.knownServices.do({ arg item;
-			if(getAnyApplication or: {item.name == "SuperCollider"}, {
-				addr = addr.add(NetAddr(item.hostname, item.port));
-				[item.name, item.hostname, item.port].postln;
-			});
-		});
-		allAddr = Array.newFrom(addr)
-			.sort({ arg a, b; (a.hostname+a.port) < (a.hostname+a.port) });
+	
+	*for { arg homeServer, addressList; //local server is a router
+			^super.new(homeServer.name)
+				.homeServer_(homeServer)
+				.addressList_(addressList)
 	}
 	
-	////we don't need much here, this class wraps the messages
-	ninit { arg argName;
-		name = argName; 
-		addr = localServer.addr;
-		options = localServer.options;
-		isLocal = false;
-		named.put(name, this);
-	}
-	
-	init {}
-	
-	addr { ^allAddr } //support NodeWatcher.register
-	
-	makeWindow {} //doesn't make sense, use Router for gui
-	
-	
-	boot { this.notify; this.initTree; }
-	quit {}
-	
-	serverRunning { ^true } //assume that.
-	waitForBoot {Êarg func; func.value }
+	addr { ^addressList } // support NodeWatcher.register
+		
+	// iterating
 	
 	at { arg index;
-		^allAddr.clipAt(index)
+		^addressList.clipAt(index)
 	}
 	
 	wrapAt { arg index;
-		^allAddr.wrapAt(index)
+		^addressList.wrapAt(index)
 	}
 	
 	do { arg function;
-		^allAddr.do(function)
+		^addressList.do(function)
 	}
 	
 	
-	///message forwarding
+	// message forwarding
 		
 	sendMsg { arg ... args;
-		allAddr.do({ arg addr; addr.sendMsg(*args) });
+		addressList.do({ arg addr; addr.sendMsg(*args) });
 	}
 	sendBundle { arg time ... messages;
-		allAddr.do({ arg addr; addr.sendBundle(time, *messages); });
+		addressList.do({ arg addr; addr.sendBundle(time, *messages); });
 	}
 	sendRaw { arg rawArray;
-		allAddr.do({ arg addr; addr.sendRaw(rawArray) })
+		addressList.do({ arg addr; addr.sendRaw(rawArray) })
 	}
 	
 	listSendMsg { arg msg;
-		allAddr.do({ arg addr; addr.sendMsg(msg) });
+		addressList.do({ arg addr; addr.sendMsg(*msg) });
 	}
  	listSendBundle { arg time,bundle;
- 		allAddr.do({ arg addr; addr.sendBundle(time ? this.latency, *bundle) })
+ 		addressList.do({ arg addr; addr.sendBundle(time, *bundle) })
 	}
-		
+	
+	// need to verride some methods in superclass
+	
+	options { ^homeServer.options }
+	
+	makeWindow { homeServer.makeWindow }
+	
+	boot { homeServer.waitForBoot { this.notify; this.initTree; } }
+
+	serverRunning { ^homeServer.serverRunning }
+	serverBooting { ^homeServer.serverBooting }
+	
 	status {
-		allAddr.do({ arg addr; addr.sendMsg("/status") });
+		this.sendMsg("/status");
 	}
 	notify { arg flag=true;
-		notified = true;
-		allAddr.do({ arg addr; addr.sendMsg("/notify", flag.binaryValue) });
+		this.sendMsg("/notify", flag.binaryValue);
 	}
+	
+	// todo:
+	// wait
+	// openBundle
+	// makeBundle
+	
+
+	
 	
 	// sync
 	sendMsgSync { arg condition ... args;
 		var cmdName, count;
 		if (condition.isNil) { condition = Condition.new };
 		condition.test = false;
-		count = allAddr.size;
+		count = addressList.size;
 		cmdName = args[0].asString;
 		if (cmdName[0] != $/) { cmdName = cmdName.insert(0, $/) };
-		allAddr.do { arg addr;
+		addressList.do { arg addr;
 			var resp;
 			resp = OSCresponderNode(addr, "/done", {|time, resp, msg|
 			if (msg[1].asString == cmdName) {
@@ -115,9 +109,9 @@ BroadcastServer : Server {
 	sync { arg condition, bundles, latency; // array of bundles that cause async action
 		var count;
 		if (condition.isNil) { condition = Condition.new };
-		count = allAddr.size;
+		count = addressList.size;
 		condition.test = false;
-		allAddr.do { arg addr;
+		addressList.do { arg addr;
 			var resp, id;
 			id = UniqueID.next;
 			resp = OSCresponderNode(addr, "/synced", {|time, resp, msg|
@@ -139,76 +133,19 @@ BroadcastServer : Server {
 		condition.wait;
 	}
 	
+	
 		
-	//use local allocators
+	// use home server allocators
 
-	nodeAllocator { ^localServer.nodeAllocator }
-	staticNodeAllocator { ^localServer.staticNodeAllocator }
-	controlBusAllocator { ^localServer.controlBusAllocator }
-	audioBusAllocator { ^localServer.audioBusAllocator }
-	bufferAllocator { ^localServer.bufferAllocator }
+	nodeAllocator { ^homeServer.nodeAllocator }
+	staticNodeAllocator { ^homeServer.staticNodeAllocator }
+	controlBusAllocator { ^homeServer.controlBusAllocator }
+	audioBusAllocator { ^homeServer.audioBusAllocator }
+	bufferAllocator { ^homeServer.bufferAllocator }
 	
-	nextNodeID { ^localServer.nodeAllocator.alloc }
-	nextSharedNodeID { ^localServer.nextSharedNodeID }
-}
-
-
-
-// handles node id allocation etc.
-
-Router : Server {
-	
-	var <broadcast, <sharedNodeIDAllocator;
+	nextNodeID { ^homeServer.nodeAllocator.alloc }
+	nextSharedNodeID { ^homeServer.nextSharedNodeID }
 	
 	
-	addr_ { arg list;
-		broadcast = BroadcastServer.for(this, list);
-	}
-	
-	autoConfigure { arg getAnyApplication=false;
-		broadcast.autoConfigure(getAnyApplication);
-	} 
-	
-	boot {
-		super.boot;
-		broadcast.boot;
-	}
-	
-	quit {
-		super.quit;
-		broadcast.quit;
-	}
-	
-	at { arg index;
-		^broadcast.allAddr.at(index)
-	}
-	
-	wrapAt { arg index;
-		^broadcast.allAddr.wrapAt(index)
-	}
-	
-	do { arg function;
-		broadcast.allAddr.do(function)
-	}
-	
-	nextSharedNodeID {
-		^sharedNodeIDAllocator.alloc
-	}
-	
-	newAllocators {
-	
-		super.newAllocators;
-		sharedNodeIDAllocator = RingNumberAllocator(128, 800);
-		// alloc shared busses.
-		// maybe pre allocate 26 + 8 audio busses
-		// and 1000 kr busses?
-		
-	}
-	serverRunning { ^true } //assume that.
-	
-	//waitForBoot {Êarg func; func.value }
-	//stopAliveThread { }
-	//startAliveThread { }
-
 }
 
