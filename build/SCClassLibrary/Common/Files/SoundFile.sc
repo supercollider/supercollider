@@ -205,7 +205,7 @@ SoundFile {
 			});
 				// write, and check whether successful
 				// throwing the error invokes error handling that closes the files
-			outFile.writeData(rawData).not.if({
+			(outFile.writeData(rawData) == false).if({
 				MethodError("SoundFile writeData failed.", this).throw
 			});
 
