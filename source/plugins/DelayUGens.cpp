@@ -633,22 +633,22 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 			if (loop) { \
 				table0 += bufSamples; \
 			} else { \
-				table0 += 1; \
+				table0 += bufChannels; \
 			} \
 		} else if (iphase >= guardFrame) { \
 			if (iphase == guardFrame) { \
 				if (loop) { \
 					table3 -= bufSamples; \
 				} else { \
-					table3 -= 1; \
+					table3 -= bufChannels; \
 				} \
 			} else { \
 				if (loop) { \
 					table2 -= bufSamples; \
 					table3 -= bufSamples; \
 				} else { \
-					table2 -= 1; \
-					table3 -= 2; \
+					table2 -= bufChannels; \
+					table3 -= 2 * bufChannels; \
 				} \
 			} \
 		} \
@@ -672,7 +672,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 			if (loop) { \
 				table2 -= bufSamples; \
 			} else { \
-				table2 -= 1; \
+				table2 -= bufChannels; \
 			} \
 		} \
 		int32 index = 0; \
