@@ -161,14 +161,17 @@ SCErr meth_n_run(World *inWorld, int inSize, char *inData, ReplyAddress *inReply
 SCErr meth_n_run(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	int32 nodeID = msg.geti();
-	Node *node = World_GetNode(inWorld, nodeID);
-	if (!node) return kSCErr_NodeNotFound;
-		
-	int32 run = msg.geti();
-
-	Node_SetRun(node, run);
-
+	
+	while (msg.remain()) {
+		int32 nodeID = msg.geti();
+		Node *node = World_GetNode(inWorld, nodeID);
+		if (!node) return kSCErr_NodeNotFound;
+			
+		int32 run = msg.geti();
+	
+		Node_SetRun(node, run);
+	}
+	
 	return kSCErr_None;
 }
 
@@ -366,45 +369,47 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress *inReply
 SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	int32 newGroupID = msg.geti();
-	int32 addAction = msg.geti();
-	int32 addTargetID = msg.geti();
-		
-	Group *newGroup = 0;
-	switch (addAction) {
-		case 0 : {
-			Group *group = World_GetGroup(inWorld, addTargetID);
-			if (!group) return kSCErr_GroupNotFound;
-			newGroup = Group_New(inWorld, newGroupID);
-			if (!newGroup) return kSCErr_Failed;
-			Group_AddHead(group, &newGroup->mNode);
-		} break;
-		case 1 : {
-			Group *group = World_GetGroup(inWorld, addTargetID);
-			if (!group) return kSCErr_GroupNotFound;
-			newGroup = Group_New(inWorld, newGroupID);
-			if (!newGroup) return kSCErr_Failed;
-			Group_AddTail(group, &newGroup->mNode);
-		} break;
-		case 2 : {
-			Node *beforeThisNode = World_GetNode(inWorld, addTargetID);
-			if (!beforeThisNode) return kSCErr_NodeNotFound;
-			newGroup = Group_New(inWorld, newGroupID);
-			if (!newGroup) return kSCErr_Failed;
-			Node_AddBefore(&newGroup->mNode, beforeThisNode);
-		} break;
-		case 3 : {
-			Node *afterThisNode = World_GetNode(inWorld, addTargetID);
-			if (!afterThisNode) return kSCErr_NodeNotFound;
-			newGroup = Group_New(inWorld, newGroupID);
-			if (!newGroup) return kSCErr_Failed;
-			Node_AddAfter(&newGroup->mNode, afterThisNode);
-		} break;
-		default: return kSCErr_Failed;
+	while (msg.remain()) {
+		int32 newGroupID = msg.geti();
+		int32 addAction = msg.geti();
+		int32 addTargetID = msg.geti();
+			
+		Group *newGroup = 0;
+		switch (addAction) {
+			case 0 : {
+				Group *group = World_GetGroup(inWorld, addTargetID);
+				if (!group) return kSCErr_GroupNotFound;
+				newGroup = Group_New(inWorld, newGroupID);
+				if (!newGroup) return kSCErr_Failed;
+				Group_AddHead(group, &newGroup->mNode);
+			} break;
+			case 1 : {
+				Group *group = World_GetGroup(inWorld, addTargetID);
+				if (!group) return kSCErr_GroupNotFound;
+				newGroup = Group_New(inWorld, newGroupID);
+				if (!newGroup) return kSCErr_Failed;
+				Group_AddTail(group, &newGroup->mNode);
+			} break;
+			case 2 : {
+				Node *beforeThisNode = World_GetNode(inWorld, addTargetID);
+				if (!beforeThisNode) return kSCErr_NodeNotFound;
+				newGroup = Group_New(inWorld, newGroupID);
+				if (!newGroup) return kSCErr_Failed;
+				Node_AddBefore(&newGroup->mNode, beforeThisNode);
+			} break;
+			case 3 : {
+				Node *afterThisNode = World_GetNode(inWorld, addTargetID);
+				if (!afterThisNode) return kSCErr_NodeNotFound;
+				newGroup = Group_New(inWorld, newGroupID);
+				if (!newGroup) return kSCErr_Failed;
+				Node_AddAfter(&newGroup->mNode, afterThisNode);
+			} break;
+			default: return kSCErr_Failed;
+		}
+	
+		Node_StateMsg(&newGroup->mNode, kNode_Go);
 	}
-
-	Node_StateMsg(&newGroup->mNode, kNode_Go);
-
+	
 	return kSCErr_None;
 }
 
@@ -429,20 +434,22 @@ SCErr meth_n_before(World *inWorld, int inSize, char *inData, ReplyAddress *inRe
 SCErr meth_n_before(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	int32 nodeID = msg.geti();
-	Node *node = World_GetNode(inWorld, nodeID);
-	if (!node) return kSCErr_NodeNotFound;
-
-	Node *beforeThisOne = World_GetNode(inWorld, msg.geti());
-	if (!beforeThisOne) return kSCErr_NodeNotFound;
-
-	Group *prevGroup = node->mParent;
-		
-	Node_Remove(node);
-	Node_AddBefore(node, beforeThisOne);
-
-	if (node->mParent != prevGroup) {
-		Node_StateMsg(node, kNode_Move);
+	while (msg.remain()) {
+		int32 nodeID = msg.geti();
+		Node *node = World_GetNode(inWorld, nodeID);
+		if (!node) return kSCErr_NodeNotFound;
+	
+		Node *beforeThisOne = World_GetNode(inWorld, msg.geti());
+		if (!beforeThisOne) return kSCErr_NodeNotFound;
+	
+		Group *prevGroup = node->mParent;
+			
+		Node_Remove(node);
+		Node_AddBefore(node, beforeThisOne);
+	
+		if (node->mParent != prevGroup) {
+			Node_StateMsg(node, kNode_Move);
+		}
 	}
 	return kSCErr_None;
 }
@@ -451,20 +458,22 @@ SCErr meth_n_after(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 SCErr meth_n_after(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	int32 nodeID = msg.geti();
-	Node *node = World_GetNode(inWorld, nodeID);
-	if (!node) return kSCErr_NodeNotFound;
-
-	Node *afterThisOne = World_GetNode(inWorld, msg.geti());
-	if (!afterThisOne) return kSCErr_NodeNotFound;
-
-	Group *prevGroup = node->mParent;
+	while (msg.remain()) {
+		int32 nodeID = msg.geti();
+		Node *node = World_GetNode(inWorld, nodeID);
+		if (!node) return kSCErr_NodeNotFound;
 	
-	Node_Remove(node);
-	Node_AddBefore(node, afterThisOne);
-
-	if (node->mParent != prevGroup) {
-		Node_StateMsg(node, kNode_Move);
+		Node *afterThisOne = World_GetNode(inWorld, msg.geti());
+		if (!afterThisOne) return kSCErr_NodeNotFound;
+	
+		Group *prevGroup = node->mParent;
+		
+		Node_Remove(node);
+		Node_AddBefore(node, afterThisOne);
+	
+		if (node->mParent != prevGroup) {
+			Node_StateMsg(node, kNode_Move);
+		}
 	}
 	return kSCErr_None;
 }
@@ -473,21 +482,23 @@ SCErr meth_g_head(World *inWorld, int inSize, char *inData, ReplyAddress *inRepl
 SCErr meth_g_head(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	Group *group = World_GetGroup(inWorld, msg.geti());
-	if (!group) return kSCErr_GroupNotFound;
-
-	int32 nodeID = msg.geti();
-	Node *node = World_GetNode(inWorld, nodeID);
-	if (!node) return kSCErr_NodeNotFound;
-
-	Group *prevGroup = node->mParent;
-
-	Node_Remove(node);
+	while (msg.remain()) {
+		Group *group = World_GetGroup(inWorld, msg.geti());
+		if (!group) return kSCErr_GroupNotFound;
 	
-	Group_AddHead(group, node);
+		int32 nodeID = msg.geti();
+		Node *node = World_GetNode(inWorld, nodeID);
+		if (!node) return kSCErr_NodeNotFound;
 	
-	if (group != prevGroup) {
-		Node_StateMsg(node, kNode_Move);
+		Group *prevGroup = node->mParent;
+	
+		Node_Remove(node);
+		
+		Group_AddHead(group, node);
+		
+		if (group != prevGroup) {
+			Node_StateMsg(node, kNode_Move);
+		}
 	}
 	return kSCErr_None;
 }
@@ -496,20 +507,22 @@ SCErr meth_g_tail(World *inWorld, int inSize, char *inData, ReplyAddress *inRepl
 SCErr meth_g_tail(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	Group *group = World_GetGroup(inWorld, msg.geti());
-	if (!group) return kSCErr_GroupNotFound;
-
-	int32 nodeID = msg.geti();
-	Node *node = World_GetNode(inWorld, nodeID);
-	if (!node) return kSCErr_NodeNotFound;
-
-	Group *prevGroup = node->mParent;
-
-	Node_Remove(node);
-	Group_AddTail(group, node);
-
-	if (group != prevGroup) {
-		Node_StateMsg(node, kNode_Move);
+	while (msg.remain()) {
+		Group *group = World_GetGroup(inWorld, msg.geti());
+		if (!group) return kSCErr_GroupNotFound;
+	
+		int32 nodeID = msg.geti();
+		Node *node = World_GetNode(inWorld, nodeID);
+		if (!node) return kSCErr_NodeNotFound;
+	
+		Group *prevGroup = node->mParent;
+	
+		Node_Remove(node);
+		Group_AddTail(group, node);
+	
+		if (group != prevGroup) {
+			Node_StateMsg(node, kNode_Move);
+		}
 	}
 	return kSCErr_None;
 }
@@ -518,22 +531,24 @@ SCErr meth_g_insert(World *inWorld, int inSize, char *inData, ReplyAddress *inRe
 SCErr meth_g_insert(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	Group *group = World_GetGroup(inWorld, msg.geti());
-	if (!group) return kSCErr_GroupNotFound;
-
-	int32 nodeID = msg.geti();
-	Node *node = World_GetNode(inWorld, nodeID);
-	if (!node) return kSCErr_NodeNotFound;
-
-	Group *prevGroup = node->mParent;
-
-	int index = msg.geti();
+	while (msg.remain()) {
+		Group *group = World_GetGroup(inWorld, msg.geti());
+		if (!group) return kSCErr_GroupNotFound;
 	
-	Node_Remove(node);
-	Group_Insert(group, node, index);
-
-	if (group != prevGroup) {
-		Node_StateMsg(node, kNode_Move);
+		int32 nodeID = msg.geti();
+		Node *node = World_GetNode(inWorld, nodeID);
+		if (!node) return kSCErr_NodeNotFound;
+	
+		Group *prevGroup = node->mParent;
+	
+		int index = msg.geti();
+		
+		Node_Remove(node);
+		Group_Insert(group, node, index);
+	
+		if (group != prevGroup) {
+			Node_StateMsg(node, kNode_Move);
+		}
 	}
 	return kSCErr_None;
 }
