@@ -81,7 +81,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 - (void)mouseDown:(NSEvent *)theEvent
 {
     BOOL keepOn = YES;
-    BOOL isInside = YES;
+    //BOOL isInside = YES;
     NSPoint mouseLoc;
     
 	if (!mTopView) return;
@@ -346,7 +346,7 @@ const int circDiam = 20;
 }
 
 - (BOOL)performDragOperation:(id)dragInfo {
-	if (!mTopView) return;
+	if (!mTopView) return NO;
     //post("performDragOperation %08X\n", self);
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
@@ -380,7 +380,7 @@ const int circDiam = 20;
     //post("concludeDragOperation %08X\n", self);
 }
 
-static int ivxGUIScreen_frameNumber = 11;
+//static int ivxGUIScreen_frameNumber = 11;
 
 - (void)drawRect: (NSRect)drawBounds
 {
@@ -405,8 +405,8 @@ static int ivxGUIScreen_frameNumber = 11;
         CGContextClipToRect(cgc, cgrect);*/
         
         Rect qdrect;
-        SetRect(&qdrect, screct.x, screct.y, 
-            screct.x + screct.width, screct.y + screct.height);
+        SetRect(&qdrect, (int)screct.x, (int)screct.y, 
+            (int)(screct.x + screct.width), (int)(screct.y + screct.height));
         ClipRect(&qdrect);
 
         mTopView->drawIfNecessary(screct);
@@ -486,7 +486,7 @@ int stringDrawLeftInRect(char *cString, SCRect screct, char *cFontName, float fo
     
     NSRect drawBounds = SCtoNSRect(screct);
 
-    float hdiff = drawBounds.size.width - size.width;
+    //float hdiff = drawBounds.size.width - size.width;
     float vdiff = drawBounds.size.height - size.height;
     
     drawBounds.origin.y += vdiff * .5;
@@ -546,7 +546,7 @@ SCColor blendColor(float blend, SCColor a, SCColor b)
 
 void vPaintGradient(CGContextRef cgc, CGRect bounds, SCColor startColor, SCColor endColor, int numSteps)
 {
-    numSteps = sc_min(numSteps, floor(bounds.size.height));
+    numSteps = (int)sc_min(numSteps, floor(bounds.size.height));
     float rNumSteps1 = 1. / (numSteps - 1.);
     
     CGRect rect;
@@ -569,7 +569,7 @@ void vPaintGradient(CGContextRef cgc, CGRect bounds, SCColor startColor, SCColor
 
 void hPaintGradient(CGContextRef cgc, CGRect bounds, SCColor startColor, SCColor endColor, int numSteps)
 {
-    numSteps = sc_min(numSteps, floor(bounds.size.width));
+    numSteps = (int)sc_min(numSteps, floor(bounds.size.width));
     float rNumSteps1 = 1. / (numSteps - 1.);
     
     CGRect rect;

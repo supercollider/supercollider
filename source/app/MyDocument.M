@@ -634,7 +634,7 @@ extern bool compiledOK;
 - (BOOL)readFromFile:(NSString *)path ofType:(NSString *)aType
 {
 
-    NSFileManager *fmgr = [NSFileManager defaultManager];
+    //NSFileManager *fmgr = [NSFileManager defaultManager];
     //NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
     //OSType creatorval = [attr2 fileHFSCreatorCode];
 	
@@ -714,9 +714,9 @@ extern bool compiledOK;
 /* toggleRich: puts up an alert before ultimately calling doToggleRich
 */
 - (void)toggleRich:(id)sender {
-    int length = [[textView textStorage] length];
-    NSRange range;
-    NSDictionary *attrs;
+    //int length = [[textView textStorage] length];
+    //NSRange range;
+    //NSDictionary *attrs;
 	[self doToggleRich];
 /*
     // If we are rich and any ofthe text attrs have been changed from the default, then put up an alert first...
