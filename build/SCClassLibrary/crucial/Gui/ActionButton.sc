@@ -2,14 +2,13 @@
 
 SCViewAdapter { // SCViewHolder
 	
-	// SCView classes can't be subclassed.
 	// SCViewAdapter makes it possible to wrap more capabilities by holding, not subclassing
 	// has a  not is a
-	// alternative is for SCView to pass in the name of the c++ view to prInit primitive
 	
 	var <>view;
 	
 	action_ { arg f; view.action_(f) }
+	doAction { view.doAction }
 	keyDownAction_ { arg f;
 		view.keyDownAction_(f);
 	}
@@ -41,7 +40,7 @@ StartRow : SCViewAdapter {
 }
 
 
-FlowView : SCCompositeView {
+FlowView : SCLayoutView {
 
 	var autoRemoves;
 	
