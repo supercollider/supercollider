@@ -1,17 +1,29 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red0\green0\blue191;
-\red0\green115\blue0;\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 SCTabletView
 \f1\b0\fs18 \
 \
 
-\f2\fs24 The action is passed the following wacom tablet values:\
+\f0\b\fs24 action - 
+\f2\b0 dragging the mouse inside the view
+\f1\fs18 \
 
-\f0\b 	x - 
+\f0\b\fs24 mouseDownAction\
+mouseUpAction\
+
+\f2\b0 \
+Each of the three actions are passed the following wacom tablet values:\
+
+\f0\b \
+	view - 
+\f2\b0 the view
+\f0\b \
+	x - 
 \f2\b0 subpixel location in view\
 
 \f0\b 	y - 
@@ -30,10 +42,11 @@
 \f2\b0 will be used to look up if the tip or the eraser is used
 \f0\b \
 	buttonNumber - 
-\f2\b0 0 left, 1 right, 2 middle
+\f2\b0 0 left, 1 right, 2 middle wheel click
 \f0\b \
 	clickCount - 
-\f2\b0 double click, triple click ...
+\f2\b0 double click, triple click ...\
+		most relevant for the mouseDown, but still valid for the dragged and mouseUp
 \f1\fs18 \
 \
 (\
@@ -42,20 +55,41 @@ t = \cf2 SCTabletView\cf0 (w,\cf2 Rect\cf0 (40,40,300,300));\
 t.background = \cf2 Color\cf0 .white;\
 w.front;\
 \
-t.mouseDraggedAction = \{ \cf2 arg\cf0  view, x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ;\
-	[x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ].postln;\
+t.mouseDownAction = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ;\
+	["down",x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ].postln;\
+\};\
+\
+t.action = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ;\
+	["dragging", x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ].postln;\
 	t.background = \cf2 Color\cf0 (x / 300,y / 300,tiltx,pressure);\
+\};\
+\
+t.mouseUpAction = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ;\
+	["up",x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ].postln;\
 \};\
 \
 )\
 \
-
-\f0\b\fs24 mouseDownAction\
-mouseUpAction\
-mouseDraggedAction\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\b0\fs18 \cf0 \
+(\
+w = \cf2 SCWindow\cf0 .new;\
+t = \cf2 SCTabletView\cf0 (w,\cf2 Rect\cf0 (40,40,300,300));\
+t.background = \cf2 Color\cf0 .white;\
+w.front;\
+\
+f = \{ \cf2 arg\cf0   view,x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ;\
+	[x,y,pressure,tiltx,tilty,\CocoaLigature0 deviceID, buttonNumber,clickCount\CocoaLigature1 ].postln;\
+	t.background = \cf2 Color\cf0 (x / 300,y / 300,tiltx,pressure);\
+\};\
+\
+t.mouseDownAction = f;\
+t.action = f;\
+t.mouseUpAction = f;\
+\
+)\
+\
+\
+\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -76,9 +110,8 @@ t.mouseDraggedAction = \{ \cf2 arg\cf0  view,x,y;\
 \};\
 \
 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 \
+\f2\fs24 \
 If dragging from inside to outside the view, the x y values will also be out of bounds, but will still be sent.  So you should clip the value to the bounds of the view if you need to.\
 \
 If using a mouse rather than a pen, the x and y will be integer pixel values, rather than subpixel floats.  Wacom stylus devices have higher resolution than the screen.  Pressure will be 1 for mouse down, 0 for mouse up.\
@@ -86,56 +119,53 @@ If using a mouse rather than a pen, the x and y will be integer pixel values, ra
 \
 \
 (
-\f1\fs18 \cf3 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 Instr\cf3 ([\cf5 \\minimoog\cf3 ,\cf5 \\loose\cf3 ],\{ \cf4 arg\cf3  freq=440,int1=5,int2 = -5,\
+\f1\fs18 \
+\cf2 Instr\cf0 ([\cf3 \\minimoog\cf0 ,\cf3 \\loose\cf0 ],\{ \cf2 arg\cf0  freq=440,int1=5,int2 = -5,\
 			ffreqInterval=0,rq=0.4,gate=0.0;\
-	\cf4 var\cf3  p,c,d,f;\
-	c=\cf4 LFNoise1\cf3 .kr(0.1,0.45,0.55);\
-	d=\cf4 LFNoise1\cf3 .kr(0.1,0.45,0.55);\
-	f=\cf4 LFNoise1\cf3 .kr(0.1,2);\
-	p=\cf4 Pulse\cf3 .ar([ freq  * int1.midiratio + f , freq, freq * int2.midiratio - f],\
+	\cf2 var\cf0  p,c,d,f;\
+	c=\cf2 LFNoise1\cf0 .kr(0.1,0.45,0.55);\
+	d=\cf2 LFNoise1\cf0 .kr(0.1,0.45,0.55);\
+	f=\cf2 LFNoise1\cf0 .kr(0.1,2);\
+	p=\cf2 Pulse\cf0 .ar([ freq  * int1.midiratio + f , freq, freq * int2.midiratio - f],\
 			[c,d,c],0.2);\
 			\
-	\cf4 RLPF\cf3 .ar(\cf4 Mix\cf3 .ar(p),freq * ffreqInterval.midiratio,rq)\
-		* \cf4 EnvGen\cf3 .kr(\cf4 Env\cf3 .adsr, gate, \cf4 Latch\cf3 .kr(gate,gate))\
+	\cf2 RLPF\cf0 .ar(\cf2 Mix\cf0 .ar(p),freq * ffreqInterval.midiratio,rq)\
+		* \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .adsr, gate, \cf2 Latch\cf0 .kr(gate,gate))\
 \
 \},#[\
-	\cf4 nil\cf3 ,\
-	[[-48,48,\cf5 \\linear\cf3 ,1]],\
-	[[-48,48,\cf5 \\linear\cf3 ,1]],\
-	[[-48,48,\cf5 \\linear\cf3 ,1]]\
+	\cf2 nil\cf0 ,\
+	[[-48,48,\cf3 \\linear\cf0 ,1]],\
+	[[-48,48,\cf3 \\linear\cf0 ,1]],\
+	[[-48,48,\cf3 \\linear\cf0 ,1]]\
 ]);\
 \
-p = \cf4 Patch\cf3 .new([ \cf5 'minimoog'\cf3 , \cf5 'loose'\cf3  ],[\
-	\cf4 nil\cf3 ,\cf4 nil\cf3 ,\cf4 nil\cf3 ,\cf4 nil\cf3 ,\cf4 nil\cf3 ,\
-	\cf4 KrNumberEditor\cf3 (0.0,\cf5 \\gate\cf3 ) \cf6 // override the default control\cf3 \
+p = \cf2 Patch\cf0 .new([ \cf3 'minimoog'\cf0 , \cf3 'loose'\cf0  ],[\
+	\cf2 nil\cf0 ,\cf2 nil\cf0 ,\cf2 nil\cf0 ,\cf2 nil\cf0 ,\cf2 nil\cf0 ,\
+	\cf2 KrNumberEditor\cf0 (0.0,\cf3 \\gate\cf0 ) \cf4 // override the default control\cf0 \
 ]);\
 \
-\cf4 Sheet\cf3 (\{ \cf4 arg\cf3  f;\
-	\cf4 var\cf3  v,freq,int;\
-	freq = \cf4 ControlSpec\cf3 (100,3000,\cf5 \\exp\cf3 );\
-	int = [-48,48,\cf5 \\linear\cf3 ,1].asSpec;\
+\cf2 Sheet\cf0 (\{ \cf2 arg\cf0  f;\
+	\cf2 var\cf0  v,freq,int;\
+	freq = \cf2 ControlSpec\cf0 (100,3000,\cf3 \\exp\cf0 );\
+	int = [-48,48,\cf3 \\linear\cf0 ,1].asSpec;\
 	\
 	p.topGui(f);\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 	v = \cf4 SCTabletView\cf3 (f,\cf4 Rect\cf3 (0,0,200,200));\
-	v.background = \cf4 Color\cf3 .white;\
-	v.mouseDraggedAction = \{ \cf4 arg\cf3  view,x,y,pressure,tiltx,tilty;\
+	v = \cf2 SCTabletView\cf0 (f,\cf2 Rect\cf0 (0,0,200,200));\
+	v.background = \cf2 Color\cf0 .white;\
+	v.action = \{ \cf2 arg\cf0  view,x,y,pressure,tiltx,tilty;\
 		p.args.at(1).value_( int.map( x / 200 ) ).changed;\
 		p.args.at(2).value_( int.map( y / 200 ) ).changed;\
 		p.args.at(3).value_( int.map( pressure ) ).changed;\
 	\};\
-	v.mouseDownAction = \{ \cf4 arg\cf3  view,x,y,pressure;\
+	v.mouseDownAction = \{ \cf2 arg\cf0  view,x,y,pressure;\
+		p.args.at(0).value_( rrand(30,80).midicps ).changed;\
 		p.args.at(5).value_( pressure ).changed;\
 	\};\
-	v.mouseUpAction = \{ \cf4 arg\cf3  view,x,y,pressure;\
+	v.mouseUpAction = \{ \cf2 arg\cf0  view,x,y,pressure;\
 		p.args.at(5).value_( 0.0 ).changed;\
 	\};\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 \});\
+\});\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 )\
+\f2\fs24 )\
 }
