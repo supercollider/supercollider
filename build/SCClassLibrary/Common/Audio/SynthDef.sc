@@ -15,40 +15,48 @@ SynthDef {
 	// topo sort
 	var <>available;
 	
-	*new { arg name, ugenGraphFunc, lags;
+	*new { arg name, ugenGraphFunc, lags, prependArgs;
 		^this.prNew(name)
-			.build(ugenGraphFunc, lags)
+			.build(ugenGraphFunc, lags, prependArgs)
 	}
 	*prNew { arg name;
 		^super.new.name_(name.asString)
 	}
-	build { arg ugenGraphFunc, lags;
-		this.initBuild
-			.buildUgenGraph(ugenGraphFunc, lags)
-			.finishBuild
+	build { arg ugenGraphFunc, lags, prependArgs;
+		this.initBuild;
+		this.buildUgenGraph(ugenGraphFunc, lags, prependArgs);
+		this.finishBuild
 	}
-		
+	
+	*wrap { arg func, lags, prependArgs;
+		if (UGen.buildSynthDef.isNil, { 
+			"SynthDef.wrap should be called inside a SynthDef ugenGraphFunc.\n".error; 
+			^0 
+		});
+		^UGen.buildSynthDef.buildUgenGraph(func, lags, prependArgs);
+	}
 	initBuild {
 		UGen.buildSynthDef = this;
 		constants = Dictionary.new;
 		constantSet = Set.new;
 	}
-	buildUgenGraph { arg func, lags;
-		this.addControlsFromArgsOfFunc(func, lags);
-		func.valueArray(this.buildControls);
+	buildUgenGraph { arg func, lags, prependArgs;
+		prependArgs = prependArgs.asArray;
+		this.addControlsFromArgsOfFunc(func, lags, prependArgs.size);
+		^func.valueArray(prependArgs.asArray ++ this.buildControls);
 	}
-	addControlsFromArgsOfFunc { arg func, lags;
+	addControlsFromArgsOfFunc { arg func, lags, skipArgs;
 		var def, names, values;
 		
 		def = func.def;
-		names = def.argNames;
+		names = def.argNames.copyToEnd(skipArgs);
 		if (names.isNil, { ^nil });
 		controlsSize = 0;
 		// OK what we do here is separate the ir and kr rate arguments,
 		// create one Control ugen for all of the ir and one for all of 
 		// the kr, and then construct the argument array from combining 
 		// the OutputProxies of these two Control ugens in the original order.
-		values = def.prototypeFrame.copy.extend(names.size);
+		values = def.prototypeFrame.copyToEnd(skipArgs).extend(names.size);
 		values = values.collect({ arg value; value ? 0.0 });
 		lags = lags.asArray.extend(names.size, 0).collect({ arg lag; lag ? 0.0 });
 		names.do({ arg name, i; 
@@ -102,6 +110,11 @@ SynthDef {
 		krcontrols.asArray.do({ arg control, i; 
 			outputProxies.put(krpositions.at(i), control);
 		});
+		
+		// clean up.
+		irnames = irvalues = ircontrols = irpositions = nil;
+		krnames = krvalues = krcontrols = krpositions = krlags = nil;
+		
 		^outputProxies
 	}
 	finishBuild {
@@ -112,6 +125,7 @@ SynthDef {
 		// re-sort graph. reindex.
 		this.topologicalSort;
 		this.indexUGens;
+		UGen.buildSynthDef = nil;
 	}
 
 	
