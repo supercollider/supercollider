@@ -3075,7 +3075,11 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 	//postfl("<-prRoutineResume %d %08X\n", g->level, g->thread);
 	//DumpBackTrace(g);
 	//Debugger();
-	assert(g->gc->SanityCheck());
+	//assert(g->gc->SanityCheck());
+        if(! g->gc->SanityCheck()) {
+            DumpBackTrace(g);
+          //  assert(g->gc->SanityCheck());
+        }    
 	//CallStackSanity(g);
 	return errNone;
 }
@@ -3394,6 +3398,7 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 #endif	
 	
 	//post("doPrimitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+        //printf("doPrimitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 
 	PyrMethodRaw *methraw = METHRAW(meth);
 	int primIndex = methraw->specialIndex;
@@ -3458,6 +3463,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 	g->gc->SanityCheck();
 #endif	
 	//post("doPrimitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+        //printf("doPrimitive %s-%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 
 	PyrMethodRaw *methraw = METHRAW(meth);
 	int primIndex = methraw->specialIndex;
@@ -3828,11 +3834,16 @@ void init_OSC_primitives();
 void initGUIPrimitives();
         initGUIPrimitives();
 
+/*  these probably should be moved out of the Lang code
+into an App init primitives section */
 void initSCViewPrimitives();
         initSCViewPrimitives();
 
 void initMIDIPrimitives();
 		initMIDIPrimitives();
+                
+void initCocoaFilePrimitives();
+        initCocoaFilePrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
 	post("   NumPrimitives = %d\n", nextPrimitiveIndex());
