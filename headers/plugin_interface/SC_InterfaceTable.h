@@ -93,6 +93,8 @@ struct InterfaceTable
 	void (*fNRTLock)(World *inWorld);
 	void (*fNRTUnlock)(World *inWorld);
 	
+	bool mAltivecAvailable;
+	
 };
 typedef struct InterfaceTable InterfaceTable;
 
