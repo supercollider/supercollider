@@ -1,3 +1,5 @@
+//todo: make efficient by using PriorityQueue
+
 Order : SequenceableCollection {
 	var <>array, <>indices;
 	
@@ -21,9 +23,10 @@ Order : SequenceableCollection {
 			indices = indices.add(index);
 	}
 	
+		
 	removeAt { arg index;
 		var realIndex;
-		realIndex = indices.indexOf(index);
+		realIndex = this.slotOf(index);
 		^if(realIndex.notNil, {
 			indices.removeAt(realIndex);
 			array.removeAt(realIndex);
@@ -48,27 +51,38 @@ Order : SequenceableCollection {
 	
 	at { arg index;
 		var realIndex;
-		realIndex = indices.indexOf(index);
+		realIndex = this.slotOf(index);
 		^if(realIndex.notNil, {
 			array.at(realIndex)
 		})
 	}
 	
+	slotOf { arg i;
+		(i+1).do({ arg j; if(indices.at(j) === i, { ^j }) });
+		^nil
+	}
+
+	nextSlot { arg index;
+		if(indices.notEmpty and: { index <= indices.last }, {
+			indices.do({ arg item, j; if(item >= index, { ^j }) });
+		});
+		^nil
+	}
 	
 	put { arg index, obj;
-		var realIndex, search;
-		if(indices.notEmpty and: { index <= indices.last }, {
-			realIndex = indices.detectIndex({ arg item; search = item; item >= index });
-		});
-		if(realIndex.isNil, {
+		var nextIndex, nextSlot;
+		
+		nextSlot = this.nextSlot(index);
+		if(nextSlot.isNil, {
 			array = array.add(obj);
 			indices = indices.add(index);
 		}, {
-			if(search == index, {
-				array.put(realIndex, obj) //replace existing object
+			nextIndex = indices.at(nextSlot);
+			if(nextIndex === index, {
+				array.put(nextSlot, obj) //replace existing object
 			}, {
-				array = array.insert(realIndex, obj); //insert into order
-				indices = indices.insert(realIndex, index);
+				array = array.insert(nextSlot, obj); //insert into order
+				indices = indices.insert(nextSlot, index);
 			})
 		})
 			
@@ -122,4 +136,14 @@ Order : SequenceableCollection {
 	
 
 }
+
+
+
+
+/*
+ProxyOrder - play to group
+	- keine nodemap
+	- add / replace etc..
+*/
+
 
