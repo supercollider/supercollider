@@ -232,17 +232,7 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 i
 		graphDef->mNodeDef.mAllocSize += unitSpec->mAllocSize;
 		graphDef->mNumWires += unitSpec->mNumOutputs;
 	}
-	
-	if (inVersion >= 1) {
-		graphDef->mNumVariants = readInt16_be(buffer);
-		if (graphDef->mNumVariants) {
-			graphDef->mVariants = (GraphDef*)calloc(graphDef->mNumVariants, sizeof(GraphDef));
-			for (uint32 i=0; i<graphDef->mNumVariants; ++i) {
-				GraphDef_ReadVariant(inWorld, buffer, graphDef, graphDef->mVariants + i);
-			}
-		}
-	}
-	
+		
 	DoBufferColoring(inWorld, graphDef);
 		
 	graphDef->mWiresAllocSize = graphDef->mNumWires * sizeof(Wire);
@@ -261,6 +251,16 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 i
 	
 	graphDef->mNext = inList;
 	graphDef->mRefCount = 1;
+
+	if (inVersion >= 1) {
+		graphDef->mNumVariants = readInt16_be(buffer);
+		if (graphDef->mNumVariants) {
+			graphDef->mVariants = (GraphDef*)calloc(graphDef->mNumVariants, sizeof(GraphDef));
+			for (uint32 i=0; i<graphDef->mNumVariants; ++i) {
+				GraphDef_ReadVariant(inWorld, buffer, graphDef, graphDef->mVariants + i);
+			}
+		}
+	}
 	
 	return graphDef;
 }
