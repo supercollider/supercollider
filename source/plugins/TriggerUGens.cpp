@@ -125,6 +125,12 @@ struct Peak : public Unit
 	float m_prevtrig;
 };
 
+struct PeakFollower : public Unit
+{
+	float mLevel;
+	float mDecay;
+};
+
 struct MostChange : public Unit
 {
 	float mPrevA, mPrevB;
@@ -253,6 +259,11 @@ void Peak_Ctor(Peak *unit);
 void Peak_next_ak(Peak *unit, int inNumSamples);
 void Peak_next_ai(Peak *unit, int inNumSamples);
 void Peak_next_aa(Peak *unit, int inNumSamples);
+
+
+void PeakFollower_Ctor(PeakFollower *unit);
+void PeakFollower_next(PeakFollower *unit, int inNumSamples);
+void PeakFollower_next_ai(PeakFollower *unit, int inNumSamples);
 
 void MostChange_Ctor(MostChange *unit);
 void MostChange_next_ak(MostChange *unit, int inNumSamples);
@@ -1431,7 +1442,109 @@ void Peak_next_aa(Peak *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void PeakFollower_Ctor(PeakFollower *unit)
+{
+
+	if (INRATE(1) == calc_ScalarRate) {
+		SETCALC(PeakFollower_next_ai);
+	} else {
+		SETCALC(PeakFollower_next);
+	}
+	
+	unit->mDecay = ZIN0(1);
+	ZOUT0(0) = unit->mLevel = ZIN0(0);
+}
+
+void PeakFollower_next(PeakFollower *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float decay = ZIN0(1);
+	float level = unit->mLevel;
+	
+	
+	if(decay == unit->mDecay) {
+		LOOP(inNumSamples,
+			float inlevel = ZXP(in);
+			if (inlevel >= level) { 
+				level = inlevel; 
+			} else { 
+				level = inlevel + decay * (level - inlevel); 
+			}
+			ZXP(out) = level;
+		);
+		
+	} else {
+		
+		float decay_slope = CALCSLOPE(decay, unit->mDecay);
+		if (decay >= 0.f && unit->mDecay >= 0.f) {
+			LOOP(inNumSamples, 
+				float inlevel = ZXP(in);
+				if (inlevel >= level) { 
+					level = inlevel; 
+				} else {
+					level = inlevel + decay * (level - inlevel);
+					decay += decay_slope;
+				};
+				ZXP(out) = level;
+			);
+		} else if (decay <= 0.f && unit->mDecay <= 0.f) {
+			LOOP(inNumSamples, 
+				float inlevel = ZXP(in);
+				if (inlevel >= level) { 
+					level = inlevel; 
+				} else {
+					level = inlevel + decay * (level + inlevel);
+					decay += decay_slope;
+				};
+				ZXP(out) = level;
+			);
+		} else {
+			LOOP(inNumSamples, 
+				float inlevel = ZXP(in);
+				if (inlevel >= level) { 
+					level = inlevel; 
+				} else {
+					level = (1.f - fabs(decay)) * inlevel + decay * level;
+					decay += decay_slope;
+				};
+				ZXP(out) = level;
+			);
+		};
+	}
+		
+	unit->mLevel = level;
+	unit->mDecay = decay;
+}
+
+
+void PeakFollower_next_ai(PeakFollower *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float decay = ZIN0(1);
+	float level = unit->mLevel;
+	
+		LOOP(inNumSamples,
+			float inlevel = ZXP(in);
+			if (inlevel >= level) { 
+				level = inlevel; 
+			} else { 
+				level = inlevel + decay * (level - inlevel); 
+			}
+			ZXP(out) = level;
+		);
+	
+	unit->mLevel = level;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 void MostChange_Ctor(MostChange *unit)
 {
@@ -1899,6 +2012,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Sweep);
 	DefineSimpleUnit(Phasor);
 	DefineSimpleUnit(Peak);
+	DefineSimpleUnit(PeakFollower);
 	DefineSimpleUnit(MostChange);
 	DefineSimpleUnit(LeastChange);
 	DefineSimpleUnit(LastValue);
