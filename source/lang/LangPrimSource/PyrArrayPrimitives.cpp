@@ -2126,11 +2126,21 @@ int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
 					}
 					break;
 				case shape_Squared :
-					level = pos * pos * (endLevel - begLevel) + begLevel;
+				{
+					double sqrtBegLevel = sqrt(begLevel);
+					double sqrtEndLevel = sqrt(endLevel);
+					double sqrtLevel = pos * (sqrtEndLevel - sqrtBegLevel) + sqrtBegLevel;
+					level = sqrtLevel * sqrtLevel;
 					break;
+				}
 				case shape_Cubed :
-					level = pos * pos * pos * (endLevel - begLevel) + begLevel;
+				{
+					double cbrtBegLevel = pow(begLevel, 0.3333333);
+					double cbrtEndLevel = pow(endLevel, 0.3333333);
+					double cbrtLevel = pos * (cbrtEndLevel - cbrtBegLevel) + cbrtBegLevel;
+					level = cbrtLevel * cbrtLevel * cbrtLevel;
 					break;
+				}
 			}
 			SetFloat(a, level);
 			return errNone;
