@@ -59,7 +59,7 @@ TaskControl : AbstractPlayControl {
 	build { arg proxy;
 		clock = proxy.clock;
 		paused = proxy.paused;
-		stream = source;
+		stream = source.copy;
 		^true;
 	}
 	
