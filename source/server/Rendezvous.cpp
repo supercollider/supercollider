@@ -37,7 +37,7 @@ extern "C" {
 void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
 {
 	scprintf("PublishPortToRendezvous %d %hu\n", protocol, portNum);
-	CFStringRef serviceType;
+	CFStringRef serviceType = 0;
 	switch (protocol)
 	{
 		case kSCRendezvous_UDP:

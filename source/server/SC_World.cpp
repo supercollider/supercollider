@@ -292,7 +292,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	SF_INFO inputFileInfo, outputFileInfo;
 	float *inputFileBuf = 0;
 	float *outputFileBuf = 0;
-	int numInputChannels;
+	int numInputChannels = 0;
 	int numOutputChannels;
 	
 	outputFileInfo.samplerate = inOptions->mNonRealTimeSampleRate;
