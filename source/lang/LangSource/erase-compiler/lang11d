@@ -177,7 +177,7 @@ msgsend : name blocklist1
 				PyrParseNode* args;
 				
 				if (isSuperObjNode((PyrParseNode*)$3)) {
-					((PyrPushNameNode*)$3)->varName.us == s_this;
+					((PyrPushNameNode*)$3)->varName.us = s_this;
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -222,7 +222,7 @@ msgsend : name blocklist1
 				PyrParseNode* args;
 				
 				if (isSuperObjNode((PyrParseNode*)$1)) {
-					((PyrPushNameNode*)$1)->varName.us == s_this;
+					((PyrPushNameNode*)$1)->varName.us = s_this;
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -248,7 +248,7 @@ msgsend : name blocklist1
 				PyrParseNode* args;
 				
 				if (isSuperObjNode((PyrParseNode*)$1)) {
-					((PyrPushNameNode*)$1)->varName.us == s_this;
+					((PyrPushNameNode*)$1)->varName.us = s_this;
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -320,7 +320,7 @@ expr1	: pushliteral
 				PyrParseNode* args;
 				
 				if (isSuperObjNode((PyrParseNode*)$1)) {
-					((PyrPushNameNode*)$1)->varName.us == s_this;
+					((PyrPushNameNode*)$1)->varName.us = s_this;
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);

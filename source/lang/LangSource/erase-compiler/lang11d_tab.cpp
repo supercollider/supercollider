@@ -1402,7 +1402,7 @@ case 48:
 				PyrParseNode* args;
 				
 				if (isSuperObjNode((PyrParseNode*)yyvsp[-2])) {
-					((PyrPushNameNode*)yyvsp[-2])->varName.us == s_this;
+					((PyrPushNameNode*)yyvsp[-2])->varName.us = s_this;
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -1455,7 +1455,7 @@ case 52:
 				PyrParseNode* args;
 				
 				if (isSuperObjNode((PyrParseNode*)yyvsp[-5])) {
-					((PyrPushNameNode*)yyvsp[-5])->varName.us == s_this;
+					((PyrPushNameNode*)yyvsp[-5])->varName.us = s_this;
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -1485,7 +1485,7 @@ case 54:
 				PyrParseNode* args;
 				
 				if (isSuperObjNode((PyrParseNode*)yyvsp[-6])) {
-					((PyrPushNameNode*)yyvsp[-6])->varName.us == s_this;
+					((PyrPushNameNode*)yyvsp[-6])->varName.us = s_this;
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -1571,7 +1571,7 @@ case 68:
 				PyrParseNode* args;
 				
 				if (isSuperObjNode((PyrParseNode*)yyvsp[-4])) {
-					((PyrPushNameNode*)yyvsp[-4])->varName.us == s_this;
+					((PyrPushNameNode*)yyvsp[-4])->varName.us = s_this;
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
