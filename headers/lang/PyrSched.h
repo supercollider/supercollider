@@ -43,19 +43,11 @@ void syncOSCOffsetWithTimeOfDay();
 void doubleToTimespec(double secs, struct timespec *spec);
 
 
-void addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task);
+bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task);
 bool lookheap(PyrObject *heap, double *schedtime, PyrSlot *task) ;
 bool getheap(PyrObject *heap, double *schedtime, PyrSlot *task) ;
 void offsetheap(VMGlobals *g, PyrObject *heap, double offset) ;
 void dumpheap(PyrObject *heap);
-
-void addheap4(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task,
-	PyrSlot *numRepeats, PyrSlot *maxRepeats);
-bool lookheap4(PyrObject *heap, double *schedtime, PyrSlot *task,
-	PyrSlot *numRepeats, PyrSlot *maxRepeats) ;
-bool getheap4(PyrObject *heap, double *schedtime, PyrSlot *task,
-	PyrSlot *numRepeats, PyrSlot *maxRepeats) ;
-void dumpheap4(PyrObject *heap);
 
 const double kSecondsToOSC  = 4294967296.; // pow(2,32)/1
 const double kMicrosToOSC = 4294.967296; // pow(2,32)/1e6

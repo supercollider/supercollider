@@ -150,7 +150,7 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 	
 	SetInt(&proc->processID, gc->ProcessID());
 	
-	PyrObject *sysSchedulerQueue = newPyrArray(gc, 128, 0, false);
+	PyrObject *sysSchedulerQueue = newPyrArray(gc, 1024, 0, false);
 	SetObject(&proc->sysSchedulerQueue, sysSchedulerQueue);
 	
 	classVars = newPyrArray(gc, gNumClasses, 0, false);

@@ -34,7 +34,7 @@
 
 void runAwakeMessage(VMGlobals *g);
 
-void addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task) 
+bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task) 
 {
 	short mom;	/* parent and sibling in the heap, not in the task hierarchy */
 	PyrSlot *pme, *pmom;
@@ -42,6 +42,7 @@ void addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task)
 #if SANITYCHECK
 	gcSanity(g->gc);
 #endif
+	if (heap->size >= ARRAYMAXINDEXSIZE(heap)) return false;
 	//dumpheap(heap);
 	//post("->addheap\n");
 	mom = heap->size;
@@ -65,6 +66,7 @@ void addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task)
 #endif
 	//dumpheap(heap);
 	//post("<-addheap %g\n", schedtime);
+	return true;
 }
 
 
@@ -144,137 +146,6 @@ void dumpheap(PyrObject *heap)
 		post("%3d %9.2f %08X\n", i>>1, heap->slots[i].uf, heap->slots[i+1].ui);
 		if (heap->slots[i].uf < mintime) 
 			post("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-	}
-}
-
-void addheap4(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task, 
-	PyrSlot *numRepeats, PyrSlot *maxRepeats) 
-{
-	short mom;	/* parent and sibling in the heap, not in the task hierarchy */
-	PyrSlot *pme, *pmom;
-	
-#if SANITYCHECK
-	gcSanity(g->gc);
-#endif
-	//dumpheap4(heap);
-	//post("->addheap\n");
-	mom = heap->size;
-	pme = heap->slots + mom;
-	for (; mom>0;) {	/* percolate up heap */
-		mom = (mom - 4 >> 1) & ~3;
-		pmom = heap->slots + mom;
-		if (schedtime < pmom->uf) {
-			pme[0].ucopy = pmom[0].ucopy;
-			pme[1].ucopy = pmom[1].ucopy;
-			pme[2].ucopy = pmom[2].ucopy;
-			pme[3].ucopy = pmom[3].ucopy;
-			pme = pmom;
-		} else break;
-	}
-	pme[0].uf = schedtime;
-	pme[1].ucopy = task->ucopy;
-	pme[2].ucopy = numRepeats->ucopy;
-	pme[3].ucopy = maxRepeats->ucopy;
-	g->gc->GCWrite(heap, task);
-	heap->size += 4;
-
-#if SANITYCHECK
-	gcSanity(g->gc);
-#endif
-	//dumpheap4(heap);
-	//post("<-addheap %g\n", schedtime);
-}
-
-
-bool lookheap4(PyrObject *heap, double *schedtime, PyrSlot *task,
-	PyrSlot *numRepeats, PyrSlot *maxRepeats) 
-{
-	if (heap->size) {
-		*schedtime = heap->slots[0].uf;
-		task->ucopy = heap->slots[1].ucopy;
-		numRepeats->ucopy = heap->slots[2].ucopy;
-		maxRepeats->ucopy = heap->slots[3].ucopy;
-		return true;
-	} else return false;
-}
-
-
-bool getheap4(PyrObject *heap, double *schedtime, PyrSlot *task,
-	PyrSlot *numRepeats, PyrSlot *maxRepeats) 
-{
-	PyrSlot *pmom, *pme, *pend;
-	short mom,me,size;	/* parent and sibling in the heap, not in the task hierarchy */
-	double tasktemp;
-	double timetemp;
-	double counttemp;
-	double maxcounttemp;
-
-	if (heap->size>0) {
-		//dumpheap4(heap);
-		//post("->getheap\n");
-
-		*schedtime = heap->slots[0].uf;
-		task->ucopy = heap->slots[1].ucopy;
-		numRepeats->ucopy = heap->slots[2].ucopy;
-		maxRepeats->ucopy = heap->slots[3].ucopy;
-		size = heap->size -= 4;
-		heap->slots[0].ucopy = heap->slots[size].ucopy;
-		heap->slots[1].ucopy = heap->slots[size+1].ucopy;
-		heap->slots[2].ucopy = heap->slots[size+2].ucopy;
-		heap->slots[3].ucopy = heap->slots[size+3].ucopy;
-		mom = 0;
-		me = 4;
-		pmom = heap->slots + mom;
-		pme = heap->slots + me;
-		pend = heap->slots + size;
-		timetemp = pmom[0].uf;
-		tasktemp = pmom[1].uf;
-		counttemp = pmom[2].uf;
-		maxcounttemp = pmom[3].uf;
-		for (;pme < pend;) { /* demote heap */
-			if (pme+4 < pend && pme[0].uf > pme[4].uf) {
-				me += 4; pme += 4; 
-			}
-			if (timetemp > pme[0].uf) {
-				pmom[0].ucopy = pme[0].ucopy;
-				pmom[1].ucopy = pme[1].ucopy;
-				pmom[2].ucopy = pme[2].ucopy;
-				pmom[3].ucopy = pme[3].ucopy;
-				pmom = pme;
-				me = ((mom = me) << 1) + 4;
-				pme = heap->slots + me;
-			} else break;
-		}
-		pmom[0].uf = timetemp;
-		pmom[1].uf = tasktemp;
-		pmom[2].uf = counttemp;
-		pmom[3].uf = maxcounttemp;
-		
-		//dumpheap4(heap);
-		//post("<-getheap true\n");
-
-		return true;
-	} else {
-		//post("<-getheap false\n");
-		return false;
-	}
-}
-
-void dumpheap4(PyrObject *heap)
-{
-	long i, j;
-	double mintime;
-	mintime = heap->slots[0].uf;
-	post("SCHED QUEUE (%d)\n", heap->size);
-	for (i=0, j=0; i<heap->size; i+=4,j++) {
-		post("%3d %9.2f %08X %d %d\n", j, heap->slots[i].uf, heap->slots[i+1].ui,
-			heap->slots[i+2].ui, heap->slots[i+3].ui);
-		if (i > 0) {
-			post("** %d %d %g %g\n", (i - 4 >> 1) & ~3, i, heap->slots[(i - 4 >> 1) & ~3].uf, heap->slots[i].uf);
-			if (heap->slots[(i - 4 >> 1) & ~3].uf > heap->slots[i].uf) {
-				post("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-			}
-		}
 	}
 }
 
@@ -423,8 +294,9 @@ void schedAdd(VMGlobals *g, PyrObject* inQueue, double inSeconds, PyrSlot* inTas
 {
 	// gLangMutex must be locked
 	double prevTime = inQueue->size ? inQueue->slots->uf : -1e10;
-	addheap(g, inQueue, inSeconds, inTask);
-	if (inQueue->size && inQueue->slots->uf != prevTime) {
+	bool added = addheap(g, inQueue, inSeconds, inTask);
+	if (!added) post("scheduler queue is full.\n");
+	else if (inQueue->slots->uf != prevTime) {
 		//post("pthread_cond_signal\n");
 		pthread_cond_signal (&gSchedCond);
 	}
@@ -983,8 +855,9 @@ void TempoClock::Flush()
 void TempoClock::Add(double inBeats, PyrSlot* inTask)
 {
 	double prevBeats = mQueue->size ? mQueue->slots->uf : -1e10;
-	addheap(g, mQueue, inBeats, inTask);
-	if (mQueue->size && mQueue->slots->uf != prevBeats) {
+	bool added = addheap(g, mQueue, inBeats, inTask);
+	if (!added) post("scheduler queue is full.\n");
+	else if (mQueue->slots->uf != prevBeats) {
 		pthread_cond_signal (&mCondition);
 	}
 }
