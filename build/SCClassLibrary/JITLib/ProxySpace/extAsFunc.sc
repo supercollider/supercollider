@@ -52,9 +52,9 @@
 	wrapForNodeProxy { arg proxy,channelOffset=0;
 		^EventStreamContainer.new(this.collect({ arg event;
 			event.copy.use({ 
-				~out = proxy.outbus.index + channelOffset;
+				~outIndex = proxy.outbus.index + channelOffset;
 				~nodeMap = proxy.nodeMap;
-				~argNames = [\freq,\amp,\sustain,\pan,\out];//more later
+				~argNames = [\freq,\amp,\sustain,\pan,\outIndex];//more later
 				//~group = proxy.group.nodeID;
 			})
 		

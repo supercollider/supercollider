@@ -92,7 +92,7 @@ NodeProxy : AbstractFunction {
 				\i_busOut, busIndex+i, \i_busIn, outbus.index+i]);
 		});
 		
-		this.schedSendOSC(bundle)
+		this.schedSendOSC(bundle, 0)
 		^playGroup
 	}
 	
@@ -123,7 +123,7 @@ NodeProxy : AbstractFunction {
 		var bundle;
 		bundle = MixedBundle(server);
 		this.sendSynthMsg(bundle, true);
-		this.schedSendOSC(bundle)
+		this.schedSendOSC(bundle, 0)
 	}
 	
 	rate { ^outbus.tryPerform(\rate) }
@@ -261,45 +261,39 @@ NodeProxy : AbstractFunction {
 		
 		if(server.serverRunning, {
 				bundle = bundle ? MixedBundle(server);
-				this.prepareForPlayMsg(bundle, freeAll);
+				if(this.isPlaying.not, {this.prepareForPlayMsg(bundle, freeAll) });
 				this.sendSynthMsg(bundle, freeAll, extraArgs);
-				
-				if(latency.notNil, {
-					SystemClock.sched(latency, {
-								this.schedSendOSC(bundle, onCompletion); 
-					})
-				}, {
-					resp = OSCresponder(server.addr, '/done', { 
-						this.schedSendOSC(bundle, onCompletion);
-						resp.remove;
-					}).add;
-				
-				});
+				this.schedSendOSC(bundle, latency, onCompletion);
 		});
 	}
 			
-	schedSendOSC { arg bundle, onCompletion;
+	schedSendOSC { arg bundle, latency, onCompletion;
+					var resp;
 					//bundle.asCompileString.postln;
-					if(clock.notNil, {
-						clock.sched(0, { 
-							bundle.send; 
-							onCompletion.value(this) 
+					if(latency.notNil, {
+						(clock ? SystemClock).sched(latency, { 
+										bundle.send; 
+										onCompletion.value(this) 
 						})
 					}, {
-						bundle.send;
-						onCompletion.value(this)
-					})
+						resp = OSCresponder(server.addr, '/done', { 
+							(clock ? SystemClock).sched(latency, { 
+										bundle.send; 
+										onCompletion.value(this) 
+							});
+							resp.remove;
+						}).add;
+				});
 	}
 	
 	prepareForPlayMsg { arg bundle, freeAll=true;
 				var watcher;
-					if(this.isPlaying.not, {
 						watcher = server.nodeWatcher;
 						group = Group.newToBundle(bundle, server, \addToHead);
 						group.prIsPlaying(true);
 						//RootNode(server).prAddHead(group);//manually link the node
 						watcher.nodes.add(group); //force isPlaying						if(watcher.isWatching.not, { watcher.start }); //to be sure.
-						})
+					
 	}
 	
 	sendSynthMsg { arg bundle, freeAll=true, extraArgs;
@@ -384,19 +378,18 @@ NodeProxy : AbstractFunction {
 	}
 	
 	wakeUpParentsToBundle { arg bundle; //see for objects
-		
 		if(this.isPlaying.not, {
-			if(loaded.not, { this.loadAll });
+			if(loaded.not, { this.loadAll; });
 			parents.do({ arg item; item.wakeUpParentsToBundle(bundle) });
 			this.wakeUpToBundle(bundle);
 		});
 	}
 	
-	wakeUpParents { 
+	wakeUpParents { arg latency=0.0; //see for load 
 		var bundle;
 		bundle = MixedBundle(server);
 		this.wakeUpParentsToBundle(bundle);
-		this.schedSendOSC(bundle);
+		this.schedSendOSC(bundle, latency);
 	}
 			
 	
