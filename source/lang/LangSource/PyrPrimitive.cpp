@@ -3809,8 +3809,8 @@ void initSchedPrimitives();
 void initMIDIPrimitives();
 		initMIDIPrimitives();
 
-//void initHIDPrimitives();
-//                initHIDPrimitives();
+void initHIDPrimitives();
+                initHIDPrimitives();
 
 void initSpeechPrimitives();
 		initSpeechPrimitives();     
