@@ -66,3 +66,79 @@ XInFeedback {
 	}
 }
 
+// listens on a fixed index (or several)
+// plays out to another.
+
+Monitor {
+	
+	var <group, <vol, <out;
+	
+	play { arg fromIndex, fromNumChannels=2, toIndex=0, toNumChannels, 
+			target, multi=false, volume=1, fadeTime=0.1;
+			
+		var server, inGroup, numChannels, bundle, divider;
+		inGroup = target.asGroup;
+		server = inGroup.server;
+		if(multi.not and: { group.isPlaying })
+		{ 
+			if(group.group !== group) {
+				if(group.server !== group.group.server) 
+					{ÊError("group not on the same server").throw }; 
+				group.moveToTail(inGroup) 
+			};
+			group.set(\gate, 1); // if releasing, keep up.
+		};
+		toNumChannels = toNumChannels ? fromNumChannels;
+		numChannels = max(fromNumChannels, toNumChannels);
+			vol = volume ? vol;
+			
+			bundle = MixedBundle.new;
+			if(group.isPlaying.not) { 
+				group = Group.newToBundle(bundle, inGroup, \addToTail);
+				bundle.add("/n_set", group.nodeID, \fadeTime, fadeTime);
+				NodeWatcher.register(group);
+				out = toIndex;
+				
+			} { 
+				out = out.asCollection.add(toIndex);
+			};
+			 
+			divider = if(toNumChannels.even and: { fromNumChannels.even }, 2, 1);
+			(numChannels div: divider).do { arg i;
+			bundle.add([9, "system_link_audio_"++divider, 
+					server.nextNodeID.debug, 1, group.nodeID,
+					\out, toIndex + (i * divider  % toNumChannels), 
+					\in, fromIndex + (i * divider % fromNumChannels),
+					\vol, volume
+					]);
+			};
+			bundle.send(server, server.latency);
+	}
+	
+	stop { arg fadeTime;
+		if(group.isPlaying) {
+			group.release(fadeTime);
+			SystemClock.sched(fadeTime, { 
+				group.free;
+				group = nil;
+				out = nil;
+			}); 
+		}
+	}
+	
+	toggle {
+		if(group.isPlaying) { this.stop } { this.play };
+	}
+	
+	vol_ { arg invol;
+		vol = invol ? vol;
+		group.set(\vol, vol);
+	}
+	
+	out_ { arg inval;
+		out = inval;
+		group.set(\out, inval);
+	}
+
+
+}

@@ -3,9 +3,8 @@
 BusPlug : AbstractFunction {
 	
 	var <server, <bus; 		
-	var <monitorGroup;
+	var <monitor;
 	var <busArg = \; // cache for "/s_new" bus arg
-	var <monitorVol = 1, <>onClear;
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
 	
 	
@@ -32,14 +31,14 @@ BusPlug : AbstractFunction {
 				var env;
 				env = EnvGate.new * vol;
 				Out.ar(out, InFeedback.ar(in, i) * env) 
-			}, [\ir, \ir]).writeDefFile;
+			}, [\kr, \ir]).writeDefFile;
 		};
 		2.do { arg i; i = i + 1;
-			SynthDef.writeOnce("system_link_control_" ++ i, { arg out=0, in=16;
+			SynthDef("system_link_control_" ++ i, { arg out=0, in=16;
 				var env;
 				env = EnvGate.new;
 				Out.kr(out, In.kr(in, i) * env) 
-			}, [\ir, \ir]);
+			}, [\kr, \ir]).writeDefFile;
 		}
 	}
 	
@@ -48,13 +47,8 @@ BusPlug : AbstractFunction {
 		this.free;
 		this.stop;
 		this.freeBus;
-		this.doOnClear; 
 	}
-	doOnClear {
-		onClear.do { arg item; item.value(this) };
-		onClear = nil;
-	}
-	
+		
 	
 	////////  bus definitions  //////////////////////////////////////////
 	
@@ -196,72 +190,27 @@ BusPlug : AbstractFunction {
 	
 	///// monitoring //////////////
 	
-	//play { arg group=0, atTime, bus, multi=false;
-	play { arg busIndex=0, numChannels, group, multi=false, vol;  
-		var bundle, divider, n, localServer, ok;
+	
+	play { arg out=0, numChannels, group, multi=false, vol=1.0;  
+		var ok, localServer;
 		
 		localServer = this.localServer; // multi client support
 		if(localServer.serverRunning.not, { "server not running".inform; ^nil });
+		ok = this.initBus(\audio, numChannels);
+		if(ok.not) { Error("can't monitor a" + bus.rate + "proxy" + "with" + numChannels).throw };
+		this.wakeUp;
+		if(monitor.isNil) { monitor = Monitor.new };
 		group = (group ? localServer).asGroup;
-		if(multi.not and: { monitorGroup.isPlaying })
-		{ // maybe should warn if not same server
-			if(monitorGroup.group !== group) { monitorGroup.moveToTail(group) };
-			monitorGroup.set(\gate, 1); // if releasing, keep up.
-			//this.wakeUp;
-			^monitorGroup 
-		};
-			
-			ok = this.initBus(\audio, numChannels);
-			if(ok.not) { ("can't monitor a" + bus.rate + "proxy" + "with" + numChannels).error };
-			this.wakeUp;
-
-			n = bus.numChannels;
-			numChannels = min(n, numChannels ? n);
-			monitorVol = vol ? monitorVol;
-			
-			bundle = MixedBundle.new;
-			if(monitorGroup.isPlaying.not) { 
-				monitorGroup = Group.newToBundle(bundle, group, \addToTail);
-				bundle.add("/n_set", monitorGroup.nodeID, \fadeTime, this.fadeTime);
-				NodeWatcher.register(monitorGroup);
-// check this again				// monitorGroup.isPlaying = true;
-			};
-			
-			divider = if(numChannels.even, 2, 1);
-			(numChannels div: divider).do { arg i;
-			bundle.add([9, "system_link_audio_"++divider, 
-					localServer.nextNodeID, 1, monitorGroup.nodeID,
-					\out, busIndex + (i*divider), 
-					\in, bus.index + (i*divider),
-					\vol, monitorVol
-					]);
-			};
-			bundle.send(localServer, localServer.latency);
-		^monitorGroup
+		monitor.play(bus.index, bus.numChannels, out, numChannels, group, multi, vol)
+		^monitor.group
 	}
 	
 	fadeTime Ê{ ^0.02 }
-	
-	vol_ { arg invol;
-		monitorVol = invol ? monitorVol;
-		monitorGroup.set(\vol, monitorVol);
-	}
-	
-	vol { ^monitorVol }
-	
-	toggle {
-		if(monitorGroup.isPlaying) { this.stop } { this.play };
-	}
 
 	stop { arg fadeTime=0.1;
-		if(monitorGroup.isPlaying) {
-			monitorGroup.release(fadeTime);
-			SystemClock.sched(fadeTime, { 
-				monitorGroup.free;
-				monitorGroup = nil;
-			}); // revisit
-		}
+		monitor.stop(fadeTime)
 	}
+	
 	scope { arg bufsize = 4096, zoom; if(this.isNeutral.not) { ^bus.scope(bufsize, zoom) } }
 	
 	record { arg path, headerFormat="aiff", sampleFormat="int16", numChannels;
@@ -317,12 +266,11 @@ NodeProxy : BusPlug {
 	}
 	
 	clear {
-		this.task = nil;
 		this.free(0, true); // free group and objects
 		this.stop(0);		// stop any monitor
+		this.task = nil;
 		this.freeBus;	 // free the bus from the server allocator 
 		this.init;	// reset the environment
-		this.doOnClear; // if any dependants are to be freed, do it.
 	}
 	
 	end { arg fadeTime;
@@ -332,13 +280,13 @@ NodeProxy : BusPlug {
 	}
 	
 	pause {
-		objects.do { |item| item.pause(clock) };
+		if(this.isPlaying) {Êobjects.do { |item| item.pause(clock) } };
 		paused = true;
 	}
 	
 	resume {
 		paused = false;
-		objects.do { |item| item.resume(clock) };
+		if(this.isPlaying) {Êobjects.do { |item| item.resume(clock) } };
 	}
 	
 	fadeTime_ { arg t;
@@ -363,7 +311,6 @@ NodeProxy : BusPlug {
 		this.put(nil, obj, 0)
 	}
 	
-		
 	at { arg index;  ^objects.at(index) }
 	
 	
@@ -373,7 +320,10 @@ NodeProxy : BusPlug {
 			
 			orderIndex = index ? 0;
 			if(obj.isSequenceableCollection)
-				{Êobj.do { |item, i| this.put(i + orderIndex, item) }; ^this };
+				{Ê
+					obj.do { |item, i| this.put(i + orderIndex, item) }; 
+					^this 
+				};
 			if(index.isSequenceableCollection)
 				{ 
 					obj = obj.asArray; 
@@ -407,11 +357,7 @@ NodeProxy : BusPlug {
 
 	}
 	
-	putSeries { arg first, second, last, value; 
-		var step;
-		step = if(second.isNil) { 1 } { second - first };
-		forBy(first, last, step, { arg i; this.put(i, value) });
-	}
+	putSeries { arg first, second, last, value; this.put((first, second..last), value) }
 	
 	shouldAddObject { arg obj; ^obj.readyForPlay } // shared node proxy overrides this
 	
@@ -432,7 +378,7 @@ NodeProxy : BusPlug {
 	setRates { arg ... args;
 		nodeMap.setRates(args);
 		this.rebuild;
-	} 
+	}
 			
 	defineBus { arg rate=\audio, numChannels;
 		super.defineBus(rate, numChannels);
@@ -447,7 +393,7 @@ NodeProxy : BusPlug {
 	}
 	
 	bus_ { arg inBus;
-		if(server != inBus.server) { "can't change the server".inform; ^this };
+		if(server != inBus.server) { Error("can't change the server").throw };
 		super.bus_(inBus);
 		this.linkNodeMap;
 		this.rebuild;
@@ -455,7 +401,7 @@ NodeProxy : BusPlug {
 		
 	group_ { arg agroup;
 		var bundle;
-		if(agroup.server !== server, { "cannot move to another server".error; ^this });
+		if(agroup.server !== server, { Error("cannot move to another server").throw });
 		NodeWatcher.register(agroup.isPlaying_(true)); // assume it is playing
 		if(this.isPlaying)
 		{ 	bundle = MixedBundle.new;
@@ -720,8 +666,8 @@ NodeProxy : BusPlug {
 					if(index.notNil) { // if nil, all are sent anyway
 					// make list of nodeIDs following the index
 						nodes = Array(8);
-						objects.doFrom( { arg obj; nodes = nodes ++ obj.nodeID }, index + 1);
-					//	nodes.debug;
+						objects.doFrom( { arg obj; nodes = nodes ++ obj.nodeID }, index + 2);
+						//(["/n_before", synthID] ++ nodes).debug;
 						if(nodes.size > 0) { bundle.add(["/n_before", synthID] ++ nodes) };
 						
 					};
@@ -1057,10 +1003,7 @@ SharedNodeProxy : NodeProxy {
 		^asString(constantGroupID)
 	}
 	
-	shouldAddObject { arg obj, index;
-			if(index.notNil) { "cannot add multiple objects to a shared node proxy".inform;
-				^false 
-			}; 
+	shouldAddObject { arg obj, index; 
 			^if(obj.distributable.not) { 
 				"this type of input is not distributable in a shared node proxy".inform;
 				false
@@ -1074,7 +1017,7 @@ SharedNodeProxy : NodeProxy {
 		args = [key,proxy]++args;
 		// check if any not shared proxy is passed in
 		(args.size div: 2).do { arg i; 
-			if(args[2*i+1].shared.not, { "shouldn't map a local to a shared proxy".error; ^this }) 
+			if(args[2*i+1].shared.not, { Error("shouldn't map a local to a shared proxy").throw }) 
 		};
 		nodeMap.map(*args);
 		if(this.isPlaying) { nodeMap.sendToNode(group) }
