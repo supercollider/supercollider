@@ -706,7 +706,7 @@ SCFuncUserView : SCUserView {
 	}
 }
 
-//by jt v.0.1
+//by jt v.0.12
 SCMultiSliderView : SCView { 
 
 	var <>acceptDrag = true;
@@ -745,7 +745,12 @@ SCMultiSliderView : SCView {
 	index_ {arg inx;
 		this.setProperty(\x, inx)
 	}
-
+	isFilled_{arg abool;
+		^this.setProperty(\isFilled, abool);
+		}
+	xOffset_{arg aval;
+		^this.setProperty(\xOffset, aval);
+		}
 	gap_ {arg inx;
 		gap = inx;
 		this.setProperty(\xOffset, inx)
@@ -754,18 +759,36 @@ SCMultiSliderView : SCView {
 	selectionSize { 
 		^this.getProperty(\selectionSize)
 	}
+	selectionSize_ { arg aval;
+		^this.setProperty(\selectionSize, aval)
+	}
 	currentvalue { //returns value of selected index
 		^this.getProperty(\y)
 	}
-
+	fillColor_{arg acolor;
+		^this.setProperty(\fillColor, acolor)
+		}
+	strokeColor_{arg acolor;
+		^this.setProperty(\strokeColor, acolor)
+		}
+	colors_{arg strokec, fillc;
+		this.strokeColor_(strokec);
+		this.fillColor_(fillc);
+		}
 	currentvalue_ {arg iny;
 		this.setProperty(\y, iny)
 	}
-	showIndex{arg abool;
+	showIndex_{arg abool;
 		this.setProperty(\showIndex, abool)
 		}
 	drawLines{arg abool;
 		this.setProperty(\drawLines, abool)
+		}
+	drawLines_{arg abool;
+		this.drawLines(abool)
+		}
+	drawRects_{arg abool;
+		this.setProperty(\drawRects, abool)
 		}
 	readOnly_{arg val;
 		this.setProperty(\readOnly, val);
@@ -773,7 +796,13 @@ SCMultiSliderView : SCView {
 	thumbSize_{arg val;
 		this.setProperty(\thumbSize, val)
 	}
-	isHorizontal_{arg val;
+	indexThumbSize_{arg val;
+		this.setProperty(\indexThumbSize, val)
+	}
+	valueThumbSize_{arg val;
+		this.setProperty(\valueThumbSize, val)
+	}
+	indexIsHorizontal_{arg val;
 		this.setProperty(\isHorizontal,val);	
 	}
 	canReceiveDrag {
@@ -822,25 +851,64 @@ SCMultiSliderView : SCView {
 			this.bounds = this.bounds.moveTo(ax,this.bounds.top );
 		},{	this.metaAction.value(this);} );
 	} //when ctrl click
-
-	
-
 }
+
 SCEnvelopeView : SCMultiSliderView {
-	xvalues {//returns array
-		^this.getProperty(\xvalues, Array.newClear(this.size))
-	}
-	yvalues {//returns array
-		^this.getProperty(\value, Array.newClear(this.size))
-	}
+	
 	value_ {arg val;
 		this.size = val.at(0).size;
 		^this.setProperty(\value, val)
 	}
+	value {
+		var ax, ay, axy;
+		ax = Array.newClear(this.size);
+		ay = Array.newClear(this.size);
+		axy = Array.with(ax, ay);
+		^this.getProperty(\value, axy)
+	}
+	thumbHeight_{arg index, height;
+		this.select(index);
+		this.setProperty(\thumbWidth, height);
+		this.select(-1);
+	}
+	thumbWidth_{arg index, width;
+		this.select(index);
+		this.setProperty(\thumbWidth, width);
+		this.select(-1);
+	}
+	select{arg index;
+		^this.setProperty(\selectedIndex, index);
+		}
+	x { 						//returns selected x
+		^this.getProperty(\x);
+	}
+	y {
+		^this.getProperty(\y);
+	}
+	x_{arg ax; 				
+		^this.setProperty(\x, ax);
+	}
+	y_{arg ay;
+		^this.setProperty(\y, ay);
+	}
+	index {
+		^this.getProperty(\selectedIndex)
+		}
+	setStatic {arg index, abool;
+		this.select(index);
+		this.setProperty(\isStatic, abool);
+		this.select(-1); //unselect
+		}
+	selectionColor_{arg acolor;
+		^this.setProperty(\selectionColor, acolor)
+		}
+	receiveDrag {
+		
+	}
+	beginDrag {
+	}
 
 }
-
-
 Gradient {
 	var color1, color2, direction, steps;
 	*new { arg color1, color2, direction=\h, steps=64;
