@@ -705,7 +705,7 @@ void initListPrimitives()
 	definePrimitive(base, index++, "_PriorityQueueTop", prPriorityQueueTop, 1, 0);
 	definePrimitive(base, index++, "_PriorityQueueClear", prPriorityQueueClear, 1, 0);
 	definePrimitive(base, index++, "_PriorityQueueEmpty", prPriorityQueueEmpty, 1, 0);
-	definePrimitive(base, index++, "_PriorityQueuePostpone", prPriorityQueueEmpty, 2, 0);
+	definePrimitive(base, index++, "_PriorityQueuePostpone", prPriorityQueuePostpone, 2, 0);
 	
 	definePrimitive(base, index++, "_Event_Delta", prEvent_Delta, 1, 0);
 }
