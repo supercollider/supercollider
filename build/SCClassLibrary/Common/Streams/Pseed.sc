@@ -70,7 +70,7 @@ PdegreeToKey : FilterPattern {
 
 // classical indian scale pattern. no special pakads (movements) or vakras (twists) are applied.
 // the pakad is often a natural consequence of the notes of arohana / avarohana 
-// (ascending and descending structures).ÊThis is the purpose of this pattern
+// (ascending and descending structures).  This is the purpose of this pattern
 // jrh 2003
 
 

@@ -66,7 +66,7 @@ Color {
 	
 	asHSV {
 		var max, min, delta, hue, sat, val;	
-		max = [red,green,blue].maxItem;
+		max  = [red,green,blue].maxItem;
 		min = [red,green,blue].minItem;
 		delta = max - min;
 		if (red == max, {hue = (green - blue) / delta});

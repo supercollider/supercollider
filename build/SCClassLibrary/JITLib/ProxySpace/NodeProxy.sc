@@ -168,7 +168,7 @@ BusPlug : AbstractFunction {
 	
 	value { arg something; 
 		var n;
-		something !? {Ên = something.numChannels };
+		something !? {  n = something.numChannels };
 		^if(something.rate == 'audio') { this.ar(n) } { this.kr(n) }  
 	}
 	

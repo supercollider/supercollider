@@ -69,7 +69,7 @@ Stethoscope {
 
 	}
 	
-	spec { ^if(rate === \audio) { audiospec } {Êcontrolspec } }
+	spec { ^if(rate === \audio) { audiospec } {  controlspec } }
 	
 	setProperties { arg numChannels, index, bufsize=4096, zoom, rate;
 				
@@ -106,7 +106,7 @@ Stethoscope {
 	free {
 		buffer.free;
 		
-		if(synth.isPlaying) {Êsynth.free };
+		if(synth.isPlaying) {  synth.free };
 		synth = nil;
 		if(server.scopeWindow === this) { server.scopeWindow = nil }
 	}
@@ -119,15 +119,15 @@ Stethoscope {
 	numChannels_ { arg n;
 	
 		var isPlaying;
-		if(n > 16) {ÊError("cannot display more than 16 channels at once").throw };
-		if(n != numChannels and: { n > 0 }) {Ê
+		if(n > 16) {  Error("cannot display more than 16 channels at once").throw };
+		if(n != numChannels and: { n > 0 }) {  
 			isPlaying = synth.isPlaying;
 			if(isPlaying) { synth.free; synth.isPlaying = false; synth = nil }; // immediate
 			numChannels = n;
 			
 			d.value = n;
 			this.allocBuffer;
-			if(isPlaying) {Êthis.run };
+			if(isPlaying) {  this.run };
 			this.updateColors;
 		};
 	}
@@ -143,7 +143,7 @@ Stethoscope {
 	}
 	
 	rate_ { arg argRate=\audio;
-		if(rate === argRate) {Ê^this };
+		if(rate === argRate) {  ^this };
 		if(argRate === \audio)
 		{ 
 				if(synth.isPlaying) { synth.set(\switch, 0) };

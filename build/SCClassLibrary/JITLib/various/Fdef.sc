@@ -1,10 +1,18 @@
+
 FuncProxy : Ref {
+
+	func { ^value }
 	
-	value { ^value.value }
-	valueArray { arg ... args; ^value.valueArray(args) }
-	valueEnvir { arg ... args; ^value.valueEnvir(*args) }
-	valueArrayEnvir {  arg ... args; ^value.valueArrayEnvir(args) }
+	value { arg ... args; ^value.valueArray(args) ? this } 
+	valueArray { arg args; ^value.valueArray(args) ? this  }
+	valueEnvir { arg ... args; ^value.valueEnvir(*args) ? this  }
+	valueArrayEnvir {  arg ... args; ^value.valueArrayEnvir(args) ? this  }
+	
+	source_ { arg obj; if(obj !== this) {  this.value = obj } } // catch at least identity
+	clear { value = nil }
+	
 }
+
 
 Fdef : FuncProxy {
 	classvar <>all;
@@ -17,12 +25,15 @@ Fdef : FuncProxy {
 		var res;
 		res = all[key];
 		if(res.isNil) {
-			res = super.new.value_(val ? 1);
+			res = super.new.source_(val ? 1);
 			all[key] = res
 		} {
-			if(val.notNil) { res.value = val };
+			if(val.notNil) { res.source = val };
 		}
 		^res
 	}
 
 }
+
+
+

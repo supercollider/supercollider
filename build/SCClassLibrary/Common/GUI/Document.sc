@@ -33,16 +33,16 @@ Document {
 //class:
 
 	*dir_ { arg path; path = path.standardizePath;
-		if(path == "") {Êdir = path } {
-			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln }Ê{Ê
+		if(path == "") {  dir = path } {
+			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln }  {  
 				dir = path ++ "/"
 			}
 		}
 	}
 	
 	*wikiDir_ { arg path; path = path.standardizePath;
-		if(path == "") {ÊwikiDir = path } {
-			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln }Ê{Ê
+		if(path == "") {  wikiDir = path } {
+			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln }  {  
 				wikiDir = path ++ "/"
 			}
 		}
@@ -280,7 +280,7 @@ Document {
 			doc.path = filename;
 			doc.selectRange(0,0x7FFFFFFF);
 			doc.onClose = {
-				if(doc.string == ("Write about " ++ wikiWord ++ " here.")) {Ê
+				if(doc.string == ("Write about " ++ wikiWord ++ " here.")) {  
 					unixCmd("rm" + filename) 
 				};
 			};

@@ -74,7 +74,7 @@ Symbol {
 
 	// support for math on symbols
 	
-	performBinaryOpOnSomething {Ê^this }
+	performBinaryOpOnSomething { ^this }
 
 	// unary ops
 	neg { ^this }

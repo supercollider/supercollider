@@ -44,7 +44,7 @@ PatchGui : AbstractPlayerGui {
 					Tile(a,layout);
 				},{
 					gui = a.gui(layout);/*
-					ToggleButton(layout,"³",
+					ToggleButton(layout,"   ",
 						{  gui = model.args.at(i).gui(box); },
 						{  gui.remove(true); box.refresh;  },
 						true

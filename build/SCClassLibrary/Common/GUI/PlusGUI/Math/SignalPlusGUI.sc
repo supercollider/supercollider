@@ -50,7 +50,7 @@
 					
 					txt.string_("index: " ++ (v.index / zoom).roundUp(0.01).asString ++ 
 					", value: " ++ curval);
-					if(write) { this[(v.index / zoom).asInteger]Ê= curval };
+					if(write) { this[(v.index / zoom).asInteger]  = curval };
 				})
 				.keyDownAction_({ |v, char|
 					if(char === $l) { write = write.not; v.readOnly = write.not;  };

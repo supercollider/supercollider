@@ -325,7 +325,7 @@ Server : Model {
 					result = max(result, dt);
 					n = n - 1;
 					if(n > 0) { 
-						SystemClock.sched(wait, {ÊpingFunc.value; nil }) 
+						SystemClock.sched(wait, {  pingFunc.value; nil }) 
 					} {
 						("maximum determined latency of" + name + ":" + result + "s").postln;
 						func.value(result) 

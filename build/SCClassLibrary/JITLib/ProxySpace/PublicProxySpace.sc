@@ -4,7 +4,8 @@
 
 
 PublicProxySpace : ProxySpace {
-
+	
+	
 	var <>sendingKeys, <>listeningKeys, <>public=true;
 	var <>addresses, <>channel, <>nickname;
 	var <>action, <>logSelf=true, <logAll=false, <>basicSafety=true;
@@ -41,7 +42,7 @@ PublicProxySpace : ProxySpace {
 	
 	lurk { listeningKeys = \all; sendingKeys = nil; }
 	boss { listeningKeys = nil; sendingKeys = \all; }
-	merge {Ê listeningKeys = \all; sendingKeys = \all; }
+	merge {   listeningKeys = \all; sendingKeys = \all; }
 	 
 	logAll_ { arg flag; if(flag) {
 						if(sendingKeys === \all) { logAll = true } 
@@ -102,7 +103,7 @@ PublicProxySpace : ProxySpace {
 						};
 					}
 				} { 
-					if(proxyspace.logAll) {Ê
+					if(proxyspace.logAll) {  
 						proxyspace.action.value(proxyspace, nickname, key, str) 
 					} 
 				};
@@ -171,6 +172,7 @@ PublicProxySpace : ProxySpace {
 			and: { str.find("PublicProxySpace").isNil }
 		}
 	}
+	
 	
 	
 }
