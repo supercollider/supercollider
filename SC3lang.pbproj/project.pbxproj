@@ -5,6 +5,35 @@
 	};
 	objectVersion = 38;
 	objects = {
+		90A4CDA0044D5AF2000000AF = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = SC_Speech.cpp;
+			path = source/lang/LangSource/SC_Speech.cpp;
+			refType = 2;
+		};
+		90A4CDA1044D5AF2000000AF = {
+			fileRef = 90A4CDA0044D5AF2000000AF;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		90A4CDA2044D5AF2000000AF = {
+			fileRef = 90A4CDA0044D5AF2000000AF;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//900
+//901
+//902
+//903
+//904
+//920
+//921
+//922
+//923
+//924
 		920F883D0443F54D00A80088 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -794,6 +823,7 @@
 			children = (
 				F5ED526B02FC2E330195E057,
 				F5ED526C02FC2E330195E057,
+				90A4CDA0044D5AF2000000AF,
 				F50D05A502E69B6B01CA2799,
 				F50D05A602E69B6B01CA2799,
 				F50D05A702E69B6B01CA2799,
@@ -1460,6 +1490,7 @@
 				F5E8B845039BD69C01A87B78,
 				C26BDCCD03D0B4E900A87B78,
 				920F88410443F59700A80088,
+				90A4CDA1044D5AF2000000AF,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2886,6 +2917,7 @@
 				F59DF0C203073BC901CE0C16,
 				F59DF0C8030777A201CE0C16,
 				F5285E0F0316170401CA2799,
+				90A4CDA2044D5AF2000000AF,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
