@@ -1,8 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
-}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 NodeWatcher\
@@ -16,13 +15,16 @@
 usually this is not needed, but in some cases it can be essential.
 \f2\fs18 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs26 *new(server)\
+\f0\b\fs26 \cf0 *new(server)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	create a new instance listening to the server's address\
+\f1\b0 \cf0 	create a new instance listening to the server's address\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b *newFrom(server)
+\f0\b \cf0 *newFrom(server)
 \f1\b0 \
 	 create a new instance listening to the server's address\
 	 if there is one present already return that one\
@@ -57,19 +59,20 @@ usually this is not needed, but in some cases it can be essential.
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // example:\
-\cf3 \
-	a = \cf4 Group\cf3 .basicNew(1000, s); \cf2 //create a node object\cf3 \
-	\cf4 NodeWatcher\cf3 .register(a);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+	a = \cf3 Group\cf0 .basicNew(s, 1000); \cf2 //create a node object\cf0 \
+	\cf3 NodeWatcher\cf0 .register(a);\
 	a.isPlaying;\
-	a.nodeToServer; \cf2 //start the node on the server\cf3 \
-	a.isPlaying;\
-	a.isRunning;\
-	a.run(\cf4 false\cf3 );\
-	a.isRunning;\
-	s.freeAll; \cf2 //free all nodes\cf3 \
+	a.nodeToServer; \cf2 //start the node on the server\cf0 \
 	a.isPlaying;\
 	a.isRunning;\
-	\cf0 \
+	a.run(\cf3 false\cf0 );\
+	a.isRunning;\
+	s.freeAll; \cf2 //free all nodes\cf0 \
+	a.isPlaying;\
+	a.isRunning;\
+	\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -85,21 +88,22 @@ it doesn't require registration, reacts to each message.
 \f2\fs18 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs26 nodeIsPlaying(nodeID)
+\f0\b\fs26 \cf0 nodeIsPlaying(nodeID)
 \f1\b0 \
 	check if the node with the nodeID is playing\
 	
 \f2\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // example:\cf3 \
-	n = \cf4 DebugNodeWatcher\cf3 (s);\
+\cf2 // example:\cf0 \
+	n = \cf3 DebugNodeWatcher\cf0 (s);\
 	n.start;\
-	x = \cf4 Group\cf3 (s);\
-	x.run(\cf4 false\cf3 );\
+	x = \cf3 Group\cf0 (s);\
+	x.run(\cf3 false\cf0 );\
 	x.free;\
-	n.stop;\cf0 \
+	n.stop;\
 	\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
