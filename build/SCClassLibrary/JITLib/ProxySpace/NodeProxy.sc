@@ -295,14 +295,14 @@ NodeProxy : BusPlug {
 	asTarget { ^group.asGroup }
 	
 	pause {
-		objects.do { |item| item.pause };
+		objects.do { |item| item.pause(clock) };
 		task.stop;
 		paused = true;
 	}
 	
 	resume {
 		paused = false;
-		objects.do { |item| item.resume };
+		objects.do { |item| item.resume(clock) };
 	}
 	
 		
@@ -627,7 +627,7 @@ NodeProxy : BusPlug {
 	}
 	
 	
-	send { arg extraArgs, index=0, freeLast=false;
+	send { arg extraArgs, index=0, freeLast=true;
 			var bundle, obj;
 			obj = objects.at(index);
 			if(obj.notNil, {
@@ -638,7 +638,7 @@ NodeProxy : BusPlug {
 			})
 	}
 	
-	sendAll { arg extraArgs, freeLast=false;
+	sendAll { arg extraArgs, freeLast=true;
 			var bundle;
 			bundle = this.getBundle;
 			if(freeLast, { this.stopAllToBundle(bundle) });
@@ -1002,6 +1002,12 @@ SharedNodeProxy : NodeProxy {
 	
 	generateUniqueName {
 		^asString(constantGroupID)
+	}
+	
+	addObject { arg bundle, obj, index, freeAll;
+		if(obj.distributable) {
+			super.addObject(bundle, obj, index, freeAll);
+		} { "this type of input is not distributable in a shared node proxy".error; ^this.halt; };
 	}
 
 	//map to a control proxy

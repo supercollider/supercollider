@@ -23,6 +23,7 @@ AbstractPlayControl {
 	
 	readyForPlay { ^true }
 	synthDef { ^nil }
+	distributable {Ê^false } // shared proxy support
 
 	sendDefToBundle {}
 	spawnToBundle {}
@@ -69,7 +70,7 @@ StreamControl : AbstractPlayControl {
 		stream.stop;
 	}
 	pause { stream.pause; paused=true }
-	resume { stream.resume; paused=false }
+	resume { arg clock, quant=1.0; stream.resume(clock, quant); paused=false }
 	
 	free { stream.stop; stream = nil }
 	cmdPeriod { stream.stop }
@@ -104,6 +105,7 @@ SynthControl : AbstractPlayControl {
 	sendDefToBundle {} //assumes that SynthDef is loaded in the server 
 	name { ^source }
 	clear { nodeID = nil }
+	distributable { ^true }
 	build { arg proxy;
 		^proxy.initBus(proxy.rate ? \audio, proxy.numChannels ? 2);
 	}
@@ -149,8 +151,22 @@ SynthControl : AbstractPlayControl {
 			
 	stopClientToBundle { }  // used in shared node proxy
 	
-	pause { if(nodeID.notNil) { server.sendMsg("/n_run", nodeID, 0) }; paused = true; }
-	resume { if(nodeID.notNil) { server.sendMsg("/n_run", nodeID, 1) }; paused = false; }
+	pause { arg clock, quant=1;
+		this.run(clock, quant, false); 
+	}
+	resume { arg clock, quant=1.0;
+		this.run(clock, quant, true);
+	}
+	run { arg clock, quant, flag=true;
+		if(nodeID.notNil) { 
+			(clock ? SystemClock).play({
+				server.sendMsg("/n_run", nodeID, flag.binaryValue);
+				paused = flag.not;
+				nil;
+			}, quant)
+		} { paused = flag.not; }
+	}
+	
 	canReleaseSynth { ^canReleaseSynth }
 }
 
