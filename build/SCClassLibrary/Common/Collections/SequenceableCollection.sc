@@ -533,8 +533,15 @@ SequenceableCollection : Collection {
 	
 	// sorting
 	sort { arg function; 
-		if (function.isNil, { function = { arg a, b; a < b }; }); 
-		this.sortRange(0, this.size - 1, function) 
+		^this.mergeSort(function)
+	}
+	sortBy { arg key;
+		^this.sort({| a, b | a[key] <= b[key] })
+	}
+	
+	quickSort { arg function; 
+		if (function.isNil) { function = { arg a, b; a <= b }; }; 
+		this.quickSortRange(0, this.size - 1, function) 
 	}
 	
 	swap { arg i, j;
@@ -544,7 +551,7 @@ SequenceableCollection : Collection {
 		this[j] = temp;
 	}
 	
-	sortRange { arg i, j, function;
+	quickSortRange { arg i, j, function;
 		//Sort elements i through j of this to be nondescending according to
 		// function.
 		var di, dij, dj, tt, ij, k, l, n;
@@ -593,11 +600,70 @@ SequenceableCollection : Collection {
 				});
 		// Now l<k (either 1 or 2 less), and di through dl are all less than or equal to dk
 		// through dj.  Sort those two segments.
-				this.sortRange(i, l, function);
-				this.sortRange(k, j, function);
+				this.quickSortRange(i, l, function);
+				this.quickSortRange(k, j, function);
 			});
 		});
 	}
+	
+	
+	
+	mergeSort { arg function;
+		var tempArray;
+		tempArray = this.class.newClear(this.size);
+		if (function.isNil) { function = { arg a, b; a <= b }; }; 
+		this.mergeSortTemp(function, tempArray, 0, this.size - 1);
+	}
+	
+	mergeSortTemp { arg function, tempArray, left, right;
+		var mid;
+		if (right > left) 
+		{
+			mid = (right + left) >> 1;
+			this.mergeSortTemp(function, tempArray, left, mid);
+			this.mergeSortTemp(function, tempArray, mid+1, right);
+			this.mergeTemp(function, tempArray, left, mid+1, right);
+		};
+	}
+	
+	mergeTemp { arg function, tempArray, left, mid, right;
+		var i, leftEnd, size, tempPos;
+		leftEnd = mid - 1;
+		tempPos = left;
+		size = right - left + 1;
+		while { (left <= leftEnd) && (mid <= right) }
+		{
+			if (function.value( this[left], this[mid] ))
+			{
+				tempArray[tempPos] = this[left];
+				tempPos = tempPos + 1;
+				left = left + 1;
+			} 
+			{
+				tempArray[tempPos] = this[mid];
+				tempPos = tempPos + 1;
+				mid = mid + 1;
+			}
+		};
+		while { left <= leftEnd }
+		{
+			tempArray[tempPos] = this[left];
+			tempPos = tempPos + 1;
+			left = left + 1;
+		};
+		while { mid <= right }
+		{
+			tempArray[tempPos] = this[mid];
+			tempPos = tempPos + 1;
+			mid = mid + 1;
+		};
+		size.do { 
+			this[right] = tempArray[right]; 
+			right = right - 1; 
+		};
+	}
+	
+
 	// mirror image of String-split
 	join { arg joiner;
 		^String.streamContents({ arg stream;
