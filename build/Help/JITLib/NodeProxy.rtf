@@ -41,7 +41,7 @@ ___________________________________________________\
 			and an out argument, this can be used to do filtering].\
 		
 \f0\b \
-	add(anObject)\
+	add(anObject, channelOffset)\
 		
 \f2\b0 play a new synth, add it to the present ones\
 		anObject can be a Function, an Instr, any valid UGen input
@@ -53,15 +53,17 @@ ___________________________________________________\
 		the argument list is applied to the synth only.
 \f0\b \
 	\
-	put(anObject, sendFlag, freeAllFlag, completionFunc, latency)\
+	put(anObject, channelOffset, sendFlag, freeAllFlag, completionFunc, latency)\
 		
 \f2\b0 set the source:\
-			sendFlag: send it or not -  default:false\
-			freeAllFlag: replace current synth or not - default:true\
-					if false, add the new synthDef to the present ones\
+			channelOffset: 	using a multichannel setup it can be useful to set this.\
+							when the objects numChannels is smaller than the proxy \
+			sendFlag: 	send it or not -  default:false\
+			freeAllFlag: 	replace current synth or not - default:true\
+						if false, add the new synthDef to the present ones\
 			completionFunc: is evaluated as soon as synth is running\
-			latency: 	nil: wait for '/done' message (doesn't work always)\
-					a number is the time to wait for the loading.\
+			latency: 		nil: wait for '/done' message (doesn't work when sending several at once)\
+						a number is the time to wait for the loading.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 	\
