@@ -82,13 +82,17 @@ NodeProxy : AbstractFunction {
 			this.sendToServer(false, 0.0, extraArgs);
 	}
 	
-	record { arg path, headerFormat="aiff", sampleFormat="int16";
+	record { arg path, headerFormat="aiff", sampleFormat="int16", numChannels;
 		var rec;
-		rec = RecNodeProxy.newFrom(this);
+		rec = RecNodeProxy.newFrom(this, numChannels, {
+					//rec.record(path, headerFormat, sampleFormat);
+		});
+		
 		Routine({
-			1.0.wait;//must wait.
+			1.0.wait;//seemingly must wait.
 			rec.record(path, headerFormat, sampleFormat);
 		}).play;
+		
 		^rec
 	}
 	
@@ -96,7 +100,11 @@ NodeProxy : AbstractFunction {
 	load {
 		if(server.serverRunning, {
 			parents.do({ arg item; item.load });
-			this.updateSynthDefs;
+			if(synthDefs.isEmpty.not, { 
+					synthDefs.do({ arg def;
+						this.defToServer(def)
+					});
+			});
 		}, { "server not running".inform });
 	}
 	
@@ -135,10 +143,11 @@ NodeProxy : AbstractFunction {
 				def = obj.asProxySynthDef(this);
 				synthDefs = synthDefs.add(def);
 				def.writeDefFile;
-				server.sendMsg("/d_recv", def.asBytes);
 				
-				
-				if(send, { this.sendToServer(freeLast, latency, onCompletion) });
+				if(server.serverRunning, { 
+					this.defToServer(def);
+					if(send, { this.sendToServer(freeLast, latency, onCompletion) });
+				 });
 				
 			}, { "rate/numChannels must match".inform })
 			
@@ -234,35 +243,26 @@ NodeProxy : AbstractFunction {
 					})
 	}
 	
-	updateSynthDefs {
-		if(synthDefs.isEmpty.not, { 
-			synthDefs.do({ arg synthDef;
-			/*
-			if(server.isLocal, {//maybe direct send would be better? server reboot would destroy them?
-				server.sendSynthDef(synthDef.name)
-				//server.loadSynthDef(synthDef.name)
-			}, {
-				server.sendSynthDef(synthDef.name)
-			}); 
-			*/
-			//server.sendSynthDef(synthDef.name);
-			//server.loadSynthDef(synthDef.name);
-			server.sendMsg("/d_recv", synthDef.asBytes);
-			});
-				
-		});
-	}
+	defToServer { arg def;
 	
-	startGroupMsg { arg msg;
-					group = Group.newMsg(msg, server, \addToHead);
-					group.prIsPlaying(true);
-				
+		server.sendMsg("/d_recv", def.asBytes);
+		/*
+		if(server.isLocal, {
+				server.loadSynthDef(def.name)
+			}, {
+				server.sendSynthDef(def.name)
+		}); 
+		*/
 	}
+		
+	
 	
 	sendSynthMsg { arg msg, freeLast=true, extraArgs;
 	
 				if(this.isPlaying.not, {
-					this.startGroupMsg(msg);
+					group = Group.newMsg(msg, server, \addToHead);
+					group.prIsPlaying(true);
+				
 				}, {
 					//release current synth
 					if(freeLast, {

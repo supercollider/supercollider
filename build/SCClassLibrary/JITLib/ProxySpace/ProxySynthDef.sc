@@ -26,7 +26,7 @@ ProxySynthDef : SynthDef {
 				Out.multiNewList([proxy.rate, proxy.bus.index]++output)
 		};
 					
-		^super.prNew(name).proxy_(proxy).build(func);
+		^super.prNew.name_(name).proxy_(proxy).build(func);
 	}
 	
 }
