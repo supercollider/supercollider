@@ -324,7 +324,7 @@ Pfindur : FilterPattern {
 				};
 				delta = inevent.delta;
 				nextElapsed = elapsed + delta;
-				if (nextElapsed.round(tolerance) >= dur, {
+				if (nextElapsed.roundUp(tolerance) >= dur, {
 					// must always copy an event before altering it.
 					inevent = inevent.copy; 
 					// fix delta time.
