@@ -735,6 +735,8 @@ void PV_BinShift_next(PV_BinShift *unit, int inNumSamples)
 			q->bin[pos] += p->bin[i];
 		}
 	}
+	memcpy(p->bin, q->bin, numbins * sizeof(float));
+
 }
 
 void PV_BinShift_Ctor(PV_BinShift *unit)
@@ -777,6 +779,7 @@ void PV_MagShift_next(PV_MagShift *unit, int inNumSamples)
 			q->bin[pos].mag += p->bin[i].mag;
 		}
 	}
+	memcpy(p->bin, q->bin, numbins * sizeof(float));
 }
 
 void PV_MagShift_Ctor(PV_MagShift *unit)
