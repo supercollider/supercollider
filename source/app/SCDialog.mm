@@ -3,8 +3,21 @@
 //  SC3lang
 //
 //  Created by cruxxial on Tue Dec 17 2002.
-//  Copyright (c) 2002 crucial-systems. All rights reserved.
-//
+/*
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
 
 #import "SCDialog.h"
 
@@ -12,7 +25,6 @@
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "VMGlobals.h"
-#include "SC_RGen.h"
 #include "GC.h"
 #include "PyrSched.h"
 
@@ -35,13 +47,12 @@
 
 
 
-// call method on self for Cocoa usage
+// detach method on self for Cocoa usage
 -(void)detachThreadWithSelector:(SEL)selector
 {
-    // detach
     [NSThread detachNewThreadSelector:selector toTarget:self withObject:NULL];
 }
-// call method on self when SCVM is ready for sclang usage
+// SCVM defer method on self for sclang usage
 -(void)scvmDeferWithSelector:(SEL)selector
 {
     NSInvocation *invocation =  [NSInvocation invocationWithMethodSignature:
@@ -57,13 +68,9 @@
 -(void)getPaths
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-
- //   [NSThread setThreadPriority: [NSThread threadPriority] * 0.9 ]; 
-//    NSLog(@"in detached thread , my priority: %f",[NSThread threadPriority]);
     NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
     
     NSArray *urls = [docctl URLsFromRunningOpenPanel];
-    // on return go through this
     if(urls) {
         temp = [urls retain];
         [self scvmDeferWithSelector: @selector(returnPaths) ];
@@ -81,7 +88,6 @@
     
     VMGlobals *g = gMainVMGlobals;
     pthread_mutex_lock (&gLangMutex);
-    // TODO: limit at max size of array
     for (i = 0; i < count; i++)
     {
         PyrString* pyrPathString = newPyrString(g->gc,[[[urls objectAtIndex: i ] path] cString],0,true);
@@ -99,6 +105,7 @@
 
     [self ok];
 }
+
 
 
 

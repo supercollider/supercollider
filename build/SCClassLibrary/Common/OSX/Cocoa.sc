@@ -3,10 +3,9 @@ CocoaDialog {
 
 	classvar returnSlot,ok,cancel;
 	
-	*getPaths { arg okFunc,cancelFunc,
-				maxSize=20;
+	*getPaths { arg okFunc,cancelFunc;
 		if(returnSlot.isNil,{
-			returnSlot = Array.new(maxSize);
+			returnSlot = Array.new;
 			ok = okFunc;
 			cancel = cancelFunc;
 			this.prGetPathsDialog(returnSlot);
@@ -31,19 +30,5 @@ CocoaDialog {
 	*clear { // in case of errors, invalidate any previous dialogs
 		returnSlot = nil;
 	}
-	
-
-
 }
-
-
-/*
-Cocoa
-
-	*saveAsPlist { arg object,path;
-		_Cocoa_SaveAsPlist
-		^this.primitiveFailed
-	}
-
-*/
 

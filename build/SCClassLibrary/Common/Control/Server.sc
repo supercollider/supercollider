@@ -177,7 +177,6 @@ Server : Model {
 			//this.serverRunning = true;
 		},{
 			//isBooting = true;
-			//("./scsynth -u " ++ addr.port ++ " " ++ options.asString).postln;
 			unixCmd("./scsynth -u " ++ addr.port ++ " " ++ (if(options.notNil,{options.asOptionsString},"")));
 			("booting " ++ addr.port.asString).inform;
 		});
@@ -209,9 +208,9 @@ Server : Model {
 		// its often because of multiple servers
 		// and you can't cause them to quit via OSC
 		
-		// doesn't work here
-//	ps aux | grep -i "[s]csynth" | awk '{system("kill " $2)}'
-		unixCmd("ps aux | grep -i \"[s]csynth\" | awk '{system(\"kill \" $2)}'");
+		// doesn't work here ?
+		//	ps -axo pid,command | grep -i "[s]csynth" | awk '{system("kill " $1)}'
+		unixCmd("ps axo pid,command | grep -i \"[s]csynth\" | awk '{system(\"kill \" $1)}'");
 	}
 	freeAll {
 		this.sendMsg("/g_freeAll",0);

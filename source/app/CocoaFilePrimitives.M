@@ -3,8 +3,20 @@
  *  SC3lang
  *
  *  Created by cruxxial on Mon Nov 25 2002.
- *  Copyright (c) 2002 __MyCompanyName__. All rights reserved.
- *
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include <Cocoa/Cocoa.h>
@@ -16,7 +28,6 @@
 #include "GC.h"
 
 #import "SCDialog.h"
-//#import "SCVirtualMachine.h"
 
 
 inline NSString* pyrSlotToNSString(PyrSlot *slot)
@@ -48,7 +59,7 @@ id convertSCSlot(PyrSlot* b)
             if( NotNil( key )) {
                 [dict 
                     setObject: convertSCSlot( &(array->uo->slots[i+1]) ) 
-                    forKey: [(NSObject*)convertSCSlot(key) description] // symbol, string, number, or ??
+                    forKey: [(NSObject*)convertSCSlot(key) description] // symbol, string, number, or ?
                 ];
             }
         }
@@ -96,18 +107,15 @@ id convertSCSlot(PyrSlot* b)
                     }
                     break;
                 
-    /*            
+    /*   
             case tagInf :
             //dict must do values
                 NSNumber with infinity
             NaN
                 NSNumber with NaN
                 
-
             default : // object asString
-                    break;
-    */
-    
+    */    
     }
     
     // can't happen ?
@@ -131,21 +139,18 @@ int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
     
     SCDialog *dialog = [SCDialog receiver: receiver->uo returnSlot: array->uo ];
     [dialog detachThreadWithSelector:@selector(getPaths) ];
-  //  NSLog(@"thread detached, my priority: %f",[NSThread threadPriority]);
     return errNone;
 }
-
 
 
 int prSaveAsPlist(struct VMGlobals *g, int numArgsPushed);
 int prSaveAsPlist(struct VMGlobals *g, int numArgsPushed)
 {
-    if (!g->canCallOS) return errCantCallOS;//if its deferred, does this matter ?
-
+    if (!g->canCallOS) return errCantCallOS;
+    
     PyrSlot *object = g->sp - 1;
     PyrSlot *path = g->sp;
     
-    //NSLog(@"Plist converted: %@ ",convertSCSlot(object) );
     if([NSKeyedArchiver archiveRootObject:convertSCSlot(object) toFile: pyrSlotToNSString(path) ]) {
         return errNone;
     } else {
@@ -153,7 +158,6 @@ int prSaveAsPlist(struct VMGlobals *g, int numArgsPushed)
         return errFailed;
     }
 }
-
 
 
 void initCocoaFilePrimitives()
