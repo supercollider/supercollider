@@ -1,4 +1,13 @@
 
++ SCWindow {
+	flow { arg func,bounds;
+		var f,comp;
+		f = FlowView(this,bounds ?? { this.bounds });
+		func.value(f);
+		f.resizeToFit;
+		^f
+	}
+}
 
 + SCContainerView {
 
