@@ -12,13 +12,17 @@ Demand : MultiOutUGen {
  	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
-SelfDemand : Demand {
+SelfDemand : MultiOutUGen {
 	
 	*ar { arg dur, reset, demandUGens, doneAction=0;
 		^this.multiNewList(['audio', dur, reset, doneAction] ++ demandUGens.asArray)
 	}
 	*kr { arg dur, reset, demandUGens, doneAction=0;
 		^this.multiNewList(['control', dur, reset, doneAction] ++ demandUGens.asArray)
+	}
+	init { arg ... argInputs;
+		inputs = argInputs;
+		^this.initOutputs(inputs.size - 3, rate)
 	}
 	checkInputs {
 		^if(inputs.at(0).rate === \demand) {
