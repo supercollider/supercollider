@@ -17,6 +17,7 @@ libcommoninclude_HEADERS	= \
 	SC_Altivec.h		\
 	SC_Endian.h		\
         SC_Sem.h                \
+	SC_StringBuffer.h	\
 	SC_StringParser.h	\
 	scsynthsend.h
 

@@ -49,14 +49,15 @@ libsclang_la_SOURCES	=		\
 	SC_ComPort.cpp			\
 	SC_HID.cpp			\
 	SC_AlsaMIDI.cpp			\
+	SC_LanguageClient.cpp		\
+	SC_LibraryConfig.cpp		\
 	SC_TerminalClient.cpp		\
 	Samp.cpp			\
 	SimpleStack.cpp			\
 	VMGlobals.cpp			\
 	alloca.cpp			\
 	dumpByteCodes.cpp		\
-	lang_tab.tmp.cpp		\
-	libraryConfig.cpp
+	lang_tab.tmp.cpp
 
 bin_PROGRAMS		= sclang
 sclang_LDADD		= libsclang.la $(top_srcdir)/source/server/libscsynth.la

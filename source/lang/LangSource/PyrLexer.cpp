@@ -54,7 +54,7 @@
 #include "dirent.h"
 #include <string.h>
 
-#include "libraryConfig.h"
+#include "SC_LibraryConfig.h"
 
 int yyparse();
 
@@ -70,8 +70,6 @@ thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 #else
 # undef ENABLE_LIBRARY_CONFIGURATOR
 #endif // SC_LINUX
-
-LibraryConfig *gLibraryConfig = 0;
 
 PyrSymbol *gCompilingFileSym = 0;
 VMGlobals *gCompilingVMGlobals = 0;

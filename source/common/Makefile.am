@@ -19,6 +19,7 @@ noinst_LTLIBRARIES	= libcommon.la
 libcommon_la_SOURCES	= 	\
 	SC_AllocPool.cpp	\
 	SC_Sem.cpp		\
+	SC_StringBuffer.cpp	\
 	SC_StringParser.cpp	\
 	scsynthsend.cpp
 

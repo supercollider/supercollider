@@ -56,11 +56,12 @@ libsclanginclude_HEADERS =	\
 	SC_LogFile.h		\
 	SC_Msg.h		\
 	SC_SynthImpl.h		\
+	SC_LanguageClient.h	\
+	SC_LibraryConfig.h	\
 	SC_TerminalClient.h	\
 	SC_UnorderedList.h	\
 	SFHeaders.h		\
 	SimpleStack.h		\
-	VMGlobals.h		\
-	libraryConfig.h
+	VMGlobals.h
 
 ## EOF ================================================================

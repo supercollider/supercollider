@@ -1,5 +1,5 @@
 // emacs:		-*- c++ -*-
-// file:		SC_TerminalClient.h
+// file:		SC_StringBuffer.h
 // copyright:	2003 stefan kersten <steve@k-hornz.de>
 // cvs:			$Id$
 
@@ -18,40 +18,50 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 // USA
 
-#ifndef SC_TERMINALCLIENT_H_INCLUDED
-#define SC_TERMINALCLIENT_H_INCLUDED
+#ifndef SC_STRINGBUFFER_H_INCLUDED
+#define SC_STRINGBUFFER_H_INCLUDED
 
-#include "SC_LanguageClient.h"
-#include <pthread.h>
+#include <stdarg.h>
+#include <stdlib.h>
 
 // =====================================================================
-// SC_TerminalClient - command line sclang client.
+// SC_StringBuffer - Autogrowing string buffer.
 // =====================================================================
 
-class SC_TerminalClient : public SC_LanguageClient
+class SC_StringBuffer
 {
 public:
-	SC_TerminalClient();
+	SC_StringBuffer(size_t initialSize=0);
+	SC_StringBuffer(const SC_StringBuffer& other);
+	~SC_StringBuffer();
 
-	void run(int argc, char** argv);
+	size_t getCapacity() const { return mCapacity; }
+	size_t getSize() const { return mPtr - mData; }
+	size_t getRemaining() const { return mCapacity - getSize(); }
+	char* getData() const { return mData; }
 
-	void post(const char *fmt, va_list ap, bool error);
-	void post(char c);
-	void post(const char* str, size_t len);
-	void flush();
+	bool isEmpty() const { return getSize() == 0; }
+
+	void finish() { append('\0'); }
+	void reset() { mPtr = mData; }
+	void append(const char* src, size_t len);
+	void append(char c);
+	void append(const char* str);
+	void vappendf(const char* fmt, va_list vargs);
+	void appendf(const char* fmt, ...);
 
 protected:
-	void printUsage(FILE* file);
-	void printOptions(FILE* file);
+	enum {
+		kGrowAlign = 256,
+		kGrowMask = kGrowAlign - 1
+	};
 
-	int readCommands(FILE* inputFile);
-	static void* tickThreadFunc(void* data);
+	void growBy(size_t request);
 
 private:
-	int				mArgc;
-	char**			mArgv;
-	bool			mShouldBeRunning;
-	pthread_t		mTickThread;
+	size_t	mCapacity;
+	char*	mPtr;
+	char*	mData;
 };
 
-#endif // SC_TERMINALCLIENT_H_INCLUDED
+#endif // SC_STRINGBUFFER_H_INCLUDED

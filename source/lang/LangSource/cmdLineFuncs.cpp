@@ -27,11 +27,19 @@
 #if USE_SC_TERMINAL_CLIENT
 
 #include "SC_TerminalClient.h"
+#include <stdio.h>
+#include <stdexcept>
 
 int main(int argc, char** argv)
 {
 	SC_TerminalClient lang;
-	return lang.run(argc, argv);
+	try {
+		lang.run(argc, argv);
+	} catch (std::runtime_error& e) {
+		fprintf(stderr, "%s\n", e.what());
+		return 1;
+	}
+	return 0;
 }
 
 #else // !USE_SC_TERMINAL_CLIENT
