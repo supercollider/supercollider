@@ -41,9 +41,9 @@
 +SimpleNumber {
 	prepareForProxySynthDef { arg proxy;
 		^if(proxy.rate === 'audio', {
-			{Line.ar(this,this,0)}
+			{Line.ar(this,this,0.001)}
 		}, { 
-			{Line.kr(this,this,0)}
+			{Line.kr(this,this,0.001)}
 		})
 	}
 }
@@ -62,6 +62,12 @@
 +NodeProxy {
 	prepareForProxySynthDef { arg proxy;
 		^{ this.value(proxy) }
+	}
+}
+
++SoundDef {
+	prepareForProxySynthDef {
+		^obj
 	}
 }
 
