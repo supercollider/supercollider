@@ -454,8 +454,6 @@ void SyntaxColorize(NSTextView* textView);
 
 NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile, NSString* extension)
 {
-    // Try to find the help file
-
     // The place to start looking
     NSString* helpFolderPath = [NSString stringWithFormat: @"%@/Help/",
 		    [fileManager currentDirectoryPath]];
@@ -468,10 +466,10 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     NSDirectoryEnumerator* dirEnumerator = [fileManager enumeratorAtPath:helpFolderPath];
     NSString* candidate;
     while (candidate = [dirEnumerator nextObject]) {
-	if([[candidate lastPathComponent] isEqual:helpFileName]) {
-	    helpFilePath = [helpFolderPath stringByAppendingString: candidate];
-	    break;
-	}
+        if([[candidate lastPathComponent] isEqualToString:helpFileName]) {
+            helpFilePath = [helpFolderPath stringByAppendingString: candidate];
+            break;
+        }
     }
 
     return helpFilePath;
@@ -493,49 +491,59 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 - (IBAction) showHelp: (id) sender;
 {
-    NSDocumentController* docctl = [NSDocumentController sharedDocumentController];
-    if (!docctl)
-	return;
-    NSFileManager* fileManager = [NSFileManager defaultManager];
-    if (!fileManager)
-	return;
+    [self showHelpFor:[self currentlySelectedTextOrLine: NULL]];
+}
+-(NSString*)pathOfHelpFileFor:(NSString*)selection {
 
-    // What do they want help for?
-	NSString* selection = [self currentlySelectedTextOrLine: NULL];
-	
-    // figure out the name of the help file
-    NSString* helpFilePath = helpFileWithName(fileManager, selection, @".help.rtf");
+    NSString* helpFilePath = nil;
+
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    if (!fileManager) helpFilePath; // == NULL
+
+    helpFilePath = helpFileWithName(fileManager, selection, @".help.rtf");
     if (!helpFilePath) {
 		helpFilePath = helpFileWithName(fileManager, selection, @".rtf");
 		if (!helpFilePath) {
 			helpFilePath = helpFileWithName(fileManager, selection, @".help");
 			if (!helpFilePath) {
 				helpFilePath = helpFileWithName(fileManager, selection, @".sc");
-				if (!helpFilePath) {
-					helpFilePath = helpFileWithName(fileManager, @"Help", @".help.rtf");
-					if (!helpFilePath) {
-						// Oops -- doesn't exist... let the user know
-						post("\nCan't open help for '%s'\n", [selection cString]);
-						return;
-					}
-				}
+				//if (!helpFilePath) {
+					//helpFilePath = helpFileWithName(fileManager, @"Help", @".help.rtf");
+                    // possiblly == NULL
+				//}
 			}
 		}
     }
+    return helpFilePath; // possibly == NULL
+}
 
+-(void)showHelpFor:(NSString*)selection
+{
+    NSDocumentController* docctl = [NSDocumentController sharedDocumentController];
+    if (!docctl)
+	return;
+	
+    NSString *helpFilePath = [self pathOfHelpFileFor: selection];
+    if(!helpFilePath) { // none found
+        helpFilePath = helpFileWithName([NSFileManager defaultManager], @"Help", @".help.rtf");
+        if(!helpFilePath) { // not even Help.help ?
+            post("\nCan't find help for '%s'\n", [selection cString]);
+            return;
+        }
+    }
+    
     MyDocument *doc = (MyDocument*)[docctl documentForFileName: helpFilePath];
     if (!doc) {
-	doc = [docctl openDocumentWithContentsOfFile: helpFilePath display: true];
-	if (!doc) {
-	    post("Can't open Document '%s'\n", [helpFilePath cString]);
-	    return;
-	}
-
+        doc = [docctl openDocumentWithContentsOfFile: helpFilePath display: true];
+        if (!doc) {
+            post("Can't open Help File Document '%s'\n", [helpFilePath cString]);
+            return;
+        }
     }
     NSWindow *window = [[[doc windowControllers] objectAtIndex: 0] window];
     if (!window) {
-	post("window controller returns nil\n");
-	return;
+        post("!! window controller returns nil ? failed to open help file window\n");
+        return;
     }
     [window makeKeyAndOrderFront: nil];
 }

@@ -4,6 +4,10 @@
  *
  *  Created by cruxxial on Mon Nov 25 2002.
 
+
+File utilties that depend on the Cocoa framework.
+
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -19,31 +23,32 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <Cocoa/Cocoa.h>
-#include <Carbon/Carbon.h>
-#include "PyrPrimitive.h"
-#include "PyrObject.h"
-#include "PyrKernel.h"
-#include "VMGlobals.h"
-#include "GC.h"
+#import <Cocoa/Cocoa.h>
+
+#import "PyrPrimitive.h"
+#import "PyrObject.h"
+#import "PyrKernel.h"
+#import "VMGlobals.h"
+#import "GC.h"
 
 #import "SCDialog.h"
 
+//#import "PyrNSconversions.M"
 
-inline NSString* pyrSlotToNSString(PyrSlot *slot)
+inline NSString* nsStringFromPyrSlot(PyrSlot *slot)
 {
     PyrString* pyrString = slot->uos;
     return [NSString stringWithCString: pyrString->s length: pyrString->size];
 }
 
-id convertSCSlot(PyrSlot* b);
-id convertSCSlot(PyrSlot* b)
+//id nsCodableFromPyrSlot(PyrSlot* b);
+id nsCodableFromPyrSlot(PyrSlot* b)
 {
     if(IsFloat(b)) { // floats don't have tags, check for them first
         return [NSNumber numberWithFloat: b->uf];
     }
     if( ( classOfSlot(b) )->name.us == s_string ) {
-        return pyrSlotToNSString(b);
+        return nsStringFromPyrSlot(b);
     }
     
     // !! WARNING :  will break if array is not first instance variable in the SC class
@@ -58,8 +63,8 @@ id convertSCSlot(PyrSlot* b)
             key = &( array->uo->slots[i] );
             if( NotNil( key )) {
                 [dict 
-                    setObject: convertSCSlot( &(array->uo->slots[i+1]) ) 
-                    forKey: [(NSObject*)convertSCSlot(key) description] // symbol, string, number, or ?
+                    setObject: nsCodableFromPyrSlot( &(array->uo->slots[i+1]) ) 
+                    forKey: [(NSObject*)nsCodableFromPyrSlot(key) description] // symbol, string, number, or ?
                 ];
             }
         }
@@ -98,7 +103,7 @@ id convertSCSlot(PyrSlot* b)
                             NSMutableArray *array = [NSMutableArray arrayWithCapacity: b->uo->size];
                             int i;
                             for(i = 0; i < b->uo->size; i++) {
-                                [array insertObject: convertSCSlot(&(b->uo->slots[i])) atIndex: i];
+                                [array insertObject: nsCodableFromPyrSlot(&(b->uo->slots[i])) atIndex: i];
                             }
                             return array;
                         } else {
@@ -122,9 +127,6 @@ id convertSCSlot(PyrSlot* b)
     NSLog( @"writeAsPlist failed to determine type of object");
     return [NSNull null];
 }
-    
-
-
 
 
 /** PRIMITIVES **/
@@ -153,7 +155,7 @@ int prSaveAsPlist(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *object = g->sp - 1;
     PyrSlot *path = g->sp;
     
-    if([NSKeyedArchiver archiveRootObject:convertSCSlot(object) toFile: pyrSlotToNSString(path) ]) {
+    if([NSKeyedArchiver archiveRootObject:nsCodableFromPyrSlot(object) toFile: nsStringFromPyrSlot(path) ]) {
         return errNone;
     } else {
         post("prSaveAsPlist failed !!\n");
@@ -168,12 +170,102 @@ int prStandardizePath(struct VMGlobals *g, int numArgsPushed)
     
     PyrSlot *string = g->sp;
     PyrString *pyrString;
-    NSString *path = pyrSlotToNSString(string);
+    NSString *path = nsStringFromPyrSlot(string);
     path = [path stringByStandardizingPath];
     pyrString = newPyrString(g->gc, [path cString], 0, true);
     SetObject(string, pyrString);
     return errNone;
 }
+
+//still buggy
+int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed);
+int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *receiver = g->sp - 3;
+    PyrSlot *directoryPath = g->sp - 2;
+    PyrSlot *extension = g->sp - 1;
+    PyrSlot *returnArray  = g->sp;
+    
+    if(IsNil(directoryPath)) return errWrongType;
+    
+    dumpPyrSlot(receiver);
+    dumpPyrSlot(returnArray);
+    dumpPyrSlot(extension);
+    dumpPyrSlot(directoryPath);
+    
+    PyrObject *returnObject = returnArray->uo;
+    
+    NSLog(@"directoryPath: %@",nsStringFromPyrSlot(directoryPath));
+    
+    NSDirectoryEnumerator *direnum = [[NSFileManager defaultManager]
+            enumeratorAtPath:nsStringFromPyrSlot(directoryPath)];
+    NSString *pname;
+    NSString *nsextension;
+    int i=0;
+    /*
+        NSDictionary *fattrs = [manager fileAttributesAtPath:fullpath traverseLink:YES];
+        //NSString *fileName = [pname lastPathComponent];
+
+        if ([fattrs objectForKey:NSFileType] != NSFileTypeDirectory)
+    */
+   if(IsNil(extension)) {
+        while (pname = [direnum nextObject]) {
+            NSLog(@" pname: %@",pname);
+            PyrString* pyrPathString = newPyrString(g->gc,[pname cString],0,true);
+            
+            PyrSlot slot;
+            SetObject(&slot, pyrPathString);
+            returnObject->slots[i].ucopy = slot.ucopy;
+            g->gc->GCWrite(returnObject,pyrPathString);
+            // have to set size field each time in order that gc can find the created objects
+            returnObject->size = i+1;
+            i++;
+        }
+    } else {
+        nsextension = nsStringFromPyrSlot(extension);
+        while (pname = [direnum nextObject]) {
+            if (![[pname pathExtension] isEqualToString:nsextension]) {
+                //[direnum skipDescendents]; /* don't enumerate this directory */
+            //} else {
+                PyrString* pyrPathString = newPyrString(g->gc,[pname cString],0,true);
+                
+                PyrSlot slot;
+                SetObject(&slot, pyrPathString);
+                
+                returnObject->slots[i].ucopy = slot.ucopy;
+        
+                g->gc->GCWrite(returnObject,pyrPathString);
+                returnObject->size = i+1;
+                i++;
+            }
+        }        
+    }
+    SetObject(receiver,returnObject);
+    return errNone;
+}
+
+
+int prHelpFileForString(struct VMGlobals *g, int numArgsPushed);
+int prHelpFileForString(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *receiver = g->sp;
+    
+    // this function should be moved out of the MyDocument instance
+    NSString *path = [[[NSDocumentController sharedDocumentController] currentDocument]
+        pathOfHelpFileFor: nsStringFromPyrSlot(receiver) ];
+    if(path) {
+        PyrString* pyrPathString = newPyrString(g->gc,[path cString],0,true);
+        SetObject(receiver,pyrPathString);
+    } else {
+        SetNil(receiver);
+    }
+    return errNone;
+}
+
 
 
 void initCocoaFilePrimitives()
@@ -186,6 +278,9 @@ void initCocoaFilePrimitives()
     definePrimitive(base, index++, "_Cocoa_GetPathsDialog", prGetPathsDialog, 2, 0);	
     definePrimitive(base, index++, "_Cocoa_SaveAsPlist", prSaveAsPlist, 2, 0);	
     definePrimitive(base, index++, "_Cocoa_StandardizePath", prStandardizePath, 1, 0);	
+    definePrimitive(base, index++, "_Cocoa_GetPathsInDirectory", prGetPathsInDirectory, 4, 0);	
+    definePrimitive(base, index++, "_Cocoa_HelpFileForString_", prHelpFileForString, 1, 0);	
+
 }
 
 
