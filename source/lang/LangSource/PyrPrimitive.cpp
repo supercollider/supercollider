@@ -708,7 +708,6 @@ void reallocStack(struct VMGlobals *g, int stackNeeded, int stackDepth)
 	PyrThread *thread = g->thread;
 	PyrGC *gc = g->gc;
 	int newStackSize = NEXTPOWEROFTWO(stackNeeded);
-	SetInt(&thread->stackSize, newStackSize);
 	
 	PyrObject* array = newPyrArray(gc, newStackSize, 0, false);	
 	memcpy(array->slots, gc->Stack()->slots, stackDepth * sizeof(PyrSlot));
@@ -2966,8 +2965,6 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
         
 	thread->func.ucopy = func->ucopy;
 	gc->GCWrite(thread, func);
-
-	SetInt(&thread->stackSize, stacksize);
 	
 	array = newPyrArray(gc, stacksize, 0, collect);
 	SetObject(&thread->stack, array);
@@ -3093,7 +3090,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot value;
 	
-	//postfl("->prRoutineYield %d %08X\n", g->level, g->thread);
+	//postfl("->prRoutineYield %08X\n", g->thread);
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "prRoutineYield");
 	//postfl("->numArgsPushed %d\n", numArgsPushed);
@@ -3112,7 +3109,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 	(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
 
 	//postfl("<-numArgsPushed %d\n", numArgsPushed);
-	//postfl("<-prRoutineYield %d\n", g->level);
+	//postfl("<-prRoutineYield\n");
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "<prRoutineYield");
 	return errNone;
@@ -3241,11 +3238,7 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 		SetInt(&thread->numpop, 0);
 		SetNil(&thread->parent);
 	} else if (state == tDone) {
-		//PyrObject *array;
 		thread->state.ui = tInit;
-		//array = newPyrArray(g->gc, thread->stackSize.ui, 0, true);
-		//SetObject(&thread->stack, array);
-		//g->gc->GCWrite(thread, array);
 		thread->stack.uo->size = 0;
 		SetNil(&thread->method);
 		SetNil(&thread->block);

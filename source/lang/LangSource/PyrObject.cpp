@@ -1383,11 +1383,10 @@ void initClasses()
 	class_absfunc = makeIntrinsicClass(s_absfunc, s_object, 0, 0); 
 	class_stream = makeIntrinsicClass(s_stream, s_absfunc, 0, 0); 
 
-	class_thread = makeIntrinsicClass(s_thread, s_stream, 24, 0);
+	class_thread = makeIntrinsicClass(s_thread, s_stream, 23, 0);
 		addIntrinsicVar(class_thread, "state", &o_nil);
 		addIntrinsicVar(class_thread, "func", &o_nil);
 		addIntrinsicVar(class_thread, "stack", &o_nil);
-		addIntrinsicVar(class_thread, "stackSize", &o_zero);
 		addIntrinsicVar(class_thread, "method", &o_nil);
 		addIntrinsicVar(class_thread, "block", &o_nil);
 		addIntrinsicVar(class_thread, "frame", &o_nil);

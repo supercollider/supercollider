@@ -8,7 +8,7 @@
 // behave like a Stream. Thread itself is not used like a Stream.
 
 Thread : Stream {
-	var <state=0, func, stack, stackSize=0, method, block, frame, ip=0, sp=0;
+	var <state=0, func, stack, method, block, frame, ip=0, sp=0;
 	var numpop=0, receiver, numArgsPushed=0;
 	var parent, terminalValue;
 	var <primitiveError=0, <primitiveIndex=0, <randData=0;

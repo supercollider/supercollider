@@ -103,7 +103,7 @@ enum { tInit, tStart, tReady, tRunning, tSleeping, tSuspended, tDone };
 struct PyrThread : public PyrObjectHdr 
 {
 		
-	PyrSlot state, func, stack, stackSize, method, block, frame, ip, sp;
+	PyrSlot state, func, stack, method, block, frame, ip, sp;
 	PyrSlot numpop, receiver, numArgsPushed;
 	PyrSlot parent, terminalValue;
 	PyrSlot primitiveError;
