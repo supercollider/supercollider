@@ -123,7 +123,7 @@ SyncSaw : UGen {
 }
 
 
-TPulse : UGen {
+TPulse : UGen {//exception in GrafDef_Load: UGen 'TPulse' not installed.
 	*ar {
 		arg trig = 0.0, freq = 440.0, width = 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', trig, freq, width).madd(mul, add)

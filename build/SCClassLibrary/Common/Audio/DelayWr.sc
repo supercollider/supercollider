@@ -1,4 +1,9 @@
 
+/*
+	these are still set up for sc3d5 style PlayBuf.
+	won't work on scsynth yet
+	-felix
+*/
 
 PingPong {
 	*ar { arg bank, index, inputs, delayTime, feedback=0.7, rotate=1, interpolationType=2;
