@@ -679,6 +679,8 @@ SCErr meth_c_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	sc_msg_iter msg(inSize, inData);
 	
 	float *data = inWorld->mControlBus;
+	int32 *touched = inWorld->mControlBusTouched;
+	int32 bufCounter = inWorld->mBufCounter;
 	int maxIndex = inWorld->mNumControlBusChannels;
 	
 	while (msg.remain() >= 8)
@@ -688,6 +690,7 @@ SCErr meth_c_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 		if (index >= 0 && index < maxIndex) 
 		{
 			data[index] = value;
+			touched[index] = bufCounter;
 		} else return kSCErr_IndexOutOfRange;
 		
 	}
@@ -700,8 +703,10 @@ SCErr meth_c_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 	sc_msg_iter msg(inSize, inData);
 	
 	float *data = inWorld->mControlBus;
+	int32 *touched = inWorld->mControlBusTouched;
+	int32 bufCounter = inWorld->mBufCounter;
 	int maxIndex = inWorld->mNumControlBusChannels;
-			
+	
 	while (msg.remain()) {
 		int32 start = msg.geti();
 		int32 n = msg.geti();
@@ -715,6 +720,7 @@ SCErr meth_c_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 		for (int i=start; msg.remain() && i<=end; ++i) {
 			float32 value = msg.getf();
 			data[i] = value;
+			touched[i] = bufCounter;
 		}
 	}
 
@@ -728,6 +734,8 @@ SCErr meth_c_fill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 	sc_msg_iter msg(inSize, inData);
 	
 	float *data = inWorld->mControlBus;
+	int32 *touched = inWorld->mControlBusTouched;
+	int32 bufCounter = inWorld->mBufCounter;
 	int maxIndex = inWorld->mNumControlBusChannels;
 
 	while (msg.remain() >= 12) 
@@ -742,7 +750,10 @@ SCErr meth_c_fill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 		start = sc_clip(start, 0, maxIndex-1);
 		end   = sc_clip(end,   0, maxIndex-1);
 		
-		for (int i=start; i<=end; ++i) data[i] = value;
+		for (int i=start; i<=end; ++i) {
+			data[i] = value;
+			touched[i] = bufCounter;
+		}
 	}
 
 	return kSCErr_None;
