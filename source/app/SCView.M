@@ -266,6 +266,7 @@ SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 
 SCView::~SCView()
 {
+    makeFocus(false);
     if (mParent) mParent->remove(this);
     if (mObj) SetNil(mObj->slots+0);
     delete mBackground;
@@ -713,6 +714,7 @@ void SCContainerView::remove(SCView *inChild)
 {
 	SCView *child = mChildren;
 	SCView *prev = 0;
+    inChild->makeFocus(false);
 	while (child) {
 		SCView *next = child->mNext;
 		if (child == inChild) {
