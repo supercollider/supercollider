@@ -1576,7 +1576,7 @@ PyrObject* copyObjectRange(class GC *gc, PyrObject *inobj, int start, int end, b
 	PyrObject *newobj;
  
  	if (start < 0) start = 0;
- 	if (end > inobj->size) end = inobj->size;
+ 	if (end >= inobj->size) end = inobj->size - 1;
  	int length = end - start + 1;
  	if (length < 0) length = 0;
  	
