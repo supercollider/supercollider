@@ -6,17 +6,17 @@
 	objectVersion = 39;
 	objects = {
 		43C4FB05050E298F004C2729 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = libraryConfig.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		43C4FB06050E29C9004C2729 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = libraryConfig.cpp;
 			refType = 4;
 			sourceTree = "<group>";
@@ -51,90 +51,90 @@
 			sourceTree = SOURCE_ROOT;
 		};
 		6AB6FF64053898BC0000009F = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = HID_Error_Handler.c;
 			path = source/lang/LangSource/HID_Utilities/HID_Error_Handler.c;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		6AB6FF65053898BC0000009F = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = HID_Error_Handler.h;
 			path = source/lang/LangSource/HID_Utilities/HID_Error_Handler.h;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		6AB6FF66053898BC0000009F = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = HID_Name_Lookup.c;
 			path = source/lang/LangSource/HID_Utilities/HID_Name_Lookup.c;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		6AB6FF67053898BC0000009F = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = HID_Name_Lookup.h;
 			path = source/lang/LangSource/HID_Utilities/HID_Name_Lookup.h;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		6AB6FF68053898BC0000009F = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = HID_Queue_Utilities.c;
 			path = source/lang/LangSource/HID_Utilities/HID_Queue_Utilities.c;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		6AB6FF69053898BC0000009F = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = HID_Queue_Utilities.h;
 			path = source/lang/LangSource/HID_Utilities/HID_Queue_Utilities.h;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		6AB6FF6A053898BC0000009F = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = HID_Utilities.c;
 			path = source/lang/LangSource/HID_Utilities/HID_Utilities.c;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		6AB6FF6B053898BC0000009F = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = HID_Utilities.h;
 			path = source/lang/LangSource/HID_Utilities/HID_Utilities.h;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		6AB6FF6C053898BC0000009F = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = HID_Utilities_External.h;
 			path = source/lang/LangSource/HID_Utilities/HID_Utilities_External.h;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		6AB6FF6D053898BC0000009F = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = HID_Utilities_Internal.h;
 			path = source/lang/LangSource/HID_Utilities/HID_Utilities_Internal.h;
 			refType = 2;
@@ -261,9 +261,9 @@
 			};
 		};
 		6AB6FF83053898F00000009F = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			name = SC_HID.cpp;
 			path = source/lang/LangSource/SC_HID.cpp;
 			refType = 2;
@@ -282,9 +282,9 @@
 			};
 		};
 		6AB6FFA10538A90A0000009F = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = IOKit.framework;
 			path = /System/Library/Frameworks/IOKit.framework;
 			refType = 0;
@@ -313,9 +313,9 @@
 //903
 //904
 		908DBC360507C63D00000098 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			fileEncoding = "-2147483619";
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = GoToPanel.M;
 			refType = 4;
 			sourceTree = "<group>";
@@ -327,9 +327,9 @@
 			};
 		};
 		908DBC380507C65100000098 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = "-2147483619";
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = GoToPanel.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -341,8 +341,8 @@
 			};
 		};
 		908DBC3A0507C66500000098 = {
-			expectedFileType = wrapper.nib;
 			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
 			name = GoToLinePanel.nib;
 			path = resources/GoToLinePanel.nib;
 			refType = 4;
@@ -355,9 +355,9 @@
 			};
 		};
 		90A4CDA0044D5AF2000000AF = {
-			expectedFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			name = SC_Speech.cpp;
 			path = source/lang/LangSource/SC_Speech.cpp;
 			refType = 2;
@@ -386,9 +386,9 @@
 //923
 //924
 		920F883D0443F54D00A80088 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = RendezvousClient.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -406,9 +406,9 @@
 			};
 		};
 		920F88400443F59700A80088 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = RendezvousClient.M;
 			refType = 4;
 			sourceTree = "<group>";
@@ -420,9 +420,9 @@
 			};
 		};
 		9286AE9E057D30B9000EBAEB = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = SCService.mm;
 			refType = 4;
 			sourceTree = "<group>";
@@ -440,9 +440,9 @@
 			};
 		};
 		9286AEA3057D30EC000EBAEB = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SCService.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -455,6 +455,26 @@
 		};
 		9286AEA5057D30EC000EBAEB = {
 			fileRef = 9286AEA3057D30EC000EBAEB;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		92B4EA55059397C600CA25E4 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = SC_LibraryConfig.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		92B4EA56059397C600CA25E4 = {
+			fileRef = 92B4EA55059397C600CA25E4;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		92B4EA57059397C600CA25E4 = {
+			fileRef = 92B4EA55059397C600CA25E4;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -1792,14 +1812,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		92B5F3FC0547488200496808 = {
-			expectedFileType = text.plist;
 			isa = PBXFileReference;
+			lastKnownFileType = text.plist;
 			path = "Info-SuperCollider__xc_.plist";
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		92B5F3FD0547488300496808 = {
-			expectedFileType = wrapper.application;
+			explicitFileType = wrapper.application;
 			includeInIndex = 0;
 			isa = PBXFileReference;
 			path = SuperCollider.app;
@@ -1823,9 +1843,9 @@
 //AA3
 //AA4
 		AAE9248C048143A400A8010B = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Endian.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1847,17 +1867,17 @@
 //C23
 //C24
 		C21B4672046D847B00A87B78 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = TabletEvents.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		C21B4673046D847B00A87B78 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			name = TabletEvents.m;
 			path = source/app/TabletEvents.m;
 			refType = 2;
@@ -1876,9 +1896,9 @@
 			};
 		};
 		C26BDCCC03D0B4E900A87B78 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = SCDialog.mm;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1890,9 +1910,9 @@
 			};
 		};
 		C26BDCCE03D0B4FB00A87B78 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SCDialog.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1914,81 +1934,81 @@
 //CF3
 //CF4
 		CFF7A362058AC2970096CD03 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = AIAttributedStringAdditions.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		CFF7A363058AC2970096CD03 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = AIColorAdditions.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		CFF7A364058AC2970096CD03 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = AIHTMLDecoder.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		CFF7A365058AC2970096CD03 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = AIStringAdditions.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		CFF7A366058AC2970096CD03 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = AITextAttributes.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		CFF7A367058AC2B80096CD03 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = AIAttributedStringAdditions.m;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		CFF7A368058AC2B80096CD03 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = AIColorAdditions.m;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		CFF7A369058AC2B80096CD03 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = AIHTMLDecoder.m;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		CFF7A36A058AC2B80096CD03 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = AIStringAdditions.m;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		CFF7A36B058AC2B80096CD03 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = AITextAttributes.m;
 			refType = 4;
 			sourceTree = "<group>";
@@ -2135,85 +2155,85 @@
 			sourceTree = "<group>";
 		};
 		F50D04FE02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ChangeCounter.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D04FF02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ControlSpec.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = DrawBackground.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = GetStringFromUser.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = MyDocument.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SCGeom.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050402E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SCGraphView.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SCTextView.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SCView.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SCVirtualMachine.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = TextFinder.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = UserPanel.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -2237,36 +2257,36 @@
 			sourceTree = "<group>";
 		};
 		F50D050B02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = dfftlib.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050C02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = dlfcn.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050D02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = fftlib.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050E02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_AllocPool.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D050F02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = scsynthsend.h;
 			refType = 4;
@@ -2316,6 +2336,7 @@
 				F50D053802E69B6B01CA2799,
 				F50D053902E69B6B01CA2799,
 				F50D053A02E69B6B01CA2799,
+				92B4EA55059397C600CA25E4,
 				F50D053B02E69B6B01CA2799,
 				F50D053C02E69B6B01CA2799,
 				F50D053D02E69B6B01CA2799,
@@ -2333,358 +2354,358 @@
 			sourceTree = "<group>";
 		};
 		F50D051102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = AdvancingAllocPool.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = AllocPools.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = bullet.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051402E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ByteCodeArray.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = FIFOT.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = GC.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = HashTable.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = InitAlloc.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = MiscInlineMath.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051A02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = Opcodes.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051B02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = OSCData.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051C02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PowerOfTwoAllocPool.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051D02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PredefinedSymbols.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051E02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PriorityQueue.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D051F02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrArchiverT.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrDeepCopier.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrDeepFreezer.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrErrors.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrFilePrim.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052402E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrFileUtils.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrInterpreter.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrKernel.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrKernelProto.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrLexer.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrListPrim.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052A02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrMathPrim.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052B02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrMessage.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052C02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrObject.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052D02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrObjectProto.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052E02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrParseNode.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D052F02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrPrimitive.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrPrimitiveProto.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrSched.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrSignal.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrSignalPrim.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053402E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrSlot.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrSymbol.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = PyrSymbolTable.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = readSamples.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ReadWriteMacros.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = Samp.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053A02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_ComPort.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053B02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_List.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053C02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_LogFile.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053D02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Msg.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D053F02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_SynthImpl.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_UnorderedList.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SCBase.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SFHeaders.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SimpleStack.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054402E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = VMGlobals.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -2708,29 +2729,29 @@
 			sourceTree = "<group>";
 		};
 		F50D054602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = clz.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = Hash.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D054802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_BoundsMacros.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D055702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Types.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -2779,92 +2800,92 @@
 			sourceTree = "<group>";
 		};
 		F50D058202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = DrawBackground.M;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D058302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.objc;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = GetStringFromUser.m;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D058402E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = GUIPrimitives.M;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D058502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.objc;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = main.m;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D058602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = MyDocument.M;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D058702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = post_queue.M;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D058B02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = SCGraphView.M;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D058C02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = SCTextView.M;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D058D02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = SCView.M;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D058E02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = SCVirtualMachine.M;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D058F02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = syntaxColorize.M;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D059002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.objc;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = TextFinder.m;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D059102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = UserPanel.M;
 			refType = 4;
 			sourceTree = "<group>";
@@ -2910,64 +2931,64 @@
 			sourceTree = "<group>";
 		};
 		F50D059802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrArchiver.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D059902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrArrayPrimitives.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D059A02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrBitPrim.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D059B02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrCharPrim.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D059D02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrFilePrim.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D059E02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrListPrim.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D059F02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrStringPrim.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05A002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrSymbolPrim.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05A102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrUnixPrim.cpp;
 			refType = 4;
 			sourceTree = "<group>";
@@ -3013,43 +3034,43 @@
 			sourceTree = "<group>";
 		};
 		F50D05A502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = AdvancingAllocPool.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05A602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = alloca.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05A702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = ByteCodeArray.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05A802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = cmdLineFuncs.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05AA02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = dumpByteCodes.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05AB02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = DumpParseNode.cpp;
 			refType = 4;
 			sourceTree = "<group>";
@@ -3074,211 +3095,211 @@
 			sourceTree = "<group>";
 		};
 		F50D05AD02E69B6B01CA2799 = {
-			expectedFileType = text;
 			isa = PBXFileReference;
+			lastKnownFileType = text;
 			path = lang11;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05AE02E69B6B01CA2799 = {
-			expectedFileType = text;
 			isa = PBXFileReference;
+			lastKnownFileType = text;
 			path = lang11c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05AF02E69B6B01CA2799 = {
-			expectedFileType = text;
 			isa = PBXFileReference;
+			lastKnownFileType = text;
 			path = lang11c.output;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05B002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = lang11c_tab.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05B102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = lang11c_tab.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05B202E69B6B01CA2799 = {
-			expectedFileType = text;
 			isa = PBXFileReference;
+			lastKnownFileType = text;
 			path = lang11cx;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05B302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.c;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = lang11cx.tab.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05B402E69B6B01CA2799 = {
-			expectedFileType = text;
 			isa = PBXFileReference;
+			lastKnownFileType = text;
 			path = lang11d;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05B502E69B6B01CA2799 = {
-			expectedFileType = text;
 			isa = PBXFileReference;
+			lastKnownFileType = text;
 			path = lang11d.output;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05B602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = lang11d_tab.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05B702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = lang11d_tab.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05B802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = GC.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05BA02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = InitAlloc.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05BD02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrFileUtils.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05BE02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrInterpreter3.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05BF02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrLexer.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05C002E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrMathOps.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05C102E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrMathPrim.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05C202E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrMathSupport.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05C302E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrMessage.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05C402E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrObject.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05C502E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrParseNode.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05C602E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrPrimitive.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05C702E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrSched.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05C802E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrSignal.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05C902E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrSignalPrim.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05CA02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = PyrSymbolTable.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05CB02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = Samp.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05CE02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SimpleStack.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F50D05CF02E69B6B01CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = VMGlobals.cpp;
 			refType = 4;
 			sourceTree = "<group>";
@@ -3295,7 +3316,7 @@
 			sourceTree = "<group>";
 		};
 		F50D060402E69C2101CA2799 = {
-			expectedFileType = wrapper.application;
+			explicitFileType = wrapper.application;
 			fallbackIsa = PBXFileReference;
 			isa = PBXApplicationReference;
 			path = SuperCollider.app;
@@ -3571,6 +3592,7 @@
 				6AB6FF77053898BC0000009F,
 				6AB6FF78053898BC0000009F,
 				9286AEA4057D30EC000EBAEB,
+				92B4EA57059397C600CA25E4,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4435,72 +4457,72 @@
 			sourceTree = "<group>";
 		};
 		F50D069502E6A1C601CA2799 = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = AppKit.framework;
 			path = /System/Library/Frameworks/AppKit.framework;
 			refType = 0;
 			sourceTree = "<absolute>";
 		};
 		F50D069602E6A1C601CA2799 = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = ApplicationServices.framework;
 			path = /System/Library/Frameworks/ApplicationServices.framework;
 			refType = 0;
 			sourceTree = "<absolute>";
 		};
 		F50D069702E6A1C601CA2799 = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = Carbon.framework;
 			path = /System/Library/Frameworks/Carbon.framework;
 			refType = 0;
 			sourceTree = "<absolute>";
 		};
 		F50D069802E6A1C601CA2799 = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = Cocoa.framework;
 			path = /System/Library/Frameworks/Cocoa.framework;
 			refType = 0;
 			sourceTree = "<absolute>";
 		};
 		F50D069902E6A1C601CA2799 = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = CoreAudio.framework;
 			path = /System/Library/Frameworks/CoreAudio.framework;
 			refType = 0;
 			sourceTree = "<absolute>";
 		};
 		F50D069A02E6A1C601CA2799 = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = CoreMIDI.framework;
 			path = /System/Library/Frameworks/CoreMIDI.framework;
 			refType = 0;
 			sourceTree = "<absolute>";
 		};
 		F50D069B02E6A1C601CA2799 = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = CoreServices.framework;
 			path = /System/Library/Frameworks/CoreServices.framework;
 			refType = 0;
 			sourceTree = "<absolute>";
 		};
 		F50D069C02E6A1C601CA2799 = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = Foundation.framework;
 			path = /System/Library/Frameworks/Foundation.framework;
 			refType = 0;
@@ -4571,8 +4593,8 @@
 			sourceTree = "<group>";
 		};
 		F50D06A702E6A60F01CA2799 = {
-			expectedFileType = wrapper.nib;
 			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
 			name = English;
 			path = English.lproj/FindPanel.nib;
 			refType = 4;
@@ -4589,8 +4611,8 @@
 			sourceTree = "<group>";
 		};
 		F50D06A902E6A60F01CA2799 = {
-			expectedFileType = text.rtf;
 			isa = PBXFileReference;
+			lastKnownFileType = text.rtf;
 			name = English;
 			path = English.lproj/Credits.rtf;
 			refType = 4;
@@ -4607,8 +4629,8 @@
 			sourceTree = "<group>";
 		};
 		F50D06AB02E6A60F01CA2799 = {
-			expectedFileType = wrapper.nib;
 			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
 			name = English;
 			path = English.lproj/SCGraphView.nib;
 			refType = 4;
@@ -4625,8 +4647,8 @@
 			sourceTree = "<group>";
 		};
 		F50D06AD02E6A60F01CA2799 = {
-			expectedFileType = wrapper.nib;
 			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
 			name = English;
 			path = English.lproj/MyDocument.nib;
 			refType = 4;
@@ -4643,8 +4665,8 @@
 			sourceTree = "<group>";
 		};
 		F50D06AF02E6A60F01CA2799 = {
-			expectedFileType = wrapper.nib;
 			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
 			name = English;
 			path = English.lproj/MainMenu.nib;
 			refType = 4;
@@ -4661,8 +4683,8 @@
 			sourceTree = "<group>";
 		};
 		F50D06B102E6A60F01CA2799 = {
-			expectedFileType = text.plist.strings;
 			isa = PBXFileReference;
+			lastKnownFileType = text.plist.strings;
 			name = English;
 			path = English.lproj/InfoPlist.strings;
 			refType = 4;
@@ -4679,8 +4701,8 @@
 			sourceTree = "<group>";
 		};
 		F50D06B302E6A60F01CA2799 = {
-			expectedFileType = wrapper.nib;
 			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
 			name = English;
 			path = English.lproj/GetStringDlg.nib;
 			refType = 4;
@@ -4697,8 +4719,8 @@
 			sourceTree = "<group>";
 		};
 		F50D06B502E6A60F01CA2799 = {
-			expectedFileType = text.plist.strings;
 			isa = PBXFileReference;
+			lastKnownFileType = text.plist.strings;
 			name = English;
 			path = English.lproj/FindPanel.strings;
 			refType = 4;
@@ -4753,8 +4775,8 @@
 			};
 		};
 		F50D06BE02E7F11301CA2799 = {
-			expectedFileType = archive.ar;
 			isa = PBXFileReference;
+			lastKnownFileType = archive.ar;
 			name = "libstdc++.a";
 			path = "/usr/lib/libstdc++.a";
 			refType = 0;
@@ -4767,16 +4789,16 @@
 			};
 		};
 		F50D06C002E7F29001CA2799 = {
-			expectedFileType = archive.ar;
 			isa = PBXFileReference;
+			lastKnownFileType = archive.ar;
 			name = libsndfile.a;
 			path = /usr/local/lib/libsndfile.a;
 			refType = 0;
 			sourceTree = "<absolute>";
 		};
 		F50D06C202E7F64801CA2799 = {
-			expectedFileType = image.icns;
 			isa = PBXFileReference;
+			lastKnownFileType = image.icns;
 			name = BBall.icns;
 			path = resources/BBall.icns;
 			refType = 4;
@@ -4789,8 +4811,8 @@
 			};
 		};
 		F5285E0D0316170401CA2799 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = OSCData.cpp;
 			refType = 4;
@@ -4809,8 +4831,8 @@
 			};
 		};
 		F53D4643030B8CE601E9DD5D = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_RGen.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -4852,15 +4874,15 @@
 			};
 		};
 		F53D464A030B8FF501E9DD5D = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_InlineBinaryOp.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F53D464B030B8FF501E9DD5D = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_InlineUnaryOp.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -4890,8 +4912,8 @@
 			};
 		};
 		F53D4650030B905201E9DD5D = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			path = sc_msg_iter.h;
 			refType = 4;
@@ -4910,8 +4932,8 @@
 			};
 		};
 		F53D4653030B934D01E9DD5D = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Constants.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -4929,8 +4951,8 @@
 			};
 		};
 		F561BDB50335370801C816AC = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_Sem.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -4948,29 +4970,29 @@
 			};
 		};
 		F5889A2C0397F2F801A87B78 = {
-			expectedFileType = sourcecode.cpp.objcpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
 			path = CocoaFilePrimitives.M;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F59DF065030733E801CE0C16 = {
-			expectedFileType = sourcecode.c.c;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = dlopen.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F59DF066030733E801CE0C16 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_AllocPool.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F59DF067030733E801CE0C16 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			lineEnding = 0;
 			path = scsynthsend.cpp;
 			refType = 4;
@@ -5024,8 +5046,8 @@
 			};
 		};
 		F59DF0C5030777A101CE0C16 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_Sem.cpp;
 			refType = 4;
 			sourceTree = "<group>";
@@ -5067,8 +5089,8 @@
 			targetProxy = 92B5F2D30547314E00496808;
 		};
 		F5BAFADE037F805101CA27E6 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SC_SndBuf.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -5086,8 +5108,8 @@
 			};
 		};
 		F5C7B14E033D595901A80099 = {
-			expectedFileType = archive.ar;
 			isa = PBXFileReference;
+			lastKnownFileType = archive.ar;
 			name = libscsynth.a;
 			path = build/libscsynth.a;
 			refType = 4;
@@ -5100,8 +5122,8 @@
 			};
 		};
 		F5C7B150033D5B4801A80099 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			name = SC_World.h;
 			path = headers/plugin_interface/SC_World.h;
@@ -5115,8 +5137,8 @@
 			};
 		};
 		F5C7B154033D5EDC01A80099 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			name = SC_WorldOptions.h;
 			path = headers/plugin_interface/SC_WorldOptions.h;
@@ -5130,8 +5152,8 @@
 			};
 		};
 		F5C7B156033D611701A80099 = {
-			expectedFileType = sourcecode.c.h;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			lineEnding = 0;
 			name = SC_Reply.h;
 			path = headers/server/SC_Reply.h;
@@ -5151,7 +5173,7 @@
 			};
 		};
 		F5ED51FE02FBA97D0195E057 = {
-			expectedFileType = "compiled.mach-o.executable";
+			explicitFileType = "compiled.mach-o.executable";
 			fallbackIsa = PBXFileReference;
 			isa = PBXExecutableFileReference;
 			path = sclang;
@@ -5256,6 +5278,7 @@
 				6AB6FF80053898BC0000009F,
 				6AB6FF81053898BC0000009F,
 				6AB6FF82053898BC0000009F,
+				92B4EA56059397C600CA25E4,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5903,15 +5926,15 @@
 			};
 		};
 		F5ED526B02FC2E330195E057 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_ComPort.cpp;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		F5ED526C02FC2E330195E057 = {
-			expectedFileType = sourcecode.cpp.cpp;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
 			path = SC_CoreMIDI.cpp;
 			refType = 4;
 			sourceTree = "<group>";
