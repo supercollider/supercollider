@@ -33,18 +33,19 @@ Score {
 	*play { arg list, server;
 		^this.new(list).play(server);
 	}	
-	
+	sort { // needs a revisit: messages with identical timetag are not reliable
+		score = score.quickSort({ arg a, b; a[0] < b[0] });
+	}
 	play { arg server;
-		var size, osccmd, timekeep, inserver, rout, sortedScore;
-		sortedScore = score.quickSort({ arg a, b; a[0] < b[0] });
+		var size, osccmd, timekeep, inserver, rout;
 		isPlaying.not.if({
 			inserver = server ? Server.default;
-			size = sortedScore.size;
+			size = score.size;
 			timekeep = 0;
 			routine = Routine({
 				size.do { |i|
 					var deltatime, msg;
-					osccmd = sortedScore[i];
+					osccmd = score[i];
 					deltatime = osccmd[0];
 					msg = osccmd.copyToEnd(1);
 					(deltatime-timekeep).wait;
@@ -99,6 +100,10 @@ Score {
 	
 	write {arg oscFilePath;
 		this.class.write(score, oscFilePath);
+	}
+	
+	storeArgs {
+		^score
 	}
 	
 }	
