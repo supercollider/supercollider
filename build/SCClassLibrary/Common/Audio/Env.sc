@@ -62,7 +62,7 @@ Env {
 			[0, peakLevel, peakLevel * sustainLevel, 0] + bias,
 			[attackTime, decayTime, releaseTime], 
 			curve,
-			1
+			2
 		)
 	}
 	
@@ -75,7 +75,7 @@ Env {
 			[0, sustainLevel, 0],
 			[attackTime, releaseTime], 
 			curve,
-			0
+			1
 		)
 	}
 	
