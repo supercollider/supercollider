@@ -95,4 +95,6 @@ extern PyrSymbol *s_closed;
 - (NSTextView*) initTextView;
 -(void)selectLine:(int)linenum;
 - (IBAction)selectLineWindow: (id) sender;
+- (void) callSCLangWithMethod: (PyrSymbol*) method;
+
 @end
