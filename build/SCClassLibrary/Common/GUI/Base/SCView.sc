@@ -441,12 +441,18 @@ SC2DSlider : SCSliderBase {
 		^this.getProperty(\x)
 	}
 	x_ { arg val;
+		this.setProperty(\x, val);
+	}	
+	activex_ { arg val;
 		this.setPropertyWithAction(\x, val);
 	}	
 	y {
 		^this.getProperty(\y)
 	}
 	y_ { arg val;
+		this.setProperty(\y, val);
+	}	
+	activey_ { arg val;
 		this.setPropertyWithAction(\y, val);
 	}	
 	properties {
