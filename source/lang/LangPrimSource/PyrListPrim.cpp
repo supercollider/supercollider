@@ -34,12 +34,13 @@
 
 int objectPerform(VMGlobals *g, int numArgsPushed);
 
-int ivxIdentDict_array, ivxIdentDict_size, ivxIdentDict_parent, ivxIdentDict_proto;
+int ivxIdentDict_array, ivxIdentDict_size, ivxIdentDict_parent, ivxIdentDict_proto, ivxIdentDict_know;
 
 int class_array_index, class_array_maxsubclassindex;
 int class_identdict_index, class_identdict_maxsubclassindex;
 
 PyrClass *class_identdict;
+PyrSymbol *s_proto, *s_parent;
 PyrSymbol *s_delta, *s_dur, *s_stretch;
 
 #define HASHSYMBOL(sym) (sym >> 5)
@@ -207,6 +208,19 @@ int identDictPut(struct VMGlobals *g, PyrObject *dict, PyrSlot *key, PyrSlot *va
 	int i, index, size;
 	PyrObject *array;
 	
+	bool knows = IsTrue(dict->slots + ivxIdentDict_know);
+	if (knows && IsSym(key)) {
+		if (key->us == s_parent) {
+			dict->slots[ivxIdentDict_parent].ucopy = value->ucopy;
+			g->gc->GCWrite(dict, value);
+			return errNone;
+		}
+		if (key->us == s_proto) {
+			dict->slots[ivxIdentDict_proto].ucopy = value->ucopy;
+			g->gc->GCWrite(dict, value);
+			return errNone;
+		}
+	}
 	array = dict->slots[ivxIdentDict_array].uo;
 	if (!isKindOf((PyrObject*)array, class_array)) return errFailed;
 	
@@ -403,9 +417,22 @@ int prIdentDict_At(struct VMGlobals *g, int numArgsPushed);
 int prIdentDict_At(struct VMGlobals *g, int numArgsPushed)
 {	
 	PyrSlot* a = g->sp - 1;  // dict
-	PyrSlot* b = g->sp;		// key
+	PyrSlot* key = g->sp;		// key
+	PyrObject *dict = a->uo;
 	
-	identDict_lookup(a->uo, b, a);
+	bool knows = IsTrue(dict->slots + ivxIdentDict_know);
+	if (knows && IsSym(key)) {
+		if (key->us == s_parent) {
+			a->ucopy = dict->slots[ivxIdentDict_parent].ucopy;
+			return errNone;
+		}
+		if (key->us == s_proto) {
+			a->ucopy = dict->slots[ivxIdentDict_proto].ucopy;
+			return errNone;
+		}
+	}
+	
+	identDict_lookup(dict, key, a);
 	return errNone;
 }
 
@@ -723,11 +750,12 @@ void initPatterns();
 void initPatterns()
 {
 	PyrSymbol *sym;
-	
+
 	ivxIdentDict_array  = instVarOffset("IdentityDictionary", "array");
 	ivxIdentDict_size   = instVarOffset("IdentityDictionary", "size");
 	ivxIdentDict_parent = instVarOffset("IdentityDictionary", "parent");
 	ivxIdentDict_proto = instVarOffset("IdentityDictionary", "proto");
+	ivxIdentDict_know = instVarOffset("IdentityDictionary", "know");
 	
 	sym = getsym("IdentityDictionary");
 	class_identdict = sym ? sym->u.classobj : NULL;
@@ -737,6 +765,8 @@ void initPatterns()
 	class_array_index = class_array->classIndex.ui;
 	class_array_maxsubclassindex = class_array->maxSubclassIndex.ui;
 	
+	s_parent = getsym("parent");
+	s_proto = getsym("proto");
 	s_delta = getsym("delta");
 	s_dur = getsym("dur");
 	s_stretch = getsym("stretch");
