@@ -134,12 +134,9 @@ SCErr meth_n_trace(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 SCErr meth_n_trace(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
-	scprintf("meth_n_trace\n");
 	while (msg.remain()) {
 		int32 nodeID = msg.geti();
-		scprintf("nodeID %d\n", nodeID);
 		Node *node = World_GetNode(inWorld, nodeID);
-		scprintf("node %08X\n", node);
 		if (!node) return kSCErr_NodeNotFound;
 		
 		Node_Trace(node);

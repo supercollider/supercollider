@@ -658,7 +658,8 @@ Group* World_GetGroup(World *inWorld, int32 inID)
 void World_Run(World *inWorld)
 {
 	// run top group
-	Group_Calc(inWorld->mTopGroup);
+	Node *node = (Node*)inWorld->mTopGroup;
+	(*node->mCalcFunc)(node);
 }
 
 void World_Start(World *inWorld)
