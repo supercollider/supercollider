@@ -994,6 +994,12 @@
 			settings = {
 			};
 		};
+		92FF072D064A325200AF4C45 = {
+			fileRef = 92CCC51F045B4BDE00CA2167;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 //920
 //921
 //922
@@ -2239,6 +2245,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F5499A2603A3023A01BA7E76,
+				92FF072D064A325200AF4C45,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
