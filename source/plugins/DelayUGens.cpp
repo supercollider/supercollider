@@ -39,6 +39,7 @@ struct PlayBuf : public Unit
 	SndBuf *m_buf;
 };
 
+#if NOTYET
 struct SimpleLoopBuf : public Unit
 {
 	int m_phase;
@@ -46,6 +47,7 @@ struct SimpleLoopBuf : public Unit
 	float m_fbufnum;
 	SndBuf *m_buf;
 };
+#endif
 
 struct BufRd : public Unit
 {
@@ -238,9 +240,10 @@ extern "C"
 	void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples);
 	void PlayBuf_Ctor(PlayBuf* unit);
 
+#if NOTYET
 	void SimpleLoopBuf_next_kk(SimpleLoopBuf *unit, int inNumSamples);
 	void SimpleLoopBuf_Ctor(SimpleLoopBuf* unit);
-
+#endif
 
 	void BufRd_Ctor(BufRd *unit);
 	void BufRd_next_4(BufRd *unit, int inNumSamples);
@@ -524,12 +527,12 @@ inline double sc_loop(double in, double hi, int loop)
 		unit->m_buf = world->mSndBufs + bufnum; \
 	} \
 	SndBuf *buf = unit->m_buf; \
-	int bufChannels = buf->channels; bufChannels; \
-	int bufSamples = buf->samples; bufSamples; \
+	int bufChannels __attribute__((__unused__)) = buf->channels; \
+	int bufSamples __attribute__((__unused__)) = buf->samples; \
 	int bufFrames = buf->frames; \
-	int mask = buf->mask; mask; \
-	int guardFrame = bufFrames - 2; guardFrame; \
-	float *bufData = buf->data;
+	int mask __attribute__((__unused__)) = buf->mask; \
+	int guardFrame __attribute__((__unused__)) = bufFrames - 2; \
+	float *bufData __attribute__((__unused__)) = buf->data;
 
 #define SETUP_OUT \
 	if (unit->mNumOutputs != bufChannels) { \
@@ -4579,6 +4582,7 @@ inline double sc_loop1(int32 in, int32 lo, int32 hi)
 	return lo + range * (in-lo) / range; 
 }
 
+#if NOTYET
 
 void SimpleLoopBuf_next_kk(SimpleLoopBuf *unit, int inNumSamples)
 {
@@ -4620,6 +4624,7 @@ void SimpleLoopBuf_Ctor(SimpleLoopBuf *unit)
 	
 	ClearUnitOutputs(unit, 1);
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4699,7 +4704,9 @@ void load(InterfaceTable *inTable)
 	DefineBufInfoUnit(BufDur);
 
 	DefineSimpleUnit(PlayBuf);
+#if NOTYET
 	DefineSimpleUnit(SimpleLoopBuf);
+#endif
 	DefineSimpleUnit(RecordBuf);
 	DefineSimpleUnit(BufRd);
 	DefineSimpleUnit(BufWr);
