@@ -11,8 +11,7 @@
 \
 
 \f1\b0 A Signal is a FloatArray that represents a sampled function of time buffer. \
-Signals support math operations.
-\
+Signals support math operations.\
 \
 note:  the display methods on this page are not yet functioning.\
 \
@@ -182,9 +181,9 @@ Plays the Signal in a Mixer channel.\
 \f1\b0  - A Boolean whether to loop the entire signal or play it once. Default is to loop.\
 \
 
-\f2 Signal.sineFill(512, [1]).play;\
+\f2 Signal.sineFill(512, [1]);//.play;\
 \
-Signal.sineFill(512, [1]).play(44100, "Signal 1");\
+Signal.sineFill(512, [1]);//.play(44100, "Signal 1");\
 \
 // Synth.collect returns a Signal\
 //Synth.collect(\{ PinkNoise.ar(XLine.kr(0.001, 0.2, 2)) \}, 2).play;\
@@ -217,7 +216,7 @@ The function is called with two arguments.\
 \f2 (\
 s = Signal.newClear(512);\
 s.waveFill(\{ arg x, i; sin(x).max(0) \}, 0, 3pi);\
-// s.plot;\
+s.plot;\
 )\
 \
 
@@ -227,7 +226,7 @@ s.waveFill(\{ arg x, i; sin(x).max(0) \}, 0, 3pi);\
 Convert the Signal into a Wavetable.\
 \
 
-\f2 Signal.sineFill(512, [1]).asWavetable;//.plot;\
+\f2 Signal.sineFill(512, [1]).asWavetable.plot;\
 \
 
 \f1 \
@@ -238,7 +237,7 @@ Convert the Signal into a Wavetable.\
 Fill the Signal with a value.\
 \
 
-\f2 Signal.newClear(512).fill(0.2);//.plot;\
+\f2 Signal.newClear(512).fill(0.2).plot;\
 \
 
 \f1 \
@@ -320,10 +319,10 @@ Invert the Signal
 \f1\b0 .\
 \
 (\
-s = 
+\cf2 //s = 
 \f2 Signal.sineFill(512, [1]);\
-SignalWindow.new(signals: [s, s.copy.invert]);\
-)\
+//SignalWindow.new(signals: [s, s.copy.invert]);\
+\cf0 )\
 \
 \
 
@@ -335,10 +334,10 @@ Reverse a subrange of the Signal
 \f1\b0 .\
 \
 (\
-s = 
+\cf2 //s = 
 \f2 Signal.sineFill(512, [1]);\
-SignalWindow.new(signals: [s, s.copy.reverse(128, 384)]);\
-)\
+//SignalWindow.new(signals: [s, s.copy.reverse(128, 384)]);\
+\cf0 )\
 \
 \
 
@@ -350,10 +349,10 @@ Fade a subrange of the Signal
 \f1\b0 .\
 \
 (\
-s = 
+\cf2 //s = 
 \f2 Synth.collect(\{ ClipNoise.ar(0.5) \}, 0.02);\
-SignalWindow.new(signals: [s, s.copy.fade(0, 300, 0, 1)]);\
-)\
+//SignalWindow.new(signals: [s, s.copy.fade(0, 300, 0, 1)]);\
+\cf0 )\
 \
 \
 
@@ -362,9 +361,9 @@ SignalWindow.new(signals: [s, s.copy.fade(0, 300, 0, 1)]);\
 \f1\b0 \
 Return the integral of a signal.\
 \
-
+\cf2 //
 \f2 Synth.collect(\{ PinkNoise.ar(0.1) \}, 0.01).integral.postln;\
-\
+\cf0 \
 \
 
 \f0\b overDub(aSignal, index)\
@@ -374,13 +373,13 @@ Add a signal to myself starting at the index.\
 If the other signal is too long only the first part is overdubbed.\
 \
 (\
-s = 
+\cf2 //s = 
 \f2 Synth.collect(\{ BrownNoise.ar(0.3) \}, 0.05);\
-
+//
 \f1 t = 
 \f2 Synth.collect(\{ FSinOsc.ar(800, 0.3) \}, 0.02);\
-s.overDub(t, 1000).plot;\
-)\
+//s.overDub(t, 1000).plot;\
+\cf0 )\
 \
 \
 
@@ -391,13 +390,13 @@ Write a signal to myself starting at the index.\
 If the other signal is too long only the first part is overdubbed.\
 \
 (\
-s = 
+\cf2 //s = 
 \f2 Synth.collect(\{ BrownNoise.ar(0.3) \}, 0.05);\
-
+//
 \f1 t = 
 \f2 Synth.collect(\{ FSinOsc.ar(800, 0.3) \}, 0.02);\
-s.overWrite(t, 1000).plot;\
-)\
+//s.overWrite(t, 1000).plot;\
+\cf0 )\
 \
 \
 
@@ -408,10 +407,10 @@ Blend two signals by some proportion.\
 \
 
 \f2 (\
-s = Synth.collect(\{ LFPulse.ar(1300, 0.2) \}, 0.01);\
-t = Synth.collect(\{ FSinOsc.ar(400) \}, 0.01);\
-SignalWindow.new(signals: Array.fill(6, \{ arg i; s.blend(t, i/5) \}));\
-) \
+\cf2 //s = Synth.collect(\{ LFPulse.ar(1300, 0.2) \}, 0.01);\
+//t = Synth.collect(\{ FSinOsc.ar(400) \}, 0.01);\
+//SignalWindow.new(signals: Array.fill(6, \{ arg i; s.blend(t, i/5) \}));\
+\cf0 ) \
 \
 
 \f0\b\fs28 \ul Fourier Transform:\
@@ -434,26 +433,26 @@ Perform an FFT on a real and imaginary signal
 \
 
 \f2 (\
-var real, imag, table;\
-real = Synth.collect(\{ \
-		LFPulse.ar(800, 0.2)\
-	\}, 4096/Synth.sampleRate) * Signal.hanningWindow(4096);\
-imag = Signal.newClear(4096);\
-table = Signal.fftCosTable(4096);\
-(fft(real, imag, table)/100).plot;\
-)\
+\cf2 //var real, imag, table;\
+//real = Synth.collect(\{ \
+//		LFPulse.ar(800, 0.2)\
+//	\}, 4096/Synth.sampleRate) * Signal.hanningWindow(4096);\
+//imag = Signal.newClear(4096);\
+//table = Signal.fftCosTable(4096);\
+//(fft(real, imag, table)/100).plot;\
+\cf0 )\
 \
 (\
-var real, imag, table,complex;\
-real = Synth.collect(\{ \
-		LFPulse.ar(800, 0.2)\
-	\}, 4096/Synth.sampleRate) * Signal.hanningWindow(4096);\
-imag = Signal.newClear(4096);\
-table = Signal.fftCosTable(4096);\
-complex=(fft(real, imag, table)/100);\
-complex.real.plot;\
-complex.imag.plot;\
-)\
+\cf2 //var real, imag, table,complex;\
+//real = Synth.collect(\{ \
+//		LFPulse.ar(800, 0.2)\
+//	\}, 4096/Synth.sampleRate) * Signal.hanningWindow(4096);\
+//imag = Signal.newClear(4096);\
+//table = Signal.fftCosTable(4096);\
+//complex=(fft(real, imag, table)/100);\
+//complex.real.plot;\
+//complex.imag.plot;\
+\cf0 )\
 \
 \
 
@@ -466,16 +465,16 @@ Perform an inverse FFT on a real and imaginary signal
 \
 
 \f2 (\
-var real, imag, table;\
-real = Synth.collect(\{ \
-		LFSaw.ar(100, 0.2)\
-	\}, 4096/Synth.sampleRate);\
-imag = Signal.newClear(4096);\
-table = Signal.fftCosTable(4096);\
-fft(real, imag, table);	// forward transform\
-ifft(real, imag, table);	// inverse transform\
-real.plot;	// returns the original\
-)\
+\cf2 //var real, imag, table;\
+//real = Synth.collect(\{ \
+//		LFSaw.ar(100, 0.2)\
+//	\}, 4096/Synth.sampleRate);\
+//imag = Signal.newClear(4096);\
+//table = Signal.fftCosTable(4096);\
+//fft(real, imag, table);	// forward transform\
+//ifft(real, imag, table);	// inverse transform\
+//real.plot;	// returns the original\
+\cf0 )\
 
 \f1 \
 
@@ -492,11 +491,11 @@ isStrictlyPositive\
 \
 
 \f2\b0 (\
-s = Signal.sineFill(512, [0,0,0,1]);\
-SignalWindow.new(signals: \
-	[s, s.neg, s.abs, s.sign, s.squared, s.cubed, \
-	s.asin.normalize, s.exp.normalize, s.distort, s.nyqring]);\
-)\
+\cf2 //s = Signal.sineFill(512, [0,0,0,1]);\
+//SignalWindow.new(signals: \
+//	[s, s.neg, s.abs, s.sign, s.squared, s.cubed, \
+//	s.asin.normalize, s.exp.normalize, s.distort, s.nyqring]);\
+\cf0 )\
 \
 
 \f1 \
@@ -515,9 +514,10 @@ scaleneg, clip2, excess, <!\
 \
 
 \f2\b0 (\
-s = Synth.collect(\{ WhiteNoise.ar \}, 0.01);\
-t = Synth.collect(\{ FSinOsc.ar(400) \}, 0.01);\
-SignalWindow.new(signals: \
-	[s, t, (s + t) * 0.5, s * t, min(s, t), max(s, t) ]\
-);\
-) }
+\cf2 //s = Synth.collect(\{ WhiteNoise.ar \}, 0.01);\
+//t = Synth.collect(\{ FSinOsc.ar(400) \}, 0.01);\
+//SignalWindow.new(signals: \
+//	[s, t, (s + t) * 0.5, s * t, min(s, t), max(s, t) ]\
+//);\
+\cf0 ) \
+}
