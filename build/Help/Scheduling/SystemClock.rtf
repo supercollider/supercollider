@@ -26,6 +26,7 @@ AppClock is less accurate (uses NSTimers) but can call Cocoa primitives.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 		SystemClock\cf0 .sched(0.0,\{ arg time;  \
 			time.postln; \
 			rrand(0.1,0.9) \
@@ -37,33 +38,34 @@ AppClock is less accurate (uses NSTimers) but can call Cocoa primitives.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 		SystemClock\cf0 .sched(2.0,\{ \
 			\cf3 "2.0 seconds later"\cf0 .postln; \
 			\cf2 nil\cf0  \
 		\});\
 \
-
-\f0\b\fs24 *clear\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 	clear the AppClock's scheduler to stop it\
+\f0\b\fs24 \cf0 *clear\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	clear the SystemClock's scheduler to stop it\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
 		SystemClock\cf0 .clear\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 *schedAbs(time,task)\
+\f0\b\fs24 \cf0 *schedAbs(time,task)\
 	\
 
 \f2\b0\fs18 		\cf2 SystemClock\cf0 .schedAbs( (\cf2 thisThread\cf0 .time + 4.0).round(1.0),\{ \cf2 arg\cf0  time;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 			(\cf3 "the time is exactly "\cf0  ++ time.asString \
+			(\cf3 "the time is exactly "\cf0  ++ time.asString \
 				++ \cf3 " seconds since starting SuperCollider")\cf0 .postln;\
 		\});\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 				
+\f0\b\fs24 				
 \f2\b0\fs18 \
 	
 \f0\b\fs24 \
@@ -82,8 +84,7 @@ AppClock is less accurate (uses NSTimers) but can call Cocoa primitives.\
 \f2\fs18 	\cf2 AppClock\cf0 .sched(0, function):\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 		(\
+		(\
 		\cf2 var\cf0  w, r;\
 		w = \cf2 SCWindow\cf0 (\cf3 "trem"\cf0 , \cf2 Rect\cf0 (512, 256, 360, 130));\
 		w.front;\
@@ -100,11 +101,9 @@ AppClock is less accurate (uses NSTimers) but can call Cocoa primitives.\
 		\});\
 		\cf2 SystemClock\cf0 .play(r);\
 		)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\
 
-\f1\fs24 \cf0 	This example is only to show how to make calls to Cocoa/GUI when \
+\f1\fs24 	This example is only to show how to make calls to Cocoa/GUI when \
 	scheduling with the SystemClock.\
 	If you only wish to control the GUI, use AppClock.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
