@@ -3245,15 +3245,7 @@
 		};
 		F50D05AC02E69B6B01CA2799 = {
 			children = (
-				F50D05AD02E69B6B01CA2799,
-				F50D05AE02E69B6B01CA2799,
-				F50D05AF02E69B6B01CA2799,
-				F50D05B002E69B6B01CA2799,
-				F50D05B102E69B6B01CA2799,
-				F50D05B202E69B6B01CA2799,
-				F50D05B302E69B6B01CA2799,
 				F50D05B402E69B6B01CA2799,
-				F50D05B502E69B6B01CA2799,
 				F50D05B602E69B6B01CA2799,
 				F50D05B702E69B6B01CA2799,
 			);
@@ -3262,66 +3254,10 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		F50D05AD02E69B6B01CA2799 = {
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = lang11;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		F50D05AE02E69B6B01CA2799 = {
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = lang11c;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		F50D05AF02E69B6B01CA2799 = {
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = lang11c.output;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		F50D05B002E69B6B01CA2799 = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			path = lang11c_tab.cpp;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		F50D05B102E69B6B01CA2799 = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			path = lang11c_tab.h;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		F50D05B202E69B6B01CA2799 = {
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = lang11cx;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		F50D05B302E69B6B01CA2799 = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.c;
-			path = lang11cx.tab.c;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		F50D05B402E69B6B01CA2799 = {
 			isa = PBXFileReference;
 			lastKnownFileType = text;
 			path = lang11d;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		F50D05B502E69B6B01CA2799 = {
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = lang11d.output;
 			refType = 4;
 			sourceTree = "<group>";
 		};
