@@ -158,7 +158,7 @@ Env {
 		name = "env_test_" ++ id;
 		SynthDef(name, { arg gate=1;
 			Out.ar(0,
-				FSinOsc.ar(800, 0, 0.3) * EnvGen.ar(this, gate, doneAction:2)
+				SinOsc.ar(800, pi/2, 0.3) * EnvGen.ar(this, gate, doneAction:2)
 			)
 		}).send(s);
 		SystemClock.sched(0.2, {
