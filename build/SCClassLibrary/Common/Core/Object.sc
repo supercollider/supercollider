@@ -207,7 +207,7 @@ Object {
 		this.halt  
 	}
 	shouldNotImplement { arg method;
-		error(method.ownerClass.name.asString ++ "::" ++ method.name.asString 
+		error(method.ownerClass.name.asString ++ "-" ++ method.name.asString 
 			++ " : Message not valid for this subclass\n");
 		this.dumpBackTrace;
 		this.halt;
@@ -232,7 +232,7 @@ Object {
 		var string;
 		_ObjectString
 		string = String.streamContentsLimit({ arg stream; this.printOn(stream); }, limit);
-		if (string.size >= limit, { string = string ++ "...etc..."; });
+		if (string.size >= limit, { ^(string ++ "...etc..."); });
 		^string
 	}
 	asCompileString {
@@ -289,44 +289,37 @@ Object {
 	}
 	
 	// dependancy support
+	*initClass { dependantsDictionary = IdentityDictionary.new(4); }
 	dependants {
-		if (dependantsDictionary.isNil, { 
-			^IdentitySet.new 
-		},{
-			^dependantsDictionary.atFail(this, { ^IdentitySet.new });
-		})
+		^dependantsDictionary.atFail(this, { ^IdentitySet.new });
 	}
 	changed { arg theChanger;
-		var theDependants;
-		theDependants = this.dependants;
-		theDependants.do({ arg item;
+		dependantsDictionary.at(this).do({ arg item;
 			item.update(this, theChanger);
 		});
 	}
 	addDependant { arg dependant;
 		var theDependants;
-		if (dependantsDictionary.isNil, {
-			dependantsDictionary = IdentityDictionary.new(4);
-		});
-		theDependants = this.dependants;
-		dependantsDictionary.put(this, theDependants.add(dependant));
+		theDependants = dependantsDictionary.at(this);
+		if(theDependants.isNil,{
+			theDependants = IdentitySet.new.add(dependant);
+			dependantsDictionary.put(this, theDependants);
+		},{
+			theDependants.add(dependant);
+		});		
 	}
 	removeDependant { arg dependant;
 		var theDependants;
-		if (dependantsDictionary.notNil, { 
-			theDependants = dependantsDictionary.atFail(this);
-			if (theDependants.notNil, {
-				theDependants.remove(dependant);
-				if (theDependants.size == 0, {
-					dependantsDictionary.removeAt(this);
-				});
+		theDependants = dependantsDictionary.at(this);
+		if (theDependants.notNil, {
+			theDependants.remove(dependant);
+			if (theDependants.size == 0, {
+				dependantsDictionary.removeAt(this);
 			});
-		})
+		});
 	}
 	release {
-		if (dependantsDictionary.notNil, {
-			dependantsDictionary.removeAt(this);
-		})
+		dependantsDictionary.removeAt(this);
 	}
 	update { arg theChanged, theChanger;	// respond to a change in a model
 	}
