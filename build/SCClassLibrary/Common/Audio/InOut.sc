@@ -129,11 +129,28 @@ AbstractOut : UGen {
  		});
  		^nil
  	}
+ 	*replaceZeroesWithSilence { arg array;
+ 		// this replaces zeroes with audio rate silence.
+ 		var numZeroes, silentChannels, pos = 0;
+ 		
+ 		numZeroes = array.count({ arg item; item == 0.0 });
+ 		if (numZeroes == 0, { ^array });
+ 		
+ 		silentChannels = Silent.ar(numZeroes);
+ 		array.do({ arg item, i; 
+ 			if (item == 0.0, { 
+ 				array.put(i, silentChannels.at(pos)); 
+ 				pos = pos + 1;
+ 			});
+ 		});
+ 		^array;
+ 	}
 }
 
 Out : AbstractOut {
 	*ar { arg bus, channelsArray;
-		this.multiNewList(['audio', bus] ++ channelsArray.asArray)
+		channelsArray = this.replaceZeroesWithSilence(channelsArray.asArray);
+		this.multiNewList(['audio', bus] ++ channelsArray)
 		^0.0		// Out has no output
 	}
 	*kr { arg bus, channelsArray;
@@ -148,7 +165,8 @@ OffsetOut : Out {}
 
 XOut : AbstractOut {
 	*ar { arg bus, xfade, channelsArray;
-		this.multiNewList(['audio', bus, xfade] ++ channelsArray.asArray)
+		channelsArray = this.replaceZeroesWithSilence(channelsArray.asArray);
+		this.multiNewList(['audio', bus, xfade] ++ channelsArray)
 		^0.0		// Out has no output
 	}
 	*kr { arg bus, xfade, channelsArray;

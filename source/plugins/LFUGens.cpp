@@ -106,7 +106,7 @@ struct LinExp : public Unit
 
 struct LinLin : public Unit
 {
-	float m_scale, m_offset, m_srclo, m_srchi;
+	float m_scale, m_offset;
 };
 
 struct Clip : public Unit
@@ -147,6 +147,10 @@ struct Trapezoid : public Unit
 struct K2A : public Unit
 {
 	float mLevel;
+};
+
+struct Silent : public Unit
+{
 };
 
 struct EnvGen : public Unit
@@ -222,6 +226,12 @@ extern "C"
 	void SyncSaw_next_kk(SyncSaw *unit, int inNumSamples);
 	void SyncSaw_Ctor(SyncSaw* unit);
 
+	void K2A_next(K2A *unit, int inNumSamples);
+	void K2A_Ctor(K2A* unit);
+
+	void Silent_next(Silent *unit, int inNumSamples);
+	void Silent_Ctor(Silent* unit);
+
 	void Line_next(Line *unit, int inNumSamples);
 	void Line_Ctor(Line* unit);
 
@@ -248,6 +258,9 @@ extern "C"
 
 	void LinExp_next(LinExp *unit, int inNumSamples);
 	void LinExp_Ctor(LinExp* unit);
+
+	void LinLin_next(LinLin *unit, int inNumSamples);
+	void LinLin_Ctor(LinLin* unit);
 
 	void EnvGen_next_k(EnvGen *unit, int inNumSamples);
 	void EnvGen_next_aa(EnvGen *unit, int inNumSamples);
@@ -985,6 +998,38 @@ void SyncSaw_Ctor(SyncSaw* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+void K2A_next(K2A *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float in = ZIN0(0);
+	
+	float level = unit->mLevel;
+	float slope = CALCSLOPE(in, level);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = level += slope;
+	);
+	unit->mLevel = level;
+}
+
+void K2A_Ctor(K2A* unit)
+{
+	SETCALC(K2A_next);
+	unit->mLevel = ZIN0(0);
+	
+	ZOUT0(0) = unit->mLevel;
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Silent_Ctor(Unit* unit)
+{
+	SETCALC(ClearUnitOutputs);
+	ZOUT0(0) = 0.f;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Line_next(Line *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -1318,6 +1363,36 @@ void LinExp_Ctor(LinExp* unit)
 	unit->m_rrminuslo = unit->m_rsrcrange * -srclo;
 
 	LinExp_next(unit, 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void LinLin_next(LinLin *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in   = ZIN(0);
+	
+	float scale = unit->m_scale;
+	float offset = unit->m_offset;
+
+	LOOP(inNumSamples, 
+		ZXP(out) = scale * ZXP(in) + offset;
+	);
+}
+
+void LinLin_Ctor(LinLin* unit)
+{
+	SETCALC(LinLin_next);
+
+	float srclo = ZIN0(1);
+	float srchi = ZIN0(2);
+	float dstlo = ZIN0(3);
+	float dsthi = ZIN0(4);
+	
+	unit->m_scale = (dsthi - dstlo) / (srchi - srclo);
+	unit->m_offset = dstlo - unit->m_scale * srclo;
+
+	LinLin_next(unit, 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3037,6 +3112,8 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Impulse);
 	DefineSimpleUnit(VarSaw);
 	DefineSimpleUnit(SyncSaw);
+	DefineSimpleUnit(K2A);
+	DefineSimpleUnit(Silent);
 	DefineSimpleUnit(Line);
 	DefineSimpleUnit(XLine);
 	
@@ -3047,6 +3124,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(InRange);
 	DefineSimpleUnit(InRect);
 	DefineSimpleUnit(LinExp);
+	DefineSimpleUnit(LinLin);
 	DefineSimpleUnit(EnvGen);
 	//DefineSimpleUnit(BufEnvGen);
 	DefineSimpleUnit(Linen);

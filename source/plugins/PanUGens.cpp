@@ -761,7 +761,7 @@ void PanB_next(PanB *unit, int inNumSamples)
 		
 		long iazimuth   = kSineMask & (long)(azimuth   * (kSineSize * 0.5));
 		long ielevation = kSineMask & (long)(elevation * (kSineSize * 0.25));
-		float sina = ft->mSine[iazimuth];
+		float sina = -ft->mSine[iazimuth];
 		float sinb = ft->mSine[ielevation];
 		
 		iazimuth   = kSineMask & (iazimuth   + (kSineSize>>2));
@@ -834,7 +834,7 @@ void PanB2_next(PanB2 *unit, int inNumSamples)
 		unit->m_level = level;
 		
 		long iazimuth   = kSineMask & (long)(azimuth   * (kSineSize * 0.5));
-		float sina = ft->mSine[iazimuth];
+		float sina = -ft->mSine[iazimuth];
 		
 		iazimuth   = kSineMask & (iazimuth   + (kSineSize>>2));
 		float cosa = ft->mSine[iazimuth];
