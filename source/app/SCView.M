@@ -2501,11 +2501,12 @@ void SCMultiSliderView::setVisibleSize()
         else offset = mXOffset;
         scaledsize = (float) (mTabSize - mStartIndex) * mThumbSize;
 		if(mIsHorizontal){
-			if (scaledsize <= mBounds.width) mVisibleSize = mTabSize;
-			else mVisibleSize = (int) mBounds.width / mThumbSize;
+//			if (scaledsize <= mBounds.width) mVisibleSize = mTabSize;
+			if (scaledsize <= mBounds.width) mVisibleSize = mTabSize - mStartIndex;
+			else mVisibleSize = (int) (mStartIndex + (mBounds.width / mThumbSize));
 		} else {
-			if (scaledsize <= mBounds.height) mVisibleSize = mTabSize;
-			else mVisibleSize = (int) mBounds.height / mThumbSize;
+			if (scaledsize <= mBounds.height) mVisibleSize = mTabSize - mStartIndex
+			else mVisibleSize = (int) (mStartIndex +  (mBounds.height / mThumbSize));
 		}
     } else {
         mVisibleSize = 0;
