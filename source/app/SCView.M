@@ -3757,9 +3757,9 @@ SCViewMaker::SCViewMaker(const char* inName, SCViewCtor inCtor)
 	gSCViewMakers = this;
 }
 
-SCView* MakeSCView(PyrObject* inObj, SCContainerView *inParent, SCRect inBounds)
+SCView* MakeSCView(PyrObject* inObj, SCContainerView *inParent, SCRect inBounds,const char *classname)
 {
-        const char *classname = inObj->classptr->name.us->name;
+       // const char *classname = inObj->classptr->name.us->name;
         SCViewMaker* maker = gSCViewMakers;
 	while (maker) {
             if (strcmp(classname, maker->mName) == 0) {
@@ -3804,23 +3804,23 @@ int prSCView_New(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
 
-	PyrSlot *args = g->sp - 2;
-        // view, parent, bounds
+	PyrSlot *args = g->sp - 3;
+        // view, parent, bounds, viewclass
     
         SCContainerView* parent;
-        if (isKindOfSlot(args+0, s_sctopview->u.classobj)) {
+        if (isKindOfSlot(args, s_sctopview->u.classobj)) {
             parent = 0;
         } else {
             if (!isKindOfSlot(args+1, s_sccontview->u.classobj)) return errWrongType;
             parent = (SCContainerView*)args[1].uo->slots[0].ui;
         }
-        if(IsNil(args+2)) return errWrongType; // nil bounds
+        if (!(isKindOfSlot(args+2, s_rect->u.classobj))) return errWrongType;
         
 	SCRect bounds;
 	int err = slotGetSCRect(args+2, &bounds);
 	if (err) return err;
 	
-	SCView *view = MakeSCView(args[0].uo, parent, bounds);
+	SCView *view = MakeSCView(args[0].uo, parent, bounds,args[3].uoc->name.us->name);
 	if (!view) return errFailed;
 
 	return errNone;
@@ -3918,7 +3918,7 @@ void initSCViewPrimitives()
 	base = nextPrimitiveIndex();
 	index = 0;
 	
-	definePrimitive(base, index++, "_SCView_New", prSCView_New, 3, 0);
+	definePrimitive(base, index++, "_SCView_New", prSCView_New, 4, 0);
 	definePrimitive(base, index++, "_SCView_SetProperty", prSCView_SetProperty, 3, 0);
 	definePrimitive(base, index++, "_SCView_GetProperty", prSCView_GetProperty, 3, 0);	
 	definePrimitive(base, index++, "_SCView_Focus", prSCView_Focus, 2, 0);	

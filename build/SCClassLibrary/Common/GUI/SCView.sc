@@ -8,15 +8,15 @@ SCView {  // abstract class
 	*new { arg parent, bounds;
 		^super.new.init(parent, bounds);
 	}
-	
+	*viewClass { ^this }
 	*paletteExample { arg parent, bounds;
 		^this.new(parent, bounds);
 	}
 	
 	init { arg argParent, argBounds;
-		parent = argParent.asView;
-		this.prInit(parent, argBounds);
-		parent.add(this);
+		parent = argParent.asView; // actual view
+		this.prInit(parent, argBounds.asRect,this.class.viewClass);
+		argParent.add(this);//maybe window or viewadapter
 		this.keyDownAction_({ arg view,char,modifiers,unicode,keycode;
 			this.defaultKeyDownAction(char,modifiers,unicode,keycode);
 			nil // default DOESN't consume it
@@ -160,11 +160,13 @@ SCView {  // abstract class
 	}
 	
 	// private
-	prInit { arg argParent, argBounds;
+	prInit { arg argParent, argBounds,argViewClass;
 		_SCView_New
 		^this.primitiveFailed
 	}
 	prClose { dataptr = nil; }
+	// prRemove
+	
 	setProperty { arg key, value;
 		_SCView_SetProperty
 		^this.primitiveFailed
@@ -195,6 +197,15 @@ SCContainerView : SCView { // abstract class
 		children = children.add(child);
 		if (decorator.notNil, { decorator.place(child); });
 	}
+//	remove { arg child;
+//		children.remove(child);
+//		// decorator replace
+//	}
+	
+	//bounds_  replace children
+		// needs the StartRow view
+
+
 	// private
 	prClose {
 		super.prClose;
