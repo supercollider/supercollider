@@ -74,16 +74,16 @@ PV_BinWipe : UGen
 	}
 }
 
-PV_MagMultiply : UGen
+PV_MagMul : UGen
 {
 	*new { arg bufferA, bufferB;
 		^this.multiNew('control', bufferA, bufferB)
 	}
 }
 
-PV_CopyPhase : PV_MagMultiply {}
-PV_Max : PV_MagMultiply {}
-PV_Min : PV_MagMultiply {}
+PV_CopyPhase : PV_MagMul {}
+PV_Max : PV_MagMul {}
+PV_Min : PV_MagMul {}
 
 PV_RandComb : UGen 
 {
