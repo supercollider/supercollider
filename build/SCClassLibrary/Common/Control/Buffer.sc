@@ -22,24 +22,32 @@ Buffer {
 					.alloc(completionMessage).addToServerArray.sampleRate_(server.sampleRate);
 	}
 
+	alloc { arg completionMessage;
+		server.listSendMsg( this.allocMsg(completionMessage) )
+	}
+	allocRead { arg argpath,startFrame,numFrames, completionMessage;
+		path = argpath;
+		server.listSendMsg(this.allocReadMsg( argpath,startFrame,numFrames, completionMessage));
+	}
+	
 	allocMsg { arg completionMessage;
 		^["/b_alloc", bufnum, numFrames, numChannels, completionMessage.value(this)]
 	}
-	allocReadMsg { arg argpath,startFrame,completionMessage;
+	allocReadMsg { arg argpath,startFrame,numFrames, completionMessage;
 		path = argpath;
 		^["/b_allocRead",bufnum, path,startFrame,numFrames ? -1, completionMessage.value(this)]
 	}
 
 	// read whole file into memory for PlayBuf etc.
 	// adds a query as a completion message
-	*read { arg server,path,startFrame = 0,numFrames = -1, action, bufnum;
+	*read { arg server,path,startFrame = 0,numFrames, action, bufnum;
 		server = server ? Server.default;
 		^super.newCopyArgs(server,
 						bufnum ?? { server.bufferAllocator.alloc(1) })
-					.allocRead(path,startFrame,{|buf|["/b_query",buf.bufnum]})
+					.allocRead(path,startFrame,numFrames,{|buf|["/b_query",buf.bufnum]})
 					.addToServerArray.doOnInfo_(action).waitForBufInfo;
 	}
-	read { arg argpath, fileStartFrame = 0, numFrames = -1, 
+	read { arg argpath, fileStartFrame = 0, numFrames, 
 					bufStartFrame = 0, leaveOpen = false, action;
 		doOnInfo = action;
 		this.waitForBufInfo;
@@ -48,24 +56,23 @@ Buffer {
 						leaveOpen,{|buf|["/b_query",buf.bufnum]} )
 		);
 	}
-	*readNoUpdate { arg server,path,startFrame = 0,numFrames = -1, bufnum, completionMsg;
+	*readNoUpdate { arg server,path,startFrame = 0,numFrames, bufnum, completionMessage;
 		server = server ? Server.default;
 		^super.newCopyArgs(server,
-						bufnum ?? { server.bufferAllocator.alloc(1) },
-						numFrames)
-					.allocRead(path,startFrame,completionMsg);
+						bufnum ?? { server.bufferAllocator.alloc(1) })
+					.allocRead(path,startFrame,numFrames, completionMessage).addToServerArray;
 	}
-	readNoUpdate { arg argpath, fileStartFrame = 0, numFrames = -1, 
-					bufStartFrame = 0, leaveOpen = false, completionMsg;
+	readNoUpdate { arg argpath, fileStartFrame = 0, numFrames, 
+					bufStartFrame = 0, leaveOpen = false, completionMessage;
 		server.listSendMsg(
-			this.readMsg(argpath,fileStartFrame,numFrames,bufStartFrame, leaveOpen, completionMsg)
+			this.readMsg(argpath,fileStartFrame,numFrames,bufStartFrame, 
+				leaveOpen, completionMessage)
 		);
 	}
-	readMsg { arg argpath, fileStartFrame = 0, numFrames = -1, 
+	readMsg { arg argpath, fileStartFrame = 0, numFrames, 
 					bufStartFrame = 0, leaveOpen = false, completionMessage;
-		this.numFrames = numFrames;
 		path = argpath;
-		^["/b_read", bufnum, path, fileStartFrame, numFrames, 
+		^["/b_read", bufnum, path, fileStartFrame, numFrames ? -1, 
 			bufStartFrame, leaveOpen.binaryValue, completionMessage.value(this)]
 		// doesn't set my numChannels etc.
 	}
@@ -75,15 +82,15 @@ Buffer {
 			 bufferSize=32768,completionMessage;
 		^this.alloc(server,bufferSize,numChannels,{ arg buffer;
 						buffer.readMsg(path,startFrame,bufferSize,0,true,completionMessage)
-					})
+					}).addToServerArray;
 	}
 	
-	cueSoundFile { arg path,startFrame = 0, numFrames=32768,completionMessage;
+	cueSoundFile { arg path,startFrame,completionMessage;
 		server.listSendMsg(
 			this.cueSoundFileMsg(path,startFrame,numFrames,completionMessage)
 		)
 	}
-	cueSoundFileMsg { arg path,startFrame,numFrames=32768,completionMessage;
+	cueSoundFileMsg { arg path,startFrame = 0,completionMessage;
 		^["/b_read", bufnum,path,startFrame,numFrames,0,1,completionMessage.value(this) ]
 	}
 	
@@ -108,7 +115,7 @@ Buffer {
 							if(File.delete(path), { buf.path = nil}, 
 								{("Could not delete data file:" + path).warn;});
 							action.value(buf);
-						}).waitForBufInfo.allocRead(path, 0, {|buf|["/b_query",buf.bufnum]});
+						}).waitForBufInfo.allocRead(path, 0, -1,{|buf|["/b_query",buf.bufnum]});
 				
 				}, {"Failed to write data".warn; ^nil}
 			);
@@ -290,19 +297,23 @@ Buffer {
 	}
 	
 	setn { arg startAt , values ... morePairs;
-		server.listSendMsg(["/b_setn",bufnum,startAt,values.size] 
-			++ values ++ morePairs.flat);
+		server.sendMsg(*this.setnMsg(startAt, values, *morePairs));
 	}
 	setnMsg { arg startAt , values ... morePairs;
+		var nargs;
+		nargs = List.new;
+		morePairs.pairsDo({ arg control, moreVals; 
+			nargs.addAll([control, moreVals.size, moreVals].flat)}
+		);
 		^["/b_setn",bufnum,startAt,values.size] 
-			++ values ++ morePairs.flat
+			++ values ++ nargs;
 	}
 	get { arg index, action;
 		OSCpathResponder(server.addr,['/b_set',bufnum,index],{ arg time, r, msg; 
 			action.value(msg.at(3)); r.remove }).add;
 		server.listSendMsg(["/b_get",bufnum,index]);
 	}
-	getMsg { arg index, action;
+	getMsg { arg index;
 		^["/b_get",bufnum,index];
 	}
 	getn { arg index, count, action;
@@ -310,7 +321,7 @@ Buffer {
 			action.value(msg.copyToEnd(4)); r.remove } ).add; 
 		server.listSendMsg(["/b_getn",bufnum,index, count]);
 	}
-	getnMsg { arg index, count, action;
+	getnMsg { arg index, count;
 		^["/b_getn",bufnum,index, count];
 	}
 
@@ -338,26 +349,26 @@ Buffer {
 			+ (clearFirst.binaryValue * 4)]
 			++ genArgs;
 	}
-	sine1 { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
+	sine1 { arg amps,normalize=true,asWavetable=true,clearFirst=true;
 		server.listSendMsg(["/b_gen",bufnum,"sine1",
 			normalize.binaryValue 
 			+ (asWavetable.binaryValue * 2) 
 			+ (clearFirst.binaryValue * 4)]
-			++ amplitudes)
+			++ amps)
 	}
-	sine2 { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
+	sine2 { arg freqs, amps,normalize=true,asWavetable=true,clearFirst=true;
 		server.listSendMsg(["/b_gen",bufnum,"sine2",
 			normalize.binaryValue 
 			+ (asWavetable.binaryValue * 2) 
 			+ (clearFirst.binaryValue * 4)]
-			++ amplitudes)
+			++ [freqs, amps].lace(freqs.size * 2))
 	}
-	sine3 { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
+	sine3 { arg freqs, amps, phases,normalize=true,asWavetable=true,clearFirst=true;
 		server.listSendMsg(["/b_gen",bufnum,"sine3",
 			normalize.binaryValue 
 			+ (asWavetable.binaryValue * 2) 
 			+ (clearFirst.binaryValue * 4)]
-			++ amplitudes)
+			++ [freqs, amps, phases].lace(freqs.size * 3))
 	}
 	cheby { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
 		server.listSendMsg(["/b_gen",bufnum,"cheby",
@@ -366,26 +377,26 @@ Buffer {
 			+ (clearFirst.binaryValue * 4)]
 			++ amplitudes)
 	}
-	sine1Msg { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
+	sine1Msg { arg amps,normalize=true,asWavetable=true,clearFirst=true;
 		^["/b_gen",bufnum,"sine1",
 			normalize.binaryValue 
 			+ (asWavetable.binaryValue * 2) 
 			+ (clearFirst.binaryValue * 4)]
-			++ amplitudes
+			++ amps
 	}
-	sine2Msg { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
+	sine2Msg { arg freqs, amps,normalize=true,asWavetable=true,clearFirst=true;
 		^["/b_gen",bufnum,"sine2",
 			normalize.binaryValue 
 			+ (asWavetable.binaryValue * 2) 
 			+ (clearFirst.binaryValue * 4)]
-			++ amplitudes
+			++ [freqs, amps].lace(freqs.size * 2)
 	}
-	sine3Msg { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
+	sine3Msg { arg freqs, amps, phases,normalize=true,asWavetable=true,clearFirst=true;
 		^["/b_gen",bufnum,"sine3",
 			normalize.binaryValue 
 			+ (asWavetable.binaryValue * 2) 
 			+ (clearFirst.binaryValue * 4)]
-			++ amplitudes
+			++ [freqs, amps, phases].lace(freqs.size * 3)
 	}
 	chebyMsg { arg amplitudes,normalize=true,asWavetable=true,clearFirst=true;
 		^["/b_gen",bufnum,"cheby",
@@ -428,16 +439,6 @@ Buffer {
 		this.waitForBufInfo;
 		server.sendMsg("/b_query", bufnum);
 	}
-
-	
-	//private	
-	alloc { arg completionMessage;
-		server.listSendMsg( this.allocMsg(completionMessage) )
-	}
-	allocRead { arg argpath,startFrame,completionMessage;
-		path = argpath;
-		server.listSendMsg(this.allocReadMsg( argpath,startFrame,completionMessage));
-	}
 	
 	// cache Buffers in an Array for easy info updating
 	addToServerArray {
@@ -458,16 +459,25 @@ Buffer {
 		stream << this.class.name << "(" <<* [bufnum,numFrames,numChannels,sampleRate,path] <<")";
 	}
 
-	*loadDialog { arg server,startFrame = 0,numFrames = -1, bufnum;
+	*loadDialog { arg server,startFrame = 0,numFrames, action, bufnum;
+		var buffer;
 		server = server ? Server.default;
-		^super.newCopyArgs(server,
-						bufnum ?? { server.bufferAllocator.alloc(1) },
-						numFrames).loadDialog(startFrame)
-	}
-	loadDialog { arg startFrame, completionMessage;
+		buffer = super.newCopyArgs(server, bufnum ?? { server.bufferAllocator.alloc(1) })
+					.addToServerArray;
 		File.openDialog("Select a file...",{ arg path;
-			this.allocRead(path, startFrame, completionMessage);
+			buffer.doOnInfo_(action).waitForBufInfo
+				.allocRead(path,startFrame,numFrames, {["/b_query",buffer.bufnum]})
 		});
+		^buffer;
+	}
+	
+	play { arg loop = false, mul = 1;
+		^{ var player;
+			player = PlayBuf.ar(numChannels,bufnum,BufRateScale.kr(bufnum),loop: loop.binaryValue) 
+				* mul; 
+			loop.not.if(FreeSelfWhenDone.kr(player));
+			player; 
+		}.play;
 	}
 }
 
