@@ -55,8 +55,8 @@ Pevent : Pattern {
 	asStream {
 		^EventStream(pattern.asStream, event);
 	}
-	play { arg clock;
-		^this.asStream.play(clock ? SystemClock)
+	play {
+		^this.asStream.play
 	}
 }
 

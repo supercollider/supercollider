@@ -189,25 +189,35 @@ PauseStream : Stream
 	var <stream, originalStream, clock;
 	
 	*new { arg argStream, argClock; 
-		^super.newCopyArgs(argStream, argStream, argClock) 
+		^super.newCopyArgs(nil, argStream, argClock ? SystemClock) 
 	}
 	
-	play { stream = originalStream; super.play(clock) }
+	play { arg doReset = false;
+		if (stream.notNil, { "already playing".postln; ^this });
+		if (doReset, { this.reset });
+		stream = originalStream; 
+		super.play(clock) 
+	}
 	reset { ^originalStream.reset }
 	stop { stream = nil }
 
-	// pause and resume are synonyms of stop and play
 	pause { stream = nil }
-	resume { ^this.play }
+	resume { ^this.play(false) }
 	
-	start { this.reset; ^this.play }
+	start { ^this.play(true) }
 		
 	stream_ { arg argStream; stream = originalStream = argStream; }
-	next { arg inval; ^stream.next(inval) }
+	next { arg inval; 
+		var nextTime;
+		nextTime = stream.next(inval);
+		if (nextTime.isNil, { stream = nil });
+		^nextTime
+	}
 	
 	awake { arg inTime;
+		var nextTime;
 		stream.time = inTime;
-		^this.next(inTime)
+		^this.next(inTime);
 	}
 }
 
@@ -227,8 +237,10 @@ EventStream : PauseStream {
 		^super.new(stream, SystemClock).protoEvent_(protoEvent);
 	}
 	next {
-		var event;
+		var event, nextTime;
 		event = stream.next( protoEvent.copy );		
-		^event.play;
+		nextTime = event.play;
+		if (nextTime.isNil, { stream = nil });
+		^nextTime
 	}
 }
