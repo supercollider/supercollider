@@ -3,30 +3,29 @@
 //lightweight objects that insulate different ways of playing/stopping.
 
 EventStreamControl  {
-	var <>pattern, <event, <eventstream; 
+	var <>stream; 
 	
-	*new { arg pattern, event;
-		^super.newCopyArgs(pattern, event)
+	*new { arg stream;
+		^super.newCopyArgs(stream)
 	}
 		
 	sendDef {}
 	writeDef {}
 	
-	playToBundle { arg bundle, extraArgs, group; //mixedbundle
+	playToBundle { arg bundle; //mixedbundle
 		bundle.addFunction({ 
-			this.play(extraArgs, group) 
+			this.play; 
 		}); //no latency (latency is in stream already)
-		^nil
+		^nil //return a nil object instead of a synth
 	}
 	
-	play { arg extraArgs, group;
-		this.stop;
-		eventstream = Pevent(pattern, event).asStream;
-		^eventstream.play;
+	play {
+		stream.stop;
+		stream.play(true);
 	}
 	
 	stop {
-		if(eventstream.notNil, { eventstream.stream = nil });
+		stream.stop;
 		
 	}
 	
@@ -34,7 +33,7 @@ EventStreamControl  {
 		bundle.addFunction({ this.stop });
 	}
 	
-	pause { this.stop } //clear this up.
+	pause { this.stop } //clear this up later.
 	unpause { this.start }
 
 	sendDefToBundle {}
