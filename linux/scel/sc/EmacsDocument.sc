@@ -83,12 +83,10 @@ EmacsDocument : Document
 
 	//interaction:
 	front {
-		//_TextWindow_ToFront
 		Emacs.sendToLisp(\_documentSwitchTo, this);
 	}
 	
 	unfocusedFront {
-		//_TextWindow_UnfocusedFront
 		Emacs.sendToLisp(\_documentPopTo, this);
 	}
 	

@@ -43,16 +43,22 @@ public:
 			: mLibraryConfigFile(0),
 			  mDaemon(false),
 			  mCallRun(false),
-			  mCallStop(false)
+			  mCallStop(false),
+			  mArgc(0), mArgv(0)
 		{ }
 
 		char*			mLibraryConfigFile;
 		bool			mDaemon;
 		bool			mCallRun;
 		bool			mCallStop;
+		int				mArgc;
+		char**			mArgv;
 	};
 
-	SC_TerminalClient();
+	SC_TerminalClient(const char* name);
+
+	const Options& options() const { return mOptions; }
+	bool shouldBeRunning() const { return mShouldBeRunning; }
 
 	int run(int argc, char** argv);
 	void quit(int code);
@@ -63,12 +69,16 @@ public:
 	virtual void flush();
 
 protected:
-	void parseOptions(int& argc, char**& argv, Options& opt);
+	bool parseOptions(int& argc, char**& argv, Options& opt);
 	void printUsage();
 
+	// fd is assumed to be non-blocking
+	bool readCmdLine(int fd, SC_StringBuffer& cmdLine);
 	void interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine);
-	void commandLoop();
-	void daemonLoop();
+
+	// subclasses should override
+	virtual void commandLoop();
+	virtual void daemonLoop();
 
 	static int prExit(struct VMGlobals* g, int);
 	virtual void onLibraryStartup();
@@ -76,6 +86,7 @@ protected:
 private:
 	bool				mShouldBeRunning;
 	int					mReturnCode;
+	Options				mOptions;
 };
 
 #endif // SC_TERMINALCLIENT_H_INCLUDED

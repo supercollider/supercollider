@@ -31,7 +31,7 @@
 
 int main(int argc, char** argv)
 {
-	SC_TerminalClient app;
+	SC_TerminalClient app("sclang");
 	return app.run(argc, argv);
 }
 

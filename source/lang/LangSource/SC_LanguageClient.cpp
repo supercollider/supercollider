@@ -63,6 +63,7 @@ void SC_LanguageClient::initRuntime(const Options& opt)
 		pyr_init_mem_pools(opt.mMemSpace, opt.mMemGrow);
 		init_OSC(opt.mPort);
 		schedInit();
+		onInitRuntime();
 	}
 }
 
@@ -259,6 +260,10 @@ void SC_LanguageClient::tick()
 		unlock();
     }
     flush();
+}
+
+void SC_LanguageClient::onInitRuntime()
+{
 }
 
 void SC_LanguageClient::onLibraryStartup()

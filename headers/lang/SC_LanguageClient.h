@@ -126,6 +126,8 @@ protected:
 
 	// language notifications, subclasses can override
 
+	// called after language runtime has been initialized
+	virtual void onInitRuntime();
 	// called after the library has been compiled
 	virtual void onLibraryStartup();
 	// called before the library is shut down

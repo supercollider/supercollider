@@ -29,8 +29,8 @@
 #include "PyrSlot.h"
 #include "VMGlobals.h"
 
-SC_TerminalClient::SC_TerminalClient()
-	: SC_LanguageClient("sclang"),
+SC_TerminalClient::SC_TerminalClient(const char* name)
+	: SC_LanguageClient(name),
 	  mShouldBeRunning(false),
 	  mReturnCode(0)
 {
@@ -86,7 +86,7 @@ void SC_TerminalClient::printUsage()
 		);
 }
 
-void SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
+bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 {
 	const char* optstr = ":d:Dg:hl:m:rsu:";
 	int c;
@@ -131,36 +131,47 @@ void SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 				goto optArgExpected;
 			default:
 				::post("%s: unknown error (getopt)\n", getName());
-				exit(255);
+				quit(255);
+				return false;
 		}
 	}
 
 	argv += optind;
 	argc -= optind;
 
-	return;
+	return true;
 
  help:
 	printUsage();
-	exit(0);
+	quit(0);
+	return false;
 
  optInvalid:
 	::post("%s: invalid option -%c\n", getName(), optopt);
-	exit(1);
+	quit(1);
+	return false;
 
  optArgExpected:
 	::post("%s: missing argument for option -%c\n", getName(), optopt);
-	exit(1);
+	quit(1);
+	return false;
 
  optArgInvalid:
 	::post("%s: invalid argument for option -%c -- %s\n", getName(), optopt, optarg);
-	exit(1);
+	quit(1);
+	return false;
 }
 
 int SC_TerminalClient::run(int argc, char** argv)
 {
-	Options opt;
-	parseOptions(argc, argv, opt);
+	Options& opt = mOptions;
+
+	if (!parseOptions(argc, argv, opt)) {
+		return mReturnCode;
+	}
+
+	opt.mArgc = argc;
+	opt.mArgv = argv;
 
 	// read library configuration file 
 	bool success;
@@ -171,7 +182,7 @@ int SC_TerminalClient::run(int argc, char** argv)
 	}
 	if (!success) {
 		::post("%s: error reading library configuration file\n", getName());
-		exit(1);
+		return 1;
 	}
 
 	// initialize runtime
@@ -226,6 +237,38 @@ void SC_TerminalClient::quit(int code)
 	mReturnCode = code;
 }
 
+bool SC_TerminalClient::readCmdLine(int fd, SC_StringBuffer& cmdLine)
+{
+	const int bufSize = 256;
+	char buf[bufSize];
+
+	int n = read(fd, buf, bufSize);
+	
+	if (n > 0) {
+		char* ptr = buf;
+		while (n--) {
+			char c = *ptr++;
+			if (c == kInterpretCmdLine) {
+				interpretCmdLine(s_interpretCmdLine, cmdLine);
+			} else if (c == kInterpretPrintCmdLine) {
+				interpretCmdLine(s_interpretPrintCmdLine, cmdLine);
+			} else {
+				cmdLine.append(c);
+			}
+		}
+		return true;
+	}
+	
+	if (n == 0) {
+		quit(0);
+	} else if (errno != EAGAIN) {
+		perror(getName());
+		quit(1);
+	}
+
+	return false;
+}
+
 void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine)
 {
 	setCmdLine(cmdLine);
@@ -237,8 +280,6 @@ void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmd
 void SC_TerminalClient::commandLoop()
 {
 	const int fd = 0;
-	const int bufSize = 256;
-	char buf[bufSize];
 	struct pollfd pfds[1] = { fd, POLLIN, 0 };
 	SC_StringBuffer cmdLine;
 
@@ -248,37 +289,11 @@ void SC_TerminalClient::commandLoop()
 		return;
 	}
 
-	while (mShouldBeRunning) {
+	while (shouldBeRunning()) {
 		tick();
 		int nfds = poll(pfds, 1, 50);
 		if (nfds > 0) {
-			for (;;) {
-				int n = read(fd, buf, bufSize);
-				if (n > 0) {
-					char* ptr = buf;
-					while (n--) {
-						char c = *ptr++;
-						if (c == kInterpretCmdLine) {
-							interpretCmdLine(s_interpretCmdLine, cmdLine);
-						} else if (c == kInterpretPrintCmdLine) {
-							interpretCmdLine(s_interpretPrintCmdLine, cmdLine);
-						} else {
-							cmdLine.append(c);
-						}
-					}
-				} else {
-					if (n == 0) {
-						quit(0);
-						return;
-					} else if (errno == EAGAIN) {
-						break;
-					} else {
-						perror(getName());
-						quit(1);
-						return;
-					}
-				}
-			}
+			while (readCmdLine(fd, cmdLine));
 		} else if (nfds == -1) {
 			perror(getName());
 			quit(1);
@@ -291,7 +306,7 @@ void SC_TerminalClient::daemonLoop()
 {
 	struct timespec tv = { 0, 500000 };
 
-	while (mShouldBeRunning) {
+	while (shouldBeRunning()) {
 		tick(); // also flushes post buffer
 		if (nanosleep(&tv, 0) == -1) {
 			perror(getName());
