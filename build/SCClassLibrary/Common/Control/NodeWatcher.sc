@@ -13,12 +13,12 @@ BasicNodeWatcher {
 		addr = address;
 		this.clear;
 		responders = [];
-		addr.asArray.do({ arg addr; //support for multiple servers
+		addr.asArray.do({ arg addrItem; //support for multiple servers
 			this.cmds.do({ arg cmd;
 				var method;
 				method = cmd.copyToEnd(1).asSymbol;
 				responders = responders.add(
-					OSCresponderNode(addr, cmd, 
+					OSCresponderNode(addrItem, cmd, 
 						{ arg time, resp, msg; this.respond(method, msg) }
 					)
 				)
@@ -29,6 +29,7 @@ BasicNodeWatcher {
 	
 	respond { arg method, msg;
 				//msg.postln;
+				msg = msg.copy;
 				msg.removeAt(0);
 				this.performList(method, msg)
 	}
@@ -61,12 +62,14 @@ BasicNodeWatcher {
 	}
 		
 	n_end { arg nodeID;
-		//postln("ended" + nodeID);
+		postln("ended" + nodeID);
 		nodes.remove(nodeID);
+		//nodes.postln;
 	}
 	n_go { arg nodeID;
-		//postln("started" + nodeID);
+		postln("started" + nodeID);
 		nodes.add(nodeID);
+		//nodes.postln;
 	}
 	
 
