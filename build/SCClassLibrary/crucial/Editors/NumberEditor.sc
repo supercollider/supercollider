@@ -75,9 +75,13 @@ NumberEditor : Editor {
 }
 
 KrNumberEditor : NumberEditor { 
-
- 	var <>lag=0.1;
+	classvar <>defaultLag = 0.1;
+ 	var <>lag;
  
+	init { arg val,aspec;
+		super.init(val, aspec);
+		lag = defaultLag;
+	}
 	rate { ^\control }
  	canDoSpec { arg aspec; ^aspec.isKindOf(ControlSpec) }
 
