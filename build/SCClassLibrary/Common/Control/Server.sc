@@ -81,6 +81,7 @@ Server : Model {
 	var <controlBusAllocator;
 	var <audioBusAllocator;
 	var <bufferAllocator;
+	var <nodeWatcher;
 
 	var <numUGens=0,<numSynths=0,<numGroups=0,<numSynthDefs=0;
 	var <avgCPU, <peakCPU;
@@ -103,6 +104,7 @@ Server : Model {
 		named.put(name, this);
 		set.add(this);
 		this.newAllocators;	
+		nodeWatcher = BasicNodeWatcher.new(this);
 	}
 	newAllocators {
 		nodeAllocator = RingNumberAllocator(1000, 1000 + options.maxNodes);
@@ -155,6 +157,9 @@ Server : Model {
 	}
 	nextStaticNodeID {
 		^staticNodeAllocator.alloc;
+	}
+	nodeIsPlaying { arg nodeID;
+		^nodeWatcher.nodeIsPlaying(nodeID)
 	}
 		
 	
@@ -234,6 +239,7 @@ Server : Model {
 			("booting " ++ addr.port.asString).inform;
 		});
 		
+		SystemClock.sched(1, { nodeWatcher.start; });
 	}
 	
 	reboot {
@@ -277,6 +283,7 @@ Server : Model {
 		});
 		alive = false;
 		this.serverRunning = false;
+		nodeWatcher.stop;
 		this.newAllocators;
 		RootNode(this).freeAll;
 	}
