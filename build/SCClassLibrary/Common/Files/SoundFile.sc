@@ -120,7 +120,7 @@ SoundFile {
 
 		// normalizer utility
 
-	*normalize { |path, outPath, newHeaderFormat = "AIFF", newSampleFormat = "int16",
+	*normalize { |path, outPath, newHeaderFormat, newSampleFormat,
 		startFrame = 0, numFrames, chunkSize = 4194304, maxAmp = 1.0, linkChannels = true|
 		
 		var	file, outFile;
@@ -138,7 +138,7 @@ SoundFile {
 		});
 	}
 	
-	normalize { |outPath, newHeaderFormat = "AIFF", newSampleFormat = "int16",
+	normalize { |outPath, newHeaderFormat, newSampleFormat,
 		startFrame = 0, numFrames, chunkSize = 4194304, maxAmp = 1.0, linkChannels = true|
 		
 		var	peak, outFile;
