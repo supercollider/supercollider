@@ -102,7 +102,44 @@ int prUnix_Errno(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+#include <time.h>
+#include <sys/time.h>
+double bootSeconds();
 
+int prGetDate(struct VMGlobals *g, int numArgsPushed);
+int prGetDate(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	PyrSlot *slots = a->uo->slots;
+	
+	struct timeval tv;
+	gettimeofday(&tv, 0);
+	
+	
+	struct tm* tm = localtime((const time_t*)&tv.tv_sec);
+	
+	SetInt(slots+0, tm->tm_year + 1900);
+	SetInt(slots+1, tm->tm_mon);
+	SetInt(slots+2, tm->tm_mday);
+	SetInt(slots+3, tm->tm_hour);
+	SetInt(slots+4, tm->tm_min);
+	SetInt(slots+5, tm->tm_sec);
+	SetInt(slots+6, tm->tm_wday);
+	SetFloat(slots+7, tv.tv_sec + 1e-6 * tv.tv_usec);
+	SetFloat(slots+8, bootSeconds());
+	
+	return errNone;
+}
+
+int32 timeseed();
+
+int prTimeSeed(struct VMGlobals *g, int numArgsPushed);
+int prTimeSeed(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	SetInt(a, timeseed());
+	return errNone;
+}
 
 void initUnixPrimitives();
 void initUnixPrimitives()
@@ -114,6 +151,8 @@ void initUnixPrimitives()
 	definePrimitive(base, index++, "_String_System", prString_System, 1, 0);
 	definePrimitive(base, index++, "_String_POpen", prString_POpen, 1, 0);
 	definePrimitive(base, index++, "_Unix_Errno", prUnix_Errno, 1, 0);
+	definePrimitive(base, index++, "_GetDate", prGetDate, 1, 0);
+	definePrimitive(base, index++, "_TimeSeed", prTimeSeed, 1, 0);
 }
 
 
