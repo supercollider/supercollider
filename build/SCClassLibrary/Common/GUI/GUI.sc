@@ -468,7 +468,7 @@ Label {
 	getLayoutSize { ^layoutSize }
 }
 
-CLabel : Label {
+CLabel : CXLabel {
 	draw {
 		pen.use({ string.drawCenteredIn(bounds) });
 	}

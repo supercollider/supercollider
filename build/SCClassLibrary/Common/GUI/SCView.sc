@@ -220,11 +220,11 @@ SCCompositeView : SCContainerView {
 
 SCTopView : SCCompositeView {
 	// created by SCWindow
-	handleKeyDownBubbling { arg view, key, modifiers, unicode, keycode;
-		keyDownAction.value(view, key, modifiers, unicode, keycode);
+	handleKeyDownBubbling { arg view, char, modifiers, unicode, keycode;
+		keyDownAction.value(view, char, modifiers, unicode, keycode);
 	}
-	handleKeyUpBubbling { arg view, key, modifiers, unicode, keycode;
-		keyUpAction.value(view, key, modifiers, unicode, keycode);
+	handleKeyUpBubbling { arg view, char, modifiers, unicode, keycode;
+		keyUpAction.value(view, char, modifiers, unicode, keycode);
 	}
 }
 
@@ -276,14 +276,14 @@ SCSlider : SCSliderBase
 	increment { ^this.valueAction = this.value + this.bounds.width.reciprocal }
 	decrement { ^this.valueAction = this.value - this.bounds.width.reciprocal }
 	
-	defaultKeyDownAction { arg key, modifiers, unicode,keycode;
+	defaultKeyDownAction { arg char, modifiers, unicode,keycode;
 		// standard keydown
-		if (key == $r, { this.valueAction = 1.0.rand; });
-		if (key == $n, { this.valueAction = 0.0; });
-		if (key == $x, { this.valueAction = 1.0; });
-		if (key == $c, { this.valueAction = 0.5; });
-		if (key == $], { this.increment; ^this });
-		if (key == $[, { this.decrement; ^this });
+		if (char == $r, { this.valueAction = 1.0.rand; });
+		if (char == $n, { this.valueAction = 0.0; });
+		if (char == $x, { this.valueAction = 1.0; });
+		if (char == $c, { this.valueAction = 0.5; });
+		if (char == $], { this.increment; ^this });
+		if (char == $[, { this.decrement; ^this });
 		if (unicode == 16rF700, { this.increment; ^this });
 		if (unicode == 16rF703, { this.increment; ^this });
 		if (unicode == 16rF701, { this.decrement; ^this });
@@ -361,19 +361,19 @@ SCRangeSlider : SCSliderBase {
 		this.hi = this.hi - inc;
 	}
 
-	defaultKeyDownAction { arg key, modifiers, unicode;
+	defaultKeyDownAction { arg char, modifiers, unicode;
 		var a, b;
 		// standard keydown
-		if (key == $r, { 
+		if (char == $r, { 
 			a = 1.0.rand; 
 			b = 1.0.rand; 
 			this.lo = min(a, b);
 			this.hi = max(a, b);
 		});
-		if (key == $n, { this.lo = 0.0; this.hi = 0.0; });
-		if (key == $x, { this.lo = 1.0; this.hi = 1.0; });
-		if (key == $c, { this.lo = 0.5; this.hi = 0.5; });
-		if (key == $a, { this.lo = 0.0; this.hi = 1.0; });
+		if (char == $n, { this.lo = 0.0; this.hi = 0.0; });
+		if (char == $x, { this.lo = 1.0; this.hi = 1.0; });
+		if (char == $c, { this.lo = 0.5; this.hi = 0.5; });
+		if (char == $a, { this.lo = 0.0; this.hi = 1.0; });
 		if (unicode == 16rF700, { this.increment; ^this });
 		if (unicode == 16rF703, { this.increment; ^this });
 		if (unicode == 16rF701, { this.decrement; ^this });
@@ -463,9 +463,9 @@ SCButton : SCControlView {
 		this.setPropertyWithAction(\value, val);
 	}	
 
-	defaultKeyDownAction { arg key, modifiers, unicode;
-		if (key == $ , { this.valueAction = this.value + 1; ^this });
-		if (key == $\r, { this.valueAction = this.value + 1; ^this });
+	defaultKeyDownAction { arg char, modifiers, unicode;
+		if (char == $ , { this.valueAction = this.value + 1; ^this });
+		if (char == $\r, { this.valueAction = this.value + 1; ^this });
 	}
 
 	font_ { arg argFont;
@@ -515,9 +515,9 @@ SCPopUpMenu : SCControlView {
 		this.setPropertyWithAction(\value, val);
 	}	
 
-	defaultKeyDownAction { arg key, modifiers, unicode;
-		if (key == $ , { this.valueAction = this.value + 1; ^this });
-		if (key == $\r, { this.valueAction = this.value + 1; ^this });
+	defaultKeyDownAction { arg char, modifiers, unicode;
+		if (char == $ , { this.valueAction = this.value + 1; ^this });
+		if (char == $\r, { this.valueAction = this.value + 1; ^this });
 		if (unicode == 16rF700, { this.valueAction = this.value + 1; ^this });
 		if (unicode == 16rF703, { this.valueAction = this.value + 1; ^this });
 		if (unicode == 16rF701, { this.valueAction = this.value - 1; ^this });
@@ -608,26 +608,26 @@ SCNumberBox : SCStaticTextBase {
 		^v
 	}
 
-	defaultKeyDownAction { arg key, modifiers, unicode;
-		// standard keydown
-		if ((key == 3.asAscii) || (key == $\r) || (key == $\n), { // enter key
+	defaultKeyDownAction { arg char, modifiers, unicode;
+		// standard chardown
+		if ((char == 3.asAscii) || (char == $\r) || (char == $\n), { // enter key
 			if (keyString.notNil,{ // no error on repeated enter
 				this.valueAction_(keyString.asFloat);
 			});
 			^this
 		});
-		if (key == 127.asAscii, { // delete key
+		if (char == 127.asAscii, { // delete key
 			keyString = nil;
 			this.string = object.asString;
 			this.stringColor = Color.black;
 			^this
 		});
-		if (key.isDecDigit || "+-.eE".includes(key), {
+		if (char.isDecDigit || "+-.eE".includes(char), {
 			if (keyString.isNil, { 
 				keyString = String.new;
 				this.stringColor = Color.red;
 			});
-			keyString = keyString.add(key);
+			keyString = keyString.add(char);
 			this.string = keyString;
 		});
 	}

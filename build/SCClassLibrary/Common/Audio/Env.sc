@@ -147,12 +147,7 @@ Env {
 //		netAddr.performList(\sendMsg, "buf.setn", bufnum, 0, array.size, array);
 //	}
 
-
-	storeParamsOn { arg stream;
-		stream << "(";
-		[levels, times, curves, releaseNode, loopNode].storeItemsOn(stream);
-		stream << ")";
-	}
+	storeArgs { ^[levels, times, curves, releaseNode, loopNode] }
 
 }
 

@@ -20,6 +20,8 @@ ControlSpec : Spec {
 				default ? minval, units ? ""
 			).init
 	}
+	// make Warps independant of spec
+	//storeArgs { ^[minval,maxval,warp,step,default,units] }
 	init { 
 		warp = warp.asWarp(this);
 	}
@@ -87,7 +89,7 @@ Warp {
 
 	*asWarp { arg spec; ^this.new(spec) }
 	*initClass {
-		// support Symbol::asWarp
+		// support Symbol-asWarp
 		warps = IdentityDictionary[
 			\lin -> LinearWarp,
 			\exp -> ExponentialWarp,
@@ -100,7 +102,6 @@ Warp {
 		];
 		// CurveWarp is specified by a number, not a Symbol
 	}
-	
 }
 
 LinearWarp : Warp {

@@ -1,3 +1,6 @@
+
+/*
+
 UserPanel {
 	classvar <allPanels;
 	var filename, <>actions;
@@ -30,3 +33,4 @@ UserPanel {
 	}
 }
 
+*/

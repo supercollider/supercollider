@@ -42,31 +42,37 @@ SCTextField : SCNumberBox {
 }
 
 
+
 /*
 
 SCAutoCompleteTextField : SCTextField {
 	
-	var <possibles,searchIndex=0;
+	var <possibles,charIndex=0,searchIndex=0;
 	
 	possibles_ { arg list;
 		possibles = list.sort;
 	}
-	
+
 	keyDownAction { arg view, key, modifiers, unicode;
+		var keyChar;
 		// standard keydown
 		if ((key == 3.asAscii) || (key == $\r) || (key == $\n), { // enter key
 			if (keyString.notNil,{ // no error on repeated enter
 				view.valueAction_(keyString);
 				keyString = nil;// restart editing
+				charIndex = searchIndex = 0;
 			});
 			^this
 		});
 		if (key == 127.asAscii, { // delete key
 			if(keyString.notNil,{
 				if(keyString.size > 1,{
-					keyString = keyString.copyRange(0,keyString.size - 2);
+					keyString = keyString.copyRange(0,charIndex = keyString.size - 2);
+					// research on next tab
+					searchIndex = 0;
 				},{
 					keyString = String.new;
+					charIndex = searchIndex = 0;
 				});
 				view.string = keyString.asString;
 				view.stringColor = Color.red;
@@ -74,22 +80,26 @@ SCAutoCompleteTextField : SCTextField {
 				keyString = String.new;
 				view.string = keyString;
 				view.stringColor = Color.red;
+				charIndex = searchIndex = 0;
 			});
 			^this
 		});
-		if (keyString.isNil, { 
+		if (keyString.isNil, {
 			keyString = view.string;
 			view.stringColor = Color.red;
+			searchIndex = charIndex = 0;
 		});
 		if(key == $\t) { // tab
 			// step through 
+			keyChar = keyString.at(charIndex);
 			for(searchIndex,possibles.size - 1,{ arg i;
-				// extend 
+				var candidate;
 				candidate = possibles.at(i);
-				// what char are we scanning from ?
-				if(candidate.at(ci),{
-					...
-				})
+				while({ candidate.at(charIndex) == keyChar }, {
+					bestMatch = candidate;
+					charIndex = charIndex + 1;
+				});
+				//should spot gone past it...
 			});
 		keyString = keyString.add(key);
 		view.string = keyString;
@@ -98,5 +108,6 @@ SCAutoCompleteTextField : SCTextField {
 }
 
 */
+
 
 

@@ -41,18 +41,13 @@ Color {
 		^Color.fromArray(blend(this.asArray, that.asArray, blend));
 	}
 	asArray { ^[red, green, blue, alpha] }
-	
+
 	printOn { arg stream;
 		var title;
 		stream << this.class.name;
-		this.printParamsOn(stream);
+		this.storeParamsOn(stream);
 	}
-	printParamsOn { arg stream;
-		stream << "(" <<* [red,green,blue,alpha] << ")";
-	}
-	storeParamsOn { arg stream;
-		stream << "(" <<<* [red,green,blue,alpha] << ")";
-	}
+	storeArgs { ^[red,green,blue,alpha] }
 }
 
 /*	X-windows colors :

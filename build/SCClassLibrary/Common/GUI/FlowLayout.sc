@@ -45,9 +45,8 @@ FlowLayout {
 		maxHeight = maxHeight + (d);
 		bounds = b;
 		// and then you need to re-place all views
-		// nextLine will be broken, see FlowView
-	}	
-
+		// but nextLine will be broken, see FlowView
+	}
 }
 
 

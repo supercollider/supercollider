@@ -1,4 +1,4 @@
-Interval : Collection {	var <>start, <>end, <>step;		*new { arg start, end, step=1;		^super.newCopyArgs(start, end, step)	}		size { ^end - start div: step + 1 }	at { arg index; 		var val;		if (index < 0 or: { index >= this.size }, { ^nil });		^step * index + start;	}	do { arg function;		forBy(start, end, step, function);	}		add { ^this.shouldNotImplement(thisMethod) }	put { ^this.shouldNotImplement(thisMethod) }		storeParamsOn { arg stream;		stream.putAll("( ");		[start, end, step].storeItemsOn(stream);		stream.putAll(" )");	}}
+Interval : Collection {	var <>start, <>end, <>step;		*new { arg start, end, step=1;		^super.newCopyArgs(start, end, step)	}		size { ^end - start div: step + 1 }	at { arg index; 		var val;		if (index < 0 or: { index >= this.size }, { ^nil });		^step * index + start;	}	do { arg function;		forBy(start, end, step, function);	}		add { ^this.shouldNotImplement(thisMethod) }	put { ^this.shouldNotImplement(thisMethod) }	storeArgs { ^[start, end, step] }}
 
 Range : Collection {
 	var <>start, <>size;
@@ -31,10 +31,5 @@ Range : Collection {
 		size = size - num;
 		^newRange
 	}
-	
-	storeParamsOn { arg stream;
-		stream.putAll("( ");
-		[start, size].storeItemsOn(stream);
-		stream.putAll(" )");
-	}
+	storeArgs { ^[start, size] }
 }

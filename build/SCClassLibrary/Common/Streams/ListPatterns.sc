@@ -7,9 +7,7 @@ ListPattern : Pattern {
 	copy {
 		^super.copy.list_(list.copy)
 	}
-	storeParamsOn { arg stream;
-		stream << "(" <<<* [ list, repeats ] << ")";
-	}
+	storeArgs { ^[ list, repeats ] }
 }
 
 Pseq : ListPattern {
@@ -38,9 +36,7 @@ Pseq : ListPattern {
 			});
 		});
 	}
-	storeParamsOn { arg stream;
-		stream << "(" <<<* [ list, repeats, offset ] << ")";
-	}
+	storeArgs { ^[ list, repeats, offset ] }
 }
 
 Pser : Pseq {
@@ -122,9 +118,7 @@ Pwrand : ListPattern {
 			});
 		});
 	}
-	storeParamsOn { arg stream;
-		stream << "(" <<<* [ list, weights, repeats ] << ")";
-	}
+	storeArgs { ^[ list, weights, repeats ] }
 }		
 
 
@@ -257,9 +251,7 @@ Pswitch : Pattern {
 			});
 		});
 	}
-	storeParamsOn { arg stream;
-		stream << "(" <<<* [ list, which ] << ")";
-	}
+	storeArgs { ^[ list, which ]  }
 }
 
 Pswitch1 : Pswitch {	
