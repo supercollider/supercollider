@@ -18,13 +18,26 @@ this ugen is used where sample accurate output is needed.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 	*ar(bus, channelsArray)  
+\f1\b0 - write a signal to an audio bus.
+\f0\b \
+	*kr(bus, channelsArray)  
+\f1\b0 -
+\f0\b  
+\f1\b0 write a signal to a control bus.
+\f2\fs18 \cf2 \
+	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 	
-\f0\b OffsetOut.ar(busNumber,arrayOfChannels);\
-	OffsetOut.kr(busNumber,arrayOfChannels);
-\f2\b0\fs18 \
+\f0\b 	bus 
+\f1\b0 - the index of the bus to write out to. The lowest numbers are written to the audio hardware.\
+		
+\f0\b channelsArray 
+\f1\b0 - an Array of channels to write out.
+\f2\fs18 \
 	\
 	\
 	\

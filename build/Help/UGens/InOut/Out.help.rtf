@@ -6,7 +6,7 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Out
-\fs28 				send signal to a bus\
+\fs28 				write a signal to a bus\
 
 \f1\b0\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -15,13 +15,36 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf2 \
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 	Out.ar(busNumber,arrayOfChannels);\
-	Out.kr(busNumber,arrayOfChannels);
-\f1\b0\fs18 \cf2 \
+\f0\b\fs24 \cf0 	*ar(bus, channelsArray)  
+\f2\b0 - write a signal to an audio bus.
+\f0\b \
+	*kr(bus, channelsArray)  
+\f2\b0 -
+\f0\b  
+\f2\b0 write a signal to a control bus.
+\f1\fs18 \cf2 \
 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 	
+\f0\b 	bus 
+\f2\b0 - the index of the bus to write out to. The lowest numbers are written to the audio hardware.\
+		
+\f0\b channelsArray 
+\f2\b0 - an Array of channels to write out.\
+		\
+Note that using the 
+\f0\b Bus
+\f2\b0  class to create a multichannel bus simply reserves a series of adjacent bus indices. There is nothing to stop you from outputting a channelsArray larger than that range. You are responsible for making sure that the number of channels match and that there are no conflicts.\
+\
+See the 
+\f0\b Server-Architecture
+\f2\b0  and 
+\f0\b Bus
+\f2\b0  helpfiles for more information on buses and how they are used.
+\f1\fs18 \cf2 \
 \
 	(\
 	SynthDef\cf0 (\cf3 "help-out"\cf0 , \{ \cf2 arg\cf0  out=0, freq=440;\

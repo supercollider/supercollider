@@ -19,9 +19,15 @@
 \f1\fs18 \cf2 \
 	\
 	
-\f0\b\fs24 \cf0 InFeedback.ar(busNumber,numChannels);\
+\f0\b\fs24 \cf0 *ar(bus, numChannels)\
 	\
-	
+		bus 
+\f2\b0 - the index of the to read in from.\
+		
+\f0\b numChannels 
+\f2\b0 - the number of channels (i.e. adjacent buses) to read in. The default is 1.
+\f0\b \
+
 \f1\b0\fs18 \cf2 \
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -45,9 +51,6 @@ from a bus independant of the current node order, which is the use of InFeedback
 The delay introduced by this is at a maximum one block size, which equals\
 about 0.0014 sec at the default block size and sample rate.
 \f1\fs18 \cf2 \
-\
-\
-\
 \
 \
 
