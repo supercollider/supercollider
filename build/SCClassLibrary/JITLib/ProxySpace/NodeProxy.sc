@@ -154,17 +154,14 @@ NodeProxy : AbstractFunction {
 		this.setObj(obj, true) 
 	}
 	
-	setObj { arg obj, send=false, freeAll=true, onCompletion, latency=0.3; 		var def, ok, writeOK;
-			
-			ok = this.initFor(obj);
-			
-			if(ok, {
+	setObj { arg obj, send=false, freeAll=true, onCompletion, latency=0.3; 			var def;
+			def = obj.asProxySynthDef(this);
+			if(def.isNil, { "rate/numChannels must match".inform; }, {
+				
 				if(freeAll, { 
 					synthDefs = Array.new; 
 					this.initParents 
 				});
-				
-				def = obj.asProxySynthDef(this);
 				synthDefs = synthDefs.add(def);
 				def.writeDefFile;
 				loaded = false;
@@ -295,9 +292,6 @@ NodeProxy : AbstractFunction {
 				});	
 	}
 	
-	
-
-		
 	freeAllMsg { arg msg;
 					if(autoRelease, {
 							group.addMsg(msg, 15, [\synthGate, 0.0]); //n_set
@@ -311,23 +305,15 @@ NodeProxy : AbstractFunction {
 		
 	////// private /////
 	
-	initFor { arg obj;
-		var rate, numChannels;
-			if(obj.notNil, {
-				#rate, numChannels = obj.busData;
-				if(rate !== 'audio', { rate = 'control' });//see later for scalars
-				numChannels = numChannels ? 1;
-				
+	
+	initBus { arg rate, numChannels;
 				if(outbus.isNil, {
-					outbus = Bus.perform(rate, server, numChannels);
+					this.allocBus(rate,numChannels);
 					nodeMap = ProxyNodeMap.new;
 					^true
 				}, {
 					^(outbus.rate === rate) && (numChannels <= outbus.numChannels)
 				});
-			});
-			^false
-		
 	}
 
 	getOutput { arg numChannels;

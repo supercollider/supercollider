@@ -16,26 +16,28 @@ ProxySynthDef : SynthDef {
 	}
 	
 	build { arg object;
-		var argNames, argValues, func, env;
+		var argNames, argValues, func;
 		argNames = object.argNames;
 		argValues = object.defArgs;
-		
-		
-		func = {
-			var ctl, synthGate, synthFadeTime, output, envgen;
-				argValues = argNames.collect({ arg x,i; 
+		argValues = argNames.collect({ arg x,i; 
 					argValues.at(i) ? 0.0 
-				});
+		});
+		func = {
+			var synthGate, synthFadeTime, envgen, output, ctl, ok;
 				ctl = Control.names(argNames).kr(argValues);
+				output = object.valueArray(ctl).asArray;
+				ok = proxy.initBus(output.rate, output.size);
+				if(ok.not, { ^nil });
+				
 				envgen = if(proxy.autoRelease, {
-					env = proxy.env ? this.class.defaultEnvelope;
 					synthGate = Control.names(\synthGate).kr(1.0);
 					synthFadeTime = Control.names(\synthFadeTime).kr(0.02);
-					EnvGen.kr(env, synthGate, 1.0, 0.0, synthFadeTime, 2);
+					EnvGen.kr(proxy.env ? this.class.defaultEnvelope, 
+						synthGate, 1.0, 0.0, synthFadeTime, 2);
 				}, { 
 					1.0 
 				});
-				output = (envgen*object.valueArray(ctl)).asArray;
+				output = envgen*output;
 			//if((output.rate === 'control') && (proxy.rate === 'audio'), 
 			//{ output = K2A.ar(output) });
 				Out.multiNewList([proxy.rate, proxy.outbus.index]++output)
@@ -44,5 +46,6 @@ ProxySynthDef : SynthDef {
 		super.build(func);
 	
 	}
+	
 	
 }
