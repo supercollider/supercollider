@@ -159,7 +159,7 @@
 				player.event.use({
 					~channelOffset = channelOffset; // default value
 					~out = { ~channelOffset % numChannels + index };
-					~server = { server };
+					~server = server; // not safe for server changes yet
 					~finish = {
 						~out = ~out.value;
 						~group = proxy.group.asNodeID;// group shouldn't be assigned by the user
