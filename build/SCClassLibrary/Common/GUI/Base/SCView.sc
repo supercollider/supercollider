@@ -723,6 +723,7 @@ SCListView : SCControlView {
 	}	
 
 	defaultKeyDownAction { arg char, modifiers, unicode;
+		var index;
 		if (char == $ , { this.valueAction = this.value + 1; ^this });
 		if (char == $\r, { this.doAction; ^this });
 		if (unicode == 16rF700, { this.valueAction = this.value - 1; ^this });
@@ -730,7 +731,6 @@ SCListView : SCControlView {
 		if (unicode == 16rF701, { this.valueAction = this.value + 1; ^this });
 		if (unicode == 16rF702, { this.valueAction = this.value - 1; ^this });
 		if (char.isAlpha, {
-			var index;
 			char = char.toUpper;
 			index = items.detectIndex({|item| item.asString.at(0).toUpper >= char });
 			if (index.notNil, {
