@@ -232,14 +232,12 @@ SynthDef {
 	}
 	
 	play { arg target,args,addAction=\addToTail;
+		var synth, cmd;
 		target = target.asTarget;
-		this.load(target.server);
-		// pause ...
-		// TODO: wait for /done at some central responder
-		AppClock.sched(0.2,{
-			Synth(name,args,target,addAction);
-			nil
-		});
+		cmd = List.new;
+		synth = Synth.newCommand(cmd, name, args, target, addAction);
+		this.load(target.server, cmd.at(0));
+		^synth
 	}
 }
 
