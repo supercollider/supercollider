@@ -249,6 +249,8 @@ NodeProxy : BusPlug {
 			^asString(this.identityHash.abs)
 	}
 	
+	asGroup { ^group.asGroup }
+	
 		
 	//////////// set the source to anything that returns a valid ugen input ////////////
 	
@@ -464,14 +466,14 @@ NodeProxy : BusPlug {
 
 	sendAllToBundle { arg bundle, extraArgs;
 				objects.do({ arg item;
-						item.playToBundle(bundle, extraArgs, group);
+						item.playToBundle(bundle, extraArgs, this);
 				});
 				if(objects.notEmpty, { nodeMap.addToBundle(bundle, group) });
 	}
 	
 	sendObjectToBundle { arg bundle, object, extraArgs;
 				var synth;
-				synth = object.playToBundle(bundle, extraArgs, group);
+				synth = object.playToBundle(bundle, extraArgs, this);
 				if(synth.notNil, { nodeMap.addToBundle(bundle, synth) });
 	}
 
@@ -574,7 +576,7 @@ NodeProxy : BusPlug {
 	//map to a control proxy
 	map { arg key, proxy ... args;
 		args = [key,proxy]++args;
-		nodeMap.map(args);
+		nodeMap.performList(\map, args);
 		if(this.isPlaying, { 
 			nodeMap.sendToNode(group);
 		})
@@ -594,7 +596,7 @@ NodeProxy : BusPlug {
 	}
 	
 	unmap { arg ... keys;
-		nodeMap.unmapProxy(keys);
+		nodeMap.performList(\unmap, keys);
 		if(this.isPlaying, {
 			keys.do({ arg key; group.map(key,-1) });
 			nodeMap.sendToNode(group) 
@@ -632,7 +634,7 @@ NodeProxy : BusPlug {
 			
 			this.sendEachToBundle(bundle);
 			this.sendBundle(bundle);
-		})
+		}, { "not playing".inform })
 	}
 	
 	

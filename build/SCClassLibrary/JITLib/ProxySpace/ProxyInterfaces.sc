@@ -105,7 +105,7 @@ SynthDefControl : AbstractPlayControl {
 	}
 	
 	sendDefToBundle { arg bundle, server;
-		bundle.addPrepare(["/d_recv", synthDef.asBytes]);
+		bundle.addPrepare([5, synthDef.asBytes]); //"/d_recv"
 		//this.registerDef(server);
 	}
 	
@@ -129,9 +129,9 @@ SynthDefControl : AbstractPlayControl {
 	
 	name { ^synthDef.name }
 	
-	playToBundle { arg bundle, extraArgs, group;
-		var synthMsg, msg, name;
-		group = group.asGroup;
+	playToBundle { arg bundle, extraArgs, proxy;
+		var synthMsg, name, group;
+		group = proxy.asGroup;
 		name = this.name;
 		synth = Synth.basicNew(name, group.server);
 		synth.isPlaying = true;
@@ -150,7 +150,6 @@ SynthDefControl : AbstractPlayControl {
 	
 	play { arg group, extraArgs;
 		var bundle;
-		group = group.asGroup;
 		bundle = MixedBundle.new;
 		this.playToBundle(bundle, extraArgs, group);
 		bundle.send(group.server)
@@ -191,21 +190,21 @@ SoundDefControl : SynthDefControl {
 
 
 CXPlayerControl : AbstractPlayControl {
-	var bus, group;
 	build { arg proxy;
-		bus = proxy.bus;
-		group = proxy.group;
-		^true;
+		^proxy.initBus(source.rate, source.numChannels);
 	}
-	playToBundle { arg bundle, extraArgs, group;
+	playToBundle { arg bundle, extraArgs, proxy;
 		//source.prepareToJITBundle(group,bundle);
 		//source.makePatchOut(group,true,bus);
-		source.prepareForPlay(group,false,bus);
+		var bus, group;
+		bus = proxy.bus;
+		group = proxy.group;
+		source.prepareForPlay(group, false, bus);
 		source.spawnOnToBundle(group, bus, bundle);
 		^source.synth;
 	}
 	stop {
-		source.release; //proxy time
+		source.stop; //release? proxy time
 	}
 	play {
 		source.play;
