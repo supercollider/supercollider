@@ -63,7 +63,8 @@ PulseCount : UGen {
 Peak : PulseCount {
 }
 
-PulseDivider : UGen {
+
+PulseDivider : UGen { // not installed
 	
 	*ar { arg trig = 0.0, div = 2.0, start = 0.0;
 		^this.multiNew('audio', trig, div, start)
@@ -131,7 +132,8 @@ Phasor : UGen {
  	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
-PeakFollower : UGen {
+PeakFollower : UGen { // not installed
+	
 	*ar { arg in = 0.0, decay = 0.999;
 		^this.multiNew('audio', in, decay)
 	}
@@ -142,10 +144,11 @@ PeakFollower : UGen {
 
 Pitch : MultiOutUGen {
 	
-	*kr { arg in = 0.0, initFreq = 440.0, minFreq = 60.0, maxFreq = 4000.0, execFreq = 100.0,
-		maxBinsPerOctave = 16, median = 1, ampThreshold = 0.01, peakThreshold = 0.5, downSample = 1;
+	*kr { arg in = 0.0, initFreq = 440.0, minFreq = 60.0, maxFreq = 4000.0, 
+			execFreq = 100.0, maxBinsPerOctave = 16, median = 1, 
+			ampThreshold = 0.01, peakThreshold = 0.5, downSample = 1;
 		^this.multiNew('control', in, initFreq, minFreq, maxFreq, execFreq,
-				maxBinsPerOctave, median, ampThreshold, peakThreshold, downSample)
+			maxBinsPerOctave, median, ampThreshold, peakThreshold, downSample)
 	}
 	init { arg ... theInputs;
 		inputs = theInputs;
@@ -166,10 +169,12 @@ InRange : UGen
 InRect : UGen
 {
 	*ar { arg x = 0.0, y = 0.0, rect;
-		^this.multiNew('audio', x, y, rect.left, rect.top, rect.right, rect.bottom)
+		^this.multiNew('audio', x, y, rect.left, rect.top, 
+			rect.right, rect.bottom)
 	}
 	*kr { arg x = 0.0, y = 0.0, rect;
-		^this.multiNew('control', x, y, rect.left, rect.top, rect.right, rect.bottom)
+		^this.multiNew('control', x, y, rect.left, rect.top, 
+			rect.right, rect.bottom)
 	}
 }
 
