@@ -23,6 +23,18 @@ Buffer {
 						numChannels)
 					.alloc(completionMessage).sampleRate_(server.sampleRate);
 	}
+	
+	*allocConsecutive { |numBufs = 1, server, numFrames, numChannels = 1, completionMessage,
+			bufnum|
+		var	bufBase, newBuf;
+		bufBase = bufnum ?? { server.bufferAllocator.alloc(numBufs) };
+		^Array.fill(numBufs, { |i|
+			newBuf = Buffer.new(server, numFrames, numChannels, i + bufBase);
+			server.sendMsg(\b_alloc, i + bufBase, numFrames, numChannels,
+				completionMessage.value(newBuf, i));
+			newBuf
+		});
+	}
 
 	alloc { arg completionMessage;
 		server.listSendMsg( this.allocMsg(completionMessage) )
