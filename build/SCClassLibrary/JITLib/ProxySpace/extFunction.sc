@@ -11,6 +11,11 @@
 	sendAdd { arg key, server;
 		^this.send(key, server, true)
 	}
+	
+	schedToBeat { arg clock, beats=0;
+			clock = clock ? TempoClock.default;
+			clock.schedAbs(clock.elapsedBeats.ceil + beats, { this.value(clock); nil })
+	}
 
 }
 
@@ -23,3 +28,4 @@
 
 
 }
+
