@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
-\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green0\blue0;
+\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Phid
@@ -16,8 +16,9 @@
 \f1\fs18 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 *new(element, locID, repeats)
+\f0\b\fs24 \cf0 *new(element, locID, repeats)
 \f1\b0\fs18 \
 	\
 		
@@ -34,51 +35,50 @@
 \f2\b0 		number of values to return (defaults to inf)\
 		\
 		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 		\
-\cf2 //example\cf3 \
+\f1\fs18 \cf0 		\
+\cf2 //example\cf0 \
 \
-\cf2 //while this is running, test your device\cf3 \
+\cf2 //while this is running, test your device\cf0 \
 (\
-a = \cf4 Phid\cf3 (0,0);\
+a = \cf3 Phid\cf0 (0,0);\
 x = a.asStream;\
 \
-\cf4 Routine\cf3 (\{ loop(\{\
+\cf3 Routine\cf0 (\{ loop(\{\
 	x.next.postln;\
 	0.2.wait;\
 \}) \}).play;\
 )\
 \
-\cf2 //using devicespecs:\cf3 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //wingman. for other specs see [HIDDeviceService]
+\cf2 // using devicespecs:\cf0 \
+\cf2 // for example wingman. for other specs see [HIDDeviceService]
 \f2\fs24 \cf0 \
 
-\f1\fs18 (\cf3 \
-\cf4 HIDDeviceService\cf3 .deviceSpecs.put(\cf5 'WingMan Action Pad'\cf3 , \
-			\cf4 IdentityDictionary\cf3 [\
-				\cf5 \\a\cf3  -> 0, \cf5 \\b\cf3 -> 1, \cf5 \\c\cf3 -> 2,\
-				\cf5 \\x\cf3 -> 3, \cf5 \\y\cf3 -> 4, \cf5 \\z\cf3 -> 5,\
-				\cf5 \\l\cf3 -> 6, \cf2 //front left\cf3 \
-				\cf5 \\r\cf3 -> 7, \cf2 //front right\cf3 \
-				\cf5 \\s\cf3 -> 8, \
-				\cf5 \\mode\cf3 -> 9,\
-				\cf5 \\x\cf3 -> 10,		\
-				\cf5 \\y\cf3 -> 11,		\
-				\cf5 \\slider\cf3 -> 12,\
-				\cf5 \\hat\cf3 -> 13\
+\f1\fs18 (\cf4 \
+\cf5 HIDDeviceService\cf4 .deviceSpecs.put(\cf6 'WingMan Action Pad'\cf4 , \
+			\cf5 IdentityDictionary\cf4 [\
+				\cf7 // buttons\cf4 \
+				\cf6 \\a\cf4  -> 0, \cf6 \\b\cf4 -> 1, \cf6 \\c\cf4 -> 2,\
+				\cf6 \\x\cf4 -> 3, \cf6 \\y\cf4 -> 4, \cf6 \\z\cf4 -> 5,\
+				\cf6 \\l\cf4 -> 6, \cf7 //front left\cf4 \
+				\cf6 \\r\cf4 -> 7, \cf7 //front right\cf4 \
+				\cf6 \\s\cf4 -> 8, \
+				\cf6 \\mode\cf4 -> 9,\
+				\cf6 \\xx\cf4 -> 10,		\cf7 //analog controller x axis\cf4 \
+				\cf6 \\yy\cf4 -> 11,		\cf7 //analog controller y axis\cf4 \
+				\cf6 \\slider\cf4 -> 12,\
+				\cf6 \\hat\cf4 -> 13\
 			])\
-\cf0 )\cf3 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\cf0 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //then you can use the named key:\cf3 \
+\
+\cf2 //then you can use the named key:\cf0 \
 (\
-a = \cf4 Phid\cf3 (\cf5 \\x\cf3 , 0, inf);\
+a = \cf3 Phid\cf0 (\cf8 \\x\cf0 , 0, inf);\
 x = a.asStream;\
 \
-\cf4 Routine\cf3 (\{ loop(\{\
+\cf3 Routine\cf0 (\{ loop(\{\
 	x.next.postln;\
 	0.2.wait;\
 \}) \}).play;\
@@ -86,12 +86,12 @@ x = a.asStream;\
 \
 \
 \
-\cf2 //'musical' example:\cf3 \
+\cf2 //'musical' example:\cf0 \
 (\
-	\cf4 Pbind\cf3 (\
-		\cf5 \\freq\cf3 , \cf4 Pseq\cf3 ([\cf4 Phid\cf3 (\cf5 \\x\cf3 ,0,8),\cf4 Phid\cf3 (\cf5 \\y\cf3 ,0,8)],\cf4 inf\cf3 ) * 500 + 200,\
-		\cf5 \\dur\cf3 , \cf4 Phid\cf3 (\cf5 \\slider\cf3 ) + 0.02,\
-		\cf5 \\pan\cf3 , \cf4 Phid\cf3 (\cf5 \\hat\cf3 ) * 2 - 1\
+	\cf3 Pbind\cf0 (\
+		\cf8 \\freq\cf0 , \cf3 Pseq\cf0 ([\cf3 Phid\cf0 (\cf8 \\x\cf0 ,0,8),\cf3 Phid\cf0 (\cf8 \\y\cf0 ,0,8)],\cf3 inf\cf0 ) * 500 + 200,\
+		\cf8 \\dur\cf0 , \cf3 Phid\cf0 (\cf8 \\slider\cf0 ) + 0.02,\
+		\cf8 \\pan\cf0 , \cf3 Phid\cf0 (\cf8 \\hat\cf0 ) * 2 - 1\
 	).play;\
 ) \
 \
