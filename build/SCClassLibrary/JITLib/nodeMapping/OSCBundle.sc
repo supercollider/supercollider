@@ -2,13 +2,13 @@
 OSCBundle {
 	var <messages;
 		
-	send { arg server, time;
-		server.listSendBundle(time, messages);
+	send { arg server, latency;
+		server.listSendBundle(latency, messages);
 	}
-	schedSend { arg server, time, clock;
+	schedSend { arg server, time, clock, latency;
 		SystemClock.sched(time ? 0, {
 			if(clock.isNil, {
-				this.send(server) 
+				this.send(server, latency) 
 			}, {
 				clock.schedAbs(clock.elapsedBeats.ceil, { this.send(server) })
 			});
@@ -41,7 +41,7 @@ MixedBundle : OSCBundle {
 	
 	var <functions; //functions to evaluate on send 
 	var <preparationMessages; //messages to send first on schedSend
-	var <>preparationTime=0.2; //time between preparation and action
+	var <>preparationTime=0.3; //time between preparation and action
 	
 	addFunction { arg func;
 		functions = functions.add(func);
@@ -51,10 +51,12 @@ MixedBundle : OSCBundle {
 		preparationMessages = preparationMessages.add(msg);
 	}
 	
+	addMessage { arg receiver, selector, args;
+		functions = functions.add( Message(receiver,selector,args) )
+	}
 	
 	send { arg server, latency;
 		var array;
-		latency = latency ? server.latency;
 		//no latency here, because usuallay the streams etc have their own 
 		//latency handling:
 		functions.do({ arg item; item.value(latency, server) }); 
@@ -65,28 +67,30 @@ MixedBundle : OSCBundle {
 		server.listSendBundle(latency, preparationMessages);
 	}
 	
-	schedSend { arg server, clock, onCompletion;
+	schedSend { arg server, clock;
 			this.sendPrepare(server, server.latency);
-			if(clock.isNil, {
-					this.send(server, server.latency + preparationTime) 
-			}, {
-				clock.schedAbs(clock.elapsedBeats.ceil, { 
-					this.send(server, server.latency + preparationTime); 
-					nil 
+			SystemClock.sched(preparationTime, {
+				if(clock.isNil, {
+					this.send(server, server.latency ? 0 + preparationTime) 
+				}, {
+					clock.schedAbs(clock.elapsedBeats.ceil, { 
+						this.send(server, server.latency);  
+					});
 				});
+				nil
 			})
 		
 	}
 	//todo
-	schedSendRespond { arg server, clock, onCompletion;
+	schedSendRespond { arg server, clock;
 			var resp;
 			resp = OSCresponderNode(server.addr, '/done', {
 								if(clock.isNil, {
 										this.send(server, server.latency) 
 									}, {
 										clock.schedAbs(clock.elapsedBeats.ceil, { 
-										this.send(server, server.latency); 
-										nil 
+											this.send(server, server.latency); 
+											nil 
 									})
 							});
 							resp.remove;
@@ -98,10 +102,11 @@ MixedBundle : OSCBundle {
 DebugBundle : MixedBundle {
 	send { arg server, latency;
 		var array;
-		latency = latency ? server.latency;
 		functions.do({ arg item; item.value(latency, server) }); 
 		"sending messages:".inform;
-		messages.asCompileString.postln;
+		"[".postln;
+		messages.do({ arg item; item.asCompileString.postln });
+		"]".postln;
 		server.listSendBundle(latency, messages);
 	}
 	

@@ -1,49 +1,37 @@
+
+
 NodeMap {
-	var <values, <mappings, <>msgs;
+	var <>settings;
 	var <bundle, <upToDate=false;
-	
 	
 	*new {
 		^super.new.clear
 	}
 	
-	clear {
-		mappings = IdentityDictionary.new;
-		values = IdentityDictionary.new;
+	controlClass {
+		^NodeMapSetting
 	}
-	
-	addMsg { arg msg;
-		msgs = msgs.add(msg);
-		upToDate = false;
-	}
-	
 	
 	map { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			mappings.put(args.at(i), args.at(i+1));
+			this.at(args.at(i)).bus_(args.at(i+1));
 		});
 		upToDate = false;
 	}
 	
 	unmap { arg ... keys;
 		keys.do({ arg key;
-			mappings.removeAt(key);
+			var setting;
+			setting = this.at(key);
+			if(setting.value.isNil, { 
+				settings.removeAt(key) 
+			}, {
+				setting.bus_(nil);
+			});
 		});
 		upToDate = false;
 		
 	}
-	
-//	get { arg target ... args;
-//		var resp, server;
-//		server = target.asTarget.server;
-//		if(args.isEmpty, { args = mappings.keys });
-//		resp = OSCresponder(server.addr, '/c_set', { arg ... msg;
-//			msg.postln;
-//			resp.remove;
-//		}).add;
-//		server.sendBundle(nil, ["/c_get"]++args);
-//		
-//	}
 	
 	setn { arg ... args;
 		this.performList(\set, args);
@@ -53,24 +41,23 @@ NodeMap {
 
 	set { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			values.put(args.at(i), args.at(i+1));
+			this.at(args.at(i)).value_(args.at(i+1));
 		});
 		upToDate = false;
 	}
 	
 	unset { arg ... keys;
 		keys.do({ arg key;
-			values.removeAt(key);
+			this.at(key).value_(nil);
 		});
 		upToDate = false;
-		
 	}
 	
 	send { arg server, nodeID, latency;
-		var msgBundle;
-		msgBundle = List.new;
-		this.addToBundle(msgBundle, nodeID);
-		server.listSendBundle(latency, msgBundle.postln);
+		var bundle;
+		bundle = List.new;
+		this.addToBundle(bundle, nodeID);
+		server.listSendBundle(latency, bundle);
 	}
 	
 	sendToNode { arg node, latency;
@@ -78,90 +65,107 @@ NodeMap {
 		this.send(node.server, node.nodeID, latency)
 	}
 	
-	mapArgs {	
-				var mapArgs;
-				if(mappings.isEmpty, { ^#[] });
-				mapArgs = Array.new;
-				mappings.keysValuesDo({ arg key, value;
-										if(value.notNil, {
-											mapArgs = mapArgs.add(key); 
-											mapArgs = mapArgs.add(value);
-										})
-				});
-				^mapArgs
-					
+	clear {
+		settings = IdentityDictionary.new;
 	}
 	
 	
-	valArgs {
-				var valArgs;
-				if(values.isEmpty, { ^#[] });
-				valArgs = Array.new;
-				values.keysValuesDo({ arg key, value;
-								if(value.isSequenceableCollection.not, {
-									if(mappings.at(key).isNil, {
-										valArgs = valArgs.add(key); 
-										valArgs = valArgs.add(value);
-									});
-								});
-				});
-				^valArgs
-
-	}
-	
-	multiValArgs {
-				var valArgs;
-				if(values.isEmpty, { ^#[] });
-				valArgs = Array.new;
-				values.keysValuesDo({ arg key, value;
-								if(value.isSequenceableCollection, {
-									if(mappings.at(key).isNil, {
-										valArgs = valArgs.add(key); 
-										valArgs = valArgs.add(value.size);
-										valArgs = valArgs.addAll(value);
-									});
-								});
-				});
-				^valArgs
+	at { arg key;
+		var setting;
+		setting = settings.at(key);
+		if(setting.isNil, { 
+			setting = this.controlClass.new(key); 
+			settings.put(key, setting) 
+		});
+		^setting
 	}
 	
 	updateBundle { arg nodeID;
-			var mapArgs, valArgs, multiValArgs;
-			
-			if(upToDate, {
+		var newBundle;
+		if(upToDate, {
 				bundle.do({ arg item;
-					item.put(1, nodeID); //the nodeID is always number two in a message
+					item.put(1, nodeID); //the nodeID is always second in a synth message
 				});
 			}, {
 				bundle = List.new;
-				mapArgs = this.mapArgs;
-				valArgs = this.valArgs;
-				multiValArgs = this.multiValArgs;
-										
-				if(mapArgs.isEmpty.not, {
-					bundle.add([14, nodeID]++mapArgs);
-				});
-				if(valArgs.isEmpty.not, {
-					bundle.add([15, nodeID]++valArgs);
-				});
-				if(multiValArgs.isEmpty.not, {
-					bundle.add([16, nodeID]++multiValArgs);
-				});
-				msgs.do({ arg item;
-					bundle.add(item.insert(1, nodeID));
-				});
+				settings.do({ arg item; item.addToBundle(bundle, nodeID) });
 				upToDate = true;
-			});
-
-	
+		});
 	}
 	
 	addToBundle { arg inBundle, target;
+		var mapArgs, valArgs, multiValArgs;
 			target = target.asNodeID;
 			this.updateBundle(target);
 			inBundle.addAll(bundle);
-	}	
+	}
 
+
+}
+
+
+ProxyNodeMap : NodeMap {
+
+		var <>parents, <>proxy;
+		
+		clear {
+			super.clear;
+			parents = IdentityDictionary.new;
+		}
+		
+		controlClass {
+			^ProxyNodeMapSetting
+		}
+		
+		wakeUpParentsToBundle { arg bundle, checkedAlready;
+			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
+		}
+		
+		unmapProxy { arg keys;
+			keys = keys.asArray;
+			if(keys.at(0).isNil, { keys = this.mappingKeys });
+			this.performList(\unmap, keys);
+			keys.do({ arg key; 
+				parents.removeAt(key);
+			});
+		}
+		
+		mappingKeys {
+			^settings.select({ arg item; item.bus.notNil }).collect({ arg item; item.key })
+		}
+						
+		map { arg args;
+			var mapArgs, playing;
+			mapArgs = [];
+			playing = proxy.isPlaying;
+			(args.size div: 2).do({ arg i;
+				var key, mapProxy, bus, ok;
+				key = args.at(i*2).asArray;
+				mapProxy = args.at(2*i+1);
+				ok = mapProxy.initBus(\control, key.size);
+				if(ok, {
+					if(playing && mapProxy.isPlaying.not, { mapProxy.wakeUp;  });
+					min(key.size, mapProxy.numChannels ? 1).do({ arg chan;
+						var theKey;
+						theKey = key.at(chan);
+						this.at(theKey).bus_(mapProxy).channelOffset_(chan);
+						parents = parents.put(theKey, mapProxy);
+					});
+				}, {
+					"rate / numChannels doesn't match".inform
+				});
+			});
+			upToDate = false;
+		}
+		
+		mapEnvir { arg keys;
+			var args;
+			keys = keys ? settings.keys;
+			args = Array.new(keys.size*2);
+			keys.do({ arg key; args.add(key); args.add(currentEnvironment.at(key)) });
+			this.map(args);
+		}
 	
 }
+
 
