@@ -171,6 +171,13 @@ Buffer {
 		}).add.removeWhenDone;
 		server.sendMsg("/b_query",bufnum) 
 	}
+	updateInfo {
+		OSCresponder(server.addr, "/b_info", { arg t, r, m;
+			numFrames = m.at(2);
+			numChannels = m.at(3);
+		}).add.removeWhenDone;
+		server.sendMsg("/b_query", bufnum);
+	}
 	
 	//private	
 	alloc { arg completionMessage;
