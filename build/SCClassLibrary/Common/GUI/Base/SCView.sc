@@ -858,10 +858,10 @@ SCDragSource : SCDragView {
 	
 	beginDrag { 
 		currentDrag = if (beginDragAction.isNil, 
-			object, 
-		{
-			beginDragAction.value(this);
-		});
+			{ object },
+			{
+				beginDragAction.value(this);
+			});
 	}
 }
 
