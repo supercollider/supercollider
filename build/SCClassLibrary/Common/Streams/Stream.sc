@@ -162,6 +162,10 @@ Stream : AbstractFunction {
 		^inval
 	}
 	
+	asEventStreamPlayer { arg protoEvent;
+		^EventStreamPlayer(this, protoEvent);
+	}
+	
 	play { arg clock;
 		clock = clock ? SystemClock;
 		clock.play(this);
@@ -256,6 +260,9 @@ EventStreamPlayer : PauseStream {
 			if ((nextTime = outEvent.play).isNil, { stream = nil });
 			^nextTime
 		});
+	}
+	collect { arg func;
+		^this.class.new(originalStream.collect(func), event);
 	}
 }
 
