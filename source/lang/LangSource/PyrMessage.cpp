@@ -619,7 +619,6 @@ void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
                 int localB = cvxUniqueMethods;
                 int localC = g->classvars[class_object->classIndex.ui].ui;
                 int localD = g->classvars[class_object->classIndex.ui].uo->size;
-                post("%d %d %d %d\n", localA, localB, localC, localD);
 		uniqueMethodSlot = g->classvars[class_object->classIndex.ui].uo->slots + cvxUniqueMethods;
 		if (isKindOfSlot(uniqueMethodSlot, class_identdict)) {
 			arraySlot = uniqueMethodSlot->uo->slots + ivxIdentDict_array;
@@ -697,7 +696,6 @@ void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
                 int localB = cvxUniqueMethods;
                 int localC = g->classvars[class_object->classIndex.ui].ui;
                 int localD = g->classvars[class_object->classIndex.ui].uo->size;
-                post("%d %d %d %d\n", localA, localB, localC, localD);
 		uniqueMethodSlot = g->classvars[class_object->classIndex.ui].uo->slots + cvxUniqueMethods;
 		if (isKindOfSlot(uniqueMethodSlot, class_identdict)) {
 			arraySlot = uniqueMethodSlot->uo->slots + ivxIdentDict_array;
