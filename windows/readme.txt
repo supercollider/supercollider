@@ -1,21 +1,118 @@
 
+Win32 build how-to
+-------------------------
 
-prerequisites :
+You need Visual C++ 7.1 to build it. I plan to create makefiles that make it possible
+to build SC3 with the free Microsoft compiler toolkit ($$$todo).
 
-http://sources.redhat.com/pthreads-win32/
+let's call ROOT the folder that contains the SuperCollider3 folder (which, in turn,
+contains "build", "doc", "English.lproj", etc...
 
-("change in config.h to "#define HAVE_C_INLINE"??" : no, we're not using config file.. maybe have a look at using __inline for INLINE)
+folders must be like that :
 
-http://www.mega-nerd.com/libsndfile/
+ROOT\SuperCollider3\build
+ROOT\SuperCollider3\doc
 
-copy sndfile.h and config.h from the Win32 subfolder to the upper src folder
+
+libsndfile
+-----------
+- you do NOT need to build libsndfile. this is taken care of by the msvc project.
+
+- ($$$todo) sc3 is known to build with libsndfile-1.0.11.tar.gz. please report
+issues (or better, fix them) with newer versions.
+
+1) go to "http://www.mega-nerd.com/libsndfile/" and download the .tar.gz package
+
+2) uncompress it in ROOT and rename its libsndfile-x.y.zz (eg : libsndfile-1.0.11)  folder to "libsndfile". so that the folders are like that :
+
+...
+ROOT\libsndfile\doc
+ROOT\libsndfile\examples
+....
+
+3) copy "ROOT\libsndfile\Win32\sndfile.h"  and "ROOT\libsndfile\Win32\config.h"
+to the "ROOT\libsndfile\src\" folder
+
+portaudio + asio
+----------------------
+- you do NOT need to build portaudio. this is taken care of by the msvc project.
+
+1) go to "http://www.portaudio.com/" and download pa_snapshot_v19.tar.gz
+(main page --> CVS (left menu) --> pa_snapshot_v19.tar.gz in the "v19-devel" branch section)
+
+2) uncompress it in the ROOT folder. normally, the portaudio folder has the correct name "portaudio".
+folders must be like that :
+
+...
+ROOT\portaudio\docs
+ROOT\portaudio\pa_asio
+....
+
+3) go to steinberg.net --> support --> 3rd party Developers (menu on the right) --> ASIO SDK Download
+if you agree on legal junk, you can enter a valid email address (please note that i do NOT know if you can 
+safely Disagree with Steinberg sending your email address to commercial partners and receive the SDK 
+info anyway...). 
+
+4) once you receive the email (it took 5 minutes here), you can download asiosdk2.zip, copy and uncompress
+it to a temp folder. you must then copy some parts of the asio2 sdk to the PortAudio source tree.
+
+5) the "asiosdk2.zip\asiosdk2\host" folder must be copied to "ROOT\portaudio\pa_win\msvc\"
+
+so that the source tree looks like that :
+
+...
+ROOT\portaudio\pa_win\msvc\host\ASIOConvertSamples.cpp"
+...
+
+6) the "asiosdk2.zip\asiosdk2\common" folder must be copied to "ROOT\portaudio\pa_win\msvc\"
+
+so that the source tree looks like that :
+
+...
+ROOT\portaudio\pa_win\msvc\common\asiosys.h"
+...
+
+portmidi
+-----------
+1) go to the "http://www-2.cs.cmu.edu/~music/portmusic/portmidi/" web folder
+retrieve the latest version (known to work with portmidi17nov04.zip )
+
+2) 
 
 
-rename portaudio folder to "portaudio"
+pthread-win32 ()
+---------------------------------------------------------------------------------------------
 
-rename other folders too ($$$todo)
+1) go to : "ftp://sources.redhat.com/pub/pthreads-win32" and get "pthreads-snap-yyyy-mm-dd.tar.gz".
+(known to work with "pthreads-snap-2005-01-25.tar.gz")
+uncompress it to ROOT, rename the folder to "pthread-win32" so that the source tree looks like :
 
-download the ASIO sdk from ...
+...
+ROOT\pthread-win32\tests
+ROOT\pthread-win32\announce
+ROOT\pthread-win32\attr.c
+...
 
-copier le SDK asio là où le fichier portaudio/pa_win/msvc/readme.txt l'explique
 
+NOTE : the home page is "http://sources.redhat.com/pthreads-win32"
+
+
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+
+once all these steps are done, all projects should build correctly.
+if they fail for some reason (change to SC code that i haven't caught or 
+update to the support libs), please let me know at my email address (and
+maybe on the sc-dev mailing too, but please make sure to send an email) :
+benjamin.golinvaux@euresys.com
+
+thanks
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------

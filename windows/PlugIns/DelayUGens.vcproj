@@ -4,10 +4,6 @@
 	Version="7.10"
 	Name="DelayUGens"
 	ProjectGUID="{4E998729-F079-485C-B30C-B0B99BD69B19}"
-	SccProjectName="&quot;//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3&quot;"
-	SccAuxPath=""
-	SccLocalPath="..\.."
-	SccProvider="MSSCCI:Perforce SCM"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform

@@ -23,6 +23,7 @@ Primitives for File i/o.
 
 */
 
+
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
@@ -41,6 +42,8 @@ Primitives for File i/o.
 # include <unistd.h>
 #else
 # include <direct.h>
+# include <malloc.h>
+# define strcasecmp stricmp
 #endif
 
 #include <fcntl.h>
@@ -49,7 +52,6 @@ Primitives for File i/o.
 #define DELIMITOR ':'
 
 bool filelen(FILE *file, size_t *length);
-
 
 int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1401,11 +1403,19 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	memcpy(filename, b->uos->s, b->uo->size);
 	filename[b->uos->size] = 0;
 		
-	char headerFormat[headerSlot->uos->size];
-	memcpy(headerFormat, headerSlot->uos->s, headerSlot->uo->size);
+#ifdef SC_WIN32
+  char* headerFormat = reinterpret_cast<char*>(_alloca(headerSlot->uos->size));
+#else
+  char headerFormat[headerSlot->uos->size];
+#endif
+  memcpy(headerFormat, headerSlot->uos->s, headerSlot->uo->size);
 	headerFormat[headerSlot->uos->size] = 0;
 	
+#ifdef SC_WIN32
+  char* sampleFormat = reinterpret_cast<char*>(_alloca(formatSlot->uos->size));
+#else
 	char sampleFormat[formatSlot->uos->size];
+#endif
 	memcpy(sampleFormat, formatSlot->uos->s, formatSlot->uo->size);
 	sampleFormat[formatSlot->uos->size] = 0;
 

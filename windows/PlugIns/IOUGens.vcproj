@@ -4,10 +4,6 @@
 	Version="7.10"
 	Name="IOUGens"
 	ProjectGUID="{68881603-F9D0-4DBE-A323-701A49DC39BC}"
-	SccProjectName="&quot;//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3&quot;"
-	SccAuxPath=""
-	SccLocalPath="..\.."
-	SccProvider="MSSCCI:Perforce SCM"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform

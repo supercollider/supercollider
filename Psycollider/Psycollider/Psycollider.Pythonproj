@@ -1,10 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <VisualStudioProject>
     <pythonproj Version="1.2.1"
-         SccProjectName="SAK"
-         SccLocalPath="SAK"
-         SccAuxPath="SAK"
-         SccProvider="SAK">
+>
         <configurations>
             <configuration name="Debug"
                  LaunchArgs=""

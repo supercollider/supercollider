@@ -19,6 +19,7 @@
 */
 
 #ifdef SC_WIN32
+# define snprintf _snprintf
 # define PATH_MAX _MAX_PATH
 #endif
 #include "SCBase.h"

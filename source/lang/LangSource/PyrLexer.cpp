@@ -35,6 +35,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef SC_WIN32
+# define strcasecmp stricmp
+# define snprintf _snprintf
 #else
 # include "lang11d_tab.h"
 #endif
@@ -993,7 +995,11 @@ int processident(char *token)
 	if (strcmp("var",token) ==0) return VAR; 
 	if (strcmp("arg",token) ==0) return ARG; 
 	if (strcmp("classvar",token) ==0) return CLASSVAR; 
+#ifdef SC_WIN32
+	if (strcmp("const",token) ==0) return CONST_COMPAT; 
+#else
 	if (strcmp("const",token) ==0) return CONST; 
+#endif
 	
 	if (strcmp("while",token) ==0) { 
 		sym = getsym(token);
@@ -1036,8 +1042,12 @@ int processident(char *token)
 #endif
 		node = newPyrSlotNode(&slot);
 		zzval = (int)node;
-		return FLOAT; 
-	}
+#ifdef SC_WIN32
+    return FLOAT_COMPAT; 
+#else
+    return FLOAT; 
+#endif
+  }
 
 	sym = getsym(token);
 	
@@ -1181,7 +1191,11 @@ int processfloat(char *s, int sawpi)
 	else  { SetFloat(&slot, atof(s)); }
 	node = newPyrSlotNode(&slot);
 	zzval = (int)node;
-	return FLOAT;
+#ifdef SC_WIN32
+    return FLOAT_COMPAT; 
+#else
+    return FLOAT; 
+#endif
 }
 
 

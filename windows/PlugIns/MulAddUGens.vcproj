@@ -4,10 +4,6 @@
 	Version="7.10"
 	Name="MulAddUGens"
 	ProjectGUID="{C7FBD879-BA07-4663-BB98-A53D4B4BE430}"
-	SccProjectName="&quot;//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3&quot;"
-	SccAuxPath=""
-	SccLocalPath="..\.."
-	SccProvider="MSSCCI:Perforce SCM"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform

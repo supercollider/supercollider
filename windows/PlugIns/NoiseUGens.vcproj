@@ -4,10 +4,6 @@
 	Version="7.10"
 	Name="NoiseUGens"
 	ProjectGUID="{D4690C35-8896-42E1-8CBB-A6C0574B00B5}"
-	SccProjectName="&quot;//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3&quot;"
-	SccAuxPath=""
-	SccLocalPath="..\.."
-	SccProvider="MSSCCI:Perforce SCM"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform

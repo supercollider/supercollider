@@ -5,10 +5,6 @@
 	Name="TriggerUGens"
 	ProjectGUID="{3ACD1DB7-EBFD-499F-9C76-D3167F6C8FA4}"
 	RootNamespace="TriggerUGens"
-	SccProjectName="&quot;//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3&quot;"
-	SccAuxPath=""
-	SccLocalPath="..\.."
-	SccProvider="MSSCCI:Perforce SCM"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform

@@ -4,10 +4,6 @@
 	Version="7.10"
 	Name="OSCUGens"
 	ProjectGUID="{42538BD2-C36C-4060-9FC0-038D2558E250}"
-	SccProjectName="&quot;//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3&quot;"
-	SccAuxPath=""
-	SccLocalPath="..\.."
-	SccProvider="MSSCCI:Perforce SCM"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform

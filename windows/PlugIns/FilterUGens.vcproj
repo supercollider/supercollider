@@ -4,10 +4,6 @@
 	Version="7.10"
 	Name="FilterUGens"
 	ProjectGUID="{EEB81965-7987-41FA-82B3-F6A7786D1E97}"
-	SccProjectName="&quot;//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3&quot;"
-	SccAuxPath=""
-	SccLocalPath="..\.."
-	SccProvider="MSSCCI:Perforce SCM"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform

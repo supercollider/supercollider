@@ -4,10 +4,6 @@
 	Version="7.10"
 	Name="LFUGens"
 	ProjectGUID="{84B136F8-AD3A-48A1-96FD-FBF4445D7043}"
-	SccProjectName="&quot;//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3&quot;"
-	SccAuxPath=""
-	SccLocalPath="..\.."
-	SccProvider="MSSCCI:Perforce SCM"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform

@@ -4,15 +4,6 @@ Project("{6021F4C0-62D6-4BDA-8A89-4D7F5EB4B402}") = "Psycollider", "Psycollider.
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(SourceCodeControl) = preSolution
-		SccNumberOfProjects = 2
-		SccLocalPath0 = .
-		CanCheckoutShared = true
-		SolutionUniqueID = {D7C1C07D-5E5C-4687-B373-21E977654464}
-		SccProjectUniqueName1 = Psycollider.Pythonproj
-		SccLocalPath1 = .
-		CanCheckoutShared = true
-	EndGlobalSection
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
 		Release = Release

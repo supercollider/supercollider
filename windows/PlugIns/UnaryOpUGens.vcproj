@@ -4,10 +4,6 @@
 	Version="7.10"
 	Name="UnaryOpUGens"
 	ProjectGUID="{A706B3C3-EC0D-416D-BA13-6EFE1DB83316}"
-	SccProjectName="&quot;//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3&quot;"
-	SccAuxPath=""
-	SccLocalPath="..\.."
-	SccProvider="MSSCCI:Perforce SCM"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform

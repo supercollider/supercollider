@@ -4,10 +4,6 @@
 	Version="7.10"
 	Name="BinaryOpUGens"
 	ProjectGUID="{A25458C1-2618-4FB0-89BC-E41769B5AE4B}"
-	SccProjectName="&quot;//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3&quot;"
-	SccAuxPath=""
-	SccLocalPath="..\.."
-	SccProvider="MSSCCI:Perforce SCM"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform

@@ -57,3 +57,4 @@ PyrSymbol* getmetasym(const char *name);
 PyrSymbol* findsym(const char *name);
 
 #endif
+

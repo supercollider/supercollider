@@ -5,10 +5,6 @@
 	Name="PhysicalModelingUGens"
 	ProjectGUID="{E20E332A-0084-40DB-9219-39B04A20DE70}"
 	RootNamespace="PhysicalModelingUGens"
-	SccProjectName="&quot;//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3&quot;"
-	SccAuxPath=""
-	SccLocalPath="..\.."
-	SccProvider="MSSCCI:Perforce SCM"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform

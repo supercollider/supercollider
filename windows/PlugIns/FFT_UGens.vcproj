@@ -4,10 +4,6 @@
 	Version="7.10"
 	Name="FFT_UGens"
 	ProjectGUID="{7427914C-3567-4ABE-9C08-0C1C32979A66}"
-	SccProjectName="&quot;//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3&quot;"
-	SccAuxPath=""
-	SccLocalPath="..\.."
-	SccProvider="MSSCCI:Perforce SCM"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform

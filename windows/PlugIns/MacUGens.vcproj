@@ -118,6 +118,18 @@
 			UniqueIdentifier="{003C36E4-84CB-479D-BB0E-8EBCE7D3FA05}">
 			<File
 				RelativePath="..\..\..\SuperCollider3\source\plugins\MacUGens.cpp">
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter

@@ -1,8 +1,4 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SCLangWX", "SCLangWX\SCLangWX.vcproj", "{5B4351C7-0A02-4EDF-A46A-88DC5DE1E3F8}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BinaryOpUGens", "PlugIns\BinaryOpUGens.vcproj", "{A25458C1-2618-4FB0-89BC-E41769B5AE4B}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
@@ -76,94 +72,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PySCLang", "..\Psycollider\
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(SourceCodeControl) = preSolution
-		SccNumberOfProjects = 19
-		SccProjectName0 = \u0022//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3\u0022
-		SccLocalPath0 = ..
-		SccProvider0 = MSSCCI:Perforce\u0020SCM
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection0 = windows\\
-		SolutionUniqueID = {B9FE78CE-4400-49F4-B548-2DA88F5AFFE1}
-		SccProjectUniqueName1 = SCSpawn\\SCSpawn.vcproj
-		SccProjectName1 = \u0022//depot/rnd/usersCorner/golinvauxb/_own/_cvs_supco/SuperCollider3/windows/SCSpawn\u0022
-		SccLocalPath1 = SCSpawn
-		CanCheckoutShared = true
-		SccProjectUniqueName2 = PlugIns\\BinaryOpUGens.vcproj
-		SccLocalPath2 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection2 = windows\\PlugIns\\
-		SccProjectUniqueName3 = PlugIns\\DelayUGens.vcproj
-		SccLocalPath3 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection3 = windows\\PlugIns\\
-		SccProjectUniqueName4 = PlugIns\\DiskIOUGens.vcproj
-		SccLocalPath4 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection4 = windows\\PlugIns\\
-		SccProjectUniqueName5 = PlugIns\\UnaryOpUGens.vcproj
-		SccLocalPath5 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection5 = windows\\PlugIns\\
-		SccProjectUniqueName6 = PlugIns\\NoiseUGens.vcproj
-		SccLocalPath6 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection6 = windows\\PlugIns\\
-		SccProjectUniqueName7 = PlugIns\\FFT_UGens.vcproj
-		SccLocalPath7 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection7 = windows\\PlugIns\\
-		SccProjectUniqueName8 = PlugIns\\TriggerUGens.vcproj
-		SccLocalPath8 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection8 = windows\\PlugIns\\
-		SccProjectUniqueName9 = SCLangWX\\SCLangWX.vcproj
-		SccLocalPath9 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection9 = windows\\SCLangWX\\
-		SccProjectUniqueName10 = PlugIns\\OSCUGens.vcproj
-		SccLocalPath10 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection10 = windows\\PlugIns\\
-		SccProjectUniqueName11 = PlugIns\\MulAddUGens.vcproj
-		SccLocalPath11 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection11 = windows\\PlugIns\\
-		SccProjectUniqueName12 = PlugIns\\PhysicalModelingUGens.vcproj
-		SccLocalPath12 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection12 = windows\\PlugIns\\
-		SccProjectUniqueName13 = PlugIns\\IOUGens.vcproj
-		SccLocalPath13 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection13 = windows\\PlugIns\\
-		SccProjectUniqueName14 = PlugIns\\PanUGens.vcproj
-		SccLocalPath14 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection14 = windows\\PlugIns\\
-		SccProjectUniqueName15 = scsynth.vcproj
-		SccLocalPath15 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection15 = windows\\
-		SccProjectUniqueName16 = PlugIns\\FilterUGens.vcproj
-		SccLocalPath16 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection16 = windows\\PlugIns\\
-		SccProjectUniqueName17 = PlugIns\\LFUGens.vcproj
-		SccLocalPath17 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection17 = windows\\PlugIns\\
-		SccProjectUniqueName18 = ..\\Psycollider\\PySCLang\\PySCLang.vcproj
-		SccLocalPath18 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection18 = Psycollider\\PySCLang\\
-	EndGlobalSection
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
 		Release = Release
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
-		{5B4351C7-0A02-4EDF-A46A-88DC5DE1E3F8}.Debug.ActiveCfg = Debug|Win32
-		{5B4351C7-0A02-4EDF-A46A-88DC5DE1E3F8}.Release.ActiveCfg = Release|Win32
 		{A25458C1-2618-4FB0-89BC-E41769B5AE4B}.Debug.ActiveCfg = Debug|Win32
 		{A25458C1-2618-4FB0-89BC-E41769B5AE4B}.Release.ActiveCfg = Release|Win32
 		{4E998729-F079-485C-B30C-B0B99BD69B19}.Debug.ActiveCfg = Debug|Win32
@@ -202,9 +115,6 @@ Global
 		{580DA691-0F33-4970-8D19-69CB47DE67D4}.Debug.Build.0 = Debug|Win32
 		{580DA691-0F33-4970-8D19-69CB47DE67D4}.Release.ActiveCfg = Release|Win32
 		{580DA691-0F33-4970-8D19-69CB47DE67D4}.Release.Build.0 = Release|Win32
-	EndGlobalSection
-	GlobalSection(SolutionItems) = postSolution
-		..\readme.txt = ..\readme.txt
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
