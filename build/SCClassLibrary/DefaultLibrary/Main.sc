@@ -2,6 +2,7 @@ Main : Process {
 	
 	startup {
 		super.startup;
+		Document.startup;
 		// set the 's' interpreter variable to the default server.
 		interpreter.s = Server.default;
 		// make server window
