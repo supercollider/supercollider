@@ -2,12 +2,14 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
-\red96\green96\blue96;}
+\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 NodeProxy\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \
+\f1\b0\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs26 \cf0 superclass: AbstractFunction\
@@ -36,6 +38,8 @@ See ProxySpace for more examples.\
 \
 ___________________________________________________\
 \
+\ul setting the source:\
+\ulnone \
 	source_(anObject)\
 		
 \f2\b0 play a new synth through me, release old one.\
@@ -48,10 +52,22 @@ ___________________________________________________\
 	add(anObject, channelOffset)\
 		
 \f2\b0 play a new synth, add it to the present ones\
-		anObject can be a Function, an Instr, any valid UGen input
+		anObject can be a Function, an Instr, any valid UGen input\
+	\
+	
+\f0\b removeAt(index)\
+		
+\f2\b0 remove the synth at index i and its player definition\
+	\
+	
+\f0\b removeAt(index)\
+		
+\f2\b0 remove the last synth and its player definition
 \f0\b \
 	\
 	\
+\ul group-like behaviour:\ulnone \
+\
 	set(key, val, ...)\
 		
 \f2\b0 I behave like my nodeMap: see [NodeMap]\
@@ -66,9 +82,17 @@ ___________________________________________________\
 	
 \f0\b run(flag)
 \f2\b0 \
-		pause/unpause all synths in the group
+		pause/unpause all synths in the group\
+		\
+	
+\f0\b pause\
+		
+\f2\b0 pause all synths in the group\
+
 \f0\b \
-	\
+\
+\ul reading from bus\
+\ulnone \
 	play(index, numChannels)\
 		
 \f2\b0 play output on specified bus index (default: public busses)
@@ -78,16 +102,26 @@ ___________________________________________________\
 	kr(numChannels)\
 	\
 		
-\f2\b0 return a link to my output, which is limited by [NumChannels]\
+\f2\b0 return a link to my output, which is limited by [numChannels]\
 	\
 	_____________________
 \f0\b \
 	\
-	\
+\ul sending synths to server\
+
+\f2\b0 \ulnone (normally the source_ message does the sending already)
+\f0\b \
+\
 	send(argList)\
 		
 \f2\b0 send a new synth without releasing the old one.\
-		the argument list is applied to the synth only.
+		the argument list is applied to the synth only.\
+		\
+	
+\f0\b sendAll(argList)\
+		
+\f2\b0 send all synths without releasing the old one.\
+		the argument list is applied to all synths.
 \f0\b \
 	\
 	put(anObject, channelOffset, sendFlag, freeAllFlag, completionFunc, latency)\
@@ -101,9 +135,10 @@ ___________________________________________________\
 			completionFunc: is evaluated as soon as synth is running\
 			latency: 		nil: wait for '/done' message (doesn't work when sending several at once)\
 						a number is the time to wait for the loading.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	\
+\f0\b \
+\ul release and cleaning up:\
+\ulnone \
 	free\
 		
 \f2\b0 free all my running synths and the group
@@ -119,13 +154,9 @@ ___________________________________________________\
 \f2\b0 reset everything to nil
 \f0\b \
 	\
+\
+\ul setting properties:\ulnone \
 	\
-	\
-	record(path, headerFormat, sampleFormat)\
-		
-\f2\b0 record output to file (returns a RecNodeProxy that you can use for stopping)\
-		
-\f0\b \
 	fadeTime_(time)\
 		
 \f2\b0 set the attack/release time\
@@ -133,13 +164,27 @@ ___________________________________________________\
 	
 \f0\b clock_(aClock)
 \f2\b0 \
-		use a clock for scheduling beat accurate\
+		use a tempoclock for scheduling beat accurate\
 	\
 	
 \f0\b freeSelf_(true/false)
 \f2\b0 \
 		switch it to false if a nodeproxy should be used to spawn\
 		single synths that have their own envelope (see ProxySpace example)\
+	\
+
+\f0\b 	still undocumented/experimental: lags, prepends\
+
+\f2\b0 	\
+
+\f0\b \ul misc:\
+
+\f2\b0 \ulnone \
+	
+\f0\b record(path, headerFormat, sampleFormat)\
+		
+\f2\b0 record output to file (returns a RecNodeProxy that you can use for stopping)\
+		\
 _________________________________________________________	\
 		
 \f1\fs18 \
@@ -178,12 +223,12 @@ a.set(\cf4 \\f\cf0 , rrand(1500,700));\
 a.set(\cf4 \\f\cf0 , rrand(1500,700));\
 a.xset(\cf4 \\f\cf0 , rrand(1500,700)); \cf2 //crossfaded setting\cf0 \
 a.source = \{ \cf3 arg\cf0  f=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f*[1,1.2], 0.5, 0.1), f*2) \};\
-\
+a.lags = #[];\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //mapping to busses\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 c = \cf3 NodeProxy.control\cf0 (s,2);\
+\cf0 c = \cf3 NodeProxy.control\cf0 (s, 2);\
 c.source = \{ \cf3 SinOsc\cf0 .kr([10,20]*2, 0, 50, 300) \};\
 a.map(\cf4 \\f\cf0 , c);\
 a.source = \{ \cf3 arg\cf0  f=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f*[0.4,1], 0.2, 0.1), f*2) \};\
@@ -196,10 +241,10 @@ c.source = \{ \cf3 Line\cf0 .kr(300, 500, 10) + \cf3 SinOsc\cf0 .kr(20*[1,2], 0,
 a.map([\cf4 \\f\cf0 ,\cf4 \\f2\cf0 ], c); \cf2 //same as a.map([0,1], c); \
 \cf0 a.source = \{ \cf3 arg\cf0  f=400, f2=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar([f,f2], 0.2, 0.1), f2) \};\
 c.source = \{ \cf3 SinOsc\cf0 .kr([10, 1], 0, [100, 700], [300, 700]) \};\
-a.lags = #[];\
 \
 \
-c.fadeTime = 0.5;\
+\
+c.fadeTime = 2.5;\
 c.source = \{ \cf3 LFNoise0\cf0 .kr([2.3,1], [100, 700], [300, 1700]) \};\
 c.source = \{ \cf3 SinOsc\cf0 .kr([2.3,1], 0, [100, 700], [300, 1700]) \};\
 c.source = 500;\
@@ -230,6 +275,10 @@ c.free;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //beat accurate playing\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 x = a.play;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 a.clock = \cf3 TempoClock\cf0 (2.0); \cf2 //round to every 2.0 seconds\
 \cf0 a.source = \{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(0.5, 0, 0.3), 3000, 0.01) \};\
 a.add(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar([0.5, 1], 0, 0.3), 1000, 0.01) \});\
@@ -243,12 +292,11 @@ a.source = \{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(4, 0, 0.3), 3000, 0.01) \}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //using patterns - event streams\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 (\
 \cf3 SynthDef\cf0 (\cf5 "par"\cf0 , \{ \cf3 arg\cf0  freq, out=0, sustain=0.1; \cf2 //must have 'outIndex' argument to work properly\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 Out\cf0 .ar(out, Pan2.ar(\cf3 LFCub\cf0 .ar(freq,0,\cf3 Line\cf0 .kr(0.1,0,sustain, doneAction:2)), Rand(-1.0,1.0)))\
-\}).load(s);\
+\}).send(s);\
+)\
 \
 (\
 a = \cf3 NodeProxy.audio\cf0 (s, 2);\
@@ -279,6 +327,9 @@ c.source = \{ \cf3 SinOsc\cf0 .kr(\cf3 SinOsc\cf0 .kr(0.2, 0, 10, 10), 0, 400, 7
 \
 a.source = b;\
 c.source = \{ LFNoise1.kr(0.1, 100, 300) \};\
+\cf2 \
+//remove the mapping\cf0 \
+b.unmap(\cf4 \\freq\cf0 );\
 \
 (\
 b.source = \cf3 Pbind\cf0 (e,\
@@ -286,21 +337,19 @@ b.source = \cf3 Pbind\cf0 (e,\
 \cf4 			\\instrument\cf0 , \cf4 \\par\cf0 , \
 			\cf4 \\freq\cf0 , Pseq([600, 400],inf), \
 			\cf4 \\doneAction\cf0 , 2, \
-			\cf4 \\dur\cf0 , 0.2\cf3 \
+			\cf4 \\dur\cf0 , 0.25\cf3 \
 		\cf0 );\
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //remove the mapping\cf0 \
-b.unmap(\cf4 \\freq\cf0 );\
 \
-b.add(\cf3 Pbind\cf0 (e, \cf4 \\instrument\cf0 , \cf4 \\par\cf0 , \cf4 \\freq\cf0 , 620));\
-b.add(\cf3 Pbind\cf0 (e, \cf4 \\instrument\cf0 , \cf4 \\par\cf0 , \cf4 \\freq\cf0 , Pseq([700, 400],inf)));\
-b.add(\{ \cf3 WhiteNoise.ar([0.01,0.01]) \});\cf0 \
+\
+b.add(\cf3 Pbind\cf0 (e, \cf4 \\instrument\cf0 , \cf4 \\par\cf0 , \cf4 \\freq\cf0 , 620));\cf6 \
+b.add(\cf7 Pbind\cf6 (e, \cf8 \\instrument\cf6 , \cf8 \\par\cf6 , \cf8 \\freq\cf6 , \cf7 Pseq\cf6 ([700, 400],\cf7 inf\cf6 )));\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf9 //b.add(\{ WhiteNoise.ar([0.01,0.01]) \}); some error here\cf0 \
 \
 a.source = \{  b.ar * \cf3 WhiteNoise.ar(0.1, 1)\cf0   \}; \
 a.source = \{  b.ar * \cf3 WhiteNoise.ar(0.1, 1) + (b.ar * SinOsc\cf0 .ar(\cf3 SinOsc\cf0 .kr(0.01, 0, 50, 330)))  \}; \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
 \
 \
@@ -309,14 +358,12 @@ a.source = \{  b.ar * \cf3 WhiteNoise.ar(0.1, 1) + (b.ar * SinOsc\cf0 .ar(\cf3 S
 \
 _\cf0 _\cf3 __\cf0 _\cf3 ___\cf0 __\cf3 __\cf0 _____\cf3 ___\cf0 __\cf3 __\cf0 ___\cf3 _\cf0 _\
 \
-presently, NodeProxy can be used implicitly using the following shortcut:\
+NodeProxy can be used implicitly using the following shortcut:\
 \
 \
-\{ \cf3 SinOsc\cf0 .ar([350, 390], 0, 0.1) \}.play(\cf4 \\out\cf0 ); \cf2 //play the function on a private bus\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 \\out\cf0 .play;	\cf2 //play it out the hardware bus\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\{ \cf3 SinOsc\cf0 .ar([350, 390], 0, 0.1) \}.send(\cf4 \\out\cf0 ); \cf2 //play the function on a private bus\
+\cf6 x = \cf8 \\out\cf6 .play;	\cf9 //play it out the hardware bus\cf6 \
 \cf0 \
-\{ \cf3 SinOsc\cf0 .ar([350, 390]+20, 0, 0.1) \}.play(\cf4 \\out\cf0 ); \cf2 //replace the synth playing in \\out\
+\{ \cf3 SinOsc\cf0 .ar([350, 390]+20, 0, 0.1) \}.send(\cf4 \\out\cf0 ); \cf2 //replace the synth playing in \\out\
 \cf0 \
 }
