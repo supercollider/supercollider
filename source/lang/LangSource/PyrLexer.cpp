@@ -220,28 +220,27 @@ text:
 
 bool startLexer(char* filename) 
 {	
-        if (!getFileText(filename, &text, &textlen)) return false;
-		
-		textlen = stripNonAscii(text);
-		int rtfresult = rtf2txt(text);
-        if (rtfresult) textlen = rtfresult;
-       
-        initLongStack(&brackets);
-        textpos = 0;
-        linepos = 0;
-        lineno = 1;
-        charno = 0;
-
-        yylen = 0;
-        zzval = 0;
-        parseFailed = 0;
-        lexCmdLine = 0;
-        strcpy(curfilename, filename);
-        maxlinestarts = 1000;
-        linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
-        linestarts[0] = 0;
-        linestarts[1] = 0;
-
+	if (!getFileText(filename, &text, &textlen)) return false;
+	
+	rtf2txt(text);
+	textlen = stripNonAscii(text);
+	
+	initLongStack(&brackets);
+	textpos = 0;
+	linepos = 0;
+	lineno = 1;
+	charno = 0;
+	
+	yylen = 0;
+	zzval = 0;
+	parseFailed = 0;
+	lexCmdLine = 0;
+	strcpy(curfilename, filename);
+	maxlinestarts = 1000;
+	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
+	linestarts[0] = 0;
+	linestarts[1] = 0;
+	
 	//postfl("<startLexer\n");
 	return true;
 }
@@ -257,9 +256,8 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	text[textbuflen+1] = 0;
 	textlen = textbuflen + 1;
 	
+	rtf2txt(text);
 	textlen = stripNonAscii(text);
-	int rtfresult = rtf2txt(text);
-	if (rtfresult) textlen = rtfresult;
 	
 	//postfl("text '%s' %d\n", text, text);
 		
