@@ -3969,10 +3969,10 @@ void initSCViewPrimitives();
 void initSchedPrimitives();
         initSchedPrimitives();
 
-#ifndef SC_WIN32
 void initMIDIPrimitives();
 		initMIDIPrimitives();
 
+#ifndef SC_WIN32
 void initHIDPrimitives();
                 initHIDPrimitives();
 
