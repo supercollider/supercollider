@@ -20,9 +20,10 @@ TempoBus   {
 	index { ^bus.index }
 	prepareForPlay { arg group,bundle;
 		// ignores the group
-		if(isReady.not,{ // just in case server wasn't booted before on init
-			bundle.add( bus.setMsg(tempo.tempo) )
-		})
+		//if(isReady.not,{ // just in case server wasn't booted before on init
+			bundle.add( bus.setMsg(tempo.tempo) );
+			//isReady = true;
+		//})
 	}
 	
 	free {
@@ -39,9 +40,12 @@ TempoBus   {
 		bus.set(tempo.tempo);
 		tempo.addDependant(this);
 		
-		// is it already ready ?
-		isReady = true;
-		bus.value = tempo.tempo;
+		// could depend on the server too (serverRunning)
+		
+		if(server.serverRunning,{ 
+			isReady = true;
+			bus.value = tempo.tempo;
+		});
 	}
 	update { arg changed,changer;
 		if(changed === tempo,{

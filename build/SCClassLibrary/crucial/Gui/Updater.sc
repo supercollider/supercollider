@@ -28,7 +28,7 @@ Updater {
 /**
 
 	var tog;
-	layout=FlowLayout.guify(layout);
+	layout=PageLayout.guify(layout);
 	
 	tog=ToggleButton(layout,name ? "process",{ this.on },{ this.off });
 	

@@ -152,14 +152,22 @@ AbstractPlayer : AbstractFunction  {
 		this.children.do({ arg child;
 			child.spawnToBundle(bundle);
 		});
-		synth = Synth.newMsg(bundle, // newToBundle
-				this.defName,
-				this.synthDefArgs.collect({ arg a,i; [i,a]}).flat ,
+		synth = Synth.basicNew(this.defName,patchOut.server);
+		bundle.add(
+			synth.addToTailMsg(patchOut.group,
+				this.synthDefArgs.collect({ arg a,i; [i,a]}).flat 
 					//++ this.secretSynthDefArgs
 					//++ this.children.collect({ arg child; child.secretSynthDefArgs }).flat,
-				patchOut.group,
-				\addToTail
-				);
+			)
+		);
+//		Synth.newMsg(bundle, // newToBundle
+//				this.defName,
+//				this.synthDefArgs.collect({ arg a,i; [i,a]}).flat ,
+//					//++ this.secretSynthDefArgs
+//					//++ this.children.collect({ arg child; child.secretSynthDefArgs }).flat,
+//				patchOut.group,
+//				\addToTail
+//				);
 	}
 	/*
 		when player saves, save defName and secret args (name -> inputIndex)

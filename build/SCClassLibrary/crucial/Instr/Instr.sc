@@ -188,7 +188,7 @@ Instr  {
 		if(startAt.isNil,{
 //			startAt = Library3.at(Instr);
 			page = Roster(":rosters:EfxOrcs").all.choose;
-			page.load;
+			page.loadPath;
 			startAt = Instr.at(PathName(page).fileName.asSymbol);
 		},{
 			startAt = this.at(startAt);

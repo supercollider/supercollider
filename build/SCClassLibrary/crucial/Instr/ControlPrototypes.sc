@@ -21,10 +21,10 @@ ControlPrototypes {
 					]},
 			
 			AudioSpec -> {[
-								Silence(0.0) // silence
+						Silence(0.0) // silence
 							]},
 			TrigSpec -> {[	
-						SimpleTrigger.new
+						BeatClockPlayer.new(8)
 					]},
 			SampleSpec -> {[
 						Sample.new

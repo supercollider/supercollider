@@ -1,8 +1,10 @@
 BeatClockPlayer : KrPlayer { 		var <>tempoFactor,<>tempoBase,tempoBus;	var <>mul;
 		*new { arg tempoFactor=2.0,mul=1.0,tempoBase;
-		//TODO: share by tempoFactor
 		^super.new.tempoFactor_(tempoFactor).tempoBase_(tempoBase ? Tempo.default).mul_(mul)	}	
 	prepareForPlay { arg group,bundle;
+		//TODO: share by tempoFactor per server
+		// place in a high level group
+
 		if(patchOut.isNil,{
 			super.prepareForPlay(group,bundle);
 			tempoBus = TempoBus(group.asGroup.server,tempoBase);

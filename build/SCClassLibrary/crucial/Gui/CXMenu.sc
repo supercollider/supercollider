@@ -9,7 +9,7 @@ CXMenu { // multiple actions
 	*newWith { arg nameFuncs;
 		^super.new.nameFuncs_(nameFuncs)
 	}
-	gui { arg lay,windowWidth=150,height=400,argbuttonWidth=120,title="Menu";
+	gui { arg lay,windowWidth=150,height=400,argbuttonWidth=120,title="CXMenu";
 		
 		buttonWidth = argbuttonWidth;
 		height = max(height,nameFuncs.size * 20);
@@ -86,7 +86,7 @@ PopUp : ActionButton {
 
 /*
 (
-	f=FlowLayout.new;
+	f=PageLayout.new;
 	PopUp(f,"choose",[1,2,3,4],{arg int;  int.postln });
 	
 	PopUp(f,nil,[1,2,3,4],{arg int;  int.postln },{arg thing; thing.asString });

@@ -23,8 +23,9 @@ Crucial {
 		PageLayout.focuscolor = Color.new255(255,25,33);
 		PageLayout.hrcolor = Color.new255(226,230,209);
 		
-		ActionButton.offcolor = Color.new255(222, 184, 135);
-		
+		ActionButton.offcolor = Color.new255(112, 128, 144);
+
+
 		CXLabel.bgcolor = Color.new255(250,250,240);
 /*
 		Tile.bgcolor =   Color.new255(231,250,178);
@@ -79,8 +80,9 @@ Crucial {
 			'pitch'->ControlSpec.new(-4, 4, 'lin', 0, 0),
 
 			'trig'->TrigSpec.new(0, 1, 'lin', 0, 0.0),
-			'gate'->ControlSpec.new(0, 1, 'lin', 0, 0.0),
-			
+			'gate'->TrigSpec.new(0, 1, 'lin', 0, 0.0),
+			//'gate'->ControlSpec.new(0, 1, 'lin', 0, 0.5),
+
 			'legato'->StaticSpec.new(0.01, 4, 'lin', 0, 2.005),
 			'release'->ControlSpec.new(0, 16, 'lin', 0, 8),
 			'db'->ControlSpec.new(-130, 12, 'lin', 0, -59),
@@ -264,15 +266,16 @@ Crucial {
 			})
 		});
 		
-		Library.put(\menuItems,\introspection,'gcInfo',{
-			this.gcInfo
-		});
-		Library.put(\menuItems,\introspection,'Interpreter-inspect',{
-			thisProcess.interpreter.inspect;
-		});
-		Library.put(\menuItems,\introspection,'Interpreter-clearAll',{
-			thisProcess.interpreter.clearAll;
-		});
+//		Library.put(\menuItems,\introspection,'gcInfo',{
+//			this.gcInfo
+//		});
+//		Library.put(\menuItems,\introspection,'Interpreter-inspect',{
+//			thisProcess.interpreter.inspect;
+//		});
+//		Library.put(\menuItems,\introspection,'Interpreter-clearAll',{
+//			thisProcess.interpreter.clearAll;
+//		});
+
 //		Library.put(\menuItems,\introspection,\findClassByPartialName,{
 //			GetStringDialog("Classname or partial string","",{
 //				arg ok,string;
@@ -367,27 +370,21 @@ Crucial {
 		});
 	
 		// browse all currently loaded Instr
-		Library.put(\menuItems,\sounds,\orcs,{ arg onSelect;
-			// if there's nothing in Instr it does the top
-			MLIDbrowser(\Instr,onSelect).gui
-		});
+//		Library.put(\menuItems,\sounds,\orcs,{ arg onSelect;
+//			// if there's nothing in Instr it does the top
+//			MLIDbrowser(\Instr,onSelect).gui
+//		});
 		
 		Library.put(\menuItems,\post,'post Instr address',{
-			Library.at(\sounds,\orcs).value({ arg instr;
+			MLIDbrowser(\Instr,{ arg instr;
 				instr.name.asCompileString.post; 
-			});
-		});
-		
-		Library.put(\menuItems,\post,'post new Patch',{
-			Library.at(\sounds,\orcs).value({ arg instr; 
-				Patch(instr.name).asCompileString.postln
-			});
+			}).gui;
 		});
 		
 		Library.put(\menuItems,\sounds,'make new Patch',{
-			Library.at(\sounds,\orcs).value({ arg instr; 
+			MLIDbrowser(\Instr,{ arg instr;
 				Patch(instr.name).topGui
-			});
+			}).gui;
 		});
 
 		Library.put(\menuItems,\tools,\Specs,{

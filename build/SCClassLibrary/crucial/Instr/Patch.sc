@@ -77,12 +77,19 @@ Patch : AbstractPlayer  {
 			synthArgs.add(i);
 			synthArgs.add(a);
 		});
-		synth = Synth.newMsg(bundle, // newToBundle
-				this.defName,
-				synthArgs ++ synthDef.secretDefArgs(args),//.insp("secretArgs"),
-				patchOut.group,
-				\addToTail
-				);
+		synth = Synth.basicNew(this.defName,patchOut.server);
+		bundle.add(
+			synth.addToTailMsg(patchOut.group,
+				synthArgs ++ synthDef.secretDefArgs(args)//.insp("secretArgs"),
+			)
+		);
+
+//		synth = Synth.newMsg(bundle, // newToBundle
+//				this.defName,
+//				synthArgs ++ synthDef.secretDefArgs(args),//.insp("secretArgs"),
+//				patchOut.group,
+//				\addToTail
+//				);
 	}
 
 	synthDefArgs {
@@ -101,6 +108,12 @@ Patch : AbstractPlayer  {
 		});
 	}
 	
+	free {
+		// TODO only if i am the only exclusive owner
+		this.children.do({ arg child; child.free });
+		super.free;
+	}
+
 	/*
 	setInput { arg i,newarg;
 		var old,newargpatchOut;
@@ -116,32 +129,8 @@ Patch : AbstractPlayer  {
 		});
 	}
 	*/
-	free {
-		// TODO only if i am the only exclusive owner
-		this.children.do({ arg child; child.free });
-		super.free;
-	}
 
-	// pattern support
-	/*	
-	asStream {
-		// return a stream of ugenFuncs.
-		// each argument is also streamed
-		var argstreams,func;
-		func= this.instr.func;
-		argstreams = args.collect({ arg a; a.asStream });
-		
-		^FuncStream({
-			arg inval;
-			// return the ugenFunc
-			{	func.valueArray( argstreams.collect({ arg a,i; a.next.value })  )  }
-			// no envelope added
-		})
-	}
-	*/
-	
-	
-	
+
 	//act like a simple ugen function
 	ar { 	arg ... overideArgs;	^this.valueArray(overideArgs) }
 	value { arg ... overideArgs;  ^this.valueArray(overideArgs) }

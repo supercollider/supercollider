@@ -128,11 +128,11 @@ InstrSynthDef : SynthDef {
 			defarg.addToSynthDef(this,name);
 			defarg
 		});
-		outputProxies = this.buildControls;
+		outputProxies = this.buildControls;//.insp("buildControls");
 		// wrap them in In.kr etc. if needed
 		^outputProxies.collect({ arg outp,i;
 			defargs.at(i).instrArgFromControl(outp,i)
-		})
+		})//.insp("outputProxies")
 	}
 	
 }

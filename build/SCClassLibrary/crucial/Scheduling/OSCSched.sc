@@ -169,8 +169,8 @@ OSCSched : BeatSched {
 	
 	/**  instance methods **/
 	tsched { arg seconds,server,message,clientSideFunction;
-		clock.sched(seconds - server.delay,{
-			server.sendBundle(server.delay,message);
+		clock.sched(seconds - server.latency,{
+			server.sendBundle(server.latency,message);
 			nil
 		});
 		if(clientSideFunction.notNil,{
@@ -179,9 +179,9 @@ OSCSched : BeatSched {
 	}
 	xtsched { arg seconds,server,message,clientSideFunction;
 		var thTask,notCancelled;
-		clock.sched(seconds - server.delay,thTask = nextTask = {
+		clock.sched(seconds - server.latency,thTask = nextTask = {
 			if(notCancelled = (thTask === nextTask),{
-				server.sendBundle(server.delay,message)
+				server.sendBundle(server.latency,message)
 			});
 			nil
 		});
@@ -234,9 +234,9 @@ OSCSched : BeatSched {
 			list = nextAbsList = pq.pop;
 			secs = nextAbsTime - this.time;
 			server = list.at(0);
-			clock.sched(secs - server.delay,thTask = nextAbsFunc = {
+			clock.sched(secs - server.latency,thTask = nextAbsFunc = {
 				if(notCancelled = (thTask === nextAbsFunc),{
-					server.sendBundle(server.delay,list.at(1))
+					server.sendBundle(server.latency,list.at(1))
 				});
 				nil
 			});
