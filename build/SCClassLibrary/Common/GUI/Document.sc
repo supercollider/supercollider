@@ -2,16 +2,21 @@ Document {
 
 	classvar <dir="", <allDocuments, <>current;
 	classvar <>globalKeyDownAction, <>initAction;
+	
+	classvar <>autoRun = true;
+	classvar <>wikiBrowse = false;
+	classvar <>wikiPath = "~/scwork/wiki/";
 
 	//don't change the order of these vars:
 	var <dataptr, <>keyDownAction, <>mouseDownAction, <>toFrontAction, <>endFrontAction;
 	
-	var path, title, visible, <background, <stringColor, <>onClose;
+	var <>path, title, visible, <background, <stringColor, <>onClose;
 	var unused;
 	var <editable;
 	
 	*startup {
 		var num, doc;
+		
 		num = this.numberOfOpen;
 		num.do({arg i;
 			doc = this.newFromIndex(i);
@@ -218,8 +223,40 @@ Document {
 		endFrontAction.value(this);
 	}
 	
+	makeWikiPage { arg filename, wikiWord;
+		var file, doc;
+		
+		file = File(filename, "w");
+		if (file.isOpen) {
+			file.write(
+				"{\\rtf1\\mac\\ansicpg10000\\cocoartf102\\n{\\fonttbl}\n"
+				"{\\colortbl;\\red255\\green255\\blue255;}\n"
+				"Write about " ++ wikiWord ++ " here.\n}"
+			);
+			file.close;
+			
+			doc = this.class.open(filename);
+			doc.path = filename;
+			doc.selectRange(0,0x7FFFFFFF);
+		};
+	}
+	
 	mouseDown {
+		var filename, doc, wikiWord;
 		mouseDownAction.value(this);
+		
+		if (wikiBrowse) {
+			if (this.selectUnderlinedText) {
+				wikiWord = this.selectedText;
+				filename = (wikiPath ++ this.selectedText ++ ".rtf").standardizePath;
+				if (File.exists(filename)) {
+					this.class.open(filename);
+				}{
+					this.makeWikiPage(filename, wikiWord);
+				};
+				^this
+			};
+		};		
 	}
 	
 	keyDown {arg character, modifiers, keycode;
@@ -259,6 +296,10 @@ Document {
 	selectedText {
 		_TextWindow_SelectedText
 	}
+	selectUnderlinedText {
+		_TextWindow_SelectUnderlinedText
+		^false
+	}
 	
 	rangeText { arg rangestart=0, rangesize=1; 
 		_TextWindow_TextWithRange
@@ -286,6 +327,12 @@ Document {
 	prAdd {
 		allDocuments = allDocuments.add(this);
 		this.editable = true;
+		if (autoRun) {
+			if (this.rangeText(0,7) == "/*RUN*/")
+			{
+				this.text.interpret;
+			}
+		};
 		initAction.value(this);
 	
 	}
