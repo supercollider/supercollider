@@ -28,6 +28,7 @@ SoundFile {
 	var <numFrames = 0;		// number of frames
 	var <>numChannels = 1;	// number of channels
 	var <>sampleRate = 44100.0;
+
 	
 	*closeAll {
 		if (openFiles.notNil, {
@@ -50,7 +51,13 @@ SoundFile {
 		^this.primitiveFailed;
 	}
 	
-	
+	readHeaderAsString {
+		// must have called openRead first!
+		//returns the whole header as String
+		_SFHeaderInfoString
+		^this.primitiveFailed;
+
+	}
 	openWrite { arg pathName;
 		// write the header
 		// format written is that indicated in headerFormat and sampleFormat. 
