@@ -218,3 +218,18 @@ Task : PauseStream {
 	}
 }
 
+////////////////////////////////////////////////////////////////////////
+
+EventStream : Stream {
+	var <>stream, <>protoEvent;
+	*new { arg stream, protoEvent;
+		^super.newCopyArgs(stream, protoEvent);
+	}
+	next {
+		var event;
+		event = stream.next( protoEvent.copy );
+		if (event.isNil, { ^nil });
+		
+		^event.play;
+	}
+}

@@ -58,20 +58,6 @@ Pevent : Pattern {
 	}
 }
 
-EventStream : Stream {
-	var <>stream, <>protoEvent;
-	*new { arg stream, protoEvent;
-		^super.newCopyArgs(stream, protoEvent);
-	}
-	next {
-		var event;
-		event = stream.next( protoEvent.copy );
-		if (event.isNil, { ^nil });
-		
-		^event.play;
-	}
-}
-
 
 Pfunc : Pattern {
 	var <>nextFunc; // Func is evaluated for each next state
