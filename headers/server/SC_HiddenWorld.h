@@ -85,8 +85,8 @@ struct HiddenWorld
 	
 	SC_Semaphore* mQuitProgram;
 
-	void *mNRTInputFile; 
-	void *mNRTOutputFile; 
+	SNDFILE *mNRTInputFile; 
+	SNDFILE *mNRTOutputFile; 
 	FILE *mNRTCmdFile;
 	
 	int32 mHiddenID;

@@ -22,6 +22,7 @@
 #define _SndBuf_
 
 #include <sys/types.h>
+#include <sndfile.h>
 
 struct SndBuf
 {
@@ -35,7 +36,7 @@ struct SndBuf
 	int mask;	// for delay lines
 	int mask1;	// for interpolating oscillators.
 	int coord;	// used by fft ugens
-	void *sndfile; // used by disk i/o
+	SNDFILE *sndfile; // used by disk i/o
 	bool shared;
 };
 typedef struct SndBuf SndBuf;
