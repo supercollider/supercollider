@@ -392,17 +392,17 @@ r.pop\
 	\cf2 var\cf0  char;\
 	char = doc.rangeText(doc.selectionStart, 2);\
 	if(char == \cf3 "17"\cf0 ,\{\
-		\{\cf2 SinOsc\cf0 .ar([100,120,300].choose, 0, 0.2)\}.play;\
+		\{EnvGen.kr(\cf2 Env\cf0 .perc, doneAction:2) * \cf2 SinOsc\cf0 .ar([600,720,300].choose, 0, 0.5)\}.play;\
 	\});\
 	if(char == \cf3 "23"\cf0 ,\{\
-		\{\cf2 PinkNoise\cf0 .ar(0.2)\}.play;\
+		\{EnvGen.kr(\cf2 Env\cf0 .perc, doneAction:2) * \cf2 PinkNoise\cf0 .ar(0.2)\}.play;\
 	\});\
 \})\
 \
 \cf2 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 test here:\
+\f1\fs24 \cf0 test here and click in front of the number:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 	
