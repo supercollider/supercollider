@@ -20,7 +20,7 @@
 		^if(rate == \audio,{
 			Bus(\audio,0,numChannels,server); // out yer speakers
 		},{
-			Bus.alloc(\control,numChannels,server); // private control bus
+			Bus.alloc(\control,server,numChannels); // private control bus
 		})
 	}
 }
