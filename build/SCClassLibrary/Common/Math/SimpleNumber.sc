@@ -1,5 +1,7 @@
 SimpleNumber : Number {
-		
+
+	*new { ^this.shouldNotImplement(thisMethod) }
+
 	isValidUGenInput { ^true }
 	numChannels { ^1 }
 	
