@@ -909,7 +909,7 @@ void vPanB2_next(PanB2 *unit, int inNumSamples)
 {
 	vfloat32 *vWout = (vfloat32*)OUT(0);
 	vfloat32 *vXout = (vfloat32*)OUT(1);
-	vfloat32 *vYout = (vfloat32*)OUT(1);
+	vfloat32 *vYout = (vfloat32*)OUT(2);
 	vfloat32 *vin = (vfloat32*)IN(0);
 	define_vzero;
 	int len = inNumSamples << 2;
