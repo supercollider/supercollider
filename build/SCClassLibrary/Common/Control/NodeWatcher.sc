@@ -97,10 +97,10 @@ NodeWatcher {
 	
 	n_end { arg node;
 		node.remove;
-		this.unregister(node);
-		
 		(node.asString ++ " was freed").postln;
-		
+
+		this.unregister(node);
+				
 		node.isPlaying = false;
 		node.isRunning = false;
 	}
