@@ -59,9 +59,8 @@ ControlSpec : Spec {
 	}
 	unmap { arg value;
 		// maps a value from spec range to [0..1]
-		^warp.unmap(value.clip(clipLo, clipHi).round(step));
+		^warp.unmap(value.round(step).clip(clipLo, clipHi));
 	}
-	
 	*initClass {
 		specs = specs.addAll([
 			// set up some ControlSpecs for common mappings
