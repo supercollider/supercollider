@@ -175,14 +175,17 @@ Server : Model {
 	}
 	
 	sync { arg condition;
-		var resp;
+		var resp, id;
+		id = UniqueID.next;
 		resp = OSCresponder(addr, "/synced", {|time, resp, msg|
-			resp.remove;
-			condition.test = true;
-			condition.signal;
+			if (msg[1] == id) {
+				resp.remove;
+				condition.test = true;
+				condition.signal;
+			};
 		}).add;
 		condition.test = false;
-		addr.sendBundle(nil, ["/sync"]);
+		addr.sendBundle(nil, ["/sync", id]);
 		condition.wait;
 	}
 	
