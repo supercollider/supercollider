@@ -1,11 +1,10 @@
 + String {
 	newTextWindow { arg title="Untitled", makeListener=false;
-		_NewTextWindow 
-		^this.primitiveFailed
+		Document.new(this, title, makeListener);
 	}
-	openTextFile { arg selectionStart=0, selectionLength=0;
-		_OpenTextFile 
-		^this.primitiveFailed
+	openTextFile{ arg selectionStart=0, selectionLength=0;
+		var doc;
+		doc = Document.open(this, selectionStart, selectionLength);
 	}
 	
 //	*fromUser { arg prompt="Enter string :", default="";
