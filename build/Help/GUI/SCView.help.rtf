@@ -163,10 +163,19 @@
 \f5\b0\fs20 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 	the hardware dependent keycode.  this will vary from machine to machine, but is useful for building musical interfaces using the computer keyboard.\
+\f2\fs24 \cf0 	the hardware dependent keycode indicating the physical key.  this will vary from machine to machine, but is useful for building musical interfaces using the computer keyboard.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f1\fs18 \cf0 	function key modifier may change keycode.\
+\
+\
+for various reasons these don't make it through cocoa:\
+	most command \
+	 cntl-tab\
+	 cntl-escape\
+	 tab and shift tab are currently trapped by SC itself (could change this)\
+	 \
+\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
