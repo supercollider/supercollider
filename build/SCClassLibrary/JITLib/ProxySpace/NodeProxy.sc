@@ -451,7 +451,7 @@ NodeProxy : AbstractFunction {
 		var parentProxy;
 		parentProxy = this.class.buildProxy;
 		if(parentProxy.notNil && (parentProxy !== this), { parentProxy.parents.add(this) });
-		^parentProxy.isPlaying;
+		^(parentProxy.isPlaying || parentProxy.isNil);
 	}
 	
 	wakeUpToBundle { arg bundle, checkedAlready; //no need to wait, def is on server
