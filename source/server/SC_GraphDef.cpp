@@ -125,7 +125,7 @@ GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList);
 GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList)
 {
 	int32 magic = readInt32_be(buffer);
-	if (magic != 'SCgf') return inList;
+	if (magic != (('S'<<24)|('C'<<16)|('g'<<8)|'f') /*'SCgf'*/) return inList;
 	
 	/*int32 version = */ readInt32_be(buffer);
 		
