@@ -13,7 +13,7 @@ Buffer {
 						numChannels).addToServerArray.sampleRate_(server.sampleRate);
 	}
 
-	*alloc { arg server, numFrames = -1, numChannels = 1, completionMessage, bufnum;
+	*alloc { arg server, numFrames, numChannels = 1, completionMessage, bufnum;
 		server = server ? Server.default;
 		^super.newCopyArgs(server,
 						bufnum ?? { server.bufferAllocator.alloc(1) },
@@ -32,7 +32,7 @@ Buffer {
 
 	// read whole file into memory for PlayBuf etc.
 	// adds a query as a completion message
-	*read { arg server,path,startFrame = 0,numFrames = -1, bufnum, action;
+	*read { arg server,path,startFrame = 0,numFrames = -1, action, bufnum;
 		server = server ? Server.default;
 		^super.newCopyArgs(server,
 						bufnum ?? { server.bufferAllocator.alloc(1) })
