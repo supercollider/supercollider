@@ -67,6 +67,7 @@ static void midiProcessPacket(MIDIPacket *pkt, int uid)
  //jt
     if(pkt) {
      pthread_mutex_lock (&gLangMutex); //dont know if this is really needed/seems to be more stable..
+		// it is needed  -jamesmcc
 
       VMGlobals *g = gMainVMGlobals;
       uint8 status = pkt->data[0] & 0xF0;
