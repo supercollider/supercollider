@@ -295,7 +295,7 @@ Server : Model {
 	
 	addStatusWatcher {
 		statusWatcher = 
-			OSCresponder(addr, 'status.reply', { arg time, resp, msg;
+			OSCresponderNode(addr, 'status.reply', { arg time, resp, msg;
 				var cmd, one;
 				alive = true;
 				#cmd, one, numUGens, numSynths, numGroups, numSynthDefs, 
