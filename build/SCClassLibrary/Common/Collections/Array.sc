@@ -61,6 +61,16 @@ Array[slot] : ArrayedCollection {
 		_ArrayContainsSeqColl 
 		^this.primitiveFailed 
 	}
+	
+	// multiChannelExpand and flop do the same thing.
+	flop {
+		_ArrayMultiChannelExpand 
+		^this.primitiveFailed 
+	}
+	multiChannelExpand {
+		_ArrayMultiChannelExpand 
+		^this.primitiveFailed 
+	}
 
 	shift { arg n;
 		var fill, remain;
@@ -70,10 +80,6 @@ Array[slot] : ArrayedCollection {
 	}
 	
 	// UGen support:
-	multiChannelExpand {
-		_ArrayMultiChannelExpand 
-		^this.primitiveFailed 
-	}
 	source {
 		var elem;
 		// returns the source UGen from an Array of OutputProxy(s)
