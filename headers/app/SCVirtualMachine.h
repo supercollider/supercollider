@@ -47,6 +47,7 @@
 - (IBAction) stopMain: (id) sender;
 - (IBAction) compileLibrary: (id) sender;
 - (IBAction) newSCWindow: (id) sender;
+- (void)postWindowToFront:(id)sender;
 
 // deferred primitives
 
