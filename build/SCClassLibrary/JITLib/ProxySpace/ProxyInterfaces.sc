@@ -4,6 +4,7 @@
 AbstractPlayControl {
 	sendDef {}
 	writeDef {}
+	prepareForPlay {}
 	pause { this.stop } 
 	unpause { this.start }
 
@@ -65,8 +66,8 @@ NumericalControl : AbstractPlayControl {
 SynthDefControl {
 	var <synthDef, <hasGate, <synth;
 	
-	*new { arg synthDef, hasGate=true;
-		^super.newCopyArgs(synthDef, hasGate);
+	*new { arg synthDef;
+		^super.newCopyArgs(synthDef, synthDef.hasGate);
 	}
 	
 	sendDefToBundle { arg bundle;
@@ -77,6 +78,9 @@ SynthDefControl {
 	}
 	writeDef {
 		synthDef.writeDefFile
+	}
+	prepareForPlay {
+		this.writeDef;
 	}
 	
 	playToBundle { arg bundle, extraArgs, group;

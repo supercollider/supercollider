@@ -411,6 +411,15 @@ NodeProxy : AbstractFunction {
 		// todo maybe
 	}
 	
+	wakeUp { 
+		var bundle, checkedAlready;
+		bundle = MixedBundle.new;
+		bundle.preparationTime = if(loaded, { 0 }, { 0.2 }); //synthdefs are on server?
+		checkedAlready = Set.new;
+		this.wakeUpToBundle(bundle, checkedAlready);
+		this.sendBundle(bundle);
+	}
+	
 		
 	
 	////// private /////
@@ -469,22 +478,13 @@ NodeProxy : AbstractFunction {
 			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
 			nodeMap.wakeUpParentsToBundle(bundle, checkedAlready);
 	}
-	
-	wakeUp { 
-		var bundle, checkedAlready;
-		bundle = MixedBundle.new;
-		bundle.preparationTime = if(loaded, { 0 }, { 0.2 }); //synthdefs are on server?
-		checkedAlready = Set.new;
-		this.wakeUpToBundle(bundle, checkedAlready);
-		this.sendBundle(bundle);
-	}
 			
 	
 	loadToBundle { arg bundle;
 		objects.do({ arg item;
 			item.sendDefToBundle(bundle)
 		});
-		loaded = true; //remember to send;
+		loaded = true; //remember to send
 	}	
 	
 	
