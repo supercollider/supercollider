@@ -256,8 +256,6 @@ Process {
 		Post << "\nuser asked for help for '" << string << "'.\n";
 	}	
 
-	isDemo { _IsDemo }
-
 	shallowCopy { ^this }
 	
 	*elapsedTime { _ElapsedTime }
