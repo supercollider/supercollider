@@ -18,4 +18,8 @@ Server.program = "scsynth";
 // same for Score
 Score.program = Server.program;
 
+// jack port hookup
+"SC_JACK_DEFAULT_INPUTS".setenv("alsa_pcm:capture_1,alsa_pcm:capture_2");
+"SC_JACK_DEFAULT_OUTPUTS".setenv("alsa_pcm:playback_1,alsa_pcm:playback_2");
+
 // EOF

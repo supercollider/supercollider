@@ -226,6 +226,14 @@ void SC_TerminalClient::quit(int code)
 	mReturnCode = code;
 }
 
+void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine)
+{
+	setCmdLine(cmdLine);
+	cmdLine.reset();
+	runLibrary(method);
+	flush();
+}
+
 void SC_TerminalClient::commandLoop()
 {
 	const int fd = 0;
@@ -247,32 +255,17 @@ void SC_TerminalClient::commandLoop()
 			for (;;) {
 				int n = read(fd, buf, bufSize);
 				if (n > 0) {
-					char* start = buf;
-					char* end = start;
-					while (n > 0) {
-						char c = *end;
-						if ((c == kInterpretCmdLine) || (c == kInterpretPrintCmdLine)) {
-							// end points to delimiter
-							int k = end-start;
-							if (k > 0) cmdLine.append(start, k);
-							setCmdLine(cmdLine);
-							runLibrary(
-								c == kInterpretCmdLine ?
-								s_interpretCmdLine :
-								s_interpretPrintCmdLine
-								);
-							flush();
-							cmdLine.reset();
-							// let start/end point one past delimiter
-							start += k+1;
-							end = start;
-							n -= k+1;
+					char* ptr = buf;
+					while (n--) {
+						char c = *ptr++;
+						if (c == kInterpretCmdLine) {
+							interpretCmdLine(s_interpretCmdLine, cmdLine);
+						} else if (c == kInterpretPrintCmdLine) {
+							interpretCmdLine(s_interpretPrintCmdLine, cmdLine);
 						} else {
-							end++;
-							n--;
+							cmdLine.append(c);
 						}
 					}
-					if (end > start) cmdLine.append(start, end-start);
 				} else {
 					if (n == 0) {
 						quit(0);

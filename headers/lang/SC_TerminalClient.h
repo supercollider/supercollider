@@ -22,6 +22,7 @@
 #define SC_TERMINALCLIENT_H_INCLUDED
 
 #include "SC_LanguageClient.h"
+#include "SC_StringBuffer.h"
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
@@ -65,6 +66,7 @@ protected:
 	void parseOptions(int& argc, char**& argv, Options& opt);
 	void printUsage();
 
+	void interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine);
 	void commandLoop();
 	void daemonLoop();
 
@@ -72,8 +74,8 @@ protected:
 	virtual void onLibraryStartup();
 
 private:
-	bool		mShouldBeRunning;
-	int			mReturnCode;
+	bool				mShouldBeRunning;
+	int					mReturnCode;
 };
 
 #endif // SC_TERMINALCLIENT_H_INCLUDED
