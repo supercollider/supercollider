@@ -36,7 +36,7 @@ MIDIPlayer : SynthlessPlayer { // InterfacePlayer, Control
 	}		
 	freeToBundle { arg bundle;
 		super.freeToBundle(bundle);
-		bundle.addAction(this,\removeResponders);
+		bundle.addMessage(this,\removeResponders);
 	}
 	cmdPeriod { this.free; CmdPeriod.remove(this); }
 	rate { ^\control }

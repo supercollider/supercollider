@@ -38,12 +38,14 @@ NumberEditorGui : EditorGui {
 		});
 	}
 	update {arg changed,changer; // always has a number box
-		if(changer !== numv,{
-			numv.value_(model.poll);
-		});
-		if(changer !== slv and: {slv.notNil},{
-			slv.value_(model.spec.unmap(model.poll));
-		});
+		//{
+			if(changer !== numv,{
+				numv.value_(model.poll);
+			});
+			if(changer !== slv and: {slv.notNil},{
+				slv.value_(model.spec.unmap(model.poll));
+			});
+		//}.valueInApp;
 	}
 	background { ^Color(0.0,0.2,0.2,0.3) }
 }

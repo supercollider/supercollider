@@ -9,7 +9,7 @@ CXBundle {
 	addFunction { arg f;
 		functions = functions.add(f);
 	}
-	addAction { arg receiver,selector, args;
+	addMessage { arg receiver,selector, args;
 		functions = functions.add( Message(receiver,selector,args) )
 	}
 	sendAtTime { arg server,atTime,timeOfRequest;

@@ -11,7 +11,7 @@ PlayerSocket : AbstractPlayerProxy {
 	var <>round,<>rate,<>numChannels;
 	var <>env,socketGroup,sched;
 	var isWaking = false;
-	var <lastPlayer,envdSource,dee,dum;
+	var <lastPlayer,envdSource,onBat, dee,dum;
 	
 	*new { arg rate=\audio,numChannels=2,round=0.0,env;
 		^super.new.round_(round)
@@ -29,7 +29,7 @@ PlayerSocket : AbstractPlayerProxy {
 	}
 	prepareAndSpawn { arg player,releaseTime=0.0;
 		var bsize;
-		bsize = this.preparePlayer(player);
+		bsize = player.prepareForPlay(onBat.group,bus: sharedBus);
 		SystemClock.sched(bsize / 7.0,{
 			this.spawnPlayer(player,releaseTime);
 			nil
@@ -37,14 +37,14 @@ PlayerSocket : AbstractPlayerProxy {
 	}
 	prepareAndQSpawn { arg player,releaseTime=0.0;
 		var bsize;
-		bsize = this.preparePlayer(player);
+		bsize = player.prepareForPlay(onBat.group,bus: sharedBus);
 		SystemClock.sched(bsize / 7.0,{
 			this.qspawnPlayer(player,releaseTime);
 			nil
 		})
 	}
 	preparePlayer { arg player;
-		^player.prepareForPlay(socketGroup,bus: sharedBus)
+		^onBat.preparePlayer(player);
 	}
 
 	spawnPlayer { arg player,releaseTime=0.0,beatDelta=0.0;
@@ -82,10 +82,13 @@ PlayerSocket : AbstractPlayerProxy {
 		^(isSleeping and: isWaking.not)
 	}
 	
-	prepareToBundle { arg agroup,bundle;
-		group = agroup.asGroup;
-		server = group.server;
-		
+//	prepareToBundle { arg agroup,bundle;
+//		group = agroup.asGroup;
+//		server = group.server;	
+//		// children should be taken care of
+//		super.prepareToBundle(group,bundle);
+//	}
+	makeResourcesToBundle { arg bundle;
 		socketGroup = Group.basicNew(server: server);
 		this.annotate(socketGroup,"socketGroup");
 		NodeWatcher.register(socketGroup);
@@ -93,13 +96,12 @@ PlayerSocket : AbstractPlayerProxy {
 
 		dee = EnvelopedPlayer(Patch(SinOsc),env,this.numChannels);
 		dum = EnvelopedPlayer(Patch(SinOsc),env,this.numChannels);
-		dee.prepareToBundle(socketGroup,bundle);
-		dum.prepareToBundle(socketGroup,bundle);
+		dee.prepareToBundle(socketGroup,bundle,bus: sharedBus);
+		dum.prepareToBundle(socketGroup,bundle,bus: sharedBus);
 		envdSource = dee;
-		
-		// children should be taken care of
-		super.prepareToBundle(group,bundle);
+		onBat = dum;
 	}
+	
 	// no synth of my own
 	loadDefFileToBundle { arg bundle,server;
 		this.children.do({ arg child;
@@ -126,7 +128,7 @@ PlayerSocket : AbstractPlayerProxy {
 		if(source.notNil,{
 			this.setSourceToBundle(source,bundle);
 		});
-		bundle.addAction(this,\didSpawn);
+		bundle.addMessage(this,\didSpawn);
 	}
 	synthArg { ^sharedBus.index }
 	
@@ -143,10 +145,19 @@ PlayerSocket : AbstractPlayerProxy {
 	setSourceToBundle { arg s,bundle,releaseTime;
 		if(envdSource.isPlaying,{
 			envdSource.releaseToBundle(releaseTime,bundle);
+
+// release happening later
+// removing patch out
+// after next event has already created a new one
+// next event fails with no patch out
+
+		//	"releaseing".debug(envdSource.identityHash);
 			if(envdSource === dee,{
 				envdSource = dum;
+				onBat = dee;
 			},{
 				envdSource = dee;
+				onBat = dum;
 			});
 		});
 		source = s;
@@ -155,7 +166,7 @@ PlayerSocket : AbstractPlayerProxy {
 			("PlayerSocket-setSourceToBundle sharedBus.rate + source.rate:" 
 				+ sharedBus.rate + source.rate).error(this,source);
 		});
-		
+		// "spawingin on".debug(envdSource.identityHash);
 		envdSource.spawnOnToBundle(socketGroup,sharedBus,bundle);
 		bundle.addFunction({
 			isSleeping = isWaking = false;
@@ -168,7 +179,7 @@ PlayerSocket : AbstractPlayerProxy {
 		super.freeToBundle(bundle);
 		socketGroup.freeToBundle(bundle);
 		socketGroup = nil;
-		bundle.addAction(this,\didFree);
+		bundle.addMessage(this,\didFree);
 	}
 	didFree {
 		isPlaying = false;

@@ -147,32 +147,14 @@ Patch : HasPatchIns  {
 	*new { arg name,inputs;
 		^super.new.loadSubject(name).createArgs(loadDocument(inputs) ? [])
 	}
-	storeParamsOn { arg stream;
-		var last;
-		if(this.class === Patch,{ // an indulgence ...
-			last = args.size - 1;
-			// anything with a path gets stored as abreviated
-			stream << "(" <<< this.instr.name << ",[";
-				if(stream.isKindOf(PrettyPrintStream),{ stream.indent(1); });
-				args.do({ arg ag,i;
-					stream.nl;
-					stream <<< enpath(ag);
-					if(i != last,{ stream << "," });
-				});
-				if(stream.isKindOf(PrettyPrintStream),{ stream.indent(-1); });
-			stream.nl;
-			stream << "])";
-		},{
-			super.storeParamsOn(stream)
-		});
-	}
-	storeArgs { ^[this.instr.name,args] }
 
 	inputs { ^args }
 	setInput { arg ai, ag;
 		//ISSUE if it wasn't a synth input before it won't become one now
 		// but you can respawn
 		var synthArgi;
+		args.at(ai).removeDependant(this);
+		ag.addDependant(this);
 		args.put(ai,ag);
 		synthArgi = synthArgsIndices.at(ai);
 		if(synthArgi.notNil,{
@@ -193,7 +175,7 @@ Patch : HasPatchIns  {
 			^nil
 		})
 	}
-		
+	
 	loadSubject { arg name;
 		instr = name.asInstr;
 		if(instr.isNil,{
@@ -237,12 +219,24 @@ Patch : HasPatchIns  {
 				argNamesForSynth = argNamesForSynth.add(this.argNameAt(i));
 				synthPatchIns = synthPatchIns.add(patchIn);
 				synthArgsIndices.put(i,synthPatchIns.size - 1);
+			},{
+				// watch scalars for changes. 
+				// if Env or Sample or quanity changed, synth def is invalid
+				ag.addDependant(this);		
 			});
-			
 			ag		
 		});
 	}
-	
+	update { arg changed,changer;
+		var newArgs;
+		// one of my scalar inputs changed
+		if(this.isPlaying,{
+			newArgs = synthDef.secretDefArgs(this.args);
+			synth.performList(\set,newArgs);
+		},{
+			defName = synthDef = nil;
+		})
+	}
 	asSynthDef {
 		// could be cached, must be able to invalidate it
 		// if an input changes
@@ -280,7 +274,7 @@ Patch : HasPatchIns  {
 				++ synthDef.secretDefArgs(args)
 			)
 		);
-		bundle.addAction(this,\didSpawn);
+		bundle.addMessage(this,\didSpawn);
 	}
 	synthDefArgs {
 		// not every arg makes it into the synth def
@@ -300,17 +294,19 @@ Patch : HasPatchIns  {
 	
 	stopToBundle { arg bundle;
 		super.stopToBundle(bundle);
-		bundle.addAction(this,\didStop);
+		bundle.addMessage(this,\didStop);
 	}
-	didStop {
-		// ISSUE: if you change a static non-synth input 
-		// nobody notices to rebuild the synth def
-		// so for now, wipe it out
-		// the Instr knows if it came from a file, could check the moddate
-		
-		synthDef = nil;
-		defName = nil;
-	}
+//	didStop {
+//	
+//		// ISSUE: if you change a static non-synth input 
+//		// nobody notices to rebuild the synth def
+//		// so for now, wipe it out
+//		// the Instr knows if it came from a file, could check the moddate
+//		
+//		// i am dependant on the args, i will watch for changes
+//		//synthDef = nil;
+//		//defName = nil;
+//	}
 	
 	// act like a simple ugen function
 	// mostly this won't work except with simple UGens
@@ -322,7 +318,6 @@ Patch : HasPatchIns  {
 				args.collect({ arg a,i; (overideArgs.at(i) ? a).value; })  
 			)
 	}
-	printOn { arg s; s << this.class.name << instr.name; }
 	
 	/*storeModifiersOn { arg stream;
 		// this allows a known defName to be used to look up in the cache
@@ -337,14 +332,28 @@ Patch : HasPatchIns  {
 	}*/
 	
 	children { ^args }
+
+	printOn { arg s; s << this.class.name << instr.name; }
+	storeParamsOn { arg stream;
+		var last;
+		if(this.class === Patch,{ // an indulgence ...
+			last = args.size - 1;
+			// anything with a path gets stored as abreviated
+			stream << "(" <<< this.instr.name << ",[";
+				if(stream.isKindOf(PrettyPrintStream),{ stream.indent(1); });
+				args.do({ arg ag,i;
+					stream.nl;
+					stream <<< enpath(ag);
+					if(i != last,{ stream << "," });
+				});
+				if(stream.isKindOf(PrettyPrintStream),{ stream.indent(-1); });
+			stream.nl;
+			stream << "])";
+		},{
+			super.storeParamsOn(stream)
+		});
+	}
+	storeArgs { ^[this.instr.name,args] }
 	guiClass { ^PatchGui }
 }
-
-
-/*
-EfxPatch : Patch
-
-	one meant for efx should be a specific type
-	then it can share its bus with the primary input	
-*/
 

@@ -15,9 +15,9 @@ BusDriver : SynthlessPlayer {
 	synthArg {
 		^patchOut.synthArg
 	}
-	stopToBundle { arg b;
-		super.stopToBundle(b);
-		b.addAction(this,\reset);
+	stopToBundle { arg bundle;
+		super.stopToBundle(bundle);
+		bundle.addMessage(this,\reset);
 	}
 }
 
@@ -72,7 +72,7 @@ StreamKrDur : BusDriver {
 		bnd = [msg];
 		// send first message
 		bundle.add(msg);
-		bundle.addAction(this,\didSpawn);
+		bundle.addMessage(this,\didSpawn);
 	}
 	didSpawn {
 		routine.reset;

@@ -56,9 +56,25 @@
 
 + Pattern {
 	rate { ^\stream }
+	addToSynthDef {  arg synthDef,name;
+		synthDef.addIr(name,this.synthArg);
+	}
+	// no idea until the pattern starts, so
+	// give some answer to build the synth def with
+	synthArg { ^1 }
+	instrArgFromControl { arg control; ^1 }
 }
-
-+ Function {
++ Stream {
+	rate { ^\stream }
+	addToSynthDef {  arg synthDef,name;
+		synthDef.addIr(name,this.synthArg);
+	}
+	// no idea until the pattern starts, so
+	// give some answer to build the synth def with
+	synthArg { ^1 }
+	instrArgFromControl { arg control; ^1 }
+}
++ Function { // treat it like a stream or transform into a Patch ?
 	rate { ^\stream }
 }
 

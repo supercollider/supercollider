@@ -180,7 +180,7 @@ Crucial {
 		
 		
 		if(debugNodeWatcher.isNil,{
-			debugNodeWatcher = DebugNodeWatcher(Server.default);
+			debugNodeWatcher = AnnotatedDebugNodeWatcher(Server.default);
 		});
 		ToggleButton(menu.startRow,"DebugNodeWatcher",{
 			debugNodeWatcher.start;

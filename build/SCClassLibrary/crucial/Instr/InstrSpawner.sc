@@ -4,7 +4,7 @@ InstrSpawner : Patch {
 	classvar <>latency=0.07;
 	
 	var <>deltaPattern,deltaStream,<delta;
-	var streams,sendArray,spawnTask,<clock,spawnGroup;
+	var streams,sendArray,firstSecretDefArgIndex,spawnTask,<clock,spawnGroup;
 	
 	*new { arg instrName,args,deltaPattern = 1.0;
 		^super.new(instrName,args).deltaPattern_(deltaPattern)
@@ -18,39 +18,23 @@ InstrSpawner : Patch {
 			initArgs = this.args.collect({ arg a,i;
 						var spec;
 						if(a.rate == \stream,{
-							spec = this.instr.specs.at(i);							IrNumberEditor(spec.default,spec);
+							// use an Ir to reserve an input into the synth.
+							// a Pattern does not know the spec/default of its output
+							// but we do.
+							spec = this.instr.specs.at(i);
+							IrNumberEditor(spec.default,spec);
 						},{
 							a
 						})
+						//a
 					});
 			synthDef = InstrSynthDef.build(this.instr,initArgs,Out);
+			//synthDef.secretDefArgs(this.args).insp;
 			defName = synthDef.name;
 			numChannels = synthDef.numChannels;
 			rate = synthDef.rate;
 			synthDef
 		}
-	}
-	prepareToBundle { arg group,bundle;
-		super.prepareToBundle(group,bundle);
-		streams = Array(argsForSynth.size);
-		sendArray = Array(argsForSynth.size * 2);
-		synthArgsIndices.do({ arg ind,i;
-			if(ind.notNil,{
-				// a pattern or player
-				// eg. a ModalFreq would use asStream rather than its synth version
-				streams.add(args.at(i).asStream);
-
-				sendArray.add(this.instr.argNameAt(i));
-				sendArray.add(nil); // where the value will go
-			})
-		});
-		deltaStream = deltaPattern.asStream;
-		
-		this.asSynthDef;// make sure it exists
-		sendArray = ["/s_new",defName,-1,1,nil]
-					++ sendArray ++ synthDef.secretDefArgs(args) 
-					++ [\out, this.patchOut.synthArg];
-		CmdPeriod.add(this);
 	}
 	makeTask {
 		deltaStream.reset; delta = 0.0;
@@ -68,6 +52,8 @@ InstrSpawner : Patch {
 	}
 	spawnNext {
 		if((delta = deltaStream.next(this)).isNil,{ ^false });
+		// only sending secret def args the first time !
+		// if sample changes, need to put into sendArray
 		streams.do({ arg s,i;
 			var val;
 			if((val = s.next(this)).isNil ,{ ^false });
@@ -75,15 +61,54 @@ InstrSpawner : Patch {
 		});
 		^true
 	}
-	makePatchOut { arg agroup,private=false,bus,bundle;
-		group = group.asGroup;
-		server = group.server;
-		this.topMakePatchOut(group,private,bus);
+	update { arg changed,changer;
+		// one of my scalar inputs changed
+		if(this.isPlaying,{
+			synthDef.secretDefArgs(this.args).do({ arg newarg,i;
+				sendArray.put(i + firstSecretDefArgIndex, newarg);
+			})
+		},{
+			defName = synthDef = nil;
+		})
+	}
 
+	makeResourcesToBundle { arg bundle;
 		spawnGroup = Group.basicNew;
 		NodeWatcher.register(spawnGroup);
 		this.annotate(spawnGroup,"spawnGroup");
 		bundle.add( spawnGroup.addToTailMsg(group) );
+
+		streams = Array(argsForSynth.size);
+		sendArray = Array(argsForSynth.size * 2);
+		synthArgsIndices.do({ arg ind,i;
+			if(ind.notNil,{
+				// a pattern or player
+				// eg. a ModalFreq would use asStream rather than its synth version
+				streams.add(args.at(i).asStream);
+
+				sendArray.add(this.instr.argNameAt(i));
+				sendArray.add(nil); // where the value will go
+			})
+		});
+		deltaStream = deltaPattern.asStream;
+
+		CmdPeriod.add(this);		
+		sendArray = ["/s_new",defName,-1,1,nil] ++ sendArray;
+		firstSecretDefArgIndex = sendArray.size;
+		sendArray = sendArray	++ synthDef.secretDefArgs(args) 
+					++ [\out, this.patchOut.synthArg];
+	}
+	freeResourcesToBundle { arg bundle;
+		spawnGroup.freeToBundle(bundle);
+		bundle.addFunction({ spawnGroup  = nil; });
+		bundle.addFunction({ CmdPeriod.remove(this) });
+	}
+
+	makePatchOut { arg agroup,private=false,bus,bundle;
+		//group = group.asGroup;
+		//server = group.server;
+		this.topMakePatchOut(agroup,private,bus);
+
 		this.childrenMakePatchOut(spawnGroup,true,bundle);
 
 		streams.do({ arg s,i;
@@ -94,11 +119,6 @@ InstrSpawner : Patch {
 		});
 		sendArray.put(4,spawnGroup.nodeID);
 		sendArray.put(sendArray.size - 1, this.patchOut.synthArg);
-	}
-	freePatchOut { arg bundle;
-		spawnGroup.freeToBundle(bundle);
-		spawnGroup  = nil;
-		super.freePatchOut(bundle);
 	}
 
 	spawnToBundle { arg bundle;
@@ -117,7 +137,7 @@ InstrSpawner : Patch {
 			});
 
 			bundle.add(sendArray);
-			bundle.addAction(this,\didSpawn);
+			bundle.addMessage(this,\didSpawn);
 		});
 	}
 
@@ -146,11 +166,9 @@ InstrSpawner : Patch {
 		this.didStop;
 	}
 	freeToBundle { arg bundle;
-		bundle.addAction(this,\didFree);
+		bundle.addMessage(this,\didFree);
 	}
 	
-//	freeSynth { // free the group node
-//	}
 	guiClass { ^InstrSpawnerGui }	
 }
 
@@ -254,116 +272,4 @@ InstrGateSleepSpawner : InstrGateSpawner {
 **/
 
 
-
-
-// older pre-TempoClock...
-
-// jt 
-/**
- needs to be refactored now
- 
-InstrSpawner2 : InstrSpawner {
-
-	var <>beatsPerStep,<>tempo,tempoUpdater;
-	
-	*new { arg name,args,noteOn = 1.0, beatsPerStep = 0.25,tempo;
-		^super.new(name,args,noteOn).beatsPerStep_(beatsPerStep).tempo_(tempo ? Tempo.default)
-	}
-//storeArgs
-	didSpawn {
-		var beatWait;
-		beatWait = tempo.beats2secs(beatsPerStep);
-		tempoUpdater = Updater(tempo,{
-			beatWait = tempo.beats2secs(beatsPerStep);
-		});
-		spawnTask = Task({
-			var aintSeenNil=true, aNoteOn,group;
-			group = this.group;
-			beatWait.wait;
-			while({
-				aintSeenNil
-			},{
-				aNoteOn = deltaStream.next;
-				if(aNoteOn > 0,{
-					synth = Synth(defName,sendArray,group);
-					beatWait.wait;
-					this.synthDefArgs; // make next array
-				},{
-					if(aNoteOn < 0,{ // legato
-						synth.setWithArray(sendArray);
-						beatWait.wait;
-						this.synthDefArgs; // make next array
-					},{
-						// rest
-						beatWait.wait
-					});
-				});
-			});
-			
-		}, SystemClock);
-		spawnTask.play
-	}
-	free {
-		tempoUpdater.remove;
-		super.free;
-	}
-
-}
-
-
-InstrSpawner3 : InstrSpawner2 {
-
-	didSpawn {
-		var beatWait;
-		beatWait = tempo.beats2secs(beatsPerStep);
-		tempoUpdater = Updater(tempo,{
-			beatWait = tempo.beats2secs(beatsPerStep);
-		});
-		spawnTask = Task({
-			var aintSeenNil=true, aNoteOn,group,lastNoteOn=0;
-			group = this.group;
-			// ISSUE first note maybe shouldn't have played
-			beatWait.wait;
-			// release first synth
-			
-			while({
-				aintSeenNil
-			},{
-				aNoteOn = deltaStream.next;
-				if(lastNoteOn != 0,{
-					if(aNoteOn.isStrictlyPostive,{ // sustain
-						beatWait.wait;
-					},{
-						if(aNoteOn.isNegative,{ // legato
-							synth.setWithArray(sendArray);
-							beatWait.wait;
-							this.synthDefArgs; // make next array
-						},{
-							// note off
-							synth.release;
-							beatWait.wait;
-							// don't send free message
-							synth.server.nodeAllocator.free(synth.nodeID);
-						});
-					});
-				},{
-					if(aNoteOn.isStrictlyPostive,{ // note on
-						synth = Synth(defName,sendArray,group);
-						beatWait.wait;
-						this.synthDefArgs; // make next array
-					},{
-						// rest
-						beatWait.wait;
-					});
-				});
-				lastNoteOn = aNoteOn;
-			});
-			
-		});
-		spawnTask.play(SystemClock)
-	}
-
-}
-
-**/
 

@@ -66,14 +66,20 @@ Interface : AbstractPlayerProxy {
 		environment.use(onPlay ? interfaceDef.onPlay);
 		// if midi, install
 		if(onNoteOn.notNil,{
-			nor = NoteOnResponder({ arg num,veloc; environment.use({onNoteOn.value(num,veloc)}) });
+			nor = NoteOnResponder({ arg num,veloc; 
+				environment.use({ onNoteOn.value(num,veloc) }) 
+			});
 		});
 		if(onNoteOff.notNil,{
-			nfr = NoteOffResponder({ arg num,veloc; environment.use({onNoteOff.value(num,veloc)}) });
+			nfr = NoteOffResponder({ arg num,veloc; 
+				environment.use({ onNoteOff.value(num,veloc) })
+			 });
 		});
 		if(onCC.notNil,{
-			ccr = CCResponder({ arg num,value; environment.use({onCC.value(num,value)}) });
-		});
+			CCResponder.add({ arg src,chan,num,val; 
+				environment.use({ onCC.value(src,chan,num,val); })
+			})
+		})
 	}
 	didStop {
 		super.didStop;

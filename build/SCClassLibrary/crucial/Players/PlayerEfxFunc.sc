@@ -1,3 +1,4 @@
+/*
 
 PlayerEfxFunc : AbstractSinglePlayerEffect {
 
@@ -39,7 +40,7 @@ PlayerEfxFunc : AbstractSinglePlayerEffect {
 	guiClass { ^PlayerEffectGui }
 }
 
-
+*/
 
 /*
 

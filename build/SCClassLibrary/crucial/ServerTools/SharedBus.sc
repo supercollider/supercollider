@@ -28,5 +28,4 @@ SharedBus : Bus {
 		super.realloc;
 		released = false;
 	}
-
 }

@@ -204,6 +204,7 @@ SampleSpec : ScalarSpec {
 		)
 	}
 	defaultControl { ^Sample.new } // silent sample
+	default { ^this.defaultControl }
 	canAccept { arg ting; ^ting.isKindOf(Sample) }
 
 }

@@ -74,8 +74,7 @@ AbstractSFP  : AbstractPlayer {
 	}
 	
 	// server support
-	prepareToBundle { arg group,bundle;
-		super.prepareToBundle(group,bundle);
+	makeResourcesToBundle { arg bundle;
 		// prepare all the preloads
 		segmentBuffers = List.new;
 		this.preloadData(0,nil,group,bundle,segmentBuffers);
@@ -129,7 +128,6 @@ AbstractSFP  : AbstractPlayer {
 		// if we stop before the end, the synths aren't used but they sucked
 		// up nodeIDs
 	}
-
 
 	storeArgs {^[file] }
 	children { ^[file] }

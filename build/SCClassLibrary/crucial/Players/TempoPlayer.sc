@@ -9,30 +9,26 @@ TempoPlayer : KrPlayer { //Synthless
 		^super.new.tempo_(tempo ?? {Tempo.default})
 	}
 	
-	 /*add a secret arg
+	/*add a secret arg
 	kr {
 		^In.kr( tempoBus.index, 1)
 	}*/
 	
-	prepareToBundle { arg group,bundle;
-		readyForPlay = true;
+	makeResourcesToBundle { arg bundle;
+		tempoBus = TempoBus(server,tempo);
 		tempoBus.prepareToBundle(group,bundle);	
-	}
-	makePatchOut { arg group;
-		group = group.asGroup;
-		tempoBus = TempoBus(group.server,tempo);
+	}	
+	makePatchOut {
 		patchOut = PatchOut.control(this,group,tempoBus);
-		// may not have to do anything
 	}
-
-	// nothing more to do
+	freeResourcesToBundle { arg bundle;
+		bundle.addFunction({
+			tempoBus.free;
+			tempoBus = nil;
+		});
+	}
 	spawnAtTime {}
 	spawnToBundle {}
 	loadDefFileToBundle {}
 	asSynthDef { ("shouldn't call this" + thisMethod).die; }
-	
 }
-
-
-
-

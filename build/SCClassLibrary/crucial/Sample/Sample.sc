@@ -31,18 +31,18 @@ BufferProxy { // blank space for delays, loopers etc.
 		buffer.numFrames = this.size;
 		buffer.numChannels = numChannels;
 		bundle.add( buffer.allocMsg );
-		readyForPlay = true;
+		bundle.addFunction({ readyForPlay = true; });
 	}
 	makePatchOut {
 		patchOut = ScalarPatchOut(this);
 	}
 	freeToBundle { arg bundle;
 		this.freePatchOut(bundle);
-		bundle.addAction(this,\freeHeavyResources);
+		bundle.addMessage(this,\freeHeavyResources);
 		readyForPlay = false;
 	}
 	freePatchOut { arg bundle;
-		bundle.addAction(patchOut,\free);
+		bundle.addMessage(patchOut,\free);
 	}
 	freeHeavyResources {
 		buffer.free; // release bufnum to allocator
@@ -195,7 +195,9 @@ AbstractSample : BufferProxy {
 			buffer.numChannels = numChannels;
 			bundle.add( buffer.allocMsg )
 		});
-		readyForPlay = true;
+		bundle.addFunction({
+			readyForPlay = true;
+		})
 	}
 	makePatchOut {
 		patchOut = ScalarPatchOut(this);
@@ -403,7 +405,7 @@ ArrayBuffer : BufferProxy {
 	prepareToBundle { arg group,bundle;
 		buffer = Buffer.new(group.asGroup.server,array.size,1);
 		bundle.add( buffer.allocMsg( buffer.setnMsg(0,array ) ) );
-		readyForPlay = true;
+		bundle.addFunction({ readyForPlay = true; });
 	}
 	makePatchOut {
 		patchOut = ScalarPatchOut(this);
