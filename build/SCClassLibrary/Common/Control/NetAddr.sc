@@ -6,6 +6,12 @@ NetAddr {
 		addr = if (hostname.notNil, { hostname.gethostbyname },{0});
 		^super.newCopyArgs(addr, port, hostname);
 	}
+
+	*useDoubles { arg flag = false;
+		_NetAddr_UseDoubles
+		^this.primitiveFailed;
+	}
+
 	hostname_ { arg inHostname;
 		hostname = inHostname;
 		addr = inHostname.gethostbyname;
@@ -26,10 +32,6 @@ NetAddr {
 
 ///////////////
 
-	useDoubles { arg flag = false;
-		_NetAddr_UseDoubles
-		^this.primitiveFailed;
-	}
 
 	sendRaw { arg rawArray;
 		_NetAddr_SendRaw
