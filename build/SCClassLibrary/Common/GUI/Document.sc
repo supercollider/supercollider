@@ -189,7 +189,7 @@ Document {
 	}
 	
 	
-	font_ {arg font, rangestart = -1, rangesize;
+	font_ {arg font, rangestart = -1, rangesize=0;
 		this.setFont(font, rangestart, rangesize)
 	}
 		 
@@ -246,12 +246,15 @@ Document {
 	}
 
 	//if range is -1 apply to whole doc
-	setFont {arg fontname="Monaco", size=9, rangeStart= -1, rangeSize=100;
+	setFont {arg font, rangeStart= -1, rangeSize=100;
 		_TextWindow_SetFont
+		^this.primitiveFailed
+
 	}
 	
 	setTextColor { arg color,  rangeStart = -1, rangeSize = 0;
 		_TextWindow_SetTextColor
+		^this.primitiveFailed
 	}
 	
 	text {
@@ -280,6 +283,7 @@ Document {
 	}
 	insertTextRange { arg string, rangestart, rangesize;
 		_TextWindow_InsertTextInRange
+		^this.primitiveFailed
 	}
 
 	
