@@ -5,8 +5,7 @@
 \red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 NodeMap\
-BusNodeMap
+\f0\b\fs36 \cf0 NodeMap
 \f1\b0\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -35,8 +34,11 @@ BusNodeMap
 \f2\b0 				save a message that is applied to the node\
 \
 	
-\f0\b send(aTarget, latency)
-\f2\b0 			apply a setting to a node by sending a bundle
+\f0\b sendToNode(aTarget, latency)
+\f2\b0 	apply a setting to a node by sending a bundle\
+	
+\f0\b send(server, nodeID, latency)
+\f2\b0 	apply a setting to a node by sending a bundle
 \fs26 \
 	
 \f0\b\fs24 addToBundle(aBundle)			
@@ -45,22 +47,19 @@ BusNodeMap
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 	the subclass 
-\f0\b BusNodeMap
-\f2\b0  stores the buses as objects: map(key, bus1, ...) 
-\fs26 \
-	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
 \f1\fs18 \cf0 \
+\
+\
+s.boot;\
+\
 (\
 \cf2 SynthDef\cf0 (\cf3 "modsine"\cf0 , \
-	\{ \cf2 arg\cf0  freq=320, amp=0.1;\
+	\{ \cf2 arg\cf0  freq=320, amp=0.2;\
 		\cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(freq, 0, amp));\
 	\}).load(s);\
 \cf2 SynthDef\cf0 (\cf3 "lfo"\cf0 , \
 	\{ \cf2 arg\cf0  rate=2, busNum=0;\
-		\cf2 Out\cf0 .kr(busNum, \cf2 LFPulse\cf0 .kr(rate, 0, 0.1, 0.1)) \
+		\cf2 Out\cf0 .kr(busNum, \cf2 LFPulse\cf0 .kr(rate, 0, 0.1, 0.2)) \
 	\}).load(s);\
 )\
 \
@@ -93,15 +92,15 @@ e.addMsg([\cf3 "/n_free"\cf0 ]);\
 \cf4 //apply the maps\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
-h.send(x);\
+h.sendToNode(x);\
 \
-k.send(x);\
+k.sendToNode(x);\
 \
 h.set(\cf5 \\freq\cf0 , 600);\
 \
-h.send(x);\
+h.sendToNode(x);\
 \
-e.send(x); \cf4 //free the node by sending the map to it (just an example..)\
-\cf0 e.send(y);\
+e.sendToNode(x); \cf4 //free the node by sending the map to it (just an example..)\
+\cf0 e.sendToNode(y);\
 \
 }
