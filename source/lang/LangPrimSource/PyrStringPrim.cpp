@@ -140,10 +140,11 @@ int prString_Format(struct VMGlobals *g, int numArgsPushed)
 		} else if (ch == '\\') {
 			if (i >= asize) break;
 			ch = fmt[i++];
-			if (ch != '%') {
-				buf[k++] = '\\';
+			if (ch == '%') {
+				buf[k++] = '%';
+			} else {
+				i--;
 			}
-			buf[k++] = ch;
 		} else {
 			buf[k++] = ch;
 		}
