@@ -13,7 +13,6 @@ CmdPeriod {
 	
 	*clear {
 		objects.do({ arg item; item.cmdPeriod });
-		objects = nil;
 	}
 
 
