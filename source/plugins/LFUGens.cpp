@@ -217,6 +217,7 @@ extern "C"
 	void VarSaw_Ctor(VarSaw* unit);
 
 	void Impulse_next_a(Impulse *unit, int inNumSamples);
+	void Impulse_next_kk(Impulse *unit, int inNumSamples);
 	void Impulse_next_k(Impulse *unit, int inNumSamples);
 	void Impulse_Ctor(Impulse* unit);
 
@@ -756,6 +757,31 @@ void Impulse_next_a(Impulse *unit, int inNumSamples)
 	
 }
 
+/* phase mod - jrh 03 */
+void Impulse_next_kk(Impulse *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float freq = ZIN0(0) * unit->mFreqMul;
+	
+	double phase = unit->mPhase;
+	double phaseOffset =  ZIN0(1);
+	phase = phase + phaseOffset;
+	LOOP(inNumSamples, 
+		float z;
+		if (phase >= 1.f) {
+			phase -= 1.f;
+			z = 1.f;
+		} else {
+			z = 0.f;
+		}
+		phase += freq;
+		ZXP(out) = z;
+	);
+
+	unit->mPhase = phase - phaseOffset;
+}
+
+
 void Impulse_next_k(Impulse *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -779,14 +805,22 @@ void Impulse_next_k(Impulse *unit, int inNumSamples)
 
 void Impulse_Ctor(Impulse* unit)
 {
+	
+	unit->mPhase = ZIN0(1);
+	unit->mFreqMul = unit->mRate->mSampleDur;
+	
 	if (INRATE(0) == calc_FullRate) {
 		SETCALC(Impulse_next_a);
 	} else {
-		SETCALC(Impulse_next_k);
+		if(INRATE(1) != calc_ScalarRate) {
+			SETCALC(Impulse_next_kk);
+			unit->mPhase = 1.f;
+		} else {
+			SETCALC(Impulse_next_k);
+		}
 	}
-
-	unit->mFreqMul = unit->mRate->mSampleDur;
-	unit->mPhase = ZIN0(1);
+	
+	
 	if (unit->mPhase == 0.f) unit->mPhase = 1.f;
 	
 	ZOUT0(0) = 0.f;
