@@ -191,9 +191,12 @@ extern NSTextView *gPostView;
 - (void)clearPostWindow:(id)sender
 {
     if(gPostView) {
-        NSTextStorage *text = [gPostView textStorage];
-        [[text mutableString] setString:@""]; 
-        [gPostView didChangeText];
+        NSTextStorage *textStorage = [gPostView textStorage];
+		NSRange range = NSMakeRange(0, [textStorage length]);
+		if ([gPostView shouldChangeTextInRange: range replacementString: @""]) {
+			[gPostView replaceCharactersInRange: range withString: @""];
+			[gPostView didChangeText];
+		}
     }
 }
 - (void)defer: (NSInvocation*) action
