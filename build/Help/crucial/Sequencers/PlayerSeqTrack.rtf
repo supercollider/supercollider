@@ -1,0 +1,324 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green112\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs38 \cf0 PlayerSeqTrack
+\f1\b0 \
+\
+
+\fs28 Play a series of Players in a sequence, with individual control over duration, \
+attack,release and level.\
+\
+The primary design difference between this and CyclePlayers is that \
+PlayerSeqTrack  does not need to know all of its players before play/editing.  \
+They can be added and removed dynamically, even while playing.\
+\
+
+\f0\b\fs26 PlayerSeqTrack( arrayOfPlayerPaths, arrayOfBeatDurations,arrayOfEnvelopes, loop)\
+\
+	arrayOfPlayerPaths
+\f1\b0  - or nil (players can be added later )\
+		or they can be actual players.  if you use paths, then identical paths\
+		in the array will play the identical player (only one copy is loaded).\
+		so the sequence can contain repeats:\
+		[ path1, path2, path1, path2, path3 ...]
+\fs28 \
+\
+(
+\f2\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // locate some players on your hard drive and add them to a list\
+// hit cancel when you have enough\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 l = \cf3 List\cf0 .new;\
+f = \{\
+	\cf3 GetFileDialog\cf0 (\{ \cf3 arg\cf0  ok,path;\
+		if(ok,\{\
+			l.add(loadPath(path));\
+			f.value;\
+		\})\
+	\});\
+\};\
+f.value\
+
+\f1\fs28 )\
+\
+\
+(\
+
+\f2\fs18 \
+p = \cf3 PlayerSeqTrack\cf0 .new;\
+\
+6.do(\{\
+	p.insertLast(Properties(\\working).wchoose.asString.loadDocument);\
+\});\
+\
+p.setDuration(0,4);\
+p.setDuration(1,4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 p.setDuration(2,4);\
+p.setDuration(3,4);\
+p.setDuration(4,4);\
+p.setDuration(5,4);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 \
+p.gui\
+)\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf0 \
+p.play;\
+\
+p.free;\
+)\
+\
+p.insp\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs28 \cf0 \
+\
+PlayerSeqTrackGui\
+\
+now while watching the pretty visuals:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs20 \cf0 (\
+	p.gui;\
+	p.changed; \cf2 // update the gui\
+\cf0 )\
+\
+\
+// while playing is fine, weve already loaded the players\
+p.insert(  3, l.choose ).changed;\
+p.insert( 8.rand, l.choose ).changed;\
+\
+\
+(\
+	5.do(\{ \cf3 arg\cf0  i;\
+		p.insert(i, l.choose );\
+	\});\
+	p.changed;\
+)\
+(\
+	5.do(\{ \cf3 arg\cf0  i;\
+		p.setDuration( p.playerSeq.size.rand, [4,8,16,32].choose );\
+	\});\
+	p.changed;\
+)\
+(\
+	5.do(\{ \cf3 arg\cf0  i;\
+		p.setRelease( i, rrand(0.01,5.0) );\
+	\});\
+	// no gui display of release times\
+)\
+(\
+	5.do(\{ \cf3 arg\cf0  i;\
+		p.setLevel( i, rrand(0.1,2.0) );\
+	\});\
+	// no gui display of levels\
+)\
+\
+\
+p.deleteAt(6).changed;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs28 \cf0 \
+Note that the duration display changes also.  It also changes when you change the tempo.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 GUI Hot-Keys\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 \
+While selected on any of the sequences these keys are active:\
+\
+<-   			select previous\
+->  			select next\
+opt ->  		move selected left\
+opt <-      		move selected right\
+up			increase dur by 1 bar\
+down		decrease dur by 1 bar\
+opt-up		double duration\
+opt-down		half duration\
+shift-opt-up	double durations of all steps\
+shift-opt-down  half durations of all steps\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 `
+\f1\b0  			relocate (while playing) to this step\
+delete		delete this step\
+g			gui the player at this step\
+i			open information window\
+\
+escape		focus on the first focusable view in this window that is not one of the sequence steps\
+		\
+		\
+
+\f0\b The information window
+\f1\b0 \
+\
+	in the information window you can edit\
+		duration, attack,decay,level, envelope\
+	in three selectable scopes:\
+		this step, all steps with this player, all steps\
+				\
+It is also possible to embed the info window on the same layout:\
+\
+(
+\f2\fs18 \
+	\cf3 Sheet\cf0 (\{ \cf3 arg\cf0  f;\
+		\cf3 PlayerSeqTrack\cf0 .new.topGui(f).infoGui(f);\
+	\})\
+)\
+\
+Note that topGui returns the PlayerSeqTrackGui object, which responds to infoGui(layout);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs28 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Its turtles all the way down
+\f1\b0 \
+	\
+It is of course possible to put a PlayerSeqTrack inside of another PlayerSeqTrack.\
+\
+Multiple tracks are obtainable via the use of PlayerMixer, though they won't easily\
+remained synchronized if you relocate while playing.  \
+And the gui will be not lined up verticle.\
+Eventually i will write a multi-track version that holds and synchronizes multiple PlayerSeqTrack.\
+\
+\
+
+\f0\b Live Insert of Players
+\f1\b0 \
+\
+( // insert players at the selected step, even while playing
+\f2\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Sheet\cf0 (\{ \cf3 arg\cf0  f;\
+\
+	p = \cf3 PlayerSeqTrack\cf0 .new;\
+	g = p.topGui(f); \cf2 // return the gui itself\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\
+	Label(f,"insert:");\
+	l.do(\{ \cf3 arg\cf0  player;\
+		\cf3 ActionButton\cf0 (f,player.name,\{ p.insert(g.selected ? 0 , player).changed \})\
+	\})\
+\})\
+
+\f1\fs28 )\
+\
+\
+(\
+ // insert players NOW at the presently playing step\
+ // 808 style
+\f2\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Sheet\cf0 (\{ \cf3 arg\cf0  f;\
+\
+	p = \cf3 PlayerSeqTrack\cf0 .new;\
+	p.topGui(f);\
+	\
+	Label(f,"insertNow:");\
+	l.do(\{ \cf3 arg\cf0  player;\
+		\cf3 ActionButton\cf0 (f,player.name,\{ p.insertNow( player,round: 1.0).changed \})\
+	\})\
+\})\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs28 \cf0 )\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 insert
+\f1\b0 (step,player,duration,env)\
+	
+\f0\b step
+\f1\b0 - index to insert at\
+	
+\f0\b player
+\f1\b0  - the player object or path to insert\
+		in the example above, i used the actual player because its faster, you share\
+		the same player instance, and it doesn't have to load anything from disk while\
+		its playing.\
+	
+\f0\b duration
+\f1\b0  - the number of beats it should play for\
+		if nil,\
+			use the duration of any previous appearance of this player in the sequence\
+		if that is nil,\
+			use the natural beatDuration of the player\
+		if that is nil,\
+			use 128.0 beats\
+	
+\f0\b env
+\f1\b0  - the envelope to use\
+		if nil,\
+			use the envelope of any previous appearance of this player in the sequence\
+		if that is nil,\
+			use default envelope\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 All players that you insert must have a path (must have been loaded from disk).\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 When this example saves, notice that the steps 0 and 3 repeat the same player.  On reloading, they will\
+share the same copy.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf0 	\cf3 PlayerSeqTrack\cf0 .new(\
+		[ \cf4 ":Patches:footfist:dawhohop"\cf0 , \cf4 ":Patches:footfistwhisker:dhallooo"\cf0 ,  \cf4 ":Patches:footfist:dawhohop"\cf0 ,\
+			\cf4 ":Patches:footfistwhisker:buggercraft"\cf0 , \cf4 ":Patches:footfistwhisker:basscl"\cf0 , \cf4 ":Patches:footfist:simp"\cf0  ], \
+		[ 16, 16, 16, 16, 16, 16 ], \
+		[ \cf3 Env\cf0 .new([ 0, 1, 1, 0 ], [ 0.01, 1, 0.1 ], [ -2, -2, -2 ], 2, \cf3 nil\cf0 ), \cf3 Env\cf0 .new([ 0, 1, 1, 0 ], [ 0.01, 1, 0.1 ], [ -2, -2, -2 ], 2, \cf3 nil\cf0 ), \cf3 Env\cf0 .new([ 0, 1, 1, 0 ], [ 0.01, 1, 0.1 ], [ -2, -2, -2 ], 2, \cf3 nil\cf0 ), \cf3 Env\cf0 .new([ 0, 1, 1, 0 ], [ 0.01, 1, 0.1 ], [ -2, -2, -2 ], 2, \cf3 nil\cf0 ), \cf3 Env\cf0 .new([ 0, 1, 1, 0 ], [ 0.01, 1, 0.1 ], [ -2, -2, -2 ], 2, \cf3 nil\cf0 ), \cf3 Env\cf0 .new([ 0, 1, 1, 0 ], [ 0.01, 1, 0.1 ], [ -2, -2, -2 ], 2, \cf3 nil\cf0 ) ]\
+	)
+\f0\b\fs28 \
+
+\f1\b0 \
+Actually PlayerSeqTrack could play players without a path, but the gui would display them\
+all as "nil" "nil" etc.\
+And it would save as something like this:\
+
+\f2\fs18 	\
+	\cf3 PlayerSeqTrack\cf0 .new(\
+		[ \cf3 Patch\cf0 .new(\
+			[ \cf5 'minimoog'\cf0 , \cf5 'detune'\cf0  ], \
+			[ 440, -4, 0, 0.4, 1 ]\
+		), \cf3 Patch\cf0 .new(\
+			[ \cf5 'synths'\cf0 , \cf5 'stereo'\cf0 , \cf5 'SyncSaw'\cf0  ], \
+			[  BeatClockPlayer(16) \
+			, 440, 447.214, 0.5, 0.4, \cf3 Env\cf0 .new([ 0, 1, 0.5, 0 ], [ 0.01, 0.3, 1 ], -4, 2, \cf3 nil\cf0 ), 4, 2 ]\
+		), \cf3 Patch\cf0 .new(\
+			[ \cf5 'minimoog'\cf0 , \cf5 'detune'\cf0  ], \
+			[ 440, -4, 0, 0.4, 1 ]\
+		) ], \
+		[ 16, 16, 16 ], \
+		[ \cf3 Env\cf0 .new([ 0, 1, 1, 0 ], [ 0.01, 1, 0.1 ], [ -2, -2, -2 ], 2, \cf3 nil\cf0 ), \cf3 Env\cf0 .new([ 0, 1, 1, 0 ], [ 0.01, 1, 0.1 ], [ -2, -2, -2 ], 2, \cf3 nil\cf0 ), \cf3 Env\cf0 .new([ 0, 1, 1, 0 ], [ 0.01, 1, 0.1 ], [ -2, -2, -2 ], 2, \cf3 nil\cf0 ) ]\
+	)\
+
+\f1\fs28 \
+\
+And on reload the identical steps 0 and 3 would not be able to share the same copy.\
+}

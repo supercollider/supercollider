@@ -1,0 +1,108 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green112\blue0;\red191\green0\blue0;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 NotificationCenter
+\f1\b0\fs24 \
+\
+\
+Objects can send notifications to the NotificationCenter, and all functions that were registered for\
+that notification will be excecuted.\
+\
+implements the \cf2 Notification\cf0  pattern.\
+This is similar to MVC, except here the model object does not ever\
+know anything about who is dependant on it.\
+This allows any interested client object to be notified of special events such as the object being\
+saved to disk, the object recording a sound file version of itself etc.\
+\
+For instance when a Sample is saved it emits a \\didSave notification:\
+
+\f2\fs18 	\cf2 NotificationCenter\cf0 (notify,\cf2 Sample\cf0 ,\cf3 \\didSave\cf0 ,soundFilePath);\
+
+\f1\fs24 \
+You can listen for this:\
+
+\f2\fs18 	\cf2 NotificationCenter\cf0 .register(\cf2 Sample\cf0 ,\cf3 \\didSave\cf0 ,\cf3 \\sampleWatcher\cf0 , \{ \cf2 arg\cf0  path;\
+		path.postln; \
+	\});\
+\
+
+\f1\fs24 \
+\cf4 //in the following examples 
+\f0\b this 
+\f1\b0 is the interpreter\
+\cf2 this\cf0 .postln \
+an \cf2 Interpreter\cf0 \
+
+\f2\fs18 \
+	\
+(\
+\cf4 // nothing is yet registered\
+// so notify finds nothing to do\
+\cf2 NotificationCenter\cf0 .notify(\cf2 this\cf0 ,\cf3 \\didRecord\cf0 );\
+\
+\cf4 // register a function\
+\cf2 NotificationCenter\cf0 .register(\cf2 this\cf0 ,\cf3 \\didRecord\cf0 ,\cf3 \\theRequestingObject\cf0 , \{ \cf5 "hello"\cf0 .postln; \});\
+\
+\cf4 // now it has something to do\
+\cf2 NotificationCenter\cf0 .notify(\cf2 this\cf0 ,\cf3 \\didRecord\cf0 );\
+hello\
+\
+\cf4 // unregister, thus releasing yourself for GC\
+\cf2 NotificationCenter\cf0 .unregister(\cf2 this\cf0 ,\cf3 \\didRecord\cf0 ,\cf3 \\theRequestingObject\cf0 )\
+\
+\cf4 // theRequestingObject is no longer interested in this notification\
+\cf2 NotificationCenter\cf0 .notify(\cf2 this\cf0 ,\cf3 \\didRecord\cf0 );\
+\
+\
+)\
+\
+\
+
+\f1\fs24 The listener argument is somewhat unimportant as far as you the client is concerned.  \
+It is used to identify the notification and to find it later to remove it when needed.\
+\
+There can only be one notification per listener, but you may use anything for the listener object, such\
+as an arbitrary symbol.\
+
+\f2\fs18 \
+(\cf4 // two symbols\
+\cf2 NotificationCenter\cf0 .register(\cf2 this\cf0 ,\cf3 \\didRecord\cf0 ,\cf3 \\thingOne\cf0 , \{ \cf5 "this will get overwritten by the next registration"\cf0 .postln; \});\
+\cf2 NotificationCenter\cf0 .register(\cf2 this\cf0 ,\cf3 \\didRecord\cf0 ,\cf3 \\thingOne\cf0 , \{ \cf5 "do this"\cf0 .postln; \});\
+\cf2 NotificationCenter\cf0 .register(\cf2 this\cf0 ,\cf3 \\didRecord\cf0 ,\cf3 \\thingTwo\cf0 , \{ \cf5 "do this also"\cf0 .postln; \});\
+\
+\cf2 NotificationCenter\cf0 .notify(\cf2 this\cf0 ,\cf3 \\didRecord\cf0 );\
+\
+do this\
+do this also\
+)\
+\
+\
+(\
+\cf2 NotificationCenter\cf0 .register(\cf2 this\cf0 ,\cf3 \\didRecord\cf0 ,\cf3 this\cf0 , \{ arg path,comments; \cf5 path\cf0 .postln; comments.postln; \});\
+\
+// after the addressing, an array of arguments can be supplied to be passed into the function\
+\cf2 NotificationCenter\cf0 .notify(\cf2 this\cf0 ,\cf3 \\didRecord,[":SoundFiles:blurb.aiff",'yo mama']\cf0 );\
+:SoundFiles:blurb.aiff\
+yo mama\
+\
+)\
+\
+\
+You can also remove the Notification registration by getting the layout to remove you\
+when the window closes:\
+\
+guiBody \{ \cf2 arg\cf0  layout;\
+	layout.removeOnClose(\
+		\cf2 NotificationCenter\cf0 .register(model,\cf3 \\didRecord\cf0 ,\cf2 this\cf0 , \{\
+			\cf4 // do things\
+\cf0 		\});\
+	);\
+\}\
+\
+\
+\
+}

@@ -54,7 +54,7 @@ releaseVoice(releaseTime)
 (\
 q = \cf2 Patch\cf0 (\{ \cf2 Saw\cf0 .ar * 0.2 \});\
 r = \cf2 Patch\cf0 (\{ \cf2 Saw\cf0 .ar(800) * 0.2 \});\
-p = \cf2 PlayerSocket\cf0 .new;\
+p = \cf2 PlayerSocket\cf0 .new(\\audio,1);\
 p.play;\
 )\
 \

@@ -8,19 +8,43 @@
 \f0\b\fs36 \cf0 Crucial
 \f1\b0\fs24 \
 \
+
+\f0\b\fs28 superclass: Object
+\f1\b0\fs24 \
+\
 If you are looking for the intro to the library, see [
 \f0\b CRUCIAL-LIBRARY
 \f1\b0 ].\
 \
-This class initializes some lightweight resources relevant to crucial library.\
+This class initializes some lightweight resources relevant to crucial library and loads some useful utilities into the Library (a shared dictionary of reusable functions).\
 \
-You should set personal preferences in Main-startUp, as this file will get overwritten\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+Crucial.menu;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+You can put this in Main if you like:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+	run \{ \cf2 // called by command-R\cf0 \
+		\cf3 Crucial\cf0 .menu;\
+	\}\
+	\
+	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+You should set personal preferences in Main-startUp, as this file (Crucial.sc) will get overwritten\
 by CVS updates from time to time.	\
 \
 \
 In Main-startUp you can set:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 	\cf2 // you can move all of your documents to your home directory\cf0 \
+\f2\fs18 \cf0 	\cf2 // you can move all of your documents to your home directory\cf0 \
 	\cf3 Document\cf0 .dir = \cf4 "~/Documents/SuperCollider/"\cf0 ;	\
 		see \cf3 Document\cf0 \
 	\
@@ -33,16 +57,15 @@ In Main-startUp you can set:\
 		\cf2 // copy a11wlk01.wav to there for use in helpfiles !\cf0 \
 \
 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 	\
+\f1\fs24 \cf0 	\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 everything is called in *initClass\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b everything is called in *initClass\
 
-\f1\b0 \cf0 \
-	preferences: Colors, screensizes, root paths.\
+\f1\b0 \
+	preferences: Colors, root paths.\
 \
 	creates some useful common Specs\
 \
@@ -51,7 +74,8 @@ In Main-startUp you can set:\
 	see [
 \f0\b Library
 \f1\b0 ]\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
 \
 	}

@@ -32,21 +32,18 @@ TempoBus.new \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	a = \cf2 TempoBus\cf0 .new;\
 	b = \cf2 TempoBus\cf0 .new;\
-	a == b \cf3 // they are the same object\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+	a === b \cf3 // they are the same object\
 \cf2 )\
 \
 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
 s = \cf2 Server\cf0 .local;\
 t = \cf2 TempoBus\cf0 .new(s);\
 \
 t.index.postln;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Tempo\cf0 .bpm = 60;\
 \
 \cf2 SynthDef\cf0 (\cf4 "help-TempoBus"\cf0 ,\{ \cf2 arg\cf0  out=0,tempoBus;\
@@ -67,8 +64,7 @@ t.index.postln;\
 \cf2 Tempo\cf0 .bpm = 666;\
 \
 \cf2 Sheet\cf0 (\{ \cf2 arg\cf0  f;\
-	\cf2 Tempo\cf0 .gui(f); \cf3 // move the slider, it works\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+	\cf2 Tempo\cf0 .default.gui(f); \cf3 // move the slider, it works\
 \cf0 \})\
 \
 )\

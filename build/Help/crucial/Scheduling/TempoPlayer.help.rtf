@@ -59,9 +59,23 @@ so that the argname tempo in an Instr would by default result in a TempoPlayer f
 \}).gui\
 \
 \
+\
+execute this many times\
+(\
+\
+Patch(\{ arg tempo;\
+	\cf2 Impulse\cf0 .ar( tempo )\
+\},[\
+	TempoPlayer.new\
+\
+]).play(atTime: 1)\
+\
+)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
+\
+\
 see BeatClockPlayer\
 \
 }
