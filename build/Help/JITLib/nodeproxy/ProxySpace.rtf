@@ -2,17 +2,15 @@
 {\fonttbl\f0\fnil\fcharset77 Futura-Medium;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica;\f4\fnil\fcharset77 LucidaGrande;}
 {\colortbl;\red255\green255\blue255;\red163\green146\blue90;\red191\green0\blue0;\red0\green0\blue191;
-\red96\green96\blue96;\red0\green115\blue0;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
-\red0\green115\blue0;}
+\red96\green96\blue96;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs40 \cf0 ProxySpace 		
 \f1\b\fs24 an environment of references on a server 
 \f2\b0\fs18 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b\fs24 \cf0 superclass: EnvironmentRedirect \
+\f1\b\fs24 superclass: EnvironmentRedirect \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -264,7 +262,7 @@ s.boot;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs24 \cf0 \ul internal patching\
+\f0\fs24 \cf0 \ul referencing between proxies\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \ulnone \
@@ -326,7 +324,6 @@ currentEnvironment.free; \cf3 // free all node proxies\cf0 \
 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // supercollider 'differential equations'\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
@@ -352,7 +349,7 @@ currentEnvironment.free; \cf3 // free all node proxies\cf0 \
 ~out = \{ \cf4 arg\cf0  freqOffest;\
 	\cf4 var\cf0  ctl;\
 	ctl = \cf4 Control\cf0 .names(\cf6 \\array\cf0 ).kr(\cf4 Array\cf0 .rand(8, 400, 1000));\
-	Pan2.ar(\cf4 Mix\cf0 (\cf4 SinOsc\cf0 .ar(ctl + freqOffest, 0, 0.1)), LFNoise0.kr(2))\
+	Pan2.ar(\cf4 Mix\cf0 (\cf4 SinOsc\cf0 .ar(ctl + freqOffest, 0, 0.1 / 8)), LFNoise0.kr(2))\
 \};\
 )	\
 \
@@ -679,11 +676,11 @@ using patterns\
 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 SynthDef\cf0 (\cf5 "who"\cf0 , \{ \cf4 arg\cf0  amp=0.1, freq, gate=1, out=0, ffreq=800;\
+\cf4 SynthDef\cf0 (\cf5 "who"\cf0 , \{ \cf4 arg\cf0  amp=0.1, freq=440, detune=0, gate=1, out=0, ffreq=800;\
 	\cf4 var\cf0  env;\
 	env = \cf4 Env\cf0 .asr(0.01, amp, 0.5);\
 	\cf4 Out\cf0 .ar(out, \cf4 Pan2\cf0 .ar(\
-		\cf4 Formant\cf0 .ar(freq, ffreq, 30, \cf4 EnvGen\cf0 .kr(env, gate, doneAction:2)), \cf4 Rand\cf0 (-1.0, 1.0))\
+		\cf4 Formant\cf0 .ar(freq + detune, ffreq, 30, \cf4 EnvGen\cf0 .kr(env, gate, doneAction:2)), \cf4 Rand\cf0 (-1.0, 1.0))\
 	)\
 \}).store;\
 \
@@ -730,7 +727,7 @@ using patterns\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 ~lfoStereo = \{ \cf4 LFNoise1\cf0 .kr([1, 1], 1300, 1500) \}; \cf3 // 2 channel control rate proxy\cf0 \
-~out = \cf4 Pbind\cf0 (\cf6 \\instrument\cf0 , \cf6 \\who\cf0 , \cf6 \\freq\cf0 , ~lfoStereo, \cf6 \\ffreq\cf0 , 500, \cf6 \\legato\cf0 , 0.02);\
+~out = \cf4 Pbind\cf0 (\cf6 \\instrument\cf0 , \cf6 \\who\cf0 , \cf6 \\freq\cf0 , 1500, \cf6 \\detune\cf0 , ~lfoStereo, \cf6 \\legato\cf0 , 0.02);\
 ~lfoStereo = \{ [\cf4 MouseX\cf0 .kr(100, 15500, 1), \cf4 SinOsc\cf0 .kr(\cf4 SinOsc\cf0 .kr(0.2, 0, 10, 10), 0, 400, 700)] \}\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -739,22 +736,20 @@ p.clock = \cf4 TempoClock\cf0 .default;\
 p.clock.tempo = 2.0;\
 p.clock.tempo = 1.0\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf7 // patterns also crossfade, if an \\amp arg is defined in the synthdef:\
-// (evaluate a couple of times)\cf8 \
+\
+\cf3 // patterns also crossfade, if an \\amp arg is defined in the synthdef:\
+// (evaluate a couple of times)\cf0 \
 ~out.fadeTime = 3.0;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf8 (\
-~out = \cf9 Pbind\cf8 (\
-			\cf10 \\instrument\cf8 , \cf10 \\who\cf8 ,\
-			\cf10 \\freq\cf8 , \cf9 Pshuf\cf8 ([500, 380, 200, 510, 390, 300, 300],\cf9 inf\cf8 ) * rrand(1.0, 2.0),\
-			\cf10 \\legato\cf8 , 0.1,\
-			\cf10 \\ffreq\cf8 , \cf9 Pshuf\cf8 ([~lfo, 100, ~lfo, 100, 300, 550], \cf9 inf\cf8 ),\
-			\cf10 \\dur\cf8 , 0.125 * [1, 2, 3, 2/3].choose\
+(\
+~out = \cf4 Pbind\cf0 (\
+			\cf6 \\instrument\cf0 , \cf6 \\who\cf0 ,\
+			\cf6 \\freq\cf0 , \cf4 Pshuf\cf0 ([500, 380, 200, 510, 390, 300, 300],\cf4 inf\cf0 ) * rrand(1.0, 2.0),\
+			\cf6 \\legato\cf0 , 0.1,\
+			\cf6 \\ffreq\cf0 , \cf4 Pshuf\cf0 ([~lfo, 100, ~lfo, 100, 300, 550], \cf4 inf\cf0 ),\
+			\cf6 \\dur\cf0 , 0.125 * [1, 2, 3, 2/3].choose\
 		);\
 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -865,7 +860,7 @@ t.start;\
 t.stop;\
 ~out.awake = \cf4 true\cf0 ; \cf3 // don't forget this\cf0 \
 \cf3 //  free all synths in this current ProxySpace\cf0 \
-currentEnvironment.free;\
+currentEnvironment.clear;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs26 \cf0 \
@@ -991,7 +986,6 @@ p.play(\cf6 \\out\cf0 ); \
 q.play; \cf3 // out is the default output\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
-\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
