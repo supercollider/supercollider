@@ -43,6 +43,7 @@ s = \cf2 Server\cf0 .local;\
 b = \cf2 Buffer\cf0 .alloc(s, 512, 1);\
 b.sine1(1.0/[1,2,3,4,5,6], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
 	\cf2 Out\cf0 .ar(out,\
 		\cf2 Osc\cf0 .ar(bufnum, 200, 0, 0.5)\
@@ -58,6 +59,7 @@ b.sine1(1.0/[1,2,3,4,5,6], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \cf2 SynthDef\cf0 (\cf3 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
 	\cf2 Out\cf0 .ar(out,\
 		\cf2 Osc\cf0 .ar(bufnum, \cf2 XLine\cf0 .kr(2000,200), 0, 0.5)\cf5 // modulate freq\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	)\
 \}).play(s,[\cf4 \\out\cf0 , 0, \cf4 \\bufnum\cf0 , b.bufnum]);\
 )\
@@ -68,6 +70,7 @@ s = \cf2 Server\cf0 .local;\
 b = \cf2 Buffer\cf0 .alloc(s, 512, 1);\
 b.sine1([1.0], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
 	\cf2 Out\cf0 .ar(out,\
 		\cf2 Osc\cf0 .ar(bufnum, \
@@ -84,11 +87,14 @@ b.sine1([1.0], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // modulate phase\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s = \cf2 Server\cf0 .local;\
 b = \cf2 Buffer\cf0 .alloc(s, 512, 1);\
 b.sine1([1.0], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
 	\cf2 Out\cf0 .ar(out,\
 		\cf2 Osc\cf0 .ar(bufnum, \
@@ -105,11 +111,14 @@ b.sine1([1.0], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // change the buffer while its playing\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s = \cf2 Server\cf0 .local;\
 b = \cf2 Buffer\cf0 .alloc(s, 4096, 1);\
 b.sine1(1.0/[1,2,3,4,5,6], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
 	\cf2 Out\cf0 .ar(out,\
 		\cf2 Osc\cf0 .ar(bufnum, [80,80.2], 0, 0.2)\
@@ -118,13 +127,13 @@ b.sine1(1.0/[1,2,3,4,5,6], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 )\
 \
 (\
-\cf2 Routine\cf0 (\{\
+fork \{\
 	\cf2 var\cf0  n = 32;\
-	50.do(\{\
+	50.do \{\
 		b.sine1(\cf2 Array\cf0 .rand(n,0,1).cubed, \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 		0.25.wait;\
-	\});\
-\}).play;\
+	\};\
+\};\
 )
 \fs24 \
 }
