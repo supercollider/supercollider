@@ -10,7 +10,11 @@ MultiLevelIdentityDictionary : Collection
 		dictionary = this.newInternalNode;
 	}
 	
-	newInternalNode { ^IdentityDictionary.new }
+	newInternalNode { ^this.nodeType.new }
+
+	nodeType {
+		^IdentityDictionary;
+	}
 
 	at { arg ... path;
 		^this.atPath(path)
@@ -77,13 +81,13 @@ MultiLevelIdentityDictionary : Collection
 	}
 	postTree { arg obj,tabs=0;
 		if(obj.isNil,{ obj = dictionary });
-		if(obj.isKindOf(IdentityDictionary),{
+		if(obj.isKindOf(this.nodeType),{
 			"".postln;
 			obj.keysValuesDo({ arg k,v;
 				tabs.do({ Char.tab.post });
 				k.post;
 				": ".post;
-				this.doPostTree(v,tabs + 1)
+				this.postTree(v,tabs + 1)
 			});
 		},{
 			Char.tab.post;
@@ -120,7 +124,7 @@ MultiLevelIdentityDictionary : Collection
 	prChooseFrom { arg dict;
 		var item;
 		item = dict.choose;
-		if(item.isKindOf(IdentityDictionary),{
+		if(item.isKindOf(this.nodeType),{
 			^this.prChooseFrom(item);
 		},{
 			^item
@@ -149,11 +153,62 @@ MultiLevelIdentityDictionary : Collection
 	}
 	prNestedValuesFromDict { arg dict;
 		^dict.values.collect({ arg thing;
-			if(thing.isKindOf(IdentityDictionary),{
+			if(thing.isKindOf(this.nodeType),{
 				this.prNestedValuesFromDict(thing)
 			},{
 				thing
 			})
+		})
+	}
+
+	// Tree-like do methods
+	leafDo {
+		arg func;
+
+		this.dictionary.keysValuesDo({
+			arg name, object;
+			this.doLeafDo([name], object, func)
+		})
+	}
+	doLeafDo {
+		arg path, object, func;
+
+		if (object.isKindOf(this.nodeType), {
+			object.keysValuesDo({
+				arg name, subobject;
+				this.doLeafDo(path ++ [name], subobject, func)
+			});
+		}, {
+			func.value(path, object);
+		})
+	}
+	treeDo {
+		arg branchFunc, leafFunc, argument0, postBranchFunc;
+		var result;
+
+		result = this.doTreeDo([], this.dictionary, branchFunc, leafFunc, argument0, postBranchFunc);
+		^result;
+	}
+	doTreeDo {
+		arg path, object, branchFunc, leafFunc, argument, postBranchFunc;
+		var result;
+
+		if (object.isKindOf(this.nodeType), {
+			if (branchFunc.notNil, {
+				result = branchFunc.value(path, argument, object);
+			}, {
+				result = argument;
+			});
+			object.keysValuesDo({
+				arg name, subobject;
+				this.doTreeDo(path ++ [name], subobject, branchFunc, leafFunc, result, postBranchFunc)
+			});
+			if (postBranchFunc.notNil, {
+				postBranchFunc.value(path, result);
+			});
+			^result
+		}, {
+			leafFunc.value(path, object, argument);
 		})
 	}
 }
