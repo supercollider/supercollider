@@ -9,9 +9,8 @@ EnvEditorGui : ObjectGui {
 		
 		var curves,levels,times,temp=0.0;
 		
-		ev = SCEnvelopeView(layout,layout.layRight(100,40));
-		ev.setProperty(\thumbWidth,5.0);
-		ev.setProperty(\thumbHeight,5.0);
+		ev = SCEnvelopeView(layout,layout.layRight(100,40))
+			.thumbSize_(-1, 5);
 		ev.drawLines = true;
 		ev.selectionColor = Color.red;
 		ev.drawRects = true;
