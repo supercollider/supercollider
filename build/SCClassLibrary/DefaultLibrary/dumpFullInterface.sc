@@ -87,7 +87,47 @@
 		
 		if(this.isMetaClass, {"\nMethods inherited from Class\n".postln; Class.dumpInterface; });
 
+	}
+	
+	dumpMethodList {
+		var	mList, sc;
 		
+		mList = IdentityDictionary.new;		// repository for methods
+		this.collectMethods(mList);			// get them
+		
+		sc = this;	// to print superclass chain
+		{ sc != Object }.while({
+			(sc.name ++ " : ").post;
+			sc = sc.superclass;
+		});
+		"Object".postln;
+		
+		mList.asSortedArray.do({ |pair|
+			(pair[0] ++ " <" ++ pair[1].ownerClass.name ++ "-"
+				++ pair[0] ++ ">").post;
+			(pair[1].argNames.size > 1).if({
+				" (".post;
+				pair[1].argNames.do({ |argname, i|
+					(i > 1).if({ ", ".post });
+					(i > 0).if({ argname.post; });
+				});
+				")".post;
+			});
+			"".postln;
+		});
+	}
+
+	collectMethods { arg list;
+			// only collect if not Object or Class
+		((this.name != \Object) && (this.name != \Class)).if({			this.methods.do({ |meth|
+					// if keys already includes methodname,
+					// then a subclass has overridden this superclass method, so don't add
+				list.keys.includes(meth.name).not.if({
+					list.put((meth.name.asString).asSymbol, meth);
+				});
+			});
+			superclass.asClass.collectMethods(list);  // go up a level
+		});
 	}
 	
 	helpFileForMethod {
