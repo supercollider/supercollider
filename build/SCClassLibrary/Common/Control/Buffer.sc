@@ -151,6 +151,18 @@ Buffer {
 		^["/b_close", bufnum, completionMessage.value(this) ];
 	}
 	
+	query { 
+		OSCresponder(server.addr,'/b_info',{ arg a,b,c;
+			var bb,bufnum,numFrames,numChannels,sr;
+			# bb, bufnum,numFrames,numChannels,sr = c;
+			Post << "bufnum      :" << bufnum << Char.nl
+				<< "numFrames   : " << numFrames << Char.nl
+				<< "numChannels : " << numChannels << Char.nl
+				<< "sampleRate  :" << sr << Char.nl << Char.nl;
+		}).add;
+		server.sendMsg("/b_query",bufnum) 
+	}
+	
 	//private	
 	alloc { arg completionMessage;
 		server.listSendMsg( this.allocMsg(completionMessage) )
