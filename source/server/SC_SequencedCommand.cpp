@@ -251,8 +251,10 @@ int BufGenCmd::Init(char *inData, int inSize)
 	mBufIndex = msg.geti();
 	
 	int32 *genName = msg.gets4();
+	if (!genName) return kSCErr_WrongArgType;
+	
 	mBufGen = GetBufGen(genName);
-	if (!mBufGen) return kSCErr_Failed;
+	if (!mBufGen) return kSCErr_BufGenNotFound;
 
 	mSize = msg.size;
 	mData = (char*)World_Alloc(mWorld, mSize);
@@ -390,6 +392,8 @@ int BufAllocReadCmd::Init(char *inData, int inSize)
 	mBufIndex = msg.geti();
 	
 	char *filename = msg.gets();
+	if (!filename) return kSCErr_WrongArgType;
+
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 	strcpy(mFilename, filename);
 	
@@ -469,6 +473,8 @@ int BufReadCmd::Init(char *inData, int inSize)
 	mBufIndex = msg.geti();
 	
 	char *filename = msg.gets();
+	if (!filename) return kSCErr_WrongArgType;
+
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 	strcpy(mFilename, filename);
 	
@@ -548,11 +554,13 @@ int BufWriteCmd::Init(char *inData, int inSize)
 	mBufIndex = msg.geti();
 	
 	char *filename = msg.gets();
+	if (!filename) return kSCErr_WrongArgType;
+
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 	strcpy(mFilename, filename);
 
-	char *headerFormatString = msg.gets();
-	char *sampleFormatString = msg.gets();
+	char *headerFormatString = msg.gets("aiff");	
+	char *sampleFormatString = msg.gets("int16");
 
 	mNumFrames = msg.geti(-1);
 	mBufOffset = msg.geti();
@@ -882,6 +890,8 @@ int LoadSynthDefCmd::Init(char *inData, int inSize)
 	sc_msg_iter msg(inSize, inData);
 	
 	char *filename = msg.gets();
+	if (!filename) return kSCErr_WrongArgType;
+
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 	strcpy(mFilename, filename);
 	
@@ -932,6 +942,8 @@ int LoadSynthDefDirCmd::Init(char *inData, int inSize)
 	sc_msg_iter msg(inSize, inData);
 	
 	char *filename = msg.gets();
+	if (!filename) return kSCErr_WrongArgType;
+
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 	strcpy(mFilename, filename);
 	

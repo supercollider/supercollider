@@ -262,20 +262,20 @@ SCErr meth_n_fill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 	while (msg.remain() >= 12) 
 	{
 		if (msg.nextTag('i') == 's') {
-			int32 index = msg.geti();
-			int32 n = msg.geti();
-			float32 value = msg.getf();
-			
-			for (int i=0; i<n; ++i) {
-				Node_SetControl(node, index+i, value);
-			}
-		} else {
 			int32* name = msg.gets4();
 			int32 n = msg.geti();
 			float32 value = msg.getf();
 			
 			for (int i=0; i<n; ++i) {
 				Node_SetControl(node, name, i, value);
+			}
+		} else {
+			int32 index = msg.geti();
+			int32 n = msg.geti();
+			float32 value = msg.getf();
+			
+			for (int i=0; i<n; ++i) {
+				Node_SetControl(node, index+i, value);
 			}
 		}
 	}
@@ -323,6 +323,8 @@ SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 {
 	sc_msg_iter msg(inSize, inData);	
 	int32 *defname = msg.gets4();
+	if (!defname) return kSCErr_WrongArgType;
+	
 	int32 nodeID = msg.geti();
 	int32 addAction = msg.geti();
 	int32 addTargetID = msg.geti();

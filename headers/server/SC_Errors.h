@@ -50,6 +50,7 @@ enum {
 	kSCErr_UnsupportedSampleFormat,
 
 	kSCErr_SharedBuf,
+	kSCErr_BufGenNotFound,
 
 	kSCErr_NumErrors
 };

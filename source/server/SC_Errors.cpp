@@ -31,7 +31,7 @@ const char *SC_ErrorString(SCErr err)
 			case kSCErr_GroupNotFound : return "Group not found";
 			case kSCErr_SynthDefNotFound : return "NodeDef not found";
 			case kSCErr_NoSuchCommand : return "no such command";
-			case kSCErr_WrongArgType : return "wrong argument types";
+			case kSCErr_WrongArgType : return "wrong argument type";
 			case kSCErr_IndexOutOfRange : return "index out of range";
 			case kSCErr_AccessDenied : return "access denied";
 			case kSCErr_NoReplyPort : return "no reply port";
@@ -48,6 +48,7 @@ const char *SC_ErrorString(SCErr err)
 			case kSCErr_UnsupportedSampleFormat : return "unsupported sample format";
 
 			case kSCErr_SharedBuf : return "can't perform operation on shared buffer";
+			case kSCErr_BufGenNotFound : return "buf gen routine not found";
 			
 			default : return "unknown error";
 	}
