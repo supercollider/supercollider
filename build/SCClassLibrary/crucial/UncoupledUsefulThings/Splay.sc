@@ -134,7 +134,7 @@ NumChannels {
 					chan.at(0)
 				},{
 					if(mixdown,{
-						Mix.ar(chan)
+						Mix.new(chan) //jrh: changed to .new
 					},{
 						chan.at(0)
 					})
@@ -151,6 +151,10 @@ NumChannels {
 				^Array.fill(numChannels,input)
 			})
 		})
+	}
+	
+	*new { arg input,numChannels=2,mixdown=true;
+		^this.ar(input, numChannels, mixdown)
 	}
 		
 }
