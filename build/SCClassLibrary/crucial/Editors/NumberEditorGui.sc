@@ -23,6 +23,7 @@ NumberEditorGui : EditorGui {
 		var r;
 		numv = SCNumberBox(layout,Rect(0,0,40,17))
 			.object_(model.poll)
+			//.stringColor_(this.background)
 			.action_({ arg nb;
 				model.activeValue_(nb.value).changed(numv);
 			});		
@@ -31,6 +32,7 @@ NumberEditorGui : EditorGui {
 		var r;
 		slv = SCSlider(layout, Rect(0,0,100,15));
 		slv.setProperty(\value,model.spec.unmap(model.poll));
+		//slv.background_(this.background);
 		slv.action_({arg th; 
 			model.activeValue_(model.spec.map(th.value)).changed(slv)
 		});
@@ -43,6 +45,11 @@ NumberEditorGui : EditorGui {
 			slv.value_(model.spec.unmap(model.poll));
 		});
 	}
+	background { ^Color(0.4,0.0,0.0,0.1) }
+}
+
+KrNumberEditorGui : NumberEditorGui {
+	background { ^Color(0.0,0.4,0.0,0.1) }
 }
 
 

@@ -3,12 +3,30 @@ HasPatchIns : AbstractPlayer {
 
 	var <patchIns;
 
+	didSpawn {
+		super.didSpawn;
+		//i know of the synth, i hand out the NodeControls
+		patchIns.do({ arg patchIn,argi;
+			patchIn.nodeControl_(NodeControl(synth,this.synthArgsIndices.at(argi)));
+			this.inputs.at(argi).connectToPatchIn(patchIn,false);
+		});
+	}
+	//subclassResponsibility
+	synthArgsIndices { ^this.subclassResponsibility(thisMethod) }
+	inputs { ^this.subclassResponsibility(thisMethod) }
+	// specAt
+	// argNameAt
+
+
+
+
 	mapInputToBus { arg i,bus;
 		var patchOut;
 		bus = bus.asBus;
 		patchOut = PatchOut.performList(bus.rate,[nil,bus.server.asGroup,bus]);
 		patchOut.connectTo(patchIns.at(i), this.isPlaying );
 	}
+	
 /*
 have to bundle it
 	connectInputToPlayer { arg i,player;
@@ -37,15 +55,13 @@ have to bundle it
 		});
 	}
 	*/
-	//subclassResponsibility
-	// inputs
-	// specAt
-	// argNameAt	
+	
 
 	inputProxies { // just this patch
 		^this.inputs.select({ arg a; a.isKindOf(PlayerInputProxy) })
 	}
-	annotatedInputProxies { arg offset=0,array;
+	// deep search
+	annotatedInputProxies { arg offset=0,array; // [ input , deepOffset, argName, spec ]
 		var inputs;
 		inputs = this.inputs;
 		if(array.isNil,{ array = [] });
@@ -125,15 +141,30 @@ have to bundle it
 
 Patch : HasPatchIns  {
 		
-	var <>args,<instr;
+	var <instr,<>args;
 	var synthPatchIns,<argsForSynth,<synthArgsIndices;
 	
 	var synthDef;
 	var <numChannels,<rate; // determined after making synthdef
 	
-	*new { arg name,args;
-		^super.new.loadSubject(name).createArgs(loadDocument(args) ? [])
+	*new { arg name,inputs;
+		^super.new.loadSubject(name).createArgs(loadDocument(inputs) ? [])
 	}
+	inputs { ^args }
+	setInput { arg ai, ag;
+		var synthArgi;
+		args.put(ai,ag);
+		synthArgi = synthArgsIndices.at(ai);
+		if(synthArgi.notNil,{
+			argsForSynth.put(synthArgi,ag);
+		});
+	}
+	argNameAt { arg i; ^instr.argNameAt(i) }
+	specAt { arg i; ^instr.specs.at(i) }
+	/*defName_ { arg df;
+		// for reloading from storeModifiersOn
+		defName = df;
+	}*/
 
 	loadSubject { arg name;
 		instr = name.asInstr;
@@ -157,10 +188,13 @@ Patch : HasPatchIns  {
 				?? 
 				{ //  or auto-create a suitable control...
 					spec = instr.specs.at(i);
-					//proto = spec.defaultControl;
-					proto = ControlPrototypes.forSpec(spec,instr.argNames.at(i)) 
+					proto = ControlPrototypes.at(instr.argNames.at(i)) 
+							?? { var x;
+								x = ControlPrototypes.at(spec.class);
+								if(x.notNil,{ x.first }, { nil });
+							}
 								?? {spec.defaultControl};
-					//if(proto.isNil,{ spec.insp("nil proto:",instr.argNames.at(i),i) });
+								
 					proto.tryPerform('spec_',spec); // make sure it does the spec
 					
 					darg = instr.initAt(i);
@@ -175,7 +209,7 @@ Patch : HasPatchIns  {
 
 			// although input is control, arg could overide that
 			if(instr.specs.at(i).rate != \scalar
-				and: {ag.instrArgRate != \scalar}
+				and: {ag.rate != \scalar}
 			,{
 				argsForSynth = argsForSynth.add(ag);
 				synthPatchIns = synthPatchIns.add(patchIn);
@@ -205,14 +239,15 @@ Patch : HasPatchIns  {
 		this.children.do({ arg child;
 			child.spawnToBundle(bundle);
 		});
-		synth = Synth.basicNew(this.defName,patchOut.server);
+		synth = Synth.basicNew(this.defName,this.server);
+		NodeWatcher.register(synth);
 		bundle.add(
 			synth.addToTailMsg(patchOut.group,
 				this.synthDefArgs
 				++ synthDef.secretDefArgs(args)
 			)
 		);
-		bundle.addMessage(this,\didSpawn);
+		bundle.addAction(this,\didSpawn);
 	}
 	synthDefArgs {
 		// not every arg makes it into the synth def
@@ -229,22 +264,23 @@ Patch : HasPatchIns  {
 	defName { ^defName } // NOT 'Patch' ever
 	
 	// HasPatchIns
-	didSpawn {
-		super.didSpawn;
-		//i know of the synth, i hand out the NodeControls
-		synthPatchIns.do({ arg synpatchIn,synthArgi;
-			synpatchIn.nodeControl_(NodeControl(synth,synthArgi));
-			argsForSynth.at(synthArgi).connectToPatchIn(synpatchIn,false);
-		});
-	}
+//	didSpawn {
+//		super.didSpawn;
+//		//i know of the synth, i hand out the NodeControls
+//		synthPatchIns.do({ arg synpatchIn,synthArgi;
+//			synpatchIn.nodeControl_(NodeControl(synth,synthArgi));
+//			argsForSynth.at(synthArgi).connectToPatchIn(synpatchIn,false);
+//		});
+//	}
 
 	free {
-		// TODO only if i am the only exclusive owner
-		this.children.do({ arg child; child.free });
+		// TODO only if i am the only exclusive owner of children
 		super.free;
-		// ISSUE: if you change a static, nobody notices to rebuild the synth def
+		this.children.do({ arg child; child.free });
+		// ISSUE: if you change a static non-synth input 
+		// nobody notices to rebuild the synth def
 		// so for now, wipe it out
-		// the Instr should know if it came from a file, check the moddate
+		// the Instr knows if it came from a file, can the moddate
 		synthDef = nil;
 		readyForPlay = false;
 		this.setPatchOut(nil);
@@ -253,18 +289,6 @@ Patch : HasPatchIns  {
 		super.stop;
 		this.children.do({ arg child; child.stop });
 	}
-
-	inputs { ^args }
-	setInput { arg ai, ag;
-		var synthArgi;
-		args.put(ai,ag);
-		synthArgi = synthArgsIndices.at(ai);
-		if(synthArgi.notNil,{
-			argsForSynth.put(synthArgi,ag);
-		});
-	}
-	argNameAt { arg i; ^instr.argNameAt(i) }
-	specAt { arg i; ^instr.specs.at(i) }
 	
 	//act like a simple ugen function
 	ar { 	arg ... overideArgs;	^this.valueArray(overideArgs) }
@@ -277,7 +301,13 @@ Patch : HasPatchIns  {
 	}
 
 	storeArgs { ^[this.instr.name,args] }
-
+	/*storeModifiersOn { arg stream;
+		// this allows a known defName to be used to look up in the cache
+		// otherwise a Patch doesn't know its defName until after building
+		if(defName.notNil,{
+			stream << ".defName_(" <<< defName << ")";
+		})
+	}*/
 	children { ^args }
 	guiClass { ^PatchGui }
 

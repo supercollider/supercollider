@@ -1,5 +1,4 @@
 
-
 PatchIn {
 
 	var <>nodeControl,<>connectedTo;
@@ -34,7 +33,6 @@ AudioPatchIn : PatchIn {
 		// to set the value of audio, would have to set up a bus and set the sample value
 		thisMethod.notYetImplemented;
 	}
-	
 }	
 	
 ControlPatchIn : AudioPatchIn {
@@ -87,11 +85,11 @@ PatchOut {
 	free {
 		// tell my connectedTo that i'm gone
 	}
-//	pause { arg requester;
-//		if(connectedTo.every({ arg cn; cn === requester }),{
-//			// then we can pause
-//		})
-//	}
+	/*pause { arg requester;
+		if(connectedTo.every({ arg cn; cn === requester }),{
+			// then we can pause
+		})
+	}*/
 	bus_ { arg b;
 		bus = b.asBus;
 		connectedTo.do({ arg pti;
@@ -129,7 +127,7 @@ ControlPatchOut : PatchOut { // you are returned from a .kr play
 	scalar { arg scalarPatchIn;
 		// polling of value not yet implemented on scserver
 		// scalarPatchIn.value = bus.poll;
-		//["notYetImplemented",this,scalarPatchIn].insp("scalar to scalar patch ?");
+		//[this,scalarPatchIn].insp("scalar -> scalar patch ?");
 		thisMethod.notYetImplemented;
 	}
 	server { ^group.server }
@@ -153,29 +151,22 @@ AudioPatchOut : ControlPatchOut {
 		});
 	}
 	control { arg controlPatchIn,needsValueSetNow;
-		// A2K convertor needed ?
-		// how else can i get a .kr input to read from an .ar buss ?
-		
-		// why is this running ?
-		//thisMethod.notYetImplemented;
-		
+		//no problem, an audio output into a control input is common
+		// and no action needs to be taken
+		//[controlPatchIn,this,"control -> audio"].insp;
 	}
 	scalar { arg scalarPatchIn;
 		// polling of value not yet implemented on scserver
-		// scalarPatchIn.value = bus.poll;
+		// scalarPatchIn.value = bus.get;
 		thisMethod.notYetImplemented;
 	}
 }
 
 //AbstractScalarPatchOut
-
 ScalarPatchOut : PatchOut { 
 
 	// floats,NumberEditors, numeric pattern players, midi, wacom
-
 	// things that are not ON the server
-	
-	var <>updater; // multiple outs, multiple updaters
 	
 	*new { arg source,bus; // TODO use this to get server...
 		^this.prNew(source)
@@ -197,14 +188,9 @@ ScalarPatchOut : PatchOut {
 		if(needsValueSetNow,{
 			controlPatchIn.value = source.value;
 		});
-		//updater moved to the object
 	}
 	scalar { arg scalarPatchIn;
 		//thisMethod.notYetImplemented;
-	}
-	free {
-		updater.remove;
-		updater = nil;
 	}
 }
 
@@ -233,7 +219,6 @@ UpdatingScalarPatchOut : ScalarPatchOut {
 		this.enable;
 	}
 	scalar { arg scalarPatchIn;
-		//thisMethod.notYetImplemented;
 		this.enable;
 	}
 	enable { 

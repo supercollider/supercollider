@@ -1,13 +1,14 @@
 
 
 
+
 PlayerEfxFuncGui : AbstractPlayerGui {
 
 	guiBody { arg layout;
 		
 		model.function.gui(layout);
-		CXLabel(layout,"on:");
-		model.subject.gui(layout);
+		//Label(layout,"on:");
+		//model.subject.gui(layout);
 	}
 
 }
@@ -16,17 +17,21 @@ PlayerEfxFuncGui : AbstractPlayerGui {
 XFaderPlayerGui : AbstractPlayerGui {
 	
 	guiBody { arg layout;
+		var one,two,xfader,pre1,pre2;
+		#one,two,xfader,pre1,pre2 = model.inputs;
+
+
 		CXLabel(layout,"(");
-		model.one.gui(layout);
+		one.gui(layout);
 		
 		layout.startRow;
 		CXLabel(layout,"levelOne xfade levelTwo"); 
-		model.pre1.gui(layout);
-		model.xfader.gui(layout);
-		model.pre2.gui(layout);
+		pre1.gui(layout);
+		xfader.gui(layout);
+		pre2.gui(layout);
 		
 		layout.startRow;
-		model.two.gui(layout);	
+		two.gui(layout);	
 		CXLabel(layout,")");
 	}
 

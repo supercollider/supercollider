@@ -24,7 +24,7 @@ Document {
 	}
 	// ~/Documents
 	// /Volumes
-	// Patches
+	// Music/Patches
 	*abrevPath { arg path;
 		if(path.size < dir.size,{ ^path });
 		if(path.copyRange(0,dir.size - 1) == dir,{

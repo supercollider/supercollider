@@ -85,7 +85,7 @@ SynthConsole : AbstractConsole  {
 
 	tempo {
 		Tempo.default.gui(layout);
-//		TempoGui.setTempoKeys;
+		TempoGui.setTempoKeys;
 	}
 
 	// pr

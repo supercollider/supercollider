@@ -57,7 +57,7 @@ NumberEditor : Editor {
 	instrArgFromControl { arg control;
 		^value
 	}
-	instrArgRate { ^\scalar }
+	rate { ^\scalar }
 
 	guiClass { ^NumberEditorGui }
 
@@ -65,26 +65,28 @@ NumberEditor : Editor {
 
 KrNumberEditor : NumberEditor { 
 
- 	var lag=0.05;
+ 	var <>lag=0.1;
  
-	instrArgRate { ^\control }
-
+	rate { ^\control }
+	numChannels { ^1 }
  	canDoSpec { arg aspec; ^aspec.isKindOf(ControlSpec) }
 
 	addToSynthDef {  arg synthDef,name;
 		synthDef.addKr(name,this.synthArg);
 	}
-	instrArgFromControl { arg control;
-		^control
-	}
 //	instrArgFromControl { arg control;
-//		//should request a LagControl
-//		if(lag > 0.0,{
-//			^Lag.kr(control,lag)
-//		},{
-//			^control
-//		})
+//		^control
 //	}
+	instrArgFromControl { arg control;
+		// should request a LagControl
+		// either way it violates the contract
+		// by putting the player inside the patch
+		if(lag.notNil,{
+			^Lag.kr(control,lag)
+		},{
+			^control
+		})
+	}
 	makePatchOut { 
 		patchOut = UpdatingScalarPatchOut(this,enabled: false);
 	}
@@ -95,7 +97,9 @@ KrNumberEditor : NumberEditor {
 		patchOut.free;
 	}
 	free { this.stop }	
- 
+	
+	guiClass { ^KrNumberEditorGui }
+
 }
 
 

@@ -3,7 +3,7 @@ Instr  {
 
 	classvar <dir = "Instr/"; // set this in Main-startUp
 
-	var  <>name, <>func,<>specs,<outSpec;
+	var  <>name, <>func,<>specs,<outSpec,>path;
 	
 	*new { arg name, func,specs,outSpec;
 		if(name.isString or: {name.isKindOf(Symbol)},{
@@ -19,10 +19,8 @@ Instr  {
 	*dir_ { arg p;
 		dir = p.standardizePath ++ "/";
 	}
-	*instrDirectory_ { arg p; this.dir = p }
+	//*instrDirectory_ { arg p; this.dir = p }
 	
-	//*write go ahead and write it
-
 	init { arg specs,outsp;
 		this.makeSpecs(specs ? #[]);
 		if(outsp.isNil,{
@@ -72,13 +70,13 @@ Instr  {
 			1
 		});
 	}
-	path { ^dir ++ name.first.asString ++ ".rtf" }
+	path { ^path ?? {dir ++ name.first.asString ++ ".rtf"} }
 	
 	*put { arg instr;
 		^Library.putList([this.name,instr.name,instr].flatten )
 	}
 	*at { arg  name;
-		var fullname;
+		var fullname,instr,path;
 		if(name.isString or: {name.isKindOf(Symbol)},{
 			name = [name.asSymbol];
 		});
@@ -87,8 +85,13 @@ Instr  {
 			??
 		{ 	
 			// if not previously loaded, try loading the file
-			(dir ++ [name].flat.first.asString ++ ".rtf").loadPath;
-			Library.atList(fullname) // or not found
+			path = (dir ++ [name].flat.first.asString ++ ".rtf");
+			path.loadPath;
+			instr = Library.atList(fullname.debug);
+			if(instr.isKindOf(Instr),{ 
+				instr.path = path; 
+			});
+			instr // or nil, not found
 		}
 		)
 	}
@@ -98,7 +101,7 @@ Instr  {
 		instr=this.at(name);
 		if(instr.isNil,{
 			die("(Meta_Instr-ar) Instr not found !!" 
-					+ name.asCompileString, thisMethod);
+					+ name.asCompileString +  thisMethod);
 		},{
 			^instr.valueArray(args)
 		})
@@ -155,7 +158,6 @@ Instr  {
 	}
 		
 	writeDefFile {
-		// TODO: check if needed
 		this.asSynthDef.writeDefFile;
 	}
 	write {
@@ -165,10 +167,6 @@ Instr  {
 		this.writePropertyList(synthDef);
 	}
 	writePropertyList { arg synthDef;
-		/*
-			current model supports non-modulatable inputs
-			that don't make it into the synthDef.
-		*/
 		Dictionary[
 			"name" -> this.name.collect({ arg item; item.asString }),
 			"defName" -> synthDef.name,
@@ -189,29 +187,20 @@ Instr  {
 	play { arg ... args;
 		^Patch(this.name,args).play
 	}
-/*
-	*choose { arg startAt;
-		var page;
-		if(startAt.isNil,{
-//			startAt = Library3.at(Instr);
-			page = Roster("EfxOrcs").all.choose;
-			page.loadDocument;
-			startAt = Instr.at(PathName(page).fileName.asSymbol);
+
+	*choose { arg start;
+		// todo: scan directory first
+		^if(start.isNil,{ 
+			Library.global.choose(this.name)
 		},{
-			startAt = this.at(startAt);
-		});
-		^Library.global.chooseFromNode(startAt);
+			Library.global.performList(\choose,[this.name] ++ start)
+		})
 	}
-	
-	*loadAll
-		or at least register all the names of files
-		
-*/	
-	guiClass { ^InstrGui }
+
 	asString { ^"Instr " ++ this.name.asString }
-//	*keys {
-//		^Library.global.values.select({ arg w; w.isKindOf(Instr) }).collect({ arg instr; instr.name })
-//	}
+
+	guiClass { ^InstrGui }
+
 }
 
 
@@ -433,7 +422,6 @@ InstrSynthDef : SynthDef {
 		})
 	}
 	
-	
 //	tempoKr {
 //		// have to include in cacheing, playing
 //		tempoKr ?? {
@@ -445,11 +433,21 @@ InstrSynthDef : SynthDef {
 		if(watchedServers.at(server).isNil,{
 			SimpleController(server)
 				.put(\serverRunning,{
-					"Clearing AbstractPlayer SynthDef cache".inform;
-					Library.put(SynthDef,server,nil)
+					if(server.serverRunning.not,{
+						"Clearing AbstractPlayer SynthDef cache".inform;
+						Library.put(SynthDef,server,nil);
+					});
 				});
 			watchedServers.put(server,Main.elapsedTime);
 		});
+	}
+	*loadCacheFromDir { arg server,dir = "synthdefs/";
+		(dir++"*").pathMatch.do({ arg p;
+			var defName;
+			defName = PathName(p).fileNameWithoutExtension;
+			defName.debug;
+			Library.put(SynthDef,server,defName.asSymbol,\assumedLoaded);
+		})
 	}
 }
 

@@ -35,11 +35,11 @@ CXMenu : SCViewAdapter { // multiple actions
 					layout.close
 				},{
 					if(lastButton.notNil,{ 
-						lastButton.background_(backColor ? Color.white);
-						lastButton.labelColor_(Color.black);
+						lastButton.background_(Color.new255(112, 128, 144));
+						lastButton.labelColor_(Color.white).refresh;
 					});
-					ab.background_(Color.new255(112, 128, 144));
-					ab.labelColor_(Color.white);
+					ab.background_(backColor ? Color.white);
+					ab.labelColor_(Color.black).refresh;
 					lastButton = ab;
 				});
 			},buttonWidth)
@@ -86,7 +86,8 @@ CXMenu : SCViewAdapter { // multiple actions
 		});
 		^kdr
 	}
-	focusOn { arg f;
+	focus { this.focusOn(0) }
+	focusOn { arg f=0;
 		focus = f.clip(0,view.children.size - 1);
 		view.children.at( focus ).focus;
 	}	

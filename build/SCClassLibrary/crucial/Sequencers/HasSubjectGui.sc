@@ -10,6 +10,14 @@ HasSubjectGui : AbstractPlayerGui {
 }
 
 
+PlayerEffectGui : HasSubjectGui {
+	
+	guiBody { arg layout;
+		model.subject.gui(layout);
+		model.effect.gui(layout.startRow);
+	}
+}
+
 PlayerAmpGui : HasSubjectGui {
 	var num;
 
@@ -32,28 +40,14 @@ PlayerAmpGui : HasSubjectGui {
 	}
 }
 
-KrGui : HasSubjectGui {
 
-//	guiBody { arg layout;
-//		CXLabel(layout,"lag:");
-//		model.lag.smallGui(layout);
-//		super.guiBody(layout);
-//	}
-}
-
-
-StreamKrDurGui : KrGui {
+// move me...
+StreamKrDurGui : HasSubjectGui {
 
 	guiBody { arg layout;
 		CXLabel(layout,"durs:");
 		model.durations.smallGui(layout);
-		super.guiBody(layout);
+		layout.startRow;
+		subjg = model.values.gui(layout);
 	}
-
 }
-
-
-// StreamKrDur can simply inherit
-
-
-

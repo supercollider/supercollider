@@ -8,19 +8,21 @@ AbstractPlayerGui : ObjectGui {
 			// top level controls
 			this.synthConsole(layout);
 			this.saveConsole(layout);
+			Do(\topGuiPlugIns,model,layout);
 			layout.startRow;
 		});
 		layout.flow({ arg layout;
 			view = layout;
 			this.writeName(layout);
 			this.guiBody(layout);
-		},bounds).background_(Color.blue(0.5,0.15));
+		},bounds).background_(this.background);
 		this.enableKeyDowns;
 		if(lay.isNil,{
 			layout.resizeToFit.front;
 			view.focus;
 		})
 	}
+	background { ^Color.yellow(0.3,alpha:0.1) }
 	topGui { arg lay,bounds ... args;
 		var layout;
 		layout=this.guify(lay,bounds);
@@ -29,11 +31,10 @@ AbstractPlayerGui : ObjectGui {
 		this.saveConsole(layout);
 		layout.startRow;
 		this.performList(\gui,[layout,bounds] ++ args);
-		/*layout.flow({ arg layout;
-			view = layout;
-			this.writeName(layout);
-			this.guiBody(layout);
-		}).background_(Color.blue(0.5,0.15));*/
+
+		/** plug in **/
+		Do(\topGuiPlugIns,model,layout);
+
 		this.enableKeyDowns;
 		if(lay.isNil,{
 			layout.resizeToFit.front;
@@ -54,7 +55,7 @@ AbstractPlayerGui : ObjectGui {
 			InspectorLink.new(model,layout);
 		});
 		if(model.path.notNil,{
-			ActionButton(layout,"edit",{
+			ActionButton(layout,"edit code",{
 				model.path.openTextFile;
 			});
 		});
@@ -109,13 +110,13 @@ AbstractPlayerGui : ObjectGui {
 
 		layout.removeOnClose(
 			Updater(model,{  arg changed,changer;// any change to model at all
-				durv.label_("dur:" + this.durationString);
+				durv.label_("dur:" + this.durationString).refresh;
 			}).update;
 		);
 		
 		layout.removeOnClose(
 			Updater(Tempo.default,{ // any change to Tempo
-				durv.label_("dur:" + this.durationString);	
+				durv.label_("dur:" + this.durationString).refresh;
 			}).update;
 		);
 	}

@@ -1,7 +1,7 @@
 
 BufferProxy { // blank space for delays, loopers etc.
 
-	var <buffer,<patchOut,<readyForPlay = false;
+	var <buffer,<patchOut,<readyForPlay = false,server;
 
 	var size=0,<end=0,<>numChannels=1,<>sampleRate=44100.0;
 
@@ -11,7 +11,6 @@ BufferProxy { // blank space for delays, loopers etc.
 	// while building the synth def...
 	var <>forArgi,bufnumControl;
 
-
 	*new { arg numFrames=44100,numChannels=1,sampleRate=44100.0;
 		^super.new
 			.startFrame_(0).endFrame_(numFrames - 1)
@@ -19,9 +18,10 @@ BufferProxy { // blank space for delays, loopers etc.
 	}
 	storeArgs { ^[this.size,numChannels,sampleRate] }
 
-	size {// actual size loaded on server, not total size
+	size {
+		// actual size loaded on server, not total size
 		^if(endFrame == -1,{
-			end
+			size - 1
 		},{
 			endFrame - startFrame
 		})	
@@ -30,8 +30,9 @@ BufferProxy { // blank space for delays, loopers etc.
 	/* server support */
 	prepareToBundle { arg group,bundle;
 		group = group.asGroup;
+		server = group.server;
 		if(buffer.notNil,{
-			if(buffer.server != group.server,{
+			if(buffer.server != server,{
 				// this makes me suitable for one server only
 				// which is probably always the case
 				buffer.free;
@@ -42,7 +43,7 @@ BufferProxy { // blank space for delays, loopers etc.
 			})
 		});
 		
-		buffer = Buffer.new(group.asGroup.server,this.size,numChannels);
+		buffer = Buffer.new(server,this.size,numChannels);
 		buffer.numFrames = this.size;
 		buffer.numChannels = numChannels;
 		bundle.add( buffer.allocMsg );
@@ -51,12 +52,16 @@ BufferProxy { // blank space for delays, loopers etc.
 	makePatchOut {
 		patchOut = ScalarPatchOut(this);
 	}
+	freePatchOut { patchOut.free }
 	setPatchOut { arg po; patchOut = po }
 	free {  
-		buffer.free; 
-		buffer = nil;
-		patchOut = nil;
+		this.freeHeavyResources;
+		this.freePatchOut;
 		readyForPlay = false;
+	}
+	freeHeavyResources { arg bundle;
+		buffer.free;
+		buffer = nil;
 	}
 	
 	// each synth def, multiple usage in a synth def ok
@@ -129,7 +134,8 @@ Sample : BufferProxy { // a small sound loaded from disk
 		new = super.new;
 		new.load(soundFilePath);
 		new.tempo_(tempo ? TempoClock.default.tempo);
-		if(endFrame.isKindOf(Boolean), { startFrame = 0; endFrame = -1; }); // temp
+		// backassward translation
+		if(endFrame.isKindOf(Boolean), { startFrame = 0; endFrame = -1; }); 
 		new.startFrame_(startFrame).endFrame_(endFrame);
 		^new
 	}
@@ -220,6 +226,13 @@ Sample : BufferProxy { // a small sound loaded from disk
 
 		});*/
 	}
+	reloadBuffer {
+		buffer.free;
+		buffer = nil;
+		if(server.notNil,{
+			this.prepareForPlay(server);
+		});
+	}
 						
 	tempo_ { arg tm;
 		if(tm.notNil,{ 
@@ -277,20 +290,22 @@ Sample : BufferProxy { // a small sound loaded from disk
 		// when start/end are changed, might have to reassign
 		
 		group = group.asGroup;
+		server = group.server;
 		if(buffer.notNil,{
-			if(buffer.server != group.server,{
+			if(buffer.server != server,{
 				// this makes me suitable for one server only
 				// which is probably always the case
-				buffer.free;//.insp("discarding buffer");
+				buffer.free;
 				// make buffer
 			},{
 				// buffer is fine to use
-				^this;//.insp("buffer is loaded")
+				^this;
 			});
 		});
 
-		buffer = Buffer.new(group.asGroup.server,this.size,numChannels);
+		buffer = Buffer.new(server,this.size,numChannels);
 		if(soundFilePath.notNil,{
+			// numFrames already set above, no need for an end
 			bundle.add( buffer.allocReadMsg(this.soundFilePath,startFrame) )
 		},{
 			buffer.numFrames = this.size;
@@ -301,7 +316,8 @@ Sample : BufferProxy { // a small sound loaded from disk
 	}
 	makePatchOut {
 		patchOut = ScalarPatchOut(this);
-	}	
+	}
+	
 	guiClass { ^SampleGui }
 
 	play { // for testing
@@ -319,8 +335,6 @@ Sample : BufferProxy { // a small sound loaded from disk
 	}
 }
 
-
-
 ArrayBuffer : BufferProxy {
 
 	var <>array;
@@ -331,7 +345,6 @@ ArrayBuffer : BufferProxy {
 	storeArgs { ^[array] }	
 
 	//this.size wrong ?
-	
 	prepareToBundle { arg group,bundle;
 		buffer = Buffer.new(group.asGroup.server,array.size,numChannels);
 		buffer.numFrames = this.size;

@@ -21,9 +21,9 @@ MultiPageLayout  {
 			w=SCWindow.new("< " ++ title.asString ++ " >",
 						bounds ?? {Rect(20,20,screenWidth,screenHeight)})
 				.onClose_({  
-						//"MultiPageLayout onClose".postln;
+					//"MultiPageLayout onClose".debug;
 					this.close; // close all windows in this layout
-					})
+				})
 		);
 		metal = argmetal;
 		if(metal.not,{
@@ -95,6 +95,7 @@ MultiPageLayout  {
 	}
 	close { // called when the GUIWindow closes
 		if(isClosed.not,{
+			//"MultiPageLayout-close".debug;
 			isClosed = true; 
 			autoRemoves.do({ arg updater; updater.remove(false) });
 			if(windows.notNil,{

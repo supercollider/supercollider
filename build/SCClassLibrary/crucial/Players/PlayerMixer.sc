@@ -4,7 +4,6 @@
 PlayerMixer : MultiplePlayers {
 
 	var <>players;
-	//,<>timeSplay=0.007;// 0.0029025 is one block
 	
 	*new { arg players;
 		^super.new.players_(loadDocument(players) ? [])

@@ -197,7 +197,7 @@ Crucial {
 			this.gcInfo
 		});
 		Library.put(\menuItems,\introspection,'Interpreter-inspect',{
-			thisProcess.interpreter.inspect;
+			thisProcess.interpreter.insp;
 		});
 		Library.put(\menuItems,\introspection,'Interpreter-clearAll',{
 			thisProcess.interpreter.clearAll;
@@ -225,6 +225,9 @@ Crucial {
 							ActionButton(f,"help",{
 								cl.openHelpFile;
 							},60);
+						});
+						if(matches.isEmpty,{
+							CXLabel(f,"No matches found");
 						});
 					},"matches" + string);
 				})

@@ -1,1 +1,44 @@
-EnvEditorGui : ObjectGui {	guiBody { arg layout;				var curves;				// test button		//ActionButton(layout,"test",{		//	model.env.test		//});		ActionButton(layout,"#",{			model.env.asCompileString.postln;		});				layout.startRow;		CXLabel(layout,"times:   ");		model.times.do({ arg t,i;			NumberEditor(t,[0.0,100.0]).action_({ arg val; model.putTime(i,val) }).gui(layout);		});				layout.startRow;		CXLabel(layout,"levels:");				model.levels.do({ arg l,i;			NumberEditor(l,model.levelSpec).action_({ arg val; model.putLevel(i,val) }).gui(layout);		});//		ActionButton(layout,"set spec...",{//			var f,s;//			f=PageLayout.new("",600,600);//			s=levels.spec.copy;//			s.gui(f);//			ActionButton(f,"DONE",{//				levels.do({ arg nv; nv.spec_(s) });	//				f.close;//			})//		});				layout.startRow;				CXLabel(layout,"curves:  ");		// curves		curves = model.env.curves;		if(curves.isKindOf(SimpleNumber),{			NumberEditor(curves,[-10.0,10.0]).action_({ arg val; model.setCurve(val);  })				.gui(layout);		},{			if(curves.isKindOf(SequenceableCollection),{					curves.do({ arg l,i;						NumberEditor(l,[-10.0,10.0]).action_({ arg val; model.putCurve(i,val) }).gui(layout);					});			},{				curves.gui(layout); //symbol \linear,\sine etc.			});		});		// loop node		CXLabel(layout,"loop");		CXLabel(layout,model.env.loopNode);				//release node		CXLabel(layout,"releaseNode:");		CXLabel(layout,model.env.releaseNode);				// the envelope itself		model.env.gui(layout);			}}
+EnvEditorGui : ObjectGui {
+
+	var ev,timeScale=1.0,levelScale = 1.0;
+	
+	writeName {}	guiBody { arg layout;				var curves,levels,times,temp=0.0;		
+		ev = SCEnvelopeView(layout,layout.layRight(100,40));
+		ev.setProperty(\thumbWidth,5.0);
+		ev.setProperty(\thumbHeight,5.0);
+		ev.drawLines = true;
+		ev.selectionColor = Color.red;
+		ev.drawRects = true;
+		
+		times = [0.0];
+		model.env.times.do({ arg delta;
+			times = times.add(temp = temp + delta);
+		});
+		levels = model.env.levels;
+		
+		timeScale = times.maxItem * 1.5;
+		levelScale = levels.maxItem * 1.5;
+		ev.value_([times / timeScale,levels / levelScale]);//.insp("initial setting"));
+		ev.action = {
+			var index,levels,times,deltas,sum=0;
+			index = ev.index;
+			times = ev.value.at(0);
+			levels = ev.value.at(1);
+			times = times.collect({ arg t,i;
+						if(i == 0,{
+							0
+						},{
+							t.clip(times.at(i - 1),times.at(i + 1) ? 1);
+						});
+					});
+			(times.size - 1).do({ arg i;
+							model.putTime(i, times.at(i + 1) - times.at(i) * timeScale );
+						});
+			model.putLevel(index,levels.at(index) * levelScale);
+			//visual clip
+			//[ times,levels].insp("times,levels");
+			//ev.value_([ times,levels]);
+			ev.refresh;
+		};		// test button		/*ActionButton(layout,"test",{			model.env.test		});*/		ActionButton(layout,"#",{			model.env.asCompileString.postln;		});				CXLabel(layout,"curve:");		// curves		curves = model.env.curves;		if(curves.isKindOf(SimpleNumber),{			NumberEditor(curves,[-10.0,10.0]).action_({ arg val; model.setCurve(val);  })				.smallGui(layout);		},{			if(curves.isKindOf(SequenceableCollection),{					curves.do({ arg l,i;						NumberEditor(l,[-10.0,10.0])
+							.action_({ arg val; model.putCurve(i,val) })
+							.smallGui(layout);					});			},{				curves.gui(layout); //symbol \linear,\sine etc.			});		});		// loop node		//CXLabel(layout,"loop");		//CXLabel(layout,model.env.loopNode);				//release node		CXLabel(layout,"releaseNode:");		CXLabel(layout,model.env.releaseNode);				// the envelope itself		//model.env.gui(layout);	}}

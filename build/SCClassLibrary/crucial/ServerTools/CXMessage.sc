@@ -1,5 +1,4 @@
 
-
 CXBundle {
 	var <>functions,<>messages;
 	
@@ -9,15 +8,20 @@ CXBundle {
 	addFunction { arg f; // time should be the same
 		functions = functions.add(f);
 	}
-	addMessage { arg receiver,selector, args;
+	// confusing, different kind of message
+	addAction { arg receiver,selector, args;
 		functions = functions.add( Message(receiver,selector,args) )
 	}
 	send { arg server,time;
 		server.listSendBundle(time,messages);
 		if(functions.notNil,{
-			SystemClock.sched(time,{
-				functions.do({ arg f; f.value });
-				nil
+			if(time.notNil,{
+				SystemClock.sched(time,{
+					this.doFunctions;
+					nil
+				})
+			},{
+				this.doFunctions;
 			})
 		});
 	}
@@ -30,6 +34,9 @@ CXBundle {
 		},{
 			^0
 		})
+	}
+	doFunctions {
+		functions.do({ arg f; f.value });
 	}
 	//cancellable
 }

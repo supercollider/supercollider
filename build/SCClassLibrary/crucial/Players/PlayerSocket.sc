@@ -16,54 +16,86 @@
 PlayerSocket : AbstractPlayerProxy {
 
 	var <>round,<>rate,<>numChannels;
-	var <>env,socketGroup;
+	var <>env,socketGroup,sched;
+	var isWaking = false;
+	var <lastPlayer,sharedBus;
 	
 	*new { arg rate=\audio,numChannels=2,round=0.0;
 		^super.new.round_(round)
 			.rate_(rate).numChannels_(numChannels)
+			.psinit
 	}
-	preparePlayer { arg player;
-		player.prepareForPlay(socketGroup,bus: this.bus)
+	psinit {
+		sched = OSCSched.new;
+	}
+	topMakePatchOut { arg group,private=false,bus;
+		super.topMakePatchOut(group,private,bus);
+		sharedBus = patchOut.bus.as(SharedBus);
 	}
 	prepareAndSpawn { arg player,releaseTime=0.0;
-		// use players prepare / spawn sequence
-		player.play(socketGroup,nil,this.bus);
-		isSleeping = false;
-		this.changed;
-		if(player != source,{
-			source.release(releaseTime);
-		});
-		source = player;
+		var bsize;
+		bsize = this.preparePlayer(player);
+		SystemClock.sched(bsize / 10.0,{
+			this.spawnPlayer(player,releaseTime);
+			nil
+		})
 	}
-	spawnPlayer { arg player,releaseTime=0.0,onTrigger,atTime;
+	prepareAndQSpawn { arg player,releaseTime=0.0;
+		var bsize;
+		bsize = this.preparePlayer(player);
+		SystemClock.sched(bsize / 15.0,{
+			this.qspawnPlayer(player,releaseTime);
+			nil
+		})
+	}
+	preparePlayer { arg player;
+		// returns the bundle size
+		^player.prepareForPlay(socketGroup,bus: sharedBus)
+	}
+
+	spawnPlayer { arg player,releaseTime=0.0,beatDelta=0.0;
 		var bundle;
 		bundle = CXBundle.new;
 		this.setSourceToBundle(player,bundle,releaseTime);
 		bundle.addFunction({
-			isSleeping = false;
+			isSleeping = isWaking = false;
+			lastPlayer = player;
 			{ this.changed; }.defer;
-			onTrigger.value;
 			nil
 		});
-		// should use a shared BeatSched
-		bundle.send(this.server, atTime );
+		sched.xschedCXBundle(beatDelta,this.server,bundle);
 	}
-	qspawnPlayer { arg player,releaseTime=0.0,onTrigger;
-		this.spawnPlayer(player,releaseTime,onTrigger,BeatSched.tdeltaTillNext(round).postln)
+	qspawnPlayer { arg player,releaseTime=0.0;
+		isWaking = true;
+		this.spawnPlayer(player,releaseTime,sched.deltaTillNext(round))
 	}
 	
 	releaseVoice { arg releaseTime=0.0;
-		isSleeping = true;
-		if(source.notNil,{
-			source.release(releaseTime);
+		var bundle;
+		if(isWaking,{
+			sched.xblock;
+			isWaking = false;
+			^this.changed;
 		});
-		this.changed;
+		if(isSleeping.not,{
+			if(source.notNil,{
+				bundle = CXBundle.new;
+				source.releaseToBundle(releaseTime,bundle);
+				bundle.addFunction({ isSleeping = true; });
+				sched.xschedCXBundle(0.0,this.server,bundle);
+			});
+		});
 	}
+	isSleeping {
+		^(isSleeping and: isWaking.not)
+	}
+
 	
 	//
 	prepareToBundle { arg group,bundle;
 		group = group.asGroup;
 		socketGroup = Group.basicNew(server: group.server);
+		NodeWatcher.register(socketGroup);
 		bundle.add( socketGroup.addToTailMsg(group) );
 		if(source.notNil,{
 			source.prepareToBundle(socketGroup,bundle)
@@ -83,7 +115,7 @@ PlayerSocket : AbstractPlayerProxy {
 		if(source.notNil,{
 			source.spawnToBundle(bundle)
 		});
-		bundle.addMessage(this,\didSpawn);
+		bundle.addAction(this,\didSpawn);
 	}
 	instrArgFromControl { arg control;
 		^if(this.rate == \audio,{
@@ -101,61 +133,33 @@ PlayerSocket : AbstractPlayerProxy {
 		bundle.send(this.server,atTime);
 	}
 	setSourceToBundle { arg s,bundle,releaseTime=0.2;
-		var oldsource;
-		if(source != s and: {source.notNil},{
-			oldsource = source;
-			oldsource.releaseToBundle(releaseTime,bundle);
-			if(releaseTime.notNil,{
-				AppClock.sched(releaseTime,{
-					oldsource.stop;
-					nil;
-				});
-			});
+		if(source.isPlaying,{
+			source.releaseToBundle(releaseTime,bundle);
 		});
 		source = s;
-		source.spawnOnToBundle(socketGroup,this.bus,bundle);
+		source.spawnOnToBundle(socketGroup,sharedBus,bundle);
 	}
-
 
 	free {
 		isPlaying = false;
 		isSleeping = true;
 		socketGroup.free;
+		sharedBus.releaseBus;
 		super.free;
 	}
 }
 
-
-//
-//PPPregVoice : PlayerSocket {
-//
-//	var <register;
-//	
-//	init {
-//		register = Array.newClear(3);
-//	}
-//	setRegister { arg i;
-//		register.put(i,)
-//
-//}
-
-
-
-
 PlayerEffectSocket : PlayerSocket {
 
-	var bus;
+	var inputBus;
 	
 	setInputBus { arg abus;
-		bus = abus.asBus;
+		inputBus = abus.asBus.as(SharedBus);
 		// assume not playing yet
 	}	
 	
-	setSource { arg aplayer;
-		aplayer.inputProxies.first.setInputBus(bus);
-		super.setSource(aplayer);
+	setSourceToBundle { arg aplayer,bundle,releaseTime=0.2;
+		aplayer.inputProxies.first.setInputBus(inputBus);
+		super.setSourceToBundle(aplayer,bundle,releaseTime);
 	}
-
 }
-
-

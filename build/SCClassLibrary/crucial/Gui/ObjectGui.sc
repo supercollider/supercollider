@@ -45,10 +45,11 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 			view = layout;
 			this.writeName(layout);
 			this.performList(\guiBody,[layout] ++ args);
-		},bounds).background_(Color.yellow(0.2,0.15));
+		},bounds).background_(this.background);
 		//if you created it, front it
 		if(lay.isNil,{ layout.resizeToFit.front });
 	}
+	background { ^Color.yellow(0.2,0.15) }
 	topGui { arg ... args;
 		this.performList(\gui, args);
 	}

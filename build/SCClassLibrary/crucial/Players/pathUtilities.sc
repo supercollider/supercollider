@@ -3,6 +3,7 @@
 	loadPath {}
 	enpath {}
 	loadDocument {}
+	didLoadFromPath {}
 }
 
 + SequenceableCollection {
@@ -29,7 +30,7 @@
 		path = this.standardizePath;
 		if(File.exists(path),{
 			obj = thisProcess.interpreter.executeFile(path);
-			obj.tryPerform(\path_,this);
+			obj.didLoadFromPath(this);
 		},{
 			if(warnIfNotFound,{
 				warn("String-loadPath file not found " + this + path);
@@ -64,7 +65,10 @@
 	loadDocument {
 		^this
 	}
-
+	didLoadFromPath { arg argpath;
+		path = argpath;
+		dirty = false;
+	}
 // old style
 	*load { arg obj, warnIfNotFound=true;
 		^obj.loadDocument(warnIfNotFound);

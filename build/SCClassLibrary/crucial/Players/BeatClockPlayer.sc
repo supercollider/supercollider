@@ -10,9 +10,8 @@ BeatClockPlayer : KrPlayer {
 	storeArgs { ^[tempoFactor,mul] } // tempoBase won't save really
 	
 	prepareToBundle { arg group,bundle;
-		//TODO: share by tempoFactor per server
+		// TODO: share by tempoFactor per server
 		// place in a high level group
-
 		if(patchOut.isNil,{
 			super.prepareToBundle(group,bundle);
 			tempoBus = TempoBus(group.asGroup.server,tempoBase);
@@ -23,7 +22,7 @@ BeatClockPlayer : KrPlayer {
 	asSynthDef { 
 		//unique by tempoFactor
 		^SynthDef(this.defName,{ arg i_tempoIndex=0,out = 0;
-			Out.kr(out,Impulse.kr(In.kr(i_tempoIndex) * (tempoFactor * 0.25),mul: mul))
+			Out.kr(out,Impulse.kr(In.kr(i_tempoIndex) * (tempoFactor.value * 0.25),mul: mul.value))
 		})
 	}
 	defName {

@@ -42,6 +42,12 @@
 + Server {
 	guiClass { ^ServerGui }
 }
++ Node {
+	guiClass { ^NodeGui }
+}
++ Synth {
+	guiClass { ^SynthGui }
+}
 
 + Nil {
 
@@ -95,4 +101,8 @@
 		//bounds = bounds ?? {this.view.bounds};
 		//^FlowView(this.view,this.layRight(bounds.width - 10,bounds.height - 10))
 	}
+}
+
++ Pswitch  {
+	guiClass { ^PswitchGui }
 }

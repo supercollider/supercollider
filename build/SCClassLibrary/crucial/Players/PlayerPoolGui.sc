@@ -1,6 +1,6 @@
 PlayerPoolGui : AbstractPlayerGui {	var triggers,guis,rect,selectedBox;		guiBody { arg layout; // has a select button		var maxx,prev=0,indicators,wrapEvery;
 		
-		ActionButton(layout,"releaseAll",{ this.releaseAll });		if(model.list.notEmpty,{			maxx = model.list.maxItem({ arg sf; sf.name.asString.size }).name.asString.size * 9;					wrapEvery = (layout.innerBounds.width / (maxx + 100)).asInteger;							triggers = 			model.list.collect({arg sf,i;				var ind;				if(i % wrapEvery == 0,{ layout.startRow });				ind = SCButton(layout,20@16);
+		ActionButton(layout,"release",{ this.releaseAll });		if(model.list.notEmpty,{			maxx = model.list.maxItem({ arg sf; sf.name.asString.size }).name.asString.size * 9;					wrapEvery = (layout.innerBounds.width / (maxx + 100)).asInteger;							triggers = 			model.list.collect({arg sf,i;				var ind;				if(i % wrapEvery == 0,{ layout.startRow });				ind = SCButton(layout,20@16);
 				ind.action = { 
 					this.unselect(model.selected); 
 					model.select(i); 
@@ -12,10 +12,14 @@
 		
 		rect = selectedBox.bounds;
 		guis = Array.newClear(model.list.size);
-		this.select(model.selected);
-	}		releaseAll {		triggers.at(model.selected).setProperty(\value, 0);		model.releaseAll;	}
+		//this.select(model.selected);
+	}		releaseAll {		triggers.at(model.selected).setProperty(\value, 0);		model.releaseVoice;	}
 	unselect { arg i;
-		guis.at(i).visible = false;
+		var g;
+		g = guis.at(i);
+		if(g.notNil,{
+			g.visible = false;
+		});
 		triggers.at(i).setProperty(\value, 0); // dim
 	}	select { arg i;
 		var gui;

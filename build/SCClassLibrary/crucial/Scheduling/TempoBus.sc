@@ -16,20 +16,29 @@ TempoBus   {
 			}
 		)
 	}
+	releaseBus {
+		bus.free;
+		bus = nil;
+		isReady = false;
+	}
 	asBus {}
 	index { ^bus.index }
 	prepareToBundle { arg group,bundle;
-		// ignores the group
-		//if(isReady.not,{ // just in case server wasn't booted before on init
-			bundle.add( bus.setMsg(tempo.tempo) );
-			//isReady = true;
-		//})
+		// probably duplicate setMsg in there
+		bundle.add( bus.setMsg(tempo.tempo) );
 	}
-	
+	addToSynthDef {  arg synthDef,name;
+		synthDef.addIr(name,this.synthArg);
+	}
+	synthArg { ^this.index }
+	rate { ^\control }
+	instrArgFromControl { arg control;
+		^control
+	}
+
 	free {
 		// for now just leave it on the server, its cheap.
 		// we need reference counting, since its a shared object.
-		
 		//bus.free;
 		//bus = nil;
 		//isReady = false;
@@ -40,8 +49,18 @@ TempoBus   {
 		bus.set(tempo.tempo);
 		tempo.addDependant(this);
 		
-		// could depend on the server too (serverRunning)
-		
+		/*  client crashed ?
+		SimpleController(server).put(\serverRunning,{
+			if(server.serverRunning.not,{
+				this.releaseBus;
+			},{
+				bus = Bus.control(server,1);
+				bus.set(tempo.tempo);
+				isReady = true;
+			})
+		})
+		*/
+
 		if(server.serverRunning,{ 
 			isReady = true;
 			bus.value = tempo.tempo;
@@ -49,9 +68,9 @@ TempoBus   {
 	}
 	update { arg changed,changer;
 		if(changed === tempo,{
-			bus.value = tempo.tempo;	
+			bus.server.listSendBundle(bus.server.latency, [bus.setMsg(tempo.tempo)]);
+			//bus.value = tempo.tempo;	
 		})
 	}
-
 }
 

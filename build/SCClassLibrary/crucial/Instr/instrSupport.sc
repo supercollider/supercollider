@@ -51,7 +51,7 @@
 
 + ControlSpec 	{
 
-	defaultControl { arg val=0.0; 
+	defaultControl { arg val;
 		^KrNumberEditor.new(this.constrain(val ? this.default),this); 
 	}
 

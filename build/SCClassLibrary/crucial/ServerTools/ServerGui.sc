@@ -16,6 +16,9 @@ ServerGui : ObjectGui {
 			booter.action = { arg view; 
 				if(view.value == 1, {
 					booting.value;
+					if(model.isLocal,{
+						InstrSynthDef.loadCacheFromDir(model);
+					});
 					model.boot(model.dumpMode == 0);
 				});
 				if(view.value == 0,{

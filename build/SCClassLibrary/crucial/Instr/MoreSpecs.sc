@@ -53,6 +53,7 @@ TrigSpec : ControlSpec {
 
 TempoSpec : Spec {
 	defaultControl { ^TempoPlayer.new }
+	rate { ^\control }
 	*initClass {
 		specs.putAll(
 		 IdentityDictionary[
@@ -62,7 +63,23 @@ TempoSpec : Spec {
 	}
 }
 
-StaticSpec : ControlSpec { 
+NoLagControlSpec : ControlSpec {
+
+	*initClass {
+		specs.putAll(
+		 IdentityDictionary[
+			\loop -> this.new,
+			\paused -> this.new
+			];
+		)
+	}
+	defaultControl { arg val=0.0; 
+		^KrNumberEditor.new(this.constrain(val ? this.default),this).lag_(nil) 
+	}
+
+}
+
+StaticSpec : NoLagControlSpec { 
 	// also a scalar spec, but better to inherit ControlSpec
 
 	canKr { ^false }
@@ -137,24 +154,23 @@ SymbolSetSpec : ScalarSpec {
 
 BufferProxySpec : ScalarSpec {
 
-	var <>prototype;
+	var <>numFrames=44100,<>numChannels=1,<>sampleRate=44100.0;
 	
-	*new { arg prototype;
-		^super.new.prototype_(prototype)
+	*new { arg numFrames=44100,numChannels=1,sampleRate=44100.0;
+		^super.new.numFrames_(numFrames).numChannels_(numChannels).sampleRate_(sampleRate)
 	}
-	storeArgs { ^[prototype] }
+	storeArgs { ^[numFrames,numChannels,sampleRate] }
 	*initClass {
 		specs.putAll(
 		 IdentityDictionary[
-			\buffer -> this.new( BufferProxy(44100,2) ),
-			\bufferProxy -> this.new( BufferProxy(44100,2) )
-			//\bufnum -> this.new( BufferProxy(44100,2) )
+			\buffer -> this.new( 44100,2 ),
+			\bufferProxy -> this.new( 44100,2 )
 		];
 		)
 	}
 
-	//defaultControl { ^prototype.deepCopy }
-	defaultControl { ^BufferProxy(44100,2) }
+	//defaultControl { ^prototype.deepCopy } // this caused a deepCopy crash !?
+	defaultControl { ^BufferProxy(numFrames,numChannels,sampleRate) }
 }
 
 SampleSpec : ScalarSpec {

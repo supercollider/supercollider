@@ -55,7 +55,6 @@ BeatSched {
 		^if(next == beats,0 ,{ tempo.beats2secs(next + quantize - beats) }) // now or next
 	}	
 	
-	
 	/** global scheduler **/
 	*tsched { arg seconds,function;
 		^global.tsched(seconds,function);
@@ -167,51 +166,52 @@ BeatSched {
 }
 
 OSCSched : BeatSched {
-	classvar <global;	
+	classvar <global;
+	
 	*initClass { global = this.new; }
 
 	/** global scheduler **/
-	*tsched { arg seconds,server,message,clientSideFunction;
-		^global.tsched(seconds,server,message,clientSideFunction);
+	*tsched { arg seconds,server,bundle,clientSideFunction;
+		^global.tsched(seconds,server,bundle,clientSideFunction);
 	}
-	*xtsched { arg seconds,server,message,clientSideFunction;
-		^global.xtsched(seconds,server,message,clientSideFunction);
+	*xtsched { arg seconds,server,bundle,clientSideFunction;
+		^global.xtsched(seconds,server,bundle,clientSideFunction);
 	}		
-	*sched { arg beats,server,message,clientSideFunction;
-		^global.sched(beats,server,message,clientSideFunction)
+	*sched { arg beats,server,bundle,clientSideFunction;
+		^global.sched(beats,server,bundle,clientSideFunction)
 	}
-	*xsched { arg beats,server,message,clientSideFunction;
-		^global.xsched(beats,server,message,clientSideFunction)
+	*xsched { arg beats,server,bundle,clientSideFunction;
+		^global.xsched(beats,server,bundle,clientSideFunction)
 	}
-	*qsched { arg quantize,server,message,clientSideFunction;
-		^global.qsched(quantize,server,message,clientSideFunction)
+	*qsched { arg quantize,server,bundle,clientSideFunction;
+		^global.qsched(quantize,server,bundle,clientSideFunction)
 	}
-	*xqsched { arg quantize,server,message,clientSideFunction;
-		^global.xqsched(quantize,server,message,clientSideFunction )
+	*xqsched { arg quantize,server,bundle,clientSideFunction;
+		^global.xqsched(quantize,server,bundle,clientSideFunction )
 	}
-	*tschedAbs { arg time,server,message,clientSideFunction;
-		^global.tschedAbs(time,server,message,clientSideFunction)
+	*tschedAbs { arg time,server,bundle,clientSideFunction;
+		^global.tschedAbs(time,server,bundle,clientSideFunction)
 	}		
 	// xtschedAbs
-	*schedAbs { arg beat,server,message,clientSideFunction;
-		^global.tschedAbs(beat,server,message,clientSideFunction)
+	*schedAbs { arg beat,server,bundle,clientSideFunction;
+		^global.tschedAbs(beat,server,bundle,clientSideFunction)
 	}
 	
 	/**  instance methods **/
-	tsched { arg seconds,server,message,clientSideFunction;
+	tsched { arg seconds,server,bundle,clientSideFunction;
 		clock.sched(seconds - server.latency,{
-			server.sendBundle(server.latency,message);
+			server.listSendBundle(server.latency,bundle);
 			nil
 		});
 		if(clientSideFunction.notNil,{
 			clock.sched(seconds,{ clientSideFunction.value; nil })
 		});
 	}
-	xtsched { arg seconds,server,message,clientSideFunction;
+	xtsched { arg seconds,server,bundle,clientSideFunction;
 		var thTask,notCancelled;
 		clock.sched(seconds - server.latency,thTask = nextTask = {
 			if(notCancelled = (thTask === nextTask),{
-				server.sendBundle(server.latency,message)
+				server.listSendBundle(server.latency,bundle)
 			});
 			nil
 		});
@@ -220,20 +220,21 @@ OSCSched : BeatSched {
 		});
 	}
 		
-	sched { arg beats,server,message,clientSideFunction;
+	sched { arg beats,server,bundle,clientSideFunction;
 		tempoClock.dsched(beats - server.latency,{ // lazily using the seconds as beats
-			server.sendBundle(tempo.beats2secs(server.latency),message);
+			// inaccurate final delivery if tempo is changing quickly
+			server.listSendBundle(tempo.beats2secs(server.latency),bundle);
 			nil
 		});
 		if(clientSideFunction.notNil,{
 			tempoClock.dsched(beats,{ clientSideFunction.value; nil })
 		});
 	}
-	xsched { arg beats,server,message,clientSideFunction;
+	xsched { arg beats,server,bundle,clientSideFunction;
 		var thTask,notCancelled;
 		tempoClock.dsched(beats - server.latency,thTask = nextTask = {
 			if(notCancelled = (thTask === nextTask),{
-				server.sendBundle(tempo.beats2secs(server.latency),message)
+				server.listSendBundle(tempo.beats2secs(server.latency),bundle)
 			});
 			nil
 		});
@@ -242,17 +243,17 @@ OSCSched : BeatSched {
 		});
 	}
 	
-	qsched { arg quantize,server,message,clientSideFunction;
-		this.sched(this.deltaTillNext(quantize),server,message,clientSideFunction)
+	qsched { arg quantize,server,bundle,clientSideFunction;
+		this.sched(this.deltaTillNext(quantize),server,bundle,clientSideFunction)
 
 	}
-	xqsched { arg quantize,server,message,clientSideFunction;
-		this.xsched(this.deltaTillNext(quantize),server,message,clientSideFunction )
+	xqsched { arg quantize,server,bundle,clientSideFunction;
+		this.xsched(this.deltaTillNext(quantize),server,bundle,clientSideFunction )
 	}
 	
-	tschedAbs { arg time,server,message,clientSideFunction;
+	tschedAbs { arg time,server,bundle,clientSideFunction;
 		if(time >= this.time,{ // in the future ?
-			pq.put(time,[server,message,clientSideFunction]);
+			pq.put(time,[server,bundle,clientSideFunction]);
 			// was something else already scheduled before me ?
 			if(nextAbsTime.notNil,{
 				if(time == pq.topPriority ,{ // i'm next
@@ -265,10 +266,10 @@ OSCSched : BeatSched {
 		})			
 	}
 	// xtschedAbs
-	schedAbs { arg beat,server,message,clientSideFunction;
+	schedAbs { arg beat,server,bundle,clientSideFunction;
 		/*  to do...
 		if(time >= this.time,{ // in the future ?
-			pq.put(time,[server,message,clientSideFunction]);
+			pq.put(time,[server,bundle,clientSideFunction]);
 			// was something else already scheduled before me ?
 			if(nextAbsTime.notNil,{
 				if(time == pq.topPriority ,{ // i'm next
@@ -280,9 +281,12 @@ OSCSched : BeatSched {
 			});
 		})	
 		*/
-		this.tschedAbs(tempo.beats2secs(beat),server,message,clientSideFunction)
+		this.tschedAbs(tempo.beats2secs(beat),server,bundle,clientSideFunction)
 	}
 
+	xschedCXBundle { arg beatDelta,server,cxbundle;
+		this.xsched(beatDelta,server,cxbundle.messages,{cxbundle.doFunctions});
+	}
 
 
 	// private
@@ -295,7 +299,7 @@ OSCSched : BeatSched {
 			server = list.at(0);
 			clock.sched(secs - server.latency,thTask = nextAbsFunc = {
 				if(notCancelled = (thTask === nextAbsFunc),{
-					server.sendBundle(server.latency,list.at(1))
+					server.listSendBundle(server.latency,list.at(1))
 				});
 				nil
 			});

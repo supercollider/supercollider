@@ -10,6 +10,7 @@ ModalFreq : AbstractPlayerProxy {
 			.root_(root).octave_(octave).stepsPerOctave_(stepsPerOctave)
 			.init
 	}
+	storeArgs { ^[degree,scale,root,octave,stepsPerOctave] }
 	init {
 		// make Patch do all the work
 		source = 
@@ -55,6 +56,7 @@ Midi2Freq : KrPlayer {
 
 		^Patch(UGenInstr(Midi2FreqUGen,\kr),[ note,octave ])
 	}
+	//storeArgs { ^[degree,octave] }
 	
 	//TODO
 	//asStream

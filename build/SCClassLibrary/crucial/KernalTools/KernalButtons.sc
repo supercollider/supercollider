@@ -2,14 +2,14 @@
 
 ClassNameLabel : ActionButton {
 
-	*new { arg  class,layout,maxx=200;
-		^super.new(layout,class.name.asString,{class.gui},maxx,nil,
+	*new { arg  class,layout,maxx=200,maxy;
+		^super.new(layout,class.name.asString,{class.gui},maxx,maxy,
 			Color.white,
 			Color( 0.52156862745098, 0.75686274509804, 0.90196078431373 )
 		);
 	}
-	*newBig { arg  class,layout,maxx=200;
-		^super.new(layout,class.name.asString,{class.gui},maxx,30, Color.white,
+	*newBig { arg  class,layout,maxx=200,maxy=30;
+		^super.new(layout,class.name.asString,{class.gui},maxx,maxy, Color.white,
 			Color( 0.52156862745098, 0.75686274509804, 0.90196078431373 ),
 			Font("Helvetica-Bold",18))
 	}
@@ -18,14 +18,18 @@ ClassNameLabel : ActionButton {
 
 
 MethodLabel : ActionButton {
-
+	// show args and prototypes
 	*new { arg  method,layout,maxx=100;
 		^super.new(layout,method.ownerClass.name.asString ++ "-" ++ method.name.asString,
-			{method.gui},maxx,15,nil,Color.new255(245, 222, 179));
+			{method.gui},maxx,15,nil,Color.new255(245, 222, 179),Font("Monaco",9));
 	}
 	*withoutClass { arg  method,layout,maxx=100;
-		^super.new(layout, "-" ++ method.name.asString,{method.gui},maxx,15,nil,
-			Color.new255(245, 222, 179));
+		^super.new(layout, method.name.asString,{method.gui},maxx,15,nil,
+			Color.new255(245, 222, 179),Font("Monaco",9));
+	}
+	*classMethod { arg  method,layout,maxx=100;
+		^super.new(layout,"*" ++ method.name.asString,{method.gui},maxx,15,nil,
+			Color.new255(245, 222, 179),Font("Monaco",9));
 	}
 	
 //	// search by selector link
@@ -49,9 +53,7 @@ Tile : ActionButton {
 
 	*new { arg  target,layout,maxx=100; 
 		^super.new(layout,target.asString,{ 
-				Sheet({ arg f; 
-					target.gui(f); 
-				},target.asString)
+				target.gui; 
 			},maxx,15, Color.black,Color.new255(152, 251, 152))
 	}
 

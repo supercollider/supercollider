@@ -67,7 +67,7 @@ FlowView : SCLayoutView {
 								w
 							},
 							bounds ?? {parent.asView.bounds});
-		decorator = FlowLayout(this.bounds,Point(2,2),Point(3,3));// after i am placed by parent
+		decorator = FlowLayout(this.bounds,Point(2,2),Point(4,4));// after i am placed by parent
 		autoRemoves = IdentitySet.new;
 	}
 
@@ -147,7 +147,7 @@ SCButtonAdapter : SCViewAdapter {
 		// NSFont-boundingRectForFont
 		// or NSString- (NSSize) sizeWithAttributes: (NSDictionary *) attributes 
 		this.makeView( layout,
-					(stringsize.clip(3,55) * 8.3).max(maxx?20),
+					(stringsize.clip(3,55) * 7.9).max(maxx?20),
 						(maxy ) )
 	}
 	initOneState { arg name,textcolor,backcolor;
@@ -239,7 +239,7 @@ PopUp : ActionButton { // change to use SCPopUp
 		this.label_(title.value 
 						?? {menuLabelsFunc.value(list.value.at(index),index)} 
 						?? {list.value.at(index).asString} 
-						??  {"choose..."});
+						??  {"choose..."}).refresh
 	}
 
 }

@@ -1,7 +1,7 @@
 
 Insp {
 
-	var <subject,<notes,<name,layout;
+	var <subject,<notes,<name,layout,box,hidden = false;
 	
 	*new { arg subject, notes;
 		^super.newCopyArgs(subject,notes).init
@@ -14,89 +14,96 @@ Insp {
 		});
 		if(name.size > 20,{ name = name.copyRange(0,19) ++ "..."});
 		InspManager.global.watch(this)
-	}	
-	gui { arg origin;
-		// ideally this will be a proper snapshot at the time of calling
-		// keep same location as last window
-		if(layout.notNil and: {layout.isClosed.not},{ layout.front.show; ^this });
-		{	
-			if(this === InspManager.global.currentInsp, {
+	}
+	show { arg inspView;
+		hidden = false;
+		if(box.isNil,{
+			this.gui(inspView);
+		},{
+			box.visible = true;
+		})
+	}
+	gui { arg inspView;
+		{
+			box = inspView.flow({ arg box;
 				// what's the calling method ?
-				if(origin.isNil, { origin = 240@10; });
-				layout = Sheet({ arg layout;
-					notes.do({ arg ag;
-						ag.smallGui(layout);
-					});
-					layout.startRow;
-					CXObjectInspector(subject).gui(layout);
-				},"insp:" + name,origin.x,origin.y,800,1000);
-			});
+				notes.do({ arg ag;
+					ag.smallGui(box);
+				});
+				box.startRow;
+				CXObjectInspector(subject).gui(box);
+			},Rect(180,0,775,900));
+			box.visible = hidden.not;
+
 			nil
 		}.defer
 	}
-	origin { 
-		^if(layout.notNil,{
-			layout.bounds.origin
-		},{
-			nil
-		}) 
-	}
 	hide {
-		if(layout.notNil,{
-			layout.hide;
-		})
+		if(box.notNil,{
+			box.visible = false;
+		});
+		hidden = true;
 	}
-	close {
-		if(layout.notNil, { layout.close })
+	remove {
+		if(box.notNil,{ 
+			box.remove;
+			box = nil;
+		});	
+	}
+	didClose {
+		box = nil;
 	}
 }
 
 InspManager {
 
 	classvar <global;
-
-	var <insps,menu,<currentInsp;
+	var <insps,menu,<currentInsp,inspView;
 	
 	*initClass { global = this.new }
 	
 	watch { arg insp;
-
 		insps = insps.add(insp);	
-	
-		//if window not open, make
 		if(menu.isNil, {
-			menu = CXMenu.newWith(insps.collect({ arg insp; 
-						insp.name -> {this.showInsp(insp) } 
-					}));
+			menu = \pleaseWait;
+			{
+				Sheet({ arg f;
+					var h;
+					h = SCHLayoutView(f,Rect(0,0,1000,1000));
+					menu = CXMenu.newWith([insp.name->{this.showInsp(insp)}]);
 					menu.closeOnSelect = false;
-			{ 	menu.gui(nil,200,600,200); 
-				menu.layout.removeOnClose(this);
-				this.showInsp(insp);
+					menu.gui(h); 
+
+					inspView = SCCompositeView(h,Rect(180,0,800,1000));
+					this.showInsp(insp);
+
+				},"-Insp-",width:1100,height:1100)
+				.background_(Color.red(0.2,0.15))
+				.removeOnClose(this);
+				//.window.alpha_(0.96);
+				
 				nil; 
 			}.defer;
 		},{
 			{
-				// add an entry
-				menu.add(insp.name -> {this.showInsp(insp) } );
-				menu.resize;
+				while({menu ==\pleaseWait},{ 0.1.wait });
+				menu.add(insp.name -> { this.showInsp(insp) });
 				this.showInsp(insp);
 				nil
-			}.defer
+			}.defer;
 		});		
 	}
 	showInsp { arg insp;
-		var origin;
-		if(currentInsp.notNil,{ 
-			//origin = currentInsp.origin;
+		if(currentInsp.notNil,{
 			currentInsp.hide 
 		});			
 		currentInsp = insp;
-		insp.gui; //(origin);
+		insp.show(inspView);
 	}
-	remove { // the menu shut
-		insps.do({ arg insp; insp.close });
-		insps = [];
+	remove {
+		//"InspManager-remove window shut".debug;
 		menu = nil;
+		insps.do({ arg in; in.didClose });
+		insps = [];
 	}
-	
 }

@@ -6,9 +6,9 @@ Silence : SynthlessPlayer {
 
 PlayerInputProxy : Silence { // audio
 
-	var <>spec,<>initValue,>numChannels;
+	var <>spec,<>initValue = 0,>numChannels;
 	var <patchIn;
-	var inBus,nullBus;
+	var inBus;
 	
 	*new { arg spec=\audio;
 		^super.new.spec_(spec.asSpec).pipinit
@@ -17,22 +17,26 @@ PlayerInputProxy : Silence { // audio
 		patchIn = PatchIn.newByRate(spec.rate);
 	}
 	setInputBus { arg bus;
-		if(nullBus.notNil and: {nullBus.index.notNil},{ nullBus.free });
 		inBus = bus;
+		initValue = inBus.index;
 	}
 	setNodeControl { arg nc;
 		patchIn.nodeControl = nc;
 	}
 	synthArg {
-		^initValue // ? spec.default
+		^initValue
 	}
-	prepareToBundle { arg group,bundle;
-		if(initValue.isNil,{
-			// should share this
-			nullBus = Bus.performList(this.rate,group.server,this.numChannels);
-			initValue = nullBus.index; 
-		});
-		super.prepareToBundle(group,bundle);
+//	prepareToBundle { arg group,bundle;
+//		if(initValue.isNil,{
+//			// should share this
+//			nullBus = Bus.performList(this.rate,group.server,this.numChannels);
+//			initValue = nullBus.index; 
+//		});
+//		super.prepareToBundle(group,bundle);
+//	}
+	makePatchOut {
+		// bus is always given to me
+		patchOut = PatchOut(this,nil,inBus);
 	}
 	rate { ^spec.rate }
 	numChannels { ^(numChannels ?? {spec.tryPerform(\numChannels) ? 1}) }
@@ -49,7 +53,9 @@ ObjectNotFound : Silence {
 	
 	*new { arg path;
 		somethingMissing = path;
+		(path ++ " NOT FOUND !! ").warn;
 		^super.new(0.0).missing_(path)
 	}
+	storeArgs { ^[missing] }
 
 }

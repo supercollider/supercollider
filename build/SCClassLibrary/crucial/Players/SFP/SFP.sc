@@ -112,6 +112,7 @@ AbstractSFP  : AbstractPlayer {
 				lastSynth = synth; // the one we start with
 				nextSynth = Synth.basicNew(this.defName,this.server);
 			});
+			NodeWatcher.register(nextSynth);
 		});	
 	}
 
@@ -138,13 +139,15 @@ SFP : AbstractSFP  {
 	
 	*getNew { arg receivingFunction;
 		GetFileDialog({ arg ok, path;	
-			var it;	
 			if(ok,{
-				if(receivingFunction.notNil,{
-					receivingFunction.value(this.new(path));
-				},{	
-					it=this.new(path).topGui;	
-				})
+				{
+					if(receivingFunction.notNil,{
+						receivingFunction.value(this.new(path));
+					},{	
+						this.new(path).gui;
+					});
+					nil
+				}.defer
 			})	
 		})
 	}
@@ -165,7 +168,7 @@ SFP : AbstractSFP  {
 //					found = file.openRead(file.path);
 //					filePath = fi
 //				},{
-					die("not a path or a SoundFile ",sfilePath)
+					die("not a path or a SoundFile " + sfilePath)
 //				})
 			});
 		});
