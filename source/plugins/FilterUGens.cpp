@@ -1670,14 +1670,12 @@ void Slew_next(Slew* unit, int inNumSamples)
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
-	float upf = ZIN0(1);
-	float dnf = ZIN0(2);
+	float upf = ZIN0(1) *  unit->mRate->mSampleDur;
+	float dnf = 0.f - ZIN0(2) *  unit->mRate->mSampleDur;
 	float level = unit->mLevel;
 	LOOP(inNumSamples, 
 		float slope = ZXP(in) - level;
-		if (slope > upf) slope = upf;
-		else if (slope < dnf) slope = dnf;
-		level += slope; 
+		level += sc_clip(slope,dnf,upf); 
 		ZXP(out) = level; 
 	);
 	unit->mLevel = level;
@@ -3130,19 +3128,23 @@ void Compander_next(Compander* unit, int inNumSamples)
 		float val = fabs(ZXP(control)); 
 		if (val > newmaxval) newmaxval = val;
 	);
-	
+    
 	if (newmaxval < prevmaxval) {
 		newmaxval = newmaxval - unit->m_relaxcoef * (prevmaxval - newmaxval);
 	} else {
 		newmaxval = newmaxval - unit->m_clampcoef * (prevmaxval - newmaxval);
 	}
-	
-	float next_gain;
+
+	float next_gain;//,absx;
 	if (newmaxval < thresh) {
 		if (slope_below == 1.f) {
 			next_gain = 1.f;
 		} else {
 			next_gain = pow(newmaxval / thresh, slope_below - 1.f);
+            //blows up here
+            float32 absx = fabs(next_gain);
+            //zap gremlins, but returns 1. on failure
+            next_gain =  (absx > (float32)1e-15 && absx < (float32)1e15) ? next_gain : (float32)1.;    
 		}
 	} else {
 		if (slope_above == 1.f) {
