@@ -272,7 +272,11 @@ NodeProxy : BusPlug {
 		parents = IdentitySet.new;
 	}
 	
-	end { this.stop; this.free; } //stop playback and inner group
+	end {
+		var dt;
+		dt = this.fadeTime ? 0.01;
+		Routine({ this.free; (dt + server.latency).wait; this.stop;  }).play;
+	}
 	
 	fadeTime_ { arg t;
 		this.set(\fadeTime, t);
@@ -826,11 +830,6 @@ NodeProxy : BusPlug {
 		});
 	}
 	
-	releaseAndStop {
-		var dt;
-		dt = this.fadeTime ? 0.01;
-		Routine({ this.release; (dt + server.latency).wait; this.end }).play;
-	}
 	
 	//xfades
 	
@@ -938,6 +937,7 @@ NodeProxy : BusPlug {
 			);
 		}, { "not playing".inform });
 	}
+	
 	
 }
 
