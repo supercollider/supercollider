@@ -12,7 +12,7 @@ ProxySpace : EnvironmentRedirect {
 	}
 	
 	*new { arg server, name, clock;
-		^super.new(name).einit(server, name, clock)
+		^super.new(name).einit(server ? Server.local, name, clock)
 	}
 	
 	*push { arg server, name, clock;
@@ -27,7 +27,7 @@ ProxySpace : EnvironmentRedirect {
 		fadeTime = dt;
 		this.do({ arg item; item.fadeTime = dt });
 	}
-	
+	/*
 	makeTempoClock { arg tempo, beats, seconds;
 		var clock, proxy;
 		proxy = NodeProxy.control(server, 1);
@@ -37,6 +37,7 @@ ProxySpace : EnvironmentRedirect {
 		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds);
 		super.put(\tempo, proxy);
 	}
+	*/
 	
 	//todo add group to target
 	einit { arg srv, argName, argClock; 
@@ -85,6 +86,12 @@ ProxySpace : EnvironmentRedirect {
 	play { arg key=\out, busIndex=0, nChan=2;
 		^this.use({ arg envir;
 			this.at(key).play(busIndex, nChan);
+		});
+	}
+	
+	stop { arg key=\out;
+		^this.use({ arg envir;
+			this.at(key).stop;
 		});
 	}
 	
@@ -152,6 +159,7 @@ ProxySpace : EnvironmentRedirect {
 		
 }
 
+//needs further testing
 
 SharedProxySpace  : ProxySpace {
 	

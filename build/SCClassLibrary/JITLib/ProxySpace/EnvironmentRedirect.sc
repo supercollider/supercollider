@@ -1,4 +1,4 @@
-//jrh 2002
+
 //abstract class that servers as a template for any environment hacks
 
 EnvironmentRedirect {
@@ -14,32 +14,19 @@ EnvironmentRedirect {
 	}
 	
 	*pop { 
-		var curr;
-		curr = currentEnvironment;
-		if(curr.isKindOf(this), {
-			currentEnvironment = saveEnvir;
-			topEnvironment = saveTopEnvir;
-		}, {
-			"outside environment already".inform;
-		})
-	
-	}
-	
-	push { 
-		if(currentEnvironment === this, { ^topEnvironment = this });
-		if(currentEnvironment.isKindOf(this.class),
-			{ currentEnvironment.pop });
-		this.class.saveEnvir = currentEnvironment;
-		this.class.saveTopEnvir = topEnvironment;
-		currentEnvironment = this;
-		topEnvironment = this; //to avoid error loss
+		Environment.pop;
 	}
 	
 	pop {
-		this.class.pop
+		Environment.pop
 	}
-
 	
+	push { 
+		topEnvironment = this;
+		if(currentEnvironment !== this, {  
+			Environment.push(this);
+		});
+	}
 	
 	//override in subclasses
 	
@@ -87,18 +74,19 @@ EnvironmentRedirect {
         ^envir.choose
      }
      
-     makeDocument { arg title, string, backcolor, stringcolor;
-     	var doc;
-     	doc = Document.new("", "untitled proxyspace", false)
-     		.background_(backcolor ? rgb(223, 223, 223))
-			.stringColor_(stringcolor ? rgb(0,0,0));
-		this.linkDoc(doc, false);
+     makeDocument { arg title, string;
+     	^EnvirDocument.new(this);
 	 }
      
      linkDoc { arg doc, instantPush=true;
      	doc = doc ? Document.current;
-     	if(instantPush) {this.push};
-     	doc	.toFrontAction_({ this.push })
-     		.endFrontAction_({ this.pop });
+     	if(doc.isKindOf(EnvirDocument), {
+     		doc.envir_(this)
+     	}, {
+     		if(instantPush) {this.push};
+     		"added actions to current doc".inform;
+     		doc	.toFrontAction_({ this.push })
+     			.endFrontAction_({ this.pop });
+     	});
      }
 }
