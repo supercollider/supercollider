@@ -11,8 +11,9 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 Rotate2.kr(x, y, pos)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Rotate2 can be used for rotating an ambisonic B-format sound field around an axis.\
 Rotate2 does an equal power rotation so it also works well on stereo sounds.\
 It takes two audio inputs (x, y) and an angle control (pos).\
@@ -25,20 +26,18 @@ yout = cos(angle) * yin - sin(angle) * xin;\
 where angle = pos * pi,  so that -1 becomes -pi and +1 becomes +pi. \
 This allows you to use an LFSaw to do continuous rotation around a circle.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b x, y
+\f0\b \cf0 x, y
 \f1\b0  - input signals\
 
 \f0\b pos
 \f1\b0  - angle to rotate around the circle from -1 to +1. \
 -1 is 180 degrees, -0.5 is left, 0 is forward, +0.5 is right, +1 is behind.\
 \
-\
-\
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 (\
+\f2\fs18 \cf0 (\
 \{\
 	\cf2 var\cf0  w, x, y, p, q, a, b, c, d;\
 	\
