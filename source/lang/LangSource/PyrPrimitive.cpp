@@ -47,7 +47,7 @@
 //#include "Wacom.h"
 #include "InitAlloc.h"
 
-#define SANITYCHECK 1
+#define SANITYCHECK 0
 int yyparse();
 
 extern bool gTraceInterpreter;
