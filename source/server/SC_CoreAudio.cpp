@@ -236,29 +236,10 @@ void PerformCompletionMsg(World *inWorld, OSC_Packet *inPacket)
 {
 	bool isBundle = gIsBundle.check((int32*)inPacket->mData);
 	
-	SC_CoreAudioDriver *driver = inWorld->hw->mAudioDriver;
-
-	if (!isBundle) {
-		PerformOSCMessage(inWorld, inPacket->mSize, inPacket->mData, &inPacket->mReplyAddr);
+	if (isBundle) {
+		PerformOSCBundle(inWorld, inPacket);
 	} else {
-	
-		// in real time engine, schedule the packet
-		int64 time = *(int64*)(inPacket->mData + 8);
-
-		if (time == 0 || time == 1) {
-			PerformOSCBundle(inWorld, inPacket);
-		} else {
-			if (time < driver->mOSCbuftime) {
-				double seconds = (driver->mOSCbuftime - time)*kOSCtoSecs;
-				scprintf("late %.9f\n", seconds);
-				//FifoMsg outMsg;
-				
-				//ReportLateness(inPacket->mReply, seconds)
-			}
-			
-			SC_ScheduledEvent event(inWorld, time, inPacket);
-			driver->AddEvent(event);
-		}
+		PerformOSCMessage(inWorld, inPacket->mSize, inPacket->mData, &inPacket->mReplyAddr);
 	}
 }
 
