@@ -138,6 +138,14 @@ PV_BinScramble : UGen
 }
 
 
+PV_ConformalMap : UGen 
+{
+
+	*new { arg buffer, areal = 0.0, aimag = 0.0;
+		^this.multiNew('control', buffer, areal, aimag)
+	}
+}
+
 
 ////////////////////////////////////////////////////
 /*
