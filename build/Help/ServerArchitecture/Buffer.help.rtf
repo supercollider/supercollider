@@ -104,7 +104,7 @@ With Buffer methods that take a completionMessage, it is also possible to pass i
 		completionMessage: \{ \cf2 arg\cf0  buffer;\
 			\cf5 // synth add its s_new msg to follow \
 \cf0 			\cf5 // after the buffer read completes\
-\cf0 			y.newMsg(s,\cf4 \\addToTail\cf0 ,[\cf4 \\bufnum\cf0 ,buffer.bufnum])\
+\cf0 			y.newMsg(s,[\cf4 \\bufnum\cf0 ,buffer.bufnum],\\addToTail)\
 		\});\
 	\
 	)\
@@ -154,9 +154,8 @@ With Buffer methods that take a completionMessage, it is also possible to pass i
 			\cf5 //read a file into the buffer and play it right away\
 \cf0 			b = \cf2 Buffer\cf0 .cueSoundFile(s,path,0,2, completionMessage: m);\
 		\});\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 \
+\f0\b\fs28 \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 \ulnone 	Buffer.new(server, numFrames, numChannels);\
@@ -175,9 +174,8 @@ With Buffer methods that take a completionMessage, it is also possible to pass i
 	b = \cf2 Buffer\cf0 .new(s,44100 * 8.0,2);\
 	c = \cf2 Buffer\cf0 .new(s,44100 * 8.0,2);\
 	s.sendBundle(0,b.allocMsg,c.allocMsg); // sent both at the same time\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 \
+\f0\b\fs28 \ul \
 Accessing Instance Variables\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
