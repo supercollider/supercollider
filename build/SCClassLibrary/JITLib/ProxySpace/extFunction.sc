@@ -14,7 +14,9 @@
 	
 	schedToBeat { arg clock, beats=0;
 			clock = clock ? TempoClock.default;
-			clock.schedAbs(clock.elapsedBeats.ceil + beats, { this.value(clock); nil })
+			clock.schedAbs(clock.elapsedBeats.ceil + beats, 
+				{ arg beat, sec, clock; this.value(beat, sec, clock); nil }
+			)
 	}
 
 }
