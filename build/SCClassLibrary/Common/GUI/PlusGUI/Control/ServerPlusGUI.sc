@@ -69,9 +69,11 @@
 		recorder.enabled = false;
 		
 		w.view.keyDownAction = { arg ascii, char;
-			if(char === $n) { this.queryAllNodes };
-			if(char === $ ) { this.boot };
-			if(char == $d) {
+			case 
+			{char === $n} { this.queryAllNodes }
+			{char === $ } { this.boot }
+			{char === $s and: {this.inProcess}} { this.scope }
+			{char == $d} {
 				if(dumping) {
 					this.dumpOSC(0);
 					this.startAliveThread;
