@@ -220,9 +220,10 @@ SimpleNumber : Number {
 	}
 	
 	keyToDegree { arg scale, stepsPerOctave=12;
-		var key;
+		var key, n;
+		n = this div: stepsPerOctave * scale.size;
 		key = this % stepsPerOctave;
-		^key.asIndex2(scale)
+		^key.asIndex2(scale) + n
 	}
 	
 	roundToScale { arg scale, stepsPerOctave=12;
