@@ -74,7 +74,7 @@ Score {
 			sectionlist = sectionlist.add(item);
 			}
 		};
-		sectionlist = sectionlist.add([end - start, [\c_set, 0, 0]]); // add dummy command
+		sectionlist = sectionlist.add([end - start, [0]]); // add dummy command (cmd_none)
 		if(configevents.notNil, 
 			{if(configevents.isArray, 
 				{if(configevents[0] == 0.0,
@@ -82,7 +82,7 @@ Score {
 					{"Configuration events should have a timestamp of 0.0".warn; ^nil})},
 				{"Configuration events need to be a bundle array: [time, [events]]".warn;
 					^nil})});
-		^this.new(sectionlist);	
+		^this.class.new(sectionlist);	
 	}
 	
 	writeOSCFile { arg path, from, to;
