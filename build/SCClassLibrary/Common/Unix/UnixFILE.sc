@@ -60,13 +60,7 @@ UnixFILE : IOStream {
 	getLine { arg maxSize=1024;
 		var string;
 		string = String.newClear(maxSize);
-		string = this.prGetLine(string);
-		if (string.isNil, { ^nil });
-		if(string.at(string.size - 1) == $\n,{
-			^string.copyRange(0,string.size - 2)
-		},{
-			^string.copy		
-		});
+		^this.prGetLine(string);
 	}
 	prGetLine { arg argString;
 		// returns a string up to lesser of next newline 

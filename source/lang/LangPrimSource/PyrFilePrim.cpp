@@ -270,6 +270,7 @@ int prFileReadLine(struct VMGlobals *g, int numArgsPushed)
 		SetNil(a);
 	} else {
 		b->uos->size = strlen(b->uos->s);
+		if (b->uos->s[b->uos->size-1] == '\n') b->uos->size--;
 		a->ucopy = b->ucopy;
 	}
 	return errNone;
