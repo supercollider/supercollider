@@ -73,7 +73,7 @@ NodeProxy : AbstractFunction {
 		nChan.do({ arg i;
 			Synth.newMsg(msg, "proxyOut-linkDefAr", [\i_busOut, outBus+i, \i_busIn, bus.index+i], playGroup, \addToTail);
 		});
-		server.listSendBundle(0, msg);
+		server.listSendBundle(nil, msg);
 		^playGroup
 	}
 	
@@ -111,7 +111,7 @@ NodeProxy : AbstractFunction {
 		this.setObj(obj, true) 
 	}
 	
-	setObj { arg obj, send=false, freeLast=true, add=false, onCompletion; 		var def, ok, writeOK;
+	setObj { arg obj, send=false, freeLast=true, add=false, onCompletion, latency=0.3; 		var def, ok, writeOK;
 			
 			ok = this.initFor(obj);
 			
@@ -128,7 +128,7 @@ NodeProxy : AbstractFunction {
 				synthDefs = synthDefs.add(def);
 					
 				if(send, 
-						{ this.sendToServer(freeLast, false, nil, onCompletion) },
+						{ this.sendToServer(freeLast, false, nil, onCompletion, latency) },
 						{ this.updateSynthDef } //only load def. maybe we are on server already? 
 				);
 				
@@ -192,7 +192,7 @@ NodeProxy : AbstractFunction {
 			
 	// server communications, updating
 	
-	sendToServer { arg freeLast=true, loaded=false, extraArgs, onCompletion;
+	sendToServer { arg freeLast=true, loaded=false, extraArgs, onCompletion, latency=0.3;
 		var msg, resp;
 		if( synthDefs.isEmpty.not and: { server.serverRunning }, {
 				msg = List.new;
@@ -200,12 +200,18 @@ NodeProxy : AbstractFunction {
 				
 				if(loaded.not, { 
 					this.updateSynthDef;
-					//resp = OSCresponder(server.addr, '/done', {
-//						this.schedSendOSC(msg, clock, onCompletion);
-//						resp.remove;
-//					}).add
-					//doesn't work when several defs are sent at once.
-					Routine({ 0.3.wait; this.schedSendOSC(msg, onCompletion); }).play;
+					if(latency.notNil, {
+						SystemClock.sched(latency, {
+							this.schedSendOSC(msg, onCompletion); 
+						});
+					
+					}, {
+						//doesn't work when several defs are sent at once.
+						resp = OSCresponder(server.addr, '/done', {
+							this.schedSendOSC(msg, onCompletion);
+							resp.remove;
+						}).add
+					});
 				}, { 
 					this.schedSendOSC(msg, onCompletion)
 				});
@@ -219,7 +225,6 @@ NodeProxy : AbstractFunction {
 							onCompletion.value(this) 
 						})
 					}, {
-						//server.sendMsgList(msg);
 						server.listSendBundle(nil, msg); 
 						onCompletion.value(this)
 					})

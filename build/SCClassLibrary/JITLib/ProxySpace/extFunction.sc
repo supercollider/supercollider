@@ -1,13 +1,13 @@
 +Function {
 
-	send { arg key, add=false;
+	send { arg key, add=false, onComplete;
 		var proxy;
 		proxy = Library.at(\proxy, key);
 		if(proxy.isNil, {
 			proxy = NodeProxy(Library.at(\defaultServer) ? Server.local);
 			Library.put(\proxy, key, proxy);
 		});
-		proxy.setObj(this, true, add.not, add);
+		proxy.setObj(this, true, add.not, add, onComplete, nil);
 		^proxy
 	}
 	
