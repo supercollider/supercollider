@@ -154,7 +154,6 @@ Node {
 		^this.perform(addAction, target, args)
 	}
 
-
 	// private
 	*prNew { arg server;
 		^super.newCopyArgs(server.nextNodeID, server ? Server.default)
@@ -279,7 +278,6 @@ Group : Node {
 		target = target.asTarget;
 		group = this.basicNew(target.server);
 		bundle.add(group.perform(addAction, target));
-		group.group.finishBundle(bundle, group);
 		^group
 	}
 	//private
@@ -287,9 +285,7 @@ Group : Node {
 		^["/g_new", nodeID, addActionNum, targetID]  	 // "/g_new"
 	}
 	
-	finishBundle { //override this to do modifications that are dependant
-				//on a synth's group. see: AbstractEnsemble-finishBundle
-	}	
+
 }
 
 Synth : Node {
@@ -356,7 +352,6 @@ Synth : Node {
 		target = target.asTarget;
 		synth = this.basicNew(defName, target.server);
 		bundle.add(synth.perform(addAction, target, args));
-		synth.group.finishBundle(bundle, synth);
 		^synth
 	}
 
