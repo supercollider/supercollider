@@ -1,34 +1,35 @@
 
 CocoaDialog {
 
-	classvar returnSlot,ok,cancel;
+	classvar result, ok, cancel;
 	
-	*getPaths { arg okFunc,cancelFunc;
-		if(returnSlot.isNil,{
-			returnSlot = Array.new;
-			ok = okFunc;
-			cancel = cancelFunc;
-			this.prGetPathsDialog(returnSlot);
-		},{
+	*getPaths { arg okFunc, cancelFunc, maxSize=20;
+		if(result.notNil,{
 			"A CocoaDialog is already in progress.".warn;
+			^nil
 		});
+		
+		result = Array.new(maxSize);
+		ok = okFunc;
+		cancel = cancelFunc;
+		this.prGetPathsDialog(result);
 	}
 	
-	*prGetPathsDialog { arg returnSlot;
+	*prGetPathsDialog { arg argResult;
 		_Cocoa_GetPathsDialog
 		^this.primitiveFailed
 	}
 
 	*ok {
-		ok.value(returnSlot);
-		ok = cancel = returnSlot = nil;
+		ok.value(result);
+		ok = cancel = result = nil;
 	}
 	*cancel {
 		cancel.value;
-		ok = cancel = returnSlot = nil;
+		ok = cancel = result = nil;
 	}
 	*clear { // in case of errors, invalidate any previous dialogs
-		returnSlot = nil;
+		result = nil;
 	}
 }
 

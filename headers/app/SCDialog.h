@@ -16,28 +16,22 @@
 #include "PyrSched.h"
 #import "SCVirtualMachine.h"
 
-
-
-
-
 @interface SCDialog : NSObject {
     PyrObject *receiver;
-    PyrObject *returnSlot;
+    PyrObject *resultArray;
     id temp;
 }
 
-+(id)receiver:(PyrObject*)receiver returnSlot:(PyrObject*)returnSlot;
--(id)initWithReceiver:(PyrObject*)argreceiver returnSlot:(PyrObject*)argreturnSlot;
++(id)receiver:(PyrObject*)argReceiver resultArray:(PyrObject*)argResultArray;
+-(id)initWithReceiver:(PyrObject*)argReceiver resultArray:(PyrObject*)argResultArray;
 
-// call method on self for Cocoa usage
--(void)detachThreadWithSelector:(SEL)selector;
 // call method on self when SCVM is ready for sclang usage
 -(void)scvmDeferWithSelector:(SEL)selector;
-
 
 -(void)ok;
 -(void)cancel;
 
+-(void)returnPaths;
 -(void)getPaths;
 
 @end

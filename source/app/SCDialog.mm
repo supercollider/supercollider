@@ -24,31 +24,24 @@
 
 @implementation SCDialog
 
-+(id)receiver:(PyrObject*)receiver returnSlot:(PyrObject*)returnSlot
++(id)receiver:(PyrObject*)argReceiver resultArray:(PyrObject*)argResultArray
 {
-    return [[super alloc] initWithReceiver: receiver returnSlot: returnSlot];
+    return [[super alloc] initWithReceiver: argReceiver resultArray: argResultArray];
 }
--(id)initWithReceiver:(PyrObject*)argreceiver returnSlot:(PyrObject*)argreturnSlot
+
+-(id)initWithReceiver:(PyrObject*)argReceiver resultArray:(PyrObject*)argResultArray
 {	
     if(self == [super init]) {
-        receiver = argreceiver;
-        returnSlot = argreturnSlot;
-    }
+        receiver = argReceiver;
+        resultArray = argResultArray;
+	}
     return self;
 }
 
-
-
-// detach method on self for Cocoa usage
--(void)detachThreadWithSelector:(SEL)selector
-{
-    [NSThread detachNewThreadSelector:selector toTarget:self withObject:NULL];
-}
-// SCVM defer method on self for sclang usage
 -(void)scvmDeferWithSelector:(SEL)selector
 {
-    NSInvocation *invocation =  [NSInvocation invocationWithMethodSignature:
-                                                    [self methodSignatureForSelector: selector]];
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:
+                                        [self methodSignatureForSelector: selector]];
     [invocation setTarget:self];
     [invocation setSelector: selector];
     [invocation retainArguments];
@@ -59,17 +52,15 @@
 
 -(void)getPaths
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
     
     NSArray *urls = [docctl URLsFromRunningOpenPanel];
     if(urls) {
         temp = [urls retain];
-        [self scvmDeferWithSelector: @selector(returnPaths) ];
+		[self returnPaths];
     } else {
-        [self scvmDeferWithSelector: @selector(cancel) ];
+		[self cancel];
     }
-    [pool release];
 }
         
 -(void)returnPaths
@@ -87,11 +78,11 @@
         PyrSlot slot;
         SetObject(&slot, pyrPathString);
         
-        returnSlot->slots[i].ucopy = slot.ucopy;
+        resultArray->slots[i].ucopy = slot.ucopy;
 
-        g->gc->GCWrite(returnSlot,pyrPathString);
+        g->gc->GCWrite(resultArray,pyrPathString);
         // have to set size field each time in order that gc can find the created objects
-        returnSlot->size = i+1;
+        resultArray->size = i+1;
     }
     pthread_mutex_unlock (&gLangMutex);
 
@@ -104,8 +95,8 @@
 
 -(void)ok
 {
-    PyrSymbol *method = getsym("ok");
     pthread_mutex_lock (&gLangMutex);
+		PyrSymbol *method = getsym("ok");
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
         ++g->sp;  SetObject(g->sp, receiver ); 
@@ -113,10 +104,11 @@
         g->canCallOS = false;
     pthread_mutex_unlock (&gLangMutex);
 }
+
 -(void)cancel
 {
-    PyrSymbol *method = getsym("cancel");
     pthread_mutex_lock (&gLangMutex);
+		PyrSymbol *method = getsym("cancel");
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
         ++g->sp;  SetObject(g->sp, receiver ); 

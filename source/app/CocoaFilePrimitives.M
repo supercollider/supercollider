@@ -137,8 +137,10 @@ int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *receiver = g->sp - 1; // CocoaDialog class
     PyrSlot *array = g->sp; // an array
     
-    SCDialog *dialog = [SCDialog receiver: receiver->uo returnSlot: array->uo ];
-    [dialog detachThreadWithSelector:@selector(getPaths) ];
+    SCDialog *dialog = [SCDialog receiver: receiver->uo resultArray: array->uo ];
+
+    [dialog scvmDeferWithSelector:@selector(getPaths) ];
+
     return errNone;
 }
 
