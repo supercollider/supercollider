@@ -27,7 +27,7 @@ CXPlayerControl : AbstractPlayControl {
 			// we'll need channel offset maybe.
 			//group = Group.newToBundle(bundle, target, addAction);
 			source.prepareToBundle(nil, bundle);
-			f = {ÊCmdPeriod.remove(f); source.free; };
+			f = {  CmdPeriod.remove(f); source.free; };
 			CmdPeriod.add(f); 
 			if(source.readyForPlay.not) {
 				source.makePatchOut(nil, true, bus, bundle);
