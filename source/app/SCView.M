@@ -242,7 +242,7 @@ bool SCView::hit(SCPoint where) const
 	return SCPointInRect(where, mBounds);
 }
 
-void SCView::keyDown(int character, int modifiers,unsigned short keycode)
+void SCView::keyDown(int character, int modifiers, unsigned short keycode)
 {
     PyrSymbol *method = getsym("keyDown");
     pthread_mutex_lock (&gLangMutex);
@@ -260,7 +260,7 @@ void SCView::keyDown(int character, int modifiers,unsigned short keycode)
     pthread_mutex_unlock (&gLangMutex);
 }
 
-void SCView::keyUp(int character, int modifiers,unsigned short keycode)
+void SCView::keyUp(int character, int modifiers, unsigned short keycode)
 {
     PyrSymbol *method = getsym("keyUp");
     pthread_mutex_lock (&gLangMutex);
