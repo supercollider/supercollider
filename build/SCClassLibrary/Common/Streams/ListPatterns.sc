@@ -8,7 +8,7 @@ Pindex : Pattern {
 		listStream = listPat.asStream;
 		repeats.do {
 			list = listStream.next;
-			if (list.isNil) { nil.alwaysYield };
+			if (list.isNil) { ^inval };
 			indexStream = indexPat.asStream;
 			while {
 				index = indexStream.next;
