@@ -114,7 +114,7 @@ int brakptr = 0;
 bool checkBraks(unsigned int startpos, unsigned int endpos, unichar *text, int length);
 bool checkBraks(unsigned int startpos, unsigned int endpos, unichar *text, int length)
 {
-	int pos;
+	unsigned int pos;
 	unichar c;
 	
 	brakptr = 0;
@@ -147,7 +147,6 @@ bool checkBraks(unsigned int startpos, unsigned int endpos, unichar *text, int l
 bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, bool ignoreImmediateParens);
 bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, bool ignoreImmediateParens)
 {
-    int pos;
     unichar c, d;
     
     // check selection internally
@@ -529,19 +528,19 @@ extern bool compiledOK;
     {
     NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
     OSType creatorval = [attr2 fileHFSCreatorCode];
-    printf("creator was %d   SCjm %d\n", creatorval, 'SCjm');
+    //printf("creator was %d   SCjm %d\n", creatorval, 'SCjm');
     }
     
     NSMutableDictionary *attr = [NSMutableDictionary dictionary];
     NSNumber *creator = [NSNumber numberWithInt: 'SCjm'];
     [attr setObject: creator forKey: NSFileHFSCreatorCode];
     success = [fmgr changeFileAttributes: attr atPath: path];
-    printf("write success %d\n", success);
+    //printf("write success %d\n", success);
 
     NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
     OSType creatorval = [attr2 fileHFSCreatorCode];
 
-    printf("creator is %d   SCjm %d\n", creatorval, 'SCjm');
+    //printf("creator is %d   SCjm %d\n", creatorval, 'SCjm');
 	
     return success;
 }
@@ -553,13 +552,13 @@ extern bool compiledOK;
     NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
     OSType creatorval = [attr2 fileHFSCreatorCode];
 	
-    printf("r creator is %d   SCjm %d\n", creatorval, 'SCjm');
+    //printf("r creator is %d   SCjm %d\n", creatorval, 'SCjm');
 
     NSMutableDictionary *options = [NSMutableDictionary dictionary];
     NSDictionary *docAttrs;
     NSURL *url = [NSURL fileURLWithPath: path];
-    NSString *docType;
-    id val, viewSizeVal, paperSizeVal;
+	//NSString *docType;
+	//id val, viewSizeVal, paperSizeVal;
     BOOL success;
     
     if (!initTextView) initTextView = [self makeTextView];
