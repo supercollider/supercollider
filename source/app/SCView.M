@@ -222,8 +222,8 @@ Layout::Layout()
 
 SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: mNext(0), mParent(0), mTop(0), mObj(inObj), mBounds(inBounds), 
-	mVisible(true), mEnabled(true), mCanFocus(true),
-        mBackground(0), mDragHilite(false)
+	mVisible(true), mEnabled(true),
+        mBackground(0), mCanFocus(true), mDragHilite(false)
 {
 	if (inParent) inParent->add(this);
 	// store myself into sc object.
@@ -826,11 +826,11 @@ SCHLayoutView::~SCHLayoutView()
 
 void SCHLayoutView::setBounds(SCRect inBounds)
 {
-    float totalWidth = mSpacing * (mNumChildren + 1);
+    //float totalWidth = mSpacing * (mNumChildren + 1);
     SCView *child = mChildren;
     while (child) {
         SCRect bounds = child->getBounds();
-        Layout layout = child->getLayout();
+        //Layout layout = child->getLayout();
         
         child->setBounds(bounds);
         child = child->next();
@@ -1026,7 +1026,6 @@ void SCSlider::mouseTrack(SCPoint where, int modifiers)
 int SCSlider::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {	
 	int err;
-	SCColor sccolor;
 	if (symbol == s_value) {
 		double value;
 		err = slotDoubleVal(slot, &value);
@@ -1268,7 +1267,6 @@ void SCRangeSlider::mouseTrack(SCPoint where, int modifiers)
 int SCRangeSlider::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {	
 	int err;
-	SCColor sccolor;
 	if (symbol == s_lo || symbol == s_value) {
 		double lo;
 		err = slotDoubleVal(slot, &lo);
@@ -1423,7 +1421,6 @@ void SC2DSlider::mouseTrack(SCPoint where, int modifiers)
 int SC2DSlider::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {	
 	int err;
-	SCColor sccolor;
 	if (symbol == s_x) {
 		double x;
 		err = slotDoubleVal(slot, &x);
@@ -1660,7 +1657,7 @@ int SCButton::getProperty(PyrSymbol *symbol, PyrSlot *slot)
             SetInt(slot, mValue);
             return errNone;
 	}
-	char *name = symbol->name;
+	//char *name = symbol->name;
 
         return SCView::getProperty(symbol, slot);
 }
@@ -1714,8 +1711,8 @@ void SCPopUpMenu::draw(SCRect inDamage)
 
 	CGContextSetRGBFillColor(cgc, mStringColor.red, mStringColor.green, mStringColor.blue, mStringColor.alpha);
 	
-	int vc = bounds.origin.y + bounds.size.height/2;
-	int hc = bounds.origin.x + 7;
+	int vc = (int)(bounds.origin.y + bounds.size.height/2);
+	int hc = (int)(bounds.origin.x + 7);
     CGContextMoveToPoint(cgc, hc-3, vc-3);
 	
     CGContextAddLineToPoint(cgc, hc+3, vc-3);
@@ -1909,6 +1906,7 @@ SCMultiSliderView::SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj
         mCurrentY = 0.0;
         //mCurrentX = 0.0;
         mYValues = new double [mTabSize];
+		memset(mYValues, 0, mTabSize * sizeof(double));
         mReadOnly = mShowIndex = false;
         mResamp = 1; //used for zooming out
         mFillColor = SCMakeColor(0,0,0,1); // black
@@ -2091,17 +2089,28 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
 
 }
 
+int SCMultiSliderView::indexFromPoint(SCPoint where)
+{
+    if(mIsHorizontal){
+        return (int) ((where.x - mBounds.x -1)/(mThumbSize + mXOffset));
+    } else {
+        return (int) ((where.y - mBounds.y -1)/(mThumbSize + mXOffset));
+    }
+}
+
+double SCMultiSliderView::valueFromPoint(SCPoint where)
+{
+    if(mIsHorizontal){
+        return (where.y - mBounds.y - 1 - mThumbSizeY/2) / (mBounds.height - mThumbSizeY - 2);
+    } else {
+        return (where.x - mBounds.x - 1 - mThumbSizeY/2) / (mBounds.width - mThumbSizeY - 2);
+    }
+}
+
 void SCMultiSliderView::setValueFromPoint(SCPoint where)
 {
-    double y;
-    int xIndx;
-    if(mIsHorizontal){
-        y = (where.y - mBounds.y - 1 - mThumbSizeY/2) / (mBounds.height - mThumbSizeY - 2);
-        xIndx = (int) (where.x - mBounds.x -1)/(mThumbSize + mXOffset);
-    } else {
-        y = (where.x - mBounds.x - 1 - mThumbSizeY/2) / (mBounds.width - mThumbSizeY - 2);
-        xIndx = (int) (where.y - mBounds.y -1)/(mThumbSize + mXOffset);
-    }
+    double y = valueFromPoint(where);
+    int xIndx = indexFromPoint(where);
     setValue(xIndx, y, true);
 }
 
@@ -2139,6 +2148,13 @@ void SCMultiSliderView::setSelection(SCPoint where)
     if(mSelectionSize > maxSize) mSelectionSize = maxSize;
     refresh();
 }
+
+void SCMultiSliderView::mouseBeginTrack(SCPoint where, int modifiers)
+{
+	mPrevPoint = where;
+	mouseTrack(where, modifiers);
+}
+
 void SCMultiSliderView::mouseTrack(SCPoint where, int modifiers)
 {
     if (modifiers & NSCommandKeyMask) {
@@ -2153,7 +2169,28 @@ void SCMultiSliderView::mouseTrack(SCPoint where, int modifiers)
         else mCurrentX = where.y;
         sendMessage(getsym("doMetaAction"), 0, 0, 0);
     } else {
-        setValueFromPoint(where);
+		int prevIndex = indexFromPoint(mPrevPoint);
+		int index = indexFromPoint(where);
+		double prevValue = valueFromPoint(mPrevPoint);
+		double value = valueFromPoint(where);
+		if (prevIndex == index) {
+			setValue(index, value, true);
+		} else if (prevIndex < index) {
+			double val = prevValue;
+			double delta = (value - prevValue) / (index - prevIndex);
+			for (int i=prevIndex; i<=index; ++i) {
+				setValue(i, val, true);
+				val += delta;
+			}
+		} else {
+			double val = value;
+			double delta = (prevValue - value) / (prevIndex - index);
+			for (int i=index; i<=prevIndex; ++i) {
+				setValue(i, val, true);
+				val += delta;
+			}
+		}
+		mPrevPoint = where;
     }
 }
 
@@ -2285,7 +2322,7 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             
             if (!isKindOfSlot(slot, class_array)) return errWrongType;
             if(slot->uo->size == mTabSize && mSecYValues != NULL) {
-            int len = slot->uo->size;
+            //int len = slot->uo->size;
                 //memcpy(mSecYValues, slot->uo->slots, len * sizeof(double));
                 //mTabSize = slot->uo->size;
                 err = allocSlotDoubleArrayVal(slot, &mSecYValues);    

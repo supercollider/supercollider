@@ -461,6 +461,7 @@ public:
 	SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
         virtual ~SCMultiSliderView();
 	virtual void draw(SCRect inDamage);
+	virtual void mouseBeginTrack(SCPoint where, int modifiers);
 	virtual void mouseTrack(SCPoint where, int modifiers);
 	void setSelection(SCPoint where);
 	bool setValue(int inX, double inY, bool send);
@@ -472,6 +473,8 @@ public:
         virtual void receiveDrag();
 
 protected:
+	int indexFromPoint(SCPoint where);
+	double valueFromPoint(SCPoint where);
 	void setValueFromPoint(SCPoint point);
 	SCRect calcThumbRect(int xIn, double valIn, float xoffset);
 	int mThumbSize, mThumbSizeY; // size of the rect
@@ -488,6 +491,7 @@ protected:
         float mXOffset ; //space between points
         bool mReadOnly, mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsHorizontal, mIsFilled;
         int mResamp;
+		SCPoint mPrevPoint;
 };
 SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 //
