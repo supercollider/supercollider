@@ -3,30 +3,16 @@ BufferProxy { // blank space for delays, loopers etc.
 
 	var <buffer,<patchOut,<readyForPlay = false,server;
 
-	var size=0,<end=0,<>numChannels=1,<>sampleRate=44100.0;
-
-	// move down, no sense up here
-	var <>startFrame=0,<>endFrame = -1;
+	var <>size=0,<>numChannels=1,<>sampleRate=44100.0;
 
 	// while building the synth def...
 	var <>forArgi,bufnumControl;
 
 	*new { arg numFrames=44100,numChannels=1,sampleRate=44100.0;
-		^super.new
-			.startFrame_(0).endFrame_(numFrames - 1)
-			.numChannels_(numChannels).sampleRate_(sampleRate)
+		^super.new.size_(numFrames).numChannels_(numChannels).sampleRate_(sampleRate)
 	}
 	storeArgs { ^[this.size,numChannels,sampleRate] }
 
-	size {
-		// actual size loaded on server, not total size
-		^if(endFrame == -1,{
-			size - 1
-		},{
-			endFrame - startFrame
-		})	
-	}
-	
 	/* server support */
 	prepareToBundle { arg group,bundle;
 		group = group.asGroup;
@@ -36,7 +22,7 @@ BufferProxy { // blank space for delays, loopers etc.
 				// this makes me suitable for one server only
 				// which is probably always the case
 				buffer.free;
-				// make buffer
+				// ...make buffer
 			},{
 				// buffer is fine to use
 				^this
@@ -52,13 +38,12 @@ BufferProxy { // blank space for delays, loopers etc.
 	makePatchOut {
 		patchOut = ScalarPatchOut(this);
 	}
-	freePatchOut { patchOut.free }
-	setPatchOut { arg po; patchOut = po }
-	free {  
-		this.freeHeavyResources;
+	free {
 		this.freePatchOut;
+		this.freeHeavyResources;
 		readyForPlay = false;
 	}
+	freePatchOut { patchOut.free }
 	freeHeavyResources { arg bundle;
 		buffer.free;
 		buffer = nil;
@@ -129,17 +114,29 @@ Sample : BufferProxy { // a small sound loaded from disk
 
 	var <beatsize;
 	
+	var <end=0,// last possible Frame
+		<>startFrame=0,<>endFrame = -1;
+	
 	*new { arg soundFilePath,tempo,startFrame=0,endFrame = -1;
 		var new;
 		new = super.new;
-		new.load(soundFilePath);
-		new.tempo_(tempo ? TempoClock.default.tempo);
-		// backassward translation
+		new.load(soundFilePath,tempo);
+		// backassward sc2 translation
 		if(endFrame.isKindOf(Boolean), { startFrame = 0; endFrame = -1; }); 
 		new.startFrame_(startFrame).endFrame_(endFrame);
 		^new
 	}
 	storeArgs { ^[ this.class.abrevPath(soundFilePath) ,tempo, startFrame, endFrame ] }
+
+	size {
+		// actual size loaded on server, not total size of file
+		^if(endFrame == -1,{
+			size
+		},{
+			endFrame - startFrame + 1
+		})	
+	}
+
 	*soundsDir_ { arg dir;
 		soundsDir = dir.standardizePath ++ "/";
 	}
@@ -159,15 +156,14 @@ Sample : BufferProxy { // a small sound loaded from disk
 		});
 		^path
 	}
-
 	soundFilePath_ { arg string;
 		soundFilePath = string;
 		if(soundFilePath.notNil,{
 			name=PathName(soundFilePath).fileName.asSymbol;
 		});
 	}
-	load { arg thing;
-		this.prLoad(thing);
+	load { arg thing,tempo;
+		this.prLoad(thing,tempo);
 		this.calculate;
 		if(buffer.notNil,{ // if already loaded, on server
 			// TODO check size and numChannels !!
@@ -184,7 +180,7 @@ Sample : BufferProxy { // a small sound loaded from disk
 			});
 		});// else wait till prepare
 	}
-	prLoad { arg thing;
+	prLoad { arg thing,t;
 		var pathName;
 		
 		if(thing.isNil,{ // a blank holder till you load something by gui
@@ -192,20 +188,14 @@ Sample : BufferProxy { // a small sound loaded from disk
 			// channels, numFrames...
 			size = 44100; // 1 second
 			this.calculate;
-			this.tempo = Tempo.tempo;
+			this.tempo = t ? Tempo.tempo;
 			numChannels = 1;
 			sampleRate = 44100.0;
 			^this
 		});
-		if(thing.isKindOf(SoundFile),{
-			soundFile=thing;
-			this.soundFilePath = this.class.standardizePath( soundFile.path );
-			this.calculate;
-			this.guessBeats;
-			numChannels = soundFile.numChannels;
-			sampleRate = soundFile.sampleRate;
-			^this
-		});
+
+		// if tempo and endFrame are supplied, avoid loading
+		// need sampleRate
 		if(thing.isString,{
 			this.soundFilePath = this.class.standardizePath( thing );
 			soundFile = SoundFile.new;
@@ -216,15 +206,32 @@ Sample : BufferProxy { // a small sound loaded from disk
 					+ soundFilePath).error;
 			});
 			this.calculate;
-			this.guessBeats;
+			if(t.notNil,{
+				this.tempo = t;
+			},{
+				this.beats = 4.0;
+				this.guessBeats;
+			});
+			numChannels = soundFile.numChannels;
+			sampleRate = soundFile.sampleRate;
+			^this
+		});
+		
+		if(thing.isKindOf(SoundFile),{
+			soundFile=thing;
+			this.soundFilePath = this.class.standardizePath( soundFile.path );
+			this.calculate;
+			if(t.notNil,{
+				this.tempo = t;
+			},{
+				this.beats = 4.0;
+				this.guessBeats;
+			});
 			numChannels = soundFile.numChannels;
 			sampleRate = soundFile.sampleRate;
 			^this
 		});
 		size = 1;
-		/*if(thing.isKindOf(Buffer),{
-
-		});*/
 	}
 	reloadBuffer {
 		buffer.free;
@@ -235,20 +242,15 @@ Sample : BufferProxy { // a small sound loaded from disk
 	}
 						
 	tempo_ { arg tm;
-		if(tm.notNil,{ 
-			tempo = tm; 
-			beats = tempo * (size/soundFile.sampleRate);
-			beatsize = size / beats;
-		},{ 
-			this.guessBeats 
-		});
-		// invalidates any synth def made off of me
+		tempo = tm; 
+		beats = tempo * (size/soundFile.sampleRate);
+		beatsize = size / beats;
 	}
 
 	beats_ { arg bt;
-		beats=bt;
+		beats = bt;
 		beatsize = size / beats;
-		tempo=beats / (size/soundFile.sampleRate);
+		tempo = beats / (size/soundFile.sampleRate);
 	}
 			
 	calculate { 	
@@ -256,13 +258,11 @@ Sample : BufferProxy { // a small sound loaded from disk
 		end=size-1;
 	}
 	guessBeats {
-		this.beats_(4.0); // this may look wack, but it works very well !
-		if(tempo > 4.0,{ this.beats_(beats / 2.0) });
-		if(tempo > 4.0,{ this.beats_(beats / 2.0) });
-		if(tempo > 4.0,{ this.beats_(beats / 2.0) });
+		if(tempo > 3.0,{ this.beats_(beats / 2.0) });
+		if(tempo > 3.0,{ this.beats_(beats / 2.0) });
+		if(tempo > 3.0,{ this.beats_(beats / 2.0) });
 		if(tempo < 0.5,{ this.beats_(beats * 2.0) });
-		if(tempo < 0.5,{ this.beats_(beats * 2.0) });		
-		if(tempo < 0.5,{ this.beats_(beats * 2.0) });
+		if(tempo < 0.5,{ this.beats_(beats * 2.0) });			if(tempo < 0.5,{ this.beats_(beats * 2.0) });
 	}
 	
 	duration { ^this.size / this.sampleRate }
@@ -344,16 +344,13 @@ ArrayBuffer : BufferProxy {
 	}
 	storeArgs { ^[array] }	
 
-	//this.size wrong ?
 	prepareToBundle { arg group,bundle;
-		buffer = Buffer.new(group.asGroup.server,array.size,numChannels);
-		buffer.numFrames = this.size;
-		buffer.numChannels = numChannels;
+		buffer = Buffer.new(group.asGroup.server,array.size,1);
 		bundle.add( buffer.allocMsg( buffer.setnMsg(0,array ) ) );
 		readyForPlay = true;
 	}
 	makePatchOut {
 		patchOut = ScalarPatchOut(this);
 	}
-	// gui show it
+	// gui: show it
 }

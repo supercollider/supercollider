@@ -71,6 +71,7 @@ PatchOut {
 	*scalar { arg source, group,bus;
 		^ScalarPatchOut.prNew(source, group,bus)
 	}
+	init {}
 	connectTo { arg patchIn,needsValueSetNow=true;
 		// am i already connected to this client ?
 		if(connectedTo.isNil or: {connectedTo.includes(patchIn).not},{
@@ -90,6 +91,8 @@ PatchOut {
 			// then we can pause
 		})
 	}*/
+	server { ^group.server }
+
 	bus_ { arg b;
 		bus = b.asBus;
 		connectedTo.do({ arg pti;
@@ -110,7 +113,6 @@ ControlPatchOut : PatchOut { // you are returned from a .kr play
 	rate { ^\control }
 	synthArg { ^bus.index } //need some initialValue
 
-	// private
 	control { arg controlPatchIn,needsValueSetNow;
 		if(needsValueSetNow,{
 			// TODO ! check if on same server
@@ -130,7 +132,6 @@ ControlPatchOut : PatchOut { // you are returned from a .kr play
 		//[this,scalarPatchIn].insp("scalar -> scalar patch ?");
 		thisMethod.notYetImplemented;
 	}
-	server { ^group.server }
 	free {
 		// PlayerMixer has multiple patchOuts sharing the same bus
 		if(bus.notNil and: {bus.index.notNil},{
@@ -158,6 +159,7 @@ AudioPatchOut : ControlPatchOut {
 	scalar { arg scalarPatchIn;
 		// polling of value not yet implemented on scserver
 		// scalarPatchIn.value = bus.get;
+		//[this,scalarPatchIn].insp("audio -> scalar not yet implemented");
 		thisMethod.notYetImplemented;
 	}
 }
@@ -167,14 +169,7 @@ ScalarPatchOut : PatchOut {
 
 	// floats,NumberEditors, numeric pattern players, midi, wacom
 	// things that are not ON the server
-	
-	*new { arg source,bus; // TODO use this to get server...
-		^this.prNew(source)
-	}
-	// no group needed
-	*prNew { arg source,group,bus; ^super.newCopyArgs(source,group,bus).init }
 
-	init {}
 	rate { ^\scalar }
 	synthArg {
 	 	^source.synthArg

@@ -6,7 +6,7 @@ ModalFreq : AbstractPlayerProxy {
 	var <>degree,<>scale,<>root,<>octave=5.0,<>stepsPerOctave=12.0;
 	
 	*new { arg degree=0,scale,root=0.0,octave=5.0,stepsPerOctave=12.0;
-		^super.new.degree_(degree).scale_(scale ?? {[0,1,2,3,4,5,6,7,8,9,10,11]})
+		^super.new.degree_(degree).scale_(scale ?? {#[0, 2, 4, 5, 7, 9, 11]})
 			.root_(root).octave_(octave).stepsPerOctave_(stepsPerOctave)
 			.init
 	}
@@ -53,14 +53,13 @@ ModalFreq : AbstractPlayerProxy {
 Midi2Freq : KrPlayer {
 	// players or floats will work
 	*new { arg note,octave=5.0;
-
 		^Patch(UGenInstr(Midi2FreqUGen,\kr),[ note,octave ])
 	}
 	//storeArgs { ^[degree,octave] }
 	
 	//TODO
 	//asStream
-	guiClass { ^Midi2FreqGui }
+	//guiClass { ^Midi2FreqGui }
 }
 
 

@@ -19,7 +19,6 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 	}
 	guify { arg layout,bounds,title;
 		if(layout.isNil,{
-			//FlowView.new(nil,Rect(10,10,width,height));
 			layout = MultiPageLayout(title ?? {model.asString.copyRange(0,50)},bounds);
 		},{
 			layout = layout.asPageLayout(title,bounds);
@@ -29,13 +28,23 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		^layout
 	}
 	prClose {
+		//"ObjectGui-prClose".debug;
 		this.remove(false);
 	}
 	remove { arg removeView=true;
 		model.removeDependant(this);
-		if(removeView and: {view.notNil},{
-			super.remove;
-		});
+//		if(removeView,{
+//			view.remove;
+//			view = nil;		
+//		});
+	}
+	removeView {
+		var parent;
+		this.remove;
+		parent = view.parent;
+		view.remove;
+		parent.refresh;
+		view = nil;
 	}
 
 	gui { arg lay, bounds ... args;

@@ -145,11 +145,13 @@ Patch : HasPatchIns  {
 	var synthPatchIns,<argsForSynth,<synthArgsIndices;
 	
 	var synthDef;
-	var <numChannels,<rate; // determined after making synthdef
+	var numChannels,rate; // determined after making synthdef
 	
 	*new { arg name,inputs;
 		^super.new.loadSubject(name).createArgs(loadDocument(inputs) ? [])
 	}
+	storeArgs { ^[this.instr.name,args] }
+
 	inputs { ^args }
 	setInput { arg ai, ag;
 		var synthArgi;
@@ -188,13 +190,17 @@ Patch : HasPatchIns  {
 				?? 
 				{ //  or auto-create a suitable control...
 					spec = instr.specs.at(i);
-					proto = ControlPrototypes.at(instr.argNames.at(i)) 
-							?? { var x;
-								x = ControlPrototypes.at(spec.class);
-								if(x.notNil,{ x.first }, { nil });
-							}
-								?? {spec.defaultControl};
-								
+					proto = ControlPrototypes.at(instr.argNames.at(i));
+					if(proto.notNil,{ 
+						proto = proto.first; 
+					},{
+						proto = ControlPrototypes.at(spec.class);
+						if(proto.notNil,{ 
+							proto = proto.first;
+						}, { 
+							proto = spec.defaultControl;
+						});
+					});								
 					proto.tryPerform('spec_',spec); // make sure it does the spec
 					
 					darg = instr.initAt(i);
@@ -231,6 +237,20 @@ Patch : HasPatchIns  {
 			synthDef
 		}
 	}
+	// compute on first demand
+	rate {
+		if(rate.isNil,{
+			this.asSynthDef;
+		});
+		^rate
+	}
+	numChannels {
+		if(numChannels.isNil,{
+			this.asSynthDef;
+		});
+		^numChannels
+	}
+	
 	// has inputs
 	spawnToBundle { arg bundle;
 		var synthArgs;
@@ -274,23 +294,17 @@ Patch : HasPatchIns  {
 //	}
 
 	free {
-		// TODO only if i am the only exclusive owner of children
 		super.free;
-		this.children.do({ arg child; child.free });
+
 		// ISSUE: if you change a static non-synth input 
 		// nobody notices to rebuild the synth def
 		// so for now, wipe it out
-		// the Instr knows if it came from a file, can the moddate
+		// the Instr knows if it came from a file, can check the moddate
 		synthDef = nil;
-		readyForPlay = false;
-		this.setPatchOut(nil);
-	}
-	stop {
-		super.stop;
-		this.children.do({ arg child; child.stop });
 	}
 	
-	//act like a simple ugen function
+	// act like a simple ugen function
+	// mostly this won't work with Samples etc.
 	ar { 	arg ... overideArgs;	^this.valueArray(overideArgs) }
 	value { arg ... overideArgs;  ^this.valueArray(overideArgs) }
 	valueArray { arg  overideArgs;  
@@ -300,7 +314,6 @@ Patch : HasPatchIns  {
 			)
 	}
 
-	storeArgs { ^[this.instr.name,args] }
 	/*storeModifiersOn { arg stream;
 		// this allows a known defName to be used to look up in the cache
 		// otherwise a Patch doesn't know its defName until after building

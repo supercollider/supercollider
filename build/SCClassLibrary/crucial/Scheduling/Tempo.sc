@@ -4,7 +4,7 @@ Tempo  {
 	classvar <default;
 	
 	var <tempo=1.0,<beatsPerBar=4.0;
-	var tempor,beatsPerBarr,tempoClock,clocks;
+	var tempor,beatsPerBarr,tempoClock,clocks,owners;
 	
 	*new { arg tempo=1.0,tempoClock;
 		^super.new.init(tempoClock).tempo_(tempo)
@@ -12,13 +12,19 @@ Tempo  {
 	init { arg t; 
 		tempoClock = t ?? {TempoClock.default};
 		clocks = [tempoClock];
+		owners = [this];
+		CmdPeriod.add(this);
 	}
-	
+	// rare to have more than one tempo,
+	// but any you create you will have to call destroy on to get rid of it
+	// permanantly.  or re-compile.
+	destroy {
+		CmdPeriod.remove(this);	
+	}
 	*initClass { 
 		Class.initClassTree(TempoClock);
 		Class.initClassTree(Server);
 		default = this.new;
-		CmdPeriod.add(default);
 	}
 		
 	bpm { ^tempo * 60.0 }
@@ -56,22 +62,29 @@ Tempo  {
 	//	*beats2secsKr { arg beats; ^GetTempo.kr.reciprocal * beats }
 	//	*secs2beatsKr { arg secs; ^GetTempo.kr * secs }
 	
-	*makeClock {
-		^default.makeClock;
+	// not using this because the clocks get killed by command-.
+	// making them dangerous to hold onto
+	*makeClock { arg owner;
+		^default.makeClock(owner);
 	}
-	makeClock {
+	makeClock { arg owner;
 		var t;
-		t = TempoClock(default.tempo);
-		clocks = clocks.add(t);
+		t = TempoClock(tempo);
+		clocks = clocks.add(t );
+		owners = owners.add( owner );
 		^t
 	}
 	cmdPeriod {
-		this.clearClocks;
+		//would get cleared twice
+		// this.clearClocks;
 	}
 	clearClocks {
 		clocks.do({ arg c; c.clear });
+		owners.do({ arg o; o.clockDidClear });
 	}
-	*gui { arg layout; default.gui(layout) }
+	clockDidClear {}
+	
+	//*gui { arg layout; default.gui(layout) }
 	guiClass { ^TempoGui }
 }
 

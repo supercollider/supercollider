@@ -97,7 +97,7 @@ SampleGui : ObjectGui {
 		lastSoundFilePath = model.soundFilePath;
 		file = model.soundFile;
 		file.openRead(lastSoundFilePath);
-		file.numFrames;
+		//file.numFrames;
 		// what if its stereo ???
 		c = FloatArray.newClear(file.numFrames);
 		file.readData(c);

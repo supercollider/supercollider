@@ -20,11 +20,13 @@ HasSubject : AbstractPlayer {
 
 AbstractPlayerEffect : HasSubject { // has two groups
 
-	var <group,subjectGroup,effectGroup,sharedBus;
+	var subjectGroup,effectGroup;
 	
 	prepareToBundle { arg agroup,bundle;
 		readyForPlay = false;
 		
+		// more of a PatchOut thing, 
+		// problems on restarting
 		group = agroup.asGroup;
 		subjectGroup = Group.basicNew;
 		effectGroup = Group.basicNew;
@@ -40,29 +42,41 @@ AbstractPlayerEffect : HasSubject { // has two groups
 		readyForPlay = true;
 	}
 
-	makePatchOut { arg parentGroup,private,bus;
-		server = group.server;
-		this.topMakePatchOut(effectGroup,private,bus);
-		// share my bus
-		sharedBus = patchOut.bus.as(SharedBus);
-		subject.makePatchOut(subjectGroup,private,sharedBus);
-	}
 	freePatchOut {
 		subjectGroup.free;
 		effectGroup.free;
 		subjectGroup = effectGroup = nil;
-		sharedBus.releaseBus;
 		super.freePatchOut;
 	}
 }
 
+AbstractSinglePlayerEffect : AbstractPlayerEffect {
+
+	var sharedBus;
+
+	makePatchOut { arg parentGroup,private,bus;
+		server = group.server;
+		this.topMakePatchOut(effectGroup,private,bus);
+		// share my bus
+		sharedBus = SharedBus.from(patchOut.bus,this);
+		patchOut.bus = sharedBus;
+		subject.makePatchOut(subjectGroup,private,sharedBus);
+	}
+	freePatchOut {
+		super.freePatchOut;
+		if(sharedBus.notNil,{
+			sharedBus.releaseBus(this);
+			sharedBus = nil;
+		})
+	}	
+}
 
 
 
-PlayerAmp : AbstractPlayerEffect {
+PlayerAmp : AbstractSinglePlayerEffect {
 	
 	// spawn the subject
-	// spawn after it, multplying on same bus
+	// spawn after it, multiplying on same bus
 	
 	var <amp=1.0;
 	// change to a multiplier (anything) ?
@@ -76,6 +90,11 @@ PlayerAmp : AbstractPlayerEffect {
 				)
 		})
 	}
+
+//	spawnToBundle { arg b;
+//		this.children;
+//		super.spawnToBundle(b);
+//	}
 
 	defName { ^this.class.name.asString ++ this.numChannels.asString }
 	synthDefArgs { ^[0,patchOut.synthArg,1,amp] }

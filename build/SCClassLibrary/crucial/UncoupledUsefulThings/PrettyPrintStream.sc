@@ -17,5 +17,6 @@ PrettyPrintStream : CollStream { // well prettier anyway
 		this.nl;
 		this << ")";
 	}
+	indent { arg way=1; tabs = tabs + 1; }
 		
 }

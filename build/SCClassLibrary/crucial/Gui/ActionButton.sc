@@ -33,14 +33,14 @@ SCViewAdapter { // SCViewHolder
 			view.remove;
 			view = nil;
 		},{
-			("SCViewAdapter-remove : already removed !" + this).debug(this);
+			//("SCViewAdapter-remove : already removed !" + this).debug(this);
 		});
 	}
-	prClose { 
-		"SCViewAdapter-prClose".debug(this);
-		view.prClose;
-		view = nil;
-	}
+//	prClose { 
+//		"SCViewAdapter-prClose".debug(this);
+//		view.prClose;
+//		view = nil;
+//	}
 }
 
 
@@ -113,7 +113,9 @@ FlowView : SCLayoutView {
 		autoRemoves.add(updater);
 	}
 	prClose {
+		//autoRemoves.insp("removing", this);
 		autoRemoves.do({ arg u; u.remove });
+		autoRemoves = nil;
 		super.prClose; // close the view		
 	}
 	indent {

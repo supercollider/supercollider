@@ -50,6 +50,12 @@
 	openDocument {
 		^Document(this).showWindow
 	}
+	guiDocument {
+		var doc;
+		doc = this.loadDocument;
+		doc.gui;
+		^doc
+	}
 }
 
 + AbstractPlayer {

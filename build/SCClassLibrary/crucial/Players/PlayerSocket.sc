@@ -18,7 +18,7 @@ PlayerSocket : AbstractPlayerProxy {
 	var <>round,<>rate,<>numChannels;
 	var <>env,socketGroup,sched;
 	var isWaking = false;
-	var <lastPlayer,sharedBus;
+	var <lastPlayer;
 	
 	*new { arg rate=\audio,numChannels=2,round=0.0;
 		^super.new.round_(round)
@@ -30,7 +30,8 @@ PlayerSocket : AbstractPlayerProxy {
 	}
 	topMakePatchOut { arg group,private=false,bus;
 		super.topMakePatchOut(group,private,bus);
-		sharedBus = patchOut.bus.as(SharedBus);
+		sharedBus = SharedBus.from(patchOut.bus,this);
+		patchOut.bus = sharedBus;
 	}
 	prepareAndSpawn { arg player,releaseTime=0.0;
 		var bsize;
@@ -118,25 +119,47 @@ PlayerSocket : AbstractPlayerProxy {
 		bundle.addAction(this,\didSpawn);
 	}
 	instrArgFromControl { arg control;
-		^if(this.rate == \audio,{
-			In.ar(control,this.numChannels)
+		^if(source.notNil,{
+			source.instrArgFromControl(control)
 		},{
-			In.kr(control,this.numChannels)
+			if(this.rate == \audio,{
+				In.ar(control,this.numChannels)
+			},{
+				if(this.rate == \control,{
+					In.kr(control,this.numChannels)
+				},{
+					control
+				})
+			})
 		})
 	}
-	
+
 	// prepared sources only
 	setSource { arg s,atTime;
 		var bundle;
-		bundle = CXBundle.new;
-		this.setSourceToBundle(s,bundle);
-		bundle.send(this.server,atTime);
+		// or this.isPlay
+		if(this.server.notNil,{ // else not even playing, or not loaded
+			bundle = CXBundle.new;
+			this.setSourceToBundle(s,bundle);
+			bundle.send(this.server,atTime);
+		},{
+			source = s;
+			rate = source.rate ? rate ? \audio;
+			numChannels = source.tryPerform(\numChannels) ? numChannels ? 1;
+		});
+	}
+	qsetSource { arg s,round=4.0;
+		this.setSource(s,BeatSched.tdeltaTillNext(round));
 	}
 	setSourceToBundle { arg s,bundle,releaseTime=0.2;
 		if(source.isPlaying,{
 			source.releaseToBundle(releaseTime,bundle);
 		});
 		source = s;
+		// possibly should complain if different and we are playing
+		rate = source.rate ? rate ? \audio;
+		numChannels = source.tryPerform(\numChannels) ? numChannels ? 1;
+		
 		source.spawnOnToBundle(socketGroup,sharedBus,bundle);
 	}
 
@@ -154,7 +177,9 @@ PlayerEffectSocket : PlayerSocket {
 	var inputBus;
 	
 	setInputBus { arg abus;
-		inputBus = abus.asBus.as(SharedBus);
+		// who did we get this from ?
+		//"PlayerEffectSocket-setInputBus".debug;
+		inputBus = SharedBus.from(abus.asBus,this);
 		// assume not playing yet
 	}	
 	

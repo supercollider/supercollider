@@ -2,6 +2,7 @@
 CXAbstractLabel : SCStaticText {
 
 	*new { arg layout,string,x,y=17,maxx=15;
+		string = string.asString;
 		^super.new(layout,	Rect(0,0,x ?? {(string.size * 7.5).max(maxx)} ,y))
 			.string_(string)
 	}

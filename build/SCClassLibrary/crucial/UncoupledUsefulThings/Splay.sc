@@ -171,9 +171,10 @@ Mono {
 Enveloper2 { 
 		
 	*ar { arg audio,gate,env;
-		var ts;
+		var ts,gated;
+		gated = Latch.kr(gate,gate);
 		env ?? {env = Env.adsr};
-		^audio.value * EnvGen.kr(env,gate,Latch.kr(gate,gate))
+		^audio.value * EnvGen.kr(env,gate,gated)
 	}
 
 }

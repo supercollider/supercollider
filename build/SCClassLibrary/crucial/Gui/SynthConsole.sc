@@ -20,30 +20,19 @@ AbstractConsole {
 
 SynthConsole : AbstractConsole  {
 
-	var format =  '32float', <>duration;
+	var <>format, <>duration;
 	var <>ugenFunc,<>onRecordOrWrite;
 	 var pauseControl;
 	 
 	 var tempoG;
 	 
 	*new { arg ugenFunc,layout;
-		^super.new.ugenFunc_(ugenFunc).layout_(layout.asPageLayout)
+		^super.new.ugenFunc_(ugenFunc).layout_(layout.asPageLayout).format_(SoundFileFormats.new)
 	}
 	
-	play {	// any time you hit play, you register the space bar as the stop/start play key
-			// if several consoles are open, the most recently played one has the keydown registration
-		ActionButton(layout,">",{this.registerPlayKey.doPlay }).background_(Color.green);
+	play {	
+		ActionButton(layout,">",{this.doPlay }).background_(Color.green);
 	}
-	registerPlayKey { arg keycode=49; // spacebar
-		/*	KeyCodeResponder.resetKeycode(keycode).registerKeycode(0,keycode,{  
-			if(Synth.isPlaying,{
-				this.doStop
-			},{
-				this.doPlay    
-			})
-		});//  
-		*/
-	}	
 	scope {arg duration=0.5;
 		//ActionButton(layout,"scope",{this.doScope(duration)})
 		//	.background_(Color.green);
@@ -68,19 +57,18 @@ SynthConsole : AbstractConsole  {
 		//pauseControl = CheckBoxView(layout.win,layout.layRight(29,13),",");
 	}
 	write {arg dur,defpath;
-//		if(defpath.notNil,{ defaultPath = defpath });
-//		ActionButton(layout, "{}",{ this.getPathThen(\doWrite,dur.value ? duration ?? { 120 }) } ); // do a dialog
+		//		if(defpath.notNil,{ defaultPath = defpath });
+		//		ActionButton(layout, "{}",{ this.getPathThen(\doWrite,dur.value ? duration ?? { 120 }) } ); // do a dialog
 	}
 	
 	stop { arg stopFunc;
 		ActionButton(layout,"[_]",{ 
 			this.doStop(stopFunc)
 		});
-		//KeyCodeResponder.registerKeycode(16,49,{ this.doStop      });//  
 	}
 
 	formats {
-		//SelectButtonSet(layout,['32float','16aiff','24AIFF'],{arg i,th; format = th.selectedLabel })
+		format.gui(layout);
 	}
 
 	tempo {
@@ -175,23 +163,6 @@ SynthConsole : AbstractConsole  {
 //			file.endRecord;
 //		});
 	}
-	
-	getFormats {
-		
-		if(format=='16aiff',{
-			^[ 'AIFF' ,'16 big endian signed']
-		});
-		
-		if(format=='32float',{
-			^[ 'Sun',  '32 big endian float' ]
-		});
-		
-		if(format=='24AIFF',{
-			^[ 'AIFF',  '24 big endian signed' ]
-		});
-		
-		^nil 
-	}
 
 }
 
@@ -201,7 +172,7 @@ SynthConsole : AbstractConsole  {
 SaveConsole : AbstractConsole {
 
 	var <>object;
-	var <path,<>defaultPath; // defaultPath may be a function
+	var <path; // defaultPath may be a function
 	var <>onSaveAs; // arg path
 	
 	*new { arg object, path,layout;
@@ -217,7 +188,6 @@ SaveConsole : AbstractConsole {
 	}
 	//dirtyAwareSave
 	save { arg title="save",maxx=100;
-	 	/*
 		ActionButton(layout,title,{
 			if(path.value.isNil,{
 		 		this.getPathThen(\doSaveAs);
@@ -231,124 +201,110 @@ SaveConsole : AbstractConsole {
 	 			Color(255,242,89)
 	 		})
 	 	);
-	 	*/
 	}
 	saveAs { arg onSaveF,default;
-		/*
 		defaultPath = default ? defaultPath;
 		onSaveAs = onSaveF ? onSaveAs;
 		ActionButton(layout,"save as",{
 			this.getPathThen(\doSaveAs,default);
 	 	});
-	 	*/
 	}
-	load {
-		//ActionButton(layout,"load",{ this.doLoad });
-	}	
 			
 	getPathThen {  arg then ... args;
-		/*
-		var defPath;
-		defPath=(defaultPath.value ? object).asString;
-		defPath = defPath.copyRange(0,30); // mac beeps if path is too long
-		File.saveDialog("Filename..." ++ then.asString, defPath, { arg  argpath;
+		//var defPath;
+		//defPath=(defaultPath.value ? object).asString;
+		CocoaDialog.savePanel({arg argpath;
 			this.path = argpath;
-			this.performList(then,[path] ++ args)
+			this.performList(then,[path] ++ args);
 		});
-		*/
 	}
 	
 	doSave {
 		var clobber,vpath;
 		vpath = path.value;
-		clobber=File.new(vpath,"r");
-		if(clobber.length.notNil,{
+		if(File.exists(vpath),{
+			clobber=File.new(vpath,"r");
 			clobber.contents.write("~"++vpath);
+			clobber.close;	
 		});
-		clobber.close;	
 		object.asCompileString.write(vpath);
 	}
 	doSaveAs {
 		var clobber,vpath;
 		vpath = path.value;
-		clobber=File.new(vpath,"r");
-		if(clobber.length.notNil,{
+		if(File.exists(vpath),{
+			clobber=File.new(vpath,"r");
 			clobber.contents.write("~"++vpath);
+			clobber.close;	
 		});
-		clobber.close;	
 		object.asCompileString.write(vpath);
 		onSaveAs.value(vpath);
 	}
 
-	doLoad { arg onLoad; // optional func
-		/*
-		File.openDialog("Load...",{ arg apath;
-			this.path = apath;
-			object=thisProcess.interpreter.executeFile(apath);
-			onLoad.value(object,this)
-		})
-		*/
-	}
 	path_ { arg p; 
 		if(p.notNil,{
 			path = PathName(p).asRelativePath 
 		})
-	}
-	
+	}	
 }
 
 
 
 SoundFileFormats { // an interface
 
-	var format='32float';
+	var format='float32';
 
 	gui { arg layout;
-		SelectButtonSet(layout,20,16,['32float','16aiff','16SD2','24SD2'],{arg i,th; format = th.selectedLabel },
-			Color(245, 245, 245),Color(255, 99, 71))
+		var items;
+		items = #['float32', 'aiff16', 'aiff24','wav16'];
+		SCPopUpMenu(layout,Rect(0,0,80,16))
+			.items_(items)
+			.action_({ arg pop;
+				format = items.at(pop.value);
+			})
+			.background_(Color.red(0.4,0.3));
 	}
 
 	headerFormat {
 	
-		if(format=='16aiff',{
-			^'AIFF'
-		});
-		
-		if(format=='16SD2',{
-			^'SD2'
-		});
-		
-		if(format=='32float',{
+		if(format=='float32',{
 			^'Sun'
 		});
 		
-		if(format=='24SD2',{
-			^'SD2'
+		if(format=='aiff16',{
+			^'AIFF'
 		});
 		
-		^nil 
+		if(format=='aiff24',{
+			^'AIFF'
+		});
 		
+		if(format=='wav16',{
+			^'WAV'
+		});
+		
+		^nil
 	}
+	
 	sampleFormat {
 	
-		if(format=='16aiff',{
-			^'16 big endian signed'
+		if(format=='float32',{
+			^'float32'
 		});
 		
-		if(format=='16SD2',{
-			^'16 big endian signed'
+		if(format=='aiff16',{
+			^'int16'
 		});
 		
-		if(format=='32float',{
-			^'32 big endian float'
+		if(format=='aiff24',{
+			^'int24'
 		});
 		
-		if(format=='24SD2',{
-			^'24 big endian signed'
+		if(format=='wav16',{
+			^'int16'
 		});
 		
-		^nil 
-		
+		^nil	
 	}
 }
 

@@ -93,10 +93,11 @@ KrNumberEditor : NumberEditor {
 	connectToPatchIn { arg patchIn,needsValueSetNow = true;
 		patchOut.connectTo(patchIn,needsValueSetNow);
 	}
-	stop {
+	stop { this.freePatchOut }
+	free { this.freePatchOut }
+	freePatchOut {
 		patchOut.free;
 	}
-	free { this.stop }	
 	
 	guiClass { ^KrNumberEditorGui }
 
@@ -149,7 +150,9 @@ BooleanEditor : NumberEditor {
 		^super.new.value_(val)
 	}
 	// value returns true/false
-
+	instrArgFromControl { arg control;
+		^value
+	}
 	guiClass { ^BooleanEditorGui }
 }
 

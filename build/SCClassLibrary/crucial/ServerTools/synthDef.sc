@@ -2,18 +2,19 @@
 
 + Object {
 	
+	isPlaying { ^false }
+	stop {}
+	stopToBundle {}
+	free {}
+
 	rate { ^\scalar }
 	
-	//play { ^ScalarPatchOut(this) }
-
 	makePatchOut {}
-	childrenMakePatchOut {}
 	patchOut { ^ScalarPatchOut(this) }
 	connectToPatchIn {}
-	isPlaying { ^false }
 
 	prepareToBundle {  }
-	prepareForPlay {	arg group;
+	prepareForPlay {	arg group,private,bus;
 		var bundle;
 		bundle = CXBundle.new;
 		group = group.asGroup;
@@ -23,15 +24,9 @@
 	spawnToBundle {}
 	spawnOnToBundle {}
 	loadDefFileToBundle {}
-	//writeDefFile {}
 	
-	stop {}
-	free {}
-	freeHeavyResources {}
-	//didSpawn {}
-
-	addToSynthDef {  arg synthDef,name;
-		synthDef.addInstrOnlyArg(name,this.synthArg); // has to be an InstrSynthDef
+	addToSynthDef {  arg instrSynthDef,name;
+		instrSynthDef.addInstrOnlyArg(name,this.synthArg);
 	}
 	
 	synthArg { ^this }
@@ -45,6 +40,12 @@
 + Buffer {
 	synthArg {
 		^bufnum
+	}
+}
+
++ SynthDef {
+	prepareToBundle { arg group,bundle;
+		bundle.add(["/d_recv", this.asBytes]);
 	}
 }
 

@@ -95,9 +95,9 @@ MultiPageLayout  {
 	}
 	close { // called when the GUIWindow closes
 		if(isClosed.not,{
-			//"MultiPageLayout-close".debug;
 			isClosed = true; 
 			autoRemoves.do({ arg updater; updater.remove(false) });
+			autoRemoves = nil;
 			if(windows.notNil,{
 				windows.do({ arg w; 
 					w.close; 
@@ -105,9 +105,7 @@ MultiPageLayout  {
 				windows=views=nil;
 			});
 			NotificationCenter.notify(this,\didClose);
-		}/*,{
-			"MultiPageLayout-close : is closed already".debug(this);
-		}*/);
+		});
 	}
 
 	hr { arg color,height=8,borderStyle=1; // html joke

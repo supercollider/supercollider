@@ -15,7 +15,7 @@ Document {
 	*dir_ { arg path;  dir = path.standardizePath ++ "/"; }
 	*standardizePath { arg p;
 		var pathName;
-		pathName = PathName.fromOS9(p);
+		pathName = PathName.fromOS9(p.standardizePath);
 		^if(pathName.isRelativePath,{
 			dir ++ pathName.fullPath
 		},{

@@ -157,19 +157,22 @@ SFP : AbstractSFP  {
 			file = SoundFile.new("no soundfile specified...",numChannels:2);
 			filePath = "no soundfile specified";
 		},{
+			// we don't have to check actually
 			if(sfilePath.isString,{
-				file=SoundFile.new;
-				found =  file.openRead(sfilePath);
-				filePath = sfilePath;
-				//file.insp;
+				file = SoundFile.new;
+				filePath = this.class.standardizePath(sfilePath);
+				found = file.openRead(filePath);
 			},{
-//				if(sfilePath.isKindOf(SoundFile),{
-//					file=sfilePath;
-//					found = file.openRead(file.path);
-//					filePath = fi
-//				},{
-					die("not a path or a SoundFile " + sfilePath)
-//				})
+				if(sfilePath.isKindOf(SoundFile),{
+					file=sfilePath;
+					filePath = file.path = this.class.standardizePath(file.path);
+					found = file.openRead(file.path);
+				},{
+					die("SFP-init : not a path or a SoundFile " + sfilePath)
+				})
+			});
+			if(found.not,{
+				("SFP-init file not found: " + file.path).warn;
 			});
 		});
 	}

@@ -45,11 +45,11 @@ NumberEditorGui : EditorGui {
 			slv.value_(model.spec.unmap(model.poll));
 		});
 	}
-	background { ^Color(0.4,0.0,0.0,0.1) }
+	background { ^Color(0.0,0.2,0.2,0.3) }
 }
 
 KrNumberEditorGui : NumberEditorGui {
-	background { ^Color(0.0,0.4,0.0,0.1) }
+	background { ^Color(0.0,0.3,0.0,0.3) }
 }
 
 

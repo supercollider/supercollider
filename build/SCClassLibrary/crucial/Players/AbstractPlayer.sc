@@ -3,27 +3,27 @@ AbstractPlayer : AbstractFunction  {
 
 	var <path,name,<>dirty=true; 
 	
-	var <synth,<server,<patchOut,<>readyForPlay = false,defName;
+	var <synth,<group,<server,<patchOut,<>readyForPlay = false,defName;
 		
-	play { arg group,atTime,bus;
+	play { arg agroup,atTime,bus;
 		var bundle;
 		if(synth.isPlaying,{ ^this });
 
 		if(bus.notNil,{ 
 			bus = bus.asBus;
-			if(group.isNil,{
+			if(agroup.isNil,{
 				server = bus.server;
 				group = server.asGroup;
 			},{	
-				group = group.asGroup;
+				group = agroup.asGroup;
 				server = group.server;
 			})
 		},{
-			group = group.asGroup;
+			group = agroup.asGroup;
 			server = group.server;
 			// leave bus nil
 		});
-
+		
 		bundle = CXBundle.new;
 
 		if(readyForPlay and: {Library.at(SynthDef,server,this.defName.asSymbol).notNil},{
@@ -72,73 +72,96 @@ AbstractPlayer : AbstractFunction  {
 			}).play(SystemClock);
 		});
 	}
-	prepareForPlay { arg group,private = false,bus;
+	prepareForPlay { arg agroup,private = false,bus;
 		var bundle;
 		bundle = CXBundle.new;
-		group = group.asGroup;
+		group = agroup.asGroup;
 		this.prepareToBundle(group,bundle);
 		this.makePatchOut(group,private,bus,bundle);
 		^bundle.clumpedSendNow(group.server)
 	}
-	prepareToBundle { arg group,bundle;
+	prepareToBundle { arg agroup,bundle;
 		readyForPlay = false;
 		
-		group = group.asGroup;
-		this.loadDefFileToBundle(bundle,group.server);
-		// has inputs
+		group = agroup.asGroup;
 		this.children.do({ arg child;
 			child.prepareToBundle(group,bundle);
 		});
+		this.loadDefFileToBundle(bundle,group.server);
 		
-		// not really until the last confirmation comes from server
 		readyForPlay = true;
 	}
 
-	/* status */
 	isPlaying { ^synth.isPlaying ? false }
+	
+	// these always call children
 	stop {
 		this.freeSynth;
 		this.freePatchOut;
+		this.children.do({ arg child;
+			child.stop;
+		});
+	}
+	stopToBundle { arg b;
+		if(synth.isPlaying,{
+			b.add(synth.freeMsg);
+		});
+		b.addAction(this,\freePatchOut);
+		this.children.do({ arg child;
+			child.stopToBundle(b);
+		});
 	}
 	free {
 		this.stop;
 		this.freeHeavyResources;
+		readyForPlay = false;
+		this.children.do({ arg child;
+			child.free;
+		});
 	}
-
+	
+	// these don't call children
 	freeSynth {
 		if(synth.isPlaying,{
 			synth.free;
 		});
 		synth = nil;
 	}
-	//loadHeavyResources { arg bundle; }
-	freeHeavyResources { arg bundle; 
-		this.children.do({ arg c; c.freeHeavyResources(bundle) })
+	freePatchOut {
+		if(patchOut.notNil,{
+			patchOut.free;
+			patchOut = nil;
+		});
 	}
-
+	freeHeavyResources { arg bundle; }
+	
 	run { arg flag=true;
 		if(synth.notNil,{
 			synth.run(flag);
 		});
+		//should call children ?
 	}
 	release { arg releaseTime = 0.1,atTime;
 		var rb;
 		rb = CXBundle.new;
 		this.releaseToBundle(releaseTime,rb);
-		rb.send(server,atTime);//.insp("send");
+		rb.send(server,atTime);
 	}
 	releaseToBundle { arg releaseTime,bundle;
 		if(synth.notNil,{
 			bundle.add(synth.releaseMsg(releaseTime));
-		},{
-			"AbstractPlayer-releaseToBundle synth already released".warn;
 		});
-		bundle.addFunction({
-			if(releaseTime.notNil,{
-				AppClock.sched(releaseTime,{ this.stop; nil; })
-			},{
-				this.stop;
-			})
+		if(releaseTime ? 0.0 > 0.01,{
+			bundle.addFunction({
+				//if(releaseTime.notNil,{
+					SystemClock.sched(releaseTime,{ this.stop; nil; })
+				//},{
+				//	this.stop; // happening before the gate gets there !
+				//})
+			});
+		},{
+			this.stopToBundle(bundle);
+			// is same thing...
 		});
 	}
 		
@@ -154,7 +177,6 @@ AbstractPlayer : AbstractFunction  {
 		});
 		// otherwise we should have had a patchOut
 	}
-	group { ^patchOut.group }
 
 	spawn { this.spawnAtTime(nil) }
 	spawnAtTime { arg atTime;
@@ -169,8 +191,7 @@ AbstractPlayer : AbstractFunction  {
 		});
 		synth = Synth.basicNew(this.defName,server);
 		NodeWatcher.register(synth);
-		("spawning: " + this.defName).debug;
-		//patchOut ?? {this.insp("noPatchOut")};
+		//("spawning: " + this.defName).debug;
 		bundle.add(
 			synth.addToTailMsg(this.group,this.synthDefArgs)
 		);
@@ -212,8 +233,10 @@ AbstractPlayer : AbstractFunction  {
 	}
 	topMakePatchOut { arg group,private = false,bus;
 		if(patchOut.notNil,{
-			// does not free any previous bus
 			if(bus.notNil and: {patchOut.bus != bus},{
+				//frees the previous bus it had
+				//[this,patchOut.bus,"freeing previous bus :" ].insp;
+				patchOut.bus.free;
 				patchOut.bus = bus;
 			});
 			if(group.notNil and: {patchOut.group != group},{
@@ -236,7 +259,7 @@ AbstractPlayer : AbstractFunction  {
 						AudioPatchOut(this,group,bus 
 								?? {Bus.audio(group.server,this.numChannels)})
 						)
-				},{			
+				},{
 					this.setPatchOut(
 						AudioPatchOut(this,group,bus 
 								?? {Bus(\audio,0,this.numChannels,group.server)})
@@ -249,11 +272,13 @@ AbstractPlayer : AbstractFunction  {
 								bus ?? {Bus.control(group.server,this.numChannels)})
 							)
 				},{
-					(thisMethod.asString + "Wrong output rate: " + this.rate + 
-				".  AbstractPlayer cannot prepare this object for play.").die;
+					this.setPatchOut(
+						ScalarPatchOut(this,group,bus)
+					)
 				});
 			});
 		});
+				
 		^patchOut
 	}
 	childrenMakePatchOut { arg group,private = true;
@@ -267,17 +292,7 @@ AbstractPlayer : AbstractFunction  {
 			server = patchOut.server;
 		});
 	}
-	freePatchOut {
-		if(patchOut.notNil,{
-			patchOut.free;
-			patchOut = nil;
-		});
-		this.children.do({ arg child; 
-			if(child.isKindOf(AbstractPlayer),{
-				child.freePatchOut 
-			});
-		})
-	}
+
 	
 	loadDefFileToBundle { arg bundle,server;
 		var def,bytes,dn;
@@ -300,18 +315,18 @@ AbstractPlayer : AbstractFunction  {
 			// save it in the archive of the player
 			// or at least the name.
 			// Patches cannot know their defName until they have built
-			( "building:" + (this.path ?? {this.name}) ).debug;
+			//( "building:" + (this.path ?? {this.name}) ).debug;
 			def = this.asSynthDef;
 			bytes = def.asBytes;
 			bundle.add(["/d_recv", bytes]);
 			// even if name was nil before (Patch), its set now
 			defName = def.name;
-			//("loading def:" + defName).debug;
+			// ("loading def:" + defName).debug;
 			// InstrSynthDef watches \serverRunning to clear this
 			InstrSynthDef.watchServer(server);
 			Library.put(SynthDef,server,defName.asSymbol,true);
-			//write for next time
-			//def.writeDefFile;
+			// write for next time
+			// def.writeDefFile;
 		});
 	}
 	//for now:  always sending, not writing
@@ -380,7 +395,7 @@ AbstractPlayer : AbstractFunction  {
 	}
 	connectToPatchIn { arg patchIn,needsValueSetNow = true;
 		// if my bus is public, change to private
-		if(this.isPlaying and: {this.bus.isAudioOut},{
+		if(this.isPlaying and: {this.rate == \audio} and: {this.bus.isAudioOut},{
 			//"reallocating bus".debug;
 			this.bus = Bus.alloc(this.rate,this.server,this.numChannels);
 		});
@@ -394,9 +409,43 @@ AbstractPlayer : AbstractFunction  {
 /*  RECORDING ETC.
 	scope 	{ Synth.scope({ Tempo.setTempo; this.ar }) }
 	fftScope 	{ Synth.fftScope({ Tempo.setTempo; this.ar }) }
-	record	{ arg pathName,headerFormat='SD2',sampleFormat='16 big endian signed';
-		 Synth.record({ Tempo.setTempo; this.ar },this.timeDuration, pathName, headerFormat, sampleFormat) 
+*/
+
+/*
+	record	{ arg pathName,headerFormat='AIFF',sampleFormat='int24',
+				agroup,atTime;
+		var bsize,recdef,b;
+
+		if(this.isPlaying.not,{
+			bsize = this.prepareForPlay(agroup,true) / 15.0;
+			//check if built/loaded
+			recdef = SynthDef("_cxrecplayer" ++ this.numChannels,{ arg in,bufnum;
+				var inar;
+				inar = In.ar(in,this.numChannels);
+				DiskOut.ar(bufnum,inar);
+				// should be able to decide where the output goes
+				Out.ar(0,inar);
+			});
+			recdef.send(this.server);
+			(bsize).wait;
+			
+			// start play/recording
+			b = CXBundle.new;
+			this.spawnToBundle(b);
+			recsynth = Synth.newToBundle(b,"_cxrecplayer" ++ this.numChannels,
+						[0,this.bus.index,1,recbuf.bufnum],
+						this.group,\addToTail);
+			
+			// subtract bsize
+			if(atTime.notNil, { atTime = max(0,(atTime - bsize)); });
+			b.send(this.server,atTime);
+
+			// something has to hang on to the recbuf and the recsynth
+		});
 	}
+*/
+
+/*
 	write 	{  arg pathName,headerFormat='SD2',sampleFormat='16 big endian signed',duration;
 		var dur;
 		dur = duration ?? {this.timeDuration};
@@ -443,8 +492,6 @@ AbstractPlayer : AbstractFunction  {
 	reverseComposeBinaryOp { arg operator, pattern;
 		^PlayerBinop.new(operator, pattern, this)
 	}
-	
-
 
 	// subclasses need only implement beatDuration 
 	beatDuration { ^nil } // nil means inf
@@ -457,7 +504,6 @@ AbstractPlayer : AbstractFunction  {
 		});	
 	}
 	delta { 	^this.beatDuration	}
-
 
 /*
 	// all that is needed to play inside standard patterns
@@ -569,40 +615,19 @@ SynthlessPlayer : AbstractPlayer { // should be higher
 }
 
 
-// manages multiple players sharing the same bus
-MultiplePlayers : SynthlessPlayer {
+MultiplePlayers : AbstractPlayer { // abstract
 
-	var <>voices,sharedBus;
+	var <>voices;
 
 	children { ^this.voices }
 
 	rate { ^this.voices.first.rate }
 	numChannels { ^this.voices.first.numChannels }
 
-	childrenMakePatchOut { arg group,private = false;
-		sharedBus = patchOut.bus.as(SharedBus);
-		this.voices.do({ arg vo;
-			vo.makePatchOut(patchOut.group,private,sharedBus);
-		});		
-	}
-	loadDefFileToBundle { arg bundle,server;
-		// but not self, has no synthdef
-		this.voices.do({ arg pl;
-			pl.loadDefFileToBundle(bundle,server)
-		})
-	}		
-	spawnToBundle { arg bundle;
-		// but not self, has no synthdef
-		this.voices.do({ arg pl;
-			pl.spawnToBundle(bundle)
-		});
-		bundle.addAction(this,\didSpawn);
-	}
 	free {
 		this.voices.do({ arg pl;
 			pl.free
 		});
-		sharedBus.releaseBus;
 		super.free;
 	}
 	stop {
@@ -620,29 +645,11 @@ MultiplePlayers : SynthlessPlayer {
 
 MultiTrackPlayer : MultiplePlayers { // abstract
 	
-	// manages multiple players with individual private patchOuts
-	// doesn't make a patchOut or synth for itself
-	
-	topMakePatchOut { arg group;
-		server = group.asGroup.server;
-		// make a synthless patch out ?
-	}
-	setPatchOut { arg po;
-		//irrelevant for me 
-	}
-	// as it is for abstractplayer
-	childrenMakePatchOut { arg group,private = false;
-		this.voices.do({ arg vo;
-			vo.makePatchOut(group,true);
-		})
-	}
 }
-
-
 
 AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 
-	var <>source,<isPlaying = false, <isSleeping = true;
+	var <>source,<isPlaying = false, <isSleeping = true,sharedBus;
 
 	asSynthDef { ^source.asSynthDef }
 	synthDefArgs { ^source.synthDefArgs }
@@ -660,8 +667,10 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 	instrArgFromControl { arg control;
 		^source.instrArgFromControl(control)
 	}
+	connectToPatchIn { arg patchIn, needsValueSetNow=true;
+		source.connectToPatchIn(patchIn,needsValueSetNow);
+	}
 	free {
-		source.free;
 		super.free;
 		isPlaying = false;
 		isSleeping = true;
@@ -669,7 +678,6 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 	stop {
 		isPlaying = false;
 		isSleeping = true;
-		source.stop;
 		super.stop;
 	}
 	releaseToBundle { arg releaseTime=0.2,bundle;
@@ -677,26 +685,22 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 	}
 	children { ^[source] }
 	
-//	makePatchOut { arg group,private,bus;
-//		//super.topMakePatchOut(group,private,bus);
-//		// a copy to the source
-//		if(source.notNil,{
-//			source.makePatchOut(group,private,bus);
-//			// double freeing problems ?
-//			
-//			//source.setPatchOut(PatchOut(source,patchOut.group,patchOut.bus.copy));
-//		});
-//	}
-	//called by topMakePatchOut
-	setPatchOut { arg po;
-		super.setPatchOut(po);
-		// a copy to the source
-         if(source.notNil,{
-			source.setPatchOut(PatchOut(source,patchOut.group,patchOut.bus.copy));
- 		});
-     }
-	childrenMakePatchOut { arg group,private;
- 		source.childrenMakePatchOut(group,private);
+	makePatchOut { arg group,private,bus;
+		super.topMakePatchOut(group,private,bus);
+		if(patchOut.bus.notNil,{ // could be a scalar out
+			sharedBus = SharedBus.from(patchOut.bus,this);
+			patchOut.bus = sharedBus;
+		});
+		if(source.notNil,{
+			source.makePatchOut(group,private,sharedBus);
+		});
+	}
+	freePatchOut {
+		super.freePatchOut;
+		if(sharedBus.notNil,{
+			sharedBus.releaseBus(this);
+			sharedBus = nil;
+		});
 	}
 }
 

@@ -2,7 +2,7 @@
 CXMenu : SCViewAdapter { // multiple actions
 
 	var <nameFuncs,<layout,<>backColor,<>stringColor,
-			<>closeOnSelect=true,lastButton,buttonWidth=150,view,focus = 0;
+			<>closeOnSelect=true,lastButton,buttonWidth=150,focus = 0;
 
 	*new { arg ... nameFuncs;
 		^super.new.nameFuncs_(nameFuncs)

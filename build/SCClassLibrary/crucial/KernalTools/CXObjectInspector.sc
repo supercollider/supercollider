@@ -8,18 +8,6 @@ CXObjectInspector : ObjectGui {
 		CXLabel(layout,model.asString,500,30)
 			.font_(Font("Helvetica-Bold",18));
 
-		/*
-		ActionButton(layout,"-> a-z",{
-			GetStringDialog("assign to interpreter variable a-z","x",{ arg ok,string;
-				if(ok,{
-					thisProcess.interpreter.performList((string ++ "_").asSymbol,model);
-					this.newErrorWindow;
-					"".postln;
-					string.postln;
-				})
-			})
-		});
-		*/
 	}
 
 	guiBody { arg layout;
@@ -90,9 +78,22 @@ CXObjectInspector : ObjectGui {
 		});
 		// uniqueMethods
 	}
-	actionsGui { arg layout;	
+	actionsGui { arg layout;
+		layout.startRow;
 		ActionButton(layout,"gui",{ model.topGui });
-		ActionButton(layout,"post asCompileString",{ model.asCompileString.postln });
+		ActionButton(layout,"post",{ model.asCompileString.postln });
+		ActionButton(layout,"dump",{ model.dump });
+		ActionButton(layout,":=> var x",{
+			var string = "x";
+			//GetStringDialog("assign to interpreter variable a-z","x",{ arg ok,string;
+				//if(ok,{
+					thisProcess.interpreter.performList((string ++ "_").asSymbol,model);
+					//this.newErrorWindow;
+					//"".postln;
+					//string.postln;
+				//})
+			//})
+		});
 	}
 }
 
@@ -122,13 +123,18 @@ ClassGui : CXObjectInspector { // ClassGui
 		ActionButton(layout, "Source",{
 			model.openCodeFile;
 		}).font_(Font("Monaco",9.0));	
-		ActionButton(layout,"Help",{ model.openHelpFile });
+		ActionButton(layout,"Help",{ 
+			var path;
+			// wtf ?  this works in the interpreter but not here
+			//path = model.name.asString.findHelpFile;
+			//path.insp;
+			model.openHelpFile;
+			//{ model.asClass.insp.openHelpFile; nil; }.defer;
+		});
 
 		// subclasses
 		// needs a scroll view
-		layout.indent(1);
 		this.displaySubclassesOf(model,layout,0,50);
-		layout.indent(-1);
 		
 		layout.hr;		
 		
@@ -216,7 +222,7 @@ ClassGui : CXObjectInspector { // ClassGui
 	}
 	
 	
-	displaySubclassesOf { arg class,layout,shown,limit;
+	displaySubclassesOf { arg class,layout,shown,limit,indent = 50;
 		var subclasses;
 		if(class.subclasses.notNil,{
 			subclasses = class.subclasses.as(Array)
@@ -224,18 +230,21 @@ ClassGui : CXObjectInspector { // ClassGui
 			shown = shown + subclasses.size;
 			subclasses.do({ arg c,i;
 					layout.startRow;
+					CXLabel(layout,"",maxx: indent).background = Color.clear;
 					ClassNameLabel(c,layout,200);
-					layout.indent(1);
+					indent = indent + 50;
+					//layout.indent(1);
 					
 					if(c.subclasses.size + shown < limit,{
-						this.displaySubclassesOf(c,layout,shown,limit);
+						this.displaySubclassesOf(c,layout,shown,limit,indent);
 					},{
 						if(c.subclasses.size > 0,{
 							CXLabel(layout,c.subclasses.size.asString 
 								+ " subclasses",maxx:80);
 						});
 					});
-					layout.indent(-1);
+					indent = indent - 50;
+					//layout.indent(-1);
 				})
 		});
 	}

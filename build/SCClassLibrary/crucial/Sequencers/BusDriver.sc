@@ -24,6 +24,11 @@ BusDriver : SynthlessPlayer {
 	}
 	stop { 
 		this.reset;
+		super.stop;
+	}
+	stopToBundle { arg b;
+		super.stopToBundle(b);
+		b.addAction(this,\reset);
 	}
 	free {
 		this.reset;
@@ -50,7 +55,7 @@ StreamKrDur : BusDriver {
 		^super.new.values_(values).durations_(durations.loadDocument).lag_(lag).skdinit
 	}
 	skdinit {
-		sched = Tempo.makeClock;
+		sched = TempoClock.default;
 		routine = Routine({
 			var dur,val,server;
 			server = this.server;
@@ -72,8 +77,8 @@ StreamKrDur : BusDriver {
 		durst = durations.asStream;
 	}
 	reset {
-		sched.clear;
-		routine.stop.reset;
+		routine.stop;
+		// should be able to just reset these
 		valst = values.asStream;
 		durst = durations.asStream;
 	}		
@@ -87,6 +92,7 @@ StreamKrDur : BusDriver {
 		bundle.addAction(this,\didSpawn);
 	}
 	didSpawn {
+		routine.reset;
 		sched.schedAbs(sched.elapsedBeats, routine);
 		super.didSpawn;
 	}

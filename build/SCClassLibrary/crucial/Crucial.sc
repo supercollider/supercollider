@@ -1,7 +1,7 @@
 
 Crucial {
 
-	classvar menu;
+	classvar menu, debugNodeWatcher;
 		
 	*initClass {
 		// force to init first
@@ -136,7 +136,59 @@ Crucial {
 		  ]
 		);
 	}	
+	*menu {
 	
+		// this is just everything in Library(\menuItems) functions put up on a menu
+		
+		var a;
+		if(menu.notNil,{ menu.close });
+		
+		menu = MultiPageLayout.new("-Library-");
+		
+		Server.local.gui(menu);
+
+		a = ActionButton(menu.startRow,"     Library Menu Items...     ",{
+			MLIDbrowser(\menuItems)
+				.onSelect_({ arg f; f.value })
+				.browse
+		},maxx: 250)
+		.background_(Color.new255(112, 128, 144))
+		.labelColor_(Color.white);
+
+		ToggleButton(menu.startRow,"Server dumpOSC",{
+			Server.local.stopAliveThread;
+			Server.local.dumpOSC(1)
+		},{
+			Server.local.startAliveThread;
+			Server.local.dumpOSC(0)
+		},Server.local.dumpMode != 0 ,maxx: 250);
+		
+		
+		if(debugNodeWatcher.isNil,{
+			debugNodeWatcher = DebugNodeWatcher(Server.local.addr);
+		});
+		ToggleButton(menu.startRow,"DebugNodeWatcher",{
+			debugNodeWatcher.start;
+		},{
+			debugNodeWatcher.stop;
+		},debugNodeWatcher.isWatching,maxx: 250);
+
+		ActionButton(menu.startRow,"Query All Nodes",{
+			Library.at(\menuItems,\tools,'Server Node Report').value;		},maxx: 250);
+
+		ActionButton(menu.startRow,"kill all",{
+			Server.killAll;
+		},maxx: 250);
+			
+			
+	
+		TempoGui.setTempoKeys;
+		Tempo.default.gui(menu.startRow);
+
+		menu.resizeToFit.front;
+		
+		a.focus;
+	}
 	*initLibraryItems {
 
 		Library.put(\menuItems,'introspection','ClassBrowser',{
@@ -363,6 +415,30 @@ Crucial {
 			},"Classvars")
 		});
 	
+		Library.put(\menuItems,\introspection,'find duplicate variable name errors',{
+			var f;
+			f = { arg class,found;
+				class.subclasses.do({ arg sub;
+					var full,myFound;
+					myFound = if(found.isNil,{ List.new },{ found.copy });
+
+					if(sub.instVarNames.as(IdentitySet).size != sub.instVarNames.size,{
+						full = sub.instVarNames.reject(IsIn(myFound)).as(Array);
+						full.removeAll( sub.instVarNames.as(IdentitySet) );
+						myFound.addAll(full);
+						if(full.notEmpty,{
+							Post << sub << " has defined a variable with the same name as a superclass." << Char.nl;
+						
+							Post << full << Char.nl << Char.nl;
+						});
+					});
+					f.value(sub,myFound);
+				});
+			};
+			
+			f.value(Object);		
+		});
+		
 		// browse all currently loaded Instr
 //		Library.put(\menuItems,\sounds,\orcs,{ arg onSelect;
 //			// if there's nothing in Instr it does the top
@@ -401,6 +477,86 @@ Crucial {
 					CXLabel(f,block.size);
 				});
 			},"AudioBusses on local")
+		});
+		
+		Library.put(\menuItems,\tools,'Server Node Report',{
+			var probe,probing,resp,nodes,server,report,indent = 0,order=0;
+			var nodeWatcher;
+			
+			server = Server.local;
+			nodeWatcher = NodeWatcher.newFrom(server);
+			
+			nodes = IdentityDictionary.new;
+			probing = List.new;
+			
+			probe = { arg nodeID;
+				probing.add(nodeID);
+				server.sendMsg("/n_query",nodeID);
+			};
+			
+			report = { arg nodeID=0;
+				var child,synth;
+				indent.do({ " ".post });
+				nodes.at(nodeID).use({
+					~order = order;
+					if(~isGroup,{ 
+						("Group(" ++ nodeID ++ ")").postln;
+						child = ~head;
+						indent = indent + 8;
+						while({
+							child > 0
+						},{
+							order = order + 1;
+							report.value(child);
+							child = nodes.at(child).at(\next);
+						});
+						indent = indent - 8;
+					},{
+						synth = nodeWatcher.nodes.at(nodeID);
+						if(synth.notNil,{ // get defName if available
+							synth.asString.postln;
+						},{
+							("Synth" + nodeID).postln;
+						});
+					});
+				});
+			};
+				
+			resp = OSCresponder(server.addr,'/n_info',{ arg a,b,c;
+						var cmd,nodeID,parent,prev,next,isGroup,head,tail;
+						# cmd,nodeID,parent,prev,next,isGroup,head,tail = c;
+						
+						//[cmd,nodeID,parent,prev,next,isGroup,head,tail].debug;
+						
+						nodes.put(nodeID,
+							Environment.make({
+								~nodeID = nodeID;
+								~parent = parent;
+								~prev = prev;
+								~next = next;
+								~isGroup = isGroup == 1;
+								~head = head;
+								~tail = tail;
+							})
+						);
+						
+						if(next > 0,{
+							probe.value(next);
+						});
+						if(isGroup==1,{
+							if(head > 0,{
+								probe.value(head);
+							});
+						});
+						probing.remove(nodeID);
+						if(probing.size == 0,{
+							resp.remove;
+							report.value;
+						});
+					}).add;
+					
+			probe.value(0);
+
 		});
 	}
 	

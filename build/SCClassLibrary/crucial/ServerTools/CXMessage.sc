@@ -5,10 +5,9 @@ CXBundle {
 	add { arg message;
 		messages = messages.add(message);
 	}
-	addFunction { arg f; // time should be the same
+	addFunction { arg f;
 		functions = functions.add(f);
 	}
-	// confusing, different kind of message
 	addAction { arg receiver,selector, args;
 		functions = functions.add( Message(receiver,selector,args) )
 	}

@@ -165,7 +165,8 @@ BufferProxySpec : ScalarSpec {
 		specs.putAll(
 		 IdentityDictionary[
 			\buffer -> this.new( 44100,2 ),
-			\bufferProxy -> this.new( 44100,2 )
+			\bufferProxy -> this.new( 44100,2 ),
+			\fftbuff -> this.new( 2048 , 1)
 		];
 		)
 	}

@@ -22,7 +22,7 @@
 		// by using this rather than just postln
 		// you can command-shift-y on debug and find every one you left
 		this.postln;
-		if(caller.notNil,{ caller.identityHash.postln; "".postln; });
+		if(caller.notNil,{ (caller.asString + caller.identityHash).postln; "".postln; });
 	}
 	
 }
