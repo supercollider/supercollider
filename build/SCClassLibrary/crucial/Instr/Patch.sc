@@ -69,12 +69,13 @@ have to bundle it
 		inputs.do({ arg a,i;
 			var spec;
 			spec = this.specAt(i);
-			if(spec.rate == \control and: {
-				a.isNumber or: {
+			if(spec.rate == \control /* and: {
+				a.isNumber or: {a.isKindOf(KrNumberEditor)} or: {
 					defaultControl = ControlPrototypes.forSpec(spec,this.argNameAt(i));
+					[a,defaultControl].insp;
 					a.isKindOf(defaultControl.class)
 				}
-			},{ // if
+			}*/,{ // if
 				array = array.add([a, offset + i, this.argNameAt(i), this.specAt(i) ]);
 			},{ // else
 				if(a.isKindOf(HasPatchIns),{

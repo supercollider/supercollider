@@ -18,9 +18,11 @@
 	insp { arg  ... args;
 		Insp(this,args);
 	}
-	debug { // by using this rather than just postln
+	debug { arg caller;
+		// by using this rather than just postln
 		// you can command-shift-y on debug and find every one you left
 		this.postln;
+		if(caller.notNil,{ caller.identityHash.postln; "".postln; });
 	}
 	
 }

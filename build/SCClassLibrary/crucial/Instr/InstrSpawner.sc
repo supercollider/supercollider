@@ -2,7 +2,7 @@
 
 InstrSpawner : Patch {
 
-	var <>delta;
+	var <>delta,<i=0;
 	
 	var deltaStream,streams,sendArray,aintSeenNil = true,spawnTask;
 	
@@ -104,10 +104,12 @@ InstrSpawner : Patch {
 	didSpawn {
 		spawnTask = Task({
 			var aintSeenNil=true;
+			i = 0;
 			deltaStream.next.wait;
 			while({ 
 				aintSeenNil 
 			},{
+				i = i + 1;
 				// no release, just replace
 				synth = Synth.grain(defName,sendArray);
 				deltaStream.next.wait;
@@ -141,9 +143,11 @@ InstrSpawner2 : InstrSpawner {
 			var aintSeenNil=true, aNoteOn,group;
 			group = this.group;
 			beatWait.wait;
+			i = 0;
 			while({
 				aintSeenNil
 			},{
+				i = i + 1;
 				aNoteOn = deltaStream.next;
 				if(aNoteOn > 0,{
 					synth = Synth(defName,sendArray,group);
@@ -183,7 +187,7 @@ InstrSpawner3 : InstrSpawner2 {
 		spawnTask = Task({
 			var aintSeenNil=true, aNoteOn,group,lastNoteOn=0;
 			group = this.group;
-			
+			i = 0;
 			// ISSUE first note maybe shouldn't have played
 			beatWait.wait;
 			// release first synth
@@ -191,6 +195,7 @@ InstrSpawner3 : InstrSpawner2 {
 			while({
 				aintSeenNil
 			},{
+				i = i + 1;
 				aNoteOn = deltaStream.next;
 				if(lastNoteOn != 0,{
 					if(aNoteOn.isStrictlyPostive,{ // sustain

@@ -28,11 +28,13 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		^layout
 	}
 	prClose {
+		//"ObjectGui-prClose".debug(this);
 		this.remove(false);
 	}
 	remove { arg removeView=true;
 		model.removeDependant(this);
 		if(removeView,{
+			//"ObjectGui-remove".debug(this);
 			super.remove;
 		});
 	}

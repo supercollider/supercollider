@@ -28,7 +28,13 @@ SCViewAdapter { // SCViewHolder
 	font_ { arg f;
 		view.font = f;
 	}
-	remove { view.remove }
+	remove { 
+		if(view.notNil,{
+			view.remove;
+		},{
+			"SCViewAdapter-remove : already removed !".debug;
+		});
+	}
 	prClose { 
 		view.prClose 
 	}

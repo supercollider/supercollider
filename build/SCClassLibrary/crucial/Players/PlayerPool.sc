@@ -1,4 +1,4 @@
-PlayerPool : PlayerSocket { 	// implements selectable interface	var <>selected, <>list,<>autostart=false;		*new { arg list,selected=0,env,round=0.0;		^super.new(round)			.list_(loadDocument(list))			.selected_(selected)			.env_(env ?? {Env.new([ 0, 1.0, 0 ], [ 0.01, 0.7 ], -4, 1, nil)})	}	storeArgs { ^[list, selected ,env,round ]  }
+PlayerPool : PlayerSocket { 	// implements selectable interface	var <>selected, <>list, <>autostart=false;		*new { arg list,selected=0,env,round=0.0;		^super.new(round)			.list_(loadDocument(list))			.selected_(selected)			.env_(env ?? {Env.new([ 0, 1.0, 0 ], [ 0.01, 0.7 ], -4, 1, nil)})	}	storeArgs { ^[list, selected ,env,round ]  }
 	addPlayer { arg player;
 		var path;
 		player = loadDocument(player);
@@ -21,7 +21,7 @@
 		});
 	}
 
-	guiClass { ^PlayerPoolGui }}/*PatchSwitcher : PlayerPool {
+	guiClass { ^PlayerPoolGui }}/**PatchSwitcher : PlayerPool {
 
 	var <>inputs,ip,proxyMatches;
 	var connectedInputs,inputGroup;
@@ -91,8 +91,8 @@
 				});
 			});
 
-			atTime = this.qtime;
-			bundle.send(server,this.qtime);
+			atTime = BeatSched.tdeltaTillNext(round);
+			bundle.send(server,atTime);
 		})
 	}
 	prepareToBundle { arg group,bundle;
@@ -113,5 +113,6 @@
 		bundle.send(this.server,atTime);
 	}
 }
-*/
+
+**/
 

@@ -1,12 +1,14 @@
 
-FunctionPlayer : AbstractPlayer {
+FunctionPlayer  {
 
-	var <function,synthDef;
-	var numChannels,rate; // override methods
+//	var <function,synthDef;
+//	var numChannels,rate; // override methods
 	
 	*new { arg function;
-		^super.new.init(function)
+		^Patch(function)
+		//^super.new.init(function)
 	}
+	/*
 	init { arg f;
 		function = f;
 		synthDef = this.asSynthDef;
@@ -40,13 +42,13 @@ FunctionPlayer : AbstractPlayer {
 			});
 		})
 	}
-	//*initClass {  kill files }
 
+	*/
 }
 
 
-
-PlayerEfxFunc : FunctionPlayer {
+/**
+PlayerEfxFunc : AbstractPlayerEffect {
 
 	var <>efxFunction;
 	
@@ -107,6 +109,7 @@ XFadeEfxFunc : XFaderPlayer {
 	// pre1 is the pre level, pre2 is the post level
 	ar { arg newinput;
 		var dry,wet;
+		//[one,two].insp("building");
 		dry = (newinput ? one).value;
 		// optimizes out if its a simple float
 		wet = two.value(if(pre1 == 1.0,{ dry},{ dry * pre1.value }));
@@ -161,3 +164,4 @@ DualSeriesEfx : AbstractPlayer {
 
 }
 
+**/

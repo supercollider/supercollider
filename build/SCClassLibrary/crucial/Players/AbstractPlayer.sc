@@ -103,18 +103,18 @@ AbstractPlayer : AbstractFunction  {
 			synth = nil;
 		});
 	}
-//	stop {// does not release server  resources
-//		this.stopMsg.send;
-//	}
-//	stopMsg {
-//		var m;
-//		if(synth.notNil,{
-//			m = CXMessage( synth.server, synth.freeMsg );
-//			//	freeMsg { ^[11, nodeID] }
-//			synth = nil;
-//		});
-//		^m
-//	}	
+	/*stop {// does not release server  resources
+		this.stopMsg.send;
+	}
+	stopMsg {
+		var m;
+		if(synth.notNil,{
+			m = CXMessage( synth.server, synth.freeMsg );
+			//	freeMsg { ^[11, nodeID] }
+			synth = nil;
+		});
+		^m
+	}*/
 	free {
 		if(synth.notNil,{
 			synth.free;
@@ -131,6 +131,20 @@ AbstractPlayer : AbstractFunction  {
 		if(synth.notNil,{
 			synth.run(flag);
 		});
+	}
+	release { arg releaseTime = 0.1,atTime;
+		var rb;
+		rb = CXBundle.new;
+		this.releaseToBundle(releaseTime,rb);
+		rb.send(server,atTime);
+		if(releaseTime.notNil,{
+			AppClock.sched((atTime ? 0) + releaseTime,{
+				this.stop;
+			})
+		})
+	}
+	releaseToBundle { arg releaseTime,bundle;
+		bundle.add(synth.releaseMsg(releaseTime));
 	}
 		
 	busIndex { ^patchOut.index }
@@ -289,13 +303,13 @@ AbstractPlayer : AbstractFunction  {
 			})
 		},{
 			// save it in the archive of the player
-			( "building:" +this.name ).debug;
+			( "building:" + (this.path ?? {this.name}) ).debug;
 			def = this.asSynthDef;
 			bytes = def.asBytes;
 			bundle.add(["/d_recv", bytes]);
 			// even if name was nil before (Patch), its set now
 			defName = def.name;
-			("loading def:" + defName).debug;
+			//("loading def:" + defName).debug;
 			// InstrSynthDef watches \serverRunning to clear this
 			InstrSynthDef.watchServer(server);
 			Library.put(SynthDef,server,defName.asSymbol,true);
@@ -521,6 +535,8 @@ SynthlessPlayer : AbstractPlayer { // should be higher
 		super.stop;
 		isPlaying = false;
 	}
+	releaseToBundle { arg releaseTime = 0.1,bundle;
+	}
 	connectToPatchIn { arg patchIn,needsValueSetNow = true;
 		this.patchOut.connectTo(patchIn,needsValueSetNow)
 	}
@@ -584,6 +600,11 @@ MultiplePlayers : SynthlessPlayer { // SynthlessAggregatePlayer
 		});
 		super.stop;
 	}
+	releaseToBundle { arg releaseTime = 0.1,bundle;
+		this.voices.do({ arg pl;
+			pl.releaseToBundle(releaseTime,bundle)
+		})
+	}
 }
 
 MultiTrackPlayer : MultiplePlayers { // abstract
@@ -623,7 +644,7 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 	}
 	didSpawn {
 		isPlaying = true;
-		isSleeping = false;
+		if(source.notNil, { isSleeping = false });
 	}
 	instrArgFromControl { arg control;
 		^source.instrArgFromControl(control)
@@ -639,6 +660,9 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 		isSleeping = true;
 		source.stop;
 		super.stop;
+	}
+	releaseToBundle { arg releaseTime=0.2,bundle;
+		source.releaseToBundle(releaseTime,bundle)
 	}
 	children { ^[source] }
 	//called by topMakePatchOut

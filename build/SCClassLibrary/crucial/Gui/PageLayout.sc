@@ -66,6 +66,7 @@ MultiPageLayout  {
 	}
 	asPageLayout { arg name,bounds;
 		if(isClosed,{
+			//"layout was closed".debug;
 			^this.class.new(name,bounds)
 		})// else this
 	}
@@ -103,6 +104,8 @@ MultiPageLayout  {
 				windows=views=nil;
 			});
 			NotificationCenter.notify(this,\didClose);
+		},{
+			"MultiPageLayout-close : is closed already".debug(this);
 		});
 	}
 

@@ -167,8 +167,10 @@ Sample : BufferProxy { // a small sound loaded from disk
 			// TODO check size and numChannels !!
 			if(buffer.numFrames == this.size
 				and: {buffer.numChannels == numChannels},{
+					if(soundFilePath.notNil,{
 						buffer.read(this.soundFilePath,startFrame, 
 								max(endFrame - startFrame, -1))
+					}); // else check if its allocated yet
 			},{
 				//discard
 				buffer.free;
@@ -211,7 +213,12 @@ Sample : BufferProxy { // a small sound loaded from disk
 			this.guessBeats;
 			numChannels = soundFile.numChannels;
 			sampleRate = soundFile.sampleRate;
-		})
+			^this
+		});
+		size = 1;
+		/*if(thing.isKindOf(Buffer),{
+
+		});*/
 	}
 						
 	tempo_ { arg tm;

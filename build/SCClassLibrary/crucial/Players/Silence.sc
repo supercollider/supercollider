@@ -10,7 +10,7 @@ PlayerInputProxy : Silence { // audio
 	var <patchIn;
 	var inBus,nullBus;
 	
-	*new { arg spec;
+	*new { arg spec=\audio;
 		^super.new.spec_(spec.asSpec).pipinit
 	}
 	pipinit {

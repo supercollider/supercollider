@@ -18,49 +18,47 @@ PlayerSocket : AbstractPlayerProxy {
 	var <>round,<>rate,<>numChannels;
 	var <>env,socketGroup;
 	
-	*new { arg round=0.0,rate=\audio,numChannels=2;
+	*new { arg rate=\audio,numChannels=2,round=0.0;
 		^super.new.round_(round)
 			.rate_(rate).numChannels_(numChannels)
 	}
 	preparePlayer { arg player;
 		player.prepareForPlay(socketGroup,bus: this.bus)
 	}
-	prepareAndSpawn { arg player;
+	prepareAndSpawn { arg player,releaseTime=0.0;
 		// use players prepare / spawn sequence
 		player.play(socketGroup,nil,this.bus);
 		isSleeping = false;
 		this.changed;
 		if(player != source,{
-			source.stop;
+			source.release(releaseTime);
 		});
 		source = player;
 	}
-	spawnPlayer { arg player,newEnv,onTrigger,atTime;
+	spawnPlayer { arg player,releaseTime=0.0,onTrigger,atTime;
 		var bundle;
 		bundle = CXBundle.new;
-		this.setSourceToBundle(player,bundle);
+		this.setSourceToBundle(player,bundle,releaseTime);
 		bundle.addFunction({
 			isSleeping = false;
-			this.changed;
+			{ this.changed; }.defer;
 			onTrigger.value;
 			nil
 		});
 		// should use a shared BeatSched
 		bundle.send(this.server, atTime );
 	}
-	qspawnPlayer { arg player,newEnv,onTrigger;
-		this.spawnPlayer(player,newEnv,onTrigger,BeatSched.tdeltaTillNext(round))
+	qspawnPlayer { arg player,releaseTime=0.0,onTrigger;
+		this.spawnPlayer(player,releaseTime,onTrigger,BeatSched.tdeltaTillNext(round))
 	}
 	
-
-	releaseVoice {
+	releaseVoice { arg releaseTime=0.0;
 		isSleeping = true;
 		if(source.notNil,{
-			source.stop;
+			source.release(releaseTime);
 		});
 		this.changed;
 	}
-	
 	
 	//
 	prepareToBundle { arg group,bundle;
@@ -102,10 +100,17 @@ PlayerSocket : AbstractPlayerProxy {
 		this.setSourceToBundle(s,bundle);
 		bundle.send(this.server,atTime);
 	}
-	setSourceToBundle { arg s,bundle;
-		if(source != s,{
-			//bundle.add( source.stopMsg );
-			source.stop;
+	setSourceToBundle { arg s,bundle,releaseTime=0.2;
+		var oldsource;
+		if(source != s and: {source.notNil},{
+			oldsource = source;
+			oldsource.releaseToBundle(releaseTime,bundle);
+			if(releaseTime.notNil,{
+				AppClock.sched(releaseTime,{
+					oldsource.stop;
+					nil;
+				});
+			});
 		});
 		source = s;
 		source.spawnOnToBundle(socketGroup,this.bus,bundle);

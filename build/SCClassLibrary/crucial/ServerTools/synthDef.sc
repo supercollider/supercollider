@@ -19,6 +19,7 @@
 		^bundle.clumpedSendNow(group.server)
 	}
 	spawnToBundle {}
+	spawnOnToBundle {}
 	loadDefFileToBundle {}
 	//writeDefFile {}
 	
