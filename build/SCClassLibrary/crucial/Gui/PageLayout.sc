@@ -60,9 +60,10 @@ PageLayout  {
 			.onClose_({  	
 						this.close; // close all windows in this layout
 					})
-			//.backColor_(bgcolor)
-			//.focusColor_(focuscolor)	
 		);
+		w.view.background_(bgcolor);
+		//.focusColor_(focuscolor)	
+
 		isClosed = false;	
 			
 		margin=Rect.new(0,0,x,y).insetAll(marginx ? hspacer,marginy ? vspacer,
@@ -71,6 +72,7 @@ PageLayout  {
 		curry=margin.top;
 		
 		autoRemoves = List.new;
+		this.front;
 	}
 	
 	window { ^windows.last }
@@ -167,23 +169,23 @@ PageLayout  {
 	}
 	
 	// place the code posted by gui builder onto flow layout
-	placeCode { arg function;
-		var win,lastView,newViews,rect;
-		win = this.window;
-		lastView = win.views.size;
-		function.value(win);
-		newViews = win.views.copyRange(lastView,win.views.size - 1);
-		
-		rect = this.layRight(
-			newViews.maxValue({ arg v; v.bounds.right }),
-			newViews.maxValue({ arg v; v.bounds.bottom })
-		);
-		newViews.do({ arg v;
-			v.bounds_(v.bounds.moveBy(rect.left,rect.top));
-			//v.prSetBounds(v.bounds.moveBy(rect.left,rect.top));
-		});
-		win.refresh;
-	}
+//	placeCode { arg function;
+//		var win,lastView,newViews,rect;
+//		win = this.window;
+//		lastView = win.views.size;
+//		function.value(win);
+//		newViews = win.views.copyRange(lastView,win.views.size - 1);
+//		
+//		rect = this.layRight(
+//			newViews.maxValue({ arg v; v.bounds.right }),
+//			newViews.maxValue({ arg v; v.bounds.bottom })
+//		);
+//		newViews.do({ arg v;
+//			v.bounds_(v.bounds.moveBy(rect.left,rect.top));
+//			//v.prSetBounds(v.bounds.moveBy(rect.left,rect.top));
+//		});
+//		win.refresh;
+//	}
 
 	// create a layout within the current layout
 	within { arg x,y,func;  		
@@ -242,7 +244,7 @@ PageLayout  {
 		ow = this.window;
 		this.init("..." ++ ow.name,
 				margin.right + hspacer,margin.bottom + vspacer,(ow.bounds.left + 100).wrap(0,900),(ow.bounds.top+10).wrap(0,300));
-		this.window.backColor_(ow.backColor);
+		this.window.background_(ow.background);
 		tabs.do({
 			this.layRight(10,10);
 		});
