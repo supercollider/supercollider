@@ -1191,6 +1191,7 @@ void returnFromBlock(VMGlobals *g)
 #endif
 }
 
+void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numArgsPushed);
 
 void returnFromMethod(VMGlobals *g)
 {
@@ -1265,6 +1266,7 @@ void returnFromMethod(VMGlobals *g)
 		}*/
 		
 		{
+			again:
 			PyrFrame *tempFrame = curframe;
 			while (tempFrame != homeContext) {
 				meth = tempFrame->method.uom;
@@ -1277,12 +1279,28 @@ void returnFromMethod(VMGlobals *g)
 				}
 				tempFrame = nextFrame;
 				if (!tempFrame) {
-					g->sp[2].ucopy = g->sp[0].ucopy;
-					g->sp->ucopy = g->receiver.ucopy;
-					g->sp++; SetObject(g->sp, g->method);
-					g->sp++; 
-					sendMessage(g, getsym("outOfContextReturn"), 3);
-					return;
+					if (isKindOf((PyrObject*)g->thread, class_routine) && NotNil(&g->thread->parent)) {
+						// not found, so yield to parent thread and continue searching.
+						PyrSlot value;
+						value.ucopy = g->sp->ucopy;
+
+						int numArgsPushed = 1;
+						switchToThread(g, g->thread->parent.uot, tSuspended, &numArgsPushed);
+
+						// on the other side of the looking glass, put the yielded value on the stack as the result..
+						g->sp -= numArgsPushed - 1;
+						g->sp->ucopy = value.ucopy;
+						
+						curframe = g->frame;
+						goto again;
+					} else {
+						g->sp[2].ucopy = g->sp[0].ucopy;
+						g->sp->ucopy = g->receiver.ucopy;
+						g->sp++; SetObject(g->sp, g->method);
+						g->sp++; 
+						sendMessage(g, getsym("outOfContextReturn"), 3);
+						return;
+					}
 				}
 			}
 		}
