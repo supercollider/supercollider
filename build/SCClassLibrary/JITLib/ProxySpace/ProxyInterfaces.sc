@@ -1,16 +1,13 @@
 
 
 //lightweight objects that insulate different ways of playing/stopping.
-
-EventStreamControl  {
-	var <>stream; 
-	
-	*new { arg stream;
-		^super.newCopyArgs(stream)
-	}
-		
+AbstractPlayControl {
 	sendDef {}
 	writeDef {}
+	pause { this.stop } 
+	unpause { this.start }
+
+	sendDefToBundle {}
 	
 	playToBundle { arg bundle; //mixedbundle
 		bundle.addFunction({ 
@@ -19,6 +16,26 @@ EventStreamControl  {
 		^nil //return a nil object instead of a synth
 	}
 	
+	stopToBundle { arg bundle;
+		bundle.addFunction({ this.stop });
+	}
+	
+	play {
+		this.subclassResponsibility(thisMethod);
+	}
+	
+	stop {
+		this.subclassResponsibility(thisMethod);
+	}
+}
+
+EventStreamControl : AbstractPlayControl {
+	var <>stream; 
+	
+	*new { arg stream;
+		^super.newCopyArgs(stream)
+	}
+		
 	play {
 		stream.stop;
 		stream.play(true);
@@ -26,18 +43,21 @@ EventStreamControl  {
 	
 	stop {
 		stream.stop;
-		
 	}
-	
-	stopToBundle { arg bundle;
-		bundle.addFunction({ this.stop });
-	}
-	
-	pause { this.stop } //clear this up later.
-	unpause { this.start }
+}
 
-	sendDefToBundle {}
+NumericalControl : AbstractPlayControl {
+	var <>bus, <>value; 
 	
+	*new { arg bus, value=0;
+		^super.newCopyArgs(bus, value)
+	}
+	
+	play {
+		bus.set(value);
+	}
+	
+	stop {}
 
 }
 
@@ -85,6 +105,11 @@ SynthDefControl {
 	
 	pause { synth.run(false) }
 	unpause { synth.run(true) }
+
+}
+
+SoundDefControl : SynthDefControl {
+	sendDef { } //assumes that SoundDef does send to the same server 
 
 }
 
