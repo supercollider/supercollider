@@ -313,8 +313,8 @@ bool SCView::hit(SCPoint where) const
 
 void SCView::keyDown(int character, int modifiers, unsigned short keycode)
 {
-    PyrSymbol *method = getsym("keyDown");
     pthread_mutex_lock (&gLangMutex);
+    PyrSymbol *method = getsym("keyDown");
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
@@ -331,8 +331,8 @@ void SCView::keyDown(int character, int modifiers, unsigned short keycode)
 
 void SCView::keyUp(int character, int modifiers, unsigned short keycode)
 {
-    PyrSymbol *method = getsym("keyUp");
     pthread_mutex_lock (&gLangMutex);
+    PyrSymbol *method = getsym("keyUp");
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;

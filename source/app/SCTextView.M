@@ -124,21 +124,23 @@ extern bool compiledOK;
 				
 			MyDocument * doc = [self delegate];			
 			PyrObject * pobj = [doc getSCObject];
-			PyrSymbol *method = getsym("keyDown");
 
 			if (pobj) {
 				pthread_mutex_lock (&gLangMutex);
-				if(NotNil(pobj->slots+1)){
-					//pthread_mutex_lock (&gLangMutex);
-					VMGlobals *g = gMainVMGlobals;
-					g->canCallOS = true;
-					++g->sp;  SetObject(g->sp, pobj); 
-					++g->sp;  SetChar(g->sp, character); 
-					++g->sp;  SetInt(g->sp, modifiers); 
-					++g->sp;  SetInt(g->sp, character); 
-					++g->sp;  SetInt(g->sp, keycode); 
-					runInterpreter(g, method, 5);
-					g->canCallOS = false;
+				if (compiledOK) { // must test again inside the lock
+					PyrSymbol *method = getsym("keyDown");
+					if(NotNil(pobj->slots+1)){
+						//pthread_mutex_lock (&gLangMutex);
+						VMGlobals *g = gMainVMGlobals;
+						g->canCallOS = true;
+						++g->sp;  SetObject(g->sp, pobj); 
+						++g->sp;  SetChar(g->sp, character); 
+						++g->sp;  SetInt(g->sp, modifiers); 
+						++g->sp;  SetInt(g->sp, character); 
+						++g->sp;  SetInt(g->sp, keycode); 
+						runInterpreter(g, method, 5);
+						g->canCallOS = false;
+					}
 				}
 				pthread_mutex_unlock (&gLangMutex);
 			}
@@ -191,9 +193,8 @@ extern PyrSymbol * s_mouseDown;
 - (void) mouseDownAction: (int) index
 {
 		MyDocument * doc = [self delegate];
-		PyrObject * pobj = [doc getSCObject];
-		//PyrSymbol *method = getsym("mouseDown");
 		pthread_mutex_lock (&gLangMutex);
+		PyrObject * pobj = [doc getSCObject];
 		if (pobj) {
 			VMGlobals *g = gMainVMGlobals;
 			g->canCallOS = true;
