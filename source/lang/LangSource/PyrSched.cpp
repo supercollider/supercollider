@@ -995,7 +995,6 @@ int prTempoClock_Beats(struct VMGlobals *g, int numArgsPushed)
 	double beats, seconds;
 	
 	if (SlotEq(&g->thread->clock, a)) {
-		double beats;
 		int err = slotDoubleVal(&g->thread->beats, &beats);
 		if (err) return errWrongType; 
 	} else {
