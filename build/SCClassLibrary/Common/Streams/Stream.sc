@@ -218,6 +218,7 @@ OneShotStream : Stream {
 	}
 	next { ^if (once) {once = false; value} }
 	reset { once = true }
+	storeArgs { ^[value] }
 }
 
 FuncStream : Stream {
@@ -232,6 +233,7 @@ FuncStream : Stream {
 	reset { 
 		^resetFunc.value
 	}
+	storeArgs { ^[nextFunc, resetFunc] }
 }
 
 
@@ -310,6 +312,9 @@ PauseStream : Stream
 Task : PauseStream {
 	*new { arg func, clock; 
 		^super.new(Routine(func), clock) 
+	}
+	storeArgs { ^originalStream.storeArgs 
+				++ if(clock != TempoClock.default) { clock } 
 	}
 }
 

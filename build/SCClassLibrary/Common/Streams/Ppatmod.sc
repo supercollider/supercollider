@@ -10,6 +10,7 @@ Plazy : Pattern {
 	embedInStream { arg inval;				
 		^func.value.embedInStream(inval)
 	}
+	storeArgs { ^[func] }
 }
 
 PlazyEnvir : Plazy {
@@ -35,4 +36,5 @@ Ppatmod : Pattern {
 		});
 		^inval;
 	}
+	storeArgs { ^[pattern, func, repeats] }
 }
