@@ -72,6 +72,7 @@ public:
 	virtual void mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent);
 //	virtual void mouseOver(SCPoint where);
 	virtual int findSelection(int frame);
+	virtual void setBounds(SCRect inbounds);
 	
 	SCPoint pixelToUnits(SCPoint p, SCRect r) 
             { 
