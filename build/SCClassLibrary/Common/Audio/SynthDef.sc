@@ -80,15 +80,15 @@ SynthDef {
 			#c, c2 = name.asString;
 			value = values.at(i);
 			lag = lags.at(i);
-			if (c == $i && { c2 == $_ }, {
-				if (lag != 0, {
+			if ((lag == \ir) or: { c == $i and: { c2 == $_ }}, {
+				if (lag.isNumber and: { lag != 0 }, {
 					Post << "WARNING: lag value "<< lag <<" for i-rate arg '"
 						<< name <<"' will be ignored.\n";
 				});
 				this.addIr(name, value);
 			},{
-			if (c == $t && { c2 == $_ }, {
-				if (lag != 0, {
+			if ((lag == \tr) or: { c == $t and: { c2 == $_ }}, {
+				if (lag.isNumber and: { lag != 0 }, {
 					Post << "WARNING: lag value "<< lag <<" for trigger arg '"
 						<< name <<"' will be ignored.\n";
 				});
