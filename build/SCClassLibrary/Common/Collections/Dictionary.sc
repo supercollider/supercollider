@@ -13,7 +13,7 @@ Dictionary : Set {
 	}
 	atFail { arg key, function;
 		var val;
-		val = array.at(this.scanFor(key) + 1);
+		val = this.at(key);
 		if ( val.isNil, { ^function.value }, { ^val });
 	}
 	add { arg anAssociation;
@@ -333,12 +333,5 @@ IdentityDictionary : Dictionary {
 		this.as(Dictionary).writeAsPlist(path);
 	}
 	
-}
-
-NameDictionary : IdentityDictionary
-{
-	add { arg aNamedObject;
-		this.put(aNamedObject.name, aNamedObject);
-	}
 }
 
