@@ -42,7 +42,7 @@ When the various output ugens (
 \f0\b In.kr
 \f2\b0  also reads data that is older than the current cycle.\
 \
-In some cases we might also want to read audio from a node later in the current node order. This is the purpose of InFeedback. The delay introduced by this is at maximum one block size, which equals about 0.0014 sec at the default block size and sample rate.\
+In some cases we might also want to read audio from a node later in the current node order. This is the purpose of InFeedback. The delay introduced by this is one block size, which equals about 0.0014 sec at the default block size and sample rate. (See the resonator example below to see the implications of this.)\
 \
 The variably mixing and overwriting behaviour of the output ugens can make order of execution crucial. (No pun intended.) For example with a node order like the following the InFeedback ugen in Synth 2 will only receive data from Synth 1 (-> = write out; <- = read in):\
 \
@@ -60,7 +60,13 @@ Because of this it is often useful to allocate a separate bus for feedback. With
 Synth 2 (with InFeedback) <- busB \
 Synth 3 -> busB + busA \
 \
-The second example below demonstrates this issue.
+The second example below demonstrates this issue.\
+\
+See also 
+\f0\b LocalIn
+\f2\b0  and 
+\f0\b LocalOut
+\f2\b0 .
 \f1\fs18 \cf2 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -120,6 +126,28 @@ audio feedback modulation:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 	\
+\f2\fs24 \cf0 The example below implements a resonator. Note that you must subtract the blockSize in order for the tuning to be correct. See 
+\f0\b LocalIn
+\f2\b0  for an equivalent example.\
+	
+\f1\fs18 \
+	(\
+	\cf2 var\cf0  play, imp, initial;\
+	\cf2 SynthDef\cf0 (\cf3 "testRes"\cf0 , \{\
 	\
-	}
+	play = \cf2 InFeedback\cf0 .ar(10, 1); \cf4 // 10 is feedback channel\cf0 \
+	imp = \cf2 Impulse\cf0 .ar(1);\
+	\
+	\cf4 // feedback\cf0 \
+	\cf2 OffsetOut\cf0 .ar(10, \cf2 DelayC\cf0 .ar(imp + (play * 0.995), 1, \
+		440.reciprocal - ControlRate.ir.reciprocal)); \cf4 // subtract block size\cf0 \
+	\
+	\cf2 OffsetOut\cf0 .ar(0, play);\
+	\
+	\}).play(s);\
+	\
+	\cf4 // Compare with this for tuning\cf0 \
+	\{ \cf2 SinOsc\cf0 .ar(440, 0, 0.2) \}.play(s, 1);\
+	)
+\f2\fs24 \
+		}
