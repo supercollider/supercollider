@@ -95,6 +95,11 @@ Function : AbstractFunction {
 		^thisMethod.notYetImplemented
 	}
 	cmdPeriod { this.value }	
+	
+	<> { arg that;
+		// function composition
+		^{|x| this.value(that.value(x)) }
+	}
 }
 
 

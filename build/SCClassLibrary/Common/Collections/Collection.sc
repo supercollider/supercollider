@@ -208,6 +208,15 @@ Collection {
 		}
 		^sum;
 	}
+	product { | function |
+		var i, product = 1;
+		if (function.isNil) { // optimized version if no function
+			this.do { | elem | product = product * elem; }
+		}{
+			this.do {|elem, i| product = product * function.value(elem, i); }
+		}
+		^product;
+	}
 	sumabs {  // sum of the absolute values - used to convert Mikael Laursen's rhythm lists.
 		var sum = 0;
 		this.do { | elem | 

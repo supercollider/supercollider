@@ -171,6 +171,4 @@ AbstractFunction {
 	expexp { arg inMin, inMax, outMin, outMax;
 		^this.composeNAryOp('expexp', [inMin, inMax, outMin, outMax])
 	}
-
-
 }

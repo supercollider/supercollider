@@ -62,12 +62,19 @@ SequenceableCollection : Collection {
 		^obj
 	}
 
-	++ { arg aSequentialCollection; 
+	++ { arg aSequenceableCollection; 
 		var newlist;
-		newlist = this.species.new(this.size + aSequentialCollection.size);
-		newlist = newlist.addAll(this).addAll(aSequentialCollection);
+		newlist = this.species.new(this.size + aSequenceableCollection.size);
+		newlist = newlist.addAll(this).addAll(aSequenceableCollection);
 		^newlist
 	}
+	+++ { arg aSequenceableCollection; 
+		aSequenceableCollection = aSequenceableCollection.asSequenceableCollection;
+		^this.collect {|item, i|
+			item.asSequenceableCollection ++ aSequenceableCollection.wrapAt(i)
+		}
+	}
+	asSequenceableCollection { ^this }
 	
 	// select an element at random
 	choose { 
@@ -551,6 +558,22 @@ SequenceableCollection : Collection {
 			});
 			^newList
 		};
+		if (adverb.isInteger) {
+			if (adverb == 0) {
+				size = this.size max: theOperand.size;
+				newList = this.species.new(size);
+				size.do({ arg i;
+					newList.add(theOperand.wrapAt(i).perform(aSelector, this.wrapAt(i)));
+				});
+				^newList
+			}{
+				if (adverb > 0) {
+					^theOperand.collect {|item, i| item.perform(aSelector, this, adverb-1) }
+				}{
+					^this.collect {|item, i| theOperand.perform(aSelector, item, adverb+1) }
+				}
+			}
+		};
 		if (adverb == 't') {
 //			size = this.size;
 //			newList = this.species.new(size);
@@ -677,6 +700,14 @@ SequenceableCollection : Collection {
 	
 	quickSort { arg function; 
 		this.quickSortRange(0, this.size - 1, function) 
+	}
+	order { arg function; 
+		var array, orderFunc;
+		// returns an array of indices that would sort the collection into order.
+		if (function.isNil) { function = { arg a, b; a <= b }; };
+		array = [this, (0..this.lastIndex)].flop;
+		orderFunc = {|a,b| function.value(a[0], b[0]) };
+		^array.mergeSort(orderFunc).flop[1]
 	}
 	
 	swap { arg i, j;
@@ -857,5 +888,17 @@ SequenceableCollection : Collection {
 	wrapPut { arg index, value;
 		index = index % this.size;
 		^this.put(index, value)
+	}
+	reduce { arg operator;
+		var once = true, result;
+		this.doAdjacentPairs {|a, b|
+			if (once) {
+				once = false;
+				result = a.perform(operator, b);
+			}{
+				result = result.perform(operator, b)
+			};
+		};
+		^result
 	}
 }

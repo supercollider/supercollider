@@ -6,7 +6,7 @@
 %token  BADTOKEN INTERPRET
 %left	':'
 %right  '='
-%left	BINOP KEYBINOP '-' '<' '>' '*' '+' '|' READWRITEVAR DOUBLEEQUAL
+%left	BINOP KEYBINOP '-' '<' '>' '*' '+' '|' READWRITEVAR
 %left	'.'
 %right  '`'
 %right  UMINUS
@@ -780,7 +780,7 @@ expr	: expr1
 
 adverb  : { $$ = 0; }
 		| '.' name { $$ = (long)newPyrPushLitNode((PyrSlotNode*)$2, NULL); }
-		| '.' binop { $$ = (long)newPyrPushLitNode((PyrSlotNode*)$2, NULL); }
+		| '.' integer { $$ = (long)newPyrPushLitNode((PyrSlotNode*)$2, NULL); }
 		| '.' '(' exprseq ')' { $$ = $3; }
 		;
 		
@@ -1122,7 +1122,6 @@ pseudovar	: PSEUDOVAR { $$ = zzval; }
 		
 binop	: BINOP { $$ = zzval; }	
 		| READWRITEVAR { $$ = zzval; }
-		| DOUBLEEQUAL { $$ = zzval; }
 		| '<'  { $$ = zzval; }	
 		| '>'  { $$ = zzval; }	
 		| '-'  { $$ = zzval; }	

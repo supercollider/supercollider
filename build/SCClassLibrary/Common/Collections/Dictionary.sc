@@ -34,6 +34,7 @@ Dictionary : Set {
 			this.put(key, value) 
 		}) 
 	}
+	
 	associationAt { arg key;
 		var index, anAssociation;
 		index = this.scanFor(key);

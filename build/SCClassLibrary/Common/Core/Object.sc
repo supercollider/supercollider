@@ -127,7 +127,7 @@ Object {
 	reset { ^this }
 	stop { ^this }
 	free { ^this }
-	removedFromScheduler {}
+	removedFromScheduler { ^this }
 	isPlaying { ^false }
 	embedInStream { ^this.yield; }
 	asStream { ^this }
@@ -222,7 +222,7 @@ Object {
 	species { ^this.class }
 	asCollection { ^[this] }
 	asSymbol { ^this.asString.asSymbol }
-	asString { arg limit = 150;
+	asString { arg limit = 512;
 		var string;
 		_ObjectString
 		string = String.streamContentsLimit({ arg stream; this.printOn(stream); }, limit);
@@ -260,6 +260,18 @@ Object {
 	asRef { ^Ref.new(this) }
 	// asArray { ^Array.with(this) }
 	asArray { ^this.asCollection.asArray }
+	asSequenceableCollection { ^this.asArray }
+
+	// arrays
+	rank { ^0 }
+	deepCollect { arg depth, function; ^function.value(this, 0) }
+	slice { ^this }
+	shape { ^nil }
+	unbubble { ^this }
+	bubble { arg depth=0, levels=1; 
+		if (levels <= 1) { ^[this] };
+		^[this.bubble(depth,levels-1)]
+	}
 	
 	// looping
 	while { arg body;

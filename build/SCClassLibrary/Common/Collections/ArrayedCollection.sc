@@ -284,6 +284,97 @@ ArrayedCollection : SequenceableCollection {
 			"*\n".post;
 		};
 	}
+
+	// concepts borrowed from J programming language
+	rank {
+		// rank is the number of dimensions in a multidimensional array.
+		// see also Object-rank
+		// this assumes every element has the same rank
+		^ 1 + this.first.rank
+	}
+	shape {
+		// this assumes every element has the same shape
+		^[this.size] ++ this[0].shape
+	}
+	reshape { arg ... shape;
+		var result, size;
+		size = shape.product;
+		result = this.flat.wrapExtend(size);
+		shape[1..].reverseDo {|n| result = result.clump(n) };
+		^result
+	}
+	deepCollect { arg depth = 1, function;
+		if (depth <= 0) {
+			^function.value(this, 0)
+		};
+		depth = depth-1;
+		^this.collect {|item| item.deepCollect(depth, function) }
+	}
+	
+	unbubble { arg depth=0, levels=1;
+		if (depth <= 0) {
+			// converts a size 1 array to the item.
+			if (this.size > 1) { ^this };
+			if (levels <= 1) { ^this[0] }
+			^this[0].unbubble(depth, levels-1)
+		};
+		^this.collect {|item| item.unbubble(depth-1) } 
+	}
+	bubble { arg depth=0, levels=1;
+		if (depth <= 0) { 
+			if (levels <= 1) { ^[this] }
+			^[this.bubble(depth,levels-1)]
+		};
+		^this.collect {|item| item.bubble(depth-1, levels) } 
+	}
+	
+	slice { arg ... cuts;
+		var firstCut, index, list;
+		if (cuts.size == 0) { ^this.copy };
+
+		firstCut = cuts[0];
+		if (firstCut.isNil) { list = this.copy } { list = this[firstCut.asArray] };
+		if (cuts.size == 1) {
+			^list.unbubble
+		}{
+			cuts = cuts[1..];
+			^list.collect {|item| item.slice(*cuts) }.unbubble
+		}
+	}
+	*iota { arg ... sizes;
+		^(0..sizes.product-1).reshape(*sizes)
+	}
+	*fill2D { arg rows, cols, function;
+		var array;
+		array = this.new(rows);
+		rows.do{|row|
+			var array2;
+			array2 = this.new(cols);
+			cols.do{|col|
+				array2 = array2.add(function.(row, col))
+			};
+			array = array.add(array2);
+		};
+		^array
+	}
+	*fill3D { arg planes, rows, cols, function;
+		var array;
+		array = this.new(planes);
+		planes.do{|plane|
+			var array2;
+			array2 = this.new(rows);
+			rows.do{|row|
+				var array3;
+				array3 = this.new(cols);
+				cols.do{|col|
+					array3 = array3.add(function.(plane, row, col))
+				};
+				array2 = array2.add(array3);
+			};
+			array = array.add(array2);
+		};
+		^array
+	}
 }
 
 RawArray : ArrayedCollection {

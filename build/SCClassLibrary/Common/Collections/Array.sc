@@ -37,6 +37,157 @@ Array[slot] : ArrayedCollection {
 		_ArrayPyramid 
 		^this.primitiveFailed 
 	}
+	pyramidg { arg patternType=1;
+		var listA, listB, lastIndex;
+		listA = [];
+		lastIndex = this.lastIndex;
+		if (patternType == 1) {
+			for (0,lastIndex) {|i|
+				listB = [];
+				for (0,i) {|j|
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			^listA
+		};
+		if (patternType == 2) {
+			for (0,lastIndex) {|i|
+				listB = [];
+				for (0,i) {|j|
+					j = lastIndex - i + j;
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			^listA
+		};
+		if (patternType == 3) {
+			for (0,lastIndex) {|i|
+				listB = [];
+				for (0,lastIndex-i) {|j|
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			^listA
+		};
+		if (patternType == 4) {
+			for (0,lastIndex) {|i|
+				listB = [];
+				for (i,lastIndex) {|j|
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			^listA
+		};
+		if (patternType == 5) {
+			for (0,lastIndex) {|i|
+				listB = [];
+				for (0,i) {|j|
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			for (lastIndex-1,0) {|i|
+				listB = [];
+				for (0,i) {|j|
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			^listA
+		};
+		if (patternType == 6) {
+			for (0,lastIndex) {|i|
+				listB = [];
+				for (lastIndex-i,lastIndex) {|j|
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			for (lastIndex-1,0) {|i|
+				listB = [];
+				for (lastIndex-i,lastIndex) {|j|
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			^listA
+		};
+		if (patternType == 7) {
+			for (0,lastIndex) {|i|
+				listB = [];
+				for (0,lastIndex-i) {|j|
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			for (lastIndex-1,0) {|i|
+				listB = [];
+				for (0,lastIndex-i) {|j|
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			^listA
+		};
+		if (patternType == 8) {
+			for (0,lastIndex) {|i|
+				listB = [];
+				for (i,lastIndex) {|j|
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			for (lastIndex-1,0) {|i|
+				listB = [];
+				for (i,lastIndex) {|j|
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			^listA
+		};
+		if (patternType == 9) {
+			for (0,lastIndex) {|i|
+				listB = [];
+				for (0,i) {|j|
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			for (lastIndex-1,0) {|i|
+				listB = [];
+				for (0,i) {|j|
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			^listA
+		};
+		if (patternType == 10) {
+			for (0,lastIndex) {|i|
+				listB = [];
+				for (0,i) {|j|
+					j = lastIndex - i + j;
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			for (lastIndex-1,0) {|i|
+				listB = [];
+				for (0,i) {|j|
+					j = lastIndex - i + j;
+					listB = listB.add(this[j]);
+				};
+				listA = listA.add(listB);
+			};
+			^listA
+		};
+	}		
+				
 	lace { arg length;
 		_ArrayLace
 		^this.primitiveFailed 
@@ -163,3 +314,4 @@ Array[slot] : ArrayedCollection {
 		^this.primitiveFailed;
 	}
 }
+

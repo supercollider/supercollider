@@ -34,6 +34,7 @@ IOStream : Stream {
 		^string
 	}
 	flush {}
+	pos_ { ^this.subclassResponsibility(thisMethod) }
 }
 
 CollStream : IOStream {
