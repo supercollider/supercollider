@@ -1,231 +1,182 @@
 
-PhaseVocoderUGen : UGen
+// fft uses a local buffer for holding the buffered audio
+
+FFT : UGen 
 {
-	var <fftSize, cosTable, inputWindow, outputWindow;
-	
-	init { arg argFFTSize ... argInputs;
-		inputs = argInputs;
-		fftSize = argFFTSize;
-		cosTable = Library.at(\signal, \cosTable, fftSize);
-		inputWindow = outputWindow = Library.at(\signal, \welch, fftSize);
+	*new { arg buffer, in = 0.0;
+		^this.multiNew(buffer, in)
+	}
+}	
+
+IFFT : UGen 
+{
+	*new { arg buffer;
+		^this.multiNew(buffer)
+	}
+}	
+
+PV_MagAbove : UGen
+{
+	*new { arg buffer, threshold = 0.0;
+		^this.multiNew(buffer, threshold)
 	}
 }
 
-PV_Noop : PhaseVocoderUGen {
-	// this class just for debugging
-	*ar { arg fftSize = 1024, in = 0.0;
-		^this.multiNew('audio', fftSize, in)
-	}
-	*kr { arg fftSize = 1024, in = 0.0;
-		^this.multiNew('control', fftSize, in)
+PV_MagBelow : PV_MagAbove {}
+PV_MagClip : PV_MagAbove {}
+PV_LocalMax : PV_MagAbove {}
+
+PV_MagSmear : UGen
+{
+	*new { arg buffer, bins = 0.0;
+		^this.multiNew(buffer, bins)
 	}
 }
 
-PV_Scope : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0;
-		^this.multiNew('audio', fftSize, in)
-	}
-	*kr { arg fftSize = 1024, in = 0.0;
-		^this.multiNew('control', fftSize, in)
-	}
-	init { arg argFFTSize ... argInputs;
-		inputs = argInputs;
-		fftSize = argFFTSize;
-		cosTable = Library.at(\signal, \cosTable, fftSize);
-		inputWindow = outputWindow = Library.at(\signal, \hanning, fftSize);
+PV_BinShift : UGen 
+{
+
+	*new { arg buffer, stretch = 1.0, shift = 0.0;
+		^this.multiNew(buffer, stretch, shift)
 	}
 }
+PV_MagShift : PV_BinShift {}
 
-PV_TimeAverageScope : PV_Scope {}
-
-PV_ApxTest : PhaseVocoderUGen {
-	// this class just for debugging
-	*ar { arg fftSize = 1024, in = 0.0;
-		^this.multiNew('audio', fftSize, in)
-	}
-	*kr { arg fftSize = 1024, in = 0.0;
-		^this.multiNew('control', fftSize, in)
-	}
-}
-
-PV_MagSquared : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0;
-		^this.multiNew('audio', fftSize, in)
-	}
-	*kr { arg fftSize = 1024, in = 0.0;
-		^this.multiNew('control', fftSize, in)
+PV_MagSquared : UGen 
+{
+	*new { arg buffer;
+		^this.multiNew(buffer)
 	}
 }
 
 PV_MagNoise : PV_MagSquared {}
+PV_PhaseShift90 : PV_MagSquared {}
+PV_PhaseShift270 : PV_MagSquared {}
 
-
-PV_AboveThresh : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0, threshold = 0.0;
-		^this.multiNew('audio', fftSize, in, threshold)
+PV_PhaseShift : UGen 
+{
+	*new { arg buffer, shift;
+		^this.multiNew(buffer, shift)
 	}
-	*kr { arg fftSize = 1024, in = 0.0, threshold = 0.0;
-		^this.multiNew('control', fftSize, in, threshold)
+}	
+
+PV_BrickWall : UGen
+{
+	*new { arg buffer, wipe = 0.0;
+		^this.multiNew(buffer, wipe)
 	}
 }
 
-PV_BelowThresh : PV_AboveThresh {}
-PV_MagClip : PV_AboveThresh {}
-PV_LocalMax : PV_AboveThresh {}
-
-PV_BinShift : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0, stretch = 1.0, shift = 0.0;
-		^this.multiNew('audio', fftSize, in, stretch, shift)
-	}
-	*kr { arg fftSize = 1024, in = 0.0, stretch = 1.0, shift = 0.0;
-		^this.multiNew('control', fftSize, in, stretch, shift)
+PV_BinWipe : UGen 
+{
+	*new { arg bufferA, bufferB, wipe = 0.0;
+		^this.multiNew(bufferA, bufferB, wipe)
 	}
 }
 
-PV_MagShift : PV_BinShift {}
-
-
-PV_BrickWall : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0, wipe = 0.0;
-		^this.multiNew('audio', fftSize, in, wipe)
-	}
-	*kr { arg fftSize = 1024, in = 0.0, wipe = 0.0;
-		^this.multiNew('control', fftSize, in, wipe)
+PV_MagMultiply : UGen
+{
+	*new { arg bufferA, bufferB;
+		^this.multiNew(bufferA, bufferB)
 	}
 }
 
-PV_MagOnePole : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0, feedback = 0.0;
-		^this.multiNew('audio', fftSize, in, feedback)
-	}
-	*kr { arg fftSize = 1024, in = 0.0, feedback = 0.0;
-		^this.multiNew('control', fftSize, in, feedback)
+PV_CopyPhase : PV_MagMultiply {}
+PV_Max : PV_MagMultiply {}
+PV_Min : PV_MagMultiply {}
+
+PV_RandComb : UGen 
+{
+	*new { arg buffer, wipe = 0.0, trig = 0.0;
+		^this.multiNew(buffer, wipe, trig)
 	}
 }
 
-PV_MagAllTimeAverage : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0;
-		^this.multiNew('audio', fftSize, in)
-	}
-	*kr { arg fftSize = 1024, in = 0.0;
-		^this.multiNew('control', fftSize, in)
+PV_RectComb : UGen 
+{
+	*new { arg buffer, numTeeth = 0.0, phase = 0.0, width = 0.5;
+		^this.multiNew(buffer, numTeeth, phase, width)
 	}
 }
 
-PV_MagPeakDecay : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0, decay = 0.0;
-		^this.multiNew('audio', fftSize, in, decay)
-	}
-	*kr { arg fftSize = 1024, in = 0.0, decay = 0.0;
-		^this.multiNew('control', fftSize, in, decay)
+
+PV_RectComb2 : UGen 
+{
+	*new { arg bufferA, bufferB, numTeeth = 0.0, phase = 0.0, width = 0.5;
+		^this.multiNew(bufferA, bufferB, numTeeth, phase, width)
 	}
 }
 
-PV_MagSmear : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0, bins = 0.0;
-		^this.multiNew('audio', fftSize, in, bins)
+PV_RandWipe : UGen 
+{
+	*new { arg bufferA, bufferB, wipe = 0.0, trig = 0.0;
+		^this.multiNew(bufferA, bufferB, wipe, trig)
 	}
-	*kr { arg fftSize = 1024, in = 0.0, bins = 0.0;
-		^this.multiNew('control', fftSize, in, bins)
+}
+
+PV_Diffuser : UGen
+{
+	*new { arg buffer, trig = 0.0;
+		^this.multiNew(buffer, trig)
+	}
+}
+
+PV_MagFreeze : UGen
+{
+	*new { arg buffer, freeze = 0.0;
+		^this.multiNew(buffer, freeze)
+	}
+}
+
+PV_BinScramble : UGen
+{
+	*new { arg buffer, wipe = 0.0, width = 0.2, trig = 0.0;
+		^this.multiNew(buffer, wipe, width, trig)
+	}
+}
+
+////////////////////////////////////////////////////
+/*
+PV_OscBank : UGen 
+{
+	*new { arg buffer, scale;
+		^this.multiNew(buffer)
+	}
+}	
+
+PV_Scope : UGen {}
+
+PV_TimeAverageScope : PV_Scope {}
+
+PV_MagAllTimeAverage : PV_MagSquared {}
+
+
+
+
+
+PV_MagOnePole : UGen
+{
+	*new { arg buffer, feedback = 0.0;
+		^this.multiNew(buffer, feedback)
+	}
+}
+
+PV_MagPeakDecay : UGen
+{
+	*new { arg buffer, decay = 0.0;
+		^this.multiNew(buffer, decay)
 	}
 }
 
 PV_TimeSmear : PV_MagSmear {}
 
-PV_RandComb : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0, wipe = 0.0, trig = 0.0;
-		^this.multiNew('audio', fftSize, in, wipe, trig)
-	}
-	*kr { arg fftSize = 1024, in = 0.0, wipe = 0.0, trig = 0.0;
-		^this.multiNew('control', fftSize, in, wipe, trig)
+PV_LoBitEncoder : UGen
+{
+	*new { arg buffer, levels = 4.0;
+		^this.multiNew(buffer, levels)
 	}
 }
+*/
 
-PV_MagFreeze : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0, freeze = 0.0;
-		^this.multiNew('audio', fftSize, in, freeze)
-	}
-	*kr { arg fftSize = 1024, in = 0.0, freeze = 0.0;
-		^this.multiNew('control', fftSize, in, freeze)
-	}
-}
-
-PV_LoBitEncoder : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0, levels = 8.0;
-		^this.multiNew('audio', fftSize, in, levels)
-	}
-	*kr { arg fftSize = 1024, in = 0.0, levels = 8.0;
-		^this.multiNew('control', fftSize, in, levels)
-	}
-}
-
-PV_BinScramble : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0, wipe = 0.0, width = 0.2, trig = 0.0;
-		^this.multiNew('audio', fftSize, in, wipe, width, trig)
-	}
-	*kr { arg fftSize = 1024, in = 0.0, wipe = 0.0, width = 0.2, trig = 0.0;
-		^this.multiNew('control', fftSize, in, wipe, width, trig)
-	}
-}
-
-PV_Diffuser : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0, trig = 0.0;
-		^this.multiNew('audio', fftSize, in, trig)
-	}
-	*kr { arg fftSize = 1024, in = 0.0, trig = 0.0;
-		^this.multiNew('control', fftSize, in, trig)
-	}
-}
-
-PV_MagMultiply : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, inA = 0.0, inB = 0.0;
-		^this.multiNew('audio', fftSize, inA, inB)
-	}
-	*kr { arg fftSize = 1024, inA = 0.0, inB = 0.0;
-		^this.multiNew('control', fftSize, inA, inB)
-	}
-}
-
-PV_PhasePaste : PV_MagMultiply {}
-PV_Max : PV_MagMultiply {}
-PV_Min : PV_MagMultiply {}
-
-PV_BinWipe : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, inA = 0.0, inB = 0.0, wipe = 0.0;
-		^this.multiNew('audio', fftSize, inA, inB, wipe)
-	}
-	*kr { arg fftSize = 1024, inA = 0.0, inB = 0.0, wipe = 0.0;
-		^this.multiNew('control', fftSize, inA, inB, wipe)
-	}
-}
-
-PV_RandWipe : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, inA = 0.0, inB = 0.0, wipe = 0.0, trig = 0.0;
-		^this.multiNew('audio', fftSize, inA, inB, wipe, trig)
-	}
-	*kr { arg fftSize = 1024, inA = 0.0, inB = 0.0, wipe = 0.0, trig = 0.0;
-		^this.multiNew('control', fftSize, inA, inB, wipe, trig)
-	}
-}
-
-
-PV_RectComb : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, in = 0.0, numTeeth = 0.0, phase = 0.0, width = 0.5;
-		^this.multiNew('audio', fftSize, in, numTeeth, phase, width)
-	}
-	*kr { arg fftSize = 1024, in = 0.0, numTeeth = 0.0, phase = 0.0, width = 0.5;
-		^this.multiNew('control', fftSize, in, numTeeth, phase, width)
-	}
-}
-
-
-PV_RectComb2 : PhaseVocoderUGen {
-	*ar { arg fftSize = 1024, inA = 0.0, inB = 0.0, numTeeth = 0.0, phase = 0.0, width = 0.5;
-		^this.multiNew('audio', fftSize, inA, inB, numTeeth, phase, width)
-	}
-	*kr { arg fftSize = 1024, inA = 0.0, inB = 0.0, numTeeth = 0.0, phase = 0.0, width = 0.5;
-		^this.multiNew('control', fftSize, inA, inB, numTeeth, phase, width)
-	}
-}
 
 

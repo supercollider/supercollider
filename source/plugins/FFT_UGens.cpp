@@ -621,7 +621,7 @@ void PV_MagSmear_next(PV_MagSmear *unit, int inNumSamples)
 	SCPolarBuf *p = ToPolarApx(buf);
 	SCPolarBuf *q = (SCPolarBuf*)unit->m_tempbuf;
 	
-	int width = (int)ZIN0(2);
+	int width = (int)ZIN0(1);
 	width = sc_clip(width, 0, numbins-1);
 	float scale = 1. / (2*width+1);
 
@@ -659,8 +659,8 @@ void PV_BinShift_next(PV_BinShift *unit, int inNumSamples)
 	MAKE_TEMP_BUF
 
 	// get shift and stretch params
-	float stretch = ZIN0(2);
-	float shift = ZIN0(3);
+	float stretch = ZIN0(1);
+	float shift = ZIN0(2);
 	
 	SCComplexBuf *p = ToComplexApx(buf);
 	SCComplexBuf *q = (SCComplexBuf*)unit->m_tempbuf;
@@ -700,8 +700,8 @@ void PV_MagShift_next(PV_MagShift *unit, int inNumSamples)
 	MAKE_TEMP_BUF
 
 	// get shift and stretch params
-	float stretch = ZIN0(2);
-	float shift = ZIN0(3);
+	float stretch = ZIN0(1);
+	float shift = ZIN0(2);
 	
 	SCPolarBuf *p = ToPolarApx(buf);
 	SCPolarBuf *q = (SCPolarBuf*)unit->m_tempbuf;
@@ -885,7 +885,7 @@ void PV_BinWipe_next(PV_Unit *unit, int inNumSamples)
 	SCComplexBuf *p = (SCComplexBuf*)buf1->data;
 	SCComplexBuf *q = (SCComplexBuf*)buf2->data;
 
-	int wipe = (int)(ZIN0(1) * numbins);
+	int wipe = (int)(ZIN0(2) * numbins);
 	if (wipe > 0) {
 		wipe = sc_min(wipe, numbins);
 		for (int i=0; i < wipe; ++i) {
@@ -1177,7 +1177,7 @@ void PV_RandWipe_next(PV_RandWipe *unit, int inNumSamples)
 {
 	PV_GET_BUF2
 	
-	float trig = ZIN0(2);
+	float trig = ZIN0(3);
 	if (!unit->m_ordering) {
 		unit->m_ordering = (int*)RTAlloc(unit->mWorld, numbins * sizeof(int));
 		unit->m_numbins = numbins;
@@ -1189,7 +1189,7 @@ void PV_RandWipe_next(PV_RandWipe *unit, int inNumSamples)
 		}
 	}
 
-	int n = (int)(ZIN0(1) * numbins);
+	int n = (int)(ZIN0(2) * numbins);
 	n = sc_clip(n, 0, numbins);
 	
 	SCComplexBuf *p = (SCComplexBuf*)buf1->data;
@@ -1232,7 +1232,7 @@ void PV_Diffuser_next(PV_Diffuser *unit, int inNumSamples)
 {
 	PV_GET_BUF
 	
-	float trig = ZIN0(2);
+	float trig = ZIN0(1);
 	if (!unit->m_shift) {
 		unit->m_shift = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
 		unit->m_numbins = numbins;
@@ -1334,7 +1334,7 @@ void PV_BinScramble_choose(PV_BinScramble* unit)
 		to[j] = temp;
 	}
 
-	int32 width = (int32)(ZIN0(4) * numbins);
+	int32 width = (int32)(ZIN0(2) * numbins);
 	for (int i=0; i<numbins; ++i) {
 		int32 k = to[i];
 		int32 minr = sc_max(0, k-width);
@@ -1366,7 +1366,7 @@ void PV_BinScramble_next(PV_BinScramble *unit, int inNumSamples)
 	SCComplexBuf *p = (SCComplexBuf*)buf->data;
 	SCComplexBuf *q = (SCComplexBuf*)unit->m_tempbuf;
 	
-	float wipe = ZIN0(2);
+	float wipe = ZIN0(1);
 	int32 scrambleBins = (int32)(numbins * sc_clip(wipe, 0.f, 1.f));
 	
 	int *to = unit->m_to;
