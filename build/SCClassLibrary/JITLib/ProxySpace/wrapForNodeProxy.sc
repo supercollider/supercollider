@@ -45,12 +45,6 @@
 	}
 }
 
-+ProxySynthDef {
-	hasGate {
-		^true
-	}
-}
-
 
 +SynthDef {
 	buildForProxy {}
@@ -60,9 +54,11 @@
 			false 
 		}, {
 			controlNames.any({ arg name; name.name == "gate" })
+			and:
+			this.canFreeSynth
 		})
 	}
-	
+	canFreeSynth { ^children.canFreeSynth }
 }
 
 +SoundDef {
@@ -82,6 +78,7 @@
 	}
 }
 
+
 +AbstractPlayControl {
 	makeProxyControl {} //already wrapped
 }
@@ -93,7 +90,7 @@
 		^if(proxy.rate === 'audio', {
 			{ Array.fill(proxy.numChannels, { K2A.ar(this) }) }
 		}, { 
-			{ Array.fill(proxy.numChannels, { Line.kr(this,this,0.001) }) }
+			{  Control.kr(Array.fill(proxy.numChannels, {this})) }
 		})
 	}
 }
@@ -115,7 +112,7 @@
 	prepareForProxySynthDef {
 		^func;
 	}
-	
+	//see later for a player inherent scheme.
 	//makeProxyControl { arg channelOffset=0;
 	//	^Patch(this.name).makeProxyControl(channelOffset)
 	//}
@@ -136,7 +133,7 @@
 		^StreamControl
 	}
 	buildForProxy { arg proxy, channelOffset=0;
-		^this.asEventStreamPlayer.buildForProxy(proxy, channelOffset)
+		^this.asStream.buildForProxy(proxy, channelOffset)
 	}
 }
 
@@ -145,36 +142,35 @@
 
 	buildForProxy { arg proxy, channelOffset=0;
 		//assume audio rate event stream for now.
-		var str, ok, argNames, msgFunc;
+		var str, ok, argNames, msgFunc, index;
 		ok = proxy.initBus('audio', 2);
-		
-		argNames = [\freq,\amp,\sustain,\pan];//more later
+		index = proxy.index;
+		argNames = [\amp,\sustain,\pan];//change later
 		msgFunc = { arg id, freq;
-				var args, bundle;
-				if(~argNames.notNil, {
-					args = Array.newClear(~argNames.size * 2);
-					~argNames.do({ arg name, i; 
+				var args, bundle, names;
+				names = ~argNames ? argNames;
+				args = Array.newClear(names.size * 2);
+				names.do({ arg name, i; 
 						args.put(i*2, name); 
 						args.put(i*2+1, currentEnvironment.at(name))
 					});
-				});
+				
+				args = args ++ [\out, index, \i_out, index, \freq, freq];
 				bundle = List[[9, ~instrument, id, 1, ~group] ++ args];
-				proxy.nodeMap.addToBundle(bundle, id);
+				proxy.nodeMap.mapToBundle(bundle, id);
 				bundle
 		};
 
-		
 		^if(ok, {
-			//bus = proxy.index; //done in bundle already
-			
 			this.collect({ arg event;
 				event.use({ 
-					~nodeID = proxy.group.asNodeID; //in case of Pmono. see.
-					~argNames = argNames;
+					~nodeID = proxy.group.asNodeID; //in case of Pmono
+					~argNames = ~argNames ? argNames;
 					~msgFunc = msgFunc;
+					~server = proxy.server;
 				});
 				event;
-			}); 
+			}).asEventStreamPlayer
 		}, nil);
 
 	}
@@ -202,11 +198,6 @@
 	}
 }
 
-+EventStreamPlayer {
-	collect { arg func;
-		^this.class.new(originalStream.collect(func), event)
-	}
-}
 
 ///////////////// cx players ////////////
 
@@ -216,9 +207,22 @@
 		^CXPlayerControl
 	}
 	
+	prepareToPlayWithProxy { arg proxy;
+		var tempBus, ok;
+		tempBus = proxy.asBus;
+		this.prepareForPlay(bus: tempBus); //to get the rate
+		ok = proxy.initBus(this.rate ? 'audio', this.numChannels ? 2);
+		//source.free; 
+		tempBus.free;
+		^ok
+	}
 }
 
 +Patch {
+	
+	proxyControlClass {
+			^CXSynthPlayerControl
+	}
 	
 	makeProxyControl { arg channelOffset=0, proxy;
 			
@@ -226,24 +230,54 @@
 	}
 	
 	wrapInFader { arg proxy;
-			^Patch({ arg input;
-						var synthGate, synthFadeTime;
-						synthGate = Control.names('#gate').kr(1.0);
-						synthFadeTime = Control.names('#fadeTime').kr(0.02);
-						input 
-						 *
-						 Array.fill((proxy.numChannels ? 1), 1)
-						 *
-						 EnvGen.kr(
-							Env.new(#[0,1,0],[1,1.25],'sin',1),
-							synthGate,1,0,synthFadeTime,2
-						)
-			}, [this]);
+			this.prepareToPlayWithProxy(proxy); //do it here for now.
+			^EnvelopedPlayer(this, Env.asr(0.5, 1, 0.5));
 			
 	}
 	
-	
 }
+
+/////////// test : query freeing
+
+
++ Object {
+	canFreeSynth {
+		^false
+	}
+}
+
++SequenceableCollection {
+	canFreeSynth {
+		^this.any({ arg item; item.canFreeSynth })
+	}
+}
+
++ EnvGen {
+	canFreeSynth {
+		^if(inputs.at(4) > 1, { //doneAction
+			if(inputs.at(7) != -99 and: { inputs.at(0).isNumber }, { //releaseNode, gate
+				false
+			}, {
+				true
+			})
+		}, { 
+			false 
+		})
+	}
+}
+
++ Free {
+	canFreeSynth { ^true }
+}
+
++ FreeSelf {
+	canFreeSynth { ^true }
+}
+
++ DetectSilence {
+	canFreeSynth { ^true }
+}
+
 
 
 

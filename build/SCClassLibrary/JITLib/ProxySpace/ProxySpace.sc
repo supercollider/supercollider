@@ -78,7 +78,7 @@ ProxySpace : EnvironmentRedirect {
 			});
 			
 		});
-		proxy.source = obj; //(-1, obj, 0);
+		proxy.source = obj;
 		this.class.lastEdited = proxy;
 	}
 		
@@ -147,7 +147,7 @@ ProxySpace : EnvironmentRedirect {
 	printOn { arg stream; 
 		stream << "ProxySpace: " << Char.nl;
 		this.sortedKeysValuesDo({ arg key, item; 
-			stream <<< key << Char.tab 
+			stream <<< key << Char.tab << Char.tab 
 			<< if(item.rate === 'audio', { "ar" }, { 
 					if(item.rate === 'control', { "kr" }, { "ir" })
 					}) 
@@ -172,25 +172,27 @@ SharedProxySpace  : ProxySpace {
 		^this.new(router, name, clock, controlKeys, audioKeys, firstAudioKey).push
 	}
 	
-	addSharedKeys { arg controlKeys, audioKeys, firstAudioKey;
-		//default: initialize single letters as shared busses, 
-		//up to firstAudioKey control, the rest audio
+	//default: initialize single letters as shared busses, 
+	//up to firstAudioKey control, the rest audio
 		
+	addSharedKeys { arg controlKeys, audioKeys, firstAudioKey;
 		var nControl, nAudio;
+		
 		nControl = firstAudioKey.digit - 10;
 		nAudio = 25 - nControl;
-		controlKeys = controlKeys ?? { 
-						Array.fill(nControl, { arg i; asSymbol(asAscii(97 + i)) }) 
-					};
-		audioKeys = audioKeys ?? { 
-						Array.fill(nAudio, { arg i; asSymbol(asAscii(97 + nControl + i)) }) 
-				};
-		
+		controlKeys = controlKeys ?? { this.defaultControlKeys(nControl) };
+		audioKeys = audioKeys ?? { this.defaultAudioKeys(nAudio) };
 		controlKeys.do({ arg key; this.makeSharedProxy(key, 'control') });
 		audioKeys.do({ arg key; this.makeSharedProxy(key, 'audio') });
 	}
 	
-	
+	defaultControlKeys { arg n;
+		^Array.fill(n, { arg i; asSymbol(asAscii(97 + i)) })
+	}
+	defaultAudioKeys { arg n;
+		^Array.fill(n, { arg i; asSymbol(asAscii(97 + n + i)) }) 
+	}
+
 	makeSharedProxy { arg key, rate;
 			var proxy, broadcast;
 			broadcast = server.broadcast;
@@ -213,11 +215,12 @@ SharedProxySpace  : ProxySpace {
 	-node map thing
 	-lazy init
 */
+
 PlayerSpace : ProxySpace {
 	
 	makeProxy { arg key;
 			var proxy;
-			proxy = PlayerSocket(\audio, 2, server); //for now..
+			proxy = PlayerSocket(\audio, 1, server); //for now..
 			envir.put(key, proxy);
 			^proxy
 	}
@@ -245,7 +248,7 @@ PlayerSpace : ProxySpace {
 			});
 			
 		});
-		proxy.prepareAndSpawn(obj, 0.1); //(-1, obj, 0);
+		proxy.prepareAndSpawn(obj.asPlayer, 0.1);
 	}
 
 }

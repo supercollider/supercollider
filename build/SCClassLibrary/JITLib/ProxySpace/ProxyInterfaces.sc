@@ -23,11 +23,13 @@ AbstractPlayControl {
 	synthDef { ^nil }
 
 	sendDefToBundle {}
+	spawnToBundle {}
 	
-	playToBundle { arg bundle; 
-		bundle.addAction(this, \play); //no latency (latency is in stream already)
+	playToBundle { arg bundle, args, proxy; 
+		bundle.addAction(this, \play, [proxy]); //no latency (latency is in stream already)
 		^nil //return a nil object instead of a synth
 	}
+	
 	freeToBundle { arg bundle;
 		bundle.addAction(this, \free);
 	}
@@ -56,14 +58,17 @@ AbstractPlayControl {
 StreamControl : AbstractPlayControl {
 	var <stream, clock;
 		
-	play {
+	play { arg proxy;
 		stream.stop;
-		stream.play; //(clock);
+		stream.play(clock, false, proxy); //(clock);
 	}
 	
 	stop {
 		stream.stop;
 	}
+	
+	free { stream.stop; stream = nil }
+	
 	mute {
 		stream.mute;
 	}
@@ -84,7 +89,7 @@ StreamControl : AbstractPlayControl {
 }
 
 SynthControl : AbstractPlayControl {
-	var <synth, >hasGate=false;
+	var <synth, >hasGate=false, <>needsFree=true;
 	
 	sendDef { } //assumes that SoundDef does send to the same server 
 	writeDef { }
@@ -93,24 +98,25 @@ SynthControl : AbstractPlayControl {
 	name { ^source }
 	clear { synth = nil }
 	
-	playToBundle { arg bundle, extraArgs, proxy;
-		var synthMsg, name, group;
-		group = proxy.asGroup;
-		name = this.name;
-		synth = Synth.basicNew(name, group.server);
-		synth.isPlaying = true;
-		synthMsg = [9, name, synth.nodeID, 1, group.nodeID]++extraArgs; 
-		//check the target: better after the last object.
-		//todo: Order does the playing.
+	spawnToBundle { arg bundle, extraArgs, proxy; //assumes self freeing
+		var synthMsg;
+		synthMsg = [9, this.name, -1, 0, proxy.group.nodeID]++extraArgs; 
 		bundle.add(synthMsg);
+	}
+	
+	playToBundle { arg bundle, extraArgs, group;
+		synth = Synth.newToBundle(bundle, this.name, extraArgs, group.asGroup, \addToTail);
+		synth.isPlaying = true;
 		^synth
 	}
+	
+	
 	stopToBundle { arg bundle;
-		if(synth.isPlaying,{
+		if(synth.isPlaying, {
 			if(this.hasGate, {
-				bundle.add([15, synth.nodeID, '#gate', 0.0, \gate, 0.0]); //to be sure.
+					bundle.add([15, synth.nodeID, '#gate', 0.0, \gate, 0.0]); //to be sure.
 			}, {
-				bundle.add([11, synth.nodeID]); //"/n_free"
+					if(this.needsFree, {bundle.add([11, synth.nodeID])}); //"/n_free"
 			});
 			synth.isPlaying = false;
 		});
@@ -141,10 +147,12 @@ SynthControl : AbstractPlayControl {
 
 
 SynthDefControl : SynthControl {
+	classvar <>writeDefs=true;
 	var <synthDef;
-		
-	hasGate { ^synthDef.hasGate }
+	
 	readyForPlay { ^synthDef.notNil }
+	hasGate { ^synthDef.hasGate }
+	needsFree { ^synthDef.canFreeSynth.not }
 	
 	build { arg proxy, index=0; 
 		var ok;
@@ -152,7 +160,9 @@ SynthDefControl : SynthControl {
 		ok = proxy.initBus(synthDef.rate, synthDef.numChannels);
 		if(ok && synthDef.notNil, { 
 			//schedule to avoid hd sleep latency. def writing is only for server reboot
-			AppClock.sched(rrand(0.2, 1), { this.writeDef; nil }); 
+			if(writeDefs, {
+				AppClock.sched(rrand(0.2, 1), { this.writeDef; nil });
+			}); 
 		}, { 
 			synthDef = nil; 
 		})
@@ -193,14 +203,9 @@ SoundDefControl : SynthDefControl {
 CXPlayerControl : AbstractPlayControl {
 	//here the lazy bus init happens and allocation of client side ressources
 	//there is no bundle passing in build
+	
 	build { arg proxy;
-		var player, tempBus, ok;
-		if(proxy.isNeutral.not, { proxy.bus.as(SharedBus) });
-		source.prepareForPlay(bus: tempBus); //to get the rate
-		proxy.initBus(source.rate ? 'audio', source.numChannels ? 2);
-		//source.free; 
-		tempBus.free;
-		^ok
+		^source.prepareToPlayWithProxy(proxy)
 	}
 	
 	playToBundle { arg bundle, extraArgs, proxy;
@@ -213,12 +218,11 @@ CXPlayerControl : AbstractPlayControl {
 //		}, {
 		
 			source.prepareToBundle(group, bundle);
-			source.makePatchOut(group, true, proxy.bus.as(SharedBus), bundle);
+			source.makePatchOut(group, true, proxy.asBus, bundle);
 //		});
 		source.spawnToBundle(bundle);
 		^source.synth;
 	}
-	
 	stopToBundle { arg bundle;
 		source.stopToBundle(bundle);
 	}
@@ -234,6 +238,16 @@ CXPlayerControl : AbstractPlayControl {
 		source.free;
 	}
 
+}
+
+CXSynthPlayerControl : CXPlayerControl {
+	
+	stopToBundle { arg bundle;
+			source.releaseToBundle(0.5, bundle);
+			//bundle.addFunction({ source.release })
+	}
+	free {} //need a releaseAndFreeToBundle
+	
 }
 
 
