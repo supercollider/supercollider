@@ -442,12 +442,12 @@ int basicPut(struct VMGlobals *g, int numArgsPushed)
 		if (index < 0 || index >= obj->size) return errIndexOutOfRange;
 		return putIndexedSlot(g, obj, c, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
-		PyrSlot *indices = b->uo->slots;
+		PyrObject *indexArray = b->uo;
 		int size = b->uo->size;
 
 		for (int i=0; i<size; ++i) {
 			int index;
-			int err = slotIntVal(indices + i, &index);
+			int err = getIndexedInt(indexArray, i, &index);
 			if (err) return err;
 			if (index < 0 || index >= obj->size) return errIndexOutOfRange;
 			err = putIndexedSlot(g, obj, c, index);
@@ -477,12 +477,12 @@ int basicClipPut(struct VMGlobals *g, int numArgsPushed)
 		index = sc_clip(index, 0, obj->size);
 		return putIndexedSlot(g, obj, c, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
-		PyrSlot *indices = b->uo->slots;
+		PyrObject *indexArray = b->uo;
 		int size = b->uo->size;
 
 		for (int i=0; i<size; ++i) {
 			int index;
-			int err = slotIntVal(indices + i, &index);
+			int err = getIndexedInt(indexArray, i, &index);
 			if (err) return err;
 			index = sc_clip(index, 0, obj->size);
 			err = putIndexedSlot(g, obj, c, index);
@@ -512,12 +512,12 @@ int basicWrapPut(struct VMGlobals *g, int numArgsPushed)
 		index = sc_mod((int)index, (int)obj->size);
 		return putIndexedSlot(g, obj, c, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
-		PyrSlot *indices = b->uo->slots;
+		PyrObject *indexArray = b->uo;
 		int size = b->uo->size;
 
 		for (int i=0; i<size; ++i) {
 			int index;
-			int err = slotIntVal(indices + i, &index);
+			int err = getIndexedInt(indexArray, i, &index);
 			if (err) return err;
 			index = sc_mod((int)index, (int)obj->size);
 			err = putIndexedSlot(g, obj, c, index);
@@ -547,12 +547,12 @@ int basicFoldPut(struct VMGlobals *g, int numArgsPushed)
 		index = sc_fold(index, 0, obj->size);
 		return putIndexedSlot(g, obj, c, index);
 	} else if (isKindOfSlot(b, class_arrayed_collection)) {
-		PyrSlot *indices = b->uo->slots;
+		PyrObject *indexArray = b->uo;
 		int size = b->uo->size;
 
 		for (int i=0; i<size; ++i) {
 			int index;
-			int err = slotIntVal(indices + i, &index);
+			int err = getIndexedInt(indexArray, i, &index);
 			if (err) return err;
 			index = sc_fold(index, 0, obj->size);
 			err = putIndexedSlot(g, obj, c, index);
@@ -565,7 +565,6 @@ int basicFoldPut(struct VMGlobals *g, int numArgsPushed)
 int prArrayPutEach(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
-	int index;
 	PyrObject *obj;
 	
 	a = g->sp - 2;
