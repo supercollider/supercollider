@@ -39,6 +39,18 @@ NodeMap {
 		
 	}
 	
+	get { arg target ... args;
+		var resp, server;
+		server = target.asTarget.server;
+		if(args.isEmpty, { args = mappings.keys });
+		resp = OSCresponder(server.addr, '/c_set', { arg ... msg;
+			msg.postln;
+			resp.remove;
+		}).add;
+		server.sendBundle(nil, ["/c_get"]++args);
+		
+	}
+	
 	setn { arg ... args;
 		this.performList(\set, args);
 		

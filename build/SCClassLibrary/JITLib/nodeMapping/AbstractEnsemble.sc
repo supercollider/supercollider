@@ -5,19 +5,20 @@
 AbstractEnsemble : Group  {
 	
 	
-	*new { arg  target,addAction=\addToHead;
+	*new { arg target,addAction=\addToHead;
 			^super.new(target,addAction);
 	}
 	
 	//here any updating messages can be implemented
-	updateMsg { arg msgList;
+	finishBundle { arg msgList, reciever;
 		^this.subclassResponsibility(thisMethod)
 	}
 	
-	sendUpdatedMsg { arg msgList, reciever;
+	sendUpdatedMsg { arg msgList, reciever, latency;
 		
-		this.updateMsg(msgList, reciever);
-		server.sendMsgList(msgList);
+		this.finishBundle(msgList, reciever);
+		//server.sendMsgList(msgList);
+		server.listSendBundle(latency, msgList); 
 	}
 	/*
 	*newMsg { arg msgList, target, addAction=\addToHead;
@@ -63,6 +64,7 @@ AbstractEnsemble : Group  {
 		this.sendUpdatedMsg(msg, movedNode);
 	}	
 	
+	/*
 	sendGroupToServer { arg arggroup, addActionNum,targetID;
 		var msg;
 		
@@ -96,6 +98,7 @@ AbstractEnsemble : Group  {
 			//argsynth.isRunning = true;
 		}, { "Server not running".inform });
 	}
+	*/
 }
 
 
@@ -108,7 +111,7 @@ ModelGroup : AbstractEnsemble {
 	}
 	
 	//see bundled messages for how to use these
-	updateMsg { arg msgList, reciever;
+	finishBundle { arg msgList, reciever;
 		updateFunc.value(msgList, reciever);
 	}
 

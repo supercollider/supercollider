@@ -7,13 +7,13 @@ Ensemble : AbstractEnsemble {
 	*new { arg  target,addAction=\addToTail, nodeMap;
 			^super.new(target,addAction).ginit(nodeMap);
 	}
-	*prNew { ^super.new.ginit }
+	
 	ginit { arg map;
 		nodeMap = map ?? { NodeMap.new };
 	}
 	nodeMap_ { arg map;
 		nodeMap = map;
-		if(this.isPlaying, {nodeMap.send(this)});
+		if(this.isPlaying ?? nodeMap.notNil, {nodeMap.send(this)});
 	}
 	map { arg ... args;
 		nodeMap.performList(\map, args);
@@ -64,15 +64,14 @@ Ensemble : AbstractEnsemble {
 		nodeMap.addMsg(cmdArray)
 	}
 	
-	newMsg { arg msgList, target, addAction=\addToTail, nodeMap;
+	*newMsg { arg msgList, target, addAction=\addToTail, nodeMap;
 		var res;
-		res = super.prNew;
-		msgList.add(res.newMsg(target, addAction));
+		res = super.newMsg(msgList, target, addAction);
 		res.nodeMap_(nodeMap); 
-		nodeMap.updateMsg(msgList, res);//not needed?
+		nodeMap.updateMsg(msgList, res);
 		^res
 	}
-	updateMsg { arg cmdList, reciever;
+	finishBundle { arg cmdList, reciever;
 		^nodeMap.updateMsg(cmdList, reciever);
 	}
 	
