@@ -490,14 +490,14 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 }
 -(void)selectRangeStart:(int)rangeStart size:(int)rangeSize
 {
-    NSTextView *textView = [self textView];
+    NSTextView *localTextView = [self textView];
     
     NSRange range = NSMakeRange(rangeStart, rangeSize);
     
     if (rangeSize < 0) {
         unsigned int lineStart, lineEnd;
         range.length = 0;
-        NSString *nsstring = [textView string];
+        NSString *nsstring = [localTextView string];
         if (!nsstring) {
             post("text view has no string\n");
             return;
@@ -505,20 +505,20 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
         [nsstring getLineStart: &lineStart end: &lineEnd contentsEnd: nil forRange: range];
         range = NSMakeRange(lineStart, lineEnd - lineStart);
     }
-    [textView setSelectedRange: range];
-    [textView scrollRangeToVisible: range];
+    [localTextView setSelectedRange: range];
+    [localTextView scrollRangeToVisible: range];
 }
 /*
 -(void)selectLine:(int)linenum
 {
-    NSTextView *textView = [self textView];
+    NSTextView *localTextView = [self textView];
     
     unsigned int lineStart, lineEnd;
     //count the lines ??
     // what separator ?
     
     range.length = 0;
-    NSString *nsstring = [textView string];
+    NSString *nsstring = [localTextView string];
     if (!nsstring) {
         post("text view has no string\n");
         return errFailed;
@@ -526,8 +526,8 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     [nsstring getLineStart: &lineStart end: &lineEnd contentsEnd: nil forRange: range];
     range = NSMakeRange(lineStart, lineEnd - lineStart);
 
-    [textView setSelectedRange: range];
-    [textView scrollRangeToVisible: range];   
+    [localTextView setSelectedRange: range];
+    [localTextView scrollRangeToVisible: range];   
 }
 */
 
@@ -535,7 +535,9 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 {
     [self showHelpFor:[self currentlySelectedTextOrLine: NULL]];
 }
--(NSString*)pathOfHelpFileFor:(NSString*)selection {
+
+-(NSString*)pathOfHelpFileFor:(NSString*)selection 
+{
 
     NSString* helpFilePath = nil;
 

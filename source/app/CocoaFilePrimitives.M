@@ -29,6 +29,7 @@ File utilties that depend on the Cocoa framework.
 #import "PyrObject.h"
 #import "PyrKernel.h"
 #import "VMGlobals.h"
+#import "MyDocument.h"
 #import "GC.h"
 
 #import "SCDialog.h"
@@ -202,7 +203,6 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
     NSDirectoryEnumerator *direnum = [[NSFileManager defaultManager]
             enumeratorAtPath:nsStringFromPyrSlot(directoryPath)];
     NSString *pname;
-    NSString *nsextension;
     int i=0;
     int maxsize = MAXINDEXSIZE(returnObject);
     if(IsNil(extension)) {
@@ -220,6 +220,7 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
         }
     } else {
         /*
+		NSString *nsextension;
         nsextension = nsStringFromPyrSlot(extension);
         while (pname = [direnum nextObject]) {
             if (![[pname pathExtension] isEqualToString:nsextension]) {
