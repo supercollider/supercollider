@@ -28,6 +28,7 @@ and examine the box that lists the controls for each synth.\
 Use controls, which most often are defined as arguments in a ugenGraphFunc, to give information to a synth, either when it is created and/or after it is running. Supply default values to the arguments to make code more readable and to protect against user error (such as forgetting to supply a value to an argument).\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // 2 arguments (controls) with default values\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\
@@ -50,7 +51,7 @@ z.set(\cf5 \\freq\cf0 , 700, \\beatFreq, 2, \cf5 \\mul\cf0 , 0.2);\
 \
 \cf3 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
-Write controls names and appropriate values in the array given as an argument to a synth. Control names can be given as symbols (a unique within the SuperCollider system)\
+Write controls names and appropriate values in the array given as an argument to a synth. Control names can be given as symbols (a unique name within the SuperCollider system).\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Synth\cf0 (\cf4 "withControls"\cf0 , [\cf5 \\freq\cf0 , 440, \\beatFreq, 0.5, \cf5 \\mul\cf0 , 0.1]);\
@@ -168,6 +169,7 @@ The array of lagtimes means that the synthdef template with two components (disc
 can include three components.\cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // a re-defined template for a synthdef _with an array of lagtimes\
 // the class definition for the lagtime array calls it 'rates'\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
