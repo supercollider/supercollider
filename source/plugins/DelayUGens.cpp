@@ -1647,10 +1647,10 @@ void DelayUnit_AllocDelayLine(DelayUnit *unit)
 
 void BufDelayUnit_Reset(BufDelayUnit *unit)
 {
-	Print("->DelayUnit_Reset\n");
+	//Print("->DelayUnit_Reset\n");
 	//unit->m_maxdelaytime = ZIN0(1);
 	unit->m_delaytime = ZIN0(2);
-	Print("unit->m_delaytime %g\n", unit->m_delaytime);
+	//Print("unit->m_delaytime %g\n", unit->m_delaytime);
 	//unit->m_dlybuf = 0;
 	unit->m_fbufnum = -1e9f;
 	
@@ -1711,9 +1711,8 @@ void BufDelayN_next(BufDelayN *unit, int inNumSamples)
 			nsmps = sc_min(remain, nsmps);
 			remain -= nsmps;
 			LOOP(nsmps,
-				float value = ZXP(dlyrd);
 				ZXP(dlywr) = ZXP(in);
-				ZXP(out) = value;
+				ZXP(out) = ZXP(dlyrd);
 			);
 			if (dlyrd == dlyN) dlyrd = dlybuf1;
 			if (dlywr == dlyN) dlywr = dlybuf1;
@@ -1724,12 +1723,11 @@ void BufDelayN_next(BufDelayN *unit, int inNumSamples)
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 		
 		LOOP(inNumSamples,
+			bufData[iwrphase & mask] = ZXP(in);
 			dsamp += dsamp_slope;
 			++iwrphase;
 			long irdphase = iwrphase - (long)dsamp;
-			float value = bufData[irdphase & mask];
-			bufData[iwrphase & mask] = ZXP(in);
-			ZXP(out) = value;
+			ZXP(out) = bufData[irdphase & mask];
 		);
 		unit->m_dsamp = dsamp;
 		unit->m_delaytime = delaytime;
@@ -1772,9 +1770,8 @@ void BufDelayN_next_z(BufDelayN *unit, int inNumSamples)
 				);
 			} else {
 				LOOP(nsmps,
-					float value = ZXP(dlyrd);
 					ZXP(dlywr) = ZXP(in);
-					ZXP(out) = value;
+					ZXP(out) = ZXP(dlyrd);
 				);
 			}
 			iwrphase += nsmps;
@@ -1793,9 +1790,8 @@ void BufDelayN_next_z(BufDelayN *unit, int inNumSamples)
 				bufData[iwrphase & mask] = ZXP(in);
 				ZXP(out) = 0.f;
 			} else {
-				float value = bufData[irdphase & mask];
 				bufData[iwrphase & mask] = ZXP(in);
-				ZXP(out) = value;
+				ZXP(out) = bufData[irdphase & mask];
 			}
 			iwrphase++;
 		);
@@ -1836,13 +1832,12 @@ void BufDelayL_next(BufDelayL *unit, int inNumSamples)
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
 		LOOP(inNumSamples,
+			bufData[iwrphase & mask] = ZXP(in);
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 			float d1 = bufData[irdphase & mask];
 			float d2 = bufData[irdphaseb & mask];
-			float value = lininterp(frac, d1, d2);
-			bufData[iwrphase & mask] = ZXP(in);
-			ZXP(out) = value;
+			ZXP(out) = lininterp(frac, d1, d2);
 			iwrphase++;
 		);
 	} else {
@@ -1851,6 +1846,7 @@ void BufDelayL_next(BufDelayL *unit, int inNumSamples)
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 		
 		LOOP(inNumSamples,
+			bufData[iwrphase & mask] = ZXP(in);
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -1858,9 +1854,7 @@ void BufDelayL_next(BufDelayL *unit, int inNumSamples)
 			long irdphaseb = irdphase - 1;
 			float d1 = bufData[irdphase & mask];
 			float d2 = bufData[irdphaseb & mask];
-			float value = lininterp(frac, d1, d2);
-			bufData[iwrphase & mask] = ZXP(in);
-			ZXP(out) = value;
+			ZXP(out) = lininterp(frac, d1, d2);
 			iwrphase++;
 		);
 		unit->m_dsamp = dsamp;
@@ -1890,21 +1884,16 @@ void BufDelayL_next_z(BufDelayL *unit, int inNumSamples)
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 			
-			float zin = ZXP(in);
+			bufData[iwrphase & mask] = ZXP(in);
 			if (irdphase < 0) {
-				bufData[iwrphase & mask] = zin;
 				ZXP(out) = 0.f;
 			} else if (irdphaseb < 0) {
 				float d1 = bufData[irdphase & mask];
-				float value = d1 - frac * d1;
-				bufData[iwrphase & mask] = zin;
-				ZXP(out) = value;
+				ZXP(out) = d1 - frac * d1;
 			} else {
 				float d1 = bufData[irdphase & mask];
 				float d2 = bufData[irdphaseb & mask];
-				float value = lininterp(frac, d1, d2);
-				bufData[iwrphase & mask] = zin;
-				ZXP(out) = value;
+				ZXP(out) = lininterp(frac, d1, d2);
 			}
 			iwrphase++;
 		);
@@ -1920,21 +1909,16 @@ void BufDelayL_next_z(BufDelayL *unit, int inNumSamples)
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 
-			float zin = ZXP(in);
+			bufData[iwrphase & mask] = ZXP(in);
 			if (irdphase < 0) {
 				ZXP(out) = 0.f;
-				bufData[iwrphase & mask] = zin;
 			} else if (irdphaseb < 0) {
 				float d1 = bufData[irdphase & mask];
-				float value = d1 - frac * d1;
-				bufData[iwrphase & mask] = zin;
-				ZXP(out) = value;
+				ZXP(out) = d1 - frac * d1;
 			} else {
 				float d1 = bufData[irdphase & mask];
 				float d2 = bufData[irdphaseb & mask];
-				float value = lininterp(frac, d1, d2);
-				bufData[iwrphase & mask] = zin;
-				ZXP(out) = value;
+				ZXP(out) = lininterp(frac, d1, d2);
 			}
 			iwrphase++;
 		);
@@ -1974,6 +1958,7 @@ void BufDelayC_next(BufDelayC *unit, int inNumSamples)
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
 		LOOP(inNumSamples,
+			bufData[iwrphase & mask] = ZXP(in);
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
@@ -1982,9 +1967,7 @@ void BufDelayC_next(BufDelayC *unit, int inNumSamples)
 			float d1 = bufData[irdphase1 & mask];
 			float d2 = bufData[irdphase2 & mask];
 			float d3 = bufData[irdphase3 & mask];
-			float value = cubicinterp(frac, d0, d1, d2, d3);
-			bufData[iwrphase & mask] = ZXP(in);
-			ZXP(out) = value;
+			ZXP(out) = cubicinterp(frac, d0, d1, d2, d3);
 			iwrphase++;
 		);
 	} else {
@@ -1993,6 +1976,7 @@ void BufDelayC_next(BufDelayC *unit, int inNumSamples)
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		LOOP(inNumSamples,
+			bufData[iwrphase & mask] = ZXP(in);
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -2004,9 +1988,7 @@ void BufDelayC_next(BufDelayC *unit, int inNumSamples)
 			float d1 = bufData[irdphase1 & mask];
 			float d2 = bufData[irdphase2 & mask];
 			float d3 = bufData[irdphase3 & mask];
-			float value = cubicinterp(frac, d0, d1, d2, d3);
-			bufData[iwrphase & mask] = ZXP(in);
-			ZXP(out) = value;
+			ZXP(out) = cubicinterp(frac, d0, d1, d2, d3);
 			iwrphase++;
 		);
 		unit->m_dsamp = dsamp;
@@ -2039,8 +2021,8 @@ void BufDelayC_next_z(BufDelayC *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			
+			bufData[iwrphase & mask] = ZXP(in);
 			if (irdphase0 < 0) {
-				bufData[iwrphase & mask] = ZXP(in);
 				ZXP(out) = 0.f;
 			} else {
 				if (irdphase1 < 0) {
@@ -2061,9 +2043,7 @@ void BufDelayC_next_z(BufDelayC *unit, int inNumSamples)
 					d2 = bufData[irdphase2 & mask];
 					d3 = bufData[irdphase3 & mask];
 				}
-				float value = cubicinterp(frac, d0, d1, d2, d3);
-				bufData[iwrphase & mask] = ZXP(in);
-				ZXP(out) = value;
+				ZXP(out) = cubicinterp(frac, d0, d1, d2, d3);
 			}
 			iwrphase++;
 		);
@@ -2081,8 +2061,8 @@ void BufDelayC_next_z(BufDelayC *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 
+			bufData[iwrphase & mask] = ZXP(in);
 			if (irdphase0 < 0) {
-				bufData[iwrphase & mask] = ZXP(in);
 				ZXP(out) = 0.f;
 			} else {
 				if (irdphase1 < 0) {
@@ -2103,9 +2083,7 @@ void BufDelayC_next_z(BufDelayC *unit, int inNumSamples)
 					d2 = bufData[irdphase2 & mask];
 					d3 = bufData[irdphase3 & mask];
 				}
-				float value = cubicinterp(frac, d0, d1, d2, d3);
-				bufData[iwrphase & mask] = ZXP(in);
-				ZXP(out) = value;
+				ZXP(out) = cubicinterp(frac, d0, d1, d2, d3);
 			}
 			iwrphase++;
 		);
@@ -3276,6 +3254,13 @@ void DelayUnit_AllocDelayLine(DelayUnit *unit)
 	unit->m_mask = delaybufsize - 1;
 }
 
+float CalcDelay(DelayUnit *unit, float delaytime);
+float CalcDelay(DelayUnit *unit, float delaytime)
+{
+	float next_dsamp = delaytime * SAMPLERATE;
+	return sc_clip(next_dsamp, 1.f, unit->m_fdelaylen);
+}
+
 void DelayUnit_Reset(DelayUnit *unit)
 {
 	unit->m_maxdelaytime = ZIN0(1);
@@ -3283,6 +3268,8 @@ void DelayUnit_Reset(DelayUnit *unit)
 	unit->m_dlybuf = 0;
 	
 	DelayUnit_AllocDelayLine(unit);
+
+	unit->m_dsamp = CalcDelay(unit, unit->m_delaytime);	
 	
 	unit->m_numoutput = 0;
 	unit->m_iwrphase = 0;
@@ -3296,13 +3283,6 @@ void DelayUnit_Dtor(DelayUnit *unit)
 	RTFree(unit->mWorld, unit->m_dlybuf);
 }
 
-float CalcDelay(DelayUnit *unit, float delaytime);
-float CalcDelay(DelayUnit *unit, float delaytime)
-{
-	float next_dsamp = delaytime * SAMPLERATE;
-	return sc_clip(next_dsamp, 1.f, unit->m_fdelaylen);
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void FeedbackDelay_Reset(FeedbackDelay *unit)
@@ -3311,7 +3291,6 @@ void FeedbackDelay_Reset(FeedbackDelay *unit)
 	
 	DelayUnit_Reset(unit);
 	
-	unit->m_dsamp = CalcDelay(unit, unit->m_delaytime);
 	unit->m_feedbk = CalcFeedback(unit->m_delaytime, unit->m_decaytime);
 }
 
@@ -3335,7 +3314,7 @@ void DelayN_next(DelayN *unit, int inNumSamples)
 	float dsamp = unit->m_dsamp;
 	long mask = unit->m_mask;
 
-	//postbuf("DelayN_next %g %g %g %g %d %d %d\n", delaytime, dsamp, mask, iwrphase, zorg);
+	//Print("DelayN_next %08X %g %g  %d %d\n", unit, delaytime, dsamp, mask, iwrphase);
 	if (delaytime == unit->m_delaytime) {
 		long irdphase = iwrphase - (long)dsamp;
 		float* dlybuf1 = dlybuf - ZOFF;
@@ -3350,9 +3329,8 @@ void DelayN_next(DelayN *unit, int inNumSamples)
 			nsmps = sc_min(remain, nsmps);
 			remain -= nsmps;
 			LOOP(nsmps,
-				float value = ZXP(dlyrd);
 				ZXP(dlywr) = ZXP(in);
-				ZXP(out) = value;
+				ZXP(out) = ZXP(dlyrd);
 			);
 			if (dlyrd == dlyN) dlyrd = dlybuf1;
 			if (dlywr == dlyN) dlywr = dlybuf1;
@@ -3363,12 +3341,11 @@ void DelayN_next(DelayN *unit, int inNumSamples)
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 		
 		LOOP(inNumSamples,
+			dlybuf[iwrphase & mask] = ZXP(in);
 			dsamp += dsamp_slope;
 			++iwrphase;
 			long irdphase = iwrphase - (long)dsamp;
-			float value = dlybuf[irdphase & mask];
-			dlybuf[iwrphase & mask] = ZXP(in);
-			ZXP(out) = value;
+			ZXP(out) = dlybuf[irdphase & mask];
 		);
 		unit->m_dsamp = dsamp;
 		unit->m_delaytime = delaytime;
@@ -3410,9 +3387,8 @@ void DelayN_next_z(DelayN *unit, int inNumSamples)
 				);
 			} else {
 				LOOP(nsmps,
-					float value = ZXP(dlyrd);
 					ZXP(dlywr) = ZXP(in);
-					ZXP(out) = value;
+					ZXP(out) = ZXP(dlyrd);
 				);
 			}
 			iwrphase += nsmps;
@@ -3427,13 +3403,11 @@ void DelayN_next_z(DelayN *unit, int inNumSamples)
 			dsamp += dsamp_slope;
 			long irdphase = iwrphase - (long)dsamp;
 			
+			dlybuf[iwrphase & mask] = ZXP(in);
 			if (irdphase < 0) {
-				dlybuf[iwrphase & mask] = ZXP(in);
 				ZXP(out) = 0.f;
 			} else {
-				float value = dlybuf[irdphase & mask];
-				dlybuf[iwrphase & mask] = ZXP(in);
-				ZXP(out) = value;
+				ZXP(out) = dlybuf[irdphase & mask];
 			}
 			iwrphase++;
 		);
@@ -3474,13 +3448,12 @@ void DelayL_next(DelayL *unit, int inNumSamples)
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
 		LOOP(inNumSamples,
+			dlybuf[iwrphase & mask] = ZXP(in);
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 			float d1 = dlybuf[irdphase & mask];
 			float d2 = dlybuf[irdphaseb & mask];
-			float value = lininterp(frac, d1, d2);
-			dlybuf[iwrphase & mask] = ZXP(in);
-			ZXP(out) = value;
+			ZXP(out) = lininterp(frac, d1, d2);
 			iwrphase++;
 		);
 	} else {
@@ -3489,6 +3462,7 @@ void DelayL_next(DelayL *unit, int inNumSamples)
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		LOOP(inNumSamples,
+			dlybuf[iwrphase & mask] = ZXP(in);
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -3496,9 +3470,7 @@ void DelayL_next(DelayL *unit, int inNumSamples)
 			long irdphaseb = irdphase - 1;
 			float d1 = dlybuf[irdphase & mask];
 			float d2 = dlybuf[irdphaseb & mask];
-			float value = lininterp(frac, d1, d2);
-			dlybuf[iwrphase & mask] = ZXP(in);
-			ZXP(out) = value;
+			ZXP(out) = lininterp(frac, d1, d2);
 			iwrphase++;
 		);
 		unit->m_dsamp = dsamp;
@@ -3528,23 +3500,18 @@ void DelayL_next_z(DelayL *unit, int inNumSamples)
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 			
-			float zin = ZXP(in);
+			dlybuf[iwrphase & mask] = ZXP(in);
 			if (irdphase < 0) {
-				dlybuf[iwrphase & mask] = zin;
 				ZXP(out) = 0.f;
 			} else if (irdphaseb < 0) {
 				float d1 = dlybuf[irdphase & mask];
-				float value = d1 - frac * d1;
-				dlybuf[iwrphase & mask] = zin;
 				//postbuf("A %d d1 %g fr %g v %g in %g fb %g\n", irdphase, d1, frac, value, zin, feedbk);
-				ZXP(out) = value;
+				ZXP(out) = d1 - frac * d1;
 			} else {
 				float d1 = dlybuf[irdphase & mask];
 				float d2 = dlybuf[irdphaseb & mask];
-				float value = lininterp(frac, d1, d2);
-				dlybuf[iwrphase & mask] = zin;
 				//postbuf("B %d d1 %g d2 %g fr %g v %g in %g fb %g\n", irdphase, d1, d2, frac, value, zin, feedbk);
-				ZXP(out) = value;
+				ZXP(out) = lininterp(frac, d1, d2);
 			}
 			iwrphase++;
 		);
@@ -3560,21 +3527,16 @@ void DelayL_next_z(DelayL *unit, int inNumSamples)
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 
-			float zin = ZXP(in);
+			dlybuf[iwrphase & mask] = ZXP(in);
 			if (irdphase < 0) {
 				ZXP(out) = 0.f;
-				dlybuf[iwrphase & mask] = zin;
 			} else if (irdphaseb < 0) {
 				float d1 = dlybuf[irdphase & mask];
-				float value = d1 - frac * d1;
-				dlybuf[iwrphase & mask] = zin;
-				ZXP(out) = value;
+				ZXP(out) = d1 - frac * d1;
 			} else {
 				float d1 = dlybuf[irdphase & mask];
 				float d2 = dlybuf[irdphaseb & mask];
-				float value = lininterp(frac, d1, d2);
-				dlybuf[iwrphase & mask] = zin;
-				ZXP(out) = value;
+				ZXP(out) = lininterp(frac, d1, d2);
 			}
 			iwrphase++;
 		);
@@ -3614,6 +3576,7 @@ void DelayC_next(DelayC *unit, int inNumSamples)
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
 		LOOP(inNumSamples,
+			dlybuf[iwrphase & mask] = ZXP(in);
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
@@ -3622,9 +3585,7 @@ void DelayC_next(DelayC *unit, int inNumSamples)
 			float d1 = dlybuf[irdphase1 & mask];
 			float d2 = dlybuf[irdphase2 & mask];
 			float d3 = dlybuf[irdphase3 & mask];
-			float value = cubicinterp(frac, d0, d1, d2, d3);
-			dlybuf[iwrphase & mask] = ZXP(in);
-			ZXP(out) = value;
+			ZXP(out) = cubicinterp(frac, d0, d1, d2, d3);
 			iwrphase++;
 		);
 	} else {
@@ -3633,6 +3594,7 @@ void DelayC_next(DelayC *unit, int inNumSamples)
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		LOOP(inNumSamples,
+			dlybuf[iwrphase & mask] = ZXP(in);
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -3644,9 +3606,7 @@ void DelayC_next(DelayC *unit, int inNumSamples)
 			float d1 = dlybuf[irdphase1 & mask];
 			float d2 = dlybuf[irdphase2 & mask];
 			float d3 = dlybuf[irdphase3 & mask];
-			float value = cubicinterp(frac, d0, d1, d2, d3);
-			dlybuf[iwrphase & mask] = ZXP(in);
-			ZXP(out) = value;
+			ZXP(out) = cubicinterp(frac, d0, d1, d2, d3);
 			iwrphase++;
 		);
 		unit->m_dsamp = dsamp;
@@ -3679,8 +3639,8 @@ void DelayC_next_z(DelayC *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			
+			dlybuf[iwrphase & mask] = ZXP(in);
 			if (irdphase0 < 0) {
-				dlybuf[iwrphase & mask] = ZXP(in);
 				ZXP(out) = 0.f;
 			} else {
 				if (irdphase1 < 0) {
@@ -3701,9 +3661,7 @@ void DelayC_next_z(DelayC *unit, int inNumSamples)
 					d2 = dlybuf[irdphase2 & mask];
 					d3 = dlybuf[irdphase3 & mask];
 				}
-				float value = cubicinterp(frac, d0, d1, d2, d3);
-				dlybuf[iwrphase & mask] = ZXP(in);
-				ZXP(out) = value;
+				ZXP(out) = cubicinterp(frac, d0, d1, d2, d3);
 			}
 			iwrphase++;
 		);
@@ -3721,8 +3679,8 @@ void DelayC_next_z(DelayC *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 
+			dlybuf[iwrphase & mask] = ZXP(in);
 			if (irdphase0 < 0) {
-				dlybuf[iwrphase & mask] = ZXP(in);
 				ZXP(out) = 0.f;
 			} else {
 				if (irdphase1 < 0) {
@@ -3743,9 +3701,7 @@ void DelayC_next_z(DelayC *unit, int inNumSamples)
 					d2 = dlybuf[irdphase2 & mask];
 					d3 = dlybuf[irdphase3 & mask];
 				}
-				float value = cubicinterp(frac, d0, d1, d2, d3);
-				dlybuf[iwrphase & mask] = ZXP(in);
-				ZXP(out) = value;
+				ZXP(out) = cubicinterp(frac, d0, d1, d2, d3);
 			}
 			iwrphase++;
 		);
