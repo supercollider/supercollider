@@ -185,7 +185,6 @@ Patch : HasPatchIns  {
 		});
 	}
 	
-	/* scserver support */
 	asSynthDef {
 		// could be cached, must be able to invalidate it
 		// if an input changes

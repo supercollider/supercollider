@@ -36,10 +36,10 @@ AbstractPlayerEffect : HasSubject {
 		this.childrenMakePatchOut(childGroup,true,bundle);
 	}
 	
-	childrenMakePatchOut { arg argchildGroup,private,bundle;
+	childrenMakePatchOut { arg argchildGroup,private;
 		subject.setPatchOut(AudioPatchOut(subject,childGroup,patchOut.bus.copy));
 		// but children make their own
-		subject.childrenMakePatchOut(childGroup,true,bundle);
+		subject.childrenMakePatchOut(childGroup,true);
 	}
 	free {
 		childGroup.free;

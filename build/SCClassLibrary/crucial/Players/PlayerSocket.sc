@@ -16,7 +16,7 @@
 PlayerSocket : AbstractPlayerProxy {
 
 	var <>round,<>rate,<>numChannels;
-	var <>env;
+	var <>env,socketGroup;
 	
 	*new { arg round=0.0,rate=\audio,numChannels=2;
 		^super.new.round_(round)
@@ -24,18 +24,17 @@ PlayerSocket : AbstractPlayerProxy {
 	}
 	
 	prepareToBundle { arg group,bundle;
+		group = group.asGroup;
+		socketGroup = Group.basicNew(server: group.server);
+		//["made socket group",socketGroup.nodeID].debug;
+		bundle.add( socketGroup.addToTailMsg(group) );
 		if(source.notNil,{
-			source.prepareToBundle(group,bundle)
+			source.prepareToBundle(socketGroup,bundle)
 		})
 	}
-//	makePatchOut { arg group,public;
-//		if(source.notNil,{
-//			super.makePatchOut(group,public)
-//		})
-//	}
 	childrenMakePatchOut { arg group,private = true;
 		if(source.notNil,{
-			source.childrenMakePatchOut(group,private)
+			source.childrenMakePatchOut(socketGroup,private)
 		})
 	}
 	loadDefFileToBundle { arg bundle,server;
@@ -65,18 +64,12 @@ PlayerSocket : AbstractPlayerProxy {
 		bundle.send(this.server,atTime);
 	}
 	setSourceToBundle { arg s,bundle;
-		// do replace, same bus
-		// set patchout of s ?
-		if(source.notNil,{
+		if(source != s,{
 			//bundle.add( source.stopMsg );
 			source.stop;
-			
-			// deallocate busses !
-			// but keep samples etc.
-			//source.freePatchOut;
 		});
 		source = s;
-		source.spawnOnToBundle(this.group,this.bus,bundle);
+		source.spawnOnToBundle(socketGroup,this.bus,bundle);
 	}
 
 	trigger { arg player,newEnv;
@@ -87,8 +80,7 @@ PlayerSocket : AbstractPlayerProxy {
 	}
 	qtime { ^BeatSched.tdeltaTillNext(round) }
 	qtrigger { arg player,newEnv,onTrigger;
-		var t,bundle;
-		// should use a shared BeatSched
+		var bundle;
 		bundle = CXBundle.new;
 		
 		this.setSourceToBundle(player,bundle);
@@ -98,25 +90,25 @@ PlayerSocket : AbstractPlayerProxy {
 			onTrigger.value;
 			nil
 		});
+		// should use a shared BeatSched
 		bundle.send(this.server, this.qtime );
 	}
 	
 	preparePlayer { arg player;
-		// should have prepared the socket first
-		player.prepareForPlay(this.group,bus: this.bus)
+		player.prepareForPlay(socketGroup,bus: this.bus)
 	}
 	prepareAndTrigger { arg player;
-		// play on my bus
-		player.play(this.group,nil,this.bus);
+		// use players prepare / spawn sequence
+		player.play(socketGroup,nil,this.bus);
 		isSleeping = false;
 		this.changed;
-		
-		source.stop;
-
+		if(player != source,{
+			source.stop;
+		});
 		source = player;
 	}
 
-	release {
+	releaseVoice {
 		isSleeping = true;
 		if(source.notNil,{
 			source.stop;
@@ -126,6 +118,7 @@ PlayerSocket : AbstractPlayerProxy {
 	free {
 		isPlaying = false;
 		isSleeping = true;
+		socketGroup.free;
 		super.free;
 	}
 }

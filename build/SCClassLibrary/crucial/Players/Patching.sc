@@ -97,7 +97,8 @@ PatchOut {
 		connectedTo.do({ arg pti;
 			pti.readFromBus(bus);
 		})
-	}		
+	}
+		
 }
 
 ControlPatchOut : PatchOut { // you are returned from a .kr play

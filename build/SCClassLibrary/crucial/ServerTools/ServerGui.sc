@@ -71,7 +71,7 @@ ServerGui : ObjectGui {
 	update { arg changer,what;
 		if(what == \serverRunning,{
 			if(model.serverRunning,running,stopped)
-		} , {
+		},{
 			status.label = 
 				model.avgCPU.round(0.1).asString ++ "/" ++ model.peakCPU.round(0.1) ++ "%      "
 				+ model.numUGens ++ "u"

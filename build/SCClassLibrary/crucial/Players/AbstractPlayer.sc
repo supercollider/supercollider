@@ -23,9 +23,9 @@ AbstractPlayer : AbstractFunction  {
 			server = group.server;
 			// leave bus nil
 		});
-					
+
 		bundle = CXBundle.new;
-		
+
 		if(readyForPlay and: {Library.at(SynthDef,server,this.defName.asSymbol).notNil},{
 			this.makePatchOut(group,false,bus,bundle);
 			this.spawnToBundle(bundle);
@@ -40,7 +40,7 @@ AbstractPlayer : AbstractFunction  {
 					server.boot(false);
 					while({
 						server.serverRunning.not 
-							and: {(limit = limit - 1).isStrictlyPositive}
+							and: {(limit = limit - 1) > 0}
 					},{
 						"waiting for server to boot...".inform;
 						0.4.wait;	
@@ -159,7 +159,7 @@ AbstractPlayer : AbstractFunction  {
 			child.spawnToBundle(bundle);
 		});
 		synth = Synth.basicNew(this.defName,server);
-		("spawning: " + this.defName).postln;
+		("spawning: " + this.defName).debug;
 		//patchOut ?? {this.insp("noPatchOut")};
 		bundle.add(
 			synth.addToTailMsg(this.group,this.synthDefArgs)
@@ -194,43 +194,61 @@ AbstractPlayer : AbstractFunction  {
 					
 		save it all in InstrSynthDef (patch is only one with secret args so far)
 	*/
-	makePatchOut { arg group,private = false,bus,bundle;
+	makePatchOut { arg group,private = false,bus;
 		group = group.asGroup;
 		server = group.server;
-		this.topMakePatchOut(group,private,bus,bundle);
-		this.childrenMakePatchOut(group,true,bundle);
+		this.topMakePatchOut(group,private,bus);
+		this.childrenMakePatchOut(group,true);
 	}
-	topMakePatchOut { arg group,private = false,bus,bundle;
-		if(patchOut.notNil,{ patchOut.free });
-		//Patch doesn't know its numChannels or rate until after it makes the synthDef
-		if(this.rate == \audio,{// out yr speakers
+	topMakePatchOut { arg group,private = false,bus;
+		if(patchOut.notNil,{
+			// does not free any previous bus
+			if(bus.notNil and: {patchOut.bus != bus},{
+				patchOut.bus = bus;
+			});
+			if(group.notNil and: {patchOut.group != group},{
+				patchOut.group = group;
+			});
 			if(private,{
-				this.setPatchOut(
-					AudioPatchOut(this,group,bus 
-							?? {Bus.audio(group.server,this.numChannels)})
-					)
-			},{			
-				this.setPatchOut(
-					AudioPatchOut(this,group,bus 
-							?? {Bus(\audio,0,this.numChannels,group.server)})
-							)
+				if(patchOut.bus.isAudioOut,{
+					patchOut.bus = Bus.audio(group.server,this.numChannels);
+				})
+			},{
+				if(patchOut.bus.isAudioOut.not,{
+					patchOut.bus = Bus(\audio,0,this.numChannels,group.server)
+				})
 			})
 		},{
-			if(this.rate == \control,{
-				this.setPatchOut(
-					ControlPatchOut(this,group,
-							bus ?? {Bus.control(group.server,this.numChannels)})
+			//Patch doesn't know its numChannels or rate until after it makes the synthDef
+			if(this.rate == \audio,{// out yr speakers
+				if(private,{
+					this.setPatchOut(
+						AudioPatchOut(this,group,bus 
+								?? {Bus.audio(group.server,this.numChannels)})
 						)
+				},{			
+					this.setPatchOut(
+						AudioPatchOut(this,group,bus 
+								?? {Bus(\audio,0,this.numChannels,group.server)})
+								)
+				})
 			},{
-				(thisMethod.asString + "Wrong output rate: " + this.rate + 
-			".  AbstractPlayer cannot prepare this object for play.").die;
+				if(this.rate == \control,{
+					this.setPatchOut(
+						ControlPatchOut(this,group,
+								bus ?? {Bus.control(group.server,this.numChannels)})
+							)
+				},{
+					(thisMethod.asString + "Wrong output rate: " + this.rate + 
+				".  AbstractPlayer cannot prepare this object for play.").die;
+				});
 			});
 		});
 		^patchOut
 	}
-	childrenMakePatchOut { arg group,private = true,bundle;
+	childrenMakePatchOut { arg group,private = true;
 		this.children.do({ arg child;
-			child.makePatchOut(group,private,nil,bundle)
+			child.makePatchOut(group,private,nil)
 		});
 	}
 	setPatchOut { arg po; // not while playing
@@ -271,13 +289,13 @@ AbstractPlayer : AbstractFunction  {
 			})
 		},{
 			// save it in the archive of the player
-			( "building:" +this.name ).postln;
+			( "building:" +this.name ).debug;
 			def = this.asSynthDef;
 			bytes = def.asBytes;
 			bundle.add(["/d_recv", bytes]);
 			// even if name was nil before (Patch), its set now
 			defName = def.name;
-			("loading def:" + defName).postln;
+			("loading def:" + defName).debug;
 			// InstrSynthDef watches \serverRunning to clear this
 			InstrSynthDef.watchServer(server);
 			Library.put(SynthDef,server,defName.asSymbol,true);
@@ -332,6 +350,7 @@ AbstractPlayer : AbstractFunction  {
 	connectToPatchIn { arg patchIn,needsValueSetNow = true;
 		// if my bus is public, change to private
 		if(this.isPlaying and: {this.bus.isAudioOut},{
+			//"reallocating bus".debug;
 			this.bus = Bus.alloc(this.rate,this.server,this.numChannels);
 		});
 		this.patchOut.connectTo(patchIn,needsValueSetNow)
@@ -580,9 +599,9 @@ MultiTrackPlayer : MultiplePlayers { // abstract
 		//irrelevant for me 
 	}
 	// as it is for abstractplayer
-	childrenMakePatchOut { arg group,private = false,bundle;
+	childrenMakePatchOut { arg group,private = false;
 		this.voices.do({ arg vo;
-			vo.makePatchOut(group,true,bundle: bundle);
+			vo.makePatchOut(group,true);
 		})
 	}
 }
@@ -630,8 +649,8 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 			source.setPatchOut(PatchOut(source,patchOut.group,patchOut.bus.copy));
 		});
 	}
-	childrenMakePatchOut { arg group,private,bundle;
-		source.childrenMakePatchOut(group,private,bundle);
+	childrenMakePatchOut { arg group,private;
+		source.childrenMakePatchOut(group,private);
 	}
 	
 }
