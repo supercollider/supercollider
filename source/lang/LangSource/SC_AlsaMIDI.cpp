@@ -260,6 +260,7 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 				++g->sp; SetInt(g->sp, 0);
 				++g->sp; SetInt(g->sp, 0xE);
 				runInterpreter(g, s_midiSysrtAction, 4);
+				break;
 			case SND_SEQ_EVENT_RESET:			// system reset
 				++g->sp; SetInt(g->sp, 0);
 				++g->sp; SetInt(g->sp, 0xF);
