@@ -187,3 +187,53 @@ EZSlider
 		};
 	}
 }
+
+
+
+EZNumber
+{
+	var <>labelView, <>numberView, <>controlSpec, <>action, <value;
+	var <>round = 0.001;
+	
+	*new { arg window, dimensions, label, controlSpec, action, initVal, 
+			initAction=false, labelWidth=80, numberWidth = 80;
+		^super.new.init(window, dimensions, label, controlSpec, action, initVal, 
+			initAction, labelWidth, numberWidth);
+	}
+	init { arg window, dimensions, label, argControlSpec, argAction, initVal, 
+			initAction, labelWidth, numberWidth;
+		labelView = SCStaticText(window, labelWidth @ dimensions.y);
+		labelView.string = label;
+		labelView.align = \right;
+		
+		controlSpec = argControlSpec.asSpec;
+		initVal = initVal ? controlSpec.default;
+		action = argAction;
+		
+		numberView = SCNumberBox(window, numberWidth @ dimensions.y);
+		numberView.action = {
+			numberView.value = value = controlSpec.constrain(numberView.value);
+			action.value(this);
+		};
+		
+		if (initAction) {
+			this.value = initVal;
+		}{
+			value = initVal;
+			numberView.value = value.round(round);
+		};
+	}
+	value_ { arg value; numberView.valueAction = value }
+	set { arg label, spec, argAction, initVal, initAction=false;
+		labelView.string = label;
+		controlSpec = spec.asSpec;
+		action = argAction;
+		initVal = initVal ? controlSpec.default;
+		if (initAction) {
+			this.value = initVal;
+		}{
+			value = initVal;
+			numberView.value = value.round(round);
+		};
+	}
+}

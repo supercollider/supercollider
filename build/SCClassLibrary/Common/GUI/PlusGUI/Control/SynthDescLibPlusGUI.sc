@@ -11,12 +11,45 @@
 		var synthDescList;
 		var hvBold12;
 		var updateViews;
+		var btn, testFn;
 		
 		hvBold12 = Font("Helvetica-Bold", 12);		
 		
-		w = SCWindow("SynthDef browser", Rect(128, 320, 700, 580));
+		w = SCWindow("SynthDef browser", Rect(128, 320, 700, 608));
 		w.view.decorator = FlowLayout(w.view.bounds);
 		
+		w.view.decorator.shift(220);
+		
+		testFn = {
+			var synth, item;
+			item = this[synthDescListView.item.asSymbol];
+			if (item.notNil) {
+				synth = Synth(item.name);
+				synth.postln;
+				synth.play;
+				SystemClock.sched(3, { 
+					if (item.hasGate) 
+						{ synth.release }
+						{ synth.free };
+				});
+			};
+		};
+		
+		btn = SCButton(w, 48 @ 20);
+		btn.states = [["test", Color.black, Color.clear]];
+		btn.action = testFn;
+		
+		btn = SCButton(w, 48 @ 20);
+		btn.states = [["window", Color.black, Color.clear]];
+		btn.action = {
+			var item;
+			item = this[synthDescListView.item.asSymbol];
+			if (item.notNil) {
+				item.makeWindow;
+			}
+		};
+		
+		w.view.decorator.nextLine;
 		SCStaticText(w, Rect(0,0,220,24)).string_("SynthDescLibs").font_(hvBold12);
 		SCStaticText(w, Rect(0,0,220,24)).string_("SynthDefs").font_(hvBold12);
 		SCStaticText(w, Rect(0,0,220,24)).string_("UGens").font_(hvBold12);
@@ -69,6 +102,7 @@
 		synthDescListView.action = {
 			updateViews.value;
 		};
+		synthDescListView.enterKeyAction = testFn;
 		
 		updateViews = {
 			var libName, synthDesc;
