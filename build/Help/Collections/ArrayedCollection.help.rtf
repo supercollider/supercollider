@@ -1,0 +1,240 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 ArrayedCollection
+\f1\b0\fs24 \
+\
+
+\f0\b Superclass: SequenceableCollection\
+
+\f1\b0 \
+ArrayedCollection is a class of SequenceableCollections whose elements are held in a vector of slots. Instances of ArrayedCollection have a fixed maximum size beyond which they may not grow.\
+\
+
+\f0\b\fs28 \ul Class Methods\
+
+\f1\b0\fs24 \ulnone \
+
+\f0\b *with(... args)\
+
+\f1\b0 \
+Create a new ArrayedCollection whose slots are filled with the given arguments.\
+\
+
+\f2 Array.with(7, 'eight',  9).postln;\
+
+\f1 \
+
+\f0\b *series(size, start, step)\
+
+\f1\b0 \
+Fill an ArrayedCollection with an arithmetic series.\
+\
+
+\f2 Array.series(5, 10, 2).postln;\
+
+\f1 \
+
+\f0\b *geom(size, start, grow)\
+
+\f1\b0 \
+Fill an ArrayedCollection with a geometric series.\
+\
+
+\f2 Array.geom(5, 1, 3).postln;\
+\
+
+\f1 \
+
+\f0\b\fs28 \ul Instance Methods
+\f2\b0\fs24 \ulnone \
+\
+
+\f0\b add(item)\
+
+\f1\b0 \
+Adds an item to an ArrayedCollection if there is space. If there is not any space left in the object\
+then this method returns a new ArrayedCollection. For this reason, you should always assign\
+the result of add to a variable - never depend on add changing the receiver.\
+\
+
+\f2 (\
+// z and y are the same object\
+var y, z;\
+z = [1, 2, 3];\
+y = z.add(4);\
+z.postln;\
+y.postln;\
+)\
+\
+(\
+// in this case a new object is returned\
+var y, z;\
+z = [1, 2, 3, 4];\
+y = z.add(5);\
+z.postln;\
+y.postln;\
+)\
+\
+
+\f0\b addAll(aCollection)\
+
+\f1\b0 \
+Adds all the elements of aCollection to the contents of the receiver, possibly returning a new collection.\
+\
+
+\f2 (\
+// in this case a new object is returned\
+var y, z;\
+z = [1, 2, 3, 4];\
+y = z.addAll([7, 8, 9]);\
+z.postln;\
+y.postln;\
+)\
+
+\f1 \
+
+\f0\b insert(index, item)\
+
+\f1\b0 \
+Inserts the item into the contents of the receiver, possibly returning a new collection.\
+\
+
+\f2 (\
+// in this case a new object is returned\
+var y, z;\
+z = [1, 2, 3, 4];\
+y = z.insert(1, 999);\
+z.postln;\
+y.postln;\
+)\
+\
+
+\f0\b addFirst(item)\
+
+\f1\b0 \
+Inserts the item before the contents of the receiver, possibly returning a new collection.\
+\
+
+\f2 (\
+// in this case a new object is returned\
+var y, z;\
+z = [1, 2, 3, 4];\
+y = z.addFirst(999);\
+z.postln;\
+y.postln;\
+)\
+\
+
+\f0\b pop
+\f1\b0 \
+\
+Remove and return the last element of the ArrayedCollection.\
+\
+
+\f2 (\
+var z;\
+z = [1, 2, 3, 4];\
+z.pop.postln;\
+z.postln;\
+)\
+\
+
+\f0\b copyRange(start, end)\
+
+\f1\b0 \
+Return a new ArrayedCollection which is a copy of the indexed slots of the receiver from start to end.\
+
+\f2 \
+(\
+var y, z;\
+z = [1, 2, 3, 4, 5];\
+y = z.copyRange(1,3);\
+z.postln;\
+y.postln;\
+)\
+\
+
+\f0\b ++ aCollection\
+
+\f2\b0 \
+
+\f1 Concatenate the contents of the two collections into a new ArrayedCollection.\
+\
+
+\f2 (\
+var y, z;\
+z = [1, 2, 3, 4];\
+y = z ++ [7, 8, 9];\
+z.postln;\
+y.postln;\
+)\
+\
+
+\f0\b reverse
+\f2\b0 \
+
+\f1 \
+Return a new ArrayedCollection whose elements are reversed.\
+\
+
+\f2 (\
+var y, z;\
+z = [1, 2, 3, 4];\
+y = z.reverse;\
+z.postln;\
+y.postln;\
+)\
+\
+
+\f0\b do(function)
+\f2\b0 \
+
+\f1 \
+Iterate over the elements in order, calling the function for each element. The function is passed two arguments, the element and an index.\
+\
+
+\f2 ['a', 'b', 'c'].do(\{ arg item, i; [i, item].postln; \});\
+\
+
+\f0\b reverseDo(function)
+\f2\b0 \
+
+\f1 \
+Iterate over the elements in reverse order, calling the function for each element. The function is passed two arguments, the element and an index.\
+\
+
+\f2 ['a', 'b', 'c'].reverseDo(\{ arg item, i; [i, item].postln; \});\
+\
+
+\f0\b windex
+\f1\b0 \
+\
+Interprets the array as a list of probabilities which should sum to 1.0 and returns a random index value based on those probabilities.\
+
+\f2 \
+(\
+Array.fill(10, \{\
+	[0.1, 0.6, 0.3].windex;\
+\}).postln;\
+)\
+\
+
+\f0\b normalizeSum
+\f1\b0 \
+\
+Returns the Array resulting from : \
+
+\f2 (this / this.sum)\
+
+\f1 so that the array will sum to 1.0.\
+This is useful for using with windex or wchoose.\
+
+\f2 \
+[1, 2, 3].normalizeSum.postln;\
+\
+\
+}

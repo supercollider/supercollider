@@ -1,0 +1,233 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green112\blue0;\red0\green0\blue191;\red191\green0\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Environment
+\f1\b0\fs24 \
+\
+
+\f0\b superclass: IdentityDictionary
+\f1\b0 \
+\
+An Environment is an IdentityDictionary mapping Symbols to values.\
+There is always one current Environment which is stored in the currentEnvironment\
+class variable of class Object.\
+\
+Symbol and value pairs may be put into the current Environment as follows:\
+\
+
+\f2 currentEnvironment.put(\cf2 \\myvariable\cf0 , 999);\
+
+\f1 \
+and retrieved from the current Environment as follows:\
+\
+
+\f2 currentEnvironment.at(\cf2 \\myvariable\cf0 ).postln;\
+\
+
+\f1 The compiler provides a shorthand for the two constructs above .\
+\
+
+\f2 ~myvariable = 888;\
+
+\f1 \
+is equivalent to:\
+\
+
+\f2 currentEnvironment.put(\\\cf2 myvariable\cf0 , 888);\
+
+\f1 \
+and:\
+\
+
+\f2 ~myvariable.postln;\
+\
+
+\f1 is equivalent to:\
+ \
+
+\f2 currentEnvironment.at(\\\cf2 myvariable\cf0 ).postln;\
+\
+
+\f0\b\fs28 Making an Environment\
+
+\f1\b0\fs24 \
+Environment has a class method 
+\f0\b make
+\f1\b0  which can be used to create an Environment\
+and fill it with values. What 
+\f0\b make
+\f1\b0  does is temporarily replace the current Environment \
+with a new one, call your function where you fill the Environment with values, then it\
+replaces the previous current Environment and returns you the new one.\
+\
+
+\f2 (\
+\cf3 var\cf0  a;\
+a = \cf3 Environment\cf0 .make(\{\
+	~a = 100;\
+	~b = 200;\
+	~c = 300;\
+\});\
+a.postln;\
+)\
+
+\f1 \
+
+\f0\b\fs28 Using an Environment\
+
+\f1\b0\fs24 \
+The instance method 
+\f0\b use
+\f1\b0  lets you temporarily replace the current Environment with one you have made.\
+The 
+\f0\b use
+\f1\b0  method returns the result of your function instead of the Environment like 
+\f0\b make
+\f1\b0  does.\
+\
+
+\f2 (\
+\cf3 var\cf0  a;\
+a = \cf3 Environment\cf0 .make(\{\
+	~a = 10;\
+	~b = 200;\
+	~c = 3000;\
+\});\
+a.use(\{\
+	~a + ~b + ~c\
+\}).postln;\
+)\
+
+\f1 \
+There is also a 
+\f0\b use
+\f1\b0  class method for when you want to make and use the result from \
+an Environment directly.\
+\
+
+\f2 (\
+\cf3 var\cf0  a;\
+a = \cf3 Environment\cf0 .use(\{\
+	~a = 10;\
+	~b = 200;\
+	~c = 3000;\
+	~a + ~b + ~c\
+\}).postln;\
+)\
+
+\f1 \
+
+\f0\b\fs28 Calling Functions with arguments from the current Environment\
+
+\f1\b0\fs24 \
+It is possible to call a Function and have it look up any unspecified argument values from the\
+current Environment. This is done with the 
+\f0\b valueEnvir
+\f1\b0  and 
+\f0\b valueArrayEnvir
+\f1\b0  methods.\
+These methods will, for any unspecified argument value, look in the current Environment for\
+a symbol with the same name as the argument. If the argument is not found then whatever the\
+function defines as the default value for that argument is used.\
+\
+
+\f2 (\
+\cf3 var\cf0  f;\
+\
+\cf4 // define a function\
+\cf0 f = \{ \cf3 arg\cf0  x, y, z; [x, y, z].postln; \};\
+\
+\cf3 Environment\cf0 .use(\{\
+	~x = 7;\
+	~y = 8;\
+	~z = 9;\
+	\
+	f.valueEnvir(1, 2, 3);	\cf4 // all values supplied\
+\cf0 	f.valueEnvir(1, 2);	\cf4 // z is looked up in the current Environment\
+\cf0 	f.valueEnvir(1);		\cf4 // y and z are looked up in the current Environment \
+\cf0 	f.valueEnvir;			\cf4 // all arguments are looked up in the current Environment\
+\cf0 	f.valueEnvir(z: 1);	\cf4 // x and y are looked up in the current Environment\
+\cf0 \});\
+)\
+\
+
+\f1 Now here is how this can be used with an instrument function.\
+Environments allow you to define instruments without having to worry about argument \
+ordering conflicts.\
+Even though the three functions below have the freq, amp and pan args declared in\
+different orders it does not matter, because valueEnvir looks them up in the\
+environment. \
+\
+
+\f2 (\
+\cf3 var\cf0  a, b, c, orc;\
+\
+a = \{ \cf3 arg\cf0  freq, amp, pan;\
+	\cf3 Pan2\cf0 .ar(\cf3 SinOsc\cf0 .ar(freq), pan, amp);\
+\};\
+b =  \{ \cf3 arg\cf0  amp, pan, freq;\
+	\cf3 Pan2\cf0 .ar(\cf3 RLPF\cf0 .ar(\cf3 Saw\cf0 .ar(freq), freq * 6, 0.1), pan, amp);\
+\};\
+c =  \{ \cf3 arg\cf0  pan, freq, amp;\
+	\cf3 Pan2\cf0 .ar(\cf3 Resonz\cf0 .ar(\cf3 GrayNoise\cf0 .ar, freq * 2, 0.1), pan, amp * 2);\
+\};\
+orc = [a, b, c];\
+\
+\cf3 Synth\cf0 .scope(\{\
+	\cf3 var\cf0  out;\
+	out = \cf3 OverlapTexture\cf0 .ar(\{\
+		\cf3 Environment\cf0 .use(\{\
+				\cf4 // set values in the environment\
+\cf0 			~freq = exprand(80, 600);\
+			~amp = 0.1;\
+			~pan = 1.0.rand2;\
+			\
+				\cf4 // call a randomly chosen instrument function \
+\cf0 				\cf4 // with values from the environment\
+\cf0 			orc.choose.valueEnvir;\
+		\});\
+	\}, 1, 0.2, 2, 2);\
+	\cf3 CombN\cf0 .ar(out, 0.2, 0.2, 3, 1, out);\
+\}, 0.4);\
+)\
+\
+
+\f0\b \
+\
+
+\f2\b0\fs18 Variables may be accessed using by using the tilde: ~\
+
+\f0\b\fs24 \
+currentEnvironment is a special interpreter variable that contains\
+the currently active Environment.
+\f2\b0\fs18 \
+\
+\
+(\
+\
+currentEnvironment = \cf3 Environment\cf0 .new;\
+~thing = 40;\
+~thing.postln;\
+\
+)\
+\
+\
+(\
+\cf4 //inside of the following function, the currentEnvironment will be swapped\
+//with this new Environment while the function is executed.\
+\cf0 \
+\cf3 Environment\cf0 .use(\{\
+	~thing.postln;		\
+	~something = 40;\
+\});\
+\
+\
+~thing.postln;\
+\
+\cf3 nil\cf0 \
+40\
+)}
