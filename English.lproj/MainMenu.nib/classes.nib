@@ -50,6 +50,7 @@
         }, 
         {
             ACTIONS = {
+                clearPostWindow = id; 
                 compileLibrary = id; 
                 newSCWindow = id; 
                 postWindowToFront = id; 
