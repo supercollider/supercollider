@@ -119,6 +119,10 @@ optcomma	:
 			| ','
 			;
 			
+optequal	:
+			| '='
+			;
+			
 funcbody	: funretval
 			| exprseq funretval
 				{ $$ = (long)newPyrDropNode((PyrParseNode*)$1, (PyrParseNode*)$2); }
@@ -1243,11 +1247,11 @@ funcvardecl	: VAR vardeflist ';'
 			;
 
 argdecls	: { $$ = 0; }
-			| ARG slotdeflist ';'
+			| ARG vardeflist ';'
 				{
 					$$ = (long)newPyrArgListNode((PyrVarDefNode*)$2, NULL); 
 				}
-			| ARG slotdeflist0 ELLIPSIS name ';'
+			| ARG vardeflist0 ELLIPSIS name ';'
 				{ 
 					$$ = (long)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4); 
 				}
@@ -1267,16 +1271,22 @@ slotdeflist0 	: { $$ = 0; }
 				;
 				
 slotdeflist	: slotdef
-			| slotdeflist ',' slotdef
+			| slotdeflist optcomma slotdef
 				{ $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
 			;
 
 slotdef		: name
 				{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, NULL, 0); }
-			| name '=' slotliteral
+			| name optequal slotliteral
 				{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 0); }
+			| name optequal '(' exprseq ')'
+				{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, (PyrParseNode*)$4, 0); }
 			;
-
+			
+vardeflist0 	: { $$ = 0; }
+				| vardeflist
+				;
+				
 vardeflist      : vardef
                         | vardeflist ',' vardef
                                 { $$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }

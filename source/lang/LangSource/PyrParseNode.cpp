@@ -1309,7 +1309,8 @@ void PyrMethodNode::compile(PyrSlot *result)
 			for (i=1; i<numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
 				PyrSlot *slot, litval;
 				slot = method->prototypeFrame.uo->slots + i;
-				compilePyrLiteralNode((PyrLiteralNode*)vardef->mDefVal, &litval);
+				//compilePyrLiteralNode((PyrLiteralNode*)vardef->mDefVal, &litval);
+				vardef->hasExpr(&litval);
 				*slot = litval;
 			}
 			if (funcVarArgs) {
@@ -1552,7 +1553,13 @@ void PyrMethodNode::compile(PyrSlot *result)
 		} else {
 			compile_body:
 			SetTailIsMethodReturn mr(false);
-			if (numVars) {
+			if (mArglist) {
+				vardef = mArglist->mVarDefs;
+				for (i=1; i<numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
+					vardef->compileArg(&dummy);
+				}
+			}
+			if (mVarlist) {
 				vardef = mVarlist->mVarDefs;
 				for (i=0; i<numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
 					vardef->compile(&dummy);
@@ -1610,6 +1617,7 @@ PyrVarDefNode* newPyrVarDefNode(PyrSlotNode* varName, PyrParseNode* defVal,
 	node->mVarName = varName;
 	node->mDefVal = defVal;
 	node->mFlags = flags;
+	node->mDrop = true;
 	return node;
 }
 
@@ -1617,12 +1625,18 @@ bool PyrVarDefNode::hasExpr(PyrSlot *result)
 {
 	if (result) SetNil(result);
 	if (!mDefVal) return false;
-	if (mDefVal->mClassno != pn_PushLitNode) return true;
+	if (mDefVal->mClassno != pn_PushLitNode && mDefVal->mClassno != pn_LiteralNode) {
+			//post("hasExpr A %s-%s %s %d\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name, mVarName->mSlot.us->name, mDefVal->mClassno);	
+			return true;
+	}
 
 	PyrPushLitNode *pushlitnode = (PyrPushLitNode*)mDefVal;
 	if (pushlitnode->mSlot.utag == tagPtr) {
 		PyrParseNode* literalObj = (PyrParseNode*)pushlitnode->mSlot.uo;
-		if (literalObj->mClassno == pn_BlockNode) return true;
+		if (literalObj->mClassno == pn_BlockNode) {
+			//post("hasExpr B %s-%s %s %d\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name, mVarName->mSlot.us->name, mDefVal->mClassno);	
+			return true;
+		}
 	}
 	if (result) *result = pushlitnode->mSlot;
 	return false;
@@ -1632,7 +1646,30 @@ void PyrVarDefNode::compile(PyrSlot *result)
 {
 	if (hasExpr(NULL)) {
 		COMPILENODE(mDefVal, result, false);
-		compileAssignVar((PyrParseNode*)this, mVarName->mSlot.us, true);	
+		compileAssignVar((PyrParseNode*)this, mVarName->mSlot.us, mDrop);	
+	}
+
+	//error("compilePyrVarDefNode: shouldn't get here.\n"); 
+	//compileErrors++;
+}
+
+void PyrVarDefNode::compileArg(PyrSlot *result)
+{
+	if (hasExpr(NULL)) {
+		ByteCodes trueByteCodes;
+		
+		compilePushVar((PyrParseNode*)this, mVarName->mSlot.us);
+
+		mDrop = false;
+		trueByteCodes = compileBodyWithGoto(this, 0, true);
+		int jumplen = byteCodeLength(trueByteCodes);
+
+		compileByte(143); // special opcodes
+		compileByte(26); 
+		compileByte((jumplen >> 8) & 0xFF);
+		compileByte(jumplen & 0xFF);
+		compileAndFreeByteCodes(trueByteCodes);
+		compileOpcode(opSpecialOpcode, opcDrop); // drop the boolean
 	}
 
 	//error("compilePyrVarDefNode: shouldn't get here.\n"); 
@@ -2055,18 +2092,21 @@ ByteCodes compileSubExpression(PyrPushLitNode* litnode, bool onTailBranch)
 
 ByteCodes compileSubExpressionWithGoto(PyrPushLitNode* litnode, int branchLen, bool onTailBranch)
 {
+	PyrBlockNode *bnode = (PyrBlockNode*)litnode->mSlot.uo;
+	return compileBodyWithGoto(bnode->mBody, branchLen, onTailBranch);
+}
+
+ByteCodes compileBodyWithGoto(PyrParseNode* body, int branchLen, bool onTailBranch)
+{
 	ByteCodes	currentByteCodes, subExprByteCodes;
-	PyrBlockNode *bnode;
 	PyrSlot dummy;
 	
 	PyrBlock* prevPartiallyAppliedFunction = gPartiallyAppliedFunction;
 	gPartiallyAppliedFunction = NULL;
 
-	bnode = (PyrBlockNode*)litnode->mSlot.uo;
 	currentByteCodes = saveByteCodeArray();
 
-	//compileStatements(mExpr->mBody, false);
-	COMPILENODE(bnode->mBody, &dummy, onTailBranch);
+	COMPILENODE(body, &dummy, onTailBranch);
 	if (branchLen) {
 		if (!byteCodeLength(gCompilingByteCodes)) {
 			compileOpcode(opPushSpecialValue, opsvNil); // push nil
@@ -3835,7 +3875,8 @@ void PyrBlockNode::compile(PyrSlot* result)
 		for (i=0; i<numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
 			PyrSlot *slot, litval;
 			slot = block->prototypeFrame.uo->slots + i;
-			compilePyrLiteralNode((PyrLiteralNode*)vardef->mDefVal, &litval);
+			vardef->hasExpr(&litval);
+			//compilePyrLiteralNode((PyrLiteralNode*)vardef->mDefVal, &litval);
 			*slot = litval;
 		}
 	}
@@ -3869,7 +3910,13 @@ void PyrBlockNode::compile(PyrSlot* result)
 			DUMPNODE(mBody, 0);
 		}*/
 		SetTailIsMethodReturn mr(false);
-		if (numVars) {
+		if (mArglist) {
+			vardef = mArglist->mVarDefs;
+			for (i=0; i<numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
+				vardef->compileArg(&dummy);
+			}
+		}
+		if (mVarlist) {
 			vardef = mVarlist->mVarDefs;
 			for (i=0; i<numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
 				vardef->compile(&dummy);

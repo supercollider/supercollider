@@ -172,12 +172,14 @@ struct PyrVarListNode : public PyrParseNode {
 struct PyrVarDefNode : public PyrParseNode {
 	PyrVarDefNode() : PyrParseNode(pn_VarDefNode) {}
 	virtual void compile(PyrSlot *result);
+	virtual void compileArg(PyrSlot *result);
 	virtual void dump(int level);
 	bool hasExpr(PyrSlot *result);
 	
 	struct PyrSlotNode* mVarName;
 	PyrParseNode* mDefVal;
 	int mFlags;
+	bool mDrop;
 } ;
 
 struct PyrCallNodeBase : public PyrParseNode {
@@ -487,6 +489,7 @@ void installByteCodes(PyrBlock *block);
 
 ByteCodes compileSubExpression(PyrPushLitNode* litnode, bool onTailBranch);
 ByteCodes compileSubExpressionWithGoto(PyrPushLitNode* litnode, int branchLen, bool onTailBranch);
+ByteCodes compileBodyWithGoto(PyrParseNode* body, int branchLen, bool onTailBranch);
 //ByteCodes compileDefaultValue(int litIndex, int realExprLen);
 
 void initParser();
