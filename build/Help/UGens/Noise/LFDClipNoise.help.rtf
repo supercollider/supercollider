@@ -1,0 +1,65 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 Monaco;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs36 \cf0 LFDClipNoise				dynamic clipped noise
+\f2\b0\fs24 \
+\
+
+\f1\b LFClipNoise.ar(freq, mul, add)\
+
+\f2\b0 \
+Like 
+\f1\b LFClipNoise
+\f2\b0 , it generates the values -1 or +1 at a rate given \
+by the 
+\f1\b freq
+\f2\b0  argument,  with two differences: \
+\
+-no time quantization \
+-fast recovery from low freq values.\
+\
+(LFClipNoise, as well as LFNoise0,1,2 quantize to the nearest integer division \
+of the samplerate, and they poll the freq argument only when scheduled;\
+thus they often seem to hang when freqs get very low).\
+\
+If you don't need very high or very low freqs, or use fixed freqs, \
+LFNoise0 is more efficient.\
+\
+
+\f1\b freq
+\f2\b0  - rate at which to generate random values.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs18 \cf2 // try wiggling the mouse quickly;\cf0 \
+\cf2 // LFNoise frequently seems stuck, LFDNoise changes smoothly.\
+\cf0 \
+\{ \cf3 LFClipNoise\cf0 .ar(\cf3 MouseX\cf0 .kr(0.1, 1000, 1), 0.1)  \}.play\
+\
+\{ \cf3 LFDClipNoise\cf0 .ar(\cf3 MouseX\cf0 .kr(0.1, 1000, 1), 0.1)  \}.play\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs18 \cf2 // silent for 2 secs before going up in freq\
+\cf0 \
+\{ \cf3 LFClipNoise\cf0 .ar(\cf3 XLine\cf0 .kr(0.5, 10000, 3), 0.1) \}.scope;\
+\
+\{ \cf3 LFDClipNoise\cf0 .ar(\cf3 XLine\cf0 .kr(0.5, 10000, 3), 0.1) \}.scope;\
+\
+\
+\cf2 // LFNoise quantizes time steps at high freqs, LFDNoise does not:\
+\cf0 \
+\{ \cf3 LFClipNoise\cf0 .ar(\cf3 XLine\cf0 .kr(1000, 20000, 10), 0.1) \}.scope;\
+\
+\{ \cf3 LFDClipNoise\cf0 .ar(\cf3 XLine\cf0 .kr(1000, 20000, 10), 0.1) \}.scope;\
+\
+}
