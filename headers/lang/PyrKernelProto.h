@@ -49,8 +49,7 @@ bool funcFindVar(PyrBlock* func, PyrSymbol *name, int *index);
 void addMethod(PyrClass *classobj, PyrMethod *method);
 
 
-PyrMethod* classFindDirectInstMethod(PyrClass* classobj, PyrSymbol *name);
-PyrMethod* classFindDirectClassMethod(PyrClass* classobj, PyrSymbol *name);
+PyrMethod* classFindDirectMethod(PyrClass* classobj, PyrSymbol *name);
 
 PyrBlock* newPyrBlock(int flags);
 PyrMethod* newPyrMethod();

@@ -1140,13 +1140,8 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 	PyrSymbolArray *argNames, *varNames;
 		
 	//postfl("->method '%s'\n", node->methodName->slot.us->name);
-	if (node->isClassMethod) {
-		gCompilingClass = gCurrentMetaClass;
-		oldmethod = classFindDirectClassMethod(gCompilingClass, node->methodName->slot.us);
-	} else {
-		gCompilingClass = gCurrentClass;
-		oldmethod = classFindDirectInstMethod(gCompilingClass, node->methodName->slot.us);
-	}
+	gCompilingClass = node->isClassMethod ? gCurrentMetaClass : gCurrentClass;
+	oldmethod = classFindDirectMethod(gCompilingClass, node->methodName->slot.us);
 	
 	if (oldmethod && !node->extension) {
 		error("Method %s-%s already defined.\n", 

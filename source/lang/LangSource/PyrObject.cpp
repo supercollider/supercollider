@@ -513,15 +513,22 @@ int numClassVars(PyrClass* classobj)
 void objAddIndexedSlotGrow(PyrSlot *arraySlot, PyrSlot *addSlot);
 void objAddIndexedSlotGrow(PyrSlot *arraySlot, PyrSlot *addSlot)
 {
-	PyrObject *obj = arraySlot->uo;
-	if (obj->size >= ARRAYMAXINDEXSIZE(obj)) {
-		//post("objAddIndexedSlotGrow\n");
-		PyrObject *newobj = (PyrObject*)newPyrArray(NULL, obj->size * 2, obj_permanent | obj_immutable, false);
-		memcpy(newobj->slots, obj->slots, obj->size * sizeof(PyrSlot));
-		newobj->size = obj->size;
+	PyrObject *obj;
+	if (IsNil(arraySlot)) {
+		PyrObject *newobj = (PyrObject*)newPyrArray(NULL, 1, obj_permanent | obj_immutable, false);
 		SetObject(arraySlot, newobj);
-		pyr_pool_runtime->Free((void*)obj);
 		obj = newobj;
+	} else {
+		obj = arraySlot->uo;
+		if (obj->size >= ARRAYMAXINDEXSIZE(obj)) {
+			//post("objAddIndexedSlotGrow\n");
+			PyrObject *newobj = (PyrObject*)newPyrArray(NULL, obj->size * 2, obj_permanent | obj_immutable, false);
+			memcpy(newobj->slots, obj->slots, obj->size * sizeof(PyrSlot));
+			newobj->size = obj->size;
+			SetObject(arraySlot, newobj);
+			pyr_pool_runtime->Free((void*)obj);
+			obj = newobj;
+		}
 	}
 	obj->slots[obj->size++].ucopy = addSlot->ucopy;
 }
@@ -535,11 +542,12 @@ void addMethod(PyrClass *classobj, PyrMethod *method)
 
 
 
-PyrMethod* classFindDirectInstMethod(PyrClass* classobj, PyrSymbol *name)
+PyrMethod* classFindDirectMethod(PyrClass* classobj, PyrSymbol *name)
 {
 	PyrMethod *method;
 	PyrSlot *methods;
 	int i, numMethods;
+	if (IsNil(&classobj->methods)) return NULL;
 	methods = classobj->methods.uo->slots;
 	numMethods = classobj->methods.uo->size;
 	for (i=0; i<numMethods; ++i) {
@@ -547,26 +555,6 @@ PyrMethod* classFindDirectInstMethod(PyrClass* classobj, PyrSymbol *name)
 		if (method->name.us == name) break;
 	}
 	if (i>=numMethods) method = NULL;
-	return method;
-}
-
-PyrMethod* classFindDirectClassMethod(PyrClass* classobj, PyrSymbol *name)
-{
-	PyrMethod *method = NULL;
-	PyrSlot *methods;
-	PyrClass *metaclassobj;
-	int i, numMethods;
-	
-	metaclassobj = classobj->classptr;
-	if (metaclassobj) {
-		methods = classobj->methods.uo->slots;
-		numMethods = classobj->methods.uo->size;
-		for (i=0; i<numMethods; ++i) {
-			method = methods[i].uom;
-			if (method->name.us == name) break;
-		}
-		if (i>=numMethods) method = NULL;
-	}
 	return method;
 }
 
