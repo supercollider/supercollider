@@ -145,7 +145,7 @@ struct K2A : public Unit
 struct EnvGen : public Unit
 {
 	double m_a1, m_a2, m_b1, m_y1, m_y2, m_grow, m_level, m_endLevel;
-	int m_counter, m_stage, m_shape;
+	int m_counter, m_stage, m_shape, m_releaseNode;
 	float m_prevGate;
 	bool m_released;
 };
@@ -1207,6 +1207,7 @@ void EnvGen_Ctor(EnvGen *unit)
 	unit->m_stage = 1000000000;
 	unit->m_prevGate = 0.f;
 	unit->m_released = false;
+	unit->m_releaseNode = (int)ZIN0(kEnvGen_releaseNode);
 	EnvGen_next_k(unit, 1);
 }
 
@@ -1245,6 +1246,11 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 		unit->m_shape = shape_Linear;
 		unit->m_grow = -level / counter;
 		unit->m_endLevel = 0.;
+	} else if (unit->m_prevGate > 0.f && gate <= 0.f 
+			&& unit->m_releaseNode >= 0 && !unit->m_released) {
+		counter = 0;
+		unit->m_stage = unit->m_releaseNode - 1;
+		unit->m_released = true;
 	}
 	unit->m_prevGate = gate;
 	
@@ -1266,7 +1272,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 			unit->mDone = true;
 			int doneAction = (int)ZIN0(kEnvGen_doneAction);
 			DoneAction(doneAction, unit);
-		} else if (unit->m_stage+1 == (int)ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
+		} else if (unit->m_stage+1 == unit->m_releaseNode && !unit->m_released) { // sustain stage
 			int loopNode = (int)ZIN0(kEnvGen_loopNode);
 			if (loopNode >= 0 && loopNode < numstages) {
 				unit->m_stage = loopNode;
@@ -1427,12 +1433,6 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 				unit->m_y1 = y1;
 			} break;
 		case shape_Sustain : {
-			if (gate <= 0.) {
-				//Print("gate off %g\n", level);
-				unit->m_released = true;
-				counter = 1;
-				break;
-			}
 		} break;
 	}
 	//Print("x %d %d %d %g\n", unit->m_stage, counter, unit->m_shape, *out);
@@ -1463,6 +1463,11 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 		unit->m_shape = shape_Linear;
 		unit->m_grow = -level / counter;
 		unit->m_endLevel = 0.;
+	} else if (unit->m_prevGate > 0.f && gate <= 0.f 
+			&& unit->m_releaseNode >= 0 && !unit->m_released) {
+		counter = 0;
+		unit->m_stage = unit->m_releaseNode - 1;
+		unit->m_released = true;
 	}
 	unit->m_prevGate = gate;
 	
@@ -1656,12 +1661,6 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 				unit->m_y1 = y1;
 			} break;
 			case shape_Sustain : {
-				if (gate <= 0.) {
-					unit->m_released = true;
-					counter = 0;
-					nsmps = 0;
-					break;
-				}
 				for (int i=0; i<nsmps; ++i) {
 					ZXP(out) = level;
 				}
@@ -1695,7 +1694,13 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 		unit->m_grow = -level / counter; \
 		unit->m_endLevel = 0.; \
 		break; \
-	}
+	} else if (prevGate > 0.f && gate <= 0.f \
+			&& unit->m_releaseNode >= 0 && !unit->m_released) { \
+		counter = 0; \
+		unit->m_stage = unit->m_releaseNode - 1; \
+		unit->m_released = true; \
+		break; \
+	} \
 	
 
 void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
