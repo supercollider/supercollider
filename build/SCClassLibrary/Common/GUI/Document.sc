@@ -7,10 +7,11 @@ Document {
 	classvar <>wikiBrowse = true;
 
 	//don't change the order of these vars:
-	var <dataptr, <>keyDownAction, <>keyUpAction, <>mouseDownAction, <>toFrontAction, <>endFrontAction;
+	var <dataptr, <>keyDownAction, <>keyUpAction, <>mouseDownAction, <>toFrontAction, <>endFrontAction, <>onClose;
 	
-	var <>path, title, visible, <background, <stringColor, <>onClose;
-	var unused;
+	var <stringColor;
+// 	var >path, visible; 
+// replaced by primitves: title, background
 	var <editable;
 	
 	*startup {
@@ -113,18 +114,26 @@ Document {
 	}
 	
 //document setup	
+	path{
+		^this.prGetFileName
+	}
+	
 	title {
-		if(title.isNil,{title = this.prgetTitle})
-		^title
+		^this.prGetTitle
 	}
 	
 	title_ {arg argName;
-		this.prSetName(argName);
+		this.prSetTitle(argName);
 	}
 	
-	background_ {arg color, rangestart= -1, rangesize = 0;
-		background = color;
-		this.setBackgroundColor(background, rangestart, rangesize);
+	background_ {arg color;
+		this.prSetBackgroundColor(color);
+	}
+	background{
+		var color;
+		color = Color.new;
+		this.prGetBackgroundColor(color);
+		^color;
 	}
 	
 	stringColor_ {arg color, rangeStart = -1, rangeSize = 0;
@@ -156,7 +165,7 @@ Document {
 	}
 	
 	selectLine {arg line;
-		this.prselectLine(line);
+		this.prSelectLine(line);
 	}
 	
 	selectRange {arg start=0, length=0;
@@ -164,10 +173,7 @@ Document {
 	}
 	editable_{arg abool=true;
 		editable = abool;
-		this.prisEditable_(abool);
-	}
-	prisEditable_{arg editable=true;
-		_TextWindow_SetEditable
+		this.prIsEditable_(abool);
 	}
 	removeUndo{
 		_TextWindow_RemoveUndo
@@ -325,17 +331,23 @@ Document {
 	}
 		
 	== { arg doc;
-		^if(path.isNil or: { doc.path.isNil }) { doc === this } {
-			path == doc.path
+		^if(this.path.isNil or: { doc.path.isNil }) { doc === this } {
+			this.path == doc.path
 		}
 	}
 	
 //private-----------------------------------
-	prSetName { arg argName;
+	prIsEditable_{arg editable=true;
+		_TextWindow_SetEditable
+	}
+	prSetTitle { arg argName;
 		_TextWindow_SetName
 		^this.primitiveFailed
 	}
-	prGetFiletName {
+	prGetTitle {
+		_TextWindow_GetName
+	}	
+	prGetFileName {
 		_TextWindow_GetFileName
 		^this.primitiveFailed
 	}
@@ -434,6 +446,7 @@ Document {
 	initLast {
 		this.prGetLastIndex;
 		if(dataptr.isNil,{^nil});
+		this.background_(Color.white);
 		this.prAdd;
 	}
 	
@@ -441,14 +454,15 @@ Document {
 		_TextWindow_GetLastIndex
 	}
 	//private open
-	initFromPath { arg apath, selectionStart, selectionLength;
+	initFromPath { arg path, selectionStart, selectionLength;
 		var stpath;
-		path = apath;
+//		path = apath;
 		stpath = this.class.standardizePath(path);
 		this.propen(stpath, selectionStart, selectionLength);
 		if(dataptr.isNil,{ 
 			^this.class.allDocuments.detect({|d| d == this})
 		});
+		this.background_(Color.white);
 		^this.prAdd;
 	}
 	propen { arg path, selectionStart=0, selectionLength=0;
@@ -457,25 +471,25 @@ Document {
 	//private newTextWindow
 	initByString{arg argTitle, str, makeListener;
 	
-		title = argTitle;
-		this.prinitByString(title, str, makeListener);
+		this.prinitByString(argTitle, str, makeListener);
+		this.background_(Color.white);		
 		if(dataptr.isNil,{^nil});
 		this.prAdd;
+		this.title = argTitle;
 	
 	}
 	prinitByString { arg title, str, makeListener;
 		_NewTextWindow
 	}
-	//
-	prgetTitle {
-		_TextWindow_DisplayName
-	}
+
 	//other private
 	//if -1 whole doc
-	setBackgroundColor { arg color;
+	prSetBackgroundColor { arg color;
 		_TextWindow_SetBackgroundColor
 	}
-	
+	prGetBackgroundColor { arg color;
+		_TextWindow_GetBackgroundColor
+	}	
 	selectedRangeLocation {
 		_TextWindow_GetSelectedRangeLocation
 	}
@@ -483,7 +497,7 @@ Document {
 		_TextWindow_GetSelectedRangeLength
 	}
 	
-	prselectLine { arg line;
+	prSelectLine { arg line;
 		_TextWindow_SelectLine;
 		^this.primitiveFailed
 	}
@@ -522,7 +536,7 @@ EnvirDocument : Document {
 		doc = super.open(path, selectionStart, selectionLength);
 		if(doc.notNil) { doc.initEnvirDoc(envir, pushNow) };
 		^doc	}	initEnvirDoc { arg inEnv, pushNow;		this.envir = inEnv;		if (pushNow) { envir.push };
-		this.title = title ?? { "-" + (envir.tryPerform(\name) ? "Untitled Environment") }	}
+		this.title = this.title ?? { "-" + (envir.tryPerform(\name) ? "Untitled Environment") }	}
 	
 	didBecomeKey {
 		envir.push;
