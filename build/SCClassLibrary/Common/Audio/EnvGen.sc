@@ -30,24 +30,25 @@ PauseSelfWhenDone : UGen {
 }
 
 Pause : UGen {	
-	*kr { arg src, id;
-		^this.multiNew('control', src, id)
+	*kr { arg gate, id;
+		^this.multiNew('control', gate, id)
 	}
 }
 
 Free : UGen {	
-	*kr { arg src, id;
-		^this.multiNew('control', src, id)
+	*kr { arg trig, id;
+		^this.multiNew('control', trig, id)
 	}
 }
 
 // the doneAction arg lets you cause the EnvGen to stop or end the 
 // synth without having to use a PauseSelfWhenDone or FreeSelfWhenDone ugen. 
-// It is more efficient.
+// It is more efficient to use a doneAction.
 // doneAction = 0   do nothing when the envelope has ended.
 // doneAction = 1   pause the synth running, it is still resident.
 // doneAction = 2   remove the synth and deallocate it.
 // doneAction = 3   remove and deallocate both this synth and the preceeding node.
+// doneAction = 4   remove and deallocate both this synth and the following node.
 
 EnvGen : UGen { // envelope generator	
 	*ar { arg envelope, gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction = 0;

@@ -1,3 +1,4 @@
+
 Env { 
 	// envelope specification for an EnvGen, Env is not a UGen itself
 	var <>levels;
@@ -20,7 +21,10 @@ Env {
 			\exp -> 2,
 			\exponential -> 2,
 			\sin -> 3,
-			\cos -> 4
+			\cos -> 4,
+			\sqr -> 6,
+			\squared -> 6,
+			\cubed -> 7
 		];	
 	}
 	// methods to make some typical shapes :

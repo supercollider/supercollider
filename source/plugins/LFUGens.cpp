@@ -1100,6 +1100,12 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 					if (prev) {
 						NodeEnd(prev);
 					}
+				} else if (doneAction == 4) {
+					NodeEnd(&unit->mParent->mNode);
+					Node* next = unit->mParent->mNode.mNext;
+					if (next) {
+						NodeEnd(next);
+					}
 				}
 			}
 		} else if (unit->m_stage == ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
@@ -1314,6 +1320,12 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 						Node* prev = unit->mParent->mNode.mPrev;
 						if (prev) {
 							NodeEnd(prev);
+						}
+					} else if (doneAction == 4) {
+						NodeEnd(&unit->mParent->mNode);
+						Node* next = unit->mParent->mNode.mNext;
+						if (next) {
+							NodeEnd(next);
 						}
 					}
 				}
@@ -1557,6 +1569,12 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 						Node* prev = unit->mParent->mNode.mPrev;
 						if (prev) {
 							NodeEnd(prev);
+						}
+					} else if (doneAction == 4) {
+						NodeEnd(&unit->mParent->mNode);
+						Node* next = unit->mParent->mNode.mNext;
+						if (next) {
+							NodeEnd(next);
 						}
 					}
 				}
@@ -2542,6 +2560,12 @@ void Linen_next_k(Linen *unit, int inNumSamples)
 					if (prev) {
 						NodeEnd(prev);
 					}
+				} else if (doneAction == 4) {
+					NodeEnd(&unit->mParent->mNode);
+					Node* next = unit->mParent->mNode.mNext;
+					if (next) {
+						NodeEnd(next);
+					}
 				}
 			}
 			} break;
@@ -2723,6 +2747,12 @@ void ADSR_next_k(ADSR *unit, int inNumSamples)
 						Node* prev = unit->mParent->mNode.mPrev;
 						if (prev) {
 							NodeEnd(prev);
+						}
+					} else if (doneAction == 4) {
+						NodeEnd(&unit->mParent->mNode);
+						Node* next = unit->mParent->mNode.mNext;
+						if (next) {
+							NodeEnd(next);
 						}
 					}
 				}
