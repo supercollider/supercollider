@@ -24,6 +24,7 @@
 #include <math.h>
 #include <new.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
