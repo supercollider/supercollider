@@ -33,6 +33,11 @@ struct Balance2 : public Unit
 	float m_pos, m_level, m_leftamp, m_rightamp;
 };
 
+struct Rotate2 : public Unit
+{
+	float m_pos, m_sint, m_cost;
+};
+
 struct XFade2 : public Unit
 {
 	float m_pos, m_level, m_leftamp, m_rightamp;
@@ -107,6 +112,8 @@ extern "C"
 	void PanAz_next(PanAz *unit, int inNumSamples);
 	void PanAz_Ctor(PanAz* unit);
 
+	void Rotate2_next_ak(Rotate2 *unit, int inNumSamples);
+	void Rotate2_Ctor(Rotate2 *unit);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -919,6 +926,63 @@ void PanAz_next(PanAz *unit, int inNumSamples)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Rotate2_next_ak(Rotate2 *unit, int inNumSamples)
+{
+	float *xout = ZOUT(0);
+	float *yout = ZOUT(1);
+	float *xin = ZIN(0);
+	float *yin = ZIN(1);
+	float pos = ZIN0(2);
+	float sint = unit->m_sint;
+	float cost = unit->m_cost;	
+
+	if (pos != unit->m_pos) {
+		int32 isinpos = 8191 & (int32)(4096.f * pos);
+		int32 icospos = 8191 & (2048 + isinpos);
+	
+		float nextsint = unit->m_sint = ft->mSine[isinpos];
+		float nextcost = unit->m_cost = ft->mSine[icospos];
+		
+		float slopeFactor = unit->mRate->mSlopeFactor;
+		float sinslope = (nextsint - sint) * slopeFactor;
+		float cosslope = (nextcost - cost) * slopeFactor;
+
+		LOOP(inNumSamples, 
+			float x = ZXP(xin);
+			float y = ZXP(yin);
+			ZXP(xout) = cost * x + sint * y;
+			ZXP(yout) = cost * y - sint * x;	
+			sint += sinslope;
+			cost += cosslope;
+		);
+		unit->m_pos = pos;
+	} else {
+		LOOP(inNumSamples, 
+			float x = ZXP(xin);
+			float y = ZXP(yin);
+			ZXP(xout) = cost * x + sint * y;
+			ZXP(yout) = cost * y - sint * x;	
+		);
+	}
+}
+
+void Rotate2_Ctor(Rotate2 *unit)
+{	
+	SETCALC(Rotate2_next_ak);
+
+	unit->m_pos = ZIN0(2);
+	int32 isinpos = 8191 & (int32)(4096.f * unit->m_pos);
+	int32 icospos = 8191 & (2048 + isinpos);
+	
+	unit->m_sint = ft->mSine[isinpos];
+	unit->m_cost = ft->mSine[icospos];
+	
+	Rotate2_next_ak(unit, 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -932,6 +996,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Pan4);
 	DefineSimpleUnit(LinPan2);
 	DefineSimpleUnit(Balance2);
+	DefineSimpleUnit(Rotate2);
 	DefineSimpleUnit(XFade2);
 	DefineSimpleUnit(LinXFade2);
 	DefineSimpleUnit(PanB);

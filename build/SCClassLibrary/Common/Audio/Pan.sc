@@ -29,6 +29,37 @@ Pan4 : MultiOutUGen {
 	}
 }
 
+Balance2 : MultiOutUGen {
+	
+	*ar { arg left, right, pos = 0.0, level = 1.0;
+		^this.multiNew('audio', left, right, pos, level )
+	}
+	init { arg ... theInputs;
+		inputs = theInputs;		
+		channels = [ 
+			OutputProxy(rate, this, 0), 
+			OutputProxy(rate, this, 1) 
+		];
+		^channels
+	}
+}
+
+Rotate2 : MultiOutUGen {
+	
+	*ar { arg x, y, pos = 0.0;
+		^this.multiNew('audio', x, y, pos )
+	}
+	init { arg ... theInputs;
+		inputs = theInputs;		
+		channels = [ 
+			OutputProxy(rate, this, 0), 
+			OutputProxy(rate, this, 1) 
+		];
+		^channels
+	}
+}
+
+
 
 PanB : MultiOutUGen {
 	var channels;
