@@ -27,6 +27,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <ctype.h>
 extern int textpos;
 
 extern "C" {
@@ -431,7 +432,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 			sprintf(str, "ptr%08X", slot->ui);
 			break;
 		default :
-			sprintf(str, "%.14g", slot->uf);
+			g_fmt(str, slot->uf);
 			break;
 	}
 }
@@ -543,7 +544,7 @@ bool postString(PyrSlot *slot, char *str)
 			sprintf(str, "%X", slot->ui);
 			break;
 		default :
-			sprintf(str, "%.14g", slot->uf);
+			g_fmt(str, slot->uf);
 			break;
 	}
 	return res;
