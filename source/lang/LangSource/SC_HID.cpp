@@ -230,6 +230,10 @@ int prHIDGetValue(VMGlobals *g, int numArgsPushed)
 	if (pCurrentHIDElement)
     {
 		SInt32 value = HIDGetElementValue (pCurrentHIDDevice, pCurrentHIDElement);
+		 // if it's not a button and it's not a hatswitch then calibrate
+		if(( pCurrentHIDElement->type != kIOHIDElementTypeInput_Button ) &&
+			( pCurrentHIDElement->usagePage == 0x01 && pCurrentHIDElement->usage != kHIDUsage_GD_Hatswitch)) 
+			value = HIDCalibrateValue ( value, pCurrentHIDElement );
 		SetInt(a, value);
 	}
 	else SetNil(a);
@@ -237,30 +241,21 @@ int prHIDGetValue(VMGlobals *g, int numArgsPushed)
 	
 }
 
-
-void PushQueueEvents ();
-void PushQueueEvents (){
+void PushQueueEvents_RawValue ();
+void PushQueueEvents_RawValue (){
 
 	IOHIDEventStruct event;
 	pRecDevice  pCurrentHIDDevice = HIDGetFirstDevice ();
 	int numdevs = gNumberOfHIDDevices;
 	unsigned char result;
 	for(int i=0; i< numdevs; i++){
-		//if (pCurrentHIDDevice)
-		//{
-		//SInt32 value = HIDGetElementValue (pCurrentHIDDevice, pCurrentHIDElement);
-		//call lang with: arg locID, cookie, value 
-		//IOHIDQueueInterface ** queue = (IOHIDQueueInterface**) pCurrentHIDDevice->queue;
-		//if(!queue) return;
-		//AbsoluteTime zeroTime = {0,0};
-		//IOReturn result = (*queue)->getNextEvent(queue, &event, zeroTime, 0);
 		result = HIDGetEvent(pCurrentHIDDevice, (void*) &event);
 		if(result && compiledOK) {
 			SInt32 value = event.value;
 			int vendorID = pCurrentHIDDevice->vendorID;
 			int productID = pCurrentHIDDevice->productID;			
 			int locID = pCurrentHIDDevice->locID;
-			int cookie = (int) event.elementCookie;
+			IOHIDElementCookie cookie = (IOHIDElementCookie) event.elementCookie;
 			VMGlobals *g = gMainVMGlobals;
 			pthread_mutex_lock (&gLangMutex); 
 			g->canCallOS = false; // cannot call the OS
@@ -269,23 +264,66 @@ void PushQueueEvents (){
 			++g->sp;SetInt(g->sp, vendorID); 
 			++g->sp;SetInt(g->sp, productID); 			
 			++g->sp;SetInt(g->sp, locID); 
-			++g->sp;SetInt(g->sp, cookie); 
+			++g->sp;SetInt(g->sp, (int) cookie); 
 			++g->sp;SetInt(g->sp, value); 
 			runInterpreter(g, s_hidAction, 6);
 			g->canCallOS = false; // cannot call the OS
 			pthread_mutex_unlock (&gLangMutex); 
 		}
-//	}
 	pCurrentHIDDevice = HIDGetNextDevice(pCurrentHIDDevice);
 	}
+}
 
+void PushQueueEvents_CalibratedValue ();
+void PushQueueEvents_CalibratedValue (){
+
+	IOHIDEventStruct event;
+	pRecDevice  pCurrentHIDDevice = HIDGetFirstDevice ();
+	
+	int numdevs = gNumberOfHIDDevices;
+	unsigned char result;
+	for(int i=0; i< numdevs; i++){
+
+		result = HIDGetEvent(pCurrentHIDDevice, (void*) &event);
+		if(result && compiledOK) {
+			SInt32 value = event.value;
+			int vendorID = pCurrentHIDDevice->vendorID;
+			int productID = pCurrentHIDDevice->productID;			
+			int locID = pCurrentHIDDevice->locID;
+			IOHIDElementCookie cookie = (IOHIDElementCookie) event.elementCookie;
+			pRecElement pCurrentHIDElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeIO);
+	// use gElementCookie to find current element
+			while (pCurrentHIDElement && ( (pCurrentHIDElement->cookie) != cookie))
+			pCurrentHIDElement = HIDGetNextDeviceElement (pCurrentHIDElement, kHIDElementTypeIO);
+		
+			if (pCurrentHIDElement)
+			{
+			value = HIDCalibrateValue(value, pCurrentHIDElement);
+			//find element to calibrate
+			VMGlobals *g = gMainVMGlobals;
+			pthread_mutex_lock (&gLangMutex); 
+			g->canCallOS = false; // cannot call the OS
+			++g->sp; SetObject(g->sp, s_hid->u.classobj); // Set the class HIDService
+			//set arguments: 
+			++g->sp;SetInt(g->sp, vendorID); 
+			++g->sp;SetInt(g->sp, productID); 			
+			++g->sp;SetInt(g->sp, locID); 
+			++g->sp;SetInt(g->sp, (int) cookie); 
+			++g->sp;SetInt(g->sp, value); 
+			runInterpreter(g, s_hidAction, 6);
+			g->canCallOS = false; // cannot call the OS
+			pthread_mutex_unlock (&gLangMutex); 
+			}
+		}
+	pCurrentHIDDevice = HIDGetNextDevice(pCurrentHIDDevice);
+	}
 }
 
 static pascal void IdleTimer (EventLoopTimerRef inTimer, void* userData);
 static pascal void IdleTimer (EventLoopTimerRef inTimer, void* userData)
 {
 	#pragma unused (inTimer, userData)
-	PushQueueEvents ();
+	PushQueueEvents_CalibratedValue ();
 }
 int prHIDReleaseDeviceList(VMGlobals *g, int numArgsPushed);
 int prHIDReleaseDeviceList(VMGlobals *g, int numArgsPushed)
@@ -448,5 +486,10 @@ void initHIDPrimitives()
 	definePrimitive(base, index++, "_HIDDequeueDevice", prHIDDequeueDevice, 2, 0);
 	definePrimitive(base, index++, "_HIDDequeueElement", prHIDDequeueElement, 3, 0);
 	definePrimitive(base, index++, "_HIDQueueElement", prHIDQueueElement, 3, 0);
+}
+#else // !SC_DARWIN
+void initHIDPrimitives()
+{
+	//other platforms?
 }
 #endif // SC_DARWIN
