@@ -1,6 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
-\f3\fnil\fcharset77 Monaco;\f4\fnil\fcharset77 Georgia-Bold;}
+\f3\fnil\fcharset77 Monaco;\f4\fnil\fcharset77 Georgia-Bold;\f5\fswiss\fcharset77 Helvetica-BoldOblique;
+}
 {\colortbl;\red255\green255\blue255;\red163\green146\blue90;}
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
@@ -207,15 +208,15 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 \
 
 \f1\fs24 [1] see for example 
-\f2\i http://toplap.org\
+\f2\i \ul http://toplap.org\ulnone \
 
 \f1\i0 [2] 
 \f2\i dynamic programming
 \f1\i0  would have been a good term, but it is in use for something else already\
 	compare: \
-		http://en.wikipedia.org/wiki/Dynamic_programming\
-		http://en.wikipedia.org/wiki/Dynamic_programming_language
-\f3\fs18 \
+		\ul http://en.wikipedia.org/wiki/Dynamic_programming\ulnone \
+		\ul http://en.wikipedia.org/wiki/Dynamic_programming_language
+\f3\fs18 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -232,7 +233,21 @@ Julian Rohrhuber,  rohrhuber@uni-hamburg.de
 \f0\b\fs24 \cf0 RECENT CHANGES:
 \f1\b0 \
 \
-2005	febuary\
+2005	march\
+	pattern proxies: all can have an environment, and take functions as arguments as well.\
+		Tdef/TaskProxy take also a pattern as argument (for time streams).\
+		Tdef .
+\f0\b fork
+\f1\b0 : fork a thread.\
+		defaults now end (no looping by default)\
+		\
+	nodeproxy / nodemap: 
+\f5\i\b mapEnvir
+\f1\i0\b0  now takes not an array of keys, but multiple arguments\
+		(.mapEnvir(\\a, \\b, \\c) instead of .mapEnvir([\\a, \\b, \\c])\
+		\
+\
+	febuary\
 	improved network classes, PublicProxySpace\
 	added envir variable to pattern proxies, the respond to set / map now.\
 	\
