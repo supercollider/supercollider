@@ -33,8 +33,8 @@ EnvironmentRedirect {
 	// behave like environment
 	
 	
-	*push { arg name;
-		^this.new(name).push;
+	*push {
+		^this.new.push;
 	}
 	
 	*pop {
