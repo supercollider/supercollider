@@ -114,18 +114,26 @@ NodeProxy : AbstractFunction {
 	setObj { arg obj, send=false, freeLast=true, add=false, onCompletion; 		var def, ok, writeOK;
 			
 			ok = this.initFor(obj);
+			
 			if(ok, {
+				if(add.not, { 
+					synthDefs = Array.new; 
+					this.initParents 
+				});
+				
 				def = obj.asProxySynthDef(this);
 				def.writeDefFile;
 			
-				if(add.not, { synthDefs = Array.new });
+				
 				synthDefs = synthDefs.add(def);
 					
 				if(send, 
 						{ this.sendToServer(freeLast, false, nil, onCompletion) },
 						{ this.updateSynthDef } //only load def. maybe we are on server already? 
 				);
+				
 			}, { "matching rate error".inform })
+			
 	}
 	
 	
@@ -211,7 +219,8 @@ NodeProxy : AbstractFunction {
 							onCompletion.value(this) 
 						})
 					}, {
-						server.sendMsgList(msg); 
+						//server.sendMsgList(msg);
+						server.listSendBundle(nil, msg); 
 						onCompletion.value(this)
 					})
 	}
@@ -260,7 +269,7 @@ NodeProxy : AbstractFunction {
 				//for speed
 				if(obj.isKindOf(NodeProxy), {
 					rate = obj.rate;
-					numChannels = obj.numChannels
+					numChannels = obj.numChannels ? 1;
 				},{
 					array = obj.value.asArray;
 					rate = array.rate;
@@ -270,8 +279,8 @@ NodeProxy : AbstractFunction {
 				if(bus.isNil, {
 					
 					bus = Bus.perform(rate, server, numChannels);
-					//nodeMap = ProxyNodeMap.new;
-					//this.initParents;
+					nodeMap = ProxyNodeMap.new;
+					
 					^true
 				}, {
 					^(bus.rate === rate) && (numChannels <= bus.numChannels)
@@ -311,9 +320,10 @@ NodeProxy : AbstractFunction {
 	}
 	
 	wakeUpParents {
-		
-		parents.do({ arg item; if(item !== this, { item.wakeUpParents }) });
-		this.wakeUp;
+		if(this.isPlaying.not, {
+			parents.do({ arg item; item.wakeUpParents });
+			this.wakeUp;
+		});
 	}
 	
 		
