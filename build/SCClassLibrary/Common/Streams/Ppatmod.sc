@@ -5,7 +5,7 @@ Plazy : Pattern {
 		^super.new.func_(func)
 	}
 	asStream { arg ... args;
-		^func.valueArray(args).asStream
+		^func.valueArrayEnvir(args).asStream
 	}
 }
 
