@@ -25,6 +25,10 @@ Nil {
 	
 	do {}
 	doReverse {}
+	collect {}
+	select {}
+	reject {}
+	detect { ^false }
 	
 	// dependancy operators are no-ops
 	dependants { 			
