@@ -230,7 +230,7 @@ NodeProxy : BusPlug {
 
 	var <group, <objects;
 	var <parents, <nodeMap;	//playing templates
-	var <loaded=false, <>awake=true, <task, <>clock; 	
+	var <loaded=false, <>awake=true, <task, <>clock, block=false; 	
 	classvar <>buildProxy;
 	
 	
@@ -291,15 +291,17 @@ NodeProxy : BusPlug {
 	}
 	
 	removeAt { arg index;
-		objects.removeAt(index).stop
+		objects.removeAt(index).stop //should free also.
 	}
+	
 	
 	at { arg index;  ^objects.at(index) }
 	
 	
 	put { arg index=0, obj, channelOffset = 0, extraArgs; 			var container, bundle, grandParents, freeAll;
 			
-			freeAll = index.notNil and: {index < 0};
+			freeAll = index.notNil and: { index < 0 };
+			if(obj.isNil and: { freeAll.not }, { ^this.removeAt(index) });
 			bundle = MixedBundle.new;
 			if(parents.isEmpty, { grandParents = parents }, {
 				grandParents = parents.copy;
@@ -398,8 +400,9 @@ NodeProxy : BusPlug {
 		var bundle;
 		bundle = MixedBundle.new;
 		if(task.notNil, { bundle.addAction(task, \stop) });
+		awake = true;
 		task = argTask;
-		if(this.isPlaying, {  bundle.addAction(task, \play, [SystemClock]) });//clock
+		if(this.isPlaying, {  this.playTaskToBundle(bundle) });//clock
 		this.sendBundle(bundle);
 	}
 	
@@ -506,18 +509,19 @@ NodeProxy : BusPlug {
 		var dt;
 		dt = beats.asStream;
 		argFunc = if(argFunc.notNil, { argFunc.hatchArray }, { #[] });
-		argFunc = argFunc.hatchArray;
 		this.task = Routine.new({ 
 					inf.do({ arg i;
-						var t;
+						var t, args;
 						if((t = dt.next).isNil, { nil.alwaysYield });
+						args = argFunc.next(i, beats);
 						this.sendAll(
-							argFunc.value(i, beats) ++ [\i, i, \beats, thisThread.beats],
+							args ++ [\i, i, \beats, thisThread.beats],
 							true
 						); 
 						t.wait; 
 						}) 
-					})
+					});
+		awake = false;
 	}
 	
 	gspawner { arg beats=1, argFunc, index=0;
@@ -535,7 +539,12 @@ NodeProxy : BusPlug {
 						); 
 						t.wait; 
 						})
-					})
+					});
+		awake = false;
+	}
+	
+	taskFunc_ { arg func;
+		this.task = Routine({ func.value(this) })
 	}
 	
 	readFromBus { arg busses;
@@ -784,7 +793,7 @@ NodeProxy : BusPlug {
 	unset { arg ... keys;
 		if(keys.isEmpty, { keys = nodeMap.settingKeys });
 		nodeMap.performList(\unset, keys);
-		if(this.isPlaying, { keys.do({ arg key; group.set(key,-1) }) });
+		if(this.isPlaying, { this.sendAll(nil, true) });
 	}
 	
 	unmap { arg ... keys;
