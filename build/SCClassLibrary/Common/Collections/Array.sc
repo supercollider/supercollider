@@ -38,155 +38,67 @@ Array[slot] : ArrayedCollection {
 		^this.primitiveFailed 
 	}
 	pyramidg { arg patternType=1;
-		var listA, listB, lastIndex;
-		listA = [];
+		var list, lastIndex;
+		list = [];
 		lastIndex = this.lastIndex;
 		if (patternType == 1) {
-			for (0,lastIndex) {|i|
-				listB = [];
-				for (0,i) {|j|
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			^listA
+			for (0,lastIndex) {|i| list = list.add(this[0..i]) };
+			^list
 		};
 		if (patternType == 2) {
-			for (0,lastIndex) {|i|
-				listB = [];
-				for (0,i) {|j|
-					j = lastIndex - i + j;
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			^listA
+			for (0,lastIndex) {|i| list = list.add(this[lastIndex-i..lastIndex]) };
+			^list
 		};
 		if (patternType == 3) {
-			for (0,lastIndex) {|i|
-				listB = [];
-				for (0,lastIndex-i) {|j|
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			^listA
+			for (lastIndex,0) {|i| list = list.add(this[0..i]) };
+			^list
 		};
 		if (patternType == 4) {
-			for (0,lastIndex) {|i|
-				listB = [];
-				for (i,lastIndex) {|j|
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			^listA
+			for (0,lastIndex) {|i| list = list.add(this[i..lastIndex]) };
+			^list
 		};
 		if (patternType == 5) {
-			for (0,lastIndex) {|i|
-				listB = [];
-				for (0,i) {|j|
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			for (lastIndex-1,0) {|i|
-				listB = [];
-				for (0,i) {|j|
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			^listA
+			for (0,lastIndex)   {|i| list = list.add(this[0..i]) };
+			for (lastIndex-1,0) {|i| list = list.add(this[0..i]) };
+			^list
 		};
 		if (patternType == 6) {
-			for (0,lastIndex) {|i|
-				listB = [];
-				for (lastIndex-i,lastIndex) {|j|
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			for (lastIndex-1,0) {|i|
-				listB = [];
-				for (lastIndex-i,lastIndex) {|j|
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			^listA
+			for (0,lastIndex)   {|i| list = list.add(this[lastIndex-i..lastIndex]) };
+			for (lastIndex-1,0) {|i| list = list.add(this[lastIndex-i..lastIndex]) };
+			^list
 		};
 		if (patternType == 7) {
-			for (0,lastIndex) {|i|
-				listB = [];
-				for (0,lastIndex-i) {|j|
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			for (lastIndex-1,0) {|i|
-				listB = [];
-				for (0,lastIndex-i) {|j|
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			^listA
+			for (lastIndex,0) {|i| list = list.add(this[0..i]) };
+			for (1,lastIndex) {|i| list = list.add(this[0..i]) };
+			^list
 		};
 		if (patternType == 8) {
-			for (0,lastIndex) {|i|
-				listB = [];
-				for (i,lastIndex) {|j|
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			for (lastIndex-1,0) {|i|
-				listB = [];
-				for (i,lastIndex) {|j|
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			^listA
+			for (0,lastIndex)   {|i| list = list.add(this[i..lastIndex]) };
+			for (lastIndex-1,0) {|i| list = list.add(this[i..lastIndex]) };
+			^list
 		};
 		if (patternType == 9) {
-			for (0,lastIndex) {|i|
-				listB = [];
-				for (0,i) {|j|
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			for (lastIndex-1,0) {|i|
-				listB = [];
-				for (0,i) {|j|
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			^listA
+			for (0,lastIndex) {|i| list = list.add(this[0..i]) };
+			for (1,lastIndex) {|i| list = list.add(this[i..lastIndex]) };
+			^list
 		};
 		if (patternType == 10) {
-			for (0,lastIndex) {|i|
-				listB = [];
-				for (0,i) {|j|
-					j = lastIndex - i + j;
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			for (lastIndex-1,0) {|i|
-				listB = [];
-				for (0,i) {|j|
-					j = lastIndex - i + j;
-					listB = listB.add(this[j]);
-				};
-				listA = listA.add(listB);
-			};
-			^listA
+			for (0,lastIndex)   {|i| list = list.add(this[lastIndex-i..lastIndex]) };
+			for (lastIndex-1,0) {|i| list = list.add(this[0..i]) };
+			^list
 		};
 	}		
+	sputter { arg probability=0.25, maxlen = 100;
+		var list, i=0, size;
+		list = Array.new;
+		size = this.size;
+		probability = 1.0 - probability;
+		while { (i < size) and: { list.size < maxlen }}{
+			list = list.add(this[i]);
+			if (probability.coin) { i = i + 1; }
+		};
+		^list
+	}
 				
 	lace { arg length;
 		_ArrayLace
