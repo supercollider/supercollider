@@ -5,6 +5,12 @@
 # changelog :
 #############
 
+# SC3-WIN32-2005-02-19 : deees' :
+# -------------------------------------------
+# added "CTRL+W" shortcut for closing the current window
+# improvement of codes' highlighting. Now, SC3-Keywords are read from "keywords.list" file.
+# fixed some bugs.
+
 # SC3-WIN32-2004-10-20-21h30 :
 # -------------------------------------------
 # CTRL+RETURN is a shortcut for eval selection
@@ -49,7 +55,6 @@
 # TODO : CTRL+F1 should open a little dlg with some text to type and opens the corresponding help file
 # TODO : SHIFT+F1 should open a help file and close the current one first (warning if old and new are the same)
 # TODO : opening a file should merely re-activate the existing window, if the file is already loaded.
-# TODO : CTRL + W should close the current window
 #################################################################################
 
 import wx
@@ -61,7 +66,7 @@ if wx.Platform == '__WXMSW__':
   gAppHelpFolder = 'help_windows'
   gHelpFolder = 'Help'
 else:
-  faces = { 'times': 'Times', 'mono' : 'Courier', 'helv' : 'Helvetica', 'other': 'new century schoolbook', 'size' : 12, 'size2': 10, }
+  faces = { 'times': 'Times', 'mono' : 'Courier', 'helv' : 'Helvetica', 'other': 'new century schoolbook', 'size' : 10, 'size2': 8, }
   gAppHelpFolder = 'Help-windows'
   gHelpFolder = 'Help'
 
@@ -72,6 +77,7 @@ ID_StopServer = wx.NewId()
 ID_OpenFile = wx.NewId()
 ID_SaveFile = wx.NewId()
 ID_SaveFileAs = wx.NewId()
+ID_CloseCodeWin = wx.NewId() # yssr
 
 ID_Exit = wx.NewId()
 ID_AccelF2 = wx.NewId()
@@ -100,12 +106,28 @@ ID_Lang_ReferencesTo = wx.NewId()
 ID_Go_To_Help_File = wx.NewId()
 
 #----------------------------------------------------------------------
+# yssr --------- set SC3_KEYWORDS as global vary.
+
+try:
+  file = open("keywords.list","r")
+  SC3_KEYWORDS = string.split( file.read() )
+  file.close()
+except IOError:
+  SC3_KEYWORDS = [ "var", "arg", "Server" ]
+  print "warning:"
+  print "SC3-keywords definition file \"keywords.list\" was not found."
+  print "so now, these following words are the KEYWORDS for the meantime."
+  print SC3_KEYWORDS
+
+SC3_KEYWORDS.sort()
+#print SC3_KEYWORDS
+
+#----------------------------------------------------------------------
 
 class PsycolliderRTFSubWin(wx.TextCtrl):
   def __init__ (self,parent):
     wx.TextCtrl.__init__(self,parent,style = wx.TE_MULTILINE | wx.TE_RICH2 | wx.TE_READONLY)
     self.Bind(wx.EVT_CHAR, self.OnChar)
-    
   def OnChar(self,event):
     self.GetParent().GetParent().OnChildCharHook(event)
 
@@ -122,12 +144,12 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
     self.CmdKeyAssign(ord('B'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMIN)
     self.CmdKeyAssign(ord('N'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMOUT)
 
-    self.SetLexer(wx.stc.STC_LEX_PYTHON)
-    self.SetKeyWords(0, " ".join(keyword.kwlist))
+    self.SetLexer(wx.stc.STC_LEX_CPP)             # yssr
+    self.SetKeyWords(0, " ".join(SC3_KEYWORDS))   # yssr
 
     self.SetProperty("fold", "1")
     self.SetProperty("tab.timmy.whinge.level", "1")
-    self.SetMargins(0,0)
+    self.SetMargins(1,0) # yssr
 
     self.SetViewWhiteSpace(False)
     #self.SetBufferedDraw(False)
@@ -168,45 +190,37 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
 
     # Global default styles for all languages
     self.StyleSetSpec(stc.STC_STYLE_DEFAULT,     "face:%(mono)s,size:%(size)d" % faces)
-    self.StyleSetSpec(stc.STC_STYLE_LINENUMBER,  "back:#C0C0C0,face:%(helv)s,size:%(size2)d" % faces)
+    #self.StyleSetSpec(stc.STC_STYLE_LINENUMBER,  "back:#C0C0C0,face:%(helv)s,size:%(size2)d" % faces)
     self.StyleSetSpec(stc.STC_STYLE_CONTROLCHAR, "face:%(other)s" % faces)
     self.StyleSetSpec(stc.STC_STYLE_BRACELIGHT,  "fore:#FFFFFF,back:#00FFFF,bold")
     self.StyleSetSpec(stc.STC_STYLE_BRACEBAD,    "fore:#000000,back:#FF3333,bold")
 
-    # Python styles
+    # C++ styles
     # Default 
-    self.StyleSetSpec(stc.STC_P_DEFAULT, "fore:#000000,face:%(mono)s,size:%(size)d" % faces)
+    self.StyleSetSpec(stc.STC_C_DEFAULT, "fore:#000000,face:%(mono)s,size:%(size)d" % faces)
     # Comments
-    self.StyleSetSpec(stc.STC_P_COMMENTLINE, "fore:#007F00,face:%(mono)s,size:%(size)d" % faces)
+    self.StyleSetSpec(stc.STC_C_COMMENTLINE, "fore:#007F00,face:%(mono)s,size:%(size)d" % faces)
     # Number
-    self.StyleSetSpec(stc.STC_P_NUMBER, "fore:#007F7F,size:%(size)d" % faces)
+    self.StyleSetSpec(stc.STC_C_NUMBER, "bold,fore:#333333,size:%(size)d" % faces)
     # String
-    self.StyleSetSpec(stc.STC_P_STRING, "fore:#7F007F,face:%(mono)s,size:%(size)d" % faces)
+    self.StyleSetSpec(stc.STC_C_STRING, "italic,fore:#CC0000,face:%(mono)s,size:%(size)d" % faces)
     # Single quoted string
-    self.StyleSetSpec(stc.STC_P_CHARACTER, "fore:#7F007F,face:%(mono)s,size:%(size)d" % faces)
+    self.StyleSetSpec(stc.STC_C_CHARACTER, "fore:#CC0000,face:%(mono)s,size:%(size)d" % faces)
     # Keyword
-    self.StyleSetSpec(stc.STC_P_WORD, "fore:#00007F,bold,size:%(size)d" % faces)
-    # Triple quotes
-    self.StyleSetSpec(stc.STC_P_TRIPLE, "fore:#7F0000,size:%(size)d" % faces)
-    # Triple double quotes
-    self.StyleSetSpec(stc.STC_P_TRIPLEDOUBLE, "fore:#7F0000,size:%(size)d" % faces)
-    # Class name definition
-    self.StyleSetSpec(stc.STC_P_CLASSNAME, "fore:#0000FF,bold,underline,size:%(size)d" % faces)
-    # Function or method name definition
-    self.StyleSetSpec(stc.STC_P_DEFNAME, "fore:#007F7F,bold,size:%(size)d" % faces)
+    self.StyleSetSpec(stc.STC_C_WORD, "fore:#00007F,bold,size:%(size)d" % faces)
     # Operators
-    self.StyleSetSpec(stc.STC_P_OPERATOR, "bold,size:%(size)d" % faces)
+    # self.StyleSetSpec(stc.STC_C_OPERATOR, "bold,size:%(size)d" % faces)
     # Identifiers
-    self.StyleSetSpec(stc.STC_P_IDENTIFIER, "fore:#000000,face:%(mono)s,size:%(size)d" % faces)
-    # Comment-blocks
-    self.StyleSetSpec(stc.STC_P_COMMENTBLOCK, "fore:#7F7F7F,size:%(size)d" % faces)
+    self.StyleSetSpec(stc.STC_C_IDENTIFIER, "fore:#000000,face:%(mono)s,size:%(size)d" % faces)
     # End of line where string is not closed
-    self.StyleSetSpec(stc.STC_P_STRINGEOL, "fore:#000000,face:%(mono)s,back:#E0C0E0,eol,size:%(size)d" % faces)
-
+    self.StyleSetSpec(stc.STC_C_STRINGEOL, "fore:#000000,face:%(mono)s,back:#E0C0E0,eol,size:%(size)d" % faces)
+    #self.StyleSetSpec(stc.STC_C_COMMENTDOC, "fore:#7F7F7F,size:%(size)d" % faces)
+    #self.StyleSetSpec(stc.STC_C_COMMENTLINEDOC,  "fore:#7F7F7F,size:%(size)d" % faces)
+    #self.StyleSetSpec(stc.STC_C_GLOBALCLASS, "fore:#7F7F7F,size:%(size)d" % faces)
     self.SetCaretForeground("BLACK")
-    
     #wx.MessageBox("OnStcChange")
     #GetParent().setModified
+
   def OnKeyPressed(self, event):
     if self.CallTipActive():
       self.CallTipCancel()
@@ -246,7 +260,6 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
         for i in range(len(kw)):
           if kw[i] in keyword.kwlist:
             kw[i] = kw[i] + "?1"
-
         self.AutoCompShow(0, " ".join(kw))
     else:
       event.Skip()
@@ -264,7 +277,7 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
       styleBefore = self.GetStyleAt(caretPos - 1)
 
     # check before
-    if charBefore and chr(charBefore) in "[]{}()" and styleBefore == stc.STC_P_OPERATOR:
+    if charBefore and chr(charBefore) in "[]{}()" and styleBefore == stc.STC_C_OPERATOR:
       braceAtCaret = caretPos - 1
 
     # check after
@@ -272,7 +285,7 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
       charAfter = self.GetCharAt(caretPos)
       styleAfter = self.GetStyleAt(caretPos)
 
-      if charAfter and chr(charAfter) in "[]{}()" and styleAfter == stc.STC_P_OPERATOR:
+      if charAfter and chr(charAfter) in "[]{}()" and styleAfter == stc.STC_C_OPERATOR:
         braceAtCaret = caretPos
 
     if braceAtCaret >= 0:
@@ -448,6 +461,10 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     menu.Append(ID_OpenFile, "&Open File...\tCtrl+O")
     menu.Append(ID_SaveFile, "&Save File...\tCtrl+S")
     menu.Append(ID_SaveFileAs, "Save File &As...\tCtrl+Shift+S")
+    
+    menu.AppendSeparator()
+    
+    menu.Append(ID_CloseCodeWin, "Close &Window...\tCtrl+W") # yssr
 
     menu.AppendSeparator()
     menu.Append(ID_Exit, "E&xit\tAlt+F4")
@@ -491,6 +508,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     self.Bind(wx.EVT_MENU, self.OnOpenFile, id=ID_OpenFile)
     self.Bind(wx.EVT_MENU, self.OnSaveFile, id=ID_SaveFile)
     self.Bind(wx.EVT_MENU, self.OnSaveFileAs, id=ID_SaveFileAs)
+    self.Bind(wx.EVT_MENU, self.OnCloseCodeWin, id=ID_CloseCodeWin) # yssr
     self.Bind(wx.EVT_MENU, self.OnAccelF2, id=ID_AccelF2)
     self.Bind(wx.EVT_MENU, self.OnAccelF3, id=ID_AccelF3)
     self.Bind(wx.EVT_MENU, self.OnAccelF4, id=ID_AccelF4)
@@ -534,6 +552,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     accelTableEntries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL,ord('N'),ID_NewCodeWin))
     accelTableEntries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL,ord('O'),ID_OpenFile))
     accelTableEntries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL,ord('S'),ID_SaveFile))
+    accelTableEntries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL,ord('W'),ID_CloseCodeWin)) # yssr
     accelTableEntries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL | wx.ACCEL_SHIFT ,ord('S'),ID_SaveFileAs))
     # EVAL & HELP
     accelTableEntries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL ,wx.WXK_RETURN,ID_EvalSelection))
@@ -623,7 +642,16 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
     if fileDlg.ShowModal( ) == wx.ID_OK:
       path = fileDlg.GetPath()
       self.OpenFile(path)
-    
+
+  def OnCloseCodeWin(self,evt): # yssr -added new def
+    activeWin = self.GetActiveChild( )
+    if activeWin == None:
+      # TODO : disable menu items dynamically instead 
+      wx.MessageBox("ERROR : No document is active")
+    elif not activeWin == self.logWin:
+      if self.IsAllowedToCloseWindow(activeWin):
+        activeWin.Destroy();
+
   def IsAllowedToCloseWindow(self,win):
     if win.isModified:
       if win.originalFilePath == "":
@@ -685,15 +713,17 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
   
   def OnSaveFile(self,evt):
     activeWin = self.GetActiveChild( );
-    self.OnSaveFileInWin(self,evt,activeWin)
+    self.OnSaveFileInWin(evt,activeWin) # yssr
 
   def OnSaveFileInWin(self,evt,activeWin):
+    if activeWin == self.logWin: return None # yssr
     if activeWin == None:
       # TODO : disable menu items dynamically instead 
       wx.MessageBox("ERROR : No document is active")
     else:
-      #fileDlg = wx.FileDialog(self,style=wx.SAVE)
+      # fileDlg = wx.FileDialog(self,style=wx.SAVE)
       path = activeWin.originalFilePath
+      # path = fileDlg.GetPath()
       if path == "":
         self.OnSaveFileAsInWin(evt,activeWin)
       else:
@@ -701,6 +731,8 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
         content = activeWin.codeSubWin.GetText()
         file.write(content)
         file.close()
+        activeWin.SetTitle(path) # yssr
+        activeWin.isModified = 0 # yssr
 
   def OnSaveFileAs(self,evt):
     activeWin = self.GetActiveChild( );
@@ -723,6 +755,9 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
         content = activeWin.codeSubWin.GetText()
         file.write(content)
         file.close()
+        activeWin.originalFilePath = path # yssr
+        activeWin.SetTitle(path) # yssr
+        activeWin.isModified = 0 # yssr
 
   def OnAccelF2(self,evt):
     #wx.MessageBox("OnAccelF2")
@@ -833,11 +868,21 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
   def GoToHelpFile(self):
     # TODO : test this : most help files don't open. remove trailing and leading spaces from sel, too, since wxTextCtrl is behaving strangely
     activeChild = self.GetActiveChild()
-    sel = string.strip(str(activeChild.GetSelectedText()))
+    if not activeChild == self.logWin: # yssr
+      sel = string.strip(str(activeChild.GetSelectedText()))
+    else : sel = ""                    # yssr
     foundFilePath = ""
     filePath = ""
+    if   sel == "-" : sel = "subtraction"                 # "subtraction.rtf"
+    elif sel == "/" : sel = "division"                    # "division.rtf"
+    elif sel == "*" : sel = "(W32) multiplication"        # from "*.rtf"
+    elif sel == "**": sel = "(W32) exponentiation"        # from "**.rtf"
+    elif sel == "<" : sel = "(W32) less than"             # from "<.rtf"
+    elif sel == "<=": sel = "(W32) less than or equal"    # from "<=.rtf"
+    elif sel == ">" : sel = "(W32) greater than"          # from ">.rtf"
+    elif sel == ">=": sel = "(W32) greater than or equal" # from ">=.rtf"
     if sel != "":
-      for helpFolder in [gAppHelpFolder,gHelpFolder]:
+      for helpFolder in [gHelpFolder]:
         for folderPath, foldersInPath, fileNamesInFolder in os.walk(helpFolder):
         # don't visit CVS directories
           if 'CVS' in foldersInPath:
@@ -859,7 +904,7 @@ class PsycolliderMainFrame(wx.MDIParentFrame):
         if foundFilePath != "":
           break
     if foundFilePath == "":     
-      foundFilePath = os.path.join(gAppHelpFolder,"Help.help.rtf")
+      foundFilePath = os.path.join(gHelpFolder,"Help.help.rtf")
     self.OpenFile(foundFilePath)
     
 
