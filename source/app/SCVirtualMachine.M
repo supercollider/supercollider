@@ -313,7 +313,7 @@ void setupUserPaneViews(id target, id view, int tagsum)
     }
     
     NSView *view = [window contentView];
-    [panel setSCObject: scobj];
+    [panel setSCObject: (PyrObject*)scobj];
     setupUserPaneViews(panel, view, 0);
 
     [window makeKeyAndOrderFront: nil];
