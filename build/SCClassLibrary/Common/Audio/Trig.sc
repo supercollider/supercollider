@@ -134,10 +134,10 @@ InRange : UGen
 InRect : UGen
 {
 	*ar { arg x = 0.0, y = 0.0, rect;
-		^this.multiNew('audio', x, y, rect)
+		^this.multiNew('audio', x, y, rect.left, rect.top, rect.right, rect.bottom)
 	}
 	*kr { arg x = 0.0, y = 0.0, rect;
-		^this.multiNew('control', x, y, rect)
+		^this.multiNew('control', x, y, rect.left, rect.top, rect.right, rect.bottom)
 	}
 }
 
