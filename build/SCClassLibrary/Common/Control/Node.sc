@@ -65,7 +65,7 @@ Node {
 	addMsg { arg bundle, cmdName, argList;
 		^bundle.add([cmdName, nodeID] ++ (argList ? #[]));
 	}
-	newMsg { arg target, addAction=\addToTail, args;//does not link nodes!
+	newMsg { arg target, addAction=\addToTail, args;
 		var bundle, addActionNum;
 		target = target.asTarget;
 		^this.perform(addAction, target, args);
@@ -127,7 +127,7 @@ Node {
 	
 	//these now return messages
 	
-	addToHead { arg arggroup,args,linked;
+	addToHead { arg arggroup,args;
 		group = arggroup; 
 		group.prAddHead(this);
 		^this.nodeToServerMsg(arggroup.nodeID, 0, args);
@@ -149,7 +149,7 @@ Node {
 	}
 	addReplace { arg removeThisOne,args;
 		group = removeThisOne.group; 
-		//this.prMoveAfter(removeThisOne);
+		this.prMoveAfter(removeThisOne);
 		removeThisOne.remove;
 		^this.nodeToServerMsg(removeThisOne.nodeID, 4, args);
 	}
@@ -401,7 +401,7 @@ Synth : Node {
 		var synth;
 		target = target.asTarget;
 		synth = this.prNew(defName, target.server);
-		bundle.add(synth.newMsg(target, addAction, args));
+		bundle.add(synth.perform(addAction, target, args));
 		synth.group.finishBundle(bundle, synth);
 		^synth
 	}
