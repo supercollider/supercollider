@@ -27,6 +27,11 @@ Node {
 		server.sendBundle(server.latency, 
 			[15, nodeID,controlName, value]++args); //"/n_set"
 	}
+	setWithArray { arg args;
+		server.sendBundle(server.latency, 
+			[15, nodeID] ++ args); //"/n_set"
+	}
+
 	setn { arg controlName,  values ... args;
 		var nargs;
 		args.do({ arg cnv;
