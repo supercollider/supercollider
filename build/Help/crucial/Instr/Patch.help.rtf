@@ -61,8 +61,8 @@ Floats and other scalar values including Envelopes, are transparently dealt with
 ( // fixing arguments\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 Instr\cf0 ([\cf4 \\jmcExamples\cf0 ,\cf4 'moto-rev'\cf0 ],\{ \cf3 arg\cf0  lfo=0.2,ffreq=1000,rq=0.1;\
-	\cf3 RLPF\cf0 .ar(\cf3 LFPulse\cf0 .ar(\cf3 SinOsc\cf0 .kr(lfo, 0, 10, 21), [0,0.1], 0.1), ffreq, rq).clip2(0.4);\
+\cf3 Instr\cf0 ([\cf4 \\jmcExamples\cf0 ,\cf4 'moto-rev'\cf0 ],\{ \cf3 arg\cf0  lfo=0.2,freq=1000,rq=0.1;\
+	\cf3 RLPF\cf0 .ar(\cf3 LFPulse\cf0 .ar(\cf3 SinOsc\cf0 .kr(lfo, 0, 10, 21), [0,0.1], 0.1), freq, rq).clip2(0.4);\
 \});\
 \
 q = \cf3 Patch\cf0 ([\cf4 \\jmcExamples\cf0 ,\cf4 'moto-rev'\cf0 ],[\
@@ -89,20 +89,20 @@ q.topGui;\
 	zout * amp\
 \},[\
 	\cf4 \\amp\cf0 \
-],\cf3 ArOutputSpec\cf4 (2)\cf0 ); // stereo out\
+],\cf3 AudioSpec\cf4 (2)\cf0 ); // stereo out\
 \
 \
-\cf3 Instr\cf0 (\cf4 \\rlpf\cf0 ,\{ \cf3 arg\cf0  audio=0,ffreq=500,rq=0.1;\
-	\cf3 RLPF\cf0 .ar(audio, ffreq, rq)\
+\cf3 Instr\cf0 (\cf4 \\rlpf\cf0 ,\{ \cf3 arg\cf0  audio=0,freq=500,rq=0.1;\
+	\cf3 RLPF\cf0 .ar(audio, freq, rq)\
 \},[\
 	\cf2 // this will not multi channel expand !\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf2 // must specify input and output specs with correct numChannels\
 \cf0 	\cf2 // or this will assume to build a mono filter\
 \cf0 	\cf4 \\stereo\cf0 ,\
-	\cf4 \\ffreq\cf0 ,\
+	\cf4 \\freq\cf0 ,\
 	\cf4 \\rq\cf0 \
-], \cf3 ArOutputSpec\cf4 (2)\cf0  );\
+], \cf3 AudioSpec\cf4 (2)\cf0  );\
 \
 \
 // put bubbles into the filter\
