@@ -2403,7 +2403,6 @@ void SCMultiSliderView::receiveDrag()
 {
     sendMessage(s_receiveDrag, 0, 0, 0);
 }
-
 //////////////////////////////////////////////////////////////////////////////////
 //SCEnvelopeView by jan trutzschler feb.02.03
 int allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr);
@@ -2525,7 +2524,7 @@ bool SCEnvelopeView::setValue(int indx,  double xIn, double yIn, bool send)
     }
         mCurrentIndex = indx;
        // if (changed) {
-        envob = &mEnvObj[mSelectedIndex];
+        envob = &mEnvObj[indx];
         //changed = valXIn != envob->x || valYIn != envob->y;
         setEnvRect(xIn, yIn, envob);
         mCurrentY = yIn;
@@ -2578,10 +2577,13 @@ void SCEnvelopeView::setSelection(SCPoint where)
     SCEnvObject * envo;
     bool sel = false;
     //single selection
-    (&mEnvObj[mSelectedIndex])->mIsSelected = false;
-    (&mEnvObj[mSelectedIndex])->mColor = mFillColor;
+    if(mSelectedIndex >= 0){
+        (&mEnvObj[mSelectedIndex])->mIsSelected = false;
+        (&mEnvObj[mSelectedIndex])->mColor = mFillColor;
+        mSelectedIndex = -1;
+    }
     //
-    mSelectedIndex = -1;
+    
     for(int i=0; i< mVisibleSize; i++) {
         envo = &mEnvObj[i];
         sel = SCPointInRect(where, envo->mRect);
@@ -2631,8 +2633,6 @@ void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers)
             sendMessage(getsym("doAction"), 0, 0, 0);
     } else if (modifiers & NSControlKeyMask) {
         mAbsoluteX = where.x; //absolute y mouse position
-        mEnvObj[mSelectedIndex].mIsSelected = false;
-        mSelectedIndex = -1;
         sendMessage(getsym("doMetaAction"), 0, 0, 0);
     } else {
         setValueFromPoint(where);
@@ -2674,14 +2674,17 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         }
         if (strcmp(name, "thumbSize")==0) {
             err = slotIntVal(slot, &mThumbSize);
+            if(mSelectedIndex >= 0){
             (&mEnvObj[mSelectedIndex])->mRect.width = mThumbSize;
             (&mEnvObj[mSelectedIndex])->mRect.height = mThumbSize;
+            }
             setVisibleSize();
             refresh();
             return errNone;
         } 
         if (strcmp(name, "thumbWidth")==0) {
             err = slotIntVal(slot, &mThumbSize);
+            if(mSelectedIndex >= 0)
             (&mEnvObj[mSelectedIndex])->mRect.width = mThumbSize;
             setVisibleSize();
             refresh();
@@ -2689,7 +2692,9 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         }
         if (strcmp(name, "thumbHeight")==0) {
             err = slotIntVal(slot, &mThumbSizeY);
+            if(mSelectedIndex >= 0)
             (&mEnvObj[mSelectedIndex])->mRect.height = mThumbSizeY;
+            
             refresh();
             return errNone;
         } 
@@ -2720,6 +2725,7 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             return errNone;
         }
         if (strcmp(name, "isStatic")==0) {
+            if(mSelectedIndex >= 0)
            (&mEnvObj[mSelectedIndex])->mIsStatic = IsTrue(slot); 
             refresh();
             return errNone;
@@ -2739,18 +2745,22 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             double y;
             slotDoubleVal(slot, &mCurrentX);
             mCurrentX  = sc_clip(mCurrentX, 0.0, 1.0);
+            if(mSelectedIndex >= 0){
             y =  (&mEnvObj[mSelectedIndex])->y;
             setEnvRect(mCurrentX, y,&mEnvObj[mSelectedIndex]);
             refresh();
+            }
             return errNone;
 	}
 	if (symbol == s_y) {
             double x;
             slotDoubleVal(slot, &mCurrentY);
             mCurrentY = sc_clip(mCurrentY, 0.0, 1.0);
+            if(mSelectedIndex >= 0){
             x =  (&mEnvObj[mSelectedIndex])->x;
             setEnvRect(x, mCurrentY, &mEnvObj[mSelectedIndex]);
             refresh();
+            }
             return errNone;
 	}
         if (symbol == s_value) {
@@ -2859,7 +2869,6 @@ void SCEnvelopeView::receiveDrag()
 {
     sendMessage(s_receiveDrag, 0, 0, 0);
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////
 
