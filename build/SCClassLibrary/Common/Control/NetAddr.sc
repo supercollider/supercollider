@@ -53,4 +53,11 @@ NetAddr {
 	hash { arg that;
 		^addr.hash bitXor: port.hash
 	} 
+
+	ip {
+	    ^(((addr >> 24) & 255).asString ++ "." ++
+	      ((addr >> 16) & 255).asString ++ "." ++
+	      ((addr >> 8) & 255).asString ++ "." ++
+	      (addr & 255).asString);
+	}
 }
