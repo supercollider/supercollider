@@ -22,6 +22,88 @@
 //432
 //433
 //434
+//6A0
+//6A1
+//6A2
+//6A3
+//6A4
+		6A2055B405376CDA0000009F = {
+			isa = PBXFrameworkReference;
+			name = IOKit.framework;
+			path = /System/Library/Frameworks/IOKit.framework;
+			refType = 0;
+		};
+		6A2055B505376CDA0000009F = {
+			fileRef = 6A2055B405376CDA0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6A2055B605376CDA0000009F = {
+			fileRef = 6A2055B405376CDA0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6A2055B705376D0E0000009F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = HID_Utilities_External.h;
+			refType = 4;
+		};
+		6A2055B805376D0E0000009F = {
+			fileRef = 6A2055B705376D0E0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6A2055B905376D0E0000009F = {
+			fileRef = 6A2055B705376D0E0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6A2055BA05376D2C0000009F = {
+			isa = PBXFileReference;
+			name = libHIDUtilities.a;
+			path = build/libHIDUtilities.a;
+			refType = 4;
+		};
+		6A2055BB05376D2C0000009F = {
+			fileRef = 6A2055BA05376D2C0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6A2055BC05376D2C0000009F = {
+			fileRef = 6A2055BA05376D2C0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6A2055BD05376D8C0000009F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = SC_HID.cpp;
+			refType = 4;
+		};
+		6A2055BE05376D8C0000009F = {
+			fileRef = 6A2055BD05376D8C0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6A2055BF05376D8C0000009F = {
+			fileRef = 6A2055BD05376D8C0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//6A0
+//6A1
+//6A2
+//6A3
+//6A4
 //900
 //901
 //902
@@ -406,6 +488,7 @@
 				F50D051502E69B6B01CA2799,
 				F50D051602E69B6B01CA2799,
 				F50D051702E69B6B01CA2799,
+				6A2055B705376D0E0000009F,
 				F50D051802E69B6B01CA2799,
 				F50D051902E69B6B01CA2799,
 				F50D051A02E69B6B01CA2799,
@@ -934,6 +1017,7 @@
 			children = (
 				F5ED526B02FC2E330195E057,
 				F5ED526C02FC2E330195E057,
+				6A2055BD05376D8C0000009F,
 				90A4CDA0044D5AF2000000AF,
 				F50D05A502E69B6B01CA2799,
 				F50D05A602E69B6B01CA2799,
@@ -1189,10 +1273,10 @@
 			);
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = "/Users/falkenst/Public/sc-tst/SuperCollider3/build";
 				OPTIMIZATION_CFLAGS = "-O0";
 				OTHER_CFLAGS = "-DSC_DARWIN";
-				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
+				OTHER_LDFLAGS = "/usr/local/lib/libsndfile.a build/libHIDUtilities.a";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = SuperCollider;
 				SECTORDER_FLAGS = "";
@@ -1418,6 +1502,7 @@
 				C21B4674046D847B00A87B78,
 				AAE9248D048143A400A8010B,
 				908DBC390507C65100000098,
+				6A2055B805376D0E0000009F,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1610,6 +1695,7 @@
 				90A4CDA1044D5AF2000000AF,
 				C21B4675046D847B00A87B78,
 				908DBC370507C63D00000098,
+				6A2055BE05376D8C0000009F,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1625,6 +1711,8 @@
 				F50D06A402E6A1C601CA2799,
 				F50D06BF02E7F11301CA2799,
 				F5C7B14F033D595901A80099,
+				6A2055B505376CDA0000009F,
+				6A2055BB05376D2C0000009F,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2260,7 +2348,9 @@
 				F50D069C02E6A1C601CA2799,
 				F50D06BE02E7F11301CA2799,
 				F50D06C002E7F29001CA2799,
+				6A2055BA05376D2C0000009F,
 				F5C7B14E033D595901A80099,
+				6A2055B405376CDA0000009F,
 			);
 			isa = PBXGroup;
 			name = Frameworks;
@@ -2905,9 +2995,9 @@
 			);
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = "/Users/falkenst/Public/sc-tst/SuperCollider3/build";
 				OTHER_CFLAGS = "-DSC_DARWIN";
-				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
+				OTHER_LDFLAGS = "/usr/local/lib/libsndfile.a build/libHIDUtilities.a";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = sclang;
 				REZ_EXECUTABLE = YES;
@@ -2988,6 +3078,7 @@
 				F53D4655030B934D01E9DD5D,
 				F5BAFAE0037F805101CA27E6,
 				920F883F0443F54D00A80088,
+				6A2055B905376D0E0000009F,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3038,6 +3129,7 @@
 				F59DF0C8030777A201CE0C16,
 				F5285E0F0316170401CA2799,
 				90A4CDA2044D5AF2000000AF,
+				6A2055BF05376D8C0000009F,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3053,6 +3145,8 @@
 				F5ED526702FBB0110195E057,
 				F5ED526802FBB0110195E057,
 				F5709AEE033E525101A80099,
+				6A2055B605376CDA0000009F,
+				6A2055BC05376D2C0000009F,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
