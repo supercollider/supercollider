@@ -683,7 +683,8 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	} else if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"])
         {
                 NSTextStorage *textStorage = [textView textStorage];
-		NSString *html = [AIHTMLDecoder encodeHTML: textStorage encodeFullString: YES];
+		//NSString *html = [AIHTMLDecoder encodeHTML: textStorage encodeFullString: YES];
+                NSString *html = [AIHTMLDecoder encodeHTML:textStorage headers:YES fontTags:YES closeFontTags:YES styleTags:YES closeStyleTagsOnFontChange:YES encodeNonASCII:YES];
                 success = html ? [html writeToFile: path atomically: YES] : NO;
         
         } else {

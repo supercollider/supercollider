@@ -59,7 +59,6 @@ int HTMLEquivalentForFontSize(int fontSize);
     BOOL		openFontTag = NO;
 
     //Setup the destination HTML string
-    // Initial <PRE> to maintain tab formatting
     NSMutableString	*string = [NSMutableString stringWithString:(includeHeaders ? @"<HTML>" : @"")];
 
     //Setup the incoming message as a regular string, and it's length
@@ -188,6 +187,7 @@ int HTMLEquivalentForFontSize(int fontSize);
         [chunk replaceOccurrencesOfString:@">" withString:@"&gt;"
             options:NSLiteralSearch range:NSMakeRange(0, [chunk length])];
         
+        
         //Append string character by character, replacing any non-ascii characters with the designated unicode
         //escape sequence.
         int i;
@@ -236,7 +236,7 @@ int HTMLEquivalentForFontSize(int fontSize);
     if(includeStyleTags && currentUnderline) [string appendString:@"</U>"];
     if(includeFontTags && closeFontTags && openFontTag) [string appendString:@"</FONT>"];	//Close any open font tag
     if(includeHeaders && pageColor) [string appendString:@"</BODY>"];				//Close the body tag
-    if(includeHeaders) [string appendString:@"</HTML>"];					//Close the HTML
+    if(includeHeaders) [string appendString:@"</HTML>"];				//Close the HTML, etc.
 
     return(string);
 }
