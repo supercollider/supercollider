@@ -49,3 +49,12 @@ Bag : Collection {
 		contents = Dictionary.new(n)
 	}
 }
+
+IdentityBag : Bag
+{
+	// PRIVATE IMPLEMENTATION
+	setDictionary { arg n;
+		contents = IdentityDictionary.new(n)
+	}
+}
+
