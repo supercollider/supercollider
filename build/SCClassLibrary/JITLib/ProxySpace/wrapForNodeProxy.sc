@@ -51,6 +51,7 @@
 
 +Function {
 	prepareForProxySynthDef { ^this }
+	argNames { ^def.argNames }
 }
 
 +SequenceableCollection {
