@@ -12,19 +12,18 @@ Pstr : Stream {
 	}
 	
 	next { arg inval;
-			//if(stream.isNil, { this.resetPat }); //in case a nil stream stopped everything
 			^stream.next(inval);
 	}
 	
 	reset {
 			//pattern.post; "  reset.".postln;
-			"_|".post;
+			//"_|".post;
 			stream.reset;
 	}
 	
 	resetPat {
 			//pattern.post; "  resetPat.".postln;
-			"_".post;
+			//"_".post;
 			stream = pattern.asStream;
 	}
 	
@@ -59,14 +58,10 @@ ResetStream : Pstr {
 		
 		if(duration.notNil, { 
 			if(nextElapsed.round(tolerance) >= duration, {
-                    	event.put(\schedMode, \trig); //flag used in StreamLock
-                    	//pattern.post; " waiting for trigger...".postln;
                     	elapsed = 0;
                     	duration = timeStream.next;
-                    	
- 				if(autoReset, { this.resetPat;  });
- 				
-			}, { elapsed = nextElapsed });
+                  		if(autoReset, { this.resetPat;  });
+ 			}, { elapsed = nextElapsed });
 		});
 		});
 		^event
