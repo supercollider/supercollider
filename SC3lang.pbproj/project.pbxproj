@@ -22,6 +22,243 @@
 //432
 //433
 //434
+//6A0
+//6A1
+//6A2
+//6A3
+//6A4
+		6AB6FF62053898BC0000009F = {
+			children = (
+				6AB6FF64053898BC0000009F,
+				6AB6FF65053898BC0000009F,
+				6AB6FF66053898BC0000009F,
+				6AB6FF67053898BC0000009F,
+				6AB6FF68053898BC0000009F,
+				6AB6FF69053898BC0000009F,
+				6AB6FF6A053898BC0000009F,
+				6AB6FF6B053898BC0000009F,
+				6AB6FF6C053898BC0000009F,
+				6AB6FF6D053898BC0000009F,
+			);
+			isa = PBXGroup;
+			name = HID_Utilities;
+			path = source/lang/LangSource/HID_Utilities;
+			refType = 2;
+		};
+		6AB6FF64053898BC0000009F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = HID_Error_Handler.c;
+			path = source/lang/LangSource/HID_Utilities/HID_Error_Handler.c;
+			refType = 2;
+		};
+		6AB6FF65053898BC0000009F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = HID_Error_Handler.h;
+			path = source/lang/LangSource/HID_Utilities/HID_Error_Handler.h;
+			refType = 2;
+		};
+		6AB6FF66053898BC0000009F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = HID_Name_Lookup.c;
+			path = source/lang/LangSource/HID_Utilities/HID_Name_Lookup.c;
+			refType = 2;
+		};
+		6AB6FF67053898BC0000009F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = HID_Name_Lookup.h;
+			path = source/lang/LangSource/HID_Utilities/HID_Name_Lookup.h;
+			refType = 2;
+		};
+		6AB6FF68053898BC0000009F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = HID_Queue_Utilities.c;
+			path = source/lang/LangSource/HID_Utilities/HID_Queue_Utilities.c;
+			refType = 2;
+		};
+		6AB6FF69053898BC0000009F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = HID_Queue_Utilities.h;
+			path = source/lang/LangSource/HID_Utilities/HID_Queue_Utilities.h;
+			refType = 2;
+		};
+		6AB6FF6A053898BC0000009F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = HID_Utilities.c;
+			path = source/lang/LangSource/HID_Utilities/HID_Utilities.c;
+			refType = 2;
+		};
+		6AB6FF6B053898BC0000009F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = HID_Utilities.h;
+			path = source/lang/LangSource/HID_Utilities/HID_Utilities.h;
+			refType = 2;
+		};
+		6AB6FF6C053898BC0000009F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = HID_Utilities_External.h;
+			path = source/lang/LangSource/HID_Utilities/HID_Utilities_External.h;
+			refType = 2;
+		};
+		6AB6FF6D053898BC0000009F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = HID_Utilities_Internal.h;
+			path = source/lang/LangSource/HID_Utilities/HID_Utilities_Internal.h;
+			refType = 2;
+		};
+		6AB6FF6F053898BC0000009F = {
+			fileRef = 6AB6FF64053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF70053898BC0000009F = {
+			fileRef = 6AB6FF65053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF71053898BC0000009F = {
+			fileRef = 6AB6FF66053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF72053898BC0000009F = {
+			fileRef = 6AB6FF67053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF73053898BC0000009F = {
+			fileRef = 6AB6FF68053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF74053898BC0000009F = {
+			fileRef = 6AB6FF69053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF75053898BC0000009F = {
+			fileRef = 6AB6FF6A053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF76053898BC0000009F = {
+			fileRef = 6AB6FF6B053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF77053898BC0000009F = {
+			fileRef = 6AB6FF6C053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF78053898BC0000009F = {
+			fileRef = 6AB6FF6D053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF79053898BC0000009F = {
+			fileRef = 6AB6FF64053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF7A053898BC0000009F = {
+			fileRef = 6AB6FF65053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF7B053898BC0000009F = {
+			fileRef = 6AB6FF66053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF7C053898BC0000009F = {
+			fileRef = 6AB6FF67053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF7D053898BC0000009F = {
+			fileRef = 6AB6FF68053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF7E053898BC0000009F = {
+			fileRef = 6AB6FF69053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF7F053898BC0000009F = {
+			fileRef = 6AB6FF6A053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF80053898BC0000009F = {
+			fileRef = 6AB6FF6B053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF81053898BC0000009F = {
+			fileRef = 6AB6FF6C053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF82053898BC0000009F = {
+			fileRef = 6AB6FF6D053898BC0000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF83053898F00000009F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = SC_HID.cpp;
+			path = source/lang/LangSource/SC_HID.cpp;
+			refType = 2;
+		};
+		6AB6FF84053898F00000009F = {
+			fileRef = 6AB6FF83053898F00000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		6AB6FF85053898F00000009F = {
+			fileRef = 6AB6FF83053898F00000009F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//6A0
+//6A1
+//6A2
+//6A3
+//6A4
 //900
 //901
 //902
@@ -932,6 +1169,8 @@
 		};
 		F50D05A302E69B6B01CA2799 = {
 			children = (
+				6AB6FF62053898BC0000009F,
+				6AB6FF83053898F00000009F,
 				F5ED526B02FC2E330195E057,
 				F5ED526C02FC2E330195E057,
 				90A4CDA0044D5AF2000000AF,
@@ -1418,6 +1657,12 @@
 				C21B4674046D847B00A87B78,
 				AAE9248D048143A400A8010B,
 				908DBC390507C65100000098,
+				6AB6FF70053898BC0000009F,
+				6AB6FF72053898BC0000009F,
+				6AB6FF74053898BC0000009F,
+				6AB6FF76053898BC0000009F,
+				6AB6FF77053898BC0000009F,
+				6AB6FF78053898BC0000009F,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1610,6 +1855,11 @@
 				90A4CDA1044D5AF2000000AF,
 				C21B4675046D847B00A87B78,
 				908DBC370507C63D00000098,
+				6AB6FF6F053898BC0000009F,
+				6AB6FF71053898BC0000009F,
+				6AB6FF73053898BC0000009F,
+				6AB6FF75053898BC0000009F,
+				6AB6FF84053898F00000009F,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2988,6 +3238,12 @@
 				F53D4655030B934D01E9DD5D,
 				F5BAFAE0037F805101CA27E6,
 				920F883F0443F54D00A80088,
+				6AB6FF7A053898BC0000009F,
+				6AB6FF7C053898BC0000009F,
+				6AB6FF7E053898BC0000009F,
+				6AB6FF80053898BC0000009F,
+				6AB6FF81053898BC0000009F,
+				6AB6FF82053898BC0000009F,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3038,6 +3294,11 @@
 				F59DF0C8030777A201CE0C16,
 				F5285E0F0316170401CA2799,
 				90A4CDA2044D5AF2000000AF,
+				6AB6FF79053898BC0000009F,
+				6AB6FF7B053898BC0000009F,
+				6AB6FF7D053898BC0000009F,
+				6AB6FF7F053898BC0000009F,
+				6AB6FF85053898F00000009F,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
