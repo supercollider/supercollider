@@ -24,7 +24,7 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		},{
 			layout = layout.asPageLayout(title,bounds);
 		});
-		layout.removeOnClose(this);
+		//layout.removeOnClose(this);
 		^layout
 	}
 	remove {
