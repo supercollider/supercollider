@@ -385,7 +385,7 @@ NodeProxy : AbstractFunction {
 		var out, n;
 		
 		this.addToParentProxy;
-		this.wakeUpParents(0.3);
+		this.wakeUp(0.3);
 		n = outbus.numChannels;
 		out = if(this.rate === 'audio', 
 				{ InFeedback.ar( outbus.index, n) },
