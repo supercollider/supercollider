@@ -296,7 +296,7 @@ void SyntaxColorize(NSTextView* textView)
 			c = input0(); 
 		} while (c != '\n' && c != '\r' && c != 0);
 		endrun = textpos;
-                range = NSMakeRange(startrun, endrun - startrun);
+                range = NSMakeRange(startrun, endrun - startrun - 1);
                 [textView setTextColor: darkRed range: range];
 		continue;
 
