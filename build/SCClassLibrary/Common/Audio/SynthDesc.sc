@@ -1,5 +1,4 @@
 
-
 IODesc {
 	var <>rate, <>numberOfChannels, <>startingChannel;
 	
@@ -19,6 +18,11 @@ SynthDesc {
 	var <>controls, <>inputs, <>outputs; 
 	
 	var <>constants, <>def;
+	var <>msgFunc, <>hasGate = false;
+	
+	send { arg server, completionMsg; 
+		def.send(server, completionMsg);
+	}
 	
 	printOn { arg stream;
 		stream << name << " :\n";
@@ -27,25 +31,29 @@ SynthDesc {
 		outputs.do {|output| stream << "   O "; output.printOn(stream) };
 	}
 	
-	*read { arg path, keepDefs=false;
-		^path.pathMatch.collect { |filename|
+	*read { arg path, keepDefs=false, dict;
+		dict = dict ?? { IdentityDictionary.new };
+		path.pathMatch.do { |filename|
 			var file, result;
 			//filename.postln;
 			file = File(filename, "r");
-			result = this.readFile(file, keepDefs);
+			dict = this.readFile(file, keepDefs, dict);
 			file.close;
-			result
-		}
+		};
+		^dict;
 	}
-	*readFile { arg stream, keepDefs=false;
-		var numDefs, array;
+	*readFile { arg stream, keepDefs=false, dict;
+		var numDefs;
+		dict = dict ?? { IdentityDictionary.new };
 		stream.getInt32; // 'SCgf'
 		stream.getInt32; // version
 		numDefs = stream.getInt16;
 		numDefs.do {
-			array = array.add( SynthDesc.new.readSynthDef(stream, keepDefs));
+			var desc;
+			desc = SynthDesc.new.readSynthDef(stream, keepDefs);
+			dict.put(desc.name.asSymbol, desc);
 		}
-		^array
+		^dict
 	}
 	readSynthDef { arg stream, keepDef=false;
 		var numControls, numConstants, numControlNames, numUGens;
@@ -93,7 +101,8 @@ SynthDesc {
 			// throw away unneeded stuff
 			def = nil;
 			constants = nil;
-		}
+		};
+		this.makeMsgFunc;
 	}
 	
 	readUGenSpec { arg stream;
@@ -158,5 +167,72 @@ SynthDesc {
 			}}
 		};
 	}
+	
+	makeMsgFunc {
+		var string;
+		string = "#{ arg id, freq;\n\t[[9, '" ++ name ++ "', id, 0, ~group";
+		controlNames.do {|name| 
+			var name2;
+			if (name == "freq") {
+				string = string ++ ", 'freq', freq";
+			}{
+				if (name == "gate") {
+					hasGate = true;
+				}{
+					string = string ++ ", 'freq', freq";
+					if (name[1] == $_) { name2 = name.drop(2) } { name2 = name }; 
+					string = [string,", '",name,"', ~",name2].join; 
+				};
+			};
+		};
+		string = string ++ " ]] }";
+		msgFunc = string.postln.interpret;
+	}
 }
 
+SynthDescLib {
+	classvar <>global;
+	var <>synthDescs, <>servers;
+
+	*new { arg servers;
+		^super.new.servers_(servers ? Server.default)
+	}
+	*initClass {
+		Class.initClassTree(Server);
+		global = this.new;
+	}
+
+	*send {
+		global.send;
+	}
+	*read { arg path = "./synthdefs/*.scsyndef";
+		global.read(path);
+	}
+
+	send { 
+		servers.do {|server|
+			synthDescs.do {|desc| desc.send(server) };
+		};
+	}
+	read	{ arg path = "./synthdefs/*.scsyndef";
+		synthDescs = SynthDesc.read(path, true, synthDescs);
+	}
+}
+
+
+/*
+Event
+which arguments to use for an note event?
+if ~args is not nil then it is the list of args to use.
+if it is nil then use the instrument's arg list.
+
+~synthLib = SynthDescLib.global;
+~osc = { 
+	var desc;
+	desc = ~synthLib[~instrument];
+	if (desc.notNil) { desc.msgFunc }
+	{ [] }
+}
+~osc = { [9, ~instrument, id, ~addAction, ~group] ++ ~args.value.makeEnvirValPairs };
+~
+*/
