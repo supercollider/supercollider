@@ -156,7 +156,7 @@ Pdefn : PatternProxy {
 }
 
 
-
+// contains time patterns (tasks)
 
 TaskProxy : PatternProxy {
 	var <isPlaying=false, <source;
@@ -211,8 +211,7 @@ TaskProxy : PatternProxy {
 	}
 	
 	fork { arg clock, quant;
-		clock = clock ? thisThread.clock;
-		^this.asStream.play(clock, quant)
+		^this.asStream.play(clock ? thisThread.clock, quant)
 	}
 	
 	stop { player.stop; isPlaying = false }
@@ -311,19 +310,27 @@ EventPatternProxy : TaskProxy {
 	outset_ { arg val; quant = quant.instill(2, val) }
 	outset { arg val; ^quant.obtain(2) }
 	
+	// branching from another thread
+	
+	fork { arg argClock, quant, protoEvent; // usual fork arg order: clock, quant, ...
+		argClock = argClock ? thisThread.clock;
+		^EventStreamPlayer(this.asStream, protoEvent).play(argClock, true, quant)
+	}
+	
 	// playing one instance //
 	
 	playOnce { arg argClock, protoEvent, quant;
-		clock = argClock ? clock;
-		^EventStreamPlayer(this.asStream, protoEvent)
-				.play(clock, true, quant ? this.quant) 
+		^this.fork(argClock ? clock, quant ? this.quant, protoEvent)
 	}
 	
 	// start playing //
 	
 	play { arg argClock, protoEvent, quant;
 		isPlaying = true;
-		if(player.isPlaying.not) { player = this.playOnce(argClock, protoEvent, quant) }
+		if(player.isPlaying.not) { 
+			player = this.fork(argClock, quant ? this.quant, protoEvent);
+			argClock !? { clock = argClock };
+		}
 	}
 	
 	
@@ -391,6 +398,7 @@ Pdef : EventPatternProxy {
 					};
 					pat = Pfindur(~sustain.value, pat);
 					outerEvent.put(\delta, nil); // block delta modification by Ppar
+				
 					pat.play(thisThread.clock, outerEvent, 0.0);
 				} {
 					~type = \note;
@@ -476,7 +484,7 @@ Pbindef : Pdef {
 				src.set(*pairs);
 				pat.wakeUp;
 			} {
-				if(src.class === Pbind and: { src.patternpairs != #[\freq, \rest]}) 
+				if(src.isKindOf(Pbind)) 
 				{
 					src.patternpairs.pairsDo { |key, pat|
 						if(pairs.includes(key).not) { 
