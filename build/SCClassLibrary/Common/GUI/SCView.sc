@@ -455,14 +455,14 @@ SC2DTabletSlider : SC2DSlider {
 
 	var <>mouseDownAction,<>mouseUpAction;
 	
-	mouseDown { arg pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
-		mouseDownAction.value(this,	pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
+	mouseDown { arg x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
+		mouseDownAction.value(this,	x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
 	}
-	mouseUp { arg pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
-		mouseUpAction.value(this,	pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
+	mouseUp { arg x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
+		mouseUpAction.value(this,x,y,	pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
 	}
-	doAction { arg pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
-		action.value(this,	pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
+	doAction { arg x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;
+		action.value(this,x,y,	pressure,tiltx,tilty,deviceID, buttonNumber,clickCount);
 	}
 	
 }
