@@ -3,9 +3,10 @@ Main : Process {
 	startUp {
 		super.startUp;
 		// set the 's' interpreter variable to the default server.
-		interpreter.s = Server.local; 
-		//interpreter.s = Server.internal; 
-
+		interpreter.s = Server.local;
+		// make server window
+		Server.internal.makeWindow;
+		Server.local.makeWindow;
 	}
 
 	run {
@@ -16,8 +17,6 @@ Main : Process {
 	}
 	
 	recvOSCmessage { arg time, replyAddr, msg;
-		//msg.postln;
-		//replyAddr.dump;
 		// this method is called when an OSC message is received.
 		OSCresponder.respond(time, replyAddr, msg);
 	}
