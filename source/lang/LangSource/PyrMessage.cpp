@@ -64,7 +64,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 	PyrMethodRaw *methraw;
 	PyrSlot *recvrSlot, *sp;
 	PyrClass *classobj;
-	long index, classVarIndex;
+	long index;
 	PyrObject *obj;
 		
 	//postfl("->sendMessage\n");
@@ -197,7 +197,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	PyrMethodRaw *methraw;
 	PyrSlot *recvrSlot, *sp;
 	PyrClass *classobj;
-	long index, classVarIndex;
+	long index;
 	PyrObject *obj;
 		
 	//postfl("->sendMessage\n");
@@ -382,7 +382,7 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 	PyrMethodRaw *methraw;
 	PyrSlot *recvrSlot, *sp;
 	PyrClass *classobj;
-	long index, classVarIndex;
+	long index;
 	PyrObject *obj;
 		
 	//postfl("->sendMessage\n");
@@ -516,7 +516,7 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	PyrMethodRaw *methraw;
 	PyrSlot *recvrSlot, *sp;
 	PyrClass *classobj;
-	long index, classVarIndex;
+	long index;
 	PyrObject *obj;
 		
 	//postfl("->sendMessage\n");
@@ -1135,6 +1135,8 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 #endif
 }
 
+void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numArgsPushed);
+
 void returnFromBlock(VMGlobals *g)
 {
 	PyrFrame *curframe;
@@ -1152,6 +1154,7 @@ void returnFromBlock(VMGlobals *g)
 	CallStackSanity(g, "returnFromBlock");
 #endif
 	curframe = g->frame;
+again:
 	returnFrame = curframe->caller.uof;
 	if (returnFrame) {
 		block = curframe->method.uoblk;
@@ -1176,7 +1179,6 @@ void returnFromBlock(VMGlobals *g)
 
 	} else {
 		////// this should never happen .
-		
 		error("return from Function at top of call stack.\n");
 		g->method = NULL;
 		g->block = NULL;
@@ -1191,7 +1193,6 @@ void returnFromBlock(VMGlobals *g)
 #endif
 }
 
-void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numArgsPushed);
 
 void returnFromMethod(VMGlobals *g)
 {
@@ -1250,34 +1251,10 @@ void returnFromMethod(VMGlobals *g)
 		if (returnFrame == NULL) goto null_return;
 		
 		// make sure homeContext is a caller and find earliest stack frame
-		/*{
+		{
 			PyrFrame *tempFrame = curframe; 
 			while (tempFrame != homeContext) {
 				tempFrame = tempFrame->caller.uof;
-				if (!tempFrame) {
-					g->sp[2].ucopy = g->sp[0].ucopy;
-					g->sp->ucopy = g->receiver.ucopy;
-					g->sp++; SetObject(g->sp, g->method);
-					g->sp++; 
-					sendMessage(g, getsym("outOfContextReturn"), 3);
-					return;
-				}
-			}
-		}*/
-		
-		{
-			again:
-			PyrFrame *tempFrame = curframe;
-			while (tempFrame != homeContext) {
-				meth = tempFrame->method.uom;
-				methraw = METHRAW(meth);
-				PyrFrame *nextFrame = tempFrame->caller.uof;
-				if (!methraw->needsHeapContext) {
-					g->gc->Free(tempFrame);
-				} else {
-					SetNil(&tempFrame->caller);
-				}
-				tempFrame = nextFrame;
 				if (!tempFrame) {
 					if (isKindOf((PyrObject*)g->thread, class_routine) && NotNil(&g->thread->parent)) {
 						// not found, so yield to parent thread and continue searching.
@@ -1291,8 +1268,7 @@ void returnFromMethod(VMGlobals *g)
 						g->sp -= numArgsPushed - 1;
 						g->sp->ucopy = value.ucopy;
 						
-						curframe = g->frame;
-						goto again;
+						curframe = tempFrame = g->frame;
 					} else {
 						g->sp[2].ucopy = g->sp[0].ucopy;
 						g->sp->ucopy = g->receiver.ucopy;
@@ -1302,6 +1278,21 @@ void returnFromMethod(VMGlobals *g)
 						return;
 					}
 				}
+			}
+		}
+		
+		{
+			PyrFrame *tempFrame = curframe;
+			while (tempFrame != homeContext) {
+				meth = tempFrame->method.uom;
+				methraw = METHRAW(meth);
+				PyrFrame *nextFrame = tempFrame->caller.uof;
+				if (!methraw->needsHeapContext) {
+					g->gc->Free(tempFrame);
+				} else {
+					SetNil(&tempFrame->caller);
+				}
+				tempFrame = nextFrame;
 			}
 		}
 		
