@@ -17,6 +17,7 @@ ServerOptions
 	var <>numRGens = 64;
 	var <>numWireBufs = 64;
 
+	var <>sampleRate = 0;
 	var <>loadDefs = true;
 
 // max logins
@@ -62,6 +63,9 @@ ServerOptions
 		});
 		if (numWireBufs != 64, {
 			o = o ++ " -w " ++ numWireBufs;
+		});
+		if (sampleRate != 0, {
+			o = o ++ " -S " ++ sampleRate;
 		});
 		if (loadDefs.not, {
 			o = o ++ " -D 0";
