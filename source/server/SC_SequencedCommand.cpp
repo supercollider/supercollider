@@ -775,8 +775,8 @@ bool AudioStatusCmd::Stage2()
 	packet.addtag('i');
 	packet.addtag('f');
 	packet.addtag('f');
-	packet.addtag('f');
-	packet.addtag('f');
+	packet.addtag('d');
+	packet.addtag('d');
 
 	packet.addi(1); // audio is always active now.
 	packet.addi(mWorld->mNumUnits);
@@ -787,8 +787,8 @@ bool AudioStatusCmd::Stage2()
 	SC_AudioDriver *driver = mWorld->hw->mAudioDriver;
 	packet.addf(driver->GetAvgCPU());
 	packet.addf(driver->GetPeakCPU());
-	packet.addf(driver->GetSampleRate());
-	packet.addf(driver->GetActualSampleRate());
+	packet.addd(driver->GetSampleRate());
+	packet.addd(driver->GetActualSampleRate());
 
 	SendReply(&mReplyAddress, packet.data(), packet.size());
 
