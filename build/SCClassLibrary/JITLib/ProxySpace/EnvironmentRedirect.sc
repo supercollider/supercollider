@@ -61,10 +61,10 @@ EnvironmentRedirect {
 		// executes function, returns the result of the function
 		var result, saveEnvir;
 		
-		this.class.saveEnvir = currentEnvironment;
+		saveEnvir = currentEnvironment;
 		currentEnvironment = this;
 		result = function.value(this);
-		this.class.currentEnvironment = saveEnvir;
+		currentEnvironment = saveEnvir;
 		^result
 	}
 	
