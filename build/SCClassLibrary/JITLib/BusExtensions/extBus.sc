@@ -27,6 +27,7 @@
 					this.gateSynthMsg(bundle, target, defName, cArgs, index+i);
 				});
 				time = (latency - time + thisThread.time).max(0);
+				bundle.asCompileString.postln;
 				server.listSendBundle(time, bundle);
 				resp.remove;
 				
@@ -36,7 +37,7 @@
 			
 	}
 	gateSynthMsg { arg bundle, target, defName, args, index;
-			Synth.newMsg(bundle, defName, [\bus, index]++args, 
+			Synth.newMsg(bundle, defName, [\i_bus, index]++args, 
 				target.asTarget.group, \addToHead)
 	} 
 	
