@@ -75,6 +75,22 @@ int prTextWindow_IsEdited(struct VMGlobals *g, int numArgsPushed)
 		else SetFalse(a);
 		return errNone;
 }
+
+int prTextWindow_SetEditable(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SetEditable(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp-1;
+		PyrSlot *b = g->sp;
+
+		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+		if (!doc) return errFailed;
+		if(IsFalse(b))[[doc textView] setEditable: NO];
+		else [[doc textView] setEditable: YES];
+		return errNone;
+}
+
 int slotGetNSRect(PyrSlot* a, NSRect *r);
 
 int prTextWindow_SetBounds(struct VMGlobals *g, int numArgsPushed);
@@ -368,8 +384,12 @@ int prTextWindow_GetByIndex(struct VMGlobals *g, int numArgsPushed)
         if (!doc) return errFailed;
 		PyrObject * obj = [doc getSCObject];
 		//if there is a scobject already don't store i
-		if(!obj)[doc setSCObject: a->uo];
-		//will be deleted in the lang
+		if(obj){
+			//post("docuemnt has scObject already\n");
+			SetNil(a);
+			return errNone;
+		}
+		[doc setSCObject: a->uo];
 		SetPtr(a->uo->slots + 0, doc);
 		return errNone;
 }
@@ -385,7 +405,12 @@ int prTextWindow_GetLastIndex(struct VMGlobals *g, int numArgsPushed)
         MyDocument* doc = [[docctl documents] lastObject];
         if (!doc) return errFailed;
 		PyrObject * obj = [doc getSCObject];
-		if(!obj)[doc setSCObject: a->uo];
+		if(obj){
+			//post("docuemnt has scObject already\n");
+			SetNil(a);
+			return errNone;
+		}
+		[doc setSCObject: a->uo];
 		SetPtr(a->uo->slots + 0, doc);
 		return errNone;
 }
@@ -662,6 +687,12 @@ int prNewTextWindow(struct VMGlobals *g, int numArgsPushed)
         if (IsTrue(c)) {
             gPostView = [doc textView];
         }
+		PyrObject * obj = [doc getSCObject];
+		if(obj){
+			//post("docuemnt has scObject already\n");
+			SetNil(d);
+			return errNone;
+		}
 		[doc setSCObject: d->uo];
         SetPtr(d->uo->slots + 0, doc);
 		docCreatedFromLang = false;
@@ -737,6 +768,13 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
         [textView setSelectedRange: range];
         [textView scrollRangeToVisible: range];
         */
+		PyrObject * obj = [doc getSCObject];
+		//if there is a scobject already don't store i
+		if(obj){
+			//post("docuemnt has scObject already\n");
+			SetNil(d);
+			return errNone;
+		}
 		[doc setSCObject: d->uo];
 		SetPtr(d->uo->slots + 0, doc);
 		docCreatedFromLang = false;
@@ -2469,7 +2507,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_SetBounds", prTextWindow_SetBounds, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_GetBounds", prTextWindow_GetBounds, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_SetName", prTextWindow_SetName, 2, 0);	
-
+	definePrimitive(base, index++, "_TextWindow_SetEditable", prTextWindow_SetEditable, 2, 0);	
 
 
 
