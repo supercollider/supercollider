@@ -137,6 +137,25 @@ Object {
 	removedFromScheduler { ^this }
 	isPlaying { ^false }
 	embedInStream { ^this.yield; }
+	cyc { arg n = inf;
+		^r {|inval|
+			n.do {
+				inval = this.embedInStream(inval);
+				this.reset;
+			}
+		}
+	}
+	fin { arg n = 1;
+		^r {|inval|
+			var item;
+			n.do {
+				item = this.next(inval);
+				if (item.isNil) { nil.alwaysYield };
+				inval = item.yield
+			}
+		}
+	}
+	
 	asStream { ^this }
 	
 	eventAt { ^nil }
