@@ -342,7 +342,7 @@ const int circDiam = 20;
 	
 	} else if ([[pboard types] containsObject: NSStringPboardType]) {
 		NSString *nsstring = [pboard stringForType: NSStringPboardType];
-		if (!nsstring) NSDragOperationNone;
+		if (!nsstring) return NSDragOperationNone;
 		
 		pthread_mutex_lock (&gLangMutex);
 			VMGlobals *g = gMainVMGlobals;
