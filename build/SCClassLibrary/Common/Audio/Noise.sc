@@ -60,6 +60,9 @@ IRand : UGen {
 
 TRand : UGen {
 	// uniform distribution
+	*ar { arg lo = 0.0, hi = 1.0, trig = 0.0;
+		^this.multiNew('control', lo, hi, trig)
+	}
 	*kr { arg lo = 0.0, hi = 1.0, trig = 0.0;
 		^this.multiNew('control', lo, hi, trig)
 	}
