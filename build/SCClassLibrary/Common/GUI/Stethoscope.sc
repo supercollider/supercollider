@@ -65,7 +65,7 @@ Stethoscope {
 				if(char === $_) {  zy = zy - 0.25; this.yZoom = 2 ** zy; ^this  };
 				if(char === $A) {  this.adjustBufferSize; ^this  };
 				if(char === $m) { this.toggleSize; ^this  };
-				if(char === $.) { synth.free; if(synth.isPlaying) { synth.free }; };
+				if(char === $.) { if(synth.isPlaying) { synth.free } };
 
 	}
 	
