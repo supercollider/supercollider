@@ -2,14 +2,12 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
-}
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 "Spawning" and "TSpawning"\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \cf0 \
+\f1\b0\fs24 \
 In SC2, Spawn and TSpawn were two of the most powerful and commonly used UGens. In SC3 the idea of a top level Synth in which everything is spawned is no longer valid. Synthesis is always running (at least as long as a server is) and new Synths can be created on the fly. This arrangement results in even greater flexibility than in SC2, but requires a slightly different approach.\
 \
 In SC3 one can create Synths at any time simply by executing blocks of code.\
@@ -58,9 +56,8 @@ In SC3 time-based sequences of events can be implemented using Routines. A
 \f0\b Routine
 \f1\b0  which yields a number can be scheduled using a clock:\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 	(\
+\f2\fs18 	(\
 	\cf3 var\cf0  w, r;\
 	w = \cf3 SCWindow\cf0 (\cf4 "trem"\cf0 , \cf3 Rect\cf0 (512, 256, 360, 130));\
 	w.front;\
@@ -156,7 +153,7 @@ A simple SC2 Spawn example is shown below, followed by its translation into SC3 
 			\}).play(s);\
 			1.yield;\
 		\}); \
-	\}).play(t); \cf5 // Note the alternative syntax: Routine.play(aClock)\cf0 \
+	\}).play(t); \cf2 // Note the alternative syntax: Routine.play(aClock)\cf0 \
 	)\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -165,36 +162,38 @@ A simple SC2 Spawn example is shown below, followed by its translation into SC3 
 \f0\b Routine
 \f1\b0  or 
 \f0\b Clock
-\f1\b0 . For instance:\
+\f1\b0 . (See the 
+\f0\b play
+\f1\b0  helpfile for a more detailed discussion.) For instance:\
 \
-\cf6 	
+	
 \f2\fs18 (\
-	\cf5 // this, that and the other\cf6 \
-	r = \cf7 Routine\cf6 .new(\{\cf7 var\cf6  i = 0; \{ (\cf8 "this: "\cf6  ++ i).postln; i = i + 1; 1.yield; \}.loop \});\
-	q = \cf7 Routine\cf6 .new(\{\cf7 var\cf6  i = 0; \{ (\cf8 "that: "\cf6  ++ i).postln; i = i + 1; 1.yield; \}.loop \}); \cf5 \
+	\cf2 // this, that and the other\cf0 \
+	r = \cf3 Routine\cf0 .new(\{\cf3 var\cf0  i = 0; \{ (\cf4 "this: "\cf0  ++ i).postln; i = i + 1; 1.yield; \}.loop \});\
+	q = \cf3 Routine\cf0 .new(\{\cf3 var\cf0  i = 0; \{ (\cf4 "that: "\cf0  ++ i).postln; i = i + 1; 1.yield; \}.loop \}); \cf2 \
 	\cf0 t = \cf3 Routine\cf0 .new(\{\cf3 var\cf0  i = 0; \{ (\cf4 "the other: "\cf0  ++ i).postln; i = i + 1; 1.yield; \}.loop \});\
 	)\
-	\cf6 \
-	\cf7 SystemClock\cf6 .play(r); 	\cf5 // start this\cf6 \
-	\cf7 SystemClock\cf6 .play(q); 	\cf5 // start that\
-	\cf3 SystemClock\cf0 .play(t); 	\cf2 // start the other\cf6 \
 	\
-	r.stop; 				\cf5 // stop this but not that or the other\cf6 \
-	q.reset;				\cf5 // reset that while playing\
-	\cf6 \
-	c = \cf7 TempoClock\cf6 .new;	\cf5 // make a TempoClock\cf6 \
-	r.reset;				\cf5 // have to reset this because it's stopped\cf6 \
-	c.play(r);			\cf5 // play this in the new clock; starts from the beginning\cf6 \
-	c.tempo = 16;			\cf5 // increase the tempo of this\
-	\cf6 \
-	\cf7 SystemClock\cf6 .clear; 	\cf5 // clear EVERYTHING scheduled in the SystemClock; so that and the other \
+	\cf3 SystemClock\cf0 .play(r); 	\cf2 // start this\cf0 \
+	\cf3 SystemClock\cf0 .play(q); 	\cf2 // start that\
+	\cf3 SystemClock\cf0 .play(t); 	\cf2 // start the other\cf0 \
+	\
+	r.stop; 				\cf2 // stop this but not that or the other\cf0 \
+	q.reset;				\cf2 // reset that while playing\
+	\cf0 \
+	c = \cf3 TempoClock\cf0 .new;	\cf2 // make a TempoClock\cf0 \
+	r.reset;				\cf2 // have to reset this because it's stopped\cf0 \
+	c.play(r);			\cf2 // play this in the new clock; starts from the beginning\cf0 \
+	c.tempo = 16;			\cf2 // increase the tempo of this\
+	\cf0 \
+	\cf3 SystemClock\cf0 .clear; 	\cf2 // clear EVERYTHING scheduled in the SystemClock; so that and the other \
 						// but not this\
-						\cf6 \
-	c.clear;				\cf5 // clear everything scheduled in c, i.e. this\cf6 \
-	c.play(r);			\cf5 // since it wasn't stopped, we don't have to reset this\
+						\cf0 \
+	c.clear;				\cf2 // clear everything scheduled in c, i.e. this\cf0 \
+	c.play(r);			\cf2 // since it wasn't stopped, we don't have to reset this\
 						// and it picks up where it left off\
-						\cf6 \
-	c.stop				\cf5 // stop c, destroy its scheduler, and release its OS thread
+						\cf0 \
+	c.stop				\cf2 // stop c, destroy its scheduler, and release its OS thread
 \f1\fs24 \cf0 \
 \
 For convenience pauseable scheduling can be implemented with a 
@@ -205,30 +204,28 @@ For convenience pauseable scheduling can be implemented with a
 \f0\b TempoClock
 \f1\b0  for you. Since you don't have to explicitly create a Clock or Routine, use of Task can result in code that is a little more compact.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 	
-\f2\fs18 \cf6 (\
-	t = \cf7 Task.\cf6 new(\{ \
-			\cf7 inf\cf6 .do(\{ \cf7 arg\cf6  i;\
+	
+\f2\fs18 (\
+	t = \cf3 Task.\cf0 new(\{ \
+			\cf3 inf\cf0 .do(\{ \cf3 arg\cf0  i;\
 				i.postln; \
 				0.5.wait \
 			\}); \
 		\});\
 	)\
 	\
-	t.start; 				\cf5 // Start it\cf6 \
-	t.stop;				\cf5 // Stop it\cf6 \
-	t.start;				\cf5 // Start again from the beginning\cf6 \
-	t.reset;				\cf5 // Reset on the fly\cf6 \
-	t.stop;				\cf5 // Stop again\cf6 \
-	t.resume;				\cf5 // Restart from where you left off\
-	\cf6 t.clock.tempo = 0.25;\cf5 	// Get the Task's clock and change the tempo. This works since the\
-						// default is a TempoClock.\cf6 \
-	t.pause;				\cf5 // Same as t.stop\cf6 \
+	t.start; 				\cf2 // Start it\cf0 \
+	t.stop;				\cf2 // Stop it\cf0 \
+	t.start;				\cf2 // Start again from the beginning\cf0 \
+	t.reset;				\cf2 // Reset on the fly\cf0 \
+	t.stop;				\cf2 // Stop again\cf0 \
+	t.resume;				\cf2 // Restart from where you left off\
+	\cf0 t.clock.tempo = 0.25;\cf2 	// Get the Task's clock and change the tempo. This works since the\
+						// default is a TempoClock.\cf0 \
+	t.pause;				\cf2 // Same as t.stop\cf0 \
 
-\f1\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\f1\fs24 \
+\
 TSpawn's functionality can be replicated with 
 \f0\b SendTrig
 \f1\b0  and 
@@ -253,7 +250,7 @@ TSpawn's functionality can be replicated with
 	\
 	(\
 	\cf2 // this recieves the trigger on the client side and 'Spawns' a new Synth on the server\cf0 \
-	\cf3 OSCresponder\cf0 (s.addr,\cf9 '/tr'\cf0 ,\{ \
+	\cf3 OSCresponder\cf0 (s.addr,\cf5 '/tr'\cf0 ,\{ \
 		\cf3 SynthDef\cf0 (\cf4 "help-EnvGen"\cf0 ,\{ \cf3 arg\cf0  out=0;\
 			\cf3 Out\cf0 .ar(out,\
 				\cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc,1.0,doneAction: 2) \
@@ -262,6 +259,6 @@ TSpawn's functionality can be replicated with
 		\}).play(s);\
 	\}).add;\
 	\
-	\cf5 // Start 'spawning'\cf0 \
+	\cf2 // Start 'spawning'\cf0 \
 	\cf3 Synth\cf0 (\cf4 "help-SendTrig"\cf0 );\
 	)}

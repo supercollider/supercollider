@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;
-\red0\green115\blue0;\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Backwards Compatibility
@@ -10,40 +10,50 @@
 \
 There are a number of classes and methods that have been added to allow for backwards compatibility with SC2 code. The most notable of these are Function.play and Synth.play:\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 \cf2 \{ \cf3 SinOsc\cf2 .ar(440, 0, 0.5) \}.play; \cf4 // creates an arbitrarily named SynthDef and a Synth to play it\cf2 \
-\cf3 Synth\cf2 .play(\{ \cf3 SinOsc\cf2 .ar(440, 0, 0.5) \}); \cf4 // in SC3 just a wrapper for Function.play with fewer args\cf0 \
+\f2\fs20 \cf0 \{ \cf2 SinOsc\cf0 .ar(440, 0, 0.5) \}.play; \cf3 // creates an arbitrarily named SynthDef and a Synth to play it\cf0 \
+\cf2 Synth\cf0 .play(\{ \cf2 SinOsc\cf0 .ar(440, 0, 0.5) \}); \cf3 // in SC3 just a wrapper for Function.play with fewer args\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \
+\f1\fs24 \cf0 \
 Both of these will create synth nodes on the default server. Note that neither requires the use of an Out.ar ugen; they simply output to the first audio bus. One can however add an Out to Function.play in order to specify.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 \cf2 \{ \cf3 Out\cf2 .ar(1, \cf3 SinOsc\cf2 .ar(440, 0, 0.5)) \}.play;
-\f1\fs24 \cf0 \
+\f2\fs20 \cf0 \{ \cf2 Out\cf0 .ar(1, \cf2 SinOsc\cf0 .ar(440, 0, 0.5)) \}.play;
+\f1\fs24 \
 \
 In general, one should be aware of this distinction when using this code. When copying such code for reuse with other SC3 classes (for example in a reusable SynthDef), it will usually be necessary to add an Out.ar. Although useful for quick testing these methods are generally inferior to SynthDef.play, as the latter is more direct, requires no modifications for general reuse, and has slightly less overhead. (Although this is insignificant in most cases, it could be relevant when large numbers of defs or nodes are being created.) \
 \
 Like SynthDef.play, Function.play does return a Synth object which can then be messaged, etc. However, since Function.play creates an arbitrarily named SynthDef, one cannot reuse the resulting def, at least not without reading its name from the post window, or getting it from the Synth object.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 \cf4 //The following examples are functionally equivalent\cf2 \
-x = \{ \cf3 arg\cf2  freq = 440; \cf3 Out\cf2 .ar(1, \cf3 SinOsc\cf2 .ar(freq, 0, 0.5)) \}.play; \
-x.set(\cf5 \\freq\cf2 , 880); 		\cf4 // you can set arguments\cf2 \
-y = \cf3 Synth\cf2 .new(x.defName); 	\cf4 // get the arbitrary defname from x\cf2 \
+\f2\fs20 \cf3 //The following examples are functionally equivalent\cf0 \
+x = \{ \cf2 arg\cf0  freq = 440; \cf2 Out\cf0 .ar(1, \cf2 SinOsc\cf0 .ar(freq, 0, 0.5)) \}.play; \
+x.set(\cf4 \\freq\cf0 , 880); 		\cf3 // you can set arguments\cf0 \
+y = \cf2 Synth\cf0 .new(x.defName); 	\cf3 // get the arbitrary defname from x\cf0 \
 x.free;\
 y.free;\
 \
-x = \cf3 SynthDef\cf2 (\cf6 "backcompat-sine"\cf2 , \{ \cf3 arg\cf2  freq = 440; \cf3 Out\cf2 .ar(1, \cf3 SinOsc\cf2 .ar(freq, 0, 0.5)) \}).play; \
-x.set(\cf5 \\freq\cf2 , 880);\
-y = \cf3 Synth\cf2 .new(\cf6 "backcompat-sine"\cf2 );\
+x = \cf2 SynthDef\cf0 (\cf5 "backcompat-sine"\cf0 , \{ \cf2 arg\cf0  freq = 440; \cf2 Out\cf0 .ar(1, \cf2 SinOsc\cf0 .ar(freq, 0, 0.5)) \}).play; \
+x.set(\cf4 \\freq\cf0 , 880);\
+y = \cf2 Synth\cf0 .new(\cf5 "backcompat-sine"\cf0 );\
 x.free;\
 y.free;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 In addition a number of other classes  and methods have been added to improve compatibility. These are listed below. In general there are equivalent or better ways of doing the same things in SC3.\
+\f1\fs24 \cf0 See also the 
+\f0\b play
+\f1\b0  helpfile for a more in depth discussion of this topic.\
 \
+In addition a number of other classes  and methods have been added to improve compatibility. These are listed below. In general there are equivalent or better ways of doing the same things in SC3.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b GetFileDialog
+\f0\b \cf0 GetFileDialog
 \f1\b0   			use CocoaDialog\
 
 \f0\b GetStringDialog
