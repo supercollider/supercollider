@@ -1,7 +1,7 @@
 
 +Server {
 	asTarget {
-		^RootNode(this)
+		^Group.basicNew(this, 1)
 	}
 }
 
@@ -13,6 +13,6 @@
 
 +Nil {
 	asTarget {
-		^RootNode.new;
+		^Group.basicNew(Server.default, 1)
 	}
 }
