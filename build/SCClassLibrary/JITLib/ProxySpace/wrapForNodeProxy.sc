@@ -212,27 +212,32 @@
 
 +AbstractPlayer {
 	
-	buildForProxy {}
-	makeProxyControl { arg channelOffset=0;
-		var patch;
-		//trying to wrap it in a fader
-		patch = Patch({ arg input;
-						var synthGate, synthFadeTime;
-						synthGate = Control.names('#gate').kr(1.0);
-						synthFadeTime = Control.names('#fadeTime').kr(0.02);
-						input * 											EnvGen.kr(
-							Env.new(#[0,1,0],[1,1.25],'sin',1),
-							synthGate,1,0,synthFadeTime,2
-						)	
-				}, [this]);
-		^this.proxyControlClass.new(patch, channelOffset); 
-	}
 	proxyControlClass {
 		^CXPlayerControl
 	}
-
+	
 }
 
++Patch {
+	
+	makeProxyControl { arg channelOffset=0, proxy;
+			var res;
+			res = Patch({ arg input;
+						var synthGate, synthFadeTime;
+						synthGate = Control.names('#gate').kr(1.0);
+						synthFadeTime = Control.names('#fadeTime').kr(0.02);
+						Array.fill(proxy.numChannels ? 1, { input }) //channel expansion
+						 * 												EnvGen.kr(
+							Env.new(#[0,1,0],[1,1.25],'sin',1),
+							synthGate,1,0,synthFadeTime,2
+						)	
+			}, [this]);
+		^this.proxyControlClass.new(res, channelOffset); 
+	}
+	
+	
+	
+}
 
 
 

@@ -2,6 +2,7 @@
 
 //lightweight objects that insulate different ways of playing/stopping.
 //the bundle that is passed in is a MixedBundle
+//these could be players in future, a superclass of AbstractPlayer would be required
 
 AbstractPlayControl {
 	var <source, <>channelOffset;
@@ -180,40 +181,33 @@ SoundDefControl : SynthDefControl {
 	sendDefToBundle {}
 }
 
-//to do:
-//kr, ar, binop
-NodeProxyControl : SynthControl {
-	hasGate { ^true }
-	playToBundle { arg bundle, extraArgs, proxy;
-		^super.playToBundle(
-			bundle, 
-			extraArgs ++ [\i_busIn, source.index, \i_busOut, proxy.index], 
-			proxy
-		)
-	}
-	name {//for now only 2 channels
-		^if(source.numChannels == 1, {'system-switch-1'}, {'system-switch-2'});//change names!
-	}
-}
+
 
 CXPlayerControl : AbstractPlayControl {
 	//here the lazy bus init happens and allocation of ressources
 	build { arg proxy;
-		//source.asSynthDef;//build synthDef
-		source.prepareForPlay(bus: proxy.bus.copy); //don't know why it has to be here, but well.
+		var player;
+		source.prepareForPlay(proxy.group, false, proxy.bus.copy);
 		^proxy.initBus(source.rate, source.numChannels);
 	}
-	
+	//this allocates the bus and plays it
 	playToBundle { arg bundle, extraArgs, proxy;
 		var bus, group;
-		bus = proxy.bus.copy; //needs a copy, otherwise player frees my bus when stopped
+		//revisist this.
+		bus = if(channelOffset == 0, {
+				proxy.bus.copy; //needs a copy, otherwise player frees my bus when stopped
+		}, {
+				Bus.new(proxy.rate, proxy.index+channelOffset, source.numChannels, proxy.server)
+		});
 		group = proxy.group;
-		source.prepareForPlay(group, true, bus);				source.spawnOnToBundle(group, bus, bundle);
+		source.makePatchOut(group, false, bus, bundle);
+		source.spawnToBundle(bundle);
 		^source.synth;
 	}
 	
 	stopToBundle { arg bundle;
-		bundle.addFunction({ source.stopSynthToBundle(bundle) });
+		source.stopSynthToBundle(bundle);
+		//bundle.addFunction({  });
 	}
 	
 	stop {
@@ -228,4 +222,21 @@ CXPlayerControl : AbstractPlayControl {
 	}
 
 }
+
+
+//kr, ar, binop?
+/*
+NodeProxyControl : SynthControl {
+	hasGate { ^true }
+	playToBundle { arg bundle, extraArgs, proxy;
+		^super.playToBundle(
+			bundle, 
+			extraArgs ++ [\in, source.index, \out, proxy.index], 
+			proxy
+		)
+	}
+	name {//for now only 2 channels
+		^if(source.numChannels == 1, {'system-switch-1'}, {'system-switch-2'});	}
+}
+*/
 

@@ -31,6 +31,13 @@ BusPlug : AbstractFunction {
 				env = ProxySynthDef.makeFadeEnv;
 				Out.ar(out, InFeedback.ar(in, i) * env) 
 			}, [\ir, \ir]);
+		});
+		2.do({ arg i; i = i + 1;
+			SynthDef.writeOnce("system_link_control_" ++ i, { arg out=0, in=16;
+				var env;
+				env = ProxySynthDef.makeFadeEnv;
+				Out.kr(out, In.kr(in, i) * env) 
+			}, [\ir, \ir]);
 		})
 	}
 	
@@ -319,7 +326,7 @@ NodeProxy : BusPlug {
 	
 	wrapObject { arg obj, channelOffset=0, index;
 		var container, ok;
-		container = obj.makeProxyControl(channelOffset);
+		container = obj.makeProxyControl(channelOffset,this);
 		this.class.buildProxy = this;
 		container.build(this, index); //bus allocation happens here
 		this.class.buildProxy = nil;
@@ -530,14 +537,13 @@ NodeProxy : BusPlug {
 	
 	read { arg proxies;
 		var n, x;
-		if(this.rate !== 'audio', { "read works only for audio rate".inform; ^this });
 		proxies = proxies.asCollection;
 		n = this.numChannels;
 		proxies.do({ arg item, i;
 			if(item.isPlaying.not, { item.wakeUp });
 			x = min(item.numChannels ? n, n);
 			this.put(i,
-				SynthControl.new("system_link_audio_" ++ n).hasGate_(true), 
+				SynthControl.new("system_link_" ++ this.rate ++ "_" ++ n).hasGate_(true), 
 				0, 
 				[\in, item.index, \out, this.index]
 			)
