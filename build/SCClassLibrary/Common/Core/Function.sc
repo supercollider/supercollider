@@ -48,11 +48,11 @@ Function : AbstractFunction {
 	loop {
 		// loop is supported magically by the compiler,
 		// thus it can be implemented in terms of itself
-		loop({ this.value });
+		loop { this.value };
 	}
 
 	block {
-		this.value({ arg val; ^val });
+		this.value {|val| ^val };
 	}
 	
 	asRoutine {
@@ -61,8 +61,13 @@ Function : AbstractFunction {
 			
 	dup { arg n = 2;
 		var array;
-		n.do({ arg i; array = array.add(this.value(i)) });
+		n.do {|i| array = array.add(this.value(i)) };
 		^array
+	}
+	sum { arg n = 2;
+		var sum = 0;
+		n.do {|i| sum = sum + this.value(i) };
+		^sum
 	}
 	
 	defer { arg delta = 0;
@@ -87,10 +92,6 @@ Function : AbstractFunction {
 		time = seconds; // prevent optimization
 		^this.value(beats, seconds, clock)
 	}
-//	play { arg clock;
-//		clock = clock ? SystemClock;
-//		clock.play(this);
-//	}
 	plot {
 		^thisMethod.notYetImplemented
 	}
@@ -98,7 +99,7 @@ Function : AbstractFunction {
 	
 	<> { arg that;
 		// function composition
-		^{|x| this.value(that.value(x)) }
+		^{|...args| this.value(that.valueArray(args)) }
 	}
 }
 
