@@ -120,7 +120,7 @@ CCResponder : MIDIResponder {
 		})
 	}
 	*remove { arg resp;
-		ccr.remove(resp);
+		ccr.put(resp.num,nil);
 	}
 	*init {
 		if(MIDIClient.initialized.not,{ MIDIIn.connect });
