@@ -19,12 +19,12 @@ MultiTap  {
 		var sampleRate;
 		timesArray = timesArray.dereference;
 		levelsArray = levelsArray.dereference;
-		RecordBuf.ar(in,bufnum,0.0);
+		RecordBuf.ar(in,bufnum,0.0, run: -1.0);
 		sampleRate = BufSampleRate.kr(bufnum);
 
 		^Mix.arFill(timesArray.size,{ arg i;
 			PlayBuf.ar(in.numChannels,
-					bufnum,1.0,1.0,
+					bufnum, -1.0,1.0,
 					timesArray.at(i) * sampleRate,
 					loop: 1)
 				.madd(levelsArray.at(i) ? 1.0)
