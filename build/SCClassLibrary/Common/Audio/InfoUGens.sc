@@ -17,5 +17,6 @@ BufSampleRate : UGen {
 
 BufRateScale : BufSampleRate {}
 BufFrames : BufSampleRate {}
-BufSamples : UGen {}
-BufChannels : UGen {}
+BufSamples : BufSampleRate {}
+BufDur : BufSampleRate {}
+BufChannels : BufSampleRate {}
