@@ -2,7 +2,7 @@
 NodeProxy : AbstractFunction {
 
 	var <server, <group, <outbus;
-	var <objects, <loaded=false, <parents;
+	var <objects, <loaded=true, <parents; //loading will be revisited
 	
 	var <nodeMap, <>clock, <>freeSelf=true;
 	
@@ -37,6 +37,7 @@ NodeProxy : AbstractFunction {
 		if(outbus.notNil, { outbus.free });
 		outbus = nil;
 		group = nil;
+		if(server.nodeWatcher.isWatching.not, { server.nodeWatcher.start }); //to be sure.
 	}
 
 	initParents {
@@ -72,7 +73,9 @@ NodeProxy : AbstractFunction {
 	
 	nodeMap_ { arg map;
 		nodeMap = map;
-		map.sendToNode(group);
+		if(this.isPlaying, {
+			map.sendToNode(group);
+		});
 	}
 	
 		
@@ -98,11 +101,11 @@ NodeProxy : AbstractFunction {
 	
 	send { arg extraArgs;
 			//latency is 0, def is on server
-			this.sendToServer(nil, false, 0.0, extraArgs);
+			this.sendToServer(OSCBundle(server), false, 0.0, extraArgs);
 	}
 	sendAll { arg extraArgs;
 			//latency is 0, def is on server
-			this.sendToServer(nil, true, 0.0, extraArgs);
+			this.sendToServer(OSCBundle(server), true, 0.0, extraArgs);
 	}
 	
 	record { arg path, headerFormat="aiff", sampleFormat="int16", numChannels;
@@ -260,7 +263,6 @@ NodeProxy : AbstractFunction {
 		var resp;
 		
 		if(server.serverRunning, {
-				bundle = bundle ? MixedBundle(server);
 				if(this.isPlaying.not, {this.prepareForPlayMsg(bundle, freeAll) });
 				this.sendSynthMsg(bundle, freeAll, extraArgs);
 				this.schedSendOSC(bundle, latency, onCompletion);
@@ -286,13 +288,13 @@ NodeProxy : AbstractFunction {
 				});
 	}
 	
+	//here happens the dangerous thing. if isPlaying is not assured properly, 
+	//we might crash iteratively during wakeUpParents
 	prepareForPlayMsg { arg bundle, freeAll=true;
-				var watcher;
-						watcher = server.nodeWatcher;
+				
 						group = Group.newToBundle(bundle, server, \addToHead);
 						group.prIsPlaying(true);
-						//RootNode(server).prAddHead(group);//manually link the node
-						watcher.nodes.add(group); //force isPlaying						if(watcher.isWatching.not, { watcher.start }); //to be sure.
+						server.nodeWatcher.nodes.postln.add(group.nodeID); //force isPlaying.
 					
 	}
 	
@@ -316,7 +318,7 @@ NodeProxy : AbstractFunction {
 					objects.do({ arg item;
 						item.stopClientProcessToBundle(bundle);
 					});
-					if(group.notNil, {
+					if(this.isPlaying, {
 						if(freeSelf, {
 							group.msgToBundle(bundle, 15, [\synthGate, 0.0]); //n_set
 						}, {
@@ -379,9 +381,10 @@ NodeProxy : AbstractFunction {
 	
 	wakeUpParentsToBundle { arg bundle; //see for objects
 		if(this.isPlaying.not, {
-			if(loaded.not, { this.loadAll; });
-			parents.do({ arg item; item.wakeUpParentsToBundle(bundle) });
+			//if(loaded.not, { this.loadAll; });
 			this.wakeUpToBundle(bundle);
+			parents.do({ arg item; item.wakeUpParentsToBundle(bundle) });
+			
 		});
 	}
 	

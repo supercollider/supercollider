@@ -1,17 +1,24 @@
 ProxySpace : EnvironmentRedirect {	classvar <>lastEdited;//undo support
+	classvar <>all; //access
 		var <group, <server, <>clock;
 	var <>defaultNumChannels=2; //default values for numChannels 
+	var <name;
 	
-		*new { arg target, clock;
-		^super.new.einit(target, clock)
+	*initClass {
+		all = IdentitySet.new;
 	}
-		*pop { 		if(this.inside, {			currentEnvironment = currentEnvironment.saveEnvir;		}, { "¥ ProxySpace is inactive already".postln })	}	*push { arg target, clock;
-		^super.push.einit(target, clock);
+		*new { arg server, name, clock;
+		^super.new.einit(server, name, clock)
+	}
+		*pop { 		if(this.inside, {			currentEnvironment = currentEnvironment.saveEnvir;		}, { "¥ ProxySpace is inactive already".postln })	}	*push { arg server, name, clock;
+		^super.push.einit(server, name, clock);
 	}
 	
-	//todo add group to target	einit { arg target,argClock; 
-		server = target.asTarget.server;  
+	//todo add group to target	einit { arg srv,argName, argClock; 
+		server = srv;  
 		clock = argClock;
+		name = argName.asSymbol;
+		this.class.all.add(this);
 	}
 	
 	makeProxy { arg key;
@@ -58,12 +65,15 @@
 	free {
 		this.do({ arg proxy; proxy.free });
 	}
+	clear {
+		this.do({ arg proxy; proxy.clear });
+	}
 	release {
 		this.do({ arg proxy; proxy.release });
 	}
-			
+		*clearAll {
+		all.do({ arg item; item.clear });
+	}	
 	*undo {		lastEdited.tryPerform(\undo)	}
-	postln {
-	 lastEdited.postln;
-	}
+	
 		}
