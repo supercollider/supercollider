@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red0\green0\blue0;\red191\green0\blue0;}
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Server
@@ -16,7 +16,9 @@ A Server object is the client-side representation of a server app and is used to
 \f0\b ClientVsServer
 \f1\b0  for more details on the distinction.) It forwards osc-messages and keeps a number of allocators that keep track of id's for nodes, buses and buffers. The server application is a commandline program, so all commands apart from the osc-messages are unix commands.\
 \
-\ul instance creation:\ulnone \
+
+\f0\b\fs30 \ul Class Methods
+\f1\b0\fs24 \ulnone \
 \
 
 \f0\b *new(name, address, options, clientID)
@@ -55,9 +57,26 @@ A Server object is the client-side representation of a server app and is used to
 \f0\b *internal
 \f1\b0 \
 		returns the local server, stored in classvar local (created already on initClass)\
+\
+
+\f0\b *quitAll
+\f1\b0 \
+		quit all registered servers\
+		\
+
+\f0\b *killAll
+\f1\b0 \
+		query the system for any sc-servers and quit them\
+		\
+
+\f0\b *freeAll
+\f1\b0 \
+		free all nodes in all servers\
 		\
 \
-\ul instance methods:\ulnone \
+
+\f0\b\fs30 \ul Instance Methods
+\f1\b0\fs24 \ulnone \
 			\
 
 \f0\b sendMsg(arg1, arg2, arg3, ... argN)
@@ -98,16 +117,26 @@ A Server object is the client-side representation of a server app and is used to
 		same like sendMsg, but takes an array as argument, which allows to send a list of bundles\
 		\
 
-\f0\b sendSynthDef(name, directory)\
+\f0\b sendSynthDef(name, dir)\
 	
 \f1\b0 \
 		send a synthDef to the server that was written in a local directory\
 		\
 
-\f0\b loadSynthDef(name, completionMsg, directory)\
+\f0\b loadSynthDef(name, completionMsg, dir)\
 
 \f1\b0 \
 		load a synthDef that resides in the remote directory\
+\
+
+\f0\b loadDirectory(dir, completionMsg)\
+
+\f1\b0 \
+		load all the SynthDefs in the directory 
+\f0\b dir
+\f1\b0 . 
+\f0\b dir
+\f1\b0  is a String which is a valid path.\
 		\
 
 \f0\b nextNodeID
@@ -149,21 +178,6 @@ A Server object is the client-side representation of a server app and is used to
 \f0\b reboot
 \f1\b0 \
 		quit and restart the server application\
-\
-
-\f0\b *quitAll
-\f1\b0 \
-		quit all registered servers\
-		\
-
-\f0\b *killAll
-\f1\b0 \
-		query the system for any sc-servers and quit them\
-		\
-
-\f0\b *freeAll
-\f1\b0 \
-		free all nodes in all servers\
 		\
 
 \f0\b freeAll
@@ -195,7 +209,7 @@ A Server object is the client-side representation of a server app and is used to
 \f1\fs24 \cf0 \
 \
 
-\f0\b scope(numChannels, startingChannel, bufsize)
+\f0\b scope(numChannels, startingChannel, bufsize, zoom)
 \f1\b0 \
 		This opens a scope window showing the audio output of the Server. \
 		This only works with the internal server, and currently only on OSX.\
@@ -210,9 +224,13 @@ A Server object is the client-side representation of a server app and is used to
 		
 \f0\b bufsize 
 \f1\b0 - the size of the buffer for the ScopeView. The default is 4096.\
+		
+\f0\b zoom
+\f1\b0  - a zoom value for the scope's X axis. Larger values show more. The default is 1.\
 		\
-\ul Recording Support
-\f0\b \ulnone \
+
+\f0\b\fs30 \ul Recording Support
+\fs24 \ulnone \
 \
 
 \f1\b0 The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the 
@@ -265,7 +283,6 @@ prepareForRecord(path, headerFormat, sampleFormat, numChannels)\
 \
 \cf2 // something to record\cf0 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 "bubbles"\cf0 , \{\
 	\cf3 var\cf0  f, zout;\
 	f = \cf3 LFSaw\cf0 .kr(0.4, 0, 24, \cf3 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps; \cf2 // glissando function\cf0 \
@@ -277,7 +294,6 @@ prepareForRecord(path, headerFormat, sampleFormat, numChannels)\
 x = \cf3 Synth\cf0 .new(\cf4 "bubbles"\cf0 );\
 \
 s.prepareForRecord("testout.aiff"); \cf2 // you have to call this first\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 s.record;\
 \
@@ -287,4 +303,4 @@ s.record \cf2 // start again\
 \cf0 \
 s.stopRecording; \cf2 // this closes the file and deallocates the buffer recording node, etc.\
 \
-\cf5 x.free; \cf6 // stop the bubbles synth}
+\cf0 x.free; \cf2 // stop the bubbles synth}

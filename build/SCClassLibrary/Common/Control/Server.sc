@@ -178,7 +178,9 @@ Server : Model {
 		) 
 	}
 	//loadDir
-	
+	loadDirectory { arg dir, completionMsg;
+		this.listSendMsg(["/d_loadDir", dir, completionMsg]);
+	}
 	
 	serverRunning_ { arg val;
 		if (val != serverRunning, {
