@@ -165,7 +165,7 @@ inline float RGen::fcoin()
 {
 	// only return one of the two values -1.0 or +1.0
 	union { uint32 i; float f; } u;		// union for floating point conversion of result
-	u.i = 0x3E000000 | (0x80000000 & trand());
+	u.i = 0x3F800000 | (0x80000000 & trand());
 	return u.f;
 }
 
