@@ -320,6 +320,7 @@ World* World_New(WorldOptions *inOptions)
 		}
 		
 		world->mNRTLock = new SC_Lock();
+		world->mDriverLock = new SC_Lock();
 		
 		if (inOptions->mPassword) {
 			strncpy(world->hw->mPassword, inOptions->mPassword, 31);
@@ -906,11 +907,14 @@ void World_Cleanup(World *world)
 
 	if (world->mTopGroup) Group_DeleteAll(world->mTopGroup);
 	
+	world->mDriverLock->Lock(); // never unlock..
 	if (hw) {
 		free(hw->mWireBufSpace);
 		delete hw->mAudioDriver;
+		hw->mAudioDriver = 0;
 	}
 	delete world->mNRTLock;
+	delete world->mDriverLock;
 	World_Free(world, world->mTopGroup);
 	
 	for (uint32 i=0; i<world->mNumSndBufs; ++i) {

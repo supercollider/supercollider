@@ -93,7 +93,6 @@ protected:
 	bool mRunThreadFlag;
 	uint32 mSafetyOffset;
 	PriorityQueueT<SC_ScheduledEvent, 2048> mScheduler;
-	SC_Lock *mProcessPacketLock;
 	int mNumSamplesPerCallback;
 	uint32 mPreferredHardwareBufferFrameSize;
 	uint32 mPreferredSampleRate;
@@ -126,9 +125,6 @@ public:
 	bool Stop();
 	
 	void ClearSched() { mScheduler.Empty(); }
-
-	void Lock() { mProcessPacketLock->Lock(); }
-	void Unlock() { mProcessPacketLock->Unlock(); }
 	
 	void RunNonRealTime(float *in, float *out, int numSamples, int64 oscTime);
 	void* RunThread();

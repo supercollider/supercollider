@@ -247,14 +247,16 @@ IsBundle gIsBundle;
 bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 {
 	//scprintf("ProcessOSCPacket %d, '%s'\n", inPacket->mSize, inPacket->mData);
-	if (!inPacket) return false;	
-	SC_AudioDriver *driver = AudioDriver(inWorld);	
-	inPacket->mIsBundle = gIsBundle.checkIsBundle((int32*)inPacket->mData);
-	driver->Lock();
+	if (!inPacket) return false;
+	bool result;	
+	inWorld->mDriverLock->Lock();
+		SC_AudioDriver *driver = AudioDriver(inWorld);
+		if (!driver) return false;
+		inPacket->mIsBundle = gIsBundle.checkIsBundle((int32*)inPacket->mData);
 		FifoMsg fifoMsg;
 		fifoMsg.Set(inWorld, Perform_ToEngine_Msg, FreeOSCPacket, (void*)inPacket);
-		bool result = driver->SendMsgToEngine(fifoMsg);
-	driver->Unlock();
+		result = driver->SendMsgToEngine(fifoMsg);
+	inWorld->mDriverLock->Unlock();
 	return result;
 }
 
@@ -379,7 +381,6 @@ SC_AudioDriver::SC_AudioDriver(struct World *inWorld)
         , mNumSamplesPerCallback(0)
 
 {
-    mProcessPacketLock = new SC_Lock();
 }
 
 SC_AudioDriver::~SC_AudioDriver()
@@ -387,8 +388,6 @@ SC_AudioDriver::~SC_AudioDriver()
     mRunThreadFlag = false;
 	mAudioSync.Signal();
 	pthread_join(mThread, 0);
-	
-	delete mProcessPacketLock;
 }
 
 void* audio_driver_thread_func(void* arg);
@@ -501,7 +500,6 @@ bool SC_AudioDriver::Start()
 
 bool SC_AudioDriver::Stop()
 {
-	printf("SC_AudioDriver::Stop\n");
 	if (!DriverStop()) return false;
 	return true;
 }

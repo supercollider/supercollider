@@ -82,6 +82,8 @@ struct World
 	bool mRealTime;
 	bool mRunning;
 	int mDumpOSC;
+
+	SC_Lock* mDriverLock;
 };
 
 extern "C" {
