@@ -100,7 +100,6 @@ NodeProxy : AbstractFunction {
 	
 	asDefName { ^if(synthDef.notNil, { synthDef.name }, { nil }) }
 	
-
 	
 	// setting the source 
 	
@@ -145,10 +144,12 @@ NodeProxy : AbstractFunction {
 		if(this.isPlaying, { group.performList(\setn, args) });
 	}
 	
-	map { arg key, proxy ... args;
+	//map to a control proxy
+	map { arg key, proxy; //...args doesn't work. why?
+		var args;
 		if(proxy.rate === 'control', { 
-			args = [key, proxy]++args;
-			nodeMap.performList(\map, args);
+			args = [key, proxy];
+			nodeMap.performList(\map, args.postln);
 			if(this.isPlaying, { nodeMap.send(group) })
 		}, {
 			"can only map to control bus".inform
