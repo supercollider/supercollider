@@ -89,6 +89,20 @@ PanB2 : MultiOutUGen {
 	}
 }
 
+BiPanB2 : MultiOutUGen {
+	var channels;
+	
+	*ar { arg inA, inB, azimuth, gain=1;
+		^this.multiNew('audio', inA, inB, azimuth, gain )
+	}
+	init { arg ... theInputs;
+		inputs = theInputs;		
+		channels = [ OutputProxy(\audio,this,0), OutputProxy(\audio,this,1),
+					OutputProxy(\audio,this,2) ];
+		^channels
+	}
+}
+
 DecodeB2 : MultiOutUGen {
 	var channels;
 	
