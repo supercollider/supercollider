@@ -26,7 +26,7 @@ Range : Collection {
 	split { arg num;
 		// assert: size > num
 		var newRange;
-		newRange = Range(start, num);
+		newRange = this.class.new(start, num);
 		start = start + num;
 		size = size - num;
 		^newRange
