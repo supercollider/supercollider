@@ -343,7 +343,7 @@ Pfindur : FilterPattern {
 	}
 }
 
-Psync : FilterPattern {
+Pfit : FilterPattern {
 	var <>mindur, <>maxdur, <>tolerance;
 	*new { arg pattern, mindur, maxdur, tolerance = 0.001;
 		^super.new(pattern).mindur_(mindur).maxdur_(maxdur).tolerance_(tolerance)
