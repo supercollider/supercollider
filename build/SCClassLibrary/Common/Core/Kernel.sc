@@ -265,7 +265,7 @@ Process {
 	}
 	methodTemplates {
 		// this constructs the method templates when cmd-Y is pressed in the Lang menu.
-		var name, out, found = false;
+		var name, out, found = 0, namestring;
 		out = CollStream.new;
 		if (interpreter.cmdLine[0].toLower != interpreter.cmdLine[0]) {
 			// user pressed the wrong key. DWIM.
@@ -276,8 +276,9 @@ Process {
 		Class.allClasses.do({ arg class;
 			class.methods.do({ arg method;
 				if (method.name == name, {
-					found = true;
-					out << "   " << class.name << "-" << name << " :     ";
+					found = found + 1;
+					namestring = class.name ++ "-" ++ name;
+					out << "   " << namestring << " :     ";
 					if (method.argNames.isNil or: { method.argNames.size == 1 }, {
 						out << "this." << name;
 						if (name.isSetter, { out << "(val)"; });
@@ -301,12 +302,19 @@ Process {
 				});
 			});
 		});
-		if (found, {
-			out.collection.newTextWindow(name.asString);
-			//out.collection.post;
-		},{
+		case 
+		{ found == 0 } 
+		{
 			Post << "\nNo implementations of '" << name << "'.\n";
-		});
+		}
+		{ found == 1 }
+		{
+			interpreter.cmdLine = namestring;
+			this.openCodeFile;
+		}
+		{
+			out.collection.newTextWindow(name.asString);
+		};
 	}
 	
 	interpretCmdLine {
