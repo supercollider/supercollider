@@ -8,18 +8,14 @@
 \f0\b\fs36 \cf0 Messages
 \f1\b0\fs24  \
 \
-Sending messages is the way things get done in an object oriented language.\
-A message consists of a message 
+Sending messages is the way things get done in an object oriented language. A message consists of a message 
 \f0\b selector
-\f1\b0  which names the type of operation,\
-a 
+\f1\b0  which names the type of operation, a 
 \f0\b receiver
 \f1\b0  to which the message is sent and in some cases a list of 
 \f0\b arguments
-\f1\b0  \
-which give additional information pertaining to the operation. A message always\
-returns a result. The kind of result depends on the kind of message. \
-In the default case, the return value is the receiver itself.\
+\f1\b0  which give additional information pertaining to the operation. A message always\
+returns a result. The kind of result depends on the kind of message. In the default case, the return value is the receiver itself.\
 \
 Messages may be written using binary operators, functional notation or receiver notation. \
 \
@@ -116,8 +112,7 @@ the receiver.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
-A method call in functional notation may be converted to receiver notation by putting the receiver\
-before the method name followed by a dot as shown below. \
+A method call in functional notation may be converted to receiver notation by putting the receiver before the method name followed by a dot as shown below. \
 \
 	
 \f2 max(a, b)
@@ -169,17 +164,15 @@ before the method name followed by a dot as shown below. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
-You may call a function or method with more or fewer arguments than it was declared to accept. \
-If fewer arguments are passed, those arguments not passed are set to a default value if one is \
-given in the method or function definition, or otherwise to nil.  If too many arguments are passed, \
-the excess arguments are either collected into an Array or ignored depending on whether or \
-not the function or method has an ellipsis argument (explained in [06 Functions]).\
-When calling a method or function with zero arguments you can omit the parentheses :\
+You may call a function or method with more or fewer arguments than it was declared to accept. If fewer arguments are passed, those arguments not passed are set to a default value if one is given in the method or function definition, or otherwise to nil.  If too many arguments are passed, the excess arguments are either collected into an Array or ignored depending on whether or not the function or method has an ellipsis argument (explained in 
+\f0\b Functions
+\f1\b0 ). When calling a method or function with zero arguments you can omit the parentheses:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf2 // x is declared to take two arguments a and b which default to 1 and 2 respectively.\
 // It returns their sum. This syntax will be explained in the section on Functions.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 x = \{ \cf3 arg\cf0  a=1, b=2; a + b \}; \
 \
 z = x.value;    		\cf2 // z is set to 3. (a defaults to 1, b defaults to 2)\
@@ -196,26 +189,20 @@ z = x.value(10, 5, 9);	\cf2 // z is set to 15. (a is 10, b is 5, 9 is ignored)\
 \f0\b \cf0 Keyword Arguments
 \f1\b0 \
 \
-Arguments to Methods may be specified by the name by which they are declared\
-in a method's definition. Such arguments are called keyword arguments.\
-Any argument may be passed as a keyword argument except for the receiver\
-'this'. Keyword arguments must come after any normal (aka 'positional') arguments, \
-and may be specified in any order. If a keyword is specified and there is no matching\
-argument then it is ignored and a warning will be printed. This warning may be turned\
-off globally by making the following call: 
-\f2 keywordWarnings(false)\
+Arguments to Methods may be specified by the name by which they are declared in a method's definition. Such arguments are called keyword arguments. Any argument may be passed as a keyword argument except for the receiver 'this'. Keyword arguments must come after any normal (aka 'positional') arguments, and may be specified in any order. If a keyword is specified and there is no matching argument then it is ignored and a warning will be printed. This warning may be turned off globally by making the following call: \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 \
+keywordWarnings(false)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
-If a keyword argument and a positional argument specify the same argument, then the \
-keyword argument value overrides the positional argument value.\
+If a keyword argument and a positional argument specify the same argument, then the keyword argument value overrides the positional argument value.\
 \
 For example the 'ar' class method of the SinOsc class takes arguments named 
 \f0\b freq
-\f1\b0 ,\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b \cf0 phase
+\f1\b0 , 
+\f0\b phase
 \f1\b0 , 
 \f0\b mul
 \f1\b0 , and 
@@ -224,27 +211,35 @@ For example the 'ar' class method of the SinOsc class takes arguments named
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SinOsc\cf0 .ar(800, pi, 0.2, 0); \cf2 // all normal arguments: freq, phase, mul, add\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // freq = 800, mul = 0.2, others get default values.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SinOsc\cf0 .ar(800, mul: 0.2); \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // freq = 800, phase = pi, mul = 0.2, add gets its default value of zero.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SinOsc\cf0 .ar(phase: pi, mul: 0.2, freq: 800);\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // keyword value of 1200 overrides the positional arg value of 800\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SinOsc\cf0 .ar(800, freq: 1200); \
 \
 \cf3 SinOsc\cf0 .ar(zorg: 999); \cf2 // invalid keyword prints warning\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 \
-The arguments to a Function may also be specified by keyword arguments when using the\
-'value' message. \
+The arguments to a Function may also be specified by keyword arguments when using the 'value' message. \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf2 // function args may be specified by keyword.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \{ \cf3 arg\cf0  a=1, b=2, c=3; [a, b, c].postln \}.value(b: 7, c: 8);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -253,6 +248,7 @@ The arguments to a Function may also be specified by keyword arguments when usin
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SinOsc\cf0 .perform(\cf4 'ar'\cf0 , phase: pi, mul: 0.2, freq: 800);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -262,7 +258,5 @@ The arguments to a Function may also be specified by keyword arguments when usin
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \cf0 When using keyword arguments there is a runtime cost to do the matching \
-that you should be aware of. The cost can be worth the convenience when\
-speed is not critical.\
+\f1 \cf0 When using keyword arguments there is a runtime cost to do the matching that you should be aware of. The cost can be worth the convenience when speed is not critical.\
 }

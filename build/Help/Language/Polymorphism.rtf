@@ -8,15 +8,11 @@
 \f0\b\fs36 \cf0 Polymorphism
 \f1\b0\fs24 \
 \
-Polymorphism is the ability of different classes to respond to a message in\
-different ways. A message generally has some underlying meaning and it is the\
-responsibility of each class to respond in a way appropriate to that meaning.\
+Polymorphism is the ability of different classes to respond to a message in different ways. A message generally has some underlying meaning and it is the responsibility of each class to respond in a way appropriate to that meaning.\
 \
 For example, the '
 \f0\b value
-\f1\b0 ' message means "give me the effective value of this \
-object".\
-\
+\f1\b0 ' message means "give me the effective value of this object".\
 \
 The value method is implemented by these classes (among others):\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -29,6 +25,7 @@ Ref :   this.value\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 Let's look at how these classes implement the value message.\
+\
 Here's the value method in class 
 \f0\b Object
 \f1\b0 :\
@@ -41,8 +38,7 @@ Here's the value method in class
 \fs14 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 It simply returns itself. Since all classes inherit from class Object this means that\
-unless a class overrides 'value', the object will respond to 'value' by returning itself.\
+\f1\fs24 \cf0 It simply returns itself. Since all classes inherit from class Object this means that unless a class overrides 'value', the object will respond to 'value' by returning itself.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -52,6 +48,7 @@ unless a class overrides 'value', the object will respond to 'value' by returnin
 \cf4 'a symbol'\cf0 .postln;\
 \cf4 'a symbol'\cf0 .value.postln;\
 [1,2,3].value.postln;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //etc...\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -71,8 +68,7 @@ In class
 
 \f1 \cf0 \
 \
-_FunctionValue is a C code primitive, so it is not possible to know just by looking at it what \
-it does. However what it does is to evaluate the function and return the result.\
+_FunctionValue is a C code primitive, so it is not possible to know just by looking at it what it does. However what it does is to evaluate the function and return the result.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -83,14 +79,11 @@ it does. However what it does is to evaluate the function and return the result.
 \f1 \cf0 \
 The 
 \f0\b Ref
-\f1\b0  class provides a way to create an indirect reference to an object.\
-It can be used to pass a value by reference. Ref objects have a single instance\
-variable called '
+\f1\b0  class provides a way to create an indirect reference to an object. It can be used to pass a value by reference. Ref objects have a single instance variable called '
 \f0\b value
 \f1\b0 '. The '
 \f0\b value
-\f1\b0 ' method returns the value of the instance variable.\
-'
+\f1\b0 ' method returns the value of the instance variable '
 \f0\b value
 \f1\b0 '. Here is the class definition for 
 \f0\b Ref
@@ -127,30 +120,20 @@ variable called '
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Ref\cf0 .new(123).postln;\
 \cf2 Ref\cf0 .new(123).value.postln;
 \f1 \
 \
 Ref also implements a message called '
 \f0\b dereference
-\f1\b0 ' which is another good example of polymorphism.\
-As implemented in Ref, dereference just returns the value instance variable which is no different than\
-what the value method does. So what is the need for it? That is explained by how other classes respond\
-to dereference. The dereference message means "remove any Ref that contains you".\
-In class Object dereference returns the object itself, again just like the value message. The\
-difference is that no other classes override this method. So that dereference of a Function is still\
-the Function.\
+\f1\b0 ' which is another good example of polymorphism. As implemented in Ref, dereference just returns the value instance variable which is no different than what the value method does. So what is the need for it? That is explained by how other classes respond to dereference. The dereference message means "remove any Ref that contains you". In class Object dereference returns the object itself, again just like the value message. The difference is that no other classes override this method. So that dereference of a Function is still the Function.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 Object :   this.dereference()\
+\f2 Object :   this.dereference()\
 Ref :   this.dereference()\
-\
 \
 5.value.postln;		\
 \{ 5.squared \}.value.postln;		\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Ref\cf0 .new(123).value.postln;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -159,7 +142,6 @@ Ref :   this.dereference()\
 
 \f2 \cf0 5.dereference.postln;		\
 \{ 5.squared \}.dereference.postln;		\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Ref\cf0 .new(123).dereference.postln;\
 \
 \
@@ -167,15 +149,13 @@ Ref :   this.dereference()\
 
 \f1 \cf0 Yet another example of polymorphism is 
 \f0\b play
-\f1\b0 . \
-Many different kinds of objects know how to play themselves.
+\f1\b0 . Many different kinds of objects know how to play themselves.
 \f2 \
 \
 \{ \cf2 PinkNoise\cf0 .ar(0.1) \}.play;						\cf3 // Function\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 (												\cf3 // AppClock\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  w, r;\
 w = \cf2 SCWindow\cf0 (\cf5 "trem"\cf0 , \cf2 Rect\cf0 (512, 256, 360, 130));\
 w.front;\
@@ -191,7 +171,6 @@ r = \cf2 Routine\cf0 (\{ arg appClockTime;\
 \});\
 \cf2 AppClock\cf0 .play(r);\
 )\cf3 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 (												\cf3 // SynthDef
 \f1\fs30 \cf0 \
@@ -202,9 +181,7 @@ r = \cf2 Routine\cf0 (\{ arg appClockTime;\
 	\}).play;\
 )\cf3 \
 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pbind\cf0 (\\\cf4 degree\cf0 , \cf2 Pseq\cf0 ([0, 1, 2, 3],\cf2 inf\cf0 )).play;	\cf3 // Pattern\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
