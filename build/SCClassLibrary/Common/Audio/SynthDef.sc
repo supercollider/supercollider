@@ -62,6 +62,7 @@ SynthDef {
 	}
 	addControlsFromArgsOfFunc { arg func, rates, skipArgs=0;
 		var def, names, values,argNames;
+		\addControlsFromArgsOfFunc.postln;
 		
 		def = func.def;
 		argNames = def.argNames;
@@ -105,6 +106,7 @@ SynthDef {
 		irvalues = irvalues.add(value);
 		irpositions = irpositions.add(controlsSize);
 		controlsSize = controlsSize + 1;
+		[\addIr, name, value, controlsSize, irnames, irvalues, irpositions].postln;
 	}
 	addKr { arg name, value, lag=0;
 		krnames = krnames.add(name);
@@ -112,15 +114,20 @@ SynthDef {
 		krpositions = krpositions.add(controlsSize);
 		krlags = krlags.add(lag);
 		controlsSize = controlsSize + 1;
+		[\addKr, name, value, controlsSize, krnames, krvalues, krpositions].postln;
 	}
 	addTr { arg name, value;
 		trnames = trnames.add(name);
 		trvalues = trvalues.add(value);
 		trpositions = trpositions.add(controlsSize);
 		controlsSize = controlsSize + 1;
+		[\addTr, name, value, controlsSize, trnames, trvalues, trpositions].postln;
 	}
 	buildControls {
 		var outputProxies;
+		\buildControls.postln;
+		controls.postln;
+		
 		// the Controls add themselves to my controls
 		if (irnames.size > 0, {
 			ircontrols = Control.names(irnames).ir(irvalues);
@@ -158,6 +165,10 @@ SynthDef {
 		this.topologicalSort;
 		this.indexUGens;
 		UGen.buildSynthDef = nil;
+		
+		[\sz, controlsSize, controls.size].postln;
+		controls.postln;
+		this.dumpUGens;
 	}
 
 	
@@ -180,6 +191,7 @@ SynthDef {
 		this.writeConstants(file);
 
 		//controls have been added by the Control UGens
+		[\writeDef, controls].postln;
 		file.putInt16(controls.size);
 		controls.do({ arg item;
 			file.putFloat(item);

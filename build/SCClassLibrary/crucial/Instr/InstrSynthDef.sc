@@ -98,6 +98,7 @@ InstrSynthDef : SynthDef {
 	
 	// passed to Instr function but not to synth
 	addInstrOnlyArg { arg name,value;
+		[\addInstrOnlyArg, name, value].postln;
 		fixedNames = fixedNames.add(name);
 		fixedValues = fixedValues.add(value);
 		fixedPositions = fixedPositions.add(controlsSize);

@@ -4,6 +4,7 @@ ControlName
 	var <>name, <>index, <>rate, <>defaultValue;
 	
 	*new { arg name, index, rate, defaultValue;
+		[\ControlName, name, index, rate, defaultValue].postln;
 		^super.newCopyArgs(name, index, rate, defaultValue)
 	}
 
@@ -22,6 +23,7 @@ Control : MultiOutUGen {
 	
 	*names { arg names;
 		var synthDef, index;
+		[\names, names].postln;
 		synthDef = UGen.buildSynthDef;
 		index = synthDef.controls.size;
 		names.asArray.do({ arg name, i; 
@@ -42,6 +44,7 @@ Control : MultiOutUGen {
 			specialIndex = synthDef.controls.size;
 			synthDef.controls = synthDef.controls.addAll(values);
 		});
+		[\cinit, rate, specialIndex, values].postln;
 		^this.initOutputs(values.size, rate)
 	}
 	*isControlUGen { ^true }
