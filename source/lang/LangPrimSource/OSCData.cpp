@@ -727,10 +727,10 @@ int prExit(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	
-        //exit(a->ui);
+	exit(a->ui);
         
-        post("exit %d\n", a->ui);
-        DumpBackTrace(g);
+	//post("exit %d\n", a->ui);
+	//DumpBackTrace(g);
 	return errNone;
 }
 
