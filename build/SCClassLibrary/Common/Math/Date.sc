@@ -40,6 +40,9 @@ Date {
 	stamp {
 		^this.dayStamp ++ "_" ++ this.secStamp
 	}
+	hourStamp {
+		^hour.asString ++ ":" ++ minute ++ ":"  ++ (rawSeconds % 60).round(0.0001)
+	}
 	asSortableString {  // standard database format, alphabetically sortable
 		^String.streamContents({ arg s;
 			s << year;
