@@ -24,3 +24,23 @@ WaitForServerBoot {
 			}).play;
 	}
 }
+
+WaitUntilServerBoot {
+	//doesn't boot the server, just waits.
+	*new { arg server, onComplete, limit=100;
+			^Routine({
+				
+						while({
+							server.serverRunning.not 
+								and: {(limit = limit - 1) > 0}
+						},{
+							0.2.wait;	
+						});
+				
+				if(server.serverRunning.not,{
+					"server failed to start".error;
+				}, onComplete);
+			}).play;
+	}
+}
+
