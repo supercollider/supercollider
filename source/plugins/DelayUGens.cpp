@@ -48,7 +48,7 @@ struct Grain
 	int counter;
 	int bufnum;
 	int chan;
-	int reserved;
+	int interp;
 };
 
 const int kMaxGrains = 64;
@@ -5766,7 +5766,7 @@ void GrainTap_Ctor(GrainTap *unit)
 	uint32 bufChannels __attribute__((__unused__)) = buf->channels; \
 	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \
 	uint32 bufFrames = buf->frames; \
-	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
+	int guardFrame __attribute__((__unused__)) = bufFrames - 2; \
 
 
 inline float IN_AT(Unit* unit, int index, int offset) 
@@ -5806,6 +5806,37 @@ inline float IN_AT(Unit* unit, int index, int offset)
 		y2 = y1; \
 		y1 = y0; \
 
+
+#define GRAIN_LOOP_BODY_2 \
+		float amp = y1 * y1; \
+		phase = sc_loop((Unit*)unit, phase, bufFrames, 1); \
+		int32 iphase = (int32)phase; \
+		float* table1 = bufData + iphase * bufChannels; \
+		float* table2 = table1 + bufChannels; \
+		if (iphase > guardFrame) { \
+			table2 -= bufSamples; \
+		} \
+		float fracphase = phase - (double)iphase; \
+		float b = table1[0]; \
+		float c = table2[0]; \
+		float outval = b + fracphase * (c - b); \
+		ZXP(out1) += outval * pan1; \
+		ZXP(out2) += outval * pan2; \
+		double y0 = b1 * y1 - y2; \
+		y2 = y1; \
+		y1 = y0; \
+		
+
+#define GRAIN_LOOP_BODY_1 \
+		float amp = y1 * y1; \
+		phase = sc_loop((Unit*)unit, phase, bufFrames, 1); \
+		int32 iphase = (int32)phase; \
+		float outval = bufData[iphase]; \
+		ZXP(out1) += outval * pan1; \
+		ZXP(out2) += outval * pan2; \
+		double y0 = b1 * y1 - y2; \
+		y2 = y1; \
+		y1 = y0; \
 	
 
 void TGrains_next(TGrains *unit, int inNumSamples)
@@ -5848,11 +5879,23 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 		//printf("B chan %d %d  %08X %08X", chan1, chan2, out1, out2);
 
 		int nsmps = sc_min(grain->counter, inNumSamples);
-		for (int j=0; j<nsmps; ++j) {
-			GRAIN_LOOP_BODY_4;
-			phase += rate;
+		if (grain->interp >= 4) {
+			for (int j=0; j<nsmps; ++j) {
+				GRAIN_LOOP_BODY_4;
+				phase += rate;
+			}
+		} else if (grain->interp >= 2) {
+			for (int j=0; j<nsmps; ++j) {
+				GRAIN_LOOP_BODY_2;
+				phase += rate;
+			}
+		} else {
+			for (int j=0; j<nsmps; ++j) {
+				GRAIN_LOOP_BODY_1;
+				phase += rate;
+			}
 		}
-
+		
 		grain->phase = phase;
 		grain->y1 = y1;
 		grain->y2 = y2;
@@ -5875,17 +5918,23 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 			uint32 bufnum = (uint32)IN_AT(unit, 1, i);
 			if (bufnum >= numBufs) continue;
 			GRAIN_BUF
+
+			float bufSampleRate = buf->samplerate;
+			float bufRateScale = bufSampleRate * SAMPLEDUR;
+
 			if (bufChannels != 1) continue;
 			Grain *grain = unit->mGrains + unit->mNumActive++;
 			grain->bufnum = bufnum;
 			
-			double rate = grain->rate = IN_AT(unit, 2, i);
-			double phase = IN_AT(unit, 3, i);
+			double rate = grain->rate = IN_AT(unit, 2, i) * bufRateScale;
+			double phase = IN_AT(unit, 3, i) * bufSampleRate;
 			grain->counter = (int)(IN_AT(unit, 4, i) * SAMPLERATE);
 			grain->counter = sc_max(4, grain->counter);
 			
 			float pan = IN_AT(unit, 5, i);
 			float amp = IN_AT(unit, 6, i);
+			grain->interp = (int)IN_AT(unit, 7, i);
+			
 			float panangle;
 			if (numOutputs > 2) {				
 				pan = sc_wrap(pan * 0.5f, 0.f, 1.f);
@@ -5915,9 +5964,21 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 			float *out2 = out[chan2] + i;
 			
 			int nsmps = sc_min(grain->counter, inNumSamples - i);
-			for (int j=0; j<nsmps; ++j) {
-				GRAIN_LOOP_BODY_4;
-				phase += rate;
+			if (grain->interp >= 4) {
+				for (int j=0; j<nsmps; ++j) {
+					GRAIN_LOOP_BODY_4;
+					phase += rate;
+				}
+			} else if (grain->interp >= 2) {
+				for (int j=0; j<nsmps; ++j) {
+					GRAIN_LOOP_BODY_2;
+					phase += rate;
+				}
+			} else {
+				for (int j=0; j<nsmps; ++j) {
+					GRAIN_LOOP_BODY_1;
+					phase += rate;
+				}
 			}
 			
 			grain->phase = phase;
