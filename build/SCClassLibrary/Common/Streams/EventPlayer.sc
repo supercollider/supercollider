@@ -14,7 +14,7 @@ NotePlayer : EventPlayer {
 		id = server.nextNodeID;
 		
 		//send the note on bundle
-		server.sendBundle(lag, [9, desc.name, id, 0, ~group] ++ msgArgs); 
+		server.sendBundle(lag, [9, desc.name, id, ~addAction, ~group] ++ msgArgs); 
 //		ttbeats = thisThread.beats;
 //		ttseconds = thisThread.seconds;
 				
