@@ -291,7 +291,7 @@ int64 gHostOSCoffset = 0;
 int64 gHostStartNanos = 0;
 int64 gElapsedOSCoffset = 0;
 
-const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800; /* 17 leap years */
+const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800UL; /* 17 leap years */
 const double fSECONDS_FROM_1900_to_1970 = 2208988800.; /* 17 leap years */
 
 void syncOSCOffsetWithTimeOfDay();
@@ -317,7 +317,11 @@ void schedCleanup()
 	pthread_cond_destroy (&gSchedCond);
 }
 
-
+double bootSeconds();
+double bootSeconds()
+{
+	return 1e-9 * (double)AudioConvertHostTimeToNanos(AudioGetCurrentHostTime());
+}
 
 double elapsedTime();
 double elapsedTime()
@@ -663,4 +667,178 @@ all these happen in the main thread.
 
 */
 
+/* 
+new clock:
+	create
+	destroy
+	wake up at time x.
+	unschedule
+	awake 
+		reschedules.
+*/
 
+
+#if 1
+
+class Clock
+{
+public:
+	Clock(VMGlobals *inVMGlobals, PyrObject* inClockObj, double inBaseTime, double inBaseBeats);
+	~Clock();
+	void* Run();
+	
+	void Add(double inBeats, PyrSlot* inTask);
+	void SetTempo(double inTempo);
+	void SetTempoAtBeat(double inBeats, double inTempo);
+	void SetTempoAtTime(double inTime, double inTempo);
+	double ElapsedBeats();
+	void Clear();
+	
+protected:
+	VMGlobals* g;
+	PyrObject* mClockObj;
+	PyrObject* mQueue;
+	
+	double mTempo; // beats per second
+	double mBeatDur; // 1/tempo
+	double mBeats; // beats
+	double mBaseTime;
+	double mBaseBeats;
+	bool mRun;
+	pthread_t mThread;
+	pthread_cond_t mCondition; 
+	
+};
+
+void* Clock_run_func(void* p)
+{
+	Clock* clock = (Clock*)p;
+	return clock->Run();
+}
+
+Clock::Clock(VMGlobals *inVMGlobals, PyrObject* inClockObj, double inBaseTime, double inBaseBeats)
+	: g(inVMGlobals), mClockObj(inClockObj), 
+	mBaseTime(inBaseTime), mBaseBeats(inBaseBeats), mRun(true)
+{
+	mQueue = mClockObj->slots[0].uo;
+	pthread_cond_init (&mCondition, NULL);
+	pthread_create (&mThread, NULL, Clock_run_func, (void*)this);
+}
+
+Clock::~Clock()
+{
+	pthread_mutex_lock (&gLangMutex);
+	if (mRun) {
+		mRun = false;
+		pthread_cond_signal (&mCondition);
+		pthread_mutex_unlock (&gLangMutex);
+		pthread_join(mThread, 0);
+	} else {
+		pthread_mutex_unlock (&gLangMutex);
+	}
+	pthread_cond_destroy (&mCondition);
+}
+
+void Clock::SetTempo(double inTempo)
+{
+	SetTempoAtBeat(mBeats, inTempo);
+}
+
+void Clock::SetTempoAtBeat(double inBeats, double inTempo)
+{
+	mBaseTime += mBeatDur * (inBeats - mBaseBeats);
+	mBaseBeats = inBeats;
+	mTempo = inTempo;
+	mBeatDur = 1. / mTempo;
+	pthread_cond_signal (&mCondition);
+}
+
+void Clock::SetTempoAtTime(double inTime, double inTempo)
+{
+	mBaseBeats += mTempo * (inTime - mBaseTime);
+	mBaseTime = inTime;
+	mTempo = inTempo;
+	mBeatDur = 1. / mTempo;
+	pthread_cond_signal (&mCondition);
+}
+
+double Clock::ElapsedBeats()
+{
+	double elapsed = elapsedTime();
+	return mBaseBeats + mTempo * (elapsed - mBaseTime);
+}
+
+void* Clock::Run()
+{
+	while (true) {
+		//postfl("wait until there is something in scheduler\n");
+		// wait until there is something in scheduler
+		while (mQueue->size == 0) {
+			//postfl("wait until there is something in scheduler\n");
+			pthread_cond_wait (&mCondition, &gLangMutex);
+			if (!mRun) goto leave;
+		}
+		//postfl("wait until an event is ready\n");
+		
+		// wait until an event is ready
+		double elapsedBeats;
+		while (mQueue->size > 0) {
+			elapsedBeats = ElapsedBeats();
+			if (elapsedBeats >= mQueue->slots->uf) break;
+			struct timespec abstime;
+			//doubleToTimespec(mQueue->slots->uf, &abstime);
+			double wakeTime = mBaseTime + mBeatDur * (mQueue->slots->uf - mBaseBeats);
+			ElapsedTimeToTimespec(wakeTime, &abstime);
+			//postfl("wait until an event is ready\n");
+			pthread_cond_timedwait (&mCondition, &gLangMutex, &abstime);
+			if (!mRun) goto leave;
+			//postfl("time diff %g\n", elapsedTime() - mQueue->slots->uf);
+		}
+		//postfl("perform all events that are ready %d %.9f\n", mQueue->size, elapsed);
+		
+		// perform all events that are ready
+		//postfl("perform all events that are ready\n");
+		while (mQueue->size && elapsedBeats >= mQueue->slots->uf) {
+			double delta;
+			PyrSlot task;
+			
+			//postfl("while %.6f >= %.6f\n", elapsed, inQueue->slots->uf);
+						
+			getheap(mQueue, &mBeats, &task);
+
+			(++g->sp)->ucopy = task.ucopy;
+			(++g->sp)->uf = mBeats;
+			
+			runInterpreter(g, s_awake, 2);
+			long err = slotDoubleVal(&g->result, &delta);
+			if (!err) {
+				// add delta time and reschedule
+				double time = mBeats + delta;
+				schedAdd(g, mQueue, time, &task);
+			}
+		}
+	}
+leave:
+	pthread_mutex_unlock (&gLangMutex);
+	return 0;
+}
+
+
+void Clock::Add(double inBeats, PyrSlot* inTask)
+{
+	double prevBeats = mQueue->size ? mQueue->slots->uf : -1e10;
+	addheap(g, mQueue, inBeats, inTask);
+	if (mQueue->size && mQueue->slots->uf != prevBeats) {
+		pthread_cond_signal (&mCondition);
+	}
+}
+
+void Clock::Clear()
+{
+	if (mRun) {
+		mQueue->size = 0;
+		pthread_cond_signal (&mCondition);
+	}
+}
+
+#endif
