@@ -565,7 +565,7 @@ protected:
 	double valueFromPoint(SCPoint where);
 	void setValueFromPoint(SCPoint point);
 	SCRect calcThumbRect(int xIn, double valIn, double step);
-	int mThumbSize, mThumbSizeY; // size of the rect
+	float mThumbSize, mThumbSizeY; // size of the rect
 	int mTabSize, mVisibleSize; // size of the table
 	SCColor mFillColor;
 	SCColor mStrokeColor;
