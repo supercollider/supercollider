@@ -1,25 +1,46 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fnil\fcharset77 LucidaGrande;
 \f3\fnil\fcharset77 LucidaGrande-Bold;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 Comments
 \f1\b0\fs18 \
 \
-The easiest things to read in code are often are the comments.\
+Comments are descriptive remarks that are meant to be read by humans but ignored by computers. Programmers use comments to annotate how code works or what it does. It's also the case that some find it helpful to write programs by first notating comments and then filling in matching code.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // This line - everything up to the end of the line, is a comment, SuperCollider won't evaluate it.\cf0 \
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
-The following is C style comment (everything between /* and */).\
+To write a comment in SuperCollider, either precede text with \
 \
-\cf2 /* \
+//\
 \
-This is a comment.\
+as in\
+\
+\cf2 // Everything up to the end of the line is a comment\cf0 \
+\
+or place text on one or more lines between\
+\
+/* and */\
+\
+as in\
+\cf2 \
+/* \
+\
+This \
+is \
+a \
+comment\
 \
  */\
- \cf0 \
+ \
+\cf3 If (when) evaluated, a comment will \cf0 return nil, which is the value SuperCollider uses for unitialized data.\cf2 \
+\
+////////////////////////////////////////////////////////////////////////////////////////////////////\
+ \
+\cf3 Use Format->Syntax Colorize (or cmd-') to syntax-colorize comments.\
+\cf2  \cf0 \
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
