@@ -98,17 +98,19 @@ interface in 'scel'. see the README in this directory for installation
 and usage.
 
 before running sclang, you have to create a library configuration file
-in ~/.sclang.cfg that tells sclang which classes to compile. there are
+~/.sclang.cfg that tells sclang which classes to compile. there are
 classes that don't work on linux, so you'll have to exclude the
 respective files/directories from your library configuration. an
 example configuration file that works on linux is provided in
-'examples/sclang.cfg'.
+'examples/sclang.cfg'; it is installed to ~/.sclang.cfg during
+installation if the file doesn't exist yet.
 
-you also have to install a custom version of the class Main, because
-the default version calls startup code not implemented on linux. an
-example is given in 'examples/extMain.sc'; you can adapt the file to
-your needs and put it in your library search path (as specified in
-~/.sclang.cfg).
+you also have to create a custom version of the class Main, because
+the default version calls startup code of classes not working on
+linux. an example is given in 'examples/extMain.sc'; you can adapt the
+file to your needs and put it in your library search path (as
+specified in ~/.sclang.cfg), or live with the default version, which
+is installed in the standard library location.
 
 sclang executes the startup file ~/.sclang.sc after class library
 initialization. this file can contain statements you don't want to put
@@ -145,6 +147,13 @@ names are separated by ':' as in the unix PATH variable:
  * SC_PLUGIN_PATH, SC_SYNTHDEF_PATH
 
    $ export SC_SYNTHDEF_PATH="./synthdefs:/home/steve/lib/SuperCollider/synthdefs"
+
+in order to use the library configuration file provided in the
+installation, you have to define another environment variable:
+
+ * SC_LIB_DIR path to the standard supercollider class library, e.g.
+
+   $ export SC_LIB_DIR=/usr/local/share/SuperCollider/SCClassLibrary
 
 documentation
 --------------

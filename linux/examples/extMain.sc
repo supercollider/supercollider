@@ -1,5 +1,4 @@
 + Main {
-	
 	startUp {
 		super.startUp;
 		// set the 's' interpreter variable to the default server.
