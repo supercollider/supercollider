@@ -174,7 +174,7 @@ Sevent : Stream {
 Pbind : Pattern {
 	var <>patternpairs;
 	*new { arg ... pairs;
-		if (pairs.size.odd, { "Pbind should have even number of args.\n".error; this.halt });
+		if (pairs.size.odd, { Error("Pbind should have even number of args.\n").throw; });
 		^super.newCopyArgs(pairs)
 	}
 	

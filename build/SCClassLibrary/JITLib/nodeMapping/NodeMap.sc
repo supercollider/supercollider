@@ -199,7 +199,7 @@ ProxyNodeMap : NodeMap {
 				var key, mapProxy, bus, ok;
 				key = args.at(i*2).asArray;
 				mapProxy = args.at(2*i+1);
-				if(mapProxy.isKindOf(BusPlug).not) { "map: not a node proxy".error; ^this.halt };
+				if(mapProxy.isKindOf(BusPlug).not) { Error("map: not a node proxy").throw };
 				ok = mapProxy.initBus(\control, key.size);
 				if(ok, {
 					if(playing, { mapProxy.wakeUp;  });

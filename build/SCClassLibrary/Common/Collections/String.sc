@@ -46,10 +46,8 @@ String[char] : RawArray {
 	postc { "// ".post; this.post; }
 
 	die { arg ... culprits; 
-		"FATAL ERROR:\n".post;  
-		this.postln;  
 		culprits.do({ arg c; c.dump });
-		this.halt; 
+		Error("FATAL ERROR:\n" ++ this).throw; 
 	}
 	error { "ERROR:\n".post; this.postln; }
 	warn { "WARNING:\n".post; this.postln }

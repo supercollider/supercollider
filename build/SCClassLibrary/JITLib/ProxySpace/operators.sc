@@ -19,7 +19,7 @@ AbstractOpPlug : AbstractFunction {
 		^{ this.value(proxy) }
 	}
 	writeInputSpec {
-		"use .ar or .kr to use within a synth.".error; this.halt;
+		Error("use .ar or .kr to use within a synth.").throw;
 	}
 	
 

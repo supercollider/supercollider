@@ -422,35 +422,33 @@ Object {
 	clock_ {  } // for Clock
 
 	// catch binary operators failure
-	performBinaryOpOnSomething { arg aSelector, adverb;
+	performBinaryOpOnSomething { arg aSelector, thing, adverb;
 		if (aSelector === '==', {
 			^false
 		},{
 		if (aSelector === '!=', {
 			^true
 		},{
-			error("performBinaryOp failed.\n");
-			this.dumpBackTrace;
-			this.halt 
+			BinaryOpFailureError(this, aSelector, [thing, adverb]).throw;
 		})});
 	}
-	performBinaryOpOnSimpleNumber { arg aSelector, adverb;
-		^this.performBinaryOpOnSomething(aSelector, adverb)
+	performBinaryOpOnSimpleNumber { arg aSelector, thing, adverb;
+		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
-	performBinaryOpOnSignal { arg aSelector, adverb;
-		^this.performBinaryOpOnSomething(aSelector, adverb)
+	performBinaryOpOnSignal { arg aSelector, thing, adverb;
+		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
-	performBinaryOpOnComplex { arg aSelector, adverb;
-		^this.performBinaryOpOnSomething(aSelector, adverb)
+	performBinaryOpOnComplex { arg aSelector, thing, adverb;
+		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
-	performBinaryOpOnSeqColl { arg aSelector, adverb;
-		^this.performBinaryOpOnSomething(aSelector, adverb)
+	performBinaryOpOnSeqColl { arg aSelector, thing, adverb;
+		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
-	performBinaryOpOnUGen { arg aSelector, adverb;
-		^this.performBinaryOpOnSomething(aSelector, adverb)
+	performBinaryOpOnUGen { arg aSelector, thing, adverb;
+		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
-	performBinaryOpOnInfinitum { arg aSelector, adverb;
-		^this.performBinaryOpOnSomething(aSelector, adverb)
+	performBinaryOpOnInfinitum { arg aSelector, thing, adverb;
+		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
 	
 	writeDefFile { arg name, dir="synthdefs/";

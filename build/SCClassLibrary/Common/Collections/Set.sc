@@ -27,7 +27,7 @@ Set : Collection {
 	}
 	add { arg item;
 		var index;
-		if (item.isNil, { "A Set cannot contain nil.\n".error; this.halt; });
+		if (item.isNil, { Error("A Set cannot contain nil.\n").throw; });
 		index = this.scanFor(item);
 		if ( array.at(index).isNil, { this.putCheck(index, item) });
 	}

@@ -92,5 +92,13 @@ MustBeBooleanError : MethodError {
 	}
 }
 
-NotYetImplemented : MethodError {
+NotYetImplementedError : MethodError {
 }
+
+BinaryOpFailureError : DoesNotUnderstandError {
+	errorString {
+		^"ERROR: binary operator '" ++ selector ++ "' failed."
+	}
+}
+
+

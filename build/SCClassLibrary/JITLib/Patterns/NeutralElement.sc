@@ -30,7 +30,7 @@ Debug : N {
 	doesNotUnderstand { arg selector ... args;
 		if(end.notNil, {
 			end = end - 1;
-			if(end < 0, { this.halt })
+			if(end < 0, { Error("end < 0").throw })
 		});
 		postln("debug:" + selector + "args:" + args);
 		super.doesNotUnderstand(selector, args)

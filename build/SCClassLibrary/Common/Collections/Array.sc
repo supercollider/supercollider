@@ -242,8 +242,7 @@ Array[slot] : ArrayedCollection {
 		if (elem.isKindOf(OutputProxy), {
 			^elem.source
 		},{
-			error("source: Not an Array of OutputProxy(s)\n");
-			this.halt;
+			Error("source: Not an Array of OutputProxy(s)\n").throw;
 		});
 	}
 	isValidUGenInput { ^true }

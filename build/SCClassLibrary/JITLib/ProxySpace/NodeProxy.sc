@@ -190,7 +190,7 @@ BusPlug : AbstractFunction {
 	// error catch
 	
 	writeInputSpec {
-		"use .ar or .kr to use within a synth.".error; this.halt;
+		Error("use .ar or .kr to use within a synth.").throw;
 	}
 	
 	
@@ -428,7 +428,7 @@ NodeProxy : BusPlug {
 	linkNodeMap {
 		var index;
 		index = this.index;
-		if(index.isNil) { "couldn't allocate bus".error; this.halt };
+		if(index.isNil) { Error("couldn't allocate bus").throw };
 		nodeMap.set(\out, index, \i_out, index);
 	}
 	
