@@ -316,7 +316,7 @@ NodeProxy : AbstractFunction {
 					objects.do({ arg item;
 						item.stopClientProcessToBundle(bundle);
 					});
-					if(this.isPlaying, {
+					if(group.notNil, {
 						if(freeSelf, {
 							group.msgToBundle(bundle, 15, [\synthGate, 0.0]); //n_set
 						}, {
