@@ -321,6 +321,11 @@ void Klank_next(Klank *unit, int inNumSamples);
 			unit->m_buf = world->mSndBufs + bufnum; \
 		} \
 		SndBuf *buf = unit->m_buf; \
+		float *bufData __attribute__((__unused__)) = buf->data; \
+		if (!bufData) { \
+			ClearUnitOutputs(unit, inNumSamples); \
+			return; \
+		} \
 		int tableSize = buf->samples;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -343,6 +348,7 @@ void TableLookup_SetTable(TableLookup* unit, int32 inSize, float* inTable)
 
 void DegreeToKey_Ctor(DegreeToKey *unit)
 {
+	unit->m_fbufnum = -1e9f;
 	if (BUFLENGTH == 1) {
 		SETCALC(DegreeToKey_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -360,7 +366,7 @@ void DegreeToKey_next_1(DegreeToKey *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	int32 key, oct;
@@ -393,7 +399,7 @@ void DegreeToKey_next_k(DegreeToKey *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -430,7 +436,7 @@ void DegreeToKey_next_a(DegreeToKey *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 
@@ -521,6 +527,7 @@ void Select_next_a(Select *unit, int inNumSamples)
 
 void Index_Ctor(Index *unit)
 {
+	unit->m_fbufnum = -1e9f;
 	if (BUFLENGTH == 1) {
 		SETCALC(Index_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -535,7 +542,7 @@ void Index_next_1(Index *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		int32 maxindex = tableSize - 1;
 	
 	int32 index = (int32)ZIN0(0);
@@ -548,7 +555,7 @@ void Index_next_k(Index *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -567,7 +574,7 @@ void Index_next_a(Index *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -587,6 +594,7 @@ void Index_next_a(Index *unit, int inNumSamples)
 
 void FoldIndex_Ctor(FoldIndex *unit)
 {
+	unit->m_fbufnum = -1e9f;
 	if (BUFLENGTH == 1) {
 		SETCALC(FoldIndex_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -601,7 +609,7 @@ void FoldIndex_next_1(FoldIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	int32 index = (int32)ZIN0(1);
@@ -614,7 +622,7 @@ void FoldIndex_next_k(FoldIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	int32 index = (int32)ZIN0(1);
@@ -633,7 +641,7 @@ void FoldIndex_next_a(FoldIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -652,6 +660,7 @@ void FoldIndex_next_a(FoldIndex *unit, int inNumSamples)
 
 void WrapIndex_Ctor(WrapIndex *unit)
 {
+	unit->m_fbufnum = -1e9f;
 	if (BUFLENGTH == 1) {
 		SETCALC(WrapIndex_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -666,7 +675,7 @@ void WrapIndex_next_1(WrapIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	int32 index = (int32)floor(ZIN0(1));
@@ -679,7 +688,7 @@ void WrapIndex_next_k(WrapIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -698,7 +707,7 @@ void WrapIndex_next_a(WrapIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -716,6 +725,7 @@ void WrapIndex_next_a(WrapIndex *unit, int inNumSamples)
 
 void Shaper_Ctor(Shaper *unit)
 {
+	unit->m_fbufnum = -1e9f;
 	if (BUFLENGTH == 1) {
 		SETCALC(Shaper_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -731,7 +741,7 @@ void Shaper_next_1(Shaper *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = buf->data;
+		float *table0 = bufData;
 		float *table1 = table0 + 1;
 		int32 maxindex = tableSize - 1;
 		float offset = maxindex * 0.5;
@@ -758,7 +768,7 @@ void Shaper_next_k(Shaper *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = buf->data;
+		float *table0 = bufData;
 		float *table1 = table0 + 1;
 		int32 maxindex = tableSize - 1;
 		float offset = maxindex * 0.5;
@@ -794,7 +804,7 @@ void Shaper_next_a(Shaper *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = buf->data;
+		float *table0 = bufData;
 		float *table1 = table0 + 1;
 		int32 maxindex = tableSize - 1;
 		float offset = maxindex * 0.5;
@@ -828,6 +838,7 @@ void Shaper_next_a(Shaper *unit, int inNumSamples)
 
 void SigOsc_Ctor(SigOsc *unit)
 {
+	unit->m_fbufnum = -1e9f;
 	if (BUFLENGTH == 1) {
 		SETCALC(SigOsc_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -844,7 +855,7 @@ void SigOsc_next_1(SigOsc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = buf->data;
+		float *table0 = bufData;
 		float *table1 = table0 + 1;
 		int32 maxindex = tableSize - 1;
 		float maxphase = (float)maxindex;
@@ -874,7 +885,7 @@ void SigOsc_next_k(SigOsc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = buf->data;
+		float *table0 = bufData;
 		float *table1 = table0 + 1;
 		int32 maxindex = tableSize - 1;
 		float maxphase = (float)maxindex;
@@ -910,7 +921,7 @@ void SigOsc_next_a(SigOsc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = buf->data;
+		float *table0 = bufData;
 		float *table1 = table0 + 1;
 		int32 maxindex = tableSize - 1;
 		float maxphase = (float)maxindex;
@@ -1236,6 +1247,7 @@ void SinOsc_next_iak(SinOsc *unit, int inNumSamples)
 
 void Osc_Ctor(Osc *unit)
 {
+	unit->m_fbufnum = -1e9f;
 	if (INRATE(0) == calc_FullRate) {
 		if (INRATE(1) == calc_FullRate) {
 			//postbuf("next_iaa\n");
@@ -1272,7 +1284,7 @@ void Osc_next_ikk(Osc *unit, int inNumSamples)
 	// get table
 	GET_TABLE
 
-		float *table0 = buf->data;
+		float *table0 = bufData;
 		float *table1 = table0 + 1;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
@@ -1307,7 +1319,7 @@ void Osc_next_ika(Osc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = buf->data;
+		float *table0 = bufData;
 		float *table1 = table0 + 1;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
@@ -1342,7 +1354,7 @@ void Osc_next_iaa(Osc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = buf->data;
+		float *table0 = bufData;
 		float *table1 = table0 + 1;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
@@ -1379,7 +1391,7 @@ void Osc_next_iak(Osc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = buf->data;
+		float *table0 = bufData;
 		float *table1 = table0 + 1;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
@@ -1417,6 +1429,7 @@ void Osc_next_iak(Osc *unit, int inNumSamples)
 
 void OscN_Ctor(OscN *unit)
 {
+	unit->m_fbufnum = -1e9f;
 	//Print("OscN_Ctor\n");
 	if (INRATE(0) == calc_FullRate) {
 		if (INRATE(1) == calc_FullRate) {
@@ -1446,7 +1459,7 @@ void OscN_next_nkk(OscN *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
 			unit->m_lomask = (tableSize - 1) << 2;
@@ -1478,7 +1491,7 @@ void OscN_next_nka(OscN *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
 			unit->m_lomask = (tableSize - 1) << 2;
@@ -1508,7 +1521,7 @@ void OscN_next_naa(OscN *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
 			unit->m_lomask = (tableSize - 1) << 2;
@@ -1540,7 +1553,7 @@ void OscN_next_nak(OscN *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = buf->data;
+		float *table = bufData;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
 			unit->m_lomask = (tableSize - 1) << 2;
@@ -1653,7 +1666,7 @@ void COsc_next(COsc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = buf->data;
+		float *table0 = bufData;
 		float *table1 = table0 + 1;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
@@ -1719,7 +1732,7 @@ void COsc2_next(COsc2 *unit, int inNumSamples)
 	GET_TABLE
 		int size = buf->samples;
 		int tableSize2 = size >> 1;
-		float *table0 = buf->data;
+		float *table0 = bufData;
 		float *table1 = table0 + 1;
 		float *table2 = table0 + size2;
 		float *table3 = table2 + 1;
