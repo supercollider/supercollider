@@ -34,12 +34,21 @@ BufRd : MultiOutUGen {
 	*ar { arg numChannels, bufnum=0, phase=0.0, loop=1.0, interpolation=2;
 		^this.multiNew('audio', numChannels, bufnum, phase, loop, interpolation)
 	}
+	*kr { arg numChannels, bufnum=0, phase=0.0, loop=1.0, interpolation=2;
+		^this.multiNew('control', numChannels, bufnum, phase, loop, interpolation)
+	}
 	
 	init { arg argNumChannels ... theInputs;
 		inputs = theInputs;
 		^this.initOutputs(argNumChannels, rate);
 	}
 	argNamesInputsOffset { ^2 }
+	checkInputs {
+ 		if (rate == 'audio' and: {inputs.at(1).rate != 'audio'}, { 
+ 			^("phase input is not audio rate: " + inputs.at(1) + inputs.at(1).rate);
+ 		});
+ 		^nil
+ 	}
 }
 
 BufWr : UGen {	
@@ -48,6 +57,17 @@ BufWr : UGen {
 			loop] ++ inputArray.asArray)
 		^inputArray
 	}
+	*kr { arg inputArray, bufnum=0, phase=0.0, loop=1.0;
+		this.multiNewList(['control', bufnum, phase, 
+			loop] ++ inputArray.asArray)
+		^inputArray
+	}
+	checkInputs {
+ 		if (rate == 'audio' and: {inputs.at(1).rate != 'audio'}, { 
+ 			^("phase input is not audio rate: " + inputs.at(1) + inputs.at(1).rate);
+ 		});
+ 		^nil
+ 	}
 }
 
 
