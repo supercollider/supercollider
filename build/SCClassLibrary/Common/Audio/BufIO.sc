@@ -15,13 +15,13 @@ PlayBuf : MultiOutUGen {
 }
 
 TGrains : MultiOutUGen {
-	*ar { arg numChannels, trigger=0, bufnum=0, rate=1, startPos=0, 
+	*ar { arg numChannels, trigger=0, bufnum=0, rate=1, centerPos=0, 
 			dur=0.1, pan=0, amp=0.1, interp=4; 
 		if (numChannels < 2) {
 			 "TGrains needs at least two channels.".error;
 			 ^nil
 		}
-		^this.multiNew('audio', numChannels, trigger, bufnum, rate, startPos, 
+		^this.multiNew('audio', numChannels, trigger, bufnum, rate, centerPos, 
 				dur, pan, amp, interp)
 	}
 	init { arg argNumChannels ... theInputs;

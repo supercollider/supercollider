@@ -5811,15 +5811,15 @@ inline float IN_AT(Unit* unit, int index, int offset)
 		float amp = y1 * y1; \
 		phase = sc_loop((Unit*)unit, phase, bufFrames, 1); \
 		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase * bufChannels; \
-		float* table2 = table1 + bufChannels; \
+		float* table1 = bufData + iphase; \
+		float* table2 = table1 + 1; \
 		if (iphase > guardFrame) { \
 			table2 -= bufSamples; \
 		} \
 		float fracphase = phase - (double)iphase; \
 		float b = table1[0]; \
 		float c = table2[0]; \
-		float outval = b + fracphase * (c - b); \
+		float outval = amp * (b + fracphase * (c - b)); \
 		ZXP(out1) += outval * pan1; \
 		ZXP(out2) += outval * pan2; \
 		double y0 = b1 * y1 - y2; \
@@ -5831,7 +5831,7 @@ inline float IN_AT(Unit* unit, int index, int offset)
 		float amp = y1 * y1; \
 		phase = sc_loop((Unit*)unit, phase, bufFrames, 1); \
 		int32 iphase = (int32)phase; \
-		float outval = bufData[iphase]; \
+		float outval = amp * bufData[iphase]; \
 		ZXP(out1) += outval * pan1; \
 		ZXP(out2) += outval * pan2; \
 		double y0 = b1 * y1 - y2; \
@@ -5925,11 +5925,14 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 			if (bufChannels != 1) continue;
 			Grain *grain = unit->mGrains + unit->mNumActive++;
 			grain->bufnum = bufnum;
+
+			double counter = floor(IN_AT(unit, 4, i) * SAMPLERATE);
+			counter = sc_max(4., counter);
+			grain->counter = (int)counter;
 			
 			double rate = grain->rate = IN_AT(unit, 2, i) * bufRateScale;
-			double phase = IN_AT(unit, 3, i) * bufSampleRate;
-			grain->counter = (int)(IN_AT(unit, 4, i) * SAMPLERATE);
-			grain->counter = sc_max(4, grain->counter);
+			double centerPhase = IN_AT(unit, 3, i) * bufSampleRate;
+			double phase = centerPhase - 0.5 * counter * rate;
 			
 			float pan = IN_AT(unit, 5, i);
 			float amp = IN_AT(unit, 6, i);
@@ -5951,7 +5954,7 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 			}
 			float pan1 = grain->pan1 = amp * sin(panangle);
 			float pan2 = grain->pan2 = amp * cos(panangle);
-			double w = pi / grain->counter;
+			double w = pi / counter;
 			double b1 = grain->b1 = 2. * cos(w);
 			double y1 = sin(w);
 			double y2 = 0.;
