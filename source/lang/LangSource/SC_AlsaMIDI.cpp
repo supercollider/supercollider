@@ -43,9 +43,12 @@ PyrSymbol* s_midiControlAction;
 PyrSymbol* s_midiPolyTouchAction;
 PyrSymbol* s_midiProgramAction;
 PyrSymbol* s_midiBendAction;
-PyrSymbol * s_midiin;
-PyrSymbol * s_numMIDIDev;
-PyrSymbol * s_midiclient;
+PyrSymbol* s_midiSysexAction;
+PyrSymbol* s_midiSysrtAction;
+PyrSymbol* s_midiSMPTEAction;
+PyrSymbol* s_midiin;
+PyrSymbol* s_numMIDIDev;
+PyrSymbol* s_midiclient;
 const int kMaxMidiPorts = 16;
 int gNumMIDIInPorts = 0, gNumMIDIOutPorts = 0;
 bool gMIDIInitialized = false;
@@ -152,75 +155,113 @@ void* SC_AlsaMidiClient::inputThreadFunc(void* arg)
 	return 0;
 }
 
+// TODO: SMPTE
+
 void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 {
 	pthread_mutex_lock (&gLangMutex);
 	if (compiledOK) {
-		VMGlobals *g = gMainVMGlobals;
+		VMGlobals* g = gMainVMGlobals;
+		PyrInt8Array* sysexArray; 
+
 		SC_AlsaMidiPacket pkt;
 
-		g->canCallOS = false; // cannot call the OS			
-		++g->sp; SetObject(g->sp, s_midiin->u.classobj); // set the class MIDIIn
-		//set arguments:
-		++g->sp; SetInt(g->sp, evt->dest.port); // src
+		g->canCallOS = false; // cannot call the OS		
+
+		// class MIDIIn	
+		++g->sp; SetObject(g->sp, s_midiin->u.classobj);
+		// source
+		++g->sp; SetInt(g->sp, evt->dest.port);
 
 		switch (evt->type) {
-			case SND_SEQ_EVENT_NOTEOFF: // noteOff
+			case SND_SEQ_EVENT_NOTEOFF:			// noteOff
 				++g->sp; SetInt(g->sp, evt->data.note.channel);
 				++g->sp; SetInt(g->sp, evt->data.note.note);
 				++g->sp; SetInt(g->sp, evt->data.note.velocity);
 				runInterpreter(g, s_midiNoteOffAction, 5);
 				break;
-			case SND_SEQ_EVENT_NOTEON: // noteOn 
+			case SND_SEQ_EVENT_NOTEON:			// noteOn 
 				++g->sp; SetInt(g->sp, evt->data.note.channel);
 				++g->sp; SetInt(g->sp, evt->data.note.note);
 				++g->sp; SetInt(g->sp, evt->data.note.velocity);
 				runInterpreter(g, evt->data.note.velocity ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
 				break;
-			case SND_SEQ_EVENT_KEYPRESS: // polytouch
+			case SND_SEQ_EVENT_KEYPRESS:		// polytouch
 				++g->sp; SetInt(g->sp, evt->data.note.channel);
 				++g->sp; SetInt(g->sp, evt->data.note.note);
 				++g->sp; SetInt(g->sp, evt->data.note.velocity);
 				runInterpreter(g, s_midiPolyTouchAction, 5);
 				break;
-			case SND_SEQ_EVENT_CONTROLLER: // control
+			case SND_SEQ_EVENT_CONTROLLER:		// control
 				++g->sp; SetInt(g->sp, evt->data.control.channel);
 				++g->sp; SetInt(g->sp, evt->data.control.param);
 				++g->sp; SetInt(g->sp, evt->data.control.value);
 				runInterpreter(g, s_midiControlAction, 5);
 				break;
-			case SND_SEQ_EVENT_PGMCHANGE: // program
+			case SND_SEQ_EVENT_PGMCHANGE:		// program
 				++g->sp; SetInt(g->sp, evt->data.control.channel);
 				++g->sp; SetInt(g->sp, evt->data.control.param);
 				runInterpreter(g, s_midiProgramAction, 4);
 				break;
-			case SND_SEQ_EVENT_CHANPRESS: // touch
+			case SND_SEQ_EVENT_CHANPRESS:		// touch
 				++g->sp; SetInt(g->sp, evt->data.control.channel);
 				++g->sp; SetInt(g->sp, evt->data.control.param);
 				runInterpreter(g, s_midiTouchAction, 4);
 				break;
-			case SND_SEQ_EVENT_PITCHBEND: // bend	
+			case SND_SEQ_EVENT_PITCHBEND:		// bend	
 				++g->sp; SetInt(g->sp, evt->data.control.channel);
 				++g->sp; SetInt(g->sp, evt->data.control.value + 8191);
 				runInterpreter(g, s_midiBendAction, 4);
 				break;
-// 			case 0xF0: // sysex
-// 				g->sp -= 2;
-// 				break;  
-			default :
-				// convert to midi packet
-				snd_midi_event_reset_decode(mEventToMidi);
-				memset(pkt.data, 0, kAlsaMaxPacketSize);
-				if (snd_midi_event_decode(mEventToMidi, pkt.data, kAlsaMaxPacketSize, evt) > 0) {
-					++g->sp; SetInt(g->sp,  pkt.data[1]); // val1
-					++g->sp; SetInt(g->sp,  pkt.data[2]); // val2
-					runInterpreter(g, s_domidiaction, 5);
-				} else {
-					post("MIDI (ALSA): could not decode MIDI packet: %s\n", snd_strerror(errno));
-					g->sp -= 2;
-				}
+			case SND_SEQ_EVENT_SONGPOS:			// song ptr
+				++g->sp; SetInt(g->sp, evt->data.control.channel);
+				++g->sp; SetInt(g->sp, (evt->data.control.value << 7) | evt->data.control.param);
+				runInterpreter(g, s_midiSysrtAction, 4);
 				break;
-				
+			case SND_SEQ_EVENT_SONGSEL:			// song sel
+				++g->sp; SetInt(g->sp, evt->data.control.channel);
+				++g->sp; SetInt(g->sp, evt->data.control.param);
+				runInterpreter(g, s_midiSysrtAction, 4);
+				break;				
+			case SND_SEQ_EVENT_START:
+				++g->sp; SetInt(g->sp, 10);
+				runInterpreter(g, s_midiSysrtAction, 3);
+				break;
+			case SND_SEQ_EVENT_CONTINUE:
+				++g->sp; SetInt(g->sp, 11);
+				runInterpreter(g, s_midiSysrtAction, 3);
+				break;
+			case SND_SEQ_EVENT_STOP:
+				++g->sp; SetInt(g->sp, 12);
+				runInterpreter(g, s_midiSysrtAction, 3);
+				break;
+			case SND_SEQ_EVENT_CLOCK:
+				++g->sp; SetInt(g->sp, 8);
+				runInterpreter(g, s_midiSysrtAction, 3);
+				break;
+			case SND_SEQ_EVENT_RESET:
+				++g->sp; SetInt(g->sp, 15);
+				runInterpreter(g, s_midiSysrtAction, 3);
+				break;
+			case SND_SEQ_EVENT_SYSEX:			// sysex
+				sysexArray = newPyrInt8Array(g->gc, evt->data.ext.len, 0, true);
+				memcpy(sysexArray->b, evt->data.ext.ptr, evt->data.ext.len);
+				sysexArray->size = evt->data.ext.len;
+				++g->sp; SetObject(g->sp, (PyrObject*)sysexArray);
+				runInterpreter(g, s_midiSysexAction, 3);
+				break;
+// 			default :
+// 				// convert to midi packet
+// 				snd_midi_event_reset_decode(mEventToMidi);
+// 				memset(pkt.data, 0, kAlsaMaxPacketSize);
+// 				if (snd_midi_event_decode(mEventToMidi, pkt.data, kAlsaMaxPacketSize, evt) > 0) {
+// 					processPacket(&pkt);
+// 				} else {
+// 					g->sp -= 2;
+// 				}
+// 				break;
+			default:
+				g->sp -= 2;
 		}
 		g->canCallOS = false;
 	}
@@ -767,6 +808,9 @@ void initMIDIPrimitives()
     s_midiPolyTouchAction = getsym("doPolyTouchAction");
     s_midiProgramAction = getsym("doProgramAction");
     s_midiBendAction = getsym("doBendAction");
+    s_midiSysexAction = getsym("doSysexAction");
+    s_midiSysrtAction = getsym("doSysrtAction");
+    s_midiSMPTEAction = getsym("doSMPTEaction");
     s_numMIDIDev = getsym("prSetNumberOfDevices");
     s_midiclient = getsym("MIDIClient");
 	definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
