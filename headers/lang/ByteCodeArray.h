@@ -46,4 +46,5 @@ void freeByteCodes(ByteCodes byteCodes);
 int compileOpcode(long opcode, long operand1);
 void compileJump(long opcode, long jumplen);
 int compileNumber(unsigned long value);
+int compileNumber24(unsigned long value);
 

@@ -68,4 +68,10 @@ Nil {
 	// ControlView support
 	set {}
 	get { arg prevVal; ^prevVal }
+	
+	
+	// if Main-startup fails then AppClock scheduler may be nil. If that happens an
+	// endless cascade of doesNotUnderstand messages gets printed in response to each clock tick
+	// unless we do this.
+	seconds_ {}
 }

@@ -45,6 +45,9 @@ PyrParseNodeClass* parseNodeClasses[pn_NumTypes];
 PyrParseNode* gRootParseNode;
 int gParserResult;
 
+int conjureConstantIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot);
+void compilePushConstant(PyrParseNode* node, PyrSlot *slot);
+
 /*
 PyrParseNodeClass *pyrSlotNodeClass;
 PyrParseNodeClass *pyrPushNameNodeClass;
@@ -252,8 +255,12 @@ void compilePushVar(PyrParseNode *node, PyrSymbol *varName)
 				vindex = METHRAW(tempfunc)->numtemps - index - 1;
 				if (level == 0) {
 					compileOpcode(opPushTempZeroVar, vindex);
-				} else {
+				} else if (level < 8) {
 					compileOpcode(opPushTempVar, level);
+					compileByte(vindex);
+				} else {
+					compileByte(opPushTempVar);
+					compileByte(level);
 					compileByte(vindex);
 				}
 				break;
@@ -657,7 +664,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetNil(&method->varNames);
 						SetObject(&method->ownerclass, metaclassobj);
 						method->name.ucopy = vardef->varName->slot.ucopy;
-						SetSymbol(&method->literals, classobj->name.us);
+						SetSymbol(&method->selectors, classobj->name.us);
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
 						SetInt(&method->charPos, linestarts[vardef->varName->lineno]);
 
@@ -686,7 +693,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetNil(&method->varNames);
 						SetObject(&method->ownerclass, metaclassobj);
 						SetSymbol(&method->name, setterSym);
-						SetSymbol(&method->literals, classobj->name.us);
+						SetSymbol(&method->selectors, classobj->name.us);
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
 						SetInt(&method->charPos, linestarts[vardef->varName->lineno]);
 
@@ -1171,7 +1178,7 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 
 		method = oldmethod;
 		freePyrSlot(&method->code);
-		freePyrSlot(&method->literals);
+		freePyrSlot(&method->selectors);
 		freePyrSlot(&method->prototypeFrame);
 		freePyrSlot(&method->argNames);
 		freePyrSlot(&method->varNames);
@@ -1376,7 +1383,7 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 						methType = methNormal;
 					} else {
 						methType = methReturnLiteral;
-						method->literals = rslot;
+						method->selectors = rslot;
 					}
 				} else if (rtype == pn_PushNameNode) {
 					PyrSlot *rslot;
@@ -1405,7 +1412,7 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 					methType = compareCallArgs(node, cnode, &specialIndex);
 					if (methType != methNormal) {
 						methraw->specialIndex = specialIndex;
-						method->literals = cnode->selector->slot;
+						method->selectors = cnode->selector->slot;
 					}
 				}
 			} else {
@@ -2253,9 +2260,11 @@ void compilePyrPushKeyArgNode(PyrPushKeyArgNode* node, void *result)
 	long dummy, index;
 	//postfl("->compilePyrPushKeyArgNode\n");
 	
-	index = conjureLiteralSlotIndex((PyrParseNode*)node, gCompilingBlock, &node->selector->slot);
+	compilePushConstant((PyrParseNode*)node, &node->selector->slot);
+
+	//index = conjureLiteralSlotIndex((PyrParseNode*)node, gCompilingBlock, &node->selector->slot);
 	
-	compileOpcode(opPushLiteral, index);
+	//compileOpcode(opPushLiteral, index);
 	
 	COMPILENODE(node->expr, &dummy);
 }
@@ -2332,17 +2341,57 @@ PyrPushLitNode* newPyrPushLitNode(PyrSlotNode* literalSlot, PyrParseNode* litera
 	return node;
 }
 
+
+void compilePushConstant(PyrParseNode* node, PyrSlot *slot)
+{
+	int index = conjureConstantIndex(node, gCompilingBlock, slot);
+	if (index < (1<<8)) {
+		compileByte(40);
+		compileByte(index & 0xFF);
+	} else if (index < (1<<16)) {
+		compileByte(41);
+		compileByte((index >> 8) & 0xFF);
+		compileByte(index & 0xFF);
+	} else if (index < (1<<24)) {
+		compileByte(42);
+		compileByte((index >> 16) & 0xFF);
+		compileByte((index >> 8) & 0xFF);
+		compileByte(index & 0xFF);
+	} else {
+		compileByte(43);
+		compileByte((index >> 24) & 0xFF);
+		compileByte((index >> 16) & 0xFF);
+		compileByte((index >> 8) & 0xFF);
+		compileByte(index & 0xFF);
+	}
+}
+
 void compilePushInt(int value)
 {
 	//postfl("compilePushInt\n");
 	if (value >= -1 && value <= 2) {
 		compileOpcode(opPushSpecialValue, opsvZero + value);
-	} else if (value >= 0) {
-		compileOpcode(opSpecialOpcode, opcPushPosInt);
-		compileNumber( value);
-	} else {
-		compileOpcode(opSpecialOpcode, opcPushNegInt);
-		compileNumber(-value);
+	} else{
+		//printf("int %d\n", value);
+		if (value >= -(1<<7) && value <= ((1<<7)-1)) {
+			compileByte(44);
+			compileByte(value & 0xFF);
+		} else if (value >= -(1<<15) && value <= ((1<<15)-1)) {
+			compileByte(45);
+			compileByte((value >> 8) & 0xFF);
+			compileByte(value & 0xFF);
+		} else if (value >= -(1<<23) && value <= ((1<<23)-1)) {
+			compileByte(46);
+			compileByte((value >> 16) & 0xFF);
+			compileByte((value >> 8) & 0xFF);
+			compileByte(value & 0xFF);
+		} else {
+			compileByte(47);
+			compileByte((value >> 24) & 0xFF);
+			compileByte((value >> 16) & 0xFF);
+			compileByte((value >> 8) & 0xFF);
+			compileByte(value & 0xFF);
+		}
 	}
 }
 
@@ -2367,17 +2416,19 @@ void compilePyrPushLitNode(PyrPushLitNode* node, void *result)
 			compileByte(index);
 		} else {
 			COMPILENODE(literalObj, &slot);
-			index = conjureLiteralSlotIndex(literalObj, gCompilingBlock, &slot);
-			compileOpcode(opPushLiteral, index);
+			//post("??? : %08X %08X %s\n", slot.utag, slot.ui, slot.uo->classptr->name.us->name);
+			compilePushConstant((PyrParseNode*)literalObj, &slot);
+			//index = conjureLiteralSlotIndex(literalObj, gCompilingBlock, &slot);
+			//compileOpcode(opPushLiteral, index);
 		}
 	} else {
 		slot = node->literalSlot;
 		if (slot.utag == tagInt) {
 			compilePushInt(slot.ui);
-		} else if (slot.utag == tagSym || slot.utag == tagChar 
+		/*} else if (slot.utag == tagChar 
 			|| slot.utag == tagObj) {
 			index = conjureLiteralSlotIndex((PyrParseNode*)node, gCompilingBlock, &slot);
-			compileOpcode(opPushLiteral, index);
+			compileOpcode(opPushLiteral, index);*/
 		} else if (SlotEq(&slot, &o_nil)) {
 			compileOpcode(opPushSpecialValue, opsvNil);
 		} else if (SlotEq(&slot, &o_true)) {
@@ -2385,23 +2436,25 @@ void compilePyrPushLitNode(PyrPushLitNode* node, void *result)
 		} else if (SlotEq(&slot, &o_false)) {
 			compileOpcode(opPushSpecialValue, opsvFalse);
 		} else if (SlotEq(&slot, &o_fhalf)) {
-			//post("opsvFHalf %s-%s\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 			compileOpcode(opPushSpecialValue, opsvFHalf);
 		} else if (SlotEq(&slot, &o_fnegone)) {
-			//post("opsvFNegOne %s-%s\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 			compileOpcode(opPushSpecialValue, opsvFNegOne);
 		} else if (SlotEq(&slot, &o_fzero)) {
 			compileOpcode(opPushSpecialValue, opsvFZero);
 		} else if (SlotEq(&slot, &o_fone)) {
 			compileOpcode(opPushSpecialValue, opsvFOne);
 		} else if (SlotEq(&slot, &o_ftwo)) {
-			//post("opsvFTwo %s-%s\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 			compileOpcode(opPushSpecialValue, opsvFTwo);
-		//} else if (SlotEq(&slot, &o_twopi)) {
-		//	compileOpcode(opPushSpecialValue, opsv2PI);
+		} else if (SlotEq(&slot, &o_inf)) {
+			compileOpcode(opPushSpecialValue, opsvInf);
+		} else if (IsFloat(&slot)) {
+			compilePushConstant((PyrParseNode*)node, &slot);
+		} else if (IsSym(&slot)) {
+			compilePushConstant((PyrParseNode*)node, &slot);
 		} else {
-			index = conjureLiteralSlotIndex((PyrParseNode*)node, gCompilingBlock, &slot);
-			compileOpcode(opPushLiteral, index);
+			compilePushConstant((PyrParseNode*)node, &slot);
+			//index = conjureLiteralSlotIndex((PyrParseNode*)node, gCompilingBlock, &slot);
+			//compileOpcode(opPushLiteral, index);
 		}
 	}
 }
@@ -2760,8 +2813,7 @@ void compilePyrDynDictNode(PyrDynDictNode* node, void* result)
 
         compilePushVar((PyrParseNode*)node, s_event);
 
-	compileOpcode(opSpecialOpcode, opcPushPosInt);
-	compileNumber(numItems);
+	compilePushInt(numItems);
 	
 	compileOpcode(opSendSpecialMsg, 2);
 	compileByte(opmNew);
@@ -2812,8 +2864,7 @@ void compilePyrDynListNode(PyrDynListNode* node, void* result)
 	//compileOpcode(opExtended, opPushSpecialValue);
 	//compileByte(op_class_list);
 
-	compileOpcode(opSpecialOpcode, opcPushPosInt);
-	compileNumber(numItems);
+	compilePushInt(numItems);
 	
 	compileOpcode(opSendSpecialMsg, 2);
 	compileByte(opmNew);
@@ -3080,8 +3131,8 @@ void compilePyrBlockNode(PyrBlockNode* node, void* result)
 	compileOpcode(opSpecialOpcode, opcFunctionReturn);
 	installByteCodes(block);
 
-	//postfl("literals %d\n", 
-	//	block->literals.uo ? block->literals.uo->size : 0);
+	//postfl("selectors %d\n", 
+	//	block->selectors.uo ? block->selectors.uo->size : 0);
 
 	gCompilingBlock = prevBlock;
 	//postfl("<-block\n");
@@ -3124,7 +3175,7 @@ int conjureSelectorIndex(PyrParseNode *node, PyrBlock* func,
 	bool isSuper, PyrSymbol *selector, int *selType)
 {
 	int i;
-	PyrObject *literals;
+	PyrObject *selectors;
 	PyrSlot *slot;
 	int newsize, flags;
 
@@ -3169,22 +3220,22 @@ int conjureSelectorIndex(PyrParseNode *node, PyrBlock* func,
 		}
 	}
 	
-	literals = func->literals.uo;
-	if (literals) {
-		for (i=0; i<literals->size; ++i) {
-			if (literals->slots[i].utag == tagSym && literals->slots[i].us == selector) {
+	selectors = func->selectors.uo;
+	if (selectors) {
+		for (i=0; i<selectors->size; ++i) {
+			if (selectors->slots[i].utag == tagSym && selectors->slots[i].us == selector) {
 				*selType = selNormal;
 				return i;
 			}
 		}
 	} else {
-		func->literals.utag = tagObj;
-		literals = func->literals.uo = 
+		func->selectors.utag = tagObj;
+		selectors = func->selectors.uo = 
 			(PyrObject*)newPyrArray(compileGC(), 2, flags, false);
 	}
-	// otherwise add it to the literals table
+	// otherwise add it to the selectors table
 	
-	if (literals->size+1 >= 256) { 
+	if (selectors->size+1 >= 256) { 
 		error("Literal table too big. Simplify the function.\n");
 		post("Next selector was: %s\n", selector->name);
 		nodePostErrorLine(node);
@@ -3192,54 +3243,54 @@ int conjureSelectorIndex(PyrParseNode *node, PyrBlock* func,
 		return 0;
 	}
 
-	if (literals->size+1 > ARRAYMAXINDEXSIZE(literals)) { 
+	if (selectors->size+1 > ARRAYMAXINDEXSIZE(selectors)) { 
 		// resize literal table
-		newsize = ARRAYMAXINDEXSIZE(literals) * 2;
-		func->literals.uo = 
+		newsize = ARRAYMAXINDEXSIZE(selectors) * 2;
+		func->selectors.uo = 
 			(PyrObject*)newPyrArray(compileGC(), newsize, flags, false);
-		memcpy(func->literals.uo->slots, literals->slots, literals->size * sizeof(PyrSlot));
-		func->literals.uo->size = literals->size;
-		freePyrObject(literals);
-		literals = func->literals.uo;
+		memcpy(func->selectors.uo->slots, selectors->slots, selectors->size * sizeof(PyrSlot));
+		func->selectors.uo->size = selectors->size;
+		freePyrObject(selectors);
+		selectors = func->selectors.uo;
 	}
-	slot = literals->slots + literals->size++;
+	slot = selectors->slots + selectors->size++;
 	SetSymbol(slot, selector);
 		
 	*selType = selNormal;
-	return literals->size-1;
+	return selectors->size-1;
 }
 
 int conjureLiteralSlotIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot)
 {
 	int i;
-	PyrObject *literals;
+	PyrObject *selectors;
 	PyrSlot *slot2;
 	int newsize, flags;
 
 	flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
-	// lookup slot in literals table
-	literals = func->literals.uo;
-	/*if (literals && literals->classptr != class_array) {
+	// lookup slot in selectors table
+	selectors = func->selectors.uo;
+	/*if (selectors && selectors->classptr != class_array) {
 		post("compiling %s-%s\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
-		post("literals is a '%s'\n", literals->classptr->name.us->name);
+		post("selectors is a '%s'\n", selectors->classptr->name.us->name);
 		dumpObjectSlot(slot);
 		Debugger();
 	}*/
-	if (literals) {
-		for (i=0; i<literals->size; ++i) {
-			if (literals->slots[i].utag == slot->utag 
-				&& literals->slots[i].ui == slot->ui) {
+	if (selectors) {
+		for (i=0; i<selectors->size; ++i) {
+			if (selectors->slots[i].utag == slot->utag 
+				&& selectors->slots[i].ui == slot->ui) {
 				return i;
 			}
 		}
 	} else {
-		func->literals.utag = tagObj;
-		literals = func->literals.uo = 
+		func->selectors.utag = tagObj;
+		selectors = func->selectors.uo = 
 			(PyrObject*)newPyrArray(compileGC(), 4, flags, false);
 	}
-	// otherwise add it to the literals table
+	// otherwise add it to the selectors table
 	
-	if (literals->size+1 >= 256) { 
+	if (selectors->size+1 >= 256) { 
 		error("Literal table too big (>256). Simplify the function.\n");
 		post("Next literal was:\n");
 		dumpPyrSlot(slot); 
@@ -3247,21 +3298,62 @@ int conjureLiteralSlotIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot)
 		compileErrors++;
 		return 0;
 	}
-	if (literals->size+1 > ARRAYMAXINDEXSIZE(literals)) { 
+	if (selectors->size+1 > ARRAYMAXINDEXSIZE(selectors)) { 
 		// resize literal table
-		newsize = ARRAYMAXINDEXSIZE(literals) * 2;
+		newsize = ARRAYMAXINDEXSIZE(selectors) * 2;
 		// resize literal table
-		func->literals.uo = 
+		func->selectors.uo = 
 			(PyrObject*)newPyrArray(compileGC(), newsize, flags, false);
-		memcpy(func->literals.uo->slots, literals->slots, literals->size * sizeof(PyrSlot));
-		func->literals.uo->size = literals->size;
-		freePyrObject(literals);  
-		literals = func->literals.uo;
+		memcpy(func->selectors.uo->slots, selectors->slots, selectors->size * sizeof(PyrSlot));
+		func->selectors.uo->size = selectors->size;
+		freePyrObject(selectors);  
+		selectors = func->selectors.uo;
 	}
-	slot2 = literals->slots + literals->size++;
+	slot2 = selectors->slots + selectors->size++;
 	*(double*)slot2 = *(double*)slot;
 		
-	return literals->size-1;
+	return selectors->size-1;
+}
+
+
+int conjureConstantIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot)
+{
+	int i;
+	PyrObject *constants;
+	int newsize, flags;
+
+	flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
+	
+	// lookup slot in constants table
+	constants = func->constants.uo;
+	if (constants) {
+		for (i=0; i<constants->size; ++i) {
+			if (constants->slots[i].utag == slot->utag 
+				&& constants->slots[i].ui == slot->ui) {
+				return i;
+			}
+		}
+	} else {
+		func->constants.utag = tagObj;
+		constants = func->constants.uo = 
+			(PyrObject*)newPyrArray(compileGC(), 4, flags, false);
+	}
+
+	// otherwise add it to the constants table
+	if (constants->size+1 > ARRAYMAXINDEXSIZE(constants)) { 
+		// resize literal table
+		newsize = ARRAYMAXINDEXSIZE(constants) * 2;
+		// resize literal table
+		func->constants.uo = 
+			(PyrObject*)newPyrArray(compileGC(), newsize, flags, false);
+		memcpy(func->constants.uo->slots, constants->slots, constants->size * sizeof(PyrSlot));
+		func->constants.uo->size = constants->size;
+		freePyrObject((PyrObject*)constants);  
+		constants = func->constants.uo;
+	}
+	constants->slots[constants->size++].ucopy = slot->ucopy;
+		
+	return constants->size-1;
 }
 
 bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name, 

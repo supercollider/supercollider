@@ -60,8 +60,8 @@ enum {
 	opcJumpIfTruePushTrue,		// OR: 		
 	opcJumpFwd,			
 	opcJumpBak,			
-	opcPushPosInt,				
-	opcPushNegInt,		// 15
+	opcPushInt,				
+	opcPushConstant,		// 15
 	
 	opcNewList,
 	
@@ -313,7 +313,7 @@ enum {
 	opsvTrue,
 	opsvFalse,
 	opsvNil,
-	opsvEnd,		// 15
+	opsvInf,		// 15
 	
 	opsvNumSpecialValues
 };

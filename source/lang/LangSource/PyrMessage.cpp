@@ -89,7 +89,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 				break;
 			case methReturnLiteral : /* return literal */
 				sp = g->sp -= numArgsPushed - 1;
-				sp[0].ucopy = meth->literals.ucopy; /* in this case literals is just a single value */
+				sp[0].ucopy = meth->selectors.ucopy; /* in this case selectors is just a single value */
 				break;
 			case methReturnArg : /* return an argument */
 				sp = g->sp -= numArgsPushed - 1;
@@ -121,13 +121,13 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 			case methReturnClassVar : /* return class var */
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
-				classIndex = meth->literals.us->u.classobj->classIndex.ui;
+				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
 				sp[0].ucopy = g->classvars[classIndex].uo->slots[index].ucopy;
 				break;
 			case methAssignClassVar : /* assign class var */
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
-				classIndex = meth->literals.us->u.classobj->classIndex.ui;
+				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
 				obj = g->classvars[classIndex].uo;
 				if (numArgsPushed >= 2) {
 					obj->slots[index].ucopy = sp[1].ucopy;
@@ -148,7 +148,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
-				selector = meth->literals.us;
+				selector = meth->selectors.us;
 				goto lookup_again;
 			case methForward : /* forward to an instance variable */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
@@ -161,7 +161,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
-				selector = meth->literals.us;
+				selector = meth->selectors.us;
 				index = methraw->specialIndex;
 				recvrSlot->ucopy = recvrSlot->uo->slots[index].ucopy;
 							
@@ -218,7 +218,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				break;
 			case methReturnLiteral : /* return literal */
 				sp = g->sp -= numArgsPushed - 1;
-				sp[0].ucopy = meth->literals.ucopy; /* in this case literals is just a single value */
+				sp[0].ucopy = meth->selectors.ucopy; /* in this case selectors is just a single value */
 				break;
 			case methReturnArg : /* return an argument */
 				sp = g->sp -= numArgsPushed - 1;
@@ -250,13 +250,13 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 			case methReturnClassVar : /* return class var */
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
-				classIndex = meth->literals.us->u.classobj->classIndex.ui;
+				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
 				sp[0].ucopy = g->classvars[classIndex].uo->slots[index].ucopy;
 				break;
 			case methAssignClassVar : /* assign class var */
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
-				classIndex = meth->literals.us->u.classobj->classIndex.ui;
+				classIndex = meth->selectors.us->u.classobj->classIndex.ui;
 				obj = g->classvars[classIndex].uo;
 				if (numArgsPushed >= 2) {
 					obj->slots[index].ucopy = sp[1].ucopy;
@@ -267,10 +267,10 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				sp[0].ucopy = recvrSlot->ucopy;
 				break;
 			case methRedirect : /* send a different selector to self, e.g. this.subclassResponsibility */
-				selector = meth->literals.us;
+				selector = meth->selectors.us;
 				goto lookup_again;
 			case methForward : /* forward to an instance variable */
-				selector = meth->literals.us;
+				selector = meth->selectors.us;
 				index = methraw->specialIndex;
 				recvrSlot->ucopy = recvrSlot->uo->slots[index].ucopy;
 				
@@ -289,7 +289,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				index = methraw->specialIndex;
 				if (index < numArgsPushed) {
 					classobj = sp[index].uo->classptr;
-					selector = meth->literals.us;
+					selector = meth->selectors.us;
 					goto lookup_again;
 				} else {
 					doesNotUnderstand(g, selector, numArgsPushed);
@@ -299,7 +299,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				index = methraw->specialIndex;
 				if (index < numArgsPushed) {
 					index = arrayAtIdentityHashInPairs(array, b);
-					meth = meth->literals.uo->slots[index + 1].uom;
+					meth = meth->selectors.uo->slots[index + 1].uom;
 					goto meth_select_again;
 				} else {
 					doesNotUnderstand(g, selector, numArgsPushed);

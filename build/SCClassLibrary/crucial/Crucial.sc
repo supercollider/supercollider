@@ -327,9 +327,9 @@ Crucial {
 
 			Class.allClasses.do({ arg class;
 				(class.methods).do({ arg method;
-					var literals;
-					literals = method.literals;
-					literals.do({ arg lit;
+					var selectors;
+					selectors = method. selectors;
+					selectors.do({ arg lit;
 						if(lit.isKindOf(Symbol) and: { lit.isClassName },{
 							if(lit.asClass.isNil,{
 								lit.post;
@@ -369,10 +369,10 @@ Crucial {
 		
 		Class.allClasses.do({ arg class;
 			(class.methods).do({ arg method;
-				var literals;
-				literals = method.literals;
-				if(literals.notNil,{
-					literals.do({ arg lit;
+				var selectors;
+				selectors = method.selectors;
+				if(selectors.notNil,{
+					selectors.do({ arg lit;
 						if(lit.isKindOf(Symbol) and: { lit.isClassName.not },{
 							if(allMethodNames.at(lit).isNil,{
 								lit.post;

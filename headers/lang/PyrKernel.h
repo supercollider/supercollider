@@ -147,7 +147,8 @@ struct PyrBlock : public PyrObjectHdr
 	PyrSlot rawData1;			
 	PyrSlot rawData2;			
 	PyrSlot code;				// byte codes, nil if inlined
-	PyrSlot literals;			// literal table
+	PyrSlot selectors;			// method selectors, class names, closures table
+	PyrSlot constants;			// floating point constants table (to alleviate the literal table problem)
 	PyrSlot prototypeFrame;		// prototype of an activation frame
 	PyrSlot context;			// ***defining block context
 	PyrSlot argNames;			// ***arguments to block
@@ -196,13 +197,6 @@ struct PyrInterpreter : public PyrObjectHdr
 	PyrSlot u, v, w, x, y, z;
 };
 
-struct PyrDict : public PyrObjectHdr 
-{
-	
-	PyrSlot numelems;
-	PyrSlot elems;
-};
-
 /* special values */
 enum {
 	svNil,
@@ -217,7 +211,7 @@ enum {
 	svFZero,
 	svFOne,
 	svFTwo,
-	svEnd,
+	svInf,
 	
 	svNumSpecialValues
 };
@@ -236,6 +230,7 @@ PyrObject* newPyrArray(class PyrGC *gc, int size, int flags, bool collect);
 PyrSymbolArray* newPyrSymbolArray(class PyrGC *gc, int size, int flags, bool collect);
 PyrInt8Array* newPyrInt8Array(class PyrGC *gc, int size, int flags, bool collect);
 PyrInt32Array* newPyrInt32Array(class PyrGC *gc, int size, int flags, bool collect);
+PyrDoubleArray* newPyrDoubleArray(class PyrGC *gc, int size, int flags, bool collect);
 
 PyrObject* copyObject(class PyrGC *gc, PyrObject *inobj, bool collect);
 PyrObject* copyObjectRange(class PyrGC *gc, PyrObject *inobj, int start, int end, bool collect);

@@ -263,7 +263,7 @@ enum {
 	pn_ArgListNode,
 	pn_SlotDefNode,
 	
-	/* literals */
+	/* selectors */
 	pn_LiteralNode,
 	
 	/* code */

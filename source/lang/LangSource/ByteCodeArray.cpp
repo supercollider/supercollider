@@ -73,34 +73,19 @@ void compileByte(long byte)
 
 int compileNumber(unsigned long value)
 {
-	int retc;
-	if (value < 0x00000080) {
-		compileByte(value & 0x7F);
-		retc = 1;
-	} else if (value < 0x00004000) {
-		compileByte((value >>  7) & 0x7F | 0x80);
-		compileByte(value & 0x7F);
-		retc = 2;
-	} else if (value < 0x00200000) {
-		compileByte((value >> 14) & 0x7F | 0x80);
-		compileByte((value >>  7) & 0x7F | 0x80);
-		compileByte(value & 0x7F);
-		retc = 3;
-	} else if (value < 0x10000000) {
-		compileByte((value >> 21) & 0x7F | 0x80);
-		compileByte((value >> 14) & 0x7F | 0x80);
-		compileByte((value >>  7) & 0x7F | 0x80);
-		compileByte(value & 0x7F);
-		retc = 4;
-	} else {
-		compileByte((value >> 28) & 0x0F | 0x80);
-		compileByte((value >> 21) & 0x7F | 0x80);
-		compileByte((value >> 14) & 0x7F | 0x80);
-		compileByte((value >>  7) & 0x7F | 0x80);
-		compileByte(value & 0x7F);
-		retc = 4;
-	}
-	return retc;
+	compileByte((value >> 24) & 0xFF);
+	compileByte((value >> 16) & 0xFF);
+	compileByte((value >> 8) & 0xFF);
+	compileByte(value & 0xFF);
+	return 4;
+}
+
+int compileNumber24(unsigned long value)
+{
+	compileByte((value >> 16) & 0xFF);
+	compileByte((value >> 8) & 0xFF);
+	compileByte(value & 0xFF);
+	return 4;
 }
 
 void compileAndFreeByteCodes(ByteCodes byteCodes)

@@ -290,7 +290,7 @@ void initSymbols()
 	gSpecialValues[svFZero] = o_fzero.uf;
 	gSpecialValues[svFOne] = o_fone.uf;
 	gSpecialValues[svFTwo] = o_ftwo.uf;
-	gSpecialValues[svEnd] = o_end.uf;
+	gSpecialValues[svInf] = o_inf.uf;
 	
 	gFormatElemSize[obj_notindexed] = sizeof(PyrSlot);
 	gFormatElemSize[obj_slot  ] = sizeof(PyrSlot);
@@ -1296,13 +1296,14 @@ void initClasses()
 	fixClassArrays(class_arrayed_collection);
 	fixClassArrays(class_array);
 	
-	class_fundef = makeIntrinsicClass(s_fundef, s_object, 8, 0);
+	class_fundef = makeIntrinsicClass(s_fundef, s_object, 9, 0);
 		// declare varNames for Block
 		
 		addIntrinsicVar(class_fundef, "raw1", &o_nil);
 		addIntrinsicVar(class_fundef, "raw2", &o_nil);
 		addIntrinsicVar(class_fundef, "code", &o_nil);
-		addIntrinsicVar(class_fundef, "literals", &o_nil);
+		addIntrinsicVar(class_fundef, "selectors", &o_nil);
+		addIntrinsicVar(class_fundef, "constants", &o_nil);
 		
 		addIntrinsicVar(class_fundef, "prototypeFrame", &o_nil);
 		addIntrinsicVar(class_fundef, "context", &o_nil);
@@ -2190,6 +2191,16 @@ PyrInt32Array* newPyrInt32Array(class PyrGC *gc, int size, int flags, bool colle
 	if (!gc) array = (PyrInt32Array*)PyrGC::NewPermanent(size, flags, obj_int32);
 	else array = (PyrInt32Array*)gc->New(size, flags, obj_int32, collect);
 	array->classptr = class_int32array;
+	return array;
+}
+
+PyrDoubleArray* newPyrDoubleArray(class PyrGC *gc, int size, int flags, bool collect) 
+{
+	PyrDoubleArray* array;
+
+	if (!gc) array = (PyrDoubleArray*)PyrGC::NewPermanent(size, flags, obj_double);
+	else array = (PyrDoubleArray*)gc->New(size, flags, obj_double, collect);
+	array->classptr = class_doublearray;
 	return array;
 }
 

@@ -90,9 +90,9 @@ typedef union pyrslot {
 			struct PyrClass *oc;
 			struct PyrFrame *of;
 			struct PyrList *ol;
-			struct PyrDict *od;
 			struct PyrString *os;
 			struct PyrInt8Array *ob;
+			struct PyrDoubleArray *od;
 			struct PyrSymbolArray *osym;
 			struct PyrParseNode *opn;
 			struct PyrProcess *op;
@@ -224,7 +224,7 @@ int slotStrVal(PyrSlot *slot, char *str, int maxlen);
 int slotPStrVal(PyrSlot *slot, unsigned char *str);
 int slotSymbolVal(PyrSlot *slot, PyrSymbol **symbol);
 
-extern PyrSlot o_nil, o_true, o_false, o_end, o_inf;
+extern PyrSlot o_nil, o_true, o_false, o_inf;
 extern PyrSlot o_pi, o_twopi;
 extern PyrSlot o_fhalf, o_fnegone, o_fzero, o_fone, o_ftwo;
 extern PyrSlot o_negtwo, o_negone, o_zero, o_one, o_two;

@@ -1991,7 +1991,7 @@ bool compileLibrary()
         compileStartTime = elapsedTime();
 	
 	totalByteCodes = 0;
-
+	
 	postfl("compiling class library..\n");
 
 	bool res = passOne();
@@ -2016,6 +2016,7 @@ bool compileLibrary()
 	} else {
 		compiledOK = false;
 	}
+	
 	pthread_mutex_unlock (&gLangMutex);
 	//printf("<-compileLibrary\n");
 	return compiledOK;

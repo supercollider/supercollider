@@ -300,7 +300,7 @@ Process {
 
 
 FunctionDef {
-	var raw1, raw2, <code, <literals, <prototypeFrame, <context, <argNames, <varNames;
+	var raw1, raw2, <code, <selectors, <constants, <prototypeFrame, <context, <argNames, <varNames;
 	
 	// a FunctionDef is defined by a code within curly braces {}
 	// When you use a FunctionDef in your code it gets pushed on the stack
@@ -327,7 +327,7 @@ FunctionDef {
 	
 	findReferences { arg aSymbol, references; 
 		var lits;
-		lits = literals.asArray;
+		lits = selectors.asArray;
 		if (lits.includes(aSymbol), {
 			references = references.add(this);
 		});

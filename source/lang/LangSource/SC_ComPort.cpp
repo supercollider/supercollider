@@ -42,6 +42,123 @@ int sendall(int socket, const void *msg, size_t len);
 
 void ProcessOSCPacket(OSC_Packet *inPacket);
 
+void dumpOSCmsg(int inSize, char* inData)
+{
+	int size;
+	char *data;
+	
+	if (inData[0]) {
+		char *addr = inData;
+		data = OSCstrskip(inData);
+		size = inSize - (data - inData);
+		printf("[ \"%s\",", addr);
+	}
+	else
+	{
+		printf("[ %d,", OSCint(inData));
+		data = inData + 4;
+		size = inSize - 4;
+	}
+	
+	sc_msg_iter msg(size, data);
+				
+	while (msg.remain())
+	{
+		char c = msg.nextTag('i');
+		switch(c)
+		{
+			case 'i' :
+				printf(" %d", msg.geti());
+				break;
+			case 'f' :
+				printf(" %g", msg.getf());
+				break;
+			case 'd' :
+				printf(" %g", msg.getd());
+				break;
+			case 's' :
+				printf(" \"%s\"", msg.gets());
+				break;
+			case 'b' :
+				printf(" DATA[%d]", msg.getbsize());
+				msg.skipb();
+				break;
+			default :
+				printf(" !unknown tag '%c' 0x%02x !", isprint(c)?c:'?', (unsigned char)c & 255);
+				goto leave;
+		}
+		if (msg.remain()) printf(",");
+	}
+leave:
+	printf(" ]");
+}
+
+void hexdump(int size, char* data)
+{
+	char ascii[20];
+	int padsize = (size + 15) & -16;
+	printf("size %d\n", size);
+	for (int i=0; i<padsize; ++i)
+	{
+		if ((i&15)==0)
+		{
+			printf("%4d   ", i);
+		}
+		if (i >= size) 
+		{
+			printf("   ");
+			ascii[i&15] = 0;
+		}
+		else 
+		{
+			printf("%02x ", (unsigned char)data[i] & 255);
+			
+			if (isprint(data[i])) ascii[i&15] = data[i];
+			else ascii[i&15] = '.';
+		}
+		if ((i&15)==15)
+		{
+			ascii[16] = 0;
+			printf("  |%s|\n", ascii);
+		}
+		else if ((i&3)==3)
+		{
+			printf(" ");
+		}
+	}
+	printf("\n");
+}
+
+void dumpOSC(int mode, int size, char* inData)
+{
+	if (mode & 1)
+	{
+		if (strcmp(inData, "#bundle") == 0) 
+		{
+			char* data = inData + 8;
+			printf("[ \"#bundle\", %lld, ", OSCtime(data));
+			data += 8;
+			char* dataEnd = inData + size;
+			while (data < dataEnd) {
+				int32 msgSize = OSCint(data);
+				data += sizeof(int32);
+				printf("\n    ");
+				dumpOSCmsg(msgSize, data);
+				data += msgSize;
+				if (data < dataEnd) printf(",");
+			}
+			printf("\n]\n");
+		}
+		else 
+		{
+			dumpOSCmsg(size, inData);
+			printf("\n");
+		}
+	}
+	
+	if (mode & 2) hexdump(size, inData);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 SC_CmdPort::SC_CmdPort()
@@ -151,6 +268,9 @@ void* SC_UdpInPort::Run()
 {
 	char buf[kTextBufSize];
 	OSC_Packet *packet = 0;
+	
+	//printf("SC_UdpInPort::Run\n"); fflush(stdout);
+	
 	while (true) {		
 		if (!packet) {
 			packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
@@ -160,6 +280,9 @@ void* SC_UdpInPort::Run()
 								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, (socklen_t*)&packet->mReplyAddr.mSockAddrLen);
 		
 		if (size > 0) {
+			//dumpOSC(3, size, buf);
+			//fflush(stdout);
+			
 			char *data = (char*)malloc(size);
 			packet->mReplyAddr.mReplyFunc = udp_reply_func;
 			packet->mSize = size;
@@ -264,7 +387,6 @@ extern const char* gPassword;
 
 void* SC_TcpConnectionPort::Run()
 {
-	char buf[kTextBufSize];
 	OSC_Packet *packet = 0;
 	// wait for login message
 	int32 size;

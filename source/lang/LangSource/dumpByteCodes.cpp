@@ -72,7 +72,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 	switch (op1) {
 		case 0 : //	push class
 			op2 = *ip++; // get literal index
-			classobj = theBlock->literals.uo->slots[op2].us->u.classobj;
+			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
 			post(" %02X    PushClassX '%s'\n", op2,
 				classobj->name.us->name);
 			break;
@@ -118,14 +118,14 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 4 : // Extended, PushLiteral
 			op2 = *ip++; // get literal index
 			// push a block if it is one
-			slot = theBlock->literals.uo->slots + op2;
+			slot = theBlock->selectors.uo->slots + op2;
 			slotString(slot, str);
 			post(" %02X    PushLiteralX %s\n", op2, str);
 			break;
 		case 5 : // Extended, PushClassVar
 			op2 = *ip++; // get class var literal index
 			op3 = *ip++; // get class var index
-			classobj = theBlock->literals.uo->slots[op2].us->u.classobj;
+			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
 			post(" %02X %02X PushClassVarX '%s'\n", op2, op3,
 				classobj->classVarNames.uosym->symbols[op3]->name);
 			break;
@@ -161,7 +161,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 9 : // Extended, StoreClassVar
 			op2 = *ip++; // get class var literal index
 			op3 = *ip++; // get class var index
-			classobj = theBlock->literals.uo->slots[op2].us->u.classobj;
+			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
 			post(" %02X %02X StoreClassVarX '%s'\n", op2, op3,
 				classobj->classVarNames.uosym->symbols[op3]->name);
 			break;
@@ -169,14 +169,14 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op2 = *ip++; // get num args
 			op3 = *ip++; // get num key args
 			op4 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op4].us;
+			selector = theBlock->selectors.uo->slots[op4].us;
 			post(" %02X %02X %02X SendMsgX '%s'\n", op2, op3, op4, selector->name);
 			break;
 		case 11 : // Extended, SuperMsg
 			op2 = *ip++; // get num args
 			op3 = *ip++; // get num key args
 			op4 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op4].us;
+			selector = theBlock->selectors.uo->slots[op4].us;
 			post(" %02X %02X %02X SuperMsgX '%s'\n", op2, op3, op4, selector->name);
 			break;
 		case 12 :  // Extended, SendSpecialMsg
@@ -222,8 +222,6 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			break;
 		case 32 :	case 33 :	case 34 :	case 35 :  
 		case 36 :	case 37 :	case 38 :	case 39 :  
-		case 40 :	case 41 :	case 42 :	case 43 : 
-		case 44 :	case 45 :	case 46 :	case 47 : 
 			op2 = op1 & 15; // get temp var level
 
 			block = theBlock;
@@ -241,6 +239,74 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 					block->varNames.uosym->symbols[op3-numArgNames]->name);
 			}
 			break;				
+
+		case 40 :
+			op5 = *ip++;
+			ival = op5;
+			slot = theBlock->constants.uo->slots + ival;
+			slotString(slot, str);
+			post(" %02X PushConstant %s\n", op5, str);
+			break;
+			
+		case 41 :
+			op4 = *ip++;
+			op5 = *ip++;
+			ival = (op4 << 8) | op5;
+			slot = theBlock->constants.uo->slots + ival;
+			slotString(slot, str);
+			post(" %02X %02X PushConstant %s\n", op4, op5, str);
+			break;
+			
+		case 42 :
+			op3 = *ip++;
+			op4 = *ip++;
+			op5 = *ip++;
+			ival = (op3 << 16) | (op4 << 8) | op5;
+			slot = theBlock->constants.uo->slots + ival;
+			slotString(slot, str);
+			post(" %02X %02X %02X PushConstant %s\n", op3, op4, op5, str);
+			break;
+			
+		case 43 :
+			op2 = *ip++;
+			op3 = *ip++;
+			op4 = *ip++;
+			op5 = *ip++;
+			ival = (op2 << 24) | (op3 << 16) | (op4 << 8) | op5;
+			slot = theBlock->constants.uo->slots + ival;
+			slotString(slot, str);
+			post(" %02X %02X %02X %02X PushConstant %s\n", op2, op3, op4, op5, str);
+			break;
+
+		case 44 :
+			op5 = *ip++;
+			ival = (int32)(op5 << 24) >> 24;
+			post(" %02X PushInt %d\n", op5, ival);
+			break;
+			
+		case 45 :
+			op4 = *ip++;
+			op5 = *ip++;
+			ival = (int32)((op5 << 24) | (op4 << 16)) >> 16;
+			post(" %02X %02X PushInt %d\n", op4, op5, ival);
+			break;
+			
+		case 46 :
+			op3 = *ip++;
+			op4 = *ip++;
+			op5 = *ip++;
+			ival = (int32)((op5 << 24) | (op4 << 16) | (op3 << 8)) >> 8;
+			post(" %02X %02X %02X PushInt %d\n", op3, op4, op5, ival);
+			break;
+			
+		case 47 :
+			op2 = *ip++;
+			op3 = *ip++;
+			op4 = *ip++;
+			op5 = *ip++;
+			ival = (int32)((op5 << 24) | (op4 << 16) | (op3 << 8) | op2);
+			post(" %02X %02X %02X %02X PushInt %d\n", op2, op3, op4, op5, ival);
+			break;
 
 		case 48 :	case 49 :	case 50 :	case 51 :  
 		case 52 :	case 53 :	case 54 :	case 55 :  
@@ -268,7 +334,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 72 :	case 73 :	case 74 :	case 75 : 
 		case 76 :	case 77 :	case 78 :	case 79 : 
 			op2 = op1 & 15; // get temp var level
-			slot = theBlock->literals.uo->slots + op2;
+			slot = theBlock->selectors.uo->slots + op2;
 			slotString(slot, str);
 			post("       PushLiteral %s\n", str);
 			break;				
@@ -280,7 +346,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 92 :  case 93 :  case 94 :  case 95 :
 			op2 = op1 & 15;
 			op3 = *ip++; // get class var index
-			classobj = theBlock->literals.uo->slots[op2].us->u.classobj;
+			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
 			post(" %02X %02X PushClassVar '%s'\n", op2, op3,
 				classobj->classVarNames.uosym->symbols[op3]->name);
 			break;
@@ -341,13 +407,13 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			break;
 		case 137 :  
 			op2 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op2].us;
+			selector = theBlock->selectors.uo->slots[op2].us;
 			post(" %02X    PushAllArgs+SendMsg '%s'\n", 
 				op2, selector->name);
 			break;
 		case 138 :  
 			op2 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op2].us;
+			selector = theBlock->selectors.uo->slots[op2].us;
 			post(" %02X     PushAllButFirstArg+SendMsg '%s'\n", 
 				op2, selector->name);
 			break;
@@ -365,7 +431,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			break;
 		case 141 :  
 			op2 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op2].us;
+			selector = theBlock->selectors.uo->slots[op2].us;
 			post(" %02X     PushAllButFirstTwoArgs+SendMsg '%s'\n", 
 				op2, selector->name);
 			break;
@@ -388,7 +454,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 156 :  case 157 :  case 158 :  case 159 :
 			op2 = op1 & 15;
 			op3 = *ip++; // get class var index
-			classobj = theBlock->literals.uo->slots[op2].us->u.classobj;
+			classobj = theBlock->selectors.uo->slots[op2].us->u.classobj;
 			post(" %02X    StoreClassVar '%s'\n", op3,
 				classobj->classVarNames.uosym->symbols[op3]->name);
 			break;
@@ -399,7 +465,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 168 :  case 169 :  case 170 :  case 171 :  
 		case 172 :  case 173 :  case 174 :  case 175 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op2].us;
+			selector = theBlock->selectors.uo->slots[op2].us;
 			post(" %02X    SendMsg '%s'\n", op2, selector->name);
 			break;
 			
@@ -409,7 +475,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 184 :  case 185 :  case 186 :  case 187 :  
 		case 188 :  case 189 :  case 190 :  case 191 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op2].us;
+			selector = theBlock->selectors.uo->slots[op2].us;
 			post(" %02X    SuperMsg '%s'\n", op2, selector->name);
 			break;
 			
@@ -490,63 +556,23 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			jmplen = (op2<<8) | op3;
 			post(" %02X %02X JumpBak %d  (%d)\n", op2, op3, jmplen, n - jmplen + 1);
 			break;
-		case 254 : // PushPosInt
+		case 254 : // PushInt
 			op2 = *ip++;
-			if (op2 & 0x80) {
-				ival = op2 & 0x7F;
-				op3 = *ip++;
-				ival = (ival<<7) | (op3 & 0x7F);
-				if (op3 & 0x80) {
-					op4 = *ip++;
-					ival = (ival<<7) | (op4 & 0x7F);
-					if (op4 & 0x80) {
-						op5 = *ip++;
-						ival = (ival<<7) | (op5 & 0x7F);
-						if (op5 & 0x80) {
-							op6 = *ip++;
-							ival = (ival<<7) | (op6 & 0x7F);
-							post(" %02X %02X %02X %02X %02X PushPosInt %d\n", op2, op3, op4, op5, op6, ival);
-						} else {
-							post(" %02X %02X %02X %02X PushPosInt %d\n", op2, op3, op4, op5, ival);
-						}
-					} else {
-							post(" %02X %02X %02X PushPosInt %d\n", op2, op3, op4, ival);
-					}
-				} else {
-						post(" %02X %02X PushPosInt %d\n", op2, op3, ival);
-				}
-			} else {
-						post(" %02X    PushPosInt %d\n", op2, op2);
-			}
+			op3 = *ip++;
+			op4 = *ip++;
+			op5 = *ip++;
+			ival = (op2 << 24) | (op3 << 16) | (op4 << 8) | op5;
+			post(" %02X %02X %02X %02X PushInt %d\n", op2, op3, op4, op5, ival);
 			break;
-		case 255 : // PushNegInt
+		case 255 : // PushConstant
 			op2 = *ip++;
-			if (op2 & 0x80) {
-				ival = op2 & 0x7F;
-				op3 = *ip++;
-				ival = (ival<<7) | (op3 & 0x7F);
-				if (op3 & 0x80) {
-					op4 = *ip++;
-					ival = (ival<<7) | (op4 & 0x7F);
-					if (op4 & 0x80) {
-						op5 = *ip++;
-						ival = (ival<<7) | (op5 & 0x7F);
-						if (op5 & 0x80) {
-							op6 = *ip++;
-							ival = (ival<<7) | (op6 & 0x7F);
-							post(" %02X %02X %02X %02X %02X PushNegInt %d\n", op2, op3, op4, op5, op6, -ival);
-						} else {
-							post(" %02X %02X %02X %02X PushNegInt %d\n", op2, op3, op4, op5, -ival);
-						}
-					} else {
-							post(" %02X %02X %02X PushNegInt %d\n", op2, op3, op4, -ival);
-					}
-				} else {
-						post(" %02X %02X PushNegInt %d\n", op2, op3, -ival);
-				}
-			} else {
-						post(" %02X    PushNegInt %d\n", op2, -op2);
-			}
+			op3 = *ip++;
+			op4 = *ip++;
+			op5 = *ip++;
+			ival = (op2 << 24) | (op3 << 16) | (op4 << 8) | op5;
+			slot = theBlock->constants.uo->slots + ival;
+			slotString(slot, str);
+			post(" %02X %02X %02X %02X PushConstant %s\n", op2, op3, op4, op5, str);
 			break;
 	}
 	return ip;
@@ -615,13 +641,13 @@ bool detectSendSelector(PyrBlock *theBlock, PyrClass* theClass, unsigned char **
 			op2 = *ip++; // get num args
 			op3 = *ip++; // get num key args
 			op4 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op4].us;
+			selector = theBlock->selectors.uo->slots[op4].us;
 			break;
 		case 11 : // Extended, SuperMsg
 			op2 = *ip++; // get num args
 			op3 = *ip++; // get num key args
 			op4 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op4].us;
+			selector = theBlock->selectors.uo->slots[op4].us;
 			break;
 		case 12 :  // Extended, SendSpecialMsg
 			op2 = *ip++; // get num args
@@ -703,11 +729,11 @@ bool detectSendSelector(PyrBlock *theBlock, PyrClass* theClass, unsigned char **
 			break;
 		case 137 :  
 			op2 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op2].us;
+			selector = theBlock->selectors.uo->slots[op2].us;
 			break;
 		case 138 :  
 			op2 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op2].us;
+			selector = theBlock->selectors.uo->slots[op2].us;
 			break;
 		case 139 :  
 			op2 = *ip++; // get selector index
@@ -719,7 +745,7 @@ bool detectSendSelector(PyrBlock *theBlock, PyrClass* theClass, unsigned char **
 			break;
 		case 141 :  
 			op2 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op2].us;
+			selector = theBlock->selectors.uo->slots[op2].us;
 			break;
 		case 142 :  
 			op2 = *ip++; // get selector index
@@ -744,7 +770,7 @@ bool detectSendSelector(PyrBlock *theBlock, PyrClass* theClass, unsigned char **
 		case 168 :  case 169 :  case 170 :  case 171 :  
 		case 172 :  case 173 :  case 174 :  case 175 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op2].us;
+			selector = theBlock->selectors.uo->slots[op2].us;
 			break;
 			
 		// SuperMsg
@@ -753,7 +779,7 @@ bool detectSendSelector(PyrBlock *theBlock, PyrClass* theClass, unsigned char **
 		case 184 :  case 185 :  case 186 :  case 187 :  
 		case 188 :  case 189 :  case 190 :  case 191 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->literals.uo->slots[op2].us;
+			selector = theBlock->selectors.uo->slots[op2].us;
 			break;
 			
 		// SendSpecialMsg
@@ -867,7 +893,7 @@ bool detectSendSelectorIn(PyrBlock *theBlock, PyrSymbol *testSelector)
 	if (theBlock->code.uob == NULL) {
 		PyrMethodRaw* methraw = METHRAW(theBlock);
 		if (methraw->methType == methRedirect || methraw->methType == methRedirect) {
-			selector = theBlock->literals.us;
+			selector = theBlock->selectors.us;
 			return selector == testSelector;
 		} else return false;
 	}
