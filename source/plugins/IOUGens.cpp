@@ -1015,6 +1015,40 @@ void OffsetOut_Ctor(OffsetOut* unit)
 
 void OffsetOut_Dtor(OffsetOut* unit)
 {
+
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumInputs - 1;
+
+	int32 offset = unit->mParent->mSampleOffset;
+	
+	float *out = unit->m_bus;
+	float *saved = unit->m_saved;
+	int32 *touched = unit->m_busTouched;
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	for (int i=0; i<numChannels; ++i, out+=bufLength, saved += offset) {
+		//Print("out %d  %d %d  %d %d\n", 
+		//	i, touched[i] == bufCounter, unit->m_empty,
+		//	offset, remain);
+			
+		if (touched[i] == bufCounter) {
+			if (unit->m_empty) {
+				//Print("touched offset %d\n", offset);
+			} else {
+				Accum(offset, out, saved);
+			}
+		} else {
+			if (unit->m_empty) {
+				Clear(offset, out);
+				//Print("untouched offset %d\n", offset);
+			} else {
+				Copy(offset, out, saved);
+			}
+			touched[i] = bufCounter;
+		}
+		//Print("out %d %d %d  %g %g\n", i, in[0], out[0]);
+	}
+
 	RTFree(unit->mWorld, unit->m_saved);
 }
 
