@@ -392,7 +392,7 @@ bool gIsFullScreen = false;
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
-		[self sendMain: "shutDown"];
+		[self sendMain: "shutdown"];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification;

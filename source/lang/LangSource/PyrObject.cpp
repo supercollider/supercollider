@@ -226,7 +226,7 @@ void initSymbols()
 	s_environment = getsym("Environment");
 	s_event = getsym("Event");
 	s_hardwaresetup = getsym("hardwareSetup");
-	s_shutdown = getsym("shutDown");
+	s_shutdown = getsym("shutdown");
 	
 	s_nocomprendo = getsym("doesNotUnderstand");
 	
@@ -242,7 +242,7 @@ void initSymbols()
 	s_control = getsym("control");
 	s_scalar = getsym("scalar");
 	s_run = getsym("run");
-	s_startup = getsym("startUp");
+	s_startup = getsym("startup");
 	s_docmdline = getsym("doCmdLine");
 	s_next = getsym("next");
 	s_value = getsym("value");
