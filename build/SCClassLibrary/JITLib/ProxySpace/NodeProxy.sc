@@ -356,6 +356,7 @@ NodeProxy : BusPlug {
 				loaded = true;
 				if(awake) { // revisit for tasks!
 					this.prepareToBundle(nil, bundle);
+					container.wakeUpParentsToBundle(bundle);
 					this.sendObjectToBundle(bundle, container, extraArgs, index);
 				};
 				bundle.schedSend(server, clock);
