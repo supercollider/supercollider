@@ -9,7 +9,7 @@ SimpleNumber : Number {
 		var size, scaleDegree;
 		size = scale.size;
 		scaleDegree = this.asInteger;
-		^(stepsPerOctave * (scaleDegree div: size)) + scale.wrapAt(scaleDegree.asInteger)
+		^(stepsPerOctave * (scaleDegree div: size)) + scale.wrapAt(scaleDegree)
 	}
 
 	neg { _Neg; ^this.primitiveFailed }
