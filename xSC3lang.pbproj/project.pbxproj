@@ -1886,6 +1886,54 @@
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		92D3BEA8060769D3000FE5DD = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = Japanese;
+			path = Japanese.lproj/FindPanel.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		92D3BEA9060769D3000FE5DD = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = Japanese;
+			path = Japanese.lproj/SCGraphView.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		92D3BEAA060769D3000FE5DD = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = Japanese;
+			path = Japanese.lproj/MainMenu.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		92D3BEAB060769D3000FE5DD = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = Japanese;
+			path = Japanese.lproj/GetStringDlg.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		92D3BEAC060769D3000FE5DD = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.strings;
+			name = Japanese;
+			path = Japanese.lproj/FindPanel.strings;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		92D3BEAD060769D3000FE5DD = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			name = Japanese;
+			path = Japanese.lproj/MyDocument.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
 		92E20AB7058BBE8C004A7C6F = {
 			fileRef = F50D06C002E7F29001CA2799;
 			isa = PBXBuildFile;
@@ -4651,6 +4699,7 @@
 		F50D06A602E6A60F01CA2799 = {
 			children = (
 				F50D06A702E6A60F01CA2799,
+				92D3BEA8060769D3000FE5DD,
 			);
 			isa = PBXVariantGroup;
 			name = FindPanel.nib;
@@ -4687,6 +4736,7 @@
 		F50D06AA02E6A60F01CA2799 = {
 			children = (
 				F50D06AB02E6A60F01CA2799,
+				92D3BEA9060769D3000FE5DD,
 			);
 			isa = PBXVariantGroup;
 			name = SCGraphView.nib;
@@ -4705,6 +4755,7 @@
 		F50D06AC02E6A60F01CA2799 = {
 			children = (
 				F50D06AD02E6A60F01CA2799,
+				92D3BEAD060769D3000FE5DD,
 			);
 			isa = PBXVariantGroup;
 			name = MyDocument.nib;
@@ -4723,6 +4774,7 @@
 		F50D06AE02E6A60F01CA2799 = {
 			children = (
 				F50D06AF02E6A60F01CA2799,
+				92D3BEAA060769D3000FE5DD,
 			);
 			isa = PBXVariantGroup;
 			name = MainMenu.nib;
@@ -4759,6 +4811,7 @@
 		F50D06B202E6A60F01CA2799 = {
 			children = (
 				F50D06B302E6A60F01CA2799,
+				92D3BEAB060769D3000FE5DD,
 			);
 			isa = PBXVariantGroup;
 			name = GetStringDlg.nib;
@@ -4777,6 +4830,7 @@
 		F50D06B402E6A60F01CA2799 = {
 			children = (
 				F50D06B502E6A60F01CA2799,
+				92D3BEAC060769D3000FE5DD,
 			);
 			isa = PBXVariantGroup;
 			name = FindPanel.strings;
