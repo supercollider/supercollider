@@ -250,14 +250,10 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 		case errIndexOutOfRange : str = "Index out of range."; break;
 		case errImmutableObject : str = "Attempted write to immutable object."; break;
 		case errNotAnIndexableObject : str = "Not an indexable object."; break;
-		case errRateMismatch : str = "Rate mismatch error."; break;
-		case errSpectrumMismatch : str = "Spectrum sizes do not match."; break;
+		case errStackOverflow : str = "Stack overflow."; break;
 		case errOutOfMemory : str = "Out of memory."; break;
 		case errCantCallOS : str = "operation cannot be called from this Process."; break;
 		
-		case errMsgTooLong : str = "fifo message too int."; break;
-		case errFifoTooFull : str = "fifo too full."; break;
-		case errFifoEmpty : str = "fifo empty."; break;
 		default : str = "Failed.";
 	}
 	string = newPyrString(g->gc, str, 0, true);
@@ -1834,6 +1830,7 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 	int m, mmax, numargslots;
 	PyrObject *array;
 	
+	
 	recvrSlot = g->sp - numArgsPushed + 1;
 	selSlot = recvrSlot + 1;
 	listSlot = g->sp;
@@ -1843,17 +1840,25 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 		return errWrongType;
 	}
 	selector = selSlot->us;
+	
 	if (listSlot->utag != tagObj) {
 		return objectPerform(g, numArgsPushed);
 	}
 	if (listSlot->uo->classptr == class_array) {
 		doarray:
+		array = listSlot->uo;
+		
+		PyrObject *stack = g->gc->Stack();
+		int stackDepth = g->sp - stack->slots;
+		int stackSize = ARRAYMAXINDEXSIZE(stack);
+		int stackRemain = stackSize - stackDepth;
+		if (stackRemain < array->size) return errStackOverflow;
+		
 		pslot = (double*)(recvrSlot);
 		if (numargslots>0) {
 			qslot = (double*)selSlot;
 			for (m=0; m<numargslots; ++m) *++pslot = *++qslot;
 		} else numargslots = 0;
-		array = listSlot->uo;
 		qslot = (double*)(array->slots - 1);
 		for (m=0,mmax=array->size; m<mmax; ++m) *++pslot = *++qslot;
 	} else if (listSlot->uo->classptr == class_list) {
@@ -1873,6 +1878,7 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 	
 	sendMessage(g, selector, numArgsPushed);
 	g->numpop = 0;
+	
 	return errNone;
 }
 
@@ -3736,7 +3742,8 @@ int nextPrimitiveIndex()
 
 void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 {
-	
+
+
 #if SANITYCHECK
 	g->gc->SanityCheck();
 #endif	

@@ -374,14 +374,12 @@ void PyrGC::SweepBigObjects()
 		PyrObjectHdr *obj = gcs->mFree;
 		
 		if (!IsMarker(obj)) {
-		
 			// unlink chain of free objects
 			gcs->mFree = obj->prev->next = &gcs->mBlack;
 			gcs->mBlack.prev = obj->prev;
 			
 			do {
 				PyrObjectHdr *nextobj = obj->next;
-				//void* ptr = (void*)RAWPART(obj);
 				void* ptr = (void*)obj;
 				mPool->Free(ptr);
 				obj = nextobj;

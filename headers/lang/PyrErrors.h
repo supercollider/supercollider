@@ -36,16 +36,10 @@ enum { // primitive errors
 	errIndexOutOfRange,
 	errImmutableObject,
 	errNotAnIndexableObject,
-	errRateMismatch,
-	errSpectrumMismatch,
+	errStackOverflow,
 	errOutOfMemory,
 	errCantCallOS,
 	errException,
-	
-	// fifo errors
-        errMsgTooLong,
-        errFifoTooFull,
-        errFifoEmpty,
 
 	errPropertyNotFound = 6000,
     
