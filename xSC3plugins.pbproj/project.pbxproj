@@ -573,7 +573,7 @@
 		92ADA1DC06265AC20093F2C8 = {
 			buildActionMask = 2147483647;
 			files = (
-				92ADA20306265C310093F2C8,
+				92F246640628AB3E0063D98D,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -653,21 +653,6 @@
 			isa = PBXTargetDependency;
 			target = 92ADA1DF06265AC20093F2C8;
 			targetProxy = 92ADA1FE06265BC40093F2C8;
-		};
-		92ADA20206265C310093F2C8 = {
-			fileEncoding = 4;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			name = DemandUGens.cpp;
-			path = /Users/jamesmcc/in/sc1_copy/SuperCollider3/source/plugins/DemandUGens.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
-		};
-		92ADA20306265C310093F2C8 = {
-			fileRef = 92ADA20206265C310093F2C8;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 		92ADA27B06266AA00093F2C8 = {
 			fileEncoding = 4;
@@ -994,6 +979,20 @@
 			isa = PBXTargetDependency;
 			target = 92CCC524045B4BFD00CA2167;
 			targetProxy = 92B5F2F40547315200496808;
+		};
+		92F246630628AB3E0063D98D = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = DemandUGens.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		92F246640628AB3E0063D98D = {
+			fileRef = 92F246630628AB3E0063D98D;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 //920
 //921
@@ -1436,7 +1435,7 @@
 				F50D05E402E69B6B01CA2799,
 				F50D05E502E69B6B01CA2799,
 				92CCC51E045B451100CA2167,
-				92ADA20206265C310093F2C8,
+				92F246630628AB3E0063D98D,
 			);
 			isa = PBXGroup;
 			path = plugins;

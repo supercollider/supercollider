@@ -31,7 +31,7 @@ When there is a trigger at the reset input, the demand rate ugens in the list ar
 \fs20 \cf0 (\
 \{ \
 	\cf2 var\cf0  trig, seq, freq;\
-	trig = \cf2 Impulse\cf0 .kr(12);\
+	trig = \cf2 Impulse\cf0 .kr(24);\
 	seq = \cf2 Drand\cf0 ([\cf2 Dseq\cf0 ((1..5).mirror1, 1), \cf2 Drand\cf0 ((4..10), 8)], 2000);\
 	freq = \cf2 Demand\cf0 .kr(trig, 0, seq * 100);\
 	\cf2 SinOsc\cf0 .ar(freq + [0,0.7]).cubed.cubed.scaleneg(\cf2 MouseX\cf0 .kr(-1,1)) * 0.1;\
@@ -57,7 +57,7 @@ When there is a trigger at the reset input, the demand rate ugens in the list ar
 	reset = \cf2 Dust\cf0 .kr(1);\
 	seq = \cf2 Dgeom\cf0 (24, 72.midicps, 1.midiratio); \
 	freq = \cf2 Demand\cf0 .kr(trig, reset, seq);\
-	\cf2 SinOsc\cf0 .ar(freq + [0,0.7]).cubed.max(0) * 0.2;\
+	\cf2 SinOsc\cf0 .ar(freq + [0,0.7]).cubed.max(0) * 0.1;\
 \}.play;\
 )\
 \
@@ -68,7 +68,7 @@ When there is a trigger at the reset input, the demand rate ugens in the list ar
 	trig = \cf2 Impulse\cf0 .kr(10);\
 	seq = \cf2 Diwhite\cf0 (1/0, 60, 72).midicps; \
 	freq = \cf2 Demand\cf0 .kr(trig, 0, seq);\
-	\cf2 SinOsc\cf0 .ar(freq + [0,0.7]).cubed.cubed * 0.2;\
+	\cf2 SinOsc\cf0 .ar(freq + [0,0.7]).cubed.cubed * 0.1;\
 \}.play;\
 )\
 \
@@ -78,26 +78,26 @@ When there is a trigger at the reset input, the demand rate ugens in the list ar
 	trig = \cf2 Impulse\cf0 .kr(10);\
 	seq = \cf2 Dseq\cf0 ([72, 75, 79, \cf2 Drand\cf0 ([82,84,86])], 1/0).midicps; \
 	freq = \cf2 Demand\cf0 .kr(trig, 0, seq);\
-	\cf2 SinOsc\cf0 .ar(freq + [0,0.7]).cubed.cubed * 0.2;\
+	\cf2 SinOsc\cf0 .ar(freq + [0,0.7]).cubed.cubed * 0.1;\
 \}.play;\
 )\
 \
 \
-(\
+(\cf3 \
 \{\
-	\cf2 var\cf0  freq, trig, reset, seq;\
-	trig = \cf2 Impulse\cf0 .kr(10);\
-	seq = \cf2 Dswitch1\cf0 (\
+	\cf4 var\cf3  freq, trig, reset, seq;\
+	trig = \cf4 Impulse\cf3 .kr(10);\
+	seq = \cf4 Dswitch1\cf3 (\
 		[\
-			\cf2 Diwhite\cf0 (1/0, 60, 72), \
-			\cf2 Dseq\cf0 ([72, 75, 79, \cf2 Drand\cf0 ([82,84,86])], 1/0)\
+			\cf4 Diwhite\cf3 (1/0, 60, 72), \
+			\cf4 Dseq\cf3 ([72, 75, 79, \cf4 Drand\cf3 ([82,84,86])], 1/0)\
 		], \
-		\cf2 LFPulse\cf0 .kr(\cf2 0.2\cf0 )\
+		\cf4 LFPulse\cf3 .kr(0.2)\
 	); \
-	freq = \cf2 Demand\cf0 .kr(trig, 0, seq.midicps);\
-	\cf2 SinOsc\cf0 .ar(freq + [0,0.7]).cubed.cubed * 0.2;\
+	freq = \cf4 Demand\cf3 .kr(trig, 0, seq.midicps);\
+	\cf4 SinOsc\cf3 .ar(freq + [0,0.7]).cubed.cubed * \cf0 0.1\cf3 ;\
 \}.play;\
-)\
+\cf0 )\
 \
 \
 (\
@@ -107,8 +107,7 @@ When there is a trigger at the reset input, the demand rate ugens in the list ar
 	seq1 = \cf2 Drand\cf0 ([72, 75, 79, 82] - 12, 1/0).midicps; \
 	seq2 = \cf2 Dseq\cf0 ([72, 75, 79, \cf2 Drand\cf0 ([82,84,86])], 1/0).midicps; \
 	freq = \cf2 Demand\cf0 .kr(trig, 0, [seq1, seq2]);\
-	freq.postln;\
-	\cf2 SinOsc\cf0 .ar(freq + [0,0.7]).cubed.cubed * 0.2;\
+	\cf2 SinOsc\cf0 .ar(freq + [0,0.7]).cubed.cubed * 0.1;\
 \}.play;\
 )\
 \
