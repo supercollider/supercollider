@@ -39,6 +39,7 @@ void error(const char *fmt, ...);
 void postText(const char *text, long length);
 void postChar(char c);
 void flushPostBuf();
+void setPostFile(FILE *file); // If file is not NULL, causes all posted text to also be written to the file.
 
 void debugf(char *fmt, ...);
 void pprintf(unsigned char *str, char *fmt, ...);

@@ -30,8 +30,6 @@ char *gHomePath;
 CFBundleRef gMainBundle;
 NSTextView *gPostView;
 
-#define POSTFILE 0
-
 void SetupHomeDirectory();
 void SetupHomeDirectory()
 {
@@ -73,9 +71,7 @@ static PostBuf mainPostBuf;
 #define POSTBUFLEN 131072
 #define POSTBUFMASK 131071
 
-#if POSTFILE
 FILE *postfile=0;
-#endif
 
 void PostBuf::Init()
 {
@@ -90,9 +86,11 @@ void initPostBuffer();
 void initPostBuffer()
 {
 	mainPostBuf.Init();
-#if POSTFILE
-	postfile = fopen("postfile", "w");
-#endif
+}
+
+void setPostFile(FILE *file)
+{
+	postfile = file;
 }
 
 void vposttext(const char *str, int length);
@@ -207,13 +205,11 @@ void PostBuf::Flush()
 			endpos -= POSTBUFLEN;
 			secondpart = endpos;
 
-#if POSTFILE
 			if (postfile) {
 				fwrite(buf + rdpos, firstpart, 1, postfile);
 				fwrite(buf, secondpart, 1, postfile);
 				fflush(postfile);
 			}
-#endif
 					
 			if (gPostView) {
                                 NSString* string;
@@ -231,12 +227,10 @@ void PostBuf::Flush()
 			}
 			rdpos = endpos;
 		} else {
-#if POSTFILE
 			if (postfile) {
 				fwrite(buf + rdpos, numtoread, 1, postfile);
 				fflush(postfile);
 			}
-#endif
 			if (gPostView) {
                                 NSString* string = [NSString stringWithCString: buf + rdpos length: numtoread];
                                 NSRange range = [gPostView selectedRange];
