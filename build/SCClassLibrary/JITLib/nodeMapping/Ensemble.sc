@@ -5,7 +5,8 @@ Ensemble : AbstractEnsemble {
 	var  <nodeMap;
 	
 	*new { arg target, addAction=\addToTail, nodeMap;
-			^super.new(target,addAction).ginit(nodeMap);
+			^super.new(target,addAction).ginit(nodeMap)
+				.isPlaying_(true); //for now.
 	}
 	
 	ginit { arg map;
@@ -37,7 +38,7 @@ Ensemble : AbstractEnsemble {
 	
 	set { arg ... args;
 		nodeMap.performList(\set, args);
-		if(this.isPlaying,{
+		if(this.isPlaying, {
 		server.sendBundle(server.latency, 
 			[15, nodeID]++args);
 		})
@@ -77,8 +78,7 @@ Ensemble : AbstractEnsemble {
 		nodeMap.addToBundle(bundle, reciever);
 	}
 	
-	isPlaying { ^server.nodeIsPlaying(nodeID) }
-	
+	//isPlaying { ^server.nodeIsPlaying(nodeID) }
 	
 }
 
