@@ -365,7 +365,7 @@ SynthDef {
 			file.close;
 			lib.read(path);
 			lib.servers.do { arg server;
-				server.sendMsg("/d_recv", bytes, completionMsg)
+				server.sendBundle(nil, ["/d_recv", bytes] ++ completionMsg)
 			}
 		} { file.close }
 	}
