@@ -84,7 +84,7 @@
 		loop {
 			outval = stream.next(inval);
 			if (outval.isNil) { ^inval };
-			inval = yield(outval);
+			inval = yield(func.value(outval));
 		}
 	}
 }
