@@ -2,8 +2,8 @@
 
 Event : Environment {
 	classvar defaultParentEvent;
-	classvar parentEvents;
-	classvar partialEvents;
+	classvar <parentEvents;
+	classvar <partialEvents;
 
 	*new { arg n=8, proto, parent, know=true; 
 		^super.new(n, proto, parent, know)
@@ -65,9 +65,7 @@ Event : Environment {
 
 	}
 	
-	*makeParentEvents {
-		var partialEvents, parentEvents;
-		
+	*makeParentEvents {		
 		// define useful event subsets.
 		partialEvents = (
 			pitchEvent: (
