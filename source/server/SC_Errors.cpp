@@ -29,7 +29,7 @@ const char *SC_ErrorString(SCErr err)
 			case kSCErr_NodeNotFound : return "Node not found";
 			case kSCErr_TargetNodeNotFound : return "target Node not found";
 			case kSCErr_GroupNotFound : return "Group not found";
-			case kSCErr_SynthDefNotFound : return "NodeDef not found";
+			case kSCErr_SynthDefNotFound : return "SynthDef not found";
 			case kSCErr_NoSuchCommand : return "no such command";
 			case kSCErr_WrongArgType : return "wrong argument type";
 			case kSCErr_IndexOutOfRange : return "index out of range";
