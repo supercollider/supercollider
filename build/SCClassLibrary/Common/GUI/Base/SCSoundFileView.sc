@@ -64,7 +64,7 @@ SCSoundFileView : SCScope{
 					this.changed(\progress);
 				(readtime*0.05).wait;
 			};
-			this.setData(data, block, startframe);
+			this.setData(data, block, startframe, soundfile.numChannels, soundfile.sampleRate);
 			this.xZoom_(zoomx).drawsWaveForm_(true).refresh;
 			doneAction.value(this);
 			soundfile.close;
@@ -171,11 +171,11 @@ SCSoundFileView : SCScope{
 	}
 	
 	data_{|arr|
-		this.setData(arr);		
+		this.setData(arr, 64, 0, soundfile.numChannels, soundfile.sampleRate);		
 	}
 	
-	setData{|arr, block=64, startframe = 0|
-		this.setProperty(\setViewData, Array.with(arr, block, startframe));
+	setData{|arr, block=64, startframe = 0, channels=1, samplerate=44100|
+		this.setProperty(\setViewData, [arr, block, startframe, channels, samplerate]);
 	}
 		
 	elasticMode_{arg mode;
