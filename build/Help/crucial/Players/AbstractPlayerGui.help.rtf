@@ -11,11 +11,25 @@ superclass:
 \f1\b0 \
 \
 This is the parent class for all gui classes of AbstractPlayer subclasses.\
-Usually the only method you need to implement in your subclass is 
-\f0\b guiBody
-\f1\b0 \
 \
-to the ObjectGui implementation it adds\
+to the standard ObjectGui it adds these visual elements:\
+\
+server boot controls\
+play button\
+stop button  [ ]\
+free button\
+tempo control\
+save button\
+save as\
+#path - post the path\
+#        - post the object as a compile string\
+\
+\
+\
+\
+\
+\
+to the ObjectGui implementation it adds the methods\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -28,11 +42,14 @@ to the ObjectGui implementation it adds\
 	does guiBody\
 	then shrinks the window to fit\
 
-\f0\b writeName
-\f1\b0 \
-	the color of the name label is different if the object has a path (was loaded from disk)\
+\f0\b writeName\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b saveConsole
+\f1\b0 \cf0 	write the name of the object as a label.\
+	the color of the name label is different if the object has a path (was loaded from disk)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 saveConsole
 \f1\b0 \
 	standard save controls. you can override this method in subclasses to customise.\
 
@@ -50,4 +67,11 @@ to the ObjectGui implementation it adds\
 	subclasses can call this to add a display of the duration of the player.  it will\
 	update itself when the player changes and also when the Tempo (global) changes.\
 \
-	}
+\
+\
+\
+Usually the only method you need to implement in your subclass is 
+\f0\b guiBody
+\f1\b0 \
+\
+}
