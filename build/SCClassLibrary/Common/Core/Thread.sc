@@ -74,6 +74,9 @@ Routine : Thread {
 		_RoutineStop
 		^this.primitiveFailed
 	}
+	embed { arg inval;
+		func.value(inval)
+	}
 		
 	// PRIVATE
 	awake { arg inBeats, inSeconds, inClock;
