@@ -38,8 +38,3 @@ Debug : N {
 	}
 	
 }
-
-NRef : N {
-	var <>value; //value not possibles
-	
-}
