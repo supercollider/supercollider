@@ -15,7 +15,6 @@ Plazy : Pattern {
 PlazyEnvir : Plazy {
 	
 	embedInStream { arg inval;
-		inval.debug;
 		^if(inval.isNil) { func.value } {
 			inval.use {Êfunc.valueEnvir }
 		}.embedInStream(inval)
