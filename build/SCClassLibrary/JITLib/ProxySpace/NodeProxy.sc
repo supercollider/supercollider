@@ -5,7 +5,7 @@ BusPlug : AbstractFunction {
 	var <server, <bus; 		
 	var <monitorGroup;
 	var <busArg = \; // cache for "/s_new" bus arg
-	var <monitorVol = 1;
+	var <monitorVol = 1, <>onClear;
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
 	
 	
@@ -48,7 +48,14 @@ BusPlug : AbstractFunction {
 		this.stop;
 		this.freeBus;
 	}
-	clear { this.init }
+	clear { 
+		this.init;
+		this.doOnClear; 
+	}
+	doOnClear {
+		onClear.do { arg item; item.value(this) };
+		onClear = nil;
+	}
 	
 	
 	////////  bus definitions  //////////////////////////////////////////
@@ -313,6 +320,7 @@ NodeProxy : BusPlug {
 		this.freeTask; // remove any proxy task
 		this.freeBus;	 // free the bus from the server allocator 
 		this.init;	// reset the environment
+		this.doOnClear; // if any dependants are to be freed, do it.
 	}
 	
 	clearObjects {
@@ -376,7 +384,7 @@ NodeProxy : BusPlug {
 		objects.removeAt(index).stop //should free also. parents are the problem still
 	}
 	
-	removeAll { objects.size.do { |i| this.removeAt(0) } }
+	removeAll { objects.size.do { |i| this.removeLast } }
 	
 	
 	at { arg index;  ^objects.at(index) }
@@ -478,28 +486,30 @@ NodeProxy : BusPlug {
 		nodeMap.setRates(args);
 		this.rebuild;
 	}
-	unlag { arg ... args;
-		nodeMap.removeRates(args);
-		this.rebuild;
-	}
+	
 	setRates { arg ... args;
 		nodeMap.setRates(args);
 		this.rebuild;
 	}
 		
-	bus_ { arg inBus;
+	bus_ { arg inBus; // should be a SharedBus, or releaseBus should be implemented in Bus
 		if(server != inBus.server, { "can't change the server".inform;^this });
 		super.bus_(inBus);
+		this.linkNodeMap;
 		this.rebuild;
 	}
-	
-	index_ { arg i;
-		this.bus = Bus.new(this.rate, i, this.numChannels, server);
-	}
-	
+		
 	group_ { arg agroup;
+		var bundle;
 		if(agroup.server !== server, { "cannot move to another server".error; ^this });
-		if(this.isPlaying, { this.free; group = agroup; this.wakeUp }, { group = agroup });
+		NodeWatcher.register(agroup.isPlaying_(true));
+		if(this.isPlaying)
+		{ 	bundle = MixedBundle.new;
+			this.stopAllToBundle(bundle); 
+			group = agroup;
+			this.sendAllToBundle(bundle); 
+			bundle.schedSend(server, clock);
+		} { group = agroup };
 	}
 		
 	sendNodeMap { 
@@ -556,7 +566,7 @@ NodeProxy : BusPlug {
 		});
 	
 	}
-	
+	// derive names and default args from synthDefs
 	supplementNodeMap {
 		objects.do { |obj|
 				var names, values;
@@ -567,27 +577,7 @@ NodeProxy : BusPlug {
 						{ nodeMap.set(name, values.at(i)) }
 				});
 		};
-	}
-	
-	
-	/*
-	undo {
-		var bundle, dt;
-		bundle = MixedBundle.new;
-		dt = this.fadeTime;
-		this.fadeTime = 0.1;
-		this.stopAllToBundle(bundle);
-		objects = undo;
-		this.loadToBundle(bundle);
-		this.sendAllToBundle(bundle);
-		if(this.isPlaying, {
-			bundle.schedSend(server, clock);
-		});
-		this.fadeTime = dt;
-	}
-	*/
-	
-		
+	}		
 
 	
 	
@@ -859,11 +849,6 @@ NodeProxy : BusPlug {
 	release { arg fadeTime; this.free(fadeTime, false) }
 	
 	
-//	set { arg ... args;
-//		nodeMap.performList(\set, args);
-//		if(this.isPlaying, { group.performList(\set, args) });
-//	} // use group.set otherwise..
-	
 	set { arg ... args;
 		nodeMap.performList(\set, args);
 		if(this.isPlaying, { 
@@ -873,19 +858,21 @@ NodeProxy : BusPlug {
 	
 	setn { arg ... args;
 		nodeMap.performList(\setn, args);
-		if(this.isPlaying, { group.performList(\setn, args) });
+		if(this.isPlaying, { 
+			group.performList(\setn, args);
+		});
 	}
 	
-	//map to a control proxy
+	// map to a control proxy
 	map { arg key, proxy ... args;
 		args = [key,proxy]++args;
 		nodeMap.performList(\map, args);
 		if(this.isPlaying, { 
-			nodeMap.sendToNode(group);
+			server.sendBundle(server.latency, [14, group.nodeID] ++ args);
 		})
 	}
 	
-	//map to current environment
+	// map to current environment
 	mapEnvir { arg keys;
 		nodeMap.mapEnvir(keys);
 		if(this.isPlaying, { 
@@ -910,7 +897,7 @@ NodeProxy : BusPlug {
 	}
 	
 	
-	//xfades
+	// xfades
 	
 	xset { arg ... args;
 		this.xFadePerform(\set, args);
@@ -1107,7 +1094,8 @@ SharedNodeProxy : NodeProxy {
 	stopToBundleAt { arg bundle, index;
 				bundle.add(["/n_set", constantGroupID, \gate, 0]);
 	}
-	
+	group_ {}
+	bus_ {}
 	
 	
 
