@@ -195,4 +195,41 @@ SimpleNumber : Number {
 //		size = floor((last - this) / step + 0.001).asInteger + 1;
 //		^Array.series(size, this, step)
 	}
+	
+	
+	asIndex { arg list; // list is sorted
+		var i, j, a, b;
+		j = list.detectIndex { |item| item > this };
+		if(j.isNil) { ^list.size - 1 };
+		if(j == 0) { ^j };
+		i = j - 1;
+		^if((this - list[i]) < (list[j] - this)) { i } { j }
+	}
+	
+	asIndex2 { arg list; // list is sorted
+		var i, a, b;
+		i = list.detectIndex { |item| item > this };
+		if(i.isNil) { ^list.size - 1 };
+		if(i == 0) { ^i };
+		a = list[i-1]; b = list[i];
+		^((this - a) / (b - a)) + i - 1
+	}
+	
+	roundToList { arg list; // list is sorted
+		^list.at(this.asIndex(list))
+	}
+	
+	keyToDegree { arg scale, stepsPerOctave=12, octave=5;
+		var key;
+		key = this - (stepsPerOctave * octave) % stepsPerOctave;
+		^key.asIndex2(scale)
+	}
+	
+	roundToScale { arg scale, stepsPerOctave=12, octave=5;
+		var key;
+		key = this - (stepsPerOctave * octave) % stepsPerOctave;
+		^key.roundToList(scale)
+	}
+	
+	
 }
