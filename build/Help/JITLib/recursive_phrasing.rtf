@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
-\red96\green96\blue96;\red0\green115\blue0;\red0\green0\blue191;\red0\green115\blue0;}
+\red96\green96\blue96;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs32 \cf2 recursive instrumental phrases or granular composite sounds
@@ -14,7 +14,7 @@
 \
 \cf3 // when passing a function to Pdef it creates a PlazyEnvir internally.\cf2 \
 \cf3 // this function is then evaluated in the context of the outer environment\cf2 \
-\cf3 // (see plazyEnvir help)\cf2 \
+\cf3 // (see PlazyEnvir help)\cf2 \
 \cf3 // Event.parentEvents.phraseEvent looks up in Pdef.all if it can find a definition.\cf2 \
 \cf3 // if it finds one it plays this pattern in the context of the outer pattern's event.\cf2 \
 \cf3 // if there is no definition there, it uses a synthDef with this name, if present.\cf2 \
@@ -455,16 +455,79 @@ e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
 	).play\
 )\
 \
-\cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf7 Pdef\cf0 (\cf8 \\koch\cf0 , \{\'ca\cf7 arg\cf0  dur=1, degree=0;\
-	\cf7 Pbind\cf0 (\
-		\cf8 \\dur\cf0 , dur.value / 3,\
-		\cf8 \\degree\cf0 , degree + \cf7 Pseq\cf0 ([0, 2, 0])\
+(\
+\cf4 Pdef\cf2 (\cf6 \\koch\cf2 , \{\'ca\cf4 arg\cf2  dur=1, degree=0;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\dur\cf2 , dur.value / 3,\
+		\cf6 \\degree\cf2 , degree + \cf4 Pseq\cf2 ([0, 2, 0])\
 	)\
 \});\
 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 \
+\
+\
+\
+\cf3 /////////// soundfile example\cf2 \
+\
+\
+(\
+\cf4 SynthDef\cf2 (\cf6 \\play_from_to\cf2 , \{ \cf4 arg\cf2  out, bufnum, from=0.0, to=1.0, sustain=1.0;\
+	\cf4 var\cf2  env;\
+	env = \cf4 EnvGen\cf2 .ar(\cf4 Env\cf2 .linen(0.01, sustain, 0.01), 1, doneAction:2);\
+	\cf4 Out\cf2 .ar(out,\
+		\cf4 BufRd\cf2 .ar(1, bufnum, \cf4 Line\cf2 .ar(from, to, sustain) * \cf4 BufFrames\cf2 .kr(bufnum)) * env\
+	)\
+\
+\
+\}).store;\
+)\
+\
+s.sendMsg(\cf5 "/b_allocRead"\cf2 , 170, \cf5 "sounds/a11wlk01.wav"\cf2 );\
+\
+\cf3 // this plays it straight\cf2 \
+(\
+\cf4 Pdef\cf2 (\cf6 \\poch\cf2 , \{\'ca\cf4 arg\cf2  sustain=1.0, from=0.0, to=1.0, n=3;\
+		\cf4 var\cf2  step;\
+		sustain = sustain.value;\
+		step = (to - from) / n;\
+		\cf4 Pbind\cf2 (\
+			\cf6 \\instrument\cf2 , \cf6 \\play_from_to\cf2 ,\
+			\cf6 \\from\cf2 , \cf4 Pseries\cf2 (from, step, n),\
+			\cf6 \\to\cf2 , \cf4 Pseries\cf2 (from, step, n) + step,\
+			\cf6 \\legato\cf2 , 1.0,\
+			\cf6 \\dur\cf2 , sustain / n\
+		)\
+\})\
+)\
+\
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+	\cf6 \\instrument\cf2 , \cf6 \\poch\cf2 ,\
+	\cf6 \\recursionLevel\cf2 , 3,\
+	\cf6 \\from\cf2 , 0,\
+	\cf6 \\to\cf2 , 1,\
+	\cf6 \\dur\cf2 , 3,\
+	\cf6 \\bufnum\cf2 , 170\
+).play\
+)\
+\
+\cf3 // now turn round the middle part\cf2 \
+(\
+\cf4 Pdef\cf2 (\cf6 \\poch\cf2 , \{\'ca\cf4 arg\cf2  sustain=1.0, from=0.0, to=1.0, n=3;\
+		\cf4 var\cf2  step, f, t, i;\
+		sustain = sustain.value;\
+		step = (to - from) / n;\
+		f = \cf4 Array\cf2 .series(n, from, step) +.t [0.0, step];\
+		i = n div: 2;\
+		f[i] = f[i].reverse;\
+		\cf4 Pbind\cf2 (\
+			\cf6 \\instrument\cf2 , \cf6 \\play_from_to\cf2 ,\
+			[\cf6 \\from\cf2 , \cf6 \\to\cf2 ], \cf4 Pseq\cf2 (f),\
+			\cf6 \\legato\cf2 , 1.0,\
+			\cf6 \\dur\cf2 , sustain / n\
+		)\
+\})\
+)\
+\
 \
 }
