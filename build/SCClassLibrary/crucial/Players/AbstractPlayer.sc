@@ -94,12 +94,24 @@ AbstractPlayer : AbstractFunction  {
 
 	/* status */
 	isPlaying { ^synth.isPlaying }
-	stop {// does not release server  resources
+	stop {
 		if(synth.notNil,{
 			synth.free;
 			synth = nil;
 		});
-	}	
+	}
+//	stop {// does not release server  resources
+//		this.stopMsg.send;
+//	}
+//	stopMsg {
+//		var m;
+//		if(synth.notNil,{
+//			m = CXMessage( synth.server, synth.freeMsg );
+//			//	freeMsg { ^[11, nodeID] }
+//			synth = nil;
+//		});
+//		^m
+//	}	
 	free {
 		if(synth.notNil,{
 			synth.free;
@@ -151,6 +163,7 @@ AbstractPlayer : AbstractFunction  {
 		);
 	}
 	sendSpawnBundle { arg bundle,atTime;
+		//if(bundle.notEmpty,{})
 		this.server.listSendBundle( atTime, bundle);
 		SystemClock.sched(atTime ? 0.0, {
 			this.didSpawn;
@@ -163,6 +176,10 @@ AbstractPlayer : AbstractFunction  {
 	spawnOn { arg group,bus, atTime;
 		var bundle;
 		bundle = List.new;
+		this.spawnOnToBundle(group,bus,bundle);
+		this.sendSpawnBundle(bundle,atTime);
+	}
+	spawnOnToBundle { arg group,bus,bundle;
 		if(patchOut.isNil,{
 			this.makePatchOut(group,true,bus,bundle);
 		},{
@@ -171,8 +188,7 @@ AbstractPlayer : AbstractFunction  {
 			if(patchOut.group != group,{ patchOut.group = group });
 		});
 		this.spawnToBundle(bundle);
-		this.sendSpawnBundle(bundle,atTime);
-	}
+	}		
 		
 
 	/*
@@ -299,8 +315,8 @@ AbstractPlayer : AbstractFunction  {
 	}
 	didSpawn { arg patchIn,synthArgi;
 		if(patchIn.notNil,{
-			patchOut.connectTo(patchIn,false);
 			patchIn.nodeControl_(NodeControl(synth,synthArgi));
+			patchOut.connectTo(patchIn,false);
 		});
 		if(synth.notNil,{
 			synth.isPlaying = true;
@@ -321,10 +337,13 @@ AbstractPlayer : AbstractFunction  {
 	connectTo { arg hasInput;
 		var playing;
 		// if my bus is public, change to private
-		if((playing = this.isPlaying).insp and: {this.bus.isAudioOut},{
-			this.bus = Bus.alloc(this.rate,this.server,this.numChannels);
+		playing = this.isPlaying ? false;
+		if(playing,{
+			if(this.bus.isAudioOut,{
+				this.bus = Bus.alloc(this.rate,this.server,this.numChannels);
+			});
+			patchOut.connectTo(hasInput.patchIn,playing);
 		});
-		patchOut.connectTo(hasInput.patchIn,playing);
 	}
 	connectToInputAt { arg player,inputIndex=0;
 		if(this.isPlaying and: {this.bus.isAudioOut},{

@@ -220,7 +220,7 @@ UpdatingScalarPatchOut : ScalarPatchOut {
 			source.addDependant(this)
 		})
 	}
-	enable { source.addDependant(this).insp }
+	enable { source.addDependant(this) }
 	update {
 		connectedTo.do({ arg c; c.value = source.value })
 	}

@@ -65,6 +65,7 @@ MIDIFreqPlayer : MIDIPlayer {
 	}
 }
 
-
+// MIDINotePlayer(spec)
+// MIDIVelocityPlayer(spec)
 
 

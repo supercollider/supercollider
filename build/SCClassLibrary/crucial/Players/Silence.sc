@@ -6,36 +6,33 @@ Silence : SynthlessPlayer {
 
 PlayerInputProxy : Silence { // audio
 
-	var <>numChannels,<>rate,<patchIn;
+	var <>spec,<>initValue;
+	var <patchIn;
 	var inBus,nullBus;
 	
-	*new { arg numChannels=1,rate=\audio;
-		^super.new.pipinit(numChannels,rate)
+	*new { arg spec;
+		^super.new.spec_(spec.asSpec).pipinit
 	}
-	pipinit { arg n,r;
-		numChannels = n;
-		rate = r;
-		patchIn = PatchIn.newByRate(rate);
+	pipinit {
+		patchIn = PatchIn.newByRate(spec.rate);
 	}
 	setInputBus { arg bus;
 		if(nullBus.notNil and: {nullBus.index.notNil},{ nullBus.free });
 		inBus = bus;
 	}
 	synthArg {
-		var b;
-		b = (inBus ? nullBus);
-		// called during synth def build just for the default value
-		// when actually played, we have a nullBus
-		^if(b.notNil,{b.index},nil);
+		^initValue
 	}
 	prepareToBundle { arg group,bundle;
-		if(inBus.isNil,{ 
+		if(initValue.isNil,{
 			// should share this
-			nullBus = Bus.performList(this.rate,group.server,this.numChannels) 
+			nullBus = Bus.performList(this.rate,group.server,this.numChannels);
+			initValue = nullBus.index; 
 		});
 		super.prepareToBundle(group,bundle);
 	}
-	
+	rate { ^spec.rate }
+	numChannels { ^spec.tryPerform(\numChannels) ? 1 }
 }
 
 

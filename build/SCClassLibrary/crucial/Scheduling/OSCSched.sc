@@ -73,7 +73,9 @@ BeatSched {
 	*tschedAbs { arg time,function;
 		^global.tschedAbs(time,function)
 	}		
-	// xtschedAbs
+	*xtschedAbs { arg time,function;
+		^global.xtschedAbs(time,function)
+	}
 	*schedAbs { arg beat,function;
 		^global.tschedAbs(beat,function)
 	}
@@ -121,7 +123,14 @@ BeatSched {
 			});
 		})			
 	}
-	// xtschedAbs
+	// will cancel all pending
+	xtschedAbs { arg time,function;
+		if(time >= this.time,{ // in the future ?
+			pq.clear;
+			this.xblock;
+			this.tsched(time,function)
+		});
+	}
 	schedAbs { arg beat,function;
 		this.tschedAbs(tempo.beats2secs(beat),function)
 	}
