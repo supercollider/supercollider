@@ -8,7 +8,7 @@ TempoGui : ObjectGui {
 		tempoG=NumberEditor(model.bpm,[1.0,666.0])
 			.action_({arg t; model.bpm_(t)});
 			
-		tempoG.gui(layout,true);
+		tempoG.gui(layout,nil,true);
 	}
 	
 	update {
