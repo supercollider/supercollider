@@ -1,0 +1,139 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+\f3\fswiss\fcharset77 Helvetica-Oblique;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs44 \cf0 PV_HainsworthFoote
+\f1\b0\fs24 \
+\
+FFT onset detector based on work described in \
+\
+Hainsworth, S. (2003) Techniques for the Automated Analysis of Musical Audio. PhD, University of Cambridge engineering dept. See especially p128. The Hainsworth metric is a modification of the Kullback Liebler distance. \
+\
+The onset detector has general ability to spot spectral change, so may have some ability to track chord changes  aside from obvious transient jolts, but there's no guarantee it won't be confused by frequency modulation artifacts.   \
+\
+Hainsworth metric on it's own gives good results but Foote might be useful in some situations: experimental. 
+\f2\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \ul \ulc0 Class Methods
+\f1\b0 \ulnone \
+\
+
+\f0\b *ar(buffer, proph=0.0, propf=0.0, threshold=1.0, waittime=0.04)\
+
+\f1\b0 \
+
+\f0\b buffer-
+\f1\b0  FFT buffer to read from\
+\
+
+\f0\b proph-
+\f1\b0  What strength of detection signal from Hainsworth metric to use.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 propf-
+\f1\b0  What strength of detection signal from Foote metric to use. The Foote metric is normalised to [0.0,1.0]\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 threshold-
+\f1\b0  Threshold hold level for allowing a detection\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 waittime-
+\f1\b0  If triggered, minimum wait until a further frame can cause another spot (useful to stop multiple detects on heavy signals)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i \cf0 Examples\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\i0\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //just Hainsworth metric with low threshold		\cf3 \
+(\
+b=\cf4 Buffer\cf3 .alloc(s,2048,1);\
+	\
+\cf4 SynthDef\cf3 (\cf5 \\fftod\cf3 ,\
+\{\
+ \cf4 var\cf3  source1, detect;\
+	\
+	source1= \cf4 AudioIn\cf3 .ar(1); \
+	\
+	detect= \cf4 PV_HainsworthFoote\cf3 .ar(\cf4 FFT\cf3 (b.bufnum,source1), 1.0, 0.0);\
+	\
+	\cf4 Out\cf3 .ar(0,\cf4 SinOsc\cf3 .ar([440,445],0,\cf4 Decay\cf3 .ar(0.1*detect,0.1)));\
+\}).play(s);	\
+)	\
+	\
+\
+\cf2 //spot note transitions		\cf3 \
+(\
+b=\cf4 Buffer\cf3 .alloc(s,2048,1);\
+	\
+\cf4 SynthDef\cf3 (\cf5 \\fftod\cf3 ,\
+\{\
+ \cf4 var\cf3  source1, detect;\
+	\
+	source1= \cf4 LFSaw\cf3 .ar(\cf4 LFNoise0\cf3 .kr(1,90,400),0,0.5); \
+	\
+	detect= \cf4 PV_HainsworthFoote\cf3 .ar(\cf4 FFT\cf3 (b.bufnum,source1), 1.0, 0.0, 0.9, 0.5);\
+	\
+	\cf4 Out\cf3 .ar(0,\cf4 Pan2\cf3 .ar(source1,-1.0)+ \cf4 Pan2\cf3 .ar(\cf4 SinOsc\cf3 .ar(440,0,\cf4 Decay\cf3 .ar(0.1*detect,0.1)),1.0));\
+\}).play(s);	\
+)	\
+\
+\
+\
+\cf2 //Foote solo- never triggers with threshold over 1.0, threshold under mouse control	\cf3 \
+(\
+b=\cf4 Buffer\cf3 .alloc(s,2048,1);\
+	\
+\cf4 SynthDef\cf3 (\cf5 \\fftod\cf3 ,\
+\{\
+ \cf4 var\cf3  source1, detect;\
+	\
+	source1= \cf4 AudioIn\cf3 .ar(1); \
+	\
+	detect= \cf4 PV_HainsworthFoote\cf3 .ar(\cf4 FFT\cf3 (b.bufnum,source1), 0.0, 1.0, \cf4 MouseX\cf3 .kr(0.0,1.1), 0.02);\
+	\
+	\cf4 Out\cf3 .ar(0,\cf4 Pan2\cf3 .ar(source1,-1.0)+ \cf4 Pan2\cf3 .ar(\cf4 SinOsc\cf3 .ar(440,0,\cf4 Decay\cf3 .ar(0.1*detect,0.1)),1.0));\
+\}).play(s);	\
+)\
+\
+\
+\cf2 //compare to Amplitude UGen\cf3 \
+(\
+b=\cf4 Buffer\cf3 .alloc(s,2048,1);\
+	\
+\cf4 SynthDef\cf3 (\cf5 \\fftod\cf3 ,\
+\{\
+ \cf4 var\cf3  source1, detect;\
+	\
+	source1= \cf4 AudioIn\cf3 .ar(1); \
+	\
+	detect= (\cf4 Amplitude\cf3 .ar(source1)) > (\cf4 MouseX\cf3 .kr(0.0,1.1));\
+	\
+	\cf4 Out\cf3 .ar(0,\cf4 Pan2\cf3 .ar(source1,-1.0)+ \cf4 Pan2\cf3 .ar(\cf4 SinOsc\cf3 .ar(440,0,\cf4 Decay\cf3 .ar(0.1*detect,0.1)),1.0));\
+\}).play(s);	\
+)\
+\
+\cf0 \
+\
+\
+\
+\
+	\
+	}
