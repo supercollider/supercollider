@@ -397,7 +397,8 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 							break;
 						case opFirstArg : res.ui = a->ui; res.utag = tagInt; break;
 						case opRandRange : 
-							res.ui = a->ui + g->rgen->irand(b->ui - a->ui + 1); 
+							res.ui = b->ui > a->ui ? a->ui + g->rgen->irand(b->ui - a->ui + 1) 
+								: b->ui + g->rgen->irand(a->ui - b->ui + 1);
 							res.utag = tagInt; 
 							break;
 						case opExpRandRange : 
