@@ -1869,6 +1869,7 @@ SCMultiSliderView::SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj
 {
         mTabSize = (int) (inBounds.width / mThumbSize);
         mCurrentIndex = mStartIndex = 0;
+        mThumbSizeY = mThumbSize;
         mSelectionSize = 1;
         mCurrentY = 0.0;
         //mCurrentX = 0.0;
@@ -1877,7 +1878,7 @@ SCMultiSliderView::SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj
         mResamp = 1; //used for zooming out
         mFillColor = SCMakeColor(0,0,0,1); // black
         mStrokeColor = SCMakeColor(0,0,0,1); // black
-        mDrawLinesActive = false;
+        mIsFilled = mDrawLinesActive = false;
         mDrawRectsActive = true;
         mSecYValues = NULL;
         mIsHorizontal = true;
@@ -1922,6 +1923,16 @@ void SCMultiSliderView::draw(SCRect inDamage)
             CGContextFillRect (cgc, drawRect);
             CGContextStrokeRect(cgc,drawRect);
         }
+        if (mSecYValues != NULL) {
+        j = 0;
+        for(int i = xstart; i < xpixels; i++, j++){
+            yval = mSecYValues[i];
+            drawRect = SCtoCGRect(calcThumbRect(j, yval, mXOffset));
+            CGContextFillRect (cgc, drawRect);
+            CGContextStrokeRect(cgc,drawRect);
+        }
+        }
+
     }
     //draw lines
     if (mDrawLinesActive) {
@@ -1942,36 +1953,56 @@ void SCMultiSliderView::draw(SCRect inDamage)
             }
         //these are fixed values: used for the max of soundfiles
         if (mSecYValues != NULL) {
-        j = 0;
+        int j = 0;
             if(mIsHorizontal){
                 CGContextAddLineToPoint(cgc, gcx, mBounds.height * 0.5);
                 CGContextMoveToPoint(cgc, mBounds.x, mBounds.height * 0.5);
             } else {
                 CGContextAddLineToPoint(cgc, mBounds.width * 0.5, gcy);
                 CGContextMoveToPoint(cgc, mBounds.width * 0.5, mBounds.y);
-        }        
+            }        
             for(int i = xstart; i < xpixels; i++, j++){
-            yval = mSecYValues[i];
-            drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
-            gcx =  drawRect.origin.x + xadd;
-            gcy =  drawRect.origin.y + xadd;
-            CGContextAddLineToPoint(cgc, gcx, gcy);
-            CGContextMoveToPoint(cgc, gcx, gcy);
+                yval = mSecYValues[i];
+                drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
+                gcx =  drawRect.origin.x + xadd;
+                gcy =  drawRect.origin.y + xadd;
+                CGContextAddLineToPoint(cgc, gcx, gcy);
+                CGContextMoveToPoint(cgc, gcx, gcy);
             }
-        //CGContextAddLineToPoint(cgc, gcx, mBounds.height * 0.5);
-        }
-       //CGContextFillPath(cgc); does not fill my path :(
+         if(mIsHorizontal){
+                CGContextAddLineToPoint(cgc, gcx, mBounds.height * 0.5);
+                CGContextMoveToPoint(cgc, mBounds.x, mBounds.height * 0.5);
+            } else {
+                CGContextAddLineToPoint(cgc, mBounds.width * 0.5, gcy);
+                CGContextMoveToPoint(cgc, mBounds.width * 0.5, mBounds.y);
+            }
 
+        }
+        //CGContextFillPath(cgc);//does not fill my path :(
+       // CGContextEOFillPath(cgc);
         CGContextStrokePath(cgc);
     }
+    //draw selection:
     if(mShowIndex) {
-        if(mIsHorizontal){
-        drawRect = CGRectMake(mBounds.x + 1 + (mCurrentIndex * ( mXOffset + mThumbSize)), mBounds.y + 1, mSelectionSize * ( mXOffset + mThumbSize), mBounds.height);
-        } else {
-        drawRect = CGRectMake( mBounds.x + 1, mBounds.y + 1 + (mCurrentIndex * ( mXOffset + mThumbSize)), mBounds.width, mSelectionSize * ( mXOffset + mThumbSize));
+        if(mCurrentIndex + mSelectionSize >= xstart){
+        
+        int currentI, selsize;
+        if(mCurrentIndex < xstart) { 
+        currentI = 0;
+        selsize = sc_clip(mSelectionSize - (xstart - mCurrentIndex), 1, mTabSize);
         }
+        else {
+        currentI =  mCurrentIndex - xstart;
+        selsize = mSelectionSize;
+        }
+            if(mIsHorizontal){
+            drawRect = CGRectMake(mBounds.x + 1 + (currentI * ( mXOffset + mThumbSize)), mBounds.y + 1, selsize * ( mXOffset + mThumbSize), mBounds.height);
+            } else {
+            drawRect = CGRectMake( mBounds.x + 1, mBounds.y + 1 + (currentI * ( mXOffset + mThumbSize)), mBounds.width, selsize * ( mXOffset + mThumbSize));
+            }
         CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, 0.4);
-        CGContextFillRect (cgc, drawRect);    
+        CGContextFillRect (cgc, drawRect); 
+        }   
     }
     CGContextRestoreGState(cgc);
     
@@ -2002,9 +2033,9 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
         changed = true;
         xindx = (int) xIn ;
         xindx = sc_clip(xindx, 0, mTabSize - 1);
-        mCurrentIndex = xindx;
+        mCurrentIndex = xindx + mStartIndex;
         mCurrentY = mYValues[mCurrentIndex];
-        if(mCurrentIndex > (lastindx + mSelectionSize)) mSelectionSize = mThumbSize;
+        if(mCurrentIndex > (lastindx + mSelectionSize)) mSelectionSize = 1;
 
         if (send) sendMessage(s_doaction, 0, 0, 0); 
         //post("readOnly: x: %d \n", mCurrentIndex);
@@ -2020,34 +2051,41 @@ void SCMultiSliderView::setValueFromPoint(SCPoint where)
     double y;
     int xIndx;
     if(mIsHorizontal){
-    y = (where.y - mBounds.y - 1 - mThumbSize/2) / (mBounds.height - mThumbSize - 2);
-    xIndx = (int) where.x/(mThumbSize + mXOffset);
+        y = (where.y - mBounds.y - 1 - mThumbSizeY/2) / (mBounds.height - mThumbSizeY - 2);
+        xIndx = (int) where.x/(mThumbSize + mXOffset);
     } else {
-    y = (where.x - mBounds.x - 1 - mThumbSize/2) / (mBounds.width - mThumbSize - 2);
-    xIndx = (int) where.y/(mThumbSize + mXOffset);
+        y = (where.x - mBounds.x - 1 - mThumbSizeY/2) / (mBounds.width - mThumbSizeY - 2);
+        xIndx = (int) where.y/(mThumbSize + mXOffset);
     }
     setValue(xIndx, y, true);
 }
 
 SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, float xoffset)
 {    
-    double x,y;
+    double x,y, thumbx, thumby;
     if(mIsHorizontal){
-    x = (double) indexIn * ( xoffset + mThumbSize);
-    y = valIn * (mBounds.height - mThumbSize - 2);
+        thumby = mThumbSizeY;
+        x = (double) indexIn * ( xoffset + mThumbSize);
+        y = valIn * (mBounds.height - thumby - 2);
+        if(mIsFilled) thumby = mBounds.width - y;
+        thumbx = mThumbSize;
     } else {
-    y = (double) indexIn * ( xoffset + mThumbSize);
-    x = valIn * (mBounds.width - mThumbSize - 2);
+        thumbx = mThumbSizeY;
+        y = (double) indexIn * ( xoffset + mThumbSize);
+        x = valIn * (mBounds.width - thumbx - 2);
+        if(mIsFilled) thumbx = mBounds.width + x;
+        thumby = mThumbSize;
     }
-    return SCMakeRect(mBounds.x + x + 1, mBounds.y + y + 1, mThumbSize, mThumbSize);   
+    return SCMakeRect(mBounds.x + x + 1, mBounds.y + y + 1, thumbx, thumby);   
 }
 void SCMultiSliderView::setSelection(SCPoint where)
 {
     int wx;
+    int visiIn = mCurrentIndex - mStartIndex;
     if(mIsHorizontal) wx = (int) where.x/( mXOffset + mThumbSize);
     else wx = (int) where.y/( mXOffset + mThumbSize);
     
-    if(wx > mCurrentIndex) mSelectionSize = (int) wx - mCurrentIndex;
+    if(wx > visiIn) mSelectionSize = (int) wx - visiIn;
     else {
     setValueFromPoint(where);
     mSelectionSize = (int) mCurrentIndex - wx;
@@ -2102,6 +2140,12 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             refresh();
             return errNone;
         } 
+        if (strcmp(name, "thumbWidth")==0) {
+            err = slotIntVal(slot, &mThumbSizeY);
+            //setVisibleSize();
+            refresh();
+            return errNone;
+        } 
         if (strcmp(name, "xOffset")==0) {
             err = slotFloatVal(slot, &mXOffset);
             if(mXOffset < 1.0) mXOffset = 0.0; //mResamp = (int) 1.0 / mXOffset;
@@ -2145,6 +2189,11 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             refresh();
             return errNone;
         }
+        if (strcmp(name, "isFilled")==0) {
+            mIsFilled = IsTrue(slot); 
+            refresh();
+            return errNone;
+        }
         if (strcmp(name, "showIndex")==0) {
             mShowIndex = IsTrue(slot); 
             refresh();
@@ -2153,8 +2202,6 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         if (symbol == s_x) {
             slotIntVal(slot, &mCurrentIndex);
             mCurrentIndex  = sc_clip(mCurrentIndex, 0, mTabSize - 1);
-           // if(mXOffset < 1.0 && mXOffset != 0) mCurrentX = mCurrentIndex * mXOffset;
-           // else mCurrentX = mCurrentIndex;
             refresh();
             return errNone;
 	}
@@ -2182,16 +2229,23 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         if (strcmp(name, "referenceValues")==0) {
             
             if (!isKindOfSlot(slot, class_array)) return errWrongType;
-            if(slot->uo->size != mTabSize || mSecYValues == NULL) {
+            if(slot->uo->size == mTabSize && mSecYValues != NULL) {
+            int len = slot->uo->size;
+                memcpy(mSecYValues, slot->uo->slots, len * sizeof(double));
+                
                 err = allocSlotDoubleArrayVal(slot, &mSecYValues);
                 mTabSize = slot->uo->size;
             } else {
-                int len = slot->uo->size;
-                memcpy(mSecYValues, slot->uo->slots, len * sizeof(double));
+                 err = allocSlotDoubleArrayVal(slot, &mSecYValues);
             }
             refresh();
             return errNone;
 	}
+        if (strcmp(name, "selectionSize")==0) {
+            slotIntVal(slot, &mSelectionSize);
+            refresh();
+            return errNone;
+        }
 	
         return SCView::setProperty(symbol, slot);
 }
@@ -2242,8 +2296,6 @@ void SCMultiSliderView::receiveDrag()
     sendMessage(s_receiveDrag, 0, 0, 0);
 }
 
-
-//////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
 

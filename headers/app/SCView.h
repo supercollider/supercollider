@@ -466,7 +466,7 @@ public:
 protected:
 	void setValueFromPoint(SCPoint point);
 	SCRect calcThumbRect(int xIn, double valIn, float xoffset);
-	int mThumbSize; // size of the rect
+	int mThumbSize, mThumbSizeY; // size of the rect
         int mTabSize, mVisibleSize; // size of the table
         SCColor mFillColor;
         SCColor mStrokeColor;
@@ -478,11 +478,11 @@ protected:
         double * mSecYValues;
         DrawBackground* mKnob;
         float mXOffset ; //space between points
-        bool mReadOnly, mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsHorizontal;
+        bool mReadOnly, mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsHorizontal, mIsFilled;
         int mResamp;
 };
 SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
-
+///
 
 class SCUserView : public SCView
 {
