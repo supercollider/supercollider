@@ -3,7 +3,17 @@ SampleGui : ObjectGui {
 	
 	var <sigG,lastSoundFilePath,maxs,mins,resolution = 128;
 	var nameG,tempoG,beatsG;
-	
+	writeName { arg layout;
+		var n;
+		n = model.class.asString;
+		InspectorLink.icon(model,layout);
+		SCDragSource(layout,Rect(0,0,(n.size * 7.5).max(70),17))
+			.stringColor_(Color.new255(70, 130, 200))
+			.background_(Color.white)
+			.align_(\center)
+			.beginDragAction_({ model })
+			.object_(n);
+	}
 	guiBody { arg layout;
 		var xfade,r,size;
 
