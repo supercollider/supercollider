@@ -319,8 +319,7 @@ Pfindur : FilterPattern {
 			
 			loop ({
 				inevent = stream.next(inevent);
-				if(inevent.isNil) { 
-					Event.silent(dur - elapsed).yield;
+				if(inevent.isNil) {
 					nil.alwaysYield 
 				};
 				delta = inevent.delta;
@@ -343,6 +342,44 @@ Pfindur : FilterPattern {
 		});
 	}
 }
+
+Psync : FilterPattern {
+	var <>mindur, <>maxdur, <>tolerance;
+	*new { arg pattern, mindur, maxdur, tolerance = 0.001;
+		^super.new(pattern).mindur_(mindur).maxdur_(maxdur).tolerance_(tolerance)
+	}
+	storeArgs { ^[pattern,mindur,maxdur,tolerance] }
+	asStream { 
+		^Routine.new({ arg inevent;
+			var item, stream, delta, elapsed = 0.0, nextElapsed;
+		
+			stream = pattern.asStream;
+			
+			loop {
+				inevent = stream.next(inevent);
+				if(inevent.isNil) {
+					if(mindur.notNil) { Event.silent(elapsed.roundUp(mindur) - elapsed).yield };
+					nil.alwaysYield
+				};
+				delta = inevent.delta;
+				nextElapsed = elapsed + delta;
+				
+				if (maxdur.notNil and: { nextElapsed.round(tolerance) >= maxdur })
+				{
+					inevent = inevent.copy; 
+					inevent.put(\delta, maxdur - elapsed);
+					inevent = inevent.yield;
+					nil.alwaysYield;
+				}
+				{
+					elapsed = nextElapsed;
+					inevent = inevent.yield;
+				};
+			};
+		});
+	}
+}
+
 
 Pconst : FilterPattern {
 	var <>sum, <>tolerance;
