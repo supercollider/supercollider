@@ -125,8 +125,6 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
         } else goto below; 
     } else {
 below:
-        [super mouseDown: event];
-		
 		MyDocument * doc = [self delegate];
 		PyrObject * pobj = [doc getSCObject];
 		PyrSymbol *method = getsym("mouseDown");
@@ -139,6 +137,7 @@ below:
 			g->canCallOS = false;
 		}
 		pthread_mutex_unlock (&gLangMutex);
+        [super mouseDown: event];
 
     }
 }
