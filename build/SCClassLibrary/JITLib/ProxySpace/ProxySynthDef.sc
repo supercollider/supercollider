@@ -16,7 +16,8 @@ ProxySynthDef : SynthDef {
 			envgen = if(makeFadeEnv, {
 					synthGate = Control.names('#gate').kr(1.0);
 					synthFadeTime = Control.names('#fadeTime').kr(0.02);
-					Linen.kr(synthGate,synthFadeTime, 1.0, synthFadeTime, 2)	
+					//Linen.kr(synthGate,synthFadeTime, 1.0, synthFadeTime, 2)
+					EnvGen.kr(Env.new(#[0,1,0],[1,1.25],'sin',1),synthGate,1,0,synthFadeTime,2)	
 				}, { 
 					1.0 
 				});
