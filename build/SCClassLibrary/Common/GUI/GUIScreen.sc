@@ -82,7 +82,9 @@ SCWindow {
 	bounds {
 		^this.prGetBounds(Rect.new);
 	}
-	
+	*screenBounds {
+		^this.prGetScreenBounds(Rect.new);
+	}
 	play { arg function;
 		AppClock.play({ 
 			if (dataptr.notNil, {
@@ -114,6 +116,11 @@ SCWindow {
 		_SCWindow_SetBounds
 		^this.primitiveFailed
 	}
+	*prGetScreenBounds { arg argBounds;
+		_SCWindow_GetScreenBounds
+		^this.primitiveFailed
+	}
+	
 	
 	*viewPalette {
 		var w, v, f, c;
