@@ -201,8 +201,8 @@ int main(int argc, char* argv[])
 // -N cmd-filename input-filename output-filename sample-rate header-format sample-format
 				checkNumArgs(7);
                                 options.mRealTime = false;
-				options.mNonRealTimeCmdFilename    = argv[j+1];
-				options.mNonRealTimeInputFilename  = (strcmp(argv[j+2], "_")==0) ? 0 : argv[j+2];
+				options.mNonRealTimeCmdFilename    = strcmp(argv[j+1], "_") ? argv[j+1] : 0;
+				options.mNonRealTimeInputFilename  = strcmp(argv[j+2], "_") ? argv[j+2] : 0;
 				options.mNonRealTimeOutputFilename = argv[j+3];
 				options.mNonRealTimeSampleRate = (int)atof(argv[j+4]);
 				options.mNonRealTimeOutputHeaderFormat = argv[j+5];

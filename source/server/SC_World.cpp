@@ -285,10 +285,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	const int kFileBufFrames = 8192;
 	const int kBufMultiple = kFileBufFrames / world->mBufLength;
 
-	// batch process non real time audio
-	if (!inOptions->mNonRealTimeCmdFilename)
-		throw std::runtime_error("Non real time command filename is NULL.\n");
-		
+	// batch process non real time audio		
 	if (!inOptions->mNonRealTimeOutputFilename) 
 		throw std::runtime_error("Non real time output filename is NULL.\n");
 	
@@ -346,7 +343,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	if (nextOSCPacket(cmdFile, &packet, schedTime))
 		throw std::runtime_error("command file empty.\n");
 	int64 prevTime = schedTime;
-	
+	        
 	World_SetSampleRate(world, inOptions->mNonRealTimeSampleRate);
 	World_Start(world);
 	
@@ -355,6 +352,8 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
         double oscToSeconds = 1. / pow(2.,32.);
 	double oscToSamples = inOptions->mNonRealTimeSampleRate * oscToSeconds;
 	int64 oscInc = (int64)((double)bufLength / oscToSamples);
+
+        printf("start time %g\n", schedTime * oscToSeconds);
 	
 	bool run = true;
 	int inBufStep = numInputChannels * bufLength;
@@ -402,6 +401,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	
 				PerformOSCBundle(world, &packet);
 				if (nextOSCPacket(cmdFile, &packet, schedTime)) { run = false; break; }
+        printf("nextOSCPacket %g\n", schedTime * oscToSeconds);
 				if (schedTime < prevTime) {
 					scprintf("ERROR: Packet time stamps out-of-order.\n");
 					run = false;
@@ -439,6 +439,7 @@ Bail:
 		sf_writef_float(world->hw->mNRTOutputFile, outputFileBuf, bufFramesCalculated);
 	}
 	
+        if (cmdFile != stdin) fclose(cmdFile);
 	sf_close(world->hw->mNRTOutputFile);
         world->hw->mNRTOutputFile = 0;
         
