@@ -80,7 +80,13 @@ UnixFILE : IOStream {
 		^string
 	}
 	
-	getLine { arg argString;
+	getLine { arg maxSize=1024;
+		var string;
+		string = String.newClear(maxSize);
+		this.prGetLine(string);
+		^string
+	}
+	prGetLine { arg argString;
 		// returns a string up to lesser of next newline 
 		// or length-1 of the argument string
 		_FileReadLine;
@@ -119,16 +125,20 @@ UnixFILE : IOStream {
 }
 
 File : UnixFILE {
-	*openDialog { arg prompt, successFunc, cancelFunc;
-		var path;
-		path = this.prOpenDialog(prompt);
-		if (path.notNil, { successFunc.value(path) },{ cancelFunc.value(path) });
-	}
-	*saveDialog { arg prompt, defaultName, successFunc, cancelFunc;
-		var path;
-		path = this.prSaveDialog(prompt, defaultName);
-		if (path.notNil, { successFunc.value(path) },{ cancelFunc.value(path) });
-	}
+	
+	classvar <openDialogs;
+	
+// not yet implemented
+//	*openDialog { arg prompt, successFunc, cancelFunc;
+//		var path;
+//		path = this.prOpenDialog(prompt);
+//		if (path.notNil, { successFunc.value(path) },{ cancelFunc.value(path) });
+//	}
+//	*saveDialog { arg prompt, defaultName, successFunc, cancelFunc;
+//		var path;
+//		path = this.prSaveDialog(prompt, defaultName);
+//		if (path.notNil, { successFunc.value(path) },{ cancelFunc.value(path) });
+//	}
 	
 	*new { arg pathName, mode; 
 		^super.new.open(pathName, mode);
@@ -153,12 +163,15 @@ File : UnixFILE {
 			this.addOpenFile;
 		});
 	}
-	close { // close the file
+	close {	// close the file
 		// the GC will not call this for you
+		this.prClose;
+		openFiles.remove(this);
+	}
+	prClose {
 		_FileClose 
 		^this.primitiveFailed;
 	}
-
 	
 	// PRIVATE
 	prOpen { arg pathName, mode;
@@ -183,6 +196,7 @@ File : UnixFILE {
 		_File_PutFile
 		^this.primitiveFailed;
 	}
+	
 }
 
 
