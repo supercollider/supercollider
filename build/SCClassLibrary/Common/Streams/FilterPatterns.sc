@@ -15,8 +15,9 @@ Pn : FilterPattern {
 	storeArgs { ^[pattern,repeats] }
 	asStream {
 		^Routine.new({ arg inevent;
-			var stream, outval;
-			if(inf === repeats)
+			var stream, outval, n;
+			n = repeats.value; 
+			if(inf === n)
 			{
 				stream = pattern.asStream;
 				loop {
@@ -28,7 +29,7 @@ Pn : FilterPattern {
 					inevent = outval.yield(inevent)
 				}
 			} {
-				repeats.value.do {
+				n.do {
 					inevent = pattern.embedInStream(inevent);
 				};
 			}
