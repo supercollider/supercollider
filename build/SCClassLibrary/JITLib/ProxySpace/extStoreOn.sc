@@ -20,7 +20,7 @@
 	storeOn { arg stream;
 		var key;
 		key = this.key;
-		if(key.notNil) {stream << "~" << key } { super.storeOn(stream) };
+		if(key.notNil) { stream << "~" << key } { super.storeOn(stream) };
 	}
 }
 

@@ -117,9 +117,9 @@ Order : SequenceableCollection {
 	
 	detect { arg function, start;
 		var slot, max, elem;
-		slot = if(start.isNil) {0 } { this.findSlotFor(start) };
+		slot = if(start.isNil) { 0 } { this.findSlotFor(start) };
 		max = indices.size - 1;
-		if(slot.isNil or: {slot > max}) { ^nil };
+		if(slot.isNil or: { slot > max}) { ^nil };
 		while { slot <= max } {
 			elem = array[slot];
 			if (function.value(elem, slot)) { ^elem };

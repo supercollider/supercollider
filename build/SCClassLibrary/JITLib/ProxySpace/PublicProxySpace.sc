@@ -30,7 +30,7 @@ PublicProxySpace : ProxySpace {
 		if(notCurrent) { this.push };
 		if(this.sendsTo(key))
 		{
-			if(obj.isKindOf(Function) and: {obj.isClosed.not}) {
+			if(obj.isKindOf(Function) and: { obj.isClosed.not}) {
 				(Char.bullet ++ " only closed functions can be sent").postln;
 				^this
 			};
@@ -42,8 +42,8 @@ PublicProxySpace : ProxySpace {
 		if(notCurrent) { this.pop };
 	}
 	
-	lurk {listeningKeys = \all; sendingKeys = nil; }
-	boss {listeningKeys = nil; sendingKeys = \all; } 
+	lurk { listeningKeys = \all; sendingKeys = nil; }
+	boss { listeningKeys = nil; sendingKeys = \all; } 
 	 
 	
 	makeLogWindow { arg bounds, color;
@@ -56,7 +56,7 @@ PublicProxySpace : ProxySpace {
 	 		defer { 
 	 			if(d.selectionSize > 0) { d.selectRange(d.text.size-1, 0) }; // deselect user
 	 			str = "~" ++ key ++ " = " ++ str;
-	 			if(str.last !== $;) {str = str ++ $; };
+	 			if(str.last !== $;) { str = str ++ $; };
 	 			d.selectedString_(
 	 				"\n" ++ "//" + nickname
 	 				+ "______"
@@ -94,7 +94,7 @@ PublicProxySpace : ProxySpace {
 		
 		});
 		resp.add;
-		//addresses.do {arg addr; 
+		//addresses.do { arg addr; 
 //			addr.sendMsg('/proxyspace', nickname, channel, key, nickname + "has joined" + channel);
 //		
 //		}
@@ -124,23 +124,23 @@ PublicProxySpace : ProxySpace {
 	broadcast { arg name, key, obj;
 		var str, b;
 		str = obj.asCompileString;
-		if(logSelf) {action.value(this, nickname, key, str) };
-		if(str.size > 8125) {"string too large to publish".postln; ^this };
+		if(logSelf) { action.value(this, nickname, key, str) };
+		if(str.size > 8125) { "string too large to publish".postln; ^this };
 		if(channel.isNil or: { nickname.isNil }) { Error("first join a channel, please").throw };
 		b = ['/proxyspace', nickname, channel, key, str];
 		addresses.do { arg addr; addr.sendBundle(nil, b) };
 	}
 	
 	sendsTo { arg key;
-		^public and: {sendingKeys.notNil} and: 
+		^public and: { sendingKeys.notNil} and: 
 			{ 
 				sendingKeys === \all 
 				or: 
 				{ sendingKeys.includes(key) } 
 			} 
 	}
-	listensTo {arg key;
-		^public and: {listeningKeys.notNil} and: 
+	listensTo { arg key;
+		^public and: { listeningKeys.notNil} and: 
 			{
 				listeningKeys === \all 
 				or:
@@ -208,7 +208,7 @@ SharedProxySpace : ProxySpace {
 			res = res + (a - 97 + (i * 26)); 
 		};
 		if(res > 999) // use nodeIDs between 2 and 999
-		{Error("this name" + string + "creates a too high node id. choose a shorter one").throw };
+		{ Error("this name" + string + "creates a too high node id. choose a shorter one").throw };
 		^res
 	}
 

@@ -143,7 +143,7 @@ NodeMap {
 		(keys ?? { settings.keys }).do { arg key;
 			var item;
 			item = settings[key];
-			if(item.notNil and: {item.isMapped}) {
+			if(item.notNil and: { item.isMapped}) {
 					args = args ++ [key, -1, item.busNumChannels];
 			};
 		};

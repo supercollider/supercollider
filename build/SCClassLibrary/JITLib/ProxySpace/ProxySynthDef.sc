@@ -9,7 +9,7 @@ ProxySynthDef : SynthDef {
 		unixCmd("rm synthdefs/"++ this.tempPrefix ++ "*");
 	}
 	
-	*tempPrefix {^"temp__" }
+	*tempPrefix { ^"temp__" }
 	
 	*new { arg name, func, rates, prependArgs, makeFadeEnv=true, channelOffset=0, chanConstraint;
 		var def, rate, numChannels, output, isScalar, envgen, canFree, hasOwnGate;

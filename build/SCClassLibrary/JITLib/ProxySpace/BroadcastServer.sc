@@ -90,7 +90,7 @@ BroadcastServer : Server {
 		if (cmdName[0] != $/) { cmdName = cmdName.insert(0, $/) };
 		addresses.do { arg addr;
 			var resp;
-			resp = OSCresponderNode(addr, "/done", {|time, resp, msg|
+			resp = OSCresponderNode(addr, "/done", { |time, resp, msg|
 			if (msg[1].asString == cmdName) {
 				resp.remove;
 				count = count - 1;
@@ -114,7 +114,7 @@ BroadcastServer : Server {
 		addresses.do { arg addr;
 			var resp, id;
 			id = UniqueID.next;
-			resp = OSCresponderNode(addr, "/synced", {|time, resp, msg|
+			resp = OSCresponderNode(addr, "/synced", { |time, resp, msg|
 			if (msg[1] == id) {
 				resp.remove;
 				count = count - 1;

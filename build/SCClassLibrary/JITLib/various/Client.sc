@@ -96,7 +96,7 @@ LocalClient : Client {
 	defaultAddr { ^[nil] } // default: listen to all.
 	
 	start {
-		if(isListening.not, { resp.do {arg u; u.add }; isListening = true });
+		if(isListening.not, { resp.do { arg u; u.add }; isListening = true });
 	}
 	
 	stop {
@@ -104,7 +104,7 @@ LocalClient : Client {
 		isListening = false;
 	}
 	*stop {
-		named.do {arg u; u.stop }
+		named.do { arg u; u.stop }
 	}
 	
 	
@@ -112,7 +112,7 @@ LocalClient : Client {
 		
 	allowInterpret {
 		ClientFunc.new(\interpret, { arg pw, string;
-			if(password.notNil and: { pw === password }, { {string.asString.interpret}.defer })
+			if(password.notNil and: { pw === password }, { { string.asString.interpret}.defer })
 		});
 	}
 	
@@ -130,7 +130,7 @@ ClientFunc {
 	*new { arg name, func;
 		^super.newCopyArgs(name, func).toLib;
 	}
-	*initClass {this.clear }
+	*initClass { this.clear }
 	*clear { all = IdentityDictionary.new }
 	*at { arg key; ^all.at(key) }
 	*removeAt { arg key; ^all.removeAt(key) }

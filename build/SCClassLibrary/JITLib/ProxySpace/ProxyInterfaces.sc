@@ -19,7 +19,7 @@ AbstractPlayControl {
 	nodeID { ^nil }
 	
 	readyForPlay { ^true }
-	distributable {^false } // shared proxy support
+	distributable { ^false } // shared proxy support
 
 	loadToBundle {}
 	spawnToBundle {} // only active in synthcontrols
@@ -79,7 +79,7 @@ StreamControl : AbstractPlayControl {
 			stream.stop; stream = stream.copy; stream.play(clock, false, 0.0)
 		} 
 	}
-	stop {stream.stop }
+	stop { stream.stop }
 	
 }
 
@@ -220,7 +220,7 @@ SynthControl : AbstractPlayControl {
 	
 	synthDesc { var dict;
 		dict = SynthDescLib.global.synthDescs;
-		^if(dict.notNil) { dict.at(source) } {nil }; // source is symbol: synth def name
+		^if(dict.notNil) { dict.at(source) } { nil }; // source is symbol: synth def name
 	}
 
 	controlNames { var desc; 
@@ -228,7 +228,7 @@ SynthControl : AbstractPlayControl {
 					^if(desc.notNil) { desc.controls } { nil } 
 	}
 	
-	synthDefPath {^SynthDef.synthDefDir ++ this.asDefName ++ ".scsyndef" }
+	synthDefPath { ^SynthDef.synthDefDir ++ this.asDefName ++ ".scsyndef" }
 	store { SynthDescLib.global.read(this.synthDefPath) }
 	
 }
@@ -252,7 +252,7 @@ SynthDefControl : SynthControl {
 		numChannels = synthDef.numChannels ? proxy.numChannels ? 2;
 		ok = proxy.initBus(rate, numChannels);
 
-		if(ok and: {synthDef.notNil}) 
+		if(ok and: { synthDef.notNil}) 
 		{ 
 			paused = proxy.paused;
 			canReleaseSynth = synthDef.canReleaseSynth;
@@ -269,7 +269,7 @@ SynthDefControl : SynthControl {
 		bytes = synthDef.asBytes;
 		size = bytes.size;
 		size = size - (size bitAnd: 3) + 84; // 4 + 4 + 16 + 16 //appx path length size + overhead
-		if(server.options.protocol === \tcp or: {size < 8192}) {
+		if(server.options.protocol === \tcp or: { size < 8192}) {
 			bundle.addPrepare([5, bytes]); // "/d_recv"
 			
 // synthdefs now are not written, as there is no way to regain
@@ -292,7 +292,7 @@ SynthDefControl : SynthControl {
 	}
 	
 	freeToBundle { arg bundle; 
-		if(synthDef.notNil) {bundle.addPrepare([53, synthDef.name]) } // "/d_free"
+		if(synthDef.notNil) { bundle.addPrepare([53, synthDef.name]) } // "/d_free"
 	}
 	
 	writeSynthDefFile { arg path, bytes;

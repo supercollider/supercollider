@@ -29,7 +29,7 @@ InBus {
 						{ XInFeedback.ar(index, numChannels) }
 						{ XIn.kr(index, numChannels) }
 			};
-		^if(argRate === rate) {out } { // if not the same rate, convert rates
+		^if(argRate === rate) { out } { // if not the same rate, convert rates
 			if(argRate === 'audio') { K2A.ar(out) } { A2K.kr(out) }
 		};
 	
@@ -94,7 +94,7 @@ Monitor {
 		var divider, server, numChannels;
 		toIndex = toIndex ? out;
 		vol = volume ? vol;
-		if(multi) {out = out.asCollection.add(toIndex) } {out = toIndex };
+		if(multi) { out = out.asCollection.add(toIndex) } { out = toIndex };
 		toNumChannels = toNumChannels ? fromNumChannels;
 		server = inGroup.server;
 		if(group.isPlaying.not) {
@@ -105,7 +105,7 @@ Monitor {
 		} {
 				if(group.group.nodeID != inGroup.nodeID) {
 					if(group.server !== group.group.server) 
-						{Error("group not on the same server").throw };
+						{ Error("group not on the same server").throw };
 						bundle.add(["/g_tail", inGroup.nodeID, group.nodeID]);
 						group.group = inGroup;
 				};
@@ -123,7 +123,7 @@ Monitor {
 		bundle.add([15, group.nodeID, "fadeTime", fadeTime, "vol", vol]);
 	}
 	
-	isPlaying {^group.isPlaying }
+	isPlaying { ^group.isPlaying }
 	
 	stop { arg fadeTime;
 		if(group.isPlaying) {

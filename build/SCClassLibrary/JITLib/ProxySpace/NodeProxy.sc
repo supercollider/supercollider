@@ -95,8 +95,8 @@ BusPlug : AbstractFunction {
 		
 	makeBusArg { 	
 			var index, numChannels;
-			busArg = if(bus.isNil or: {bus.rate === 'audio' }) // audio buses can't be 
-					{"" } {						// used for control mapping
+			busArg = if(bus.isNil or: { bus.rate === 'audio' }) // audio buses can't be 
+					{ "" } {						// used for control mapping
 						index = this.index;
 						numChannels = this.numChannels;
 						if(numChannels == 1) 
@@ -221,7 +221,7 @@ BusPlug : AbstractFunction {
 				}
 	}
 	monitorIndex { ^if(monitor.isNil) { nil }{ monitor.out } }
-	monitorGroup {^if(monitor.isNil) { nil } {monitor.group } }
+	monitorGroup { ^if(monitor.isNil) { nil } { monitor.group } }
 	
 	stop { arg fadeTime=0.1;
 		monitor.stop(fadeTime)
@@ -296,13 +296,13 @@ NodeProxy : BusPlug {
 	}
 	
 	pause {
-		if(this.isPlaying) {objects.do { |item| item.pause(clock) } };
+		if(this.isPlaying) { objects.do { |item| item.pause(clock) } };
 		paused = true;
 	}
 	
 	resume {
 		paused = false;
-		if(this.isPlaying) {objects.do { |item| item.resume(clock) } };
+		if(this.isPlaying) { objects.do { |item| item.resume(clock) } };
 	}
 	
 	fadeTime_ { arg t;
@@ -491,7 +491,7 @@ NodeProxy : BusPlug {
 	controlNames {
 		var all; // Set doesn't work, because equality undefined for ControlName
 		all = Array.new;
-		objects.do {|el|
+		objects.do { |el|
 			var cn;
 			cn = el.controlNames.reject { |item| 
 				all.any { |cn| cn.name === item.name }

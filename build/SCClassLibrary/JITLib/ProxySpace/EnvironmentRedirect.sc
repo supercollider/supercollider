@@ -108,7 +108,7 @@ EnvironmentRedirect {
      	if(doc.isKindOf(EnvirDocument), {
      		doc.envir_(this)
      	}, {
-     		if(pushNow) {this.push};
+     		if(pushNow) { this.push};
      		"added actions to current doc".inform;
      		doc	.toFrontAction_({ this.push })
      			.endFrontAction_({ this.pop });

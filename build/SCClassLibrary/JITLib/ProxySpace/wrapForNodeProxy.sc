@@ -63,7 +63,7 @@
 		^if(proxy.rate === 'audio', {
 			{ Array.fill(proxy.numChannels ? 1, { K2A.ar(this) }) }
 		}, { 
-			{  Control.kr(Array.fill(proxy.numChannels ? 1, {this})) }
+			{  Control.kr(Array.fill(proxy.numChannels ? 1, { this})) }
 		})
 	}
 }
