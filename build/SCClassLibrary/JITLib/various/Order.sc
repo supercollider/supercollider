@@ -33,12 +33,12 @@ Order : SequenceableCollection {
 	}
 	
 	remove { arg item;
-		var index;
+		var index, res;
 		index = array.indexOf(item);
-		if(index.notNil, {
+		^if(index.notNil, {
 			indices.removeAt(index);
-			array.removeAt(index);
-		})
+			res = array.removeAt(index);
+		});
 	}
 	
 	pop {
@@ -122,3 +122,4 @@ Order : SequenceableCollection {
 	
 
 }
+
