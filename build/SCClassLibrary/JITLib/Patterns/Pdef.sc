@@ -7,7 +7,7 @@ Pdefn : Pattern {
 	*initClass { 
 		patterns = IdentityDictionary.new; 
 		numericals = IdentityDictionary.new; 
-		clock = QuantClock.new(1.0);
+		//clock = TempoClock.new(1.0);
 		patterns.put(\rest,  
 			Pdef.make(\rest, Pbind(nil,
 				\freq, \rest, 
@@ -118,7 +118,7 @@ Pdef : Pdefn {
 	
 	sched { arg func;
 		if(clock.isNil, func, {
-			clock.sched(0, func);
+			clock.schedToBeat(0, func);
 		})
 	}
 	
