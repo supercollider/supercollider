@@ -419,6 +419,26 @@
 			settings = {
 			};
 		};
+		9284649C06DFB69C00964E7E = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.icns;
+			name = SCcube.icns;
+			path = resources/SCcube.icns;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		9284649D06DFB69C00964E7E = {
+			fileRef = 9284649C06DFB69C00964E7E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		9284649E06DFB69C00964E7E = {
+			fileRef = 9284649C06DFB69C00964E7E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		9286AE9E057D30B9000EBAEB = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1265,8 +1285,8 @@
 				92B5F3A90547488200496808,
 				92B5F3AA0547488200496808,
 				92B5F3AB0547488200496808,
-				92B5F3AC0547488200496808,
 				92B5F3AD0547488200496808,
+				9284649E06DFB69C00964E7E,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1315,12 +1335,6 @@
 		};
 		92B5F3AB0547488200496808 = {
 			fileRef = F50D06B402E6A60F01CA2799;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		92B5F3AC0547488200496808 = {
-			fileRef = F50D06C202E7F64801CA2799;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -3583,7 +3597,7 @@
 	<key>CFBundleGetInfoString</key>
 	<string></string>
 	<key>CFBundleIconFile</key>
-	<string>BBall.icns</string>
+	<string>SCcube.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string></string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -3829,8 +3843,8 @@
 				F50D06BB02E6A60F01CA2799,
 				F50D06BC02E6A60F01CA2799,
 				F50D06BD02E6A60F01CA2799,
-				F50D06C302E7F64801CA2799,
 				908DBC3B0507C66500000098,
+				9284649D06DFB69C00964E7E,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4654,7 +4668,7 @@
 				F50D06B002E6A60F01CA2799,
 				F50D06B202E6A60F01CA2799,
 				F50D06B402E6A60F01CA2799,
-				F50D06C202E7F64801CA2799,
+				9284649C06DFB69C00964E7E,
 			);
 			isa = PBXGroup;
 			name = Resources;
@@ -4916,20 +4930,6 @@
 			path = /usr/local/lib/libsndfile.a;
 			refType = 0;
 			sourceTree = "<absolute>";
-		};
-		F50D06C202E7F64801CA2799 = {
-			isa = PBXFileReference;
-			lastKnownFileType = image.icns;
-			name = BBall.icns;
-			path = resources/BBall.icns;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		F50D06C302E7F64801CA2799 = {
-			fileRef = F50D06C202E7F64801CA2799;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 		F5285E0D0316170401CA2799 = {
 			isa = PBXFileReference;
