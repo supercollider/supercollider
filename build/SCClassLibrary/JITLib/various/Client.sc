@@ -1,7 +1,7 @@
 Client {
 	classvar <>named;
 	var <name, <addr;
-	var <>password;
+	var <>cmdName='/client', <>password;
 
 	*new { arg name=\default, addr;
 		^super.newCopyArgs(name).minit(addr).add
@@ -57,7 +57,7 @@ Client {
 	}
 	
 	interpret { arg string;
-		addr.do({ arg a; a.sendBundle(nil, ["/client", \interpret, password, string]); });
+		addr.do({ arg a; a.sendBundle(nil, [cmdName, \interpret, password, string]); });
 	}
 	
 	recv { arg name, string;
@@ -87,7 +87,7 @@ LocalClient : Client {
 	minit { arg argAddr;
 		super.minit(argAddr);
 		resp = addr.collect { arg netaddr;
-				OSCresponderNode(netaddr, '/client', { arg time, responder, msg;
+				OSCresponderNode(netaddr, cmdName, { arg time, responder, msg;
 				var key, func;
 				key = msg[1];
 				func = ClientFunc.at(key);
