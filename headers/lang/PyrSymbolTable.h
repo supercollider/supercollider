@@ -75,6 +75,4 @@ private:
 	int mNumItems, mMaxItems, mMask;
 };
 
-extern SymbolTable *gSymbolTable;
-
 #endif
