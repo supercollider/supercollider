@@ -135,7 +135,7 @@ RefStream : Pstr {
 	next { arg inval;
 	
 		var outval;
-		if(changed.not and: { parent.changed }) {
+		if(parent.changed and: { changed.not }) {
 			changed = true; 
 			stream = parent.constrainStream(stream); 
 			parent.schedForChange(this);
