@@ -28,11 +28,14 @@ related: [
 \f2\b0 \
 		create a new instance with a pattern (the source).\
 		the pattern should be a 
-\f3\i numerical pattern
+\f3\i value pattern
 \f2\i0  (see 
 \f0\b Pdefn
 \f2\b0 )\
 		(*new is implemented for Pdefn to avoid a dispatch)\
+		for event pattern proxy, see: 
+\f3\i EventPatternProxy
+\f2\i0 \
 	\
 	
 \f0\b *default
@@ -88,9 +91,7 @@ t.stop;\
 \
 \cf2 // PatternProxy, like Pdefn can be accessed in multiple streams\cf0 \
 \cf3 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf4 "Pdefhelp"\cf0 , \{ \cf3 arg\cf0  out, freq, sustain=1, amp=1, pan;\
 	\cf3 var\cf0  env, u=1;\
 	env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.03, sustain), 1, doneAction:2);\
@@ -124,9 +125,8 @@ x.source = \cf3 Pn\cf0 (\cf3 Pshuf\cf0 ([0, 3, 2, 7, 6],2),\cf3 inf\cf0 );\
 \cf3 x\cf0 .quant = 4;\
 \cf3 x.source = Pn\cf0 (\cf3 Pseries\cf0 (0, 1, 8),\cf3 inf\cf0 );\
 \
-\cf3 x\cf0 .quant = \cf3 nil\cf0 ; \cf2 // activate immediately again\
+\cf3 x\cf0 .quant = \cf3 nil\cf0 ; \cf2 // reactivate immediacy\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
 x.source = \cf3 Prout\cf0  \{\
 	loop \{\

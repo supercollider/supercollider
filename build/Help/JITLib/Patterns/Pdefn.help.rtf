@@ -6,7 +6,7 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Pdefn     
-\fs24 pattern definition that references a numerical (non-event) pattern
+\fs24 pattern definition that references a value pattern
 \f1\b0\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -33,7 +33,7 @@ it is very similar to
 \f0\b PatternProxy
 \f2\b0 \
 \
-it can be used to store numerical Patterns globally.\
+it can be used to store value patterns globally (for event patterns, see Pdef).\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -72,8 +72,7 @@ it can be used to store numerical Patterns globally.\
 \f0\b defaultQuant_(beats)
 \f2\b0 \
 			set the default quantisation for new instances (default: nil)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\
 	\ul \
 	
 \f0\b \ulnone source_	\
@@ -89,15 +88,14 @@ it can be used to store numerical Patterns globally.\
 			
 \f2\b0 just like any stream, embeds itself in stream.\
 	\
-
-\f1\fs18 \
-\
-\
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\
+\
 \cf2 // example\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Pdefn\cf0 (\cf4 \\x\cf0 , \cf3 Pseq\cf0 ([1, 2, 3],\cf3 inf\cf0 ));\
 \
 x = \cf3 Pseq\cf0 ([0, 0, \cf3 Pdefn\cf0 (\cf4 \\x\cf0 )], \cf3 inf\cf0 ).asStream;\
@@ -110,13 +108,9 @@ x = \cf3 Pseq\cf0 ([0, 0, \cf3 Pdefn\cf0 (\cf4 \\x\cf0 )], \cf3 inf\cf0 ).asStre
 \
 t.stop;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // Pdefn can be accessed in multiple streams\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 SynthDef\cf0 (\cf5 "Pdefhelp"\cf0 , \{ \cf3 arg\cf0  out, freq, sustain=1, amp=1, pan;\
 	\cf3 var\cf0  env, u=1;\
 	env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.03, sustain), 1, doneAction:2);\
@@ -144,17 +138,13 @@ s.boot;\
 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // if quant is set, the update is done at the next beat or whatever is specified:\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Pdefn\cf0 (\cf4 \\deg\cf0 ).quant = 4;\
 \cf3 Pdefn\cf0 (\cf4 \\deg\cf0 , \cf3 Pn\cf0 (\cf3 Pseries\cf0 (0, 1, 8),\cf3 inf\cf0 ));\
 \
 \cf3 Pdefn\cf0 (\cf4 \\deg\cf0 ).quant = \cf3 nil\cf0 ; \cf2 // activate immediately again\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Pdefn\cf0 (\cf4 \\deg\cf0 , \cf3 Prout\cf0  \{\
 	loop \{\
 	5.do \{ \cf3 |i|\cf0 \
