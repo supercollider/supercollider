@@ -132,7 +132,16 @@ struct SC_AlsaMidiPort
 // Platform implementation (ALSA)
 // =====================================================================
 
-// TODO: SMPTE
+static inline int SC_AlsaMakeUID(int clientID, int portID)
+{
+	return (clientID << 16) | (portID & 0xFFFF);
+}
+
+static inline void SC_AlsaParseUID(int uid, int& clientID, int& portID)
+{
+	clientID = uid >> 16;
+	portID = uid & 0xFFFF;
+}
 
 void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 {
@@ -148,9 +157,10 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 		// class MIDIIn	
 		++g->sp; SetObject(g->sp, s_midiin->u.classobj);
 		// source
-		++g->sp; SetInt(g->sp, evt->dest.port);
+		++g->sp; SetInt(g->sp, SC_AlsaMakeUID(evt->source.client, evt->source.port));
 
 		switch (evt->type) {
+			// midi events
 			case SND_SEQ_EVENT_NOTEOFF:			// noteOff
 				++g->sp; SetInt(g->sp, evt->data.note.channel);
 				++g->sp; SetInt(g->sp, evt->data.note.note);
@@ -190,6 +200,31 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 				++g->sp; SetInt(g->sp, evt->data.control.value + 8192);
 				runInterpreter(g, s_midiBendAction, 4);
 				break;
+			// system common events
+			case SND_SEQ_EVENT_QFRAME:			// mtc quarter frame
+			{
+				int index = evt->data.control.value >> 4;
+				int data = evt->data.control.value & 0xf;
+				
+#if 0
+				post(
+					"mtc qframe: byte 0x%x index 0x%x data 0x%x\n",
+					evt->data.control.value,
+					index, data
+					);
+#endif
+
+				switch (index) {
+					case 1: case 3:
+					case 5:	case 7:
+						data = data << 4;
+				}
+
+				++g->sp; SetInt(g->sp, index);
+				++g->sp; SetInt(g->sp, data);
+			}
+				runInterpreter(g, s_midiSMPTEAction, 4);
+				break;
 			case SND_SEQ_EVENT_SONGPOS:			// song ptr
 				++g->sp; SetInt(g->sp, evt->data.control.channel);
 				++g->sp; SetInt(g->sp, (evt->data.control.value << 7) | evt->data.control.param);
@@ -199,27 +234,38 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 				++g->sp; SetInt(g->sp, evt->data.control.channel);
 				++g->sp; SetInt(g->sp, evt->data.control.param);
 				runInterpreter(g, s_midiSysrtAction, 4);
-				break;				
-			case SND_SEQ_EVENT_START:
-				++g->sp; SetInt(g->sp, 10);
-				runInterpreter(g, s_midiSysrtAction, 3);
 				break;
-			case SND_SEQ_EVENT_CONTINUE:
-				++g->sp; SetInt(g->sp, 11);
-				runInterpreter(g, s_midiSysrtAction, 3);
+			// system realtime events
+			case SND_SEQ_EVENT_CLOCK:			// clock
+				++g->sp; SetInt(g->sp, 0);
+				++g->sp; SetInt(g->sp, 0x8);
+				runInterpreter(g, s_midiSysrtAction, 4);
 				break;
-			case SND_SEQ_EVENT_STOP:
-				++g->sp; SetInt(g->sp, 12);
-				runInterpreter(g, s_midiSysrtAction, 3);
+			case SND_SEQ_EVENT_START:			// start
+				++g->sp; SetInt(g->sp, 0);
+				++g->sp; SetInt(g->sp, 0xA);
+				runInterpreter(g, s_midiSysrtAction, 4);
 				break;
-			case SND_SEQ_EVENT_CLOCK:
-				++g->sp; SetInt(g->sp, 8);
-				runInterpreter(g, s_midiSysrtAction, 3);
+			case SND_SEQ_EVENT_CONTINUE:		// continue
+				++g->sp; SetInt(g->sp, 0);
+				++g->sp; SetInt(g->sp, 0xB);
+				runInterpreter(g, s_midiSysrtAction, 4);
 				break;
-			case SND_SEQ_EVENT_RESET:
-				++g->sp; SetInt(g->sp, 15);
-				runInterpreter(g, s_midiSysrtAction, 3);
+			case SND_SEQ_EVENT_STOP:			// stop
+				++g->sp; SetInt(g->sp, 0);
+				++g->sp; SetInt(g->sp, 0xC);
+				runInterpreter(g, s_midiSysrtAction, 4);
 				break;
+			case SND_SEQ_EVENT_SENSING:			// active sensing
+				++g->sp; SetInt(g->sp, 0);
+				++g->sp; SetInt(g->sp, 0xE);
+				runInterpreter(g, s_midiSysrtAction, 4);
+			case SND_SEQ_EVENT_RESET:			// system reset
+				++g->sp; SetInt(g->sp, 0);
+				++g->sp; SetInt(g->sp, 0xF);
+				runInterpreter(g, s_midiSysrtAction, 4);
+				break;
+			// sysex events
 			case SND_SEQ_EVENT_SYSEX:			// sysex
 				sysexArray = newPyrInt8Array(g->gc, evt->data.ext.len, 0, true);
 				memcpy(sysexArray->b, evt->data.ext.ptr, evt->data.ext.len);
@@ -228,7 +274,7 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 				runInterpreter(g, s_midiSysexAction, 3);
 				break;
 			default:
-				// convert to midi packet
+				// unknown: convert to midi packet
 				snd_midi_event_reset_decode(mEventToMidi);
 				memset(pkt.data, 0, kAlsaMaxPacketSize);
 				if (snd_midi_event_decode(mEventToMidi, pkt.data, kAlsaMaxPacketSize, evt) > 0) {
@@ -239,8 +285,6 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 				} else {
 					g->sp -= 2;
 				}
-// 			default:
-// 				g->sp -= 2;
 		}
 		g->canCallOS = false;
 	}
@@ -280,6 +324,7 @@ int SC_AlsaMidiClient::connectInput(int inputIndex, int uid, int (*action)(snd_s
 	snd_seq_client_info_t* cinfo;
 	snd_seq_port_subscribe_t* subs;
 	snd_seq_addr_t src, dst;
+	int cid, pid;
 
 	if ((inputIndex < 0) || (inputIndex >= mNumInPorts)) return errIndexOutOfRange;
 
@@ -291,8 +336,9 @@ int SC_AlsaMidiClient::connectInput(int inputIndex, int uid, int (*action)(snd_s
 
 	dst.client = snd_seq_client_info_get_client(cinfo);
 	dst.port = mInPorts[inputIndex];
-	src.client = uid >> 16;
-	src.port = uid & 0xFFFF;
+	SC_AlsaParseUID(uid, cid, pid);
+	src.client = cid;
+	src.port = pid;
 
 	//post("MIDI (ALSA): connect ndx %d uid %u dst %d:%d src %d:%d\n", inputIndex, uid, dst.client, dst.port, src.client, src.port);
 
@@ -320,7 +366,9 @@ int SC_AlsaMidiClient::sendEvent(int outputIndex, int uid, snd_seq_event_t* evt,
 		snd_seq_ev_set_subs(evt);
 	} else {
 		// send to specific port
-		snd_seq_ev_set_dest(evt, uid >> 16, uid & 0xFFFF);
+		int cid, pid;
+		SC_AlsaParseUID(uid, cid, pid);
+		snd_seq_ev_set_dest(evt, cid, pid);
 	}
 
 	if (late > 0.f) {
@@ -520,7 +568,7 @@ int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* a)
 				// src port
 				srcPorts.push_back(SC_AlsaMidiPort());
 				snprintf(srcPorts.back().name, kAlsaMaxPortNameLen, "%s-%s", cname, pname);
-				srcPorts.back().uid = (cid << 16) | pid;
+				srcPorts.back().uid = SC_AlsaMakeUID(cid, pid);
 				//post("MIDI (ALSA): src %s-%s %d:%d %u\n", cname, pname, cid, pid, srcPorts.back().uid);
 			}
 
@@ -528,7 +576,7 @@ int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* a)
 				// dst port
 				dstPorts.push_back(SC_AlsaMidiPort());
 				snprintf(dstPorts.back().name, kAlsaMaxPortNameLen, "%s-%s", cname, pname);
-				dstPorts.back().uid = (cid << 16) | pid;
+				dstPorts.back().uid = SC_AlsaMakeUID(cid, pid);
 				//post("MIDI (ALSA): dst %s-%s %d:%d %u\n", cname, pname, cid, pid, srcPorts.back().uid);
 			}
 		}
