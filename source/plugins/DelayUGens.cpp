@@ -394,6 +394,7 @@ void BufSampleRate_next(BufInfoUnit *unit, int inNumSamples)
 
 void BufSampleRate_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
+	SETCALC(BufSampleRate_next);
 	unit->m_fbufnum = -1.f;
 	SIMPLE_GET_BUF
 	ZOUT0(0) = buf->samplerate;
@@ -408,6 +409,7 @@ void BufFrames_next(BufInfoUnit *unit, int inNumSamples)
 
 void BufFrames_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
+	SETCALC(BufFrames_next);
 	unit->m_fbufnum = -1.f;
 	SIMPLE_GET_BUF
 	ZOUT0(0) = buf->frames;
@@ -422,6 +424,7 @@ void BufDur_next(BufInfoUnit *unit, int inNumSamples)
 
 void BufDur_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
+	SETCALC(BufDur_next);
 	unit->m_fbufnum = -1.f;
 	SIMPLE_GET_BUF
 	ZOUT0(0) = buf->frames * buf->sampledur;
@@ -436,6 +439,7 @@ void BufChannels_next(BufInfoUnit *unit, int inNumSamples)
 
 void BufChannels_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
+	SETCALC(BufChannels_next);
 	unit->m_fbufnum = -1.f;
 	SIMPLE_GET_BUF
 	ZOUT0(0) = buf->channels;
@@ -450,6 +454,7 @@ void BufSamples_next(BufInfoUnit *unit, int inNumSamples)
 
 void BufSamples_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
+	SETCALC(BufSamples_next);
 	unit->m_fbufnum = -1.f;
 	SIMPLE_GET_BUF
 	ZOUT0(0) = buf->samples;
@@ -464,6 +469,7 @@ void BufRateScale_next(BufInfoUnit *unit, int inNumSamples)
 
 void BufRateScale_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
+	SETCALC(BufRateScale_next);
 	unit->m_fbufnum = -1.f;
 	SIMPLE_GET_BUF
 	ZOUT0(0) = buf->samplerate * unit->mWorld->mFullRate.mSampleDur;
