@@ -203,7 +203,7 @@ int prHIDBuildDeviceList(VMGlobals *g, int numArgsPushed)
 	return errNone;	
 }
 
-
+  
 int prHIDGetValue(VMGlobals *g, int numArgsPushed);
 int prHIDGetValue(VMGlobals *g, int numArgsPushed)
 {
@@ -244,17 +244,18 @@ void PushQueueEvents (){
 	IOHIDEventStruct event;
 	pRecDevice  pCurrentHIDDevice = HIDGetFirstDevice ();
 	int numdevs = gNumberOfHIDDevices;
-
+	unsigned char result;
 	for(int i=0; i< numdevs; i++){
-		if (pCurrentHIDDevice)
-		{
+		//if (pCurrentHIDDevice)
+		//{
 		//SInt32 value = HIDGetElementValue (pCurrentHIDDevice, pCurrentHIDElement);
 		//call lang with: arg locID, cookie, value 
-		IOHIDQueueInterface ** queue = (IOHIDQueueInterface**) pCurrentHIDDevice->queue;
-		if(!queue) return;
-		AbsoluteTime zeroTime = {0,0};
-		IOReturn result = (*queue)->getNextEvent(queue, &event, zeroTime, 0);
-		if(!result && compiledOK) {
+		//IOHIDQueueInterface ** queue = (IOHIDQueueInterface**) pCurrentHIDDevice->queue;
+		//if(!queue) return;
+		//AbsoluteTime zeroTime = {0,0};
+		//IOReturn result = (*queue)->getNextEvent(queue, &event, zeroTime, 0);
+		result = HIDGetEvent(pCurrentHIDDevice, (void*) &event);
+		if(result && compiledOK) {
 			SInt32 value = event.value;
 			int vendorID = pCurrentHIDDevice->vendorID;
 			int productID = pCurrentHIDDevice->productID;			
@@ -274,7 +275,7 @@ void PushQueueEvents (){
 			g->canCallOS = false; // cannot call the OS
 			pthread_mutex_unlock (&gLangMutex); 
 		}
-	}
+//	}
 	pCurrentHIDDevice = HIDGetNextDevice(pCurrentHIDDevice);
 	}
 
