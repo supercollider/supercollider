@@ -87,9 +87,9 @@
 		}
 	}
 	
-	document { arg ... keys; // use -1 as flag so audible content is ducumented only.
+	document { arg keys; // use -1 as flag so only audible content is documented.
 		var str;
-		if(keys[0] == -1) {
+		if(keys == -1) {
 			keys = this.monitors.collect { arg item; item.key(envir) };
 		};
 		str = String.streamContents({ arg stream; 
