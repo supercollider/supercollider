@@ -31,6 +31,7 @@ struct UnitSpec
 	int16 mSpecialIndex;
 	struct InputSpec* mInputSpec;
 	struct OutputSpec* mOutputSpec;
+	struct Rate* mRateInfo;
 	size_t mAllocSize;
 };
 typedef struct UnitSpec UnitSpec;

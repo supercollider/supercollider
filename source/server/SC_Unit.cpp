@@ -58,10 +58,11 @@ Unit* Unit_New(World *inWorld, UnitSpec *inUnitSpec, char*& memory)
 
 	unit->mCalcRate = inUnitSpec->mCalcRate;
 	unit->mSpecialIndex = inUnitSpec->mSpecialIndex;
+	Rate* rateInfo = unit->mRate = inUnitSpec->mRateInfo;
+	unit->mBufLength = rateInfo->mBufLength;
 	
-	unit->mRate = 0;
 	unit->mDimension = 0;
-	unit->mCalcFunc = 0;
+	//unit->mCalcFunc = 0;
 	unit->mDone = false;
 	
 	return unit;

@@ -75,8 +75,9 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	graph->mMemory = memory;
 	
 	// allocate space for children
-	graph->mNumUnits = inGraphDef->mNumUnitSpecs;
-	inWorld->mNumUnits += graph->mNumUnits;
+	int numUnits = inGraphDef->mNumUnitSpecs;
+	graph->mNumUnits = numUnits;
+	inWorld->mNumUnits += numUnits;
 	inWorld->mNumGraphs ++;	
 	
 	graph->mUnits = (Unit**)memory; 
@@ -88,6 +89,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	// allocate wires
 	graph->mNumWires = inGraphDef->mNumWires;
 	graph->mWire = (Wire*)memory;
+	
 	memory += inGraphDef->mWiresAllocSize;
 
 	graph->mNumCalcUnits = inGraphDef->mNumCalcUnits;
@@ -95,18 +97,24 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	memory += inGraphDef->mCalcUnitsAllocSize;
 	
 	// initialize controls
-	graph->mNumControls = inGraphDef->mNumControls;
+	int numControls = inGraphDef->mNumControls;
+	graph->mNumControls = numControls;
 	graph->mControls = (float*)memory;
 	memory += inGraphDef->mControlAllocSize;
 	
 	graph->mMapControls = (float**)memory;
 	memory += inGraphDef->mMapControlsAllocSize;
 	
-	for (int i=0; i<graph->mNumControls; ++i) {
-		graph->mControls[i] = inGraphDef->mInitialControlValues[i];
-		graph->mMapControls[i] = graph->mControls + i;
+	{
+		float*  graphControls = graph->mControls;
+		float*  initialControlValues = inGraphDef->mInitialControlValues;
+		float** graphMapControls = graph->mMapControls;
+		for (int i=0; i<numControls; ++i, ++graphControls) {
+			*graphControls = initialControlValues[i];
+			graphMapControls[i] = graphControls;
+		}
 	}
-
+	
 	// set controls
 	while (msg->remain() >= 8) {
 		if (msg->nextTag('i') == 's') {
@@ -124,12 +132,13 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 
 	// set up scalar values
 	Wire *graphWires = graph->mWire;
+	int numConstants = inGraphDef->mNumConstants;
 	{
 		float *constants = inGraphDef->mConstants;
 		Wire *wire = graphWires;
-		for (int i=0; i<inGraphDef->mNumConstants; ++i, ++wire) {
+		for (int i=0; i<numConstants; ++i, ++wire) {
 			wire->mFromUnit = 0;
-			wire->mCalcRate = calc_Scalar;
+			wire->mCalcRate = calc_ScalarRate;
 			wire->mBuffer = &wire->mScalarValue;
 			wire->mScalarValue = constants[i];
 		}
@@ -140,9 +149,12 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	
 	// initialize units
 	//scprintf("initialize units\n");
+	Unit** calcUnits = graph->mCalcUnits;
+	int calcCtr=0;
+
 	float *bufspace = inWorld->hw->mWireBufSpace;
-	int wireCtr=inGraphDef->mNumConstants;
-	for (int i=0; i<graph->mNumUnits; ++i) {
+	int wireCtr = numConstants;
+	for (int i=0; i<numUnits; ++i) {
 		// construct unit from spec
 		UnitSpec *unitSpec = inGraphDef->mUnitSpecs + i;
 		Unit *unit = Unit_New(inWorld, unitSpec, memory);
@@ -150,68 +162,69 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 		// set parent
 		unit->mParent = graph;
 		unit->mParentIndex = i;
-		if (unit->mCalcRate == calc_Full) {
-			unit->mRate = &inWorld->mFullRate;
-		} else {
-			unit->mRate = &inWorld->mBufRate;
-		}
-		unit->mBufLength = unit->mRate->mBufLength;
 		
 		graph->mUnits[i] = unit;
 		
-		// hook up unit inputs
-		//scprintf("hook up unit inputs\n");
-		InputSpec *inputSpec = unitSpec->mInputSpec;
-		for (int j=0; j<unitSpec->mNumInputs; ++j, ++inputSpec) {			
-			Wire *wire = graphWires + inputSpec->mWireIndex;
-			unit->mInput[j] = wire;
-			unit->mInBuf[j] = wire->mBuffer;
-		}
-		// hook up unit outputs
-		//scprintf("hook up unit outputs\n");
-		for (int j=0; j<unitSpec->mNumOutputs; ++j) {
-			OutputSpec *outputSpec = unitSpec->mOutputSpec + j;
-			Wire *wire = graph->mWire + wireCtr++;
-			wire->mFromUnit = unit;
-			wire->mCalcRate = outputSpec->mCalcRate;
-			if (wire->mCalcRate == calc_FullRate) {
-				wire->mBuffer = bufspace + outputSpec->mBufferIndex;
-			} else {
-				wire->mBuffer = &wire->mScalarValue;
+		{
+			// hook up unit inputs
+			//scprintf("hook up unit inputs\n");
+			InputSpec *inputSpec = unitSpec->mInputSpec;
+			Wire** unitInput = unit->mInput;
+			float** unitInBuf = unit->mInBuf;
+			int numInputs = unitSpec->mNumInputs;
+			for (int j=0; j<numInputs; ++j, ++inputSpec) {			
+				Wire *wire = graphWires + inputSpec->mWireIndex;
+				unitInput[j] = wire;
+				unitInBuf[j] = wire->mBuffer;
 			}
-			//wire->mScalarValue = 0.;
-			unit->mOutput[j] = wire;
-			unit->mOutBuf[j] = wire->mBuffer;
+		}
+		
+		{
+			// hook up unit outputs
+			//scprintf("hook up unit outputs\n");
+			Wire** unitOutput = unit->mOutput;
+			float** unitOutBuf = unit->mOutBuf;
+			int numOutputs = unitSpec->mNumOutputs;
+			Wire *wire = graphWires + wireCtr;
+			wireCtr += numOutputs;
+			int unitCalcRate = unit->mCalcRate;
+			if (unitCalcRate == calc_FullRate) {
+				OutputSpec *outputSpec = unitSpec->mOutputSpec;
+				for (int j=0; j<numOutputs; ++j, ++wire, ++outputSpec) {
+					wire->mFromUnit = unit;
+					wire->mCalcRate = calc_FullRate;
+					wire->mBuffer = bufspace + outputSpec->mBufferIndex;
+					unitOutput[j] = wire;
+					unitOutBuf[j] = wire->mBuffer;
+				}
+				calcUnits[calcCtr++] = unit;
+			} else {
+				for (int j=0; j<numOutputs; ++j, ++wire) {
+					wire->mFromUnit = unit;
+					wire->mCalcRate = unitCalcRate;
+					wire->mBuffer = &wire->mScalarValue;
+					unitOutput[j] = wire;
+					unitOutBuf[j] = wire->mBuffer;
+				}
+				if (unitCalcRate != calc_ScalarRate) {
+					calcUnits[calcCtr++] = unit;
+				}
+			}
 		}
 	}
+
 	inGraphDef->mRefCount ++ ;
 }
 
 void Graph_FirstCalc(Graph *inGraph)
 {
 	//scprintf("->Graph_FirstCalc\n");
-	int calcCtr=0;
-	for (int i=0; i<inGraph->mNumUnits; ++i) {
-		Unit *unit = inGraph->mUnits[i];
-		/*scprintf("  unit %d %s  i", i, unit->mUnitDef->mUnitDefName);
-		for (int j=0; j<unit->mNumInputs; ++j) {
-			scprintf(" %g", ZIN0(j));
-		}
-		scprintf("\n");*/
-		
+	int numUnits = inGraph->mNumUnits;
+	Unit **units = inGraph->mUnits;
+	for (int i=0; i<numUnits; ++i) {
+		Unit *unit = units[i];
 		// call constructor
 		(*unit->mUnitDef->mUnitCtorFunc)(unit);
-		
-		// insert into calc list
-		if (unit->mCalcRate != calc_Scalar) {
-			inGraph->mCalcUnits[calcCtr++] = unit;
-		}
-		
-		/*scprintf("    o");
-		for (int j=0; j<unit->mNumOutputs; ++j) {
-			scprintf(" %g", ZOUT0(j));
-		}
-		scprintf("\n");*/
 	}
 	//scprintf("<-Graph_FirstCalc\n");
 	
@@ -223,19 +236,11 @@ void Graph_FirstCalc(Graph *inGraph)
 void Graph_Calc(Graph *inGraph)
 {
 	//scprintf("->Graph_Calc\n");
-	for (int i=0; i<inGraph->mNumCalcUnits; ++i) {
-		Unit *unit = inGraph->mCalcUnits[i];
-		/*scprintf("  unit %d %s  i", i, unit->mUnitDef->mUnitDefName);
-		for (int j=0; j<unit->mNumInputs; ++j) {
-			scprintf(" %g", ZIN0(j));
-		}
-		scprintf("\n");*/
+	int numCalcUnits = inGraph->mNumCalcUnits;
+	Unit **calcUnits = inGraph->mCalcUnits;
+	for (int i=0; i<numCalcUnits; ++i) {
+		Unit *unit = calcUnits[i];
 		(unit->mCalcFunc)(unit, unit->mBufLength);
-		/*scprintf("    o");
-		for (int j=0; j<unit->mNumOutputs; ++j) {
-			scprintf(" %g", ZOUT0(j));
-		}
-		scprintf("\n");*/
 	}
 	//scprintf("<-Graph_Calc\n");
 }
@@ -244,8 +249,10 @@ void Graph_CalcTrace(Graph *inGraph);
 void Graph_CalcTrace(Graph *inGraph)
 {
 	scprintf("\nTRACE %d\n", inGraph->mNode.mID);
-	for (int i=0; i<inGraph->mNumCalcUnits; ++i) {
-		Unit *unit = inGraph->mCalcUnits[i];
+	int numCalcUnits = inGraph->mNumCalcUnits;
+	Unit **calcUnits = inGraph->mCalcUnits;
+	for (int i=0; i<numCalcUnits; ++i) {
+		Unit *unit = calcUnits[i];
 		scprintf("  unit %d %s\n    in ", i, (char*)unit->mUnitDef->mUnitDefName);
 		for (int j=0; j<unit->mNumInputs; ++j) {
 			scprintf(" %g", ZIN0(j));

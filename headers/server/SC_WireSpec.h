@@ -23,12 +23,6 @@
 
 #include "SC_Types.h"
 
-enum {
-	calc_Scalar,
-	calc_Buf,
-	calc_Full
-};
-
 struct InputSpec
 {
 	// read from file:
