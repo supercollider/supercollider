@@ -68,40 +68,40 @@ Node {
 	hash { 	^server.hash bitXor: nodeID.hash	}
 	printOn { arg stream; stream << this.class.name << "(" << nodeID <<")" }
 	
-	// bundle commands //
+	// bundle messages //
 	
 	convertAddAction { arg symbol;
-		^#[\addToHead, \addToTail, \addBefore, \addAfter].indexOf(symbol)
+		^#[\addToHead, \addToTail, \addBefore, \addAfter].indexOf(symbol) ? 1
 	}
 	
-	getCommand { arg cmdName, argList;
+	getMsg { arg cmdName, argList;
 		^[cmdName, nodeID]++argList??{[]};
 	}
 	
-	addCommand { arg cmdList, cmdName, argList;
-		^cmdList.add([cmdName, nodeID]++argList??{[]});
+	addMsg { arg msgList, cmdName, argList;
+		^msgList.add([cmdName, nodeID]++argList??{[]});
 	}
 	
-	//your responsibility to send these commands.
+	//your responsibility to send these messages.
 	//if they are not sent, the sclang model
 	//gets out of sync with the server.
 	
 	
-	moveBeforeCommand { arg  cmdList, aNode;
-		^cmdList.add([18, nodeID, aNode.nodeID]);//"/n_after"
+	moveBeforeMsg { arg  msgList, aNode;
+		^msgList.add([18, nodeID, aNode.nodeID]);//"/n_after"
 	}
 	
-	moveAfterCommand { arg cmdList, aNode;
-		^cmdList.add([19, nodeID, aNode.nodeID]); //"/n_after"
+	moveAfterMsg { arg msgList, aNode;
+		^msgList.add([19, nodeID, aNode.nodeID]); //"/n_after"
 		
 	}
 	
-	moveToHeadCommand { arg cmdList, aGroup;
-		^(aGroup ? group).moveNodeToHeadCommand(cmdList, this);
+	moveToHeadMsg { arg msgList, aGroup;
+		^(aGroup ? group).moveNodeToHeadMsg(msgList, this);
 	}
 	
-	moveToTailCommand { arg cmdList, aGroup;
-		^(aGroup ? group).moveNodeToTailCommand(cmdList, this);
+	moveToTailMsg { arg msgList, aGroup;
+		^(aGroup ? group).moveNodeToTailMsg(msgList, this);
 	}
 	
 	/** PRIVATE IMPLEMENTATION  **/
@@ -250,7 +250,7 @@ Group : Node {
 			server.sendBundle(server.latency,
 				([9, argsynth.defName, argsynth.nodeID, //"/s_new"
 					addActionNum, targetID] 
-				++ args).postln);
+				++ args));
 			
 		}, { "Server not running".inform });
 	}
@@ -274,39 +274,31 @@ Group : Node {
 		var node;
 		node = head;
 		while({ node.notNil }, {
-			function.value(node);
 			node.deepDo(function);
+			function.value(node);
 			node = node.next;
 		});
 	}
 		
-	// bundle commands //
+	// bundle messages //
+
 	
-	*newCommand { arg cmdList, target, addAction=\addToTail;
-		var group, actionNumber;
+	newMsg { arg target, addAction;
+		var msg, addActionNum;
 		target = target.asTarget;
-		addAction = addAction ?? {target.defaultAddAction};
-		group = this.prNew;
 		
-		group.register(target.server);
-		//your responsibility to send. you also should send it to my server!
-		group.basicNewCommand(cmdList, addAction, target);
-		^group
-	}
-	
-	basicNewCommand { arg cmdList, addAction, target;
-		var cmd, addActionNum;
+		this.register(target.server);
+		
 		addActionNum = this.convertAddAction(addAction);
-		cmd = [21, nodeID, addActionNum, target.nodeID]; //"/g_new"
-		cmdList.add(cmd);
+		^[21, nodeID, addActionNum, target.nodeID]; //"/g_new"
 	}
 
-	moveNodeToHeadCommand { arg cmdList, aNode;
-			^cmdList.add([22, nodeID, aNode.nodeID]); //"/g_head"
+	moveNodeToHeadMsg { arg aNode;
+			^[22, nodeID, aNode.nodeID]; //"/g_head"
 	}
 	
-	moveNodeToTailCommand { arg cmdList, aNode;
-		^cmdList.add([23, nodeID, aNode.nodeID]);
+	moveNodeToTailMsg { arg aNode;
+		^[23, nodeID, aNode.nodeID];
 	}
 	
 
@@ -345,10 +337,10 @@ Synth : Node {
 	}
 	
 	*newLoad { arg defName,args,target,addAction=\addToTail;
-		var cmd, synth;
-		cmd = List.new;
-		synth = this.newCommand(cmd, defName,args,target,addAction);
-		synth.server.sendMsg(6, "synthdefs/"++synth.defName++".scsyndef", cmd.at(0)); //"/d_load"
+		var msg, synth;
+		msg = List.new;
+		synth = this.newMsg(msg, defName,args,target,addAction);
+		synth.server.sendMsg(6, "synthdefs/"++synth.defName++".scsyndef", msg.at(0)); //"/d_load"
 		^synth
 	
 	} 
@@ -357,11 +349,11 @@ Synth : Node {
 	}
 	
 	*newPaused {arg defName,args,target,addAction=\addToTail;
-		var cmd, synth;
-		cmd = List.new;
-		synth = this.newCommand(cmd, defName,args,target,addAction);
-		synth.addCommand(cmd, 12, 0); //"/n_run"
-		synth.server.sendCmdList(cmd);
+		var msg, synth;
+		msg = List.new;
+		synth = this.newMsg(msg, defName,args,target,addAction);
+		msg.add(synth.getMsg(12, 0)); //"/n_run"
+		synth.server.sendMsgList(msg);
 		^synth
 	}
 	//no linking, only use for self releasing nodes
@@ -369,7 +361,8 @@ Synth : Node {
 		var synth, server;
 		target = target.asTarget;
 		server = target.server;
-		synth = this.prNew(defName).prSetServer(server).prSetNodeID;
+		//synth = this.prNew(defName).prSetServer(server).prSetNodeID;
+		synth = this.prNew(defName).register(server);
 		addAction = synth.convertAddAction(addAction ?? { this.defaultAddAction });		server.sendBundle(server.latency, 
 		 [9, synth.defName, synth.nodeID, addAction, target.nodeID] ++ args??{[]});
 		^synth
@@ -396,27 +389,18 @@ Synth : Node {
 	}
 	
 	
-	///  bundle commands  ///
-	//this adds the command to the commandlist and returns the synth.
-	//use a List as first arg
+	///  bundle messages  ///
+	//this adds the message to the messagelist and returns the synth.
+	//the synth is created first with prNew
 	
-	*newCommand { arg cmdList, defName, args, target, addAction=\addToTail;
-		var synth, actionNumber;
-		synth = this.prNew(defName);
+	newMsg { arg target, args, addAction=\addToTail;
+		var msg, addActionNum;
 		target = target.asTarget;
 		addAction = addAction ?? {target.defaultAddAction};
-		synth.register(target.server);
-		//your responsibility to send. you also should send it to my server!
-		synth.basicNewCommand(cmdList, addAction, target, args);
-		^synth
-	}
-	
-	
-	basicNewCommand { arg cmdList, addAction, target, args;
-		var cmd, addActionNum;
 		addActionNum = this.convertAddAction(addAction);
-		cmd = [9, defName, nodeID, addActionNum, target.nodeID] ++ args??{[]}; //"/s_new"
-		^cmdList.add(cmd);
+		this.register(target.server);
+		msg = [9, defName, nodeID, addActionNum, target.nodeID]; //"/s_new"
+		^if(args.notNil,{ msg ++ args }, { msg });
 	}
 }
 
