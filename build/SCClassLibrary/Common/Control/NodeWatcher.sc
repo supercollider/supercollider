@@ -48,8 +48,9 @@ NodeWatcher {
 	}
 	
 	register { arg node;
-		server.notify;/////just test
-		nodes.put(node.nodeID, node);
+		if(isListening, {
+			nodes.put(node.nodeID, node);
+		});
 	}
 	
 	unregister { arg node;
