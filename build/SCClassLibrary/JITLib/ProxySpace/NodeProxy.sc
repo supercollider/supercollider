@@ -149,15 +149,15 @@ BusPlug : AbstractFunction {
 	//////////// embedding bus in event streams, myself if within a normal stream
 	
 	embedInStream { arg inval;
-			if(this.isPlaying.not) { this.wakeUp }; 
-			if(inval.isNil) {Êthis.yield } { busArg.yield } // if in event stream yield bus arg
+					if(inval.notNil) {Ê
+						if(this.isPlaying.not) { this.wakeUp };  
+						busArg.yield;
+					} { this.yield  } // if in event stream yield bus arg
+					^inval
 	}
 	asStream  {
 			^Routine.new({ arg inval;
-				loop({
-					if(this.isPlaying.not) { this.wakeUp }; 
-					if(inval.isNil) {Êthis.yield } { busArg.yield }
-				})
+				loop({ inval = this.embedInStream(inval) })
 			})
 	}
 	
