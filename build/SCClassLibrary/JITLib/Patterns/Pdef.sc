@@ -81,6 +81,7 @@ PatternProxy : Pattern {
 	
 	clear { this.class.all.removeAt(this.key).stop }
 	
+	repositoryArgs { ^[this.key, this.source] }
 	
 	*postRepository { arg keys, stream;
 		keys = keys ?? { this.all.keys };
@@ -89,7 +90,7 @@ PatternProxy : Pattern {
 			var item;
 			item = this.all[key];
 			if(item.notNil) {
-				stream << this.name << "(" <<< key << ", " <<< item.pattern << ");";
+				stream << item.class.name << "(" <<<* item.repositoryArgs << ");";
 				stream << Char.nl;
 			};
 		};
@@ -415,6 +416,7 @@ Pbindef : Pdef {
 		
 	}
 	storeArgs { ^[key]++pattern.storeArgs }
+	repositoryArgs { ^this.storeArgs }
 	quant_ { arg val; super.quant = val; source.quant = val }
 }
 
