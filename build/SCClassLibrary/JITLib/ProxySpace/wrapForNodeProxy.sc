@@ -153,7 +153,6 @@
 				event = player.event;
 				newParent = Event.make({
 					~player = MapNotePlayer.new;
-					
 					~finish = {
 						~group = proxy.group.asNodeID;
 						~mapping = proxy.nodeMap.mapArgs;
@@ -164,7 +163,7 @@
 						~sustain = ~sustain.value;
 					}
 				}).parent_(event.parent);
-				event.parent = newParent;
+				event.parent = newParent.collapse;
 			player
 			
 		} { nil }
