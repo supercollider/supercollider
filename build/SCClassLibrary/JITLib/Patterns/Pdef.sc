@@ -11,7 +11,7 @@ Pdefn : Pattern {
 		patterns.put(\rest,  
 			Pdef.make(\rest, Pbind( 
 				\freq, \rest, 
-				\dur, 1,
+				\dur, 1
 		 	 )));
 		numericals.put(\rest,  Pdefn.make(\rest, Pn(0, 1)));
 	
