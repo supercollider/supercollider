@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green0\blue0;
+\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Buffer					
@@ -10,8 +10,9 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b superclass: Object
+\f0\b \cf0 superclass: Object
 \f1\b0 \
 \
 Buffer encapsulates a number of common tasks, OSC messages, and capabilities related to server-side buffers, which are globally available arrays of floats. These are commonly used to hold sampled audio, such as a soundfile loaded into memory, but can be used to hold other types of data as well. They can be freed or altered even while being accessed.  Buffers are commonly used with 
@@ -176,7 +177,27 @@ Accessing Instance Variables
 		b = \cf2 Buffer\cf0 .alloc(s, s.sampleRate * 8.0, 2);\
 		b.free;\
 	\
-	
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
+
+\f1\fs24 \cf0 	*
+\f0\b Buffer.allocConsecutive(numBufs, server, numFrames, numChannels, completionMessage, bufnum) 
+\f1\b0 \
+\
+		Allocates a range of consecutively-numbered buffers, for use with UGens like VOsc that require a contiguous block of buffers. Arguments are identical to Buffer.alloc, with the addition of numBufs, which specifies how many buffers to allocate. \
+\
+		Returns an array containing the buffer objects that were allocated.\
+\
+		If the completionMessage is a function, it will be passed two arguments: the buffer, and the index of that buffer in the array. \
+\
+		When you're finished with the buffers, be careful to free all of the buffers together. The easiest way is:\
+\
+		
+\f3\fs18 \cf4 myBufferArray.do(\cf5 _\cf4 .free);
+\f1\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
+
+\f3\fs18 \cf0 	
 \f0\b\fs24 *read(server, path, startFrame, numFrames, action, bufnum)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1140\fi-1140\ql\qnatural
 
@@ -215,26 +236,26 @@ Accessing Instance Variables
 	\
 		\cf3 // read a soundfile\cf0 \
 		s.boot;\
-		b = \cf2 Buffer\cf0 .read(s, \cf4 "sounds/a11wlk01.wav"\cf0 );\
+		b = \cf2 Buffer\cf0 .read(s, \cf6 "sounds/a11wlk01.wav"\cf0 );\
 		\
 		\cf3 // now play it\cf0 \
 		(\
-		x = \cf2 SynthDef\cf0 (\cf4 "help-Buffer"\cf0 ,\{ \cf2 arg\cf0  out = 0, bufnum;\
+		x = \cf2 SynthDef\cf0 (\cf6 "help-Buffer"\cf0 ,\{ \cf2 arg\cf0  out = 0, bufnum;\
 			\cf2 Out\cf0 .ar( out,\
 				\cf2 PlayBuf\cf0 .ar(1, bufnum, \cf2 BufRateScale\cf0 .kr(bufnum))\
 			)\
-		\}).play(s,[\cf5 \\bufnum\cf0 , b.bufnum ]);\
+		\}).play(s,[\cf7 \\bufnum\cf0 , b.bufnum ]);\
 		)\
 		x.free; b.free;\
 		\
 		\cf3 // with an action function\cf0 \
 		\cf3 // note that the vars are not immediately up-to-date\cf0 \
 		(\
-		b = \cf2 Buffer\cf0 .read(s, \cf4 "sounds/a11wlk01.wav"\cf0 , action: \{ \cf2 arg\cf0  buffer; \
-			(\cf4 "After update:"\cf0  + buffer.numFrames).postln;\
+		b = \cf2 Buffer\cf0 .read(s, \cf6 "sounds/a11wlk01.wav"\cf0 , action: \{ \cf2 arg\cf0  buffer; \
+			(\cf6 "After update:"\cf0  + buffer.numFrames).postln;\
 			x = \{ \cf2 PlayBuf\cf0 .ar(1, buffer.bufnum, \cf2 BufRateScale\cf0 .kr(buffer.bufnum)) \}.play;\
 		\});\
-		(\cf4 "Before update:"\cf0  + b.numFrames).postln;\
+		(\cf6 "Before update:"\cf0  + b.numFrames).postln;\
 		)\
 		x.free; b.free;\
 \
@@ -279,18 +300,18 @@ Accessing Instance Variables
 \f3\fs18 \cf3 // with a completion message			\cf0 \
 		s.boot;\
 		(\
-		\cf2 SynthDef\cf0 (\cf4 "help-Buffer"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum;\
+		\cf2 SynthDef\cf0 (\cf6 "help-Buffer"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum;\
 			\cf2 Out\cf0 .ar( out,\
 				\cf2 PlayBuf\cf0 .ar(1,bufnum,\cf2 BufRateScale\cf0 .kr(bufnum))\
 			)\
 		\}).send(s);\
 		\
-		y = \cf2 Synth\cf0 .basicNew(\cf4 "help-Buffer"\cf0 ); \cf3 // not sent yet\cf0 \
-		b = \cf2 Buffer\cf0 .readNoUpdate(s,\cf4 "sounds/a11wlk01.wav"\cf0 , \
+		y = \cf2 Synth\cf0 .basicNew(\cf6 "help-Buffer"\cf0 ); \cf3 // not sent yet\cf0 \
+		b = \cf2 Buffer\cf0 .readNoUpdate(s,\cf6 "sounds/a11wlk01.wav"\cf0 , \
 			completionMessage: \{ \cf2 arg\cf0  buffer;\
 				\cf3 // synth add its s_new msg to follow \cf0 \
 				\cf3 // after the buffer read completes\cf0 \
-				y.newMsg(s,[\cf5 \\bufnum\cf0 ,buffer.bufnum],\cf5 \\addToTail\cf0 )\
+				y.newMsg(s,[\cf7 \\bufnum\cf0 ,buffer.bufnum],\cf7 \\addToTail\cf0 )\
 			\});\
 		)\
 		\cf3 // note vars not accurate\cf0 \
@@ -338,7 +359,7 @@ Accessing Instance Variables
 
 \f3\fs18 \cf0 		s.boot;\
 		(\
-		\cf2 SynthDef\cf0 (\cf4 "help-Buffer-cue"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum;\
+		\cf2 SynthDef\cf0 (\cf6 "help-Buffer-cue"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum;\
 			\cf2 Out\cf0 .ar(out,\
 				\cf2 DiskIn\cf0 .ar( 1, bufnum )\
 			)\
@@ -347,8 +368,8 @@ Accessing Instance Variables
 		\
 		(\
 		s.makeBundle(nil, \{\
-			b = \cf2 Buffer\cf0 .cueSoundFile(s,\cf4 "sounds/a11wlk01-44_1.aiff"\cf0 , 0, 1);\
-			y = \cf2 Synth\cf0 .new(\cf4 "help-Buffer-cue", \cf0 [\cf5 \\bufnum\cf0 ,b.bufnum], s);\
+			b = \cf2 Buffer\cf0 .cueSoundFile(s,\cf6 "sounds/a11wlk01-44_1.aiff"\cf0 , 0, 1);\
+			y = \cf2 Synth\cf0 .new(\cf6 "help-Buffer-cue", \cf0 [\cf7 \\bufnum\cf0 ,b.bufnum], s);\
 		\});\
 		)\
 		b.free; y.free;\
@@ -465,7 +486,7 @@ Accessing Instance Variables
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 		(\
 		a = \cf2 Array\cf0 .fill(2000000,\{ rrand(0.0,1.0) \}); \cf3 // a LARGE collection\cf0 \
-		b = \cf2 Buffer\cf0 .sendCollection(s, a, 1, 0, \{\cf2 arg\cf0  buf; \cf4 "finished"\cf0 .postln;\});\
+		b = \cf2 Buffer\cf0 .sendCollection(s, a, 1, 0, \{\cf2 arg\cf0  buf; \cf6 "finished"\cf0 .postln;\});\
 		)\
 		b.get(1999999, \{\cf2 |msg|\cf0  (msg == a[1999999]).postln\});\
 		b.free;\
@@ -619,7 +640,7 @@ Accessing Instance Variables
 		
 \f3\fs18 s.boot;\
 		b = \cf2 Buffer\cf0 .new(s);\
-		b.allocRead(\cf4 "sounds/a11wlk01.wav"\cf0 );\
+		b.allocRead(\cf6 "sounds/a11wlk01.wav"\cf0 );\
 		x = \{ \cf2 PlayBuf\cf0 .ar(1, b.bufnum, \cf2 BufRateScale\cf0 .kr(b.bufnum), loop: 1) * 0.5 \}.play;\
 		x.free; b.free;
 \f1\fs24 \
@@ -713,12 +734,12 @@ Accessing Instance Variables
 \f1\fs24 \
 		
 \f3\fs18 \cf3 //create with cueSoundFile class method\cf0 \
-		b = \cf2 Buffer\cf0 .cueSoundFile(s, \cf4 "sounds/a11wlk01-44_1.aiff"\cf0 , 0, 1);\
+		b = \cf2 Buffer\cf0 .cueSoundFile(s, \cf6 "sounds/a11wlk01-44_1.aiff"\cf0 , 0, 1);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 		x = \{ \cf2 DiskIn\cf0 .ar(1, b.bufnum) \}.play;	\
 		b.close;	\cf3 // must call close in between cueing\cf0 \
 		\cf3 // now use like named instance method, but different arguments\cf0 \
-		b.cueSoundFile(\cf4 "sounds/a11wlk01-44_1.aiff"\cf0 );	\
+		b.cueSoundFile(\cf6 "sounds/a11wlk01-44_1.aiff"\cf0 );	\
 		\cf3 // have to do all this to clean up properly!	\cf0 \
 		x.free; b.close; b.free;	
 \f1\fs24 \
@@ -967,7 +988,7 @@ Accessing Instance Variables
 		a = \cf2 Array\cf0 .fill(2000000,\{ rrand(0.0,1.0) \});\
 		b = \cf2 Buffer\cf0 .alloc(s, 2000000);\
 		)\
-		b = b.sendCollection(a, action: \{\cf2 arg\cf0  buf; \cf4 "finished"\cf0 .postln;\});\
+		b = b.sendCollection(a, action: \{\cf2 arg\cf0  buf; \cf6 "finished"\cf0 .postln;\});\
 		b.get(1999999, \{\cf2 |msg|\cf0  (msg == a[1999999]).postln\});\
 		b.free;\
 		
@@ -1057,9 +1078,9 @@ Accessing Instance Variables
 		
 \f3\fs18 s.boot;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 		b = \cf2 Buffer\cf0 .read(s,\cf4 "sounds/a11wlk01.wav"\cf0 );\
+\cf0 		b = \cf2 Buffer\cf0 .read(s,\cf6 "sounds/a11wlk01.wav"\cf0 );\
 		\cf3 // same as Buffer.plot\cf0 \
-		b.loadToFloatArray(action: \{ \cf2 arg\cf0  array; a = array; \{a.plot;\}.defer; \cf4 "done"\cf0 .postln;\});\
+		b.loadToFloatArray(action: \{ \cf2 arg\cf0  array; a = array; \{a.plot;\}.defer; \cf6 "done"\cf0 .postln;\});\
 		b.free;
 \f0\b\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1120\fi-1120\ql\qnatural
@@ -1110,7 +1131,7 @@ Accessing Instance Variables
 		
 \f3\fs18 s.boot;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 		b = \cf2 Buffer\cf0 .read(s,\cf4 "sounds/a11wlk01.wav"\cf0 );\
+\cf0 		b = \cf2 Buffer\cf0 .read(s,\cf6 "sounds/a11wlk01.wav"\cf0 );\
 		\cf3 // like Buffer.plot\cf0 \
 		b.getToFloatArray(wait:0.01,action:\{arg array; a = array; \{a.plot;\}.defer;"done".postln;\});\
 		b.free;\
@@ -1152,33 +1173,33 @@ Accessing Instance Variables
 		
 \f3\fs18 s.boot;\
 		(\
-		\cf2 SynthDef\cf0 (\cf4 "help-Buffer-copy"\cf0 , \{ \cf2 arg\cf0  out=0, buf;\
+		\cf2 SynthDef\cf0 (\cf6 "help-Buffer-copy"\cf0 , \{ \cf2 arg\cf0  out=0, buf;\
 			\cf2 Line\cf0 .ar(0, 0, dur: \cf2 BufDur\cf0 .kr(buf), doneAction: 2); \cf3 // frees itself\cf0 \
 			\cf2 Out\cf0 .ar(out, \cf2 PlayBuf\cf0 .ar(1, buf, 0.25));\
 		\}).send(s);\
 		)\
 		\
 		(\
-		b = \cf2 Buffer\cf0 .read(s, \cf4 "sounds/a11wlk01.wav"\cf0 );\
+		b = \cf2 Buffer\cf0 .read(s, \cf6 "sounds/a11wlk01.wav"\cf0 );\
 		c = \cf2 Buffer\cf0 .alloc(s, 120000);\
 		)\
 \
-		\cf2 Synth\cf0 (\cf4 "help-Buffer-copy"\cf0 , [\cf5 \\buf\cf0 , b.bufnum]);		\
+		\cf2 Synth\cf0 (\cf6 "help-Buffer-copy"\cf0 , [\cf7 \\buf\cf0 , b.bufnum]);		\
 		\
 		\cf3 // copy the whole buffer\cf0 \
 		b.copy(c);\
-		\cf2 Synth\cf0 (\cf4 "help-Buffer-copy"\cf0 , [\cf5 \\buf\cf0 , c.bufnum]);\
+		\cf2 Synth\cf0 (\cf6 "help-Buffer-copy"\cf0 , [\cf7 \\buf\cf0 , c.bufnum]);\
 		\
 		\cf3 // copy some samples\cf0 \
 		c.zero;								\
 		b.copy(c, numSamples: 4410);\
-		\cf2 Synth\cf0 (\cf4 "help-Buffer-copy"\cf0 , [\cf5 \\buf\cf0 , c.bufnum]);\
+		\cf2 Synth\cf0 (\cf6 "help-Buffer-copy"\cf0 , [\cf7 \\buf\cf0 , c.bufnum]);\
 		\
 		\cf3 // buffer "compositing"\cf0 \
 		c.zero;								\
 		b.copy(c, numSamples: 4410);\
 		b.copy(c, dstStartAt: 4410, numSamples: 15500);\
-		\cf2 Synth\cf0 (\cf4 "help-Buffer-copy"\cf0 , [\cf5 \\buf\cf0 , c.bufnum]);\
+		\cf2 Synth\cf0 (\cf6 "help-Buffer-copy"\cf0 , [\cf7 \\buf\cf0 , c.bufnum]);\
 
 \f1\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\li1700\fi-1700\ql\qnatural
@@ -1228,7 +1249,7 @@ Accessing Instance Variables
 		
 \f3\fs18 s.boot;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 		b = \cf2 Buffer\cf0 .read(s,\cf4 "sounds/a11wlk01.wav"\cf0 );\
+\cf0 		b = \cf2 Buffer\cf0 .read(s,\cf6 "sounds/a11wlk01.wav"\cf0 );\
 		b.plot;\
 		b.free;\
 		\
@@ -1253,7 +1274,7 @@ Accessing Instance Variables
 		
 \f3\fs18 s.boot;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 		b = \cf2 Buffer\cf0 .read(s,\cf4 "sounds/a11wlk01.wav"\cf0 );\
+\cf0 		b = \cf2 Buffer\cf0 .read(s,\cf6 "sounds/a11wlk01.wav"\cf0 );\
 		b.play; \cf3 // frees itself\cf0 \
 		x = b.play(\cf2 true\cf0 );\
 		x.free; b.free;\
@@ -1283,7 +1304,7 @@ Accessing Instance Variables
 		\
 		
 \f3\fs18 s.boot;\
-		b = \cf2 Buffer\cf0 .readNoUpdate(s, \cf4 "sounds/a11wlk01.wav"\cf0 );\
+		b = \cf2 Buffer\cf0 .readNoUpdate(s, \cf6 "sounds/a11wlk01.wav"\cf0 );\
 		b.numFrames; \cf3 // incorrect, shows nil\cf0 \
 		b.updateInfo(\{\cf2 |buf|\cf0  buf.numFrames.postln; \}); \cf3 // now it's right\cf0 \
 		b.free;\
@@ -1377,11 +1398,11 @@ Accessing Instance Variables
 \cf0 		b = \cf2 Buffer\cf0 .alloc(s, 512, 1);\
 		b.sine1(1.0/[1,2,3,4], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 		\
-		x = \cf2 SynthDef\cf0 (\cf4 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
+		x = \cf2 SynthDef\cf0 (\cf6 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
 			\cf2 Out\cf0 .ar(out,\
 				\cf2 Osc\cf0 .ar(bufnum, 200, 0, 0.5)\
 			)\
-		\}).play(s,[\cf5 \\out\cf0 , 0, \cf5 \\bufnum\cf0 , b.bufnum]);\
+		\}).play(s,[\cf7 \\out\cf0 , 0, \cf7 \\bufnum\cf0 , b.bufnum]);\
 		)\
 		x.free; b.free;
 \f1\fs24 \
@@ -1429,11 +1450,11 @@ Accessing Instance Variables
 \cf0 		b = \cf2 Buffer\cf0 .alloc(s, 512, 1);\
 		b.sine2([1.0, 3], [1, 0.5]);\
 		\
-		x = \cf2 SynthDef\cf0 (\cf4 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
+		x = \cf2 SynthDef\cf0 (\cf6 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
 			\cf2 Out\cf0 .ar(out,\
 				\cf2 Osc\cf0 .ar(bufnum, 440, 0, 0.5)\
 			)\
-		\}).play(s,[\cf5 \\out\cf0 , 0, \cf5 \\bufnum\cf0 , b.bufnum]);\
+		\}).play(s,[\cf7 \\out\cf0 , 0, \cf7 \\bufnum\cf0 , b.bufnum]);\
 		)\
 		x.free; b.free;
 \f1\fs24 \

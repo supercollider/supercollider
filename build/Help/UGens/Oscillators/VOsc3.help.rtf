@@ -9,18 +9,24 @@
 \
 
 \fs24 VOsc3.ar(table, freq1, freq2, freq3, mul, add)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 A wavetable lookup oscillator which can be swept smoothly across wavetables. All the wavetables must be allocated to the same size. Fractional values of table will interpolate between two adjacent tables. This unit generator contains three oscillators at different frequencies, mixed together.\
 \
-This oscillator requires a buffer to be filled with a wavetable format signal.  This preprocesses the Signal into a form which can be used efficiently by the Oscillator.  The buffer size must be a power of 2.\
+This oscillator requires at least two buffers to be filled with a wavetable format signal.  This preprocesses the Signal into a form which can be used efficiently by the Oscillator.  The buffer size must be a power of 2.\
 \
 This can be achieved by creating a Buffer object and sending it one of the "b_gen" messages ( sine1, sine2, sine3 ) with the wavetable flag set to true.  \
 \
 This can also be achieved by creating a Signal object and sending it the 'asWavetable' message, saving it to disk, and having the server load it from there.\
 \
+If you use Buffer objects to manage buffer numbers, you can use the *allocConsecutive method to allocate a continuous block of buffers. See the 
+\f0\b [\ul Buffer\ulnone ]
+\f1\b0  helpfile for details.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b table
+\f0\b \cf0 table
 \f1\b0  - buffer index. Can be swept continuously among adjacent wavetable buffers of the same size.\
 
 \f0\b freq1, freq1, freq3
