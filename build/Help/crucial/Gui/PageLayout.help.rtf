@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;\red0\green112\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green112\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 PageLayout
@@ -28,17 +28,17 @@ the layout manager moves its internal cursor, wrapping to a new line, then to a 
 \f0\b \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \cf0 \ulnone (\cf2 	\
-	\cf3 var\cf2  f;\
-	f=\cf3 PageLayout\cf2 .new(\cf4 "flow"\cf2 );\
+\f2\b0\fs18 \cf0 \ulnone (\
+	\cf2 var\cf0  f;\
+	f=\cf2 PageLayout\cf0 .new(\cf3 "flow"\cf0 );\
 	\
-	504.do(\{ \cf3 arg\cf2  i;\
-		\cf3 SCButton\cf2 ( f.window, f.layRight(30,30) )\
-			.states_([[i.asString,\cf3 Color\cf2 .black,\cf3 Color\cf2 .white]])\
+	504.do(\{ \cf2 arg\cf0  i;\
+		\cf2 SCButton\cf0 ( f.window, f.layRight(30,30) )\
+			.states_([[i.asString,\cf2 Color\cf0 .black,\cf2 Color\cf0 .white]])\
 	\});\
 	\
 	f.front;\
-\cf0 )\
+)\
 \
 \
 \
@@ -48,14 +48,14 @@ the layout manager moves its internal cursor, wrapping to a new line, then to a 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
-	\cf5 var\cf0  f;\
-	f=\cf5 PageLayout\cf0 .new(\cf6 "flow"\cf0 );\
+	\cf2 var\cf0  f;\
+	f=\cf2 PageLayout\cf0 .new(\cf3 "flow"\cf0 );\
 	\
-	800.do(\{ \cf5 arg\cf0  i;\
-		\cf5 var\cf0  r;\
-		r= f.layRight(30,30); \cf7 // obtain the rectangle first\
-\cf0 	\cf7 					// in case we cascade to the next window\
-\cf0 		\cf5 SCButton\cf0 ( f.window, r )\
+	800.do(\{ \cf2 arg\cf0  i;\
+		\cf2 var\cf0  r;\
+		r= f.layRight(30,30); \cf4 // obtain the rectangle first\
+\cf0 	\cf4 					// in case we cascade to the next window\
+\cf0 		\cf2 SCButton\cf0 ( f.window, r )\
 			.states_([[i.asString,Color.black,Color.white]])\
 	\});\
 	f.front;\
@@ -81,7 +81,7 @@ the layout manager moves its internal cursor, wrapping to a new line, then to a 
 
 \f0\b\fs24 \cf0 .layRight(x,y) \
 
-\f1\b0 allocates space and returns a \cf5 Rect\cf0  of size (x,y)\
+\f1\b0 allocates space and returns a \cf2 Rect\cf0  of size (x,y)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
@@ -119,18 +119,18 @@ the layout manager moves its internal cursor, wrapping to a new line, then to a 
 \f2\fs18 \cf0 \
 \
 ( \
-\cf5 	var\cf0  f,sliders;\
-	f= \cf5 PageLayout\cf0 .new("a vaguely practical example");\
+\cf2 	var\cf0  f,sliders;\
+	f= \cf2 PageLayout\cf0 .new("a vaguely practical example");\
 	\
-	sliders=\cf5 Array\cf0 .fill(rrand(16,32),\{ \cf5 arg\cf0  i;\
-		SC\cf5 Slider\cf0 ( f.window, f.layRight(10, 150));\
+	sliders=\cf2 Array\cf0 .fill(rrand(16,32),\{ \cf2 arg\cf0  i;\
+		SC\cf2 Slider\cf0 ( f.window, f.layRight(10, 150));\
 	\});\
 \
-	f.within( 50,150,\{ \cf5 arg\cf0  subf;\
-		SC\cf5 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
-		SC\cf5 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
-		SC\cf5 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
-		SC\cf5 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
+	f.within( 50,150,\{ \cf2 arg\cf0  subf;\
+		SC\cf2 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
+		SC\cf2 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
+		SC\cf2 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
+		SC\cf2 Slider\cf0 ( subf.window, subf.layDown( 30,30));\
 	\});\
 	\
 	f.resizeToFit;\
@@ -139,7 +139,7 @@ the layout manager moves its internal cursor, wrapping to a new line, then to a 
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf7 //\
+\cf4 //\
 //// layout within a layout\
 //(var f;\
 //	f=PageLayout.new("flow");\
@@ -177,21 +177,21 @@ the layout manager moves its internal cursor, wrapping to a new line, then to a 
 
 \f1\fs24 \cf0 \
 \
-A nice way to work with \cf5 PageLayout\cf0  is with [
-\f0\b \cf5 Sheet
+A nice way to work with \cf2 PageLayout\cf0  is with [
+\f0\b \cf2 Sheet
 \f1\b0 \cf0 ]\
 \
 \
 \
-A \cf5 PageLayout\cf0  closes all of its windows when any of its windows is closed.\
-When a \cf5 PageLayout\cf0  closes, it sends the \cf8 \\didClose\cf0  notification (see NotificationCenter).\
+A \cf2 PageLayout\cf0  closes all of its windows when any of its windows is closed.\
+When a \cf2 PageLayout\cf0  closes, it sends the \cf5 \\didClose\cf0  notification (see NotificationCenter).\
 \
 	You can register to receive that notification:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 	\
-	\cf5 NotificationCenter\cf0 .registerOneShot( f,\cf8 \\didClose\cf0 , yourObject,\{\
-			\cf7 // stop the model from playing, clean house, \
+	\cf2 NotificationCenter\cf0 .registerOneShot( f,\cf5 \\didClose\cf0 , yourObject,\{\
+			\cf4 // stop the model from playing, clean house, \
 			// unregister a keydown etc.\
 \cf0 	\});
 \f1\fs24 \
@@ -248,10 +248,10 @@ The Gui objects (controllers) need to know when the window closes so they can re
 	in Object::guify this happens:\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf7 	\cf0 	layout.removeOnClose(guiObject)\
+\cf4 	\cf0 	layout.removeOnClose(guiObject)\
 	\
 	\
-	\cf7 \
+	\cf4 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	
 \f2\fs18 \

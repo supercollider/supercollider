@@ -56,32 +56,24 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 If you return nil from your function, or you have no function registered, the event will bubble up to the parent view which may then respond.  It will continue to bubble up unless something responds or it hits the topView of the window.  You may register a function in the window's topView to respond to all unhandled events for the window.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\fs18 \
 
-\f2\fs24 \cf0 There are default keyDownActions for some views, which will be overridden when you set a keydown action.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\fs24 There are default keyDownActions for some views, which will be overridden when you set a keydown action.\
 
-\f1\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\fs18 \
 
-\f0\b\fs24 \cf0 char
+\f0\b\fs24 char
 \f1\b0\fs18 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 	the character, possibly unprintable.  character sequences (par example \'8e) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e).  this will also vary depending on the nationality the keyboard is set to.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\fs24 	the character, possibly unprintable.  character sequences (par example \'8e) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e).  this will also vary depending on the nationality the keyboard is set to.\
 
-\f1\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\fs18 \
 
-\f0\b\fs24 \cf0 modifiers
+\f0\b\fs24 modifiers
 \f3\b0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 	an integer bit field indicating the modifier keys in effect. You can examine individual flag settings \
+\f2 	an integer bit field indicating the modifier keys in effect. You can examine individual flag settings \
 	using the C bitwise AND operator \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -151,9 +143,8 @@
 
 \f0\b\fs24 \cf0 unicode
 \f5\b0\fs20 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 	the unicode integer, identical to the char.\
+\f2\fs24 	the unicode integer, identical to the char.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f5\fs20 \cf0 	\
@@ -161,12 +152,10 @@
 
 \f0\b\fs24 \cf0 keycode
 \f5\b0\fs20 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 	the hardware dependent keycode indicating the physical key.  this will vary from machine to machine, but is useful for building musical interfaces using the computer keyboard.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f2\fs24 	the hardware dependent keycode indicating the physical key.  this will vary from machine to machine, but is useful for building musical interfaces using the computer keyboard.\
 
-\f1\fs18 \cf0 	function key modifier may change keycode.\
+\f1\fs18 	function key modifier may change keycode.\
 \
 \
 for various reasons these don't make it through cocoa:\
@@ -197,11 +186,11 @@ for various reasons these don't make it through cocoa:\
 	c = \cf2 SCSlider\cf0 (w,\cf2 Rect\cf0 (0,0,100,30));\
 	d = \cf2 SCSlider\cf0 (w,\cf2 Rect\cf0 (0,30,100,30));\
 	w.front;\
-	\
+)\
+\
 	c.focus;\
 	\
 	d.focus;\
-)\
 \
 \
 
@@ -212,7 +201,7 @@ for various reasons these don't make it through cocoa:\
 	c = \cf2 SCButton\cf0 (w,\cf2 Rect\cf0 (0,0,100,30));\
 	c.states = [[\cf3 "a"\cf0 ,\cf2 Color\cf0 .black,\cf2 Color\cf0 .red]];\
 	w.front;\
-	\
+)	\
 	\cf4 // won't display change...\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	c.states = [[\cf3 "b"\cf0 ,\cf2 Color\cf0 .red,\cf2 Color\cf0 .black]];\
@@ -220,7 +209,7 @@ for various reasons these don't make it through cocoa:\
 	\cf4 //until\
 \cf0 	c.refresh;\
 \
-)\
+\
 (\
 	w = \cf2 SCWindow\cf0 .new;\
 	c = \cf2 SCButton\cf0 (w,\cf2 Rect\cf0 (0,0,100,30));\
@@ -228,7 +217,8 @@ for various reasons these don't make it through cocoa:\
 	d = \cf2 SCButton\cf0 (w,\cf2 Rect\cf0 (0,30,100,30));\
 	d.states = [[\cf3 "a"\cf0 ,\cf2 Color\cf0 .black,\cf2 Color\cf0 .red]];\
 	w.front;\
-	\
+)\
+\
 	\cf4 // won't display change...\
 \cf0 	c.states = [[\cf3 "b"\cf0 ,\cf2 Color\cf0 .red,\cf2 Color\cf0 .black]];\
 	d.states = [[\cf3 "b"\cf0 ,\cf2 Color\cf0 .red,\cf2 Color\cf0 .black]];\
@@ -240,6 +230,6 @@ for various reasons these don't make it through cocoa:\
 \cf0 	d.refresh;\
 	\
 	\cf4 // in some cases might be better to refresh the whole window\
-\cf0 	\cf4 // which does refresh on all damaged areas\
+\cf0 	\cf4 // which does refresh on all damaged areas (it keeps track, doesn't redraw whole thing)\
 \cf0 	\
-)}
+}

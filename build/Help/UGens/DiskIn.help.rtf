@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red0\green0\blue191;
-\red96\green96\blue96;\red191\green0\blue0;\red0\green115\blue0;\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 DiskIn
@@ -18,18 +18,20 @@
 
 \f1\fs18 \cf0 \
 \
-\cf3 \
+\
 \
 (\
 \
-\cf4 File\cf3 .openDialog(\cf5 "Choose a long stereo soundfile..."\cf3 ,\{ \cf4 arg\cf3  path;\
-	\cf6 //read a file into the buffer\
-\cf3 	b = \cf4 Buffer\cf3 .cueSoundFile(s,path,0,2);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 File\cf0 .openDialog(\cf3 "Choose a long stereo soundfile..."\cf0 ,\{ \cf2 arg\cf0  path;\
+	\cf4 //read a file into the buffer\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	b = \cf2 Buffer\cf0 .cueSoundFile(s,path,0,2);\
 \});\
 \
-\
+// then execute this\
 \{\
-	\cf4 DiskIn\cf3 .ar( 2, b.bufnum )\
+	\cf2 DiskIn\cf0 .ar( 2, b.bufnum )\
 \}.play\
 		\
 )	\
@@ -37,24 +39,26 @@
 	\
 	\
 \
-( \cf6 // cue and play right away\
-\cf3 \
-\cf4 SynthDef\cf3 (\cf5 "help-Buffer"\cf3 ,\{ \cf4 arg\cf3  out=0,bufnum;\
-			\cf4 Out\cf3 .ar(out,\
-				\cf4 DiskIn\cf3 .ar( 2, bufnum )\
+( \cf4 // cue and play right away\
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "help-Buffer"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum;\
+			\cf2 Out\cf0 .ar(out,\
+				\cf2 DiskIn\cf0 .ar( 2, bufnum )\
 			)\
 \}).load(s);\
 		\
-m = \{ \cf4 arg\cf3  buf; [\cf5 "/s_new"\cf3 , \cf5 "help-Buffer"\cf3 , s.nodeAllocator.alloc, 1, 0,\
-				\cf7 \\bufnum\cf3 ,buf.bufnum]\};\
+m = \{ \cf2 arg\cf0  buf; [\cf3 "/s_new"\cf0 , \cf3 "help-Buffer"\cf0 , s.nodeAllocator.alloc, 1, 0,\
+				\cf5 \\bufnum\cf0 ,buf.bufnum]\};\
 \
-\cf4 File\cf3 .openDialog(\cf5 "Choose a long stereo soundfile..."\cf3 ,\{ \cf4 arg\cf3  path;\
-	\cf6 //read a file into the buffer and play it right away\
-\cf3 	b = \cf4 Buffer\cf3 .cueSoundFile(s,path,0,2, completionMessage: m);\
+\cf2 File\cf0 .openDialog(\cf3 "Choose a long stereo soundfile..."\cf0 ,\{ \cf2 arg\cf0  path;\
+	\cf4 //read a file into the buffer and play it right away\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	b = \cf2 Buffer\cf0 .cueSoundFile(s,path,0,2, completionMessage: m);\
 \});\
 \
 )		\
-	\cf0 	\
+		\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -69,7 +73,7 @@ size is 128.  See ServerOptions for setting block size.\
 
 \f1\fs18 \cf0 \
 s = \cf2 SoundFile\cf0 .new;\
-s.openRead(\cf8 "sounds/a11wlk01.wav"\cf0 );\
+s.openRead(\cf3 "sounds/a11wlk01.wav"\cf0 );\
 s.inspect\
 \
 only 26977 frames, smaller than one buffer size, so it can't be used to demonstrate DiskIn.\

@@ -18,12 +18,10 @@
 
 \f2\fs24 \cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 grouping by background color\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b grouping by background color\
 
-\f1\b0\fs18 \cf0 (\
+\f1\b0\fs18 (\
 w = \cf2 SCWindow\cf0 .new;\
 \
 c = \cf2 SCCompositeView\cf0 (w,\cf2 Rect\cf0 (0,0,300,300));\
@@ -35,13 +33,11 @@ c.background = \cf2 Gradient(Color\cf0 .rand,Color.rand);\
 \
 w.front;\
 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 \
+\f2\fs24 \
 Coordinates are the same as that for the window, not relative to the origin of the composite view (as in other gui frameworks).\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 (\
+\f1\fs18 (\
 w = \cf2 SCWindow\cf0 .new;\
 \
 c = \cf2 SCCompositeView\cf0 (w,\cf2 Rect\cf0 (50,0,300,300));\
@@ -53,20 +49,16 @@ c.background = \cf2 Gradient(Color\cf0 .rand,Color.rand);\
 \
 w.front;\
 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 \
+\f2\fs24 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 keydown bubbling\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b keydown bubbling\
 
-\f2\b0 \cf0 \
+\f2\b0 \
 Note that the keyDown action is assigned to the composite view. If c and d do not have keyDown actions themselves, the event is passed to b, the parent.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 (\
+\f1\fs18 (\
 w = \cf2 SCWindow\cf0 .new;\
 \
 c = \cf2 SCCompositeView\cf0 (w,\cf2 Rect\cf0 (0,0,500,500));\
@@ -85,22 +77,18 @@ c.keyDownAction = \{\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 d = \cf2 SC2DSlider\cf0 (w,\cf2 Rect\cf0 (200,200,100,100));\
 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 click on the different views and hit keys on the keyboard.\
+\f2\fs24 click on the different views and hit keys on the keyboard.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f1\fs18 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 decorators
+\f0\b\fs24 decorators
 \f2\b0 \
 	a 'decorator' object can be set to handle layout management.  all views added to the composite view will now be placed by the decorator.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f1\fs18 \
 (\
 a = \cf2 SCWindow\cf0 .new;\
 \
@@ -118,7 +106,6 @@ a.front;\
 )\cf2 \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 hiding / swapping\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -159,31 +146,29 @@ a.front;\
 \
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 removing
+\f0\b\fs24 removing
 \f1\b0\fs18 \
 (\
-w = \cf2 SCWindow\cf0 .new;\
-c = \cf2 SCCompositeView\cf0 (w,\cf2 Rect\cf0 (0,0,300,300));\
-a = \cf2 SC2DSlider\cf0 (c,\cf2 Rect\cf0 (0,0,100,100));	\
-b = \cf2 SC2DSlider\cf0 (c,\cf2 Rect\cf0 (100,100,100,100));\
-c.background = \cf2 Gradient(Color\cf0 .rand,Color.rand);\
-w.front;\
-\
+	w = \cf2 SCWindow\cf0 .new;\
+	c = \cf2 SCCompositeView\cf0 (w,\cf2 Rect\cf0 (0,0,300,300));\
+	a = \cf2 SC2DSlider\cf0 (c,\cf2 Rect\cf0 (0,0,100,100));	\
+	b = \cf2 SC2DSlider\cf0 (c,\cf2 Rect\cf0 (100,100,100,100));\
+	c.background = \cf2 Gradient(Color\cf0 .rand,Color.rand);\
+	w.front;\
+)\
 \
 \
 a.remove;\
 c.refresh;\
 \
-)\
-\
 \
 
 \f0\b\fs24 resize contraints\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf0 (\
+\f2\b0 resize the window to see how the contents behave\
+
+\f1\fs18 (\
 w = \cf2 SCWindow\cf0 .new;\
 \
 c = \cf2 SCCompositeView\cf0 (w,\cf2 Rect\cf0 (0,0,300,300));\

@@ -23,8 +23,9 @@
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \
+\f2\fs18 \cf0 \
 (\
 \
 \cf2 Instr\cf0 (\cf3 \\monosynth\cf0 ,\{ \cf2 arg\cf0  gate=0.0,freq=440.0,ffreq=500,rq=0.1,width=0.3;\
@@ -42,29 +43,35 @@
 \
 \cf2 Patch\cf0 (\cf3 \\monosynth\cf0 ,[\
 	\cf2 MIDIGatePlayer\cf0 .new,\
+	\cf2 MIDIFreqPlayer\cf0 .new\
+]).gui\
+\
+)\
+\
+\
+(\
+\cf2 Patch\cf0 (\cf3 \\monosynth\cf0 ,[\
+	\cf2 MIDIGatePlayer\cf0 .new,\
 	\cf2 MIDIFreqPlayer\cf0 .new,\
 	\cf2 CCPlayer\cf0 (50,[100,3000,\cf3 \\exponential\cf0 ]),\
 	\cf2 CCPlayer\cf0 (51,[0.1,0.9]),\
 	\cf2 CCPlayer\cf0 (52,[0.05,1.0])\
 ]).gui\
 \
-\
-\cf2 Patch\cf0 (\cf3 \\monosynth\cf0 ,[\
-	\cf2 MIDIGatePlayer\cf0 .new,\
-	\cf2 MIDIFreqPlayer\cf0 .new\
-]).gui\
-\
+)\
 \
 \
 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 Note the intial values are the spec's defaults, not the Instr defaults.\
+\f1\fs24 \cf0 Note the intial values are the spec's defaults, not the Instr defaults.\
 You won't hear anything until you bring the filter up.\
 \
 \
 (
 \f2\fs18 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Instr\cf0 (\cf3 \\fatsynth\cf0 ,\{ \cf2 arg\cf0  gate=0.0,freq=440.0,ffreq=500,rq=0.1;\
 	\cf2 var\cf0  amp;\
 	amp = \cf2 Latch\cf0 .kr(gate,gate);\
@@ -94,6 +101,7 @@ You won't hear anything until you bring the filter up.\
 	\cf2 CCPlayer\cf0 (1,[100,3000,\cf3 \\exponential\cf0 ])\
 ]).gui\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 )\
+\f1\fs24 \cf0 )\
 }

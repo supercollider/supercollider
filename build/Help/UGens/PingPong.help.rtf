@@ -79,4 +79,23 @@ b = \cf2 Buffer\cf3 .alloc(s,44100 * 2, 2);\
 \}).play(s,[\cf5 \\out\cf3 , 0, \cf5 \\bufnum\cf3 , b.bufnum]);\
 \
 )\
+\
+\
+\
+\
+\cf0 \
+(\
+\
+Patch(\{ \cf6 arg\cf0  buffer,feedback=0.5,delayTime=0.2; \
+	\cf6 var\cf0  left, right;\
+	left = \cf6 Decay2\cf0 .ar(\cf6 Impulse\cf0 .ar(0.7, 0.25), 0.01, 0.25, \
+		\cf6 SinOsc\cf0 .ar(\cf6 SinOsc\cf0 .kr(3.7,0,200,500)));\
+	right = \cf6 Decay2\cf0 .ar(\cf6 Impulse\cf0 .ar(0.5, 0.25), 0.01, 0.25, \
+		\cf6 Resonz\cf0 .ar(\cf6 PinkNoise\cf0 .ar(4), \cf6 SinOsc\cf0 .kr(2.7,0,1000,2500), 0.2));\
+		\
+	\cf6 PingPong\cf0 .ar(buffer.bufnumIr, [left,right], delayTime, feedback, 1)\
+\
+\}).gui\
+\
+)\
 }

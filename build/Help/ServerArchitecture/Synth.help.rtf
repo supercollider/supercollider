@@ -104,10 +104,31 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 	
-\f0\b\fs24 Synth.tail(aTaget,synthDefName,[ index1,arg1,... indexN,argN  ])\
+\f0\b\fs24 Synth.tail(aTarget,synthDefName,[ index1,arg1,... indexN,argN  ])\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 		create and return a synth...\
+		if the target is \
+			a group\
+				add to the tail of that group\
+			a synth\
+				add to the tail of that synth's group\
+			a server\
+				add to the tail of the RootNode of that server\
+			nil\
+				add to the tail of the RootNode of the defaultServer\
+				\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 	
+\f0\b\fs24 Synth.grain(synthDefName,[ index1,arg1,... indexN,argN  ],target,addAction)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 		create and return a synth with a nodeID of -1\
+		the synthDef must use a EnvGen with doneAction: 2 (end node when done) or similar.\
+		controls may not be set after play, the synth may not be freed externally.\
+		but its faster.\
+		\
 		if the target is \
 			a group\
 				add to the tail of that group\

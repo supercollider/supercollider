@@ -3,8 +3,7 @@
 }
 {\colortbl;\red255\green255\blue255;\red255\green3\blue3;\red118\green15\blue80;\red0\green0\blue255;
 }
-\vieww13000\viewh13600\viewkind0
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs36 \cf0 SuperCollider Server Synth Engine Command Reference\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
@@ -12,9 +11,11 @@
 \fs24 \cf0 \
 The following is a list of all server commands and their arguments. \
 \
+Each command has a command number which can be sent to the server as a 32 bit integer instead of an OSC style string. Command numbers are listed at the end of this document.\
+\
 If a command's description contains the word 
 \f1\b Asynchronous
-\f0\b0 , then that command will be passed to a background thread to complete so as not to steal CPU time from the audio synthesis thread. All asynchronous commands send a reply to the client when they are completed. Many asynchronous commands can contain an OSC message to be executed upon completion.\
+\f0\b0 , then that command will be passed to a background thread to complete so as not to steal CPU time from the audio synthesis thread. All asynchronous commands send a reply to the client when they are completed. Many asynchronous commands can contain an OSC message or bundle to be executed upon completion.\
 \
 	eg. \
 		
@@ -23,7 +24,7 @@ If a command's description contains the word
 		]\
 			
 \f0\fs24 \
-Each command has a command number which can be sent to the server as a 32 bit integer instead of an OSC style string. Command numbers are listed at the end of this document.\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
@@ -153,9 +154,9 @@ Loads a directory of synth definitions files. Resident definitions with the same
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_free					delete a node.\
-
-\f0\b0 	[\
+\f1\b \cf0 n_free					delete a node.\
+	
+\f0\b0 [\
 		int - node ID\
 	] * N\
 	\
@@ -871,8 +872,9 @@ These are the currently defined fill routines for use with the
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b \cf0 Sine Wave Fill Commands\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b0\fs20 \
+\f0\b0\fs20 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \fs24 \cf0 There are three defined fill routines for sine waves.\
@@ -928,10 +930,12 @@ These are the currently defined fill routines for use with the
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b\fs24 Command Numbers\
+\f1\b\fs24 \cf0 Command Numbers\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b0\fs20 \
+\f0\b0\fs20 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 These are the currently defined command numbers. More may be added to the end of the list in the future.\
