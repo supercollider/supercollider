@@ -171,7 +171,7 @@ struct Pause : public Unit
 
 struct Free : public Unit
 {
-	int m_state;
+	float m_prevtrig;
 };
 
 struct FreeSelfWhenDone : public Unit
@@ -1695,7 +1695,7 @@ void Pause_Ctor(Pause *unit)
 {
 	SETCALC(Pause_next);
 
-	unit->m_state = -99;
+	unit->m_state = 1;
 	
 	ZOUT0(0) = ZIN0(0);
 }
@@ -1704,7 +1704,7 @@ void Pause_Ctor(Pause *unit)
 void Pause_next(Pause *unit, int inNumSamples)
 {
 	float in = ZIN0(0);
-	int state = in != 0.f;
+	int state = in == 0.f ? 0 : 1;
 	if (state != unit->m_state) {
 		unit->m_state = state;
 		int id = (int)ZIN0(1);
@@ -1712,7 +1712,6 @@ void Pause_next(Pause *unit, int inNumSamples)
 		if (node) {
 			NodeRun(node, state);
 		}
-		SETCALC(ClearUnitOutputs);
 	}
 	ZOUT0(0) = in;
 }
@@ -1723,7 +1722,7 @@ void Free_Ctor(Free *unit)
 {
 	SETCALC(Free_next);
 
-	unit->m_state = -99;
+	unit->m_prevtrig = 0.f;
 	
 	ZOUT0(0) = ZIN0(0);
 }
@@ -1731,18 +1730,16 @@ void Free_Ctor(Free *unit)
 
 void Free_next(Free *unit, int inNumSamples)
 {
-	float in = ZIN0(0);
-	int state = in != 0.f;
-	if (state != unit->m_state) {
-		unit->m_state = state;
+	float trig = ZIN0(0);
+	if (trig > 0.f && unit->m_prevtrig <= 0) {
 		int id = (int)ZIN0(1);
 		Node *node = SC_GetNode(unit->mWorld, id);
 		if (node) {
 			NodeEnd(node);
 		}
-		SETCALC(ClearUnitOutputs);
 	}
-	ZOUT0(0) = in;
+	unit->m_prevtrig = trig;
+	ZOUT0(0) = trig;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1833,6 +1830,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Pause);
 	DefineSimpleUnit(FreeSelf);
 	DefineSimpleUnit(PauseSelf);
+	DefineSimpleUnit(Free);
 	DefineSimpleUnit(FreeSelfWhenDone);
 	DefineSimpleUnit(PauseSelfWhenDone);
 }
