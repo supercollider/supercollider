@@ -253,9 +253,14 @@ Object {
 		this.storeModifiersOn(stream);
 	}
 	storeParamsOn { arg stream;
+		var args;
+		args = this.storeArgs;
+		if(args.notEmpty,{
+			stream << "(" <<<* args << ")";
+		})
 	}
-	storeModifiersOn { arg stream;
-	}
+	storeArgs { ^#[] }
+	storeModifiersOn { arg stream;}
 
 	
 	as { arg aSimilarClass; ^aSimilarClass.newFrom(this) }

@@ -28,7 +28,6 @@ Class {
 
 	initClass {   } 
 	// call Class.initClassTree(SomeClass) to force a class to init if you depend on its resources
-	
 	*initClassTree { arg aClass; 
 		// sometimes you need a class to be inited before another class
 		// start the process: Class.initClassTree(Object)
