@@ -73,6 +73,13 @@ Event : Environment {
 		^this.delta
 	}
 	
+	*silent { arg time;
+		var res;
+		res = this.default;
+		res.use({ ~freq = \rest; ~delta = time });
+		^res
+	}
+	
 	*initClass {
 		Class.initClassTree(Server);
 		default = this.make({		
