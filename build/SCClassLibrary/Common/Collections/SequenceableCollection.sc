@@ -206,6 +206,17 @@ SequenceableCollection : Collection {
 	putFirst { arg obj; if (this.size > 0, { ^this.put(0, obj) }) }
 	putLast { arg obj; if (this.size > 0, { ^this.put(this.size - 1, obj) }) }
 
+
+	// compatibility with isolated objects
+	
+	obtain { arg index, default; ^this[index] ? default }
+	
+	instill { arg index, item, default;
+		var res;
+		res = if(index >= this.size) { this.extend(index + 1, default) } { this }
+		^res.put(index, item)
+	}
+
 	// ordering
 	pairsDo { arg function;
 		forBy(0, this.size-2, 2) {|i|
