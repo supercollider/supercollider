@@ -339,7 +339,7 @@ Synth : Node {
 		bundle = List.new;
 		synth = this.newMsg(bundle, defName,args,target,addAction);
 		synth.addMsg(bundle, 12, 0); //"/n_run"
-		synth.server.sendMsgList(bundle);
+		synth.server.listSendBundle(nil, bundle);
 		^synth
 	}
 	//no linking, only use for self releasing nodes
