@@ -109,6 +109,8 @@ if (![NSBundle loadNibNamed:@"GoToLinePanel" owner:self]){
             index = NSMaxRange(lineRange);
     }
     [findTextField setIntValue: numberOfLines];
+	[localTextView setSelectedRange: lineRange];
+    [localTextView scrollRangeToVisible: lineRange];
 }
 - (void)prselectLine:(int)linenum{
           	
