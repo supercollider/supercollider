@@ -1700,6 +1700,9 @@ bool passOne_ProcessDir(char *dirname)
 }
 
 #include <unistd.h>
+#include <sys/param.h>
+
+char gCompileDir[MAXPATHLEN];
 
 bool passOne()
 {
@@ -1709,14 +1712,12 @@ bool passOne()
 	// It should choose a directory to scan recursively and call
 	// passOne_ProcessOneFile(char *filename) for each file
 
-	char dirbuf[256];
-	getcwd(dirbuf, 255);
-	post("cwd: '%s'\n", dirbuf);
+	getcwd(gCompileDir, MAXPATHLEN-32);
+	strcat(gCompileDir, "/SCClassLibrary");
+	post("compile dir: '%s'\n", gCompileDir);
 	
-	success = passOne_ProcessDir("SCClassLibrary");
+	success = passOne_ProcessDir(gCompileDir);
 	if (!success) return false;
-	//success = passOne_ProcessDir("/Users/james/Dev/SC-cmdline-f/pyrite-code/DefaultLibrary");
-	//if (!success) return false;
 	finiPassOne();
 	return true;
 }
