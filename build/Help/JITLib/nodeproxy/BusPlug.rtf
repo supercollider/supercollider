@@ -23,10 +23,17 @@
 it is mainly a basic subclass of 
 \f0\b NodeProxy
 \f2\b0 , but it can be used as well for other things.\
+for most methods see NodeProxy.help.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 monitor
+\f2\b0 \
+	returns the current monitor
+\f1\fs18 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -62,8 +69,8 @@ d = \{ \cf3 Out\cf0 .ar(p.index, \cf3 PinkNoise\cf0 .ar([0.1, 0.1])) \}.play;\
 \
 p.play; \cf2 //monitor whatever plays in p (the execution order does not matter)\cf0 \
 \
-p.toggle; //toggle on and off\
-p.toggle;\
+p.monitor.toggle; //toggle on and off\
+p.monitor.toggle;\
 \
 \
 d.free;\
