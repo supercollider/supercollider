@@ -123,7 +123,6 @@ NodeProxy : AbstractFunction {
 				
 				def = obj.asProxySynthDef(this);
 				def.writeDefFile;
-			
 				
 				synthDefs = synthDefs.add(def);
 					
@@ -233,13 +232,17 @@ NodeProxy : AbstractFunction {
 	updateSynthDef {
 		if(synthDefs.isEmpty.not, { 
 			synthDefs.do({ arg synthDef;
+			/*
 			if(server.isLocal, {//maybe direct send would be better? server reboot would destroy them?
-				server.loadSynthDef(synthDef.name)
+				server.sendSynthDef(synthDef.name)
+				//server.loadSynthDef(synthDef.name)
 			}, {
 				server.sendSynthDef(synthDef.name)
 			}); 
+			*/
+			server.sendMsg("/d_recv", synthDef.asBytes);
 			});
-		//		server.sendMsg("/d_recv", synthDef.asBytes);
+				
 		});
 	}
 	
@@ -280,7 +283,7 @@ NodeProxy : AbstractFunction {
 					rate = array.rate;
 					numChannels = array.size;
 				});
-				if(rate !== 'audio', { rate = 'control' });
+				if(rate !== 'audio', { rate = 'control' });//see later for scalars
 				if(bus.isNil, {
 					
 					bus = Bus.perform(rate, server, numChannels);
@@ -305,9 +308,11 @@ NodeProxy : AbstractFunction {
 				{ In.kr( bus.index, n) }
 			);
 		//test that
-		//if(numChannels.notNil and: { numChannels != n }, {
-//			out = NumChannels.ar(out, numChannels, true)
-//		}); 
+		/*
+		if(numChannels != n, {
+			out = NumChannels.ar(out, numChannels, false)
+		}); 
+		*/
 		^out
 		
 	}
