@@ -138,7 +138,7 @@
 
 
 	buildForProxy { arg proxy, channelOffset=0;
-		var player, ok, index, server, newParent, event, numChannels, rate;
+		var player, ok, index, server, event, numChannels, rate;
 		player = this.asEventStreamPlayer;
 		ok = if(proxy.isNeutral) { 
 			rate = player.event.at(\rate) ? 'audio';
@@ -153,8 +153,9 @@
 				index = proxy.index;
 				server = proxy.server;
 				
-				event = player.event;
-				newParent = Event.make({
+				// event = player.event;
+				event = Event.default;
+				event.use({
 					//~player = MapNotePlayer.new;
 					~channelOffset = channelOffset; // default value
 					~addAction = 1;
@@ -167,9 +168,9 @@
 						~amp = ~amp.value;
 						~sustain = ~sustain.value;
 					}
-				}).parent_(event.parent);
-				event.parent = newParent.collapse;
-			player
+				});
+				player.event = event;
+			^player
 		} { nil }
 
 	}
