@@ -115,6 +115,10 @@ Pitch : MultiOutUGen {
 		^this.multiNew('control', in, initFreq, minFreq, maxFreq, execFreq,
 				maxBinsPerOctave, median, ampThreshold, peakThreshold, downSample)
 	}
+	init { arg ... theInputs;
+		inputs = theInputs;
+		^this.initOutputs(2, rate);
+	}
 }
 
 InRange : UGen
