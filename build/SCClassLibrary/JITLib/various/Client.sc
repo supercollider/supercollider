@@ -34,16 +34,16 @@ Client {
 	}
 	
 	prepareSendBundle { arg args;
-		args = ["/client"]++args;
+		args = args.collect { |msg| [cmdName] ++ msg };
 		if(args.bundleSize > 8192) { "bundle too large (> 8192)".warn; ^nil };
 		^args
 	}
 	send { arg ... args;
 		this.sendBundle(nil, args);
 	}
-	sendBundle { arg latency, args;
+	sendBundle { arg latency ... args;
 		args = this.prepareSendBundle(args);
-		addr.do({ arg a; a.sendBundle(latency, args) })
+		addr.do({ arg a; a.sendBundle(latency, *args) })
 	}
 	sendTo { arg index ... args;		var a;		args = this.prepareSendBundle(args);		a = addr[index];		if(a.notNil) { a.sendBundle(nil, args)  };	}
 		
@@ -114,6 +114,7 @@ LocalClient : Client {
 	disallow {
 		ClientFunc.removeAt(\interpret);
 	}
+	
 }
 
 
