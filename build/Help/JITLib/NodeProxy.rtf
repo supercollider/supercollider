@@ -6,9 +6,8 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 NodeProxy\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf0 \
+\f1\b0\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs26 \cf0 superclass: AbstractFunction\
@@ -17,8 +16,9 @@
 \f1\b0\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs26 \cf0 objects that reference nodes on a server which can be replaced,\
-mapped and patched.
+\f2\fs26 \cf0 Objects that reference nodes on a server which can be replaced,\
+mapped and patched. Any unary or binary operator that can be used\
+with UGens can be applied.
 \f1\fs18 \
 \
 \
@@ -34,22 +34,31 @@ ___________________________________________________\
 	source_(anObject)\
 		
 \f2\b0 play a new synth through me, release old one.\
+		anObject can be a Function, an Instr, any valid UGen input\
+		
+\f0\b \
+	add(anObject)\
+		
+\f2\b0 play a new synth, add it to the present ones\
 		anObject can be a Function, an Instr, any valid UGen input
 \f0\b \
-	setObj(anObject, sendFlag, replaceFlag, completionFunc)\
+	\
+	send(argList)\
+		
+\f2\b0 send a new synth without releasing the old one.\
+		the argument list is applied to the synth only.
+\f0\b \
+	\
+	setObj(anObject, sendFlag, replaceFlag, add, completionFunc)\
 		
 \f2\b0 set the source:\
-			sendFlag: send it or not\
-			replaceFlag: replace current or not\
+			sendFlag: send it or not -  default:false\
+			replaceFlag: replace current synth or not - default:true\
+			add: add the new synthDef to the present ones - default:false\
 			completionFunc: is evaluated as soon as synth is running\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 	\
-	send\
-		
-\f2\b0 send a new synth without releasing the old one 
-\f0\b \
-	\
 	free\
 		
 \f2\b0 free all my running synths and the group
@@ -63,12 +72,17 @@ ___________________________________________________\
 	set(key, val, ...)\
 		
 \f2\b0 I behave like my nodeMap: see [NodeMap]\
-		set, setn, map, unset, unmap
+		set, setn, map, unset, unmap\
+	\
+	
+\f0\b run(flag)
+\f2\b0 \
+		pause/unpause all synths in the group
 \f0\b \
 	\
 	play(index, numChannels)\
 		
-\f2\b0 play output on specified bus index (default: hardware busses)
+\f2\b0 play output on specified bus index (default: public busses)
 \f0\b \
 	\
 	ar(numChannels) / kr(numChannels)\
@@ -92,20 +106,16 @@ a = \cf3 NodeProxy.audio\cf0 (s, 2);\
 x = a.play; \cf2 //play to hardware output, return a group with synths\
 \cf0 a.source = \{ \cf3 SinOsc\cf0 .ar([350, 390], 0, 0.1) \};\
 a.fadeTime = 2.0;\
-a.source = \{ \cf3 arg\cf0  f=400; \cf3 SinOsc\cf0 .ar(f, 0, 0.1) \};\
+a.source = \{ \cf3 arg\cf0  f=400; \cf3 SinOsc\cf0 .ar(f*[1,1.2], 0, 0.1) \};\
 a.set(\cf4 \\f\cf0 , 700);\
-a.source = \{ \cf3 arg\cf0  f=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f, 0.5, 0.1), f*2) \};\
-\
-b = \cf3 NodeProxy.audio\cf0 (s);\
-b.source =  \{ \cf3 arg\cf0  f=400; \cf3 SinOsc\cf0 .ar(f*2, 0, 0.1) \};\
-a.source = b;\
+a.source = \{ \cf3 arg\cf0  f=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f*[0.4,1], 0.5, 0.1), f*2) \};\
 \
 \
 c = \cf3 NodeProxy.control\cf0 (s,1);\
 c.source = \{ \cf3 SinOsc\cf0 .kr(10, 0, 100, 300) \};\
-b.map(\cf4 \\f\cf0 , c);\
-b.source = \{ \cf3 arg\cf0  f=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f, 0.5, 0.1), f*3) \};\
-c.source = \{ \cf3 Line\cf0 .kr(300, 500, 10) + \cf3 SinOsc\cf0 .kr(20, 0, 10) \};\
+a.map(\cf4 \\f\cf0 , c);\
+a.source = \{ \cf3 arg\cf0  f=400; \cf3 LPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f*[0.4,1], 0.2, 0.1), f*3) \};\
+a.source = \{ \cf3 Line\cf0 .kr(300, 500, 10) + \cf3 SinOsc\cf0 .kr(20, 0, 10) \};\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
 //stop synthesis, then wake up proxies:\
@@ -115,6 +125,19 @@ x = a.play;\
 a.release;\
 a.free;\
 x.free;\
+\
+x = a.play;\
+a.add(\{ \cf3 SinOsc\cf0 .ar([350, 390]*1.25, 0, 0.1) \});\
+ \
+ \
+ \
+_____________________________\
+\
+presently, NodeProxy can be used implicitly using the following shortcut:\
+(just a suggestion)\
+\
+\{ \cf3 SinOsc\cf0 .ar([350, 390], 0, 0.1) \}.send(\\out);\
+\\out.play;\
 \
 \
 }

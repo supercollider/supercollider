@@ -34,7 +34,7 @@
 			if(obj.isNil, { this.removeAt(key);  });
 			
 		});
-		proxy.setObj(obj, true, true, clock);
+		proxy.setObj(obj, true, true, false, clock);
 		this.class.lastEdited = proxy;
 	}
 	
