@@ -149,7 +149,7 @@ AbstractOut : UGen {
 	writeOutputSpecs {}
  	checkInputs {
  		if (rate == 'audio', {
- 			for(1, inputs.size - 1, { arg i;
+ 			for(this.class.numFixedArgs, inputs.size - 1, { arg i;
  				if (inputs.at(i).rate != 'audio', { 
  					^(" input at index " + i + 
  						"(" + inputs.at(i) + ") is not audio rate");
