@@ -141,14 +141,16 @@
 
 
 	buildForProxy { arg proxy, channelOffset=0;
-		var player, ok, index;
+		var player, ok, index, newParent, event;
 		player = this.asEventStreamPlayer;
 		ok = proxy.initBus(player.event.at(\rate) ? 'audio', player.event.at(\numChannels) ? 2);
 		index = proxy.index;
 		^if(ok)
 			// remember to add to event's parent, so that 
 			// an external change of player's event doesn't override this.
-			{ player.event.use({
+			{ 
+				event = player.event;
+				newParent = Event.make({
 				~msgFunc = { arg id, freq;
 					var args, bundle, names, nodeMap;
 					names = ~argNames;
@@ -169,7 +171,8 @@
 					~amp = ~amp.value;
 					~sustain = ~sustain.value;
 				}
-				});
+				}).parent_(event.parent);
+				event.parent = newParent;
 			player
 			
 		} { nil }
