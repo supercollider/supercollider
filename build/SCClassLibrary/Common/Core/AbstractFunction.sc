@@ -171,6 +171,12 @@ AbstractFunction {
 	expexp { arg inMin, inMax, outMin, outMax;
 		^this.composeNAryOp('expexp', [inMin, inMax, outMin, outMax])
 	}
+	
+	// embed in ugen graph
+	asUGenInput { arg rate;
+		^this.value(rate)
+	}
+	isValidUGenInput { ^true }
 }
 
 

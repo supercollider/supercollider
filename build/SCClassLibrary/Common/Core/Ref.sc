@@ -21,11 +21,13 @@ Ref : AbstractFunction
 	valueEnvir { ^value }
 	valueArrayEnvir { ^value }
 
-	//behave like a stream
+	// behave like a stream
 	next { ^value }
 	embedInStream { arg inval;
 		^this.value.embedInStream(inval)
 	}
+	// prevent multichannel expansion in ugens
+	asUGenInput { ^this }
 
 	printOn { arg stream;
 		stream << "`(" << value << ")";

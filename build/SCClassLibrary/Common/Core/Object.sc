@@ -536,6 +536,8 @@ Object {
 	isOutputUGen { ^false }
 	isControlUGen { ^false }
 	source { ^this }
+	asUGenInput { ^this }
+
 
 	// these are the same as new and newCopyArgs, but should not be overridden by any class.
 	*prNew { arg maxSize = 0; 
