@@ -1,0 +1,132 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs52 \cf2 BeatClockPlayer\cf0 		
+\fs26 tempo synched trigger
+\f1\b0\fs18 \
+\
+
+\fs24 superclass:  \cf2 KrPlayer\cf0 \
+\
+\cf2 BeatClockPlayer\cf0 .new(tempoFactor)\
+\
+tempoFactor is in old-style music terms:\
+16 means a 16th note.\
+8 means an 8th note\
+1 is a whole note.\
+etc.\
+\
+The cpu-cheapest ways to get a steady tempo locked trig.\
+\cf2 If\cf0  it starts precisely on a downbeat, it can be trusted to keep on the beat for a very long time.\
+
+\fs18 \
+// doesn't make any sound\
+\
+BeatClockPlayer(16).play\
+\
+wrong bus ?\
+(
+\f2 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 	Instr\cf0 (\\beatClockPlayerTest,\{ \cf2 arg\cf0  gate=0.0;\
+		\cf2 var\cf0  a,t;\
+\
+	//	t = Impulse.kr(trig);\
+		t = gate;\
+		a = \cf2 Decay2\cf0 .kr(t,0.01,0.1).clip2(1.0);\
+		a * SinOsc.ar(300);\
+	\},[\
+		\cf3 \\gate\cf0 \
+	]);\
+	\
+	p=\cf2 Patch\cf0 .new(\\beatClockPlayerTest,\
+	[\
+		\cf2 BeatClockPlayer\cf0 (16) \cf4 // trig / gate \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	]);\
+\
+	p.play;\
+
+\f1 )\
+\
+
+\f2 	p.stop;\
+
+\f1 \
+p.synth.trace\
+\
+\
+p.inspect\
+\
+\
+( \cf4 // funk 2001
+\f2 \
+\cf0 	\cf2 Instr\cf0 ([\cf3 \\shaperSynths1\cf0 ,\cf3 \\decay2\cf0 ,\cf3 \\one\cf0 ],\{ \cf2 arg\cf0  gate=0.0, freq=440,direction=0.2,\
+				envadsr,attack=0.01,decay=0.2,ffreq=4000;\
+		\cf2 var\cf0  p,a;\
+	\
+		a = \cf2 Decay2\cf0 .kr(\cf2 Trig\cf0 .kr(gate ,0.05),attack,decay,direction).clip2(1.0);\
+		p = SinOsc.ar(freq,0,a);\
+		\
+		p=\cf2 LPF\cf0 .ar(p,ffreq);\
+		p=\cf2 Enveloper2\cf0 .ar(p,gate,envadsr);\
+		\cf2 HPF\cf0 .ar(p,200)\
+						\
+	\},[\
+		[\cf3 \\gate\cf0 ],\
+		[\cf3 \\freq\cf0 ],\
+		[\cf3 \\bipolar\cf0 ]\
+	]);\
+	\
+	p=\cf2 Patch\cf0 .new([\cf3 \\shaperSynths1\cf0 ,\cf3 \\decay2\cf0 ,\cf3 \\one\cf0 ],\
+	[\
+		\cf2 BeatClockPlayer\cf0 (16), \cf4 // trig / gate \
+\cf0 		\cf2 StreamKrDur\cf0 ( \
+			\cf2 Prand\cf0 (\cf2 Array\cf0 .fill(rrand(7,32),\{ rrand(20,80).midicps \}),\cf2 inf\cf0 ),\
+			 0.25,\cf4 // a float\
+\cf0 			 0.1),\
+			-0.2,\
+	  	\cf2 Env\cf0 .perc,\
+	  	0.07,\
+	  	0.7,\
+	  	4000\
+	  ]);\
+	 	  \
+	 p.topGui;\
+
+\f1 )\
+\
+
+\fs24 \
+\cf2 Being\cf0  a subclass of \cf2 KrPlayer\cf0 , the natural rate of a \cf2 BeatClockPlayer\cf0  is .kr rate.\
+\cf2 If\cf0  you .value a \cf2 BeatClockPlayer\cf0  you get a .kr rate signal.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 /*\
+But if you .ar a BeatClockPlayer you will get an .ar rate signal, and you can even listen to it.
+\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf4 BeatClockPlayer(32).play\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1 \cf4 	\
+*/\cf0 \
+\
+\
+\
+\
+a = BeatClockPlayer(16);\
+\
+a.prepareForPlay;\
+\
+a.inspect\
+\
+a.play\
+\
+}
