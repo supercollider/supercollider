@@ -315,6 +315,7 @@ NSMenu* SCView::contextMenu(SCPoint inPoint)
 
 void SCView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
+//NSLog(@"view begin");
 	mouseTrack(where, modifiers,theEvent);
 }
 
@@ -1585,7 +1586,6 @@ bool SC2DSlider::setValue(double inX, double inY, bool send)
 {
     inX = sc_clip(inX, 0., 1.);
     inY = sc_clip(inY, 0., 1.);
-    
     if (mStepSize > 0.) {
         inX = floor(inX * mStepScale + 0.5) * mStepSize;
         inY = floor(inY * mStepScale + 0.5) * mStepSize;
@@ -1618,6 +1618,7 @@ void SC2DSlider::calcThumbRect()
 
 void SC2DSlider::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
+NSLog(@"SC2DSlider::mouseTrack");
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else {
@@ -1695,29 +1696,35 @@ SCView* NewSC2DTabletSlider(SCContainerView *inParent, PyrObject* inObj, SCRect 
 {
 	return new SC2DTabletSlider(inParent, inObj, inBounds);
 }
-
 SC2DTabletSlider::SC2DTabletSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: SC2DSlider(inParent, inObj, inBounds),mStepSize(0.), mStepScale(0.), mKnob(0)
+	: SC2DSlider(inParent, inObj, inBounds)
 {
-        mX = -1.;
-        mY = -1.;
-	setValue(0.0, 0.0, false);
+}
+
+void SC2DTabletSlider::setValueFromPoint(SCPoint where)
+{
+NSLog(@"SC2DTabletSlider::setValueFromPoint");
+    double x = (where.x - mBounds.x - 1 - THUMBSIZE/2) / (mBounds.width - THUMBSIZE - 2);
+    double y = 1. - (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
+    setValue(x, y, false); // do NOT send action
 }
 
 void SC2DTabletSlider::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
+NSLog(@"SC2DTabletSlider::mouseBeginTrack");
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else {
-        setValueFromPoint(where);
+        this->setValueFromPoint(where);
         TABLETTRACK(getsym("mouseDown"))
     }
 }
 
 void SC2DTabletSlider::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-    if (! (modifiers & NSCommandKeyMask)) {
-        setValueFromPoint(where);
+NSLog(@"SC2DTabletSlider::mouseTrack");
+   if (! (modifiers & NSCommandKeyMask)) {
+        this->setValueFromPoint(where);
         TABLETTRACK(s_doaction)
     }
 }
