@@ -65,6 +65,8 @@ Nil {
 	}
 	addAll { arg array; ^array }
 	++ { arg array; ^array }
+	asCollection { ^[] }
+
 	
 	// graphical support
 	draw{}

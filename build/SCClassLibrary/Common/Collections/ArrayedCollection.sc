@@ -117,7 +117,7 @@ ArrayedCollection : SequenceableCollection {
 		var array;
 		_ArrayAddAll
 		array = this;
-		aCollection.do({ arg item; array = array.add(item) }) ;
+		aCollection.asCollection.do({ arg item; array = array.add(item) }) ;
 		^array
 	}
 	extend { arg size, item; 

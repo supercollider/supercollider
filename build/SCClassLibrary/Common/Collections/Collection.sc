@@ -52,9 +52,10 @@ Collection {
 	
 	isEmpty { ^this.size == 0 }
 	notEmpty { ^this.size > 0 }
+	asCollection { ^this }
 	
 	add { ^this.subclassResponsibility(thisMethod) }
-	addAll { arg aCollection; aCollection.do({ arg item; this.add(item) }) }
+	addAll { arg aCollection; aCollection.asCollection.do({ arg item; this.add(item) }) }
 	remove { ^this.subclassResponsibility(thisMethod) }
 	removeAll { arg list; list.do({ arg item; this.remove(item) }) }
 	removeAllSuchThat { arg function; 

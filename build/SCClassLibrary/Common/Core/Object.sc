@@ -228,6 +228,7 @@ Object {
 		
 	// conversion
 	species { ^this.class }
+	asCollection { ^[this] }
 	asSymbol { ^this.asString.asSymbol }
 	asString { arg limit = 150;
 		var string;
