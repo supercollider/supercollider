@@ -245,7 +245,6 @@ Object {
 		stream << if((title @ 0).isVowel, { "an " }, { "a " }) << title ;
 	}
 	storeOn { arg stream;
-		var title;
 		stream << this.class.name << ".new";
 		this.storeParamsOn(stream);
 		this.storeModifiersOn(stream);
