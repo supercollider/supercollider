@@ -498,7 +498,7 @@ SequenceableCollection : Collection {
 	mod { arg aNumber, adverb; ^this.performBinaryOp('mod', aNumber, adverb) }
 	pow { arg aNumber, adverb; ^this.performBinaryOp('pow', aNumber, adverb) }
 	min { arg aNumber, adverb; ^this.performBinaryOp('min', aNumber, adverb) } 
-	max { arg aNumber, adverb; ^this.performBinaryOp('max', aNumber, adverb) }
+	max { arg aNumber=0, adverb; ^this.performBinaryOp('max', aNumber, adverb) }
 
 	
 	<  { arg aNumber, adverb; ^this.performBinaryOp('<', aNumber, adverb) }
@@ -511,9 +511,9 @@ SequenceableCollection : Collection {
 	bitXor { arg aNumber, adverb; ^this.performBinaryOp('bitXor', aNumber, adverb) }	
 	lcm { arg aNumber, adverb; ^this.performBinaryOp('lcm', aNumber, adverb) }
 	gcd { arg aNumber, adverb; ^this.performBinaryOp('gcd', aNumber, adverb) }
-	round { arg aNumber, adverb; ^this.performBinaryOp('round', aNumber, adverb) }
-	roundUp { arg aNumber, adverb; ^this.performBinaryOp('roundUp', aNumber, adverb) }
-	trunc { arg aNumber, adverb; ^this.performBinaryOp('trunc', aNumber, adverb) }
+	round { arg aNumber=1, adverb; ^this.performBinaryOp('round', aNumber, adverb) }
+	roundUp { arg aNumber=1, adverb; ^this.performBinaryOp('roundUp', aNumber, adverb) }
+	trunc { arg aNumber=1, adverb; ^this.performBinaryOp('trunc', aNumber, adverb) }
 	atan2 { arg aNumber, adverb; ^this.performBinaryOp('atan2', aNumber, adverb) }	
 	hypot { arg aNumber, adverb; ^this.performBinaryOp('hypot', aNumber, adverb) }
 	hypotApx { arg aNumber, adverb; ^this.performBinaryOp('hypotApx', aNumber, adverb) }

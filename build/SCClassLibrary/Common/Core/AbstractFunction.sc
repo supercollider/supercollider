@@ -101,7 +101,7 @@ AbstractFunction {
 	mod { arg function, adverb; ^this.composeBinaryOp('mod', function, adverb) }
 	pow { arg function, adverb; ^this.composeBinaryOp('pow', function, adverb) }
 	min { arg function, adverb; ^this.composeBinaryOp('min', function, adverb) } 
-	max { arg function, adverb; ^this.composeBinaryOp('max', function, adverb) }
+	max { arg function=0, adverb; ^this.composeBinaryOp('max', function, adverb) }
 	
 	<  { arg function, adverb; ^this.composeBinaryOp('<',  function, adverb) }
 	<= { arg function, adverb; ^this.composeBinaryOp('<=', function, adverb) }
@@ -113,9 +113,9 @@ AbstractFunction {
 	bitXor { arg function, adverb; ^this.composeBinaryOp('bitXor', function, adverb) }	
 	lcm { arg function, adverb; ^this.composeBinaryOp('lcm', function, adverb) }
 	gcd { arg function, adverb; ^this.composeBinaryOp('gcd', function, adverb) }
-	round { arg function, adverb; ^this.composeBinaryOp('round', function, adverb) }
-	roundUp { arg function, adverb; ^this.composeBinaryOp('roundUp', function, adverb) }
-	trunc { arg function, adverb; ^this.composeBinaryOp('trunc', function, adverb) }
+	round { arg function=1, adverb; ^this.composeBinaryOp('round', function, adverb) }
+	roundUp { arg function=1, adverb; ^this.composeBinaryOp('roundUp', function, adverb) }
+	trunc { arg function=1, adverb; ^this.composeBinaryOp('trunc', function, adverb) }
 	atan2 { arg function, adverb; ^this.composeBinaryOp('atan2', function, adverb) }	
 	hypot { arg function, adverb; ^this.composeBinaryOp('hypot', function, adverb) }
 	hypotApx { arg function, adverb; ^this.composeBinaryOp('hypotApx', function, adverb) }
