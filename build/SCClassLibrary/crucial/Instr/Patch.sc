@@ -12,7 +12,7 @@ Patch : AbstractPlayer  {
 	var <numChannels,<rate; // determined after making synthdef
 	
 	*new { arg name,args;
-		^super.new.loadSubject(name).createArgs(loadPath(args) ?? {[]})
+		^super.new.loadSubject(name).createArgs(loadDocument(args) ? [])
 	}
 
 	loadSubject { arg name;

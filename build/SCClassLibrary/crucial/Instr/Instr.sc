@@ -187,13 +187,13 @@ Instr  {
 		var page;
 		if(startAt.isNil,{
 //			startAt = Library3.at(Instr);
-			page = Roster(":rosters:EfxOrcs").all.choose;
-			page.loadPath;
+			page = Roster("EfxOrcs").all.choose;
+			page.loadDocument;
 			startAt = Instr.at(PathName(page).fileName.asSymbol);
 		},{
 			startAt = this.at(startAt);
 		});
-		^Library3.global.chooseFromNode(startAt);
+		^Library.global.chooseFromNode(startAt);
 	}
 	
 	*loadAll

@@ -2,6 +2,7 @@
 + Object {
 	loadPath {}
 	enpath {}
+	loadDocument {}
 }
 
 + SequenceableCollection {
@@ -13,6 +14,11 @@
 	enpath {
 		^this.collect({ arg obj;
 			obj.enpath
+		})
+	}
+	loadDocument {
+		^this.collect({ arg obj;
+			obj.loadDocument
 		})
 	}
 }
@@ -31,12 +37,27 @@
 		});
 		^obj
 	}
+	loadDocument { arg warnIfNotFound=true;
+		^Document.standardizePath(this).loadPath(warnIfNotFound)
+	}
 }
 
 + AbstractPlayer {
 	
 	enpath {
+		//abrev it
 		^path ? this
+	}
+	loadDocument {
+		^this
+	}
+
+// old style
+	*load { arg obj, warnIfNotFound=true;
+		^obj.loadDocument;
+	}
+	*enpath { arg obj;
+		^obj.enpath // document enpath
 	}
 
 }

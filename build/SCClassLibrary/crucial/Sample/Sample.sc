@@ -8,16 +8,18 @@ Sample {
 	
 	var <buffer,<>patchOut,<readyForPlay = false;
 	
-	var <beatsize,<size=0,<end;
+	var <beatsize,size=0,<end;
+	var <>startFrame=0,<>endFrame = -1;
 	
 	// while building the synth def...
 	var <>forArgi,bufnumControl;
 	
-	*new { arg soundFilePath,tempo;
+	*new { arg soundFilePath,tempo,startFrame=0,endFrame = -1;
 		var new;
 		new = super.new;
 		new.load(soundFilePath);
 		new.tempo_(tempo);
+		new.startFrame_(startFrame).endFrame_(endFrame);
 		^new
 	}
 
@@ -45,9 +47,8 @@ Sample {
 	load { arg thing;
 		this.prLoad(thing);
 		this.calculate;
-		// do it right away always ?
-		if(buffer.notNil,{
-			buffer.read(this.soundFilePath);
+		if(buffer.notNil,{ // if already loaded, on server
+			buffer.read(this.soundFilePath,startFrame, max(endFrame - startFrame, -1))
 		})
 	}
 	prLoad { arg thing;
@@ -111,7 +112,13 @@ Sample {
 		size=soundFile.numFrames;
 		end=size-1;
 	}
-
+	size {// actual size loaded on server, not total size
+		^if(endFrame == -1,{
+			end
+		},{
+			endFrame - startFrame
+		})	
+	}
 	guessBeats {
 		this.beats_(4.0); // this may look wack, but it works very well !
 		if(tempo > 4.0,{ this.beats_(beats / 2.0) });
@@ -123,7 +130,7 @@ Sample {
 	}
 	
 	sampleRate { ^soundFile.sampleRate }
-	duration { ^size / this.sampleRate }
+	duration { ^this.size / this.sampleRate }
 	asString { ^(name ?? { super.asString }) }
 	// yeah but how many doubles ?
 	totalMemory { ^this.numChannels * this.size }
@@ -131,11 +138,11 @@ Sample {
 	
 	/* server support */
 	prepareForPlay { arg group,bundle;
-		buffer = Buffer.new(group.asGroup.server,-1,this.numChannels);
+		buffer = Buffer.new(group.asGroup.server,this.size,this.numChannels);
 		if(soundFilePath.notNil,{
-			bundle.add( buffer.allocReadMsg(this.soundFilePath,0) )
+			bundle.add( buffer.allocReadMsg(this.soundFilePath,startFrame) )
 		},{
-			buffer.numFrames = size;
+			buffer.numFrames = this.size;
 			buffer.numChannels = this.numChannels;
 			bundle.add( buffer.allocMsg )
 		});

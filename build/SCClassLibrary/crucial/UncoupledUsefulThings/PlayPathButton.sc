@@ -1,13 +1,13 @@
 
-PlayPathButton : ActionButton { // loads the object at loadPath and .plays it
+PlayPathButton : ActionButton { // loads the object at loadDocument and .plays it
 
 	var <>subject,<isPlaying=false,player;
 
-	*new { arg layout,loadPath,maxx=150;
+	*new { arg layout,loadDocument,maxx=150;
 		var new;
-		loadPath = loadPath.asString;
-		new=super.new(layout,PathName(loadPath).fileName,nil,maxx,13,3);
-		new.backColor_(rgb(228,255,107)).action_({new.doAction}).subject_(loadPath)
+		loadDocument = loadDocument.asString;
+		new=super.new(layout,PathName(loadDocument).fileName,nil,maxx,13,3);
+		new.backColor_(rgb(228,255,107)).action_({new.doAction}).subject_(loadDocument)
 		^new
 	}
 	
@@ -24,7 +24,7 @@ PlayPathButton : ActionButton { // loads the object at loadPath and .plays it
 	
 	play { 
 		isPlaying = true;
-		player = subject.loadPath;
+		player = subject.loadDocument;
 		
 		^player.play 
 	}

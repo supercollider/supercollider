@@ -4,7 +4,7 @@ HasSubject : AbstractPlayer {
 	var <>subject;
 
 	*new { arg subject=0.0;
-		^super.new.subject_(subject.loadPath)
+		^super.new.subject_(subject.loadDocument)
 	}
 
 	ar { ^subject.ar }
@@ -16,8 +16,8 @@ HasSubject : AbstractPlayer {
 	numChannels { ^subject.tryPerform(\numChannels) ? 1 }
 	guiClass { ^HasSubjectGui }
 }
-/*
 
+/*
 Ar : HasSubject { 
 
 	ar {  // same as .value
@@ -37,7 +37,6 @@ Ar : HasSubject {
 	canDoSpec { arg aspec; ^(aspec.isKindOf(AudioSpec) or: {aspec.canKr}) } // could go into any kr too
 
 }
-
 
 AsStream : HasSubject {  // this is for passing in patterns or streams to Patches
 
@@ -102,10 +101,7 @@ StreamKr : HasSubjectKr { // trigger is a kr rate trigger
 	*new { arg subject=0.0,trigger=0.0;
 		^super.new(subject).trigger_(trigger)
 	}
-
-
-	
-//	kr { 
+//	kr { //sc2 version
 //		var k;
 //		k=Sequencer.kr(subject.asStream,trigger.value);
 //	}
@@ -125,31 +121,40 @@ StreamKr : HasSubjectKr { // trigger is a kr rate trigger
 
 StreamKrDur : HasSubject { // Synthless, above player
 
-	var <>durations;
-	var tempo,routine,nodeControl,firstValue;
+	var <>durations,<>lag;
+	var tempo,routine,bus;
 	
-	*new { arg values=0.0,durations=0.0;
+	*new { arg values=0.0,durations=0.0,lag=0.0;
 		// check if can become a BufSeqDur
+
 		// make refs of arrays into Pseq
-		^super.new(values).durations_(durations.loadPath).skdinit
+		if(values.isKindOf(Ref),{
+			values = Pseq(values.value,inf);
+		});
+		if(durations.isKindOf(Ref),{
+			durations = Pseq(durations.value,inf);
+		});
+		^super.new(values).durations_(durations.loadDocument).lag_(lag).skdinit
 	}
 	skdinit {
 		tempo = Tempo.default;
-		firstValue = subject.asStream.next;
 		/* for musical accuracy, need to run ahead and use OSCSched
-		to deliver */
+		to deliver.
+		changing tempo while playing will screw it up and sync will be
+		lost between other StreamKr.
+		*/
 		routine = Routine({
 					var dur,val;
 					var valst,durst;
 					valst = subject.asStream;
 					durst = durations.asStream;
 					while({
-						(val = valst.next).notNil and: {
+						(val = valst.next).notNil and:
 							(dur = durst.next).notNil;
-						}
 					},{
 						// send the message...	
-						nodeControl.value_(val);
+						bus.value_(val);
+						//[this,val].postln;
 						tempo.beats2secs(dur).wait
 					});
 				});
@@ -157,7 +162,7 @@ StreamKrDur : HasSubject { // Synthless, above player
 	// has no synth, just a bus
 	loadDefFileToBundle {}
 	rate { ^\control }
-	children { ^[] } // synthChildren synthArgObjects inputs
+	children { ^[] } // inputs
 	spawnAtTime { arg atTime;
 		// depending on didSpawn to start for now
 	}
@@ -166,20 +171,25 @@ StreamKrDur : HasSubject { // Synthless, above player
 	}
 	didSpawn {	arg patchIn,synthi;
 		patchOut.connectTo(patchIn,false);
-		nodeControl = patchIn.nodeControl;
+		bus = patchOut.bus;
+		routine.reset;
 		SystemClock.play(routine)
 	}
 	instrArgRate { ^\control }
 	instrArgFromControl { arg control;
-		^control
+		^if(lag == 0.0,{
+			In.kr(control,1)
+		},{
+			Lag.kr(In.kr(control,1),lag)
+		})
 	}
 	synthArg {
-		^firstValue
+		^patchOut.synthArg
 	}
 
 	free {
 		routine.stop;
-		routine.reset;
+		//routine.reset;
 	}
 	// shouldn't happen
 	synthDefArgs {}
@@ -239,42 +249,17 @@ StreamKrDur : HasSubject { // Synthless, above player
 
 
 
-/*
+
 Stream2Trig : StreamKrDur { // outputs just a single pulse trig
-	// has no lag
-	kr { 
-		^ImpulseSequencer.kr(subject.asStream,StepClock.kr(trigger.asStream,GetTempo.kr));
+
+	// doesn't use lag	
+	instrArgFromControl { arg control;
+		^InTrig.kr( control,1)
 	}
-}
-*/
-
-
-
-
-/**
-
-StreamKrDriver( value stream,duration stream)
-	drive a plug:
-	xline
-	line
 	
-**/
-
-//ArPause : Ar {
-//	
-//	var tog;
-//	
-//	gui { arg lay;
-//		tog=ToggleButton(layout,subject.name,{ subject.resume4 },{ subject.pause });
+//	kr { //sc2 version
+//		^ImpulseSequencer.kr(subject.asStream,StepClock.kr(trigger.asStream,GetTempo.kr));
 //	}
-//	
-//	value {
-//		tog.passiveToggle(true);
-//		^subject.ar
-//	}
-//
-//}
-
-
+}
 
 

@@ -5,7 +5,7 @@ AbstractPlayer : AbstractFunction  {
 	
 	var <path,name,<>dirty=true; 
 	
-	var <synth,<patchOut,<>readyForPlay = false,defName,patchOutsOfChildren;
+	var <synth,<>patchOut,<>readyForPlay = false,defName,patchOutsOfChildren;
 		
 	// subclasses must implement
 	ar { ^this.subclassResponsibility(thisMethod) }
