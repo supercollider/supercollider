@@ -73,6 +73,14 @@ extern PrimitiveTable gPrimitiveTable;
 
 extern PyrSlot o_nullframe;
 
+int slotStrLen(PyrSlot *slot) {
+        if (IsSym(slot)) {
+                return slot->us->length;
+        } else if (isKindOfSlot(slot, class_string)) {
+                return slot->uo->size;
+        }
+        return -1;
+}
 
 int slotStrVal(PyrSlot *slot, char *str, int maxlen)
 {
