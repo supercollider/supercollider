@@ -86,6 +86,9 @@ void dumpOSCmsg(int inSize, char* inData)
 			case 'f' :
 				scprintf(" %g", msg.getf());
 				break;
+			case 'd' :
+				scprintf(" %g", msg.getd());
+				break;
 			case 's' :
 				scprintf(" \"%s\"", msg.gets());
 				break;
