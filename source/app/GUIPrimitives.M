@@ -138,9 +138,9 @@ int prGetStringFromUser(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
-	PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
+	//PyrSlot *a = g->sp - 2;
+	//PyrSlot *b = g->sp - 1;
+	//PyrSlot *c = g->sp;
                                  
 	return errNone;
 }
@@ -975,7 +975,7 @@ int prPen_MoveTo(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *a = g->sp - 1;
+    //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
     if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
@@ -995,7 +995,7 @@ int prPen_LineTo(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *a = g->sp - 1;
+    //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
     if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
@@ -1015,7 +1015,7 @@ int prPen_BeginPath(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *a = g->sp;
+    //PyrSlot *a = g->sp;
  
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextBeginPath(cgc);
@@ -1028,7 +1028,7 @@ int prPen_StrokePath(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *a = g->sp;
+    //PyrSlot *a = g->sp;
  
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextDrawPath(cgc, kCGPathStroke);
@@ -1041,7 +1041,7 @@ int prPen_FillPath(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *a = g->sp;
+    //PyrSlot *a = g->sp;
  
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextFillPath(cgc);
@@ -1056,7 +1056,7 @@ int prPen_Translate(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
     
-    PyrSlot *a = g->sp - 2;
+    //PyrSlot *a = g->sp - 2;
     PyrSlot *b = g->sp - 1;
     PyrSlot *c = g->sp;
 
@@ -1077,7 +1077,7 @@ int prPen_Scale(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
     
-    PyrSlot *a = g->sp - 2;
+    //PyrSlot *a = g->sp - 2;
     PyrSlot *b = g->sp - 1;
     PyrSlot *c = g->sp;
 
@@ -1098,7 +1098,7 @@ int prPen_Rotate(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
     
-    PyrSlot *a = g->sp - 3;
+    //PyrSlot *a = g->sp - 3;
     PyrSlot *b = g->sp - 2;
     PyrSlot *c = g->sp - 1;
     PyrSlot *d = g->sp;
@@ -1127,7 +1127,7 @@ int prPen_SetWidth(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
     
-    PyrSlot *a = g->sp - 1;
+    //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
     float width;
@@ -1145,7 +1145,7 @@ int prPen_SetMatrix(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
     
-    PyrSlot *a = g->sp - 1;
+    //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
     
     if (!isKindOfSlot(b, class_arrayed_collection)) return errWrongType;
@@ -1641,7 +1641,7 @@ int prButton_Draw(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
 	
-	PyrSlot *a = g->sp - 5; // button
+	//PyrSlot *a = g->sp - 5; // button
 	PyrSlot *b = g->sp - 4;	// rect
 	PyrSlot *c = g->sp - 3;	// backColor
 	PyrSlot *d = g->sp - 2;	// forecolor
