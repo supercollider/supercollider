@@ -64,7 +64,7 @@ Bus {
 		^["/c_get",index];
 	}
 	getnMsg { arg count, action;
-		^["/c_getn",index, count ? numChannels]);
+		^["/c_getn",index, count ? numChannels];
 	}
 
 	fill { arg value,numChans;
@@ -74,7 +74,7 @@ Bus {
 	}
 	
 	fillMsg { arg value;
-		^["/c_fill",index,numChannels,value]);
+		^["/c_fill",index,numChannels,value];
 	}
 
 
