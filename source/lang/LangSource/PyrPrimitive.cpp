@@ -3101,9 +3101,11 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 		error ("yield was called outside of a Routine.\n");
 		return errFailed;
 	}
-
+	
+	PyrThread *parent = g->thread->parent.uot;
+	SetNil(&g->thread->parent);
 	//debugf("yield from thread %08X to parent %08X\n", g->thread, g->thread->parent.uot);
-	switchToThread(g, g->thread->parent.uot, tSuspended, &numArgsPushed);
+	switchToThread(g, parent, tSuspended, &numArgsPushed);
 
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
 	(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
@@ -3132,8 +3134,10 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 	g->thread->terminalValue.ucopy = value.ucopy;
 	g->gc->GCWrite(g->thread, g->sp);
 	
-	//post("alwaysYield from thread %08X to parent %08X\n", g->thread, g->thread->parent.uot);
-	switchToThread(g, g->thread->parent.uot, tDone, &numArgsPushed);
+	PyrThread *parent = g->thread->parent.uot;
+	SetNil(&g->thread->parent);
+	//post("alwaysYield from thread %08X to parent %08X\n", g->thread, parent);
+	switchToThread(g, parent, tDone, &numArgsPushed);
 	
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
 	(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
@@ -3320,7 +3324,10 @@ int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed)
 
 	if (IsFalse(b)) state = tSuspended;
 	else state = tInit;
-	switchToThread(g, g->thread->parent.uot, state, &numArgsPushed);
+
+	PyrThread *parent = g->thread->parent.uot;
+	SetNil(&g->thread->parent);
+	switchToThread(g, parent, state, &numArgsPushed);
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
 	(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
 
