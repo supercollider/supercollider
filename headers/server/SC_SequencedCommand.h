@@ -431,5 +431,21 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////
 
+class SendReplyCmd : public SC_SequencedCommand
+{
+public:
+	SendReplyCmd(World *inWorld, ReplyAddress *inReplyAddress);
+	
+	virtual int Init(char *inData, int inSize);
+	
+	virtual bool Stage2();	// non real time
+	
+protected:
+	
+	virtual void CallDestructor();
+};
+
+///////////////////////////////////////////////////////////////////////////
+
 #endif
 

@@ -70,6 +70,7 @@ SC_SequencedCommand::SC_SequencedCommand(World *inWorld, ReplyAddress *inReplyAd
 
 SC_SequencedCommand::~SC_SequencedCommand()
 {
+	if (mMsgData) World_Free(mWorld, mMsgData);
 }
 
 int SC_SequencedCommand::Init(char* /*inData*/, int /*inSize*/)
@@ -971,4 +972,28 @@ void LoadSynthDefDirCmd::Stage4()
 
 ///////////////////////////////////////////////////////////////////////////
 
+SendReplyCmd::SendReplyCmd(World *inWorld, ReplyAddress *inReplyAddress)
+	: SC_SequencedCommand(inWorld, inReplyAddress)
+{
+}
 
+int SendReplyCmd::Init(char *inData, int inSize)
+{
+	mMsgSize = inSize;
+	mMsgData = (char*)World_Alloc(mWorld, mMsgSize);
+	memcpy(mMsgData, inData, inSize);
+	return kSCErr_None;
+}
+
+void SendReplyCmd::CallDestructor() 
+{
+	this->~SendReplyCmd();
+}
+
+bool SendReplyCmd::Stage2()
+{
+	SendReply(&mReplyAddress, mMsgData, mMsgSize);
+	return false;
+}
+
+///////////////////////////////////////////////////////////////////////////

@@ -32,6 +32,7 @@
 #include "SC_SequencedCommand.h"
 #include <new.h>
 #include "SC_Prototypes.h"
+#include "scsynthsend.h"
 
 // returns number of bytes in an OSC string.
 int OSCstrlen(char *strin);
@@ -735,16 +736,100 @@ SCErr meth_c_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 		int32 n = msg.geti();
 		int32 end = start+n-1;
 		
-		if (end < 0 || start >= maxIndex) continue;
-		
-		start = sc_clip(start, 0, maxIndex-1);
-		end   = sc_clip(end,   0, maxIndex-1);
+		if (start < 0 || end >= maxIndex || start > end) 
+			return kSCErr_IndexOutOfRange;
 
 		for (int i=start; msg.remain() && i<=end; ++i) {
 			float32 value = msg.getf();
 			data[i] = value;
 			touched[i] = bufCounter;
 		}
+	}
+
+	return kSCErr_None;
+}
+
+
+SCErr meth_c_get(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_c_get(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
+{
+	sc_msg_iter msg(inSize, inData);
+		
+	float *data = inWorld->mControlBus;
+	int maxIndex = inWorld->mNumControlBusChannels;
+	
+	int numheads = msg.remain() >> 2;
+
+	scpacket packet;
+	packet.adds("/c_set");
+	packet.maketags(numheads * 2 + 1);
+	packet.addtag(',');
+	
+	while (msg.remain() >= 4)
+	{	
+		int32 index = msg.geti();
+		if (index < 0 && index >= maxIndex)
+			return kSCErr_IndexOutOfRange;
+		packet.addtag('i');
+		packet.addtag('f');
+		packet.addi(index);
+		packet.addf(data[index]);
+	}
+	
+	if (packet.size()) {
+		CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
+	}
+	
+	return kSCErr_None;
+}
+
+SCErr meth_c_getn(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_c_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
+{		
+	sc_msg_iter msg(inSize, inData);
+	
+	float *data = inWorld->mControlBus;
+	int maxIndex = inWorld->mNumControlBusChannels;
+	
+	// figure out how many tags to allocate   
+	int numcontrols = 0;
+	int numheads = msg.remain() >> 3;
+	
+	while (msg.remain()) {
+		msg.geti(); // skip start
+		int32 n = msg.geti();
+		numcontrols += n;
+	}
+	
+	scpacket packet;
+	packet.adds("/c_setn");
+	packet.maketags(numheads * 2 + numcontrols + 1);
+	packet.addtag(',');
+
+	// start over at beginning of message
+	msg.init(inSize, inData);
+	
+	while (msg.remain()) {
+		int32 start = msg.geti();
+		int32 n = msg.geti();
+		int32 end = start+n-1;
+		
+		if (start < 0 || end >= maxIndex || start > end) 
+			return kSCErr_IndexOutOfRange;
+		
+		packet.addtag('i');
+		packet.addtag('i');
+		packet.addi(start);
+		packet.addi(n);
+
+		for (int i=start; i<=end; ++i) {
+			packet.addtag('f');
+			packet.addf(data[i]);
+		}
+	}
+
+	if (packet.size()) {
+		CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
 	}
 
 	return kSCErr_None;
@@ -850,6 +935,9 @@ void initMiscCommands()
 	NEW_COMMAND(c_fill);	
 					
 	NEW_COMMAND(dumpOSC);					
+
+	NEW_COMMAND(c_get);		
+	NEW_COMMAND(c_getn);		
 }
 
 

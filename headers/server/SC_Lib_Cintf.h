@@ -95,8 +95,11 @@ enum {
 	cmd_b_gen = 38,
 	
 	cmd_dumpOSC = 39,
+
+	cmd_c_get = 40,
+	cmd_c_getn = 41,
 	
-	NUMBER_OF_COMMANDS = 40
+	NUMBER_OF_COMMANDS = 42
 };
 
 extern SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];

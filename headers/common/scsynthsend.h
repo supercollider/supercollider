@@ -141,7 +141,7 @@ inline void scpacket::adds(char *src, size_t len)
 // support binary objects
 inline void scpacket::addb(uint8 *src, size_t len)
 {
-	size_t len4 = len >> 2;
+	size_t len4 = (len + 3) >> 2;
 	if (wrpos + (len4 + 1) > endpos) BUFFEROVERFLOW;
 	wrpos[len4 - 1] = 0;
 	int32 swaplen = len;

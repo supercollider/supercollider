@@ -571,11 +571,8 @@ Set contiguous ranges of buses to single values. For each range, the starting sa
 \
 
 \f1\b /c_get					get sample value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
-\cf2 not yet implemented\cf0  \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - a bus index\
 	] * N\
 	\
@@ -585,11 +582,8 @@ Takes a list of buses and replies to sender with the corresponding
 \
 
 \f1\b /c_getn					get ranges of sample value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
-\cf2 not yet implemented\cf0  \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - starting bus index\
 		int - number of sequential samples to get (M)\
 	] * N\
@@ -868,8 +862,11 @@ These are the currently defined fill routines for use with the
 	cmd_b_gen = \cf4 38\cf0 ,\
 \
 	cmd_dumpOSC = \cf4 39\cf0 ,\
+\
+	cmd_c_get = \cf4 40\cf0 ,\
+	cmd_c_getn = \cf4 41\cf0 ,\
 	\
-	NUMBER_OF_COMMANDS=\cf4 40\cf0 \
+	NUMBER_OF_COMMANDS=\cf4 42\cf0 \
 \};\
 \pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
 
