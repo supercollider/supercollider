@@ -26,32 +26,38 @@ static InterfaceTable *ft;
 
 struct LFPulse : public Unit
 {
-	float mPhase, mFreqMul, mDuty;
+	double mPhase;
+	float mFreqMul, mDuty;
 };
 
 struct LFSaw : public Unit
 {
-	float mPhase, mFreqMul;
+	double mPhase;
+	float mFreqMul;
 };
 
 struct LFTri : public Unit
 {
-	float mPhase, mFreqMul;
+	double mPhase;
+	float mFreqMul;
 };
 
 struct Impulse : public Unit
 {
-	float mPhase, mFreqMul;
+	double mPhase;
+	float mFreqMul;
 };
 
 struct VarSaw : public Unit
 {
-	float mPhase, mFreqMul, mDuty, mInvDuty, mInv1Duty;
+	double mPhase;
+	float mFreqMul, mDuty, mInvDuty, mInv1Duty;
 };
 
 struct SyncSaw : public Unit
 {
-	float mPhase1, mPhase2, mFreqMul;
+	double mPhase1, mPhase2;
+	float mFreqMul;
 };
 
 struct Line : public Unit
@@ -242,7 +248,7 @@ void LFPulse_next_a(LFPulse *unit, int inNumSamples)
 	float duty = unit->mDuty;
 	
 	float freqmul = unit->mFreqMul;
-	float phase = unit->mPhase;
+	double phase = unit->mPhase;
 	LOOP(inNumSamples, 
 		float z;
 		if (phase >= 1.f) {
@@ -267,7 +273,7 @@ void LFPulse_next_k(LFPulse *unit, int inNumSamples)
 	float nextDuty = ZIN0(2);
 	float duty = unit->mDuty;
 	
-	float phase = unit->mPhase;
+	double phase = unit->mPhase;
 	LOOP(inNumSamples, 
 		float z;
 		if (phase >= 1.f) {
@@ -310,7 +316,7 @@ void LFSaw_next_a(LFSaw *unit, int inNumSamples)
 	float *freq = ZIN(0);
 	
 	float freqmul = unit->mFreqMul;
-	float phase = unit->mPhase;
+	double phase = unit->mPhase;
 	LOOP(inNumSamples, 
 		float z = phase; // out must be written last for in place operation
 		phase += ZXP(freq) * freqmul;
@@ -328,7 +334,7 @@ void LFSaw_next_k(LFSaw *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float freq = ZIN0(0) * unit->mFreqMul;
 	
-	float phase = unit->mPhase;
+	double phase = unit->mPhase;
 	if (freq >= 0.f) {
 		LOOP(inNumSamples, 
 			ZXP(out) = phase;
@@ -371,7 +377,7 @@ void LFTri_next_a(LFTri *unit, int inNumSamples)
 	float *freq = ZIN(0);
 	
 	float freqmul = unit->mFreqMul;
-	float phase = unit->mPhase;
+	double phase = unit->mPhase;
 	LOOP(inNumSamples, 
 		float z = phase > 1.f ? 2.f - phase : phase;
 		phase += ZXP(freq) * freqmul;
@@ -388,7 +394,7 @@ void LFTri_next_k(LFTri *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float freq = ZIN0(0) * unit->mFreqMul;
 	
-	float phase = unit->mPhase;
+	double phase = unit->mPhase;
 	LOOP(inNumSamples, 
 		float z = phase > 1.f ? 2.f - phase : phase;
 		phase += freq;
@@ -422,7 +428,7 @@ void Impulse_next_a(Impulse *unit, int inNumSamples)
 	float *freq = ZIN(0);
 	
 	float freqmul = unit->mFreqMul;
-	float phase = unit->mPhase;
+	double phase = unit->mPhase;
 	LOOP(inNumSamples, 
 		float z;
 		if (phase >= 1.f) {
@@ -444,7 +450,7 @@ void Impulse_next_k(Impulse *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float freq = ZIN0(0) * unit->mFreqMul;
 	
-	float phase = unit->mPhase;
+	double phase = unit->mPhase;
 	LOOP(inNumSamples, 
 		float z;
 		if (phase >= 1.f) {
@@ -488,7 +494,7 @@ void VarSaw_next_a(VarSaw *unit, int inNumSamples)
 	float inv1duty = unit->mInv1Duty;
 	
 	float freqmul = unit->mFreqMul;
-	float phase = unit->mPhase;
+	double phase = unit->mPhase;
 	
 	LOOP(inNumSamples, 
 		if (phase >= 1.f) {
@@ -515,7 +521,7 @@ void VarSaw_next_k(VarSaw *unit, int inNumSamples)
 	float invduty = unit->mInvDuty;
 	float inv1duty = unit->mInv1Duty;
 	
-	float phase = unit->mPhase;
+	double phase = unit->mPhase;
 	
 	LOOP(inNumSamples, 
 		if (phase >= 1.f) {
@@ -556,8 +562,8 @@ void SyncSaw_next_aa(SyncSaw *unit, int inNumSamples)
 	float *freq1 = ZIN(0);
 	float *freq2 = ZIN(1);
 	
-	float phase1 = unit->mPhase1;
-	float phase2 = unit->mPhase2;
+	double phase1 = unit->mPhase1;
+	double phase2 = unit->mPhase2;
 	
 	LOOP(inNumSamples, 
 		float freq1x = ZXP(freq1) * freqmul;
@@ -584,8 +590,8 @@ void SyncSaw_next_ak(SyncSaw *unit, int inNumSamples)
 	float *freq1 = ZIN(0);
 	float freq2x = ZIN0(1) * freqmul;
 	
-	float phase1 = unit->mPhase1;
-	float phase2 = unit->mPhase2;
+	double phase1 = unit->mPhase1;
+	double phase2 = unit->mPhase2;
 	
 	LOOP(inNumSamples, 
 		float freq1x = ZXP(freq1) * freqmul;
@@ -611,8 +617,8 @@ void SyncSaw_next_ka(SyncSaw *unit, int inNumSamples)
 	float freq1x = ZIN0(0) * freqmul;
 	float *freq2 = ZIN(1);
 	
-	float phase1 = unit->mPhase1;
-	float phase2 = unit->mPhase2;
+	double phase1 = unit->mPhase1;
+	double phase2 = unit->mPhase2;
 	
 	LOOP(inNumSamples, 
 		float freq2x = ZXP(freq2) * freqmul;
@@ -636,8 +642,8 @@ void SyncSaw_next_kk(SyncSaw *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float freq1x = ZIN0(0) * unit->mFreqMul;
 	float freq2x = ZIN0(1) * unit->mFreqMul;
-	float phase1 = unit->mPhase1;
-	float phase2 = unit->mPhase2;
+	double phase1 = unit->mPhase1;
+	double phase2 = unit->mPhase2;
 	
 	LOOP(inNumSamples, 
 		float z = phase2;
