@@ -33,7 +33,7 @@
 	}
 }
 
-+ AudioInputSpec {
++ AudioSpec {
 	defaultControl{ ^Ar(0.0) // silence
 	}
 }

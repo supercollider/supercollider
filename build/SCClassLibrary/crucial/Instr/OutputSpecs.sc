@@ -1,5 +1,5 @@
 
-
+/*  just use AudioSpec
 ArOutputSpec : Spec {
 	var <numChannels;
 	*new { arg numChannels=1;
@@ -13,16 +13,17 @@ ArOutputSpec : Spec {
 		]);
 	}
 }
+*/
 
-MultiTrackArOutSpec : ArOutputSpec {
-	var <>tracks;
-	*new { arg tracks=2,numChannels=2;
-		^super.new(numChannels).tracks_(tracks)
-	}
-	
-}
-
+/* just use ControlSpec
 KrOutputSpec : ArOutputSpec {
 	rate { ^\control }
+	*initClass {
+		specs = specs.addAll([
+			\krOut -> KrOutputSpec(1)
+		]);
+	}
 }
+*/
+
 

@@ -54,3 +54,11 @@
 	}
 	
 }
+
++ String {
+	asFileSafeString { // this is more for protecting against / etc.
+		^this.collect({ arg c;
+			if(c.isFileSafe,{ c },{ $# })
+		})
+	}
+}		

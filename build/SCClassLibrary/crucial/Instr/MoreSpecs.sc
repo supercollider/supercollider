@@ -1,13 +1,6 @@
 
 
-StaticSpec : ControlSpec {
-
-	canKr { ^false }
-	rate { ^\scalar }
-
-}
-
-AudioInputSpec : Spec {
+AudioSpec : Spec {
 
 	var <>numChannels=1;
 	*new { arg numChannels=1;
@@ -15,8 +8,8 @@ AudioInputSpec : Spec {
 	}
 	*initClass {
 		var mono,stereo;
-		mono=AudioInputSpec.new;
-		stereo=AudioInputSpec(2);
+		mono=AudioSpec.new;
+		stereo=AudioSpec(2);
 		specs.putAll(
 		 IdentityDictionary[
 			\audio -> mono,
@@ -35,21 +28,15 @@ AudioInputSpec : Spec {
 
 }
 
-SymbolSetSpec : Spec {
-	
-	var <>symbols;
-	
-	*new { arg symbols;
-		^super.new.symbols_(symbols)
+MultiTrackAudioSpec : AudioSpec {
+	var <>tracks;
+	*new { arg tracks=2,numChannels=2;
+		^super.new(numChannels).tracks_(tracks)
 	}
-
-	default { ^symbols.first }
-	*initClass {}
-	storeParamsOn { arg stream;
-		stream << "(" <<< symbols << ")"
-	}
-
+	
 }
+
+
 
 TrigSpec : ControlSpec {
 	
@@ -64,7 +51,25 @@ TrigSpec : ControlSpec {
 	}
 }
 
-EnvSpec : Spec { // this is dodgy, not fully worked out
+StaticSpec : ControlSpec { 
+	// also a scalar spec, but better to inherit ControlSpec
+
+	canKr { ^false }
+	rate { ^\scalar }
+
+}
+
+
+ScalarSpec : Spec {
+	// SendTrig etc. output a 0.0
+	// this is a scalar spec.
+	// so is Env, Sample
+	canKr { ^false }
+	rate { ^\scalar }
+
+}
+
+EnvSpec : ScalarSpec { // this is dodgy, not fully worked out
 
 	var <>selector;
 	var <>prototype;
@@ -76,7 +81,6 @@ EnvSpec : Spec { // this is dodgy, not fully worked out
 	}
 
 	default { ^prototype.deepCopy }
-	canKr { ^false }
 	
 	*initClass {
 		specs.putAll(
@@ -99,8 +103,23 @@ EnvSpec : Spec { // this is dodgy, not fully worked out
 	}			
 }
 
+SymbolSetSpec : ScalarSpec {
+	
+	var <>symbols;
+	
+	*new { arg symbols;
+		^super.new.symbols_(symbols)
+	}
 
-SampleSpec : Spec {
+	default { ^symbols.first }
+	*initClass {}
+	storeParamsOn { arg stream;
+		stream << "(" <<< symbols << ")"
+	}
+
+}
+
+SampleSpec : ScalarSpec {
 
 	*initClass {
 		specs.putAll(
@@ -109,7 +128,6 @@ SampleSpec : Spec {
 			];
 		)
 	}
-	rate { ^\scalar }
 	default { ^Sample.newClear(16) } // silent sample
 
 }

@@ -33,7 +33,7 @@
 	CurveWarp
 */
 
-+ AudioInputSpec {
++ AudioSpec {
 	
 	asPropertyList {
 		^Dictionary[
@@ -42,7 +42,7 @@
 		]	
 	}
 }
-
+/*
 + ArOutputSpec {
 	asPropertyList {
 		^Dictionary[
@@ -51,7 +51,9 @@
 		]	
 	}
 }
-+ MultiTrackArOutSpec {
+*/
+
++ MultiTrackAudioSpec {
 	asPropertyList {
 		^Dictionary[
 			"class" -> this.class.name,
@@ -60,7 +62,8 @@
 		]	
 	}
 }
-//Kr inherits
 
 
-// EnvSpec
+//todo: EnvSpec
+
+

@@ -13,16 +13,13 @@ Instr  {
 		this.makeSpecs(specs ?? {[]});
 		
 		if(outsp.isNil,{
-			outSpec = ArOutputSpec.new;
+			outSpec = nil; //ArOutputSpec.new;
+			// it should be possible to divine the out spec from 
+			// valuing the function.
 		},{
 			outSpec = outsp.asSpec;
 		});
 
-		// it should be possible to divine the out spec from 
-		// valuing the function.
-		// as long as all args are supplied (no nils)
-		// use spec.default
-				
 		this.class.put(this);
 	}
 	
@@ -39,17 +36,16 @@ Instr  {
 					// [StaticSpec()]
 					// [0,1]
 					if(sp.first.isNumber,{
-						sp = sp.asSpec ?? {ControlSpec.new}; // [0,1,\linear] 
+						sp = sp.asSpec;
 					},{
 						sp = (sp.first ? name).asSpec
 					});
 				},{
 					sp = (sp ? name).asSpec ?? {ControlSpec.new};
 				});
-				sp.copy; //.name_(name) // not using flyweight objects.  instr own them and name them
+				sp.copy; 
 			});
 	}
-
 
 	rate { ^outSpec.rate }
 	numChannels { ^outSpec.numChannels }
@@ -72,7 +68,8 @@ Instr  {
 		var instr;
 		instr=this.at(name);
 		if(instr.isNil,{
-			die("(Meta_Instr-ar) Instr not found !!" ++ name.asCompileString, thisMethod);
+			die("(Meta_Instr-ar) Instr not found !!" 
+					+ name.asCompileString, thisMethod);
 		},{
 			^instr.valueArray(args)
 		})
@@ -124,12 +121,20 @@ Instr  {
 	
 	asSynthDef { arg fixedArgs,outClass = \Out,xfader,defName;
 		//xfader is only if using XOut
-		var nonScalarIndices,controlIndices,ci=0;
-		var fixedNames="";
+		var isScalarOut,nonScalarIndices,controlIndices,ci=0;
+		var fixedNames="",inputSpecs;
+		
+		// must supply an output spec if you are doing scalar
+		// otherwise we can determine the spec from the result.
+		// eg. SendTrig which returns 0.0
+		// other scalars can't be returned in a SynthDef
+		isScalarOut = outSpec.notNil and: {outSpec.rate == \scalar};
+		if(isScalarOut,{ ci = -1; }); // first arg is NOT \out
 		
 		outClass = outClass.asClass;
 		if(fixedArgs.isNil, { fixedArgs = [] });
-		controlIndices = this.specs.collect({ arg spec,i;
+		controlIndices = 
+				this.specs.collect({ arg spec,i;
 					if(spec.rate == \scalar or: {fixedArgs.at(i).notNil},{
 						nil
 					},{
@@ -139,10 +144,11 @@ Instr  {
 					})
 				});
 			
-		if(defName.isNil,{ // better to let the Patch specify it, its faster, but no sharing
+		if(defName.isNil,{ // better to let the Patch specify it, 
+						// its faster, but no reuseability of synthDef files
 			defName = "";
 			name.do({ arg part;
-				defName = defName ++ part.asString;
+				defName = defName ++ part.asString.asFileSafeString;
 			});
 			defName = defName ++ outClass.name.asString.first.toLower;
 			fixedArgs.do({ arg fa,i;
@@ -153,57 +159,94 @@ Instr  {
 			defName = defName ++ fixedNames.asFileSafeString;
 		});
 		
-		
-		// should only happen if you are ar or kr out
+		if(isScalarOut.not,{
+			inputSpecs = 	[[\out,\control,0]]; // first arg is always \out buss index
+		},{
+			inputSpecs = [];
+		});
+		inputSpecs = inputSpecs ++
+				nonScalarIndices.collect({ arg agi;
+					[this.argNameAt(agi),
+					specs.at(agi).rate,
+					this.defArgAt(agi)];
+				});
+
 		^SynthDef.newFromSpecs(defName,{ arg inputs;
-			var outIndex,funcArgs;
-			//outIndex = inputs.removeAt(0);
-			
+			var outIndex,funcArgs,out,anOutChannel;
 			// only gets inputs matching controls
 			funcArgs = this.specs.collect({ arg spec,i;
-			
 				if(spec.rate == \audio,{
-					fixedArgs.at(i) ?? {In.ar(inputs.at(controlIndices.at(i) ),spec.numChannels)} 
-					// not really possible to fix an audio anyway
+					fixedArgs.at(i) ?? 
+						{
+						In.ar(inputs.at(controlIndices.at(i)), 
+						spec.numChannels)} 
+					// not possible to fix an audio anyway
 				},{
 					if(spec.rate == \scalar,{
-						["fixed", fixedArgs.at(i)].postln;
-						fixedArgs.at(i) ?? {this.defArgAt(i)}//or nil:  get def arg
+						("fixed arg:" + fixedArgs.at(i)).postln;
+						fixedArgs.at(i) ?? {this.defArgAt(i)}
 					},{// control
-						fixedArgs.at(i) ?? {									if(spec.isKindOf(TrigSpec),{ // create a trig, responds to /c_set
+						fixedArgs.at(i) ?? {									if(spec.isKindOf(TrigSpec),{ // create a trig,
+												// responds to /c_set
 								InTrig.kr(inputs.at(controlIndices.at(i)))
 							},{
-								// in  already is a control signal.
+								// input already is a control signal.
 								// patching involves using /map, not In.kr
-								inputs.at(controlIndices.at(i)) // no support for variable channel kr
+								inputs.at(controlIndices.at(i)) 
+								// no support for multi channel kr
 							})
 						} 
 					})
 				});
 			});
-
-			if(outClass !== XOut,{
-				outClass.perform(if(this.rate == \audio,\ar,\kr),
-							inputs.at(0),this.func.valueArray(funcArgs))
-			},{
-				outClass.perform(if(this.rate == \audio,\ar,\kr),
-							inputs.at(0),xfader.value,this.func.valueArray(funcArgs))
-			});
-		},
-			[[\outIndex,\control,0]] ++ 
-				nonScalarIndices.collect({ arg agi;
-					[this.argNameAt(agi),specs.at(agi).rate,this.defArgAt(agi)];
+			out = this.func.valueArray(funcArgs);
+			// lets guess, look at what the ugenFunc returned
+			if(outSpec.isNil,{
+				anOutChannel = if(out.isSequenceableCollection,
+									{out.first},{out});
+				if(anOutChannel.rate == \audio,{
+					outSpec = AudioSpec(out.size);
+					// MultiTrackAudioSpec must be explicitly stated
+					// in the Instr def
+				},{
+					if(anOutChannel.rate == \control,{
+						// \bipolar, \unipolar etc.
+						outSpec = anOutChannel.signalRange.asSpec;
+						// TrigSpec must be explictly stated
+						// in the Instr def
+					},{ // or scalar
+						if(anOutChannel.isFloat,{
+							outSpec =  ScalarSpec.new;//or StaticSpec
+							// a SendTrig etc. can end with a 0.0
+							// so don't add an Out, but still needs an spec.
+						} , { 				
+							die("can't handle this scalar output from SynthDef:"
+							+ out + "@0: " + anOutChannel);
+						});
+					})
 				})
-		);
+			});
+			if(isScalarOut.not,{ // wrap it in an Out
+				if(outClass !== XOut,{
+					out = outClass.perform(if(this.rate == \audio,\ar,\kr),
+								inputs.at(0),out)
+				},{
+					out = outClass.perform(if(this.rate == \audio,\ar,\kr),
+								inputs.at(0),xfader.value,out)
+				});
+			});
+			out
+		},inputSpecs);
 	}
 	
 	writeDefFile {
-		// check if needed ?
+		// TODO: check if needed
 		this.asSynthDef.writeDefFile;
 	}
 	write {
 		var synthDef;
 		synthDef = this.asSynthDef;
+		//synthDef.dumpUGens;
 		synthDef.writeDefFile;
 		this.writePropertyList(synthDef);
 	}

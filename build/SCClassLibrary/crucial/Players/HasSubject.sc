@@ -34,7 +34,7 @@ Ar : HasSubject {
 		^subject.performList(selector,args)
 	}
 	// dodgy
-	canDoSpec { arg aspec; ^(aspec.isKindOf(AudioInputSpec) or: {aspec.canKr}) } // could go into any kr too
+	canDoSpec { arg aspec; ^(aspec.isKindOf(AudioSpec) or: {aspec.canKr}) } // could go into any kr too
 
 }
 
