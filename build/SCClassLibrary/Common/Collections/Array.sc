@@ -138,16 +138,16 @@ Array[slot] : ArrayedCollection {
 	}
 
 	// threads
-	fork { arg join;
+	fork { arg join, clock, quant;
 		var count = 0, cond;
 		join = join ? this.size;
 		cond = Condition({ count >= join });
 		this.do({ arg func; 
-			Routine({
-				func.value;
+			Routine({ arg time;
+				func.value(time);
 				count = count + 1;
 				cond.signal;
-			}).play;
+			}).play(clock, quant);
 		});
 		cond.wait;
 	}

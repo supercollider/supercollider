@@ -78,6 +78,9 @@ Function : AbstractFunction {
 	set { arg ... args; ^this.valueArray(args) }
 	get { arg prevVal; ^prevVal }
 	
+	fork { arg clock, quant=0.0;
+		Routine(this).play(clock, quant);
+	}
 	
 	awake { arg beats, seconds, clock;
 		var time;
