@@ -99,8 +99,8 @@ PanB : Panner {
 	}
 	init { arg ... theInputs;
 		inputs = theInputs;		
-		channels = [ OutputProxy(\audio,this,0), OutputProxy(\audio,this,1),
-					OutputProxy(\audio,this,2), OutputProxy(\audio,this,3) ];
+		channels = [ OutputProxy(rate,this,0), OutputProxy(rate,this,1),
+					OutputProxy(rate,this,2), OutputProxy(rate,this,3) ];
 		^channels
 	}
 }
@@ -115,8 +115,8 @@ PanB2 : Panner {
 	}
 	init { arg ... theInputs;
 		inputs = theInputs;		
-		channels = [ OutputProxy(\audio,this,0), OutputProxy(\audio,this,1),
-					OutputProxy(\audio,this,2) ];
+		channels = [ OutputProxy(rate,this,0), OutputProxy(rate,this,1),
+					OutputProxy(rate,this,2) ];
 		^channels
 	}
 }
@@ -131,8 +131,8 @@ BiPanB2 : Panner {
 	}
 	init { arg ... theInputs;
 		inputs = theInputs;		
-		channels = [ OutputProxy(\audio,this,0), OutputProxy(\audio,this,1),
-					OutputProxy(\audio,this,2) ];
+		channels = [ OutputProxy(rate,this,0), OutputProxy(rate,this,1),
+					OutputProxy(rate,this,2) ];
 		^channels
 	}
  	checkInputs { ^this.checkNInputs(2) }
@@ -143,9 +143,12 @@ DecodeB2 : Panner {
 	*ar { arg numChans, w, x, y, orientation = 0.5;
 		^this.multiNew('audio', numChans, w, x, y, orientation = 0.5 )
 	}
+	*kr { arg numChans, w, x, y, orientation = 0.5;
+		^this.multiNew('control', numChans, w, x, y, orientation = 0.5 )
+	}
 	init { arg numChans ... theInputs;
 		inputs = theInputs;		
-		channels = Array.fill(numChans, { arg i; OutputProxy(\audio,this, i) });
+		channels = Array.fill(numChans, { arg i; OutputProxy(rate,this, i) });
 		^channels
 	}
  	checkInputs { ^this.checkNInputs(3) }
