@@ -58,6 +58,7 @@ BroadcastServer : Server {
 		^allAddr.do(function)
 	}
 	
+	
 	///message forwarding
 		
 	sendMsg { arg ... args;
@@ -85,7 +86,58 @@ BroadcastServer : Server {
 		allAddr.do({ arg addr; addr.sendMsg("/notify", flag.binaryValue) });
 	}
 	
+	// sync
+	sendMsgSync { arg condition ... args;
+		var cmdName, count;
+		if (condition.isNil) { condition = Condition.new };
+		condition.test = false;
+		count = allAddr.size;
+		cmdName = args[0].asString;
+		if (cmdName[0] != $/) { cmdName = cmdName.insert(0, $/) };
+		allAddr.do { arg addr;
+			var resp;
+			resp = OSCresponderNode(addr, "/done", {|time, resp, msg|
+			if (msg[1].asString == cmdName) {
+				resp.remove;
+				count = count - 1;
+				if(count == 0) {
+					condition.test = true;
+					condition.signal;
+				};			
+			};
+			}).add;
+		
+			addr.sendBundle(nil, args);
+		};
+		condition.wait;
+	}
 	
+	sync { arg condition, bundles, latency; // array of bundles that cause async action
+		var count;
+		if (condition.isNil) { condition = Condition.new };
+		count = allAddr.size;
+		condition.test = false;
+		allAddr.do { arg addr;
+			var resp, id;
+			id = UniqueID.next;
+			resp = OSCresponderNode(addr, "/synced", {|time, resp, msg|
+			if (msg[1] == id) {
+				resp.remove;
+				count = count - 1;
+				if(count == 0) {
+					condition.test = true;
+					condition.signal;
+				};
+			};
+			}).add;
+			if(bundles.isNil) {
+				addr.sendBundle(latency, ["/sync", id]);
+			} {
+				addr.sendBundle(latency, *(bundles ++ [["/sync", id]]));
+			};
+		};
+		condition.wait;
+	}
 	
 		
 	//use local allocators
@@ -151,8 +203,8 @@ Router : Server {
 	}
 	serverRunning { ^true } //assume that.
 	//waitForBoot {Êarg func; func.value }
-	stopAliveThread { }
-	startAliveThread { }
+	//stopAliveThread { }
+	//startAliveThread { }
 
 }
 
