@@ -86,7 +86,7 @@ Score {
 	}
 	
 	writeOSCFile { arg path, from, to;
-		if(to.notNil or: {from.notNil}) {Ê
+		if(to.notNil or: {from.notNil}) {  
 			from = from ? 0.0;
 			to = to ? this.endTime;
 			this.section(from, to).write(path) 
