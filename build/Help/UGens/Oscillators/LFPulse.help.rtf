@@ -13,11 +13,13 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b \cf0 LFPulse.ar(freq, iPhase,width, mul, add)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b0 \
+\f0\b0 \cf0 \
 A non-band-limited pulse oscillator. Outputs a high value of one and a low value of zero.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b freq
+\f1\b \cf0 freq
 \f0\b0  - frequency in Hertz\
 
 \f1\b iPhase
@@ -28,7 +30,7 @@ A non-band-limited pulse oscillator. Outputs a high value of one and a low value
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 //Synth.plot(\{ LFPulse.ar(500, 0.3, 1, 0) \});\
+\f2 \cf0 //Synth.plot(\{ LFPulse.ar(500, 0, 0.3, 1, 0) \});\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0 \cf0 \
@@ -37,7 +39,7 @@ A non-band-limited pulse oscillator. Outputs a high value of one and a low value
 \f2 \cf0 // used as both Oscillator and LFO:
 \f0 \
 
-\f2 play(\{ LFPulse.ar(LFPulse.kr(3, 0.3, 200, 200), 0.2, 0.1) \});\
+\f2 play(\{ LFPulse.ar(LFPulse.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) \});\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0 \cf0 \
