@@ -114,7 +114,7 @@ struct PyrThread : public PyrObjectHdr
         PyrSlot environment;
 };
 
-#define EVALSTACKDEPTH 2048
+#define EVALSTACKDEPTH 8192
 #define SCHEDQLEN 512
 #define THREADSLEVELS 32
 
