@@ -394,6 +394,12 @@ bool gIsFullScreen = false;
 		[self sendMain: "shutDown"];
 }
 
+- (void)applicationDidFinishLaunching:(NSNotification *)notification;
+{
+	SCService* serviceObject = [[SCService alloc] init];
+	[NSApp setServicesProvider: serviceObject];
+}
+
 
 @end
 
