@@ -83,6 +83,18 @@ Pdefn : Pattern {
 	
 	*startPost { action = { arg str; ("----" + str.parent.key).postln } }
 	*stopPost { action = nil }
+	*postRepository { arg keys, stream;
+		keys = keys ?? { this.all.keys };
+		stream = stream ? Post;
+		keys.do { arg key; 
+			var item;
+			item = this.all[key];
+			if(item.notNil) {
+				stream << this.name << "(" <<< key << ", " <<< item.pattern << ");";
+				stream << Char.nl;
+			};
+		};
+	}
 	
 }
 
