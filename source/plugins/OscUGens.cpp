@@ -1417,6 +1417,7 @@ void Osc_next_iak(Osc *unit, int inNumSamples)
 
 void OscN_Ctor(OscN *unit)
 {
+	//Print("OscN_Ctor\n");
 	if (INRATE(0) == calc_FullRate) {
 		if (INRATE(1) == calc_FullRate) {
 			//postbuf("next_naa\n");
@@ -1448,11 +1449,9 @@ void OscN_next_nkk(OscN *unit, int inNumSamples)
 		float *table = buf->data;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
-			int tableSize2 = tableSize >> 1;
-			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
-			unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); // Osc, OscN, PMOsc
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
-			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.; 
+			unit->m_lomask = (tableSize - 1) << 2;
+			unit->m_radtoinc = tableSize * (rtwopi * 65536.);
+			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.; 
 		}
 
 	float *out = ZOUT(0);
@@ -1464,6 +1463,7 @@ void OscN_next_nkk(OscN *unit, int inNumSamples)
 	
 	int32 freq = (int32)(unit->m_cpstoinc * freqin);
 	int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
+	
 	LOOP(inNumSamples,
 		ZXP(out) = *(float*)((char*)table + ((phase >> xlobits) & lomask));
 		phase += phaseinc;
@@ -1481,11 +1481,9 @@ void OscN_next_nka(OscN *unit, int inNumSamples)
 		float *table = buf->data;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
-			int tableSize2 = tableSize >> 1;
-			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
-			unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); // Osc, OscN, PMOsc
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
-			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.; 
+			unit->m_lomask = (tableSize - 1) << 2;
+			unit->m_radtoinc = tableSize * (rtwopi * 65536.);
+			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.; 
 		}
 
 	float *out = ZOUT(0);
@@ -1513,11 +1511,9 @@ void OscN_next_naa(OscN *unit, int inNumSamples)
 		float *table = buf->data;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
-			int tableSize2 = tableSize >> 1;
-			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
-			unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); // Osc, OscN, PMOsc
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
-			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.; 
+			unit->m_lomask = (tableSize - 1) << 2;
+			unit->m_radtoinc = tableSize * (rtwopi * 65536.);
+			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.; 
 		}
 
 	float *out = ZOUT(0);
@@ -1547,11 +1543,9 @@ void OscN_next_nak(OscN *unit, int inNumSamples)
 		float *table = buf->data;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
-			int tableSize2 = tableSize >> 1;
-			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
-			unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); // Osc, OscN, PMOsc
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
-			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.; 
+			unit->m_lomask = (tableSize - 1) << 2;
+			unit->m_radtoinc = tableSize * (rtwopi * 65536.);
+			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.; 
 		}
 
 	float *out = ZOUT(0);
@@ -3138,7 +3132,6 @@ void SineFill1(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 	if (buf->channels != 1) return;
 	
 	int flags = msg->geti();
-	
 	float *data = buf->data;
 	int size = buf->samples;
 	
