@@ -3,8 +3,8 @@ Date {
 	var <>year=2000, <>month=1, <>day=1, <>hour=0, <>minute=0, <>second=0, <>dayOfWeek=6, 
 		<>rawSeconds=0, <>bootSeconds=0;
 	
+	*getDate { ^this.localtime }
 	*localtime { ^this.new.localtime }
-	
 	*gmtime { ^this.new.gmtime }
 	*new { arg year, month, day, hour, minute, second, dayOfWeek, rawSeconds, bootSeconds;
 		^super.newCopyArgs(year, month, day, hour, minute, second, dayOfWeek, 
@@ -39,6 +39,21 @@ Date {
 	}
 	stamp {
 		^this.dayStamp ++ "_" ++ this.secStamp
+	}
+	asSortableString {  // standard database format, alphabetically sortable
+		^String.streamContents({ arg s;
+			s << year.asString;
+			if(month < 10,{ s <<  0 });
+			s <<  month.asString;
+			if(day < 10,{ s <<  0 });
+			s <<  day.asString;
+			if(hour < 10,{ s <<  0 });
+			s <<  hour.asString;
+			if(minute < 10, { s <<  0 });
+			s <<  minute.asString;
+			if(second < 10, { s <<  0 });
+			s <<  second.asString;
+		})
 	}
 }
 
