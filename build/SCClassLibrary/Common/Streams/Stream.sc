@@ -121,10 +121,16 @@ Stream : AbstractFunction {
 			nexty = stream.next;
 		});
 	}
-	++ { arg stream;
-		// concatenate two streams
-		^this.interlace(true, stream);
+	
+	++ { arg stream; ^this.appendStream(stream) }
+	
+	appendStream { arg stream;
+		^Routine({ arg inval;
+			inval = this.embedInStream(inval);
+			stream.embedInStream(inval);
+		});
 	}
+	
 	collate { arg stream;
 		// ascending order merge of two streams
 		^this.interlace({ arg x, y; x < y }, stream);
@@ -143,11 +149,6 @@ Stream : AbstractFunction {
 	}
 	composeNAryOp { arg argSelector, anArgList;
 		^this.notYetImplemented
-	}
-	
-	spawn { arg spawn, eventCount, synth;
-		// this method assumes that the stream returns something that responds to spawn
-		this.next.spawn(spawn, eventCount, synth);	
 	}
 
 	embedInStream { arg inval;
@@ -192,10 +193,11 @@ PauseStream : Stream
 		^super.newCopyArgs(nil, argStream, TempoClock.default) 
 	}
 	
+	isPlaying { ^stream.notNil }
 	play { arg argClock, doReset = false;
-		clock = argClock ? TempoClock.default;
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
+		clock = argClock ? TempoClock.default;
 		stream = originalStream; 
 		super.play(clock) 
 	}

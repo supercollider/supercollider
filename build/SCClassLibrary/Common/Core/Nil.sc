@@ -9,21 +9,15 @@ Nil {
 	
 	// support a nil Environment
 	push { arg function; ^function.value }
-	
-	// support a nil Spawn event function
-	spawn {}
-	
+	appendStream { arg stream; ^stream }
+		
 	// nil parent view
 	asView {}
 
 	// support a nil Plug
 	source {}
 	source_ {}
-	
-	// nil Synth support
-	setPlug {} 
-	fadeEnd {}
-	
+		
 	// rate access support
 	rate { ^nil }
 	numChannels { ^nil }
