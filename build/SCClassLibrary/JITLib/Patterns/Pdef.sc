@@ -7,7 +7,7 @@ PatternProxy : Pattern {
 						// quant new pattern insertion. can be [quant, offset]
 						// in EventPatternProxy it can be [quant, offset, onset]
 	
-	classvar <>defaultQuant, <>action;
+	classvar <>defaultQuant;
 	
 	// basicNew should be used for instantiation: *new is used in Pdef/Tdef/Pdefn
 	*basicNew { arg source;
@@ -162,12 +162,11 @@ TaskProxy : PatternProxy {
 		
 	source_ { arg obj;
 			pattern = if(obj.isKindOf(Function)) {
+				// this error handling only helps if error is not in substream
 				Prout { arg x;
-					protect { 	// this error handling only helps if error is not in substream
-						obj.value(x);
-						nil.alwaysYield; // prevent from calling handler
-					} { 
-						player.removedFromScheduler 
+					try { obj.value(x) } { |error|
+						player.removedFromScheduler;
+						error.throw; 
 					}
 				}
 			}{ 
