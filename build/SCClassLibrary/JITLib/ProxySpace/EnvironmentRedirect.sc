@@ -2,15 +2,15 @@
 //abstract class that servers as a template for any environment hacks
 
 EnvironmentRedirect {
-	var <>envir;
+	var <>envir, <name;
 	classvar <>saveEnvir, <>saveTopEnvir;
 	
-	*new { 
-		^super.newCopyArgs(Environment.new)
+	*new { arg name;
+		^super.newCopyArgs(Environment.new, name.asSymbol)
 	}
 	
-	*push { 
-		^super.new.push;
+	*push { arg name;
+		^super.new(name).push;
 	}
 	
 	*pop { 

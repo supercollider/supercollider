@@ -6,14 +6,13 @@ ProxySpace : EnvironmentRedirect {
 	classvar <>all; //access
 	
 	var <server, <clock, <fadeTime, <>awake=true;
-	var <name;
 	
 	*initClass {
 		all = IdentitySet.new;
 	}
 	
 	*new { arg server, name, clock;
-		^super.new.einit(server, name, clock)
+		^super.new(name).einit(server, name, clock)
 	}
 	
 	*push { arg server, name, clock;
@@ -43,7 +42,6 @@ ProxySpace : EnvironmentRedirect {
 	einit { arg srv, argName, argClock; 
 		server = srv;  
 		clock = argClock;
-		name = argName.asSymbol;
 		if(name.notNil, { this.class.all.add(this) });
 	}
 	
