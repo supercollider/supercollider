@@ -65,7 +65,7 @@ struct RecordBuf : public Unit
 {
 	float m_fbufnum;
 	SndBuf *m_buf;
-	uint32 m_writepos;
+	int32 m_writepos;
 	float m_recLevel, m_preLevel;
 	float m_prevtrig;
 };
@@ -580,20 +580,22 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	} 
 
 #define SETUP_OUT \
-	if (unit->mNumOutputs != bufChannels) { \
+	uint32 numOutputs = unit->mNumOutputs; \
+	if (numOutputs > bufChannels) { \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
 	float *out[16]; \
-	for (uint32 i=0; i<bufChannels; ++i) out[i] = ZOUT(i); 
+	for (uint32 i=0; i<numOutputs; ++i) out[i] = ZOUT(i); 
 
 #define SETUP_IN(offset) \
-	if ((unit->mNumInputs - (uint32)offset) != bufChannels) { \
+	uint32 numInputs = unit->mNumInputs - (uint32)offset; \
+	if (numInputs > bufChannels) { \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
 	float *in[16]; \
-	for (uint32 i=0; i<bufChannels; ++i) in[i] = ZIN(i+offset); 
+	for (uint32 i=0; i<numInputs; ++i) in[i] = ZIN(i+offset); 
 		
 
 #define LOOP_BODY_4 \
@@ -615,7 +617,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		} \
 		int32 index = 0; \
 		float fracphase = phase - (double)iphase; \
-		for (uint32 i=0; i<bufChannels; ++i) { \
+		for (uint32 i=0; i<numOutputs; ++i) { \
 			float a = table0[index]; \
 			float b = table1[index]; \
 			float c = table2[index]; \
@@ -634,7 +636,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		} \
 		int32 index = 0; \
 		float fracphase = phase - (double)iphase; \
-		for (uint32 i=0; i<bufChannels; ++i) { \
+		for (uint32 i=0; i<numOutputs; ++i) { \
 			float b = table1[index]; \
 			float c = table2[index]; \
 			*++(out[i]) = b + fracphase * (c - b); \
@@ -646,7 +648,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		int32 iphase = (int32)phase; \
 		float* table1 = bufData + iphase * bufChannels; \
 		int32 index = 0; \
-		for (uint32 i=0; i<bufChannels; ++i) { \
+		for (uint32 i=0; i<numOutputs; ++i) { \
 			*++(out[i]) = table1[index++]; \
 		}
 
@@ -903,7 +905,7 @@ void BufWr_next(BufWr *unit, int inNumSamples)
 		double phase = sc_loop((Unit*)unit, ZXP(phasein), bufFrames, loop);
 		int32 iphase = (int32)phase;
 		float* table0 = bufData + iphase * bufChannels;
-		for (uint32 i=0; i<bufChannels; ++i) {
+		for (uint32 i=0; i<numInputs; ++i) {
 			table0[i] = *++(in[i]);
 		}
 	}
@@ -917,7 +919,7 @@ void RecordBuf_Ctor(RecordBuf *unit)
 {	
 	
 	unit->m_fbufnum = -1e9f;
-	unit->m_writepos = (uint32)ZIN0(1);
+	unit->m_writepos = (int32)ZIN0(1);
 	unit->m_recLevel = ZIN0(2);
 	unit->m_preLevel = ZIN0(3);
 
@@ -946,32 +948,32 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 	float trig     = ZIN0(6);
 	//printf("loop %d  run %g\n", loop, run);
 
-	uint32 writepos = unit->m_writepos;
+	int32 writepos = unit->m_writepos;
 	
 	float recLevel_slope = CALCSLOPE(recLevel, unit->m_recLevel);
 	float preLevel_slope = CALCSLOPE(preLevel, unit->m_preLevel);
 	
 	if (loop) {
 		if (writepos < 0) writepos = bufSamples - bufChannels;
-		else if (writepos >= bufSamples) writepos = 0;
+		else if (writepos >= (int32)bufSamples) writepos = 0;
 		if (run > 0.f) {
 			if (bufChannels == 1) {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
 					table0[0] = *++(in[0]) * recLevel + table0[0] * preLevel;
 					writepos += 1;
-					if (writepos >= bufSamples) writepos = 0;
+					if (writepos >= (int32)bufSamples) writepos = 0;
 					
 					recLevel += recLevel_slope;
 					preLevel += preLevel_slope;					
 				}
-			} else if (bufChannels == 2) {
+			} else if (bufChannels == 2 && numInputs == 2) {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
 					table0[0] = *++(in[0]) * recLevel + table0[0] * preLevel;
 					table0[1] = *++(in[1]) * recLevel + table0[1] * preLevel;
 					writepos += 2;
-					if (writepos >= bufSamples) writepos = 0;
+					if (writepos >= (int32)bufSamples) writepos = 0;
 					
 					recLevel += recLevel_slope;
 					preLevel += preLevel_slope;					
@@ -979,12 +981,12 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 			} else {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
-					for (uint32 i=0; i<bufChannels; ++i) {
+					for (uint32 i=0; i<numInputs; ++i) {
 						float *samp = table0 + i;
 						*samp = *++(in[i]) * recLevel + *samp * preLevel;
 					}
 					writepos += bufChannels;
-					if (writepos >= bufSamples) writepos = 0;
+					if (writepos >= (int32)bufSamples) writepos = 0;
 					
 					recLevel += recLevel_slope;
 					preLevel += preLevel_slope;					
@@ -1001,7 +1003,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 					recLevel += recLevel_slope;
 					preLevel += preLevel_slope;					
 				}
-			} else if (bufChannels == 2) {
+			} else if (bufChannels == 2 && numInputs == 2) {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
 					table0[0] = *++(in[0]) * recLevel + table0[0] * preLevel;
@@ -1015,7 +1017,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 			} else {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
-					for (uint32 i=0; i<bufChannels; ++i) {
+					for (uint32 i=0; i<numInputs; ++i) {
 						float *samp = table0 + i;
 						*samp = *++(in[i]) * recLevel + *samp * preLevel;
 					}
@@ -1044,7 +1046,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 					recLevel += recLevel_slope;
 					preLevel += preLevel_slope;					
 				}
-			} else if (bufChannels == 2) {
+			} else if (bufChannels == 2 && numInputs == 2) {
 				for (int32 k=0; k<nsmps; ++k) { 
 					float* table0 = bufData + writepos;
 					table0[0] = *++(in[0]) * recLevel + table0[0] * preLevel;
@@ -1057,7 +1059,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 			} else {
 				for (int32 k=0; k<nsmps; ++k) { 
 					float* table0 = bufData + writepos;
-					for (uint32 i=0; i<bufChannels; ++i) {
+					for (uint32 i=0; i<numInputs; ++i) {
 						float *samp = table0 + i;
 						*samp = *++(in[i]) * recLevel + *samp * preLevel;
 					}
@@ -1079,7 +1081,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 					recLevel += recLevel_slope;
 					preLevel += preLevel_slope;
 				}
-			} else if (bufChannels == 2) {
+			} else if (bufChannels == 2 && numInputs == 2) {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
 					table0[0] = *++(in[0]) * recLevel + table0[0] * preLevel;
@@ -1092,7 +1094,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 			} else {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
-					for (uint32 i=0; i<bufChannels; ++i) {
+					for (uint32 i=0; i<numInputs; ++i) {
 						float *samp = table0 + i;
 						*samp = *++(in[i]) * recLevel + *samp * preLevel;
 					}
@@ -1103,7 +1105,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 				}
 			}
 		}
-		if (writepos >= bufSamples) unit->mDone = true;
+		if (writepos >= (int32)bufSamples) unit->mDone = true;
 	}
 	buf->writeFrame = writepos;
 	unit->m_prevtrig = trig;
@@ -1124,18 +1126,18 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 	float trig     = ZIN0(6);
 	//printf("loop %d  run %g\n", loop, run);
 
-	uint32 writepos = unit->m_writepos;
+	int32 writepos = unit->m_writepos;
 	
 	if (loop) {
 		if (writepos < 0) writepos = bufSamples - bufChannels;
-		else if (writepos >= bufSamples) writepos = 0;
+		else if (writepos >= (int32)bufSamples) writepos = 0;
 		if (run > 0.f) {
 			if (bufChannels == 1) {
 				for (int32 k=0; k<inNumSamples; ++k) { 
 					float* table0 = bufData + writepos;
 					table0[0] = *++(in[0]);
 					writepos += 1;
-					if (writepos >= bufSamples) writepos = 0;
+					if (writepos >= (int32)bufSamples) writepos = 0;
 				}
 			} else if (bufChannels == 2) {
 				for (int32 k=0; k<inNumSamples; ++k) { 
@@ -1143,7 +1145,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 					table0[0] = *++(in[0]);
 					table0[1] = *++(in[1]);
 					writepos += 2;
-					if (writepos >= bufSamples) writepos = 0;
+					if (writepos >= (int32)bufSamples) writepos = 0;
 				}
 			} else {
 				for (int32 k=0; k<inNumSamples; ++k) { 
@@ -1153,7 +1155,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 						*samp = *++(in[i]);
 					}
 					writepos += bufChannels;
-					if (writepos >= bufSamples) writepos = 0;
+					if (writepos >= (int32)bufSamples) writepos = 0;
 				}
 			}
 		} else if (run < 0.f) {
@@ -1242,7 +1244,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 				}
 			}
 		}
-		if (writepos >= bufSamples) unit->mDone = true;
+		if (writepos >= (int32)bufSamples) unit->mDone = true;
 	}
 	buf->writeFrame = writepos;
 	unit->m_prevtrig = trig;
