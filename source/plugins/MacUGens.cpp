@@ -22,8 +22,11 @@
 #if SC_DARWIN
 #include <Carbon/Carbon.h>
 #else
-#include <time.h>
-#include <X11/Intrinsic.h>
+# ifndef SC_WIN32
+#  include <time.h>
+#  include <X11/Intrinsic.h>
+# else
+# endif
 #endif
 
 #include "SC_PlugIn.h"
@@ -88,6 +91,30 @@ void* gstate_update_func(void* arg)
 
 #else
 
+# ifdef SC_WIN32
+
+void* gstate_update_func(void* arg)
+{
+	UserInputUGenGlobalState* gstate = &gUserInputUGenGlobals;
+	RgnHandle rgn = GetGrayRgn();
+	Rect screenBounds;
+	GetRegionBounds(rgn, &screenBounds);
+	float rscreenWidth = 1. / (screenBounds.right - screenBounds.left);
+	float rscreenHeight = 1. / (screenBounds.bottom - screenBounds.top);
+	for (;;) {
+		Point p;
+		GetGlobalMouse(&p);
+		gstate->mouseX = (float)p.h * rscreenWidth;
+		gstate->mouseY = (float)p.v * rscreenHeight;
+		gstate->mouseButton = Button();
+		GetKeys((long*)gstate->keys);
+		usleep(17000);
+	}
+	
+	return 0;
+}
+
+# else
 void* gstate_update_func(void* arg)
 {
   UserInputUGenGlobalState* gstate ;
@@ -135,7 +162,7 @@ void* gstate_update_func(void* arg)
   
   return 0;
 }
-
+# endif
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
