@@ -276,10 +276,10 @@ NodeProxy : BusPlug {
 		loaded = false;
 	}
 	
-	clear {
-		this.free(0, true); // free group and objects
-		this.removeAll; //      take out all objects
-		this.stop(0);		// stop any monitor
+	clear { arg fadeTime=0;
+		this.free(fadeTime, true); 	// free group and objects
+		this.removeAll; 			// take out all objects
+		this.stop(fadeTime);		// stop any monitor
 		this.freeBus;	 // free the bus from the server allocator 
 		this.init;	// reset the environment
 	}
@@ -810,7 +810,15 @@ NodeProxy : BusPlug {
 	
 	setn { arg ... args;
 		nodeMap.set(*args);
-		if(this.isPlaying) { group.setn(*args) };
+		if(this.isPlaying) { 
+			server.sendBundle(server.latency, group.setnMsg(*args)); 
+		};
+	}
+	
+	setGroup { arg args, useLatency=false;
+		if(this.isPlaying) { 
+			server.sendBundle(if(useLatency) { server.latency }, [15, group.nodeID] ++ args); 
+		};
 	}
 	
 	// map to a control proxy
