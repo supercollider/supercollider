@@ -47,7 +47,9 @@ AutoCompMethodBrowser {
 		(selector[0] >= $A and: selector[0] <= $Z).if({
 				// identify classes containing that string
 			masterList = Class.allClasses.select({ |cl|
-				cl.isMetaClass and: { cl.name.asString.containsi(selector) }
+				cl.isMetaClass 
+					and: { AutoCompClassBrowser.classExclusions.includes(cl).not }
+					and: { cl.name.asString.containsi(selector) }
 			}).collect({ |cl|	// then grab their *new method
 				[cl, cl.findRespondingMethodFor(\new), cl.name]  // cl.name used for sorting
 			}).reject({ |item| item[1].isNil });
