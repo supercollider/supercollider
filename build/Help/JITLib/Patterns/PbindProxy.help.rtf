@@ -1,0 +1,111 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green114\blue0;\red191\green0\blue0;
+\red0\green0\blue191;\red95\green95\blue95;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf2 PbindProxy
+\f1\b0\fs18  			
+\f0\b\fs24 incremental event pattern reference\
+\
+
+\f2\b0 superclass: Pattern\
+\
+\
+\
+keeps a reference to a Pbind in which single keys can be replaced.\
+It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.\
+\
+\
+\
+
+\f0\b *new(key1, pattern1, key2, pattern2, ... )\
+
+\f2\b0 		create a new instance of PbindProxy with the given patternpairs\
+\
+
+\f0\b source\
+
+\f2\b0 		returns the wrapper for the Pbind\
+\
+\
+
+\f0\b set(key1, pattern1, key2, pattern2, ... )\
+
+\f2\b0 		set the given patternpairs.\
+\
+
+\f0\b at(key)\
+
+\f2\b0 		return a pattern at that key. this can be used to set quant value individually,\
+		so different elementary patterns can be quantized differently.\
+\
+
+\f1\fs18 	x.at(\cf3 \\freq\cf2 ).quant = 2;\
+\
+\
+\
+
+\f0\b\fs24 quant_(val)\
+
+\f2\b0 		set the quant of all elementary patterns\
+\
+\
+
+\f0\b quant\
+
+\f2\b0 		return the quant value of the source pattern\
+\
+\
+
+\f1\fs18 \cf4 // example:\
+\
+\cf2 (\
+\cf5 SynthDef\cf2 (\cf6 "Pdefhelp"\cf2 , \{ \cf5 arg\cf2  out, freq, sustain=1, amp=1, pan;\
+\cf5 var\cf2  env, u=1;\
+env = \cf5 EnvGen\cf2 .kr(\cf5 Env\cf2 .perc(0.03, sustain), 1, doneAction:2);\
+5.do \{ \cf5 var\cf2  d; d = exprand(0.01, 1); u = \cf5 SinOsc\cf2 .ar(d * 300, u, rrand(0.1,1.2) * d, 1) \};\
+\cf5 Out\cf2 .ar(out, \cf5 Pan2\cf2 .ar(\cf5 SinOsc\cf2 .ar(u + 1 * freq, 0, amp * env), pan));\
+\
+\}).store;\
+)\
+s.boot;\
+\
+\
+x = \cf5 PbindProxy\cf2 .new;\
+x.set(\cf3 \\instrument\cf2 , \cf3 \\Pdefhelp\cf2 );\
+\
+x.play;\
+\
+x.set(\cf3 \\degree\cf2 , \cf5 Pseq\cf2 ([0, 2, 5b, 1b], \cf5 inf\cf2 ));\
+x.set(\cf3 \\dur\cf2 , 0.1);\
+x.set(\cf3 \\degree\cf2 , \cf5 Pseq\cf2 ([1b, 5, 3, 1b, 6, 2, 5, 0, 3, 0, 2], \cf5 inf\cf2 ));\
+x.set(\cf3 \\legato\cf2 , \cf5 Prand\cf2 ([1.0, 2.4, 0.2], \cf5 inf\cf2 ), \cf3 \\mtranspose\cf2 , -3);\
+x.set(\cf3 \\mtranspose\cf2 , \cf5 nil\cf2 ); \cf4 // remove key\
+\
+\cf2 x.set(\cf3 \\degree\cf2 , \cf5 Pseq\cf2 ([1, 2, 3, 4, 5, 6], 1));\
+x.play;\
+\
+x.set( \cf3 \\degree\cf2 , \cf5 Pseq\cf2 ([1, 2, 3, 4, 5, 6], 3), \cf3 \\dur\cf2 , 0.02);\
+x.play;\
+\
+x.set(\cf3 \\degree\cf2 , \cf5 Pseq\cf2 ([1, 2, 3, 4, 5, 6], 3), \cf3 \\dur\cf2 , 0.1);\
+x.play;\
+\
+\
+\cf4 // embed in other patterns:\
+(\
+\cf2 x.set(\cf3 \\degree\cf2 , \cf5 Pseq\cf2 ([1b, 5, 3, 1b, 6, 2, 5, 0, 3, 0, 2], \cf5 inf\cf2 ));\
+\cf5 Ppar\cf2 ([\
+x,\
+\cf5 Pbindf\cf2 (x, \cf3 \\ctranspose\cf2 , 4)\
+]).play;\
+\cf4 )\
+\
+\
+\cf2 x.set(\cf3 \\degree\cf2 , \cf5 Pseq\cf2 ([1b, 5, 1b, 4, 0], \cf5 inf\cf2 ), \cf3 \\dur\cf2 , 0.4);\
+\
+\
+\
+}
