@@ -2006,7 +2006,7 @@ void HPF_Ctor(HPF* unit)
 	unit->m_b2 = 0.f;
 	unit->m_y1 = 0.f;
 	unit->m_y2 = 0.f;
-	unit->m_freq = 0.f;
+	unit->m_freq = -1e6f;
 	ZOUT0(0) = 0.f;
 }
 
