@@ -3107,7 +3107,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	//debugf("yield from thread %08X to parent %08X\n", g->thread, g->thread->parent.uot);
-	switchToThread(g, g->thread->parent.uot, tYieldToParent, &numArgsPushed);
+	switchToThread(g, g->thread->parent.uot, tSuspended, &numArgsPushed);
 
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
 	(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
@@ -3178,7 +3178,7 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
  		g->gc->GCWrite(thread, &g->thread->clock);
 
 		//postfl("start into thread %08X from parent %08X\n", thread, g->thread);
-		switchToThread(g, thread, tYieldToChild, &numArgsPushed);
+		switchToThread(g, thread, tSuspended, &numArgsPushed);
 		               
 		// set stack
 		//post("set stack %08X %08X\n", g->sp, g->gc->Stack()->slots - 1);
@@ -3187,9 +3187,11 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		(++g->sp)->ucopy = value.ucopy;
 		
 		sendMessage(g, s_prstart, 2);
-	} else if (state == tYieldToParent) {
+	} else if (state == tSuspended) {
 
-		SetObject(&thread->parent, g->thread);
+		if (IsNil(&thread->parent)) {
+			SetObject(&thread->parent, g->thread);
+		}
 		g->gc->GCWrite(thread, g->thread);
 		
 		thread->beats.uf = g->thread->beats.uf;
@@ -3199,7 +3201,7 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 
 		value.ucopy = b->ucopy;
 	//debugf("resume into thread %08X from parent %08X\n", thread, g->thread);
-		switchToThread(g, thread, tYieldToChild, &numArgsPushed);
+		switchToThread(g, thread, tSuspended, &numArgsPushed);
 		// on the other side of the looking glass, put the yielded value on the stack as the result..
 		(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
 	} else if (state == tDone) {
@@ -3227,7 +3229,7 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 	thread = g->sp->uot;
 	state = thread->state.ui;
 	//post("->prRoutineReset %d\n", state);
-	if (state == tYieldToParent || state == tYieldToChild) {
+	if (state == tSuspended) {
 		thread->state.ui = tInit;
 		thread->stack.uo->size = 0;
 		SetNil(&thread->method);
@@ -3282,7 +3284,7 @@ int prRoutineStop(struct VMGlobals *g, int numArgsPushed)
 	state = thread->state.ui;
 
 
-	if (state == tYieldToParent || state == tYieldToChild || state == tInit) {
+	if (state == tSuspended || state == tInit) {
 		SetNil(&g->thread->terminalValue);
 		thread->state.ui = tDone;
 		thread->stack.uo->size = 0;
@@ -3324,7 +3326,7 @@ int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed)
 	}*/
 	value.ucopy = a->ucopy;
 
-	if (IsFalse(b)) state = tYieldToParent;
+	if (IsFalse(b)) state = tSuspended;
 	else state = tInit;
 	switchToThread(g, g->thread->parent.uot, state, &numArgsPushed);
 	// on the other side of the looking glass, put the yielded value on the stack as the result..

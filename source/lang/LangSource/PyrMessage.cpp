@@ -1276,6 +1276,14 @@ void returnFromMethod(VMGlobals *g)
 					SetNil(&tempFrame->caller);
 				}
 				tempFrame = nextFrame;
+				if (!tempFrame) {
+					g->sp[2].ucopy = g->sp[0].ucopy;
+					g->sp->ucopy = g->receiver.ucopy;
+					g->sp++; SetObject(g->sp, g->method);
+					g->sp++; 
+					sendMessage(g, getsym("outOfContextReturn"), 3);
+					return;
+				}
 			}
 		}
 		
