@@ -22,7 +22,7 @@
 	makeProxyControl { arg channelOffset=0, proxy;
 			var player;
 			//this.prepareToPlayWithProxy(proxy); //do it here for now.
-			player = if(proxy.isNeutral) { this } { this.wrapInFader(proxy) }Õ;
+			player = if(proxy.isNeutral) { this } { this.wrapInFader(proxy) }   ;
 			^this.proxyControlClass.new(player, channelOffset); 
 	}
 	
