@@ -4227,8 +4227,8 @@ void initCocoaFilePrimitives();
         initCocoaFilePrimitives();
 
 // CR ADDED
-//void initRendezvousPrimitives();
-//	initRendezvousPrimitives();
+void initRendezvousPrimitives();
+	initRendezvousPrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
 	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());

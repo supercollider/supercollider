@@ -29,4 +29,7 @@ OSCService {
 	*prInitOSCService { arg server, index;
 		_InitOSCService
 	}
+	
+	printOn { arg stream; 
+		stream << this.class.name << "(" <<* [name, hostname, port]  <<")" }
 }

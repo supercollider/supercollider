@@ -29,6 +29,9 @@
 #import "RendezvousClient.h"
 #import "SCBase.h"
 
+// for the locking mechanism
+#import <Foundation/NSLock.h>
+
 // SC headers for primitives
 #include "PyrPrimitive.h"
 #include "PyrObject.h"
@@ -47,6 +50,9 @@
 
 // for gethostbyaddr
 #include <netdb.h>
+
+// DEBUG
+#include <pthread.h>
 
 @interface RendezvousClient (RendezvousClientNetServiceBrowserCallbacks)
 // methods for callbacks from the NetServiceBrowser API
@@ -67,9 +73,20 @@
 @end
 
 
+@interface RendezvousClient (RendezvousClientPrivate)
+// private methods for internal use
+- (void)resolveAllServices;
+- (void)resolveNextService;
+
+@end
+
+
 void initRendezvousPrimitives();
 
-static RendezvousClient* sharedRendezvousClient = nil;
+static RendezvousClient* sharedRendezvousClient = nil;  // shared instance of the rendezvous client
+static OSCService* serviceBeingResolved = nil;			// placeholder for what I'm currently resolving
+static unsigned indexOfServiceBeingResolved = 0;		// which service am I currently resolving?
+
 
 @implementation RendezvousClient
 
@@ -112,6 +129,47 @@ static RendezvousClient* sharedRendezvousClient = nil;
 	return [oscServices objectAtIndex: index];
 }
 
+- (void)resolveAllServices
+{
+	// See the comment on re-entrancy in resolveNextService
+	
+	// begin with the first service, and let them each hand off to the next
+	// (see the implementation of netServiceDidResolveAddress:)
+	if ([oscServices count] < 1)
+		return;
+	
+	indexOfServiceBeingResolved = 0;
+	[self resolveNextService];
+}
+
+- (void)resolveNextService
+{
+	// NOTE ON RE-ENTRANCY OF THIS CODE
+	// Theoretically, there should be locks between resolveAllServices, resolveNextService, and
+	// netServiceDidResolveAddress, but in practice it is not necessary because all these run on the
+	// same thread, so it is not possible, e.g., for resolveNextService to have simultaneous, interleaved
+	// calls. Thus, there is no need for locking.
+	
+	// find something to resolve
+	for (; indexOfServiceBeingResolved < [oscServices count]; indexOfServiceBeingResolved++) {
+		serviceBeingResolved = [oscServices objectAtIndex: indexOfServiceBeingResolved];
+		if (!serviceBeingResolved->isResolved)
+			break;
+	}
+
+	// if we didn't find anything, we are done
+	if (!(indexOfServiceBeingResolved < [oscServices count])) {
+		// we're done
+		serviceBeingResolved = nil;
+		indexOfServiceBeingResolved = 0;
+		return;
+	}
+
+	// resolve it!
+	[serviceBeingResolved->netService setDelegate: self];
+	[serviceBeingResolved->netService resolve];
+}
+
 // Rendezvous implementation methods
 - (void)netServiceBrowserWillSearch:(NSNetServiceBrowser *)aNetServiceBrowser
 {
@@ -125,9 +183,36 @@ static RendezvousClient* sharedRendezvousClient = nil;
 		// I don't think this should happen...
 		return;
 	}
+		
+	// see if it is a duplicate
+	unsigned arrayCount = [oscServices count];
+	unsigned i;
+	OSCService* potentialDuplicate;
+	for(i = 0; i < arrayCount; i++)
+	{
+		potentialDuplicate = [oscServices objectAtIndex: i];
+		if ([aNetService isEqual: potentialDuplicate->netService])
+		{
+			(potentialDuplicate->refCount)++;
+			return;
+		}
+	}
 	
-	[aNetService setDelegate: self];
-	[aNetService resolve];
+	// allocate an OSCService object for this NSService
+	// (autorelease it because we are going to put it into an array)
+	OSCService* service = [[[OSCService alloc] init] autorelease];
+	service->netService = aNetService;
+	[service->netService retain];
+	service->refCount++;
+	service->isResolved = NO;
+	
+	// add this to the list of known services
+	[oscServices addObject: service];
+	
+	// if there's no more coming, then it's time to resolve all the services
+	if (!moreComing) {
+		[self resolveAllServices];
+	}
 }
 
 - (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser didNotSearch:(NSDictionary *)errorDict
@@ -147,6 +232,13 @@ static RendezvousClient* sharedRendezvousClient = nil;
 
 - (void)netServiceDidResolveAddress:(NSNetService *)sender
 {
+	if (!serviceBeingResolved) {
+		// this is odd... I got a resolution I didn't ask for
+		post("Resolved OSC Service %s without requesting it.\n", [[sender name] cString]);
+		[sender stop];
+		return;
+	}
+
 	// get the addresses
 	NSArray* addresses = [sender addresses];
 	if (nil == addresses)
@@ -156,28 +248,27 @@ static RendezvousClient* sharedRendezvousClient = nil;
 	NSData* address = [addresses lastObject];	
 	if (nil == address)
 		return; // I don't think this should happen
-		
-	OSCService* service = [[OSCService alloc] init];
 	
 	const struct sockaddr_in* sockaddr = (const struct sockaddr_in*) [address bytes];
-	service->netService = sender;
-	service->sockaddr = sockaddr;
-	service->hostAddress = sockaddr->sin_addr.s_addr;
-	service->port = sockaddr->sin_port;
+	serviceBeingResolved->netService = sender;
+	serviceBeingResolved->sockaddr = sockaddr;
+	serviceBeingResolved->hostAddress = sockaddr->sin_addr.s_addr;
+	serviceBeingResolved->port = sockaddr->sin_port;
 	
 	struct hostent*  hostent = gethostbyaddr((char*) &(sockaddr->sin_addr), 4, AF_INET);
 	
 	if (hostent)
-		service->hostName = [[NSString alloc] initWithCString: hostent->h_name];
+		serviceBeingResolved->hostName = [[NSString alloc] initWithCString: hostent->h_name];
 	else {
 		// Couldn't find a host name for the address.
 		// Convert the address to a string for the hostname
 		char* addrOctets = inet_ntoa(sockaddr->sin_addr);
-		service->hostName = [[NSString alloc] initWithCString: addrOctets];
+		serviceBeingResolved->hostName = [[NSString alloc] initWithCString: addrOctets];
 	}
-
-	// add this to the list of known services
-	[oscServices addObject: service];
+	serviceBeingResolved->isResolved = YES;
+	[sender stop];
+	
+	[self resolveNextService];
 }
 
 - (void)netService:(NSNetService *)sender didNotResolve:(NSDictionary *)errorDict
@@ -187,7 +278,7 @@ static RendezvousClient* sharedRendezvousClient = nil;
 
 - (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser didRemoveDomain:(NSString *)domainString moreComing:(BOOL)moreComing
 {
-	// Ignore this -- I don't it happens, as I never triger a removal of a domain
+	// Ignore this -- I don't think it happens, as I never triger a removal of a domain
 }
 
 - (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser didRemoveService:(NSNetService *)aNetService moreComing:(BOOL)moreComing
@@ -202,9 +293,13 @@ static RendezvousClient* sharedRendezvousClient = nil;
 		service = [oscServices objectAtIndex: i];
 		if ([aNetService isEqual: service->netService])
 		{
-			[oscServices removeObjectAtIndex: i];
-			[service->hostName release];
-			[service release];
+			service->refCount--;
+			if (service->refCount < 1) {
+				[service->hostName release];
+				// removing it from the array will release the service object
+				// too
+				[oscServices removeObjectAtIndex: i];
+			}
 			return;
 		}
 	}
@@ -244,6 +339,16 @@ int prInitOSCService(struct VMGlobals *g, int numArgsPushed)
 	PyrString *serverNameString = newPyrString(g->gc, [name cString] , 0, true);
 	PyrObject *serverObject = serverSlot->uo;
 	SetObject(&serverObject->slots[0], serverNameString);
+	
+	if (!service->isResolved) {
+		PyrString *hostNameString = newPyrString(g->gc, "" , 0, true);	
+		SetObject(&serverObject->slots[1], hostNameString);
+		
+		// port
+		int port = 0;
+		SetInt(&serverObject->slots[2], port);
+		return errNone;
+	}
 	
 	// hostName
 	NSString* hostName = service->hostName;
