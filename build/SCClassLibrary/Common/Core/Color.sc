@@ -38,6 +38,10 @@ Color {
 		^Color.fromArray(blend(this.asArray, that.asArray, blend));
 	}
 	asArray { ^[red, green, blue, alpha] }
+	
+	storeParamsOn { arg stream;
+		stream << "(" <<<* [red,green,blue,alpha] << ")";
+	}
 }
 
 /*	X-windows colors :
