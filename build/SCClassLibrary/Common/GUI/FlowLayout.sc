@@ -51,6 +51,12 @@ FlowLayout {
 		// and then you need to re-place all views
 		// but nextLine will be broken, see FlowView
 	}
+	currentBounds {
+		var currentBounds;
+		currentBounds = bounds;
+		currentBounds.height = top + maxHeight;
+		^currentBounds
+	}
 }
 
 
