@@ -18,17 +18,17 @@ Score {
 	}
 		
 	*write { arg file, oscfile;
-		var size, osccmd, eventList, file;
+		var size, osccmd, eventList, f;
 		eventList = thisProcess.interpreter.executeFile(file);
 		size = eventList.size;
-		file = File(oscfile, "w");
+		f = File(oscfile, "w");
 		Routine({
 			size.do { |i|
 				osccmd = eventList[i].asRawOSC;
-				file.write(osccmd.size).write(osccmd);
+				f.write(osccmd.size).write(osccmd);
 			}
 		}).play;
-		file.close;
+		f.close;
 		"done".postln;
 	}
 }
