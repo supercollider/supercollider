@@ -17,21 +17,6 @@ NetAddr {
 		addr = inHostname.gethostbyname;
 	}
 	
-	send { arg oscAddress ... args;
-		_OSC_Send
-		^this.primitiveFailed;
-	}
-	sendNoTags { arg oscAddress ... args;
-		_OSC_SendNoTags
-		^this.primitiveFailed;
-	}
-	
-	sendArray { arg array;
-		this.send(*array);
-	}
-
-///////////////
-
 
 	sendRaw { arg rawArray;
 		_NetAddr_SendRaw

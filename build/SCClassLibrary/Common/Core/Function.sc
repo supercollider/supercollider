@@ -5,7 +5,7 @@ Function : AbstractFunction {
 
 	*new { ^this.shouldNotImplement(thisMethod) }
 	
-	isClosed { _FunctionIsClosed }
+	isClosed { ^def.sourceCode.notNil }
 
 	storeOn { arg stream; stream << def.sourceCode }
 	
@@ -59,8 +59,6 @@ Function : AbstractFunction {
 		^Routine.new(this)
 	}
 			
-	draw { this.value }
-
 	dup { arg n = 2;
 		var array;
 		n.do({ arg i; array = array.add(this.value(i)) });

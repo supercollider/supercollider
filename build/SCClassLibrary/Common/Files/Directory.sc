@@ -3,7 +3,7 @@
  	Not working,
  	but see String-pathMatch
 */
-
+/*
 DirectoryEntry {
 	var <name, <pathName, <isDir=false, <isVisible;
 }
@@ -62,3 +62,4 @@ Directory {
 		_Directory_At
 	}
 }
+*/

@@ -449,7 +449,6 @@ SequenceableCollection : Collection {
 
 	distort { ^this.performUnaryOp('distort') }
 	softclip { ^this.performUnaryOp('softclip') }
-	nyqring { ^this.performUnaryOp('nyqring') }
 	coin { ^this.performUnaryOp('coin') }
 	even { ^this.performUnaryOp('even') }
 	odd { ^this.performUnaryOp('odd') }

@@ -106,7 +106,6 @@ Symbol {
 
 	distort { ^this }
 	softclip { ^this }
-	nyqring { ^this }
 	coin { ^this }
 	even { ^this }
 	odd { ^this }

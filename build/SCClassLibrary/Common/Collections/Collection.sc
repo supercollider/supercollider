@@ -407,14 +407,6 @@ Collection {
 		this.do { | item | item.debug.writeInputSpec(file, synthDef) };
 	}
 
-	// graphical support
-	draw { | args |
-		this.do { | item | item.draw(args) }
-	}
-	layout { | bounds |
-		this.do { | item | item.layout(bounds) }
-	}
-
 	// Flow control
 	case { | default |
 		var out;

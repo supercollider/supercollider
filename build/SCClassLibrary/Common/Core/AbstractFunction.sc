@@ -72,7 +72,6 @@ AbstractFunction {
 
 	distort { ^this.composeUnaryOp('distort') }
 	softclip { ^this.composeUnaryOp('softclip') }
-	nyqring { ^this.composeUnaryOp('nyqring') }
 	coin { ^this.composeUnaryOp('coin') }
 	even { ^this.composeUnaryOp('even') }
 	odd { ^this.composeUnaryOp('odd') }

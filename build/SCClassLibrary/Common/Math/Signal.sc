@@ -170,18 +170,18 @@ Signal[float] : FloatArray {
 		this.addSine(harm, 1, 0.5pi);
 	}
 	
-	fft { arg imag, cosTable; 
-		// argCosTable must contain 1/4 cycle of a cosine (use fftCosTable)
-		// fftsize is the next greater power of two than the receiver's length
-		_Signal_FFT
-		^this.primitiveFailed
-	}
-	ifft { arg imag, cosTable;
-		// argCosTable must contain 1/4 cycle of a cosine (use fftCosTable)
-		// fftsize is the next greater power of two than the receiver's length
-		_Signal_IFFT
-		^this.primitiveFailed
-	}
+//	fft { arg imag, cosTable; 
+//		// argCosTable must contain 1/4 cycle of a cosine (use fftCosTable)
+//		// fftsize is the next greater power of two than the receiver's length
+//		_Signal_FFT
+//		^this.primitiveFailed
+//	}
+//	ifft { arg imag, cosTable;
+//		// argCosTable must contain 1/4 cycle of a cosine (use fftCosTable)
+//		// fftsize is the next greater power of two than the receiver's length
+//		_Signal_IFFT
+//		^this.primitiveFailed
+//	}
 	
 	neg { _Neg; ^this.primitiveFailed }
 	abs { _Abs; ^this.primitiveFailed }
@@ -212,11 +212,7 @@ Signal[float] : FloatArray {
 	cosh { _CosH; ^this.primitiveFailed }
 	tanh { _TanH; ^this.primitiveFailed }
 	distort { _Distort; ^this.primitiveFailed }
-	softclip { _SoftClip; ^this.primitiveFailed }
-	nyqring { _NyqRing; ^this.primitiveFailed }
-	isPositive { _IsPositive; ^this.primitiveFailed }
-	isNegative { _IsNegative; ^this.primitiveFailed }
-	isStrictlyPositive { _IsStrictlyPos; ^this.primitiveFailed }	
+	softclip { _SoftClip; ^this.primitiveFailed }	
 
 	rectWindow { _RectWindow; ^this.primitiveFailed }
 	hanWindow { _HanWindow; ^this.primitiveFailed }
