@@ -138,7 +138,12 @@ Tdef : Pdef {
 		var pattern;
 		if(func.notNil) { 
 			pattern = Prout({ arg x; 
-				protect { func.value(x) } { this.at(key).player.removedFromScheduler } 
+				protect { 			// this error handling only helps if error is not in substream
+					func.value(x);
+					nil.alwaysYield; // prevent from calling handler
+				} { 
+					this.at(key).player.removedFromScheduler 
+				} 
 			}) 
 		};
 		^super.new(key, pattern)
