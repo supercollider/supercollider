@@ -349,18 +349,27 @@ SCRangeSlider : SCSliderBase {
 		^this.getProperty(\lo)
 	}
 	lo_ { arg val;
+		this.setProperty(\lo, val);
+	}	
+	activeLo_ { arg val;
 		this.setPropertyWithAction(\lo, val);
 	}	
 	hi {
 		^this.getProperty(\hi)
 	}
 	hi_ { arg val;
+		this.setProperty(\hi, val);
+	}	
+	activeHi_ { arg val;
 		this.setPropertyWithAction(\hi, val);
 	}	
 	range {
 		^this.getProperty(\range)
 	}
 	range_ { arg val;
+		this.setProperty(\range, val);
+	}	
+	activeRange_ { arg val;
 		this.setPropertyWithAction(\range, val);
 	}	
 
