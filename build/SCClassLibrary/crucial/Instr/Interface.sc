@@ -58,7 +58,6 @@ Interface : AbstractPlayerProxy {
 			ag
 		});
 	}
-	
 		
 	// on play
 	didSpawn {
@@ -76,7 +75,7 @@ Interface : AbstractPlayerProxy {
 			 });
 		});
 		if(onCC.notNil,{
-			CCResponder.add({ arg src,chan,num,val; 
+			CCResponder.add(ccr = { arg src,chan,num,val; 
 				environment.use({ onCC.value(src,chan,num,val); })
 			})
 		})
@@ -84,9 +83,9 @@ Interface : AbstractPlayerProxy {
 	didStop {
 		super.didStop;
 		environment.use(onStop ? interfaceDef.onStop);
-		if(nor.notNil,{ nor.remove; nor = nil; });
-		if(nfr.notNil,{ nfr.remove; nfr = nil; });
-		if(ccr.notNil,{ ccr.remove; ccr = nil; });
+		if(nor.notNil,{ NoteOnResponder.remove(nor); nor = nil; });
+		if(nfr.notNil,{ NoteOffResponder.remove(nfr); nfr = nil; });
+		if(ccr.notNil,{ CCResponder.remove(ccr); ccr = nil; });
 	}
 	freeToBundle { arg b;
 		super.freeToBundle(b);
