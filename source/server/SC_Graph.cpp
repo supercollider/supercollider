@@ -46,7 +46,7 @@ void Graph_Dtor(Graph *inGraph)
 	World *world = inGraph->mNode.mWorld;
 	int numUnits = inGraph->mNumUnits;
 	Unit** graphUnits = inGraph->mUnits;
-	if (inGraph->mNode.mCalcFunc != Graph_FirstCalc) {
+	if (inGraph->mNode.mCalcFunc != (NodeCalcFunc)Graph_FirstCalc) {
 		// the above test insures that dtors are not called if ctors have not been called.
 		for (int i = 0; i<numUnits; ++i) {
 			Unit *unit = graphUnits[i];
@@ -57,7 +57,7 @@ void Graph_Dtor(Graph *inGraph)
 	world->mNumUnits -= numUnits;
 	world->mNumGraphs --;
 	
-	GraphDef* def = (GraphDef*)inGraph->mNode.mDef;
+	GraphDef* def = GRAPHDEF(inGraph);
 	if (--def->mRefCount <= 0) {
 		GraphDef_DeleteMsg(world, def);
 	}
@@ -126,8 +126,9 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	while (msg->remain() >= 8) {
 		if (msg->nextTag('i') == 's') {
 			int32* name = msg->gets4();
+			int32 hash = Hash(name);
 			float32 value = msg->getf();
-			Graph_SetControl(graph, name, 0, value);
+			Graph_SetControl(graph, hash, name, 0, value);
 		} else {
 			int32 index = msg->geti();
 			float32 value = msg->getf();
@@ -291,15 +292,12 @@ int Graph_GetControl(Graph* inGraph, int inIndex, float& outValue)
 	return kSCErr_None;
 }
 
-int Graph_GetControl(Graph* inGraph, int32 *inName, int inIndex, float& outValue)
+int Graph_GetControl(Graph* inGraph, int32 inHash, int32 *inName, int inIndex, float& outValue)
 {
-	GraphDef *def = (GraphDef*)(inGraph->mNode.mDef);
-	HashTable<ParamSpec, Malloc>* table = def->mParamSpecTable;
-	if (!table) return kSCErr_IndexOutOfRange;
-	ParamSpec *spec = table->Get(inName);
+	ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
+	ParamSpec *spec = table->Get(inHash, inName);
 	if (!spec) return kSCErr_IndexOutOfRange;
-	int index = spec->mIndex + inIndex;	
-	return Graph_GetControl(inGraph, index, outValue);
+	return Graph_GetControl(inGraph, spec->mIndex + inIndex, outValue);
 }
 
 void Graph_SetControl(Graph* inGraph, int inIndex, float inValue)
@@ -309,28 +307,20 @@ void Graph_SetControl(Graph* inGraph, int inIndex, float inValue)
 	inGraph->mControlTouched = inGraph->mNode.mWorld->mBufCounter;
 }
 
-void Graph_SetControl(Graph* inGraph, int32 *inName, int inIndex, float inValue)
+void Graph_SetControl(Graph* inGraph, int32 inHash, int32 *inName, int inIndex, float inValue)
 {
-	GraphDef *def = (GraphDef*)(inGraph->mNode.mDef);
-	HashTable<ParamSpec, Malloc>* table = def->mParamSpecTable;
-	if (!table) return;
-	ParamSpec *spec = table->Get(inName);
-	if (!spec) return;
-	int index = spec->mIndex + inIndex;	
-	Graph_SetControl(inGraph, index, inValue);
+	ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
+	ParamSpec *spec = table->Get(inHash, inName);
+	if (spec) Graph_SetControl(inGraph, spec->mIndex + inIndex, inValue);
 }
 
 
 
-void Graph_MapControl(Graph* inGraph, int32 *inName, int inIndex, int inBus)
+void Graph_MapControl(Graph* inGraph, int32 inHash, int32 *inName, int inIndex, int inBus)
 {
-	GraphDef *def = (GraphDef*)(inGraph->mNode.mDef);
-	HashTable<ParamSpec, Malloc>* table = def->mParamSpecTable;
-	if (!table) return;
-	ParamSpec *spec = table->Get(inName);
-	if (!spec) return;
-	int index = spec->mIndex + inIndex;	
-	Graph_MapControl(inGraph, index, inBus);
+	ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
+	ParamSpec *spec = table->Get(inHash, inName);
+	if (spec) Graph_MapControl(inGraph, spec->mIndex + inIndex, inBus);
 }
 
 void Graph_MapControl(Graph* inGraph, int inIndex, int inBus)

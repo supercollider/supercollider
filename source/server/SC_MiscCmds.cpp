@@ -176,7 +176,7 @@ SCErr meth_n_map(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 		if (msg.nextTag('i') == 's') {
 			int32* name = msg.gets4();
 			int bus = msg.geti();
-			Node_MapControl(node, name, 0, bus);
+			Node_MapControl(node, Hash(name), name, 0, bus);
 		} else {
 			int32 index = msg.geti();
 			int32 bus = msg.geti();
@@ -197,10 +197,11 @@ SCErr meth_n_mapn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 	while (msg.remain() >= 12) {
 		if (msg.nextTag('i') == 's') {
 			int32* name = msg.gets4();
+			int32 hash = Hash(name);
 			int bus = msg.geti();
 			int n = msg.geti();
 			for (int i=0; i<n; ++i) {
-				Node_MapControl(node, name, i, bus == -1 ? -1 : bus+i);
+				Node_MapControl(node, hash, name, i, bus == -1 ? -1 : bus+i);
 			}
 		} else {
 			int32 index = msg.geti();
@@ -226,7 +227,7 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 		if (msg.nextTag('i') == 's') {
 			int32* name = msg.gets4();
 			float32 value = msg.getf();
-			Node_SetControl(node, name, 0, value);
+			Node_SetControl(node, Hash(name), name, 0, value);
 		} else {
 			int32 index = msg.geti();
 			float32 value = msg.getf();
@@ -247,10 +248,11 @@ SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 	while (msg.remain()) {
 		if (msg.nextTag('i') == 's') {
 			int32* name = msg.gets4();
+			int32 hash = Hash(name);
 			int32 n = msg.geti();
 			for (int i=0; msg.remain() && i<n; ++i) {
 				float32 value = msg.getf();
-				Node_SetControl(node, name, i, value);
+				Node_SetControl(node, hash, name, i, value);
 			}
 		} else {
 			int32 index = msg.geti();
@@ -276,11 +278,12 @@ SCErr meth_n_fill(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 	{
 		if (msg.nextTag('i') == 's') {
 			int32* name = msg.gets4();
+			int32 hash = Hash(name);
 			int32 n = msg.geti();
 			float32 value = msg.getf();
 			
 			for (int i=0; i<n; ++i) {
-				Node_SetControl(node, name, i, value);
+				Node_SetControl(node, hash, name, i, value);
 			}
 		} else {
 			int32 index = msg.geti();
@@ -1052,8 +1055,9 @@ SCErr meth_s_get(World *inWorld, int inSize, char *inData, ReplyAddress* inReply
 	while (msg.remain() >= 4) {
 		if (msg.nextTag('i') == 's') {
 			int32* name = msg.gets4();
+			int32 hash = Hash(name);
 			float32 value = 0.f;
-			Graph_GetControl(graph, name, 0, value);
+			Graph_GetControl(graph, hash, name, 0, value);
 			packet.addtag('s');
 			packet.addtag('f');
 			packet.adds((char*)name);
@@ -1109,6 +1113,7 @@ SCErr meth_s_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inRepl
 	while (msg.remain()) {
 		if (msg.nextTag('i') == 's') {
 			int32* name = msg.gets4();
+			int32 hash = Hash(name);
 			int32 n = msg.geti();
 			packet.addtag('s');
 			packet.addtag('i');
@@ -1116,7 +1121,7 @@ SCErr meth_s_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inRepl
 			packet.addi(n);
 			for (int i=0; i<n; ++i) {
 				float32 value = 0.f;
-				Graph_GetControl(graph, name, i, value);
+				Graph_GetControl(graph, hash, name, i, value);
 				packet.addtag('f');
 				packet.addf(value);
 			}

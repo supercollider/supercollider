@@ -32,6 +32,8 @@ struct ParamSpec
 	int32 mHash;
 };
 
+typedef HashTable<ParamSpec, Malloc> ParamSpecTable;
+
 struct GraphDef
 {
 	NodeDef mNodeDef;
@@ -54,7 +56,7 @@ struct GraphDef
 	
 	int32 mNumParamSpecs;
 	ParamSpec *mParamSpecs;
-	HashTable<ParamSpec, Malloc> *mParamSpecTable;
+	ParamSpecTable *mParamSpecTable;
 	
 	int mRefCount;
 	struct GraphDef* mNext;

@@ -123,12 +123,12 @@ void Group_MapControl(Group *inGroup, int inIndex, int inBus)
 	}			
 }
 
-void Group_MapControl(Group *inGroup, int32 *inName, int inIndex, int inBus)
+void Group_MapControl(Group *inGroup, int32 inHash, int32 *inName, int inIndex, int inBus)
 {
 	Node *child = inGroup->mHead;
 	while (child) {
 		Node *next = child->mNext;
-		Node_MapControl(child, inName, inIndex, inBus);
+		Node_MapControl(child, inHash, inName, inIndex, inBus);
 		child = next;
 	}			
 }
@@ -143,12 +143,12 @@ void Group_SetControl(Group *inGroup, int inIndex, float inValue)
 	}			
 }
 
-void Group_SetControl(Group *inGroup, int32 *inName, int inIndex, float inValue)
+void Group_SetControl(Group *inGroup, int32 inHash, int32 *inName, int inIndex, float inValue)
 {
 	Node *child = inGroup->mHead;
 	while (child) {
 		Node *next = child->mNext;
-		Node_SetControl(child, inName, inIndex, inValue);
+		Node_SetControl(child, inHash, inName, inIndex, inValue);
 		child = next;
 	}			
 }

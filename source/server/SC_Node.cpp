@@ -163,12 +163,12 @@ void Node_MapControl(Node* inNode, int inIndex, int inBus)
 }
 
 // set a node's control so that it reads from a control bus - name argument
-void Node_MapControl(Node* inNode, int32 *inName, int inIndex, int inBus)
+void Node_MapControl(Node* inNode, int32 inHash, int32 *inName, int inIndex, int inBus)
 {
 	if (inNode->mIsGroup) {
-		Group_MapControl((Group*)inNode, inName, inIndex, inBus);
+		Group_MapControl((Group*)inNode, inHash, inName, inIndex, inBus);
 	} else {
-		Graph_MapControl((Graph*)inNode, inName, inIndex, inBus);
+		Graph_MapControl((Graph*)inNode, inHash, inName, inIndex, inBus);
 	}
 }
 
@@ -183,12 +183,12 @@ void Node_SetControl(Node* inNode, int inIndex, float inValue)
 }
 
 // set a node's control value - name argument
-void Node_SetControl(Node* inNode, int32 *inName, int inIndex, float inValue)
+void Node_SetControl(Node* inNode, int32 inHash, int32 *inName, int inIndex, float inValue)
 {
 	if (inNode->mIsGroup) {
-		Group_SetControl((Group*)inNode, inName, inIndex, inValue);
+		Group_SetControl((Group*)inNode, inHash, inName, inIndex, inValue);
 	} else {
-		Graph_SetControl((Graph*)inNode, inName, inIndex, inValue);
+		Graph_SetControl((Graph*)inNode, inHash, inName, inIndex, inValue);
 	}
 }
 

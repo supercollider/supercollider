@@ -169,7 +169,7 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 	graphDef->mNumParamSpecs = readInt16_be(buffer);
 	if (graphDef->mNumParamSpecs) {
 		int hashTableSize = NEXTPOWEROFTWO(graphDef->mNumParamSpecs);
-		graphDef->mParamSpecTable = new HashTable<ParamSpec, Malloc>(&gMalloc, hashTableSize, false);
+		graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, hashTableSize, false);
 		graphDef->mParamSpecs = (ParamSpec*)malloc(graphDef->mNumParamSpecs * sizeof(ParamSpec));
 		for (int i=0; i<graphDef->mNumParamSpecs; ++i) {
 			ParamSpec *paramSpec = graphDef->mParamSpecs + i;
@@ -177,7 +177,8 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 			graphDef->mParamSpecTable->Add(paramSpec);
 		}
 	} else {
-		graphDef->mParamSpecTable = 0;
+		// empty table to eliminate test in Graph_SetControl
+		graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, 4, false);
 		graphDef->mParamSpecs = 0;
 	}
 
