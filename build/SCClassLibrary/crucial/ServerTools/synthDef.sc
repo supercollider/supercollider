@@ -2,8 +2,8 @@
 
 + Object {
 	
-	isPlaying { ^false }
-	stop {}
+	
+	
 	stopToBundle {}
 	free {}
 	freeHeavyResources {}
