@@ -170,6 +170,7 @@ void Trig_next_k(Trig *unit, int inNumSamples);
 
 void SendTrig_Ctor(SendTrig *unit);
 void SendTrig_next(SendTrig *unit, int inNumSamples);
+void SendTrig_next_aka(SendTrig *unit, int inNumSamples);
 
 void SetResetFF_Ctor(SetResetFF *unit);
 void SetResetFF_next(SetResetFF *unit, int inNumSamples);
@@ -400,9 +401,13 @@ void Trig_next_k(Trig *unit, int inNumSamples)
 
 void SendTrig_Ctor(SendTrig *unit)
 {
-	SETCALC(SendTrig_next);
-
-	unit->m_prevtrig = 0.f;
+	
+        if (INRATE(2) == calc_FullRate) {
+                    SETCALC(SendTrig_next_aka);
+		} else {
+                    SETCALC(SendTrig_next);
+        }
+        unit->m_prevtrig = 0.f;
 }
 
 void SendTrig_next(SendTrig *unit, int inNumSamples)
@@ -414,6 +419,23 @@ void SendTrig_next(SendTrig *unit, int inNumSamples)
 		float curtrig = ZXP(trig);
 		if (curtrig > 0.f && prevtrig <= 0.f) {
 			SendTrigger(&unit->mParent->mNode, (int)ZIN0(1), ZIN0(2));
+		}
+		prevtrig = curtrig;
+	);
+	unit->m_prevtrig = prevtrig;
+}
+
+void SendTrig_next_aka(SendTrig *unit, int inNumSamples)
+{
+	float *trig = ZIN(0);
+        float *value = ZIN(2);
+	float prevtrig = unit->m_prevtrig;
+	
+	LOOP(inNumSamples, 
+		float curtrig = ZXP(trig);
+                float curval = ZXP(value);
+		if (curtrig > 0.f && prevtrig <= 0.f) {
+			SendTrigger(&unit->mParent->mNode, (int)ZIN0(1), curval);
 		}
 		prevtrig = curtrig;
 	);
