@@ -145,10 +145,9 @@ static void midiReadProc(const MIDIPacketList *pktlist, void* readProcRefCon, vo
 
 void midiCleanUp();
 
-void initMIDI(int numIn, int numOut)
+int initMIDI(int numIn, int numOut)
 {
 	midiCleanUp();
-	
     numIn = sc_clip(numIn, 1, kMaxMidiPorts);
     numOut = sc_clip(numOut, 1, kMaxMidiPorts);
     
@@ -160,7 +159,7 @@ void initMIDI(int numIn, int numOut)
     OSStatus err = MIDIClientCreate(clientName, midiNotifyProc, nil, &gMIDIClient);
     if (err) {
         post("Could not create MIDI client. error %d\n", err);
-        return;
+        return errFailed;
     }
     CFRelease(clientName);
     
@@ -173,7 +172,7 @@ void initMIDI(int numIn, int numOut)
         if (err) {
             gNumMIDIInPorts = i;
             post("Could not create MIDI port %s. error %d\n", str, err);
-            return;
+            return errFailed;
         }
         CFRelease(inputPortName);
     }
@@ -196,13 +195,13 @@ void initMIDI(int numIn, int numOut)
         if (err) {
             gNumMIDIOutPorts = i;
             post("Could not create MIDI out port. error %d\n", err);
-            return;
+            return errFailed;
         }
         
         CFRelease(outputPortName);
     }
     gNumMIDIOutPorts = numIn;
-    
+    return errNone;
 }
 
 void midiCleanUp()
@@ -348,11 +347,11 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
         
 	int err, inputIndex, uid;
 	err = slotIntVal(b, &inputIndex);
-	if (err) return err;
+	if (err) return errWrongType;
 	if (inputIndex < 0 || inputIndex >= gNumMIDIInPorts) return errIndexOutOfRange;
 	
 	err = slotIntVal(c, &uid);
-	if (err) return err;
+	if (err) return errWrongType;
 
 	
 	MIDIEndpointRef src=0;
@@ -398,14 +397,12 @@ int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
         
 	int err, numIn, numOut;
 	err = slotIntVal(b, &numIn);
-	if (err) return err;
+	if (err) return errWrongType;
 	
 	err = slotIntVal(c, &numOut);
-	if (err) return err;
+	if (err) return errWrongType;
 	
-	initMIDI(numIn, numOut);
-	
-	return errNone;
+	return initMIDI(numIn, numOut);
 }
 int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed);
 int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed)
@@ -413,7 +410,10 @@ int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed)
     PyrSlot *a;
     a = g->sp - 1;
     OSStatus err = MIDIClientDispose(gMIDIClient);
-    if (err) post("error could not dispose MIDIClient \n");
+    if (err) {
+        post("error could not dispose MIDIClient \n");
+        return errFailed;
+    }
     return errNone;	
 
 }
