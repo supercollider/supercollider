@@ -78,7 +78,7 @@ BusPlug : AbstractFunction {
 	////////////  playing and access  /////////////////////////////////////////////
 	
 	
-	rate {  ^bus.tryPerform(\rate) }
+	rate {  ^bus.tryPerform(\rate) ? \scalar }
 	numChannels {  ^bus.tryPerform(\numChannels) }
 	index { ^bus.tryPerform(\index) }
 	

@@ -26,8 +26,9 @@ EnvironmentRedirect {
 	}
 	
 	push { 
+		if(currentEnvironment === this, { ^topEnvironment = this });
 		if(currentEnvironment.isKindOf(this.class),
-			{ "already pushed environment".inform; ^this });
+			{ currentEnvironment.pop });
 		this.saveEnvir = currentEnvironment;
 		this.saveTopEnvir = topEnvironment;
 		currentEnvironment = this;
@@ -83,8 +84,20 @@ EnvironmentRedirect {
 	}
 	
 	choose {
-        ^envir.choose 
-    }
-
-
+        ^envir.choose
+     }
+     
+     makeDocument { arg title, string, backcolor,stringcolor;
+     	var doc;
+     	doc = Document.new("", "untitled proxyspace", false)
+     		.background_(backcolor ? rgb(223, 223, 223))
+			.stringColor_(stringcolor ? rgb(0,0,0));
+		this.linkDoc(doc, false);
+	 }
+     
+     linkDoc { arg doc, instantPush=true;
+     	doc = doc ? Document.current;
+     	if(instantPush) {this.push};
+     	doc.toFrontAction_({ this.push });
+     }
 }
