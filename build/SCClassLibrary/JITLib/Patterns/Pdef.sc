@@ -139,7 +139,7 @@ Pdefn : PatternProxy {
 	}
 	map {Êarg ... args;
 		if(envir.isNil) { this.envir = () };
-		args.pairsDo { |key, name| envir.put(key, this.class.new(name)) }
+		args.pairsDo { |key, name| envir.put(key, Pdefn(name)) }
 	}
 	storeArgs { ^[key] } // assume it was created globally
 	
@@ -325,7 +325,7 @@ Pdef : EventPatternProxy {
 	}
 	map {Êarg ... args;
 		if(envir.isNil) { this.envir = () };
-		args.pairsDo { |key, name| envir.put(key, this.class.new(name)) }
+		args.pairsDo { |key, name| envir.put(key, Pdefn(name)) }
 	}
 	*initClass {
 		var phraseEventFunc;
