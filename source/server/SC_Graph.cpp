@@ -351,7 +351,7 @@ void Graph_MapControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
 	World *world = inGraph->mNode.mWorld;
 	if (inBus == 0xFFFFFFFF) {
 		inGraph->mMapControls[inIndex] = inGraph->mControls + inIndex;
-	} else if (inBus >= world->mNumControlBusChannels) {
+	} else if (inBus < world->mNumControlBusChannels) {
 		inGraph->mMapControls[inIndex] = world->mControlBus + inBus;
 	}
 }
