@@ -51,7 +51,7 @@ MixedBundle : OSCBundle {
 		preparationMessages = preparationMessages.add(msg);
 	}
 	
-	addMessage { arg receiver, selector, args;
+	addAction { arg receiver, selector, args;
 		functions = functions.add( Message(receiver,selector,args) )
 	}
 	
