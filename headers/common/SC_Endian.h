@@ -32,10 +32,21 @@
 #define SC_ENDIAN_H_INCLUDED
 
 #ifdef SC_DARWIN
+
 # include <machine/endian.h>
+
+#elif defined(SC_WIN32)
+
+# define LITTLE_ENDIAN 1234
+# define BIG_ENDIAN 4321
+# define BYTE_ORDER LITTLE_ENDIAN
+# include <winsock2.h>
+
 #else
+
 # include <endian.h>
 # include <netinet/in.h>
+
 #endif
 
 #ifndef BYTE_ORDER
