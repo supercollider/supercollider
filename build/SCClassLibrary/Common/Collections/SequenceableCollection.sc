@@ -539,9 +539,9 @@ SequenceableCollection : Collection {
 	
 	swap { arg i, j;
 		var temp;
-		temp = this.at(i);
-		this.put(i, this.at(j));
-		this.put(j, temp);
+		temp = this[i];
+		this[i] = this[j];
+		this[j] = temp;
 	}
 	
 	sortRange { arg i, j, function;

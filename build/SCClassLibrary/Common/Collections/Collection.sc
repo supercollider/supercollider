@@ -22,13 +22,13 @@ Collection {
 		^obj
 	}	
 
-	@ { | index | ^this.at(index) }
+	@ { | index | ^this[index] }
 	
 	== { | aCollection |
 		if (aCollection.class != this.class) { ^false };
 		if (this.size != aCollection.size) { ^false };
 		this.do { | item, i |
-			if (item != aCollection.at(i)) { ^false };
+			if (item != aCollection[i]) { ^false };
 		};
 		^true
 	}
@@ -199,7 +199,7 @@ Collection {
 	sumabs {  // sum of the absolute values - used to convert Mikael Laursen's rhythm lists.
 		var sum = 0;
 		this.do { | elem | 
-			if (elem.isSequenceableCollection) { elem = elem.at(0) };
+			if (elem.isSequenceableCollection) { elem = elem[0] };
 			sum = sum + elem.abs; 
 		}
 		^sum;
