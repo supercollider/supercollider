@@ -53,12 +53,13 @@ s = \cf2 Server\cf0 .local;\
 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf5 "help-VOsc"\cf0 ,\{ \cf2 arg\cf0  out=0, bufoffset=0;\
+\cf2 SynthDef\cf0 (\cf5 "help-VOsc"\cf0 ,\{ \cf2 arg\cf0  out=0, bufoffset=0, freq=240;\
 	\cf2 var\cf0  x;\
 	// mouse x controls the wavetable position\
 	x = \cf2 MouseX\cf0 .kr(0,7);\
+	freq = Vibrato.kr(freq, onset: 0.5);\
 	\cf2 Out\cf0 .ar(out,\
-		\cf2 VOsc3\cf0 .ar(bufoffset+x, [120, 121],[120.37, 121.1],[240.43, 239.91], 0.3)\
+		\cf2 VOsc3\cf0 .ar(bufoffset+x, freq+[0,1],freq+[0.37,1.1],freq+[0.43, -0.29], 0.3)\
 	)\
 \}).play(s,[\cf4 \\out\cf0 , 0, \cf4 \\bufoffset\cf0 , 0]);\
 )\
@@ -67,6 +68,7 @@ s = \cf2 Server\cf0 .local;\
 8.do(\{ \cf2 arg\cf0  i;\
 	var a;\
 	s.sendMsg(\cf4 \\b_alloc\cf0 , i, 1024); \cf3 // allocate table\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 // generate array of harmonic amplitudes\cf0 \
 	a = \cf2 Array\cf0 .fill(i, 0) ++ [0.5, 1, 0.5];\
 	\cf3 // fill table\cf0 \
@@ -99,6 +101,29 @@ s = \cf2 Server\cf0 .local;\
 \});\
 )\
 \
+(\
+var a;\
+a = \cf2 Array\cf0 .fill(64, \{ \cf2 arg\cf0  j; 1.0.rand2 \});\
+8.do(\{ \cf2 arg\cf0  i;\
+	s.sendMsg(\cf4 \\b_alloc\cf0 , i, 1024); \cf3 // allocate table\cf0 \
+	\cf3 // generate array of harmonic amplitudes\cf0 \
+	n = (i+1)**2;\
+	\cf3 // fill table\cf0 \
+	s.performList(\cf4 \\sendMsg\cf0 , \cf4 \\b_gen\cf0 , i, \cf4 \\sine1\cf0 , 7, a.extend(n.asInteger));\
+\});\
+)\
+\
+(\
+var a;\
+a = \cf2 Array\cf0 .fill(64, \{ \cf2 arg\cf0  j; 1/(j+1) \});\
+8.do(\{ \cf2 arg\cf0  i;\
+	s.sendMsg(\cf4 \\b_alloc\cf0 , i, 1024); \cf3 // allocate table\cf0 \
+	\cf3 // generate array of harmonic amplitudes\cf0 \
+	n = (i+1)**2;\
+	\cf3 // fill table\cf0 \
+	s.performList(\cf4 \\sendMsg\cf0 , \cf4 \\b_gen\cf0 , i, \cf4 \\sine1\cf0 , 7, a.extend(n.asInteger));\
+\});\
+)\
 \
 \
 }
