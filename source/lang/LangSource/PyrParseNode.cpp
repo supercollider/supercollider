@@ -1974,6 +1974,9 @@ void PyrCallNode::compileCall(PyrSlot *result)
 			case selDoubleQuestionMark :
 				if (numArgs == 2) compileQQMsg(argnode, argnode->mNext);
 				break;
+			case selExclamationQuestionMark :
+				if (numArgs == 2) compileXQMsg(argnode, argnode->mNext);
+				break;
 			default :
 				defaultCase:
 				if (numArgs == 1 && varname == s_this) {
@@ -2166,6 +2169,30 @@ void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2)
 		compileTail();
 		compileOpcode(opSendSpecialMsg, 2);
 		compileByte(opmDoubleQuestionMark);
+	}
+}
+
+void compileXQMsg(PyrParseNode* arg1, PyrParseNode* arg2)
+{
+	// double question mark. !? {|obj| ^if (this.isNil, this, func) }
+	PyrSlot dummy;
+	
+	COMPILENODE(arg1, &dummy, false);
+	if (isAnInlineableBlock(arg2)) {
+		ByteCodes nilByteCodes;
+		nilByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
+		
+		int jumplen = byteCodeLength(nilByteCodes);
+		compileByte(143); // special opcodes
+		compileByte(27); // !?
+		compileByte((jumplen >> 8) & 0xFF);
+		compileByte(jumplen & 0xFF);
+		compileAndFreeByteCodes(nilByteCodes);
+	} else {
+		COMPILENODE(arg2, &dummy, false);
+		compileTail();
+		compileOpcode(opSendSpecialMsg, 2);
+		compileByte(opmExclamationQuestionMark);
 	}
 }
 
@@ -2655,6 +2682,9 @@ void PyrBinopCallNode::compileCall(PyrSlot *result)
 				break;
 			case selDoubleQuestionMark :
 				compileQQMsg(arg1, arg2);
+				break;
+			case selExclamationQuestionMark :
+				compileXQMsg(arg1, arg2);
 				break;
 			default :
 				COMPILENODE(arg1, &dummy, false);
@@ -3636,6 +3666,9 @@ int conjureSelectorIndex(PyrParseNode *node, PyrBlock* func,
 		} else if (selector == gSpecialSelectors[opmDoubleQuestionMark]) {
 			*selType = selDoubleQuestionMark;
 			return opmAnd;
+		} else if (selector == gSpecialSelectors[opmExclamationQuestionMark]) {
+			*selType = selExclamationQuestionMark;
+			return opmAnd;
 		}
 		
 		for (i=0; i<opmNumSpecialSelectors; ++i) {
@@ -4160,6 +4193,7 @@ void initSpecialSelectors()
 	sel[opmLTLT] = getsym("<<");
 	sel[opmQuestionMark] = getsym("?");
 	sel[opmDoubleQuestionMark] = getsym("??");
+	sel[opmExclamationQuestionMark] = getsym("!?");
 	
 	sel[opmYield] = getsym("yield");
 	sel[opmName] = getsym("name");

@@ -448,6 +448,7 @@ void compileAndMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileOrMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileXQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 
 void compilePushInt(int value);
 void compileAssignVar(PyrParseNode *node, PyrSymbol* varName, bool drop);

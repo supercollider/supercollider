@@ -304,6 +304,7 @@ enum {
 	opmLTLT,
 	opmQuestionMark,
 	opmDoubleQuestionMark,
+	opmExclamationQuestionMark,
 	
 	opmYield,
 	opmName,
@@ -362,6 +363,7 @@ enum {
 	selSuperNew,
 	selQuestionMark,
 	selDoubleQuestionMark,
+	selExclamationQuestionMark,
 
 	selNumSelectorTypes
 };

@@ -1557,7 +1557,7 @@ void Interpret(VMGlobals *g)
 					}
 					sp--;
 					break;					
-				case 26 : // ifNilPushNil
+				case 26 : // ifNotNilPushNil
 					if ( ((PyrSlot*)sp)->utag != tagNil ) {
 						jmplen = (ip[1]<<8) | ip[2];
 						ip += jmplen + 2;
@@ -1567,11 +1567,10 @@ void Interpret(VMGlobals *g)
 						sp--;
 					}
 					break;
-				case 27 : // ifNotNilPushNil
+				case 27 : // ifNilPushNil
 					if ( ((PyrSlot*)sp)->utag == tagNil ) {
 						jmplen = (ip[1]<<8) | ip[2];
 						ip += jmplen + 2;
-						*sp = gSpecialValues[svNil];
 					} else {
 						ip+=2;
 						sp--;
