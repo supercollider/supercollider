@@ -1841,14 +1841,13 @@ void SCPopUpMenu::receiveDrag()
 }
 
 
-
 /////////////////////////////////////////////////////////////////
-//SCMultiSliderView by jan trutzschler jan.21.03
+//SCMultiSliderView by jan trutzschler jan.21.03 // rewrote draw jan.22.03
 int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr);
 int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr)
 {
     int len;
-     if (*arr) {
+    if (*arr) {
 		delete [] *arr;
 		*arr = 0;
 	}
@@ -1871,13 +1870,18 @@ SCMultiSliderView::SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj
         mTabSize = (int) (inBounds.width / mThumbSize);
         mCurrentIndex = 0;
         mCurrentY = 0.0;
+        mCurrentX = 0.0;
         mYValues = new double [mTabSize];
-        mReadOnly = false;
+        mReadOnly = mShowIndex = false;
         mResamp = 1; //used for zooming out
         mFillColor = SCMakeColor(0,0,0,1); // black
         mStrokeColor = SCMakeColor(0,0,0,1); // black
+        mDrawLines = true;
 }
-
+SCMultiSliderView::~SCMultiSliderView()
+{
+    delete mYValues;
+}
 
 void SCMultiSliderView::draw(SCRect inDamage)
 {
@@ -1894,32 +1898,55 @@ void SCMultiSliderView::draw(SCRect inDamage)
     CGRect drawRect;
     float yval = 0;
     float tsize = 1.0;  
-    if(mThumbSize > 0) { //draw dots for multislider
-    tsize = (int) mBounds.width / (mXOffset + mThumbSize);
+     //draw dots for multislider
+    if(!(mXOffset < 1.0)) { // this means no zoom 
         for(int i = 0; i < mTabSize; i++){
             yval = vals[i];
             drawRect = SCtoCGRect(calcThumbRect(i, yval, mXOffset));
             CGContextFillRect (cgc, drawRect);
             CGContextStrokeRect(cgc,drawRect);
         }
-
-    } else {
-        //draw lines and use mResamp = (1/mXOffset) to zoom out
-        if(mXOffset < 1.0) tsize = 1;
-        else tsize = mXOffset;
+    } else {		//this means zoom so resample the table:
         int j = 0;
         for(int i = 0; i < mTabSize; i++){
             if(!(i % mResamp )) {
                 yval = vals[i];
-                drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
-                CGContextAddLineToPoint(cgc, drawRect.origin.x, drawRect.origin.y);
-                CGContextAddRect(cgc, drawRect);
-                CGContextMoveToPoint(cgc, drawRect.origin.x, drawRect.origin.y);
+                drawRect = SCtoCGRect(calcThumbRect(j, yval, 0.0));
+                CGContextFillRect (cgc, drawRect);
                 j++;
+                }
             }
-        }
-    CGContextStrokePath(cgc);	 
     }
+    
+    if (mDrawLines) {
+                //no resample detection ...
+        if(mXOffset < 1.0) tsize = 0.0;  
+        else tsize = mXOffset;
+        int j = 0;
+        float xadd, gcx, gcy;
+        if(mThumbSize > 1) xadd =  mThumbSize * 0.5; 
+        else xadd = 0;      
+         for(int i = 0; i < mTabSize; i++){
+            if(!(i % mResamp )) {
+            yval = vals[i];
+            drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
+            gcx =  drawRect.origin.x + xadd;
+            gcy =  drawRect.origin.y + xadd;
+            CGContextAddLineToPoint(cgc, gcx, gcy);
+            CGContextMoveToPoint(cgc, gcx, gcy);
+            j++;
+            }
+            }
+        CGContextStrokePath(cgc);
+    }
+    if(mShowIndex) {
+        if(mXOffset < 1.0 && mXOffset != 0.0 )
+        drawRect = CGRectMake(mCurrentX, mBounds.y, mThumbSize, mBounds.height);
+        else drawRect = CGRectMake(mBounds.x + 1 + (mCurrentX * ( mXOffset + mThumbSize)), mBounds.y + 1, mThumbSize, mBounds.height); // one pixel extra for the stroke
+        CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, 0.4);
+        CGContextFillRect (cgc, drawRect);    
+    }
+    
     CGContextRestoreGState(cgc);
 }
 
@@ -1943,13 +1970,17 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
             refresh();
         }
     } else {
+        int xindx;
         changed = true;
-        xIn = (int) xIn *  mResamp;
-        xIn = sc_clip(xIn, 0, mTabSize - 1);
-        mCurrentIndex = xIn;
+        xindx = (int) xIn *  mResamp;
+        xindx = sc_clip(xindx, 0, mTabSize - 1);
+        if ( mXOffset  < 1.0) mCurrentX = (double) xIn;
+        else mCurrentX = (double) xindx;
+        mCurrentIndex = xindx;
         mCurrentY = mYValues[mCurrentIndex];
-        if (send) sendMessage(s_doaction, 0, 0, 0); // would be nice if it would tell where x
+        if (send) sendMessage(s_doaction, 0, 0, 0); 
         //post("readOnly: x: %d \n", mCurrentIndex);
+        refresh();
     }
     return changed;
 
@@ -1997,7 +2028,7 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             err = slotIntVal(slot, &mThumbSize);
             refresh();
             return errNone;
-        }
+        }        
         if (strcmp(name, "xOffset")==0) {
             err = slotFloatVal(slot, &mXOffset);
             if(mXOffset < 1.0 && mXOffset != 0.0) {
@@ -2023,8 +2054,31 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             refresh();
             return errNone;
         }
+        if (strcmp(name, "drawLines")==0) {
+            mDrawLines = IsTrue(slot); 
+            refresh();
+            return errNone;
+        }
+        if (strcmp(name, "showIndex")==0) {
+            mShowIndex = IsTrue(slot); 
+            refresh();
+            return errNone;
+        }
+        if (symbol == s_x) {
+            slotIntVal(slot, &mCurrentIndex);
+            mCurrentIndex  = sc_clip(mCurrentIndex, 0, mTabSize - 1);
+            if(mXOffset < 1.0 && mXOffset != 0.0) mCurrentX = mCurrentIndex;
+            refresh();
+            return errNone;
+	}
+	if (symbol == s_y) {
+            slotDoubleVal(slot, &mCurrentY);
+            mCurrentY = sc_clip(mCurrentIndex, 0.0, 1.0);
+            mYValues[mCurrentIndex] = mCurrentY;
+            refresh();
+            return errNone;
+	}
         if (symbol == s_value) {
-            
             if (!isKindOfSlot(slot, class_array)) return errWrongType;
             if(slot->uo->size != mTabSize) {
                 err = allocSlotDoubleArrayVal(slot, &mYValues);
