@@ -391,7 +391,8 @@ Document {
 
 EnvirDocument : Document {
 	var <>envir;
-	*new { arg envir, title, string="";
+	*new { arg envir, title, string="", pushNow=true;
+		if(pushNow) { envir.push };
 		title = title ?? { "envir" + (envir.tryPerform(\name) ? "Untitled Environment") };
 		^super.new(title, string).envir_(envir).background_(rgb(240, 240, 240));
 	}
