@@ -8,12 +8,12 @@
 
 + ArrayedCollection{
 	
-	plot { arg name, bounds, discreet;
+	plot { arg name, bounds, discrete;
 		//this.asciiPlot;
 		var plotter, val, minval, maxval, txt, window, thumbsize;
 		bounds = bounds ?  Rect(200 , 140, 705, 410);
-		discreet = discreet ? false;
-		if(discreet){
+		discrete = discrete ? false;
+		if(discrete){
 			thumbsize = (bounds.width-8) / this.size;
 		}{
 			thumbsize = 1;
@@ -33,8 +33,8 @@
 		window.view.decorator.nextLine;
 		plotter = SCMultiSliderView(window, Rect(0, 0, bounds.width-8, bounds.height - 60))
 			.readOnly_(true)
-			.drawLines_(discreet.not)
-			.drawRects_(discreet)
+			.drawLines_(discrete.not)
+			.drawRects_(discrete)
 			.thumbSize_(thumbsize) 
 			.valueThumbSize_(1)
 			.colors_(Color.black, Color.blue(1.0,1.0))
