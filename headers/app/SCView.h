@@ -296,6 +296,7 @@ protected:
 	SCRect mThumbRect;
 	double mValue, mStepSize, mStepScale;
 	DrawBackground* mKnob;
+	float mThumbSize;
 };
 SCView* NewSCSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 

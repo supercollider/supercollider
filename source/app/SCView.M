@@ -1233,7 +1233,7 @@ SCView* NewSCSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds
 }
 
 SCSlider::SCSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: SCView(inParent, inObj, inBounds), mStepSize(0.), mStepScale(0.), mKnob(0)
+	: SCView(inParent, inObj, inBounds), mStepSize(0.), mStepScale(0.), mKnob(0), mThumbSize(12.)
 {
         mValue = 1.;
 	setValue(0.0, false);
@@ -1278,18 +1278,16 @@ bool SCSlider::setValue(double inValue, bool send)
     return changed;
 }
 
-const int THUMBSIZE = 12;
-
 void SCSlider::setValueFromPoint(SCPoint point)
 {
     double moveableRange, value;
     
     if (mBounds.width > mBounds.height) {
-        moveableRange = mBounds.width - THUMBSIZE - 2;
-        value = (point.x - mBounds.x - 1 - THUMBSIZE/2) / moveableRange;
+	moveableRange = mBounds.width - mThumbSize - 2;
+	value = (point.x - mBounds.x - 1 - mThumbSize/2) / moveableRange;
     } else {
-        moveableRange = mBounds.height - THUMBSIZE - 2;
-        value = 1. - (point.y - mBounds.y - 1 - THUMBSIZE/2) / moveableRange;
+	moveableRange = mBounds.height - mThumbSize - 2;
+	value = 1. - (point.y - mBounds.y - 1 - mThumbSize/2) / moveableRange;
     }
     setValue(value, true);
 }
@@ -1300,16 +1298,16 @@ void SCSlider::calcThumbRect()
     
     moveableRange = (mBounds.width > mBounds.height) 
                   ?  mBounds.width : mBounds.height;
-    moveableRange -= THUMBSIZE + 2;
+    moveableRange -= mThumbSize + 2;
         
     double offset = mValue * moveableRange;
 
     if (mBounds.width > mBounds.height) {
-       mThumbRect = SCMakeRect(mBounds.x + offset + 1, mBounds.y + 1,
-                     THUMBSIZE, mBounds.height - 2);   
+	mThumbRect = SCMakeRect(mBounds.x + offset + 1, mBounds.y + 1,
+				mThumbSize, mBounds.height - 2);   
     } else {
-       mThumbRect = SCMakeRect(mBounds.x + 1, mBounds.y + mBounds.height - offset - 1 - THUMBSIZE,
-                     mBounds.width - 2, THUMBSIZE);   
+	mThumbRect = SCMakeRect(mBounds.x + 1, mBounds.y + mBounds.height - offset - 1 - mThumbSize,
+				mBounds.width - 2, mThumbSize);   
     }
 }
 
@@ -1349,6 +1347,12 @@ int SCSlider::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		}
 		return errNone;
 	}
+	if (strcmp(name, "thumbSize")==0) {
+		err = slotFloatVal(slot, &mThumbSize);
+		if (err) return err;
+		refresh();
+		return errNone;
+	}
 
 	return SCView::setProperty(symbol, slot);
 }
@@ -1363,6 +1367,10 @@ int SCSlider::getProperty(PyrSymbol *symbol, PyrSlot *slot)
         if (strcmp(name, "step")==0) {
             SetFloat(slot, mStepSize);
             return errNone;
+        }
+        if (strcmp(name, "thumbSize")==0) {
+	    SetFloat(slot, mThumbSize);
+	    return errNone;
         }
 
         return SCView::getProperty(symbol, slot);
@@ -1703,6 +1711,8 @@ bool SC2DSlider::setValue(double inX, double inY, bool send)
     }
     return changed;
 }
+
+const int THUMBSIZE = 12;
 
 void SC2DSlider::setValueFromPoint(SCPoint where)
 {

@@ -266,6 +266,13 @@ SCTopView : SCCompositeView {
 
 SCLayoutView : SCContainerView {
 	properties { ^super.properties ++ #[\spacing] }
+	
+	spacing {
+		^this.getProperty(\spacing, 0)
+	}
+	spacing_ { arg distance;
+		this.setProperty(\spacing, distance)
+	}
 }
 
 SCHLayoutView : SCLayoutView {}
@@ -339,6 +346,17 @@ SCSlider : SCSliderBase
 	receiveDrag {
 		this.valueAction = currentDrag;
 		currentDrag = nil;
+	}
+
+	thumbSize {
+		^this.getProperty(\thumbSize, 12);
+	}
+	thumbSize_ { arg size;
+		this.setProperty(\thumbSize, size);
+	}
+	
+	properties {
+		^super.properties ++ #[\thumbSize];
 	}
 }
 
