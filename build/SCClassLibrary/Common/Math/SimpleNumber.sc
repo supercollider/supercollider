@@ -278,14 +278,14 @@ SimpleNumber : Number {
 			^[n.neg, d]
 		};
 		if (this < 1.0) {
-			lower = [0,1]; 
-			upper = [1,1];
+			upper = [1, this.reciprocal.floor]; 
+			lower = [1, upper[1]+1];
 		}{
 			lower = [this.floor, 1]; 
 			upper = [lower[0]+1, 1];
 		};
 		loop {
-			mediant = [lower[0] + upper[0], lower[1] + upper[1]].postln;
+			mediant = [lower[0] + upper[0], lower[1] + upper[1]];
 			
 			case 
 			{ (this * mediant[1]) > mediant[0] } 
