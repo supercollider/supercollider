@@ -144,6 +144,11 @@ Symbol {
 	unsignedRightShift { arg x; ^this }
 	rrand { arg x; ^this }
 	exprand { arg x; ^this }
+
+	< { arg aNumber; _LT; ^this }
+	> { arg aNumber; _GT; ^this }
+	<= { arg aNumber; _LE; ^this }
+	>= { arg aNumber; _GE; ^this }
 	
 	degreeToKey { ^this }
 	
