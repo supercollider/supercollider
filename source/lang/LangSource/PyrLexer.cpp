@@ -498,6 +498,7 @@ start:
 				case 'r' : c = '\r'; break;
 				case 't' : c = '\t'; break;
 				case 'f' : c = '\f'; break;
+				case 'v' : c = '\v'; break;
 			}
 		}
 		r = processchar(c);
@@ -772,6 +773,7 @@ string1 : {
 					case 'r' : yytext[yylen-1] = '\r'; break;
 					case 't' : yytext[yylen-1] = '\t'; break;
 					case 'f' : yytext[yylen-1] = '\f'; break;
+					case 'v' : yytext[yylen-1] = '\v'; break;
 				}
 			} else if (c == '\r') c = '\n';
 			else if (c == endchar) break;
@@ -1386,6 +1388,7 @@ start:
 				case 'r' : c = '\r'; break;
 				case 't' : c = '\t'; break;
 				case 'f' : c = '\f'; break;
+				case 'v' : c = '\v'; break;
 			}
 		}
 		goto start; 
