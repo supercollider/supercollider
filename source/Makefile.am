@@ -6,6 +6,6 @@
 ## ====================================================================
 
 MAINTAINERCLEANFILES	= Makefile.in
-SUBDIRS			= common server lang
+SUBDIRS			= common server plugins lang
 
 ## EOF ================================================================

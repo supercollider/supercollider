@@ -32,7 +32,7 @@
 #include "clz.h"
 #include "sc_msg_iter.h"
 #include "SC_Altivec.h"
-
+#include <stdlib.h>
 
 #ifdef SC_WIN32
 

@@ -8,7 +8,6 @@ dnl ===================================================================
 # initialize autoconf
 AC_PREREQ(2.52)
 AC_INIT(source/server/scsynth_main.cpp)
-AC_CANONICAL_HOST
 
 # initialize automake
 AM_INIT_AUTOMAKE(SuperCollider,3.0)
@@ -107,8 +106,9 @@ snd_pcm_drop,
 [-lm])
 AC_SUBST(ALSA_LIBS)
 
-# libraries needed for all targets
-LIBS="$LIBS $lib_pthread $lib_dl"
+# libraries needed for all targets (except plugins)
+SC_LIBS="$LIBS $lib_pthread $lib_dl"
+AC_SUBST(SC_LIBS)
 
 # check for packages
 pkg_modules="sndfile >= 1.0.0"
@@ -120,7 +120,11 @@ AC_SUBST(SNDFILE_LIBS)
 SC_CPPFLAGS="-Wall -DSC_LINUX -D_REENTRANT"
 
 # add default (platform dependent) flags
-case "$target_cpu" in
+cpu="${build_cpu}"
+test -n "${cpu}" || cpu="${target_cpu}"
+test -n "${cpu}" || cpu="${host_cpu}"
+
+case $cpu in
     powerpc*|ppc*)
 	SC_CFLAGS="-fsigned-char"
 	SC_CFLAGS_OPT="-maltivec"
@@ -177,8 +181,30 @@ if test "$HAVE_ALSA" = "true"; then
     AC_DEFINE([HAVE_ALSA],[1],[wether ALSA libs are available])
 fi
 
+# X11 support is optional
+AC_PATH_XTRA
+if test "$with_x" = no || test "$no_x" = yes; then
+    HAVE_X11=false
+else
+    if test -z "$X_DISPLAY_MISSING"; then
+        HAVE_X11=true
+        AC_CHECK_HEADERS(X11/Intrinsic.h)
+        AC_CHECK_LIB(X11, XQueryPointer)
+        SC_X11_CFLAGS="$X_CFLAGS"
+        SC_X11_LIBS="$X_LIBS $X_PRE_LIBS $X_EXTRA_LIBS -lX11"
+    else
+        HAVE_X11=false
+    fi
+fi
+AM_CONDITIONAL(HAVE_X11, $HAVE_X11)
+AC_SUBST(SC_X11_CFLAGS)
+AC_SUBST(SC_X11_LIBS)
+
+
 AC_SUBST(SC_CPPFLAGS)
 AC_SUBST(SC_CFLAGS)
+
+AC_MSG_NOTICE([SC_CFLAGS: $SC_CFLAGS])
 
 # generate output files
 AC_OUTPUT(
@@ -192,6 +218,7 @@ headers/lang/Makefile
 source/Makefile
 source/common/Makefile
 source/server/Makefile
+source/plugins/Makefile
 source/lang/Makefile
 source/lang/LangPrimSource/Makefile
 source/lang/LangSource/Makefile

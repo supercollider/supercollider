@@ -36,7 +36,26 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
-#endif
+# include <signal.h>
+# include <setjmp.h>
+
+// niklas werner: kernel independent altivec detection
+// borrowed from MPlayer, who borrowed from libmpeg2
+
+static sigjmp_buf sigIllJmpBuf;
+static volatile sig_atomic_t sigIllCanJump = 0;
+static sighandler_t sigIllOldHandler = SIG_DFL;
+
+static void sigIllHandler(int sig)
+{
+	if (!sigIllCanJump) {
+		signal(sig, sigIllOldHandler);
+		raise(sig);
+	}
+	sigIllCanJump = 0;
+	siglongjmp(sigIllJmpBuf, 1);
+}
+#endif // SC_LINUX && __ALTIVEC__
 
 bool HasAltivec()
 {
@@ -50,17 +69,19 @@ bool HasAltivec()
 #endif // SC_DARWIN
 
 #if defined(SC_LINUX) && defined(__ALTIVEC__)
-	const char* cpuInfoFile = "/proc/cpuinfo";
-	const char* cpuInfoAltivec = "altivec supported";
-		
-	FILE* fd = fopen(cpuInfoFile, "r");
-	if (fd) {
-		char* buffer;
-		int err = fscanf(fd, "cpu\t: %a[^\n]", &buffer);
-		fclose(fd);
-		if (err == 1) {
-			hasAltivec = strstr(buffer, cpuInfoAltivec) != 0;
-			free(buffer);
+	if (getenv("SC_NOVEC") == 0) {
+		sigIllOldHandler = signal(SIGILL, sigIllHandler);
+
+		if (sigsetjmp(sigIllJmpBuf, 1)) {
+			signal(SIGILL, sigIllOldHandler);
+		} else {
+			sigIllCanJump = 1;
+			asm volatile ("mtspr 256, %0\n\t"
+						  "vand %%v0, %%v0, %%v0"
+						  :
+						  : "r" (-1));
+			signal(SIGILL, sigIllOldHandler);
+			hasAltivec = true;
 		}
 	}
 

@@ -30,7 +30,7 @@ else
 MACUGENS_LA =
 endif
 
-SC_INCLUDE_DIR		= $(top_srcdir)/../../headers
+SC_INCLUDE_DIR		= $(top_srcdir)/headers
 INCLUDES		= -I$(SC_INCLUDE_DIR)/common \
 			-I$(SC_INCLUDE_DIR)/plugin_interface \
 			-I$(SC_INCLUDE_DIR)/server
@@ -39,23 +39,24 @@ AM_CFLAGS		= $(SC_CFLAGS)
 AM_CXXFLAGS		= $(AM_CFLAGS)
 
 plugindir		= $(SC_PLUGIN_DIR)
-plugin_LTLIBRARIES	= 	\
-	BinaryOpUGens.la	\
-	DelayUGens.la		\
-	DiskIO_UGens.la		\
-	FFT_UGens.la		\
-	FilterUGens.la		\
-	IOUGens.la		\
-	LFUGens.la		\
-	$(MACUGENS_LA)		\
-	MulAddUGens.la		\
-	NoiseUGens.la		\
-	OscUGens.la		\
-	PanUGens.la		\
-	TriggerUGens.la		\
-	UnaryOpUGens.la		\
-	GendynUGens.la		\
-	PhysicalModelingUGens.la
+plugin_LTLIBRARIES	=		\
+	BinaryOpUGens.la		\
+	DelayUGens.la			\
+	DiskIO_UGens.la			\
+	FFT_UGens.la			\
+	FilterUGens.la			\
+	GendynUGens.la			\
+	IOUGens.la			\
+	LFUGens.la			\
+	$(MACUGENS_LA)			\
+	MulAddUGens.la			\
+	NoiseUGens.la			\
+	OscUGens.la			\
+	PV_ThirdParty.la		\
+	PanUGens.la			\
+	PhysicalModelingUGens.la	\
+	TriggerUGens.la			\
+	UnaryOpUGens.la
 
 # BinaryOpUGens
 BinaryOpUGens_la_SOURCES	= BinaryOpUGens.cpp
@@ -78,6 +79,10 @@ FFT_UGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 # FilterUGens
 FilterUGens_la_SOURCES		= FilterUGens.cpp
 FilterUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
+
+# GendynUGens
+GendynUGens_la_SOURCES		= GendynUGens.cpp
+GendynUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 
 # IOUGens
 IOUGens_la_SOURCES		= IOUGens.cpp
@@ -105,9 +110,21 @@ NoiseUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 OscUGens_la_SOURCES		= OscUGens.cpp
 OscUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 
+PV_ThirdParty_la_SOURCES	= Convolution.cpp \
+				fftlib.c fftlib.h \
+				SCComplex.cpp SCComplex.h \
+				FFT2InterfaceTable.cpp \
+				FeatureDetection.cpp \
+				PV_ThirdParty.cpp
+PV_ThirdParty_la_LDFLAGS	= -module -no-undefined -avoid-version
+
 # PanUGens
 PanUGens_la_SOURCES		= PanUGens.cpp
 PanUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
+
+# PhysicalModelingUGens
+PhysicalModelingUGens_la_SOURCES       	= PhysicalModelingUGens.cpp
+PhysicalModelingUGens_la_LDFLAGS       	= -module -no-undefined -avoid-version
 
 # TriggerUGens
 TriggerUGens_la_SOURCES		= TriggerUGens.cpp
@@ -116,13 +133,5 @@ TriggerUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 # UnaryOpUGens
 UnaryOpUGens_la_SOURCES		= UnaryOpUGens.cpp
 UnaryOpUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
-
-# GendynUGens
-GendynUGens_la_SOURCES		= GendynUGens.cpp
-GendynUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
-
-# PhysicalModelingUGens
-PhysicalModelingUGens_la_SOURCES       	= PhysicalModelingUGens.cpp
-PhysicalModelingUGens_la_LDFLAGS       	= -module -no-undefined -avoid-version
 
 ## EOF ================================================================

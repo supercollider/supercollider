@@ -76,11 +76,6 @@ be new to you:
     $ make
     $ make install
 
-the supercollider synthesis plugins are built separately to allow for
-compilation with alternative compilers other than gcc; in order to
-build the plugins, change into source/plugins and repeat steps 2. and
-3. above.
-
 running scsynth
 ----------------
 

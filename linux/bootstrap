@@ -24,24 +24,26 @@ do_bootstrap()
     set +x
 }
 
-case "$1" in
-    server|lang)
-	echo "* bootstrapping server/lang"
-	do_bootstrap
-	;;
-    plugins)
-	if test -d source/plugins; then
-	    echo "* bootstrapping plugins"
-	    cd source/plugins && do_bootstrap
-	else
-	    echo "directory source/plugins not found"
-	    exit 1
-	fi
-	;;
-    *)
-	"$bootstrap" server
-	"$bootstrap" plugins
-	;;
-esac
+# case "$1" in
+#     server|lang)
+# 	echo "* bootstrapping server/lang"
+# 	do_bootstrap
+# 	;;
+#     plugins)
+# 	if test -d source/plugins; then
+# 	    echo "* bootstrapping plugins"
+# 	    cd source/plugins && do_bootstrap
+# 	else
+# 	    echo "directory source/plugins not found"
+# 	    exit 1
+# 	fi
+# 	;;
+#     *)
+# 	"$bootstrap" server
+# 	"$bootstrap" plugins
+# 	;;
+# esac
+
+do_bootstrap
 
 # EOF
