@@ -14,13 +14,13 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	
-	compare { arg aString; _StringCompare }
-	< { arg aString; ^this.compare(aString) < 0 }
-	> { arg aString; ^this.compare(aString) > 0 }
-	<= { arg aString; ^this.compare(aString) <= 0 }
-	>= { arg aString; ^this.compare(aString) >= 0 }
-	== { arg aString; ^this.compare(aString) == 0 }
-	!= { arg aString; ^this.compare(aString) != 0 }
+	compare { arg aString, ignoreCase=false; _StringCompare }
+	< { arg aString; ^this.compare(aString, true) < 0 }
+	> { arg aString; ^this.compare(aString, true) > 0 }
+	<= { arg aString; ^this.compare(aString, true) <= 0 }
+	>= { arg aString; ^this.compare(aString, true) >= 0 }
+	== { arg aString; ^this.compare(aString, true) == 0 }
+	!= { arg aString; ^this.compare(aString, true) != 0 }
 	hash { _StringHash }
 	
 	// no sense doing collect as per superclass collection

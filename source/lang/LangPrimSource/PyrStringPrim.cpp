@@ -76,20 +76,34 @@ int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int memcmpi(char *a, char *b, int len)
+{
+	for (int i=0; i<len; ++i) {
+		char aa = toupper(a[i]);
+		char bb = toupper(b[i]);
+		if (aa < bb) return -1;
+		if (aa > bb) return 1;
+	}
+	return 0;	
+}
+
 int prStringCompare(struct VMGlobals *g, int numArgsPushed);
 int prStringCompare(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b;
+	PyrSlot *a, *b, *c;
 	int cmp, length;
 	
-	a = g->sp - 1;
-	b = g->sp;
+	a = g->sp - 2;
+	b = g->sp - 1;
+	c = g->sp;
+	
 	if (b->utag != tagObj || !isKindOf(b->uo, class_string)) {
 		SetNil(a);
 		return errNone;
 	}
 	length = sc_min(a->uo->size, b->uo->size);
-	cmp = memcmp(a->uos->s, b->uos->s, length);
+	if (IsTrue(c)) cmp = memcmpi(a->uos->s, b->uos->s, length);
+	else cmp = memcmp(a->uos->s, b->uos->s, length);
 	if (cmp == 0) {
 		if (a->uo->size < b->uo->size) cmp = -1;
 		else if (a->uo->size > b->uo->size) cmp = 1;
@@ -152,7 +166,7 @@ void initStringPrimitives()
 		
 	base = nextPrimitiveIndex();
 
-	definePrimitive(base, index++, "_StringCompare", prStringCompare, 2, 0);	
+	definePrimitive(base, index++, "_StringCompare", prStringCompare, 3, 0);	
 	definePrimitive(base, index++, "_StringHash", prStringHash, 1, 0);	
 	definePrimitive(base, index++, "_StringPathMatch", prStringPathMatch, 1, 0);	
 	definePrimitive(base, index++, "_StringAsSymbol", prStringAsSymbol, 1, 0);	
