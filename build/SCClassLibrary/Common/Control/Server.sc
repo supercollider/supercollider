@@ -52,7 +52,7 @@ Server : Model {
 	var <name, <addr;
 	var <isLocal, <inProcess;
 	var <serverRunning = false;
-	var >options;
+	var >options,<>latency = 0.2;
 	var <nodeAllocator;
 	var <controlBusAllocator;
 	var <audioBusAllocator;
