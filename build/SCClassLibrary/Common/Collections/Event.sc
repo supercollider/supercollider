@@ -13,7 +13,7 @@ Event : Environment {
 		^Event.new(8, nil, defaultParentEvent, true);
 	}
 	*silent { arg dur = 1.0;
-		^defaultParentEvent.copy.put(\type, \rest)
+		^defaultParentEvent.copy.put(\type, \rest).put(\dur, dur)
 	}
 	
 	next { ^this.copy }
@@ -282,18 +282,35 @@ Event : Environment {
 							server.sendBundle(latency, [\n_set, id, \gate, 0]); 
 						};
 					},
+					
+					group: #{|server|
+						var lag, dur, strum;
+										
+						lag = ~lag + server.latency;
+						strum = ~strum;
+			
+						~id.asArray.do {|id, i|
+							var latency;
+							
+							latency = i * strum + lag;
+							
+							server.sendBundle(latency.post, [\g_new, id, ~addAction, ~group].post); 
+						};
+					},
+	
+
 					kill: #{|server|
 						var lag, dur, strum;
 										
 						lag = ~lag + server.latency;
 						strum = ~strum;
 			
-						~id.do {|id, i|
+						~id.asArray.do {|id, i|
 							var latency;
 							
 							latency = i * strum + lag;
 							
-							server.sendBundle(latency, [\n_free, id]); 
+							server.sendBundle(latency.post, [\n_free, id].post); 
 						};
 					},
 	
