@@ -4,7 +4,7 @@ BroadcastServer : Server {
 	var <>localServer, <>allAddr;
 	
 	
-	*newFrom { arg localServer, allAddr;
+	*newFrom { arg localServer, allAddr; //local server is a router
 		^super.new
 				.localServer_(localServer)
 				.ninit(localServer.name.asString ++ "_broadcast")
@@ -15,7 +15,19 @@ BroadcastServer : Server {
 				 
 	}
 	
-	////we don't need much here, this class mainly wraps the messages
+	autoConfigure { arg getAnyApplication=false;
+		var addr;
+		addr = [];
+		OSCService.knownServices.do({ arg item;
+			if(getAnyApplication || (item.name == "SuperCollider"), {
+				addr = addr.add(NetAddr(item.hostname, item.port));
+				[item.name, item.hostname, item.port].postln;
+			});
+		});
+		allAddr = addr;
+	}
+	
+	////we don't need much here, this class wraps the messages
 	ninit { arg argName;
 		name = argName; 
 		addr = localServer.addr;
@@ -29,7 +41,7 @@ BroadcastServer : Server {
 	makeWindow {} //doesn't make sense, use Router for gui
 	
 	newNodeWatcher {
-		nodeWatcher = NodeWatcher.new(allAddr);
+		nodeWatcher = NodeWatcher.new(this);
 		nodeWatcher.start;
 		
 	}
@@ -95,7 +107,6 @@ BroadcastServer : Server {
 	bufferAllocator { ^localServer.bufferAllocator }
 	
 	nextNodeID { ^localServer.nodeAllocator.alloc }
-	//nextStaticNodeID { ^localServer.staticNodeAllocator.alloc }
 	nextSharedNodeID { ^localServer.nextSharedNodeID }
 }
 
@@ -157,15 +168,23 @@ DispatchServer : BroadcastServer {
 Router : Server {
 	
 	var <broadcast, <sharedNodeIDAllocator;
-	var <clientNumber=0; //for multi user dungeons
 	
 	*new { arg name, addr, options, clientNumber=0, allAddr, latencies;
 		^super.new(name, addr, options, clientNumber).initBroadcast(allAddr, latencies)
 	}
 	
-	nextSharedNodeID {
-		^sharedNodeIDAllocator.alloc
+	initBroadcast { arg addresses, latencies;
+		
+		if(latencies.isNil, {
+			broadcast = BroadcastServer.newFrom(this, addresses);
+		}, {
+			broadcast = DispatchServer.newFrom(this, addresses, latencies);
+		});
 	}
+	
+	autoConfigure { arg getAnyApplication=false;
+		broadcast.autoConfigure(getAnyApplication);
+	} 
 	
 	boot {
 		super.boot;
@@ -189,27 +208,15 @@ Router : Server {
 		broadcast.allAddr.do(function)
 	}
 	
-	//isLocal { ^false }
-	
-	initBroadcast { arg addresses, latencies;
-		if(latencies.isNil, {
-			broadcast = BroadcastServer.newFrom(this, addresses);
-		}, {
-			broadcast = DispatchServer.newFrom(this, addresses, latencies);
-		});
+	nextSharedNodeID {
+		^sharedNodeIDAllocator.alloc
 	}
 	
 	newAllocators {
-		var nodeIdOffset, n;
-		n = options.maxNodes;
-		nodeIdOffset = 1000 + (clientID * n);
-		nodeAllocator = LRUNumberAllocator(nodeIdOffset, nodeIdOffset + n);
-		sharedNodeIDAllocator = RingNumberAllocator(16, 800);
+	
+		super.newAllocators;
+		sharedNodeIDAllocator = RingNumberAllocator(128, 800);
 		
-		controlBusAllocator = PowerOfTwoAllocator(options.numControlBusChannels);
-		audioBusAllocator = PowerOfTwoAllocator(options.numAudioBusChannels, 
-		options.numInputBusChannels + options.numOutputBusChannels);
-		bufferAllocator = PowerOfTwoAllocator(options.numBuffers);
 	}
 	
 
