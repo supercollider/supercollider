@@ -1,40 +1,38 @@
 
 CocoaDialog {
 
-	classvar openDialogs;
-	
-	var returnSlot;
+	classvar returnSlot,ok,cancel;
 	
 	*getPaths { arg okFunc,cancelFunc,
 				maxSize=20;
-		var new,returnSlot;
-		returnSlot = Array.new(maxSize);
-		new = super.newCopyArgs(returnSlot);
-		new.retainDialog;
-		{
-			new.prGetPathsDialog(returnSlot);
-			if(returnSlot.size > 0,{
-				okFunc.value(returnSlot);
-			},{
-				cancelFunc.value(returnSlot);
-			});
-			new.releaseDialog;
-			nil
-		}.defer;
-		^new
+		if(returnSlot.isNil,{
+			returnSlot = Array.new(maxSize);
+			ok = okFunc;
+			cancel = cancelFunc;
+			this.prGetPathsDialog(returnSlot);
+		},{
+			"A CocoaDialog is already in progress.".warn;
+		});
 	}
-
-	prGetPathsDialog { arg returnSlot;
+	
+	*prGetPathsDialog { arg returnSlot;
 		_Cocoa_GetPathsDialog
 		^this.primitiveFailed
 	}
-		
-	retainDialog {
-		openDialogs = openDialogs.add(this);
+
+	*ok {
+		ok.value(returnSlot);
+		ok = cancel = returnSlot = nil;
 	}
-	releaseDialog {
-		openDialogs.remove(this);
+	*cancel {
+		cancel.value;
+		ok = cancel = returnSlot = nil;
 	}
+	*clear { // in case of errors, invalidate any previous dialogs
+		returnSlot = nil;
+	}
+	
+
 
 }
 
