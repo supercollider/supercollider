@@ -102,6 +102,11 @@ Server : Model {
 	sendBundle { arg time ... args;
 		addr.performList(\sendBundle, time, args);
 	}
+	
+	sendCmdList { arg commands, latency;
+		//"sent to server: ".post; commands.asCompileString.postln;
+		this.performList(\sendBundle, [latency ? this.latency ] ++ commands) 
+	}
 	// 
 	sendSynthDef { arg name;
 		var file, buffer;
