@@ -366,34 +366,6 @@ IdentityDictionary : Dictionary {
 		^this.superPerformList(\doesNotUnderstand, selector, args);
 	}
 	
-	collapse {
-		// cyclic parents will crash.
-		^this.collapseParents(this.class.new);
-	}
-	collapseParents { arg all;
-		if (parent.notNil) { all.putAll(parent.collapseParents(all)) };
-		^all.putAll(this);
-	}
-	topParent {
-		var event, parent;
-		event = this;
-		while { parent = event.parent; parent.notNil } { event = parent };
-		^event
-	}
-
-	insertParent { arg newParent;
-		var oldParent, newTopParent;
-		oldParent = parent;
-		newTopParent = newParent.topParent;
-		parent = newParent;
-		newTopParent.parent = oldParent;
-	}
-
-	
-	embedInStream { arg event;
-		^this.copy.parent_(event).yield;
-	}
-	
 	// not the fastest way, but the simplest
 	writeAsPlist { arg path;
 		this.as(Dictionary).writeAsPlist(path);
