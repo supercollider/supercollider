@@ -199,8 +199,9 @@ PauseStream : Stream
 	// pause and resume are synonyms of stop and play
 	pause { stream = nil }
 	resume { ^this.play }
-	start { ^this.play }
 	
+	start { this.reset; ^this.play }
+		
 	stream_ { arg argStream; stream = originalStream = argStream; }
 	next { arg inval; ^stream.next(inval) }
 	

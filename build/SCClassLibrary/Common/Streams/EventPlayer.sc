@@ -11,13 +11,8 @@ NotePlayer : EventPlayer {
 		
 		server = ~server;
 		id = server.nextNodeID;
-
-		// create note on event
-		msg = [9, ~instrument, id, 1, ~group, \freq, freq];
-		~argNames.do({ arg name;
-			msg = msg.add(name);
-			msg = msg.add(currentEnvironment.at(name));
-		});
+		
+		msg = ~msgFunc.value(id, freq);
 		
 		//send the note on bundle
 		server.sendBundle(lag, msg); 
@@ -55,16 +50,13 @@ NoteDurPlayer : NotePlayer {
 		
 		server = ~server;
 		id = server.nextNodeID;
-
-		// create note on event
-		msg = [9, ~instrument, id, 1, ~group, \freq, freq, \dur, dur];
-		~argNames.do({ arg name;
-			msg = msg.add(name);
-			msg = msg.add(currentEnvironment.at(name));
-		});
+		
+		msg = ~msgFunc.value(id, freq);
 		
 		//send the note on bundle
 		server.sendBundle(lag, msg); 
+		
+		// no note off. note assumed to have a fixed duration.
 	}
 }
 /*

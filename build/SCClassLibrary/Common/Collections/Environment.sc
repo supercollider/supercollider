@@ -100,7 +100,6 @@ Event : Environment {
 
 			~instrument = \default;
 			
-			~argNames = #[\amp, \pan, \out];
 			~group = 0;
 			~out = 0;
 
@@ -121,6 +120,12 @@ Event : Environment {
 			};
 						
 			~player = NotePlayer.new;
+			
+			~msgFunc = { arg id, freq;
+				[9, ~instrument, id, 1, ~group, 
+					\freq, freq, \amp, ~amp, \out, ~out, \pan, ~pan];
+			};
+			
 			~server = Server.local;
 		});
 	}
