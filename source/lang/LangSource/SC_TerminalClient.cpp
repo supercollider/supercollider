@@ -28,6 +28,7 @@
 #include <ctype.h>
 #include <fcntl.h>
 #include <string.h>
+#include <sys/param.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -59,8 +60,6 @@ static PyrSymbol* s_interpretCmdLine = 0;
 static PyrSymbol* s_interpretPrintCmdLine = 0;
 static PyrSymbol* s_stop = 0;
 static PyrSymbol* s_tick = 0;
-
-static PyrSymbol* gInterpretSymbol = 0;
 
 static char gInputInterpretDelimiter = 0x1b;			// ^[
 static char gInputInterpretPrintDelimiter = 0x0c;		// ^L
@@ -307,15 +306,18 @@ bool SC_LibraryConfigFile::parseLine(const char* fileName, int lineNumber, const
 
 	if (!error && action && (path.getSize() > 0)) {
 		path.finish();
-		char* str = (char*)malloc(path.getSize() * sizeof(char));
-		if (str) {
-			strcpy(str, path.getData());
-			if (action == '+') {
-				libConf->addIncludedDirectory(str);
-			} else {
-				libConf->addExcludedDirectory(str);
+		char realPath[MAXPATHLEN];
+		if (unixStandardizePath(path.getData(), realPath) != 0) {
+			char* str = (char*)malloc((strlen(realPath) + 1) * sizeof(char));
+			if (str) {
+				strcpy(str, realPath);
+				if (action == '+') {
+					libConf->addIncludedDirectory(str);
+				} else {
+					libConf->addExcludedDirectory(str);
+				}
+				return true;
 			}
-			return true;
 		}
 	}
 

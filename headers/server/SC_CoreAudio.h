@@ -112,7 +112,7 @@ protected:
 public:
 	// Common methods
 	SC_AudioDriver(struct World *inWorld);
-	~SC_AudioDriver();
+	virtual ~SC_AudioDriver();
 
     int64 mOSCbuftime;
     
@@ -173,7 +173,7 @@ protected:
     
 public:
     SC_CoreAudioDriver(struct World *inWorld);
-	~SC_CoreAudioDriver();
+	virtual ~SC_CoreAudioDriver();
 
     void Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime);
 
@@ -208,7 +208,7 @@ protected:
     
 public:
     SC_JackDriver(struct World *inWorld);
-	~SC_JackDriver();
+	virtual ~SC_JackDriver();
 
     void JackRun();
 	void JackBufferSizeChanged(int numSamples);

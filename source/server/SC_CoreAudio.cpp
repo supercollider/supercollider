@@ -1387,10 +1387,10 @@ int sc_jack_srate_cb(jack_nframes_t sampleRate, void *arg)
 // SC_JackDriver (JACK)
 
 SC_JackDriver::SC_JackDriver(struct World *inWorld)
-		: SC_AudioDriver(inWorld)
-        , mClient(0)
-        , mInputList(0)
-        , mOutputList(0)
+	: SC_AudioDriver(inWorld),
+	  mClient(0),
+	  mInputList(0),
+	  mOutputList(0)
 {
 	pthread_mutex_init(&gJackState.mLock, 0);
 }
