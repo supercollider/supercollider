@@ -5,20 +5,20 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 OSCresponder				
-\fs30 client side responder
+\fs26 client side responder
 \f1\b0\fs24 \
+\
 \
 Register a function to be called upon receiving a specific command from a specific OSC address.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 \
-OSCresponder(addr,cmdName,action);\
+	*new(addr,cmdName,action);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 	\
-	
+\f1\b0 \cf0 	
 \f0\b addr
 \f1\b0 		\
 		an instance of NetAddr, usually obtained from your server:  server-addr\
@@ -39,14 +39,18 @@ OSCresponder(addr,cmdName,action);\
 \f0\b \{ ... \}.defer
 \f1\b0 ;\
 				\
-Note:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Note:
+\f1\b0 \
 	A single OSCresponder may be set up for each addr and cmdName combination.  \
 	Subsequent registrations will overwrite previous ones.  See 
 \f0\b [OSCresponderNode]
 \f1\b0 .
 \f0\b\fs26 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \
+\f1\b0\fs24 \cf0 \
 	Whenever an OSC message is sent to the SuperCollider application (the language, not the server), either 	Main-recvOSCmessage or Main-recvOSCbundle is called.  There, the messages are forwarded to the 	OSCresponder class using the OSCresponder-respond class method.  \
 \
 \
