@@ -1734,7 +1734,7 @@ void PyrCallNode::compileCall(PyrSlot *result)
 	index = conjureSelectorIndex((PyrParseNode*)mSelector, gCompilingBlock, 
 		isSuper, mSelector->mSlot.us, &selType);
 
-	if (numKeyArgs > 0 || numArgs > 15) {
+	if (numKeyArgs > 0 || (numArgs > 15 && !(selType == selSwitch || selType == selCase))) {
 		for (; argnode; argnode = argnode->mNext) {
 			COMPILENODE(argnode, &dummy, false);
 		}
