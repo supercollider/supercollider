@@ -11,7 +11,7 @@
 
 \f1\b0\fs18 \cf0 When SuperCollider runs a program, it first examines the code to ensure that syntax and grammar are correct. In general, syntax describes how words are spelled and grammar describes how words are formed into statements and expressions. For example, are all variable names and/or keywords spelled correctly in a program? Are statements terminated by semi-colons? \
 \
-If errors of syntax or grammar are found, SuperCollider writes a notification to the transcript window. Such messages\
+If errors of syntax or grammar are found, SuperCollider writes a notification to the post window. Such messages\
 \
 \'a5 ERROR: Parse error\
    in file 'selected text'\
@@ -21,9 +21,8 @@ If errors of syntax or grammar are found, SuperCollider writes a notification to
 \'a5 ERROR: Command line parse failed\
 nil\
 \
-are descriptive but terse.\
+are descriptive but terse, so learning how to read error messages is a useful skill.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////
 \f0\b\fs24 \cf0 \
 \
@@ -39,9 +38,9 @@ Two helpful commands in the SuperCollider Edit menu: \
 \
 1. "Go to Line ..." transports you to the line number of your choice. Use this when an error message identifies the line number on which a problem occured.\
 \
-2. "Find" searches through text for specific strings that can be case sensitive or insensitive. Use "Find" to locate code that has been identified in error messages or, for example, to replace all instances of an improperly spelled word.\
+2. "Find" searches for words or phrases. Use "Find" to locate code that has been identified in error messages or to replace all instances of an improperly spelled word.\
 \
-All of the examples below create error messages.\
+The examples below create error messages that are displayed in the transcript window.\
 \
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \cf2 // what's a variable? it's a placeholder for a value. the most common way to think of variables is\cf0 \
@@ -68,7 +67,6 @@ hi;		\cf2 // nothing has been assigned to hi, by default, it returns nil\cf0 \
 \cf2 // what's a symbol? a symbol is a unique name\cf0 \
 'hi\cf4 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 // correct\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 'hi'\cf0 \
