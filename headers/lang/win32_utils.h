@@ -71,11 +71,11 @@ inline void win32_GetHomeFolder(char* homeFolder, int bufLen)
         strcat(homeFolder_,h);
     }
   }
-  size_t len = strlen(homeFolder);
+  size_t len = strlen(homeFolder_);
   if (bufLen < len + 1)
 		fprintf(stderr, "the buffer given to win32_GetHomeFolder(...) is too small\n");
   strncpy(homeFolder,homeFolder_,len);
-  homeFolder[bufLen-1]= 0;
+  homeFolder[len]= 0;
 }
 
 inline char* win32_basename(char* path)
