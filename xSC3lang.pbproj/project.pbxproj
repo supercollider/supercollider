@@ -1902,6 +1902,126 @@
 //C22
 //C23
 //C24
+//CF0
+//CF1
+//CF2
+//CF3
+//CF4
+		CFF7A362058AC2970096CD03 = {
+			expectedFileType = sourcecode.c.h;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AIAttributedStringAdditions.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		CFF7A363058AC2970096CD03 = {
+			expectedFileType = sourcecode.c.h;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AIColorAdditions.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		CFF7A364058AC2970096CD03 = {
+			expectedFileType = sourcecode.c.h;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AIHTMLDecoder.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		CFF7A365058AC2970096CD03 = {
+			expectedFileType = sourcecode.c.h;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AIStringAdditions.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		CFF7A366058AC2970096CD03 = {
+			expectedFileType = sourcecode.c.h;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AITextAttributes.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		CFF7A367058AC2B80096CD03 = {
+			expectedFileType = sourcecode.c.objc;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AIAttributedStringAdditions.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		CFF7A368058AC2B80096CD03 = {
+			expectedFileType = sourcecode.c.objc;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AIColorAdditions.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		CFF7A369058AC2B80096CD03 = {
+			expectedFileType = sourcecode.c.objc;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AIHTMLDecoder.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		CFF7A36A058AC2B80096CD03 = {
+			expectedFileType = sourcecode.c.objc;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AIStringAdditions.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		CFF7A36B058AC2B80096CD03 = {
+			expectedFileType = sourcecode.c.objc;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = AITextAttributes.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		CFF7A3A7058AC6610096CD03 = {
+			fileRef = CFF7A367058AC2B80096CD03;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		CFF7A3A8058AC6610096CD03 = {
+			fileRef = CFF7A368058AC2B80096CD03;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		CFF7A3A9058AC6610096CD03 = {
+			fileRef = CFF7A369058AC2B80096CD03;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		CFF7A3AA058AC6610096CD03 = {
+			fileRef = CFF7A36A058AC2B80096CD03;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		CFF7A3AB058AC6610096CD03 = {
+			fileRef = CFF7A36B058AC2B80096CD03;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//CF0
+//CF1
+//CF2
+//CF3
+//CF4
 //F50
 //F51
 //F52
@@ -1980,6 +2100,11 @@
 		};
 		F50D04FD02E69B6B01CA2799 = {
 			children = (
+				CFF7A362058AC2970096CD03,
+				CFF7A363058AC2970096CD03,
+				CFF7A364058AC2970096CD03,
+				CFF7A365058AC2970096CD03,
+				CFF7A366058AC2970096CD03,
 				F50D04FE02E69B6B01CA2799,
 				F50D04FF02E69B6B01CA2799,
 				F50D050002E69B6B01CA2799,
@@ -2617,6 +2742,11 @@
 		};
 		F50D058002E69B6B01CA2799 = {
 			children = (
+				CFF7A367058AC2B80096CD03,
+				CFF7A368058AC2B80096CD03,
+				CFF7A369058AC2B80096CD03,
+				CFF7A36A058AC2B80096CD03,
+				CFF7A36B058AC2B80096CD03,
 				F50D058202E69B6B01CA2799,
 				F50D058302E69B6B01CA2799,
 				F50D058402E69B6B01CA2799,
@@ -3285,6 +3415,29 @@
 			<key>NSDocumentClass</key>
 			<string>MyDocument</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>htm</string>
+				<string>html</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>html.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/html</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>SC Help (HTML)</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>HTML</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>SuperCollider</string>
@@ -3544,6 +3697,11 @@
 		F50D061A02E69C2101CA2799 = {
 			buildActionMask = 2147483647;
 			files = (
+				CFF7A3A7058AC6610096CD03,
+				CFF7A3A8058AC6610096CD03,
+				CFF7A3A9058AC6610096CD03,
+				CFF7A3AA058AC6610096CD03,
+				CFF7A3AB058AC6610096CD03,
 				F50D065902E69D5901CA2799,
 				F50D065A02E69D5901CA2799,
 				F50D065B02E69D5901CA2799,
