@@ -44,8 +44,36 @@ HIDDeviceElement {
 HIDDeviceService{
 	classvar < devices, <> action;
 	classvar < initialized = false;
-	
+	classvar < deviceSpecs;
 
+	*initClass {
+		deviceSpecs = IdentityDictionary.new;
+		deviceSpecs.put(\wingMan, 
+			IdentityDictionary[
+				\a -> 0, \b-> 1, \c-> 2,
+				\x-> 3, \y-> 4, \z-> 5,
+				\l-> 6, //front left
+				\r-> 7, //front right
+				\s-> 8, 
+				\mode-> 9,
+				\x-> 10,		
+				\y-> 11,		
+				\slider-> 12,
+				\hat-> 13
+			]);
+		deviceSpecs.put(\cyborg, 
+			IdentityDictionary[				\trig -> 0, \a-> 1, \b -> 2, \c -> 3,				\f1-> 4, \f2-> 5, \f3-> 6, \f4 -> 7,				\l -> 8, \r -> 9, // arrow buttons				\hu -> 10, \hl -> 11, \hr -> 12, \hd -> 13, // hat positions				\x -> 14, \y -> 15, \z -> 16, // axes				\slider-> 17,				\hat-> 18			]);
+	}
+	
+	*keyToIndex { arg key, locID=0;
+		var device, deviceSpec;
+		device = devices.at(locID);
+		^if(device.isNil, { ^nil }, {
+			deviceSpec = deviceSpecs.at(device.product.asSymbol);
+			if(deviceSpec.notNil, { deviceSpec.at(key) }, { nil });
+		})
+	}
+	
 	*getValue{arg locID, cookie;
 		_HIDGetValue
 	}	
