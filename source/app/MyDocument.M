@@ -519,10 +519,29 @@ void SyntaxColorize(NSTextView* textView);
 
 NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile, NSString* extension, NSString* helpFolderPath)
 {
-    // The place to start looking
-    if(!helpFolderPath) { helpFolderPath = [NSString stringWithFormat: @"%@/Help/",
-		    [fileManager currentDirectoryPath]];
-	}
+    // If called with no folder check in the SC distribution Help
+    // directory and the System and User Extensions directories.
+    if(!helpFolderPath) { 
+      NSString* helpFilePath ;
+      NSString* searchPath ;
+      
+      searchPath = [NSString stringWithFormat: @"%@/Help/",
+			     [fileManager currentDirectoryPath]];
+      helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
+      if (helpFilePath) return helpFilePath;
+
+      searchPath = @"/Library/Application Support/SuperCollider/Extensions/";
+      helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
+      if (helpFilePath) return helpFilePath;
+
+      searchPath = [NSString stringWithFormat: @"%@/Library/Application Support/SuperCollider/Extensions/",  
+			     NSHomeDirectory()];
+      helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, searchPath);
+      if (helpFilePath) return helpFilePath;
+
+      return NULL;
+    }
+
     // the name of the help file we are looking for 
     NSString* helpFileName;
        
@@ -545,11 +564,14 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 		if([[candidate lastPathComponent] isEqualToString:helpFileName]) {
             helpFilePath = fullName;
             break;
-        } else if // if that didn't work, check if this is a directory symlink
-		(([[fileManager fileAttributesAtPath: fullName traverseLink: NO] objectForKey:@"NSFileType"] == NSFileTypeSymbolicLink) && ([[candidate pathExtension] isEqualToString: @""])){
-			// if so traverse the link and call helpFileWithName() recursively
-			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, [[fullName stringByResolvingSymlinksInPath] stringByAppendingString: @"/"]);
-			if(helpFilePath) break;
+        } else if // if that didn't work, check if this is a directory symlink (allow directories to have extensions)
+	    (([[fileManager fileAttributesAtPath: fullName traverseLink: NO] objectForKey:@"NSFileType"] == NSFileTypeSymbolicLink)){
+		  NSString* linkName = [[fullName stringByResolvingSymlinksInPath] stringByAppendingString: @"/"];
+		  if(([[fileManager fileAttributesAtPath: linkName traverseLink: NO] objectForKey:@"NSFileType"] == NSFileTypeDirectory)) {
+		    // if so traverse the link and call helpFileWithName() recursively
+		    helpFilePath = helpFileWithName(fileManager, desiredHelpFile, extension, linkName);
+		    if(helpFilePath) break;
+		  }
 		}
     }
 
@@ -1025,6 +1047,9 @@ NSString* pathOfHelpFileFor(NSString* selection)
     if (!fileManager) return helpFilePath; // == NULL
 
     helpFilePath = helpFileWithName(fileManager, selection, @".help.rtf", nil);
+	if (helpFilePath) return helpFilePath;
+	
+    helpFilePath = helpFileWithName(fileManager, selection, @".help.sc", nil);
 	if (helpFilePath) return helpFilePath;
 	
 	helpFilePath = helpFileWithName(fileManager, selection, @".rtf", nil);
