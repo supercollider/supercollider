@@ -271,11 +271,13 @@ NodeProxy : AbstractFunction {
 	}
 	
 	prepareForPlayMsg { arg bundle, freeAll=true;
+				var watcher;
 					if(this.isPlaying.not, {
+						watcher = server.nodeWatcher;
 						group = Group.newToBundle(bundle, server, \addToHead);
 						group.prIsPlaying(true);
 						//RootNode(server).prAddHead(group);//manually link the node
-						server.nodeWatcher.nodes.add(group); //force isPlaying					
+						watcher.nodes.add(group); //force isPlaying						if(watcher.isWatching.not, { watcher.start }); //to be sure.
 						})
 	}
 	
