@@ -1359,7 +1359,9 @@ ClassDependancy* newClassDependancy(PyrSymbol *className, PyrSymbol *superClassN
 	// lifetime: kill after compile. 
 	numClassDeps++;
 	if (className->classdep) {
-		error("duplicate Class found: '%s'\n", className->name);
+		error("duplicate Class found: '%s' \n", className->name);
+                post("%s\n",className->classdep->fileSym->name);
+                postfl("%s\n\n",fileSym->name);
 		return className->classdep;
 	}
 	classdep = (ClassDependancy*)pyr_pool_compile->Alloc(sizeof(ClassDependancy));
@@ -1515,11 +1517,13 @@ void traverseFullDepTree2()
 		setSelectorFlags();
 		if (2*numClassDeps != gNumClasses) {
 			error("There is a discrepancy.\n");
+                    /* not always correct
                     if(2*numClassDeps < gNumClasses) {
                         post("Duplicate files may exist in the directory structure.\n");
                     } else {
                         post("Some class files may be missing.\n");
                     }
+                    */
                     post("numClassDeps %d   gNumClasses %d\n", numClassDeps, gNumClasses);
 			findDiscrepancy();
 			compileErrors++;
