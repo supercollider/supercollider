@@ -145,7 +145,9 @@ Event : Environment {
 				numchannels: 1,
 				gencmd: \sine1,
 				genflags: 7,
-				genarray: [1]
+				genarray: [1],
+				bufpos: 0,
+				leaveOpen: 0
 			),
 			
 			playerEvent: (
@@ -201,7 +203,7 @@ Event : Environment {
 								id = server.nextNodeID;
 								
 								//send the note on bundle
-								server.sendBundle(latency, [9, instrumentName, id, addAction, group] ++ msgArgs); 
+								server.sendBundle(latency, [\s_new, instrumentName, id, addAction, group] ++ msgArgs); 
 										
 								if (hasGate) {
 									// send note off bundle.
@@ -308,10 +310,15 @@ Event : Environment {
 						genarray = ~genarray;
 						server.sendBundle(lag, [\b_gen, ~bufnum, ~gencmd, ~genflags] ++ genarray);
 					},
-					read: #{|server|
+					load: #{|server|
 						var lag;
 						lag = ~lag + server.latency;
 						server.sendBundle(lag, [\b_allocRead, ~bufnum, ~filename, ~frame, ~numframes]);
+					},
+					read: #{|server|
+						var lag;
+						lag = ~lag + server.latency;
+						server.sendBundle(lag, [\b_read, ~bufnum, ~filename, ~frame, ~numframes, ~bufpos, ~leaveOpen]);
 					},
 					alloc: #{|server|
 						var lag;
