@@ -1,7 +1,7 @@
 
 ObjectGui : SCViewAdapter { // aka AbstractController
 
-	var <>model;
+	var <>model, <dragSource;
 
 	guiBody { arg layout;
 		// implement this in your subclass
@@ -61,7 +61,7 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		var n;
 		n = model.asString;
 		InspectorLink.icon(model,layout);
-		SCDragSource(layout,Rect(0,0,(n.size * 7.5).max(70),17))
+		dragSource = SCDragSource(layout,Rect(0,0,(n.size * 7.5).max(70),17))
 			.stringColor_(Color.new255(70, 130, 200))
 			.background_(Color.white)
 			.align_(\center)
