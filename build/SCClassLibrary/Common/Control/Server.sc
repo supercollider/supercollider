@@ -104,6 +104,9 @@ Server : Model {
 		named.put(name, this);
 		set.add(this);
 		this.newAllocators;	
+		this.newNodeWatcher;
+	}
+	newNodeWatcher {
 		nodeWatcher = BasicNodeWatcher.new(this);
 	}
 	newAllocators {
@@ -136,7 +139,7 @@ Server : Model {
 		addr.sendBundle(nil,msg);
 	}
  	listSendBundle { arg time,bundle;
-		addr.performList(\sendBundle, [time ? this.latency] ++ bundle);
+		addr.performList(\sendBundle, [time] ++ bundle);
 	}
 	
 	// load from disk locally, send remote
@@ -242,8 +245,8 @@ Server : Model {
 			unixCmd("./scsynth" ++ options.asOptionsString(addr.port));
 			("booting " ++ addr.port.asString).inform;
 		});
-		
-		SystemClock.sched(1, { nodeWatcher.start; });
+		nodeWatcher.start;
+		//SystemClock.sched(1, { nodeWatcher.start; });
 	}
 	
 	reboot {
