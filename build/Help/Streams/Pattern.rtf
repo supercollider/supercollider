@@ -20,47 +20,61 @@ superclass: AbstractFunction\
 \fs24 \cf0 \
 	Pattern 
 \f1\b0 is an abstract class that is the base for library of classes that form a remarkably \
-rich and concise score language. This help file attempts a brief introduction.\
+rich and concise score language. The series of help files entitled 
+\f0\b Streams-Patterns-Events 
+\f1\b0 \
+gives a detailed introduction. This attemps a briefer characterization.\
 \
 	A 
 \f0\b Stream
-\f1\b0  represents a sequence of values.  The sequence is obtained one at a time by\
- sending the stream the message 
+\f1\b0  is an object that responds to 
+\f2 next, reset, 
+\f1 and 
+\f2 embedInStream. 
+\f1 Streams \
+represent sequences of values that are obtained one at a time by with message 
 \f2 next
 \f1 .  A 
 \f2 reset
-\f0\b  
-\f1\b0 message will cause the stream to restart (many but \
- not all streams actually repeat themselves.) If a stream runs out of  values it returns 
+\f0\b  \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 message will cause the stream to restart (many but  not all streams actually repeat themselves.) \
+If a stream runs out of  values it returns 
 \f2 nil
-\f1  in response to \
- 
+\f1  in response to 
 \f2 next
-\f1 .  All objects respond to 
+\f1 .  The message 
+\f2 embedInStream\
+
+\f1 allows a stream definition to allow another stream to  "take over control" of the stream.\
+All objects respond to 
 \f2 next
 \f1  and 
 \f2 reset,
 \f1 most by returning themselves in response to next.  \
- Thus, the number 7 defines a Stream that produces an infinite sequence of 7's.\
+Thus, the number 7 defines a Stream that produces an infinite sequence of 7's. Most objects \
+respond to 
+\f2 embedInStream 
+\f1 with a singleton Stream that returns the object once. \
 \
 	A 
 \f0\b Pattern 
-\f1\b0 defines the  behavior of a Stream and creates such streams in response to \
-the message 
-\f0\b asStream
-\f1\b0 .  This may be contrasted with classes such as 
-\f0\b Routine 
-\f1\b0 that define\
-a single Stream only.   The difference between a Pattern and a Stream is similar to the \
-difference between a score and a performance of that score or a class and an instance of \
-that class.  All objects respond to 
-\f0\b asStream
-\f1\b0 , most by returning themselves.  So most\
-objects are patterns that return streams that are an infinite sequence of the object itself.\
+\f1\b0 defines the behavior of a Stream and creates such streams in response to \
+the messages 
+\f2 asStream 
+\f1 and 
+\f2 embedInStream
+\f1 .  The difference between a Pattern and \
+a Stream is similar to the  difference between a score  and a performance of that score or \
+a class and an instance of that class.  All objects respond to this interface, most by returning \
+themselves.  So most objects are patterns that define streams that are an infinite sequence of \
+the object and embed as singleton streams of that object returned once.\
 \
-	So, what is the advantage of this abstraction?  Patterns are defined in terms of other \
-Patterns, so a Pattern of arbitrary complexity may be substituted for a single value anywhere\
-within a Pattern definition.  The following examples illustrate the difference.\
+	Patterns are defined in terms of other Patterns rather than in terms of specific \
+values.  This allows a Pattern of arbitrary complexity may be substituted for a \
+single value anywhere within a Pattern definition.  A comparison between the Pattern \
+class Pseq and the Stream class  will illustrate the difference:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -70,15 +84,22 @@ within a Pattern definition.  The following examples illustrate the difference.\
 \f1\b0 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 The Pattern class 
+\fs24 \cf0 The
+\fs28  
+\fs24 Pattern class 
 \f0\b Pseq(array, repetitions) 
-\f1\b0 defines a stream that iterates an array. Below a stream\
-is created with 
+\f1\b0 defines a Pattern that will create a stream that iterates \
+an array.  In contrast, the class 
+\f0\b Routine(func, stackSize) 
+\f1\b0 defines a single Stream.  \
+\
+Below a stream is created with 
 \f0\b Pseq 
 \f1\b0 and an 
 \f2 asStream
 \f0\b  
-\f1\b0 message. An identical stream is created directly using 
+\f1\b0 message and an identical stream is \
+created directly using 
 \f0\b Routine
 \f1\b0 .\
 \
@@ -102,12 +123,12 @@ is created with
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \
-	In example 1, there is little difference between using the Pattern class Pseq and the Stream class\
-Routine.  But Pseq actually iterates its array as  a collection of 
+	In example 1, there is little difference between using  Pseq and Routine.  But Pseq actually \
+iterates its array as  a collection of 
 \f3\i patterns to be embedded
-\f1\i0 . This allows any of \
-the values in the array a to be replaced by patterns.  The Routine, on the other hand,  needs to be \
-completely redefined.\
+\f1\i0 . This allows any of the values in the \
+array a to be replaced by patterns.  The Routine, on the other hand,  needs to be completely \
+redefined.\
 \
 ( var routinesA;\
 	a = [3, Pseq([-100,00,300,400]), Pseq([-100,00,300,400].reverse) ];\
@@ -153,7 +174,9 @@ A Routine can perform a pattern simply by replacing calls to
 	10.do(\{ Post << Char.tab << r.next << " " << q.next << Char.nl; \});\
 )	\
 \
-However, there is no concise way to define this stream without using the classes Pattern library. \
+However, there is no concise way to 
+\f3\i define
+\f1\i0  this stream without using Pseq. \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
