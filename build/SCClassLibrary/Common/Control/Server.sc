@@ -99,11 +99,10 @@ Server : Model {
 	var <isLocal, <inProcess;
 	var <serverRunning = false, <serverBooting=false;
 	var <>options,<>latency = 0.2,<dumpMode=0, <notified=true;
-	var <nodeAllocator; 
+	var <nodeAllocator;
 	var <controlBusAllocator;
 	var <audioBusAllocator;
 	var <bufferAllocator;
-	var <nodeWatcher;
 	var <syncThread, <syncTasks;
 
 	var <numUGens=0,<numSynths=0,<numGroups=0,<numSynthDefs=0;
@@ -112,7 +111,7 @@ Server : Model {
 	var alive = false, booting = false, aliveThread, statusWatcher;
 	var <>tree;
 	
-	var <window, scopeWindow, scopeBuffer, <scopeSynth;
+	var <window, <>scopeWindow;
 	var recordBuf, <recordNode;
 	
 	*new { arg name, addr, options, clientID=0;
@@ -347,7 +346,6 @@ Server : Model {
 		this.newAllocators;	
 		this.doWhenBooted({ 
 			if(notified, { 
-				if (nodeWatcher.notNil) { nodeWatcher.start; };
 				this.notify;
 				"notification is on".inform;
 			}, { 
@@ -413,7 +411,6 @@ Server : Model {
 		dumpMode = 0;
 		serverBooting = false;
 		this.serverRunning = false;
-		if (nodeWatcher.notNil) { nodeWatcher.stop; };
 		RootNode(this).freeAll;
 		this.newAllocators;
 	}
@@ -436,7 +433,6 @@ Server : Model {
 		this.sendMsg("/g_freeAll", 0);
 		this.sendMsg("/clearSched");
 		this.initTree;
-		if (nodeWatcher.notNil) { nodeWatcher.clear };
 	}
 	*freeAll {
 		set.do({ arg server;
@@ -478,7 +474,7 @@ Server : Model {
 		recordBuf.isNil.if({"Please execute Server-prepareForRecord before recording".warn; }, {
 			recordNode.isNil.if({
 				recordNode = Synth.new("server-record", [\bufnum, recordBuf.bufnum], this, 
-					\addToTail);  
+					\addAfter);  
 			}, { recordNode.run(true) });
 			"Recording".postln;
 		});
@@ -503,21 +499,13 @@ Server : Model {
 			{arg buf; buf.writeMsg(path, headerFormat, sampleFormat, 0, 0, true);});
 		SynthDef("server-record", { arg bufnum;
 			DiskOut.ar(bufnum, In.ar(0, numChannels)) 
-		}).send(this, {});
+		}).send(this);
 		// cmdPeriod support
 		CmdPeriod.add(this);
 	}
 	
 	// CmdPeriod support for Server-scope and Server-record
 	cmdPeriod {
-		scopeWindow.notNil.if({ 
-			scopeWindow.onClose = nil;
-			scopeWindow.close; 
-			scopeBuffer.free;
-			scopeWindow = nil; 
-			scopeBuffer = nil;
-		});
-		scopeSynth.notNil.if({ scopeSynth = nil; });
 		recordNode.notNil.if({ recordNode = nil; });
 		recordBuf.notNil.if({recordBuf.close({ arg buf; buf.free; }); recordBuf = nil;});
 		CmdPeriod.remove(this);
