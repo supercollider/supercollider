@@ -36,7 +36,7 @@
 		
 		getSliderValues = {
 			var envir;
-			\getSliderValues.postln;
+
 			envir = ();
 			usefulControls.do {|controlName, i|
 				var ctlname;
