@@ -19,9 +19,14 @@ Nil {
 	// support a nil Plug
 	source {}
 	source_ {}
+	
 	// nil Synth support
 	setPlug {} 
 	fadeEnd {}
+	
+	// rate access support
+	rate { ^nil }
+	numChannels { ^nil }
 	
 	do {}
 	doReverse {}
@@ -70,7 +75,7 @@ Nil {
 
 	
 	// graphical support
-	draw{}
+	draw {}
 	click { ^nil }
 	fontID { ^nil }
 	asRect { ^Rect.new }
