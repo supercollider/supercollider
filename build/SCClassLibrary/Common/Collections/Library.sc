@@ -1,4 +1,3 @@
-
 MultiLevelIdentityDictionary : Collection 
 {
 	
@@ -13,22 +12,31 @@ MultiLevelIdentityDictionary : Collection
 	
 	newInternalNode { ^IdentityDictionary.new }
 
-	at { arg ... args;
+	at { arg ... path;
+		^this.atPath(path)
+	}
+	atPath {
+		arg path;
 		var item;
 		item = dictionary;
-		args.do({ arg name; 
+		path.do({ arg name; 
 			item = item.at(name);
 			if (item.isNil, { ^nil });
 		});
 		^item
 	}
-	
-	put { arg ... args;
-		var item, val, lastName;
-		val = args.pop;
-		lastName = args.pop;
+
+	put { arg ... path;
+		var item;
+		item = path.pop;
+		^this.putAtPath(path, item);
+	}	
+	putAtPath { arg path, val;
+		var item, lastName;
+		path = path.copy;
+		lastName = path.pop;
 		item = dictionary;
-		args.do({ arg name; 
+		path.do({ arg name; 
 			item = item.atFail(name, {
 				var newitem; 
 				newitem = this.newInternalNode;
@@ -38,6 +46,7 @@ MultiLevelIdentityDictionary : Collection
 		});
 		item.put(lastName, val);
 	}
+
 	create { arg ... args;
 		var item;
 		item = dictionary;
@@ -84,11 +93,16 @@ MultiLevelIdentityDictionary : Collection
 	do { arg function;
 		dictionary.do(function);
 	}
-	removeAt { arg ... args;
+	removeAt {
+		arg ... path;
+		this.removeAtPath(path)
+	}
+	removeAtPath { arg path;
 		var item, lastName;
-		lastName = args.pop;
+		path = path.copy;
+		lastName = path.pop;
 		item = dictionary;
-		args.do({ arg name; 
+		path.do({ arg name; 
 			item = item.at(name); 
 			if (item.isNil, { ^nil });
 		});
