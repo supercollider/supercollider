@@ -121,15 +121,6 @@ Event : Environment {
 			
 			~group = 0;
 			~out = 0;
-
-			// I don't see the point of these.
-			// doneAction should be built into the patch.
-			// releaseValue should be zero. a negative value would only be for a voice stealer, not a normal note off.
-			// why should gate be any value other than 1 ? gate should just be an argument defaulting to one, but not
-			// passed in the s_new message.
-			//~doneAction = 2;
-			//~releaseValue = 0; // sent to gate on release
-			//~gate = 1.0;
 			
 			~finish = {
 				// do final calculations
@@ -139,7 +130,7 @@ Event : Environment {
 			};
 						
 			~player = NotePlayer.new;
-			
+			~argNames = #[\out, \freq, \amp, \pan];
 			~msgFunc = { arg id, freq;
 				[[9, ~instrument, id, 0, ~group, 
 					\out, ~out, \freq, freq, \amp, ~amp, \pan, ~pan]];
