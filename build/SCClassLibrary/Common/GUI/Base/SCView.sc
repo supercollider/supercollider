@@ -630,7 +630,7 @@ SCPopUpMenu : SCControlView {
 
 
 SCStaticTextBase : SCView {
-	var <string, <font, <object;
+	var <string, <font, <object, <>setBoth=true;
 	
 	font_ { arg argFont;
 		font = argFont;
@@ -654,7 +654,7 @@ SCStaticTextBase : SCView {
 
 	object_ { arg obj;
 		object = obj;
-		this.string = object.asString(80);
+		if (setBoth) { this.string = object.asString(80); };
 	}
 	
 	properties {
