@@ -381,12 +381,17 @@ Document {
 
 
 EnvirDocument : Document {
-	var <>envir;
+	var <envir, <canPlay;
 	*new { arg envir, string="", title, pushNow=true;
 		if(pushNow, { envir.push });
 		title = envir.tryPerform(\name) ? "Untitled Environment";
-		^super.new(string, "envir" + title.asString).envir_(envir)
+		^super.new(string, "envir" + title.asString).envir_(envir).registerKeys
 				.background_(rgb(250, 240, 240));
+	}
+	
+	envir_ { arg environment;
+		envir = environment;
+		canPlay = environment.respondsTo(\play);
 	}
 	
 	didBecomeKey {
@@ -397,6 +402,18 @@ EnvirDocument : Document {
 	didResignKey {
 		envir.pop;
 		endFrontAction.value(this);
+	}
+	
+	registerKeys {
+		this.keyDownAction_({ arg key, modifiers, num;
+				if(canPlay, {
+					if(modifiers == 262144, { //ctl
+						if(num == 49, { (envir.server ? Server.local).boot }); //ctl-1
+						if(num == 50, { envir.at(\out).toggle }); //ctl-2
+						if(num == 51, { envir.at(\out).releaseAndStop }); //ctl-3
+					});
+				})
+		});
 	}
 
 }
