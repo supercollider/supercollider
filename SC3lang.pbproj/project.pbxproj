@@ -2679,6 +2679,7 @@
 		};
 		F5C7B156033D611701A80099 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			name = SC_Reply.h;
 			path = headers/server/SC_Reply.h;
 			refType = 2;

@@ -482,12 +482,14 @@
 		F50D057102E69B6B01CA2799 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Reply.h;
 			refType = 4;
 		};
 		F50D057202E69B6B01CA2799 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SC_Prototypes.h;
 			refType = 4;
 		};
