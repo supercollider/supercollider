@@ -193,6 +193,11 @@ Dictionary : Set {
 		array = array.sort({ arg a, b; a.at(0) < b.at(0) });
 		^array;
 	}
+	asKeyValuePairs {
+		var array = Array.new(this.size * 2);
+		this.keysValuesDo { |key, val| array.add(key); array.add(val) };
+		^array
+	}
 	
 	// PRIVATE IMPLEMENTATION
 	keysValuesArrayDo { arg argArray, function;
