@@ -57,6 +57,13 @@ Env {
 			curve
 		)
 	} 
+	*linen { arg attackTime=0.01, sustainTime=1.0, releaseTime=1.0, level=1.0, curve = \lin;
+		^this.new(
+			[0, level, level, 0],
+			[attackTime, sustainTime, releaseTime], 
+			curve
+		)
+	}
 	
 	
 	// envelopes with sustain
@@ -71,10 +78,6 @@ Env {
 		)
 	}
 	
-	// changed this..
-	*linen { arg attackTime=0.01, sustainLevel=1.0, releaseTime=1.0, curve = \lin;
-		^this.asr(attackTime, sustainLevel, releaseTime, curve)
-	}
 	*asr { arg attackTime=0.01, sustainLevel=1.0, releaseTime=1.0, curve = -4.0;
 		^this.new(
 			[0, sustainLevel, 0],
