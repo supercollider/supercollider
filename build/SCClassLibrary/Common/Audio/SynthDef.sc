@@ -331,14 +331,20 @@ SynthDef {
 			ugen.makeAvailable; // all ugens with no antecedents are made available
 		});
 	}
+	cleanupTopoSort {
+		children.do({ arg ugen;
+			ugen.antecedents = nil;
+			ugen.descendants = nil;
+		});
+	}
 	topologicalSort {
 		var outStack;
 		this.initTopoSort;
 		while ({ available.size > 0 },{
 			outStack = available.pop.schedule(outStack);
 		});
-		
 		children = outStack;
+		this.cleanupTopoSort;
 	}
 	indexUGens {
 		children.do({ arg ugen, i;
