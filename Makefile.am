@@ -13,17 +13,16 @@ MAINTAINERCLEANFILES =	\
 	config.guess	\
 	config.h.in	\
 	config.h.in~	\
-        config.log      \
-        config.status   \
 	config.sub	\
 	configure	\
-        depcomp         \
 	install-sh	\
 	ltmain.sh	\
 	missing		\
 	mkinstalldirs	\
-        stamp-h         \
-	stamp-h.in
+	stamp-h.in	\
+        config.log      \
+        depcomp         \
+        stamp-h
 
 SUBDIRS			= source headers linux
 EXTRA_DIST		= build

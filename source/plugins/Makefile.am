@@ -14,7 +14,6 @@ MAINTAINERCLEANFILES =	\
 	config.h.in	\
 	config.h.in~	\
 	config.log      \
-	config.status   \
 	config.sub	\
 	configure	\
 	depcomp         \
@@ -22,8 +21,8 @@ MAINTAINERCLEANFILES =	\
 	ltmain.sh	\
 	missing		\
 	mkinstalldirs	\
-        stamp-h         \
-	stamp-h.in
+	stamp-h.in	\
+        stamp-h
 
 if HAVE_X11
 MACUGENS_LA = MacUGens.la
