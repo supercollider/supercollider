@@ -45,9 +45,11 @@ For more on the crucial distinction between client objects and server nodes, see
 \f0\b Server
 \f2\b0  is booted there is a top level group with an ID of zero that defines the root of the tree. This is represented by a subclass of Group: 
 \f0\b RootNode
-\f2\b0 . If the Server was booted from within SCLang (as opposed to from the command lione) there will also be a 
+\f2\b0 . If the Server was booted from within SCLang (as opposed to from the command line) then a 
 \f0\b default_group
-\f2\b0  with an ID of 1. This group is the default enclosing group for all Nodes, i.e. it's what you get if you don't specify. In general you should create new Nodes within the default group of a Server rather than in its RootNode. See 
+\f2\b0  with an ID of 1 will be automatically created. This group is the default enclosing group for all Nodes, i.e. it's what you get if you don't specify. In general you should create new Nodes within the default group of a Server rather than in its RootNode. See 
+\f0\b Server
+\f2\b0 , 
 \f0\b default_group
 \f2\b0  and 
 \f0\b RootNode 

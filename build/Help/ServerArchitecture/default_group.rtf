@@ -20,9 +20,7 @@ When a
 \f0\b Server
 \f1\b0  is booted there is a top level group with an ID of 0 that defines the root of the node tree. (This is represented by a subclass of Group: 
 \f0\b RootNode
-\f1\b0 .) If the Server was booted from within SCLang there will also be  a 
-\f0\b default group
-\f1\b0  with an ID of 1, which is the default group for all Nodes when using object style. This group is what you will get if you supply a Server as a target. If you don't specify a target or pass in nil, you will get the default group of the default Server.  \
+\f1\b0 .) If the Server was booted from within SCLang (as opposed to from the command line) a default group with an ID of 1 will be automatically created. This is the default target for all Nodes when using object style and is what you will get if you supply a Server as a target. If you don't specify a target or pass in nil, you will get the default group of the default Server.  \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 

@@ -46,7 +46,7 @@ Server apps running on the local machine have two unix environment variables: SC
 \f1\b0\fs24 \ulnone \
 When a Server is booted there is a top level group with an ID of 0 that defines the root of the node tree. (This is represented by a subclass of Group: 
 \f0\b RootNode
-\f1\b0 .) If the server app was booted from within SCLang (as opposed to from the command line) there will also be a 
+\f1\b0 .) If the server app was booted from within SCLang (as opposed to from the command line) the method initTree will be called automatically after booting. This will also create a 
 \f0\b default_group
 \f1\b0  with an ID of 1, which is the default group for all Nodes when using object style. This provides a predictable basic node tree so that methods such as Server-scope, Server-record, etc. can function without running into order of execution problems. The default group is persistent, i.e. it is recreated after a reboot, pressing cmd-., etc. See 
 \f0\b RootNode
@@ -280,15 +280,13 @@ dumpOSC(code)\
 \f1\b0  object. Changes take effect when the server is rebooted.
 \f2\fs18 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 defaultGroup - 
+\f0\b\fs24 defaultGroup - 
 \f1\b0 returns this Server's default group.
 \f2\fs18 \
 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs30 \cf0 \ul Automatic Message Bundling\
+\f0\b\fs30 \ul Automatic Message Bundling\
 \
 
 \f1\b0\fs24 \ulnone Server provides support for automatically bundling messages. This is quite convenient in object style. \
