@@ -544,15 +544,27 @@ int asCompileString(PyrSlot *slot, char *str)
 			sprintf(str, "%d", slot->ui);
 			break;
 		case tagChar :
-			sprintf(str, "$%c", slot->ui);
+		{
+			int c = slot->ui;
+			if (isprint(c)) {
+				sprintf(str, "$%c", c);
+			} else {
+				switch (c) {
+					case '\n' : strcpy(str, "$\\n"); break;
+					case '\r' : strcpy(str, "$\\r"); break;
+					case '\t' : strcpy(str, "$\\t"); break;
+					case '\f' : strcpy(str, "$\\f"); break;
+					case '\v' : strcpy(str, "$\\v"); break;
+					default: sprintf(str, "%d.asAscii", c);
+				}
+			}
 			break;
+		}
 		case tagSym :
 			sprintf(str, "'%s'", slot->us->name);
 			break;
 		case tagObj :
-			//sprintf(str, "%s.new", slot->uo->classptr->name.us->name);
 			return errFailed;
-			break;
 		case tagNil :
 			sprintf(str, "nil");
 			break;
