@@ -90,8 +90,8 @@ Rect {
 	}
 
 	containsPoint { arg aPoint;
-		^ aPoint.x.inclusivelyBetween(left, left + width) 
-			and: { aPoint.y.inclusivelyBetween(top, top + height) }
+		^(aPoint.x.inclusivelyBetween(left, left + width) 
+			and: { aPoint.y.inclusivelyBetween(top, top + height) })
 	}
 	containsRect { arg aRect;
 		^(this.containsPoint(aRect.leftTop) and: {this.containsPoint(aRect.rightBottom) })
@@ -115,15 +115,15 @@ Rect {
 		^this.class.newSides( left max: aRect.left, top max: aRect.top,
 			this.right min: aRect.right, this.bottom min: aRect.bottom)
 	}
-
-	printOn { arg stream;
-		stream << this.class.name << "(" 
-			<<* [left, top, width, height] << ")";
-	}
-	storeOn { arg stream;
-		stream << this.class.name << "(" 
-			<<<* [left, top, width, height] << ")";
-	}
+	storeArgs { ^[left,top,width,height] }
+//	printOn { arg stream;
+//		stream << this.class.name << "(" 
+//			<<* [left, top, width, height] << ")";
+//	}
+//	storeOn { arg stream;
+//		stream << this.class.name << "(" 
+//			<<<* [left, top, width, height] << ")";
+//	}
 	
 	draw { arg color, operation=2;
 		_Rect_Draw
