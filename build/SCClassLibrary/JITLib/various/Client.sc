@@ -139,7 +139,7 @@ ClientFunc {
 
 ResponderClientFunc : ClientFunc {
 	value { arg args, resp, time;
-		func.valueArray([resp, time] ++ args)
+		func.valueArray(resp, time, args)
 	}
 
 }
