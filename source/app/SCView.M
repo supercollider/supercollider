@@ -1840,6 +1840,245 @@ void SCPopUpMenu::receiveDrag()
     sendMessage(s_receiveDrag, 0, 0, 0);
 }
 
+
+
+/////////////////////////////////////////////////////////////////
+//SCMultiSliderView by jan trutzschler jan.21.03
+int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr);
+int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr)
+{
+    int len;
+    if (isKindOfSlot(slot, class_array)) {
+            len = slot->uo->size;
+            *arr = new double[len];
+            memcpy(*arr, slot->uo->slots, len * sizeof(double));
+            return errNone;
+    }
+    return errWrongType;
+}
+SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCMultiSliderView(inParent, inObj, inBounds);
+}
+
+SCMultiSliderView::SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+	: SCView(inParent, inObj, inBounds), mStepSize(0.), mStepScale(0.), mKnob(0), mThumbSize(12), mXOffset(1)
+{
+        mTabSize = (int) (inBounds.width / mThumbSize);
+        mCurrentIndex = 0;
+        mCurrentY = 0.0;
+        mYValues = new double [mTabSize];
+        mReadOnly = false;
+        mResamp = 1; //used for zooming out
+        mFillColor = SCMakeColor(0,0,0,1); // black
+        mStrokeColor = SCMakeColor(0,0,0,1); // black
+}
+
+
+void SCMultiSliderView::draw(SCRect inDamage)
+{
+    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+    CGContextSaveGState(cgc);
+    CGRect rect = SCtoCGRect(mBounds);
+    CGContextClipToRect(cgc, rect);
+    double * vals;
+    vals = mYValues;
+    if (mBackground) mBackground->draw(cgc, rect);
+    QDDrawBevelRect(cgc, rect, 1, true);
+    CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, mFillColor.alpha);
+    CGContextSetRGBStrokeColor(cgc, mStrokeColor.red, mStrokeColor.green, mStrokeColor.blue, mStrokeColor.alpha);
+    CGRect drawRect;
+    float yval = 0;
+    float tsize = 1.0;  
+    if(mThumbSize > 0) { //draw dots for multislider
+    tsize = (int) mBounds.width / (mXOffset + mThumbSize);
+        for(int i = 0; i < mTabSize; i++){
+            yval = vals[i];
+            drawRect = SCtoCGRect(calcThumbRect(i, yval, mXOffset));
+            CGContextFillRect (cgc, drawRect);
+            CGContextStrokeRect(cgc,drawRect);
+        }
+
+    } else {
+        //draw lines and use mResamp = (1/mXOffset) to zoom out
+        if(mXOffset < 1.0) tsize = 1;
+        else tsize = mXOffset;
+        int j = 0;
+        for(int i = 0; i < mTabSize; i++){
+            if(!(i % mResamp )) {
+            yval = vals[i];
+            drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
+            CGContextAddLineToPoint(cgc, drawRect.origin.x, drawRect.origin.y);
+            CGContextAddRect(cgc, drawRect);
+            CGContextMoveToPoint(cgc, drawRect.origin.x, drawRect.origin.y);
+            j++;
+            //yval = 0;
+            }
+        }
+    CGContextStrokePath(cgc);	 
+    }
+    CGContextRestoreGState(cgc);
+}
+
+bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
+{
+    bool changed;
+    yIn = sc_clip(yIn, 0., 1.);
+    xIn = sc_clip(xIn, 0, mTabSize - 1);
+    
+    if (mStepSize > 0.) {
+        yIn = floor(yIn * mStepScale + 0.5) * mStepSize;
+    }
+    if(!mReadOnly){
+        mCurrentIndex = xIn;
+        changed = mYValues[xIn] != yIn;
+        if (changed) {
+            mYValues[xIn] = yIn;
+            mCurrentY = yIn;
+            if (send) sendMessage(s_doaction, 0, 0, 0); 
+            // post("new val: %f  x: %d \n", (float) yIn, xIn);
+            refresh();
+        }
+    } else {
+        changed = true;
+        xIn = (int) xIn *  mResamp;
+        xIn = sc_clip(xIn, 0, mTabSize - 1);
+        mCurrentIndex = xIn;
+        mCurrentY = mYValues[mCurrentIndex];
+        if (send) sendMessage(s_doaction, 0, 0, 0); // would be nice if it would tell where x
+        //post("readOnly: x: %d \n", mCurrentIndex);
+    }
+    return changed;
+
+}
+
+void SCMultiSliderView::setValueFromPoint(SCPoint where)
+{
+    double y = (where.y - mBounds.y - 1 - mThumbSize/2) / (mBounds.height - mThumbSize - 2);
+    int xIndx;
+    if(mXOffset < 1.0 && mXOffset != 0) xIndx = (int) where.x;
+    else xIndx = (int) where.x/(mThumbSize + mXOffset);
+    setValue(xIndx, y, true);
+}
+
+SCRect SCMultiSliderView::calcThumbRect(int xIn, double valIn, float xoffset)
+{        
+    double x = (double) xIn * ( xoffset + mThumbSize);
+    double y = valIn * (mBounds.height - mThumbSize - 2);
+    return SCMakeRect(mBounds.x + x + 1, mBounds.y + y + 1, mThumbSize, mThumbSize);   
+}
+
+void SCMultiSliderView::mouseTrack(SCPoint where, int modifiers)
+{
+    if (modifiers & NSCommandKeyMask) {
+        beginDrag(where);
+    } else {
+        setValueFromPoint(where);
+    }
+}
+
+int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	int err;
+        char *name = symbol->name;
+        if (strcmp(name, "step")==0) {
+            err = slotDoubleVal(slot, &mStepSize);
+            if (!err) {
+                mStepScale = 1. / mStepSize;
+		//bool changed = setValue(mX, mY, false);
+                //SetBool(slot, changed);
+            }
+            return errNone;
+        }
+        if (strcmp(name, "thumbSize")==0) {
+            err = slotIntVal(slot, &mThumbSize);
+            refresh();
+            return errNone;
+        }
+        if (strcmp(name, "xOffset")==0) {
+            err = slotFloatVal(slot, &mXOffset);
+            if(mXOffset < 1.0 && mXOffset != 0.0) {
+                mResamp = (int) 1.0 / mXOffset;
+            } else {
+                mResamp = 1;
+            }
+            refresh();
+            return errNone;
+        }
+        if (strcmp(name, "fillColor")==0) {
+            err = slotColorVal(slot, &mFillColor);
+            refresh();
+            return errNone;
+        }
+        if (strcmp(name, "strokeColor")==0) {
+            err = slotColorVal(slot, &mStrokeColor);
+            refresh();
+            return errNone;
+        }
+        if (strcmp(name, "readOnly")==0) {
+            mReadOnly = IsTrue(slot); 
+            refresh();
+            return errNone;
+        }
+        if (symbol == s_value) {
+            
+            if (!isKindOfSlot(slot, class_array)) return errWrongType;
+            if(slot->uo->size != mTabSize) {
+                err = allocSlotDoubleArrayVal(slot, &mYValues);
+                mTabSize = slot->uo->size;
+            } else {
+                int len = slot->uo->size;
+                memcpy(mYValues, slot->uo->slots, len * sizeof(double));
+            }
+            refresh();
+            return errNone;
+	}
+	
+        return SCView::setProperty(symbol, slot);
+}
+
+int SCMultiSliderView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+
+	char *name = symbol->name;
+        if (strcmp(name, "step")==0) {
+            SetFloat(slot, mStepSize);
+            return errNone;
+        }
+        if (symbol == s_x) {
+            SetInt(slot, mCurrentIndex);
+           return errNone;
+	}
+	if (symbol == s_y) {
+            SetFloat(slot, mCurrentY);
+           return errNone;
+	}
+        if (symbol == s_value) {
+              int len;
+            if (isKindOfSlot(slot, class_array)) {
+                len = slot->uo->size;
+                if(len > mTabSize)  return errWrongType;
+                memcpy(slot->uo->slots, mYValues, len * sizeof(double));
+                }
+            return errNone;
+	}
+
+        return SCView::getProperty(symbol, slot);
+}
+
+bool SCMultiSliderView::canReceiveDrag()
+{
+    PyrSlot result;
+    sendMessage(s_canReceiveDrag, 0, 0, &result);
+    return IsTrue(&result);
+}
+
+void SCMultiSliderView::receiveDrag()
+{
+    sendMessage(s_receiveDrag, 0, 0, 0);
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2276,6 +2515,8 @@ void registerSCViewClasses()
     new SCViewMaker("SCDragBoth", NewSCDragBoth);
     new SCViewMaker("SCUserView", NewSCUserView);
     new SCViewMaker("SCPopUpMenu", NewSCPopUpMenu);
+    new SCViewMaker("SCMultiSliderView", NewSCMultiSliderView);
+
 }
 
 
