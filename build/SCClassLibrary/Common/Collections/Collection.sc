@@ -126,6 +126,18 @@ Collection {
 	collectMsg { | selector ... args |
 		^this.collect {| item | item.performList(selector, args) }
 	}
+	selectMsg { | selector ... args |
+		^this.select {| item | item.performList(selector, args) }
+	}
+	rejectMsg { | selector ... args |
+		^this.reject {| item | item.performList(selector, args) }
+	}
+	detectMsg { | selector ... args |
+		^this.detect {| item | item.performList(selector, args) }
+	}
+	detectIndexMsg { | selector ... args |
+		^this.detectIndex {| item | item.performList(selector, args) }
+	}
 	lastForWhich { | function |
 		var prev;
 		this.do {|elem, i| 
