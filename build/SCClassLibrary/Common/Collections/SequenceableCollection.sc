@@ -146,6 +146,17 @@ SequenceableCollection : Collection {
 		^((val - a) / (b - a)) + i - 1
 	}
 	
+	nearest { arg val;  // collection is sorted
+		^this.at(this.indexIn(this))
+	}
+	
+	nearestInScale { arg val, stepsPerOctave=12; // collection is sorted
+		var key, root;
+		root = val.trunc(stepsPerOctave);
+		key = val % stepsPerOctave;
+		^key.nearestInList(this) + root
+	}
+	
 	remove { arg item;
 		var index;
 		index = this.indexOf(item);
@@ -323,6 +334,7 @@ SequenceableCollection : Collection {
 		key = this % stepsPerOctave;
 		^scale.indexInBetween(key) + n
 	}
+	
 	transposeKey { arg amount, octave=12;
 		^((this + amount) % octave).sort
 	}
