@@ -115,6 +115,7 @@ BusPlug : AbstractFunction {
 		^InBus.kr(bus, numChannels ? this.class.defaultNumControl)
 	}
 	
+	
 	writeInputSpec {
 		"use .ar or .kr to use within a synth.".error; this.halt;
 	}
@@ -396,7 +397,7 @@ NodeProxy : BusPlug {
 	}
 		
 	bus_ { arg inBus;
-		server = inBus.server;
+		if(server != inBus.server, { "can't change the server".inform;^this });
 		bus = inBus;
 		this.linkNodeMap;
 		this.rebuild;
@@ -405,12 +406,7 @@ NodeProxy : BusPlug {
 	index_ { arg i;
 		this.bus = Bus.new(this.rate, i, this.numChannels, server);
 	}
-	
-	server_ { arg srv;
-		server = srv;
-		this.rebuild;
-	}
-	
+		
 	sendNodeMap { 
 		var bundle;
 		bundle = MixedBundle.new;
