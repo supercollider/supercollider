@@ -97,7 +97,7 @@ public:
         writeUInt8(u.c[3]);
     }
 
-#if BIG_ENDIAN
+#if BYTE_ORDER == BIG_ENDIAN
     void writeFloat_le(float inFloat)
 #else
     void writeFloat_be(float inFloat)
@@ -115,7 +115,7 @@ public:
     }
 
 
-#if BIG_ENDIAN
+#if BYTE_ORDER == BIG_ENDIAN
     void writeDouble_be(double inDouble)
 #else
     void writeDouble_le(double inDouble)
@@ -136,7 +136,7 @@ public:
         writeUInt8(u.c[7]);
     }
 
-#if BIG_ENDIAN
+#if BYTE_ORDER == BIG_ENDIAN
     void writeDouble_le(double inDouble)
 #else
     void writeDouble_be(double inDouble)
@@ -195,7 +195,7 @@ public:
         return (int32)((d << 24) | (c << 16) | (b << 8) | a);
     }
 
-#if BIG_ENDIAN
+#if BYTE_ORDER == BIG_ENDIAN
     float readFloat_be()
 #else
     float readFloat_le()
@@ -212,7 +212,7 @@ public:
         return u.f;
     }
 
-#if BIG_ENDIAN
+#if BYTE_ORDER == BIG_ENDIAN
     float readFloat_le()
 #else
     float readFloat_be()
@@ -230,7 +230,7 @@ public:
     }
 
 
-#if BIG_ENDIAN
+#if BYTE_ORDER == BIG_ENDIAN
     double readDouble_be()
 #else
     double readDouble_le()
@@ -251,7 +251,7 @@ public:
         return u.f;
     }
 
-#if BIG_ENDIAN
+#if BYTE_ORDER == BIG_ENDIAN
     double readDouble_le()
 #else
     double readDouble_be()
