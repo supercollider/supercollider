@@ -25,7 +25,7 @@ PublicProxySpace : ProxySpace {
 	}
 	
 	put { arg key, obj; 
-		var notCurrent;
+		var notCurrent, sends;
 		notCurrent = currentEnvironment !== this;
 		if(notCurrent) { this.push };
 		if(this.sendsTo(key))
@@ -36,6 +36,8 @@ PublicProxySpace : ProxySpace {
 			};
 			this.at(key).put(nil, obj);
 			this.broadcast(name, key, obj) 
+		} {
+			this.at(key).put(nil, obj);
 		};
 		if(notCurrent) { this.pop };
 	}
@@ -51,6 +53,7 @@ PublicProxySpace : ProxySpace {
 	 	d.string_("//" + Date.getDate.asString ++ "\n\n\n");
 	 	action = { arg ps, nickname, key, str;
 	 		defer { 
+	 			if(d.selectionSize > 0) { d.selectRange(d.text.size-1, 0) }; // deselect user
 	 			str = "~" ++ key ++ " = " ++ str;
 	 			if(str.last !== $;) {Êstr = str ++ $; };
 	 			d.selectedString_(
@@ -61,6 +64,7 @@ PublicProxySpace : ProxySpace {
 	 				++ str
 	 				++ "\n\n"
 	 			);
+	 			d.selectRange(d.text.size-1, 0)
 	 		};
 	 	};
 	 	d.onClose = { action = nil }
@@ -105,10 +109,10 @@ PublicProxySpace : ProxySpace {
 	
 	localPut { arg key, obj;
 		if(currentEnvironment === this) {
-				this.at(key).put(nil, obj);
+				this.at(key).put(0, obj);
 		} {
 			this.use {
-				this.at(key).put(nil, obj);
+				this.at(key).put(0, obj);
 			}
 		}
 	}
