@@ -40,8 +40,8 @@ IOStream : Stream {
 CollStream : IOStream {
 	var <>collection, <pos = 0;
 	
-	*new {
-		^super.new.collection_(String.new(128))
+	*new { arg collection;
+		^super.new.collection_(collection ?? { String.new(128) })
 	}
 	*on { arg aCollection; 
 		^super.new.on(aCollection); 
