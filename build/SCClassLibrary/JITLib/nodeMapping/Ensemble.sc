@@ -15,7 +15,7 @@ Ensemble : AbstractEnsemble {
 	
 	nodeMap_ { arg map;
 		nodeMap = map;
-		if(this.isPlaying ?? nodeMap.notNil, {nodeMap.sendToNode(this)});
+		if(this.isPlaying and:{ nodeMap.notNil }, {nodeMap.sendToNode(this)});
 	}
 	
 	map { arg ... args;
