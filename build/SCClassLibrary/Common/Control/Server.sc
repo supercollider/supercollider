@@ -246,7 +246,8 @@ Server : Model {
 		},{
 			//isBooting = true;
 			if(notified, { 
-				SystemClock.sched(1, { this.notify; "sent notify on".inform; });
+				//assumes four seconds startup time. should be replaced by something else.
+				WaitUntilServerBoot(this, { this.notify; "sent notify on".inform; });
 			});
 			unixCmd("./scsynth" ++ options.asOptionsString(addr.port));
 			("booting " ++ addr.port.asString).inform;
