@@ -27,21 +27,51 @@
     IBOutlet NSScrollView* scrollView;
 	Boolean isRichText;
 }
-    - (NSTextView*) textView;
-    - (IBAction) executeSelection: (id) sender;
-    - (IBAction) openCode: (id) sender;
-    - (IBAction) methodTemplates: (id) sender;
-    - (IBAction) methodReferences: (id) sender;
-    - (IBAction) commentCode: (id) sender;
-    - (IBAction) uncommentCode: (id) sender;
-    - (IBAction) shiftLeft: (id) sender;
-    - (IBAction) shiftRight: (id) sender;
-    - (IBAction) balanceParens: (id) sender;
-    - (IBAction) becomePostWindow: (id) sender;
 
-    - (void) sendSelection: (char*) methodName;
-    - (void) insertText: (char*) text length: (int)length;
-	- (BOOL) isDocumentEdited;
+- (NSTextView*)makeTextView;
+- (NSTextView*) textView;
 
-	- (void)setRichText:(BOOL)flag ;
+- (void)windowControllerDidLoadNib:(NSWindowController*) aController;
+
+- (IBAction)openCode:(id)sender;
+- (IBAction)methodTemplates: (id)sender;
+- (IBAction)methodReferences: (id)sender;
+
+- (IBAction)balanceParens: (id)sender;
+
+- (IBAction)syntaxColorize: (id)sender;
+- (void) insertText: (char*) text length: (int)length;
+- (IBAction)shiftLeft: (id)sender;
+- (IBAction)shiftRight: (id)sender;
+- (IBAction)commentCode: (id)sender;
+- (IBAction)uncommentCode:(id)sender;
+
+- (IBAction) executeSelection: (id) sender;
+- (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange;
+
+- (IBAction) showHelp: (id) sender;
+-(NSString*)pathOfHelpFileFor:(NSString*)selection;
+-(void)showHelpFor:(NSString*)selection;
+
+- (void)sendSelection: (char*) methodName;
+
+- (NSString *)windowNibName;
+
+- (BOOL)writeToFile:(NSString*) path ofType:(NSString *)aType;
+- (BOOL)readFromFile:(NSString *)path ofType:(NSString *)aType;
+
+- (BOOL) shouldRunSavePanelWithAccessoryView;
+
+- (BOOL)windowShouldClose:(id)sender;
+- (void)windowWillClose:(NSNotification *)aNotification;
+- (IBAction) becomePostWindow: (id) sender;
+- (BOOL) isDocumentEdited;
+
+- (void)doToggleRich;
+// toggleRich: puts up an alert before ultimately calling doToggleRich
+- (IBAction)toggleRich:(id)sender;
+- (void)setRichText:(BOOL)flag;
+
+- (BOOL)validateMenuItem:(NSMenuItem *)aCell;
+
 @end
