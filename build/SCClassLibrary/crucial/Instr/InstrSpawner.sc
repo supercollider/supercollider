@@ -113,7 +113,7 @@ InstrSpawner : Patch {
 				deltaStream.next.wait;
 				this.synthDefArgs; // make next array
 			})	
-		});
+		}, SystemClock);
 		spawnTask.play
 	}
 	stop { spawnTask.stop }
