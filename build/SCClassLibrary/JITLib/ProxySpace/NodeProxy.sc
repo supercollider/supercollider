@@ -145,10 +145,14 @@ NodeProxy : AbstractFunction {
 		if(this.isPlaying, { group.performList(\setn, args) });
 	}
 	
-	map { arg ... args;
-		
-		nodeMap.performList(\map, args);
-		if(this.isPlaying, { nodeMap.send(group) });
+	map { arg key, proxy ... args;
+		if(proxy.rate === 'control', { 
+			args = [key, proxy]++args;
+			nodeMap.performList(\map, args);
+			if(this.isPlaying, { nodeMap.send(group) })
+		}, {
+			"can only map to control bus".inform
+		})
 	}
 	
 	unset { arg ... args;
@@ -223,7 +227,7 @@ NodeProxy : AbstractFunction {
 			if(obj.notNil, {
 				
 				array = obj.value.asArray;
-				array = obj.rate; 
+				rate = array.rate ? 'control'; 
 				bus = Bus.perform(rate, server, array.size);
 				nodeMap = ProxyNodeMap.new;
 				this.initParents;
