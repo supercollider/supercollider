@@ -97,7 +97,11 @@ Routine : Thread {
 	}
 	
 	storeArgs { ^[func] }
-	
+	storeOn { arg stream;
+		stream << this.class.name;
+		this.storeParamsOn(stream);
+		this.storeModifiersOn(stream);
+	}	
 		
 	// PRIVATE
 	awake { arg inBeats, inSeconds, inClock;
