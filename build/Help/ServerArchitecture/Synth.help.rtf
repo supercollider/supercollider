@@ -190,14 +190,23 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 \f1\fs24 \cf0 					add immediately before the target, \
 					in the same group,\
 					on the same server\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+				
+\f2\fs18 \cf2 \\addReplace\
 
-\f2\fs18 \cf2 		
-\f0\b\fs24 \cf0 Synth.newLoad(synthDefName,[ index1,arg1,... indexN,argN  ], \
+\f1\fs24 \cf0 					replace the target,\
+					in the same group,\
+					on the same server\
+					\
+		
+\f0\b Synth.replace(nodeToReplace, synthDefName,[ index1,arg1,... indexN,argN  ])\
+
+\f1\b0 				returns a new synth by replacing a node \
+				\
+		
+\f0\b Synth.newLoad(synthDefName,[ index1,arg1,... indexN,argN  ], \
 				target,addAction)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 				loads the synth def to the server and starts it when the load\
+\f1\b0 				loads the synth def to the server and starts it when the load\
 				is completed.\
 				\
 		
@@ -213,7 +222,7 @@ Do not confuse this with audio patching !  Audio patching is accomplished by usi
 \f2\b0\fs18 \
 				
 \f1\fs24 creates a synth on the server, without storing it in a Group object.\
-				This is more efficient if the Synth is a quick event and frees itself,\
+				This is more efficient if the Synth is one of a big amount of short events and frees itself,\
 				for instance when creating many small sound grains.
 \f2\fs18 \
 \
