@@ -35,11 +35,15 @@ CocoaDialog {
 
 Cocoa {
 
-	*getPathsInDirectory { arg directoryPath,extension;
-		^this.prGetPathsInDirectory(directoryPath,extension,Array.new(16));
+	*getPathsInDirectory { arg directoryPath,extension,maxItems=1000;
+		^this.prGetPathsInDirectory(directoryPath,extension,Array.new(maxItems));
+		//throws an index out of range if more than maxItems items in directory
+		
+		//extension matching not yet implemented
 	}
 	*prGetPathsInDirectory { arg dir,ext,arr;
 		_Cocoa_GetPathsInDirectory;
 		^this.primitiveFailed
 	}
 }
+
