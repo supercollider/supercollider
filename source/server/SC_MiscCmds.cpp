@@ -231,14 +231,14 @@ SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 		if (msg.nextTag('i') == 's') {
 			int32* name = msg.gets4();
 			int32 n = msg.geti();
-			for (int i=0; i<n; ++i) {
+			for (int i=0; msg.remain() && i<n; ++i) {
 				float32 value = msg.getf();
 				Node_SetControl(node, name, i, value);
 			}
 		} else {
 			int32 index = msg.geti();
 			int32 n = msg.geti();
-			for (int i=0; i<n; ++i) {
+			for (int i=0; msg.remain() && i<n; ++i) {
 				float32 value = msg.getf();
 				Node_SetControl(node, index+i, value);
 			}
@@ -625,7 +625,7 @@ SCErr meth_b_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 		start = sc_clip(start, 0, numSamples-1);
 		end   = sc_clip(end,   0, numSamples-1);
 
-		for (int i=start; i<=end; ++i) {
+		for (int i=start; msg.remain() && i<=end; ++i) {
 			float32 value = msg.getf();
 			data[i] = value;
 		}
@@ -712,7 +712,7 @@ SCErr meth_c_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 		start = sc_clip(start, 0, maxIndex-1);
 		end   = sc_clip(end,   0, maxIndex-1);
 
-		for (int i=start; i<=end; ++i) {
+		for (int i=start; msg.remain() && i<=end; ++i) {
 			float32 value = msg.getf();
 			data[i] = value;
 		}
