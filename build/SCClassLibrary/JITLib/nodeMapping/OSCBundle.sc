@@ -17,6 +17,4 @@ NodeBundle {
 		messages.add([cmd, nodeID]++argList);
 	}
 	
-	server { ^target.server }
-	
 }
