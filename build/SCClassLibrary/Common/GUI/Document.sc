@@ -312,13 +312,14 @@ Document {
 		stpath = this.class.standardizePath(path);
 		this.propen(stpath, selectionStart, selectionLength);
 		if(dataptr.isNil,{ this = nil; ^nil});
+		isListener = false;
 		this.prAdd;
 	}
 	propen { arg path, selectionStart=0, selectionLength=0;
 		_OpenTextFile
 	}
 	//private newTextWindow
-	initByString{arg str, argTitle, makeListener;
+	initByString{arg argTitle, str, makeListener;
 	
 		title = argTitle;
 		if(makeListener, {
@@ -331,7 +332,7 @@ Document {
 		this.prAdd;
 	
 	}
-	prinitByString { arg str, title, makeListener;
+	prinitByString { arg title, str, makeListener;
 		_NewTextWindow
 	}
 	//
@@ -386,7 +387,7 @@ EnvirDocument : Document {
 		if(pushNow, { envir.push });
 		title = title ?? { "envir" + (envir.tryPerform(\name) ? "Untitled Environment") };
 		^super.new(title, string).envir_(envir).registerKeys
-				.background_(rgb(250, 240, 240));
+				.background_(rgb(240, 240, 240));
 	}
 	
 	envir_ { arg environment;
