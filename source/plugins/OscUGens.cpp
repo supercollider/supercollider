@@ -3218,8 +3218,8 @@ void NormalizeWaveBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 
 void CopyBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 {		
-	float *data1 = buf->data;
 	int frames1 = buf->frames;
+	int channels1 = buf->channels;
 	
 	int toPos = msg->geti();
 	int bufnum2 = msg->geti();
@@ -3229,12 +3229,20 @@ void CopyBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 	if (bufnum2 < 0 || bufnum2 >= world->mNumSndBufs) bufnum2 = 0;
 	SndBuf* buf2 = world->mSndBufs + bufnum2;
 	int frames2 = buf2->frames;
+	int channels2 = buf2->channels;
 	
+	if (channels1 != channels2) return;
+	
+	fromPos = sc_clip(fromPos, 0, frames2-1);
+	toPos = sc_clip(toPos, 0, frames1-1);
 	length = sc_min(frames2 - fromPos, frames1 - toPos);
 	if (length <= 0) return;
 	
+	int numbytes = length * sizeof(float) * channels1;
+	float *data1 = buf->data + toPos * channels1;
+	float *data2 = buf2->data + fromPos * channels2;
 	
-	
+	memcpy(data1, data2, numbytes);
 }
 
 
