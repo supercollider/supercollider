@@ -59,15 +59,14 @@ Event : Environment {
 	
 	next { ^this.copy }
 	delta {
-		/*
 		_Event_Delta
 		^this.primitiveFailed;
-		*/
+		/*
 		// implemented by primitive for speed
 		var delta;
 		delta = this.at('delta');
 		if (delta.notNil, { ^delta },{ ^this.at('dur') * this.at('stretch') });
-		
+		*/
 	}
 	play {
 		this[\player].playEvent(this);		
