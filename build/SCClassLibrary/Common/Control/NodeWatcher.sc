@@ -14,6 +14,7 @@ AbstractNodeWatcher {
 		server = argServer;
 		this.clear;
 		responders = [];
+		if(server.isLocal) { CmdPeriod.add(this) }; //server crash support
 		server.addr.asArray.do({ arg addrItem; //support for multiple addresses
 			this.cmds.do({ arg cmd;
 				var method;
@@ -28,6 +29,7 @@ AbstractNodeWatcher {
 	}
 	
 	clear {}
+	cmdPeriod { this.clear }
 	
 	cmds { ^nil }
 		
@@ -85,8 +87,8 @@ BasicNodeWatcher : AbstractNodeWatcher {
 		
 	clear { 
 		nodes = IdentitySet.new;
-		
 	}
+	
 	cmds {  ^#["/n_go", "/n_end"] }
 		
 	n_end { arg nodeID;
@@ -149,6 +151,10 @@ NodeWatcher : BasicNodeWatcher {
 	
 	
 	clear {
+		nodes.do({ arg node; 
+			node.isPlaying = false;
+			node.isRunning = false;
+		});
 		nodes = IdentityDictionary.new 
 	}
 	
