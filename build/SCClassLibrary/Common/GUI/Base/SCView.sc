@@ -1134,7 +1134,7 @@ SCEnvelopeView : SCMultiSliderView {
 		this.size = val.at(0).size;
 		this.setProperty(\value, val)
 	}
-	string_ { arg index, astring;
+	setString { arg index, astring;
 		//items = items.add(astring);
 		this.setProperty(\string, [index, astring])
 	}
@@ -1151,21 +1151,40 @@ SCEnvelopeView : SCMultiSliderView {
 		axy = Array.with(ax, ay);
 		^this.getProperty(\value, axy)
 	}
-	thumbHeight_ { arg index, height;
+	
+	setThumbHeight {arg index, height;
 		this.setProperty(\thumbHeight, [index, height]);
 	}
-	thumbWidth_ { arg index, width;
+	
+	thumbHeight_ { arg height;
+		this.setThumbHeight(-1, height);
+	}
+
+	setThumbWidth{ arg index, width;
 		this.setProperty(\thumbWidth, [index, width]);
 	}
-	thumbSize_ { arg index, size;
+	
+	thumbWidth_ { arg width;
+		this.setThumbWidth(-1, width);
+	}
+	
+	setThumbSize{ arg index, size;
 		this.setProperty(\thumbSize, [index, size]);
 	}
-	connect { arg from, aconnections; //draw a connection between the selected index 
-		this.setProperty(\connect, [from, aconnections.asFloat]);
+	
+	thumbSize_ { arg size;
+		this.setThumbSize(-1, size);
 	}
-	fillColor_ { arg index, color; //draw a connection between the selected index 
+	setFillColor { arg index, color; 
 		this.setProperty(\fillColor, [index, color]);
 	}
+	fillColor_ { arg color; 
+		this.setFillColor(-1, color);
+	}
+	connect { arg from, aconnections; 
+		this.setProperty(\connect, [from, aconnections.asFloat]);
+	}
+
 	select { arg index; //this means no refresh;
 		this.setProperty(\setIndex, index);
 	}
@@ -1190,14 +1209,13 @@ SCEnvelopeView : SCMultiSliderView {
 	lastIndex {
 		^this.getProperty(\lastIndex)
 	}
-	setStatic { arg index, abool;
-		this.select(index);
-		this.setProperty(\isStatic, abool);
-		this.select(-1); //unselect
-	}
-	
-	editable_{arg index, abool;
-		this.setProperty(\editable, [index,abool]);		
+
+	setEditable{arg index, boolean;
+		this.setProperty(\editable, [index,boolean]);		
+	}	
+
+	editable_{arg boolean;
+		this.setEditable(-1, boolean);		
 	}
 	
 	selectionColor_ { arg acolor;
