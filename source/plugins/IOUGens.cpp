@@ -231,7 +231,8 @@ void InFeedback_next_a(IOUnit *unit, int inNumSamples)
 	
 	for (int i=0; i<numChannels; ++i, in += bufLength) {
 		float *out = OUT(i);
-		if (bufCounter - touched[i] == 1) Copy(inNumSamples, out, in);
+		int diff = bufCounter - touched[i];
+		if (diff == 1 || diff == 0) Copy(inNumSamples, out, in);
 		else Fill(inNumSamples, out, 0.f);
 	}
 }
@@ -647,6 +648,90 @@ void OffsetOut_Dtor(OffsetOut* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+void SharedIn_next_k(IOUnit *unit, int inNumSamples)
+{
+//Print("->SharedIn_next_k\n");
+	World *world = unit->mWorld;
+	int numChannels = unit->mNumOutputs;
+
+	float fbusChannel = ZIN0(0);
+	if (fbusChannel != unit->m_fbusChannel) {
+		unit->m_fbusChannel = fbusChannel;
+		int busChannel = (int)fbusChannel;
+		int lastChannel = busChannel + numChannels;
+		
+		if (!(busChannel < 0 || lastChannel > world->mNumSharedControls)) {
+			unit->m_bus = world->mSharedControls + busChannel;
+		}
+	}
+	
+	float *in = unit->m_bus;
+	for (int i=0; i<numChannels; ++i, in++) {
+		float *out = OUT(i);
+		*out = *in;
+	}
+//Print("<-SharedIn_next_k\n");
+}
+
+void SharedIn_Ctor(IOUnit* unit)
+{
+//Print("->SharedIn_Ctor\n");
+	World *world = unit->mWorld;
+	unit->m_fbusChannel = -1.;
+
+	SETCALC(SharedIn_next_k);
+	unit->m_bus = world->mSharedControls;
+	//unit->m_busTouched = world->mControlBusTouched;
+	SharedIn_next_k(unit, 1);
+
+//Print("<-SharedIn_Ctor\n");
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void SharedOut_next_k(IOUnit *unit, int inNumSamples)
+{
+//Print("->SharedOut_next_k\n");
+	World *world = unit->mWorld;
+	int numChannels = unit->mNumInputs;
+
+	float fbusChannel = ZIN0(0);
+	if (fbusChannel != unit->m_fbusChannel) {
+		unit->m_fbusChannel = fbusChannel;
+		int busChannel = (int)fbusChannel;
+		int lastChannel = busChannel + numChannels;
+		
+		if (!(busChannel < 0 || lastChannel > world->mNumSharedControls)) {
+			unit->m_bus = world->mSharedControls + busChannel;
+		}
+	}
+	
+	float *out = unit->m_bus;
+	for (int i=1; i<numChannels+1; ++i, out++) {
+		float *in = IN(i);
+		*out = *in;
+	}
+//Print("<-SharedOut_next_k\n");
+}
+
+void SharedOut_Ctor(IOUnit* unit)
+{
+//Print("->SharedOut_Ctor\n");
+	World *world = unit->mWorld;
+	unit->m_fbusChannel = -1.;
+
+	SETCALC(SharedOut_next_k);
+	unit->m_bus = world->mSharedControls;
+	//unit->m_busTouched = world->mControlBusTouched;
+	SharedOut_next_k(unit, 1);
+
+//Print("<-SharedOut_Ctor\n");
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void load(InterfaceTable *inTable)
 {
 	ft = inTable;
@@ -657,5 +742,9 @@ void load(InterfaceTable *inTable)
 	DefineUnit("ReplaceOut", sizeof(IOUnit), (UnitCtorFunc)&ReplaceOut_Ctor, 0);
 	DefineUnit("Out", sizeof(IOUnit), (UnitCtorFunc)&Out_Ctor, 0);
 	DefineUnit("In", sizeof(IOUnit), (UnitCtorFunc)&In_Ctor, 0);
+	DefineUnit("InFeedback", sizeof(IOUnit), (UnitCtorFunc)&InFeedback_Ctor, 0);
 	DefineUnit("InTrig", sizeof(IOUnit), (UnitCtorFunc)&InTrig_Ctor, 0);
+
+	DefineUnit("SharedOut", sizeof(IOUnit), (UnitCtorFunc)&SharedOut_Ctor, 0);
+	DefineUnit("SharedIn", sizeof(IOUnit), (UnitCtorFunc)&SharedIn_Ctor, 0);
 }
