@@ -34,6 +34,7 @@
     if(self == [super init]) {
         receiver = argReceiver;
         result = argResult;
+		openPanel = 0;
 	}
     return self;
 }
@@ -50,10 +51,11 @@
 }
 
 
+  /*
 -(void)getPaths
 {
     NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
-    
+
     NSArray *urls = [docctl URLsFromRunningOpenPanel];
     if(urls) {
         [self returnPaths: urls];
@@ -61,19 +63,19 @@
         [self cancel];
     }
 }
-
-
-/*-(void)getPath
-{
-    NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
-    
-    if(NSOkButton == [docctl runModalOpenPanel:[NSOpenPanel openPanel] forTypes:]) {
-        //temp = [urls retain];
-        [self returnPath:   ];
+*/
+-(void)getPaths
+{  
+    if (!openPanel) {
+		openPanel = [NSOpenPanel openPanel];
+		[openPanel retain];
+	}
+    if(NSOKButton == [openPanel runModalForTypes: nil]) {
+         [self returnPaths: [openPanel URLs]];
     } else {
         [self cancel];
     }
-}*/
+}
 
         
 -(void)returnPaths:(NSArray*)urls

@@ -19,6 +19,7 @@
 @interface SCDialog : NSObject {
     PyrObject *receiver;
     PyrObject *result;
+	NSOpenPanel *openPanel;
 }
 
 +(id)receiver:(PyrObject*)argReceiver result:(PyrObject*)argResult;
