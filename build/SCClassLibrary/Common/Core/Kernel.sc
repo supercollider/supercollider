@@ -388,7 +388,7 @@ Interpreter {
 	// The interpreter defines a context in which interactive commands
 	// are compiled.
 	
-	var <cmdLine; // place holder for text executed from a worksheet
+	var <>cmdLine; // place holder for text executed from a worksheet
 	var context; // faked interpreter context frame. Don't mess with it.
 	var <>codeDump;
 	

@@ -8,7 +8,8 @@ IODesc {
 	}
 	
 	printOn { arg stream;
-		stream << rate.asString << " " << startingChannel << " " << numberOfChannels << "\n"
+		stream << rate.asString << " " << startingChannel.source 
+				<< " " << numberOfChannels << "\n"
 	}	
 }
 
@@ -26,12 +27,12 @@ SynthDesc {
 		outputs.do {|output| stream << "   O "; output.printOn(stream) };
 	}
 	
-	*read { arg path;
+	*read { arg path, keepDefs=false;
 		^path.pathMatch.collect { |filename|
 			var file, result;
 			//filename.postln;
 			file = File(filename, "r");
-			result = this.readFile(file);
+			result = this.readFile(file, keepDefs);
 			file.close;
 			result
 		}
@@ -140,10 +141,10 @@ SynthDesc {
 			}
 		} {
 			if (ugenClass.isInputUGen) {
-				bus = ugen.inputs[0];
+				bus = ugen.inputs[0].source;
 				if (bus.class.isControlUGen) {
 					control = controls.detect {|item| item.index == bus.specialIndex };
-					if (control.notNil) { bus = control.name }
+					if (control.notNil) { bus = control.name };
 				};
 				inputs = inputs.add( IODesc(rate, numOutputs, bus))
 			} {
@@ -151,7 +152,7 @@ SynthDesc {
 				bus = ugen.inputs[0].source;
 				if (bus.class.isControlUGen) {
 					control = controls.detect {|item| item.index == bus.specialIndex };
-					if (control.notNil) { bus = control.name }
+					if (control.notNil) { bus = control.name };
 				};
 				outputs = outputs.add( IODesc(rate, numInputs - ugenClass.numFixedArgs, bus))
 			}}

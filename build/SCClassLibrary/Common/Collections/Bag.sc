@@ -1,5 +1,5 @@
 Bag : Collection {
-	var contents;
+	var <contents;
 	
 	*new { arg n=4;
 		^super.new.setDictionary(n)

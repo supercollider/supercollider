@@ -136,6 +136,18 @@ String[char] : RawArray {
 		});
 		^false
 	}
+
+	find { arg string;
+		// returns the index of the substring, or nil if not found
+		var firstChar;
+		firstChar = string.at(0);
+		this.do({	arg char,i;
+			if(char == firstChar,{
+				if(this.containsStringAt(i, string), { ^i });
+			})
+		});
+		^nil
+	}
 	
 
 	escapeChar { arg charToEscape; // $"
