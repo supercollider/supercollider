@@ -18,6 +18,11 @@
 	
 }
 
++Symbol {
+	asDefName { ^this.asString }
+
+}
+
 + Function {
 	
 	asSynthDef {
