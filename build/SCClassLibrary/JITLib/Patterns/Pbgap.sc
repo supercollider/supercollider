@@ -1,4 +1,4 @@
-Pbgap : Pbind {
+Pbgap : Pbindf {
 	
 	asStream {
 		var streampairs, endval, eventStream;

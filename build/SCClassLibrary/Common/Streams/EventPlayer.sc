@@ -8,6 +8,7 @@ EventPlayer {
 NotePlayer : EventPlayer {
 	playOneEvent { arg lag, dur, freq;
 		var bndl, server, id;
+		var ttbeats, ttseconds;
 		
 		server = ~server;
 		id = server.nextNodeID;
@@ -16,9 +17,17 @@ NotePlayer : EventPlayer {
 		
 		//send the note on bundle
 		server.listSendBundle(lag, bndl); 
+		ttbeats = thisThread.beats;
+		ttseconds = thisThread.seconds;
 				
-		// send note off bundle. 
-		server.sendBundle(lag + dur, [15, id, \gate, 0]); //15 == n_set
+		// send note off bundle.
+		TempoClock.default.sched(dur, { 
+			if (thisThread.seconds <= ttseconds, {
+				[\ooo, ttbeats, ttseconds, thisThread.beats, thisThread.seconds, dur].postln;
+				TempoClock.default.prDump;
+			});
+			server.sendBundle(lag, [15, id, \gate, 0]); //15 == n_set
+		});
 	}
 	playEvent { arg event;
 		var freqs, lag, dur, strum, sustain;
@@ -26,7 +35,6 @@ NotePlayer : EventPlayer {
 			~finish.value; // finish the event
 			// if tempo changes this will be inaccurate.
 			// another way must be found to do this. but for now..
-			dur = ~dur / ~tempo;
 			lag = ~lag + ~server.latency;
 			freqs = ~freq;
 			strum = ~strum;

@@ -52,7 +52,7 @@ Event : Environment {
 	}
 	play {
 		this.at(\player).playEvent(this);
-		^this.delta / this.at(\tempo)
+		^this.delta
 	}
 	
 	*initClass {
@@ -62,7 +62,6 @@ Event : Environment {
 			
 			~reverse = false;
 			
-			~tempo = 1;	// beats per second
 			~dur = 1.0;
 			~stretch = 1.0;
 			~legato = 0.8;
@@ -130,11 +129,29 @@ Event : Environment {
 			~server = Server.local;
 		});
 		
+//		SynthDef(\default, { arg i_out=0, freq=440, amp=0.1, pan=0, gate=1;
+//			var z;
+//			z = LPF.ar(LFSaw.ar(freq) * Linen.kr(gate, 0.01, amp, 0.3, 2), freq * 12);
+//			Out.ar(i_out, Pan2.ar(z, pan));
+//		}).writeDefFile;
+//
+//		SynthDef(\default, { arg i_out=0, freq=440, amp=0.1, pan=0, gate=1;
+//			var z;
+//			z = RLPF.ar(
+//				Mix.ar(LFPulse.ar(freq + [0,Rand(-0.2,0.2),Rand(-0.2,0.2)], 0.1)),
+//				XLine.kr(Rand(4000,5000), Rand(2500,3200), 1),
+//				0.2) * Linen.kr(gate, 0.01, amp * 0.7, 0.3, 2);
+//			Out.ar(i_out, Pan2.ar(z, pan));
+//		}).writeDefFile;
+		
 		SynthDef(\default, { arg i_out=0, freq=440, amp=0.1, pan=0, gate=1;
 			var z;
-			z = LPF.ar(LFSaw.ar(freq) * Linen.kr(gate, 0.01, amp, 0.3, 2), freq * 12);
+			z = LPF.ar(
+				Mix.ar(VarSaw.ar(freq + [0, Rand(-0.4,0.0), Rand(0.0,0.4)], 0, 0.3)),
+				XLine.kr(Rand(4000,5000), Rand(2500,3200), 1)) * Linen.kr(gate, 0.01, amp * 0.7, 0.3, 2);
 			Out.ar(i_out, Pan2.ar(z, pan));
 		}).writeDefFile;
+
 	}
 }
 

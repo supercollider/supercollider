@@ -236,24 +236,24 @@ Task : PauseStream {
 ////////////////////////////////////////////////////////////////////////
 
 EventStream : PauseStream {
-	var <>muteCount = 0;
+	var <>event, <>muteCount = 0;
 	
-	*new { arg stream;
-		^super.new(stream);
+	*new { arg stream, event;
+		^super.new(stream).event_(event ? Event.default);
 	}
 	
 	mute { muteCount = muteCount + 1; }
 	unmute { muteCount = muteCount - 1; }
 	
 	next { arg inTime;
-		var event, nextTime;
-		event = stream.next(inTime);	
-		if (event.isNil, {	
+		var outEvent, nextTime;
+		outEvent = stream.next(event);	
+		if (outEvent.isNil, {	
 			stream = nil;
 			^nil
 		},{
-			if (muteCount > 0, { event.put(\freq, \rest) });
-			if ((nextTime = event.play).isNil, { stream = nil });
+			if (muteCount > 0, { outEvent.put(\freq, \rest) });
+			if ((nextTime = outEvent.play).isNil, { stream = nil });
 			^nextTime
 		});
 	}

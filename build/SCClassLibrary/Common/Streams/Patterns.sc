@@ -111,33 +111,32 @@ Pbinop : Pattern {
 
 
 Pbind : Pattern {
-	var <>pattern, <>patternpairs;
-	*new { arg pattern ... pairs;
-		if (pairs.size.odd, { "Pbind should have odd number of args.\n".error; this.halt });
-		^super.newCopyArgs(pattern ? Event.default, pairs)
+	var <>patternpairs;
+	*new { arg ... pairs;
+		if (pairs.size.odd, { "Pbind should have even number of args.\n".error; this.halt });
+		^super.newCopyArgs(pairs)
 	}
 	asStream {
-		var streampairs, endval, eventStream;
+		var streampairs, endval;
 		
 		streampairs = patternpairs.copy;
 		endval = streampairs.size - 1;
 		forBy (1, endval, 2, { arg i;
 			streampairs.put(i, streampairs.at(i).asStream);
 		});
-		eventStream = pattern.asStream;
-		
-		^FuncStream.new({ arg time;
+
+		^FuncStream.new({ arg inevent;
 			var event;
 			var sawNil = false;
-			event = eventStream.next(time);
+			event = inevent.copy;
 			if (event.isNil, { nil },{
 				forBy (0, endval, 2, { arg i;
 					var name, stream, streamout;
 					name = streampairs.at(i);
 					stream = streampairs.at(i+1);
 					
-					streamout = stream.next(time);
-					
+					streamout = stream.next(inevent);
+
 					if (streamout.isNil, {
 						sawNil = true;
 					},{
@@ -154,7 +153,7 @@ Pbind : Pattern {
 					event 
 				});
 			});
-		},{
+		},{			
 			streampairs = patternpairs.copy;
 			endval = streampairs.size - 1;
 			forBy (1, endval, 2, { arg i;

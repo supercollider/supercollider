@@ -8,11 +8,10 @@ RecNodeProxy : NodeProxy {
 	*control { ^this.notYetImplemented(thisMethod) }
 		
 	*initClass {
-		SynthDef.writeOnce("system-diskout-2", { arg i_in, i_bufNum=0;
-			DiskOut.ar(i_bufNum, InFeedback.ar(i_in, 2));
-		});
-		SynthDef.writeOnce("system-diskout-1", { arg i_in, i_bufNum=0;
-			DiskOut.ar(i_bufNum, InFeedback.ar(i_in, 1));
+		for(1,8,{ arg i;
+			SynthDef.writeOnce("system-diskout-" ++ i.asString, { arg i_in, i_bufNum=0;
+				DiskOut.ar(i_bufNum, InFeedback.ar(i_in, i));
+			});
 		});
 	}
 	
@@ -37,7 +36,7 @@ RecNodeProxy : NodeProxy {
 	}
 	
 	record { arg paused=true;
-		var bundle, divider, n;
+		var bundle, n;
 		if(server.serverRunning.not, { "server not running".inform; ^this  });
 		if(buffer.isNil, { "not prepared. use open to prepare a file.".inform;  ^this });
 		
@@ -49,13 +48,10 @@ RecNodeProxy : NodeProxy {
 		
 		recGroup = Group.newToBundle(bundle, server);
 		NodeWatcher.register(recGroup);
-		divider = if(n.even, 2, 1);
-		(n div: divider).do({ arg i;
-		bundle.add([9, "system-diskout-"++divider, 
+		bundle.add([9, "system-diskout-"++n, 
 					server.nextNodeID, 1, recGroup.nodeID,
-					\i_in, outbus.index+(i*divider), \i_bufNum, buffer.bufnum
-				])
-		});
+					\i_in, outbus.index, \i_bufNum, buffer.bufnum
+				]);
 		if(paused, { recGroup.msgToBundle(bundle, "/n_run", 0); "recording (paused)".inform }); 
 		bundle.schedSend(server);
 	}

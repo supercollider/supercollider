@@ -13,9 +13,9 @@ Pn : FilterPattern {
 		^super.new(pattern).repeats_(repeats)
 	}
 	asStream {
-		^Routine.new({ arg time;
+		^Routine.new({ arg inevent;
 			repeats.do({
-				time = pattern.embedInStream(time);
+				inevent = pattern.embedInStream(inevent);
 			});
 		});
 	}
@@ -82,12 +82,12 @@ Pset : FilterPattern {
 		
 		evtStream = pattern.asStream;
 		
-		^FuncStream.new({ arg time;
-			var event, val;
-			event = evtStream.next(time);
+		^FuncStream.new({ arg event;
+			var val;
+			event = evtStream.next(event);
 			val = valStream.next;
 			if (val.isNil, { nil },{
-				if (event.notNil, { this.filter(event, val) });
+				if (event.notNil, { this.filterEvent(event, val) });
 				event
 			});
 		});
@@ -109,8 +109,8 @@ Pmul : Pset {
 
 Psetp : Pset {
 	asStream {
-		^Routine.new({ arg time;
-			var valStream, evtStream, val, outevent;
+		^Routine.new({ arg event;
+			var valStream, evtStream, val;
 			valStream = value.asStream;
 			while({
 				val = valStream.next;
@@ -118,11 +118,11 @@ Psetp : Pset {
 			},{
 				evtStream = pattern.asStream;
 				while({
-					outevent = evtStream.next(time);
-					outevent.notNil
+					event = evtStream.next(event);
+					event.notNil
 				},{
-					this.filterEvent(outevent, val);
-					time = outevent.yield;
+					this.filterEvent(event, val);
+					event = event.yield;
 				});
 			});
 		});
@@ -148,13 +148,13 @@ Pfin : FilterPattern {
 		^super.new(pattern).count_(count)
 	}
 	asStream { 
-		^Routine.new({ arg time;
-			var event, stream;
+		^Routine.new({ arg event;
+			var stream;
 		
 			stream = pattern.asStream;
 			
 			count.value.do({
-				time = stream.next(time).yield;
+				event = stream.next(event).yield;
 			});
 		});
 	}
@@ -264,61 +264,62 @@ Plag : FilterPattern {
 
 Pbindf : FilterPattern {
 	var <>patternpairs;
-	*new { arg ... pairs;
-		if (pairs.size.even, { 
-			"Pbindf should have odd number of args.\n".error; 
-			pairs.dump;
-			this.halt 
-		});
-		^super.new(pairs.last).patternpairs_(pairs)
+	*new { arg pattern ... pairs;
+		if (pairs.size.odd, { "Pbindf should have odd number of args.\n".error; this.halt });
+		^super.new(pattern ? Event.default).patternpairs_(pairs)
 	}
 	asStream {
-		var patstream, streampairs, endval;
+		var streampairs, endval, eventStream;
 		
-		patstream = pattern.asStream;
-
 		streampairs = patternpairs.copy;
-		endval = streampairs.size - 2;
+		endval = streampairs.size - 1;
 		forBy (1, endval, 2, { arg i;
 			streampairs.put(i, streampairs.at(i).asStream);
 		});
+		eventStream = pattern.asStream;
 		
 		^FuncStream.new({ arg inevent;
+			var event;
 			var sawNil = false;
-			inevent = inevent.copy;
-			forBy (0, endval, 2, { arg i;
-				var name, stream, streamout;
-				name = streampairs.at(i);
-				stream = streampairs.at(i+1);
-				
-				streamout = stream.next(inevent);
-				
-				if (streamout.isNil, {
-					sawNil = true;
-				},{
-					if (name.isSequenceableCollection, {					
-						streamout.do({ arg val, i;
-							inevent.put(name.at(i), val);
-						});
+
+			event = eventStream.next(inevent);
+
+			if (event.isNil, { nil },{
+				forBy (0, endval, 2, { arg i;
+					var name, stream, streamout;
+					name = streampairs.at(i);
+					stream = streampairs.at(i+1);
+					
+					streamout = stream.next(inevent);
+					
+					if (streamout.isNil, {
+						sawNil = true;
 					},{
-						inevent.put(name, streamout);
+						if (name.isSequenceableCollection, {					
+							streamout.do({ arg val, i;
+								event.put(name.at(i), val);
+							});
+						},{
+							event.put(name, streamout);
+						});
 					});
 				});
-			});
-			if (sawNil, { nil },{ 
-				inevent = patstream.next(inevent);
+				if (sawNil, { nil },{ 
+					event 
+				});
 			});
 		},{
-			patstream.reset;
+			eventStream.reset;
 			
 			streampairs = patternpairs.copy;
 			endval = streampairs.size - 1;
 			forBy (1, endval, 2, { arg i;
-				streampairs.put(i, streampairs.at(i).reset);
+				streampairs.put(i, streampairs.at(i).asStream);
 			});
 		});
 	}
 }
+
 
 Pstutter : FilterPattern {
 	var <>n;
@@ -326,16 +327,16 @@ Pstutter : FilterPattern {
 		^super.new(pattern).n_(n)
 	}
 	asStream { 
-		^Routine.new({ arg time;
+		^Routine.new({ arg inevent;
 			var event, stream;
 		
 			stream = pattern.asStream;
 		
 			while ({
-				(event = stream.next(time)).notNil
+				(event = stream.next(inevent)).notNil
 			},{
 				n.do({
-					time = event.copy.yield;
+					inevent = event.copy.yield;
 				});
 			});
 		});

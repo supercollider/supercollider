@@ -102,7 +102,7 @@ Pdef : Pdefn {
 	}
 	
 	*default { 
-				^Pbind(nil,
+				^Pbind(
 					\freq, \rest, 
 					\dur, 1
 		 	 	)
