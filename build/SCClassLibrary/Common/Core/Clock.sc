@@ -69,7 +69,8 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		this.prStop;
 	}
 	
-	play { arg task; this.schedAbs(this.elapsedBeats.ceil, task) }
+	play { arg task, quant=1.0; this.schedAbs(this.elapsedBeats.roundUp(quant), task) }
+	
 	*play { ^this.shouldNotImplement(thisMethod) }
 	
 	tempo {

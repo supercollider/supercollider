@@ -217,50 +217,6 @@ Plag : FilterPattern {
 	}
 }
 
-//Pbindf : FilterPattern {
-//	var <>patternpairs;
-//	*new { arg ... pairs;
-//		if (pairs.size.even, { "Pbindf should have odd number of args.\n".error; this.halt });
-//		^super.new(pairs.last).patternpairs_(pairs)
-//	}
-//	asStream {
-//		var patstream, streampairs, endval;
-//		
-//		patstream = pattern.asStream;
-//		
-//		streampairs = patternpairs.copy;
-//		endval = streampairs.size - 2;
-//		forBy (1, endval, 2, { arg i;
-//			streampairs.put(i, streampairs.at(i).asStream);
-//		});
-//		
-//		^FuncStream.new({ arg inevent;
-//			var sawNil = false;
-//			
-//			inevent = patstream.next(inevent);
-//			if (inevent.isNil, {
-//				nil
-//			},{
-//				forBy (0, endval, 2, { arg i;
-//					var name, stream, item;
-//					name = streampairs.at(i);
-//					stream = streampairs.at(i+1);
-//				
-//					item = stream.next(inevent);
-//					if (item.isNil, {
-//						sawNil = true;
-//					},{
-//						inevent.put(name, item);
-//					});
-//				});
-//				if (sawNil, { nil },{ inevent });
-//			});
-//		},{
-//			patstream.reset;
-//		});
-//	}
-//}
-
 
 Pbindf : FilterPattern {
 	var <>patternpairs;

@@ -175,6 +175,7 @@ enum {
 	opLCM,
 	opGCD,
 	opRound,
+	opRoundUp,
 	opTrunc,
 	opAtan2,	
 	opHypot,

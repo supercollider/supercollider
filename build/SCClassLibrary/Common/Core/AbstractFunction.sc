@@ -105,6 +105,7 @@ AbstractFunction {
 	lcm { arg function; ^this.composeBinaryOp('lcm', function) }
 	gcd { arg function; ^this.composeBinaryOp('gcd', function) }
 	round { arg function; ^this.composeBinaryOp('round', function) }
+	roundUp { arg function; ^this.composeBinaryOp('roundUp', function) }
 	trunc { arg function; ^this.composeBinaryOp('trunc', function) }
 	atan2 { arg function; ^this.composeBinaryOp('atan2', function) }	
 	hypot { arg function; ^this.composeBinaryOp('hypot', function) }

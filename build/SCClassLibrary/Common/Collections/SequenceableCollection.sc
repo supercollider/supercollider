@@ -419,6 +419,7 @@ SequenceableCollection : Collection {
 	lcm { arg aNumber; ^this.performBinaryOp('lcm', aNumber) }
 	gcd { arg aNumber; ^this.performBinaryOp('gcd', aNumber) }
 	round { arg aNumber; ^this.performBinaryOp('round', aNumber) }
+	roundUp { arg aNumber; ^this.performBinaryOp('roundUp', aNumber) }
 	trunc { arg aNumber; ^this.performBinaryOp('trunc', aNumber) }
 	atan2 { arg aNumber; ^this.performBinaryOp('atan2', aNumber) }	
 	hypot { arg aNumber; ^this.performBinaryOp('hypot', aNumber) }

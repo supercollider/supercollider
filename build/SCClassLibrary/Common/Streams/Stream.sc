@@ -247,8 +247,8 @@ EventStream : PauseStream {
 	
 	next { arg inTime;
 		var outEvent, nextTime;
-		outEvent = stream.next(event);	
-		if (outEvent.isNil, {	
+		outEvent = stream.next(event);
+		if (outEvent.isNil, {
 			stream = nil;
 			^nil
 		},{

@@ -3613,6 +3613,7 @@ void initPrimitives()
 	definePrimitive(base, opLCM, "_LCM", doSpecialBinaryArithMsg, 2, 0);
 	definePrimitive(base, opGCD, "_GCD", doSpecialBinaryArithMsg, 2, 0);
 	definePrimitive(base, opRound, "_Round", doSpecialBinaryArithMsg, 2, 0);
+	definePrimitive(base, opRoundUp, "_RoundUp", doSpecialBinaryArithMsg, 2, 0);
 	definePrimitive(base, opTrunc, "_Trunc", doSpecialBinaryArithMsg, 2, 0);
 	definePrimitive(base, opAtan2, "_Atan2", doSpecialBinaryArithMsg, 2, 0);	
 	definePrimitive(base, opHypot, "_Hypot", doSpecialBinaryArithMsg, 2, 0);

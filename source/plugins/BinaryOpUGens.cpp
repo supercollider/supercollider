@@ -51,6 +51,7 @@ enum {
 	opLCM,
 	opGCD,
 	opRound,
+	opRoundUp,
 	opTrunc,
 	opAtan2,	
 	opHypot,
@@ -326,6 +327,12 @@ extern "C"
 	void round_ka(BinaryOpUGen *unit, int inNumSamples);
 	void round_ai(BinaryOpUGen *unit, int inNumSamples);
 	void round_ia(BinaryOpUGen *unit, int inNumSamples);
+	void roundUp_1(BinaryOpUGen *unit, int inNumSamples);
+	void roundUp_aa(BinaryOpUGen *unit, int inNumSamples);
+	void roundUp_ak(BinaryOpUGen *unit, int inNumSamples);
+	void roundUp_ka(BinaryOpUGen *unit, int inNumSamples);
+	void roundUp_ai(BinaryOpUGen *unit, int inNumSamples);
+	void roundUp_ia(BinaryOpUGen *unit, int inNumSamples);
 	void trunc_1(BinaryOpUGen *unit, int inNumSamples);
 	void trunc_aa(BinaryOpUGen *unit, int inNumSamples);
 	void trunc_ak(BinaryOpUGen *unit, int inNumSamples);
@@ -600,6 +607,13 @@ void round_1(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float xb = ZIN0(1);
 	ZOUT0(0) = sc_round(xa, xb);
+}
+
+void roundUp_1(BinaryOpUGen *unit, int inNumSamples)
+{
+	float xa = ZIN0(0);
+	float xb = ZIN0(1);
+	ZOUT0(0) = sc_roundUp(xa, xb);
 }
 
 void trunc_1(BinaryOpUGen *unit, int inNumSamples)
@@ -3603,6 +3617,96 @@ void round_ai(BinaryOpUGen *unit, int inNumSamples)
 
 
 
+
+void roundUp_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float *b = ZIN(1);
+	
+	LOOP(inNumSamples, 
+		float xa = ZXP(a);
+		float xb = ZXP(b);
+		ZXP(out) = sc_roundUp(xa, xb);
+	);
+}
+
+void roundUp_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = unit->mPrevB;
+	float next_b = ZIN0(1);
+	
+	if (xb == next_b) {
+		LOOP(inNumSamples, 
+			float xa = ZXP(a);
+			ZXP(out) = sc_roundUp(xa, xb);
+		);
+	} else {
+		float slope = CALCSLOPE(next_b, xb);
+		LOOP(inNumSamples, 
+			float xa = ZXP(a);
+			ZXP(out) = sc_roundUp(xa, xb);
+			xb += slope;
+		);
+		unit->mPrevB = xb;
+	}
+}
+
+void roundUp_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = unit->mPrevA;
+	float *b = ZIN(1);
+	float next_a = ZIN0(0);
+	
+	if (xa == next_a) {
+		LOOP(inNumSamples, 
+			float xb = ZXP(b);
+			ZXP(out) = sc_roundUp(xa, xb);
+		);
+	} else {
+		float slope = CALCSLOPE(next_a, xa);
+		LOOP(inNumSamples, 
+			float xb = ZXP(b);
+			ZXP(out) = sc_roundUp(xa, xb);
+			xa += slope;
+		);
+		unit->mPrevA = xa;
+	}
+}
+
+
+void roundUp_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = ZIN0(0);
+	float *b = ZIN(1);
+	
+	LOOP(inNumSamples, 
+		float xb = ZXP(b);
+		ZXP(out) = sc_roundUp(xa, xb);
+	);
+	unit->mPrevA = xa;
+}
+
+
+void roundUp_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = ZIN0(1);
+	
+	LOOP(inNumSamples, 
+		float xa = ZXP(a);
+		ZXP(out) = sc_roundUp(xa, xb);
+	);
+	unit->mPrevB = xb;
+}
+
+
+
 void trunc_aa(BinaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -5323,6 +5427,7 @@ BinaryOpFunc ChooseOneSampleFunc(BinaryOpUGen *unit)
 		case opBitOr : func = &or_1; break;
 		case opBitXor : func = &xor_1; break;
 		case opRound : func = &round_1; break;
+		case opRoundUp : func = &roundUp_1; break;
 		case opTrunc : func = &trunc_1; break;
 		case opAtan2 : func = &atan2_1; break;
 		case opHypot : func = &hypot_1; break;
@@ -5385,6 +5490,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 						case opBitOr : func = &or_aa; break;
 						case opBitXor : func = &xor_aa; break;
 						case opRound : func = &round_aa; break;
+						case opRoundUp : func = &roundUp_aa; break;
 						case opTrunc : func = &trunc_aa; break;
 						case opAtan2 : func = &atan2_aa; break;
 						case opHypot : func = &hypot_aa; break;
@@ -5431,6 +5537,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 						case opBitOr : func = &or_ak; break;
 						case opBitXor : func = &xor_ak; break;
 						case opRound : func = &round_ak; break;
+						case opRoundUp : func = &roundUp_ak; break;
 						case opTrunc : func = &trunc_ak; break;
 						case opAtan2 : func = &atan2_ak; break;
 						case opHypot : func = &hypot_ak; break;
@@ -5477,6 +5584,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 						case opBitOr : func = &or_ai; break;
 						case opBitXor : func = &xor_ai; break;
 						case opRound : func = &round_ai; break;
+						case opRoundUp : func = &roundUp_ai; break;
 						case opTrunc : func = &trunc_ai; break;
 						case opAtan2 : func = &atan2_ai; break;
 						case opHypot : func = &hypot_ai; break;
@@ -5525,6 +5633,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 					case opBitOr : func = &or_ka; break;
 					case opBitXor : func = &xor_ka; break;
 					case opRound : func = &round_ka; break;
+					case opRoundUp : func = &roundUp_ka; break;
 					case opTrunc : func = &trunc_ka; break;
 					case opAtan2 : func = &atan2_ka; break;
 					case opHypot : func = &hypot_ka; break;
@@ -5576,6 +5685,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 					case opBitOr : func = &or_ia; break;
 					case opBitXor : func = &xor_ia; break;
 					case opRound : func = &round_ia; break;
+					case opRoundUp : func = &roundUp_ia; break;
 					case opTrunc : func = &trunc_ia; break;
 					case opAtan2 : func = &atan2_ia; break;
 					case opHypot : func = &hypot_ia; break;
@@ -5643,6 +5753,7 @@ BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 						case opBitOr : func = &or_aa; break;
 						case opBitXor : func = &xor_aa; break;
 						case opRound : func = &round_aa; break;
+						case opRoundUp : func = &roundUp_aa; break;
 						case opTrunc : func = &trunc_aa; break;
 						case opAtan2 : func = &atan2_aa; break;
 						case opHypot : func = &hypot_aa; break;
@@ -5689,6 +5800,7 @@ BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 						case opBitOr : func = &or_ak; break;
 						case opBitXor : func = &xor_ak; break;
 						case opRound : func = &round_ak; break;
+						case opRoundUp : func = &roundUp_ak; break;
 						case opTrunc : func = &trunc_ak; break;
 						case opAtan2 : func = &atan2_ak; break;
 						case opHypot : func = &hypot_ak; break;
@@ -5735,6 +5847,7 @@ BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 						case opBitOr : func = &or_ai; break;
 						case opBitXor : func = &xor_ai; break;
 						case opRound : func = &round_ai; break;
+						case opRoundUp : func = &roundUp_ai; break;
 						case opTrunc : func = &trunc_ai; break;
 						case opAtan2 : func = &atan2_ai; break;
 						case opHypot : func = &hypot_ai; break;
@@ -5783,6 +5896,7 @@ BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 					case opBitOr : func = &or_ka; break;
 					case opBitXor : func = &xor_ka; break;
 					case opRound : func = &round_ka; break;
+					case opRoundUp : func = &roundUp_ka; break;
 					case opTrunc : func = &trunc_ka; break;
 					case opAtan2 : func = &atan2_ka; break;
 					case opHypot : func = &hypot_ka; break;
@@ -5834,6 +5948,7 @@ BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 					case opBitOr : func = &or_ia; break;
 					case opBitXor : func = &xor_ia; break;
 					case opRound : func = &round_ia; break;
+					case opRoundUp : func = &roundUp_ia; break;
 					case opTrunc : func = &trunc_ia; break;
 					case opAtan2 : func = &atan2_ia; break;
 					case opHypot : func = &hypot_ia; break;

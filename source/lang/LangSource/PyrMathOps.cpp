@@ -326,6 +326,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 						case opLCM   : res.ui = sc_lcm(a->ui, b->ui); res.utag = tagInt; break;
 						case opGCD   : res.ui = sc_gcd(a->ui, b->ui); res.utag = tagInt; break;
 						case opRound : res.ui = sc_round((int)a->ui, (int)b->ui); res.utag = tagInt; break;
+						case opRoundUp : res.ui = sc_roundUp((int)a->ui, (int)b->ui); res.utag = tagInt; break;
 						case opTrunc : res.ui = sc_trunc((int)a->ui, (int)b->ui); res.utag = tagInt; break;
 						case opAtan2 : res.uf = atan2((double)a->ui, (double)b->ui); break;
 						case opHypot : res.uf = hypot((double)a->ui, (double)b->ui); break;
@@ -487,6 +488,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 						case opMin : res.uf = a->ui < b->uf ? a->ui : b->uf; break;
 						case opMax : res.uf = a->ui > b->uf ? a->ui : b->uf; break;
 						case opRound : res.uf = sc_round((double)a->ui, b->uf); break;
+						case opRoundUp : res.uf = sc_roundUp((double)a->ui, b->uf); break;
 						case opTrunc : res.uf = sc_trunc((double)a->ui, b->uf); break;
 						case opAtan2 : res.uf = atan2(a->ui, b->uf); break;
 						case opHypot : res.uf = hypot(a->ui, b->uf); break;
@@ -765,6 +767,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 						case opMin : res.uf = a->uf < b->ui ? a->uf : b->ui; break;
 						case opMax : res.uf = a->uf > b->ui ? a->uf : b->ui; break;
 						case opRound : res.uf = sc_round(a->uf, (double)b->ui); break;
+						case opRoundUp : res.uf = sc_roundUp(a->uf, (double)b->ui); break;
 						case opTrunc : res.uf = sc_trunc(a->uf, (double)b->ui); break;
 						case opAtan2 : res.uf = atan2(a->uf, b->ui); break;
 						case opHypot : res.uf = hypot(a->uf, b->ui); break;
@@ -893,6 +896,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 						case opMin : res.uf = a->uf < b->uf ? a->uf : b->uf; break;
 						case opMax : res.uf = a->uf > b->uf ? a->uf : b->uf; break;
 						case opRound : res.uf = sc_round(a->uf, b->uf); break;
+						case opRoundUp : res.uf = sc_roundUp(a->uf, b->uf); break;
 						case opTrunc : res.uf = sc_trunc(a->uf, b->uf); break;
 						case opAtan2 : res.uf = atan2(a->uf, b->uf); break;
 						case opHypot : res.uf = hypot(a->uf, b->uf); break;

@@ -73,19 +73,20 @@ SimpleNumber : Number {
 	div { arg aNumber; _IDiv; ^aNumber.performBinaryOpOnSimpleNumber('div', this) }
 	pow { arg aNumber; _Pow; ^aNumber.performBinaryOpOnSimpleNumber('pow', this) }
 	min { arg aNumber; _Min; ^aNumber.performBinaryOpOnSimpleNumber('min', this) } 
-	max { arg aNumber; _Max; ^aNumber.performBinaryOpOnSimpleNumber('max', this) }
+	max { arg aNumber=0.0; _Max; ^aNumber.performBinaryOpOnSimpleNumber('max', this) }
 	bitAnd { arg aNumber; _BitAnd; ^aNumber.performBinaryOpOnSimpleNumber('bitAnd', this) }
 	bitOr { arg aNumber; _BitOr; ^aNumber.performBinaryOpOnSimpleNumber('bitOr', this) }
 	bitXor { arg aNumber; _BitXor; ^aNumber.performBinaryOpOnSimpleNumber('bitXor', this) }	
 	lcm { arg aNumber; _LCM; ^aNumber.performBinaryOpOnSimpleNumber('lcm', this) }
 	gcd { arg aNumber; _GCD; ^aNumber.performBinaryOpOnSimpleNumber('gcd', this) }
-	round { arg aNumber; _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this) }
-	trunc { arg aNumber; _Trunc; ^aNumber.performBinaryOpOnSimpleNumber('trunc', this) }
+	round { arg aNumber=1.0; _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this) }
+	roundUp { arg aNumber=1.0; _RoundUp; ^aNumber.performBinaryOpOnSimpleNumber('roundUp', this) }
+	trunc { arg aNumber=1.0; _Trunc; ^aNumber.performBinaryOpOnSimpleNumber('trunc', this) }
 	atan2 { arg aNumber; _Atan2; ^aNumber.performBinaryOpOnSimpleNumber('atan2', this) }	
 	hypot { arg aNumber; _Hypot; ^aNumber.performBinaryOpOnSimpleNumber('hypot', this) }
 	hypotApx { arg aNumber; _HypotApx; ^aNumber.performBinaryOpOnSimpleNumber('hypotApx', this) }
-	leftShift { arg aNumber; _ShiftLeft; ^aNumber.performBinaryOpOnSimpleNumber('leftShift', this) }
-	rightShift { arg aNumber; _ShiftRight; ^aNumber.performBinaryOpOnSimpleNumber('rightShift', this) }
+	leftShift { arg aNumber=1; _ShiftLeft; ^aNumber.performBinaryOpOnSimpleNumber('leftShift', this) }
+	rightShift { arg aNumber=1; _ShiftRight; ^aNumber.performBinaryOpOnSimpleNumber('rightShift', this) }
 	unsignedRightShift { arg aNumber; _UnsignedShift; ^aNumber.performBinaryOpOnSimpleNumber('unsignedRightShift', this) }
 	ring1 { arg aNumber; _Ring1; ^aNumber.performBinaryOpOnSimpleNumber('ring1', this) }
 	ring2 { arg aNumber; _Ring2; ^aNumber.performBinaryOpOnSimpleNumber('ring2', this) }

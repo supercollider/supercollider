@@ -250,9 +250,20 @@ inline float sc_round(float x, float quant)
 {
 	return quant==0. ? x : floor(x/quant + .5f) * quant;
 }
+
 inline double sc_round(double x, double quant)
 {
 	return quant==0. ? x : floor(x/quant + .5) * quant;
+}
+
+inline float sc_roundUp(float x, float quant)
+{
+	return quant==0. ? x : ceil(x/quant) * quant;
+}
+
+inline double sc_roundUp(double x, double quant)
+{
+	return quant==0. ? x : ceil(x/quant) * quant;
 }
 
 inline float sc_trunc(float x, float quant)
@@ -442,6 +453,12 @@ inline int sc_unsignedRightShift(int a, int b)
 inline int sc_round(int x, int quant)
 {
 	return quant==0 ? x : sc_div(x + quant/2, quant) * quant;
+}
+
+
+inline int sc_roundUp(int x, int quant)
+{
+	return quant==0 ? x : sc_div(x + quant - 1, quant) * quant;
 }
 
 inline int sc_trunc(int x, int quant)

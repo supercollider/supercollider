@@ -3457,6 +3457,7 @@ void initSpecialSelectors()
 	sel[opLCM] = getsym("lcm");
 	sel[opGCD] = getsym("gcd");
 	sel[opRound] = getsym("round");
+	sel[opRoundUp] = getsym("roundUp");
 	sel[opTrunc] = getsym("trunc");
 	sel[opAtan2] = getsym("atan2");	
 	sel[opHypot] = getsym("hypot");

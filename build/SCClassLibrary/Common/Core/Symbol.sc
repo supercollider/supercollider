@@ -71,6 +71,8 @@ Symbol {
 	blend { // Envelopes may call this on the curves inst var.
 		^this
 	}
+	
+	++ { arg aString; ^this.asString ++ aString }
 
 	// support for math on symbols
 
@@ -139,6 +141,7 @@ Symbol {
 	lcm { arg x; ^this }
 	gcd { arg x; ^this }
 	round { arg x; ^this }
+	roundUp { arg x; ^this }
 	trunc { arg x; ^this }
 	atan2 { arg x; ^this }	
 	hypot { arg x; ^this }
