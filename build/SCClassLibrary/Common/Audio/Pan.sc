@@ -126,8 +126,8 @@ DecodeB2 : MultiOutUGen {
 
 PanAz : MultiOutUGen {
 	
-	*ar { arg numChans, in, pos = 0.0, level = 1.0, width = 2.0;
-		^this.multiNew('audio', numChans, in, pos, level, width )
+	*ar { arg numChans, in, pos = 0.0, level = 1.0, width = 2.0, orientation = 0.5;
+		^this.multiNew('audio', numChans, in, pos, level, width, orientation )
 	}
 	init { arg numChans ... theInputs;
 		inputs = theInputs;		
@@ -157,20 +157,3 @@ LinXFade2 : UGen {
 	}
 }
 
-/*
-Pan8 : MultiOutUGen {
-	
-	*ar { arg in, xpos = 0.0, ypos = 0.0, zpos = 0.0, level = 1.0;
-		^this.multiNew('audio', in, xpos, ypos, zpos, level )
-	}
-	init { arg ... theInputs;
-		inputs = theInputs;		
-		channels = [ OutputProxy(\audio,this, 0), OutputProxy(\audio,this, 1),
-					OutputProxy(\audio,this, 2), OutputProxy(\audio,this, 3),
-					OutputProxy(\audio,this, 4), OutputProxy(\audio,this, 5),
-					OutputProxy(\audio,this, 6),OutputProxy(\audio,this, 7) 
-					];
-		^channels
-	}
-}
-*/

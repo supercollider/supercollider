@@ -308,7 +308,7 @@ void Balance2_next_aa(Balance2 *unit, int inNumSamples)
 
 void XFade2_Ctor(XFade2 *unit)
 {	
-	if (INRATE(1) == calc_FullRate) {
+	if (INRATE(2) == calc_FullRate) {
 		SETCALC(XFade2_next_aa);
 	} else {
 		SETCALC(XFade2_next_ak);
@@ -553,7 +553,7 @@ void vPan2_next_ak(Pan2 *unit, int inNumSamples)
 		vfloat32 vleftampslope = vload(4.f * leftampslope);
 		vfloat32 vrightampslope = vload(4.f * rightampslope);
 		vfloat32 vleftamp = vstart(leftamp, vleftampslope);
-		vfloat32 vrightamp = vstart(leftamp, vrightampslope);
+		vfloat32 vrightamp = vstart(rightamp, vrightampslope);
 		for (int i=0; i<len; i+=16) {
 			vfloat32 zvin = vec_ld(i, vin);
 			vfloat32 vleft = vec_mul(zvin, vleftamp);
@@ -847,29 +847,6 @@ void PanB_next(PanB *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void PanB2_Ctor(PanB2 *unit)
-{
-	SETCALC(PanB2_next);
-
-	float azimuth = unit->m_azimuth = ZIN0(1);
-	float level = unit->m_level = ZIN0(2);
-
-	int kSineSize = ft->mSineSize;
-	int kSineMask = kSineSize - 1;
-	
-	long isinpos = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
-	float sina = -ft->mSine[isinpos];
-	
-	long icospos = kSineMask & (isinpos + (kSineSize>>2));
-	float cosa = ft->mSine[icospos];
-	
-	unit->m_W_amp = rsqrt2 * level;
-	unit->m_X_amp = cosa * level;
-	unit->m_Y_amp = sina * level;
-	
-	PanB2_next(unit, 1);
-}
-
 void PanB2_next(PanB2 *unit, int inNumSamples)
 {
 	float *Wout = ZOUT(0);
@@ -924,6 +901,111 @@ void PanB2_next(PanB2 *unit, int inNumSamples)
 			ZXP(Yout) = z * Y_amp;
 		);
 	}
+}
+
+#if __VEC__
+
+void vPanB2_next(PanB2 *unit, int inNumSamples)
+{
+	vfloat32 *vWout = (vfloat32*)OUT(0);
+	vfloat32 *vXout = (vfloat32*)OUT(1);
+	vfloat32 *vYout = (vfloat32*)OUT(1);
+	vfloat32 *vin = (vfloat32*)IN(0);
+	define_vzero;
+	int len = inNumSamples << 2;
+
+	float azimuth = ZIN0(1);
+	float level = ZIN0(2);
+
+	float W_amp = unit->m_W_amp;
+	float X_amp = unit->m_X_amp;
+	float Y_amp = unit->m_Y_amp;
+
+	int kSineSize = ft->mSineSize;
+	int kSineMask = kSineSize - 1;
+	if (azimuth != unit->m_azimuth || level != unit->m_level) {
+		unit->m_azimuth = azimuth;
+		unit->m_level = level;
+
+		long isinpos = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
+		float sina = -ft->mSine[isinpos];
+		
+		long icospos = kSineMask & (isinpos + (kSineSize>>2));
+		float cosa = ft->mSine[icospos];
+		
+		float next_W_amp = rsqrt2 * level;
+		float next_X_amp = cosa * level;
+		float next_Y_amp = sina * level;
+				
+		float W_slope = CALCSLOPE(next_W_amp, W_amp);
+		float X_slope = CALCSLOPE(next_X_amp, X_amp);
+		float Y_slope = CALCSLOPE(next_Y_amp, Y_amp);
+		
+		vfloat32 vW_slope = vload(4.f * W_slope);
+		vfloat32 vX_slope = vload(4.f * X_slope);
+		vfloat32 vY_slope = vload(4.f * Y_slope);
+		vfloat32 vW_amp = vstart(W_amp, vW_slope);
+		vfloat32 vX_amp = vstart(X_amp, vX_slope);
+		vfloat32 vY_amp = vstart(Y_amp, vY_slope);
+
+		for (int i=0; i<len; i+=16) {
+			vfloat32 zvin = vec_ld(i, vin);
+			vec_st(vec_mul(zvin, vW_amp), i, vWout);
+			vec_st(vec_mul(zvin, vX_amp), i, vXout);
+			vec_st(vec_mul(zvin, vY_amp), i, vYout);
+			vW_amp = vec_add(vW_amp, vW_slope);
+			vX_amp = vec_add(vX_amp, vX_slope);
+			vY_amp = vec_add(vY_amp, vY_slope);
+		}
+		unit->m_W_amp = next_W_amp;
+		unit->m_X_amp = next_X_amp;
+		unit->m_Y_amp = next_Y_amp;
+	} else {
+		vfloat32 vW_amp = vload(W_amp);
+		vfloat32 vX_amp = vload(X_amp);
+		vfloat32 vY_amp = vload(Y_amp);
+
+		for (int i=0; i<len; i+=16) {
+			vfloat32 zvin = vec_ld(i, vin);
+			vec_st(vec_mul(zvin, vW_amp), i, vWout);
+			vec_st(vec_mul(zvin, vX_amp), i, vXout);
+			vec_st(vec_mul(zvin, vY_amp), i, vYout);
+		}
+	}
+}
+
+#endif
+
+
+void PanB2_Ctor(PanB2 *unit)
+{
+#if __VEC__
+	if (USEVEC) {
+		SETCALC(vPanB2_next);
+	} else {
+		SETCALC(PanB2_next);
+	}
+#else
+	SETCALC(PanB2_next);
+#endif
+
+	float azimuth = unit->m_azimuth = ZIN0(1);
+	float level = unit->m_level = ZIN0(2);
+
+	int kSineSize = ft->mSineSize;
+	int kSineMask = kSineSize - 1;
+	
+	long isinpos = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
+	float sina = -ft->mSine[isinpos];
+	
+	long icospos = kSineMask & (isinpos + (kSineSize>>2));
+	float cosa = ft->mSine[icospos];
+	
+	unit->m_W_amp = rsqrt2 * level;
+	unit->m_X_amp = cosa * level;
+	unit->m_Y_amp = sina * level;
+	
+	PanB2_next(unit, 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1028,10 +1110,38 @@ void BiPanB2_Ctor(BiPanB2 *unit)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+/*
+void calcPos(float pos, int numOutputs, float width, float orientation)
+{
+	float rwidth = 1.f / width;
+	float range = numOutputs * rwidth;
+	float rrange = 1.f / range;
+	
+	float zpos = pos * 0.5 * numOutputs + width * 0.5 + orientation;
+	Print("pos %6.2g    rwidth %6.3g  range %6.3g  rrange %6.3g  zpos %6.3g\n", 
+		pos, rwidth, range, rrange, zpos);
+	for (int i=0; i<numOutputs; ++i) {
+		float amp;
+		float chanpos = zpos - i;
+		chanpos *= rwidth;
+		float zchanpos = chanpos - range * floor(rrange * chanpos); 
+		if (zchanpos > 1.f) {
+			amp = 0.f;
+		} else {
+			amp  = ft->mSine[(long)(4096.f * zchanpos)];
+		}
+		Print("    %d   chanpos %6.3g   zchanpos %6.3g   amp %g\n",
+			i, chanpos, zchanpos, amp);
+	}
+}
+*/
+
+
 void PanAz_Ctor(PanAz *unit)
 {	
 	SETCALC(PanAz_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = 0.f;	
 }
 
 void PanAz_next(PanAz *unit, int inNumSamples)
@@ -1039,17 +1149,15 @@ void PanAz_next(PanAz *unit, int inNumSamples)
 	float pos = ZIN0(1);
 	float level = ZIN0(2);
 	float width = ZIN0(3);
+	float orientation = ZIN0(4);
 	
 	int numOutputs = unit->mNumOutputs;
 	float rwidth = 1.f / width;
 	float range = numOutputs * rwidth;
 	float rrange = 1.f / range;
 	
-	pos *= numOutputs;
+	pos = pos * 0.5 * numOutputs + width * 0.5 + orientation;
 	
-	// this is a trick to allow me to get away with not being strictly in place
-	//float *zin0 = OUT(numOutputs-1);
-	//memcpy(zin0, IN(0), inNumSamples*sizeof(float));
 	float *zin0 = ZIN(0);
 	
 	for (int i=0; i<numOutputs; ++i) {
