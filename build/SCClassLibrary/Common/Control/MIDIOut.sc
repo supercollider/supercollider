@@ -1,13 +1,37 @@
+MIDIEndPoint {
+var <> name, <>uid;
+	*new{arg name, uid;
+		^super.newCopyArgs(name, uid)
+		}
+}
+
 MIDIClient {
+	classvar < sources, < destinations;
 	classvar < initialized=false;
-	*init {arg inports, outports;
+	*init {arg inports=1, outports=1;
 		initialized = true;
 		this.prInit(inports,outports);
+		this.list;
+	}
+	*list{
+		var out, arr, endp;
+		out = this.prList;
+		out = out.interpret;
+		arr = out.at(0);
+		arr.do({arg aval, i;
+			if(i.odd,{
+				sources = sources.add(MIDIEndPoint(arr.at(i-1), aval))
+			})});
+		arr = out.at(1);
+		arr.do({arg aval, i;
+			if(i.odd,{
+				destinations = destinations.add(MIDIEndPoint(arr.at(i-1), aval))
+			})});
 	}
 	*prInit {arg inports, outports;
 		_InitMIDI;
 	}
-	*list {
+	*prList {
 		_ListMIDIEndpoints
 	}
 	*disposeClient{
@@ -52,10 +76,32 @@ MIDIIn {
 	*doBendAction{arg src, chan, val;
 		bend.value(src, chan, val);
 	}
-	*connect {arg inport, uid;
+	*connect{arg inport, device;
+		var uid;
+		if(device.isKindOf(MIDIEndPoint), {uid = device.uid});
+		if(device.isKindOf(SimpleNumber), {
+			if(device>=0, { 
+				uid = MIDIClient.sources.at(device).uid
+			},{
+				uid = device;});
+			});
+		this.connectByUID(inport,uid);
+		}
+	*disconnect{arg inport, device;
+		var uid;
+		if(device.isKindOf(MIDIEndPoint), {uid = device.uid});
+		if(device.isKindOf(SimpleNumber), {
+			if(device>=0, { 
+				uid = MIDIClient.sources.at(device).uid
+			},{
+				uid = device;});
+			});
+		this.disconnectByUID(inport,uid);
+		}
+	*connectByUID {arg inport, uid;
 		_ConnectMIDIIn		
 	}
-	*disconnect {arg inport, uid;
+	*disconnectByUID {arg inport, uid;
 		_DisconnectMIDIIn		
 	}
 	
