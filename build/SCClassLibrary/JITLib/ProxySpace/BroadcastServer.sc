@@ -14,7 +14,7 @@ BroadcastServer : Server {
 				
 				 
 	}
-	
+	// doesn't work currently
 	autoConfigure { arg getAnyApplication=false;
 		var addr;
 		addr = Set.new;
@@ -174,7 +174,7 @@ Router : Server {
 	var <broadcast, <sharedNodeIDAllocator;
 	
 	
-	addr_ { arg list, latencies;
+	addr_ { arg list, latencies; //change this args.
 		if(latencies.isNil, {
 			broadcast = BroadcastServer.for(this, list);
 		}, {
