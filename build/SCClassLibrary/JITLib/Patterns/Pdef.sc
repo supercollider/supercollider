@@ -81,7 +81,7 @@ Pdef : Pdefn {
 		all = IdentityDictionary.new; 
 		CmdPeriod.add(this); 
 	}
-	*cmdPeriod { all.do { arg item; item.stop } }
+	*cmdPeriod { this.all.do { arg item; item.stop } }
 		
 	*default { ^Pbind(\freq, \rest) }
 	
@@ -100,6 +100,7 @@ Pdef : Pdefn {
 	}
 	
 	// playing one instance //
+	// problem: offset is not implemented in PauseStream
 	
 	playOnce { arg argClock, protoEvent, quant;
 		^EventStreamPlayer(this.asStream, protoEvent)
@@ -151,9 +152,13 @@ Tdef : Pdef {
 		} { pattern }.asStream
 	}
 	
-	play { arg argClock, doReset = false, quant;
+	playOnce { arg argClock, doReset = false, quant;
 		^PauseStream.new(this.asStream)
 			.play(argClock ? clock, doReset, quant ? this.quant)
+	}
+	play { arg argClock, doReset = false, quant;
+		isPlaying = true;
+		if(player.isPlaying.not) { player = this.playOnce(argClock, doReset, quant) }
 	}
 
 }
