@@ -5,12 +5,7 @@ SimpleNumber : Number {
 	
 	magnitude { ^this.abs }
 	angle { if (this >= 0, {^0.0}, {^pi} ) }
-	degreeToKey { arg scale, stepsPerOctave=12;
-		var size, scaleDegree;
-		size = scale.size;
-		scaleDegree = this.asInteger;
-		^(stepsPerOctave * (scaleDegree div: size)) + scale.wrapAt(scaleDegree)
-	}
+	
 
 	neg { _Neg; ^this.primitiveFailed }
 	bitNot { _BitNot; ^this.primitiveFailed }
@@ -196,34 +191,35 @@ SimpleNumber : Number {
 //		^Array.series(size, this, step)
 	}
 	
-	
-	asIndex { arg list; // list is sorted
-		var i, j, a, b;
-		j = list.detectIndex { |item| item > this };
-		if(j.isNil) { ^list.size - 1 };
-		if(j == 0) { ^j };
-		i = j - 1;
-		^if((this - list[i]) < (list[j] - this)) { i } { j }
+	degreeToKey { arg scale, stepsPerOctave=12;
+		var size, scaleDegree;
+		size = scale.size;
+		scaleDegree = this.asInteger;
+		^(stepsPerOctave * (scaleDegree div: size)) + scale.wrapAt(scaleDegree)
 	}
 	
-	asIndex2 { arg list; // list is sorted
-		var i, a, b;
-		i = list.detectIndex { |item| item > this };
-		if(i.isNil) { ^list.size - 1 };
-		if(i == 0) { ^i };
-		a = list[i-1]; b = list[i];
-		^((this - a) / (b - a)) + i - 1
+	// to be discussed. maybe make this a primitive, use for degreeToKey
+	degreeToKey2 { arg scale, stepsPerOctave=12;
+		var size, scaleDegree, z, d, last;
+		size = scale.size;
+		scaleDegree = this % size;
+		z = size - scaleDegree;
+		d = (stepsPerOctave * (this div: size));
+		last = scale.last;
+		^if(z < 1) 
+			{  (1-z) * (stepsPerOctave - last) + last + d } 
+			{ scale.blendAt(scaleDegree) + d }
 	}
 	
 	roundToList { arg list; // list is sorted
-		^list.at(this.asIndex(list))
+		^list.at(list.indexIn(this))
 	}
 	
 	keyToDegree { arg scale, stepsPerOctave=12;
 		var key, n;
 		n = this div: stepsPerOctave * scale.size;
 		key = this % stepsPerOctave;
-		^key.asIndex2(scale) + n
+		^scale.indexInBetween(key) + n
 	}
 	
 	roundToScale { arg scale, stepsPerOctave=12;
@@ -232,6 +228,5 @@ SimpleNumber : Number {
 		key = this % stepsPerOctave;
 		^key.roundToList(scale) + root
 	}
-	
-	
+		
 }
