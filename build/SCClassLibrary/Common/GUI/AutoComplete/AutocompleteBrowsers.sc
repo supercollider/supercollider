@@ -9,7 +9,8 @@ AutoCompMethodBrowser {
 		skipThis,					// flag: do (this, xxx) or (xxx) in argList
 		dropMeta,				// flag: display Meta_ for metaclasses?
 		doc,					// document from which this was created
-		start, size;	// start and length of identifier in document
+		start, size,	// start and length of identifier in document
+		cursorAfterGui;	// where is the cursor after the gui pops up?
 
 		// prevent certain method selector strings from being gui'ed during typing
 		// assumes that selectors are spelled correctly!
@@ -89,7 +90,13 @@ AutoCompMethodBrowser {
 	*free {
 			// if window is nil, isclosed should be true
 			// close the window only if it isn't closed
-		(w.tryPerform(\isClosed) ? true).not.if({ w.close; });
+		(w.tryPerform(\isClosed) ? true).not.if({
+				// if there's typing in the text box, add it into the document
+			(textField.string.size > 0).if({
+				doc.selectedString_(textField.string);
+			});
+			w.close;
+		});
 			// garbage; also, w = nil allows next browser to succeed
 		w = masterList = reducedList = nil;
 	}
@@ -186,6 +193,7 @@ AutoCompMethodBrowser {
 			.action_({ this.finish })
 			.focus;
 		w.front;
+		cursorAfterGui = doc.selectionStart;
 	}
 
 }
