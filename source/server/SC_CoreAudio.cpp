@@ -98,6 +98,7 @@ void* resyncThreadFunc(void* /*arg*/)
 		sleep(20);
 		syncOSCOffsetWithTimeOfDay();
 	}
+	return 0;
 }
 
 
@@ -567,7 +568,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 			
 			// de-interleave input
 			if (inInputData) {
-				AudioBuffer* inInputDataBuffers = inInputData->mBuffers;
+				const AudioBuffer* inInputDataBuffers = inInputData->mBuffers;
 				for (int s = 0, b = 0; b<numInputBuses && s < numInputStreams; s++) {
 					const AudioBuffer* buf = inInputDataBuffers + s;
 					int nchan = buf->mNumberChannels;
