@@ -1436,16 +1436,6 @@ void initClasses()
 		class_wavetable->classFlags.ui |= classHasIndexableInstances;
 
 		//addIntrinsicVar(class_signal, "rate", &o_nil);
-#if 0
-	class_signalnode = makeIntrinsicClass(s_signalnode, s_signal, 1, 0);
-		SetInt(&class_signalnode->instanceFormat, obj_float)
-		class_signalnode->classFlags.ui |= classHasIndexableInstances;
-		addIntrinsicVar(class_signalnode, "nextNode", &o_nil);
-	class_multichannode = makeIntrinsicClass(getsym("MultiChannelNode"), s_array, 1, 0);
-		SetInt(&class_multichannode->instanceFormat, obj_slot)
-		class_multichannode->classFlags.ui |= classHasIndexableInstances;
-		addIntrinsicVar(class_multichannode, "nextNode", &o_nil);
-#endif
 	class_doublearray = makeIntrinsicClass(s_doublearray, s_rawarray, 0, 0); 
 		SetInt(&class_doublearray->instanceFormat, obj_double);
 		class_doublearray->classFlags.ui |= classHasIndexableInstances;
@@ -2496,7 +2486,11 @@ int calcHash(PyrSlot *a)
 	int hash;
 	switch (a->utag) {
 		case tagObj : hash = Hash(a->ui); break;
-		case tagInt : hash = Hash(a->ui); break;
+		case tagInt : {
+			PyrSlot f;
+			SetFloat(&f, a->ui);
+			hash = Hash(f.utag + Hash(f.ui)); break;
+		}
 		case tagChar : hash = Hash(a->ui & 255); break;
 		case tagSym : hash = a->us->hash; break;
 		case tagNil : hash = 0xA5A5A5A5; break;
