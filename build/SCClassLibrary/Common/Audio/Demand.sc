@@ -32,6 +32,8 @@ SelfDemand : Demand {
 	}
 }
 
+TSelfDemand : SelfDemand {}
+
 Dseries : UGen {
 	*new { arg start = 1, step = 1, length = 100;
 		^this.multiNew('demand', length, start, step)
