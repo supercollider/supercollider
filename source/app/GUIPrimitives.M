@@ -581,7 +581,7 @@ int prTextWindow_TextWithRange(struct VMGlobals *g, int numArgsPushed)
 			return errNone;
 		}
 		if(rangeStart >= length) rangeStart = length - 1 ;
-		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart - 1;
+		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
 		
 		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
 		NSString* str = [string substringWithRange: selectedRange];	
