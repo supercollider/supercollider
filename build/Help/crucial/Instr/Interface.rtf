@@ -1,0 +1,285 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
+\red96\green96\blue96;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Interface
+\f1\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Builds a player from a function and connects that player with optional\
+MIDI handlers, key down/up responders and custom GUI functions.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 GUI
+\f1\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 You can set a custom gui function.\
+	This can use any combination of .gui style and normal SCViews\
+	The MetaPatch can be placed on any .gui style FlowView or normal SCWindow\
+	You may choose to not have any gui.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 MIDI\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 If you set any of these handler functions:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 	onNoteOn\
+	onNoteOff\
+	onPitchBend\
+	onCC\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 then appropriate midi responders will be enabled when the player starts to play\
+and disabled when it stops.  This includes if the player is being started/stopped by\
+external mixers, PlayerPool etc.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 KeyDown/KeyUp\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 	keyDownAction\
+	keyUpAction\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 	(only when guied, only when focus is within the MetaPatch's views)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 MetaPatch is great for having no gui at all. 
+\f2\b0  Personally I use the gui stuff to \
+set up parameters for performing, and then when performing I use no gui, only MIDI \
+controllers and key commands.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+simplistic example\
+\
+(\
+\
+m = \cf2 Interface\cf0 (\{\
+	\cf3 // an environment is in place here\cf0 \
+	~freq = \cf2 KrNumberEditor\cf0 (400,[100,1200,\cf4 \\exp\cf0 ]);\
+	~syncFreq = \cf2 KrNumberEditor\cf0 (800,[100,12000,\cf4 \\exp\cf0 ]); \
+	~amp = \cf2 KrNumberEditor\cf0 (0.1,\\amp); \
+\
+	\cf2 Patch\cf0 (\{ \cf2 arg\cf0  freq,syncFreq,amp=0.3;\
+		Sync\cf2 Saw\cf0 .ar(syncFreq,freq) * amp\
+	\},[\
+		~freq,\
+		~syncFreq,\
+		~amp\
+	])\
+\
+\});\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // you may set a function to customize the gui\cf0 \
+m.gui = \{ \cf2 arg\cf0  layout,metaPatch;\
+	\cf2 var\cf0  joy;\
+	\
+	\cf3 // the same environment is again in place\cf0 \
+	~freq.gui(layout);\
+	\
+	\cf2 ActionButton\cf0 (layout,\cf5 "twitch"\cf0 ,\{\
+		\cf2 var\cf0  x,y;\
+		\cf3 // action button remembers the environment\cf0 \
+		~freq.setUnmappedValue( x = 1.0.rand );\
+		~syncFreq.setUnmappedValue( y = 1.0.rand );\
+		joy.x_(x).y_(y).changed;\
+	\});\
+	\
+	joy = \cf2 SC2DSlider\cf0 (layout, 100 @ 100)\
+		.action_(\{ \cf2 arg\cf0  sl;\
+			\cf3 // at this time not in environment\cf0 \
+			metaPatch.use(\{ \cf3 // use the metaPatch's environment\cf0 \
+				~freq.setUnmappedValue(sl.x);\
+				~syncFreq.setUnmappedValue(sl.y );\
+			\})\
+		\});\
+		\
+	\cf2 EZNumber\cf0 (layout,30 @ 30,\cf5 "amp"\cf0 ,[0.01,0.4,\cf4 \\exp\cf0 ],\{ \cf2 arg\cf0  ez; \
+		metaPatch.use(\{\
+			~amp.value_(ez.value).changed;\
+		\})\
+	\});\
+\
+\};\
+\
+m.gui\
+\
+\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 You can place them on any window\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 (\cf6 \
+w = \cf7 SCWindow\cf6 .new(\cf8 "other"\cf6 ,\cf7 Rect\cf6 (20,20,700,200));\
+w.front;\
+\
+g = m.gui(w,\cf7 Rect\cf6 (30,30,500,200));\
+\
+g.background = \cf7 Color\cf6 .blue(alpha:0.4);\
+\cf0 )\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 <>onPlay\
+<>onStop\
+<>onFree\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs18 \cf0 \
+(\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Interface\cf0 (\{\
+\
+	~freq = \cf2 KrNumberEditor\cf0 (400,[100,1200,\cf4 \\exp\cf0 ]);\
+	~amp = \cf2 KrNumberEditor\cf0 (0.1,[0.01,0.4,\cf4 \\exp\cf0 ]); \
+\
+	\cf2 Patch\cf0 (\{ \cf2 arg\cf0  freq,amp;\
+		\cf2 SinOsc\cf0 .ar(freq) * amp\
+	\},[\
+		~freq,\
+		~amp\
+	])\
+	\
+\})\
+.onPlay_(\{\
+	\cf5 "playing"\cf0 .postln;\
+\})\
+.onStop_(\{ \cf3 // also on command-.\cf0 \
+	\cf5 "stopping"\cf0 .postln;	\
+\})\
+.onFree_(\{\
+	\cf5 "freeing"\cf0 .postln;\
+\}).play\
+\
+)\
+\
+\
+(\
+// beat juggler\
+\
+\cf2 Interface\cf0 (\{ \cf2 arg\cf0  sample;\
+	\
+	~beatStart1 = \cf2 NumberEditor\cf0 (0.0,[0.0,8.0,\cf4 \\lin\cf0 ,0.25]);\
+	~beatStart2 = \cf2 NumberEditor\cf0 (0.0,[0.0,8.0,\cf4 \\lin\cf0 ,0.25]);\
+	~durations = [ 2.0,2.0];\
+\
+	~patch = \cf2 InstrGateSpawner\cf0 (\{ \cf2 arg\cf0  sample,dur, pchRatio,beatStart,amp=0.3,envadsr,tempo;\
+	\
+			\cf2 var\cf0  gate;\
+			gate = \cf2 Trig1\cf0 .kr(1.0,dur / tempo);\
+\
+			pchRatio = pchRatio * sample.pchRatioKr;\
+			beatStart = beatStart * sample.beatsizeIr;\
+	\
+			\cf2 PlayBuf\cf0 .ar(sample.numChannels,\
+					sample.bufnumIr,\
+					pchRatio,\
+					1.0,\
+					beatStart,\
+					1.0)\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 		\
+				* \cf2 EnvGen\cf0 .kr(envadsr, gate,amp,doneAction: 2 )\
+		\},[\
+			sample,\
+			\cf3 // dur uses a Pfunc to ask the delta till the next event\cf0 \
+			\cf2 Pfunc\cf0 (\{ \cf2 arg\cf0  igs;  (igs.delta * 0.9) \}),\
+			\
+			\cf3 // get an .ir input into the synth function\cf0 \
+			~pchRatio = \cf2 IrNumberEditor\cf0 (1.0,[-2,2,\cf4 \\lin\cf0 ,0.25]),\
+\
+			\cf3 // patterns naturally create an .ir input\cf0 \
+			\cf2 Pswitch1\cf0 ([\
+				~beatStart1,\
+				~beatStart2\
+			],\cf2 Pseq\cf0 ([0,1],\cf2 inf\cf0 ))	\cf3 // juggle back and forth\cf0 \
+\
+		],\
+		\cf3 // stream of beat durations\cf0 \
+		\cf2 Pseq\cf0 (~durations,\cf2 inf\cf0 ));\
+		\
+	~patch				\
+		\
+\},[\
+	\cf3 // a blank sample\cf0 \
+	\cf2 Sample\cf0 .new(nil)\
+])\
+.gui_(\{ \cf2 arg\cf0  layout; \cf3 // we are given a FlowView\cf0 \
+\
+	\cf2 var\cf0  env,ddsp,bdsp;\
+\
+	CXLabel(layout,"Click the sample path (nil) to browse for a sample. You can choose new samples even while playing.");\
+	layout.startRow;\
+	\cf3 /* the environment from the build function above is available here */\cf0 \
+	~sample.gui(layout,500@100);\
+\
+	\cf3 /* but when view actions fire you will be in a different environment\
+		so save it here in a variable for use later */\cf0 \
+	env = currentEnvironment;\
+\
+	\cf3 // .vert returns an SCVLayoutView so we can stack each 2d over its caption \cf0 \
+	layout.vert(\{ \cf2 arg\cf0  layout;\
+		\cf2 SC2DSlider\cf0 (layout,100@100)\
+			.action_(\{ \cf2 arg\cf0  sl;\
+				env.use(\{\
+					\cf3 // set a 0..1 value, map it to the spec ranges of the NumberEditors\cf0 \
+					~beatStart1.setUnmappedValue(sl.x);\
+					~beatStart2.setUnmappedValue(sl.y);\
+					bdsp.object_( [~beatStart1.value,~beatStart2.value]).changed;\
+				\})\
+			\});\
+		\cf2 SCStaticText\cf0 (layout,100@13).object_(\cf5 "Beat starts:"\cf0 );\
+		bdsp = \cf2 SCStaticText\cf0 (layout,100@13).object_([~beatStart1.value,~beatStart2.value].asString);\
+	\},100@120);\
+	\
+	layout.vert(\{ \cf2 arg\cf0  layout;\
+		\cf2 SC2DSlider\cf0 (layout,100@100)\
+			.action_(\{ \cf2 arg\cf0  sl;\
+				env.use(\{\
+					\cf2 var\cf0  stride,part;\
+					stride = 2 ** [3,4,5,6].at((sl.x * 3).asInteger) * 0.125;\
+					part = (stride * (1.0 - sl.y)).round(0.25).clip(0.25,stride - 0.25);\
+					~durations.put(0,part);\
+					~durations.put(1,stride - part);\
+					ddsp.object_(~durations.sum.asString + \cf5 "="\cf0  + ~durations).changed;\
+				\});\
+			\});\
+		\cf2 SCStaticText\cf0 (layout,100@13).object_(\cf5 "beats"\cf0 );\
+		ddsp = \cf2 SCStaticText\cf0 (layout,100@13).object_(~durations.sum.asString + \cf5 "="\cf0  + ~durations);\
+	\},100@120);\
+	CXLabel(layout,"pchRatio:");\
+	~pchRatio.gui(layout);\
+\})\
+.gui\
+\
+)\
+}
