@@ -18,6 +18,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#define NDEBUG
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -46,7 +47,7 @@
 //#include "Wacom.h"
 #include "InitAlloc.h"
 
-#define SANITYCHECK 0
+#define SANITYCHECK 1
 int yyparse();
 
 extern bool gTraceInterpreter;
@@ -1985,7 +1986,7 @@ int prLargestFreeBlock(struct VMGlobals *g, int numArgsPushed)
 int dumpGCinfo(struct VMGlobals *g, int numArgsPushed);
 int dumpGCinfo(struct VMGlobals *g, int numArgsPushed)
 {
-	//g->gc->DumpInfo();
+	g->gc->DumpInfo();
 	return errNone;
 }
 
@@ -1999,7 +2000,7 @@ int dumpGCAll(struct VMGlobals *g, int numArgsPushed)
 int prGCSanity(struct VMGlobals *g, int numArgsPushed);
 int prGCSanity(struct VMGlobals *g, int numArgsPushed)
 {
-	//g->gc->SanityCheck();
+	g->gc->SanityCheck();
 	return errNone;
 }
 
@@ -2960,7 +2961,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot value;
 	
 	//postfl("->prRoutineYield %d %08X\n", g->level, g->thread);
-	assert(g->gc->SanityCheck());
+	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g);
 	//postfl("->numArgsPushed %d\n", numArgsPushed);
 	if (!isKindOf((PyrObject*)g->thread, class_routine)) {
@@ -2980,7 +2981,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 	(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
 	//postfl("<-numArgsPushed %d\n", numArgsPushed);
 	//postfl("<-prRoutineYield %d\n", g->level);
-	assert(g->gc->SanityCheck());
+	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g);
 	return errNone;
 }
@@ -3026,7 +3027,7 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 	int state;
 	
 	//postfl("->prRoutineResume\n");
-	assert(g->gc->SanityCheck());
+	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g);
 	a = g->sp - 1;
 	b = g->sp;
@@ -3075,11 +3076,11 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 	//postfl("<-prRoutineResume %d %08X\n", g->level, g->thread);
 	//DumpBackTrace(g);
 	//Debugger();
-	//assert(g->gc->SanityCheck());
-        if(! g->gc->SanityCheck()) {
-            DumpBackTrace(g);
+	g->gc->SanityCheck();
+    //if(! g->gc->SanityCheck()) {
+    //DumpBackTrace(g);
           //  assert(g->gc->SanityCheck());
-        }    
+    //    }    
 	//CallStackSanity(g);
 	return errNone;
 }
