@@ -16,9 +16,8 @@ Register a function to be called upon receiving a specific command from a specif
 \f0\b \cf0 \
 	*new(addr,cmdName,action);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 	
+\f1\b0 	
 \f0\b addr
 \f1\b0 		\
 		an instance of NetAddr, usually obtained from your server:  server-addr\
@@ -33,30 +32,27 @@ Register a function to be called upon receiving a specific command from a specif
 \f0\b action
 \f1\b0 \
 		a function that will be evaluated when a cmd of that name is received from addr.\
-		args: time, theResponder, message\
+		args: time, theResponder, message, addr\
 		note that OSCresponderNode evaluates its function in the system process.\
 		in order to access the application process (e.g. for GUI access ) use 
 \f0\b \{ ... \}.defer
 \f1\b0 ;\
 				\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 Note:
+\f0\b Note:
 \f1\b0 \
 	A single OSCresponder may be set up for each addr and cmdName combination.  \
 	Subsequent registrations will overwrite previous ones.  See 
 \f0\b [OSCresponderNode]
 \f1\b0 .
 \f0\b\fs26 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \cf0 \
+\f1\b0\fs24 \
 	Whenever an OSC message is sent to the SuperCollider application (the language, not the server), either 	Main-recvOSCmessage or Main-recvOSCbundle is called.  There, the messages are forwarded to the 	OSCresponder class using the OSCresponder-respond class method.  \
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 	add\
+\f0\b 	add\
 		
 \f1\b0 add this responder instance to the list of active responders.  \
 		The OSCresponder is not active until this is done.\
@@ -75,12 +71,10 @@ Register a function to be called upon receiving a specific command from a specif
 	\
 	//syntax:	\
 	\cf2 OSCresponder\cf0 (addr,cmdName,action).add.removeWhenDone;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\fs24 	\
 
-\f0\b \cf0 	\
+\f0\b 	\
 	*add(oscResponder)
 \f1\b0 \
 		 add the responder instance \
