@@ -23,9 +23,25 @@
 
 static InterfaceTable *ft;
 
+struct ScopeOut : public Unit
+{
+	SndBuf *m_buf;
+	int m_pos;
+	int m_zoomphase;
+	float m_min, m_max;
+};
+
 struct PlayBuf : public Unit
 {
 	double m_phase;
+	float m_prevtrig;
+	float m_fbufnum;
+	SndBuf *m_buf;
+};
+
+struct SimpleLoopBuf : public Unit
+{
+	int m_phase;
 	float m_prevtrig;
 	float m_fbufnum;
 	SndBuf *m_buf;
@@ -222,6 +238,10 @@ extern "C"
 	void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples);
 	void PlayBuf_Ctor(PlayBuf* unit);
 
+	void SimpleLoopBuf_next_kk(SimpleLoopBuf *unit, int inNumSamples);
+	void SimpleLoopBuf_Ctor(SimpleLoopBuf* unit);
+
+
 	void BufRd_Ctor(BufRd *unit);
 	void BufRd_next_4(BufRd *unit, int inNumSamples);
 	void BufRd_next_2(BufRd *unit, int inNumSamples);
@@ -316,6 +336,9 @@ extern "C"
 	void AllpassC_Ctor(AllpassC *unit);
 	void AllpassC_next(AllpassC *unit, int inNumSamples);
 	void AllpassC_next_z(AllpassC *unit, int inNumSamples);
+
+	void ScopeOut_next(ScopeOut *unit, int inNumSamples);
+	void ScopeOut_Ctor(ScopeOut *unit);
 
 }
 
@@ -4539,7 +4562,118 @@ void AllpassC_next_z(AllpassC *unit, int inNumSamples)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+inline double sc_loop1(int32 in, int32 lo, int32 hi) 
+{
+	// avoid the divide if possible
+	if (in >= hi) {
+		in -= hi;
+		if (in < hi) return in;
+	} else if (in < lo) {
+		in += hi;
+		if (in >= lo) return in;
+	} else return in;
+	
+	int32 range = hi - lo;
+	return lo + range * (in-lo) / range; 
+}
+
+
+void SimpleLoopBuf_next_kk(SimpleLoopBuf *unit, int inNumSamples)
+{
+	float trig     = ZIN0(1);
+	double loopstart  = (double)ZIN0(2);
+	double loopend    = (double)ZIN0(3);
+	GET_BUF
+	SETUP_OUT	
+	
+	loopend = sc_max(loopend, bufFrames);
+	int32 phase = unit->m_phase;
+	if (trig > 0.f && unit->m_prevtrig <= 0.f) {
+		phase = ZIN0(2);
+	}
+	unit->m_prevtrig = trig;
+	for (int i=0; i<inNumSamples; ++i) {
+		
+		phase = sc_loop1(phase, loopstart, loopend);
+		int32 iphase = (int32)phase;
+		float* table1 = bufData + iphase * bufChannels;
+		int32 index = 0;
+		for (int i=0; i<bufChannels; ++i) {
+			*++(out[i]) = table1[index++];
+		}
+		
+		phase++;
+	}
+	unit->m_phase = phase;
+}
+
+
+void SimpleLoopBuf_Ctor(SimpleLoopBuf *unit)
+{	
+	SETCALC(SimpleLoopBuf_next_kk);
+	
+	unit->m_fbufnum = -1.;
+	unit->m_prevtrig = 0.;
+	unit->m_phase = ZIN0(2);
+	
+	ClearUnitOutputs(unit, 1);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define GET_SCOPEBUF \
+	float fbufnum  = ZIN0(0); \
+	if (fbufnum != unit->m_fbufnum) { \
+		int bufnum = (int)fbufnum; \
+		World *world = unit->mWorld; \
+		if (bufnum < 0 || bufnum >= world->mNumSharedSndBufs) bufnum = 0; \
+		unit->m_fbufnum = fbufnum; \
+		unit->m_buf = world->mSharedSndBufs + bufnum; \
+	} \
+	SndBuf *buf = unit->m_buf; \
+
+#if 0
+
+void ScopeOut_next(ScopeOut *unit, int inNumSamples)
+{
+	GET_SCOPEBUF
+	if (buf->reads != buf->writes) return;
+	
+	float xmin = unit->m_min;
+	float xmax = unit->m_max;
+	int zoomphase = unit->
+	int size2 = buf->size >> 1;
+	int remain = size2 - pos;
+	int remain = sc_min(buf->size , inNumSamples);
+	int offset = (buf->reads & 1) ? size2 : 0;
+	while (remain)
+	{
+		int izoom = buf->zoom;
+		float x = *++in;
+		if (x < xmin) xmin = x;
+		if (x > xmax) xmax = x;
+	}
+	unit->m_pos += inNumSamples;
+	if (unit->m_pos >= size2)
+}
+
+
+void ScopeOut_Ctor(ScopeOut *unit)
+{	
+	unit->fbufnum = -1.f;
+	unit->m_min = 0.f;
+	unit->m_max = 0.f;
+	SETCALC(ScopeOut_next);
+}
+
+#endif
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void load(InterfaceTable *inTable)
@@ -4565,6 +4699,7 @@ void load(InterfaceTable *inTable)
 	DefineBufInfoUnit(BufDur);
 
 	DefineSimpleUnit(PlayBuf);
+	DefineSimpleUnit(SimpleLoopBuf);
 	DefineSimpleUnit(RecordBuf);
 	DefineSimpleUnit(BufRd);
 	DefineSimpleUnit(BufWr);

@@ -25,16 +25,17 @@
 
 struct SndBuf
 {
+	double samplerate;
+	double sampledur; // = 1/ samplerate
 	float *data;
 	int channels;
 	int samples;
 	int frames;
+	int readFrame, writeFrame; // for ring buffers.
 	int mask;	// for delay lines
 	int mask1;	// for interpolating oscillators.
 	int coord;	// used by fft ugens
 	void *sndfile; // used by disk i/o
-	double samplerate;
-	double sampledur; // = 1/ samplerate
 };
 typedef struct SndBuf SndBuf;
 

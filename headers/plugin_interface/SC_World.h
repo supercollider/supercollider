@@ -74,8 +74,8 @@ struct World
 	
 	SC_Lock* mNRTLock;
 	
-	int mNumScopeBufs;
-	struct ScopeBuf *mScopeBufs;
+	int mNumSharedSndBufs;
+	struct SndBuf *mSharedSndBufs;
 	
 	int mNumSharedControls;
 	float *mSharedControls;

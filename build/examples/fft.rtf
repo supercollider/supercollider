@@ -72,7 +72,7 @@ x = \cf2 SynthDef\cf0 (\cf3 "randcomb"\cf0 , \{ arg bufnum=0;\
 	\cf2 var\cf0  in, chain;\
 	in = \{\cf2 WhiteNoise\cf0 .ar(0.8)\}.dup;\
 	chain = \cf2 FFT\cf0 (bufnum, in);\
-	chain = \cf2 PV_RandComb(\cf0 chain\cf2 , 0.95, Impulse.kr(1)); \cf0 \
+	chain = \cf2 PV_RandComb(\cf0 chain\cf2 , 0.95, Impulse.kr(0.4)); \cf0 \
 	\cf2 Out\cf0 .ar(0, \cf2 IFFT\cf0 (chain));\
 \}).writeDefFile;\
 s.sendMsg(\cf3 "/d_load"\cf0 , \cf3 "synthdefs/randcomb.scsyndef"\cf0 );\

@@ -503,7 +503,7 @@
 				F50D054802E69B6B01CA2799,
 				F53D4653030B934D01E9DD5D,
 				F53D4643030B8CE601E9DD5D,
-				F53CA88F035FE5B601CA2799,
+				F5BAFADE037F805101CA27E6,
 				F50D055702E69B6B01CA2799,
 				F53D464A030B8FF501E9DD5D,
 				F53D464B030B8FF501E9DD5D,
@@ -1190,7 +1190,7 @@
 				F5C7B151033D5B4801A80099,
 				F5C7B155033D5EDC01A80099,
 				F5C7B157033D611701A80099,
-				F53CA890035FE5B601CA2799,
+				F5BAFADF037F805101CA27E6,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2347,17 +2347,6 @@
 			settings = {
 			};
 		};
-		F53CA88F035FE5B601CA2799 = {
-			isa = PBXFileReference;
-			path = SC_ScopeBuf.h;
-			refType = 4;
-		};
-		F53CA890035FE5B601CA2799 = {
-			fileRef = F53CA88F035FE5B601CA2799;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		F53D4643030B8CE601E9DD5D = {
 			isa = PBXFileReference;
 			path = SC_RGen.h;
@@ -2588,6 +2577,23 @@
 			isa = PBXTargetDependency;
 			target = F50D060502E69C2101CA2799;
 		};
+		F5BAFADE037F805101CA27E6 = {
+			isa = PBXFileReference;
+			path = SC_SndBuf.h;
+			refType = 4;
+		};
+		F5BAFADF037F805101CA27E6 = {
+			fileRef = F5BAFADE037F805101CA27E6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5BAFAE0037F805101CA27E6 = {
+			fileRef = F5BAFADE037F805101CA27E6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		F5C7B14E033D595901A80099 = {
 			isa = PBXFileReference;
 			name = libscsynth.a;
@@ -2734,6 +2740,7 @@
 				F53D464F030B8FF601E9DD5D,
 				F53D4652030B905201E9DD5D,
 				F53D4655030B934D01E9DD5D,
+				F5BAFAE0037F805101CA27E6,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

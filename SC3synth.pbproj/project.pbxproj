@@ -119,7 +119,6 @@
 				F50D055302E69B6B01CA2799,
 				F50D055402E69B6B01CA2799,
 				F50D055502E69B6B01CA2799,
-				F53CA88B035FC7C501CA2799,
 				F50D055602E69B6B01CA2799,
 				F50D055702E69B6B01CA2799,
 				F50D055802E69B6B01CA2799,
@@ -656,17 +655,6 @@
 			path = /usr/local/lib/libsndfile.a;
 			refType = 0;
 		};
-		F53CA88B035FC7C501CA2799 = {
-			isa = PBXFileReference;
-			path = SC_ScopeBuf.h;
-			refType = 4;
-		};
-		F53CA88C035FC7C501CA2799 = {
-			fileRef = F53CA88B035FC7C501CA2799;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		F561BDB4033536A801C816AC = {
 			isa = PBXFileReference;
 			path = SC_Sem.h;
@@ -784,7 +772,6 @@
 				F59DF0A503073A6001CE0C16,
 				F59DF0A603073A6001CE0C16,
 				F5EB7BDD031805D701CA2799,
-				F53CA88C035FC7C501CA2799,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

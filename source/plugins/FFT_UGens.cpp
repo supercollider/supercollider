@@ -331,7 +331,6 @@ void FFTBase_Ctor(FFTBase *unit)
 	SndBuf *buf = world->mSndBufs + bufnum; 
 	
 	unit->m_fftsndbuf = buf;
-	unit->m_fftbuf = buf->data;
 	unit->m_fftbufnum = bufnum;
 	unit->m_bufsize = buf->samples;
 	if (unit->m_bufsize < 8 || !ISPOWEROFTWO(unit->m_bufsize)) {
@@ -345,14 +344,28 @@ void FFTBase_Ctor(FFTBase *unit)
 	unit->m_mask = buf->mask / kNUMOVERLAPS;
 	unit->m_stride  = unit->m_bufsize / kNUMOVERLAPS;
 	unit->m_whichOverlap = 0;
-
-	ZOUT0(0) = unit->m_fftbufnum;
+	unit->m_stage = 0;
+	unit->m_pos = 0;
+	
+	ZOUT0(0) = ZIN0(0);
 }
+
+	SndBuf *m_fftsndbuf;
+	float *m_fftbuf;
+	
+	int m_pos, m_bufsize, m_mask;
+	int m_log2n, m_stage, m_whichOverlap;
+	int m_stride;
+	
+	float m_fftbufnum;
+
 
 void FFT_Ctor(FFT *unit)
 {
 	FFTBase_Ctor(unit);
-	unit->m_inbuf = (float*)RTAlloc(unit->mWorld, unit->m_bufsize * sizeof(float));
+	int size = unit->m_bufsize * sizeof(float);
+	unit->m_inbuf = (float*)RTAlloc(unit->mWorld, size);
+	memset(unit->m_inbuf, 0, size);
 	
 	SETCALC(FFT_next);	
 }
@@ -374,10 +387,12 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 	
 	unit->m_pos += numSamples;
 	
-	if (unit->m_pos & unit->m_mask) {
+	if (unit->m_pos & unit->m_mask || unit->m_fftsndbuf->samples != unit->m_bufsize) {
 		ZOUT0(0) = -1.f;
 	} else {
 		ZOUT0(0) = unit->m_fftbufnum;
+		unit->m_fftbuf = unit->m_fftsndbuf->data;
+
 		unit->m_whichOverlap = (unit->m_whichOverlap+1) & (kNUMOVERLAPS-1);
 		if (unit->m_pos == unit->m_bufsize) unit->m_pos = 0;
 				
@@ -498,9 +513,10 @@ void IFFT_next(IFFT *unit, int inNumSamples)
 	
 	unit->m_pos += inNumSamples;
 	
-	if (unit->m_pos & unit->m_mask) {
+	if (unit->m_pos & unit->m_mask || unit->m_fftsndbuf->samples != unit->m_bufsize) {
 		unit->m_fftsndbuf->coord = coord_None;
 	} else {		
+		unit->m_fftbuf = unit->m_fftsndbuf->data;
 		unit->m_whichOverlap = (unit->m_whichOverlap+1) & (kNUMOVERLAPS-1);
 		if (unit->m_pos == unit->m_bufsize) unit->m_pos = 0;
 		if (unit->m_stage < kNUMOVERLAPS) unit->m_stage++;

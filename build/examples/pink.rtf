@@ -163,7 +163,9 @@ s.sendMsg(\cf4 "/g_freeAll"\cf0 , 0);\
 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // define a synth\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf4 "glissine"\cf0 , \{\
 	\cf2 var\cf0  freq;\
 	freq = \cf2 XLine\cf0 .kr(8000,300,4);\
@@ -173,7 +175,9 @@ s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/glissine.scsyndef"\cf0 );\
 )\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // define a synth\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf4 "glissine2"\cf0 , \{\
 	\cf2 var\cf0  freq;\
 	freq = \cf2 XLine\cf0 .kr(8000,300,4);\
@@ -184,8 +188,8 @@ s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/glissine2.scsyndef"\cf0 );\
 )\
 \
 \
-s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "glissine2"\cf0 , 2003, 1, 0);\
-s.sendMsg(\cf4 "/n_free"\cf0 , 2003);\
+s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "glissine2"\cf0 , 3003, 1, 0);\
+s.sendMsg(\cf4 "/n_free"\cf0 , 3003);\
 \
 s = \cf2 Server\cf0 .local;\
 (\
@@ -216,7 +220,7 @@ s.sendMsg(\cf4 "/n_set"\cf0 , 2006, \cf5 \\gate\cf0 , 0);\
 \cf2 SynthDef\cf0 (\cf4 "busy"\cf0 , \{\
 	\cf2 var\cf0  out;\
 	out = \cf2 Pan2\cf0 .ar(\
-		\cf2 FSinOsc\cf0 .ar(\cf2 Rand\cf0 (400,2400.0), 0, \cf2 LFPulse\cf0 .kr(\cf2 ExpRand\cf0 (0.5,8), 0, \cf2 Rand\cf0 (0,0.7), 0.04)),\
+		\cf2 FSinOsc\cf0 .ar(\cf2 Rand\cf0 (400,2400.0), 0, \cf2 LFPulse\cf0 .kr(\cf2 ExpRand\cf0 (0.5,8), 0, \cf2 Rand\cf0 (0,0.7), 0.05)),\
 	\cf2 Rand\cf0 (-1,1));\
 	\cf2 Out\cf0 .ar(0, out);\
 \}).writeDefFile;\
@@ -237,7 +241,9 @@ r = \cf2 Routine\cf0 (\{\
 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // define a synth\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf4 "playbuf"\cf0 , \{ \cf2 arg\cf0  rate = 1;\
 	\cf2 var\cf0  out;\
 	out = \cf2 Mix\cf0 (\cf2 PlayBuf\cf0 .ar(2, 0, rate*[1,1.04,1.08,1.12], loop: 1)) * 0.3;\
@@ -247,7 +253,9 @@ s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/playbuf.scsyndef"\cf0 );\
 )\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // define a synth\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf4 "playbuf"\cf0 , \{ \cf2 arg\cf0  rate = 1, trig = 0;\
 	\cf2 var\cf0  out;\
 	out = \cf2 Mix\cf0 (\cf2 PlayBuf\cf0 .ar(1, 0, rate*0.25, trig, 10000, loop: 0)) * 0.3;\

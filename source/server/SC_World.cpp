@@ -35,7 +35,6 @@
 #include "SC_Prototypes.h"
 #include "SC_Samp.h"
 #include "SC_ComPort.h"
-#include "SC_ScopeBuf.h"
 
 InterfaceTable gInterfaceTable;
 extern HashTable<struct UnitDef, Malloc> *gUnitDefLib;
@@ -103,7 +102,6 @@ void InterfaceTable_Init()
 
 void initialize_library();
 void initializeScheduler();
-void World_InitScopeBufs(World *world);
 
 World* World_New(WorldOptions *inOptions)
 {	
@@ -148,8 +146,8 @@ World* World_New(WorldOptions *inOptions)
 		world->mNumInputs = inOptions->mNumInputBusChannels;
 		world->mNumOutputs = inOptions->mNumOutputBusChannels;
 		
-		world->mNumScopeBufs = inOptions->mNumScopeBufs;
-		world->mScopeBufs = inOptions->mScopeBufs;
+		world->mNumSharedSndBufs = inOptions->mNumSharedSndBufs;
+		world->mSharedSndBufs = inOptions->mSharedSndBufs;
 		
 		world->mNumSharedControls = inOptions->mNumSharedControls;
 		world->mSharedControls = inOptions->mSharedControls;

@@ -38,13 +38,13 @@
 #include "sc_msg_iter.h"
 #include "SC_ComPort.h"
 #include "SC_WorldOptions.h"
-#include "SC_ScopeBuf.h"
+#include "SC_SndBuf.h"
 
 struct LocalSynthServerGlobals
 {
 	struct World *mWorld;
-	int mNumScopeBufs;
-	ScopeBuf *mScopeBufs;
+	int mNumSharedSndBufs;
+	SndBuf *mSharedSndBufs;
 	int mNumSharedControls;
 	float *mSharedControls;
 };
@@ -121,7 +121,7 @@ void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
 			} else if (isKindOf(slot->uo, class_int8array)) {
 				PyrInt8Array *arrayObj = slot->uob;
 				packet->addtag('b');
-				printf("arrayObj %08X %d\n", arrayObj, arrayObj->size);
+				//printf("arrayObj %08X %d\n", arrayObj, arrayObj->size);
 				packet->addb(arrayObj->b, arrayObj->size);
 			}
 			break;
@@ -600,45 +600,58 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 }
 
 
-int prAllocScopeBufs(VMGlobals *g, int numArgsPushed);
-int prAllocScopeBufs(VMGlobals *g, int numArgsPushed)
+inline int32 BUFMASK(int32 x)
+{
+	return (1 << (31 - CLZ(x))) - 1;
+}
+
+int prAllocSharedSndBufs(VMGlobals *g, int numArgsPushed);
+int prAllocSharedSndBufs(VMGlobals *g, int numArgsPushed)
 {
 	//PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
+	PyrSlot *b = g->sp - 2;
+	PyrSlot *c = g->sp - 1;
+	PyrSlot *d = g->sp;
 	
 	if (gLocalSynthServer.mWorld) {
 		post("can't allocate while internal server is running\n");
 		return errNone;
 	}
-	if (gLocalSynthServer.mScopeBufs) {
-		for (int i=0; i<gLocalSynthServer.mNumScopeBufs; ++i) {
-			free(gLocalSynthServer.mScopeBufs[i].data);
+	if (gLocalSynthServer.mSharedSndBufs) {
+		for (int i=0; i<gLocalSynthServer.mNumSharedSndBufs; ++i) {
+			free(gLocalSynthServer.mSharedSndBufs[i].data);
 		}
-		free(gLocalSynthServer.mScopeBufs);
-		gLocalSynthServer.mNumScopeBufs = 0;
-		gLocalSynthServer.mScopeBufs = 0;
+		free(gLocalSynthServer.mSharedSndBufs);
+		gLocalSynthServer.mNumSharedSndBufs = 0;
+		gLocalSynthServer.mSharedSndBufs = 0;
 	}
-	int numScopeBufs;
-	int err = slotIntVal(b, &numScopeBufs);
+	int numSharedSndBufs;
+	int err = slotIntVal(b, &numSharedSndBufs);
 	if (err) return err;
 
-	int numScopeFrames;
-	err = slotIntVal(c, &numScopeFrames);
+	int numFrames;
+	err = slotIntVal(d, &numFrames);
 	if (err) return err;
 
-	if (numScopeBufs <= 0 || numScopeFrames <= 0) {
+	int numChannels = 1;
+	err = slotIntVal(c, &numChannels);
+	
+	if (numSharedSndBufs <= 0 || numFrames <= 0 || numChannels <= 0) {
 		return errNone;
 	}
-	gLocalSynthServer.mNumScopeBufs = numScopeBufs;
-	gLocalSynthServer.mScopeBufs = (ScopeBuf*)calloc(gLocalSynthServer.mNumScopeBufs, sizeof(ScopeBuf));
-	int scopeDataSize = numScopeFrames * sizeof(ScopeFrame);
-	for (int i=0; i<gLocalSynthServer.mNumScopeBufs; ++i) {
-		ScopeBuf *buf = gLocalSynthServer.mScopeBufs + i;
-		buf->zoom = 1.;
-		buf->width = 256;
-		buf->size = numScopeFrames;
-		buf->data = calloc(numScopeFrames, sizeof(ScopeFrame));
+
+	int numSamples = numFrames * numChannels;
+	gLocalSynthServer.mNumSharedSndBufs = numSharedSndBufs;
+	gLocalSynthServer.mSharedSndBufs = (SndBuf*)calloc(gLocalSynthServer.mNumSharedSndBufs, sizeof(SndBuf));
+	for (int i=0; i<gLocalSynthServer.mNumSharedSndBufs; ++i) {
+		SndBuf *buf = gLocalSynthServer.mSharedSndBufs + i;
+		buf->channels = numChannels;
+		buf->frames   = numFrames;
+		buf->samples  = numSamples;
+		buf->mask     = BUFMASK(numSamples); // for delay lines
+		buf->mask1    = buf->mask - 1;	// for oscillators
+		buf->samples = numSamples;
+		buf->data = (float*)calloc(numSamples, sizeof(float));
 	}
 	
 	return errNone;
@@ -729,7 +742,7 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);	
 	definePrimitive(base, index++, "_QuitInProcessServer", prQuitInProcessServer, 1, 0);
 		
-	definePrimitive(base, index++, "_AllocScopeBufs", prAllocScopeBufs, 3, 0);	
+	definePrimitive(base, index++, "_AllocSharedSndBufs", prAllocSharedSndBufs, 3, 0);	
 	definePrimitive(base, index++, "_AllocSharedControls", prAllocSharedControls, 2, 0);	
 	definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);	
 	definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);	

@@ -37,8 +37,8 @@ struct WorldOptions
 	int mBufLength;
 	int mRealTimeMemorySize;
 	
-	int mNumScopeBufs;
-	struct ScopeBuf *mScopeBufs;
+	int mNumSharedSndBufs;
+	struct SndBuf *mSharedSndBufs;
 
 	int mNumSharedControls;
 	float *mSharedControls;

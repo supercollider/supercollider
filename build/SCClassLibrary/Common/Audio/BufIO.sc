@@ -13,6 +13,17 @@ PlayBuf : MultiOutUGen {
 	}
 }
 
+SimpleLoopBuf : MultiOutUGen {	
+	*ar { arg numChannels, bufnum=0, loopStart=0.0, loopEnd=99999.0, trigger=0.0;
+		^this.multiNew('audio', numChannels, bufnum, loopStart, loopEnd, trigger)
+	}
+	
+	init { arg argNumChannels ... theInputs;
+		inputs = theInputs;
+		^this.initOutputs(argNumChannels, rate);
+	}
+}
+
 ReadBuf : MultiOutUGen {	
 	*ar { arg numChannels, bufnum=0, offset=0.0;
 		^this.multiNew('audio', numChannels, bufnum, offset)
