@@ -1851,9 +1851,6 @@ int prPen_StrokeRect(struct VMGlobals *g, int numArgsPushed)
     int err = slotGetNSRect(b, &rect);		
     if (err) return err;
     
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
-    if (!view) return errNone;
-
     [NSBezierPath strokeRect: rect];
 //    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     
@@ -1874,9 +1871,6 @@ int prPen_FillRect(struct VMGlobals *g, int numArgsPushed)
     int err = slotGetNSRect(b, &rect);		
     if (err) return err;
     
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
-    if (!view) return errNone;
-
     [NSBezierPath fillRect: rect];
     
     return errNone;
@@ -1896,9 +1890,6 @@ int prPen_StrokeOval(struct VMGlobals *g, int numArgsPushed)
     int err = slotGetNSRect(b, &rect);		
     if (err) return err;
     
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
-    if (!view) return errNone;
-
     [[NSBezierPath bezierPathWithOvalInRect: rect] stroke];
     
     return errNone;
@@ -1918,9 +1909,6 @@ int prPen_FillOval(struct VMGlobals *g, int numArgsPushed)
     int err = slotGetNSRect(b, &rect);		
     if (err) return err;
     
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
-    if (!view) return errNone;
-
     [[NSBezierPath bezierPathWithOvalInRect: rect] fill];
     
     return errNone;
@@ -1944,9 +1932,6 @@ int prPen_StrokeLine(struct VMGlobals *g, int numArgsPushed)
     err = slotGetPoint(c, &p2);		
     if (err) return err;
     
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
-    if (!view) return errNone;
-
     [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
     
     return errNone;
@@ -2337,116 +2322,6 @@ enum {
     drawop_Fill
 };
 
-int prRect_Draw(struct VMGlobals *g, int numArgsPushed);
-int prRect_Draw(struct VMGlobals *g, int numArgsPushed)
-{
-	if (!g->canCallOS) return errCantCallOS;
-	
-	PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
-        
-	Rect r;
-	int err = slotGetQDRect(a, &r);
-	if (err) return err;	
-        
-        RGBColor color;
-        err = slotRGBColorVal(b, &color);
-	if (err) return err;	
-        RGBForeColor(&color);
-        
-        switch (c->ui) {
-            case drawop_Invert : InvertRect(&r); break;
-            case drawop_Erase : EraseRect(&r); break;
-            case drawop_Stroke : FrameRect(&r); break;
-            case drawop_Fill : PaintRect(&r); break;
-        }
-	return errNone;
-}
-
-int prOval_Draw(struct VMGlobals *g, int numArgsPushed);
-int prOval_Draw(struct VMGlobals *g, int numArgsPushed)
-{
-	if (!g->canCallOS) return errCantCallOS;
-	
-	PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
-
-	Rect r;
-	int err = slotGetQDRect(a, &r);
-	if (err) return err;	
-        
-        RGBColor color;
-        err = slotRGBColorVal(b, &color);
-	if (err) return err;	
-        RGBForeColor(&color);
-        
-        switch (c->ui) {
-            case drawop_Invert : InvertOval(&r); break;
-            case drawop_Erase : EraseOval(&r); break;
-            case drawop_Stroke : FrameOval(&r); break;
-            case drawop_Fill : PaintOval(&r); break;
-        }
-	return errNone;
-}
-
-int prRoundRect_Draw(struct VMGlobals *g, int numArgsPushed);
-int prRoundRect_Draw(struct VMGlobals *g, int numArgsPushed)
-{
-	if (!g->canCallOS) return errCantCallOS;
-	
-	PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
-
-	Rect r;
-	int radius;
-	int err = slotGetRoundRect(a, &r, &radius);
-	if (err) return err;	
-		
-        RGBColor color;
-        err = slotRGBColorVal(b, &color);
-	if (err) return err;	
-        RGBForeColor(&color);
-        
-        switch (c->ui) {
-            case drawop_Invert : InvertRoundRect(&r, radius, radius); break;
-            case drawop_Erase : EraseRoundRect(&r, radius, radius); break;
-            case drawop_Stroke : FrameRoundRect(&r, radius, radius); break;
-            case drawop_Fill : PaintRoundRect(&r, radius, radius); break;
-        }
-
-	return errNone;
-}
-
-int prArc_Draw(struct VMGlobals *g, int numArgsPushed);
-int prArc_Draw(struct VMGlobals *g, int numArgsPushed)
-{
-	if (!g->canCallOS) return errCantCallOS;
-	
-	PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
-        
-	Rect r;
-	int startAngle, arcAngle;
-	int err = slotGetArc(a, &r, &startAngle, &arcAngle);
-	if (err) return err;	
-        
-        RGBColor color;
-        err = slotRGBColorVal(b, &color);
-	if (err) return err;	
-        RGBForeColor(&color);
-        
-        switch (c->ui) {
-            case drawop_Invert : InvertArc(&r, startAngle, arcAngle); break;
-            case drawop_Erase : EraseArc(&r, startAngle, arcAngle); break;
-            case drawop_Stroke : FrameArc(&r, startAngle, arcAngle); break;
-            case drawop_Fill : PaintArc(&r, startAngle, arcAngle); break;
-        }
-	return errNone;
-}
 
 void hilite_color(RGBColor *rgb);
 void hilite_color(RGBColor *rgb)
@@ -2618,112 +2493,6 @@ void stringBounds(char *s, int len, Rect &r)
 	r.bottom = finfo.descent;
 }
 
-int prButton_Draw(struct VMGlobals *g, int numArgsPushed);
-int prButton_Draw(struct VMGlobals *g, int numArgsPushed)
-{
-	if (!g->canCallOS) return errCantCallOS;
-	
-	//PyrSlot *a = g->sp - 5; // button
-	PyrSlot *b = g->sp - 4;	// rect
-	PyrSlot *c = g->sp - 3;	// backColor
-	PyrSlot *d = g->sp - 2;	// forecolor
-	PyrSlot *e = g->sp - 1;	// string
-	PyrSlot *f = g->sp;  	// down
-	
-	Rect r, sr;
-	int width = 2;
-	bool down = IsTrue(f);
-
-	int err = slotGetQDRect(b, &r);
-	if (err) return err;
-
-	RGBColor backColor, foreColor;
-	err = slotRGBColorVal(c, &backColor);
-	if (err) return err;
-	err = slotRGBColorVal(d, &foreColor);
-	if (err) return err;
-
-	FrameRoundRect(&r, 4, 4);
-	InsetRect(&r, 1, 1);
-
-	if (down) {
-		bevelInRect(&r, width, backColor, true);
-	} else {
-		bevelOutRect(&r, width, backColor, true);
-	}
-	if (err) return err;
-	
-	if (!(isKindOfSlot(e, class_string))) return errWrongType;
-	PyrString* string = e->uos;
-	
-	RGBForeColor(&foreColor);
-	stringBounds(string->s, string->size, sr);
-	Point p = centerRectIn(sr, r);
-	
-	MoveTo(p.h, p.v);
-	MacDrawText(string->s, 0, string->size);
-	
-	
-	return errNone;
-}
-
-int prBevelRect_Draw(struct VMGlobals *g, int numArgsPushed);
-int prBevelRect_Draw(struct VMGlobals *g, int numArgsPushed)
-{
-	if (!g->canCallOS) return errCantCallOS;
-	
-	PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
-
-	Rect r;
-	int width;
-	bool inout;
-	int err = slotBevelRect(a, &r, &width, &inout);
-	if (err) return err;	
-        
-        RGBColor backColor;
-        err = slotRGBColorVal(b, &backColor);
-	if (err) return err;	
-        
-	return drawBevelRect(r, width, inout, backColor, c->ui);
-}
-
-int prTextBox_Draw(struct VMGlobals *g, int numArgsPushed);
-int prTextBox_Draw(struct VMGlobals *g, int numArgsPushed)
-{
-	if (!g->canCallOS) return errCantCallOS;
-	
-	PyrSlot *a = g->sp;
-        PyrSlot* slots = a->uo->slots;
-	PyrSlot *boundsSlot = slots + 1;
-	PyrSlot *stringSlot = slots + 2;
-	PyrSlot *justifySlot = slots + 3;
-	PyrSlot *colorSlot = slots + 4;
-	
-	if (!(isKindOfSlot(boundsSlot, s_rect->u.classobj))) return errWrongType;
-	if (!(isKindOfSlot(stringSlot, class_string))) return errWrongType;
-	if (!IsSym(justifySlot)) return errWrongType;
-
-	RGBColor foreColor;
-	int err = slotRGBColorVal(colorSlot, &foreColor);
-	if (err) return err;
-	
-	Rect bounds;
-	err = slotGetQDRect(boundsSlot, &bounds);
-	if (err) return err;	
-	RGBForeColor(&foreColor);
-	
-	int just;
-	char *justName = justifySlot->us->name;
-	if (strlen(justName) < 4 || justName[0] == 'd') just = teFlushDefault;
-	else if (justName[0] == 'l') just = teFlushLeft;
-	else if (justName[0] == 'c') just = teCenter;
-	else if (justName[0] == 'r') just = teFlushRight;
-	TETextBox(stringSlot->uos->s, stringSlot->uo->size, &bounds, just);
-	
-	return errNone;
-}
 
 
 void initGUIPrimitives()
@@ -2847,20 +2616,6 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_HasDeferred", prHasDeferred, 1, 0);	
 	definePrimitive(base, index++, "_LoadUserPanel", prLoadUserPanel, 2, 0);	
 
-	definePrimitive(base, index++, "_Rect_Draw", prRect_Draw, 3, 0);
-	definePrimitive(base, index++, "_Oval_Draw", prOval_Draw, 3, 0);
-	//definePrimitive(base, index++, "_Lines_Draw", prLines_Draw, 1, 0);
-	//definePrimitive(base, index++, "_ZigZag_Draw", prZigZag_Draw, 1, 0);
-	//definePrimitive(base, index++, "_Polygon_Draw", prPolygon_Draw, 1, 0);
-	//definePrimitive(base, index++, "_String_GetBounds", prString_GetBounds, 2, 0);
-	//definePrimitive(base, index++, "_String_Draw", prString_Draw, 1, 0);
-	//definePrimitive(base, index++, "_Symbol_Draw", prSymbol_Draw, 1, 0);
-	//definePrimitive(base, index++, "_Char_Draw", prChar_Draw, 1, 0);
-	definePrimitive(base, index++, "_TextBox_Draw", prTextBox_Draw, 5, 0);
-	definePrimitive(base, index++, "_RoundRect_Draw", prRoundRect_Draw, 3, 0);
-	definePrimitive(base, index++, "_BevelRect_Draw", prBevelRect_Draw, 3, 0);
-	definePrimitive(base, index++, "_Button_Draw", prButton_Draw, 6, 0);
-	definePrimitive(base, index++, "_Arc_Draw", prArc_Draw, 3, 0);
 	definePrimitive(base, index++, "_Font_AvailableFonts", prFont_AvailableFonts, 1, 0);
 }
 
