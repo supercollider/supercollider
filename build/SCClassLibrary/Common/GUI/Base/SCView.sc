@@ -526,10 +526,14 @@ SCButton : SCControlView {
 		currentDrag = this.value; 
 	}
 	canReceiveDrag {
-		^currentDrag.isNumber;
+		^currentDrag.isNumber or: { currentDrag.isKindOf(Function) };
 	}
 	receiveDrag {
-		this.valueAction = currentDrag;
+		if (currentDrag.isNumber) {
+			this.valueAction = currentDrag;
+		}{
+			this.action = currentDrag;
+		};
 		currentDrag = nil;
 	}
 }
