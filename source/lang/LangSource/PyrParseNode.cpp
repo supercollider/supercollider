@@ -1722,7 +1722,7 @@ void PyrCallNodeBase::compilePartialApplication(int numCurryArgs, PyrSlot *resul
 {
 	// create a function 
 	// compile the call
-	METHRAW(gCompilingBlock)->needsHeapContext = 1;
+
 	ByteCodes savedBytes = saveByteCodeArray();
 
 	int flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
@@ -1731,6 +1731,12 @@ void PyrCallNodeBase::compilePartialApplication(int numCurryArgs, PyrSlot *resul
 	PyrSlot blockSlot;
 	SetObject(&blockSlot, block);
 
+	int prevFunctionHighestExternalRef = gFunctionHighestExternalRef;
+	bool prevFunctionCantBeClosed = gFunctionCantBeClosed;
+	gFunctionHighestExternalRef = 0;
+	gFunctionCantBeClosed = false;
+	
+	PyrClass* prevClass = gCompilingClass;
 	PyrBlock* prevBlock = gCompilingBlock;
 	gCompilingBlock = block;
 	
@@ -1792,6 +1798,18 @@ void PyrCallNodeBase::compilePartialApplication(int numCurryArgs, PyrSlot *resul
 	int index = conjureLiteralSlotIndex(this, gCompilingBlock, &blockSlot);
 	compileOpcode(opExtended, opPushLiteral);
 	compileByte(index);
+
+	if (!gFunctionCantBeClosed && gFunctionHighestExternalRef == 0) {
+		SetNil(&block->contextDef);
+	} else {
+		METHRAW(prevBlock)->needsHeapContext = 1;
+	}
+
+	gCompilingBlock = prevBlock;
+	gCompilingClass = prevClass;
+	gPartiallyAppliedFunction = prevPartiallyAppliedFunction;
+	gFunctionCantBeClosed = gFunctionCantBeClosed || prevFunctionCantBeClosed;
+	gFunctionHighestExternalRef = sc_max(gFunctionHighestExternalRef - 1, prevFunctionHighestExternalRef);
 }
 
 void PyrCallNodeBase::compile(PyrSlot *result)
@@ -3123,17 +3141,20 @@ void PyrSlotNode::compilePushLit(PyrSlot *result)
 	
 	//postfl("compilePyrPushLitNode\n");
 	if (mSlot.utag == tagPtr) {
-		PyrParseNode *literalObj;
-		literalObj = (PyrParseNode*)mSlot.uo;
+		PyrParseNode *literalObj = (PyrParseNode*)mSlot.uo;
 		//index = conjureLiteralObjIndex(gCompilingBlock, literalObj);
 		if (literalObj->mClassno == pn_BlockNode) {
-			METHRAW(gCompilingBlock)->needsHeapContext = 1;
 			savedBytes = saveByteCodeArray();
 			COMPILENODE(literalObj, &slot, false);
 			restoreByteCodeArray(savedBytes);
 			index = conjureLiteralSlotIndex(literalObj, gCompilingBlock, &slot);
 			compileOpcode(opExtended, opPushLiteral);
 			compileByte(index);
+			
+			PyrBlock *block = slot.uoblk;
+			if (NotNil(&block->contextDef)) {
+				METHRAW(gCompilingBlock)->needsHeapContext = 1;
+			}
 		} else {
 			COMPILENODE(literalObj, &slot, false);
 			compilePushConstant((PyrParseNode*)literalObj, &slot);
@@ -3198,13 +3219,16 @@ void PyrSlotNode::compileLiteral(PyrSlot *result)
 	ByteCodes savedBytes;
 	
 	if (mSlot.utag == tagPtr) {
-		PyrParseNode* literalObj;
-		literalObj = (PyrParseNode*)mSlot.uo;
+		PyrParseNode* literalObj = (PyrParseNode*)mSlot.uo;
 		if (literalObj->mClassno == pn_BlockNode) {
-			METHRAW(gCompilingBlock)->needsHeapContext = 1;
 			savedBytes = saveByteCodeArray();
 			COMPILENODE(literalObj, result, false);
 			restoreByteCodeArray(savedBytes);
+
+			PyrBlock *block = result->uoblk;
+			if (NotNil(&block->contextDef)) {
+				METHRAW(gCompilingBlock)->needsHeapContext = 1;
+			}
 		} else {
 			COMPILENODE(literalObj, result, false);
 		}
