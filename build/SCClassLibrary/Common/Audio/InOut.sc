@@ -31,7 +31,6 @@ Control : MultiOutUGen {
 					nil, synthDef.allControlNames.size)
 			);
 		};
-		synthDef.controlIndex = synthDef.controlIndex + names.size;
 	}
 	*kr { arg values;
 		^this.multiNewList(['control'] ++ values.asArray)
@@ -44,6 +43,7 @@ Control : MultiOutUGen {
 		if (synthDef.notNil) {
 			specialIndex = synthDef.controls.size;
 			synthDef.controls = synthDef.controls.addAll(values);
+			synthDef.controlIndex = synthDef.controlIndex + values.size;
 		};
 		^this.initOutputs(values.size, rate)
 	}
@@ -82,6 +82,7 @@ LagControl : Control {
 		if (synthDef.notNil, { 
 			specialIndex = synthDef.controls.size;
 			synthDef.controls = synthDef.controls.addAll(values);
+			synthDef.controlIndex = synthDef.controlIndex + values.size;
 		});
 		^this.initOutputs(values.size, rate)
 	}

@@ -128,7 +128,7 @@ SynthDef {
 	buildControls {
 		var arguments;
 		var nonControlNames, irControlNames, krControlNames, trControlNames;
-		var controlUGens, values, lags, valsize;
+		var controlUGens, index, values, lags, valsize;
 		var def, argNames;
 		
 		arguments = Array.newClear(controlNames.size);
@@ -148,10 +148,11 @@ SynthDef {
 			irControlNames.do {|cn| 
 				values = values.add(cn.defaultValue);
 			};
+			index = controlIndex;
 			controlUGens = Control.ir(values.flat).asArray.reshapeLike(values);
 			irControlNames.do {|cn, i|
-				cn.index = controlIndex;
-				controlIndex = controlIndex + cn.defaultValue.asArray.size;
+				cn.index = index;
+				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
 			};
 		};
@@ -160,10 +161,11 @@ SynthDef {
 			trControlNames.do {|cn| 
 				values = values.add(cn.defaultValue);
 			};
+			index = controlIndex;
 			controlUGens = TrigControl.kr(values.flat).asArray.reshapeLike(values);
 			trControlNames.do {|cn, i|
-				cn.index = controlIndex;
-				controlIndex = controlIndex + cn.defaultValue.asArray.size;
+				cn.index = index;
+				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
 			};
 		};
@@ -175,14 +177,15 @@ SynthDef {
 				values = values.add(cn.defaultValue);
 				lags = lags.addAll(cn.lag.asArray.wrapExtend(valsize));
 			};
+			index = controlIndex;
 			if (lags.any {|lag| lag != 0 }) {
 				controlUGens = LagControl.kr(values.flat, lags).asArray.reshapeLike(values);
 			}{
 				controlUGens = Control.kr(values.flat).asArray.reshapeLike(values);
 			};
 			krControlNames.do {|cn, i|
-				cn.index = controlIndex;
-				controlIndex = controlIndex + cn.defaultValue.asArray.size;
+				cn.index = index;
+				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
 			};
 		};
