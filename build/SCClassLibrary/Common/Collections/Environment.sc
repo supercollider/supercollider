@@ -35,8 +35,7 @@ Environment : IdentityDictionary {
 	eventAt { arg key; ^this.at(key) }
 	
 	*pop {
-		if(stack.notEmpty) { currentEnvironment = stack.pop.debug };
-		\pop.debug;
+		if(stack.notEmpty) { currentEnvironment = stack.pop };
 	}
 	
 	*push { arg envir;
