@@ -36,6 +36,7 @@ AbstractPlayControl {
 	
 	freeToBundle {}
 	
+	set {}
 	controlNames { ^nil }
 		
 	play { this.subclassResponsibility(thisMethod) }
@@ -195,6 +196,9 @@ SynthControl : AbstractPlayControl {
 			};
 			nodeID = nil;
 		};
+	}
+	set { arg ... args; // maybe want to set as fast as possible?
+		server.sendBundle(server.latency, "/n_set", nodeID, *args);
 	}
 	
 	
