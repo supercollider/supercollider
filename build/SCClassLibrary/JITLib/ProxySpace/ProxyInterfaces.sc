@@ -35,9 +35,7 @@ AbstractPlayControl {
 	
 	freeToBundle {}
 	
-	controlNames { ^nil } // normally empty, function returns names.
-	controlValues { ^nil }
-	
+	controlNames { ^nil }	
 	play { this.subclassResponsibility(thisMethod) }
 	stop { this.subclassResponsibility(thisMethod) }
 	
@@ -209,11 +207,9 @@ SynthControl : AbstractPlayControl {
 		dict = SynthDescLib.global.synthDescs;
 		^if(dict.notNil) { dict.at(source) } {Ênil }; // source is symbol: synth def name
 	}
-	controlNames { var desc; desc = this.synthDesc; 
-					^if(desc.notNil) { desc.controls.collect { |u| u.name } } { [] } 
-	}
-	controlValues {  var desc; desc = this.synthDesc; 
-					^if(desc.notNil) { desc.controls.collect { |u| u.defaultValue } } { [] } 
+	controlNames { var desc; 
+					desc = this.synthDesc; 
+					^if(desc.notNil) { desc.controls } { nil } 
 	}
 	
 }
@@ -264,7 +260,6 @@ SynthDefControl : SynthControl {
 		if(parents.isNil) { parents = IdentitySet.new };
 		parents.add(proxy);
 	}
-	controlNames { ^source.argNames } // normally empty, function returns names.
-	controlValues { ^source.defaultArgs }
+	controlNames { ^synthDef.allControlNames }
 }
 
