@@ -34,8 +34,7 @@ This class is the abstract super class of Synth and Group.  Node objects are not
 \f1\b0 	\
 	\
 		\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 		
+		
 \f0\b free\
 		
 \f1\b0 	"/n_free"\
@@ -106,18 +105,23 @@ This class is the abstract super class of Synth and Group.  Node objects are not
 				controlNameOrIndex3,busIndex3,\
 				...\
 				controlNameOrIndexN, busIndexN\
+				\
 		
-\f0\b release
+\f0\b release(releaseTime)
 \f1\b0 \
 		
 \f0\b\fs28 \ul 	
 \f1\b0\fs24 \ulnone causes synths to set the gate control to zero and release\
-			if they have an envelope defined.\
+			if they have an envelope defined. 
+\f0\b releaseTime
+\f1\b0  will override an\
+			envelope's decay time.\
 			\
 		
 \f0\b\fs28 \ul \
 changing the order of execution\
-\ulnone 	
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \ulnone 	
 \fs24 \
 		moveAfter(aNode)\
 		\
