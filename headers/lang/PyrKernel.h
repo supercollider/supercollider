@@ -98,7 +98,7 @@ struct PyrProcess : public PyrObjectHdr
 };
 
 
-enum { tInit, tStart, tReady, tRunning, tSleeping, tBlocked, tYieldToChild, tYieldToParent, tDone };
+enum { tInit, tStart, tReady, tRunning, tSleeping, tSuspended, tDone };
 
 struct PyrThread : public PyrObjectHdr 
 {
