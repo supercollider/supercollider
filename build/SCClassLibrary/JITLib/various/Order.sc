@@ -49,6 +49,11 @@ Order : SequenceableCollection {
 		^array.pop
 	}
 	
+	makeEmpty { arg func;
+		var item;
+		while { item = this.pop; item.notNil } { func.value(item) }
+	}
+	
 	at { arg index;
 		var realIndex;
 		realIndex = this.slotOf(index);
@@ -75,7 +80,7 @@ Order : SequenceableCollection {
 		})
 			
 	}
-	
+		
 	slotOf { arg index;
 		var slot;
 		slot = this.findSlotFor(index);
