@@ -11,3 +11,17 @@ GetFileDialog {
 	// warning:  doesn't handle doAction (no instance)
 
 }
+
+
+GetStringDialog  {
+
+	*new { arg prompt,defaultString="",func;
+		var b;
+		Sheet({ arg l;
+			b = 	SCTextField(l.window,l.layRight(150,30));
+			b.string = String.new ++ defaultString;
+			b.action = {arg field; func.value(true,field.value); l.close; };
+		},prompt);
+		//{ b.view.focus }.defer;
+	}
+}
