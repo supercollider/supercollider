@@ -153,7 +153,7 @@ Server : Model {
 		program = "./scsynth";
 	}
 	sendMsg { arg ... args;
-		addr.sendBundle(nil, args);
+		addr.sendMsg(*args);
 	}
 	sendBundle { arg time ... messages;
 		addr.sendBundle(time, *messages);
@@ -495,6 +495,7 @@ Server : Model {
 	}
 	
 	prepareForRecord { arg path, headerFormat = "aiff", sampleFormat = "int16", numChannels = 2;
+		if (path.isNil) { path = "recordings/SC_" ++ Date.localtime.stamp ++ "." ++ headerFormat; };
 		recordBuf = Buffer.alloc(this, 65536, numChannels,
 			{arg buf; buf.writeMsg(path, headerFormat, sampleFormat, 0, 0, true);});
 		SynthDef("server-record", { arg bufnum;
@@ -508,6 +509,7 @@ Server : Model {
 	cmdPeriod {
 		recordNode.notNil.if({ recordNode = nil; });
 		recordBuf.notNil.if({recordBuf.close({ arg buf; buf.free; }); recordBuf = nil;});
+		this.changed(\cmdPeriod);
 		CmdPeriod.remove(this);
 	}
 
