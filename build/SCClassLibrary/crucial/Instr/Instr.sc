@@ -432,11 +432,12 @@ InstrSynthDef : SynthDef {
 //	}
 
 	*initClass {
+		// TODO make this only start when first put
 		Class.initClassTree(Server);
 		SimpleController(Server.local)
 			.put(\serverRunning,{
 				//if(Server.local.serverRunning,{
-					"CLEARING".postln;
+					"Clearing AbstractPlayer SynthDef cache".inform;
 					Library.put(SynthDef,Server.local,nil)
 				//})
 			});

@@ -206,3 +206,14 @@ Patch : HasPatchIns  {
 
 }
 
+/*
+
+EfxPatch : Patch
+
+
+	one meant for efx should be a specific type
+	then it can share its bus with the primary input
+	
+	
+*/
+

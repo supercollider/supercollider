@@ -317,25 +317,10 @@ Crucial {
 
 	
 		Library.put(\menuItems,\introspection,\findReferencesToClass,{
-			GetStringDialog("Class name:","",{
-				arg ok,string;
-				var fn;
-				fn = { arg class;
-						var found;
-						found = Array(8);
-						Class.allClasses.do({ arg eachClass;
-							if(eachClass.explicitClassReferences.any({ arg c; c===class }),{
-								found = found.add(eachClass);
-							})
-						});
-						found
-					};
-				if(ok,{
-					this.newErrorWindow;
-					fn.value(string.asSymbol.asClass).do({ arg c;
-						c.postln;
-					});
-				})
+			GetStringDialog("Class name:","",{ arg ok,string;
+				Class.findAllReferences(string.asSymbol).do({ arg ref;
+					ref.postln;
+				});
 			});
 		});
 
@@ -468,61 +453,5 @@ Crucial {
 	
 	}
 
-	*libraryMenu {
-		// this is just your Library(\menuItems) functions put up on a menu
-		
-		var dic,c,w;
-		if(menu.notNil,{ menu.close });
-		
-		//menu=PageLayout("LibraryFunctions",200,800,metal: true);
-		//menu = FlowView(nil,Rect(0,0,230,800));
-		menu = MultiPageLayout.new;
-		
-		Server.local.gui(menu);
-
-		ActionButton(menu.startRow,"     MENU     ",{
-			MLIDbrowser(\menuItems)
-				.onSelect_({ arg f; f.value })
-				.browse
-		})
-		.backColor_(Color.new255(112, 128, 144))
-		.labelColor_(Color.white);
-
-//		dic=Library.at(\menuItems);
-//		if(dic.notNil,{
-//			dic.keys.asList.sort.do({arg k,ki;
-//				var subdic;
-//				subdic=Library.at(\menuItems,k);
-//				CXLabel(menu.startRow,k.asString,maxx:200)
-//					.backColor_(Color.new255(112, 128, 144))
-//					.stringColor_(Color.white);
-//				subdic.keys.asList.sort.do({arg k;
-//					ActionButton(menu.startRow,k,{
-//						subdic.at(k).value;
-//						menu.close;
-//					},200).backColor_(Color.new255(245, 245, 245))
-//				});
-//			});			
-//		});
-			
-		// if you have a wacom tablet  you could uncomment these
-		//ToggleButton(menu.startRow,"TabletTracking",{ 
-		//	TZM.tracking = true; },{ TZM.tracking = false }, 
-		//TZM.tracking ,140);
-		
-			
-		ToggleButton(menu.startRow,"Server dumpOSC",{
-			Server.local.stopAliveThread;
-			Server.local.dumpOSC(1)
-		},{
-			Server.local.startAliveThread;
-			Server.local.dumpOSC(0)
-		},Server.local.dumpMode != 0 );
-		
-		TempoGui.setTempoKeys;
-		Tempo.gui(menu.startRow);
-
-		menu.resizeToFit.front;
-	}
 	
 }

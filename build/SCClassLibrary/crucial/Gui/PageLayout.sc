@@ -1,9 +1,7 @@
 
 MultiPageLayout  {
 
-	// should get these from Cocoa
 	classvar <>screenWidth = 900, <>screenHeight = 700; // tibook
-	
 	classvar <>bgcolor;
 	
 	var windows,views;
@@ -208,7 +206,7 @@ ModalDialog { // hit ok or cancel
 
 
 // for old usage
-// to be deprec
+// to be deprec in favor of MultiPageLayout or FlowView
 PageLayout  {
 
 	// should get these from Cocoa

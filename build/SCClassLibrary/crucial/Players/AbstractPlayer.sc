@@ -32,7 +32,7 @@ AbstractPlayer : AbstractFunction  {
 			this.sendSpawnBundle(bundle);
 		},{
 			Routine({
-				var limit = 100;
+				var limit = 100,bsize;
 				if(server.serverRunning.not,{
 					server.boot;
 					server.startAliveThread;
@@ -48,16 +48,17 @@ AbstractPlayer : AbstractFunction  {
 				if(server.serverRunning.not,{
 					"server failed to start".error;
 				},{
-					this.prepareForPlay(group,false,bus);
+					bsize = this.prepareForPlay(group,false,bus) / 40.0;
 					// need some way to track all the preps completion
 					// also in some cases the prepare can have a completion
 					// tacked on and we might combine with the spawn message
 					
 					// need a fully fledged OSCMessage that can figure it out
-					1.0.wait;
-					
+					// 1 second for 40 msgs
+					bsize.wait;
+			
 					atTime = atTime ? 0;
-					if(atTime > 1.0,{ atTime = atTime - 1.0 });
+					if(atTime > bsize,{ atTime = atTime - bsize });
 					this.spawnAtTime(atTime);
 				});
 			}).play(SystemClock);
@@ -70,7 +71,8 @@ AbstractPlayer : AbstractFunction  {
 		this.makePatchOut(group,private,bus,bundle);
 		bundle.clump(5).do({ arg bundle,i;
 			group.server.listSendBundle(i * 0.001,bundle);
-		})
+		});
+		^bundle.size
 	}
 	prepareToBundle { arg group,bundle;
 		readyForPlay = false;
@@ -92,7 +94,7 @@ AbstractPlayer : AbstractFunction  {
 
 	/* status */
 	isPlaying { ^synth.isPlaying }
-	stop { // does not release server  resources
+	stop {// does not release server  resources
 		if(synth.notNil,{
 			synth.free;
 			synth = nil;
@@ -142,6 +144,7 @@ AbstractPlayer : AbstractFunction  {
 			child.spawnToBundle(bundle);
 		});
 		synth = Synth.basicNew(this.defName,server);
+		("spawning: " + this.defName).postln;
 		//patchOut ?? {this.insp("noPatchOut")};
 		bundle.add(
 			synth.addToTailMsg(this.group,this.synthDefArgs)
@@ -224,6 +227,17 @@ AbstractPlayer : AbstractFunction  {
 			server = patchOut.server;
 		});
 	}
+	freePatchOut {
+		if(patchOut.notNil,{
+			patchOut.free;
+			patchOut = nil;
+		});
+		this.children.do({ arg child; 
+			if(child.isKindOf(AbstractPlayer),{
+				child.freePatchOut 
+			});
+		})
+	}
 	
 	loadDefFileToBundle { arg bundle,server;
 		var def,bytes,dn;
@@ -250,7 +264,7 @@ AbstractPlayer : AbstractFunction  {
 			bundle.add(["/d_recv", bytes]);
 			// even if name was nil before (Patch), its set now
 			defName = def.name;
-			
+			("loading def:" + defName).postln;
 			// InstrSynthDef watches \serverRunning to clear this
 			Library.put(SynthDef,server,defName.asSymbol,true);
 		});
@@ -292,10 +306,10 @@ AbstractPlayer : AbstractFunction  {
 			synth.isRunning = true;
 		});
 		// if i create groups, set them to isRunning
-// best handled by subclass
-//		this.children.do({ arg child;
-//			child.didSpawn(     )
-//		})
+		// best handled by subclass
+		//		this.children.do({ arg child;
+		//			child.didSpawn(     )
+		//		})
 	}
 	rate { ^\audio }
 	numChannels { ^1 }

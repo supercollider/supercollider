@@ -31,6 +31,8 @@ AbstractPlayerEffect : HasSubject {
 		childGroup = Group.basicNew;
 		bundle.add( childGroup.addToHead(group) );
 		effectGroup = group;//Group.tail(group);
+		//effectGroup = Group.tail(group);
+
 		server = effectGroup.server;
 		this.topMakePatchOut(effectGroup,private,bus,bundle);
 		this.childrenMakePatchOut(childGroup,true,bundle);
@@ -197,7 +199,7 @@ StreamKrDur : HasSubject { // Synthless, above player
 	var <>durations,<>lag;
 	var tempo,routine,bus;
 	
-	*new { arg values=0.0,durations=0.0,lag=0.0;
+	*new { arg values=0.0,durations=0.25,lag=0.0;
 		// check if can become a BufSeqDur
 
 		// make refs of arrays into Pseq

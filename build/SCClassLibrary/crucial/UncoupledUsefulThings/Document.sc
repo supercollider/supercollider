@@ -1,7 +1,7 @@
 
 Document {
 
-	classvar <>dir="";
+	classvar <dir="";
 	
 	var path;
 
@@ -12,7 +12,7 @@ Document {
 	showWindow {
 		this.class.standardizePath(path).openTextFile
 	}
-	
+	*dir_ { arg path;  dir = path.standardizePath ++ "/"; }
 	*standardizePath { arg p;
 		var pathName;
 		pathName = PathName.fromOS9(p);

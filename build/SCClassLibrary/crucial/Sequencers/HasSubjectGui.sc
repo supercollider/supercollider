@@ -2,10 +2,12 @@
 
 HasSubjectGui : AbstractPlayerGui {
 	//smallGui could not gui the subject
+	var subjg;
 	guiBody { arg layout;
 		layout.startRow;
-		model.subject.gui(layout);
+		subjg = model.subject.gui(layout);
 	}
+	enableMIDI { subjg.enableMIDI }
 }
 
 

@@ -1,41 +1,14 @@
 
-	
-CCResponder {
-	classvar initialized = false,responders;
 
-	var <num,<function;
-	
-	*new { arg num,function;
-		^super.newCopyArgs(num,function).init
-	}
+MIDIResponder {
+	classvar initialized = false,responders;
+	var <>function;
 	init {
 		if(initialized.not,{ this.class.init });
 		this.class.add(this);
 	}
 	remove {
 		this.class.remove(this)
-	}
-	value { arg val;
-		function.value(val)
-	}
-	*init {
-		if(MIDIClient.initialized.not,{ MIDIIn.connect });
-		responders = Array.newClear(127);
-		MIDIIn.control = this;
-		initialized = true;
-	}
-	*add { arg resp;
-		var old;
-		old = responders.at(resp.num);
-		if(old.isNil,{
-			responders.put(resp.num,resp);
-		},{
-			if(old.isKindOf(ResponderArray).not,{
-				responders.put(resp.num,ResponderArray.new.add(old).add(resp))
-			},{
-				old.add(resp)
-			})
-		})
 	}
 	*removeAll { this.init }
 	*remove { arg resp;
@@ -50,9 +23,6 @@ CCResponder {
 				})
 			})
 		})
-	}
-	*value { arg src,chan,num,val;
-		responders.at(num).value(val);
 	}
 }
 
@@ -71,4 +41,81 @@ ResponderArray {
 	
 }
 
+NoteOnResponder : MIDIResponder {
+	*new { arg function;
+		^super.new.function_(function).init
+	}
+	*init {
+		if(MIDIClient.initialized.not,{ MIDIIn.connect });
+		initialized = true;
+		responders = [];
+		MIDIIn.noteOn = { arg src, chan, num, veloc;
+			responders.do({ arg r;
+				r.function.value(num,veloc);
+			});
+		}
+	}
+	value { arg note,veloc;
+		function.value(note,veloc)
+	}
+	*add { arg resp;
+		responders = responders.add(resp);
+	}
+	*remove { arg resp;
+		responders.remove(resp);
+	}		
+}
+
+NoteOffResponder : NoteOnResponder {
+
+	*init {
+		if(MIDIClient.initialized.not,{ MIDIIn.connect });
+		initialized = true;
+		responders = [];
+		MIDIIn.noteOff = { arg src, chan, num, veloc;
+			responders.do({ arg r;
+				r.function.value(num,veloc);
+			});
+		}
+	}
+}
+
+CCResponder : MIDIResponder {
+	var <>num;
+	
+	*new { arg num,function;
+		^super.new.num_(num).function_(function).init
+	}
+	value { arg val;
+		function.value(val)
+	}
+	*add { arg resp;
+		var old;
+		old = responders.at(resp.num);
+		if(old.isNil,{
+			responders.put(resp.num,resp);
+		},{
+			if(old.isKindOf(ResponderArray).not,{
+				responders.put(resp.num,ResponderArray.new.add(old).add(resp))
+			},{
+				old.add(resp)
+			})
+		})
+	}
+	*init {
+		if(MIDIClient.initialized.not,{ MIDIIn.connect });
+		initialized = true;
+		responders = Array.newClear(127);
+		MIDIIn.control = { arg src,chan,num,val;
+			responders.at(num).value(val);
+		};
+	}
+}
+
+
+/*
+TouchResponder
+BendResponder
+PolyTouchResponder
+*/
 

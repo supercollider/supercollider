@@ -153,6 +153,7 @@ BufferProxySpec : ScalarSpec {
 		 IdentityDictionary[
 			\buffer -> this.new( BufferProxy(44100,2) ),
 			\bufferProxy -> this.new( BufferProxy(44100,2) )
+			//\bufnum -> this.new( BufferProxy(44100,2) )
 		];
 		)
 	}

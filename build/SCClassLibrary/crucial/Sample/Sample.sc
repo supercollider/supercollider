@@ -167,7 +167,7 @@ Sample : BufferProxy { // a small sound loaded from disk
 			},{
 				//discard
 				buffer.free;
-				buffer = Buffer.read(this.server,this.soundFilePath,startFrame);
+				buffer = Buffer.read(buffer.server,this.soundFilePath,startFrame);
 			});
 		});// else wait till prepare
 	}
