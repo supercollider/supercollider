@@ -359,10 +359,7 @@ Object {
 	getLayoutSize { ^LayoutSize.new }
 	layout {}
 
-	inspect { 
-		if (this.canInspect, { this.inspectorClass.new(this) }) 
-	}
-	canInspect { ^true }
+	inspect { ^this.inspectorClass.new(this) }
 	inspectorClass { ^ObjectInspector }
 	inspector { 
 		// finds the inspector for this object, if any.

@@ -6,23 +6,28 @@ Inspector {
 	
 	*new { arg object;
 		var inspector;
-		inspector = this.inspectorFor(object);
-		if (inspector.isNil, { 
-			inspector = super.newCopyArgs(object).init
-		});
+		inspector = this.inspectorFor(object) ?? {
+			super.newCopyArgs(object).init
+		};
 		inspector.window.front; 
 		^inspector 
 	}
+	*initClass { allInspectors = []; }
 	*inspectorFor { arg object;
-		var inspector;
-		allInspectors.notNil.if({
-			inspector = allInspectors.detect({ arg item;
+		^allInspectors.detect({ arg item;
 				item.object === object
-			});
 		});
-		^inspector
 	}
-	closed {
+	init {		
+		allInspectors = allInspectors.add(this);		
+		this.makeWindow;
+		vpos = 4;
+		this.makeHead;
+		this.makeBody;
+		window.refresh;
+	}
+
+	didClose {
 		allInspectors.remove(this);
 	}
 	lineHeight { ^20 }
@@ -32,9 +37,13 @@ Inspector {
 		bounds = Rect(80, 80, 376, this.lineHeight * (this.numLines + 1) + 16);
 
 		window = SCWindow(object.class.name.asString ++ " inspector", bounds);
-		window.onClose = Message(this, \closed);
+		window.onClose = Message(this, \didClose);
 	}
+	//numLines{^0}
+	//makeHead{}
+	//makeBody {}
 }
+
 
 ObjectInspector : Inspector {
 	
@@ -42,15 +51,6 @@ ObjectInspector : Inspector {
 	
 	numLines {
 		^min(30, object.slotSize); // don't display too many lines
-	}
-	
-	init {		
-		allInspectors = allInspectors.add(this);		
-		this.makeWindow;
-		vpos = 4;
-		this.makeHead;
-		this.makeBody;
-		window.refresh;
 	}
 	
 	makeHead {
@@ -80,6 +80,7 @@ ObjectInspector : Inspector {
 			);			
 			vpos = vpos + this.lineHeight;
 		});
+		// ... link to rest, or scroll view
 	}
 	
 	update {
@@ -192,7 +193,6 @@ SlotInspector {
 		slotKeyView = SCStaticText(w, Rect(8, vpos, 110, this.buttonHeight));
 		slotKeyView.align = \right;
 		slotKeyView.font = Font("Helvetica", 12);
-		//slotKeyView.background = Color.grey(0.85);
 		
 		if (key.isKindOf(Symbol), {
 			hasGetter = class.findRespondingMethodFor(key).notNil;
@@ -226,14 +226,14 @@ SlotInspector {
 		inspectButton.states = [["I"]];
 		inspectButton.action = Message(this, \inspectSlot);
 		inspectButton.resize = 3;
-		inspectButton.visible = object.slotAt(index).canInspect;
+		//inspectButton.visible = true; //object.slotAt(index).canInspect;
 		this.update;
 	}
 	update {
 		key = object.slotKey(index);
 		slotKeyView.string = key;
 		slotValueView.object = object.slotAt(index);
-		inspectButton.visible = object.slotAt(index).canInspect;
+		//inspectButton.visible = true; //object.slotAt(index).canInspect;
 	}
 	inspectSlot {
 		object.slotAt(index).inspect;
@@ -248,6 +248,21 @@ SlotInspector {
 	}
 	lineHeight { ^20 }
 	buttonHeight { ^this.lineHeight - 4 }
+}
+
+FrameInspector : Inspector {
+	
+	numLines{^0}
+	makeHead {
+		var view;
+		view = SCButton(window, Rect(8, vpos, 128, this.buttonHeight));
+		view.states = [[object.class.name]];
+		view.action = Message(object.class, \inspect);
+				
+		vpos = vpos + this.lineHeight;
+	}
+	makeBody {}
+
 }
 
 

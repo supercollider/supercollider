@@ -334,7 +334,7 @@ Frame {
 	// dangerous to allow access to them. Dangling pointers
 	// could result.
 	shallowCopy { ^this }
-	canInspect { ^false }
+	inspectorClass { ^FrameInspector }
 }
 
 DebugFrame {
