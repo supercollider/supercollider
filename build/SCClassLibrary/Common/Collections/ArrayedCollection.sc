@@ -246,12 +246,12 @@ ArrayedCollection : SequenceableCollection {
 		var lo, hi, scale, pt;
 		lo = this.minItem; 
 		hi = this.maxItem;
-		scale = 72 / (hi - lo);
-		this.size.do({ arg i;
-			pt = ((this.at(i) - lo) * scale).asInteger;
+		scale = 80 / (hi - lo);
+		this.size.do { |i|
+			pt = ((this[i] - lo) * scale).asInteger;
 			pt.do({ " ".post; });
 			"*\n".post;
-		});
+		};
 	}
 }
 
