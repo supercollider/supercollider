@@ -5,6 +5,7 @@ Nil {
 	notNil { ^false }
 	? { arg obj; ^obj }
 	?? { arg obj; ^obj.value }
+	!? {}
 	
 	// support a nil Environment
 	push { arg function; ^function.value }

@@ -154,6 +154,8 @@ Object {
 	// testing
 	? { arg obj; ^this }
 	?? { arg obj; ^this }
+	!? { arg obj; ^obj.value }
+	
 	isNil { ^false }
 	notNil { ^true }
 	isNumber { ^false }
@@ -383,15 +385,15 @@ Object {
 	dumpDetailedBackTrace { _DumpDetailedBackTrace }
 	
 	// archiving
-	writeArchive { arg pathname;
+	writeBinaryArchive { arg pathname;
 		_WriteArchive
 		^this.primitiveFailed;
 	}
-	*readArchive { arg pathname;
+	*readBinaryArchive { arg pathname;
 		_ReadArchive
 		^this.primitiveFailed;
 	}
-	asArchive {
+	asBinaryArchive {
 		_AsArchive
 		^this.primitiveFailed;
 	}
@@ -588,13 +590,23 @@ Object {
 	}
 	
 	//////////// ARCHIVING ////////////
-	
+
+	writeArchive { arg pathname;
+		^this.writeTextArchive(pathname)
+	}
+	*readArchive { arg pathname;
+		^this.readTextArchive(pathname)
+	}
+	asArchive {
+		^this.asTextArchive;
+	}
+		
 	initFromArchive {}
 
 	archiveAsCompileString { ^false }
 	archiveAsObject { ^this.archiveAsCompileString.not }
 	checkCanArchive {}
-	
+
 	// archiving
 	writeTextArchive { arg pathname;
 		var file, text;
