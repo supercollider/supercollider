@@ -1,10 +1,11 @@
 
 NodeProxy : AbstractFunction {
 
+
 	var <server, <group, <outbus; 		//server access, the group that has the inner synths
 	var <objects, <parents; 			//playing templates
-	
 	var <nodeMap, <>lags, <>prepend, <>clock; //lags might go into function annotation later
+
 	var <>freeSelf=true, <loaded=false;	//synthDef information
 	var <playGroup;					//the group that has the user output synth
 	
@@ -83,16 +84,15 @@ NodeProxy : AbstractFunction {
 	}	
 		
 	play { arg busIndex=0, nChan;
-		var bundle, divider, checkedAlready;
+		var bundle, divider;
 		if(server.serverRunning, {
-			bundle = MixedBundle.new;
+			bundle = DebugBundle.new;
 			if(playGroup.isPlaying.not, { playGroup = Group.newToBundle(bundle, server) });
 			if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
 			nChan = nChan ? this.numChannels;
 			nChan = nChan.min(this.numChannels);
 		
-			checkedAlready = Set.new;
-			this.wakeUpToBundle(bundle, checkedAlready);
+			this.wakeUpToBundle(bundle);
 	
 			divider = if(nChan.even, 2, 1);
 			(nChan div: divider).do({ arg i;
@@ -109,20 +109,13 @@ NodeProxy : AbstractFunction {
 	
 	record { arg path, headerFormat="aiff", sampleFormat="int16", numChannels;
 		var rec;
-		rec = RecNodeProxy.newFrom(this, numChannels, {
-					//rec.record(path, headerFormat, sampleFormat);
-		});
-		
-		Routine({
-			1.0.wait;//seemingly must wait.
-			rec.record(path, headerFormat, sampleFormat);
-		}).play;
-		
+		rec= RecNodeProxy.newFrom(this, numChannels);
+		rec.open(	path, headerFormat, sampleFormat);
 		^rec
 	}
 	
 	
-	
+	///// access
 		
 	rate { ^outbus.tryPerform(\rate) }
 	numChannels { ^outbus.tryPerform(\numChannels) }
@@ -176,12 +169,12 @@ NodeProxy : AbstractFunction {
 				
 				if(container.notNil, {
 					objects = objects.add(container);
-					
-					AppClock.sched(0, { container.writeDef }); //so it is there on server reboot
+					//container.writeDef;
+					AppClock.sched(0, { container.writeDef; nil }); //so it is there on server reboot
 					if(server.serverRunning, {
-						container.sendDefToBundle(bundle); //this should go one down later
 						if(this.isPlaying, {
-						
+							container.sendDefToBundle(bundle); 
+
 						if(send, { 
 							if(freeAll, {
 								this.sendToServer(bundle,  nil, onCompletion)
@@ -325,16 +318,14 @@ NodeProxy : AbstractFunction {
 	/////////////////////////////////////////////
 	
 	send { arg extraArgs;
-			//latency is 0, def is on server
 			var bundle;
-			bundle = MixedBundle.new.preparationTime_(0);
+			bundle = MixedBundle.new.preparationTime_(0); //latency is 0, def is on server
 			this.sendLastToServer(bundle, extraArgs);
 	}
 	
 	sendAll { arg extraArgs;
-			//latency is 0, def is on server
 			var bundle;
-			bundle = MixedBundle.new.preparationTime_(0);
+			bundle = MixedBundle.new.preparationTime_(0); //latency is 0, def is on server
 			this.sendToServer(bundle, extraArgs);
 	}
 	
@@ -382,7 +373,7 @@ NodeProxy : AbstractFunction {
 				objects.do({ arg item;
 						item.playToBundle(bundle, extraArgs, group);
 				});
-				nodeMap.addToBundle(bundle, group);
+				if(objects.notEmpty, { nodeMap.addToBundle(bundle, group) });
 	}
 	
 	sendLastToBundle { arg bundle, extraArgs;
@@ -428,7 +419,7 @@ NodeProxy : AbstractFunction {
 	initBus { arg rate, numChannels;
 				if((rate === 'scalar') || rate.isNil, { ^true }); //this is no problem
 				if(outbus.isNil, {
-					this.allocBus(rate,numChannels);
+					this.allocBus(rate, numChannels);
 					^true
 				}, {
 					^(outbus.rate === rate) && (numChannels <= outbus.numChannels)
@@ -444,7 +435,7 @@ NodeProxy : AbstractFunction {
 		n = outbus.numChannels;
 		out = if(this.rate === 'audio', 
 				{ InFeedback.ar( outbus.index, n) },
-				{ In.kr( outbus.index, n) }
+				{ In.kr( outbus.index, n ) }
 			);
 	
 		//test that
@@ -463,7 +454,8 @@ NodeProxy : AbstractFunction {
 		^(parentProxy.isPlaying || parentProxy.isNil);
 	}
 	
-	wakeUpToBundle { arg bundle, checkedAlready; //no need to wait, def is on server
+	wakeUpToBundle { arg bundle, checkedAlready;
+		if(checkedAlready.isNil, { checkedAlready = Set.new });
 		if(this.isPlaying.not && checkedAlready.includes(this).not, {
 			checkedAlready.add(this); 
 			this.loadToBundle(bundle);
