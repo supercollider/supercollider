@@ -209,7 +209,11 @@ Object {
 	dumpBackTrace { _DumpBackTrace }
 	getBackTrace { _GetBackTrace }
 	throw {
-		if (Error.handling) { error("throw during error handling!\n"); ^this };
+		if (Error.handling) { 
+			error("throw during error handling!\n");
+			this.dump;
+			^this
+		};
 		thisThread.exceptionHandler.handleError(this);
 	}
 	
@@ -306,7 +310,7 @@ Object {
 	// dependancy support
 	*initClass { dependantsDictionary = IdentityDictionary.new(4); }
 	dependants {
-		^dependantsDictionary.atFail(this, { ^IdentitySet.new });
+		^dependantsDictionary.at(this) ?? { ^IdentitySet.new };
 	}
 	changed { arg theChanger;
 		dependantsDictionary.at(this).do({ arg item;
