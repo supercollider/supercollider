@@ -356,21 +356,17 @@ int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot* currentEnvironmentSlot = g->classvars[class_object->classIndex.ui].uo->slots + 1;
 	PyrObject *dict = currentEnvironmentSlot->uo;
 
-	if (!IsObj(currentEnvironmentSlot)) {
-Bail:
-		SetNil(a);
-		return errNone;
-	}
+	if (!IsObj(currentEnvironmentSlot)) return errFailed;
 
-	if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) goto Bail;
+	if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) return errFailed;
 
 	PyrSlot *arraySlot = dict->slots + ivxIdentDict_array;
 	
-	if (!IsObj(arraySlot)) goto Bail;
+	if (!IsObj(arraySlot)) return errFailed;
 	
 	PyrObject *array = arraySlot->uo;
 	
-	if (!ISKINDOF(array, class_array_index, class_array_maxsubclassindex)) goto Bail;
+	if (!ISKINDOF(array, class_array_index, class_array_maxsubclassindex)) return errFailed;
 	
 	index = arrayAtIdentityHashInPairs(array, a);
 	a->ucopy = array->slots[index + 1].ucopy;
@@ -392,13 +388,9 @@ int prSymbol_envirPut(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot* currentEnvironmentSlot = g->classvars[class_object->classIndex.ui].uo->slots + 1;
 	PyrObject *dict = currentEnvironmentSlot->uo;
 
-	if (!IsObj(currentEnvironmentSlot)) {
-Bail:
-		SetNil(a);
-		return errNone;
-	}
+	if (!IsObj(currentEnvironmentSlot)) return errFailed;
 
-	if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) goto Bail;
+	if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) return errFailed;
 	
 	int err = identDictPut(g, dict, a, b);
 	if (err) return err;
