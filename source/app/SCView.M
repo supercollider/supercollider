@@ -2685,7 +2685,7 @@ void SCMultiSliderView::draw(SCRect inDamage)
                 selsize = mSelectionSize;
             }
             if(mIsHorizontal){
-                drawRect = CGRectMake(mBounds.x + 1 + (currentI * ( mXOffset + mThumbSize)), mBounds.y + 1, selsize * ( mXOffset + mThumbSize), mBounds.height);
+                drawRect = CGRectMake(mBounds.x + 1 + (currentI * ( mXOffset + mThumbSize)), mBounds.y + 1, (selsize * ( mXOffset + mThumbSize)) - mXOffset, mBounds.height);
             } else {
                 drawRect = CGRectMake( mBounds.x + 1, mBounds.y + 1 + (currentI * ( mXOffset + mThumbSize)), mBounds.width, selsize * ( mXOffset + mThumbSize));
             }
