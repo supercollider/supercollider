@@ -14,27 +14,6 @@ UnixFILE : IOStream {
 	isOpen {
 		^fileptr.notNil
 	}
-	length { // returns the length of the file
-		_FileLength;
-		^this.primitiveFailed;
-	}		
-	pos { // current file position
-		_FilePos 
-		^this.primitiveFailed;
-	}
-	seek { arg offset, origin; 
-		// origin is an integer, one of: 
-		// 0 - from beginning of file
-		// 1 - from current position
-		// 2 - from end of file
-		
-		_FileSeek
-		^this.primitiveFailed;
-	}
-	pos_ { arg toPos;
-		toPos = toPos.clip(0, this.length - 1);
-		this.seek(toPos, 0);
-	}
 	
 	next { ^this.getChar }
 	nextN { arg n;
@@ -73,17 +52,12 @@ UnixFILE : IOStream {
 		_FileReadRaw;
 		^this.primitiveFailed;
 	}
-	readAllString {
-		var string;
-		string = String.newClear(this.length);
-		this.read(string);
-		^string
-	}
 	
 	getLine { arg maxSize=1024;
 		var string;
 		string = String.newClear(maxSize);
-		this.prGetLine(string);
+		string = this.prGetLine(string);
+		if (string.isNil, { ^nil });
 		if(string.at(string.size - 1) == $\n,{
 			^string.copyRange(0,string.size - 2)
 		},{
@@ -184,9 +158,33 @@ File : UnixFILE {
 		this.prClose;
 		openFiles.remove(this);
 	}
-	prClose {
-		_FileClose 
+	length { // returns the length of the file
+		_FileLength;
 		^this.primitiveFailed;
+	}		
+	pos { // current file position
+		_FilePos 
+		^this.primitiveFailed;
+	}
+	pos_ { arg toPos;
+		toPos = toPos.clip(0, this.length - 1);
+		this.seek(toPos, 0);
+	}
+	seek { arg offset, origin; 
+		// origin is an integer, one of: 
+		// 0 - from beginning of file
+		// 1 - from current position
+		// 2 - from end of file
+		
+		_FileSeek
+		^this.primitiveFailed;
+	}
+
+	readAllString {
+		var string;
+		string = String.newClear(this.length);
+		this.read(string);
+		^string
 	}
 	
 	// PRIVATE
@@ -197,6 +195,10 @@ File : UnixFILE {
 			"rb+","wb+","ab+" 
 		*/
 		_FileOpen 
+		^this.primitiveFailed;
+	}
+	prClose {
+		_FileClose 
 		^this.primitiveFailed;
 	}
 

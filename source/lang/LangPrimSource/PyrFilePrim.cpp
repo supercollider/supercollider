@@ -245,8 +245,13 @@ int prFileReadLine(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
 	
-	fgets(b->uos->s, MAXINDEXSIZE(b->uo) - 1, file);
-	b->uos->size = strlen(b->uos->s);
+	char* result = fgets(b->uos->s, MAXINDEXSIZE(b->uo) - 1, file);
+	if (!result) {
+		SetNil(a);
+	} else {
+		b->uos->size = strlen(b->uos->s);
+		a->ucopy = b->ucopy;
+	}
 	return errNone;
 }
 
@@ -416,7 +421,8 @@ int prFileGetDouble(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
 	
-	fread(&a->uf, sizeof(double), 1, file);
+	int count = fread(&a->uf, sizeof(double), 1, file);
+	if (count==0) SetNil(a);
 	return errNone;
 }
 
@@ -433,8 +439,9 @@ int prFileGetFloat(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
 	
-	fread(&z, sizeof(float), 1, file);
-	SetFloat(a, z);
+	int count = fread(&z, sizeof(float), 1, file);
+	if (count==0) SetNil(a);
+	else SetFloat(a, z);
 	return errNone;
 }
 
@@ -451,8 +458,9 @@ int prFileGetChar(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
 	
-	fread(&z, sizeof(char), 1, file);
-	SetChar(a, z);
+	int count = fread(&z, sizeof(char), 1, file);
+	if (count==0) SetNil(a);
+	else SetChar(a, z);
 	return errNone;
 }
 
@@ -469,8 +477,9 @@ int prFileGetInt8(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
 	
-	fread(&z, sizeof(char), 1, file);
-	SetInt(a, z);
+	int count = fread(&z, sizeof(char), 1, file);
+	if (count==0) SetNil(a);
+	else SetInt(a, z);
 	return errNone;
 }
 
@@ -487,8 +496,9 @@ int prFileGetInt16(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
 	
-	fread(&z, sizeof(short), 1, file);
-	SetInt(a, z);
+	int count = fread(&z, sizeof(short), 1, file);
+	if (count==0) SetNil(a);
+	else SetInt(a, z);
 	return errNone;
 }
 
@@ -504,8 +514,9 @@ int prFileGetInt32(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
 	
-	fread(&a->ui, sizeof(int), 1, file);
-	a->utag = tagInt;
+	int count = fread(&a->ui, sizeof(int), 1, file);
+	if (count==0) SetNil(a);
+	else a->utag = tagInt;
 	return errNone;
 }
 
@@ -525,7 +536,8 @@ int prFileReadRaw(struct VMGlobals *g, int numArgsPushed)
 	if (file == NULL) return errFailed;
 		
 	b->uo->size = fread(b->uos->s, gFormatElemSize[b->uo->obj_format], b->uo->size, file);
-	a->ucopy = b->ucopy;
+	if (b->uo->size==0) SetNil(a);
+	else a->ucopy = b->ucopy;
 	return errNone;
 }
 
@@ -548,7 +560,6 @@ int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
 int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
-	char filename[PATH_MAX];
 	char mode[12];
 	PyrFile *pfile;
 	FILE *file;
@@ -570,7 +581,7 @@ int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 	memcpy(mode, c->uos->s, c->uo->size);
 	mode[c->uos->size] = 0;
 	
-	file = popen(filename, mode);
+	file = popen(commandLine, mode);
         free(commandLine);
 	if (file) {
 		SetPtr(&pfile->fileptr, file);
@@ -593,7 +604,9 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errNone;
 	SetPtr(&pfile->fileptr, NULL);
-	if (pclose(file)) return errFailed;
+	if (pclose(file)) {
+		return errFailed;
+	}
 	return errNone;
 }
 
