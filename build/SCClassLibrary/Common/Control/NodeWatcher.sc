@@ -104,7 +104,7 @@ NodeWatcher : BasicNodeWatcher {
 		var res;
 		res = all.at(server.name);
 		if(res.isNil, {
-			res = NodeWatcher.new(server);
+			res = this.new(server);		// better OOP style anyway
 			res.start;
 			all.put(server.name, res) 
 		});
@@ -162,6 +162,7 @@ NodeWatcher : BasicNodeWatcher {
 	
 		node.isPlaying = true;
 		node.isRunning = true;
+		node.changed(\n_go);  // notify all the node's dependents of the change
 		
 	}
 	
@@ -171,16 +172,19 @@ NodeWatcher : BasicNodeWatcher {
 		this.unregister(node);
 		node.isPlaying = false;
 		node.isRunning = false;
+		node.changed(\n_end);
 	}
 
 	n_off { arg node;
 		
 		node.isRunning = false;
+		node.changed(\n_off);
 	}	
 
 	n_on { arg node;
 		
 		node.isRunning = true;
+		node.changed(\n_on);
 	}
 	
 	
