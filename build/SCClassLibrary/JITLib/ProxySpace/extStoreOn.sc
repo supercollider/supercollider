@@ -55,7 +55,7 @@
 	storeOn { arg stream, keys;
 		var proxies, hasGlobalClock;
 		hasGlobalClock = clock.isKindOf(TempoBusClock);
-		if(hasGlobalClock) { stream << "p.makeTempoClock(" << clock.tempo << ");"; stream.nl.nl };
+		if(hasGlobalClock) { stream << "p.makeTempoClock(" << clock.tempo << ");\n\n"; };
 		// find keys for all parents
 		if(keys.notNil) {
 			proxies = IdentitySet.new;
@@ -68,8 +68,8 @@
 		keys.do { arg key; 
 			var proxy, str, multiline;
 			proxy = envir.at(key);
-			if(proxy.objects.size == 1) {
-				str = proxy[0].source.asCompileString ? "";
+			if(proxy.objects.size == 1 and: { proxy.objects.indices.first == 0 }) {
+				str = proxy.source.asCompileString ? "";
 				multiline = str.includes(Char.nl);
 				if(multiline){ stream << "(" << Char.nl };
 				stream << "~" << key << " = ";
@@ -95,14 +95,16 @@
 			stream.nl;
 		}
 	}
-	
-	document { arg keys; // use -1 as flag so only audible content is documented.
+	documentOutput {
+		^this.document(nil, true)
+	}
+	document { arg keys, onlyOutput=false; // if true only audible content is documented.
 		var str;
-		if(keys == -1) {
+		if(onlyOutput) {
 			keys = this.monitors.collect { arg item; item.key(envir) };
 		};
 		str = String.streamContents({ arg stream; 
-			stream << "p = ProxySpace.new(s).push;";
+			stream << "// ( p = ProxySpace.new(s).push; )";
 			stream.nl.nl;
 			this.storeOn(stream, keys); 
 		});
@@ -113,7 +115,7 @@
 
 + ProxyNodeMap {
 	storeOn { arg stream, namestring="", dropOut=false, envir;
-			var strippedSetArgs, rates, proxyMapKeys;
+			var strippedSetArgs, storedSetNArgs, rates, proxyMapKeys, proxyMapNKeys;
 			this.updateBundle;
 			if(dropOut) { 
 				forBy(0, setArgs.size - 1, 2, { arg i; 
@@ -129,24 +131,39 @@
 			if(strippedSetArgs.notNil) {
 				stream << namestring << ".set(" <<<* strippedSetArgs << ");" << Char.nl;
 			};
-			if(mapArgs.notNil && envir.notNil) {
+			if(mapArgs.notNil or: { mapnArgs.notNil } and: { envir.notNil }) {
 				settings.keysValuesDo { arg key, s; 
 					var proxyKey;
-					if(s.bus.notNil) { 
-						proxyKey = s.bus.key;
+					if(s.isMapped) { 
+						proxyKey = s.value.key;
 						if(proxyKey.notNil) {
-							proxyMapKeys = proxyMapKeys.add("'" ++ key ++ "'"); 
-							proxyMapKeys = proxyMapKeys.add("~" ++ proxyKey);
+							if(s.isMultiChannel) {
+								proxyMapNKeys = proxyMapNKeys.add("'" ++ key ++ "'"); 
+								proxyMapNKeys = proxyMapNKeys.add("~" ++ proxyKey);
+							}{
+								proxyMapKeys = proxyMapKeys.add("'" ++ key ++ "'"); 
+								proxyMapKeys = proxyMapKeys.add("~" ++ proxyKey);
+							}
 						};
 					};
 				};
 				if(proxyMapKeys.notNil) {
 					stream << namestring << ".map(" <<* proxyMapKeys << ");" << Char.nl;
 				};
+				if(proxyMapNKeys.notNil) {
+					stream << namestring << ".mapn(" <<* proxyMapNKeys << ");" << Char.nl;
+				};
 			};
 	
 			if(setnArgs.notNil) {
-				stream << namestring << ".setn(" <<<* setnArgs << ");" << Char.nl;
+				storedSetNArgs = Array.new;
+				settings.keysValuesDo { arg key, s;
+					if(s.isMapped.not and: s.isMultiChannel) {
+						storedSetNArgs = storedSetNArgs.add(key);
+						storedSetNArgs = storedSetNArgs.add(s.value);
+					}
+				};
+				stream << namestring << ".setn(" <<<* storedSetNArgs << ");" << Char.nl;
 			};
 			settings.keysValuesDo { arg key, s;
 				if(s.rate.notNil) { rates = rates.add(key); rates = rates.add(s.rate) };
