@@ -2570,6 +2570,7 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
     }
     if (strcmp(name, "startIndex")==0) {
         err = slotIntVal(slot, &mStartIndex);
+		SetVisibleSize()
         refresh();
         return errNone;
     }
