@@ -127,11 +127,6 @@ struct PyrInt8Array : public PyrObjectHdr
 	uint8 b[1];
 };
 
-struct PyrRGBArray : public PyrObjectHdr 
-{
-	RGBColor8 r[1];
-};
-
 struct PyrString : public PyrObjectHdr 
 {
 	char s[1];

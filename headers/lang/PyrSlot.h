@@ -62,10 +62,6 @@ enum {
 #endif
 };
 
-struct RGBColor8 {
-	unsigned char c[4];
-};
-
 typedef union pyrslot {
 	double f;
 	struct {
@@ -77,7 +73,6 @@ typedef union pyrslot {
 			int i;
 			float f;
 			void *ptr;
-			struct RGBColor8 r;
 			struct PyrObject *o;
 			PyrSymbol *s;
 			struct PyrMethod *om;
@@ -113,8 +108,6 @@ typedef union pyrslot {
 #define uo s.u.o
 //PyrSymbol
 #define us s.u.s
-//RGBColor8
-#define ur s.u.r
 #define uc s.u.c
 #define uoc s.u.oc
 #define uof s.u.of
