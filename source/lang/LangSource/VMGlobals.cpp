@@ -25,7 +25,7 @@ VMGlobals::VMGlobals()
 	: allocPool(0), process(0), gc(0), classvars(0),
 	canCallOS(false),
 	thread(0), method(0), block(0), frame(0), primitiveMethod(0),
-	ip(0), sp(0), numpop(0), returnLevels(0), processID(0), 
+	ip(0), sp(0), numpop(0), returnLevels(0), 
 	primitiveIndex(0),
 	execMethod(0)
 {

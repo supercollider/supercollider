@@ -42,9 +42,6 @@ Each virtual machine has a copy of VMGlobals, which contains the state of the vi
 	so tail call optimization is turned off for now.
 */
 
-const int kNumProcesses = 1;
-const int kMainProcessID = 0;
-
 typedef void (*FifoMsgFunc)(struct VMGlobals*, struct FifoMsg*);
 
 struct FifoMsg {
@@ -84,7 +81,6 @@ struct VMGlobals {
 	PyrSlot result;
 	int numpop; // number of args to pop for primitive
 	long returnLevels;
-	long processID;
 	long primitiveIndex;
 	RGen *rgen;
 	
@@ -102,7 +98,7 @@ inline void FifoMsg::Free(struct VMGlobals* g)
 		g->allocPool->Free(dataPtr);
 	}
 
-extern VMGlobals gVMGlobals[kNumProcesses];
+extern VMGlobals gVMGlobals;
 extern VMGlobals *gMainVMGlobals;
 extern VMGlobals *gCompilingVMGlobals;
 #endif

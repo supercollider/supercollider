@@ -236,7 +236,6 @@ PyrGC::PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long p
 	mWhiteColor = 1<<2;
 	mFreeColor = 0;
 	
-	mProcessID = g->processID;
 	mRunning = false;
 
 	mCanSweep = false;
@@ -712,11 +711,11 @@ void PyrGC::Collect()
 #endif
 
 	if (mNumToScan > 0) {
-		//post("->Collect pid %d  ns %d  ng %d  s %d\n", mProcessID, mNumToScan, mNumGrey, mScans);
+		//post("->Collect  ns %d  ng %d  s %d\n", mNumToScan, mNumGrey, mScans);
 		//DumpInfo();
 		mNumToScan += mNumToScan >> 3;
 
-		//post("->Collect2 pid %d  ns %d  ng %d  s %d\n", mProcessID, mNumToScan, mNumGrey, mScans);
+		//post("->Collect2  ns %d  ng %d  s %d\n", mNumToScan, mNumGrey, mScans);
 		//mCurSet = 0;
 		while (mNumToScan > 0) {
 			while (mNumToScan > 0 && (mNumGrey > 0 || mPartialScanObj)) {
@@ -739,7 +738,7 @@ void PyrGC::Collect()
 				}
 			}
 		}
-		//post("<-Collect pid %d  ns %d  ng %d  s %d\n", mProcessID, mNumToScan, mNumGrey, mScans);
+		//post("<-Collect  ns %d  ng %d  s %d\n", mNumToScan, mNumGrey, mScans);
 		//DumpInfo();
 		//post("size9:\n");
 		//TraceAnyPathToObjsOfSize(9);

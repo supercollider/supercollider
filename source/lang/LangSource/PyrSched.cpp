@@ -378,6 +378,7 @@ void* resyncThread(void* arg)
 		syncOSCOffsetWithTimeOfDay();
 		gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
 	}
+	return 0;
 }
 #endif
 
@@ -406,7 +407,7 @@ void* schedRunFunc(void* arg)
 		
 		// wait until an event is ready
 		double elapsed;
-		while (inQueue->size > 0) {
+		do {
 			elapsed = elapsedTime();
 			if (elapsed >= inQueue->slots->uf) break;
 			struct timespec abstime;
@@ -416,7 +417,7 @@ void* schedRunFunc(void* arg)
 			pthread_cond_timedwait (&gSchedCond, &gLangMutex, &abstime);
 			if (!gRunSched) goto leave;
 			//postfl("time diff %g\n", elapsedTime() - inQueue->slots->uf);
-		}
+		} while (inQueue->size > 0);
 		
 		//postfl("perform all events that are ready %d %.9f\n", inQueue->size, elapsed);
 		
@@ -832,7 +833,7 @@ void* TempoClock::Run()
 		
 		// wait until an event is ready
 		double elapsedBeats;
-		while (mQueue->size > 0) {
+		do {
 			elapsedBeats = ElapsedBeats();
 			if (elapsedBeats >= mQueue->slots->uf) break;
 			struct timespec abstime;
@@ -845,7 +846,7 @@ void* TempoClock::Run()
 			//printf("mRun b %d\n", mRun);
 			if (!mRun) goto leave;
 			//printf("time diff %g\n", elapsedTime() - mQueue->slots->uf);
-		}
+		} while (mQueue->size > 0);
 		//printf("perform all events that are ready %d %.9f\n", mQueue->size, elapsedBeats);
 		
 		// perform all events that are ready

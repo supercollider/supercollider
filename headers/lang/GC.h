@@ -76,9 +76,7 @@ public:
 						long inFlags, long inFormat);
 
 	PyrObject* NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, bool inCollect);
-	
-	int32 ProcessID() { return mProcessID; }
-		
+			
 #if 0	
 // Codewarrior is not inlining these.. why?
 	bool IsBlack(PyrObjectHdr* inObj) { return inObj->gc_color == mBlackColor; }
@@ -207,7 +205,6 @@ private:
 	int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned;
 	
 	unsigned char mBlackColor, mGreyColor, mWhiteColor, mFreeColor;
-	int8 mProcessID;
 	bool mCanSweep;
 	bool mRunning;
 };

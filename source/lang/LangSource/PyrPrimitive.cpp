@@ -2182,11 +2182,6 @@ int prDeepFreeze(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	
-	if (g->processID != 0) {
-		error("Permanent objects may only be created from the non real time virtual machine.\n");
-		return errFailed;
-	}
-
 	a = g->sp;
 	PyrDeepFreezer freezer(g);
 	int err = freezer.doDeepFreeze(a);
@@ -2199,11 +2194,6 @@ int prDeepCopy(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	
-	if (g->processID != 0) {
-		error("Permanent objects may only be created from the non real time virtual machine.\n");
-		return errFailed;
-	}
-
 	a = g->sp;	
 	PyrDeepCopier copier(g);
 	int err = copier.doDeepCopy(a);
@@ -2212,11 +2202,6 @@ int prDeepCopy(struct VMGlobals *g, int numArgsPushed)
 
 
 
-
-struct RemoteMsg { 
-	int32 processID, numSlots;
-	PyrSlot slots[32];
-};
 
 bool IsSimpleLiteralSlot(PyrSlot* slot);
 bool IsSimpleLiteralSlot(PyrSlot* slot)

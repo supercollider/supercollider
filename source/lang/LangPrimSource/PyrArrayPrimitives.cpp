@@ -198,6 +198,7 @@ int basicRemoveAt(struct VMGlobals *g, int numArgsPushed)
 
 	if (index < 0 || index >= obj->size) return errIndexOutOfRange;
 	switch (obj->obj_format) {
+		default :
 		case obj_slot :
 		case obj_double :
 			ptr = obj->slots + index;	

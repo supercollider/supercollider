@@ -1898,9 +1898,6 @@ void initPassOne()
 	//gFileSymbolTable = newSymbolTable(512);
 	
 	pyrmath_init_globs();
-	for (int i=0; i<kNumProcesses; ++i) {
-		gVMGlobals[i].processID = i;
-	}
 	
 	initSymbols(); // initialize symbol globals
 	//init_graph_compile();
@@ -2253,11 +2250,7 @@ void compileSucceeded()
 	if (compiledOK) {		
 		compiledOK = true;
 		
-		//for (int i=0; i<kNumProcesses; ++i) {
-		//	compiledOK &&= initRuntime(gVMGlobals+i, 128*1024, pyr_pool_runtime[i], i)
-		//	gVMGlobals[i].fifo.MakeEmpty();
-		//}
-		compiledOK = initRuntime(gMainVMGlobals, 128*1024, pyr_pool_runtime, kMainProcessID);
+		compiledOK = initRuntime(gMainVMGlobals, 128*1024, pyr_pool_runtime);
 			
 		if (compiledOK) { 				
 			VMGlobals *g = gMainVMGlobals;

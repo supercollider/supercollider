@@ -93,7 +93,6 @@ struct PyrProcess : public PyrObjectHdr
 	PyrSlot classVars;
 	PyrSlot interpreter;
 	PyrSlot curThread, mainThread;
-	PyrSlot processID;
 	PyrSlot sysSchedulerQueue;
 };
 

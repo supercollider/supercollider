@@ -64,8 +64,8 @@ int32 timeseed()
   return tv.tv_sec ^ tv.tv_usec;
 }
 
-VMGlobals gVMGlobals[kNumProcesses];
-VMGlobals *gMainVMGlobals = &gVMGlobals[kMainProcessID];
+VMGlobals gVMGlobals;
+VMGlobals *gMainVMGlobals = &gVMGlobals;
 
 extern PyrObject *gSynth;
 
@@ -164,9 +164,7 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 	int classIndex, numClassVars;
 	
 	proc = (PyrProcess*)instantiateObject(gc, procclassobj, 0, true, false);
-	
-	SetInt(&proc->processID, gc->ProcessID());
-	
+		
 	PyrObject *sysSchedulerQueue = newPyrArray(gc, 1024, 0, false);
 	SetObject(&proc->sysSchedulerQueue, sysSchedulerQueue);
 	
@@ -310,7 +308,7 @@ void initPatterns();
 void initThreads();
 void initGUI();
 
-bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool, int processID)
+bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 {
 	PyrClass *class_main;
 	/*
@@ -329,7 +327,6 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool, int processID)
 	
 	// create GC environment, process
 	g->allocPool = inPool;
-	g->processID = processID;
 	g->gc = (PyrGC*)g->allocPool->Alloc(sizeof(PyrGC));
 	new (g->gc) PyrGC(g, g->allocPool, class_main, poolSize);
 	g->thread = g->process->mainThread.uot;
