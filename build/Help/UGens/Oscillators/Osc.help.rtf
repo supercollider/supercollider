@@ -37,7 +37,7 @@ Osc requires the b_gen sine1 wavetable flag to be ON.\
 \f2\fs18 \cf0 \
 (\
 s = \cf2 Server\cf0 .local;\
-b = \cf2 Buffer\cf0 .new(s, 512, 1);\
+b = \cf2 Buffer\cf0 .alloc(s, 512, 1);\
 b.sine1(1.0/[1,2,3,4,5,6], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
 \cf2 SynthDef\cf0 (\cf3 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
@@ -48,7 +48,7 @@ b.sine1(1.0/[1,2,3,4,5,6], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 )\
 \
 (s = \cf2 Server\cf0 .local;\
-b = \cf2 Buffer\cf0 .new(s, 512, 1);\
+b = \cf2 Buffer\cf0 .alloc(s, 512, 1);\
 b.sine1(1.0/[1,2,3,4,5,6], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
 \cf2 SynthDef\cf0 (\cf3 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
@@ -60,7 +60,7 @@ b.sine1(1.0/[1,2,3,4,5,6], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
 \
 (s = \cf2 Server\cf0 .local;\
-b = \cf2 Buffer\cf0 .new(s, 512, 1);\
+b = \cf2 Buffer\cf0 .alloc(s, 512, 1);\
 b.sine1([1.0], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
 \cf2 SynthDef\cf0 (\cf3 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
@@ -80,7 +80,7 @@ b.sine1([1.0], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
 (\cf5 // modulate phase\
 \cf0 s = \cf2 Server\cf0 .local;\
-b = \cf2 Buffer\cf0 .new(s, 512, 1);\
+b = \cf2 Buffer\cf0 .alloc(s, 512, 1);\
 b.sine1([1.0], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
 \cf2 SynthDef\cf0 (\cf3 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\
@@ -100,7 +100,7 @@ b.sine1([1.0], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
 (\cf5 // change the buffer while its playing\
 \cf0 s = \cf2 Server\cf0 .local;\
-b = \cf2 Buffer\cf0 .new(s, 4096, 1);\
+b = \cf2 Buffer\cf0 .alloc(s, 4096, 1);\
 b.sine1(1.0/[1,2,3,4,5,6], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
 \cf2 SynthDef\cf0 (\cf3 "help-Osc"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum=0;\

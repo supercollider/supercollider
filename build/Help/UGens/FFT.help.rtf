@@ -10,9 +10,8 @@
 \f0\b\fs28 fast fourier transform
 \f1\b0\fs18 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 The fast fourier transform analyzes the frequency content of a signal. \
+\f2\fs24 The fast fourier transform analyzes the frequency content of a signal. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf2 \
@@ -31,9 +30,7 @@
 \
 s = \cf3 Server\cf0 .local;\
 \
-b = \cf3 Buffer\cf0 (s,2048,1);\
-\
-\
+b = \cf3 Buffer.alloc\cf0 (s,2048,1);\
 \
 \
 \cf3 SynthDef\cf0 (\cf4 "help-noopFFT"\cf0 , \{ \cf3 arg\cf0  out=0,bufnum=0;\
