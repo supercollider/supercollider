@@ -161,7 +161,6 @@ Object {
 	
 	// errors
 	halt { 
-		MixerPlayer.reset;
 		currentEnvironment = topEnvironment; // restore top Environment
 		CocoaDialog.clear;
 		this.prHalt 
