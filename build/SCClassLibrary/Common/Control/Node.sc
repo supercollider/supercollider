@@ -7,11 +7,9 @@ Node {
 	
 	free {  arg sendFlag=true;
 		if(sendFlag, {
-			if(isPlaying, {
 				server.sendBundle(server.latency, [11, nodeID]);  //"/n_free"
-			})
 		}, {
-			this.unregister;
+				this.unregister;
 		});
 	}
 	run { arg flag=true;
@@ -73,7 +71,7 @@ Node {
 	// bundle commands //
 	
 	convertAddAction { arg symbol;
-		^[\addToHead, \addToTail, \addBefore, \addAfter].indexOf(symbol)
+		^#[\addToHead, \addToTail, \addBefore, \addAfter].indexOf(symbol)
 	}
 	
 	getCommand { arg cmdName, argList;
@@ -88,9 +86,6 @@ Node {
 	//if they are not sent, the sclang model
 	//gets out of sync with the server.
 	
-	freeCommand { arg cmdList;
-		^cmdList.add([11, nodeID]); //"/n_free"
-	}
 	
 	moveBeforeCommand { arg  cmdList, aNode;
 		^cmdList.add([18, nodeID, aNode.nodeID]);//"/n_after"
@@ -361,12 +356,12 @@ Synth : Node {
 	}
 	//no linking, only use for self releasing nodes
 	*newUnlinked { arg defName,args,target,addAction=\addToTail;
-		var synth, cmd;
-		cmd = List.new;
-		synth = this.prNew(defName);
+		var synth, server;
 		target = target.asTarget;
-		synth.basicNewCommand(cmd, addAction, target, args);
-		target.server.sendCmdList(cmd);
+		server = target.server;
+		synth = this.prNew(defName).prSetServer(server).prSetNodeID;
+		addAction = synth.convertAddAction(addAction ?? { this.defaultAddAction });		server.sendBundle(server.latency, 
+		 [9, synth.defName, synth.nodeID, addAction, target.nodeID] ++ args??{[]});
 		^synth
 	}
 	
