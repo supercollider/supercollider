@@ -100,12 +100,13 @@ NodeMap {
 				settings.do({ arg item; item.addToBundle(bundle) });
 				bundle = bundle.reject({ arg item; item.size == 2 }); //remove unused
 				upToDate = true;
-				[bundle, \madeNewBundle].debug;
 			});
 			
-			bundle.do({ arg item;
-					item.put(1, nodeID); //the nodeID is always second in a synth message
+			bundle = bundle.collect({ arg item;
+					// nodeID is always second in a synth message
+					item = item.copy.put(1, nodeID);
 			});
+
 	}
 	
 	
@@ -121,6 +122,12 @@ NodeMap {
 		nset = res.settings; 
 		settings.keysValuesDo({ arg key, val; nset.put(key, val.copy) });
 		^res
+	}
+	
+	printOn { arg stream;
+		stream << this.class.name << "(";
+		settings.printItemsOn(stream);
+		stream << ")"
 	}
 	
 
