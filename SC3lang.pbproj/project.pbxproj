@@ -5,6 +5,40 @@
 	};
 	objectVersion = 38;
 	objects = {
+		C26BDCCC03D0B4E900A87B78 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = SCDialog.mm;
+			refType = 4;
+		};
+		C26BDCCD03D0B4E900A87B78 = {
+			fileRef = C26BDCCC03D0B4E900A87B78;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		C26BDCCE03D0B4FB00A87B78 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = SCDialog.h;
+			refType = 4;
+		};
+		C26BDCCF03D0B4FB00A87B78 = {
+			fileRef = C26BDCCE03D0B4FB00A87B78;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//C20
+//C21
+//C22
+//C23
+//C24
+//F50
+//F51
+//F52
+//F53
+//F54
 		F50D04F702E68E8201CA2799 = {
 			buildStyles = (
 				F50D04F902E68E8201CA2799,
@@ -77,6 +111,7 @@
 				F50D050702E69B6B01CA2799,
 				F50D050802E69B6B01CA2799,
 				F50D050902E69B6B01CA2799,
+				C26BDCCE03D0B4FB00A87B78,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -560,6 +595,7 @@
 				F50D059002E69B6B01CA2799,
 				F50D059102E69B6B01CA2799,
 				F5889A2C0397F2F801A87B78,
+				C26BDCCC03D0B4E900A87B78,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -1192,6 +1228,7 @@
 				F5C7B155033D5EDC01A80099,
 				F5C7B157033D611701A80099,
 				F5BAFADF037F805101CA27E6,
+				C26BDCCF03D0B4FB00A87B78,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1378,6 +1415,7 @@
 				F59DF0C6030777A201CE0C16,
 				F5285E0E0316170401CA2799,
 				F5E8B845039BD69C01A87B78,
+				C26BDCCD03D0B4E900A87B78,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
