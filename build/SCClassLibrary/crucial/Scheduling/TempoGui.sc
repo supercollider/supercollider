@@ -3,6 +3,7 @@ TempoGui : ObjectGui {
 
 	var tempoG;
 	
+	writeName {}
 	guiBody { arg layout;
 		tempoG=NumberEditor(model.bpm,[1.0,666.0])
 			.action_({arg t; model.bpm_(t)});
