@@ -495,7 +495,11 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	
 	FILE *cmdFile;
 	if (inOptions->mNonRealTimeCmdFilename) {
+#ifdef SC_WIN32
+		cmdFile = fopen(inOptions->mNonRealTimeCmdFilename, "rb");
+#else
 		cmdFile = fopen(inOptions->mNonRealTimeCmdFilename, "r");
+#endif
 	} else cmdFile = stdin;
 	if (!cmdFile) 
 		throw std::runtime_error("Couldn't open non real time command file.\n");

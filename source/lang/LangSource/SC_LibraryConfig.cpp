@@ -199,7 +199,11 @@ SC_LibraryConfigFile::SC_LibraryConfigFile(ErrorFunc errorFunc)
 bool SC_LibraryConfigFile::open(const char* filePath)
 {
 	close();
+#ifdef SC_WIN32
+	mFile = fopen(filePath, "rb");
+#else
 	mFile = fopen(filePath, "r");
+#endif
 	return mFile != 0;
 }
 
