@@ -7,35 +7,79 @@
 \f0\b\fs36 \cf0 PlayerSocket
 \f1\b0\fs18 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 a voice that is able to switch between different players.\
-this is raw, no envelopes, no crossfading.\
+\f2\fs24 \cf0 a voice that is able to switch between different players.\
+\
+when it switches to a new player, it sends .release to the old one.\
+\
+a Patch with a \\gate and an EnvGen will release. after releaseTime, it will be\
+sent .stop which will stop it and all its children.\
+\
+a Patch with no \\gate will not release, but after releaseTime it will be\
+sent .stop which will stop it abruptly.\
+\
+the default releaseTime is 0.0 which will stop immediately.  \
+\
+a releaseTime of nil will not send stop at all.  if you use an EnvGen doneAction of 2, the node will be ended when the gate goes down.  a PlayerNodeWatcher is planned to watch for this and stop all the children which would otherwise go on playing.\
+\
 
-\f1\fs18 \
-will add envs later.\
-\
-\
-preparePlayer(aPlayer)\
-prepareAndSpawn(aPlayer)\
+\f0\b *new(rate,numChannels,round)\
+
+\f2\b0 	
+\f0\b rate
+\f2\b0  - all players should be the same rate\
+	
+\f0\b numChannels
+\f2\b0  - all players should have the same numChannels\
+	
+\f0\b round
+\f2\b0  - for qspawnPlayer\
+	\
+
+\f0\b preparePlayer(aPlayer)\
+prepareAndSpawn(aPlayer,releaseTime)\
 spawnPlayer(aPlayer)\
-qspawnPlayer(aPlayer)\
-releaseVoice\
+
+\f2\b0 	if you have already prepared the player\
+
+\f0\b qspawnPlayer(aPlayer,releaseTime)\
+	spawn at the next clock division\
+releaseVoice(releaseTime)
+\f2\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
 \
-\
-p = \cf2 PlayerSocket\cf0 .new;\
-p.play;\
-\
+(\
 q = \cf2 Patch\cf0 (\{ \cf2 Saw\cf0 .ar * 0.2 \});\
 r = \cf2 Patch\cf0 (\{ \cf2 Saw\cf0 .ar(800) * 0.2 \});\
+p = \cf2 PlayerSocket\cf0 .new;\
+p.play;\
+)\
 \
-p.prepareAndSpawn(q);\
+p.prepareAndSpawn(q,0.1);\
 \
-p.prepareAndSpawn(r);\
+p.prepareAndSpawn(r,0.1);\
 \
-p.patchOut.insp;\
 \
-p.releaseVoice;\
+(\
+p.prepareAndSpawn(\
+	Patch(\{ arg freq=400,gate=1.0;\
+		Saw.ar(freq) * EnvGen.kr(Env.adsr(0.1,2.0,0.3,2.0),gate)\
+	\},[\
+		rrand(38,70).midicps,\
+		KrNumberEditor(1.0,\\gate)\
+	]),\
+	1.0\
+)\
+)\
 \
+\
+p.releaseVoice(1.0);\
+\
+\
+//we are asleep now\
 p.isSleeping;\
 \
 p.isPlaying;\
@@ -46,7 +90,7 @@ p.isSleeping;\
 \
 p.isPlaying;\
 \
-see PlayerPool\
+see PlayerPool which is a subclass of this\
 \
 \
 (\

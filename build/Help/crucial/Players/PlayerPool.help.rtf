@@ -9,15 +9,18 @@
 \fs24 		switch between players
 \f1\b0 \
 \
+superclass: PlayerSocket\
 \
-Easiest to use with lists of paths to saved players.
-\f2\fs18 \
+Easiest to use with lists of paths to saved players.  This is a PlayerSocket with a pool of players to switch among.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 See PlayerSocket regarding Envelopes and .release\
 \
 \
-	\
 (\
-	Instr([\\oscillOrc,	\cf2 \\pmosc]\cf0 ,\{ \cf3 arg\cf0  freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;\
+	Instr([\\oscillOrc,	\cf2 \\pmosc]\cf0 ,\{ \cf3 arg\cf0  freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0,gate=1.0;\
 		\cf3 PMOsc\cf0 .ar(freq,freq2,pmindex,phasemod,amp)\
+			* EnvGen.kr(Env.adsr,gate)\
 	\});\
 	\
 	p = \cf3 Patch\cf0 .new([ \cf4 'oscillOrc'\cf0 , \cf4 'pmosc'\cf0  ],\
@@ -26,7 +29,8 @@ Easiest to use with lists of paths to saved players.
 		27.7707, \
 	  	1.3, \
 	 	0, \
-	  	0.616317\
+	  	0.616317,\
+	  	KrNumberEditor(1.0,\\gate)\
 	 ]);\
 	 \
 	 q = \cf3 Patch\cf0 .new([ \cf4 'oscillOrc'\cf0 , \cf4 'pmosc'\cf0  ],\
@@ -49,7 +53,8 @@ Easiest to use with lists of paths to saved players.
 		  	1.3, \
 		 	0, \
 		  	0.616317\
-		 ])\
+		 ]),\
+		 KrNumberEditor(1.0,\\gate)\
 	 ]);\
 	 \
 	 r =  \cf3 Patch\cf0 .new([ \cf4 'oscillOrc'\cf0 , \cf4 'pmosc'\cf0  ], [\
@@ -69,14 +74,17 @@ Easiest to use with lists of paths to saved players.
 		  	1.3, \
 		 	0, \
 		  	0.616317\
-		 ])\
+		 ]),\
+		 KrNumberEditor(1.0,\\gate)\
 	 ]);\
 	 \
 	 \cf3 PlayerPool\cf0 ([ p,q,r ]).gui\
 )\
+\
+It starts with nothing playing.  Change to a new patch to start one.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 Click on the green squares to change from one to the other.\
-Click on the title (a Patch) to gui that patch.
+\f1\fs24 \cf0 Click on the title (a Patch) to gui that patch.
 \f2\fs18 \
 If the patches had been loaded from disk, they would display their filenames.\
 \

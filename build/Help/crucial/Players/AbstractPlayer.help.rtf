@@ -1,8 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green0\blue0;
-\red0\green0\blue191;\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs42 \cf0 AbstractPlayer			
@@ -19,91 +18,101 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b\fs28 \cf0 Several common usage styles\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\b0\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\b\fs22 \cf0 1.  create the object and send it the play command\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\b0\fs24 \cf0 somePlayer = \cf2 SomePlayerClass\cf0 .new(param, param2, param3);\
-somePlayer.play;\
+\f1\b0 \cf0 A Player can be told to play and to stop, and will allocate and load any resources needed.  Many players have subplayers.  PlayerMixer mixes several players together.  Patch can take other players as inputs. PlayerSeqTrack can sequence successions of players.\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 2.  make a gui and use transport controls to stop, start, record, write etc.\
+\f0\b \cf0 play(group,atTime,bus)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 somePlayer = \cf2 SomePlayerClass\cf0 .new(param, param2, param3);\
-somePlayer.gui;\
+\f1\b0 \cf0 	boots the server, prepares the player for play (loading samples etc.)\
+	and spawns the player\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	all of these args are optional\
+	group - 	a Server (will use the root node) \
+			a Group\
+			nil (default server's root node)\
+	atTime - delay in seconds before play should start, or nil (immediate)\
+	bus - a specific Bus to play on, otherwise will default to the main outs\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
+stop \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	stops playing but does not deallocate any resources (buffers etc.)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 free \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0 \cf0 	stops playind and frees all allocated resources (buffers etc.)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 3. prepare it for play, and then send it scheduled commands\
+\f0\b \cf0 release(releaseTime)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 somePlayer = \cf2 SomePlayerClass\cf0 .new(param, param2, param3);\
-somePlayer.prepareForPlay( group ); // or server\
-somePlayer.spawnAtTime(4.0); // 4 seconds from now\
+\f1\b0 \cf0 	call release on the synth, with the releaseTime\
+	then calls stop on the player, so even if the synthDef does not have a \\gate\
+	input, it will function the same as stop after a short delay.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 AbstractPlayer  is a subclass of AbstractFunction
-\f1\b0\fs26  \
+\f0\b \cf0 prepareForPlay(group,private,bus)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 therefore you can do math with them:
-\fs22 \
-\
+\f1\b0 \cf0 	group -	a Server, a Group or nil\
+	private - if true, allocates a private bus (not the main audio outs)\
+	bus -    a specific Bus to play on.  this will cause private to be ignored\
+	\
+	this loads the synthDef to the server for the player and all of its children,\
+	and allocates any resources such as buffers, loading sound files etc.\
+	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf3 //right now this works, but only with simple ugenGraphs, no Samples,Envs etc.\
-\cf4 (\cf5 Patch\cf4 (\{ \cf5 Saw\cf4 .ar(400) \}).wrap2( 0.5) ).gui\
+\f0\b \cf0 spawnAtTime(atTime)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf4 \
-\
-\cf3 // not yet\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs18 \cf3 //(Patch(\{ Saw.ar(400) \}).wrap2( KrNumberEditor(0.5,[0.0,1.0]) ) ).gui\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs18 \cf6 //(somePatch * EnvPlayer.new(Env.newClear(10)) ).topGui\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs24 \cf0 \
-\
+\f1\b0 \cf0 	must call prepareForPlay first.\
+	starts playing.\
+	\
+	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 Patching
 \f1\b0\fs24 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf4 \
-p = \cf5 Patch\cf4 (\{  \cf5 SinOsc\cf4 .ar(mul: 0.3) \});\
+\f2\fs18 \cf0 \
+p = \cf2 Patch\cf0 (\{  \cf2 SinOsc\cf0 .ar(mul: 0.3) \});\
 p.play;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // reassign the bus while playing\
-\cf4 p.bus = 5;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 p.bus = 5;\
 \
 p.bus = 0;\
 \
+p.bus = Bus(\\audio,3); \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 \
+\f1\fs24 \cf0 if using an Integer, it will create a Bus on the same server.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 .. more to come\
+\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -113,12 +122,8 @@ p.bus = 0;\
 \f1\b0\fs24 \cf0 	
 \f0\b Patch
 \f1\b0  			\
-		- specifies a function ( Instrument ) and the arguments \
-		with which to play the function.\
-	
-\f0\b FunctionPlayer
-\f1\b0  	\
-		- takes any valid ugenFunction and grants it the powers of a Player.\
+		- specifies a function ( Instr ) and the arguments \
+		with which to play that function.\
 	
 \f0\b SFP
 \f1\b0  				\
@@ -157,25 +162,8 @@ But it is very nice  to:\
 \fs18 \cf0 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 ar    	- do your thing,  make audio\
-value 	- same as .ar\
-kr		- same as .ar\
-\
-play\
-scope\
-record\
-write\
-\
-timeDuration -(seconds) \
-	return the total duration or nil (meaning infinite).\
-	Players that specify a duration can themselves be played inside of patterns.  \
-beatDuration -(beats)	\
-tempo - (bpm) defaults to 60bpm\
-tempo_(bpm) 	- set tempo\
-delta - (beats) this is duration converted to beats\
-\
-path -  if loaded or saved, the player knows its path\
-name - an explicit name if it has been set or the filename ( if path is known)\
+\fs24 \cf0 path -  if loaded or saved, the player knows its path\
+name - if loaded or saved, the filename, else the name of the class (eg. "a Patch")\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs20 \cf0 \
@@ -195,21 +183,13 @@ name - an explicit name if it has been set or the filename ( if path is known)\
 	
 \f0\b SFP
 \f1\b0  has its underlying object as child\
-	
-\f0\b EventStreamPlayer
-\f1\b0  has its pattern.  in a properly implemented pattern structure,\
-		you can propagate all the way down your chain.
-\fs20 	\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs24 \cf0 	using this.children.do(\{arg item; .... \})  can save you from having to muck up \
+	using this.children.do(\{arg item; .... \})  can save you from having to muck up \
 	the Player class with extra methods.\
 	
 \f3\i\fs20 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\i0\b\fs24 \cf0 allChildren
+\f0\i0\b\fs24 allChildren
 \f1\b0  - and all your children's children, and their children...	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -233,9 +213,9 @@ name - an explicit name if it has been set or the filename ( if path is known)\
 Players can be put inside of standard patterns:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 /*\
+\cf3 /*\
 (
-\f2\fs18 \cf6 \
+\f2\fs18 \cf3 \
 \
 p = CropPlayer(\
 		Patch.new(\{ arg freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;\
@@ -265,38 +245,11 @@ y = CropPlayer(\
 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs20 \cf6 */\cf0 \
+\f1\fs20 \cf3 */\cf0 \
 	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs24 \cf0 each player will embed itself in the stream, making itself a single event.\
-	see AbstractPlayer::embedInStream\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs20 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\fs24 \cf0 Note that each player must have a finite duration or it will play infinitely, and the\
-sequence will not progress ! A Patch does not have a finite duration.  You can use CropPlayer to impose a finite duration  (and an envelope) on any player.  This does result in an extra layer of envelope. PlayerSeqTrack is more flexible if you want simple sequencing.  Patterns are more flexible if you want to use Prand,Pswitch etc.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs20 \cf0 \
-\
-any player could even respond itself as an event\
-\
-	EventStreamPlayer(\
-			Routine(\{\
-				... that yields a player object each time\
-			\})\
-		).ar\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf0 \
-\
-	\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -365,4 +318,39 @@ All of that can be recorded.  those event-recordings can in turn then be further
 \
 SFP is the one player type that can be sub-located (asked to start play somewhere in the middle). Timeline based event recording would be another one.   the transport system would work very nicely.\
 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 AbstractPlayer  is a subclass of AbstractFunction
+\f1\b0\fs26  \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 therefore you can do math with them:
+\fs22 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf3 //right now this works, but only with simple ugenGraphs, no Samples,Envs etc.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 (\cf2 Patch\cf0 (\{ \cf2 Saw\cf0 .ar(400) \}).wrap2( 0.5) ).gui\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // not yet\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf3 //(Patch(\{ Saw.ar(400) \}).wrap2( KrNumberEditor(0.5,[0.0,1.0]) ) ).gui\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf3 //(somePatch * EnvPlayer.new(Env.newClear(10)) ).topGui\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
 }

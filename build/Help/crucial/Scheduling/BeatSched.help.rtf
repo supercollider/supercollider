@@ -13,11 +13,11 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0 \cf0 \
-Functions can be scheduled for precise execution using relative seconds, relative beats, absolute seconds or absolute beats.\
+Functions can be scheduled for precise execution using relative seconds, relative beats, absolute seconds or absolute beats.  This class uses TempoClock for scheduling, and has some overlap of capabilities with that.\
 \
-The Tempo class is used to specify what the tempo is, and is used for all beat <-> second calculations. A default global Tempo object is used, or you can create a specific Tempo instance if y'all got your own separate grooves.\
+The TempoClock class is used to specify what the tempo is, and is used for all beat <-> second calculations. The default global TempoClock object is used, or you can create a specific TempoClock instance if y'all got your own separate grooves.\
 \
-There is a default global BeatSched that can be addressed through class methods.  It uses the SystemClock and the default global Tempo.  You may also create individual instances that maintain their own scheduling queues, tempii, and time epochs.\
+There is a default global BeatSched that can be addressed through class methods.  It uses the SystemClock and the default global TempoClock.  You may also create individual instances that maintain their own scheduling queues, tempii, and time epochs.\
 \
 If using BeatSched instances you can clear the queue, only affecting your own events.  If using the global BeatSched class, clearing the queue will affect everybody.  \
 \
@@ -109,10 +109,8 @@ tschedAbs(time,function)\
 \f0\b \cf0 schedAbs(beat,function)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0         will happen at the beat specified.  changing the Tempo before this occurs\
-        will cause unpredictable results.  actually, its quite predictable:  you're screwed. \
-        for now.  an SC2 style solution to this is pending.\
-\
+\f1\b0 \cf0         will happen at the beat specified.\
+        \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 xblock\
@@ -171,10 +169,9 @@ In the examples, remember to execute groups of code lines together.\
 	
 \f2\fs18 b = \cf2 BeatSched\cf0 .new;\
 	 \
-	b.qsched(2.0,\{ \cf3 "hello"\cf0 .postln; \});\
+	b.qsched(4.0,\{ \cf3 "hello"\cf0 .postln; \});\
 	 \
-	b.qsched(2.0,\{ \cf3 "hello"\cf0 .postln; \});\
-\
+	b.qsched(4.0,\{ \cf3 "hello"\cf0 .postln; \});\
 \
 \
 	b.time; // since the app started\
@@ -185,9 +182,9 @@ In the examples, remember to execute groups of code lines together.\
 	 \
 	b.beat;\
 \
-	Tempo.bpm = 60;\
+	TempoClock.default.tempo = 2;\
 	b.beat.postln;\
-	Tempo.bpm = 120;\
+	TempoClock.default.tempo = 1;\
 	b.beat.postln;\
 \
 \
@@ -211,12 +208,11 @@ In the examples, remember to execute groups of code lines together.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Tempo\cf0 .bpm_(120);\
+\cf2 TempoClock.default\cf0 .tempo = 120 / 60.0;\
 d = \cf2 Routine\cf0 (\{\
                 20.do(\{\
                 	var t;\
-                   t = \cf2 OSCSched\cf0 .global.tdeltaTillNext(4.0);\
+                   t = \cf2 BeatSched\cf0 .global.tdeltaTillNext(4.0);\
                    t.postln;\
 				t.wait;\
                 \});\
@@ -257,7 +253,6 @@ you just want to know when the next even beat is so you can get your groove on.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Tempo\cf0 .bpm_(120);\
 d = \cf2 Routine\cf0 (\{\
 	\cf3 "wait for the downbeat..."\cf0 .postln; \
