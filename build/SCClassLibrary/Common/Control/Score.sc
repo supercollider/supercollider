@@ -32,4 +32,5 @@ Score {
 		};
 		f.close;
 		"done".postln;
+	}
 }		
