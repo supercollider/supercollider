@@ -661,45 +661,49 @@ SCErr meth_n_before(World *inWorld, int inSize, char *inData, ReplyAddress *inRe
 SCErr meth_n_before(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
 	sc_msg_iter msg(inSize, inData);	
+
+	Node *prevNode = 0;
 	while (msg.remain()) {
 		Node *node = Msg_GetNode(inWorld, msg);
-		if (!node) return kSCErr_NodeNotFound;
-	
 		Node *beforeThisOne = Msg_GetNode(inWorld, msg);
-		if (!beforeThisOne) return kSCErr_NodeNotFound;
-	
-		//Group *prevGroup = node->mParent;
-			
+		
+		if (!node || !beforeThisOne) continue; // tolerate failure
+		// don't report redundant updates.
+		if (prevNode && prevNode != node) Node_StateMsg(prevNode, kNode_Move);
+				
 		Node_Remove(node);
 		Node_AddBefore(node, beforeThisOne);
 	
-		//if (node->mParent != prevGroup) {
-			Node_StateMsg(node, kNode_Move);
-		//}
+		prevNode = node;
 	}
+	if (prevNode) Node_StateMsg(prevNode, kNode_Move);
+	else return kSCErr_NodeNotFound; // don't tolerate total failure
+
 	return kSCErr_None;
 }
 
 SCErr meth_n_after(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_n_after(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
-	sc_msg_iter msg(inSize, inData);	
+	sc_msg_iter msg(inSize, inData);
+	
+	Node *prevNode = 0;
 	while (msg.remain()) {
 		Node *node = Msg_GetNode(inWorld, msg);
-		if (!node) return kSCErr_NodeNotFound;
-	
 		Node *afterThisOne = Msg_GetNode(inWorld, msg);
-		if (!afterThisOne) return kSCErr_NodeNotFound;
-	
-		Group *prevGroup = node->mParent;
 		
+		if (!node || !afterThisOne) continue; // tolerate failure
+		// don't report redundant updates.
+		if (prevNode && prevNode != node) Node_StateMsg(prevNode, kNode_Move);
+			
 		Node_Remove(node);
 		Node_AddAfter(node, afterThisOne);
 	
-		if (node->mParent != prevGroup) {
-			Node_StateMsg(node, kNode_Move);
-		}
+		prevNode = node;
 	}
+	if (prevNode) Node_StateMsg(prevNode, kNode_Move);
+	else return kSCErr_NodeNotFound; // don't tolerate total failure
+
 	return kSCErr_None;
 }
 
