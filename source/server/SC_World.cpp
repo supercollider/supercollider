@@ -423,6 +423,8 @@ bool nextOSCPacket(FILE *file, OSC_Packet *packet, int64& outTime)
 {
 	int32 msglen;
 	if (!fread(&msglen, 1, sizeof(int32), file)) return true;
+	// msglen is in network byte order
+	msglen = OSCint((char*)&msglen);
 	if (msglen > 8192) 
 		throw std::runtime_error("OSC packet too long. > 8192 bytes\n");
 		
@@ -432,7 +434,7 @@ bool nextOSCPacket(FILE *file, OSC_Packet *packet, int64& outTime)
 	
 	packet->mSize = msglen;
 	
-	outTime = *(int64*)(packet->mData+8);
+	outTime = OSCtime(packet->mData+8);
 	return false;
 }
 
