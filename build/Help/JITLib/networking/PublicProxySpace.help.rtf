@@ -9,8 +9,9 @@
 \f1\b0\fs18 				
 \f0\b\fs24 distributed system
 \f1\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \
+\f0\b\fs24 \cf0 \
 \
 experimental.\
 \
@@ -54,7 +55,10 @@ experimental.\
 	\
 	
 \f0\b addresses_(list)
-\f2\b0 		a list of addresses (NetAddr) to which to send to.	\
+\f2\b0 		a list of addresses (NetAddr) to which to send to.\
+						this list can contain also the sender's address, which it then sends to,\
+						but does not get evaluated.\
+							\
 	
 \f0\b sendingKeys_(list)
 \f2\b0 		keys from which to send (list of symbols). If 
@@ -103,7 +107,12 @@ experimental.\
 \f0\b logSelf_(bool)			
 \f2\b0 if logSelf is set to true, my own changes are passed into\
 						the action function (e.g. the log window)\
-						\
+	\
+	
+\f0\b logAll_(bool)
+\f2\b0 			if logAll is true, I can see all messages that are coming in, \
+						even if they do not effect me (listeningKeys != \\all). \
+						This is only allowed if sendingKeys are set to \\all\
 			
 \f3\i\b \
 	
@@ -132,8 +141,9 @@ experimental.\
 \f2\b0 		create a log window.	\
 	\
 	
-\f0\b lurk / boss
-\f2\b0 			change behaviour diametrically (just try it out)		\
+\f0\b lurk / boss / merge
+\f2\b0 		change behaviour diametrically (just try it out)\
+			\
 \
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -165,10 +175,10 @@ b.listeningKeys = \cf5 \\all\cf0 ;\
 a.listeningKeys = \cf5 \\all\cf0 ;\
 )\
 \
-\
+(\
 a.makeLogWindow; \cf2 // see what is going on\cf0 \
 b.makeLogWindow;\
-\
+)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 \
