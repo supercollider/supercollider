@@ -46,8 +46,8 @@ RecNodeProxy : NodeProxy {
 		if(this.isPlaying.not, {
 			this.wakeUpToBundle(bundle);
 		});
-		
-		recGroup = Group.newToBundle(bundle, server);
+		recGroup = Group.basicNew(server);
+		bundle.add(recGroup.newMsg(server));
 		NodeWatcher.register(recGroup);
 		bundle.add([9, "system-diskout-" ++ this.numChannels, 
 					server.nextNodeID, 1, recGroup.nodeID,

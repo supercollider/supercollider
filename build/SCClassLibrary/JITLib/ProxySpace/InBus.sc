@@ -86,7 +86,8 @@ Monitor {
 		vol = volume ? vol;
 
 		if(group.isPlaying.not) { 
-				group = Group.newToBundle(bundle, inGroup, \addToTail);
+				group = Group.basicNew(inGroup.server);
+				bundle.add(group.newMsg(inGroup, \addToTail));
 				NodeWatcher.register(group);
 				
 		} {
