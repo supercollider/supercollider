@@ -237,20 +237,27 @@ int prTextWindow_SetFont(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_SetFont(struct VMGlobals *g, int numArgsPushed)
 {
 		 if (!g->canCallOS) return errCantCallOS;
-		PyrSlot *a = g->sp - 4;
-		PyrSlot *b = g->sp - 3; //fontname
-		PyrSlot *c = g->sp - 2; //fontsize
+		PyrSlot *a = g->sp - 3;
+		PyrSlot *fontSlot = g->sp - 2; //fontsize
+		
 		PyrSlot *d = g->sp - 1; //rangestart
 		PyrSlot *e = g->sp; //rangesize
+		if (IsNil(fontSlot)) return errNone; // use default font
+		if (!(isKindOfSlot(fontSlot, s_font->u.classobj))) return errWrongType;
+
+		PyrSlot *nameSlot = fontSlot->uo->slots+0;
+		PyrSlot *sizeSlot = fontSlot->uo->slots+1;
+		float size;
+		int err = slotFloatVal(sizeSlot, &size);
+		if (err) return err;
+
+		PyrString *pstring = nameSlot->uos;
+		NSString *fontName = [NSString stringWithCString: pstring->s length: pstring->size];
+		if (!fontName) return errFailed;
+		NSFont *font = [NSFont fontWithName: fontName size: size];
+		if (!font) return errFailed;
 		
-		int rangeStart, rangeSize, fontSize, err;
-		
-		PyrString* pstring = b->uos;
-		NSString * fontname = [NSString stringWithCString: pstring->s];
-       // int err = slotStrVal(b, &str);
-        //if (err) return err;
-        err = slotIntVal(c, &fontSize);
-        if (err) return err;
+		int rangeStart, rangeSize;
 		err = slotIntVal(d, &rangeStart); //if -1 do not use range
         if (err) return err;
 		 err = slotIntVal(e, &rangeSize);
@@ -262,15 +269,15 @@ int prTextWindow_SetFont(struct VMGlobals *g, int numArgsPushed)
 		NSString* string = [[doc textView] string];
 		
 		if(rangeStart < 0){
-			[[doc textView] setFont: [NSFont fontWithName: fontname size: fontSize]];
+			[[doc textView] setFont: font];
 			return errNone;
 		}
 		int length = [string length];
 		if(rangeStart >= length) rangeStart = length - 1 ;
-		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart - 1;
+		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
 		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
 		
-        [[doc textView] setFont: [NSFont fontWithName: fontname size: fontSize] range: selectedRange];
+        [[doc textView] setFont: font range: selectedRange];
 		return errNone;
 }
 
@@ -2463,7 +2470,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_SelectLine", prTextWindow_SelectLine, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_SelectRange", prTextWindow_SelectRange, 3, 0);
 	definePrimitive(base, index++, "_TextWindow_TextWithRange", prTextWindow_TextWithRange, 3, 0);
-	definePrimitive(base, index++, "_TextWindow_SetFont", prTextWindow_SetFont, 5, 0);
+	definePrimitive(base, index++, "_TextWindow_SetFont", prTextWindow_SetFont, 4, 0);
 	definePrimitive(base, index++, "_TextWindow_GetIndexOfListener", prTextWindow_GetIndexOfListener, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_GetSelectedRangeLocation", prTextWindow_GetSelectedRangeLocation, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_GetSelectedRangeLength", prTextWindow_GetSelectedRangeLength, 1, 0);
