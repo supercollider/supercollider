@@ -155,6 +155,7 @@ struct FreeSelf : public Unit
 
 struct PauseSelf : public Unit
 {
+	float m_prevtrig;
 };
 
 struct Pause : public Unit
@@ -1460,20 +1461,19 @@ void FreeSelf_next(FreeSelf *unit, int inNumSamples)
 
 void PauseSelf_Ctor(PauseSelf *unit)
 {
-	SETCALC(PauseSelf_next);
-		
-	ZOUT0(0) = ZIN0(0);
+	SETCALC(PauseSelf_next);		
+	unit->m_prevtrig = 0.f;
+	PauseSelf_next(unit, 1);
 }
 
 
 void PauseSelf_next(PauseSelf *unit, int inNumSamples)
 {
 	float in = ZIN0(0);
-	if (in > 0.f) {
+	if (in > 0.f && unit->m_prevtrig <= 0.f) {
 		NodeRun(&unit->mParent->mNode, 0);
-		SETCALC(ClearUnitOutputs);
 	}
-	ZOUT0(0) = in;
+	unit->m_prevtrig = in;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

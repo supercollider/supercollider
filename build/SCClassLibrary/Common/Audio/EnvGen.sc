@@ -6,14 +6,16 @@ Done : UGen {
 }
 
 FreeSelf : UGen {	
-	*kr { arg src;
-		^this.multiNew('control', src)
+	*kr { arg in;
+		this.multiNew('control', in);
+		^in
 	}
 }
 
 PauseSelf : UGen {	
-	*kr { arg src;
-		^this.multiNew('control', src)
+	*kr { arg in;
+		this.multiNew('control', in);
+		^in
 	}
 }
 
