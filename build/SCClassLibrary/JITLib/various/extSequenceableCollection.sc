@@ -1,6 +1,10 @@
++Function {
+	hatchArray {}
+}
+
 +SequenceableCollection {
 	
-	asArrayStream {
+	hatchArray {
 		var streamArray, array, size, res;
 		res = FuncStream.new({ arg args;
 			(size div: 2).do({ arg i;
@@ -18,3 +22,23 @@
 	}
 
 }
+
++ Pattern {
+	hatchArray { ^Pevent(this).asStream.hatchArray }
+}
+
++ Stream {
+	hatchArray {
+		^this.collect({ arg item; item.hatchArray })
+	}
+}
+
+
++ Event {
+	hatchArray {
+		^this.use({ ~finish.value;  this.hatchAt(\argNames) })
+	}
+
+}
+
+
