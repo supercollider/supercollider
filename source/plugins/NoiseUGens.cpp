@@ -72,6 +72,10 @@ struct Hasher : public Unit
 {
 };
 
+struct MantissaMask : public Unit
+{
+};
+
 struct IRand : public Unit
 {
 };
@@ -175,6 +179,9 @@ extern "C"
 
 	void Hasher_next(Hasher *unit, int inNumSamples);
 	void Hasher_Ctor(Hasher *unit);
+
+	void MantissaMask_next(MantissaMask *unit, int inNumSamples);
+	void MantissaMask_Ctor(MantissaMask *unit);
 
 	void IRand_Ctor(IRand *unit);
 	void Rand_Ctor(Rand *unit);
@@ -759,13 +766,13 @@ void ExpRand_Ctor(ExpRand* unit)
 
 void Hasher_next(Hasher *unit, int inNumSamples)
 {
-	float *in = ZIN(0);
+	int32 *in = (int32*)ZIN(0);
 	float *out = ZOUT(0);
 
 	LOOP(inNumSamples, 
 		union { float f; int i; } u;
-		u.f = ZXP(in);
-		u.i = 0x40000000 | (Hash(u.i) >> 9);
+		int z = ZXP(in);
+		u.i = 0x40000000 | ((uint32)Hash(z) >> 9);
 		ZXP(out) = u.f - 3.f;
 	);
 	
@@ -776,6 +783,27 @@ void Hasher_Ctor(Hasher* unit)
 	SETCALC(Hasher_next);
 
 	Hasher_next(unit, 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void MantissaMask_next(MantissaMask *unit, int inNumSamples)
+{
+	int32 *in = (int32*)ZIN(0);
+	int32 bits = (int32)ZIN0(1);
+	int32 *out = (int32*)ZOUT(0);
+	int32 mask = -1 << (23 - bits);
+	LOOP(inNumSamples, 
+		ZXP(out) = mask & ZXP(in);
+	);
+	
+}
+
+void MantissaMask_Ctor(MantissaMask* unit)
+{
+	SETCALC(MantissaMask_next);
+
+	MantissaMask_next(unit, 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1033,6 +1061,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Crackle);
 	DefineSimpleUnit(Logistic);
 	DefineSimpleUnit(Hasher);
+	DefineSimpleUnit(MantissaMask);
 	DefineSimpleUnit(LFClipNoise);
 	DefineSimpleUnit(LFNoise0);
 	DefineSimpleUnit(LFNoise1);

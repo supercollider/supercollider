@@ -213,6 +213,15 @@ Hasher : UGen {
 	}
 }
 
+MantissaMask : UGen {
+	*ar { arg in = 0.0, bits=3, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', in, bits).madd(mul, add)
+	}
+	*kr { arg in = 0.0, bits=3, mul = 1.0, add = 0.0;
+		^this.multiNew('control', in, bits).madd(mul, add)
+	}
+}
+
 Dust : UGen {
 	
 	*ar { arg density = 0.0, mul = 1.0, add = 0.0;
