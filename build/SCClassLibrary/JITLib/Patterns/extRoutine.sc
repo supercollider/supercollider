@@ -173,10 +173,7 @@
 
 +TempoClock {
 	timeToNextBeat { arg quant=0.0;
-		var t;
-		t = this.elapsedBeats;
-		^quant.nextTimeOnGrid(this) - t
-		//^t.roundUp(quant) - t
+		^quant.nextTimeOnGrid(this) - this.beats
 	}
 }
 
