@@ -205,33 +205,28 @@ DebugNodeWatcher : BasicNodeWatcher {
 	
 	//////////////private implementation//////////////
 	
-	n_go { arg nodeID, groupID, prevID, nextID;
-	
-		nodes.add(nodeID);
-		postln(
-		"started" + nodeID + "in group" + groupID + "between nodes" + prevID + "and" + nextID
-		)
+	doPost { arg action, nodeID, groupID, prevID, nextID;
+		Post << ("[ server: " + server.name + "]" +
+		action + nodeID + "in group" + groupID + "between nodes" + prevID + "and" + nextID
+		) << Char.nl
 	}
 	
+	n_go { arg nodeID, groupID, prevID, nextID;
+		this.doPost("started", nodeID, groupID, prevID, nextID);
+		nodes.add(nodeID);
+	}
 	
 	n_end { arg nodeID, groupID, prevID, nextID;
 		nodes.remove(nodeID);
-		postln(
-		"ended  " + nodeID + "in group" + groupID + "between nodes" + prevID + "and" + nextID
-		)
+		this.doPost("ended", nodeID, groupID, prevID, nextID);
 	}
 
 	n_off { arg nodeID, groupID, prevID, nextID;
-		postln(
-		"turned off" + nodeID + "in group" + groupID + "between nodes" + prevID + "and" + nextID
-		)
+		this.doPost("turned off", nodeID, groupID, prevID, nextID);
 	}	
 
 	n_on { arg nodeID, groupID, prevID, nextID;
-		postln(
-		"turned on " + nodeID + "in group" + groupID + "between nodes" + prevID + "and" + nextID
-		)	
-	}
+		this.doPost("turned on", nodeID, prevID, nextID);	}
 	
 
 
