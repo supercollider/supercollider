@@ -106,6 +106,7 @@ void* gstate_update_func(void* arg)
   requested_time.tv_nsec = 17000 * 1000 ;
 
   d = XOpenDisplay ( NULL ) ;
+  if (!d) return 0;
   
   r = DefaultRootWindow ( d ) ;
   XGetWindowAttributes ( d , r , &attributes ) ;
