@@ -801,6 +801,23 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	mQueue = mTempoClockObj->slots[0].uo;
 	pthread_cond_init (&mCondition, NULL);
 	pthread_create (&mThread, NULL, TempoClock_run_func, (void*)this);
+#ifdef SC_DARWIN
+        int machprio;
+        boolean_t timeshare;
+        GetStdThreadSchedule(pthread_mach_thread_np(mThread), &machprio, &timeshare);
+        //post("mach priority %d   timeshare %d\n", machprio, timeshare);
+        
+        // what priority should gSchedThread use?
+        
+        RescheduleStdThread(pthread_mach_thread_np(mThread), 10, false);
+
+        GetStdThreadSchedule(pthread_mach_thread_np(mThread), &machprio, &timeshare);
+        //post("mach priority %d   timeshare %d\n", machprio, timeshare);
+
+        //param.sched_priority = 70; // you'll have to play with this to see what it does
+        //pthread_setschedparam (mThread, policy, &param);
+#endif // SC_DARWIN
+
 }
 
 void TempoClock::StopReq()
