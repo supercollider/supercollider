@@ -29,13 +29,13 @@ Phid : Pattern {
 			^if((min === 0) and: {max === 1}, {
 				Routine({
 					repeats.value.do({
-						device.getValue(element).yield
+						device.value(element).yield
 					})
 				})
 			}, {
 				Routine({
 					repeats.value.do({
-						spec.unmap(device.getValue(element)).yield
+						spec.unmap(device.value(element)).yield
 					})
 				})
 			})	
