@@ -7,7 +7,7 @@ Trig1 : UGen {
 	*kr { arg in = 0.0, dur = 0.1;
 		^this.multiNew('control', in, dur)
 	}
-	
+	signalRange { ^\unipolar }
 }
 
 Trig : Trig1 {
