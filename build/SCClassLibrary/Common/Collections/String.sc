@@ -114,6 +114,12 @@ String[char] : RawArray {
 		_String_Find
 		^this.primitiveFailed
 	}
+	endsWith { arg string;
+		^this.contains(string, this.size - string.size)
+	}
+	beginsWith { arg string;
+		^this.containsStringAt(0, string)
+	}
 	
 
 	escapeChar { arg charToEscape; // $"
