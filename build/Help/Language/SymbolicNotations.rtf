@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red0\green115\blue0;\red0\green0\blue191;\red191\green0\blue0;
-\red96\green96\blue96;\red0\green0\blue191;\red0\green0\blue0;}
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Catalog of symbolic notations in SuperCollider \
@@ -93,7 +93,7 @@ a === b;\
 
 \f1\fs24 \
 
-\f2\fs18 object < object
+\f2\fs18 number < number
 \f1\fs24 				comparison (less than)\
 
 \f2\fs18 number <= number
@@ -114,7 +114,7 @@ a === b;\
 \
 When a function is the second operand, these operators perform short-circuiting (i.e., the function is executed only when its result would influence the result of the operation). This is recommended for speed.\
 \
-Shortcircuiting is done only for and: and or: -- if you use && or ||, no shortcircuiting will be done and performance will be slower.\
+With and: and or: second-argument functions will be inlined. If you use && or ||, no inlining will be done and performance will be slower.\
 \
 
 \f2\fs18 a = 1;\
@@ -185,6 +185,9 @@ second condition\
 
 \f2\fs18 set | set
 \f1\fs24 						union of two sets\
+
+\f2\fs18 \cf0 setA - setB
+\f1\fs24 \cf0 					difference of sets (elements of setA not found in setB)\
 \
 
 \f2\fs18 set -- set
@@ -291,8 +294,8 @@ If the object is nil, the second expression's value will be used; otherwise, it 
 
 \f2\fs18 a = [\cf3 nil\cf0 , 5];\
 \
-10.do(\{ a.choose ? 20 \});\
-10.do(\{ a.choose ?? \{ 20 \} \});\
+10.do(\{ (a.choose ? 20).postln \});\
+10.do(\{ (a.choose ?? \{ 20 \}).postln \});\
 
 \f1\fs24 \
 ?? \{ \} is generally recommended. ? always evaluates the second expression, even if its value will not be used. ?? evaluates the function conditionally (only when needed). If the function defines no variables, the function will be inlined for speed.\
@@ -417,13 +420,13 @@ f.(10, 2, 5);	\cf4 // f2 out is [12, 5]; f1 in a=12, b=5, out is 60\cf0 \
 \f2\fs18 ""
 \f1\fs24 							define a literal String\
 
-\f2\fs18 \cf0 [item, item...]
-\f1\fs24 \cf0 				define an Array containing given items\
+\f2\fs18 [item, item...]
+\f1\fs24 				define an Array containing given items\
 
-\f2\fs18 \cf6 Set\cf7 [item, item...]
-\f1\fs24 \cf0 				define a Set -- any Collection class name can be used other than Set\
+\f2\fs18 \cf3 Set\cf0 [item, item...]
+\f1\fs24 				define a Set -- any Collection class name can be used other than Set\
 
-\f2\fs18 #[\cf0 item, item...\cf0 ]
+\f2\fs18 #[item, item...]
 \f1\fs24 				define a literal Array\
 
 \f2\fs18 (a:1, b:2)
@@ -459,7 +462,7 @@ abc'def'ghi\
 
 \f2\fs18 (_ * 2)
 \f1\fs24 						define a function \{ |a| a * 2 \} (see 
-\f0\b [\ul Partial_Application\ulnone ]
+\f0\b [\ul Partial-Application\ulnone ]
 \f1\b0 )\
 \
 
@@ -496,8 +499,8 @@ abc'def'ghi\
 \f1\fs24 			keyword addressing of function or method arguments\
 \
 
-\f2\fs18 \cf6 SomeClass\cf7 .[index]
-\f1\fs24 \cf0 				Equivalent to SomeClass.at(index) -- Instr.at is a good example\
+\f2\fs18 \cf3 SomeClass\cf0 .[index]
+\f1\fs24 				Equivalent to SomeClass.at(index) -- Instr.at is a good example\
 \
 
 \f2\fs18 myObject.method(*array)
@@ -516,26 +519,30 @@ Inside a class definition (see
 \f1\b0 ):\
 \
 
-\f2\fs18 \cf6 classvar\cf7  <a,
-\f1\fs24 \cf0 					Define a class variable with a getter method (for outside access)\
+\f2\fs18 \cf3 classvar\cf0  <a,
+\f1\fs24 					Define a class variable with a getter method (for outside access)\
 
-\f2\fs18 \cf0 	>b,
-\f1\fs24 \cf0 						Define a class variable with a setter method\
+\f2\fs18 	>b,
+\f1\fs24 						Define a class variable with a setter method\
 
-\f2\fs18 \cf0 	<>c;
-\f1\fs24 \cf0 						Define a class variable with both a getter and setter method\
+\f2\fs18 	<>c;
+\f1\fs24 						Define a class variable with both a getter and setter method\
 \
 
-\f2\fs18 \cf6 var\cf7 	<a,
-\f1\fs24 \cf0 						Define an instance variable with a getter method (for outside access)\
+\f2\fs18 \cf3 var\cf0 	<a,
+\f1\fs24 						Define an instance variable with a getter method (for outside access)\
 
-\f2\fs18 \cf0 	>b,
-\f1\fs24 \cf0 						Define an instance variable with a setter method\
+\f2\fs18 	>b,
+\f1\fs24 						Define an instance variable with a setter method\
 
-\f2\fs18 \cf0 	<>c;
-\f1\fs24 \cf0 						Define an instance variable with both a getter and setter method\
+\f2\fs18 	<>c;
+\f1\fs24 						Define an instance variable with both a getter and setter method\
 \
 These notations do not apply to variables defined within methods.\
+\
+
+\f2\fs18 ^someExpression
+\f1\fs24 				Inside a method definition: return the expression's value to the caller\
 \
 
 \f2\fs18 instVar_ \{ \}
@@ -587,7 +594,7 @@ These notations do not apply to variables defined within methods.\
 
 \f0\b Adverbs to math operators
 \f1\b0  (see 
-\f0\b [Adverbs]
+\f0\b [\ul Adverbs\ulnone ]
 \f1\b0 )\
 \
 e.g.:\
@@ -616,7 +623,7 @@ e.g.:\
 
 \f2\fs18 .0		
 \f1\fs24 					operator depth (see 
-\f0\b [J_concepts_in_SC]
+\f0\b [\ul J_concepts_in_SC\ulnone ]
 \f1\b0 )\
 
 \f2\fs18 .1
