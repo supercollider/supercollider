@@ -99,8 +99,8 @@ OSCresponderNode {
 	removeWhenDone {
 		var func;
 		func = action;
-		action = { arg time, msg; 
-			func.value(time, msg); 
+		action = { arg time, responder, msg, addr;
+			func.value(time, responder, msg, addr);
 			this.remove;
 		}
 	}
@@ -116,8 +116,8 @@ OSCresponderNode {
 		}; 
 	}
 	
-	value { arg time, msg;
-		action.value(time, msg)
+	value { arg time, msg, addr;
+		action.value(time, this, msg, addr);
 	}
 
 }
