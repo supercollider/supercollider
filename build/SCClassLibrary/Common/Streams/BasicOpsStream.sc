@@ -7,12 +7,14 @@ UnaryOpStream : Stream {
 	*new { arg operator, a;
 		^super.newCopyArgs(operator, a)
 	}
-	next {
+	next { arg inval;
 		var vala;
-		vala = a.next;
+		vala = a.next(inval);
 		if (vala.isNil, { ^nil },{ ^vala.perform(operator); });
 	}
 	reset { a.reset }
+	storeOn { arg stream; stream <<< a << "." << operator }
+
 }
 
 BinaryOpStream : Stream {	
@@ -21,15 +23,19 @@ BinaryOpStream : Stream {
 	*new { arg operator, a, b;	
 		^super.newCopyArgs(operator, a, b)
 	}
-	next {  
+	next { arg inval;
 		var vala, valb;
-		vala = a.next;
+		vala = a.next(inval);
 		if (vala.isNil, { ^nil });
-		valb = b.next;
+		valb = b.next(inval);
 		if (valb.isNil, { ^nil });
 		^vala.perform(operator, valb);
 	}
 	reset { a.reset; b.reset }
+	
+	storeOn { arg stream;
+			stream << "(" <<< a << " " << operator.asBinOpString << " " <<< b << ")"
+	}
 }
 
 
@@ -39,26 +45,31 @@ BinaryOpXStream : Stream {
 	*new { arg operator, a, b;	
 		^super.newCopyArgs(operator, a, b)
 	}
-	next {  
+	next { arg inval;
 		var valb;
 		if (vala.isNil) { 
-			vala = a.next;
+			vala = a.next(inval);
 			if (vala.isNil) { ^nil };
-			valb = b.next;
+			valb = b.next(inval);
 			if (valb.isNil, { ^nil });
 		}{
-			valb = b.next;
+			valb = b.next(inval);
 			if (valb.isNil) { 
-				vala = a.next;
+				vala = a.next(inval);
 				if (vala.isNil) { ^nil };
 				b.reset;
-				valb = b.next;
+				valb = b.next(inval);
 				if (valb.isNil) { ^nil };
 			};
 		};
 		^vala.perform(operator, valb);
 	}
 	reset { vala = nil; a.reset; b.reset }
+	storeOn { arg stream;
+			stream << "(" <<< a << " " << operator.asBinOpString;
+			stream << ".x";
+			stream << " " <<< b << ")"
+	}
 }
 
 
@@ -74,13 +85,13 @@ NAryOpStream : Stream {
 		isNumeric = list.every({ arg item; item.isNumber }); // optimization
 		arglist = list;
 	}
-	next {  
+	next { arg inval;
 		var vala, values;
-		vala = a.next;
+		vala = a.next(inval);
 		if (vala.isNil, { ^nil });
 		values = if (isNumeric) { arglist } {
 				arglist.collect({ arg item; var res; 
-					res = item.next; 
+					res = item.next(inval); 
 					if(res.isNil) { ^nil }; 
 					res 
 				})
@@ -88,5 +99,9 @@ NAryOpStream : Stream {
 		^vala.performList(operator, values);
 	}
 	reset { a.reset; arglist.do({ arg item; item.reset }) }
+	
+	storeOn { arg stream; stream <<< a << "." << operator << "(" <<<* arglist << ")" }
+
 
 }
+
