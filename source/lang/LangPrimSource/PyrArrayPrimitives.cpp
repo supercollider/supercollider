@@ -597,6 +597,89 @@ int prArrayPutEach(struct VMGlobals *g, int numArgsPushed)
 }
 
 
+int prArrayAssocAt(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b;
+	PyrObject *obj;
+	bool found = false;
+	
+	a = g->sp - 1;
+	b = g->sp;
+	
+	obj = a->uo;
+
+	int size = obj->size;
+	if (obj->obj_format == obj_slot) {
+		PyrSlot *slots = obj->slots;
+		for (int i=0; i<size; i+=2) {
+			if (SlotEq(slots+i, b)) {
+				if (i+1 >= size) return errFailed;
+				a->ucopy = slots[i+1].ucopy;
+				found = true;
+				break;
+			}
+		}
+	} else {
+		PyrSlot slot;
+		for (int i=0; i<size; i+=2) {
+			getIndexedSlot(obj, &slot, i);
+			if (SlotEq(&slot, b)) {
+				if (i+1 >= size) return errFailed;
+				getIndexedSlot(obj, &slot, i+1);
+				a->ucopy = slot.ucopy;
+				found = true;
+				break;
+			}
+		}
+	}
+	if (!found) SetNil(a);
+	
+	return errNone;
+}
+
+
+int prArrayAssocPut(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b, *c;
+	PyrObject *obj;
+	bool found = false;
+	
+	a = g->sp - 2;
+	b = g->sp - 1;
+	c = g->sp;
+	
+	obj = a->uo;
+
+	int size = obj->size;
+	if (obj->obj_format == obj_slot) {
+		PyrSlot *slots = obj->slots;
+		for (int i=0; i<size; i+=2) {
+			if (SlotEq(slots+i, b)) {
+				if (i+1 >= size) return errFailed;
+				slots[i+1].ucopy = c->ucopy;
+				g->gc->GCWrite(obj, c);
+				found = true;
+				break;
+			}
+		}
+	} else {
+		PyrSlot slot;
+		for (int i=0; i<size; i+=2) {
+			getIndexedSlot(obj, &slot, i);
+			if (SlotEq(&slot, b)) {
+				if (i+1 >= size) return errFailed;
+				putIndexedSlot(g, obj, &slot, i+1);
+				g->gc->GCWrite(obj, c);
+				found = true;
+				break;
+			}
+		}
+	}
+	if (!found) SetNil(a);
+	
+	return errNone;
+}
+
 int prArrayIndexOf(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;

@@ -328,6 +328,10 @@ IdentityDictionary : Dictionary {
 		*/
 	}
 	
+	includesKey { arg item1; 
+		this.keysDo({ arg item2; if (item1 === item2, {^true}) });
+		^false
+	}
 	findKeyForValue { arg argValue;
 		this.keysValuesArrayDo(array, { arg key, val, i;
 			if (argValue === val, { ^key })

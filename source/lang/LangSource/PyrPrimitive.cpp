@@ -75,6 +75,17 @@ extern PrimitiveTable gPrimitiveTable;
 
 extern PyrSlot o_nullframe;
 
+
+int getPrimitiveNumArgs(int index)
+{
+	return gPrimitiveTable.table[index].numArgs;
+}
+
+PyrSymbol* getPrimitiveName(int index)
+{
+	return gPrimitiveTable.table[index].name;
+}
+
 int slotStrLen(PyrSlot *slot) {
         if (IsSym(slot)) {
                 return slot->us->length;
@@ -774,7 +785,7 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
 	
-	g->execMethod++; // for the benefit of primitives using interpreter recursion
+	g->execMethod = 30;
 
 	a = g->sp - numArgsPushed + 1;
 	numArgsPushed -- ;
@@ -968,7 +979,7 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
 	
-	g->execMethod++; // for the benefit of primitives using interpreter recursion
+	g->execMethod = 40;
 
 	a = g->sp - allArgsPushed + 1;
 	allArgsPushed -- ;
@@ -1231,7 +1242,7 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	int numEnvirArrays;
 	PyrObject *envirArrays[kMaxEnvirDepth];
 	
-	g->execMethod++; // for the benefit of primitives using interpreter recursion
+	g->execMethod = 50;
 
 	a = g->sp - numArgsPushed + 1;
 	numArgsPushed -- ;
@@ -1461,7 +1472,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	int numEnvirArrays;
 	PyrObject *envirArrays[kMaxEnvirDepth];
 	
-	g->execMethod++; // for the benefit of primitives using interpreter recursion
+	g->execMethod = 60;
 
 	a = g->sp - allArgsPushed + 1;
 	allArgsPushed -- ;
@@ -3054,10 +3065,11 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	oldthread = g->thread;
 	if (newthread == oldthread) return;
 	//postfl("->switchToThread %d %08X -> %08X\n", oldstate, oldthread, newthread);
+	//post("->switchToThread from %s-%s\n", g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
 	//post("->stack %08X  g->sp %08X [%d]  g->top %08X [%d]\n", 
 	//	g->gc->Stack()->slots, g->sp, g->sp - g->gc->Stack()->slots, g->top, g->top - g->gc->Stack()->slots);
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "switchToThreadA");
 	//gcDumpInfo(g->gc);
 	gc = g->gc;
 
@@ -3160,9 +3172,9 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	
 	//if (g->ip == (unsigned char *)-1) g->returnLevels = 1;
 	//else g->execMethod = 1; //??
-	g->execMethod = 1;
+	g->execMethod = 99;
 	
-	//post("switchToThread ip %d\n", g->ip);
+	//post("switchToThread ip %08X\n", g->ip);
 	//post("switchToThread newthread->ip.ui %d\n", newthread->ip.ui);
 	//post("switchToThread oldthread->ip.ui %d\n", oldthread->ip.ui);
 	//post("switchToThread returnLevels %d\n", g->returnLevels);
@@ -3190,7 +3202,8 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	//post("<-stack %08X  g->sp %08X [%d]  g->top %08X [%d]\n", 
 	//	g->gc->Stack()->slots, g->sp, g->sp - g->gc->Stack()->slots, g->top, g->top - g->gc->Stack()->slots);
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "switchToThreadB");
+	//post("switchToThread ip2 %08X\n", g->ip);
 }
 
 #if 0
@@ -3279,7 +3292,7 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 	
 	//postfl("->prThreadInit\n");
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "prThreadInit");
 	a = g->sp - 2;	// thread
 	b = g->sp - 1;	// function
 	c = g->sp;		// stacksize
@@ -3299,7 +3312,7 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 	
 	//postfl("<-prThreadInit\n");
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "<prThreadInit");
 	return errNone;
 }
 
@@ -3371,7 +3384,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 	
 	//postfl("->prRoutineYield %d %08X\n", g->level, g->thread);
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "prRoutineYield");
 	//postfl("->numArgsPushed %d\n", numArgsPushed);
 
 	value.ucopy = g->sp->ucopy;
@@ -3390,7 +3403,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 	//postfl("<-numArgsPushed %d\n", numArgsPushed);
 	//postfl("<-prRoutineYield %d\n", g->level);
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "<prRoutineYield");
 	return errNone;
 }
 
@@ -3399,9 +3412,9 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot value;
 	
-	//postfl("->prRoutineAlwaysYield\n");
+	//postfl("->prRoutineAlwaysYield ip %08X  rl %d\n", g->ip, g->returnLevels);
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "prRoutineAlwaysYield");
 	if (!isKindOf((PyrObject*)g->thread, class_routine)) {
 		error ("alwaysYield was called outside of a Routine.\n");
 		return errFailed;
@@ -3417,9 +3430,9 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
 	(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
 	
-	//postfl("<-prRoutineAlwaysYield %d\n", g->level);
+	//postfl("<-prRoutineAlwaysYield ip %08X  rl %d\n", g->ip, g->returnLevels);
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "<prRoutineAlwaysYield");
 	return errNone;
 }
 
@@ -3430,15 +3443,14 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 	PyrThread *thread;
 	int state;
 	
-	//postfl("->prRoutineResume\n");
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "prRoutineResume");
 	a = g->sp - 1;
 	b = g->sp;
 	
 	thread = a->uot;
 	state = thread->state.ui;
-	//postfl("state %d\n", state);
+	//postfl("->prRoutineResume %d\n", state);
 	if (state == tInit) {
 		threadSlot.ucopy = a->ucopy;
 		value.ucopy = b->ucopy;
@@ -3453,7 +3465,7 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		thread->clock.ucopy = g->thread->clock.ucopy;
  		g->gc->GCWrite(thread, &g->thread->clock);
 
-	//postfl("start into thread %08X from parent %08X\n", thread, g->thread);
+		//postfl("start into thread %08X from parent %08X\n", thread, g->thread);
 		switchToThread(g, thread, tYieldToChild, &numArgsPushed);
 		               
 		// set stack
@@ -3498,11 +3510,11 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 	PyrThread *thread;
 	int state;
 	
-	//post("->prRoutineReset\n");
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "prRoutineReset");
 	thread = g->sp->uot;
 	state = thread->state.ui;
+	//post("->prRoutineReset %d\n", state);
 	if (state == tYieldToParent || state == tYieldToChild) {
 		thread->state.ui = tInit;
 		thread->stack.uo->size = 0;
@@ -3540,7 +3552,7 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "<prRoutineReset");
 	return errNone;
 }
 
@@ -3551,7 +3563,7 @@ int prRoutineStop(struct VMGlobals *g, int numArgsPushed)
 	int state;
 	//post("->prRoutineStop\n");
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "prRoutineStop");
 	
 	thread = g->sp->uot;
 	state = thread->state.ui;
@@ -3571,7 +3583,7 @@ int prRoutineStop(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "<prRoutineStop");
 	return errNone;
 }
 
@@ -3584,7 +3596,7 @@ int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed)
 	
 	//post("->prRoutineYieldAndReset\n");
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "prRoutineYieldAndReset");
 	a = g->sp - 1;
 	b = g->sp;
 	
@@ -3606,7 +3618,7 @@ int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed)
 
 	//post("<-prRoutineYieldAndReset\n");
 	//assert(g->gc->SanityCheck());
-	//CallStackSanity(g);
+	//CallStackSanity(g, "prRoutineYieldAndReset");
 	return errNone;
 }
 
@@ -3789,7 +3801,7 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 		} else if (def->varArgs) { // has var args
 			numArgsNeeded = numArgsPushed;
 		} else {
-			g->sp += numArgsNeeded - numArgsPushed; // remove excess args
+			g->sp += diff; // remove excess args
 		}
 	}
 	g->numpop = numArgsNeeded - 1;
@@ -4006,55 +4018,55 @@ void initPrimitives()
 	definePrimitive(base, opSub, "_Sub", prSubNum, 2, 0); 
 	definePrimitive(base, opMul, "_Mul", prMulNum, 2, 0); 
 
-	definePrimitive(base, opIDiv, "_IDiv", doSpecialBinaryArithMsg, 2, 0); 
-	definePrimitive(base, opFDiv, "_FDiv", doSpecialBinaryArithMsg, 2, 0); 
-	definePrimitive(base, opMod, "_Mod", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opEQ, "_EQ", doSpecialBinaryArithMsg, 2, 0);		
-	definePrimitive(base, opNE, "_NE", doSpecialBinaryArithMsg, 2, 0); 
-	definePrimitive(base, opLT, "_LT", doSpecialBinaryArithMsg, 2, 0); 
-	definePrimitive(base, opGT, "_GT", doSpecialBinaryArithMsg, 2, 0); 
-	definePrimitive(base, opLE, "_LE", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opGE, "_GE", doSpecialBinaryArithMsg, 2, 0);
-	//definePrimitive(base, opIdentical, "_Identical", doSpecialBinaryArithMsg, 2, 0);
-	//definePrimitive(base, opNotIdentical, "_NotIdentical", doSpecialBinaryArithMsg, 2, 0);	
+	definePrimitive(base, opIDiv, "_IDiv", prSpecialBinaryArithMsg, 3, 0); 
+	definePrimitive(base, opFDiv, "_FDiv", prSpecialBinaryArithMsg, 3, 0); 
+	definePrimitive(base, opMod, "_Mod", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opEQ, "_EQ", prSpecialBinaryArithMsg, 3, 0);		
+	definePrimitive(base, opNE, "_NE", prSpecialBinaryArithMsg, 3, 0); 
+	definePrimitive(base, opLT, "_LT", prSpecialBinaryArithMsg, 3, 0); 
+	definePrimitive(base, opGT, "_GT", prSpecialBinaryArithMsg, 3, 0); 
+	definePrimitive(base, opLE, "_LE", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opGE, "_GE", prSpecialBinaryArithMsg, 3, 0);
+	//definePrimitive(base, opIdentical, "_Identical", prSpecialBinaryArithMsg, 3, 0);
+	//definePrimitive(base, opNotIdentical, "_NotIdentical", prSpecialBinaryArithMsg, 3, 0);	
 	
-	definePrimitive(base, opMin, "_Min", doSpecialBinaryArithMsg, 2, 0); 
-	definePrimitive(base, opMax, "_Max", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opBitAnd, "_BitAnd", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opBitOr, "_BitOr", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opBitXor, "_BitXor", doSpecialBinaryArithMsg, 2, 0);	
-	definePrimitive(base, opLCM, "_LCM", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opGCD, "_GCD", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opRound, "_Round", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opRoundUp, "_RoundUp", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opTrunc, "_Trunc", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opAtan2, "_Atan2", doSpecialBinaryArithMsg, 2, 0);	
-	definePrimitive(base, opHypot, "_Hypot", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opHypotx, "_HypotApx", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opPow, "_Pow", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opShiftLeft, "_ShiftLeft", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opShiftRight, "_ShiftRight", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opUnsignedShift, "_UnsignedShift", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opFill, "_Fill", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opRing1, "_Ring1", doSpecialBinaryArithMsg, 2, 0);	// a * (b + 1) == a * b + a
-	definePrimitive(base, opRing2, "_Ring2", doSpecialBinaryArithMsg, 2, 0);	// a * b + a + b
-	definePrimitive(base, opRing3, "_Ring3", doSpecialBinaryArithMsg, 2, 0);	// a*a*b
-	definePrimitive(base, opRing4, "_Ring4", doSpecialBinaryArithMsg, 2, 0);	// a*a*b - a*b*b
-	definePrimitive(base, opDifSqr, "_DifSqr", doSpecialBinaryArithMsg, 2, 0);	// a*a - b*b
-	definePrimitive(base, opSumSqr, "_SumSqr", doSpecialBinaryArithMsg, 2, 0);	// a*a + b*b
-	definePrimitive(base, opSqrSum, "_SqrSum", doSpecialBinaryArithMsg, 2, 0);	// (a + b)^2
-	definePrimitive(base, opSqrDif, "_SqrDif", doSpecialBinaryArithMsg, 2, 0);	// (a - b)^2
-	definePrimitive(base, opAbsDif, "_AbsDif", doSpecialBinaryArithMsg, 2, 0);	// abs(a - b)
-	definePrimitive(base, opThresh, "_Thresh", doSpecialBinaryArithMsg, 2, 0);	// a * max(0,b)
-	definePrimitive(base, opAMClip, "_AMClip", doSpecialBinaryArithMsg, 2, 0);	// a * max(0,b)
-	definePrimitive(base, opScaleNeg, "_ScaleNeg", doSpecialBinaryArithMsg, 2, 0);	// a < 0 ? a*b : a
-	definePrimitive(base, opClip2, "_Clip2", doSpecialBinaryArithMsg, 2, 0);	
-	definePrimitive(base, opFold2, "_Fold2", doSpecialBinaryArithMsg, 2, 0);	
-	definePrimitive(base, opWrap2, "_Wrap2", doSpecialBinaryArithMsg, 2, 0);	
-	definePrimitive(base, opExcess, "_Excess", doSpecialBinaryArithMsg, 2, 0);	
-	definePrimitive(base, opFirstArg, "_FirstArg", doSpecialBinaryArithMsg, 2, 0);	
-	definePrimitive(base, opRandRange, "_RandRange", doSpecialBinaryArithMsg, 2, 0);
-	definePrimitive(base, opExpRandRange, "_ExpRandRange", doSpecialBinaryArithMsg, 2, 0);
+	definePrimitive(base, opMin, "_Min", prSpecialBinaryArithMsg, 3, 0); 
+	definePrimitive(base, opMax, "_Max", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opBitAnd, "_BitAnd", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opBitOr, "_BitOr", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opBitXor, "_BitXor", prSpecialBinaryArithMsg, 3, 0);	
+	definePrimitive(base, opLCM, "_LCM", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opGCD, "_GCD", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opRound, "_Round", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opRoundUp, "_RoundUp", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opTrunc, "_Trunc", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opAtan2, "_Atan2", prSpecialBinaryArithMsg, 3, 0);	
+	definePrimitive(base, opHypot, "_Hypot", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opHypotx, "_HypotApx", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opPow, "_Pow", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opShiftLeft, "_ShiftLeft", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opShiftRight, "_ShiftRight", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opUnsignedShift, "_UnsignedShift", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opFill, "_Fill", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opRing1, "_Ring1", prSpecialBinaryArithMsg, 3, 0);	// a * (b + 1) == a * b + a
+	definePrimitive(base, opRing2, "_Ring2", prSpecialBinaryArithMsg, 3, 0);	// a * b + a + b
+	definePrimitive(base, opRing3, "_Ring3", prSpecialBinaryArithMsg, 3, 0);	// a*a*b
+	definePrimitive(base, opRing4, "_Ring4", prSpecialBinaryArithMsg, 3, 0);	// a*a*b - a*b*b
+	definePrimitive(base, opDifSqr, "_DifSqr", prSpecialBinaryArithMsg, 3, 0);	// a*a - b*b
+	definePrimitive(base, opSumSqr, "_SumSqr", prSpecialBinaryArithMsg, 3, 0);	// a*a + b*b
+	definePrimitive(base, opSqrSum, "_SqrSum", prSpecialBinaryArithMsg, 3, 0);	// (a + b)^2
+	definePrimitive(base, opSqrDif, "_SqrDif", prSpecialBinaryArithMsg, 3, 0);	// (a - b)^2
+	definePrimitive(base, opAbsDif, "_AbsDif", prSpecialBinaryArithMsg, 3, 0);	// abs(a - b)
+	definePrimitive(base, opThresh, "_Thresh", prSpecialBinaryArithMsg, 3, 0);	// a * max(0,b)
+	definePrimitive(base, opAMClip, "_AMClip", prSpecialBinaryArithMsg, 3, 0);	// a * max(0,b)
+	definePrimitive(base, opScaleNeg, "_ScaleNeg", prSpecialBinaryArithMsg, 3, 0);	// a < 0 ? a*b : a
+	definePrimitive(base, opClip2, "_Clip2", prSpecialBinaryArithMsg, 3, 0);	
+	definePrimitive(base, opFold2, "_Fold2", prSpecialBinaryArithMsg, 3, 0);	
+	definePrimitive(base, opWrap2, "_Wrap2", prSpecialBinaryArithMsg, 3, 0);	
+	definePrimitive(base, opExcess, "_Excess", prSpecialBinaryArithMsg, 3, 0);	
+	definePrimitive(base, opFirstArg, "_FirstArg", prSpecialBinaryArithMsg, 3, 0);	
+	definePrimitive(base, opRandRange, "_RandRange", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opExpRandRange, "_ExpRandRange", prSpecialBinaryArithMsg, 3, 0);
 
 	// general primitives
 	base = nextPrimitiveIndex();

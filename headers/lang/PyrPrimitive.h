@@ -36,5 +36,7 @@ int definePrimitive(int base, int index, char *name, PrimitiveHandler handler, i
 int definePrimitiveWithKeys(int base, int index, char *name, 
 	PrimitiveHandler handler, PrimitiveWithKeysHandler keyhandler,
 	int numArgs, int varArgs);
+int getPrimitiveNumArgs(int index);
+PyrSymbol* getPrimitiveName(int index);
 
 #endif

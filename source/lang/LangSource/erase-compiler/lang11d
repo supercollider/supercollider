@@ -708,15 +708,10 @@ expr	: expr1
 				slotnode = newPyrSlotNode(&slot);
 				$$ = (long)newPyrCallNode(slotnode, args, 0, 0); 
 			}
-		| expr binop expr %prec BINOP
+		| expr binop2 adverb expr %prec BINOP
 			{ 
 				$$ = (long)newPyrBinopCallNode((PyrSlotNode*)$2, 
-						(PyrParseNode*)$1, (PyrParseNode*)$3); 
-			}
-		| expr keybinop expr %prec BINOP
-			{ 
-				$$ = (long)newPyrBinopCallNode((PyrSlotNode*)$2, 
-						(PyrParseNode*)$1, (PyrParseNode*)$3); 
+						(PyrParseNode*)$1, (PyrParseNode*)$4, (PyrParseNode*)$3); 
 			}
 		| name '=' expr
 			{ 
@@ -783,6 +778,12 @@ expr	: expr1
 			}
 		;
 
+adverb  : { $$ = 0; }
+		| '.' name { $$ = (long)newPyrPushLitNode((PyrSlotNode*)$2, NULL); }
+		| '.' binop { $$ = (long)newPyrPushLitNode((PyrSlotNode*)$2, NULL); }
+		| '.' '(' exprseq ')' { $$ = $3; }
+		;
+		
 exprn	: expr
 		| exprn ';' expr
 			{ 
@@ -1133,3 +1134,8 @@ binop	: BINOP { $$ = zzval; }
 keybinop : KEYBINOP { $$ = zzval; }	
 		;
 		
+binop2  : binop
+		| keybinop
+		;
+		
+	

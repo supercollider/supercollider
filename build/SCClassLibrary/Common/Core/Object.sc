@@ -36,31 +36,7 @@ Object {
 		
 	//accessing
 	size { ^0 }
-	
-	instVarSize { _InstVarSize; ^this.primitiveFailed }
-	instVarAt { arg index; 
-		_InstVarAt;
-		^this.primitiveFailed;
-	}
-	instVarPut { arg index, item; 
-		_InstVarPut;
-		^this.primitiveFailed;
-	}
-	
-	// see counterparts to these in ArrayedCollection 
-	slotSize {
-		^this.instVarSize;
-	}
-	slotAt { arg index;
-		^this.instVarAt(index);
-	}
-	slotPut { arg index, value;
-		^this.instVarPut(index, value);
-	}
-	slotKey { arg index;
-		^this.class.instVarNames.at(index)
-	}
-	
+			
 	do { arg function; function.value(this, 0) }
 	//reverseDo { arg function; function.value(this, 0) }
 	
@@ -253,6 +229,7 @@ Object {
 		_ObjectCompileString 
 		^String.streamContents({ arg stream; this.storeOn(stream); });
 	}
+
 	printOn { arg stream;
 		var title;
 		title = this.class.name.asString;
@@ -438,6 +415,18 @@ Object {
 	isUGen { ^false }
 	
 	
+	pair { arg that; ^[this, that] }
+	pairs { arg that;
+		var list;
+		list = [];
+		this.asArray.do {|a|
+			that.asArray.do {|b|
+				list = list.add(a.asArray ++ b)
+			};
+		};
+		^list;
+	}
+	
 
 	// scheduling
 	awake { arg beats, seconds, clock;
@@ -449,7 +438,7 @@ Object {
 	clock_ {  } // for Clock
 
 	// catch binary operators failure
-	performBinaryOpOnSomething { arg aSelector;
+	performBinaryOpOnSomething { arg aSelector, adverb;
 		if (aSelector === '==', {
 			^false
 		},{
@@ -461,23 +450,23 @@ Object {
 			this.halt 
 		})});
 	}
-	performBinaryOpOnSimpleNumber { arg aSelector;
-		^this.performBinaryOpOnSomething(aSelector)
+	performBinaryOpOnSimpleNumber { arg aSelector, adverb;
+		^this.performBinaryOpOnSomething(aSelector, adverb)
 	}
-	performBinaryOpOnSignal { arg aSelector;
-		^this.performBinaryOpOnSomething(aSelector)
+	performBinaryOpOnSignal { arg aSelector, adverb;
+		^this.performBinaryOpOnSomething(aSelector, adverb)
 	}
-	performBinaryOpOnComplex { arg aSelector;
-		^this.performBinaryOpOnSomething(aSelector)
+	performBinaryOpOnComplex { arg aSelector, adverb;
+		^this.performBinaryOpOnSomething(aSelector, adverb)
 	}
-	performBinaryOpOnSeqColl { arg aSelector;
-		^this.performBinaryOpOnSomething(aSelector)
+	performBinaryOpOnSeqColl { arg aSelector, adverb;
+		^this.performBinaryOpOnSomething(aSelector, adverb)
 	}
-	performBinaryOpOnUGen { arg aSelector;
-		^this.performBinaryOpOnSomething(aSelector)
+	performBinaryOpOnUGen { arg aSelector, adverb;
+		^this.performBinaryOpOnSomething(aSelector, adverb)
 	}
-	performBinaryOpOnInfinitum { arg aSelector;
-		^this.performBinaryOpOnSomething(aSelector)
+	performBinaryOpOnInfinitum { arg aSelector, adverb;
+		^this.performBinaryOpOnSomething(aSelector, adverb)
 	}
 	
 	writeDefFile { arg name, dir="synthdefs/";
@@ -497,4 +486,90 @@ Object {
 	isOutputUGen { ^false }
 	isControlUGen { ^false }
 	source { ^this }
+
+	// these are the same as new and newCopyArgs, but should not be overridden by any class.
+	*prNew { arg maxSize = 0; 
+		_BasicNew 
+		^this.primitiveFailed
+		// creates a new instance that can hold up to maxSize 
+		// indexable slots. the indexed size will be zero.
+		// to actually put things in the object you need to
+		// add them.
+	}
+	*prNewCopyArgs { arg ... args; 
+		_BasicNewCopyArgsToInstVars 
+		^this.primitiveFailed
+		// creates a new instance that can hold up to maxSize 
+		// indexable slots. the indexed size will be zero.
+		// to actually put things in the object you need to
+		// add them.
+	}
+	
+	//////
+	// these are dangerous operations as they break encapsulation and 
+	// can allow access to slots that should not be accessed because they are private to the
+	// virtual machine, such as Frame objects. 
+	// Use with caution.
+	// see counterparts to these in ArrayedCollection 
+	slotSize {
+		^this.instVarSize;
+	}
+	slotAt { arg index;
+		// index can be an integer or symbol.
+		^this.instVarAt(index);
+	}
+	slotPut { arg index, value;
+		// index can be an integer or symbol.
+		^this.instVarPut(index, value);
+	}
+	slotKey { arg index;
+		// index must be an integer.
+		^this.class.instVarNames.at(index)
+	}
+	slotIndex { arg key;
+		// key must be a symbol.
+		^this.class.instVarNames.indexOf(key)
+	}
+	slotsDo { arg function;
+		this.slotSize.do {|i|
+			function.value(this.slotKey(i), this.slotAt(i), i);
+		};
+	}
+	slotValuesDo { arg function;
+		this.slotSize.do {|i|
+			function.value(this.slotAt(i), i);
+		};
+	}
+	
+	// getSlots and setSlots will be used for a new implementation of asCompileString.
+	// getSlots stores the keys and values so that if the instance 
+	// variable order changes, setSlots they will still set the right one.
+	getSlots {
+		var array;
+		array = Array.new(this.slotSize * 2);
+		this.slotSize.do {|i|
+			array.add(this.slotKey(i));
+			array.add(this.slotAt(i));
+		};
+		^array;
+	}	
+	setSlots { arg array;
+		array.pairsDo {|key, value|
+			this.slotPut(key, value);
+		}
+	}
+
+	instVarSize { _InstVarSize; ^this.primitiveFailed }
+	instVarAt { arg index; 
+		// index can be an integer or symbol.
+		_InstVarAt;
+		^this.primitiveFailed;
+	}
+	instVarPut { arg index, item; 
+		// index can be an integer or symbol.
+		_InstVarPut;
+		^this.primitiveFailed;
+	}
+	////////////
+
 }

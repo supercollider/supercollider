@@ -80,11 +80,11 @@ Routine : Thread {
 		^this.value(inval) 
 	}
 	
-	reset { arg inval;
+	reset {
 		_RoutineReset
 		^this.primitiveFailed
 	}
-	stop { arg inval;
+	stop {
 		_RoutineStop
 		^this.primitiveFailed
 	}
@@ -94,6 +94,7 @@ Routine : Thread {
 	awake { arg inBeats, inSeconds, inClock;
 		var temp;
 		temp = inBeats; // prevent optimization
+		
 		^this.next(inBeats)
 	}
 	prStart { arg inval;

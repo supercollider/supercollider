@@ -79,6 +79,15 @@ ArrayedCollection : SequenceableCollection {
 	slotKey { arg index;
 		^index
 	}
+	slotIndex { arg key;
+		^nil
+	}
+	getSlots {
+		^this.copy
+	}
+	setSlots { arg array;
+		this.overWrite(array)
+	}
 	
 	atModify { arg index, function; function.value(this.at(index)) }
 	atInc { arg index, inc=1; this.put(index, this.at(index)+inc); }
@@ -175,7 +184,7 @@ ArrayedCollection : SequenceableCollection {
 		// primitive fails if arrays are different types
 		^super ++ anArray
 	}
-	overWrite { arg aCollection, pos;
+	overWrite { arg aCollection, pos=0;
 		var array, grow;
 		_ArrayOverwrite
 		^this.primitiveFailed

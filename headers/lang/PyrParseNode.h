@@ -122,6 +122,7 @@ struct PyrBinopCallNode : public PyrParseNode {
 	struct PyrSlotNode* selector;
 	struct PyrParseNode *arg1;
 	struct PyrParseNode *arg2;
+	struct PyrParseNode *arg3;
 } ;
 
 extern PyrParseNodeClass *pyrBinopCallNodeClass;
@@ -306,7 +307,7 @@ PyrVarDefNode* newPyrVarDefNode(PyrSlotNode* varName, PyrLiteralNode* defVal, in
 PyrCallNode* newPyrCallNode(PyrSlotNode* selector, PyrParseNode* arglist,
 	PyrParseNode* keyarglist, PyrParseNode* blocklist);
 PyrBinopCallNode* newPyrBinopCallNode(PyrSlotNode* selector,
-	PyrParseNode* arg1, PyrParseNode* arg2);
+	PyrParseNode* arg1, PyrParseNode* arg2, PyrParseNode* arg3);
 PyrDropNode* newPyrDropNode(PyrParseNode* expr1, PyrParseNode* expr2);
 PyrPushKeyArgNode* newPyrPushKeyArgNode(PyrSlotNode* selector, PyrParseNode* expr);
 PyrPushLitNode* newPyrPushLitNode(PyrSlotNode* literalSlot, PyrParseNode* literalObj);

@@ -7,7 +7,7 @@ Function : AbstractFunction {
 	
 	isClosed { _FunctionIsClosed }
 
-	storeOn { arg stream; stream << (def.sourceCode ? "Function.new")  }
+	storeOn { arg stream; stream << def.sourceCode }
 	
 	shallowCopy { ^this }
 	
@@ -50,7 +50,7 @@ Function : AbstractFunction {
 		// thus it can be implemented in terms of itself
 		loop({ this.value });
 	}
-	
+
 	block {
 		this.value({ arg val; ^val });
 	}

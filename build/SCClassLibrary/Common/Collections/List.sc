@@ -61,14 +61,11 @@ List : SequenceableCollection {
 	reverseDo { arg function;
 		array.reverseDo(function);
 	}
+	pairsDo { arg function;
+		array.pairsDo(function);
+	}
 	doAdjacentPairs { arg function;
-		var i, last;
-		i = 0;
-		last = this.size - 2;
-		while ({ i <= last },{ 
-			function.value(array.at(i), array.at(i+1), i);
-			i = i + 1;
-		})
+		array.doAdjacentPairs(function);
 	}
 	
 	// ordering

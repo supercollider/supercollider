@@ -16,7 +16,9 @@ Point {
 	asPolar { ^Polar.new(this.rho, this.theta) }
 	asRect { ^Rect.new(0,0,x,y) }
 	
-	== { arg aPoint; ^(x == aPoint.x) and: { y == aPoint.y } }
+	== { arg aPoint;
+		^(x == aPoint.x) and: { y == aPoint.y } 
+	}
 	hash { ^ (x.hash << 1) bitXor: y.hash }
 		
 	+ { arg delta; 
@@ -81,9 +83,7 @@ Point {
 	printOn { arg stream;
 		stream << this.class.name << "( " << x << ", " << y << " )";
 	}
-	storeOn { arg stream;
-		stream << this.class.name << "( " <<< x << ", " <<< y << " )";
-	}
+	storeArgs { ^[x,y] }
 }
 
 

@@ -356,6 +356,10 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool, int processID)
 
 bool initAwakeMessage(VMGlobals *g)
 {
+	//post("initAwakeMessage %08X %08X\n", g->thread, g->process->mainThread.uot);
+	g->process->curThread.ucopy = g->process->mainThread.ucopy; //??
+	g->thread = g->process->mainThread.uot; //??
+	
 	// these will be set up when the run method is called
 	g->method = NULL;
 	g->block = NULL;
@@ -473,11 +477,13 @@ void Interpret(VMGlobals *g)
 	g->returnLevels = 0;
 	numKeyArgsPushed = 0;
 
+
 	while (true) {  // not going to indent body to save line space
 
 #if BCSTAT
 	prevop = op1;
 #endif
+
 	op1 = ip[1]; ip++;
 #if BCSTAT
 	bcstat[op1]++;
@@ -489,7 +495,7 @@ void Interpret(VMGlobals *g)
 #if DEBUGINTERPRETER
 	if (gTraceInterpreter) {
 		//DumpStack(g, (PyrSlot*)sp);
-		if (FrameSanity(g->frame)) {
+		if (FrameSanity(g->frame, "dbgint")) {
 			//Debugger();
 		}
 		//g->gc->SanityCheck();
@@ -673,7 +679,7 @@ void Interpret(VMGlobals *g)
 			op2 = ip[1]; ip++; // get selector index
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			g->primitiveIndex = op2;
-			doSpecialBinaryArithMsg(g, -1);
+			doSpecialBinaryArithMsg(g, 2, false);
 			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip;
 			break;
@@ -1655,7 +1661,7 @@ void Interpret(VMGlobals *g)
 		case 236 :  case 237 :  case 238 :  case 239 :
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			g->primitiveIndex = op1 & 15;
-			doSpecialBinaryArithMsg(g, -1);
+			doSpecialBinaryArithMsg(g, 2, false);
 			if (g->returnLevels) { --g->returnLevels; return; }
 			sp = (double*)g->sp; ip = g->ip;
 			break;
@@ -1781,7 +1787,13 @@ void Interpret(VMGlobals *g)
 			
 			//assert(g->gc->SanityCheck());
 			break;
-		case 254 : // opcUnused1
+		case 254 : // opcSpecialBinaryOpWithAdverb
+			op2 = ip[1]; ip++; // get selector index
+			g->sp = (PyrSlot*)sp; g->ip = ip; 
+			g->primitiveIndex = op2;
+			doSpecialBinaryArithMsg(g, 3, false);
+			if (g->returnLevels) { --g->returnLevels; return; }
+			sp = (double*)g->sp; ip = g->ip;
 			break;
 		case 255 : // opcUnused2
 			/*
@@ -2053,7 +2065,7 @@ void DumpBackTrace(VMGlobals *g)
 	frame = g->frame;
 	
 	for (i=0; i<16; ++i) {
-		if (FrameSanity(frame)) {
+		if (FrameSanity(frame, "DumpBackTrace")) {
 			post("FRAME CORRUPTED\n");
 			return;
 		}
@@ -2078,7 +2090,7 @@ void DumpDetailedBackTrace(VMGlobals *g)
 	frame = g->frame;
 	
 	for (i=0; i<16; ++i) {
-		if (FrameSanity(frame)) {
+		if (FrameSanity(frame, "DumpDetailedBackTrace")) {
 			post("FRAME CORRUPTED\n");
 			return;
 		}

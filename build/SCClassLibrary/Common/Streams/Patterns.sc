@@ -35,11 +35,11 @@ Pattern : AbstractFunction {
 	composeUnaryOp { arg operator;
 		^Punop.new(operator, this)
 	}
-	composeBinaryOp { arg operator, pattern;
-		^Pbinop.new(operator, this, pattern)
+	composeBinaryOp { arg operator, pattern, adverb;
+		^Pbinop.new(operator, this, pattern, adverb)
 	}
-	reverseComposeBinaryOp { arg operator, pattern;
-		^Pbinop.new(operator, pattern, this)
+	reverseComposeBinaryOp { arg operator, pattern, adverb;
+		^Pbinop.new(operator, pattern, this, adverb)
 	}
 	composeNAryOp { arg selector, argList;
 		^Pnaryop.new(selector, this, argList);
@@ -106,16 +106,22 @@ Punop : Pattern {
 }
 
 Pbinop : Pattern {
-	var <>operator, <>a, <>b;
-	*new { arg operator, a, b;
-		^super.newCopyArgs(operator, a, b)
+	var <>operator, <>a, <>b, <>adverb;
+	*new { arg operator, a, b, adverb;
+		^super.newCopyArgs(operator, a, b, adverb)
 	}
-	storeArgs { ^[operator,a,b] }
+	storeArgs { ^[operator, a, b, adverb] }
 	asStream {
 		var streamA, streamB;
 		streamA = a.asStream;
 		streamB = b.asStream;
-		^BinaryOpStream.new(operator, streamA, streamB);
+		if (adverb.isNil) {
+			^BinaryOpStream.new(operator, streamA, streamB);
+		};
+		if (adverb == 'x') {
+			^BinaryOpXStream.new(operator, streamA, streamB);
+		};
+		^nil
 	}
 }
 

@@ -33,6 +33,7 @@
 #include "InitAlloc.h"
 #include "PredefinedSymbols.h"
 #include "SimpleStack.h"
+#include "PyrPrimitive.h"
 
 AdvancingAllocPool gParseNodePool;
 
@@ -1366,6 +1367,14 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 	methType = methNormal;
 	if (hasPrimitive) {
 		methType = methPrimitive;
+		/*
+		if (getPrimitiveNumArgs(methraw->specialIndex) != numArgs) {
+			post("warning: number of arguments for method %s-%s does not match primitive %s. %d vs %d\n",
+				gCompilingClass->name.us->name, gCompilingMethod->name.us->name,
+				getPrimitiveName(methraw->specialIndex)->name,
+				numArgs, getPrimitiveNumArgs(methraw->specialIndex));
+		}
+		*/
 	} else if (gCompilingMethod->name.us == s_nocomprendo) {
 		methType = methNormal;
 	} else {
@@ -2167,7 +2176,7 @@ void compileLoopMsg(PyrCallNode* node)
 }
 
 PyrBinopCallNode* newPyrBinopCallNode(PyrSlotNode* selector,
-	PyrParseNode* arg1, PyrParseNode* arg2)
+	PyrParseNode* arg1, PyrParseNode* arg2, PyrParseNode* arg3)
 {
 	PyrBinopCallNode* node;
 	node = ALLOCNODE(PyrBinopCallNode);
@@ -2179,12 +2188,13 @@ PyrBinopCallNode* newPyrBinopCallNode(PyrSlotNode* selector,
 	node->selector = selector;
 	node->arg1 = arg1;
 	node->arg2 = arg2;
+	node->arg3 = arg3;
 	return node;
 }
 
 void compilePyrBinopCallNode(PyrBinopCallNode* node, void *result)
 {
-	int index, selType, isSuper;
+	int index, selType, isSuper, numArgs;
 	long dummy;
 	
 	//postfl("compilePyrBinopCallNode\n");
@@ -2192,27 +2202,37 @@ void compilePyrBinopCallNode(PyrBinopCallNode* node, void *result)
 	node->selector->slot.us->flags |= sym_Called;
 	index = conjureSelectorIndex((PyrParseNode*)node->selector, gCompilingBlock, 
 		isSuper, node->selector->slot.us, &selType);
+	numArgs = node->arg3 ? 3 : 2;
 	if (isSuper) {
 		COMPILENODE(node->arg1, &dummy);
 		COMPILENODE(node->arg2, &dummy);
-		compileOpcode(opSendSuper, 2);
+		if (node->arg3) COMPILENODE(node->arg3, &dummy);
+		compileOpcode(opSendSuper, numArgs);
 		compileByte(index);
 	} else {
 		switch (selType) {
 			case selNormal :
 				COMPILENODE(node->arg1, &dummy);
 				COMPILENODE(node->arg2, &dummy);
-				compileOpcode(opSendMsg, 2);
+				if (node->arg3) COMPILENODE(node->arg3, &dummy);
+				compileOpcode(opSendMsg, numArgs);
 				compileByte(index);
 				break;
 			case selSpecial :
 				COMPILENODE(node->arg1, &dummy);
 				COMPILENODE(node->arg2, &dummy);
-				compileOpcode(opSendSpecialMsg, 2);
+				if (node->arg3) COMPILENODE(node->arg3, &dummy);
+				compileOpcode(opSendSpecialMsg, numArgs);
 				compileByte(index);
 				break;
 			case selBinary :
-				if (index == opAdd && node->arg2->classno == pn_PushLitNode
+				if (node->arg3) {
+					COMPILENODE(node->arg1, &dummy);
+					COMPILENODE(node->arg2, &dummy);
+					COMPILENODE(node->arg3, &dummy);
+					compileOpcode(opSpecialOpcode, opcSpecialBinaryOpWithAdverb);
+					compileByte(index);
+				} else if (index == opAdd && node->arg2->classno == pn_PushLitNode
 					&& ((PyrPushLitNode*)node->arg2)->literalSlot.utag == tagInt
 					&& ((PyrPushLitNode*)node->arg2)->literalSlot.ui == 1) {
 					COMPILENODE(node->arg1, &dummy);
@@ -2237,7 +2257,8 @@ void compilePyrBinopCallNode(PyrBinopCallNode* node, void *result)
 			default :
 				COMPILENODE(node->arg1, &dummy);
 				COMPILENODE(node->arg2, &dummy);
-				compileOpcode(opSendMsg, 2);
+				if (node->arg3) COMPILENODE(node->arg3, &dummy);
+				compileOpcode(opSendMsg, numArgs);
 				compileByte(index);
 				break;
 		}

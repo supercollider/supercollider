@@ -118,6 +118,7 @@ void dumpPyrBinopCallNode(PyrBinopCallNode* node, int level)
 	postfl("%2d BinopCall '%s'\n", level, node->selector->slot.us->name);
 	DUMPNODE(node->arg1, level+1);
 	DUMPNODE(node->arg2, level+1);
+	DUMPNODE(node->arg3, level+1);
 	DUMPNODE(node->next, level);
 }
 

@@ -44,7 +44,11 @@ Nil {
 	transformEvent { arg event;
 		^event
 	}
-	awake {}
+	awake { arg inBeats, inSeconds, inClock;
+		var temp;
+		temp = inBeats; // prevent optimization
+		^nil
+	}
 	play {}
 	
 	swapThisGroup {}

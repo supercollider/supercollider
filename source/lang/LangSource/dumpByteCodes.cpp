@@ -557,7 +557,8 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			post(" %02X %02X JumpBak %d  (%d)\n", op2, op3, jmplen, n - jmplen + 1);
 			break;
 		case 254 :
-			post("       Unused1\n");
+			op2 = *ip++;
+			post(" %02X    SpecialBinaryOpWithAdverb\n", op2);
 			break;
 		case 255 :
 			post("       Unused2\n");

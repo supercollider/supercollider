@@ -60,56 +60,56 @@ SimpleNumber : Number {
 	scurve { _SCurve; ^this.primitiveFailed }
 	ramp { _Ramp; ^this.primitiveFailed }
 	
-	+ { arg aNumber; _Add; ^aNumber.performBinaryOpOnSimpleNumber('+', this) }
-	- { arg aNumber; _Sub; ^aNumber.performBinaryOpOnSimpleNumber('-', this) }
-	* { arg aNumber; _Mul; ^aNumber.performBinaryOpOnSimpleNumber('*', this) }
-	/ { arg aNumber; _FDiv; ^aNumber.performBinaryOpOnSimpleNumber('/', this) }
-	mod { arg aNumber; _Mod; ^aNumber.performBinaryOpOnSimpleNumber('mod', this) }
-	div { arg aNumber; _IDiv; ^aNumber.performBinaryOpOnSimpleNumber('div', this) }
-	pow { arg aNumber; _Pow; ^aNumber.performBinaryOpOnSimpleNumber('pow', this) }
-	min { arg aNumber; _Min; ^aNumber.performBinaryOpOnSimpleNumber('min', this) } 
-	max { arg aNumber=0.0; _Max; ^aNumber.performBinaryOpOnSimpleNumber('max', this) }
-	bitAnd { arg aNumber; _BitAnd; ^aNumber.performBinaryOpOnSimpleNumber('bitAnd', this) }
-	bitOr { arg aNumber; _BitOr; ^aNumber.performBinaryOpOnSimpleNumber('bitOr', this) }
-	bitXor { arg aNumber; _BitXor; ^aNumber.performBinaryOpOnSimpleNumber('bitXor', this) }	
-	lcm { arg aNumber; _LCM; ^aNumber.performBinaryOpOnSimpleNumber('lcm', this) }
-	gcd { arg aNumber; _GCD; ^aNumber.performBinaryOpOnSimpleNumber('gcd', this) }
-	round { arg aNumber=1.0; _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this) }
-	roundUp { arg aNumber=1.0; _RoundUp; ^aNumber.performBinaryOpOnSimpleNumber('roundUp', this) }
-	trunc { arg aNumber=1.0; _Trunc; ^aNumber.performBinaryOpOnSimpleNumber('trunc', this) }
-	atan2 { arg aNumber; _Atan2; ^aNumber.performBinaryOpOnSimpleNumber('atan2', this) }	
-	hypot { arg aNumber; _Hypot; ^aNumber.performBinaryOpOnSimpleNumber('hypot', this) }
-	hypotApx { arg aNumber; _HypotApx; ^aNumber.performBinaryOpOnSimpleNumber('hypotApx', this) }
-	leftShift { arg aNumber=1; _ShiftLeft; ^aNumber.performBinaryOpOnSimpleNumber('leftShift', this) }
-	rightShift { arg aNumber=1; _ShiftRight; ^aNumber.performBinaryOpOnSimpleNumber('rightShift', this) }
-	unsignedRightShift { arg aNumber; _UnsignedShift; ^aNumber.performBinaryOpOnSimpleNumber('unsignedRightShift', this) }
-	ring1 { arg aNumber; _Ring1; ^aNumber.performBinaryOpOnSimpleNumber('ring1', this) }
-	ring2 { arg aNumber; _Ring2; ^aNumber.performBinaryOpOnSimpleNumber('ring2', this) }
-	ring3 { arg aNumber; _Ring3; ^aNumber.performBinaryOpOnSimpleNumber('ring3', this) }
-	ring4 { arg aNumber; _Ring4; ^aNumber.performBinaryOpOnSimpleNumber('ring4', this) }
-	difsqr { arg aNumber; _DifSqr; ^aNumber.performBinaryOpOnSimpleNumber('difsqr', this) }
-	sumsqr { arg aNumber; _SumSqr; ^aNumber.performBinaryOpOnSimpleNumber('sumsqr', this) }
-	sqrsum { arg aNumber; _SqrSum; ^aNumber.performBinaryOpOnSimpleNumber('sqrsum', this) }
-	sqrdif { arg aNumber; _SqrDif; ^aNumber.performBinaryOpOnSimpleNumber('sqrdif', this) }
-	absdif { arg aNumber; _AbsDif; ^aNumber.performBinaryOpOnSimpleNumber('absdif', this) }
-	thresh { arg aNumber; _Thresh; ^aNumber.performBinaryOpOnSimpleNumber('thresh', this) }
-	amclip { arg aNumber; _AMClip; ^aNumber.performBinaryOpOnSimpleNumber('amclip', this) }
-	scaleneg { arg aNumber; _ScaleNeg; ^aNumber.performBinaryOpOnSimpleNumber('scaleneg', this) }
-	clip2 { arg aNumber; _Clip2; ^aNumber.performBinaryOpOnSimpleNumber('clip2', this) }
-	fold2 { arg aNumber; _Fold2; ^aNumber.performBinaryOpOnSimpleNumber('fold2', this) }
-	wrap2 { arg aNumber; _Wrap2; ^aNumber.performBinaryOpOnSimpleNumber('wrap2', this) }
+	+ { arg aNumber, adverb; _Add; ^aNumber.performBinaryOpOnSimpleNumber('+', this, adverb) }
+	- { arg aNumber, adverb; _Sub; ^aNumber.performBinaryOpOnSimpleNumber('-', this, adverb) }
+	* { arg aNumber, adverb; _Mul; ^aNumber.performBinaryOpOnSimpleNumber('*', this, adverb) }
+	/ { arg aNumber, adverb; _FDiv; ^aNumber.performBinaryOpOnSimpleNumber('/', this, adverb) }
+	mod { arg aNumber, adverb; _Mod; ^aNumber.performBinaryOpOnSimpleNumber('mod', this, adverb) }
+	div { arg aNumber, adverb; _IDiv; ^aNumber.performBinaryOpOnSimpleNumber('div', this, adverb) }
+	pow { arg aNumber, adverb; _Pow; ^aNumber.performBinaryOpOnSimpleNumber('pow', this, adverb) }
+	min { arg aNumber, adverb; _Min; ^aNumber.performBinaryOpOnSimpleNumber('min', this, adverb) } 
+	max { arg aNumber=0.0, adverb; _Max; ^aNumber.performBinaryOpOnSimpleNumber('max', this, adverb) }
+	bitAnd { arg aNumber, adverb; _BitAnd; ^aNumber.performBinaryOpOnSimpleNumber('bitAnd', this, adverb) }
+	bitOr { arg aNumber, adverb; _BitOr; ^aNumber.performBinaryOpOnSimpleNumber('bitOr', this, adverb) }
+	bitXor { arg aNumber, adverb; _BitXor; ^aNumber.performBinaryOpOnSimpleNumber('bitXor', this, adverb) }	
+	lcm { arg aNumber, adverb; _LCM; ^aNumber.performBinaryOpOnSimpleNumber('lcm', this, adverb) }
+	gcd { arg aNumber, adverb; _GCD; ^aNumber.performBinaryOpOnSimpleNumber('gcd', this, adverb) }
+	round { arg aNumber=1.0, adverb; _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this, adverb) }
+	roundUp { arg aNumber=1.0, adverb; _RoundUp; ^aNumber.performBinaryOpOnSimpleNumber('roundUp', this, adverb) }
+	trunc { arg aNumber=1.0, adverb; _Trunc; ^aNumber.performBinaryOpOnSimpleNumber('trunc', this, adverb) }
+	atan2 { arg aNumber, adverb; _Atan2; ^aNumber.performBinaryOpOnSimpleNumber('atan2', this, adverb) }	
+	hypot { arg aNumber, adverb; _Hypot; ^aNumber.performBinaryOpOnSimpleNumber('hypot', this, adverb) }
+	hypotApx { arg aNumber, adverb; _HypotApx; ^aNumber.performBinaryOpOnSimpleNumber('hypotApx', this, adverb) }
+	leftShift { arg aNumber=1, adverb; _ShiftLeft; ^aNumber.performBinaryOpOnSimpleNumber('leftShift', this, adverb) }
+	rightShift { arg aNumber=1, adverb; _ShiftRight; ^aNumber.performBinaryOpOnSimpleNumber('rightShift', this, adverb) }
+	unsignedRightShift { arg aNumber, adverb; _UnsignedShift; ^aNumber.performBinaryOpOnSimpleNumber('unsignedRightShift', this, adverb) }
+	ring1 { arg aNumber, adverb; _Ring1; ^aNumber.performBinaryOpOnSimpleNumber('ring1', this, adverb) }
+	ring2 { arg aNumber, adverb; _Ring2; ^aNumber.performBinaryOpOnSimpleNumber('ring2', this, adverb) }
+	ring3 { arg aNumber, adverb; _Ring3; ^aNumber.performBinaryOpOnSimpleNumber('ring3', this, adverb) }
+	ring4 { arg aNumber, adverb; _Ring4; ^aNumber.performBinaryOpOnSimpleNumber('ring4', this, adverb) }
+	difsqr { arg aNumber, adverb; _DifSqr; ^aNumber.performBinaryOpOnSimpleNumber('difsqr', this, adverb) }
+	sumsqr { arg aNumber, adverb; _SumSqr; ^aNumber.performBinaryOpOnSimpleNumber('sumsqr', this, adverb) }
+	sqrsum { arg aNumber, adverb; _SqrSum; ^aNumber.performBinaryOpOnSimpleNumber('sqrsum', this, adverb) }
+	sqrdif { arg aNumber, adverb; _SqrDif; ^aNumber.performBinaryOpOnSimpleNumber('sqrdif', this, adverb) }
+	absdif { arg aNumber, adverb; _AbsDif; ^aNumber.performBinaryOpOnSimpleNumber('absdif', this, adverb) }
+	thresh { arg aNumber, adverb; _Thresh; ^aNumber.performBinaryOpOnSimpleNumber('thresh', this, adverb) }
+	amclip { arg aNumber, adverb; _AMClip; ^aNumber.performBinaryOpOnSimpleNumber('amclip', this, adverb) }
+	scaleneg { arg aNumber, adverb; _ScaleNeg; ^aNumber.performBinaryOpOnSimpleNumber('scaleneg', this, adverb) }
+	clip2 { arg aNumber, adverb; _Clip2; ^aNumber.performBinaryOpOnSimpleNumber('clip2', this, adverb) }
+	fold2 { arg aNumber, adverb; _Fold2; ^aNumber.performBinaryOpOnSimpleNumber('fold2', this, adverb) }
+	wrap2 { arg aNumber, adverb; _Wrap2; ^aNumber.performBinaryOpOnSimpleNumber('wrap2', this, adverb) }
 
-	excess { arg aNumber; _Excess; ^aNumber.performBinaryOpOnSimpleNumber('excess', this) }
-	firstArg { arg aNumber; _FirstArg; ^aNumber.performBinaryOpOnSimpleNumber('firstArg', this) }
-	rrand { arg aNumber; _RandRange; ^aNumber.performBinaryOpOnSimpleNumber('rrand', this) }
-	exprand { arg aNumber; _ExpRandRange; ^aNumber.performBinaryOpOnSimpleNumber('exprand', this) }
+	excess { arg aNumber, adverb; _Excess; ^aNumber.performBinaryOpOnSimpleNumber('excess', this, adverb) }
+	firstArg { arg aNumber, adverb; _FirstArg; ^aNumber.performBinaryOpOnSimpleNumber('firstArg', this, adverb) }
+	rrand { arg aNumber, adverb; _RandRange; ^aNumber.performBinaryOpOnSimpleNumber('rrand', this, adverb) }
+	exprand { arg aNumber, adverb; _ExpRandRange; ^aNumber.performBinaryOpOnSimpleNumber('exprand', this, adverb) }
 
-	== { arg aNumber; _EQ; ^aNumber.performBinaryOpOnSimpleNumber('==', this) }
-	!= { arg aNumber; _NE; ^aNumber.performBinaryOpOnSimpleNumber('!=', this) }
-	< { arg aNumber; _LT; ^aNumber.performBinaryOpOnSimpleNumber('<', this) }
-	> { arg aNumber; _GT; ^aNumber.performBinaryOpOnSimpleNumber('>', this) }
-	<= { arg aNumber; _LE; ^aNumber.performBinaryOpOnSimpleNumber('<=', this) }
-	>= { arg aNumber; _GE; ^aNumber.performBinaryOpOnSimpleNumber('>=', this) }
+	== { arg aNumber, adverb; _EQ; ^aNumber.performBinaryOpOnSimpleNumber('==', this, adverb) }
+	!= { arg aNumber, adverb; _NE; ^aNumber.performBinaryOpOnSimpleNumber('!=', this, adverb) }
+	< { arg aNumber, adverb; _LT; ^aNumber.performBinaryOpOnSimpleNumber('<', this, adverb) }
+	> { arg aNumber, adverb; _GT; ^aNumber.performBinaryOpOnSimpleNumber('>', this, adverb) }
+	<= { arg aNumber, adverb; _LE; ^aNumber.performBinaryOpOnSimpleNumber('<=', this, adverb) }
+	>= { arg aNumber, adverb; _GE; ^aNumber.performBinaryOpOnSimpleNumber('>=', this, adverb) }
 	equalWithPrecision { arg that,precision=0.0001;
 		^absdif(this, that) < precision
 	}
@@ -123,7 +123,7 @@ SimpleNumber : Number {
 	fontID { ^this }
 	
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber; ^error("Math operation failed.\n") }
-	performBinaryOpOnComplex { arg aSelector, aComplex; ^aComplex.perform(aSelector, this.asComplex) }
+	performBinaryOpOnComplex { arg aSelector, aComplex, adverb; ^aComplex.perform(aSelector, this.asComplex, adverb) }
 	performBinaryOpOnSignal { arg aSelector, aSignal; ^error("Math operation failed.\n") }
 	performBinaryOpOnInfinitum { arg aSelector, aInf; ^error("Math operation failed.\n") }
 

@@ -5,21 +5,21 @@ Complex : Number {
 		^super.newCopyArgs(real, imag);
 	}
 		
-	+ { arg aNumber;
+	+ { arg aNumber, adverb;
 		if ( aNumber.isNumber, {
 			^Complex.new(real + aNumber.real, imag + aNumber.imag)
 		},{
-			^aNumber.performBinaryOpOnComplex('+', this)
+			^aNumber.performBinaryOpOnComplex('+', this, adverb)
 		});
 	}
-	- { arg aNumber; 
+	- { arg aNumber, adverb; 
 		if ( aNumber.isNumber, {
 			^Complex.new(real - aNumber.real, imag - aNumber.imag)
 		},{
-			^aNumber.performBinaryOpOnComplex('-', this)
+			^aNumber.performBinaryOpOnComplex('-', this, adverb)
 		});
 	}
-	* { arg aNumber; 
+	* { arg aNumber, adverb; 
 		if ( aNumber.isNumber, {
 			^Complex.new(
 				// these are implemented as additional message sends so that UGens can
@@ -28,10 +28,10 @@ Complex : Number {
 				(real * aNumber.imag) + (imag * aNumber.real)
 			)
 		},{
-			^aNumber.performBinaryOpOnComplex('*', this)
+			^aNumber.performBinaryOpOnComplex('*', this, adverb)
 		});
 	}
-	/ { arg aNumber; 
+	/ { arg aNumber, adverb; 
 		var denom, yr, yi;
 		if ( aNumber.isNumber, {
 			yr = aNumber.real; 
@@ -41,23 +41,23 @@ Complex : Number {
 				((real * yr) + (imag * yi)) * denom, 
 				((imag * yr) - (real * yi)) * denom)
 		},{
-			^aNumber.performBinaryOpOnComplex('/', this)
+			^aNumber.performBinaryOpOnComplex('/', this, adverb)
 		});
 	}
 
-	< { arg aNumber; 
+	< { arg aNumber, adverb; 
 		if ( aNumber.isNumber, {
 			^real < aNumber.real
 		},{
-			^aNumber.performBinaryOpOnComplex('<', this)
+			^aNumber.performBinaryOpOnComplex('<', this, adverb)
 		});
 	}
 
-	== { arg aNumber; 
+	== { arg aNumber, adverb; 
 		if ( aNumber.isNumber, {
 			^real == aNumber.real and: { imag == aNumber.imag }
 		},{
-			^aNumber.performBinaryOpOnComplex('==', this)
+			^aNumber.performBinaryOpOnComplex('==', this, adverb)
 		});
 	}
 	hash {
@@ -65,13 +65,17 @@ Complex : Number {
 	}
 	
 	// double dispatch
-	performBinaryOpOnSimpleNumber { arg aSelector, aNumber; 
-		^aNumber.asComplex.perform(aSelector, this) 
+	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb; 
+		^aNumber.asComplex.perform(aSelector, this, adverb) 
 	}
-	performBinaryOpOnSignal { arg aSelector, aSignal; ^aSignal.asComplex.perform(aSelector, this) }
-	performBinaryOpOnComplex { arg aSelector, aNumber; ^error("Math operation failed.\n") }
-	performBinaryOpOnUGen { arg aSelector, aUGen;
-		^aUGen.asComplex.perform(aSelector, this)
+	performBinaryOpOnSignal { arg aSelector, aSignal, adverb; 
+		^aSignal.asComplex.perform(aSelector, this) 
+	}
+	performBinaryOpOnComplex { arg aSelector, aNumber, adverb; 
+		^error("Math operation failed.\n") 
+	}
+	performBinaryOpOnUGen { arg aSelector, aUGen, adverb;
+		^aUGen.asComplex.perform(aSelector, this, adverb)
 	}
 	
 	neg { ^Complex.new(real.neg, imag.neg) }
@@ -97,8 +101,5 @@ Complex : Number {
 		
 	printOn { arg stream;
 		stream << "Complex( " << real << ", " << imag << " )";
-	}
-	storeOn { arg stream;
-		stream << "Complex( " <<< real << ", " <<< imag << " )";
 	}
 }

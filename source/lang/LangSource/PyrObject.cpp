@@ -1804,13 +1804,13 @@ void dumpObjectSlot(PyrSlot *slot)
 	}
 }
 
-void CallStackSanity(VMGlobals *g);
-void CallStackSanity(VMGlobals *g)
+void CallStackSanity(VMGlobals *g, char *tagstr);
+void CallStackSanity(VMGlobals *g, char *tagstr)
 {
 	PyrFrame *frame;
 	frame = g->frame;
 	while (frame) {
-		if (FrameSanity(frame)) {
+		if (FrameSanity(frame, tagstr)) {
 			DumpBackTrace(g);
 			//Debugger();
 			break;
@@ -1819,8 +1819,8 @@ void CallStackSanity(VMGlobals *g)
 	}
 }
 
-bool FrameSanity(PyrFrame *frame);
-bool FrameSanity(PyrFrame *frame)
+bool FrameSanity(PyrFrame *frame, char *tagstr);
+bool FrameSanity(PyrFrame *frame, char *tagstr)
 {	
 	bool failed = false;
 	if (frame==NULL) return false;
@@ -1871,7 +1871,7 @@ void DumpFrame(PyrFrame *frame)
 	PyrMethod *meth;
 	PyrMethodRaw *methraw;
 	
-	if (FrameSanity(frame)) {
+	if (FrameSanity(frame, "DumpFrame")) {
 		post("FRAME CORRUPTED\n");
 		return;
 	}
@@ -1912,7 +1912,7 @@ void DumpDetailedFrame(PyrFrame *frame)
 	PyrMethod *meth;
 	PyrMethodRaw *methraw;
 	
-	if (FrameSanity(frame)) {
+	if (FrameSanity(frame, "DumpDetailedFrame")) {
 		post("FRAME CORRUPTED\n");
 		return;
 	}

@@ -9,13 +9,13 @@ Number : Magnitude {
 	div { arg aNumber; ^this.subclassResponsibility(thisMethod) }
 	pow { arg aNumber; ^this.subclassResponsibility(thisMethod) }
 		
-	performBinaryOpOnSeqColl { arg aSelector, aSeqColl; 
+	performBinaryOpOnSeqColl { arg aSelector, aSeqColl, adverb; 
 		^aSeqColl.collect({ arg item; 
-			item.perform(aSelector, this)
+			item.perform(aSelector, this, adverb)
 		}) 
 	}
-	performBinaryOpOnPoint { arg op, aPoint;
-		^Point.new(this.perform(op, aPoint.x), this.perform(op, aPoint.y));
+	performBinaryOpOnPoint { arg op, aPoint, adverb;
+		^Point.new(this.perform(op, aPoint.x, adverb), this.perform(op, aPoint.y, adverb));
 	}	
 	
 	// polar support 

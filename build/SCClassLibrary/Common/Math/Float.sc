@@ -3,9 +3,9 @@ Float : SimpleNumber {
 	isFloat { ^true }	
 	asFloat { ^this }	
 
-	+ { arg aNumber; _AddFloat; ^aNumber.performBinaryOpOnSimpleNumber('+', this) }
-	- { arg aNumber; _SubFloat; ^aNumber.performBinaryOpOnSimpleNumber('-', this) }
-	* { arg aNumber; _MulFloat; ^aNumber.performBinaryOpOnSimpleNumber('*', this) }
+	+ { arg aNumber, adverb; _AddFloat; ^aNumber.performBinaryOpOnSimpleNumber('+', this, adverb) }
+	- { arg aNumber, adverb; _SubFloat; ^aNumber.performBinaryOpOnSimpleNumber('-', this, adverb) }
+	* { arg aNumber, adverb; _MulFloat; ^aNumber.performBinaryOpOnSimpleNumber('*', this, adverb) }
 	
 	clip { arg lo, hi; _ClipFloat; ^this.primitiveFailed }
 	wrap { arg lo, hi; _WrapFloat; ^this.primitiveFailed }

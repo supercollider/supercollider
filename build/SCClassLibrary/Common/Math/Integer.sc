@@ -1,9 +1,9 @@
 Integer : SimpleNumber {
 	isInteger { ^true }	
 		
-	+ { arg aNumber; _AddInt; ^aNumber.performBinaryOpOnSimpleNumber('+', this) }
-	- { arg aNumber; _SubInt; ^aNumber.performBinaryOpOnSimpleNumber('-', this) }
-	* { arg aNumber; _MulInt; ^aNumber.performBinaryOpOnSimpleNumber('*', this) }
+	+ { arg aNumber, adverb; _AddInt; ^aNumber.performBinaryOpOnSimpleNumber('+', this, adverb) }
+	- { arg aNumber, adverb; _SubInt; ^aNumber.performBinaryOpOnSimpleNumber('-', this, adverb) }
+	* { arg aNumber, adverb; _MulInt; ^aNumber.performBinaryOpOnSimpleNumber('*', this, adverb) }
 	
 	clip { arg lo, hi; _ClipInt; ^this.primitiveFailed }
 	wrap { arg lo, hi; _WrapInt; ^this.primitiveFailed }

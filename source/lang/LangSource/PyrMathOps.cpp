@@ -290,14 +290,19 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
+int prSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
+{
+	return doSpecialBinaryArithMsg(g, numArgsPushed, true);
+}
+
+int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 {
 	PyrSlot *a, *b, res;
 	PyrSymbol *msg;
 	int opcode = g->primitiveIndex;
 	
-	a = g->sp - 1;
-	b = g->sp;
+	a = g->sp - (numArgsPushed - 1);
+	b = a + 1;
 
 	switch (a->utag) {
 		case tagInt : {
@@ -962,17 +967,17 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 			}
 		} break;
 	}
-	g->sp-- ; // drop
+	g->sp -= numArgsPushed - 1; // drop
 	g->sp[0].ucopy = res.ucopy;
 	g->numpop = 0;
 	return errNone;
 	
 	send_normal_2:
-	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
+	if (isPrimitive)  // special case flag meaning it is a primitive
 		return errFailed;	// arguments remain on the stack
 	
 	msg = gSpecialBinarySelectors[opcode];
-	sendMessage(g, msg, 2);
+	sendMessage(g, msg, numArgsPushed);
 	return errNone;
 		
 }

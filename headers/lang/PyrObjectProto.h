@@ -34,8 +34,8 @@ bool objAddIndexedSlot(PyrObject *obj, PyrSlot *slot);
 bool objAddIndexedSymbol(PyrSymbolArray *obj, PyrSymbol *symbol);
 bool objAddIndexedObject(PyrObject *obj, PyrObject *obj2);
 
-void CallStackSanity(struct VMGlobals *g);
-bool FrameSanity(struct PyrFrame *frame);
+void CallStackSanity(struct VMGlobals *g, char* tagstr);
+bool FrameSanity(struct PyrFrame *frame, char* tagstr);
 
 void dumpBadObject(PyrObject *obj);
 void initRawRegistry();

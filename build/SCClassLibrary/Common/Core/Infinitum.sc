@@ -33,7 +33,7 @@ Infinitum : Magnitude {
 		stream.putAll(this.asString);
 	}
 	storeOn { arg stream;
-		stream.putAll(this.asCompileString);
+		stream.putAll("inf");
 	}
 }
 

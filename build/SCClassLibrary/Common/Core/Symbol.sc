@@ -120,30 +120,30 @@ Symbol {
 	ramp { ^this }
 
 	// binary ops
-	+ { arg x; ^this }		
-	- { arg x; ^this } 
-	* { arg x; ^this } 
-	/ { arg x; ^this } 
-	mod { arg x; ^this }
-	min { arg x; ^this } 
-	max { arg x; ^this }
-	bitAnd { arg x; ^this }
-	bitOr { arg x; ^this }
-	bitXor { arg x; ^this }	
-	lcm { arg x; ^this }
-	gcd { arg x; ^this }
-	round { arg x; ^this }
-	roundUp { arg x; ^this }
-	trunc { arg x; ^this }
-	atan2 { arg x; ^this }	
-	hypot { arg x; ^this }
-	hypotApx { arg x; ^this }
-	pow { arg x; ^this }
-	leftShift { arg x; ^this }
-	rightShift { arg x; ^this }
-	unsignedRightShift { arg x; ^this }
-	rrand { arg x; ^this }
-	exprand { arg x; ^this }
+	+ { ^this }		
+	- { ^this } 
+	* { ^this } 
+	/ { ^this } 
+	mod { ^this }
+	min { ^this } 
+	max { ^this }
+	bitAnd { ^this }
+	bitOr { ^this }
+	bitXor { ^this }	
+	lcm { ^this }
+	gcd { ^this }
+	round { ^this }
+	roundUp { ^this }
+	trunc { ^this }
+	atan2 { ^this }	
+	hypot { ^this }
+	hypotApx { ^this }
+	pow { ^this }
+	leftShift { ^this }
+	rightShift { ^this }
+	unsignedRightShift { ^this }
+	rrand { ^this }
+	exprand { ^this }
 
 	< { arg aNumber; _LT; ^this }
 	> { arg aNumber; _GT; ^this }
@@ -152,9 +152,9 @@ Symbol {
 	
 	degreeToKey { ^this }
 	
-	doNumberOp { arg x; ^this }
-	doComplexOp { arg x; ^this }
-	doSignalOp { arg x; ^this }
+	doNumberOp { ^this }
+	doComplexOp { ^this }
+	doSignalOp { ^this }
 	doListOp { arg aSelector, aList; 
 		aList.collect({ arg item; 
 			item.perform(aSelector, this)

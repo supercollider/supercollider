@@ -296,6 +296,10 @@ Process {
 	shallowCopy { ^this }
 	
 	*elapsedTime { _ElapsedTime }
+	
+	storeOn { arg stream;
+		stream << "thisProcess";
+	}
 }
 
 
@@ -338,8 +342,7 @@ FunctionDef {
 			})
 		});
 		^references
-	}
-	
+	}	
 }
 
 Method : FunctionDef {
@@ -361,6 +364,7 @@ Method : FunctionDef {
 }
 
 Frame {
+	// frames contain the local variables, context and continuation of a function or method invocation.
 	// since Frames are often created on the stack, it is too 
 	// dangerous to allow access to them. Dangling pointers
 	// could result.
@@ -382,7 +386,6 @@ DebugFrame {
 RawPointer {
 	// class used to hold raw pointers from the 
 	// host environment. 
-	// no instance variables, no methods
 }
 
 Interpreter {	

@@ -60,7 +60,7 @@ enum {
 	opcJumpIfTruePushTrue,		// OR: 		
 	opcJumpFwd,			
 	opcJumpBak,			
-	opcUnused1,				
+	opcSpecialBinaryOpWithAdverb,				
 	opcSuperNew,		// 15
 	
 	opcNewList,

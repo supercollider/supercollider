@@ -46,7 +46,7 @@ extern long ivxIdentDict_array;
 
 void StoreToImmutable(VMGlobals *g);
 
-void CallStackSanity(VMGlobals *g);
+void CallStackSanity(VMGlobals *g, char *tagstr);
 
 void initUniqueMethods()
 {
@@ -66,6 +66,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 	//postfl("->sendMessage\n");
 #if SANITYCHECK
 	g->gc->SanityCheck();
+	CallStackSanity(g, "sendMessageWithKeys");
 #endif
 	recvrSlot = g->sp - numArgsPushed + 1;
 	
@@ -178,6 +179,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 	}
 #if SANITYCHECK
 	g->gc->SanityCheck();
+	CallStackSanity(g, "<sendMessageWithKeys");
 #endif
 	//postfl("<-sendMessage\n");
 }
@@ -195,6 +197,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	//postfl("->sendMessage\n");
 #if SANITYCHECK
 	g->gc->SanityCheck();
+	CallStackSanity(g, "sendMessage");
 #endif
 	recvrSlot = g->sp - numArgsPushed + 1;
 	
@@ -311,6 +314,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	}
 #if SANITYCHECK
 	g->gc->SanityCheck();
+	CallStackSanity(g, "<sendMessage");
 #endif
 	//postfl("<-sendMessage\n");
 }
@@ -328,6 +332,7 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 	//postfl("->sendMessage\n");
 #if SANITYCHECK
 	g->gc->SanityCheck();
+	CallStackSanity(g, "sendSuperMessageWithKeys");
 #endif
 	recvrSlot = g->sp - numArgsPushed + 1;
 	
@@ -441,6 +446,7 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 	}
 #if SANITYCHECK
 	g->gc->SanityCheck();
+	CallStackSanity(g, "<sendSuperMessageWithKeys");
 #endif
 	//postfl("<-sendMessage\n");
 }
@@ -458,6 +464,7 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	//postfl("->sendMessage\n");
 #if SANITYCHECK
 	g->gc->SanityCheck();
+	CallStackSanity(g, "sendSuperMessage");
 #endif
 	recvrSlot = g->sp - numArgsPushed + 1;
 	
@@ -575,6 +582,7 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	}
 #if SANITYCHECK
 	g->gc->SanityCheck();
+	CallStackSanity(g, "<sendSuperMessage");
 #endif
 	//postfl("<-sendMessage\n");
 }
@@ -741,7 +749,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 		
 #if SANITYCHECK
 	g->gc->SanityCheck();
-	CallStackSanity(g);
+	CallStackSanity(g, "executeMethodWithKeys");
 #endif
 #if DEBUGMETHODS
 	if (gTraceInterpreter) {
@@ -760,7 +768,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 		meth->callMeter.ui++;
 	}
 #endif
-	g->execMethod++; // for the benefit of primitives using interpreter recursion
+	g->execMethod = 10;
 	
 	proto = meth->prototypeFrame.uo;
 	methraw = METHRAW(meth);
@@ -963,7 +971,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	g->receiver.ucopy = vars[1].ucopy;
 #if SANITYCHECK
 	g->gc->SanityCheck();
-	CallStackSanity(g);
+	CallStackSanity(g, "<executeMethodWithKeys");
 #endif
 }
 
@@ -982,7 +990,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 		
 #if SANITYCHECK
 	g->gc->SanityCheck();
-	CallStackSanity(g);
+	CallStackSanity(g, "executeMethod");
 #endif
 #if DEBUGMETHODS
 	if (gTraceInterpreter) {
@@ -1001,7 +1009,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 		meth->callMeter.ui++;
 	}
 #endif
-	g->execMethod++; // for the benefit of primitives using interpreter recursion
+	g->execMethod = 20;
 	
 	proto = meth->prototypeFrame.uo;
 	methraw = METHRAW(meth);
@@ -1151,7 +1159,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	g->receiver.ucopy = vars[1].ucopy;
 #if SANITYCHECK
 	g->gc->SanityCheck();
-	CallStackSanity(g);
+	CallStackSanity(g, "<executeMethod");
 #endif
 }
 
@@ -1167,9 +1175,10 @@ void returnFromBlock(VMGlobals *g)
 	PyrSlot *resultSlot;
 	
 	//if (gTraceInterpreter) postfl("->returnFromBlock\n");
+	//printf("->returnFromBlock\n");
 #if SANITYCHECK
 	g->gc->SanityCheck();
-	CallStackSanity(g);
+	CallStackSanity(g, "returnFromBlock");
 #endif
 	curframe = g->frame;
 	returnFrame = curframe->caller.uof;
@@ -1205,7 +1214,7 @@ void returnFromBlock(VMGlobals *g)
 	//if (gTraceInterpreter) postfl("<-returnFromBlock\n");
 #if SANITYCHECK
 	g->gc->SanityCheck();
-	CallStackSanity(g);
+	CallStackSanity(g, str);
 #endif
 }
 

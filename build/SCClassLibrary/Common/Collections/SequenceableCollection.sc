@@ -1,5 +1,4 @@
-SequenceableCollection : Collection {
-
+SequenceableCollection : Collection {	
 	// synonyms
 	|@| { arg index; ^this.clipAt(index) }
 	@@ { arg index; ^this.wrapAt(index) }
@@ -485,86 +484,136 @@ SequenceableCollection : Collection {
 	theta { ^this.performUnaryOp('theta') }
 	
 	// binary math ops
-	+ { arg aNumber; ^this.performBinaryOp('+', aNumber) }
-	- { arg aNumber; ^this.performBinaryOp('-', aNumber) }
-	* { arg aNumber; ^this.performBinaryOp('*', aNumber) }
-	/ { arg aNumber; ^this.performBinaryOp('/', aNumber) }
-	div { arg aNumber; ^this.performBinaryOp('div', aNumber) }
-	mod { arg aNumber; ^this.performBinaryOp('mod', aNumber) }
-	pow { arg aNumber; ^this.performBinaryOp('pow', aNumber) }
-	min { arg aNumber; ^this.performBinaryOp('min', aNumber) } 
-	max { arg aNumber; ^this.performBinaryOp('max', aNumber) }
+	+ { arg aNumber, adverb; ^this.performBinaryOp('+', aNumber, adverb) }
+	- { arg aNumber, adverb; ^this.performBinaryOp('-', aNumber, adverb) }
+	* { arg aNumber, adverb; ^this.performBinaryOp('*', aNumber, adverb) }
+	/ { arg aNumber, adverb; ^this.performBinaryOp('/', aNumber, adverb) }
+	div { arg aNumber, adverb; ^this.performBinaryOp('div', aNumber, adverb) }
+	mod { arg aNumber, adverb; ^this.performBinaryOp('mod', aNumber, adverb) }
+	pow { arg aNumber, adverb; ^this.performBinaryOp('pow', aNumber, adverb) }
+	min { arg aNumber, adverb; ^this.performBinaryOp('min', aNumber, adverb) } 
+	max { arg aNumber, adverb; ^this.performBinaryOp('max', aNumber, adverb) }
 
 	
-	<  { arg aNumber; ^this.performBinaryOp('<',  aNumber) }
-	<= { arg aNumber; ^this.performBinaryOp('<=', aNumber) }
-	>  { arg aNumber; ^this.performBinaryOp('>',  aNumber) }
-	>= { arg aNumber; ^this.performBinaryOp('>=', aNumber) }
+	<  { arg aNumber, adverb; ^this.performBinaryOp('<', aNumber, adverb) }
+	<= { arg aNumber, adverb; ^this.performBinaryOp('<=', aNumber, adverb) }
+	>  { arg aNumber, adverb; ^this.performBinaryOp('>', aNumber, adverb) }
+	>= { arg aNumber, adverb; ^this.performBinaryOp('>=', aNumber, adverb) }
 
-	bitAnd { arg aNumber; ^this.performBinaryOp('bitAnd', aNumber) }
-	bitOr { arg aNumber; ^this.performBinaryOp('bitOr', aNumber) }
-	bitXor { arg aNumber; ^this.performBinaryOp('bitXor', aNumber) }	
-	lcm { arg aNumber; ^this.performBinaryOp('lcm', aNumber) }
-	gcd { arg aNumber; ^this.performBinaryOp('gcd', aNumber) }
-	round { arg aNumber; ^this.performBinaryOp('round', aNumber) }
-	roundUp { arg aNumber; ^this.performBinaryOp('roundUp', aNumber) }
-	trunc { arg aNumber; ^this.performBinaryOp('trunc', aNumber) }
-	atan2 { arg aNumber; ^this.performBinaryOp('atan2', aNumber) }	
-	hypot { arg aNumber; ^this.performBinaryOp('hypot', aNumber) }
-	hypotApx { arg aNumber; ^this.performBinaryOp('hypotApx', aNumber) }
-	leftShift { arg aNumber; ^this.performBinaryOp('leftShift', aNumber) }
-	rightShift { arg aNumber; ^this.performBinaryOp('rightShift', aNumber) }
-	unsignedRightShift { arg aNumber; ^this.performBinaryOp('unsignedRightShift', aNumber) }
-	ring1 { arg aNumber; ^this.performBinaryOp('ring1', aNumber) }
-	ring2 { arg aNumber; ^this.performBinaryOp('ring2', aNumber) }
-	ring3 { arg aNumber; ^this.performBinaryOp('ring3', aNumber) }
-	ring4 { arg aNumber; ^this.performBinaryOp('ring4', aNumber) }
-	difsqr { arg aNumber; ^this.performBinaryOp('difsqr', aNumber) }
-	sumsqr { arg aNumber; ^this.performBinaryOp('sumsqr', aNumber) }
-	sqrsum { arg aNumber; ^this.performBinaryOp('sqrsum', aNumber) }
-	sqrdif { arg aNumber; ^this.performBinaryOp('sqrdif', aNumber) }
-	absdif { arg aNumber; ^this.performBinaryOp('absdif', aNumber) }
-	thresh { arg aNumber; ^this.performBinaryOp('thresh', aNumber) }
-	amclip { arg aNumber; ^this.performBinaryOp('amclip', aNumber) }
-	scaleneg { arg aNumber; ^this.performBinaryOp('scaleneg', aNumber) }
-	clip2 { arg aNumber; ^this.performBinaryOp('clip2', aNumber) }
-	fold2 { arg aNumber; ^this.performBinaryOp('fold2', aNumber) }
-	wrap2 { arg aNumber; ^this.performBinaryOp('wrap2', aNumber) }
-	excess { arg aNumber; ^this.performBinaryOp('excess', aNumber) }
-	firstArg { arg aNumber; ^this.performBinaryOp('firstArg', aNumber) }
-	rrand { arg aNumber; ^this.performBinaryOp('rrand', aNumber) }
-	exprand { arg aNumber; ^this.performBinaryOp('exprand', aNumber) }
+	bitAnd { arg aNumber, adverb; ^this.performBinaryOp('bitAnd', aNumber, adverb) }
+	bitOr { arg aNumber, adverb; ^this.performBinaryOp('bitOr', aNumber, adverb) }
+	bitXor { arg aNumber, adverb; ^this.performBinaryOp('bitXor', aNumber, adverb) }	
+	lcm { arg aNumber, adverb; ^this.performBinaryOp('lcm', aNumber, adverb) }
+	gcd { arg aNumber, adverb; ^this.performBinaryOp('gcd', aNumber, adverb) }
+	round { arg aNumber, adverb; ^this.performBinaryOp('round', aNumber, adverb) }
+	roundUp { arg aNumber, adverb; ^this.performBinaryOp('roundUp', aNumber, adverb) }
+	trunc { arg aNumber, adverb; ^this.performBinaryOp('trunc', aNumber, adverb) }
+	atan2 { arg aNumber, adverb; ^this.performBinaryOp('atan2', aNumber, adverb) }	
+	hypot { arg aNumber, adverb; ^this.performBinaryOp('hypot', aNumber, adverb) }
+	hypotApx { arg aNumber, adverb; ^this.performBinaryOp('hypotApx', aNumber, adverb) }
+	leftShift { arg aNumber, adverb; ^this.performBinaryOp('leftShift', aNumber, adverb) }
+	rightShift { arg aNumber, adverb; ^this.performBinaryOp('rightShift', aNumber, adverb) }
+	unsignedRightShift { arg aNumber, adverb; ^this.performBinaryOp('unsignedRightShift', aNumber, adverb) }
+	ring1 { arg aNumber, adverb; ^this.performBinaryOp('ring1', aNumber, adverb) }
+	ring2 { arg aNumber, adverb; ^this.performBinaryOp('ring2', aNumber, adverb) }
+	ring3 { arg aNumber, adverb; ^this.performBinaryOp('ring3', aNumber, adverb) }
+	ring4 { arg aNumber, adverb; ^this.performBinaryOp('ring4', aNumber, adverb) }
+	difsqr { arg aNumber, adverb; ^this.performBinaryOp('difsqr', aNumber, adverb) }
+	sumsqr { arg aNumber, adverb; ^this.performBinaryOp('sumsqr', aNumber, adverb) }
+	sqrsum { arg aNumber, adverb; ^this.performBinaryOp('sqrsum', aNumber, adverb) }
+	sqrdif { arg aNumber, adverb; ^this.performBinaryOp('sqrdif', aNumber, adverb) }
+	absdif { arg aNumber, adverb; ^this.performBinaryOp('absdif', aNumber, adverb) }
+	thresh { arg aNumber, adverb; ^this.performBinaryOp('thresh', aNumber, adverb) }
+	amclip { arg aNumber, adverb; ^this.performBinaryOp('amclip', aNumber, adverb) }
+	scaleneg { arg aNumber, adverb; ^this.performBinaryOp('scaleneg', aNumber, adverb) }
+	clip2 { arg aNumber, adverb; ^this.performBinaryOp('clip2', aNumber, adverb) }
+	fold2 { arg aNumber, adverb; ^this.performBinaryOp('fold2', aNumber, adverb) }
+	wrap2 { arg aNumber, adverb; ^this.performBinaryOp('wrap2', aNumber, adverb) }
+	excess { arg aNumber, adverb; ^this.performBinaryOp('excess', aNumber, adverb) }
+	firstArg { arg aNumber, adverb; ^this.performBinaryOp('firstArg', aNumber, adverb) }
+	rrand { arg aNumber, adverb; ^this.performBinaryOp('rrand', aNumber, adverb) }
+	exprand { arg aNumber, adverb; ^this.performBinaryOp('exprand', aNumber, adverb) }
 	
 	// math op dispatch support
 	performUnaryOp { arg aSelector;
 		^this.collect({ arg item; item.perform(aSelector) });
 	}
 
-	performBinaryOp { arg aSelector, theOperand;
- 		^theOperand.performBinaryOpOnSeqColl(aSelector, this);
+	performBinaryOp { arg aSelector, theOperand, adverb;
+ 		^theOperand.performBinaryOpOnSeqColl(aSelector, this, adverb);
 	}
-	performBinaryOpOnSeqColl { arg aSelector, theOperand;
-		var maxSize, newList;
-		maxSize = this.size max: theOperand.size;
-		newList = this.species.new(maxSize);
-		maxSize.do({ arg i;
-			newList.add(theOperand.wrapAt(i).perform(aSelector, this.wrapAt(i)));
-		});
-		^newList
+	performBinaryOpOnSeqColl { arg aSelector, theOperand, adverb;
+		var size, newList;
+		if (adverb == nil) {
+			size = this.size max: theOperand.size;
+			newList = this.species.new(size);
+			size.do({ arg i;
+				newList.add(theOperand.wrapAt(i).perform(aSelector, this.wrapAt(i)));
+			});
+			^newList
+		};
+		if (adverb == 't') {
+//			size = this.size;
+//			newList = this.species.new(size);
+//			size.do({ arg i;
+//				newList.add(theOperand.perform(aSelector, this.at(i)));
+//			});
+//			^newList
+			size = theOperand.size;
+			newList = this.species.new(size);
+			size.do({ arg i;
+				newList.add(theOperand.at(i).perform(aSelector, this));
+			});
+			^newList
+		};
+		if (adverb == 'x') {
+//			size = this.size;
+//			newList = this.species.new(size);
+//			size.do({ arg i;
+//				newList.add(theOperand.perform(aSelector, this.at(i)));
+//			});
+//			^newList
+			size = theOperand.size * this.size;
+			newList = this.species.new(size);
+			theOperand.do({ arg a;
+				this.do({ arg b;
+					newList.add(a.perform(aSelector, b));
+				});
+			});
+			^newList
+		};
+		if (adverb == 's') {
+			size = this.size min: theOperand.size;
+			newList = this.species.new(size);
+			size.do({ arg i;
+				newList.add(theOperand.wrapAt(i).perform(aSelector, this.wrapAt(i)));
+			});
+			^newList
+		};
+		if (adverb == 'f') {
+			size = this.size max: theOperand.size;
+			newList = this.species.new(size);
+			size.do({ arg i;
+				newList.add(theOperand.foldAt(i).perform(aSelector, this.foldAt(i)));
+			});
+			^newList
+		};
+		error("unrecognized adverb: '" ++ adverb ++ "' for operator '" ++ aSelector ++ "'\n");
+		^nil
 	}
-	performBinaryOpOnSimpleNumber { arg aSelector, aNumber; 
+	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb; 
 		^this.collect({ arg item; 
-			aNumber.perform(aSelector, item)
+			aNumber.perform(aSelector, item, adverb)
 		}) 
 	}
-	performBinaryOpOnComplex { arg aSelector, aComplex; 
+	performBinaryOpOnComplex { arg aSelector, aComplex, adverb; 
 		^this.collect({ arg item; 
-			aComplex.perform(aSelector, item)
+			aComplex.perform(aSelector, item, adverb)
 		}) 
 	}
-	performBinaryOpOnInfinitum { arg aSelector, aNumber; 
+	performBinaryOpOnInfinitum { arg aSelector, aNumber, adverb; 
 		^this.collect({ arg item; 
-			aNumber.perform(aSelector, item)
+			aNumber.perform(aSelector, item, adverb)
 		}) 
 	}
 	clip { arg lo, hi; ^this.collect {|item| item.clip(lo,hi) }  }
