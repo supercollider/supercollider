@@ -8,11 +8,11 @@
 \f0\b\fs36 \cf0 Buffer
 \f1\b0\fs24 \
 \
-Represents and encapsulates all the common tasks, OSC messages and capabilities of a buffer on a server.\
+Represents and encapsulates all the common tasks, OSC messages and capabilities of a sample buffer on a server.\
 \
-BufferIDs are automatically allocated from the Server's bufferID allocator.  The Buffer object you create can be sent the message 
+Buffer numbers are automatically allocated from the Server's bufferAllocator. When you call 
 \f0\b .free
-\f1\b0  and it will release the buffer on the server, and return the bufferID for future reallocation.\
+\f1\b0  on a Buffer object it will release the buffer on the server, and return the buffer number for future reallocation.\
 \
 Buffers are used with 
 \f0\b PlayBuf
