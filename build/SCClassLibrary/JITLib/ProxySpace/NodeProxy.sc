@@ -259,7 +259,7 @@ BusPlug : AbstractFunction {
 			}); // revisit
 		})
 	}
-	scope { arg bufsize = 4096, zoom; if(this.isNeutral.not) { bus.scope(bufsize, zoom) } }
+	scope { arg bufsize = 4096, zoom; if(this.isNeutral.not) { ^bus.scope(bufsize, zoom) } }
 	
 	record { arg path, headerFormat="aiff", sampleFormat="int16", numChannels;
 		var rec;
@@ -313,7 +313,8 @@ NodeProxy : BusPlug {
 	}
 	
 	clear {
-		this.end(0);
+		this.free(0, true); // free group and objects
+		this.stop(0);		// stop any monitor
 		this.freeTask; // remove any proxy task
 		this.freeBus;	 // free the bus from the server allocator 
 		this.init;	// reset the environment
