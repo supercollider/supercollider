@@ -233,21 +233,14 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed);
 int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 { 
 
-    //char *x, *y;
     PyrSlot *a = g->sp;
     PyrSlot *slots = a->uo->slots;
-    //x = (char*) malloc(1280);
-    //y = (char *)malloc(1280);
-    //sprintf(x, "");
+  
     int numSrc = MIDIGetNumberOfSources();
-//	post("numSrc %d\n",  numSrc);
     ++g->sp; SetObject(g->sp, s_midiclient->u.classobj);
     ++g->sp; SetInt(g->sp, numSrc);
     runInterpreter(g, getsym("prSetNumberOfSources"), 2);
     
-      //  sprintf(y, "[ [ ");
-       // strcat(x,y);
-
     for (int i=0; i<numSrc; ++i) {
         MIDIEndpointRef src = MIDIGetSource(i);
 		MIDIEntityRef ent;
@@ -265,8 +258,6 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 		CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
 		CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
                 lng = CFStringGetLength(devname);
-                post("length %d, %d", lng, strlen(cdevname));
-                
   //             post("in %3d   uid %8d   dev '%s'   endpt '%s'\n", i, id, cdevname, cendname);
         CFRelease(devname);
         CFRelease(endname);
@@ -285,13 +276,9 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
     ++g->sp; SetInt(g->sp, i);
     ++g->sp; SetInt(g->sp, id);
     runInterpreter(g, getsym("prSetSourceUID"), 3);
-    
-    //    if (i + 1 == numSrc) sprintf(y," '%s %s', %8d ", cdevname, cendname,id);
-    //    else sprintf(y," '%s %s', %8d, ", cdevname, cendname, id);
-     //   strcat(x,y);
+
     }
-      //  sprintf(y, "], [ ");
-      //  strcat(x,y);
+ 
 
 
         int numDst = MIDIGetNumberOfDestinations();
@@ -333,16 +320,9 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
         ++g->sp; SetInt(g->sp, i);
         ++g->sp; SetInt(g->sp, id);
         runInterpreter(g, getsym("prSetDestinationUID"), 3);
-        //if (i + 1 == numDst) sprintf(y," '%s %s', %8d ", cdevname, cendname,id);
-        //else sprintf(y," '%s %s', %8d, ", cdevname, cendname, id);
-         //strcat(x,y);
+  
      }
-        //sprintf(y, "] ] ");
-        //strcat(x,y);
-       // SetObject(slots,newPyrString(g->gc, x, 0, true) ); // push string onto return stack
-
-        //free(x);
-        //free(y);
+    
 	return errNone;
 }
 
