@@ -199,14 +199,22 @@ BusPlug : AbstractFunction {
 		ok = this.initBus(\audio, numChannels);
 		if(ok.not) { Error("can't monitor a" + bus.rate + "proxy" + "with" + numChannels).throw };
 		this.wakeUp;
+		if(monitor.isNil) { monitor = Monitor.new };
 		group = (group ? localServer).asGroup;
-		this.getMonitor.play(bus.index, bus.numChannels, out, numChannels, group, multi, vol)
+		monitor.play(bus.index, bus.numChannels, out, numChannels, group, multi, vol)
 		^monitor.group
 	}
 	
 	fadeTime Ê{ ^0.02 }
-	getMonitor { if(monitor.isNil) { monitor = Monitor.new }; ^monitor }
-
+	/*
+	vol { ^if(monitor.isNil) { 1.0 }Ê{ monitor.vol } }
+	vol_ { arg val; if(this.rate === 'audio') {
+						if(monitor.isNil) { monitor = Monitor.new }; monitor.vol = val 
+				}
+	}
+	monitorIndex { ^if(monitor.isNil) { nil }Ê{ monitor.out } }
+	monitorGroup {Ê^if(monitor.isNil) { nil } {Êmonitor.group } }
+	*/
 	stop { arg fadeTime=0.1;
 		monitor.stop(fadeTime)
 	}
