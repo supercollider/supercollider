@@ -20,22 +20,30 @@ TWChoose : UGen {
 
 }
 
+/*
 Channel  {
 
 	*new { arg rate, input, offset, numChannels, wrap=true;
-		var which, size;
+		var which, size, iwhich;
 		size = input.size;
+		
 		which = Array.fill(numChannels, { arg i;
 					var j;
 					j = offset + i;
 					if(wrap) { j % size } { j.min(size - 1) }
 		});
-		^if(offset.isKindOf(UGen), {
-			Select.multiNewList([rate, which] ++ input)
-		}, {
-			which.collect({ arg i; input[i] })
-		})
-	
+		
+		^if(offset.isKindOf(UGen)) {
+			iwhich = which.floor;
+			XFade2.ar(
+				Select.ar(iwhich, input),
+				Select.ar(iwhich + 1, input),
+				which - iwhich
+			)
+		} {
+			which.collect { arg i; input[i] }
+		}
+		
 	}
 
 	*ar { arg input, offset, numChannels, wrap=true;
@@ -46,4 +54,4 @@ Channel  {
 	}
 }
 
-
+*/
