@@ -1,1 +1,8 @@
-BeatClockPlayerGui : AbstractPlayerGui {	guiBody { arg layout;		model.tempoFactor.gui(layout);	}}
+
+BeatClockPlayerGui : AbstractPlayerGui {
+
+	guiBody { arg layout;
+		model.tempoFactor.gui(layout);
+	}
+
+}

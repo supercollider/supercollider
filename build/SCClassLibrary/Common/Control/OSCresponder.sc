@@ -81,7 +81,19 @@ OSCresponderNode {
 		
 	}
 	//i.zannos fix
-	add {		var made, found;		made = OSCMultiResponder(addr, cmdName);		found = OSCresponder.all.findMatch(made);		if(found.isNil, { made.nodes = [this]; made.add; ^this });		if (found.class === OSCresponder, {			found.remove;			made.nodes = [found, this];			made.add;		},{			found.nodes = found.nodes.add(this)		});	}
+	add {
+		var made, found;
+		made = OSCMultiResponder(addr, cmdName);
+		found = OSCresponder.all.findMatch(made);
+		if(found.isNil, { made.nodes = [this]; made.add; ^this });
+		if (found.class === OSCresponder, {
+			found.remove;
+			made.nodes = [found, this];
+			made.add;
+		},{
+			found.nodes = found.nodes.add(this)
+		});
+	}
 	
 	removeWhenDone {
 		var func;

@@ -1,15 +1,22 @@
-ProxySpace : EnvironmentRedirect {	classvar <>lastEdited;//undo support
+
+
+
+ProxySpace : EnvironmentRedirect {
+	classvar <>lastEdited;//undo support
 	classvar <>all; //access
-		var <server, <clock, <fadeTime, <>awake=true;
+	
+	var <server, <clock, <fadeTime, <>awake=true;
 	var <name;
 	
 	*initClass {
 		all = IdentitySet.new;
 	}
-		*new { arg server, name, clock;
+	
+	*new { arg server, name, clock;
 		^super.new.einit(server, name, clock)
 	}
-		*push { arg server, name, clock;
+	
+	*push { arg server, name, clock;
 		^this.new(server, name, clock).push
 	}
 	
@@ -31,7 +38,8 @@
 		super.put(\tempo, proxy);
 	}
 	
-	//todo add group to target	einit { arg srv, argName, argClock; 
+	//todo add group to target
+	einit { arg srv, argName, argClock; 
 		server = srv;  
 		clock = argClock;
 		name = argName.asSymbol;
@@ -47,14 +55,16 @@
 			envir.put(key, proxy);
 			^proxy
 	}
-		at { arg key;
+	
+	at { arg key;
 		var proxy;
 		proxy = super.at(key);
 		if(proxy.isNil, {
 			proxy = this.makeProxy(key);
 		});
 		^proxy
-		}
+	
+	}
 	
 	put { arg key, obj;
 		var proxy;
@@ -116,10 +126,14 @@
 			});
 		});
 	}
-		*clearAll {
+	
+	*clearAll {
 		all.do({ arg item; item.clear });
-	}	
-	*undo {		lastEdited.tryPerform(\undo)	}
+	}
+	
+	*undo {
+		lastEdited.tryPerform(\undo)
+	}
 	
 	printOn { arg stream; 
 		stream << "ProxySpace: ";
@@ -131,7 +145,9 @@
 		stream << Char.nl
 		
 	}
-		}
+		
+}
+
 
 SharedProxySpace  : ProxySpace {
 	
@@ -178,4 +194,4 @@ SharedProxySpace  : ProxySpace {
 	
 
 
-}
+}

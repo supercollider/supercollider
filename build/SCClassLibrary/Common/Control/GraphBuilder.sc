@@ -11,7 +11,9 @@ GraphBuilder {
 				// Out, SendTrig etc. probably a 0.0
 				result
 			},{
-				if(fadeTime.notNil, {						result = this.makeFadeEnv(fadeTime) * result;				});
+				if(fadeTime.notNil, {
+						result = this.makeFadeEnv(fadeTime) * result;
+				});
 				outClass.asClass.multiNewList([rate, i_out]++result)
 			})
 		})

@@ -1,8 +1,14 @@
-EnvEditorGui : ObjectGui {
+
+EnvEditorGui : ObjectGui {
+
 
 	var ev,timeScale=1.0,levelScale = 1.0;
 	
-	writeName {}	guiBody { arg layout;				var curves,levels,times,temp=0.0;		
+	writeName {}
+	guiBody { arg layout;
+		
+		var curves,levels,times,temp=0.0;
+		
 		ev = SCEnvelopeView(layout,layout.layRight(100,40));
 		ev.setProperty(\thumbWidth,5.0);
 		ev.setProperty(\thumbHeight,5.0);
@@ -39,6 +45,41 @@
 			//[ times,levels].insp("times,levels");
 			//ev.value_([ times,levels]);
 			ev.refresh;
-		};		// test button		/*ActionButton(layout,"test",{			model.env.test		});*/		ActionButton(layout,"#",{			model.env.asCompileString.postln;		});				CXLabel(layout,"curve:");		// curves		curves = model.env.curves;		if(curves.isKindOf(SimpleNumber),{			NumberEditor(curves,[-10.0,10.0]).action_({ arg val; model.setCurve(val);  })				.smallGui(layout);		},{			if(curves.isKindOf(SequenceableCollection),{					curves.do({ arg l,i;						NumberEditor(l,[-10.0,10.0])
+		};
+		// test button
+		/*ActionButton(layout,"test",{
+			model.env.test
+		});*/
+		ActionButton(layout,"#",{
+			model.env.asCompileString.postln;
+		});
+		
+		CXLabel(layout,"curve:");
+		// curves
+		curves = model.env.curves;
+		if(curves.isKindOf(SimpleNumber),{
+			NumberEditor(curves,[-10.0,10.0]).action_({ arg val; model.setCurve(val);  })
+				.smallGui(layout);
+		},{
+			if(curves.isKindOf(SequenceableCollection),{
+					curves.do({ arg l,i;
+						NumberEditor(l,[-10.0,10.0])
 							.action_({ arg val; model.putCurve(i,val) })
-							.smallGui(layout);					});			},{				curves.gui(layout); //symbol \linear,\sine etc.			});		});		// loop node		//CXLabel(layout,"loop");		//CXLabel(layout,model.env.loopNode);				//release node		CXLabel(layout,"releaseNode:");		CXLabel(layout,model.env.releaseNode);				// the envelope itself		//model.env.gui(layout);	}}
+							.smallGui(layout);
+					});
+			},{
+				curves.gui(layout); //symbol \linear,\sine etc.
+			});
+		});
+		// loop node
+		//CXLabel(layout,"loop");
+		//CXLabel(layout,model.env.loopNode);
+		
+		//release node
+		CXLabel(layout,"releaseNode:");
+		CXLabel(layout,model.env.releaseNode);
+		
+		// the envelope itself
+		//model.env.gui(layout);
+	}
+}

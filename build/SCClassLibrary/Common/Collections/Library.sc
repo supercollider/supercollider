@@ -1,4 +1,43 @@
-MultiLevelIdentityDictionary : Collection {		var <>dictionary;	*new {		^super.new.init	}	init {		dictionary = this.newInternalNode;	}		newInternalNode { ^IdentityDictionary.new }	at { arg ... args;		var item;		item = dictionary;		args.do({ arg name; 			item = item.at(name);			if (item.isNil, { ^nil });		});		^item	}		put { arg ... args;		var item, val, lastName;		val = args.pop;		lastName = args.pop;		item = dictionary;		args.do({ arg name; 			item = item.atFail(name, {				var newitem; 				newitem = this.newInternalNode;				item.put(name, newitem);				newitem			});		});		item.put(lastName, val);	}
+
+MultiLevelIdentityDictionary : Collection 
+{
+	
+	var <>dictionary;
+
+	*new {
+		^super.new.init
+	}
+	init {
+		dictionary = this.newInternalNode;
+	}
+	
+	newInternalNode { ^IdentityDictionary.new }
+
+	at { arg ... args;
+		var item;
+		item = dictionary;
+		args.do({ arg name; 
+			item = item.at(name);
+			if (item.isNil, { ^nil });
+		});
+		^item
+	}
+	
+	put { arg ... args;
+		var item, val, lastName;
+		val = args.pop;
+		lastName = args.pop;
+		item = dictionary;
+		args.do({ arg name; 
+			item = item.atFail(name, {
+				var newitem; 
+				newitem = this.newInternalNode;
+				item.put(name, newitem);
+				newitem
+			});
+		});
+		item.put(lastName, val);
+	}
 	create { arg ... args;
 		var item;
 		item = dictionary;
@@ -57,7 +96,12 @@
 	}
 
 	
-	//private	add { arg assn;		this.put(assn.key, assn.value);	}	remove { ^this.shouldNotImplement(thisMethod) }	removeFail { ^this.shouldNotImplement(thisMethod) }
+	//private
+	add { arg assn;
+		this.put(assn.key, assn.value);
+	}
+	remove { ^this.shouldNotImplement(thisMethod) }
+	removeFail { ^this.shouldNotImplement(thisMethod) }
 	
 	prChooseFrom { arg dict;
 		var item;
@@ -97,7 +141,9 @@
 				thing
 			})
 		})
-	}}
+	}
+}
+
 
 
 Library : MultiLevelIdentityDictionary 
@@ -135,4 +181,5 @@ Library : MultiLevelIdentityDictionary
 
 }
 
-
+
+

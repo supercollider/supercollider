@@ -1,4 +1,15 @@
-PlayerPool : PlayerSocket { 	// implements selectable interface	var <>selected, <>list, <>autostart=false;		*new { arg list,selected=0,env,round=0.0;		^super.new(round)			.list_(loadDocument(list))			.selected_(selected)			.env_(env ?? {Env.new([ 0, 1.0, 0 ], [ 0.01, 0.7 ], -4, 1, nil)})	}	storeArgs { ^[list, selected ,env,round ]  }
+
+PlayerPool : PlayerSocket { 	// implements selectable interface
+
+	var <>selected, <>list, <>autostart=false;
+	
+	*new { arg list,selected=0,env,round=0.0;
+		^super.new(round)
+			.list_(loadDocument(list))
+			.selected_(selected)
+			.env_(env ?? {Env.new([ 0, 1.0, 0 ], [ 0.01, 0.7 ], -4, 1, nil)})
+	}
+	storeArgs { ^[list, selected ,env,round ]  }
 	addPlayer { arg player;
 		var path;
 		player = loadDocument(player);
@@ -9,13 +20,29 @@
 		this.changed(\players);	
 	}
 
-	//selectable interface	select { arg i;		selected = i;		if(this.isPlaying,{
+	//selectable interface
+	select { arg i;
+		selected = i;
+		if(this.isPlaying,{
 			this.qspawnPlayer(list.at(i));
 		},{
 			source = lastPlayer = list.at(i);
 		})
-	}	selectedItem { ^list.at(selected) }		selectedAsString {		^list.at(selected).asString	}	maxIndex { ^list.size }			choose {		this.select(list.size.rand)	}
-	rate { ^list.first.rate } // what else to do ?	numChannels { ^list.maxValue({ arg pl; pl.numChannels }) }	children { ^list }	
+	}
+	selectedItem { ^list.at(selected) }
+	
+	selectedAsString {
+		^list.at(selected).asString
+	}
+	maxIndex { ^list.size }
+		
+	choose {
+		this.select(list.size.rand)
+	}
+	rate { ^list.first.rate } // what else to do ?
+	numChannels { ^list.maxValue({ arg pl; pl.numChannels }) }
+	children { ^list }
+	
 	prepareToBundle { arg group,bundle;
 		group = group.asGroup;
 		list.do({ arg pl; pl.prepareToBundle(group,bundle) });
@@ -37,7 +64,11 @@
 		bundle.addAction(this,\didSpawn);
 	}
 
-	guiClass { ^PlayerPoolGui }}/**PatchSwitcher : PlayerPool {
+	guiClass { ^PlayerPoolGui }
+}
+
+/**
+PatchSwitcher : PlayerPool {
 
 	var <>inputs,ip,proxyMatches;
 	var connectedInputs,inputGroup;
