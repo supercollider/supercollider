@@ -22,7 +22,9 @@ Pn : FilterPattern {
 	}
 }
 
-//same as Pn, but avoids crash when inner pattern returns nil
+// works somewhat similar to Pn, but counts how many times the first arg returns nil.
+// this solves the problem with Pn so when a stream returns always nil, it will not crash. 
+// note that Ploop(5, 1) will loop forever, as 5 never returns nil.
 
 Ploop : Pn {
 	asStream {
