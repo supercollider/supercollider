@@ -121,7 +121,7 @@ Paddpre : Psetpre {
 
 Pmulpre : Psetpre {
 	filterEvent { arg event, val;
-		^event[name] = (event[name] * val).postln;
+		^event[name] = event[name] * val;
 	}
 }
 
@@ -161,7 +161,7 @@ Padd : Pset {
 
 Pmul : Pset {
 	filterEvent { arg event, val;
-		^event[name] = (event[name] * val);
+		^event[name] = event[name] * val;
 	}
 }
 
