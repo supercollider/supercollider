@@ -23,12 +23,6 @@ MAINTAINERCLEANFILES =	\
 	stamp-h.in	\
         stamp-h
 
-if HAVE_X11
-MACUGENS_LA = MacUGens.la
-else
-MACUGENS_LA =
-endif
-
 SC_INCLUDE_DIR		= $(top_srcdir)/headers
 INCLUDES		= -I$(SC_INCLUDE_DIR)/common \
 			-I$(SC_INCLUDE_DIR)/plugin_interface \
@@ -37,25 +31,32 @@ AM_CPPFLAGS		= $(SC_CPPFLAGS)
 AM_CFLAGS		= $(SC_CFLAGS)
 AM_CXXFLAGS		= $(AM_CFLAGS)
 
+if HAVE_X11
+MACUGENS_LA		= MacUGens.la
+else
+MACUGENS_LA		=
+endif
+
 plugindir		= $(SC_PLUGIN_DIR)
-plugin_LTLIBRARIES	=		\
-	BinaryOpUGens.la		\
-	DelayUGens.la			\
-	DiskIO_UGens.la			\
-	FFT_UGens.la			\
-	FilterUGens.la			\
-	GendynUGens.la			\
-	IOUGens.la			\
-	LFUGens.la			\
-	$(MACUGENS_LA)			\
-	MulAddUGens.la			\
-	NoiseUGens.la			\
-	OscUGens.la			\
-	PV_ThirdParty.la		\
-	PanUGens.la			\
-	PhysicalModelingUGens.la	\
-	TriggerUGens.la			\
-	UnaryOpUGens.la
+plugin_LTLIBRARIES	= \
+			BinaryOpUGens.la \
+			DelayUGens.la \
+			DemandUGens.la \
+			DiskIO_UGens.la \
+			FFT_UGens.la \
+			FilterUGens.la \
+			GendynUGens.la \
+			IOUGens.la \
+			LFUGens.la \
+			$(MACUGENS_LA) \
+			MulAddUGens.la \
+			NoiseUGens.la \
+			OscUGens.la \
+			PV_ThirdParty.la \
+			PanUGens.la \
+			PhysicalModelingUGens.la \
+			TriggerUGens.la \
+			UnaryOpUGens.la
 
 # BinaryOpUGens
 BinaryOpUGens_la_SOURCES	= BinaryOpUGens.cpp
@@ -64,6 +65,10 @@ BinaryOpUGens_la_LDFLAGS	= -module -no-undefined -avoid-version
 # DelayUGens
 DelayUGens_la_SOURCES		= DelayUGens.cpp
 DelayUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
+
+# DemandUGens
+DemandUGens_la_SOURCES		= DemandUGens.cpp
+DemandUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 
 # DiskIO_UGens
 DiskIO_UGens_la_SOURCES		= DiskIO_UGens.cpp
@@ -109,6 +114,7 @@ NoiseUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 OscUGens_la_SOURCES		= OscUGens.cpp
 OscUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 
+# PV_ThirdParty
 PV_ThirdParty_la_SOURCES	= Convolution.cpp \
 				fftlib.c fftlib.h \
 				SCComplex.cpp SCComplex.h \
