@@ -130,7 +130,8 @@ Server : Model {
 		addr.performList(\sendBundle, [time ? this.latency] ++ bundle);
 	}
 	
-	// same as listSendBundle, but this has an extra performList call
+	// same as listSendBundle, but this has an extra performList call,
+	// so do not use anymore.
 	sendMsgList { arg msgList, latency;
 		//"sent to server: ".post; msgList.asCompileString.postln;
 		this.performList(\sendBundle, [latency ? this.latency ] ++ msgList) 
@@ -227,6 +228,20 @@ Server : Model {
 			("booting " ++ addr.port.asString).inform;
 		});
 		this.notify(true);
+	}
+	
+	reboot {
+		var resp;
+		if (isLocal.not, { "can't reboot a remote server".inform; ^this });
+		if(serverRunning, {
+			resp = OSCresponder(addr, '/done', {
+				this.boot;
+				resp.remove;
+			}).add;
+			this.quit;
+		}, {
+			this.boot
+		})
 	}
 	
 	status {
