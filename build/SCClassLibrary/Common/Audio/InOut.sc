@@ -115,5 +115,16 @@ XOut : AbstractOut {
 		this.multiNewList(['control', bus, xfade] ++ channelsArray.asArray)
 		^0.0		// Out has no output
 	}
+	checkInputs {
+ 		if (rate == 'audio', {
+ 			for(2, inputs.size - 1, { arg i;
+ 				if (inputs.at(i).rate != 'audio', { 
+ 					^(" input at index " + i + 
+ 						"(" + inputs.at(i) + ") is not audio rate");
+ 				});
+ 			});
+ 		});
+ 		^nil
+ 	}
 }
 
