@@ -110,6 +110,9 @@ extern PyrSymbol *s_closed;
 - (void) keyDown: (NSEvent*) event;
 - (void) mouseDown: (NSEvent*) event;
 
+- (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString;
+- (void)flashHighlight: (BOOL)onoff atIndex: (int)index wait: (NSTimeInterval)interval timesLeft: (int)timesLeft;
+
 @end
 
 NSString* pathOfHelpFileFor(NSString* selection);

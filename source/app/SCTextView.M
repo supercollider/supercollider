@@ -188,7 +188,7 @@ extern bool compiledOK;
     }
 }
 
-bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, bool ignoreImmediateParens);
+bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, unichar rightBrak, bool ignoreImmediateParens);
 
 - (void) mouseDown: (NSEvent*) event
 {
@@ -212,7 +212,7 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
             } else if (c == ']' || c == ')' || c == '}') {
                     start = end = index;
             }            
-            bool res = matchBraks(&start, &end, buffer, length, false);
+            bool res = matchBraks(&start, &end, buffer, length, 0, false);
             free(buffer);
             if (res) {
                 NSRange newSelectedRange = NSMakeRange(start, end - start);

@@ -143,7 +143,7 @@ bool docCreatedFromLang = false; //if this is true addDocument is not called
 }
 
 #define GETTEXTCHAR(pos, text, textlen)	(((int)pos<0) ? 0 : (((int)pos>=(int)textlen) ? 0 : text[pos]))
-#define MAXBRAX 128
+#define MAXBRAX 256
 unichar braks[MAXBRAX];
 int brakptr = 0;
 
@@ -180,13 +180,13 @@ bool checkBraks(unsigned int startpos, unsigned int endpos, unichar *text, int l
 	return brakptr == 0;
 }
 
-bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, bool ignoreImmediateParens);
-bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, bool ignoreImmediateParens)
+bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, unichar rightBrak, bool ignoreImmediateParens);
+bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, unichar rightBrak, bool ignoreImmediateParens)
 {
     unichar c, d;
     
     // check selection internally
-    if (*endpos > *startpos && !checkBraks(*startpos, *endpos, text, length)) return false;	
+    if (!rightBrak && *endpos > *startpos && !checkBraks(*startpos, *endpos, text, length)) return false;	
     
     c = GETTEXTCHAR(((*startpos)-1), text, length);
     d = GETTEXTCHAR(*endpos, text, length);
@@ -205,58 +205,67 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
     }
     
     brakptr = 0;
-    do {
-            --(*startpos);
-            c = GETTEXTCHAR(*startpos, text, length);
-            if (c == ')') {
-                    if (brakptr+1 < MAXBRAX) {
-                            braks[brakptr++] = '(';
-                    } else return false;
-            } else if (c == ']') {
-                    if (brakptr+1 < MAXBRAX) {
-                            braks[brakptr++] = '[';
-                    } else return false;
-            } else if (c == '}') {
-                    if (brakptr+1 < MAXBRAX) {
-                            braks[brakptr++] = '{';
-                    } else return false;
-            } else if (c == '(' || c == '[' || c == '{') {
-                    if (brakptr > 0) {
-                            if (braks[--brakptr] != c) return false;
-                    } else break;
-            } 
-    } while (c);
-    if (c == 0) return false;
-    
-    do {
-            d = GETTEXTCHAR(*endpos, text, length);
-            (*endpos)++;
-            if (d == '(') {
-                    if (brakptr+1 < MAXBRAX) {
-                            braks[brakptr++] = ')';
-                    } else return false;
-            } else if (d == '[') {
-                    if (brakptr+1 < MAXBRAX) {
-                            braks[brakptr++] = ']';
-                    } else return false;
-            } else if (d == '{') {
-                    if (brakptr+1 < MAXBRAX) {
-                            braks[brakptr++] = '}';
-                    } else return false;
-            } else if (d == ')' || d == ']' || d == '}') {
-                    if (brakptr > 0) {
-                            if (braks[--brakptr] != d) return false;
-                    } else break;
-            } 
-    } while (d);
-    if (d == 0) return false;
-    
+	if (rightBrak) {
+		d = rightBrak;
+	}
+
+	do {
+			--(*startpos);
+			c = GETTEXTCHAR(*startpos, text, length);
+			if (c == ')') {
+					if (brakptr+1 < MAXBRAX) {
+							braks[brakptr++] = '(';
+					} else return false;
+			} else if (c == ']') {
+					if (brakptr+1 < MAXBRAX) {
+							braks[brakptr++] = '[';
+					} else return false;
+			} else if (c == '}') {
+					if (brakptr+1 < MAXBRAX) {
+							braks[brakptr++] = '{';
+					} else return false;
+			} else if (c == '(' || c == '[' || c == '{') {
+					if (brakptr > 0) {
+							if (braks[--brakptr] != c) return false;
+					} else break;
+			} 
+	} while (c);
+	if (c == 0) return false;
+	
+	if (!rightBrak) {
+		do {
+				d = GETTEXTCHAR(*endpos, text, length);
+				(*endpos)++;
+				if (d == '(') {
+						if (brakptr+1 < MAXBRAX) {
+								braks[brakptr++] = ')';
+						} else return false;
+				} else if (d == '[') {
+						if (brakptr+1 < MAXBRAX) {
+								braks[brakptr++] = ']';
+						} else return false;
+				} else if (d == '{') {
+						if (brakptr+1 < MAXBRAX) {
+								braks[brakptr++] = '}';
+						} else return false;
+				} else if (d == ')' || d == ']' || d == '}') {
+						if (brakptr > 0) {
+								if (braks[--brakptr] != d) return false;
+						} else break;
+				} 
+		} while (d);
+		if (d == 0) return false;
+	}
+	
     if (!((c == '(' && d == ')') || (c == '[' && d == ']') || (c == '{' && d == '}'))) {
             return false;
     }
-    // success. shrink selection by one.
-    ++(*startpos);
-    --(*endpos);
+	
+	if (!rightBrak) {
+		// success. shrink selection by one.
+		++(*startpos);
+		--(*endpos);
+	}
     
     return true;
 }
@@ -274,13 +283,71 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
     unsigned int start, end;
     start = selectedRange.location;
     end = start + selectedRange.length;
-    bool res = matchBraks(&start, &end, buffer, length, true);
+    bool res = matchBraks(&start, &end, buffer, length, 0, true);
     free(buffer);
     if (res) {
         NSRange newSelectedRange = NSMakeRange(start, end - start);
         [textView setSelectedRange: newSelectedRange];
     }
 }
+
+- (BOOL)textView:(NSTextView *)theTextView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
+{
+	if (replacementString && [replacementString length] > 0) {
+		unichar c = [replacementString characterAtIndex: 0];
+		if (strchr(")]}", c)) {
+			NSString *string = [textView string];
+
+			int length = [string length];
+			unichar* buffer = (unichar*)malloc((length+1) * sizeof(unichar));
+			[string getCharacters: buffer];
+			
+			unsigned int start, end;
+			start = affectedCharRange.location;
+			end = start;
+			bool res = matchBraks(&start, &end, buffer, length, c, false);
+			free(buffer);
+			if (res) {
+				[self flashHighlight: YES atIndex: start wait: 0.33 timesLeft: 1];
+			} else {
+				//NSBeep();
+				[self flashHighlight: NO atIndex: affectedCharRange.location wait: 0.07 timesLeft: 6];
+			}
+		}
+	}
+	return YES;
+}
+
+- (void)flashHighlight: (BOOL)onoff atIndex: (int)index wait: (NSTimeInterval)interval timesLeft: (int)timesLeft
+{
+    NSLayoutManager *layoutManager = [textView layoutManager];
+	NSRange highlightRange = NSMakeRange(index, 1);
+
+	if (onoff) {
+		[layoutManager addTemporaryAttributes: 
+			[NSDictionary dictionaryWithObjectsAndKeys: [NSColor lightGrayColor], NSBackgroundColorAttributeName, nil] 
+							forCharacterRange: highlightRange];	
+	} else {
+		//highlightRange.length++;
+		[layoutManager removeTemporaryAttribute: NSBackgroundColorAttributeName
+							forCharacterRange: highlightRange];
+	}
+	if (timesLeft) {
+		timesLeft--;
+		onoff = !onoff;
+		SEL sel = @selector(flashHighlight:atIndex:wait:timesLeft:);
+		NSMethodSignature *sig = [MyDocument instanceMethodSignatureForSelector: sel];
+		NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+		[anInvocation setTarget: self];
+		[anInvocation setSelector: sel];
+		[anInvocation setArgument: &onoff atIndex: 2];  
+		[anInvocation setArgument: &index atIndex: 3];  
+		[anInvocation setArgument: &interval atIndex: 4];  
+		[anInvocation setArgument: &timesLeft atIndex: 5];  
+		[NSTimer scheduledTimerWithTimeInterval: interval invocation: anInvocation repeats: NO];
+	}
+}
+
 
 void SyntaxColorize(NSTextView* textView);
 
