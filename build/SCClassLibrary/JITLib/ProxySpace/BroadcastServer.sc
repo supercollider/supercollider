@@ -4,7 +4,7 @@ BroadcastServer : Server {
 	var <>localServer, <>allAddr;
 	
 	
-	*newFrom { arg localServer, allAddr; //local server is a router
+	*for { arg localServer, allAddr; //local server is a router
 		^super.new
 				.localServer_(localServer)
 				.ninit(localServer.name.asString ++ "_broadcast")
@@ -56,6 +56,7 @@ BroadcastServer : Server {
 	}
 	
 	serverRunning { ^true } //assume that.
+	waitForBoot {Êarg func; func.value }
 	
 	at { arg index;
 		^allAddr.clipAt(index)
@@ -115,8 +116,8 @@ BroadcastServer : Server {
 DispatchServer : BroadcastServer {
 	var <>latencies;
 	
-	*newFrom { arg localServer, allAddr, latencies;
-		^super.newFrom(localServer, allAddr).latencies_(latencies ? #[])
+	*for { arg localServer, allAddr, latencies;
+		^super.for(localServer, allAddr).latencies_(latencies ? #[])
 	}
 	
 	sendMsg { arg ... args;
@@ -166,20 +167,18 @@ DispatchServer : BroadcastServer {
 
 }
 
+// handles node id allocation etc.
+
 Router : Server {
 	
 	var <broadcast, <sharedNodeIDAllocator;
 	
-	*new { arg name, addr, options, clientNumber=0, allAddr, latencies;
-		^super.new(name, addr, options, clientNumber).initBroadcast(allAddr, latencies)
-	}
 	
-	initBroadcast { arg addresses, latencies;
-		
+	addr_ { arg list, latencies;
 		if(latencies.isNil, {
-			broadcast = BroadcastServer.newFrom(this, addresses);
+			broadcast = BroadcastServer.for(this, list);
 		}, {
-			broadcast = DispatchServer.newFrom(this, addresses, latencies);
+			broadcast = DispatchServer.for(this, list, latencies);
 		});
 	}
 	
@@ -219,7 +218,8 @@ Router : Server {
 		sharedNodeIDAllocator = RingNumberAllocator(128, 800);
 		
 	}
-	
+	serverRunning { ^true } //assume that.
+	waitForBoot {Êarg func; func.value }
 
 }
 

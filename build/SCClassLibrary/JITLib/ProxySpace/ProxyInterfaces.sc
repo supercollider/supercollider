@@ -130,10 +130,6 @@ SynthControl : AbstractPlayControl {
 		
 
 	}
-	
-	freeToBundle { arg bundle;
-		this.stopToBundle(bundle);
-	}
 
 	play { arg group, extraArgs;
 		var bundle;
@@ -147,7 +143,7 @@ SynthControl : AbstractPlayControl {
 		bundle = List.new;
 		this.stopToBundle(bundle);
 		synth.server.listSendBundle(latency, bundle)
-	} 
+	}
 			
 	stopClientToBundle { }  // used in shared node proxy
 	
@@ -180,7 +176,8 @@ SynthDefControl : SynthControl {
 			synthDef = nil; 
 		})
 	}
-
+	
+	free {ÊsynthDef = nil }
 	
 	sendDefToBundle { arg bundle, server;
 		bundle.addPrepare([5, synthDef.asBytes]); //"/d_recv"
@@ -206,32 +203,37 @@ SoundDefControl : SynthDefControl {
 
 
 CXPlayerControl : AbstractPlayControl {
+	
 	//here the lazy bus init happens and allocation of client side ressources
 	//there is no bundle passing in build
 	
 	build { arg proxy;
-		^source.prepareToPlayWithProxy(proxy)
+		var bus;
+		if(proxy.isNeutral.not, {Êbus = proxy.asBus });
+		source.prepareForPlay(nil, true, bus);
+		
+		^proxy.initBus(source.rate ? 'audio', source.numChannels ? 2)
 	}
 	
-	playToBundle { arg bundle, extraArgs, proxy, addAction=\addToTail;
-		var group;
-		// if(source.isPlaying, { source.stopToBundle(bundle) });
+	playToBundle { arg bundle, extraArgs, proxy, addAction=\addToHead;
+		
 		// we'll need channel offset maybe.
+		if(source.patchOut.isNil, {
+			source.prepareForPlay(nil, true, proxy.asBus);
+		});
+		source.spawnToBundle(bundle); //won't work with saved proxy!
+		bundle.addSchedFunction({ this.moveIn(proxy) }, 0.3);
+		^nil
 		
-		// analog to AbstractPlayer-prepareForPlay :
-		//group = Group.newToBundle(bundle, proxy.asTarget, addAction);
-		
-		group = proxy.group;
-		source.prepareToBundle(group, bundle);
-		
-		// spawn
-		source.spawnOnToBundle(group, proxy.asBus, bundle);
-		^source.synth;
 		
 	}
+	 
 	stopToBundle { arg bundle;
-		source.stopToBundle(bundle);
+		//source.stopToBundle(bundle);
+		source.releaseToBundle(nil, bundle);
+		//bundle.addFunction({ source.release;  });  //kompromiss.
 	}
+	freeToBundle {}
 	
 	stop {
 		source.stop;
@@ -241,19 +243,23 @@ CXPlayerControl : AbstractPlayControl {
 	}
 	
 	free { 
-		source.free;
+		source.stop;
 	}
-
+	moveIn {}
+	
 }
 
 CXSynthPlayerControl : CXPlayerControl {
 	
+	/*
 	stopToBundle { arg bundle, fadeTime=0.5;
 		//	source.releaseAndFreeToBundle(fadeTime, bundle); //free it each time for now.
-		source.releaseToBundle(fadeTime, bundle); //free it each time for now.	 
+		source.releaseToBundle(nil, bundle);
 	}
-	
-	freeToBundle { }
+	freeToBundle {}
+	*/
+	// ??
+	moveIn { arg proxy; source.children[0].synth.moveToTail(proxy.group); }
 	
 }
 

@@ -9,7 +9,8 @@ BusPlug : AbstractFunction {
 	
 	
 	*new { arg server;
-		^super.newCopyArgs(server ? Server.local).clear	}
+		^super.newCopyArgs(server ? Server.local).init;
+	}
 	
 	*for { arg bus;
 		bus = bus.asBus.as(SharedBus);
@@ -41,11 +42,13 @@ BusPlug : AbstractFunction {
 		})
 	}
 	
-	clear {
+	init {
 		this.free;
 		this.stop;
 		this.freeBus;
 	}
+	clear { this.init }
+	
 	
 	////////  bus definitions  //////////////////////////////////////////
 	
@@ -247,12 +250,16 @@ NodeProxy : BusPlug {
 		^res
 	}
 	
-	
-	clear {
+	init {
 		nodeMap = ProxyNodeMap.new.proxy_(this); 
 		this.clearObjects;
 		loaded = false;
-		super.clear;
+	
+	}
+	
+	clear {
+		this.init;
+		super.init;
 	}
 	
 	clearObjects {
@@ -749,17 +756,15 @@ NodeProxy : BusPlug {
 	
 	////////////behave like my group////////////
 	
-	isPlaying {
-		^group.isPlaying
-	}
-	
-	free {
-		if(this.isPlaying, { task.stop; group.free; group = nil });
-	}
-	
-	freeAll {
-		if(this.isPlaying, { task.stop; group.freeAll });
-	}
+	isPlaying { ^group.isPlaying }
+	free {  	\free.debug;
+		if(this.isPlaying, {	
+		
+			this.release;
+			SystemClock.sched((this.fadeTime ? 1) + server.latency, { group.free })
+		})
+ 	}
+	freeAll { this.release }
 	
 	run { arg flag=true;
 		if(this.isPlaying, { group.run(flag) });
@@ -816,7 +821,7 @@ NodeProxy : BusPlug {
 		bundle = MixedBundle.new;
 		if(this.isPlaying, { 
 			this.stopAllToBundle(bundle);
-			bundle.schedSend(server, clock)
+			bundle.schedSend(server)
 
 		});
 	}
@@ -939,10 +944,11 @@ NodeProxy : BusPlug {
 
 
 Ndef : NodeProxy {
+	classvar <>defaultServer;
 	var key;
 	*new { arg key, object, server;
 		var res;
-		server = server ? Server.local;
+		server = server ? defaultServer ? Server.local;
 		res = this.at(server, key);
 		if(res.isNil, {
 			res = super.new(server).toLib(key);
@@ -950,6 +956,10 @@ Ndef : NodeProxy {
 		if(object.notNil, { res.source = object });
 		^res;
 	}
+	*clear {
+		Library.at(this).do({ arg item; item.do({ arg item; item.clear }) });
+	}
+	
 	toLib { arg key;
 		Library.put(this.class, server, key, this);
 	}
@@ -989,10 +999,11 @@ SharedNodeProxy : NodeProxy {
 				objects.do({ arg item;
 					item.stopClientToBundle(bundle);
 				});
-				
+			// ??
 				if(group.notNil, {
 					bundle.add(["/g_freeAll", group.nodeID]);
 				})
+				
 	}
 	
 	generateUniqueName {

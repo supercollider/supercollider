@@ -215,36 +215,21 @@
 			^CXSynthPlayerControl
 	}
 	
-	prepareToPlayWithProxy { arg proxy;
-		/*
-		var tempBus, ok;
-		tempBus = proxy.asBus;
-		this.prepareForPlay(bus: tempBus); 
-		//get the rate. there seems a bug in prepareForPlay: doesn't set the rate
-		//[this.numChannels, tempBus].debug;
-		ok = proxy.initBus(this.rate ? 'audio', this.numChannels ? 2); 
-		tempBus.free;
-		this.prepareForPlay(bus: proxy.asBus);
-		
-		^ok
-		*/
-		this.prepareForPlay;
-		^proxy.initBus(this.rate ? 'audio', this.numChannels ? 2); 
-	}
-	
 	makeProxyControl { arg channelOffset=0, proxy;
 			
-			this.prepareToPlayWithProxy(proxy); //do it here for now.
+			//this.prepareToPlayWithProxy(proxy); //do it here for now.
 			^this.proxyControlClass.new(this.wrapInFader(proxy), channelOffset); 
+			//^this.proxyControlClass.new(this, channelOffset); 
+
 	}
 	
 	wrapInFader { arg bus;
 			var n;
 			n = bus.numChannels ? this.numChannels;
-			[[n]].debug;
+			
 			^EnvelopedPlayer(
 				this, //Patch({ arg input; NumChannels.ar(input, n, true) },[this]),
-				Env.asr(0.5, 1, 0.5), 
+				Env.asr(1, 1, 1), 
 				n
 			);
 			
