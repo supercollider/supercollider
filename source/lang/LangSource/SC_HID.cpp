@@ -116,26 +116,26 @@ int prHIDBuildElementList(VMGlobals *g, int numArgsPushed)
 //		post("numElements: %d\n", numElements);
 		numElements = sc_clip(numElements, 0, devAllElementsArray->size);
 		for(int i=0; i<numElements; i++){
-			
-			char cstrElementName [256];
-			PyrObject* devElementArray = newPyrArray(g->gc, 5 * sizeof(PyrObject), 0 , true);
-			HIDGetTypeName((IOHIDElementType) devElement->type, cstrElementName);
-			PyrString *devstring = newPyrString(g->gc, cstrElementName, 0, true);
-			SetObject(devElementArray->slots+devElementArray->size++, devstring);
-			//g->gc->GCWrite(devElementArray, (PyrObject*) devstring);
-			//usage
-			HIDGetUsageName (devElement->usagePage, devElement->usage, cstrElementName);
-			PyrString *usestring = newPyrString(g->gc, cstrElementName, 0, true);			
-			SetObject(devElementArray->slots+devElementArray->size++, usestring);
-			//g->gc->GCWrite(devElementArray, (PyrObject*) usestring);
-			//cookie
-			SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->cookie);
-			SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->min);
-			SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->max);
-			
-			SetObject(devAllElementsArray->slots+i, devElementArray);
-			//g->gc->GCWrite(devAllElementsArray, (PyrObject*) devElementArray);
-			
+			if(devElement){
+				char cstrElementName [256];
+				PyrObject* devElementArray = newPyrArray(g->gc, 5 * sizeof(PyrObject), 0 , true);
+				HIDGetTypeName((IOHIDElementType) devElement->type, cstrElementName);
+				PyrString *devstring = newPyrString(g->gc, cstrElementName, 0, true);
+				SetObject(devElementArray->slots+devElementArray->size++, devstring);
+				//g->gc->GCWrite(devElementArray, (PyrObject*) devstring);
+				//usage
+				HIDGetUsageName (devElement->usagePage, devElement->usage, cstrElementName);
+				PyrString *usestring = newPyrString(g->gc, cstrElementName, 0, true);			
+				SetObject(devElementArray->slots+devElementArray->size++, usestring);
+				//g->gc->GCWrite(devElementArray, (PyrObject*) usestring);
+				//cookie
+				SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->cookie);
+				SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->min);
+				SetInt(devElementArray->slots+devElementArray->size++, (long) devElement->max);
+				
+				SetObject(devAllElementsArray->slots+i, devElementArray);
+				//g->gc->GCWrite(devAllElementsArray, (PyrObject*) devElementArray);
+			}
 			devElement =  HIDGetNextDeviceElement (devElement, kHIDElementTypeInput);
 		}
 	SetObject(a, devAllElementsArray);
