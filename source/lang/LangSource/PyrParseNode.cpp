@@ -1152,6 +1152,9 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 	}
 	
 	if (oldmethod) {
+		post("Extension overwriting %s-%s in file '%s'.\n  Original method in file '%s'.\n", 
+			oldmethod->ownerclass.uoc->name.us->name, oldmethod->name.us->name, 
+			gCompilingFileSym->name, oldmethod->filenameSym.us->name);
 		method = oldmethod;
 		freePyrSlot(&method->code);
 		freePyrSlot(&method->literals);
