@@ -1,5 +1,5 @@
 NeutralProxy : AbstractFunction {
-	var <>proxySpace, <>key, <>numChan;
+	var <proxySpace, <key, <numChan;
 	
 	*new { arg proxySpace,  key, numChan;
 		^super.newCopyArgs(proxySpace,  key, numChan);	
