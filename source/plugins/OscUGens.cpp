@@ -2198,6 +2198,7 @@ void VOsc_Ctor(VOsc *unit)
 	SETCALC(VOsc_next_ik);
 	
 	float nextbufpos = ZIN0(0);
+	unit->m_bufpos = nextbufpos;
 	uint32 bufnum = (uint32)floor(nextbufpos);
 	World *world = unit->mWorld;
 	if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
@@ -2332,6 +2333,7 @@ void VOsc3_Ctor(VOsc3 *unit)
 	SETCALC(VOsc3_next_ik);
 	
 	float nextbufpos = ZIN0(0);
+	unit->m_bufpos = nextbufpos;
 	uint32 bufnum = (uint32)floor(nextbufpos);
 	World *world = unit->mWorld;
 	if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
