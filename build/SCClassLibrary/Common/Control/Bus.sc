@@ -7,8 +7,8 @@ Bus {
 		var alloc;
 		alloc = server.controlBusAllocator.alloc(numChannels);
 		if(alloc.isNil,{
-			error("BusAllocation: failed to get a control bus allocated."
-				+ "numChannels:" + numChannels + "server:" + server);
+			error("Meta_Bus-control: failed to get a control bus allocated."
+				+ "numChannels:" + numChannels + "server:" + server.name);
 			^nil
 		});
 		^this.new(\control,alloc,numChannels,server)
@@ -17,8 +17,8 @@ Bus {
 		var alloc;
 		alloc = server.audioBusAllocator.alloc(numChannels);
 		if(alloc.isNil,{
-			error("BusAllocation: failed to get an audio bus allocated."
-			+ "numChannels:" + numChannels + "server:" + server);
+			error("Meta_Bus-audio: failed to get an audio bus allocated."
+			+ "numChannels:" + numChannels + "server:" + server.name);
 			^nil
 		});
 		^this.new(\audio,alloc,numChannels,server)
