@@ -1,0 +1,669 @@
+/*
+	SuperCollider real time audio synthesis system
+    Copyright (c) 2002 James McCartney. All rights reserved.
+	http://www.audiosynth.com
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+
+#include "SC_PlugIn.h"
+
+static InterfaceTable *ft;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/* special unary math operators */
+enum {
+	opNeg,
+	opNot,
+	opIsNil,
+	opNotNil,
+	opBitNot,
+	opAbs,
+	opAsFloat,
+	opAsInt,
+	opCeil,
+	opFloor,
+	opFrac,
+	opSign,
+	opSquared,
+	opCubed,
+	opSqrt,		
+	opExp,
+	opRecip,
+	opMIDICPS,
+	opCPSMIDI,
+	
+	opMIDIRatio,
+	opRatioMIDI,
+	opDbAmp,
+	opAmpDb,	
+	opOctCPS,
+	opCPSOct,
+	opLog,
+	opLog2,
+	opLog10,
+	opSin,
+	opCos,
+	opTan,
+	opArcSin,
+	opArcCos,
+	opArcTan,
+	opSinH,
+	opCosH,
+	opTanH,
+	opRand,
+	opRand2,
+	opLinRand,
+	opBiLinRand,
+
+	opSum3Rand,
+
+	opDistort,
+	opSoftClip,
+	opCoin,
+	
+	opDigitValue,
+	opSilence,
+	opThru,
+	opRectWindow,
+	opHanWindow,
+	opWelchWindow,
+	opTriWindow,
+	
+	opRamp,
+	opSCurve,
+	
+	opNumUnarySelectors
+};
+
+struct UnaryOpUGen : public Unit
+{
+};
+
+extern "C"
+{
+	void load(InterfaceTable *inTable);
+
+	void UnaryOpUGen_Ctor(UnaryOpUGen *unit);
+	void invert_a(UnaryOpUGen *unit, int inNumSamples);
+	void zero_a(UnaryOpUGen *unit, int inNumSamples);
+	void thru_a(UnaryOpUGen *unit, int inNumSamples);
+	void abs_a(UnaryOpUGen *unit, int inNumSamples);
+	void recip_a(UnaryOpUGen *unit, int inNumSamples);
+	void floor_a(UnaryOpUGen *unit, int inNumSamples);
+	void ceil_a(UnaryOpUGen *unit, int inNumSamples);
+	void sin_a(UnaryOpUGen *unit, int inNumSamples);
+	void cos_a(UnaryOpUGen *unit, int inNumSamples);
+	void tan_a(UnaryOpUGen *unit, int inNumSamples);
+	void asin_a(UnaryOpUGen *unit, int inNumSamples);
+	void acos_a(UnaryOpUGen *unit, int inNumSamples);
+	void atan_a(UnaryOpUGen *unit, int inNumSamples);
+	void sinh_a(UnaryOpUGen *unit, int inNumSamples);
+	void cosh_a(UnaryOpUGen *unit, int inNumSamples);
+	void tanh_a(UnaryOpUGen *unit, int inNumSamples);
+	void log_a(UnaryOpUGen *unit, int inNumSamples);
+	void log2_a(UnaryOpUGen *unit, int inNumSamples);
+	void log10_a(UnaryOpUGen *unit, int inNumSamples);
+	void exp_a(UnaryOpUGen *unit, int inNumSamples);
+	void sqrt_a(UnaryOpUGen *unit, int inNumSamples);
+	void ampdb_a(UnaryOpUGen *unit, int inNumSamples);
+	void dbamp_a(UnaryOpUGen *unit, int inNumSamples);
+	void midicps_a(UnaryOpUGen *unit, int inNumSamples);
+	void cpsmidi_a(UnaryOpUGen *unit, int inNumSamples);
+	void midiratio_a(UnaryOpUGen *unit, int inNumSamples);
+	void ratiomidi_a(UnaryOpUGen *unit, int inNumSamples);
+	void cpsoct_a(UnaryOpUGen *unit, int inNumSamples);
+	void octcps_a(UnaryOpUGen *unit, int inNumSamples);
+	void frac_a(UnaryOpUGen *unit, int inNumSamples);
+	void squared_a(UnaryOpUGen *unit, int inNumSamples);
+	void cubed_a(UnaryOpUGen *unit, int inNumSamples);
+	void sign_a(UnaryOpUGen *unit, int inNumSamples);
+	void distort_a(UnaryOpUGen *unit, int inNumSamples);
+	void distortneg_a(UnaryOpUGen *unit, int inNumSamples);
+	void softclip_a(UnaryOpUGen *unit, int inNumSamples);
+	void rectwindow_a(UnaryOpUGen *unit, int inNumSamples);
+	void hanwindow_a(UnaryOpUGen *unit, int inNumSamples);
+	void welwindow_a(UnaryOpUGen *unit, int inNumSamples);
+	void triwindow_a(UnaryOpUGen *unit, int inNumSamples);
+	void ramp_a(UnaryOpUGen *unit, int inNumSamples);
+	void scurve_a(UnaryOpUGen *unit, int inNumSamples);
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void ChooseOperatorFunc(UnaryOpUGen *unit);
+
+void UnaryOpUGen_Ctor(UnaryOpUGen *unit)
+{	
+	ChooseOperatorFunc(unit);
+	(unit->mCalcFunc)(unit, 1);
+}
+
+void invert_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = -ZXP(a);
+	);
+}
+
+void zero_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	
+	ZClear(inNumSamples, out);
+}
+
+void thru_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	ZCopy(inNumSamples, out, a);
+}
+
+void abs_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = fabs(ZXP(a));
+	);
+}
+
+void recip_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = 1.f / ZXP(a);
+	);
+}
+
+void floor_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = floor(ZXP(a));
+	);
+}
+
+void ceil_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = ceil(ZXP(a));
+	);
+}
+
+void sin_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sin(ZXP(a));
+	);
+}
+
+void cos_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = cos(ZXP(a));
+	);
+}
+
+void tan_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = tan(ZXP(a));
+	);
+}
+
+void asin_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = asin(ZXP(a));
+	);
+}
+
+void acos_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = acos(ZXP(a));
+	);
+}
+
+void atan_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = atan(ZXP(a));
+	);
+}
+
+void sinh_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sinh(ZXP(a));
+	);
+}
+
+void cosh_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = cosh(ZXP(a));
+	);
+}
+
+void tanh_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = tanh(ZXP(a));
+	);
+}
+
+void log_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = log(ZXP(a));
+	);
+}
+
+void log2_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_log2(ZXP(a));
+	);
+}
+
+void log10_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_log10(ZXP(a));
+	);
+}
+
+void exp_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = exp(ZXP(a));
+	);
+}
+
+void sqrt_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_sqrt(ZXP(a));
+	);
+}
+
+void ampdb_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_ampdb(ZXP(a));
+	);
+}
+
+void dbamp_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_dbamp(ZXP(a));
+	);
+}
+
+void midicps_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_midicps(ZXP(a));
+	);
+}
+
+void cpsmidi_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_cpsmidi(ZXP(a));
+	);
+}
+
+void midiratio_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_midiratio(ZXP(a));
+	);
+}
+
+void ratiomidi_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_ratiomidi(ZXP(a));
+	);
+}
+
+void cpsoct_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_cpsoct(ZXP(a));
+	);
+}
+
+void octcps_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_octcps(ZXP(a));
+	);
+}
+
+void frac_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		float xa = ZXP(a);
+		ZXP(out) = xa - floor(xa);
+	);
+}
+
+void squared_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		float xa = ZXP(a);
+		ZXP(out) = xa * xa;
+	);
+}
+
+void cubed_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		float xa = ZXP(a);
+		ZXP(out) = xa * xa * xa;
+	);
+}
+
+void sign_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		float xa = ZXP(a);
+		ZXP(out) = xa < 0.f ? -1.f : (xa > 0.f ? 1.f : 0.f);
+	);
+}
+
+void distort_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	/*LOOP(inNumSamples, 
+		float z = ZXP(a);
+		if (z < 0.f) ZXP(out) = z/(1. - z);
+		else ZXP(out) = z/(1. + z);
+	);*/
+	
+	LOOP(inNumSamples, 
+		float z = ZXP(a);
+		ZXP(out) = z/(1.f + (float)fabs(z));
+	);
+}
+
+void distortneg_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		float z = ZXP(a);
+		if (z < 0.f) ZXP(out) = z/(1. - z);
+		else ZXP(out) = z;
+	);
+}
+
+void softclip_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	/*LOOP(inNumSamples, 
+		float z = ZXP(a);
+		if (z < -0.5) ZXP(out) = (-z - .25)/z;
+		else if (z > 0.5) ZXP(out) = (z - .25)/z;
+		else ZXP(out) = z;
+	);*/
+	
+	LOOP(inNumSamples, 
+		float z = ZXP(a);
+		float az = fabs(z);
+		if (az > 0.5) ZXP(out) = (az - .25)/z;
+		else ZXP(out) = z;
+	);
+}
+
+
+void rectwindow_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_rectwindow(ZXP(a));
+	);
+}
+
+void hanwindow_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_hanwindow(ZXP(a));
+	);
+}
+
+void welwindow_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_welwindow(ZXP(a));
+	);
+}
+
+void triwindow_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		float x = ZXP(a);
+		float z;
+		if (x < 0.f || x > 1.f) z = 0.f;
+		if (x < .5f) z = 2.f * x;
+		else z = 2.f - 2.f * x;
+		ZXP(out) = z;
+	);
+}
+
+
+void scurve_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_scurve(ZXP(a));
+	);
+}
+
+void ramp_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	
+	LOOP(inNumSamples, 
+		ZXP(out) = sc_ramp(ZXP(a));
+	);
+}
+
+
+void ChooseOperatorFunc(UnaryOpUGen *unit)
+{
+	void (*func)(UnaryOpUGen *unit, int inNumSamples);
+	
+	switch (unit->mSpecialIndex) {
+		case opSilence : func = &zero_a; break;
+		case opThru : func = &thru_a; break;
+		case opNeg : func = &invert_a; break;
+		case opAbs : func = &abs_a; break;
+		case opCeil : func = &ceil_a; break;
+		case opFloor : func = &floor_a; break;
+		case opFrac : func = &frac_a; break;
+		case opSign : func = &sign_a; break;
+		case opSquared : func = &squared_a; break;
+		case opCubed : func = &cubed_a; break;
+		case opSqrt : 		func = &sqrt_a; break;
+		case opExp : func = &exp_a; break;
+		case opRecip : func = &recip_a; break;
+		case opMIDICPS : func = &midicps_a; break;
+		case opCPSMIDI : func = &cpsmidi_a; break;
+
+		case opMIDIRatio : func = &midiratio_a; break;
+		case opRatioMIDI : func = &ratiomidi_a; break;	
+		case opDbAmp : func = &dbamp_a; break;
+		case opAmpDb : 	func = &ampdb_a; break;
+		case opOctCPS : func = &octcps_a; break;
+		case opCPSOct : func = &cpsoct_a; break;
+		case opLog : func = &log_a; break;
+		case opLog2 : func = &log2_a; break;
+		case opLog10 : func = &log10_a; break;
+		case opSin : func = &sin_a; break;
+		case opCos : func = &cos_a; break;
+		case opTan : func = &tan_a; break;
+		case opArcSin : func = &asin_a; break;
+		case opArcCos : func = &acos_a; break;
+		case opArcTan : func = &atan_a; break;
+		case opSinH : func = &sinh_a; break;
+		case opCosH : func = &cosh_a; break;
+		case opTanH : func = &tanh_a; break;
+
+		case opDistort : func = &distort_a; break;
+		case opSoftClip : func = &softclip_a; break;
+
+		case opRectWindow : func = &rectwindow_a; break;
+		case opHanWindow : func = &hanwindow_a; break;
+		case opWelchWindow : func = &welwindow_a; break;
+		case opTriWindow : func = &triwindow_a; break;
+
+		case opSCurve : func = &scurve_a; break;
+		case opRamp : func = &ramp_a; break;
+		
+		default : func = &thru_a; break;
+	}
+	unit->mCalcFunc = (UnitCalcFunc)func;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void load(InterfaceTable *inTable)
+{
+	ft = inTable;
+
+	DefineSimpleUnit(UnaryOpUGen);
+}
