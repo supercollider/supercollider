@@ -1027,7 +1027,7 @@ void EnvGen_Ctor(EnvGen *unit)
 		
 	unit->m_level = ZIN0(5);
 	unit->m_counter = 0;
-	unit->m_stage = -1;
+	unit->m_stage = 1000000000;
 	unit->m_prevGate = 0.f;
 	unit->m_released = false;
 	EnvGen_next_k(unit, 1);
