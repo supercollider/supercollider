@@ -130,28 +130,29 @@ Pbind : Pattern {
 			var event;
 			var sawNil = false;
 			event = eventStream.next(time);
-			if (event.isNil, { ^nil });
-			forBy (0, endval, 2, { arg i;
-				var name, stream, streamout;
-				name = streampairs.at(i);
-				stream = streampairs.at(i+1);
-				
-				streamout = stream.next(time);
-				
-				if (streamout.isNil, {
-					sawNil = true;
-				},{
-					if (name.isSequenceableCollection, {					
-						streamout.do({ arg val, i;
-							event.put(name.at(i), val);
-						});
+			if (event.isNil, { nil },{
+				forBy (0, endval, 2, { arg i;
+					var name, stream, streamout;
+					name = streampairs.at(i);
+					stream = streampairs.at(i+1);
+					
+					streamout = stream.next(time);
+					
+					if (streamout.isNil, {
+						sawNil = true;
 					},{
-						event.put(name, streamout);
+						if (name.isSequenceableCollection, {					
+							streamout.do({ arg val, i;
+								event.put(name.at(i), val);
+							});
+						},{
+							event.put(name, streamout);
+						});
 					});
 				});
-			});
-			if (sawNil, { nil },{ 
-				event 
+				if (sawNil, { nil },{ 
+					event 
+				});
 			});
 		},{
 			streampairs = patternpairs.copy;
