@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
-\red0\green0\blue0;\red191\green0\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green0\blue0;
+\red191\green0\blue0;\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 networked programming
@@ -12,8 +12,9 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\i\b0 \cf0 please note any problems, I'll try to add solutions here.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\i0\b \
+\f0\i0\b \cf0 \
 \
 1) using ProxySpace with more than one client, with separate bus spaces
 \f1\b0 \
@@ -61,12 +62,11 @@
 		b) from each client, initialize the default node and set notify to true:\
 			 	\
 			 
-\f3\fs18 	s.initTree;\
-			 	s.notify;\
+\f3\fs18 	\cf4 s.boot; \cf5 // this will initialize the tree and start notification\cf4 \
 			 	\
-			 	if needed, a server window can be created:\
+			 	\cf5 // if needed, a server window can be created:\cf4 \
 			 	s.makeWindow;
-\f1\fs24 \
+\f1\fs24 \cf0 \
 		\
 		c) preallocate a range of busses in each client. \
 			If there is conflicts, increase the number of busses in the server options before booting:
@@ -100,20 +100,19 @@
 \f1\fs24  \
 				\
 				\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b 2) using ProxySpace with more than one client, with a partly shared bus space\
+\f0\b \cf0 2) using ProxySpace with more than one client, with a partly shared bus space\
 		\
 	
 \f1\b0 		step a, b like in (1), skip (d)\
 			\
-			c) before allocating a number of 
-\f3\fs18 buss
-\f1\fs24 es for each client, create shared busses:\
+			c) before allocating a number of busses for each client, create shared busses:\
 				
 \f3\fs18 p = \cf2 ProxySpace\cf0 .push(s);\
 				~shared1.ar(2);\
 				~shared2.ar(2);\
-				~sharedkr.kr(1); \cf4 // or other names.\
+				~sharedkr.kr(1); \cf6 // or other names.\
 			\
 			
 \f1\fs24 \cf0 then do (c) like in (1), just take care that the shared busses are taking number space\
@@ -124,60 +123,20 @@
 \f3\fs18 \cf0 		\
 \
 \
-\cf5  \cf6 // --------the following have changed and are about to change more soon ------------- //				
-\f1\fs24 \cf6 			\cf5 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 							\
 
-\f0\b 3) using ProxySpace with more than one client/server pair, with a partly shared bus space
-\f1\b0 			\
+\f1\fs24 \cf0 \
 			
-\f2\i experimental ! more help to come.
-\f1\i0 \
-			a)	boot the (remote) server and create a local model\
-					(you cannot directly boot a remote server instance)\
-				
-\f3\fs18 s = \cf2 Router\cf0 (name, -local address (or nil)-, clientID);\
-				s.addr = [all the net addresses];
-\f1\fs24 \
-			\
-			b) like in (1), skip (d)\
-			 \
-			c) before allocating a number of busses for each client, create shared busses:\
-				
-\f3\fs18 \
-				p = \cf2 ProxySpace\cf0 .push(s);\
-				p.addSharedKeys; \
-				
-\f1\fs24 \
-			now all letters from ~a to ~r are 1 channel control rate proxies \
-			and from ~s to ~z 2 channel audio rate. ~a and ~s have currently 8 channels.\
-			\
-			This is just one scheme and there is more to come, changes will be noted here.\
-			now ~b = \{ SinOsc.ar(800) * 0.1 \} will silently play a sine tone for all participants.\
-			~b.play will monitor it, 
-\f2\i each client individually
-\f1\i0 . Every client can do with it what they want.\
-			Anyone who changes the function in ~b will change it for all client's servers.\
-			\
-	\
-			\
-
-\f0\b 4) using the Router\
-\
-			
-\f1\b0 help to come...\
-			\
-
 \f0\b \
-5) writing a chat
+3) writing a chat
 \f1\b0 \
 	\
 			see example in
 \f0\b  [\ul Client\ulnone ]\
 	\
 	\
-	
+	\
+see also [\ul PublicProxySpace\ulnone ]
 \f1\b0 \
 					\
 			}
