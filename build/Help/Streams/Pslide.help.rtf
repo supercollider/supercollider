@@ -5,7 +5,7 @@
 }
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 Ptuple
+\f0\b\fs36 \cf0 Pslide
 \f1\b0\fs24  \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -14,25 +14,26 @@
 \f1\b0 \
 \
 
-\f0\b Ptuple(list, repeats)
+\f0\b Pslide(list, repeats, length, step, start)
 \f1\b0 \
 \
-Creates tuples (arrays) of the elements from streams that each element in the list creates\
+repeats: 	number of segments\
+length: 	length of each segment\
+step:		is how far to step the start of each segment from previous.\
+start:		what index to start at.\
 \
-
-\f0\b warning
-\f1\b0 : do not use streams that return nil (end)\
+indexing wraps around if goes past beginning or end.\
+step can be negative.\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  a, b;\
-a = \cf2 Pseq\cf0 (#[1, 2, 3], inf);\
-b = \cf2 Pseq\cf0 (#[65, 76], inf);\
-c = Ptuple([a, a, b], inf);\
-x = c.asStream;\
-8.do(\{ x.next.postln; \});\
+a = \cf2 Pslide\cf0 (#[1, 2, 3, 4, 5], inf, 3, 1, 0);\
+x = a.asStream;\
+13.do(\{ x.next.postln; \});\
 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -42,7 +43,7 @@ x = c.asStream;\
 \f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \cf0 Ptuple used as a sequence of pitches (chords)\
+\f1 \cf0 Pslide used as a sequence of pitches\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2 \cf0 \
@@ -61,18 +62,12 @@ x = c.asStream;\
 \
 \
 (\
-a = \cf2 Pseq\cf0 (#[73, 71, 69, 69, 65, 64], inf);\
-b = \cf2 Pseq\cf0 (#[0, 0, 0, 4, 0, 3, 2]+64, inf);\
-c = \cf2 Ptuple\cf0 ([a, b], \cf2 inf\cf0 );\
+c = \cf2 Pslide\cf0 (#[1, 2, 3, 4, 5], inf, 3, 1, 0) * 3 + 67;\
 x = c.asStream;\
 \cf2 Routine\cf0 (\{\
-	var chord;\
 	loop(\{\
-		chord = x.next.midicps;\
-		chord.do(\{ arg freq;\
-			\cf2 Synth\cf0 (\cf3 "help-sinegrain"\cf0 , [\cf4 \\freq\cf0 , freq]);\
-		\});\
-	0.1.wait;\
+			\cf2 Synth\cf0 (\cf3 "help-sinegrain"\cf0 , [\cf4 \\freq\cf0 , x.next.midicps]);\
+			0.17.wait;\
 	\})\
 \}).play;\
 )\
