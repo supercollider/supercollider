@@ -40,48 +40,78 @@ EmacsInterface {
 				result.add(method.name);
 			};
 		};
-		^result.size.nextPrime -> result.collectAs({ arg symbol;
-			symbol.asString
-		}, Array);
+		^result.collectAs({ arg symbol; symbol.asString }, Array)
 	}
 
-	symbolDefinitions { arg name;
-		var result, symbol, adder, class, getter, setter;
+	classDefinitions { arg name;
+		var result, class, files;
 
-		result = Dictionary.new;
-		symbol = name.asSymbol;
+		result = List.new;
+		class = name.asSymbol.asClass;
 
-		adder = { arg key, obj;
-			result.put(key.asString, obj.filenameSymbol.asString -> (obj.charPos + 1));
-		};
-
-		if ((class = symbol.asClass).notNil, {
-			// class definitions
-			adder.value(class.name, class);
+		if (class.notNil) {
+			files = IdentitySet.new;
+			result.add(["  " ++ name, class.filenameSymbol.asString, class.charPos + 1]);
+			files.add(class.filenameSymbol);
 			class.methods.do { arg method;
-				if (method.filenameSymbol !== class.filenameSymbol) {
-					adder.value(method.name, method);
+				if (files.includes(method.filenameSymbol).not) {
+					result.add(["+ " ++ name, method.filenameSymbol.asString, nil]);
+					files.add(method.filenameSymbol);
 				}
 			}
-		},{
-			// method definitions
-			getter = symbol.asGetter;
-			setter = symbol.asSetter;
-			Class.allClasses.do { arg class;
-				class.methods.do { arg method;
-					if ((method.name === getter).or { method.name === setter}) {
-						adder.value(class.name, method);
-					}
+		};
+		
+		^name -> result
+	}
+
+	methodDefinitions { arg name;
+		var result, symbol, getter, setter;
+		
+		result = List.new;
+		symbol = name.asSymbol;
+		getter = symbol.asGetter;
+		setter = symbol.asSetter;
+
+		Class.allClasses.do { arg class;
+			class.methods.do { arg method;
+				if ((method.name === getter).or { method.name === setter }) {
+					result.add([
+						class.name ++ "-" ++ name,
+						method.filenameSymbol.asString,
+						method.charPos + 1
+					])
 				}
 			}
-		});
+		};
+		
+		^name -> result
+	}
+
+	methodReferences { arg name;
+		var references, methods, result;
+
+		references = Class.findAllReferences(name.asSymbol);
+		if (references.notNil) {
+			methods = IdentitySet.new;
+			references.do { arg funcDef;
+				methods.add(funcDef.homeContext);
+			};
+			result = List.new;
+			methods.do { arg method;
+				result.add([
+					method.ownerClass.name.asString ++ "-" ++ method.name.asString,
+					method.filenameSymbol.asString,
+					method.charPos + 1
+				])
+			}
+		};
 
 		^name -> result
 	}
 }
 
 Emacs {
-	classvar outFile, interface, <lib, requestHandlers, requestAllocator, slots, <menu;
+	classvar outFile, <interface, <lib, requestHandlers, requestAllocator, slots, <menu, <>keys;
 
 	// initialization
 	*initClass {
@@ -92,6 +122,7 @@ Emacs {
 		requestAllocator = LRUNumberAllocator(0, 1024);
 		slots = List.new;
 		// menu = EmacsMenu.new;
+		keys = IdentityDictionary.new;
 		Class.initClassTree(Server);
 	}
 
@@ -153,13 +184,15 @@ Emacs {
 		^obj
 	}
 
-	*performLispCommand { arg handlerFunc, lispFunctionName ... args;
+	*evalLispExpression { arg expression, handlerFunc;
 		var id;
-		id = requestAllocator.alloc;
-		if (id.notNil) {
-			requestHandlers.put(id, handlerFunc);
-			this.sendToLisp('_eval', [id, lispFunctionName, args]);
-		}
+		if (handlerFunc.notNil) {
+			id = requestAllocator.alloc;
+			if (id.notNil) {
+				requestHandlers.put(id, handlerFunc);
+			}
+		};
+		this.sendToLisp('_eval', (id -> expression));
 	}
 
 	*updateServer {
@@ -186,6 +219,10 @@ Emacs {
 				]);
 		};
 		this.sendToLisp(\_updateServer, result)
+	}
+
+	*readFileName { arg handler;
+		this.evalLispExpression("(read-file-name \"Enter file name: \")", handler);
 	}
 
 	// private interface

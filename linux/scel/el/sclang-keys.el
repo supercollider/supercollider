@@ -15,34 +15,26 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ;; USA
 
-(eval-when-compile (require 'cl))
+;; (defvar sclang-key-table (make-char-table 'foo))
 
-(defgroup sclang nil
-  "IDE for working with the SuperCollider language."
-  :group 'languages)
+;; (defun sclang-define-key (char beg end)
+;;   (interactive)
+;;   (sclang-send-string (sclang-format "Emacs.defineKey(%o, %o)" char code))
+;;   (define-key (char-to-string char) sclang-key-mode-map 'sclang-execute-key))
 
-(defgroup sclang-mode nil
-  "Major mode for working with SuperCollider source code."
-  :group 'sclang)
+;; (defun sclang-execute-key (char)
+;;   (sclang-send-string (sclang-format "Emacs.executeKey(%o)" char)))
 
-(defgroup sclang-interface nil
-  "Interface to the SuperCollider process."
-  :group 'sclang)
-
-(defun sclang-customize ()
+(defun sclang-read-keys ()
   (interactive)
-  (customize-group 'sclang))
-
-(eval-when-compile (load "sclang-util"))
-(eval-when-compile (load "sclang-browser"))
-(eval-when-compile (load "sclang-interp"))
-(eval-when-compile (load "sclang-language"))
-(eval-when-compile (load "sclang-server"))
-(eval-when-compile (load "sclang-menu"))
-(eval-when-compile (load "sclang-keys"))
-(eval-when-compile (load "sclang-help"))
-(eval-when-compile (load "sclang-mode"))
-
-(provide 'sclang)
+  (let (char)
+    (clear-this-command-keys)
+    (while t
+      (setq char (read-event))
+      (clear-this-command-keys)
+      (when (char-valid-p char)
+	(message "%s (%d)" (char-to-string char) char)
+	(sclang-send-string (format "Emacs.keys.at(%d).value(%d)" char char))))))
 
 ;; EOF
+

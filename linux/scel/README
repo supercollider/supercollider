@@ -56,21 +56,6 @@ M-x sclang-customize
 in particular, you will have to customize `sclang-runtime-directory'
 and `sclang-help-directory'.
 
-common shortcuts
------------------
-
-for a complete list, see above.
-
-Tab	indent-line
-M-Tab	complete symbol before point
-M-.	find symbol definition
-M-*	pop symbol definition marker ring (goto previous mark)
-C-M-x	eval defun
-C-c C-x	eval region or line
-C-c C-b	show post buffer
-C-c C-q clear post buffer
-C-c C-h display help topic
-
 server control
 ---------------
 

@@ -15,7 +15,7 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ;; USA
 
-(eval-when-compile (require 'view))
+(eval-when-compile (require 'view nil t))
 
 ;; TODO: better factoring
 ;; derive from view mode, make mode-map pluggable
@@ -27,8 +27,7 @@
   (define-key map "\t" 'sclang-browser-next-link)
   (define-key map [backtab] 'sclang-browser-previous-link)
   (define-key map [(shift tab)] 'sclang-browser-previous-link)
-  map
-  )
+  map)
 
 (defvar sclang-browser-mode-map (sclang-browser-fill-keymap (make-sparse-keymap)))
 (defvar sclang-browser-mode-hook nil)

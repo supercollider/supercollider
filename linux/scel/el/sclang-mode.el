@@ -66,16 +66,22 @@
   (easy-menu-create-menu
    title
    '(
-     ["Start Interpreter"	sclang-start]
+     ["Start Interpreter"	sclang-start :included (not (sclang-library-initialized-p))]
+     ["Restart Interpreter"	sclang-start :included (sclang-library-initialized-p)]
+     ["Stop Interpreter"	sclang-stop  :included (sclang-library-initialized-p)]
      "-"
      ["Show Post Buffer"	sclang-show-post-buffer]
      ["Clear Post Buffer"	sclang-clear-post-buffer]
      "-"
-     ["Evaluate Region"		sclang-eval-region]
-     ["Evaluate Defun"		sclang-eval-defun]
+     ["Evaluate Region"		sclang-eval-region :included mark-active]
+     ["Evaluate Line"		sclang-eval-region :included (not mark-active)]
+     ["Evaluate Defun"		sclang-eval-defun  :included (sclang-point-in-defun-p)]
+     ["Evaluate Expression ..."	sclang-eval-expression]
      "-"
-     ["Find Definitions ..."	sclang-find-symbol-definitions]
+     ["Find Definitions ..."	sclang-find-definitions]
+     ["Find References ..."	sclang-find-references]
      ["Pop Mark"		sclang-pop-symbol-definition-mark]
+     ["Dump Interface"		sclang-dump-interface]
      "-"
      ["Index Help Topics"	sclang-index-help-topics]
      ["Find Help ..."		sclang-find-help]
@@ -86,22 +92,25 @@
 
 (defun sclang-fill-mode-map (map)
   ;; process control
-  (define-key map "\C-c\C-s" 'sclang-start)
+  (define-key map "\C-c\C-l"	'sclang-start)
   ;; post buffer control
-  (define-key map "\C-c\C-q" 'sclang-clear-post-buffer)
-  (define-key map "\C-c\C-b" 'sclang-show-post-buffer)
+  (define-key map "\C-c<"	'sclang-clear-post-buffer)
+  (define-key map "\C-c>"	'sclang-show-post-buffer)
   ;; code evaluation
-  (define-key map "\C-c\C-x" 'sclang-eval-region)
-  (define-key map "\M-\C-x" 'sclang-eval-defun)
+  (define-key map "\C-c\C-c"	'sclang-eval-region)
+  (define-key map "\C-\M-x"	'sclang-eval-defun)
+  (define-key map "\C-c\C-e"	'sclang-eval-expression)
   ;; language information
-  (define-key map "\M-\t" 'sclang-complete-symbol)
-  (define-key map "\M-."  'sclang-find-symbol-definitions)
-  (define-key map "\M-*"  'sclang-pop-symbol-definition-mark)
+  (define-key map "\M-\t"	'sclang-complete-symbol)
+  (define-key map "\C-c:"	'sclang-find-definitions)
+  (define-key map "\C-c;"	'sclang-find-references)
+  (define-key map "\C-c}"	'sclang-pop-symbol-definition-mark)
+  (define-key map "\C-c{"	'sclang-dump-interface)
   ;; documentation access
-  (define-key map "\C-c\C-h" 'sclang-find-help)
+  (define-key map "\C-c\C-h"	'sclang-find-help)
   ;; language control
-  (define-key map "\C-c\M-r"  'sclang-main-run)
-  (define-key map "\C-c\M-\." 'sclang-main-stop)
+  (define-key map "\C-c\C-r"	'sclang-main-run)
+  (define-key map "\C-c\C-s"	'sclang-main-stop)
   ;; menu
   (let ((title "SCLang"))
     (define-key map [menu-bar sclang] (cons title (sclang-mode-make-menu title))))
@@ -183,15 +192,13 @@
 	 (or (and sclang-symbol-table
 		  (condition-case nil
 		      (concat
-		       "\\(Meta_\\)?\\("
+		       "\\(Meta_\\)?"
 		       (regexp-opt
-			(sort (all-completions
-			       "" sclang-symbol-table
-			       (lambda (s)
-				 (and (sclang-class-p s)
-				      (not (sclang-meta-class-p s)))))
-			      'string<))
-		       "\\)")
+			(remove-if-not (lambda (name)
+					 (and (sclang-class-name-p name)
+					      (not (match-string 1 name))))
+				       sclang-symbol-table)
+			t))
 		    (error nil)))
 	     sclang-class-name-regexp)
 	 "\\>")))
@@ -199,13 +206,13 @@
 (defun sclang-font-lock-syntactic-face (state)
   (cond ((eq (nth 3 state) ?')
 	 ;; symbol
-	 font-lock-constant-face)
+	 'font-lock-constant-face)
 	((nth 3 state)
 	 ;; string
-	 font-lock-string-face)
+	 'font-lock-string-face)
 	((nth 4 state)
 	 ;; comment
-	 font-lock-comment-face)))
+	 'font-lock-comment-face)))
 
 (defun sclang-set-font-lock-keywords ()
   (unless sclang-font-lock-class-keywords
@@ -217,14 +224,14 @@
    (list
     ;; keywords
     (cons (regexp-opt (sort (copy-list sclang-font-lock-keyword-list) 'string<) 'words)
-	  font-lock-keyword-face)
+	  'font-lock-keyword-face)
     ;; builtins
     (cons (regexp-opt (sort (copy-list sclang-font-lock-builtin-list) 'string<) 'words)
-	  font-lock-builtin-face)
+	  'font-lock-builtin-face)
     ;; constants
     (cons "\\s/\\s\\?." 'font-lock-constant-face)		; characters
     (cons (concat "\\\\\\(" sclang-symbol-regexp "\\)")
-	  font-lock-constant-face)				; symbols
+	  'font-lock-constant-face)				; symbols
     )
    ;; level 2
    sclang-font-lock-keywords-2
@@ -233,15 +240,15 @@
     (list
      ;; variables
      (cons (concat "\\s'\\(" sclang-identifier-regexp "\\)")
-	   font-lock-variable-name-face)			; environment variables
+	   'font-lock-variable-name-face)			; environment variables
      (cons (concat "\\<\\(" sclang-identifier-regexp "\\)\\>:")	; keyword arguments
-	   font-lock-variable-name-face)
+	   'font-lock-variable-name-face)
      ;; method definitions
      (cons sclang-method-definition-regexp
-	   (list 1 font-lock-function-name-face))
+	   (list 1 'font-lock-function-name-face))
      ;; methods
      (cons (regexp-opt (sort (copy-list sclang-font-lock-method-list) 'string<) 'words)
-	   font-lock-function-name-face)
+	   'font-lock-function-name-face)
      ))
    ;; level 3
    sclang-font-lock-keywords-3
@@ -318,23 +325,27 @@ Returns the column to indent to."
 	(beginning-of-defun))
       (while (< (point) indent-point)
 	(setq state (parse-partial-sexp (point) indent-point 0)))
-      (let ((containing-sexp (nth 1 state))
-	    (inside-string-p (nth 3 state))
-	    (inside-comment-p (nth 4 state)))
+      (let* ((containing-sexp (nth 1 state))
+	     (inside-string-p (nth 3 state))
+	     (inside-comment-p (nth 4 state)))
 	(cond (inside-string-p
 	       ;; inside string; don't change indentation
 	       (current-indentation))
 	      ((integerp inside-comment-p)
 	       ;; inside comment
-	       (save-excursion
-		 (back-to-indentation)
-		 (if (looking-at "\\*/")
-		     (setq inside-comment-p (1- inside-comment-p))))
-	       (goto-char containing-sexp)
-	       (+ (current-indentation)
-		  (* (1+ inside-comment-p) sclang-indent-level)))
+	       (let ((base 0)
+		     (offset sclang-indent-level))
+		 (if containing-sexp
+		     (save-excursion
+		       (goto-char containing-sexp)
+		       (setq base (current-indentation))))
+		 (if (and (= inside-comment-p 1)
+			  (save-excursion
+			    (back-to-indentation)
+			    (looking-at "\\*/")))
+		     (setq offset 0))
+		 (+ base sclang-indent-level offset)))
 	      ((null containing-sexp)
-	       ;; top level
 	       0)
 	      (t
 	       (back-to-indentation)

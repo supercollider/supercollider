@@ -137,47 +137,31 @@
 
 (sclang-set-command-handler
  'symbolTable
- (lambda (arg)
-   (let* ((size (car arg))
-	  (data (cdr arg))
-	  (table (make-vector size nil)))
-     (dolist (name data)
-       (let ((sym (intern name table)))
-	 ;; store various symbol information
-	 (put sym 'type
-	      (cond ((sclang-meta-class-name-p name) 'meta-class)
-		    ((sclang-class-name-p name) 'class)
-		    ((sclang-method-name-p name) 'method)))))
-     (setq sclang-symbol-table table)
-     (sclang-update-font-lock))))
+ (lambda (data)
+   (setq sclang-symbol-table (sort data 'string<))
+   (sclang-update-font-lock)))
 
 (add-hook 'sclang-library-startup-hook
 	  (lambda () (sclang-perform-command 'symbolTable)))
 
-(defun sclang-get-symbol (symbol-name)
-  (flet ((get (s) (intern-soft s sclang-symbol-table)))
-    (if (sclang-class-name-p symbol-name)
-	(get symbol-name)
-      (or (get (sclang-method-name-getter symbol-name))
-	  (get (sclang-method-name-setter symbol-name))))))
+(defun sclang-make-symbol-completion-table ()
+  (mapcar (lambda (s) (cons s nil)) sclang-symbol-table))
 
-(defun sclang-meta-class-p (symbol)
-  (eq (get symbol 'type) 'meta-class))
+(defun sclang-make-symbol-completion-predicate (predicate)
+  (and predicate
+       (lambda (assoc) (funcall predicate (car assoc)))))
 
-(defun sclang-class-p (symbol)
-  (or (sclang-meta-class-p symbol)
-      (eq (get symbol 'type) 'class)))
-
-(defun sclang-method-p (symbol)
-  (eq (get symbol 'type) 'method))
+(defun sclang-get-symbol (string)
+  (car (member string sclang-symbol-table)))
 
 (defun sclang-read-symbol (prompt &optional default predicate require-match inherit-input-method)
-  (let ((symbol (and default (sclang-get-symbol default))))
-    (completing-read (format prompt
-			     (if symbol (format " (default %s)" default) ""))
-		     sclang-symbol-table predicate
+  (let ((symbol (sclang-get-symbol default)))
+    (completing-read (sclang-make-prompt-string prompt symbol)
+		     (sclang-make-symbol-completion-table)
+		     (sclang-make-symbol-completion-predicate predicate)
 		     require-match nil
-		     'sclang-symbol-history symbol)))
+		     'sclang-symbol-history symbol
+		     inherit-input-method)))
 
 ;; =====================================================================
 ;; buffer movement
@@ -200,7 +184,8 @@ Use font-lock information is font-lock-mode is enabled."
 	(orig (point))
 	(success t))
     (while (and success (> arg 0))
-      (if (setq success (re-search-backward sclang-beginning-of-defun-regexp nil t))
+      (if (setq success (re-search-backward sclang-beginning-of-defun-regexp
+					    nil 'move))
 	  (unless (sclang-point-in-comment-p)
 	    (goto-char (match-beginning 0))
 	    (setq arg (1- arg)))))
@@ -256,12 +241,6 @@ Return value is nil or (values beg end) of defun."
 ;; =====================================================================
 ;; buffer object access
 ;; =====================================================================
-
-;; (defun sclang-thing-at-point (thing)
-;;   (with-syntax-table sclang-mode-syntax-table
-;;     (let ((bounds (bounds-of-thing-at-point thing)))
-;;       (and bounds
-;; 	   (buffer-substring-no-properties (car bounds) (cdr bounds))))))
 
 (defun sclang-symbol-at-point ()
   "Answer the symbol at point, or nil if not a valid symbol."
@@ -322,12 +301,12 @@ are considered."
 		(point)))
 	 (pattern (buffer-substring-no-properties beg end))
 	 (case-fold-search nil)
+	 (table (sclang-make-symbol-completion-table))
 	 (predicate (or predicate
 			(if (sclang-class-name-p pattern)
-			    'sclang-class-p
-			  'sclang-method-p)))
-			
-	 (completion (try-completion pattern sclang-symbol-table predicate)))
+			    'sclang-class-name-p
+			  'sclang-method-name-p)))
+	 (completion (try-completion pattern table (lambda (assoc) (funcall predicate (car assoc))))))
     (cond ((eq completion t))
 	  ((null completion)
 	   (message "Can't find completion for '%s'" pattern)
@@ -337,7 +316,7 @@ are considered."
 	   (insert completion))
 	  (t
 	   (message "Making completion list...")
-	   (let* ((list (all-completions pattern sclang-symbol-table predicate))
+	   (let* ((list (all-completions pattern table (lambda (assoc) (funcall predicate (car assoc)))))
 		  (win (selected-window))
 		  (buffer-name "*Completions*")
 		  (same-window-buffer-names (list buffer-name)))
@@ -373,126 +352,135 @@ are considered."
   (make-ring sclang-symbol-definition-marker-ring-length)
   "Ring of markers which are locations from which \\[sclang-find-symbol-definitions] was invoked.")
 
-;; symbol definition: (key . (file . pos))
-;; TODO: revise all this stuff ...
-
-(sclang-set-command-handler
- 'symbolDefinitions
- (lambda (arg)
-   (let* ((name (car arg))
-	  (data (cdr arg))
-	  (symbol (sclang-get-symbol name)))
-     (when (and (symbolp symbol) (consp data))
-       ;; cache definitions; turn key string into symbol
-       (put symbol 'definitions (mapcar (lambda (def)
-					  (cons (sclang-get-symbol (car def))
-						(cdr def)))
-					data))
-       (sclang-display-symbol-definition-list symbol)))))
-
 (add-hook 'sclang-library-startup-hook
 	  (lambda ()
 	    (setq sclang-symbol-definition-marker-ring
 		  (make-ring sclang-symbol-definition-marker-ring-length))))
 
-(defun sclang-get-symbol-definitions (symbol)
-  (get symbol 'definitions))
+(sclang-set-command-handler
+ 'classDefinitions
+ (lambda (assoc)
+   (let ((name (car assoc))
+	 (data (cdr assoc)))
+     (if data
+	 (sclang-browse-definitions
+	  name data
+	  "*Definitions*" (format "Definitions of '%s'\n" name))
+       (message "No definitions of '%s'" name)))))
 
-(defun sclang-symbol-definition (symbol key)
-  (assq key (sclang-get-symbol-definitions symbol)))
+(sclang-set-command-handler
+ 'methodDefinitions
+ (lambda (assoc)
+   (let ((name (car assoc))
+	 (data (cdr assoc)))
+     (if data
+	 (sclang-browse-definitions
+	  name data
+	  "*Definitions*" (format "Definitions of '%s'\n" name))
+       (message "No definitions of '%s'" name)))))
 
-(defun sclang-symbol-definition-key (def)
-  (car def))
+(sclang-set-command-handler
+ 'methodReferences
+ (lambda (assoc)
+   (let ((name (car assoc))
+	 (data (cdr assoc)))
+     (if data
+	 (sclang-browse-definitions
+	  name data
+	  "*References*" (format "References to '%s'\n" name))
+       (message "No references to '%s'" name)))))
 
-(defun sclang-symbol-definition-file (def)
-  (car (cdr def)))
-
-(defun sclang-symbol-definition-pos (def)
-  (cdr (cdr def)))
-
-(defun sclang-open-symbol-definition (symbol def)
-  (let* ((key (sclang-symbol-definition-key def))
-	 (file (sclang-symbol-definition-file def))
-	 (pos (sclang-symbol-definition-pos def))
-	 (regexp (sclang-regexp-group (regexp-quote (symbol-name key))))
-	 (buffer (find-file file)))
-    (with-current-buffer buffer
-      (goto-char pos)
-;;       (back-to-indentation)
-;;       ;; skip classvar, classmethod clutter
-;;       (if (re-search-forward regexp (line-end-position) t)
-;; 	  (goto-char (match-beginning 0)))
-      buffer)))
+(defun sclang-open-definition (file pos &optional search-func)
+  (let ((buffer (find-file file)))
+    (when (bufferp buffer)
+      (with-current-buffer buffer
+	(goto-char (or pos (point-min)))
+	(when (functionp search-func)
+	  (funcall search-func))))
+	;;       (back-to-indentation)
+	;;       ;; skip classvar, classmethod clutter
+;; 	(and regexp (re-search-forward regexp nil t)
+;; 	     (goto-char (match-beginning 0)))))
+      buffer))
 
 (defun sclang-pop-symbol-definition-mark ()
   (interactive)
   (let ((find-tag-marker-ring sclang-symbol-definition-marker-ring))
     (pop-tag-mark)))
 
-(defun sclang--symbol-definition-string (symbol def max-width)
-  (let* ((key (sclang-symbol-definition-key def))
-	 (file (sclang-symbol-definition-file def))
-	 (file-string (propertize (file-name-nondirectory file)
-				  'face 'bold))
-	 (def-string (cond ((sclang-class-p symbol)
-			    (if (eq key symbol)
-				(format "  %s" (symbol-name symbol))
-			      (format "+ %s-%s" (symbol-name symbol) (symbol-name key))))
-			    ((sclang-method-p symbol)
-			     (format "%s-%s" (symbol-name key) (symbol-name symbol)))
-			    (t
-			     (symbol-name symbol)))))
-    (format (format "%%-%ds  %%s" max-width) file-string def-string)))
+(defun sclang-browse-definitions (name definitions buffer-name header &optional regexp)
+  (if (cdr definitions)
+      (let ((same-window-buffer-names (list buffer-name)))
+	(with-sclang-browser
+	 buffer-name
+	 ;; (setq view-exit-action 'kill-buffer)
+	 (setq sclang-browser-link-function
+	       (lambda (data)
+		 (sclang-browser-quit)
+		 (apply 'sclang-open-definition data)))
+	 (add-hook 'sclang-browser-show-hook (lambda () (sclang-browser-next-link)))
+	 (insert header)
+	 (insert "\n")
+	 (let ((max-width 0)
+	       format-string)
+	   (dolist (def definitions)
+	     (setq max-width (max (length (file-name-nondirectory (nth 1 def))) max-width)))
+	   (setq format-string (format "%%-%ds  %%s" max-width))
+	   (dolist (def definitions)
+	     (let ((string (format format-string
+				   (propertize (file-name-nondirectory (nth 1 def)) 'face 'bold)
+				   (nth 0 def)))
+		   (data (list (nth 1 def) (nth 2 def) regexp)))
+	       (insert (sclang-browser-make-link string data))
+	       (insert "\n"))))))
+  ;; single definition: jump directly
+  (let ((def (car definitions)))
+    (sclang-open-definition (nth 1 def) (nth 2 def) regexp))))
 
-(defun sclang-display-symbol-definition-list (symbol)
-  (let* ((symbol-name (symbol-name symbol))
-	 (def-list (sclang-get-symbol-definitions symbol))
-	 (buffer-name "*Definition Browser*")
-	 (same-window-buffer-names (list buffer-name)))
-    (cond ((null def-list)
-	   (message "No definitions of '%s'" symbol-name))
-	  ((cdr def-list)
-	   (with-sclang-browser
-	    buffer-name
-	    ;; (setq view-exit-action 'kill-buffer)
-	    (setq sclang-browser-link-function
-		  (lambda (arg)
-		    (sclang-browser-quit)
-		    (apply 'sclang-open-symbol-definition arg)))
-	    (add-hook 'sclang-browser-show-hook (lambda () (sclang-browser-next-link)))
-	    (insert (format "Definitions of '%s':\n\n" symbol-name))
-	    (let ((max-width 0))
-	      (dolist (def def-list)
-		(setq max-width (max (length (file-name-nondirectory (sclang-symbol-definition-file def)))
-				     max-width)))
-	      (dolist (def def-list)
-		(let* ((link-string (sclang--symbol-definition-string symbol def max-width))
-		       (link-data (list symbol def)))
-		  (insert (sclang-browser-make-link link-string link-data))
-		  (insert "\n"))))))
-	  (t
-	   ;; single definition: jump directly
-	   (sclang-open-symbol-definition symbol (car def-list))))))
-
-(defun sclang-find-symbol-definitions (symbol-name)
-  "Find all definitions of SYMBOL-NAME."
+(defun sclang-find-definitions (name)
+  "Find all definitions of symbol NAME."
   (interactive
    (list
-    (let ((sym (sclang-symbol-at-point)))
+    (let ((name (sclang-symbol-at-point)))
       (if current-prefix-arg
-	  (sclang-read-symbol "Find definitions of%s: " sym nil t)
-	(unless sym
-	  (message "No symbol at point"))
-	sym))))
-  (when symbol-name
-    (let ((symbol (sclang-get-symbol symbol-name)))
-      (if symbol
-	  (progn
-	    (ring-insert sclang-symbol-definition-marker-ring (point-marker))
-	    (if (sclang-get-symbol-definitions symbol)
-		(sclang-display-symbol-definition-list symbol)
-	      (sclang-perform-command 'symbolDefinitions symbol-name)))
-	(message "'%s' is undefined" symbol-name)))))
+	  (sclang-read-symbol "Find definitions of: " name nil t)
+	(unless name (message "No symbol at point"))
+	name))))
+  (if (sclang-get-symbol name)
+      (progn
+	(ring-insert sclang-symbol-definition-marker-ring (point-marker))
+	(if (sclang-class-name-p name)
+	    (sclang-perform-command 'classDefinitions name)
+	  (sclang-perform-command 'methodDefinitions name)))
+    (message "'%s' is undefined" name)))
+
+(defun sclang-find-references (name)
+  "Find all references to symbol NAME."
+  (interactive
+   (list
+    (let ((name (sclang-symbol-at-point)))
+      (if current-prefix-arg
+	  (sclang-read-symbol "Find references to: " name nil t)
+	(unless name (message "No symbol at point"))
+	name))))
+  (if (sclang-get-symbol name)
+      (progn
+	(ring-insert sclang-symbol-definition-marker-ring (point-marker))
+	(sclang-perform-command 'methodReferences name))
+    (message "'%s' is undefined" name)))
+
+(defun sclang-dump-interface (class)
+  "Dump interface of class CLASS."
+  (interactive
+   (list
+    (let ((class (sclang-symbol-at-point)))
+      (if current-prefix-arg
+	  (sclang-read-symbol "Dump interface of: " class 'sclang-class-name-p t)
+	(unless name (message "No class at point"))
+	name))))
+  (and (sclang-get-symbol class)
+       (sclang-class-name-p class)
+       (sclang-send-string (format "%s.dumpFullInterface" class))))
 
 ;; =====================================================================
 ;; sc-code formatting

@@ -59,7 +59,7 @@
 
 (defun sclang-show-post-buffer (&optional eob-p)
   "Show SuperCollider process buffer.
-With argument, positions cursor at end of buffer."
+If EOB-P is non-nil, positions cursor at end of buffer."
   (interactive "P")
   (with-sclang-post-buffer
    (let ((window (display-buffer (current-buffer))))
@@ -204,8 +204,8 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
       (process-send-string proc (concat string (if print-p "\^L" "\^[")))
       string)))
 
-(defun sclang-eval-string (string &optional silent-p)
-  (interactive "sEnter string: \nP")
+(defun sclang-eval-expression (string &optional silent-p)
+  (interactive "sEval: \nP")
   (sclang-send-string string (not silent-p)))
 
 (defun sclang-eval-line (&optional silent-p)
@@ -357,10 +357,7 @@ Change this if \"cat\" has a non-standard name or location."
 	(when (functionp fun)
 	  (funcall fun (cdr assoc))
 	  t))
-    (error
-     (message "sclang--handle-command-result: %s"
-	      (error-message-string e))
-     nil)))
+    (error (debug "sclang--handle-command-result") nil)))
 
 ;; =====================================================================
 ;; default command handlers
@@ -373,15 +370,14 @@ Change this if \"cat\" has a non-standard name or location."
 
 (sclang-set-command-handler
  '_eval
- (lambda (data)
-   (message "%s" data)
-   (let ((id (nth 0 data))
-	 (func (intern-soft (nth 1 data)))
-	 (args (nth 2 data)))
-     (when (fboundp func)
-       (let ((res (apply func args)))
-	 (sclang-send-string
-	  (sclang-format "Emacs.lispHandleCommandResult(%o, %o)" id res)))))))
+ (lambda (assoc)
+   (let ((id (car assoc))
+	 (expr (cdr assoc)))
+     (when (stringp expr)
+       (let ((res (eval (read expr))))
+	 (when id
+	   (sclang-send-string
+	    (sclang-format "Emacs.lispHandleCommandResult(%o, %o)" id res))))))))
 
 ;; =====================================================================
 ;; module setup
@@ -392,7 +388,21 @@ Change this if \"cat\" has a non-standard name or location."
 
 ;; add command line switch
 (add-to-list 'command-switch-alist
-	     (cons "sclang" (lambda (switch) (sclang-start))))
+	     (cons "sclang"
+		   (lambda (switch)
+		     (sclang-start))))
+
+(add-to-list 'command-switch-alist
+	     (cons "scmail"
+		   (lambda (switch)
+		     (sclang-start)
+		     (when command-line-args-left
+		       (let ((file (pop command-line-args-left)))
+			 (with-current-buffer (get-buffer-create "*SCLang Workspace*")
+			   (and (file-exists-p file) (insert-file-contents file))
+			   (set-buffer-modified-p nil)
+			   (sclang-mode)
+			   (switch-to-buffer (current-buffer))))))))
 
 (provide 'sclang-interp)
 
