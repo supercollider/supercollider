@@ -1216,7 +1216,7 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	return errNone;
 }
 
-bool identDict_lookupNonNil(PyrObject *dict, PyrSlot *key, PyrSlot *result);
+bool identDict_lookupNonNil(PyrObject *dict, PyrSlot *key, int hash, PyrSlot *result);
 
 int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1300,7 +1300,7 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 					// replace the args with values from the environment if they exist
 					PyrSlot keyslot;
 					SetSymbol(&keyslot, argNames[m]);
-					identDict_lookupNonNil(curEnvirSlot->uo, &keyslot, vars+m+1);
+					identDict_lookupNonNil(curEnvirSlot->uo, &keyslot, calcHash(&keyslot), vars+m+1);
 				}
 			}
 		} else if (methraw->varargs) {
@@ -1373,7 +1373,7 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 					// replace the args with values from the environment if they exist
 					PyrSlot keyslot;
 					SetSymbol(&keyslot, argNames[m]);
-					identDict_lookupNonNil(curEnvirSlot->uo, &keyslot, vars+m+1);
+					identDict_lookupNonNil(curEnvirSlot->uo, &keyslot, calcHash(&keyslot), vars+m+1);
 				}
 			}
 
@@ -1525,7 +1525,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 					// replace the args with values from the environment if they exist
 					PyrSlot keyslot;
 					SetSymbol(&keyslot, argNames[m]);
-					identDict_lookupNonNil(curEnvirSlot->uo, &keyslot, vars+m+1);
+					identDict_lookupNonNil(curEnvirSlot->uo, &keyslot, calcHash(&keyslot), vars+m+1);
 				}
 			}
 			
@@ -1639,7 +1639,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 					// replace the args with values from the environment if they exist
 					PyrSlot keyslot;
 					SetSymbol(&keyslot, argNames[m]);
-					identDict_lookupNonNil(curEnvirSlot->uo, &keyslot, vars+m+1);
+					identDict_lookupNonNil(curEnvirSlot->uo, &keyslot, calcHash(&keyslot), vars+m+1);
 				}
 			}
 
