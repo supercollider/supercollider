@@ -36,7 +36,7 @@ ObjectGui {
 	
 	writeName { arg layout;
 		ActionButton(layout,model.asString,{ 	// link to console
-			model.inspect;
+			model.i;
 		},60)
 	}
 	

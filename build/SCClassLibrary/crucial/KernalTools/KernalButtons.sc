@@ -3,7 +3,7 @@
 ClassNameLabel : ActionButton {
 
 	*new { arg  class,layout,maxx=200;
-		^super.new(layout,class.name.asString,{ClassInspector(class)},maxx,13,2)
+		^super.new(layout,class.name.asString,{ClassGui(class)},maxx,13,2)
 			.backColor_(Color( 0.52156862745098, 0.75686274509804, 0.90196078431373 ));
 	}
 
@@ -14,11 +14,11 @@ MethodLabel : ActionButton {
 
 	*new { arg  method,layout,maxx=100;
 		^super.new(layout,method.ownerClass.name.asString ++ "::" ++ method.name.asString,
-			{MethodInspector(method)},maxx,13,2)
+			{MethodGui(method)},maxx,13,2)
 				.backColor_(Color( 0.62745098039216, 0.8078431372549, 0.57647058823529 ));
 	}
 	*withoutClass { arg  method,layout;
-		^super.new(layout, "::" ++ method.name.asString,{MethodInspector(method)},100,13,2)
+		^super.new(layout, "::" ++ method.name.asString,{MethodGui(method)},100,13,2)
 			.backColor_(Color( 0.62745098039216, 0.8078431372549, 0.57647058823529 ));
 	}
 	
@@ -55,7 +55,7 @@ Tile : ActionButton {
 
 InspectorLink : ActionButton {
 	*new { arg  target,layout,maxx=100; 
-		^super.new(layout,target.asString,{target.inspect},maxx)
+		^super.new(layout,target.asString,{target.i},maxx)
 			.backColor_(Color( 0.5921568627451, 0.56862745098039, 1 ))
 			.labelColor_(Color.blue)
 	}

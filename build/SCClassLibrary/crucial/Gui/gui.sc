@@ -14,5 +14,10 @@
 	smallGui { arg lay;
 		^this.guiClass.new(this).smallGui(lay);
 	}
+	
+	i { arg layout;
+		CXObjectInspector(this).gui(layout)
+	}
+	
 }
 
