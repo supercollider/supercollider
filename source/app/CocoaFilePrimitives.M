@@ -197,38 +197,33 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
     
     PyrObject *returnObject = returnArray->uo;
     
-    NSLog(@"directoryPath: %@",nsStringFromPyrSlot(directoryPath));
-    
     NSDirectoryEnumerator *direnum = [[NSFileManager defaultManager]
             enumeratorAtPath:nsStringFromPyrSlot(directoryPath)];
     NSString *pname;
     NSString *nsextension;
     int i=0;
-    /*
-        NSDictionary *fattrs = [manager fileAttributesAtPath:fullpath traverseLink:YES];
-        //NSString *fileName = [pname lastPathComponent];
-
-        if ([fattrs objectForKey:NSFileType] != NSFileTypeDirectory)
-    */
-   if(IsNil(extension)) {
+    int maxsize = MAXINDEXSIZE(returnObject);
+    if(IsNil(extension)) {
         while (pname = [direnum nextObject]) {
-            NSLog(@" pname: %@",pname);
+            if(i >= maxsize) return errIndexOutOfRange;
+            
             PyrString* pyrPathString = newPyrString(g->gc,[pname cString],0,true);
             
             PyrSlot slot;
             SetObject(&slot, pyrPathString);
             returnObject->slots[i].ucopy = slot.ucopy;
             g->gc->GCWrite(returnObject,pyrPathString);
-            // have to set size field each time in order that gc can find the created objects
             returnObject->size = i+1;
             i++;
         }
     } else {
+        /*
         nsextension = nsStringFromPyrSlot(extension);
         while (pname = [direnum nextObject]) {
             if (![[pname pathExtension] isEqualToString:nsextension]) {
                 //[direnum skipDescendents]; /* don't enumerate this directory */
             //} else {
+            /*
                 PyrString* pyrPathString = newPyrString(g->gc,[pname cString],0,true);
                 
                 PyrSlot slot;
@@ -240,11 +235,20 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
                 returnObject->size = i+1;
                 i++;
             }
-        }        
+        }  
+        */
     }
     SetObject(receiver,returnObject);
     return errNone;
 }
+
+    /*
+        NSDictionary *fattrs = [manager fileAttributesAtPath:fullpath traverseLink:YES];
+        //NSString *fileName = [pname lastPathComponent];
+
+        if ([fattrs objectForKey:NSFileType] != NSFileTypeDirectory)
+    */
+
 
 
 int prHelpFileForString(struct VMGlobals *g, int numArgsPushed);
