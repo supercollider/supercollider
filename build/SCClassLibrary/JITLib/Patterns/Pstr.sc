@@ -73,13 +73,7 @@ ResetStream : Pstr {
 
 Sfin : Stream { 
 	*new { arg count, pattern;
-		^Pfin(count.asStream, pattern.asStream)
-	}
-}
-
-Stri : Sfin {
-	*new { arg count, start=0.0, step=0.125, min=0.0, max=1.0;
-		^super.new(count, Ptri(min, max, step, start, inf))
+		^Pfin(count.asStream, pattern.asStream).asStream
 	}
 }
 
@@ -90,12 +84,6 @@ Sbrown : Sfin {
 
 }
 
-Swhite : Sfin {
-	*new { arg count, lo=0.0, hi=1.0;
-		^super.new(count, Pwhite(lo, hi, inf))
-	}
-
-}
 
 
 
