@@ -346,10 +346,14 @@ int prObjectString(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrString *string;
-	char str[256];
+	char str[256], *strp;
 	
 	a = g->sp;
-	if (postString(a, str)) {
+	if (IsSym(a)) {
+		string = newPyrString(g->gc, a->us->name, 0, true);
+		SetObject(a, string);
+		return errNone;
+	} else if (postString(a, str)) {
 		string = newPyrString(g->gc, str, 0, true);
 		SetObject(a, string);
 		return errNone;
@@ -383,15 +387,18 @@ int prAsCompileString(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrString *string;
-	char str[256];
 	int err;
 	
 	a = g->sp;
-	err = asCompileString(a, str);
-	if (err == errNone) {
+	if (IsSym(a)) {
+		string = newPyrString(g->gc, a->us->name, 0, true);
+	} else {
+		char str[256];
+		err = asCompileString(a, str);
+		if (err) return err;
 		string = newPyrString(g->gc, str, 0, true);
-		SetObject(a, string);
 	}
+	SetObject(a, string);
 	return err;
 }
 

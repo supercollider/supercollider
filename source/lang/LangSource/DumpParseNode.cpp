@@ -257,7 +257,14 @@ void slotString(PyrSlot *slot, char *str)
 			sprintf(str, "Character %d '%c'", slot->ui, slot->ui);
 			break;
 		case tagSym :
-			sprintf(str, "Symbol '%s'", slot->us->name);
+			if (strlen(slot->us->name) > 240) {
+				char str2[256];
+				memcpy(str2, slot->us->name, 240);
+				str2[240] = 0;
+				snprintf(str, 256, "Symbol '%s...'", str2);
+			} else {
+				snprintf(str, 256, "Symbol '%s'", slot->us->name);
+			}
 			break;
 		case tagObj :
 			if (slot->uo) {
@@ -355,7 +362,14 @@ void slotOneWord(PyrSlot *slot, char *str)
 			sprintf(str, "$%c", slot->ui);
 			break;
 		case tagSym :
-			sprintf(str, "'%s'", slot->us->name);
+			if (strlen(slot->us->name) > 240) {
+				char str2[256];
+				memcpy(str2, slot->us->name, 240);
+				str2[240] = 0;
+				snprintf(str, 256, "'%s...'", str2);
+			} else {
+				snprintf(str, 256, "'%s'", slot->us->name);
+			}
 			break;
 		case tagObj :
 			if (slot->uo) {
@@ -449,7 +463,8 @@ bool postString(PyrSlot *slot, char *str)
 			sprintf(str, "%c", slot->ui);
 			break;
 		case tagSym :
-			sprintf(str, "%s", slot->us->name);
+			str[0] = 0;
+			res = false;
 			break;
 		case tagObj :
 			/*if (slot->uo) {
@@ -522,6 +537,7 @@ bool postString(PyrSlot *slot, char *str)
 						sprintf(str, "Frame (%0X) of Function", slot->ui);
 					}
 				} else {
+					str[0] = 0;
 					res = false;
 //					sprintf(str, "instance of %s (%08X, size=%d, gcset=%02X)", 
 //						slot->uo->classptr->name.us->name, 
@@ -577,8 +593,7 @@ int asCompileString(PyrSlot *slot, char *str)
 			break;
 		}
 		case tagSym :
-			sprintf(str, "'%s'", slot->us->name);
-			break;
+			return errFailed;
 		case tagObj :
 			return errFailed;
 		case tagNil :

@@ -35,16 +35,20 @@ int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed);
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	char str[256];
+	char str[1024], *strp=0;
 	int len;
 
 	a = g->sp;
-	len = sc_min(255, a->uo->size);
-	memcpy(str, a->uos->s, len);
-	str[len] = 0;
-	
-	a->us = getsym(str);
+	len = a->uo->size;
+	strp = len > 1023 ? (char*)malloc(len+1) : str;
+
+	memcpy(strp, a->uos->s, len);
+	strp[len] = 0;
+		
+	a->us = getsym(strp);
 	a->utag = tagSym;
+	
+	if (len > 1023) free(strp);
 	
 	return errNone;
 }

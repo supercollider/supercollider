@@ -114,6 +114,10 @@ int prSymbolAsSetter(struct VMGlobals *g, int numArgsPushed)
 			error("Cannot convert class names or primitive names to setters.\n");
 			return errFailed;
 		}
+		if (strlen(a->us->name)>255) {
+			error("symbol name too long.\n");
+			return errFailed;
+		}
 		strcpy(str, a->us->name);
 		len = strlen(str);
 		str[len] = '_';
