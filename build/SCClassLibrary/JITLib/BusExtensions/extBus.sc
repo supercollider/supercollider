@@ -1,24 +1,6 @@
 + Bus {
 	
 	
-	free {
-		if(index.isNil,{ (this.asString + " has already been freed").warn; ^this });
-		if(rate == \audio,{
-			server.audioBusAllocator.free(index);
-		},{
-			server.controlBusAllocator.free(index);
-		});
-		index = nil;
-		numChannels = nil;
-	}
-	
-	alloc {
-		if(rate === 'audio', {
-			index = server.audioBusAllocator.alloc(numChannels);
-		}, {
-			index = server.controlBusAllocator.alloc(numChannels);
-		});
-	}
 		
 	gate { arg level=1.0, dur=0, target;
 		^this.toServer(target.asTarget, "system_gate_"++rate, level, dur);
