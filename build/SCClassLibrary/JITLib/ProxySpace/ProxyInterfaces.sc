@@ -66,19 +66,31 @@ AbstractPlayControl {
 }
 
 StreamControl : AbstractPlayControl {
-	var <stream, clock;
+	var <stream, clock, fadeTime;
 		
-	play {
+	play { 
+		var dt;
 		stream.stop;
-		stream.play(clock, false, 0); // maybe in event?
+		dt = fadeTime.value;
+		if(dt < 0.3) { stream.play(clock, false, 0) } { stream.xplay(dt, clock, false, 0) };
 		CmdPeriod.add(this); // should maybe be in PauseStream
 	}
-	isPlaying { ^stream.isPlaying }
-	stop { stream.stop; }
+	
+	stop { 
+		var dt;
+		dt = fadeTime.value;
+		if(dt < 0.3) { stream.stop } 
+		{ 
+			stream.xstop(dt);  
+			// make sure it is stopped, in case next is never called
+			SystemClock.sched(dt, { stream.stop }) 
+		}; 
+	}
 	pause { stream.pause; paused=true }
 	resume { arg clock, quant=1.0; stream.resume(clock, quant); paused=false }
 	
-	free { stream.stop; stream = nil }
+	isPlaying { ^stream.isPlaying }
+	//free { stream.stop; stream = nil }
 	cmdPeriod { stream.stop }
 	
 	playToBundle { arg bundle; 
@@ -89,6 +101,7 @@ StreamControl : AbstractPlayControl {
 	}
 	
 	build { arg proxy;
+		fadeTime = { proxy.fadeTime }; // needed for fadetime
 		stream = source.buildForProxy(proxy, channelOffset);
 		clock = proxy.clock;
 		paused = proxy.paused;
