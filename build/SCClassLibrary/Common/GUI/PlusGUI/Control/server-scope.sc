@@ -33,10 +33,10 @@
 // Function support
 
 + Function {
-	scope { arg numChannels, outbus = 0, fadeTime=0.05;
+	scope { arg numChannels, outbus = 0, fadeTime=0.05, bufsize = 4096, zoom = 1;
 		var synth;
 		synth = this.play(Server.internal, outbus, fadeTime);
 		synth.postln;
-		synth.notNil.if({Server.internal.scope(numChannels, outbus); ^synth;});
+		synth.notNil.if({Server.internal.scope(numChannels, outbus, bufsize, zoom); ^synth;});
 	}
 }
