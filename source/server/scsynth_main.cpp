@@ -200,7 +200,8 @@ int main(int argc, char* argv[])
 			case 'N' :
 // -N cmd-filename input-filename output-filename sample-rate header-format sample-format
 				checkNumArgs(7);
-				options.mNonRealTimeCmdFilename    = (strcmp(argv[j+1], "_")==0) ? 0 : argv[j+1];
+                                options.mRealTime = false;
+				options.mNonRealTimeCmdFilename    = argv[j+1];
 				options.mNonRealTimeInputFilename  = (strcmp(argv[j+2], "_")==0) ? 0 : argv[j+2];
 				options.mNonRealTimeOutputFilename = argv[j+3];
 				options.mNonRealTimeSampleRate = (int)atof(argv[j+4]);
@@ -210,8 +211,8 @@ int main(int argc, char* argv[])
 			default: Usage();
 		}
 	}
-	if (udpPortNum == -1 && tcpPortNum == -1) {
-		scprintf("ERROR: There must be a -u and/or a -t option.\n");
+	if (udpPortNum == -1 && tcpPortNum == -1 && options.mRealTime) {
+		scprintf("ERROR: There must be a -u and/or a -t options.\n");
 		Usage();
 	}
 	if (options.mNumInputBusChannels + options.mNumOutputBusChannels > options.mNumAudioBusChannels) {

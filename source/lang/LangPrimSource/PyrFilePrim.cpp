@@ -205,6 +205,8 @@ int prFileWrite(struct VMGlobals *g, int numArgsPushed)
 	if (file == NULL) return errFailed;
 	switch (b->utag) {
 		case tagInt :
+                    fwrite(&b->ui, 1, sizeof(int), file);
+                    break;
 		case tagSym :
 			fwrite(b->us->name, sizeof(char), b->us->length, file);
 			break;

@@ -300,6 +300,9 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	
 	outputFileInfo.samplerate = inOptions->mNonRealTimeSampleRate;
 	numOutputChannels = outputFileInfo.channels = world->mNumOutputs;
+	sndfileFormatInfoFromStrings(&outputFileInfo, 
+		inOptions->mNonRealTimeOutputHeaderFormat, inOptions->mNonRealTimeOutputSampleFormat);
+	
 	world->hw->mNRTOutputFile = sf_open(inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &outputFileInfo);
 	if (!world->hw->mNRTOutputFile) 
 		throw std::runtime_error("Couldn't open non real time output file.\n");
@@ -349,7 +352,8 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	
 	int bufLength = world->mBufLength;
 	int64 oscTime = 0;
-	double oscToSamples = inOptions->mNonRealTimeSampleRate / pow(2.,32.);
+        double oscToSeconds = 1. / pow(2.,32.);
+	double oscToSamples = inOptions->mNonRealTimeSampleRate * oscToSeconds;
 	int64 oscInc = (int64)((double)bufLength / oscToSamples);
 	
 	bool run = true;
@@ -390,7 +394,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 			
 			// execute ready commands
 			int64 nextTime = oscTime + oscInc;
-			
+			                        
 			while (schedTime <= nextTime) {
 				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
 				if (world->mSampleOffset < 0) world->mSampleOffset = 0;
@@ -411,16 +415,23 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 			float *outBus = outputBuses;
 			for (int j=0; j<numOutputChannels; ++j, outBus += bufLength) {
 				float *outFileBufPtr = outBufPos + j;
-				for (int k=0; k<bufLength; ++k) {
-					*outFileBufPtr = outBus[k];
-					outFileBufPtr += numInputChannels;
-				}
-				outputTouched[j] = bufCounter;
+                                if (outputTouched[j] == bufCounter) {
+                                    for (int k=0; k<bufLength; ++k) {
+                                            *outFileBufPtr = outBus[k];
+                                            outFileBufPtr += numOutputChannels;
+                                    }
+                                } else {
+                                    for (int k=0; k<bufLength; ++k) {
+                                            *outFileBufPtr = 0.f;
+                                            outFileBufPtr += numOutputChannels;
+                                    }
+                                }
 			}
 			bufFramesCalculated += bufLength;
 			inBufPos += inBufStep;
 			outBufPos += outBufStep;
 			world->mBufCounter++;
+                        oscTime = nextTime;
 		}
 Bail:
 		// write output
@@ -428,7 +439,12 @@ Bail:
 	}
 	
 	sf_close(world->hw->mNRTOutputFile);
-	if (world->hw->mNRTInputFile) sf_close(world->hw->mNRTInputFile);
+        world->hw->mNRTOutputFile = 0;
+        
+	if (world->hw->mNRTInputFile) {
+            sf_close(world->hw->mNRTInputFile);
+            world->hw->mNRTInputFile = 0;
+        }
 	
 	World_Cleanup(world);
 }
@@ -698,7 +714,7 @@ void World_Cleanup(World *world)
 	
 	HiddenWorld *hw = world->hw;
 	
-	if (hw) hw->mAudioDriver->Stop();
+	if (hw && world->mRealTime) hw->mAudioDriver->Stop();
 	
 	world->mRunning = false;
 
@@ -784,6 +800,8 @@ SCErr bufAlloc(SndBuf* buf, int numChannels, int numFrames)
 int sampleFormatFromString(const char* name);
 int sampleFormatFromString(const char* name)
 {		
+	if (!name) return SF_FORMAT_PCM_16;
+
 	size_t len = strlen(name);
 	if (len < 1) return 0;
 	
@@ -812,6 +830,7 @@ int sampleFormatFromString(const char* name)
 int headerFormatFromString(const char *name);
 int headerFormatFromString(const char *name)
 {
+	if (!name) return SF_FORMAT_AIFF;
 	if (strcasecmp(name, "AIFF")==0) return SF_FORMAT_AIFF;
 	if (strcasecmp(name, "AIFC")==0) return SF_FORMAT_AIFF;
 	if (strcasecmp(name, "RIFF")==0) return SF_FORMAT_WAV;
