@@ -223,7 +223,9 @@ SynthControl : AbstractPlayControl {
 					desc = this.synthDesc; 
 					^if(desc.notNil) { desc.controls } { nil } 
 	}
-	store { SynthDescLib.global.read("synthdefs/" ++ this.asDefName ++ ".scsyndef"); }
+	
+	synthDefPath {Ê^SynthDef.synthDefDir ++ this.asDefName ++ ".scsyndef" }
+	store { SynthDescLib.global.read(this.synthDefPath) }
 	
 }
 
@@ -259,20 +261,25 @@ SynthDefControl : SynthControl {
 	
 	loadToBundle { arg bundle;
 		var bytes, size, path;
+		
 		bytes = synthDef.asBytes;
 		size = bytes.size;
-		size = size + 4 - (size bitAnd: 3) + 4 + 16;
-		path = SynthDef.synthDefDir ++ synthDef.name ++  ".scsyndef";
+		size = size + 4 - (size bitAnd: 3) + 4 + 16 + 60; // apx path lengtht size + overhead
+		
 		if(size < 8192) {
 			bundle.addPrepare([5, bytes]); //"/d_recv"
-			if(writeDefs) { this.writeSynthDefFile(path, bytes) }; // in case of server reboot
+			if(writeDefs) { 
+				this.writeSynthDefFile(this.synthDefPath, bytes) 
+			}; // in case of server reboot
 			
 		}{
 			"SynthDef too large to be sent to remote server via udp".warn;
+			path = this.synthDefPath;
 			this.writeSynthDefFile(path, bytes);
 			bundle.addPrepare([6, path]); //"/d_load"
 		};
 	}
+	
 	writeSynthDefFile { arg path, bytes;
 		var file;
 		file = File(path, "w");
