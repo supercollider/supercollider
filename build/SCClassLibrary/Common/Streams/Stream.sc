@@ -46,8 +46,6 @@ Stream : AbstractFunction {
 			inval = this.next(inval);
 			if ( inval.notNil, {
 				argCollectFunc.value(inval) 
-			},{ 
-				nil 
 			})
 		};
 		resetFunc = { this.reset };
