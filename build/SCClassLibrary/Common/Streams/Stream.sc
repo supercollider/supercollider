@@ -201,6 +201,8 @@ Stream : AbstractFunction {
 			});
 		})
 	}
+	
+	
 }
 
 FuncStream : Stream {
@@ -240,7 +242,9 @@ PauseStream : Stream
 	stop {  stream = nil }
 
 	pause { stream = nil }
-	resume { ^this.play(clock, false) }
+	resume { arg argClock, quant=1.0; 
+		^this.play(clock ? argClock, false, quant) 
+	}
 	
 	refresh {
 		stream = originalStream
