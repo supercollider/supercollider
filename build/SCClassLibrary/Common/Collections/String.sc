@@ -168,8 +168,15 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	
-	/// os x
+	/// cocoa or at least foundation dependant
 	standardizePath { _Cocoa_StandardizePath ^this.primitiveFailed }
+	findHelpFile {
+		_Cocoa_HelpFileForString_
+		^this.primitiveFailed
+	}
+	openHelpFile {
+		(this.findHelpFile ? "Help/Help.help.rtf").openTextFile
+	}
 	
 }
 
