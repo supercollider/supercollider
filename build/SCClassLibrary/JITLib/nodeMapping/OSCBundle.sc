@@ -8,7 +8,6 @@ MixedBundle {
 	
 	var <messages, <functions; //functions to evaluate on send 
 	var <preparationMessages; //messages to send first on schedSend
-	var <>preparationTime=0.3; //time between preparation and action
 	
 	add { arg msg;
 		messages = messages.add(msg);
@@ -37,11 +36,7 @@ MixedBundle {
 		functions.do({ arg item; item.value }); 
 	}
 	
-	sendPrepare { arg server;
-		if(preparationMessages.notNil, {
-			server.listSendBundle(nil, preparationMessages);
-		})
-	}
+	sendPrepare { arg server; server.listSendBundle(nil, preparationMessages) }
 	
 	sendAndEvaluate { arg server, latency;
 		var array; // maybe pass in latency? does not work for perform message
@@ -51,32 +46,35 @@ MixedBundle {
 		})
 	}
 	
-	// the sound starts at: preparationTime + (next beat + latency) 
+	// the sound starts at: (next beat + latency) when the preparation is finished 
 	// the client side task starts at: preparationTime + next beat
 	// next beat is 0 if no clock is passed in.
 	// eventstreams e.g. take into account the latency internally
 	
 	schedSend { arg server, clock;
-			this.sendPrepare(server);
-			SystemClock.sched(preparationTime, {
+			Routine.run {
+				if(preparationMessages.notNil) {
+					this.sendPrepare(server);
+					server.sync;
+				};
 				if(clock.isNil, {
-					this.sendAndEvaluate(server, server.latency) 
+						this.sendAndEvaluate(server, server.latency) 
 				}, {
-					clock.schedAbs(clock.elapsedBeats.ceil, { 
-						this.sendAndEvaluate(server, server.latency);  
-					});
+						clock.schedAbs(clock.elapsedBeats.ceil, { 
+							this.sendAndEvaluate(server, server.latency);  
+						});
 				});
-				nil
-			})
-		
+			};
 	}
 	
 	send { arg server, time;
-			this.sendPrepare(server);
-			SystemClock.sched(preparationTime, {
+			Routine.run {
+				if(preparationMessages.notNil) {
+					this.sendPrepare(server);
+					server.sync;
+				};
 				this.sendAndEvaluate(server, time);
-				nil
-			})
+			}
 	}
 	
 	// offset by preparation time.
@@ -109,7 +107,6 @@ DebugBundle : MixedBundle {
 	sendPrepare { arg server;
 		"sending preparation messages:".inform;
 		preparationMessages.asCompileString.postln; 
-		("current delay between preparation and action:" + preparationTime).inform;
 		Char.nl.post;
 		server.listSendBundle(nil, preparationMessages);
 	}
