@@ -925,6 +925,95 @@ void SCHLayoutView::setBounds(SCRect inBounds)
     mBounds = inBounds;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////
+
+SCView* NewSCVLayoutView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCVLayoutView(inParent, inObj, inBounds);
+}
+
+SCVLayoutView::SCVLayoutView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+	: SCLayoutView(inParent, inObj, inBounds)
+{
+}
+
+SCVLayoutView::~SCVLayoutView()
+{
+}
+
+void SCVLayoutView::setBounds(SCRect inBounds)
+{
+    SCView *child = mChildren;
+    float totalWeight = 0.0;
+    while(child) {
+        Layout layout = child->getLayout();
+        // could store this when child added
+        totalWeight += layout.mWeight;
+        child = child->next();
+    }
+    // subtract the spacers we will use
+    float totalHeight = inBounds.height - (mSpacing * (mNumChildren - 1));
+
+    // find views who are constrained by a minimum or maximum size 
+    // and remove them from the set of weights.
+    float scaleWeight = sc_max(totalHeight,0.0) * (1.0 / sc_max(totalWeight,0.01));
+    child = mChildren;
+    float heights[mNumChildren];
+    SCView *children[mNumChildren];
+    int ri = mNumChildren;
+    while(child) {
+        float height;
+        //reverse the array
+        children[--ri] = child;
+        Layout layout = child->getLayout();
+        float weightedHeight = scaleWeight * layout.mWeight;
+        if(layout.mVResize == 0) {// okay to resize
+            if (weightedHeight < layout.mMinHeight) {
+                height = layout.mMinHeight;
+                heights[ri]  = height;
+                totalHeight -= height;
+                totalWeight -= layout.mWeight;
+            } else {
+                if (weightedHeight > layout.mMaxHeight) {
+                    height = layout.mMaxHeight;
+                    heights[ri]  = height;
+                    totalHeight -= height;
+                    totalWeight -= layout.mWeight;
+                } else {
+                    heights[ri] = -1.0;
+                }
+            }
+        }  else {
+            SCRect rect = child->getBounds();
+            heights[ri] = rect.height;
+        }
+        child = child->next();
+    }
+    //totalHeight is now the remaining flexible height
+    
+    // now layout the views
+    float left = inBounds.x;
+    float top = inBounds.y;
+    float width = inBounds.width;
+    scaleWeight = totalHeight * (1.0/totalWeight);
+    child = mChildren;
+    int i=0;
+    for(; i < mNumChildren; i++ ) {
+        child = children[i];
+        Layout layout = child->getLayout();
+        float height;
+        if(heights[i] == -1.0) {
+            height = scaleWeight * layout.mWeight;
+        } else { // was constrained
+            height = heights[i];
+        }
+        child->setBounds(SCMakeRect( left, top, width, height));
+        top += (height + mSpacing);
+        child = child->next();
+    }
+    mBounds = inBounds;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 
@@ -3689,6 +3778,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCTopView", NewSCTopView);
     new SCViewMaker("SCCompositeView", NewSCCompositeView);
     new SCViewMaker("SCHLayoutView", NewSCHLayoutView);
+    new SCViewMaker("SCVLayoutView", NewSCVLayoutView);
     new SCViewMaker("SCSlider", NewSCSlider);
     new SCViewMaker("SCRangeSlider", NewSCRangeSlider);
     new SCViewMaker("SC2DSlider", NewSC2DSlider);
