@@ -568,14 +568,20 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
 
-	PyrSlot *a = g->sp;
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
 	
 	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
 	if (!doc) return errFailed;
-	
+
 	NSTextView *textView = [doc textView];
-	NSRange range = [textView selectedRange];
-	int clickLoc = range.location;
+	
+	int clickLoc;
+	int err = slotIntVal(b, &clickLoc);
+	if (err) {
+		clickLoc = [textView selectedRange].location;
+	}
+	NSRange range = NSMakeRange(clickLoc, 0);
 	
 	NSTextStorage *textStorage = [textView textStorage];
 	NSRange limitRange = NSMakeRange(0, [textStorage length]);
@@ -630,12 +636,12 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 			start = underlineRange.location - 1;
 			end = underlineRange.location + underlineRange.length + 1;
 			if (start >= 0 && [string characterAtIndex: start] == '['
-				&& end < limitRange.length && [string characterAtIndex: end] == ']') {
+				&& end < (int)limitRange.length && [string characterAtIndex: end] == ']') {
 				underlineRange.location --;
 				underlineRange.length += 2;
 			}
 			
-			if ((int)underlineRange.length > 0) {
+			if ((int)underlineRange.length > 0 && underlineRange.location <= clickLoc && clickLoc < (underlineRange.location + underlineRange.length)) {
 				[doc selectRangeStart: underlineRange.location size: underlineRange.length];
 				SetTrue(a);
 			} else {
@@ -2625,7 +2631,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_SetEditable", prTextWindow_SetEditable, 2, 0);	
 	definePrimitive(base, index++, "_TextWindow_RemoveUndo", prTextWindow_RemoveUndo, 1, 0);	
 //	definePrimitive(base, index++, "_TextWindow_SelectToken", prTextWindow_SelectToken, 1, 0);	
-	definePrimitive(base, index++, "_TextWindow_SelectUnderlinedText", prTextWindow_SelectUnderlinedText, 1, 0);	
+	definePrimitive(base, index++, "_TextWindow_SelectUnderlinedText", prTextWindow_SelectUnderlinedText, 2, 0);	
 
 
 ///
