@@ -1235,7 +1235,7 @@ void returnFromMethod(VMGlobals *g)
 		}
 		gTraceInterpreter = false;
 	*/
-		if (IsNil(&homeContext->caller)) return; // do nothing.
+		//if (IsNil(&homeContext->caller)) return; // do nothing.
 	
 		// return all the way out.
 		PyrSlot *bottom = g->gc->Stack()->slots;
@@ -1249,11 +1249,10 @@ void returnFromMethod(VMGlobals *g)
 		returnFrame = homeContext->caller.uof;
 		
 		if (returnFrame == NULL) goto null_return;
-		
-		// make sure homeContext is a caller and find earliest stack frame
+		// make sure returnFrame is a caller and find earliest stack frame
 		{
 			PyrFrame *tempFrame = curframe; 
-			while (tempFrame != homeContext) {
+			while (tempFrame != returnFrame) {
 				tempFrame = tempFrame->caller.uof;
 				if (!tempFrame) {
 					if (isKindOf((PyrObject*)g->thread, class_routine) && NotNil(&g->thread->parent)) {
@@ -1283,27 +1282,19 @@ void returnFromMethod(VMGlobals *g)
 		
 		{
 			PyrFrame *tempFrame = curframe;
-			while (tempFrame != homeContext) {
+			while (tempFrame != returnFrame) {
 				meth = tempFrame->method.uom;
 				methraw = METHRAW(meth);
 				PyrFrame *nextFrame = tempFrame->caller.uof;
 				if (!methraw->needsHeapContext) {
 					g->gc->Free(tempFrame);
 				} else {
-					SetNil(&tempFrame->caller);
+					if (tempFrame != homeContext) SetNil(&tempFrame->caller);
 				}
 				tempFrame = nextFrame;
 			}
 		}
-		
-		meth = homeContext->method.uom;
-		methraw = METHRAW(meth);
-		if (!methraw->needsHeapContext) {
-			g->gc->Free(homeContext);
-		} else {
-			SetNil(&homeContext->caller);
-		}
-		
+				
 		// return to it
 		g->ip = (unsigned char *)returnFrame->ip.ui;
 		g->frame = returnFrame;

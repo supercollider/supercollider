@@ -1921,7 +1921,7 @@ void DumpFrame(PyrFrame *frame)
 	meth = frame->method.uom;
 	methraw = METHRAW(meth);
 	if (methraw->numtemps) {
-		post("\t%s\n", str);
+		post("\t%s   %08X\n", str, frame);
 //#ifndef SC_LINUX
 // sk: crashes on linux when accessing meth->argNames.uosym->symbols[i]
 		numargs = methraw->numargs + methraw->varargs;

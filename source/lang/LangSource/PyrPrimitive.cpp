@@ -2081,7 +2081,7 @@ void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
 		SetNil(debugFrameObj->slots + 2);
 	}
 	
-	if (NotNil(&frame->caller)) {
+	if (frame->caller.uof) {
 		MakeDebugFrame(g, frame->caller.uof, debugFrameObj->slots + 3);
 	} else {
 		SetNil(debugFrameObj->slots + 3);
