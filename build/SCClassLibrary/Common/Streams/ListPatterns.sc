@@ -363,6 +363,36 @@ Place : Pseq {
 	}
 }
 
+// similar to Place, but the list is an array of Patterns or Streams
+Ppatlace : Pseq {
+	asStream {
+		^Routine({ |inval|
+			var	streamList, consecutiveNils = 0, index, repeat, offsetValue, item;
+			streamList = list.collect({ |item| item.asStream });
+			offsetValue = offset.value;
+			index = repeat = 0;
+			{ (repeat < repeats) and: { consecutiveNils < list.size } }.while({
+				(inval.eventAt(\reverse) == true).if({
+					item = streamList @@ (offsetValue - index - 1);
+				}, {
+					item = streamList @@ (offsetValue + index);
+				});
+				(item = item.next).notNil.if({
+					consecutiveNils = 0;
+					inval = item.embedInStream(inval);
+				}, {
+					consecutiveNils = consecutiveNils + 1;
+				});
+				((index = index + 1) == list.size).if({
+					index = 0;
+					repeat = repeat + 1;
+				});
+			});
+			nil.alwaysYield;
+		});
+	}
+}
+
 Pslide : ListPattern {
     // 'repeats' is the number of segments.
     // 'len' is the length of each segment.
