@@ -1,0 +1,96 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Help
+\f1\b0\fs18 \
+\
+SuperCollider has a built-in help system. To see the main SperCollider help page, press cmd-shift-? (without first selecting anything). Double-click on words for which you'd like to see a help file and then press cmd-shift-?. A help file, if one exists, will open. \
+\
+In general,there are help files for Classes (capitalized words in the SuperCollider language). Help files also exist for general topics (see the main help page - cmd-shift-? without first selecting anything). Another useful document in the SuperCollider help system is 
+\f0\b\fs24 More-On-Getting-Help. 
+\f1\b0\fs18  \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 To see every SuperCollider helpfile
+\f1\b0\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+\cf0 evaluate\
+\
+\cf3 Help\cf0 .all\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 To see all unit generators helpfiles
+\f1\b0\fs18 \
+\
+evaluate\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Help\cf0 (\cf4 "Help/UGens"\cf0 ).dumpToDoc(\cf4 "SuperCollider UGens (Unit Generators)"\cf0 )\
+\
+Each line of text in the document that appears contains a word to which is appended the suffix ".help". Double-click any of the words to select them and press cmd-shift-? to open the corresponding help file. Omit the ".help" appended to the word when double-clicking\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 \
+////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Options (examining SuperCollider)
+\f1\b0\fs18 \
+\
+In addition to the built-in help system, there other ways to find what you need to know.\
+\
+To see source code for class definitions, select the name of a class and type cmd-j\
+\
+To see the list of arguments for a message, select the name and press cmd-y\
+\
+Use the Find and Find Next commands, available through the Edit menu, to search for text in an open document\
+\
+Use grep in the Terminal (in the Applications->Utilities folder) to search the SuperCollider folder for all occurences of a given word or phrase (a piece of code), an excellent way to find code examples. For example, to find every place where LFSaw is used, evaluate (in the Terminal application)\
+\
+grep -r LFSaw /Applications/SuperCollider_f\
+\
+Lines break in the terminal application according to the size of its window and not through any scheme that enhances readability. Therefore, to write the list to a file so it can be read more easily, evaluate\
+\
+grep -r LFSaw /Applications/SuperCollider_f/ > /Users/yourHomeDirectory/Desktop/grep_results\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 Change the the argument that comes after the '>' sign to the name of the file to which to write the results of the grep.\cf0 \
+\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Additional sources of information
+\f1\b0\fs18 \
+\
+David Cottle wrote a tutorial for SC2 which he is now updating for SC3.\
+\
+Visit the SuperCollider wiki, on the www, at\
+\
+	http://swiki.hfbk-hamburg.de:8888/MusicTechnology/6\
+\
+Search the SuperCollider users mailing list archive at\
+\
+	http://swiki.hfbk-hamburg.de:8888/MusicTechnology/437\
+\
+Subscribe to the SuperCollider user or developer lists (or both).\
+\
+	http://www.create.ucsb.edu/mailman/listinfo/sc-users\
+	http://www.create.ucsb.edu/mailman/listinfo/sc-dev\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+}
