@@ -32,6 +32,13 @@ struct Demand : public Unit
 	float m_prevout[MAXCHANNELS];
 };
 
+struct SelfDemand : public Unit
+{
+	float m_count;
+	float m_prevreset;
+	float m_prevout[MAXCHANNELS];
+};
+
 struct Dseries : public Unit
 {
 	int32 m_repeats;
@@ -123,6 +130,9 @@ void load(InterfaceTable *inTable);
 void Demand_Ctor(Demand *unit);
 void Demand_next(Demand *unit, int inNumSamples);
 
+void SelfDemand_Ctor(SelfDemand *unit);
+void SelfDemand_next(SelfDemand *unit, int inNumSamples);
+
 void Dseries_Ctor(Dseries *unit);
 void Dseries_next(Dseries *unit, int inNumSamples);
 
@@ -174,7 +184,6 @@ void Demand_next_aa(Demand *unit, int inNumSamples)
 		out[i] = OUT(i); 
 		prevout[i] = unit->m_prevout[i];
 	}
-
 	float prevtrig = unit->m_prevtrig;
 	float prevreset = unit->m_prevreset;
 	
@@ -221,13 +230,13 @@ void Demand_next_ak(Demand *unit, int inNumSamples)
 	float *out[MAXCHANNELS];
 	float prevout[MAXCHANNELS];
 	for (int i=0; i<unit->mNumOutputs; ++i) {
-		out[i] = OUT(i); 
+		out[i] = OUT(i); 		
 		prevout[i] = unit->m_prevout[i];
 	}
 
 	float prevtrig = unit->m_prevtrig;
 	float prevreset = unit->m_prevreset;
-	
+
 	for (int i=0; i<inNumSamples; ++i) {
 		float ztrig = ZXP(trig);
 		if (zreset > 0.f && prevreset <= 0.f) {
@@ -235,6 +244,7 @@ void Demand_next_ak(Demand *unit, int inNumSamples)
 				RESETINPUT(j);
 			}
 		}
+		
 		if (ztrig > 0.f && prevtrig <= 0.f) {
 			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
 				float x = DEMANDINPUT(j);
@@ -242,6 +252,12 @@ void Demand_next_ak(Demand *unit, int inNumSamples)
 				else prevout[k] = x;
 				out[k][i] = x;
 			}
+			
+		} else {
+			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
+				out[k][i] = prevout[k];
+			}
+			
 		}
 		prevtrig = ztrig;
 		prevreset = zreset;
@@ -317,6 +333,183 @@ void Demand_Ctor(Demand *unit)
 	//Print("Demand_Ctor calc %08X\n", unit->mCalcFunc);
 	unit->m_prevtrig = 0.f;
 	unit->m_prevreset = 0.f;
+	for (int i=0; i<unit->mNumOutputs; ++i) {
+		unit->m_prevout[i] = 0.f;
+		OUT0(i) = 0.f;
+	}
+}
+
+
+void SelfDemand_next_da(SelfDemand *unit, int inNumSamples)
+{
+	
+	float *reset = ZIN(1);
+
+	float *out[MAXCHANNELS];
+	float prevout[MAXCHANNELS];
+	for (int i=0; i<unit->mNumOutputs; ++i) {
+		out[i] = OUT(i); 
+		prevout[i] = unit->m_prevout[i];
+	}
+	float count = unit->m_count;
+	float prevreset = unit->m_prevreset;
+	
+	for (int i=0; i<inNumSamples; ++i) {
+		
+		float zreset = ZXP(reset);
+		if (zreset > 0.f && prevreset <= 0.f) {
+			
+			for (int j=2; j<unit->mNumInputs; ++j) {
+				RESETINPUT(j);
+			}
+			RESETINPUT(0);
+		}
+		if (count <= 0.f) {
+			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f;
+		
+			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
+				float x = DEMANDINPUT(j);
+				//printf("in  %d %g\n", k, x);
+				if (sc_isnan(x)) x = prevout[k];
+				else prevout[k] = x;
+				out[k][i] = x;
+			}
+		} else {
+			count--;
+			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
+				out[k][i] = prevout[k];
+			}
+		}
+		
+		prevreset = zreset;
+	}
+	
+	unit->m_count = count;
+	unit->m_prevreset = prevreset;
+	for (int i=0; i<unit->mNumOutputs; ++i) {
+		unit->m_prevout[i] = prevout[i];
+	}
+}
+
+void SelfDemand_next_dk(SelfDemand *unit, int inNumSamples)
+{
+	
+	float zreset = ZIN0(1);
+
+	float *out[MAXCHANNELS];
+	float prevout[MAXCHANNELS];
+	for (int i=0; i<unit->mNumOutputs; ++i) {
+		out[i] = OUT(i); 
+		prevout[i] = unit->m_prevout[i];
+	}
+	float count = unit->m_count;
+	float prevreset = unit->m_prevreset;
+	
+	for (int i=0; i<inNumSamples; ++i) {
+		
+		if (zreset > 0.f && prevreset <= 0.f) {
+			
+			for (int j=2; j<unit->mNumInputs; ++j) {
+				RESETINPUT(j);
+			}
+			RESETINPUT(0);
+		}
+		if (count <= 0.f) {
+			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f;
+		
+			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
+				float x = DEMANDINPUT(j);
+				//printf("in  %d %g\n", k, x);
+				if (sc_isnan(x)) x = prevout[k];
+				else prevout[k] = x;
+				out[k][i] = x;
+			}
+		} else {
+			count--;
+			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
+				out[k][i] = prevout[k];
+			}
+		}
+		
+		prevreset = zreset;
+	}
+	
+	unit->m_count = count;
+	unit->m_prevreset = prevreset;
+	for (int i=0; i<unit->mNumOutputs; ++i) {
+		unit->m_prevout[i] = prevout[i];
+	}
+}
+
+
+void SelfDemand_next_dd(SelfDemand *unit, int inNumSamples)
+{
+	
+	float *out[MAXCHANNELS];
+	float prevout[MAXCHANNELS];
+	for (int i=0; i<unit->mNumOutputs; ++i) {
+		out[i] = OUT(i); 
+		prevout[i] = unit->m_prevout[i];
+	}
+	float count = unit->m_count;
+	float reset = unit->m_prevreset;
+	
+	for (int i=0; i<inNumSamples; ++i) {
+		
+		if (reset <= 0.f) {
+			for (int j=2; j<unit->mNumInputs; ++j) {
+				RESETINPUT(j);
+			}
+			RESETINPUT(0);
+			reset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f;
+		} else { 
+			reset--; 
+		}
+		if (count <= 0.f) {
+			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f;
+			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
+				float x = DEMANDINPUT(j);
+				//printf("in  %d %g\n", k, x);
+				if (sc_isnan(x)) x = prevout[k];
+				else prevout[k] = x;
+				out[k][i] = x;
+			}
+		} else {
+			count--;
+			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
+				out[k][i] = prevout[k];
+			}
+		}
+		
+	}
+	
+	unit->m_count = count;
+	unit->m_prevreset = reset;
+	for (int i=0; i<unit->mNumOutputs; ++i) {
+		unit->m_prevout[i] = prevout[i];
+	}
+}
+
+
+void SelfDemand_Ctor(SelfDemand *unit)
+{
+	if (INRATE(1) == calc_FullRate) {
+
+			SETCALC(SelfDemand_next_da);
+			unit->m_prevreset = 0.f;
+		
+	} else { 
+		if(INRATE(1) == calc_DemandRate) {
+			SETCALC(SelfDemand_next_dd);
+			unit->m_prevreset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f;
+		} else {
+			SETCALC(SelfDemand_next_dk);
+			unit->m_prevreset = 0.f;
+		}
+	}
+	
+	unit->m_count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f;
+	
 	for (int i=0; i<unit->mNumOutputs; ++i) {
 		unit->m_prevout[i] = 0.f;
 		OUT0(i) = 0.f;
@@ -785,6 +978,7 @@ void load(InterfaceTable *inTable)
 	ft = inTable;
 
 	DefineSimpleCantAliasUnit(Demand);
+	DefineSimpleCantAliasUnit(SelfDemand);
 	DefineSimpleUnit(Dseries);
 	DefineSimpleUnit(Dgeom);
 	DefineSimpleUnit(Dwhite);
