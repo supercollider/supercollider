@@ -1,7 +1,6 @@
 ProxySpace : EnvironmentRedirect {	classvar <>lastEdited;//undo support
 	classvar <>all; //access
 		var <group, <server, <>clock;
-	var <>defaultNumChannels=2; //default values for numChannels 
 	var <name;
 	
 	*initClass {
@@ -10,22 +9,23 @@
 		*new { arg server, name, clock;
 		^super.new.einit(server, name, clock)
 	}
-		*pop { 		if(this.inside, {			currentEnvironment = currentEnvironment.saveEnvir;		}, { "¥ ProxySpace is inactive already".postln })	}	*push { arg server, name, clock;
-		^super.push.einit(server, name, clock);
+			*push { arg server, name, clock;
+		^this.new(server, name, clock).push
 	}
 	
-	//todo add group to target	einit { arg srv,argName, argClock; 
+	
+	//todo add group to target	einit { arg srv, argName, argClock; 
 		server = srv;  
 		clock = argClock;
 		name = argName.asSymbol;
-		this.class.all.add(this);
+		if(name.notNil, { this.class.all.add(this) });
 	}
 	
 	makeProxy { arg key;
 			var proxy;
 			proxy = NodeProxy(server);
 			proxy.clock = clock;
-			this.prPut(key, proxy);
+			envir.put(key, proxy);
 			^proxy
 	}
 		at { arg key;
@@ -39,7 +39,7 @@
 	
 	put { arg key, obj;
 		var proxy;
-		proxy = this.prAt(key);
+		proxy = envir.at(key);
 		if(proxy.isNil, {
 			proxy = this.makeProxy(key);
 		}, {
@@ -54,8 +54,8 @@
 	}
 	
 	
-	play { arg key=\out;
-		this.at(key).play;
+	play { arg key=\out, busIndex=0, nChan=2;
+		this.at(key).play(busIndex, nChan);
 	}
 	
 	record { arg key, path, headerFormat="aif", sampleFormat="int16";
@@ -78,6 +78,7 @@
 	*undo {		lastEdited.tryPerform(\undo)	}
 	
 	printOn { arg stream; 
+		stream << "ProxySpace: ";
 		this.keysValuesDo({ arg key, item; 
 			stream <<< key << " " 
 			<< if(item.rate==='audio', { "ar" }, { "kr" }) 
@@ -93,9 +94,11 @@ SharedProxySpace  : ProxySpace {
 
 	einit { arg srv, argName, argClock, controlKeys, audioKeys;
 		super.einit(srv,argName, argClock); 
+		//default:
 		//initialize single letters as shared busses: xyz are audio busses, the rest control
 		controlKeys = controlKeys ?? { Array.fill(25 - 3, { arg i; asSymbol(asAscii(97 + i)) }) };
 		audioKeys = audioKeys ?? { Array.fill(3, { arg i; asSymbol(asAscii(97 + 25 - 3 + i)) }) };
+		
 		controlKeys.do({ arg key; this.makeSharedProxy(key, 'control') });
 		audioKeys.do({ arg key; this.makeSharedProxy(key, 'audio') });
 	}
@@ -109,7 +112,7 @@ SharedProxySpace  : ProxySpace {
 				SharedNodeProxy.perform(rate,srv)
 			});
 			proxy.clock = clock;
-			this.prPut(key, proxy);
+			envir.put(key, proxy);
 			^proxy
 	}
 	

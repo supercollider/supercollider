@@ -1,11 +1,56 @@
-//jrh 2002//abstract class that servers as a template for any environment hacksEnvironmentRedirect : Environment {	var <>saveEnvir;			*push { 		^super.new.push;	}		*pop { 		if(this.inside, {			currentEnvironment = currentEnvironment.saveEnvir;		})	}		*inside {		^currentEnvironment.isKindOf(this);	}		//override in subclasses	at { arg key;		^super.at(key)	}		put { arg key, obj;		super.put(key, obj)	}
-	
-	prAt { arg key;
-		^super.at(key)
+//jrh 2002//abstract class that servers as a template for any environment hacksEnvironmentRedirect {
+	var <>envir;	var <>saveEnvir, <>saveTopEnvir;	
+	*new { 
+		^super.newCopyArgs(Environment.new)
+	}		*push { 		^super.new.push;	}		*pop { 
+		var curr;
+		curr = currentEnvironment;
+		if(curr.inside, {			currentEnvironment = curr.saveEnvir;
+			topEnvironment = curr.saveTopEnvir;
+		}, {
+			"not a current environment".inform;
+		})		}	
+	push { 
+		if(this.inside, { "already pushed".inform; ^this });
+		this.saveEnvir = currentEnvironment;
+		this.saveTopEnvir = topEnvironment;
+		currentEnvironment = this;
+		topEnvironment = this; //to avoid error loss
+		
 	}
 	
-	prPut { arg key, obj;
-		super.put(key, obj)
-	}		push { 
-		//check again		if(this.class.inside, {				this.saveEnvir = currentEnvironment.saveEnvir;			}, { 				this.saveEnvir = currentEnvironment;		});		currentEnvironment = this;
-		topEnvironment = this; //to avoid error loss	}		pop {		this.class.pop	}		//PRIVATE//		replaceCurrentEnvir {				this.saveEnvir = currentEnvironment;				currentEnvironment = this;	}	}
+	pop {
+		this.class.pop
+	}
+			//override in subclasses
+		at { arg key;		^envir.at(key)	}		put { arg key, obj;		envir.put(key, obj)	}
+	
+	
+		inside {
+		^currentEnvironment.isKindOf(this.class);
+	}			
+	// behave like my environment
+	
+		use { arg function;
+		// temporarily replaces the currentEnvironment with this, 
+		// executes function, returns the result of the function
+		var result, saveEnvir;
+		
+		saveEnvir = currentEnvironment;
+		currentEnvironment = this;
+		result = function.value(this);
+		currentEnvironment = saveEnvir;
+		^result
+	}
+	keysValuesDo { arg function;
+		envir.keysValuesArrayDo(function);
+	}
+	
+	keysValuesArrayDo { arg argArray, function;
+		envir.keysValuesArrayDo(argArray, function);
+	}
+	
+	choose {
+        ^envir.choose 
+    }
+}
