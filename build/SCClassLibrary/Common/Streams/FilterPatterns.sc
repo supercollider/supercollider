@@ -113,7 +113,7 @@ Pset : FilterPattern {
 	}
 	storeArgs { ^[name,value,pattern] }
 	filterEvent { arg event, val;
-		^event.put(name, val)
+		^event[name] = val;
 	}
 	asStream {
 		var evtStream, valStream;
@@ -136,21 +136,21 @@ Pset : FilterPattern {
 
 Padd : Pset {
 	filterEvent { arg event, val;
-		^event.put(name, event.at(name) + val)
+		^event[name] = event[name] + val;
 	}
 }
 
 Pmul : Pset {
 	filterEvent { arg event, val;
-		^event.put(name, event.at(name) * val)
+		^event[name] = event[name] * val;
 	}
 }
 
 
 Psetp : Pset {
 	asStream {
-		^Routine.new({ arg event;
-			var valStream, evtStream, val;
+		^Routine.new({ arg inevent;
+			var valStream, evtStream, val, outevent;
 			valStream = value.asStream;
 			while({
 				val = valStream.next;
@@ -158,26 +158,26 @@ Psetp : Pset {
 			},{
 				evtStream = pattern.asStream;
 				while({
-					event = evtStream.next(event);
-					event.notNil
+					outevent = evtStream.next(inevent);
+					outevent.notNil
 				},{
-					this.filterEvent(event, val);
-					event = event.yield;
+					this.filterEvent(outevent, val);
+					inevent = outevent.yield;
 				});
 			});
 		});
 	}
 }
 
-Paddp : Pset {
+Paddp : Psetp {
 	filterEvent { arg event, val;
-		^event.put(name, event.at(name) + val)
+		^event[name] = event[name] + val;
 	}
 }
 
-Pmulp : Pset {
+Pmulp : Psetp {
 	filterEvent { arg event, val;
-		^event.put(name, event.at(name) * val)
+		^event[name] = event[name] * val;
 	}
 }
 
