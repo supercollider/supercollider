@@ -300,7 +300,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 
 	switch (a->utag) {
-		case tagInt :
+		case tagInt : {
 			switch (b->utag) {
 				case tagInt :
 					switch (opcode) {
@@ -539,8 +539,8 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 					}
 					break;
 			}
-			break;
-		case tagChar :
+		} break;
+		case tagChar : {
 			if (b->utag == tagChar) {
 				switch (opcode) {
 					case opEQ  : res = BOOL(a->ui == b->ui); break;
@@ -558,7 +558,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 			} else {
 				goto send_normal_2;
 			}
-			break;
+		} break;
 		case tagHFrame :
 		case tagSFrame :
 		case tagPtr : 
@@ -566,7 +566,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 		case tagFalse : 
 		case tagTrue : 
 			goto send_normal_2;
-		case tagInf : 
+		case tagInf : {
 			switch (b->utag) {
 				case tagInt :
 					switch (opcode) {
@@ -592,6 +592,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case tagObj :
 					goto send_normal_2;
 					break;
+				case tagInf : res = o_true; break;
 				default:
 					switch (opcode) {
 						case opEQ  : res = o_false; break;
@@ -606,7 +607,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 					}
 					break;
 			}
-			break;
+		} break;
 		case tagSym : 
 			if (b->utag == tagSym) {
 				switch (opcode) {
@@ -626,7 +627,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 				}
 			}
 			break;
-		case tagObj :
+		case tagObj : {
 			if (isKindOf(a->uo, class_signal)) {
 				switch (b->utag) {
 					case tagInt :
@@ -746,8 +747,8 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 			} else {
 				goto send_normal_2;
 			}
-			break;
-		default : // double
+		} break;
+		default : { // double
 			switch (b->utag) {
 				case tagInt :
 					switch (opcode) {
@@ -947,7 +948,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 					}
 					break;
 			}
-			break;
+		} break;
 	}
 	g->sp-- ; // drop
 	g->sp[0].ucopy = res.ucopy;
