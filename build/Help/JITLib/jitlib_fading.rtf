@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
-\red96\green96\blue96;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;}
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs26 \cf0 \
@@ -73,6 +73,7 @@ p = \cf2 ProxySpace\cf0 .push(s.boot);\
 ~out = \{ \cf2 arg\cf0  t_trig; \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .asr, t_trig) * \cf2 SinOsc\cf0 .ar([1,1]*400) \};\
 )\
 ~out.group.set(\cf4 \\t_trig\cf0 , 1);\
+\
 \
 \cf3 // for a scalar output also no fade env is created, but the synth is freed (without fading)\cf0 \
 (\
@@ -187,28 +188,28 @@ Sy\cf0 n\cf2 thDef\cf0 (\cf5 "test"\cf0 , \{ \cf2 arg\cf0  gate=1, out;\
 \f2\b0\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf6 // the arg name 'out' can be used to output through the right channel.\cf7 \
-\cf6 // of course with this one can get problems due to a wrong number of channels\cf7 \
-\cf6 // or deliberate hacks.\cf7 \
+\cf3 // the arg name 'out' can be used to output through the right channel.\cf0 \
+\cf3 // of course with this one can get problems due to a wrong number of channels\cf0 \
+\cf3 // or deliberate hacks.\cf0 \
 \
-\cf6 //left speaker\cf7 \
+\cf3 //left speaker\cf0 \
 (\
-~out = \{ \cf8 arg\cf7  out;\
-	\cf8 OffsetOut\cf7 .ar(out, \cf8 Impulse\cf7 .ar(10,0,0.1))\
+~out = \{ \cf2 arg\cf0  out;\
+	\cf2 OffsetOut\cf0 .ar(out, \cf2 Impulse\cf0 .ar(10,0,0.1))\
 \}\
 )\
 \
-\cf6 //both speakers\cf7 \
+\cf3 //both speakers\cf0 \
 (\
-~out = \{ \cf8 arg\cf7  out;\
-	\cf8 OffsetOut\cf7 .ar(out, \cf8 Impulse\cf7 .ar([10, 10],0,0.1))\
+~out = \{ \cf2 arg\cf0  out;\
+	\cf2 OffsetOut\cf0 .ar(out, \cf2 Impulse\cf0 .ar([10, 10],0,0.1))\
 \}\
 )\
 \
-\cf6 //this plays out into another adjacent proxy: this is a possible source of confusion. \cf7 \
+\cf3 //this plays out into another adjacent bus: this is a possible source of confusion. \cf0 \
 (\
-~out = \{ \cf8 arg\cf7  out;\
-	\cf8 OffsetOut\cf7 .ar(out, \cf8 Impulse\cf7 .ar([10, 10, 10],0,0.1))\
+~out = \{ \cf2 arg\cf0  out;\
+	\cf2 OffsetOut\cf0 .ar(out, \cf2 Impulse\cf0 .ar([10, 10, 10],0,0.1))\
 \}\
 )\
 \
@@ -216,5 +217,5 @@ Sy\cf0 n\cf2 thDef\cf0 (\cf5 "test"\cf0 , \{ \cf2 arg\cf0  gate=1, out;\
 \
 \
 \
-\cf0 \
+\
 }
