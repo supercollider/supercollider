@@ -35,8 +35,7 @@ Condition {
 		tempWaitingThreads = waitingThreads;
 		waitingThreads = nil;
 		tempWaitingThreads.do({ arg thread; 
-			thread.seconds = time;
-			thread.resume;
+			thread.clock.sched(0, thread);
 		});
 	}
 }
