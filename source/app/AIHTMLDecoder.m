@@ -59,17 +59,24 @@ int HTMLEquivalentForFontSize(int fontSize);
     BOOL		openFontTag = NO;
 
     //Setup the destination HTML string
-    //Include <PRE> to preserve tab formatting
-    NSMutableString	*string = [NSMutableString stringWithString:(includeHeaders ? @"<HTML><PRE>" : @"")];
+    // Initial <PRE> to maintain tab formatting
+    NSMutableString	*string = [NSMutableString stringWithString:(includeHeaders ? @"<HTML>" : @"")];
 
     //Setup the incoming message as a regular string, and it's length
     NSString		*inMessageString = [inMessage string];
     int			messageLength = [inMessage length];
     
     //Setup the default attributes
+    /*
     NSString		*currentFamily = [@"Helvetica" retain];
     NSString		*currentColor = [@"#000000" retain];
     int			currentSize = 12;
+    */
+    // This is a quick hack to ensure that initial fonts are written
+    NSString		*currentFamily = [@"foo" retain];
+    NSString		*currentColor = [@"bar" retain];
+    int			currentSize = 4000;
+    
     BOOL		currentItalic = NO;
     BOOL		currentBold = NO;
     BOOL		currentUnderline = NO;
@@ -119,33 +126,35 @@ int HTMLEquivalentForFontSize(int fontSize);
             openFontTag = YES;
             [string appendString:@"<FONT"];
 
+            // Conditionals removed to ensure that font always written. SW.
+            
             //Family
-            if([familyName caseInsensitiveCompare:currentFamily] != 0){
-                int langNum = 0; 
+            //if([familyName caseInsensitiveCompare:currentFamily] != 0){
+            int langNum = 0; 
         
                 //(traits | NSNonStandardCharacterSetFontMask) seems to be the proper test... but it is true for all fonts!
                 //NSMacOSRomanStringEncoding seems to be the encoding of all standard Roman fonts... and langNum="11" seems to make the others send properly.
                 //It serves us well here.  Once non-AIM HTML is coming through, this will probably need to be an option in the function call.
-                if ([font mostCompatibleStringEncoding] != NSMacOSRomanStringEncoding) {
-                    langNum = 11;
-                }   
-                
-                [string appendString:[NSString stringWithFormat:@" FACE=\"%@\" LANG=\"%i\"",familyName,langNum]];
+            if ([font mostCompatibleStringEncoding] != NSMacOSRomanStringEncoding) {
+                langNum = 11;
+            }   
+            
+            [string appendString:[NSString stringWithFormat:@" FACE=\"%@\" LANG=\"%i\"",familyName,langNum]];
 
-                [currentFamily release]; currentFamily = [familyName retain];
-            }
+            [currentFamily release]; currentFamily = [familyName retain];
+            //}
 
             //Size
-            if(pointSize != currentSize){
-                [string appendString:[NSString stringWithFormat:@" ABSZ=\"%i\" SIZE=\"%i\"", (int)pointSize, HTMLEquivalentForFontSize((int)pointSize)]];
-                currentSize = pointSize;
-            }
+            //if(pointSize != currentSize){
+            [string appendString:[NSString stringWithFormat:@" ABSZ=\"%i\" SIZE=\"%i\"", (int)pointSize, HTMLEquivalentForFontSize((int)pointSize)]];
+            currentSize = pointSize;
+            //}
 
             //Color
-            if([color compare:currentColor] != 0){
-                [string appendString:[NSString stringWithFormat:@" COLOR=\"#%@\"",color]];
-                [currentColor release]; currentColor = [color retain];
-            }
+            //if([color compare:currentColor] != 0){
+            [string appendString:[NSString stringWithFormat:@" COLOR=\"#%@\"",color]];
+            [currentColor release]; currentColor = [color retain];
+            //}
 
             //Close the font tag
             [string appendString:@">"];
@@ -226,8 +235,7 @@ int HTMLEquivalentForFontSize(int fontSize);
     if(includeStyleTags && currentUnderline) [string appendString:@"</U>"];
     if(includeFontTags && closeFontTags && openFontTag) [string appendString:@"</FONT>"];	//Close any open font tag
     if(includeHeaders && pageColor) [string appendString:@"</BODY>"];				//Close the body tag
-    if(includeHeaders) [string appendString:@"</PRE></HTML>"];					//Close the HTML
-        //Close the PRE
+    if(includeHeaders) [string appendString:@"</HTML>"];					//Close the HTML
 
     return(string);
 }
