@@ -169,24 +169,22 @@ SynthDesc {
 	}
 	
 	makeMsgFunc {
-		var string;
-		string = "#{ arg id, freq;\n\t[[9, '" ++ name ++ "', id, 0, ~group";
-		controlNames.do {|name| 
-			var name2;
-			if (name == "freq") {
-				string = string ++ ", 'freq', freq";
-			}{
+		var string, comma=false;
+		string = String.streamContents {|stream|
+			stream << "#{ [ ";
+			controlNames.do {|name, i| 
+				var name2;
 				if (name == "gate") {
 					hasGate = true;
 				}{
-					string = string ++ ", 'freq', freq";
 					if (name[1] == $_) { name2 = name.drop(2) } { name2 = name }; 
-					string = [string,", '",name,"', ~",name2].join; 
+					if (comma) { stream << "," } { comma = true };
+					stream << " '" << name << "', ~" << name2; 
 				};
 			};
+			stream << " ] }";
 		};
-		string = string ++ " ]] }";
-		msgFunc = string.interpret;
+		msgFunc = string.postln.interpret;
 	}
 }
 
@@ -225,19 +223,3 @@ SynthDescLib {
 }
 
 
-/*
-Event
-which arguments to use for an note event?
-if ~args is not nil then it is the list of args to use.
-if it is nil then use the instrument's arg list.
-
-~synthLib = SynthDescLib.global;
-~osc = { 
-	var desc;
-	desc = ~synthLib[~instrument];
-	if (desc.notNil) { desc.msgFunc }
-	{ [] }
-}
-~osc = { [9, ~instrument, id, ~addAction, ~group] ++ ~args.value.makeEnvirValPairs };
-~
-*/

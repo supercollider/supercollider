@@ -63,6 +63,10 @@ Routine : Thread {
 		_RoutineResume
 		^this.primitiveFailed
 	}
+	resume { arg inval;
+		_RoutineResume
+		^this.primitiveFailed
+	}
 	valueArray { arg inval;
 		^this.value(inval) 
 	}

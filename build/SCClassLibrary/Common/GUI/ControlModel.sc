@@ -72,6 +72,7 @@ ControlSpec : Spec {
 
 			\freq -> ControlSpec(20, 20000, \exp, 0, 440, units: " Hz"),
 			\lofreq -> ControlSpec(0.1, 100, \exp, 0, 6, units: " Hz"),
+			\midfreq -> ControlSpec(25, 4200, \exp, 0, 440, units: " Hz"),
 			\widefreq -> ControlSpec(0.1, 20000, \exp, 0, 440, units: " Hz"),
 			\phase -> ControlSpec(0, 2pi),
 			\rq -> ControlSpec(0.001, 2, \exp, 0, 0.707),

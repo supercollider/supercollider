@@ -82,10 +82,15 @@ Event : Environment {
 	
 	*initClass {
 		Class.initClassTree(Server);
+		Class.initClassTree(TempoClock);
+		
 		default = this.make({		
 			// fill prototype event with default property values
 			
 			~reverse = false;
+			
+			~tempoclock = TempoClock.default;
+			~tempo = nil;
 			
 			~dur = 1.0;
 			~stretch = 1.0;
@@ -134,14 +139,10 @@ Event : Environment {
 				~amp = ~amp.value;
 				~sustain = ~sustain.value;
 			};
-						
+									
 			~player = NotePlayer.new;
-			~argNames = #[\out, \freq, \amp, \pan, \sustain];
-			~msgFunc = #{ arg id, freq;
-				[[9, ~instrument, id, 0, ~group, 
-					\out, ~out, \freq, freq, \amp, ~amp, \pan, ~pan]];
-			};
-			
+			~synthLib = SynthDescLib.global;
+
 			~server = Server.default;
 		});
 		

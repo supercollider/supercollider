@@ -79,6 +79,8 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	
 	play { arg task, quant=1.0; this.schedAbs(this.elapsedBeats.roundUp(quant), task) }
 	
+	playNextBar { arg task; this.schedAbs(this.nextBar, task) }
+	
 	*play { ^this.shouldNotImplement(thisMethod) }
 	
 	tempo {
@@ -111,11 +113,18 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	// for setting the tempo at the current logical time 
 	// (even another TempoClock's logical time).
 	tempo_ { arg newTempo;
-		if (thisThread.clock == this, {
+		if (thisThread.clock == this) {
 			this.setTempoAtBeat(newTempo, thisThread.beats);
-		},{
+		}{
 			this.setTempoAtSec(newTempo, thisThread.seconds);
-		});
+		};
+	}
+	beatsPerBar_ { arg newBeatsPerBar;
+		if (thisThread.clock != this) { 
+			"should only change beatsPerBar within the scheduling thread.".error;
+		}{
+			this.setMeterAtBeat(newBeatsPerBar, thisThread.beats);
+		};
 	}
 
 	// for setting the tempo at the current elapsed time .
@@ -146,25 +155,11 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	}
 	nextBar { arg beat;
 		// given a number of beats, determine number beats at the next bar line.
-		this.bars2beats(this.beats2bars(beat).ceil);
-	}
-	
-	setMeterAtBar { arg newBeatsPerBar, bar;
-		baseBarBeat = (bar - baseBar) * beatsPerBar + baseBarBeat;
-		baseBar = bar;
-		beatsPerBar = newBeatsPerBar;
-		barsPerBeat = beatsPerBar.reciprocal;
-		this.changed; 
-	}
-	setMeterAtBeat { arg newBeatsPerBar, beats;
-		baseBar = (beats - baseBarBeat) * barsPerBeat + baseBar;
-		baseBarBeat = beats;
-		beatsPerBar = newBeatsPerBar;
-		barsPerBeat = beatsPerBar.reciprocal;
-		this.changed; 
+		^this.bars2beats(this.beats2bars(beat ? this.elapsedBeats).ceil);
 	}
 	
 	
+		
 	// PRIVATE
 	prStart { arg tempo;
 		_TempoClock_New
@@ -181,6 +176,15 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	setTempoAtSec { arg newTempo, secs;
 		_TempoClock_SetTempoAtTime
 		^this.primitiveFailed
+	}
+	// meter should only be changed in the TempoClock's thread.
+	setMeterAtBeat { arg newBeatsPerBar, beats;
+		// bar must be integer valued when meter changes or confusion results later.
+		baseBar = round((beats - baseBarBeat) * barsPerBeat + baseBar, 1);
+		baseBarBeat = beats;
+		beatsPerBar = newBeatsPerBar;
+		barsPerBeat = beatsPerBar.reciprocal;
+		this.changed; 
 	}
 }
 

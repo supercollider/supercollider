@@ -10,6 +10,8 @@ Main : Process {
 		Server.local.options.numOutputBusChannels = 8;
 		Server.local.options.numInputBusChannels = 8;
 		Server.local.options.memSize = 8192;
+		
+		"~/scwork/startup.rtf".loadPaths;
 	}
 	
 	shutdown { // at recompile, quit

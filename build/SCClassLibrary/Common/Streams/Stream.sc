@@ -236,7 +236,7 @@ PauseStream : Stream
 		if (doReset, { this.reset });
 		clock = argClock ? clock ? TempoClock.default;
 		stream = originalStream; 
-		super.play(clock, quant) 
+		clock.play(this, quant);
 	}
 	reset { ^originalStream.reset }
 	stop {  stream = nil }
@@ -284,6 +284,15 @@ EventStreamPlayer : PauseStream {
 	
 	*new { arg stream, event;
 		^super.new(stream).event_(event ? Event.default);
+	}
+
+	play { arg argClock, doReset = false, quant=1.0;
+		if (stream.notNil, { "already playing".postln; ^this });
+		if (doReset, { this.reset });
+		clock = argClock ? clock ? TempoClock.default;
+		event[\tempoclock] = clock;
+		stream = originalStream; 
+		clock.play(this, quant);
 	}
 	
 	mute { muteCount = muteCount + 1; }

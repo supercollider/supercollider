@@ -7,7 +7,8 @@ Pattern : AbstractFunction {
 		^Pseq.new([this, aPattern])
 	}	
 
-	play { arg clock, protoEvent, quant=1.0;		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)	}
+	play { arg clock, protoEvent, quant=1.0;
+		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)	}
 	
 	asStream {
 		^this.subclassResponsibility(thisMethod)
@@ -148,9 +149,10 @@ Sevent : Stream {
 	var stream, event;
 	// the stream class for Pevent.
 	*new { arg stream, event;
-		^super.newCopyArgs(stream, event ? Event.default);
+		^super.newCopyArgs(stream, event.copy ? Event.default);
 	}
 	next { arg inEvent; 
+		event[\clock] = inEvent[\clock]; // need to copy the clock
 		^stream.next(event);
 	}
 }
