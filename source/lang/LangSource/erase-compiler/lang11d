@@ -148,7 +148,60 @@ funretval	:
 			{ $$ = (long)newPyrReturnNode((PyrParseNode*)$2); }
 		;			
 
+blocklist	:	{ $$ = 0; }
+			| blocklist blockliteral
+				{ 
+					$$ = (long)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$2); 
+				}
+			;
+
+msgsend : name '(' arglist1 optkeyarglist ')' blocklist
+			{ 
+				$$ = (long)newPyrCallNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 
+						(PyrParseNode*)$4, (PyrParseNode*)$6); 
+			}
+		| expr '.' '(' keyarglist1 ')' blocklist
+			{ 
+				PyrSlotNode *selectornode;
+				PyrSlot slot;
+				
+				SetSymbol(&slot, s_value);
+				selectornode = newPyrSlotNode(&slot);
+				$$ = (long)newPyrCallNode(selectornode, (PyrParseNode*)$1, (PyrParseNode*)$4, (PyrParseNode*)$6); 
+			}
+		| expr '.' name '(' keyarglist1 ')' blocklist
+			{ 
+				$$ = (long)newPyrCallNode((PyrSlotNode*)$3, (PyrParseNode*)$1, 
+					(PyrParseNode*)$5, (PyrParseNode*)$7); 
+			}
+		| expr '.' '(' arglist1 optkeyarglist ')' blocklist
+			{ 
+				PyrSlotNode *selectornode;
+				PyrSlot slot;
+				PyrParseNode* args;
+				
+				SetSymbol(&slot, s_value);
+				selectornode = newPyrSlotNode(&slot);
+				args = linkNextNode(
+					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1), 
+					(PyrParseNode*)$4);
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, (PyrParseNode*)$7); 
+			}
+		| expr '.' name '(' arglist1 optkeyarglist ')' blocklist
+			{ 
+				PyrParseNode* args;
+				args = linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$5);
+				$$ = (long)newPyrCallNode((PyrSlotNode*)$3, args, (PyrParseNode*)$6, (PyrParseNode*)$8); 
+			}
+		| expr '.' name blocklist
+			{ 
+				$$ = (long)newPyrCallNode((PyrSlotNode*)$3, (PyrParseNode*)$1, 0, (PyrParseNode*)$4); 
+			}
+		;
+
 expr	: pushliteral
+		| blockliteral
+		| msgsend
 		| name
 			{ $$ = (long)newPyrPushNameNode((PyrSlotNode*)$1); }
 		| '~' name
@@ -159,7 +212,7 @@ expr	: pushliteral
 				argnode = (PyrParseNode*)newPyrPushLitNode((PyrSlotNode*)$2, NULL);
 				SetSymbol(&slot, s_envirGet);
 				selectornode = newPyrSlotNode(&slot);
-				$$ = (long)newPyrCallNode(selectornode, argnode, 0); 
+				$$ = (long)newPyrCallNode(selectornode, argnode, 0, 0); 
 			}
 		| pseudovar
 			{ $$ = (long)newPyrPushNameNode((PyrSlotNode*)$1); }
@@ -174,7 +227,7 @@ expr	: pushliteral
 				SetSymbol(&slot, s_new);
 				selectornode = newPyrSlotNode(&slot);
 				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1);
-				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$3); 
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$3, 0); 
 			}
 		| classname '(' arglist1 optkeyarglist ')'
 			{ 
@@ -187,7 +240,7 @@ expr	: pushliteral
 				args = linkNextNode(
 					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1), 
 					(PyrParseNode*)$3);
-				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$4); 
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$4, 0); 
 			}
 		| '(' exprseq ')'
 			{ $$ = $2; }
@@ -203,7 +256,7 @@ expr	: pushliteral
 				args = linkNextNode(node, (PyrParseNode*)$2);
 				SetSymbol(&slot, s_new);
 				slotnode = newPyrSlotNode(&slot);
-				$$ = (long)newPyrCallNode(slotnode, args, 0); 
+				$$ = (long)newPyrCallNode(slotnode, args, 0, 0); 
 			}
 		| expr binop expr %prec BINOP
 			{ 
@@ -214,48 +267,6 @@ expr	: pushliteral
 			{ 
 				$$ = (long)newPyrBinopCallNode((PyrSlotNode*)$2, 
 						(PyrParseNode*)$1, (PyrParseNode*)$3); 
-			}
-		| name '(' arglist1 optkeyarglist ')'
-			{ 
-				$$ = (long)newPyrCallNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 
-						(PyrParseNode*)$4); 
-			}
-		| expr '.' '(' keyarglist1 ')'
-			{ 
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				
-				SetSymbol(&slot, s_value);
-				selectornode = newPyrSlotNode(&slot);
-				$$ = (long)newPyrCallNode(selectornode, (PyrParseNode*)$1, (PyrParseNode*)$5); 
-			}
-		| expr '.' name '(' keyarglist1 ')'
-			{ 
-				$$ = (long)newPyrCallNode((PyrSlotNode*)$3, (PyrParseNode*)$1, 
-					(PyrParseNode*)$5); 
-			}
-		| expr '.' '(' arglist1 optkeyarglist ')'
-			{ 
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-				
-				SetSymbol(&slot, s_value);
-				selectornode = newPyrSlotNode(&slot);
-				args = linkNextNode(
-					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1), 
-					(PyrParseNode*)$4);
-				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$5); 
-			}
-		| expr '.' name '(' arglist1 optkeyarglist ')'
-			{ 
-				PyrParseNode* args;
-				args = linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$5);
-				$$ = (long)newPyrCallNode((PyrSlotNode*)$3, args, (PyrParseNode*)$6); 
-			}
-		| expr '.' name 
-			{ 
-				$$ = (long)newPyrCallNode((PyrSlotNode*)$3, (PyrParseNode*)$1, 0); 
 			}
 		| '[' arglistc ']'
 			{ $$ = (long)newPyrDynListNode(0, (PyrParseNode*)$2); }
@@ -274,7 +285,7 @@ expr	: pushliteral
 				args = linkNextNode(argnode, (PyrParseNode*)$4);
 				SetSymbol(&slot, s_envirPut);
 				selectornode = newPyrSlotNode(&slot);
-				$$ = (long)newPyrCallNode(selectornode, args, 0); 
+				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
 			}
 		| expr '.' name '=' expr
 			{ 
@@ -354,6 +365,9 @@ slotliteral
 		| listlit	{ $$ = (long)newPyrLiteralNode(NULL, (PyrParseNode*)$1); }
 		;
 
+blockliteral : block	{ $$ = (long)newPyrPushLitNode(NULL, (PyrParseNode*)$1); }
+			;
+			
 pushliteral	: integer	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
 			| floatp	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
 			| ascii		{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
@@ -363,7 +377,6 @@ pushliteral	: integer	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
 			| falseobj	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
 			| nilobj	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
 			| infobj	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
-			| block		{ $$ = (long)newPyrPushLitNode(NULL, (PyrParseNode*)$1); }
 			| listlit	{ $$ = (long)newPyrPushLitNode(NULL, (PyrParseNode*)$1); }
 			;
 

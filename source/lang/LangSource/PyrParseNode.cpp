@@ -1597,7 +1597,7 @@ void compilePyrVarDefNode(PyrVarDefNode* node, void *result)
 }
 
 PyrCallNode* newPyrCallNode(PyrSlotNode* selector, PyrParseNode* arglist, 
-	PyrParseNode* keyarglist)
+	PyrParseNode* keyarglist, PyrParseNode* blocklist)
 {
 	PyrCallNode* node;
 	node = ALLOCNODE(PyrCallNode);
@@ -1607,6 +1607,9 @@ PyrCallNode* newPyrCallNode(PyrSlotNode* selector, PyrParseNode* arglist,
 	node->charno = charno;
 	node->lineno = lineno;
 	node->selector = selector;
+	
+	arglist = linkNextNode(arglist, blocklist);
+	
 	node->arglist = arglist;
 	node->keyarglist = keyarglist;
 	return node;

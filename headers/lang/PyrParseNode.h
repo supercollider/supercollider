@@ -296,7 +296,7 @@ PyrArgListNode* newPyrArgListNode(PyrVarDefNode* varDefs, PyrSlotNode* rest);
 PyrVarListNode* newPyrVarListNode(PyrVarDefNode* vardefs, int flags);
 PyrVarDefNode* newPyrVarDefNode(PyrSlotNode* varName, PyrLiteralNode* defVal, int flags);
 PyrCallNode* newPyrCallNode(PyrSlotNode* selector, PyrParseNode* arglist,
-	PyrParseNode* keyarglist);
+	PyrParseNode* keyarglist, PyrParseNode* blocklist);
 PyrBinopCallNode* newPyrBinopCallNode(PyrSlotNode* selector,
 	PyrParseNode* arg1, PyrParseNode* arg2);
 PyrDropNode* newPyrDropNode(PyrParseNode* expr1, PyrParseNode* expr2);
