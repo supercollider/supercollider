@@ -23,6 +23,7 @@ Class {
 		^superclass.asClass
 	}
 	asClass { ^this }
+	isMetaClass { ^this.class === Class }
 
 	initClass {   } 
 	// call Class.initClassTree(SomeClass) to force a class to init if you depend on its resources
