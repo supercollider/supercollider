@@ -32,9 +32,7 @@ Primitives for Unix.
 #include <unistd.h>
 #include <errno.h>
 #include <pthread.h>
-#ifdef __linux
 #include <libgen.h>
-#endif
 
 int prString_System(struct VMGlobals *g, int numArgsPushed);
 int prString_System(struct VMGlobals *g, int numArgsPushed)
