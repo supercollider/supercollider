@@ -212,10 +212,11 @@ Pdef : Tdef {
 	}
 	
 	// playing one instance //
-	// problem: offset is not implemented in PauseStream
 	
 	playOnce { arg argClock, protoEvent, quant;
-		^EventStreamPlayer(this.asStream, protoEvent)
+		var str;
+		str = if(offset == 0, { this }, { Pseq([Event.silent(offset), this]) }).asStream;
+		^EventStreamPlayer(str, protoEvent)
 			.play(argClock ? clock, true, quant ? this.quant) 
 	}
 	
