@@ -32,7 +32,7 @@ Should be defined to be either float or double.
 
 const long kSineSize = 8192;
 const long kSineMask = kSineSize - 1;
-const double kSinePhaseScale = kSineSize / (2.0 * 3.14159265358979);
+const double kSinePhaseScale = kSineSize / (2.0 * 3.1415926535897932384626433832795);
 
 extern float32 gSine[kSineSize+1];
 extern float32 gPMSine[kSineSize+1];

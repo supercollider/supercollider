@@ -81,7 +81,7 @@ void signal_init_globs()
 	//gFracTable = (float*)pyr_pool_runtime->Alloc(FRACTABLESIZE * sizeof(float));
 	//MEMFAIL(gFracTable);
 	
-	sineIndexToPhase = 2. * 3.14159265358979 / SINESIZE;
+	sineIndexToPhase = 2. * 3.1415926535897932384626433832795 / SINESIZE;
 	phaseToSineIndex = 1. / sineIndexToPhase;
 	phaseoffset = sineIndexToPhase * 0.5;
 	pmf = (1L << 29) / twopi;
