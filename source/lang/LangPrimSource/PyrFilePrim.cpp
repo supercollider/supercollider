@@ -1002,6 +1002,25 @@ int prSFSeek(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prSFHeaderInfoString(struct VMGlobals *g, int numArgsPushed);
+int prSFHeaderInfoString(struct VMGlobals *g, int numArgsPushed)
+{
+
+	PyrSlot *a;
+	a = g->sp;
+	SNDFILE *file = (SNDFILE*)a->uo->slots[0].ui;
+	if(file){				
+				static	char	strbuffer [(1 << 16)] ;
+				sf_command (file, SFC_GET_LOG_INFO, strbuffer, (1 << 16)) ;
+				PyrString *pstring = newPyrString(g->gc, strbuffer, 0, true);
+			//	post(strbuffer);
+				SetObject(a, pstring);
+				return errNone;
+	}
+	return errFailed;
+}
+
+
 //////////
 #ifdef NOCLASSIC
 
@@ -1205,6 +1224,7 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_SFWrite", prSFWrite, 2, 0);	
 	definePrimitive(base, index++, "_SFRead", prSFRead, 2, 0);	
 	definePrimitive(base, index++, "_SFSeek", prSFSeek, 3, 0);	
+	definePrimitive(base, index++, "_SFHeaderInfoString", prSFHeaderInfoString, 1, 0);	
         
 	definePrimitive(base, index++, "_PipeOpen", prPipeOpen, 3, 0);	
 	definePrimitive(base, index++, "_PipeClose", prPipeClose, 1, 0);	
