@@ -158,7 +158,6 @@ Object {
 	
 	// errors
 	halt { 
-		currentEnvironment = topEnvironment; // restore top Environment
 		UI.reset;
 		this.prHalt 
 	}
@@ -253,6 +252,10 @@ Object {
 		^[this.bubble(depth,levels-1)]
 	}
 	
+	// osc message support
+	msgArgSize { ^4 } // float assumed, objects are interpreted as nil, which counts as 0
+	msgSize { Error("wrong bundle calculation call").throw }
+
 	// looping
 	while { arg body;
 		// compiler magic: the compiler inlines the following loop
