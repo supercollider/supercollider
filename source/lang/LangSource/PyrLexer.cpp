@@ -24,6 +24,7 @@
 #include <math.h>
 #include <new.h>
 #include <stdlib.h>
+#include <sys/param.h>
 #include "lang11d_tab.h"
 #include "SCBase.h"
 #include "PyrObject.h"
@@ -1735,6 +1736,7 @@ bool isValidSourceFileName(char *filename)
             || (len>7 && strncmp(filename+len-7, ".sc.rtf",7) == 0);
 }
 
+#if 0
 bool passOne_ProcessOneFile(char *filename)
 {
 	bool success = true;
@@ -1752,6 +1754,35 @@ bool passOne_ProcessOneFile(char *filename)
 	}
 	return success;
 }
+#endif
+
+// sekhar's replacement
+bool passOne_ProcessOneFile(char *filename)
+{
+	bool success = true;
+	PyrSymbol *fileSym;
+	if (isValidSourceFileName(filename)) {
+		gNumCompiledFiles++;
+		if (startLexer(filename)) {
+			fileSym = getsym(filename);
+			while (parseOneClass(fileSym)) { };
+			finiLexer();
+		} else {
+			error("file '%s' open failed\n", filename);
+			success = false;
+		}
+	} else {
+		// check if this is a symlink
+		char realpathname[MAXPATHLEN];
+		realpath(filename, realpathname);
+		if (strncmp(filename, realpathname, strlen(filename)))
+			success = passOne_ProcessDir(realpathname);
+	}
+	return success;
+}
+
+
+
 
 void InitSynthGlobals(VMGlobals *g, int inNumInputs, int inNumOutputs);
 void InitSynthGlobals(VMGlobals *g, int inNumInputs, int inNumOutputs)
