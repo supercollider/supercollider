@@ -820,16 +820,6 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	
 	int tailCall = g->tailCall;
 	if (tailCall) {
-		/*if (g->method) {
-			postfl("tailCall %d   %s-%s -> %s-%s\n", 
-				tailCall,
-				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-		} else {
-			postfl("tailCall %d    top -> %s-%s\n", 
-				tailCall,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-		}*/
 		if (tailCall == 1) {
 			returnFromMethod(g);
 		} else {
@@ -962,16 +952,6 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	
 	int tailCall = g->tailCall;
 	if (tailCall) {
-		/*if (g->method) {
-			postfl("tailCall %d   %s-%s -> %s-%s\n", 
-				tailCall,
-				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-		} else {
-			postfl("tailCall %d    top -> %s-%s\n", 
-				tailCall,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-		}*/
 		if (tailCall == 1) {
 			returnFromMethod(g);
 		} else {
@@ -1132,16 +1112,6 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	
 	int tailCall = g->tailCall;
 	if (tailCall) {
-		/*if (g->method) {
-			postfl("tailCall %d   %s-%s -> %s-%s\n", 
-				tailCall,
-				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-		} else {
-			postfl("tailCall %d    top -> %s-%s\n", 
-				tailCall,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-		}*/
 		if (tailCall == 1) {
 			returnFromMethod(g);
 		} else {
@@ -1288,16 +1258,6 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	
 	int tailCall = g->tailCall;
 	if (tailCall) {
-		/*if (g->method) {
-			postfl("tailCall %d   %s-%s -> %s-%s\n", 
-				tailCall,
-				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-		} else {
-			postfl("tailCall %d    top -> %s-%s\n", 
-				tailCall,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-		}*/
 		if (tailCall == 1) {
 			returnFromMethod(g);
 		} else {

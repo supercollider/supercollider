@@ -901,16 +901,6 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	
 	int tailCall = g->tailCall;
 	if (tailCall) {
-		/*if (g->method) {
-			postfl("tailCall %d   %s-%s -> %s-%s\n", 
-				tailCall,
-				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-		} else {
-			postfl("tailCall %d    top -> %s-%s\n", 
-				tailCall,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-		}*/
 		if (tailCall == 1) {
 			returnFromMethod(g);
 		} else {
@@ -1065,16 +1055,6 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	
 	int tailCall = g->tailCall;
 	if (tailCall) {
-		/*if (g->method) {
-			postfl("tailCall %d   %s-%s -> %s-%s\n", 
-				tailCall,
-				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-		} else {
-			postfl("tailCall %d    top -> %s-%s\n", 
-				tailCall,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-		}*/
 		if (tailCall == 1) {
 			returnFromMethod(g);
 		} else {
