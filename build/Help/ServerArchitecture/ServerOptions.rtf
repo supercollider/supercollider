@@ -97,7 +97,7 @@ blockSize -
 \f0\b \
 \
 hardwareBufferSize - 
-\f1\b0 The preferred hardware buffer size. If non-zero (zero is the default) the server app will attempt to set the hardware buffer frame size. Not all sizes are valid.
+\f1\b0 The preferred hardware buffer size. If non-nil the server app will attempt to set the hardware buffer frame size. Not all sizes are valid. See the documentation of your audio hardware for details.
 \f0\b \
 	\
 memSize - 
@@ -117,7 +117,7 @@ numWireBufs -
 \f0\b \
 \
 sampleRate - 
-\f1\b0 The preferred sample rate. If non-zero (zero is the default) the server app will attempt to set the hardware sample rate.\
+\f1\b0 The preferred sample rate. If non-nil the server app will attempt to set the hardware sample rate.\
 
 \f0\b \
 loadDefs - 
@@ -159,8 +159,7 @@ asOptionsString
 \f1\b0 Returns a 
 \f0\b String
 \f1\b0  specifying the options in the format required by the command-line scsynth app.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\
 \
 For further information see 
 \f0\b Server
@@ -198,6 +197,7 @@ o.memSize = 4096;\
 \
 \cf4 // Create a new Server on the local machine using o for its options\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 t = Server\cf0 (\cf2 \\Local2\cf0 , \cf3 NetAddr\cf0 (\cf5 "127.0.0.1"\cf0 , 57111), o);\
 t.makeWindow;\
 t.boot;\
