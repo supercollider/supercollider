@@ -65,6 +65,10 @@ public:
 						fixSlots(objectArray[i]);
 					}
 					fixObjSlot(objectSlot);
+					for (int i=0; i<numObjects; ++i) {
+						objectArray[i]->ClearMark();
+					}
+
 				}
 			} catch (std::exception &ex) {
 				error(ex.what());
@@ -77,11 +81,12 @@ private:
 			
 	void recurse(PyrObject *obj, int n)
 		{	
-			//post("recurse %s %08X\n", obj->classptr->name.us->name, obj);
+			//post("->recurse %s %08X\n", obj->classptr->name.us->name, obj);
 			PyrSlot *slot = obj->slots;
 			for (int i=0; i<n; ++i, ++slot) {
 				if (IsObj(slot)) constructObjectArray(slot->uo);
 			}
+			//post("<-recurse %s %08X\n", obj->classptr->name.us->name, obj);
 		}
 
 	void growObjectArray()
@@ -106,6 +111,7 @@ private:
 			// expand array if needed
 			if (numObjects >= objectArrayCapacity) growObjectArray();
 			
+			//post("putSelf %d %08X\n", numObjects, obj);
 			// add to array
 			objectArray[numObjects++] = obj;
 		}
@@ -116,18 +122,22 @@ private:
 			obj->scratch1 = numObjects;
 			
 			// expand array if needed
-			if (numObjects >= objectArrayCapacity) growObjectArray();
+			if (numObjects+2 >= objectArrayCapacity) growObjectArray();
 			
 			// add a shallow copy to object array
 			PyrObject *copy = copyObject(g->gc, obj, false);
 			copy->ClearMark();
 			
+			//post("putCopy %d %08X\n", numObjects, copy);
+			
+			// add to array
 			objectArray[numObjects++] = copy;
+			objectArray[numObjects++] = obj;
 		}
 
 	void constructObjectArray(PyrObject *obj)
 		{
-			//post("constructObjectArray %s %08X\n", obj->classptr->name.us->name, obj);
+			//post("->constructObjectArray %s %08X\n", obj->classptr->name.us->name, obj);
 			if (!obj->IsMarked()) {
 				if (isKindOf(obj, class_class)) {
 					putSelf(obj);
@@ -151,11 +161,12 @@ private:
 					recurse(obj, obj->size);
 				}
 			}
+			//post("<-constructObjectArray %s %08X\n", obj->classptr->name.us->name, obj);
 		}
 
 	void fixObjSlot(PyrSlot* slot) 
 		{
-			//post("fixObjSlot %s %08X %08X\n", slot->uo->classptr->name.us->name, slot->uo, objectArray[slot->uo->scratch1]);
+			//post("fixObjSlot %s %08X %d %08X\n", slot->uo->classptr->name.us->name, slot->uo, slot->uo->scratch1, objectArray[slot->uo->scratch1]);
 			slot->uo = objectArray[slot->uo->scratch1];
 		}
 	
