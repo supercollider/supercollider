@@ -123,20 +123,32 @@
 
 ///////////////////////////// Pattern - Streams ///////////////////////////////////
 
++Stream { // assumes event stream
 
-+Pattern {
 	proxyControlClass {
 		^StreamControl
 	}
-	buildForProxy { arg proxy, channelOffset=0;
-		^this.asStream.buildForProxy(proxy, channelOffset)
+	buildForProxy { 
+		^PauseStream.new(this)
 	}
 }
 
 
-+Stream { // assumes event stream
+
++PauseStream {
+	buildForProxy {}
+	
+	proxyControlClass {
+		^TaskControl
+	}
+}
 
 
++Pattern {
+	proxyControlClass {
+		^PatternControl
+	}
+	
 	buildForProxy { arg proxy, channelOffset=0;
 		var player, ok, index, server, event, numChannels, rate;
 		player = this.asEventStreamPlayer;
@@ -156,12 +168,11 @@
 				// event = player.event;
 				event = Event.default;
 				event.use({
-					//~player = MapNotePlayer.new;
+					
 					~channelOffset = channelOffset; // default value
 					~addAction = 1;
 					~finish = {
 						~group = proxy.group.nodeID;
-						//~mapping = proxy.nodeMap.mapArgs;
 						~out = ~channelOffset % numChannels + index;
 						~server = server;
 						~freq = ~freq.value + ~detune;
@@ -174,21 +185,10 @@
 		} { nil }
 
 	}
-	
-	proxyControlClass {
-		^StreamControl
-	}
+
 }
 
 
-
-+Task {
-	buildForProxy {}
-	
-	proxyControlClass {
-		^TaskControl
-	}
-}
 
 
 

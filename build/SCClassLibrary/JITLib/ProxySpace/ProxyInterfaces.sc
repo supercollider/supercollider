@@ -46,8 +46,8 @@ AbstractPlayControl {
 	
 }
 
-TaskControl : AbstractPlayControl {
-	var stream, clock;
+StreamControl : AbstractPlayControl {
+	var stream, clock; // stream is a pause stream
 	
 	playToBundle { arg bundle;
 		if(paused.not and: { stream.isPlaying.not }, {
@@ -59,7 +59,7 @@ TaskControl : AbstractPlayControl {
 	build { arg proxy;
 		clock = proxy.clock;
 		paused = proxy.paused;
-		stream = source.copy;
+		stream = source.buildForProxy;
 		^true;
 	}
 	
@@ -73,7 +73,7 @@ TaskControl : AbstractPlayControl {
 	
 }
 
-StreamControl : TaskControl {
+PatternControl : StreamControl {
 	var fadeTime, <array;
 		
 	playStream { arg str;
@@ -81,8 +81,8 @@ StreamControl : TaskControl {
 		dt = fadeTime.value;
 		array = array.add(str);
 		if(dt <= 0.02) 
-			{ str.play(clock, true, 0.0) } 
-			{ str.xplay(dt / clock.beatDur, clock, true, 0.0) };
+			{ str.play(clock, false, 0.0) } 
+			{ str.xplay(dt / clock.beatDur, clock, false, 0.0) };
 	}
 		
 	stopStreams { arg streams;
@@ -99,7 +99,7 @@ StreamControl : TaskControl {
 		
 	build { arg proxy;
 		fadeTime = { proxy.fadeTime }; // needed for pattern xfade
-		stream = source.buildForProxy(proxy, channelOffset);
+		stream = source.buildForProxy(proxy, channelOffset); // this is needed for validity check 
 		clock = proxy.clock ? TempoClock.default;
 		paused = proxy.paused;
 		^stream.notNil;
@@ -118,7 +118,19 @@ StreamControl : TaskControl {
 		paused=false 
 	}
 	
-	play { this.playStream(stream.copy) }
+	playToBundle { arg bundle, args, proxy; // maybe use args to add them in Event?
+		if(paused.not and: { stream.isPlaying.not }, {
+			//no latency (latency is in stream already)
+			bundle.addFunction({
+				var str;
+				str = source.buildForProxy(proxy, channelOffset);
+				if(args.notNil) { args.pairsDo { arg key, val; str.event[key] = val } };
+				this.playStream(str) 
+			}); 		
+		})
+		^nil //return a nil object instead of a synth
+	}
+	
 	stop { this.stopStreams(array.copy); array = nil; }
 	
 }
