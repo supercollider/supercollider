@@ -275,15 +275,20 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 	int err = slotIntVal(d, &offset);
 	if (err) return err;
 
+	if (!isKindOfSlot(b, class_string)) {
+		SetNil(a);
+		return errNone;
+	}
+
 	int alength = a->uo->size - offset;
 	int blength = b->uo->size;
 	
-	if (!isKindOfSlot(b, class_string)
-            || (alength <= 0)
-            || (blength == 0)
-                // should also return false if search string is longer than source
-            || (blength > alength)) {
-		SetFalse(a);
+	if ((alength <= 0)
+		|| (blength == 0)
+			// should also return nil if search string is longer than source
+		|| (blength > alength)) 
+	{
+		SetNil(a);
 		return errNone;
 	}
             
