@@ -26,10 +26,18 @@
 
 
 + Function {
-	scope { arg numChannels = 2, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom;
-		var synth;
-		synth = this.play(Server.internal, outbus, fadeTime, \addToHead);
-		synth.notNil.if { Server.internal.scope(numChannels, outbus, bufsize, zoom, \audio) };
+	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom;
+		var synth, synthDef, bytes, synthMsg, outUGen, server;
+		server = Server.internal;
+		if(server.serverRunning.not) { "internal server not running!".postln; ^nil };
+		def = this.asSynthDef(fadeTime:fadeTime);
+		outUGen = def.children.detect { |ugen| ugen.class === Out };
+		numChannels = numChannels ? (outUGen.inputs.size - 1);
+		synth = Synth.basicNew(def.name, server);
+		bytes = def.asBytes;
+		synthMsg = synth.newMsg(server, [\i_out, outbus, \out, outbus], \addToHead);
+		server.sendMsg("/d_recv", bytes, synthMsg);
+		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate);
 		^synth
 	}
 }
