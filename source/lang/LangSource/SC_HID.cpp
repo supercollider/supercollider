@@ -97,7 +97,7 @@ int prHIDBuildElementList(VMGlobals *g, int numArgsPushed)
 			
 			char cstrElementName [256];
 			PyrObject* devElementArray = newPyrArray(g->gc, 5 * sizeof(PyrObject), 0 , true);
-			HIDGetTypeName(devElement->type, cstrElementName);
+			HIDGetTypeName((IOHIDElementType) devElement->type, cstrElementName);
 			PyrString *devstring = newPyrString(g->gc, cstrElementName, 0, true);
 			SetObject(devElementArray->slots+devElementArray->size++, devstring);
 			g->gc->GCWrite(devElementArray, (PyrObject*) devstring);
@@ -240,16 +240,17 @@ int prHIDGetValue(VMGlobals *g, int numArgsPushed)
 
 void PushQueueEvents ();
 void PushQueueEvents (){
-	//try out with one device and one element only:
+
 	IOHIDEventStruct event;
 	pRecDevice  pCurrentHIDDevice = HIDGetFirstDevice ();
 	int numdevs = gNumberOfHIDDevices;
+
 	for(int i=0; i< numdevs; i++){
-	if (pCurrentHIDDevice)
-    {
+		if (pCurrentHIDDevice)
+		{
 		//SInt32 value = HIDGetElementValue (pCurrentHIDDevice, pCurrentHIDElement);
 		//call lang with: arg locID, cookie, value 
-		IOHIDQueueInterface ** queue = pCurrentHIDDevice->queue;
+		IOHIDQueueInterface ** queue = (IOHIDQueueInterface**) pCurrentHIDDevice->queue;
 		if(!queue) return;
 		AbsoluteTime zeroTime = {0,0};
 		IOReturn result = (*queue)->getNextEvent(queue, &event, zeroTime, 0);
