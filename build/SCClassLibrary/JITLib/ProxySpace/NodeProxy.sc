@@ -826,11 +826,18 @@ NodeProxy : BusPlug {
 	release { this.free(false) }
 	
 	
+//	set { arg ... args;
+//		nodeMap.performList(\set, args);
+//		if(this.isPlaying, { group.performList(\set, args) });
+//	} // use group.set otherwise..
+	
 	set { arg ... args;
 		nodeMap.performList(\set, args);
-		if(this.isPlaying, { group.performList(\set, args) });
+		if(this.isPlaying, { 
+			server.sendBundle(server.latency, [15, group.nodeID] ++ args); 
+		});
 	}
-	//to test
+	
 	setn { arg ... args;
 		nodeMap.performList(\setn, args);
 		if(this.isPlaying, { group.performList(\setn, args) });
@@ -1037,7 +1044,7 @@ SharedNodeProxy : NodeProxy {
 	generateUniqueName {
 		^asString(constantGroupID)
 	}
-	
+	// problem: parents are lost
 	addObject { arg bundle, obj, index, freeAll;
 		if(obj.distributable) {
 			super.addObject(bundle, obj, index, freeAll);
