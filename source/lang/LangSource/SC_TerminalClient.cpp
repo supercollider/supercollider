@@ -46,19 +46,21 @@ SC_TerminalClient::SC_TerminalClient(const char* name)
 {
 }
 
-void SC_TerminalClient::post(const char *fmt, va_list ap, bool error)
+void SC_TerminalClient::postText(const char* str, size_t len)
 {
-	vfprintf(gPostDest, fmt, ap);
+	fwrite(str, sizeof(char), len, gPostDest);	
 }
 
-void SC_TerminalClient::post(char c)
+void SC_TerminalClient::postFlush(const char* str, size_t len)
 {
-	fputc(c, gPostDest);
+	fwrite(str, sizeof(char), len, gPostDest);	
+	fflush(gPostDest);
 }
 
-void SC_TerminalClient::post(const char* str, size_t len)
+void SC_TerminalClient::postError(const char* str, size_t len)
 {
-	fwrite(str, sizeof(char), len, gPostDest);
+	fprintf(gPostDest, "ERROR: ");
+	fwrite(str, sizeof(char), len, gPostDest);	
 }
 
 void SC_TerminalClient::flush()

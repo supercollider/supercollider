@@ -28,11 +28,13 @@
 */
 
 #include "Rendezvous.h"
-#include <CoreServices/CoreServices.h>
 
 extern "C" {
 	int scprintf(const char *fmt, ...);
 }
+
+#if SC_DARWIN
+#include <CoreServices/CoreServices.h>
 
 void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
 {
@@ -63,3 +65,107 @@ void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
 	
 	CFNetServiceRegister(netServiceRef, NULL); // don't care about the error
 }
+#endif // SC_DARWIN
+
+#if SC_LINUX
+# if HAVE_CONFIG_H
+#  include "config.h"
+# endif
+
+# if HAVE_HOWL
+#  include <howl/howl.h>
+#  include <sys/poll.h>
+#  include <pthread.h>
+
+struct HowlSession
+{
+	HowlSession();
+	~HowlSession();
+
+	void PublishPort(SCRendezvousProtocol protocol, short portNum);
+	void PublishPort(sw_discovery session, SCRendezvousProtocol protocol, short portNum);
+
+	sw_discovery		mSession;
+	pthread_mutex_t		mMutex;
+};
+
+static HowlSession gHowlSession;
+
+HowlSession::HowlSession()
+	: mSession(0)
+{
+	sw_discovery_init(&mSession);
+	pthread_mutex_init(&mMutex, 0);
+}
+
+HowlSession::~HowlSession()
+{
+	if (mSession) sw_discovery_fina(mSession);
+	pthread_mutex_destroy(&mMutex);
+}
+
+void HowlSession::PublishPort(SCRendezvousProtocol protocol, short portNum)
+{
+	if (mSession) {
+		pthread_mutex_lock(&mMutex);
+		PublishPort(mSession, protocol, portNum);
+		pthread_mutex_unlock(&mMutex);
+	}
+}
+
+sw_result
+howl_publish_reply_func(
+	sw_discovery,
+	sw_discovery_oid,
+	sw_discovery_publish_status,
+	sw_opaque
+	)
+{
+	return SW_OKAY;
+}
+
+void HowlSession::PublishPort(sw_discovery session, SCRendezvousProtocol protocol, short portNum)
+{
+	char* serviceType = 0;
+	sw_discovery_oid oid;
+
+	switch (protocol) {
+		case kSCRendezvous_UDP:
+			serviceType = "_osc._udp.";
+			break;
+		case kSCRendezvous_TCP:
+			serviceType = "_osc._tcp.";
+			break;
+	};
+
+	sw_result res =
+		sw_discovery_publish(
+			session,
+			0,							// interface
+			"SuperCollider",			// name
+			serviceType,				// type
+			0,							// domain (.local)
+			0,							// host
+			portNum,					// port
+			0, 0,						// text records
+			howl_publish_reply_func, 0,	// reply func
+			&oid						// request id
+			);
+
+	scprintf(
+		"Zeroconf: publishing service %s on port %hu %s\n",
+		serviceType, portNum,
+		res == SW_OKAY ? "succeeded" : "failed"
+		);
+}
+
+void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
+{
+	gHowlSession.PublishPort(protocol, portNum);
+}
+# else // !HAVE_HOWL
+void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
+{
+}
+# endif // HAVE_HOWL
+#endif // SC_LINUX

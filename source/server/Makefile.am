@@ -12,14 +12,18 @@ AM_CPPFLAGS		= $(SC_CPPFLAGS) -DSC_AUDIO_API=$(SC_AUDIO_API) \
 			-DSC_PLUGIN_DIR=\"$(SC_PLUGIN_DIR)\" \
 			-DSC_PLUGIN_EXT=\"$(SC_PLUGIN_EXT)\" \
 			-DSC_PLUGIN_LOAD_SYM=\"$(SC_PLUGIN_LOAD_SYM)\"
-AM_CFLAGS		= $(SC_CFLAGS) $(SC_AUDIO_API_CFLAGS) $(SC_SNDFILE_CFLAGS)
+AM_CFLAGS		= $(SC_CFLAGS) $(SC_AUDIO_API_CFLAGS) $(SC_SNDFILE_CFLAGS) \
+			$(SC_HOWL_CFLAGS)
+
 AM_CXXFLAGS		= $(AM_CFLAGS)
 
 lib_LTLIBRARIES		= libscsynth.la
 libscsynth_la_LDFLAGS	= -version-info $(SC_SYNTH_SHARED_VERSION_INFO)
 libscsynth_la_LIBADD	= $(top_builddir)/source/common/libcommon.la \
-			$(SC_LIBS) $(SC_AUDIO_API_LIBS) $(SC_SNDFILE_LIBS)
+			$(SC_LIBS) $(SC_AUDIO_API_LIBS) $(SC_SNDFILE_LIBS) \
+			$(SC_HOWL_LIBS)
 libscsynth_la_SOURCES	= \
+	Rendezvous.cpp \
 	Samp.cpp \
 	SC_BufGen.cpp \
 	SC_Carbon.cpp \

@@ -70,20 +70,14 @@ fi
 AC_SUBST(SC_LIBS)
 SC_LIBS="-lm $lib_pthread $lib_dl"
 
-# common packages
-sc_sndfile_pkg="sndfile >= 1.0.0"
-PKG_CHECK_MODULES(SC_SNDFILE,[$sc_sndfile_pkg])
-AC_SUBST(SC_SNDFILE_CFLAGS)
-AC_SUBST(SC_SNDFILE_LIBS)
-
 # common compiler flags
 sc_os_cflags="-DSC_LINUX"
 
 AC_SUBST(SC_CPPFLAGS)
-SC_CPPFLAGS="$sc_os_cflags -D_REENTRANT -Wall -Wno-unknown-pragmas"
+SC_CPPFLAGS="$sc_os_cflags -D_REENTRANT"
 
 AC_SUBST(SC_CFLAGS)
-SC_CFLAGS=""
+SC_CFLAGS="-Wall -Wno-unknown-pragmas"
 
 # include paths
 sc_common_includes='-I$(top_srcdir)/headers/common -I$(top_srcdir)/headers/plugin_interface'
@@ -103,12 +97,15 @@ SC_LANG_INCLUDES="$sc_common_includes $sc_lang_includes $sc_server_includes"
 # pkg-config variables
 # ======================================================================
 
+sc_sndfile_pkg="sndfile >= 1.0.0"
+sc_howl_pkg="howl >= 0.9.6"
+
 sc_common_includes='-I${includedir}/common -I${includedir}/plugin_interface'
 sc_server_includes='-I${includedir}/server'
 sc_lang_includes='-I${includedir}/lang'
 
 AC_SUBST(SC_SYNTH_PKG_REQUIRES)
-SC_SYNTH_PKG_REQUIRES="$sc_sndfile_pkg"
+SC_SYNTH_PKG_REQUIRES="${sc_sndfile_pkg}"
 
 AC_SUBST(SC_SYNTH_PKG_LIBS)
 SC_SYNTH_PKG_LIBS="-L\${libdir} -lscsynth $SC_LIBS"
@@ -125,6 +122,28 @@ SC_LANG_PKG_LIBS="-L\${libdir} -lsclang $SC_LIBS"
 
 AC_SUBST(SC_LANG_PKG_CFLAGS)
 SC_LANG_PKG_CFLAGS="$sc_os_cflags $sc_common_includes $sc_lang_includes $sc_server_includes"
+
+# ======================================================================
+# common packages
+# ======================================================================
+
+PKG_CHECK_MODULES(SC_SNDFILE,[$sc_sndfile_pkg])
+AC_SUBST(SC_SNDFILE_CFLAGS)
+AC_SUBST(SC_SNDFILE_LIBS)
+
+PKG_CHECK_MODULES(SC_HOWL,[$sc_howl_pkg],[HAVE_HOWL=true],[HAVE_HOWL=false])
+AC_SUBST(SC_HOWL_CFLAGS)
+AC_SUBST(SC_HOWL_LIBS)
+
+if $HAVE_HOWL; then
+	AC_DEFINE([HAVE_HOWL],[1],[Define when howl libs are available])
+	SC_CPPFLAGS="${SC_CPPFLAGS} -DUSE_RENDEZVOUS"
+	SC_SYNTH_PKG_REQUIRES="${SC_SYNTH_PKG_REQUIRES}, ${sc_howl_pkg}"
+	SC_LANG_PKG_REQUIRES="${SC_LANG_PKG_REQUIRES}, ${sc_howl_pkg}"
+	feat_howl=yes
+else
+	feat_howl=no
+fi
 
 # ======================================================================
 # debugging
@@ -434,6 +453,7 @@ common
 ------------------------------------------------------------
  debugging support                 $feat_debug
  altivec optimizations             $feat_altivec
+ rendezvous (howl)		   $feat_howl
 ------------------------------------------------------------
 scsynth
 ------------------------------------------------------------

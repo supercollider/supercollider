@@ -304,40 +304,51 @@ void setPostFile(FILE* file)
 
 int vpost(const char *fmt, va_list ap)
 {
-	SC_LanguageClient::instance()->post(fmt, ap, false);
+	char buf[512];
+	int n = vsnprintf(buf, sizeof(buf), fmt, ap);
+	if (n > 0) {
+		SC_LanguageClient::instance()->postText(buf, sc_min(n, sizeof(buf) - 1));
+	}
 	return 0;
 }
 
 void post(const char *fmt, ...)
 {
     va_list ap;
-    va_start(ap, fmt); 
-    vpost(fmt, ap);
+    va_start(ap, fmt);
+	vpost(fmt, ap);
 }
 
 void postfl(const char *fmt, ...)
 {
+	char buf[512];
     va_list ap;
     va_start(ap, fmt); 
-    SC_LanguageClient::instance()->post(fmt, ap, false);
-    SC_LanguageClient::instance()->flush();
+	int n = vsnprintf(buf, sizeof(buf), fmt, ap);
+	if (n > 0) {
+		SC_LanguageClient::instance()->postFlush(buf, sc_min(n, sizeof(buf) - 1));
+	}
 }
 
 void postText(const char *str, long len)
 {
-	SC_LanguageClient::instance()->post(str, len);
+	SC_LanguageClient::instance()->postText(str, len);
 }
 
 void postChar(char c)
 {
-	SC_LanguageClient::instance()->post(c);
+	SC_LanguageClient::instance()->postText(&c, sizeof(char));
 }
 
 void error(const char *fmt, ...)
 {
+	char buf[512];
     va_list ap;
     va_start(ap, fmt);
-    SC_LanguageClient::instance()->post(fmt, ap, true);
+	int n = vsnprintf(buf, sizeof(buf), fmt, ap);
+	if (n > 0) {
+		SC_LanguageClient::instance()->postError(buf, sc_min(n, sizeof(buf) - 1));
+	}
 }
 
 void flushPostBuf(void)

@@ -63,9 +63,9 @@ public:
 	int run(int argc, char** argv);
 	void quit(int code);
 
-	virtual void post(const char *fmt, va_list ap, bool error);
-	virtual void post(char c);
-	virtual void post(const char* str, size_t len);
+	virtual void postText(const char* str, size_t len);
+	virtual void postFlush(const char* str, size_t len);
+	virtual void postError(const char* str, size_t len);
 	virtual void flush();
 
 protected:

@@ -15,8 +15,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 // USA
 
-EmacsInterface
-{
+EmacsInterface {
 	classvar handlers, showClassMethods;
 
 	*initClass {
@@ -167,8 +166,7 @@ EmacsInterface
 	}
 }
 
-Emacs
-{
+Emacs {
 	classvar outFile, requestHandlers, requestAllocator;
 	classvar <menu, <>keys;
 

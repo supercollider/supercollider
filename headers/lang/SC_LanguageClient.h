@@ -106,10 +106,12 @@ public:
 	void setPostFile(FILE* file) { mPostFile = file; }
 
 	// post buffer output (subclass responsibility)
-	//     these routines should be thread-save.
-	virtual void post(const char *fmt, va_list ap, bool error) = 0;
-	virtual void post(char c) = 0;
-	virtual void post(const char* str, size_t len) = 0;
+	//     should be thread-save.
+	virtual void postText(const char* str, size_t len) = 0;
+	virtual void postFlush(const char* str, size_t len) = 0;
+	virtual void postError(const char* str, size_t len) = 0;
+	// flush post buffer contents to screen.
+	//     only called from the main language thread.
 	virtual void flush() = 0;
 
 	// common symbols
