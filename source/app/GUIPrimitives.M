@@ -452,6 +452,20 @@ int prSCWindow_EndFullScreen(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prSCWindow_SetShouldClose(struct VMGlobals *g, int numArgsPushed);
+int prSCWindow_SetShouldClose(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot *a = g->sp - 1;
+    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    if (!view) return errNone;
+    PyrSlot *boo = g->sp;
+
+    // no need to defer, right ?
+    [view setWindowShouldClose: IsTrue(boo)];
+
+    return errNone;
+}
+
 int prSCWindow_SetName(struct VMGlobals *g, int numArgsPushed);
 int prSCWindow_SetName(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1794,6 +1808,8 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_SCWindow_ToFront", prSCWindow_ToFront, 1, 0);	
 	definePrimitive(base, index++, "_SCWindow_BeginFullScreen", prSCWindow_FullScreen, 1, 0);	
 	definePrimitive(base, index++, "_SCWindow_EndFullScreen", prSCWindow_EndFullScreen, 1, 0);	
+	definePrimitive(base, index++, "_SCWindow_SetShouldClose", prSCWindow_SetShouldClose, 2, 0);	
+    
 	definePrimitive(base, index++, "_SCWindow_Show", prSCWindow_Show, 1, 0);	
 	definePrimitive(base, index++, "_SCWindow_Hide", prSCWindow_Hide, 1, 0);	
 	definePrimitive(base, index++, "_SCWindow_SetName", prSCWindow_SetName, 2, 0);	

@@ -27,6 +27,7 @@
     SCTopView *mTopView;
     bool mDragStarted;
     SCView* mMenuView;
+    bool windowShouldClose;
 }
 
 - (void)drawRect: (NSRect)bounds;
@@ -41,6 +42,8 @@
 - (void)setSCTopView: (SCTopView*)inView;
 //- (void)dealloc;
 - (void)closeWindow;
+- (void)setWindowShouldClose:(BOOL)boo;
+- (BOOL)windowShouldClose;
 - (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot;
 
 - (NSMenu*) menuForEvent:(NSEvent*)event;

@@ -169,6 +169,11 @@ static id sharedSCVM = nil;
 {
 	[self sendMain: "newSCWindow"];
 }
+/* i am the delegate for each SCGraphView window */
+-(BOOL)windowShouldClose:(id)sender
+{
+    return [[(NSWindow*)sender contentView] windowShouldClose];
+}
 
 extern NSTextView *gPostView;
 

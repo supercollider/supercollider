@@ -112,6 +112,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 	mMenuView = 0;
 	mWindowObj = 0;
 	mTopView = 0;
+    windowShouldClose = YES;
     return self;
 }
 
@@ -220,6 +221,15 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, void* inData)
     delete mTopView;
 	mTopView = 0;
 	[[self window] close];
+}
+/*  from command-w, scvm is the delegate */
+- (void)setWindowShouldClose:(BOOL)boo
+{
+    windowShouldClose = boo;
+}
+- (BOOL)windowShouldClose
+{
+    return windowShouldClose;
 }
 
 const int circDiam = 20;
