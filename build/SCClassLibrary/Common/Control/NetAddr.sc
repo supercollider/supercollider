@@ -7,7 +7,7 @@ NetAddr {
 		^super.newCopyArgs(addr, port, hostname);
 	}
 
-	*useDoubles { arg flag = false;
+	*useDoubles_ { arg flag = false;
 		_NetAddr_UseDoubles
 		^this.primitiveFailed;
 	}
