@@ -80,26 +80,6 @@ inline void writeInt32_le(char *&buf, int32 inInt)
 	*buf++ = (char)((inInt >> 24) & 255);
 }
 
-inline void writeDouble_be(char *&buf, double inDouble)
-{
-	union {
-		double f;
-		int8 c[8];
-	} u;
-	//post("writeDouble_be %g  %08X %08X\n", inDouble, inDouble);
-
-	u.f = inDouble;
-	*buf++ = u.c[0];
-	*buf++ = u.c[1];
-	*buf++ = u.c[2];
-	*buf++ = u.c[3];
-	*buf++ = u.c[4];
-	*buf++ = u.c[5];
-	*buf++ = u.c[6];
-	*buf++ = u.c[7];
-}
-
-
 inline void writeSymbol(char *&buf, char *inString)
 {
 	size_t length = strlen(inString);
@@ -190,44 +170,6 @@ inline void writeFloat_le(FILE *file, float inFloat)
 	} u;
 	u.f = inFloat;
 	writeInt32_le(file, u.i);
-}
-
-inline void writeDouble_be(FILE *file, double inDouble)
-{
-	//post("writeDouble %g\n", inDouble);
-	union {
-		double f;
-		int8 c[8];
-	} u;
-	//post("writeDouble_be %g  %08X %08X\n", inDouble, inDouble);
-
-	u.f = inDouble;
-	writeInt8(file, u.c[0]);
-	writeInt8(file, u.c[1]);
-	writeInt8(file, u.c[2]);
-	writeInt8(file, u.c[3]);
-	writeInt8(file, u.c[4]);
-	writeInt8(file, u.c[5]);
-	writeInt8(file, u.c[6]);
-	writeInt8(file, u.c[7]);
-}
-
-inline void writeDouble_le(FILE *file, double inDouble)
-{
-	//post("writeDouble %g\n", inDouble);
-	union {
-		double f;
-		int8 c[8];
-	} u;
-	u.f = inDouble;
-	writeInt8(file, u.c[7]);
-	writeInt8(file, u.c[6]);
-	writeInt8(file, u.c[5]);
-	writeInt8(file, u.c[4]);
-	writeInt8(file, u.c[3]);
-	writeInt8(file, u.c[2]);
-	writeInt8(file, u.c[1]);
-	writeInt8(file, u.c[0]);
 }
 
 inline void writeSymbol(FILE *file, char *inString)
@@ -330,48 +272,6 @@ inline float readFloat_le(FILE *file)
 	//post("readFloat %g\n", u.f);
 	return u.f;
 }
-
-inline double readDouble_be(FILE *file)
-{
-	//post("readDouble\n");
-	union {
-		double f;
-		uint8 c[8];
-	} u;
-	
-	u.c[0] = (uint8)(readInt8(file));
-	u.c[1] = (uint8)(readInt8(file));
-	u.c[2] = (uint8)(readInt8(file));
-	u.c[3] = (uint8)(readInt8(file));
-	u.c[4] = (uint8)(readInt8(file));
-	u.c[5] = (uint8)(readInt8(file));
-	u.c[6] = (uint8)(readInt8(file));
-	u.c[7] = (uint8)(readInt8(file));
-	//post("readDouble %g\n", u.f);
-	return u.f;
-}
-
-inline double readDouble_le(FILE *file)
-{
-	//post("readDouble\n");
-	union {
-		double f;
-		uint8 c[8];
-	} u;
-	
-	u.c[7] = (uint8)readInt8(file);
-	u.c[6] = (uint8)readInt8(file);
-	u.c[5] = (uint8)readInt8(file);
-	u.c[4] = (uint8)readInt8(file);
-	u.c[3] = (uint8)readInt8(file);
-	u.c[2] = (uint8)readInt8(file);
-	u.c[1] = (uint8)readInt8(file);
-	u.c[0] = (uint8)readInt8(file);
-
-	//post("readDouble %g\n", u.f);
-	return u.f;
-}
-
 
 inline void readString(FILE *file, char *outString, size_t inLength)
 {

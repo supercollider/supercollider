@@ -80,7 +80,7 @@ public:
         writeUInt8((uint8)(inInt >> 24));
     }
 
-#if BIG_ENDIAN
+#if BYTE_ORDER == BIG_ENDIAN
     void writeFloat_be(float inFloat)
 #else
     void writeFloat_le(float inFloat)
