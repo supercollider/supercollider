@@ -7,6 +7,7 @@
 
 \f0\b\fs36 \cf0 InFeedback
 \fs28 		read signal from a bus with a current or one cycle old timestamp\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -37,7 +38,7 @@ When the various output ugens (
 \f0\b ReplaceOut
 \f2\b0  overwrites all data regardless.) Thus depending on node order and what synths are writing to the bus, the data on a given bus may be from the current cycle or be one cycle old at the time of reading. 
 \f0\b In.ar
-\f2\b0  checks the timestamp of any data it reads in and zeros any data from the previous cycle. This is fine for audio data, as it avoids feedback, but for control data it is useful to be able to read data from any place in the node order. For this reason 
+\f2\b0  checks the timestamp of any data it reads in and zeros any data from the previous cycle (for use within that node; the data remains on the bus). This is fine for audio data, as it avoids feedback, but for control data it is useful to be able to read data from any place in the node order. For this reason 
 \f0\b In.kr
 \f2\b0  also reads data that is older than the current cycle.\
 \
@@ -64,7 +65,7 @@ The second example below demonstrates this issue.
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs32 \cf0 \ul \
+\f0\b\fs32 \cf0 \ul \ulc0 \
 Examples
 \f2\b0\fs24 \ulnone \
 \

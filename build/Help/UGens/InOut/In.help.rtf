@@ -7,6 +7,7 @@
 
 \f0\b\fs36 \cf0 In
 \fs28 				read a signal from a bus\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -37,7 +38,7 @@
 
 \f2\fs24 \cf0 In.kr is functionally similar to 
 \f0\b InFeedback. 
-\f2\b0 That is it reads all data on the bus whether it is from the current cycle or not. This allows for it to receive data from later in the node order. In.ar reads only data from the current cycle, and will zero data from earlier cycles. Because of this and the fact that the various out ugens 
+\f2\b0 That is it reads all data on the bus whether it is from the current cycle or not. This allows for it to receive data from later in the node order. In.ar reads only data from the current cycle, and will zero data from earlier cycles (for use within that synth; the data remains on the bus). Because of this and the fact that the various out ugens 
 \f3\i mix
 \f2\i0  their output with data from the current cycle but 
 \f3\i overwrite
@@ -61,12 +62,14 @@ Note that using the
 \f0\b Bus
 \f2\b0  helpfiles for more information on buses and how they are used. \
 \
-To read in audio from your audio hardware see 
+The hardware input busses begin just after the hardwrae output busses and can be read from using In.ar. (See 
+\f0\b Server-Architecture
+\f2\b0  for more details.) The number of hardware input and output busses can vary depending on your Server's options. For a convienent wrapper class which deals with this issue see 
 \f0\b AudioIn
 \f2\b0 .\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ul read from an audio bus\
+\cf0 \ul \ulc0 read from an audio bus\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \ulnone \
 	
@@ -97,7 +100,7 @@ To read in audio from your audio hardware see
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 \ul read from a  control bus
+\f2\fs24 \cf0 \ul \ulc0 read from a  control bus
 \f1\fs18 \ulnone \
 \
 	(\
