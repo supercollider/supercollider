@@ -27,12 +27,21 @@ Class {
 	isMetaClass { ^this.class === Class }
 
 	initClass {   } 
+	
+		
 	// call Class.initClassTree(SomeClass) to force a class to init if you depend on its resources
-	*initClassTree { arg aClass; 
+	*initClassTree { arg aClass;
+		var implementsInitClass, methods; 
 		// sometimes you need a class to be inited before another class
 		// start the process: Class.initClassTree(Object)
-		if((classesInited ?? {classesInited = IdentitySet.new}).includes(aClass).not,{
-			aClass.initClass;
+		if(classesInited.isNil, { classesInited = IdentitySet.new });
+		if(classesInited.includes(aClass).not, {
+			methods = aClass.class.methods;
+			implementsInitClass = if(methods.isNil or: { aClass.isMetaClass }, { false }, {
+					methods.any({ arg item; item.name === 'initClass' });
+			});
+			if(implementsInitClass, { aClass.initClass });
+
 			classesInited.add(aClass);			
 			if(aClass.subclasses.notNil,{
 				aClass.subclasses.do({ arg class; this.initClassTree(class); });
@@ -156,10 +165,13 @@ Process {
 	var <processID; // 0 = application, 1 = audio engine
 	var schedulerQueue;
 	
-	startUp {
+	startUp {	
+		var time;
+		
 		Class.initClassTree(AppClock); // AppClock first in case of error
+		time = this.class.elapsedTime;
 		Class.initClassTree(Object);
-		"Class tree inited".inform;
+		("Class tree inited in" + (this.class.elapsedTime - time).round(0.01) + "seconds").inform;
 		Class.classesInited = nil;
 		
 		topEnvironment = Environment.new;
@@ -376,6 +388,7 @@ Interpreter {
 	
 	var <cmdLine; // place holder for text executed from a worksheet
 	var context; // faked interpreter context frame. Don't mess with it.
+	var <>codeDump;
 	
 	// a-z are predefined variables for use by the interactive context.
 	// They are read+write so that programmatic methods can
@@ -394,9 +407,13 @@ Interpreter {
 		^this.compile(cmdLine).value;
 	}
 	interpretPrintCmdLine {
+		var res;
+		res = this.compile(cmdLine).value;
          //if (cmdLine.last != $\n , { "\n".post; });
 		"\n".post;
-		^this.compile(cmdLine).value.postln;
+		codeDump.value(cmdLine, res);
+		^res.postln;
+      
 	}
 	
 	interpret { arg string;
