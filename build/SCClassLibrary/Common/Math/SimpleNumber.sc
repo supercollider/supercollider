@@ -277,4 +277,8 @@ SimpleNumber : Number {
 		// if fasterBetter is true it may find a much closer approximation and do it faster.
 		^this.primitiveFailed
 	}
+	prSimpleNumberSeries { arg second, last;
+		_SimpleNumberSeries
+		^this.primitiveFailed
+	}
 }

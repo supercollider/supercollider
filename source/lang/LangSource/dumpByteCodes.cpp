@@ -449,7 +449,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			break;
 		case 143 :
 			op2 = *ip++; // get loop opcode
-			if (op2 < 23 || op2 == 28) {
+			if (op2 < 23 || op2 > 27) {
 				post(" %02X    ControlOpcode\n", op2); break;
 			} else {
 				op3 = *ip++; // jump

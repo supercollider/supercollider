@@ -25,10 +25,13 @@
 #define	BEGINCLOSEDFUNC	278
 #define	BADTOKEN	279
 #define	INTERPRET	280
-#define	BINOP	281
-#define	KEYBINOP	282
-#define	READWRITEVAR	283
-#define	UMINUS	284
+#define	BEGINGENERATOR	281
+#define	LEFTARROW	282
+#define	WHILE	283
+#define	BINOP	284
+#define	KEYBINOP	285
+#define	READWRITEVAR	286
+#define	UMINUS	287
 
 
 extern YYSTYPE yylval;

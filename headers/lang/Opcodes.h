@@ -295,6 +295,7 @@ enum {
 	
 	opmHalt,
 	opmForBy,
+	opmForSeries,
 	opmReverseDo,
 	opmLoop,
 	

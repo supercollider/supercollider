@@ -30,12 +30,13 @@ Stream : AbstractFunction {
 	}
 	
 	do { arg function;
-		var item;
+		var item, i=0;
 		while ({ 
 			item = this.next; 
 			item.notNil 
 		},{
-			function.value(item);
+			function.value(item, i);
+			i = i + 1;
 		});
 	}
 	
@@ -188,7 +189,7 @@ Stream : AbstractFunction {
 	}
 	
 	constrain { arg sum, tolerance=0.001;
-		^Routine.new({
+		^r {
 			var delta, elapsed = 0.0, nextElapsed;
 			loop ({
 				delta = this.next;
@@ -205,7 +206,7 @@ Stream : AbstractFunction {
 					delta.yield;
 				});
 			});
-		})
+		}
 	}
 	
 	

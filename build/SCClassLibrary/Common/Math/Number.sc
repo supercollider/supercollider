@@ -42,5 +42,18 @@ Number : Magnitude {
 		i = this;
 		while ({ i <= endValue }, { function.value(i,j); i = i + stepValue; j=j+1; });
 	}
+	
+	
+	forSeries { arg secondValue, endValue, function;
+		// called by generator expression
+		// compiler replaces this with special byte codes.
+		var stepValue;
+		if (secondValue.notNil) { 
+			stepValue = secondValue - this;
+		}{
+			stepValue = if (endValue >= this, 1, -1);
+		};
+		^this.forBy(endValue, stepValue, function)
+	}
 
 }

@@ -253,7 +253,7 @@ void initSymbols()
 	s_at = getsym("at");
 	s_put = getsym("put");
 	
-	s_series = getsym("series");
+	s_series = getsym("prSimpleNumberSeries");
 	s_copyseries = getsym("copySeries");
 	s_putseries = getsym("putSeries");
 	
@@ -1075,7 +1075,7 @@ void buildBigMethodMatrix()
 	//post("freeIndex %d\n", freeIndex);
 	//post("widthSum %d\n", widthSum);
 	//post("popSum %d\n", popSum);
-#if 1
+#if 0
 	post("building table took %.3g seconds\n", elapsedTime() - t0);
 	{
 		int numFilled = 0;

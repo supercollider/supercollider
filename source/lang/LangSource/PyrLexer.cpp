@@ -105,6 +105,7 @@ bool gDebugLexer = false;
 bool gShowWarnings = false;
 LongStack brackets;
 LongStack closedFuncCharNo;
+LongStack generatorStack;
 int lastClosedFuncCharNo = 0;
 
 char *binopchars = "!@%&*-+=|<>?/";
@@ -267,6 +268,7 @@ bool startLexer(char* filename)
 	
 	initLongStack(&brackets);
 	initLongStack(&closedFuncCharNo);
+	initLongStack(&generatorStack);
 	lastClosedFuncCharNo = 0;
 	textpos = 0;
 	linepos = 0;
@@ -305,6 +307,7 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 		
 	initLongStack(&brackets);
 	initLongStack(&closedFuncCharNo);
+	initLongStack(&generatorStack);
 	lastClosedFuncCharNo = 0;
 	textpos = 0;
 	linepos = 0;
@@ -328,6 +331,7 @@ void finiLexer()
 	pyr_pool_compile->Free(text);
 	freeLongStack(&brackets);
 	freeLongStack(&closedFuncCharNo);
+	freeLongStack(&generatorStack);
 }
 
 void initLexer() 
@@ -913,6 +917,7 @@ int processbinop(char *token)
 	SetSymbol(&slot, sym);
 	node = newPyrSlotNode(&slot);
 	zzval = (int)node;
+	if (strcmp(token, "<-")==0) return LEFTARROW;
 	if (strcmp(token, "<>")==0) return READWRITEVAR;
 	if (strcmp(token, "|")==0) return '|';
 	if (strcmp(token, "<")==0) return '<';
@@ -990,8 +995,15 @@ int processident(char *token)
 	if (strcmp("classvar",token) ==0) return CLASSVAR; 
 	if (strcmp("const",token) ==0) return CONST; 
 	
+	if (strcmp("while",token) ==0) { 
+		sym = getsym(token);
+		SetSymbol(&slot, sym);
+		node = newPyrSlotNode(&slot);
+		zzval = (int)node;
+		return WHILE; 
+	}
 	if (strcmp("pi",token) ==0) {
-		SetTrue(&slot);
+		SetFloat(&slot, pi);
 		node = newPyrSlotNode(&slot);
 		zzval = (int)node;
 		return PIE; 

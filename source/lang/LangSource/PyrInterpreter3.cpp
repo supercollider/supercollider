@@ -1592,9 +1592,107 @@ void Interpret(VMGlobals *g)
 					op2 = 1 + arrayAtIdentityHashInPairs(obj, (PyrSlot*)(sp-1));
 					sp-=2;
 					ip += obj->slots[op2].ui;
-					break;					
+					break;		
+								
+				// Number-forSeries : 143 29, 143 30, 143 31
+				case 29 :
+					vars = g->frame->vars;
+					// 0 receiver, 1 step, 2 last, 3 function, 4 i, 5 j
+					if (IsInt(vars+0) && (IsInt(vars+1) || IsNil(vars+1)) && IsInt(vars+2)) {
+						vars[4].ucopy = vars[0].ucopy;
+						vars[1].ui = IsInt(vars+1) ? (vars[1].ui - vars[0].ui) : (vars[0].ui < vars[2].ui ? 1 : -1);
+						vars[1].utag = tagInt;
+					} else {
+						vars[4].ucopy = vars[0].ucopy;
+						if (IsInt(vars+4)) {
+							vars[4].uf = vars[4].ui;
+						} else if (!IsFloat(vars+4)) {
+							bailFromNumberSeries:
+							error("Number-forSeries : first, second or last not an Integer or Float.\n");
+							
+							*++sp = g->receiver.ui;
+							numArgsPushed = 1;
+							selector = gSpecialSelectors[opmPrimitiveFailed];
+							slot = (PyrSlot*)sp;
+							
+							goto class_lookup;
+						}
+						if (IsInt(vars+2)) {
+							vars[2].uf = vars[2].ui;
+						} else if (!IsFloat(vars+2)) goto bailFromNumberSeries;
+						if (IsInt(vars+1)) {
+							vars[1].uf = (double)vars[1].ui - vars[4].uf;
+						} else if (IsFloat(vars+1)) {
+							vars[1].uf -= vars[4].uf;
+						} else {
+							if (vars[4].uf < vars[2].uf) {
+								vars[1].uf = 1.;
+							} else {
+								vars[1].uf = 1.;
+							}
+						}
+					}
+					break;
+				case 30 :
+					vars = g->frame->vars;
+					tag = vars[1].utag;
+					if (tag == tagInt) {
+						if ((vars[1].ui >= 0 && vars[4].ui <= vars[2].ui)
+								|| (vars[1].ui < 0 && vars[4].ui >= vars[2].ui)) {
+							*++sp = vars[3].uf; // push function
+							*++sp = vars[4].uf; // push i
+							*++sp = vars[5].uf; // push j
+							// SendSpecialMsg value
+							numArgsPushed = 3;
+							selector = gSpecialSelectors[opmValue];
+							slot = (PyrSlot*)sp - 2;
+							
+							goto class_lookup;
+						} else {
+							*++sp = g->receiver.uf; 
+							g->sp = (PyrSlot*)sp; g->ip = ip; 
+							returnFromMethod(g); 
+							if (g->returnLevels) { --g->returnLevels; return; }
+							sp = (double*)g->sp; ip = g->ip; 
+						}
+					} else {
+						if ((vars[1].uf >= 0. && vars[4].uf <= vars[2].uf)
+								|| (vars[1].uf < 0. && vars[4].uf >= vars[2].uf)) {
+							*++sp = vars[3].uf; // push function
+							*++sp = vars[4].uf; // push i
+							*++sp = vars[5].uf; // push j
+							// SendSpecialMsg value
+							numArgsPushed = 3;
+							selector = gSpecialSelectors[opmValue];
+							slot = (PyrSlot*)sp - 2;
+							
+							goto class_lookup;
+						} else {
+							*++sp = g->receiver.uf; 
+							g->sp = (PyrSlot*)sp; g->ip = ip; 
+							returnFromMethod(g); 
+							if (g->returnLevels) { --g->returnLevels; return; }
+							sp = (double*)g->sp; ip = g->ip; 
+						}
+					}
+					break;
+				case 31 :
+					sp -- ; // Drop
+					vars = g->frame->vars;
+					
+					tag = vars[1].utag;
+					if (tag == tagInt) {
+						vars[4].ui += vars[1].ui; // inc i
+					} else {
+						vars[4].uf += vars[1].uf; // inc i
+					}
+					vars[5].ui ++; // inc j
+					ip -= 4;
+					break;
+					
 			}
 			break;
+
 
 		//	opStoreClassVar
 		case 144 :  case 145 :  case 146 :  case 147 :  

@@ -1517,6 +1517,16 @@ void PyrMethodNode::compile(PyrSlot *result)
 				compileByte(143);
 				compileByte(14);
 			} else goto compile_body;
+		} else if (gCompilingClass == class_number) {
+			name = method->name.us;
+			if (name == gSpecialSelectors[opmForSeries]) {
+				compileByte(143);
+				compileByte(29);
+				compileByte(143);
+				compileByte(30);
+				compileByte(143);
+				compileByte(31);
+			} else goto compile_body;
 		} else if (gCompilingClass == class_float) {
 			// handle some special cases
 			name = method->name.us;
@@ -4436,6 +4446,7 @@ void initSpecialSelectors()
 	
 	sel[opmHalt] = getsym("halt");
 	sel[opmForBy] = getsym("forBy");
+	sel[opmForSeries] = getsym("forSeries");
 	sel[opmReverseDo] = getsym("reverseDo");
 	sel[opmLoop] = getsym("loop");
 	sel[opmNonBooleanError] = getsym("mustBeBoolean");
