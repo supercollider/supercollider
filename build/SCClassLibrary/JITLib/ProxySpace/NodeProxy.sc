@@ -514,9 +514,9 @@ NodeProxy : BusPlug {
 					) { nodeMap.set(key, el.defaultValue) }
 		}
 
-	}		
+	}
 	generateUniqueName {
-			^asString(this.identityHash.abs)
+			^server.clientID.asString ++ this.identityHash.abs
 	}
 	
 	
@@ -691,8 +691,15 @@ NodeProxy : BusPlug {
 		if(this.isPlaying) { objects.do { arg obj; obj.stopToBundle(bundle, dt) } };
 	}
 	
-	reallocBus {
-		if(bus.notNil) { bus.realloc }; // might cause troubles. revisit!
+	reallocBus { // this is called only when the server was not booted on creation.
+		if(bus.notNil) { 
+			if(loaded.not) {
+				bus.realloc; 
+				this.linkNodeMap
+			} {
+			 "should not reallocate bus when already loaded.".warn
+			} 
+		};
 	}
 	
 	loadToBundle { arg bundle;

@@ -162,10 +162,10 @@ SynthControl : AbstractPlayControl {
 	asDefName { ^source }
 	distributable { ^canReleaseSynth } // n_free not implemented in shared node proxy
 	
-	build { arg proxy; // assumes audio, if proxy is not initialized
+	build { arg proxy; 	// assumes audio, if proxy is not initialized
 		var rate, desc;
 		desc = this.synthDesc; // might be false assumption:
-		if(desc.notNil) { canFreeSynth = canReleaseSynth = desc.hasGate }; 		if(proxy.isNeutral) { rate = \audio }
+		if(desc.notNil) { canFreeSynth = canReleaseSynth = desc.hasGate }; 		if(proxy.isNeutral) { rate = \audio };
 		^proxy.initBus(rate, proxy.numChannels ? 2);
 	}
 	
@@ -231,7 +231,7 @@ SynthControl : AbstractPlayControl {
 
 
 SynthDefControl : SynthControl {
-	classvar <>writeDefs=true;
+	//classvar <>writeDefs=false;
 	var <synthDef, <parents;
 	
 	readyForPlay { ^synthDef.notNil }
@@ -264,22 +264,31 @@ SynthDefControl : SynthControl {
 		
 		bytes = synthDef.asBytes;
 		size = bytes.size;
-		size = size - (size bitAnd: 3) + 84; // 4 + 4 + 16 + 16 //apx path lengtht size + overhead
+		size = size - (size bitAnd: 3) + 84; // 4 + 4 + 16 + 16 //appx path length size + overhead
 		if(server.options.protocol === \tcp or: {size < 8192}) {
-			bundle.addPrepare([5, bytes]); //"/d_recv"
-			if(writeDefs) { 
+			bundle.addPrepare([5, bytes]); // "/d_recv"
+			
+// synthdefs now are not written, as there is no way to regain
+// the same bus indices on a rebooted server currently.
+
+/*			if(writeDefs) { 
 				this.writeSynthDefFile(this.synthDefPath, bytes) 
 			}; // in case of server reboot
-			
+*/			
 		}{
+			// bridge exceeding bundle size by writing to disk
 			if(server.isLocal.not) {
 				Error("SynthDef too large (" ++ size 
 				++ " bytes) to be sent to remote server via udp").throw;
 			};
 			path = this.synthDefPath;
 			this.writeSynthDefFile(path, bytes);
-			bundle.addPrepare([6, path]); //"/d_load"
+			bundle.addPrepare([6, path]); // "/d_load"
 		};
+	}
+	
+	freeToBundle { arg bundle; 
+		if(synthDef.notNil) {Êbundle.addPrepare([53, synthDef.name]) } // "/d_free"
 	}
 	
 	writeSynthDefFile { arg path, bytes;
