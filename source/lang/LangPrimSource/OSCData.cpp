@@ -167,11 +167,12 @@ void PerformOSCMessage(int inSize, char *inData, ReplyAddress *inReply);
 void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize);
 void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
 {
-	OSC_Packet packet;
-    packet.mIsBundle = strcmp(packet.mData, "#bundle") == 0;
+    bool isBundle = strcmp(inBuf, "#bundle") == 0;
     
     pthread_mutex_lock (&gLangMutex);
-    if (packet.mIsBundle) {
+    if (isBundle) {
+		OSC_Packet packet;
+		packet.mIsBundle = true;
 		packet.mData = inBuf;
 		packet.mSize = inSize;
 		packet.mReplyAddr = *inReplyAddr;
