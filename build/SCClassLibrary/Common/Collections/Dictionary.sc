@@ -164,10 +164,9 @@ Dictionary : Set {
 		keys = this.keys(Array);
 		keys.sort(sortFunc);
 		
-		keys.do({
-			arg key;
-			function.value(key, this.at(key));
-		});
+		keys.do { arg key, i;
+			function.value(key, this[key], i);
+		};
 	}
 
 	choose {
@@ -363,6 +362,21 @@ IdentityDictionary : Dictionary {
 		if (parent.notNil) { all.putAll(parent.collapseParents(all)) };
 		^all.putAll(this);
 	}
+	topParent {
+		var event, parent;
+		event = this;
+		while { parent = event.parent; parent.notNil } { event = parent };
+		^event
+	}
+
+	insertParent { arg newParent;
+		var oldParent, newTopParent;
+		oldParent = parent;
+		newTopParent = newParent.topParent;
+		parent = newParent;
+		newTopParent.parent = oldParent;
+	}
+
 	
 	embedInStream { arg event;
 		^this.copy.parent_(event).yield;
