@@ -106,7 +106,7 @@ NodeProxy : AbstractFunction {
 	
 	source_ { arg argObj; this.setObj(argObj, true) }
 	
-	setObj { arg argObj, send=false, freeLast=true, clock; 		
+	setObj { arg argObj, send=false, freeLast=true, clock, onCompletion; 		
 		synthDef = nil;
 		
 		if(argObj.notNil,{
@@ -118,7 +118,7 @@ NodeProxy : AbstractFunction {
 				{
 					synthDef.writeDefFile;
 					if(send, 
-						{ this.sendToServer(freeLast, false, nil, clock) },
+						{ this.sendToServer(freeLast, false, nil, clock, onCompletion) },
 						{ this.updateSynthDef } //only load def. maybe we are on server already? 
 					);
 			})
@@ -181,7 +181,7 @@ NodeProxy : AbstractFunction {
 			
 	// server communications, updating
 	
-	sendToServer { arg freeLast=true, loaded=false, extraArgs, clock;
+	sendToServer { arg freeLast=true, loaded=false, extraArgs, clock, onCompletion;
 		var cmd, resp;
 		if( synthDef.notNil and: { server.serverRunning }, {
 				cmd = List.new;
@@ -189,20 +189,24 @@ NodeProxy : AbstractFunction {
 				if(loaded.not, { 
 					this.updateSynthDef;
 					resp = OSCresponder(server.addr, '/done', {
-						this.schedSendOSC(cmd, clock);
+						this.schedSendOSC(cmd, clock, onCompletion);
 						resp.remove;
 					}).add
 				}, { 
-						this.schedSendOSC(cmd, clock)
+						this.schedSendOSC(cmd, clock, onCompletion)
 				});
 		});
 	}
 	
-	schedSendOSC { arg cmd, clock;
+	schedSendOSC { arg cmd, clock, onCompletion;
 					if(clock.notNil, {
-						clock.sched(0, { server.sendCmdList(cmd) })
+						clock.sched(0, { 
+							server.sendCmdList(cmd); 
+							onCompletion.value(this) 
+						})
 					}, {
-						server.sendCmdList(cmd)
+						server.sendCmdList(cmd); 
+						onCompletion.value(this)
 					})
 	}
 	
