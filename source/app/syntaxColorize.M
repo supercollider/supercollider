@@ -138,6 +138,8 @@ void SyntaxColorize(NSTextView* textView)
         range = NSMakeRange(textpos, textlen - textpos);
         [textView setTextColor: black range: range];
 	
+	bool bracket = false;
+
 	for (;;) {
 		yylen = 0;
 		c = input();
@@ -145,7 +147,12 @@ void SyntaxColorize(NSTextView* textView)
 		else if (c==' ' || c=='\t' || c=='\v' || c=='\f' || c=='\n' || c=='\r') {
 			continue;
 		}
-		else if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_') goto ident;
+		
+		if (c == '|' && bracket) goto arglist;
+		if (c == '{') { bracket = true; continue; }
+		bracket = false;
+		
+		if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_') goto ident;
 		else if (c == '\\') goto symbol1;
 		else if (c == '\'') goto symbol3;
 		else if (c == '"') goto string1;
@@ -290,6 +297,15 @@ void SyntaxColorize(NSTextView* textView)
 				continue;
 			}
 		}
+	arglist:
+		startrun = textpos-1;
+		do {
+			c = input0(); 
+		} while (c != '|' && c != 0);
+		endrun = textpos;
+                range = NSMakeRange(startrun, endrun - startrun);
+                [textView setTextColor: darkBlue range: range];
+		continue;
 	comment1:	/* comment -- to end of line */
 		startrun = textpos-2;
 		do {
