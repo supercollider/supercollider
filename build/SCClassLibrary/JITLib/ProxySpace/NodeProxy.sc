@@ -919,11 +919,7 @@ NodeProxy : BusPlug {
 		if(bus.notNil && this.isPlaying, { group.freeAll; bus.env(env) },
 		{ "not playing".inform });
 	}
-	
-	setBus { arg ... values; //does work only when no node is playing
-		if(bus.notNil) { bus.set(*values) };
-	}
-	
+		
 	gateAt { arg key, level=1.0, dur=1.0;
 		var oldLevel;
 		oldLevel = nodeMap.at(key).value; // revisit: maybe simply set group?
@@ -944,41 +940,30 @@ NodeProxy : BusPlug {
 	
 	// private
 	performAtControl { arg action, keys, levels=1.0, durs;
-		var ctlBus, bundle, id, setArgs, setBundle;
-		if(bus.notNil && this.isPlaying, {
+		var ctlBus, bundle, id, setArgs, setBundle, ctlIndex;
+		if(this.isPlaying) {
 			durs = durs ? this.fadeTime;
 			id = group.nodeID;
 			keys = keys.asArray; levels = levels.asArray; durs = durs.asArray;
-			
-			keys = keys.select({ arg key, i;
-				var ok;
-				ok = nodeMap.settings.at(key).notNil;
-				if(ok.not, { //set all undefined keys directly to value. this is probably what is expected.
-					this.set(key, levels.wrapAt(i));
-					if(i < levels.size, { levels.removeAt(i) });
-					if(i < durs.size, { durs.removeAt(i) });
-					
-				});
-				ok
-			});
-			
+
 			ctlBus = Bus.alloc('control', server, keys.size);
-			
+			ctlIndex = ctlBus.index;
 			bundle = ["/n_map", id];
-			keys.do({ arg key, i; bundle = bundle.addAll([key, ctlBus.index + i]) });
-			server.sendBundle(server.latency, bundle);
-			
+			keys.do { arg key, i; bundle = bundle.addAll([key, ctlIndex + i]) };
+			server.sendBundle(server.latency, bundle.debug);
+				
 			ctlBus.perform(action, levels, durs);
 			ctlBus.free;
-			
+				
 			setArgs = [keys, levels].flop.flat;
+				// set the node map
 			nodeMap.set(*setArgs);
-			
+				// finally set it to that vealue
 			server.sendBundle(server.latency + durs.maxItem, 
-				 ["/n_map", id] ++ [keys, -1].flop.flat,
-				 ["/n_set", id] ++ setArgs
-			);
-		}, { "not playing".inform });
+					 ["/n_map", id] ++ [keys, -1].flop.flat,
+					 ["/n_set", id] ++ setArgs
+				);
+		} { "not playing".inform };
 	}
 	
 	
