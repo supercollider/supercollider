@@ -20,6 +20,17 @@ OSCBundle {
 	addAll { arg mgs;
 		messages = messages.addAll(mgs)
 	}
+	
+	*eventToBundle { arg event;
+		var res;
+		event.use({ arg e;
+			~finish.value;
+			res = Array.newClear(~argNames.size*2);
+			~argNames.collect({ arg name, i; res.put(2*i,name); res.put(2*i+1,e.at(name)) })
+		});
+		^res
+	}
+	
 	printOn { arg stream;
 		stream << this.class.name << ": " <<< messages;
 	}

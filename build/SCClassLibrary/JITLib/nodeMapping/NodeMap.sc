@@ -4,6 +4,7 @@
 NodeMap {
 	var <>settings;
 	var <bundle, <upToDate=false;
+	var <>setArgs, <>setnArgs, <>mapArgs, <>mapnArgs;
 	
 	*new {
 		^super.new.clear
@@ -11,6 +12,10 @@ NodeMap {
 	
 	controlClass {
 		^NodeMapSetting
+	}
+	
+	clearArgs {
+		setArgs = setnArgs = mapArgs = mapnArgs = nil;
 	}
 	
 	map { arg ... args;
@@ -91,29 +96,39 @@ NodeMap {
 		^settings.at(key).value
 	}
 	
-	emptyBundle { ^#[[15, nil],[16, nil], [14, nil]].copy } //set, setn, map
-	
-	updateBundle { arg nodeID;
-			
+	settingKeys { 
+		var res;
+		settings.do({ arg item; if(item.value.notNil, { res = res.add(item.key) }) });
+		^res
+	}
+	mappingKeys { 
+		var res;
+		settings.do({ arg item; if(item.bus.notNil, { res = res.add(item.key) }) });
+		^res
+	}
+		
+	updateBundle {
 			if(upToDate.not, {
-				bundle = this.emptyBundle;
-				settings.do({ arg item; item.addToBundle(bundle) });
-				bundle = bundle.reject({ arg item; item.size == 2 }); //remove unused
+				this.clearArgs;
+				settings.do({ arg item; item.updateNodeMap(this) });
 				upToDate = true;
 			});
-			
-			bundle = bundle.collect({ arg item;
-					// nodeID is always second in a synth message
-					item = item.copy.put(1, nodeID);
-			});
-
 	}
 	
-	
+	setMsg  { arg nodeID; ^if(setArgs.notNil, { [15, nodeID] ++ setArgs }, { nil }) }
+	mapMsg  { arg nodeID; ^if(mapArgs.notNil, { [14, nodeID] ++ mapArgs }, { nil }) }
+	setnMsg { arg nodeID; ^if(setnArgs.notNil, { [16, nodeID] ++ setnArgs }, { nil }) }
+	setToBundle { arg bundle, nodeID; if(setArgs.notNil, { bundle.add([15, nodeID] ++ setArgs) }) }
+	setnToBundle { arg bundle, nodeID;if(setnArgs.notNil,{ bundle.add([16, nodeID] ++ setnArgs)}) }
+	mapToBundle { arg bundle, nodeID; if(mapArgs.notNil, { bundle.add([14, nodeID] ++ mapArgs) }) }
+
 	addToBundle { arg inBundle, target;
+			var msgs;
 			target = target.asNodeID;
-			this.updateBundle(target);
-			inBundle.addAll(bundle);
+			this.updateBundle;
+			this.setToBundle(inBundle, target);
+			this.setnToBundle(inBundle, target);
+			this.mapToBundle(inBundle, target);
 	}
 	
 	copy {
@@ -189,7 +204,7 @@ ProxyNodeMap : NodeMap {
 				mapProxy = args.at(2*i+1);
 				ok = mapProxy.initBus(\control, key.size);
 				if(ok, {
-					if(playing && mapProxy.isPlaying.not, { mapProxy.wakeUp;  });
+					if(playing, { mapProxy.wakeUp;  });
 					min(key.size, mapProxy.numChannels ? 1).do({ arg chan;
 						var theKey;
 						theKey = key.at(chan);

@@ -4,21 +4,21 @@ NodeMapSetting {
 	*new { arg key, value, bus;
 		^super.newCopyArgs(key, value, bus)
 	}
-	//assumes order of bundles: [[set, setn, map]
-	addToBundle { arg bundle;
+		
+	updateNodeMap { arg nodeMap;
 		if(bus.notNil, {
-			this.addBusToBundle(bundle)
+			this.updateBusToNodeMap(nodeMap);
 		}, {
 			if(value.isSequenceableCollection, {
-				bundle[1] = bundle[1].addAll([key, value.size]++value)
+				nodeMap.setnArgs = nodeMap.setnArgs.addAll([key, value.size]++value)
 			}, {
-				bundle[0] = bundle[0].addAll([key, value])
+				nodeMap.setArgs = nodeMap.setArgs.addAll([key, value])
 			})
 		})
 	}
 	
-	addBusToBundle { arg bundle, nodeID;
-		bundle[2] = bundle[2].addAll([key, bus])
+	updateBusToNodeMap { arg nodeMap;
+		nodeMap.mapArgs = nodeMap.mapArgs.addAll([key, bus]);
 	}
 	
 	copy {
@@ -26,19 +26,26 @@ NodeMapSetting {
 	}
 	
 	isEmpty { ^value.isNil && bus.isNil }
+	
+	storeArgs { ^[value, bus] }
+
+	printOn { arg stream;
+		stream << this.storeArgs
+	}
 }
 
 
 ProxyNodeMapSetting : NodeMapSetting {
 	var <>channelOffset=0, <>lag;
 	
-	addBusToBundle { arg bundle;
-		if(bus.index.notNil, {
-			bundle[2] = bundle[2].addAll([ key, bus.index + channelOffset])
-		})
+	
+	updateBusToNodeMap { arg nodeMap;
+		nodeMap.mapArgs = nodeMap.mapArgs.addAll([key, bus.index +  channelOffset]);
 	}
 	isEmpty {
 		^lag.isNil and: { super.isEmpty }
 	}
+	storeArgs { ^[value, bus, channelOffset, lag] }
+
 
 }
