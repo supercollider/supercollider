@@ -19,7 +19,7 @@
 //		^this.primitiveFailed
 //	}
 //}
-
+/*
 HasSubViews
 {
 	var <>pen, <>items, <>enabled, <>visible, <>layoutSize;
@@ -505,5 +505,5 @@ WindowLayer : View {
 		});
 	}
 }
-
+*/
 	

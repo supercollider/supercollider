@@ -1,3 +1,12 @@
+/*
+	this is from sc3d5 os9 version.
+	not currently working in sc3 os x
+	
+	Pen asPen etc. not functioning.
+	this is a nice layout system, we should get it working again.
+	-felix
+*/
+/*
 Layout {
 	var <>minWidth, <>maxWidth, <>minHeight, <>maxHeight, <>weight;
 	
@@ -240,4 +249,5 @@ VDivider : VLayout {
 }
 
 
-		
+*/
+

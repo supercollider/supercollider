@@ -7,6 +7,9 @@ Spec {
 		specs = IdentityDictionary.new;
 	}
 	asSpec { ^this }
+	defaultControl {
+		^thisMethod.subclassResponsibility
+	}
 }
 
 ControlSpec : Spec {
