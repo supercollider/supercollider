@@ -75,22 +75,22 @@ Pen {
 		^this.primitiveFailed
 	}
 	
-	*strokeRect { arg rect;
-		_Pen_StrokeRect
-		^this.primitiveFailed
-	}
-	*fillRect { arg rect;
-		_Pen_FillRect
-		^this.primitiveFailed
-	}
-	*strokeOval { arg rect;
-		_Pen_StrokeOval
-		^this.primitiveFailed
-	}
-	*fillOval { arg rect;
-		_Pen_FillOval
-		^this.primitiveFailed
-	}
+//	*strokeRect { arg rect;
+//		_Pen_StrokeRect
+//		^this.primitiveFailed
+//	}
+//	*fillRect { arg rect;
+//		_Pen_FillRect
+//		^this.primitiveFailed
+//	}
+//	*strokeOval { arg rect;
+//		_Pen_StrokeOval
+//		^this.primitiveFailed
+//	}
+//	*fillOval { arg rect;
+//		_Pen_FillOval
+//		^this.primitiveFailed
+//	}
 	
 	*drawAquaButton { arg rect, type=0, down=false, on=false;
 		_Pen_DrawAquaButton
