@@ -196,7 +196,7 @@ BusPlug : AbstractFunction {
 	///// monitoring //////////////
 	
 	
-	play { arg out, numChannels, group, multi=false, vol;  
+	play { arg out, numChannels, group, multi=false, vol, fadeTime;  
 		var ok, homeServer, bundle;
 		
 		homeServer = this.homeServer; // multi client support: monitor only locally
@@ -208,7 +208,7 @@ BusPlug : AbstractFunction {
 		if(monitor.isNil) { monitor = Monitor.new };
 		group = (group ? homeServer).asGroup;
 		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, 
-				group, multi, vol);
+				group, multi, vol, fadeTime);
 		bundle.schedSend(homeServer, this.clock, this.quant)
 		^monitor.group
 	}
