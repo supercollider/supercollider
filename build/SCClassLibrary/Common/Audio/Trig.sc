@@ -89,17 +89,49 @@ ToggleFF : UGen {
 
 
 ZeroCrossing : UGen {
-	
 	*ar { arg in = 0.0;
 		^this.multiNew('audio', in)
 	}
 	*kr { arg in = 0.0;
 		^this.multiNew('control', in)
 	}
+ 	checkInputs { ^this.checkSameRateAsFirstInput }
+}
+
+Timer : UGen {
+	// output is the time between two triggers
+	*ar { arg in = 0.0;
+		^this.multiNew('audio', in)
+	}
+	*kr { arg in = 0.0;
+		^this.multiNew('control', in)
+	}
+ 	checkInputs { ^this.checkSameRateAsFirstInput }
+}
+
+Sweep : UGen {
+	// output sweeps up in value at rate per second
+	// the trigger resets to zero
+	*ar { arg in = 0.0, rate = 1.0;
+		^this.multiNew('audio', in, rate)
+	}
+	*kr { arg in = 0.0, rate = 1.0;
+		^this.multiNew('control', in, rate)
+	}
+ 	checkInputs { ^this.checkSameRateAsFirstInput }
+}
+
+Phasor : UGen {
+	*ar { arg in = 0.0, rate = 1.0, start = 0.0, end = 1.0, resetPos = 0.0;
+		^this.multiNew('audio', in, rate, start, end, resetPos)
+	}
+	*kr { arg in = 0.0, rate = 1.0, start = 0.0, end = 1.0, resetPos = 0.0;
+		^this.multiNew('control', in, rate, start, end, resetPos)
+	}
+ 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 PeakFollower : UGen {
-	
 	*ar { arg in = 0.0, decay = 0.999;
 		^this.multiNew('audio', in, decay)
 	}

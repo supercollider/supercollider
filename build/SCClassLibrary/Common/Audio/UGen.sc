@@ -71,6 +71,12 @@ UGen : AbstractFunction {
 	source { ^this }
 	isValidUGenInput { ^true }
 	checkInputs { ^true }
+	checkSameRateAsFirstInput {
+ 		if (rate == 'audio', {
+ 			if (inputs.at(0).rate != 'audio', { ^false });
+ 		});
+ 		^true
+ 	}
 
 	degreeToKey { arg scale, stepsPerOctave=12;
 		^DegreeToKey.kr(scale, this, stepsPerOctave)

@@ -1,38 +1,6 @@
-/*
-	OnePole.ar(in, coef, mul, add) // one pole filter
-	OneZero.ar(in, coef, mul, add) // one zero filter
-	
-	TwoPole.ar(in, freq, radius, mul, add) // two pole filter
-	TwoZero.ar(in, freq, radius, mul, add) // two pole filter
-	
-	Integrator.ar(in, coef, mul, add) // integrator
-	
-	RLPF.ar(in, freq, q, mul, add) // 2nd order Resonant LowPass Filter
-	RHPF.ar(in, freq, q, mul, add) // 2nd order Resonant HighPass Filter
-
-	LPF.ar(in, freq, mul, add) // 2nd order butterworth LowPass Filter
-	HPF.ar(in, freq, mul, add) // 2nd order butterworth HighPass Filter
-	BPF.ar(in, freq, bw, mul, add) // 2nd order butterworth BandPass Filter
-	BRF.ar(in, freq, bw, mul, add) // 2nd order butterworth Band Reject Filter
-	
-	LPZ1.ar(in, mul, add) // two point sum
-	HPZ1.ar(in, mul, add) // two point difference
-	Slope.ar(in, mul, add) // instantaneous slew rate
-	
-	LPZ2.ar(in, mul, add) // special case two zero lowpass filter. impulse resp: 1 2 1
-	HPZ2.ar(in, mul, add) // special case two zero highpass filter. impulse resp: 1 -2 1
-	BPZ2.ar(in, mul, add) // special case two zero midpass filter. impulse resp: 1 0 1
-	BRZ2.ar(in, mul, add) // special case two zero midcut filter. impulse resp: 1 0 -1
-	
-*/
 
 Filter : UGen {
- 	checkInputs {
- 		if (rate == 'audio', {
- 			if (inputs.at(0).rate != 'audio', { ^false });
- 		});
- 		^true
- 	}
+ 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 Resonz : Filter {
@@ -288,16 +256,26 @@ Formlet : Filter {
 	}
 }
 
-//exception in GrafDef_Load: UGen 'EndThresh' not installed.
-//EndThresh : Filter {
-//
-//	*ar { arg in = 0.0, amp = 0.00001, time = 0.2;
-//		^this.multiNew('audio', in, amp, time)
-//	}
-//	*kr { arg in = 0.0, amp = 0.00001, time = 0.2;
-//		^this.multiNew('control', in, amp, time)
-//	}
-//}
+// the doneAction arg lets you cause the EnvGen to stop or end the 
+// synth without having to use a PauseSelfWhenDone or FreeSelfWhenDone ugen. 
+// It is more efficient to use a doneAction.
+// doneAction = 0   do nothing when the envelope has ended.
+// doneAction = 1   pause the synth running, it is still resident.
+// doneAction = 2   remove the synth and deallocate it.
+// doneAction = 3   remove and deallocate both this synth and the preceeding node.
+// doneAction = 4   remove and deallocate both this synth and the following node.
+// doneAction = 5   remove and deallocate this synth and free all children in the preceeding group (if it is a group).
+// doneAction = 6   remove and deallocate this synth and free all children in the following group (if it is a group).
+
+DetectSilence : Filter {
+
+	*ar { arg in = 0.0, amp = 0.00001, time = 0.2, doneAction = 0;
+		^this.multiNew('audio', in, amp, time)
+	}
+	*kr { arg in = 0.0, amp = 0.00001, time = 0.2, doneAction = 0;
+		^this.multiNew('control', in, amp, time)
+	}
+}
 
 //exception in GrafDef_Load: UGen 'FlagNaN' not installed.
 //FlagNaN : Filter {
