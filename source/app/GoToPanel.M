@@ -98,7 +98,7 @@ if (![NSBundle loadNibNamed:@"GoToLinePanel" owner:self]){
 - (void) getAndDisplayCurrentLine {
     NSTextView *localTextView = [self textObjectToSelectIn];
 	NSRange range = [localTextView selectedRange];
-	unsigned select = range.location;
+	unsigned select = range.location + 1;
 	if(!select) select = 0;
     NSLayoutManager *layoutManager = [localTextView layoutManager];
     unsigned numberOfLines, index, numberOfGlyphs = [layoutManager numberOfGlyphs];
