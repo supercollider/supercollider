@@ -78,7 +78,6 @@ audio feedback modulation:\
 		\cf2 var\cf0  input, sound;\
 			input = \cf2 InFeedback.ar(\cf0 in, 1);\
 			sound = SinOsc.ar(input * 1300 + 300, 0, 0.4);\cf4 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 			\cf2 Out\cf0 .ar(out, sound);\
 \
 	\}).play;\
@@ -100,16 +99,18 @@ audio feedback modulation:\
 		\cf2 Out\cf0 .ar(out, \cf2 SinOsc\cf0 .ar(freq, 0, 0.1))\
 	\}).send(s);\
 	)\
-\
-	\cf4 // read from bus 10 play to bus 0 (silent)\cf0 \
-	a = \cf2 Synth\cf0 (\cf3 "help-InFeedback"\cf0 ,[\cf5 \\in\cf0 , 10, \cf5 \\out\cf0 , 0]);\
-\
-	\cf4 // now play a synth after this one, playing to bus 10\cf0 \
-	b = \cf2 Synth\cf0 .after(a, \cf3 "help-SinOsc"\cf0 , [\cf5 \\out\cf0 , 10]);\
 	\
-	\cf4 // add another synth before a which also writes to 10\cf0 \
+	n = s.options.firstPrivateBus;\
+\
+	\cf4 // read from bus n play to bus 0 (silent)\cf0 \
+	a = \cf2 Synth\cf0 (\cf3 "help-InFeedback"\cf0 ,[\cf5 \\in\cf0 , n, \cf5 \\out\cf0 , 0]);\
+\
+	\cf4 // now play a synth after this one, playing to bus n\cf0 \
+	b = \cf2 Synth\cf0 .after(a, \cf3 "help-SinOsc"\cf0 , [\cf5 \\out\cf0 , n]);\
+	\
+	\cf4 // add another synth before a which also writes to bus n\cf0 \
 	\cf4 // now you can't hear b, as its data is one cycle old, and is overwritten by c\cf0 \
-	c = \cf2 Synth\cf0 .before(a, \cf3 "help-SinOsc"\cf0 , [\cf5 \\out\cf0 , 10, \cf5 \\freq\cf0 , 800]);\
+	c = \cf2 Synth\cf0 .before(a, \cf3 "help-SinOsc"\cf0 , [\cf5 \\out\cf0 , n, \cf5 \\freq\cf0 , 800]);\
 	\
 	\cf4 // free c and you can hear b again\cf0 \
 	c.free;\
