@@ -210,7 +210,6 @@ void SyntaxColorize(NSTextView* textView)
 					|| streq("thisMethod",yytext)
 					|| streq("thisFunctionDef",yytext)
 					|| streq("thisFunction",yytext)
-					|| streq("thisGroup",yytext)
 			) {
                                 [textView setTextColor: darkBlue range: range];
                         }
