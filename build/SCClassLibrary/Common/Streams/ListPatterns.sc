@@ -2,7 +2,9 @@ ListPattern : Pattern {
 	var <>list, <>repeats=1;
 	
 	*new { arg list, repeats=1;
-		^super.new.list_(list).repeats_(repeats)
+		^super.new.list_(
+			list.isKindOf(SequenceableCollection).if({ list }, { [list] })
+		).repeats_(repeats)
 	}
 	copy {
 		^super.copy.list_(list.copy)
