@@ -24,13 +24,25 @@ can be also useful:\
 \
 storing command settings:\cf2 	\cf0 [\cf2 NodeMap\cf0 ] [bundledCommands]\
 special purpose Groups: 	[\cf2 Ensemble\cf0 ] [\cf2 ModelGroup\cf0 ] [\cf2 AbstractEnsemble\cf0 ]\
-placeholders: 		[\cf2 NodeProxy\cf0 ]\cf2 [RecNodeProx\cf0 y][\cf2 ProxySwitch\cf0 ] \
+placeholders: 		[\cf2 NodeProxy\cf0 ]\cf2 [RecNodeProx\cf0 y][jitlib_efficiency]\
 \
 \
 todo:\
-make interface for different inputs to NodeProxy (e.g. players)\
 test recovering and loading from file\
-maybe allow any object that has a bus to map to a NodeProxy\
+\
+\
+RECENT CHANGES:\
+\
+NodeProxy / ProxySpace:\
+	put now has a different arg order! a.put(0, obj) or a[0] = obj\
+	prependargs were removed for now.\
+	lag can be set by name a.lag(\\freq, 1)\
+	added granular / xtexture functionality: gspawner / spawner\
+	a shortcut was added to efficiently read from another proxy: a.read(b) or a.read([b, c])\
+\
+	a.play now does not create multiple synths if evaluated repeatedly (unless multi: true)\
+	lazy init works now.\
+\
 \
 _____________________________________\
 for suggestions / comments contact me\

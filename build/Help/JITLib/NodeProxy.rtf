@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fnil\fcharset77 Futura-Medium;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
-\f3\fswiss\fcharset77 Helvetica;}
+\f3\fswiss\fcharset77 Helvetica;\f4\fnil\fcharset77 LucidaGrande;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
-\red96\green96\blue96;}
+\red191\green0\blue0;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs36 \cf0 NodeProxy
@@ -23,7 +23,10 @@
 is something playing on a server that writes to a limited number of busses.\
 (this can be for example a synth or an event stream). The rate and number\
 of channels is determined eithe when the instance is created (.control/.audio) \
-or by lazy initialisation from the first source.
+or by lazy initialisation from the first source.\
+
+\f3 see also: [ProxySpace][
+\f4 jitlib_efficiency]
 \f3 \
 \
 
@@ -61,17 +64,21 @@ ___________________________________________________\
 \f1\b \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \ulnone \
-	play(index, numChannels)\
+	play(index, numChannels, group, multi)\
 		
 \f3\b0 play output on specified bus index (default: public busses)\
-		this works like a monitor.
+		this works like a monitor.\
+		if multi is set to true it can create multiple monitors 
 \f1\b \
 	stop\
 		
-\f3\b0 stop to play out public channels (private channels keep playing)\
+\f3\b0 stop to play out public channels (private channels keep playing as others might listen still)\
 		this stop the monitoring. to stop the objects playing, use 
-\f1\b free
-\f3\b0 \
+\f1\b free, release\
+	\
+	releaseAndStop\
+		
+\f3\b0 releases the synths and stops playback\
 		
 \f1\b \
 	ar(numChannels)\
@@ -80,7 +87,11 @@ ___________________________________________________\
 		
 \f3\b0 return a link to my output, which is limited by [numChannels]\
 		causes an uninitialized proxy to create a matching bus.\
-		presently ar defaults to stereo, kr to mono.\
+	\
+	normally ar defaults to stereo, kr to mono. this can be set in the classvars:\
+	
+\f1\b defaultNumAudio, defaultNumControl
+\f3\b0 \
 	
 \f1\b \ul \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -99,7 +110,7 @@ ___________________________________________________\
 			if you supply a gate, the nodeProxy will assume doneAction 2 and fade out].\
 		
 \f1\b \
-	add(anObject, channelOffset)\
+	add(anObject, channelOffset, extraArgs)\
 		
 \f3\b0 play a new synth, add it to the present ones\
 	\
@@ -114,6 +125,26 @@ ___________________________________________________\
 \f3\b0 remove the last synth and its player definition
 \f1\b \
 	\
+	put(index, anObject, channelOffset, extraArgs)\
+		
+\f3\b0 set the source by index. \
+			index:	where the object should be placed in the internal  order. if 
+\f1\b -1
+\f3\b0 , all objects are freed\
+			anObject:	 can be a Function, an Instr, any valid UGen input\
+						a pattern can be used if it returns an EventStream.\
+			channelOffset: 	using a multichannel setup it can be useful to set this.\
+							when the objects numChannels is smaller than the proxy \
+			extraArgs: 	extra arguments that can be sent with the object directly (not cached)\
+			\
+
+\f1\b 	put 
+\f3\b0 can be used as array indexing: 
+\f1\b a[0]
+\f3\b0  = \{ SinOsc.ar \}\
+	one can put an object at any index, only the order of indices is relevant.\
+	if the index equals an existing index, the object at this index is replaced.
+\f1\b \
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -167,6 +198,16 @@ ___________________________________________________\
 \f1\b xsetn()\
 		
 \f3\b0 untested\
+	\
+	
+\f1\b lag(key, val, ...)	
+\f3\b0 \
+		set the lag values of these args\
+	\
+	
+\f1\b unlag(key, key1, ...)
+\f3\b0 	\
+		remove the lag values of thise args\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -188,7 +229,7 @@ ___________________________________________________\
 		
 \f3\b0 gate my bus to the level value for dur time\
 		\
-	\cf2 //does not work not yet !\cf0 \
+	\cf2 //do not work properly yet !\cf0 \
 	
 \f1\b lineAt(key, value, dur)\
 		
@@ -224,31 +265,21 @@ ___________________________________________________\
 			normally this is not needed.
 \f1\b \
 	\
-	send(argList, index)\
+	send(argList, index, freeLast)\
 		
 \f3\b0 send a new synth without releasing the old one.\
 		the argument list is applied to the synth only.\
+		freeLast: if to free the last synth at that index\
 		\
 	
-\f1\b sendAll(argList)\
+\f1\b sendAll(argList, freeLast)\
 		
 \f3\b0 send all synths without releasing the old one.\
-		the argument list is applied to all synths.
+		the argument list is applied to all synths.\
+		freeLast: if to free present synths
 \f1\b \
 	\
-	put(anObject, channelOffset, index, freeAllFlag)\
-		
-\f3\b0 set the source. \
-			anObject:	 can be a Function, an Instr, any valid UGen input\
-						a pattern can be used if it returns an EventStream.\
-			channelOffset: 	using a multichannel setup it can be useful to set this.\
-							when the objects numChannels is smaller than the proxy \
-			freeAllFlag: 	replace current synth or not - default:true\
-						if false, add the new synth to the ones playing\
-			\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\b \cf0 	
+	
 \f3\b0 \
 			
 \f1\b \
@@ -287,10 +318,8 @@ ___________________________________________________\
 \f1\b clock_(aClock)
 \f3\b0 \
 		use a tempo clock for scheduling beat accurate\
-	\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\b \cf0 	still experimental: lags, prepends\
+	
+\f1\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\b0 \cf0 	\
@@ -377,12 +406,12 @@ a.set(\cf4 \\f\cf0 , rrand(1500, 700));\
 a.xset(\cf4 \\f\cf0 , rrand(1500, 700)); \cf2 //crossfaded setting\cf0 \
 a.source = \{ \cf3 arg\cf0  f=400; \cf3 RLPF\cf0 .ar(\cf3 Pulse\cf0 .ar(f * [1,1.02] * 0.05, 0.5, 0.2), f * 0.58, 0.2) \};\
 \
-\cf2 //control lags: this is set explicitly for now (this might change!)\
+\cf2 //control lags\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 a.fadeTime = 0.01;\
-a.lags = [0.5]; \cf2 //for now argument lags can be set like this\cf0 \
-a.set(\cf4 \\f\cf0 , rrand(1500, 700));\
-a.lags = #[];\
+a.lag(\\f, 0.5); \cf5 //the objects are built again internally and sent to the server.\cf2 \
+\cf0 a.set(\cf4 \\f\cf0 , rrand(1500, 700));\
+a.unlag(\\f);\
 a.set(\cf4 \\f\cf0 , rrand(1500, 700));\
 a.fadeTime = 1.0;\
 \
@@ -433,7 +462,7 @@ a.fadeToMap(n);\
 n = a.nodeMap.copy;\
 n.set(\cf4 \\f\cf0 , 400);\
 a.fadeTime = 1.0;\
-a.fadeToMap(n, [\cf4 \\f\cf0 ]); \cf2 //linear interpolation to new map\cf0 \
+a.fadeToMap(n, [\cf4 \\f\cf0 ]); \cf2 //linear interpolation to new map: experimental\cf0 \
 a.map(\cf4 \\f\cf0 , c); \cf2 //restore mapping\
 \
 \
@@ -457,23 +486,9 @@ a.stop;\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //prepend args: similarly to lags, this might change.\
-//note that you have to take care for the prependargs, as some ugens\
-//don't accept certain inputs. the prepend args overwrite the args one\
-//by one, the rest is controls. this scheme will probably change\
-\
+\cf2 //prepend args: removed.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 a.clear; \cf2 //make sure there is no other functions in there\cf0 \
-a.play;\
-a.fadeTime = 1;\
-a.prepend = [`[[300, 600, 344], \cf3 nil\cf0 , \cf3 nil\cf0 ]];\
-a.source = \{ arg specs; Klang.ar(specs) * 0.1 \};\
-\
-a.prepend = [`[[100, 700, 344], nil, nil]];\
-a.prepend = [`[[400, 710, 324], nil, nil]];\
-a.prepend = [`[[400, 710, 324]*0.7, nil, nil]];\
-a.clearPrepend;\
-\
+\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -482,10 +497,10 @@ a.clearPrepend;\
 \
 a = \cf3 NodeProxy\cf0 .audio(s,2);\
 a.play;\
-a.put(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(5, 0, 0.1), 1260) \}, 0, 0);\
-a.put(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(5.3, 0, 0.1), 320) \}, 1, 1);\
-a.put(\{ \cf3 Ringz\cf0 .ar(\cf3 Dust\cf0 .ar([1,1]*15.3,  0.1), 720) \}, 0, 1);\
-a.put(\{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(5.3, 0, 0.1), 320) \}, 1, 1);\
+a[0] = \{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(5, 0, 0.1), 1260) \};\
+a.put(1, \{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(5.3, 0, 0.1), 320) \}, 1);\
+a.put(0, \{ \cf3 Ringz\cf0 .ar(\cf3 Dust\cf0 .ar([1,1]*15.3,  0.1), 720) \}, 1);\
+a.put(1, \{ \cf3 Ringz\cf0 .ar(\cf3 Impulse\cf0 .ar(5.3, 0, 0.1), 320) \}, 1);\
 a.release;\
 \
 
@@ -521,9 +536,9 @@ a.clear;\
 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 //must have 'out'or 'i_out' argument to work properly\cf0 \
+\cf2 //must have 'out' or 'i_out' argument to work properly\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 SynthDef\cf0 (\cf5 "who"\cf0 , \{ \cf3 arg\cf0  freq, gate=1, out=0, ffreq=800; \
+\cf3 SynthDef\cf0 (\cf6 "who"\cf0 , \{ \cf3 arg\cf0  freq, gate=1, out=0, ffreq=800; \
 	var env;\
 	env = Env.asr(0.01, 0.1, 0.5);\
 	\cf3 Out\cf0 .ar(out, Pan2.ar(\
@@ -541,7 +556,7 @@ b = \cf3 NodeProxy\cf0 .audio(s,2);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //play the pattern silently in b\cf0 \
-b.source = \cf3 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\\cf5 who\cf0 , \cf4 \\freq\cf0 , 600, \\legato, 0.2);\
+b.source = \cf3 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\\cf6 who\cf0 , \cf4 \\freq\cf0 , 600, \\legato, 0.2);\
 \
 \cf2 //play b out through a:\cf0 \
 a.source = b;\
@@ -584,7 +599,7 @@ b.add(\{ \cf3 WhiteNoise\cf0 .ar([0.01,0.01]) \}); \
 b.add(\{ \cf3 arg\cf0  ffreq=800; \cf3 Resonz\cf0 .ar(\cf3 WhiteNoise\cf0 .ar([1,1]), ffreq, 0.05) \}); \
 \
 \
-b.map(\cf4 \\ffreq\cf0 , c); \cf2 //xmap doesn't work yet\cf0 \
+b.map(\cf4 \\ffreq\cf0 , c);\
 b.removeLast;\
 b.removeLast;\
 a.source = \{  b.ar * \cf3 WhiteNoise.ar(0.1, 1)\cf0   \}; \
