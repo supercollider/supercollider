@@ -53,7 +53,7 @@ RecNodeProxy : NodeProxy {
 					server.nextNodeID, 1, recGroup.nodeID,
 					\i_in, bus.index, \i_bufNum, buffer.bufnum
 				]);
-		if(paused, { recGroup.msgToBundle(bundle, "/n_run", 0); "recording (paused)".inform }); 
+		if(paused, { bundle.add(["/n_run", recGroup.nodeID, 0]); "recording (paused)".inform }); 
 		bundle.schedSend(server);
 	}
 	
