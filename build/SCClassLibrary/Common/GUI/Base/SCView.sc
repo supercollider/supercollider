@@ -519,7 +519,11 @@ SCButton : SCControlView {
 	valueAction_ { arg val;
 		this.setPropertyWithAction(\value, val);
 	}	
-
+	
+	doAction { arg modifiers;
+		action.value(this, modifiers);
+	}
+	
 	defaultKeyDownAction { arg char, modifiers, unicode;
 		if (char == $ , { this.valueAction = this.value + 1; ^this });
 		if (char == $\r, { this.valueAction = this.value + 1; ^this });
