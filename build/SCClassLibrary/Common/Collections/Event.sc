@@ -30,7 +30,7 @@ Event : Environment {
 	play {
 		this.use {
 			this[\play].value;	
-		};	
+		};
 		^this.delta
 	}
 	
@@ -161,26 +161,27 @@ Event : Environment {
 			
 						desc = ~synthLib.synthDescs[~instrument.asSymbol];
 						if (desc.isNil) { 
-							error("instrument " ++ ~instrument ++ " not found."); ^nil 
-						};
-			
-						bndl = desc.msgFunc.valueEnvir.flop;
-						bndl.do {|msgArgs, i|
-							var id, latency;
-							
-							latency = i * strum + lag;
-							id = server.nextNodeID;
-							
-							//send the note on bundle
-							server.sendBundle(lag, [9, desc.name, id, addAction, group] ++ msgArgs); 
-									
-							if (desc.hasGate) {
-								// send note off bundle.
-								thisThread.clock.sched(sustain) { 
-									server.sendBundle(lag, [15, id, \gate, 0]); //15 == n_set
+							error("instrument " ++ ~instrument ++ " not found."); 
+							~delta = ~dur = nil; // force stop
+						}{
+							bndl = desc.msgFunc.valueEnvir.flop;
+							bndl.do {|msgArgs, i|
+								var id, latency;
+								
+								latency = i * strum + lag;
+								id = server.nextNodeID;
+								
+								//send the note on bundle
+								server.sendBundle(lag, [9, desc.name, id, addAction, group] ++ msgArgs); 
+										
+								if (desc.hasGate) {
+									// send note off bundle.
+									thisThread.clock.sched(sustain) { 
+										server.sendBundle(lag, [15, id, \gate, 0]); //15 == n_set
+									};
 								};
-							};
-						};
+							}
+						}
 					};
 				}
 			).putAll(
@@ -210,15 +211,18 @@ Event : Environment {
 						strum = ~strum;
 			
 						desc = ~synthLib.synthDescs[~instrument.asSymbol];
-						if (desc.isNil) { error("instrument " ++ ~instrument ++ " not found."); ^nil };
-		
-						bndl = ([15, ~id] ++ desc.msgFunc.valueEnvir).flop;
-						bndl.do {|msgArgs, i|
-							var latency;
-							
-							latency = i * strum + lag;
-							
-							server.sendBundle(lag, msgArgs); 
+						if (desc.isNil) { 
+							error("instrument " ++ ~instrument ++ " not found."); 
+							~delta = ~dur = nil; // force stop
+						}{
+							bndl = ([15, ~id] ++ desc.msgFunc.valueEnvir).flop;
+							bndl.do {|msgArgs, i|
+								var latency;
+								
+								latency = i * strum + lag;
+								
+								server.sendBundle(lag, msgArgs); 
+							};
 						};
 					};
 				}
