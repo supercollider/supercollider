@@ -8,7 +8,7 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 \
-BinaryOpUGen\
+BinaryOperator\
 \
 wrap2(a, b)\
 a wrap2: b\
@@ -17,9 +17,8 @@ a.wrap2(b)\
 
 \f1\b0 \cf0 \
 wraps input wave to +/- b\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
+\f2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs18 \cf0 \{ \cf2 FSinOsc\cf0 .ar(1000).wrap2(\cf2 Line\cf0 .kr(0,1.01,8)) \}.play;
