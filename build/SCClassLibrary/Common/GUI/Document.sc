@@ -240,7 +240,7 @@ Document {
 		};
 	}
 	openWikiPage {
-		var selectedText, filename, found = false;
+		var selectedText, filename;
 		var extensions = #[".rtf", ".sc", ".txt", ""];
 		selectedText = this.selectedText;
 
