@@ -166,7 +166,7 @@ Stream : AbstractFunction {
 		^EventStreamPlayer(this, protoEvent);
 	}
 	
-	play { arg clock, quant=1.0;
+	play { arg clock, quant=0.0;
 		clock = clock ? TempoClock.default;
 		clock.play(this, quant);
 	}
