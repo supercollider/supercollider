@@ -122,35 +122,20 @@ Event : Environment {
 			~player = NotePlayer.new;
 			
 			~msgFunc = { arg id, freq;
-				[[9, ~instrument, id, 1, ~group, 
-					\i_out, ~out, \freq, freq, \amp, ~amp, \pan, ~pan]];
+				[[9, ~instrument, id, 0, ~group, 
+					\out, ~out, \freq, freq, \amp, ~amp, \pan, ~pan]];
 			};
 			
 			~server = Server.local;
 		});
 		
-//		SynthDef(\default, { arg i_out=0, freq=440, amp=0.1, pan=0, gate=1;
-//			var z;
-//			z = LPF.ar(LFSaw.ar(freq) * Linen.kr(gate, 0.01, amp, 0.3, 2), freq * 12);
-//			Out.ar(i_out, Pan2.ar(z, pan));
-//		}).writeDefFile;
-//
-//		SynthDef(\default, { arg i_out=0, freq=440, amp=0.1, pan=0, gate=1;
-//			var z;
-//			z = RLPF.ar(
-//				Mix.ar(LFPulse.ar(freq + [0,Rand(-0.2,0.2),Rand(-0.2,0.2)], 0.1)),
-//				XLine.kr(Rand(4000,5000), Rand(2500,3200), 1),
-//				0.2) * Linen.kr(gate, 0.01, amp * 0.7, 0.3, 2);
-//			Out.ar(i_out, Pan2.ar(z, pan));
-//		}).writeDefFile;
-		
-		SynthDef(\default, { arg i_out=0, freq=440, amp=0.1, pan=0, gate=1;
+		SynthDef(\default, { arg out=0, freq=440, amp=0.1, pan=0, gate=1;
 			var z;
 			z = LPF.ar(
 				Mix.ar(VarSaw.ar(freq + [0, Rand(-0.4,0.0), Rand(0.0,0.4)], 0, 0.3)),
 				XLine.kr(Rand(4000,5000), Rand(2500,3200), 1)) * Linen.kr(gate, 0.01, amp * 0.7, 0.3, 2);
-			Out.ar(i_out, Pan2.ar(z, pan));
-		}).writeDefFile;
+			Out.ar(out, Pan2.ar(z, pan));
+		}, [\ir]).writeDefFile;
 
 	}
 }
