@@ -243,6 +243,7 @@ Document {
 		var selectedText, filename;
 		var extensions = #[".rtf", ".sc", ".txt", ""];
 		selectedText = this.selectedText;
+		this.selectRange(this.selectionStart, 0);
 
 		case { selectedText[0] == $* }
 		{ 
@@ -253,7 +254,6 @@ Document {
 				if (File.exists(filename)) {
 					// open existing wiki page
 					filename.load;
-					this.selectRange(this.selectionStart, 0);
 					^this
 				}
 			};
@@ -275,7 +275,6 @@ Document {
 				if (File.exists(filename)) {
 					// open existing wiki page
 					this.class.open(filename);
-					this.selectRange(this.selectionStart, 0);
 					^this
 				}
 			};
@@ -283,7 +282,6 @@ Document {
 			filename = this.class.standardizePath(selectedText ++ ".rtf");
 			this.makeWikiPage(filename, selectedText);
 		};
-		this.selectRange(this.selectionStart, 0);
 	}
 		
 	mouseDown {		
