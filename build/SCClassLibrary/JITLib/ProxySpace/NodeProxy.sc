@@ -5,7 +5,9 @@ NodeProxy : AbstractFunction {
 	var <objects, <parents; 			//playing templates
 	
 	var <nodeMap, <>lags, <>prepend, <>clock; //lags might go into function annotation later
-	var <>freeSelf=true, <loaded=false;		
+	var <>freeSelf=true, <loaded=false;	//synthDef information
+	var <playGroup;					//the group that has the user synth
+	
 	classvar <>buildProxy;
 	
 	*new { arg server;
@@ -31,6 +33,7 @@ NodeProxy : AbstractFunction {
 		objects = Array.new;
 		this.initParents;
 		this.free;
+		this.stop;
 		if(outbus.notNil, { outbus.free });
 		outbus = nil;
 		group = nil;
@@ -45,7 +48,7 @@ NodeProxy : AbstractFunction {
 		var alloc, busIndex;
 		alloc = server.audioBusAllocator.alloc(numChannels);
 		if(alloc.isNil,{ "no channels left".error ^nil });
-		outbus = Bus.new(rate, alloc + 32, numChannels, server);
+		outbus = Bus.new(rate, alloc, numChannels, server);
 		busIndex = outbus.index;
 		//set both, because patterns may have both.
 		nodeMap.set(\out, busIndex, \i_out, busIndex); 
@@ -74,13 +77,16 @@ NodeProxy : AbstractFunction {
 		^if(something.rate == 'audio', {this.ar(n)}, {this.kr(n)})  
 	}
 	
-		
+	stop {
+		playGroup.free;
+		playGroup = nil;
+	}	
 		
 	play { arg busIndex=0, nChan;
-		var playGroup, bundle, divider, checkedAlready;
+		var bundle, divider, checkedAlready;
 		if(server.serverRunning, {
 			bundle = MixedBundle.new;
-			playGroup = Group.newToBundle(bundle, server);
+			if(playGroup.isPlaying.not, { playGroup = Group.newToBundle(bundle, server) });
 			if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
 			nChan = nChan ? this.numChannels;
 			nChan = nChan.min(this.numChannels);
@@ -91,7 +97,7 @@ NodeProxy : AbstractFunction {
 			divider = if(nChan.even, 2, 1);
 			(nChan div: divider).do({ arg i;
 			bundle.add([9, "proxyOut-linkDefAr-"++divider, 
-					server.nextNodeID, 1,playGroup.nodeID,
+					server.nextNodeID, 1, playGroup.nodeID,
 					\i_busOut, busIndex+(i*divider), \i_busIn, outbus.index+(i*divider)]);
 			});
 		
@@ -173,17 +179,23 @@ NodeProxy : AbstractFunction {
 					
 					container.writeDef; //so it is there on server reboot
 					if(server.serverRunning, {
-						container.sendDefToBundle(bundle);
+						container.sendDefToBundle(bundle); //this should go one down later
+						if(this.isPlaying, {
+						
 						if(send, { 
 							if(freeAll, {
 								this.sendToServer(bundle,  nil, onCompletion)
 							}, {
 								this.sendLastToServer(bundle, nil, onCompletion)
-							})
+							});
+							
 						}, { 
 							bundle.sendPrepare(server, server.latency)
 						});
-						loaded = true;
+							loaded = true;
+						});
+							loaded = false;
+						
 				 	}, {
 				 		loaded = false;
 				 	});
@@ -235,7 +247,7 @@ NodeProxy : AbstractFunction {
 	
 	set { arg ... args;
 		nodeMap.performList(\set, args);
-		if(this.isPlaying, { group.performList(\set, args) }, { "not playing".inform });
+		if(this.isPlaying, { group.performList(\set, args) });
 	}
 	//to test
 	setn { arg ... args;
@@ -247,7 +259,9 @@ NodeProxy : AbstractFunction {
 	map { arg key, proxy ... args;
 		args = [key,proxy]++args;
 		nodeMap.mapToProxy(args);
-		if(this.isPlaying, { nodeMap.sendToNode(group) })
+		if(this.isPlaying, { 
+			nodeMap.sendToNode(group);
+		})
 	}
 	
 		
@@ -397,13 +411,7 @@ NodeProxy : AbstractFunction {
 		// todo maybe
 	}
 	
-	loadToBundle { arg bundle;
-		if(loaded == false, {
-			this.sendAllDefsToBundle(bundle);
-			loaded = true; 
-		});
-	}
-	
+		
 	
 	////// private /////
 	
@@ -420,10 +428,10 @@ NodeProxy : AbstractFunction {
 
 
 	getOutput { arg numChannels;
-		var out, n;
+		var out, n, parentPlaying;
 		
-		this.addToParentProxy;
-		this.wakeUp(0.3);
+		parentPlaying = this.addToParentProxy;
+		if(parentPlaying, { this.wakeUp });
 		n = outbus.numChannels;
 		out = if(this.rate === 'audio', 
 				{ InFeedback.ar( outbus.index, n) },
@@ -438,17 +446,18 @@ NodeProxy : AbstractFunction {
 		*/
 		^out	
 	}
-
+	
 	addToParentProxy {
 		var parentProxy;
 		parentProxy = this.class.buildProxy;
 		if(parentProxy.notNil && (parentProxy !== this), { parentProxy.parents.add(this) });
+		^parentProxy.isPlaying;
 	}
 	
 	wakeUpToBundle { arg bundle, checkedAlready; //no need to wait, def is on server
 		if(this.isPlaying.not && checkedAlready.includes(this).not, {
 			checkedAlready.add(this); 
-			//this.loadToBundle(bundle);
+			this.loadToBundle(bundle);
 			this.wakeUpParentsToBundle(bundle, checkedAlready);
 			this.prepareForPlayToBundle(bundle);
 			this.sendAllToBundle(bundle);
@@ -457,22 +466,21 @@ NodeProxy : AbstractFunction {
 	}
 	
 	wakeUpParentsToBundle { arg bundle, checkedAlready;
-			//if(loaded.not, { this.loadAll; });
 			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
 			nodeMap.wakeUpParentsToBundle(bundle, checkedAlready);
 	}
 	
-	wakeUp { arg latency=0.0; //see for load 
+	wakeUp { 
 		var bundle, checkedAlready;
 		bundle = MixedBundle.new;
-		bundle.preparationTime = 0; //synthdefs are on server
+		bundle.preparationTime = if(loaded, { 0 }, { 0.2 }); //synthdefs are on server?
 		checkedAlready = Set.new;
 		this.wakeUpToBundle(bundle, checkedAlready);
 		this.sendBundle(bundle);
 	}
 			
 	
-	sendAllDefsToBundle { arg bundle;
+	loadToBundle { arg bundle;
 		objects.do({ arg item;
 			item.sendDefToBundle(bundle)
 		});
@@ -546,8 +554,10 @@ SharedNodeProxy : NodeProxy {
 			divider = if(nChan.even, 2, 1);
 			(nChan div: divider).do({ arg i;
 			bundle.add([9, "proxyOut-linkDefAr-"++divider, 
-						localServer.nextNodeID, 1,playGroup.nodeID,
-						\i_busOut, busIndex+(i*divider), \i_busIn, outbus.index+(i*divider)]);
+						localServer.nextNodeID, 1, playGroup.nodeID,
+						\i_busOut, 	busIndex+(i*divider), 
+						\i_busIn,	 	outbus.index+(i*divider)
+					]);
 			});
 			
 			
