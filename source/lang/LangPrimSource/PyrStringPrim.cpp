@@ -29,6 +29,7 @@ Primitives for String.
 #include "Hash.h"
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed);
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed)
