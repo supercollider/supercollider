@@ -228,8 +228,12 @@ void Timer_Ctor(Timer *unit);
 void Timer_next_a(Timer *unit, int inNumSamples);
 
 void Sweep_Ctor(Sweep *unit);
-void Sweep_next_k(Sweep *unit, int inNumSamples);
-void Sweep_next_a(Sweep *unit, int inNumSamples);
+void Sweep_next_0k(Sweep *unit, int inNumSamples);
+void Sweep_next_0a(Sweep *unit, int inNumSamples);
+void Sweep_next_kk(Sweep *unit, int inNumSamples);
+void Sweep_next_ka(Sweep *unit, int inNumSamples);
+void Sweep_next_ak(Sweep *unit, int inNumSamples);
+void Sweep_next_aa(Sweep *unit, int inNumSamples);
 
 void Phasor_Ctor(Phasor *unit);
 void Phasor_next_kk(Phasor *unit, int inNumSamples);
@@ -907,21 +911,114 @@ void Timer_next_a(Timer *unit, int inNumSamples)
 
 void Sweep_Ctor(Sweep *unit)
 {
-	if (INRATE(1) == calc_FullRate) {
-		SETCALC(Sweep_next_a);
+	if (INRATE(0) == calc_ScalarRate) {
+		if (INRATE(1) == calc_FullRate) {
+			SETCALC(Sweep_next_0a);
+		} else {
+			SETCALC(Sweep_next_0k);
+		}
+	} else if (INRATE(0) == calc_BufRate) {
+		if (INRATE(1) == calc_FullRate) {
+			SETCALC(Sweep_next_ka);
+		} else {
+			SETCALC(Sweep_next_kk);
+		}
 	} else {
-		SETCALC(Sweep_next_k);
+		if (INRATE(1) == calc_FullRate) {
+			SETCALC(Sweep_next_aa);
+		} else {
+			SETCALC(Sweep_next_ak);
+		}
 	}
 
 	unit->m_previn = ZIN0(0);
 	ZOUT0(0) = unit->mLevel = 0.f;
 }
 
-void Sweep_next_k(Sweep *unit, int inNumSamples)
+// this is a test
+// this is another test
+
+void Sweep_next_0k(Sweep *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float rate = ZIN0(1) * SAMPLEDUR;
+	float level = unit->mLevel;
+	
+	LOOP(inNumSamples,
+		level += rate;
+		ZXP(out) = level;
+	);
+	
+	unit->mLevel = level;
+}
+
+void Sweep_next_0a(Sweep *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *rate = ZIN(1);
+	float level = unit->mLevel;
+	float sampledur = SAMPLEDUR;
+	
+	LOOP(inNumSamples,
+		float zrate = ZXP(rate) * sampledur;
+		level += zrate;
+		ZXP(out) = level;
+	);
+	
+	unit->mLevel = level;
+}
+
+void Sweep_next_kk(Sweep *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float curin = ZIN0(0);
+	float rate = ZIN0(1);
+	float previn = unit->m_previn;
+	float level = unit->mLevel;
+
+	if (previn <= 0.f && curin > 0.f) {
+		float frac = -previn/(curin-previn);
+		level = frac * rate;
+	}
+	
+	LOOP(inNumSamples,
+		level += rate;
+		ZXP(out) = level;
+	);
+	
+	unit->m_previn = curin;
+	unit->mLevel = level;
+}
+
+void Sweep_next_ka(Sweep *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float curin = ZIN0(0);
+	float *rate = ZIN(1);
+	float previn = unit->m_previn;
+	float level = unit->mLevel;
+	float sampledur = SAMPLEDUR;
+
+	if (previn <= 0.f && curin > 0.f) {
+		float frac = -previn/(curin-previn);
+		level = frac * rate[ZOFF] * sampledur;
+	}
+	
+	LOOP(inNumSamples,
+		float zrate = ZXP(rate) * sampledur;
+		level += zrate;
+		ZXP(out) = level;
+	);
+	
+	unit->m_previn = curin;
+	unit->mLevel = level;
+}
+
+void Sweep_next_ak(Sweep *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
-	float rate = ZIN0(1);
+	float rate = ZIN0(1) * SAMPLEDUR;
 	float previn = unit->m_previn;
 	float level = unit->mLevel;
 	
@@ -941,17 +1038,18 @@ void Sweep_next_k(Sweep *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
-void Sweep_next_a(Sweep *unit, int inNumSamples)
+void Sweep_next_aa(Sweep *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 	float *rate = ZIN(1);
 	float previn = unit->m_previn;
 	float level = unit->mLevel;
+	float sampledur = SAMPLEDUR;
 	
 	LOOP(inNumSamples,
 		float curin = ZXP(in);
-		float zrate = *rate++;
+		float zrate = ZXP(rate) * sampledur;
 		if (previn <= 0.f && curin > 0.f) {
 			float frac = -previn/(curin-previn);
 			level = frac * zrate;
