@@ -35,10 +35,28 @@
 		});
 		^false
 	}
-//	*play {
-//		// play the func
-//	}
-//	play {
-//		//if not already playing, play
-//	}
+	*play { arg func;
+		^func.play;
+	}
+	play {
+		//if not already playing, play
+	}
+}
+
+
+
++ RawArray {
+
+	write { arg path;
+		var file;
+		file = File.new(path, "wb");
+		if (file.notNil, {
+			file.write(this);
+			if(file.length < this.size,{
+				die("Write file failed !!!! " ++ path);
+			});
+			file.close;
+		});
+	}
+	
 }
