@@ -124,6 +124,9 @@ Object {
 	dup { arg n = 2;
 		^Array.fill(n, { this.copy });
 	}
+	! { arg n;
+		^this.dup(n)
+	}
 			
 	// evaluation
 	poll { ^this.value }
