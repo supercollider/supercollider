@@ -2261,10 +2261,6 @@ void compilePyrPushKeyArgNode(PyrPushKeyArgNode* node, void *result)
 	//postfl("->compilePyrPushKeyArgNode\n");
 	
 	compilePushConstant((PyrParseNode*)node, &node->selector->slot);
-
-	//index = conjureLiteralSlotIndex((PyrParseNode*)node, gCompilingBlock, &node->selector->slot);
-	
-	//compileOpcode(opPushLiteral, index);
 	
 	COMPILENODE(node->expr, &dummy);
 }
@@ -2345,7 +2341,9 @@ PyrPushLitNode* newPyrPushLitNode(PyrSlotNode* literalSlot, PyrParseNode* litera
 void compilePushConstant(PyrParseNode* node, PyrSlot *slot)
 {
 	int index = conjureConstantIndex(node, gCompilingBlock, slot);
-	if (index < (1<<8)) {
+	if (index < (1<<4)) {
+		compileByte((opPushLiteral << 4) | index);
+	} else if (index < (1<<8)) {
 		compileByte(40);
 		compileByte(index & 0xFF);
 	} else if (index < (1<<16)) {
@@ -2416,19 +2414,12 @@ void compilePyrPushLitNode(PyrPushLitNode* node, void *result)
 			compileByte(index);
 		} else {
 			COMPILENODE(literalObj, &slot);
-			//post("??? : %08X %08X %s\n", slot.utag, slot.ui, slot.uo->classptr->name.us->name);
 			compilePushConstant((PyrParseNode*)literalObj, &slot);
-			//index = conjureLiteralSlotIndex(literalObj, gCompilingBlock, &slot);
-			//compileOpcode(opPushLiteral, index);
 		}
 	} else {
 		slot = node->literalSlot;
 		if (slot.utag == tagInt) {
 			compilePushInt(slot.ui);
-		/*} else if (slot.utag == tagChar 
-			|| slot.utag == tagObj) {
-			index = conjureLiteralSlotIndex((PyrParseNode*)node, gCompilingBlock, &slot);
-			compileOpcode(opPushLiteral, index);*/
 		} else if (SlotEq(&slot, &o_nil)) {
 			compileOpcode(opPushSpecialValue, opsvNil);
 		} else if (SlotEq(&slot, &o_true)) {
@@ -2453,8 +2444,6 @@ void compilePyrPushLitNode(PyrPushLitNode* node, void *result)
 			compilePushConstant((PyrParseNode*)node, &slot);
 		} else {
 			compilePushConstant((PyrParseNode*)node, &slot);
-			//index = conjureLiteralSlotIndex((PyrParseNode*)node, gCompilingBlock, &slot);
-			//compileOpcode(opPushLiteral, index);
 		}
 	}
 }

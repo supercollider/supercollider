@@ -475,7 +475,7 @@ void Interpret(VMGlobals *g)
 #if BCSTAT
 	prevop = op1;
 #endif
-	op1 = *++ip;
+	op1 = ip[1]; ip++;
 #if BCSTAT
 	bcstat[op1]++;
 	bcpair[prevop][op1] ++;
@@ -532,7 +532,7 @@ void Interpret(VMGlobals *g)
 #endif
 	switch (op1) {
 		case 0 : //	push class
-			op2 = *++ip; // get literal index
+			op2 = ip[1]; ip++; // get literal index
 			classobj = g->block->selectors.uo->slots[op2].us->u.classobj;
 			if (classobj) {
 				++sp; SetObject((PyrSlot*)sp, classobj);
@@ -541,21 +541,22 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 1 : // opExtended, opPushInstVar
-			op2 = *++ip; // get inst var index
+			op2 = ip[1]; ip++; // get inst var index
 			*++sp = g->receiver.uo->slots[op2].uf;
 			break;
 		case 2 : // opExtended, opPushTempVar
-			op2 = *++ip; // get temp var level
-			op3 = *++ip; // get temp var index
+			op2 = ip[1]; // get temp var level
+			op3 = ip[2]; // get temp var index
+			ip += 2;
 			for (tframe = g->frame; op2--; tframe = tframe->context.uof) { /* noop */ }
 			*++sp = tframe->vars[-op3].uf;
 			break;
 		case 3 : // opExtended, opPushTempZeroVar
-			op2 = *++ip; // get temp var index
+			op2 = ip[1]; ip++; // get temp var index
 			*++sp = g->frame->vars[-op2].uf;
 			break;
 		case 4 : // opExtended, opPushLiteral
-			op2 = *++ip; // get literal index
+			op2 = ip[1]; ip++; // get literal index
 			// push a block as a closure if it is one
 			slot = g->block->selectors.uo->slots + op2;
 			if (slot->utag == tagObj && slot->uo->classptr == gSpecialClasses[op_class_fundef]->u.classobj) {
@@ -577,13 +578,14 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 5 : // opExtended, opPushClassVar
-			op2 = *++ip; // get class var literal index
-			op3 = *++ip; // get class var index
+			op2 = ip[1]; // get temp var level
+			op3 = ip[2]; // get temp var index
+			ip += 2;
 			classIndex = g->block->selectors.uo->slots[op2].us->u.classobj->classIndex.ui;
 			*++sp = g->classvars[classIndex].uo->slots[op3].uf;
 			break;
 		case 6 :  // opExtended, opPushSpecialValue == push a special class
-			op2 = *++ip; // get class name index
+			op2 = ip[1]; ip++; // get class name index
 			classobj = gSpecialClasses[op2]->u.classobj;
 			if (classobj) {
 				++sp; SetObject((PyrSlot*)sp, classobj);
@@ -592,7 +594,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 7 : // opExtended, opStoreInstVar
-			op2 = *++ip; // get inst var index
+			op2 = ip[1]; ip++; // get inst var index
 			obj = g->receiver.uo;
 			if (obj->obj_flags & obj_immutable) { StoreToImmutable(g); return; }
 			slot = obj->slots + op2;
@@ -600,8 +602,9 @@ void Interpret(VMGlobals *g)
 			g->gc->GCWrite(obj, slot);
 			break;
 		case 8 : // opExtended, opStoreTempVar
-			op2 = *++ip; // get temp var level
-			op3 = *++ip; // get temp var index
+			op2 = ip[1]; // get temp var level
+			op3 = ip[2]; // get temp var index
+			ip += 2;
 			for (tframe = g->frame; op2--; tframe = tframe->context.uof) { /* noop */ }
 			slot = tframe->vars - op3;
 			slot->uf = *sp;
@@ -611,8 +614,9 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 9 : // opExtended, opStoreClassVar
-			op2 = *++ip; // get class var literal index
-			op3 = *++ip; // get class var index
+			op2 = ip[1]; // get class var literal level
+			op3 = ip[2]; // get class var index
+			ip += 2;
 			classobj = g->block->selectors.uo->slots[op2].us->u.classobj;
 			classIndex = classobj->classIndex.ui;
 			obj = g->classvars[classIndex].uo;
@@ -621,9 +625,10 @@ void Interpret(VMGlobals *g)
 			g->gc->GCWrite(obj, slot);
 			break;
 		case 10 : // opExtended, opSendMsg
-			numArgsPushed = *++ip; // get num args
-			numKeyArgsPushed = *++ip; // get num keyword args
-			op3 = *++ip; // get selector index
+			numArgsPushed = ip[1]; // get num args
+			numKeyArgsPushed = ip[2]; // get num keyword args
+			op3 = ip[3]; // get selector index
+			ip += 3;
 			selector = g->block->selectors.uo->slots[op3].us;			
 
 			slot = (PyrSlot*)sp - numArgsPushed + 1;
@@ -631,9 +636,10 @@ void Interpret(VMGlobals *g)
 			goto key_class_lookup;
 
 		case 11 : // opExtended, opSendSuper
-			numArgsPushed = *++ip; // get num args
-			numKeyArgsPushed = *++ip; // get num keyword args
-			op3 = *++ip; // get selector index
+			numArgsPushed = ip[1]; // get num args
+			numKeyArgsPushed = ip[2]; // get num keyword args
+			op3 = ip[3]; // get selector index
+			ip += 3;
 			selector = g->block->selectors.uo->slots[op3].us;
 
 			slot = g->sp - numArgsPushed + 1;
@@ -642,9 +648,10 @@ void Interpret(VMGlobals *g)
 			goto key_msg_lookup;
 
 		case 12 :  // opExtended, opSendSpecialMsg
-			numArgsPushed = *++ip; // get num args
-			numKeyArgsPushed = *++ip; // get num keyword args
-			op3 = *++ip; // get selector index
+			numArgsPushed = ip[1]; // get num args
+			numKeyArgsPushed = ip[2]; // get num keyword args
+			op3 = ip[3]; // get selector index
+			ip += 3;
 			
 			selector = gSpecialSelectors[op3];
 			slot = (PyrSlot*)sp - numArgsPushed + 1;
@@ -652,7 +659,7 @@ void Interpret(VMGlobals *g)
 			goto key_class_lookup;
 			
 		case 13 :  // opExtended, opSendSpecialUnaryArithMsg
-			op2 = *++ip; // get selector index
+			op2 = ip[1]; ip++; // get selector index
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			g->primitiveIndex = op2;
 			doSpecialUnaryArithMsg(g, -1);
@@ -660,7 +667,7 @@ void Interpret(VMGlobals *g)
 			sp = (double*)g->sp; ip = g->ip;
 			break;
 		case 14 :  // opExtended, opSendSpecialBinaryArithMsg
-			op2 = *++ip; // get selector index
+			op2 = ip[1]; ip++; // get selector index
 			g->sp = (PyrSlot*)sp; g->ip = ip; 
 			g->primitiveIndex = op2;
 			doSpecialBinaryArithMsg(g, -1);
@@ -668,7 +675,7 @@ void Interpret(VMGlobals *g)
 			sp = (double*)g->sp; ip = g->ip;
 			break;
 		case 15 : // opExtended, opSpecialOpcode (none yet)
-			op2 = *++ip; // get extended special opcode
+			op2 = ip[1]; ip++; // get extended special opcode
 			switch (op2) {
 				case opgProcess : // push thisProcess
 					++sp; SetObject((PyrSlot*)sp, g->process); break;
@@ -712,18 +719,18 @@ void Interpret(VMGlobals *g)
 		case 31 : *++sp = g->receiver.uo->slots[15].uf; break;
 		
 		// opPushTempVar, levels 0..15
-		case 32 : *++sp = g->frame->vars[-*++ip].uf; break;
-		case 33 : *++sp = g->frame->context.uof->vars[-*++ip].uf; break;
-		case 34 : *++sp = g->frame->context.uof->context.uof->vars[-*++ip].uf; break;
-		case 35 : *++sp = g->frame->context.uof->context.uof->context.uof->vars[-*++ip].uf; break;
+		case 32 : *++sp = g->frame->vars[-ip[1]].uf; ip++; break;
+		case 33 : *++sp = g->frame->context.uof->vars[-ip[1]].uf; ip++; break;
+		case 34 : *++sp = g->frame->context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
+		case 35 : *++sp = g->frame->context.uof->context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
 		case 36 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->vars[-*++ip].uf; break;
+					context.uof->vars[-ip[1]].uf; ip++; break;
 		case 37 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->vars[-*++ip].uf; break;
+					context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
 		case 38 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->vars[-*++ip].uf; break;
+					context.uof->context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
 		case 39 : *++sp = g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->vars[-*++ip].uf; break;
+					context.uof->context.uof->context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
 
 		// push literal constants.
 		case 40 : 
@@ -773,32 +780,32 @@ void Interpret(VMGlobals *g)
 /*
 		case 40 : *++sp = g->frame->context.uof->context.uof->context.uof->
 					context.uof->context.uof->context.uof->context.uof->
-					context.uof->vars[-*++ip].uf; break;
+					context.uof->vars[-ip[1]].uf; ip++; break;
 		case 41 : *++sp = g->frame->context.uof->context.uof->context.uof->
 					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->vars[-*++ip].uf; break;
+					context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
 		case 42 : *++sp = g->frame->context.uof->context.uof->context.uof->
 					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->vars[-*++ip].uf; break;
+					context.uof->context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
 		case 43 : *++sp = g->frame->context.uof->context.uof->context.uof->
 					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->vars[-*++ip].uf; break;
+					context.uof->context.uof->context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
 		case 44 : *++sp = g->frame->context.uof->context.uof->context.uof->
 					context.uof->context.uof->context.uof->context.uof->
 					context.uof->context.uof->context.uof->context.uof->
-					context.uof->vars[-*++ip].uf; break;
+					context.uof->vars[-ip[1]].uf; ip++; break;
 		case 45 : *++sp = g->frame->context.uof->context.uof->context.uof->
 					context.uof->context.uof->context.uof->context.uof->
 					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->vars[-*++ip].uf; break;
+					context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
 		case 46 : *++sp = g->frame->context.uof->context.uof->context.uof->
 					context.uof->context.uof->context.uof->context.uof->
 					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->vars[-*++ip].uf; break;
+					context.uof->context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
 		case 47 : *++sp = g->frame->context.uof->context.uof->context.uof->
 					context.uof->context.uof->context.uof->context.uof->
 					context.uof->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->vars[-*++ip].uf; break;
+					context.uof->context.uof->context.uof->context.uof->vars[-ip[1]].uf; ip++; break;
 */					
 		// opPushTempZeroVar
 		case 48 : *++sp = g->frame->vars[  0].uf; break;
@@ -819,22 +826,22 @@ void Interpret(VMGlobals *g)
 		case 63 : *++sp = g->frame->vars[-15].uf; break;
 		
 		// case opPushLiteral
-		case 64 : *++sp = g->block->selectors.uo->slots[ 0].uf; break;
-		case 65 : *++sp = g->block->selectors.uo->slots[ 1].uf; break;
-		case 66 : *++sp = g->block->selectors.uo->slots[ 2].uf; break;
-		case 67 : *++sp = g->block->selectors.uo->slots[ 3].uf; break;
-		case 68 : *++sp = g->block->selectors.uo->slots[ 4].uf; break;
-		case 69 : *++sp = g->block->selectors.uo->slots[ 5].uf; break;
-		case 70 : *++sp = g->block->selectors.uo->slots[ 6].uf; break;
-		case 71 : *++sp = g->block->selectors.uo->slots[ 7].uf; break;
-		case 72 : *++sp = g->block->selectors.uo->slots[ 8].uf; break;
-		case 73 : *++sp = g->block->selectors.uo->slots[ 9].uf; break;
-		case 74 : *++sp = g->block->selectors.uo->slots[10].uf; break;
-		case 75 : *++sp = g->block->selectors.uo->slots[11].uf; break;
-		case 76 : *++sp = g->block->selectors.uo->slots[12].uf; break;
-		case 77 : *++sp = g->block->selectors.uo->slots[13].uf; break;
-		case 78 : *++sp = g->block->selectors.uo->slots[14].uf; break;
-		case 79 : *++sp = g->block->selectors.uo->slots[15].uf; break;
+		case 64 : *++sp = g->block->constants.uo->slots[ 0].uf; break;
+		case 65 : *++sp = g->block->constants.uo->slots[ 1].uf; break;
+		case 66 : *++sp = g->block->constants.uo->slots[ 2].uf; break;
+		case 67 : *++sp = g->block->constants.uo->slots[ 3].uf; break;
+		case 68 : *++sp = g->block->constants.uo->slots[ 4].uf; break;
+		case 69 : *++sp = g->block->constants.uo->slots[ 5].uf; break;
+		case 70 : *++sp = g->block->constants.uo->slots[ 6].uf; break;
+		case 71 : *++sp = g->block->constants.uo->slots[ 7].uf; break;
+		case 72 : *++sp = g->block->constants.uo->slots[ 8].uf; break;
+		case 73 : *++sp = g->block->constants.uo->slots[ 9].uf; break;
+		case 74 : *++sp = g->block->constants.uo->slots[10].uf; break;
+		case 75 : *++sp = g->block->constants.uo->slots[11].uf; break;
+		case 76 : *++sp = g->block->constants.uo->slots[12].uf; break;
+		case 77 : *++sp = g->block->constants.uo->slots[13].uf; break;
+		case 78 : *++sp = g->block->constants.uo->slots[14].uf; break;
+		case 79 : *++sp = g->block->constants.uo->slots[15].uf; break;
 		
 		//	opPushClassVar
 		case 80 :  case 81 :  case 82 :  case 83 :  
@@ -842,7 +849,7 @@ void Interpret(VMGlobals *g)
 		case 88 :  case 89 :  case 90 :  case 91 :  
 		case 92 :  case 93 :  case 94 :  case 95 :
 			op2 = op1 & 15;
-			op3 = *++ip; // get class var index
+			op3 = ip[1]; ip++; // get class var index
 			classobj = g->block->selectors.uo->slots[op2].us->u.classobj;
 			classIndex = classobj->classIndex.ui;
 			*++sp = g->classvars[classIndex].uo->slots[op3].uf;
@@ -1017,7 +1024,7 @@ void Interpret(VMGlobals *g)
 		
 		// opStoreTempVar
 		case 128 :  
-			op3 = *++ip;  // get temp var index
+			op3 = ip[1]; ip++;  // get temp var index
 			tframe = g->frame; // zero level
 			slot = tframe->vars - op3;
 			slot->uf = *sp--;
@@ -1028,7 +1035,7 @@ void Interpret(VMGlobals *g)
 			break;
 		
 		case 129 :  
-			op3 = *++ip;  // get temp var index
+			op3 = ip[1]; ip++;  // get temp var index
 			tframe = g->frame->context.uof; // one level
 			slot = tframe->vars - op3;
 			slot->uf = *sp--;
@@ -1039,7 +1046,7 @@ void Interpret(VMGlobals *g)
 			break;
 		
 		case 130 :  
-			op3 = *++ip;  // get temp var index
+			op3 = ip[1]; ip++;  // get temp var index
 			tframe = g->frame->context.uof->context.uof; // two levels
 			slot = tframe->vars - op3;
 			slot->uf = *sp--;
@@ -1050,7 +1057,7 @@ void Interpret(VMGlobals *g)
 			break;
 		
 		case 131 :  
-			op3 = *++ip;  // get temp var index
+			op3 = ip[1]; ip++;  // get temp var index
 			tframe = g->frame->context.uof->context.uof->context.uof; // three levels
 			slot = tframe->vars - op3;
 			slot->uf = *sp--;
@@ -1061,7 +1068,7 @@ void Interpret(VMGlobals *g)
 			break;
 		
 		case 132 : 
-			op3 = *++ip;  // get temp var index
+			op3 = ip[1]; ip++;  // get temp var index
 			tframe = g->frame->context.uof->context.uof->context.uof->context.uof; // four levels
 			slot = tframe->vars - op3;
 			slot->uf = *sp--;
@@ -1073,7 +1080,7 @@ void Interpret(VMGlobals *g)
 		
 		case 133 : case 134 : case 135 :
 			op2 = op1 & 15;
-			op3 = *++ip; // get temp var index
+			op3 = ip[1]; ip++; // get temp var index
 			for (tframe = g->frame; op2--; tframe = tframe->context.uof) { /* noop */ }
 			slot = tframe->vars - op3;
 			slot->uf = *sp;
@@ -1084,8 +1091,9 @@ void Interpret(VMGlobals *g)
 			break;
 			
 		case 136 :  // push inst var, send special selector
-			op2 = *++ip; // get inst var index
-			op3 = *++ip; // get selector
+			op2 = ip[1]; // get inst var index
+			op3 = ip[2]; // get selector
+			ip+=2;
 			
 			*++sp = g->receiver.uo->slots[op2].uf;
 			
@@ -1100,7 +1108,7 @@ void Interpret(VMGlobals *g)
 			pslot = (double*)(g->frame->vars - METHRAW(g->block)->numtemps); 
 			for (m=0,mmax=numArgsPushed; m<mmax; ++m) *++sp = *++pslot;
 
-			op2 = *++ip; // get selector index
+			op2 = ip[1]; ip++; // get selector index
 			selector = g->block->selectors.uo->slots[op2].us;
 			slot = (PyrSlot*)sp - numArgsPushed + 1;
 						
@@ -1111,7 +1119,7 @@ void Interpret(VMGlobals *g)
 			pslot = (double*)(g->frame->vars - METHRAW(g->block)->numtemps + 1); 
 			for (m=0,mmax=numArgsPushed-1; m<mmax; ++m) *++sp = *++pslot;
 
-			op2 = *++ip; // get selector index
+			op2 = ip[1]; ip++; // get selector index
 			selector = g->block->selectors.uo->slots[op2].us;
 			slot = (PyrSlot*)sp - numArgsPushed + 1;
 						
@@ -1122,7 +1130,7 @@ void Interpret(VMGlobals *g)
 			pslot = (double*)(g->frame->vars - METHRAW(g->block)->numtemps); 
 			for (m=0,mmax=numArgsPushed; m<mmax; ++m) *++sp = *++pslot;
 			
-			op2 = *++ip; // get selector
+			op2 = ip[1]; ip++; // get selector
 			selector = gSpecialSelectors[op2];
 			slot = (PyrSlot*)sp - numArgsPushed + 1;
 						
@@ -1133,7 +1141,7 @@ void Interpret(VMGlobals *g)
 			pslot = (double*)(g->frame->vars - METHRAW(g->block)->numtemps + 1); 
 			for (m=0,mmax=numArgsPushed-1; m<mmax; ++m) *++sp = *++pslot;
 			
-			op2 = *++ip; // get selector
+			op2 = ip[1]; ip++; // get selector
 			selector = gSpecialSelectors[op2];
 			slot = (PyrSlot*)sp - numArgsPushed + 1;
 						
@@ -1144,7 +1152,7 @@ void Interpret(VMGlobals *g)
 			pslot = (double*)(g->frame->vars - METHRAW(g->block)->numtemps + 1); 
 			for (m=0,mmax=numArgsPushed-2; m<mmax; ++m) *++sp = *++pslot;
 
-			op2 = *++ip; // get selector index
+			op2 = ip[1]; ip++; // get selector index
 			selector = g->block->selectors.uo->slots[op2].us;
 			slot = (PyrSlot*)sp - numArgsPushed + 1;
 						
@@ -1155,7 +1163,7 @@ void Interpret(VMGlobals *g)
 			pslot = (double*)(g->frame->vars - METHRAW(g->block)->numtemps + 1); 
 			for (m=0,mmax=numArgsPushed-2; m<mmax; ++m) *++sp = *++pslot;
 			
-			op2 = *++ip; // get selector
+			op2 = ip[1]; ip++; // get selector
 			selector = gSpecialSelectors[op2];
 			slot = (PyrSlot*)sp - numArgsPushed + 1;
 
@@ -1164,7 +1172,7 @@ void Interpret(VMGlobals *g)
 		case 143 : // loop byte codes
 			// this is major cheating to speed up often used looping methods
 			// these byte codes are specific to their method and should only be used there.
-			op2 = *++ip; // get which one
+			op2 = ip[1]; ip++; // get which one
 			switch (op2) {
 				// Integer::do : 143 0, 143 1
 				case 0 :
@@ -1223,7 +1231,7 @@ void Interpret(VMGlobals *g)
 					break;
 					
 				// Integer::for : 143 5, 143 6, 143 16
-				case 5 :
+				case 5 : 
 					tag = g->frame->vars[-3].utag;
 					if (tag != tagInt && tag != tagInf) {
 						error("Integer::for : endval not an Integer or Infinitum.\n");
@@ -1472,7 +1480,7 @@ void Interpret(VMGlobals *g)
 		case 152 :  case 153 :  case 154 :  case 155 :  
 		case 156 :  case 157 :  case 158 :  case 159 :
 			op2 = op1 & 15;
-			op3 = *++ip; // get class var index
+			op3 = ip[1]; ip++; // get class var index
 			classobj = g->block->selectors.uo->slots[op2].us->u.classobj;
 			classIndex = classobj->classIndex.ui;
 			obj = g->classvars[classIndex].uo;
@@ -1484,7 +1492,7 @@ void Interpret(VMGlobals *g)
 		// opSendMsg
 		case 160 :  
 			// special case for this as only arg			
-			op2 = *++ip; // get selector index
+			op2 = ip[1]; ip++; // get selector index
 			*++sp = g->receiver.uf;
 			numArgsPushed = 1;
 			selector = g->block->selectors.uo->slots[op2].us;
@@ -1497,7 +1505,7 @@ void Interpret(VMGlobals *g)
 		case 168 :  case 169 :  case 170 :  case 171 :  
 		case 172 :  case 173 :  case 174 :  case 175 :
 			
-			op2 = *++ip; // get selector index
+			op2 = ip[1]; ip++; // get selector index
 			numArgsPushed = op1 & 15;
 			selector = g->block->selectors.uo->slots[op2].us;
 			slot = (PyrSlot*)sp - numArgsPushed + 1;
@@ -1507,7 +1515,7 @@ void Interpret(VMGlobals *g)
 		// opSuperMsg
 		case 176 :  
 			// special case for this as only arg
-			op2 = *++ip; // get selector index
+			op2 = ip[1]; ip++; // get selector index
 			*++sp = g->receiver.uf;
 			numArgsPushed = 1;
 			selector = g->block->selectors.uo->slots[op2].us;
@@ -1521,7 +1529,7 @@ void Interpret(VMGlobals *g)
 		case 184 :  case 185 :  case 186 :  case 187 :  
 		case 188 :  case 189 :  case 190 :  case 191 :
 			
-			op2 = *++ip; // get selector index
+			op2 = ip[1]; ip++; // get selector index
 			numArgsPushed = op1 & 15;
 			selector = g->block->selectors.uo->slots[op2].us;
 			slot = (PyrSlot*)sp - numArgsPushed + 1;
@@ -1533,7 +1541,7 @@ void Interpret(VMGlobals *g)
 		case 192 :  
 			
 			*++sp = g->receiver.uf;
-			op2 = *++ip; // get selector index
+			op2 = ip[1]; ip++; // get selector index
 			numArgsPushed = 1;
 			selector = gSpecialSelectors[op2];
 			slot = (PyrSlot*)sp;
@@ -1545,7 +1553,7 @@ void Interpret(VMGlobals *g)
 		case 200 :  case 201 :  case 202 :  case 203 :  
 		case 204 :  case 205 :  case 206 :  case 207 :
 			
-			op2 = *++ip; // get selector index
+			op2 = ip[1]; ip++; // get selector index
 			numArgsPushed = op1 & 15;
 			selector = gSpecialSelectors[op2];
 			slot = (PyrSlot*)sp - numArgsPushed + 1;

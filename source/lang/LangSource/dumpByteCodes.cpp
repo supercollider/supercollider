@@ -245,7 +245,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			ival = op5;
 			slot = theBlock->constants.uo->slots + ival;
 			slotString(slot, str);
-			post(" %02X PushConstant %s\n", op5, str);
+			post(" %02X    PushConstant %s\n", op5, str);
 			break;
 			
 		case 41 :
@@ -281,13 +281,13 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 44 :
 			op5 = *ip++;
 			ival = (int32)(op5 << 24) >> 24;
-			post(" %02X PushInt %d\n", op5, ival);
+			post(" %02X    PushInt %d\n", op5, ival);
 			break;
 			
 		case 45 :
 			op4 = *ip++;
 			op5 = *ip++;
-			ival = (int32)((op5 << 24) | (op4 << 16)) >> 16;
+			ival = (int32)((op4 << 24) | (op5 << 16)) >> 16;
 			post(" %02X %02X PushInt %d\n", op4, op5, ival);
 			break;
 			
@@ -295,7 +295,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op3 = *ip++;
 			op4 = *ip++;
 			op5 = *ip++;
-			ival = (int32)((op5 << 24) | (op4 << 16) | (op3 << 8)) >> 8;
+			ival = (int32)((op3 << 24) | (op4 << 16) | (op5 << 8)) >> 8;
 			post(" %02X %02X %02X PushInt %d\n", op3, op4, op5, ival);
 			break;
 			
@@ -304,7 +304,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op3 = *ip++;
 			op4 = *ip++;
 			op5 = *ip++;
-			ival = (int32)((op5 << 24) | (op4 << 16) | (op3 << 8) | op2);
+			ival = (int32)((op2 << 24) | (op3 << 16) | (op4 << 8) | op5);
 			post(" %02X %02X %02X %02X PushInt %d\n", op2, op3, op4, op5, ival);
 			break;
 
@@ -334,7 +334,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 72 :	case 73 :	case 74 :	case 75 : 
 		case 76 :	case 77 :	case 78 :	case 79 : 
 			op2 = op1 & 15; // get temp var level
-			slot = theBlock->selectors.uo->slots + op2;
+			slot = theBlock->constants.uo->slots + op2;
 			slotString(slot, str);
 			post("       PushLiteral %s\n", str);
 			break;				
