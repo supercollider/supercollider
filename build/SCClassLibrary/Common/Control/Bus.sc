@@ -113,15 +113,23 @@ Bus {
 	setAll { arg value;
 		this.fill(value,numChannels);
 	}
+	
 	value_ { arg value;
 		this.fill(value,numChannels);
 	}
 	
-	printOn { arg stream; stream << this.class.name << "(" <<* [server.name,rate,index,numChannels]  <<")" }
-	== { arg aBus;
-		^(aBus.class === this.class 
-		and: {aBus.index == index} and: {aBus.rate == rate} and: {aBus.server == server})
+	printOn { arg stream; 
+		stream << this.class.name << "(" <<* [server.name,rate,index,numChannels]  <<")" 
 	}
+	
+	== { arg aBus;
+		^aBus.class === this.class 
+		and: {aBus.index == index} 
+		and: {aBus.numChannels == numChannels}
+		and: {aBus.rate == rate}
+		and: {aBus.server === server}
+	}
+	
 	isAudioOut { // audio interface
 		^(rate === \audio and: {index < server.options.firstPrivateBus})
 	}
