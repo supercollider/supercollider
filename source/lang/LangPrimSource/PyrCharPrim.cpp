@@ -213,7 +213,7 @@ int prAsDigit(struct VMGlobals *g, int numArgsPushed)
 		a->ui += '0';
 	} else if (c >= 10 && c <= 35) {
 		a->utag = tagChar;
-		a->ui += 'A';
+		a->ui += 'A' - 10;
 	} else {
 		return errFailed;
 	}
