@@ -128,6 +128,27 @@ Dictionary : Set {
 			function.value( Association.new(key, val), i);
 		})
 	}
+	collect { arg function;
+		var i, res;
+		res = this.class.new(this.size);
+		this.keysValuesDo { arg key, elem; res.put(key, function.value(elem, key)) }
+		^res;
+	}
+	select { arg function;
+		var i, res;
+		res = this.class.new(this.size);
+		this.keysValuesDo { arg key, elem; if(function.value(elem, key)) { res.put(key, elem) } }
+		^res;
+	}
+	reject { arg function;
+		var i, res;
+		res = this.class.new(this.size);
+		this.keysValuesDo { arg key, elem; if(function.value(elem, key).not) 
+			{ res.put(key, elem) } }
+		^res;
+	}
+
+
 
 	findKeyForValue { arg argValue;
 		this.keysValuesArrayDo(array, { arg key, val, i;
@@ -307,6 +328,7 @@ IdentityDictionary : Dictionary {
 		^prev
 		*/
 	}
+	
 	findKeyForValue { arg argValue;
 		this.keysValuesArrayDo(array, { arg key, val, i;
 			if (argValue === val, { ^key })
@@ -340,6 +362,10 @@ IdentityDictionary : Dictionary {
 	collapseParents { arg all;
 		if (parent.notNil) { all.putAll(parent.collapseParents(all)) };
 		^all.putAll(this);
+	}
+	
+	embedInStream { arg event;
+		^this.copy.parent_(event).yield;
 	}
 	
 	// not the fastest way, but the simplest
