@@ -5,6 +5,18 @@
 	};
 	objectVersion = 38;
 	objects = {
+		920DAEAD0423E08200A80067 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = SC_Carbon.cpp;
+			refType = 4;
+		};
+		920DAEAE0423E08200A80067 = {
+			fileRef = 920DAEAD0423E08200A80067;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		9230F70403B83BB900E3EBC0 = {
 			fileRef = F50D050E02E69B6B01CA2799;
 			isa = PBXBuildFile;
@@ -570,6 +582,7 @@
 		F50D05E602E69B6B01CA2799 = {
 			children = (
 				F53F78F103B28353011C068F,
+				920DAEAD0423E08200A80067,
 				F50D05E902E69B6B01CA2799,
 				F50D05EB02E69B6B01CA2799,
 				F50D05EC02E69B6B01CA2799,
@@ -876,7 +889,7 @@
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = STATIC;
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-faltivec";
 				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1287,6 +1300,7 @@
 				F59DF0CB030777F201CE0C16,
 				F59DF0CC030777F201CE0C16,
 				F53F78F303B28353011C068F,
+				920DAEAE0423E08200A80067,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1517,7 +1531,7 @@
 			);
 			buildSettings = {
 				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-faltivec";
 				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_REZFLAGS = "";
 				PREBINDING = NO;

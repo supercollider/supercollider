@@ -262,63 +262,71 @@ void ampmix_ii(MulAdd *unit, int inNumSamples)
 
 #if __VEC__
 
+#include "SC_Altivec.h"
+
 void v_ampmix_aa(MulAdd *unit, int inNumSamples);
 void v_ampmix_aa(MulAdd *unit, int inNumSamples)
 {
+	ampmix_aa(unit, inNumSamples);
+	return;
+	
+	float *in = IN(0);
 	float *out = OUT(0);
 	float *amp = MULIN;
 	float *mix = ADDIN;
 
 	int i, len = BUFLENGTH << 2;
-	vector float *vout = (vector float*)out;
-	vector float *vamp = (vector float*)amp;
+	vfloat32 *vin = (vfloat32*)in;
+	vfloat32 *vout = (vfloat32*)out;
+	vfloat32 *vamp = (vfloat32*)amp;
 	//LOOP(inNumSamples, PZ(out); *out = ZXP(amp) * *out + ZXP(mix); ZP(out););
-	vector float *vmix = (vector float*)mix;
+	vfloat32 *vmix = (vfloat32*)mix;
 	for (i=0; i<len; i+=16) {
-		vec_st(vec_madd(vec_ld(i, vamp), vec_ld(i, vout), vec_ld(i, vmix)), i, vout);
+		vec_st(vec_madd(vec_ld(i, vamp), vec_ld(i, vin), vec_ld(i, vmix)), i, vout);
 	}
-	//out_ptr->phyend = smax(smin(out_ptr->phyend, amp_ptr->phyend), mix_ptr->phyend);
-	//out_ptr->durend = smax(smin(out_ptr->durend, amp_ptr->durend), mix_ptr->durend);
-	
 }
 
 void v_ampmix_ak(MulAdd *unit, int inNumSamples);
 void v_ampmix_ak(MulAdd *unit, int inNumSamples)
 {
 	int i, len = BUFLENGTH << 2;
-	define_vtemp
 
-	float *out = ZOUT(0);
+	float *in = IN(0);
+	float *out = OUT(0);
 	float *amp = MULIN;
-
+	float nextMix = ADDIN[0];
+	
 	float mix_cur = unit->mPrevAdd;
 	float mix_slope = CALCSLOPE(ADDIN[0], mix_cur);
 	if (mix_slope == 0.f) {
 		if (mix_cur == 0.f) {
 			//LOOP(inNumSamples, PZ(out); *out = ZXP(amp) * *out; ZP(out););
-			vector float *vout = (vector float*)out;
-			vector float *vamp = (vector float*)amp;
+			vfloat32 *vin = (vfloat32*)in;
+			vfloat32 *vout = (vfloat32*)out;
+			vfloat32 *vamp = (vfloat32*)amp;
 			define_vzero 				
 			for (i=0; i<len; i+=16) {
-				vec_st(vec_mul(vec_ld(i, vamp), vec_ld(i, vout)), i, vout);
+				vec_st(vec_mul(vec_ld(i, vamp), vec_ld(i, vin)), i, vout);
 			}
 		} else {
 			//LOOP(inNumSamples, PZ(out); *out = ZXP(amp) * *out + mix_cur; ZP(out););
-			vector float *vout = (vector float*)out;
-			vector float *vamp = (vector float*)amp;
-			vector float vmix = vload(*mix);
+			vfloat32 *vin = (vfloat32*)in;
+			vfloat32 *vout = (vfloat32*)out;
+			vfloat32 *vamp = (vfloat32*)amp;
+			vfloat32 vmix = vload(mix_cur);
 			for (i=0; i<len; i+=16) {
-				vec_st(vec_madd(vec_ld(i, vamp), vec_ld(i, vout), vmix), i, vout);
+				vec_st(vec_madd(vec_ld(i, vamp), vec_ld(i, vin), vmix), i, vout);
 			}
 		}
 	} else {
 		//LOOP(inNumSamples, PZ(out); *out = ZXP(amp) * *out + mix_cur; mix_cur += mix_slope; ZP(out););
-		vector float *vout = (vector float*)out;
-		vector float *vamp = (vector float*)amp;
-		vector float vmix_slope = vload(4.f * mix_slope);
-		vector float vmix = vstart(mix_cur, vmix_slope);
+		vfloat32 *vin = (vfloat32*)in;
+		vfloat32 *vout = (vfloat32*)out;
+		vfloat32 *vamp = (vfloat32*)amp;
+		vfloat32 vmix_slope = vload(4.f * mix_slope);
+		vfloat32 vmix = vstart(mix_cur, vmix_slope);
 		for (i=0; i<len; i+=16) {
-			vec_st(vec_madd(vec_ld(i, vamp), vec_ld(i, vout), vmix), i, vout);
+			vec_st(vec_madd(vec_ld(i, vamp), vec_ld(i, vin), vmix), i, vout);
 			vmix = vec_add(vmix, vmix_slope);
 		}
 		unit->mPrevAdd = nextMix;
@@ -329,21 +337,21 @@ void v_ampmix_ak(MulAdd *unit, int inNumSamples)
 void v_ampmix_ai(MulAdd *unit, int inNumSamples);
 void v_ampmix_ai(MulAdd *unit, int inNumSamples)
 {
-	float amp_cur, mix_cur, amp_slope, mix_slope;
 	int i, len = BUFLENGTH << 2;
-	define_vtemp
 
-	float *out = ZOUT(0);
+	float *in = IN(0);
+	float *out = OUT(0);
 	
 	float *amp = MULIN;
 
 	float mix_cur = unit->mPrevAdd;
 	//LOOP(inNumSamples, PZ(out); *out = ZXP(amp) * *out + mix_cur; ZP(out););
-	vector float *vout = (vector float*)out;
-	vector float *vamp = (vector float*)amp;
-	vector float vmix = vload(mix_cur);
+	vfloat32 *vin = (vfloat32*)in;
+	vfloat32 *vout = (vfloat32*)out;
+	vfloat32 *vamp = (vfloat32*)amp;
+	vfloat32 vmix = vload(mix_cur);
 	for (i=0; i<len; i+=16) {
-		vec_st(vec_madd(vec_ld(i, vamp), vec_ld(i, vout), vmix), i, vout);
+		vec_st(vec_madd(vec_ld(i, vamp), vec_ld(i, vin), vmix), i, vout);
 	}
 }
 
@@ -352,44 +360,50 @@ void v_ampmix_ka(MulAdd *unit, int inNumSamples)
 {
 	float amp_cur, amp_slope;
 	int i, len = BUFLENGTH << 2;
-	define_vtemp
-	define_vzero
 
-	float *out = ZOUT(0);
+	float *in = IN(0);
+	float *out = OUT(0);
 	float *mix = ADDIN;
 	amp_cur = unit->mPrevMul;
-	amp_slope = CalcSlope(MULIN[0], amp_cur);
+	float nextAmp = MULIN[0];
+	amp_slope = CALCSLOPE(nextAmp, amp_cur);
 
 	if (amp_slope == 0.f) {
 		if (amp_cur == 0.f) {
-			out_ptr->bufptr = mix;
-		} else if (amp_cur == 1.f) {
-			vector float *vout = (vector float*)out;
-			vector float *vmix = (vector float*)mix;
+			vfloat32 *vout = (vfloat32*)out;
+			vfloat32 *vmix = (vfloat32*)mix;
 			for (i=0; i<len; i+=16) {
-				vec_st(vec_add(vec_ld(i, vout), vec_ld(i, vmix)), i, vout);
+				vec_st(vec_ld(i, vmix), i, vout);
+			}
+		} else if (amp_cur == 1.f) {
+			vfloat32 *vin = (vfloat32*)in;
+			vfloat32 *vout = (vfloat32*)out;
+			vfloat32 *vmix = (vfloat32*)mix;
+			for (i=0; i<len; i+=16) {
+				vec_st(vec_add(vec_ld(i, vin), vec_ld(i, vmix)), i, vout);
 			}
 		} else {
 			//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + ZXP(mix); ZP(out););
-			vector float *vout = (vector float*)out;
-			vector float vamp = vload(amp_cur);
-			vector float *vmix = (vector float*)mix;
+			vfloat32 *vin = (vfloat32*)in;
+			vfloat32 *vout = (vfloat32*)out;
+			vfloat32 vamp = vload(amp_cur);
+			vfloat32 *vmix = (vfloat32*)mix;
 			for (i=0; i<len; i+=16) {
-				vec_st(vec_madd(vamp, vec_ld(i, vout), vec_ld(i, vmix)), i, vout);
+				vec_st(vec_madd(vamp, vec_ld(i, vin), vec_ld(i, vmix)), i, vout);
 			}
 			//unit->mPrevMul = *amp;
 		}
 	} else {
-		define_vzero
-		vector float *vout = (vector float*)out;
-		vector float vamp_slope = vload(4.f * amp_slope);
-		vector float vamp = vstart(amp_cur, vamp_slope);
-		vector float *vmix = (vector float*)mix;
+		vfloat32 *vin = (vfloat32*)in;
+		vfloat32 *vout = (vfloat32*)out;
+		vfloat32 vamp_slope = vload(4.f * amp_slope);
+		vfloat32 vamp = vstart(amp_cur, vamp_slope);
+		vfloat32 *vmix = (vfloat32*)mix;
 		for (i=0; i<len; i+=16) {
-			vec_st(vec_madd(vamp, vec_ld(i, vout), vec_ld(i, vmix)), i, vout);
+			vec_st(vec_madd(vamp, vec_ld(i, vin), vec_ld(i, vmix)), i, vout);
 			vamp = vec_add(vamp, vamp_slope);
 		}
-		unit->mPrevMul = *amp;
+		unit->mPrevMul = nextAmp;
 	}
 
 }
@@ -399,15 +413,17 @@ void v_ampmix_kk(MulAdd *unit, int inNumSamples)
 {
 	float amp_cur, mix_cur, amp_slope, mix_slope;
 	int i, len = BUFLENGTH << 2;
-	define_vtemp
 	define_vzero
 
-	float *out = ZOUT(0);
+	float *in = IN(0);
+	float *out = OUT(0);
 
 	amp_cur = unit->mPrevMul;
-	amp_slope = CalcSlope(MULIN[0], amp_cur);
+	float nextAmp = MULIN[0];
+	amp_slope = CALCSLOPE(nextAmp, amp_cur);
 	mix_cur = unit->mPrevAdd;
-	mix_slope = CalcSlope(ADDIN[0], mix_cur);
+	float nextMix = ADDIN[0];
+	mix_slope = CALCSLOPE(nextMix, mix_cur);
 
 	if (amp_slope == 0.f) {
 		if (mix_slope == 0.f) {
@@ -415,69 +431,75 @@ void v_ampmix_kk(MulAdd *unit, int inNumSamples)
 				if (amp_cur == 1.f) {
 					// do nothing!
 				} else if (amp_cur == 0.f) {
+					vfloat32 *vout = (vfloat32*)out;
 					for (i=0; i<len; i+=16) {
 						vec_st(vzero, i, vout);
 					}
 				} else {
 					//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out; ZP(out););
-					vector float *vout = (vector float*)out;
-					vector float vamp = vload(amp_cur);
+					vfloat32 *vin = (vfloat32*)in;
+					vfloat32 *vout = (vfloat32*)out;
+					vfloat32 vamp = vload(amp_cur);
 					for (i=0; i<len; i+=16) {
-						vec_st(vec_mul(vamp, vec_ld(i, vout)), i, vout);
+						vec_st(vec_mul(vamp, vec_ld(i, vin)), i, vout);
 					}
 				}
 			} else {
 				if (amp_cur == 1.f) {
 					//LOOP(inNumSamples, ZXP(out) += mix_cur;);
-					vector float *vout = (vector float*)out;
-					vector float vmix = vload(mix_cur);
+					vfloat32 *vin = (vfloat32*)in;
+					vfloat32 *vout = (vfloat32*)out;
+					vfloat32 vmix = vload(mix_cur);
 					for (i=0; i<len; i+=16) {
-						vec_st(vec_add(vmix, vec_ld(i, vout)), i, vout);
+						vec_st(vec_add(vmix, vec_ld(i, vin)), i, vout);
 					}
 				} else if (amp_cur == 0.f) {
 					//LOOP(inNumSamples, ZXP(out) = mix_cur;);
-					vector float *vout = (vector float*)out;
-					vector float vmix = vload(mix_cur);
+					vfloat32 *vout = (vfloat32*)out;
+					vfloat32 vmix = vload(mix_cur);
 					for (i=0; i<len; i+=16) {
 						vec_st(vmix, i, vout);
 					}
 				} else {
 					//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; ZP(out););
-					vector float *vout = (vector float*)out;
-					vector float vamp = vload(amp_cur);
-					vector float vmix = vload(mix_cur);
+					vfloat32 *vin = (vfloat32*)in;
+					vfloat32 *vout = (vfloat32*)out;
+					vfloat32 vamp = vload(amp_cur);
+					vfloat32 vmix = vload(mix_cur);
 					for (i=0; i<len; i+=16) {
-						vec_st(vec_madd(vamp, vec_ld(i, vout), vmix), i, vout);
+						vec_st(vec_madd(vamp, vec_ld(i, vin), vmix), i, vout);
 					}
 				}
 			}
 		} else {
 			if (amp_cur == 1.f) {
 				//LOOP(inNumSamples, ZXP(out) += mix_cur; mix_cur += mix_slope;);
-				vector float *vout = (vector float*)out;
-				vector float vmix_slope = vload(4.f * mix_slope);
-				vector float vmix = vstart(mix_cur, vmix_slope);
+				vfloat32 *vin = (vfloat32*)in;
+				vfloat32 *vout = (vfloat32*)out;
+				vfloat32 vmix_slope = vload(4.f * mix_slope);
+				vfloat32 vmix = vstart(mix_cur, vmix_slope);
 				for (i=0; i<len; i+=16) {
-					vec_st(vec_add(vmix, vec_ld(i, vout)), i, vout);
+					vec_st(vec_add(vmix, vec_ld(i, vin)), i, vout);
 					vmix = vec_add(vmix, vmix_slope);
 				}
 			} else if (amp_cur == 0.f) {
 				//LOOP(inNumSamples, ZXP(out) = mix_cur; mix_cur += mix_slope;);
-				vector float *vout = (vector float*)out;
-				vector float vmix_slope = vload(4.f * mix_slope);
-				vector float vmix = vstart(mix_cur, vmix_slope);
+				vfloat32 *vout = (vfloat32*)out;
+				vfloat32 vmix_slope = vload(4.f * mix_slope);
+				vfloat32 vmix = vstart(mix_cur, vmix_slope);
 				for (i=0; i<len; i+=16) {
 					vec_st(vmix, i, vout);
 					vmix = vec_add(vmix, vmix_slope);
 				}
 			} else {
 				//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; mix_cur += mix_slope; ZP(out););
-				vector float *vout = (vector float*)out;
-				vector float vamp = vload(amp_cur);
-				vector float vmix_slope = vload(4.f * mix_slope);
-				vector float vmix = vstart(mix_cur, vmix_slope);
+				vfloat32 *vin = (vfloat32*)in;
+				vfloat32 *vout = (vfloat32*)out;
+				vfloat32 vamp = vload(amp_cur);
+				vfloat32 vmix_slope = vload(4.f * mix_slope);
+				vfloat32 vmix = vstart(mix_cur, vmix_slope);
 				for (i=0; i<len; i+=16) {
-					vec_st(vec_madd(vamp, vec_ld(i, vout), vmix), i, vout);
+					vec_st(vec_madd(vamp, vec_ld(i, vin), vmix), i, vout);
 					vmix = vec_add(vmix, vmix_slope);
 				}
 			}
@@ -487,39 +509,42 @@ void v_ampmix_kk(MulAdd *unit, int inNumSamples)
 		if (mix_slope == 0.f) {
 			if (mix_cur == 0.f) {
 				//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out; amp_cur += amp_slope; ZP(out););
-				vector float *vout = (vector float*)out;
-				vector float vamp_slope = vload(4.f * amp_slope);
-				vector float vamp = vstart(amp_cur, vamp_slope);
+				vfloat32 *vin = (vfloat32*)in;
+				vfloat32 *vout = (vfloat32*)out;
+				vfloat32 vamp_slope = vload(4.f * amp_slope);
+				vfloat32 vamp = vstart(amp_cur, vamp_slope);
 				for (i=0; i<len; i+=16) {
-					vec_st(vec_mul(vamp, vec_ld(i, vout)), i, vout);
+					vec_st(vec_mul(vamp, vec_ld(i, vin)), i, vout);
 					vamp = vec_add(vamp, vamp_slope);
 				}
 			} else {
 				//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; amp_cur += amp_slope; ZP(out););
-				vector float *vout = (vector float*)out;
-				vector float vamp_slope = vload(4.f * amp_slope);
-				vector float vamp = vstart(amp_cur, vamp_slope);
-				vector float vmix = vload(mix_cur);
+				vfloat32 *vin = (vfloat32*)in;
+				vfloat32 *vout = (vfloat32*)out;
+				vfloat32 vamp_slope = vload(4.f * amp_slope);
+				vfloat32 vamp = vstart(amp_cur, vamp_slope);
+				vfloat32 vmix = vload(mix_cur);
 				for (i=0; i<len; i+=16) {
-					vec_st(vec_madd(vamp, vec_ld(i, vout), vmix), i, vout);
+					vec_st(vec_madd(vamp, vec_ld(i, vin), vmix), i, vout);
 					vamp = vec_add(vamp, vamp_slope);
 				}
 			}
 		} else {
 			//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; amp_cur += amp_slope; mix_cur += mix_slope; ZP(out););
-			vector float *vout = (vector float*)out;
-			vector float vamp_slope = vload(4.f * amp_slope);
-			vector float vamp = vstart(amp_cur, vamp_slope);
-			vector float vmix_slope = vload(4.f * mix_slope);
-			vector float vmix = vstart(mix_cur, vmix_slope);
+			vfloat32 *vin = (vfloat32*)in;
+			vfloat32 *vout = (vfloat32*)out;
+			vfloat32 vamp_slope = vload(4.f * amp_slope);
+			vfloat32 vamp = vstart(amp_cur, vamp_slope);
+			vfloat32 vmix_slope = vload(4.f * mix_slope);
+			vfloat32 vmix = vstart(mix_cur, vmix_slope);
 			for (i=0; i<len; i+=16) {
-				vec_st(vec_madd(vamp, vec_ld(i, vout), vmix), i, vout);
+				vec_st(vec_madd(vamp, vec_ld(i, vin), vmix), i, vout);
 				vamp = vec_add(vamp, vamp_slope);
 				vmix = vec_add(vmix, vmix_slope);
 			}
-			unit->mPrevAdd = *mix;
+			unit->mPrevAdd = nextMix;
 		}
-		unit->mPrevMul = *amp;
+		unit->mPrevMul = nextAmp;
 	}
 
 }
@@ -530,45 +555,47 @@ void v_ampmix_ki(MulAdd *unit, int inNumSamples)
 
 	float amp_cur, mix_cur, amp_slope;
 	int i, len = BUFLENGTH << 2;
-	define_vtemp
 
-	float *out = ZOUT(0);
-	float *mix = ADDIN;
+	float *in = IN(0);
+	float *out = OUT(0);
 	amp_cur = unit->mPrevMul;
-	amp_slope = CalcSlope(MULIN[0], amp_cur);
+	amp_slope = CALCSLOPE(MULIN[0], amp_cur);
 	mix_cur = unit->mPrevAdd;
 	if (amp_slope == 0.f) {
 		if (amp_cur == 1.f) {
 			//LOOP(inNumSamples, ZXP(out) += mix_cur;);
-			vector float *vout = (vector float*)out;
-			vector float vmix = vload(mix_cur);
+			vfloat32 *vin = (vfloat32*)in;
+			vfloat32 *vout = (vfloat32*)out;
+			vfloat32 vmix = vload(mix_cur);
 			for (i=0; i<len; i+=16) {
-				vec_st(vec_add(vmix, vec_ld(i, vout)), i, vout);
+				vec_st(vec_add(vmix, vec_ld(i, vin)), i, vout);
 			}
 		} else if (amp_cur == 0.f) {
 			//LOOP(inNumSamples, ZXP(out) = mix_cur;);
-			vector float *vout = (vector float*)out;
-			vector float vmix = vload(mix_cur);
+			vfloat32 *vout = (vfloat32*)out;
+			vfloat32 vmix = vload(mix_cur);
 			for (i=0; i<len; i+=16) {
 				vec_st(vmix, i, vout);
 			}
 		} else {
 			//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; ZP(out););
-			vector float *vout = (vector float*)out;
-			vector float vamp = vload(amp_cur);
-			vector float vmix = vload(mix_cur);
+			vfloat32 *vin = (vfloat32*)in;
+			vfloat32 *vout = (vfloat32*)out;
+			vfloat32 vamp = vload(amp_cur);
+			vfloat32 vmix = vload(mix_cur);
 			for (i=0; i<len; i+=16) {
-				vec_st(vec_madd(vamp, vec_ld(i, vout), vmix), i, vout);
+				vec_st(vec_madd(vamp, vec_ld(i, vin), vmix), i, vout);
 			}
 		}
 	} else {
 		//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; amp_cur += amp_slope; ZP(out););
-		vector float *vout = (vector float*)out;
-		vector float vamp_slope = vload(4.f * amp_slope);
-		vector float vamp = vstart(amp_cur, vamp_slope);
-		vector float vmix = vload(mix_cur);
+		vfloat32 *vin = (vfloat32*)in;
+		vfloat32 *vout = (vfloat32*)out;
+		vfloat32 vamp_slope = vload(4.f * amp_slope);
+		vfloat32 vamp = vstart(amp_cur, vamp_slope);
+		vfloat32 vmix = vload(mix_cur);
 		for (i=0; i<len; i+=16) {
-			vec_st(vec_madd(vamp, vec_ld(i, vout), vmix), i, vout);
+			vec_st(vec_madd(vamp, vec_ld(i, vin), vmix), i, vout);
 			vamp = vec_add(vamp, vamp_slope);
 		}
 		unit->mPrevMul = amp_cur;
@@ -578,22 +605,21 @@ void v_ampmix_ki(MulAdd *unit, int inNumSamples)
 void v_ampmix_ia(MulAdd *unit, int inNumSamples);
 void v_ampmix_ia(MulAdd *unit, int inNumSamples)
 {
-	float amp_cur, amp_slope;
+	float amp_cur;
 
-	float *out = ZOUT(0);
+	float *in = IN(0);
+	float *out = OUT(0);
 	int i, len = BUFLENGTH << 2;
-	define_vtemp
-	define_vzero
 
-	float *amp = MULIN;
 	float *mix = ADDIN;
 	amp_cur = unit->mPrevMul;
 	//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + ZXP(mix); ZP(out););
-	vector float *vout = (vector float*)out;
-	vector float vamp = vload(amp_cur);
-	vector float *vmix = (vector float*)mix;
+	vfloat32 *vin = (vfloat32*)in;
+	vfloat32 *vout = (vfloat32*)out;
+	vfloat32 vamp = vload(amp_cur);
+	vfloat32 *vmix = (vfloat32*)mix;
 	for (i=0; i<len; i+=16) {
-		vec_st(vec_madd(vamp, vec_ld(i, vout), vec_ld(i, vmix)), i, vout);
+		vec_st(vec_madd(vamp, vec_ld(i, vin), vec_ld(i, vmix)), i, vout);
 	}
 }
 
@@ -601,42 +627,46 @@ void v_ampmix_ik(MulAdd *unit, int inNumSamples);
 void v_ampmix_ik(MulAdd *unit, int inNumSamples)
 {
 
-	float amp_cur, mix_cur, amp_slope, mix_slope;
+	float amp_cur, mix_cur, mix_slope;
 	int i, len = BUFLENGTH << 2;
-	define_vtemp
 	define_vzero
 
-	float *out = ZOUT(0);
-	float *amp = MULIN;
+	float *in = IN(0);
+	float *out = OUT(0);
 
 	amp_cur = unit->mPrevMul;
 	mix_cur = unit->mPrevAdd;
-	mix_slope = CalcSlope(ADDIN[0], mix_cur);
+	float nextMix = ADDIN[0];
+	mix_slope = CALCSLOPE(nextMix, mix_cur);
 	if (mix_slope == 0.f) {
 		if (mix_cur == 0.f) {
 			//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out; ZP(out););
-			vector float *vout = (vector float*)out;
-			vector float vamp = vload(amp_cur);
+			vfloat32 *vin = (vfloat32*)in;
+			vfloat32 *vout = (vfloat32*)out;
+			vfloat32 vamp = vload(amp_cur);
 			for (i=0; i<len; i+=16) {
-				vec_st(vec_mul(vamp, vec_ld(i, vout)), i, vout);
+				vec_st(vec_mul(vamp, vec_ld(i, vin)), i, vout);
 			}
 		} else {
 			//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; ZP(out););
-			vector float *vout = (vector float*)out;
-			vector float vamp = vload(amp_cur);
-			vector float vmix = vload(mix_cur);
+			vfloat32 *vin = (vfloat32*)in;
+			vfloat32 *vout = (vfloat32*)out;
+			vfloat32 vamp = vload(amp_cur);
+			vfloat32 vmix = vload(mix_cur);
 			for (i=0; i<len; i+=16) {
-				vec_st(vec_madd(vamp, vec_ld(i, vout), vmix), i, vout);
+				vec_st(vec_madd(vamp, vec_ld(i, vin), vmix), i, vout);
 			}
 		}
 	} else {
 		//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; mix_cur += mix_slope; ZP(out););
-		vector float *vout = (vector float*)out;
-		vector float vamp = vload(amp_cur);
-		vector float vmix_slope = vload(4.f * mix_slope);
-		vector float vmix = vstart(mix_cur, vmix_slope);
+		vfloat32 *vin = (vfloat32*)in;
+		vfloat32 *vout = (vfloat32*)out;
+		vfloat32 vamp = vload(amp_cur);
+		vfloat32 vmix_slope = vload(4.f * mix_slope);
+		vfloat32 vmix = vstart(mix_cur, vmix_slope);
 		for (i=0; i<len; i+=16) {
-			vec_st(vec_madd(vamp, vec_ld(i, vout), vmix), i, vout);
+			vec_st(vec_madd(vamp, vec_ld(i, vin), vmix), i, vout);
+			//Print("vmix %d  %g %g %g %g\n", i, ((float*)&vmix)[0],((float*)&vmix)[1],((float*)&vmix)[2],((float*)&vmix)[3]);
 			vmix = vec_add(vmix, vmix_slope);
 		}
 		unit->mPrevAdd = nextMix;
@@ -646,22 +676,22 @@ void v_ampmix_ik(MulAdd *unit, int inNumSamples)
 void v_ampmix_ii(MulAdd *unit, int inNumSamples);
 void v_ampmix_ii(MulAdd *unit, int inNumSamples)
 {
-	float *out, *endptr;
 	float amp_cur, mix_cur;
 	int i, len = BUFLENGTH << 2;
-	define_vtemp
 
-	float *out = ZOUT(0);
+	float *in = IN(0);
+	float *out = OUT(0);
 
 	amp_cur = unit->mPrevMul;
 	mix_cur = unit->mPrevAdd;
 
 	//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; ZP(out););
-	vector float *vout = (vector float*)out;
-	vector float vamp = vload(amp_cur);
-	vector float vmix = vload(mix_cur);
+	vfloat32 *vin = (vfloat32*)in;
+	vfloat32 *vout = (vfloat32*)out;
+	vfloat32 vamp = vload(amp_cur);
+	vfloat32 vmix = vload(mix_cur);
 	for (i=0; i<len; i+=16) {
-		vec_st(vec_madd(vamp, vec_ld(i, vout), vmix), i, vout);
+		vec_st(vec_madd(vamp, vec_ld(i, vin), vmix), i, vout);
 	}
 }
 
@@ -688,7 +718,7 @@ void MulAdd_Ctor(MulAdd *unit)
 	//Print("**** %08X %08X %08X    %08X\n", IN(0), IN(1), IN(2), OUT(0));
 
 #if __VEC__	
-	if (BUFLENGTH & 3) {
+	if (!ft->mAltivecAvailable || (BUFLENGTH & 3)) {
 #endif
 		switch (mulRate) {
 			case calc_FullRate :
@@ -763,9 +793,11 @@ void MulAdd_Ctor(MulAdd *unit)
 			case calc_ScalarRate :
 				switch (addRate) {
 					case calc_FullRate :
+		Print("choose v_ampmix_ia\n");
 						unit->mCalcFunc = (UnitCalcFunc)&v_ampmix_ia;
 						break;
 					case calc_BufRate :
+		Print("choose v_ampmix_ik\n");
 						unit->mCalcFunc = (UnitCalcFunc)&v_ampmix_ik;
 						break;
 					case calc_ScalarRate :

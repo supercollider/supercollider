@@ -98,14 +98,8 @@ void InterfaceTable_Init()
 	ft->fNRTLock = &World_NRTLock;
 	ft->fNRTUnlock = &World_NRTUnlock;
 		
-#if __VEC__ 
-	long response;
-	Gestalt(gestaltPowerPCProcessorFeatures, &response);
-	if (response & (1<<gestaltPowerPCHasVectorInstructions)) ft->mAltivecAvailable = true;
-	else ft->mAltivecAvailable = false;
-#else
-	ft->mAltivecAvailable = false;
-#endif
+bool HasAltivec();
+	ft->mAltivecAvailable = HasAltivec();
 
 	ft->fGroup_DeleteAll = &Group_DeleteAll;
 	ft->fDoneAction = &Unit_DoneAction;
@@ -523,6 +517,7 @@ void World_Start(World *inWorld)
 	for (int i=0; i<inWorld->mNumControlBusChannels; ++i) inWorld->mControlBusTouched[i] = -1;
 	
 	inWorld->hw->mWireBufSpace = (float*)malloc(inWorld->hw->mMaxWireBufs * inWorld->mBufLength * sizeof(float));
+	scprintf("mWireBufSpace %08X   %d %d   %d\n", inWorld->hw->mWireBufSpace, inWorld->hw->mMaxWireBufs, inWorld->mBufLength);
 	
 	inWorld->hw->mTriggers.MakeEmpty();
 	inWorld->hw->mNodeEnds.MakeEmpty();
