@@ -1021,6 +1021,7 @@ void OffsetOut_Dtor(OffsetOut* unit)
 	int numChannels = unit->mNumInputs - 1;
 
 	int32 offset = unit->mParent->mSampleOffset;
+	int32 remain = BUFLENGTH - offset;
 	
 	float *out = unit->m_bus;
 	float *saved = unit->m_saved;
@@ -1031,20 +1032,14 @@ void OffsetOut_Dtor(OffsetOut* unit)
 		//	i, touched[i] == bufCounter, unit->m_empty,
 		//	offset, remain);
 			
-		if (touched[i] == bufCounter) {
-			if (unit->m_empty) {
-				//Print("touched offset %d\n", offset);
-			} else {
+		if (!unit->m_empty) {
+			if (touched[i] == bufCounter) {
 				Accum(offset, out, saved);
-			}
-		} else {
-			if (unit->m_empty) {
-				Clear(offset, out);
-				//Print("untouched offset %d\n", offset);
 			} else {
 				Copy(offset, out, saved);
+				Clear(remain, out + offset);
+				touched[i] = bufCounter;
 			}
-			touched[i] = bufCounter;
 		}
 		//Print("out %d %d %d  %g %g\n", i, in[0], out[0]);
 	}
