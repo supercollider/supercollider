@@ -1,7 +1,8 @@
 //watches an address for created nodes and ending nodes.
 
-BasicNodeWatcher {
-	var <nodes, <addr, <responders;
+AbstractNodeWatcher {
+
+	var <addr, <responders;
 	var <isWatching=false;
 	
 	*new { arg addr;
@@ -13,7 +14,7 @@ BasicNodeWatcher {
 		addr = address;
 		this.clear;
 		responders = [];
-		addr.asArray.do({ arg addrItem; //support for multiple servers
+		addr.asArray.do({ arg addrItem; //support for multiple addresses
 			this.cmds.do({ arg cmd;
 				var method;
 				method = cmd.copyToEnd(1).asSymbol;
@@ -25,15 +26,18 @@ BasicNodeWatcher {
 			});
 		});
 	}
-	cmds {  ^#["/n_go", "/n_end"] }
 	
+	clear {}
+	
+	cmds { ^nil }
+		
 	respond { arg method, msg;
 				//msg.postln;
 				msg = msg.copy;
 				msg.removeAt(0);
 				this.performList(method, msg)
 	}
-		
+	
 	start {
 		if(isWatching.not, {
 			responders.do({ arg item; item.add });
@@ -47,6 +51,29 @@ BasicNodeWatcher {
 			this.clear;
 		})
 	}
+
+}
+
+NodeIDWatcher : AbstractNodeWatcher {
+	var <>nodeAllocator;
+	
+	*new { arg addr, nodeAllocator;
+		^super.new(addr).nodeAllocator_(nodeAllocator);
+	}
+	cmds {  ^#["/n_end"] }
+
+	n_end { arg nodeID;
+		//postln("ended" + nodeID);
+		nodeAllocator.free(nodeID);
+	
+	}
+	
+}
+
+
+
+BasicNodeWatcher : AbstractNodeWatcher {
+	var <nodes; 
 	
 	nodeIsPlaying { arg nodeID;
 		^nodes.includes(nodeID);
@@ -62,18 +89,15 @@ BasicNodeWatcher {
 	}
 		
 	n_end { arg nodeID;
-		postln("ended" + nodeID);
 		nodes.remove(nodeID);
-		//nodes.postln;
 	}
 	n_go { arg nodeID;
-		postln("started" + nodeID);
 		nodes.add(nodeID);
-		//nodes.postln;
 	}
-	
 
 }
+
+
 
 
 ///////////////////////////////////
@@ -82,10 +106,39 @@ BasicNodeWatcher {
 
 NodeWatcher : BasicNodeWatcher {
 	
+	classvar <>all;
+	
+	*initClass {
+		all = IdentityDictionary.new;
+	}
+	
+	*newFrom { arg server;
+		var res;
+		res = all.at(server.name);
+		if(res.isNil, {
+			res = NodeWatcher.new(server.addr);
+			res.start;
+			all.put(server.name, res) 
+		});
+		^res
+	}
+	
+	*register { arg node;
+		var watcher;
+		watcher = this.newFrom(node.server);
+		watcher.register(node);
+	}
+	
+	*unregister { arg node;
+		var watcher;
+		watcher = this.newFrom(node.server);
+		watcher.unregister(node);
+	}
+
 
 	cmds { ^#["/n_go", "/n_end", "/n_off", "/n_on"] }
 	respond { arg method, msg;
-						msg.postln;
+						//msg.postln;
 						msg.removeAt(0);
 						if(nodes.at(msg.at(0)).notNil, {//for speed
 							msg = this.lookUp(msg);
@@ -94,6 +147,7 @@ NodeWatcher : BasicNodeWatcher {
 							})
 						})
 	}
+	
 	lookUp { arg msg;
 		var res;
 		res = msg.collect({ arg nodeID; nodes.at(nodeID) });
@@ -114,7 +168,6 @@ NodeWatcher : BasicNodeWatcher {
 	
 	unregister { arg node;
 		nodes.removeAt(node.nodeID);
-		//node.freeNodeID;
 	}
 	
 	
@@ -153,63 +206,40 @@ NodeWatcher : BasicNodeWatcher {
 
 
 
-NodeWatcherLinker : NodeWatcher {
-	//if you want nodes to be linked, use this
+DebugNodeWatcher : BasicNodeWatcher {
 
-	cmds { ^#["/n_go", "/n_end", "/n_off", "/n_on", "/n_move"] }
+	cmds { ^#["/n_go", "/n_end", "/n_off", "/n_on"] }
 	
-	n_go { arg node, group, prev, next;
-		//group is set in the prMove calls
-		//this needs to be revisited, as group respond might 
-		//come back from server after its synth respond.
-		
-		if(prev.notNil, {
-			node.prMoveAfter(prev);
-		}, {
-			if(next.notNil, {
-				node.prMoveBefore(next);
-			}, {
-				group.asGroup.prAddTail(node); 
-			})
-		});
-		
-		
-		node.isPlaying = true;
-		node.isRunning = true;
-		
+	//////////////private implementation//////////////
+	
+	n_go { arg nodeID, groupID, prevID, nextID;
+	
+		nodes.add(nodeID);
+		postln(
+		"started" + nodeID + "in group" + groupID + "between nodes" + prevID + "and" + nextID
+		)
 	}
 	
-	n_move { arg node, group, prev, next;
-		//group is set in the prMove calls
-		node.remove;
-		if(prev.notNil, {
-			node.prMoveAfter(prev);
-		}, {
-			if(next.notNil, {
-				node.prMoveBefore(next);
-			}, {
-				group.prAddTail(node);
-			})
-		});
-	}
 	
-	n_end { arg node;
-		node.remove;
-		this.unregister(node);
-		node.group = nil;
-		node.isPlaying = false;
-		node.isRunning = false;
+	n_end { arg nodeID, groupID, prevID, nextID;
+		nodes.remove(nodeID);
+		postln(
+		"ended  " + nodeID + "in group" + groupID + "between nodes" + prevID + "and" + nextID
+		)
 	}
 
-	n_off { arg node, group, prev, next;
-		
-		node.isRunning = false;
+	n_off { arg nodeID, groupID, prevID, nextID;
+		postln(
+		"turned off" + nodeID + "in group" + groupID + "between nodes" + prevID + "and" + nextID
+		)
 	}	
 
-	n_on { arg node, group, prev, next;
-		
-		node.isRunning = true;
+	n_on { arg nodeID, groupID, prevID, nextID;
+		postln(
+		"turned on " + nodeID + "in group" + groupID + "between nodes" + prevID + "and" + nextID
+		)	
 	}
 	
+
 
 }
