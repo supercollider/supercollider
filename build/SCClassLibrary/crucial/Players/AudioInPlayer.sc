@@ -9,7 +9,7 @@ AudioInPlayer : AbstractPlayer {
 	}
 	storeArgs { ^[numChannels,firstChannel] }
 	ar {
-		^AudioIn.ar(Array.series(numChannels,firstChannel) )
+		^AudioIn.ar(Array.series(numChannels,firstChannel+1) )
 	}
 	//guiClass { ^AudioInPlayerGui }
 }
