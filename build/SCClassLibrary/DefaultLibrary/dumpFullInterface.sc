@@ -89,4 +89,9 @@
 
 		
 	}
+	
+	helpFileForMethod {
+		arg methodSymbol; 
+		this.findRespondingMethodFor(methodSymbol).ownerClass.openHelpFile;
+	}
 }
