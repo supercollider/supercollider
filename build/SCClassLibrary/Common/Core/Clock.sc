@@ -55,8 +55,14 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	*new { arg tempo, beats, seconds;
 		^super.new.init(tempo, beats, seconds)
 	}
+	
 	*initClass {
 		default = this.new;
+		CmdPeriod.add(this);
+	}	
+	
+	*cmdPeriod {
+		all.do({ arg item; item.clear })
 	}	
 
 	init { arg tempo, beats, seconds;
