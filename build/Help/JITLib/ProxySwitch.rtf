@@ -21,6 +21,7 @@ Its rate is determined from the input proxy.
 \f2\fs26 \cf0 __________________________________________________________________
 \f1\fs18 \
 \
+s.boot;\
 \
 a = \cf3 NodeProxy.audio\cf0 (s);\
 b = \cf3 NodeProxy.audio\cf0 (s);\
@@ -33,6 +34,8 @@ a.source = \{ \cf3 FSinOsc\cf0 .ar(300, 0, 0.1) \};\
 b.source = \{ \cf3 FSinOsc\cf0 .ar(400, 0, 0.1) \};\
 c.source = \{ \cf3 FSinOsc\cf0 .ar(500, 0, 0.1) \};\
 \
+\
+x.input = a;\
 x.input = b;\
 x.input = c;\
 \
