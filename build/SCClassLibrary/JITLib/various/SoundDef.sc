@@ -9,13 +9,14 @@ SoundDef {
 	*new { arg key, func, lags, prependArgs;
 		var synthDef;
 		if(func.isNil, { ^all.at(key.asSymbol) });
-		if(servers.isNil, { servers = [Server.local] }); //lazy init for now
 		synthDef = SynthDef(key, func, lags, prependArgs);
 		^super.newCopyArgs(synthDef).toLib(key.asSymbol) //add some preparation later
 	}
 	
 	*initClass { 
+		Class.initClassTree(Server);
 		all = IdentityDictionary.new;
+		servers = [Server.local]
 	}
 	
 	toLib { arg key;
