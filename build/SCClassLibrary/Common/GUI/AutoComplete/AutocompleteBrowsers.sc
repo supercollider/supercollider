@@ -90,8 +90,9 @@ AutoCompMethodBrowser {
 			// if window is nil, isclosed should be true
 			// close the window only if it isn't closed
 		(w.tryPerform(\isClosed) ? true).not.if({
-				// if there's typing in the text box, add it into the document
-			(textField.string.size > 0).if({
+				// if there's typing in the text box and no possible autocomplete,
+				// add it into the document
+			(textField.string.size > 0 and: { reducedList.size == 0 }).if({
 				doc.selectedString_(textField.string);
 			});
 			w.close;
