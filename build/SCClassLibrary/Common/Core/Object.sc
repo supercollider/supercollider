@@ -119,7 +119,7 @@ Object {
 	
 	// equality, identity
 	== { arg obj; ^this === obj }
-	!= { arg obj; ^this !== obj }
+	!= { arg obj; ^not(this == obj) }
 	=== { arg obj; _Identical; ^this.primitiveFailed }
 	!== { arg obj;_NotIdentical; ^this.primitiveFailed }
 	
