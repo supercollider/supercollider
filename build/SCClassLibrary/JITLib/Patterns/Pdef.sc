@@ -3,8 +3,9 @@
 
 PatternProxy : Pattern {
 	var <pattern;
-	var <>clock, <>quant; 	// quant new pattern insertion. can be [quant, offset]
-						// in EventPatternProxy it can be [quant, offset, onsetQuant]
+	var <>clock, <>quant, <envir; 	
+						// quant new pattern insertion. can be [quant, offset]
+						// in EventPatternProxy it can be [quant, offset, onset]
 	
 	classvar <>defaultQuant, <>action;
 	
@@ -21,28 +22,45 @@ PatternProxy : Pattern {
 		this.source = src ?? { this.class.default }
 	}
 	
-	constrainStream { arg str; ^pattern.asStream }
+	constrainStream { ^pattern.asStream }
 	
-	source_ { arg pat; this.sched { pattern = pat } }
+	source_ { arg obj; 
+		var pat;
+		pat = if(obj.isKindOf(Function)) {
+			Proutine { arg inval; loop { inval = yield(obj.valueEnvir) } };
+		} { obj };
+		if(envir.notNil) { pat = Penvir(envir, pat, envir[\isolate] ? false) };
+		
+		this.sched { pattern = pat } 
+	}
 	source { ^pattern }
 	
 	pattern_ { arg pat; this.source_(pat) }
 	offset_ { arg val; quant = quant.instil(1, val) }
 	offset { arg val; ^quant.obtain(1) }
 
+	envir_ { arg argEnvir;
+		envir = argEnvir; 
+		this.source = this.source;
+	}
+	
+	set { arg ... args; 
+		if(envir.isNil) { this.envir = () };
+		args.pairsDo { arg key, val; envir.put(key, val) };
+	}
+	
 		
 	embedInStream { arg inval;
-		var pat, stream, outval;
+		var pat, stream, outval, event;
 		pat = pattern;
+		
 		stream = pattern.asStream;
-		while {
+		loop {
 			if((pat !== pattern)) {
-					pat = pattern;
-					stream = this.constrainStream(stream);
+						pat = pattern;
+						stream = this.constrainStream(stream);
 			};
 			outval = stream.next(inval);
-			outval.notNil
-		} {
 			inval = outval.yield;
 		}
 		^inval
@@ -119,6 +137,10 @@ Pdefn : PatternProxy {
 	*put { arg key, pattern;
 		all.put(key, pattern);
 	}
+	map {Êarg ... args;
+		if(envir.isNil) { this.envir = () };
+		args.pairsDo { |key, name| envir.put(key, this.class.new(name)) }
+	}
 	storeArgs { ^[key] } // assume it was created globally
 	
 }
@@ -139,12 +161,14 @@ TaskProxy : PatternProxy {
 					nil.alwaysYield; // prevent from calling handler
 				} { 
 					player.removedFromScheduler 
-				} 
+				}
 			};
+			if(envir.notNil) { pattern = Penvir(envir, pattern, envir[\isolate] ? false) };
 			this.wakeUp;
 			source = function;
 	}
 	
+		
 	wakeUp { if(isPlaying and: { player.isPlaying.not }) { this.play(quant:playQuant) } }
 	
 
@@ -215,6 +239,7 @@ EventPatternProxy : TaskProxy {
 		if(item.isKindOf(Function)) // allow functions to be passed in
 			{ source = item; pattern = PlazyEnvir(item) } 
 			{ pattern = source = item };
+		if(envir.notNil) { pattern = Pchain(envir, pattern) };
 		this.wakeUp;
 	}
 	
@@ -298,6 +323,10 @@ Pdef : EventPatternProxy {
 	*put { arg key, pattern;
 		all.put(key, pattern);
 	}
+	map {Êarg ... args;
+		if(envir.isNil) { this.envir = () };
+		args.pairsDo { |key, name| envir.put(key, this.class.new(name)) }
+	}
 	*initClass {
 		var phraseEventFunc;
 		CmdPeriod.add(this);
@@ -333,7 +362,7 @@ Pdef : EventPatternProxy {
 						} {
 							// play pattern in the ordinary way
 							~type = \note;
-							outerEvent.put(\instrument, ~synthDef);
+							outerEvent.put(\instrument, ~synthDef ? \default);
 						};
 					} {	// avoid recursion, if instrument not set.
 						outerEvent.put(\embeddingLevel, embeddingLevel + 1);
@@ -379,6 +408,8 @@ PbindProxy : Pattern {
 		source.quant = val;
 	}
 	quant { ^source.quant }
+	envir { ^source.envir }
+	envir_ { arg envir; source.envir_(envir) }
 	
 	at { arg key; var i; i = this.find(key); ^if(i.notNil) { pairs[i+1] } { nil } }
 	
@@ -469,6 +500,4 @@ Pdict : Pattern {
 		^inval
 	}
 }
-
-
 
