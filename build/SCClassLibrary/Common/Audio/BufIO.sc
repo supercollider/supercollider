@@ -14,6 +14,21 @@ PlayBuf : MultiOutUGen {
 	argNamesInputsOffset { ^2 }
 }
 
+TGrains : MultiOutUGen {
+	*ar { arg numChannels, trigger=0, bufnum=0, rate=1, startPos=0, dur=0.1, pan=0, amp=0.1; 
+		if (numChannels < 2) {
+			 "TGrains needs at least two channels.".error;
+			 ^nil
+		}
+		^this.multiNew('audio', numChannels, trigger, bufnum, rate, startPos, dur, pan, amp)
+	}
+	init { arg argNumChannels ... theInputs;
+		inputs = theInputs;
+		^this.initOutputs(argNumChannels, rate);
+	}
+	argNamesInputsOffset { ^2 }
+}
+
 
 /*
 // exception in GrafDef_Load: UGen 'SimpleLoopBuf' not installed.

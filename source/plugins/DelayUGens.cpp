@@ -39,6 +39,28 @@ struct PlayBuf : public Unit
 	SndBuf *m_buf;
 };
 
+
+struct Grain
+{
+	double phase, rate;
+	double b1, y1, y2; // envelope
+	float pan1, pan2;
+	int counter;
+	int bufnum;
+	int chan;
+	int reserved;
+};
+
+const int kMaxGrains = 64;
+
+struct TGrains : public Unit
+{
+	float mPrevTrig;
+	int mNumActive;
+	Grain mGrains[kMaxGrains];
+};
+
+
 #if NOTYET
 struct SimpleLoopBuf : public Unit
 {
@@ -238,6 +260,9 @@ extern "C"
 	void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples);
 	void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples);
 	void PlayBuf_Ctor(PlayBuf* unit);
+
+	void TGrains_next(TGrains *unit, int inNumSamples);
+	void TGrains_Ctor(TGrains* unit);
 
 #if NOTYET
 	void SimpleLoopBuf_next_kk(SimpleLoopBuf *unit, int inNumSamples);
@@ -5731,6 +5756,202 @@ void GrainTap_Ctor(GrainTap *unit)
 
 
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+#define GRAIN_BUF \
+	SndBuf *buf = bufs + bufnum; \
+	float *bufData __attribute__((__unused__)) = buf->data; \
+	uint32 bufChannels __attribute__((__unused__)) = buf->channels; \
+	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \
+	uint32 bufFrames = buf->frames; \
+	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
+
+
+inline float IN_AT(Unit* unit, int index, int offset) 
+{
+	if (INRATE(index) == calc_FullRate) return IN(index)[offset];
+	return ZIN0(index);
+}
+
+
+#define GRAIN_LOOP_BODY_4 \
+		float amp = y1 * y1; \
+		phase = sc_loop((Unit*)unit, phase, bufFrames, 1); \
+		int32 iphase = (int32)phase; \
+		float* table1 = bufData + iphase; \
+		float* table0 = table1 - 1; \
+		float* table2 = table1 + 1; \
+		float* table3 = table1 + 2; \
+		if (iphase == 0) { \
+			table0 += bufSamples; \
+		} else if (iphase >= guardFrame) { \
+			if (iphase == guardFrame) { \
+				table3 -= bufSamples; \
+			} else { \
+				table2 -= bufSamples; \
+				table3 -= bufSamples; \
+			} \
+		} \
+		float fracphase = phase - (double)iphase; \
+		float a = table0[0]; \
+		float b = table1[0]; \
+		float c = table2[0]; \
+		float d = table3[0]; \
+		float outval = amp * cubicinterp(fracphase, a, b, c, d); \
+		ZXP(out1) += outval * pan1; \
+		ZXP(out2) += outval * pan2; \
+		double y0 = b1 * y1 - y2; \
+		y2 = y1; \
+		y1 = y0; \
+
+	
+
+void TGrains_next(TGrains *unit, int inNumSamples)
+{
+	float *trigin = IN(0);
+	float prevtrig = unit->mPrevTrig;
+
+	uint32 numOutputs = unit->mNumOutputs;
+	ClearUnitOutputs(unit, inNumSamples);
+	float *out[16];
+	for (uint32 i=0; i<numOutputs; ++i) out[i] = ZOUT(i); 
+	
+	World *world = unit->mWorld;
+	SndBuf *bufs = world->mSndBufs;
+	uint32 numBufs = world->mNumSndBufs;
+	
+	for (int i=0; i < unit->mNumActive; ) {
+		Grain *grain = unit->mGrains + i;
+		uint32 bufnum = grain->bufnum;
+		GRAIN_BUF
+		if (bufChannels != 1) {
+			 ++i;
+			 continue;
+		}
+				
+		float pan1 = grain->pan1;
+		float pan2 = grain->pan2;
+		double rate = grain->rate;
+		double phase = grain->phase;
+		double b1 = grain->b1;
+		double y1 = grain->y1;
+		double y2 = grain->y2;
+
+		uint32 chan1 = grain->chan;
+		uint32 chan2 = chan1 + 1;
+		if (chan2 >= numOutputs) chan2 = 0;
+		
+		float *out1 = out[chan1];
+		float *out2 = out[chan2];
+		//printf("B chan %d %d  %08X %08X", chan1, chan2, out1, out2);
+
+		int nsmps = sc_min(grain->counter, inNumSamples);
+		for (int j=0; j<nsmps; ++j) {
+			GRAIN_LOOP_BODY_4;
+			phase += rate;
+		}
+
+		grain->phase = phase;
+		grain->y1 = y1;
+		grain->y2 = y2;
+
+		grain->counter -= nsmps;
+		if (grain->counter <= 0) {
+			// remove grain
+			*grain = unit->mGrains[--unit->mNumActive];
+		} else ++i;
+	}
+	
+	int trigSamples = INRATE(0) == calc_FullRate ? inNumSamples : 1;
+
+	for (int i=0; i<trigSamples; ++i) {
+		float trig = trigin[i];
+
+		if (trig > 0.f && prevtrig <= 0.f) {
+			// start a grain
+			if (unit->mNumActive+1 >= kMaxGrains) break;
+			uint32 bufnum = (uint32)IN_AT(unit, 1, i);
+			if (bufnum >= numBufs) continue;
+			GRAIN_BUF
+			if (bufChannels != 1) continue;
+			Grain *grain = unit->mGrains + unit->mNumActive++;
+			grain->bufnum = bufnum;
+			
+			double rate = grain->rate = IN_AT(unit, 2, i);
+			double phase = IN_AT(unit, 3, i);
+			grain->counter = (int)(IN_AT(unit, 4, i) * SAMPLERATE);
+			grain->counter = sc_max(4, grain->counter);
+			
+			float pan = IN_AT(unit, 5, i);
+			float amp = IN_AT(unit, 6, i);
+			float panangle;
+			if (numOutputs > 2) {				
+				pan = sc_wrap(pan * 0.5f, 0.f, 1.f);
+				float cpan = numOutputs * pan + 0.5;
+				float ipan = floor(cpan);
+				float panfrac = cpan - ipan;
+				panangle = panfrac * pi2;
+				grain->chan = (int)ipan;
+				if (grain->chan >= (int)numOutputs) grain->chan -= numOutputs;
+			} else {
+				grain->chan = 0;
+				pan = sc_wrap(pan * 0.5f + 0.5f, 0.f, 1.f);
+				panangle = pan * pi2;
+			}
+			float pan1 = grain->pan1 = amp * sin(panangle);
+			float pan2 = grain->pan2 = amp * cos(panangle);
+			double w = pi / grain->counter;
+			double b1 = grain->b1 = 2. * cos(w);
+			double y1 = sin(w);
+			double y2 = 0.;
+			
+			uint32 chan1 = grain->chan;
+			uint32 chan2 = chan1 + 1;
+			if (chan2 >= numOutputs) chan2 = 0;
+			
+			float *out1 = out[chan1] + i;
+			float *out2 = out[chan2] + i;
+			
+			int nsmps = sc_min(grain->counter, inNumSamples - i);
+			for (int j=0; j<nsmps; ++j) {
+				GRAIN_LOOP_BODY_4;
+				phase += rate;
+			}
+			
+			grain->phase = phase;
+			grain->y1 = y1;
+			grain->y2 = y2;
+			
+			grain->counter -= nsmps;
+			if (grain->counter <= 0) {
+				// remove grain
+				*grain = unit->mGrains[--unit->mNumActive];
+			}
+		}
+		prevtrig = trig;
+	}	
+	
+	unit->mPrevTrig = prevtrig;
+}
+
+void TGrains_Ctor(TGrains *unit)
+{	
+	SETCALC(TGrains_next);
+	
+	unit->mNumActive = 0;
+	unit->mPrevTrig = 0.;
+	
+	ClearUnitOutputs(unit, 1);
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void load(InterfaceTable *inTable)
@@ -5796,6 +6017,7 @@ void load(InterfaceTable *inTable)
 	
 	DefineDtorUnit(PitchShift);
 	DefineSimpleUnit(GrainTap);
+	DefineSimpleCantAliasUnit(TGrains);
 	DefineSimpleUnit(ScopeOut);
 }
 
