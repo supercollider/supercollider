@@ -4,7 +4,7 @@ SynthDef {
 	
 	var controlsSize=0;
 	var irnames, irvalues, ircontrols, irpositions;
-	var krnames, krvalues, krcontrols, krpositions;
+	var krnames, krvalues, krcontrols, krpositions, krlags;
 
 	var <>controls,<>controlNames; // ugens add to this
 	var <>children;
@@ -15,16 +15,16 @@ SynthDef {
 	// topo sort
 	var <>available;
 	
-	*new { arg name, ugenGraphFunc;
+	*new { arg name, ugenGraphFunc, lags;
 		^this.prNew(name)
-			.build(ugenGraphFunc)
+			.build(ugenGraphFunc, lags)
 	}
 	*prNew { arg name;
 		^super.new.name_(name.asString)
 	}
-	build { arg ugenGraphFunc;
+	build { arg ugenGraphFunc, lags;
 		this.initBuild
-			.buildUgenGraph(ugenGraphFunc)
+			.buildUgenGraph(ugenGraphFunc, lags)
 			.finishBuild
 	}
 		
@@ -33,10 +33,11 @@ SynthDef {
 		constants = Dictionary.new;
 		constantSet = Set.new;
 	}
-	buildUgenGraph { arg func;
-		func.valueArray(this.buildControlsFromArgsOfFunc(func));
+	buildUgenGraph { arg func, lags;
+		this.addControlsFromArgsOfFunc(func, lags);
+		func.valueArray(this.buildControls);
 	}
-	buildControlsFromArgsOfFunc { arg func;
+	addControlsFromArgsOfFunc { arg func, lags;
 		var def, names, values;
 		
 		def = func.def;
@@ -49,29 +50,36 @@ SynthDef {
 		// the OutputProxies of these two Control ugens in the original order.
 		values = def.prototypeFrame.copy.extend(names.size);
 		values = values.collect({ arg value; value ? 0.0 });
+		lags = lags.asArray.extend(names.size, 0).collect({ arg lag; lag ? 0.0 });
 		names.do({ arg name, i; 
-			var c, c2, value;
+			var c, c2, value, lag;
 			#c, c2 = name.asString;
 			value = values.at(i);
+			lag = lags.at(i);
 			if (c == $i && { c2 == $_ }, {
-				this.addIr(name,value);
+				if (lag != 0, {
+					Post << "WARNING: lag value "<< lag <<" for i-rate arg '"
+						<< name <<"' will be ignored.\n";
+				});
+				this.addIr(name, value);
 			},{
-				this.addKr(name,value);
+				this.addKr(name, value, lag);
 			});
 		});
-		^this.buildControls
 	}
+	
 	// allow incremental building of controls
-	addIr { arg name,value;
+	addIr { arg name, value;
 		irnames = irnames.add(name);
 		irvalues = irvalues.add(value);
 		irpositions = irpositions.add(controlsSize);
 		controlsSize = controlsSize + 1;
 	}
-	addKr { arg name,value;
+	addKr { arg name, value, lag;
 		krnames = krnames.add(name);
 		krvalues = krvalues.add(value);
 		krpositions = krpositions.add(controlsSize);
+		krlags = krlags.add(lag);
 		controlsSize = controlsSize + 1;
 	}
 	buildControls {
@@ -81,7 +89,11 @@ SynthDef {
 			ircontrols = Control.names(irnames).ir(irvalues);
 		});
 		if (krnames.size > 0, {
-			krcontrols = Control.names(krnames).kr(krvalues);
+			if (krlags.any({ arg lag; lag != 0 }), {
+				krcontrols = LagControl.names(krnames).kr(krvalues, krlags);
+			},{
+				krcontrols = Control.names(krnames).kr(krvalues);
+			});
 		});
 		outputProxies = Array.newClear(controlsSize);
 		ircontrols.asArray.do({ arg control, i; 

@@ -42,6 +42,14 @@ struct OffsetOut : public IOUnit
 	float *m_saved;
 };
 
+const int kMaxLags = 16;
+
+struct LagControl : public IOUnit
+{
+	float m_b1[kMaxLags];
+	float m_y1[kMaxLags];
+};
+
 extern "C"
 {
 	void load(InterfaceTable *inTable);
@@ -49,6 +57,10 @@ extern "C"
 	void Control_Ctor(Unit *inUnit);
 	void Control_next_k(Unit *unit, int inNumSamples);
 	void Control_next_1(Unit *unit, int inNumSamples);
+
+	void LagControl_Ctor(LagControl *inUnit);
+	void LagControl_next_k(LagControl *unit, int inNumSamples);
+	void LagControl_next_1(LagControl *unit, int inNumSamples);
 
 	void ControlTrig_Ctor(Unit *inUnit);
 	void ControlTrig_next_k(Unit *unit, int inNumSamples);
@@ -109,6 +121,45 @@ void Control_Ctor(Unit* unit)
 	} else {
 		SETCALC(Control_next_k);
 		Control_next_k(unit, 1);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void LagControl_next_k(LagControl *unit, int inNumSamples)
+{
+	int numChannels = unit->mNumOutputs;
+	float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
+	for (int i=0; i<numChannels; ++i, mapin++) {
+		float *out = OUT(i);
+		float z = **mapin;
+		*out = unit->m_y1[i] = z + unit->m_b1[i] * (unit->m_y1[i] - z);
+	}
+}
+
+void LagControl_next_1(LagControl *unit, int inNumSamples)
+{
+	float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
+	float *out = OUT(0);
+	float z = **mapin;
+	*out = unit->m_y1[0] = z + unit->m_b1[0] * (unit->m_y1[0] - z);
+}
+
+void LagControl_Ctor(LagControl* unit)
+{
+	if (unit->mNumOutputs == 1) {
+		SETCALC(LagControl_next_1);
+		LagControl_next_1(unit, 1);
+	} else {
+		SETCALC(LagControl_next_k);
+		LagControl_next_k(unit, 1);
+	}
+	int numChannels = unit->mNumInputs;
+	float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
+	for (int i=0; i<numChannels; ++i, mapin++) {
+		unit->m_y1[i] = **mapin;
+		float lag = ZIN0(i);
+		unit->m_b1[i] = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
 	}
 }
 
@@ -886,6 +937,7 @@ void load(InterfaceTable *inTable)
 
 	DefineDtorUnit(OffsetOut);
 	DefineSimpleUnit(XOut);
+	DefineSimpleUnit(LagControl);
 	DefineUnit("Control", sizeof(Unit), (UnitCtorFunc)&Control_Ctor, 0);
 	DefineUnit("ReplaceOut", sizeof(IOUnit), (UnitCtorFunc)&ReplaceOut_Ctor, 0);
 	DefineUnit("Out", sizeof(IOUnit), (UnitCtorFunc)&Out_Ctor, 0);

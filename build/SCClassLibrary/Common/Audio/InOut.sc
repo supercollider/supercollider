@@ -10,6 +10,7 @@ ControlName
 
 Control : MultiOutUGen {
 	var <values, <specialIndex;
+	
 	*names { arg names;
 		var synthDef, index;
 		synthDef = UGen.buildSynthDef;
@@ -28,6 +29,33 @@ Control : MultiOutUGen {
 	}
 	init { arg ... argValues;
 		values = argValues;
+		if (synthDef.notNil, { 
+			specialIndex = synthDef.controls.size;
+			synthDef.controls = synthDef.controls.addAll(values);
+		});
+		^this.initOutputs(values.size, rate)
+	}
+}
+
+LagControl : Control {	
+	*kr { arg values, lags;
+		values = values.asArray;
+		lags = lags.asArray;
+		if (values.size != lags.size, {
+			"LagControl values.size != lags.size".error; 
+			^nil 
+		});
+		^this.multiNewList(['control'] ++ values ++ lags)
+	}
+	*ir {
+		^this.shouldNotImplement(thisMethod)
+	}
+	init { arg ... stuff;
+		var lags, size, size2;
+		size = stuff.size;
+		size2 = size >> 1;
+		values = stuff.copyRange(0, size2-1);
+		inputs = stuff.copyRange(size2, size-1);
 		if (synthDef.notNil, { 
 			specialIndex = synthDef.controls.size;
 			synthDef.controls = synthDef.controls.addAll(values);
