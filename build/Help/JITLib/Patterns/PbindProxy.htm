@@ -1,0 +1,85 @@
+<HTML><FONT FACE="Helvetica" LANG="0" ABSZ="18" SIZE="5" COLOR="#000000"><B>PbindProxy</B></FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">           </FONT><FONT FACE="Helvetica" LANG="0" ABSZ="12" SIZE="3" COLOR="#000000"><B>incremental event pattern reference<BR>
+<BR>
+</B>superclass: Pattern<BR>
+<BR>
+<BR>
+<BR>
+keeps a reference to a Pbind in which single keys can be replaced.<BR>
+It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.<BR>
+<BR>
+<BR>
+<BR>
+<B>*new(key1, pattern1, key2, pattern2, ... )<BR>
+</B>create a new instance of PbindProxy with the given patternpairs<BR>
+<BR>
+<B>source</B><BR>
+returns the wrapper for the Pbind<BR>
+<BR>
+<BR>
+<B>set(key1, pattern1, key2, pattern2, ... )<BR>
+</B>set the given patternpairs.<BR>
+<BR>
+<B>at(key)</B><BR>
+return a pattern at that key. this can be used to set quant value individually,<BR>
+so different elementary patterns can be quantized differently.<BR>
+</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000"><BR>
+	x.at(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\freq</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">).quant = 2;</FONT><FONT FACE="Helvetica" LANG="0" ABSZ="12" SIZE="3" COLOR="#000000"><B><BR>
+<BR>
+<BR>
+quant_(val)<BR>
+</B>set the quant of all elementary patterns<BR>
+<BR>
+<B>quant</B><BR>
+return the quant value of the source pattern<B><BR>
+<BR>
+<BR>
+</B></FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#BF0000">// example:<BR>
+<BR>
+</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">(<BR>
+</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">SynthDef</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#5F5F5F">"Pdefhelp"</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, { </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">arg</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000"> out, freq, sustain=1, amp=1, pan;<BR>
+</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">var</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000"> env, u=1;<BR>
+env = </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">EnvGen</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">.kr(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">Env</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">.perc(0.03, sustain), 1, doneAction:2);<BR>
+5.do { </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">var</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000"> d; d = exprand(0.01, 1); u = </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">SinOsc</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">.ar(d * 300, u, rrand(0.1,1.2) * d, 1) };<BR>
+</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">Out</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">.ar(out, </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">Pan2</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">.ar(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">SinOsc</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">.ar(u + 1 * freq, 0, amp * env), pan));<BR>
+<BR>
+}).store;<BR>
+)<BR>
+s.boot;<BR>
+<BR>
+<BR>
+x = </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">PbindProxy</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">.new;<BR>
+x.set(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\instrument</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\Pdefhelp</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">);<BR>
+<BR>
+x.play;<BR>
+<BR>
+x.set(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\degree</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">Pseq</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">([0, 2, 5b, 1b], </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">inf</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">));<BR>
+x.set(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\dur</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, 0.1);<BR>
+x.set(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\degree</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">Pseq</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">([1b, 5, 3, 1b, 6, 2, 5, 0, 3, 0, 2], </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">inf</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">));<BR>
+x.set(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\legato</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">Prand</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">([1.0, 2.4, 0.2], </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">inf</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">), </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\mtranspose</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, -3);<BR>
+x.set(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\mtranspose</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">nil</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">); </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#BF0000">// remove key</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000"><BR>
+<BR>
+x.set(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\degree</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">Pseq</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">([1, 2, 3, 4, 5, 6], 1));<BR>
+x.play;<BR>
+<BR>
+x.set( </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\degree</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">Pseq</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">([1, 2, 3, 4, 5, 6], 3), </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\dur</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, 0.02);<BR>
+x.play;<BR>
+<BR>
+x.set(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\degree</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">Pseq</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">([1, 2, 3, 4, 5, 6], 3), </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\dur</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, 0.1);<BR>
+x.play;<BR>
+</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#BF0000"><BR>
+<BR>
+// embed in other patterns:<BR>
+(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000"><BR>
+x.set(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\degree</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">Pseq</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">([1b, 5, 3, 1b, 6, 2, 5, 0, 3, 0, 2], </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">inf</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">));<BR>
+</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">Ppar</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">([<BR>
+	x,<BR>
+	</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">Pbindf</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">(x, </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\ctranspose</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, 4)<BR>
+]).play;<BR>
+</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#BF0000">)<BR>
+</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000"><BR>
+<BR>
+x.set(</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\degree</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">Pseq</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">([1b, 5, 1b, 4, 0], </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#0000BF">inf</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">), </FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#007200">\dur</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#000000">, 0.4);<BR>
+<BR>
+</FONT><FONT FACE="Monaco" LANG="0" ABSZ="9" SIZE="1" COLOR="#BF0000"><BR>
+<BR>
+</FONT></HTML>
