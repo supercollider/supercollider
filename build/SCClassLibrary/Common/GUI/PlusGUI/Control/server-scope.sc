@@ -29,3 +29,14 @@
 		}, {scopeWindow.isNil.if({"Server-scope only works with the Internal Server".warn})});
 	}
 }
+
+// Function support
+
++ Function {
+	scope { arg numChannels, outbus = 0, fadeTime;
+		var synth;
+		synth = this.play(Server.internal, outbus, fadeTime);
+		synth.postln;
+		synth.notNil.if({Server.internal.scope(numChannels, outbus); ^synth;});
+	}
+}
