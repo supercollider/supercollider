@@ -3,6 +3,7 @@ SynthDef {
 	var <>name;
 	
 	var <>controls, <>controlNames; // ugens add to this
+	var <>allControlNames;
 	var <>controlIndex=0;
 	var <>children;
 		
@@ -49,11 +50,21 @@ SynthDef {
 		controlIndex = 0;
 	}
 	buildUgenGraph { arg func, rates, prependArgs;
-		// restart controls in case of *wrap
+		var result, saveControlNames;
+		
+		// save/restore controls in case of *wrap
+		saveControlNames = controlNames;
 		controlNames = nil;
+		
 		prependArgs = prependArgs.asArray;
 		this.addControlsFromArgsOfFunc(func, rates, prependArgs.size);
-		^func.valueArray(prependArgs ++ this.buildControls);
+		result = func.valueArray(prependArgs ++ this.buildControls);
+		
+		allControlNames = allControlNames ++ controlNames;
+		controlNames = saveControlNames
+		
+		^result
+
 	}
 	addControlsFromArgsOfFunc { arg func, rates, skipArgs=0;
 		var def, names, values,argNames;
@@ -209,11 +220,12 @@ SynthDef {
 			file.putFloat(item);
 		});
 				
-		file.putInt16(controlNames.size);
-		controlNames.do({ arg item;
+		file.putInt16(allControlNames.size);
+		allControlNames.do({ arg item;
 			if (item.name.notNil, {
 				file.putPascalString(item.name.asString);
 				file.putInt16(item.index);
+				[item.name.asString, item.index].postln;
 			});
 		});
 
