@@ -1,6 +1,6 @@
 Dictionary : Set {
 		
-	*new { arg n=3; ^super.new(n*2) }
+	*new { arg n=3; ^super.new(max(n,2)*4) }
 	*newFrom { arg aCollection;
 		var newCollection;
 		newCollection = this.new(aCollection.size);
@@ -26,7 +26,7 @@ Dictionary : Set {
 		if ( array.at(index).isNil, {
 			array.put(index, key);
 			size = size + 1;
-			if (array.size < (size * 3), { this.grow });
+			if (array.size < (size * 4), { this.grow });
 		});
 	}
 	putAll { arg aDictionary; 
@@ -176,11 +176,10 @@ Dictionary : Set {
 			i = i + 2;
 		});
 	}
-	*sizeFor { arg n=3; ^if (n < 0, {1}, { n * 3 }) }
 	grow {
 		var oldElements, index;
 		oldElements = array;
-		array = Array.newClear(array.size + this.growSize);
+		array = Array.newClear(array.size * 2);
 		this.keysValuesArrayDo(oldElements, 
 		{ arg key, val;
 			index = this.scanFor(key);
@@ -263,7 +262,7 @@ IdentityDictionary : Dictionary {
 		if ( array.at(index).isNil, {
 			array.put(index, key);
 			size = size + 1;
-			if (array.size < (size * 3), { this.grow });
+			if (array.size < (size * 4), { this.grow });
 		});
 		*/
 	}
@@ -278,7 +277,7 @@ IdentityDictionary : Dictionary {
 		if ( array.at(index).isNil, {
 			array.put(index, key);
 			size = size + 1;
-			if (array.size < (size * 3), { this.grow });
+			if (array.size < (size * 4), { this.grow });
 		});
 		^prev
 		*/

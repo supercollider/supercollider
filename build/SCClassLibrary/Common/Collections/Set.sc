@@ -1,8 +1,7 @@
 Set : Collection {
 	var <>array, <size=0;
 	
-	*new { arg n=3; ^super.new.initSet(this.sizeFor(n)) }
-	*sizeFor { arg n=3; ^if (n < 0, {1}, { n * 3 div: 2 }) }
+	*new { arg n=2; ^super.new.initSet(max(n,2)*2) }
 	species { ^this.class }
 	copy { ^this.shallowCopy.array_( array.copy ) }
 	makeEmpty { array.fill; }
@@ -86,14 +85,12 @@ Set : Collection {
 		this.fullCheck;
 	}
 	fullCheck {
-		//[\fullCheck, array.size, size * 3 div: 2, size].postln;
-		if (array.size < (size * 3 div: 2), { this.grow });
+		if (array.size < (size * 2), { this.grow });
 	}
-	growSize { ^max( array.size, 2 ) }
 	grow {
 		var oldElements;
 		oldElements = array;
-		array = Array.newClear(array.size + this.growSize);
+		array = Array.newClear(array.size * 2);
 		size = 0;
 		oldElements.do({ arg item;
 			if ( item.notNil, { this.noCheckAdd(item) })
