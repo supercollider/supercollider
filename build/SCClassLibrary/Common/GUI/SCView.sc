@@ -251,10 +251,10 @@ SCSlider : SCSliderBase
 		^this.getProperty(\value)
 	}
 	value_ { arg val;
-		this.setPropertyWithAction(\value, val);
-	}	
-	valueQuiet_ { arg val;
 		this.setProperty(\value, val);
+	}	
+	valueAction_ { arg val;
+		this.setPropertyWithAction(\value, val);
 	}	
 	
 	increment { ^this.value = this.value + this.bounds.width.reciprocal }
@@ -441,10 +441,10 @@ SCButton : SCControlView {
 		^this.getProperty(\value)
 	}
 	value_ { arg val;
-		this.setPropertyWithAction(\value, val);
-	}	
-	valueQuiet_ { arg val;
 		this.setProperty(\value, val);
+	}	
+	valueAction_ { arg val;
+		this.setPropertyWithAction(\value, val);
 	}	
 
 	defaultKeyDownAction { arg key, modifiers, unicode;
@@ -493,10 +493,10 @@ SCPopUpMenu : SCControlView {
 		^this.getProperty(\value)
 	}
 	value_ { arg val;
-		this.setPropertyWithAction(\value, val);
-	}
-	valueQuiet_ { arg val;
 		this.setProperty(\value, val);
+	}	
+	valueAction_ { arg val;
+		this.setPropertyWithAction(\value, val);
 	}	
 
 	defaultKeyDownAction { arg key, modifiers, unicode;
@@ -616,16 +616,19 @@ SCNumberBox : SCStaticTextBase {
 		});
 	}
 	value { ^object }
-	valueQuiet_ { arg val;
+	value_ { arg val;
 		keyString = nil;
 		this.stringColor = Color.black;
 		object = val;
-		this.string = val.asString;
+		this.string = object.asString;
 	}	
-	value_ { arg val;
-		this.valueQuiet(val);
-		this.doAction;
-	}
+	valueAction_ { arg val;
+		var prev;
+		prev = object;
+		this.value = val;
+		if (object != prev, { this.doAction });
+	}	
+
 	properties {
 		^super.properties ++ [\boxColor]
 	}
