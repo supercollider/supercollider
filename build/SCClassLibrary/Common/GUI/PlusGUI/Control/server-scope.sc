@@ -1,7 +1,7 @@
 + Server {
 
 	scope {arg numChannels, startingChannel = 0, bufsize = 4096, zoom = 1;
-		var numChan, scope, synth;
+		var numChan, scope;
 		if((this === Server.internal) and: scopeWindow.isNil ) {
 			numChan = numChannels ? this.options.numOutputBusChannels;
 			scopeBuffer = Buffer.alloc(this, bufsize, numChan);
@@ -11,13 +11,13 @@
 			scope.background = Color.black;
 			scope.resize = 5;
 			scope.xZoom = zoom;
-			synth = SynthDef("server-scope",{ 
+			scopeSynth = SynthDef("server-scope",{ 
 					ScopeOut.ar(InFeedback.ar(startingChannel, numChan), scopeBuffer.bufnum);  
 			}).play(this, addAction: \addToTail);
 				
 			// free synth and buffer when window is closed
 			scopeWindow.onClose = { 
-			synth.free; 
+			scopeSynth.free; 
 			scopeBuffer.free; 
 			scopeWindow = scopeBuffer = nil; 
 			};
