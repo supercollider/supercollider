@@ -12,10 +12,10 @@ Stream : AbstractFunction {
 		^Array.fill(n, { this.next; });
 	}
 	all {
-		arg list;
-		list = List.new;
-		this.do({ arg item; list.add(item); });
-		^list
+		// don't do this on infinite streams.
+		var array;
+		this.do { arg item; array = array.add(item); };
+		^array
 	}
 	
 	// writing
