@@ -157,7 +157,7 @@ Node {
 	hash {  ^server.hash bitXor: nodeID.hash	}
 	
 	== { arg aNode;
-		^(aNode.nodeID == nodeID) and: {aNode.server === server}
+		^(aNode.tryPerform(\nodeID) == nodeID) and: {aNode.tryPerform(\server) === server}
 	}
 	printOn { arg stream; stream << this.class.name << "(" << nodeID <<")" }
 
