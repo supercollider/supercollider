@@ -5,6 +5,28 @@
 	};
 	objectVersion = 38;
 	objects = {
+		43C4FB05050E298F004C2729 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = libraryConfig.h;
+			refType = 4;
+		};
+		43C4FB06050E29C9004C2729 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = libraryConfig.cpp;
+			refType = 4;
+		};
+//430
+//431
+//432
+//433
+//434
+//900
+//901
+//902
+//903
+//904
 		908DBC360507C63D00000098 = {
 			fileEncoding = "-2147483619";
 			isa = PBXFileReference;
@@ -428,6 +450,7 @@
 				F50D054202E69B6B01CA2799,
 				F50D054302E69B6B01CA2799,
 				F50D054402E69B6B01CA2799,
+				43C4FB05050E298F004C2729,
 			);
 			isa = PBXGroup;
 			path = lang;
@@ -938,6 +961,7 @@
 				F50D05CB02E69B6B01CA2799,
 				F50D05CE02E69B6B01CA2799,
 				F50D05CF02E69B6B01CA2799,
+				43C4FB06050E29C9004C2729,
 			);
 			isa = PBXGroup;
 			path = LangSource;
