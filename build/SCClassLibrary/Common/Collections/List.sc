@@ -22,7 +22,11 @@ List : SequenceableCollection {
 	grow { arg sizeIncrease; array = array.grow(sizeIncrease); }
 	size { ^array.size }
 	dump { "List's array:\n".post; array.dump }
-		
+
+	clear {
+		this.setCollection(Array.new(8));
+	}
+	
 	// accessing
 	
 	at { arg i; ^array.at(i) }
