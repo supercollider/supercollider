@@ -24,13 +24,9 @@ SharedBus : Bus {
 		})
 	}
 	realloc {
-		var r, n;
-		if(index.notNil, {
-			r = rate; n = numChannels;
-			this.releaseBus;
-			rate = r; numChannels = n;
-			this.alloc;
-		})
+		released = true;
+		super.realloc;
+		released = false;
 	}
 
 }
