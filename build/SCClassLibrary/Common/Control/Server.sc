@@ -491,7 +491,7 @@ Server : Model {
 		var bundle;
 		bundle = addr.bundle;
 		addr = addr.saveAddr;
-		if (time != false) { this.sendBundle(time, bundle); }
+		if (time != false) { this.listSendBundle(time, bundle); }
 		^bundle;
 	}
 	makeBundle { arg time, func, bundle;
