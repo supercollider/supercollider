@@ -60,7 +60,8 @@ PyrBlock *gPartiallyAppliedFunction = NULL;
 
 bool gIsTailCodeBranch = false;
 bool gTailIsMethodReturn = false;
-bool gFunctionHasExternalRefs = false;
+int gFunctionHighestExternalRef = 1;
+bool gFunctionCantBeClosed = true;
 #if TAILCALLOPTIMIZE
 bool gGenerateTailCallByteCodes = true;
 #else
@@ -217,7 +218,7 @@ void compilePushVar(PyrParseNode *node, PyrSymbol *varName)
 			}
 		}
 	} else if (varName == s_this || varName == s_super) {
-		gFunctionHasExternalRefs = true;
+		gFunctionCantBeClosed = true;
 		compileOpcode(opPushSpecialValue, opsvSelf);
 	} else if (varName == s_true) {
 		compileOpcode(opPushSpecialValue, opsvTrue);
@@ -1777,7 +1778,7 @@ void PyrCallNode::compileCall(PyrSlot *result)
 	} else if (isSuper) {
 		if (numArgs == 1) {
 			// pushes this as well, don't compile arg
-			gFunctionHasExternalRefs = true;
+			gFunctionCantBeClosed = true;
 			compileTail();
 			compileOpcode(opSendSuper, numArgs);
 			compileByte(index);
@@ -1797,7 +1798,7 @@ void PyrCallNode::compileCall(PyrSlot *result)
 			varname = NULL;
 		}
 		if (varname == s_this) {
-			gFunctionHasExternalRefs = true;
+			gFunctionCantBeClosed = true;
 		}
 		switch (selType) {
 			case selNormal :
@@ -3122,9 +3123,8 @@ void PyrReturnNode::compile(PyrSlot *result)
 	PyrSlot dummy;
 	
 	//post("->compilePyrReturnNode\n");
-	gFunctionHasExternalRefs = true;
+	gFunctionCantBeClosed = true;
 	if (!mExpr) {
-		gFunctionHasExternalRefs = true;
 		compileOpcode(opSpecialOpcode, opcReturnSelf);
 	} else if (mExpr->mClassno == pn_PushLitNode) {
 		lit = (PyrPushLitNode*)mExpr;
@@ -3646,8 +3646,11 @@ void PyrBlockNode::compile(PyrSlot* result)
 	block = newPyrBlock(flags);
 	SetObject(slotResult, block);
 	
-	bool prevFunctionHasExternalRefs = gFunctionHasExternalRefs;
-	gFunctionHasExternalRefs = false;
+	int prevFunctionHighestExternalRef = gFunctionHighestExternalRef;
+	bool prevFunctionCantBeClosed = gFunctionCantBeClosed;
+	gFunctionHighestExternalRef = 0;
+	gFunctionCantBeClosed = false;
+	
 	prevBlock = gCompilingBlock;
 	PyrClass* prevClass = gCompilingClass;
 
@@ -3832,18 +3835,23 @@ void PyrBlockNode::compile(PyrSlot* result)
 	compileOpcode(opSpecialOpcode, opcFunctionReturn);
 	installByteCodes(block);
 
-	if (!gFunctionHasExternalRefs) {
+	if ((!gFunctionCantBeClosed && gFunctionHighestExternalRef == 0) || mIsTopLevel) {
 			SetNil(&block->contextDef);
 			
 			PyrString* string = newPyrStringN(compileGC(), stringLength, flags, false);
 			memcpy(string->s, text+mBeginCharNo, stringLength);
 			SetObject(&block->sourceCode, string);
+			//static int totalLength = 0, totalStrings = 0;
+			//totalLength += stringLength;
+			//totalStrings++;
+			//post("cf %4d %4d %6d %s-%s \n", totalStrings, stringLength, totalLength, gCompilingClass->name.us->name, gCompilingMethod->name.us->name);
 	}
 
 	gCompilingBlock = prevBlock;
 	gCompilingClass = prevClass;
 	gPartiallyAppliedFunction = prevPartiallyAppliedFunction;
-	gFunctionHasExternalRefs = gFunctionHasExternalRefs || prevFunctionHasExternalRefs;
+	gFunctionCantBeClosed = gFunctionCantBeClosed || prevFunctionCantBeClosed;
+	gFunctionHighestExternalRef = sc_max(gFunctionHighestExternalRef - 1, prevFunctionHighestExternalRef);
 }
 
 
@@ -4086,19 +4094,18 @@ int conjureConstantIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot)
 	return constants->size-1;
 }
 
-bool findVarName(PyrBlock* inFunc, PyrClass **classobj, PyrSymbol *name, 
+bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name, 
 	int *varType, int *level, int *index, PyrBlock** tempfunc)
 {
 	int i, j, k;
 	int numargs;
 	PyrSymbol *argname, *varname;
 	PyrMethodRaw *methraw;
-	PyrBlock* func = inFunc;
 	
 	//postfl("->findVarName %s\n", name->name);
 	// find var in enclosing blocks, instance, class
 	if (name == s_super) {
-		gFunctionHasExternalRefs = true;
+		gFunctionCantBeClosed = true;
 		name = s_this;
 	}
 	if (name->name[0] >= 'A' && name->name[0] <= 'Z') return false;
@@ -4113,7 +4120,7 @@ bool findVarName(PyrBlock* inFunc, PyrClass **classobj, PyrSymbol *name,
 				*index = i;
 				*varType = varTemp;
 				if (tempfunc) *tempfunc = func;
-				if (func != inFunc) gFunctionHasExternalRefs = true;
+				if (j > 0) gFunctionHighestExternalRef = j;
 				return true;
 			}
 		}
@@ -4125,7 +4132,7 @@ bool findVarName(PyrBlock* inFunc, PyrClass **classobj, PyrSymbol *name,
 				*index = k;
 				*varType = varTemp;
 				if (tempfunc) *tempfunc = func;
-				if (func != inFunc) gFunctionHasExternalRefs = true;
+				if (j > 0) gFunctionHighestExternalRef = j;
 				return true;
 			}
 		}
@@ -4134,12 +4141,12 @@ bool findVarName(PyrBlock* inFunc, PyrClass **classobj, PyrSymbol *name,
 	if (classFindInstVar(*classobj, name, index)) {
 		*level = 0;
 		*varType = varInst;
-		if (gCompilingClass != class_interpreter) gFunctionHasExternalRefs = true;
+		if (gCompilingClass != class_interpreter) gFunctionCantBeClosed = true;
 		return true;
 	}
 	if (classFindClassVar(classobj, name, index)) {
 		*varType = varClass;
-		if (gCompilingClass != class_interpreter) gFunctionHasExternalRefs = true;
+		if (gCompilingClass != class_interpreter) gFunctionCantBeClosed = true;
 		return true;
 	}
 	if (name == s_curProcess) {
