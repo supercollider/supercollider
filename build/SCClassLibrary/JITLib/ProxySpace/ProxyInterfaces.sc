@@ -54,7 +54,6 @@ AbstractPlayControl {
 	play { this.subclassResponsibility(thisMethod) }
 	stop { this.subclassResponsibility(thisMethod) }
 	
-	
 	wakeUpParentsToBundle { arg bundle, checkedAlready;
 		parents.do { arg proxy; proxy.wakeUpToBundle(bundle, checkedAlready) }
 	}
@@ -177,6 +176,7 @@ SynthControl : AbstractPlayControl {
 	controlValues {  var desc; desc = this.synthDesc; 
 					^if(desc.notNil) { desc.controls.collect { |u| u.defaultValue } } { [] } 
 	}
+	
 }
 
 

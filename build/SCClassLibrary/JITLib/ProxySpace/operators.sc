@@ -45,8 +45,9 @@ UnaryOpPlug : AbstractOpPlug {
 	value { arg proxy;
 		var rate, numChannels;
 		rate = this.rate;
+		if(rate === 'stream') { rate = nil };  // cx defines rate of func as \stream
 		numChannels = this.numChannels;
-		if(rate.notNil && numChannels.notNil, { 
+		if(rate.notNil and: { numChannels.notNil }, { 
 			proxy.initBus(rate, numChannels)
 		});
 		a.initBus(rate, numChannels);
@@ -75,8 +76,9 @@ BinaryOpPlug : AbstractOpPlug  {
 	value { arg proxy;
 		var vala, valb, rate, numChannels;
 		rate = this.rate;
+		if(rate === 'stream') { rate = nil };  // cx defines rate of func as \stream
 		numChannels = this.numChannels;
-		if(rate.notNil && numChannels.notNil, { 
+		if(rate.notNil and: { numChannels.notNil }, { 
 			proxy.initBus(rate, numChannels)
 		});
 		this.initBus(rate, numChannels);

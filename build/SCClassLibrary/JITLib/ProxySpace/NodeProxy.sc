@@ -300,10 +300,9 @@ NodeProxy : BusPlug {
 	classvar <>buildProxyControl;
 	
 	
-	*make { arg server, rate, numChannels, inputs;
+	*new { arg server, rate, numChannels, inputs;
 		var res;
-		res = this.new(server);
-		res.initBus(rate, numChannels);
+		res = super.new(server).initBus(rate, numChannels);
 		inputs.do({ arg o; res.add(o) });
 		^res
 	}
@@ -478,7 +477,7 @@ NodeProxy : BusPlug {
 	group_ { arg agroup;
 		var bundle;
 		if(agroup.server !== server, { "cannot move to another server".error; ^this });
-		NodeWatcher.register(agroup.isPlaying_(true));
+		NodeWatcher.register(agroup.isPlaying_(true)); // assume it is playing
 		if(this.isPlaying)
 		{ 	bundle = MixedBundle.new;
 			this.stopAllToBundle(bundle); 
@@ -605,6 +604,8 @@ NodeProxy : BusPlug {
 	taskFunc_ { arg func; 
 		this.task = Routine.new({ func.value(this) })
 	}
+	
+	/////////// shortcuts for efficient bus input //////////////
 	
 	readFromBus { arg busses;
 		var n, x;
@@ -781,12 +782,18 @@ NodeProxy : BusPlug {
 			nodeMap.wakeUpParentsToBundle(bundle, checkedAlready);
 	}
 	
-	getFamily { arg set;
+	// used in 'garbage collector'
+	
+	getFamily { arg set, alreadyAsked;
 		var parents;
 		parents = IdentitySet.new;
+		alreadyAsked = alreadyAsked ?? { IdentitySet.new };
+		alreadyAsked.add(this);
 		objects.do { arg obj; parents.addAll(obj.parents) };
 		parents.addAll(nodeMap.parents);
-		parents.do { arg proxy; proxy.getFamily(parents) };
+		parents.do { arg proxy; 
+			if(alreadyAsked.includes(proxy).not) { proxy.getFamily(parents, alreadyAsked) }
+		};
 		set.add(this);
 		set.addAll(parents);
 		^set 	
