@@ -3,6 +3,7 @@
 \f3\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;
 }
+\vieww9000\viewh9000\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs44 \cf0 Gendy2
@@ -14,18 +15,21 @@ Hoffmann, Peter. (2000) The New GENDYN Program. Computer Music Journal 24:2, pp 
 \
 Technical notes- random walk is of the amplitude and time delta, not the amp and time directly. The amplitude step random walk uses a lehmer style number generator whose parameters are accessible. \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \ul Class Methods
+\f0\b \cf0 \ul \ulc0 Class Methods
 \f1\b0 \ulnone \
 \
 
 \f0\b *ar(ampdist=1, durdist=1, adparam=1.0, ddparam=1.0, minfreq=20, maxfreq=1000, ampscale= 0.5, durscale=0.5, initCPs=12, knum=12, a= 1.17, c=0.31, mul=1.0, add=0.0)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 All parameters can be modulated at control rate except for initCPs which is used only at initialisation.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b ampdist
+\f0\b \cf0 ampdist
 \f1\b0  - Choice of probability distribution for the next perturbation of the amplitude of a control point. \
 \
 The distributions are (adapted from the GENDYN program in Formalized Music):\
@@ -163,7 +167,7 @@ Where the sinus (Xenakis' name) is in this implementation taken as sampling from
 \cf2 //texture- the howling wind?\cf0 \
 (\
 \{\
-\cf3 Mix\cf0 .arFill(10,\{\
+\cf3 Mix.fill\cf0 (10,\{\
 \cf3 var\cf0  freq;\
 \
 freq= rrand(130,160.3);\
@@ -191,7 +195,7 @@ freq= rrand(130,160.3);\
 \cf3 var\cf0  n;\
 n=15;\
 \
-0.5*\cf3 Mix\cf0 .arFill(n,\{\
+0.5*\cf3 Mix.fill\cf0 (n,\{\
 \cf3 var\cf0  freq, numcps;\
 \
 freq= rrand(130,160.3);\
@@ -210,7 +214,7 @@ numcps= rrand(2,20);\
 n=10;\
 \
 \cf3 Resonz\cf0 .ar(\
-\cf3 Mix\cf0 .arFill(n,\{\
+\cf3 Mix.fill\cf0 (n,\{\
 \cf3 var\cf0  freq, numcps;\
 \
 freq= rrand(50,560.3);\
