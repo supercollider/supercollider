@@ -83,7 +83,7 @@ MIDIIn {
 	*connect { arg inport=0, device=0;
 		var uid;
 		if(device.isNumber, {
-			if(device.isPositive, {
+			if(device >= 0, {
 				if(MIDIClient.initialized.not,{ MIDIClient.init });
 				uid = MIDIClient.sources.at(device).uid
 			},{

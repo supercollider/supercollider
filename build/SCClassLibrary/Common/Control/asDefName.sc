@@ -1,4 +1,12 @@
 
+
++ SynthDef {
+
+	asSynthDef { ^this }
+	asDefName {	^name	}
+
+}
+
 + Object {
 
 	asSynthDef {
@@ -83,12 +91,5 @@
 		})
 	}
 	
-}
-
-+ SynthDef {
-
-	asSynthDef { ^this }
-	asDefName {	^name	}
-
 }
 
