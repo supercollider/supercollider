@@ -38,6 +38,7 @@ Collection {
 		this.do({ arg item;
 			hash = hash bitXor: item.hash;
 		});
+		^hash
 	}
 	
 	species { ^Array }
