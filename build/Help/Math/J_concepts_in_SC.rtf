@@ -1,121 +1,122 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+\red191\green0\blue0;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs18 \cf2 // The J programming language is a successor of APL. <http://www.jsoftware.com>\cf0 \
-\cf2 // These languages are made for processing arrays of data and are able to express\cf0 \
-\cf2 // complex notions of iteration implicitly.\cf0 \
-\cf2 // These are some concepts borrowed from J for SC.\cf0 \
-\cf2 // Thinking about multidimensional arrays can be both mind bending and mind expanding.\cf0 \
-\cf2 // It may take some effort to grasp what is happening in these examples.\cf0 \
+\f0\fs18 \cf2 // The J programming language is a successor of APL. <http://www.jsoftware.com>\cf3 \
+\cf2 // These languages are made for processing arrays of data and are able to express\cf3 \
+\cf2 // complex notions of iteration implicitly.\cf3 \
+\cf2 // These are some concepts borrowed from J for SC.\cf3 \
+\cf2 // Thinking about multidimensional arrays can be both mind bending and mind expanding.\cf3 \
+\cf2 // It may take some effort to grasp what is happening in these examples.\cf3 \
 \
-\cf2 // iota fills an array with a counter\cf0 \
-z = \cf3 Array\cf0 .iota(2, 3, 3);\
-z.rank; \cf2 // 3 dimensions\cf0 \
-z.shape; \cf2 // gives the sizes of the dimensions\cf0 \
-z = z.reshape(3, 2, 3); \cf2 // reshape changes the dimensions of an array\cf0 \
-z.rank; \cf2 // 3 dimensions\cf0 \
+\cf2 // iota fills an array with a counter\cf3 \
+z = \cf4 Array\cf3 .iota(2, 3, 3);\
+z.rank; \cf2 // 3 dimensions\cf3 \
+z.shape; \cf2 // gives the sizes of the dimensions\cf3 \
+z = z.reshape(3, 2, 3); \cf2 // reshape changes the dimensions of an array\cf3 \
+z.rank; \cf2 // 3 dimensions\cf3 \
 z.shape;\
 \
-\cf2 // fill a 2D array\cf0 \
-\cf3 Array\cf0 .fill2D(3,3,\{1.0.rand.round(0.01)\});\
+\cf2 // fill a 2D array\cf3 \
+\cf4 Array\cf3 .fill2D(3,3,\{1.0.rand.round(0.01)\});\
 \
-\cf3 Array\cf0 .fill2D(2,3,\{\cf3 |i,j|\cf0  i@j\});\
+\cf4 Array\cf3 .fill2D(2,3,\{\cf4 |i,j|\cf3  i@j\});\
 \
-\cf2 // fill a 3D array\cf0 \
-\cf3 Array\cf0 .fill3D(2,2,2,\{1.0.rand.round(0.01)\});\
+\cf2 // fill a 3D array\cf3 \
+\cf4 Array\cf3 .fill3D(2,2,2,\{1.0.rand.round(0.01)\});\
 \
-\cf3 Array\cf0 .fill3D(2,2,2,\{\cf3 |i,j,k|\cf0  `[i,j,k]\});\
+\cf4 Array\cf3 .fill3D(2,2,2,\{\cf4 |i,j,k|\cf3  `[i,j,k]\});\
 \
 \
-\cf2 // using dup to create arrays\cf0 \
+\cf2 // using dup to create arrays\cf3 \
 (1..4) dup: 3;\
 100.rand dup: 10;\
 \{100.rand\} dup: 10;\
 \{100.rand\} dup: 3 dup: 4;\
 \{\{100.rand\} dup: 3\} dup: 4;\
-\{\cf3 |i|\cf0  i.squared\} dup: 10;\
-\{\cf3 |i|\cf0  i.nthPrime\} dup: 10;\
+\{\cf4 |i|\cf3  i.squared\} dup: 10;\
+\{\cf4 |i|\cf3  i.nthPrime\} dup: 10;\
 \
-\cf2 // operator adverbs\cf0 \
-\cf2 // Adverbs are a third argument passed to binary operators that modifies how they iterate over\cf0 \
-\cf2 // SequenceableCollections or Streams.\cf0 \
-\cf2 // see the Adverbs help file\cf0 \
-[10, 20, 30, 40, 50] + [1, 2, 3]; \cf2 // normal\cf0 \
-[10, 20, 30, 40, 50] +.f [1, 2, 3]; \cf2 // folded\cf0 \
-[10, 20, 30, 40, 50] +.s [1, 2, 3]; \cf2 // shorter\cf0 \
-[10, 20, 30, 40, 50] +.x [1, 2, 3]; \cf2 // cross\cf0 \
-[10, 20, 30, 40, 50] +.t [1, 2, 3]; \cf2 // table\cf0 \
+\cf2 // operator adverbs\cf3 \
+\cf2 // Adverbs are a third argument passed to binary operators that modifies how they iterate over\cf3 \
+\cf2 // SequenceableCollections or Streams.\cf3 \
+\cf2 // see the Adverbs help file\cf3 \
+[10, 20, 30, 40, 50] + [1, 2, 3]; \cf2 // normal\cf3 \
+[10, 20, 30, 40, 50] +.f [1, 2, 3]; \cf2 // folded\cf3 \
+[10, 20, 30, 40, 50] +.s [1, 2, 3]; \cf2 // shorter\cf3 \
+[10, 20, 30, 40, 50] +.x [1, 2, 3]; \cf2 // cross\cf3 \
+[10, 20, 30, 40, 50] +.t [1, 2, 3]; \cf2 // table\cf3 \
 \
-\cf2 // operator depth.\cf0 \
-\cf2 // J has a concept called verb rank, which is probably too complex to understand implement in SC,\cf0 \
-\cf2 // but operator depth is similar and simpler.\cf0 \
-\cf2 // A binary operator can be given a depth at which to operate\cf0 \
-\cf2 // negative depths iterate the opposite operand.\cf0 \
-\cf2 // These are better understood by example.\cf0 \
-\cf2 // It is not currently possible to combine adverb and depth.\cf0 \
-z = \cf3 Array\cf0 .iota(3,3);\
+\cf2 // operator depth.\cf3 \
+\cf2 // J has a concept called verb rank, which is probably too complex to understand and implement \cf3 \
+\cf2 // in SC, but operator depth is similar and simpler.\cf3 \
+\cf2 // A binary operator can be given a depth at which to operate\cf3 \
+\cf2 // negative depths iterate the opposite operand.\cf3 \
+\cf2 // These are better understood by example.\cf3 \
+\cf2 // It is not currently possible to combine adverb and depth.\cf3 \
+z = \cf4 Array\cf3 .iota(3,3);\
 y = [100, 200, 300];\
-z + y\
-z +.1 y;\
-z +.2 y;\
-z +.-1 y; \
+z + y;\
+z +.0 y; \cf2 // \cf5 same as the above. \cf2 y added to each row of z\cf3 \
+z +.1 y; \cf2 // y added to each column of z\cf3 \
+z +.2 y; \cf2 // y added to each element of z\cf3 \
+z +.-1 y; \cf2 // z added to each element of y\cf3 \
 \
-\cf2 // deepCollect operates a function at different dimensions or depths in an array.\cf0 \
-z = \cf3 Array\cf0 .iota(3, 2, 3);\
-f = \{\cf3 |item|\cf0  item.reverse \};\
+\cf2 // deepCollect operates a function at different dimensions or depths in an array.\cf3 \
+z = \cf4 Array\cf3 .iota(3, 2, 3);\
+f = \{\cf4 |item|\cf3  item.reverse \};\
 z.deepCollect(0, f);\
 z.deepCollect(1, f);\
 z.deepCollect(2, f);\
 \
-f = \{\cf3 |item|\cf0  item.stutter \};\
+f = \{\cf4 |item|\cf3  item.stutter \};\
 z.deepCollect(0, f);\
 z.deepCollect(1, f);\
 z.deepCollect(2, f);\
 \
-\cf2 // slice can get sections of multidimensional arrays.\cf0 \
-\cf2 // nil gets all the indices of a dimension\cf0 \
-z = \cf3 Array\cf0 .iota(4,5);\
-z.slice(\cf3 nil\cf0 , (1..3));\
+\cf2 // slice can get sections of multidimensional arrays.\cf3 \
+\cf2 // nil gets all the indices of a dimension\cf3 \
+z = \cf4 Array\cf3 .iota(4,5);\
+z.slice(\cf4 nil\cf3 , (1..3));\
 z.slice(2, (1..3));\
 z.slice((2..3), (0..2));\
 z.slice((1..3), 3);\
 z.slice(2, 3);\
 \
-z = \cf3 Array\cf0 .iota(3,3,3);\
+z = \cf4 Array\cf3 .iota(3,3,3);\
 z.slice([0,1],[1,2],[0,2]);\
-z.slice(\cf3 nil\cf0 ,\cf3 nil\cf0 ,[0,2]);\
+z.slice(\cf4 nil\cf3 ,\cf4 nil\cf3 ,[0,2]);\
 z.slice(1);\
-z.slice(\cf3 nil\cf0 ,1);\
-z.slice(\cf3 nil\cf0 ,\cf3 nil\cf0 ,1);\
-z.slice(\cf3 nil\cf0 ,2,1);\
-z.slice(\cf3 nil\cf0 ,1,(1..2));\
+z.slice(\cf4 nil\cf3 ,1);\
+z.slice(\cf4 nil\cf3 ,\cf4 nil\cf3 ,1);\
+z.slice(\cf4 nil\cf3 ,2,1);\
+z.slice(\cf4 nil\cf3 ,1,(1..2));\
 z.slice(1,[0,1]);\
 z.flop;\
 \
-\cf2 // sorting order\cf0 \
+\cf2 // sorting order\cf3 \
 \
-z = \{100.rand\}.dup(10); \cf2 // generate a random array;\cf0 \
-\cf2 // order returns an array of indices representing what would be the sorted order of the array.\cf0 \
+z = \{100.rand\}.dup(10); \cf2 // generate a random array;\cf3 \
+\cf2 // order returns an array of indices representing what would be the sorted order of the array.\cf3 \
 o = z.order; \
-y = z[o]; \cf2 // using the order as an index returns the sorted array\cf0 \
+y = z[o]; \cf2 // using the order as an index returns the sorted array\cf3 \
 \
-\cf2 // calling order on the order returns an array of indices that returns the sorted array to the \cf0 \
-\cf2 // original scrambled order\cf0 \
+\cf2 // calling order on the order returns an array of indices that returns the sorted array to the \cf3 \
+\cf2 // original scrambled order\cf3 \
 p = o.order; \
 x = y[p];\
 \
-\cf2 // bubbling wraps an item in an array of one element. it takes the depth and levels as arguments.\cf0 \
-z = \cf3 Array\cf0 .iota(4,4);\
+\cf2 // bubbling wraps an item in an array of one element. it takes the depth and levels as arguments.\cf3 \
+z = \cf4 Array\cf3 .iota(4,4);\
 z.bubble;\
 z.bubble(1);\
 z.bubble(2);\
 z.bubble(0,2);\
 z.bubble(1,2);\
 z.bubble(2,2);\
-\cf2 // similarly, unbubble unwraps an Array if it contains a single element.\cf0 \
+\cf2 // similarly, unbubble unwraps an Array if it contains a single element.\cf3 \
 5.unbubble;\
 [5].unbubble;\
 [[5]].unbubble;\
@@ -127,15 +128,15 @@ z.bubble.unbubble;\
 z.bubble(1).unbubble(1);\
 z.bubble(2).unbubble(2);\
 \
-\cf2 // laminating with the +++ operator\cf0 \
-\cf2 // the +++ operator takes each item from the second list and appends it to the corresponding item\cf0 \
-\cf2 // in the first list. If the second list is shorter, it wraps.\cf0 \
-z = \cf3 Array\cf0 .iota(5,2);\
+\cf2 // laminating with the +++ operator\cf3 \
+\cf2 // the +++ operator takes each item from the second list and appends it to the corresponding item\cf3 \
+\cf2 // in the first list. If the second list is shorter, it wraps.\cf3 \
+z = \cf4 Array\cf3 .iota(5,2);\
 z +++ [77,88,99];\
 z +++ [[77,88,99]];\
 z +++ [[[77,88,99]]];\
 z +++ [ [[77]],[[88]],[[99]] ];\
-\cf2 // same as:\cf0 \
+\cf2 // same as:\cf3 \
 z +++ [77,88,99].bubble;\
 z +++ [77,88,99].bubble(0,2);\
 z +++ [77,88,99].bubble(1,2);\
@@ -148,10 +149,10 @@ z +++ [[[11,22,33].pyramidg]];\
 \
 (\
 z = (1..4);\
-10.do \{\cf3 |i|\cf0  \
+10.do \{\cf4 |i|\cf3  \
 			z.pyramid(i+1).postln;\
 			z.pyramidg(i+1).postln;\
-			\cf4 ""\cf0 .postln;\
+			\cf6 ""\cf3 .postln;\
 \};\
 )\
 }
