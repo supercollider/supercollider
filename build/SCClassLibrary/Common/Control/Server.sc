@@ -132,6 +132,7 @@ Server : Model {
 		this.newAllocators;	
 	}
 	initTree {
+		nodeAllocator = NodeIDAllocator(clientID);	
 		this.sendMsg("/g_new", 1);
 		tree.value(this);
 	}
