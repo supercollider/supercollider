@@ -26,5 +26,7 @@
 		length.do({ arg i; signal.add(this.at(i * ratio)) });
 		^signal;
 	}
+	
+	plot { arg size; this.asSignal(size).plot; }
 
 }
