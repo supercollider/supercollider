@@ -13,6 +13,11 @@ ProxySynthDef : SynthDef {
 		name = "temp_proxy_def_" ++ name;		
 		def = super.new(name, { 
 			var envgen, synthGate, synthFadeTime, out, outCtl;
+			
+			prependArgs = prependArgs.collect({ arg parg; parg.value });
+			output = SynthDef.wrap(func, lags, prependArgs);
+			rate = output.rate;
+			
 			envgen = if(makeFadeEnv, {
 					synthGate = Control.names('#gate').kr(1.0);
 					synthFadeTime = Control.names('#fadeTime').kr(0.02);
@@ -20,12 +25,9 @@ ProxySynthDef : SynthDef {
 					EnvGen.kr(Env.new(#[0,1,0],[1,1.25],'sin',1),synthGate,1,0,synthFadeTime,2)	
 				}, { 
 					1.0 
-				});
-			prependArgs = prependArgs.collect({ arg parg; parg.value });
-			output = envgen * SynthDef.wrap(func, lags, prependArgs);
-			rate = output.rate;
-			
-				if(rate === 'scalar', {
+			});
+			output = output * envgen;
+			if(rate === 'scalar', {
 					output
 					}, {
 					outCtl = Control.names(\out).ir(0) + channelOffset;

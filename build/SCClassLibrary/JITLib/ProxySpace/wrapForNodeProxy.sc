@@ -53,11 +53,18 @@
 +SimpleNumber {
 	prepareForProxySynthDef { arg proxy;
 		^if(proxy.rate === 'audio', {
-			{Line.ar(this,this,0.001)}
+			{ Array.fill(proxy.numChannels, { Line.ar(this,this,0.001) }) }
 		}, { 
-			{Line.kr(this,this,0.001)}
+			{ Array.fill(proxy.numChannels, { Line.kr(this,this,0.001) }) }
 		})
 	}
+//problem here: when there is a fade, the bus is still written on after the setting.
+//	wrapForNodeProxy { arg proxy, lags, channelOffset=0;
+//		var ok;
+//		ok = proxy.initBus('control',1);
+//		^if(ok, { NumericalControl(proxy.outbus, this) }, nil)
+//	}
+
 }
 
 +Instr {
@@ -91,13 +98,11 @@
 +Pattern {
 	wrapForNodeProxy { arg proxy, channelOffset=0;
 		//assume audio rate event stream for now.
-		var pat, ok, outbus, protoEvent;
+		var pat, ok, outbus, argNames, msgFunc;
 		ok = proxy.initBus('audio', 2);
-		//for now make a special protoevent
-		protoEvent = Event.protoEvent;
-		protoEvent.use({
-			~argNames = [\freq,\amp,\sustain,\pan,\out];//more later
-			~msgFunc = { arg id, freq;
+		
+		argNames = [\freq,\amp,\sustain,\pan];//more later
+		msgFunc = { arg id, freq;
 				var args, bundle;
 				if(~argNames.notNil, {
 					args = Array.newClear(~argNames.size * 2);
@@ -108,10 +113,9 @@
 				});
 				bundle = List[[9, ~instrument, id, 1, ~group] ++ args];
 				proxy.nodeMap.addToBundle(bundle, id);
-				bundle.postln;
-			};
+				bundle
+		};
 
-		});
 		
 		^if(ok, {
 			outbus = proxy.index; //doesn't change
@@ -119,10 +123,12 @@
 			pat = this.collect({ arg event;
 				event.use({ 
 					~nodeID = proxy.asNodeID; //in case of Pmono. see.
+					~argNames = argNames;
+					~msgFunc = msgFunc;
 				});
 				event;
 			});
-			Pevent(pat, protoEvent).asStream.wrapForNodeProxy
+			pat.asEventStream.wrapForNodeProxy
 		}, nil);
 
 	}
@@ -130,19 +136,14 @@
 }
 
 
-// add Pevent and Stream .wrapForNodeProxy
+// add  Stream .wrapForNodeProxy
+// this assumes initBus is done in Pattern-wrapForNodeProxy.
 
 +EventStream {
 	wrapForNodeProxy { 
 			^EventStreamControl.new(this)
 		
 	}
-	//this doesn't do. 
-	/*
-	collect { arg func;
-		^this.class.new(originalStream.collect(func), protoEvent.copy)
-	}
-	*/
 }
 
 

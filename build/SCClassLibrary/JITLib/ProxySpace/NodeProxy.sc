@@ -4,7 +4,7 @@ NodeProxy : AbstractFunction {
 	var <server, <group, <outbus; 		//server access
 	var <objects, <parents; 			//playing templates
 	
-	var <nodeMap, <>lags=#[], <>prepend, <>clock;
+	var <nodeMap, <>lags=#[], <>prepend, <>clock; //lags might go into function annotation later
 	var <>freeSelf=true, <loaded=false;		
 	classvar <>buildProxy;
 	
@@ -42,11 +42,13 @@ NodeProxy : AbstractFunction {
 	
 	allocBus { arg rate=\audio, numChannels=2;
 		//skip the first 32 channels. maybe use special server later. revisit.
-		var alloc;
+		var alloc, busIndex;
 		alloc = server.audioBusAllocator.alloc(numChannels);
 		if(alloc.isNil,{ "no channels left".error ^nil });
 		outbus = Bus.new(rate, alloc + 32, numChannels, server);
-		nodeMap.set(\out, outbus.index);
+		busIndex = outbus.index;
+		//set both, because patterns may have both.
+		nodeMap.set(\out, busIndex, \i_out, busIndex); 
 	}
 	
 	fadeTime_ { arg t;
@@ -76,24 +78,26 @@ NodeProxy : AbstractFunction {
 		
 	play { arg busIndex=0, nChan;
 		var playGroup, bundle, divider, checkedAlready;
-		bundle = MixedBundle.new;
-		playGroup = Group.newToBundle(bundle, server);
-		if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
-		nChan = nChan ? this.numChannels;
-		nChan = nChan.min(this.numChannels);
-		checkedAlready = Set.new;
-		this.wakeUpToBundle(bundle, checkedAlready);
+		if(server.serverRunning, {
+			bundle = MixedBundle.new;
+			playGroup = Group.newToBundle(bundle, server);
+			if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
+			nChan = nChan ? this.numChannels;
+			nChan = nChan.min(this.numChannels);
+		
+			checkedAlready = Set.new;
+			this.wakeUpToBundle(bundle, checkedAlready);
 	
-		divider = if(nChan.even, 2, 1);
-		(nChan div: divider).do({ arg i;
-		bundle.add([9, "proxyOut-linkDefAr-"++divider, 
+			divider = if(nChan.even, 2, 1);
+			(nChan div: divider).do({ arg i;
+			bundle.add([9, "proxyOut-linkDefAr-"++divider, 
 					server.nextNodeID, 1,playGroup.nodeID,
 					\i_busOut, busIndex+(i*divider), \i_busIn, outbus.index+(i*divider)]);
-		});
+			});
 		
-		server.waitForBoot({
 			this.sendBundle(bundle,0);
-		});
+		}, { "server not running".inform });
+		
 		^playGroup
 	}
 	
@@ -192,12 +196,28 @@ NodeProxy : AbstractFunction {
 		{ "not playing".inform });
 	}
 	
+	env { arg env;
+		if(outbus.notNil && this.isPlaying, { outbus.env(env) },
+		{ "not playing".inform });
+	}
+	
+	setBus { arg ... values;
+		if(outbus.notNil && this.isPlaying, { 
+			outbus.performList(\set, values) 
+		},
+		{ "not playing".inform });
+	}
+
+	
 	////////////behave like my group////////////
 	
 	free {
 		if(this.isPlaying, { group.free });
 	}
 	
+	freeAll {
+		if(this.isPlaying, { group.freeAll });
+	}
 	
 	set { arg ... args;
 		nodeMap.performList(\set, args);
