@@ -11,7 +11,7 @@ superclass: SCNumberBox\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Sheet\cf0 (\{ \cf2 arg\cf0  l;\
-	b = 	\cf2 SCTextField\cf0 (l.window,l.layRight(150,30));\
+	b = 	\cf2 SCTextField\cf0 (l,Rect(0,0,150,30));\
 	b.string = "hi there";\
 	b.action = \{\cf2 arg\cf0  field; field.value.postln; \}\
 \});\
@@ -31,4 +31,4 @@ b.setProperty(\cf4 \\align\cf0 ,\cf4 \\center\cf0 );\
 \
 Does not handle composed character sequences ( \'8e \'bf etc. )\
 \
-}
+option-e appears to freeze it ?}
