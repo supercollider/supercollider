@@ -209,7 +209,7 @@ Buffer {
 			server.sendMsgSync(cond, *msg);
 			file = SoundFile.new;
 			file.openRead(path);
-			array = FloatArray.newClear(file.numFrames);
+			array = FloatArray.newClear(file.numFrames * file.numChannels);
 			file.readData(array);
 			file.close;
 			if(File.delete(path).not, {("Could not delete data file:" + path).warn;});
@@ -220,7 +220,7 @@ Buffer {
 	// risky without wait 
 	getToFloatArray { arg index = 0, count, wait = 0.01, timeout = 3, action;
 		var refcount, array, pos = 0, getsize, resp, done = false;
-		count = count ? numFrames;
+		count = count ? (numFrames * numChannels);
 		array = FloatArray.newClear(count);
 		refcount = (count / 1633).asInteger + 1;
 		resp = OSCresponderNode(server.addr, '/b_setn', { arg time, responder, msg; 
