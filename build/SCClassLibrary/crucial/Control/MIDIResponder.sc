@@ -1,10 +1,8 @@
 
-
 MIDIResponder {
-	classvar initialized = false,responders;
 	var <>function;
 	init {
-		if(initialized.not,{ this.class.init });
+		if(this.class.initialized.not,{ this.class.init });
 		this.class.add(this);
 	}
 	remove {
@@ -12,13 +10,13 @@ MIDIResponder {
 	}
 	*removeAll { this.init }
 	*remove { arg resp;
-		responders.do({ arg r,i;
+		this.responders.do({ arg r,i;
 			if(r === resp,{
-				responders.put(i,nil)
+				this.responders.put(i,nil)
 			},{
 				if(r.isKindOf(ResponderArray),{
-					if( r.remove(resp) == 0,{
-						responders.put(i,nil); // all cleared
+					if(r.remove(resp) == 0,{
+						this.responders.put(i,nil); // all cleared
 					})
 				})
 			})
@@ -38,19 +36,22 @@ ResponderArray {
 		array.remove(resp);
 		^array.size
 	}
-	
 }
 
 NoteOnResponder : MIDIResponder {
+	classvar <norinit = false,<nonr;
+
 	*new { arg function;
 		^super.new.function_(function).init
 	}
+	*initialized { ^norinit }
+	*responders { ^nonr }
 	*init {
 		if(MIDIClient.initialized.not,{ MIDIIn.connect });
-		initialized = true;
-		responders = [];
+		norinit = true;
+		nonr = [];
 		MIDIIn.noteOn = { arg src, chan, num, veloc;
-			responders.do({ arg r;
+			nonr.do({ arg r;
 				r.function.value(num,veloc);
 			});
 		}
@@ -59,55 +60,72 @@ NoteOnResponder : MIDIResponder {
 		function.value(note,veloc)
 	}
 	*add { arg resp;
-		responders = responders.add(resp);
+		nonr = nonr.add(resp);
 	}
 	*remove { arg resp;
-		responders.remove(resp);
+		nonr.remove(resp);
 	}		
 }
 
 NoteOffResponder : NoteOnResponder {
+	classvar <noffinit = false,<noffr;
 
 	*init {
 		if(MIDIClient.initialized.not,{ MIDIIn.connect });
-		initialized = true;
-		responders = [];
+		noffinit = true;
+		noffr = [];
 		MIDIIn.noteOff = { arg src, chan, num, veloc;
-			responders.do({ arg r;
+			noffr.do({ arg r;
 				r.function.value(num,veloc);
 			});
 		}
 	}
+	*initialized { ^noffinit }
+	*responders { ^noffr }
+
+	*add { arg resp;
+		noffr = noffr.add(resp);
+	}
+	*remove { arg resp;
+		noffr.remove(resp);
+	}
 }
 
 CCResponder : MIDIResponder {
+	classvar <ccinit = false,<ccr;
+
 	var <>num;
 	
 	*new { arg num,function;
 		^super.new.num_(num).function_(function).init
 	}
+	*initialized { ^ccinit }
+	*responders { ^ccr }
 	value { arg val;
 		function.value(val)
 	}
 	*add { arg resp;
 		var old;
-		old = responders.at(resp.num);
+		old = ccr.at(resp.num);
 		if(old.isNil,{
-			responders.put(resp.num,resp);
+			ccr.put(resp.num,resp);
 		},{
 			if(old.isKindOf(ResponderArray).not,{
-				responders.put(resp.num,ResponderArray.new.add(old).add(resp))
+				ccr.put(resp.num,ResponderArray.new.add(old).add(resp))
 			},{
 				old.add(resp)
 			})
 		})
 	}
+	*remove { arg resp;
+		ccr.remove(resp);
+	}
 	*init {
 		if(MIDIClient.initialized.not,{ MIDIIn.connect });
-		initialized = true;
-		responders = Array.newClear(127);
+		ccinit = true;
+		ccr = Array.newClear(127);
 		MIDIIn.control = { arg src,chan,num,val;
-			responders.at(num).value(val);
+			ccr.at(num).value(val);
 		};
 	}
 }

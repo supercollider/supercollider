@@ -7,7 +7,6 @@ HasSubjectGui : AbstractPlayerGui {
 		layout.startRow;
 		subjg = model.subject.gui(layout);
 	}
-	enableMIDI { subjg.enableMIDI }
 }
 
 
