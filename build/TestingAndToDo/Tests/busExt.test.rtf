@@ -28,4 +28,30 @@ a.value = 300;\
 a.gate(1000, 0.1);\
 a.gate(400, 0.1);\
 a.line(rrand(800.0,300), 2);\
+\
+\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "help-busGating"\cf0 , \
+	\{ arg freq=700, out=0, in=0;\
+		\cf2 Out\cf0 .ar(out, \
+			\cf2 SinOsc\cf0 .ar(In.ar(in), 0, 0.1)\
+		)\
+	\}).load(s);\
+)\
+\
+a = Bus.audio(s,2);\
+s.notify(true);\
+\
+c = Synth("\cf3 help-busGating", [\\out, 1, \\in, \cf0 a.index\cf3 ]);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 d = Synth("\cf3 help-busGating", [\\out, 0, \\in, \cf0 a.index+1\cf3 ]);\cf0 \
+\
+\
+a.gate(1000, 0.1);\
+a.gate(400, 0.1);\
+a.line(rrand(800.0,300), 2);\
+a.xline(rrand(800.0,300), 2);\
+\
 }
