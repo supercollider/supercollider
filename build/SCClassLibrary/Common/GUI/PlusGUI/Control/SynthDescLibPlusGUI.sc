@@ -24,6 +24,9 @@
 		
 		synthDescLibListView = SCListView(w, Rect(0,0, 220, 320)).focus;
 		synthDescListView = SCListView(w, Rect(0,0, 220, 320));
+		synthDescListView.beginDragAction_({arg v;
+			v.items[v.value].asSymbol;
+		});
 		ugensListView = SCListView(w, Rect(0,0, 220, 320));
 		
 		w.view.decorator.nextLine;
