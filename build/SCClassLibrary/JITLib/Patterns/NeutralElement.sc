@@ -8,11 +8,11 @@ N  {
 	
 	//class
 	*doesNotUnderstand { arg selector, args;
-		this.value; //avoid crash
+		this.emptyCall; //avoid crash
 		^this
 	}
 	
-	*value {}
+	*emptyCall {}
 	
 	*performBinaryOpOnSomething {
 		^this
@@ -20,12 +20,31 @@ N  {
 	
 	//instance
 	doesNotUnderstand { arg selector, args;
-		this.value; //avoid crash
+		this.emptyCall; //avoid crash
 		^this
 	}
 	performBinaryOpOnSomething {
 		^this
 	}
-	value {}
+	emptyCall {}
+	
+}
+
+Debug : N {
+	var <>end;
+	doesNotUnderstand { arg selector, args;
+		if(end.notNil, {
+			end = end - 1;
+			if(end < 0, { this.halt })
+		});
+		postln("debug:" + selector + "args:" + args);
+		super.doesNotUnderstand(selector, args)
+		
+	}
+	
+}
+
+NRef : N {
+	var <>value; //value not possibles
 	
 }
