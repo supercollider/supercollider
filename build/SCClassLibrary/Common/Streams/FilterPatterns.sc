@@ -13,33 +13,14 @@ Pn : FilterPattern {
 		^super.new(pattern).repeats_(repeats)
 	}
 	storeArgs { ^[pattern,repeats] }
-	asStream {
-		^Routine.new({ arg inevent;
-			var stream, outval, n;
-			n = repeats.value; 
-			if(inf === n)
-			{
-				stream = pattern.asStream;
-				loop {
-					outval = stream.next(inevent);
-					if(outval.isNil, { 
-						stream = pattern.asStream;
-						outval = stream.next(inevent);
-					});
-					inevent = outval.yield(inevent)
-				}
-			} {
-				n.do {
-					inevent = pattern.embedInStream(inevent);
-				};
-			}
-		});
+	embedInStream { arg event;
+		repeats.value.do { event = pattern.embedInStream(event) };
+		^event;
 	}
 }
 
 // will be removed
 Ploop : Pn {}
-
 
 FuncFilterPattern : FilterPattern {
 	var <>func;
@@ -68,21 +49,21 @@ Preject : FuncFilterPattern {
 	}
 }
 
-
-
 Pfset : FuncFilterPattern {
-	asStream {
-		var stream, envir;
+	embedInStream { arg event;
+		var stream, envir, inevent;
 
 		envir = Event.make(func);
 		
 		stream = pattern.asStream;
 		
-		^FuncStream.new({ arg event;
+		loop { 
 			event = event.copy;
 			event.putAll(envir);
-			stream.next(event);
-		});
+			inevent =stream.next(event);
+			if (inevent.isNil) { ^event };
+			event = yield(inevent);
+		};
 	}
 }
 
@@ -97,19 +78,21 @@ Psetpre : FilterPattern {
 	filterEvent { arg event, val;
 		^event[name] = val;
 	}
-	asStream {
-		var evtStream, valStream;
+	embedInStream { arg event;
+		var evtStream, valStream, val, inevent;
 		
 		valStream = value.asStream;
 		
 		evtStream = pattern.asStream;
 		
-		^FuncStream.new({ arg event;
-			var val;
+		loop {
 			val = valStream.next;
-			if (val.notNil && event.notNil, { event = this.filterEvent(event, val) });
-			evtStream.next(event);
-		});
+			if (val.isNil or: event.isNil) { ^event };
+			event = this.filterEvent(event, val);
+			inevent = evtStream.next(event);
+			if (inevent.isNil) { ^event };
+			event = yield(inevent);
+		}
 	}
 }
 
@@ -134,24 +117,25 @@ Pset : FilterPattern {
 	filterEvent { arg event, val;
 		^event[name] = val;
 	}
-	asStream {
-		var evtStream, valStream;
+	embedInStream { arg event;
+		var evtStream, valStream, val, inEvent;
 		
 		valStream = value.asStream;
-		
 		evtStream = pattern.asStream;
 		
-		^FuncStream.new({ arg event;
-			var val;
-			event = evtStream.next(event);
+		loop {
+			inEvent = evtStream.next(event);
+			if (inEvent.isNil) { ^event };
 			val = valStream.next;
-			if (val.isNil, { nil },{
-				if (event.notNil, { this.filterEvent(event, val) });
-				event
-			});
-		});
+			if (val.isNil) { ^event };
+			
+			this.filterEvent(inEvent, val);
+			event = inEvent.yield;
+			
+		}
 	}
 }
+
 
 Padd : Pset {
 	filterEvent { arg event, val;
@@ -167,24 +151,23 @@ Pmul : Pset {
 
 
 Psetp : Pset {
-	asStream {
-		^Routine.new({ arg inevent;
-			var valStream, evtStream, val, outevent;
-			valStream = value.asStream;
+	embedInStream { arg event;
+		var valStream, evtStream, val, inevent;
+		valStream = value.asStream;
+		while({
+			val = valStream.next;
+			val.notNil
+		},{
+			evtStream = pattern.asStream;
 			while({
-				val = valStream.next;
-				val.notNil
+				inevent = evtStream.next(event);
+				inevent.notNil
 			},{
-				evtStream = pattern.asStream;
-				while({
-					outevent = evtStream.next(inevent);
-					outevent.notNil
-				},{
-					this.filterEvent(outevent, val);
-					inevent = outevent.yield;
-				});
+				this.filterEvent(inevent, val);
+				event = inevent.yield;
 			});
 		});
+		^event;
 	}
 }
 
@@ -207,83 +190,79 @@ Pstretch : FilterPattern {
 		^super.new(pattern).value_(value)
 	}
 	storeArgs { ^[value,pattern] }
-	asStream {
-		var evtStream, valStream;
+	embedInStream {  arg event;
+		var evtStream, valStream, inevent;
+		var val, delta;
 		
 		valStream = value.asStream;
 		
 		evtStream = pattern.asStream;
 		
-		^FuncStream.new({ arg event;
-			var val, delta;
-			event = evtStream.next(event);
+		loop {
+			inevent = evtStream.next(event);
+			if (inevent.isNil) { ^event };
 			val = valStream.next;
-			if (val.isNil, { nil },{
-				if (event.notNil) {
-					delta = event[\delta];
-					if (delta.notNil) {
-						event[\delta] = delta * val;
-					};
-					event[\dur] = event[\dur] * val;
-				};
-				event
-			});
-		});
+			if (val.isNil) { ^event };
+			
+			delta = event[\delta];
+			if (delta.notNil) {
+				inevent[\delta] = delta * val;
+			};
+			inevent[\dur] = inevent[\dur] * val;
+			event = yield(inevent);
+		}
 	}
 }
 
-Pstretchp : FilterPattern {
-	var <>value;
-	*new { arg value, pattern;
-		^super.new(pattern).value_(value)
-	}
-	storeArgs { ^[value,pattern] }
-	asStream {
-		^Routine.new({ arg inevent;
-			var valStream, evtStream, val, outevent, delta;
-			valStream = value.asStream;
+
+
+Pstretchp : Pstretch {
+
+	embedInStream { arg event;
+		var valStream, evtStream, val, inevent, delta;
+		valStream = value.asStream;
+		while({
+			val = valStream.next;
+			val.notNil
+		},{
+			evtStream = pattern.asStream;
 			while({
-				val = valStream.next;
-				val.notNil
+				inevent = evtStream.next(event);
+				inevent.notNil
 			},{
-				evtStream = pattern.asStream;
-				while({
-					outevent = evtStream.next(inevent);
-					outevent.notNil
-				},{
-					delta = outevent[\delta];
-					if (delta.notNil) {
-						outevent[\delta] = delta * val;
-					};
-					outevent[\dur] = outevent[\dur] * val;
-					inevent = outevent.yield;
-				});
+				delta = inevent[\delta];
+				if (delta.notNil) {
+					inevent[\delta] = delta * val;
+				};
+				inevent[\dur] = inevent[\dur] * val;
+				event = inevent.yield;
 			});
 		});
+		^event;
 	}
 }
+
 
 Pplayer : FilterPattern {
 	var <>playerPattern, <>subPattern;
 	*new { arg playerPattern, subPattern;
 		^super.newCopyArgs(playerPattern, subPattern)
 	}
-	asStream {
-		var playerStream, stream;
+	embedInStream { arg event;
+		var playerStream, stream, player, inevent;
 		playerStream = playerPattern.asStream;
 		stream = subPattern.asStream;
-		^FuncStream({ arg event;
-			var player;
-			event = stream.next(event);
-			if (event.notNil) {
-				player = playerStream.next(event);
-				if (player.notNil) {
-					event.parent = player.event;
-				}
-			};
-		})
+		loop{ 
+			inevent = stream.next(event);
+			if (inevent.isNil) { ^event };
+			player = playerStream.next(event);
+			if (player.isNil) { ^event };
+			inevent.parent = player.event;
+			event = yield(inevent);
+		}
 	}
 }
+
 
 
 Pfin : FilterPattern {
@@ -292,18 +271,20 @@ Pfin : FilterPattern {
 		^super.new(pattern).count_(count)
 	}
 	storeArgs { ^[count,pattern] }
-	asStream { 
-		^Routine.new({ arg event;
-			var stream;
+	embedInStream { arg event;
+		var stream, inevent;
+	
+		stream = pattern.asStream;
 		
-			stream = pattern.asStream;
-			
-			count.value.do({
-				event = stream.next(event).yield;
-			});
+		count.value.do({
+			inevent = stream.next(event);
+			if (inevent.isNil, { ^event });
+			event = inevent.yield;
 		});
+		^event
 	}
 }	
+
 
 Pfindur : FilterPattern {
 	var <>dur, <>tolerance;
@@ -311,35 +292,28 @@ Pfindur : FilterPattern {
 		^super.new(pattern).dur_(dur).tolerance_(tolerance)
 	}
 	storeArgs { ^[dur,pattern,tolerance] }
-	asStream { 
-		^Routine.new({ arg inevent;
-			var item, stream, delta, elapsed = 0.0, nextElapsed;
+	embedInStream { arg event;
+		var item, stream, delta, elapsed = 0.0, nextElapsed, inevent;
+	
+		stream = pattern.asStream;
 		
-			stream = pattern.asStream;
+		loop {
+			inevent = stream.next(event);
+			if(inevent.isNil) { ^event };
+			delta = inevent.delta;
+			nextElapsed = elapsed + delta;
+			if (nextElapsed.roundUp(tolerance) >= dur) {
+				// must always copy an event before altering it.
+				inevent = inevent.copy; 
+				// fix delta time.
+				inevent.put(\delta, dur - elapsed);
+				^inevent;
+			};
+
+			elapsed = nextElapsed;
+			event = inevent.yield;
 			
-			loop ({
-				inevent = stream.next(inevent);
-				if(inevent.isNil) {
-					nil.alwaysYield 
-				};
-				delta = inevent.delta;
-				nextElapsed = elapsed + delta;
-				if (nextElapsed.roundUp(tolerance) >= dur, {
-					// must always copy an event before altering it.
-					inevent = inevent.copy; 
-					// fix delta time.
-					inevent.put(\delta, dur - elapsed);
-					inevent = inevent.yield;
-					// the note is not truncated here. maybe you want that..
-					
-					// end of pattern
-					nil.alwaysYield;
-				},{
-					elapsed = nextElapsed;
-					inevent = inevent.yield;
-				});
-			});
-		});
+		}
 	}
 }
 
@@ -349,39 +323,35 @@ Psync : FilterPattern {
 		^super.new(pattern).quant_(quant).maxdur_(maxdur).tolerance_(tolerance)
 	}
 	storeArgs { ^[pattern,quant,maxdur,tolerance] }
-	asStream { 
-		^Routine.new({ arg inevent;
-			var item, stream, delta, elapsed = 0.0, nextElapsed, clock;
-		
-			stream = pattern.asStream;
-			/*
-			clock = inevent[\clock].debug ? TempoClock.default;
-			elapsed = clock.elapsedBeats;
-			elapsed = elapsed.roundUp(quant ? 1) - elapsed;
-			if(elapsed > tolerance) { Event.silent(elapsed).yield };
-			*/
-			loop {
-				inevent = stream.next(inevent);
-				if(inevent.isNil) {
-					if(quant.notNil) { Event.silent(elapsed.roundUp(quant) - elapsed).yield };
-					nil.alwaysYield
-				};
-				delta = inevent.delta;
-				nextElapsed = elapsed + delta;
-				
-				if (maxdur.notNil and: { nextElapsed.round(tolerance) >= maxdur })
-				{
-					inevent = inevent.copy; 
-					inevent.put(\delta, maxdur - elapsed);
-					inevent = inevent.yield;
-					nil.alwaysYield;
-				}
-				{
-					elapsed = nextElapsed;
-					inevent = inevent.yield;
+	embedInStream { arg event;
+		var item, stream, delta, elapsed = 0.0, nextElapsed, clock, inevent;
+	
+		stream = pattern.asStream;
+
+		loop {
+			inevent = stream.next(event);
+			if(inevent.isNil) {
+				if(quant.notNil) { 
+					event = Event.silent(elapsed.roundUp(quant) - elapsed).yield 
+					^event
 				};
 			};
-		});
+			delta = inevent.delta;
+			nextElapsed = elapsed + delta;
+			
+			if (maxdur.notNil and: { nextElapsed.round(tolerance) >= maxdur })
+			{
+				inevent = inevent.copy; 
+				inevent.put(\delta, maxdur - elapsed);
+				event = inevent.yield;
+				^event
+				
+			}
+			{
+				elapsed = nextElapsed;
+				event = inevent.yield;
+			};
+		};
 	}
 }
 
@@ -403,20 +373,19 @@ Plag : FilterPattern {
 		^super.new(pattern).lag_(lag)
 	}
 	storeArgs { ^[lag,pattern] }
-	asStream {
+	embedInStream { arg event;	
+		var inevent;	
 		var stream, item;
-		
+	
 		stream = pattern.asStream;
-		
-		^Routine.new({ arg inevent;	
-			var newevent;	
-			newevent = inevent.copy;
-			newevent.put('freq', \rest);
-			newevent.put('dur', lag);
-			inevent = newevent.yield;
-			loop ({
-				inevent = stream.next(inevent).yield;
-			});
+		inevent = event.copy;
+		inevent.put('freq', \rest);
+		inevent.put('dur', lag);
+		event = inevent.yield;
+		loop ({
+			inevent = stream.next(event);
+			if (inevent.isNil) { ^event};
+			event = inevent.yield;
 		});
 	}
 }
@@ -429,8 +398,12 @@ Pbindf : FilterPattern {
 		^super.new(pattern ? Event.default).patternpairs_(pairs)
 	}
 	storeArgs { ^[pattern] ++ patternpairs }
-	asStream {
+	embedInStream { arg event;
+	
 		var streampairs, endval, eventStream;
+		var inevent;
+		var sawNil = false;
+
 		
 		streampairs = patternpairs.copy;
 		endval = streampairs.size - 1;
@@ -439,45 +412,29 @@ Pbindf : FilterPattern {
 		};
 		eventStream = pattern.asStream;
 		
-		^FuncStream.new({ arg inevent;
-			var event;
-			var sawNil = false;
+		loop{ 
+			inevent = eventStream.next(event);
 
-			event = eventStream.next(inevent);
-
-			if (event.isNil) { nil } {
-				forBy (0, endval, 2) { arg i;
-					var name, stream, streamout;
-					name = streampairs[i];
-					stream = streampairs[i+1];
-					
-					streamout = stream.next(event);
-					
-					if (streamout.isNil) {
-						sawNil = true;
-					}{
-						if (name.isSequenceableCollection) {					
-							streamout.do({ arg val, i;
-								event.put(name[i], val);
-							});
-						}{
-							event.put(name, streamout);
-						};
-					};
+			if (inevent.isNil) { ^event };
+			forBy (0, endval, 2) { arg i;
+				var name, stream, streamout;
+				name = streampairs[i];
+				stream = streampairs[i+1];
+				
+				streamout = stream.next(inevent);
+				
+				if (streamout.isNil) { ^event };
+				if (name.isSequenceableCollection) {					
+					streamout.do({ arg val, i;
+						inevent.put(name[i], val);
+					});
+				}{
+					inevent.put(name, streamout);
 				};
-				if (sawNil) { nil } { 
-					event 
-				};
-			};
-		},{
-			eventStream.reset;
 			
-			streampairs = patternpairs.copy;
-			endval = streampairs.size - 1;
-			forBy (1, endval, 2) { arg i;
-				streampairs.put(i, streampairs[i].asStream);
 			};
-		});
+			event = yield(inevent);
+		};
 	}
 }
 
@@ -488,57 +445,54 @@ Pstutter : FilterPattern {
 		^super.new(pattern).n_(n)
 	}
 	storeArgs { ^[n,pattern] }
-	asStream { 
-		^Routine.new({ arg inevent;
-			var event, stream;
+	embedInStream { arg event;
+			var inevent, stream;
 		
 			stream = pattern.asStream;
 		
 			while ({
-				(event = stream.next(inevent)).notNil
+				(inevent = stream.next(event)).notNil
 			},{
 				n.do({
-					inevent = event.copy.yield;
+					event = inevent.copy.yield;
 				});
 			});
-		});
+			^event;
 	}
 }
 
 
 PdurStutter : Pstutter { // float streams
 	
-	asStream {
-		^Routine.new({
-			var durs,stutts,dur,stut;
-			durs = pattern.asStream;
-			stutts = n.asStream;
-			while({
-				(dur = durs.next).notNil
-				and: {(stut = stutts.next).notNil}
-			},{
-				if(stut > 0,{ // 0 skips it
-					if(stut > 1,{
-						dur = dur / stut;
-						stut.do({
-							dur.yield;
-						})
-					},{
-						dur.yield
+	embedInStream { arg event;
+		var durs,stutts,dur,stut;
+		durs = pattern.asStream;
+		stutts = n.asStream;
+		while({
+			(dur = durs.next).notNil
+			and: {(stut = stutts.next).notNil}
+		},{
+			if(stut > 0,{ // 0 skips it
+				if(stut > 1,{
+					dur = dur / stut;
+					stut.do({
+						event = dur.yield;
 					})
+				},{
+					event = dur.yield
 				})
-			})		
-		})
+			})
+		})		
+		^event;
 	}		
 }
-	
+
 Pwhile : FuncFilterPattern {
-	asStream {
-		^Routine.new({ arg inval;
-			while({ func.value },{
-				inval = pattern.embedInStream(inval);
-			});
+	embedInStream {arg event;
+		while({ func.value },{
+			event = pattern.embedInStream(event);
 		});
+		^event;
 	}
 }
 
@@ -548,16 +502,15 @@ Pwrap : FilterPattern {
 		^super.new(pattern).lo_(lo).hi_(hi)
 	}
 	storeArgs { ^[pattern,lo,hi] }
-	asStream {
-		^Routine({
-			var stream,next;
-			stream = pattern.asStream;
-			while({
-				(next = stream.next).notNil
-			},{
-				next.wrap(lo,hi).yield
-			})
-		})
+	embedInStream { arg event;
+		var stream,next;
+		stream = pattern.asStream;
+		while({
+			(next = stream.next).notNil
+		},{
+			event = next.wrap(lo,hi).yield
+		});
+		^event;
 	}
 }
 

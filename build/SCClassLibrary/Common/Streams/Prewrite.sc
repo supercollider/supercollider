@@ -47,20 +47,19 @@ Prewrite : FilterPattern {
 		});
 		^inval;
 	}
-	asStream { 
+	embedInStream {  arg inval;
+		var outval;
 		var stream;
-		
+	
 		stream = pattern.asStream;
-		
-		^Routine.new({ arg inval;
-			var outval;
-			while({
-				outval = stream.next(inval);
-				outval.notNil;
-			},{
-				inval = this.rewriteList(outval, inval, levels);
-			});
-		}, 2048)
+		while({
+			outval = stream.next(inval);
+			outval.notNil;
+		},{
+			inval = this.rewriteList(outval, inval, levels);
+		});
+		^inval
 	}
 }
+
 

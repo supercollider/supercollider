@@ -5,7 +5,10 @@ Plazy : Pattern {
 		^super.new.func_(func)
 	}
 	asStream { arg ... args;
-		^func.valueArrayEnvir(args).asStream
+		^func.valueArray(args).asStream
+	}
+	embedInStream { arg ... args;				
+		^func.valueArray(args).embedInStream
 	}
 }
 
@@ -15,15 +18,13 @@ Ppatmod : Pattern {
 	*new { arg pattern, func, repeats;
 		^super.new.pattern_(pattern).func_(func).repeats_(repeats)
 	}
-	asStream { 
-		^Routine.new({ arg inval;
-			var localPat;
-			localPat = pattern.value.copy;
-			repeats.do({ arg i;
-				inval = localPat.embedInStream(inval);
-				localPat = func.value(localPat, i);
-			});
-		})
+	embedInStream { arg inval;
+		var localPat;
+		localPat = pattern.value.copy;
+		repeats.do({ arg i;
+			inval = localPat.embedInStream(inval);
+			localPat = func.value(localPat, i);
+		});
+		^inval;
 	}
 }
-

@@ -9,20 +9,23 @@ Pseed : FilterPattern {
 		^super.new(pattern).randSeed_(randSeed)
 	}
 	storeArgs { ^[randSeed,pattern] }
-	asStream {
+	
+	embedInStream { arg inval;
 		var seedStream;
+		var seed;
 		seedStream = randSeed.asStream;
-		^Routine({ arg inval;
-			var seed;
-			while({
-				seed = seedStream.next;
-				seed.notNil
-				}, {
-				thisThread.randSeed = seed;
-				inval = pattern.embedInStream(inval);
-			})
+
+		while({
+			seed = seedStream.next;
+			seed.notNil
+			}, {
+			thisThread.randSeed = seed;
+			inval = pattern.embedInStream(inval);
 		});
+		^inval
+		
 	}
+
 }
 
 // cx: temporarily putting this here
@@ -35,33 +38,32 @@ PdegreeToKey : FilterPattern {
 		^super.new(pattern).scale_(scale).stepsPerOctave_(stepsPerOctave)
 	}
 	storeArgs { ^[pattern,scale,stepsPerOctave ] }
-	asStream {
+	embedInStream { arg inval;
 		var size, scaleDegree;
+		var mestream,scstream,sc,me;
 		if(scale.isSequenceableCollection,{
-			^Routine({
-				var mestream,me;
-				size = scale.size;
-				mestream = pattern.asStream;
-				while({ 
-					(me = mestream.next).notNil
-				},{
-					me = me.asInteger;
-					((stepsPerOctave * (me div: size)) + scale.wrapAt(me)).yield
-				})
-			})
+
+			size = scale.size;
+			mestream = pattern.asStream;
+			while({ 
+				(me = mestream.next).notNil
+			},{
+				me = me.asInteger;
+				inval = ((stepsPerOctave * (me div: size)) + scale.wrapAt(me)).yield
+			});
+			^inval
 		},{		
-			^Routine({
-				var mestream,scstream,sc,me;
-				mestream = pattern.asStream;
-				scstream = scale.asStream;
-				while({ 
-					me = mestream.next;
-					sc = scstream.next;
-					me.notNil
-				},{
-					me.degreeToKey(sc,stepsPerOctave).yield
-				})
+			
+			mestream = pattern.asStream;
+			scstream = scale.asStream;
+			while({ 
+				me = mestream.next;
+				sc = scstream.next;
+				me.notNil
+			},{
+				inval = me.degreeToKey(sc,stepsPerOctave).yield
 			})
+			^inval;
 		});
 	}
 }
@@ -81,22 +83,23 @@ Pavaroh : FilterPattern {
 	}
 	storeArgs { ^[pattern, aroh, avaroh, stepsPerOctave ] }
 	
-	asStream {
-		^Routine({
-				var mestream, me, melast, scale, size;
-				mestream = pattern.asStream;
-				melast = 0;
-				while({ 
-					(me = mestream.next).notNil
-				},{
-					me = me.asInteger;
-					scale = if(me >= melast, { aroh }, { avaroh });
-					melast = me;
-					size = scale.size;
-					((stepsPerOctave * (me div: size)) + scale.wrapAt(me)).yield
-				})
-			})
+	embedInStream { arg inval;
+		var mestream, me, melast, scale, size;
+		mestream = pattern.asStream;
+		melast = 0;
+		while({ 
+			(me = mestream.next).notNil
+		},{
+			me = me.asInteger;
+			scale = if(me >= melast, { aroh }, { avaroh });
+			melast = me;
+			size = scale.size;
+			inval = ((stepsPerOctave * (me div: size)) + scale.wrapAt(me)).yield
+		});
+		^inval
+
 	}
+	
 	
 }
 

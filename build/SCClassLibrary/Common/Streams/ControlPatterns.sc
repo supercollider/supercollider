@@ -9,7 +9,7 @@ Phid : Pattern {
 		^super.newCopyArgs(element, locID, repeats)
 	}
 	
-	asStream {
+	embedInStream { arg event;
 		var all, device, spec, elements, deviceName, min, max;
 			all = HIDDeviceService.devices;
 			if(all.isNil, { 
@@ -27,17 +27,15 @@ Phid : Pattern {
 			max = elements.at(element).max;
 			spec = ControlSpec.new(min, max, 'lin', 1)
 			^if((min === 0) and: {max === 1}, {
-				Routine({
 					repeats.value.do({
-						device.value(element).yield
-					})
-				})
+						event = device.value(element).yield
+					});
+					^event
 			}, {
-				Routine({
 					repeats.value.do({
-						spec.unmap(device.value(element)).yield
-					})
-				})
+						event = spec.unmap(device.value(element)).yield
+					});
+					^event;
 			})	
 	}
 }
