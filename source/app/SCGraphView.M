@@ -125,6 +125,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
     NSPoint mouseLoc;
     mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
+	if (!mTopView) return 0;
     SCView *view = mTopView->findView(scpoint);
     if (!view) return 0;
 	return view->contextMenu(scpoint);
@@ -223,6 +224,7 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, void* inData)
 
 - (void)dealloc
 {
+	//printf("dealloc %08X mTopView %08X\n", self, mTopView);
     delete mTopView;
 	mTopView = 0;
 }
@@ -230,7 +232,15 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, void* inData)
 
 - (void)closeWindow
 {
+	//printf("closeWindow %08X mTopView %08X\n", self, mTopView);
 	[[self window] close];
+}
+
+- (void)willClose
+{
+	//printf("willClose %08X mTopView %08X\n", self, mTopView);
+    delete mTopView;
+	mTopView = 0;
 }
 
 /*  from command-w, scvm is the delegate */
@@ -728,6 +738,7 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout)
 
 - (IBAction) toggleUIEditMode: (id) sender;
 {
+	if (!mTopView) return;
 	mTopView->SetConstructionMode(!mTopView->ConstructionMode());
 	[self setNeedsDisplay: YES];
 }

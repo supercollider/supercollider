@@ -42,6 +42,7 @@
 - (void)setSCTopView: (SCTopView*)inView;
 //- (void)dealloc;
 - (void)closeWindow;
+- (void)willClose;
 - (void)setWindowShouldClose:(BOOL)boo;
 - (BOOL)windowShouldClose;
 - (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot;

@@ -380,6 +380,8 @@ bool gIsFullScreen = false;
         [view setSCObject: nil];
     }
     pthread_mutex_unlock (&gLangMutex);
+	
+	[view willClose];
 }
 
 -(IBAction)showHelp:(id)sender {
