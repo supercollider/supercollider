@@ -113,15 +113,13 @@ bool getFileText(char* filename, char **text, int *length)
         
         fseek(file, 0L, SEEK_END);
         llength = ftell(file);
-        *length = llength;
         fseek(file, 0L, SEEK_SET);
         ltext = (char*)pyr_pool_compile->Alloc((llength+1) * sizeof(char));
         MEMFAIL(ltext);
         fread(ltext, 1, llength, file);
         ltext[llength] = 0;
-        int rtfresult = rtf2txt(ltext);
-        if (rtfresult) llength = rtfresult;
         //ltext[llength] = 0;
+        *length = llength;
         fclose(file);
         *text = ltext;
         return true;
@@ -186,7 +184,10 @@ text:
 bool startLexer(char* filename) 
 {	
         if (!getFileText(filename, &text, &textlen)) return false;
-        
+		
+		int rtfresult = rtf2txt(text);
+        if (rtfresult) textlen = rtfresult;
+       
         initLongStack(&brackets);
         textpos = 0;
         linepos = 0;
@@ -217,6 +218,9 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	text[textbuflen] = ' ';
 	text[textbuflen+1] = 0;
 	textlen = textbuflen + 1;
+	
+	int rtfresult = rtf2txt(text);
+	if (rtfresult) textlen = rtfresult;
 	
 	//postfl("text '%s' %d\n", text, text);
 		

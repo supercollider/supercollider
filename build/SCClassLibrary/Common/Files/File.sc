@@ -79,6 +79,12 @@
 \cf0 		\cf2 _FileReadRaw\cf0 ;\
 		^\cf2 this\cf0 .primitiveFailed;\
 	\}\
+	readAllString \{\
+		var string;\
+		string = String.newClear(this.length);\
+		this.read(string);\
+		^string\
+	\}\
 	\
 	getLine \{ \cf2 arg\cf0  argString;\
 		\cf3 // returns a string up to lesser of next newline \
