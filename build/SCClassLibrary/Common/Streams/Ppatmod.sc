@@ -7,8 +7,8 @@ Plazy : Pattern {
 	asStream { arg ... args;
 		^func.valueArray(args).asStream
 	}
-	embedInStream { arg ... args;				
-		^func.valueArray(args).embedInStream
+	embedInStream { arg inval;				
+		^func.value(inval).embedInStream(inval)
 	}
 }
 
@@ -16,8 +16,8 @@ PlazyEnvir : Plazy {
 	asStream {	
 		^func.valueEnvir.asStream
 	}
-	embedInStream { arg ... args;				
-		^func.valueEnvir.embedInStream
+	embedInStream { arg inval;				
+		^func.valueEnvir.embedInStream(inval)
 	}
 }
 
