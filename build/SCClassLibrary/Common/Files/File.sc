@@ -41,7 +41,7 @@ UnixFILE : IOStream {
 		^String.fill(n, { this.next; });
 	}
 	contents {
-		^this.read(String.new(this.length));
+		^this.readAllString;
 	}
 	
 	put { arg item; this.write(item); }
