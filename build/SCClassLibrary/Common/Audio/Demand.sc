@@ -34,6 +34,24 @@ Duty : UGen {
 
 TDuty : Duty {}
 
+DemandEnvGen : UGen {
+
+	*kr { arg level, dur, shape=1, curve=0, gate=1.0, reset=1.0,
+				levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;
+		^this.multiNew('control', level, dur, shape, curve, gate, reset, 
+				levelScale, levelBias, timeScale, doneAction)
+	}
+	*ar { arg level, dur, shape=1, curve=0, gate=1.0, reset=1.0, 
+				levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;
+					if(gate.rate === 'audio' or: { reset.rate === 'audio' }) {
+						if(gate.rate !== 'audio') { gate = K2A.ar(gate) };
+						if(reset.rate !== 'audio') { reset = K2A.ar(reset) };
+					};
+		^this.multiNew('audio', level, dur, shape, curve, gate, reset, 
+				levelScale, levelBias, timeScale, doneAction)
+	}
+}
+
 Dseries : UGen {
 	*new { arg start = 1, step = 1, length = 100;
 		^this.multiNew('demand', length, start, step)
