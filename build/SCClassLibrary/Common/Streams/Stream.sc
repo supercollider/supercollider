@@ -170,6 +170,15 @@ Stream : AbstractFunction {
 		clock = clock ? SystemClock;
 		clock.play(this);
 	}
+	
+	trace { arg key;
+		^if(key.isNil) {
+			this.collect { arg item; item.postln }
+		} {
+			this.collect { arg item; item.at(key).postln }
+		}
+			 
+	}
 }
 
 FuncStream : Stream {
@@ -211,6 +220,10 @@ PauseStream : Stream
 	pause { stream = nil }
 	resume { ^this.play(clock, false) }
 	
+	refresh {
+		stream = originalStream
+	}
+
 	start { ^this.play(clock, true) }
 		
 	stream_ { arg argStream; 
