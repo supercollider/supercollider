@@ -577,13 +577,13 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 				printf("rdy %.9f %.9f %.9f\n", mScheduler.NextTime() * kOSCtoSecs, mOSCbuftime*kOSCtoSecs, diff);
 			}*/
 			
-			//mScheduler.Perform(mOSCbuftime);
 			int64 schedTime;
 			int64 nextTime = mOSCbuftime + oscInc;
 			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
-				mSampleOffset = (int)((double)(schedTime - mOSCbuftime) * mOSCtoSamples);
+				mWorld->mSampleOffset = (int)((double)(schedTime - mOSCbuftime) * mOSCtoSamples);
 				SC_ScheduledEvent event = mScheduler.Remove();
 				event.Perform();
+				mWorld->mSampleOffset = 0;
 			}
 			
 			World_Run(mWorld);
@@ -623,7 +623,6 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 	} catch (...) {
 		printf("unknown exception in real time\n");
 	}
-	//if (go == 1) go = 2;
 	mAudioSync.Signal();
 }
 
@@ -643,10 +642,17 @@ bool SC_CoreAudioDriver::Start()
 			fprintf(stdout, "AudioDeviceAddIOProc failed %d\n", (int)err);
 			return false;
 		}
-	
+		
+		err = AudioDeviceStart(mInputDevice, NULL);		// start playing sound through the device
+		if (err != kAudioHardwareNoError) {
+			fprintf(stdout, "AudioDeviceStart failed %d\n", (int)err);
+			return false;
+		}
+		
 		err = AudioDeviceStart(mOutputDevice, appIOProc2);		// start playing sound through the device
 		if (err != kAudioHardwareNoError) {
 			fprintf(stdout, "AudioDeviceStart failed %d\n", (int)err);
+			err = AudioDeviceStop(mInputDevice, NULL);		// stop playing sound through the device
 			return false;
 		}
 	} else {

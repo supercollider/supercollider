@@ -81,7 +81,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	// set calc func
 	graph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_Calc;
 	
-	graph->mSampleOffset = 0; // calculate this from OSC time offset.. later
+	graph->mSampleOffset = inWorld->mSampleOffset;
 	
 	// allocate wires
 	graph->mNumWires = inGraphDef->mNumWires;

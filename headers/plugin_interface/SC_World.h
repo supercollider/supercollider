@@ -69,6 +69,7 @@ struct World
 	RGen mRGen;
 
 	int mNumUnits, mNumGraphs, mNumGroups;
+	int mSampleOffset; // offset in the buffer of current event time.
 		
 };
 

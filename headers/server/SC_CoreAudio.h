@@ -58,7 +58,6 @@ class SC_CoreAudioDriver
 	UInt32 mSafetyOffset;
 	int mNumSamples;
 	int mSampleTime;
-	int mSampleOffset;
 	int64 mOSCincrement;
 	double mOSCtoSamples;
 	PriorityQueueT<SC_ScheduledEvent, 1024> mScheduler;
@@ -91,8 +90,6 @@ public:
 	int NumSamples() const { return mNumSamples; }
 	int SafetyOffset() const { return mSafetyOffset; }
 	
-	int SampleOffset() const { return mSampleOffset; }
-
 	bool SendMsgToEngine(FifoMsg& inMsg);
 	bool SendMsgFromEngine(FifoMsg& inMsg);
 	
