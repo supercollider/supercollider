@@ -54,7 +54,7 @@ void ReadName(char*& buffer, int32* name)
 {
 	uint32 namelen = readInt8(buffer);
 	if (namelen >= kSCNameByteLen) {
-		throw std::runtime_error("ParamSpec name too long > 31 chars");
+		throw std::runtime_error("name too long > 31 chars");
 		namelen = 31;
 	}
 	memset(name, 0, kSCNameByteLen);
@@ -423,7 +423,7 @@ struct BufColorAllocator
 	~BufColorAllocator();
 	
 	int alloc(int count);
-	void release(int inIndex);
+	bool release(int inIndex);
 	int NumBufs() { return nextIndex; }
 };
 
@@ -453,10 +453,11 @@ inline int BufColorAllocator::alloc(int count)
 	return outIndex;
 }
 
-inline void BufColorAllocator::release(int inIndex)
+inline bool BufColorAllocator::release(int inIndex)
 {
-	if (refs[inIndex] == 0) exit(1);
+	if (refs[inIndex] == 0) return false;
 	if (--refs[inIndex] == 0) stack[stackPtr++] = inIndex;
+	return true;
 }
 
 void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
@@ -469,6 +470,7 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 			if (inputSpec->mFromUnitIndex >= 0) {
 				UnitSpec *outUnit = inGraphDef->mUnitSpecs + inputSpec->mFromUnitIndex;
 				OutputSpec *outputSpec = outUnit->mOutputSpec + inputSpec->mFromOutputIndex;
+				int p = outputSpec->mNumConsumers;
 				outputSpec->mNumConsumers ++;
 			}
 		}
@@ -488,15 +490,18 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 					UnitSpec *outUnit = inGraphDef->mUnitSpecs + inputSpec->mFromUnitIndex;
 					OutputSpec *outputSpec = outUnit->mOutputSpec + inputSpec->mFromOutputIndex;
 					inputSpec->mWireIndex = outputSpec->mWireIndex;
-						//	i, outputSpec->mBufferIndex, outputSpec->mCalcRate);
 					if (outputSpec->mCalcRate == calc_FullRate) {
-						bufColor.release(outputSpec->mBufferIndex);
+						if (!bufColor.release(outputSpec->mBufferIndex)) {
+							scprintf("buffer coloring error: tried to release output with zero count\n");
+							scprintf("output: %d %s %d\n", inputSpec->mFromUnitIndex, outUnit->mUnitDef->mUnitDefName, inputSpec->mFromOutputIndex);
+							scprintf("input: %d %s %d\n", j, unitSpec->mUnitDef->mUnitDefName, i);
+							throw std::runtime_error("buffer coloring error.");
+						}
 					}
 				} else {
 					inputSpec->mWireIndex = inputSpec->mFromOutputIndex;
 				}
 			}
-			
 			// set wire index, alloc outputs
 			for (int i=0; i<unitSpec->mNumOutputs; ++i) {
 				OutputSpec *outputSpec = unitSpec->mOutputSpec + i;
@@ -507,8 +512,8 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 				}
 			}
 		}
+
 		inGraphDef->mNumWireBufs = bufColor.NumBufs();
-		//scprintf("num wire bufs = %d\n", inGraphDef->mNumWireBufs);
 		if (inWorld->mRunning)
 		{
 			// cannot reallocate interconnect buffers while running audio.
