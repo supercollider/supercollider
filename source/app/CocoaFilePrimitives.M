@@ -161,6 +161,20 @@ int prSaveAsPlist(struct VMGlobals *g, int numArgsPushed)
     }
 }
 
+int prStandardizePath(struct VMGlobals *g, int numArgsPushed);
+int prStandardizePath(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+    
+    PyrSlot *string = g->sp;
+    PyrString *pyrString;
+    NSString *path = pyrSlotToNSString(string);
+    path = [path stringByStandardizingPath];
+    pyrString = newPyrString(g->gc, [path cString], 0, true);
+    SetObject(string, pyrString);
+    return errNone;
+}
+
 
 void initCocoaFilePrimitives()
 {
@@ -171,6 +185,7 @@ void initCocoaFilePrimitives()
 
     definePrimitive(base, index++, "_Cocoa_GetPathsDialog", prGetPathsDialog, 2, 0);	
     definePrimitive(base, index++, "_Cocoa_SaveAsPlist", prSaveAsPlist, 2, 0);	
+    definePrimitive(base, index++, "_Cocoa_StandardizePath", prStandardizePath, 1, 0);	
 }
 
 

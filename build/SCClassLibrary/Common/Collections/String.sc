@@ -167,5 +167,9 @@ String[char] : RawArray {
 		_UGenCodeString
 		^this.primitiveFailed
 	}
+	
+	/// os x
+	standardizePath { _Cocoa_StandardizePath ^this.primitiveFailed }
+	
 }
 
