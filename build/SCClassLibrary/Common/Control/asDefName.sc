@@ -55,15 +55,15 @@
 		^def.name
 	}
 	
-	asSynthDef { arg lags, prependArgs, outClass=\Out, xfade=false;
+	asSynthDef { arg lags, prependArgs, outClass=\Out, fadeTime;
 		
-		^SynthDef.newWrapOut(this.hash.asString, this, lags, prependArgs, outClass, xfade);	}
+		^SynthDef.newWrapOut(this.hash.asString, this, lags, prependArgs, outClass, fadeTime);	}
 		
-	play { arg target, xfade=true;
+	play { arg target, fadeTime=0.02;
 		var def, synth, server;
 		target = target.asTarget;
 		server = target.server;
-		def = this.asSynthDef(xfade:xfade);
+		def = this.asSynthDef(fadeTime:fadeTime);
 		synth = Synth.basicNew(def.name,server);
 		server.waitForBoot({
 			def.send(server, synth.newMsg(target));
