@@ -28,7 +28,7 @@ UGen : AbstractFunction {
 			args.do({ arg item, j;
 				newArgs.put(j, if (item.class == Array, { item.wrapAt(i) },{ item }));
 			});
-			results.put(i, this.performList(\multiNew, newArgs));
+			results.put(i, this.multiNewList(newArgs));
 		});
 		^results
 	}
