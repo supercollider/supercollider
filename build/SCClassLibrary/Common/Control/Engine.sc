@@ -11,7 +11,7 @@ NodeIDAllocator
 	reset {
 		mask = user << 26;
 		temp = 1000;
-		perm = 1;
+		perm = 2;
 	}
 	alloc {
 		var x;
