@@ -49,7 +49,7 @@ ControlSpec : Spec {
 		this.init
 	}
 	constrain { arg value;
-		^value.clip(clipLo, clipHi).round(step)
+		^value.asFloat.clip(clipLo, clipHi).round(step)
 	}
 	range { ^maxval - minval }
 	ratio { ^maxval / minval }
