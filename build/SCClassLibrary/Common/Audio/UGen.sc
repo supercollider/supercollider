@@ -52,6 +52,13 @@ UGen : AbstractFunction {
 		});
  		^MulAdd(this, mul, add);
  	}
+ 	clip { arg lo,hi;
+ 		if(rate == \audio,{
+ 			^Clip.ar(lo,hi)
+ 		},{
+ 			^Clip.kr(lo,hi)
+ 		})
+ 	}
 	signalRange { ^\bipolar }
  	 	
 	addToSynth {
