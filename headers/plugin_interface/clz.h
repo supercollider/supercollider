@@ -106,6 +106,24 @@ inline int32 LSBit(int32 x)
 	return x & -x;
 }
 
+// find least significant bit position
+inline int32 LSBitPos(int32 x)
+{
+	return CTZ(x & -x);
+}
+
+// find most significant bit position
+inline int32 MSBitPos(int32 x)
+{
+	return 31 - CLZ(x);
+}
+
+// find most significant bit
+inline int32 MSBit(int32 x)
+{
+	return 1L << MSBitPos(x);
+}
+
 // count number of one bits
 inline uint32 ONES(uint32 x) 
 {
