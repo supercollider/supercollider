@@ -96,6 +96,8 @@ thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 PyrSymbol *gCompilingFileSym = 0;
 VMGlobals *gCompilingVMGlobals = 0;
 char gCompileDir[MAXPATHLEN];
+char gSystemExtensionDir[MAXPATHLEN];
+char gUserExtensionDir[MAXPATHLEN];
 
 //#define DEBUGLEX 1
 bool gDebugLexer = false;
@@ -1922,6 +1924,31 @@ void finiPassOne()
     //postfl("<-finiPassOne\n");
 }
 
+// Returns TRUE iff dirname is an existing directory.
+
+bool sc_DirectoryExists(const char *dirname);
+bool sc_DirectoryExists(const char *dirname) 
+{
+#ifndef SC_WIN32
+  struct stat buf;
+  int err = stat(dirname, &buf);
+  return (err == 0) && (buf.st_mode & S_IFDIR);
+#else
+  return 0;
+#endif
+}
+
+// Returns TRUE iff 'name' is to be ignored during compilation.
+
+static bool sc_SkipDirectory(const char *name);
+static bool sc_SkipDirectory(const char *name)
+{
+  return ((strcmp(name, ".") == 0) || 
+	  (strcmp(name, "..") == 0) ||
+	  (strcasecmp(name, "help") == 0) ||
+	  (strcasecmp(name, "test") == 0));
+}
+
 bool passOne_ProcessDir(char *dirname, int level);
 #ifndef SC_WIN32
 bool passOne_ProcessDir(char *dirname, int level)
@@ -1949,7 +1976,8 @@ bool passOne_ProcessDir(char *dirname, int level)
 		de = readdir(dir);
 		if (!de) break;
 		
-        if ((strcmp(de->d_name, ".") == 0) || (strcmp(de->d_name, "..") == 0)) continue;
+		if (sc_SkipDirectory(de->d_name)) continue;
+
 		char *entrypathname = (char*)malloc(strlen(dirname) + strlen((char*)de->d_name) + 2);
 		strcpy(entrypathname, dirname);
 		//strcat(entrypathname, ":");
@@ -1963,10 +1991,7 @@ bool passOne_ProcessDir(char *dirname, int level)
 #endif // SC_DARWIN
 #ifdef SC_LINUX
 		{
-			struct stat stat_buf;
-			isDirectory =
-				(stat(entrypathname, &stat_buf) == 0)
-				&& S_ISDIR(stat_buf.st_mode);
+			isDirectory = sc_DirectoryExists(entrypathname);
 		}
 #endif // SC_LINUX
 
@@ -2008,9 +2033,8 @@ bool passOne_ProcessDir(char *dirname, int level)
 	}
   
 	do {
-    if ((strcmp(findData.cFileName, ".") == 0) || (strcmp(findData.cFileName, "..") == 0))
-      continue;
-		
+	  if (sc_SkipDirectory(findData.cFileName)) continue;
+	  
     char *entrypathname = (char*)malloc(strlen(dirname) + strlen(findData.cFileName) + 2);
 		strcpy(entrypathname, dirname);
 		strcat(entrypathname, "\\");
@@ -2035,6 +2059,80 @@ bool passOne_ProcessDir(char *dirname, int level)
 # include <sys/param.h>
 #endif
 
+// Get the Users home directory.
+
+#if SC_WIN32
+# include "win32_utils.h"
+#endif
+
+void sc_GetUserHomeDirectory(char *str, int size);
+void sc_GetUserHomeDirectory(char *str, int size)
+{
+#ifndef SC_WIN32
+  char *home = getenv("HOME");
+  strncpy(str, home, size);
+#else
+  win32_GetHomeFolder(str,size);
+#endif
+}
+
+// Get the System level 'Extensions' directory.
+
+void sc_GetSystemExtensionDirectory(char *str, int size);
+void sc_GetSystemExtensionDirectory(char *str, int size)
+{
+  strncpy(str, 
+#ifdef SC_DARWIN
+	  "/Library/Application Support/SuperCollider/Extensions",
+#else
+	  "/usr/local/share/SuperCollider/Extensions",
+#endif
+	  size);
+}
+
+// Get the System level 'Extensions' directory.
+
+void sc_GetUserExtensionDirectory(char *str, int size);
+void sc_GetUserExtensionDirectory(char *str, int size)
+{
+  char home[MAXPATHLEN];
+  sc_GetUserHomeDirectory(home, MAXPATHLEN);
+
+  snprintf(str, 
+	   size, 
+#ifdef SC_DARWIN
+	   "%s/Library/Application Support/SuperCollider/Extensions",
+#else
+	   "%s/share/SuperCollider/Extensions",
+#endif
+	   home);
+}
+
+// Add a component to a path.
+
+void sc_AppendToPath(char *path, const char *component);
+void sc_AppendToPath(char *path, const char *component)
+{
+#ifndef SC_WIN32
+  strcat(path, "/");
+#else
+  strcat(path, "\\");
+#endif
+  strcat(path, component);
+}
+
+// Locate directories to compile.
+
+static void sc_InitCompileDirectories(void);
+static void sc_InitCompileDirectories(void)
+{
+  getcwd(gCompileDir, MAXPATHLEN-32);
+  sc_AppendToPath(gCompileDir,"SCClassLibrary");
+
+  sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
+  sc_GetUserExtensionDirectory(gUserExtensionDir, MAXPATHLEN);
+}
+
 bool passOne()
 {
 	bool success;
@@ -2042,16 +2140,22 @@ bool passOne()
 	// This function must be provided by the host environment.
 	// It should choose a directory to scan recursively and call
 	// passOne_ProcessOneFile(char *filename) for each file
-
+	
 	if (!gLibraryConfig) {
-		getcwd(gCompileDir, MAXPATHLEN-32);
-#ifndef SC_WIN32
-    strcat(gCompileDir, "/SCClassLibrary");
-#else
-    strcat(gCompileDir, "\\SCClassLibrary");
-#endif
+	        sc_InitCompileDirectories();
+
 		success = passOne_ProcessDir(gCompileDir, 0);
 		if (!success) return false;
+
+		if(sc_DirectoryExists(gSystemExtensionDir)) {
+		  success = passOne_ProcessDir(gSystemExtensionDir,0);
+		  if (!success) return false;
+		}
+
+		if(sc_DirectoryExists(gUserExtensionDir)) {
+		  success = passOne_ProcessDir(gUserExtensionDir,0);
+		  if (!success) return false;
+		}
 	} else {
 #ifdef ENABLE_LIBRARY_CONFIGURATOR
 		success = gLibraryConfig->forEachIncludedDirectory(passOne_ProcessDir);
@@ -2121,8 +2225,7 @@ bool passOne_ProcessOneFile(char *filename, int level)
 		char realpathname[MAXPATHLEN];
 		realpath(filename, realpathname);
 		if (strncmp(filename, realpathname, strlen(filename))) {
-			struct stat stat_buf;
-			if ((stat(realpathname, &stat_buf) == 0) && S_ISDIR(stat_buf.st_mode))
+			if (sc_DirectoryExists(realpathname))
 				success = passOne_ProcessDir(realpathname, level);
 		}
 #else
