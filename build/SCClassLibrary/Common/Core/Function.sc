@@ -101,6 +101,14 @@ Function : AbstractFunction {
 		// function composition
 		^{|...args| this.value(that.valueArray(args)) }
 	}
+
+	bench {
+		var t0, dt;
+		t0 = Main.elapsedTime;
+		this.value;
+		dt = Main.elapsedTime - t0;
+		Post << "time to run: " << dt << " seconds.\n";
+	}
 	
 	protect { arg handler;
 		var error;
