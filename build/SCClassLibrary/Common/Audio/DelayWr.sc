@@ -4,20 +4,24 @@ PingPong {
 	//your buffer should be the same numChannels as your inputs
 	*ar { arg  bufnum=0,  inputs, delayTime, feedback=0.7, rotate=1;
 	
-		var indices, delayedSignals, outputs;
+		var trig, delayedSignals;
 		
-		delayedSignals = PlayBuf.ar(inputs.size,bufnum,1.0,1.0,0.0,1.0);
+		trig = Impulse.kr(delayTime.reciprocal);
 		
-		outputs = delayedSignals.rotate(rotate) * feedback + inputs;
-		// feedback to buffers		
-		RecordBuf.ar(outputs,bufnum,0.0,1.0,0.0,1.0,1.0,1.0);
-		
-		^outputs
+		delayedSignals = 
+			PlayBuf.ar(inputs.numChannels,bufnum,1.0,trig,
+				0,
+				0.0).rotate(rotate)
+			* feedback + inputs;
+
+		RecordBuf.ar(delayedSignals,bufnum,0.0,1.0,0.0,1.0,0.0,trig);
+
+		^delayedSignals
 	}
 }
 
 
-/* old version
+/* old sc3d5 version
 PingPong {
 	*ar { arg bank, index, inputs, delayTime, feedback=0.7, rotate=1, interpolationType=2;
 	
