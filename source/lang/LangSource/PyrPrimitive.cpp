@@ -2734,6 +2734,12 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	//gcDumpInfo(g->gc);
 	gc = g->gc;
 
+        // save environment in oldthread
+        PyrObject* objClassVars = g->classvars[class_object->classIndex.ui].uo;
+        PyrSlot* currentEnvironmentSlot = objClassVars->slots + 1;
+        oldthread->environment.ucopy = currentEnvironmentSlot->ucopy;
+        gc->GCWrite(oldthread, currentEnvironmentSlot);
+
 	oldthread->state.ui = oldstate;
 	
 	if (oldstate == tDone) {
@@ -2831,6 +2837,11 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	SetNil(&newthread->receiver);
 	
 	newthread->state.ui = tRunning;
+
+
+        // set new environment
+        currentEnvironmentSlot->ucopy = g->thread->environment.ucopy;
+        g->gc->GCWrite(objClassVars, currentEnvironmentSlot);
 
 	//post("old thread %08X stack %08X\n", oldthread, oldthread->stack.uo);
 	//post("new thread %08X stack %08X\n", g->thread, g->thread->stack.uo);
@@ -3067,17 +3078,15 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 	//post("thread %08X\n", thread);
 		SetObject(&thread->parent, g->thread);
 		g->gc->GCWrite(thread, g->thread);
-		
+                		
 		thread->beats.uf = g->thread->beats.uf;
 		thread->seconds.uf = g->thread->seconds.uf;
 		thread->clock.ucopy = g->thread->clock.ucopy;
  		g->gc->GCWrite(thread, &g->thread->clock);
-		thread->environment.ucopy = g->thread->environment.ucopy;
-		g->gc->GCWrite(thread, &g->thread->environment);
 
 	//postfl("start into thread %08X from parent %08X\n", thread, g->thread);
 		switchToThread(g, thread, tYieldToChild, &numArgsPushed);
-		
+		               
 		// set stack
 		//post("set stack %08X %08X\n", g->sp, g->gc->Stack()->slots - 1);
 		g->sp = g->gc->Stack()->slots - 1;
@@ -3094,8 +3103,6 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		thread->seconds.uf = g->thread->seconds.uf;
 		thread->clock.ucopy = g->thread->clock.ucopy;
 		g->gc->GCWrite(thread, &g->thread->clock);
-		thread->environment.ucopy = g->thread->environment.ucopy;
-		g->gc->GCWrite(thread, &g->thread->environment);
 
 		value.ucopy = b->ucopy;
 	//debugf("resume into thread %08X from parent %08X\n", thread, g->thread);
