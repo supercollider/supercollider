@@ -378,11 +378,10 @@ ArrayedCollection : SequenceableCollection {
 	
 	// random distribution table
 	
-	*randomTable { arg size, func;
-		var inc, a, b, c, res, sum=0;
-		
-		c = Array.fill(size, func);
-		a = c.collect { |el| sum = sum + el }; // incrementally integrate
+	asRandomTable {
+		var inc, a, b,res, sum=0, size;
+		size = this.size;
+		a = this.normalize.collect { |el| sum = sum + el }; // incrementally integrate
 		a = a / sum * size; // divide by sum (maximum value) and scale by new size
         	b = Array.fill(size, { arg i; a.indexInBetween(i) });  // flip array
         	b = b / size // rescale to 0..1
