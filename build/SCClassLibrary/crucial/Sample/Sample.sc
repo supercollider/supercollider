@@ -412,3 +412,5 @@ ArrayBuffer : BufferProxy {
 	}
 	// gui: show it
 }
+
+

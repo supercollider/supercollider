@@ -180,8 +180,8 @@ Instr  {
 		this.asSynthDef.prepareToBundle(group,bundle);
 	}
 			
-	writeDefFile {
-		this.asSynthDef.writeDefFile;
+	writeDefFile { arg dir;
+		this.asSynthDef.writeDefFile(dir);
 	}
 	write {
 		var synthDef;

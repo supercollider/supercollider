@@ -402,10 +402,10 @@ AbstractPlayer : AbstractFunction  {
 		});
 	}
 	//for now:  always sending, not writing
-	writeDefFile {
-		this.asSynthDef.writeDefFile;
+	writeDefFile {  arg dir;
+		this.asSynthDef.writeDefFile(dir);
 		this.children.do({ arg child;
-			child.writeDefFile;
+			child.writeDefFile(dir);
 		});
 	}
 	addToSynthDef {  arg synthDef,name;

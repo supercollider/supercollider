@@ -85,7 +85,7 @@ InstrSynthDef : SynthDef {
 
 		longName = name ++ this.class.defNameFromObjects(args);
 		name = longName.hash.asFileSafeString;
-		("InstrSynthDef built:" + name + longName).debug;
+		("InstrSynthDef built:" + name + longName).inform;
 	}
 	
 	// passed to Instr function but not to synth
