@@ -33,11 +33,14 @@ AbstractPlayControl {
 		bundle.addAction(this, \stop);
 	}
 	
+	freeToBundle {}
+	
 	controlNames { ^nil } // normally empty, function returns names.
 	controlValues { ^nil }
 	
 	play { this.subclassResponsibility(thisMethod) }
 	stop { this.subclassResponsibility(thisMethod) }
+	
 	
 	wakeUpParentsToBundle {}
 	addParent { "wrong object in NodeProxy.buildControl".error } // for now.
@@ -179,6 +182,7 @@ SynthControl : AbstractPlayControl {
 					bundle.add([15, nodeID, \gate, 0.0]); //to be sure.
 			} {
 					if(canFreeSynth.not) { bundle.add([11, nodeID]) }; //"/n_free"
+					// otherwise it is self freeing by some inner mechanism.
 			};
 			nodeID = nil;
 		};

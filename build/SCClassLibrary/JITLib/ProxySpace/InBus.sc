@@ -71,7 +71,7 @@ XInFeedback {
 
 Monitor {
 	
-	var <group, <vol=1.0, <out;
+	var <group, <vol=1.0, <out=0;
 	
 	play { arg fromIndex, fromNumChannels=2, toIndex=0, toNumChannels, 
 			target, multi=false, volume, fadeTime=0.02;
@@ -80,10 +80,11 @@ Monitor {
 		inGroup = target.asGroup;
 		server = inGroup.server;
 		bundle = List.new;
+		
 		toNumChannels = toNumChannels ? fromNumChannels;
 		numChannels = max(fromNumChannels, toNumChannels);
 		vol = volume ? vol;
-		
+
 		if(group.isPlaying.not) { 
 				group = Group.newToBundle(bundle, inGroup, \addToTail);
 				NodeWatcher.register(group);
@@ -99,15 +100,15 @@ Monitor {
 		};
 		
 		if(multi) {Êout = out.asCollection.add(toIndex) } {Êout = toIndex };
-			divider = if(toNumChannels.even and: { fromNumChannels.even }, 2, 1);
-			(numChannels div: divider).do { arg i;
+		divider = if(toNumChannels.even and: { fromNumChannels.even }, 2, 1);
+		(numChannels div: divider).do { arg i;
 			bundle.add([9, "system_link_audio_"++divider, 
 					server.nextNodeID.debug, 1, group.nodeID,
 					\out, toIndex + (i * divider  % toNumChannels), 
 					\in, fromIndex + (i * divider % fromNumChannels),
 					\vol, vol
 					]);
-			};
+		};
 		bundle.add(["/n_set", group.nodeID, "fadeTime", fadeTime]);
 		server.listSendBundle(server.latency, bundle);
 	}
