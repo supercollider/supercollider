@@ -235,8 +235,8 @@ NodeProxy : BusPlug {
 	
 	*make { arg server, rate, numChannels, inputs;
 		var res;
-		res = super.new(server).defineBus(rate, numChannels);
-		//inputs.do({ arg o; res.add(o) }); //to do.
+		res = this.new(server).defineBus(rate, numChannels);
+		inputs.do({ arg o; res.add(o) });
 		^res
 	}
 	
