@@ -70,6 +70,11 @@ private:
 // =====================================================================
 
 struct PyrSymbol;
+struct VMGlobals;
+
+extern long compiledOK;
+extern pthread_mutex_t gLangMutex;
+extern VMGlobals* gMainVMGlobals;
 
 class SC_LanguageClient
 {
@@ -112,11 +117,18 @@ public:
 	void printUsage();
 
 	// library startup/shutdown
+	bool isLibraryCompiled() { return compiledOK; }
 	void compileLibrary();
 	void shutdownLibrary();
 	void recompileLibrary();
 
 	// interpreter access
+	void lock() { pthread_mutex_lock(&gLangMutex); }
+	bool trylock() { return pthread_mutex_trylock(&gLangMutex) == 0; }
+	void unlock() { pthread_mutex_unlock(&gLangMutex); }
+
+	VMGlobals* getVMGlobals() { return gMainVMGlobals; }
+
 	void setCmdLine(const char* buf, size_t size);
 	void setCmdLine(const char* str);
 	void setCmdLine(const SC_StringBuffer& strBuf);

@@ -53,9 +53,6 @@ long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2);
 
 extern PyrString* newPyrStringN(class PyrGC *gc, long length, long flags, long collect);
 
-extern long compiledOK;
-extern pthread_mutex_t gLangMutex;
-
 static const char kInputInterpretDelimiter = 0x1b;			// ^[
 static const char kInputInterpretPrintDelimiter = 0x0c;		// ^L
 
@@ -464,9 +461,9 @@ void SC_LanguageClient::recompileLibrary()
 
 void SC_LanguageClient::setCmdLine(const char* buf, size_t size)
 {
-    if (compiledOK) {
-		pthread_mutex_lock(&gLangMutex);
-		if (compiledOK) {
+    if (isLibraryCompiled()) {
+		lock();
+		if (isLibraryCompiled()) {
 			VMGlobals *g = gMainVMGlobals;
 			
 			PyrString* strobj = newPyrStringN(g->gc, size, 0, true);
@@ -475,7 +472,7 @@ void SC_LanguageClient::setCmdLine(const char* buf, size_t size)
 			SetObject(&g->process->interpreter.uoi->cmdLine, strobj);
 			g->gc->GCWrite(g->process->interpreter.uo, strobj);
 		}
-		pthread_mutex_unlock(&gLangMutex);
+		unlock();
     }
 }
 
@@ -501,16 +498,16 @@ void SC_LanguageClient::setCmdLinef(const char* fmt, ...)
 
 void SC_LanguageClient::runLibrary(PyrSymbol* symbol)
 {
-    pthread_mutex_lock(&gLangMutex);
+	lock();
     ::runLibrary(symbol);
-    pthread_mutex_unlock(&gLangMutex);
+	unlock();
 }
 
 void SC_LanguageClient::runLibrary(const char* methodName)
 {
-    pthread_mutex_lock(&gLangMutex);
+	lock();
     ::runLibrary(getsym(methodName));
-    pthread_mutex_unlock(&gLangMutex);
+	unlock();
 }
 
 void SC_LanguageClient::executeFile(const char* fileName)
@@ -568,11 +565,11 @@ void SC_LanguageClient::errorOptionArgInvalid(const char* opt, const char* arg)
 
 void SC_LanguageClient::tick()
 {
-    if (pthread_mutex_trylock(&gLangMutex) == 0) {
-		if (compiledOK) {
+    if (trylock()) {
+		if (isLibraryCompiled()) {
 			::runLibrary(s_tick);
 		}
-		pthread_mutex_unlock(&gLangMutex);
+		unlock();
     }
     flush();
 }
