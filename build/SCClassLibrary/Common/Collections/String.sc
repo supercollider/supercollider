@@ -55,7 +55,7 @@ String[char] : RawArray {
 	+ { arg anObject; ^this prCat: " " prCat: anObject.asString; }
 	catArgs { arg ... items; ^this.catList(items) }
 	scatArgs { arg ... items; ^this.scatList(items) }
-	ccatArgs { arg ... items; ^this.scatList(items) }
+	ccatArgs { arg ... items; ^this.ccatList(items) }
 	catList { arg list; 
 		// concatenate this with a list as a string
 		var string;
