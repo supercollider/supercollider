@@ -326,12 +326,7 @@ IdentityDictionary : Dictionary {
 			};
 			if (selector.isSetter) {
 				selector = selector.asGetter;
-				func = this[selector];
-				if (func.notNil) {
-					^func.performList(\value, this, args);
-				}{
-					^this[selector] = args[0];
-				};
+				^this[selector] = args[0];
 			}
 		};
 
