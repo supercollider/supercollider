@@ -1,9 +1,9 @@
 + Server {
 
-	scope { arg numChannels, index, bufsize = 4096, zoom, rate;
+	scope { arg numChannels = 2, index, bufsize = 4096, zoom, rate;
 			
 			if(scopeWindow.isNil) {
-				numChannels = numChannels ? this.options.numOutputBusChannels;
+				// numChannels = numChannels ? this.options.numOutputBusChannels;
 				scopeWindow = 
 					Stethoscope.new(this, numChannels, index, bufsize, zoom, rate)
 			} {
