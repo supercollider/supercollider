@@ -1136,7 +1136,7 @@ SCErr meth_s_get(World *inWorld, int inSize, char *inData, ReplyAddress* inReply
 
 	scpacket packet;
 	packet.adds("/n_set");
-	packet.maketags(numheads * 2 + 1);
+	packet.maketags(numheads * 2 + 2);
 	packet.addtag(',');
 	packet.addtag('i');
 	packet.addi(graph->mNode.mID);
