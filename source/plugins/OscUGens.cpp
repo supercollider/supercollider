@@ -3806,7 +3806,14 @@ void CopyBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 	
 	fromPos = sc_clip(fromPos, 0, frames2-1);
 	toPos = sc_clip(toPos, 0, frames1-1);
-	length = sc_min(frames2 - fromPos, frames1 - toPos);
+	
+	int maxLength = sc_min(frames2 - fromPos, frames1 - toPos);
+	if (length < 0) {
+		length = maxLength;
+	} else {
+		length = sc_min(length, maxLength);
+	}
+
 	if (length <= 0) return;
 	
 	int numbytes = length * sizeof(float) * channels1;
