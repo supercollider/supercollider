@@ -439,7 +439,7 @@ int prIdentDict_At(struct VMGlobals *g, int numArgsPushed)
 int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed);
 int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *result;
+	PyrSlot *a, result;
 	unsigned int index;
 	int objClassIndex;
 	
@@ -452,27 +452,8 @@ int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed)
 
 	if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) return errFailed;
 
-again:
-	PyrSlot *arraySlot = dict->slots + ivxIdentDict_array;
-	
-	if (!IsObj(arraySlot)) return errFailed;
-	
-	PyrObject *array = arraySlot->uo;
-	
-	if (!ISKINDOF(array, class_array_index, class_array_maxsubclassindex)) return errFailed;
-	
-	index = arrayAtIdentityHashInPairs(array, a);
-	result = array->slots + index + 1;
-
-	if (IsNil(result)) {
-		PyrSlot *parentSlot = dict->slots + ivxIdentDict_parent;
-		if (isKindOfSlot(parentSlot, s_identitydictionary->u.classobj)) {
-			dict = parentSlot->uo;
-			goto again; // tail call
-		}
-	}
-	
-	a->ucopy = result->ucopy;
+	identDict_lookup(dict, a, &result);
+	a->ucopy = result.ucopy;
 	
 	return errNone;
 }
