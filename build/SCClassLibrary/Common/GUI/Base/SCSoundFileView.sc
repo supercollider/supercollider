@@ -51,7 +51,7 @@ SCSoundFileView : SCScope{
 			spec = [0, times].asSpec;
 			times.do{|i|
 				readtime = {
-					this.read(frame, o, 64);
+					this.read(frame, o, block);
 					frame = frame + o;		
 					readProgress = spec.unmap(i);
 				}.bench(false);
@@ -219,5 +219,6 @@ SoundFileViewProgressWindow{
 		};	
 		
 	}
-
 }
+
+/* jan truetzschler 2005 */
