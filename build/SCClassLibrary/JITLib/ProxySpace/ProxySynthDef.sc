@@ -23,10 +23,11 @@ ProxySynthDef : SynthDef {
 					argValues.at(i) ? 0.0 
 		});
 		func = {
-			var synthGate, synthFadeTime, envgen, output, ctl, ok;
+			var synthGate, synthFadeTime, envgen, output, ctl, ok, rate;
 				ctl = Control.names(argNames).kr(argValues);
 				output = object.valueArray(ctl).asArray;
-				ok = proxy.initBus(output.rate, output.size);
+				rate = output.rate;
+				ok = proxy.initBus(rate, output.size);
 				if(ok.not, { ^nil });
 				
 				envgen = if(proxy.autoRelease, {
@@ -38,9 +39,13 @@ ProxySynthDef : SynthDef {
 					1.0 
 				});
 				output = envgen*output;
-			//if((output.rate === 'control') && (proxy.rate === 'audio'), 
-			//{ output = K2A.ar(output) });
-				Out.multiNewList([proxy.rate, proxy.outbus.index]++output)
+				if(rate === 'scalar', {
+					output
+					}, {
+					//if((rate === 'control') && (proxy.rate === 'audio'), 
+					//{ output = K2A.ar(output) }); //change in NodeProxy-initBus
+					Out.multiNewList([rate, proxy.outbus.index]++output)
+				})
 		};
 		
 		super.build(func);

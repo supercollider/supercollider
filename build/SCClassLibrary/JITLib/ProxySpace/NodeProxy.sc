@@ -307,9 +307,9 @@ NodeProxy : AbstractFunction {
 	
 	
 	initBus { arg rate, numChannels;
+				if(rate === 'scalar', { ^true }); //just exit
 				if(outbus.isNil, {
 					this.allocBus(rate,numChannels);
-					nodeMap = ProxyNodeMap.new;
 					^true
 				}, {
 					^(outbus.rate === rate) && (numChannels <= outbus.numChannels)
