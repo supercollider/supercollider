@@ -265,6 +265,8 @@ AutoCompClassBrowser : AutoCompMethodBrowser {
 }
 
 AutoCompClassSearch : AutoCompClassBrowser {
+	classvar	classBrowser;	// reserve one class browser for autocomplete use
+
 	*newCondition { ^Document.allowAutoComp }	// no restrictions on when a window will be opened
 	
 	*init { arg argStart, argSize, argDoc;
@@ -284,21 +286,21 @@ AutoCompClassSearch : AutoCompClassBrowser {
 			// I need to test whether the method chosen is in a superclass of the class
 			// selected here -- see finishString
 		savedClass = reducedList[listView.value];
-		savedClass.browse;
+		classBrowser = savedClass.browse;
 			// set enter key action to drop a method template into the document
-		ClassBrowser.methodView.focus
+		classBrowser.methodView.focus
 			.enterKeyAction_({
 				var str, newstart, newsize;
 				Document.listener.selectRange(start, size)
 					.selectedString_(str = this.finishString);
 				#newstart, newsize = this.finalSelection(str);
 				Document.listener.selectRange(newstart, newsize);
-				ClassBrowser.methodView.enterKeyAction = ClassBrowser.normalMethodEnterKey;
-				ClassBrowser.close;
+				classBrowser.methodView.enterKeyAction = classBrowser.normalMethodEnterKey;
+				classBrowser.close;
 			})
 			.keyDownAction_({ |list, char, modifiers, unicode|
 				(char == $^).if({
-					ClassBrowser.superButton.doAction;
+					classBrowser.superButton.doAction;
 				}, {
 					list.defaultKeyDownAction(char, modifiers, unicode)
 				});
@@ -308,7 +310,7 @@ AutoCompClassSearch : AutoCompClassBrowser {
 	
 	*finishString { 
 		var meth, classname;
-		meth = ClassBrowser.methodArray[ClassBrowser.methodView.value];
+		meth = classBrowser.methodArray[classBrowser.methodView.value];
 		meth.ownerClass.isMetaClass.if({
 				// if the method chosen comes from this class or a superclass,
 				// use this class, otherwise use the class selected in the class browser
@@ -336,40 +338,36 @@ ClassBrowser {
 		// moving jmc's Class-browse method into a separate object
 		// with some customizability
 		
-		// it's a singleton
 		// methodView and methodArray need to be accessible from outside
 		// (for AutoCompClassSearch)
-	classvar w;
-	classvar currentClassNameView;
-	classvar superClassNameView;
-	classvar subclassView, <methodView, argView;
-	classvar instVarView, classVarView;
-	classvar filenameView;
-	classvar cvsButton;
-	classvar bakButton, fwdButton;
-	classvar <superButton, metaButton, helpButton;
-	classvar methodSourceButton, classSourceButton;
-	classvar implementationButton, refsButton;
-	classvar currentClass;
-	classvar currentMethod;
-	classvar subclassArray, classMethodArray, <methodArray;
-	classvar updateViews, setNewClass;
-	classvar hvBold12;
-	classvar history, historyPos=0;
+	var w;
+	var currentClassNameView;
+	var superClassNameView;
+	var subclassView, <methodView, argView;
+	var instVarView, classVarView;
+	var filenameView;
+	var cvsButton;
+	var bakButton, fwdButton;
+	var <superButton, metaButton, helpButton;
+	var methodSourceButton, classSourceButton;
+	var implementationButton, refsButton;
+	var currentClass;
+	var currentMethod;
+	var subclassArray, classMethodArray, <methodArray;
+	var updateViews, setNewClass;
+	var hvBold12;
+	var history, historyPos=0;
 
 	*new { arg class;
-		w.isNil.if({ this.init(class) },
-			{ this.currentClass_(class) });
-		^this
+		^super.new.init(class)
 	}
 
-	*init { arg class;
+	init { arg class;
 		
 		currentClass = class;
 		history = [currentClass];
 		
-		w = SCWindow("class browser", Rect(128, 320, 640, 560))
-			.onClose_({ w = nil; });	// so that next .browse call will create a new window
+		w = SCWindow("class browser", Rect(128, 320, 640, 560));
 		w.view.decorator = FlowLayout(w.view.bounds);
 		
 		currentClassNameView = SCTextField(w, Rect(0,0, 256, 32));
@@ -526,15 +524,15 @@ ClassBrowser {
 		w.front;
 	}
 	
-	*close {
+	close {
 		w.close
 	}
 	
-	*normalMethodEnterKey {
+	normalMethodEnterKey {
 		^{ currentMethod.openCodeFile; }
 	}
 
-	*currentClass_ { | newClass, addHistory = true |
+	currentClass_ { | newClass, addHistory = true |
 		if (newClass.notNil) {
 			if (addHistory) {
 				if (history.size > 1000) { history = history.drop(1) };
@@ -549,7 +547,7 @@ ClassBrowser {
 		};
 	}
 	
-	*updateViews {
+	updateViews {
 		var classMethodNames, methodNames;
 		
 		currentClassNameView.string = currentClass.name.asString;

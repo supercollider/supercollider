@@ -64,7 +64,7 @@
 	}
 	
 	browse {
-		ClassBrowser.new(this)
+		^ClassBrowser.new(this)
 	}
 }
 
