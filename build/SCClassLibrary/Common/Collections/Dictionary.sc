@@ -263,7 +263,11 @@ Dictionary : Set {
 
 IdentityDictionary : Dictionary {
 	var <>parent; // inheritance of properties
-
+	
+	var <>know = false; 
+	// if know is set to true then not understood messages will look in the dictionary
+	// for that selector and send the value message to them.
+	
 	*new { arg n=8, parent; 
 		^super.new(n).parent_(parent) 
 	}
@@ -311,29 +315,28 @@ IdentityDictionary : Dictionary {
 	}
 	scanFor { arg argKey;
 		^array.atIdentityHashInPairs(argKey)
-/*
-		var i, start, end, key, maxHash;
-		
-		maxHash = array.size div: 2;
-		start = (argKey.identityHash % maxHash) * 2;
-		end = array.size;
-		i = start;
-		while ({ i < end }, {
-			key = array.at(i);
-			if ( key.isNil or: { key === argKey }, { ^i });
-			i = i + 2;
-		});
-		end = start - 1;
-		i = 0;
-		while ({ i < end }, {
-			key = array.at(i);
-			if ( key.isNil or: { key === argKey }, { ^i });
-			i = i + 2;
-		});
-		^-2
-*/
 	}
 
+	doesNotUnderstand { arg selector ... args;
+		var func;
+		if (know) {
+			func = this[selector];
+			if (func.notNil) {
+				^func.performList(\value, this, args);
+			};
+			if (selector.isSetter) {
+				selector = selector.asGetter;
+				func = this[selector];
+				if (func.notNil) {
+					^func.performList(\value, this, args);
+				}{
+					^this[selector] = args[0];
+				};
+			}
+		};
+
+		^this.superPerformList(\doesNotUnderstand, selector, args);
+	}
 	
 	collapse {
 		// cyclic parents will crash.
