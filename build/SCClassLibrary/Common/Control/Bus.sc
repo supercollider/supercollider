@@ -76,5 +76,8 @@ Bus {
 //		^(aBus.class === this.class 
 //		and: {aBus.index == index} and: {aBus.rate == rate} and: {aBus.server == server})
 //	}
+	isAudioOut { // audio interface
+		^(rate === \audio and: {index <= server.options.firstPrivateBus})
+	}
 }
 
