@@ -41,6 +41,7 @@ OSCresponder {
 	hash {
 		^addr.hash bitXor: cmdName.hash
 	}
-
+	add { all.add(this); }
+	remove { all.remove(this) }
 }
 

@@ -66,6 +66,15 @@ Server : Model {
 		});
 	}	
 	
+	wait { arg cmdName;
+		var resp, routine;
+		routine = thisThread;
+		resp = OSCresponder(addr, cmdName, { resp.remove; routine.resume(true); });
+		resp.add;
+		true.yield;
+	}
+		
+	
 	bootInProcess {
 		_BootInProcessServer
 		^this.primitiveFailed
