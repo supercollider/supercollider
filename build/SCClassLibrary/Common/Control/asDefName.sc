@@ -71,13 +71,19 @@
 			})
 		})
 	}
-	play { arg key, mixToPresent=false, onComplete;
+	play { arg key, server, mixToPresent=false, onComplete, latency;
+		var def, synth;
+		server = server ? Server.local;
 		if(key.isNil,{ 
-			^Synth(this)
+			def = this.asSynthDef;
+			synth = Synth.basicNew(def.name,server);
+			def.send(server, synth.newMsg);
+			^synth
 		}, {
-			^this.send(key, mixToPresent, onComplete) //for now..
+			^this.send(key, server, mixToPresent, onComplete, latency)
 		})
 	}
+	
 }
 
 + SynthDef {
