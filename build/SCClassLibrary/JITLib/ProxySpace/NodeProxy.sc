@@ -437,7 +437,7 @@ NodeProxy : BusPlug {
 	task_ { arg newTask; 
 		var bundle;
 		bundle = MixedBundle.new;
-		if(task.isPlaying) { bundle.addAction(task, \stop) };
+		if(task.isPlaying) { bundle.addMessage(task, \stop) };
 		task = newTask;
 		if(this.isPlaying) { this.playTaskToBundle(bundle) };
 		bundle.schedSend(server, clock);
@@ -706,6 +706,7 @@ NodeProxy : BusPlug {
 	//send single object
 	sendObjectToBundle { arg bundle, object, extraArgs, index;
 				var synthID, target, nodes;
+				[[extraArgs]].debug;
 				synthID = object.playToBundle(bundle, extraArgs.value, this);
 				if(synthID.notNil) {
 					if(index.notNil) { // if nil, all are sent anyway
@@ -791,7 +792,7 @@ NodeProxy : BusPlug {
 	
 	playTaskToBundle { arg bundle;
 		if(task.notNil and: { task.isPlaying.not }) 
-			{ bundle.addAction(task, \play, [clock, false, 0.0]) }
+			{ bundle.addMessage(task, \play, [clock, false, 0.0]) }
 	}
 	
 	// used in 'garbage collector'

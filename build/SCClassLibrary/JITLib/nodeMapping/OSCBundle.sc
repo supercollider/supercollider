@@ -65,7 +65,7 @@ MixedBundle : OSCBundle {
 		functions = functions.add({ SystemClock.sched(time, { func.value; nil }) });
 	}
 	
-	addAction { arg receiver, selector, args;
+	addMessage { arg receiver, selector, args;
 		functions = functions.add( Message(receiver,selector,args) )
 	}
 	doFunctions {

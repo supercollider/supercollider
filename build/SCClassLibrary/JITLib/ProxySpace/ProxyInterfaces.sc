@@ -25,7 +25,7 @@ AbstractPlayControl {
 
 	
 	playToBundle { arg bundle, args; 
-		bundle.addAction(this, \play); //no latency (latency is in stream already)
+		bundle.addMessage(this, \play); //no latency (latency is in stream already)
 		^nil //return a nil object instead of a synth
 	}
 	
@@ -43,6 +43,7 @@ AbstractPlayControl {
 	wakeUpParentsToBundle {}
 	addParent { "wrong object in NodeProxy.buildControl".error } // for now.
 	parents { ^nil }
+	store {}
 	
 }
 
@@ -51,7 +52,7 @@ StreamControl : AbstractPlayControl {
 	
 	playToBundle { arg bundle;
 		if(paused.not and: { stream.isPlaying.not }, {
-			bundle.addAction(this, \play); //no latency (latency is in stream already)
+			bundle.addMessage(this, \play); //no latency (latency is in stream already)
 		})
 		^nil //return a nil object instead of a synth
 	}
@@ -148,7 +149,7 @@ SynthControl : AbstractPlayControl {
 	
 	
 	loadToBundle {} //assumes that SynthDef is loaded in the server 
-	name { ^source }
+	asDefName { ^source }
 	distributable { ^canReleaseSynth } // n_free not implemented in shared node proxy
 	
 	build { arg proxy; // assumes audio, if proxy is not initialized
@@ -160,7 +161,7 @@ SynthControl : AbstractPlayControl {
 	
 	spawnToBundle { arg bundle, extraArgs, target, addAction=0; //assumes self freeing
 		var synthMsg;
-		synthMsg = [9, this.name, -1, addAction, target.asTarget.nodeID]++extraArgs;
+		synthMsg = [9, this.asDefName, -1, addAction, target.asTarget.nodeID]++extraArgs;
 		bundle.add(synthMsg);
 	}
 	
@@ -169,7 +170,7 @@ SynthControl : AbstractPlayControl {
 		server = target.server;
 		group = target.asTarget;
 		nodeID = server.nextNodeID;
-		bundle.add([9, this.name, nodeID, addAction, group.nodeID]++extraArgs);
+		bundle.add([9, this.asDefName, nodeID, addAction, group.nodeID]++extraArgs);
 		if(paused) { bundle.add(["/n_run", nodeID, 0]) };
 		^nodeID
 	}
@@ -207,10 +208,12 @@ SynthControl : AbstractPlayControl {
 		dict = SynthDescLib.global.synthDescs;
 		^if(dict.notNil) { dict.at(source) } {Ênil }; // source is symbol: synth def name
 	}
+
 	controlNames { var desc; 
 					desc = this.synthDesc; 
 					^if(desc.notNil) { desc.controls } { nil } 
 	}
+	store { SynthDescLib.global.read("synthdefs/" ++ this.asDefName ++ ".scsyndef"); }
 	
 }
 
@@ -251,7 +254,7 @@ SynthDefControl : SynthControl {
 		bundle.addPrepare([5, synthDef.asBytes]); //"/d_recv"
 	}
 	
-	name { ^synthDef.name }
+	asDefName { ^synthDef.name }
 	
 	wakeUpParentsToBundle { arg bundle, checkedAlready;
 		parents.do { arg proxy; proxy.wakeUpToBundle(bundle, checkedAlready) }
