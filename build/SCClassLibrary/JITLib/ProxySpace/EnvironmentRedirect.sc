@@ -4,7 +4,7 @@
 
 EnvironmentRedirect {
 
-	var <>envir;
+	var <envir;
 	var <dispatch;
 	
 	*new { arg envir;
@@ -133,6 +133,10 @@ EnvironmentRedirect {
      // networking
      dispatch_ { arg disp;
      	     dispatch = disp.envir_(this);
+	}
+	envir_ { arg argEnvir;
+		envir = argEnvir;
+		if(dispatch.notNil) { this.dispatch = dispatch };
 	}
 	
 }
