@@ -11,6 +11,9 @@ OSCBundle {
 	add { arg msg;
 		messages = messages.add(msg);
 	}
+	addAll { arg mgs;
+		messages = messages.addAll(mgs)
+	}
 	printOn { arg stream;
 		stream << this.class.name << ": " <<< messages;
 	}

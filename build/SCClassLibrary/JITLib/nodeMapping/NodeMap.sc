@@ -1,6 +1,7 @@
 NodeMap {
 	var <values, <mappings, <>msgs;
-	var <currentMsg;
+	var <bundle, <upToDate=false;
+	
 	
 	*new {
 		^super.new.clear
@@ -9,35 +10,26 @@ NodeMap {
 	clear {
 		mappings = IdentityDictionary.new;
 		values = IdentityDictionary.new;
-		currentMsg = List.new;
 	}
 	
 	addMsg { arg msg;
-		if(msgs.isNil, { this.clearMsgs });
-		msgs.add(msg);
+		msgs = msgs.add(msg);
+		upToDate = false;
 	}
 	
-	clearMsgs {
-		msgs = List.new;
-	}
 	
 	map { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			mappings.put(args.at(i).asSymbol, args.at(i+1));
+			mappings.put(args.at(i), args.at(i+1));
 		});
+		upToDate = false;
 	}
 	
-	unmap { arg ... args;
-		forBy(0, args.size-1, 2, { arg i;
-			var key, oldval;
-			key = args.at(i).asSymbol;
+	unmap { arg ... keys;
+		keys.do({ arg key;
 			mappings.removeAt(key);
-			//mappings.put(key, -1); //what is better?
-			oldval = values.at(key);
-			if(oldval.notNil, {
-				this.set(key, oldval) 
-			})
 		});
+		upToDate = false;
 		
 	}
 	
@@ -55,27 +47,30 @@ NodeMap {
 	
 	setn { arg ... args;
 		this.performList(\set, args);
+		upToDate = false;
 		
 	}
 
 	set { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			values.put(args.at(i).asSymbol, args.at(i+1));
+			values.put(args.at(i), args.at(i+1));
 		});
+		upToDate = false;
 	}
 	
 	unset { arg ... keys;
 		keys.do({ arg key;
 			values.removeAt(key);
 		});
+		upToDate = false;
 		
 	}
 	
 	send { arg server, nodeID, latency;
-		var bundle;
-		bundle = List.new;
-		this.addToBundle(bundle, nodeID);
-		server.listSendBundle(latency, bundle);
+		var msgBundle;
+		msgBundle = List.new;
+		this.addToBundle(msgBundle, nodeID);
+		server.listSendBundle(latency, msgBundle.postln);
 	}
 	
 	sendToNode { arg node, latency;
@@ -88,7 +83,6 @@ NodeMap {
 				if(mappings.isEmpty, { ^#[] });
 				mapArgs = List.new;
 				mappings.keysValuesDo({ arg key, value;
-										value = this.translate(value);
 										if(value.notNil, {
 											mapArgs.add(key); 
 											mapArgs.add(value);
@@ -98,7 +92,6 @@ NodeMap {
 					
 	}
 	
-	translate { arg val; ^val }
 	
 	valArgs {
 				var valArgs;
@@ -115,6 +108,7 @@ NodeMap {
 				^valArgs
 
 	}
+	
 	multiValArgs {
 				var valArgs;
 				valArgs = List.new;
@@ -131,35 +125,43 @@ NodeMap {
 				^valArgs
 	}
 	
-	
-	addToBundle { arg msgList, target;
-		var mapArgs, valArgs, multiValArgs;
-			target = target.asNodeID;
+	updateBundle { arg nodeID;
+			var mapArgs, valArgs, multiValArgs;
+			
+			if(upToDate, {
+				bundle.do({ arg item;
+					item.put(1, nodeID);
+				});
+			}, {
+				bundle = List.new;
 				mapArgs = this.mapArgs;
 				valArgs = this.valArgs;
 				multiValArgs = this.multiValArgs;
 										
 				if(mapArgs.isEmpty.not, {
-					msgList.add([14, target]++mapArgs);
+					bundle.add([14, nodeID]++mapArgs);
 				});
 				if(valArgs.isEmpty.not, {
-					msgList.add([15, target]++valArgs);
+					bundle.add([15, nodeID]++valArgs);
 				});
 				if(multiValArgs.isEmpty.not, {
-					msgList.add([16, target]++multiValArgs);
+					bundle.add([16, nodeID]++multiValArgs);
 				});
-				
 				msgs.do({ arg item;
-					msgList.add(item.insert(1, target));
+					bundle.add(item.insert(1, nodeID));
 				});
-	}
+				upToDate = true;
+			});
 
 	
-}
+	}
+	
+	addToBundle { arg inBundle, target;
+			target = target.asNodeID;
+			this.updateBundle(target);
+			inBundle.addAll(bundle);
+	}	
 
-BusNodeMap : NodeMap {
-
-		translate { arg bus; ^bus.index }
-
+	
 }
 
