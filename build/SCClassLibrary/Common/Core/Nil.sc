@@ -88,7 +88,11 @@ Nil {
 	
 	handleError { arg error;
 		Error.handling = true;
-		if (Error.debug) { error.inspect } { error.reportError };
+		if (Error.debug) {
+			{ error.inspect }.defer;
+		} {
+			error.reportError
+		};
 		Error.handling = false;
 		this.halt;
 	}
