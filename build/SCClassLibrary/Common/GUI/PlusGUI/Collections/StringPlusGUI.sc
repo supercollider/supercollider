@@ -1,6 +1,6 @@
 + String {
 	newTextWindow { arg title="Untitled", makeListener=false;
-		Document.new(this, title, makeListener);
+		Document.new(title, this, makeListener);
 	}
 	
 	openTextFile{ arg selectionStart=0, selectionLength=0;
