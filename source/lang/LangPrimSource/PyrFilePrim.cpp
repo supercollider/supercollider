@@ -529,6 +529,19 @@ int prFileReadRaw(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
+{
+	//PyrSlot* a = g->sp - 1; // File
+	PyrSlot* string = g->sp;
+        
+    if (!isKindOfSlot(string, class_string))  return errWrongType;
+
+    getcwd(string->uos->s,255);
+    string->uos->size = strlen(string->uos->s);
+    
+	return errNone;
+}
+
 ////////
 
 
@@ -970,6 +983,7 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_FileLength", prFileLength, 1, 0);	
 	definePrimitive(base, index++, "_FileWrite", prFileWrite, 2, 0);	
 	definePrimitive(base, index++, "_FileReadLine", prFileReadLine, 2, 0);	
+	definePrimitive(base, index++, "_File_getcwd", prFileGetcwd, 2, 0);	
 
 	definePrimitive(base, index++, "_FilePutChar", prFilePutChar, 2, 0);	
 	definePrimitive(base, index++, "_FilePutInt8", prFilePutInt8, 2, 0);	

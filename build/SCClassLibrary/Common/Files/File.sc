@@ -164,6 +164,11 @@ File : UnixFILE {
 		if (file.isOpen, { file.close; ^true });
 		^false
 	}
+	*getcwd {
+		var string;
+		this.prGetcwd(string = String.new(256));
+		^string
+	}
 	open { arg pathName, mode;
 		/* open the file. mode is a string passed
 			to fopen, so should be one of:
@@ -207,7 +212,10 @@ File : UnixFILE {
 		_File_PutFile
 		^this.primitiveFailed;
 	}
-	
+	*prGetcwd { arg string;
+		_File_getcwd
+		^this.primitiveFailed;
+	}
 }
 
 

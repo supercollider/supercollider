@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fmodern\fcharset77 Courier;
 \f3\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
-}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red0\green0\blue191;
+\red96\green96\blue96;\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 File
@@ -69,26 +69,32 @@ Close the file.\
 
 \f0\b *exists(pathName)\
 
-\f1\b0 answers if a file exists at that path.\
+\f1\b0 	answers if a file exists at that path.\
 \
 
 \f0\b *delete(pathName)
 \f1\b0 \
-deletes the file at that path.  don't be an a**hole.\
+	deletes the file at that path.\
+	use only for good, never for evil.\
 \
 
-\f0\b *openDialog("hello",\{\},\{\})\
+\f0\b *openDialog(prompt,sucessFunc,cancelFunc)\
 
-\f1\b0 	not yet implemented\
-	\
+\f1\b0 	\
 
 \f0\b *saveDialog("hello",\{\},\{\})\
 
 \f1\b0 	not yet implemented\
 \
-\
-\
-\
+
+\f0\b *getcwd\
+
+\f1\b0 	POSIX standard 'get current working directory'.\
+
+\f3\fs18 \cf2 (\
+	\cf3 File\cf2 .getcwd\
+)
+\f1\fs24 \cf0 \
 \
 
 \f0\b Examples:
@@ -100,36 +106,36 @@ deletes the file at that path.  don't be an a**hole.\
 
 \fs18 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 var\cf0  f, g;\
-f = \cf2 File\cf0 (\cf3 "test"\cf0 ,\cf3 "w"\cf0 );\
-f.write(\cf3 "Does this work?\\n is this thing on ?\\n"\cf0 );\
+\cf4 var\cf0  f, g;\
+f = \cf4 File\cf0 (\cf5 "test"\cf0 ,\cf5 "w"\cf0 );\
+f.write(\cf5 "Does this work?\\n is this thing on ?\\n"\cf0 );\
 f.close;\
 \
-g = \cf2 File\cf0 (\cf3 "test"\cf0 ,\cf3 "r"\cf0 );\
+g = \cf4 File\cf0 (\cf5 "test"\cf0 ,\cf5 "r"\cf0 );\
 g.readAllString.postln;\
 g.close;\
 )\
 \
 (\
-\cf2 var\cf0  h, k;\
-h = \cf2 File\cf0 (\cf3 "test2"\cf0 , \cf3 "wb"\cf0 );\
+\cf4 var\cf0  h, k;\
+h = \cf4 File\cf0 (\cf5 "test2"\cf0 , \cf5 "wb"\cf0 );\
 h.inspect;\
-h.write( \cf2 FloatArray\cf0 [1.1, 2.2, 3.3, pi, 3.sqrt] );\
+h.write( \cf4 FloatArray\cf0 [1.1, 2.2, 3.3, pi, 3.sqrt] );\
 h.close;\
 \
-k = \cf2 File\cf0 (\cf3 "test2"\cf0 , \cf3 "rb"\cf0 );\
+k = \cf4 File\cf0 (\cf5 "test2"\cf0 , \cf5 "rb"\cf0 );\
 (k.length div: 4).do(\{ k.getFloat.postln; \});\
 k.close;\
 )\
 \
 \
 (\
-\cf2 var\cf0  f, g;\
-f = \cf2 File\cf0 (\cf3 "test3"\cf0 ,\cf3 "w"\cf0 );\
+\cf4 var\cf0  f, g;\
+f = \cf4 File\cf0 (\cf5 "test3"\cf0 ,\cf5 "w"\cf0 );\
 100.do(\{ f.putChar([$a, $b, $c, $d, $e, $\\n].choose); \});\
 f.close;\
 \
-g = \cf2 File\cf0 (\cf3 "test3"\cf0 ,\cf3 "r"\cf0 );\
+g = \cf4 File\cf0 (\cf5 "test3"\cf0 ,\cf5 "r"\cf0 );\
 g.readAllString.postln;\
 g.close;\
 \
@@ -147,16 +153,16 @@ g.close;\
 )\
 \
 (\
-\cf4 //var f, g;\
+\cf6 //var f, g;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 f = \cf2 File\cf0 (\cf3 "test3"\cf0 ,\cf3 "wb"\cf0 );\
+\cf0 f = \cf4 File\cf0 (\cf5 "test3"\cf0 ,\cf5 "wb"\cf0 );\
 f.inspect;\
 100.do(\{ f.putFloat(1.0.rand); \});\
 \
 f.inspect;\
 f.close;\
 \
-g = \cf2 File\cf0 (\cf3 "test3"\cf0 ,\cf3 "rb"\cf0 );\
+g = \cf4 File\cf0 (\cf5 "test3"\cf0 ,\cf5 "rb"\cf0 );\
 100.do(\{\
 	g.getFloat.postln;\
 \});\
@@ -167,9 +173,9 @@ g.close;\
 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //var f, g;\
+\cf6 //var f, g;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 f = \cf2 File\cf0 (\cf3 "test3"\cf0 ,\cf3 "r"\cf0 );\
+\cf0 f = \cf4 File\cf0 (\cf5 "test3"\cf0 ,\cf5 "r"\cf0 );\
 f.inspect;\
 \
 f.getLine(1024).postln;\
