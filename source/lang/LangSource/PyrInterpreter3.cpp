@@ -1244,12 +1244,12 @@ void Interpret(VMGlobals *g)
 					vars = g->frame->vars;
 					tag = vars[1].utag;
 					
-					if (tag != tagInt && tag != tagInf) {
+					if (tag != tagInt) {
 						if (IsFloat(&vars[1])) {
 							// coerce to int
 							SetInt(&vars[1], (int32)(vars[1].uf));
 						} else {
-							error("Integer-for : endval not a SimpleNumber Infinitum.\n");
+							error("Integer-for : endval not a SimpleNumber.\n");
 							
 							*++sp = g->receiver.ui;
 							numArgsPushed = 1;
@@ -1260,7 +1260,7 @@ void Interpret(VMGlobals *g)
 						}
 					}
 					
-					if (tag == tagInf || g->receiver.ui <= vars[1].ui) {
+					if (g->receiver.ui <= vars[1].ui) {
 						vars[5].ui = 1;
 					} else {
 						vars[5].ui = -1;
@@ -1270,7 +1270,7 @@ void Interpret(VMGlobals *g)
 					break;
 				case 6 :
 					vars = g->frame->vars;
-					if (vars[1].utag == tagInf 
+					if (vars[1].ui == 0x7FFFFFFF 
 							|| (vars[5].ui > 0 && vars[3].ui <= vars[1].ui)
 							|| (vars[5].ui < 0 && vars[3].ui >= vars[1].ui)) 
 					{
@@ -1295,8 +1295,14 @@ void Interpret(VMGlobals *g)
 				// Integer-forBy : 143 7, 143 8, 143 9
 				case 7 :
 					vars = g->frame->vars;
+					if (IsFloat(vars+1)) {
+						SetInt(&vars[1], (int32)(vars[1].uf));
+					}
+					if (IsFloat(vars+2)) {
+						SetInt(&vars[2], (int32)(vars[2].uf));
+					}
 					tag = vars[1].utag;
-					if ((tag != tagInt && tag != tagInf)
+					if ((tag != tagInt)
 							|| vars[2].utag != tagInt) {
 						error("Integer-forBy : endval or stepval not an Integer.\n");
 						
@@ -1311,7 +1317,7 @@ void Interpret(VMGlobals *g)
 					break;
 				case 8 :
 					vars = g->frame->vars;
-					if (vars[1].utag == tagInf 
+					if (vars[1].ui == 0x7FFFFFFF 
 							|| (vars[2].ui >= 0 && vars[4].ui <= vars[1].ui)
 							|| (vars[2].ui < 0 && vars[4].ui >= vars[1].ui)) {
 						*++sp = vars[3].uf; // push function
@@ -1430,18 +1436,8 @@ void Interpret(VMGlobals *g)
 					g->frame->vars[3].ui += 2; // inc i
 					ip -= 4;
 					break;
-				// Infinitum-do : 143 15, 143 1
 				case 15 :
-					vars = g->frame->vars;
-					*++sp = vars[1].uf; // push function
-					*++sp = vars[2].uf; // push i
-					*++sp = vars[2].uf; // push i
-					// SendSpecialMsg value
-					numArgsPushed = 3;
-					selector = gSpecialSelectors[opmValue];
-					slot = (PyrSlot*)sp - 2;
-					
-					goto class_lookup;
+					// unused opcode.
 					break;
 					
 				case 16 :

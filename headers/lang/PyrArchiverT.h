@@ -285,8 +285,6 @@ private:
 					return 0;
 				case tagTrue : 
 					return 0;
-				case tagInf : 
-					return 0;
 				case tagPtr : 
 					throw std::runtime_error("cannot archive RawPointers.");
 					return 0;
@@ -415,9 +413,6 @@ private:
 				case tagTrue : 
 					mStream.writeInt8('T');
 					break;
-				case tagInf : 
-					mStream.writeInt8('I');
-					break;
 				case tagPtr : 
 					mStream.writeInt8('N');
 					break;
@@ -477,10 +472,6 @@ private:
 					break;
 				case 'F' :
 					slot->utag = tagFalse;
-					slot->ui = 0;
-					break;
-				case 'I' :
-					slot->utag = tagInf;
 					slot->ui = 0;
 					break;
 				default :

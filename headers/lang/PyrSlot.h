@@ -52,8 +52,7 @@ enum {
 	tagNil     = 0x7FF90005,	// nil, false, and true are indicated by the tag alone.
 	tagFalse   = 0x7FF90006,	// the lower 32 bits are zero.
 	tagTrue    = 0x7FF90007,
-	tagInf     = 0x7FF90008,
-	tagPtr     = 0x7FF90009,
+	tagPtr     = 0x7FF90008,
 	/* anything else is a double */
 	tagUnused  = 0x7FF9000D
 	
@@ -171,7 +170,6 @@ inline void SetTrue(PyrSlot* slot)   { (slot)->utag = tagTrue; (slot)->ui = 0; }
 inline void SetFalse(PyrSlot* slot)   { (slot)->utag = tagFalse; (slot)->ui = 0; }
 inline void SetBool(PyrSlot* slot, bool test)	{ (slot)->utag = ((test) ? tagTrue : tagFalse); (slot)->ui = 0;  }
 inline void SetNil(PyrSlot* slot)    { (slot)->utag = tagNil;  (slot)->ui = 0; }
-inline void SetInf(PyrSlot* slot)   { (slot)->utag = tagInf;  (slot)->ui = 0; }
 
 #if DOUBLESLOTS
 inline void SetFloat(PyrSlot* slot, double val)    { (slot)->uf = (val); }
@@ -200,7 +198,6 @@ inline bool IsFloatTag(int tag)  { return ((tag & 0xFFFFFFF0) != 0x7FF90000); }
 inline bool IsFloat(PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) != 0x7FF90000); }
 inline bool NotFloat(PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) == 0x7FF90000); }
 
-inline bool IsInf(PyrSlot* slot) { return ((slot)->utag == tagInf); }
 inline bool IsPtr(PyrSlot* slot) { return ((slot)->utag == tagPtr); }
 
 void dumpPyrSlot(PyrSlot* slot);

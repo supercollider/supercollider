@@ -124,7 +124,6 @@ SimpleNumber : Number {
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber; ^error("Math operation failed.\n") }
 	performBinaryOpOnComplex { arg aSelector, aComplex, adverb; ^aComplex.perform(aSelector, this.asComplex, adverb) }
 	performBinaryOpOnSignal { arg aSelector, aSignal; ^error("Math operation failed.\n") }
-	performBinaryOpOnInfinitum { arg aSelector, aInf; ^error("Math operation failed.\n") }
 
 	linlin { arg inMin, inMax, outMin, outMax;
 		// linear to linear mapping

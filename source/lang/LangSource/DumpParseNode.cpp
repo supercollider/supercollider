@@ -320,9 +320,6 @@ void slotString(PyrSlot *slot, char *str)
 		case tagTrue :
 			sprintf(str, "true");
 			break;
-		case tagInf :
-			sprintf(str, "inf");
-			break;
 		case tagPtr :
 			sprintf(str, "RawPointer %X", slot->ui);
 			break;
@@ -416,9 +413,6 @@ void slotOneWord(PyrSlot *slot, char *str)
 			break;
 		case tagTrue :
 			sprintf(str, "true");
-			break;
-		case tagInf :
-			sprintf(str, "inf");
 			break;
 		case tagPtr :
 			sprintf(str, "ptr%08X", slot->ui);
@@ -532,9 +526,6 @@ bool postString(PyrSlot *slot, char *str)
 		case tagTrue :
 			sprintf(str, "true");
 			break;
-		case tagInf :
-			sprintf(str, "inf");
-			break;
 		case tagPtr :
 			sprintf(str, "%X", slot->ui);
 			break;
@@ -570,9 +561,6 @@ int asCompileString(PyrSlot *slot, char *str)
 			break;
 		case tagTrue :
 			sprintf(str, "true");
-			break;
-		case tagInf :
-			sprintf(str, "inf");
 			break;
 		case tagPtr :
 			strcpy(str, "/*Ptr*/ nil");

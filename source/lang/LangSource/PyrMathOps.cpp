@@ -139,7 +139,6 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 			}
 			break;
 		case tagPtr : 
-		case tagInf : 
 			switch (opcode) {
 				case opIsNil : SetFalse(a); break;
 				case opNotNil : SetTrue(a); break;
@@ -416,19 +415,6 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 				case tagFalse : 
 				case tagTrue : 
 					goto send_normal_2;
-				case tagInf : 
-					switch (opcode) {
-						case opEQ  : res = o_false; break;
-						case opNE  : res = o_true; break;
-						case opLT  : res = o_true; break;
-						case opGT  : res = o_false; break;
-						case opLE  : res = o_true; break;
-						case opGE  : res = o_false; break;
-						case opMin : res.uf = a->uf; break;
-						case opMax : res.uf = o_inf.uf; break;
-						default : goto send_normal_2;
-					}
-					break;
 				case tagSym : 
 					if (IS_BINARY_BOOL_OP(opcode)) {
 						res = o_false;
@@ -565,58 +551,6 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 		case tagFalse : 
 		case tagTrue : 
 			goto send_normal_2;
-		case tagInf : {
-			switch (b->utag) {
-				case tagInt :
-					switch (opcode) {
-						case opEQ  : res = o_false; break;
-						case opNE  : res = o_true; break;
-						case opLT  : res = o_false; break;
-						case opGT  : res = o_true; break;
-						case opLE  : res = o_false; break;
-						case opGE  : res = o_true; break;
-						case opMin : res.uf = b->uf; break;
-						case opMax : res.uf = o_inf.uf; break;
-						default : goto send_normal_2;
-					}
-					break;
-				case tagChar :
-				case tagPtr : 
-				case tagNil : 
-				case tagFalse : 
-				case tagTrue : 
-				case tagSym : 
-				case tagObj :
-					goto send_normal_2;
-					break;
-				case tagInf : 
-					switch (opcode) {
-						case opEQ  : res = o_true; break;
-						case opNE  : res = o_false; break;
-						case opLT  : res = o_false; break;
-						case opGT  : res = o_false; break;
-						case opLE  : res = o_false; break;
-						case opGE  : res = o_false; break;
-						case opMin : res.uf = o_inf.uf; break;
-						case opMax : res.uf = o_inf.uf; break;
-						default : goto send_normal_2;
-					}
-					break;
-				default:
-					switch (opcode) {
-						case opEQ  : res = o_false; break;
-						case opNE  : res = o_true; break;
-						case opLT  : res = o_true; break;
-						case opGT  : res = o_false; break;
-						case opLE  : res = o_true; break;
-						case opGE  : res = o_false; break;
-						case opMin : res.uf = a->uf; break;
-						case opMax : res.uf = o_inf.uf; break;
-						default : goto send_normal_2;
-					}
-					break;
-			}
-		} break;
 		case tagSym : 
 			if (b->utag == tagSym) {
 				switch (opcode) {
@@ -675,7 +609,6 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 					case tagPtr : 
 					case tagNil : 
 					case tagFalse : 
-					case tagInf : 
 					case tagTrue : 
 						goto send_normal_2;
 					case tagSym : 
@@ -831,19 +764,6 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 				case tagFalse : 
 				case tagTrue : 
 					goto send_normal_2;
-				case tagInf : 
-					switch (opcode) {
-						case opEQ  : res = o_false; break;
-						case opNE  : res = o_true; break;
-						case opLT  : res = o_true; break;
-						case opGT  : res = o_false; break;
-						case opLE  : res = o_true; break;
-						case opGE  : res = o_false; break;
-						case opMin : res.uf = a->uf; break;
-						case opMax : res.ui = 0; res.utag = tagInf; break;
-						default : goto send_normal_2;
-					}
-					break;
 				case tagSym : 
 					if (IS_BINARY_BOOL_OP(opcode)) {
 						res = o_false;

@@ -1,6 +1,6 @@
 %token	NAME INTEGER FLOAT ACCIDENTAL SYMBOL STRING ASCII PRIMITIVENAME CLASSNAME
 %token  VAR ARG CLASSVAR CONST 
-%token	NILOBJ TRUEOBJ FALSEOBJ INFINITUMOBJ
+%token	NILOBJ TRUEOBJ FALSEOBJ
 %token	PSEUDOVAR
 %token  ELLIPSIS DOTDOT PIE BEGINCLOSEDFUNC
 %token  BADTOKEN INTERPRET
@@ -888,7 +888,6 @@ slotliteral
 		| trueobj	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 		| falseobj	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 		| nilobj	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
-		| infobj	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 		| listlit	{ $$ = (long)newPyrLiteralNode(NULL, (PyrParseNode*)$1); }
 		;
 
@@ -906,7 +905,6 @@ pushliteral	: integer	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
 			| trueobj	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
 			| falseobj	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
 			| nilobj	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
-			| infobj	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
 			| listlit	{ $$ = (long)newPyrPushLitNode(NULL, (PyrParseNode*)$1); }
 			;
 
@@ -918,7 +916,6 @@ listliteral	: integer	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 			| trueobj	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 			| falseobj	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 			| nilobj	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
-			| infobj	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 			| listlit2	{ $$ = (long)newPyrLiteralNode(NULL, (PyrParseNode*)$1); }
 			;
 			
@@ -1125,9 +1122,6 @@ falseobj	: FALSEOBJ { $$ = zzval; }
 nilobj		: NILOBJ { $$ = zzval; }	
 		;
 		
-infobj		: INFINITUMOBJ { $$ = zzval; }	
-		;
-
 ascii		: ASCII { $$ = zzval; }	
 		;
 

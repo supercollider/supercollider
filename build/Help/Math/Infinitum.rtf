@@ -7,52 +7,8 @@
 \f1\b0\fs24 \
 \
 
-\f0\b Superclass: Magnitude\
-
-\f1\b0 \
-Infinitum has a single instance named 
-\f0\b inf
-\f1\b0  and is used to represent an infinite \
-number of iterations. It also responds to comparison operations.\
-Infinitum is defined to be greater than all SImpleNumbers.\
-It is \ul not\ulnone  meant as a general mathematical infinity value.\
+\f0\b class Infinitum is removed.\
 \
-
-\f0\b\fs28 \ul Instance Methods\
-
-\fs24 \ulnone \
-do(func)
-\f1\b0 \
-\
-Will iterate the function an infinite number of times. This is only safe to do in a Routine where\
-you yield from within the do Function. Otherwise you have a real infinite loop.\
-\
-
-\f0\b min(aNumber)\
-
-\f1\b0 \
-The minimum of any number and Infinitum is the number.\
-\
-
-\f0\b max(aNumber)\
-
-\f1\b0 \
-The maximum of any number and Infinitum is 
-\f0\b inf
-\f1\b0 .\
-\
-
-\f0\b < aNumber\
-<= aNumber\
-
-\f1\b0 \
-Always false.\
-\
-
-\f0\b > aNumber\
->= aNumber\
-
-\f1\b0 \
-Always true.\
+inf is now a floating point infinity.\
 \
 }

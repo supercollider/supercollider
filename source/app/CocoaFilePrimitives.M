@@ -113,7 +113,6 @@ id nsCodableFromPyrSlot(PyrSlot* b)
                     break;
                 
     /*   
-            case tagInf :
             //dict must do values
                 NSNumber with infinity
             NaN
@@ -206,7 +205,6 @@ void setInvocationArgFromPyrSlot(NSInvocation *invocation,int i,PyrSlot* slot)
                     break;
                 
     /*   
-            case tagInf :
             //dict must do values
                 NSNumber with infinity
             NaN

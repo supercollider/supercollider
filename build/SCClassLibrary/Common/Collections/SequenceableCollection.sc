@@ -633,11 +633,6 @@ SequenceableCollection : Collection {
 			aComplex.perform(aSelector, item, adverb)
 		}) 
 	}
-	performBinaryOpOnInfinitum { arg aSelector, aNumber, adverb; 
-		^this.collect({ arg item; 
-			aNumber.perform(aSelector, item, adverb)
-		}) 
-	}
 	clip { arg lo, hi; ^this.collect {|item| item.clip(lo,hi) }  }
 	wrap { arg lo, hi; ^this.collect {|item| item.wrap(lo,hi) }  }
 	fold { arg lo, hi; ^this.collect {|item| item.fold(lo,hi) }  }

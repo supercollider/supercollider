@@ -229,7 +229,6 @@ int prFileWrite(struct VMGlobals *g, int numArgsPushed)
 		case tagNil :
 		case tagFalse :
 		case tagTrue :
-		case tagInf :
 		case tagPtr :
 			return errWrongType;
 		case tagObj : 	

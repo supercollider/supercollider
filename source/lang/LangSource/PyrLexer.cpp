@@ -969,10 +969,10 @@ int processident(char *token)
 		return NILOBJ; 
 	}
 	if (strcmp("inf",token) ==0) {
-		SetInf(&slot);
+		SetFloat(&slot, INFINITY);
 		node = newPyrSlotNode(&slot);
 		zzval = (int)node;
-		return INFINITUMOBJ; 
+		return FLOAT; 
 	}
 
 	sym = getsym(token);

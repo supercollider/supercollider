@@ -30,9 +30,6 @@ String[char] : RawArray {
 	performBinaryOpOnComplex { arg aSelector, aComplex; 
 		^this.perform(aSelector, aComplex)
 	}
-	performBinaryOpOnInfinitum { arg aSelector, aNumber; 
-		^this.perform(aSelector, aNumber)
-	}
 
 	
 	isString { ^true }

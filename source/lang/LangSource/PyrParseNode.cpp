@@ -1527,14 +1527,6 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 				compileByte(143);
 				compileByte(14);
 			} else goto compile_body;
-		} else if (gCompilingClass == class_inf) {
-			name = method->name.us;
-			if (name == gSpecialSelectors[opmDo]) {
-				compileByte(143);
-				compileByte(15);
-				compileByte(143);
-				compileByte(1);
-			} else goto compile_body;
 		} else if (gCompilingClass == class_float) {
 			// handle some special cases
 			name = method->name.us;

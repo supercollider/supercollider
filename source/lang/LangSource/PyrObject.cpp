@@ -50,7 +50,6 @@ PyrClass *class_list, *class_method, *class_fundef, *class_frame, *class_class;
 PyrClass *class_symbol, *class_nil;
 PyrClass *class_boolean, *class_true, *class_false;
 PyrClass *class_int, *class_char, *class_float, *class_complex;
-PyrClass *class_inf;
 PyrClass *class_rawptr;
 PyrClass *class_string;
 PyrClass *class_magnitude, *class_number, *class_collection, *class_ordered_collection;
@@ -84,7 +83,7 @@ PyrSymbol *s_linkedlist;
 PyrSymbol *s_sortedlist;
 PyrSymbol *s_array;
 PyrSymbol *s_list, *s_method, *s_fundef, *s_frame, *s_class;
-PyrSymbol *s_symbol, *s_nil, *s_inf;
+PyrSymbol *s_symbol, *s_nil;
 PyrSymbol *s_boolean, *s_true, *s_false;
 PyrSymbol *s_int, *s_char, *s_color, *s_float, *s_complex;
 PyrSymbol *s_rawptr, *s_objptr;
@@ -140,9 +139,9 @@ PyrSymbol *s_synth, *s_spawn, *s_environment, *s_event;
 PyrSymbol *s_hardwaresetup, *s_shutdown;
 PyrSymbol *s_linear, *s_exponential, *s_gate;
 PyrSymbol *s_super, *s_this;
-PyrSlot o_nil, o_true, o_false, o_end, o_inf;
+PyrSlot o_nil, o_true, o_false, o_end;
 PyrSlot o_pi, o_twopi;
-PyrSlot o_fhalf, o_fnegone, o_fzero, o_fone, o_ftwo;
+PyrSlot o_fhalf, o_fnegone, o_fzero, o_fone, o_ftwo, o_inf;
 PyrSlot o_negtwo, o_negone, o_zero, o_one, o_two;
 PyrSlot o_nullframe, o_none;
 PyrSlot o_emptyarray, o_onenilarray, o_argnamethis;
@@ -175,7 +174,6 @@ void initSymbols()
 	s_true = getsym("True");
 	s_false = getsym("False");
 	s_int = getsym("Integer");
-	s_inf = getsym("Infinitum");
 	s_float = getsym("Float");
 	s_char = getsym("Char");
 	s_color = getsym("Color");
@@ -268,7 +266,6 @@ void initSymbols()
 	o_nil.utag = tagNil;		o_nil.ui = 0;
 	o_false.utag = tagFalse;	o_false.ui = 0;
 	o_true.utag = tagTrue;		o_true.ui = 0;
-	o_inf.utag = tagInf;		o_inf.ui = 0;
 	
 	SetFloat(&o_pi, pi);
 	SetFloat(&o_twopi, twopi);
@@ -283,6 +280,7 @@ void initSymbols()
 	SetInt(&o_one, 1);
 	SetInt(&o_two, 2);
 	SetSymbol(&o_none, s_none);
+	SetFloat(&o_inf, INFINITY);
 	
 	gSpecialValues[svNil] = o_nil.uf;
 	gSpecialValues[svFalse] = o_false.uf;
@@ -1391,7 +1389,6 @@ void initClasses()
 	class_simple_number = makeIntrinsicClass(s_simple_number, s_number, 0, 0);
 	class_int = makeIntrinsicClass(s_int, s_simple_number, 0, 0);
 	class_float = makeIntrinsicClass(s_float, s_simple_number, 0, 0);
-	class_inf = makeIntrinsicClass(s_inf, s_magnitude, 0, 0);
 
 	class_rawptr = makeIntrinsicClass(s_rawptr, s_object, 0, 0);
 	
@@ -1460,8 +1457,8 @@ void initClasses()
 	gTagClassTable[ 5] = class_nil;
 	gTagClassTable[ 6] = class_false;
 	gTagClassTable[ 7] = class_true;
-	gTagClassTable[ 8] = class_inf;
-	gTagClassTable[ 9] = class_rawptr;
+	gTagClassTable[ 8] = class_rawptr;
+	gTagClassTable[ 9] = class_float;
 	gTagClassTable[10] = class_float;
 	gTagClassTable[11] = class_float;
 	gTagClassTable[12] = class_float;
@@ -2492,7 +2489,6 @@ int calcHash(PyrSlot *a)
 		case tagNil : hash = 0xA5A5A5A5; break;
 		case tagFalse : hash = 0x55AA55AA; break;
 		case tagTrue : hash = 0x69696969; break;
-		case tagInf : hash = 0x78912347; break;
 		case tagPtr : hash = Hash(a->ui); break;
 		default : hash = Hash(a->utag + Hash(a->ui)); break; // hash for a double
 	}

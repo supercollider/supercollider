@@ -2171,7 +2171,6 @@ bool IsSimpleLiteralSlot(PyrSlot* slot)
 		case tagNil : return true;
 		case tagFalse : return true;
 		case tagTrue : return true;
-		case tagInf : return true;
 		case tagPtr : return false;
 		default : return true;
 	}

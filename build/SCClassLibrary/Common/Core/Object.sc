@@ -459,9 +459,6 @@ Object {
 	performBinaryOpOnUGen { arg aSelector, thing, adverb;
 		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
-	performBinaryOpOnInfinitum { arg aSelector, thing, adverb;
-		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
-	}
 	
 	writeDefFile { arg name, dir="synthdefs/";
 		var file;

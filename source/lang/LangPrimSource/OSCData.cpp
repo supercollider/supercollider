@@ -123,7 +123,6 @@ void addMsgSlot(scpacket *packet, PyrSlot *slot)
 		case tagTrue :
 		case tagFalse :
 		case tagChar :
-		case tagInf :
 		case tagPtr :
 			break;
 		default :
@@ -178,7 +177,6 @@ void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
 		case tagFalse :
 		case tagNil :
 		case tagChar :
-		case tagInf :
 		case tagPtr :
 			packet->addtag('i');
 			packet->addi(0);

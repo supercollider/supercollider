@@ -168,7 +168,6 @@ extern struct PyrClass *class_stream;
 extern struct PyrClass *class_process;
 extern struct PyrClass *class_thread;
 extern struct PyrClass *class_routine;
-extern struct PyrClass *class_inf;
 extern struct PyrClass *class_finalizer;
 
 extern PyrSymbol *s_none;
@@ -182,7 +181,7 @@ extern PyrSymbol *s_linkedlist;
 extern PyrSymbol *s_sortedlist;
 extern PyrSymbol *s_array;
 extern PyrSymbol *s_list, *s_method, *s_fundef, *s_frame, *s_class;
-extern PyrSymbol *s_symbol, *s_nil, *s_inf;
+extern PyrSymbol *s_symbol, *s_nil;
 extern PyrSymbol *s_boolean, *s_true, *s_false;
 extern PyrSymbol *s_int, *s_char, *s_color, *s_float, *s_complex;
 extern PyrSymbol *s_rawptr, *s_objptr;
