@@ -77,13 +77,14 @@ Server : Model {
 		serverRunning = false;
 		named.put(name, this);
 		set.add(this);
-		
+		this.newAllocators;		
+	}
+	newAllocators {
 		nodeAllocator = LRUNumberAllocator(1000, 1000 + options.maxNodes);
 		controlBusAllocator = PowerOfTwoAllocator(options.numControlBusChannels);
 		audioBusAllocator = PowerOfTwoAllocator(options.numAudioBusChannels, 
 			options.numInputBusChannels + options.numOutputBusChannels);
 		bufferAllocator = PowerOfTwoAllocator(options.numBuffers);
-		
 	}
 	
 	*initClass {
@@ -211,6 +212,7 @@ Server : Model {
 		});
 		alive = false;
 		this.serverRunning = false;
+		this.newAllocators;
 	}
 	*quitAll {
 		set.do({ arg server; server.quit; })
