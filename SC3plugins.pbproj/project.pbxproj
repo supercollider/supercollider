@@ -302,6 +302,142 @@
 //AA2
 //AA3
 //AA4
+//B90
+//B91
+//B92
+//B93
+//B94
+		B92321F505C1462100C1B479 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = PhysicalModelingUGens.cpp;
+			refType = 4;
+		};
+		B92321F605C1463800C1B479 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = Convolution.cpp;
+			refType = 4;
+		};
+		B92321F705C1467900C1B479 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = GendynUGens.cpp;
+			refType = 4;
+		};
+		B92321F805C1468C00C1B479 = {
+			buildPhases = (
+				B92321F905C1468C00C1B479,
+				B92321FC05C1468C00C1B479,
+				B92321FE05C1468C00C1B479,
+				B923220005C1468C00C1B479,
+				B923220105C1468C00C1B479,
+			);
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				LIBRARY_STYLE = BUNDLE;
+				OPTIMIZATION_CFLAGS = "-O3";
+				OTHER_CFLAGS = "-DSC_DARWIN";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOL_FLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = PhysicalModelingUGens.scx;
+				REZ_EXECUTABLE = YES;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
+			};
+			dependencies = (
+			);
+			isa = PBXLibraryTarget;
+			name = PhysicalModelingUGens;
+			productInstallPath = /usr/local/lib;
+			productName = TriggerUGens;
+			productReference = B923220205C1468C00C1B479;
+		};
+		B92321F905C1468C00C1B479 = {
+			buildActionMask = 2147483647;
+			files = (
+				B92321FA05C1468C00C1B479,
+				B92321FB05C1468C00C1B479,
+			);
+			isa = PBXHeadersBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B92321FA05C1468C00C1B479 = {
+			fileRef = 920DAED20425A5D200A80067;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		B92321FB05C1468C00C1B479 = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		B92321FC05C1468C00C1B479 = {
+			buildActionMask = 2147483647;
+			files = (
+				B923220305C1470800C1B479,
+			);
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B92321FE05C1468C00C1B479 = {
+			buildActionMask = 2147483647;
+			files = (
+				B92321FF05C1468C00C1B479,
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B92321FF05C1468C00C1B479 = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		B923220005C1468C00C1B479 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXRezBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B923220105C1468C00C1B479 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			generatedFileNames = (
+			);
+			isa = PBXShellScriptBuildPhase;
+			neededFileNames = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp build/PhysicalModelingUGens.scx build/plugins";
+		};
+		B923220205C1468C00C1B479 = {
+			isa = PBXLibraryReference;
+			path = PhysicalModelingUGens.scx;
+			refType = 3;
+		};
+		B923220305C1470800C1B479 = {
+			fileRef = B92321F505C1462100C1B479;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		B923220505C1474700C1B479 = {
+			isa = PBXTargetDependency;
+			target = B92321F805C1468C00C1B479;
+		};
+//B90
+//B91
+//B92
+//B93
+//B94
 //F50
 //F51
 //F52
@@ -331,6 +467,7 @@
 				F5B741D402E9CBFE01CA2799,
 				F5B741F402E9D0C501CA2799,
 				F5B741FB02E9D32B01CA2799,
+				B92321F805C1468C00C1B479,
 				F5B7408602E9455801CA2799,
 				92CCC524045B4BFD00CA2167,
 			);
@@ -563,9 +700,12 @@
 				F50D05E102E69B6B01CA2799,
 				F50D05E202E69B6B01CA2799,
 				F50D05E302E69B6B01CA2799,
+				B92321F605C1463800C1B479,
 				F50D05E402E69B6B01CA2799,
 				F50D05E502E69B6B01CA2799,
 				92CCC51E045B451100CA2167,
+				B92321F505C1462100C1B479,
+				B92321F705C1467900C1B479,
 			);
 			isa = PBXGroup;
 			path = plugins;
@@ -701,6 +841,7 @@
 				F5B741F302E9D0C501CA2799,
 				F5B741FA02E9D32A01CA2799,
 				92CCC525045B4BFD00CA2167,
+				B923220205C1468C00C1B479,
 			);
 			isa = PBXGroup;
 			name = Products;
@@ -976,6 +1117,7 @@
 				F5B7420202E9D84201CA2799,
 				F5B7420302E9D84201CA2799,
 				F5B7420402E9D84201CA2799,
+				B923220505C1474700C1B479,
 				F5B740A602E94DC001CA2799,
 				92CCC529045B4CA700CA2167,
 			);
