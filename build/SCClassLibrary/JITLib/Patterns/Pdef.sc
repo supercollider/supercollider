@@ -185,7 +185,7 @@ TaskProxy : PatternProxy {
 	wakeUp { if(isPlaying and: { player.isPlaying.not }) { this.play(quant:playQuant) } }
 	
 
-	*default { ^#{ loop { 1.wait } } }
+	*default { ^{ |inval| inval.yield } }
 	
 	
 	constrainStream { arg str;
@@ -261,8 +261,9 @@ EventPatternProxy : TaskProxy {
 		this.wakeUp;
 	}
 	
-	*default { ^Pbind(\freq, \rest) }
-		
+	*default { ^Pn(Event.silent,1) }
+
+
 	constrainStream { arg str;
 		var delta, tolerance, new, quantVal, catchUp, deltaTillCatchUp, forwardTime;
 		^if(quant.notNil) {
