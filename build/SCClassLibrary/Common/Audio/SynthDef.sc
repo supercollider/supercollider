@@ -232,11 +232,11 @@ SynthDef {
 	}
 	
 	play { arg target,args,addAction=\addToTail;
-		var synth, cmd;
+		var synth, msg;
 		target = target.asTarget;
-		cmd = List.new;
-		synth = Synth.newCommand(cmd, name, args, target, addAction);
-		this.load(target.server, cmd.at(0));
+		synth = Synth.prNew(name);
+		msg = synth.newMsg(target, addAction, args);
+		this.load(target.server, msg);
 		^synth
 	}
 }
