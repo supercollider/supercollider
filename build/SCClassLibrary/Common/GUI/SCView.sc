@@ -706,11 +706,13 @@ SCFuncUserView : SCUserView {
 	}
 }
 
-//by jt
+//by jt v.0.1
 SCMultiSliderView : SCView { 
 
 	var <>acceptDrag = true;
-	var < object;
+	var <> metaAction;
+	var <> size ;
+	var < gap;
 
 	draw {}
 	mouseBeginTrack { arg x, y, modifiers;
@@ -721,23 +723,41 @@ SCMultiSliderView : SCView {
 	
 	}
 	properties {
-		^super.properties ++ [\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \selectionSize]
+		^super.properties ++ [\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \thumbWidth, \absoluteX, \isFilled]
 	}	
-	value {arg val; //returns array
-		^this.getProperty(\value, val)
+	value {//returns array
+		^this.getProperty(\value, Array.newClear(this.size))
 	}
 	value_ {arg val;
+		this.size = val.size;
 		^this.setProperty(\value, val)
+	}
+	reference {//returns array
+		^this.getProperty(\referenceValues, Array.newClear(this.size))
+	}
+	reference_ {arg val;
+		//this.size = val.size;
+		^this.setProperty(\referenceValues, val)
 	}
 	index { //returns selected index
 		^this.getProperty(\x)
 	}
-	currentvalue { //returns value of selected index
-		^this.getProperty(\y)
-	}
 	index_ {arg inx;
 		this.setProperty(\x, inx)
 	}
+
+	gap_ {arg inx;
+		gap = inx;
+		this.setProperty(\xOffset, inx)
+	}
+	
+	selectionSize { 
+		^this.getProperty(\selectionSize)
+	}
+	currentvalue { //returns value of selected index
+		^this.getProperty(\y)
+	}
+
 	currentvalue_ {arg iny;
 		this.setProperty(\y, iny)
 	}
@@ -756,29 +776,57 @@ SCMultiSliderView : SCView {
 	isHorizontal_{arg val;
 		this.setProperty(\isHorizontal,val);	
 	}
-	selectionSize{
-		^this.setProperty(\selectionSize)
-	}
 	canReceiveDrag {
 		^acceptDrag.value(this);
 	}
 	receiveDrag {
-		this.object = currentDrag;
+		//this.object = currentDrag;
+		if(currentDrag.at(0).isKindOf(Array), { 
+		this.value_(currentDrag.at(0));
+		this.reference_(currentDrag.at(1));
+		},{
+		this.value_(currentDrag);
+		});
 		this.doAction;
 		currentDrag = nil;
 	}
 	beginDrag {
-	currentDrag = Array.new; 
-	this.value(currentDrag);
-	^currentDrag
-	}
-	object_ { arg obj;
-		object = obj;
-		this.value_(object.asArray);
-	}
+		var setsize, vals, rvals;
+		rvals = this.reference;
+		vals = this.value;
+		if(this.selectionSize > 1, {
+			vals = vals.copyRange(this.index, this.selectionSize + this.index);});
+		if(rvals.isNil, { 
+			currentDrag = vals 
+		},{
+		if(this.selectionSize > 1, {
+			rvals = rvals.copyRange(this.index, this.selectionSize + this.index);});
+			currentDrag = currentDrag.add(vals);
+			currentDrag = currentDrag.add(rvals);
+		});
 
+		^currentDrag
+	}
+	defaultKeyDownAction { arg key, modifiers, unicode;
+		//modifiers.postln; 16rF702
+		if (unicode == 16rF703, { this.index = this.index + 1; ^this });
+		if (unicode == 16rF702, { this.index = this.index - 1; ^this });
+		if (unicode == 16rF700, { this.gap = this.gap + 1; ^this });
+		if (unicode == 16rF701, { this.gap = this.gap - 1; ^this });
+
+		}
+	doMetaAction{ 
+		var ax;
+		if(this.metaAction.isNil,{
+			ax = this.getProperty(\absoluteX);
+			this.bounds = this.bounds.moveTo(ax,this.bounds.top );
+		},{	this.metaAction.value(this);} );
+	} //when ctrl click
+
+	
 
 }
+
 
 
 Gradient {

@@ -490,7 +490,7 @@ protected:
         int mResamp;
 };
 SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
-///
+//
 
 class SCUserView : public SCView
 {

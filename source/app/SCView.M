@@ -1877,7 +1877,7 @@ void SCPopUpMenu::receiveDrag()
 
 
 /////////////////////////////////////////////////////////////////
-//SCMultiSliderView by jan trutzschler jan.21.03 //jan.23.03 changed draw added more prop.
+//SCMultiSliderView by jan trutzschler jan.21.03 //jan.23.03 changed draw added more prop.//jan.28.03 debug
 int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr);
 int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr)
 {
@@ -1976,6 +1976,11 @@ void SCMultiSliderView::draw(SCRect inDamage)
         else xadd = 0;  
         int j = 0;    
        // CGContextMoveToPoint(cgc, mBounds.x, mBounds.height * 0.5);
+       if(mIsHorizontal){
+                CGContextMoveToPoint(cgc, mBounds.x, mBounds.height * 0.5);
+            } else {
+                CGContextMoveToPoint(cgc, mBounds.width * 0.5, mBounds.y);
+            }
             for(int i = xstart; i < xpixels; i++, j++){
             yval = vals[i];
             //mIsHorizontal
@@ -1983,7 +1988,7 @@ void SCMultiSliderView::draw(SCRect inDamage)
             gcx =  drawRect.origin.x + xadd;
             gcy =  drawRect.origin.y + xadd;
             CGContextAddLineToPoint(cgc, gcx, gcy);
-            CGContextMoveToPoint(cgc, gcx, gcy);
+            //CGContextMoveToPoint(cgc, gcx, gcy);
             
             }
         //these are fixed values: used for the max of soundfiles
@@ -1991,7 +1996,8 @@ void SCMultiSliderView::draw(SCRect inDamage)
         int j = 0;
             if(mIsHorizontal){
                 CGContextAddLineToPoint(cgc, gcx, mBounds.height * 0.5);
-                CGContextMoveToPoint(cgc, mBounds.x, mBounds.height * 0.5);
+               // CGContextMoveToPoint(cgc, mBounds.x, mBounds.height * 0.5);
+               CGContextAddLineToPoint(cgc, mBounds.x + 1, mBounds.height * 0.5);
             } else {
                 CGContextAddLineToPoint(cgc, mBounds.width * 0.5, gcy);
                 CGContextMoveToPoint(cgc, mBounds.width * 0.5, mBounds.y);
@@ -2002,19 +2008,21 @@ void SCMultiSliderView::draw(SCRect inDamage)
                 gcx =  drawRect.origin.x + xadd;
                 gcy =  drawRect.origin.y + xadd;
                 CGContextAddLineToPoint(cgc, gcx, gcy);
-                CGContextMoveToPoint(cgc, gcx, gcy);
+              //  CGContextMoveToPoint(cgc, gcx, gcy);
             }
          if(mIsHorizontal){
                 CGContextAddLineToPoint(cgc, gcx, mBounds.height * 0.5);
-                CGContextMoveToPoint(cgc, mBounds.x, mBounds.height * 0.5);
+                //CGContextMoveToPoint(cgc, mBounds.x, mBounds.height * 0.5);
             } else {
                 CGContextAddLineToPoint(cgc, mBounds.width * 0.5, gcy);
-                CGContextMoveToPoint(cgc, mBounds.width * 0.5, mBounds.y);
+                //CGContextMoveToPoint(cgc, mBounds.width * 0.5, mBounds.y);
             }
 
         }
-        //CGContextFillPath(cgc);//does not fill my path :(
-       // CGContextEOFillPath(cgc);
+        if(mIsFilled)
+      //  CGContextFillPath(cgc);
+              CGContextEOFillPath(cgc);
+       else
         CGContextStrokePath(cgc);
     }
     //draw selection:
@@ -2063,7 +2071,7 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
             refresh();
         }
     } else {
-        int xindx, lastindx;
+        int xindx, lastindx, maxSize;
         lastindx = mCurrentIndex;
         changed = true;
         xindx = (int) xIn ;
@@ -2071,6 +2079,8 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
         mCurrentIndex = xindx + mStartIndex;
         mCurrentY = mYValues[mCurrentIndex];
         if(mCurrentIndex > (lastindx + mSelectionSize)) mSelectionSize = 1;
+        maxSize = mTabSize - mCurrentIndex;
+        if(mSelectionSize > maxSize) mSelectionSize = maxSize;
 
         if (send) sendMessage(s_doaction, 0, 0, 0); 
         //post("readOnly: x: %d \n", mCurrentIndex);
@@ -2087,10 +2097,10 @@ void SCMultiSliderView::setValueFromPoint(SCPoint where)
     int xIndx;
     if(mIsHorizontal){
         y = (where.y - mBounds.y - 1 - mThumbSizeY/2) / (mBounds.height - mThumbSizeY - 2);
-        xIndx = (int) where.x/(mThumbSize + mXOffset);
+        xIndx = (int) (where.x - mBounds.x -1)/(mThumbSize + mXOffset);
     } else {
         y = (where.x - mBounds.x - 1 - mThumbSizeY/2) / (mBounds.width - mThumbSizeY - 2);
-        xIndx = (int) where.y/(mThumbSize + mXOffset);
+        xIndx = (int) (where.y - mBounds.y -1)/(mThumbSize + mXOffset);
     }
     setValue(xIndx, y, true);
 }
@@ -2113,18 +2123,20 @@ SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, float xoffset
     }
     return SCMakeRect(mBounds.x + x + 1, mBounds.y + y + 1, thumbx, thumby);   
 }
+
 void SCMultiSliderView::setSelection(SCPoint where)
 {
     int wx;
     int visiIn = mCurrentIndex - mStartIndex;
-    if(mIsHorizontal) wx = (int) where.x/( mXOffset + mThumbSize);
-    else wx = (int) where.y/( mXOffset + mThumbSize);
-    
+    int maxSize = mTabSize - mCurrentIndex;
+    if(mIsHorizontal) wx = (int) (where.x - mBounds.x - 1) /( mXOffset + mThumbSize);
+    else wx = (int) (where.y - mBounds.y - 1)/( mXOffset + mThumbSize);
     if(wx > visiIn) mSelectionSize = (int) wx - visiIn;
     else {
     setValueFromPoint(where);
     mSelectionSize = (int) mCurrentIndex - wx;
     }
+    if(mSelectionSize > maxSize) mSelectionSize = maxSize;
     refresh();
 }
 void SCMultiSliderView::mouseTrack(SCPoint where, int modifiers)
@@ -2132,9 +2144,14 @@ void SCMultiSliderView::mouseTrack(SCPoint where, int modifiers)
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else if (modifiers & NSShiftKeyMask) {
-        if(mShowIndex) setSelection(where);
+        if(mShowIndex) {
+            setSelection(where);
+            sendMessage(getsym("doAction"), 0, 0, 0);
+            }
     } else if (modifiers & NSControlKeyMask) {
-        sendMessage(s_doaction, 0, 0, 0);
+        if(mIsHorizontal) mCurrentX = where.x; //absolute y mouse position
+        else mCurrentX = where.y;
+        sendMessage(getsym("doMetaAction"), 0, 0, 0);
     } else {
         setValueFromPoint(where);
     }
@@ -2200,6 +2217,7 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         }
         if (strcmp(name, "startIndex")==0) {
             err = slotIntVal(slot, &mStartIndex);
+           
             refresh();
             return errNone;
         }
@@ -2237,6 +2255,8 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         if (symbol == s_x) {
             slotIntVal(slot, &mCurrentIndex);
             mCurrentIndex  = sc_clip(mCurrentIndex, 0, mTabSize - 1);
+            int maxSize = mTabSize - mCurrentIndex;
+            if(mSelectionSize > maxSize) mSelectionSize = maxSize;
             refresh();
             return errNone;
 	}
@@ -2266,10 +2286,9 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             if (!isKindOfSlot(slot, class_array)) return errWrongType;
             if(slot->uo->size == mTabSize && mSecYValues != NULL) {
             int len = slot->uo->size;
-                memcpy(mSecYValues, slot->uo->slots, len * sizeof(double));
-                
-                err = allocSlotDoubleArrayVal(slot, &mSecYValues);
-                mTabSize = slot->uo->size;
+                //memcpy(mSecYValues, slot->uo->slots, len * sizeof(double));
+                //mTabSize = slot->uo->size;
+                err = allocSlotDoubleArrayVal(slot, &mSecYValues);    
             } else {
                  err = allocSlotDoubleArrayVal(slot, &mSecYValues);
             }
@@ -2310,8 +2329,23 @@ int SCMultiSliderView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
                 }
             return errNone;
 	}
+        if (strcmp(name, "referenceValues")==0) {
+              int len;
+            if (isKindOfSlot(slot, class_array)) {
+                len = slot->uo->size;
+                if(len > mTabSize)  return errWrongType;
+                if (mSecYValues != NULL)
+                memcpy(slot->uo->slots, mSecYValues, len * sizeof(double));
+                else SetNil(slot);
+                }
+            return errNone;
+	}
         if (strcmp(name, "selectionSize")==0) {
             SetInt(slot, mSelectionSize);
+            return errNone;
+        }
+        if (strcmp(name, "absoluteX")==0) {
+            SetInt(slot, (int) mCurrentX);
             return errNone;
         }
 
@@ -2330,7 +2364,6 @@ void SCMultiSliderView::receiveDrag()
 {
     sendMessage(s_receiveDrag, 0, 0, 0);
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////
 
