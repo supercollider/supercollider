@@ -35,6 +35,7 @@ extern PyrSymbol *s_closed;
     IBOutlet NSScrollView* scrollView;
     Boolean isRichText;
     struct PyrObject *mWindowObj;
+	Boolean promptToSave;	
 }
 
 
@@ -102,6 +103,8 @@ extern PyrSymbol *s_closed;
 -(void)selectLine:(int)linenum;
 - (IBAction)selectLineWindow: (id) sender;
 - (void) callSCLangWithMethod: (PyrSymbol*) method;
+-(BOOL) promptToSave;
+-(void) setPromptToSave: (BOOL) flag; 
 
 @end
 
