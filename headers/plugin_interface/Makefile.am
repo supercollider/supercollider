@@ -14,6 +14,7 @@ libplugininclude_HEADERS =	\
 	SC_BoundsMacros.h	\
 	SC_BufGen.h		\
 	SC_Constants.h		\
+	SC_DemandUnit.h		\
 	SC_Dimension.h		\
 	SC_FifoMsg.h		\
 	SC_Graph.h		\
