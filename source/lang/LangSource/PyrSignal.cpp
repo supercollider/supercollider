@@ -41,7 +41,10 @@
 #include "SCBase.h"
 #include "InitAlloc.h"
 
-#include <CarbonCore/fp.h>
+#ifdef SC_DARWIN
+# include <CarbonCore/fp.h>
+#endif
+
 //double log2 ( double x );
 //double hypot ( double x, double y );
 

@@ -21,9 +21,9 @@
 #ifndef _scpacket_
 #define _scpacket_
 
-#include <stdexcept>
-#include <machine/endian.h>
+#include "SC_Endian.h"
 #include "SC_Types.h"
+#include <stdexcept>
 
 struct netaddr {
 	int socket;
@@ -99,7 +99,7 @@ inline void scpacket::maketags(int n)
 inline void scpacket::addi(int i)
 {
 	if (wrpos >= endpos) BUFFEROVERFLOW;
-	*wrpos++ = HTONL(i);
+	*wrpos++ = htonl(i);
 }
 
 inline void scpacket::addii(int64 ii)
@@ -116,7 +116,7 @@ inline void scpacket::addf(float f)
 	if (wrpos >= endpos) BUFFEROVERFLOW;
 	elem32 slot;
 	slot.f = f;
-	*wrpos++ = HTONL(slot.i);
+	*wrpos++ = htonl(slot.i);
 }
 
 inline void scpacket::adds(char *src)
@@ -145,7 +145,7 @@ inline void scpacket::addb(uint8 *src, size_t len)
 	if (wrpos + (len4 + 1) > endpos) BUFFEROVERFLOW;
 	wrpos[len4 - 1] = 0;
 	int32 swaplen = len;
-	*wrpos++ = HTONL(swaplen);	
+	*wrpos++ = htonl(swaplen);	
 	memcpy(wrpos, src, (size_t)len);
 	wrpos += len4;
 }
@@ -173,7 +173,7 @@ inline void scpacket::BeginMsg()
 inline void scpacket::EndMsg()
 {
 	if (inbundle) {
-		*msgsizepos = ((wrpos - msgsizepos) - 1) * sizeof(int32);
+		*msgsizepos = htonl(((wrpos - msgsizepos) - 1) * sizeof(int32));
 	}
 }
 

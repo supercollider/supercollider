@@ -22,6 +22,7 @@
 #ifndef _sc_msg_iter_
 #define _sc_msg_iter_
 
+#include "SC_Endian.h"
 #include "SC_Types.h"
 #include <string.h>
 
@@ -44,13 +45,24 @@ inline int OSCstrlen(char *strin)
 inline float32 OSCfloat(char* inData)
 {
 	elem32* elem = (elem32*)inData;
+	elem->u = ntohl(elem->u);
 	return elem->f;
 }
 
 inline int32 OSCint(char* inData)
 {
-	elem32* elem = (elem32*)inData;
-	return elem->i;
+	return (int32)ntohl(*(uint32*)inData);
+}
+
+inline int64 OSCtime(char* inData)
+{
+#if BYTE_ORDER == BIG_ENDIAN
+	int64 time;
+	memcpy(&time, inData, sizeof(time));
+	return time;
+#else
+	return ((int64)ntohl(*(uint32*)inData) << 32) + (ntohl(*(uint32*)(inData + 4)));
+#endif
 }
 
 struct sc_msg_iter 

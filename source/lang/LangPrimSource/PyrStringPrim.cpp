@@ -119,16 +119,21 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 	
 	glob_t pglob;
-	
-	int gerr = glob(pattern, GLOB_MARK | GLOB_TILDE | GLOB_QUOTE, NULL, &pglob);
+
+	int gflags = GLOB_MARK | GLOB_TILDE;
+#ifdef SC_DARWIN
+	gflags |= GLOB_QUOTE;
+#endif
+
+	int gerr = glob(pattern, gflags, NULL, &pglob);
 	if (gerr) {
-		pglob.gl_matchc = 0;
+		pglob.gl_pathc = 0;
 	}
-	PyrObject* array = newPyrArray(g->gc, pglob.gl_matchc, 0, true);
+	PyrObject* array = newPyrArray(g->gc, pglob.gl_pathc, 0, true);
 	SetObject(a, array);
 	if (gerr) return errNone;
 	
-	for (int i=0; i<pglob.gl_matchc; ++i) {
+	for (int i=0; i<pglob.gl_pathc; ++i) {
 		PyrObject *string = (PyrObject*)newPyrString(g->gc, pglob.gl_pathv[i], 0, true);
 		SetObject(array->slots+i, string);
 		g->gc->GCWrite(array, string);

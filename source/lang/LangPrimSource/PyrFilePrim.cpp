@@ -130,7 +130,13 @@ int prFilePos(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
 	if (fgetpos(file, &pos)) return errFailed;
+
+#ifdef SC_LINUX
+	// sk: hack alert!
+	length = pos.__pos;
+#else
 	length = pos;
+#endif
 
 	SetInt(a, length);
 	return errNone;

@@ -18,30 +18,24 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include "scsynthsend.h"
-#include "SC_Endian.h"
 
-void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port);
-void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port)
+#ifndef _SC_StringParser_
+#define _SC_StringParser_
+
+#define SC_MAX_TOKEN_LENGTH 256
+
+class SC_StringParser
 {
-    toaddr.sin_family = AF_INET;     // host byte order
-    toaddr.sin_port = htons(port); // short, network byte order
-    toaddr.sin_addr = *((struct in_addr *)&addr);
-    bzero(&(toaddr.sin_zero), 8);    // zero the rest of the struct
-}
+	char	*mSpec, *mStart, *mEnd;
+	char	mSep, mBuf[SC_MAX_TOKEN_LENGTH];
 
-int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
-int sendall(int socket, const void *msg, size_t len);
+public:
+	SC_StringParser();
+	SC_StringParser(char *spec, char sep);
 
+	bool AtEnd() const;
+	const char *NextToken();
+};
 
-void scpacket::sendudp(int socket, int addr, int port)
-{
-	struct sockaddr_in toaddr;
-	makeSockAddr(toaddr, addr, port);
-	sendallto(socket, buf, sizeof(buf), (sockaddr*)&toaddr, sizeof(toaddr));
-}
-
+#endif
 

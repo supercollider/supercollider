@@ -39,6 +39,11 @@
 #include "SC_ComPort.h"
 #include "SC_WorldOptions.h"
 #include "SC_SndBuf.h"
+#include "SC_Endian.h"
+
+#ifndef SC_DARWIN
+# include <unistd.h>
+#endif
 
 struct LocalSynthServerGlobals
 {
@@ -275,9 +280,10 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr)
 	
 	if (tcpSocket != -1) {
 		// send TCP
-		int32 sizebuf = msglen;
+		// sk: msglen is in network byte order
+		int32 sizebuf = htonl(msglen);
 		sendall(tcpSocket, &sizebuf, sizeof(int32));
-		sendall(tcpSocket, bufptr, msglen);
+		sendall(tcpSocket, bufptr, htonl(msglen));
 		
 	} else {
 		if (gUDPport == 0) return errFailed;
@@ -527,10 +533,7 @@ void PerformOSCBundle(OSC_Packet* inPacket)
     PyrObject *replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
     // convert all data to arrays
     
-    int64 oscTime;
-    memcpy(&oscTime, inPacket->mData + 8, sizeof(int64)); 
-    // need to byte swap oscTime if host is little endian..
-    
+    int64 oscTime = OSCtime(inPacket->mData + 8);
     double seconds = OSCToElapsedTime(oscTime);
 
     VMGlobals *g = gMainVMGlobals;
@@ -542,7 +545,7 @@ void PerformOSCBundle(OSC_Packet* inPacket)
     char *data = inPacket->mData + 16;
     char* dataEnd = inPacket->mData + inPacket->mSize;
     while (data < dataEnd) {
-        int32 msgSize = *(int32*)data;
+        int32 msgSize = OSCint(data);
         data += sizeof(int32);
         PyrObject *arrayObj = ConvertOSCMessage(msgSize, data);
         ++g->sp; SetObject(g->sp, arrayObj);

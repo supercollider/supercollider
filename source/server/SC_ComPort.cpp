@@ -20,13 +20,24 @@
 
 
 #include "SC_ComPort.h"
+#include "SC_Endian.h"
 #include "SC_Lock.h"
 #include "SC_HiddenWorld.h"
 #include "SC_WorldOptions.h"
+#include "sc_msg_iter.h"
 #include <ctype.h>
 #include <stdexcept>
 #include <stdarg.h>
 #include <netinet/tcp.h>
+
+#ifdef SC_DARWIN
+typedef int socklen_t;
+#endif
+
+#ifdef SC_LINUX
+# include <errno.h>
+# include <unistd.h>
+#endif
 
 #ifdef USE_RENDEZVOUS
 #include "Rendezvous.h"
@@ -51,7 +62,7 @@ void dumpOSCmsg(int inSize, char* inData)
 	}
 	else
 	{
-		scprintf("[ %d,", *(int32*)inData);
+		scprintf("[ %d,", OSCint(inData));
 		data = inData + 4;
 		size = inSize - 4;
 	}
@@ -129,11 +140,11 @@ void dumpOSC(int mode, int size, char* inData)
 		if (strcmp(inData, "#bundle") == 0) 
 		{
 			char* data = inData + 8;
-			scprintf("[ \"#bundle\", %lld, ", *(int64*)data);
+			scprintf("[ \"#bundle\", %lld, ", OSCtime(data));
 			data += 8;
 			char* dataEnd = inData + size;
 			while (data < dataEnd) {
-				int32 msgSize = *(int32*)data;
+				int32 msgSize = OSCint(data);
 				data += sizeof(int32);
 				scprintf("\n    ");
 				dumpOSCmsg(msgSize, data);
@@ -277,7 +288,9 @@ void DumpReplyAddress(ReplyAddress *inReplyAddress)
 {
 	scprintf("mSockAddrLen %d\n", inReplyAddress->mSockAddrLen);
 	scprintf("mSocket %d\n", inReplyAddress->mSocket);
+#ifdef SC_DARWIN
 	scprintf("mSockAddr.sin_len %d\n", inReplyAddress->mSockAddr.sin_len);
+#endif
 	scprintf("mSockAddr.sin_family %d\n", inReplyAddress->mSockAddr.sin_family);
 	scprintf("mSockAddr.sin_port %d\n", inReplyAddress->mSockAddr.sin_port);
 	scprintf("mSockAddr.sin_addr.s_addr %d\n", inReplyAddress->mSockAddr.sin_addr.s_addr);
@@ -307,7 +320,9 @@ bool operator==(const ReplyAddress& a, const ReplyAddress& b)
 	return a.mSockAddr.sin_addr.s_addr == b.mSockAddr.sin_addr.s_addr
 		&& a.mSockAddr.sin_family == b.mSockAddr.sin_family
 		&& a.mSockAddr.sin_port == b.mSockAddr.sin_port
+#ifdef SC_DARWIN
 		&& a.mSockAddr.sin_len == b.mSockAddr.sin_len
+#endif
 		&& a.mSocket == b.mSocket;
 }
 
@@ -336,7 +351,7 @@ void* SC_UdpInPort::Run()
 		
 		packet->mReplyAddr.mSockAddrLen = sizeof(sockaddr_in);
 		int size = recvfrom(mSocket, data, kPacketBufSize , 0,
-								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, &packet->mReplyAddr.mSockAddrLen);
+								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, (socklen_t*)&packet->mReplyAddr.mSockAddrLen);
 		
 		if (size > 0) {
 			if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, size, data);
@@ -398,7 +413,7 @@ void* SC_TcpInPort::Run()
     {
         mConnectionAvailable.Acquire();
         struct sockaddr_in address; /* Internet socket address stuct */
-        int addressSize=sizeof(struct sockaddr_in);
+        socklen_t addressSize=sizeof(struct sockaddr_in);
         int socket = accept(mSocket,(struct sockaddr*)&address,&addressSize);
         if (socket < 0) {
         	mConnectionAvailable.Release();
@@ -474,7 +489,8 @@ void* SC_TcpConnectionPort::Run()
 		size = recvall(mSocket, &msglen, sizeof(int32) );
 		if (size < 0) goto leave;
 		
-		size = recvall(mSocket, buf, msglen);
+		// sk: msglen is in network byte order
+		size = recvall(mSocket, buf, ntohl(msglen));
 		if (size < 0) goto leave;
 		
 		validated = strcmp(buf, mWorld->hw->mPassword) == 0;
@@ -488,6 +504,9 @@ void* SC_TcpConnectionPort::Run()
 			}
 			size = recvall(mSocket, &msglen, sizeof(int32));
 			if (size < 0) goto leave;
+			
+			// sk: msglen is in network byte order
+			msglen = ntohl(msglen);
 			
 			char *data = (char*)malloc(msglen);
 			size = recvall(mSocket, data, msglen);

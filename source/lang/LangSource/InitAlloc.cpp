@@ -25,7 +25,11 @@ AllocPool *pyr_pool_compile = 0;
 AllocPool *pyr_pool_runtime = 0;
 
 #define HOST_ALLOC(size) malloc(size)
-#define HOST_FREE(ptr) free((char*)ptr)
+#ifdef SC_LINUX
+# define HOST_FREE(ptr) /* sk: AllocPool bug on linux */
+#else
+# define HOST_FREE(ptr) free((char*)ptr)
+#endif
 
 #define AREASIZE 65536L
 

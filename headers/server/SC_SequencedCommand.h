@@ -34,7 +34,7 @@
 #include "SC_BufGen.h"
 #include "sc_msg_iter.h"
 #include <sndfile.h>
-#include <new.h>
+#include <new>
 
 #define CallSequencedCommand(T, inWorld, inSize, inData, inReply)	\
 	void* space = World_Alloc(inWorld, sizeof(T)); \

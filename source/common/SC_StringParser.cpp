@@ -18,30 +18,57 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include "scsynthsend.h"
-#include "SC_Endian.h"
+#include "SC_StringParser.h"
+#include <algorithm>
+#include <string.h>
+#include <stdlib.h>
 
-void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port);
-void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port)
+SC_StringParser::SC_StringParser()
+	: mSpec(0), mStart(0), mEnd(0), mSep(0)
 {
-    toaddr.sin_family = AF_INET;     // host byte order
-    toaddr.sin_port = htons(port); // short, network byte order
-    toaddr.sin_addr = *((struct in_addr *)&addr);
-    bzero(&(toaddr.sin_zero), 8);    // zero the rest of the struct
 }
 
-int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
-int sendall(int socket, const void *msg, size_t len);
-
-
-void scpacket::sendudp(int socket, int addr, int port)
+SC_StringParser::SC_StringParser(char *spec, char sep)
+	: mSpec(spec), mStart(0), mEnd(0), mSep(sep)
 {
-	struct sockaddr_in toaddr;
-	makeSockAddr(toaddr, addr, port);
-	sendallto(socket, buf, sizeof(buf), (sockaddr*)&toaddr, sizeof(toaddr));
+	if (mSpec) {
+		size_t len = strlen(mSpec);
+		if (len > 0) {
+			mStart = mSpec;
+			mEnd = mStart + len;
+		} else {
+			mSpec = 0;
+		}
+	}
 }
 
+bool SC_StringParser::AtEnd() const
+{
+	return mSpec == 0;
+}
 
+const char *SC_StringParser::NextToken()
+{
+	if (mSpec) {
+		char *end = strchr(mStart, mSep);
+		if (end == 0) {
+			end = mEnd;
+		}
+
+		size_t len = std::min(SC_MAX_TOKEN_LENGTH-1, end-mStart);
+		memcpy(mBuf, mStart, len);
+		mBuf[len] = '\0';
+
+		if (end == mEnd) {
+			mSpec = 0;
+		} else {
+			mStart = end+1;
+		}
+
+		return mBuf;
+	}
+
+	return 0;
+}
+
+// EOF

@@ -31,7 +31,14 @@ bool filelen(FILE *file, size_t *length)
 	fpos_t pos;
 	if (fseek(file, 0, SEEK_END)) return true;
 	if (fgetpos(file, &pos)) return true;
+
+#ifdef SC_LINUX
+	// sk: hack alert!
+	*length = pos.__pos;
+#else
 	*length = pos;
+#endif
+
 	return false;
 }
 

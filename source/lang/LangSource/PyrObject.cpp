@@ -1881,6 +1881,8 @@ void DumpFrame(PyrFrame *frame)
 	methraw = METHRAW(meth);
 	if (methraw->numtemps) {
 		post("\t%s\n", str);
+#ifndef SC_LINUX
+// sk: crashes on linux when accessing meth->argNames.uosym->symbols[i]
 		k = methraw->numtemps - 1;
 		numargs = methraw->numargs + methraw->varargs;
 		for (i=0; i<=k; ++i) {
@@ -1892,6 +1894,7 @@ void DumpFrame(PyrFrame *frame)
 				post("\t\tvar %s = %s\n", meth->varNames.uosym->symbols[i - numargs]->name, str);
 			}
 		}
+#endif // !SC_LINUX
 	} else {
 		post("\t%s  (no arguments or variables)\n", str);
 	}

@@ -18,30 +18,36 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include "scsynthsend.h"
-#include "SC_Endian.h"
+/* NOTE: This file should declare/define the following functions/macros:
+	
+	htonl
+	htons
+	ntohl
+	ntohs
 
-void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port);
-void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port)
-{
-    toaddr.sin_family = AF_INET;     // host byte order
-    toaddr.sin_port = htons(port); // short, network byte order
-    toaddr.sin_addr = *((struct in_addr *)&addr);
-    bzero(&(toaddr.sin_zero), 8);    // zero the rest of the struct
-}
+   either explicitly or implicitly by including system headers.
+*/
 
-int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
-int sendall(int socket, const void *msg, size_t len);
+#ifndef SC_ENDIAN_H_INCLUDED
+#define SC_ENDIAN_H_INCLUDED
 
+#ifdef SC_DARWIN
+# include <machine/endian.h>
+#else
+# include <endian.h>
+# include <netinet/in.h>
+#endif
 
-void scpacket::sendudp(int socket, int addr, int port)
-{
-	struct sockaddr_in toaddr;
-	makeSockAddr(toaddr, addr, port);
-	sendallto(socket, buf, sizeof(buf), (sockaddr*)&toaddr, sizeof(toaddr));
-}
+#ifndef BYTE_ORDER
+# error BYTE_ORDER undefined, check __FILE__
+#endif // BYTE_ORDER
 
+#ifndef BIG_ENDIAN
+# error BIG_ENDIAN undefined, check __FILE__
+#endif // BIG_ENDIAN
 
+#ifndef LITTLE_ENDIAN
+# error LITTLE_ENDIAN undefined, check __FILE__
+#endif // LITTLE_ENDIAN
+
+#endif // SC_ENDIAN_H_INCLUDED

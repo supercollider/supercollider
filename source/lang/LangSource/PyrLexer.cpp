@@ -1759,7 +1759,6 @@ bool passOne()
 	return true;
 }
 
-
 // true if filename ends in ".sc"
 bool isValidSourceFileName(char *filename)
 {

@@ -105,6 +105,7 @@
 		92CCC520045B4BFD00CA2167 = {
 			buildActionMask = 2147483647;
 			files = (
+				AAE924500481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -144,7 +145,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				LIBRARY_STYLE = BUNDLE;
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -200,6 +201,107 @@
 //922
 //923
 //924
+//AA0
+//AA1
+//AA2
+//AA3
+//AA4
+		AAE924420481416E00A8010B = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = SC_Endian.h;
+			path = common/SC_Endian.h;
+			refType = 4;
+		};
+		AAE924430481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AAE924440481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AAE924450481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AAE924460481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AAE924470481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AAE924480481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AAE924490481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AAE9244A0481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AAE9244B0481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AAE9244C0481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AAE9244D0481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AAE9244E0481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AAE9244F0481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		AAE924500481416E00A8010B = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//AA0
+//AA1
+//AA2
+//AA3
+//AA4
 //F50
 //F51
 //F52
@@ -796,7 +898,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -816,6 +918,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				920DAEDE0425A5D200A80067,
+				AAE9244F0481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -903,7 +1006,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -924,6 +1027,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				920DAED40425A5D200A80067,
+				AAE924430481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -979,7 +1083,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1000,6 +1104,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				920DAEDB0425A5D200A80067,
+				AAE9244B0481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1051,7 +1156,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1072,6 +1177,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				920DAED50425A5D200A80067,
+				AAE924440481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1132,7 +1238,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1156,6 +1262,7 @@
 				F5959CFB0339983301A80099,
 				F5959CFE03399CED01A80099,
 				920DAED60425A5D200A80067,
+				AAE924450481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1212,7 +1319,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1235,6 +1342,7 @@
 				F5B7413002E9554601CA2799,
 				F5B7414F02E9567001CA2799,
 				920DAED70425A5D200A80067,
+				AAE924460481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1317,7 +1425,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1338,6 +1446,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				920DAED80425A5D200A80067,
+				AAE924470481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1394,6 +1503,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1414,6 +1524,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				920DAED90425A5D200A80067,
+				AAE924480481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1470,7 +1581,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1491,6 +1602,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				920DAEDA0425A5D200A80067,
+				AAE924490481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1547,6 +1659,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1567,6 +1680,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				920DAED30425A5D200A80067,
+				AAE9244A0481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1619,7 +1733,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1640,6 +1754,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				920DAEDF0425A5D200A80067,
+				AAE9244C0481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1691,7 +1806,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1712,6 +1827,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				920DAEDC0425A5D200A80067,
+				AAE9244D0481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1763,7 +1879,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				LIBRARY_STYLE = BUNDLE;
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1784,6 +1900,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				920DAEDD0425A5D200A80067,
+				AAE9244E0481416E00A8010B,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1961,7 +2078,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp build/OscUGens.scx build/plugins";
+			shellScript = "cp build/OSCUGens.scx build/plugins";
 		};
 		F5B7421202EA304001CA2799 = {
 			buildActionMask = 2147483647;
@@ -2013,6 +2130,7 @@
 			children = (
 				F5D127DA03355EE10164B34C,
 				920DAED20425A5D200A80067,
+				AAE924420481416E00A8010B,
 			);
 			isa = PBXGroup;
 			name = common;

@@ -30,7 +30,7 @@
 #include <stdexcept>
 #include "SC_Lib_Cintf.h"
 #include "SC_SequencedCommand.h"
-#include <new.h>
+#include <new>
 #include "SC_Prototypes.h"
 #include "scsynthsend.h"
 
