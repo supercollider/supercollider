@@ -13,7 +13,9 @@ Node {
 		if(sendFlag, {
 			server.sendBundle(nil, [11, nodeID]);  	//"/n_free"
 		});
-		this.remove;
+		group = nil;
+		isPlaying = false;
+		isRunning = false;
 	}
 	freeMsg { ^[11, nodeID] }
 
@@ -26,7 +28,6 @@ Node {
 		server.sendBundle(nil, 
 			[14, nodeID,controlName, busIndex]++args); //"/n_map"
 	}
-	
 	mapMsg {  arg controlName, busIndex ... args;
 			^[14, nodeID,controlName, busIndex]++args; //"/n_map"
 	}
@@ -58,33 +59,19 @@ Node {
 		server.sendBundle(nil, 
 			[17, nodeID,controlName,numControls, value]++args); //"n_setn"
 	}
-/*
+
 	release { arg releaseTime;
-		//assumes a control called 'gate' in the synth
-		if(releaseTime.isNil, { 
-			releaseTime = 0.0;
-		},{
-			releaseTime = -1.0 - releaseTime;
-		});
-		server.sendBundle(nil, 
-			[15, nodeID, \gate, releaseTime],
-			["/s_noid", nodeID]
-		);
-		server.nodeAllocator.free(nodeID);
-	}
-*/	
-	release { arg releaseTime;
+		server.sendBundle(nil,this.releaseMsg(releaseTime))
+    	}
+    	releaseMsg { arg releaseTime;
 		//assumes a control called 'gate' in the synth
 		if(releaseTime.isNil, {
 			releaseTime = 0.0;
 		},{
 			releaseTime = -1.0 - releaseTime;
 		});
-		server.sendBundle(nil,
-			[15, nodeID, \gate, releaseTime]
-		);
-		server.nodeAllocator.free(nodeID);
-    	}
+		^[15, nodeID, \gate, releaseTime]
+	}
 	trace {
 		server.sendMsg(10, nodeID);//"/n_trace"
 	}
@@ -138,6 +125,7 @@ Node {
 	moveToTailMsg { arg bundle, aGroup;
 		^(aGroup ? group).moveNodeToTailMsg(bundle, this);
 	}
+
 	//another syntax style
 	getMsg { arg cmdName, argList;
 		^[cmdName, nodeID] ++ argList
@@ -150,7 +138,6 @@ Node {
 		target = target.asTarget;
 		^this.perform(addAction, target, args)
 	}
-	
 
 
 	// private
@@ -169,12 +156,17 @@ Node {
 		var msg;
 		msg = [this.perform(addAction,target,args)];
 		target.asGroup.finishBundle(msg, this);
-		server.listSendBundle(server.latency, msg.postln);
-		//isPlaying = isRunning = true;
+		server.listSendBundle(nil, msg);
 	}
 	nodeToServerMsg { 
 		^this.subclassResponsibility(thisMethod)       
 	}
+
+	register { arg argServer;
+		server = argServer;
+		nodeID = server.nextNodeID;
+	}
+	// not used ?
 	remove {
 		group = nil;
 		isPlaying = false;
@@ -192,14 +184,15 @@ Node {
 
 
 Group : Node {
-
-	var <>head, <>tail;
 	
+	var <>head,<>tail;
+	
+	/** immediately sends **/
 	*new { arg target,addAction=\addToTail;
 		var group, server;
 		target = target.asTarget;
 		server = target.server;
-		group = this.prNew(server);
+		group = this.basicNew(nil,server);
 		group.nodeToServer(addAction,target);
 		^group
 	}
@@ -228,43 +221,61 @@ Group : Node {
 		movedNode.group = this;
 		server.sendBundle(nil,
 			[19, movedNode.nodeID, aNode.nodeID]); //"/n_after"
-	}       
-	
-	nodeToServerMsg { arg targetID, addActionNum;
-		^[21, nodeID, addActionNum, targetID]  	 // "/g_new"
-	}
-		
-	freeAll { arg sendFlag=true;
+	}  
+	freeAll {
 		// free my children, but this node is still playing
 		server.sendBundle(nil,[24,nodeID]); //"/g_freeAll"
 	}
-	
+	deepFree {
+		server.sendBundle(nil,["/g_deepFree",nodeID])
+	}
+
+	/*  return messages */
+	addToHeadMsg { arg arggroup; 
+		group = arggroup.asGroup;
+		^[21, nodeID, 0, group.nodeID] 
+	}
+	addToTailMsg { arg arggroup;
+		group = arggroup.asGroup;
+		^[21, nodeID, 1, group.nodeID] 
+	}
+	addAfterMsg {  arg afterThisOne;
+		group = afterThisOne.group;
+		^[21, nodeID, 3, afterThisOne.nodeID] 
+	}
+	addBeforeMsg {  arg beforeThisOne;
+		group = beforeThisOne.group;
+		^[21, nodeID, 2, beforeThisOne.nodeID] 
+	}
+	addReplaceMsg { arg removeThisOne;
+		group = removeThisOne.group;
+		^[21, nodeID, 4, removeThisOne.nodeID] 
+	}
+	moveNodeToHeadMsg { arg aNode;
+		^[22, nodeID, aNode.nodeID]; //"/g_head"
+	}
+	moveNodeToTailMsg { arg aNode;
+		^[23, nodeID, aNode.nodeID];//g_tail
+	}
+
+		
+
 			
 	/** bundle messages **/
-	
 	*newToBundle { arg bundle, target, addAction=\addToTail;
 		var group;
 		target = target.asTarget;
-		group = this.prNew(target.server);
+		group = this.basicNew(nil,target.server);
 		bundle.add(group.perform(addAction, target));
 		group.group.finishBundle(bundle, group);
 		^group
 	}
-	
-	moveNodeToHeadMsg { arg aNode;
-		^[22, nodeID, aNode.nodeID]; //"/g_head"
+	//private
+	nodeToServerMsg { arg targetID, addActionNum;
+		^[21, nodeID, addActionNum, targetID]  	 // "/g_new"
 	}
-	
-	moveNodeToTailMsg { arg aNode;
-		^[23, nodeID, aNode.nodeID];//g_tail
-	}
-	
-	finishBundle { //overridden in subclass
-	}
-	
-	
-
-	
+	finishBundle { //overridden in a JIT subclass
+	}	
 }
 
 Synth : Node {
@@ -276,7 +287,7 @@ Synth : Node {
 		var synth, server;
 		target = target.asTarget;
 		server = target.server;
-		synth = this.prNew(defName, server);
+		synth = this.basicNew(defName, server);
 		synth.nodeToServer(addAction, target, args);
 		^synth
 	}
@@ -307,7 +318,7 @@ Synth : Node {
 	*newLoad { arg defName,args,target,addAction=\addToTail,dir="synthdefs/";
 		var msg, synth;
 		target = target.asTarget;
-		synth = this.prNew(defName, target.server);
+		synth = this.basicNew(defName, target.server);
 		msg = synth.newMsg(target,addAction,args);
 		synth.server.sendMsg(6, dir ++synth.defName++".scsyndef", msg); //"/d_load"
 		^synth
@@ -324,19 +335,17 @@ Synth : Node {
 
 	/** does not send	(used for bundling) **/
 	*basicNew { arg defName,server,nodeID;
-		^super.basicNew(nodeID,server).defName_(defName)
+		^super.basicNew(nodeID,server).defName_(defName.asDefName)
 	}
-	//  bundle is a List
 	*newToBundle { arg bundle, defName, args, target, addAction=\addToTail;
 		var synth;
 		target = target.asTarget;
-		synth = this.prNew(defName, target.server);
+		synth = this.basicNew(defName, target.server);
 		bundle.add(synth.perform(addAction, target, args));
 		synth.group.finishBundle(bundle, synth);
 		^synth
 	}
 
-	// basic msg construction
 	addToHeadMsg { arg arggroup,args;
 		group = arggroup;
 		^[9, defName, nodeID, 0, group.nodeID] ++ args // s_new
@@ -360,7 +369,7 @@ Synth : Node {
 		
 	// private
 	*prNew { arg defName, server;
-		^super.prNew(server).defName_(defName.asDefName)
+		^this.basicNew(defName,server)
 	}
 	nodeToServerMsg { arg targetID, addActionNum, args;
 		^[9, defName, nodeID, addActionNum, targetID] ++ args
@@ -375,7 +384,7 @@ RootNode : Group {
 	*new { arg server;
 		server = server ?? {Server.local};
 		^(roots.at(server.name) ?? {
-			^super.basicNew(0, server).rninit
+			^super.basicNew(0,server).rninit
 		})
 	}
 	rninit { 
@@ -383,7 +392,7 @@ RootNode : Group {
 		isPlaying = isRunning = true;
 		group = this; // self
 	}
-		*initClass {  roots = IdentityDictionary.new; }
+	*initClass {  roots = IdentityDictionary.new; }
 	
 	nodeToServer {} // already running
 	
