@@ -99,7 +99,7 @@ Function : AbstractFunction {
 	
 	<> { arg that;
 		// function composition
-		^{|...args| this.value(that.valueArray(args)) }
+		^{|...args| this.valueArray(that.valueArray(args)) }
 	}
 
 	bench { arg print = true;
