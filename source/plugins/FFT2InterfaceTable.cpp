@@ -35,6 +35,7 @@ void init_SCComplex(InterfaceTable *inTable);
 //these are defined in the relevant files
 extern void initConvolution(InterfaceTable *);
 extern void initPV_ThirdParty(InterfaceTable *);
+extern void initFeatureDetectors(InterfaceTable *it);
 
 void load(InterfaceTable *inTable)
 {
@@ -44,4 +45,5 @@ void load(InterfaceTable *inTable)
 
 	initConvolution(inTable);
 	initPV_ThirdParty(inTable);
+	initFeatureDetectors(inTable);
 }
