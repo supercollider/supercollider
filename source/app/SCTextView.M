@@ -125,21 +125,27 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
         } else goto below; 
     } else {
 below:
+
+        [super mouseDown: event];
+        [self mouseDownAction];
+
+    }
+}
+
+extern PyrSymbol * s_mouseDown;
+- (void) mouseDownAction
+{
 		MyDocument * doc = [self delegate];
 		PyrObject * pobj = [doc getSCObject];
-		PyrSymbol *method = getsym("mouseDown");
+		//PyrSymbol *method = getsym("mouseDown");
 		pthread_mutex_lock (&gLangMutex);
 		if (pobj) {
 			VMGlobals *g = gMainVMGlobals;
 			g->canCallOS = true;
 			++g->sp;  SetObject(g->sp, pobj); 
-			runInterpreter(g, method, 1);
+			runInterpreter(g, s_mouseDown, 1);
 			g->canCallOS = false;
 		}
 		pthread_mutex_unlock (&gLangMutex);
-        [super mouseDown: event];
-
-    }
 }
-
 @end

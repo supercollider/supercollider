@@ -28,5 +28,6 @@
     - (void) keyDown: (NSEvent*) event;
     - (void) mouseDown: (NSEvent*) event;
     - (void) autoIndent;
+    - (void) mouseDownAction;
     
 @end
