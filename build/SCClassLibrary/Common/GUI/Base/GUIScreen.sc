@@ -4,6 +4,10 @@ SCWindow {
 	
 	var dataptr, <name, <>onClose, <view, <userCanClose=true;
 	
+	*initClass {
+		UI.registerForShutdown({ this.closeAll });
+	}
+
 	*new { arg name = "panel", bounds, resizable = true, border = true;
 		^super.new.initSCWindow(name, bounds, resizable, border)
 	}
