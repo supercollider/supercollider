@@ -93,6 +93,8 @@ Function : AbstractFunction {
 			AppClock.sched(delta, { this.value; nil })
 		}
 	}
+	
+	thunk { ^Thunk(this) }
 
 	// Pattern support
 	transformEvent { arg event;
@@ -172,6 +174,24 @@ Function : AbstractFunction {
 	matchItem { arg item;
 		^this.value(item)
 	}
+}
+
+Thunk : AbstractFunction {
+	// a thunk is an unevaluated value. 
+	// it gets evaluated once and then always returns that value.
+	// also known as a "promise" in Scheme.
+	// thunks have no arguments.
+	var function, value;
+	
+	*new { arg function;
+		^super.newCopyArgs(function)
+	}
+	value {
+		^value ?? { value = function.value; function = nil; value }
+	}
+	valueArray { ^this.value }
+	valueEnvir { ^this.value }
+	valueArrayEnvir { ^this.value }
 }
 
 
