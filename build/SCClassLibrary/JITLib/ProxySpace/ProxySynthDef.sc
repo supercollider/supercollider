@@ -5,8 +5,14 @@ ProxySynthDef : SynthDef {
 		unixCmd("rm synthdefs/temp_proxy_def_*");
 	}
 	*new { arg proxy, ugenGraphFunc;
-		var func, name, argNames, argValues;
-		name = "temp_proxy_def_" ++ proxy.identityHash.abs ++ proxy.synthDefs.size;
+		var name;
+		name = "temp_proxy_def_" 
+		++ proxy.identityHash.abs ++ proxy.synthDefs.size;
+		^super.prNew(name).proxy_(proxy).build(ugenGraphFunc);
+	}
+	
+	build { arg ugenGraphFunc;
+		var argNames, argValues, func;
 		argNames = ugenGraphFunc.def.argNames;
 		argValues = ugenGraphFunc.def.prototypeFrame;
 		
@@ -25,8 +31,9 @@ ProxySynthDef : SynthDef {
 			//{ output = K2A.ar(output) });
 				Out.multiNewList([proxy.rate, proxy.bus.index]++output)
 		};
-					
-		^super.prNew.name_(name).proxy_(proxy).build(func);
+		
+		super.build(func);
+	
 	}
 	
 }
