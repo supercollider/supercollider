@@ -630,13 +630,26 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		float* table2 = table1 + bufChannels; \
 		float* table3 = table2 + bufChannels; \
 		if (iphase == 0) { \
-			table0 += bufSamples; \
+			if (loop) { \
+				table0 += bufSamples; \
+			} else { \
+				table0 += 1; \
+			} \
 		} else if (iphase >= guardFrame) { \
 			if (iphase == guardFrame) { \
-				table3 -= bufSamples; \
+				if (loop) { \
+					table3 -= bufSamples; \
+				} else { \
+					table3 -= 1; \
+				} \
 			} else { \
-				table2 -= bufSamples; \
-				table3 -= bufSamples; \
+				if (loop) { \
+					table2 -= bufSamples; \
+					table3 -= bufSamples; \
+				} else { \
+					table2 -= 1; \
+					table3 -= 2; \
+				} \
 			} \
 		} \
 		int32 index = 0; \
@@ -656,7 +669,11 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		float* table1 = bufData + iphase * bufChannels; \
 		float* table2 = table1 + bufChannels; \
 		if (iphase > guardFrame) { \
-			table2 -= bufSamples; \
+			if (loop) { \
+				table2 -= bufSamples; \
+			} else { \
+				table2 -= 1; \
+			} \
 		} \
 		int32 index = 0; \
 		float fracphase = phase - (double)iphase; \
