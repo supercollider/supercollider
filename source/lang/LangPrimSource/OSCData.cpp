@@ -517,8 +517,8 @@ PyrObject* ConvertReplyAddress(ReplyAddress *inReply)
     VMGlobals *g = gMainVMGlobals;
     PyrObject *obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
     PyrSlot *slots = obj->slots;
-    SetInt(slots+0, inReply->mSockAddr.sin_addr.s_addr);
-    SetInt(slots+1, inReply->mSockAddr.sin_port);
+    SetInt(slots+0, ntohl(inReply->mSockAddr.sin_addr.s_addr));
+    SetInt(slots+1, ntohs(inReply->mSockAddr.sin_port));
     return obj;
 }
 
@@ -620,7 +620,7 @@ int prGetHostByName(VMGlobals *g, int numArgsPushed)
 	struct hostent *he = gethostbyname(hostname);
 	if (!he) return errFailed;
 	
-	SetInt(a, *(int*)he->h_addr);
+	SetInt(a, ntohl(*(int*)he->h_addr));
 	postfl("prGetHostByName hostname %s addr %d\n", hostname, a->ui);
 	
 	return errNone;
