@@ -1,6 +1,7 @@
 ProxySpace : EnvironmentRedirect {	classvar <>lastEdited;//undo support
 		var <group, <server, <>clock;
 	var <>defaultNumChannels=2; //default values for numChannels 
+	var <>defaultEnv;
 		*new { arg target, clock;
 		^super.new.einit(target, clock)
 	}
@@ -12,13 +13,20 @@
 		server = target.asTarget.server;  
 		clock = argClock;
 	}
+	
+	makeProxy { arg key;
+			var proxy;
+			proxy = NodeProxy(server);
+			proxy.clock = clock;
+			proxy.env = defaultEnv;
+			this.prPut(key, proxy);
+			^proxy
+	}
 		at { arg key;
 		var proxy;
 		proxy = super.at(key);
 		if(proxy.isNil, {
-			proxy = NodeProxy(server);
-			proxy.clock = clock;
-			this.prPut(key, proxy);
+			proxy = this.makeProxy(key);
 		});
 		^proxy
 		}
@@ -27,14 +35,15 @@
 		var proxy;
 		proxy = this.prAt(key);
 		if(proxy.isNil, {
-			proxy = NodeProxy(server);
-			proxy.clock = clock;
-			this.prPut(key, proxy);
+			proxy = this.makeProxy(key);
 		}, {
-			if(obj.isNil, { this.removeAt(key);  });
+			if(obj.isNil, { 
+				proxy.clear; 
+				this.removeAt(key);  
+			});
 			
 		});
-		proxy.setObj(obj, true, true, false, clock);
+		proxy.setObj(obj, true, true, clock);
 		this.class.lastEdited = proxy;
 	}
 	

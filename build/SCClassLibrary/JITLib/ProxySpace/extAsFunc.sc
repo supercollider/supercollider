@@ -11,6 +11,7 @@
 	
 }
 
+
 +SimpleNumber {
 	prepareForProxySynthDef {
 		^{ Control.names([\value]).kr([this])  }
@@ -19,6 +20,7 @@
 
 
 +Function {
+	
 	defArgs {
 		^def.prototypeFrame
 	}
@@ -27,7 +29,11 @@
 	}
 }
 
-
++NodeProxy {
+	prepareForProxySynthDef {
+		^{ this.value }
+	}
+}
 
 /*
 //for now:

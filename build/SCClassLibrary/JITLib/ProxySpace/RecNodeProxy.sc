@@ -17,7 +17,7 @@ RecNodeProxy : NodeProxy {
 	
 	*newFrom { arg proxy, numChannels, onCompletion;
 		^this.audio(proxy.server, numChannels ? proxy.numChannels)
-			.setObj({proxy.ar(numChannels) }, onCompletion:onCompletion);
+			.setObj({proxy.ar(numChannels) }, true, onCompletion:onCompletion);
 	}
 	
 	
@@ -28,7 +28,7 @@ RecNodeProxy : NodeProxy {
 		if(this.isPlaying && recSynth.isNil, {
 			buffer = Buffer.alloc(server, 65536, n);
 			if(n <= 2, {
-				recSynth = Synth.prNew("system-diskout"++n.asString);
+				recSynth = Synth.prNew("system-diskout"++n.asString, group.server);
 				msg = recSynth.newMsg(group,\addAfter,
 					[\i_in, outbus.index, \i_bufNum, buffer.bufnum]);
 			}, {
