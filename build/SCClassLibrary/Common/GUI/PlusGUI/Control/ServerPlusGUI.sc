@@ -67,6 +67,11 @@
 		};
 		recorder.enabled = false;
 		
+		w.view.keyDownAction = { arg ascii, char;
+			if(char === $n) { this.queryAllNodes };
+			if(char === $ ) { this.boot };
+		};
+		
 		if (isLocal, {
 			
 			running = {
