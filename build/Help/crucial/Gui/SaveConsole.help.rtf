@@ -1,0 +1,49 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 SaveConsole
+\f1\b0\fs18 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 a tool for managing .asCompileString based archiving of objects.\
+\
+does a no-clobber check, makes a .bak copy of any previously existing file it finds. saves inside a TaskIfPlaying, so you don't have to stop play.\
+\
+
+\f0\b SaveConsole(object,path)\
+
+\f2\b0 \
+
+\f0\b object:\
+
+\f2\b0 	anything that can meaningfully respond to .asCompileString\
+
+\f0\b path:
+\f2\b0 \
+	if the object you are supplying was already loaded from disk and has a known path,\
+	tell the SaveConsole of this. (makes a difference for save/save as behavior)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+(\
+	\cf2 SaveConsole\cf0 (\
+		\cf2 Array\cf0 .rand(16,10,200),\
+		\cf2 nil\cf0 , \cf3 // no previous path\
+\cf0 		\cf2 nil\cf0 ) \cf3 //no layout\
+\cf0 	.print \cf3 // prints object \
+\cf0 	.save\
+	.saveAs\
+\
+)\
+\
+\
+\
+\
+\
+}

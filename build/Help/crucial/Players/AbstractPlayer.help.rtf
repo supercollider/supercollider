@@ -1,0 +1,322 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+\f3\fswiss\fcharset77 Helvetica-Oblique;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green112\blue0;
+\red96\green96\blue96;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs42 \cf0 AbstractPlayer			
+\fs28 a playable synthesis process
+\f1\b0\fs18 \
+\
+
+\fs24 superclass: AbstractFunction\
+\
+
+\f0\b Players are things that play.  Anything that you want to play, you can stick your concept into a subclass of AbstractPlayer and you will inherit powerful server management and patching abilities.\
+\
+
+\f1\b0 \
+
+\f0\b\fs28 Several common usage styles\
+
+\f1\b0\fs24 \
+
+\f0\b\fs22 1.  create the object and send it the play command\
+
+\f1\b0\fs24 somePlayer = \cf2 SomePlayerClass\cf0 .new(param, param2, param3);\
+somePlayer.play;\
+\
+
+\f0\b\fs22 2.  make a gui and use transport controls to stop, start, record, write etc.\
+
+\f1\b0\fs24 somePlayer = \cf2 SomePlayerClass\cf0 .new(param, param2, param3);\
+somePlayer.topGui;\
+\
+
+\f0\b\fs22 3.  create the object and use .ar\
+
+\f1\b0\fs24 somePlayer = \cf2 SomePlayerClass\cf0 .new(param, param2, param3);\
+\{\
+	somePlayer.ar  \cf3 // combine it with UGens etc.\
+\cf0 \}.play\
+\
+
+\f0\b\fs22 4. use the class method *ar in the style of normal UGens \
+
+\f1\b0\fs24 \{\
+	\cf2 SomePlayerClass\cf0 .ar(param, param2, param3); \cf3 // combine it with UGens etc.\
+\cf0 \}.play\
+\
+\
+
+\f0\b\fs28 AbstractPlayer  is a subclass of AbstractFunction
+\f1\b0\fs26  \
+
+\fs24 therefore you can do math with them:
+\fs22 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 (somePatch * \cf2 EnvPlayer\cf0 .new(\cf2 Env\cf0 .newClear(10)) ).topGui\
+\
+(somePatch.wrap2( 0.5) ).topGui\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
+\
+
+\f0\b\fs28 Common players\
+
+\f1\b0\fs24 	
+\f0\b Patch
+\f1\b0  			\
+		- specifies a function ( Instrument ) and the arguments \
+		with which to play the function.\
+	
+\f0\b FunctionPlayer
+\f1\b0  	\
+		- takes any valid ugenFunction and grants it the powers of a Player.\
+	
+\f0\b SFP
+\f1\b0  				\
+		- plays sound files	\
+	
+\f0\b Ar
+\f1\b0  or 
+\f0\b EventStreamPlayer
+\f1\b0  	\
+		- plays standard patterns (Pbind etc.)\
+	
+\f0\b Kr StreamKr StreamKrDur
+\f1\b0  
+\f0\b Stream2Trig
+\f1\b0  \
+		- renders a number stream to a .kr signal\
+\
+
+\f0\b\fs30 Gui
+\f1\b0\fs20 \
+
+\fs24 AbstractPlayer also comes with a powerful gui class framework.  Because of this, many people make the mistake of assuming that AbstractPlayer is primarily a way to get pretty windows.  It has nothing to do with that.\
+\
+But it is very nice  to:\
+	hit the play button and have your sound play.\
+	select a format, choose a path by normal dialog and record your \
+		sound to disk as a soundfile.\
+	hit the save button and save your object with all its parameters to disk.\
+	change the tempo when you want to.
+\fs22 \
+
+\fs18 \
+\
+
+\fs28 \ul Methods\
+
+\fs18 \ulnone \
+
+\fs24 ar    	- do your thing,  make audio\
+value 	- same as .ar\
+kr		- same as .ar\
+\
+play\
+scope\
+record\
+write\
+\
+timeDuration -(seconds) \
+	return the total duration or nil (meaning infinite).\
+	Players that specify a duration can themselves be played inside of patterns.  \
+beatDuration -(beats)	\
+tempo - (bpm) defaults to 60bpm\
+tempo_(bpm) 	- set tempo\
+delta - (beats) this is duration converted to beats\
+\
+path -  if loaded or saved, the player knows its path\
+name - an explicit name if it has been set or the filename ( if path is known)\
+
+\fs20 \
+\
+\
+
+\f0\b\fs28 \ul Path Utilities
+\f1\b0\fs20 \ulnone \
+\
+*
+\f0\b load
+\f1\b0  ( object) - \
+	useful in the constructor.	\
+
+\fs24 	strings - load from disk from this path\
+	collections - recursively do *load on each item\
+	anything else - passes thru \
+
+\fs20 	\
+	( \cf3 // you can't execute this, as it will try to load things you haven't got\
+\cf0 		\cf2 Patch\cf0 ([\cf4 \\some\cf0 ,\cf4 \\instr\cf0 ],\
+			\cf3 //args\
+\cf0 			[ \cf3 // args is a collection, so each item gets sent thru *load\
+\cf0 				440, \cf3 // passes thru\
+\cf0 				\cf5 ":patches:freaker"\cf0 , \cf3 // load from disk from this path\
+\cf0 				\cf2 Patch\cf0 ([\cf4 \\controls\cf0 ,\cf4 \\wobbly\cf0 ],[0.3]), \cf3 // passes thru\
+\cf0 				\cf2 nil\cf0  \cf3 // passes thru\
+\cf0 			])\
+	)\
+	\
+
+\f0\b\fs24 enpath
+\f1\b0  (object) -  the opposite of 
+\f0\b *load
+\f1\b0 \
+	if object responds to 'path' and has a path set,\
+	returns that path, otherwise returns the object itself.\
+	this is used in storeParamsOn to reduced items to path references where possible\
+	\
+
+\f0\b children
+\f1\b0  - for composites, return your children\
+	player classes should implement where appropriate.\
+	a 
+\f0\b Patch
+\f1\b0  has its args as children\
+	
+\f0\b SFP
+\f1\b0  has its underlying object as child\
+	
+\f0\b EventStreamPlayer
+\f1\b0  has its pattern.  in a properly implemented pattern structure,\
+		you can propagate all the way down your chain.
+\fs20 	\
+\
+
+\fs24 	using this.children.do(\{arg item; .... \})  can save you from having to muck up \
+	the Player class with extra methods.\
+	
+\f3\i\fs20 \
+
+\f0\i0\b\fs24 allChildren
+\f1\b0  - and all your children's children, and their children...	\
+
+\f0\b\fs22 deepDo(function)
+\f1\b0  - do to allChildren
+\fs26 \
+
+\fs20 \
+
+\fs24 \
+
+\f0\b \ul playing in patterns:\ulnone \
+
+\f1\b0 		\
+Players can be put inside of standard patterns:\
+\
+(
+\f2\fs18 \
+\
+p = \cf2 CropPlayer\cf0 (\
+		\cf2 Patch\cf0 .new(\{ \cf2 arg\cf0  freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;\
+				\cf2 PMOsc\cf0 .ar(freq,freq2,pmindex,phasemod,amp)\
+		\},[\
+			150.06, \
+		  	27.7707, \
+		  	15.1163, \
+		 	0, \
+		  	0.616317\
+		 ]),0,4);\
+		 \
+y = \cf2 CropPlayer\cf0 (\
+		\cf2 Patch\cf0 .new(\{ \cf2 arg\cf0  freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;\
+				\cf2 PMOsc\cf0 .ar(freq,freq2,pmindex,phasemod,amp)\
+		\},[\
+			200, \
+		  	97.7707, \
+		  	15.1163, \
+		 	0, \
+		  	0.616317\
+		 ]),0,4);\
+		 \
+\
+	\cf2 Pseq\cf0 ([ p,y,p,y ],2).play\
+\
+)\
+
+\f1\fs20 	\
+
+\fs24 each player will embed itself in the stream, making itself a single event.\
+	see AbstractPlayer::embedInStream\
+
+\fs20 \
+
+\fs24 Note that each player must have a finite duration or it will play infinitely, and the\
+sequence will not progress ! A Patch does not have a finite duration.  You can use CropPlayer to impose a finite duration  (and an envelope) on any player.  This does result in an extra layer of envelope. PlayerSeqTrack is more flexible if you want simple sequencing.  Patterns are more flexible if you want to use Prand,Pswitch etc.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs20 \cf0 \
+\
+any player could even respond itself as an event\
+\
+	EventStreamPlayer(\
+			Routine(\{\
+				... that yields a player object each time\
+			\})\
+		).ar\
+
+\fs18 \
+\
+	\
+\
+
+\fs24 \
+\
+
+\f0\b\fs32 Subclassing AbstractPlayer\
+
+\f1\b0\fs24 \
+	
+\fs26 The only thing your class needs to implement is the .ar method\
+	\
+	After that you would usually write a gui class for it.\
+	\
+	Then implement the 
+\f0\b storeParamsOn
+\f1\b0  method which enables you \
+		to load and save your object.\
+	\
+	
+\f0\b \
+
+\f1\b0\fs24 \
+
+\f0\b\fs28 Players to come\
+
+\fs24 \ul \
+
+\f1\b0 \ulnone possible futures:\
+	Stream2Midi - renders a number stream to midi ( controllers etc.)\
+	EventStream2Midi - renders note/freq,amp/velocity, duration to midi note events\
+
+\fs22 \
+\
+\
+
+\f0\b\fs24 \ul \
+\ulnone TimelineEventPlayer\
+	
+\f1\b0 timecode based events.  (rather than delta based event streams where each event\
+	is responsible for determing when the one succeeding it will happen).\
+	\
+Recording of events\
+	from midi, wacom, gui etc.\
+\
+	\
+any Player could be triggered to play from midi or wacom.  it can also go through\
+SchedPlayer to quantise the start time of its play.\
+\
+All of that can be recorded.  those event-recordings can in turn then be further played with.\
+\
+SFP is the one player type that can be sub-located (asked to start play somewhere in the middle). Timeline based event recording would be another one.   the transport system would work very nicely.\
+\
+}
