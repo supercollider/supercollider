@@ -33,7 +33,6 @@ int64 gOSCoffset = 0;
 
 const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800UL; /* 17 leap years */
 
-int32 timeseed();
 int32 timeseed()
 {
 	int64 time = AudioGetCurrentHostTime();

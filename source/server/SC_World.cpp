@@ -50,8 +50,6 @@ bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int32 timeseed();
-
 void InterfaceTable_Init();
 void InterfaceTable_Init()
 {

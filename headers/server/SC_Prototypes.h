@@ -99,7 +99,6 @@ void Dimension_Init(struct Dimension *inDimension, int inWidth, int inHeight);
 
 void Graph_Ctor(struct World *inWorld, struct GraphDef *inGraphDef, struct Graph *graph, struct sc_msg_iter *msg);
 void Graph_Dtor(struct Graph *inGraph);
-void Graph_Calc(struct Graph *inGraph);
 void Graph_SetControl(struct Graph* inGraph, int inIndex, float inValue);
 void Graph_SetControl(struct Graph* inGraph, int32 *inName, int inIndex, float inValue);
 void Graph_MapControl(Graph* inGraph, int inIndex, int inBus);
@@ -124,13 +123,18 @@ extern "C" {
 void Node_SetRun(Node* inNode, int inRun);
 void Node_SendTrigger(Node* inNode, int triggerID, float value);
 void Node_End(struct Node* inNode);
+void Node_NullCalc(struct Node* inNode);
 }
 
 ////////////////////////////////////////////////////////////////////////
 
+extern "C" {
+void Group_Calc(Group *inGroup);
+void Graph_Calc(struct Graph *inGraph);
+}
+
 Group* Group_New(World *inWorld, int32 inID);
 void Group_Dtor(Group *inGroup);
-void Group_Calc(Group *inGroup);
 void Group_DeleteAll(Group *inGroup);
 void Group_AddHead (Group *s, Node *child);
 void Group_AddTail (Group *s, Node *child);
@@ -159,6 +163,12 @@ void SendFailure(struct ReplyAddress *inReply, char *inCommandName, char *errStr
 void ReportLateness(struct ReplyAddress *inReply, float32 seconds);
 void DumpReplyAddress(struct ReplyAddress *inReplyAddress);
 int32 Hash(struct ReplyAddress *inReplyAddress);
+
+////////////////////////////////////////////////////////////////////////
+
+extern "C" {
+int32 timeseed();
+}
 
 ////////////////////////////////////////////////////////////////////////
 
