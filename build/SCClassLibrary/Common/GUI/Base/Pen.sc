@@ -46,6 +46,9 @@ Pen {
 		_Pen_LineTo
 		^this.primitiveFailed
 	}
+	*line { arg p1, p2;
+		^this.moveTo(p1).lineTo(p2);
+	}
 //	*curveTo { arg point, cpoint1, cpoint2;
 //		_Pen_CurveTo
 //		^this.primitiveFailed
@@ -54,10 +57,18 @@ Pen {
 //		_Pen_QuadCurveTo
 //		^this.primitiveFailed
 //	}
-//	*addArc { arg center, startAngle, arcAngle;
-//		_Pen_AddArc
-//		^this.primitiveFailed
-//	}
+	*addArc { arg center, radius, startAngle, arcAngle;
+		_Pen_AddArc
+		^this.primitiveFailed
+	}
+	*addWedge { arg center, radius, startAngle, arcAngle;
+		_Pen_AddWedge
+		^this.primitiveFailed
+	}
+	*addAnnularWedge { arg center, innerRadius, outerRadius, startAngle, arcAngle;
+		_Pen_AddAnnularWedge
+		^this.primitiveFailed
+	}
 	*addRect { arg rect;
 		_Pen_AddRect
 		^this.primitiveFailed

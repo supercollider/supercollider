@@ -55,15 +55,15 @@
 		this.drawAtPoint(pos);
 	}
 		
-//	bounds { ^this.prBounds(Rect.new) }
+	bounds { ^this.prBounds(Rect.new) }
+	prBounds { arg rect;
+		_String_GetBounds
+		^this.primitiveFailed
+	}
 //	getLayoutSize {
 //		arg extent;
 //		extent = this.bounds.extent;
 //		^LayoutSize(extent.x+1, extent.x+1, extent.y+1, extent.y+1, 0);
-//	}
-//	prBounds { arg rect;
-//		_String_GetBounds
-//		^this.primitiveFailed
 //	}
 
 	/// cocoa or at least foundation dependant

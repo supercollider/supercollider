@@ -1661,6 +1661,37 @@ int prFont_AvailableFonts(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prFont_SetAntiAliasing(struct VMGlobals *g, int numArgsPushed);
+int prFont_SetAntiAliasing(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+    
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+	CGContextSetShouldAntialias(cgc, IsTrue(b));
+	
+	return errNone;
+}
+
+int prFont_SetSmoothing(struct VMGlobals *g, int numArgsPushed);
+int prFont_SetSmoothing(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+    
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+	CGContextSetShouldSmoothFonts(cgc, IsTrue(b));
+	
+	return errNone;
+}
 
 int prString_GetBounds(struct VMGlobals *g, int numArgsPushed);
 int prString_GetBounds(struct VMGlobals *g, int numArgsPushed)
@@ -1773,7 +1804,9 @@ int prColor_SetStroke(struct VMGlobals *g, int numArgsPushed)
     err = slotFloatVal(slots+3, &alpha);
     if (err) return err;
     
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextSetRGBStrokeColor(cgc, red, green, blue, alpha);
     CGContextSetRGBFillColor(cgc, red, green, blue, alpha);
    /* NSColor *color = [NSColor colorWithCalibratedRed: red
@@ -1806,7 +1839,9 @@ int prColor_SetFill(struct VMGlobals *g, int numArgsPushed)
     err = slotFloatVal(slots+3, &alpha);
     if (err) return err;
     
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextSetRGBFillColor(cgc, red, green, blue, alpha);
    /* NSColor *color = [NSColor colorWithCalibratedRed: red
                             green: green 
@@ -1850,7 +1885,9 @@ int prPen_AddRect(struct VMGlobals *g, int numArgsPushed)
     CGRect rect;
     int err = slotGetCGRect(b, &rect);		
 
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
 	
 	CGContextAddRect(cgc, rect);
     return errNone;
@@ -1871,7 +1908,9 @@ int prPen_StrokeRect(struct VMGlobals *g, int numArgsPushed)
     if (err) return err;
     
     //[NSBezierPath strokeRect: rect];
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextBeginPath(cgc);
 	CGContextAddRect(cgc, rect);
     CGContextDrawPath(cgc, kCGPathStroke);
@@ -1894,7 +1933,9 @@ int prPen_FillRect(struct VMGlobals *g, int numArgsPushed)
     if (err) return err;
     
     //[NSBezierPath fillRect: rect];
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextBeginPath(cgc);
 	CGContextAddRect(cgc, rect);
     CGContextDrawPath(cgc, kCGPathFill);
@@ -1977,7 +2018,9 @@ int prPen_MoveTo(struct VMGlobals *g, int numArgsPushed)
     int err = slotGetPoint(b, &p1);		
     if (err) return err;
  
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextMoveToPoint(cgc, p1.x, p1.y);
     
     return errNone;
@@ -1997,8 +2040,155 @@ int prPen_LineTo(struct VMGlobals *g, int numArgsPushed)
     int err = slotGetPoint(b, &p1);		
     if (err) return err;
  
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextAddLineToPoint(cgc, p1.x, p1.y);
+    
+    return errNone;
+}
+
+int prPen_AddArc(struct VMGlobals *g, int numArgsPushed);
+int prPen_AddArc(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    //PyrSlot *a = g->sp - 4;
+    PyrSlot *b = g->sp - 3;
+    PyrSlot *c = g->sp - 2;	// radius
+    PyrSlot *d = g->sp - 1; // start angle
+    PyrSlot *e = g->sp; // angle
+
+    if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
+
+    NSPoint p1;
+    int err = slotGetPoint(b, &p1);		
+    if (err) return err;
+ 
+	float radius;
+	err = slotFloatVal(c, &radius);		
+    if (err) return err;
+ 
+	float startAngle;
+	err = slotFloatVal(d, &startAngle);		
+    if (err) return err;
+ 
+	float angle;
+	err = slotFloatVal(e, &angle);		
+    if (err) return err;
+ 
+	int clockwise = angle > 0. ? 0 : 1;
+	float endAngle = startAngle + angle;
+ 
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+	//post("start %g %g  end %g %g  arc %g %g\n", startAngle, startAngle * 180./3.14156, endAngle, endAngle * 180./3.14156, angle, angle * 180./3.14156);
+	CGContextAddArc(cgc, p1.x, p1.y, radius, startAngle, endAngle, clockwise);
+    
+    return errNone;
+}
+
+int prPen_AddWedge(struct VMGlobals *g, int numArgsPushed);
+int prPen_AddWedge(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    //PyrSlot *a = g->sp - 4;
+    PyrSlot *b = g->sp - 3;
+    PyrSlot *c = g->sp - 2;	// radius
+    PyrSlot *d = g->sp - 1; // start angle
+    PyrSlot *e = g->sp; // angle
+
+    if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
+
+    NSPoint p1;
+    int err = slotGetPoint(b, &p1);		
+    if (err) return err;
+ 
+	float radius;
+	err = slotFloatVal(c, &radius);		
+    if (err) return err;
+ 
+	float startAngle;
+	err = slotFloatVal(d, &startAngle);		
+    if (err) return err;
+ 
+	float angle;
+	err = slotFloatVal(e, &angle);		
+    if (err) return err;
+ 
+	int clockwise = angle > 0. ? 0 : 1;
+	float endAngle = startAngle + angle;
+
+    NSPoint p2;
+	p2.x = p1.x + radius * cos(startAngle);
+	p2.y = p1.y + radius * sin(startAngle);
+ 
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+    CGContextMoveToPoint(cgc, p1.x, p1.y);
+    CGContextAddLineToPoint(cgc, p2.x, p2.y);
+	CGContextAddArc(cgc, p1.x, p1.y, radius, startAngle, endAngle, clockwise);
+    CGContextAddLineToPoint(cgc, p1.x, p1.y);
+    
+    return errNone;
+}
+
+int prPen_AddAnnularWedge(struct VMGlobals *g, int numArgsPushed);
+int prPen_AddAnnularWedge(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    //PyrSlot *a = g->sp - 5;
+    PyrSlot *b = g->sp - 4;
+    PyrSlot *c = g->sp - 3;	// innerRadius
+    PyrSlot *d = g->sp - 2;	// outerRadius
+    PyrSlot *e = g->sp - 1; // start angle
+    PyrSlot *f = g->sp; // angle
+
+    if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
+
+    NSPoint p1;
+    int err = slotGetPoint(b, &p1);		
+    if (err) return err;
+ 
+	float innerRadius;
+	err = slotFloatVal(c, &innerRadius);		
+    if (err) return err;
+ 
+	float outerRadius;
+	err = slotFloatVal(d, &outerRadius);		
+    if (err) return err;
+ 
+	float startAngle;
+	err = slotFloatVal(e, &startAngle);		
+    if (err) return err;
+ 
+	float angle;
+	err = slotFloatVal(f, &angle);		
+    if (err) return err;
+ 
+	int clockwise = angle > 0. ? 0 : 1;
+	float endAngle = startAngle + angle;
+
+    NSPoint p2, p3, p4;
+	p2.x = p1.x + innerRadius * cos(startAngle);
+	p2.y = p1.y + innerRadius * sin(startAngle);
+	p3.x = p1.x + outerRadius * cos(startAngle);
+	p3.y = p1.y + outerRadius * sin(startAngle);
+	p4.x = p1.x + innerRadius * cos(endAngle);
+	p4.y = p1.y + innerRadius * sin(endAngle);
+ 
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+    CGContextMoveToPoint(cgc, p2.x, p2.y);
+    CGContextAddLineToPoint(cgc, p3.x, p3.y);
+	CGContextAddArc(cgc, p1.x, p1.y, outerRadius, startAngle, endAngle, clockwise);
+    CGContextAddLineToPoint(cgc, p4.x, p4.y);
+	CGContextAddArc(cgc, p1.x, p1.y, innerRadius, endAngle, startAngle, 1-clockwise);
     
     return errNone;
 }
@@ -2010,7 +2200,9 @@ int prPen_BeginPath(struct VMGlobals *g, int numArgsPushed)
 
     //PyrSlot *a = g->sp;
  
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextBeginPath(cgc);
     
     return errNone;
@@ -2023,7 +2215,9 @@ int prPen_StrokePath(struct VMGlobals *g, int numArgsPushed)
 
     //PyrSlot *a = g->sp;
  
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextDrawPath(cgc, kCGPathStroke);
     
     return errNone;
@@ -2036,7 +2230,9 @@ int prPen_FillPath(struct VMGlobals *g, int numArgsPushed)
 
     //PyrSlot *a = g->sp;
  
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextFillPath(cgc);
     
     return errNone;
@@ -2059,7 +2255,9 @@ int prPen_Translate(struct VMGlobals *g, int numArgsPushed)
     err = slotFloatVal(c, &y);		
     if (err) return err;
     
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextTranslateCTM(cgc, x, y);
     
     return errNone;
@@ -2080,7 +2278,9 @@ int prPen_Scale(struct VMGlobals *g, int numArgsPushed)
     err = slotFloatVal(c, &y);		
     if (err) return err;
     
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextScaleCTM(cgc, x, y);
     
     return errNone;
@@ -2104,7 +2304,9 @@ int prPen_Rotate(struct VMGlobals *g, int numArgsPushed)
     err = slotFloatVal(d, &y);		
     if (err) return err;
     
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     if (x == 0. && y == 0.) {
         CGContextRotateCTM(cgc, angle);
     } else {
@@ -2127,7 +2329,9 @@ int prPen_SetWidth(struct VMGlobals *g, int numArgsPushed)
     int err = slotFloatVal(b, &width);		
     if (err) return err;
     
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextSetLineWidth(cgc, width);
     
     return errNone;
@@ -2161,7 +2365,9 @@ int prPen_SetMatrix(struct VMGlobals *g, int numArgsPushed)
     err = getIndexedFloat(mobj, 5, &afx.ty);
     if (err) return err;
 
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextConcatCTM(cgc, afx);
 
     return errNone;
@@ -2246,7 +2452,9 @@ int prDrawButtonState(struct VMGlobals *g, int numArgsPushed)
     err = slotGetCGRect(rectSlot, &rect);		
     if (err) return err;
     
-    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
+	if (!gctx) return errFailed;
+    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
 
     CGContextSaveGState(cgc);
     
@@ -2630,6 +2838,9 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_Pen_Rotate", prPen_Rotate, 4, 0);	
 	definePrimitive(base, index++, "_Pen_SetWidth", prPen_SetWidth, 2, 0);	
 	definePrimitive(base, index++, "_Pen_SetMatrix", prPen_SetMatrix, 2, 0);	
+	definePrimitive(base, index++, "_Pen_AddArc", prPen_AddArc, 5, 0);	
+	definePrimitive(base, index++, "_Pen_AddWedge", prPen_AddWedge, 5, 0);	
+	definePrimitive(base, index++, "_Pen_AddAnnularWedge", prPen_AddAnnularWedge, 6, 0);	
 
 	definePrimitive(base, index++, "_Pen_BeginPath", prPen_BeginPath, 1, 0);	
 	definePrimitive(base, index++, "_Pen_MoveTo", prPen_MoveTo, 2, 0);	
@@ -2643,5 +2854,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_LoadUserPanel", prLoadUserPanel, 2, 0);	
 
 	definePrimitive(base, index++, "_Font_AvailableFonts", prFont_AvailableFonts, 1, 0);
+	definePrimitive(base, index++, "_Font_SetAntiAliasing", prFont_SetAntiAliasing, 2, 0);
+	definePrimitive(base, index++, "_Font_SetSmoothing", prFont_SetSmoothing, 2, 0);
 }
 

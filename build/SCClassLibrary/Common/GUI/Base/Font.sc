@@ -14,6 +14,14 @@ Font {
 		_Font_AvailableFonts
 		^this.primitiveFailed
 	}
+	*antiAliasing_ { arg flag = false;
+		_Font_SetAntiAliasing;
+		^this.primitiveFailed
+	}
+	*smoothing_ { arg flag = false;
+		_Font_SetSmoothing;
+		^this.primitiveFailed
+	}
 	storeArgs { ^[name,size] }
 }
 
