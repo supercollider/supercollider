@@ -22,11 +22,14 @@
 			server.listSendBundle(nil, bundle);
 						
 	}
+	
 	gateSynthMsg { arg bundle, target, defName, args, index;
 			var synth;
-			synth = Synth.newMsg(bundle, defName, [\i_bus, index]++args, 
+			synth = Synth.newToBundle(bundle, defName, [\i_bus, index]++args, 
 				target.asTarget.group, \addToHead);
-			synth.addMsg(bundle, "/n_map", [\i_start, index]);
+			if(rate === 'control', {
+				synth.msgToBundle(bundle, "/n_map", [\i_start, index]) 
+			});
 	} 
 	
 
