@@ -96,7 +96,7 @@ StreamControl : AbstractPlayControl {
 }
 
 SynthControl : AbstractPlayControl {
-	var <synth, >canReleaseSynth=false, >canFreeSynth=true;
+	var <synth, >canReleaseSynth=true, >canFreeSynth=true;
 	
 	sendDef { } //assumes that SoundDef does send to the same server 
 	writeDef { }
@@ -123,7 +123,7 @@ SynthControl : AbstractPlayControl {
 			if(this.canReleaseSynth, {
 					bundle.add([15, synth.nodeID, \gate, 0.0]); //to be sure.
 			}, {
-					if(this.canFreeSynth.not, {bundle.add([11, synth.nodeID])}); //"/n_free"
+					if(this.canFreeSynth.not, { bundle.add([11, synth.nodeID]) }); //"/n_free"
 			});
 			synth.isPlaying = false;
 		});
