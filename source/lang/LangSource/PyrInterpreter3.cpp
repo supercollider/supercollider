@@ -741,8 +741,24 @@ void Interpret(VMGlobals *g)
 		case 30 : *++sp = g->receiver.uo->slots[14].uf; break;
 		case 31 : *++sp = g->receiver.uo->slots[15].uf; break;
 		
-		// opPushTempVar, levels 0..7
-		case 32 : *++sp = g->frame->vars[ip[1]].uf; ip++; break;
+		case 32 : // JumpIfTrue
+			// cannot compare with o_false because it is NaN
+			if ( ((PyrSlot*)sp)->utag == tagTrue ) {
+				jmplen = (ip[1]<<8) | ip[2];
+				ip += jmplen + 2;
+			} else if ( ((PyrSlot*)sp)->utag == tagFalse) {
+				ip+=2;
+			} else {
+				numArgsPushed = 1;
+				selector = gSpecialSelectors[opmNonBooleanError];
+				slot = (PyrSlot*)sp;
+							
+				goto class_lookup;
+			}
+			sp--;
+			break;
+
+		// opPushTempVar, levels 1..7
 		case 33 : *++sp = g->frame->context.uof->vars[ip[1]].uf; ip++; break;
 		case 34 : *++sp = g->frame->context.uof->context.uof->vars[ip[1]].uf; ip++; break;
 		case 35 : *++sp = g->frame->context.uof->context.uof->context.uof->vars[ip[1]].uf; ip++; break;

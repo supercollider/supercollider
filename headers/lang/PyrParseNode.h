@@ -188,13 +188,8 @@ struct PyrCallNodeBase : public PyrParseNode {
 	virtual int isPartialApplication()=0;
 };
 
-struct PyrCallNode : public PyrCallNodeBase {
-	PyrCallNode() : PyrCallNodeBase(pn_CallNode) {}
-
-	virtual void compileCall(PyrSlot *result);
-	virtual void dump(int level);
-
-	virtual int isPartialApplication();
+struct PyrCallNodeBase2 : public PyrCallNodeBase {
+	PyrCallNodeBase2(int classno) : PyrCallNodeBase(classno) {}
 	
 	struct PyrSlotNode* mSelector;
 	struct PyrParseNode *mArglist;
@@ -202,19 +197,22 @@ struct PyrCallNode : public PyrCallNodeBase {
 	bool mTailCall;
 } ;
 
-struct PyrBinopCallNode : public PyrCallNodeBase {
-	PyrBinopCallNode() : PyrCallNodeBase(pn_BinopCallNode) {}
+struct PyrCallNode : public PyrCallNodeBase2 {
+	PyrCallNode() : PyrCallNodeBase2(pn_CallNode) {}
 
 	virtual void compileCall(PyrSlot *result);
 	virtual void dump(int level);
 
 	virtual int isPartialApplication();
+} ;
 
-	struct PyrSlotNode* mSelector;
-	struct PyrParseNode *mArg1;
-	struct PyrParseNode *mArg2;
-	struct PyrParseNode *mArg3;
-	bool mTailCall;
+struct PyrBinopCallNode : public PyrCallNodeBase2 {
+	PyrBinopCallNode() : PyrCallNodeBase2(pn_BinopCallNode) {}
+
+	virtual void compileCall(PyrSlot *result);
+	virtual void dump(int level);
+
+	virtual int isPartialApplication();
 } ;
 
 struct PyrSetterNode : public PyrCallNodeBase {
@@ -440,10 +438,12 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode *cnode, int *varIndex, PyrC
 bool findSpecialClassName(PyrSymbol *className, int *index);
 int getIndexType(PyrClassNode *classnode);
 
-void compileIfMsg(PyrCallNode* node);
-void compileIfNilMsg(PyrCallNode* node, bool flag);
-void compileWhileMsg(PyrCallNode* node);
-void compileLoopMsg(PyrCallNode* node);
+void compileAnyIfMsg(PyrCallNodeBase2* node);
+void compileIfMsg(PyrCallNodeBase2* node);
+void compileIfNilMsg(PyrCallNodeBase2* node, bool flag);
+void compileCaseMsg(PyrCallNodeBase2* node);
+void compileWhileMsg(PyrCallNodeBase2* node);
+void compileLoopMsg(PyrCallNodeBase2* node);
 void compileAndMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileOrMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileQMsg(PyrParseNode* arg1, PyrParseNode* arg2);

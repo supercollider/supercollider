@@ -128,9 +128,7 @@ void PyrCallNode::dump(int level)
 void PyrBinopCallNode::dump(int level)
 {
 	postfl("%2d BinopCall '%s'\n", level, mSelector->mSlot.us->name);
-	DUMPNODE(mArg1, level+1);
-	DUMPNODE(mArg2, level+1);
-	DUMPNODE(mArg3, level+1);
+	DUMPNODE(mArglist, level+1);
 	DUMPNODE(mNext, level);
 }
 
@@ -544,7 +542,8 @@ bool postString(PyrSlot *slot, char *str)
 			sprintf(str, "%X", slot->ui);
 			break;
 		default :
-			g_fmt(str, slot->uf);
+			sprintf(str, "%.14g", slot->uf);
+			//g_fmt(str, slot->uf);
 			break;
 	}
 	return res;

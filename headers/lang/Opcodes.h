@@ -224,37 +224,39 @@ enum {
 };	
 
 enum {
-	opmNew,			// 0
+	opmNew,
 	opmInit,
 	opmAt,
 	opmPut,
 	opmNext,
-	opmReset,		// 5
-	opmValue,		
+	opmReset,
+	opmValue,
 	opmCopyToEnd,		// used by multi assign
 	opmAdd,					// used by dynamic list
 	//opmIsNil,
-	//opmNotNil,		// 10
+	//opmNotNil,		
 	opmSize,		
 	opmClass,
 	opmIf,
 	opmWhile,		
-	opmFor,			// 15
+	opmFor,			
 	opmAnd,			
 	opmOr,
+	opmCase,
+	//opmSwitch,
 	opmIdentical,
 	opmNotIdentical,
-	opmPrint,		// 20
+	opmPrint,		
 	opmRemove,
 	opmIndexOf,
 	opmWrapAt,
 	opmClipAt,
-	opmFoldAt,		// 25
+	opmFoldAt,
 	opmWrapPut,
 	opmClipPut,
 	opmFoldPut,
 	opmDo,
-	opmCollect,		// 30
+	opmCollect,
 	opmSelect, 
 	opmReject,
 	opmAny,
@@ -354,6 +356,8 @@ enum {
 	selWhile, 
 	selAnd,
 	selOr,
+	selCase,
+	selSwitch,
 	selLoop,
 	selSuperNew,
 	selQuestionMark,

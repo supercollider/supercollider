@@ -219,7 +219,15 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			post("       PushInstVar '%s'\n",
 				theClass->instVarNames.uosym->symbols[op1&15]->name);
 			break;
-		case 32 :	case 33 :	case 34 :	case 35 :  
+			
+		case 32 :	
+			op2 = *ip++;
+			op3 = *ip++;
+			jmplen = (op2<<8) | op3;
+			post(" %02X %02X JumpIfTrue %d  (%d)\n", op2, op3, jmplen, n + jmplen + 3);
+			break;
+		
+		case 33 :	case 34 :	case 35 :  
 		case 36 :	case 37 :	case 38 :	case 39 :  
 			op2 = op1 & 15; // get temp var level
 
