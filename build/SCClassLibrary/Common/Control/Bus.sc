@@ -52,7 +52,7 @@ Bus {
 	}	
 	getn { arg count, action;
 		OSCpathResponder(server.addr,['/c_setn',index],{arg time, r, msg; 
-			action.value(msg.copyToEnd(4)); r.remove } ).add; 
+			action.value(msg.copyToEnd(3)); r.remove } ).add; 
 		server.listSendMsg(["/c_getn",index, count]);
 	}
 
