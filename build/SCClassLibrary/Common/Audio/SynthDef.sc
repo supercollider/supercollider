@@ -65,11 +65,11 @@ SynthDef {
 			value = values.at(i);
 			if (c == $i && { c2 == $_ }, {
 				irnames = irnames.add(name);
-				irvalues = irvalues.add(value.asFloat);
+				irvalues = irvalues.add(value);
 				irpositions = irpositions.add(i);
 			},{
 				krnames = krnames.add(name);
-				krvalues = krvalues.add(value.asFloat);
+				krvalues = krvalues.add(value);
 				krpositions = krpositions.add(i);
 			});
 		});
@@ -131,7 +131,7 @@ SynthDef {
 
 		file.putInt16(controls.size);
 		controls.do({ arg item;
-			file.putFloat(item);
+			file.putFloat(item.asFloat);
 		});
 				
 		file.putInt16(controlNames.size);
