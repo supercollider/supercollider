@@ -94,17 +94,39 @@ inline static double AudioConvertHostTimeToNanos(int64 frameTime)
 #endif // SC_AUDIO_API_JACK
 
 #if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
-inline static int64 AudioGetCurrentHostTime()
+
+static inline int64 GetCurrentOSCTime()
 {
+/*	struct timeval tv;
+	uint64 s, f;
+	gettimeofday(&tv, 0); 
+
+	s = (uint64)tv.tv_sec + (uint64)kSECONDS_FROM_1900_to_1970;
+	f = (uint64)((double)tv.tv_usec * kMicrosToOSCunits);
+
+	return (s << 32) + f;
+*/
+// TODO
     return 0;
 }
 
-inline static double AudioConvertHostTimeToNanos(int64 frameTime)
+int32 timeseed()
 {
-    return 0.0;
+	int64 time = GetCurrentOSCTime();
+	return Hash((int32)(time >> 32) + Hash((int32)time));
+}
+
+int64 oscTimeNow()
+{
+	return GetCurrentOSCTime();
+}
+
+void initializeScheduler()
+{
 }
 #endif // SC_AUDIO_API_PORTAUDIO
 
+#if (SC_AUDIO_API == SC_AUDIO_API_COREAUDIO) || (SC_AUDIO_API == SC_AUDIO_API_JACK)
 int32 timeseed()
 {
 	static int32 count = 0;
@@ -181,6 +203,8 @@ void initializeScheduler()
 	pthread_create (&resyncThread, NULL, resyncThreadFunc, (void*)0);
 	set_real_time_priority(resyncThread);
 }
+
+#endif // SC_AUDIO_API_COREAUDIO
 
 // =====================================================================
 // Packets (Common)
