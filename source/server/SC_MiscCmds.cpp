@@ -623,7 +623,7 @@ SCErr meth_n_after(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 		Group *prevGroup = node->mParent;
 		
 		Node_Remove(node);
-		Node_AddBefore(node, afterThisOne);
+		Node_AddAfter(node, afterThisOne);
 	
 		if (node->mParent != prevGroup) {
 			Node_StateMsg(node, kNode_Move);
