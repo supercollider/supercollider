@@ -219,6 +219,7 @@ Collection {
 	asSortedList { ^SortedList.new(this.size).addAll(this); }
 	
 	printAll { this.do({ arg item; item.postln; }); } // convenience method
+	dumpAll { this.do({ arg item; item.dump; }); } // convenience method
 	
 	printOn { arg stream;
 		if (stream.atLimit, { ^this });
