@@ -380,18 +380,16 @@ Synth : Node {
 	
 		
 	*after { arg aNode,defName,args;	
-		^this.prNew(defName, aNode.server).addAfter(aNode,args) 
+		^this.new(defName, args, aNode, \addAfter);
 	}
 	*before {  arg aNode,defName,args;
-		^this.prNew(defName, aNode.server).addBefore(aNode,args) 
+		^this.new(defName, args, aNode, \addBefore); 
 	}
 	*head { arg aGroup,defName,args; 
-		aGroup = aGroup.asGroup;
-		^this.prNew(defName, aGroup.server).addToHead(aGroup,args) 
+		^this.new(defName, args, aGroup, \addToHead); 
 	}
 	*tail { arg aGroup,defName,args; 
-		aGroup = aGroup.asGroup;
-		^this.prNew(defName, aGroup.server).addToTail(aGroup,args) 
+		^this.new(defName, args, aGroup, \addToTail);  
 	}
 	
 	
