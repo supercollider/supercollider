@@ -8,8 +8,8 @@ Stream : AbstractFunction {
 	value { arg inval; ^this.next(inval) }
 	valueArray { ^this.next }
 	
-	nextN { arg n;
-		^Array.fill(n, { this.next; });
+	nextN { arg n, inval;
+		^Array.fill(n, { this.next(inval) });
 	}
 	all {
 		// don't do this on infinite streams.
@@ -104,6 +104,7 @@ Stream : AbstractFunction {
 			{ this.reset; stream.reset; }
 		);
 	}
+	
 	interlace { arg function, stream;
 		// interlace with another stream
 		var nextx = this.next;
@@ -126,6 +127,8 @@ Stream : AbstractFunction {
 		});
 	}
 	
+	<> { arg stream; ^CompositeStream.new(this, stream) }
+
 	++ { arg stream; ^this.appendStream(stream) }
 	
 	appendStream { arg stream;
@@ -151,11 +154,25 @@ Stream : AbstractFunction {
 	composeUnaryOp { arg argSelector;
 		^UnaryOpStream.new(argSelector, this)
 	}
-	composeBinaryOp { arg argSelector, argStream;
-		^BinaryOpStream.new(argSelector, this, argStream)
+	composeBinaryOp { arg argSelector, argStream, adverb;
+		if(adverb.isNil) {
+			^BinaryOpStream.new(argSelector, this, argStream)
+		} {
+			if (adverb == 'x') {
+				^BinaryOpXStream.new(argSelector, this, argStream);
+			};
+		};
+		^nil
 	}
-	reverseComposeBinaryOp { arg argSelector, argStream;
-		^BinaryOpStream.new(argSelector, argStream, this)
+	reverseComposeBinaryOp { arg argSelector, argStream, adverb;
+		if(adverb.isNil) {
+			^BinaryOpStream.new(argSelector, argStream, this)
+		} {
+			if (adverb == 'x') {
+				^BinaryOpXStream.new(argSelector, argStream, this);
+			};
+		};
+		^nil
 	}
 	composeNAryOp { arg argSelector, anArgList;
 		^NAryOpStream.new(argSelector, this, anArgList);
@@ -192,10 +209,10 @@ Stream : AbstractFunction {
 	}
 	
 	constrain { arg sum, tolerance=0.001;
-		^r {
+		^r { arg inval;
 			var delta, elapsed = 0.0, nextElapsed;
 			loop ({
-				delta = this.next;
+				delta = this.next(inval);
 				if(delta.isNil) { 
 					(sum - elapsed).yield; 
 					nil.alwaysYield 
