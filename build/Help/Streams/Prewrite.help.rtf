@@ -37,6 +37,7 @@ arrays of elements starting with the values in the
 		elem2 -> [ otherElements ],\
 		elem2 -> [ otherElements ]\
 	]\
+the examples use  the shortcut for IdentityDictionary.\
  _________________________________________________\
  \
  \
@@ -44,11 +45,10 @@ arrays of elements starting with the values in the
 
 \f2\fs18 \cf0 (\
 a = \cf2 Prewrite\cf0 (0, \cf3 //start with 0\
-\cf0  		\cf2 IdentityDictionary\cf0 [\
- 			0 -> #[2,0],\
- 			1 -> #[0,0,1],\
- 			2 -> #[1,0,1]\
- 		],4);\
+\cf0  		\cf2 (\cf0 	0: #[2,0],\
+ 			1: #[0,0,1],\
+ 			2: #[1,0,1]\
+ 		), 4);\
 x = a.asStream;\
 30.do(\{ x.next.postln \});\
 )\
@@ -71,17 +71,14 @@ Prewrite used as a sequence of pitches:\
 \
 \
 (\
-a = \cf2 Prewrite\cf0 (0, \cf3 //start with 0\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0  		\cf2 IdentityDictionary\cf0 [\
- 			0 -> #[2,0],\
- 			1 -> #[0,0,1],\
- 			2 -> #[1,0,1]\
- 		],4).asStream;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+a = \cf2 Prewrite\cf0 (0,\cf3 	\cf2 (\cf0 	0: #[2,0],\
+ 					1: #[0,0,1],\
+ 					2: #[1,0,1]\
+ 				), \
+ 			4).asStream;\
 \cf2 Routine\cf0 (\{\
 	loop(\{\
-	\cf2 Synth\cf0 (\cf4 "help-sinegrain"\cf0 , [\cf5 \\freq\cf0 , (a.next*5+70).midicps]);\
+	\cf2 Synth\cf0 (\cf4 "help-sinegrain"\cf0 , [\cf5 \\freq\cf0 , (a.next * 5 + 70).midicps]);\
 	0.1.wait;\
 	\})\
 \}).play;\
