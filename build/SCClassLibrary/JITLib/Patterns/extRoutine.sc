@@ -18,6 +18,9 @@
 	repeat { arg repeats = inf;
 		^Ploop(this, repeats)
 	}
+	limit { arg n=1;
+		^Pfin(n.asStream, this.asStream)
+	}
 
 }
 

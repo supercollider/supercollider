@@ -69,21 +69,6 @@ ResetStream : Pstr {
 
 }
 
-//some more small streams returning a limited number (count) of elements each
-
-Sfin : Stream { 
-	*new { arg count, pattern;
-		^Pfin(count.asStream, pattern.asStream)
-	}
-}
-
-Sbrown : Sfin {
-	*new { arg count, lo=0.0, hi=1.0,  step=0.125;
-		^super.new(count, Pbrown(lo, hi, step, inf))
-	}
-
-}
-
 
 
 
