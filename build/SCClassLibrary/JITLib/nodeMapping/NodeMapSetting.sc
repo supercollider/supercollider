@@ -24,17 +24,21 @@ NodeMapSetting {
 	copy {
 		^this.class.new(key, value, bus)
 	}
+	
+	isEmpty { ^value.isNil && bus.isNil }
 }
 
 
 ProxyNodeMapSetting : NodeMapSetting {
-	var <>channelOffset=0;
+	var <>channelOffset=0, <>lag;
 	
 	addBusToBundle { arg bundle, nodeID;
 		if(bus.index.notNil, {
 			bundle.add([14, nodeID, key, bus.index + channelOffset])
 		})
 	}
-
+	isEmpty {
+		^lag.isNil and: { super.isEmpty }
+	}
 
 }
