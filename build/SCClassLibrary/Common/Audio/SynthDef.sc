@@ -207,5 +207,10 @@ SynthDef {
 			[i, ugen, ugen.rate, ugen.synthIndex, inputs].postln;
 		});
 	}
+	
+	load { arg server;
+		this.writeDefFile;
+		server.loadSynthDef(name);
+	}
 }
 

@@ -19,29 +19,25 @@ s = \cf2 Server\cf0 .local; \cf3 // get the default server\
 (\
 \cf2 SynthDef\cf0 (\cf4 "pink"\cf0 , \{\
 	\cf2 Out\cf0 .ar(0, \cf2 PinkNoise\cf0 .ar(0.1));\
-\}).writeDefFile;\
-s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/pink.scsyndef"\cf0 );\
+\}).load(s);\
 )\
 \
 (\
 \cf2 SynthDef\cf0 (\cf4 "white"\cf0 , \{\
 	\cf2 Out\cf0 .ar(0, \cf2 WhiteNoise\cf0 .ar(0.1));\
-\}).writeDefFile;\
-s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/white.scsyndef"\cf0 );\
+\}).load(s);\
 )\
 \
 (\
 \cf2 SynthDef\cf0 (\cf4 "brown"\cf0 , \{\
 	\cf2 Out\cf0 .ar(0, \cf2 BrownNoise\cf0 .ar(0.1));\
-\}).writeDefFile;\
-s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/brown.scsyndef"\cf0 );\
+\}).load(s);\
 )\
 \
 (\
 \cf2 SynthDef\cf0 (\cf4 "gray"\cf0 , \{\
 	\cf2 Out\cf0 .ar(0, \cf2 GrayNoise\cf0 .ar(0.1));\
-\}).writeDefFile;\
-s.sendMsg(\cf4 "/d_load"\cf0 , \cf4 "synthdefs/gray.scsyndef"\cf0 );\
+\}).load(s);\
 )\
 \
 (\
