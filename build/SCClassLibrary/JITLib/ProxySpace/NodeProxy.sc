@@ -276,7 +276,7 @@ NodeProxy : BusPlug {
 	
 	end {
 		var dt;
-		dt = this.fadeTime ? 0.01;
+		dt = this.fadeTime;
 		Routine({ this.free; (dt + server.latency).wait; this.stop;  }).play;
 	}
 	
@@ -284,7 +284,7 @@ NodeProxy : BusPlug {
 		this.set(\fadeTime, t);
 	}
 	fadeTime {
-		^nodeMap.at(\fadeTime).value;
+		^nodeMap.at(\fadeTime).value ? 0.02;
 	}
 	
 	generateUniqueName {
@@ -435,11 +435,15 @@ NodeProxy : BusPlug {
 	}
 	
 	lag { arg ... args;
-		nodeMap.putRates(args);
+		nodeMap.setRates(args);
 		this.rebuild;
 	}
 	unlag { arg ... args;
 		nodeMap.removeRates(args);
+		this.rebuild;
+	}
+	setRates { arg ... args;
+		nodeMap.setRates(args);
 		this.rebuild;
 	}
 		
@@ -778,22 +782,19 @@ NodeProxy : BusPlug {
 	////////////behave like my group////////////
 	
 	isPlaying { ^group.isPlaying }
-	free {
+	free { arg all=true;
+		var bundle;
 		if(this.isPlaying, {	
-		
-			this.release;
-			SystemClock.sched((this.fadeTime ? 1) + server.latency, { group.free })
+			bundle = MixedBundle.new;
+			this.stopAllToBundle(bundle);
+			if(all) { bundle.add(["/n_free", group.nodeID]) };
+			bundle.send(server);
 		})
  	}
-	freeAll { this.release }
 	
-	run { arg flag=true;
-		if(this.isPlaying, { group.run(flag) });
-	}
+	release { this.free(false) }
 	
 	
-	
-
 	set { arg ... args;
 		nodeMap.performList(\set, args);
 		if(this.isPlaying, { group.performList(\set, args) });
@@ -834,16 +835,6 @@ NodeProxy : BusPlug {
 		if(this.isPlaying, {
 			keys.do({ arg key; group.map(key,-1) });
 			nodeMap.sendToNode(group) 
-		});
-	}
-	
-	release {
-		var bundle;
-		bundle = MixedBundle.new;
-		if(this.isPlaying, { 
-			this.stopAllToBundle(bundle);
-			bundle.schedSend(server)
-
 		});
 	}
 	
@@ -900,7 +891,7 @@ NodeProxy : BusPlug {
 	
 	gateAt { arg key, level=1.0, dur=1.0;
 		var oldLevel;
-		oldLevel = nodeMap.valueAt(key);
+		oldLevel = nodeMap.at(key).value;
 		this.set(key, level); 
 		SystemClock.sched(dur, {
 			if(oldLevel.notNil, { this.set(key, oldLevel) }, { this.unset(key) }); 

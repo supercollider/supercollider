@@ -20,7 +20,7 @@ NodeMap {
 	
 	map { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			this.at(args.at(i)).bus_(args.at(i+1));
+			this.get(args.at(i)).bus_(args.at(i+1));
 		});
 		upToDate = false;
 	}
@@ -40,14 +40,14 @@ NodeMap {
 	
 	setn { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			this.at(args.at(i)).value_(args.at(i+1).asCollection);
+			this.get(args.at(i)).value_(args.at(i+1).asCollection);
 		});
 		upToDate = false;
 	}
 	
 	set { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			this.at(args.at(i)).value_(args.at(i+1));
+			this.get(args.at(i)).value_(args.at(i+1));
 		});
 		upToDate = false;
 		
@@ -82,7 +82,7 @@ NodeMap {
 	}
 	
 	
-	at { arg key;
+	get { arg key;
 		var setting;
 		setting = settings.at(key);
 		if(setting.isNil, { 
@@ -92,8 +92,8 @@ NodeMap {
 		^setting
 	}
 	
-	valueAt { arg key;
-		^settings.at(key).value
+	at { arg key;
+		^settings.at(key)
 	}
 	
 	settingKeys { 
@@ -166,19 +166,15 @@ ProxyNodeMap : NodeMap {
 			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
 		}
 		
-		putRates { arg args;
+		setRates { arg args;
 			forBy(0, args.size-1, 2, { arg i;
-				this.at(args.at(i)).rate_(args.at(i+1));
-			});
-		}
-		removeRates { arg args;
-			args.do({ arg key;
-				var s;
-				s = settings.at(key); 
-				if(s.notNil, { 
-					s.rate_(nil); 
-					if(s.isEmpty, { settings.removeAt(key) })
-				});
+				var key, rate, setting;
+				key = args[i];
+				setting = this.get(key);
+				rate = args[i+1];
+				if(rate.isNil and: { setting.notNil } and: { setting.isEmpty })
+				{ settings.removeAt(key) }
+				{ setting.rate_(rate) };
 			});
 		}
 		
@@ -208,7 +204,7 @@ ProxyNodeMap : NodeMap {
 					min(key.size, mapProxy.numChannels ? 1).do({ arg chan;
 						var theKey;
 						theKey = key.at(chan);
-						this.at(theKey).bus_(mapProxy).channelOffset_(chan);
+						this.get(theKey).bus_(mapProxy).channelOffset_(chan);
 						parents = parents.put(theKey, mapProxy);
 					});
 				}, {

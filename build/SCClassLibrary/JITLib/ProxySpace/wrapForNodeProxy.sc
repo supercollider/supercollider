@@ -226,11 +226,10 @@
 	}
 	
 	makeProxyControl { arg channelOffset=0, proxy;
-			
+			var player;
 			//this.prepareToPlayWithProxy(proxy); //do it here for now.
-			^this.proxyControlClass.new(this.wrapInFader(proxy), channelOffset); 
-			//^this.proxyControlClass.new(this, channelOffset); 
-
+			player = if(proxy.isNeutral) { this } { this.wrapInFader(proxy) }Õ;
+			^this.proxyControlClass.new(player, channelOffset); 
 	}
 	
 	wrapInFader { arg bus;
@@ -247,10 +246,11 @@
 	
 }
 
+
 +Instr {
 	
 	makeProxyControl { arg channelOffset=0, proxy;
-		^Patch(this).makeProxyControl(channelOffset, proxy)
+		^Patch(this.name).makeProxyControl(channelOffset, proxy)
 	}
 	
 }

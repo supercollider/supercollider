@@ -91,7 +91,7 @@ MixedBundle : OSCBundle {
 	send { arg server, time;
 			this.sendPrepare(server);
 			SystemClock.sched(preparationTime, {
-				this.sendAndEvaluate(server, server.latency);
+				this.sendAndEvaluate(server, time);
 				nil
 			})
 	}

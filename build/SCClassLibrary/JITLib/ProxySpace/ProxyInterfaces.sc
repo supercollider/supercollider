@@ -18,6 +18,7 @@ AbstractPlayControl {
 	build { ^true }
 	pause { this.stop } 
 	resume { this.start }
+	free {}
 	synth { ^nil }
 	
 	readyForPlay { ^true }
@@ -36,7 +37,7 @@ AbstractPlayControl {
 	}
 	
 	resumeToBundle { arg bundle, args;
-		//...//
+		bundle.addAction(this, \resume);
 	}
 	
 	stopToBundle { arg bundle;
@@ -48,15 +49,10 @@ AbstractPlayControl {
 		this.stopToBundle(bundle);
 	}
 	
-	play {
-		this.subclassResponsibility(thisMethod);
-	}
+	play { this.subclassResponsibility(thisMethod) }
+	stop { this.subclassResponsibility(thisMethod) }
 	
-	stop {
-		this.subclassResponsibility(thisMethod);
-	}
 	
-	free {}
 	
 }
 
@@ -76,8 +72,8 @@ StreamControl : AbstractPlayControl {
 	
 	free { stream.stop; stream = nil }
 	
-	playToBundle { arg bundle, args; 
-		if(paused.not and: {stream.isPlaying.not}, {
+	playToBundle { arg bundle; 
+		if(paused.not and: { stream.isPlaying.not }, {
 			bundle.addAction(this, \play); //no latency (latency is in stream already)
 		})
 		^nil //return a nil object instead of a synth
@@ -96,16 +92,16 @@ StreamControl : AbstractPlayControl {
 	
 }
 
-
 SynthControl : AbstractPlayControl {
-	var <synth, >canReleaseSynth=true, >canFreeSynth=true;
+	var <server, <nodeID;
+	var >canReleaseSynth=true, >canFreeSynth=true;
 	
 	
 	writeDef { }
 	
 	sendDefToBundle {} //assumes that SynthDef is loaded in the server 
 	name { ^source }
-	clear { synth = nil }
+	clear { nodeID = nil }
 	build { arg proxy;
 		^proxy.initBus(proxy.rate ? \audio, proxy.numChannels ? 2);
 	}
@@ -115,45 +111,44 @@ SynthControl : AbstractPlayControl {
 		bundle.add(synthMsg);
 	}
 	
-	playToBundle { arg bundle, extraArgs, target, addAction=\addToTail;
-		synth = Synth.newToBundle(bundle, this.name, extraArgs, target.asTarget, addAction);
-		if(paused) { synth.msgToBundle(bundle, "/n_run", #[0])};
-		synth.isPlaying = true;
-		^synth
+	playToBundle { arg bundle, extraArgs, target, addAction=1;
+		target = target.asTarget;
+		server = target.server;
+		nodeID = server.nextNodeID;
+		bundle.add([9, this.name, nodeID, addAction, target.nodeID]++extraArgs);
+		if(paused) { bundle.add(["/n_run", nodeID, 0]) };
+		^nodeID
 	}
-	
 	
 	stopToBundle { arg bundle;
-		if(synth.isPlaying, {
+		if(nodeID.notNil, {
 			if(this.canReleaseSynth, {
-					bundle.add([15, synth.nodeID, \gate, 0.0]); //to be sure.
+					bundle.add([15, nodeID, \gate, 0.0]); //to be sure.
 			}, {
-					if(this.canFreeSynth.not, { bundle.add([11, synth.nodeID]) }); //"/n_free"
+					if(this.canFreeSynth.not, { bundle.add([11, nodeID]) }); //"/n_free"
 			});
-			synth.isPlaying = false;
+			nodeID = nil;
 		});
-		
-
 	}
+	// pauseToBundle ?
 
 	play { arg group, extraArgs;
 		var bundle;
 		bundle = MixedBundle.new;
 		this.playToBundle(bundle, extraArgs, group);
 		bundle.send(group.server)
-		^synth
 	}
 	stop { arg latency;
 		var bundle;
 		bundle = List.new;
 		this.stopToBundle(bundle);
-		synth.server.listSendBundle(latency, bundle)
+		server.listSendBundle(latency, bundle)
 	}
 			
 	stopClientToBundle { }  // used in shared node proxy
 	
-	pause { if(synth.notNil) {synth.run(false)} }
-	resume { if(synth.notNil) { synth.run(true) } }
+	pause { if(nodeID.notNil) { server.sendMsg("/n_run", nodeID, 0) }; paused = true; }
+	resume { if(nodeID.notNil) { server.sendMsg("/n_run", nodeID, 1) }; paused = false; }
 	canReleaseSynth { ^canReleaseSynth }
 }
 
@@ -216,30 +211,34 @@ CXPlayerControl : AbstractPlayControl {
 	//there is no bundle passing in build
 	
 	build { arg proxy;
-		var bus;
-		if(proxy.isNeutral.not, {Êbus = proxy.asBus });
+		var bus, ok;
+		if(proxy.isNeutral) {
+			source.prepareForPlay; // first initialization for lazy rate detection
+			ok = proxy.initBus(source.rate ? 'audio', source.numChannels ? 2);
+			source.free;
+			
+		};
+		bus = proxy.asBus;
 		source.prepareForPlay(nil, true, bus);
+		ok = source.readyForPlay;
 		paused = proxy.paused;
-		^proxy.initBus(source.rate ? 'audio', source.numChannels ? 2)
+		^ok
 	}
 	
-	playToBundle { arg bundle, extraArgs, proxy, addAction=\addToHead;
+	playToBundle { arg bundle, extraArgs, proxy, addAction;
 		
 		// we'll need channel offset maybe.
-		if(source.patchOut.isNil)
-		 { source.prepareForPlay(nil, true, proxy.asBus) };
-		source.spawnToBundle(bundle); //won't work with saved proxy!
-		bundle.addSchedFunction({ this.moveIn(proxy) }, 0.3);
+		source.prepareToBundle(proxy.group, bundle);
+		source.spawnOnToBundle(proxy.group, proxy, bundle);
+		// this.moveToGroupToBundle(bundle, proxy.group);
 		// if(paused) { bundle.addAction(source, \pause) };
 		^nil
 		
 		
 	}
 	 
-	stopToBundle { arg bundle;
-		//source.stopToBundle(bundle);
-		source.releaseToBundle(nil, bundle);
-		//bundle.addFunction({ source.release;  });  //kompromiss.
+	stopToBundle { arg bundle, fadeTime=0.02;
+		source.releaseToBundle(fadeTime, bundle);
 	}
 	freeToBundle {}
 	
@@ -255,21 +254,18 @@ CXPlayerControl : AbstractPlayControl {
 	}
 	pause { source.stop }
 	resume { source.play }
-	moveIn {}
+	// moveToGroupToBundle {}
 	
 }
 
 CXSynthPlayerControl : CXPlayerControl {
-	
+		
 	/*
-	stopToBundle { arg bundle, fadeTime=0.5;
-		//	source.releaseAndFreeToBundle(fadeTime, bundle); //free it each time for now.
-		source.releaseToBundle(nil, bundle);
+	moveToGroupToBundle { arg bundle, group; 
+		if(group.isPlaying) {
+			bundle.add(["/g_tail", group.nodeID, source.children[0].synth.nodeID]);
+		}
 	}
-	freeToBundle {}
 	*/
-	// ??
-	moveIn { arg proxy; source.children[0].synth.moveToTail(proxy.group); }
-	
-}
 
+}

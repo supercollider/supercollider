@@ -36,16 +36,16 @@ NodeMapSetting {
 
 
 ProxyNodeMapSetting : NodeMapSetting {
-	var <>channelOffset=0, <>lag;
+	var <>channelOffset=0, <>rate;
 	
 	
 	updateBusToNodeMap { arg nodeMap;
 		nodeMap.mapArgs = nodeMap.mapArgs.addAll([key, bus.index +  channelOffset]);
 	}
 	isEmpty {
-		^lag.isNil and: { super.isEmpty }
+		^rate.isNil and: { super.isEmpty }
 	}
-	storeArgs { ^[value, bus, channelOffset, lag] }
+	storeArgs { ^[value, bus, channelOffset, rate] }
 
 
 }
