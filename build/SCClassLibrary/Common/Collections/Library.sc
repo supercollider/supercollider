@@ -80,7 +80,24 @@
 				this.prPutTree(keys ++ [key],item);
 			})
 		})
-	}	}
+	}
+	leaves { arg startAt;
+		if(startAt.isNil,{
+			startAt = dictionary;
+		},{
+			startAt = this.performList(\at,startAt);
+		});
+		^this.prNestedValuesFromDict(startAt);
+	}
+	prNestedValuesFromDict { arg dict;
+		^dict.values.collect({ arg thing;
+			if(thing.isKindOf(IdentityDictionary),{
+				this.prNestedValuesFromDict(thing)
+			},{
+				thing
+			})
+		})
+	}}
 
 
 Library : MultiLevelIdentityDictionary 
