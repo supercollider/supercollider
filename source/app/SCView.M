@@ -2560,7 +2560,10 @@ int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr)
     if (isKindOfSlot(slot, class_array)) {
             len = slot->uo->size;
             *arr = new double[len];
-            memcpy(*arr, slot->uo->slots, len * sizeof(double));
+           // memcpy(*arr, slot->uo->slots, len * sizeof(double));
+			for(int i =0; i<len; i++){
+				slotDoubleVal(slot->uo->slots+i, *arr+i);
+			}
             return errNone;
     }
     return errWrongType;
@@ -2607,7 +2610,7 @@ void SCMultiSliderView::draw(SCRect inDamage)
     CGContextClipToRect(cgc, rect);
     double * vals;
     vals = mYValues;
-
+	setVisibleSize();
     int xpixels = mVisibleSize;
     int xstart = mStartIndex;
        
@@ -2990,7 +2993,13 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             mTabSize = slot->uo->size;
         } else {
             int len = slot->uo->size;
-            memcpy(mYValues, slot->uo->slots, len * sizeof(double));
+			double val;
+           // memcpy(mYValues, slot->uo->slots, len * sizeof(double));
+			for(int i =0; i<len; i++){
+				slotDoubleVal(slot->uo->slots+i, &val);
+				mYValues[i] = val;
+			}
+			
         }
         setVisibleSize();
         refresh();
