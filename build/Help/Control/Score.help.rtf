@@ -23,9 +23,8 @@ The list should be in the following format, with times in ascending order. Bundl
 ]\
 \
 For NRT synthesis the final event should a dummy event, after which synthesis will cease. It is thus important that this event be timed to allow previous events to complete.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 \
+\f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs28 \cf0 \ul Class Methods\
@@ -110,9 +109,8 @@ For NRT synthesis the final event should a dummy event, after which synthesis wi
 \f0\b Server
 \f1\b0  will be used.
 \f0\b \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \
+\f1\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs28 \cf0 \ul Instance Methods\
@@ -339,12 +337,9 @@ z.play;\
 \f2\b0\fs18 \ulnone \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // render the pattern to aiff\cf0 \
+\cf2 // render the pattern to aiff (3 sec)\cf0 \
 \
-p.render(\cf4 "asScore-Help.aif"\cf0 , 3);\
-\
-\
-\cf2 // todo: remove the osc file after rendering.\cf0 \
+p.render(\cf4 "asScore-Help.aif"\cf0 , 3.0);\
 \
 \
 \
