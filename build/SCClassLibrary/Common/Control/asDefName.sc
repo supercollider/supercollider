@@ -46,10 +46,12 @@
 		^def.name
 	}
 	asSynthDef {
-		// could cycle through some integers per session
-		// so these get overwritten.
-		// can we save and load to /tmp ?
-		^SynthDef("def" ++ this.identityHash.asString,{
+		//TODO need to stream the def straight to the server
+		// this overwrites starting at 0 each time you compile SC
+		var cycle;
+		cycle = Library.at(Function,'__asSynthDef__') ? 0;
+		Library.put(Function,'__asSynthDef__', cycle + 1);
+		^SynthDef("__asSynthDef__" ++ cycle.asString,{
 			var result,rate;
 			result = this.value;
 			rate = result.rate;
