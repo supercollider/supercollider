@@ -132,12 +132,15 @@ File : UnixFILE {
 	
 	classvar <openDialogs;
 	
-// not yet implemented
-//	*openDialog { arg prompt, successFunc, cancelFunc;
-//		var path;
-//		path = this.prOpenDialog(prompt);
-//		if (path.notNil, { successFunc.value(path) },{ cancelFunc.value(path) });
-//	}
+	*openDialog { arg prompt, successFunc, cancelFunc;
+		var path;
+		// replace with platform independant stuff later
+		CocoaDialog.getPaths({arg paths; successFunc.value(paths.first) },cancelFunc,20);
+		//		path = this.prOpenDialog(prompt);
+		//		if (path.notNil, { successFunc.value(path) },{ cancelFunc.value(path) });
+	}
+	
+//  not yet implemented
 //	*saveDialog { arg prompt, defaultName, successFunc, cancelFunc;
 //		var path;
 //		path = this.prSaveDialog(prompt, defaultName);
