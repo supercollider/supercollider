@@ -2191,7 +2191,7 @@ SCView* NewSCButton(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds
 SCButton::SCButton(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: SCView(inParent, inObj, inBounds), mNumStates(0), mStates(0), mPushed(false)
 {
-	setValue(0, false);
+	setValue(0, false, 0);
         strcpy(mFontName, "Helvetica");
         mFontSize = 12.;
 }
@@ -2231,14 +2231,16 @@ void SCButton::draw(SCRect inDamage)
     }
 }
 
-bool SCButton::setValue(int inValue, bool send)
+bool SCButton::setValue(int inValue, bool send, int modifiers)
 {
     bool changed = inValue != mValue;
+    PyrSlot args[1];
     if (inValue < 0 || inValue >= mNumStates) inValue = 0;
     if (inValue != mValue || mNumStates < 2) {
         mValue = inValue;
         refresh();
-        if (send) sendMessage(s_doaction, 0, 0, 0);
+        SetInt(args, modifiers);
+        if (send) sendMessage(s_doaction, 1, args, 0);
     }
     return changed;
 }
@@ -2260,7 +2262,7 @@ void SCButton::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 void SCButton::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
     bool inside = hit(where);
-    if (inside) setValue(mValue+1, true);
+    if (inside) setValue(mValue+1, true, modifiers);
     mPushed = false;
 }
 
@@ -2299,7 +2301,7 @@ int SCButton::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             int value;
             err = slotIntVal(slot, &value);
             if (err) return err;
-            bool changed = setValue(value, false);
+            bool changed = setValue(value, false, 0);
             SetBool(slot, changed);
             return errNone;
 	}
