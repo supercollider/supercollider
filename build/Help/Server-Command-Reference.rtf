@@ -911,11 +911,11 @@ These are the currently defined fill routines for use with the
 \f0\b /b_gen
 \f1\b0  command.\
 \
-
-\f0\b Wave Fill Commands\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs20 \cf0 \
+\f0\b \cf0 Wave Fill Commands\
+
+\f1\b0\fs20 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \fs24 \cf0 There are three defined fill routines for sine waves.\
@@ -1001,12 +1001,10 @@ The first float value specifies the amplitude for n = 1, the second float value 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs20 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 Command Numbers\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b\fs24 Command Numbers\
 
-\f1\b0\fs20 \cf0 \
+\f1\b0\fs20 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 These are the currently defined command numbers. More may be added to the end of the list in the future.\
@@ -1016,7 +1014,7 @@ The first float value specifies the amplitude for n = 1, the second float value 
 \pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
 
 \f2 \cf3 \CocoaLigature0 enum\cf0  \{\
-	cmd_none=\cf4 0\cf0 ,\
+	cmd_none = \cf4 0\cf0 ,\
 \
 	cmd_notify = \cf4 1\cf0 ,\
 	cmd_status = \cf4 2\cf0 ,\
@@ -1063,7 +1061,7 @@ The first float value specifies the amplitude for n = 1, the second float value 
 	cmd_b_setn = \cf4 36\cf0 ,\
 	cmd_b_fill = \cf4 37\cf0 ,\
 	cmd_b_gen = \cf4 38\cf0 ,\
-\
+	\
 	cmd_dumpOSC = \cf4 39\cf0 ,\
 \
 	cmd_c_get = \cf4 40\cf0 ,\
@@ -1075,13 +1073,17 @@ The first float value specifies the amplitude for n = 1, the second float value 
 	\
 	cmd_n_query = \cf4 46\cf0 ,\
 	cmd_b_query = \cf4 47\cf0 ,\
+\
 	cmd_n_mapn = \cf4 48\cf0 ,\
 	cmd_s_noid = \cf4 49\cf0 ,\
 \
-	NUMBER_OF_COMMANDS = \cf4 50\cf0 \
-\};\
-\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\ql\qnatural
-
+	cmd_g_deepFree = \cf4 50\cf0 ,\
+	cmd_clearSched = \cf4 51\cf0 ,\
+\
+	cmd_sync = \cf4 52\cf0 ,\
+\
+	NUMBER_OF_COMMANDS = \cf4 53\
+\}
 \f1 \cf0 \CocoaLigature1 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 copyright \'a9 2002 James McCartney\
