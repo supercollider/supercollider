@@ -27,6 +27,24 @@
 #include "SC_HiddenWorld.h"
 #include "SC_Sem.h"
 
+#define GET_COMPLETION_MSG(msg) \
+	mMsgSize = msg.getbsize(); \
+	if (mMsgSize) { \
+		mMsgData = (char*)World_Alloc(mWorld, mMsgSize); \
+		msg.getb(mMsgData, mMsgSize); \
+	}
+
+void PerformCompletionMsg(World *inWorld, OSC_Packet *inPacket);
+
+#define SEND_COMPLETION_MSG \
+	if (mMsgSize) { \
+		OSC_Packet packet; \
+		packet.mData = mMsgData; \
+		packet.mSize = mMsgSize; \
+		packet.mReplyAddr = mReplyAddress; \
+		PerformCompletionMsg(mWorld, &packet); \
+	}
+
 void SndBuf_Init(SndBuf *buf);
 void SndBuf_Init(SndBuf *buf)
 {
@@ -45,7 +63,8 @@ void SndBuf_Init(SndBuf *buf)
 }
 
 SC_SequencedCommand::SC_SequencedCommand(World *inWorld, ReplyAddress *inReplyAddress)
-	: mNextStage(1), mReplyAddress(*inReplyAddress), mWorld(inWorld)
+	: mNextStage(1), mReplyAddress(*inReplyAddress), mWorld(inWorld),
+	mMsgSize(0), mMsgData(0)
 {
 }
 
@@ -174,6 +193,9 @@ int BufAllocCmd::Init(char *inData, int inSize)
 	mBufIndex = msg.geti();
 	mNumFrames = msg.geti();
 	mNumChannels = msg.geti(1);
+		
+	GET_COMPLETION_MSG(msg);
+
 	return kSCErr_None;
 }
 
@@ -197,6 +219,7 @@ bool BufAllocCmd::Stage3()
 {
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
 	*buf = mSndBuf;
+	SEND_COMPLETION_MSG;
 	return true;
 }
 
@@ -282,6 +305,8 @@ int BufFreeCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
+	
+	GET_COMPLETION_MSG(msg);
 
 	return kSCErr_None;
 }
@@ -305,6 +330,7 @@ bool BufFreeCmd::Stage3()
 	SndBuf *buf = World_GetBuf(mWorld, mBufIndex);
 	
 	SndBuf_Init(buf);
+	SEND_COMPLETION_MSG;
 	
 	return true;
 }
@@ -326,6 +352,9 @@ int BufZeroCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
+	
+	GET_COMPLETION_MSG(msg);
+
 	return kSCErr_None;
 }
 
@@ -343,6 +372,7 @@ bool BufZeroCmd::Stage2()
 
 bool BufZeroCmd::Stage3()
 {
+	SEND_COMPLETION_MSG;
 	return true;
 }
 
@@ -369,6 +399,9 @@ int BufAllocReadCmd::Init(char *inData, int inSize)
 	
 	mFileOffset = msg.geti();
 	mNumFrames = msg.geti();
+	
+	GET_COMPLETION_MSG(msg);
+
 	return kSCErr_None;
 }
 
@@ -416,6 +449,7 @@ bool BufAllocReadCmd::Stage3()
 {
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);	
 	*buf = mSndBuf;
+	SEND_COMPLETION_MSG;
 	
 	return true;
 }
@@ -446,6 +480,8 @@ int BufReadCmd::Init(char *inData, int inSize)
 	mNumFrames = msg.geti(-1);
 	mBufOffset = msg.geti();
 	mLeaveFileOpen = msg.geti();
+	
+	GET_COMPLETION_MSG(msg);
 	
 	return kSCErr_None;
 }
@@ -490,6 +526,7 @@ bool BufReadCmd::Stage2()
 
 bool BufReadCmd::Stage3()
 {
+	SEND_COMPLETION_MSG;
 	return true;
 }
 
@@ -524,6 +561,8 @@ int BufWriteCmd::Init(char *inData, int inSize)
 	mNumFrames = msg.geti(-1);
 	mBufOffset = msg.geti();
 	mLeaveFileOpen = msg.geti();
+	
+	GET_COMPLETION_MSG(msg);
 
 	memset(&mFileInfo, 0, sizeof(mFileInfo));
 	return sndfileFormatInfoFromStrings(&mFileInfo, headerFormatString, sampleFormatString);
@@ -571,6 +610,7 @@ bool BufWriteCmd::Stage2()
 
 bool BufWriteCmd::Stage3()
 {
+	SEND_COMPLETION_MSG;
 	return true;
 }
 
@@ -590,6 +630,8 @@ int BufCloseCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
+	
+	GET_COMPLETION_MSG(msg);
 
 	return kSCErr_None;
 }
@@ -611,6 +653,7 @@ bool BufCloseCmd::Stage2()
 
 bool BufCloseCmd::Stage3()
 {
+	SEND_COMPLETION_MSG;
 	return true;
 }
 
@@ -694,6 +737,7 @@ int NotifyCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	mOnOff = msg.geti();
+	
 	return kSCErr_None;
 }
 
@@ -785,8 +829,12 @@ int RecvSynthDefCmd::Init(char *inData, int inSize)
 	sc_msg_iter msg(inSize, inData);
 	
 	int size = msg.getbsize();
+	if (!size) throw kSCErr_WrongArgType;
+	
 	mBuffer = (char*)World_Alloc(mWorld, size);
 	msg.getb(mBuffer, size);
+	
+	GET_COMPLETION_MSG(msg);
 	
 	mDefs = 0;
 	return kSCErr_None;
@@ -812,6 +860,7 @@ bool RecvSynthDefCmd::Stage2()
 bool RecvSynthDefCmd::Stage3()
 {
 	GraphDef_Define(mWorld, mDefs);
+	SEND_COMPLETION_MSG;
 	return true;
 }
 
@@ -834,6 +883,8 @@ int LoadSynthDefCmd::Init(char *inData, int inSize)
 	char *filename = msg.gets();
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 	strcpy(mFilename, filename);
+	
+	GET_COMPLETION_MSG(msg);
 	
 	mDefs = 0;
 	return kSCErr_None;
@@ -859,6 +910,7 @@ bool LoadSynthDefCmd::Stage2()
 bool LoadSynthDefCmd::Stage3()
 {
 	GraphDef_Define(mWorld, mDefs);
+	SEND_COMPLETION_MSG;
 	return true;
 }
 
@@ -881,6 +933,8 @@ int LoadSynthDefDirCmd::Init(char *inData, int inSize)
 	char *filename = msg.gets();
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 	strcpy(mFilename, filename);
+	
+	GET_COMPLETION_MSG(msg);
 	
 	mDefs = 0;
 	return kSCErr_None;
@@ -906,6 +960,7 @@ bool LoadSynthDefDirCmd::Stage2()
 bool LoadSynthDefDirCmd::Stage3()
 {
 	GraphDef_Define(mWorld, mDefs);
+	SEND_COMPLETION_MSG;
 	return true;
 }
 

@@ -75,6 +75,9 @@ protected:
 	ReplyAddress mReplyAddress;
 	World *mWorld;
 	
+	int mMsgSize;
+	char *mMsgData;
+	
 	virtual void CallDestructor()=0;
 };
 

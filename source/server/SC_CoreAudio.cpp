@@ -199,27 +199,62 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 	OSC_Packet *packet = (OSC_Packet*)inMsg->mData;
 	if (!packet) return;
 	
-	// in real time engine, schedule the packet
-	int64 time = *(int64*)(packet->mData + 8);
-	
 	SC_CoreAudioDriver *driver = inMsg->mWorld->hw->mAudioDriver;
 	
 	if (!packet->mIsBundle) {
 		PerformOSCMessage(world, packet->mSize, packet->mData, &packet->mReplyAddr);
-	} else if (time == 0 || time == 1) {
-		PerformOSCBundle(world, packet);
 	} else {
-		if (time < driver->mOSCbuftime) {
-			double seconds = (driver->mOSCbuftime - time)*kOSCtoSecs;
-			scprintf("late %.9f\n", seconds);
-			//FifoMsg outMsg;
+	
+		// in real time engine, schedule the packet
+		int64 time = *(int64*)(packet->mData + 8);
+
+		if (time == 0 || time == 1) {
+			PerformOSCBundle(world, packet);
+		} else {
+			if (time < driver->mOSCbuftime) {
+				double seconds = (driver->mOSCbuftime - time)*kOSCtoSecs;
+				scprintf("late %.9f\n", seconds);
+				//FifoMsg outMsg;
+				
+				//ReportLateness(packet->mReply, seconds)
+			}
 			
-			//ReportLateness(packet->mReply, seconds)
+			SC_ScheduledEvent event(world, time, packet);
+			driver->AddEvent(event);
+			inMsg->mFreeFunc = 0;
 		}
-		
-		SC_ScheduledEvent event(world, time, packet);
-		driver->AddEvent(event);
-		inMsg->mFreeFunc = 0;
+	}
+}
+
+
+void PerformCompletionMsg(World *inWorld, OSC_Packet *inPacket);
+void PerformCompletionMsg(World *inWorld, OSC_Packet *inPacket)
+{
+	bool isBundle = gIsBundle.check((int32*)inPacket->mData);
+	
+	SC_CoreAudioDriver *driver = inWorld->hw->mAudioDriver;
+
+	if (!isBundle) {
+		PerformOSCMessage(inWorld, inPacket->mSize, inPacket->mData, &inPacket->mReplyAddr);
+	} else {
+	
+		// in real time engine, schedule the packet
+		int64 time = *(int64*)(inPacket->mData + 8);
+
+		if (time == 0 || time == 1) {
+			PerformOSCBundle(inWorld, inPacket);
+		} else {
+			if (time < driver->mOSCbuftime) {
+				double seconds = (driver->mOSCbuftime - time)*kOSCtoSecs;
+				scprintf("late %.9f\n", seconds);
+				//FifoMsg outMsg;
+				
+				//ReportLateness(inPacket->mReply, seconds)
+			}
+			
+			SC_ScheduledEvent event(inWorld, time, inPacket);
+			driver->AddEvent(event);
+		}
 	}
 }
 

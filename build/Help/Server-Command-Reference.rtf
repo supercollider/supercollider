@@ -13,7 +13,7 @@
 The following is a list of all server commands and their arguments. \
 If a command's description contains the word 
 \f1\b Asynchronous
-\f0\b0 , then that command will be passed to a background thread to complete so as not to steal CPU time from the audio synthesis thread. All asynchronous commands send a reply to the client when they are completed. \
+\f0\b0 , then that command will be passed to a background thread to complete so as not to steal CPU time from the audio synthesis thread. All asynchronous commands send a reply to the client when they are completed. Many asynchronous commands can contain an OSC message to be executed upon completion.\
 Each command has a command number which can be sent to the server as a 32 bit integer instead of an OSC style string. Command numbers are listed at the end of this document.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
@@ -82,6 +82,7 @@ Commands are defined by plug-ins.\
 \f1\b receive a synth definition file
 \f0\b0 \
 	bytes - buffer of data. \
+	bytes - an OSC message to execute upon completion. (optional)\
 \
 Loads a file of synth definitions from a buffer in the message. Resident definitions with the same names are overwritten. \
 
@@ -97,6 +98,7 @@ Loads a file of synth definitions from a buffer in the message. Resident definit
 \f1\b load synth definition
 \f0\b0 \
 	string - pathname of file. \
+	bytes - an OSC message to execute upon completion. (optional)\
 \
 Loads a file of synth definitions. Resident definitions with the same names are overwritten. \
 
@@ -110,6 +112,7 @@ Loads a file of synth definitions. Resident definitions with the same names are 
 \f1\b /d_loadDir					load a directory of synth definitions
 \f0\b0 \
 	string - pathname of directory.\
+	bytes - an OSC message to execute upon completion. (optional)\
 	\
 Loads a directory of synth definitions files. Resident definitions with the same names are overwritten. \
 
@@ -346,6 +349,7 @@ Buffers are stored in a global array, indexed by integers starting at zero. \
 \f0\b0 	int - buffer number\
 	int - number of frames\
 	int - number of channels (optional. default = 1 channel)\
+	bytes - an OSC message to execute upon completion. (optional)\
 	\
 Allocates zero filled buffer to number of channels and samples.\
 
@@ -361,6 +365,7 @@ Allocates zero filled buffer to number of channels and samples.\
 	string - path name of a sound file.\
 	int - starting frame in file (optional. default = 0)\
 	int - number of frames to read (optional. default = 0, see below)\
+	bytes - an OSC message to execute upon completion. (optional)\
 	\
 Allocates buffer to number of channels of file and number of samples requested, or fewer if sound file is smaller than requested. Reads sound file data from the given starting frame in the file. If the number of frames argument is less than or equal to zero, the entire file is read. \
 
@@ -378,6 +383,7 @@ Allocates buffer to number of channels of file and number of samples requested, 
 	int - number of frames to read (optional. default = -1, see below)\
 	int - starting frame in buffer (optional. default = 0)\
 	int - leave file open (optional. default = 0)\
+	bytes - an OSC message to execute upon completion. (optional)\
 	\
 Reads sound file data from the given starting frame in the file and writes it to the given starting frame in the buffer. If number of frames is less than zero, the entire file is read. \
 If reading a file to be used by DiskIn ugen then you will want to set "leave file open" to one, otherwise set it to zero.\
@@ -397,6 +403,8 @@ If reading a file to be used by DiskIn ugen then you will want to set "leave fil
 	int - number of frames to write (optional. default = -1, see below)\
 	int - starting frame in buffer (optional. default = 0)\
 	int - leave file open (optional. default = 0)\
+	bytes - an OSC message to execute upon completion. (optional)\
+\
 Write a buffer as a sound file.\
 Header format is one of: \
 	"aiff", "next", "wav", "ircam"", "raw"\
@@ -416,6 +424,7 @@ If opening a file to be used by DiskOut ugen then you will want to set "leave fi
 \f1\b /b_free					free buffer data.\
 
 \f0\b0 	int - buffer number\
+	bytes - an OSC message to execute upon completion. (optional)\
 	\
 Frees buffer space allocated for this buffer. \
 
@@ -428,6 +437,7 @@ Frees buffer space allocated for this buffer. \
 \f1\b /b_zero					zero sample data\
 
 \f0\b0 	int - buffer number\
+	bytes - an OSC message to execute upon completion. (optional)\
 	\
 Sets all samples in the buffer to zero. \
 

@@ -75,6 +75,7 @@ const int ivxNetAddr_Socket = 3;
 void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port);
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
 int sendall(int socket, const void *msg, size_t len);
+int makeSynthMsgWithTags(scpacket *packet, PyrSlot *slots, int size);
 
 void addMsgSlot(scpacket *packet, PyrSlot *slot);
 void addMsgSlot(scpacket *packet, PyrSlot *slot)
@@ -93,7 +94,21 @@ void addMsgSlot(scpacket *packet, PyrSlot *slot)
 			} else if (isKindOf(slot->uo, class_int8array)) {
 				PyrInt8Array *arrayObj = slot->uob;
 				packet->addb(arrayObj->b, arrayObj->size);
+			} else if (isKindOf(slot->uo, class_array)) {
+				PyrObject *arrayObj = slot->uo;
+				scpacket packet2;
+				makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);				
+				packet->addb((uint8*)packet2.data(), packet2.size());
 			}
+			break;
+		case tagNil :
+		case tagTrue :
+		case tagFalse :
+		case tagChar :
+		case tagInf :
+		case tagPtr :
+		case tagHFrame :
+		case tagSFrame :
 			break;
 		default :
 			packet->addf(slot->uf);
@@ -123,7 +138,22 @@ void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
 				packet->addtag('b');
 				//printf("arrayObj %08X %d\n", arrayObj, arrayObj->size);
 				packet->addb(arrayObj->b, arrayObj->size);
+			} else if (isKindOf(slot->uo, class_array)) {
+				PyrObject *arrayObj = slot->uo;
+				packet->addtag('b');
+				scpacket packet2;
+				makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);				
+				packet->addb((uint8*)packet2.data(), packet2.size());
 			}
+			break;
+		case tagNil :
+		case tagTrue :
+		case tagFalse :
+		case tagChar :
+		case tagInf :
+		case tagPtr :
+		case tagHFrame :
+		case tagSFrame :
 			break;
 		default :
 			packet->addtag('f');
@@ -274,7 +304,6 @@ inline int OSCStrLen(char *str)
 }
 
 
-int makeSynthMsgWithTags(scpacket *packet, PyrSlot *slots, int size);
 int makeSynthBundle(scpacket *packet, PyrSlot *slots, int size);
 
 int prNetAddr_Connect(VMGlobals *g, int numArgsPushed);
@@ -590,7 +619,7 @@ void* wait_for_quit(void* thing)
 int prQuitInProcessServer(VMGlobals *g, int numArgsPushed);
 int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp;
+	//PyrSlot *a = g->sp;
 	
 	if (gLocalSynthServer.mWorld) {
 		World *world = gLocalSynthServer.mWorld;

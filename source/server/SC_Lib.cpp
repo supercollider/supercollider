@@ -92,7 +92,12 @@ SC_LibCmd::SC_LibCmd(SC_CommandFunc inFunc) : mFunc(inFunc)
 
 SCErr SC_LibCmd::Perform(struct World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
-	SCErr err = (mFunc)(inWorld, inSize, inData, inReply);
+	SCErr err;
+	try {
+		err = (mFunc)(inWorld, inSize, inData, inReply);
+	} catch (...) {
+		err = kSCErr_Failed;
+	}
 	if (err) {
 		const char *errstr = SC_ErrorString(err);
 		CallSendFailureCommand(inWorld, (char*)Name(), (char*)errstr, inReply);
