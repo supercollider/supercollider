@@ -5,46 +5,41 @@
 }
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 Pmul					
+\f0\b\fs36 \cf0 Pmulp					
 \fs24 event pattern that multiplies with existing value of one key
 \f1\b0 \
 \
 
-\f0\b superclass: Pset
+\f0\b superclass: Psetp
 \f1\b0 \
 \
 
-\f0\b Pmul(name, value, pattern)
+\f0\b Pmulp(name, value, pattern)
 \f1\b0 \
 \
+multiplies a value in an event stream until it ends, repeats this with new values until\
+the value stream ends.\
+\
+
+\f0\b value
+\f1\b0  can be a pattern, a stream or an array. the resulting stream ends when that incoming stream ends.\
 \
 \
 
 \f2\fs18 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  a, b;\
-a = \cf2 Pmul\cf0 (\\freq, 801, \cf2 Pbind\cf0 (\cf3 \\freq\cf0 , 100));\
+a = \cf2 Pmulp\cf0 (\\freq, Pseq([2, 3, pi],inf), \cf2 Pbind\cf0 (\cf3 \\freq\cf0 , Pseq([100, 200, 300])));\
 x = a.asStream;\
 9.do(\{ x.next(\cf2 Event\cf0 .new).postln; \});\
 )\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 value
-\f1\b0  can be a pattern or a stream. the resulting stream ends when that incoming stream ends\
-\
-
-\f2\fs18 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 var\cf0  a, b;\
-a = \cf2 Pmul\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([3, 4, 6], 2), \cf2 Pbind\cf0 (\cf3 \\freq, 100\cf0 ));\
-x = a.asStream;\
-9.do(\{ x.next(\cf2 Event\cf0 .new).postln; \});\
-)\
-\
+\f2\fs18 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -55,18 +50,20 @@ x = a.asStream;\
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 \\sinegrain\cf0 , \
-	\{ \cf2 arg\cf0  out=0, freq=440, gate=1;\
+	\{ \cf2 arg\cf0  out=0, freq=440, sustain=0.02;\
 		\cf2 var\cf0  env;\
-		env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .asr(0.001, 1, 0.2), gate, doneAction:2);\
+		env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.001, sustain), 1, doneAction:2);\
 		\cf2 Out\cf0 .ar(out, \cf2 SinOsc\cf0 .ar(freq, 0, env * 0.1))\
 	\}).store;\
 )\
 \
 (\
-a = \cf2 Pbind\cf0 (\cf3 \\dur\cf0 , 0.5, \cf3 \\instrument\cf0 , \cf3 \\\cf4 sinegrain, \\freq, 440\cf0 );\
-b = \cf2 Pmul\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([1, 2, 3, 4, 5, 6, 7], \cf2 inf\cf0 ), a);\
-b.play;\
+a = \cf2 Pbind\cf0 (\cf3 \\freq\cf0 , Pseq([500, 600, 700]), \cf3 \\instrument\cf0 , \cf3 \\\cf4 sinegrain\cf0 );\
+a = \cf2 Pmulp\cf0 (\cf3 \\freq\cf0 , \cf2 Pseq\cf0 ([0.5, 0.9, 0.8], \cf2 inf\cf0 ), a);\
+a.play;\
 )\
+\
+\
 \
 \
 }
