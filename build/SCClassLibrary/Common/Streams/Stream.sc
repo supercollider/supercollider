@@ -3,7 +3,7 @@ Stream : AbstractFunction {
 	// 'reset' is defined in class Object to do nothing.
 	// reading
 	next { ^this.subclassResponsibility(thisMethod) }
-	value { ^this.next }
+	value { arg inval; ^this.next(inval) }
 	valueArray { ^this.next }
 	
 	nextN { arg n;
@@ -178,6 +178,43 @@ FuncStream : Stream {
 	}
 	reset { 
 		^resetFunc.value
+	}
+}
+
+
+// PauseStream is a stream wrapper that can be started and stopped.
+
+PauseStream : Stream
+{
+	var <stream, originalStream, clock;
+	
+	*new { arg argStream, argClock; 
+		^super.newCopyArgs(argStream, argStream, argClock) 
+	}
+	
+	play { stream = originalStream; super.play(clock) }
+	reset { ^stream.reset }
+	stop { stream = nil }
+
+	// pause and resume are synonyms of stop and play
+	pause { stream = nil }
+	resume { ^this.play }
+	start { ^this.play }
+	
+	stream_ { arg argStream; stream = originalStream = argStream; }
+	next { arg inval; ^stream.next(inval) }
+	
+	awake { arg inTime;
+		stream.time = inTime;
+		^this.next(inTime)
+	}
+}
+
+// Task is a PauseStream for wrapping a Routine
+
+Task : PauseStream {
+	*new { arg func; 
+		^super.new(Routine(func)) 
 	}
 }
 

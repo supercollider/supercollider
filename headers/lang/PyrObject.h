@@ -167,7 +167,6 @@ extern struct PyrClass *class_stream;
 extern struct PyrClass *class_process;
 extern struct PyrClass *class_thread;
 extern struct PyrClass *class_routine;
-extern struct PyrClass *class_task;
 extern struct PyrClass *class_inf;
 extern struct PyrClass *class_finalizer;
 

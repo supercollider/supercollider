@@ -104,3 +104,4 @@ Integer : SimpleNumber {
 	// exit the program and return the result code to unix shell
 	exit { _Exit }
 }
+

@@ -518,16 +518,6 @@ void* schedRunFunc(void* arg)
 				double time = schedtime + delta;
 				schedAdd(g, inQueue, time, &task);
 			}
-			
-			/*if (isKindOfSlot(&task, class_task)) {
-				double delta;
-				long err = slotDoubleVal(&task.uot->waitTime, &delta);
-				if (!err) {
-					// add delta time and reschedule
-					double time = task.uot->time.uf += delta;
-					schedAdd(g, inQueue, time, &task);
-				}
-			}*/
 		}
 	//postfl("loop\n");
 	}

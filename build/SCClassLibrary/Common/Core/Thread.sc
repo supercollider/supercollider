@@ -47,10 +47,6 @@ Thread : Stream {
 Routine : Thread {
 	
 	// resume, next and value are synonyms
-	resume { arg inval;
-		_RoutineResume
-		^this.primitiveFailed
-	}
 	next { arg inval;
 		_RoutineResume
 		^this.primitiveFailed
@@ -84,6 +80,4 @@ Routine : Thread {
 		nil.alwaysYield;
 	}
 }
-
-Task : Routine {}
 

@@ -419,6 +419,7 @@ Object {
 		time = inTime; // prevent optimization
 		^this.next(inTime)
 	}
+	time_ {  } // for PauseStream
 
 	// catch binary operators failure
 	performBinaryOpOnSomething { arg aSelector;

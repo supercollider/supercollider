@@ -71,7 +71,6 @@ PyrClass *class_stream;
 PyrClass *class_process;
 PyrClass *class_thread;
 PyrClass *class_routine;
-PyrClass *class_task;
 PyrClass *class_finalizer;
 
 PyrSymbol *s_none;
@@ -1382,7 +1381,6 @@ void initClasses()
 		addIntrinsicVar(class_finalizer, "object", &o_nil);
 
 	class_routine = makeIntrinsicClass(s_routine, s_thread, 0, 0);
-	class_task = makeIntrinsicClass(s_task, s_routine, 0, 0);
 
 	class_symbol = makeIntrinsicClass(s_symbol, s_object, 0, 0);
 	class_nil = makeIntrinsicClass(s_nil, s_object, 0, 0);
