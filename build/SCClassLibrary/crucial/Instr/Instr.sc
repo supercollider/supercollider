@@ -1,7 +1,7 @@
 
 Instr  { 
 
-	classvar <>instrDirectory = "Instr/";
+	classvar <dir = "Instr/";
 
 	var  <>name, <>func,<>specs,<outSpec;
 	
@@ -14,8 +14,13 @@ Instr  {
 	*initClass {
 		Class.initClassTree(Document);
 		// default is relative to your doc directory
-		instrDirectory = Instr.instrDirectory = Document.dir ++ "Instr/";
+		dir = Document.dir ++ "Instr/";
 	}
+	*dir_ { arg p;
+		dir = p.standardizePath ++ "/";
+	}
+	*instrDirectory_ { arg p; this.dir = p }
+	
 	//*write go ahead and write it
 
 	init { arg specs,outsp;
@@ -67,7 +72,7 @@ Instr  {
 			1
 		});
 	}
-	path { ^instrDirectory ++ name.first.asString ++ ".rtf" }
+	path { ^dir ++ name.first.asString ++ ".rtf" }
 	
 	*put { arg instr;
 		^Library.putList([this.name,instr.name,instr].flatten )
@@ -82,7 +87,7 @@ Instr  {
 			??
 		{ 	
 			// if not previously loaded, try loading the file
-			(instrDirectory ++ [name].flat.first.asString ++ ".rtf").loadPath;
+			(dir ++ [name].flat.first.asString ++ ".rtf").loadPath;
 			Library.atList(fullname) // or not found
 		}
 		)

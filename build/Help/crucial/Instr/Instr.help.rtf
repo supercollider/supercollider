@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 \f3\fmodern\fcharset77 Courier;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
-\red96\green96\blue96;}
+\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs50 \cf0 Instr    		
@@ -15,9 +15,8 @@ Instr is a way of storing sound functions such that they can be easily reused.\
 It is flexible for many different situations and styles of coding.\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 Instr(name,function,inputSpecs);
+\f0\b Instr(name,function,inputSpecs);
 \f2\b0 \
 \
 
@@ -242,9 +241,8 @@ storing in the Library\
 \f0\b\fs24 \cf0 \
 \
 Auto loading the instr from the "Instr/" directory\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 If an Instr is not found in the library, it will attempt to load a super collider code\
+\f2\b0 If an Instr is not found in the library, it will attempt to load a super collider code\
 file by the name of the first name of the Instr:\
 \
 	eg. if Instr.at([\\minimoog,\\one]) \
@@ -257,15 +255,15 @@ By default, this directory is set to be "Instr/" in your document directory (see
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 It is probably best to just set the Document.dir directory\
+\f0\b\fs28 \cf0 the best thing to do is :\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 \
-	or, In Main-startUp, set \
+\f2\b0\fs24 \cf0 	\
+in Main-startUp\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 		\cf4 // in your home documents directory would be a nice place\
-\cf0 		\cf2 Instr\cf0 .instrDirectory = \cf5 "~/Documents/SC3/Instr/"\cf0 ; \
+\f1\fs18 \cf5 	\cf6 Instr\cf5 .dir = \cf7 "~/Documents/SuperCollider/Instr"\cf5 ;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 \
