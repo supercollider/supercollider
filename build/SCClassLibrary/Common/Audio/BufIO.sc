@@ -16,7 +16,7 @@ PlayBuf : MultiOutUGen {
 
 /*
 // exception in GrafDef_Load: UGen 'SimpleLoopBuf' not installed.
->>>>>>> 1.6
+
 SimpleLoopBuf : MultiOutUGen {	
 	*ar { arg numChannels, bufnum=0, loopStart=0.0, loopEnd=99999.0, trigger=0.0;
 		^this.multiNew('audio', numChannels, bufnum, loopStart, loopEnd, trigger)
