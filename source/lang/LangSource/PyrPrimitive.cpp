@@ -3277,7 +3277,7 @@ int prThreadRandSeed(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
+#if 0
 int32 timeseed();
 
 int transformMainThreadToRoutine(VMGlobals *g)
@@ -3311,6 +3311,8 @@ int transformMainThreadToRoutine(VMGlobals *g)
 }
 
 void schedAdd(VMGlobals *g, PyrObject* inQueue, double inSeconds, PyrSlot* inTask);
+#endif
+
 
 int prRoutineYield(struct VMGlobals *g, int numArgsPushed);
 int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
