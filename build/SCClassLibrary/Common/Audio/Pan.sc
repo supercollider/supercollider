@@ -44,6 +44,20 @@ PanB : MultiOutUGen {
 	}
 }
 
+PanB2 : MultiOutUGen {
+	var channels;
+	
+	*ar { arg in, azimuth, gain;
+		^this.multiNew('audio', in, azimuth, gain )
+	}
+	init { arg ... theInputs;
+		inputs = theInputs;		
+		channels = [ OutputProxy(\audio,this,0), OutputProxy(\audio,this,1),
+					OutputProxy(\audio,this,2) ];
+		^channels
+	}
+}
+
 PanAz : MultiOutUGen {
 	
 	*ar { arg numChans, in, pos = 0.0, level = 1.0, width = 2.0;
