@@ -29,6 +29,7 @@ Interface : AbstractPlayerProxy {
 		interfaceDef = i.asInterfaceDef;
 		args = this.createArgs( a.asArray );
 		environment = Environment.new;
+		environment.put(\face,this);
 
 		// if you change an arg, must rebuild
 		interfaceDef.argNames.do({ arg argName,i;
@@ -126,6 +127,9 @@ Interface : AbstractPlayerProxy {
 	
 	use { arg function;
 		environment.use(function);
+	}
+	defer { arg function;
+		{ environment.use(function); nil }.defer;
 	}
 	
 	storeArgs { ^[interfaceDef.name,args] }

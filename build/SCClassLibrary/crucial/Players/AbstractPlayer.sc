@@ -83,7 +83,7 @@ AbstractPlayer : AbstractFunction  {
 			status = \preparedForPlay;
 		});
 		this.children.do({ arg child;
-			child.prepareToBundle(group,bundle);
+			child.prepareToBundle(group,bundle,true);
 		});
 		this.loadDefFileToBundle(bundle,server);
 		this.makeResourcesToBundle(bundle);
@@ -131,21 +131,28 @@ AbstractPlayer : AbstractFunction  {
 
 	free { arg atTime;
 		var bundle;
-		if(server.notNil,{
-			bundle = CXBundle.new;
-			this.stopToBundle(bundle);
-			this.freeToBundle(bundle);
-			bundle.sendAtTime(server,atTime);
-		})
+		bundle = CXBundle.new;
+		this.freeToBundle(bundle);
+		bundle.sendAtTime(server,atTime);
 	}
 	freeToBundle { arg bundle;
-		bundle.addFunction({ readyForPlay = false; });
-		this.freeHeavyResources(bundle);
-		this.children.do({ arg child;
-			child.freeToBundle(bundle);
-		});
+		if(status != \freed,{
+			if(status == \isPlaying,{
+				// sends to all the children
+				this.stopToBundle(bundle);
+			});
+			bundle.addMessage(this,\didFree);
+			//bundle.addFunction({ readyForPlay = false; });
+			this.freeResourcesToBundle(bundle);
+			this.children.do({ arg child;
+				child.freeToBundle(bundle);
+			});
+		})
 	}
-	
+	didFree {
+		readyForPlay = false;
+		status = \freed;
+	}	
 	// these don't call children
 	freeSynthToBundle { arg bundle;
 		if(synth.isPlaying,{ // ? false
@@ -161,12 +168,9 @@ AbstractPlayer : AbstractFunction  {
 			patchOut.free; // free the bus
 			patchOut = nil;
 			group  = nil; 
-			server = nil;
+			//server = nil;
 			readyForPlay = false;
 		});
-	}
-	freeHeavyResources { arg bundle; 
-		this.children.do({ arg child; child.freeHeavyResources(bundle) })
 	}
 	
 	run { arg flag=true;

@@ -3,14 +3,12 @@
 + Object {
 	
 	stopToBundle {}
-	freeHeavyResources {}
 	freeToBundle {}
 	
 	rate { ^\scalar }
 	
 	makePatchOut {}
 	patchOut { ^ScalarPatchOut(this) }
-	discardPatchOut {}
 	connectToPatchIn {}
 
 	prepareToBundle {  }

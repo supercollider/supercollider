@@ -124,7 +124,7 @@ InstrSpawner : Patch {
 	spawnToBundle { arg bundle;
 		if(patchOut.isNil,{ 
 			(thisMethod.asString 
-				+ "PatchOut is nil. Has this been prepared for play ?").die(this);
+				+ "PatchOut is nil. This has not been prepared for play.").die(this);
 		});
 		this.makeTask;
 
@@ -160,13 +160,11 @@ InstrSpawner : Patch {
 		spawnTask = nil;
 	}
 	didFree {
+		super.didFree;
 		CmdPeriod.remove(this);
 	}
 	cmdPeriod {
 		this.didStop;
-	}
-	freeToBundle { arg bundle;
-		bundle.addMessage(this,\didFree);
 	}
 	
 	guiClass { ^InstrSpawnerGui }	

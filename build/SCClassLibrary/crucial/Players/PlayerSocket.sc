@@ -81,6 +81,7 @@ PlayerSocket : AbstractPlayerProxy {
 	isSleeping {
 		^(isSleeping and: isWaking.not)
 	}
+	qwake { this.qspawnPlayer(lastPlayer); }
 	
 //	prepareToBundle { arg agroup,bundle;
 //		group = agroup.asGroup;
@@ -150,6 +151,8 @@ PlayerSocket : AbstractPlayerProxy {
 // removing patch out
 // after next event has already created a new one
 // next event fails with no patch out
+
+// i will use the new status variable to check the state
 
 		//	"releaseing".debug(envdSource.identityHash);
 			if(envdSource === dee,{

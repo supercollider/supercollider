@@ -55,6 +55,7 @@ NumberEditor : Editor {
 	setUnmappedValue { arg unipolar;
 		value = spec.map(unipolar);
 		this.changed;
+		^value
 	}
 	unmappedValue {
 		^spec.unmap(value)
