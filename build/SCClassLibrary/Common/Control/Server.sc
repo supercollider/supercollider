@@ -119,6 +119,9 @@ Server : Model {
 		options.numInputBusChannels + options.numOutputBusChannels);
 		bufferAllocator = PowerOfTwoAllocator(options.numBuffers);
 	}
+	nextNodeID {
+		^nodeAllocator.alloc
+	}
 	
 	*initClass {
 		named = IdentityDictionary.new;
@@ -159,13 +162,8 @@ Server : Model {
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
 		) 
 	}
-	
-	nextNodeID {
-		^nodeAllocator.alloc
-	}
-	
-	
 	//loadDir
+	
 	
 	serverRunning_ { arg val;
 		if (val != serverRunning, {
@@ -184,23 +182,25 @@ Server : Model {
 	}
 	
 	waitForBoot { arg onComplete, limit=100;
-		if(serverBooting.not && serverRunning.not, { this.boot });
-		this.doWhenBooted(onComplete, limit)
+		if(serverBooting,{ ^this.doWhenBooted(onComplete,limit) });
+		if(serverRunning.not, { 
+			this.boot;
+			this.doWhenBooted(onComplete, limit);
+		},onComplete);
 	}
 	
 	doWhenBooted { arg onComplete, limit=100;
-			^Routine({
-				while({
-					serverRunning.not 
-					and: {(limit = limit - 1) > 0}
-				},{
-					0.2.wait;	
-				});
-				
-				if(serverRunning.not,{
-					"server failed to start".error;
-				}, onComplete);
-			}).play;
+		^Routine({
+			while({
+				serverRunning.not and: {(limit = limit - 1) > 0}
+			},{
+				0.2.wait;	
+			});
+
+			if(serverRunning.not,{
+				"server failed to start".error;
+			}, onComplete);
+		}).play;
 	}
 	
 	addStatusWatcher {
@@ -247,33 +247,33 @@ Server : Model {
 			statusWatcher = nil;
 		});
 	}
+	*resumeThreads {
+		set.do({ arg server;
+			server.stopAliveThread;
+			server.startAliveThread(0.7);
+		});
+	}
 	
-	
-	
-	boot { arg withAliveThread=true;
+	boot { arg startAliveThread=true;
 		var resp;
 		if (serverRunning, { "server already running".inform; ^this });
 		if (serverBooting, { "server already booting".inform; ^this });
 		if (isLocal.not, { "can't boot a remote server".inform; ^this });
 		
-		
 		serverBooting = true;
-		if(withAliveThread, { this.startAliveThread });
+		if(startAliveThread, { this.startAliveThread });
 		this.doWhenBooted({ 
-				if(notified, { 
-					nodeWatcher.start;
-					this.notify;
-					"notification is on".inform;
-				}, { 
-					"notification is off".inform; 
-				});
-				serverBooting = false;
+			if(notified, { 
+				nodeWatcher.start;
+				this.notify;
+				"notification is on".inform;
+			}, { 
+				"notification is off".inform; 
+			});
+			serverBooting = false;
 		});
-		
 		this.bootServerApp;
-		
 	}
-	
 	bootServerApp {
 		if (inProcess, { 
 			"booting internal".inform;
@@ -285,9 +285,6 @@ Server : Model {
 			("booting " ++ addr.port.asString).inform;
 		});
 	}
-	
-	
-	
 	reboot {
 		var resp;
 		if (isLocal.not, { "can't reboot a remote server".inform; ^this });
@@ -360,12 +357,7 @@ Server : Model {
 			})
 		})
 	}
-	*resumeThreads {
-		set.do({ arg server;
-			server.stopAliveThread;
-			server.startAliveThread(0.7);
-		});
-	}
+
 	
 	// internal server commands
 	bootInProcess {
@@ -393,7 +385,6 @@ Server : Model {
 		^this.primitiveFailed
 	}
 	
-	////
 	makeWindow { arg w;
 		var active,booter,running,booting,stopped;
 		var countsViews, ctlr;
@@ -401,7 +392,8 @@ Server : Model {
 		if (window.notNil, { ^window.front });
 		
 		if(w.isNil,{
-			w = window = SCWindow(name.asString ++ " server", Rect(10, named.values.indexOf(this) * 140 + 10, 256, 100));
+			w = window = SCWindow(name.asString ++ " server", 
+						Rect(10, named.values.indexOf(this) * 140 + 10, 256, 100));
 			w.view.decorator = FlowLayout(w.view.bounds);
 		});
 		
