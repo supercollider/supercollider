@@ -1,15 +1,8 @@
 
 PatchGui : AbstractPlayerGui {
 
-//	writeName { arg layout,big=false; 
-//		//layout.startRow;
-//		super.writeName(layout,big)
-//	}
-
 	guiBody { arg layout;
 		Tile(this.model.instr,layout);
-		//this.durationGui(layout);// usually 'inf' meaning 'endless'
-		//layout.indent(1);
 		model.args.do({ arg a,i;
 			layout.startRow;
 			ArgNameLabel(model.instr.argNames.at(i),layout);
@@ -23,8 +16,16 @@ PatchGui : AbstractPlayerGui {
 				});
 			})
 		});
-		//layout.indent(-1);
 	}
 
 }
  
+InstrSpawnerGui : PatchGui {
+
+	guiBody { arg layout;
+		super.guiBody(layout);
+		layout.startRow;
+		CXLabel(layout,"delta:");
+		model.delta.gui(layout);
+	}
+}

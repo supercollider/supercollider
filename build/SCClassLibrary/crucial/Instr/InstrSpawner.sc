@@ -114,5 +114,6 @@ InstrSpawner : Patch {
 			})	
 		}).play(SystemClock)
 	}
+	guiClass { ^InstrSpawnerGui }
 	
 }
