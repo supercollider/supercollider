@@ -99,7 +99,7 @@ MultiLevelIdentityDictionary : Collection
 	}
 	removeAt {
 		arg ... path;
-		this.removeAtPath(path)
+		^this.removeAtPath(path)
 	}
 	removeAtPath { arg path;
 		var item, lastName;
