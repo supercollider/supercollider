@@ -60,10 +60,10 @@ SynthDef {
 		values = def.prototypeFrame.copy.extend(size);
 		values = values.collect({ arg value; value ? 0.0 });
 		names.do({ arg name, i; 
-			var c, value;
-			c = name.asString.at(0);
+			var c, c2, value;
+			#c, c2 = name.asString;
 			value = values.at(i);
-			if (c == $i, {
+			if (c == $i && { c2 == $_ }, {
 				irnames = irnames.add(name);
 				irvalues = irvalues.add(value);
 				irpositions = irpositions.add(i);

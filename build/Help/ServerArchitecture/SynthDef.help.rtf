@@ -16,7 +16,7 @@ Evaluates a UGen function, generating a ugenGraph that describes the exact archi
 
 \f1\b0 \cf0 	Create a synthDef instance, evaluate the ugenGraphFunc and build the ugenGraph.\
 \
-	Argument names that begin with the letter 'i' will be static and non-modulatable.\
+	Argument names that begin with "i_" will be static and non-modulatable.\
 		they will not respond to /n_set or /n_map.\
 	Other arguments are all Float inputs, representing either values or bus indices\
 		for use in In or Out.\
