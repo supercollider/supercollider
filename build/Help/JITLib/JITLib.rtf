@@ -50,10 +50,10 @@ Placeholders are currently provided for Patterns, Tasks and Synth Nodes.\
 	the rest of the behaviour depends on its use.\
 	\
 	client side: 	
-\f0\b Pdef, Pdefn, Tdef, Pbindef
+\f0\b [\ul Pdef\ulnone ] [\ul Pdefn\ulnone ], [\ul Tdef\ulnone ], [\ul Pbindef\ulnone ]
 \f1\b0 \
-	server side: 	
-\f0\b Ndef\
+	server side: 	[
+\f0\b \ul Ndef\ulnone ]\
 	
 \f1\b0 \
 \'a5 Another way, for server side NodeProxies, is an 
@@ -61,8 +61,8 @@ Placeholders are currently provided for Patterns, Tasks and Synth Nodes.\
 \f1\i0  that returns placeholders on demand:\
 	ProxySpace.push\
 	~out = \{ ...\}\
-	helpfile: 		
-\f0\b ProxySpace\
+	helpfile: 		[
+\f0\b \ul ProxySpace\ulnone ]\
 	
 \f1\b0 \
 \'a5 there is also direct access 
@@ -70,15 +70,15 @@ Placeholders are currently provided for Patterns, Tasks and Synth Nodes.\
 \f1\i0  using the access schemes: NodeProxy, TaskProxy etc. provide it.\
 	internally the former use these as base classes.\
 \
-	client side: 	
-\f0\b PatternProxy, EventPatternProxy
-\f1\b0 , 
-\f0\b TaskProxy
-\f1\b0 , 
-\f0\b PbindProxy, Pdict\
+	client side: 	[
+\f0\b \ul PatternProxy\ulnone ], [\ul EventPatternProxy\ulnone ]
+\f1\b0 , [
+\f0\b \ul TaskProxy\ulnone ]
+\f1\b0 , [
+\f0\b \ul PbindProxy\ulnone ], [\ul Pdict\ulnone ]\
 
-\f1\b0 	server side: 	
-\f0\b NodeProxy, RecNodeProxy
+\f1\b0 	server side: 	[
+\f0\b \ul NodeProxy\ulnone ], [\ul RecNodeProxy\ulnone ]
 \f1\b0 \
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 \cf0 \
@@ -89,8 +89,8 @@ Placeholders are currently provided for Patterns, Tasks and Synth Nodes.\
 	by sharing a common server, using SharedNodeProxy and exchanging code and comments \
 	in a chat (see Client)\
 	networking classes:		\
-			
-\f0\b Client 
+			[
+\f0\b \ul Client\ulnone ] 
 \f1\b0 simplifies client-to-client networking\
 			BroadcastServer, Router (no help yet)\
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
@@ -102,14 +102,12 @@ Placeholders are currently provided for Patterns, Tasks and Synth Nodes.\
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
 \f1\b0 \cf0 tutorials:	
-\f0\b 		[jitlib_efficiency][the_lazy_proxy][jitlib_fading][jitlib_asCompileString]\
-			[recursive_phrasing]\
+\f0\b 		[\ul jitlib_efficiency\ulnone ][\ul the_lazy_proxy\ulnone ][\ul jitlib_fading\ulnone ][\ul jitlib_asCompileString\ulnone ]\
+			[\ul recursive_phrasing\ulnone ]\
 \
 
-\f1\b0 storage:			NodeMap storing control setting\
-			
-\f0\b Order
-\f1\b0  	ordered collection
+\f1\b0 storage:			[\ul NodeMap\ulnone ] storing control setting\
+			[\ul Order\ulnone ] 	ordered collection
 \f0\b \
 
 \f1\b0 \
@@ -124,10 +122,10 @@ unconnected other classes:\
 
 \f0\b UGens	\
 	
-\f1\b0 TChoose
+\f1\b0 [\ul TChoose\ulnone ]
 \f0\b \
-	
-\f1\b0 TWChoose\
+	[
+\f1\b0 \ul TWChoose\ulnone ]\
 	\
 \
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
