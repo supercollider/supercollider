@@ -10,7 +10,7 @@ EnvironmentRedirect {
 	}
 	
 	*push { arg name;
-		^super.new(name).push;
+		^this.new(name).push;
 	}
 	
 	*pop { 
