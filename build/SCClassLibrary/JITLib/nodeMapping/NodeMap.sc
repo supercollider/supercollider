@@ -187,7 +187,8 @@ ProxyNodeMap : NodeMap {
 		}
 				
 		mappingKeys {
-			^settings.select({ arg item; item.bus.notNil }).collect({ arg item; item.key })
+			^settings.select({ arg item; item.bus.notNil })
+					.asArray.collect({ arg item; item.key })
 		}
 						
 		map { arg ... args;
@@ -198,6 +199,7 @@ ProxyNodeMap : NodeMap {
 				var key, mapProxy, bus, ok;
 				key = args.at(i*2).asArray;
 				mapProxy = args.at(2*i+1);
+				if(mapProxy.isKindOf(BusPlug).not) { "map: not a node proxy".error; ^this.halt };
 				ok = mapProxy.initBus(\control, key.size);
 				if(ok, {
 					if(playing, { mapProxy.wakeUp;  });
@@ -208,7 +210,7 @@ ProxyNodeMap : NodeMap {
 						parents = parents.put(theKey, mapProxy);
 					});
 				}, {
-					"rate / numChannels doesn't match".inform
+					"rate / numChannels doesn't match:".inform
 				});
 			});
 			upToDate = false;
