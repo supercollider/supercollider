@@ -469,8 +469,17 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     NSString* helpFolderPath = [NSString stringWithFormat: @"%@/Help/",
 		    [fileManager currentDirectoryPath]];
 
-    // the name of the help file we are looking for
-    NSString* helpFileName = [NSString stringWithFormat: @"%@%@", desiredHelpFile, extension];
+    // the name of the help file we are looking for 
+    NSString* helpFileName;
+       
+    // substitute for - or /
+    if([desiredHelpFile isEqual: @"-"]) {
+    	helpFileName = [NSString stringWithFormat: @"%@%@", @"subtraction", extension];
+    } else if([desiredHelpFile isEqual: @"/"]) {
+        helpFileName = [NSString stringWithFormat: @"%@%@", @"division", extension];
+    } else {
+        helpFileName = [NSString stringWithFormat: @"%@%@", desiredHelpFile, extension];
+    }
 
     // recurse through this directory until we find it
     NSString* helpFilePath = nil;
