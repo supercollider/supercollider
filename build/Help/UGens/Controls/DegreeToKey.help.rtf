@@ -40,8 +40,7 @@ The input signal value is truncated to an integer value and used as an index int
 \cf3 var\cf0  scale, buffer;\
 scale = \cf3 FloatArray\cf0 [0, 2, 3.2, 5, 7, 9, 10]; \cf2 // dorian scale\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 buffer = Buffer.alloc(s,scale.size,1);\
-buffer.setn(0, scale);\
+\cf0 buffer = Buffer.alloc(s, scale.size,1, \{|b| b.setnMsg(0, scale) \});\
 \
 play(\{\
 	\cf3 var\cf0  mix;\
