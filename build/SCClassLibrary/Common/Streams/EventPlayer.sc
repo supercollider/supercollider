@@ -63,10 +63,7 @@ NotePlayer : EventPlayer {
 				(~degree + ~mtranspose).degreeToKey(~scale, ~stepsPerOctave);
 			};
 			~midinote = #{
-				var divs;	
-				divs = ~stepsPerOctave;
-				(~note.value + ~gtranspose + (~octave * divs) + ~root)
-					 * 12.0 / divs; 
+				((~note.value + ~gtranspose + ~root) / ~stepsPerOctave + ~octave) * 12.0; 
 			};
 			~freq = #{
 				(~midinote.value + ~ctranspose).midicps;
