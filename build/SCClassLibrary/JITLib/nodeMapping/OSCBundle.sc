@@ -57,14 +57,11 @@ MixedBundle : OSCBundle {
 		latency = latency ? server.latency;
 		//no latency here, because usuallay the streams etc have their own 
 		//latency handling:
-		functions.do({ arg item; item.value(latency) }); 
-		
-		//messages.asCompileString.postln;
+		functions.do({ arg item; item.value(latency, server) }); 
 		server.listSendBundle(latency, messages);
 	}
 	
 	sendPrepare { arg server, latency;
-		//preparationMessages.asCompileString.postln;
 		server.listSendBundle(latency, preparationMessages);
 	}
 	
@@ -98,5 +95,23 @@ MixedBundle : OSCBundle {
 	}
 }
 
+DebugBundle : MixedBundle {
+	send { arg server, latency;
+		var array;
+		latency = latency ? server.latency;
+		functions.do({ arg item; item.value(latency, server) }); 
+		"sending messages:".inform;
+		messages.asCompileString.postln;
+		server.listSendBundle(latency, messages);
+	}
+	
+	sendPrepare { arg server, latency;
+		"sending preparation messages:".inform;
+		preparationMessages.asCompileString.postln; 
+		("current delay between preparation and action:" + preparationTime).inform;
+		Char.nl.post;
+		server.listSendBundle(latency, preparationMessages);
+	}
 
 
+}
