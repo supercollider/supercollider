@@ -236,6 +236,8 @@ Server : Model {
 		var resp;
 		if (serverRunning, { "server already running".inform; ^this });
 		if (isLocal.not, { "can't boot a remote server".inform; ^this });
+		nodeWatcher.start;
+	
 		if (inProcess, { 
 			"booting internal".inform;
 			this.bootInProcess; 
@@ -243,16 +245,13 @@ Server : Model {
 			//this.serverRunning = true;
 		},{
 			//isBooting = true;
+			if(notified, { 
+				SystemClock.sched(1, { this.notify; "sent notify on".inform; });
+			});
 			unixCmd("./scsynth" ++ options.asOptionsString(addr.port));
 			("booting " ++ addr.port.asString).inform;
 		});
-		nodeWatcher.start;
-		if(notified, { 
-			resp = OSCresponder(addr, '/done', {
-						this.notify;
-						resp.remove;  
-				}).add; 
-		});
+		
 		
 		
 		
