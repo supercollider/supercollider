@@ -21,7 +21,7 @@ AudioSpec : Spec {
 		)
 	}
 	defaultControl{ 
-		^PlayerInputProxy.new(this.numChannels,this.rate)
+		^PlayerInputProxy.new(this)
 	}
 	storeArgs { ^[numChannels] }
 	rate { ^\audio }

@@ -116,7 +116,7 @@ InstrSpawner : Patch {
 		}, SystemClock);
 		spawnTask.play
 	}
-	stop { spawnTask.stop }
+	stop { spawnTask.stop; synth.stop; } // release last one too
 	guiClass { ^InstrSpawnerGui }
 	
 }
