@@ -1,13 +1,13 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green115\blue0;\red0\green0\blue0;
-\red0\green0\blue191;\red0\green0\blue191;\red96\green96\blue96;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green115\blue0;\red0\green0\blue191;
+\red96\green96\blue96;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 Runtime errors\
 
 \f1\b0\fs18 \
-Runtime errors occur only after SuperCollider determines that a program has no syntax or grammar errors and a message sent to an object whle the program is executing creates an error.\
+Runtime errors occur while a program is executing.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ Execute the following line\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 3.createRuntimeError\
+\cf0 3.createRuntimeError\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -82,31 +82,31 @@ The ARGS section says how many arguments were included in the message.\
 Read the CALL STACK from the bottom to the top to see where the error happened. Reading from bottom to top means going from\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 Process\cf0 -interpretPrintCmdLine \
+\cf4 Process\cf0 -interpretPrintCmdLine \
 \
 to \
 \
-\cf5 Interpreter\cf0 -interpretPrintCmdLine \
+\cf4 Interpreter\cf0 -interpretPrintCmdLine \
 \
 to \
 \
-\cf5 Object\cf0 -doesNotUnderstand\
+\cf4 Object\cf0 -doesNotUnderstand\
 \
 to\
 \
-\cf6 Object\cf4 -throw\
+\cf4 Object\cf0 -throw\
 \
 to\
 \
-\cf6 Nil\cf4 -handleError\
+\cf4 Nil\cf0 -handleError\
 \
 to\
 \
-\cf6 DoesNotUnderstandError\cf4 -reportError\cf0 \
+\cf4 DoesNotUnderstandError\cf0 -reportError\
 \
 which is the first line in the stack.\
 \
-\cf5 DoesNotUnderstandError\cf0 -reportError \
+\cf4 DoesNotUnderstandError\cf0 -reportError \
 \
 is the mechanism that prints the error notification to the transcript window. Select it and press cmd-j to see how .reportError is defined. It uses the .dumpBackTrace method, defined in class Object, to print the call stack.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -176,13 +176,13 @@ A: Look in the Char.sc document (select the word Char and press cmd-j) to see th
 Or evaluate\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 Char\cf0 .dumpInterface\
+\cf4 Char\cf0 .dumpInterface\
 \
 to see a list of messages to which Char can answer. \
 \
 Evaluate\
 \
-\cf5 Char\cf0 .dumpClassSubtree\
+\cf4 Char\cf0 .dumpClassSubtree\
 \
 to see the classes from which Char inherits. Messages to those classes can also be used and messages defined in Object are valid, as well.\
 \
@@ -200,12 +200,12 @@ to see the classes from which Char inherits. Messages to those classes can also 
 Multiplying the variable a, an integer, by the variable b, nil, produces a runtime error.\
 \
 (\
-\cf5 var\cf0  a = 10;	\cf2 // a is declared and initialized\cf0 \
-\cf5 var\cf0  b;		\cf2 // b declared but defaults to nil ... this will cause a runtime error\
+\cf4 var\cf0  a = 10;	\cf2 // a is declared and initialized\cf0 \
+\cf4 var\cf0  b;		\cf2 // b declared but defaults to nil ... this will cause a runtime error\
 			// in the case of a * b\cf0 \
-t = \cf5 Task\cf0 (\{\
+t = \cf4 Task\cf0 (\{\
 \
-	4.do(\{ \cf5 arg\cf0  item, i;\
+	4.do(\{ \cf4 arg\cf0  item, i;\
 	\
 		\cf2 // print the value of i if as long as it doesn't equal 3\
 		// when i equals 3, then multiply a * b ... but this is a problem if b is nil\cf0 \
@@ -289,7 +289,7 @@ x=4\
 \
 an assignment, as its test, as in\
 \
-if(x=4) \{ \cf7 "this is ok"\cf0 \};\
+if(x=4) \{ \cf5 "this is ok"\cf0 \};\
 \
 the result is\
 \
@@ -324,7 +324,7 @@ MethodError-reportError\
 	\
 show what went wrong. Correcting the test clause makes the if statement work.\
 \
-if(x==4) \{ \cf7 "this is ok"\cf0 \};\
+if(x==4) \{ \cf5 "this is ok"\cf0 \};\
 \
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
@@ -335,7 +335,7 @@ if(x==4) \{ \cf7 "this is ok"\cf0 \};\
 
 \f1\b0\fs18 Trying to determine the length of a non-existent file creates a runtime error. In this case, _FileLength, a C code primitive, fails.\
 \
-f = \cf5 File\cf0 (\cf7 "i_don't_exist"\cf0 , \cf7 "r"\cf0 );\
+f = \cf4 File\cf0 (\cf5 "i_don't_exist"\cf0 , \cf5 "r"\cf0 );\
 f.length;\
 \
 ERROR: Primitive '_FileLength' failed.\
