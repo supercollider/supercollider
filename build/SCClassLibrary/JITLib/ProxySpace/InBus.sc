@@ -19,6 +19,7 @@ InBus {
 			index = Array.fill(numChannels, { arg i; startIndex + (i % n) });
 			numChannels = 1;
 		};
+		
 		out = if(offset.isInteger) {
 					if(rate === 'audio')
 						{ InFeedback.ar(index, numChannels) }
@@ -28,9 +29,9 @@ InBus {
 						{ XInFeedback.ar(index, numChannels) }
 						{ XIn.kr(index, numChannels) }
 			};
-		
-		// ar -> kr is not a problem so much (mainly with triggers). there is no A2K ugen
-		^if((argRate === 'audio') and: { rate === 'control' }) { K2A.ar(out) } { out };
+		^if(argRate === rate) {Êout } { // if not the same rate, convert rates
+			if(argRate === 'audio') { K2A.ar(out) } { LinLin.kr(out) }
+		};
 	
 	}
 
