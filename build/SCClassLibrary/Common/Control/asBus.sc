@@ -1,7 +1,7 @@
 
 + Server {
-	asBus { arg rate,numChannels,server;
-		^Bus.alloc(rate,numChannels,this,server)
+	asBus { arg rate,numChannels;
+		^Bus.alloc(rate,this,numChannels)
 	}
 }
 
@@ -11,7 +11,7 @@
 
 + Integer {
 	asBus { arg rate = \control,numChannels=1,server;
-		^Bus.new(rate,this,numChannels,server ? Server.local)
+		^Bus.new(rate,this,numChannels,server)
 	}
 }
 
