@@ -80,7 +80,7 @@ void dumpOSCmsg(int inSize, char* inData)
 				printf(" \"%s\"", msg.gets());
 				break;
 			case 'b' :
-				printf(" DATA[%d]", msg.getbsize());
+				printf(" DATA[%lu]", msg.getbsize());
 				msg.skipb();
 				break;
 			default :
@@ -231,7 +231,7 @@ void DumpReplyAddress(ReplyAddress *inReplyAddress)
 	printf("mSockAddr.sin_family %d\n", inReplyAddress->mSockAddr.sin_family);
 	printf("mSockAddr.sin_port %d\n", inReplyAddress->mSockAddr.sin_port);
 	printf("mSockAddr.sin_addr.s_addr %d\n", inReplyAddress->mSockAddr.sin_addr.s_addr);
-	printf("mReplyFunc %08X\n", inReplyAddress->mReplyFunc);
+	printf("mReplyFunc %08X\n", (uint32)inReplyAddress->mReplyFunc);
 }
 
 /*
@@ -336,7 +336,7 @@ void* SC_TcpInPort::Run()
         if (socket < 0) {
         	mConnectionAvailable.Release();
         } else {
-        	SC_TcpConnectionPort *conn = new SC_TcpConnectionPort(this, socket);
+        	new SC_TcpConnectionPort(this, socket);
         }
     }
     return 0;
@@ -422,7 +422,7 @@ leave:
 
 int recvall(int socket, void *msg, size_t len)
 {
-	int total = 0;
+	size_t total = 0;
 	while (total < len)
 	{
 		int numbytes = recv(socket, msg, len - total, 0);
@@ -435,7 +435,7 @@ int recvall(int socket, void *msg, size_t len)
 
 int recvallfrom(int socket, void *msg, size_t len, struct sockaddr *fromaddr, int addrlen)
 {
-	int total = 0;
+	size_t total = 0;
 	while (total < len)
 	{
 		socklen_t addrlen2 = addrlen;
@@ -449,7 +449,7 @@ int recvallfrom(int socket, void *msg, size_t len, struct sockaddr *fromaddr, in
 
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen)
 {
-	int total = 0;
+	size_t total = 0;
 	while (total < len)
 	{
 		int numbytes = sendto(socket, msg, len - total, 0, toaddr, addrlen);
@@ -466,7 +466,7 @@ int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, 
 
 int sendall(int socket, const void *msg, size_t len)
 {
-	int total = 0;
+	size_t total = 0;
 	while (total < len) 
 	{
 		int numbytes = send(socket, msg, len - total, 0);
