@@ -856,11 +856,63 @@ SCMultiSliderView : SCView {
 	} //when ctrl click
 }
 
+
 SCEnvelopeView : SCMultiSliderView {
+	var connection, <>allConnections, doOnce;
+	setPdStyle{
+		connection = Array.newClear(3);
+		doOnce = true;
+		this.setProperty(\setGraphView, true);
+		allConnections = Array.newClear(this.size);
+		this.mouseEndTrackAction = {arg ab; 
+			ab.setProperty(\connectTo, -1);
+			ab.setProperty(\connectFrom, -1);
+			doOnce = true;
+			};
+
+		this.metaAction = {arg ab;
+			var from, to, nexti, in, out, toarr, outarr, inarr;
+			from = ab.getProperty(\connectFrom);
+			to = ab.getProperty(\connectTo);
+			//from.postln;
+			//to.postln;
+			if((from >= 0) && (to >= 0) && (doOnce),{
+				if((allConnections@from).notNil,{
+					connection = allConnections@from;
+					//connection.postln;
+					//"from ;".post; from.postln;
+				});
+				ab.select(from);
+				out =  ab.getProperty(\connectFromOutput);
+				in = ab.getProperty(\connectToInput);
+				toarr = connection@0;
+				outarr = connection@1;
+				inarr = connection@2;
+				toarr = toarr.add(to);
+				outarr = outarr.add(out);
+				inarr = inarr.add(in);
+				connection.put(0, toarr);
+				connection.put(1, outarr);
+				connection.put(2, inarr);
+				ab.connectToInputs(from,connection);
+				allConnections.put(from, connection);
+				connection = Array.newClear(3);
+				doOnce =false;
+				});
+			};
 	
+	}
+	connectToInputs{arg indx, aconn;
+		//[[toIndex..],[fromOutputs..],[toInputs..]]
+		this.select(indx);
+		this.setProperty(\connectToInputs,aconn.asFloat);
+	}
 	value_ {arg val;
 		this.size = val.at(0).size;
 		^this.setProperty(\value, val)
+	}
+	string_{arg astring;
+		^this.setProperty(\string, astring)
 	}
 	value {
 		var ax, ay, axy;
@@ -879,7 +931,13 @@ SCEnvelopeView : SCMultiSliderView {
 		this.setProperty(\thumbWidth, width);
 		this.select(-1);
 	}
-	select{arg index;
+	connect{arg aconnections; //draw a connection between the selected index 
+		^this.setProperty(\connect, aconnections.asFloat);
+	}
+	select{arg index; //this means no refresh;
+		^this.setProperty(\setIndex, index);
+		}
+	selectIndex{arg index; //this means that the view will be refreshed
 		^this.setProperty(\selectedIndex, index);
 		}
 	x { 						//returns selected x
@@ -937,7 +995,7 @@ SCEnvelopeView : SCMultiSliderView {
 			this.value_(arr);
 	
 	}
-
+	
 }
 Gradient {
 	var color1, color2, direction, steps;
