@@ -6,7 +6,7 @@ Node {
 	
 	*basicNew { arg server, nodeID;
 		server = server ? Server.default;
-		^super.newCopyArgs(nodeID ?? {server.nextNodeID}, server)
+		^super.newCopyArgs(nodeID ?? { server.nextNodeID }, server)
 	}
 
 	free { arg sendFlag=true;
@@ -166,11 +166,7 @@ Node {
 	prMoveBefore {  arg beforeThisOne;
 		this.group = beforeThisOne.group;
 	}
-	nodeToServer { arg addAction=\addToHead, target, args;
-		var msg;
-		msg = this.perform(addAction, target, args);
-		server.sendBundle(nil, msg);
-	}
+	
 	nodeToServerMsg { 
 		^this.subclassResponsibility(thisMethod)       
 	}
@@ -204,7 +200,7 @@ Group : Node {
 		target = target.asTarget;
 		server = target.server;
 		group = this.basicNew(server);
-		group.nodeToServer(addAction, target);
+		server.sendBundle(nil, group.perform(addAction, target));
 		^group
 	}
 	*after { arg aNode;    ^this.new(aNode, \addAfter) }
@@ -298,7 +294,7 @@ Synth : Node {
 		target = target.asTarget;
 		server = target.server;
 		synth = this.basicNew(defName, server);
-		synth.nodeToServer(addAction, target, args);
+		server.sendBundle(nil, synth.perform(addAction, target, args));
 		^synth
 	}
 	*after { arg aNode, defName, args;	
@@ -322,7 +318,7 @@ Synth : Node {
 		target = target.asTarget;
 		server = target.server;
 		synth = this.basicNew(defName, server, -1);
-		synth.nodeToServer(addAction, target, args);
+		server.sendBundle(nil, synth.perform(addAction, target, args));
 		^synth
 	}
 	*newLoad { arg defName, args, target, addAction=\addToHead, dir="synthdefs/";
@@ -417,8 +413,6 @@ RootNode : Group {
 		group = this; // self
 	}
 	*initClass {  roots = IdentityDictionary.new; }
-	
-	nodeToServer {} // already running
 	
 	remove {}
 
