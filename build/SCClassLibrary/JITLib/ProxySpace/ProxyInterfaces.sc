@@ -6,6 +6,7 @@
 
 AbstractPlayControl {
 	var <source, <>channelOffset;
+	var <paused=false;
 	
 	*new { arg source, channelOffset=0;
 		^super.newCopyArgs(source, channelOffset);
@@ -70,13 +71,13 @@ StreamControl : AbstractPlayControl {
 	stop {
 		stream.stop;
 	}
-	pause { stream.pause }
-	resume { stream.resume }
+	pause { stream.pause; paused=true }
+	resume { stream.resume; paused=false }
 	
 	free { stream.stop; stream = nil }
 	
 	playToBundle { arg bundle, args; 
-		if(stream.isPlaying.not, {
+		if(paused.not and: {stream.isPlaying.not}, {
 			bundle.addAction(this, \play); //no latency (latency is in stream already)
 		})
 		^nil //return a nil object instead of a synth
@@ -85,6 +86,7 @@ StreamControl : AbstractPlayControl {
 	build { arg proxy;
 		stream = source.buildForProxy(proxy, channelOffset);
 		clock = proxy.clock;
+		paused = proxy.paused;
 		^stream.notNil;
 	}
 	readyForPlay { ^stream.notNil }
@@ -100,11 +102,13 @@ SynthControl : AbstractPlayControl {
 	
 	
 	writeDef { }
-	build { ^true }
+	
 	sendDefToBundle {} //assumes that SynthDef is loaded in the server 
 	name { ^source }
 	clear { synth = nil }
-	
+	build { arg proxy;
+		^proxy.initBus(proxy.rate ? \audio, proxy.numChannels ? 2);
+	}
 	spawnToBundle { arg bundle, extraArgs, target, addAction=0; //assumes self freeing
 		var synthMsg;
 		synthMsg = [9, this.name, -1, addAction, target.asTarget.nodeID]++extraArgs; 
@@ -113,6 +117,7 @@ SynthControl : AbstractPlayControl {
 	
 	playToBundle { arg bundle, extraArgs, target, addAction=\addToTail;
 		synth = Synth.newToBundle(bundle, this.name, extraArgs, target.asTarget, addAction);
+		if(paused) { synth.msgToBundle(bundle, "/n_run", #[0])};
 		synth.isPlaying = true;
 		^synth
 	}
@@ -123,7 +128,7 @@ SynthControl : AbstractPlayControl {
 			if(this.canReleaseSynth, {
 					bundle.add([15, synth.nodeID, \gate, 0.0]); //to be sure.
 			}, {
-					if(this.canFreeSynth.not, { "free".debug; bundle.add([11, synth.nodeID]) }); //"/n_free"
+					if(this.canFreeSynth.not, { bundle.add([11, synth.nodeID]) }); //"/n_free"
 			});
 			synth.isPlaying = false;
 		});
@@ -162,11 +167,14 @@ SynthDefControl : SynthControl {
 	canFreeSynth { ^synthDef.canFreeSynth }
 	
 	build { arg proxy, index=0; 
-		var ok;
+		var ok, rate, numChannels;
 		synthDef = source.buildForProxy(proxy, channelOffset, index);
-		ok = proxy.initBus(synthDef.rate, synthDef.numChannels);
-		
+		rate = synthDef.rate ?? { if(proxy.rate !== \control) { \audio } { \control } };
+		numChannels = synthDef.numChannels ? proxy.numChannels ? 2;
+		ok = proxy.initBus(rate, numChannels);
+		[rate, numChannels].debug;
 		if(ok && synthDef.notNil, { 
+			paused = proxy.paused;
 			// schedule to avoid hd sleep latency. 
 			// def writing is only for server boot.
 			if(writeDefs, {
@@ -211,18 +219,18 @@ CXPlayerControl : AbstractPlayControl {
 		var bus;
 		if(proxy.isNeutral.not, {Êbus = proxy.asBus });
 		source.prepareForPlay(nil, true, bus);
-		
+		paused = proxy.paused;
 		^proxy.initBus(source.rate ? 'audio', source.numChannels ? 2)
 	}
 	
 	playToBundle { arg bundle, extraArgs, proxy, addAction=\addToHead;
 		
 		// we'll need channel offset maybe.
-		if(source.patchOut.isNil, {
-			source.prepareForPlay(nil, true, proxy.asBus);
-		});
+		if(source.patchOut.isNil)
+		 { source.prepareForPlay(nil, true, proxy.asBus) };
 		source.spawnToBundle(bundle); //won't work with saved proxy!
 		bundle.addSchedFunction({ this.moveIn(proxy) }, 0.3);
+		// if(paused) { bundle.addAction(source, \pause) };
 		^nil
 		
 		
@@ -245,8 +253,8 @@ CXPlayerControl : AbstractPlayControl {
 	free { 
 		source.stop;
 	}
-	pause { source.pause }
-	resume { source.resume }
+	pause { source.stop }
+	resume { source.play }
 	moveIn {}
 	
 }

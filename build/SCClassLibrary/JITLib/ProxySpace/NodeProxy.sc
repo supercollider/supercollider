@@ -9,7 +9,7 @@ BusPlug : AbstractFunction {
 	
 	
 	*new { arg server;
-		^super.newCopyArgs(server ? Server.local).init;
+		^super.newCopyArgs(server ? Server.default).init;
 	}
 	
 	*for { arg bus;
@@ -241,7 +241,7 @@ NodeProxy : BusPlug {
 
 	var <group, <objects;
 	var <parents, <nodeMap;	// playing templates
-	var <loaded=false, <>awake=true, <task, <>clock; 	
+	var <loaded=false, <>awake=true, <>paused=false, <task, <>clock; 	
 	classvar <>buildProxy;
 	
 	
@@ -297,12 +297,12 @@ NodeProxy : BusPlug {
 	pause {
 		objects.do { |item| item.pause };
 		task.stop;
-		awake = false;
+		paused = true;
 	}
 	
 	resume {
-		awake = true;
-		this.sendAll(nil, true);
+		paused = false;
+		objects.do { |item| item.resume };
 	}
 	
 		
@@ -427,11 +427,11 @@ NodeProxy : BusPlug {
 	freeTask { this.task = nil;  }
 	
 	task_ { arg argTask;
-		var bundle;
+		var bundle, t;
 		bundle = MixedBundle.new;
 		if(task.notNil) { bundle.addAction(task, \stop) };
 		task = argTask;
-		if(awake and: {this.isPlaying}, {  this.playTaskToBundle(bundle) });//clock
+		if(paused.not and: {this.isPlaying}, {  this.playTaskToBundle(bundle) });//clock
 		bundle.schedSend(server, clock);
 
 	}
@@ -574,7 +574,7 @@ NodeProxy : BusPlug {
 		awake = false;
 	}
 	
-	freeSpawn { awake = true; this.task = nil } // find better solution later
+	freeSpawn { awake = true; this.task = nil } // find better solution.
 	
 	taskFunc_ { arg func; 
 		this.task = Routine.new({ func.value(this) })
@@ -672,9 +672,10 @@ NodeProxy : BusPlug {
 	}
 	
 	playTaskToBundle { arg bundle; //revisit
-				bundle.addFunction({ 
-					SystemClock.sched(server.latency, { task.reset; task.play(clock); nil; })
-				}) 
+				bundle.addSchedFunction({ 
+						if(task.isPlaying.not) { task.reset; task.play(clock); };
+						nil; 
+					}, server.latency)
 	}
 
 	//apply the node map settings to the entire group
@@ -964,7 +965,7 @@ Ndef : NodeProxy {
 	var key;
 	*new { arg key, object, server;
 		var res;
-		server = server ? defaultServer ? Server.local;
+		server = server ? defaultServer ? Server.default;
 		res = this.at(server, key);
 		if(res.isNil, {
 			res = super.new(server).toLib(key);
