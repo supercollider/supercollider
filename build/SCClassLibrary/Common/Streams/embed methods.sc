@@ -143,19 +143,3 @@
 	}
 
 }
-
-// This is in JIT lib...
-+Pdict {
-	asStream { ^Routine({ arg inval; this.embedInStream(inval) }) }
-	
-	embedInStream { arg inval;
-		var keyStream, key;
-		keyStream = which.asStream;
-		repeats.value.do({
-			key = keyStream.next;
-			if(key.isNil) { ^inval };
-			inval = (dict.at(key) ? default).embedInStream(inval);
-		});
-		^inval
-	}
-}	
