@@ -2,7 +2,7 @@
 	
 	dumpFullInterface {
 		
-		("Full Interface for " ++ this.name).postln;
+		("\nFull Interface for " ++ this.name).postln;
 		
 		// post the superclasses
 		("\nSuperclasses: " ++ this.superclasses).postln;
@@ -64,7 +64,7 @@
 			superobject.methods.do({ arg meth;
 				var numargs, methname;
 				methname = meth.name;
-				if(methodlist.includes.not, {
+				if(methodlist.includes(methname).not, {
 					methodlist.add(methname);
 					numargs = meth.argNames.size - 1;
 					"   ".post;
@@ -84,6 +84,7 @@
 		
 		});
 		// include methods for Class
+		
 		if(this.isMetaClass, {"\nMethods inherited from Class\n".postln; Class.dumpInterface; });
 
 		
