@@ -12,15 +12,16 @@ SynthDef {
 	var <>arAvailable, <>krAvailable;
 	
 	*new { arg name, ugenGraphFunc;
-		^super.new.name_(name).build(ugenGraphFunc).postln;
+		^super.new.name_(name).build(ugenGraphFunc);
 	}
 	
 	addUGen { arg ugen;
 		ugen.synthIndex = children.size;
-		children = children.add(ugen)
+		children = children.add(ugen);
 	}
 	removeUGen { arg ugen;
-		children.remove(ugen)
+		children.remove(ugen);
+		this.indexUGens;
 	}
 	
 	build { arg func;
@@ -32,7 +33,9 @@ SynthDef {
 		
 		controls = this.buildControlsFromArgs(func);
 		func.valueArray(controls);
-		
+
+		this.optimizeGraph;
+
 		if (this.checkInputs.not, { ^nil });
 		this.collectConstants;
 		
@@ -159,6 +162,21 @@ SynthDef {
 	// the topological sort below follows branches in a depth first order,
 	// so that cache performance of connection buffers is optimized.
 	
+	optimizeGraph {
+		this.initTopoSort;
+		children.copy.do({ arg ugen;
+			ugen.optimizeGraph;
+		});
+	}
+	
+	replaceUGen { arg a, b;
+		children.do({ arg item, i;
+			if (item === a, { children.put(i, b) });
+			item.inputs.do({ arg input, j;
+				if (input === a, { item.inputs.put(j, b) });
+			});
+		});
+	}
 	
 	initTopoSort {
 		arAvailable = krAvailable = nil;

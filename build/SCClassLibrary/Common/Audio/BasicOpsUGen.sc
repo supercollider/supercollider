@@ -56,28 +56,6 @@ BinaryOpUGen : BasicOpUGen {
 		if (selector == '+', {
 			if (a == 0.0, { ^b });
 			if (b == 0.0, { ^a });
-			
-			// create a MulAdd if possible.
-			if (a.isKindOf(BinaryOpUGen) && { a.operator == '*' }, {
-				if (MulAdd.canBeMulAdd(a.inputs.at(0), a.inputs.at(1), b), {
-					buildSynthDef.removeUGen(a);
-					^MulAdd.new(a.inputs.at(0), a.inputs.at(1), b)
-				});
-				if (MulAdd.canBeMulAdd(a.inputs.at(1), a.inputs.at(0), b), {
-					buildSynthDef.removeUGen(a);
-					^MulAdd.new(a.inputs.at(1), a.inputs.at(0), b)
-				});
-			});
-			if (b.isKindOf(BinaryOpUGen) && { b.operator == '*' }, {
-				if (MulAdd.canBeMulAdd(b.inputs.at(0), b.inputs.at(1), a), {
-					buildSynthDef.removeUGen(b);
-					^MulAdd.new(b.inputs.at(0), b.inputs.at(1), a)
-				});
-				if (MulAdd.canBeMulAdd(b.inputs.at(1), b.inputs.at(0), a), {
-					buildSynthDef.removeUGen(b);
-					^MulAdd.new(b.inputs.at(1), b.inputs.at(0), a)
-				});
-			});
 		},{
 		if (selector == '-', {
 			if (a == 0.0, { ^b.neg });
@@ -96,6 +74,42 @@ BinaryOpUGen : BasicOpUGen {
 		operator = theOperator;
 		rate = this.determineRate(a, b);
 		inputs = [a, b];
+	}
+	
+	optimizeGraph {
+		var a, b, muladd;
+		#a, b = inputs;
+		
+		if (operator == '+', {
+			// create a MulAdd if possible.
+			if (a.isKindOf(BinaryOpUGen) && { a.operator == '*' }
+				&& { a.descendants.size == 1 }, 
+			{
+				if (MulAdd.canBeMulAdd(a.inputs.at(0), a.inputs.at(1), b), {
+					buildSynthDef.removeUGen(a);
+					muladd = MulAdd.new(a.inputs.at(0), a.inputs.at(1), b);
+				},{
+				if (MulAdd.canBeMulAdd(a.inputs.at(1), a.inputs.at(0), b), {
+					buildSynthDef.removeUGen(a);
+					muladd = MulAdd.new(a.inputs.at(1), a.inputs.at(0), b)
+				})});
+			},{
+			if (b.isKindOf(BinaryOpUGen) && { b.operator == '*' }
+				&& { b.descendants.size == 1 }, 
+			{
+				if (MulAdd.canBeMulAdd(b.inputs.at(0), b.inputs.at(1), a), {
+					buildSynthDef.removeUGen(b);
+					muladd = MulAdd.new(b.inputs.at(0), b.inputs.at(1), a)
+				},{
+				if (MulAdd.canBeMulAdd(b.inputs.at(1), b.inputs.at(0), a), {
+					buildSynthDef.removeUGen(b);
+					muladd = MulAdd.new(b.inputs.at(1), b.inputs.at(0), a)
+				})});
+			})});
+			if (muladd.notNil, {
+				synthDef.replaceUGen(this, muladd);
+			});
+		});
 	}
 }
 

@@ -175,7 +175,10 @@ UGen : AbstractFunction {
 		});
 		^outStack.add(this);
 	}
+	
 	< { arg that; ^this.synthIndex < that.synthIndex }
+	
+	optimizeGraph {}
 	
 }
 
