@@ -1,29 +1,33 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green115\blue0;\red0\green0\blue191;
-}
+\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 Runtime errors\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf0 \
+\f1\b0\fs18 \
 Runtime errors occur only after SuperCollider determines that 1. a program has no syntax or grammar errors and 2. when an object, after this check, doesn't know how to respond to a message. Such errors are also known as exceptions.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////
 \f0\b\fs24 \cf0 \
 \
-Common error
+Common errors
 \f1\b0\fs18 \
 \
 1. an object receives a message to which it doesn't know how to respond\
+2. a binary operation (addition, subtraction, multiplication, etc.) can't be performed\
 \
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 Execute the following line\
+
+\f0\b\fs24 \cf0 An object doesn't understand
+\f1\b0\fs18 \
+\
+Execute the following line\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -31,9 +35,9 @@ Common error
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 Neither the Integer class of which 3 is an instance or any of the superclasses from which Integer inherits knows what to do with a .createRuntimeError message; obviously, a .createRuntimeError is not defined anywhere in the system. \
+\cf0 Neither the Integer class of which 3 is an instance or any of the superclasses from which Integer inherits knows what to do with a .createRuntimeError message; obviously, .createRuntimeError is not defined anywhere in the system. \
 \
-In such instances, when an object doesn't know how to respond to a message, SuperCollider, by default, executes a .doesNotUnderstand message which then returns a four-part error notification. The names of the parts of the notification are ERROR, RECEIVER, ARGS, and CALL STACK.\
+In such instances, when an object doesn't know how to respond to a message, SuperCollider executes a .doesNotUnderstand message which then returns a four-part error notification. The names of the parts of the notification are ERROR, RECEIVER, ARGS, and CALL STACK.\
 \
 ERROR:\
 Message 'createRuntimeError' not understood.\
@@ -63,7 +67,7 @@ The ERROR section explains what went wrong. \
 \
 The RECEIVER section names the object that received the message. \
 \
-The ARGS section says how many arguments were included in the message - in this case the number was 0. \
+The ARGS section says how many arguments were included in the message; in this case the number was 0. \
 \
 The CALL STACK shows the code that led up to the runtime error. Read the stack from the bottom; the stack shows everything leading up to the error. As seen above, execution moves from \
 \
@@ -87,12 +91,12 @@ is the method that prints the error notification to the transcript window. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
-To see how the error message is created, select the entire line \
+To see how the error message is created, select \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 Object\cf0 -doesNotUnderstand\
 \
-and press cmd-j to bring up a window with the code for the .doesNotUnderstand method.\
+which is the top message in the stack. Then press cmd-j to bring up a window with the code for the .doesNotUnderstand method.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -133,7 +137,7 @@ CALL STACK:\
 		\
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
-One way to fix to the problem of trying to multiply to characters is just to write\
+One way to fix to the problem of trying to multiply two characters is to write\
 \
 $a.ascii * $b.ascii;\
 \
@@ -154,5 +158,85 @@ Evaluate\
 to see the classes from which Char inherits. Messages to those classes can also be used and messages defined in Object are valid, as well.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 Unitialized variable\
+\
+
+\f1\b0\fs18 The next examples shows that the variable a is initialized and the variable b isn't. When the program runs, those two variables are multiplied against each other when a condition is met: if/when the index, i, of the loop is equal to 3. This creates a runtime error.\
+\
+(\cf5 \
+\cf6 var\cf5  a = 10;	\cf7 // a is declared and initialized\cf5 \
+\cf6 var\cf5  b;		\cf7 // b declared but is not initialized ... will cause a runtime error\cf5 \
+\
+t = \cf6 Task\cf5 (\{\
+\
+	4.do(\{ \cf6 arg\cf5  item, i;\
+	\
+		\cf7 // print the value of i if as long as it doesn't equal 3\
+		// when i equals 3, then multiply a * b ... but this is a problem as b is nil\cf5 \
+		if(i != 3) \{ i.postln \} \cf0 \{ (a * b).postln \}\cf5 ;\
+		1.wait;\
+		\
+	\})\
+	\
+\});\
+t.start;\
+\cf0 )\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+Here's the printout from the transcript window. It shows the program ran successfully until the index, i, reached 3.\
+\
+a Task\
+0\
+1\
+2\
+ERROR:\
+performBinaryOp failed.\
+\
+CALL STACK:\
+	Object-performBinaryOpOnSomething\
+		arg this = nil\
+		arg aSelector = '*'\
+		arg adverb = 10\
+	Integer-*\
+		arg this = 10\
+		arg aNumber = nil\
+		arg adverb = nil\
+	< FunctionDef in closed FunctionDef >\
+		arg item = 3\
+		arg i = 3\
+	Integer-do\
+		arg this = 4\
+		arg function = <instance of Function>\
+		var i = 3\
+	< FunctionDef in closed FunctionDef >  (no arguments or variables)\
+	Routine-prStart\
+		arg this = <instance of Routine>\
+		arg inval = 1018.000000\
+		\
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+To see how the error message was created, select \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 Object\cf0 -performBinaryOpOnSomething\
+\
+which is the top message in the stack. Then press cmd-j to bring up a window with the code for the .doesNotUnderstand method.\
+\
+Basically, the .performBinaryOpOnSomething message first prints\
+\
+ERROR:\
+performBinaryOp failed.\
+\
+And then it shows the stack leading up to the error. \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
+\
+As with the the .doesNotUnderstand method, the .performBinaryOpOnSomething method uses .dumpBackTrace, which is defined in class Object, to print the call stack.\
 }
