@@ -1150,6 +1150,22 @@ SCErr meth_s_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inRepl
 
 
 
+SCErr meth_s_noid(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_s_noid(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
+{		
+	sc_msg_iter msg(inSize, inData);
+	while (msg.remain()) {
+		int id = msg.geti();
+		Graph *graph = World_GetGraph(inWorld, id);
+		if (!graph) continue;
+		
+		Graph_RemoveID(inWorld, graph);
+	}
+	
+	return kSCErr_None;
+}
+
+
 SCErr meth_notify(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_notify(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
@@ -1228,7 +1244,9 @@ void initMiscCommands()
 	NEW_COMMAND(s_getn);
 			
 	NEW_COMMAND(n_query);		
-	NEW_COMMAND(b_query);		
+	NEW_COMMAND(b_query);
+			
+	NEW_COMMAND(s_noid);		
 }
 
 

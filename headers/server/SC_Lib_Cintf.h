@@ -107,8 +107,9 @@ enum {
 	cmd_b_query = 47,
 
 	cmd_n_mapn = 48,
+	cmd_s_noid = 49,
 
-	NUMBER_OF_COMMANDS = 49
+	NUMBER_OF_COMMANDS = 50
 };
 
 extern SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];

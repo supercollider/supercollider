@@ -108,6 +108,7 @@ void Graph_SetControl(struct Graph* inGraph, int32 inHash, int32 *inName, int in
 void Graph_MapControl(Graph* inGraph, int inIndex, int inBus);
 void Graph_MapControl(Graph* inGraph, int32 inHash, int32 *inName, int inIndex, int inBus);
 void Graph_Trace(Graph *inGraph);
+void Graph_RemoveID(World* inWorld, Graph *inGraph);
 
 ////////////////////////////////////////////////////////////////////////
 
