@@ -173,7 +173,7 @@ Dictionary : Set {
 		var array;
 		this.keysValuesDo({ arg key, value; array = array.add([key,value]); });
 		array = array.sort({ arg a, b; a.at(0) < b.at(0) });
-		^array.flop;
+		^array;
 	}
 	
 	// PRIVATE IMPLEMENTATION
