@@ -259,7 +259,7 @@ NodeProxy : AbstractFunction {
 			synthDefs.do({ arg synthDef;
 				var synth;
 				synth = Synth.newMsg(msg, synthDef.name, extraArgs, group); 
-				nodeMap.updateMsg(msg.postln, synth);
+				nodeMap.updateMsg(msg, synth);
 			});
 		
 	
