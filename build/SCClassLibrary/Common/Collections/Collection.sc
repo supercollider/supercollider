@@ -28,7 +28,8 @@ Collection {
 		if (aCollection.class != this.class) { ^false };
 		if (this.size != aCollection.size) { ^false };
 		this.do { | item, i |
-			if (item != aCollection[i]) { ^false };
+			// this is enough since both collections are finite
+			if ((aCollection.includes(item)).not) { ^false };
 		};
 		^true
 	}
@@ -44,7 +45,7 @@ Collection {
 	species { ^Array }
 	do { ^this.subclassResponsibility(thisMethod) }
 	iter { 
-		^Routine({ this.do {|item| item.yield } })
+		^r { this.do {|item| item.yield } }
 	}
 	size { 
 		// this is the slow way. Most collections have a faster way.

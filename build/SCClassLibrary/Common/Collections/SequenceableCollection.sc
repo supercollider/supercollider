@@ -97,6 +97,15 @@ SequenceableCollection : Collection {
 	wchoose { arg weights;
 		^this.at(weights.windex) 
 	}
+	
+	== { | aCollection |
+		if (aCollection.class != this.class) { ^false };
+		if (this.size != aCollection.size) { ^false };
+		this.do { | item, i |
+			if (item != aCollection[i]) { ^false };
+		};
+		^true
+	}
 
 	copyRange { arg start, end;
 		var newColl, i;
