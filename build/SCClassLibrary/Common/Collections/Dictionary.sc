@@ -282,6 +282,7 @@ Dictionary : Set {
 }
 
 IdentityDictionary : Dictionary {
+	var <>proto; // inheritance of properties
 	var <>parent; // inheritance of properties
 	
 	var <>know = false; 

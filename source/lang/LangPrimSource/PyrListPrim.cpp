@@ -34,7 +34,7 @@
 
 int objectPerform(VMGlobals *g, int numArgsPushed);
 
-int ivxIdentDict_array, ivxIdentDict_size, ivxIdentDict_parent;
+int ivxIdentDict_array, ivxIdentDict_size, ivxIdentDict_parent, ivxIdentDict_proto;
 
 int class_array_index, class_array_maxsubclassindex;
 int class_identdict_index, class_identdict_maxsubclassindex;
@@ -320,39 +320,52 @@ int prArray_AtIdentityHashInPairs(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prIdentDict_At(struct VMGlobals *g, int numArgsPushed);
-int prIdentDict_At(struct VMGlobals *g, int numArgsPushed)
+
+void identDict_lookup(PyrObject *dict, PyrSlot *key, PyrSlot *result);
+void identDict_lookup(PyrObject *dict, PyrSlot *key, PyrSlot *result)
 {
-	PyrSlot *a, *b;
-	unsigned int index;
-	int objClassIndex;
+again:	
+	PyrSlot *dictslots = dict->slots;
+	PyrSlot *arraySlot = dictslots + ivxIdentDict_array;
 	
-	a = g->sp - 1;  // dict
-	b = g->sp;		// key
+	if (isKindOfSlot(arraySlot, class_array)) {
+		PyrObject *array = arraySlot->uo;
 	
-	PyrObject *obj = a->uo;
-
-again:
-
-	PyrSlot *arraySlot = obj->slots + ivxIdentDict_array;
-	
-	if (!IsObj(arraySlot)) return errFailed;
-	
-	PyrObject *array = arraySlot->uo;
-	
-	if (!ISKINDOF(array, class_array_index, class_array_maxsubclassindex)) return errFailed;
-
-	index = arrayAtIdentityHashInPairs(array, b);
-	a->ucopy = array->slots[index + 1].ucopy;
-	
-	if (IsNil(a)) {
-		PyrSlot *parentSlot = obj->slots + ivxIdentDict_parent;
-		if (isKindOfSlot(parentSlot, s_identitydictionary->u.classobj)) {
-			obj = parentSlot->uo;
-			goto again; // tail call
-		}
+		int index = arrayAtIdentityHashInPairs(array, key);
+		result->ucopy = array->slots[index + 1].ucopy;
+	} else {
+		SetNil(result);
 	}
 	
+	if (IsNil(result)) {
+		PyrClass *identDictClass = s_identitydictionary->u.classobj;
+		PyrSlot *parentSlot = dictslots + ivxIdentDict_parent;
+		PyrSlot * protoSlot = dictslots + ivxIdentDict_proto;
+		if (isKindOfSlot(parentSlot, identDictClass)) {
+			if (isKindOfSlot(protoSlot, identDictClass)) {
+				// recursive call.
+				identDict_lookup(protoSlot->uo, key, result);
+				if (NotNil(result)) return;
+			}
+		
+			dict = parentSlot->uo;
+			goto again; // tail call
+		} else {
+			if (isKindOfSlot(protoSlot, identDictClass)) {
+				dict = protoSlot->uo;
+				goto again; // tail call
+			}
+		}
+	}	
+}
+
+int prIdentDict_At(struct VMGlobals *g, int numArgsPushed);
+int prIdentDict_At(struct VMGlobals *g, int numArgsPushed)
+{	
+	PyrSlot* a = g->sp - 1;  // dict
+	PyrSlot* b = g->sp;		// key
+	
+	identDict_lookup(a->uo, b, a);
 	return errNone;
 }
 
@@ -734,6 +747,7 @@ void initPatterns()
 	ivxIdentDict_array  = instVarOffset("IdentityDictionary", "array");
 	ivxIdentDict_size   = instVarOffset("IdentityDictionary", "size");
 	ivxIdentDict_parent = instVarOffset("IdentityDictionary", "parent");
+	ivxIdentDict_proto = instVarOffset("IdentityDictionary", "proto");
 	
 	sym = getsym("IdentityDictionary");
 	class_identdict = sym ? sym->u.classobj : NULL;
