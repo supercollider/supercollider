@@ -32,7 +32,7 @@ ControlSpec : Spec {
 	}
 	unmap { arg value;
 		// maps a value from spec range to [0..1]
-		^warp.unmap(value.clip(minval, maxval)).round(step);
+		^warp.unmap(value.clip(minval, maxval).round(step));
 	}
 	
 	*initClass {
