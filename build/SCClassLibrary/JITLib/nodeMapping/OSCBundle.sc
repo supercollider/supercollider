@@ -39,6 +39,10 @@ MixedBundle : OSCBundle {
 		functions = functions.add(func);
 	}
 	
+	addSchedFunction { arg func, time=0;
+		functions = functions.add({ SystemClock.sched({ func.value; nil }) });
+	}
+	
 	addPrepare { arg msg;
 		preparationMessages = preparationMessages.add(msg);
 	}
