@@ -241,7 +241,7 @@ CleanupStream : Stream {
 
 PauseStream : Stream
 {
-	var <stream, <originalStream, <clock;
+	var <stream, <originalStream, <clock, <nextBeat;
 	
 	*new { arg argStream, clock; 
 		^super.newCopyArgs(nil, argStream, clock ? TempoClock.default) 
@@ -256,10 +256,10 @@ PauseStream : Stream
 		clock.play(this, quant);
 	}
 	reset { ^originalStream.reset }
-	stop {  stream = nil }
+	stop {  stream = nextBeat = nil }
 	removedFromScheduler { this.stop }
 	
-	pause { stream = nil }
+	pause { stream = nextBeat = nil }
 	resume { arg argClock, quant=1.0; 
 		^this.play(clock ? argClock, false, quant) 
 	}
@@ -278,7 +278,8 @@ PauseStream : Stream
 	next { arg inval; 
 		var nextTime;
 		nextTime = stream.next(inval);
-		if (nextTime.isNil, { stream = nil });
+		if (nextTime.isNil) { stream = nextBeat = nil }
+			{ nextBeat = inval + nextTime };	// inval is current logical beat
 		^nextTime
 	}
 	awake { arg beats, seconds, inClock;
@@ -319,11 +320,12 @@ EventStreamPlayer : PauseStream {
 		var outEvent, nextTime;
 		outEvent = stream.next(event);
 		if (outEvent.isNil) {
-			stream = nil;
+			stream = nextBeat = nil;
 			^nil
 		}{
 			if (muteCount > 0) { outEvent.put(\freq, \rest) };
 			if ((nextTime = outEvent.play).isNil) { stream = nil };
+			nextBeat = inTime + nextTime;	// inval is current logical beat
 			^nextTime
 		};
 	}
