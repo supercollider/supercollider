@@ -770,8 +770,8 @@ bool NotifyCmd::Stage2()
 		for (int i=0; i<hw->mNumUsers; ++i) {
 			if (mReplyAddress == hw->mUsers[i]) {
 				// already in table - don't fail though..
-				SendFailure(&mReplyAddress, "/notify", "already registered\n");
-				scprintf("already registered\n");
+				SendFailure(&mReplyAddress, "/notify", "notify: already registered\n");
+				scprintf("/notify : already registered\n");
 				return false;
 			}
 		}
