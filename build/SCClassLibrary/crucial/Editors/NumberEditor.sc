@@ -15,16 +15,10 @@ Editor {
 	setPatchOut { arg po; patchOut = po }
 
 	prepareToBundle { arg group,bundle;
-		// i need this now ?
-		if(patchOut.isNil,{ // private out
-			//patchOut = UpdatingScalarPatchOut(this,enabled: false);
+		if(patchOut.isNil,{
 			patchOut = ScalarPatchOut(this);
 		});
 	}
-	spawnToBundle { arg bundle;
-		bundle.addMessage(this,\didSpawn);
-	}
-	didSpawn {}
 	synthArg { ^this.poll }
 	instrArgFromControl { arg control;
 		^control
@@ -40,9 +34,9 @@ Editor {
 	
 }
 
-KrNumberEditor : Editor {
+NumberEditor : Editor {
 	
-	var <spec,lag=0.05;
+	var <spec;
 	
 	*new { arg value=1.0,spec='amp';
 		^super.new.init(value,spec)
@@ -60,58 +54,6 @@ KrNumberEditor : Editor {
 		value = spec.constrain(value);
 		this.changed(\spec);
 	}
-	canDoSpec { arg aspec; ^aspec.isKindOf(ControlSpec) }
-
-	addToSynthDef {  arg synthDef,name;
-		synthDef.addKr(name,this.synthArg);
-	}
-	instrArgRate { ^\control }
-//	instrArgFromControl { arg control;
-//		//should request a LagControl
-//		if(lag > 0.0,{
-//			^Lag.kr(control,lag)
-//		},{
-//			^control
-//		})
-//	}
-//	didSpawn { arg patchIn,synthi;
-//		//patchOut.enable;
-//		
-//		// separate, nothing passed in
-//		//patchOut.connectTo(patchIn,false);
-//		
-//		// am i already connected to this client ?
-//		if(this.dependants.includes(patchOut.updater).not,{
-//			patchOut.updater = 
-//				Updater(this,{
-//					patchIn.value = value;
-//				});
-//		});
-//	}
-	connectToPatchIn { arg patchIn,needsValueSetNow = true;
-		if(this.dependants.includes(patchOut.updater).not,{
-			patchOut.updater = 
-				Updater(this,{
-					patchIn.value = value;
-				});
-		});
-		if(needsValueSetNow,{ patchIn.value = value });
-	}
-	stop {
-		//patchOut.free;
-		if(patchOut.notNil and: {patchOut.updater.notNil},{
-			patchOut.updater.remove;
-			patchOut.updater = nil;
-		});
-	}
-	free { this.stop }	
-	guiClass { ^NumberEditorGui }
-
-}
-
-
-// for controls that won't talk to the server
-NumberEditor : KrNumberEditor { 
 
 	addToSynthDef { arg synthDef,name;
 		synthDef.addInstrOnlyArg(name,this.synthArg)
@@ -120,6 +62,48 @@ NumberEditor : KrNumberEditor {
 		^value
 	}
 	instrArgRate { ^\scalar }
+
+	guiClass { ^NumberEditorGui }
+
+}
+
+
+// for controls that won't talk to the server
+KrNumberEditor : NumberEditor { 
+
+ 	var lag=0.05;
+ 
+	instrArgRate { ^\control }
+
+ 	canDoSpec { arg aspec; ^aspec.isKindOf(ControlSpec) }
+
+	addToSynthDef {  arg synthDef,name;
+		synthDef.addKr(name,this.synthArg);
+	}
+	instrArgFromControl { arg control;
+		^control
+	}
+//	instrArgFromControl { arg control;
+//		//should request a LagControl
+//		if(lag > 0.0,{
+//			^Lag.kr(control,lag)
+//		},{
+//			^control
+//		})
+//	}
+	prepareToBundle { arg group,bundle;
+		if(patchOut.isNil,{
+			patchOut = UpdatingScalarPatchOut(this,enabled: false);
+		});
+	}
+	connectToPatchIn { arg patchIn,needsValueSetNow = true;
+		patchOut.connectTo(patchIn,needsValueSetNow);
+	}
+	stop {
+		patchOut.free;
+	}
+	free { this.stop }	
+ 
 }
 
 IntegerEditor : NumberEditor {

@@ -26,10 +26,12 @@ AbstractPlayer : AbstractFunction  {
 					
 		bundle = CXBundle.new;
 		
-		if(readyForPlay,{
+		if(readyForPlay and: {Library.at(SynthDef,server,this.defName.asSymbol).notNil},{
 			this.makePatchOut(group,false,bus,bundle);
 			this.spawnToBundle(bundle);
-			bundle.send(this.server,atTime);
+			server.waitForBoot({
+				bundle.send(this.server,atTime);
+			});
 		},{
 			Routine({
 				var limit = 100,bsize;
@@ -48,7 +50,7 @@ AbstractPlayer : AbstractFunction  {
 				if(server.serverRunning.not,{
 					"server failed to start".error;
 				},{
-					bsize = this.prepareForPlay(group,false,bus) / 40.0;
+					bsize = this.prepareForPlay(group,false,bus) / 30.0;
 					// need some way to track all the preps completion
 					// also in some cases the prepare can have a completion
 					// tacked on and we might combine with the spawn message
@@ -603,10 +605,6 @@ AbstractPlayerProxy : AbstractPlayer {
 			source.setPatchOut(PatchOut(source,patchOut.group,patchOut.bus.copy));
 		});
 	}
-//	didSpawn { arg patchIn,synthArgi;
-//		super.didSpawn(patchIn,synthArgi);
-//		source.didSpawn(patchIn,synthArgi);
-//	}
 	//children { ^source.children }
 	children { ^[source] }
 	instrArgFromControl { arg control;

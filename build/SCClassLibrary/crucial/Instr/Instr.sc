@@ -445,7 +445,7 @@ InstrSynthDef : SynthDef {
 					"Clearing AbstractPlayer SynthDef cache".inform;
 					Library.put(SynthDef,server,nil)
 				});
-			watchedServers.put(server,true);
+			watchedServers.put(server,Main.elapsedTime);
 		});
 	}
 }

@@ -40,7 +40,6 @@ AudioPatchIn : PatchIn {
 ControlPatchIn : AudioPatchIn {
 	rate { ^\control }
 	value_ { arg val;
-		//[this,nodeControl].insp(thisMethod);
 		nodeControl.value = val;
 	}
 }
@@ -56,7 +55,7 @@ ScalarPatchIn : ControlPatchIn {
 
 PatchOut {
 
-	var <source,<>group,<bus;
+	var <>source,<>group,<bus;
 	var <connectedTo,<>patchOutsOfInputs;
 
 	*new { arg source,group,bus;
@@ -209,7 +208,7 @@ ScalarPatchOut : PatchOut {
 }
 
 UpdatingScalarPatchOut : ScalarPatchOut {
-
+	var enabled=false;
 	*new { arg source,bus,enabled=true;
 		^this.prNew(source,enabled)
 	}
@@ -237,11 +236,17 @@ UpdatingScalarPatchOut : ScalarPatchOut {
 		//thisMethod.notYetImplemented;
 		this.enable;
 	}
-	enable { source.addDependant(this) }
+	enable { 
+		if(enabled.not,{
+			source.addDependant(this);
+			enabled = true;
+		})
+	}
 	update {
 		connectedTo.do({ arg c; c.value = source.value })
 	}
 	free {
-		source.removeDependant(this)
+		source.removeDependant(this);
+		enabled = false;
 	}
 }

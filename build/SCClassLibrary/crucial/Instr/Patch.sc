@@ -60,6 +60,36 @@ have to bundle it
 		});
 		^array
 	}
+	
+	controllables { arg offset=0, array;
+		var inputs;
+		inputs = this.inputs;
+		if(array.isNil,{ array = [] });
+		inputs.do({ arg a,i;
+			if(a.isNumber or: {a.isKindOf(this.specAt(i).defaultControl.class)},{
+				array = array.add([a, offset + i, this.argNameAt(i), this.specAt(i) ]);
+			},{
+				if(a.isKindOf(HasPatchIns),{
+					a.controllables(offset + i, array)
+				})
+			})
+		});
+		^array
+	}
+	setInput { arg ai,ag;
+		^this.subclassResponsibility(thisMethod)
+	}
+	setDeepInput { arg ai,ag,offset=0;
+		var inputs;
+		inputs = this.inputs;
+		if(inputs.size + offset > ai,{
+			this.setInput(ai - offset, ag);
+			^true
+		});
+		^inputs.any({ arg a,i;
+			a.isKindOf(HasPatchIns) and: { a.setDeepInput(ai,ag,offset + i) }
+		})
+	}		
 }
 
 Patch : HasPatchIns  {
@@ -205,7 +235,9 @@ Patch : HasPatchIns  {
 			)
 	}
 
-
+	setInput { arg ai, ag;
+		args.put(ai,ag)
+	}
 	storeArgs { ^[this.instr.name,args] }
 
 	children { ^args }
