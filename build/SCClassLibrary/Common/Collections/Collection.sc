@@ -214,6 +214,7 @@ Collection {
 			^minElement;
 		})
 	}
+	asArray { ^Array.new(this.size).addAll(this); }
 	asBag { ^Bag.new(this.size).addAll(this); }
 	asList { ^List.new(this.size).addAll(this); }
 	asSet { ^Set.new(this.size).addAll(this); }
