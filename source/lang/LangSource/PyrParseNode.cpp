@@ -318,7 +318,7 @@ void compilePyrClassExtNode(PyrClassExtNode* node, void *result)
 	if (!classobj) {
         char extPath[1024];
         asRelativePath(gCompilingFileSym->name, extPath);
-		error("Class extension for nonexisting class '%s'\n     In file:'%s'", 
+		error("Class extension for nonexistent class '%s'\n     In file:'%s'\n", 
             node->className->slot.us->name,
             extPath
         );
