@@ -3,11 +3,17 @@ BroadcastServer : Server {
 
 	var <>localServer, <>allAddr;
 	
+	
 	*newFrom { arg localServer, allAddr;
 		^super.new(localServer.name.asString ++ "_broadcast")
 				.localServer_(localServer)
-				.allAddr_(allAddr.add(localServer.addr))
+				.allAddr_(allAddr.add(localServer))
+				 
 	}
+	init { arg argName; name = argName; } //we don't need anything here
+	boot {}
+	
+	serverRunning { ^true }
 		
 	sendMsg { arg ... args;
 		allAddr.do({ arg addr; addr.sendBundle(nil, args) });
@@ -33,10 +39,14 @@ BroadcastServer : Server {
 		allAddr.do({ arg addr; addr.sendMsg("/notify", flag.binaryValue) });
 	}
 	
-	serverRunning {
-		^true //for now assume it is
+	nodeIsPlaying_ { arg nodeID;
+		localServer.nodeWatcher.nodes.add(nodeID);
 	}
 	
+	nodeIsPlaying { arg nodeID;
+		^localServer.nodeIsPlaying(nodeID); //for simplicity
+	}
+		
 	//use local allocators
 
 	nodeAllocator { ^localServer.nodeAllocator }
@@ -47,12 +57,13 @@ BroadcastServer : Server {
 	
 	nextNodeID { ^localServer.nodeAllocator.alloc }
 	nextStaticNodeID { ^localServer.staticNodeAllocator.alloc }
+	nextSharedNodeID { ^localServer.nextSharedNodeID }
 }
 
 
 Router : Server {
 	
-	var <broadcast;
+	var <broadcast, <sharedNodeIDAllocator;
 	var <clientNumber=0; //for multi user dungeons
 	
 	*new { arg name, addr, options, clientNumber=0, allAddr;
@@ -61,11 +72,16 @@ Router : Server {
 			.newAllocatorsForThisClient //move up later maybe
 			.initBroadcast(allAddr)
 	}
+	nextSharedNodeID {
+		^sharedNodeIDAllocator.alloc
+	}
 	
+	//isLocal { ^false }
 	
 	initBroadcast { arg addresses;
 		broadcast = BroadcastServer.newFrom(this, addresses);
 	}
+	
 	
 	setID { arg id;
 		clientNumber = id;
@@ -75,17 +91,22 @@ Router : Server {
 	
 	newAllocatorsForThisClient { 
 		var startID;
-		startID = clientNumber * (options.maxNodes * 2) + 1;
-		nodeAllocator = RingNumberAllocator(startID, startID + options.maxNodes);
-		staticNodeAllocator = RingNumberAllocator(startID + options.maxNodes, 
+		startID = clientNumber * (options.maxNodes * 2) + options.maxNodes + 1;
+		sharedNodeIDAllocator = RingNumberAllocator(startID, options.maxNodes);
+		nodeAllocator = RingNumberAllocator(startID + options.maxNodes, 
 										startID + 1 + (2*options.maxNodes));
-		
+		staticNodeAllocator = RingNumberAllocator(startID + options.maxNodes, 
+										startID + 1 + (3*options.maxNodes));
 		controlBusAllocator = PowerOfTwoAllocator(options.numControlBusChannels);
 		audioBusAllocator = PowerOfTwoAllocator(options.numAudioBusChannels, 
 		options.numInputBusChannels + options.numOutputBusChannels);
 		bufferAllocator = PowerOfTwoAllocator(options.numBuffers);
 	}
-
+	
+	nodeIsPlaying_ { arg nodeID;
+		nodeWatcher.nodes.add(nodeID);
+	}
+	
 
 }
 
