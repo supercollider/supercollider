@@ -84,6 +84,7 @@ struct PV_Diffuser : Unit
 {
 	int m_numbins;
 	float m_prevtrig, *m_shift;
+	bool m_triggered;
 };
 
 struct PV_MagFreeze : Unit
@@ -96,12 +97,14 @@ struct PV_RandWipe : Unit
 {
 	int *m_ordering, m_numbins;
 	float m_prevtrig;
+	bool m_triggered;
 };
 
 struct PV_RandComb : Unit
 {
 	int *m_ordering, m_numbins;
 	float m_prevtrig;
+	bool m_triggered;
 };
 
 struct PV_BinScramble : Unit
@@ -109,6 +112,7 @@ struct PV_BinScramble : Unit
 	int *m_from, *m_to, m_numbins;
 	float m_prevtrig;
 	float *m_tempbuf;
+	bool m_triggered;
 };
 
 struct SCComplexBuf 
@@ -374,6 +378,8 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 		ZOUT0(0) = -1.f;
 	} else {
 		ZOUT0(0) = unit->m_fftbufnum;
+		unit->m_whichOverlap = (unit->m_whichOverlap+1) & (kNUMOVERLAPS-1);
+		if (unit->m_pos == unit->m_bufsize) unit->m_pos = 0;
 				
 		// copy to fftbuf
 		CopyInput(unit);
@@ -386,8 +392,6 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 		rffts((float*)unit->m_fftbuf, log2n, 1, cosTable[log2n]);
 		
 		unit->m_fftsndbuf->coord = coord_Complex;
-		if (unit->m_pos == unit->m_bufsize) unit->m_pos = 0;
-		unit->m_whichOverlap = (unit->m_whichOverlap+1) & (kNUMOVERLAPS-1);
 	}
 }
 
@@ -404,12 +408,14 @@ void OverlapAddOutput0(IFFT *unit, int inNumSamples, float *out)
 void OverlapAddOutput1(IFFT *unit, int inNumSamples, float *out);
 void OverlapAddOutput1(IFFT *unit, int inNumSamples, float *out)
 {
-	int mask = unit->m_mask;
+	int mask = unit->m_bufsize - 1;
 	int pos = unit->m_pos;
-	float *fftbuf0 = (float*)unit->m_outbuf[0] + (pos & mask) - 1;
+	int stride = unit->m_stride;
+	int pos1 = (pos + stride) & mask;
+	float *outbuf1 = (float*)unit->m_outbuf[1] + pos1 - 1;
 	
 	for (int i=0; i<inNumSamples; ++i) {
-		*++out = *++fftbuf0;
+		*++out = *++outbuf1;
 	}
 }
 
@@ -419,8 +425,10 @@ void OverlapAddOutput2(IFFT *unit, int inNumSamples, float *out)
 	int mask = unit->m_bufsize - 1;
 	int pos = unit->m_pos;
 	int stride = unit->m_stride;
-	float *outbuf0 = (float*)unit->m_outbuf[0] + (pos & mask) - 1;
-	float *outbuf1 = (float*)unit->m_outbuf[1] + ((pos + stride) & mask) - 1;
+	int pos0 = pos & mask;
+	int pos1 = (pos + stride) & mask;
+	float *outbuf0 = (float*)unit->m_outbuf[0] + pos0 - 1;
+	float *outbuf1 = (float*)unit->m_outbuf[1] + pos1 - 1;
 
 	for (int i=0; i<inNumSamples; ++i) {
 		*++out = *++outbuf0 + *++outbuf1;
@@ -486,15 +494,17 @@ void IFFT_next(IFFT *unit, int inNumSamples)
 		case 2 : OverlapAddOutput2(unit, inNumSamples, out); break;
 //		case 3 : OverlapAddOutput3(unit, inNumSamples, out); break;
 //		case 4 : OverlapAddOutput4(unit, inNumSamples, out); break;
-	}	
+	}
 	
 	unit->m_pos += inNumSamples;
 	
 	if (unit->m_pos & unit->m_mask) {
 		unit->m_fftsndbuf->coord = coord_None;
-	} else {
-		int bufnum = (int)ZIN0(0);
-		
+	} else {		
+		unit->m_whichOverlap = (unit->m_whichOverlap+1) & (kNUMOVERLAPS-1);
+		if (unit->m_pos == unit->m_bufsize) unit->m_pos = 0;
+		if (unit->m_stage < kNUMOVERLAPS) unit->m_stage++;
+
 		ToComplexApx(unit->m_fftsndbuf);
 		
 		// do ifft
@@ -506,9 +516,6 @@ void IFFT_next(IFFT *unit, int inNumSamples)
 		
 		CopyOutput(unit);
 
-		if (unit->m_pos == unit->m_bufsize) unit->m_pos = 0;
-		if (unit->m_stage < kNUMOVERLAPS) unit->m_stage++;
-		unit->m_whichOverlap = (unit->m_whichOverlap+1) & (kNUMOVERLAPS-1);
 	}
 }
 
@@ -553,11 +560,10 @@ void IFFT_next(IFFT *unit, int inNumSamples)
 void PV_MagAbove_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF
-	
+
 	SCPolarBuf *p = ToPolarApx(buf);
 	
 	float thresh = ZIN0(1);
-	static int count = 0;
 	for (int i=0; i<numbins; ++i) {
 		float mag = p->bin[i].mag;
 		if (mag < thresh) p->bin[i].mag = 0.;
@@ -1133,16 +1139,20 @@ void PV_RandComb_choose(PV_RandComb* unit)
 
 void PV_RandComb_next(PV_RandComb *unit, int inNumSamples)
 {
+	float trig = ZIN0(2);
+	if (trig > 0.f && unit->m_prevtrig <= 0.f) unit->m_triggered = true;
+	unit->m_prevtrig = trig;
+	
 	PV_GET_BUF
 	
-	float trig = ZIN0(2);
 	if (!unit->m_ordering) {
 		unit->m_ordering = (int*)RTAlloc(unit->mWorld, numbins * sizeof(int));
 		unit->m_numbins = numbins;
 		PV_RandComb_choose(unit);
 	} else {
 		if (numbins != unit->m_numbins) return;
-		if (trig > 0.f && unit->m_prevtrig <= 0.f) {
+		if (unit->m_triggered) {
+			unit->m_triggered = false;
 			PV_RandComb_choose(unit);
 		}
 	}
@@ -1166,6 +1176,7 @@ void PV_RandComb_Ctor(PV_RandComb* unit)
 	ZOUT0(0) = ZIN0(0);
 	unit->m_ordering = 0;
 	unit->m_prevtrig = 0.f;
+	unit->m_triggered = false;
 }
 
 void PV_RandComb_Dtor(PV_RandComb* unit)
@@ -1194,16 +1205,20 @@ void PV_RandWipe_choose(PV_RandWipe* unit)
 
 void PV_RandWipe_next(PV_RandWipe *unit, int inNumSamples)
 {
+	float trig = ZIN0(3);
+	if (trig > 0.f && unit->m_prevtrig <= 0.f) unit->m_triggered = true;
+	unit->m_prevtrig = trig;
+
 	PV_GET_BUF2
 	
-	float trig = ZIN0(3);
 	if (!unit->m_ordering) {
 		unit->m_ordering = (int*)RTAlloc(unit->mWorld, numbins * sizeof(int));
 		unit->m_numbins = numbins;
 		PV_RandWipe_choose(unit);
 	} else {
 		if (numbins != unit->m_numbins) return;
-		if (trig > 0.f && unit->m_prevtrig <= 0.f) {
+		if (unit->m_triggered) {
+			unit->m_triggered = false;
 			PV_RandWipe_choose(unit);
 		}
 	}
@@ -1228,6 +1243,7 @@ void PV_RandWipe_Ctor(PV_RandWipe* unit)
 	ZOUT0(0) = ZIN0(0);
 	unit->m_ordering = 0;
 	unit->m_prevtrig = 0.f;
+	unit->m_triggered = false;
 }
 
 void PV_RandWipe_Dtor(PV_RandWipe* unit)
@@ -1249,16 +1265,20 @@ void PV_Diffuser_choose(PV_Diffuser* unit)
 
 void PV_Diffuser_next(PV_Diffuser *unit, int inNumSamples)
 {
+	float trig = ZIN0(1);
+	if (trig > 0.f && unit->m_prevtrig <= 0.f) unit->m_triggered = true;
+	unit->m_prevtrig = trig;
+
 	PV_GET_BUF
 	
-	float trig = ZIN0(1);
 	if (!unit->m_shift) {
 		unit->m_shift = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
 		unit->m_numbins = numbins;
 		PV_Diffuser_choose(unit);
 	} else {
 		if (numbins != unit->m_numbins) return;
-		if (trig > 0.f && unit->m_prevtrig <= 0.f) {
+		if (unit->m_triggered) {
+			unit->m_triggered = false;
 			PV_Diffuser_choose(unit);
 		}
 	}
@@ -1282,6 +1302,7 @@ void PV_Diffuser_Ctor(PV_Diffuser* unit)
 	ZOUT0(0) = ZIN0(0);
 	unit->m_shift = 0;
 	unit->m_prevtrig = 0.f;
+	unit->m_triggered = false;
 }
 
 void PV_Diffuser_Dtor(PV_Diffuser* unit)
@@ -1366,9 +1387,12 @@ void PV_BinScramble_choose(PV_BinScramble* unit)
 
 void PV_BinScramble_next(PV_BinScramble *unit, int inNumSamples)
 {
+	float trig = ZIN0(3);
+	if (trig > 0.f && unit->m_prevtrig <= 0.f) unit->m_triggered = true;
+	unit->m_prevtrig = trig;
+
 	PV_GET_BUF
 	
-	float trig = ZIN0(3);
 	if (!unit->m_to) {
 		unit->m_to = (int*)RTAlloc(unit->mWorld, numbins * 2 * sizeof(int));
 		unit->m_from = unit->m_to + numbins;
@@ -1377,7 +1401,8 @@ void PV_BinScramble_next(PV_BinScramble *unit, int inNumSamples)
 		PV_BinScramble_choose(unit);
 	} else {
 		if (numbins != unit->m_numbins) return;
-		if (trig > 0.f && unit->m_prevtrig <= 0.f) {
+		if (unit->m_triggered) {
+			unit->m_triggered = false;
 			PV_BinScramble_choose(unit);
 		}
 	}
@@ -1409,6 +1434,7 @@ void PV_BinScramble_Ctor(PV_BinScramble* unit)
 	ZOUT0(0) = ZIN0(0);
 	unit->m_to = 0;
 	unit->m_prevtrig = 0.f;
+	unit->m_triggered = false;
 	unit->m_tempbuf = 0;
 }
 

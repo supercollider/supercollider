@@ -40,8 +40,8 @@ x = \cf2 SynthDef\cf0 (\cf3 "magAbove"\cf0 , \{\
 	in = \cf2 SinOsc\cf0 .ar(SinOsc.kr(SinOsc.kr(0.08,0,6,6.2).squared, 0, 100,800));\
 	//in = \cf2 WhiteNoise\cf0 .ar(0.2);\
 	chain = \cf2 FFT\cf0 (0, in);\
-	chain = \cf2 PV_MagAbove(\cf0 chain\cf2 , 8); \cf0 \
-	\cf2 Out\cf0 .ar(0, \cf2 IFFT\cf0 (chain));\
+	chain = \cf2 PV_MagAbove(\cf0 chain\cf2 , 310); \cf0 \
+	\cf2 Out\cf0 .ar(0, 0.5 * \cf2 IFFT\cf0 (chain));\
 \}).writeDefFile;\
 s.sendMsg(\cf3 "/d_load"\cf0 , \cf3 "synthdefs/magAbove.scsyndef"\cf0 );\
 )\
@@ -54,7 +54,7 @@ s.sendMsg(\cf3 "/n_free"\cf0 , 2002);\
 (\
 x = \cf2 SynthDef\cf0 (\cf3 "brick"\cf0 , \{\
 	\cf2 var\cf0  in, chain;\
-	in = \{\cf2 WhiteNoise\cf0 .ar(0.0)\}.dup;\
+	in = \{\cf2 WhiteNoise\cf0 .ar(0.2)\}.dup;\
 	chain = \cf2 FFT\cf0 (0, in);\
 	chain = \cf2 PV_BrickWall(\cf0 chain\cf2 , SinOsc.kr(0.1)); \cf0 \
 	\cf2 Out\cf0 .ar(0, \cf2 IFFT\cf0 (chain));\
@@ -64,6 +64,39 @@ s.sendMsg(\cf3 "/d_load"\cf0 , \cf3 "synthdefs/brick.scsyndef"\cf0 );\
 \
 s.sendMsg(\cf3 "/b_alloc"\cf0 , 0, 2048, 1);\
 s.sendMsg(\cf3 "/s_new"\cf0 , \cf3 "brick"\cf0 , 2002, 1, 0);\
+s.sendMsg(\cf3 "/s_trace"\cf0 , 2002)\
+s.sendMsg(\cf3 "/n_free"\cf0 , 2002);\
+\
+(\
+x = \cf2 SynthDef\cf0 (\cf3 "randcomb"\cf0 , \{ arg bufnum=0;\
+	\cf2 var\cf0  in, chain;\
+	in = \{\cf2 WhiteNoise\cf0 .ar(0.8)\}.dup;\
+	chain = \cf2 FFT\cf0 (bufnum, in);\
+	chain = \cf2 PV_RandComb(\cf0 chain\cf2 , 0.95, Impulse.kr(1)); \cf0 \
+	\cf2 Out\cf0 .ar(0, \cf2 IFFT\cf0 (chain));\
+\}).writeDefFile;\
+s.sendMsg(\cf3 "/d_load"\cf0 , \cf3 "synthdefs/randcomb.scsyndef"\cf0 );\
+)\
+\
+s.sendMsg(\cf3 "/b_alloc"\cf0 , 1, 2048, 1);\
+s.sendMsg(\cf3 "/s_new"\cf0 , \cf3 "randcomb"\cf0 , 2003, 1, 0, \\bufnum, 1);\
+s.sendMsg(\cf3 "/s_trace"\cf0 , 2003)\
+s.sendMsg(\cf3 "/n_free"\cf0 , 2003);\
+\
+(\
+x = \cf2 SynthDef\cf0 (\cf3 "rectcomb"\cf0 , \{ arg bufnum=0;\
+	\cf2 var\cf0  in, chain;\
+	in = \{\cf2 WhiteNoise\cf0 .ar(0.2)\}.dup;\
+	chain = \cf2 FFT\cf0 (bufnum, in);\
+	chain = \cf2 PV_RectComb(\cf0 chain\cf2 , 8, LFTri.kr(0.097,0,0.4,0.5), \
+		LFTri.kr(0.24,0,-0.5,0.5)); \cf0 \
+	\cf2 Out\cf0 .ar(0, \cf2 IFFT\cf0 (chain));\
+\}).writeDefFile;\
+s.sendMsg(\cf3 "/d_load"\cf0 , \cf3 "synthdefs/rectcomb.scsyndef"\cf0 );\
+)\
+\
+s.sendMsg(\cf3 "/b_alloc"\cf0 , 0, 2048, 1);\
+s.sendMsg(\cf3 "/s_new"\cf0 , \cf3 "rectcomb"\cf0 , 2002, 1, 0, \\bufnum, 1);\
 s.sendMsg(\cf3 "/s_trace"\cf0 , 2002)\
 s.sendMsg(\cf3 "/n_free"\cf0 , 2002);\
 \
