@@ -2,126 +2,113 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green115\blue0;}
+\red0\green0\blue0;\red96\green96\blue96;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 DiskIn
+\f0\b\fs36 \cf0 DiskIn				stream in audio from a file
 \f1\b0\fs18 \cf2 \
 \
 \
-	DiskIn\cf0 .ar(numChannels,bufnum)\
+
+\f0\b\fs24 \cf0 DiskIn.ar(numChannels, bufnum)
+\f1\b0\fs18 \
 	\cf2 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 Continously play a longer soundfile from disk.  This requires a buffer to be preloaded with one buffer size of sound.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs18 \cf0 \
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f2\fs24 \cf0 See the DiskOut example that writes the soundfile that this example reads
+\f2\fs24 \cf0 Continously play a longer soundfile from disk.  This requires a buffer to be preloaded with one buffer size of sound.
 \f1\fs18 \
 \
 s.boot; \cf3 // start the server\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 (\
-\cf2 SynthDef\cf0 (\cf4 "diskin"\cf0 , \{\
-	\cf2 Out\cf0 .ar(0, \cf2 DiskIn\cf0 .ar(2, 0));\
+\cf2 SynthDef\cf0 (\cf4 "help-Diskin"\cf0 , \{ arg bufnum = 0;\
+	\cf2 Out\cf0 .ar(0, \cf2 DiskIn\cf0 .ar(1, bufnum));\
 \}).send(s)\
 )\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs28 \cf0 OSC Messaging Style
+\f1\b0\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // allocate a disk i/o buffer\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 s.sendMsg(\cf4 "/b_alloc"\cf0 , 0, 65536, 2);\
+\cf0 s.sendMsg(\cf4 "/b_alloc"\cf0 , 0, 65536, 1);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // open an input file for this buffer, leave it open\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 s.sendMsg(\cf4 "/b_read"\cf0 , 0, \cf4 "diskouttest2.aiff"\cf0 , 0, 0, 0, 1);\
+\cf3 // open an input file for this buffer, leave it open\cf0 \
+s.sendMsg(\cf4 "/b_read"\cf0 , 0, \cf4 "sounds/a11wlk01-44.1.aiff"\cf0 , 0, 0, 0, 1);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // create a diskin node\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "diskin"\cf0 , 2004, 1, 0);\
+\cf0 s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "help-Diskin"\cf0 , x = s.nextNodeID, 1, 1);\cf3 \
 \
-s.sendMsg(\cf4 "/n_free"\cf0 , 2004); \cf3 // stop reading\
-\cf0 \
-s.sendMsg(\cf4 "/b_zero"\cf0 , 0); \cf3 // clear buffer\
-\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // again\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "diskin"\cf0 , 2004, 1, 0);\
+\cf0 s.sendMsg(\cf4 "/b_close"\cf0 , 0); \cf3 // close the file (very important!)\
 \
-s.sendMsg(\cf4 "/n_free"\cf0 , 2004); \cf3 // stop reading\
 \cf0 \
-s.sendMsg(\cf4 "/b_close"\cf0 , 0); \cf3 // close the file.\
+\cf3 // again \
+// don't need to reallocate and Synth is still reading\
+\cf0 s.sendMsg(\cf4 "/b_read"\cf0 , 0, \cf4 "sounds/a11wlk01-44.1.aiff"\cf0 , 0, 0, 0, 1);\
+\
+s.sendMsg(\cf4 "/n_free"\cf0 , x); \cf3 // stop reading\
+\
+\cf0 s.sendMsg(\cf4 "/b_close"\cf0 , 0); \cf3 // close the file.\
 \cf0 \
-s.sendMsg(\cf4 "/quit"\cf0 ); \cf3 // quit the server\
-\cf0 s.quit;\
+s.sendMsg(\cf4 "/b_free"\cf0 , 0); \cf3 // frees the buffer\cf0 \
 \
 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 Using Buffer
-\f1\b0\fs18 \
-(\
-\
+\f0\b\fs28 \cf0 Using Buffer (Object Style)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 File\cf0 .openDialog(\cf4 "Choose a long stereo soundfile..."\cf0 ,\{ \cf2 arg\cf0  path;\
-	\cf3 //read a file into the buffer\
-\cf0 	b = \cf2 Buffer\cf0 .cueSoundFile(s,path,0,2);\
-\});\
+
+\f1\b0\fs18 \cf0 \
+b = \cf2 Buffer\cf0 .cueSoundFile(s, \cf4 "sounds/a11wlk01-44.1.aiff"\cf0 , 0, 1);\
 \
-// then execute this\
-\{\
-	\cf2 DiskIn\cf0 .ar( 2, b.bufnum )\
-\}.play\
-		\
-)	\
-	\
-	\
-	\
+x = \{ \cf2 DiskIn\cf0 .ar(1, b.bufnum) \}.play;\
 \
-( \cf3 // cue and play right away\
+b.close;	\
+\
+\cf3 // again\
+// note the like named instance method, but different arguments\cf0 \
+b.cueSoundFile(\cf4 "sounds/a11wlk01-44.1.aiff"\cf0 , 0);	\
+	\
+x.free; b.close; b.free;	\
+\
+\
+\
+\cf3 // loop it (for better looping use PlayBuf!)\cf0 \
+(\cf5 \
+p = \cf6 "sounds/a11wlk01-44.1.aiff"\cf5 ;\
+a = \cf7 SoundFile\cf5 .new;\
+a.openRead(p);\
+d = a.numFrames/s.sampleRate; \cf8 // get the duration\cf5 \
+a.close; \cf8 // don't forget\cf5 \
+b = \cf7 Buffer\cf5 .cueSoundFile(s, p, 0, 1);\
+f = \{ \cf7 DiskIn\cf5 .ar(1, b.bufnum) \};\
+x = f.play;\
+r = \cf7 Routine\cf5 (\{\
+	loop(\{ d.wait; x.free; x = f.play; b.close( b.cueSoundFileMsg(p, 0)) \});\
+\}).play; \cf0 )\
+r.stop; x.free; b.close; b.free; \cf8 // you need to do all these to properly cleanup\cf4 \
+\
+\
 \cf0 \
-\cf2 SynthDef\cf0 (\cf4 "help-Buffer"\cf0 ,\{ \cf2 arg\cf0  out=0,bufnum;\
-			\cf2 Out\cf0 .ar(out,\
-				\cf2 DiskIn\cf0 .ar( 2, bufnum )\
-			)\
+\cf3 // cue and play right away\cf0 \
+(\
+\cf2 SynthDef\cf0 (\cf4 "help-Diskin"\cf0 , \{ \cf2 arg\cf0  bufnum = 0;\
+	\cf2 Out\cf0 .ar(0, \cf2 DiskIn\cf0 .ar(1, bufnum));\
 \}).send(s);\
 		\
-m = \{ \cf2 arg\cf0  buf; [\cf4 "/s_new"\cf0 , \cf4 "help-Buffer"\cf0 , s.nodeAllocator.alloc, 1, 0,\
-				\cf5 \\bufnum\cf0 ,buf.bufnum]\};\
+x = \cf2 Synth\cf0 .basicNew(\cf4 "help-Diskin"\cf0 );\
+m = \{ \cf2 arg\cf0  buf; x.addToHeadMsg(s, [\cf9 \\bufnum\cf0 ,buf.bufnum])\};\
 \
-\cf2 File\cf0 .openDialog(\cf4 "Choose a long stereo soundfile..."\cf0 ,\{ \cf2 arg\cf0  path;\
-	\cf3 //read a file into the buffer and play it right away\
-\cf0 	b = \cf2 Buffer\cf0 .cueSoundFile(s,path,0,2, completionMessage: m);\
-\});\
+b = \cf2 Buffer\cf0 .cueSoundFile(s,\cf4 "sounds/a11wlk01-44.1.aiff"\cf0 ,0,1, completionMessage: m);\
 \
 )		\
 		\
 \
-\
-\cf2 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 Buffer size must be a multiple of (2 * synth block size).  Default block\
-size is 128.  See ServerOptions for setting block size.\
-\
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1\fs18 \cf0 \
-s = \cf2 SoundFile\cf0 .new;\
-s.openRead(\cf4 "sounds/a11wlk01.wav"\cf0 );\
-s.inspect\
-\
-only 26977 frames, smaller than one buffer size, so it can't be used to demonstrate DiskIn.\
-}
+\f2\fs24 See 
+\f0\b PlayBuf
+\f2\b0  for playing a soundfile loaded into memory.}
