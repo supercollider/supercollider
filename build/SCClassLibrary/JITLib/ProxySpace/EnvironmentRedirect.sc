@@ -14,18 +14,20 @@ EnvironmentRedirect {
 	}
 	
 	*pop { 
-		Environment.pop;
+		^Environment.pop;
 	}
 	
 	pop {
-		Environment.pop
+		^Environment.pop
 	}
 	
 	push { 
-		topEnvironment = this;
-		if(currentEnvironment !== this, {  
+		// avoid chaining, maybe move down
+		if(currentEnvironment !== this, {
+			topEnvironment = this;
 			Environment.push(this);
 		});
+		
 	}
 	
 	//override in subclasses

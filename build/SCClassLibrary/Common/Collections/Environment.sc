@@ -39,14 +39,12 @@ Environment : IdentityDictionary {
 	}
 	
 	*push { arg envir;
-		^envir.push;
+		stack = stack.add(currentEnvironment);
+		currentEnvironment = envir;
 	}
 	
 	pop { ^this.class.pop }
-	push {
-		stack = stack.add(currentEnvironment);
-		currentEnvironment = this;
-	}
+	push { this.class.push(this) }
 	
 }
 
