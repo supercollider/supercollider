@@ -37,19 +37,31 @@ PdegreeToKey : FilterPattern {
 	storeArgs { ^[pattern,scale,stepsPerOctave ] }
 	asStream {
 		var size, scaleDegree;
-		size = scale.size;
-		^Routine({
-			var mestream,scstream,sc,me;
-			mestream = pattern.asStream;
-			scstream = scale.asStream;
-			while({ 
-				me = mestream.next;
-				sc = scstream.next;
-				me.notNil
-			},{
-				me = me.asInteger;
-				((stepsPerOctave * (me div: size)) + sc.wrapAt(me)).yield
+		if(scale.isSequenceableCollection,{
+			^Routine({
+				var mestream,me;
+				size = scale.size;
+				mestream = pattern.asStream;
+				while({ 
+					(me = mestream.next).notNil
+				},{
+					me = me.asInteger;
+					((stepsPerOctave * (me div: size)) + scale.wrapAt(me)).yield
+				})
 			})
-		})
+		},{		
+			^Routine({
+				var mestream,scstream,sc,me;
+				mestream = pattern.asStream;
+				scstream = scale.asStream;
+				while({ 
+					me = mestream.next;
+					sc = scstream.next;
+					me.notNil
+				},{
+					me.degreeToKey(sc,stepsPerOctave).yield
+				})
+			})
+		});
 	}
 }
