@@ -35,6 +35,13 @@ SynthDef {
 		});
 		^UGen.buildSynthDef.buildUgenGraph(func, lags, prependArgs);
 	}
+	//use this for system synth defs
+	*writeOnce { arg name, func, lags, prependArgs, dir="synthdefs/";
+		^pathMatch(dir ++ name ++ ".scsyndef").isEmpty.if({
+			this.new(name, func, lags, prependArgs).writeDefFile(dir)
+		}, nil);
+	}
+	
 	initBuild {
 		UGen.buildSynthDef = this;
 		constants = Dictionary.new;
@@ -285,6 +292,7 @@ SynthDef {
 	
 	send { arg server,completionMsg;
 		server.listSendBundle(nil,[["/d_recv", this.asBytes,completionMsg]]);
+		//server.sendMsg("/d_recv", this.asBytes,completionMsg);
 	}
 	load { arg server, completionMsg,dir="synthdefs/";
 		// i should remember what dir i was written to
