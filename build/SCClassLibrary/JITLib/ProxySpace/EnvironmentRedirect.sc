@@ -3,7 +3,7 @@
 
 EnvironmentRedirect {
 	var <>envir;
-	var <>saveEnvir, <>saveTopEnvir;
+	classvar <>saveEnvir, <>saveTopEnvir;
 	
 	*new { 
 		^super.newCopyArgs(Environment.new)
@@ -17,8 +17,8 @@ EnvironmentRedirect {
 		var curr;
 		curr = currentEnvironment;
 		if(curr.isKindOf(this), {
-			currentEnvironment = curr.saveEnvir;
-			topEnvironment = curr.saveTopEnvir;
+			currentEnvironment = saveEnvir;
+			topEnvironment = saveTopEnvir;
 		}, {
 			"outside environment already".inform;
 		})
@@ -29,8 +29,8 @@ EnvironmentRedirect {
 		if(currentEnvironment === this, { ^topEnvironment = this });
 		if(currentEnvironment.isKindOf(this.class),
 			{ currentEnvironment.pop });
-		this.saveEnvir = currentEnvironment;
-		this.saveTopEnvir = topEnvironment;
+		this.class.saveEnvir = currentEnvironment;
+		this.class.saveTopEnvir = topEnvironment;
 		currentEnvironment = this;
 		topEnvironment = this; //to avoid error loss
 	}
@@ -61,10 +61,10 @@ EnvironmentRedirect {
 		// executes function, returns the result of the function
 		var result, saveEnvir;
 		
-		saveEnvir = currentEnvironment;
+		this.class.saveEnvir = currentEnvironment;
 		currentEnvironment = this;
 		result = function.value(this);
-		currentEnvironment = saveEnvir;
+		this.class.currentEnvironment = saveEnvir;
 		^result
 	}
 	
