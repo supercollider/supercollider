@@ -132,7 +132,7 @@ NodeProxy : AbstractFunction {
 						{ this.updateSynthDef } //only load def. maybe we are on server already? 
 				);
 				
-			}, { "matching rate error".inform })
+			}, { "rate/numChannels must match".inform })
 			
 	}
 	
