@@ -334,6 +334,11 @@ Method : FunctionDef {
 	openCodeFile {
 		this.filenameSymbol.asString.openTextFile(this.charPos, -1);
 	}
+	hasHelpFile { 
+		//should cache this in Library or classvar
+		//can't add instance variables to Class
+		^this.name.asString.findHelpFile.notNil
+	}
 	openHelpFile {
 		this.name.asString.openHelpFile
 	}
