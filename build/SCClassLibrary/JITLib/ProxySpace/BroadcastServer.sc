@@ -9,10 +9,6 @@ BroadcastServer : Server {
 				.localServer_(localServer)
 				.ninit(localServer.name.asString ++ "_broadcast")
 				.allAddr_(allAddr)
-				.newNodeWatcher
-				
-				
-				 
 	}
 	// doesn't work currently
 	autoConfigure { arg getAnyApplication=false;
@@ -43,19 +39,9 @@ BroadcastServer : Server {
 	
 	makeWindow {} //doesn't make sense, use Router for gui
 	
-	newNodeWatcher {
-		nodeWatcher = NodeWatcher.new(this);
-		nodeWatcher.start;
-		
-	}
-	boot {
-		nodeWatcher.start;
-		this.notify;
-		
-	}
-	quit {
-		nodeWatcher.stop;
-	}
+	
+	boot { this.notify; this.initTree; }
+	quit {}
 	
 	serverRunning { ^true } //assume that.
 	waitForBoot {Êarg func; func.value }
@@ -78,7 +64,7 @@ BroadcastServer : Server {
 		allAddr.do({ arg addr; addr.sendBundle(nil, args) });
 	}
 	sendBundle { arg time ... messages;
-		allAddr.do({ arg addr; addr.performList(\sendBundle, time, messages); });
+		allAddr.do({ arg addr; addr.sendBundle(time, *messages); });
 	}
 	sendRaw { arg rawArray;
 		allAddr.do({ arg addr; addr.sendRaw(rawArray) })
@@ -88,7 +74,7 @@ BroadcastServer : Server {
 		allAddr.do({ arg addr; addr.sendBundle(nil,msg) });
 	}
  	listSendBundle { arg time,bundle;
- 		allAddr.do({ arg addr; addr.performList(\sendBundle, [time ? this.latency] ++ bundle) })
+ 		allAddr.do({ arg addr; addr.sendBundle(time ? this.latency, *bundle) })
 	}
 		
 	status {
@@ -164,7 +150,7 @@ Router : Server {
 		
 	}
 	serverRunning { ^true } //assume that.
-	waitForBoot {Êarg func; func.value }
+	//waitForBoot {Êarg func; func.value }
 	stopAliveThread { }
 	startAliveThread { }
 
