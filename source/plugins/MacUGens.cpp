@@ -28,7 +28,7 @@ static InterfaceTable *ft;
 struct MacUGenGlobalState {
 	float mouseX, mouseY;
 	bool mouseButton;
-	long keys[4];
+	uint8 keys[16];
 } gMacUGenGlobals;
 
 struct MacUGen : public Unit
@@ -68,7 +68,7 @@ void* gstate_update_func(void* arg)
 		gstate->mouseX = (float)p.h * rscreenWidth;
 		gstate->mouseY = (float)p.v * rscreenHeight;
 		gstate->mouseButton = Button();
-		GetKeys(gstate->keys);
+		GetKeys((long*)gstate->keys);
 		usleep(17000);
 	}
 	
@@ -183,12 +183,12 @@ void MouseButton_Ctor(MacUGen *unit)
 void KeyState_next(MacUGen *unit, int inNumSamples)
 {	
 	// minval, maxval, warp, lag
-
+	uint8 *keys = unit->gstate->keys;
 	int keynum = (int)ZIN0(0);
-	int word = (keynum >> 5) & 3;
-	int bit = keynum & 31;
-	int val = unit->gstate->keys[word] & (1 << bit);
-	
+	int byte = (keynum >> 3) & 15;
+	int bit = keynum & 7;
+	int val = keys[byte] & (1 << bit);
+		
 	float minval = ZIN0(1);
 	float maxval = ZIN0(2);
 	float lag = ZIN0(3);
