@@ -13,18 +13,15 @@
 + Object {
 	
 	render { arg path, maxTime=60, sampleRate = 44100, 
-			headerFormat = "AIFF", sampleFormat = "int16", options;
+			headerFormat = "AIFF", sampleFormat = "int16", options, inputFilePath;
 			
-		var file, oscFilePath, inputFilePath, score;
-		oscFilePath = "temp_oscscore" ++ this.hash;
+		var file, oscFilePath, score;
+		oscFilePath = "temp_oscscore" ++ UniqueID.next;
 		score = this.asScore(maxTime);
-		score.write(oscFilePath);
 		score.recordNRT(
-			oscFilePath, path, inputFilePath, sampleRate, headerFormat, sampleFormat, options
+			oscFilePath, path, inputFilePath, sampleRate = 44100, headerFormat, sampleFormat, 
+			options, "; rm" + oscFilePath
 		);
-		// todo: remove file
-		// unixCmd("rm" + oscFilePath);
-		
 	}
 
 }
