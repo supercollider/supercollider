@@ -246,6 +246,12 @@ ArrayedCollection : SequenceableCollection {
 		_ArrayNormalizeSum
 		^(this / this.sum)
 	}
+	normalize { arg min=0.0, max=1.0;
+		var minItem, maxItem;
+		minItem = this.minItem;
+		maxItem = this.maxItem;
+		^this.collect { |el| el.linlin(minItem, maxItem, min, max) };
+	}
 	asciiPlot {
 		// draw the waveform down the page as asterisks
 		var lo, hi, scale, pt;
