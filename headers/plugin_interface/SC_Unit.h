@@ -79,6 +79,8 @@ enum {
 #define SAMPLERATE (unit->mRate->mSampleRate)
 #define SAMPLEDUR (unit->mRate->mSampleDur)
 #define BUFLENGTH (unit->mBufLength)
+#define BUFRATE (unit->mRate->mBufRate)
+#define BUFDUR (unit->mRate->mBufDuration)
 
 typedef void (*UnitCmdFunc)(struct Unit *unit, struct sc_msg_iter *args);
 typedef void (*PlugInCmdFunc)(World *inWorld, void* inUserData, struct sc_msg_iter *args, void *replyAddr);
