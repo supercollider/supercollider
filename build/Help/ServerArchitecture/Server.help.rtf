@@ -9,197 +9,252 @@
 \f0\b object representing an sc-server application
 \f1\b0 \
 \
-\
 superclass: Model\
 \
-\
-Server is used to control an sc-server application from sc-lang. It forwards osc-messages\
-and keeps a number of allocators that return id's for nodes, buses and buffers. The server\
-application is a commandline program, so all commands apart from the osc-messages\
-are unix commands.\
+A Server object is the client-side representation of a server app and is used to control the app from sc-lang. (See 
+\f0\b ClientVsServer
+\f1\b0  for more details on the distinction.) It forwards osc-messages and keeps a number of allocators that keep track of id's for nodes, buses and buffers. The server application is a commandline program, so all commands apart from the osc-messages are unix commands.\
 \
 \ul instance creation:\ulnone \
 \
-	
+
 \f0\b *new(name, address, options, clientID)
 \f1\b0 \
-		\
-			
+	\
+		
 \f0\b name
 \f1\b0  	\
-					each server object is stored in one global classvariable under its name.\
-			\
-			
+				each server object is stored in one global classvariable under its name.\
+		\
+		
 \f0\b address
 \f1\b0  	\
-					instance of 
+				instance of 
 \f0\b NetAddr
 \f1\b0 , providing host and port\
-			\
-			
+		\
+		
 \f0\b options
 \f1\b0 	\
-					instance of 
+				instance of 
 \f0\b ServerOptions
 \f1\b0 , providing all special options\
-			\
-			
+		\
+		
 \f0\b clientID
 \f1\b0 	an integer. \
-					in multi client situations, every client can be given a separate nodeID range\
-	\
-	
+				in multi client situations, every client can be given a separate nodeID range\
+\
+
 \f0\b *local
 \f1\b0 \
-			returns the local server, stored in classvar local (created already on initClass)\
-	\
-	
+		returns the local server, stored in classvar local (created already on initClass)\
+\
+
 \f0\b *internal
 \f1\b0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 			returns the local server, stored in classvar local (created already on initClass)\
-			\
+		returns the local server, stored in classvar local (created already on initClass)\
+		\
 \
 \ul instance methods:\ulnone \
 			\
-	
+
 \f0\b sendMsg(arg1, arg2, arg3, ... argN)
 \f1\b0 \
-	\
-			send an osc message to the server.\
-			\
-			s.sendMsg("/s_new", "default", 1980, 0);\
-			\
-	
+\
+		send an osc message to the server.\
+		\
+		s.sendMsg("/s_new", "default", 1980, 0);\
+		\
+
 \f0\b sendBundle(time, array1, array1, array1, ... arrayN)
 \f1\b0 \
-			\
-			send  osc bundles to the server.\
-			\
-			time:  \
-				as the network might have irregular performance the message is \
-				scheduled to be evaluated the future so that all messages are synchroneous\
-				relative to each other, but delayed by a constant offset.\
-				if such a bundle arrives late, the server replies with a late message but still evaluates it.				\
-			\
-			s.sendBundle(0.2, ["/s_new", "default", 1980, 0], ["/n_map", 1980, "freq", 0]);\
-			\
-	
+		\
+		send  osc bundles to the server.\
+		\
+		time:  \
+			as the network might have irregular performance the message is \
+			scheduled to be evaluated the future so that all messages are synchroneous\
+			relative to each other, but delayed by a constant offset.\
+			if such a bundle arrives late, the server replies with a late message but still evaluates it.				\
+		\
+		s.sendBundle(0.2, ["/s_new", "default", 1980, 0], ["/n_map", 1980, "freq", 0]);\
+		\
+
 \f0\b sendRaw(aRawArray)
 \f1\b0 \
-	\
-	
+\
+
 \f0\b listSendMsg([arg1, arg2, arg3, ... argN])\
-	
+
 \f1\b0 \
-			same like sendMsg, but takes an array as argument\
-			\
-	
+		same like sendMsg, but takes an array as argument\
+		\
+
 \f0\b listSendBundle(time, [array1, array1, array1, ... arrayN])\
-	
+
 \f1\b0 \
-			same like sendMsg, but takes an array as argument, which allows to send a list of bundles\
-			\
-	
+		same like sendMsg, but takes an array as argument, which allows to send a list of bundles\
+		\
+
 \f0\b sendSynthDef(name, directory)\
-		
-\f1\b0 \
-			send a synthDef to the server that was written in a local directory\
-			\
 	
+\f1\b0 \
+		send a synthDef to the server that was written in a local directory\
+		\
+
 \f0\b loadSynthDef(name, completionMsg, directory)\
 
 \f1\b0 \
-			load a synthDef that resides in the remote directory\
-			\
-	
+		load a synthDef that resides in the remote directory\
+		\
+
 \f0\b nextNodeID
 \f1\b0 \
-			get a unique nodeID. if the synth is freed, also the nodeID is freed by the NodeIDWatcher \
-			\
-	
+		get a unique nodeID. if the synth is freed, also the nodeID is freed by the NodeIDWatcher \
+		\
+
 \f0\b wait(responseName)
 \f1\b0 \
-			this can be used within a Routine to wait for a server reply\
-			\
-	
+		this can be used within a Routine to wait for a server reply\
+		\
+
 \f0\b waitForBoot(func, limit)
 \f1\b0 \
-			evaluate the function as soon as the server has booted. \
-			if it is running, it is evaluated immediately.\
-			if it is not running, boot the server and evaluate the function.\
-			limit: maximum times to try. (5 times/sec)\
-	\
-	
+		evaluate the function as soon as the server has booted. \
+		if it is running, it is evaluated immediately.\
+		if it is not running, boot the server and evaluate the function.\
+		limit: maximum times to try. (5 times/sec)\
+\
+
 \f0\b doWhenBooted(func, limit)
 \f1\b0 \
-			evaluate the function as soon as the server has booted. \
-			if it is running, it is evaluated immediately.\
-			limit: maximum times to try. (5 times/sec)\
-			\
-	
+		evaluate the function as soon as the server has booted. \
+		if it is running, it is evaluated immediately.\
+		limit: maximum times to try. (5 times/sec)\
+		\
+
 \f0\b boot(startAliveThread)
 \f1\b0 \
-			boot the remote server, create new allocators.\
-			startAliveThread: if set to false, the server is not queried to give information for the window.\
-	\
-	
+		boot the remote server, create new allocators.\
+		startAliveThread: if set to false, the server is not queried to give information for the window.\
+\
+
 \f0\b quit
 \f1\b0 \
-			quit the server application\
-			\
-	
+		quit the server application\
+		\
+
 \f0\b reboot
 \f1\b0 \
-			quit and restart the server application\
-	\
-	
+		quit and restart the server application\
+\
+
 \f0\b *quitAll
 \f1\b0 \
-			quit all registered servers\
-			\
-	
+		quit all registered servers\
+		\
+
 \f0\b *killAll
 \f1\b0 \
-			query the system for any sc-servers and quit them\
-			\
-	
+		query the system for any sc-servers and quit them\
+		\
+
 \f0\b *freeAll
 \f1\b0 \
-			free all nodes in all servers\
-			\
-	
+		free all nodes in all servers\
+		\
+
 \f0\b freeAll
 \f1\b0 \
-			free all nodes in this server \
-			\
-	
+		free all nodes in this server \
+		\
+
 \f0\b status
 \f1\b0 \
-			query the server status\
-	\
-	\
-	
+		query the server status\
+\
+\
+
 \f0\b notify(flag)
 \f1\b0 \
-			server sends notifications, for example if a node was created, a 'tr' message from a SendTrig,\
-			or a /done action. if flag is set to false, these messages are not sent.\
-	\
-	\
-	
+		server sends notifications, for example if a node was created, a 'tr' message from a SendTrig,\
+		or a /done action. if flag is set to false, these messages are not sent. The default is true.\
+\
+\
+
 \f0\b dumpOSC(code)
 \f1\b0 \
-		
+	
 \f2\fs18 \cf2 	0 - turn dumping OFF.\
-			1 - print the parsed contents of the message.\
-			2 - print the contents in hexadecimal.\
-			3 - print both the parsed and hexadecimal representations of the contents.\
-		
+		1 - print the parsed contents of the message.\
+		2 - print the contents in hexadecimal.\
+		3 - print both the parsed and hexadecimal representations of the contents.\
+	
 \f1\fs24 \cf0 \
-	\
-	\
+\
+
+\f0\b scope(numChannels, startingChannel, bufsize)
+\f1\b0 \
+		This opens a scope window showing the audio output of the Server. \
+		This only works with the internal server, and currently only on OSX.\
+		\
+		
+\f0\b numChannels 
+\f1\b0 - the number of channels to be scoped out. \
+			The default is this server's options' numOutputBusChannels.\
+		
+\f0\b startingChannel 
+\f1\b0 - the first channel to be output. The default is 0.\
+		
+\f0\b bufsize 
+\f1\b0 - the size of the buffer for the ScopeView. The default is 4096.\
+		\
+\ul Recording Support
+\f0\b \ulnone \
+\
+
+\f1\b0 The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the 
+\f0\b DiskOut
+\f1\b0  helpfile for more info. For non-realtime recording, see the 
+\f0\b Non-Realtime-Synthesis
+\f1\b0  helpfile.\
+
+\f0\b \
+prepareForRecord(path, headerFormat, sampleFormat, numChannels)\
+
+\f1\b0 		Allocates the necessary buffer, etc. for recording the server's output. (See record below.)\
+		See 
+\f0\b SoundFile
+\f1\b0  for information on the various sample and header formats.\
+		\
+		
+\f0\b path 
+\f1\b0 - A String representing the path of the output file.\
+		
+\f0\b headerFormat
+\f1\b0  - A Symbol indicating the output file's format. Default is 'aiff'.\
+		
+\f0\b sampleFormat
+\f1\b0  - A Symbol indicating the output file's sample format. Default is 'int16'.\
+		
+\f0\b numChannels
+\f1\b0  - The number of channels of the output file.\
+		\
+
+\f0\b record
+\f1\b0 \
+		Starts or resumes recording the output. You must have called prepareForRecord first (see above).\
 			\
-			\
-			\
-			\
+
+\f0\b pauseRecording
+\f1\b0 		\
+		Pauses recording. Can be resumed by executing record again.\
+		\
+
+\f0\b stopRecording\
+
+\f1\b0 		Stops recording, closes the file, and frees the associated resources. \
+		You must call this when finished recording or the output file will be unusable.\
+		Cmd-. while recording has the same effect.\
 			}
