@@ -2882,13 +2882,14 @@ PyrThread* popThread(VMGlobals *g, PyrObject *obj, PyrSlot *head)
 }
 #endif
 
-void initPyrThread(class GC *gc, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
+void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
 	double beats, double seconds, PyrSlot* clock, bool collect);
-void initPyrThread(class GC *gc, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
+void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
 	double beats, double seconds, PyrSlot* clock, bool collect)
 {
 	PyrObject *array;
-	
+	GC* gc = g->gc;
+        
 	thread->func.ucopy = func->ucopy;
 	gc->GCWrite(thread, func);
 
@@ -2911,6 +2912,10 @@ void initPyrThread(class GC *gc, PyrThread *thread, PyrSlot *func, int stacksize
 		thread->clock.ucopy = clock->ucopy; 
 		gc->GCWrite(thread, clock);
 	}
+        
+	PyrSlot* currentEnvironmentSlot = g->classvars[class_object->classIndex.ui].uo->slots + 1;
+        thread->environment.ucopy = currentEnvironmentSlot->ucopy;
+        gc->GCWrite(thread, currentEnvironmentSlot);
 }
 
 extern PyrSymbol *s_prstart;
@@ -2939,7 +2944,7 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(c, &stacksize);
 	if (err) return err;
 	
-	initPyrThread(g->gc, thread, b, stacksize, (PyrInt32Array*)(g->thread->randData.uo), 
+	initPyrThread(g, thread, b, stacksize, (PyrInt32Array*)(g->thread->randData.uo), 
 		g->thread->beats.uf, g->thread->seconds.uf, &g->thread->clock, true);
 	
 	//postfl("<-prThreadInit\n");
@@ -3066,7 +3071,9 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		thread->beats.uf = g->thread->beats.uf;
 		thread->seconds.uf = g->thread->seconds.uf;
 		thread->clock.ucopy = g->thread->clock.ucopy;
-		g->gc->GCWrite(thread, &g->thread->clock);
+ 		g->gc->GCWrite(thread, &g->thread->clock);
+		thread->environment.ucopy = g->thread->environment.ucopy;
+		g->gc->GCWrite(thread, &g->thread->environment);
 
 	//postfl("start into thread %08X from parent %08X\n", thread, g->thread);
 		switchToThread(g, thread, tYieldToChild, &numArgsPushed);
@@ -3087,6 +3094,8 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		thread->seconds.uf = g->thread->seconds.uf;
 		thread->clock.ucopy = g->thread->clock.ucopy;
 		g->gc->GCWrite(thread, &g->thread->clock);
+		thread->environment.ucopy = g->thread->environment.ucopy;
+		g->gc->GCWrite(thread, &g->thread->environment);
 
 		value.ucopy = b->ucopy;
 	//debugf("resume into thread %08X from parent %08X\n", thread, g->thread);

@@ -124,7 +124,7 @@ void GCSet::MoveWhiteToFree()
 	}
 }
 
-PyrProcess* newPyrProcess(class GC *gc, PyrClass *procclassobj);
+PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj);
 
 GC::GC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long poolSize)
 {
@@ -169,7 +169,7 @@ GC::GC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long poolSiz
 		mSets[i].Init(i);
 	}
 	
-	mProcess = newPyrProcess(this, mainProcessClass);
+	mProcess = newPyrProcess(g, mainProcessClass);
 	
 	mStack = mProcess->mainThread.uot->stack.uo;
 	ToBlack(mStack);

@@ -111,6 +111,7 @@ struct PyrThread : public PyrObjectHdr
 	PyrSlot primitiveIndex;
 	PyrSlot randData;
 	PyrSlot beats, seconds, clock;
+        PyrSlot environment;
 };
 
 #define EVALSTACKDEPTH 2048

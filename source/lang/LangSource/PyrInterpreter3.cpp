@@ -129,11 +129,11 @@ void runAwakeMessage(VMGlobals *g)
 	endInterpreter(g);		
 }
 
-void initPyrThread(class GC *gc, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
+void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
 	double beats, double seconds, PyrSlot* clock, bool collect);
 int32 timeseed();
 
-PyrProcess* newPyrProcess(class GC *gc, PyrClass *procclassobj)
+PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 {
 	PyrProcess *proc;
 	PyrInterpreter *interpreter;
@@ -142,6 +142,7 @@ PyrProcess* newPyrProcess(class GC *gc, PyrClass *procclassobj)
 	PyrObject *classVarArray;
 	PyrThread *thread;
 	//PyrDSP *dsp;
+        GC* gc = g->gc;
 	
 	int classIndex, numClassVars;
 	
@@ -151,6 +152,28 @@ PyrProcess* newPyrProcess(class GC *gc, PyrClass *procclassobj)
 	
 	PyrObject *sysSchedulerQueue = newPyrArray(gc, 128, 0, false);
 	SetObject(&proc->sysSchedulerQueue, sysSchedulerQueue);
+	
+	classVars = newPyrArray(gc, gNumClasses, 0, false);
+	classVars->size = gNumClasses;
+	nilSlots(classVars->slots, gNumClasses);
+	SetObject(&proc->classVars, classVars);
+	g->classvars = classVars->slots;
+	
+	// fill class vars from prototypes:
+	classobj = gClassList;
+	while (classobj) {
+		if (classobj->cprototype.uo) {
+			numClassVars = classobj->cprototype.uo->size;
+			if (numClassVars > 0) {
+				classVarArray = newPyrArray(gc, numClassVars, 0, false);
+				classIndex = classobj->classIndex.ui;
+				SetObject(classVars->slots + classIndex, classVarArray);
+				classVarArray->size = numClassVars;
+				memcpy(classVarArray->slots, classobj->cprototype.uo->slots, numClassVars * sizeof(PyrSlot));
+			}
+		}
+		classobj = classobj->nextclass.uoc;
+	}
 	
 	class_thread = getsym("Thread")->u.classobj;
 	if (class_thread) {
@@ -164,7 +187,7 @@ PyrProcess* newPyrProcess(class GC *gc, PyrClass *procclassobj)
 
 		PyrSlot clockSlot;
 		SetObject(&clockSlot, s_systemclock->u.classobj);
-		initPyrThread(gc, thread, &o_nil, EVALSTACKDEPTH, rgenArray, 0., 0., &clockSlot, false);
+		initPyrThread(g, thread, &o_nil, EVALSTACKDEPTH, rgenArray, 0., 0., &clockSlot, false);
 		//postfl("elapsedTime %.6f\n", elapsedTime());
 	} else {
 		error("Class Thread not found.\n");
@@ -215,27 +238,6 @@ PyrProcess* newPyrProcess(class GC *gc, PyrClass *procclassobj)
 	} else {
 		error("Class Interpreter not found.\n");
 		//SetNil(&proc->interpreter);
-	}
-	
-	classVars = newPyrArray(gc, gNumClasses, 0, false);
-	classVars->size = gNumClasses;
-	nilSlots(classVars->slots, gNumClasses);
-	SetObject(&proc->classVars, classVars);
-	
-	// fill class vars from prototypes:
-	classobj = gClassList;
-	while (classobj) {
-		if (classobj->cprototype.uo) {
-			numClassVars = classobj->cprototype.uo->size;
-			if (numClassVars > 0) {
-				classVarArray = newPyrArray(gc, numClassVars, 0, false);
-				classIndex = classobj->classIndex.ui;
-				SetObject(classVars->slots + classIndex, classVarArray);
-				classVarArray->size = numClassVars;
-				memcpy(classVarArray->slots, classobj->cprototype.uo->slots, numClassVars * sizeof(PyrSlot));
-			}
-		}
-		classobj = classobj->nextclass.uoc;
 	}
 	
 	return proc;
@@ -322,7 +324,6 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool, int processID)
 	g->gc = (GC*)g->allocPool->Alloc(sizeof(GC));
 	new (g->gc) GC(g, g->allocPool, class_main, poolSize);
 	g->thread = g->process->mainThread.uot;
-	g->classvars = g->process->classVars.uo->slots;
 	SetObject(&g->receiver, g->process);
 
 	// these will be set up when the run method is called

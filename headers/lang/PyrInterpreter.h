@@ -39,7 +39,7 @@ void DumpBackTrace(VMGlobals *g);
 void DumpStack(VMGlobals *g, PyrSlot *sp);
 void DumpFrame(struct PyrFrame *frame);
 bool FrameSanity(PyrFrame *frame);
-struct PyrProcess* newPyrProcess(class GC *gc, struct PyrClass *classobj);
+struct PyrProcess* newPyrProcess(VMGlobals *g, struct PyrClass *classobj);
 void startProcess(VMGlobals *g, PyrSymbol *selector);
 void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed);
 

@@ -1331,7 +1331,7 @@ void initClasses()
 	class_absfunc = makeIntrinsicClass(s_absfunc, s_object, 0, 0); 
 	class_stream = makeIntrinsicClass(s_stream, s_absfunc, 0, 0); 
 
-	class_thread = makeIntrinsicClass(s_thread, s_stream, 22, 0);
+	class_thread = makeIntrinsicClass(s_thread, s_stream, 23, 0);
 		addIntrinsicVar(class_thread, "state", &o_nil);
 		addIntrinsicVar(class_thread, "func", &o_nil);
 		addIntrinsicVar(class_thread, "stack", &o_nil);
@@ -1355,6 +1355,8 @@ void initClasses()
 		addIntrinsicVar(class_thread, "beats", &o_fzero);
 		addIntrinsicVar(class_thread, "seconds", &o_fzero);
 		addIntrinsicVar(class_thread, "clock", &o_nil);
+
+		addIntrinsicVar(class_thread, "environment", &o_nil);
 
 	class_finalizer = makeIntrinsicClass(s_finalizer, s_object, 2, 0);
 		addIntrinsicVar(class_finalizer, "cFunction", &o_nil);
