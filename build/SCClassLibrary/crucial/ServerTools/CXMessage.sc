@@ -26,6 +26,7 @@ CXBundle {
 		});
 	}
 	clumpedSendNow { arg server;
+		this.doFunctions;
 		if(messages.notNil,{
 			messages.clump(5).do({ arg bundle,i;
 				server.listSendBundle(i * 0.001,bundle);

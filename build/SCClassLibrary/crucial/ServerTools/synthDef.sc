@@ -66,7 +66,9 @@
 				(thing.spec.class == this.class and: {
 					ts = thing.spec;
 					// thing does not exceed my bounds
-					ts.clipHi <= clipHi and: {ts.clipLo >= clipLo}
+					//ts.clipHi <= clipHi and: {ts.clipLo >= clipLo}
+					// need more detail
+					true
 				})
 			},{
 				false
