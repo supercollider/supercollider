@@ -483,7 +483,7 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 			UnitSpec *unitSpec = inGraphDef->mUnitSpecs + j;
 			
 			// set wire index, release inputs
-			for (uint32 i=unitSpec->mNumInputs-1; i>=0; --i) {
+			for (int i=unitSpec->mNumInputs-1; i>=0; --i) {
 				InputSpec *inputSpec = unitSpec->mInputSpec + i;
 				if (inputSpec->mFromUnitIndex >= 0) {
 					UnitSpec *outUnit = inGraphDef->mUnitSpecs + inputSpec->mFromUnitIndex;
