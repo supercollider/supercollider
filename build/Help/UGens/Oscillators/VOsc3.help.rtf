@@ -15,9 +15,9 @@ A wavetable lookup oscillator which can be swept smoothly across wavetables. All
 \
 This oscillator requires a buffer to be filled with a wavetable format signal.  This preprocesses the Signal into a form which can be used efficiently by the Oscillator.  The buffer size must be a power of 2.\
 \
-This can be acheived by creating a Buffer object and sending it one of the "b_gen" messages ( sine1, sine2, sine3 ) with the wavetable flag set to true.  \
+This can be achieved by creating a Buffer object and sending it one of the "b_gen" messages ( sine1, sine2, sine3 ) with the wavetable flag set to true.  \
 \
-This can also be acheived by creating a Signal object and sending it the 'asWavetable' message, saving it to disk, and having the server load it from there.\
+This can also be achieved by creating a Signal object and sending it the 'asWavetable' message, saving it to disk, and having the server load it from there.\
 \
 
 \f0\b table
@@ -37,7 +37,6 @@ VOsc3 requires the b_gen sine1 wavetable flag to be ON.\
 \
 (\
 s = \cf2 Server\cf0 .local;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // allocate and fill tables 0 to 7\cf0 \
 8.do(\{ \cf2 arg\cf0  i;\
 	\cf2 var\cf0  n, a;\
@@ -52,7 +51,6 @@ s = \cf2 Server\cf0 .local;\
 )\
 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf5 "help-VOsc"\cf0 ,\{ \cf2 arg\cf0  out=0, bufoffset=0, freq=240;\
 	\cf2 var\cf0  x;\
 	// mouse x controls the wavetable position\
@@ -67,7 +65,6 @@ s = \cf2 Server\cf0 .local;\
 8.do(\{ \cf2 arg\cf0  i;\
 	var a;\
 	s.sendMsg(\cf4 \\b_alloc\cf0 , i, 1024); \cf3 // allocate table\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf3 // generate array of harmonic amplitudes\cf0 \
 	a = \cf2 Array\cf0 .fill(i, 0) ++ [0.5, 1, 0.5];\
 	\cf3 // fill table\cf0 \
