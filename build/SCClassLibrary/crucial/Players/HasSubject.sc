@@ -10,10 +10,6 @@ HasSubject : AbstractPlayer {
 
 	ar { ^subject.ar }
 	
-	stopToBundle { arg b;
-		super.stopToBundle(b);
-		subject.stopToBundle(b); 
-	}
 	children { ^this.inputs }
 	inputs { ^[subject] }
 	
@@ -25,31 +21,20 @@ AbstractPlayerEffect : HasSubject { // has two groups
 
 	var subjectGroup,effectGroup;
 	
-	prepareToBundle { arg agroup,bundle;
-		readyForPlay = false;
-		
-		// more of a PatchOut thing, 
-		// problems on restarting
-		group = agroup.asGroup;
+	makePatchOut { arg agroup,private = false,bus,bundle;
 		subjectGroup = Group.basicNew;
 		effectGroup = Group.basicNew;
 		NodeWatcher.register(subjectGroup);
 		NodeWatcher.register(effectGroup);
 		bundle.add( subjectGroup.addToTail(group) );
 		bundle.add( effectGroup.addAfterMsg(subjectGroup) );
-
-		this.loadDefFileToBundle(bundle,effectGroup.server);
-
-		subject.prepareToBundle(subjectGroup,bundle);
-
-		readyForPlay = true;
+		super.makePatchOut(agroup,private,bus,bundle);
 	}
-
-	freePatchOut {
-		subjectGroup.free;
-		effectGroup.free;
+	freePatchOut { arg bundle;
+		subjectGroup.freeToBundle(bundle);
+		effectGroup.freeToBundle(bundle);
 		subjectGroup = effectGroup = nil;
-		super.freePatchOut;
+		super.freePatchOut(bundle);
 	}
 }
 
@@ -57,32 +42,26 @@ AbstractSinglePlayerEffect : AbstractPlayerEffect {
 
 	var sharedBus;
 
-	makePatchOut { arg parentGroup,private,bus;
-		server = group.server;
-		this.topMakePatchOut(effectGroup,private,bus);
-		// share my bus
+	childrenMakePatchOut { arg parentGroup,private=true,bundle;
 		sharedBus = SharedBus.newFrom(patchOut.bus,this);
 		patchOut.bus = sharedBus;
-		subject.makePatchOut(subjectGroup,private,sharedBus);
+		subject.makePatchOut(subjectGroup,private,sharedBus,bundle);
 	}
-	freePatchOut {
-		super.freePatchOut;
+	freePatchOut { arg bundle;
+		super.freePatchOut(bundle);
 		if(sharedBus.notNil,{
-			sharedBus.releaseBus(this);
-			sharedBus = nil;
+			bundle.addFunction({
+				sharedBus.releaseBus(this);
+				sharedBus = nil;
+			})
 		})
 	}	
 }
 
-
-
 PlayerAmp : AbstractSinglePlayerEffect {
 	
-	// spawn the subject
-	// spawn after it, multiplying on same bus
-	
 	var <amp=1.0;
-	// change to a multiplier (anything) ?
+
 	*new { arg player,amp=1.0;
 		^super.new(player).amp_(amp)
 	}
@@ -93,14 +72,9 @@ PlayerAmp : AbstractSinglePlayerEffect {
 				)
 		})
 	}
-
-//	spawnToBundle { arg b;
-//		this.children;
-//		super.spawnToBundle(b);
-//	}
-
 	defName { ^this.class.name.asString ++ this.numChannels.asString }
-	synthDefArgs { ^[0,patchOut.synthArg,1,amp] }
+	synthDefArgs { ^[\i_bus,patchOut.synthArg,\amp,amp] }
+
 	amp_ { arg v; 
 		amp = v; 
 		if(synth.isPlaying,{
@@ -113,25 +87,44 @@ PlayerAmp : AbstractSinglePlayerEffect {
 			synth.set(\amp,amp)
 		})
 	}		
+
 	guiClass { ^PlayerAmpGui }
 }
 
-
-/*
-AsStream : HasSubject {  // this is for passing in patterns or streams to Patches
-
-	ar {
-		^subject.asStream
-	}
+EnvelopedPlayer : AbstractSinglePlayerEffect {
 	
-	next { ^this.value }
-
-	doesNotUnderstand { arg selector ... args;
-		^subject.performList(selector,args)
+	var <>env,<>numChannels;
+	
+	*new { arg player,env,numChannels;
+		^super.new(player).env_(env).numChannels_(numChannels)
 	}
-
+	storeArgs { ^[subject,env,numChannels] }
+	asSynthDef {
+		^SynthDef(this.defName,{ arg i_bus,gate;
+			var in,pnc;
+			pnc = subject.numChannels;
+			in = In.ar(i_bus,pnc) * EnvGen.kr(env,gate,doneAction: 2);
+			if(numChannels.notNil,{
+				in = NumChannels.ar(in,numChannels,true);
+			});
+			ReplaceOut.ar(i_bus,in)
+		})
+	}
+	defName { ^this.class.name.asString ++ numChannels.asString ++ env.asCompileString.hash.asFileSafeString }
+	synthDefArgs { ^[\i_bus,patchOut.synthArg,\gate,1.0] }
+	releaseToBundle { arg releaseTime,bundle;
+		if(releaseTime.isNil,{ releaseTime = env.releaseTime; });
+		if(synth.notNil,{
+			bundle.add(synth.releaseMsg(releaseTime));
+		});
+		if(releaseTime > 0.01,{
+			bundle.addFunction({
+				SystemClock.sched(releaseTime,{ this.stop; nil; })
+			});
+		},{
+			this.stopToBundle(bundle);
+		});
+	}
 }
-
-*/
 
 

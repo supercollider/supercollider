@@ -9,7 +9,7 @@ MLIDbrowser { // MultiLevelIdentityDictionary browser
 			onSelect = args.pop;
 		});
 		^super.new
-			.onSelect_(onSelect ? { arg item;  item.topGui })
+			.onSelect_(onSelect ? { arg item;  item.gui })
 			.browse(Library.atList(args) ?? {Library.global.dictionary})
 	}
 	
@@ -42,16 +42,24 @@ MLIDbrowser { // MultiLevelIdentityDictionary browser
 			menu.focusOn(0);
 		})
 	}
-	*tree { arg ... args;
-		var onSelect;
-		if(args.size > 1,{
-			onSelect = args.pop;
-		});
+	// all on one page
+	*tree { arg  dictNames, layout ,onSelect;
 		^super.new
-			.onSelect_(onSelect ? { arg item;  item.topGui })
-			.tree
+			.layTree(layout.asPageLayout,
+				Library.atList(dictNames) ?? {Library.global.dictionary},
+				onSelect ? { arg item;  item.gui },0)
 	}
-	tree { arg layout;
-		
+	layTree { arg layout,dict,onSelect,indent=0;
+		dict.keys.asList.do({ arg key;
+			CXLabel(layout,"",maxx: indent * 20).background_(Color.clear);
+			if(dict.at(key).isKindOf(IdentityDictionary).not,{
+				ActionButton(layout,key.asString,{ onSelect.value(dict.at(key)) },maxx:150);
+				layout.startRow;
+			},{
+				CXLabel(layout,key.asString,maxx:150);
+			layout.startRow;
+			this.layTree(layout,dict.at(key),onSelect,indent + 1);
+			});
+		})
 	}
 }

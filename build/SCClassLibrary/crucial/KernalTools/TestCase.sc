@@ -5,7 +5,7 @@ TestCase {
 	var class,associations;
 	var routine;
 	
-	classvar <>testdir="TestingAndToDo/Tests/", <failures;
+	classvar <>testdir="TestingAndToDo/TestsCases/", <failures;
 	
 	*new { arg class ... associations;
 		^super.newCopyArgs(class,associations)
@@ -30,8 +30,9 @@ TestCase {
 					this.failed(ass.key);
 				})
 			});
+			if(report,{ this.class.report });
+			nil
 		}).play(AppClock);
-		if(report,{ this.class.report });
 	}
 	
 	*runAll { arg resetFailures=true,report=true;
@@ -52,14 +53,12 @@ TestCase {
 		Sheet({ arg f;
 			if(failures.size > 0,{
 				CXLabel(f,"There were failures.");
-				CXLabel(f, "click the class to open implementation, " +
-					" click the test name to open the test file.");
 				failures.do({ arg cn;
-					ActionButton(f.startRow,cn.at(0),{
+					ActionButton(f.startRow,"Class file" + cn.at(0),{
 						// could see if the method name matches
 						cn.at(0).openCodeFile;
 					});
-					ActionButton(f, cn.at(1),{
+					ActionButton(f, "TestCase file" + cn.at(1),{
 						this.pathForClassTest(cn.at(0)).openTextFile;
 					});
 				})

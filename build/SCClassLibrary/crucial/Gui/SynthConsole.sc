@@ -66,7 +66,11 @@ SynthConsole : AbstractConsole  {
 			this.doStop(stopFunc)
 		});
 	}
-
+	free {
+		ActionButton(layout,"free",{
+			ugenFunc.free;
+		});
+	}
 	formats {
 		format.gui(layout);
 	}
@@ -96,7 +100,7 @@ SynthConsole : AbstractConsole  {
 	
 	doStop { arg stopFunc;
 		stopFunc.value;
-		ugenFunc.tryPerform(\stop) ?? {RootNode.new.freeAll};
+		ugenFunc.stop;
 		NotificationCenter.notify(this,\didStop);
 	}
 		

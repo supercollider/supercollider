@@ -11,7 +11,7 @@ MIDIResponder {
 		this.class.remove(this)
 	}
 	*removeAll { this.init }
-	*remove { arg resp;
+	/* *remove { arg resp;
 		this.responders.do({ arg r,i;
 			if(r === resp,{
 				this.responders.put(i,nil)
@@ -23,7 +23,7 @@ MIDIResponder {
 				})
 			})
 		})
-	}
+	} */
 }
 
 ResponderArray {
@@ -120,7 +120,13 @@ CCResponder : MIDIResponder {
 		})
 	}
 	*remove { arg resp;
-		ccr.put(resp.num,nil);
+		var rar;
+		rar = ccr.at(resp.num);
+		if(rar.isKindOf(ResponderArray),{
+			rar.remove(resp)
+		},{
+			ccr.put(resp.num,nil);
+		})
 	}
 	*init {
 		if(MIDIClient.initialized.not,{ MIDIIn.connect });

@@ -1,8 +1,6 @@
 
 CXObjectInspector : ObjectGui {
 
-	// guify, set bigger size
-		
 	writeName { arg layout;
 		ClassNameLabel.newBig(model.class,layout);
 		//CXLabel(layout,model.asString,500,30)
@@ -96,6 +94,9 @@ CXObjectInspector : ObjectGui {
 					//string.postln;
 				//})
 			//})
+		});
+		ActionButton(layout,"open class file",{
+			model.class.openCodeFile;
 		});
 	}
 }
@@ -192,7 +193,23 @@ ClassGui : CXObjectInspector { // ClassGui
 				this.displayMethodsOf(model);
 			})
 		});
-		
+		ActionButton(layout,"find method...",{
+			GetStringDialog("find method...","",{ arg ok,string;
+				var class,method;
+				string = string.asSymbol;
+				class = model;
+				while({ class != Meta_Object },{
+					method = class.findMethod(string);
+					if(method.notNil,{ 
+						method.gui;
+						class = Meta_Object
+					 },{
+					 	class = class.superclass;
+					 });
+				});
+			})
+		});		
+				
 		this.dependantsGui(layout);
 	}
 	

@@ -15,12 +15,7 @@ Tempo  {
 		owners = [this];
 		CmdPeriod.add(this);
 	}
-	// rare to have more than one tempo,
-	// but any you create you will have to call destroy on to get rid of it
-	// permanantly.  or re-compile.
-	destroy {
-		CmdPeriod.remove(this);	
-	}
+
 	*initClass { 
 		Class.initClassTree(TempoClock);
 		Class.initClassTree(Server);
@@ -59,9 +54,17 @@ Tempo  {
 		default.tempo_(tempo);
 
 	}
-	//	*beats2secsKr { arg beats; ^GetTempo.kr.reciprocal * beats }
-	//	*secs2beatsKr { arg secs; ^GetTempo.kr * secs }
+
+	guiClass { ^TempoGui }
+
 	
+	
+	// rare to have more than one tempo,
+	// but any you create you will have to call destroy on to get rid of it
+	// permanantly.  or re-compile.
+	destroy {
+		CmdPeriod.remove(this);	
+	}
 	// not using this because the clocks get killed by command-.
 	// making them dangerous to hold onto
 	*makeClock { arg owner;
@@ -84,7 +87,6 @@ Tempo  {
 	}
 	clockDidClear {}
 	
-	//*gui { arg layout; default.gui(layout) }
-	guiClass { ^TempoGui }
+
 }
 

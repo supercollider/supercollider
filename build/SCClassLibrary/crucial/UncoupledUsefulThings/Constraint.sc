@@ -1,4 +1,5 @@
 
+
 AbstractConstraint {
 
 	not {	^Not(this)	}
@@ -189,3 +190,4 @@ NotNil : AbstractConstraint {
 	*value { arg obj; ^obj.notNil }
 
 }
+

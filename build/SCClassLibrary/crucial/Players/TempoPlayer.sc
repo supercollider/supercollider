@@ -30,6 +30,7 @@ TempoPlayer : KrPlayer { //Synthless
 	spawnToBundle {}
 	loadDefFileToBundle {}
 	asSynthDef { ("shouldn't call this" + thisMethod).die; }
+	
 }
 
 

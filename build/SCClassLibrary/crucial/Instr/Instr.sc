@@ -131,8 +131,11 @@ Instr  {
 	valueArray { arg inputs;
 		^func.valueArray(inputs)
 	}
-	kr{ arg ... inputs;
+	kr { arg ... inputs;
 		^func.valueArrayEnvir(inputs);
+	}
+	next { arg ... inputs;
+		^func.valueArray(inputs)
 	}
 
 	maxArgs { ^this.argsSize }
@@ -168,6 +171,7 @@ Instr  {
 		synthDef.build(this,args,outClass);
 		^synthDef
 	}
+
 	prepareToBundle { arg group,bundle;
 		this.asSynthDef.prepareToBundle(group,bundle);
 	}
@@ -217,6 +221,9 @@ Instr  {
 	
 	*loadAll {
 		(this.dir ++ "*.rtf").pathMatch.do({ arg path; path.loadPath })
+	}
+	*clearAll {
+		Library.global.removeAt(this.name)
 	}
 
 	*choose { arg start;

@@ -39,10 +39,17 @@
 		^obj
 	}
 	loadDocument { arg warnIfNotFound=true;
-		var path;
+		var path,obj;
 		path = Document.standardizePath(this);
-		^path.loadPath(warnIfNotFound)
-			?? {ObjectNotFound.new(path)}
+		if(File.exists(path),{
+			obj = thisProcess.interpreter.executeFile(path);
+			obj.didLoadFromPath(path);
+		},{
+			if(warnIfNotFound,{
+				warn("String-loadDocument file not found " + this + path);
+			})
+		});
+		if(obj.notNil,{ ^obj },{^ObjectNotFound.new(path)});
 	}
 	enpath {
 		^Document.abrevPath(this)

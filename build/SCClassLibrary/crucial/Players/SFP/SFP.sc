@@ -163,7 +163,7 @@ SFP : AbstractSFP  {
 				filePath = this.class.standardizePath(sfilePath);
 				found = file.openRead(filePath);
 			},{
-				if(sfilePath.isKindOf(SoundFile),{
+				if(sfilePath.isKindOf(CXSoundFile),{
 					file=sfilePath;
 					filePath = file.path = this.class.standardizePath(file.path);
 					found = file.openRead(file.path);
@@ -172,7 +172,7 @@ SFP : AbstractSFP  {
 				})
 			});
 			if(found.not,{
-				("SFP-init file not found: " + file.path).warn;
+				("SFP-init file not found: " + filePath).warn;
 			});
 		});
 	}

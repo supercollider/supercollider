@@ -19,8 +19,6 @@ BufferProxy { // blank space for delays, loopers etc.
 		server = group.server;
 		if(buffer.notNil,{
 			if(buffer.server != server,{
-				// this makes me suitable for one server only
-				// which is probably always the case
 				buffer.free;
 				// ...make buffer
 			},{
@@ -38,14 +36,16 @@ BufferProxy { // blank space for delays, loopers etc.
 	makePatchOut {
 		patchOut = ScalarPatchOut(this);
 	}
-	free {
-		this.freePatchOut;
-		this.freeHeavyResources;
+	freeToBundle { arg bundle;
+		this.freePatchOut(bundle);
+		bundle.addAction(this,\freeHeavyResources);
 		readyForPlay = false;
 	}
-	freePatchOut { patchOut.free }
-	freeHeavyResources { arg bundle;
-		buffer.free;
+	freePatchOut { arg bundle;
+		bundle.addAction(patchOut,\free);
+	}
+	freeHeavyResources {
+		buffer.free; // release bufnum to allocator
 		buffer = nil;
 	}
 	
@@ -59,7 +59,6 @@ BufferProxy { // blank space for delays, loopers etc.
 
 	bufnum { ^buffer.bufnum }
 	
-	//ISSUE must invalidate these at start of new synth def !!!!!
 	bufnumIr {
 		// add a secret ir control
 		^bufnumControl ?? {
@@ -67,6 +66,8 @@ BufferProxy { // blank space for delays, loopers etc.
 				("__bufnum__" ++ forArgi.asString).asSymbol,0,forArgi,\bufnum);
 		}
 	}
+	
+	// no reason to use the kr versions since reloading always happens to the same buffer
 	bufnumKr {
 		// add a secret kr control
 		^bufnumControl ?? {
@@ -98,15 +99,24 @@ BufferProxy { // blank space for delays, loopers etc.
 	bufSamplesKr {
 		^BufSamples.kr(this.bufnumKr)
 	}
-	
+	bufSamplesIr {
+		^BufSamples.ir(this.bufnumIr)
+	}
+		
 	bufDurKr {
 		^BufDur.kr(this.bufnumKr)
 	}
-	
+	bufDurIr {
+		^BufDur.kr(this.bufnumIr)
+	}
+		
 	bufChannelsKr {
 		^BufChannels.kr(this.bufnumKr)
 	}
-
+	bufChannelsIr {
+		^BufChannels.ir(this.bufnumIr)
+	}
+	
 	rate { ^\scalar }
 }
 
@@ -199,7 +209,7 @@ Sample : AbstractSample { // a small sound loaded from disk
 	
 	var <>soundFile,<beats=4.0,<tempo=1.0;
 
-	var <beatsize;
+	var <beatsize,pchk,beatsizek,tempoi;
 	
 	var <end=0; // last possible frame for looping
 		
@@ -317,24 +327,52 @@ Sample : AbstractSample { // a small sound loaded from disk
 		if(tempo < 0.5,{ this.beats_(beats * 2.0) });
 		if(tempo < 0.5,{ this.beats_(beats * 2.0) });			if(tempo < 0.5,{ this.beats_(beats * 2.0) });
 	}
-	
-	
-	
-	pchRatioKr { arg temp;
-		// for now, pass in tempo
-		
-		// InstrSynthDef can support a shared tempo input
-		
-		// would have to send __mytempo__ when you load buffer and recalc
-		// UGen.buildSynthDef.addSecretKr(
-		//		("__mytempo__" ++ forArgi.asString).asSymbol,tempo,forArgi,\tempo)
-		
-		^(this.bufRateScaleKr * temp).madd(tempo.reciprocal)
+	initForSynthDef { arg synthDef,argi;
+		super.initForSynthDef(synthDef,argi);
+		beatsizek = pchk = tempoi = nil;
 	}
-	
-	
-	/* server support */
-
+	pchRatioKr {
+		// ISSUE once its built and InstrSynthDef object discarded
+		// how do you know to send the secret ones ?
+		// for now the InstrSynthDef is always there when its playing anyway
+		// i haven't had any problems
+		^pchk ?? { 
+			pchk = 
+				(this.bufRateScaleIr * UGen.buildSynthDef.tempoKr(forArgi,\getTempoBus))
+					.madd(this.sampleTempoIr.reciprocal)
+		}
+	}
+	getTempoBus {
+		^TempoBus(buffer.server).index
+	}	
+	beatsizeIr {
+		^beatsizek ?? {
+			beatsizek = 
+				UGen.buildSynthDef.addSecretIr( 
+					("__beatsize__" ++ forArgi.asString).asSymbol,
+					beatsize,forArgi,\beatsize
+				);
+		}
+	}
+	sampleTempoIr {
+		^tempoi ?? {
+			tempoi = UGen.buildSynthDef.addSecretIr(("__stempo__" ++ forArgi.asString).asSymbol,
+											tempo,forArgi,\tempo);
+		}
+	}
+	/*
+	sampleTempoKr { // issue: if new sample is loaded, send the tempo to which synths ?
+		^samplek ?? {
+			samplek = UGen.buildSynthDef.addSecretKr(("__stempo__" ++ forArgi.asString).asSymbol,
+											tempo,forArgi,\tempo));
+		}
+	}*/
+	prepareToBundle { arg group,bundle;
+		super.prepareToBundle(group,bundle);
+		if(pchk.notNil,{
+			TempoBus(buffer.server).prepareToBundle(group,bundle)
+		});
+	}
 	
 	guiClass { ^SampleGui }
 
@@ -372,3 +410,4 @@ ArrayBuffer : BufferProxy {
 	}
 	// gui: show it
 }
+	

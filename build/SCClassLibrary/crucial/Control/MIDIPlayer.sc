@@ -22,10 +22,8 @@ MIDIPlayer : SynthlessPlayer { // InterfacePlayer, Control
 	removeResponders {
 		resp.remove;
 	}
-	free {
-		patchOut.free;
-		patchOut = nil;
-		this.removeResponders;
+	freeToBundle { arg bundle;
+		bundle.addAction(this,\removeResponders);
 	}
 }
 

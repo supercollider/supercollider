@@ -42,16 +42,11 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 	rate { ^list.first.rate } // what else to do ?
 	numChannels { ^list.maxValue({ arg pl; pl.numChannels }) }
 	children { ^list }
-	
+	// PlayerSocket doesn't prepare children
 	prepareToBundle { arg group,bundle;
 		group = group.asGroup;
 		list.do({ arg pl; pl.prepareToBundle(group,bundle) });
 		super.prepareToBundle(group,bundle);
-	}
-	loadDefFileToBundle { arg bundle,server;
-		list.do({ arg pl;
-			pl.loadDefFileToBundle(bundle,server)
-		});
 	}
 	spawnToBundle { arg bundle;
 		if(autostart,{

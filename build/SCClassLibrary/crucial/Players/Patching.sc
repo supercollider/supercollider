@@ -135,7 +135,8 @@ ControlPatchOut : PatchOut { // you are returned from a .kr play
 	scalar { arg scalarPatchIn;
 		// polling of value not yet implemented on scserver
 		// scalarPatchIn.value = bus.poll;
-		//[this,scalarPatchIn].insp("scalar -> scalar patch ?");
+		[this,scalarPatchIn,this.source]
+			.debug("control -> scalar patch ? this,scalarPatchIn,this.source");
 		thisMethod.notYetImplemented;
 	}
 	free {

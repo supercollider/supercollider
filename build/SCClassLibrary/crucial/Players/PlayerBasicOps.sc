@@ -26,8 +26,8 @@ PlayerUnop : AbstractPlayer {
 				)
 			})
 		})			
+		//synthDefArgs { ^[ a.synthArg, patchOut.synthArg ] }
 	}*/
-	synthDefArgs { ^[ a.synthArg, patchOut.synthArg ] }
 	defName { ^(this.class.name.asString ++ operator.asString 
 					++ a.numChannels.asString ++ a.rate.asString) }
 	children { ^[a] }

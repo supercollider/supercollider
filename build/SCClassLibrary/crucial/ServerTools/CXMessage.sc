@@ -1,5 +1,6 @@
 
 CXBundle {
+
 	var <>functions,<>messages;
 	
 	add { arg message;
@@ -11,12 +12,16 @@ CXBundle {
 	addAction { arg receiver,selector, args;
 		functions = functions.add( Message(receiver,selector,args) )
 	}
-	send { arg server,time;
-		//messages.flat.size.debug("messages size");
-		server.listSendBundle(time,messages);
+	sendAtTime { arg server,atTime,timeOfRequest;
+		atTime.schedCXBundle(this,server,timeOfRequest ?? {Main.elapsedTime});
+	}
+	send { arg server,delta;
+		if(messages.notNil,{
+			server.listSendBundle(delta,messages);
+		});
 		if(functions.notNil,{
-			if(time.notNil,{
-				SystemClock.sched(time,{
+			if(delta.notNil and: {delta > 0.0},{
+				SystemClock.sched(delta,{
 					this.doFunctions;
 					nil
 				})
@@ -26,18 +31,22 @@ CXBundle {
 		});
 	}
 	clumpedSendNow { arg server;
-		this.doFunctions;
 		if(messages.notNil,{
 			messages.clump(5).do({ arg bundle,i;
 				server.listSendBundle(i * 0.001,bundle);
 			});
+			SystemClock.sched(messages.size * 0.001,{ this.doFunctions; nil });
 			^messages.size
 		},{
+			this.doFunctions;
 			^0
 		})
 	}
 	doFunctions {
 		functions.do({ arg f; f.value });
 	}
-	//cancellable
 }
+
+
+
+

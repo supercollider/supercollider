@@ -30,8 +30,8 @@ PlayerAmpGui : HasSubjectGui {
 	smallGui { arg layout;
 		var l;
 		l=this.guify(layout);
-		num = NumberEditor(1.0,[0,2.0]);
-		num.action_({ arg val; model.amp_(val) });
+		num = NumberEditor(model.amp.ampdb,ControlSpec(0.ampdb, 2.ampdb, \db, units: " dB"));
+		num.action_({ arg val; model.amp_(val.dbamp) });
 		num.gui(l);
 		if(layout.isNil,{ l.front });
 	}

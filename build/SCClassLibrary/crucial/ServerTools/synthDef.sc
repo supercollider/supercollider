@@ -6,7 +6,9 @@
 	stop {}
 	stopToBundle {}
 	free {}
-
+	freeHeavyResources {}
+	freeToBundle {}
+	
 	rate { ^\scalar }
 	
 	makePatchOut {}
@@ -36,6 +38,12 @@
 	}	
 }
 
++ Node {
+	freeToBundle { arg bundle;
+		bundle.add(this.freeMsg)
+	}
+}
+		
 + Buffer {
 	synthArg {
 		^bufnum
@@ -49,6 +57,10 @@
 }
 
 + Pattern {
+	rate { ^\stream }
+}
+
++ Function {
 	rate { ^\stream }
 }
 

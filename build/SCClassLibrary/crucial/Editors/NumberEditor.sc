@@ -74,9 +74,6 @@ KrNumberEditor : NumberEditor {
 	addToSynthDef {  arg synthDef,name;
 		synthDef.addKr(name,this.synthArg);
 	}
-//	instrArgFromControl { arg control;
-//		^control
-//	}
 	instrArgFromControl { arg control;
 		// should request a LagControl
 		// either way it violates the contract
@@ -93,10 +90,9 @@ KrNumberEditor : NumberEditor {
 	connectToPatchIn { arg patchIn,needsValueSetNow = true;
 		patchOut.connectTo(patchIn,needsValueSetNow);
 	}
-	stop { this.freePatchOut }
-	free { this.freePatchOut }
-	freePatchOut {
-		patchOut.free;
+	stopToBundle { arg b; b.addFunction({ patchOut.free; patchOut = nil; }); }
+	freePatchOut { arg bundle;
+		bundle.addFunction({ patchOut.free; patchOut = nil; })
 	}
 	
 	guiClass { ^KrNumberEditorGui }
@@ -104,6 +100,7 @@ KrNumberEditor : NumberEditor {
 }
 
 IrNumberEditor : NumberEditor {
+	rate { ^\control } // irate icontrol ?
 	addToSynthDef {  arg synthDef,name;
 		synthDef.addIr(name,this.synthArg);
 	}

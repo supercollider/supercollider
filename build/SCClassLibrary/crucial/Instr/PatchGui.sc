@@ -64,7 +64,7 @@ InstrSpawnerGui : PatchGui {
 	guiBody { arg layout;
 		super.guiBody(layout);
 		layout.startRow;
-		CXLabel(layout,"delta:");
+		CXLabel(layout,"delta pattern:");
 		model.delta.gui(layout);
 	}
 }

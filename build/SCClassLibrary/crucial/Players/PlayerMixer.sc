@@ -64,7 +64,7 @@ PlayerMixer : MultiplePlayers {  // will become a HasPatchIns
 		if(this.isPlaying,{
 			bundle = CXBundle.new;
 			//start player
-			player.makePatchOut(this.group,true);
+			player.makePatchOut(this.group,true,nil,bundle);
 			
 			
 			

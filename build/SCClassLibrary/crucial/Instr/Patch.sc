@@ -7,7 +7,7 @@ HasPatchIns : AbstractPlayer {
 		super.didSpawn;
 		//i know of the synth, i hand out the NodeControls
 		patchIns.do({ arg patchIn,argi;
-			patchIn.nodeControl_(NodeControl(synth,this.synthArgsIndices.at(argi)));
+			patchIn.nodeControl_(NodeControl(synth,this.argNameAt(argi)));
 			this.inputs.at(argi).connectToPatchIn(patchIn,false);
 		});
 	}
@@ -139,9 +139,9 @@ have to bundle it
 Patch : HasPatchIns  {
 		
 	var <instr,<>args;
-	var synthPatchIns,<argsForSynth,<synthArgsIndices;
+	var synthPatchIns,<argsForSynth,<argNamesForSynth,<synthArgsIndices;
 	
-	var synthDef;
+	var <synthDef;
 	var <numChannels,<rate; // determined after making synthdef
 	
 	*new { arg name,inputs;
@@ -170,6 +170,8 @@ Patch : HasPatchIns  {
 
 	inputs { ^args }
 	setInput { arg ai, ag;
+		//ISSUE if it wasn't a synth input before it won't become one now
+		// but you can respawn
 		var synthArgi;
 		args.put(ai,ag);
 		synthArgi = synthArgsIndices.at(ai);
@@ -202,11 +204,12 @@ Patch : HasPatchIns  {
 	createArgs { arg argargs;
 		var argsSize;
 		argsForSynth = [];
+		argNamesForSynth = [];
 		patchIns = [];
 		synthPatchIns = [];
 		argsSize = this.instr.argsSize;
 		synthArgsIndices = Array.newClear(argsSize);
-
+		
 		args=Array.fill(argsSize,{arg i; 
 			var proto,spec,ag,patchIn,darg;
 			spec = instr.specs.at(i);
@@ -230,6 +233,7 @@ Patch : HasPatchIns  {
 				and: {ag.rate != \scalar}
 			,{
 				argsForSynth = argsForSynth.add(ag);
+				argNamesForSynth = argNamesForSynth.add(this.argNameAt(i));
 				synthPatchIns = synthPatchIns.add(patchIn);
 				synthArgsIndices.put(i,synthPatchIns.size - 1);
 			});
@@ -249,13 +253,17 @@ Patch : HasPatchIns  {
 			synthDef
 		}
 	}
-	invalidateSynthDef { synthDef = nil; }
+	invalidateSynthDef { 
+		synthDef = nil;
+		defName = nil;
+		readyForPlay = false;
+	}
 	
 	// has inputs
 	spawnToBundle { arg bundle;
 		var synthArgs;
 		if(patchOut.isNil,{ 
-			"Patch-spawnToBundle : this Patch has not yet been prepared".die(this);
+			"PatchOut is nil. Has this been prepared for play ?".die(this,thisMethod.asString);
 		});
 		this.asSynthDef;// make sure it exists
 		
@@ -277,7 +285,7 @@ Patch : HasPatchIns  {
 		var args;
 		args = Array(argsForSynth.size * 2 + 2);
 		argsForSynth.do({ arg ag,i;
-			args.add(i);
+			args.add(argNamesForSynth.at(i));
 			args.add(ag.synthArg);
 		});
 		args.add(\out);
@@ -286,13 +294,18 @@ Patch : HasPatchIns  {
 	}
 	defName { ^defName } // NOT 'Patch' ever
 	
-	free {
-		super.free;
+	stopToBundle { arg bundle;
+		super.stopToBundle(bundle);
+		bundle.addAction(this,\didStop);
+	}
+	didStop {
 		// ISSUE: if you change a static non-synth input 
 		// nobody notices to rebuild the synth def
 		// so for now, wipe it out
 		// the Instr knows if it came from a file, can check the moddate
+		
 		synthDef = nil;
+		defName = nil;
 	}
 	
 	// act like a simple ugen function

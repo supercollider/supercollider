@@ -3,24 +3,29 @@ PathName { 	// this class by originally by AdC
 
 	var <fullPath, <colonIndices;
 	
-	classvar <>scroot;
+	classvar <>scroot,<>secondVolume;
 	
 	*new { arg path = ""; 
 		^super.new.init(path.standardizePath); 
 	}
 	*fromOS9 { arg path="";
-		var treated;
-		treated = Array.new(path.size);
-		path = path.do({ arg char,i ;
+		if(secondVolume.notNil and: 
+			{ path.copyRange(0,secondVolume.size - 1) == secondVolume },{
+				path = "/Volumes/" ++ path;
+		});
+		^super.new.init(
+			String.streamContents({ arg s;
+				path.do({ arg char,i;
 					if(char == $:,{
 						if(i != 0,{ // leading : is not wanted in unix
-							treated.add($/);
+							s << $/
 						})
 					},{
-						treated.add(char)
+						s <<  char
 					});
-				});
-		^super.new.init(treated.as(String))
+				})
+			})
+		)
 	}
 	*initClass {	scroot = File.getcwd;	}
 	init { arg inPath;			// always calculate indices for all the colons,

@@ -29,7 +29,7 @@ BeatClockPlayer : KrPlayer {
 		^("BeatClockPlayer" ++ tempoFactor.asString)
 	}
 	synthDefArgs { // synthinputs collect synthArg
-		^[ 0, tempoBus.index,1,patchOut.synthArg]
+		^[ \i_tempoIndex, tempoBus.index,\out,patchOut.synthArg]
 	}
 
 	guiClass { ^BeatClockPlayerGui }

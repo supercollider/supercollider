@@ -12,37 +12,30 @@ SampleGui : ObjectGui {
 			this.loadDialog
 		},maxx:140).background_(Color.white);
 		
-		ActionButton(layout,"query",{
+		ActionButton(layout,"query buffer",{
 			if(model.buffer.notNil,{
 				model.buffer.query;
 			},{
 				"Sample buffer not loaded".inform;
 			})
 		});
+		ActionButton(layout,"reload buffer",{
+			model.reloadBuffer;
+		});
 		
 		CXLabel(layout,"bpm:");
-		tempoG=NumberEditor(1,[0,1000])
+		tempoG=NumberEditor(model.tempo * 60.0,[0,1000])
 					.action_({ arg th; model.tempo_(th.value / 60) });
 		tempoG.smallGui(layout);
 					
 		CXLabel(layout,"beats:");
-		beatsG=NumberEditor(1,[0.000001,32])
+		beatsG=NumberEditor(model.beats,[0.000001,32])
 					.action_({arg th; model.beats_(th.value)});
 		beatsG.smallGui(layout);
 
-		ActionButton(layout,"reload buffer",{
-			model.reloadBuffer;
-		});
-
-		//ActionButton(layout,"play",{model.play},maxx:70);
+		ActionButton(layout,">",{model.play},maxx:70).background_(Color.green(alpha:0.5));
 		//ActionButton(layout, "save...",{model.save},maxx:70).background_(Color.white);
-		
-			
 		//ActionButton(layout,"selAll",{sigG.setSelection(0,model.size)},maxx:70);
-
-		//sigG=SignalView(layout.view,r,model.signal.at(0));
-		//SliderView(layout.view,layout.layRight(10,75,2),"",1,0,3.4,0).action_({arg th; sigG.zoom=(model.size/sigG.view.bounds.width) * th.value});
-		//SliderView(layout.view,layout.layRight(10,75,2),"",1,0.0,1.0,0).action_({arg th; sigG.scroll=(model.size) * th.value});
 
 		size = layout.asView.bounds.width - 50;
 		sigG = SCMultiSliderView(layout, Rect(0, 0, size, 50));
@@ -76,7 +69,6 @@ SampleGui : ObjectGui {
 		//ActionButton(layout,"< -fades- >",{model.inouts});
 		
 		//ActionButton(layout,"crop",{model.crop(sigG.selectionStart,sigG.selectionEnd)});
-
 		
 		this.update;		
 	}

@@ -10,7 +10,7 @@ PlayerEfxFunc : AbstractSinglePlayerEffect {
 		var proxies;
 		proxies = effect.annotatedInputProxies;
 		if(proxies.isEmpty,{
-			("PlayerEffect-peinit : No possible input found on effect " + effect).error;
+			("PlayerEfxFunc-peinit : No possible input found on effect " + effect).die;
 		});
 		inputIndex = index;
 		playerInputProxy = proxies.at(inputIndex).at(0);
@@ -21,10 +21,10 @@ PlayerEfxFunc : AbstractSinglePlayerEffect {
 	}
 	loadDefFileToBundle { } // really its Synthless or proxy
 
-	makePatchOut { arg parentGroup,private,bus;
+	makePatchOut { arg parentGroup,private,bus,bundle;
 		// the subject
-		super.makePatchOut(parentGroup,private,bus);
-		effect.makePatchOut(effectGroup,true,sharedBus);
+		super.makePatchOut(parentGroup,private,bus,bundle);
+		effect.makePatchOut(effectGroup,true,sharedBus,bundle);
 		// effect reads from subject's bus
 		playerInputProxy.numChannels_(subject.numChannels).spec_(subject.spec);
 		playerInputProxy.setInputBus(sharedBus);
@@ -33,6 +33,7 @@ PlayerEfxFunc : AbstractSinglePlayerEffect {
 		effect.spawnToBundle(bundle);
 		subject.spawnToBundle(bundle);
 	}
+	isPlaying { ^effect.isPlaying }
 
 	children { ^[subject,effect] }
 	guiClass { ^PlayerEffectGui }

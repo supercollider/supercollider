@@ -3,11 +3,15 @@ InstrSynthDef : SynthDef {
 	
 	classvar watchedServers;
 	
+	var <longName;
+	
 	var <fixedNames,<fixedValues,<fixedPositions;
 
 	// secret because the function doesn't see them
 	// but they are needed to pass into the synth
 	var secretIrPairs, secretKrPairs;
+	
+	var <>tempTempoKr;
 	
 	var <rate,<numChannels; //after build
 
@@ -30,6 +34,7 @@ InstrSynthDef : SynthDef {
 		// restart controls in case of *wrap
 		irnames = irvalues = ircontrols = irpositions = nil;
 		krnames = krvalues = krcontrols = krpositions = krlags = nil;
+		trnames = trvalues = trcontrols = trpositions = nil;
 		fixedNames = fixedValues = fixedPositions = nil;
 		
 		// OutputProxy In InTrig Float etc.		
@@ -53,13 +58,13 @@ InstrSynthDef : SynthDef {
 			});
 				
 			if(rate == \audio,{
-				this.addKr(\out,0);
-				result = outClass.ar(Control.names([\out]).kr([0]) , result);
+				this.addIr(\out,0);
+				result = outClass.ar(Control.names([\out]).ir([0]) , result);
 				// can still add Out controls if you always use \out, not index
 			},{
 				if(rate == \control,{
-					this.addKr(\out,0);
-					result = outClass.kr(Control.names([\out]).kr([0]) , result);
+					this.addIr(\out,0);
+					result = outClass.kr(Control.names([\out]).ir([0]) , result);
 				},{
 					("InstrSynthDef: scalar rate ? result of your function:" + result).error;
 				})
@@ -71,20 +76,24 @@ InstrSynthDef : SynthDef {
 		// outClass,numChannels (in case it expanded)
 		name = "";
 		instr.name.do({ arg part;
-				name = name ++ part.asString.asFileSafeString;
+			name = name ++ part.asString.asFileSafeString;
 		});
-		if(name.size > 10,{
-			name = name.copyRange(0,9) ++ name.copyRange(10,name.size - 1).hash.asFileSafeString;
+		if(name.size > 8,{
+			name = name.copyRange(0,7) ++ name.copyRange(8,name.size - 1).hash.asFileSafeString;
 		});
 		name = name ++ outClass.name.asString.first.toUpper;
-		// TODO: ir, kr pattern
-		fixedValues.do({ arg fa,i;
-			if(fa.notNil,{
-				fixedID = fixedID ++ i ++ fa.asCompileString;
-			})
-		});
-		name = name ++ fixedID.hash.asFileSafeString;
-		("InstrSynthDef built:" + name ).debug;
+
+//		fixedValues.do({ arg fa,i;
+//			if(fa.notNil,{
+//				fixedID = fixedID ++ i ++ fa.asCompileString;
+//			})
+//		});
+//		name = name ++ fixedID.hash.asFileSafeString;
+
+// 		more correct, but too long.
+		longName = name ++ this.class.defNameFromObjects(args);
+		name = longName.hash.asFileSafeString;
+		("InstrSynthDef built:" + name + longName).debug;
 	}
 	
 	// passed to Instr function but not to synth
@@ -139,24 +148,39 @@ InstrSynthDef : SynthDef {
 		})
 	}
 	
-//	tempoKr {
-//		// have to include in cacheing, playing
-//		tempoKr ?? {
-//			this.addSecretKr('__tempo__',Tempo.tempo, ... )
-//		}
-//	}
+	tempoKr { arg argi,selector;
+		^(tempTempoKr ?? { // first client to request will later be asked to produce the TempoBus
+			tempTempoKr = In.kr(
+				this.addSecretKr(("__tempo__" ++ argi.asString).asSymbol,1.0,argi,selector),
+			1)
+		})
+	}
+	
+	*defNameFromObjects { arg objects;
+		^String.streamContents({ arg stream;
+			var iks=0;
+			objects.do({ arg obj,argi;
+				// returns 0/i 1/k 2/s tag, adds values if any to stream
+				iks = (3 ** argi) *  obj.addToDefName(stream) + iks;			});
+			stream << iks;//.debug("iks tag");
+		});
+	}
 	*initClass { watchedServers = IdentityDictionary.new }
 	*watchServer { arg server;
 		if(watchedServers.at(server).isNil,{
 			SimpleController(server)
-				.put(\serverRunning,{
+				.put(\serverRunning,{ //clear on quit
 					if(server.serverRunning.not,{
-						"Clearing AbstractPlayer SynthDef cache".inform;
-						Library.put(SynthDef,server,nil);
+						this.clearCache(server);
+						this.loadCacheFromDir(server);
 					});
 				});
 			watchedServers.put(server,Main.elapsedTime);
 		});
+	}
+	*clearCache { arg server;
+		"Clearing AbstractPlayer SynthDef cache".inform;
+		Library.put(SynthDef,server,nil);		
 	}
 	*loadCacheFromDir { arg server,dir = "synthdefs/";
 		(dir++"*").pathMatch.do({ arg p;

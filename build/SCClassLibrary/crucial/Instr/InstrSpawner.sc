@@ -1,49 +1,16 @@
 
 InstrSpawner : Patch {
-
-	var <>delta;	
-	var deltaStream,streams,sendArray,aintSeenNil = true,spawnTask;
 	
-	*new { arg name,args,delta = 1.0;
-		^super.new(name,args).delta_(delta)
+	classvar <>latency=0.07;
+	
+	var <>deltaPattern,deltaStream,<delta;
+	var streams,sendArray,spawnTask,<clock;
+	
+	*new { arg instrName,args,deltaPattern = 1.0;
+		^super.new(instrName,args).deltaPattern_(deltaPattern)
 	}
-	storeArgs { ^[this.instr.name,args,delta] }
-	createArgs { arg argargs;
-		var argsSize;
-		argsForSynth = [];
-		patchIns = [];
-		synthPatchIns = [];
-		argsSize = this.instr.argsSize;
-		synthArgsIndices = Array.newClear(argsSize);
-
-		args=Array.fill(argsSize,{arg i; 
-			var proto,spec,ag,patchIn,darg;
-			ag = 
-				argargs.at(i) // explictly specified
-				?? 
-				{ //  or auto-create a suitable control...
-					spec = instr.specs.at(i);
-					proto = spec.defaultControl;
-					proto.tryPerform('spec_',spec); // make sure it does the spec
-					if((darg = instr.initAt(i)).isNumber,{
-						proto.tryPerform('value_',darg);// set its value
-					});
-					proto
-				};
-				
-			patchIn = PatchIn.newByRate(instr.specs.at(i).rate);
-			patchIns = patchIns.add(patchIn);
-
-			if(ag.rate != \scalar and: { instr.specs.at(i).rate != \scalar },{
-				//ag.insp(instr.argNameAt(i));
-				argsForSynth = argsForSynth.add(ag);
-				synthPatchIns = synthPatchIns.add(patchIn);
-				synthArgsIndices.put(i,synthPatchIns.size - 1);
-			});
-			
-			ag		
-		});
-	}
+	
+	storeArgs { ^[instr.name,args,deltaPattern] }
 	
 	asSynthDef {
 		^synthDef ?? {
@@ -51,7 +18,7 @@ InstrSpawner : Patch {
 			initArgs = this.args.collect({ arg a,i;
 						var spec;
 						if(a.rate == \stream,{
-							spec = this.instr.specs.at(i);								IrNumberEditor(spec.default,spec);
+							spec = this.instr.specs.at(i);							IrNumberEditor(spec.default,spec);
 						},{
 							a
 						})
@@ -66,142 +33,315 @@ InstrSpawner : Patch {
 	
 	prepareToBundle { arg group,bundle;
 		super.prepareToBundle(group,bundle);
-		
 		streams = Array(argsForSynth.size);
 		sendArray = Array(argsForSynth.size * 2);
 		synthArgsIndices.do({ arg ind,i;
 			if(ind.notNil,{
-				if(args.at(i).isKindOf(AbstractPlayer),{
-					// temp put the arg in there
-					// after making the patchOut, insert synthArg
-					streams.add(args.at(i))
-				},{
-					// a pattern 
-					streams.add(args.at(i).asStream);
-				});
+				// a pattern or player
+				// eg. a ModalFreq would use asStream rather than its synth version
+				streams.add(args.at(i).asStream);
+
 				sendArray.add(this.instr.argNameAt(i));
 				sendArray.add(nil); // where the value will go
 			})
 		});
-		sendArray = sendArray ++ synthDef.secretDefArgs(args) 
+		deltaStream = deltaPattern.asStream;
+		
+		this.asSynthDef;// make sure it exists
+		sendArray = ["/s_new",defName,-1,1,group.nodeID]
+					++ sendArray ++ synthDef.secretDefArgs(args) 
 					++ [\out, this.patchOut.synthArg];
+		CmdPeriod.add(this);
 	}
-	
-	makePatchOut {arg group,private = false,bus;
-		super.makePatchOut(group,private,bus);
-		// replace players with their outputs
-		streams.do({ arg s,i;
-			if(s.isKindOf(AbstractPlayer),{
-				streams.put(i,s.synthArg);
-			})
+	makeTask {
+		deltaStream.reset; delta = 0.0;
+		streams.do({ arg stream; stream.reset });
+		spawnTask = Routine({
+			var server;
+			server = this.server;
+			while({
+				this.spawnNext;
+			},{
+				server.sendBundle(latency,sendArray);
+				delta.wait // we are running slightly ahead of arrival time
+			});					
 		});
-		// last slot is my \out
+	}
+	spawnNext {
+		if((delta = deltaStream.next(this)).isNil,{ ^false });
+		streams.do({ arg s,i;
+			var val;
+			if((val = s.next(this)).isNil ,{ ^false });
+			sendArray.put(i * 2 + 6,val);
+		});
+		^true
+	}
+	makePatchOut { arg group,private = false,bus,bundle;
+		super.makePatchOut(group,private,bus,bundle);
+		streams.do({ arg s,i;
+			// replace players with their outputs
+			// other objects return themselves
+			streams.put(i,s.synthArg);
+		});
+		sendArray.put(4,this.group.nodeID);
 		sendArray.put(sendArray.size - 1, this.patchOut.synthArg);
 	}
-	synthDefArgs {
-		streams.do({ arg s,i;
-			sendArray.put(i * 2 + 1,s.value ?? {aintSeenNil = false; nil });
-		});		
-		^sendArray
+	spawnToBundle { arg bundle;
+		if(patchOut.isNil,{ 
+			(thisMethod.asString 
+				+ "PatchOut is nil. Has this been prepared for play ?").die(this);
+		});
+		this.makeTask;
+
+		if((delta = deltaStream.next).notNil and: {this.spawnNext},{
+			this.asSynthDef;// make sure it exists
+			
+			this.children.do({ arg child;
+				child.spawnToBundle(bundle);
+			});
+
+			bundle.add(sendArray);
+			bundle.addAction(this,\didSpawn);
+		});
 	}
 
 	didSpawn {
-		deltaStream = delta.asStream;
-		spawnTask = Task({
-			aintSeenNil=true;
-			deltaStream.next.wait;
-			while({ 
-				this.synthDefArgs; // make next array
-				aintSeenNil 
-			},{
-				this.server.listSendBundle(0.05, // slop
-					[["/s_new",defName,-1,1,this.group.nodeID] ++ sendArray]);
-				deltaStream.value.wait;
-			})	
-		}, SystemClock);
-		spawnTask.play
+		super.didSpawn;
+		this.startTask;
 	}
-	stop { 
+
+	startTask {
+		clock = SystemClock;
+		clock.sched((delta - latency).max(0.0),spawnTask);
+	}
+
+	isPlaying {
+		^(spawnTask.notNil and: {spawnTask.state == 7})
+	}
+	didStop {
+		super.didStop;
+		// can't use Task because its start is quantized
 		spawnTask.stop;
+		spawnTask = nil;
 	}
+	didFree {
+		CmdPeriod.remove(this);
+	}
+	cmdPeriod {
+		this.didStop;
+	}
+	freeToBundle { arg bundle;
+		bundle.addAction(this,\didFree);
+	}
+	
+//	freeSynth { // free the group node
+//	}
 	guiClass { ^InstrSpawnerGui }	
 }
 
 
 InstrGateSpawner : InstrSpawner {
-	var <>duration,durationStream,<>maxPolyphony = 16,synths;
 	
-	*new { arg name,args,delta = 1.0,duration=0.8;
-		^super.new(name,args).delta_(delta).duration_(duration)
-	}
-	storeArgs { ^[this.instr.name,args,delta,duration] }
-	createArgs { arg argargs;
-		var gateIndex;
-		argargs = argargs.asArray.extend(instr.argsSize,nil);
-		gateIndex = instr.argNames.detectIndex({ arg agn; agn == \gate });
-		// stick a Kr there to hold the input as control
-		if(gateIndex.notNil,{
-			argargs.put(gateIndex, KrNumberEditor(1.0,[0.0,1.0]).lag_(0.0) );
+	var <beat=0;
+	
+	makeTask {
+		deltaStream.reset; delta = 0.0; beat = 0.0;
+		streams.do({ arg stream; stream.reset });
+		spawnTask = Routine({
+			var server;
+			server = this.server;
+			while({
+				beat = beat + delta;
+				this.spawnNext;
+			},{
+				server.sendBundle(latency,sendArray);
+				delta.wait // we are running slightly ahead of arrival time
+			});					
 		});
-		super.createArgs(argargs);
 	}
-	prepareToBundle { arg group,bundle;
-		super.prepareToBundle(group,bundle);
+
+	startTask {
+		clock = TempoClock.default;
+		// play without the quantize
+		//first event has been sent, sched to the second
+		clock.schedAbs(clock.elapsedBeats + (delta - Tempo.secs2beats(latency)), spawnTask);
+	}
+}
+
+
+
+
+// sends on and off gate message
+//InstrGateSpawner : InstrSpawner {
+//	var <>duration,durationStream,<>maxPolyphony = 16,synths;
+//	
+//	*new { arg name,args,delta = 1.0,duration=0.8;
+//		^super.new(name,args).delta_(delta).duration_(duration)
+//	}
+//	storeArgs { ^[this.instr.name,args,delta,duration] }
+//	createArgs { arg argargs;
+//		var gateIndex;
+//		argargs = argargs.asArray.extend(instr.argsSize,nil);
+//		gateIndex = instr.argNames.detectIndex({ arg agn; agn == \gate });
+//		// stick a Kr there to hold the input as control
+//		if(gateIndex.notNil,{
+//			argargs.put(gateIndex, KrNumberEditor(1.0,[0.0,1.0]).lag_(0.0) );
+//		});
+//		super.createArgs(argargs);
+//	}
+//	prepareToBundle { arg group,bundle;
+//		super.prepareToBundle(group,bundle);
+//		synths = Array.fill(maxPolyphony,{ arg i;
+//						if(i > 0,{ // first synth will be from spawnToBundle
+//							Synth.basicNew(defName,this.server);
+//						})
+//					});
+//	}
+//	synthDefArgs { arg  beat=0,delta;
+//		streams.do({ arg s,i;
+//			var x;
+//			x = s.value(beat,delta);
+//			if(x.isNil,{ aintSeenNil = false });
+//			sendArray.put(i * 2 + 1, x);
+//		});
+//		^sendArray 
+//	}
+//	didSpawn {
+//		deltaStream = delta.asStream;
+//		durationStream = duration.asStream;
+//		synths.put(0,synth);
+//		
+//		spawnTask = Task({
+//		
+//			var delta,dur,server,latency,beat,itSynth,index=1;
+//			aintSeenNil=true;
+//			beat = TempoClock.default.elapsedBeats;
+//			
+//			server = this.server;
+//			latency = server.latency;
+//			
+//			//first synth already started
+//			delta = deltaStream.next;
+//			dur = durationStream.next(delta,beat);
+//			// sched first gate off
+//			server.listSendBundle(Tempo.beats2secs(dur), [ synth.releaseMsg ]);
+//			
+//			// small slippage if tempo changes during first event !
+//			(delta - Tempo.secs2beats(latency)).wait;
+//			
+//			while({
+//				beat = TempoClock.default.elapsedBeats;
+//				delta = deltaStream.value(beat);
+//				this.synthDefArgs(beat,delta);
+//				dur = durationStream.value(delta,beat);
+//				aintSeenNil and: delta.notNil
+//			},{
+//				itSynth = synths.wrapAt(index = index + 1);
+//				// voice stealing: if(itSynth.isPlaying,{ add the release for it });
+//				server.listSendBundle(server.latency,
+//					[ itSynth.addToTailMsg(this.group,sendArray) ] );
+//					
+//				if(dur.notNil,{
+//					server.listSendBundle(server.latency + Tempo.beats2secs(dur),
+//						[	["/n_set", itSynth.nodeID, \gate, 0] ]);
+//				});
+//				delta.wait // we are running slightly ahead of arrival time
+//			});
+//
+//		}, TempoClock.default);
+//		spawnTask.play
+//	}
+//	freeSynth {
+//		synths.do({ arg synth;
+//			synth.free(synth.isPlaying);
+//		});
+//	}
+//}
+
+/*
+	// maxPolyphony version
+	
+InstrGateSpawner : InstrSpawner {
+	var <>maxPolyphony = 16,synths;
+	
+	makeTask {
 		synths = Array.fill(maxPolyphony,{ arg i;
 						if(i > 0,{ // first synth will be from spawnToBundle
 							Synth.basicNew(defName,this.server);
 						})
 					});
-	}
-	synthDefArgs { arg  beat=0;
-		streams.do({ arg s,i;
-			sendArray.put(i * 2 + 1,s.value(beat) ?? {aintSeenNil = false; nil });
-		});
-		^sendArray 
-	}
-	didSpawn {
-		deltaStream = delta.asStream;
-		durationStream = duration.asStream;
-		synths.put(0,synth);
-		
+
 		spawnTask = Task({
 		
 			var delta,dur,server,latency,beat,itSynth,index=1;
 			aintSeenNil=true;
-			beat = TempoClock.default.elapsedBeats;
 			
 			server = this.server;
 			latency = server.latency;
 			
 			//first synth already started
 			delta = deltaStream.next;
-			dur = durationStream.next(delta,beat);
-			// sched first gate off
-			server.listSendBundle(Tempo.beats2secs(dur), [ synth.releaseMsg ]);
 			
 			// small slippage if tempo changes during first event !
 			(delta - Tempo.secs2beats(latency)).wait;
 			
 			while({
 				beat = TempoClock.default.elapsedBeats;
-				this.synthDefArgs(beat);
 				delta = deltaStream.value(beat);
-				dur = durationStream.value(delta,beat);
-				aintSeenNil and: delta.notNil and: dur.notNil
+				this.synthDefArgs(beat,delta);
+				aintSeenNil and: {delta.notNil}
 			},{
 				itSynth = synths.wrapAt(index = index + 1);
-				// voice stealing: if(itSynth.isPlaying,{ add the release for it });
-				server.listSendBundle(server.latency,
-					[ itSynth.addToTailMsg(this.group,sendArray) ] );
-					
-				// tempo change during play screws up release time
-				server.listSendBundle(server.latency + Tempo.beats2secs(dur),
-					[	["/n_set", itSynth.nodeID, \gate, 0] ]);
+				// voice stealing: 
+				if(itSynth.isPlaying,{ 
+					server.listSendBundle(server.latency,
+						[ 
+							itSynth.releaseMsg(0.1), // release
+							['s_noid',itSynth.nodeID], // reassign
+							itSynth.addToTailMsg(this.group,sendArray) // reuse
+						]);
+				},{
+					server.listSendBundle(server.latency,
+						[ itSynth.addToTailMsg(this.group,sendArray) ] );
+				});					
 				delta.wait // we are running slightly ahead of arrival time
 			});
 
 		}, TempoClock.default);
-		spawnTask.play
+	}
+	// have to know first delta
+	spawnToBundle { arg bundle;
+		var synthArgs;
+		if(patchOut.isNil,{ 
+			"InstrGateSpawner-spawnToBundle : this has not yet been prepared".die(this);
+		});
+		this.asSynthDef;// make sure it exists
+		
+		this.children.do({ arg child;
+			child.spawnToBundle(bundle);
+		});
+		synth = Synth.basicNew(this.defName,this.server);
+		NodeWatcher.register(synth);
+		
+		synths.put(0,synth);
+		deltaStream = delta.asStream;
+
+		bundle.add(
+			synth.addToTailMsg(patchOut.group,
+				this.synthDefArgs(0,deltaStream.next)
+				++ synthDef.secretDefArgs(args)
+			)
+		);
+		bundle.addAction(this,\didSpawn);
+	}
+	synthDefArgs { arg  beat=0,delta;
+		streams.do({ arg s,i;
+			var x;
+			x = s.value(beat,delta);
+			if(x.isNil,{ aintSeenNil = false });
+			sendArray.put(i * 2 + 1, x);
+		});
+		^sendArray 
 	}
 	freeSynth {
 		synths.do({ arg synth;
@@ -209,6 +349,12 @@ InstrGateSpawner : InstrSpawner {
 		});
 	}
 }
+
+*/
+
+
+
+/**
 
 InstrGateSleepSpawner : InstrGateSpawner {
 	// assumes doneAction 1 (sleep)
@@ -273,7 +419,7 @@ InstrGateSleepSpawner : InstrGateSpawner {
 
 
 
-
+**/
 
 
 
@@ -288,7 +434,7 @@ InstrSpawner2 : InstrSpawner {
 	*new { arg name,args,noteOn = 1.0, beatsPerStep = 0.25,tempo;
 		^super.new(name,args,noteOn).beatsPerStep_(beatsPerStep).tempo_(tempo ? Tempo.default)
 	}
-
+//storeArgs
 	didSpawn {
 		var beatWait;
 		beatWait = tempo.beats2secs(beatsPerStep);

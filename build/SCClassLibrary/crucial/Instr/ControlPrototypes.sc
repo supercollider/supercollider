@@ -63,9 +63,17 @@ ControlPrototypes {
 				)	
 	}
 	*listForSpec { arg argName,spec;
-		var try,class;
+		var try,class,specname;
+
 		try = this.at(argName,spec);
 		if(try.notNil,{ ^try });
+
+		specname = Spec.specs.findKeyForValue(spec);
+		if(specname.notNil,{
+			try = this.at(specname,spec);
+			if(try.notNil, { ^try });
+		});
+		
 		class = spec.class;
 		while({
 			try.isNil and: {class != Object}

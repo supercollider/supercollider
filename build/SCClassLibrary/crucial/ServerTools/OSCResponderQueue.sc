@@ -1,6 +1,9 @@
 
 /*
 
+TO BE DEPRECIATED
+ancient history
+
 		OSCresponder.queue([ 
 			[ { server.serverRunning.not },{ server.boot }, '/done'],
 			[ { server.audioRunning.not },{ server.start }, '/on'],

@@ -2,15 +2,8 @@
 /*
 	a player that can switch to different players
 	
-	doesn't crossfade, this is a raw socket
-	
-	the players should be in a prepared state
-		preparePlayer
-		prepareAndTrigger
-	
-	
 	should all be same rate
-		numChannels should adapt
+	numChannels will adapt
 */
 
 PlayerSocket : AbstractPlayerProxy {
@@ -18,11 +11,12 @@ PlayerSocket : AbstractPlayerProxy {
 	var <>round,<>rate,<>numChannels;
 	var <>env,socketGroup,sched;
 	var isWaking = false;
-	var <lastPlayer;
+	var <lastPlayer,envdSource;
 	
-	*new { arg rate=\audio,numChannels=2,round=0.0;
+	*new { arg rate=\audio,numChannels=2,round=0.0,env;
 		^super.new.round_(round)
 			.rate_(rate).numChannels_(numChannels)
+			.env_(env ?? {Env.asr(0.01,1.0,0.1)})
 			.psinit
 	}
 	psinit {
@@ -36,7 +30,7 @@ PlayerSocket : AbstractPlayerProxy {
 	prepareAndSpawn { arg player,releaseTime=0.0;
 		var bsize;
 		bsize = this.preparePlayer(player);
-		SystemClock.sched(bsize / 10.0,{
+		SystemClock.sched(bsize / 7.0,{
 			this.spawnPlayer(player,releaseTime);
 			nil
 		})
@@ -44,31 +38,27 @@ PlayerSocket : AbstractPlayerProxy {
 	prepareAndQSpawn { arg player,releaseTime=0.0;
 		var bsize;
 		bsize = this.preparePlayer(player);
-		SystemClock.sched(bsize / 15.0,{
+		SystemClock.sched(bsize / 7.0,{
 			this.qspawnPlayer(player,releaseTime);
 			nil
 		})
 	}
 	preparePlayer { arg player;
-		// returns the bundle size
 		^player.prepareForPlay(socketGroup,bus: sharedBus)
 	}
 
 	spawnPlayer { arg player,releaseTime=0.0,beatDelta=0.0;
 		var bundle;
-		bundle = CXBundle.new;
-		this.setSourceToBundle(player,bundle,releaseTime);
-		bundle.addFunction({
-			isSleeping = isWaking = false;
-			lastPlayer = player;
-			{ this.changed; }.defer;
-			nil
+		if((player !== lastPlayer) or: isSleeping,{ // freePatchOut overlaps
+			bundle = CXBundle.new;
+			this.setSourceToBundle(player,bundle,releaseTime);
+			sched.xschedCXBundle(beatDelta,this.server,bundle);
 		});
-		sched.xschedCXBundle(beatDelta,this.server,bundle);
 	}
 	qspawnPlayer { arg player,releaseTime=0.0;
 		isWaking = true;
 		// TODO switch to TempoClock
+		// needs xblock for now
 		this.spawnPlayer(player,releaseTime,sched.deltaTillNext(round))
 	}
 	
@@ -80,9 +70,9 @@ PlayerSocket : AbstractPlayerProxy {
 			^this.changed;
 		});
 		if(isSleeping.not,{
-			if(source.notNil,{
+			if(envdSource.notNil,{
 				bundle = CXBundle.new;
-				source.releaseToBundle(releaseTime,bundle);
+				envdSource.releaseToBundle(releaseTime,bundle);
 				bundle.addFunction({ isSleeping = true; });
 				bundle.clumpedSendNow(this.server);
 			});
@@ -91,34 +81,26 @@ PlayerSocket : AbstractPlayerProxy {
 	isSleeping {
 		^(isSleeping and: isWaking.not)
 	}
-
 	
-	//
 	prepareToBundle { arg group,bundle;
 		group = group.asGroup;
+
 		socketGroup = Group.basicNew(server: group.server);
 		NodeWatcher.register(socketGroup);
 		bundle.add( socketGroup.addToTailMsg(group) );
-		if(source.notNil,{
-			source.prepareToBundle(socketGroup,bundle)
-		})
+
+		// children should be taken care of
+		super.prepareToBundle(group,bundle);
 	}
-	childrenMakePatchOut { arg group,private = true;
-		if(source.notNil,{
-			source.childrenMakePatchOut(socketGroup,private)
-		})
-	}
+	// no synth of my own
 	loadDefFileToBundle { arg bundle,server;
-		if(source.notNil,{
-			source.loadDefFileToBundle(bundle,server)
-		})
-	}
-	spawnToBundle { arg bundle;
-		if(source.notNil,{
-			source.spawnToBundle(bundle)
+		this.children.do({ arg child;
+			child.loadDefFileToBundle(bundle,server);
 		});
-		bundle.addAction(this,\didSpawn);
+		// load once		
+		EnvelopedPlayer(Patch(SinOsc),env,this.numChannels).loadDefFileToBundle(bundle,server);
 	}
+	
 	instrArgFromControl { arg control;
 		^if(source.notNil,{
 			source.instrArgFromControl(control)
@@ -134,50 +116,68 @@ PlayerSocket : AbstractPlayerProxy {
 			})
 		})
 	}
-	//addToSynthDef 
-
-	// prepared sources only
-	setSource { arg s,atTime;
+	spawnToBundle { arg bundle;
+		if(source.notNil,{
+			this.setSourceToBundle(source,bundle);
+		});
+		bundle.addAction(this,\didSpawn);
+	}
+	synthArg { ^sharedBus.index }
+	
+	setSource { arg s,atTime,releaseTime;
 		var bundle;
-		// or this.isPlay
 		if(this.server.notNil,{ // else not even playing, or not loaded
 			bundle = CXBundle.new;
-			this.setSourceToBundle(s,bundle);
-			bundle.send(this.server,atTime);
+			this.setSourceToBundle(s,bundle,releaseTime);
+			bundle.sendAtTime(this.server,atTime);
 		},{
 			source = s;
-			rate = source.rate ? rate ? \audio;
-			numChannels = source.tryPerform(\numChannels) ? numChannels ? 1;
 		});
 	}
-	qsetSource { arg s,round=4.0;
-		this.setSource(s,BeatSched.tdeltaTillNext(round));
-	}
-	setSourceToBundle { arg s,bundle,releaseTime=0.2;
-		if(source.isPlaying,{
-			source.releaseToBundle(releaseTime,bundle);
+	setSourceToBundle { arg s,bundle,releaseTime;
+		if(envdSource.isPlaying,{
+			envdSource.releaseToBundle(releaseTime,bundle);
 		});
 		source = s;
-		// possibly should complain if different and we are playing
-		rate = source.rate ? rate ? \audio;
-		numChannels = source.tryPerform(\numChannels) ? numChannels ? 1;
-		
-		source.spawnOnToBundle(socketGroup,sharedBus,bundle);
+		envdSource = EnvelopedPlayer(source,env,this.numChannels);
+		if(sharedBus.rate != source.rate,{
+			("PlayerSocket-setSourceToBundle sharedBus.rate + source.rate:" 
+				+ sharedBus.rate + source.rate).error(this,source);
+		});
+		envdSource.spawnOnToBundle(socketGroup,sharedBus,bundle);
+		bundle.addFunction({
+			isSleeping = isWaking = false;
+			lastPlayer = source;
+			{ this.changed; nil; }.defer;
+			nil
+		});
 	}
-
-	free {
+	freeToBundle { arg bundle;
+		super.freeToBundle(bundle);
+		socketGroup.freeToBundle(bundle);
+		socketGroup = nil;
+		bundle.addAction(this,\didFree);
+	}
+	didFree {
 		isPlaying = false;
 		isSleeping = true;
-		socketGroup.free;
-		sharedBus.releaseBus;
-		super.free;
+		if(sharedBus.notNil,{
+			sharedBus.releaseBus(this);
+			sharedBus = nil;
+		});
+		readyForPlay = false;
+	}
+	
+	// emergency kill off contents
+	socketFreeAll {
+		socketGroup.freeAll
 	}
 }
 
 PlayerEffectSocket : PlayerSocket {
 
 	var inputBus;
-	
+
 	setInputBus { arg abus;
 		// who did we get this from ?
 		//"PlayerEffectSocket-setInputBus".debug;
@@ -187,6 +187,7 @@ PlayerEffectSocket : PlayerSocket {
 	
 	setSourceToBundle { arg aplayer,bundle,releaseTime=0.2;
 		aplayer.inputProxies.first.setInputBus(inputBus);
+		//.insp("setting inputbus",inputBus);
 		super.setSourceToBundle(aplayer,bundle,releaseTime);
 	}
 }

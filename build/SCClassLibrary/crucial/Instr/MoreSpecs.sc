@@ -97,8 +97,24 @@ StaticSpec : NoLagControlSpec {
 	}
 }
 StaticIntegerSpec : StaticSpec {
+	*new { arg minval=0, maxval=10, default, units;
+		^super.new(minval.asInteger, maxval.asInteger, \lin, 1, default , units )
+	}
+	init { 
+		warp = warp.asWarp(this);
+		if(minval < maxval,{
+			clipLo = minval.asInteger;
+			clipHi = maxval.asInteger;
+		}, {
+			clipLo = maxval.asInteger;
+			clipHi = minval.asInteger;
+		});
+	}	
 	defaultControl { arg val;
 		^IntegerEditor(this.constrain(val ? this.default),this)
+	}
+	constrain { arg value;
+		^value.asInteger.clip(clipLo, clipHi).round(step)
 	}
 	*initClass {
 		specs.addAll(
@@ -194,35 +210,24 @@ SampleSpec : ScalarSpec {
 HasItemSpec : ScalarSpec {
 	var <>itemSpec;
 	*new { arg itemSpec;
-		^super.new.itemSpec_(itemSpec.asSpec)
+		var spec;
+		spec = itemSpec.asSpec;
+		if(spec.isNil,{
+			(this.class.name.asString ++ " nil or unfound itemSpec:" + itemSpec + spec).warn;
+		});
+		^super.new.itemSpec_(spec)
 	}
+	defaultControl { ^itemSpec.defaultControl }
+	default { ^itemSpec.default }
+	storeArgs { ^[itemSpec] }
 }
 ArraySpec : HasItemSpec {
-	*initClass {
-		specs.addAll(
-		 [
-			\array -> this.new(\degree),
-			\scale -> this.new(StaticSpec(-100,100,\linear))
-		];
-		)
-	}
 	canAccept { arg ting;
-		^ting.isArray // ... and every is in
+		^ting.isArray // ... and every is in itemSpec
 	}
 }
 
 StreamSpec : HasItemSpec {
-	*initClass {
-		specs.addAll(
-		 [
-		 	\stream -> this.new,
-			\degreeStream -> this.new(StaticIntegerSpec(-100,100,\linear,1)),
-			\durationStream -> this.new(StaticSpec(2 ** -6, 2 ** 8))
-		];
-		)
-	}
-	defaultControl { ^itemSpec.defaultControl }
-	default { ^itemSpec.default }
 	constrain { arg value; ^itemSpec.constrain(value) }
 	canAccept { arg ting;
 		^(ting.rate == \stream or: {itemSpec.canAccept(ting) })
@@ -231,15 +236,8 @@ StreamSpec : HasItemSpec {
 }
 
 PlayerSpec : HasItemSpec {
-	*initClass {
-		specs.addAll(
-		 [
-			\player -> this.new(\audio)
-		];
-		)
-	}
-	defaultControl { ^itemSpec.defaultControl }
 	canAccept { arg ting;
 		^(ting.isKindOf(AbstractPlayer) and: {ting.spec == itemSpec})
 	}
 }
+

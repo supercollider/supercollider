@@ -24,8 +24,9 @@ TempoBus   {
 	asBus {}
 	index { ^bus.index }
 	prepareToBundle { arg group,bundle;
-		// probably duplicate setMsg in there
+		// for now setting duplicate setMsg in there
 		bundle.add( bus.setMsg(tempo.tempo) );
+		// will trap by isReady later
 	}
 	addToSynthDef {  arg synthDef,name;
 		synthDef.addIr(name,this.synthArg);

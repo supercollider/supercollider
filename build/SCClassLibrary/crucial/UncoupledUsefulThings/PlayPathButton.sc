@@ -1,39 +1,42 @@
 
+
 PlayPathButton : SCButtonAdapter { // loads the object at loadDocument and .plays it
 
-	var <>subject,<isPlaying=false,player;
+	var <>subject,player,<>action;
 
-	*new { arg layout,loadDocument,maxx=150;
+	*new { arg layout,path,maxx=150;
 		var new;
-		loadDocument = loadDocument.asString;
+		path = path.asString;
+		path.dump;
 		new=super.new;
-		new.makeView(layout,maxx,15);
-		new.initOneState(PathName(loadDocument).fileName,nil,rgb(228,255,107));
-		new.action_({new.doAction})
-			.subject_(loadDocument);
-			//.align_(\right);
+		new.makeView(layout,maxx,17);
+		new.view.action_({new.doAction});
+		new.path_(path);		
 		^new
+	}
+	path_ { arg p;
+		subject = p.asString;
+		this.initOneState(PathName(subject).fileName,nil,rgb(228,255,107));
 	}
 	
 	doAction { 
-		if(this.isPlaying,{
+		if(player.isPlaying ? false,{
 			this.stop;
 		},{
 			this.play;
-		})
+		});
+		action.value(this);
 	}
 	stop {
-		isPlaying = false;
 		this.background_(rgb(228,255,107));
 		if(player.notNil,{player.stop });		
 	}
 	play { 
-		isPlaying = true;
 		player = subject.loadDocument;
-		this.background_(Color.green);
-		
-		^player.play 
+		this.background_(rgb(255, 215, 0));
+		player.play(atTime:1);
 	}
+	isPlaying { ^player.isPlaying }
 
 }
 
@@ -113,5 +116,6 @@ XPlayButton : PlayButton { // plays exclusively one thing at any time.
 	}
 	
 */
+
 
 
