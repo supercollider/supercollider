@@ -22,34 +22,6 @@ ServerOptions
 	
 	var <>inputStreamsEnabled;
 	var <>outputStreamsEnabled;
-	
-	*synthDefPaths_ { | array |
-		var paths;
-		paths = array.inject("", { | s, x, i |
-			s ++ (i == 0).if("", ":") ++ x.asString.standardizePath;
-		});
-		"SC_SYNTHDEF_PATH".setenv(paths);
-	}
-	
-	*pluginPaths_ { | array |
-		var paths;
-		paths = array.inject("", { | s, x, i |
-			s ++ (i == 0).if("", ":") ++ x.asString.standardizePath;
-		});
-		"SC_PLUGIN_PATH".setenv(paths);
-	}
-	
-	*synthDefPaths {
-		var paths;
-		paths = "SC_SYNTHDEF_PATH".getenv;
-		paths.notNil.if({ ^paths.split($:); }, { ^nil });
-	}
-	
-	*pluginPaths {
-		var paths;
-		paths = "SC_PLUGIN_PATH".getenv;
-		paths.notNil.if({ ^paths.split($:); }, { ^nil });
-	}
 
 // max logins
 // session-password
