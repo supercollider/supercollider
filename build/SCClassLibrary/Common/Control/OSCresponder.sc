@@ -53,8 +53,8 @@ OSCresponder {
 	removeWhenDone {
 		var func;
 		func = action;
-		action = { arg time, responder,msg; 
-			func.value(time, responder,msg); 
+		action = { arg time, responder, msg, addr;
+			func.value(time, responder, msg, addr);
 			this.remove;
 		}
 	}
