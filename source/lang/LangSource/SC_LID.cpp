@@ -647,13 +647,13 @@ int prLID_Grab(VMGlobals *g, int numArgsPushed)
 
 int prLID_Start(VMGlobals* g, int numArgsPushed)
 {
-	if (!g->canCallOS) return errCantCallOS;
+// 	if (!g->canCallOS) return errCantCallOS;
 	return SC_LIDManager::instance().start();
 }
 
 int prLID_Stop(VMGlobals* g, int numArgsPushed)
 {
-	if (!g->canCallOS) return errCantCallOS;
+// 	if (!g->canCallOS) return errCantCallOS;
 	return SC_LIDManager::instance().stop();
 }
 
