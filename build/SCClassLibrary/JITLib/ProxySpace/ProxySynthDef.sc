@@ -64,7 +64,7 @@ ProxySynthDef : SynthDef {
 						postln(
 						"wrapped channels from" + numChannels 
 						+ "to" + chanConstraint + "channels");
-						output = NumChannels(output, chanConstraint, true);
+						output = NumChannels.ar(output, chanConstraint, true);
 						numChannels = chanConstraint;
 					} {
 						postln("kept first" + chanConstraint + "channels from" 
