@@ -28,7 +28,7 @@ Insp {
 						ag.smallGui(layout);
 					});
 					layout.startRow;
-					CXObjectInspector(subject).topGui(layout);
+					CXObjectInspector(subject).gui(layout);
 				},"insp:" + name,origin.x,origin.y,800,1000);
 			});
 			nil

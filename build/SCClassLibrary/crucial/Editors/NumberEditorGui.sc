@@ -65,7 +65,7 @@ BooleanEditorGui : EditorGui {
 		var r;
 		r = layout.layRight(14,14);
 		cb = SCButton.new( layout.window,r);
-		cb.states = [["0",Color.black,Color.white],["1",Color.white,Color.black]];
+		cb.states = [[" ",Color.black,Color.white],[" ",Color.white,Color.black]];
 		cb.font = Font("Helvetica",9);
 		cb.setProperty(\value,model.value.binaryValue);
 		cb.action = { model.activeValue_(cb.value != 0,this) };

@@ -48,7 +48,17 @@ BufferProxy { // blank space for delays, loopers etc.
 		patchOut = nil;
 		readyForPlay = false;
 	}
+	// each synth def, multiple usage in a synth def ok
+	initForSynthDef { arg synthDef,argi;
+		forArgi = argi;// for buffer etc. to build a control
+		bufnumControl = nil;
+		// invalidate any other cached ones
+		^this
+	}
+
 	bufnum { ^buffer.bufnum }
+	
+	//ISSUE must invalidate these at start of new synth def !!!!!
 	bufnumIr {
 		// add a secret ir control
 		^bufnumControl ?? {

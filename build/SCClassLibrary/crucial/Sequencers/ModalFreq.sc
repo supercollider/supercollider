@@ -53,5 +53,5 @@ ModalFreq  { // convert it to sc3
 	}
 }
 Midi2Freq  {	// players or floats will work	*new { arg note,octave=5.0;
-		^Patch(Midi2FreqUGen,[ note,octave ])
+		^Patch(UGenInstr(Midi2FreqUGen,\kr),[ note,octave ])
 	}}

@@ -20,7 +20,9 @@ AudioSpec : Spec {
 			];
 		)
 	}
-	defaultControl { ^0.0 }
+	defaultControl{ 
+		^Silence.new // silence
+	}
 	storeParamsOn { arg stream;
 		stream << "(" <<< numChannels << ")"
 	}
@@ -67,6 +69,9 @@ StaticSpec : ControlSpec {
 
 	canKr { ^false }
 	rate { ^\scalar }
+	defaultControl { arg val=0.0; 
+		^NumberEditor.new(this.constrain(val ? this.default),this) 
+	}
 
 }
 
@@ -91,7 +96,9 @@ EnvSpec : ScalarSpec { // this is dodgy, not fully worked out
 		^super.new.prototype_(prototype)
 	}
 
-	defaultControl { ^prototype.deepCopy }
+	defaultControl {
+		^EnvEditor.new(prototype.deepCopy)
+	}
 	
 	*initClass {
 		specs.putAll(

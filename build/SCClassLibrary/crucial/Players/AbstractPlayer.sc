@@ -1,6 +1,8 @@
 
 AbstractPlayer : AbstractFunction  { 
 
+	classvar <>debug=false; // for a while, a switch
+	
 	var <path,name,<>dirty=true; 
 	
 	var <synth,<>patchOut,<>readyForPlay = false,defName;
@@ -43,9 +45,7 @@ AbstractPlayer : AbstractFunction  {
 					this.prepareForPlay(group,bundle);
 					
 					if(bundle.notEmpty,{
-						server.listSendBundle(nil,bundle
-												//.insp("prepare")
-												);
+						server.listSendBundle(nil,bundle);
 					});
 					// need some way to track all the preps completion
 					// also in some cases the prepare can have a completion
@@ -108,8 +108,7 @@ AbstractPlayer : AbstractFunction  {
 		this.spawnToBundle(bundle);
 		
 		// atTime.asDeltaTime
-		patchOut.server.listSendBundle( atTime, bundle//.insp("spawn")
-												);
+		patchOut.server.listSendBundle( atTime, bundle);
 		// schedule atTime:
 		synth.isPlaying = true;
 		synth.isRunning = true;
@@ -146,7 +145,10 @@ AbstractPlayer : AbstractFunction  {
 		dn = this.defName;
 		if(dn.isNil or: {
 			dn = dn.asSymbol;
-			Library.at(SynthDef,server,dn).isNil
+			// name creation still has a bug, can't depend yet
+			//Library.at(SynthDef,server,dn).isNil
+			
+			true
 		},{
 			// save it in the archive of the player
 			def = this.asSynthDef;

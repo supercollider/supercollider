@@ -85,7 +85,7 @@ InstrSynthDef : SynthDef {
 	
 	// fixed arg : passed to Instr but not to synth
 	// like addIr addKr
-	addFixed { arg name,value;
+	addInstrOnlyArg { arg name,value;
 		fixedNames = fixedNames.add(name);
 		fixedValues = fixedValues.add(value);
 		fixedPositions = fixedPositions.add(controlsSize);
@@ -95,7 +95,7 @@ InstrSynthDef : SynthDef {
 	// to cache this def, this info needs to be saved
 	// argi points to the slot in objects (as supplied to secretDefArgs)
 	// selector will be called on that object to produce the synthArg
-	// thus sample can indicate itself and ask for \tempo or \bufnum
+	// thus sample can indicate itself and be asked for \tempo or \bufnum
 	addSecretIr { arg name,value,argi,selector;
 		secretIrPairs = secretIrPairs.add([name,value,argi,selector]);
 		^Control.names([name]).ir([value])
@@ -110,7 +110,7 @@ InstrSynthDef : SynthDef {
 		if(size == 0, { ^#[] });
 		synthArgs = Array(size);
 		secretIrPairs.do({ arg n,i;
-			synthArgs.add(n.at(0));
+			synthArgs.add(n.at(0)); // secret arg name
 			synthArgs.add(objects.at(n.at(2)).perform(n.at(3)));
 		});
 		secretKrPairs.do({ arg n,i;
@@ -122,6 +122,7 @@ InstrSynthDef : SynthDef {
 
 	buildControlsWithObjects { arg instr,objects;
 		var argNames,defargs,outputProxies;
+		objects.do({ arg obj,argi; obj.initForSynthDef(this,argi) });
 		defargs = (argNames = instr.argNames).collect({ arg name,defargi;
 			var defarg;
 			defarg = (objects.at(defargi) ? {instr.defArgAt(defargi)});
@@ -132,8 +133,15 @@ InstrSynthDef : SynthDef {
 		// wrap them in In.kr etc. if needed
 		^outputProxies.collect({ arg outp,i;
 			defargs.at(i).instrArgFromControl(outp,i)
-		})//.insp("outputProxies")
+		})
 	}
 	
+	
+//	tempoKr {
+//		// have to include in cacheing, playing
+//		tempoKr ?? {
+//			this.addSecretKr('__tempo__',Tempo.tempo, ... )
+//		}
+//	}
 }
 

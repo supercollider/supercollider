@@ -72,15 +72,17 @@ Instr  {
 		^Library.putList([this.name,instr.name,instr].flatten )
 	}
 	*at { arg  name;
+		var fullname;
 		if(name.isString or: {name.isKindOf(Symbol)},{
 			name = [name.asSymbol];
 		});
 
-		^(Library.atList([this.name,name].flatten)
+		^(Library.atList(fullname = [this.name,name].flatten)
 			??
 		{ 	
 			// if not previously loaded, try loading the file
 			(instrDirectory ++ [name].flat.first.asString ++ ".rtf").loadPath;
+			Library.atList(fullname) // or not found
 		}
 		)
 	}

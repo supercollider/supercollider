@@ -51,6 +51,9 @@ ControlPatchIn : AudioPatchIn {
 
 ScalarPatchIn : ControlPatchIn {
 	rate { ^\scalar }
+	value_ { arg val;
+		// nothing to do 
+	}
 }
 
 

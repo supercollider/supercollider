@@ -21,11 +21,12 @@
 	didSpawn {}
 
 	addToSynthDef {  arg synthDef,name;
-		synthDef.addFixed(name,this.synthArg); // has to be an InstrSynthDef
+		synthDef.addInstrOnlyArg(name,this.synthArg); // has to be an InstrSynthDef
 	}
 	
 	synthArg { ^this }
 	instrArgRate { ^\scalar }
+	initForSynthDef {}
 	instrArgFromControl { arg control;
 		^this//.insp("Object returns self as instrArg")
 	}
@@ -45,7 +46,8 @@
 	}
 }
 
-+ NumberEditor {
+/*
++ KrNumberEditor {
 		
 	addToSynthDef {  arg synthDef,name;
 		synthDef.addKr(name,this.synthArg);
@@ -65,6 +67,16 @@
 		});
 	}
 }
+
++ NumberEditor {
+
+	addToSynthDef { }
+	instrArgFromControl { arg control;
+		^value
+	}
+	instrArgRate { ^\scalar }
+}
+*/
 
 + TempoBus {
 	addToSynthDef {  arg synthDef,name;
@@ -111,13 +123,6 @@
 	}
 }
 
-+ BufferProxy {
-
-	instrArgFromControl { arg control,argi;
-		forArgi = argi; // for buffer etc. to build a control
-		^this
-	}
-}
 
 
 // trig things, supply an InTrig.kr

@@ -36,7 +36,8 @@ Patch : AbstractPlayer  {
 				?? 
 				{ //  or auto-create a suitable control...
 					spec = instr.specs.at(i);
-					proto = ControlPrototypes.forSpec(spec,instr.argNames.at(i));
+					proto = spec.defaultControl;
+					//ControlPrototypes.forSpec(spec,instr.argNames.at(i));
 					//if(proto.isNil,{ spec.insp("nil proto:",instr.argNames.at(i),i) });
 					proto.tryPerform('spec_',spec); // make sure it does the spec
 					if((darg = instr.initAt(i)).isNumber,{
@@ -66,6 +67,8 @@ Patch : AbstractPlayer  {
 		// could be cached, must be able to invalidate it
 		// if an input changes
 		^synthDef ?? {
+			// reset args (Sample esp.)
+			
 			synthDef = InstrSynthDef.build(this.instr,this.args,\Out);
 			defName = synthDef.name;
 			numChannels = synthDef.numChannels;
@@ -120,6 +123,10 @@ Patch : AbstractPlayer  {
 		// TODO only if i am the only exclusive owner
 		this.children.do({ arg child; child.free });
 		super.free;
+		// ISSUE: if you change a static, nobody notices to rebuild the synth def
+		synthDef = nil;
+		readyForPlay = false;
+		patchOut = nil;
 	}
 
 	/*

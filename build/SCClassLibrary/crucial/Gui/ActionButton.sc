@@ -1,27 +1,32 @@
 
-ActionButton  {
-
-	classvar <>offcolor,<>defaultHeight=17;
-	var <action,<>view;
+SCViewAdapter {
+	var <>view;
 	
-	*new { arg layout,title,function,maxx=20,maxy;
-		^this.prNew(layout,title,function,maxx,maxy)
-				.font_(Font("Helvetica",12.0))
-	}
-	*prNew { arg layout,title,function,maxx=20,maxy;
-		var rect,view;
-		layout = layout.asPageLayout(title,300,100);
-		title = title.asString;
-		rect = layout.layRight(
-					(title.size.clip(3,55) * 8.3).max(maxx?20),
-					(maxy ? defaultHeight));
-		view = SCButton(layout, rect )
-			.states_([[title,Color.black,offcolor]])
-			.action_(function);
-
-		^super.new.view_(view)
-	}
 	action_ { arg f; view.action_(f) }
+
+	font_ { arg f;
+		view.font = f;
+	}
+	keyDownAction_ { arg f;
+		view.keyDownAction_(f);
+	}
+
+}
+
+// 1 state
+SCButtonAdapter : SCViewAdapter {
+
+//	*new { arg layout,x,y;
+//		^super.new.scbainit(layout,x,y)
+//	}
+//	
+	makeView { arg layout,x,y;
+		var rect;
+		rect = layout.layRight(x,y);
+		view = SCButton(layout.window,rect);
+		//view.states_([[title,Color.black,offcolor]]);
+	}
+	
 	backColor_ { arg color;
 		var s;
 		s = view.states;
@@ -40,9 +45,32 @@ ActionButton  {
 		s.at(0).put(0,string.asString);
 		view.states = s;
 	}
-	font_ { arg f;
-		view.font = f;
+	
+}
+
+ActionButton : SCButtonAdapter {
+
+	classvar <>offcolor,<>defaultHeight=17;
+	var <action;
+	
+	*new { arg layout,title,function,maxx=20,maxy;
+		^this.prNew(layout,title,function,maxx,maxy)
+				.font_(Font("Helvetica",12.0))
 	}
+	*prNew { arg layout,title,function,maxx=20,maxy;
+		var rect,view;
+		layout = layout.asPageLayout(title,300,100);
+		title = title.asString;
+		rect = layout.layRight(
+					(title.size.clip(3,55) * 8.3).max(maxx?20),
+					(maxy ? defaultHeight));
+		view = SCButton(layout, rect )
+			.states_([[title,Color.black,offcolor]])
+			.action_(function);
+
+		^super.new.view_(view)
+	}
+
 	*initClass {
 		 offcolor = Color(0.84313725490, 0.81960784313, 0.75686274509 );
 	}

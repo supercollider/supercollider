@@ -10,7 +10,7 @@ ControlPrototypes {
 		this.define(
 			// a function that returns a list of prototypes
 			ControlSpec -> {[
-							NumberEditor.new
+							KrNumberEditor.new
 					]},
 			StaticSpec -> {[
 							NumberEditor.new

@@ -37,7 +37,7 @@ ObjectGui {
 	topGui { arg layout ... args;
 		layout=this.guify(layout);
 		this.performList(\gui,[layout] ++ args);
-		layout.resizeWindowToFit;
+		layout.resizeWindowToFit.front;
 	}
 	
 	writeName { arg layout;

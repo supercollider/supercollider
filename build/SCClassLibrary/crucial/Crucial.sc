@@ -155,6 +155,7 @@ Crucial {
 			'root'->ControlSpec.new(0, 11, 'lin', 1, 6),
 			'bidecay'->ControlSpec.new(-10, 10, 'lin', 0, 0),
 			'midinote'->ControlSpec.new(0, 127, 'lin', 1, 64),
+			'note'->ControlSpec.new(0, 11, 'lin', 1, 0),
 			'env'->EnvSpec.new,
 			'timeScale'->ControlSpec.new(0.1, 10, 'lin', 0, 5.05),
 			'pmindex'->ControlSpec.new(0, 20, 'lin', 0, 10),
@@ -459,8 +460,10 @@ Crucial {
 		//TZM.tracking ,140);
 			
 		ToggleButton(menu.startRow,"Server dumpOSC",{
+			Server.local.stopAliveThread;
 			Server.local.dumpOSC(1)
 		},{
+			Server.local.startAliveThread;
 			Server.local.dumpOSC(0)
 		},Server.local.dumpMode != 0 );
 		

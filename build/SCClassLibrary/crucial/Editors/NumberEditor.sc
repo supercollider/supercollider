@@ -21,7 +21,7 @@ Editor {
 //	}
 }
 
-NumberEditor : Editor {
+KrNumberEditor : Editor {
 	
 	var <spec;
 	
@@ -52,16 +52,50 @@ NumberEditor : Editor {
 	canDoSpec { arg aspec; ^aspec.isKindOf(ControlSpec) }
 	//kr { arg lag=0.05; ^Plug.kr({value},lag) }
 
+
+	addToSynthDef {  arg synthDef,name;
+		synthDef.addKr(name,this.synthArg);
+	}
+	instrArgRate { ^\control }
+
+	didSpawn { arg patchIn,synthi;
+		patchOut.connectTo(patchIn,false);
+
+		// am i already connected to this client ?
+		if(this.dependants.includes(patchOut.updater).not,{
+			patchOut.updater = 
+				SimpleController(this)
+						.put(\value,{
+							patchIn.value = value;
+						});
+		});
+	}
+	free {
+		if(patchOut.updater.notNil,{
+			patchOut.updater.remove;
+			patchOut.updater = nil;
+		});
+	}
+	
 	guiClass { ^NumberEditorGui }
 
 }
 
 
-KrNumberEditor : NumberEditor { }
+// for controls that won't talk to the server
+NumberEditor : KrNumberEditor { 
 
-/* 
-	obsolete
-*/
+	addToSynthDef { arg synthDef,name;
+		synthDef.addInstrOnlyArg(name,this.synthArg)
+	}
+	instrArgFromControl { arg control;
+		^value
+	}
+	instrArgRate { ^\scalar }
+
+
+}
+
 
 
 BooleanEditor : NumberEditor {

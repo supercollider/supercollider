@@ -4,8 +4,6 @@
 		^super.guify(layout,title,width ? 800,height ? 800)
 	}	writeName { arg layout;		ClassNameLabel.newBig(model.class,layout);		CXLabel(layout,model.asString,300,30)
 			.view.font_(Font("Helvetica-Bold",18));
-		ActionButton(layout,"gui...",{ model.topGui });
-		ActionButton(layout,"#",{ model.asCompileString.postln });
 
 		/*		ActionButton(layout,"-> a-z",{			GetStringDialog("assign to interpreter variable a-z","x",{ arg ok,string;				if(ok,{					thisProcess.interpreter.performList((string ++ "_").asSymbol,model);					this.newErrorWindow;					"".postln;					string.postln;				})			})		});
 		*/	}	guiBody { arg layout;		var vert;
@@ -19,10 +17,16 @@
 				CXLabel(layout,"... slotSize is" ++ model.slotSize.asString,maxx:210).bold;
 			});
 		});		this.dependantsGui(layout);
+		this.actionsGui(layout);
 	}		instVarsGui { arg layout;			var iNames;		//instVars		iNames=model.class.instVarNames;		if(iNames.notNil,{			iNames.do({arg v,i;				var iv;				layout.startRow;				VariableNameLabel(v,layout);				/*
 				ActionButton(layout,"code->",{					GetStringDialog("enter code to compile and insert to " 
 							+ v.asString,"",					{ arg ok,string;						if(ok,{							model.instVarPut(i,  string.interpret)						})					})				});
-				*/				iv=model.instVarAt(i);				//ClassNameLabel(iv.class,layout);				InspectorLink(iv,layout,200);			});		});	}	dependantsGui { arg layout;		layout.hr;		// dependants		CXLabel(layout.startRow,"dependants:",maxx:210).bold;		model.dependants.do({ arg d;			InspectorLink(d,layout);		});		// uniqueMethods	}}ClassGui : CXObjectInspector { // ClassGui	writeName {}	guiBody { arg layout;			var iNames,supers,scale;		layout.hr;			// you are here
+				*/				iv=model.instVarAt(i);				//ClassNameLabel(iv.class,layout);				InspectorLink(iv,layout,300);			});		});	}	dependantsGui { arg layout;		layout.hr;		// dependants		CXLabel(layout.startRow,"dependants:",maxx:210).bold;		model.dependants.do({ arg d;			InspectorLink(d,layout);		});		// uniqueMethods	}
+	actionsGui { arg layout;	
+		CXLabel(layout.startRow,"actions:",maxx:210).bold;
+		ActionButton(layout,"gui",{ model.topGui });
+		ActionButton(layout,"post asCompileString",{ model.asCompileString.postln });
+	}}ClassGui : CXObjectInspector { // ClassGui	writeName {}	guiBody { arg layout;			var iNames,supers,scale;		layout.hr;			// you are here
 		InspectorLink.big(model,layout.startRow,maxx:200);
 		supers = model.superclasses;
 		if(supers.notNil,{

@@ -129,6 +129,7 @@ PageLayout  {
 	// act like a GUIWindow 
 	checkNotClosed { ^isClosed.not }
 	front {
+		//windows.do({ arg w; w.unhide });
 		//windows.reverseDo({arg w; w.front }); 
 		windows.first.front;
 	}
@@ -248,7 +249,7 @@ PageLayout  {
 			w.bounds_(b);
 			margin = b.insetAll(hspacer,vspacer,hspacer,vspacer);
 			// warning: subsequent windows would have the same margin
-			w.front;
+			//w.front;
 		})
 	}
 	

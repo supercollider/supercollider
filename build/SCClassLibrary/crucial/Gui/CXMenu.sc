@@ -20,7 +20,7 @@ CXMenu { // multiple actions
 		});
 		// if we are not on somebody else's page...
 		if(lay.isNil,{
-			layout.resizeWindowToFit;
+			layout.resizeWindowToFit.front;
 		});
 	}		
 	

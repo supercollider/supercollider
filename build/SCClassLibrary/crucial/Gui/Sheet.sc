@@ -6,6 +6,7 @@ Sheet {
 		layout = PageLayout(name,width,height,x,y);
 		buildDialog.value(layout);
 		layout.resizeWindowToFit;
+		layout.front;
 		^layout
 	}
 }
