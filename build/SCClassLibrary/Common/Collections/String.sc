@@ -202,7 +202,7 @@ String[char] : RawArray {
 	loadPaths {
 		var paths;
 		paths = this.pathMatch;
-		paths.do({ arg path;
+		^paths.collect({ arg path;
 			thisProcess.interpreter.executeFile(path);
 		});
 	}
