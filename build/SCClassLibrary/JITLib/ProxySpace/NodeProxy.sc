@@ -263,10 +263,10 @@ NodeProxy : BusPlug {
 	end { this.stop; this.free; } //stop playback and inner group
 	
 	fadeTime_ { arg t;
-		this.set('#fadeTime', t);
+		this.set(\fadeTime, t);
 	}
 	fadeTime {
-		^nodeMap.at('#fadeTime').value;
+		^nodeMap.at(\fadeTime).value;
 	}
 	
 	generateUniqueName {
@@ -455,7 +455,7 @@ NodeProxy : BusPlug {
 			this.lineAt(interpolKeys, values) 
 		});
 		nodeMap = map.copy;
-		nodeMap.set('#fadeTime', fadeTime);
+		nodeMap.set(\fadeTime, fadeTime);
 		this.linkNodeMap;
 		if(this.isPlaying, { this.sendEach(nil,true) });
 	}
@@ -499,17 +499,14 @@ NodeProxy : BusPlug {
 
 	
 	
-	/////////////////////////////////////////////
+	///////////////////// tasks ////////////////////////
 	
 		
-	
-
-	/// special tasks: might move out! ///
 	
 	spawner { arg beats=1, argFunc;
 		var dt;
 		dt = beats.asStream;
-		argFunc = if(argFunc.notNil, { argFunc.hatchArray }, { #[] });
+		argFunc = if(argFunc.notNil, { argFunc.asArgStream }, { #[] });
 		this.task = Routine.new({ 
 					inf.do({ arg i;
 						var t, args;
@@ -528,7 +525,7 @@ NodeProxy : BusPlug {
 	gspawner { arg beats=1, argFunc, index=0;
 		var dt;
 		dt = beats.asStream;
-		argFunc = if(argFunc.notNil, { argFunc.hatchArray }, { #[] });
+		argFunc = if(argFunc.notNil, { argFunc.asArgStream }, { #[] });
 		index = index.loop.asStream;
 		this.task = Routine.new({ 
 					inf.do({ arg i;	
@@ -545,7 +542,9 @@ NodeProxy : BusPlug {
 	}
 	
 	taskFunc_ { arg func;
-		this.task = Routine({ func.value(this) })
+		var envir;
+		envir = currentEnvironment;
+		this.task = Routine({ envir.use({ func.value(this) }) })
 	}
 	
 	readFromBus { arg busses;

@@ -225,6 +225,17 @@ PlayerSpace : ProxySpace {
 			^proxy
 	}
 
+
+	at { arg key;
+		var proxy;
+		proxy = envir.at(key);
+		if(proxy.isNil, {
+			proxy = this.makeProxy(key);
+		});
+		^proxy
+	
+	}
+	
 	put { arg key, obj;
 		var proxy;
 		proxy = envir.at(key);

@@ -96,7 +96,7 @@ StreamControl : AbstractPlayControl {
 }
 
 SynthControl : AbstractPlayControl {
-	var <synth, >hasGate=false, <>needsFree=true;
+	var <synth, >canReleaseSynth=false, >canFreeSynth=true;
 	
 	sendDef { } //assumes that SoundDef does send to the same server 
 	writeDef { }
@@ -120,10 +120,10 @@ SynthControl : AbstractPlayControl {
 	
 	stopToBundle { arg bundle;
 		if(synth.isPlaying, {
-			if(this.hasGate, {
-					bundle.add([15, synth.nodeID, '#gate', 0.0, \gate, 0.0]); //to be sure.
+			if(this.canReleaseSynth, {
+					bundle.add([15, synth.nodeID, \gate, 0.0]); //to be sure.
 			}, {
-					if(this.needsFree, {bundle.add([11, synth.nodeID])}); //"/n_free"
+					if(this.canFreeSynth.not, {bundle.add([11, synth.nodeID])}); //"/n_free"
 			});
 			synth.isPlaying = false;
 		});
@@ -153,7 +153,7 @@ SynthControl : AbstractPlayControl {
 	
 	pause { synth.run(false) }
 	unpause { synth.run(true) }
-	hasGate { ^hasGate }
+	canReleaseSynth { ^canReleaseSynth }
 }
 
 
@@ -162,8 +162,8 @@ SynthDefControl : SynthControl {
 	var <synthDef;
 	
 	readyForPlay { ^synthDef.notNil }
-	hasGate { ^synthDef.hasGate }
-	needsFree { ^synthDef.canFreeSynth.not }
+	canReleaseSynth { ^synthDef.canReleaseSynth }
+	canFreeSynth { ^synthDef.canFreeSynth }
 	
 	build { arg proxy, index=0; 
 		var ok;
@@ -172,7 +172,7 @@ SynthDefControl : SynthControl {
 		if(ok && synthDef.notNil, { 
 			//schedule to avoid hd sleep latency. def writing is only for server reboot
 			if(writeDefs, {
-				AppClock.sched(rrand(0.2, 1), { this.writeDef; nil });
+				AppClock.sched(rrand(0.2, 1), { this.writeDef; \write.debug; nil });
 			}); 
 		}, { 
 			synthDef = nil; 

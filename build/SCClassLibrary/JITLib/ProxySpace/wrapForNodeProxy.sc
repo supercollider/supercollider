@@ -298,13 +298,14 @@
 + SynthDef {
 	canFreeSynth { ^children.canFreeSynth }
 	
-	hasGate {
+	canReleaseSynth {
 		^if(controlNames.isNil, { 
 			false 
 		}, {
-			controlNames.any({ arg name; name.name == "gate" })
+			//gate should be actually input to envgen, but this ist too much to check.
+			controlNames.any({ arg name; name.name == "gate" })  
 			and:
-			this.canFreeSynth
+			{ this.canFreeSynth }
 		})
 	}
 }
