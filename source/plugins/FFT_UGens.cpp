@@ -199,8 +199,8 @@ extern "C"
 	void PV_MagNoise_Ctor(PV_Unit *unit);
 	void PV_MagNoise_next(PV_Unit *unit, int inNumSamples);
 
-	void PV_Brickwall_Ctor(PV_Unit *unit);
-	void PV_Brickwall_next(PV_Unit *unit, int inNumSamples);
+	void PV_BrickWall_Ctor(PV_Unit *unit);
+	void PV_BrickWall_next(PV_Unit *unit, int inNumSamples);
 
 	void PV_BinWipe_Ctor(PV_Unit *unit);
 	void PV_BinWipe_next(PV_Unit *unit, int inNumSamples);
@@ -260,6 +260,7 @@ SCPolarBuf* ToPolarApx(SndBuf *buf)
 		for (int i=0; i<numbins; ++i) {
 			p->bin[i].ToPolarApxInPlace();
 		}
+		buf->coord = coord_Polar;
 	}
 	return (SCPolarBuf*)buf->data;
 }
@@ -273,6 +274,7 @@ SCComplexBuf* ToComplexApx(SndBuf *buf)
 		for (int i=0; i<numbins; ++i) {
 			p->bin[i].ToComplexApxInPlace();
 		}
+		buf->coord = coord_Complex;
 	}
 	return (SCComplexBuf*)buf->data;
 }
@@ -284,7 +286,6 @@ SCComplexBuf* ToComplexApx(SndBuf *buf)
 void CopyInput(FFT *unit);
 void CopyInput(FFT *unit)
 {
-	
 	if (unit->m_whichOverlap == 0) {
 		memcpy(unit->m_fftbuf, unit->m_inbuf, unit->m_bufsize * sizeof(float));
 	} else {
@@ -296,13 +297,20 @@ void CopyInput(FFT *unit)
 	}
 }
 
+void CopyOutput(IFFT *unit);
+void CopyOutput(IFFT *unit)
+{
+	float *out = unit->m_outbuf[unit->m_whichOverlap];	
+	memcpy(out, unit->m_fftbuf, unit->m_bufsize * sizeof(float));	
+}
+
 void DoWindowing(FFTBase *unit);
 void DoWindowing(FFTBase *unit)
 {
 	float *win = fftWindow[unit->m_log2n];
 	if (!win) return;
 	float *in = unit->m_fftbuf - 1;
-	in--; win--;
+	win--;
 	int size = unit->m_bufsize;
 	for (int i=0; i<size; ++i) {
 		*++in *= *++win;
@@ -323,14 +331,18 @@ void FFTBase_Ctor(FFTBase *unit)
 	unit->m_fftbufnum = bufnum;
 	unit->m_bufsize = buf->samples;
 	if (unit->m_bufsize < 8 || !ISPOWEROFTWO(unit->m_bufsize)) {
+		//Print("FFTBase_Ctor: buffer size not a power of two\n");
 		// buffer not a power of two
 		SETCALC(*ClearUnitOutputs);
 		return;
 	}
 	
 	unit->m_log2n = LOG2CEIL(unit->m_bufsize);
-	unit->m_mask = buf->mask;
+	unit->m_mask = buf->mask / kNUMOVERLAPS;
 	unit->m_stride  = unit->m_bufsize / kNUMOVERLAPS;
+	unit->m_whichOverlap = 0;
+
+	ZOUT0(0) = unit->m_fftbufnum;
 }
 
 void FFT_Ctor(FFT *unit)
@@ -346,21 +358,23 @@ void FFT_Dtor(FFT *unit)
 	RTFree(unit->mWorld, unit->m_inbuf);
 }
 
-void FFT_next(FFT *unit, int inNumSamples)
+void FFT_next(FFT *unit, int wrongNumSamples)
 {
 	float *in = IN(1);
 	float *out = unit->m_inbuf + unit->m_pos;
 	
-	// copy input
-	Copy(inNumSamples, out, in);
+	int numSamples = unit->mWorld->mFullRate.mBufLength;
 	
-	unit->m_pos += inNumSamples;
+	// copy input
+	Copy(numSamples, out, in);
+	
+	unit->m_pos += numSamples;
 	
 	if (unit->m_pos & unit->m_mask) {
 		ZOUT0(0) = -1.f;
 	} else {
 		ZOUT0(0) = unit->m_fftbufnum;
-		
+				
 		// copy to fftbuf
 		CopyInput(unit);
 		
@@ -373,7 +387,7 @@ void FFT_next(FFT *unit, int inNumSamples)
 		
 		unit->m_fftsndbuf->coord = coord_Complex;
 		if (unit->m_pos == unit->m_bufsize) unit->m_pos = 0;
-		if (unit->m_stage < kNUMOVERLAPS) unit->m_stage++;
+		unit->m_whichOverlap = (unit->m_whichOverlap+1) & (kNUMOVERLAPS-1);
 	}
 }
 
@@ -402,14 +416,14 @@ void OverlapAddOutput1(IFFT *unit, int inNumSamples, float *out)
 void OverlapAddOutput2(IFFT *unit, int inNumSamples, float *out);
 void OverlapAddOutput2(IFFT *unit, int inNumSamples, float *out)
 {
-	int mask = unit->m_mask;
+	int mask = unit->m_bufsize - 1;
 	int pos = unit->m_pos;
 	int stride = unit->m_stride;
-	float *fftbuf0 = (float*)unit->m_outbuf[0] + (pos & mask) - 1;
-	float *fftbuf1 = (float*)unit->m_outbuf[1] + ((pos + stride) & mask) - 1;
+	float *outbuf0 = (float*)unit->m_outbuf[0] + (pos & mask) - 1;
+	float *outbuf1 = (float*)unit->m_outbuf[1] + ((pos + stride) & mask) - 1;
 
 	for (int i=0; i<inNumSamples; ++i) {
-		*++out = *++fftbuf0 + *++fftbuf1;
+		*++out = *++outbuf0 + *++outbuf1;
 	}
 }
 
@@ -454,7 +468,7 @@ void IFFT_Ctor(IFFT *unit)
 	unit->m_outbuf[0] = (float*)RTAlloc(unit->mWorld, kNUMOVERLAPS * unit->m_bufsize * sizeof(float));
 	unit->m_outbuf[1] = unit->m_outbuf[0] + unit->m_bufsize;	
 	
-	SETCALC(FFT_next);	
+	SETCALC(IFFT_next);		
 }
 
 void IFFT_Dtor(IFFT *unit)
@@ -464,7 +478,7 @@ void IFFT_Dtor(IFFT *unit)
 
 void IFFT_next(IFFT *unit, int inNumSamples)
 {
-	float *out = OUT(0);
+	float *out = ZOUT(0);
 	
 	switch (unit->m_stage) {
 		case 0 : OverlapAddOutput0(unit, inNumSamples, out); break;
@@ -479,6 +493,9 @@ void IFFT_next(IFFT *unit, int inNumSamples)
 	if (unit->m_pos & unit->m_mask) {
 		unit->m_fftsndbuf->coord = coord_None;
 	} else {
+		int bufnum = (int)ZIN0(0);
+		
+		ToComplexApx(unit->m_fftsndbuf);
 		
 		// do ifft
 		int log2n = unit->m_log2n;
@@ -486,11 +503,13 @@ void IFFT_next(IFFT *unit, int inNumSamples)
 
 		// do windowing
 		DoWindowing(unit);
+		
+		CopyOutput(unit);
 
-		unit->m_fftsndbuf->coord = coord_Complex;
 		if (unit->m_pos == unit->m_bufsize) unit->m_pos = 0;
+		if (unit->m_stage < kNUMOVERLAPS) unit->m_stage++;
+		unit->m_whichOverlap = (unit->m_whichOverlap+1) & (kNUMOVERLAPS-1);
 	}
-	
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -538,7 +557,7 @@ void PV_MagAbove_next(PV_Unit *unit, int inNumSamples)
 	SCPolarBuf *p = ToPolarApx(buf);
 	
 	float thresh = ZIN0(1);
-	
+	static int count = 0;
 	for (int i=0; i<numbins; ++i) {
 		float mag = p->bin[i].mag;
 		if (mag < thresh) p->bin[i].mag = 0.;
@@ -548,7 +567,7 @@ void PV_MagAbove_next(PV_Unit *unit, int inNumSamples)
 void PV_MagAbove_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_MagAbove_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_MagBelow_next(PV_Unit *unit, int inNumSamples)
@@ -568,7 +587,7 @@ void PV_MagBelow_next(PV_Unit *unit, int inNumSamples)
 void PV_MagBelow_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_MagBelow_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_MagClip_next(PV_Unit *unit, int inNumSamples)
@@ -588,7 +607,7 @@ void PV_MagClip_next(PV_Unit *unit, int inNumSamples)
 void PV_MagClip_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_MagClip_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_LocalMax_next(PV_Unit *unit, int inNumSamples)
@@ -610,7 +629,7 @@ void PV_LocalMax_next(PV_Unit *unit, int inNumSamples)
 void PV_LocalMax_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_LocalMax_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_MagSmear_next(PV_MagSmear *unit, int inNumSamples)
@@ -644,7 +663,7 @@ void PV_MagSmear_next(PV_MagSmear *unit, int inNumSamples)
 void PV_MagSmear_Ctor(PV_MagSmear *unit)
 {
 	SETCALC(PV_MagSmear_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 	unit->m_tempbuf = 0;
 }
 
@@ -685,7 +704,7 @@ void PV_BinShift_next(PV_BinShift *unit, int inNumSamples)
 void PV_BinShift_Ctor(PV_BinShift *unit)
 {
 	SETCALC(PV_BinShift_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 	unit->m_tempbuf = 0;
 }
 
@@ -727,7 +746,7 @@ void PV_MagShift_next(PV_MagShift *unit, int inNumSamples)
 void PV_MagShift_Ctor(PV_MagShift *unit)
 {
 	SETCALC(PV_MagShift_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 	unit->m_tempbuf = 0;
 }
 
@@ -774,7 +793,7 @@ void PV_MagNoise_next(PV_Unit *unit, int inNumSamples)
 void PV_MagNoise_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_MagNoise_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_PhaseShift_next(PV_Unit *unit, int inNumSamples)
@@ -793,7 +812,7 @@ void PV_PhaseShift_next(PV_Unit *unit, int inNumSamples)
 void PV_PhaseShift_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_PhaseShift_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_PhaseShift90_next(PV_Unit *unit, int inNumSamples)
@@ -812,7 +831,7 @@ void PV_PhaseShift90_next(PV_Unit *unit, int inNumSamples)
 void PV_PhaseShift90_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_PhaseShift90_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_PhaseShift270_next(PV_Unit *unit, int inNumSamples)
@@ -831,7 +850,7 @@ void PV_PhaseShift270_next(PV_Unit *unit, int inNumSamples)
 void PV_PhaseShift270_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_PhaseShift270_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_MagSquared_next(PV_Unit *unit, int inNumSamples)
@@ -849,10 +868,10 @@ void PV_MagSquared_next(PV_Unit *unit, int inNumSamples)
 void PV_MagSquared_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_MagSquared_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
-void PV_Brickwall_next(PV_Unit *unit, int inNumSamples)
+void PV_BrickWall_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF
 	
@@ -872,10 +891,10 @@ void PV_Brickwall_next(PV_Unit *unit, int inNumSamples)
 	}
 }
 
-void PV_Brickwall_Ctor(PV_Unit *unit)
+void PV_BrickWall_Ctor(PV_Unit *unit)
 {
-	SETCALC(PV_Brickwall_next);
-	ZOUT0(0) = 0.f;
+	SETCALC(PV_BrickWall_next);
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_BinWipe_next(PV_Unit *unit, int inNumSamples)
@@ -902,7 +921,7 @@ void PV_BinWipe_next(PV_Unit *unit, int inNumSamples)
 void PV_BinWipe_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_BinWipe_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_MagMul_next(PV_Unit *unit, int inNumSamples)
@@ -922,7 +941,7 @@ void PV_MagMul_next(PV_Unit *unit, int inNumSamples)
 void PV_MagMul_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_MagMul_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_CopyPhase_next(PV_Unit *unit, int inNumSamples)
@@ -942,7 +961,7 @@ void PV_CopyPhase_next(PV_Unit *unit, int inNumSamples)
 void PV_CopyPhase_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_CopyPhase_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_Mul_next(PV_Unit *unit, int inNumSamples)
@@ -963,7 +982,7 @@ void PV_Mul_next(PV_Unit *unit, int inNumSamples)
 void PV_Mul_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_Mul_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_Add_next(PV_Unit *unit, int inNumSamples)
@@ -984,7 +1003,7 @@ void PV_Add_next(PV_Unit *unit, int inNumSamples)
 void PV_Add_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_Add_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_Max_next(PV_Unit *unit, int inNumSamples)
@@ -1004,7 +1023,7 @@ void PV_Max_next(PV_Unit *unit, int inNumSamples)
 void PV_Max_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_Max_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_Min_next(PV_Unit *unit, int inNumSamples)
@@ -1024,7 +1043,7 @@ void PV_Min_next(PV_Unit *unit, int inNumSamples)
 void PV_Min_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_Min_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_RectComb_next(PV_Unit *unit, int inNumSamples)
@@ -1057,7 +1076,7 @@ void PV_RectComb_next(PV_Unit *unit, int inNumSamples)
 void PV_RectComb_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_RectComb_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 void PV_RectComb2_next(PV_Unit *unit, int inNumSamples)
@@ -1091,7 +1110,7 @@ void PV_RectComb2_next(PV_Unit *unit, int inNumSamples)
 void PV_RectComb2_Ctor(PV_Unit *unit)
 {
 	SETCALC(PV_RectComb2_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 }
 
 
@@ -1144,7 +1163,7 @@ void PV_RandComb_next(PV_RandComb *unit, int inNumSamples)
 void PV_RandComb_Ctor(PV_RandComb* unit)
 {
 	SETCALC(PV_RandComb_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 	unit->m_ordering = 0;
 	unit->m_prevtrig = 0.f;
 }
@@ -1206,7 +1225,7 @@ void PV_RandWipe_next(PV_RandWipe *unit, int inNumSamples)
 void PV_RandWipe_Ctor(PV_RandWipe* unit)
 {
 	SETCALC(PV_RandWipe_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 	unit->m_ordering = 0;
 	unit->m_prevtrig = 0.f;
 }
@@ -1260,7 +1279,7 @@ void PV_Diffuser_next(PV_Diffuser *unit, int inNumSamples)
 void PV_Diffuser_Ctor(PV_Diffuser* unit)
 {
 	SETCALC(PV_Diffuser_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 	unit->m_shift = 0;
 	unit->m_prevtrig = 0.f;
 }
@@ -1304,7 +1323,7 @@ void PV_MagFreeze_next(PV_MagFreeze *unit, int inNumSamples)
 void PV_MagFreeze_Ctor(PV_MagFreeze* unit)
 {
 	SETCALC(PV_MagFreeze_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 	unit->m_mags = 0;
 }
 
@@ -1387,7 +1406,7 @@ void PV_BinScramble_next(PV_BinScramble *unit, int inNumSamples)
 void PV_BinScramble_Ctor(PV_BinScramble* unit)
 {
 	SETCALC(PV_BinScramble_next);
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(0);
 	unit->m_to = 0;
 	unit->m_prevtrig = 0.f;
 	unit->m_tempbuf = 0;
@@ -1420,10 +1439,12 @@ float* create_fftwindow(int log2n)
 {
 	int size = 1 << log2n;
 	float *win = (float*)malloc(size * sizeof(float));
-	double winc = twopi / size;
+	//double winc = twopi / size;
+	double winc = pi / size;
 	for (int i=0; i<size; ++i) {
 		double w = i * winc;
-		win[i] = 0.5 - 0.5 * cos(w);
+		//win[i] = 0.5 - 0.5 * cos(w);
+		win[i] = sin(w);
 	}
 	return win;
 }
@@ -1473,7 +1494,7 @@ void load(InterfaceTable *inTable)
 	DefinePVUnit(PV_Add);
 	DefinePVUnit(PV_RectComb);
 	DefinePVUnit(PV_RectComb2);
-	DefinePVUnit(PV_Brickwall);
+	DefinePVUnit(PV_BrickWall);
 	DefinePVUnit(PV_BinWipe);
 	
 	DefineDtorUnit(PV_MagSmear);
