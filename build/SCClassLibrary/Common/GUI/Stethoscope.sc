@@ -42,12 +42,9 @@ Stethoscope {
 		zx = n.xZoom.log2;
 		zy = n.yZoom.log2;
 		
-		audiospec = ControlSpec.specs.at(\audiobus);
-				//ControlSpec(0, server.options.numAudioBusChannels, step:1);
-		controlspec = ControlSpec.specs.at(\controlbus);
-				//ControlSpec(0, server.options.numControlBusChannels, step:1);
+		audiospec = ControlSpec(0, server.options.numAudioBusChannels, step:1);
+		controlspec = ControlSpec(0, server.options.numControlBusChannels, step:1);
 						
-		
 		sl = SCSlider(w, Rect(10, 10, w.view.bounds.width - 100, 20));
 		sl.action = { arg x;
 				var i; 
@@ -58,17 +55,12 @@ Stethoscope {
 		c = SCNumberBox(w, Rect(10,10, 30,20)).value_(0);
 		c.action = { this.index = c.value;  };
 		c.resize = 9;
+		c.font = Font("Monaco", 9);
 		d = SCNumberBox(w, Rect(10,10, 25,20)).value_(numChannels);
 		d.action = { this.numChannels = d.value.asInteger  };
 		d.resize = 9;
-		b = SCButton(w,Rect(10,10,25,20));
-		b.states = [
-			["ar",Color.black,Color.clear],
-			["kr",Color.black,Color.clear]
-		];
-		b.resize = 9;
-		b.action = {this.switchRate};
-		b.valueAction = 0;
+		d.font = Font("Monaco", 9);
+		SCStaticText(w, Rect(10,10, 20,20)).visible_(false);
 		this.updateColors;
 	}
 	
@@ -133,7 +125,6 @@ Stethoscope {
 		
 		if(argRate === \audio)
 		{ 
-				b.value = 0;
 				if(synth.isPlaying) { synth.set(\switch, 0) };
 				rate = \audio;
 				this.updateColors;
@@ -141,7 +132,6 @@ Stethoscope {
 				this.index = ai;
 		}
 		{
-				b.value = 1;
 				if(synth.isPlaying) { synth.set(\switch, 1) };
 				rate = \control;
 				this.updateColors;
