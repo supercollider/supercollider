@@ -470,20 +470,23 @@ play(\{\
 (\
 \{\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 var\cf0  root, scale;\
+\cf3 	var\cf0  root, scale;\
 \
-			\cf2 // struck string\cf0 \
-			\cf3 var\cf0  trig, p, exc, x, freq;\
-		root = rrand(3,6);\
-		scale = #[0,2,4,5,7,9,11];\
+	\cf2 // struck string\cf0 \
+	\cf3 var\cf0  trig, p, exc, x, freq, s;\
+	root = rrand(3,6);\
+	scale = #[0,2,4,5,7,9,11];\
 \
-			freq = (scale.choose + #[24,36,48,60,72,84].choose + root).midicps;\
-			exc = \cf3 BrownNoise\cf0 .ar(\cf3 Decay2\cf0 .kr(\cf3 Impulse\cf0 .kr(#[0.125,0.25,0.375,0.5,0.75,1,1.5,2,3,4].choose,0,[0.05,0.05]), 0.005, 0.05));\
-			s = (\cf3 Klank\cf0 .ar(`[\
-					\cf3 Array\cf0 .series(16, freq, freq),\
-					\cf3 Array\cf0 .geom(16,1,rrand(0.7,0.999)),\
-					\cf3 Array\cf0 .fill(16, \{rrand(0.1,2.5)\})\
-				], exc) * 0.1).softclip;\
+	freq = (scale.choose + #[24,36,48,60,72,84].choose + root).midicps;\
+	exc = \cf3 BrownNoise\cf0 .ar(\
+		\cf3 Decay2\cf0 .kr(\
+			\cf3 Impulse\cf0 .kr(#[0.125,0.25,0.375,0.5,0.75,1,1.5,2,3,4].choose,0,[0.05,0.05]\
+		), 0.005, 0.05));\
+	s = (\cf3 Klank\cf0 .ar(`[\
+			\cf3 Array\cf0 .series(16, freq, freq),\
+			\cf3 Array\cf0 .geom(16,1,rrand(0.7,0.999)),\
+			\cf3 Array\cf0 .fill(16, \{rrand(0.1,2.5)\})\
+		], exc) * 0.1).softclip;\
 \}.play\
 )\
 \
@@ -493,15 +496,15 @@ play(\{\
 (\
 \{\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 var\cf0  root, scale;\
+\cf3 	var\cf0  root, scale, s;\
 			\cf2 // wind chords\cf0 \
-			\cf3 var\cf0  trig, p, n, exc, x, base, range;\
+	\cf3 var\cf0  trig, p, n, exc, x, base, range;\
 		\cf2 //root = rrand(3,6);\cf0 \
 		root = 5;\
 		scale = #[0,2,4,5,7,9,11];\
-			n = 5;\
-			exc = \cf3 BrownNoise\cf0 .ar([0.007,0.007]) * max(0, \cf3 LFNoise1\cf0 .kr(exprand(0.125,0.5), 1.25, -0.25));\
-			s = (\cf3 Klank\cf0 .ar(`[\cf3 Array\cf0 .fill(n, \{(scale.choose + #[36,48,60,72,84].choose + root).midicps\}),\cf3 nil\cf0 ,\cf3 Array\cf0 .fill(n, \{rrand(0.1,2.0)\})], exc) * 0.1).softclip;\
+		n = 5;\
+		exc = \cf3 BrownNoise\cf0 .ar([0.007,0.007]) * max(0, \cf3 LFNoise1\cf0 .kr(exprand(0.125,0.5), 1.25, -0.25));\
+		s = (\cf3 Klank\cf0 .ar(`[\cf3 Array\cf0 .fill(n, \{(scale.choose + #[36,48,60,72,84].choose + root).midicps\}),\cf3 nil\cf0 ,\cf3 Array\cf0 .fill(n, \{rrand(0.1,2.0)\})], exc) * 0.1).softclip;\
 \}.play;\
 )\
 \
@@ -512,7 +515,7 @@ play(\{\
 \{\
 \
 			\cf2 // wind metals\cf0 \
-			\cf3 var\cf0  trig, p, n, exc, x, base, range;\
+			\cf3 var\cf0  trig, s, p, n, exc, x, base, range;\
 			n = 6;\
 			base = exprand(60,4000);\
 			range = rrand(500.0,8000.0);\
@@ -528,7 +531,7 @@ play(\{\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 var\cf0  root, scale;\
 			\cf2 // bowed string\cf0 \
-			\cf3 var\cf0  trig, p, exc, x, freq;\
+		\cf3 var\cf0  trig, p, s, exc, x, freq;\
 		\cf2 //root = rrand(3,6);\cf0 \
 		root = 5;\
 		scale = #[0,2,4,5,7,9,11];\
@@ -548,10 +551,9 @@ play(\{\
 (\
 \{\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 var\cf0  root, scale;\
-			\cf2 // whistle\cf0 \
-			\cf3 var\cf0  trig, p, exc, x, freq;\
-		\cf2 //root = rrand(3,6);\cf0 \
+\cf3 	var\cf0  root, scale, s;\
+	\cf2 // whistle\cf0 \
+	\cf3 var\cf0  trig, p, exc, x, freq;\
 		root = 5;\
 		scale = #[0,2,4,5,7,9,11];\
 			freq = (scale.choose + #[84,96].choose + root).midicps;\
@@ -570,10 +572,10 @@ play(\{\
 (\
 \{\
 \
-			\cf2 // metallic\cf0 \
-			\cf3 var\cf0  trig, p, exc, x;\
-			exc = \cf3 BrownNoise\cf0 .ar(\cf3 Decay2\cf0 .kr(\cf3 Impulse\cf0 .kr(#[0.125,0.25,0.375,0.5,0.75,1,1.5,2].choose,0,[0.04,0.04]), 0.005, 0.05));\
-			s = (\cf3 Klank\cf0 .ar(`[\cf3 Array\cf0 .fill(16, \{linrand(8000.0)+60\}),\cf3 nil\cf0 ,\cf3 Array\cf0 .fill(16, \{rrand(0.1,2.0)\})], exc) * 0.1).softclip;\
+	\cf2 // metallic\cf0 \
+	\cf3 var\cf0  trig, p, exc, x, s;\
+	exc = \cf3 BrownNoise\cf0 .ar(\cf3 Decay2\cf0 .kr(\cf3 Impulse\cf0 .kr(#[0.125,0.25,0.375,0.5,0.75,1,1.5,2].choose,0,[0.04,0.04]), 0.005, 0.05));\
+	s = (\cf3 Klank\cf0 .ar(`[\cf3 Array\cf0 .fill(16, \{linrand(8000.0)+60\}),\cf3 nil\cf0 ,\cf3 Array\cf0 .fill(16, \{rrand(0.1,2.0)\})], exc) * 0.1).softclip;\
 \}.play\
 )\
 \
