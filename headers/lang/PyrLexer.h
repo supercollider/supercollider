@@ -102,7 +102,6 @@ extern bool compilingCmdLine;
 extern bool compilingCmdLineErrorWindow;
 extern bool compiledOK;
 
-#define MAXCOMPILEFILES 1000
 #define MAXYYLEN 8192
 
 extern int gNumCompiledFiles;

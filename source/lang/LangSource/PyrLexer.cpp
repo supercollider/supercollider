@@ -1586,6 +1586,7 @@ void buildDepTree()
 
 ClassDependancy **gClassCompileOrder;
 int gClassCompileOrderNum = 0;
+int gClassCompileOrderSize = 1000;
 
 void compileDepTree();
 
@@ -1594,7 +1595,7 @@ void traverseFullDepTree()
 	//postfl("->traverseFullDepTree\n"); fflush(stdout);
 	gClassCompileOrderNum = 0;
 	gClassCompileOrder = (ClassDependancy**)pyr_pool_compile->Alloc(
-								MAXCOMPILEFILES * sizeof(ClassDependancy));
+								gClassCompileOrderSize * sizeof(ClassDependancy));
 	MEMFAIL(gClassCompileOrder);
 	
 	// parse and compile all files
@@ -1625,11 +1626,13 @@ void traverseDepTree(ClassDependancy *classdep, int level)
 	for (; subclassdep; subclassdep = subclassdep->next) {
 		traverseDepTree(subclassdep, level+1);
 	}
-	if (gClassCompileOrderNum > MAXCOMPILEFILES) {
-		error("Too many files.\n");
-	} else {
-		gClassCompileOrder[gClassCompileOrderNum++] = classdep;
+	if (gClassCompileOrderNum > gClassCompileOrderSize) {
+		gClassCompileOrderSize *= 2;
+		gClassCompileOrder = (ClassDependancy**)pyr_pool_compile->Realloc(gClassCompileOrder, 
+								gClassCompileOrderSize * sizeof(ClassDependancy));
+		MEMFAIL(gClassCompileOrder);		
 	}
+	gClassCompileOrder[gClassCompileOrderNum++] = classdep;
 }
 
 
