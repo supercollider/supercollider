@@ -216,8 +216,7 @@ int slotBackgroundVal(PyrSlot *slot, DrawBackground **ioPtr)
 
 Layout::Layout()
     : mMinWidth(0.), mMaxWidth(10000.), mMinHeight(0.), mMaxHeight(10000.), mWeight(1.),
-    mShouldResize(true), mHResize(layout_FixedLeft), mVResize(layout_FixedTop),
-    mFixWidth(-1.),mFixHeight(-1.)
+    mShouldResize(true), mHResize(layout_FixedLeft), mVResize(layout_FixedTop
 {
 }
 
