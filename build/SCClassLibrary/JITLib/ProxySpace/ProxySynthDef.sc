@@ -15,7 +15,7 @@ ProxySynthDef : SynthDef {
 			argValues = argNames.collect({ arg x,i; argValues.at(i) ? 0.0 });
 			ctl = Control.names(argNames).kr(argValues);
 			synthGate = Control.names(\synthGate).kr(1.0);
-			synthFadeTime = Control.names(\synthFadeTime).kr(0.1);
+			synthFadeTime = Control.names(\synthFadeTime).kr(0.005);
 			env = Linen.kr(synthGate, synthFadeTime, 1.0, synthFadeTime, 2);
 			output = (env*ugenGraphFunc.valueArray(ctl)).asArray;
 			if((output.rate === 'control') && (proxy.rate === 'audio'), 
