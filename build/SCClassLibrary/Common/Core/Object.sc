@@ -462,12 +462,12 @@ Object {
 		^this.performBinaryOpOnSomething(aSelector)
 	}
 	
-	writeDefFile { arg name;
+	writeDefFile { arg name, dir="synthdefs/";
 		var file;
 		
 		if (name.isNil, { error("no file name"); ^nil });
 		
-		file = File("synthdefs/" ++ name ++ ".scsyndef", "w");
+		file = File(dir ++ name ++ ".scsyndef", "w");
 		
 		this.asArray.writeDef(file);
 		
