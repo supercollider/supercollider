@@ -7,8 +7,13 @@ Interval : Collection {
 	
 	size { ^end - start div: step + 1 }
 	at { arg index; 
-		var val;
 		if (index < 0 or: { index >= this.size }, { ^nil });
+		^step * index + start;
+	}
+	wrapAt { arg index; ^step * (index % this.size) + start }
+	clipAt { arg index; 
+		if (index < 0) { ^start };
+		if (index >= this.size) { ^end };
 		^step * index + start;
 	}
 	do { arg function;
