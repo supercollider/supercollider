@@ -85,7 +85,7 @@ Pdef : Pdefn {
 	
 	pattern_ { arg pat;
 		pattern = pat;
-		if(isPlaying and: { player.isPlaying.not }) { this.run }
+		if(isPlaying and: { player.isPlaying.not }) { this.play }
 	}
 	
 	/*
@@ -93,7 +93,7 @@ Pdef : Pdefn {
 	pattern_ { arg pat;
 		if(min.notNil or: { max.notNil }) { pat = Psync(pat, min, max) };
 		pattern = pat;
-		if(isPlaying and: { this.streamIsPlaying.not }) { this.run }
+		if(isPlaying and: { this.streamIsPlaying.not }) { this.play }
 	}
 
 	
