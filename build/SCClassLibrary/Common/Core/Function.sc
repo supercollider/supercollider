@@ -161,6 +161,16 @@ Function : AbstractFunction {
 	}
 	
 	handleError { arg error; ^this.value(error) }
+
+	case { arg ... cases;
+		cases = [this] ++ cases;
+		cases.pairsDo { | test, trueFunc |
+			if (test.value) { ^trueFunc.value };
+		};
+		if (cases.size.odd) { ^cases.last.value };
+		^nil
+	}
+
 }
 
 

@@ -276,6 +276,13 @@ Object {
 			body.value
 		});
 	}
+	switch { arg ... cases;
+		cases.pairsDo { | test, trueFunc |
+			if (this == test.value) { ^trueFunc.value };
+		};
+		if (cases.size.odd) { ^cases.last.value };
+		^nil
+	}
 	
 	// coroutine support
 	yield {
