@@ -65,7 +65,8 @@ Stethoscope {
 				if(char === $_) {  zy = zy - 0.25; this.yZoom = 2 ** zy; ^this  };
 				if(char === $A) {  this.adjustBufferSize; ^this  };
 				if(char === $m) { this.toggleSize; ^this  };
-				if(char === $.) {  if(synth.isPlaying) { synth.free }; };
+				if(char === $.) { synth.free; if(synth.isPlaying) { synth.free }; };
+
 	}
 	
 	spec { ^if(rate === \audio) { audiospec } {Êcontrolspec } }
@@ -74,7 +75,7 @@ Stethoscope {
 				
 				if(rate.notNil) { this.rate = rate };
 				if(index.notNil) { this.index = index };
-				if(numChannels.notNil) {Êthis.numChannels = numChannels };
+				if(numChannels.notNil) { this.numChannels = numChannels };
 				if(this.bufsize != bufsize) { this.allocBuffer(bufsize) };
 				if(zoom.notNil) { this.zoom = zoom };
 	}
@@ -104,7 +105,8 @@ Stethoscope {
 	
 	free {
 		buffer.free;
-		if(synth.isPlaying) { synth.free };
+		
+		if(synth.isPlaying) {Êsynth.free };
 		synth = nil;
 		if(server.scopeWindow === this) { server.scopeWindow = nil }
 	}
@@ -117,9 +119,10 @@ Stethoscope {
 	numChannels_ { arg n;
 	
 		var isPlaying;
+		if(n > 16) {ÊError("cannot display more than 16 channels at once").throw };
 		if(n != numChannels and: { n > 0 }) {Ê
 			isPlaying = synth.isPlaying;
-			if(isPlaying) { synth.free; synth.isPlaying = false; }; // immediate
+			if(isPlaying) { synth.free; synth.isPlaying = false; synth = nil }; // immediate
 			numChannels = n;
 			
 			d.value = n;
@@ -140,7 +143,7 @@ Stethoscope {
 	}
 	
 	rate_ { arg argRate=\audio;
-		
+		if(rate === argRate) {Ê^this };
 		if(argRate === \audio)
 		{ 
 				if(synth.isPlaying) { synth.set(\switch, 0) };
@@ -166,6 +169,9 @@ Stethoscope {
 	
 	xZoom_ { arg val; n.xZoom = val; zx = val.log2 }
 	yZoom_ { arg val; n.yZoom = val; zy = val.log2 }
+	xZoom { ^2.0 ** zx }
+	yZoom { ^2.0 ** zy }
+	
 	zoom_ { arg val; this.xZoom_(val ? 1) }
 
 	style_ { arg val; n.style = style = val }
