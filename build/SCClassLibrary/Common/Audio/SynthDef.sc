@@ -65,11 +65,11 @@ SynthDef {
 			value = values.at(i);
 			if (c == $i && { c2 == $_ }, {
 				irnames = irnames.add(name);
-				irvalues = irvalues.add(value);
+				irvalues = irvalues.add(value.asFloat);
 				irpositions = irpositions.add(i);
 			},{
 				krnames = krnames.add(name);
-				krvalues = krvalues.add(value);
+				krvalues = krvalues.add(value.asFloat);
 				krpositions = krpositions.add(i);
 			});
 		});
