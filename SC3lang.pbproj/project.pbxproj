@@ -2712,7 +2712,7 @@
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = sclang;
 				REZ_EXECUTABLE = YES;
