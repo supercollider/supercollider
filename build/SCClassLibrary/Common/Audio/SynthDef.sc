@@ -108,6 +108,7 @@ SynthDef {
 				this.addTr(name, value);
 			}
 			{
+				if (lag == \kr) { lag = 0.0 };
 				this.addKr(name, value, lag);
 			};
 		};
@@ -270,8 +271,8 @@ SynthDef {
 					if (cn.notNil) {
 						values = values.asArray;
 						if (values.size > cn.defaultValue.asArray.size) {
-							Post << "variant: '" << varname << "' control: '" << cname 
-								<< "' size mismatch.\n";
+							postf("variant: '%' control: '%' size mismatch.\n", 
+								varname, cname);
 							^nil
 						}{
 							index = cn.index;
@@ -280,8 +281,8 @@ SynthDef {
 							}
 						}
 					}{
-						Post << "variant: '" << varname << "' control: '" << cname 
-								<< "' not found.\n";
+						postf("variant: '%' control: '%' not found.\n", 
+								varname, cname);
 						^nil
 					}
 				};

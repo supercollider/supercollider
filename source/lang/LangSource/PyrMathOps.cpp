@@ -424,7 +424,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 					goto send_normal_2;
 				case tagSym : 
 					if (IS_BINARY_BOOL_OP(opcode)) {
-						res = o_false;
+						res = opcode == opNE ? o_true : o_false;
 					} else {
 						res.us = b->us; res.utag = tagSym;
 					}
@@ -571,7 +571,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 				}
 			} else {
 				if (IS_BINARY_BOOL_OP(opcode)) {
-					res = o_false;
+					res = opcode == opNE ? o_true : o_false;
 				} else {
 					res.us = a->us; res.utag = tagSym;
 				}
@@ -620,7 +620,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						goto send_normal_2;
 					case tagSym : 
 						if (IS_BINARY_BOOL_OP(opcode)) {
-							res = o_false;
+							res = opcode == opNE ? o_true : o_false;
 						} else {
 							res.us = b->us; res.utag = tagSym;
 						}
@@ -773,7 +773,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 					goto send_normal_2;
 				case tagSym : 
 					if (IS_BINARY_BOOL_OP(opcode)) {
-						res = o_false;
+						res = opcode == opNE ? o_true : o_false;
 					} else {
 						res.us = b->us; res.utag = tagSym;
 					}
