@@ -16,6 +16,7 @@ Set : Collection {
 			})
 		})
 	}
+	clear { this.makeEmpty }
 	
 	includes { arg item; 
 		^array.at(this.scanFor(item)).notNil;
@@ -51,12 +52,16 @@ Set : Collection {
 	pop {
 		var index = 0, val;
 		while({
-			(val = array.at(index)).isNil;
+			(index < array.size) and: { (val = array.at(index)).isNil }
 		},{ 
 			index = index + 1 
 		});
-		this.remove(val);
-		^val
+		if (index < array.size, {
+			this.remove(val);
+			^val
+		}, {
+			^nil
+		});
 	}
 	
 	sect { arg that;
