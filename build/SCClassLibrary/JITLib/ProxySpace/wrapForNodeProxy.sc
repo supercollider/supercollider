@@ -60,7 +60,7 @@
 	}
 }
 
-+SimpleNumber { //some more efficient way needed to put a value here
++SimpleNumber {
 	prepareForProxySynthDef { arg proxy;
 		^if(proxy.rate === 'audio', {
 			{ Array.fill(proxy.numChannels ? 1, { K2A.ar(this) }) }
@@ -151,26 +151,17 @@
 			{ 
 				event = player.event;
 				newParent = Event.make({
-				~msgFunc = { arg id, freq;
-					var args, bundle, names, nodeMap;
-					names = ~argNames;
-					args = currentEnvironment.hatch(names);
-					bundle = [9, ~instrument, id, 0, ~group] ++ args;
-					bundle = [bundle ++ [\freq, freq]];
-					//mapping to buses
-					nodeMap = proxy.nodeMap;
-					nodeMap.mapToBundle(bundle, id);
-					~mapArgs = nodeMap.mapArgs; //polyplayer support
-					bundle
-				};
-				~finish = {
-					~group = proxy.group.asNodeID;
-					~i_out = ~out = index;
-					~server = proxy.server;
-					~freq = ~freq.value + ~detune;
-					~amp = ~amp.value;
-					~sustain = ~sustain.value;
-				}
+					~player = MapNotePlayer.new;
+					
+					~finish = {
+						~group = proxy.group.asNodeID;
+						~mapping = proxy.nodeMap.mapArgs;
+						~i_out = ~out = index;
+						~server = proxy.server;
+						~freq = ~freq.value + ~detune;
+						~amp = ~amp.value;
+						~sustain = ~sustain.value;
+					}
 				}).parent_(event.parent);
 				event.parent = newParent;
 			player
