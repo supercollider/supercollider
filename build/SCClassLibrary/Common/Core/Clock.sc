@@ -28,7 +28,8 @@ SystemClock : Clock {
 	
 	*beats2secs { arg beats; ^beats }
 	*secs2beats { arg secs; ^secs }
-	beats { ^thisThread.seconds }
+	*beats { ^thisThread.seconds }
+	*seconds { ^thisThread.seconds }
 }
 
 

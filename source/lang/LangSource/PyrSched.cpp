@@ -296,9 +296,14 @@ void schedAdd(VMGlobals *g, PyrObject* inQueue, double inSeconds, PyrSlot* inTas
 	double prevTime = inQueue->size ? inQueue->slots->uf : -1e10;
 	bool added = addheap(g, inQueue, inSeconds, inTask);
 	if (!added) post("scheduler queue is full.\n");
-	else if (inQueue->slots->uf != prevTime) {
-		//post("pthread_cond_signal\n");
-		pthread_cond_signal (&gSchedCond);
+	else {
+		if (isKindOfSlot(inTask, class_thread)) {
+			SetFloat(&inTask->uot->nextBeat, inSeconds);
+		}
+		if (inQueue->slots->uf != prevTime) {
+			//post("pthread_cond_signal\n");
+			pthread_cond_signal (&gSchedCond);
+		}
 	}
 }
 
@@ -411,6 +416,10 @@ void* schedRunFunc(void* arg)
 						
 			getheap(inQueue, &schedtime, &task);
 
+			if (isKindOfSlot(&task, class_thread)) {
+				SetNil(&task.uot->nextBeat);
+			}
+
 			(++g->sp)->ucopy = task.ucopy;
 			(++g->sp)->uf = schedtime;
 			(++g->sp)->uf = schedtime;
@@ -421,6 +430,7 @@ void* schedRunFunc(void* arg)
 			if (!err) {
 				// add delta time and reschedule
 				double time = schedtime + delta;
+
 				schedAdd(g, inQueue, time, &task);
 			}
 		}
@@ -447,12 +457,12 @@ kern_return_t  GetStdThreadSchedule( mach_port_t    machThread,
 {
     kern_return_t                       result = 0;
     thread_extended_policy_data_t       timeShareData;
-    thread_precedence_policy_data_t     precidenceData;
+    thread_precedence_policy_data_t     precedenceData;
     mach_msg_type_number_t		structItemCount;
     boolean_t				fetchDefaults = false;
 
     memset( &timeShareData, 0, sizeof( thread_extended_policy_data_t ));
-    memset( &precidenceData, 0, sizeof( thread_precedence_policy_data_t ));
+    memset( &precedenceData, 0, sizeof( thread_precedence_policy_data_t ));
 
     if( 0 == machThread )
         machThread = mach_thread_self();
@@ -472,8 +482,8 @@ kern_return_t  GetStdThreadSchedule( mach_port_t    machThread,
         fetchDefaults = false;
         structItemCount = THREAD_PRECEDENCE_POLICY_COUNT;
         result = thread_policy_get( machThread, THREAD_PRECEDENCE_POLICY,
-                                    (integer_t*)&precidenceData, &structItemCount, &fetchDefaults );
-        *priority = precidenceData.importance;
+                                    (integer_t*)&precedenceData, &structItemCount, &fetchDefaults );
+        *priority = precedenceData.importance;
     }
 
     return result;
@@ -495,10 +505,10 @@ kern_return_t  RescheduleStdThread( mach_port_t    machThread,
 {
     kern_return_t                       result = 0;
     thread_extended_policy_data_t       timeShareData;
-    thread_precedence_policy_data_t     precidenceData;
+    thread_precedence_policy_data_t     precedenceData;
 
     //Set up some variables that we need for the task
-    precidenceData.importance = newPriority;
+    precedenceData.importance = newPriority;
     timeShareData.timeshare = isTimeshare;
     if( 0 == machThread )
         machThread = mach_thread_self();
@@ -516,7 +526,7 @@ kern_return_t  RescheduleStdThread( mach_port_t    machThread,
     //Now set the priority
     return   thread_policy_set( machThread,
                                 THREAD_PRECEDENCE_POLICY,
-                                (integer_t*)&precidenceData,
+                                (integer_t*)&precedenceData,
                                 THREAD_PRECEDENCE_POLICY_COUNT );
 
 }
@@ -556,9 +566,9 @@ void schedRun()
         
         //pthread_t thread = pthread_self ();
         pthread_getschedparam (gSchedThread, &policy, &param);
+        //post("param.sched_priority %d\n", param.sched_priority);
         
         policy = SCHED_RR;         // round-robin, AKA real-time scheduling
-        //post("param.sched_priority %d\n", param.sched_priority);
         
         int machprio;
         boolean_t timeshare;
@@ -567,7 +577,7 @@ void schedRun()
         
         // what priority should gSchedThread use?
         
-        RescheduleStdThread(pthread_mach_thread_np(gSchedThread), 10, false);
+        RescheduleStdThread(pthread_mach_thread_np(gSchedThread), 62, false);
 
         GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread), &machprio, &timeshare);
         //post("mach priority %d   timeshare %d\n", machprio, timeshare);
@@ -577,7 +587,7 @@ void schedRun()
 
         pthread_getschedparam (gSchedThread, &policy, &param);
         
-        //post("param.sched_priority %d\n", param.sched_priority);
+		//post("param.sched_priority %d\n", param.sched_priority);
 #endif // SC_DARWIN
 
 #ifdef SC_LINUX
@@ -834,6 +844,10 @@ void* TempoClock::Run()
 						
 			getheap(mQueue, &mBeats, &task);
 
+			if (isKindOfSlot(&task, class_thread)) {
+				SetNil(&task.uot->nextBeat);
+			}
+
 			(++g->sp)->ucopy = task.ucopy;
 			(++g->sp)->uf = mBeats;
 			(++g->sp)->uf = BeatsToSecs(mBeats);
@@ -887,8 +901,13 @@ void TempoClock::Add(double inBeats, PyrSlot* inTask)
 	double prevBeats = mQueue->size ? mQueue->slots->uf : -1e10;
 	bool added = addheap(g, mQueue, inBeats, inTask);
 	if (!added) post("scheduler queue is full.\n");
-	else if (mQueue->slots->uf != prevBeats) {
-		pthread_cond_signal (&mCondition);
+	else {
+		if (isKindOfSlot(inTask, class_thread)) {
+			SetFloat(&inTask->uot->nextBeat, inBeats);
+		}
+		if (mQueue->slots->uf != prevBeats) {
+			pthread_cond_signal (&mCondition);
+		}
 	}
 }
 
@@ -1250,6 +1269,7 @@ int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	if (err) return errNone; // return nil OK, just don't schedule
 	seconds += delta;
 	PyrObject* inQueue = g->process->sysSchedulerQueue.uo;
+
 	schedAdd(g, inQueue, seconds, c);
 
 	return errNone;
@@ -1266,6 +1286,7 @@ int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	int err = slotDoubleVal(b, &time);
 	if (err) return errNone; // return nil OK, just don't schedule
 	PyrObject* inQueue = g->process->sysSchedulerQueue.uo;
+
 	schedAdd(g, inQueue, time, c);
 
 	return errNone;
