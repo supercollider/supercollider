@@ -1140,8 +1140,12 @@ void calcPos(float pos, int numOutputs, float width, float orientation)
 
 void PanAz_Ctor(PanAz *unit)
 {	
+	int numOutputs = unit->mNumOutputs;
+	for (int i=0; i<numOutputs; ++i) {
+		unit->m_chanamp[i] = 0;
+		ZOUT0(i) = 0.f;	
+	}
 	SETCALC(PanAz_next);
-	ZOUT0(0) = 0.f;	
 }
 
 void PanAz_next(PanAz *unit, int inNumSamples)
