@@ -44,7 +44,6 @@ PfadeOut : PfadeIn {
 					inval = outval.yield;
 				} {
 					c = elapsed - holdTime / fadeTime;
-					c.debug;
 					if(c >= 1.0) { 
 						nil.alwaysYield 
 					} {
