@@ -106,6 +106,43 @@ Pfset : FuncFilterPattern {
 
 
 
+Psetpre : FilterPattern {
+	var <>name, <>value;
+	*new { arg name, value, pattern;
+		^super.new(pattern).name_(name).value_(value)
+	}
+	storeArgs { ^[name,value,pattern] }
+	filterEvent { arg event, val;
+		^event[name] = val;
+	}
+	asStream {
+		var evtStream, valStream;
+		
+		valStream = value.asStream;
+		
+		evtStream = pattern.asStream;
+		
+		^FuncStream.new({ arg event;
+			var val;
+			val = valStream.next;
+			if (val.notNil && event.notNil, { event = this.filterEvent(event, val) });
+			evtStream.next(event);
+		});
+	}
+}
+
+Paddpre : Psetpre {
+	filterEvent { arg event, val;
+		^event[name] = event[name] + val;
+	}
+}
+
+Pmulpre : Psetpre {
+	filterEvent { arg event, val;
+		^event[name] = (event[name] * val).postln;
+	}
+}
+
 Pset : FilterPattern {
 	var <>name, <>value;
 	*new { arg name, value, pattern;
@@ -142,7 +179,7 @@ Padd : Pset {
 
 Pmul : Pset {
 	filterEvent { arg event, val;
-		^event[name] = event[name] * val;
+		^event[name] = (event[name] * val).postln;
 	}
 }
 
@@ -178,6 +215,69 @@ Paddp : Psetp {
 Pmulp : Psetp {
 	filterEvent { arg event, val;
 		^event[name] = event[name] * val;
+	}
+}
+
+
+Pstretch : FilterPattern {
+	var <>value;
+	*new { arg value, pattern;
+		^super.new(pattern).value_(value)
+	}
+	storeArgs { ^[value,pattern] }
+	asStream {
+		var evtStream, valStream;
+		
+		valStream = value.asStream;
+		
+		evtStream = pattern.asStream;
+		
+		^FuncStream.new({ arg event;
+			var val, delta;
+			event = evtStream.next(event);
+			val = valStream.next;
+			if (val.isNil, { nil },{
+				if (event.notNil) {
+					delta = event[\delta];
+					if (delta.notNil) {
+						event[\delta] = delta * val;
+					};
+					event[\dur] = event[\dur] * val;
+				};
+				event
+			});
+		});
+	}
+}
+
+Pstretchp : FilterPattern {
+	var <>value;
+	*new { arg value, pattern;
+		^super.new(pattern).value_(value)
+	}
+	storeArgs { ^[value,pattern] }
+	asStream {
+		^Routine.new({ arg inevent;
+			var valStream, evtStream, val, outevent, delta;
+			valStream = value.asStream;
+			while({
+				val = valStream.next;
+				val.notNil
+			},{
+				evtStream = pattern.asStream;
+				while({
+					outevent = evtStream.next(inevent);
+					outevent.notNil
+				},{
+					delta = outevent[\delta];
+					if (delta.notNil) {
+						outevent[\delta] = delta * val;
+					};
+					outevent[\dur] = outevent[\dur] * val;
+					inevent = outevent.yield;
+				});
+			});
+		});
 	}
 }
 
