@@ -20,6 +20,7 @@
 
 #import "SCTextView.h"
 #import "MyDocument.h"
+#include <pthread.h>
 
 @implementation SCTextView
 
