@@ -50,6 +50,10 @@ struct Unit
 };
 typedef struct Unit Unit;
 
+enum { 
+	kUnitDef_CantAliasInputsToOutputs = 1 
+};
+
 // easy macros, the unit variable must be named 'unit'.
 #define IN(index)  (unit->mInBuf[index])
 #define OUT(index) (unit->mOutBuf[index])

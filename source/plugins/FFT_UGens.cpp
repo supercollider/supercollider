@@ -1531,7 +1531,7 @@ void init_ffts()
 void init_SCComplex(InterfaceTable *inTable);
 
 #define DefinePVUnit(name) \
-	(*ft->fDefineUnit)(#name, sizeof(PV_Unit), (UnitCtorFunc)&name##_Ctor, 0);
+	(*ft->fDefineUnit)(#name, sizeof(PV_Unit), (UnitCtorFunc)&name##_Ctor, 0, 0);
 	
 
 void load(InterfaceTable *inTable)

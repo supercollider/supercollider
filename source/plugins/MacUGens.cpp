@@ -224,8 +224,8 @@ void load(InterfaceTable *inTable)
 	pthread_t macThread;
 	pthread_create (&macThread, NULL, gstate_update_func, (void*)0);
 
-	DefineUnit("MouseX", sizeof(MacUGen), (UnitCtorFunc)&MouseX_Ctor, 0);
-	DefineUnit("MouseY", sizeof(MacUGen), (UnitCtorFunc)&MouseY_Ctor, 0);
-	DefineUnit("MouseButton", sizeof(MacUGen), (UnitCtorFunc)&MouseButton_Ctor, 0);
-	DefineUnit("KeyState", sizeof(MacUGen), (UnitCtorFunc)&KeyState_Ctor, 0);
+	DefineUnit("MouseX", sizeof(MacUGen), (UnitCtorFunc)&MouseX_Ctor, 0, 0);
+	DefineUnit("MouseY", sizeof(MacUGen), (UnitCtorFunc)&MouseY_Ctor, 0, 0);
+	DefineUnit("MouseButton", sizeof(MacUGen), (UnitCtorFunc)&MouseButton_Ctor, 0, 0);
+	DefineUnit("KeyState", sizeof(MacUGen), (UnitCtorFunc)&KeyState_Ctor, 0, 0);
 }

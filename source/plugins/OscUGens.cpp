@@ -2384,8 +2384,6 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 		float *table0  = bufs[0].data;
 		float *table2  = bufs[1].data;
 		if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
-			printf("z %08X %08X %d %d %d\n", table0, table2, tableSize, bufs[0].samples, bufs[1].samples);
-			
 			ClearUnitOutputs(unit, inNumSamples);
 			return;
 		}

@@ -50,11 +50,12 @@ struct UnitDef
 	UnitDtorFunc mUnitDtorFunc;
 	
 	HashTable<UnitCmd, Malloc>* mCmds;
+	uint32 mFlags;
 };
 
 extern "C" {
 bool UnitDef_Create(char *inName, size_t inAllocSize, 
-	UnitCtorFunc inCtor, UnitDtorFunc inDtor);
+	UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
 bool UnitDef_AddCmd(char *inUnitDefName, char *inCmdName, UnitCmdFunc inFunc);
 bool PlugIn_DefineCmd(char *inCmdName, PlugInCmdFunc inFunc, void *inUserData);
 }

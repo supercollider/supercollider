@@ -4978,7 +4978,7 @@ void load(InterfaceTable *inTable)
 	ft = inTable;
 
 #define DefineInfoUnit(name) \
-	(*ft->fDefineUnit)(#name, sizeof(Unit), (UnitCtorFunc)&name##_Ctor, 0);
+	(*ft->fDefineUnit)(#name, sizeof(Unit), (UnitCtorFunc)&name##_Ctor, 0, 0);
 
 	DefineInfoUnit(ControlRate);
 	DefineInfoUnit(SampleRate);
@@ -4992,7 +4992,7 @@ void load(InterfaceTable *inTable)
 	DefineInfoUnit(NumRunningSynths);
 
 #define DefineBufInfoUnit(name) \
-	(*ft->fDefineUnit)(#name, sizeof(BufInfoUnit), (UnitCtorFunc)&name##_Ctor, 0);
+	(*ft->fDefineUnit)(#name, sizeof(BufInfoUnit), (UnitCtorFunc)&name##_Ctor, 0, 0);
 
 	DefineBufInfoUnit(BufSampleRate);
 	DefineBufInfoUnit(BufRateScale);
@@ -5022,7 +5022,7 @@ void load(InterfaceTable *inTable)
 
 #define DefineDelayUnit(name) \
 	(*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, \
-	(UnitDtorFunc)&DelayUnit_Dtor);
+	(UnitDtorFunc)&DelayUnit_Dtor, 0);
 	
 	DefineDelayUnit(DelayN);
 	DefineDelayUnit(DelayL);

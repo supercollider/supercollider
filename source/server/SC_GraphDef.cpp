@@ -460,6 +460,42 @@ inline bool BufColorAllocator::release(int inIndex)
 	return true;
 }
 
+void ReleaseInputBuffers(GraphDef *inGraphDef, UnitSpec *unitSpec, BufColorAllocator& bufColor)
+{
+	for (int i=unitSpec->mNumInputs-1; i>=0; --i) {
+		InputSpec *inputSpec = unitSpec->mInputSpec + i;
+		if (inputSpec->mFromUnitIndex >= 0) {
+			UnitSpec *outUnit = inGraphDef->mUnitSpecs + inputSpec->mFromUnitIndex;
+			OutputSpec *outputSpec = outUnit->mOutputSpec + inputSpec->mFromOutputIndex;
+			inputSpec->mWireIndex = outputSpec->mWireIndex;
+			if (outputSpec->mCalcRate == calc_FullRate) {
+				if (!bufColor.release(outputSpec->mBufferIndex)) {
+					scprintf("buffer coloring error: tried to release output with zero count\n");
+					scprintf("output: %d %s %d\n", inputSpec->mFromUnitIndex, 
+								outUnit->mUnitDef->mUnitDefName, inputSpec->mFromOutputIndex);
+					//scprintf("input: %d %s %d\n", j, unitSpec->mUnitDef->mUnitDefName, i);
+					scprintf("input: %s %d\n", unitSpec->mUnitDef->mUnitDefName, i);
+					throw std::runtime_error("buffer coloring error.");
+				}
+			}
+		} else {
+			inputSpec->mWireIndex = inputSpec->mFromOutputIndex;
+		}
+	}
+}
+
+void AllocOutputBuffers(UnitSpec *unitSpec, BufColorAllocator& bufColor, int& wireIndexCtr)
+{
+	for (uint32 i=0; i<unitSpec->mNumOutputs; ++i) {
+		OutputSpec *outputSpec = unitSpec->mOutputSpec + i;
+		outputSpec->mWireIndex = wireIndexCtr++;
+		if (outputSpec->mCalcRate == calc_FullRate) {
+			int bufIndex = bufColor.alloc(outputSpec->mNumConsumers);
+			outputSpec->mBufferIndex = bufIndex;
+		}
+	}
+}
+
 void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 {
 	// count consumers of outputs
@@ -481,34 +517,16 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 		int wireIndexCtr = inGraphDef->mNumConstants;
 		for (uint32 j=0; j<inGraphDef->mNumUnitSpecs; ++j) {
 			UnitSpec *unitSpec = inGraphDef->mUnitSpecs + j;
-			
-			// set wire index, release inputs
-			for (int i=unitSpec->mNumInputs-1; i>=0; --i) {
-				InputSpec *inputSpec = unitSpec->mInputSpec + i;
-				if (inputSpec->mFromUnitIndex >= 0) {
-					UnitSpec *outUnit = inGraphDef->mUnitSpecs + inputSpec->mFromUnitIndex;
-					OutputSpec *outputSpec = outUnit->mOutputSpec + inputSpec->mFromOutputIndex;
-					inputSpec->mWireIndex = outputSpec->mWireIndex;
-					if (outputSpec->mCalcRate == calc_FullRate) {
-						if (!bufColor.release(outputSpec->mBufferIndex)) {
-							scprintf("buffer coloring error: tried to release output with zero count\n");
-							scprintf("output: %d %s %d\n", inputSpec->mFromUnitIndex, outUnit->mUnitDef->mUnitDefName, inputSpec->mFromOutputIndex);
-							scprintf("input: %d %s %d\n", j, unitSpec->mUnitDef->mUnitDefName, i);
-							throw std::runtime_error("buffer coloring error.");
-						}
-					}
-				} else {
-					inputSpec->mWireIndex = inputSpec->mFromOutputIndex;
-				}
-			}
-			// set wire index, alloc outputs
-			for (uint32 i=0; i<unitSpec->mNumOutputs; ++i) {
-				OutputSpec *outputSpec = unitSpec->mOutputSpec + i;
-				outputSpec->mWireIndex = wireIndexCtr++;
-				if (outputSpec->mCalcRate == calc_FullRate) {
-					int bufIndex = bufColor.alloc(outputSpec->mNumConsumers);
-					outputSpec->mBufferIndex = bufIndex;
-				}
+			if (unitSpec->mUnitDef->mFlags & kUnitDef_CantAliasInputsToOutputs) {
+				// set wire index, alloc outputs
+				AllocOutputBuffers(unitSpec, bufColor, wireIndexCtr);
+				// set wire index, release inputs
+				ReleaseInputBuffers(inGraphDef, unitSpec, bufColor);
+			} else {
+				// set wire index, release inputs
+				ReleaseInputBuffers(inGraphDef, unitSpec, bufColor);
+				// set wire index, alloc outputs
+				AllocOutputBuffers(unitSpec, bufColor, wireIndexCtr);
 			}
 		}
 

@@ -27,7 +27,7 @@
 #include "SC_Str4.h"
 #include <stdlib.h>
 
-bool UnitDef_Create(char *inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor)
+bool UnitDef_Create(char *inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
 {
 	if (strlen(inName) >= kSCNameByteLen) return false;
 
@@ -41,6 +41,7 @@ bool UnitDef_Create(char *inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitD
 	unitDef->mUnitCtorFunc = inCtor;
 	unitDef->mUnitDtorFunc = inDtor;
 	unitDef->mCmds = 0;
+	unitDef->mFlags = inFlags;
 	
 	if (!AddUnitDef(unitDef)) {
 		free(unitDef);

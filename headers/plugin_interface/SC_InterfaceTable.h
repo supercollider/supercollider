@@ -45,7 +45,7 @@ struct InterfaceTable
 	
 	// define a unit def
 	bool (*fDefineUnit)(char *inUnitClassName, size_t inAllocSize, 
-			UnitCtorFunc inCtor, UnitDtorFunc inDtor);
+			UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
 
 	// define a command  /cmd
 	bool (*fDefinePlugInCmd)(char *inCmdName, PlugInCmdFunc inFunc, void* inUserData);
@@ -134,11 +134,11 @@ typedef struct InterfaceTable InterfaceTable;
 #define SndFileFormatInfoFromStrings (*ft->fSndFileFormatInfoFromStrings)
 
 #define DefineSimpleUnit(name) \
-	(*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, 0);
+	(*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, 0, 0);
 
 #define DefineDtorUnit(name) \
 	(*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, \
-	(UnitDtorFunc)&name##_Dtor);
+	(UnitDtorFunc)&name##_Dtor, 0);
 
 
 #endif

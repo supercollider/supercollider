@@ -891,8 +891,9 @@ void PanAz_next(PanAz *unit, int inNumSamples)
 	pos *= numOutputs;
 	
 	// this is a trick to allow me to get away with not being strictly in place
-	float *zin0 = OUT(numOutputs-1);
-	memcpy(zin0, IN(0), inNumSamples*sizeof(float));
+	//float *zin0 = OUT(numOutputs-1);
+	//memcpy(zin0, IN(0), inNumSamples*sizeof(float));
+	float *zin0 = ZIN(0);
 	
 	for (int i=0; i<numOutputs; ++i) {
 		float *out = ZOUT(i);
@@ -1005,7 +1006,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(LinXFade2);
 	DefineSimpleUnit(PanB);
 	DefineSimpleUnit(PanB2);
-	DefineSimpleUnit(PanAz);
+	DefineUnit("PanAz", sizeof(PanAz), (UnitCtorFunc)&PanAz_Ctor, 0, kUnitDef_CantAliasInputsToOutputs);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

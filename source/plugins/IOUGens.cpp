@@ -1079,15 +1079,15 @@ void load(InterfaceTable *inTable)
 	DefineDtorUnit(OffsetOut);
 	DefineSimpleUnit(XOut);
 	DefineSimpleUnit(LagControl);
-	DefineUnit("Control", sizeof(Unit), (UnitCtorFunc)&Control_Ctor, 0);
-	DefineUnit("TrigControl", sizeof(Unit), (UnitCtorFunc)&TrigControl_Ctor, 0);
-	DefineUnit("ReplaceOut", sizeof(IOUnit), (UnitCtorFunc)&ReplaceOut_Ctor, 0);
-	DefineUnit("Out", sizeof(IOUnit), (UnitCtorFunc)&Out_Ctor, 0);
-	DefineUnit("In", sizeof(IOUnit), (UnitCtorFunc)&In_Ctor, 0);
-	DefineUnit("LagIn", sizeof(IOUnit), (UnitCtorFunc)&LagIn_Ctor, 0);
-	DefineUnit("InFeedback", sizeof(IOUnit), (UnitCtorFunc)&InFeedback_Ctor, 0);
-	DefineUnit("InTrig", sizeof(IOUnit), (UnitCtorFunc)&InTrig_Ctor, 0);
+	DefineUnit("Control", sizeof(Unit), (UnitCtorFunc)&Control_Ctor, 0, 0);
+	DefineUnit("TrigControl", sizeof(Unit), (UnitCtorFunc)&TrigControl_Ctor, 0, 0);
+	DefineUnit("ReplaceOut", sizeof(IOUnit), (UnitCtorFunc)&ReplaceOut_Ctor, 0, 0);
+	DefineUnit("Out", sizeof(IOUnit), (UnitCtorFunc)&Out_Ctor, 0, 0);
+	DefineUnit("In", sizeof(IOUnit), (UnitCtorFunc)&In_Ctor, 0, 0);
+	DefineUnit("LagIn", sizeof(IOUnit), (UnitCtorFunc)&LagIn_Ctor, 0, 0);
+	DefineUnit("InFeedback", sizeof(IOUnit), (UnitCtorFunc)&InFeedback_Ctor, 0, 0);
+	DefineUnit("InTrig", sizeof(IOUnit), (UnitCtorFunc)&InTrig_Ctor, 0, 0);
 
-	DefineUnit("SharedOut", sizeof(IOUnit), (UnitCtorFunc)&SharedOut_Ctor, 0);
-	DefineUnit("SharedIn", sizeof(IOUnit), (UnitCtorFunc)&SharedIn_Ctor, 0);
+	DefineUnit("SharedOut", sizeof(IOUnit), (UnitCtorFunc)&SharedOut_Ctor, 0, 0);
+	DefineUnit("SharedIn", sizeof(IOUnit), (UnitCtorFunc)&SharedIn_Ctor, 0, 0);
 }
