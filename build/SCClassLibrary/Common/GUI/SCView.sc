@@ -660,27 +660,38 @@ SCMultiSliderView : SCView { // abstract class
 	mouseEndTrack { arg x, y, modifiers;
 	
 	}
-	
-properties {
-		^super.properties ++ [\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y]
+	properties {
+		^super.properties ++ [\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines]
 	}	
-value {arg val;
+	value {arg val; //returns array
 		^this.getProperty(\value, val)
 	}
-value_ {arg val;
+	value_ {arg val;
 		^this.setProperty(\value, val)
 	}
-x {
+	x {
 		^this.getProperty(\x)
 	}
 	y {
 		^this.getProperty(\y)
 	}
-readOnly_{arg val;
-	^this.setProperty(\readOnly, val);
+	x_ {arg inx;
+		this.setProperty(\x, inx)
+	}
+	y_ {arg iny;
+		this.setProperty(\y, iny)
+	}
+	showIndex{arg abool;
+		this.setProperty(\showIndex, abool)
+		}
+	drawLines{arg abool;
+		this.setProperty(\drawLines, abool)
+		}
+	readOnly_{arg val;
+		this.setProperty(\readOnly, val);
 	}
 	thumbSize_{arg val;
-	^this.setProperty(\thumbSize, val)
+		this.setProperty(\thumbSize, val)
 	}	
 }
 
