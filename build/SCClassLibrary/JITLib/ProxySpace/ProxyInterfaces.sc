@@ -6,7 +6,7 @@
 
 AbstractPlayControl {
 	var <source, <>channelOffset;
-	var <paused=false, <parents;
+	var <paused=false;
 	
 	*new { arg source, channelOffset=0;
 		^super.newCopyArgs(source, channelOffset);
@@ -15,11 +15,9 @@ AbstractPlayControl {
 	build { ^true }
 	pause { this.stop } 
 	resume { this.start }
-	free {}
 	nodeID { ^nil }
 	
 	readyForPlay { ^true }
-	synthDef { ^nil }
 	distributable {Ê^false } // shared proxy support
 
 	loadToBundle {}
@@ -128,8 +126,10 @@ PatternControl : StreamControl {
 			bundle.addFunction({
 				var str;
 				str = source.buildForProxy(proxy, channelOffset);
-				event = str.event;
-				if(args.notNil) { args.pairsDo { arg key, val; event[key] = val } };
+				if(args.notNil) { 
+					event = str.event;
+					args.pairsDo { arg key, val; event[key] = val } 
+				};
 				this.playStream(str) 
 			}); 		
 		}
