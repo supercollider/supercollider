@@ -31,6 +31,7 @@
 #import "ChangeCounter.h"
 #import "GC.h"
 
+
 extern ChangeCounter gUIChangeCounter;
 extern NSTextView* gPostView;
 PyrSymbol *s_draw;
@@ -38,29 +39,616 @@ PyrSymbol *s_font;
 PyrSymbol *s_closed;
 PyrSymbol *s_tick;
 PyrSymbol *s_doaction;
+PyrSymbol * s_didBecomeKey;
+
+extern bool docCreatedFromLang;
+int slotColorVal(PyrSlot *slot, SCColor *sccolor);
+
+int prNumberOfOpenTextWindows(struct VMGlobals *g, int numArgsPushed);
+int prNumberOfOpenTextWindows(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+		        		
+		NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
+        if (!docctl) return errFailed;
+		int num = [[docctl documents] count];
+        if (!num) return errFailed;
+		SetInt(a, num);
+		return errNone;
+}
+
+
+int prTextWindow_IsEdited(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_IsEdited(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+		
+		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		bool edited = (bool) [doc isDocumentEdited];
+		if(edited) SetTrue(a);
+		else SetFalse(a);
+		return errNone;
+}
+int slotGetNSRect(PyrSlot* a, NSRect *r);
+
+int prTextWindow_SetBounds(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SetBounds(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+
+    if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
+
+    NSRect bounds;
+    int err = slotGetNSRect(b, &bounds);		
+    if (err) return err;
+    
+	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+	if (!doc) return errFailed;
+
+    NSWindow *window = [[doc textView] window];
+    //[window setFrame: bounds display: YES];
+
+    SEL sel = @selector(setFrame:display:);
+    NSMethodSignature *sig = [NSWindow instanceMethodSignatureForSelector: sel];
+    BOOL flag = YES;
+    
+    NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+    SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+    [anInvocation setTarget: window];
+    [anInvocation setSelector: sel];
+    [anInvocation setArgument: &bounds atIndex: 2];       
+    [anInvocation setArgument: &flag atIndex: 3];       
+    [scvm defer: anInvocation];
+   
+    return errNone;
+}
+
+int prTextWindow_GetBounds(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_GetBounds(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+
+    if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
+
+	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+	if (!doc) return errFailed;
+
+    NSWindow *window = [[doc textView] window];
+
+    NSRect bounds = [window frame];
+    PyrSlot *slots = b->uo->slots;
+    SetFloat(slots+0, bounds.origin.x);
+    SetFloat(slots+1, bounds.origin.y);
+    SetFloat(slots+2, bounds.size.width);
+    SetFloat(slots+3, bounds.size.height);
+    a->ucopy = b->ucopy;
+    
+    return errNone;
+}
+
+int prTextWindow_SetName(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SetName(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+
+    if (!(isKindOfSlot(b, class_string))) return errWrongType;
+    
+	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+	if (!doc) return errFailed;
+
+    NSWindow *window = [[doc textView] window];
+    PyrString *string = b->uos;
+    NSString *title = [NSString stringWithCString: string->s length: string->size];
+    [window setTitle: title];
+    return errNone;
+}
+
+int prTextWindow_SetBackgroundColor(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp-1;
+		PyrSlot *b = g->sp;
+		if (IsNil(b)) return errNone;
+		SCColor rgb;
+		int err = slotColorVal(b, &rgb);
+		if (err) return err;
+		NSColor *color = [NSColor colorWithCalibratedRed: rgb.red
+                            green: rgb.green 
+                            blue: rgb.blue 
+                            alpha: rgb.alpha];
+		
+		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		[doc setBackgroundColor: color];
+		//[[doc textView] didChangeText];
+		
+		return errNone;
+}
+
+int prTextWindow_SetTextColor(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SetTextColor(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp-3;
+		PyrSlot *b = g->sp-2;
+		PyrSlot *c = g->sp-1;
+		PyrSlot *d = g->sp;
+		
+		int rangeStart, rangeSize;
+		if (IsNil(b)) return errNone;
+		
+		SCColor rgb;
+		int err = slotColorVal(b, &rgb);
+		if (err) return err;
+		err = slotIntVal(c, &rangeStart); //if -1 do not use range
+        if (err) return err;
+		err = slotIntVal(d, &rangeSize);
+        if (err) return err;
+		
+		
+		NSColor *color = [NSColor colorWithCalibratedRed: rgb.red
+                            green: rgb.green 
+                            blue: rgb.blue 
+                            alpha: rgb.alpha];
+		
+		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		//[[doc textView] setBackgroundColor: color];
+		
+		if(rangeStart < 0){
+			[[doc textView] setTextColor: color];
+			[[doc textView] didChangeText];
+			return errNone;
+		}
+		int length = [[[doc textView] string] length];
+		if(rangeStart >= length) rangeStart = length - 1 ;
+		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart - 1;
+		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
+		
+		
+		[[doc textView] setTextColor: color range: selectedRange];
+		[[doc textView] didChangeText];
+		
+		
+		
+		
+		return errNone;
+}
+
+int prTextWindow_SetFont(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SetFont(struct VMGlobals *g, int numArgsPushed)
+{
+		 if (!g->canCallOS) return errCantCallOS;
+		PyrSlot *a = g->sp - 4;
+		PyrSlot *b = g->sp - 3; //fontname
+		PyrSlot *c = g->sp - 2; //fontsize
+		PyrSlot *d = g->sp - 1; //rangestart
+		PyrSlot *e = g->sp; //rangesize
+		
+		int rangeStart, rangeSize, fontSize, err;
+		
+		PyrString* pstring = b->uos;
+		NSString * fontname = [NSString stringWithCString: pstring->s];
+       // int err = slotStrVal(b, &str);
+        //if (err) return err;
+        err = slotIntVal(c, &fontSize);
+        if (err) return err;
+		err = slotIntVal(d, &rangeStart); //if -1 do not use range
+        if (err) return err;
+		 err = slotIntVal(e, &rangeSize);
+        if (err) return err;
+		
+		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		
+		NSString* string = [[doc textView] string];
+		
+		if(rangeStart < 0){
+			[[doc textView] setFont: [NSFont fontWithName: fontname size: fontSize]];
+			return errNone;
+		}
+		int length = [string length];
+		if(rangeStart >= length) rangeStart = length - 1 ;
+		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart - 1;
+		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
+		
+        [[doc textView] setFont: [NSFont fontWithName: fontname size: fontSize] range: selectedRange];
+		return errNone;
+}
+
+int prTextWindow_Close(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_Close(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+		
+		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		SEL sel = @selector(closeWindow);
+		NSMethodSignature *sig = [MyDocument instanceMethodSignatureForSelector: sel];
+    
+		NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+		SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+		[anInvocation setTarget: doc];
+		[anInvocation setSelector: sel];
+		[scvm defer: anInvocation];
+		
+		
+		return errNone;
+}
+
+int prTextWindow_SelectLine(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SelectLine(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp - 1;
+		PyrSlot *b = g->sp; //the win number
+        
+        int err, linenum;
+		err = slotIntVal(b, &linenum);
+		if (err) return errWrongType;
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		//[doc selectLine: linenum];
+		SEL sel = @selector(selectLine:);
+		NSMethodSignature *sig = [MyDocument instanceMethodSignatureForSelector: sel];
+    
+		NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+		SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+		[anInvocation setTarget: doc];
+		[anInvocation setSelector: sel];
+		[anInvocation setArgument: &linenum atIndex: 2];  
+		[scvm defer: anInvocation];
+		
+		return errNone;
+}
+
+int prTextWindow_SelectRange(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SelectRange(struct VMGlobals *g, int numArgsPushed)
+{
+		if (!g->canCallOS) return errCantCallOS;
+		PyrSlot *a = g->sp - 2;
+		PyrSlot *b = g->sp - 1; //the win number
+		PyrSlot *c = g->sp;
+		
+		int rangeStart, rangeSize;
+        int err = slotIntVal(b, &rangeStart);
+        if (err) return err;
+        err = slotIntVal(c, &rangeSize);
+        if (err) return err;
+		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+        [doc selectRangeStart: rangeStart size: rangeSize];
+		return errNone;
+}
+
+int prTextWindow_GetByIndex(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_GetByIndex(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp - 1;
+		PyrSlot *b = g->sp; //the win number
+        
+        int err, inputIndex;
+		err = slotIntVal(b, &inputIndex);
+		if (err) return errWrongType;
+        
+        NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
+        if (!docctl) return errFailed;
+        MyDocument* doc = [[docctl documents] objectAtIndex: inputIndex];
+        if (!doc) return errFailed;
+		PyrObject * obj = [doc getSCObject];
+		//if there is a scobject already don't store i
+		if(!obj)[doc setSCObject: a->uo];
+		//will be deleted in the lang
+		SetPtr(a->uo->slots + 0, doc);
+		return errNone;
+}
+
+int prTextWindow_GetLastIndex(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_GetLastIndex(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+        NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
+        if (!docctl) return errFailed;
+        MyDocument* doc = [[docctl documents] lastObject];
+        if (!doc) return errFailed;
+		PyrObject * obj = [doc getSCObject];
+		if(!obj)[doc setSCObject: a->uo];
+		SetPtr(a->uo->slots + 0, doc);
+		return errNone;
+}
+
+int prTextWindow_ToFront(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_ToFront(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *b = g->sp; //the win number
+        
+		MyDocument* doc = (MyDocument*) b->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		docCreatedFromLang = true;
+        [[[doc textView] window] makeKeyAndOrderFront: nil];
+		docCreatedFromLang = false;
+        return errNone;
+}
+
+int prTextWindow_SyntaxColorize(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SyntaxColorize(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *b = g->sp; //the win number
+        
+        MyDocument* doc = (MyDocument*) b->uo->slots[0].ui;
+        if (!doc) return errFailed;
+        [doc syntaxColorize: nil];
+        return errNone;
+}
+
+int prTextWindow_InsertTextInRange(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_InsertTextInRange(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+		PyrSlot *a = g->sp - 3; 
+        PyrSlot *b = g->sp - 2; //the text
+		PyrSlot *c = g->sp - 1;
+		PyrSlot *d = g->sp;
+		
+		int rangeStart, rangeSize;
+		int err = slotIntVal(c, &rangeStart); //if -1 do not use range
+        if (err) return err;
+		err = slotIntVal(d, &rangeSize);
+        if (err) return err;
+		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		PyrString* pstring = b->uos;
+		NSRange selectedRange;
+		int length = [[[doc textView] string] length];
+		if(rangeStart<0) selectedRange =	NSMakeRange(0, length);
+		else selectedRange =	NSMakeRange(rangeStart, rangeSize);
+		
+		if(rangeStart >= length) rangeStart = length - 1 ;
+		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
+		
+		
+		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
+		if ([[doc textView]  shouldChangeTextInRange: selectedRange replacementString: string]) {
+			[[doc textView]  replaceCharactersInRange: selectedRange withString: string];
+			[[doc textView]  didChangeText];
+		}
+		[string release];
+	
+        return errNone;
+}
+
+//insert in current position
+int prTextWindow_InsertText(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_InsertText(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+		PyrSlot *b = g->sp - 1; 
+        PyrSlot *c = g->sp; //the text
+        
+        MyDocument* doc = (MyDocument*) b->uo->slots[0].ui;
+        if (!doc) return errFailed;
+        PyrString* string = c->uos;
+        [doc insertText: string->s length: string->size];
+        return errNone;
+}
+
+int prTextWindow_DisplayName(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_DisplayName(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+        
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+        
+        NSString* str = [doc displayName];
+        char * cstr = new char [[str length]];
+        [str getCString: cstr];
+        PyrString *string = newPyrString(g->gc, cstr, 0, true);
+        SetObject(a, string);
+        return errNone;
+}
+int prTextWindow_GetSelectedRangeLocation(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_GetSelectedRangeLocation(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		NSRange range = [[doc textView] selectedRange];
+		SetInt(a, range.location);
+        return errNone;
+}
+
+int prTextWindow_GetSelectedRangeLength(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_GetSelectedRangeLength(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+		PyrSlot *a = g->sp;
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		NSRange range = [[doc textView] selectedRange];
+		SetInt(a, range.length);
+		return errNone;
+}
+
+int prTextWindow_SelectedText(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SelectedText(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+        
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+        
+        NSString* str = [doc currentlySelectedTextOrLine:NULL];
+        char * cstr = new char [[str length]];
+        [str getCString: cstr];
+        PyrString *string = newPyrString(g->gc, cstr, 0, true);
+        SetObject(a, string);
+        return errNone;
+}
+
+int prTextWindow_TextWithRange(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_TextWithRange(struct VMGlobals *g, int numArgsPushed)
+{
+
+		 if (!g->canCallOS) return errCantCallOS;
+		PyrSlot *a = g->sp - 2;
+		PyrSlot *b = g->sp - 1; //from
+		PyrSlot *c = g->sp;//length
+		
+		int rangeStart, rangeSize;
+        int err = slotIntVal(b, &rangeStart);
+        if (err) return err;
+        err = slotIntVal(c, &rangeSize);
+        if (err) return err;
+		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		NSString* string = [[doc textView] string];
+		int length = [string length];
+		if(rangeStart >= length) rangeStart = length - 1 ;
+		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart - 1;
+		
+		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
+		NSString* str = [string substringWithRange: selectedRange];	
+		char * cstr = new char [[str length]];
+        [str getCString: cstr];
+        PyrString *pstring = newPyrString(g->gc, cstr, 0, true);
+        SetObject(a, pstring);
+
+		return errNone;
+}
+
+int prTextWindow_Text(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_Text(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+        
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+        
+        NSString* str = [[doc textView] string];
+        char * cstr = new char [[str length]];
+        [str getCString: cstr];
+        PyrString *string = newPyrString(g->gc, cstr, 0, true);
+        SetObject(a, string);
+        return errNone;
+}
+
+int prTextWindow_UnfocusedFront(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_UnfocusedFront(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+        
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+        [[[doc textView] window] orderFrontRegardless];
+        return errNone;
+}
+
+int prTextWindow_Current(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_Current(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+		NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
+        if (!docctl) return errFailed;
+		MyDocument* doc = [docctl currentDocument];
+        if (!doc) return errFailed;
+		int index = [[docctl documents] indexOfObject: doc];
+		SetInt(a, index);
+        return errNone;
+}
+extern NSTextView *gPostView;
+
+int prTextWindow_GetIndexOfListener(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_GetIndexOfListener(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+		NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
+        if (!docctl) return errFailed;
+		MyDocument* doc = [gPostView delegate];
+        if (!doc) return errFailed;
+		int index = [[docctl documents] indexOfObject: doc];
+		SetInt(a, index);
+        return errNone;
+}
+
+
+///////
+
 
 int prNewTextWindow(struct VMGlobals *g, int numArgsPushed);
 int prNewTextWindow(struct VMGlobals *g, int numArgsPushed)
 {
         if (!g->canCallOS) return errCantCallOS;
-
-	PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
+		
+        PyrSlot *d = g->sp - 3;
+	
+        PyrSlot *a = g->sp - 2;
+		PyrSlot *b = g->sp - 1;
+		PyrSlot *c = g->sp;
         
+		
+		
         PyrString* string = a->uos;
-                        
         NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
         if (!docctl) return errFailed;
-        [docctl newDocument: nil];
+		docCreatedFromLang = true;
+        
+		[docctl newDocument: nil];
         MyDocument* doc = [docctl currentDocument];
-        if (!doc) return errFailed;
+        if (!doc) {
+			docCreatedFromLang = false;
+			return errFailed;
+		}
         
         [doc insertText: string->s length: string->size];
         NSWindow *window = [[[doc windowControllers] objectAtIndex: 0] window];
-        if (!window) return errFailed;
-        
-        if (isKindOfSlot(b, class_string)) {
+        if (!window) {
+			docCreatedFromLang = false;
+			return errFailed;
+		}        
+		if (isKindOfSlot(b, class_string)) {
             PyrString* title = b->uos;
             NSString *nstitle = [NSString stringWithCString: title->s length: title->size];
             [window setTitle: nstitle];
@@ -70,7 +658,9 @@ int prNewTextWindow(struct VMGlobals *g, int numArgsPushed)
         if (IsTrue(c)) {
             gPostView = [doc textView];
         }
-        
+		[doc setSCObject: d->uo];
+        SetPtr(d->uo->slots + 0, doc);
+		docCreatedFromLang = false;
 	return errNone;
 }
 
@@ -78,11 +668,12 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed);
 int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
 {
         if (!g->canCallOS) return errCantCallOS;
-
-	PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
+		PyrSlot *d = g->sp - 3;
         
+		PyrSlot *a = g->sp - 2;
+		PyrSlot *b = g->sp - 1;
+		PyrSlot *c = g->sp;
+		
         PyrString* string = a->uos;
         int rangeStart, rangeSize;
         int err = slotIntVal(b, &rangeStart);
@@ -100,11 +691,14 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
         NSURL *url = [NSURL fileURLWithPath: nsstring];
         NSString *nspath = [url path];
         
+		docCreatedFromLang = true;
+		
         MyDocument *doc = (MyDocument*)[docctl documentForFileName: nspath];
         if (!doc) {
             doc = [docctl openDocumentWithContentsOfFile: nspath display: true];
             if (!doc) {
                 post("Can't open Document '%s'\n", [nspath cString]);
+				docCreatedFromLang = false;
                 return errFailed;
             }
 
@@ -112,6 +706,7 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
         NSWindow *window = [[[doc windowControllers] objectAtIndex: 0] window];
         if (!window) {
             post("window controller returns nil\n");
+			docCreatedFromLang = false;
             return errFailed;
         }
         [window makeKeyAndOrderFront: nil];
@@ -137,6 +732,9 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
         [textView setSelectedRange: range];
         [textView scrollRangeToVisible: range];
         */
+		[doc setSCObject: d->uo];
+		SetPtr(d->uo->slots + 0, doc);
+		docCreatedFromLang = false;
 	return errNone;
 }
 
@@ -341,7 +939,7 @@ int prSCWindow_Close(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *a = g->sp;
     SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
     if (!view) return errNone;
-    //[[view window] close];
+   // [[view window] close];
 
    // NSWindow *window = [view window];
     
@@ -681,7 +1279,6 @@ int addFontAttribute(NSMutableDictionary *dict, PyrSlot *fontSlot)
     return errNone;
 }
 
-int slotColorVal(PyrSlot *slot, SCColor *sccolor);
 
 
 int slotRGBColorVal(PyrSlot *slot, RGBColor *rgbcolor)
@@ -1825,12 +2422,56 @@ void initGUIPrimitives()
         s_closed = getsym("closed");
         s_tick = getsym("tick");
         s_doaction = getsym("doAction");
-        
+	s_didBecomeKey = getsym("didBecomeKey");
+
 	base = nextPrimitiveIndex();
 	index = 0;
 	
-	definePrimitive(base, index++, "_NewTextWindow", prNewTextWindow, 3, 0);	
-	definePrimitive(base, index++, "_OpenTextFile", prOpenTextFile, 3, 0);	
+	
+	//reset scobjects in mydocument
+	//_TextWindow_ primitves by jan.t
+	NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
+	if (docctl) {
+		int num = [[docctl documents] count];
+        for(int i=0; i<num; i++){
+			MyDocument * doc = [[docctl documents] objectAtIndex: i];
+			[doc setSCObject: nil];
+		}
+	}
+	definePrimitive(base, index++, "_TextWindow_ToFront", prTextWindow_ToFront, 1, 0);	
+	definePrimitive(base, index++, "_TextWindow_SelectedText", prTextWindow_SelectedText, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_Current", prTextWindow_Current, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_InsertText", prTextWindow_InsertText, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_InsertTextInRange", prTextWindow_InsertTextInRange, 4, 0);
+	definePrimitive(base, index++, "_TextWindow_GetByIndex", prTextWindow_GetByIndex, 2, 0);
+	definePrimitive(base, index++, "_NumberOfOpenTextWindows", prNumberOfOpenTextWindows, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_GetLastIndex", prTextWindow_GetLastIndex, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_DisplayName", prTextWindow_DisplayName, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_IsEdited", prTextWindow_IsEdited, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_Close", prTextWindow_Close, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_Text", prTextWindow_Text, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_SetBackgroundColor", prTextWindow_SetBackgroundColor, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_SetTextColor", prTextWindow_SetTextColor, 4, 0);
+	definePrimitive(base, index++, "_TextWindow_SyntaxColorize", prTextWindow_SyntaxColorize, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_SelectLine", prTextWindow_SelectLine, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_SelectRange", prTextWindow_SelectRange, 3, 0);
+	definePrimitive(base, index++, "_TextWindow_TextWithRange", prTextWindow_TextWithRange, 3, 0);
+	definePrimitive(base, index++, "_TextWindow_SetFont", prTextWindow_SetFont, 5, 0);
+	definePrimitive(base, index++, "_TextWindow_GetIndexOfListener", prTextWindow_GetIndexOfListener, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_GetSelectedRangeLocation", prTextWindow_GetSelectedRangeLocation, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_GetSelectedRangeLength", prTextWindow_GetSelectedRangeLength, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_UnfocusedFront", prTextWindow_UnfocusedFront, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_SetBounds", prTextWindow_SetBounds, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_GetBounds", prTextWindow_GetBounds, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_SetName", prTextWindow_SetName, 2, 0);	
+
+
+
+
+///
+	definePrimitive(base, index++, "_NewTextWindow", prNewTextWindow, 4, 0);	
+	definePrimitive(base, index++, "_OpenTextFile", prOpenTextFile, 4, 0);	
+        
 	definePrimitive(base, index++, "_GetStringFromUser", prGetStringFromUser, 3, 0);	
 	definePrimitive(base, index++, "_SCWindow_New", prSCWindow_New, 6, 0);	
 	definePrimitive(base, index++, "_SCWindow_Refresh", prSCWindow_Refresh, 1, 0);	
