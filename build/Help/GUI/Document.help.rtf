@@ -17,7 +17,7 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs18 \cf2 Document.new("this is a text", "this the title");
+\f2\b0\fs18 \cf2 Document.new("this the title", "this is a text");
 \f0\b\fs24 \cf0 \
 \
 \
@@ -29,60 +29,70 @@ Document.open("Help/Help.help.rtf");\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 Document.allDocuments\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 array where all open documents are stored.\
+\f1\b0 \cf0 array where all open documents are stored.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 Document.current\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 returns the current Document.
+\f1\b0 \cf0 returns the current Document.
 \f2\fs18 \cf2 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 Document.hasEditedDocuments\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 returns true if there are unsaved changes in one of the open Document.
+\f1\b0 \cf0 returns true if there are unsaved changes in one of the open Document.
 \f2\fs18 \cf2 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 Document.closeAll(leavePostOpen)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 by default the postWindow stays open.
+\f1\b0 \cf0 by default the postWindow stays open.
 \f2\fs18 \cf2 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 Document.closeAllUnedited(leavePostOpen)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 by default the postWindow stays open.\
+\f1\b0 \cf0 by default the postWindow stays open.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 background_\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 set the background color of a Document
+\f1\b0 \cf0 set the background color of a Document
 \f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf2 (\cf0 \
-a = \cf2 Document\cf0 (\cf3 "'hardly see anything"\cf0 , \cf3 "background"\cf0 );\
+a = \cf2 Document\cf0 (\cf3 "background", "'hardly see anything"\cf0 );\
 a.background_(\cf2 Color\cf0 .blue(alpha:0.8));\
 \cf2 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 stringColor_\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 set the text color of a Document
+\f1\b0 \cf0 set the text color of a Document
 \f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf2 (\cf0 \
-a = \cf2 Document\cf0 (\cf3 "where are my glasses?"\cf0 , \cf3 "background"\cf0 );\
+a = \cf2 Document\cf0 (\cf3 "background", "where are my glasses?"\cf0 );\
 a.background_(\cf2 Color\cf0 .red(alpha:0.8));\
 a.stringColor_(\cf2 Color\cf0 .red);\
 \cf2 )\
@@ -90,22 +100,26 @@ a.stringColor_(\cf2 Color\cf0 .red);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 font_(font, rangestart, rangesize)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 set font. if rangestart = -1 for the whole document\
+\f1\b0 \cf0 set font. if rangestart = -1 for the whole document\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 bounds_(Rect)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 set bounds
+\f1\b0 \cf0 set bounds
 \f2\fs18 \cf2 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 close\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 close a Document
+\f1\b0 \cf0 close a Document
 \f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -113,7 +127,7 @@ a.stringColor_(\cf2 Color\cf0 .red);\
 (\cf0 \
 \cf2 Task\cf0 (\{\
 	\cf2 var\cf0  doc;\
-	doc = \cf2 Document\cf0 (\cf3 "closing in 2 seconds"\cf0 , \cf3 "background"\cf0 );\
+	doc = \cf2 Document\cf0 (\cf3 "background", "closing in 2 seconds"\cf0 );\
 	doc.stringColor_(\cf2 Color\cf0 .red);\
 	1.wait;\
 	doc.background_(\cf2 Color\cf0 .red(alpha:0.8));\
@@ -126,8 +140,9 @@ a.stringColor_(\cf2 Color\cf0 .red);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 isEdited\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 returns true if a Document has unsaved changes unless it is the postWindow\
+\f1\b0 \cf0 returns true if a Document has unsaved changes unless it is the postWindow\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
@@ -138,8 +153,9 @@ a.stringColor_(\cf2 Color\cf0 .red);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 syntaxColorize\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 same as command' \
+\f1\b0 \cf0 same as command' \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
@@ -160,8 +176,9 @@ a = \cf2 Document\cf0 .allDocuments.at(0).syntaxColorize; \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 selectionStart\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 get the current position in the text \
+\f1\b0 \cf0 get the current position in the text \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
@@ -172,8 +189,9 @@ a = \cf2 Document\cf0 .allDocuments.at(0).syntaxColorize; \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 selectionSize\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 get the current position in the text \
+\f1\b0 \cf0 get the current position in the text \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
@@ -194,8 +212,9 @@ Document.current.selectRange(Document\cf0 .current.selectionStart, 100\cf2 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 string(rangestart, rangesize)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 get the text of a document. if rangestart is -1 (default) the whole text is returned\
+\f1\b0 \cf0 get the text of a document. if rangestart is -1 (default) the whole text is returned\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
@@ -206,14 +225,14 @@ Document.current.selectRange(Document\cf0 .current.selectionStart, 100\cf2 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 selectedString\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 get the currently selected text.
+\f1\b0 \cf0 get the currently selected text.
 \f2\fs18 \cf2 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 var doc;\
 doc = \cf2 Document.current;\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 doc.selectRange(doc\cf0 .selectionStart-40, 10\cf2 );\
 doc.selectedString.postln;\cf0 \
 \cf2 )\
@@ -221,16 +240,15 @@ doc.selectedString.postln;\cf0 \
 
 \f0\b\fs24 \cf0 \
 string_(string, rangestart, rangesize)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 set the text of a document. if rangestart is -1 (default) the whole text is replaced
+\f1\b0 \cf0 set the text of a document. if rangestart is -1 (default) the whole text is replaced
 \f0\b \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf2 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 var doc;\
-doc = \cf2 Document("");\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+doc = \cf2 Document(string:"");\cf0 \
 \cf2 doc.string_("set a String")\cf0 \
 \cf2 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -238,8 +256,9 @@ doc = \cf2 Document("");\cf0 \
 \f0\b\fs24 \cf0 \
 \
 selectedString_\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 insert text at the current position\
+\f1\b0 \cf0 insert text at the current position\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
@@ -256,23 +275,21 @@ doc.selectedString_(txt);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Document\cf0 .allDocuments.at(0).front; \
 \cf2 )\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 keyDownAction_\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 register a keyDownAction. this is useful for macros\
+\f1\b0 \cf0 register a keyDownAction. this is useful for macros\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 var doc, txt;\
 doc = \cf2 Document.current;\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 doc.\cf0 keyDownAction_\cf2 (\{arg key, modifiers, num;\
 	[key, modifiers].postln\
 \});\
@@ -284,26 +301,25 @@ doc = \cf2 Document.current;\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 toFrontAction_\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 called when the window is clicked to front\
+\f1\b0 \cf0 called when the window is clicked to front\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
 example:\
 associate a proxyspace to two different windows.\
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s = \cf2 Server\cf0 .local;\
 s.boot;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 q = ProxySpace\cf0 .push(s);\
 q.pop;\
 r = \cf2 ProxySpace\cf0 .push(r);\
 r.pop;\
-a = Document("//this is proxyspace r \\n x = ~out.play; \\n ~out = \{ \cf2 SinOsc\cf0 .ar([400, 500]*0.9, 0, 0.2) \};", "proxy r");\
+a = Document("proxy r", "//this is proxyspace r \\n x = ~out.play; \\n ~out = \{ \cf2 SinOsc\cf0 .ar([400, 500]*0.9, 0, 0.2) \};");\
 a.background_(Color(0.8, 1.0, 1.0));\
 \
-b = Document("//this is proxyspace q \\n x = ~out.play; \\n ~out = \{ \cf2 SinOsc\cf0 .ar([1400, 1500]*0.9, 0, 0.2) \};", "proxy q");\
+b = Document( "proxy q", "//this is proxyspace q \\n x = ~out.play; \\n ~out = \{ \cf2 SinOsc\cf0 .ar([1400, 1500]*0.9, 0, 0.2) \};");\
 b.background_(Color(1.0, 1.0, 0.8));\
 \
 b.toFrontAction_(\{\
@@ -316,9 +332,7 @@ a.toFrontAction_(\{\
 \
 \});\
 \cf2 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //need to pop proxyspace from other examples\cf0 \
 q.pop\
 r.pop\
@@ -327,14 +341,15 @@ r.pop\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 onClose_\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 register a close - action.
+\f1\b0 \cf0 register a close - action.
 \f2\fs18 \cf2 \
 (\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Document\cf0 .current.onClose_(\{\
 	\cf2 var\cf0  doc;\
-	doc = \cf2 Document\cf0 (\cf3 "did you call me?"\cf0 , \cf3 "before closing"\cf0 );\
+	doc = \cf2 Document\cf0 (\cf3 "before closing","did you call me?"\cf0 );\
 \
 	\cf2 Task\cf0 (\{\
 	\
@@ -355,11 +370,9 @@ r.pop\
 
 \f2\b0\fs18 \cf2 (\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //add a mouse action to this document: \cf0 \
 \cf4 //example: easy button:\cf0 \
 \cf4 //when you click in front of a 17 a SinOsc will start up;\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Server\cf0 .local.boot;\
 \cf2 Document\cf0 .current.mouseDownAction_(\{\cf2 arg\cf0  doc;\
 	\cf2 var\cf0  char;\
@@ -382,7 +395,7 @@ r.pop\
 \fs26 \cf0 	\cf2 17\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	\cf2 	23
-\fs18 \
+\fs18 \cf2 \
 \
 \
 \
@@ -400,7 +413,7 @@ r.pop\
 (\cf0 \
 \
 \cf2 var\cf0  doc;\
-doc = \cf2 Document\cf0 (\cf3 "||"\cf0 , \cf3 ""\cf0 );\
+doc = \cf2 Document\cf0 (\cf3 "", "||"\cf0 );\
 doc.background_(\cf2 Color\cf0 .blue(alpha: 1.0.rand));\
 \cf2 Task\cf0 (\{\
 	1000.do(\{\
@@ -450,8 +463,9 @@ In Main-startUp you can set this to a more practical directory:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 *standardizePath\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	if it is a relative path, expand it to an absolute path relative to your document directory.	expand tildes in path (your home directory), resolve symbolic links (but not aliases).\
+\f1\b0 \cf0 	if it is a relative path, expand it to an absolute path relative to your document directory.	expand tildes in path (your home directory), resolve symbolic links (but not aliases).\
 	also converts from OS9 macintosh path format.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -477,8 +491,9 @@ In Main-startUp you can set this to a more practical directory:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 *abrevPath\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 	reduce the path relative to your document directory if possible.\
+\f1\b0 \cf0 	reduce the path relative to your document directory if possible.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf2 \
