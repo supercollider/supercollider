@@ -189,8 +189,8 @@ PauseStream : Stream
 {
 	var <stream, originalStream, <clock;
 	
-	*new { arg argStream; 
-		^super.newCopyArgs(nil, argStream, TempoClock.default) 
+	*new { arg argStream, clock; 
+		^super.newCopyArgs(nil, argStream, clock ? TempoClock.default) 
 	}
 	
 	isPlaying { ^stream.notNil }
@@ -228,8 +228,8 @@ PauseStream : Stream
 // Task is a PauseStream for wrapping a Routine
 
 Task : PauseStream {
-	*new { arg func; 
-		^super.new(Routine(func)) 
+	*new { arg func, clock; 
+		^super.new(Routine(func), clock) 
 	}
 }
 
