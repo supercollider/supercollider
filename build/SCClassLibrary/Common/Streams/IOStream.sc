@@ -123,8 +123,15 @@ CollStream : IOStream {
 		this.putInt8(anInteger>>8);
 		this.putInt8(anInteger);
 	}
-	putFloat { arg aFloat; this.putInt32(aFloat.as32Bits); }
-//	putDouble { arg aFloat; _CollStream_PutDouble; ^this.primitiveFailed; }
+	putFloat { arg aFloat; 
+		aFloat = aFloat.asFloat;
+		this.putInt32(aFloat.as32Bits); 
+	}
+	putDouble { arg aFloat;
+		aFloat = aFloat.asFloat; 
+		this.putInt32(aFloat.high32Bits); 
+		this.putInt32(aFloat.low32Bits); 
+	}
 	putString { arg aString; 
 		aString.do({ arg char; this.putChar(char); });
 	}
