@@ -59,7 +59,7 @@ Peak : PulseCount {
 }
 
 
-PulseDivider : UGen { // not installed
+PulseDivider : UGen {
 	
 	*ar { arg trig = 0.0, div = 2.0, start = 0.0;
 		^this.multiNew('audio', trig, div, start)
