@@ -68,6 +68,7 @@ NoLagControlSpec : ControlSpec {
 	*initClass {
 		specs.putAll(
 		 IdentityDictionary[
+		 	\binary -> this.new,
 			\loop -> this.new,
 			\paused -> this.new
 			];
