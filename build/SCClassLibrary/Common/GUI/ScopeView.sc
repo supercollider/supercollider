@@ -42,9 +42,16 @@ SCScope : SCView {
 	}
 	waveColors_ { arg arrayOfColors;
 		this.setProperty(\waveColors, arrayOfColors);
-	}	
-
+	}
+	
+	style_ { arg val;
+		this.setProperty(\style, val);
+		// 0 = vertically spaced
+		// 1 = overlapped
+		// 2 = x/y
+	}
+	
 	properties {
-		^super.properties ++ #[\bufnum, \x, \y, \xZoom, \yZoom, \gridColor, \waveColors]
+		^super.properties ++ #[\bufnum, \x, \y, \xZoom, \yZoom, \gridColor, \waveColors, \style]
 	}
 }

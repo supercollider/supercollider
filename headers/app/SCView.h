@@ -390,6 +390,9 @@ public:
 	virtual ~SCScope();
 	
 	virtual void draw(SCRect inDamage);
+	virtual void draw0(CGContextRef cgc);
+	virtual void draw1(CGContextRef cgc);
+	virtual void draw2(CGContextRef cgc);
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void animate();
 	

@@ -1772,7 +1772,6 @@ SCScope::~SCScope()
 	free(mSndBuf.data);
 }
 
-static int frameCount = 0;
 int getScopeBuf(uint32 index, SndBuf *buf, bool& didChange);
 
 void SCScope::animate()
@@ -1782,10 +1781,173 @@ void SCScope::animate()
 	if (didChange) refresh();
 }
 
+void SCScope::draw0(CGContextRef cgc)
+{
+	float *data = mSndBuf.data;
+	if (!data) return;
+	
+	int samples = mSndBuf.samples;
+	
+	// draw scope.
+    CGRect rect = SCtoCGRect(mBounds);
+	int width = mBounds.width - 2;
+	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
+	//post("channels %d\n", channels);
+	float chanHeight = (mBounds.height - 2.) / channels;
+	float chanHeight2 = 0.5 * chanHeight;
+	float yScale = mZoom.y * chanHeight2;
+	
+	for (int j=0; j<channels; ++j)
+	{
+		CGContextSetRGBFillColor(cgc, mWaveColors[j].red, mWaveColors[j].green, mWaveColors[j].blue, mWaveColors[j].alpha);
+		float fframe = mScroll.x;
+		float hzoom = mZoom.x;
+		int iframe = (int)floor(fframe);
+		int isample = iframe * channels;
+		float val = -data[isample + j];
+		
+		CGRect chanRect;
+		chanRect.origin.x = rect.origin.x + 1.;
+		chanRect.origin.y = rect.origin.y + 1. + chanHeight * j + chanHeight2;
+		chanRect.size.width = width;
+		chanRect.size.height = chanHeight;
+		
+	//post("width %d\n", width);
+		for (int i = 0; i < width; i++)
+		{
+			float ymin, ymax;
+			ymin = ymax = val;
+			float nextfframe = fframe + hzoom;
+			int nextiframe = (int)floor(nextfframe);
+			int nscan = nextiframe - iframe;
+			for (int k=0; k<nscan && isample < samples; ++k)
+			{
+				val = -data[isample + j];
+				if (val < ymin) ymin = val;
+				else if (val > ymax) ymax = val;
+				isample += channels;
+			}
+			iframe = nextiframe;
+			fframe = nextfframe;
+			
+			CGRect wrect;
+			wrect.origin.x = rect.origin.x + 1. + i;
+			wrect.size.width = 1.; 
+			wrect.origin.y = chanRect.origin.y + ymin * yScale;
+			wrect.size.height = (ymax - ymin) * yScale + 1.;
+			
+			//if (i == 64) post("%g %g    %g   %g %g\n", ymin, ymin, wrect.origin.x, wrect.origin.y, wrect.size.height);
+			
+			CGContextFillRect(cgc, wrect);
+		}
+	}
+}
+
+void SCScope::draw1(CGContextRef cgc)
+{
+	float *data = mSndBuf.data;
+	if (!data) return;
+	
+	int samples = mSndBuf.samples;
+	
+	// draw scope.
+    CGRect rect = SCtoCGRect(mBounds);
+	int width = mBounds.width - 2;
+	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
+	//post("channels %d\n", channels);
+	float chanHeight = mBounds.height - 2.;
+	float chanHeight2 = 0.5 * chanHeight;
+	float yScale = mZoom.y * chanHeight2;
+	
+	for (int j=0; j < channels; ++j)
+	{
+		CGContextSetRGBFillColor(cgc, mWaveColors[j].red, mWaveColors[j].green, mWaveColors[j].blue, mWaveColors[j].alpha);
+		float fframe = mScroll.x;
+		float hzoom = mZoom.x;
+		int iframe = (int)floor(fframe);
+		int isample = iframe * channels;
+		float val = -data[isample + j];
+		
+		CGRect chanRect;
+		chanRect.origin.x = rect.origin.x + 1.;
+		chanRect.origin.y = rect.origin.y + 1. + chanHeight2;
+		chanRect.size.width = rect.size.width - 2.;
+		chanRect.size.height = chanHeight;
+		
+	//post("width %d\n", width);
+		for (int i = 0; i < width && isample < samples; i++)
+		{
+			float ymin, ymax;
+			ymin = ymax = val;
+			float nextfframe = fframe + hzoom;
+			int nextiframe = (int)floor(nextfframe);
+			int nscan = nextiframe - iframe;
+			for (int k=0; k<nscan; ++k)
+			{
+				val = -data[isample + j];
+				if (val < ymin) ymin = val;
+				else if (val > ymax) ymax = val;
+				isample += channels;
+			}
+			iframe = nextiframe;
+			fframe = nextfframe;
+			
+			CGRect wrect;
+			wrect.origin.x = rect.origin.x + 1. + i;
+			wrect.size.width = 1.; 
+			wrect.origin.y = chanRect.origin.y + ymin * yScale;
+			wrect.size.height = (ymax - ymin) * yScale + 1.;
+			
+			//if (i == 64) post("%g %g    %g   %g %g\n", ymin, ymin, wrect.origin.x, wrect.origin.y, wrect.size.height);
+			
+			CGContextFillRect(cgc, wrect);
+		}
+	}
+}
+
+void SCScope::draw2(CGContextRef cgc)
+{
+	float *data = mSndBuf.data;
+	if (!data) return;
+	
+	int samples = mSndBuf.samples;
+
+	// draw scope.
+    CGRect rect = SCtoCGRect(mBounds);
+	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
+	float height = rect.size.height - 2.;
+	float height2 = 0.5 * height;
+	float width = rect.size.width - 2.;
+	float width2 = 0.5 * width;
+	float yScale = mZoom.y * height2;
+	float xScale = mZoom.x * width2;
+	float xoff = rect.origin.x + width2 + 1.;
+	float yoff = rect.origin.y + height2 + 1.;
+	
+	
+	for (int k=0, j=0; j<channels; k++, j+=2)
+	{
+		CGContextSetRGBStrokeColor(cgc, mWaveColors[k].red, mWaveColors[k].green, mWaveColors[k].blue, mWaveColors[k].alpha);
+		float x = xoff + data[j] * xScale;
+		float y = yoff - data[j+1] * yScale;
+		CGContextMoveToPoint(cgc, x, y);
+		
+		for (int i=channels; i<samples; i+=channels) {
+			x = xoff + data[i+j] * xScale;
+			y = yoff - data[i+j+1] * yScale;
+			CGContextAddLineToPoint(cgc, x, y);
+		}
+		CGContextStrokePath(cgc);	
+	}
+}
+
+
+
 void SCScope::draw(SCRect inDamage)
 {
 	bool didChange;
 	int err = getScopeBuf(mBufNum, &mSndBuf, didChange);
+	if (err) return;
 	
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
@@ -1793,64 +1955,14 @@ void SCScope::draw(SCRect inDamage)
     if (mBackground) mBackground->draw(cgc, rect);
     QDDrawBevelRect(cgc, rect, 1, true);
 
-	int width = mBounds.width - 2;
-	float *data = mSndBuf.data;
 	// draw grid.
-	
-	if (data)
-	{
-		// draw scope.
-		int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
-		//post("channels %d\n", channels);
-		float chanHeight = (rect.size.height - 2.) / channels;
-		float chanHeight2 = 0.5 * chanHeight;
-		float yScale = mZoom.y * chanHeight2;
-		
-		for (int j=0; j<channels; ++j)
-		{
-			CGContextSetRGBFillColor(cgc, mWaveColors[j].red, mWaveColors[j].green, mWaveColors[j].blue, mWaveColors[j].alpha);
-			float fframe = mScroll.x;
-			float hzoom = mZoom.x;
-			int iframe = (int)floor(fframe);
-			int isample = iframe * channels;
-			float val = data[isample + j];
-			
-			CGRect chanRect;
-			chanRect.origin.x = rect.origin.x + 1.;
-			chanRect.origin.y = rect.origin.y + 1. + chanHeight * j + chanHeight2;
-			chanRect.size.width = rect.size.width - 2.;
-			chanRect.size.height = chanHeight;
-			
-		//post("width %d\n", width);
-			for (int i = 0; i < width; i++)
-			{
-				float ymin, ymax;
-				ymin = ymax = val;
-				float nextfframe = fframe + hzoom;
-				int nextiframe = (int)floor(nextfframe);
-				int nscan = nextiframe - iframe;
-				for (int k=0; k<nscan; ++k)
-				{
-					val = data[isample + j];
-					if (val < ymin) ymin = val;
-					else if (val > ymax) ymax = val;
-					isample += channels;
-				}
-				iframe = nextiframe;
-				fframe = nextfframe;
-				
-				CGRect wrect;
-				wrect.origin.x = rect.origin.x + 1. + i;
-				wrect.size.width = 1.; 
-				wrect.origin.y = chanRect.origin.y + ymin * yScale;
-				wrect.size.height = (ymax - ymin) * yScale + 1.;
-				
-				//if (i == 64) post("%g %g    %g   %g %g\n", ymin, ymin, wrect.origin.x, wrect.origin.y, wrect.size.height);
-				
-				CGContextFillRect(cgc, wrect);
-			}
-		}
+
+	switch (mStyle) {
+		case 0 : draw0(cgc); break;
+		case 1 : draw1(cgc); break;
+		case 2 : draw2(cgc); break;
 	}
+
     CGContextRestoreGState(cgc);
 }
 
@@ -1914,6 +2026,12 @@ int SCScope::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			err = slotColorVal(slots+i, mWaveColors+i);
 			if (err) return err;
 		}
+		refresh();
+		return errNone;
+	}
+	if (strcmp(name, "style")==0) {
+		err = slotIntVal(slot, &mStyle);
+		if (err) return err;
 		refresh();
 		return errNone;
 	}
