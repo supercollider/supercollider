@@ -15,6 +15,16 @@ OSCService {
 		
 		^services;		
 	}
+	
+	*knownAddresses { arg applicationType="SuperCollider";
+		var addr;
+		this.knownServices.do { arg item;
+			if(applicationType.isNil or: { item.name == applicationType }, {
+				addr = addr.add(item.netAddr);
+			});
+		};
+		^addr
+	}
 
 // accessors	
 	*numberOfKnownServices {
