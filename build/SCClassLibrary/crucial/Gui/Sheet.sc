@@ -1,11 +1,12 @@
 
 
 Sheet {
-	*new { arg buildDialog,name="";
+	*new { arg buildDialog,name="",x=100,y=100;
 		var layout;
-		layout = PageLayout(name,600,600,100,100);
+		layout = PageLayout(name,600,600,x,y);
 		buildDialog.value(layout);
 		layout.resizeWindowToFit;
+		^layout
 	}
 }
 

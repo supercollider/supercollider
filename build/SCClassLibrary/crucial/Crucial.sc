@@ -12,7 +12,6 @@ Crucial {
 		Instr.instrDirectory = "Instr/"; // or ~/Documents/SC3/Instr/
 
 
-
 		// hint: Lib menu, post... color
 			//not working yet
 			
@@ -187,12 +186,12 @@ Crucial {
 	
 	*initLibraryItems {
 
-		Library.put(\mainLibrary,'introspection','ClassBrowser',{
+		Library.put(\menuItems,'introspection','ClassBrowser',{
 			Object.gui
 		});
 		
 		// tools
-		Library.put(\mainLibrary,\load,'browse for objects...',{
+		Library.put(\menuItems,\load,'browse for objects...',{
 			GetFileDialog({ arg ok,loadPath;
 				if(ok,{
 					loadPath.loadPath.topGui;
@@ -200,14 +199,14 @@ Crucial {
 			})
 		});
 		
-		Library.put(\mainLibrary,\test,'audioIn Test',{
+		Library.put(\menuItems,\test,'audioIn Test',{
 			{AudioIn.ar([1,2])}.play
 		});
-		Library.put(\mainLibrary,\test,'simple audio test',{
+		Library.put(\menuItems,\test,'simple audio test',{
 			{SinOsc.ar(500,0,0.1)}.play
 		});
 //		
-//		Library.put(\mainLibrary,\test,'midiCC test',{var w;
+//		Library.put(\menuItems,\test,'midiCC test',{var w;
 //			w = PageLayout.new("jlcooper",200,150);
 //			8.do({arg i;
 //			SliderView.new( w.window, w.layRight(10,100), "SliderView", 0.409449, 0, 1, 0, 'lin')
@@ -215,12 +214,12 @@ Crucial {
 //			})
 //		});
 //		
-//		Library.put(\mainLibrary,\post,'post keydown...',{
+//		Library.put(\menuItems,\post,'post keydown...',{
 //			KeyDown.tester
 //		});
 //		
 //		
-//		Library.put(\mainLibrary,\post,'post ascii,keyCode,modifier...',{
+//		Library.put(\menuItems,\post,'post ascii,keyCode,modifier...',{
 //			Sheet({ arg l;
 //				ActionButton.new(l,"while focused on this button, press keys and modifiers to post a code template").focus
 //					.keyDownAction_({arg a,c,m;
@@ -229,7 +228,7 @@ Crucial {
 //			})
 //		});
 //
-//		Library.put(\mainLibrary,\post,'post keyCode',{
+//		Library.put(\menuItems,\post,'post keyCode',{
 //			Sheet({ arg l;
 //				ActionButton.new(l,"while focused on this button, press keys and modifiers to post a code template").focus
 //					.keyDownAction_({arg a,c,m;
@@ -241,20 +240,20 @@ Crucial {
 
 	
 		
-//		Library.put(\mainLibrary,\post,'post color...',{
+//		Library.put(\menuItems,\post,'post color...',{
 //			GetColorDialog("Color",Color.white,{ arg ok,color;
 //				if(ok,{ color.post;})
 //			});
 //		});
 		
-		Library.put(\mainLibrary,\post,'post path...',{
+		Library.put(\menuItems,\post,'post path...',{
 			GetFileDialog({ arg ok,loadPath;
 				if(ok,{
 					PathName(loadPath).asRelativePath.asCompileString.post;
 				});
 			})
 		});
-		Library.put(\mainLibrary,\post,'post array of paths...',{
+		Library.put(\menuItems,\post,'post array of paths...',{
 			CocoaDialog.getPaths({ arg paths;
 				Post <<<  paths.collect({ arg p; 
 							PathName(p).asRelativePath })   
@@ -262,16 +261,16 @@ Crucial {
 			})
 		});
 		
-		Library.put(\mainLibrary,\introspection,'gcInfo',{
+		Library.put(\menuItems,\introspection,'gcInfo',{
 			this.gcInfo
 		});
-		Library.put(\mainLibrary,\introspection,'Interpreter-inspect',{
+		Library.put(\menuItems,\introspection,'Interpreter-inspect',{
 			thisProcess.interpreter.inspect;
 		});
-		Library.put(\mainLibrary,\introspection,'Interpreter-clearAll',{
+		Library.put(\menuItems,\introspection,'Interpreter-clearAll',{
 			thisProcess.interpreter.clearAll;
 		});
-//		Library.put(\mainLibrary,\introspection,\findClassByPartialName,{
+//		Library.put(\menuItems,\introspection,\findClassByPartialName,{
 //			GetStringDialog("Classname or partial string","",{
 //				arg ok,string;
 //				var matches,f,classes;
@@ -294,7 +293,7 @@ Crucial {
 //				})
 //			});
 //		});
-//		Library.put(\mainLibrary,\tools,\methodfinder,{
+//		Library.put(\menuItems,\tools,\methodfinder,{
 //			GetStringDialog("methodname or partial string","",{
 //				arg ok,string;
 //				var matches,f,classes;
@@ -321,7 +320,7 @@ Crucial {
 		
 
 //		
-//		Library.put(\mainLibrary,\introspection,\findReferencesToClass,{
+//		Library.put(\menuItems,\introspection,\findReferencesToClass,{
 //			GetStringDialog("Class name:","",{
 //				arg ok,string;
 //				var fn;
@@ -345,49 +344,50 @@ Crucial {
 //		});
 
 		//needs a tree browser
-		Library.put(\mainLibrary,\introspection,'all class variables',{
+		Library.put(\menuItems,\introspection,'non-nil class variables',{
 			Sheet({ arg f;
 				Object.allSubclasses.do({ arg c,i;
 					if(c.classVarNames.size > 0,{
 						ClassNameLabel(c,f.hr);
 						c.classVars.do({ arg cv,cvi;
 							var iv;
-							VariableNameLabel(c.classVarNames.at(cvi),f.startRow);
-							//iv=Class.classVars.at(c.classIndex).at(cvi);
-							ClassNameLabel(cv.class,f);
-							InspectorLink(cv,f);
+							if(cv.notNil,{
+								VariableNameLabel(c.classVarNames.at(cvi),
+									f.startRow);
+								//ClassNameLabel(cv.class,f);
+								InspectorLink(cv,f);
+							})
 						});
 					})		
 				})
 			},"Classvars")
-		});	
-
+		});
 	
 		// browse all currently loaded Instr
-		Library.put(\mainLibrary,\sounds,\orcs,{ arg onSelect;
+		Library.put(\menuItems,\sounds,\orcs,{ arg onSelect;
 			// if there's nothing in Instr it does the top
 			MLIDbrowser(\Instr,onSelect).gui
 		});
 		
-		Library.put(\mainLibrary,\post,'post Instr address',{
+		Library.put(\menuItems,\post,'post Instr address',{
 			Library.at(\sounds,\orcs).value({ arg instr;
 				instr.name.asCompileString.post; 
 			});
 		});
 		
-		Library.put(\mainLibrary,\post,'post new Patch',{
+		Library.put(\menuItems,\post,'post new Patch',{
 			Library.at(\sounds,\orcs).value({ arg instr; 
 				Patch(instr.name).asCompileString.postln
 			});
 		});
 		
-		Library.put(\mainLibrary,\sounds,'make new Patch',{
+		Library.put(\menuItems,\sounds,'make new Patch',{
 			Library.at(\sounds,\orcs).value({ arg instr; 
 				Patch(instr.name).topGui
 			});
 		});
 
-		Library.put(\mainLibrary,\tools,\Specs,{
+		Library.put(\menuItems,\tools,\Specs,{
 			Sheet({ arg f;
 				Spec.specs.keys.asList.asArray.sort.do({arg spn;
 					var sp;
@@ -398,8 +398,15 @@ Crucial {
 				})
 			},"Specs")
 		});
+		//should be a toggle button
+		/*Library.put(\menuItems,\tools,'Server dump',{
+			Server.local.dumpOSC(1);
+		});
+		Library.put(\menuItems,\tools,'Server stop dump',{
+			Server.local.dumpOSC(0);
+		});*/
 		
-//		Library.put(\mainLibrary,\settings,'set max PageLayout size ...',{
+//		Library.put(\menuItems,\settings,'set max PageLayout size ...',{
 //			// useful when using video projectors with small screen size
 //			Sheet({ arg f;
 //					ActionButton(f,"set and post screen size",{
@@ -416,23 +423,18 @@ Crucial {
 	
 	}
 
-	*osMenu { arg resize=true;
-		// the OS part is just a joke
-		// this is just your Library(\mainLibrary) functions put up on a menu
+	*libraryMenu { arg resize=true;
+		// this is just your Library(\menuItems) functions put up on a menu
 		
 		var dic,c;
 		if(menu.notNil,{ menu.close });
 		
-		menu=PageLayout("LibraryFunctions",160,800,metal: true);
-		dic=Library.at(\mainLibrary);
+		menu=PageLayout("LibraryFunctions",220,800,metal: true);
+		dic=Library.at(\menuItems);
 		if(dic.notNil,{
 			dic.keys.asList.sort.do({arg k,ki;
 				var subdic;
-				//menu.hr;
-				c=Color(1.0 - (0.05 * ki),
-						1.0 - (0.1 * ki),
-						1.0);//.greyScale(0.99);
-				subdic=Library.at(\mainLibrary,k);
+				subdic=Library.at(\menuItems,k);
 				CXLabel(menu,k.asString,maxx:200)
 					.backColor_(Color.new255(112, 128, 144))
 					.view.stringColor_(Color.white);
@@ -444,14 +446,20 @@ Crucial {
 			});			
 		});
 			
-			// if you have a wacom tablet  you could uncomment these
-			//ToggleButton(menu.startRow,"TabletTracking",{ 
-			//	TZM.tracking = true; },{ TZM.tracking = false }, 
-			//TZM.tracking ,140);
+		// if you have a wacom tablet  you could uncomment these
+		//ToggleButton(menu.startRow,"TabletTracking",{ 
+		//	TZM.tracking = true; },{ TZM.tracking = false }, 
+		//TZM.tracking ,140);
 			
-		CXLabel(menu,"bpm");
+		ToggleButton(menu.startRow,"Server dumpOSC",{
+			Server.local.dumpOSC(1)
+		},{
+			Server.local.dumpOSC(0)
+		},Server.local.dumpMode != 0 );
+		
 		TempoGui.setTempoKeys;
-		Tempo.gui(menu);
+		Tempo.gui(menu.startRow);
+
 		if(resize,{
 			menu.resizeWindowToFit;
 		});

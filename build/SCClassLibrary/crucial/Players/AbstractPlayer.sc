@@ -45,7 +45,7 @@ AbstractPlayer : AbstractFunction  {
 		}); // what if i'm patched to something old ?
 		// depend on stop being issued
 
-		group = group.asGroup;		
+		group = group.asGroup;
 		if(patchOut.isNil,{
 			if(this.rate == \audio,{// out yr speakers
 				patchOut = PatchOut(this,
@@ -117,8 +117,6 @@ AbstractPlayer : AbstractFunction  {
 		
 		// not really until the last confirmation comes from server
 		readyForPlay = true;
-		
-		^bundle
 	}
 	spawnAtTime { arg atTime;
 		var bundle;
@@ -146,17 +144,22 @@ AbstractPlayer : AbstractFunction  {
 				);
 	}
 	loadDefFileToBundle { arg bundle;
-		var defName,def;
+		var defName,def,bytes;
 		defName = this.defName;
 		if(Library.at(SynthDef,patchOut.server,defName.asSymbol).isNil,{
+			//TODO check path, if a saved version is there
 			def = this.asSynthDef;
-			def.writeDefFile;
+			bytes = def.asBytes;
+			// write it to disk if this player or its parent hasPath
+			//def.writeDefFile;
+			bundle.add(["/d_recv", bytes]);
 			defName = def.name;
-			bundle.add(["/d_load", "synthdefs/" ++ defName ++ ".scsyndef"]);
+			//bundle.add(["/d_load", "synthdefs/" ++ defName ++ ".scsyndef"]);
+
 			// on server quit have to clear this
 			// but for now at least we know it was written, and therefore
 			// loaded automatically on reboot
-			Library.put(SynthDef,patchOut.server,this.defName.asSymbol,true);
+			//Library.put(SynthDef,patchOut.server,this.defName.asSymbol,true);
 		});
 		this.children.do({ arg child;
 			child.loadDefFileToBundle(bundle);
@@ -190,6 +193,8 @@ AbstractPlayer : AbstractFunction  {
 	}
 	didSpawn {}
 	
+
+
 
 	/* status */
 	isPlaying { ^synth.isPlaying }

@@ -1,5 +1,5 @@
 
-TempoBus  {
+TempoBus   {
 
 	var <>tempo,bus,isReady = false;
 	
@@ -16,11 +16,18 @@ TempoBus  {
 			}
 		)
 	}
-	index { ^bus.index }	
+	asBus {}
+	index { ^bus.index }
+	prepareForPlay { arg group,bundle;
+		// ignores the group
+		if(isReady.not,{ // just in case server wasn't booted before on init
+			bundle.add( bus.setMsg(tempo.tempo) )
+		})
+	}
 	
 	free {
-		// for now just leave it on the server, its cheap
-		// but we need reference counting, since its a shared object.
+		// for now just leave it on the server, its cheap.
+		// we need reference counting, since its a shared object.
 		
 		//bus.free;
 		//bus = nil;
@@ -29,6 +36,7 @@ TempoBus  {
 	
 	init { arg server;
 		bus = Bus.control(server,1);
+		bus.set(tempo.tempo);
 		tempo.addDependant(this);
 		
 		// is it already ready ?

@@ -1,5 +1,5 @@
 
-// HaspatchIns
+// : HasInputsPlayer
 
 Patch : AbstractPlayer  {
 		
@@ -20,16 +20,12 @@ Patch : AbstractPlayer  {
 							})  
 			)
 	}
-		
+	
 	loadSubject { arg name;
-		if(name.isKindOf(Meta_UGen),{ // you can pass in a class eg. SinOsc
-			instr = UGenInstr(name);
-		},{
-			instr = Instr.at(name);
-			if(instr.isNil,{
-				("Instrument not found !!" + name).die;
-			});
-		})
+		instr = name.asInstr;
+		if(instr.isNil,{
+			("Instrument not found !!" + name).die;
+		});
 	}
 
 	createArgs { arg argargs;
@@ -69,20 +65,29 @@ Patch : AbstractPlayer  {
 	asSynthDef { 
 		var synthDef,fixedArgs;
 		fixedArgs = args.collect({ arg ag,i;
-			if(instr.specs.at(i).rate == \scalar,{
-				ag.value
+			if(instr.specs.at(i).rate === \scalar 
+				//or if the ag itself is scalar
+				//or: { ag.rate === \scalar }
+				// this allows a float to be fixed, but a number editor also gets fixed
+			,{
+				//TODO: if its just a float or int, use an .ir, not a fixed
+				ag.initDefArg
 			},{
 				nil // not fixed
 			})
 		});
 		
-		synthDef = this.instr.asSynthDef( fixedArgs );			defName = synthDef.name;
+		synthDef = this.instr.asSynthDef( 
+			fixedArgs//.insp(thisMethod,"patch's fixedArgs supplied to instr.asSynthDef") 
+		);		
+		defName = synthDef.name;
 		^synthDef
 	} // the default Out version
+	
 	synthDefArgs {
 		^[patchOut.bus.index] ++ 
 			// not every arg makes it into the synth def
-			synthArgs.collect({ arg ag; ag.initDefArg })
+			synthArgs.collect({ arg ag; ag.initDefArg })//.insp("synth def args");
 	}
 	defName { // needs to be identical to what the instr writes
 			// prepare,asSynthDef would have been called first

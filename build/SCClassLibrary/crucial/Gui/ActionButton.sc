@@ -1,47 +1,47 @@
 
 ActionButton  {
 
-	classvar <>offcolor;
-	var <>action,<>butt;
+	classvar <>offcolor,<>defaultHeight=17;
+	var <>action,<>view;
 	
-	*new { arg layout,title,function,maxx=20,maxy=17;
+	*new { arg layout,title,function,maxx=20,maxy;
 		^this.prNew(layout,title,function,maxx,maxy)
 				.font_(Font("Helvetica",12.0))
 	}
-	*prNew { arg layout,title,function,maxx=20,maxy=17;
-		var rect,butt;
+	*prNew { arg layout,title,function,maxx=20,maxy;
+		var rect,view;
 		layout = layout.asPageLayout(title,300,100);
 		title = title.asString;
 		rect = layout.layRight(
-					(title.size * 8.3).max(maxx?20),
-					(maxy ? 17));
-		butt = SCButton(layout, rect )
+					(title.size.clip(3,55) * 8.3).max(maxx?20),
+					(maxy ? defaultHeight));
+		view = SCButton(layout, rect )
 			.states_([[title,Color.black,offcolor]])
 			.action_(function);
 
-		^super.new.butt_(butt)
+		^super.new.view_(view)
 	}
 
 	backColor_ { arg color;
 		var s;
-		s = butt.states;
+		s = view.states;
 		s.at(0).put(2,color);
-		butt.states = s;
+		view.states = s;
 	}	
 	labelColor_ { arg color; 	
 		var s;
-		s = butt.states;
+		s = view.states;
 		s.at(0).put(1,color);
-		butt.states = s;
+		view.states = s;
 	}
 	label_ { arg string;
 		var s;
-		s = butt.states;
+		s = view.states;
 		s.at(0).put(0,string.asString);
-		butt.states = s;
+		view.states = s;
 	}
 	font_ { arg f;
-		butt.font = f;
+		view.font = f;
 	}
 	*initClass {
 		 offcolor = Color(0.84313725490, 0.81960784313, 0.75686274509 );
@@ -96,27 +96,30 @@ PopUp : ActionButton { // change to use SCPopUp
 
 ToggleButton : ActionButton {
 
-	var <>offc,<>onc;
 	var <state,<>onFunction,<>offFunction;
 	
 	*new { arg layout,title,onFunction,offFunction,init=false,maxx=20,maxy=13,borderStyle=4;
-	
 			^super.new(layout,title,nil,maxx,maxy,borderStyle)
 				.onFunction_(onFunction).offFunction_(offFunction)
-				.tbinit(init)
+				.tbinit(init,title)
 	}
 
-	tbinit { arg init;
+	tbinit { arg init,title;
+		var offc,onc;
 		state=init;
-		offc=Color( 0.74117647058824, 0.5921568627451, 0.27450980392157 );
-		onc=Color( 0.4078431372549, 0.95686274509804, 0.19607843137255 );
-		this.backColor_(if(state,onc,offc));
-		this.action_({this.toggle});
+		onc=Color( 0.74117647058824, 0.5921568627451, 0.27450980392157 );
+		offc=Color( 0.4078431372549, 0.95686274509804, 0.19607843137255 );
+		view.states = [
+			[title,Color.black,onc],
+			[title,Color.black,offc]
+		];
+		view.setProperty(\value,state.binaryValue);
+		view.action_({this.toggle});
 	}
 
 	toggle { arg newState;
 		state=newState ? state.not;
-		this.backColor_(if(state,onc,offc));
+		view.setProperty(\value,state.binaryValue);
 		if(state,{
 			onFunction.value(this)
 		},{
@@ -124,8 +127,8 @@ ToggleButton : ActionButton {
 		});
 	}		
 	passiveToggle { arg newState;
-		state=newState ?? {state.not};
-		this.backColor_(if(state,onc,offc));
+		state=newState ? state.not;
+		view.setProperty(\value,state.binaryValue);
 	}
 	value { ^state }
 }

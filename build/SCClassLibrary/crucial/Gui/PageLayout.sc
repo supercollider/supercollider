@@ -1,8 +1,10 @@
 
 PageLayout  {
 
+	// should get these from Cocoa
 	classvar <>screenWidth = 1100, <>screenHeight = 700; // tibook
-	classvar <>bgcolor ,<>focuscolor,<>hrcolor ;
+	
+	classvar <>bgcolor ,<>focuscolor,<>hrcolor;
 	
 	var windows, <>vspacer=3,<>hspacer=5, maxx=0, maxy=0, currx, curry;
 	var <margin; // max area in window we may occupy
@@ -146,8 +148,7 @@ PageLayout  {
 		var r;
 		this.startRow;
 		r=this.layRight(this.margin.width - (2 * hspacer), height,0);
-		// on window resize, jmc sets every view to a minimum of 8
-		SCStaticText(this.window,r).string_("").background_(color ? hrcolor)
+		SCStaticText(this.window,r).string_("").background_(color ? hrcolor).resize_(2)
 	}
 	tab {
 		this.layRight(10,10);
@@ -163,12 +164,6 @@ PageLayout  {
 		var first;
 		first = this.window.views.at(index);
 		if(first.notNil,{first.focus });
-	}
-	focusOnAButton {
-//		var first;
-//		// not needed now ?
-//		first = this.window.views.detect({arg v; v.isKindOf(SCButton) });
-//		if(first.notNil,{first.focus });
 	}
 
 	backColor { ^this.window.view.background }
@@ -231,13 +226,15 @@ PageLayout  {
 		windows.reverse.do({ arg w;
 			var b;
 			
-			b = Rect.newSides(w.view.bounds.left, w.bounds.top,
+			b = Rect.newSides(w.view.bounds.left, w.view.bounds.top,
 				 w.view.children.maxValue({ arg v; v.bounds.right }) 
 				 		+ hspacer + hspacer ,
 				 w.view.children.maxValue({ arg v; v.bounds.bottom }) 
 				 		+ vspacer + vspacer + 45);
+
+			b.left = w.bounds.left; // same left as it was
+			b.top = screenHeight - b.top; //flip to top
 			
-			b.top = b.bottom; //centers it vertically
 			w.bounds_(b);
 			margin = b.insetAll(hspacer,vspacer,hspacer,vspacer);
 			// warning: subsequent windows would have the same margin
@@ -246,7 +243,7 @@ PageLayout  {
 	}
 	
 	warnError {
-		"FlowLayout within a FlowLayout exceeded bounds !!".warn;
+		"PageLayout within a PageLayout exceeded bounds !!".warn;
 	}
 
 	newWindow {
@@ -260,14 +257,13 @@ PageLayout  {
 				hspacer,
 				vspacer,
 				metal);
-//		this.halt;
-//		//this.window.view.background_(ow.view.background);
-//		tabs.do({
-//			this.layRight(10,10);
-//		});
+		//this.window.view.background_(ow.view.background);
+		tabs.do({
+			this.layRight(10,10);
+		});
 	}
 
-	// make flowLayout gui objects dropable
+	// make PageLayout gui objects dropable
 	*onWindow { arg w;
 		^this.newWithin(w,w.bounds.insetAll(5,5,5,5)).findPosition;
 	}
@@ -288,7 +284,7 @@ PageLayout  {
 	}
 
 	
-	// making FlowLayout compat with LayoutView
+	// making PageLayout compat with LayoutView
 //	add { arg view;
 //		view.bounds = this.layRight(view.bounds.width,view.bounds.height);
 //		// view.window

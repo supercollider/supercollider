@@ -10,8 +10,6 @@ KrPlayer : AbstractPlayer {
 	ar { ^K2A.ar(this.kr) }
 	value { ^this.kr }
 
-	initialValue { ^0.0 }
-
 	//guiClass { ^KrPlayerGui }
 	
 	asSynthDef { 
@@ -20,7 +18,6 @@ KrPlayer : AbstractPlayer {
 			Out.kr(outIndex,this.kr)
 		})
 	}
-	
 }
 
 

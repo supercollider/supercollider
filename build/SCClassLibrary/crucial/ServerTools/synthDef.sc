@@ -1,18 +1,6 @@
 
-
 + SynthDef {
-	//  cx  Patch support
-	//  func = { arg inputs; }
-	/* 
-		inputSpecs must be supplied : 
-		[ 
-			['nameOfInput',\audio,0],
-			['qnty',\scalar,3],
-			['ffreq',\control,440 ]
-		]
-	*/
-	
-	// newFromSpecs
+
 	*newFromSpecs { arg name, ugenGraphFunc,inputSpecs;
 		^super.new.name_(name).buildList(ugenGraphFunc,inputSpecs);
 	}
@@ -76,16 +64,4 @@
 		
 		^controls
 	}
-	/*
-	defCode {
-	
-		file.putString("SCgf");
-		file.putInt32(0); // file version
-		file.putInt16(this.size); // number of defs in file.
-		
-		this.do({ arg item; item.writeDef(file); });
-	}
-	*/
-
 }	
-	

@@ -12,7 +12,9 @@ ObjectGui {
 	}
 	
 	guify { arg layout,title,width,height;
-		layout = layout.asPageLayout(title ? model.asString,width,height);
+		layout = layout ?? {
+			PageLayout(title ?? {model.asString},width,height);
+		};
 		NotificationCenter.registerOneShot(layout,\didClose,this,{
 			model.removeDependant(this); // when the window shuts
 		});
@@ -28,9 +30,9 @@ ObjectGui {
 		this.writeName(layout);
 		this.performList(\guiBody,[layout] ++ args);
 	}
-	topGui { arg layout;
+	topGui { arg layout ... args;
 		layout=this.guify(layout);
-		this.gui(layout);
+		this.performList(\gui,[layout] ++ args);
 		layout.resizeWindowToFit;
 	}
 	
@@ -44,7 +46,7 @@ ObjectGui {
 	
 	// a smaller format gui, defaults to the tileGui
 	smallGui { arg layout;
-		Tile(this.class,model,layout);
+		Tile(model,layout);
 	}		
 
 }

@@ -1,7 +1,7 @@
 
 CXMenu { // multiple actions
 
-	var <>nameFuncs,<layout,<>backColor;
+	var <>nameFuncs,<layout,<>backColor,<>closeOnSelect=true,lastButton,buttonWidth=150;
 
 	*new { arg ... nameFuncs;
 		^super.new.nameFuncs_(nameFuncs)
@@ -9,26 +9,41 @@ CXMenu { // multiple actions
 	*newWith { arg nameFuncs;
 		^super.new.nameFuncs_(nameFuncs)
 	}
-	gui { arg lay,width=150,height=75,xtent=120;
+	gui { arg lay,windowWidth=150,height=400,argbuttonWidth=120,title="Menu";
 		
-		layout=lay.asPageLayout("CXMenu",width,height.clip(700,nameFuncs.size * 20),metal: true);
-		layout.backColor_(Color(0.12549019607843, 0.16862745098039, 0.49803921568627, 1));
-		
+		buttonWidth = argbuttonWidth;
+		height = max(height,nameFuncs.size * 20);
+		layout=lay.asPageLayout(title,windowWidth,height,metal: true);
+
 		nameFuncs.do({arg nf;
-			ActionButton(layout.startRow,nf.key,{nf.value.value; layout.close},xtent,13,3)
-				.backColor_(backColor ? Color.white)
+			this.add(nf);
 		});
 		// if we are not on somebody else's page...
 		if(lay.isNil,{
 			layout.resizeWindowToFit;
 		});
-	}
+	}		
 	
-	add { arg ass,xtent=85;
-		ActionButton(layout.startRow,ass.key,{ass.value.value; layout.close},xtent)
-					.backColor_(backColor ? Color.white);
+	add { arg nf;
+		var ab;
+		ab = ActionButton(layout.startRow,nf.key,{
+				nf.value.value; 
+				if(closeOnSelect,{ 
+					layout.close 
+				},{
+					if(lastButton.notNil,{ 
+						lastButton.backColor_(backColor ? Color.white);
+						lastButton.labelColor_(Color.black);
+					});
+					ab.backColor_(Color.new255(112, 128, 144));
+					ab.labelColor_(Color.white);
+				});
+			},buttonWidth)
+			.backColor_(backColor ? Color.white);
 	}
-	
+	resize {
+		layout.resizeWindowToFit;
+	}
 }
 
 /*

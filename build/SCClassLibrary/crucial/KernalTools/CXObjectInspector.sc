@@ -1,33 +1,37 @@
-CXObjectInspector : ObjectGui {	writeName { arg layout;		ClassNameLabel.newBig(model.class,layout);		CXLabel(layout,model.asString,140,30)
+CXObjectInspector : ObjectGui {
+	
+	guify { arg layout,title,width,height;
+		^super.guify(layout,title,width ? 800,height ? 800)
+	}	writeName { arg layout;		ClassNameLabel.newBig(model.class,layout);		CXLabel(layout,model.asString,140,30)
 			.view.font_(Font("Helvetica-Bold",18));
-		ActionButton(layout,"gui...",{ model.gui });
+		ActionButton(layout,"gui...",{ model.topGui });
 
 		/*		ActionButton(layout,"-> a-z",{			GetStringDialog("assign to interpreter variable a-z","x",{ arg ok,string;				if(ok,{					thisProcess.interpreter.performList((string ++ "_").asSymbol,model);					this.newErrorWindow;					"".postln;					string.postln;				})			})		});
-		*/	}	guiBody { arg layout,moreArgs;		
-		moreArgs.do({ arg ag;
-			ag.gui(layout.startRow);
-		});
-				this.instVarsGui(layout);				// slotAt
+		*/	}	guiBody { arg layout;		
+		this.instVarsGui(layout);				// slotAt
 		if(model.isArray,{			min(model.slotSize,300).do({arg i;				var iv;				layout.startRow;				CXLabel(layout,"@" ++ i,maxx: 40);				iv=model.slotAt(i);//				ActionButton(layout,"code->",{//					GetStringDialog("enter code to compile and insert at slot " 
 //						+ i ,"",//					{ arg ok,string;//						if(ok,{//							model.slotPut(i,  string.interpret)//						})//					})//				});					//ClassNameLabel(iv.class,layout);				InspectorLink(iv,layout);			});			if(model.slotSize > 300,{ 
 				CXLabel(layout,"... slotSize is" ++ model.slotSize.asString,maxx:210).bold;
 			});
-		});		this.dependantsGui(layout);
-		
-		}		instVarsGui { arg layout;			var iNames;		//instVars		iNames=model.class.instVarNames;		if(iNames.notNil,{			iNames.do({arg v,i;				var iv;				layout.startRow;				VariableNameLabel(v,layout);				/*
+		});		this.dependantsGui(layout);
+	}		instVarsGui { arg layout;			var iNames;		//instVars		iNames=model.class.instVarNames;		if(iNames.notNil,{			iNames.do({arg v,i;				var iv;				layout.startRow;				VariableNameLabel(v,layout);				/*
 				ActionButton(layout,"code->",{					GetStringDialog("enter code to compile and insert to " 
 							+ v.asString,"",					{ arg ok,string;						if(ok,{							model.instVarPut(i,  string.interpret)						})					})				});
-				*/				iv=model.instVarAt(i);				//ClassNameLabel(iv.class,layout);				InspectorLink(iv,layout);			});		});	}	dependantsGui { arg layout;		layout.hr;		// dependants		CXLabel(layout.startRow,"dependants:",maxx:210).bold;		model.dependants.do({ arg d;			InspectorLink(d,layout);		});		// uniqueMethods	}}ClassGui : CXObjectInspector { // ClassGui	writeName {}	guiBody { arg layout;			var iNames,supers;		layout.hr;		supers = model.superclasses;
-		if(supers.notNil,{
-			supers.reverse.do({ arg sup;				ClassNameLabel(sup,layout.startRow,200);				//CXLabel(layout,sup.subclasses.size.asString 
-				//	+ " subclasses",maxx:210).bold;			})
-		});			// you are here
+				*/				iv=model.instVarAt(i);				//ClassNameLabel(iv.class,layout);				InspectorLink(iv,layout,200);			});		});	}	dependantsGui { arg layout;		layout.hr;		// dependants		CXLabel(layout.startRow,"dependants:",maxx:210).bold;		model.dependants.do({ arg d;			InspectorLink(d,layout);		});		// uniqueMethods	}}ClassGui : CXObjectInspector { // ClassGui	writeName {}	guiBody { arg layout;			var iNames,supers,scale;		layout.hr;			// you are here
 		InspectorLink.big(model,layout.startRow,maxx:200);
+		supers = model.superclasses;
+		if(supers.notNil,{
+			scale = supers.size;
+			supers.do({ arg sup,i;
+				ClassNameLabel(sup,layout,100);//.labelColor_(Color.grey(1.0 - (i / scale))
+			})
+		});
+
 
 		ActionButton(layout,"VIEW SOURCE",{
 			model.openCodeFile;
 		}).font_(Font("Monaco",9.0));	
-		//ActionButton(layout,"openHelpFile",{ model.openHelpFile });
+		ActionButton(layout,"openHelpFile",{ model.openHelpFile });
 	 	//ActionButton(layout,"dumpInterface",{ 
 	 	//	model.newErrorWindow.dumpInterface 
 	 	//});
@@ -50,7 +54,7 @@
 					if(c.subclasses.size + shown < limit,{						this.displaySubclassesOf(c,layout,shown,limit);					},{						if(c.subclasses.size > 0,{
 							CXLabel(layout,c.subclasses.size.asString 
 								+ " subclasses",maxx:80);
-						});					});					layout.indent(-1);				})		});	}}MethodGui : ObjectGui {	writeName { arg layout;		Tile(model.class,layout);		CXLabel(layout,model.asString);	}		guiBody { arg layout;		var prototypeFrame;		var started=false,supers;				layout.hr;				// link to superclass implementations		supers = model.ownerClass.superclasses;
+						});					});					layout.indent(-1);				})		});	}}MethodGui : ObjectGui {//	writeName { arg layout;//		Tile(model.class,layout);//		CXLabel(layout,model.asString);//	}		guiBody { arg layout;		var prototypeFrame;		var started=false,supers;				layout.hr;				// link to superclass implementations		supers = model.ownerClass.superclasses;
 		if(supers.notNil,{
 			supers.reverse.do({ arg class;				var supermethod;				supermethod = class.findMethod(model.name);				ClassNameLabel(class,layout.startRow,maxx:200);				if(supermethod.notNil,{				//	started = true;					MethodLabel(supermethod,layout,maxx:200);				});
 			})

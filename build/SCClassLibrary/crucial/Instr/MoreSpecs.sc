@@ -50,6 +50,18 @@ TrigSpec : ControlSpec {
 	}
 }
 
+
+TempoSpec : ControlSpec {
+	default { ^TempoPlayer.new }
+	*initClass {
+		specs.putAll(
+		 IdentityDictionary[
+			\tempo -> this.new
+			];
+		)
+	}
+}
+
 StaticSpec : ControlSpec { 
 	// also a scalar spec, but better to inherit ControlSpec
 
@@ -130,3 +142,4 @@ SampleSpec : ScalarSpec {
 	default { ^Sample.newClear(16) } // silent sample
 
 }
+

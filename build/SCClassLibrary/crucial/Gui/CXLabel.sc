@@ -1,8 +1,4 @@
 
-// temp translations
-
-// FLabel
-
 CXLabel {
 	classvar <>bgcolor;
 	var <>view;
@@ -39,7 +35,7 @@ CXLabel {
 }
 
 
-VariableNameLabel : CXLabel { // also used for arg name
+VariableNameLabel : CXLabel {
 	*new { arg name,layout,maxx=120;
 		^super.prNew(layout,name,maxx: maxx)
 			.backColor_(Color( 1, 0.86666666666667, 0.38039215686275 ))

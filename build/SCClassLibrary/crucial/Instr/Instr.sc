@@ -6,11 +6,12 @@ Instr  {
 	var  <>name, <>func,<>specs,<outSpec;
 	
 	*new { arg name, func,specs,outSpec;
-		if(name.isKindOf(String) or: {name.isKindOf(Symbol)},{
+		if(name.isString or: {name.isKindOf(Symbol)},{
 			name = [name.asSymbol];
 		});
-		^super.newCopyArgs(name,func).init(specs,outSpec).write;
+		^super.newCopyArgs(name,func).init(specs,outSpec)//.write;
 	}
+	//*write go ahead and write it
 
 	init { arg specs,outsp;
 		this.makeSpecs(specs ?? {[]});
@@ -19,6 +20,7 @@ Instr  {
 			outSpec = nil; //ArOutputSpec.new;
 			// it should be possible to divine the out spec from 
 			// valuing the function.
+			
 		},{
 			outSpec = outsp.asSpec;
 		});
@@ -49,8 +51,21 @@ Instr  {
 			});
 	}
 
-	rate { ^outSpec.rate }
-	numChannels { ^outSpec.numChannels }
+	rate {  
+		^if(outSpec.notNil,{ 
+			outSpec.rate;
+		},{
+			// if you aren't audio, you must specify an outSpec
+			\audio
+		})
+	}
+	numChannels { 
+		^if(outSpec.notNil,{
+			outSpec.numChannels 
+		},{ // if you are more than one channel, you must specify an outSpec
+			1
+		});
+	}
 	path { ^instrDirectory ++ name.first.asString ++ ".rtf" }
 	
 	*put { arg instr;
@@ -137,9 +152,9 @@ Instr  {
 		if(fixedArgs.isNil, { fixedArgs = [] });
 		controlIndices = 
 				this.specs.collect({ arg spec,i;
-					if(spec.rate == \scalar or: {fixedArgs.at(i).notNil},{
+					if(spec.rate == \scalar or: {fixedArgs.at(i).notNil},
 						nil
-					},{
+					,{
 						nonScalarIndices = nonScalarIndices.add(i);
 						ci = ci + 1;
 						ci
@@ -158,7 +173,7 @@ Instr  {
 					fixedNames = fixedNames ++ i ++ fa.asCompileString;
 				})
 			});
-			defName = defName ++ fixedNames.asFileSafeString;
+			defName = defName ++ fixedNames.hash.asFileSafeString;
 		});
 		
 		if(isScalarOut.not,{
@@ -170,12 +185,17 @@ Instr  {
 				nonScalarIndices.collect({ arg agi;
 					[this.argNameAt(agi),
 					specs.at(agi).rate,
-					this.defArgAt(agi)];
+					/*  SEEMS RIGHT TO USE THE FIXED ARG FOR THE VALUE */
+					fixedArgs.at(agi) ?? {this.defArgAt(agi)}];
 				});
 
 		^SynthDef.newFromSpecs(defName,{ arg inputs;
 			var outIndex,funcArgs,out,anOutChannel;
 			// only gets inputs matching Controls
+			
+			//fixedArgs.insp("fixedArgs to Instr");
+			//inputs.insp("inputs to Instr");
+			
 			funcArgs = this.specs.collect({ arg spec,i;
 				if(spec.rate == \audio,{
 					fixedArgs.at(i) ?? 
@@ -186,17 +206,14 @@ Instr  {
 					// not possible to fix an audio anyway
 				},{
 					if(spec.rate == \scalar,{
-						("fixed arg:" + fixedArgs.at(i)).postln;
 						fixedArgs.at(i) ?? {this.defArgAt(i)}
-					},{// control
-						fixedArgs.at(i) ?? {									if(spec.isKindOf(TrigSpec),{ // create a trig,
-												// responds to /c_set
+					},{// control or mixed rate (nil)
+						fixedArgs.at(i) ?? {									if(spec.isKindOf(TrigSpec),{ 
+								// create a trig, responds to /c_set touching
 								InTrig.kr(inputs.at(controlIndices.at(i)))
 							},{
-								// input already is a control signal.
-								// patching involves using /map, not In.kr
-								inputs.at(controlIndices.at(i)) 
-								// no support for multi channel kr
+								In.kr(inputs.at(controlIndices.at(i)),1 )
+								// assumes 1 channel kr for now
 							})
 						} 
 					})
@@ -219,9 +236,8 @@ Instr  {
 						// in the Instr def
 					},{ // or scalar
 						if(anOutChannel.isFloat,{
+							// SendTrig etc.:  no Out
 							outSpec =  ScalarSpec.new;//or StaticSpec
-							// a SendTrig etc. can end with a 0.0
-							// so don't add an Out, but still needs an spec.
 						} , { 				
 							die("can't handle this scalar output from SynthDef:"
 							+ out + "@0: " + anOutChannel);
