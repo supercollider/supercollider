@@ -55,12 +55,14 @@ PatternProxy : Pattern {
 		pat = pattern;
 		
 		stream = pattern.asStream;
-		loop {
+		while {
 			if((pat !== pattern)) {
 						pat = pattern;
 						stream = this.constrainStream(stream);
 			};
 			outval = stream.next(inval);
+			outval.notNil
+		}{
 			inval = outval.yield;
 		}
 		^inval
