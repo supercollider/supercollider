@@ -23,9 +23,8 @@ SynthDef creates these when compiling the ugenGraph function.   They are created
 \f2\fs18 \cf2 SynthDef\cf0 (\cf3 "help-Control"\cf0 ,\{ \cf2 arg\cf0  freq=200;\
 \
 	freq.inspect; \cf4 // at the time of compiling the def\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
-\}).writeDef;\
+\}).writeDefFile;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
@@ -36,18 +35,14 @@ The main explicit use of Control is to allow Arrays to be sent to running Synths
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // a synth def that has 4 partials\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
 s = Server.local;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "help-Control"\cf0 , \{ \cf2 arg\cf0  out=0,i_freq;\
 	\cf2 var\cf0  klank, n, harm, amp, ring;\
 	n = 9;\
 	\
 	\cf4 // harmonics\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	harm = \cf2 Control\cf0 .names([\cf5 \\harm\cf0 ]).ir(\cf2 Array\cf0 .series(4,1,1).postln);\
 	\cf4 // amplitudes\
 \cf0 	amp = \cf2 Control\cf0 .names([\cf5 \\amp\cf0 ]).ir(\cf2 Array\cf0 .fill(4,0.05));\
@@ -60,9 +55,7 @@ s = Server.local;\
 \}).send(s);\
 )\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // nothing special yet, just using the default set of harmonics.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 a = \cf2 Synth\cf0 (\cf3 "help-Control"\cf0 ,[\cf5 \\i_freq\cf0 , 300]);\
 b = \cf2 Synth\cf0 (\cf3 "help-Control"\cf0 ,[\cf5 \\i_freq\cf0 , 400]);\
 c = \cf2 Synth\cf0 (\cf3 "help-Control"\cf0 ,[\cf5 \\i_freq\cf0 , 533.33]);\
@@ -73,10 +66,8 @@ b.free;\
 c.free;\
 d.free;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // in order to set the harmonics amps and ring times at\
 // initialization time we need to use an OSC bundle.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
 s.sendBundle(\cf2 nil\cf0 ,\
 	[\cf3 "/s_new"\cf0 , \cf3 "help-Control"\cf0 , 2000, 1, 0, \cf5 \\i_freq\cf0 , 500], \cf4 // start note\
@@ -97,9 +88,7 @@ s.sendBundle(\cf2 nil\cf0 ,\
 s.sendMsg(\cf3 "/n_free"\cf0 , 2000);\
 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // set harmonics, ring times and amplitudes\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendBundle(\cf2 nil\cf0 ,\
 	[\cf3 "/s_new"\cf0 , \cf3 "help-Control"\cf0 , 2000, 1, 0, \cf5 \\i_freq\cf0 , 500], \cf4 // start note\
 \cf0 	[\cf3 "/n_setn"\cf0 , 2000, \cf3 "harm"\cf0 , 4, 1, 3, 5, 7], \cf4 // set odd harmonics\
@@ -112,9 +101,7 @@ s.sendMsg(\cf5 \\n_trace\cf0 , 2000);\
 s.sendMsg(\cf5 \\n_free\cf0 , 2000);\
 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // same effect as above, but packed into one n_setn command\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 s.sendBundle(\cf2 nil\cf0 ,\
 	[\cf3 "/s_new"\cf0 , \cf3 "help-Control"\cf0 , 2000, 1, 0, \cf5 \\i_freq\cf0 , 500], \cf4 // start note\
 \cf0 	[\cf3 "/n_setn"\cf0 , 2000, \cf3 "harm"\cf0 , 4, 1, 3, 5, 7,\
