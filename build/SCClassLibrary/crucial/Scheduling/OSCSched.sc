@@ -3,14 +3,16 @@ BeatSched {
 
 	classvar <global;
 	
-	var clock,tempo;
+	var clock,tempo,tempoClock;
 	var epoch=0.0;
 	var nextTask; // for exclusive locks
 
 	var pq,nextAbsTime,nextAbsFunc,nextAbsList;
 	
-	*new { arg clock,tempo;
-		^super.newCopyArgs(clock ? SystemClock,tempo ? Tempo).init
+	*new { arg clock,tempo,tempoClock;
+		^super.newCopyArgs(clock ? SystemClock,
+			tempo ?? {Tempo.default},
+			tempoClock ?? {TempoClock.default}).init
 	}		
 	*initClass { global = this.new; }
 	init {
@@ -95,15 +97,22 @@ BeatSched {
 	}
 		
 	sched { arg beats,function;
-		this.tsched(tempo.beats2secs(beats),function)
+		tempoClock.dsched(beats,function)
+		//this.tsched(tempo.beats2secs(beats),function)
 	}
 	xsched { arg beats,function;
-		this.xtsched(tempo.beats2secs(beats),function)
+		var thsTask,notCancelled;
+		tempoClock.dsched(beats,
+			thsTask = nextTask = {
+				if(thsTask === nextTask,function);
+				nil
+			}
+		);
+		//this.xtsched(tempo.beats2secs(beats),function)
 	}
 	
 	qsched { arg quantize,function;
 		this.sched(this.deltaTillNext(quantize),function)
-
 	}
 	xqsched { arg quantize,function;
 		this.xsched(this.deltaTillNext(quantize),function )
@@ -132,7 +141,8 @@ BeatSched {
 		});
 	}
 	schedAbs { arg beat,function;
-		this.tschedAbs(tempo.beats2secs(beat),function)
+		tempo.schedAbs(beat,function);
+		//this.tschedAbs(tempo.beats2secs(beat),function)
 	}
 
 	// private
@@ -208,10 +218,25 @@ OSCSched : BeatSched {
 	}
 		
 	sched { arg beats,server,message,clientSideFunction;
-		this.tsched(tempo.beats2secs(beats),server,message,clientSideFunction)
+		tempoClock.dsched(beats - server.latency,{ // lazily using the seconds as beats
+			server.sendBundle(tempo.beats2secs(server.latency),message);
+			nil
+		});
+		if(clientSideFunction.notNil,{
+			tempoClock.dsched(beats,{ clientSideFunction.value; nil })
+		});
 	}
 	xsched { arg beats,server,message,clientSideFunction;
-		this.xtsched(tempo.beats2secs(beats),server,message,clientSideFunction)
+		var thTask,notCancelled;
+		tempoClock.dsched(beats - server.latency,thTask = nextTask = {
+			if(notCancelled = (thTask === nextTask),{
+				server.sendBundle(tempo.beats2secs(server.latency),message)
+			});
+			nil
+		});
+		if(clientSideFunction.notNil,{
+			tempoClock.dsched(beats,{ if(notCancelled,clientSideFunction); nil })
+		});
 	}
 	
 	qsched { arg quantize,server,message,clientSideFunction;
@@ -238,6 +263,20 @@ OSCSched : BeatSched {
 	}
 	// xtschedAbs
 	schedAbs { arg beat,server,message,clientSideFunction;
+		/*  to do...
+		if(time >= this.time,{ // in the future ?
+			pq.put(time,[server,message,clientSideFunction]);
+			// was something else already scheduled before me ?
+			if(nextAbsTime.notNil,{
+				if(time == pq.topPriority ,{ // i'm next
+					pq.put(nextAbsTime,nextAbsList); // put old top back on queue
+					this.tschedAbsNext;
+				})
+			},{
+				this.tschedAbsNext; // sched meself
+			});
+		})	
+		*/
 		this.tschedAbs(tempo.beats2secs(beat),server,message,clientSideFunction)
 	}
 

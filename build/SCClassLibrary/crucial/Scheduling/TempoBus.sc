@@ -6,7 +6,7 @@ TempoBus   {
 	*new { arg server,tempo;
 		var new;
 		server = server ? Server.local;
-		tempo = tempo ? Tempo.default;
+		tempo = tempo ?? {Tempo.default};
 		// return the same one for any combo
 		^(Library.at(this,server.name,tempo) ??
 			{

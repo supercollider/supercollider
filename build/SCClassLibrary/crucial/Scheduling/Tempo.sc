@@ -4,20 +4,25 @@ Tempo  {
 	classvar <default;
 	
 	var <tempo=1.0,<beatsPerBar=4.0;
-	var tempor,beatsPerBarr;
+	var tempor,beatsPerBarr,tempoClock;
 	
-	*new { arg tempo=1.0;
-		^super.new.tempo_(tempo)
+	*new { arg tempo=1.0,tempoClock;
+		^super.new.init(tempoClock).tempo_(tempo)
 	}
+	init { arg t; tempoClock = t ?? {TempoClock.default}; }
 	
-	*initClass { default = this.new; }
+	*initClass { 
+		Class.initClassTree(TempoClock);
+		default = this.new; 
+	}
 		
 	bpm { ^tempo * 60.0 }
-	bpm_ { arg bpm; this.tempo = bpm / 60.0; this.changed; }
+	bpm_ { arg bpm; this.tempo = bpm / 60.0; }
 	next { ^tempo }
 	tempo_ { arg t; 
 		tempo = t; 
-		tempor = tempo.reciprocal; 
+		tempor = tempo.reciprocal;
+		tempoClock.tempo = t;
 		this.changed; 
 	}	
 	beatsPerBar_ { arg b; 
@@ -31,15 +36,6 @@ Tempo  {
 	bars2secs { arg bars; ^tempor * (bars * beatsPerBar) }
 	secs2bars { arg secs; ^tempo * secs * beatsPerBarr }
 	
-	/* scheduling.   BeatSched is more flexible */
-	// changing tempo after scheduling won't work yet
-	sched { arg delta,item; 
-		SystemClock.sched(this.beats2secs(delta),item) 
-	}
-	schedAbs { arg beat,item; 
-		SystemClock.schedAbs(this.beats2secs(beat),item) 
-	}
-	
 	*bpm { ^default.bpm }
 	*bpm_ { arg bpm; default.bpm_(bpm) }
 	*next { ^default.tempo }
@@ -47,46 +43,10 @@ Tempo  {
 	*secs2beats { arg secs; ^default.secs2beats(secs) }
 	*tempo { ^default.tempo }
 	*tempo_ { arg tempo; default.tempo_(tempo) }
-	*sched { arg delta,item; ^default.sched(delta,item) }
-	*schedAbs { arg beat,item; ^default.schedAbs(beat,item) }
-		
-//	*beats2secsKr { arg beats; ^GetTempo.kr.reciprocal * beats }
-//	*secs2beatsKr { arg secs; ^GetTempo.kr * secs }
+	//	*beats2secsKr { arg beats; ^GetTempo.kr.reciprocal * beats }
+	//	*secs2beatsKr { arg secs; ^GetTempo.kr * secs }
 		
 	*gui { arg layout; default.gui(layout) }
 	guiClass { ^TempoGui }
 }
-
-/*  depreciated.  use BeatSched
-
-BeatClock : Clock {
-	
-	classvar global;
-	var <>tempo;
-	
-	*initClass { global = this.new }
-	*new { arg tempo;
-		^super.new.tempo_(tempo ? Tempo.default)
-	}
-	sched { arg delta,item;
-		SystemClock.sched(tempo.beats2secs(delta),
-			{ arg time;
-				var beat;
-				if((beat = item.value(time)).isNumber,{
-					this.sched(beat,item)
-				})
-			})
-	}
-	schedAbs { arg time,item;
-		SystemClock.schedAbs(tempo.beats2secs(time),item)
-	}
-	*sched { arg delta,item;
-		global.sched(delta,item)
-	}
-	*schedAbs { arg time,item;
-		global.schedAbs(time,item)
-	}
-}
-
-*/
 
