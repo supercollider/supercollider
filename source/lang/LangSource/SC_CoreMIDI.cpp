@@ -363,28 +363,20 @@ MIDIEndpointRef MIDIGetDestinationByUID(SInt32 inUID)
 	return 0;
 }
 void sendmidi(int port, MIDIEndpointRef dest, int length, int chan, int status, int aval, int bval, float late);
-void sendmidi(int port, MIDIEndpointRef dest, int length, int chan, int status, int aval, int bval, float late){
- 
-        MIDIPacketList * pktlist;
-        pktlist = (MIDIPacketList*) pyr_pool_runtime->Alloc(sizeof(MIDIPacketList));
-        MIDIPacket * pk = MIDIPacketListInit(pktlist);
-        //lets add some latency
-        float  latency =  1000000 * late ; //ms to nano 
-        UInt64  utime = AudioConvertNanosToHostTime( AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) + (UInt64)latency);
-        ByteCount nData = (ByteCount) length;
-        Byte * data = (Byte*) pyr_pool_runtime->Alloc(3 * sizeof(Byte));
-        data[0] = (Byte) chan + (status & 0xF0);
-        data[1] = (Byte) aval;
-        data[2] = (Byte) bval;
-        pk = MIDIPacketListAdd(pktlist, sizeof(struct MIDIPacketList) , pk,(MIDITimeStamp) utime,nData,data);
-   
-	OSStatus error = MIDISend(gMIDIOutPort[port],  dest, pktlist );
-
-        //if(error)
-        pyr_pool_runtime->Free(pktlist);
-        pyr_pool_runtime->Free(data);
-
-
+void sendmidi(int port, MIDIEndpointRef dest, int length, int chan, int status, int aval, int bval, float late)
+{
+    MIDIPacketList mpktlist;
+    MIDIPacketList * pktlist = &mpktlist;
+    MIDIPacket * pk = MIDIPacketListInit(pktlist);
+    //lets add some latency
+    float  latency =  1000000 * late ; //ms to nano 
+    UInt64  utime = AudioConvertNanosToHostTime( AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) + (UInt64)latency);
+    ByteCount nData = (ByteCount) length;
+    pk->data[0] = (Byte) chan + (status & 0xF0);
+    pk->data[1] = (Byte) aval;
+    pk->data[2] = (Byte) bval;
+    pk = MIDIPacketListAdd(pktlist, sizeof(struct MIDIPacketList) , pk,(MIDITimeStamp) utime,nData,pk->data);
+   	OSStatus error = MIDISend(gMIDIOutPort[port],  dest, pktlist );
 }
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed);
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
@@ -399,13 +391,13 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *s = g->sp - 4;
 	PyrSlot *c = g->sp - 3;
         
-        PyrSlot *a = g->sp - 2;
+    PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
-        PyrSlot *plat = g->sp;
+    PyrSlot *plat = g->sp;
 
         
 	int err, outputIndex, uid, length, chan, status, aval, bval;
-        float late;
+    float late;
 	err = slotIntVal(p, &outputIndex);
 	if (err) return err;
 	if (outputIndex < 0 || outputIndex >= gNumMIDIInPorts) return errIndexOutOfRange;
@@ -427,8 +419,8 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
         MIDIEndpointRef dest = MIDIGetDestinationByUID(uid);
 	if (!dest) return errFailed;
 
-        sendmidi(outputIndex, dest, length, chan, status, aval, bval, late);
-		return errNone;
+    sendmidi(outputIndex, dest, length, chan, status, aval, bval, late);
+    return errNone;
 }
 
 void initMIDIPrimitives()
@@ -439,21 +431,21 @@ void initMIDIPrimitives()
 	index = 0;
         
 	s_midiin = getsym("MIDIIn");
-        s_domidiaction = getsym("doAction");
-        s_midiNoteAction = getsym("doNoteAction");
-        s_midiTouchAction = getsym("doTouchAction");
-        s_midiControlAction = getsym("doControlAction");
-        s_midiPolyTouchAction = getsym("doPolyTouchAction");
-        s_midiProgramAction = getsym("doProgramAction");
-        s_midiBendAction = getsym("doBendAction");
+    s_domidiaction = getsym("doAction");
+    s_midiNoteAction = getsym("doNoteAction");
+    s_midiTouchAction = getsym("doTouchAction");
+    s_midiControlAction = getsym("doControlAction");
+    s_midiPolyTouchAction = getsym("doPolyTouchAction");
+    s_midiProgramAction = getsym("doProgramAction");
+    s_midiBendAction = getsym("doBendAction");
 
-        definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
+    definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
 	definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);	
 	definePrimitive(base, index++, "_ConnectMIDIIn", prConnectMIDIIn, 3, 0);
 	definePrimitive(base, index++, "_DisconnectMIDIIn", prDisconnectMIDIIn, 3, 0);
 	definePrimitive(base, index++, "_DisposeMIDIClient", prDisposeMIDIClient, 1, 0);
 	definePrimitive(base, index++, "_RestartMIDI", prRestartMIDI, 1, 0);
         
-        definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
-        if(gMIDIClient) midiCleanUp();
+    definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
+    if(gMIDIClient) midiCleanUp();
 }
