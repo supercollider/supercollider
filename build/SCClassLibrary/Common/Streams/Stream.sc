@@ -224,7 +224,7 @@ FuncStream : Stream {
 
 PauseStream : Stream
 {
-	var <stream, originalStream, <clock;
+	var <stream, <originalStream, <clock;
 	
 	*new { arg argStream, clock; 
 		^super.newCopyArgs(nil, argStream, clock ? TempoClock.default) 
@@ -240,7 +240,7 @@ PauseStream : Stream
 	}
 	reset { ^originalStream.reset }
 	stop {  stream = nil }
-
+	free { this.stop }
 	pause { stream = nil }
 	resume { arg argClock, quant=1.0; 
 		^this.play(clock ? argClock, false, quant) 
