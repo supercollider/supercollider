@@ -446,7 +446,7 @@ public:
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
     virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 
-	bool setValue(int inValue, bool send);
+	bool setValue(int inValue, bool send, int modifiers);
 
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
