@@ -59,10 +59,10 @@ NodeProxy : AbstractFunction {
 	value { ^this.ar }
 	
 	
-	play { arg outBus=0, nChan;
+	play { arg outBus=0, nChan, clock;
 		var playGroup, cmd;
 		if(bus.isNil, {this.allocBus(\audio, nChan ? 2) });
-		this.wakeUpParents;
+		this.wakeUpParents(clock);
 		
 		cmd = List.new;
 		playGroup = Group.newCommand(cmd, server);
@@ -75,8 +75,8 @@ NodeProxy : AbstractFunction {
 		^playGroup
 	}
 	
-	send {
-			this.sendToServer(false, true);
+	send { arg extraArgs;
+			this.sendToServer(false, true, extraArgs);
 	}
 	
 		
@@ -106,19 +106,19 @@ NodeProxy : AbstractFunction {
 	
 	source_ { arg argObj; this.setObj(argObj, true) }
 	
-	setObj { arg argObj, send=false, freeLast=true, completionFunc; 		
+	setObj { arg argObj, send=false, freeLast=true, clock; 		
 		synthDef = nil;
 		
 		if(argObj.notNil,{
 			if(bus.isNil, {this.initFor(argObj) });
-			
+			this.initParents;
 			synthDef = argObj.asProxySynthDef(this);
 			if(synthDef.isNil, 
-				{ "writing synthDef failed".inform },
+				{ "creating synthDef failed".inform },
 				{
 					synthDef.writeDefFile;
 					if(send, 
-						{ this.sendToServer(freeLast, false, completionFunc) },
+						{ this.sendToServer(freeLast, false, nil, clock) },
 						{ this.updateSynthDef } //only load def. maybe we are on server already? 
 					);
 			})
@@ -171,6 +171,9 @@ NodeProxy : AbstractFunction {
 	release {
 		if(this.isPlaying, { group.set(\synthGate, 0.0) });
 	}
+	run { arg flag=true;
+		if(this.isPlaying, { group.run(flag) });
+	}
 	
 	/////////////////////////////////////////////
 	
@@ -178,21 +181,19 @@ NodeProxy : AbstractFunction {
 			
 	// server communications, updating
 	
-	sendToServer { arg freeLast=true, loaded=false, completionFunc;
+	sendToServer { arg freeLast=true, loaded=false, extraArgs, clock;
 		var cmd, resp;
 		if( synthDef.notNil and: { server.serverRunning }, {
 				cmd = List.new;
-				this.sendSynthCommand(cmd, freeLast);
+				this.sendSynthCommand(cmd, freeLast, extraArgs);
 				if(loaded.not, { 
 					this.updateSynthDef;
 					resp = OSCresponder(server.addr, '/done', {
-						server.sendCmdList(cmd);
-						completionFunc.value(this);
+						clock.sched({ server.sendCmdList(cmd) });
 						resp.remove;
 					}).add
 				}, { 
-						server.sendCmdList(cmd);
-						completionFunc.value(this)
+						clock.sched({ server.sendCmdList(cmd) })
 				});
 		});
 	}
@@ -209,7 +210,7 @@ NodeProxy : AbstractFunction {
 	}
 	
 	
-	sendSynthCommand { arg cmd, freeLast=true;
+	sendSynthCommand { arg cmd, freeLast=true, extraArgs;
 		var synth;
 				if(this.isPlaying.not, {
 					group = Group.newCommand(cmd, server, \addToHead);
@@ -220,7 +221,7 @@ NodeProxy : AbstractFunction {
 					if(freeLast, {group.addCommand(cmd, "/n_set", [\synthGate, 0.0]) });
 				});
 		
-		synth = Synth.newCommand(cmd, synthDef.name, nil, group); 
+		synth = Synth.newCommand(cmd, synthDef.name, extraArgs, group); 
 		nodeMap.updateCommand(cmd, synth);
 		
 	
@@ -258,9 +259,9 @@ NodeProxy : AbstractFunction {
 				{ In.kr( bus.index, n) }
 			);
 		//test that
-		if(numChannels.notNil and: { numChannels != n }, {
-			out = NumChannels.ar(out, numChannels, true)
-		}); 
+		//if(numChannels.notNil and: { numChannels != n }, {
+//			out = NumChannels.ar(out, numChannels, true)
+//		}); 
 		^out
 		
 	}
@@ -271,16 +272,16 @@ NodeProxy : AbstractFunction {
 		if(parentProxy.notNil && (parentProxy !== this), { parentProxy.parents.add(this) });
 	}
 	
-	wakeUp {
+	wakeUp { arg clock;
 		
-		if(this.isPlaying.not, { this.sendToServer(true, true) });
+		if(this.isPlaying.not, { this.sendToServer(true, true, nil, clock) });
 	
 	}
 	
-	wakeUpParents {
+	wakeUpParents { arg clock;
 		
-		parents.do({ arg item; item.wakeUpParents });
-		this.wakeUp;
+		parents.do({ arg item; item.wakeUpParents(clock) });
+		this.wakeUp(clock);
 	}
 	
 		

@@ -1,10 +1,11 @@
 ProxySpace : EnvironmentRedirect {	classvar <>lastEdited;//undo support
-		var <group, <server;
+		var <group, <server, <>clock;
 	var <>defaultNumChannels=2; //default values for numChannels 
-		*new { arg target;
+		*new { arg target, clock;
 		^super.new.einit(target)
-	}	*pop { 		if(this.inside, {			currentEnvironment = currentEnvironment.saveEnvir;		}, { "¥ ProxySpace is inactive already".postln })	}	*push { arg server;
-		^super.push.einit(server);
+	}
+		*pop { 		if(this.inside, {			currentEnvironment = currentEnvironment.saveEnvir;		}, { "¥ ProxySpace is inactive already".postln })	}	*push { arg target, clock;
+		^super.push.einit(target).clock_(clock);
 	}
 	
 	//todo add group to target	einit { arg target; server = target.asTarget.server;  }
@@ -44,7 +45,7 @@
 			if(obj.isNil, { this.removeAt(key);  });
 			
 		});
-		proxy.setObj(obj, true);
+		proxy.setObj(obj, true, true, clock);
 		this.class.lastEdited = proxy;	}
 	
 		
