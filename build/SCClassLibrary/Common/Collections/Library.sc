@@ -3,41 +3,41 @@
 
 Library : MultiLevelIdentityDictionary 
 {
-	classvar global;
+	classvar <global;
 	
-	*global { 
-		^(global ?? { global =  this.new });
+	*initClass {
+		global = this.new;
 	}
+
 	*clear {
 		global = this.new;
 	}
 	*at { arg ... args;
-		^this.global.performList(\at, args);
+		^global.performList(\at, args);
 	}
 
 	*atList { arg args;
-		^this.global.performList(\at,args)
+		^global.performList(\at,args)
 	}
 	*putList { arg args;
-		^this.global.performList(\put,args)
+		^global.performList(\put,args)
 	}
 	
 	*put { arg ... args;
-		
-		this.global.performList(\put,args);
+		global.performList(\put,args);
 	}
 	*create { arg ... args;
-		^this.global.performList(\create, args);
+		^global.performList(\create, args);
 	}
 	*localPut { arg ... args;
-		^this.global.performList(\put, args);
+		^global.performList(\put, args);
 	}
 	*localCreate { arg ... args;
-		^this.global.performList(\create, args);
+		^global.performList(\create, args);
 	}
 	
 	*postTree {
-		this.global.postTree
+		global.postTree
 	}
 	postTree {
 		this.doPostTree(dictionary)		
