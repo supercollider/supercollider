@@ -1,0 +1,74 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Assignment Statements \
+
+\f1\b0\fs24 \
+\
+
+\f0\b Single Assignment\
+
+\f1\b0 \
+A single assignment assigns the value of an expression on the right hand side to a variable \
+on the left hand side. A single assignment is in the form:\
+\
+<variable> = <an expression>\
+\
+examples:\
+\
+
+\f2 x = [1, 2, 3, 4].rotate(1);\
+c = a + b;\
+
+\f1 \
+
+\f0\b Multiple Assignment\
+
+\f1\b0 \
+A multiple assignment statement assigns the elements of a Collection which is the result of an \
+expression on the right hand side, to a list of variables on the left hand side. \
+A multiple assignment statement is preceeded by the symbol #. If the last \
+variable on the left is preceeded by three dots, then the entire remainder of the collection is \
+assigned to that variable. There must be at least one variable name before the ellipsis.\
+The form of a multiple assignment is:\
+\
+# <list of variables> = <expression>\
+ -- or --\
+# <list of variables> ... <variable> = <expression>\
+\
+examples:\
+\
+
+\f2 # a, b, c = [1, 2, 3, 4, 5, 6]; \cf2 // afterwards a=1, b=2, c=3\
+\cf0 \
+# a, b ... c = [1, 2, 3, 4, 5, 6]; \cf2 // afterwards a=1, b=2, c = [3, 4, 5, 6]\
+\cf0 \
+# ... a = [1, 2, 3, 4, 5, 6]; \cf2 // ILLEGAL, just use:    a = [1, 2, 3, 4, 5, 6];\
+
+\f1 \cf0 \
+Multiple assignment is implemented using the 'at' method and the 'copyToEnd' method.\
+Your right hand side expression can return any object that responds to these messages.\
+\
+
+\f0\b Instance Variable Assignment\
+\
+
+\f1\b0 The basic syntax for setting the value of an instance variable is to use the variable's setter\
+method which is the name of the variable with an underscore appended.\
+\
+
+\f2 point.x_(5); \cf2 // set point's x coordinate to 5\
+
+\f1 \cf0 \
+An alternative syntax is to use instance variable assignment.\
+\
+
+\f2 point.x = 5;\
+
+\f1 \
+This type of assignment is translated to the first form by the compiler. The two syntaxes are equivalent.\
+\
+}
