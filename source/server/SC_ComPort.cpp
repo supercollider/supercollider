@@ -414,7 +414,6 @@ void SC_TcpInPort::ConnectionTerminated()
         mConnectionAvailable.Release();
 }
 
-void null_reply_func(struct ReplyAddress* addr, char* msg, int size);
 void null_reply_func(struct ReplyAddress* /*addr*/, char* /*msg*/, int /*size*/)
 {
 }

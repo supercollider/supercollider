@@ -56,6 +56,7 @@ void Usage()
 		"          When using TCP, the session password must be the first command sent.\n"
 		"          The default is no password.\n"
 		"          UDP ports never require passwords, so for security use TCP.\n"
+		"   -N <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>\n"
 		"\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n",
 		kDefaultWorldOptions.mNumControlBusChannels,
 		kDefaultWorldOptions.mNumAudioBusChannels, 
@@ -71,8 +72,17 @@ void Usage()
 		kDefaultWorldOptions.mNumRGens,
 		kDefaultWorldOptions.mMaxLogins
 	);
-	exit(0);
+	exit(1);
 }
+
+#define checkNumArgs(n) \
+	if (i+n > argc) { \
+		if (n == 2) scprintf("ERROR: Argument expected after option %s\n", argv[j]); \
+		else scprintf("ERROR: More arguments expected after option %s\n", argv[j]); \
+		Usage(); \
+	} \
+	i += n;
+	
 
 int main(int argc, char* argv[]);
 int main(int argc, char* argv[])
@@ -85,64 +95,87 @@ int main(int argc, char* argv[])
 
 	WorldOptions options = kDefaultWorldOptions;
 	
-	for (int i=1; i<argc; i+=2) {
+	for (int i=1; i<argc;) {
 		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZ", argv[i][1]) == 0) {
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
-		if (i+1 >= argc) {
-			scprintf("ERROR: Argument expected after option %s\n", argv[i]);
-			Usage();
-		}
-		switch (argv[i][1]) {
+		int j = i;
+		switch (argv[j][1]) {
 			case 'u' :
-				udpPortNum = atoi(argv[i+1]);
+				checkNumArgs(2);
+				udpPortNum = atoi(argv[j+1]);
 				break;
 			case 't' :
-				tcpPortNum = atoi(argv[i+1]);
+				checkNumArgs(2);
+				tcpPortNum = atoi(argv[j+1]);
 				break;
 			case 'a' :
-				options.mNumAudioBusChannels = atoi(argv[i+1]);
+				checkNumArgs(2);
+				options.mNumAudioBusChannels = atoi(argv[j+1]);
 				break;
-			case 'i' :
-				options.mNumInputBusChannels = atoi(argv[i+1]);
+			case 'j' :
+				checkNumArgs(2);
+				options.mNumInputBusChannels = atoi(argv[j+1]);
 				break;
 			case 'o' :
-				options.mNumOutputBusChannels = atoi(argv[i+1]);
+				checkNumArgs(2);
+				options.mNumOutputBusChannels = atoi(argv[j+1]);
 				break;
 			case 'c' :
-				options.mNumControlBusChannels = atoi(argv[i+1]);
+				checkNumArgs(2);
+				options.mNumControlBusChannels = atoi(argv[j+1]);
 				break;
 			case 'z' :
-				options.mBufLength = NEXTPOWEROFTWO(atoi(argv[i+1]));
+				checkNumArgs(2);
+				options.mBufLength = NEXTPOWEROFTWO(atoi(argv[j+1]));
 				break;
 			case 'Z' :
-				options.mPreferredHardwareBufferFrameSize = NEXTPOWEROFTWO(atoi(argv[i+1]));
+				checkNumArgs(2);
+				options.mPreferredHardwareBufferFrameSize = NEXTPOWEROFTWO(atoi(argv[j+1]));
 				break;
 			case 'b' :
-				options.mNumBuffers = NEXTPOWEROFTWO(atoi(argv[i+1]));
+				checkNumArgs(2);
+				options.mNumBuffers = NEXTPOWEROFTWO(atoi(argv[j+1]));
 				break;
 			case 'l' :
-				options.mMaxLogins = NEXTPOWEROFTWO(atoi(argv[i+1]));
+				checkNumArgs(2);
+				options.mMaxLogins = NEXTPOWEROFTWO(atoi(argv[j+1]));
 				break;
 			case 'n' :
-				options.mMaxNodes = NEXTPOWEROFTWO(atoi(argv[i+1]));
+				checkNumArgs(2);
+				options.mMaxNodes = NEXTPOWEROFTWO(atoi(argv[j+1]));
 				break;
 			case 'd' :
-				options.mMaxGraphDefs = NEXTPOWEROFTWO(atoi(argv[i+1]));
+				checkNumArgs(2);
+				options.mMaxGraphDefs = NEXTPOWEROFTWO(atoi(argv[j+1]));
 				break;
 			case 'p' :
-				options.mPassword = argv[i+1];
-				break;		
+				checkNumArgs(2);
+				options.mPassword = argv[j+1];
+				break;
 			case 'm' :
-				options.mRealTimeMemorySize = atoi(argv[i+1]);
-				break;		
+				checkNumArgs(2);
+				options.mRealTimeMemorySize = atoi(argv[j+1]);
+				break;
 			case 'w' :
-				options.mMaxWireBufs = atoi(argv[i+1]);
-				break;		
+				checkNumArgs(2);
+				options.mMaxWireBufs = atoi(argv[j+1]);
+				break;
 			case 'r' :
-				options.mNumRGens = atoi(argv[i+1]);
-				break;		
+				checkNumArgs(2);
+				options.mNumRGens = atoi(argv[j+1]);
+				break;
+			case 'N' :
+// -N cmd-filename input-filename output-filename sample-rate header-format sample-format
+				checkNumArgs(7);
+				options.mNonRealTimeCmdFilename    = (strcmp(argv[j+1], "_")==0) ? 0 : argv[j+1];
+				options.mNonRealTimeInputFilename  = (strcmp(argv[j+2], "_")==0) ? 0 : argv[j+2];
+				options.mNonRealTimeOutputFilename = argv[j+3];
+				options.mNonRealTimeSampleRate = (int)atof(argv[j+4]);
+				options.mNonRealTimeOutputHeaderFormat = argv[j+5];
+				options.mNonRealTimeOutputSampleFormat = argv[j+6];
+				break;
 			default: Usage();
 		}
 	}

@@ -29,6 +29,8 @@
 
 typedef void (*ReplyFunc)(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize);
 
+void null_reply_func(struct ReplyAddress* addr, char* msg, int size);
+
 struct ReplyAddress
 {
 	struct sockaddr_in mSockAddr;

@@ -119,6 +119,7 @@ bool HasAltivec();
 
 void initialize_library();
 void initializeScheduler();
+void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions);
 
 World* World_New(WorldOptions *inOptions)
 {	
@@ -227,44 +228,8 @@ World* World_New(WorldOptions *inOptions)
 				scprintf("start audio failed.\n");
 				return 0;
 			}
-		} else {		
-			GraphDef *list = 0;
-			list = GraphDef_LoadDir(world, "synthdefs", list);
-			GraphDef_Define(world, list);
-
-			// batch process non real time audio
-			if (!inOptions->mNonRealTimeCmdFilename)
-				throw std::runtime_error("Non real time command filename is NULL.\n");
-				
-			if (!inOptions->mNonRealTimeOutputFilename) 
-				throw std::runtime_error("Non real time output filename is NULL.\n");
-			
-			SF_INFO info;
-			info.samplerate = inOptions->mNonRealTimeSampleRate;
-			info.channels = world->mNumOutputs;
-			world->hw->mNRTOutputFile = sf_open(inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &info);
-			if (!world->hw->mNRTOutputFile) 
-				throw std::runtime_error("Couldn't open non real time output file.\n");
-			
-			if (inOptions->mNonRealTimeInputFilename) {
-				world->hw->mNRTInputFile = sf_open(inOptions->mNonRealTimeInputFilename, SFM_READ, &info);
-				if (!world->hw->mNRTInputFile) 
-					throw std::runtime_error("Couldn't open non real time input file.\n");
-				
-				if (info.samplerate != inOptions->mNonRealTimeSampleRate)
-					scprintf("WARNING: input file sample rate does not equal output sample rate.\n");
-					
-			} else {
-				world->hw->mNRTInputFile = 0;
-			}
-			
-			world->hw->mNRTCmdFile = fopen(inOptions->mNonRealTimeCmdFilename, "r");
-			if (!world->hw->mNRTCmdFile) 
-				throw std::runtime_error("Couldn't open non real time command file.\n");
-				
-			World_Start(world);
-			
-			World_Cleanup(world);
+		} else {	
+			World_NonRealTimeSynthesis(world, inOptions);
 			world = 0;
 		}
 	} catch (std::exception& exc) {
@@ -274,6 +239,181 @@ World* World_New(WorldOptions *inOptions)
 	} catch (...) {
 	}
 	return world;
+}
+
+bool nextOSCPacket(FILE *file, OSC_Packet *packet, int64& outTime)
+{
+	int32 msglen;
+	if (!fread(&msglen, 1, sizeof(int32), file)) return true;
+	if (msglen > 8192) 
+		throw std::runtime_error("OSC packet too long. > 8192 bytes\n");
+		
+	fread(packet->mData, 1, msglen, file);
+	if (strcmp(packet->mData, "#bundle")!=0)
+			throw std::runtime_error("OSC packet not a bundle\n");
+	
+	packet->mSize = msglen;
+	
+	outTime = *(int64*)(packet->mData+8);
+	return false;
+}
+
+void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket);
+
+void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
+{
+	GraphDef *list = 0;
+	list = GraphDef_LoadDir(world, "synthdefs", list);
+	GraphDef_Define(world, list);
+	const int kFileBufFrames = 8192;
+	const int kBufMultiple = kFileBufFrames / world->mBufLength;
+
+	// batch process non real time audio
+	if (!inOptions->mNonRealTimeCmdFilename)
+		throw std::runtime_error("Non real time command filename is NULL.\n");
+		
+	if (!inOptions->mNonRealTimeOutputFilename) 
+		throw std::runtime_error("Non real time output filename is NULL.\n");
+	
+	SF_INFO inputFileInfo, outputFileInfo;
+	float *inputFileBuf = 0;
+	float *outputFileBuf = 0;
+	int numInputChannels;
+	int numOutputChannels;
+	
+	outputFileInfo.samplerate = inOptions->mNonRealTimeSampleRate;
+	numOutputChannels = outputFileInfo.channels = world->mNumOutputs;
+	world->hw->mNRTOutputFile = sf_open(inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &outputFileInfo);
+	if (!world->hw->mNRTOutputFile) 
+		throw std::runtime_error("Couldn't open non real time output file.\n");
+	
+	outputFileBuf = (float*)calloc(1, world->mNumOutputs * kFileBufFrames * sizeof(float));
+	
+	if (inOptions->mNonRealTimeInputFilename) {
+		world->hw->mNRTInputFile = sf_open(inOptions->mNonRealTimeInputFilename, SFM_READ, &inputFileInfo);
+		if (!world->hw->mNRTInputFile) 
+			throw std::runtime_error("Couldn't open non real time input file.\n");
+
+		inputFileBuf = (float*)calloc(1, inputFileInfo.channels * kFileBufFrames * sizeof(float));
+		
+		if (world->mNumInputs != inputFileInfo.channels)
+			scprintf("WARNING: input file channels didn't match number of inputs specified in options.\n");
+
+		numInputChannels = world->mNumInputs = inputFileInfo.channels; // force it.
+
+		if (inputFileInfo.samplerate != inOptions->mNonRealTimeSampleRate)
+			scprintf("WARNING: input file sample rate does not equal output sample rate.\n");
+			
+	} else {
+		world->hw->mNRTInputFile = 0;
+	}
+	
+	FILE *cmdFile;
+	if (inOptions->mNonRealTimeCmdFilename) {
+		cmdFile = fopen(inOptions->mNonRealTimeCmdFilename, "r");
+	} else cmdFile = stdin;
+	if (!cmdFile) 
+		throw std::runtime_error("Couldn't open non real time command file.\n");
+		
+	char msgbuf[8192];
+	OSC_Packet packet;
+	memset(&packet, 0, sizeof(packet));
+	packet.mData = msgbuf;
+	packet.mIsBundle = true;
+	packet.mReplyAddr.mReplyFunc = null_reply_func;
+
+	int64 schedTime;
+	if (nextOSCPacket(cmdFile, &packet, schedTime))
+		throw std::runtime_error("command file empty.\n");
+	int64 prevTime = schedTime;
+	
+	World_SetSampleRate(world, inOptions->mNonRealTimeSampleRate);
+	World_Start(world);
+	
+	int bufLength = world->mBufLength;
+	int64 oscTime = 0;
+	double oscToSamples = inOptions->mNonRealTimeSampleRate / pow(2.,32.);
+	int64 oscInc = (int64)((double)bufLength / oscToSamples);
+	
+	bool run = true;
+	int inBufStep = numInputChannels * bufLength;
+	int outBufStep = numOutputChannels * bufLength;
+	float* inputBuses    = world->mAudioBus + world->mNumOutputs * bufLength;
+	float* outputBuses   = world->mAudioBus;
+	int32* inputTouched  = world->mAudioBusTouched + world->mNumOutputs;
+	int32* outputTouched = world->mAudioBusTouched;
+	for (; run;) {
+		int bufFramesCalculated = 0;
+		float* inBufPos = inputFileBuf;
+		float* outBufPos = outputFileBuf;
+		
+		if (world->hw->mNRTInputFile) {
+			int framesRead = sf_readf_float(world->hw->mNRTInputFile, inputFileBuf, kFileBufFrames);
+			if (framesRead < kFileBufFrames) {
+				memset(inputFileBuf + framesRead * numInputChannels, 0, 
+					(kFileBufFrames - framesRead) * numInputChannels * sizeof(float));
+			}
+		}
+		
+		for (int i=0; i<kBufMultiple && run; ++i) {
+			int bufCounter = world->mBufCounter;
+			
+			// deinterleave input to input buses
+			if (inputFileBuf) {
+				float *inBus = inputBuses;
+				for (int j=0; j<numInputChannels; ++j, inBus += bufLength) {
+					float *inFileBufPtr = inBufPos + j;
+					for (int k=0; k<bufLength; ++k) {
+						inBus[k] = *inFileBufPtr;
+						inFileBufPtr += numInputChannels;
+					}
+					inputTouched[j] = bufCounter;
+				}
+			}
+			
+			// execute ready commands
+			int64 nextTime = oscTime + oscInc;
+			
+			while (schedTime <= nextTime) {
+				world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
+				if (world->mSampleOffset < 0) world->mSampleOffset = 0;
+				else if (world->mSampleOffset >= world->mBufLength) world->mSampleOffset = world->mBufLength-1;
+	
+				PerformOSCBundle(world, &packet);
+				if (nextOSCPacket(cmdFile, &packet, schedTime)) { run = false; break; }
+				if (schedTime < prevTime) {
+					scprintf("ERROR: Packet time stamps out-of-order.\n");
+					goto Bail;
+				}
+				prevTime = schedTime;
+			}
+			
+			World_Run(world);
+			
+			// interleave output to output buffer
+			float *outBus = outputBuses;
+			for (int j=0; j<numOutputChannels; ++j, outBus += bufLength) {
+				float *outFileBufPtr = outBufPos + j;
+				for (int k=0; k<bufLength; ++k) {
+					*outFileBufPtr = outBus[k];
+					outFileBufPtr += numInputChannels;
+				}
+				outputTouched[j] = bufCounter;
+			}
+			bufFramesCalculated += bufLength;
+			inBufPos += inBufStep;
+			outBufPos += outBufStep;
+			world->mBufCounter++;
+		}
+Bail:
+		// write output
+		sf_writef_float(world->hw->mNRTOutputFile, outputFileBuf, bufFramesCalculated);
+	}
+	
+	sf_close(world->hw->mNRTOutputFile);
+	if (world->hw->mNRTInputFile) sf_close(world->hw->mNRTInputFile);
+	
+	World_Cleanup(world);
 }
 
 void World_OpenUDP(struct World *inWorld, int inPort)
