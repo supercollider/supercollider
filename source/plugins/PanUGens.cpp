@@ -890,6 +890,10 @@ void PanAz_next(PanAz *unit, int inNumSamples)
 	
 	pos *= numOutputs;
 	
+	// this is a trick to allow me to get away with not being strictly in place
+	float *zin0 = OUT(numOutputs-1);
+	memcpy(zin0, IN(0), inNumSamples*sizeof(float));
+	
 	for (int i=0; i<numOutputs; ++i) {
 		float *out = ZOUT(i);
 		float nextchanamp;
@@ -905,16 +909,16 @@ void PanAz_next(PanAz *unit, int inNumSamples)
 
 		if (nextchanamp == chanamp) {
 			if (nextchanamp == 0.f) {
-				Clear(inNumSamples, out);
+				ZClear(inNumSamples, out);
 			} else {
-				float *in = ZIN(0);
+				float *in = zin0;
 				LOOP(inNumSamples, 
 					ZXP(out) = ZXP(in) * chanamp;
 				)
 			}
 		} else {
 			float chanampslope  = CALCSLOPE(nextchanamp, chanamp);
-			float *in = ZIN(0);
+			float *in = zin0;
 			LOOP(inNumSamples, 
 				ZXP(out) = ZXP(in) * chanamp;
 				chanamp += chanampslope;
