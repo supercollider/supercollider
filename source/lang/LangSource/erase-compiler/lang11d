@@ -188,6 +188,64 @@ msgsend : name blocklist1
 					newPyrPushLitNode((PyrSlotNode*)$1, NULL));
 				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$4, 0); 
 			}
+		| classname '[' arrayelems ']'
+			{ $$ = (long)newPyrDynListNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
+		| classname blocklist1
+			{ 
+				PyrSlotNode *selectornode;
+				PyrSlot slot;
+				PyrParseNode* args;
+				
+				SetSymbol(&slot, s_new);
+				selectornode = newPyrSlotNode(&slot);
+				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1);
+				$$ = (long)newPyrCallNode(selectornode, args, 0, $2); 
+			}
+		| classname '(' keyarglist1 ')' blocklist
+			{ 
+				PyrSlotNode *selectornode;
+				PyrSlot slot;
+				PyrParseNode* args;
+				
+				SetSymbol(&slot, s_new);
+				selectornode = newPyrSlotNode(&slot);
+				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1);
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$3, $5); 
+			}
+		| classname '(' arglist1 optkeyarglist ')' blocklist
+			{ 
+				PyrSlotNode *selectornode;
+				PyrSlot slot;
+				PyrParseNode* args;
+				
+				SetSymbol(&slot, s_new);
+				selectornode = newPyrSlotNode(&slot);
+				args = linkNextNode(
+					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1), 
+					(PyrParseNode*)$3);
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$4, $6); 
+			}
+		| classname '(' arglistv1 optkeyarglist ')'
+			{
+				PyrSlotNode *selectornode, *selectornode2;
+				PyrSlot slot, slot2;
+				PyrParseNode* args;
+				
+				if (isSuperObjNode((PyrParseNode*)$1)) {
+					((PyrPushNameNode*)$1)->mSlot.us = s_this;
+					SetSymbol(&slot, s_superPerformList);
+				} else {
+					SetSymbol(&slot, s_performList);
+				}
+				SetSymbol(&slot2, s_new);
+				selectornode = newPyrSlotNode(&slot);
+				selectornode2 = newPyrSlotNode(&slot2);
+				args = linkNextNode(
+					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1),
+					newPyrPushLitNode(selectornode2, NULL));
+				args = linkNextNode(args, (PyrParseNode*)$3);
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, 0); 
+			}
 		| expr '.' '(' keyarglist1 ')' blocklist
 			{ 
 				PyrSlotNode *selectornode;
@@ -290,53 +348,6 @@ expr1	: pushliteral
 			{ $$ = (long)newPyrDynDictNode((PyrParseNode*)$2); }
 		| pseudovar
 			{ $$ = (long)newPyrPushNameNode((PyrSlotNode*)$1); }
-		| classname '(' keyarglist1 ')'
-			{ 
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-				
-				SetSymbol(&slot, s_new);
-				selectornode = newPyrSlotNode(&slot);
-				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1);
-				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$3, 0); 
-			}
-		| classname '(' arglist1 optkeyarglist ')'
-			{ 
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-				
-				SetSymbol(&slot, s_new);
-				selectornode = newPyrSlotNode(&slot);
-				args = linkNextNode(
-					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1), 
-					(PyrParseNode*)$3);
-				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$4, 0); 
-			}
-		| classname '(' arglistv1 optkeyarglist ')'
-			{
-				PyrSlotNode *selectornode, *selectornode2;
-				PyrSlot slot, slot2;
-				PyrParseNode* args;
-				
-				if (isSuperObjNode((PyrParseNode*)$1)) {
-					((PyrPushNameNode*)$1)->mSlot.us = s_this;
-					SetSymbol(&slot, s_superPerformList);
-				} else {
-					SetSymbol(&slot, s_performList);
-				}
-				SetSymbol(&slot2, s_new);
-				selectornode = newPyrSlotNode(&slot);
-				selectornode2 = newPyrSlotNode(&slot2);
-				args = linkNextNode(
-					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1),
-					newPyrPushLitNode(selectornode2, NULL));
-				args = linkNextNode(args, (PyrParseNode*)$3);
-				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, 0); 
-			}
-		| classname '[' arrayelems ']'
-			{ $$ = (long)newPyrDynListNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
 		| expr1 '[' arglist1 ']'
 			{ 
 				PyrSlotNode *selectornode;
@@ -700,6 +711,7 @@ valrange2	: DOTDOT exprseq
 expr	: expr1
 		| valrangexd
 		| valrangeassign
+		| classname { $$ = (long)newPyrPushNameNode((PyrSlotNode*)$1); }
 		| expr '.' '[' arglist1 ']'
 			{ 
 				PyrSlotNode *selectornode;
@@ -713,8 +725,6 @@ expr	: expr1
 					(PyrParseNode*)$4);
 				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
 			}
-		| classname
-			{ $$ = (long)newPyrPushNameNode((PyrSlotNode*)$1); }
 		| '`' expr 
 			{
 				PyrParseNode *node, *args;
