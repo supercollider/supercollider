@@ -3,6 +3,7 @@ SynthDef {
 	var <>name;
 	
 	var <>controls, <>controlNames; // ugens add to this
+	var <>controlIndex=0;
 	var <>children;
 		
 	var <>constants;
@@ -44,11 +45,12 @@ SynthDef {
 		UGen.buildSynthDef = this;
 		constants = Dictionary.new;
 		constantSet = Set.new;
-		controlNames = nil;
 		controls = nil;
+		controlIndex = 0;
 	}
 	buildUgenGraph { arg func, rates, prependArgs;
 		// restart controls in case of *wrap
+		controlNames = nil;
 		prependArgs = prependArgs.asArray;
 		this.addControlsFromArgsOfFunc(func, rates, prependArgs.size);
 		^func.valueArray(prependArgs ++ this.buildControls);
@@ -112,7 +114,7 @@ SynthDef {
 		var arguments;
 		var nonControlNames, irControlNames, krControlNames, trControlNames;
 		var controlUGens, values, lags, valsize;
-		var def, argNames, controlIndex = 0;
+		var def, argNames;
 		
 		arguments = Array.newClear(controlNames.size);
 		
@@ -184,9 +186,6 @@ SynthDef {
 		this.indexUGens;
 		UGen.buildSynthDef = nil;		
 	}
-
-	
-
 
 	asBytes {
 		var stream;
@@ -366,8 +365,10 @@ SynthDef {
 			lib.read(path);
 			lib.servers.do { arg server;
 				server.sendBundle(nil, ["/d_recv", bytes] ++ completionMsg)
-			}
-		} { file.close }
+			};
+		} { 
+			file.close 
+		}
 	}
 
 	play { arg target,args,addAction=\addToHead;
