@@ -2,11 +2,12 @@ ProxySynthDef : SynthDef {
 	
 	var <>rate, <>numChannels; 
 	var <>canReleaseSynth, <>canFreeSynth;
-	
+	classvar <>outClass;
 	
 	*initClass {
 		//clean up any written synthdefs starting with "temp__"
 		unixCmd("rm synthdefs/temp__*");
+		outClass = Out; // either Out or OffsetOut
 	}	
 	
 	*new { arg name, func, rates, prependArgs, makeFadeEnv=true, channelOffset=0, chanConstraint;
@@ -31,7 +32,7 @@ ProxySynthDef : SynthDef {
 			
 			if(isScalar.not and: hasOutArg)
 			{ 
-				"out argument is provided internally!".error; 
+				"out argument is provided internally!".error; // avoid overriding generated out
 				^nil 
 			};
 			
@@ -80,7 +81,7 @@ ProxySynthDef : SynthDef {
 					output
 				}, {
 					outCtl = Control.names(\out).ir(0) + channelOffset;
-					Out.multiNewList([rate, outCtl]++output)
+					outClass.multiNewList([rate, outCtl]++output)
 			})
 		});
 		
