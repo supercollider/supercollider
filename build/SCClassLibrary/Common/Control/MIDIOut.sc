@@ -43,7 +43,7 @@ MIDIClient {
 MIDIIn {
 	var <>port;
 	classvar <>action, 
-	<> note, <> polytouch, 
+	<> noteOn, <> noteOff, <> polytouch, 
 	<> control, <> program, 
 	<> touch, <> bend;	
 	
@@ -55,11 +55,13 @@ MIDIIn {
 	*doAction{arg src, status, a, b, c;
 		action.value(src, status, a, b, c);
 		}
-	*doNoteAction{arg src, chan, num, veloc;
-		//note.postln;
-		note.value(src, chan, num, veloc);
+	*doNoteOnAction{arg src, chan, num, veloc;
+		noteOn.value(src, chan, num, veloc);
 	}
-	*doPolyTochAction{arg src, chan, num, val;
+	*doNoteOffAction{arg src, chan, num, veloc;
+		noteOff.value(src, chan, num, veloc);
+	}
+	*doPolyTouchAction{arg src, chan, num, val;
 		polytouch.value(src, chan, num, val);
 	}
 	*doControlAction{arg src, chan, num, val;
