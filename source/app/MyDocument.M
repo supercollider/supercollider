@@ -53,6 +53,16 @@ bool docCreatedFromLang = false; //if this is true addDocument is not called
 
 @implementation MyDocument
 
+- (id)init
+{
+	mWindowObj = nil;
+    initTextView = nil;
+    textView = nil;
+    scrollView = nil;
+    isRichText = YES;
+	return [super init];
+}
+
 - (NSTextView*)makeTextView
 {
     NSTextView* aTextView = [[SCTextView alloc] initWithFrame: 
@@ -819,18 +829,13 @@ extern PyrSymbol * s_didResignKey;
 - (void)windowWillClose:(NSNotification *)aNotification
 {
     //for some reason some Documents created with open do not call windowWillClose
-    /*
-   
-	[self callSCLangWithMethod: s_closed];
+	if (textView == gPostView) gPostView = nil;
+ 	[self callSCLangWithMethod: s_closed];
 	[self setSCObject: nil];
-    */
 }
 - (void)dealloc{
 	//for some reason some Documents created with open do not call windowWillClose
 	//so that its action is called here: jan.t
-	if (textView == gPostView) gPostView = nil;
- 	[self callSCLangWithMethod: s_closed];
-	[self setSCObject: nil];
 	[super dealloc];
 }
 - (IBAction) becomePostWindow: (id) sender

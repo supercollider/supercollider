@@ -508,13 +508,12 @@ int prTextWindow_DisplayName(struct VMGlobals *g, int numArgsPushed)
         MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
         if (!doc) return errFailed;
         
-        NSString* str = [doc displayName];
-        char * cstr = new char [[str length]];
-        [str getCString: cstr];
+        const char * cstr = [[doc displayName] UTF8String];
         PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(a, string);
         return errNone;
 }
+
 int prTextWindow_GetSelectedRangeLocation(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_GetSelectedRangeLocation(struct VMGlobals *g, int numArgsPushed)
 {
@@ -526,6 +525,101 @@ int prTextWindow_GetSelectedRangeLocation(struct VMGlobals *g, int numArgsPushed
 		NSRange range = [[doc textView] selectedRange];
 		SetInt(a, range.location);
         return errNone;
+}
+
+#if 0
+int prTextWindow_SelectToken(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SelectToken(struct VMGlobals *g, int numArgsPushed)
+{
+        if (!g->canCallOS) return errCantCallOS;
+
+		PyrSlot *a = g->sp;
+        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        if (!doc) return errFailed;
+		
+		NSString* string = [[doc textView] string];
+		NSRange range = [[doc textView] selectedRange];
+		int clickLoc = range.location;
+		range.location = range.location < 64 ? 0 : range.location - 64;
+		range.length = 64;
+		NSRange wordRange = range;
+		for (int i=clickLoc; i>=(int)range.location; --i) {
+			if (isspace([string characterAtIndex: i])) {
+				wordRange.location = i;
+				wordRange.length = range.location + range.length - i;
+				break;
+			}
+		}
+		for (int i=clickLoc; i<(int)(range.location + range.length); ++i) {
+			if (isspace([string characterAtIndex: i])) {
+				wordRange.length = i - wordRange.location;
+				break;
+			}
+		}
+		
+        [doc selectRangeStart: wordRange.location size: wordRange.length];
+
+        return errNone;
+}
+#endif
+
+int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+
+	PyrSlot *a = g->sp;
+	
+	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+	if (!doc) return errFailed;
+	
+	NSTextView *textView = [doc textView];
+	NSRange range = [textView selectedRange];
+	int clickLoc = range.location;
+	
+	NSTextStorage *textStorage = [textView textStorage];
+	NSRange limitRange = NSMakeRange(0, [textStorage length]);
+	NSRange underlineRange;
+	if (range.location < limitRange.length) {
+
+		id isUnderlined = [textStorage attribute: NSUnderlineStyleAttributeName 
+							atIndex: range.location 
+							longestEffectiveRange: &underlineRange 
+							inRange: limitRange];
+
+		if (isUnderlined) {
+		
+			// underlined range should not cross newlines.
+			NSString* string = [[doc textView] string];
+			
+			for (int i=clickLoc; i>=(int)underlineRange.location; --i) {
+				int c = [string characterAtIndex: i];
+				if (c == '\n') {
+					underlineRange.length -= i + 1 - underlineRange.location;
+					underlineRange.location = i + 1;
+					break;
+				}
+			}
+			for (int i=clickLoc; i<(int)(underlineRange.location + underlineRange.length); ++i) {
+				int c = [string characterAtIndex: i];
+				if (c == '\n') {
+					underlineRange.length = i - underlineRange.location;
+					break;
+				}
+			}
+			if ((int)underlineRange.length > 0) {
+				[doc selectRangeStart: underlineRange.location size: underlineRange.length];
+				SetTrue(a);
+			} else {
+				SetFalse(a);
+			}
+		} else {
+			SetFalse(a);
+		}
+	} else {
+		SetFalse(a);
+	}
+	return errNone;
 }
 
 int prTextWindow_GetSelectedRangeLength(struct VMGlobals *g, int numArgsPushed);
@@ -551,8 +645,7 @@ int prTextWindow_SelectedText(struct VMGlobals *g, int numArgsPushed)
         if (!doc) return errFailed;
         
         NSString* str = [doc currentlySelectedTextOrLine:NULL];
-        char * cstr = new char [[str length]];
-        [str getCString: cstr];
+        const char * cstr = [str UTF8String];
         PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(a, string);
         return errNone;
@@ -586,8 +679,7 @@ int prTextWindow_TextWithRange(struct VMGlobals *g, int numArgsPushed)
 		
 		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
 		NSString* str = [string substringWithRange: selectedRange];	
-		char * cstr = new char [[str length]];
-        [str getCString: cstr];
+        const char * cstr = [str UTF8String];
         PyrString *pstring = newPyrString(g->gc, cstr, 0, true);
         SetObject(a, pstring);
 		return errNone;
@@ -604,8 +696,7 @@ int prTextWindow_Text(struct VMGlobals *g, int numArgsPushed)
         if (!doc) return errFailed;
         
         NSString* str = [[doc textView] string];
-        char * cstr = new char [[str length]];
-        [str getCString: cstr];
+        const char * cstr = [str UTF8String];
         PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(a, string);
         return errNone;
@@ -741,8 +832,6 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
         NSString *nspath = [url path];
         
 		docCreatedFromLang = true;
-		//this is not needed openDocumentWithContentsOfFile does it also. jt
-		//MyDocument *doc = (MyDocument*)[docctl documentForFileName: nspath];
 		MyDocument *doc = [docctl openDocumentWithContentsOfFile: nspath display: true];
 		if (!doc) {
 			post("Can't open Document '%s'\n", [nspath cString]);
@@ -759,25 +848,7 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
         
         // select 
         [doc selectRangeStart: rangeStart size: rangeSize];
-        /*
-        NSTextView *textView = [doc textView];
-        
-        NSRange range = NSMakeRange(rangeStart, rangeSize);
-        
-        if (rangeSize < 0) {
-            unsigned int lineStart, lineEnd;
-            range.length = 0;
-            NSString *nsstring = [textView string];
-            if (!nsstring) {
-                post("text view has no string\n");
-                return errFailed;
-            }
-            [nsstring getLineStart: &lineStart end: &lineEnd contentsEnd: nil forRange: range];
-            range = NSMakeRange(lineStart, lineEnd - lineStart);
-        }
-        [textView setSelectedRange: range];
-        [textView scrollRangeToVisible: range];
-        */
+
 		PyrObject * obj = [doc getSCObject];
 		//if there is a scobject already don't store i
 		if(obj){
@@ -2525,8 +2596,8 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_SetName", prTextWindow_SetName, 2, 0);	
 	definePrimitive(base, index++, "_TextWindow_SetEditable", prTextWindow_SetEditable, 2, 0);	
 	definePrimitive(base, index++, "_TextWindow_RemoveUndo", prTextWindow_RemoveUndo, 1, 0);	
-
-
+//	definePrimitive(base, index++, "_TextWindow_SelectToken", prTextWindow_SelectToken, 1, 0);	
+	definePrimitive(base, index++, "_TextWindow_SelectUnderlinedText", prTextWindow_SelectUnderlinedText, 1, 0);	
 
 
 ///
