@@ -28,7 +28,7 @@ SoundFile {
 	var <numFrames = 0;		// number of frames
 	var <>numChannels = 1;	// number of channels
 	var <>sampleRate = 44100.0;
-
+	var <> path;
 	
 	
 	*closeAll {
@@ -40,23 +40,33 @@ SoundFile {
 		^fileptr.notNil
 	}
 	
+	*new{arg pathName;
+		^super.new.path_(pathName);
+	}
+	
 	*openRead{ arg pathName;
 		var file;
-		file = SoundFile.new;
+		file = SoundFile(pathName);
 		if(file.openRead(pathName)){^file}{^nil}
 	}
 	
 	*openWrite{ arg pathName;
 		var file;
-		file = SoundFile.new;
-		if(file.openWrite(pathName)){^file}{^nil}
+		file = SoundFile(pathName);
+		if(file.openWrite(pathName)){ ^file}{^nil}
 	}
-
-	openRead { arg pathName; 
+	
+	openRead{ arg pathName; 
+		pathName = pathName ? path;
+		^this.prOpenRead(pathName);
+	}
+	
+	prOpenRead { arg pathName; 
 		// returns true if success, false if file not found or error reading.
 		_SFOpenRead
 		^this.primitiveFailed;
 	}
+	
 	readData { arg rawArray;
 		// must have called openRead first!
 		// returns true if success, false if file not found or error reading.
@@ -71,7 +81,13 @@ SoundFile {
 		^this.primitiveFailed;
 
 	}
-	openWrite { arg pathName;
+
+	openWrite{ arg pathName;
+		pathName = pathName ? path;
+		^this.prOpenWrite(pathName)
+	}
+	
+	prOpenWrite { arg pathName;
 		// write the header
 		// format written is that indicated in headerFormat and sampleFormat. 
 		// return true if successful, false if not found or error writing.
