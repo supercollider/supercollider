@@ -19,6 +19,14 @@
 */
 
 #import <Cocoa/Cocoa.h>
+#import "UserPanel.h"
+#include "PyrObject.h"
+#include "PyrKernel.h"
+#include "GC.h"
+#include "VMGlobals.h"
+
+extern pthread_mutex_t gLangMutex;
+extern PyrSymbol *s_closed;
 
 @interface MyDocument : NSDocument
 {
@@ -26,12 +34,16 @@
     IBOutlet NSTextView* textView;
     IBOutlet NSScrollView* scrollView;
 	Boolean isRichText;
+    struct PyrObject *mWindowObj;
 }
+
 
 - (NSTextView*)makeTextView;
 - (NSTextView*) textView;
 
 - (void)windowControllerDidLoadNib:(NSWindowController*) aController;
+
+- (void)addDocument;
 
 - (IBAction)openCode:(id)sender;
 - (IBAction)methodTemplates: (id)sender;
@@ -75,4 +87,12 @@
 
 - (BOOL)validateMenuItem:(NSMenuItem *)aCell;
 
+- (void)setSCObject: (struct PyrObject*)inObject;
+- (struct PyrObject*)getSCObject;
+- (void) closeWindow;
+- (void)setBackgroundColor:(NSColor *)color;
+- (NSScrollView*) scrollView;
+- (NSTextView*) initTextView;
+-(void)selectLine:(int)linenum;
+- (IBAction)selectLineWindow: (id) sender;
 @end
