@@ -74,31 +74,6 @@
 //C22
 //C23
 //C24
-		C21B466E046D844C00A87B78 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			name = TabletApplication.h;
-			path = headers/app/TabletApplication.h;
-			refType = 2;
-		};
-		C21B466F046D844C00A87B78 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			path = TabletApplication.m;
-			refType = 4;
-		};
-		C21B4670046D844C00A87B78 = {
-			fileRef = C21B466E046D844C00A87B78;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		C21B4671046D844C00A87B78 = {
-			fileRef = C21B466F046D844C00A87B78;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		C21B4672046D847B00A87B78 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -120,79 +95,6 @@
 		};
 		C21B4675046D847B00A87B78 = {
 			fileRef = C21B4673046D847B00A87B78;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		C21B4677046D84A500A87B78 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			path = Wacom.h;
-			refType = 4;
-		};
-		C21B4679046D84A500A87B78 = {
-			fileRef = C21B4677046D84A500A87B78;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		C21B467A046D84D200A87B78 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			name = TAEHelpers.c;
-			path = source/app/TAEHelpers.c;
-			refType = 2;
-		};
-		C21B467B046D84D200A87B78 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			path = TAEHelpers.h;
-			refType = 4;
-		};
-		C21B467C046D84D200A87B78 = {
-			fileRef = C21B467A046D84D200A87B78;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		C21B467D046D84D200A87B78 = {
-			fileRef = C21B467B046D84D200A87B78;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		C21B467E046D861100A87B78 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			path = TabletAEDictionary.h;
-			refType = 4;
-		};
-		C21B467F046D861100A87B78 = {
-			fileRef = C21B467E046D861100A87B78;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		C21B4682046D93DC00A87B78 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			path = DeviceTracker.h;
-			refType = 4;
-		};
-		C21B4683046D93DC00A87B78 = {
-			fileRef = C21B4682046D93DC00A87B78;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		C21B4684046D93F600A87B78 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			path = DeviceTracker.m;
-			refType = 4;
-		};
-		C21B4685046D93F600A87B78 = {
-			fileRef = C21B4684046D93F600A87B78;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -305,12 +207,7 @@
 				F50D050802E69B6B01CA2799,
 				F50D050902E69B6B01CA2799,
 				C26BDCCE03D0B4FB00A87B78,
-				C21B466E046D844C00A87B78,
 				C21B4672046D847B00A87B78,
-				C21B4677046D84A500A87B78,
-				C21B467B046D84D200A87B78,
-				C21B467E046D861100A87B78,
-				C21B4682046D93DC00A87B78,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -796,10 +693,7 @@
 				F50D059102E69B6B01CA2799,
 				F5889A2C0397F2F801A87B78,
 				C26BDCCC03D0B4E900A87B78,
-				C21B466F046D844C00A87B78,
 				C21B4673046D847B00A87B78,
-				C21B467A046D84D200A87B78,
-				C21B4684046D93F600A87B78,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -1343,7 +1237,7 @@
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
-	<string>TabletApplication</string>
+	<string>NSApplication</string>
 </dict>
 </plist>
 ";
@@ -1436,12 +1330,7 @@
 				F5BAFADF037F805101CA27E6,
 				C26BDCCF03D0B4FB00A87B78,
 				920F883E0443F54D00A80088,
-				C21B4670046D844C00A87B78,
 				C21B4674046D847B00A87B78,
-				C21B4679046D84A500A87B78,
-				C21B467D046D84D200A87B78,
-				C21B467F046D861100A87B78,
-				C21B4683046D93DC00A87B78,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1631,10 +1520,7 @@
 				C26BDCCD03D0B4E900A87B78,
 				920F88410443F59700A80088,
 				90A4CDA1044D5AF2000000AF,
-				C21B4671046D844C00A87B78,
 				C21B4675046D847B00A87B78,
-				C21B467C046D84D200A87B78,
-				C21B4685046D93F600A87B78,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

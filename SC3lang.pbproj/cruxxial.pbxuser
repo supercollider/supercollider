@@ -100,6 +100,62 @@
 		vrLen = 1109;
 		vrLoc = 23276;
 	};
+	C21B466E046D844C00A87B78 = {
+		fileEncoding = 30;
+		isa = PBXFileReference;
+		name = TabletApplication.h;
+		path = /downloads/other/SuperCollider3/headers/app/TabletApplication.h;
+		refType = 0;
+	};
+	C21B466F046D844C00A87B78 = {
+		fileEncoding = 30;
+		isa = PBXFileReference;
+		name = TabletApplication.m;
+		path = /downloads/other/SuperCollider3/source/app/TabletApplication.m;
+		refType = 0;
+	};
+	C21B4677046D84A500A87B78 = {
+		fileEncoding = 30;
+		isa = PBXFileReference;
+		name = Wacom.h;
+		path = /downloads/other/SuperCollider3/headers/app/Wacom.h;
+		refType = 0;
+	};
+	C21B467A046D84D200A87B78 = {
+		fileEncoding = 30;
+		isa = PBXFileReference;
+		name = TAEHelpers.c;
+		path = /downloads/other/SuperCollider3/source/app/TAEHelpers.c;
+		refType = 0;
+	};
+	C21B467B046D84D200A87B78 = {
+		fileEncoding = 30;
+		isa = PBXFileReference;
+		name = TAEHelpers.h;
+		path = /downloads/other/SuperCollider3/headers/app/TAEHelpers.h;
+		refType = 0;
+	};
+	C21B467E046D861100A87B78 = {
+		fileEncoding = 30;
+		isa = PBXFileReference;
+		name = TabletAEDictionary.h;
+		path = /downloads/other/SuperCollider3/headers/app/TabletAEDictionary.h;
+		refType = 0;
+	};
+	C21B4682046D93DC00A87B78 = {
+		fileEncoding = 30;
+		isa = PBXFileReference;
+		name = DeviceTracker.h;
+		path = /downloads/other/SuperCollider3/headers/app/DeviceTracker.h;
+		refType = 0;
+	};
+	C21B4684046D93F600A87B78 = {
+		fileEncoding = 30;
+		isa = PBXFileReference;
+		name = DeviceTracker.m;
+		path = /downloads/other/SuperCollider3/source/app/DeviceTracker.m;
+		refType = 0;
+	};
 	C21B4688046DF9CE00A87B78 = {
 		fileReference = F50D058D02E69B6B01CA2799;
 		isa = PBXFileBreakpoint;
@@ -3372,7 +3428,7 @@
 			C2017CAD041A9E1600A87B78,
 		);
 		perUserDictionary = {
-			PBXPerProjectTemplateStateSaveDate = 74321673;
+			PBXPerProjectTemplateStateSaveDate = 74324071;
 			PBXWorkspaceContents = (
 				{
 					LeftSlideOut = {
@@ -4561,7 +4617,7 @@
 					WindowLocation = "{320, 90}";
 				},
 			);
-			PBXWorkspaceStateSaveDate = 74321673;
+			PBXWorkspaceStateSaveDate = 74324071;
 		};
 		perUserProjectItems = {
 			C2097843043FE7BA00A87B78 = C2097843043FE7BA00A87B78;
