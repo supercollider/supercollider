@@ -90,9 +90,9 @@ ProxySpace : LazyEnvir {
 		tempoProxy.free;
 	}
 	
-	clear {
-		this.do({ arg proxy; proxy.clear });
-		tempoProxy.clear;
+	clear { arg fadeTime=0.0;
+		this.do({ arg proxy; proxy.clear(fadeTime) });
+		tempoProxy !? { tempoProxy.clear };
 		super.clear;
 	}
 	
