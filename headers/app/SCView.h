@@ -446,7 +446,7 @@ protected:
 };
 SCView* NewSCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
-//by jan trutzschler 
+//by jan trutzschler (jan.t@kandos.de)
 class SCMultiSliderView : public SCView
 {
 public:	
@@ -454,12 +454,12 @@ public:
         virtual ~SCMultiSliderView();
 	virtual void draw(SCRect inDamage);
 	virtual void mouseTrack(SCPoint where, int modifiers);
-	
+	void setSelection(SCPoint where);
 	bool setValue(int inX, double inY, bool send);
         //virtual void setPoint(int x, double y, bool send);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
-
+        void setVisibleSize();
         virtual bool canReceiveDrag();
         virtual void receiveDrag();
 
@@ -467,22 +467,21 @@ protected:
 	void setValueFromPoint(SCPoint point);
 	SCRect calcThumbRect(int xIn, double valIn, float xoffset);
 	int mThumbSize; // size of the rect
-        int mTabSize; // size of the table
+        int mTabSize, mVisibleSize; // size of the table
         SCColor mFillColor;
         SCColor mStrokeColor;
 	SCRect mThumbRect;
 	double mCurrentY, mCurrentX;
-        int mCurrentIndex;
+        int mCurrentIndex, mStartIndex, mSelectionSize;
         double mStepSize, mStepScale;
         double * mYValues;
+        double * mSecYValues;
         DrawBackground* mKnob;
         float mXOffset ; //space between points
-        bool mReadOnly, mDrawLines, mShowIndex;
+        bool mReadOnly, mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsHorizontal;
         int mResamp;
 };
 SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
-
-
 
 
 class SCUserView : public SCView
