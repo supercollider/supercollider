@@ -75,8 +75,6 @@ z.deepCollect(0, f);\
 z.deepCollect(1, f);\
 z.deepCollect(2, f);\
 \
-z = (1..18).reshape(2, 3, 3);\
-\
 \cf2 // slice can get sections of multidimensional arrays.\cf0 \
 \cf2 // nil gets all the indices of a dimension\cf0 \
 z = \cf3 Array\cf0 .iota(4,5);\
@@ -96,24 +94,6 @@ z.slice(\cf3 nil\cf0 ,2,1);\
 z.slice(\cf3 nil\cf0 ,1,(1..2));\
 z.slice(1,[0,1]);\
 z.flop;\
-\
-\cf2 // deepCollect operates a function at different dimensions or depths in an array.\cf0 \
-\cf2 // it is easier to understand from examples than to describe.\cf0 \
-z = \cf3 Array\cf0 .iota(2,2,2,2);\
-z.rank;\
-z.shape;\
-f = \{\cf3 |item|\cf0  item + [100,200] \};\
-z.deepCollect(0, f);\
-z.deepCollect(1, f);\
-z.deepCollect(2, f);\
-z.deepCollect(3, f);\
-z.deepCollect(4, f);\
-\
-z = \cf3 Array\cf0 .iota(3,3,3);\
-f = \{\cf3 |x|\cf0  x.stutter(2) \};\
-z.deepCollect(0, f);\
-z.deepCollect(1, f);\
-z.deepCollect(2, f);\
 \
 \cf2 // sorting order\cf0 \
 \
@@ -174,6 +154,4 @@ z = (1..4);\
 			\cf4 ""\cf0 .postln;\
 \};\
 )\
-(1..3).collect \{\cf3 |x|\cf0  [x]\}\
-\
-(1..4).pyramidg(1)}
+}
