@@ -2107,8 +2107,9 @@ PyrObject* newPyrArray(class PyrGC *gc, int size, int flags, bool collect)
 {
 	PyrObject* array;
 
-	if (!gc) array = (PyrObject*)PyrGC::NewPermanent(size * sizeof(PyrSlot), flags, obj_slot);
-	else array = (PyrObject*)gc->New(size * sizeof(PyrSlot), flags, obj_slot, collect);
+	int numbytes = size * sizeof(PyrSlot);
+	if (!gc) array = (PyrObject*)PyrGC::NewPermanent(numbytes, flags, obj_slot);
+	else array = (PyrObject*)gc->New(numbytes, flags, obj_slot, collect);
 	array->classptr = class_array;
 	return array;
 }
@@ -2117,8 +2118,9 @@ PyrSymbolArray* newPyrSymbolArray(class PyrGC *gc, int size, int flags, bool col
 {
 	PyrSymbolArray* array;
 
-	if (!gc) array = (PyrSymbolArray*)PyrGC::NewPermanent(size * sizeof(PyrSlot), flags, obj_symbol);
-	else array = (PyrSymbolArray*)gc->New(size * sizeof(PyrSymbol*), flags, obj_symbol, collect);
+	int numbytes = size * sizeof(PyrSymbol*);
+	if (!gc) array = (PyrSymbolArray*)PyrGC::NewPermanent(numbytes, flags, obj_symbol);
+	else array = (PyrSymbolArray*)gc->New(numbytes, flags, obj_symbol, collect);
 	array->classptr = class_symbolarray;
 	return array;
 }
@@ -2136,9 +2138,9 @@ PyrInt8Array* newPyrInt8Array(class PyrGC *gc, int size, int flags, bool collect
 PyrInt32Array* newPyrInt32Array(class PyrGC *gc, int size, int flags, bool collect) 
 {
 	PyrInt32Array* array;
-
-	if (!gc) array = (PyrInt32Array*)PyrGC::NewPermanent(size, flags, obj_int32);
-	else array = (PyrInt32Array*)gc->New(size, flags, obj_int32, collect);
+	int numbytes = size * sizeof(int32);
+	if (!gc) array = (PyrInt32Array*)PyrGC::NewPermanent(numbytes, flags, obj_int32);
+	else array = (PyrInt32Array*)gc->New(numbytes, flags, obj_int32, collect);
 	array->classptr = class_int32array;
 	return array;
 }
@@ -2147,6 +2149,7 @@ PyrDoubleArray* newPyrDoubleArray(class PyrGC *gc, int size, int flags, bool col
 {
 	PyrDoubleArray* array;
 
+	int numbytes = size * sizeof(double);
 	if (!gc) array = (PyrDoubleArray*)PyrGC::NewPermanent(size, flags, obj_double);
 	else array = (PyrDoubleArray*)gc->New(size, flags, obj_double, collect);
 	array->classptr = class_doublearray;
