@@ -131,30 +131,6 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////
 
-class BufShmAllocCmd : public SC_SequencedCommand
-{
-public:
-	BufShmAllocCmd(World *inWorld, ReplyAddress *inReplyAddress);
-	
-	virtual int Init(char *inData, int inSize);
-
-	virtual bool Stage2();	// non real time
-	virtual bool Stage3();	//     real time
-	virtual void Stage4();	// non real time
-	
-protected:
-	int mBufIndex;
-	SndBuf mSndBuf;
-	int mNumChannels, mNumFrames;
-	float *mFreeData;
-	key_t mID;
-	
-	virtual void CallDestructor();
-	
-};
-
-///////////////////////////////////////////////////////////////////////////
-
 
 class BufFreeCmd : public SC_SequencedCommand
 {
