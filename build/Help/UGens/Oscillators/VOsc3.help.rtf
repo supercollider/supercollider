@@ -57,7 +57,6 @@ s = \cf2 Server\cf0 .local;\
 	\cf2 var\cf0  x;\
 	// mouse x controls the wavetable position\
 	x = \cf2 MouseX\cf0 .kr(0,7);\
-	freq = Vibrato.kr(freq, onset: 0.5);\
 	\cf2 Out\cf0 .ar(out,\
 		\cf2 VOsc3\cf0 .ar(bufoffset+x, freq+[0,1],freq+[0.37,1.1],freq+[0.43, -0.29], 0.3)\
 	)\
