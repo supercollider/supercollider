@@ -1,0 +1,229 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 LucidaGrande-Bold;\f1\fnil\fcharset77 LucidaGrande;\f2\fmodern\fcharset77 Courier;
+\f3\fnil\fcharset77 Monaco;\f4\fswiss\fcharset77 Helvetica-Bold;\f5\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue255;\red0\green0\blue0;\red0\green0\blue191;
+\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs42 \cf0 Writing SuperCollider Classes \
+
+\f1\b0\fs28 \
+For a basic tutorial on how standard object-orientated classes are composed, look elsewhere \
+\cf2 http://www.google.com/search?q=oop+class+tutorial \cf0 .\
+\
+\
+
+\f0\b\fs32 Inheriting \
+\
+
+\f2\b0\fs28 NewClass : SomeSuperclass \{ \
+\
+\}\
+\
+\
+Without specifying a superclass, Object is assumed as the default superclass. \
+
+\f0\b\fs32 \
+
+\f2\b0\fs28 NewClass \{ // : Object is implied\
+\
+\}\
+\
+\
+
+\f0\b\fs32 Methods \
+\
+
+\f1\b0\fs28 class methods are specified with the asterix\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	
+\f3\fs18 \cf3 *classMethod \{ \cf4 arg\cf3  argument; \
+\cf0 	\cf3 \
+\cf0 	\cf3 \}
+\f2\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+
+\f1 within the class method, the keyword \
+
+\f2 	\
+	
+\f3\fs18 \cf4 this\cf3  \
+
+\f2\fs28 \cf0 \
+
+\f1 refers to the class.   \
+\
+A class in smalltalk is itself an object.  It is an instance of Class.\
+\
+\
+instance methods are specified \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	
+\f3\fs18 \cf3 instanceMethod \{ \cf4 arg\cf3  argument; \
+\cf0 	\cf3 \
+\cf0 	\cf3 \}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs28 \cf0 \
+
+\f1 within the instance method, the keyword \
+
+\f2 	\
+	
+\f3\fs18 \cf4 this\cf3  
+\f2\fs28 \cf0 \
+\
+
+\f1 refers to the instance. \
+\
+\
+\
+to return from the method use ^ (caret)\
+\
+
+\f3\fs18 \
+someMethod \{ \
+	^returnObject \
+\}\
+
+\f2\fs28 \
+\
+
+\f1 multiple exit points also possible : \
+\
+\
+
+\f3\fs18 \cf3 someMethod \{ \cf4 arg\cf3  aBoolean; \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 	if(aBoolean,\{ \
+		^someObject \
+	\},\{ \
+		^someOtherObject \
+	\}) \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \}\
+
+\f2\fs28 \cf0 \
+\
+
+\f1 if no ^ is specified, the method will return the instance. \
+(and in the case of Class methods, will return the class) \
+\
+There is no such thing as returning void in Smalltalk.\
+\
+\
+
+\f0\b\fs32 New Instance creation \
+
+\f1\b0\fs28 Object.new will return to you a new object. \
+when overiding the class method .new you must call the superclass, which in turn calls its superclass, up until Object.new is called and an object is actually created and its memory allocated.\
+\
+
+\f3\fs18 \cf5 // this example adds no new functionality \
+\cf3 *new \{ \
+	^\cf4 super\cf3 .new \
+\}\
+\
+\cf5 // common usage \
+\cf3 new \{ \cf4 arg\cf3  arga,argb,argc; \
+	^\cf4 super\cf3 .new.init(arga,argb,argc) \
+\}\
+
+\f2\fs28 \cf0 \
+
+\f1 in this case note that super.new called the method 
+\f4\b\fs24 new
+\f1\b0\fs28  on the 
+\f5 superclass
+\f1  and returned a new object. subsequently we are calling the 
+\f4\b\fs24 .init
+\f1\b0\fs28  method on that object, which is an instance method. \
+\
+warning: if the superclass also happened to call super.new.init it will have expected to call the .init method defined in that class (the superclass), but instead the message .init will find the implementation of the class that the object actually is, which is our new subclass.   So you should use a unique methodname like myclassinit if this is likely to be a problem.\
+\
+Over reliance on inheritance is usually a design flaw.  Explore "object composition" rather than trying to obtain all your powers through inheritance.  Search google for  Design Patterns.\
+\
+class variables are accessible within class methods and in any instance methods. \
+\
+
+\f3\fs18 \cf3 	\cf4 classvar\cf3  myClassvar;\
+\
+	\cf4 var\cf3  myInstanceVar; 
+\f2\fs28 \cf0 \
+\
+\
+\
+
+\f0\b\fs32 Getter Setter \
+\
+
+\f1\b0\fs28 Classic Smalltalk demands that variables are not accessible outside of the class or instance.  A method must be added to explicitly give access: \
+\
+\
+
+\f3\fs18 \cf4 NewClass\cf3  : \cf4 Superclass\cf3  \{ \
+\
+	\cf4 var\cf3  myVariable;\
+\
+	variable \{ \
+		^variable \
+	\}\
+\
+	variable_ \{ \cf4 arg\cf3  newValue; \
+		variable = newValue; \
+	\}\
+\}\
+
+\f2\fs28 \cf0 \
+\
+
+\f1 these are referred to as getter and setter methods. \
+\
+SC allows these methods to be easily added by adding < or > \
+\
+
+\f3\fs18 \cf3 	\cf4 var\cf3  <getMe, >setMe, <>getMeOrSetMe; \
+
+\f2\fs28 \cf0 \
+\
+
+\f1 you now have the methods: \
+\
+
+\f3\fs18 \cf3 	someObject.getMe;\
+\cf0 \
+	someObject.setMe_(value);\
+
+\f2\fs28 	\
+this also allows us to say:\
+\
+
+\f3\fs18 	someObject.setMe = value;\
+\
+	someObject.getMeOrSetMe_(5);\
+	someObject.getMeOrSetMe.postln; \
+
+\f2\fs28 \
+\
+
+\f1 a getter or setter method created in this fashion may  be overriden in a subclass by manually writing the method \
+\
+eg. 	\
+
+\f3\fs18 	variable_ \{ arg newValue;  \
+		variable = newValue.clip(minval,maxval); \
+	\} \
+
+\f1\fs28 \
+\
+\
+
+\f0\b\fs32 Tricks and Traps \
+
+\f1\b0\fs28 If you should happen to declare a variable in a subclass and use the same name as a variable declared in a superclass, you will find that both variables exist, but only the one in the objects actual class is accessible.  You should not do that. \
+\
+}
