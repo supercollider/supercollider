@@ -10,7 +10,7 @@ NotePlayer : EventPlayer {
 		var msg, id, dur, server;
 		
 		id = UniqueID.next;
-		server = ~server ? Server.default;
+		server = ~server ? Server.local;
 		
 		// create note on event
 		msg = ["/s_new", ~instrument, id, ~group];
@@ -33,7 +33,7 @@ NotePlayer : EventPlayer {
 		event.use({
 			~finish.value; // finish the event
 			freqs = ~freq;
-			if (freqs.isKindOf(Symbol), { nil },{
+			if (freqs.isKindOf(Symbol), nil ,{
 				if (freqs.isSequenceableCollection, {
 					freqs.do({ arg freq;
 						~freq = freq;
