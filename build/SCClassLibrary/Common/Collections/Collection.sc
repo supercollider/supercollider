@@ -120,6 +120,12 @@ Collection {
 		this.do {|elem, i| if (function.value(elem, i)) { ^i } }
 		^nil;
 	}
+	doMsg { | selector ... args |
+		this.do {| item | item.performList(selector, args) }
+	}
+	collectMsg { | selector ... args |
+		^this.collect {| item | item.performList(selector, args) }
+	}
 	lastForWhich { | function |
 		var prev;
 		this.do {|elem, i| 
