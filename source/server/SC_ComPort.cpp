@@ -28,7 +28,13 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <stdarg.h>
+#ifdef SC_WIN32
+# include <winsock2.h>
+typedef int socklen_t;
+# define bzero( ptr, count ) memset( ptr, 0, count )
+#else
 #include <netinet/tcp.h>
+#endif                  
 
 #ifdef SC_DARWIN
 typedef int socklen_t;
@@ -197,7 +203,11 @@ SC_ComPort::SC_ComPort(struct World *inWorld, int inPortNum)
 
 SC_ComPort::~SC_ComPort()
 {
+#ifdef SC_WIN32
+    if (mSocket != -1) closesocket(mSocket);
+#else
     if (mSocket != -1) close(mSocket);
+#endif
 }
 
 void* com_thread_func(void* arg);
@@ -279,7 +289,11 @@ SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 
 SC_UdpInPort::~SC_UdpInPort()
 {
+#ifdef SC_WIN32
+    if (mSocket != -1) closesocket(mSocket);
+#else
 	if (mSocket != -1) close(mSocket);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -445,15 +459,24 @@ SC_TcpConnectionPort::SC_TcpConnectionPort(struct World *inWorld, SC_TcpInPort *
 {
     mSocket = inSocket;
 	
+#ifdef SC_WIN32
+	const char on = 1;
+	setsockopt( mSocket, IPPROTO_TCP, TCP_NODELAY, (const char*)&on, sizeof(on));
+#else
 	const int on = 1;
 	setsockopt( mSocket, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on));
+#endif
 	
     Start();
 }
 
 SC_TcpConnectionPort::~SC_TcpConnectionPort()
 {
+#ifdef SC_WIN32
+	closesocket(mSocket);
+#else
 	close(mSocket);
+#endif
     mParent->ConnectionTerminated();
 }
 
@@ -494,7 +517,11 @@ void* SC_TcpConnectionPort::Run()
 		if (size < 0) goto leave;
 		
 		validated = strcmp(buf, mWorld->hw->mPassword) == 0;
+#ifdef SC_WIN32
+		if (!validated) Sleep(i+1);	// thwart cracking.
+#else
 		if (!validated) sleep(i+1);	// thwart cracking.
+#endif
 	}
 	
 	if (validated) {
@@ -534,7 +561,11 @@ int recvall(int socket, void *msg, size_t len)
 	int total = 0;
 	while (total < (int)len)
 	{
+#ifdef SC_WIN32
+		int numbytes = recv(socket, (char*)msg, len - total, 0);
+#else
 		int numbytes = recv(socket, msg, len - total, 0);
+#endif
 		if (numbytes <= 0) return total;
 		total += numbytes;
 		msg = (void*)((char*)msg + numbytes);
@@ -547,7 +578,11 @@ int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, 
 	int total = 0;
 	while (total < (int)len)
 	{
+#ifdef SC_WIN32
+		int numbytes = sendto(socket, (char*)msg, len - total, 0, toaddr, addrlen);
+#else
 		int numbytes = sendto(socket, msg, len - total, 0, toaddr, addrlen);
+#endif
 		if (numbytes < 0) {
 			scprintf("sendallto errno %d %s\n", errno, strerror(errno));
 			return total;
@@ -563,7 +598,11 @@ int sendall(int socket, const void *msg, size_t len)
 	int total = 0;
 	while (total < (int)len) 
 	{
+#ifdef SC_WIN32
+		int numbytes = send(socket, (const char*)msg, len - total, 0);
+#else
 		int numbytes = send(socket, msg, len - total, 0);
+#endif
 		if (numbytes < 0) return total;
 		total += numbytes;
 		msg = (void*)((char*)msg + numbytes);
