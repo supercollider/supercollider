@@ -230,6 +230,7 @@ PauseStream : Stream
 		originalStream = argStream; 
 		if (stream.notNil, { stream = argStream });
 	}
+
 	next { arg inval; 
 		var nextTime;
 		nextTime = stream.next(inval);
@@ -274,9 +275,8 @@ EventStreamPlayer : PauseStream {
 			^nextTime
 		});
 	}
-	collect { arg func;
-		^this.class.new(originalStream.collect(func), event);
-	}
+	
+	asEventStreamPlayer { ^this }
 }
 
 
