@@ -1,11 +1,12 @@
 Stethoscope {
-	var <server, <numChannels, <numFrames;
-	var buffer, <window, synth, <index;
-	var b, n, c, d, sl, zx, zy, spec, rate = \audio, <size=200;
+	var <server, <numChannels, <rate, <index;
+	var <bufsize, buffer, <window, synth;
+	var b, n, c, d, sl, zx, zy, spec, <size=200;
 	
 
-	*new { arg server, numFrames=4096, numChannels=2, zoom;
-		if(server.inProcess.not, { "scope works only with internal server".error; ^this.halt });		^super.newCopyArgs(server, numChannels).makeWindow.zoom_(zoom).allocBuffer(numFrames).run;
+	*new { arg server, numChannels = 2, index, bufsize = 4096, zoom, rate;
+		if(server.inProcess.not, { "scope works only with internal server".error; ^nil });		^super.newCopyArgs(server, numChannels, rate ? \audio).makeWindow.index_(index ? 0)
+		.zoom_(zoom).allocBuffer(bufsize).run;
 	}
 	
 	windowBounds { ^Rect(10 + 20  + 256, 0 + 10, size + 10 , size + 40) }
@@ -21,7 +22,8 @@ Stethoscope {
 			{ arg view, char; 
 				if(char === $i) { this.setIndexToFirstHardwareBus; this.rate = \audio }; 
 				if(char === $ ) { this.run };
-				if(char === $s) { n.style = style = (style + 1) % 3 };
+				if(char === $s) { n.style = style = (style + 1) % 2 };
+				if(char === $S) { n.style = style = (style + 1) % 2 + 1  };
 				if(char === $j or: { char.ascii === 0 }) { this.index = index - 1 };
 				if(char === $k) { this.switchRate };
 				if(char === $l or: { char.ascii === 1 }) { this.index = index + 1 };
@@ -59,13 +61,13 @@ Stethoscope {
 		b.resize = 9;
 		b.action = {this.switchRate};
 		b.valueAction = 0;
-		this.index = 0;
+		this.updateColors;
 	}
 	
-	allocBuffer { arg argNumFrames;
-		numFrames = argNumFrames ? numFrames;
+	allocBuffer { arg argbufsize;
+		bufsize = argbufsize ? bufsize;
 		if(buffer.notNil) { buffer.free };
-		buffer = Buffer.alloc(server, numFrames, numChannels);
+		buffer = Buffer.alloc(server, bufsize, numChannels);
 		n.bufnum = buffer.bufnum;
 		if(synth.isPlaying) { synth.set(\bufnum, buffer.bufnum) };
 	}
@@ -119,13 +121,13 @@ Stethoscope {
 		if(argRate === \audio)
 		{ 
 				b.value = 0;
-				synth.set(\switch, 0);
+				if(synth.isPlaying) { synth.set(\switch, 0) };
 				rate = \audio;
 				this.updateColors;
 		}
 		{
 				b.value = 1;
-				synth.set(\switch, 1);
+				if(synth.isPlaying) { synth.set(\switch, 1) };
 				rate = \control;
 				this.updateColors;
 		}
