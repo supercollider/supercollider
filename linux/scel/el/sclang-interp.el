@@ -22,19 +22,8 @@
 (defconst sclang-post-buffer "*SCLang*"
   "Name of the SuperCollider process output buffer.")
 
-;; (defvar sclang-post-buffer-mode-string nil
-;;   "Mode string used in process buffer.")
-;; 
-;; (defvar sclang-post-buffer-mode-line-format '("-"
-;; 					      mode-line-mule-info
-;; 					      mode-line-frame-identification
-;; 					      mode-line-buffer-identification
-;; 					      "  "
-;; 					      sclang-post-buffer-mode-string)
-;;   "*Modeline format for SuperCollider process buffer.")
-
 (defun sclang-get-post-buffer ()
-  (get-buffer sclang-post-buffer))
+  (get-buffer-create sclang-post-buffer))
 
 (defmacro with-sclang-post-buffer (&rest body)
   `(with-current-buffer (sclang-get-post-buffer)
@@ -57,6 +46,20 @@
 ;; 	     (set-window-point window (point-max))
 ;; 	     (recenter -1))))))))
 
+;; (defun sclang-post-string (string &optional proc)
+;;   (let* ((buffer (process-buffer proc))
+;; 	 (window (display-buffer buffer)))
+;;     (with-current-buffer buffer
+;;       (let ((moving (= (point) (process-mark proc))))
+;; 	(save-excursion
+;; 	  ;; Insert the text, advancing the process marker.
+;; 	  (goto-char (process-mark proc))
+;; 	  (insert string)
+;; 	  (set-marker (process-mark proc) (point)))
+;; 	(when moving
+;; 	  (goto-char (process-mark proc))
+;; 	  (set-window-point window (process-mark proc)))))))
+
 (defun sclang-show-post-buffer (&optional eob-p)
   "Show SuperCollider process buffer.
 If EOB-P is non-nil, positions cursor at end of buffer."
@@ -64,6 +67,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   (with-sclang-post-buffer
    (let ((window (display-buffer (current-buffer))))
      (when eob-p
+       (goto-char (point-max))
        (save-selected-window
 	 (set-window-point window (point-max)))))))
 
@@ -89,15 +93,53 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 
 (defcustom sclang-program "sclang"
   "*Name of the SuperCollider interpreter program."
-  :group 'sclang-interface
+  :group 'sclang-programs
+  :version "21.3"
   :type 'string)
 
-(defcustom sclang-runtime-directory nil
+(defcustom sclang-runtime-directory ""
   "*Path to the SuperCollider runtime directory."
-  :group 'sclang-interface
+  :group 'sclang-options
   :version "21.3"
   :type 'directory
   :options '(:must-match))
+
+(defcustom sclang-library-configuration-file ""
+  "*Path of the library configuration file."
+  :group 'sclang-options
+  :version "21.3"
+  :type 'file
+  :options '(:must-match))
+
+(defcustom sclang-heap-size ""
+  "*Initial heap size."
+  :group 'sclang-options
+  :version "21.3"
+  :type 'string)
+
+(defcustom sclang-heap-growth ""
+  "*Heap growth."
+  :group 'sclang-options
+  :version "21.3"
+  :type 'string)
+
+(defcustom sclang-udp-port -1
+  "*UDP listening port."
+  :group 'sclang-options
+  :version "21.3"
+  :type 'integer)
+
+(defcustom sclang-main-run nil
+  "*Call Main.run on startup."
+  :group 'sclang-options
+  :version "21.3"
+  :type 'boolean)
+  
+(defcustom sclang-main-stop nil
+  "*Call Main.stop on shutdown."
+  :group 'sclang-options
+  :version "21.3"
+  :type 'boolean)
 
 ;; =====================================================================
 ;; helper functions
@@ -148,7 +190,8 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 ;; =====================================================================
 
 (defun sclang--process-sentinel (proc msg)
-  (message (format "%s %s" proc (substring msg 0 -1)))
+  (with-sclang-post-buffer
+   (insert (format "%s %s" proc (substring msg 0 -1))))
   (when (memq (process-status proc) '(exit signal))
     (sclang--on-library-shutdown)))
 
@@ -170,16 +213,34 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 ;; process startup/shutdown
 ;; =====================================================================
 
-;; (defun sclang-setup-runtime-directory (dir)
-;;   (let ((prompt-fmt "Directory \"%s\" doesn't exist; create? "))
-;;     (unless (file-exists-p dir)
-;;       (when (y-or-n-p (format prompt-fmt dir))
-;; 	(make-directory dir)))
-;;     (when (file-directory-p dir)
-;;       (let ((synthdef-dir (expand-file-name "synthdefs" dir)))
-;; 	(unless (file-exists-p dir)
-;; 	  (when (y-or-n-p (format prompt-fmt synthdef-dir))
-;; 	    (make-directory synthdef-dir)))))))
+(defun sclang-memory-option-p (string)
+  (let ((case-fold-search nil))
+    (string-match "^[1-9][0-9]*[km]?$" string)))
+
+(defun sclang-port-option-p (number)
+  (and (>= number 0) (<= number #XFFFF)))
+
+(defun sclang-make-options ()
+  (let ((default-directory "")
+	(res ()))
+    (flet ((append-option
+	    (option &optional value)
+	    (setq res (append res (list option) (and value (list value))))))
+      (if (file-directory-p sclang-runtime-directory)
+	  (append-option "-d" (expand-file-name sclang-runtime-directory)))
+      (if (file-exists-p sclang-library-configuration-file)
+	  (append-option "-l" (expand-file-name sclang-library-configuration-file)))
+      (if (sclang-memory-option-p sclang-heap-size)
+	  (append-option "-m" sclang-heap-size))
+      (if (sclang-memory-option-p sclang-heap-growth)
+	  (append-option "-g" sclang-heap-growth))
+      (if (sclang-port-option-p sclang-udp-port)
+	  (append-option "-u" (number-to-string sclang-udp-port)))
+      (if sclang-main-run
+	  (append-option "-r"))
+      (if sclang-main-stop
+	  (append-option "-s"))
+      res)))
 
 (defun sclang-start ()
   "Start SuperCollider process."
@@ -188,15 +249,10 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   (sit-for 1)
   (sclang--init-post-buffer)
   (sclang--start-command-process)
-  ;; setup runtime directory structure
-;;   (and sclang-runtime-directory
-;;        (sclang-setup-runtime-directory sclang-runtime-directory))
   (let ((process-connection-type nil))
-    (let ((proc (start-process
-		 sclang-process sclang-post-buffer
-		 sclang-program
-		 "-d" (expand-file-name (or sclang-runtime-directory
-					    default-directory)))))
+    (let ((proc (apply #'start-process
+		       sclang-process sclang-post-buffer
+		       sclang-program (sclang-make-options))))
       (set-process-sentinel proc 'sclang--process-sentinel)
       (set-process-filter proc 'sclang--process-filter)
       (set-process-coding-system proc 'latin-1-unix 'latin-1-unix)
@@ -214,7 +270,8 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 		  (< i tries))
 	(incf i)
 	(sit-for 0.5))))
-  (sclang-kill))
+  (sclang-kill)
+  (sclang--release-command-fifo))
 
 (defun sclang-kill ()
   "Kill SuperCollider process."
@@ -231,14 +288,14 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   "*Name of the \"mkfifo\" program.
 
 Change this if \"mkfifo\" has a non-standard name or location."
-  :group 'sclang-interface
+  :group 'sclang-programs
   :type 'string)
 
 (defcustom sclang-cat-program "cat"
   "*Name of the \"cat\" program.
 
 Change this if \"cat\" has a non-standard name or location."
-  :group 'sclang-interface
+  :group 'sclang-programs
   :type 'string)
 
 (defconst sclang--command-process "SCLang Command"
@@ -247,12 +304,21 @@ Change this if \"cat\" has a non-standard name or location."
 (defvar sclang--command-fifo nil
   "FIFO for communicating with the subprocess.")
 
+(defun sclang--delete-command-fifo ()
+  (and sclang--command-fifo
+       (file-exists-p sclang--command-fifo)
+       (delete-file sclang--command-fifo)))
+
+(defun sclang--release-command-fifo ()
+  (sclang--delete-command-fifo)
+  (setq sclang--command-fifo nil))
+
 (defun sclang--create-command-fifo ()
   (setq sclang--command-fifo (make-temp-name
 			      (expand-file-name
 			       (concat temporary-file-directory
 				       "sclang-command-fifo."))))
-  (and (file-exists-p sclang--command-fifo) (delete-file sclang--command-fifo))
+  (sclang--delete-command-fifo)
   (let ((res (call-process sclang-mkfifo-program
 			   nil t t
 			   sclang--command-fifo)))
@@ -260,19 +326,9 @@ Change this if \"cat\" has a non-standard name or location."
       (message "SCLang: Couldn't create command fifo")
       (setq sclang--command-fifo nil))))
 
-;; (defun sclang--create-command-fifo ()
-;;   (let ((file  "/tmp/sclang-command.fifo"))
-;; ;;     (and (file-exists-p file) (delete-file file))
-;; ;;     (call-process sclang-mkfifo-program nil nil nil file)
-;;     (message (shell-command-to-string (format "rm -f %s; mkfifo %s" file file)))
-;;     (setq sclang--command-fifo file)))
-
 (defun sclang--command-process-sentinel (proc msg)
-  (when (and (memq (process-status proc) '(exit signal))
-	     sclang--command-fifo
-	     (file-exists-p sclang--command-fifo))
-    (delete-file sclang--command-fifo)
-    (setq sclang--command-fifo nil)))
+  (and (memq (process-status proc) '(exit signal))
+       (sclang--release-command-fifo)))
 
 (defun sclang--start-command-process ()
   (sclang--create-command-fifo)
@@ -396,11 +452,11 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
   (interactive "P")
   (let ((string (sclang-line-at-point)))
     (when string
-      (sclang-eval-string string (not silent-p))
-      (and sclang-eval-line-forward
-	   (/= (line-end-position) (point-max))
-	   (next-line 1))
-      string)))
+      (sclang-eval-string string (not silent-p)))
+    (and sclang-eval-line-forward
+	 (/= (line-end-position) (point-max))
+	 (next-line 1))
+    string))
 
 (defun sclang-eval-region (&optional silent-p)
   (interactive "P")

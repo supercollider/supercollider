@@ -68,15 +68,15 @@
    '(
      ["Start Interpreter"	sclang-start :included (not (sclang-library-initialized-p))]
      ["Restart Interpreter"	sclang-start :included (sclang-library-initialized-p)]
-     ["Stop Interpreter"	sclang-stop  :included (sclang-library-initialized-p)]
+     ["Stop Interpreter"	sclang-stop  :included (sclang-get-process)]
      ["Kill Interpreter"	sclang-kill  :included (sclang-get-process)]
      "-"
      ["Show Post Buffer"	sclang-show-post-buffer]
      ["Clear Post Buffer"	sclang-clear-post-buffer]
      "-"
-     ["Evaluate Region"		sclang-eval-region :included mark-active]
-     ["Evaluate Line"		sclang-eval-region :included (not mark-active)]
-     ["Evaluate Defun"		sclang-eval-defun  :included (sclang-point-in-defun-p)]
+     ["Evaluate Region"		sclang-eval-region]
+     ["Evaluate Line"		sclang-eval-region-or-line]
+     ["Evaluate Defun"		sclang-eval-defun]
      ["Evaluate Expression ..."	sclang-eval-expression]
      "-"
      ["Find Definitions ..."	sclang-find-definitions]

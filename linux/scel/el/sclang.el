@@ -29,6 +29,14 @@
   "Interface to the SuperCollider process."
   :group 'sclang)
 
+(defgroup sclang-programs nil
+  "Paths to programs used by sclang-mode."
+  :group 'sclang-interface)
+
+(defgroup sclang-options nil
+  "Options for the SuperCollider process."
+  :group 'sclang-interface)
+
 (defun sclang-customize ()
   (interactive)
   (customize-group 'sclang))

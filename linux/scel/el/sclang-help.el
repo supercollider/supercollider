@@ -26,7 +26,7 @@
 
 (defcustom sclang-rtf-editor-program "ted"
   "*Name of an RTF editor program used to edit SuperCollider help files."
-  :group 'sclang-interface
+  :group 'sclang-programs
   :type 'string)
 
 (defvar sclang-help-syntax-table nil
@@ -159,7 +159,7 @@
 		     (sclang-help-topic-at-point))))
       (completing-read (format "Help topic%s: " (if (sclang-get-help-file topic)
 						    (format " (default %s)" topic) ""))
-		       sclang-help-topic-alist nil t nil sclang-help-topic-history topic))))
+		       sclang-help-topic-alist nil t nil 'sclang-help-topic-history topic))))
   (let ((file (sclang-get-help-file topic)))
     (if file
 	(sclang-display-help-file topic file)
