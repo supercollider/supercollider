@@ -44,19 +44,14 @@
 		it inserts an Out only if it needs it		
 	*/
 	
-	asDefName {
+	asDefName { // won't work immediately for Synth.new
 		var def;
-		Routine({
-			def = this.asSynthDef;
-			def.writeDefFile;
-			0.2.wait;
-		}).play(AppClock);
-		Server.local.loadSynthDef(def.name);
+		def = this.asSynthDef;
+		def.send(Server.local);
 		^def.name
 	}
 	
 	asSynthDef { arg lags, prependArgs, outClass=\Out, fadeTime;
-		
 		^GraphBuilder.wrapOut(this.hash.asString, this, lags, prependArgs, outClass, fadeTime);	}
 		
 	play { arg target, fadeTime=0.02;
