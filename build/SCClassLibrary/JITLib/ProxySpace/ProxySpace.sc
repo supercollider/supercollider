@@ -9,7 +9,7 @@
 		*new { arg server, name, clock;
 		^super.new.einit(server, name, clock)
 	}
-			*push { arg server, name, clock;
+		*push { arg server, name, clock;
 		^this.new(server, name, clock).push
 	}
 	
@@ -17,7 +17,18 @@
 		clock = aClock;
 		this.do({ arg item; item.clock = aClock });
 	}
+	fadeTime_ { arg dt;
+		this.do({ arg item; item.fadeTime = dt });
+	}
 	
+	makeTempoClock { arg tempo, beats, seconds;
+		var clock, proxy;
+		proxy = NodeProxy.control(server, 1);
+		proxy.fadeTime = 0.0;
+		//this will change as soon as a general scheme comes up
+		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds);
+		super.put(\tempo, proxy);
+	}
 	
 	//todo add group to target	einit { arg srv, argName, argClock; 
 		server = srv;  
@@ -72,6 +83,7 @@
 	}
 	clear {
 		this.do({ arg proxy; proxy.clear });
+		envir.makeEmpty;
 	}
 	release {
 		this.do({ arg proxy; proxy.release });
