@@ -34,6 +34,15 @@ SequenceableCollection : Collection {
 		});
 		^obj
 	}
+	*exprand { arg size, minVal, maxVal;
+		var i=0, obj;
+		obj = this.new(size);
+		while ({ i < size },{
+			obj.add(exprand(minVal, maxVal));
+			i = i + 1;
+		});
+		^obj
+	}
 	*rand2 { arg size, val;
 		var i=0, obj;
 		obj = this.new(size);
