@@ -14,7 +14,9 @@ GraphBuilder {
 				if(fadeTime.notNil, {
 						result = this.makeFadeEnv(fadeTime) * result;
 				});
-				outClass.asClass.multiNewList([rate, i_out]++result)
+				outClass = outClass.asClass;
+				outClass.replaceZeroesWithSilence(result.asArray);
+				outClass.multiNewList([rate, i_out]++result)
 			})
 		})
 	}
