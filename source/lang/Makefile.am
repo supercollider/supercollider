@@ -5,6 +5,8 @@
 ## CVS:         $Id$
 ## ====================================================================
 
+MAINTAINERCLEANFILES = Makefile.in
+
 SUBDIRS = LangPrimSource LangSource
 
 ## EOF ================================================================
