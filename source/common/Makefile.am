@@ -18,6 +18,8 @@ libcommon_la_SOURCES	= \
 	SC_Sem.cpp \
 	SC_StringBuffer.cpp \
 	SC_StringParser.cpp \
+	g_fmt.c \
+	dtoa.c \
 	scsynthsend.cpp
 
 ## EOF ================================================================
