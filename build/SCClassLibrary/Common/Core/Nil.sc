@@ -26,6 +26,9 @@ Nil {
 	select {}
 	reject {}
 	detect { ^false }
+	collectAs {}
+	selectAs {}
+	rejectAs {}
 	
 	// dependancy operators are no-ops
 	dependants { 			
