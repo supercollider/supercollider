@@ -465,7 +465,7 @@ Object {
 	fuzzyEqual { arg that, precision=1.0; ^max(0.0, 1.0 - (abs(this - that)/precision)) }
 	
 	isUGen { ^false }
-	
+	numChannels { ^1 } 
 	
 	pair { arg that; ^[this, that] }
 	pairs { arg that;
