@@ -67,6 +67,7 @@ HIDDeviceService{
 		var devlist, elelist;
 		devices = Array.new;
 		devlist = this.prbuildDeviceList(usagePage, usage);
+		devlist ?? {"HIDDeviceService: no devices found".warn; ^nil};
 		devlist.do({arg dev;
 			var newdev;
 			newdev = HIDDevice(dev.at(0), dev.at(1), dev.at(2), dev.at(3), dev.at(4), dev.at(5));
@@ -78,6 +79,7 @@ HIDDeviceService{
 		});
 		initialized = true;
 	}
+	
 	*prbuildDeviceList{arg usagePage=1, usage;
 		_HIDBuildDeviceList
 		^this.primitiveFailed	

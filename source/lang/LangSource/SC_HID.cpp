@@ -150,17 +150,18 @@ int prHIDBuildDeviceList(VMGlobals *g, int numArgsPushed)
 	//kHIDUsage_GD_Joystick kHIDUsage_GD_GamePad
 	//UInt32 usagePage = kHIDPage_GenericDesktop;
 	//UInt32 usage = NULL;
-//usagePage = kHIDPage_GenericDesktop;
-	 //usage = NULL;
-	//Boolean result = HIDBuildDeviceList (kHIDPage_GenericDesktop, NULL); // returns false if no device found (ignored in this case) - returns always false ?
-	Boolean result = HIDBuildDeviceList (usagePage, usage); // returns false if no device found (ignored in this case) - returns always false ?
 
-	//post names etc ...
+	Boolean result = HIDBuildDeviceList (usagePage, usage); 
+	// returns false if no device found (ignored in this case) - returns always false ?
+
 	if(result) post("no HID devices found\n");
 	
 	int numdevs = HIDCountDevices();
 	gNumberOfHIDDevices = numdevs;
-	if(!numdevs) return errFailed;
+	if(!numdevs){
+		SetNil(a);
+		return errNone;
+	}
 	//post("number of devices: %d", numdevs);
 	char cstrDeviceName [256];
 		
