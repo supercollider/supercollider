@@ -1,29 +1,21 @@
 
 AbstractPlayer : AbstractFunction  { 
 
-	classvar <>directory="";
-	
 	var <path,name,<>dirty=true; 
 	
 	var <synth,<>patchOut,<>readyForPlay = false,defName;
 		
-	rate { ^\audio }
-	numChannels { ^1 }
-
-	/*** SC3 SERVER SUPPORT ***/
 	play { arg group,atTime;
-
-		// specify patching, boot server, prepare, load, spawn
 		var server,bundle;
-		bundle = List.new;
 		
 		if(synth.isPlaying,{
 			^this
-		}); // what if i'm patched to something old ?
-		// depend on stop being issued
+		});  // what if i'm patched to something old ?
+			// depend on stop being issued
 
 		group = group.asGroup;
 		server = group.server;
+		bundle = List.new;
 		
 		if(readyForPlay,{
 			this.makePatchOut(group);
@@ -68,25 +60,6 @@ AbstractPlayer : AbstractFunction  {
 			}).play;
 		});
 	}
-	makePatchOut { arg group;
-		//Patch doesn't know its numChannels or rate until after it makes the synthDef
-		if(this.rate == \audio,{// out yr speakers
-			patchOut = AudioPatchOut(this,
-							group,
-						Bus(\audio,0,this.numChannels,group.server))
-		},{
-			if(this.rate == \control,{
-				patchOut = 
-					ControlPatchOut(this,group,
-							Bus.control(this.numChannels,group.server))
-			},{
-				("Wrong output rate: " + this.rate + 
-			".  AbstractPlayer cannot prepare this object for play.").error;
-			});
-		});
-		^patchOut//.insp("made public patch out",this)
-	}
-	
 	prepareForPlay { arg group,bundle;
 		readyForPlay = false;
 		
@@ -109,6 +82,26 @@ AbstractPlayer : AbstractFunction  {
 		// not really until the last confirmation comes from server
 		readyForPlay = true;
 	}
+
+	makePatchOut { arg group;
+		//Patch doesn't know its numChannels or rate until after it makes the synthDef
+		if(this.rate == \audio,{// out yr speakers
+			patchOut = AudioPatchOut(this,
+							group,
+						Bus(\audio,0,this.numChannels,group.server))
+		},{
+			if(this.rate == \control,{
+				patchOut = 
+					ControlPatchOut(this,group,
+							Bus.control(this.numChannels,group.server))
+			},{
+				("Wrong output rate: " + this.rate + 
+			".  AbstractPlayer cannot prepare this object for play.").error;
+			});
+		});
+		^patchOut//.insp("made public patch out",this)
+	}
+	
 	spawnAtTime { arg atTime;
 		var bundle;
 		bundle = List.new;
@@ -140,7 +133,7 @@ AbstractPlayer : AbstractFunction  {
 			that means you can quickly check, load and execute synthdef
 		defName only if not == classname
 			
-		save it all in InstrSynthDef
+		save it all in InstrSynthDef (patch is only one with secret args so far)
 	*/
 	loadDefFileToBundle { arg bundle,server;
 		var def,bytes,dn;
@@ -169,9 +162,9 @@ AbstractPlayer : AbstractFunction  {
 		});
 	}
 	
-	//always sending right now
+	//for now:  always sending, not writing
 	writeDefFile {
-		this.asSynthDef.writeDefFile; // todo: 	check if needed
+		this.asSynthDef.writeDefFile;
 		this.children.do({ arg child;
 			child.writeDefFile;
 		});
@@ -179,6 +172,9 @@ AbstractPlayer : AbstractFunction  {
 	
 	
 	/** SUBCLASSES SHOULD IMPLEMENT **/
+	rate { ^\audio }
+	numChannels { ^1 }
+	
 	//  this works for simple audio function subclasses
 	//  but its probably more complicated if you have inputs
 	asSynthDef { 
@@ -326,7 +322,8 @@ AbstractPlayer : AbstractFunction  {
 	
 	// if i am saved/loaded from disk my name is my filename
 	// otherwise it is "a MyClassName"
-	name { ^(name ?? 
+	name { 
+		^(name ?? 
 		{
 			name = if(path.notNil,{ 
 						PathName(path).fileName

@@ -107,6 +107,7 @@ Sample : BufferProxy { // a small sound loaded from disk
 		new = super.new;
 		new.load(soundFilePath);
 		new.tempo_(tempo ? Tempo.tempo);
+		if(endFrame.isKindOf(Boolean), { startFrame = 0; endFrame = -1; }); // temp
 		new.startFrame_(startFrame).endFrame_(endFrame);
 		^new
 	}
@@ -239,7 +240,7 @@ Sample : BufferProxy { // a small sound loaded from disk
 	storeParamsOn { arg stream;
 		stream << "(";
 		//TODO must abrev the path
-		[ soundFilePath ,tempo ].storeItemsOn(stream);
+		[ soundFilePath ,tempo, startFrame, endFrame ].storeItemsOn(stream);
 		stream << ")";
 	}
 	

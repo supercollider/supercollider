@@ -130,13 +130,32 @@ SymbolSetSpec : ScalarSpec {
 
 }
 
+BufferProxySpec : ScalarSpec {
+
+	var <>prototype;
+	
+	*new { arg prototype;
+		^super.new.prototype_(prototype)
+	}
+	
+	*initClass {
+		specs.putAll(
+		 IdentityDictionary[
+			\buffer -> this.new( BufferProxy(44100,2) ),
+			\bufferProxy -> this.new( BufferProxy(44100,2) )
+		];
+		)
+	}
+
+	defaultControl { ^prototype.deepCopy }
+}
+
 SampleSpec : ScalarSpec {
 
 	*initClass {
 		specs.putAll(
 		 IdentityDictionary[
 			\sample -> this.new,
-			\bufferProxy -> this.new,
 			\arrayBuffer -> this.new			
 			];
 		)

@@ -1,10 +1,13 @@
 
 PatchGui : AbstractPlayerGui {
 
+	writeName { arg layout,big=false; 
+		layout.startRow;
+		super.writeName(layout,big)
+	}
+
 	guiBody { arg layout;
 
-		layout.startRow;
-		
 		Tile(this.model.instr,layout);
 
 		this.durationGui(layout);// usually 'inf' meaning 'endless'

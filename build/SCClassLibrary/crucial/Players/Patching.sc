@@ -118,6 +118,7 @@ ControlPatchOut : PatchOut { // you are returned from a .kr play
 	scalar { arg scalarPatchIn;
 		// polling of value not yet implemented on scserver
 		// scalarPatchIn.value = bus.poll;
+		//["notYetImplemented",this,scalarPatchIn].insp("scalar to scalar patch ?");
 		thisMethod.notYetImplemented;
 	}
 	server { ^group.server }
