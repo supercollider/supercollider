@@ -26,8 +26,6 @@ Crucial {
 		PageLayout.screenHeight = 700;
 
 		PageLayout.bgcolor = Color.new255(226,240,223);
-		PageLayout.focuscolor = Color.new255(255,25,33);
-		PageLayout.hrcolor = Color.new255(226,230,209);
 		
 		CXLabel.bgcolor = Color.new255(250,250,240);
 /*
@@ -207,13 +205,13 @@ Crucial {
 //		Library.put(\menuItems,\test,'midiCC test',{var w;
 //			w = PageLayout.new("jlcooper",200,150);
 //			8.do({arg i;
-//			SliderView.new( w.window, w.layRight(10,100), "SliderView", 0.409449, 0, 1, 0, 'lin')
+//			SliderView.new( w.view, w.layRight(10,100), "SliderView", 0.409449, 0, 1, 0, 'lin')
 //				.prSetMIDIMapping(176, 1, 50 + i)
 //			})
 //		});
 //		
 //		Library.put(\menuItems,\post,'post keydown...',{
-//			KeyDown.tester
+//			KeyCodeResponder.tester
 //		});
 //		
 //		
@@ -325,7 +323,7 @@ Crucial {
 //							cl.gui;
 //						},60);
 //					});
-//					f.resizeWindowToFit;
+//					f.resizeToFit;
 //				})
 //			});
 //		});
@@ -430,7 +428,7 @@ Crucial {
 //			Sheet({ arg f;
 //					ActionButton(f,"set and post screen size",{
 //					var b;
-//					b = f.window.bounds;
+//					b = f.view.bounds;
 //					PageLayout.screenWidth = b.width;
 //					PageLayout.screenHeight = b.height;
 //				
@@ -446,9 +444,10 @@ Crucial {
 		// this is just your Library(\menuItems) functions put up on a menu
 		
 		var dic,c;
-		if(menu.notNil,{ menu.close });
+		//if(menu.notNil,{ menu.close });
 		
-		menu=PageLayout("LibraryFunctions",220,800,metal: true);
+		//menu=PageLayout("LibraryFunctions",200,800,metal: true);
+		menu = FlowView(nil,Rect(0,0,230,800));
 		dic=Library.at(\menuItems);
 		if(dic.notNil,{
 			dic.keys.asList.sort.do({arg k,ki;
@@ -456,7 +455,7 @@ Crucial {
 				subdic=Library.at(\menuItems,k);
 				CXLabel(menu,k.asString,maxx:200)
 					.backColor_(Color.new255(112, 128, 144))
-					.view.stringColor_(Color.white);
+					.stringColor_(Color.white);
 				subdic.keys.asList.sort.do({arg k;
 					ActionButton(menu.startRow,k,{
 						subdic.at(k).value
@@ -482,7 +481,7 @@ Crucial {
 		Tempo.gui(menu.startRow);
 
 		if(resize,{
-			menu.resizeWindowToFit.front;
+			menu.resizeToFit;//.front;
 		});
 	}
 	

@@ -109,10 +109,8 @@ Patch : AbstractPlayer  {
 	
 	// has inputs
 	didSpawn { arg patchIn,synthArgi;
-		if(patchIn.notNil,{
-			patchOut.connectTo(patchIn,false); // we are connected now
-			patchIn.nodeControl_(NodeControl(synth,synthArgi));
-		});
+		super.didSpawn(patchIn,synthArgi);
+		
 		//i know of the synth, i hand out the NodeControls
 		synthPatchIns.do({ arg synpatchIn,synthArgi;
 			synpatchIn.nodeControl_(NodeControl(synth,synthArgi));

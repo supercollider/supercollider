@@ -18,9 +18,9 @@ SampleGui : ObjectGui {
 		
 			
 		//ActionButton(layout,"selAll",{sigG.setSelection(0,model.size)},maxx:70);
-		//sigG=SignalView(layout.window,r,model.signal.at(0));
-		//SliderView(layout.window,layout.layRight(10,75,2),"",1,0,3.4,0).action_({arg th; sigG.zoom=(model.size/sigG.window.bounds.width) * th.value});
-		//SliderView(layout.window,layout.layRight(10,75,2),"",1,0.0,1.0,0).action_({arg th; sigG.scroll=(model.size) * th.value});
+		//sigG=SignalView(layout.view,r,model.signal.at(0));
+		//SliderView(layout.view,layout.layRight(10,75,2),"",1,0,3.4,0).action_({arg th; sigG.zoom=(model.size/sigG.view.bounds.width) * th.value});
+		//SliderView(layout.view,layout.layRight(10,75,2),"",1,0.0,1.0,0).action_({arg th; sigG.scroll=(model.size) * th.value});
 
 		//ActionButton(layout,"!normalize",{model.normalize});
 		//ActionButton(layout,"< -fades- >",{model.inouts});
@@ -44,7 +44,7 @@ SampleGui : ObjectGui {
 		beatsG.value_(model.beats);
 		
 	//	sigG.signal_(model.signal.at(0));
-	//	sigG.zoom_(ceil(model.size  /  sigG.window.bounds.width ) * 3);  
+	//	sigG.zoom_(ceil(model.size  /  sigG.view.bounds.width ) * 3);  
 	//	sigG.update;
 	}
 /*

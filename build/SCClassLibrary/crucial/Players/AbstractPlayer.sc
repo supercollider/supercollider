@@ -3,10 +3,10 @@ AbstractPlayer : AbstractFunction  {
 
 	var <path,name,<>dirty=true; 
 	
-	var <synth,<patchOut,<>readyForPlay = false,defName;
+	var <synth,<server,<patchOut,<>readyForPlay = false,defName;
 		
 	play { arg group,atTime,bus;
-		var server,bundle;
+		var bundle;
 		
 		if(synth.isPlaying,{
 			^this
@@ -50,7 +50,7 @@ AbstractPlayer : AbstractFunction  {
 				if(server.serverRunning.not,{
 					"server failed to start".error;
 				},{
-					this.prepareForPlay(group);
+					this.prepareForPlay(group,false,bus);
 					// need some way to track all the preps completion
 					// also in some cases the prepare can have a completion
 					// tacked on and we can combine with the spawn message
@@ -58,19 +58,23 @@ AbstractPlayer : AbstractFunction  {
 					// need a fully fledged OSCMessage that can figure it out
 					1.0.wait;
 					
-					this.makePatchOut(group,false,bus);// public
+					//this.makePatchOut(group,false,bus);// public
 					
-					this.spawnAtTime(atTime);
+					this.spawnAtTime(atTime); // time is now bogus
 				});
 			}).play;
 		});
+	}
+	prepareForPlay { arg group,private = false,bus;
+		super.prepareForPlay(group); // prepareToBundle + send it
+		this.makePatchOut(group,private,bus);
 	}
 	prepareToBundle { arg group,bundle;
 		readyForPlay = false;
 		
 		group = group.asGroup;
 		this.loadDefFileToBundle(bundle,group.server);
-		defName.postln;
+		//defName.postln;
 		// if made, we have secret controls now
 		// else we already had them
 		
@@ -84,7 +88,92 @@ AbstractPlayer : AbstractFunction  {
 		readyForPlay = true;
 	}
 
+	/* status */
+	isPlaying { ^synth.isPlaying }
+
+	// do we control all the children ?
+	// they need to keep track of their own connections via PatchOut
+	stop { // does not release server  resources
+		if(synth.notNil,{
+			synth.free;
+			synth = nil;
+		});
+	}	
+	free {
+		if(synth.notNil,{
+			synth.free;
+			synth = nil;
+		});		
+		if(patchOut.notNil,{
+			patchOut.free;
+			patchOut = nil;
+		});
+		// release any connections i have made
+		readyForPlay = false;
+	}
+	run { arg flag=true;
+		if(synth.notNil,{
+			synth.run(flag);
+		});
+	}	
+	busIndex { ^patchOut.index }
+	bus { ^patchOut.bus }
+	group { ^patchOut.group }
+
+
+	spawn { this.spawnAtTime(nil) }
+	spawnAtTime { arg atTime;
+		var bundle;
+		bundle = List.new;
+		this.spawnToBundle(bundle);
+		
+		// atTime.asDeltaTime
+		server.listSendBundle( atTime, bundle);
+		SystemClock.sched(atTime ? 0.0, {
+			this.didSpawn;
+			nil
+		});
+	}
+	spawnToBundle { arg bundle;
+		this.children.do({ arg child;
+			child.spawnToBundle(bundle);
+		});
+		synth = Synth.basicNew(this.defName,server);
+		bundle.add(
+			synth.addToTailMsg(patchOut.group,this.synthDefArgs)
+		);
+	}
+	spawnOnBus { arg bus,atTime;
+		if(patchOut.isNil,{ 
+			this.makePatchOut(bus.server.asGroup,true,bus);
+		},{
+			if(patchOut.bus != bus,{ patchOut.bus.free });
+			patchOut.bus = bus;
+		});
+		this.spawnAtTime(atTime);
+	}
+	spawnOn { arg group,bus, atTime;
+		if(patchOut.isNil,{
+			this.makePatchOut(group,true,bus);
+		},{
+			if(patchOut.bus != bus,{ patchOut.bus.free });
+			patchOut.bus = bus;
+		});
+		this.spawnAtTime(atTime);
+	}
+		
+
+	/*
+		when player saves, save defName and secret args (name -> inputIndex)
+			that means you can quickly check, load and execute synthdef
+		defName only if not == classname
+			
+		save it all in InstrSynthDef (patch is only one with secret args so far)
+	*/
+	// PRIVATE
 	makePatchOut { arg group,private = false,bus;
+		group = group.asGroup;
+		server = group.server;
 		this.topMakePatchOut(group,private,bus);
 		this.childrenMakePatchOut(group,true);
 	}
@@ -99,11 +188,13 @@ AbstractPlayer : AbstractFunction  {
 		if(this.rate == \audio,{// out yr speakers
 			if(private,{
 				this.setPatchOut(
-					AudioPatchOut(this,group,bus ?? {Bus.audio(group.server,this.numChannels)})
+					AudioPatchOut(this,group,bus 
+							?? {Bus.audio(group.server,this.numChannels)})
 					)
 			},{			
 				this.setPatchOut(
-					AudioPatchOut(this,group,bus ?? {Bus(\audio,0,this.numChannels,group.server)})
+					AudioPatchOut(this,group,bus 
+							?? {Bus(\audio,0,this.numChannels,group.server)})
 							)
 			})
 		},{
@@ -124,44 +215,11 @@ AbstractPlayer : AbstractFunction  {
 			child.makePatchOut(group,private)
 		});
 	}
-	setPatchOut { arg po; patchOut = po; }
-
-	spawn { this.spawnAtTime(nil) }
-	spawnAtTime { arg atTime;
-		var bundle;
-		bundle = List.new;
-		this.spawnToBundle(bundle);
-		
-		// atTime.asDeltaTime
-		patchOut.server.listSendBundle( atTime, bundle);
-		// schedule atTime:
-		this.didSpawn;
+	setPatchOut { arg po; 
+		patchOut = po; 
+		server = patchOut.server;
 	}
-	spawnToBundle { arg bundle;
-		this.children.do({ arg child;
-			child.spawnToBundle(bundle);
-		});
-		synth = Synth.basicNew(this.defName,patchOut.server);
-		bundle.add(
-			synth.addToTailMsg(patchOut.group,this.synthDefArgs)
-		);
-	}
-	spawnOnBus { arg bus,atTime;
-		if(patchOut.isNil,{ 
-			this.makePatchOut(bus.server.asGroup,true,bus);
-		},{
-			if(patchOut.bus != bus,{ patchOut.bus.free });
-			patchOut.bus = bus;
-		});
-		this.spawnAtTime(atTime);
-	}
-	/*
-		when player saves, save defName and secret args (name -> inputIndex)
-			that means you can quickly check, load and execute synthdef
-		defName only if not == classname
-			
-		save it all in InstrSynthDef (patch is only one with secret args so far)
-	*/
+	
 	loadDefFileToBundle { arg bundle,server;
 		var def,bytes,dn;
 
@@ -229,41 +287,13 @@ AbstractPlayer : AbstractFunction  {
 			synth.isPlaying = true;
 			synth.isRunning = true;
 		});
+//		this.children.do({ arg child;
+//			child.didSpawn(     )
+//		})
 	}
 
 
-	/* status */
-	isPlaying { ^synth.isPlaying }
 
-	// do we control all the children ?
-	// they need to keep track of their own connections via PatchOut
-	stop {
-		if(synth.notNil,{
-			synth.free;
-			synth = nil;
-		});
-	}	
-	run { arg flag=true;
-		if(synth.notNil,{
-			synth.run(flag);
-		});
-	}	
-	free {
-		if(synth.notNil,{
-			synth.free;
-			synth = nil;
-		});		
-		if(patchOut.notNil,{
-			patchOut.free;
-			patchOut = nil;
-		});
-		// release any connections i have made
-		readyForPlay = false;
-	}
-	busIndex { ^patchOut.index }
-	bus { ^patchOut.bus }
-	group { ^patchOut.group }
-	server { ^patchOut.server }
 
 /*  RECORDING ETC.
 	scope 	{ Synth.scope({ Tempo.setTempo; this.ar }) }
@@ -397,63 +427,65 @@ AbstractPlayer : AbstractFunction  {
 
 
 
-MultiplePlayers : AbstractPlayer { // is PlayerMixer ?
+MultiplePlayers : AbstractPlayer { // AggregatePlayer
 
 	// manages multiple players sharing the same bus
 	// doesn't make a synth
 
 	voices { this.subclassResponsiblity(thisMethod) }
+	children { ^this.voices }
 	
 	rate { ^this.voices.first.rate }
 	numChannels { ^this.voices.first.numChannels }
 	
-	// prepare  :  making a single bus, may override in subclasses
-
 	childrenMakePatchOut { arg group,private = false;
 		this.voices.do({ arg vo;
 			// use mine
 			vo.setPatchOut(AudioPatchOut(vo,patchOut.group,patchOut.bus.copy));
-			// but children make their own
-			vo.childrenMakePatchOut(group,false);
+			// but your children make their own
+			vo.childrenMakePatchOut(group,true);
 		})
 	}
 	setPatchOut { arg po;
-		patchOut = po;
+		super.setPatchOut(po);
 		//everybody plays onto same bus
 		this.voices.do({ arg pl;
 			// ISSUE if rate is not mine, throw an error
 			pl.setPatchOut(po.deepCopy);
 		})
 	}
-	spawnAtTime { arg atTime;
-		var bundle;
-		bundle = List.new;
+//	spawnAtTime { arg atTime;
+//		var bundle;
+//		bundle = List.new;
+//		// should voices be children ?
+//		this.voices.do({ arg pl;
+//			pl.spawnToBundle(bundle)
+//		});
+//		
+//		patchOut.server.listSendBundle( atTime, bundle);
+//		SystemClock.sched(atTime ? 0,{
+//			this.didSpawn;
+//			nil;
+//		})
+//	}
+	loadDefFileToBundle { arg bundle,server;
+		// but not self, has no synthdef
 		this.voices.do({ arg pl;
-			pl.spawnToBundle(bundle)
-		});
-		
-		// atTime.asDeltaTime
-		patchOut.server.listSendBundle( atTime, bundle);
-		//isPlaying = true;
-		this.didSpawn;
-	}
+			pl.loadDefFileToBundle(bundle,server)
+		})
+	}		
 	spawnToBundle { arg bundle;
+		// but not self, has no synthdef
 		this.voices.do({ arg pl;
 			pl.spawnToBundle(bundle)
 		})
 	}
 	didSpawn { arg patchIn,synthArgi;
 		super.didSpawn(patchIn,synthArgi);
-		// right ? everybody gets connected.
 		this.voices.do({ arg pl;
 			pl.didSpawn(patchIn,synthArgi);
 		})
 	}
-	loadDefFileToBundle { arg bundle,server;
-		this.voices.do({ arg pl;
-			pl.loadDefFileToBundle(bundle,server)
-		})
-	}		
 	free {
 		this.voices.do({ arg pl;
 			pl.free
@@ -468,55 +500,51 @@ MultiplePlayers : AbstractPlayer { // is PlayerMixer ?
 	}
 }
 
+//Synthless
 MultiTrackPlayer : AbstractPlayer {
+//abstract class
 
-	// manages multiple players with individual patchOuts
-	// doesn't make a synth for itself
-	var server;
+	var <isPlaying;
 	
-	voices { this.subclassResponsiblity(thisMethod) }
-
-	children { ^this.voices }
+	// manages multiple players with individual private patchOuts
+	// doesn't make a synth for itself
+	var <>tracks;
+	
+	children { ^this.tracks }
 	topMakePatchOut { arg group;
 		server = group.asGroup.server;
 		// aggregate patchout ?
 	}
 			
-	rate { ^this.voices.first.rate }
-	numChannels { ^this.voices.first.numChannels }
+	rate { ^this.tracks.first.rate }
+	numChannels { ^this.tracks.first.numChannels }
 	
-	spawnAtTime { arg atTime;
-		var bundle;
-		bundle = List.new;
-		this.voices.do({ arg pl;
-			pl.spawnToBundle(bundle)
-		});
-		
-		// atTime.asDeltaTime
-		server.listSendBundle( atTime, bundle);
-		//isPlaying = true;
-		this.didSpawn;
-	}
 	spawnToBundle { arg bundle;
-		this.voices.do({ arg pl;
+		this.tracks.do({ arg pl;
 			pl.spawnToBundle(bundle)
 		})
 	}
 	didSpawn { arg patchIn,synthArgi;
+		isPlaying = true;
 		// everybody gets connected.
-		this.voices.do({ arg pl;
+		this.tracks.do({ arg pl;
 			pl.didSpawn(patchIn,synthArgi);
 		})
 	}
 	loadDefFileToBundle { arg bundle,server;
-		this.voices.do({ arg pl;
+		this.tracks.do({ arg pl;
 			pl.loadDefFileToBundle(bundle,server)
 		})
 	}
 	free {
-		this.voices.do({ arg pl;
+		this.tracks.do({ arg pl;
 			pl.free
 		});
+		isPlaying = false;
+	}
+	stop {
+		isPlaying = false;
+		super.stop;
 	}
 }
 
@@ -528,7 +556,10 @@ AbstractPlayerProxy : AbstractPlayer {
 	// should be switchable
 	// duplicates the Patch and Bus to the source
 	
-	var source;
+	
+	// isPlaying is if the source isPlaying, but it could be better to track it
+	
+	var <>source;
 
 	asSynthDef { ^source.asSynthDef }
 	synthDefArgs { ^source.synthDefArgs }
@@ -547,7 +578,8 @@ AbstractPlayerProxy : AbstractPlayer {
 		super.didSpawn(patchIn,synthArgi);
 		source.didSpawn(patchIn,synthArgi);
 	}
-	children { ^source.children }
+	//children { ^source.children }
+	children { ^[source] }
 	instrArgFromControl { arg control;
 		^source.instrArgFromControl(control)
 	}

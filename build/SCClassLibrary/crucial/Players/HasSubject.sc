@@ -14,9 +14,71 @@ HasSubject : AbstractPlayer {
 	}
 	stop { super.stop; subject.stop }
 	children { ^[subject] }
+	didSpawn { arg patchIn,synthArgi;
+		super.didSpawn(patchIn,synthArgi);
+		subject.didSpawn;
+	}
 	numChannels { ^subject.tryPerform(\numChannels) ? 1 }
 	guiClass { ^HasSubjectGui }
 }
+
+AbstractPlayerEffect : HasSubject {
+
+	var <childGroup,effectGroup;
+	
+	makePatchOut { arg group,private,bus;
+		childGroup = Group.head(group);
+		effectGroup = group;//Group.tail(group);
+		server = effectGroup.server;
+		this.topMakePatchOut(effectGroup,private,bus);
+		this.childrenMakePatchOut(childGroup,true);
+	}
+	
+	childrenMakePatchOut { arg argchildGroup,private;
+		subject.setPatchOut(AudioPatchOut(subject,childGroup,patchOut.bus.copy));
+		// but children make their own
+		subject.childrenMakePatchOut(childGroup,true);
+	}
+	
+}
+
+PlayerAmp : AbstractPlayerEffect {
+	
+	// spawn the subject
+	// spawn after it, multplying on same bus
+	
+	var <amp=1.0;
+	asSynthDef {
+		^SynthDef(this.defName,{ arg i_bus=0,amp=1.0;
+			ReplaceOut.ar(i_bus,
+					In.ar(i_bus,this.numChannels) * amp
+				)
+		})//.insp("synthdef",this)
+	}
+	// asks 3 times !
+	defName { ^this.class.name.asString ++ this.numChannels.asString }
+	synthDefArgs { ^[0,patchOut.synthArg,1,amp] }
+	amp_ { arg v; 
+		amp = v; 
+		if(this.isPlaying,{
+			synth.set(\amp,amp)
+		})
+	}
+	value_ { arg v;
+		amp = v; 
+		if(this.isPlaying,{
+			synth.set(\amp,amp)
+		})
+	}		
+	guiClass { ^PlayerAmpGui }
+}
+
+//PlayerEffect : AbstractPlayerEffect {
+//
+//	
+//
+//}
+
 
 /*
 Ar : HasSubject { 

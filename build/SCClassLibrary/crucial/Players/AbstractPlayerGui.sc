@@ -1,23 +1,38 @@
 
 AbstractPlayerGui : ObjectGui { 
-
+	
+	gui { arg lay;
+		var layout;
+		if(lay.isNil,{ ^this.topGui });
+		layout=this.guify(lay);
+		layout.flow({ arg layout;
+			view = layout;
+			this.writeName(layout);
+			this.guiBody(layout);
+		}).background_(Color.grey(0.5,0.3))
+	}
 	topGui { arg layout;
 		layout = this.guify(layout);
 		// top level controls
 		this.synthConsole(layout);
 		this.saveConsole(layout);
 		layout.startRow;
-		layout=this.guify(layout);
-		this.writeName(layout,true);
-		this.guiBody(layout);
-		layout.resizeWindowToFit.front;
+		layout.flow({ arg layout;
+			view = layout;
+			this.writeName(layout,true);
+			this.guiBody(layout);
+		}).background_(Color.grey(0.5,0.3));
+		layout.resizeToFit.front;
 	}
 	
-	gui { arg layout;
-		layout=this.guify(layout);
-		this.writeName(layout);
-		this.guiBody(layout);
-	}
+//	guify { arg layout,title,width,height;
+//		layout = layout ?? {
+//			FlowView(nil,nil ); //title ?? {model.asString.copyRange(0,50)},width,height);
+//		};
+//		layout.background = 
+//		layout.removeOnClose(this);
+//		^layout
+//	}
 
 	smallGui { arg layout;
 		layout=this.guify(layout);

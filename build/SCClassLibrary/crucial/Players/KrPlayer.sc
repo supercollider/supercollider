@@ -13,5 +13,3 @@ KrPlayer : AbstractPlayer {
 	//guiClass { ^KrPlayerGui }
 	
 }
-
-

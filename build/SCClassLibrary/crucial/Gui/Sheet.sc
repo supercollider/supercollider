@@ -3,9 +3,10 @@
 Sheet {
 	*new { arg buildDialog,name="",x=100,y=100,width=600,height=600;
 		var layout;
-		layout = PageLayout(name,width,height,x,y);
+		layout = MultiPageLayout(name,width,height,x,y);
+		//layout = FlowView(nil,Rect(x,y,width,height));
 		buildDialog.value(layout);
-		layout.resizeWindowToFit;
+		layout.resizeToFit;
 		layout.front;
 		^layout
 	}
@@ -20,6 +21,7 @@ ModalDialog { // hit ok or cancel
 
 			returnObjects=buildDialog.value(layout);
 		
+			layout.startRow;
 			ActionButton(layout,"OK",{
 				okFunc.value(returnObjects);
 				layout.close;

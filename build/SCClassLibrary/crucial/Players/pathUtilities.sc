@@ -40,13 +40,18 @@
 	loadDocument { arg warnIfNotFound=true;
 		^Document.standardizePath(this).loadPath(warnIfNotFound)
 	}
+			
 }
 
 + AbstractPlayer {
 	
 	enpath {
 		//document enpath abrev it
-		^path ? this
+		^if(path.notNil,{
+			^Document.abrevPath(path)
+		},{ 
+			this
+		})
 	}
 	loadDocument {
 		^this

@@ -19,7 +19,6 @@ Updater {
 	}
 	removeOnClose { arg window;
 		NotificationCenter.registerOneShot(window,\didClose,this,{
-			//this.insp("removing");
 			this.remove;
 		})
 	}

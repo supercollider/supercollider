@@ -29,3 +29,45 @@
 	guiClass { ^MethodGui }
 }
 
++ Dictionary {
+	guiClass { ^DictionaryGui }		
+}
+
+
+
++ Nil {
+
+	asPageLayout { arg name,width,height,x,y,metal=false;
+		^PageLayout(name.asString,width,height,x, y, metal: metal )
+	}
+	asFlowView { arg bounds;
+		^FlowView(nil,bounds)
+	}
+}
+
+
++ SCCompositeView {
+	asFlowView { arg bounds;
+		^FlowView(this,bounds ?? {this.bounds})
+	}
+}
+
++ FlowView {
+	asFlowView {}
+	asPageLayout {
+	
+	} // should be compatible ?
+}
+
++ MultiPageLayout {
+	asFlowView { arg bounds;
+		^if(bounds.notNil,{
+			FlowView(this,bounds)
+		},{
+			this.view
+		})
+		
+		//bounds = bounds ?? {this.view.bounds};
+		//^FlowView(this.view,this.layRight(bounds.width - 10,bounds.height - 10))
+	}
+}

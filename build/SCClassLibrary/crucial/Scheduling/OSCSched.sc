@@ -25,7 +25,7 @@ BeatSched {
 	*beat_ { arg beat; ^global.beat_(beat) }
 	*clear { ^global.clear }
 	*deltaTillNext { arg quantize;	^global.deltaTillNext(quantize) }
-	
+	*tdeltaTillNext { arg quantize; ^global.tdeltaTillNext(quantize) }	
 	xblock { nextTask = nil; } // block any subsequent xscheds
 	time { ^Main.elapsedTime - epoch }
 	time_ { arg seconds; epoch = seconds; }
@@ -37,12 +37,18 @@ BeatSched {
 		pq.clear;
 		nextTask = nextAbsFunc = nextAbsTime = nil;
 	}	
-	deltaTillNext { arg quantize;
+	deltaTillNext { arg quantize; // delta beats !
 		var beats,next;
 		beats = this.beat;
 		next = beats.trunc(quantize);
 		^if(next == beats,0 ,{ next + quantize - beats }) // now or next
 	}
+	tdeltaTillNext { arg quantize;
+		var beats,next;
+		beats = this.beat;
+		next = beats.trunc(quantize);
+		^if(next == beats,0 ,{ tempo.beats2secs(next + quantize - beats) }) // now or next
+	}	
 	
 	
 	/** global scheduler **/
@@ -71,7 +77,7 @@ BeatSched {
 	*schedAbs { arg beat,function;
 		^global.tschedAbs(beat,function)
 	}
-	
+
 	/**  instance methods **/
 	tsched { arg seconds,function;
 		clock.sched(seconds,{ arg time; function.value(time); nil })

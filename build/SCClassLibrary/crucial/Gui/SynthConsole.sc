@@ -35,7 +35,7 @@ SynthConsole : AbstractConsole  {
 		ActionButton(layout,">",{this.registerPlayKey.doPlay }).backColor_(Color.green);
 	}
 	registerPlayKey { arg keycode=49; // spacebar
-		/*	KeyDown.resetKeycode(keycode).registerKeycode(0,keycode,{  
+		/*	KeyCodeResponder.resetKeycode(keycode).registerKeycode(0,keycode,{  
 			if(Synth.isPlaying,{
 				this.doStop
 			},{
@@ -76,7 +76,7 @@ SynthConsole : AbstractConsole  {
 		ActionButton(layout,"[_]",{ 
 			this.doStop(stopFunc)
 		});
-		//KeyDown.registerKeycode(16,49,{ this.doStop      });//  
+		//KeyCodeResponder.registerKeycode(16,49,{ this.doStop      });//  
 	}
 
 	formats {

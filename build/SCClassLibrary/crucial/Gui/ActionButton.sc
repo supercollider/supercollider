@@ -1,4 +1,167 @@
 
+StartRow : SCViewAdapter {
+	*new { arg parent,bounds;
+		^super.new.view_(parent)
+	}
+	bounds { ^Rect(0,0,0,0) }
+	bounds_ {}
+	prClose {}
+}
+
+
+FlowView : SCCompositeView {
+
+	var autoRemoves;
+	
+	*viewClass { ^SCCompositeView }
+	init { arg parent,bounds;
+		super.init(parent = parent ?? { var w;
+								w = SCWindow.new("",bounds).front;
+								if(bounds.notNil,{ bounds = bounds.moveTo(0,0) });
+								w
+							},
+							bounds ?? {parent.asView.bounds});
+		decorator = FlowLayout(this.bounds);// after i am placed by parent
+		autoRemoves = IdentitySet.new;
+	}
+
+	reflowAll {
+		decorator.reset;
+		this.children.do({ arg view;
+			if(view.isKindOf(StartRow),{
+				decorator.nextLine
+			},{
+				decorator.place(view);
+			})
+		});
+	}
+	innerBounds { ^decorator.innerBounds }
+	resizeToFit {
+		var used,new;
+		used = decorator.used;
+		super.bounds = new = this.bounds.resizeTo(used.width,used.height);
+		decorator.bounds = new;
+		// don't reflow unless asked
+	}
+	bounds_ { arg b;
+		if(b != this.bounds,{
+			super.bounds = b;
+			if(decorator.notNil,{
+				decorator.bounds = b;
+				this.reflowAll;
+			})
+		});
+	}
+	wouldExceedBottom { arg aBounds; ^decorator.wouldExceedBottom(aBounds) }
+	// to replace PageLayout
+	layRight { arg x,y;
+		^Rect(0,0,x,y)
+	}
+	startRow {
+		// add a StartRow object
+		this.add(StartRow.new); //won't really put a view in there yet
+		decorator.nextLine
+	}
+	removeOnClose { arg updater;
+		autoRemoves.add(updater);
+	}
+	prClose {
+		autoRemoves.do({ arg u; u.remove });
+		super.prClose; // close the view		
+	}
+	indent {
+	
+	}
+	hr { arg color,height=3,borderStyle=1; // html joke
+		this.startRow;
+		// should fill all and still return a minimal bounds 
+		SCStaticText(this,Rect(0,0,decorator.innerBounds.width - (2 * 4), height,0))
+				.string_("").background_(color ? Color(1,1,1,0.3) ).resize_(2)
+	}
+}
+
+
+//
+//FlowView : SCViewAdapter {
+//	var <flowLayout;
+//	
+//	var childrenCopy,autoRemoves;
+//	
+//	*new { arg parent, bounds;
+//		^super.new.init(parent,bounds)
+//	}
+//	init { arg parent, bounds;
+//		view = SCCompositeView(parent = parent ?? {SCWindow.new("",bounds).front},
+//							bounds = bounds ?? {parent.asView.bounds});
+//		view.decorator = flowLayout = FlowLayout(bounds);
+//		childrenCopy = [];
+//		autoRemoves = IdentitySet.new;
+//	}
+//	add { arg child;
+//		view.add(child);
+//		childrenCopy = childrenCopy.add(child);
+//	}
+//	prAddChild { arg child;
+//		childrenCopy = childrenCopy.add(child);
+//	}
+//	remaining {
+//		^flowLayout.remaining
+//	} 
+//	reflowAll {
+//		flowLayout.reset;
+//		childrenCopy.do({ arg view;
+//			if(view.isKindOf(StartRow),{
+//				flowLayout.nextLine
+//			},{
+//				("placing" + view).postln;
+//				view.bounds.postln;
+//				flowLayout.place(view);
+//				view.bounds.postln;
+//			})
+//		});
+//	}
+//	innerBounds { ^flowLayout.innerBounds }
+//	resizeToFit {
+//		var used,new;
+//		used = flowLayout.used;
+//		view.bounds = new = view.bounds.resizeTo(used.width,used.height);
+//		flowLayout.bounds = new;
+//		// don't reflow unless asked
+//	}
+//	bounds_ { arg b;
+//		if(b != view.bounds,{
+//			view.bounds = b;
+//			flowLayout.bounds = b;
+//			this.reflowAll;
+//		});
+//	}
+//	// to replace PageLayout
+//	layRight { arg x,y;
+//		^Rect(0,0,x,y)
+//	}
+//	startRow {
+//		// add a StartRow object
+//		this.add(StartRow.new); //won't really put a view in there yet
+//		flowLayout.nextLine
+//	}
+//	removeOnClose { arg updater;
+//		autoRemoves.add(updater);
+//	}
+//	prClose {
+//		autoRemoves.do({ arg u; u.remove });
+//		super.prClose; // close the view		
+//	}
+//	indent {
+//	
+//	}
+//	hr { arg color,height=3,borderStyle=1; // html joke
+//		this.startRow;
+//		// should fill all and still return a minimal bounds 
+//		SCStaticText(this,Rect(0,0,flowLayout.innerBounds.width - (2 * 4), height,0))
+//				.string_("").background_(color ? Color(1,1,1,0.3) ).resize_(2)
+//	}
+//}
+
 
 SCButtonAdapter : SCViewAdapter {
 
@@ -6,14 +169,21 @@ SCButtonAdapter : SCViewAdapter {
 
 	makeView { arg layout,x,y;
 		var rect;
-		layout = layout.asPageLayout(this.class.name.asString,300,100);
-		rect = layout.layRight(x,y);
-		view = SCButton(layout.window,rect);
+		layout = layout.asFlowView;
+		//rect = layout.layRight(x,y ? defaultHeight);
+		view = SCButton(layout,Rect(0,0,x,y ? defaultHeight));
 	}
+	flowMakeView { arg layout,x,y;
+		view = SCButton(layout.asFlowView,Rect(0,0,x,y ? defaultHeight));
+	}		
+
 	makeViewWithStringSize { arg layout,stringsize,maxx,maxy;
+		//maxx is now dependant on font size !
+		// NSFont-boundingRectForFont
+		// or NSString- (NSSize) sizeWithAttributes: (NSDictionary *) attributes 
 		this.makeView( layout,
 					(stringsize.clip(3,55) * 8.3).max(maxx?20),
-						(maxy ? defaultHeight) )
+						(maxy ) )
 	}
 	initOneState { arg name,textcolor,backcolor;
 		view.states_([[name,textcolor ? Color.black, backcolor ? Color.white]])
@@ -55,7 +225,8 @@ ActionButton : SCButtonAdapter { // one state
 	init { arg layout,title,function,maxx=20,maxy,color,backcolor,font;
 		title = title.asString;
 		this.makeViewWithStringSize(layout,title.size,maxx,maxy);
-		view.states_([[title,color ?? {Color.black}, backcolor ?? {Color.new255(205, 201, 201)}]]);
+		view.states_([[title,color ?? {Color.black}, 
+			backcolor ?? {Color.new255(205, 201, 201)}]]);
 		this.font_(font ?? {Font("Helvetica",12.0)});
 		view.action_(function);
 	}
@@ -110,15 +281,15 @@ ToggleButton : SCButtonAdapter {
 
 	var <state,<>onFunction,<>offFunction;
 	
-	*new { arg layout,title,onFunction,offFunction,init=false,maxx=20,maxy=13;
+	*new { arg layout,title,onFunction,offFunction,init=false,maxx=20,maxy;
 			^super.new.init(layout,init, title,maxx,maxy)
 				.onFunction_(onFunction).offFunction_(offFunction)
 	}
 	init { arg layout,init,title,maxx,maxy;
 		var offc,onc;
 		this.makeViewWithStringSize(layout,title.size,maxx,maxy);
-		onc=Color( 0.74117647058824, 0.5921568627451, 0.27450980392157 );
-		offc=Color( 0.4078431372549, 0.95686274509804, 0.19607843137255 );
+		onc=Color.new255(154, 205, 50);
+		offc=Color.new255(245, 222, 179);
 		view.states = [
 			[title,Color.black,onc],
 			[title,Color.black,offc]

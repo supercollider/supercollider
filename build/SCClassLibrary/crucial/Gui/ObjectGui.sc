@@ -1,5 +1,5 @@
 
-ObjectGui {
+ObjectGui : SCViewAdapter { // Controller
 
 	var <>model;
 	
@@ -11,14 +11,12 @@ ObjectGui {
 		^new
 	}
 	
-	guify { arg layout,title,width,height;
+	guify { arg layout,title,width=500,height=500;
 		layout = layout ?? {
-			PageLayout(title ?? {model.asString},width,height);
+			//FlowView.new(nil,Rect(10,10,width,height));
+			MultiPageLayout(title ?? {model.asString.copyRange(0,50)},width,height);
 		};
 		layout.removeOnClose(this);
-//		NotificationCenter.registerOneShot(layout,\didClose,this,{
-//			model.removeDependant(this); // when the window shuts
-//		});
 		^layout
 	}
 	remove {
@@ -39,7 +37,7 @@ ObjectGui {
 	topGui { arg layout ... args;
 		layout=this.guify(layout);
 		this.performList(\gui,[layout] ++ args);
-		layout.resizeWindowToFit.front;
+		layout.resizeToFit.front;
 	}
 	
 	writeName { arg layout;
@@ -52,8 +50,13 @@ ObjectGui {
 	
 	// a smaller format gui, defaults to the tileGui
 	smallGui { arg layout;
+		this.guify(layout);
 		Tile(model,layout);
-	}		
-
+	}
+	
+	registerKeycode { arg modifier,keycode,function;
+		
+	
+	}
 }
 

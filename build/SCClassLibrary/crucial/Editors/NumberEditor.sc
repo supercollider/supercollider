@@ -14,13 +14,13 @@ Editor {
 	
 	setPatchOut { arg po; patchOut = po }
 
-//	editWithCallback { arg callback;
-//		ModalDialog({ arg layout;
-//			this.gui(layout);
-//		},{
-//			callback.value(value);
-//		})
-//	}
+	editWithCallback { arg callback;
+		ModalDialog({ arg layout;
+			this.gui(layout);
+		},{
+			callback.value(value);
+		})
+	}
 }
 
 KrNumberEditor : Editor {
@@ -34,14 +34,13 @@ KrNumberEditor : Editor {
 		spec = aspec.asSpec ?? {ControlSpec.new};
 		this.value_(spec.constrain(val));
 	}
-	value_ { arg val,changer;
-		value = val; //spec.constrain(val);
-		// server support
-		// could also do it with a dependant
-		//if(patchIn.notNil,{ patchIn.value = value });
-		//[this,value,changer,this.dependants].insp("number editor value_");
-		this.changed(\value,changer);
-	}
+//	value_ { arg val;
+//		value = val;
+//		// server support
+//		// could also do it with a dependant
+//		//if(patchIn.notNil,{ patchIn.value = value });
+//		//this.changed(\value,changer);
+//	}
 	activeValue_ { arg val;
 		this.value_(val);
 		action.value(value);
@@ -52,8 +51,6 @@ KrNumberEditor : Editor {
 		this.changed(\spec);
 	}
 	canDoSpec { arg aspec; ^aspec.isKindOf(ControlSpec) }
-	//kr { arg lag=0.05; ^Plug.kr({value},lag) }
-
 
 	addToSynthDef {  arg synthDef,name;
 		synthDef.addKr(name,this.synthArg);
@@ -62,14 +59,12 @@ KrNumberEditor : Editor {
 
 	didSpawn { arg patchIn,synthi;
 		patchOut.connectTo(patchIn,false);
-
 		// am i already connected to this client ?
 		if(this.dependants.includes(patchOut.updater).not,{
 			patchOut.updater = 
-				SimpleController(this)
-						.put(\value,{
-							patchIn.value = value;
-						});
+				Updater(this,{
+					patchIn.value = value;
+				});
 		});
 	}
 	free {
@@ -112,8 +107,6 @@ BooleanEditor : NumberEditor {
 		^super.new.value_(val)
 	}
 	// value returns true/false
-	// kr returns 1/0
-	//kr { arg lag=0.05; ^Plug.kr({value.binaryValue},lag) }
 
 	guiClass { ^BooleanEditorGui }
 }

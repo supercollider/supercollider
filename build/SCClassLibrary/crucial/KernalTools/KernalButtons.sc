@@ -65,7 +65,7 @@ InspectorLink : ActionButton {
 			Font("Helvetica",12)
 		)
 	}
-	*big { arg  target,layout,maxx=100; 
+	*big { arg  target,layout,maxx=200;
 		^super.new(layout,target.asString,{target.insp},maxx,30,
 			Color.black,Color.white,Font("Helvetica-Bold",18))
 	}

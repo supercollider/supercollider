@@ -1,8 +1,6 @@
 
 EditorGui : ObjectGui {
-
 	writeName {}
-
 }
 
 NumberEditorGui : EditorGui {
@@ -17,54 +15,53 @@ NumberEditorGui : EditorGui {
 		});
 	}
 	smallGui { arg layout ... args;
-		layout=this.guify(layout);
-		this.box(layout);
+		var l;
+		l=this.guify(layout);
+		this.box(l);
+		if(layout.isNil,{ l.front });
 	}
 	box { arg layout;
 		var r;
 		layout=this.guify(layout);
-		r = layout.layRight(40,17);
-		numv = SCNumberBox(layout,r)
+		//r = layout.layRight(40,17);
+		numv = SCNumberBox(layout,Rect(0,0,40,17))
 			.object_(model.poll)
 			.action_({ arg nb;
-				model.activeValue_(nb.value);
+				model.activeValue_(nb.value).changed(numv);
 			});		
 	}
 	update {arg changed,changer; // always has a number box
-		//numv.setProperty(\value,model.poll)
-		numv.value_(model.poll);
+		if(changer !== numv,{
+			numv.value_(model.poll);
+		})
 	}
 	
 	slider { arg layout, x=100,y=15;
 		var slv,r;
-		r = layout.layRight(x,y);
-		slv = SCSlider(layout, r);
+		//r = layout.layRight(x,y);
+		slv = SCSlider(layout, Rect(0,0,100,15));
 		slv.setProperty(\value,model.spec.unmap(model.poll));
 		slv.action_({arg th; 
-			model.activeValue_(model.spec.map(th.value))
+			model.activeValue_(model.spec.map(th.value)).changed(slv)
 		});		
 			
 		layout.removeOnClose(	
 			Updater(model,{ arg changed,changer;
 				// without triggering action
-				slv.value_(model.spec.unmap(model.poll))
-			});//.removeOnClose(layout);
+				if(changer !== slv,{
+					slv.value_(model.spec.unmap(model.poll))
+				});
+			});
 		);
 	}
 }
-
-/*
-	extra update of slider/box happening
-*/
 
 
 
 BooleanEditorGui : EditorGui {
 	var cb;
 	guiBody { arg layout;
-		var r;
-		r = layout.layRight(14,14);
-		cb = SCButton.new( layout.window,r);
+		cb = SCButton.new( layout,Rect(0,0,14,14));
 		cb.states = [[" ",Color.black,Color.white],[" ",Color.white,Color.black]];
 		cb.font = Font("Helvetica",9);
 		cb.setProperty(\value,model.value.binaryValue);

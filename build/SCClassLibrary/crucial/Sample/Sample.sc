@@ -247,6 +247,8 @@ Sample : BufferProxy { // a small sound loaded from disk
 	
 	
 	pchRatioKr { arg temp;
+		// for now, pass in tempo
+		
 		// InstrSynthDef can support a shared tempo input
 		
 		// would have to send __mytempo__ when you load buffer and recalc
@@ -259,6 +261,9 @@ Sample : BufferProxy { // a small sound loaded from disk
 	
 	/* server support */
 	prepareToBundle { arg group,bundle;
+		// TODO keep used Buffers in a map, reuse when path and start/end are identical
+		// when start/end are changed, might have to reassign
+		
 		group = group.asGroup;
 		if(buffer.notNil,{
 			if(buffer.server != group.server,{

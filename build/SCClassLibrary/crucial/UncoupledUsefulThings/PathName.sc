@@ -69,7 +69,14 @@ PathName { 	// this class by originally by AdC
 			^fullPath
 		})
 	}
-	
+	asAbsolutePath {
+		if(this.isAbsolutePath,{
+			^fullPath
+		},{
+			// this makes a big assumption
+			^scroot ++ fullPath;
+		})
+	}
 	allFolders { 	
 		var folderNames, pathCopy; 
 		folderNames = List.new; 
@@ -78,7 +85,6 @@ PathName { 	// this class by originally by AdC
 		colonIndices.doAdjacentPairs({ arg startColon, endColon; 
 			folderNames.add( fullPath.copyRange(startColon + 1, endColon - 1) );
 		});
-		
 
 		^folderNames
 	}

@@ -163,8 +163,8 @@ KeyCodeResponder {
 		// that overides this
 		new = KeyCodeResponder.new;
 		new.dict = dict.copy;
-		dict.keysValuesDo({ arg keycode,kdrstack;
-			new.put(keycode, kdrstack ++ that.at(keycode))
+		that.dict.keysValuesDo({ arg keycode,kdrstack;
+			new.put(keycode, kdrstack ++ this.at(keycode))
 		});
 		^new
 	}
@@ -175,7 +175,7 @@ KeyCodeResponderStack {
 	// but passes ascii, code and modifer to the function
 	
 	var <>stack;
-	*new {	^super.new.stack_(List.new) }
+	*new {	^super.new.reset }
 	add { arg requireMask,denyMask,function;
 		this.addKDR( KDRUnit(requireMask,denyMask,function) );
 	}
@@ -188,10 +188,10 @@ KeyCodeResponderStack {
 		if(oldIndex.notNil,{
 			stack.put(oldIndex,newGuy) // replaces old
 		},{
-			stack.add(newGuy);
+			stack = stack.add(newGuy);
 		});
 	}	
-	reset { stack = List.new }
+	reset { stack = [] }
 	value { arg char,modifier,unicode,keycode;
 		stack.do({ arg responder;
 			responder.value(char,modifier,unicode,keycode)

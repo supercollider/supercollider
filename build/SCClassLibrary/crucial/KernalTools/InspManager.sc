@@ -18,7 +18,7 @@ Insp {
 	gui { arg origin;
 		// ideally this will be a proper snapshot at the time of calling
 		// keep same location as last window
-		if(layout.notNil and: {layout.isClosed.not},{ layout.front.unhide; ^this });
+		if(layout.notNil and: {layout.isClosed.not},{ layout.front.show; ^this });
 		{	
 			if(this === InspManager.global.currentInsp, {
 				// what's the calling method ?

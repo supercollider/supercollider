@@ -13,14 +13,15 @@ CXMenu { // multiple actions
 		
 		buttonWidth = argbuttonWidth;
 		height = max(height,nameFuncs.size * 20);
-		layout=lay.asPageLayout(title,windowWidth,height,metal: true);
+		//layout=lay.asPageLayout(title,windowWidth,height,metal: true);
+		layout=lay.asFlowView(Rect(20,20,windowWidth,height));
 
 		nameFuncs.do({arg nf;
 			this.add(nf);
 		});
 		// if we are not on somebody else's page...
 		if(lay.isNil,{
-			layout.resizeWindowToFit.front;
+			layout.resizeToFit;//front;
 		});
 	}		
 	
@@ -43,7 +44,7 @@ CXMenu { // multiple actions
 			.backColor_(backColor ? Color.white);
 	}
 	resize {
-		layout.resizeWindowToFit;
+		layout.resizeToFit;
 	}
 }
 

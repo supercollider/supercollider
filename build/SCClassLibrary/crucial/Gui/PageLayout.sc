@@ -1,4 +1,167 @@
 
+MultiPageLayout  {
+
+	// should get these from Cocoa
+	classvar <>screenWidth = 900, <>screenHeight = 700; // tibook
+	
+	classvar <>bgcolor;
+	
+	var windows,views;
+	var onBoundsExceeded='newWindow',metal;
+	var <>isClosed=false;
+	
+	var autoRemoves;
+	
+	*new { arg title,width,height ,posx,posy,hspacer,vspacer,metal=false;
+		^super.new.init(title,width ,height ,
+							posx ,posy ,hspacer ,vspacer , 
+							metal)
+	}
+	
+	init { arg title,width,height,posx,posy,arghspacer=3,argvspacer=3,argmetal=true;
+		var w;
+		windows=windows.add
+		(	
+			w=SCWindow.new("< " ++ title.asString ++ " >",
+				Rect.new( posx ? 20, posy ? 20, width ? screenWidth, height ? screenHeight) )
+			.onClose_({  	
+						this.close; // close all windows in this layout
+					})
+		);
+		metal = argmetal;
+		if(metal.not,{
+			w.view.background_(bgcolor);
+		});
+		isClosed = false;
+		views = views.add( FlowView(w ) );
+		autoRemoves = IdentitySet.new;
+	}
+	
+	window { ^windows.last }
+	view { ^views.last }
+	asView { ^this.view }
+	//asView {}
+	add { arg view;
+		if(this.view.wouldExceedBottom(view.bounds),{
+			this.newWindow;
+		});
+		this.view.add(view);
+	}
+	asPageLayout { arg name,width,height,x,y;
+		if(isClosed,{
+			^this.class.new(name,width,height,x,y)
+		},{
+			^this
+		})
+	}
+	startRow { 
+		this.view.startRow;
+	}
+	
+	*guify { arg lay,title,width,height,metal=false;
+		^lay ?? {
+			this.new(title,width,height,metal: metal )
+		}
+	}
+	
+	// act like a GUIWindow 
+	checkNotClosed { ^isClosed.not }
+	front {
+		//windows.do({ arg w; w.unhide });
+		windows.reverseDo({arg w; w.front }); 
+	}
+	hide {
+		// for now
+		windows.do({ arg w; w.alpha = 0.0; })
+		//windows.do({ arg w; w.hide })
+	}
+	show {
+		//windows.do({ arg w; w.show })
+		windows.do({ arg w; w.alpha = 1.0;  })
+	}
+	close { // called when the GUIWindow closes
+		if(isClosed.not,{
+			isClosed = true; 
+			if(windows.notNil,{
+				windows.do({ arg w; 
+					w.close; 
+				});
+				windows=views=nil;
+			});
+			autoRemoves.do({ arg updater; updater.remove });
+			NotificationCenter.notify(this,\didClose);
+		});
+	}
+
+	hr { arg color,height=8,borderStyle=1; // html joke
+		this.view.hr;
+	}
+//	tab {
+//		this.layRight(10,10);
+//	}
+	indent { arg by = 1;
+		//tabs = max(0,tabs + by);
+	}
+	layRight { arg w,h; ^Rect(0,0,w,h) }
+//	width {
+//		^margin.width - (tabs * 10)
+//	}
+
+	focus { arg index=0;
+		var first;
+		first = this.window.views.at(index);
+		if(first.notNil,{first.focus });
+	}
+
+	//TODO remove
+	backColor { ^this.view.background }
+	backColor_ { arg c; this.view.background_(c) }
+	
+	background_ { arg b; this.view.background_(b) }
+	
+	
+	removeOnClose { arg dependant;
+		autoRemoves = autoRemoves.add(dependant);
+	}
+	
+	resizeToFit { 
+		// cascade all open windows and shrink them to contents
+		// margin is still set large
+		views.reverse.do({ arg v,vi;
+			v.resizeToFit;
+			// backwards 
+			windows.at(vi).setInnerExtent(v.bounds.width, v.bounds.height );
+		});
+	}
+	warnError {
+		"PageLayout within a PageLayout exceeded bounds !!".warn;
+	}
+
+	newWindow {
+		var ow;
+		ow = this.window;
+		this.init("..." ++ ow.name,
+				nil,
+				nil,
+				(ow.bounds.left + 100).wrap(0,900),
+				(ow.bounds.top+10).wrap(0,300),
+				nil,
+				nil,
+				metal);
+		this.window.front;
+	}
+	*initClass {
+		bgcolor = Color(0.886274509803, 0.94117647058824, 0.874509803921, 1);
+	}
+}
+
+
+
+
+
+
+// for old usage
+
 PageLayout  {
 
 	// should get these from Cocoa
@@ -28,7 +191,7 @@ PageLayout  {
 	//asPageLayout
 	*guify { arg lay,title,width,height,metal=false;
 		if(lay.class === GUIPlacement,{ ^lay });
-		if(lay.notNil and: {lay.checkNotClosed},{
+		if(lay.notNil,{// and: {lay.checkNotClosed},{
 			// if its a GUIWindow we return a flow layout on it
 			if(lay.isKindOf(SCWindow),{
 				^this.onWindow(lay)
@@ -76,11 +239,19 @@ PageLayout  {
 		currx=margin.left;
 		curry=margin.top;
 		
-		autoRemoves = List.new;
+		autoRemoves = IdentitySet.new;
 	}
 	
 	window { ^windows.last }
+	view { ^windows.last.view }
 	asView { ^this.window.view }
+	//asView {}
+	add { arg view;
+		var b;
+		b = view.bounds;
+		view.bounds = this.layRight(b.width,b.height);
+		this.view.add(view);
+	}
 	asPageLayout { arg name,width,height,x,y;
 		if(isClosed,{
 			^this.class.new(name,width,height,x,y)
@@ -136,12 +307,13 @@ PageLayout  {
 	hide {
 		// for now
 		windows.do({ arg w; w.alpha = 0.0; })
+		//windows.do({ arg w; w.hide })
 	}
-	unhide {
-		windows.do({ arg w; w.alpha = 1.0 })
+	show {
+		//windows.do({ arg w; w.show })
+		windows.do({ arg w; w.alpha = 1.0;  })
 	}
 	close { // called when the GUIWindow closes
-		//isClosed.insp("closing page layout" , this);
 		if(isClosed.not,{
 			isClosed = true; 
 			if(windows.notNil,{
@@ -177,8 +349,12 @@ PageLayout  {
 		if(first.notNil,{first.focus });
 	}
 
-	backColor { ^this.window.view.background }
-	backColor_ { arg c; this.window.view.background_(c) }
+	//TODO remove
+	backColor { ^this.view.background }
+	backColor_ { arg c; this.view.background_(c) }
+	
+	background_ { arg b; this.view.background_(b) }
+	
 	
 	removeOnClose { arg dependant;
 		autoRemoves = autoRemoves.add(dependant);
@@ -231,25 +407,26 @@ PageLayout  {
 		autoRemoves = List.new;
 	}
 
-	resizeWindowToFit { 
+	resizeToFit { 
 		// cascade all open windows and shrink them to contents
 		// margin is still set large
 		windows.reverse.do({ arg w;
 			var b;
-			
-			b = Rect.newSides(w.view.bounds.left, w.view.bounds.top,
-				 w.view.children.maxValue({ arg v; v.bounds.right }) 
-				 		+ hspacer + hspacer ,
-				 w.view.children.maxValue({ arg v; v.bounds.bottom }) 
-				 		+ vspacer + vspacer + 45);
-
-			b.left = w.bounds.left; // same left as it was
-			b.top = screenHeight - b.top; //flip to top
-			
-			w.bounds_(b);
-			margin = b.insetAll(hspacer,vspacer,hspacer,vspacer);
-			// warning: subsequent windows would have the same margin
-			//w.front;
+			if(w.view.children.notNil,{
+				b = Rect.newSides(w.view.bounds.left, w.view.bounds.top,
+					 w.view.children.maxValue({ arg v; v.bounds.right }) 
+					 		+ hspacer + hspacer ,
+					 w.view.children.maxValue({ arg v; v.bounds.bottom }) 
+					 		+ vspacer + vspacer + 45);
+	
+				b.left = w.bounds.left; // same left as it was
+				b.top = screenHeight - b.top; //flip to top
+				
+				w.bounds_(b);
+				margin = b.insetAll(hspacer,vspacer,hspacer,vspacer);
+				// warning: subsequent windows would have the same margin
+				//w.front;
+			})
 		})
 	}
 	
@@ -282,7 +459,7 @@ PageLayout  {
 		var w;
 		var bounds,lowest,band,overlaps;
 		w = this.window;
-		bounds = w.views.collect({ arg v; v.bounds });
+		bounds = w.children.collect({ arg v; v.bounds });
 		if(bounds.notEmpty,{
 			lowest = bounds.maxItem({ arg b; b.bottom });
 			band = Rect.newSides(0,lowest.top,w.bounds.width,lowest.bottom);
@@ -305,6 +482,10 @@ PageLayout  {
 //		^true
 //	}
 
+	remaining {
+		^this.view.bounds.insetAll(0,curry,0,0)
+	}
+	
 	*initClass {
 		bgcolor = Color(0.886274509803, 0.94117647058824, 0.874509803921, 1);
 		focuscolor = Color(1, 0.0980392156862, 0.129411764705, 1);
@@ -313,7 +494,7 @@ PageLayout  {
 
 }
 
-
+// please kill me
 GUIPlacement { // this adapts flowLayout code so that it can work with gui builder positioned objects
 	var <>window,<>bounds;
 	*new { arg window,bounds;
@@ -325,3 +506,5 @@ GUIPlacement { // this adapts flowLayout code so that it can work with gui build
 		stream << "( w," <<< bounds << ")";
 	}
 }
+
+
