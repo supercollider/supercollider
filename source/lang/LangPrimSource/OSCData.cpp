@@ -454,6 +454,28 @@ int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
 	return netAddrSend(netAddrSlot->uo, packet.size(), (char*)packet.buf);
 }
 
+int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed);
+int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
+{	
+	PyrSlot* netAddrSlot;
+	PyrSlot* args;
+
+	netAddrSlot = g->sp - numArgsPushed + 1;
+	args = netAddrSlot + 1;
+	
+	scpacket packet;
+	
+	//double time;
+	//int err = slotDoubleVal(args, &time);
+	//if (!err) { SetFloat(args, time); }
+	
+	int numargs = numArgsPushed - 1;
+	makeSynthBundle(&packet, args, numargs, true);
+	SetInt(netAddrSlot, packet.size());
+	return errNone;
+}
+
+
 int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed);
 int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
 {	
@@ -652,7 +674,7 @@ void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj)
 {
     
     PyrObject *arrayObj = ConvertOSCMessage(inSize, inData);
-    
+   
     // call virtual machine to handle message
     VMGlobals *g = gMainVMGlobals;
     ++g->sp; SetObject(g->sp, g->process);
@@ -661,6 +683,7 @@ void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj)
     ++g->sp; SetObject(g->sp, arrayObj);	
 	
     runInterpreter(g, s_recvoscmsg, 4);
+	
 
 }
 
@@ -927,6 +950,8 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_NetAddr_SendMsg", prNetAddr_SendMsg, 1, 1);	
 	definePrimitive(base, index++, "_NetAddr_SendBundle", prNetAddr_SendBundle, 2, 1);	
 	definePrimitive(base, index++, "_NetAddr_SendRaw", prNetAddr_SendRaw, 2, 0);	
+	definePrimitive(base, index++, "_NetAddr_BundleSize", prNetAddr_BundleSize, 2, 1);	
+
 	definePrimitive(base, index++, "_NetAddr_UseDoubles", prNetAddr_UseDoubles, 2, 0);	
 	definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);	
 	definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);	
