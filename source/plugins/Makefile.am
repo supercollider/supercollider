@@ -53,7 +53,9 @@ plugin_LTLIBRARIES	= 	\
 	OscUGens.la		\
 	PanUGens.la		\
 	TriggerUGens.la		\
-	UnaryOpUGens.la
+	UnaryOpUGens.la		\
+	GendynUGens.la		\
+	PhysicalModelingUGens.la
 
 # BinaryOpUGens
 BinaryOpUGens_la_SOURCES	= BinaryOpUGens.cpp
@@ -114,5 +116,13 @@ TriggerUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 # UnaryOpUGens
 UnaryOpUGens_la_SOURCES		= UnaryOpUGens.cpp
 UnaryOpUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
+
+# GendynUGens
+GendynUGens_la_SOURCES		= GendynUGens.cpp
+GendynUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
+
+# PhysicalModelingUGens
+PhysicalModelingUGens_la_SOURCES       	= PhysicalModelingUGens.cpp
+PhysicalModelingUGens_la_LDFLAGS       	= -module -no-undefined -avoid-version
 
 ## EOF ================================================================
