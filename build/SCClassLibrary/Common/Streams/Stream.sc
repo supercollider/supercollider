@@ -207,7 +207,10 @@ PauseStream : Stream
 	
 	start { ^this.play(clock, true) }
 		
-	stream_ { arg argStream; stream = originalStream = argStream; }
+	stream_ { arg argStream; 
+		originalStream = argStream; 
+		if (stream.notNil, { stream = argStream });
+	}
 	next { arg inval; 
 		var nextTime;
 		nextTime = stream.next(inval);
