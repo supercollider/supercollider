@@ -21,6 +21,7 @@ Boolean {
 	storeOn { arg stream;
 		stream.putAll(this.asCompileString);
 	}
+	archiveAsCompileString { ^true }
 }
 
 True : Boolean {

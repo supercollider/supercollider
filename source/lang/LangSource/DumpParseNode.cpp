@@ -327,7 +327,7 @@ void slotString(PyrSlot *slot, char *str)
 			sprintf(str, "RawPointer %X", slot->ui);
 			break;
 		default :
-			sprintf(str, "Float %.14g   %08X %08X", slot->uf, slot->utag, slot->ui);
+			sprintf(str, "Float %.18g   %08X %08X", slot->uf, slot->utag, slot->ui);
 			break;
 	}
 }
@@ -424,7 +424,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 			sprintf(str, "ptr%08X", slot->ui);
 			break;
 		default :
-			sprintf(str, "%f", slot->uf);
+			sprintf(str, "%.18g", slot->uf);
 			break;
 	}
 }
@@ -539,7 +539,7 @@ bool postString(PyrSlot *slot, char *str)
 			sprintf(str, "%X", slot->ui);
 			break;
 		default :
-			sprintf(str, "%.14g", slot->uf);
+			sprintf(str, "%.18g", slot->uf);
 			break;
 	}
 	return res;
@@ -578,7 +578,7 @@ int asCompileString(PyrSlot *slot, char *str)
 			strcpy(str, "/*Ptr*/ nil");
 			break;
 		default :
-			sprintf(str, "%.14g", slot->uf);
+			sprintf(str, "%.18g", slot->uf);
 			break;
 	}
 	return errNone;

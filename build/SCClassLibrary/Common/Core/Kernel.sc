@@ -103,6 +103,7 @@ Class {
 	storeOn { arg stream;
 		stream << name;
 	}
+	archiveAsCompileString { ^true }
 	
 	hasHelpFile { 
 		//should cache this in Library or classvar
@@ -300,6 +301,7 @@ Process {
 	storeOn { arg stream;
 		stream << "thisProcess";
 	}
+	archiveAsCompileString { ^true }
 }
 
 
@@ -369,6 +371,10 @@ Frame {
 	// dangerous to allow access to them. Dangling pointers could result.
 	shallowCopy { ^this }
 	inspectorClass { ^FrameInspector }
+	
+	storeOn { arg stream; stream << "nil"; }
+	archiveAsCompileString { ^true }
+	checkCanArchive { "cannot archive Frames".warn }
 }
 
 DebugFrame {

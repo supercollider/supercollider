@@ -44,7 +44,6 @@ Float : SimpleNumber {
 		_Float_AsStringPrec
 		^this.primitiveFailed
 	}
-		
-	// code gen
-	outputType { ^\FLT }
+
+	archiveAsCompileString { ^true }
 }

@@ -193,7 +193,8 @@ int instVarPut(struct VMGlobals *g, int numArgsPushed)
 				return errNone;
 			}
 		}
-		return errFailed;
+		post("WARNING: %s instVarPut '%s' failed.\n", obj->classptr->name.us->name, name->name);
+		return errNone;
 	} else return errWrongType;
 	return errNone;
 }

@@ -1645,7 +1645,7 @@ void dumpObject(PyrObject *obj)
 				for (i=0; i<maxsize; ++i) {
 					double val;
 					val = obj->slots[i].uf;
-					post("    %3d : %.14g\n", i, val);
+					post("    %3d : %.18g\n", i, val);
 				}
 				break;
 			case obj_float :
@@ -1741,7 +1741,7 @@ void dumpBadObject(PyrObject *obj)
 				for (i=0; i<maxsize; ++i) {
 					double val;
 					val = obj->slots[i].uf;
-					postfl("    %3d : %.14g\n", i, val);
+					postfl("    %3d : %.18g\n", i, val);
 				}
 				break;
 			case obj_float :

@@ -108,6 +108,10 @@ Array[slot] : ArrayedCollection {
 		_ArrayPermute
 		^this.primitiveFailed 
 	}
+	allTuples { arg maxTuples = 16384;
+		_ArrayAllTuples
+		^this.primitiveFailed 
+	}
 	wrapExtend { arg length;
 		_ArrayExtendWrap 
 		^this.primitiveFailed 
@@ -195,19 +199,6 @@ Array[slot] : ArrayedCollection {
 	}
 
 	asSpec { ^ControlSpec( *this ) }
-	
-	printOn { arg stream;
-		if (stream.atLimit, { ^this });
-		stream << "[ " ;
-		this.printItemsOn(stream);
-		stream << " ]" ;
-	}
-	storeOn { arg stream;
-		if (stream.atLimit, { ^this });
-		stream << "[ " ;
-		this.storeItemsOn(stream);
-		stream << " ]" ;
-	}
 
 	// threads
 	fork { arg join, clock, quant;
@@ -233,6 +224,24 @@ Array[slot] : ArrayedCollection {
 	asRawOSC {
 		_Array_OSCBytes
 		^this.primitiveFailed;
+	}
+	
+	printOn { arg stream;
+		if (stream.atLimit, { ^this });
+		stream << "[ " ;
+		this.printItemsOn(stream);
+		stream << " ]" ;
+	}
+	storeOn { arg stream;
+		if (stream.atLimit, { ^this });
+		stream << "[ " ;
+		this.storeItemsOn(stream);
+		stream << " ]" ;
+	}
+	prUnarchive { arg slotArray;
+		slotArray.pairsDo {|index, slots| this[index].setSlots(slots) };
+		this.do {|obj| obj.initFromArchive };
+		^this.first
 	}
 }
 

@@ -51,6 +51,10 @@ Thread : Stream {
 
 	*primitiveError { _PrimitiveError }
 	*primitiveErrorString { _PrimitiveErrorString; }
+	
+	storeOn { arg stream; stream << "nil"; }
+	archiveAsCompileString { ^true }
+	checkCanArchive { "cannot archive Threads".warn }
 }
 
 Routine : Thread {

@@ -1744,6 +1744,54 @@ int prArrayPermute(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+
+int prArrayAllTuples(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b, *slots1, *slots2, *slots3;
+	PyrObject *obj1, *obj2, *obj3;
+	
+	a = g->sp - 1;
+	b = g->sp;
+	if (b->utag != tagInt) return errWrongType;
+	int maxSize = b->ui;
+	
+	obj1 = a->uo;
+	slots1 = obj1->slots;
+	int newSize = 1;
+	int tupSize = obj1->size;
+	for (int i=0; i < tupSize; ++i) {
+		if (isKindOfSlot(slots1+i, class_arrayed_collection)) {
+			newSize *= slots1[i].uo->size;
+		}
+	}
+	if (newSize > maxSize) newSize = maxSize;
+	
+	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, newSize, false, true);
+	slots2 = obj2->slots;
+
+	for (int i=0; i < newSize; ++i) {
+		int k = i;
+		obj3 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, tupSize, false, true);
+		slots3 = obj3->slots;
+		for (int j=tupSize-1; j >= 0; --j) {
+			if (isKindOfSlot(slots1+j, class_arrayed_collection)) {
+				PyrObject *obj4 = slots1[j].uo;
+				slots3[j].ucopy = obj4->slots[k % obj4->size].ucopy;
+				g->gc->GCWrite(obj3, obj3);
+				k /= obj4->size;
+			} else {
+				slots3[j].ucopy = slots1[j].ucopy;
+			}
+		}
+		obj3->size = tupSize;
+		SetObject(obj2->slots+i, obj3);
+		g->gc->GCWriteNew(obj2, obj3);
+		obj2->size++;
+	}
+	a->uo = obj2;
+	return errNone;
+}
+
 int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *slots;
@@ -2219,6 +2267,7 @@ void initArrayPrimitives()
 	definePrimitive(base, index++, "_ArrayMirror2", prArrayMirror2, 1, 0);
 	definePrimitive(base, index++, "_ArrayRotate", prArrayRotate, 2, 0);
 	definePrimitive(base, index++, "_ArrayPermute", prArrayPermute, 2, 0);
+	definePrimitive(base, index++, "_ArrayAllTuples", prArrayAllTuples, 2, 0);
 	definePrimitive(base, index++, "_ArrayPyramid", prArrayPyramid, 2, 0);
 	definePrimitive(base, index++, "_ArrayRotate", prArrayRotate, 2, 0);
 	definePrimitive(base, index++, "_ArrayExtendWrap", prArrayExtendWrap, 2, 0);

@@ -122,7 +122,7 @@ Event : Environment {
 				out: 0,
 				addAction: 0,
 										
-				synthLib: SynthDescLib.global,
+				synthLib: #{ SynthDescLib.global },
 	
 				server: #{ Server.default }
 			)
@@ -160,14 +160,14 @@ Event : Environment {
 					if (freqs.isKindOf(Symbol).not) {
 						~finish.value;
 						~amp = ~amp.value;
-						server = ~server = ~server.value;
+						server = ~server.value;
 						addAction = ~addAction;
 						group = ~group;
 						lag = ~lag + server.latency;
 						strum = ~strum;
-						sustain = ~sustain = ~sustain.value;
+						sustain = ~sustain.value;
 			
-						desc = ~synthLib.synthDescs[~instrument.asSymbol];
+						desc = ~synthLib.value.synthDescs[~instrument.asSymbol];
 						if (desc.isNil) { 
 							error("instrument " ++ ~instrument ++ " not found."); 
 							~delta = ~dur = nil; // force stop
@@ -218,7 +218,7 @@ Event : Environment {
 						lag = ~lag + server.latency;
 						strum = ~strum;
 			
-						desc = ~synthLib.synthDescs[~instrument.asSymbol];
+						desc = ~synthLib.value.synthDescs[~instrument.asSymbol];
 						if (desc.isNil) { 
 							error("instrument " ++ ~instrument ++ " not found."); 
 							~delta = ~dur = nil; // force stop

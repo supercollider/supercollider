@@ -8,6 +8,9 @@ Function : AbstractFunction {
 	isClosed { ^def.sourceCode.notNil }
 
 	storeOn { arg stream; stream << def.sourceCode }
+	archiveAsCompileString { ^true }
+	archiveAsObject { ^true }
+	checkCanArchive { if (def.sourceCode.isNil) { "cannot archive open Functions".warn } }
 	
 	shallowCopy { ^this }
 	

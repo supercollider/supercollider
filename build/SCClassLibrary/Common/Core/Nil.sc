@@ -56,7 +56,7 @@ Nil {
 	performMsg {}
 	
 	printOn { arg stream;
-		stream.putAll(this.asString);
+		stream.putAll("nil");
 	}
 	storeOn { arg stream;
 		stream.putAll("nil");
@@ -91,4 +91,6 @@ Nil {
 		Error.handling = false;
 		this.halt;
 	}
+	
+	archiveAsCompileString { ^true }
 }

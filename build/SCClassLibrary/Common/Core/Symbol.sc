@@ -185,4 +185,6 @@ Symbol {
 	codegen_UGenCtorArg { arg stream; 
 		this.asString.codegen_UGenCtorArg(stream);
 	}
+
+	archiveAsCompileString { ^true }
 }

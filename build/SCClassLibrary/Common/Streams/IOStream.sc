@@ -104,12 +104,12 @@ CollStream : IOStream {
 //		^this.primitiveFailed;
 //	}
 
-//	getChar { _CollStream_GetChar; ^this.primitiveFailed; }
-//	getInt8 { _CollStream_GetInt8; ^this.primitiveFailed; }
-//	getInt16 { _CollStream_GetInt16; ^this.primitiveFailed; }
-//	getInt32 { _CollStream_GetInt32; ^this.primitiveFailed; }
-//	getFloat { _CollStream_GetFloat; ^this.primitiveFailed; }
-//	getDouble { _CollStream_GetDouble; ^this.primitiveFailed; }
+	getChar { ^this.next; }
+	getInt8 { ^this.next & 255; }
+	getInt16 { ^this.getInt8 << 8 | this.getInt8; }
+	getInt32 { ^this.getInt16 << 16 | this.getInt16; }
+	getFloat { ^Float.from32bits(this.getInt32); }
+	getDouble { ^Float.from64bits(this.getInt32, this.getInt32); }
 //	
 	// collection should be an Int8Array
 	putChar { arg aChar; this.put(aChar.ascii); }

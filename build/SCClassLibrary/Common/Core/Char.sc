@@ -78,5 +78,7 @@ Char : Magnitude {
 	storeOn { arg stream;
 		stream.putAll(this.asCompileString);
 	}
+
+	archiveAsCompileString { ^true }
 }
 

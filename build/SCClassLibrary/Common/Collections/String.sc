@@ -191,12 +191,17 @@ String[char] : RawArray {
 	storeOn { arg stream;
 		stream.putAll(this.asCompileString);
 	}
+	archiveAsCompileString { ^true }
+	archiveAsObject { ^true }
 	
 	inspectorClass { ^StringInspector }
 	
 	/// unix
 
 	pathMatch { _StringPathMatch ^this.primitiveFailed } // glob
+	load {
+		^thisProcess.interpreter.executeFile(this);
+	}
 	loadPaths {
 		var paths;
 		paths = this.pathMatch;

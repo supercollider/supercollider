@@ -30,11 +30,12 @@ Infinitum : Magnitude {
 
 	*new { ^this.shouldNotImplement(thisMethod) }
 	printOn { arg stream;
-		stream.putAll(this.asString);
+		stream.putAll("inf");
 	}
 	storeOn { arg stream;
 		stream.putAll("inf");
 	}
+	archiveAsCompileString { ^true }
 }
 
 

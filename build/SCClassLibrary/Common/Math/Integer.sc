@@ -104,9 +104,6 @@ Integer : SimpleNumber {
 		^nil
 		*/
 	}
-
-	// code gen
-	outputType { ^\INT }
 	
 	// exit the program and return the result code to unix shell
 	exit { _Exit }
@@ -129,5 +126,7 @@ Integer : SimpleNumber {
 		((this >> 8) & 255).asString ++ "." ++
 		(this & 255).asString
 	}
+
+	archiveAsCompileString { ^true }
 }
 
