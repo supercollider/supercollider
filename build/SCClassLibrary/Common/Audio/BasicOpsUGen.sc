@@ -88,7 +88,7 @@ BinaryOpUGen : BasicOpUGen {
 		var a, b, muladd;
 		#a, b = inputs;
 		
-		this.constantFolding;
+		//this.constantFolding;
 		
 		if (operator == '+', {
 			// create a MulAdd if possible.
