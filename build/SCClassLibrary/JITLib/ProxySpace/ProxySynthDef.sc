@@ -6,9 +6,11 @@ ProxySynthDef : SynthDef {
 	
 	*initClass {
 		//clean up any written synthdefs starting with "temp__"
-		unixCmd("rm synthdefs/temp__*");
+		unixCmd("rm synthdefs/"++ this.tempPrefix ++ "*");
 		outClass = Out; // either Out or OffsetOut
-	}	
+	}
+	
+	*tempPrefix {Ê^"temp__" }
 	
 	*new { arg name, func, rates, prependArgs, makeFadeEnv=true, channelOffset=0, chanConstraint;
 		var def, rate, numChannels, output, isScalar, envgen, canFree, hasOwnGate;

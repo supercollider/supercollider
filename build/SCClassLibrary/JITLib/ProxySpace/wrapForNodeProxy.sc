@@ -29,7 +29,7 @@
 		var argNames;
 		argNames = this.argNames;
 		^ProxySynthDef(
-			proxy.generateUniqueName ++ index,
+			ProxySynthDef.tempPrefix ++ proxy.generateUniqueName ++ index,
 			this.prepareForProxySynthDef(proxy),
 			proxy.nodeMap.ratesFor(argNames),
 			nil, 
