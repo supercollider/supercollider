@@ -199,13 +199,13 @@ BusPlug : AbstractFunction {
 		ok = this.initBus(\audio, numChannels);
 		if(ok.not) { Error("can't monitor a" + bus.rate + "proxy" + "with" + numChannels).throw };
 		this.wakeUp;
-		if(monitor.isNil) { monitor = Monitor.new };
 		group = (group ? localServer).asGroup;
-		monitor.play(bus.index, bus.numChannels, out, numChannels, group, multi, vol)
+		this.getMonitor.play(bus.index, bus.numChannels, out, numChannels, group, multi, vol)
 		^monitor.group
 	}
 	
 	fadeTime Ê{ ^0.02 }
+	getMonitor { if(monitor.isNil) { monitor = Monitor.new }; ^monitor }
 
 	stop { arg fadeTime=0.1;
 		monitor.stop(fadeTime)
@@ -978,7 +978,7 @@ Ndef : NodeProxy {
 // this class takes care for a constant groupID.
 
 
-SharedNodeProxy : NodeProxy {
+SharedNodeProxy : NodeProxy { // should pass in a bus index/numChannels.
 	var <constantGroupID;
 	var <>allowMultipleObjects=true; // in larger groups this is better set to false
 								// to limit node not found messages
@@ -992,6 +992,8 @@ SharedNodeProxy : NodeProxy {
 		constantGroupID = groupID ?? { server.nextSharedNodeID };
 		awake = true;
 	}
+	
+	// todo: rebuild! (bus identity needs to be fix)
 	
 	localServer { ^server.localServer }
 	
