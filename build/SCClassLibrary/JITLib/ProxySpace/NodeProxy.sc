@@ -23,7 +23,6 @@ NodeProxy : AbstractFunction {
 	}
 	
 	*initClass {
-		//supposes it is on server already. revisit
 		SynthDef("proxyOut-linkDefAr", { arg i_busOut=0, i_busIn=16; 
 			Out.ar(i_busOut, InFeedback.ar(i_busIn, 1)) 
 		}).writeDefFile;
@@ -155,7 +154,7 @@ NodeProxy : AbstractFunction {
 		this.setObj(obj, true) 
 	}
 	
-	setObj { arg obj, send=false, freeAll=true, onCompletion, latency=0.5; 		var def, ok, writeOK;
+	setObj { arg obj, send=false, freeAll=true, onCompletion, latency=0.3; 		var def, ok, writeOK;
 			
 			ok = this.initFor(obj);
 			
@@ -241,9 +240,10 @@ NodeProxy : AbstractFunction {
 		var msg, resp;
 		if( synthDefs.isEmpty.not and: { server.serverRunning }, {
 				msg = List.new;
+				this.prepareForPlayMsg(msg, freeAll);
 				this.sendSynthMsg(msg, freeAll, extraArgs);
 				if(latency.notNil, {
-					SystemClock.sched(latency ? 0, {
+					SystemClock.sched(latency, {
 								this.schedSendOSC(msg, onCompletion); 
 					})
 				}, {
@@ -257,7 +257,7 @@ NodeProxy : AbstractFunction {
 	}
 			
 	schedSendOSC { arg msg, onCompletion;
-					//msg.asCompileString.postln;
+					msg.asCompileString.postln;
 					if(clock.notNil, {
 						clock.sched(0, { 
 							server.listSendBundle(nil, msg); 
@@ -269,32 +269,28 @@ NodeProxy : AbstractFunction {
 					})
 	}
 	
+	prepareForPlayMsg { arg msg, freeAll=true;
+					["playing", this.isPlaying].postln;
+					if(this.isPlaying.not, {
+						group = Group.newMsg(msg, server, \addToHead);
+						group.prIsPlaying(true);
+					}, {
+						if(freeAll, {
+							this.freeAllMsg(msg);
+						});
+					});
+	}
+	
 	sendSynthMsg { arg msg, freeAll=true, extraArgs;
 				var synth;
 				
-				if(this.isPlaying.not, {
-					group = Group.newMsg(msg, server, \addToHead);
-					group.prIsPlaying(true);
-					
-				
-				}, {
-					//release current synth
-					if(freeAll, {
-						this.freeAllMsg(msg);
-					});
-				});
-			
 				if(freeAll, {
-//					if(loaded.not, {
-//							this.sendAllDefsMsg(msg);
-//					});
 					synthDefs.do({ arg synthDef;
 						Synth.newMsg(msg, synthDef.name, extraArgs, group); 
 					});
 					nodeMap.updateMsg(msg, group);
 					
 				}, {
-//					if(loaded.not, { this.sendDefMsg(msg, synthDefs.last) });
 					synth = Synth.newMsg(msg, synthDefs.last.name, extraArgs, group); 
 					nodeMap.updateMsg(msg, synth);
 				});	
@@ -305,7 +301,8 @@ NodeProxy : AbstractFunction {
 		
 	freeAllMsg { arg msg;
 					if(autoRelease, {
-							group.addMsg(msg, 15, [\synthGate, 0.0]) //n_set
+							group.addMsg(msg, 15, [\synthGate, 0.0]); //n_set
+							group.freeAll(false);
 					});
 					//group.addMsg(msg, 24); //g_freeAll
 					//	}, {
@@ -323,7 +320,6 @@ NodeProxy : AbstractFunction {
 				numChannels = numChannels ? 1;
 				
 				if(outbus.isNil, {
-					\initializedBus.postln;
 					outbus = Bus.perform(rate, server, numChannels);
 					nodeMap = ProxyNodeMap.new;
 					^true
@@ -364,7 +360,10 @@ NodeProxy : AbstractFunction {
 	}
 	
 	wakeUpToBundle { arg bundle; //no need to wait, def is on server
-		if(this.isPlaying.not, { this.sendSynthMsg(bundle, true, 0) });
+		if(this.isPlaying.not, { 
+			this.prepareForPlayMsg(bundle, true);
+			this.sendSynthMsg(bundle, true, 0);
+		});
 		
 	}
 	
