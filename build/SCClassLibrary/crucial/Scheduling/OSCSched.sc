@@ -14,7 +14,10 @@ BeatSched {
 			tempo ?? {Tempo.default},
 			tempoClock ?? {TempoClock.default}).init
 	}		
-	*initClass { global = this.new; }
+	*initClass { 
+		Class.initClassTree(Tempo);
+		global = this.new; 
+	}
 	init {
 		pq = PriorityQueue.new;
 		nextAbsFunc = nextAbsTime = nil;
