@@ -155,12 +155,15 @@ AudioProxy : AbstractFunction {
 		var def;
 		def = ProxySynthDef(this, obj).writeDefFile;
 		if(def.notNil, { 
+			server.sendSynthDef(def.name);
+			/*
 			if(server.isLocal, {
 				server.loadSynthDef(def.name)
 				//server.sendSynthDef(def.name)
 			}, {
 				server.sendSynthDef(def.name)
 			}); 
+			*/
 			lastDef = def 
 		}, { "writing synthDef failed".inform });
 	}
