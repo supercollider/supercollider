@@ -47,16 +47,27 @@ Tempo  {
 
 BeatClock : Clock {
 	
+	classvar global;
 	var <>tempo;
 	
 	*new { arg tempo;
 		^super.new.tempo_(tempo ? Tempo.default)
 	}
-
-	*sched { arg delta,item;
+	*initClass {
+		global = this.new;
+	}
+	sched { arg delta,item;
 		SystemClock.sched(tempo.beats2secs(delta),item)
 	}
-	*schedAbs { arg time,item;
-		SystemClock.sched(tempo.beats2secs(time) + beatEpoch,item)
+	schedAbs { arg time,item;
+		SystemClock.sched(tempo.beats2secs(time),item)
 	}
+	
+	*sched { arg delta,item;
+		global.sched(delta,item);
+	}
+	*schedAbs { arg time,item;
+		global.schedAbs(time,item);
+	}
+	
 }
