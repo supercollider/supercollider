@@ -85,6 +85,9 @@ Function : AbstractFunction {
 //		clock = clock ? SystemClock;
 //		clock.play(this);
 //	}
+	plot {
+		^thisMethod.notYetImplemented
+	}
 }
 
 
