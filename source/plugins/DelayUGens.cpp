@@ -524,11 +524,11 @@ inline double sc_loop(double in, double hi, int loop)
 		unit->m_buf = world->mSndBufs + bufnum; \
 	} \
 	SndBuf *buf = unit->m_buf; \
-	int bufChannels = buf->channels; \
-	int bufSamples = buf->samples; \
+	int bufChannels = buf->channels; bufChannels; \
+	int bufSamples = buf->samples; bufSamples; \
 	int bufFrames = buf->frames; \
-	int mask = buf->mask; \
-	int guardFrame = bufFrames - 2; \
+	int mask = buf->mask; mask; \
+	int guardFrame = bufFrames - 2; guardFrame; \
 	float *bufData = buf->data;
 
 #define SETUP_OUT \
@@ -4591,7 +4591,7 @@ void SimpleLoopBuf_next_kk(SimpleLoopBuf *unit, int inNumSamples)
 	loopend = sc_max(loopend, bufFrames);
 	int32 phase = unit->m_phase;
 	if (trig > 0.f && unit->m_prevtrig <= 0.f) {
-		phase = ZIN0(2);
+		phase = (int32)ZIN0(2);
 	}
 	unit->m_prevtrig = trig;
 	for (int i=0; i<inNumSamples; ++i) {
