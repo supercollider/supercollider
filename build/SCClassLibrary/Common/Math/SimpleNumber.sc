@@ -113,6 +113,9 @@ SimpleNumber : Number {
 	> { arg aNumber; _GT; ^aNumber.performBinaryOpOnSimpleNumber('>', this) }
 	<= { arg aNumber; _LE; ^aNumber.performBinaryOpOnSimpleNumber('<=', this) }
 	>= { arg aNumber; _GE; ^aNumber.performBinaryOpOnSimpleNumber('>=', this) }
+	equalWithPrecision { arg that,precision=0.0001;
+		^absdif(this, that) < precision
+	}
 
 	hash { _ObjectHash; ^this.primitiveFailed }
 		
