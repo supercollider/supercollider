@@ -90,7 +90,6 @@ void Control_next_k(Unit *unit, int inNumSamples)
 	for (int i=0; i<numChannels; ++i, mapin++) {
 		float *out = OUT(i);
 		*out = **mapin;
-		//Print("cin %d %g\n", i, *out);
 	}
 }
 
@@ -357,6 +356,8 @@ void ReplaceOut_next_k(IOUnit *unit, int inNumSamples)
 void ReplaceOut_Ctor(IOUnit* unit)
 {
 	World *world = unit->mWorld;
+	unit->m_fbusChannel = -1.;
+
 	if (unit->mCalcRate == calc_FullRate) {
 		SETCALC(ReplaceOut_next_a);
 		unit->m_bus = world->mAudioBus;
