@@ -7,10 +7,12 @@
 \f1\b0\fs18 \
 see also [Server-Command-Reference]\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 Server Commands\
+\f0\b\fs24 \cf0 Server Commands\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \
+\f1\b0\fs18 \cf0 \
 /quit\
 /notify  flag\
 /status\
@@ -21,11 +23,13 @@ see also [Server-Command-Reference]\
 /d_load path [complBytes]\
 /d_loadDir path [complBytes]\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 Node:\
+\f0\b\fs24 \cf0 Node:\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 /n_free nodeID ...\
+\f1\b0\fs18 \cf0 /n_free nodeID ...\
 /n_run | nodeID flag | ... \
 /n_set nodeID  | control value | ...\
 /n_setn nodeID | control numCtl values.. | ...\
@@ -34,10 +38,17 @@ see also [Server-Command-Reference]\
 /n_mapn nodeID | control busIndex numCtl | ...\
 \
 /n_before | movedNodeID targetNodeID | ...\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 /n_after | movedNodeID targetNodeID | ...\
+/n_after | movedNodeID targetNodeID | ...\
 /n_query nodeID ...\
 /n_trace nodeID ...\
+\
+alternative syntax for "nodeID"\
+positionArg | nodeID\
+"h" - head of the current group\
+"t" - tail of the current group\
+"u" - up. the parent of the current node.\
+"p" - the previous node.\
+"n" - the next node.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
