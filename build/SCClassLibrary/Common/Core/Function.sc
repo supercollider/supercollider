@@ -7,7 +7,7 @@ Function : AbstractFunction {
 	
 	isClosed { _FunctionIsClosed }
 
-	asCompileString { ^def.sourceCode }
+	storeOn { arg stream; stream << (def.sourceCode ? "Function.new")  }
 	
 	shallowCopy { ^this }
 	
