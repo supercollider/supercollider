@@ -55,7 +55,7 @@ Function : AbstractFunction {
 	}
 
 	block {
-		this.value {|val| ^val };
+		^this.value {|val| ^val };
 	}
 //	block {
 //		var result;
