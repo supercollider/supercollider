@@ -88,6 +88,7 @@ int processint(char *token);
 int processchar(int c);
 int processintradix(char *s);
 int processfloatradix(char *s);
+int processhex(char *s);
 int processsymbol(char *token);
 int processstring(char *token);
 int processkeywordbinop(char *token);

@@ -590,7 +590,18 @@ radix_digits_2:
 	yytext[yylen] = 0;
 	r = processfloatradix(yytext);
 	goto leave;
-	
+
+hexdigits:
+
+	c = input();
+	if (c >= '0' && c <= '9') goto hexdigits;
+	if (c >= 'a' && c <= 'f') goto hexdigits;
+	if (c >= 'A' && c <= 'F') goto hexdigits;
+	unput(c);
+	yytext[yylen] = 0;
+	r = processhex(yytext);
+	goto leave;
+
 digits_1:	/* number started with digits */
 
 	c = input();
@@ -611,11 +622,10 @@ digits_1:	/* number started with digits */
 			r = processint(yytext); 
 			goto leave;
 		}
-//	} else if (c == 'π' || c == '∏') {
-//		--yylen;
-//		yytext[yylen] = 0;
-//		r = processfloat(yytext, 1); 
-//		goto leave;
+	} 
+	else if (c == 'x') {
+		yylen = 0; 
+		goto hexdigits;
 	} else {
 		unput(c);
 		yytext[yylen] = 0;
@@ -937,6 +947,32 @@ int processident(char *token)
 	zzval = (int)node;
 	return NAME;
 }
+
+int processhex(char *s)
+{
+	PyrSlot slot;
+	PyrSlotNode *node;
+	char *c;
+	int val;
+#if DEBUGLEX
+	if (gDebugLexer) postfl("processhex: '%s'\n",s);
+#endif
+
+	c = s;
+	val = 0;
+	while (*c) {
+		if (*c >= '0' && *c <= '9') val = val*16 + *c - '0';
+		else if (*c >= 'a' && *c <= 'z') val = val*16 + *c - 'a' + 10;
+		else if (*c >= 'A' && *c <= 'Z') val = val*16 + *c - 'A' + 10;
+		c++;
+	}
+	
+	SetInt(&slot, val);
+	node = newPyrSlotNode(&slot);
+	zzval = (int)node;
+	return INTEGER;
+}
+
 
 int processintradix(char *s) 
 {
