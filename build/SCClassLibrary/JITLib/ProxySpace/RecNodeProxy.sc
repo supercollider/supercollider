@@ -15,7 +15,12 @@ RecNodeProxy : NodeProxy {
 		}).writeDefFile;
 	}
 	
-	record { arg path, headerFormat="aiff", sampleFormat="int24";
+	*newFrom { arg proxy, numChannels;
+		^this.audio(proxy.server, numChannels ? proxy.numChannels).source_({proxy.ar(numChannels) });
+	}
+	
+	
+	record { arg path, headerFormat="aiff", sampleFormat="int16";
 		var cmd, n;
 		cmd = List.new;
 		n = this.numChannels;
@@ -54,7 +59,7 @@ RecNodeProxy : NodeProxy {
 	stop {
 		recSynth.free;
 		recSynth = nil;
-		buffer.close;
+		buffer.tryPerform(\close);
 		//buffer.free;
 	}
 	free {
