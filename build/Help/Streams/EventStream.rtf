@@ -6,25 +6,26 @@
 \f0\b\fs36 \cf0 EventStream
 \f1\b0\fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b superclass: Object\
+\f0\b \cf0 superclass: Object\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
-An EventStream is used by Event based Patterns.  (see class 
-\f0\b Event
+\f1\b0 \cf0 \
+\
+An event stream is a normal [
+\f0\b \ul Stream\ulnone ]
+\f1\b0 , that returns events when called. (see class [
+\f0\b \ul Event\ulnone ]
 \f1\b0 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 You do not explictly create an EventStream, it is created by Pevent, another helper class used by Pattern-play.\
+Usually, an event stream requires an event to be passed in, often the default event is used:\
 \
-The 
-\f0\b EventStream
-\f1\b0  holds a stream (that returns a series of Events) and a protoEvent. At each call to next, it copies the protoEvent, passes that to the stream, and calls 
-\f0\b finishEvent
-\f1\b0  on the 
-\f0\b Event
-\f1\b0  returned.
+t = Pbind(\\x, Pseq([1,2,3])).asStream; // pbind, e.g. creates an event stream\
+t.next(Event.default);\
+t.next(Event.default);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
-\
+An event stream cannot be played directly with a clock, as it returns events and not time values.\
+Therefore, an [
+\f0\b \ul EventStreamPlayer\ulnone ]
+\f1\b0  is used, which replaces the event by according time value.\
 }
