@@ -45,14 +45,14 @@ Pseq : ListPattern {
 		if (inval.eventAt('reverse') == true, {
 			repeats.value.do({ arg j;
 				list.size.reverseDo({ arg i;
-					item = list @@ (i + offsetValue);
+					item = list.wrapAt(i + offsetValue);
 					inval = item.embedInStream(inval);
 				});
 			});
 		},{
 			repeats.value.do({ arg j;
 				list.size.do({ arg i;
-					item = list @@ (i + offsetValue);
+					item = list.wrapAt(i + offsetValue);
 					inval = item.embedInStream(inval);
 				});
 			});
@@ -69,12 +69,12 @@ Pser : Pseq {
 		offsetValue = offset.value;
 		if (inval.eventAt('reverse') == true, {
 			repeats.value.reverseDo({ arg i;
-				item = list @@ (i + offsetValue);
+				item = list.wrapAt(i + offsetValue);
 				inval = item.embedInStream(inval);
 			});
 		},{
 			repeats.value.do({ arg i;
-				item = list @@ (i + offsetValue);
+				item = list.wrapAt(i + offsetValue);
 				inval = item.embedInStream(inval);
 			});
 		});
@@ -89,7 +89,7 @@ Pshuf : ListPattern {
 		localList = list.copy.scramble;
 		repeats.value.do({ arg j;
 			localList.size.do({ arg i;
-				item = localList @@ i;
+				item = localList.wrapAt(i);
 				inval = item.embedInStream(inval);
 			});
 		});
@@ -371,9 +371,9 @@ Place : Pseq {
 		if (inval.eventAt('reverse') == true, {
 			repeats.value.do({ arg j;
 				list.size.reverseDo({ arg i;
-					item = list @@ (i + offsetValue);
+					item = list.wrapAt(i + offsetValue);
 					if (item.isSequenceableCollection, {
-						item = item @@ j;
+						item = item.wrapAt(j);
 					});
 					inval = item.embedInStream(inval);
 				});
@@ -381,9 +381,9 @@ Place : Pseq {
 		},{
 			repeats.value.do({ arg j;
 				list.size.do({ arg i;
-					item = list @@ (i + offsetValue);
+					item = list.wrapAt(i + offsetValue);
 					if (item.isSequenceableCollection, {
-						item = item @@ j;
+						item = item.wrapAt(j);
 					});
 					inval = item.embedInStream(inval);
 				});
@@ -402,9 +402,9 @@ Ppatlace : Pseq {
 		index = repeat = 0;
 		{ (repeat < repeats) and: { consecutiveNils < list.size } }.while({
 			(inval.eventAt(\reverse) == true).if({
-				item = streamList @@ (offsetValue - index - 1);
+				item = streamList.wrapAt(offsetValue - index - 1);
 			}, {
-				item = streamList @@ (offsetValue + index);
+				item = streamList.wrapAt(offsetValue + index);
 			});
 			(item = item.next).notNil.if({
 				consecutiveNils = 0;
