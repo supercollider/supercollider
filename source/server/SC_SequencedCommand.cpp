@@ -186,6 +186,8 @@ SyncCmd::SyncCmd(World *inWorld, ReplyAddress *inReplyAddress)
 
 int SyncCmd::Init(char *inData, int inSize)
 {
+	sc_msg_iter msg(inSize, inData);
+	mID = msg.geti();
 	return kSCErr_None;
 }
 
@@ -208,6 +210,12 @@ void SyncCmd::Stage4()
 {
 	scpacket packet;
 	packet.adds("/synced");
+	packet.maketags(2);
+	packet.addtag(',');
+	packet.addtag('i');
+
+	packet.addi(mID);
+	
 	SendReply(&mReplyAddress, packet.data(), packet.size());
 }
 

@@ -96,6 +96,19 @@ The values for the code are as follows:\
 2 - print the contents in hexadecimal.\
 3 - print both the parsed and hexadecimal representations of the contents.	\
 \
+
+\f0\b /sync					notify when async commands have completed.\
+
+\f1\b0 	int - a unique number identifying this command.\
+	\
+Replies with a /synced message when all asynchronous commands received before this one have completed. The reply will contain the sent unique ID.\
+
+\f0\b Asynchronous
+\f1\b0 . Replies to sender with 
+\f0\b /synced, ID 
+\f1\b0 when complete.\
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f0\b\fs28 \cf0 Synth Definition Commands
@@ -886,9 +899,8 @@ These are the currently defined fill routines for use with the
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 Wave Fill Commands\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs20 \cf0 \
+\f1\b0\fs20 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \fs24 \cf0 There are three defined fill routines for sine waves.\
@@ -974,12 +986,10 @@ The first float value specifies the amplitude for n = 1, the second float value 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs20 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 Command Numbers\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b\fs24 Command Numbers\
 
-\f1\b0\fs20 \cf0 \
+\f1\b0\fs20 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 These are the currently defined command numbers. More may be added to the end of the list in the future.\
