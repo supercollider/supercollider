@@ -1,19 +1,17 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red0\green0\blue191;
-}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green0\blue0;
+\red0\green0\blue191;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 HIDDeviceService\
 
 \f1\b0\fs24 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 A Service that provides access to Human Interface Devices like joysticks and gamepads.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b A Service that provides access to Human Interface Devices like joysticks and gamepads.\
 
-\f1\b0 \cf0 \
+\f1\b0 \
 This service was mainly designed to use gamepads as control input. The name is derived from the mac osx specifications. \
 The HIDDeviceService handles all the primitive calls. HIDDevice only stores information about a device and holds an array of HIDElements, which store information about the controllers of the device.\
 A HIDDevice's information consists out of: \
@@ -54,11 +52,11 @@ To set up an eventloop follow these steps:\
 \f1\fs24 4. set an action that is called by the incoming events. In addition to the value the events also deliver the productID, the vendorID and the locID of the device and the cookie of the element.\
 		\
 		
-\f2\fs18 \cf2 (\cf3 \
-		\cf4 HIDDeviceService\cf3 .action_(\{\cf4 arg\cf3  productID, vendorID, locID, cookie, val;\
+\f2\fs18 \cf2 (\cf0 \
+		\cf2 HIDDeviceService\cf0 .action_(\{\cf2 arg\cf0  productID, vendorID, locID, cookie, val;\
 				[productID, vendorID, locID, cookie, val].postln;\
 		\});\
-		\cf0 )\
+		)\
 		\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -76,15 +74,62 @@ To set up an eventloop follow these steps:\
 \
 		\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 buildDeviceList(usagePage, usage)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f0\b buildDeviceList(usagePage, usage)\
 
-\f1\b0 \cf0 \
+\f1\b0 \
 It is also possible to search for devices in other usage pages. (look in the class file)\
 the default is: page: GenericDesktop usage: Joystick. if a nil is passed in all devices are listed.\
 \
 \
 //HIDDeviceServis by jan trutzschler v. falkenstein\
+\
+
+\f0\b deviceSpecs
+\f1\b0 \
+	you can add to the classvar deviceSpecs the specs of your device.\
+	here is a collection of specs:\
+	(the proper names need to be still set.)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf3 \
+\
+//wingman
+\f1\fs24 \cf4 \
+
+\f2\fs18 \cf4 (\
+\cf5 HIDDeviceService\cf4 .deviceSpecs.put(\cf6 \\wingMan\cf4 , \
+			\cf5 IdentityDictionary\cf4 [\
+				\cf6 \\a\cf4  -> 0, \cf6 \\b\cf4 -> 1, \cf6 \\c\cf4 -> 2,\
+				\cf6 \\x\cf4 -> 3, \cf6 \\y\cf4 -> 4, \cf6 \\z\cf4 -> 5,\
+				\cf6 \\l\cf4 -> 6, \cf3 //front left\cf4 \
+				\cf6 \\r\cf4 -> 7, \cf3 //front right\cf4 \
+				\cf6 \\s\cf4 -> 8, \
+				\cf6 \\mode\cf4 -> 9,\
+				\cf6 \\x\cf4 -> 10,		\
+				\cf6 \\y\cf4 -> 11,		\
+				\cf6 \\slider\cf4 -> 12,\
+				\cf6 \\hat\cf4 -> 13\
+			])\
+)\
+\cf3 //cyborg\cf4 \
+(\
+\cf5 HIDDeviceService\cf4 .deviceSpecs.put(\cf6 \\cyborg\cf4 , \
+			\cf5 IdentityDictionary\cf4 [\
+				\cf6 \\trig\cf4  -> 0, \cf6 \\a\cf4 -> 1, \cf6 \\b\cf4  -> 2, \cf6 \\c\cf4  -> 3,\
+				\cf6 \\f1\cf4 -> 4, \cf6 \\f2\cf4 -> 5, \cf6 \\f3\cf4 -> 6, \cf6 \\f4\cf4  -> 7,\
+				\cf6 \\l\cf4  -> 8, \cf6 \\r\cf4  -> 9, \cf3 // arrow buttons\cf4 \
+				\cf6 \\hu\cf4  -> 10, \cf6 \\hl\cf4  -> 11, \cf6 \\hr\cf4  -> 12, \cf6 \\hd\cf4  -> 13, \cf3 // hat positions\cf4 \
+				\cf6 \\x\cf4  -> 14, \cf6 \\y\cf4  -> 15, \cf6 \\z\cf4  -> 16, \cf3 // axes\cf4 \
+				\cf6 \\slider\cf4 -> 17,\
+				\cf6 \\hat\cf4 -> 18\
+			]);\
+)\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 \
 }
