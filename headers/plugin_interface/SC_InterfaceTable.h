@@ -95,7 +95,7 @@ struct InterfaceTable
 	
 	bool mAltivecAvailable;
 
-	void (*fGroup_DeleteAll)(Group* group);
+	void (*fGroup_DeleteAll)(struct Group* group);
 	
 };
 typedef struct InterfaceTable InterfaceTable;
