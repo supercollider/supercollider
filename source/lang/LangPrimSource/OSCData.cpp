@@ -561,6 +561,9 @@ int prExit(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+extern "C" {
+	int vpost(const char *fmt, va_list vargs);
+}
 
 int prBootInProcessServer(VMGlobals *g, int numArgsPushed);
 int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
@@ -568,6 +571,7 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 	//PyrSlot *a = g->sp;
 	
 	if (!gLocalSynthServer.mWorld) {
+		SetPrintFunc(&vpost);
 		WorldOptions options = kDefaultWorldOptions;
 		gLocalSynthServer.mWorld = World_New(&options);
 	}

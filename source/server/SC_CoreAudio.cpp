@@ -88,7 +88,7 @@ void syncOSCOffsetWithTimeOfDay()
 	}
 	
 	gOSCoffset = newOffset;
-	//printf("gOSCoffset %016llX\n", gOSCoffset);
+	//scprintf("gOSCoffset %016llX\n", gOSCoffset);
 }
 
 void* resyncThreadFunc(void* arg);
@@ -106,7 +106,6 @@ void set_real_time_priority(pthread_t thread);
 
 void initializeScheduler()
 {
-	//printf("->initializeScheduler\n");
 	syncOSCOffsetWithTimeOfDay();
 	
 	pthread_t resyncThread;
@@ -164,10 +163,9 @@ int PerformOSCMessage(World *inWorld, int inSize, char *inData, ReplyAddress *in
 	} else {
 		cmdObj = gCmdLib->Get((int32*)inData);
 	}
-	//printf("cmdObj %08X\n", cmdObj);
 	if (!cmdObj) {
 		CallSendFailureCommand(inWorld, inData, "Command not found", inReply);
-		printf("FAILURE %s Command not found\n", inData);
+		scprintf("FAILURE %s Command not found\n", inData);
 		return kSCErr_NoSuchCommand;
 	}
 	
@@ -196,15 +194,12 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket)
 
 void Perform_ToEngine_Msg(FifoMsg *inMsg)
 {
-	//printf("Perform_ToEngine_Msg\n");
 	World *world = inMsg->mWorld;
 	OSC_Packet *packet = (OSC_Packet*)inMsg->mData;
 	if (!packet) return;
 	
 	// in real time engine, schedule the packet
 	int64 time = *(int64*)(packet->mData + 8);
-	//printf("recvTime %lld\n", time);
-	//printf("sched %.9f\n", time*kOSCtoSecs);
 	
 	SC_CoreAudioDriver *driver = inMsg->mWorld->hw->mAudioDriver;
 	
@@ -215,7 +210,7 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 	} else {
 		if (time < driver->mOSCbuftime) {
 			double seconds = (driver->mOSCbuftime - time)*kOSCtoSecs;
-			printf("late %.9f\n", seconds);
+			scprintf("late %.9f\n", seconds);
 			//FifoMsg outMsg;
 			
 			//ReportLateness(packet->mReply, seconds)
@@ -231,7 +226,6 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 void FreeOSCPacket(OSC_Packet *inPacket);
 void FreeOSCPacket(OSC_Packet *inPacket)
 {
-	//printf("->FreeOSCPacket %08X\n", inPacket);
 	if (inPacket) {
 		free(inPacket->mData);
 		free(inPacket);
@@ -240,18 +234,14 @@ void FreeOSCPacket(OSC_Packet *inPacket)
 
 void Free_ToEngine_Msg(FifoMsg *inMsg)
 {
-	//printf("->Free_ToEngine_Msg %08X\n", inMsg);
 	OSC_Packet *packet = (OSC_Packet*)inMsg->mData;
 	FreeOSCPacket(packet);
-	//printf("<-Free_ToEngine_Msg %08X\n", inMsg);
 }
 
 void Free_FromEngine_Msg(FifoMsg *inMsg);
 void Free_FromEngine_Msg(FifoMsg *inMsg)
 {
-	//printf("->Free_FromEngine_Msg %08X\n", inMsg);
 	World_Free(inMsg->mWorld, inMsg->mData);
-	//printf("<-Free_FromEngine_Msg %08X\n", inMsg);
 }
 
 void DoneWithPacket(FifoMsg *inMsg);
@@ -272,9 +262,7 @@ SC_CoreAudioDriver::~SC_CoreAudioDriver()
 {
 	mRunThreadFlag = false;
 	mAudioSync.Signal();
-	printf("->pthread_join\n");
 	pthread_join(mThread, 0);
-	printf("<-pthread_join\n");
 	
 	delete mProcessPacketLock;
 	delete mInputBufList;
@@ -416,7 +404,7 @@ bool SC_CoreAudioDriver::Setup()
 			fprintf(stdout, "get kAudioDevicePropertySafetyOffset error %4.4s\n", (char*)&err);
 			return false;
 		}
-		printf("mSafetyOffset %lu\n", mSafetyOffset);
+		scprintf("mSafetyOffset %lu\n", mSafetyOffset);
 	
 		Boolean writeable;
 		err = AudioDeviceGetPropertyInfo(mInputDevice, 0, true, kAudioDevicePropertyStreamConfiguration, &count, &writeable);
@@ -427,9 +415,9 @@ bool SC_CoreAudioDriver::Setup()
 			return false;
 		}
 	
-		printf("mNumberBuffers %lu\n", mInputBufList->mNumberBuffers);
+		scprintf("mNumberBuffers %lu\n", mInputBufList->mNumberBuffers);
 		for (uint32 i=0; i<mInputBufList->mNumberBuffers; ++i) {
-			printf("  mDataByteSize %d %lu\n", i, mInputBufList->mBuffers[i].mDataByteSize);
+			scprintf("  mDataByteSize %d %lu\n", i, mInputBufList->mBuffers[i].mDataByteSize);
 			mInputBufList->mBuffers[i].mData = calloc(1, mInputBufList->mBuffers[i].mDataByteSize);
 		}
 	
@@ -446,8 +434,8 @@ bool SC_CoreAudioDriver::Setup()
 	}
 
 	mNumSamples = mHardwareBufferSize / outputStreamDesc.mBytesPerFrame;
-	printf("mNumSamples %d\n", mNumSamples);
-	printf("mHardwareBufferSize %lu\n", mHardwareBufferSize);
+	scprintf("mNumSamples %d\n", mNumSamples);
+	scprintf("mHardwareBufferSize %lu\n", mHardwareBufferSize);
 	  
 	// compute a per sample increment to the OpenSoundControl Time
 	mOSCincrement = (int64)(mWorld->mBufLength * pow(2.,32.)/outputStreamDesc.mSampleRate);
@@ -591,7 +579,6 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 							int minchan = sc_min(nchan, numInputBuses - b);
 							for (int j=0; j<minchan; ++j, busdata += bufFrames) {
 								for (int k=0, m=j; k<bufFrames; ++k, m += nchan) {
-									//if (i==0&&k<4) printf("%d %d %g\n", j, k, bufdata[m]);
 									busdata[k] = bufdata[m];
 								}
 								inputTouched[b+j] = bufCounter;
@@ -650,9 +637,9 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 			mOSCbuftime = nextTime;
 		}
 	} catch (std::exception& exc) {
-		printf("exception in real time: %s\n", exc.what());
+		scprintf("exception in real time: %s\n", exc.what());
 	} catch (...) {
-		printf("unknown exception in real time\n");
+		scprintf("unknown exception in real time\n");
 	}
 	mAudioSync.Signal();
 }

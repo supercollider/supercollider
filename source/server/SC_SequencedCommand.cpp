@@ -47,7 +47,6 @@ void SndBuf_Init(SndBuf *buf)
 SC_SequencedCommand::SC_SequencedCommand(World *inWorld, ReplyAddress *inReplyAddress)
 	: mNextStage(1), mReplyAddress(*inReplyAddress), mWorld(inWorld)
 {
-	//printf("SC_SequencedCommand::SC_SequencedCommand\n");
 }
 
 SC_SequencedCommand::~SC_SequencedCommand()
@@ -66,13 +65,11 @@ void SC_SequencedCommand::SendDone(char *inCommandName)
 
 void SC_SequencedCommand::DoCommand()
 {
-	//printf("DoCommand\n");
 	CallNextStage();
 }
 
 void SC_SequencedCommand::CallEveryStage()
 {
-	//printf("CallEveryStage\n");
 	switch (mNextStage) {
 		case 1 : if (!Stage1()) break; mNextStage++; 
 		case 2 : if (!Stage2()) break; mNextStage++; 
@@ -99,7 +96,6 @@ void FreeSequencedCommand(FifoMsg *inMsg)
 
 void SC_SequencedCommand::CallNextStage()
 {
-	//printf("CallNextStage %d\n", mNextStage);
 	bool sendAgain = false;
 	FifoMsg msg;
 	
@@ -373,14 +369,11 @@ int BufAllocReadCmd::Init(char *inData, int inSize)
 	mBufIndex = msg.geti();
 	
 	char *filename = msg.gets();
-	//printf("filename '%s'\n", filename);
 	mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 	strcpy(mFilename, filename);
 	
 	mFileOffset = msg.geti();
-	//printf("mFileOffset %d\n", mFileOffset);
 	mNumFrames = msg.geti();
-	//printf("mNumFrames %d\n", mNumFrames);
 	return kSCErr_None;
 }
 
@@ -396,38 +389,30 @@ void BufAllocReadCmd::CallDestructor()
 
 bool BufAllocReadCmd::Stage2()
 {
-	//printf("Stage2 **\n");
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	
 	SF_INFO fileinfo;
 	memset(&fileinfo, 0, sizeof(fileinfo));
 	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
-	//printf("sf %08X\n", sf);
-	//printf("mFilename '%s'\n", mFilename);
 	if (!sf) {
-		printf("File '%s' could not be opened.\n", mFilename);
+		scprintf("File '%s' could not be opened.\n", mFilename);
 		return true;
 	}
-	//printf("mNumFrames B %d\n", mNumFrames);
 	if (mNumFrames <= 0 || mNumFrames > fileinfo.frames) mNumFrames = fileinfo.frames;
-	//printf("mNumFrames C %d %d\n", mNumFrames, fileinfo.frames);
 	
 	// alloc data size
 	mFreeData = buf->data;
 	SCErr err = bufAlloc(buf, fileinfo.channels, mNumFrames);
 	buf->samplerate = fileinfo.samplerate;
 	buf->sampledur = 1. / fileinfo.samplerate;
-	//printf("bufAlloc err %d\n", err);
 	if (err) goto leave;
-	//printf("chan %d\n", buf->channels);
 	
 	sf_seek(sf, mFileOffset, SEEK_SET);
 	sf_readf_float(sf, buf->data, mNumFrames);
 	
 leave:
 	mSndBuf = *buf;
-	//printf("schanA %d\n", mSndBuf.channels);
-	//sf_close(sf);
+	sf_close(sf);
 	
 	return true;
 }
@@ -435,16 +420,13 @@ leave:
 bool BufAllocReadCmd::Stage3()
 {
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);	
-	//printf("schanA %d\n", mSndBuf.channels);
 	*buf = mSndBuf;
-	//printf("buf %08X %d\n", buf, buf->channels);
 	
 	return true;
 }
 
 void BufAllocReadCmd::Stage4()
 {
-	//printf("Stage4\n");
 	free(mFreeData);
 	SendDone("/b_allocRead");
 }
@@ -493,7 +475,7 @@ bool BufReadCmd::Stage2()
 
 	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
-		printf("File '%s' could not be opened.\n", mFilename);
+		scprintf("File '%s' could not be opened.\n", mFilename);
 		return true;
 	}
 	if (mNumFrames < 0 || mNumFrames > fileinfo.frames) mNumFrames = fileinfo.frames;
@@ -526,7 +508,6 @@ void BufReadCmd::Stage4()
 BufWriteCmd::BufWriteCmd(World *inWorld, ReplyAddress *inReplyAddress)
 	: SC_SequencedCommand(inWorld, inReplyAddress), mFilename(0)
 {
-	//printf("BufWriteCmd::BufWriteCmd\n");
 }
 
 extern "C" {
@@ -535,7 +516,6 @@ int sndfileFormatInfoFromStrings(SF_INFO *info, const char *headerFormatString, 
 
 int BufWriteCmd::Init(char *inData, int inSize)
 {
-	//printf("BufWriteCmd::Init\n");
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
 	
@@ -566,7 +546,6 @@ void BufWriteCmd::CallDestructor()
 
 bool BufWriteCmd::Stage2()
 {
-	//printf("BufWriteCmd::Stage2\n");
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	int samplesToEnd = buf->frames - mBufOffset;
 	if (samplesToEnd < 0) samplesToEnd = 0;
@@ -577,7 +556,7 @@ bool BufWriteCmd::Stage2()
 	if (!sf) {
 		char sferr[256];
 		sf_error_str(NULL, sferr, 256);
-		printf("File '%s' could not be opened. '%s'\n", mFilename, sferr);
+		scprintf("File '%s' could not be opened. '%s'\n", mFilename, sferr);
 		return true;
 	}
 
@@ -589,7 +568,6 @@ bool BufWriteCmd::Stage2()
 		sf_writef_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
 	}
 	
-	//printf("mLeaveFileOpen %d %08X %08X\n", mLeaveFileOpen, buf->sndfile, sf);
 	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
 	else sf_close(sf);
 
@@ -814,7 +792,6 @@ int RecvSynthDefCmd::Init(char *inData, int inSize)
 	sc_msg_iter msg(inSize, inData);
 	
 	int size = msg.getbsize();
-	//printf("b size %d\n", size);
 	mBuffer = (char*)World_Alloc(mWorld, size);
 	msg.getb(mBuffer, size);
 	
@@ -835,14 +812,12 @@ void RecvSynthDefCmd::CallDestructor()
 bool RecvSynthDefCmd::Stage2()
 {
 	mDefs = GraphDef_Recv(mWorld, mBuffer, mDefs);
-	//printf("2 mDefs %08X\n", mDefs);
 	
 	return true;
 }
 
 bool RecvSynthDefCmd::Stage3()
 {
-	//printf("3 mDefs %08X\n", mDefs);
 	GraphDef_Define(mWorld, mDefs);
 	return true;
 }

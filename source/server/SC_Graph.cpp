@@ -180,15 +180,12 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 			unit->mOutBuf[j] = wire->mBuffer;
 		}
 		
-		//printf("->mUnitCtorFunc %08X\n", unit->mUnitDef->mUnitCtorFunc);
 		(*unit->mUnitDef->mUnitCtorFunc)(unit);
-		//printf("<-mUnitCtorFunc\n");
 		if (unit->mCalcRate != calc_Scalar) {
 			graph->mCalcUnits[calcCtr++] = unit;
 		}
 	}
 	inGraphDef->mRefCount ++ ;
-	//printf("<-Graph_Ctor\n");
 }
 
 void Graph_Calc(Graph *inGraph)
@@ -214,23 +211,21 @@ void Graph_Calc(Graph *inGraph)
 void Graph_CalcTrace(Graph *inGraph);
 void Graph_CalcTrace(Graph *inGraph)
 {
-	//printf("->Graph_Calc\n");
 	for (int i=0; i<inGraph->mNumCalcUnits; ++i) {
 		Unit *unit = inGraph->mCalcUnits[i];
-		printf("  unit %d %s\n    in ", i, (char*)unit->mUnitDef->mUnitDefName);
+		scprintf("  unit %d %s\n    in ", i, (char*)unit->mUnitDef->mUnitDefName);
 		for (int j=0; j<unit->mNumInputs; ++j) {
-			printf(" %g", ZIN0(j));
+			scprintf(" %g", ZIN0(j));
 		}
-		printf("\n");
+		scprintf("\n");
 		(unit->mCalcFunc)(unit, unit->mBufLength);
-		printf("    out");
+		scprintf("    out");
 		for (int j=0; j<unit->mNumOutputs; ++j) {
-			printf(" %g", ZOUT0(j));
+			scprintf(" %g", ZOUT0(j));
 		}
-		printf("\n");
+		scprintf("\n");
 	}
 	inGraph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_Calc;
-	//printf("<-Graph_Calc\n");
 }
 
 void Graph_Trace(Graph *inGraph)
@@ -241,23 +236,18 @@ void Graph_Trace(Graph *inGraph)
 
 void Graph_SetControl(Graph* inGraph, int inIndex, float inValue)
 {
-	//printf("Graph_SetControl %d %d %g\n", inGraph->mNode.mID, inIndex, inValue);
 	if (inIndex < 0 || inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
 	inGraph->mControls[inIndex] = inValue;
 	inGraph->mControlTouched = inGraph->mNode.mWorld->mBufCounter;
-	//printf("<<Graph_SetControl %08X %08X %g\n", inGraph->mControls + inIndex, inGraph->mMapControls[inIndex], inGraph->mControls[inIndex]);
 }
 
 void Graph_SetControl(Graph* inGraph, int32 *inName, int inIndex, float inValue)
 {
-	//printf("Graph_SetControl %d %s %d %g\n", inGraph->mNode.mID, inName, inIndex, inValue);
 	GraphDef *def = (GraphDef*)(inGraph->mNode.mDef);
 	HashTable<ParamSpec, Malloc>* table = def->mParamSpecTable;
 	if (!table) return;
 	ParamSpec *spec = table->Get(inName);
 	if (!spec) return;
-	//printf("spec->mName %s\n", spec->mName);
-	//printf("spec->mIndex %d\n", spec->mIndex);
 	int index = spec->mIndex + inIndex;	
 	Graph_SetControl(inGraph, index, inValue);
 }
@@ -277,7 +267,6 @@ void Graph_MapControl(Graph* inGraph, int32 *inName, int inIndex, int inBus)
 
 void Graph_MapControl(Graph* inGraph, int inIndex, int inBus)
 {
-	//printf("Graph_SetControl %d %d %g\n", inGraph->mNode.mID, inIndex, inValue);
 	if (inIndex < 0 || inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
 	World *world = inGraph->mNode.mWorld;
 	if (inBus < -1 || inBus >= world->mNumControlBusChannels) return;

@@ -66,11 +66,8 @@ void ParamSpec_Read(ParamSpec* inParamSpec, char*& buffer);
 void ParamSpec_Read(ParamSpec* inParamSpec, char*& buffer)
 {
 	ReadName(buffer, inParamSpec->mName);
-	//printf("param name '%s'\n", (char*)inParamSpec->mName);
 	inParamSpec->mIndex = readInt16_be(buffer);
-	//printf("param index %d\n", inParamSpec->mIndex);
 	inParamSpec->mHash = Hash(inParamSpec->mName);
-	//printf("param hash %d\n", inParamSpec->mHash);
 }
 
 void InputSpec_Read(InputSpec* inInputSpec, char*& buffer);
@@ -78,7 +75,6 @@ void InputSpec_Read(InputSpec* inInputSpec, char*& buffer)
 {
 	inInputSpec->mFromUnitIndex = (int16)readInt16_be(buffer);
 	inInputSpec->mFromOutputIndex = (int16)readInt16_be(buffer);
-	//printf("   inp %d %d\n", inInputSpec->mFromUnitIndex, inInputSpec->mFromOutputIndex);
 	
 	inInputSpec->mWireIndex = -1;
 }
@@ -87,7 +83,6 @@ void OutputSpec_Read(OutputSpec* inOutputSpec, char*& buffer);
 void OutputSpec_Read(OutputSpec* inOutputSpec, char*& buffer)
 {
 	inOutputSpec->mCalcRate = readInt8(buffer);
-	//printf("   outp %d\n", inOutputSpec->mCalcRate);
 
 	inOutputSpec->mWireIndex = -1;
 	inOutputSpec->mBufferIndex = -1;
@@ -108,7 +103,6 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer)
 		return;
 	}
 	inUnitSpec->mCalcRate = readInt8(buffer);
-	//printf("unit %s %d\n", name, inUnitSpec->mCalcRate);
 	
 	inUnitSpec->mNumInputs = readInt16_be(buffer);
 	inUnitSpec->mNumOutputs = readInt16_be(buffer);
@@ -130,10 +124,8 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList);
 GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList);
 GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList)
 {
-	//printf("->GraphDefLib_Read a\n");
 	int32 magic = readInt32_be(buffer);
 	if (magic != 'SCgf') return inList;
-	//printf("GraphDefLib_Read b\n");
 	
 	/*int32 version = */ readInt32_be(buffer);
 		
@@ -151,11 +143,8 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef);
 
 GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 {
-	//printf("->GraphDef_Read\n");
-
 	int32 name[kSCNameLen];
 	ReadName(buffer, name);
-	//printf("\n\nname %s\n", name);
 
 	GraphDef* graphDef = (GraphDef*)malloc(sizeof(GraphDef));
 		
@@ -168,21 +157,18 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 	graphDef->mNodeDef.mHash = Hash(graphDef->mNodeDef.mName);
 	
 	graphDef->mNumConstants = readInt16_be(buffer);
-	//printf("numconstants %d\n", graphDef->mNumConstants);
 	graphDef->mConstants = (float*)malloc(graphDef->mNumConstants * sizeof(float));
 	for (int i=0; i<graphDef->mNumConstants; ++i) {
 		graphDef->mConstants[i] = readFloat_be(buffer);
 	}
 
 	graphDef->mNumControls = readInt16_be(buffer);
-	//printf("numcontrols %d\n", graphDef->mNumControls);
 	graphDef->mInitialControlValues = (float32*)malloc(sizeof(float32) * graphDef->mNumControls);
 	for (int i=0; i<graphDef->mNumControls; ++i) {
 		graphDef->mInitialControlValues[i] = readFloat_be(buffer);
 	}
 	
 	graphDef->mNumParamSpecs = readInt16_be(buffer);
-	//printf("numparams %d\n", graphDef->mNumParamSpecs);
 	if (graphDef->mNumParamSpecs) {
 		int hashTableSize = NEXTPOWEROFTWO(graphDef->mNumParamSpecs);
 		graphDef->mParamSpecTable = new HashTable<ParamSpec, Malloc>(&gMalloc, hashTableSize, false);
@@ -199,7 +185,6 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 
 	graphDef->mNumWires = graphDef->mNumConstants;
 	graphDef->mNumUnitSpecs = readInt16_be(buffer);
-	//printf("num units %d\n", graphDef->mNumUnitSpecs);
 	graphDef->mUnitSpecs = (UnitSpec*)malloc(sizeof(UnitSpec) * graphDef->mNumUnitSpecs);
 	graphDef->mTotalAllocSize = 0;
 	graphDef->mNumCalcUnits = 0;
@@ -210,20 +195,9 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 		graphDef->mTotalAllocSize += unitSpec->mAllocSize;
 		graphDef->mNumWires += unitSpec->mNumOutputs;
 	}
-	//printf("num wires %d\n", graphDef->mNumWires);
 	
 	DoBufferColoring(inWorld, graphDef);
-	//printf("num wire bufs %d  max %d\n", graphDef->mNumWireBufs, inWorld->hw->mMaxWireBufs);
-	
-	
-	//GraphDef *check = World_GetGraphDef(inWorld, graphDef->mNodeDef.mName);
-	//printf("check %08X\n", check);
-	
-	//printf("<-GraphDef_Read %d\n", res);
-	
-	//GraphDef_Dump(graphDef);
-	//printf("<<-GraphDef_Read %d\n", res);
-	
+		
 	graphDef->mWiresAllocSize = graphDef->mNumWires * sizeof(Wire);
 	graphDef->mUnitsAllocSize = graphDef->mNumUnitSpecs * sizeof(Unit*);
 	graphDef->mCalcUnitsAllocSize = graphDef->mNumCalcUnits * sizeof(Unit*);
@@ -238,7 +212,6 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 	graphDef->mMapControlsAllocSize = graphDef->mNumControls * sizeof(float*);
 	graphDef->mTotalAllocSize += graphDef->mMapControlsAllocSize;
 	
-	//printf("<-GraphDef_Read %d %d\n", res, graphDef->mTotalAllocSize);
 	graphDef->mNext = inList;
 	graphDef->mRefCount = 1;
 	
@@ -248,7 +221,6 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList)
 
 void GraphDef_Define(World *inWorld, GraphDef *inList)
 {
-	//printf("GraphDef_Define\n");
 	GraphDef *graphDef = inList;
 	while (graphDef) {
 		GraphDef *next = graphDef->mNext;
@@ -256,7 +228,7 @@ void GraphDef_Define(World *inWorld, GraphDef *inList)
 		GraphDef* previousDef = World_GetGraphDef(inWorld, graphDef->mNodeDef.mName);
 		if (previousDef) {
 			if (!World_RemoveGraphDef(inWorld, previousDef)) {
-				printf("World_RemoveGraphDef failed? shouldn't happen.\n");
+				scprintf("World_RemoveGraphDef failed? shouldn't happen.\n");
 			}
 			if (--previousDef->mRefCount == 0) {
 				GraphDef_DeleteMsg(inWorld, previousDef);
@@ -270,23 +242,20 @@ void GraphDef_Define(World *inWorld, GraphDef *inList)
 
 void GraphDef_DeleteMsg(World *inWorld, GraphDef *inDef)
 {
-	//printf("GraphDef_DeleteMsg\n");
 	DeleteGraphDefMsg msg;
 	msg.mDef = inDef;
 	inWorld->hw->mDeleteGraphDefs.Write(msg);
 }
 
 GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList)
-{	
-	//printf("->GraphDef_Recv\n");
-	
+{		
 	
 	try {
 		inList = GraphDefLib_Read(inWorld, buffer, inList);
 	} catch (std::exception& exc) {
-		fprintf(stdout, "exception in GrafDef_Load: %s\n", exc.what());
+		scprintf("exception in GrafDef_Load: %s\n", exc.what());
 	} catch (...) {
-		fprintf(stdout, "unknown exception in GrafDef_Load\n");
+		scprintf("unknown exception in GrafDef_Load\n");
 	}
 		
 	return inList;
@@ -294,11 +263,9 @@ GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList)
 
 GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 {	
-	//printf("->GraphDef_Load %s\n", filename);
 	FILE *file = fopen(filename, "r");
 	if (!file) {
-		printf("*** ERROR: fopen '%s' err '%s'\n", filename, dlerror());
-		system("pwd");
+		scprintf("*** ERROR: fopen '%s' err '%s'\n", filename, dlerror());
 		return 0;
 	}
 
@@ -306,7 +273,7 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 	int size = ftell(file);
 	char *buffer = (char*)malloc(size);
 	if (!buffer) {
-		printf("*** ERROR: can't malloc buffer size %d\n", size);
+		scprintf("*** ERROR: can't malloc buffer size %d\n", size);
 		return 0;
 	}
 	fseek(file, 0, SEEK_SET);
@@ -317,9 +284,9 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 	try {
 		inList = GraphDefLib_Read(inWorld, buffer, inList);
 	} catch (std::exception& exc) {
-		fprintf(stdout, "exception in GrafDef_Load: %s\n", exc.what());
+		scprintf("exception in GrafDef_Load: %s\n", exc.what());
 	} catch (...) {
-		fprintf(stdout, "unknown exception in GrafDef_Load\n");
+		scprintf("unknown exception in GrafDef_Load\n");
 	}
 	
 	free(buffer);
@@ -330,10 +297,9 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 
 GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
 {
-	//printf("->GraphDef_LoadDir\n");
 	DIR *dir = opendir(dirname);	
 	if (!dir) {
-		printf("*** ERROR: open directory failed '%s'\n", dirname); fflush(stdout);
+		scprintf("*** ERROR: open directory failed '%s'\n", dirname); 
 		return 0;
 	}
 	
@@ -348,7 +314,6 @@ GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
 		strcpy(entrypathname, dirname);
 		strcat(entrypathname, "/");
 		strcat(entrypathname, (char*)de->d_name);
-		//printf("'%s'\n", entrypathname);
 		if (de->d_type == DT_DIR) {
 			inList = GraphDef_LoadDir(inWorld, entrypathname, inList);
 		} else {
@@ -361,7 +326,6 @@ GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
 	}
 	
 	closedir(dir);
-	//printf("<-GraphDef_LoadDir\n");
 	return inList;
 }
 
@@ -374,7 +338,6 @@ void UnitSpec_Free(UnitSpec *inUnitSpec)
 
 void GraphDef_Free(GraphDef *inGraphDef)
 {
-	//printf("GraphDef_Free\n");
 	for (int i=0; i<inGraphDef->mNumUnitSpecs; ++i) {
 		UnitSpec_Free(inGraphDef->mUnitSpecs + i);
 	}
@@ -388,22 +351,22 @@ void GraphDef_Free(GraphDef *inGraphDef)
 
 void NodeDef_Dump(NodeDef *inNodeDef)
 {
-	printf("mName '%s'\n", (char*)inNodeDef->mName);
-	printf("mHash %d\n", inNodeDef->mHash);
-	printf("mAllocSize %lu\n", inNodeDef->mAllocSize);
+	scprintf("mName '%s'\n", (char*)inNodeDef->mName);
+	scprintf("mHash %d\n", inNodeDef->mHash);
+	scprintf("mAllocSize %lu\n", inNodeDef->mAllocSize);
 }
 
 void GraphDef_Dump(GraphDef *inGraphDef)
 {
 	NodeDef_Dump(&inGraphDef->mNodeDef);
 	
-	printf("mNumControls %d\n", inGraphDef->mNumControls);
-	printf("mNumWires %d\n", inGraphDef->mNumWires);
-	printf("mNumUnitSpecs %d\n", inGraphDef->mNumUnitSpecs);
-	printf("mNumWireBufs %d\n", inGraphDef->mNumWireBufs);
+	scprintf("mNumControls %d\n", inGraphDef->mNumControls);
+	scprintf("mNumWires %d\n", inGraphDef->mNumWires);
+	scprintf("mNumUnitSpecs %d\n", inGraphDef->mNumUnitSpecs);
+	scprintf("mNumWireBufs %d\n", inGraphDef->mNumWireBufs);
 
 	for (int i=0; i<inGraphDef->mNumControls; ++i) {
-		printf("   %d mInitialControlValues %g\n", i, inGraphDef->mInitialControlValues[i]);
+		scprintf("   %d mInitialControlValues %g\n", i, inGraphDef->mInitialControlValues[i]);
 	}
 
 	for (int i=0; i<inGraphDef->mNumWires; ++i) {
@@ -478,23 +441,19 @@ inline BufColorAllocator::~BufColorAllocator()
 inline int BufColorAllocator::alloc(int count)
 {
 	int outIndex;
-	//printf(">alloc stk %d\n", stackPtr);
 	if (stackPtr) {
 		outIndex = stack[--stackPtr];
 	} else {
 		outIndex = nextIndex++;
 	}
 	refs[outIndex] = count;
-	//printf("<alloc %d  refs %d  stk %d  nxt %d\n", outIndex, refs[outIndex], stackPtr, nextIndex);
 	return outIndex;
 }
 
 inline void BufColorAllocator::release(int inIndex)
 {
-	//printf(">rel %d  refs %d  stk %d\n", inIndex, refs[inIndex], stackPtr);
 	if (refs[inIndex] == 0) exit(1);
 	if (--refs[inIndex] == 0) stack[stackPtr++] = inIndex;
-	//printf("<rel %d  refs %d  stk %d\n", inIndex, refs[inIndex], stackPtr);
 }
 
 void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
@@ -518,20 +477,16 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 		int wireIndexCtr = inGraphDef->mNumConstants;
 		for (int j=0; j<inGraphDef->mNumUnitSpecs; ++j) {
 			UnitSpec *unitSpec = inGraphDef->mUnitSpecs + j;
-			//printf("\n%d %s\n", j, unitSpec->mUnitDef->mUnitDefName);
 			
 			// set wire index, release inputs
 			for (int i=unitSpec->mNumInputs-1; i>=0; --i) {
 				InputSpec *inputSpec = unitSpec->mInputSpec + i;
-				//printf("r %d %d\n", i, inputSpec->mFromUnitIndex);
 				if (inputSpec->mFromUnitIndex >= 0) {
 					UnitSpec *outUnit = inGraphDef->mUnitSpecs + inputSpec->mFromUnitIndex;
 					OutputSpec *outputSpec = outUnit->mOutputSpec + inputSpec->mFromOutputIndex;
 					inputSpec->mWireIndex = outputSpec->mWireIndex;
-						//printf("release? %d %s %d  %d %d\n", inputSpec->mFromUnitIndex, outUnit->mUnitDef->mUnitDefName, 
 						//	i, outputSpec->mBufferIndex, outputSpec->mCalcRate);
 					if (outputSpec->mCalcRate == calc_FullRate) {
-						//printf("release %d %s %d  %d\n", inputSpec->mFromUnitIndex, outUnit->mUnitDef->mUnitDefName, i, outputSpec->mBufferIndex);
 						bufColor.release(outputSpec->mBufferIndex);
 					}
 				} else {
@@ -546,7 +501,6 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 				if (outputSpec->mCalcRate == calc_FullRate) {
 					int bufIndex = bufColor.alloc(outputSpec->mNumConsumers);
 					outputSpec->mBufferIndex = bufIndex;
-					//printf("alloc %d %s %d  %d %d\n", j, unitSpec->mUnitDef->mUnitDefName, i, bufIndex, outputSpec->mNumConsumers);
 				}
 			}
 		}

@@ -126,7 +126,6 @@ void SC_TcpInPort::PublishToRendezvous()
 SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 	: SC_ComPort(inWorld, inPortNum)
 {	
-	printf("SC_UdpInPort::SC_UdpInPort\n");
 	if ((mSocket = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		throw std::runtime_error("failed to create udp socket\n");
 	}
@@ -145,7 +144,6 @@ SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 	Start();
 
 #ifdef USE_RENDEZVOUS
-	printf("USE_RENDEZVOUS\n");
 	pthread_create(&mRendezvousThread, 
 		NULL, 
 		rendezvous_thread_func, 
@@ -162,13 +160,13 @@ SC_UdpInPort::~SC_UdpInPort()
 
 void DumpReplyAddress(ReplyAddress *inReplyAddress)
 {
-	printf("mSockAddrLen %d\n", inReplyAddress->mSockAddrLen);
-	printf("mSocket %d\n", inReplyAddress->mSocket);
-	printf("mSockAddr.sin_len %d\n", inReplyAddress->mSockAddr.sin_len);
-	printf("mSockAddr.sin_family %d\n", inReplyAddress->mSockAddr.sin_family);
-	printf("mSockAddr.sin_port %d\n", inReplyAddress->mSockAddr.sin_port);
-	printf("mSockAddr.sin_addr.s_addr %d\n", inReplyAddress->mSockAddr.sin_addr.s_addr);
-	printf("mReplyFunc %08X\n", (uint32)inReplyAddress->mReplyFunc);
+	scprintf("mSockAddrLen %d\n", inReplyAddress->mSockAddrLen);
+	scprintf("mSocket %d\n", inReplyAddress->mSocket);
+	scprintf("mSockAddr.sin_len %d\n", inReplyAddress->mSockAddr.sin_len);
+	scprintf("mSockAddr.sin_family %d\n", inReplyAddress->mSockAddr.sin_family);
+	scprintf("mSockAddr.sin_port %d\n", inReplyAddress->mSockAddr.sin_port);
+	scprintf("mSockAddr.sin_addr.s_addr %d\n", inReplyAddress->mSockAddr.sin_addr.s_addr);
+	scprintf("mReplyFunc %08X\n", (uint32)inReplyAddress->mReplyFunc);
 }
 
 /*
@@ -201,9 +199,7 @@ bool operator==(const ReplyAddress& a, const ReplyAddress& b)
 void udp_reply_func(struct ReplyAddress *addr, char* msg, int size);
 void udp_reply_func(struct ReplyAddress *addr, char* msg, int size)
 {
-	//printf("->udp_reply_func\n");
 	int total = sendallto(addr->mSocket, msg, size, (sockaddr*)&addr->mSockAddr, addr->mSockAddrLen);
-	//printf("<-udp_reply_func  %d of %d\n", total, size);
 	if (total < size) DumpReplyAddress(addr);
 }
 
@@ -422,9 +418,8 @@ int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, 
 	while (total < (int)len)
 	{
 		int numbytes = sendto(socket, msg, len - total, 0, toaddr, addrlen);
-		//printf("numbytes %d  total %d  len %d\n", numbytes, total, len);
 		if (numbytes < 0) {
-			printf("******* errno %d %s\n", errno, strerror(errno));
+			scprintf("sendallto errno %d %s\n", errno, strerror(errno));
 			return total;
 		}
 		total += numbytes;

@@ -32,6 +32,16 @@ void postfl(const char *fmt, ...)
         fflush(stdout);
 }
 
+extern "C" {
+	int vpost(const char *fmt, va_list vargs);
+}
+
+int vpost(const char *fmt, va_list vargs)
+{
+	vfprintf(stdout, fmt, vargs);
+        fflush(stdout);
+}
+
 void post(const char *fmt, ...);
 void post(const char *fmt, ...)
 {

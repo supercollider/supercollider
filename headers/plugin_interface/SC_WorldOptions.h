@@ -22,6 +22,10 @@
 #ifndef _SC_WorldOptions_
 #define _SC_WorldOptions_
 
+#include <stdarg.h>
+
+typedef int (*PrintFunc)(const char *format, va_list ap);
+
 struct WorldOptions
 {
 	const char* mPassword;
@@ -52,11 +56,13 @@ const WorldOptions kDefaultWorldOptions =
 #include "SC_Reply.h"
 
 extern "C" {
+	void SetPrintFunc(PrintFunc func);
 	struct World* World_New(WorldOptions *inOptions);
 	void World_OpenUDP(struct World *inWorld, int inPort);
 	void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
 	void World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
 	void World_WaitForQuit(struct World *inWorld);
+	int scprintf(const char *fmt, ...);
 }
 
 #endif

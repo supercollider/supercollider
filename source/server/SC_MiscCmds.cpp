@@ -55,15 +55,6 @@ SCErr meth_b_alloc(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 	return kSCErr_None;
 }
 
-/*SCErr meth_bufShmAlloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_bufShmAlloc(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
-{	
-	//printf("data %08X size %d\n", inData, inSize);
-	CallSequencedCommand(BufShmAllocCmd, inWorld, inSize, inData, inReply);
-	
-	return kSCErr_None;
-}*/
-
 SCErr meth_b_free(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_b_free(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
@@ -184,10 +175,8 @@ SCErr meth_n_run(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 SCErr meth_n_map(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_n_map(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
-	//printf("meth_nodeMap\n");
 	sc_msg_iter msg(inSize, inData);	
 	int id = msg.geti();
-	//printf("id %d\n", id);
 	Node *node = World_GetNode(inWorld, id);
 	if (!node) return kSCErr_NodeNotFound;
 	
@@ -208,10 +197,8 @@ SCErr meth_n_map(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
-	//printf("meth_nodeSet\n");
 	sc_msg_iter msg(inSize, inData);	
 	int id = msg.geti();
-	//printf("id %d\n", id);
 	Node *node = World_GetNode(inWorld, id);
 	if (!node) return kSCErr_NodeNotFound;
 	
@@ -234,7 +221,6 @@ SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 {
 	sc_msg_iter msg(inSize, inData);	
 	int id = msg.geti();
-	//printf("id %d\n", id);
 	Node *node = World_GetNode(inWorld, id);
 	if (!node) return kSCErr_NodeNotFound;
 
@@ -320,8 +306,6 @@ SCErr meth_d_loadDir(World *inWorld, int inSize, char *inData, ReplyAddress *inR
 SCErr meth_d_freeAll(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_d_freeAll(World *inWorld, int /*inSize*/, char */*inData*/, ReplyAddress* /*inReply*/)
 {
-	printf("meth_defFreeAll\n");
-
 	World_FreeAllGraphDefs(inWorld);
 	return kSCErr_None;
 }
@@ -330,19 +314,15 @@ SCErr meth_d_freeAll(World *inWorld, int /*inSize*/, char */*inData*/, ReplyAddr
 SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
-	//printf("->meth_synthNew\n");
 	sc_msg_iter msg(inSize, inData);	
 	int32 *defname = msg.gets4();
 	int32 nodeID = msg.geti();
 	int32 addAction = msg.geti();
 	int32 addTargetID = msg.geti();
-	//printf("meth_synthNew '%s' %d %d\n", defname, nodeID, addTargetID);
 
 	GraphDef *def = World_GetGraphDef(inWorld, defname);
-	//printf("def %08X\n", def);
 	if (!def) return kSCErr_SynthDefNotFound;
 	
-	//printf("*SynthNew %d %d\n", nodeID, arglen);
 
 	Graph *graph = 0;
 	switch (addAction) {
@@ -378,7 +358,6 @@ SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	}
 	Node_StateMsg(&graph->mNode, kNode_Go);
 	
-	//printf("graph %08X\n", graph);
 		
 	return kSCErr_None;
 }
@@ -390,7 +369,6 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	int32 newGroupID = msg.geti();
 	int32 addAction = msg.geti();
 	int32 addTargetID = msg.geti();
-	//printf("meth_groupNew %d %d\n", newGroupID, addGroupID);
 		
 	Group *newGroup = 0;
 	switch (addAction) {
@@ -426,7 +404,6 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	}
 
 	Node_StateMsg(&newGroup->mNode, kNode_Go);
-	//printf("kSCErr_None\n");
 
 	return kSCErr_None;
 }
@@ -435,7 +412,6 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 SCErr meth_n_free(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_n_free(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
-	//printf("meth_nodeDelete\n");
 	sc_msg_iter msg(inSize, inData);	
 
 	int32 nodeID = msg.geti();
@@ -539,7 +515,6 @@ SCErr meth_g_tail(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 SCErr meth_g_insert(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_g_insert(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
-	//printf("meth_groupInsert\n");
 	sc_msg_iter msg(inSize, inData);	
 	Group *group = World_GetGroup(inWorld, msg.geti());
 	if (!group) return kSCErr_GroupNotFound;
@@ -616,7 +591,6 @@ SCErr meth_b_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 SCErr meth_b_setn(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_b_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {		
-	//printf("meth_b_setn\n");
 	sc_msg_iter msg(inSize, inData);
 	int bufindex = msg.geti();
 	SndBuf* buf = World_GetBuf(inWorld, bufindex);
@@ -629,7 +603,6 @@ SCErr meth_b_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 		int32 start = msg.geti();
 		int32 n = msg.geti();
 		int32 end = start+n-1;
-		//printf("setn %d %d %d\n", start, n, end);
 		
 		if (end < 0 || start >= numSamples) continue;
 		
@@ -638,7 +611,6 @@ SCErr meth_b_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 
 		for (int i=start; i<=end; ++i) {
 			float32 value = msg.getf();
-			//printf("   %d %g\n", i, value);
 			data[i] = value;
 		}
 	}
@@ -709,7 +681,6 @@ SCErr meth_c_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 SCErr meth_c_setn(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_c_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {		
-	//printf("meth_b_setn\n");
 	sc_msg_iter msg(inSize, inData);
 	
 	float *data = inWorld->mControlBus;
@@ -719,7 +690,6 @@ SCErr meth_c_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 		int32 start = msg.geti();
 		int32 n = msg.geti();
 		int32 end = start+n-1;
-		//printf("setn %d %d %d\n", start, n, end);
 		
 		if (end < 0 || start >= maxIndex) continue;
 		
@@ -728,7 +698,6 @@ SCErr meth_c_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 
 		for (int i=start; i<=end; ++i) {
 			float32 value = msg.getf();
-			//printf("   %d %g\n", i, value);
 			data[i] = value;
 		}
 	}
@@ -776,7 +745,6 @@ SCErr meth_notify(World *inWorld, int inSize, char *inData, ReplyAddress *inRepl
 void initMiscCommands();
 void initMiscCommands()
 {
-	//printf("->initMiscCommands\n");
 
 // nrt
 	NEW_COMMAND(none);		
@@ -838,8 +806,6 @@ void initMiscCommands()
 	NEW_COMMAND(c_set);		
 	NEW_COMMAND(c_setn);		
 	NEW_COMMAND(c_fill);					
-
-	//printf("<-initMiscCommands\n");
 }
 
 

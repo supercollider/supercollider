@@ -78,8 +78,12 @@ struct World
 	struct SndBuf *mSharedSndBufs;
 	
 	int mNumSharedControls;
-	float *mSharedControls;
+	float *mSharedControls;	
 };
+
+extern "C" {
+	int scprintf(const char *fmt, ...);
+}
 
 inline SndBuf* World_GetBuf(struct World *inWorld, int index)
 {

@@ -33,7 +33,7 @@
 void Usage();
 void Usage()
 {
-	printf(
+	scprintf(
 		"supercollider_synth  options:\n"
 		"   -u <udp-port-number>    a port number 0-65535\n"
 		"   -t <tcp-port-number>    a port number 0-65535\n"
@@ -55,10 +55,10 @@ void Usage()
 		"          The default is no password.\n"
 		"          UDP ports never require passwords, so for security use TCP.\n"
 		"\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n",
+		kDefaultWorldOptions.mNumControlBusChannels,
 		kDefaultWorldOptions.mNumAudioBusChannels, 
 		kDefaultWorldOptions.mNumInputBusChannels,
 		kDefaultWorldOptions.mNumOutputBusChannels,
-		kDefaultWorldOptions.mNumControlBusChannels,
 		kDefaultWorldOptions.mBufLength,
 		kDefaultWorldOptions.mNumBuffers,
 		kDefaultWorldOptions.mMaxNodes,
@@ -83,11 +83,11 @@ int main(int argc, char* argv[])
 	
 	for (int i=1; i<argc; i+=2) {
 		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmw", argv[i][1]) == 0) {
-			printf("ERROR: Invalid option %s\n", argv[i]);
+			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
 		if (i+1 >= argc) {
-			printf("ERROR: Argument expected after option %s\n", argv[i]);
+			scprintf("ERROR: Argument expected after option %s\n", argv[i]);
 			Usage();
 		}
 		switch (argv[i][1]) {
@@ -137,11 +137,11 @@ int main(int argc, char* argv[])
 		}
 	}
 	if (udpPortNum == -1 && tcpPortNum == -1) {
-		printf("ERROR: There must be a -u and/or a -t option.\n");
+		scprintf("ERROR: There must be a -u and/or a -t option.\n");
 		Usage();
 	}
 	if (options.mNumInputBusChannels + options.mNumOutputBusChannels > options.mNumAudioBusChannels) {
-		printf("ERROR: number of audio bus channels < inputs + outputs.\n");
+		scprintf("ERROR: number of audio bus channels < inputs + outputs.\n");
 		Usage();
 	}
 	
@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
 	if (udpPortNum >= 0) World_OpenUDP(world, udpPortNum);
 	if (tcpPortNum >= 0) World_OpenTCP(world, tcpPortNum, options.mMaxLogins, 8);
 	
-	printf("SuperCollider 3 server ready..\n");
+	scprintf("SuperCollider 3 server ready..\n");
 	fflush(stdout);
 	
 	World_WaitForQuit(world);

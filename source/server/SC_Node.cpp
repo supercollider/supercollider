@@ -33,10 +33,8 @@ void Node_StateMsg(Node* inNode, int inState);
 // create a new node
 Node* Node_New(World *inWorld, NodeDef *def, int32 inID, sc_msg_iter* args)
 {
-	//printf("->Node_New %08X %d %d\n", inWorld, inID, def->mAllocSize);
 	if (World_GetNode(inWorld, inID)) return 0;
 	Node* node = (Node*)World_Alloc(inWorld, def->mAllocSize);
-	//printf("node %08X\n", node);
 	node->mWorld = inWorld;
 	node->mDef = def;
 	node->mParent = 0;
@@ -46,13 +44,11 @@ Node* Node_New(World *inWorld, NodeDef *def, int32 inID, sc_msg_iter* args)
 
 	node->mID = inID;
     node->mHash = Hash(inID);
-	//printf("hash %d\n", node->mHash);
     if (!World_AddNode(inWorld, node)) {
         throw std::runtime_error("cannot add Node to table. duplicate name or table full.\n");
     }
 
     (*def->fCtor)(inWorld, def, node, args);
-	//printf("<-Node_New\n");
 	
 	return node;
 }
@@ -61,7 +57,6 @@ Node* Node_New(World *inWorld, NodeDef *def, int32 inID, sc_msg_iter* args)
 // node destructor
 void Node_Dtor(Node *inNode)
 {
-	//printf("Node_Dtor %08X\n", inNode);		
 	Node_StateMsg(inNode, kNode_End);
 	Node_Remove(inNode);
 	inNode->mWorld->hw->mNodeLib->Remove(inNode);
@@ -71,7 +66,6 @@ void Node_Dtor(Node *inNode)
 // remove a node from a group
 void Node_Remove(Node* s) 
 {
-    //printf("Node_Remove %08X\n", s);
     Group *group = s->mParent;
 
     if (s->mPrev) s->mPrev->mNext = s->mNext;

@@ -90,11 +90,9 @@ inline void sc_msg_iter::init(int inSize, char* inData)
 	if (data[0] == ',') {
 		tags = data+1;
 		rdpos = OSCstrskip(data);
-		//printf("hash tags rdpos %d\n", rdpos - data);
 	} else {
 		tags = 0;
 		rdpos = data;
-		//printf("no tags rdpos %d\n", rdpos - data);
 	}
 }
 

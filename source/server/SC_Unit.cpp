@@ -32,30 +32,23 @@ void Unit_ChooseMulAddFunc(Unit* unit);
 
 Unit* Unit_New(World *inWorld, UnitSpec *inUnitSpec, char*& memory)
 {
-	//printf("->Unit_New %08X\n", inUnitSpec);
 	UnitDef *def = inUnitSpec->mUnitDef;
-	//printf("def %s\n", def->mUnitDefName);
-	//printf("def->mAllocSize %d\n", def->mAllocSize);
 	
 	Unit *unit = (Unit*)memory; 
 	memory += def->mAllocSize;
 	
-	//printf("unit %08X\n", unit);
 	unit->mWorld = inWorld;
 	unit->mUnitDef = def;
 	unit->mParent = 0;
 	unit->mParentIndex = 0;
 	unit->mNumInputs = inUnitSpec->mNumInputs;
 	unit->mNumOutputs = inUnitSpec->mNumOutputs;
-	//printf("->>World_Alloc\n");
 	int numPorts = unit->mNumInputs + unit->mNumOutputs;
 
 	unit->mInput = (Wire**)memory; 
 	memory += numPorts * sizeof(Wire*);
 	
-	//printf("unit->mInput %08X\n", unit->mInput);
 	unit->mOutput = unit->mInput + unit->mNumInputs;
-	//printf("unit->mOutput %08X\n", unit->mOutput);
 
 	unit->mInBuf = (float**)memory; 
 	memory += numPorts * sizeof(float*);
@@ -71,7 +64,6 @@ Unit* Unit_New(World *inWorld, UnitSpec *inUnitSpec, char*& memory)
 	unit->mCalcFunc = 0;
 	unit->mDone = false;
 	
-	//printf("<-Unit_New\n");
 	return unit;
 }
 

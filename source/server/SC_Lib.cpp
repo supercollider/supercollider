@@ -96,7 +96,7 @@ SCErr SC_LibCmd::Perform(struct World *inWorld, int inSize, char *inData, ReplyA
 	if (err) {
 		const char *errstr = SC_ErrorString(err);
 		CallSendFailureCommand(inWorld, (char*)Name(), (char*)errstr, inReply);
-		printf("FAILURE %s %s\n", (char*)Name(), (char*)errstr);
+		scprintf("FAILURE %s %s\n", (char*)Name(), (char*)errstr);
 	}
 	return err;
 }

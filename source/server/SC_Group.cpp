@@ -67,12 +67,8 @@ void Group_Calc(Group *inGroup)
 {
 	Node *child = inGroup->mHead;
 	while (child) {
-		//printf("->Group_Calc child %08X\n", child);
-		//printf("mCalcFunc %08X\n", child->mCalcFunc);
         Node *next = child->mNext;
-		//printf("next %08X\n", next);
 		(*child->mCalcFunc)(child);
-		//printf("<-Group_Calc child %08X\n", child);
 		child = next;
 	}			
 }

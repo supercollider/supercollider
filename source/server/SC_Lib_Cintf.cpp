@@ -42,10 +42,7 @@ void initMiscCommands();
 bool PlugIn_LoadDir(char *dirname);
 
 void initialize_library()
-{
-
-	printf("->initialize_library\n");
-	
+{	
 	gCmdLib     = new HashTable<SC_LibCmd, Malloc>(&gMalloc, 64, true);
 	gUnitDefLib = new HashTable<UnitDef, Malloc>(&gMalloc, 512, true);
 	gBufGenLib  = new HashTable<BufGen, Malloc>(&gMalloc, 512, true);
@@ -53,11 +50,7 @@ void initialize_library()
 
 	initMiscCommands();
 
-
-	printf("->PlugIn_LoadDir\n");
 	PlugIn_LoadDir("plugins");
-
-	printf("<-initialize_library\n");
 }
 
 
@@ -67,11 +60,10 @@ void initialize_library()
 bool PlugIn_Load(const char *filename);
 bool PlugIn_Load(const char *filename)
 {	
-	//printf("PlugIn_Load %s\n", filename);
 	void* handle = dlopen(filename, RTLD_NOW | RTLD_UNSHARED);
 	
 	if (!handle) {
-		printf("*** ERROR: dlopen '%s' err '%s'\n", filename, dlerror());
+		scprintf("*** ERROR: dlopen '%s' err '%s'\n", filename, dlerror());
 		dlclose(handle);
 		return false;
 	}		
@@ -80,7 +72,7 @@ bool PlugIn_Load(const char *filename)
 	
 	ptr = dlsym(handle, "_load");
 	if (!ptr) {
-		printf("*** ERROR: dlsym _load err '%s'\n", dlerror());
+		scprintf("*** ERROR: dlsym _load err '%s'\n", dlerror());
 		dlclose(handle);
 		return false;
 	}		
@@ -94,11 +86,10 @@ bool PlugIn_Load(const char *filename)
 bool PlugIn_LoadDir(char *dirname);
 bool PlugIn_LoadDir(char *dirname)
 {
-	//printf("PlugIn_LoadDir %s\n", dirname);
 	bool success = true;
 	DIR *dir = opendir(dirname);	
 	if (!dir) {
-		printf("*** ERROR: open directory failed '%s'\n", dirname); fflush(stdout);
+		scprintf("*** ERROR: open directory failed '%s'\n", dirname); fflush(stdout);
 		return false;
 	}
 	

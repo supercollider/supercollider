@@ -37,6 +37,8 @@
 #include "SC_ComPort.h"
 
 InterfaceTable gInterfaceTable;
+PrintFunc gPrint = 0;
+
 extern HashTable<struct UnitDef, Malloc> *gUnitDefLib;
 extern HashTable<struct BufGen, Malloc> *gBufGenLib;
 extern HashTable<PlugInCmd, Malloc> *gPlugInCmds;
@@ -53,7 +55,6 @@ bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 void InterfaceTable_Init();
 void InterfaceTable_Init()
 {
-	printf("InterfaceTable_Init\n");
 	InterfaceTable *ft = &gInterfaceTable;
 	
 	ft->mSine = gSine;
@@ -61,7 +62,7 @@ void InterfaceTable_Init()
 	ft->mSineSize = kSineSize;
 	ft->mSineWavetable = gSineWavetable;
 	
-	ft->fPrint = &printf;
+	ft->fPrint = &scprintf;
 	
 	ft->fRanSeed = &timeseed;
 
@@ -117,7 +118,6 @@ World* World_New(WorldOptions *inOptions)
 		
 		world = (World*)calloc(sizeof(World), 1);
 		
-		printf("World_Init %08X\n", (int)world);
 		world->hw = (HiddenWorld*)calloc(sizeof(HiddenWorld), 1);
 
 		world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
@@ -185,21 +185,20 @@ World* World_New(WorldOptions *inOptions)
 	
 		hw->mAudioDriver = new SC_CoreAudioDriver(world);
 	
-		//printf("->GraphDef_LoadDir\n");
 		GraphDef *list = 0;
 		list = GraphDef_LoadDir(world, "synthdefs", list);
 		GraphDef_Define(world, list);
 	
 		if (!hw->mAudioDriver->Setup()) {
-			printf("could not initialize audio.\n");
+			scprintf("could not initialize audio.\n");
 			return 0;
 		}
 		if (!hw->mAudioDriver->Start()) {
-			printf("start audio failed.\n");
+			scprintf("start audio failed.\n");
 			return 0;
 		}
 	} catch (std::exception& exc) {
-		printf("Exception in World_New: %s\n", exc.what());
+		scprintf("Exception in World_New: %s\n", exc.what());
 		World_Cleanup(world); 
 		return 0;
 	} catch (...) {
@@ -212,7 +211,7 @@ void World_OpenUDP(struct World *inWorld, int inPort)
 	try {
 		new SC_UdpInPort(inWorld, inPort);
 	} catch (std::exception& exc) {
-		printf("Exception in World_OpenUDP: %s\n", exc.what());
+		scprintf("Exception in World_OpenUDP: %s\n", exc.what());
 	} catch (...) {
 	}
 }
@@ -222,29 +221,24 @@ void World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int 
 	try {
 		new SC_TcpInPort(inWorld, inPort, inMaxConnections, inBacklog);
 	} catch (std::exception& exc) {
-		printf("Exception in World_OpenTCP: %s\n", exc.what());
+		scprintf("Exception in World_OpenTCP: %s\n", exc.what());
 	} catch (...) {
 	}
 }
 
 void World_WaitForQuit(struct World *inWorld)
 {
-	printf("->World_WaitForQuit\n");
 	try {
-	printf("-->mQuitProgram->Acquire\n");
 		inWorld->hw->mQuitProgram->Acquire();
-	printf("-->World_Cleanup\n");
 		World_Cleanup(inWorld);
 	} catch (std::exception& exc) {
-		printf("Exception in World_WaitForQuit: %s\n", exc.what());
+		scprintf("Exception in World_WaitForQuit: %s\n", exc.what());
 	} catch (...) {
 	}
-	printf("<-World_WaitForQuit\n");
 }
 
 void World_SetSampleRate(World *inWorld, double inSampleRate)
 {
-	//printf("World_SetSampleRate %08X %g %d\n", inWorld, inSampleRate, inWorld->mBufLength);
 	inWorld->mSampleRate = inSampleRate;
 	Rate_Init(&inWorld->mFullRate, inSampleRate, inWorld->mBufLength);
 	Rate_Init(&inWorld->mBufRate, inSampleRate / inWorld->mBufLength, 1);
@@ -322,10 +316,6 @@ void World_FreeAllGraphDefs(World *inWorld)
 
 GraphDef* World_GetGraphDef(World *inWorld, int32* inKey)
 {
-	//printf("graph lib size %d\n", inWorld->hw->mGraphDefLib->NumItems());
-	//printf("graph lib maxsize %d\n", inWorld->hw->mGraphDefLib->MaxItems());
-	//printf("graph lib table size %d\n", inWorld->hw->mGraphDefLib->TableSize());
-
 	return inWorld->hw->mGraphDefLib->Get(inKey);
 }
 
@@ -540,7 +530,6 @@ SCErr bufAlloc(SndBuf* buf, int numChannels, int numFrames)
 {		
 	long numSamples = numFrames * numChannels;
 	size_t size = numSamples * sizeof(float);
-	//printf("bufAlloc b %ld  s %ld  f %d  c %d\n", size, numSamples, numFrames, numChannels);
 	
 	buf->data = (float*)calloc(size, 1);
 	if (!buf->data) return kSCErr_Failed;
@@ -606,7 +595,6 @@ int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char *headerFormatS
 	if (!sampleFormat) return kSCErr_Failed;
 	
 	info->format = (unsigned int)(headerFormat | sampleFormat);
-	printf("sndfileFormatInfoFromStrings info->format %08X\n", info->format);
 	return kSCErr_None;
 }
 
@@ -699,3 +687,17 @@ bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg)
 	return inWorld->hw->mAudioDriver->SendMsgFromEngine(inMsg);
 }
 
+void SetPrintFunc(PrintFunc func)
+{
+	gPrint = func;
+}
+
+
+int scprintf(const char *fmt, ...)
+{
+	va_list vargs;
+	va_start(vargs, fmt); 
+	
+	if (gPrint) return (*gPrint)(fmt, vargs);
+	else return vprintf(fmt, vargs);
+}

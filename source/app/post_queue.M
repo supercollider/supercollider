@@ -111,13 +111,17 @@ void vposttext(const char *str, int length)
         pthread_mutex_unlock(&mainPostBuf.mutex);
 }
 
-void vpost(const char *fmt, va_list vargs);
-void vpost(const char *fmt, va_list vargs)
+extern "C" {
+	int vpost(const char *fmt, va_list vargs);
+}
+
+int vpost(const char *fmt, va_list vargs)
 {
 	char str[512];
 	
 	vsnprintf(str, 512, fmt, vargs);
 	vposttext(str, 512);
+	return 0;
 }
 
 void postfl(const char *fmt, ...);

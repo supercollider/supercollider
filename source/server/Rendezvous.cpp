@@ -30,6 +30,10 @@
 #include "Rendezvous.h"
 #include <CoreServices/CoreServices.h>
 
+extern "C" {
+	int scprintf(const char *fmt, ...);
+}
+
 void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
 {
 	printf("PublishPortToRendezvous %d %d\n", protocol, portNum);
@@ -53,7 +57,7 @@ void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
 	// DEBUG
 	if (!netServiceRef)
 	{
-		printf("Couldn't create a Rendezvous net service.\n");
+		scprintf("Couldn't create a Rendezvous net service.\n");
 		return;
 	}
 	

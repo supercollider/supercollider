@@ -36,9 +36,7 @@ bool UnitDef_Create(char *inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitD
 
 	str4cpy(unitDef->mUnitDefName, inName);
 	unitDef->mHash = Hash(unitDef->mUnitDefName);
-	
-	//printf("UnitDef_Create %s %08X %08X\n", inName, inCtor, 0);
-	
+		
 	unitDef->mAllocSize = inAllocSize;
 	unitDef->mUnitCtorFunc = inCtor;
 	unitDef->mUnitDtorFunc = inDtor;
