@@ -137,6 +137,7 @@ Server : Model {
 		named.put(name, this);
 		set.add(this);
 		this.newAllocators;	
+		bufferArray = Array.newClear(options.numBuffers + 2);
 	}
 	initTree {
 		nodeAllocator = NodeIDAllocator(clientID);	
@@ -374,6 +375,15 @@ Server : Model {
 		waitingBufs = waitingBufs + 1;	
 	}
 	
+	resetBufferAutoInfo {
+		// Buffer info support
+		// allow room for protected scope and record buffers
+		bufInfoResponder.remove;
+		bufferArray = Array.newClear(options.numBuffers + 2);
+		waitingBufs = 0;
+		waitingForBufInfo = false;
+	}
+	
 	startAliveThread { arg delay=4.0, period=0.7;
 		^aliveThread ?? {
 			this.addStatusWatcher;
@@ -416,9 +426,7 @@ Server : Model {
 		serverBooting = true;
 		if(startAliveThread, { this.startAliveThread });
 		this.newAllocators;
-		// Buffer info support
-		// allow room for protected scope and record buffers
-		bufferArray = Array.newClear(options.numBuffers + 2);
+		this.resetBufferAutoInfo;
 		this.doWhenBooted({ 
 			if(notified, { 
 				this.notify;
@@ -496,10 +504,7 @@ Server : Model {
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		RootNode(this).freeAll;
 		this.newAllocators;
-		bufferArray = nil;
-		waitingForBufInfo = false;
-		waitingBufs = 0;
-		bufInfoResponder.remove; bufInfoResponder = nil;
+		this.resetBufferAutoInfo;
 	}
 
 	*quitAll {

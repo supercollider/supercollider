@@ -10,7 +10,7 @@ Buffer {
 		^super.newCopyArgs(server,
 						bufnum ?? { server.bufferAllocator.alloc(1) },
 						numFrames,
-						numChannels).addToServerArray.sampleRate_(server.sampleRate);
+						numChannels).sampleRate_(server.sampleRate);
 	}
 
 	*alloc { arg server, numFrames, numChannels = 1, completionMessage, bufnum;
@@ -19,7 +19,7 @@ Buffer {
 						bufnum ?? { server.bufferAllocator.alloc(1) },
 						numFrames,
 						numChannels)
-					.alloc(completionMessage).addToServerArray.sampleRate_(server.sampleRate);
+					.alloc(completionMessage).sampleRate_(server.sampleRate);
 	}
 
 	alloc { arg completionMessage;
@@ -31,9 +31,11 @@ Buffer {
 	}
 	
 	allocMsg { arg completionMessage;
+		this.addToServerArray;
 		^["/b_alloc", bufnum, numFrames, numChannels, completionMessage.value(this)]
 	}
 	allocReadMsg { arg argpath,startFrame,numFrames, completionMessage;
+		this.addToServerArray;
 		path = argpath;
 		^["/b_allocRead",bufnum, path,startFrame,numFrames ? -1, completionMessage.value(this)]
 	}
@@ -44,11 +46,12 @@ Buffer {
 		server = server ? Server.default;
 		^super.newCopyArgs(server,
 						bufnum ?? { server.bufferAllocator.alloc(1) })
-					.allocRead(path,startFrame,numFrames,{|buf|["/b_query",buf.bufnum]})
-					.addToServerArray.doOnInfo_(action).waitForBufInfo;
+					.doOnInfo_(action).waitForBufInfo
+					.allocRead(path,startFrame,numFrames,{|buf|["/b_query",buf.bufnum]});
 	}
 	read { arg argpath, fileStartFrame = 0, numFrames, 
 					bufStartFrame = 0, leaveOpen = false, action;
+		this.addToServerArray;
 		doOnInfo = action;
 		this.waitForBufInfo;
 		server.listSendMsg(
@@ -60,7 +63,7 @@ Buffer {
 		server = server ? Server.default;
 		^super.newCopyArgs(server,
 						bufnum ?? { server.bufferAllocator.alloc(1) })
-					.allocRead(path,startFrame,numFrames, completionMessage).addToServerArray;
+					.allocRead(path,startFrame,numFrames, completionMessage);
 	}
 	readNoUpdate { arg argpath, fileStartFrame = 0, numFrames, 
 					bufStartFrame = 0, leaveOpen = false, completionMessage;
@@ -435,6 +438,9 @@ Buffer {
 	}
 
 	updateInfo { |action|
+		// add to the array here. That way, update will be accurate even if this buf
+		// has been freed
+		this.addToServerArray;
 		doOnInfo = action;
 		this.waitForBufInfo;
 		server.sendMsg("/b_query", bufnum);
