@@ -8,7 +8,7 @@ CXMenu : SCViewAdapter { // multiple actions
 		^super.new.nameFuncs_(nameFuncs)
 	}
 	*newWith { arg nameFuncs;
-		^super.newCopyArgs(nameFuncs)
+		^super.new.nameFuncs_(nameFuncs)
 	}
 	gui { arg lay,windowWidth=150,height=400,argbuttonWidth=120,title="CXMenu";
 		
@@ -19,7 +19,7 @@ CXMenu : SCViewAdapter { // multiple actions
 		layout= lay ?? {MultiPageLayout.new};
 		view = SCVLayoutView.new(layout,Rect(0,0,buttonWidth,24 * nameFuncs.size));
 		this.guiBody;
-		if(lay.isNil,{ layout.front.resizeToFit });
+		if(lay.isNil,{ layout.resizeToFit.front });
 	}
 	guiBody {
 		nameFuncs.do({arg nf;
