@@ -1,0 +1,101 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Interpreter
+\f1\b0\fs24 \
+\
+
+\f0\b superclass: Object\
+
+\f1\b0 \
+The interpreter defines a context in which interactive commands are compiled and executed.\
+\
+In the interpreter, \ul this\ulnone  refers to the interpreter itself, e.g.:\
+\
+
+\f2 this.postln\
+
+\f1 \
+\
+
+\f0\b\fs28 \ul Accessing
+\f1\b0\fs24 \ulnone \
+\
+The interpreter defines instance variables 'a' through 'z' which are always available\
+in the interpreter.\
+\
+
+\f0\b clearAll
+\f1\b0 \
+\
+set the values of the variables 'a' through 'z' to nil.\
+\
+
+\f2 (\
+x = 123;\
+x.postln;\
+this.clearAll;\
+x.postln;\
+)\
+
+\f1 \
+\
+
+\f0\b\fs28 \ul Compile & Interpret\
+
+\f1\b0\fs24 \ulnone \
+
+\f0\b interpret(aString)\
+
+\f1\b0 \
+Compile and execute a String.\
+\
+
+\f2 this.interpret("(123 + 4000).postln");\
+
+\f1 \
+
+\f0\b interpretPrint(aString)\
+
+\f1\b0 \
+Compile and execute a String, printing the result.\
+\
+
+\f2 this.interpretPrint("123 + 4000");\
+
+\f1 \
+\
+
+\f0\b compile(aString)\
+
+\f1\b0 \
+Compile a String and return a Function.\
+\
+(\
+z = 
+\f2 this.compile("(123 + 4000).postln");\
+z.postln;\
+z.value;\
+)\
+
+\f1 \
+
+\f0\b compileFile(pathName)\
+
+\f1\b0 \
+Reads the file at pathName, compiles it and returns a Function. \
+The file must contain a valid SuperCollider expression, naturally.\
+This will not compile class definitions, only expressions.\
+\
+
+\f0\b executeFile(pathName)\
+
+\f1\b0 \
+Reads the file at pathName, compiles it and executes it, returning the result. \
+The file must contain a valid SuperCollider expression, naturally.\
+This will not compile class definitions, only expressions.\
+\
+}
