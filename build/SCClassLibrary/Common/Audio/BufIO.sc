@@ -36,8 +36,8 @@ ReadBuf : MultiOutUGen {
 }
 
 RecordBuf : UGen {	
-	*ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0, run=1.0;
-		this.multiNewList('audio', inputArray.asArray ++ [ bufnum, offset, recLevel, preLevel, run ]);
+	*ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0, run=1.0, loop=1.0;
+		this.multiNewList(['audio', bufnum, offset, recLevel, preLevel, run, loop ] ++ inputArray.asArray);
 		^inputArray
 	}
 	init { arg ... theInputs;
