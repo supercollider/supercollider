@@ -48,6 +48,10 @@ SynthDef {
 		constantSet = Set.new;
 	}
 	buildUgenGraph { arg func, lags, prependArgs;
+		// clean up.
+		irnames = irvalues = ircontrols = irpositions = nil;
+		krnames = krvalues = krcontrols = krpositions = krlags = nil;
+
 		prependArgs = prependArgs.asArray;
 		this.addControlsFromArgsOfFunc(func, lags, prependArgs.size);
 		^func.valueArray(prependArgs.asArray ++ this.buildControls);
@@ -118,11 +122,7 @@ SynthDef {
 		krcontrols.asArray.do({ arg control, i; 
 			outputProxies.put(krpositions.at(i), control);
 		});
-		
-		// clean up.
-		irnames = irvalues = ircontrols = irpositions = nil;
-		krnames = krvalues = krcontrols = krpositions = krlags = nil;
-		
+				
 		^outputProxies
 	}
 	finishBuild {
