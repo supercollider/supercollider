@@ -30,6 +30,8 @@ If you have:\
 \
 The effect synth will not hear the source synth, and you won't get the results you want. \
 \
+\
+\
 
 \f0\b\fs28 \ul Controlling order of execution\ulnone  \
 
@@ -43,33 +45,71 @@ There are three ways to control the order of execution: using addAction in your 
 \
 By specifying an addAction argument for 
 \f0\b Synth.new
-\f1\b0  one can specify the node's placement relative to a target. The target might be a group node, another synth node, or a server. The default is the 
-\f0\b RootNode
-\f1\b0  (the top level node) of the default server. The following 
+\f1\b0  one can specify the node's placement relative to a target. The target might be a group node, another synth node, or a server. \
+\
+The default is the 
+\f0\b default node
+\f1\b0  (the group with 
+\f0\b nodeID 1
+\f1\b0 ) of the default server. \
+	
+\f0\b see [RootNode] for this
+\f1\b0 \
+\
+ The following 
 \f0\b Symbols
 \f1\b0  are valid addActions: \cf2 \\addToHead\cf0 , \cf2 \\addToTail\cf0 , \cf2 \\addBefore\cf0 , \cf2 \\addAfter\cf0 , \cf2 \\addReplace\cf0 . These correspond to the following convenience methods of class 
 \f0\b Synth
 \f1\b0 :\
 \
 
-\f0\b Synth.head(aGroup, defName, args): 
-\f1\b0 add the new node to the the head of the group specified by aGroup. If aGroup is a synth node, the new synth will be added to the head of that node's group.\
+\f0\b 	Synth.new(defName, args, aTarget, addAction)\
+		 
+\f1\b0 add the new node to the the head of the node specified by 
+\f0\b aTarget
+\f1\b0 .\
+	 	 If 
+\f0\b aTarget
+\f1\b0  is a synth node, the new synth will be 
+\f0\b added to the head
+\f1\b0  of that node's group.\
+	 	 aTarget can also be a server or nil. if it is a server, the node will be added to the\
+	 	 head of the default group (1), or according to the 
+\f0\b addAction
+\f1\b0 . \
+	 	 if it is nil, the default server is used.
+\f0\b \
+	\
+	Synth.head(aGroup, defName, args)\
+		 
+\f1\b0 add the new node to the the head of the group specified by aGroup.\
+	 	 If aGroup is a synth node, the new synth will be added to the head of that node's group.\
 
-\f0\b Synth.tail(aGroup, defName, args): 
-\f1\b0 add the new node to the the tail of the group specified by aGroup. If aGroup is a synth node, the new synth will be added to the head of that node's group.\
+\f0\b \
+	Synth.tail(aGroup, defName, args)\
+		
+\f1\b0 add the new node to the the tail of the group specified by aGroup. If aGroup is a synth node, the 		new 	synth will be added to the head of that node's group.\
 
-\f0\b Synth.before(aNode, defName, args): 
+\f0\b 	\
+	Synth.before(aNode, defName, args)\
+		
 \f1\b0 add the new node just before the node specified by aNode.\
 
-\f0\b Synth.after(aNode, defName, args): 
+\f0\b \
+	Synth.after(aNode, defName, args)\
+		
 \f1\b0 add the new node just after the node specified by aNode.\
 
-\f0\b Synth.replace(synthToReplace, defName, args): 
+\f0\b \
+	Synth.replace(synthToReplace, defName, args)\
+		
 \f1\b0 the new node replaces the node specified by synthToReplace. The target node is freed.\
 \
 Using Synth.new without an addAction will result in the default addAction. (You can check the default values for the arguments of any method by looking at a class' source code. See 
 \f0\b Internal-Snooping
 \f1\b0  for more details.) Where order of execution matters, it is important that you specify an addAction, or use one of the convenience methods shown above.\
+\
+\
 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
@@ -79,22 +119,24 @@ Using Synth.new without an addAction will result in the default addAction. (You 
 \f1\b0 \cf0 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
-\f0\b \cf0 .moveBefore\
-.moveAfter\
-.moveToHead\
-.moveToTail
+\f0\b \cf0 	.moveBefore\
+	.moveAfter\
+	.moveToHead\
+	.moveToTail
 \f1\b0 \
 \
 If you need to change the order of execution after synths and groups have been created, you can do this using move messages.\
 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
-\f2\fs18 \cf0 ~fx = \cf3 Synth\cf0 .tail(s, \cf4 "fx"\cf0 );\
-~src = \cf3 Synth\cf0 .tail(s, \cf4 "src"\cf0 );  \cf5 // effect will not be heard b/c it's earlier\cf0 \
-~src.moveBefore(~fx);   \cf5 // place the source before the effect\cf0 \
+\f2\fs18 \cf0 	~fx = \cf3 Synth\cf0 .tail(s, \cf4 "fx"\cf0 );\
+	~src = \cf3 Synth\cf0 .tail(s, \cf4 "src"\cf0 );  \cf5 // effect will not be heard b/c it's earlier\cf0 \
+	~src.moveBefore(~fx);   \cf5 // place the source before the effect\cf0 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
 \f1\fs24 \cf0 \
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-2880\ql\qnatural
 
 \f0\b \cf0 Groups \
@@ -113,6 +155,8 @@ In the above configuration, all of the synths in group 1 will execute before all
 Determine your architecture, then make groups to support the architecture.\
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 \cf0 \
+\
+\
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
 \f0\b \cf0 Using order of execution to your advantage \
@@ -213,6 +257,8 @@ Note that this arrangement prevents errors in order of execution, through the us
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
 \f0\b \cf0 \
+\
+\
 Messaging Style
 \f1\b0 \
 \
@@ -222,9 +268,11 @@ The above examples are in 'object style'. Should you prefer to work in 'messagin
 \f0\b Server-Command-Reference
 \f1\b0  for more details.\
 \
+\
+\
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
-\f0\b\fs28 \cf0 \ul \ulc0 Feedback\
+\f0\b\fs28 \cf0 \ul Feedback\
 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -273,7 +321,6 @@ Synth 2 (with InFeedback) <- busB \
 Synth 3 -> busB + busA \
 \
 The following example demonstrates this issue with In.kr:\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -308,8 +355,9 @@ c = \cf3 Bus\cf0 .control(s, 1);\
 y.set(\cf2 \\bus\cf0 , c.index); x.set(\cf2 \\bus\cf0 , c.index);\
 \
 x.free; y.free; z.free;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 	
+\f1\fs24 \cf0 	
 \f2\fs18 \cf3 \
 \pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
 
@@ -323,4 +371,7 @@ James Harkins' MixerChannel class can help you with order of execution. Each cha
 \
 If you run into trouble, the crucial library includes a utility to query all nodes on the server so that you can see the order in which they're executing. Type 
 \f0\b Crucial.menu
-\f1\b0  to access this command.}
+\f1\b0  to access this command.\
+\
+\
+}
