@@ -28,11 +28,34 @@ Color {
 	blend { arg that, blend;
 		^Color.fromArray(blend(this.asArray, that.asArray, blend));
 	}
-	vary { arg val=0.1, alphaVal=0; 
+	vary { arg val=0.1, lo=0.3, hi=0.9, alphaVal=0; 
 		^Color.new(
-			(red + val.rand2).clip(0,1), (green + val.rand2).clip(0,1), (blue + val.rand2).clip(0,1), 
+			(red + val.rand2).clip(lo,hi), 
+			(green + val.rand2).clip(lo,hi), 
+			(blue + val.rand2).clip(lo,hi), 
 			(alpha + alphaVal.rand2).clip(0,1)
 		) 
+	}
+	*hsv { arg hue, sat, val, alpha=1;
+			var r, g, b, segment, fraction, t1, t2, t3;
+			hue = hue.linlin(0, 1, 0, 360);
+			if( sat == 0 )
+				{ r = g = b = val }
+				{ 		
+						segment = floor( hue/60 );
+						fraction = ( hue/60 - segment );
+						t1 = val * (1 - sat);
+						t2 = val * (1 - (sat * fraction));
+						t3 = val * (1 - (sat * (1 - fraction)));
+						if( segment == 0, { r=val; g=t3; b=t1 });
+						if( segment == 1, { r=t2; g = val; b=t3 });
+						if( segment == 2, { r=t1; g=val; b=t3 });
+						if( segment == 3, { r=t1; g=t2; b=val });
+						if( segment == 4, { r=t3; g=t1; b=val });
+						if( segment == 5, { r=val; g=t1; b=t2 });
+				};
+			//[r, g, b].postln;
+			^this.new(r, g, b, alpha);
 	}
 	
 	asArray { ^[red, green, blue, alpha] }
