@@ -13,7 +13,7 @@ Event : Environment {
 		^Event.new(8, nil, defaultParentEvent, true);
 	}
 	*silent { arg time;
-		^Event.new(8, nil, parentEvents.silentEvent, true);
+		^Event.new(8, nil, parentEvents.silentEvent, true).put(\dur, time);
 	}
 	
 	next { ^this.copy }
