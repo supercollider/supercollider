@@ -1708,7 +1708,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 			double y2 = unit->m_y2;
 			double y1 = unit->m_y1;
 				double y0 = b1 * y1 - y2; 
-				level = a2 - y0;
+				level = a2 + y0;
 				y2 = y1; 
 				y1 = y0;
 			unit->m_y1 = y1;
@@ -1722,20 +1722,20 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 				level = a2 - b1;
 			unit->m_b1 = b1;
 		} break;
-			case shape_Squared : {
-				double grow = unit->m_grow;
-				double y1 = unit->m_y1;
-					y1 += grow;
-					level = y1*y1;
-				unit->m_y1 = y1;
-			} break;
-			case shape_Cubed : {
-				double grow = unit->m_grow;
-				double y1 = unit->m_y1;
-					y1 += grow;
-					level = y1*y1*y1;
-				unit->m_y1 = y1;
-			} break;
+		case shape_Squared : {
+			double grow = unit->m_grow;
+			double y1 = unit->m_y1;
+				y1 += grow;
+				level = y1*y1;
+			unit->m_y1 = y1;
+		} break;
+		case shape_Cubed : {
+			double grow = unit->m_grow;
+			double y1 = unit->m_y1;
+				y1 += grow;
+				level = y1*y1*y1;
+			unit->m_y1 = y1;
+		} break;
 		case shape_Sustain : {
 		} break;
 	}
@@ -1926,7 +1926,7 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 				for (int i=0; i<nsmps; ++i) {
 					ZXP(out) = level;
 					double y0 = b1 * y1 - y2; 
-					level = a2 - y0;
+					level = a2 + y0;
 					y2 = y1; 
 					y1 = y0;
 				}
@@ -2174,7 +2174,7 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 					CHECK_GATE
 					ZXP(out) = level;
 					double y0 = b1 * y1 - y2; 
-					level = a2 - y0;
+					level = a2 + y0;
 					y2 = y1; 
 					y1 = y0;
 				}
@@ -2436,7 +2436,7 @@ void BufEnvGen_next_k(BufEnvGen *unit, int inNumSamples)
 			double y2 = unit->m_y2;
 			double y1 = unit->m_y1;
 				double y0 = b1 * y1 - y2; 
-				level = a2 - y0;
+				level = a2 + y0;
 				y2 = y1; 
 				y1 = y0;
 			unit->m_y1 = y1;
@@ -2645,7 +2645,7 @@ void BufEnvGen_next_ak(BufEnvGen *unit, int inNumSamples)
 				for (int i=0; i<nsmps; ++i) {
 					ZXP(out) = level;
 					double y0 = b1 * y1 - y2; 
-					level = a2 - y0;
+					level = a2 + y0;
 					y2 = y1; 
 					y1 = y0;
 				}
@@ -2880,7 +2880,7 @@ void BufEnvGen_next_aa(BufEnvGen *unit, int inNumSamples)
 					CHECK_GATE
 					ZXP(out) = level;
 					double y0 = b1 * y1 - y2; 
-					level = a2 - y0;
+					level = a2 + y0;
 					y2 = y1; 
 					y1 = y0;
 				}
