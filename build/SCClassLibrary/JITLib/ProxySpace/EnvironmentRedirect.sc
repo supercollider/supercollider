@@ -42,8 +42,12 @@
 		currentEnvironment = saveEnvir;
 		^result
 	}
+	
+	do { arg function;
+		envir.do(function)
+	}
 	keysValuesDo { arg function;
-		envir.keysValuesArrayDo(function);
+		envir.keysValuesDo(function);
 	}
 	
 	keysValuesArrayDo { arg argArray, function;
