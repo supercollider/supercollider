@@ -184,7 +184,9 @@ collection.do(function)\
 \
 5.do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // iterates from zero to four\
 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 "you"\cf0 .do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // a String is a collection of characters\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 'they'\cf0 .do(\{ \cf2 arg\cf0  item; item.postln \}); \cf3 // a Symbol is a singular item
@@ -199,7 +201,8 @@ collection.do(function)\
 \f1\b0\fs24 \cf0 \
 Object implements a 
 \f0\b switch 
-\f1\b0 method which allows for conditional evaluation with multiple cases. These are implemented as pairs of test objects (tested using if this == test.value) and corresponding functions to be evaluated if true. In order for switch to be inlined (and thus be as efficient as nested if statements) the matching values must be literal Integers, Floats, Chars, Symbols and the functions must have no variables or arguments.\
+\f1\b0 method which allows for conditional evaluation with multiple cases. These are implemented as pairs of test objects (tested using if this == test.value) and corresponding functions to be evaluated if true. The switch statement will be inlined if the test objects are all Floats, Integers, Symbols, Chars, nil, false, true and if the functions have no variable or argument declarations. The inlined switch uses a hash lookup (which is faster than nested if statements), so it should be very fast and scale to any number of clauses.\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 \
