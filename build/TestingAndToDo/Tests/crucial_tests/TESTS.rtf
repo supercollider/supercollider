@@ -1,128 +1,266 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl\f0\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
-\red96\green96\blue96;\red0\green115\blue0;}
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;\red0\green112\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs18 \cf2 \
-\
-\cf3 // crucial tests\
-\cf2 \
-\
-\cf3 // patch\
+\f0\fs24 \cf2 //
+\f1\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 	i = \cf4 Instr\cf2 (\cf5 "help-Patch"\cf2 ,\{ \cf4 arg\cf2  freq=100,amp=1.0;\
-			\cf4 SinOsc\cf2 .ar([freq,freq + 30],0,amp)\
-		\});\
-	p = \cf4 Patch\cf2 (i,[ 500,	0.3 ]);\
-	p.play\
+\cf2 //\cf0 \
+\cf2 //// crucial tests\cf0 \
+\cf2 //TestCase(Crucial,\cf0 \
+\cf2 //	\\patcha -> \{ arg test;\cf0 \
+\cf2 //		// patch\cf0 \
+\cf2 //		i = Instr("help-Patch",\{ arg freq=100,amp=1.0;\cf0 \
+\cf2 //				SinOsc.ar([freq,freq + 30],0,amp)\cf0 \
+\cf2 //			\});\cf0 \
+\cf2 //		p = Patch(i,[ 500,	0.3 ]);\cf0 \
+\cf2 //		p.play;\cf0 \
+\cf2 //		\cf0 \
+\cf2 //		//message,button wait for confirm\cf0 \
+\cf2 //		//test.askMonkey("stereo sin wave");\cf0 \
+\cf2 //	\}\cf0 \
+\cf2 //).run\cf0 \
+\cf2 //\cf0 \
+\
+(\
+\cf2 // patch\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 i = \cf3 Instr\cf0 (\cf4 "help-Patch"\cf0 ,\{ \cf3 arg\cf0  freq=100,amp=1.0;\
+		\cf3 SinOsc\cf0 .ar([freq,freq + 30],0,amp)\
+	\});\
+p = \cf3 Patch\cf0 (i,[ 500,	0.3 ]);\
+p.play;\
+)\
 \
 \
 \
-\cf3 // fixed arg\
-\cf4 Instr\cf2 ([\cf6 \\jmcExamples\cf2 ,\cf6 'moto-rev'\cf2 ],\{ \cf4 arg\cf2  lfo=0.2,freq=1000,rq=0.1;\
-	\cf4 RLPF\cf2 .ar(\cf4 LFPulse\cf2 .ar(\cf4 SinOsc\cf2 .kr(lfo, 0, 10, 21), [0,0.1], 0.1), freq, rq).clip2(0.4);\
-\});\
-q = \cf4 Patch\cf2 ([\cf6 \\jmcExamples\cf2 ,\cf6 'moto-rev'\cf2 ],[\
-	0.2\
-]);\
-q.play;\
-\
-\
-\
-\cf3 // patch in a patch\
-\cf4 Instr\cf2 (\cf6 \\bubbles\cf2 , \{ \cf4 arg\cf2  amp=1.0;\
-	\cf4 var\cf2  f, zout;\
-	f = \cf4 LFSaw\cf2 .kr(0.4, 0, 24, \cf4 LFSaw\cf2 .kr([8,7.23], 0, 3, 80)).midicps;\
-	zout = \cf4 CombN\cf2 .ar(\cf4 SinOsc\cf2 .ar(f, 0, 0.04), 0.2, 0.2, 4);\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 // gui works\
+Instr\cf0 (\cf5 \\bubbles\cf0 , \{ \cf3 arg\cf0  amp=1.0;\
+	\cf3 var\cf0  f, zout;\
+	f = \cf3 LFSaw\cf0 .kr(0.4, 0, 24, \cf3 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps;\
+	zout = \cf3 CombN\cf0 .ar(\cf3 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4);\
 	zout * amp\
 \});\
-\cf3 //note that the same function will work stereo or mono\
-//depending on what gets put into it\
-\cf4 Instr\cf2 (\cf6 \\rlpf\cf2 ,\{ \cf4 arg\cf2  audio=0,freq=500,rq=0.1;\
-	\cf4 RLPF\cf2 .ar(audio, freq, rq)\
+\
+\cf3 Instr\cf0 (\cf5 \\rlpf\cf0 ,\{ \cf3 arg\cf0  audio=0,freq=500,rq=0.1;\
+	\cf3 RLPF\cf0 .ar(audio, freq, rq)\
 \});\
-\cf3 // put bubbles into the filter\
-\cf2 p = \cf4 Patch\cf2 (\cf6 \\rlpf\cf2 ,[\
-	q = \cf4 Patch\cf2 (\cf6 \\bubbles\cf2 )\
+\
+p = \cf3 Patch\cf0 (\cf5 \\rlpf\cf0 ,[\
+	q = \cf3 Patch\cf0 (\cf5 \\bubbles\cf0 )\
 ]);\
-p.play\
 \
+p.gui\
+)\
 \
+		\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // fixed arg\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Instr\cf0 ([\cf5 \\jmcExamples\cf0 ,\cf5 'moto-rev'\cf0 ],\{ \cf3 arg\cf0  lfo=0.2,freq=1000,rq=0.1;\
+	\cf3 RLPF\cf0 .ar(\cf3 LFPulse\cf0 .ar(\cf3 SinOsc\cf0 .kr(lfo, 0, 10, 21), [0,0.1], 0.1), freq, rq).clip2(0.4);\
+\});\
+q = \cf3 Patch\cf0 ([\cf5 \\jmcExamples\cf0 ,\cf5 'moto-rev'\cf0 ],[\
+	\cf3 nil\cf0 ,500\
+]);\
+q.play;\
+)\
 \
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // should be filtered low\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Instr\cf0 (\cf5 \\bubbles\cf0 , \{ \cf3 arg\cf0  amp=1.0;\
+	\cf3 var\cf0  f, zout;\
+	f = \cf3 LFSaw\cf0 .kr(0.4, 0, 24, \cf3 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps;\
+	zout = \cf3 CombN\cf0 .ar(\cf3 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4);\
+	zout * amp\
+\});\
+\cf3 Instr\cf0 (\cf5 \\rlpf\cf0 ,\{ \cf3 arg\cf0  audio=0,freq=200,rq=0.1;\
+	\cf3 RLPF\cf0 .ar(audio, freq, rq)\
+\});\
+p = \cf3 Patch\cf0 (\cf5 \\rlpf\cf0 ,[\
+	q = \cf3 Patch\cf0 (\cf5 \\bubbles\cf0 )\
+]);\
+p.play;\
+)\
 \
-\cf3 // tempo bus\
-\cf2 t = \cf4 TempoBus\cf2 .new(s);\
-\cf4 Tempo\cf2 .bpm = 60;\
-\cf4 SynthDef\cf2 (\cf5 "help-TempoBus"\cf2 ,\{ \cf4 arg\cf2  out=0,tempoBus;\
-	\cf4 var\cf2  tempo,trig,amp;\
-	tempo = \cf4 In\cf2 .kr(tempoBus);\
-	trig = \cf4 Impulse\cf2 .kr(tempo);\
-	amp = \cf4 Decay2\cf2 .kr(trig,0.01,0.1).clip2(1.0);\
-	\cf4 Out\cf2 .ar(out,\
-		amp * \cf4 SinOsc\cf2 .ar(300)\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // tempo bus\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 t = \cf3 TempoBus\cf0 .new(s);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Tempo\cf0 .bpm = 60;\
+\cf3 SynthDef\cf0 (\cf4 "help-TempoBus"\cf0 ,\{ \cf3 arg\cf0  out=0,tempoBus;\
+	\cf3 var\cf0  tempo,trig,amp;\
+	tempo = \cf3 In\cf0 .kr(tempoBus);\
+	trig = \cf3 Impulse\cf0 .kr(tempo);\
+	amp = \cf3 Decay2\cf0 .kr(trig,0.01,0.1).clip2(1.0);\
+	\cf3 Out\cf0 .ar(out,\
+		amp * \cf3 SinOsc\cf0 .ar(300)\
 	)\
 \}).play(s,[0,0,1,t.index]);\
+)\
+\
+\cf3 Tempo\cf0 .bpm = 40;\
+\
+\cf3 Tempo\cf0 .bpm = 666;\
+\
+\cf3 Tempo\cf0 .bpm = 100;\
 \
 \
-\cf4 Tempo\cf2 .bpm = 40;\
-\
-\cf4 Tempo\cf2 .bpm = 666;\
-\
-\cf4 Tempo\cf2 .bpm = 100;\
 \
 \
-\
-\
-\
-\cf3 // TempoPlayer\
-\cf4 Instr\cf2 (\cf6 \\helpTempoPlayer\cf2 ,\{ \cf4 arg\cf2  tempo;\
-	\cf4 Impulse\cf2 .ar( tempo )\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // TempoPlayer\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Instr\cf0 (\cf5 \\helpTempoPlayer\cf0 ,\{ \cf3 arg\cf0  tempo;\
+	\cf3 Impulse\cf0 .ar( tempo )\
 \});\
-\cf4 Patch\cf2 (\cf6 \\helpTempoPlayer\cf2 ,[\
-	\cf4 TempoPlayer\cf2 .new\
-]).play\
+\cf3 Patch\cf0 (\cf5 \\helpTempoPlayer\cf0 ,[\
+	\cf3 TempoPlayer\cf0 .new\
+]).play;\
+)\
+\cf3 Tempo\cf0 .bpm = 40;\
 \
-\cf4 Tempo\cf2 .bpm = 40;\
+\cf3 Tempo\cf0 .bpm = 666;\
 \
-\cf4 Tempo\cf2 .bpm = 666;\
-\
-\cf4 Tempo\cf2 .bpm = 100;\
-\
-\
+\cf3 Tempo\cf0 .bpm = 100;\
 \
 \
-\cf3 // ModalFreq\
-\cf2 m = 	\cf4 ModalFreq\cf2 .new(\
-			\cf4 StreamKrDur\cf2 .new(\cf4 Pseq\cf2 (#[ 7, 6,1,10 ], \cf4 inf\cf2 ), 1, 0.1), \
-			\cf4 FloatArray\cf2 [ 0, 2, 3, 4, 7 ], \
-			\cf4 StreamKrDur\cf2 .new(\cf4 Pseq\cf2 (#[ 6, 5 ],\cf4 inf\cf2 ), 4, 0.1), \
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // ModalFreq\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 m = 	\cf3 ModalFreq\cf0 .new(\
+			\cf3 StreamKrDur\cf0 .new(\cf3 Pseq\cf0 (#[ 7, 6,1,10 ], \cf3 inf\cf0 ), 1, 0.1), \
+			\cf3 FloatArray\cf0 [ 0, 2, 3, 4, 7 ], \
+			\cf3 StreamKrDur\cf0 .new(\cf3 Pseq\cf0 (#[ 6, 5 ],\cf3 inf\cf0 ), 4, 0.1), \
 			2, \
 			12\
 		); 	\
-p = \cf4 Patch\cf2 (\{ \cf4 arg\cf2  freq=200;\
-	\cf4 Pulse\cf2 .ar(freq,0.3,0.3)\
+p = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=200;\
+	\cf3 Pulse\cf0 .ar(freq,0.3,0.3)\
 \},[\
 	m\
-]).play\
+]).play;\
+)\
+\
+p.stop;\
+\
+p.play;\
+\
+(\
+p = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=200;\
+	\cf3 Pulse\cf0 .ar(freq,0.3,0.3)\
+\},[  \
+  \cf3 Patch\cf0 (\
+		\cf3 UGenInstr\cf0 (\cf3 ModalFreqUGen\cf0 ,\cf5 \\kr\cf0 ),\
+		[\
+		\cf3 StreamKrDur\cf0 .new(\cf3 Pseq\cf0 (#[ 7, 6,1,10 ], \cf3 inf\cf0 ), 1, 0.1), \
+		\cf3 ArrayBuffer\cf0 ( [ 0, 2, 3, 4, 7 ]  ),\
+		6,\cf2 //StreamKrDur.new(Pseq(#[ 6, 5 ],inf), 4, 0.1), \
+\cf0 		2,\
+		12]\
+  )\
+]);\
+p.play;\
+)\
+\
+p.stop;\
+\
+p.play;\
+		  \
+		  \
+(\
+p = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=200;\
+	\cf3 Pulse\cf0 .ar(freq,0.3,0.3)\
+\},[  \
+  \cf3 Patch\cf0 (\
+		\cf3 UGenInstr\cf0 (\cf3 ModalFreqUGen\cf0 ,\cf5 \\kr\cf0 ),\
+		[\
+		\cf3 StreamKrDur\cf0 .new(\cf3 Pseq\cf0 (#[ 7, 6,1,10 ], \cf3 inf\cf0 ), 1, 0.1), \
+		\cf3 ArrayBuffer\cf0 ( [ 0, 2, 3, 4, 7 ]  ),\
+		\cf3 StreamKrDur\cf0 .new(\cf3 Pseq\cf0 (#[ 6, 5 ],\cf3 inf\cf0 ), 4, 0.1), \
+		2,\
+		12]\
+  )\
+]);\
+p.play;\
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 thisProcess\cf0 .stop;\
+\
+p.play;\
 \
 \
 \
-\cf4 Patch\cf2 (\{ \cf4 arg\cf2  freq=100,amp=1.0;\
-		\cf4 SinOsc\cf2 .ar([freq,freq + 30],0,amp)\
+(\
+p = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=100,amp=1.0;\
+		\cf3 SinOsc\cf0 .ar([freq,freq + 30],0,amp)\
 	\},[	\
-		\cf4 StreamKrDur\cf2 (\
-			\cf4 ModalFreq\cf2 (\cf4 Pseq\cf2 ([1,2,3,4],\cf4 inf\cf2 )), \
-			\cf4 Pseq\cf2 ([0.25,0.5,0.75],\cf4 inf\cf2 ),\
+		\cf3 StreamKrDur\cf0 (\
+			\cf3 ModalFreq\cf0 (\cf3 Pseq\cf0 ([1,2,3,4],\cf3 inf\cf0 )), \
+			\cf3 Pseq\cf0 ([0.25,0.5,0.75],\cf3 inf\cf0 ),\
 			0.1),\
-		1\
-	]).play;\
-	\
-	\
-\cf3 // Sample\
-\cf2 p = \cf4 Patch\cf2 (\{ \cf4 arg\cf2  sample;\
+		0.2\
+	]);\
+p.play;\
+)\
 \
-	\cf4 PlayBuf\cf2 .ar(sample.numChannels,\
+p.stop;\
+\
+p.play;\
+\
+\cf3 thisProcess\cf0 .stop; \cf2 // command .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+p.play;	\
+\
+(\
+p = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=100,amp=1.0;\
+		\cf3 SinOsc\cf0 .ar([freq,freq + 30],0,amp)\
+	\},[	\
+		\cf3 StreamKrDur\cf0 (\
+			\cf3 ModalFreq\cf0 (\cf3 Pseq\cf0 ([1,2,3,4],\cf3 inf\cf0 )), \
+			\cf3 Pseq\cf0 ([0.25,0.5,0.75],\cf3 inf\cf0 ),\
+			0.1),\
+		0.2\
+	]);\
+q = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=100,amp=1.0;\
+		\cf3 SinOsc\cf0 .ar([freq,freq + 30],0,amp)\
+	\},[	\
+		\cf3 StreamKrDur\cf0 (\
+			\cf3 ModalFreq\cf0 (\cf3 Pseq\cf0 ([1,2,3,4],\cf3 inf\cf0 )), \
+			\cf3 Pseq\cf0 ([0.25,0.5,0.75],\cf3 inf\cf0 ),\
+			0.1),\
+		0.2\
+	]);\
+p.play;\
+q.play;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 thisProcess\cf0 .stop;\
+\
+p.play;\
+q.play;\
+\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // Sample\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 p = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  sample;\
+	\cf3 PlayBuf\cf0 .ar(sample.numChannels,\
 			sample.bufnumIr,\
 			sample.bufRateScaleKr,\
 			1.0,\
@@ -130,70 +268,217 @@ p = \cf4 Patch\cf2 (\{ \cf4 arg\cf2  freq=200;\
 			1.0)\
 \
 \},[\
-	\cf4 Sample\cf2 (\cf5 "a11wlk01.wav"\cf2 )\
+	\cf3 Sample\cf0 (\cf4 "a11wlk01.wav"\cf0 )\
 ]);\
 p.play;\
+)\
 \
+p.stop;\
 \
-\cf4 Instr\cf2 ([\cf6 \\help\cf2 ,\cf6 \\Sample\cf2 ],\{ \cf4 arg\cf2  sample,tempo;\
-	\cf4 PlayBuf\cf2 .ar(\
+p.play;\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Instr\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\{ \cf3 arg\cf0  sample,tempo;\
+	\cf3 PlayBuf\cf0 .ar(\
 		sample.numChannels,\
 		sample.bufnumKr,\
 		sample.sampleRateKr / 44100 * tempo * sample.tempo.reciprocal,\
 		1.0,0.0,1.0);\
 \},[\
-	\cf6 \\sample\cf2 ,\
-	\cf6 \\tempo\cf2 \
+	\cf5 \\sample\cf0 ,\
+	\cf5 \\tempo\cf0 \
 ]);\
-p = \cf4 Patch\cf2 ([\cf6 \\help\cf2 ,\cf6 \\Sample\cf2 ],\
+p = \cf3 Patch\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\
 [\
-	\cf4 Sample\cf2 (\cf5 "a11wlk01.wav"\cf2 ),\
-	\cf4 TempoPlayer\cf2 .new\
+	\cf3 Sample\cf0 (\cf4 "a11wlk01.wav"\cf0 ),\
+	\cf3 TempoPlayer\cf0 .new\
 ]);\
 p.play;\
+)\
 \
+p.isPlaying\
 \
-\cf4 Tempo\cf2 .bpm = 100;\
+\cf3 Tempo\cf0 .bpm = 100;\
 \
-\cf4 Tempo\cf2 .bpm = 40;\
+\cf3 Tempo\cf0 .bpm = 40;\
 \
+\cf3 Tempo\cf0 .bpm = 100;\
 \
-\cf3 //PlayerMixer\
-\cf4 Instr\cf2 (\cf6 \\helpPlayerMixer\cf2 , \{ \cf4 arg\cf2  freq=100,amp=1.0;\
-	\cf4 SinOsc\cf2 .ar([freq,freq + 30],0,amp)\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //PlayerMixer\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Instr\cf0 (\cf5 \\helpPlayerMixer\cf0 , \{ \cf3 arg\cf0  freq=100,amp=1.0;\
+	\cf3 SinOsc\cf0 .ar([freq,freq + 30],0,amp)\
 \});\
-p= \cf4 PlayerMixer\cf2 ([\
-	\cf4 Patch\cf2 (\cf6 \\helpPlayerMixer\cf2 ,[\
+p= \cf3 PlayerMixer\cf0 ([\
+	\cf3 Patch\cf0 (\cf5 \\helpPlayerMixer\cf0 ,[\
 		500,\
 		0.3\
 	]),\
-	\cf4 Patch\cf2 (\cf6 \\helpPlayerMixer\cf2 ,[\
+	\cf3 Patch\cf0 (\cf5 \\helpPlayerMixer\cf0 ,[\
 		450,\
 		0.3\
 	]),\
-	\cf4 Patch\cf2 (\cf6 \\helpPlayerMixer\cf2 ,[\
+	\cf3 Patch\cf0 (\cf5 \\helpPlayerMixer\cf0 ,[\
 		800,\
 		0.3\
 	])\
 ]).play\
+)\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs20 \cf3 Tempo\cf0 .bpm = 100; \cf2 // times are in beats\
+\cf0 p = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq;\
+	
+\fs18 \cf3 Saw\cf0 .ar(freq,0.2)\
+\},[\
+	\cf3 StreamKrDur\cf0 ( \
+		\cf3 Prand\cf0 (\cf3 Array\cf0 .fill(rrand(4,16),\{ rrand(20,80).midicps \}),\cf3 inf\cf0 ),\
+		 0.25,
+\fs20 \cf2 // a float
+\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 		 0.1)
+\fs20 ;
+\fs18 \
+]);\
+p.play;\
+)\
+p.stop;\
+\
+p.play;\
 \
 \
 \
-\
-\cf3 // children are started\
-\cf4 Patch\cf2 (\{ \cf4 arg\cf2  freq=100,amp=1.0;\
-		\cf4 SinOsc\cf2 .ar([freq,freq + 3],0,amp)\
-\},[\cf4 StreamKrDur\cf2 (\cf4 Pseq\cf2 ([1000,660,470,400,500,700,600,570],\cf4 inf\cf2 ), \cf4 Pseq\cf2 ([1],\cf4 inf\cf2 ),0),0.1])\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // children are started\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=100,amp=1.0;\
+		\cf3 SinOsc\cf0 .ar([freq,freq + 3],0,amp)\
+\},[\cf3 StreamKrDur\cf0 (\cf3 Pseq\cf0 ([1000,660,470,400,500,700,600,570],\cf3 inf\cf0 ), \cf3 Pseq\cf0 ([1],\cf3 inf\cf0 ),0),0.1])\
 .play\
+)\
 \
 \
-\
-\
-\cf3 // children inside of patch inside of player mixer are started\
-\cf4 PlayerMixer\cf2 ([\
-	\cf4 Patch\cf2 (\{ \cf4 arg\cf2  freq=100,amp=1.0;\
-		\cf4 SinOsc\cf2 .ar([freq,freq + 3],0,amp)\
-	\},[\cf4 StreamKrDur\cf2 (\cf4 Pseq\cf2 ([1000,660,470,400,500,700,600,570],\cf4 inf\cf2 ), \cf4 Pseq\cf2 ([1],\cf4 inf\cf2 ),0),0.1])\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // children inside of patch inside of player mixer are started\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 PlayerMixer\cf0 ([\
+	\cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=100,amp=1.0;\
+		\cf3 SinOsc\cf0 .ar([freq,freq + 3],0,amp)\
+	\},[\cf3 StreamKrDur\cf0 (\cf3 Pseq\cf0 ([1000,660,470,400,500,700,600,570],\cf3 inf\cf0 ), \cf3 Pseq\cf0 ([1.0],\cf3 inf\cf0 ),0),0.1])\
 ]).play\
+)\
 \
+(\
+\cf3 PlayerMixer\cf0 ([\
+	\cf3 Patch\cf0 (\{ \cf3 arg\cf0  audio=0,freq=500,rq=0.1;\
+		\cf3 RLPF\cf0 .ar(audio, freq, rq)\
+	\},[\
+		\cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=100,amp=1.0;\
+			\cf3 SinOsc\cf0 .ar([freq,freq + 3],0,amp)\
+		\},[	\
+			\cf3 StreamKrDur\cf0 (\cf3 Pseq\cf0 ([1000,660,470,400,500,700,600,570],\cf3 inf\cf0 ), \cf3 Pseq\cf0 ([1],\cf3 inf\cf0 ),0),\
+			0.01\
+		]),\
+	1000,\
+	0.2]),\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //	Patch(\\reverb,[\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 		\cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=100,amp=1.0;\
+			\cf3 SinOsc\cf0 .ar([freq,freq + 3],0,amp)\
+		\},[\
+			\cf3 Stream2Trig\cf0 (\cf3 Pseq\cf0 ([1],\cf3 inf\cf0 ),\cf3 Pseq\cf0 ([0.75,0.25],\cf3 inf\cf0 ))\
+		])\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 //	20])\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 ]).play;\
+)	\
+
+\f0\fs24 \
+\
+\
+
+\f1\fs18 p = \cf3 PlayerSocket\cf0 .new;\
+p.play;\
+\
+q = \cf3 Patch\cf0 (\{ \cf3 Saw\cf0 .ar * 0.2 \});\
+r = \cf3 Patch\cf0 (\{ \cf3 Saw\cf0 .ar(800) * 0.2 \});\
+\
+p.prepareAndTrigger(q);\
+\
+p.prepareAndTrigger(r);\
+\
+p.release;\
+\
+\
+\
+(\
+\
+	Instr([\\oscillOrc,	\cf5 \\pmosc]\cf0 ,\{ \cf3 arg\cf0  freq=400, freq2=500,pmindex=0,phasemod=0.0,amp=1.0;\
+		\cf3 PMOsc\cf0 .ar(freq,freq2,pmindex,phasemod,amp)\
+	\});\
+	\
+	p = \cf3 Patch\cf0 .new([ \cf6 'oscillOrc'\cf0 , \cf6 'pmosc'\cf0  ],\
+	[\
+		\cf3 KrNumberEditor\cf0 (240.06,\cf6 \\freq\cf0 ), \
+		27.7707, \
+	  	1.3, \
+	 	0, \
+	  	0.616317\
+	 ]);\
+	 \
+	 q = \cf3 Patch\cf0 .new([ \cf6 'oscillOrc'\cf0 , \cf6 'pmosc'\cf0  ],\
+		[\
+		\cf3 KrNumberEditor\cf0 (90,\cf6 \\freq\cf0 ), \
+	  	27.7707, \
+	  	\cf3 Patch\cf0 .new([ \cf6 'oscillOrc'\cf0 , \cf6 'pmosc'\cf0  ],\
+		[\
+			\cf3 KrNumberEditor\cf0 (150.06,\cf6 \\freq\cf0 ), \
+			27.7707, \
+		  	1.3, \
+		 	0, \
+		  	0.616317\
+		 ]), \
+	 	0, \
+		\cf3 Patch\cf0 .new([ \cf6 'oscillOrc'\cf0 , \cf6 'pmosc'\cf0  ],\
+		[\
+			\cf3 KrNumberEditor\cf0 (150.06,\cf6 \\freq\cf0 ), \
+			27.7707, \
+		  	1.3, \
+		 	0, \
+		  	0.616317\
+		 ])\
+	 ]);\
+	 \
+	 r =  \cf3 Patch\cf0 .new([ \cf6 'oscillOrc'\cf0 , \cf6 'pmosc'\cf0  ], [\
+		\cf3 KrNumberEditor\cf0 (40,\cf6 \\freq\cf0 ), \
+	  	\cf3 nil\cf0 , \
+	  	\cf3 Patch\cf0 .new([ \cf6 'oscillOrc'\cf0 , \cf6 'pmosc'\cf0  ], [\
+			\cf3 KrNumberEditor\cf0 (150.06,\cf6 \\freq\cf0 ), \
+			27.7707, \
+		  	1.3, \
+		 	0, \
+		  	0.616317\
+		 ]), \
+	 	0, \
+		\cf3 Patch\cf0 .new([ \cf6 'oscillOrc'\cf0 , \cf6 'pmosc'\cf0  ], [\
+			\cf3 KrNumberEditor\cf0 (150.06,\cf6 \\freq\cf0 ), \
+			27.7707, \
+		  	1.3, \
+		 	0, \
+		  	0.616317\
+		 ])\
+	 ]);\
+	 \
+	 \cf3 PlayerPool\cf0 ([ p,q,r ]).gui\
+)\
 }
