@@ -78,7 +78,7 @@ int32 GetHash(struct PlugInCmd *inPlugInCmd);
 bool AddPlugInCmd(struct PlugInCmd* inPlugInCmd);
 bool RemovePlugInCmd(struct PlugInCmd* inPlugInCmd);
 struct PlugInCmd* GetPlugInCmd(int32* inKey);
-int PlugIn_DoCmd(int inSize, char *inArgs);
+int PlugIn_DoCmd(struct World *inWorld, int inSize, char *inArgs, struct ReplyAddress *inReply);
 
 int32 *GetKey(struct GraphDef *inGraphDef);
 int32 GetHash(struct GraphDef *inGraphDef);
@@ -185,6 +185,25 @@ int32 Hash(struct ReplyAddress *inReplyAddress);
 extern "C" {
 int32 timeseed();
 }
+
+////////////////////////////////////////////////////////////////////////
+
+typedef bool (*AsyncStageFn)(World *inWorld, void* cmdData);
+typedef void (*AsyncFreeFn)(World *inWorld, void* cmdData);
+
+int PerformAsynchronousCommand
+	(
+		World *inWorld,
+		void* replyAddr,
+		const char* cmdName,
+		void *cmdData,
+		AsyncStageFn stage2, // stage2 is non real time
+		AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+		AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+		AsyncFreeFn cleanup,
+		int completionMsgSize,
+		void* completionMsgData
+	);
 
 ////////////////////////////////////////////////////////////////////////
 

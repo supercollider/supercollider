@@ -282,7 +282,46 @@ void KeyState_Ctor(UserInputUGen *unit)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
+// example of implementing a plug in command with async execution.
+
+bool cmdStage2(World* world, void* inUserData)
+{
+	Print("cmdStage2 %08X\n", inUserData);
+	return true;
+}
+
+bool cmdStage3(World* world, void* inUserData)
+{
+	Print("cmdStage3 %08X\n", inUserData);
+	return true;
+}
+
+bool cmdStage4(World* world, void* inUserData)
+{
+	Print("cmdStage4 %08X\n", inUserData);
+	return true;
+}
+
+void cmdCleanup(World* world, void* inUserData)
+{
+	Print("cmdCleanup %08X\n", inUserData);
+}
+
+void cmdDemoFunc(World *inWorld, void* inUserData, struct sc_msg_iter *args, void *replyAddr)
+{
+	Print("->cmdDemoFunc %08X\n", inUserData);
+	
+	// ..get data from args..
+	
+	DoAsynchronousCommand(inWorld, replyAddr, "cmdDemoFunc", inUserData,
+					cmdStage2, cmdStage3, cmdStage4, cmdCleanup,
+					0, 0);
+	
+	Print("<-cmdDemoFunc\n");
+}
 
 void load(InterfaceTable *inTable)
 {
@@ -295,4 +334,6 @@ void load(InterfaceTable *inTable)
 	DefineUnit("MouseY", sizeof(UserInputUGen), (UnitCtorFunc)&MouseY_Ctor, 0, 0);
 	DefineUnit("MouseButton", sizeof(UserInputUGen), (UnitCtorFunc)&MouseButton_Ctor, 0, 0);
 	DefineUnit("KeyState", sizeof(UserInputUGen), (UnitCtorFunc)&KeyState_Ctor, 0, 0);
+	
+	DefinePlugInCmd("pluginCmdDemo", cmdDemoFunc, (void*)0x00012345);
 }

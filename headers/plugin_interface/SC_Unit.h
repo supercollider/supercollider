@@ -66,6 +66,6 @@ enum {
 #define BUFLENGTH (unit->mBufLength)
 
 typedef void (*UnitCmdFunc)(struct Unit *unit, struct sc_msg_iter *args);
-typedef void (*PlugInCmdFunc)(void* inUserData, struct sc_msg_iter *args);
+typedef void (*PlugInCmdFunc)(World *inWorld, void* inUserData, struct sc_msg_iter *args, void *replyAddr);
 
 #endif

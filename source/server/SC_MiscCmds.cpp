@@ -106,9 +106,9 @@ SCErr meth_u_cmd(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 };
 
 SCErr meth_cmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
-SCErr meth_cmd(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+SCErr meth_cmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
-	return PlugIn_DoCmd(inSize, inData);	
+	return PlugIn_DoCmd(inWorld, inSize, inData, inReply);	
 };
 
 

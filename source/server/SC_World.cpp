@@ -115,7 +115,7 @@ bool HasAltivec();
 
 	ft->fGroup_DeleteAll = &Group_DeleteAll;
 	ft->fDoneAction = &Unit_DoneAction;
-
+	ft->fDoAsynchronousCommand = &PerformAsynchronousCommand;
 }
 
 void initialize_library();

@@ -1020,3 +1020,77 @@ bool SendReplyCmd::Stage2()
 }
 
 ///////////////////////////////////////////////////////////////////////////
+
+int PerformAsynchronousCommand(
+			World *inWorld,
+			void* replyAddr,
+			const char* cmdName,
+			void *cmdData,
+			AsyncStageFn stage2, // stage2 is non real time
+			AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+			AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+			AsyncFreeFn cleanup,
+			int completionMsgSize,
+			void* completionMsgData
+)
+{
+	void* space = World_Alloc(inWorld, sizeof(AsyncPlugInCmd));
+	AsyncPlugInCmd *cmd = new (space) AsyncPlugInCmd(inWorld, (ReplyAddress*)replyAddr, 
+								cmdName, cmdData, stage2, stage3, stage4, cleanup, 
+								completionMsgSize, completionMsgData);
+	if (!cmd) return kSCErr_Failed;
+	if (inWorld->mRealTime) cmd->CallNextStage();
+	else cmd->CallEveryStage();
+	return kSCErr_None;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+AsyncPlugInCmd::AsyncPlugInCmd(World *inWorld, ReplyAddress *inReplyAddress, 
+			const char* cmdName,
+			void *cmdData,
+			AsyncStageFn stage2, // stage2 is non real time
+			AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+			AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+			AsyncFreeFn cleanup,
+			int completionMsgSize,
+			void* completionMsgData)
+	: SC_SequencedCommand(inWorld, inReplyAddress),
+	mCmdName(cmdName), mCmdData(cmdData), 
+	mStage2(stage2), mStage3(stage3), mStage4(stage4), 
+	mCleanup(cleanup)
+{
+	mMsgSize = completionMsgSize;
+	mMsgData = (char*)completionMsgData;
+}
+
+AsyncPlugInCmd::~AsyncPlugInCmd()
+{
+	(mCleanup)(mWorld, mCmdData);
+}
+
+void AsyncPlugInCmd::CallDestructor() 
+{
+	this->~AsyncPlugInCmd();
+}
+
+bool AsyncPlugInCmd::Stage2()
+{	
+	bool result = !mStage2 || (mStage2)(mWorld, mCmdData);
+	return result;
+}
+
+bool AsyncPlugInCmd::Stage3()
+{
+	bool result = !mStage3 || (mStage3)(mWorld, mCmdData);
+	if (result) SEND_COMPLETION_MSG;
+	return result;
+}
+
+void AsyncPlugInCmd::Stage4()
+{
+	bool result = !mStage4 || (mStage4)(mWorld, mCmdData);
+	if (result) SendDone((char*)mCmdName);
+}
+
+

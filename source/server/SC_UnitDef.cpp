@@ -126,7 +126,7 @@ int Unit_DoCmd(World *inWorld, int inSize, char *inData)
 	return kSCErr_None;
 }
 
-int PlugIn_DoCmd(int inSize, char *inData)
+int PlugIn_DoCmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {	
 	sc_msg_iter msg(inSize, inData);
 
@@ -136,7 +136,7 @@ int PlugIn_DoCmd(int inSize, char *inData)
 	PlugInCmd *cmd = GetPlugInCmd(cmdName);
 	if (!cmd) return kSCErr_Failed;
 	
-	(cmd->mFunc)(cmd->mUserData, &msg);
+	(cmd->mFunc)(inWorld, cmd->mUserData, &msg, (void*)inReply);
 	
 	return kSCErr_None;
 }

@@ -30,6 +30,9 @@
 
 struct World;
 
+typedef bool (*AsyncStageFn)(World *inWorld, void* cmdData);
+typedef void (*AsyncFreeFn)(World *inWorld, void* cmdData);
+
 struct InterfaceTable 
 {	
 	unsigned int mSineSize;
@@ -97,6 +100,20 @@ struct InterfaceTable
 
 	void (*fGroup_DeleteAll)(struct Group* group);
 	void (*fDoneAction)(int doneAction, struct Unit *unit);
+
+	int (*fDoAsynchronousCommand)
+		(
+			World *inWorld,
+			void* replyAddr,
+			const char* cmdName,
+			void *cmdData,
+			AsyncStageFn stage2, // stage2 is non real time
+			AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+			AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+			AsyncFreeFn cleanup,
+			int completionMsgSize,
+			void* completionMsgData
+		);
 	
 };
 typedef struct InterfaceTable InterfaceTable;
@@ -133,6 +150,8 @@ typedef struct InterfaceTable InterfaceTable;
 
 #define SndFileFormatInfoFromStrings (*ft->fSndFileFormatInfoFromStrings)
 
+#define DoAsynchronousCommand (*ft->fDoAsynchronousCommand)
+
 #define DefineSimpleUnit(name) \
 	(*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, 0, 0);
 
@@ -146,8 +165,6 @@ typedef struct InterfaceTable InterfaceTable;
 #define DefineDtorCantAliasUnit(name) \
 	(*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, \
 	(UnitDtorFunc)&name##_Dtor, kUnitDef_CantAliasInputsToOutputs);
-
-
 
 
 #endif
