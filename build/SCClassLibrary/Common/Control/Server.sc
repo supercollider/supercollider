@@ -86,6 +86,7 @@ Server : Model {
 	sendBundle { arg time ... args;
 		addr.performList(\sendBundle, time, args);
 	}
+	// 
 	sendSynthDef { arg name;
 		var file, buffer;
 		file = File("synthdefs/" ++ name ++ ".scsyndef","r");
@@ -98,6 +99,7 @@ Server : Model {
 	loadSynthDef { arg name;
 		this.sendMsg("/d_load", "synthdefs/" ++ name ++ ".scsyndef");
 	}
+	//loadDir
 	
 	serverRunning_ { arg val;
 		if (val != serverRunning, {
@@ -166,6 +168,12 @@ Server : Model {
 		this.notify(true);
 	}
 	
+	status {
+		addr.sendMsg("/status");
+	}
+	notify { arg flag=true;
+		addr.sendMsg("/notify", flag.binaryValue);
+	}	
 	quit {
 		addr.sendMsg("/quit");
 		if (inProcess, { 
@@ -177,15 +185,20 @@ Server : Model {
 		alive = false;
 		this.serverRunning = false;
 	}
-	
-	status {
-		addr.sendMsg("/status");
+	*quitAll {
+		set.do({ arg server; server.quit; })
+	}
+	freeAll {
+		this.sendMsg("/g_freeAll",0);
+	}
+	*freeAll {
+		set.do({ arg server;
+			if(server.isLocal,{ // debatable ?
+				server.freeAll;
+			})
+		})
 	}
 	
-	notify { arg flag=true;
-		addr.sendMsg("/notify", flag.binaryValue);
-	}	
-
 	// internal server commands
 	bootInProcess {
 		_BootInProcessServer

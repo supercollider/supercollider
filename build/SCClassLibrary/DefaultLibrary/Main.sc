@@ -8,10 +8,16 @@ Main : Process {
 		Server.internal.makeWindow;
 		Server.local.makeWindow;
 	}
-
-	run {
+	shutDown { // at recompile, quit
+		Server.quitAll;
+		super.shutDown;
 	}
-	stop {
+	run { // called by command-R
+	}
+	stop { // called by command-.
+		// stop all sounds on local servers
+		Server.freeAll;
+		
 		SystemClock.clear;
 		AppClock.clear;
 	}
