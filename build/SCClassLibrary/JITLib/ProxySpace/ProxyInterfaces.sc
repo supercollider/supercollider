@@ -246,23 +246,33 @@ SynthDefControl : SynthControl {
 		numChannels = synthDef.numChannels ? proxy.numChannels ? 2;
 		ok = proxy.initBus(rate, numChannels);
 
-		if(ok and: {synthDef.notNil}, { 
+		if(ok and: {synthDef.notNil}) 
+		{ 
 			paused = proxy.paused;
 			canReleaseSynth = synthDef.canReleaseSynth;
 			canFreeSynth = synthDef.canFreeSynth;
-			// schedule to avoid hd sleep latency. 
-			// def writing is only for server boot.
-			if(writeDefs, {
-				AppClock.sched(rrand(0.01, 0.3), { synthDef.writeDefFile; nil });
-			}); 
-		}, { 
+	
+		}{ 
 			synthDef = nil; 
-		})
+		}
 	}
 	
 	loadToBundle { arg bundle;
-		bundle.addPrepare([5, synthDef.asBytes]); //"/d_recv"
+		var bytes, size;
+		bytes = synthDef.asBytes;
+		size = bytes.size;
+		size = size + 4 - (size bitAnd: 3) + 4 + 16;
+		if(size < 8192) {
+			bundle.addPrepare([5, bytes]); //"/d_recv"
+			if(writeDefs) { this.writeSynthDefFile }; // in case of server reboot
+			
+		}{
+			"SynthDef too large to be sent to remote server".warn;
+			this.writeSynthDefFile;
+			bundle.addPrepare([6, SynthDef.synthDefDir ++ synthDef.name ++  ".scsyndef"]); //"/d_load"
+		};
 	}
+	writeSynthDefFile { synthDef.writeDefFile }
 	
 	asDefName { ^synthDef.name }
 	
