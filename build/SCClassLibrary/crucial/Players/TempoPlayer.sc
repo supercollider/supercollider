@@ -13,17 +13,17 @@ TempoPlayer : KrPlayer { //Synthless
 //	kr {
 //		^In.kr( tempoBus.index, 1)
 //	}
-
 	prepareForPlay { arg group,bundle;
-		if(patchOut.isNil,{
-			group = group.asGroup;
-			tempoBus = TempoBus(group.server,tempo);
-			patchOut = PatchOut.control(this,group,tempoBus);
-			// may not have to do anything
-			tempoBus.prepareForPlay(group,bundle);
-		});
 		readyForPlay = true;
+		tempoBus.prepareForPlay(group,bundle);	
 	}
+	makePatchOut { arg group;
+		group = group.asGroup;
+		tempoBus = TempoBus(group.server,tempo);
+		patchOut = PatchOut.control(this,group,tempoBus);
+		// may not have to do anything
+	}
+
 	// nothing more to do
 	spawnAtTime {}
 	spawnToBundle {}

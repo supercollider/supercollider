@@ -40,7 +40,7 @@ AbstractPlayer : AbstractFunction  {
 					"server failed to start".error;
 				},{
 					// screwy
-					patchOut = true; // keep it from making one
+					//this.patchOut_(true); // keep it from making one
 					
 					this.prepareForPlay(group,bundle);
 					
@@ -52,9 +52,11 @@ AbstractPlayer : AbstractFunction  {
 					// tacked on and we can combine with the spawn message
 					
 					// need a fully fledged OSCMessage that can figure it out
-					0.1.wait;
+					0.3.wait;
 					
-					this.makePatchOut(group);
+					this.makePatchOut(group,false);// public
+					this.childrenMakePatchOut(group,true); // private
+					
 					this.spawnAtTime(atTime);
 				});
 			}).play;
@@ -68,12 +70,6 @@ AbstractPlayer : AbstractFunction  {
 		// if made, we have secret controls now
 		// else we already had them
 		
-		// play would have already done this if we were top level object
-		if(patchOut.isNil,{ // private out
-			patchOut = PatchOut(this,group,
-						Bus.alloc(this.rate,group.server,this.numChannels))
-						// private buss on this server
-		});
 		// has inputs
 		this.children.do({ arg child;
 			child.prepareForPlay(group,bundle);
@@ -83,23 +79,35 @@ AbstractPlayer : AbstractFunction  {
 		readyForPlay = true;
 	}
 
-	makePatchOut { arg group;
+	makePatchOut { arg group,private = false;
 		//Patch doesn't know its numChannels or rate until after it makes the synthDef
 		if(this.rate == \audio,{// out yr speakers
-			patchOut = AudioPatchOut(this,
-							group,
-						Bus(\audio,0,this.numChannels,group.server))
+			if(private,{
+				this.patchOut_(
+					AudioPatchOut(this,group,Bus.audio(group.server,this.numChannels))
+					)
+			},{			
+				this.patchOut_(
+					AudioPatchOut(this,group,Bus(\audio,0,this.numChannels,group.server))
+							)
+			})
 		},{
 			if(this.rate == \control,{
-				patchOut = 
+				this.patchOut_(
 					ControlPatchOut(this,group,
-							Bus.control(this.numChannels,group.server))
+							Bus.control(group.server,this.numChannels))
+						)
 			},{
 				("Wrong output rate: " + this.rate + 
 			".  AbstractPlayer cannot prepare this object for play.").error;
 			});
 		});
-		^patchOut//.insp("made public patch out",this)
+		^patchOut
+	}
+	childrenMakePatchOut { arg group,private = true;
+		this.children.do({ arg child;
+			child.makePatchOut(group,private)
+		});
 	}
 	
 	spawnAtTime { arg atTime;
@@ -157,9 +165,7 @@ AbstractPlayer : AbstractFunction  {
 			// even if name was nil before (Patch), its set now
 			defName = def.name;
 			
-			// on server quit have to clear this
-			// but for now at least we know it was written, and therefore
-			// loaded automatically on reboot
+			// TODO on server quit have to clear this
 			Library.put(SynthDef,server,defName,true);
 		});
 	}
@@ -263,7 +269,7 @@ AbstractPlayer : AbstractFunction  {
 		// could change to asUGenFunc
 		// or this could be asInAr
 		
-		^thisMethod.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	kr { ^this.ar }
 	value {  ^this.ar }
@@ -340,11 +346,17 @@ AbstractPlayer : AbstractFunction  {
 
 	// structural utilities
 	children { ^[] }
-	deepDo { arg function;
+	deepDo { arg function;// includes self
 		function.value(this);
-		this.children.do({arg c; function.value(c); c.children.do(function) });
+		this.children.do({arg c; function.value(c); c.tryPerform(\children).do(function) });
 	}	 
-
+	allChildren { 
+		var all;
+		all = List.new;
+		this.deepDo({ arg child; all.add(child) });
+		^all
+		// includes self
+	}
 
 	
 	asCompileString { // support arg sensitive formatting

@@ -26,6 +26,9 @@ SCButtonAdapter : SCViewAdapter {
 		view = SCButton(layout.window,rect);
 		//view.states_([[title,Color.black,offcolor]]);
 	}
+	initOneState { arg name,textcolor,backcolor;
+		view.states_([[name,textcolor ? Color.black, backcolor ? Color.white]])
+	}
 	
 	backColor_ { arg color;
 		var s;
@@ -45,6 +48,10 @@ SCButtonAdapter : SCViewAdapter {
 		s.at(0).put(0,string.asString);
 		view.states = s;
 	}
+// no align
+//	align_ { arg align;
+//		view.align_(align)
+//	}
 	
 }
 

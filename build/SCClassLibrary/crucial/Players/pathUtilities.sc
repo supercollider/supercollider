@@ -59,6 +59,12 @@
 	*enpath { arg obj;
 		^obj.enpath // document enpath
 	}
+	load { arg obj, warnIfNotFound=true;
+		^this.class.load(obj,warnIfNotFound);
+	}
+	enpath { arg obj;
+		^this.class.enpath(obj) // document enpath
+	}
 
 }
 

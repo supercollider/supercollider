@@ -62,15 +62,9 @@ Crucial {
 	*initSpecs {
 		Spec.specs.putAll(			
 		  IdentityDictionary[
-			'envasr'->EnvSpec.new,
-			'env3'->EnvSpec.new,
 			'audio'->AudioSpec.new,
 			'lofreq'->ControlSpec.new(0.1, 100, 'exp', 0, 6),
-			'env3sustain'->EnvSpec.new,
-			'fenv'->EnvSpec.new,
 			'rq'->ControlSpec.new(0.001, 2, 'exp', 0, 0.707),
-			'rqenv'->EnvSpec.new,
-			'envpercshort'->EnvSpec.new,
 			'boostcut'->ControlSpec.new(-20, 20, 'lin', 0, 0),
 			'bw'->ControlSpec.new(0, 1, 'lin', 0, 0.5),
 			'octave'->ControlSpec.new(-6, 10, 'lin', 1, 2),
@@ -110,7 +104,7 @@ Crucial {
 			'numChannels'->StaticSpec.new(1, 8, 'lin', 1, 5),
 			'detune'->ControlSpec.new(-4000, 4000, 'lin', 0, 0),
 			'freqScale'->ControlSpec.new(0.01, 10, 'lin', 0, 5.005),
-			'qnty0'->StaticSpec.new(0, 20, 'lin', 1, 10),
+			'qnty0'->StaticIntegerSpec.new(0, 20, 'lin', 1, 10),
 			'ffreqMul'->ControlSpec.new(0.1, 16000, 'exp', 0, 40),
 			'freq'->ControlSpec.new(20, 20000, 'exp', 0, 440),
 			'phase'->ControlSpec.new(0, 6.28319, 'lin', 0, 3.14159),
@@ -142,7 +136,7 @@ Crucial {
 			'duration'->ControlSpec.new(0.125, 16, 'lin', 0.125, 8.125),
 			'dur'->ControlSpec.new(0, 16, 'lin', 0, 8),
 			'density'->ControlSpec.new(0, 30, 'lin', 0, 15),
-			'qnty'->StaticSpec.new(1, 24, 'lin', 1, 13),
+			'qnty'->StaticIntegerSpec.new(1, 24, 'lin', 1, 13),
 			'winSize'->StaticSpec.new(0.01, 4, 'lin', 0, 2.005),
 			'pchDispersion'->ControlSpec.new(0, 4, 'lin', 0, 2),
 			'timeDispersion'->ControlSpec.new(0, 3, 'lin', 0, 1.5),
@@ -156,7 +150,6 @@ Crucial {
 			'bidecay'->ControlSpec.new(-10, 10, 'lin', 0, 0),
 			'midinote'->ControlSpec.new(0, 127, 'lin', 1, 64),
 			'note'->ControlSpec.new(0, 11, 'lin', 1, 0),
-			'env'->EnvSpec.new,
 			'timeScale'->ControlSpec.new(0.1, 10, 'lin', 0, 5.05),
 			'pmindex'->ControlSpec.new(0, 20, 'lin', 0, 10),
 			'rate'->ControlSpec.new(0.125, 8, 'exp', 0, 1),
@@ -181,12 +174,7 @@ Crucial {
 			'pre'->ControlSpec.new(0, 1, 'lin', 0, 0.5),
 			'audio2'->AudioSpec.new,
 			'midivelocity'->ControlSpec.new(1, 127, 'lin', 0, 64),
-			'envlinen'->EnvSpec.new,
-			'envtriangle'->EnvSpec.new,
 			'delay'->ControlSpec.new(0.005, 1, 'lin', 0, 0.5025),
-			'envsine'->EnvSpec.new,
-			'envadsr'->EnvSpec.new,
-			'envperc'->EnvSpec.new,
 			\in->AudioSpec.new,
 			\k->ControlSpec(-6.0,6.0),
 			\stepsPerOctave->ControlSpec(0.5,128.0)
@@ -213,7 +201,7 @@ Crucial {
 			{AudioIn.ar([1,2])}.play
 		});
 		Library.put(\menuItems,\test,'simple audio test',{
-			{SinOsc.ar(500,0,0.1)}.play
+			{SinOsc.ar([500,550],0,0.1)}.play
 		});
 		Library.put(\menuItems,\test,'run Class unit tests',{
 			TestCase.runAll;

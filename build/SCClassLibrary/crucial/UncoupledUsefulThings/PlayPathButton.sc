@@ -1,30 +1,36 @@
 
-PlayPathButton : ActionButton { // loads the object at loadDocument and .plays it
+PlayPathButton : SCButtonAdapter { // loads the object at loadDocument and .plays it
 
 	var <>subject,<isPlaying=false,player;
 
 	*new { arg layout,loadDocument,maxx=150;
 		var new;
 		loadDocument = loadDocument.asString;
-		new=super.new(layout,PathName(loadDocument).fileName,nil,maxx,13,3);
-		new.backColor_(rgb(228,255,107)).action_({new.doAction}).subject_(loadDocument)
+		new=super.new;
+		new.makeView(layout,maxx,15);
+		new.initOneState(PathName(loadDocument).fileName,nil,rgb(228,255,107));
+		new.action_({new.doAction})
+			.subject_(loadDocument);
+			//.align_(\right);
 		^new
 	}
 	
 	doAction { 
 		if(this.isPlaying,{
-			isPlaying = false;
-			this.backColor_(rgb(228,255,107));
-			if(player.notNil,{player.stop });
+			this.stop;
 		},{
-			this.backColor_(Color.green);
 			this.play;
 		})
 	}
-	
+	stop {
+		isPlaying = false;
+		this.backColor_(rgb(228,255,107));
+		if(player.notNil,{player.stop });		
+	}
 	play { 
 		isPlaying = true;
 		player = subject.loadDocument;
+		this.backColor_(Color.green);
 		
 		^player.play 
 	}
@@ -38,6 +44,26 @@ PlayButton : PlayPathButton {
 	play { subject.play }
 
 }
+
+
+XPlayPathButton : PlayPathButton {
+
+	classvar last;
+	
+	doAction {
+		if(this.isPlaying.not,{
+			if(last.notNil, { last.stop });
+			this.play;
+			last = this;
+		},{
+			this.stop;
+			last = nil;
+		})
+	}
+}
+
+
+
 
 /*
 
@@ -75,34 +101,17 @@ XPlayButton : PlayButton { // plays exclusively one thing at any time.
 
 }
 
-*/
-
-/*
-
-
-XPlayButton : StopStartPlayer {
-
-	classvar tspawn;
-	
-	doAction {
-		if(Synth.isPlaying,{
-			if(tspawn.isNil or: { tspawn.state != 3 },{
-				this.backColor_(rgb(228,255,107));
-				Synth.stop;
-			},{
-				// start the tspawn
-				
-				
-			});
+	doAction { 
+		if(this.isPlaying,{
+			isPlaying = false;
+			this.backColor_(rgb(228,255,107));
+			if(player.notNil,{player.stop });
 		},{
 			this.backColor_(Color.green);
-			player.play;
+			this.play;
 		})
 	}
-}
-
-
-TogglePlayButton // each one can add or drop self from play
-
+	
 */
+
 

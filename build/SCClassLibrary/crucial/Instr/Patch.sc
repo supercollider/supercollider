@@ -29,6 +29,7 @@ Patch : AbstractPlayer  {
 		synthPatchIns = [];
 		argsSize = this.instr.argsSize;
 		synthArgsIndices = Array.newClear(argsSize);
+
 		args=Array.fill(argsSize,{arg i; 
 			var proto,spec,ag,patchIn,darg;
 			ag = 
@@ -67,8 +68,6 @@ Patch : AbstractPlayer  {
 		// could be cached, must be able to invalidate it
 		// if an input changes
 		^synthDef ?? {
-			// reset args (Sample esp.)
-			
 			synthDef = InstrSynthDef.build(this.instr,this.args,\Out);
 			defName = synthDef.name;
 			numChannels = synthDef.numChannels;
@@ -103,6 +102,7 @@ Patch : AbstractPlayer  {
 	}
 	// has inputs
 	didSpawn { arg patchIn,synthArgi;
+
 		if(patchIn.notNil,{
 			patchOut.connectTo(patchIn,false); // we are connected now
 			patchIn.nodeControl_(NodeControl(synth,synthArgi));
@@ -126,7 +126,7 @@ Patch : AbstractPlayer  {
 		// ISSUE: if you change a static, nobody notices to rebuild the synth def
 		synthDef = nil;
 		readyForPlay = false;
-		patchOut = nil;
+		this.patchOut = nil;
 	}
 
 	/*

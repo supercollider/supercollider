@@ -29,8 +29,8 @@ KrNumberEditor : Editor {
 		^super.new.init(value,spec)
 	}
 	init { arg val,aspec;
-		spec = aspec.asSpec;
-		value = spec.constrain(val);
+		spec = aspec.asSpec ?? {ControlSpec.new};
+		this.value_(spec.constrain(val));
 	}
 	value_ { arg val,changer;
 		value = val; //spec.constrain(val);
@@ -42,7 +42,7 @@ KrNumberEditor : Editor {
 	}
 	activeValue_ { arg val;
 		this.value_(val);
-		action.value(val);
+		action.value(value);
 	}
 	spec_ { arg aspec;
 		spec = aspec.asSpec;
@@ -71,7 +71,7 @@ KrNumberEditor : Editor {
 		});
 	}
 	free {
-		if(patchOut.updater.notNil,{
+		if(patchOut.notNil and: {patchOut.updater.notNil},{
 			patchOut.updater.remove;
 			patchOut.updater = nil;
 		});
@@ -93,7 +93,13 @@ NumberEditor : KrNumberEditor {
 	}
 	instrArgRate { ^\scalar }
 
+}
+IntegerEditor : NumberEditor {
 
+	value_ { arg val,changer;
+		value = val.asInteger;
+		this.changed(\value,changer);
+	}
 }
 
 

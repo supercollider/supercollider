@@ -72,9 +72,12 @@ StaticSpec : ControlSpec {
 	defaultControl { arg val=0.0; 
 		^NumberEditor.new(this.constrain(val ? this.default),this) 
 	}
-
 }
-
+StaticIntegerSpec : StaticSpec {
+	defaultControl { arg val=0;
+		^IntegerEditor(this.constrain(val ? this.default),this)
+	}
+}
 
 ScalarSpec : Spec {
 	// SendTrig etc. output a 0.0
@@ -93,11 +96,11 @@ EnvSpec : ScalarSpec { // this is dodgy, not fully worked out
 	// level limitiations ?	
 	
 	*new { arg prototype;
-		^super.new.prototype_(prototype)
+		^super.new.prototype_(prototype ?? {Env.asr})
 	}
 
 	defaultControl {
-		^EnvEditor.new(prototype.deepCopy)
+		^EnvEditor.new(prototype.copy)
 	}
 	
 	*initClass {
@@ -154,7 +157,8 @@ BufferProxySpec : ScalarSpec {
 		)
 	}
 
-	defaultControl { ^prototype.deepCopy }
+	//defaultControl { ^prototype.deepCopy }
+	defaultControl { ^BufferProxy(44100,2) }
 }
 
 SampleSpec : ScalarSpec {

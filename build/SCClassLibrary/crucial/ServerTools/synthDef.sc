@@ -2,15 +2,18 @@
 
 + Object {
 	
+	rate { ^\scalar }
+	
 	//writeDefFile {}
 	
 	//play { ^ScalarPatchOut(this) }
 
+	makePatchOut {}
 	patchOut { ^ScalarPatchOut(this) }
 	isPlaying { ^false }
 
 	// floats only ?
-	readyForPlay { ^true }
+//	readyForPlay { ^true }
 	prepareForPlay {  }
 	
 	spawnToBundle {}
@@ -102,9 +105,9 @@
 	instrArgFromControl { arg control;
 		// a Patch could be either
 		^if(this.rate == \audio,{
-			In.ar(control,this.numChannels,this)
+			In.ar(control,this.numChannels)
 		},{
-			In.kr(control,this.numChannels,this)
+			In.kr(control,this.numChannels)
 		})
 	}
 }

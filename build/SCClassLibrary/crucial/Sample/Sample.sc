@@ -98,6 +98,7 @@ BufferProxy { // blank space for delays, loopers etc.
 		^BufChannels.kr(this.bufnumKr)
 	}
 
+	rate { ^\scalar }
 }
 
 
