@@ -18,8 +18,9 @@ A Server's instance of ServerOptions is stored in its
 \f0\b options
 \f1\b0  instance variable, which can be accessed through corresponding getter and setter methods.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b Note: 
+\f0\b \cf0 Note: 
 \f1\b0 A ServerOptions' instance variables are translated into commandline arguments when a server app is booted. Thus a running Server must be rebooted before changes will take effect. There are also a few commandline options which are not currently encapsulated in ServerOptions. See 
 \f0\b Server-Architecture
 \f1\b0  for more details.\
@@ -30,11 +31,13 @@ A Server's instance of ServerOptions is stored in its
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs24 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b *new\
+\f0\b \cf0 *new\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 Create and return a new instance of ServerOptions.\
+\f1\b0 \cf0 Create and return a new instance of ServerOptions.\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -44,8 +47,9 @@ A Server's instance of ServerOptions is stored in its
 \f1\b0\fs24 \cf0 \ulnone 	\
 The following instance variables can be changed through getter and setter methods. Note that the defaults listed below only apply to newly created instances of ServerOptions. The options for the local and internal Servers may have been changed at startup in Main-startup or in ~/scwork/startup.rtf.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b numAudioBusChannels - 
+\f0\b \cf0 numAudioBusChannels - 
 \f1\b0  The number of internal audio rate busses. The default is 128.\
 
 \f0\b \
@@ -135,6 +139,29 @@ outputStreamsEnabled -
 \f0\b String 
 \f1\b0  which allows turning off output streams that you are not interested in on the  audio device. If the string is "11000", for example, then only the first two output streams on the device will be enabled. Turning off streams can reduce CPU load.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs30 \cf0 \ul Instance Methods\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf0 \ulnone 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 firstPrivateBus
+\f1\b0  
+\f0\b - 
+\f1\b0 Returns the index of the first audio bus on this server which is not used by the input and output hardware.\
+
+\f0\b \
+asOptionsString
+\f1\b0  
+\f0\b - 
+\f1\b0 Returns a 
+\f0\b String
+\f1\b0  specifying the options in the format required by the command-line scsynth app.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\
 For further information see 
 \f0\b Server
 \f1\b0 , 
@@ -171,7 +198,6 @@ o.memSize = 4096;\
 \
 \cf4 // Create a new Server on the local machine using o for its options\cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 t = Server\cf0 (\cf2 \\Local2\cf0 , \cf3 NetAddr\cf0 (\cf5 "127.0.0.1"\cf0 , 57111), o);\
 t.makeWindow;\
 t.boot;\
