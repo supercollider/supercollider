@@ -667,7 +667,7 @@ SC_MachMessagePort::~SC_MachMessagePort()
 static void mach_reply_func(struct ReplyAddress * addr, char* msg, int size)
 {
     CFMessagePortRef replyPort = (CFMessagePortRef) addr->mSocket;
-    CFDataRef data = CFDataCreateWithBytesNoCopy(NULL, msg, size, kCFAllocatorNull);
+    CFDataRef data = CFDataCreateWithBytesNoCopy(NULL, (const UInt8*)msg, size, kCFAllocatorNull);
     CFMessagePortSendRequest(replyPort, 0, data, 0, 0, NULL, NULL);
     CFRelease(data);
 }
