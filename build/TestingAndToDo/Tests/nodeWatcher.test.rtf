@@ -14,13 +14,11 @@ Routine(\{ inf.do(\{  arg i;\
 	0.05.wait;\
 	a.free;\
 	0.05.wait;\
-	if(i % 20 == 0, \{ RootNode(s).nodeWatcher.nodes.postln \});\
+	if(i % 20 == 0, \{ s.nodeWatcher.nodes.postln \});\
 \}) \}).play;\
 \
-RootNode(s).disconnect;\
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 RootNode(s).connect;\
+s.nodeWatcher.start;\
+s.nodeWatcher.stop;\
 \
 \
 Routine(\{ inf.do(\{  arg i;\
@@ -31,19 +29,7 @@ Routine(\{ inf.do(\{  arg i;\
 	0.05.wait;\
 	a.free;\
 	0.05.wait;\
-	if(i % 20 == 0, \{ RootNode(s).nodeWatcher.nodes.postln \});\
+	if(i % 20 == 0, \{s.nodeWatcher.nodes.postln \});\
 \}) \}).play;\
-\
-\
-RootNode(s).disconnect;\
-\
-\
-RootNode(s).connect;\
-\
-s.notify(false);\
-\
-s.sendMsg("/status");\
-\
-OSCresponder(s.addr, "/n_go", \{ arg t,m, msg; msg.postln \}).add;\
 \
 }
