@@ -58,7 +58,7 @@ Char : Magnitude {
 	}
 	isFileSafe {
 		if(this.isPrint.not,{ ^false });
-		^this.ascii != 47 and: {this.ascii != 58}
+		^this.ascii != 47 and: {this.ascii != 58} and: {this.ascii != 34}
 	}
 	< { arg aChar;
 		^this.ascii < aChar.ascii
