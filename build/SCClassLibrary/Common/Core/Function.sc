@@ -81,10 +81,10 @@ Function : AbstractFunction {
 		time = inTime; // prevent optimization
 		^this.value(inTime)
 	}
-	play { arg clock;
-		clock = clock ? SystemClock;
-		clock.play(this);
-	}
+//	play { arg clock;
+//		clock = clock ? SystemClock;
+//		clock.play(this);
+//	}
 }
 
 
