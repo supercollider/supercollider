@@ -123,8 +123,8 @@ typedef struct InterfaceTable InterfaceTable;
 #define RTRealloc (*ft->fRTRealloc)
 #define RTFree (*ft->fRTFree)
 
-#define GetNode (*ft->fGetNode)
-#define GetGraph (*ft->fGetGraph)
+#define SC_GetNode (*ft->fGetNode)
+#define SC_GetGraph (*ft->fGetGraph)
 
 #define NRTLock (*ft->fNRTLock)
 #define NRTUnlock (*ft->fNRTUnlock)

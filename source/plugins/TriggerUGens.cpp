@@ -1495,7 +1495,7 @@ void Pause_next(Pause *unit, int inNumSamples)
 	if (state != unit->m_state) {
 		unit->m_state = state;
 		int id = (int)ZIN0(1);
-		Node *node = GetNode(unit->mWorld, id);
+		Node *node = SC_GetNode(unit->mWorld, id);
 		if (node) {
 			NodeRun(node, state);
 		}
@@ -1523,7 +1523,7 @@ void Free_next(Free *unit, int inNumSamples)
 	if (state != unit->m_state) {
 		unit->m_state = state;
 		int id = (int)ZIN0(1);
-		Node *node = GetNode(unit->mWorld, id);
+		Node *node = SC_GetNode(unit->mWorld, id);
 		if (node) {
 			NodeEnd(node);
 		}
