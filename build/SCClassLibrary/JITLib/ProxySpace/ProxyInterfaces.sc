@@ -17,6 +17,7 @@ AbstractPlayControl {
 	build { ^true }
 	pause { this.stop } 
 	unpause { this.start }
+	synth { ^nil }
 	
 	readyForPlay { ^true }
 	synthDef { ^nil }
@@ -95,7 +96,9 @@ SynthControl : AbstractPlayControl {
 		name = this.name;
 		synth = Synth.basicNew(name, group.server);
 		synth.isPlaying = true;
-		synthMsg = [9, name, synth.nodeID, 0, group.nodeID]++extraArgs;
+		synthMsg = [9, name, synth.nodeID, 1, group.nodeID]++extraArgs; 
+		//check the target: better after the last object.
+		//todo: Order does the playing.
 		bundle.add(synthMsg);
 		^synth
 	}
@@ -187,16 +190,18 @@ CXPlayerControl : AbstractPlayControl {
 	//here the lazy bus init happens and allocation of ressources
 	build { arg proxy;
 		var player;
-		source.prepareForPlay(proxy.group, false, proxy.bus.as(SharedBus));
-		^proxy.initBus(source.rate, source.numChannels);
+		//source.prepareForPlay(proxy.group, false, proxy.bus.as(SharedBus));
+		//^proxy.initBus(source.rate, source.numChannels);
+		^proxy.initBus(source.rate ? 'audio', source.numChannels ? 2);
 	}
 	//this allocates the bus and plays it
 	playToBundle { arg bundle, extraArgs, proxy;
 		var bus, group;
 		//we'll need channel offset maybe.
-		
-		source.group = proxy.group;
-		source.bus = proxy.bus.as(SharedBus);
+		group = Group.newToBundle(bundle, proxy.group, \addToTail);
+		//source.group_ = group;
+		//source.bus = proxy.bus.as(SharedBus);
+		source.prepareForPlay(group, false, proxy.bus.as(SharedBus));
 		source.spawnToBundle(bundle);
 		^source.synth;
 	}
