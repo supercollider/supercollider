@@ -224,9 +224,12 @@ Server : Model {
 		var file, buffer;
 		file = File(dir ++ name ++ ".scsyndef","r");
 		if (file.isNil, { ^nil });
-		buffer = Int8Array.newClear(file.length);
-		file.read(buffer);
-		file.close;
+		protect {
+			buffer = Int8Array.newClear(file.length);
+			file.read(buffer);
+		}{
+			file.close;
+		};
 		this.sendMsg("/d_recv", buffer);
 	}
 	// tell server to load from disk

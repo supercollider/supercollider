@@ -90,11 +90,14 @@ Score {
 	*write {arg list, oscFilePath;
 		var osccmd, f;
 		f = File(oscFilePath, "w");
-		list.size.do { |i|
-			osccmd = list[i].asRawOSC;
-			f.write(osccmd.size).write(osccmd);
+		protect {
+			list.size.do { |i|
+				osccmd = list[i].asRawOSC;
+				f.write(osccmd.size).write(osccmd);
+			};
+		}{
+			f.close;
 		};
-		f.close;
 		"done".postln;
 	}
 	

@@ -37,8 +37,11 @@ SynthDesc {
 			var file, result;
 			//filename.postln;
 			file = File(filename, "r");
-			dict = this.readFile(file, keepDefs, dict);
-			file.close;
+			protect {
+				dict = this.readFile(file, keepDefs, dict);
+			}{
+				file.close;
+			};
 		};
 		^dict;
 	}

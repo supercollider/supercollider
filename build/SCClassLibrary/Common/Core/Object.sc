@@ -460,10 +460,11 @@ Object {
 		
 		file = File(dir ++ name ++ ".scsyndef", "w");
 		
-		this.asArray.writeDef(file);
-		
-		//file.length.postln;
-		file.close;
+		protect {
+			this.asArray.writeDef(file);
+		}{		
+			file.close;
+		};
 	}
 
 	isInputUGen { ^false }
