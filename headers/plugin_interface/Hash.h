@@ -104,14 +104,14 @@ inline int64 Hash64(int64 inKey)
 {
     // Thomas Wang's 64 bit integer hash.
 	uint64 hash = (uint64)inKey;
-	hash ^= ((~hash) >> 31);
-	hash += (hash << 28);
-	hash ^= (hash >> 21);
-	hash += (hash << 3);
-	hash ^= ((~hash) >> 5);
-	hash += (hash << 13);
-	hash ^= (hash >> 27);
-	hash += (hash << 32);
+	hash += ~(hash << 32);
+	hash ^=  (hash >> 22);
+	hash += ~(hash << 13);
+	hash ^=  (hash >> 8);
+	hash +=  (hash << 3);
+	hash ^=  (hash >> 15);
+	hash += ~(hash << 27);
+	hash ^=  (hash >> 31);
 	return (int64)hash;
 }
 
