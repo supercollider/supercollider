@@ -32,7 +32,7 @@ Bus {
 	}
 
 	set { arg ... values; // shouldn't be larger than this.numChannels
-		server.sendBundle(server.latency,(["/c_set"] 
+		server.sendBundle(nil,(["/c_set"] 
 			++ values.collect({ arg v,i; [index + i ,v] }).flat));
 	}
 	setMsg { arg ... values;
@@ -42,12 +42,12 @@ Bus {
 	
 	setn { arg values;
 		// could throw an error if values.size > numChannels
-		server.sendBundle(server.latency,
-			["/c_setn",index,values.size,values]);
+		server.sendBundle(nil,
+			["/c_setn",index,values.size] ++ values);
 	}
 	fill { arg value,numChans;
 		// could throw an error if numChans > numChannels
-		server.sendBundle(server.latency,
+		server.sendBundle(nil,
 			["/c_fill",index,numChans,value]);
 	}
 	// not yet implemented :
