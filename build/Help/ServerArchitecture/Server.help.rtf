@@ -18,6 +18,12 @@ A Server object is the client-side representation of a server app and is used to
 \f0\b ClientVsServer
 \f1\b0  for more details on the distinction.) It forwards osc-messages and has a number of allocators that keep track of IDs for nodes, buses and buffers. The server application is a commandline program, so all commands apart from osc-messages are unix commands. The server application represented by a Server object might be running on the same machine as the client (in the same address space as the language application or separately; see below), or it may be running on a remote machine. \
 \
+Most of a Server's options are contolled through its instance of 
+\f0\b ServerOptions
+\f1\b0 . See the 
+\f0\b ServerOptions
+\f1\b0  helpfile for more detail.\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs30 \cf0 \ul \ulc0 Paths
@@ -271,9 +277,8 @@ In general, when working with a single machine one will probably be using one of
 	\
 	
 \f0\b\fs24 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs30 \cf0 \ul Persistent Node Trees\
+\fs30 \ul Persistent Node Trees\
 
 \fs24 \ulnone \
 
