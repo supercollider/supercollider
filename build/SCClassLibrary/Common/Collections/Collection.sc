@@ -368,6 +368,17 @@ Collection {
 	}
 	isSubsetOf { | that | ^that.includesAll(this) }
 
+	msgSize {
+		^this.inject(0, { | sum, elt |
+			if(sum + elt.isString)
+			{ elt.size + 4 - (elt.size bitAnd: 3) }
+			{ 4 };
+		}) + this.size + 4 - (this.size bitAnd: 3)
+    }
+    bundleSize {
+    		// array of messages without timetag
+    		^16 + this.inject(0, { | sum, msg | sum + 4 + msg.msgSize })
+    }
 
 	asArray { ^Array.new(this.size).addAll(this); }
 	asBag { ^Bag.new(this.size).addAll(this); }
