@@ -312,7 +312,7 @@ Collection {
 	asBag { ^Bag.new(this.size).addAll(this); }
 	asList { ^List.new(this.size).addAll(this); }
 	asSet { ^Set.new(this.size).addAll(this); }
-	asSortedList { ^SortedList.new(this.size).addAll(this); }
+	asSortedList { arg function; ^SortedList.new(this.size, function).addAll(this); }
 	
 	printAll { this.do({ arg item; item.postln; }); } // convenience method
 	dumpAll { this.do({ arg item; item.dump; }); } // convenience method

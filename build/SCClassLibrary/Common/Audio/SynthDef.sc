@@ -257,7 +257,9 @@ SynthDef {
 			ugen.initTopoSort;
 		});
 		children.reverseDo({ arg ugen;
-			ugen.descendants = ugen.descendants.asSortedList;
+			ugen.descendants = ugen.descendants.asSortedList(
+								{ arg a, b; ^a.synthIndex < b.synthIndex}
+							);
 			ugen.makeAvailable; // all ugens with no antecedents are made available
 		});
 	}
