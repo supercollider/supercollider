@@ -703,7 +703,7 @@ NodeProxy : BusPlug {
 		
 	unset { arg ... keys;
 		nodeMap.performList(\unset, keys);
-		if(this.isPlaying, { nodeMap.sendToNode(group) });
+		if(this.isPlaying, { keys.do({ arg key; group.set(key,-1) }) });
 	}
 	
 	unmap { arg ... keys;
@@ -768,7 +768,7 @@ NodeProxy : BusPlug {
 	}
 	
 	env { arg env;
-		if(bus.notNil && this.isPlaying, { group.freeAll; bus.env(env) }, //??
+		if(bus.notNil && this.isPlaying, { group.freeAll; bus.env(env) },
 		{ "not playing".inform });
 	}
 	
@@ -781,13 +781,12 @@ NodeProxy : BusPlug {
 	
 	gateAt { arg key, level=1.0, dur=1.0;
 		var oldLevel;
-		oldLevel = nodeMap.at(key).value;
-		this.set(key, level);
-		if(oldLevel.notNil, { 
-			SystemClock.sched(dur, {
-				this.set(key, oldLevel); nil;
-			});
-		 })
+		oldLevel = nodeMap.valueAt(key);
+		this.set(key, level); 
+		SystemClock.sched(dur, {
+			if(oldLevel.notNil, { this.set(key, oldLevel) }, { this.unset(key) }); 
+			nil;
+		});
 	}
 	
 	lineAt { arg key, level=1.0, dur;
@@ -918,10 +917,10 @@ SharedNodeProxy : NodeProxy {
 		
 			divider = if(nChan.even, 2, 1);
 			(nChan div: divider).do({ arg i;
-			localBundle.add([9, "proxyOut-linkDefAr-"++divider, 
+			localBundle.add([9, "system_link_audio_"++divider, 
 						localServer.nextNodeID, 1, monitorGroup.nodeID,
-						\i_busOut, 	busIndex+(i*divider), 
-						\i_busIn,	 	bus.index+(i*divider)
+						\out, 	busIndex+(i*divider), 
+						\in,	 	bus.index+(i*divider)
 					]);
 			});
 			this.wakeUpToBundle(bundle);
