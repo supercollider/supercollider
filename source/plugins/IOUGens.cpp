@@ -65,6 +65,10 @@ extern "C"
 	void Control_next_k(Unit *unit, int inNumSamples);
 	void Control_next_1(Unit *unit, int inNumSamples);
 
+	void TrigControl_Ctor(Unit *inUnit);
+	void TrigControl_next_k(Unit *unit, int inNumSamples);
+	void TrigControl_next_1(Unit *unit, int inNumSamples);
+
 	void LagControl_Ctor(LagControl *inUnit);
 	void LagControl_next_k(LagControl *unit, int inNumSamples);
 	void LagControl_next_1(LagControl *unit, int inNumSamples);
@@ -132,6 +136,75 @@ void Control_Ctor(Unit* unit)
 	} else {
 		SETCALC(Control_next_k);
 		Control_next_k(unit, 1);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void TrigControl_next_k(Unit *unit, int inNumSamples)
+{
+	uint32 numChannels = unit->mNumOutputs;
+	int specialIndex = unit->mSpecialIndex;
+	Graph *parent = unit->mParent;
+	float **mapin = parent->mMapControls + specialIndex;
+	float *control = parent->mControls + specialIndex;
+	World *world = unit->mWorld;
+	float *buses = world->mControlBus;
+	int32 *touched = world->mControlBusTouched;
+	int bufCount = world->mBufCounter;
+	for (uint32 i=0; i<numChannels; ++i, mapin++, control++) {
+		float *out = OUT(i);
+		// requires a bit of detective work to see what it has been mapped to.
+		if (*mapin == control) {
+			// destructive read of local control.
+			*out = *control;
+			*control = 0.f; 
+		} else {
+			// global control bus. look at time stamp.
+			int busindex = *mapin - buses;
+			if (touched[busindex] == bufCount) {
+				*out = buses[busindex];
+			} else {
+				*out = 0.f;
+			}
+		}
+	}
+}
+
+void TrigControl_next_1(Unit *unit, int inNumSamples)
+{
+	int specialIndex = unit->mSpecialIndex;
+	Graph *parent = unit->mParent;
+	float **mapin = parent->mMapControls + specialIndex;
+	float *control = parent->mControls + specialIndex;
+	float *out = OUT(0);
+	// requires a bit of detective work to see what it has been mapped to.
+	if (*mapin == control) {
+		// destructive read of local control.
+		*out = *control;
+		*control = 0.f; 
+	} else {
+		// global control bus. look at time stamp.
+		World *world = unit->mWorld;
+		int busindex = *mapin - world->mControlBus;
+		if (world->mControlBusTouched[busindex] == world->mBufCounter) {
+			*out = **mapin;
+		} else {
+			*out = 0.f;
+		}
+	}
+}
+
+void TrigControl_Ctor(Unit* unit)
+{
+	//Print("TrigControl_Ctor\n");
+	if (unit->mNumOutputs == 1) {
+		SETCALC(TrigControl_next_1);
+		TrigControl_next_1(unit, 1);
+	} else {
+		SETCALC(TrigControl_next_k);
+		TrigControl_next_k(unit, 1);
 	}
 }
 
@@ -1023,6 +1096,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(XOut);
 	DefineSimpleUnit(LagControl);
 	DefineUnit("Control", sizeof(Unit), (UnitCtorFunc)&Control_Ctor, 0);
+	DefineUnit("TrigControl", sizeof(Unit), (UnitCtorFunc)&TrigControl_Ctor, 0);
 	DefineUnit("ReplaceOut", sizeof(IOUnit), (UnitCtorFunc)&ReplaceOut_Ctor, 0);
 	DefineUnit("Out", sizeof(IOUnit), (UnitCtorFunc)&Out_Ctor, 0);
 	DefineUnit("In", sizeof(IOUnit), (UnitCtorFunc)&In_Ctor, 0);

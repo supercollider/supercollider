@@ -5,6 +5,7 @@ SynthDef {
 	var controlsSize=0;
 	var irnames, irvalues, ircontrols, irpositions;
 	var krnames, krvalues, krcontrols, krpositions, krlags;
+	var trnames, trvalues, trcontrols, trpositions;
 
 	var <>controls,<>controlNames; // ugens add to this
 	var <>children;
@@ -51,6 +52,7 @@ SynthDef {
 		// clean up.
 		irnames = irvalues = ircontrols = irpositions = nil;
 		krnames = krvalues = krcontrols = krpositions = krlags = nil;
+		trnames = trvalues = trcontrols = trpositions = nil;
 
 		prependArgs = prependArgs.asArray;
 		this.addControlsFromArgsOfFunc(func, lags, prependArgs.size);
@@ -83,8 +85,15 @@ SynthDef {
 				});
 				this.addIr(name, value);
 			},{
+			if (c == $t && { c2 == $_ }, {
+				if (lag != 0, {
+					Post << "WARNING: lag value "<< lag <<" for trigger arg '"
+						<< name <<"' will be ignored.\n";
+				});
+				this.addTr(name, value);
+			},{
 				this.addKr(name, value, lag);
-			});
+			})});
 		});
 	}
 	
@@ -102,11 +111,20 @@ SynthDef {
 		krlags = krlags.add(lag);
 		controlsSize = controlsSize + 1;
 	}
+	addTr { arg name, value;
+		trnames = trnames.add(name);
+		trvalues = trvalues.add(value);
+		trpositions = trpositions.add(controlsSize);
+		controlsSize = controlsSize + 1;
+	}
 	buildControls {
 		var outputProxies;
 		// the Controls add themselves to my controls
 		if (irnames.size > 0, {
 			ircontrols = Control.names(irnames).ir(irvalues);
+		});
+		if (trnames.size > 0, {
+			trcontrols = TrigControl.names(trnames).kr(trvalues);
 		});
 		if (krnames.size > 0, {
 			if (krlags.any({ arg lag; lag != 0 }), {
@@ -118,6 +136,9 @@ SynthDef {
 		outputProxies = Array.newClear(controlsSize);
 		ircontrols.asArray.do({ arg control, i; 
 			outputProxies.put(irpositions.at(i), control);
+		});
+		trcontrols.asArray.do({ arg control, i; 
+			outputProxies.put(trpositions.at(i), control);
 		});
 		krcontrols.asArray.do({ arg control, i; 
 			outputProxies.put(krpositions.at(i), control);

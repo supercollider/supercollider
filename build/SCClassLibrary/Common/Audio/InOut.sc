@@ -37,6 +37,8 @@ Control : MultiOutUGen {
 	}
 }
 
+TrigControl : Control {}
+
 LagControl : Control {	
 	*kr { arg values, lags, outputs;
 		values = values.asArray;
