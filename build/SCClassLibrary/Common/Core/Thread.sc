@@ -55,10 +55,7 @@ Thread : Stream {
 Routine : Thread {
 
 	*run { arg func, stackSize=512;
-		var res; 
-		res = super.new(func, stackSize);
-		res.value;
-		^res;
+		^super.new(func, stackSize).value;
 	}
 		
 	// resume, next, value, run are synonyms
