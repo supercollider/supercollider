@@ -43,9 +43,6 @@ other topics:		[jitlib_efficiency][the_lazy_proxy][jitlib_fading]\
 \f1\b0 \cf0 storing control settings:	[NodeMap]
 \f0\b \
 
-\f1\b0 special purpose Groups: 	[Ensemble] [ModelGroup] // will be removed
-\f0\b \
-
 \f1\b0 \
 \
 there is a couple of other classes that are not specifically connected:\
@@ -55,15 +52,12 @@ there is a couple of other classes that are not specifically connected:\
 \
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
-\f0\b \cf0 Patterns
+\f0\b \cf0 Patterns\
+	Pdict\
+	Pref\
+	Prefn\
+	StreamClutch
 \f1\b0 \
-	
-\f0\b StreamClutch
-\f1\b0 \
-	
-\f0\b PolyPlayer // <-will be removed soon, NotePlayer does it now.
-\f1\b0 \
-	(undocumented: Pdict, Pref: they might change.)\
 \pard\tx0\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\ql\qnatural
 
 \f2\fs18 \cf0 \
@@ -104,6 +98,12 @@ there is a couple of other classes that are not specifically connected:\
 \
 NodeProxy / ProxySpace:\
 	\
+	\ul march\ulnone \
+	fixed Pattern support for NodeProxy/ProxySpace due to change in Event implementation\
+	fixed Prefn\
+	removed Penvir, Sfin etc, Ensemble etc. (removed classes can be found on sc-swiki)\
+	simplifications\
+	\
 	\ul feb\ulnone \
 	added garbage collector to ProxySpace\
 	fixed unmap\
@@ -126,7 +126,7 @@ NodeProxy / ProxySpace:\
 	\ul oct 19:\ulnone \
 	symbol input is assumed to represent a synthdef that has a gate and frees.\
 	functions and synthdefs are searched for their inner envelopes and the appropriate\
-	method of freeing / releasing is chosen acoodingly.\
+	method of freeing / releasing is chosen accordingly.\
 	\
 	\ul earlier:\ulnone \
 	input channels now wrap. so any number of channels can be set to any proxy.\
@@ -162,7 +162,7 @@ TODO:\
 	finish PlayerSpace\
 
 \f2\fs18 \
-	\
+\
 	
 \f1\fs24 _____________________________________\
 for suggestions / comments contact me\

@@ -1,0 +1,54 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red0\green0\blue191;
+\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 Pref     
+\fs24 pattern that references an event pattern
+\f1\b0\fs18 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 superclass: Pattern
+\f1\fs18 \
+\
+\
+
+\f2\fs24 access and assignment are done by *new\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 Pref(\\foo)
+\f2\b0  returns empty default pattern\
+
+\f0\b Pref(\\foo, Pseq([1, 2, 3])
+\f2\b0  sets the pattern at that key.\
+\
+access is global in: Prefn.patterns
+\f1\fs18 \
+\
+\cf2 // example\cf3 \
+\cf4 SynthDescLib\cf3 .read;\
+\
+\
+\cf4 Pref\cf3 (\cf5 \\a\cf3 , \cf4 Pbind\cf3 (\cf5 \\dur\cf3 , 0.1, \cf5 \\degree\cf3 , \cf4 Pseq\cf3 ([0, 5, 4, 3, 2])));\
+\cf4 Pref\cf3 (\cf5 \\b\cf3 , \cf4 Pbind\cf3 (\cf5 \\dur\cf3 , 0.06, \cf5 \\degree\cf3 , \cf4 Pseq\cf3 ([7, 8, 7, 8])));\
+\cf4 Pref\cf3 (\cf5 \\c\cf3 , \cf4 Pbind\cf3 (\cf5 \\dur\cf3 , 0.3, \cf5 \\degree\cf3 , \cf4 Pseq\cf3 ([0, 1, 2], 2)));\
+\
+x = \cf4 Pseq\cf3 ([\cf4 Pref\cf3 (\cf5 \\a\cf3 ), \cf4 Pref\cf3 (\cf5 \\b\cf3 ), \cf4 Pref\cf3 (\cf5 \\c\cf3 )], \cf4 inf\cf3 );\
+x.play;\
+\
+\cf4 Pref\cf3 (\cf5 \\c\cf3 , \cf4 Pbind\cf3 (\cf5 \\dur\cf3 , 0.3, \cf5 \\degree\cf3 , \cf4 Pseq\cf3 ([4, 3, 1], 2)));\
+\
+\
+\cf2 // infinite loops are scheduled (to TempoClock by default) and released:\cf3 \
+\
+\cf4 Pref\cf3 (\cf5 \\a\cf3 , \cf4 Pbind\cf3 (\cf5 \\dur\cf3 , 0.1, \cf5 \\degree\cf3 , \cf4 Pseq\cf3 ([0, 5, 4, 3, 2], \cf4 inf\cf3 )));\
+\
+\cf4 Pref\cf3 (\cf5 \\a\cf3 , \cf4 Pbind\cf3 (\cf5 \\dur\cf3 , 0.1, \cf5 \\degree\cf3 , \cf4 Pseq\cf3 ([0, 5, 4, 3, 2] - 1, 1)));\
+\
+}
