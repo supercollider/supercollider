@@ -62,7 +62,7 @@ SynthDef {
 		^this.buildControls
 	}
 	// allow incremental building of controls
-	addIr { arg name,value,defargi;
+	addIr { arg name,value;
 		irnames = irnames.add(name);
 		irvalues = irvalues.add(value);
 		irpositions = irpositions.add(controlsSize);
@@ -273,7 +273,7 @@ SynthDef {
 	play { arg target,args,addAction=\addToTail;
 		var synth, msg;
 		target = target.asTarget;
-		synth = Synth.prNew(name);
+		synth = Synth.prNew(name,target.server);
 		msg = synth.newMsg(target, addAction, args);
 		this.send(target.server, msg);
 		^synth
