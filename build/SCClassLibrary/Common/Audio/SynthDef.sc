@@ -322,7 +322,7 @@ SynthDef {
 	}
 	load { arg server, completionMsg,dir="synthdefs/";
 		// i should remember what dir i was written to
-		this.writeDefFile;
+		this.writeDefFile(dir);
 		server.listSendMsg(
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
 		)
