@@ -58,7 +58,7 @@ SynthDef {
 
 		prependArgs = prependArgs.asArray;
 		this.addControlsFromArgsOfFunc(func, lags, prependArgs.size);
-		^func.valueArray(prependArgs.asArray ++ this.buildControls);
+		^func.valueArray(prependArgs ++ this.buildControls);
 	}
 	addControlsFromArgsOfFunc { arg func, lags, skipArgs=0;
 		var def, names, values,argNames;
