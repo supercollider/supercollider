@@ -24,22 +24,45 @@ of creating Synths and Groups are more safe.\
 \
 aNode.
 \f1\b addMsg
-\f0\b0 (cmdList, cmdName, argList) \
-	adds a message to the list\
+\f0\b0 (bundle, cmdName, argList) \
+	adds a message to the bundle (a list)\
 aNode.
 \f1\b getMsg
 \f0\b0 (cmdName or number, argList) \
 	returns a message\
+\
+
+\f1\b instance creation and adding to a bundle ( usually a List )
+\f0\b0 \
+\
+Synth.
+\f1\b newMsg
+\f0\b0 (bundle, defName, argList, target, addAction)\
+	returns a new synth and adds commands to the bundle\
+	all initialisations and registring the node are done\
+\
+Group.
+\f1\b newMsg
+\f0\b0 (bundle, target, addAction)\
+	returns a new synth and adds commands to the bundle\
+	all initialisations and registring the node are done\
+\
+\
+
+\f1\b creating messages that can be added to a bundle\
+
+\f0\b0 \
 aSynth.
 \f1\b newMsg
-\f0\b0 (target, argList, addAction) \
+\f0\b0 (target, addAction, argList) \
 	use this with a synth that was created by prNew(defName).\
-	it does all initialisations and registers the node.\
+	all initialisations and registring the node are done\
+	\
 aGroup.
 \f1\b newMsg
 \f0\b0 (target, addAction) \
 	use this with a group that was created by prNew\
-	it does all initialisations and registers the node.\
+	all initialisations and registring the node are done\
 \
 aNode.
 \f1\b moveBeforeMsg
@@ -75,8 +98,8 @@ SynthDef("void", \{ arg freq=800, out=0;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //return an in instance of synth (registered) and adds the message to the list \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 y = Synth.prNew("void");\
-b.add(y.newMsg); \
+\cf0 y = Synth.newMsg(b, "void");\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //add a couple of messages\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
