@@ -154,7 +154,6 @@ StreamKrDur : HasSubject { // Synthless, above player
 					},{
 						// send the message...	
 						bus.value_(val);
-						//[this,val].postln;
 						tempo.beats2secs(dur).wait
 					});
 				});
@@ -167,10 +166,9 @@ StreamKrDur : HasSubject { // Synthless, above player
 		// depending on didSpawn to start for now
 	}
 	spawnToBundle {
-		this.spawnAtTime;
+		this.spawnAtTime; // for now
 	}
 	didSpawn {	arg patchIn,synthi;
-		//routine.insp("didSpawn krstream");
 		patchOut.connectTo(patchIn,false);
 		bus = patchOut.bus;
 		routine.reset;

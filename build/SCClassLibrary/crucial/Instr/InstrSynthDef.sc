@@ -80,11 +80,10 @@ InstrSynthDef : SynthDef {
 			})
 		});
 		name = name ++ fixedID.hash.asFileSafeString;
-		("InstrSynthDef made:" + name ).postln;
+		("InstrSynthDef built:" + name ).postln;
 	}
 	
-	// fixed arg : passed to Instr but not to synth
-	// like addIr addKr
+	// passed to Instr function but not to synth
 	addInstrOnlyArg { arg name,value;
 		fixedNames = fixedNames.add(name);
 		fixedValues = fixedValues.add(value);

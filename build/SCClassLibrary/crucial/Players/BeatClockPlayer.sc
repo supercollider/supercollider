@@ -1,6 +1,13 @@
-BeatClockPlayer : KrPlayer { 		var <>tempoFactor,<>tempoBase,tempoBus;	var <>mul;
-		*new { arg tempoFactor=2.0,mul=1.0,tempoBase;
-		^super.new.tempoFactor_(tempoFactor).tempoBase_(tempoBase ? Tempo.default).mul_(mul)	}	
+
+BeatClockPlayer : KrPlayer { 
+	
+	var <>tempoFactor,<>tempoBase,tempoBus;
+	var <>mul;
+	
+	*new { arg tempoFactor=2.0,mul=1.0,tempoBase;
+		^super.new.tempoFactor_(tempoFactor).tempoBase_(tempoBase ? Tempo.default).mul_(mul)
+	}
+	
 	prepareToBundle { arg group,bundle;
 		//TODO: share by tempoFactor per server
 		// place in a high level group
@@ -14,14 +21,20 @@
 	
 	asSynthDef { 
 		//unique by tempoFactor
-		^SynthDef(this.defName,{ arg tempoIndex=0,outIndex = 0;
-			Out.kr(outIndex,Impulse.kr(In.kr(tempoIndex) * (tempoFactor * 0.25),mul: mul))
+		^SynthDef(this.defName,{ arg i_tempoIndex=0,out = 0;
+			Out.kr(out,Impulse.kr(In.kr(i_tempoIndex) * (tempoFactor * 0.25),mul: mul))
 		})
 	}
 	defName {
 		^("BeatClockPlayer" ++ tempoFactor.asString)
-	}	synthDefArgs { // synthinputs collect synthArg
-		^[ tempoBus.index,patchOut.synthArg]
+	}
+	synthDefArgs { // synthinputs collect synthArg
+		^[ tempoBus.index]
 	}
 
-	storeParamsOn { arg stream;		stream.storeArgs([tempoFactor])	}	guiClass { ^BeatClockPlayerGui }}
+	storeParamsOn { arg stream;
+		stream.storeArgs([tempoFactor])
+	}
+	guiClass { ^BeatClockPlayerGui }
+
+}

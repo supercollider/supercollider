@@ -127,9 +127,9 @@ ControlPatchOut : PatchOut { // you are returned from a .kr play
 	server { ^group.server }
 	free {
 		// PlayerMixer has multiple patchOuts sharing the same bus
-		//if(bus.index.notNil,{
+		if(bus.index.notNil,{
 			bus.free;
-		//});
+		});
 		bus = nil;
 	}
 }

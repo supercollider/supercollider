@@ -154,8 +154,7 @@ AbstractPlayer : AbstractFunction  {
 		bundle.add(
 			synth.addToTailMsg(patchOut.group,
 				this.synthDefArgs.collect({ arg a,i; [i,a]}).flat 
-					//++ this.secretSynthDefArgs
-					//++ this.children.collect({ arg child; child.secretSynthDefArgs }).flat,
+				++ ['out',patchOut.synthArg]
 			)
 		);
 	}
@@ -210,20 +209,18 @@ AbstractPlayer : AbstractFunction  {
 	//  this works for simple audio function subclasses
 	//  but its probably more complicated if you have inputs
 	asSynthDef { 
-		^SynthDef(this.defName,{ arg i_outIndex = 0;
+		^SynthDef(this.defName,{ arg out = 0;
 			if(this.rate == \audio,{
-				Out.ar(i_outIndex,this.ar)
+				Out.ar(out,this.ar)
 			},{
-				Out.kr(i_outIndex,this.kr)
+				Out.kr(out,this.kr)
 			})
 		})
 	}
 	synthDefArgs { 
 		// if children are your args, you won't have to implement this
-		// no indices
-		^this.children.collect({ arg ag,i; ag.synthArg })  
-				 ++ [patchOut.bus.index] // always goes last
-	}
+		// no indices, no out index
+		^this.children.collect({ arg ag,i; ag.synthArg })	}
 	defName {
 		^defName ?? {this.class.name.asString}
 	}
@@ -395,7 +392,7 @@ AbstractPlayer : AbstractFunction  {
 
 
 
-MultiplePlayers : AbstractPlayer {
+MultiplePlayers : AbstractPlayer { // is PlayerMixer ?
 
 	// manages multiple players sharing the same bus
 	// doesn't make a synth
@@ -460,6 +457,21 @@ MultiplePlayers : AbstractPlayer {
 	}
 }
 
+MultiTrackPlayer : MultiplePlayers {
+
+	// manages multiple players with individual busses
+	// doesn't make a synth for itself
+
+	children { ^this.voices }
+	setPatchOut { arg po;
+		patchOut = po;
+		// what do i do with this ?
+		// i'm not supposed to have a single focused out
+
+	}
+
+}
+
 
 
 AbstractPlayerProxy : AbstractPlayer {
@@ -479,7 +491,9 @@ AbstractPlayerProxy : AbstractPlayer {
 	setPatchOut { arg po;
 		super.setPatchOut(po);
 		// a copy to the source
-		source.setPatchOut(PatchOut(source,patchOut.group,patchOut.bus.copy));
+		if(source.notNil,{
+			source.setPatchOut(PatchOut(source,patchOut.group,patchOut.bus.copy));
+		});
 	}
 	didSpawn { arg patchIn,synthArgi;
 		super.didSpawn(patchIn,synthArgi);

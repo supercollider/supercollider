@@ -89,7 +89,7 @@ Patch : AbstractPlayer  {
 		synth = Synth.basicNew(this.defName,patchOut.server);
 		bundle.add(
 			synth.addToTailMsg(patchOut.group,
-				synthArgs ++ synthDef.secretDefArgs(args)//.insp("secretArgs"),
+				(synthArgs ++ [\outIndex,patchOut.synthArg] ++ synthDef.secretDefArgs(args))
 			)
 		);
 	}
@@ -97,12 +97,11 @@ Patch : AbstractPlayer  {
 	
 	synthDefArgs {
 		// not every arg makes it into the synth def
-		^(argsForSynth.collect({ arg ag; ag.synthArg })
-			++ [patchOut.bus.index]) // always goes last
+		^(argsForSynth.collect({ arg ag; ag.synthArg }) )
+		// without \outIndex 
 	}
 	// has inputs
 	didSpawn { arg patchIn,synthArgi;
-
 		if(patchIn.notNil,{
 			patchOut.connectTo(patchIn,false); // we are connected now
 			patchIn.nodeControl_(NodeControl(synth,synthArgi));
