@@ -840,6 +840,116 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 
 #include <sndfile.h>
 
+//need to add more rates, the most common for now, jan.t
+int sampleFormatToString(struct SF_INFO *info, char **string);
+int sampleFormatToString(struct SF_INFO *info, char **string)
+{
+	unsigned int samplerate =  info->format & SF_FORMAT_SUBMASK;
+	if((samplerate == SF_FORMAT_DPCM_16) || (samplerate ==SF_FORMAT_PCM_16) || (samplerate == SF_FORMAT_DWVW_16))
+	{
+		*string = "int16";
+		return errNone;
+	}
+	if((samplerate == SF_FORMAT_PCM_S8) || (samplerate ==SF_FORMAT_DPCM_8) || (samplerate == SF_FORMAT_DWVW_16))
+	{
+		*string = "int16";
+		return errNone;
+	}
+	if((samplerate == SF_FORMAT_PCM_24) || (samplerate == SF_FORMAT_DWVW_24))
+	{
+		*string = "int24";
+		return errNone;
+	}
+	if((samplerate == SF_FORMAT_PCM_32))
+	{
+		*string = "int32";
+		return errNone;
+	}
+	if((samplerate == SF_FORMAT_FLOAT))
+	{
+		*string = "float";
+		return errNone;
+	}
+return errNone;
+}
+
+
+int headerFormatToString(struct SF_INFO *info, char **string);
+int headerFormatToString(struct SF_INFO *info, char **string){
+	switch (info->format & SF_FORMAT_TYPEMASK)
+	{	case SF_FORMAT_WAV :
+				*string = "WAV";
+				break;
+		case SF_FORMAT_AIFF :
+				*string = "AIFF";
+				break ;
+		case SF_FORMAT_AU :
+				*string = "SUN";
+				break ;
+		case SF_FORMAT_IRCAM :
+				*string = "IRCAM";
+				break ;				
+		case SF_FORMAT_RAW :
+				*string = "raw";
+				break ;
+		case SF_FORMAT_W64 :
+				*string = "WAV";
+				break ;
+/*
+		case SF_FORMAT_PAF :
+
+				break ;
+
+		case SF_FORMAT_SVX :
+
+				break ;
+
+		case SF_FORMAT_NIST :
+
+				break ;
+
+		case SF_FORMAT_VOC :
+
+				break ;
+
+		case SF_FORMAT_MAT4 :
+
+				break ;
+
+		case SF_FORMAT_MAT5 :
+
+				break ;
+
+		case SF_FORMAT_PVF :
+
+				break ;
+
+		case SF_FORMAT_XI :
+
+				break ;
+
+		case SF_FORMAT_HTK :
+
+				break ;
+
+		case SF_FORMAT_SDS :
+
+				break ;
+*/
+		default : break ;
+		}
+return errNone;
+}
+
+int sndfileFormatInfoFromStrings(struct SF_INFO *info, char **stringHead,  char **stringSample);
+int sndfileFormatInfoFromStrings(struct SF_INFO *info, char **stringHead,  char **stringSample)
+{
+	int error = 0;
+	error = headerFormatToString(info, stringHead);
+	error = sampleFormatToString(info, stringSample);
+	return error;
+}
+
 int prSFOpenRead(struct VMGlobals *g, int numArgsPushed);
 int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 {
@@ -847,7 +957,9 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 	char filename[PATH_MAX];
 	SNDFILE *file;
 	SF_INFO info;
-        
+	char *headerstr;
+	char *sampleformatstr;
+		
 	a = g->sp - 1;
 	b = g->sp;
 
@@ -859,13 +971,20 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 	
 	info.format = 0;
 	file = sf_open(filename, SFM_READ, &info);
-        
-        
+
+	        
 	if (file) {
 		SetPtr(a->uo->slots + 0, file);
-                SetInt(a->uo->slots + 3, info.frames);
-                SetInt(a->uo->slots + 4, info.channels);
-                SetInt(a->uo->slots + 5, info.samplerate);
+		sndfileFormatInfoFromStrings(&info, &headerstr, &sampleformatstr);
+		//headerFormatToString(&info, &headerstr);
+		PyrString *hpstr = newPyrString(g->gc, headerstr, 0, true);
+		SetObject(a->uo->slots+1, hpstr);
+		PyrString *smpstr = newPyrString(g->gc, sampleformatstr, 0, true);
+		SetObject(a->uo->slots+2, smpstr);
+		SetInt(a->uo->slots + 3, info.frames);
+		SetInt(a->uo->slots + 4, info.channels);
+		SetInt(a->uo->slots + 5, info.samplerate);
+
 		SetTrue(a);
 	} else {
 		SetNil(a);
@@ -873,6 +992,66 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 	}
 	return errNone;
 }
+/// copied from SC_World.cpp:
+
+int sampleFormatFromString(const char* name);
+int sampleFormatFromString(const char* name)
+{		
+	if (!name) return SF_FORMAT_PCM_16;
+
+	size_t len = strlen(name);
+	if (len < 1) return 0;
+	
+	if (name[0] == 'u') {
+		if (len < 5) return 0;
+		if (name[4] == '8') return SF_FORMAT_PCM_U8; // uint8
+		return 0;
+	} else if (name[0] == 'i') {
+		if (len < 4) return 0;
+		if (name[3] == '8') return SF_FORMAT_PCM_S8;      // int8
+		else if (name[3] == '1') return SF_FORMAT_PCM_16; // int16
+		else if (name[3] == '2') return SF_FORMAT_PCM_24; // int24
+		else if (name[3] == '3') return SF_FORMAT_PCM_32; // int32
+	} else if (name[0] == 'f') {
+		return SF_FORMAT_FLOAT; // float
+	} else if (name[0] == 'd') {
+		return SF_FORMAT_DOUBLE; // double
+	} else if (name[0] == 'm' || name[0] == 'u') {
+		return SF_FORMAT_ULAW; // mulaw ulaw
+	} else if (name[0] == 'a') {
+		return SF_FORMAT_ALAW; // alaw
+	}
+	return 0;
+}
+
+int headerFormatFromString(const char *name);
+int headerFormatFromString(const char *name)
+{
+	if (!name) return SF_FORMAT_AIFF;
+	if (strcasecmp(name, "AIFF")==0) return SF_FORMAT_AIFF;
+	if (strcasecmp(name, "AIFC")==0) return SF_FORMAT_AIFF;
+	if (strcasecmp(name, "RIFF")==0) return SF_FORMAT_WAV;
+	if (strcasecmp(name, "WAVE")==0) return SF_FORMAT_WAV;
+	if (strcasecmp(name, "WAV" )==0) return SF_FORMAT_WAV;
+	if (strcasecmp(name, "Sun" )==0) return SF_FORMAT_AU;
+	if (strcasecmp(name, "IRCAM")==0) return SF_FORMAT_IRCAM;
+	if (strcasecmp(name, "NeXT")==0) return SF_FORMAT_AU;
+	if (strcasecmp(name, "raw")==0) return SF_FORMAT_RAW;
+	return 0;
+}
+
+int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char *headerFormatString, const char *sampleFormatString)
+{
+	int headerFormat = headerFormatFromString(headerFormatString);
+	if (!headerFormat) return errWrongType;
+	
+	int sampleFormat = sampleFormatFromString(sampleFormatString);
+	if (!sampleFormat) return errWrongType;
+	
+	info->format = (unsigned int)(headerFormat | sampleFormat);
+	return errNone;
+}
+// end copy
 
 int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed);
 int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
@@ -881,17 +1060,42 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	char filename[PATH_MAX];
 	SNDFILE *file;
 	SF_INFO info;
+	PyrSlot *headerSlot;
+	PyrSlot *formatSlot;
+	int error;
         
+		
 	a = g->sp - 1;
 	b = g->sp;
 
+	headerSlot = (a->uo->slots + 1);
+	formatSlot = (a->uo->slots + 2);
+	
+	
+	if (!isKindOfSlot(headerSlot, class_string)) return errWrongType; 
+	if (!isKindOfSlot(formatSlot, class_string)) return errWrongType; 
+	
 	if (!isKindOfSlot(b, class_string)) return errWrongType; 
 	if (b->uo->size > PATH_MAX - 1) return errFailed;
 	
 	memcpy(filename, b->uos->s, b->uo->size);
 	filename[b->uos->size] = 0;
+		
+	char headerFormat[headerSlot->uos->size];
+	memcpy(headerFormat, headerSlot->uos->s, headerSlot->uo->size);
+	headerFormat[headerSlot->uos->size] = 0;
 	
-	file = sf_open(filename, SFM_READ, &info);
+	char sampleFormat[formatSlot->uos->size];
+	memcpy(sampleFormat, formatSlot->uos->s, formatSlot->uo->size);
+	sampleFormat[formatSlot->uos->size] = 0;
+
+	error = sndfileFormatInfoFromStrings(&info, headerFormat, sampleFormat);
+	if(error) 	return errFailed;
+	//slotIntVal(a->uo->slots + 3, &info.frames);
+	slotIntVal(a->uo->slots + 4, &info.channels);
+	slotIntVal(a->uo->slots + 5, &info.samplerate);
+
+	file = sf_open(filename, SFM_WRITE, &info);
 	if (file) {
 		SetPtr(a->uo->slots+0, file);
 		SetTrue(a);
@@ -899,6 +1103,7 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 		SetNil(a);
 		SetFalse(a);
 	}
+
 	return errNone;
 }
 
@@ -1224,7 +1429,7 @@ void initFilePrimitives()
 	index = 0;
 
 	definePrimitive(base, index++, "_SFOpenRead", prSFOpenRead, 2, 0);	
-	definePrimitive(base, index++, "_SFOpenWrite", prSFOpenWrite, 4, 0);	
+	definePrimitive(base, index++, "_SFOpenWrite", prSFOpenWrite, 2, 0);	
 	definePrimitive(base, index++, "_SFClose", prSFClose, 1, 0);	
 	definePrimitive(base, index++, "_SFWrite", prSFWrite, 2, 0);	
 	definePrimitive(base, index++, "_SFRead", prSFRead, 2, 0);	
