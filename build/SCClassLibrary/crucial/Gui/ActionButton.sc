@@ -1,4 +1,36 @@
 
+
+SCViewAdapter { // SCViewHolder
+	
+	// SCView classes can't be subclassed.
+	// SCViewAdapter makes it possible to wrap more capabilities by holding, not subclassing
+	// has a  not is a
+	// alternative is for SCView to pass in the name of the c++ view to prInit primitive
+	
+	var <>view;
+	
+	action_ { arg f; view.action_(f) }
+	keyDownAction_ { arg f;
+		view.keyDownAction_(f);
+	}
+	asView { ^view }
+	bounds { ^view.bounds }
+	bounds_ { arg b; view.bounds_(b) }
+	resize_ { arg r; view.resize_(r) }
+	refresh { view.refresh }
+	background_ { arg b; view.background_(b) }
+	focus { arg flag=true; view.focus(flag) }
+	// move lower
+	font_ { arg f;
+		view.font = f;
+	}
+	prClose { 
+		view.prClose 
+	}
+}
+
+
+
 StartRow : SCViewAdapter {
 	*new { arg parent,bounds;
 		^super.new.view_(parent)
@@ -79,88 +111,6 @@ FlowView : SCCompositeView {
 				.string_("").background_(color ? Color(1,1,1,0.3) ).resize_(2)
 	}
 }
-
-
-//
-//FlowView : SCViewAdapter {
-//	var <flowLayout;
-//	
-//	var childrenCopy,autoRemoves;
-//	
-//	*new { arg parent, bounds;
-//		^super.new.init(parent,bounds)
-//	}
-//	init { arg parent, bounds;
-//		view = SCCompositeView(parent = parent ?? {SCWindow.new("",bounds).front},
-//							bounds = bounds ?? {parent.asView.bounds});
-//		view.decorator = flowLayout = FlowLayout(bounds);
-//		childrenCopy = [];
-//		autoRemoves = IdentitySet.new;
-//	}
-//	add { arg child;
-//		view.add(child);
-//		childrenCopy = childrenCopy.add(child);
-//	}
-//	prAddChild { arg child;
-//		childrenCopy = childrenCopy.add(child);
-//	}
-//	remaining {
-//		^flowLayout.remaining
-//	} 
-//	reflowAll {
-//		flowLayout.reset;
-//		childrenCopy.do({ arg view;
-//			if(view.isKindOf(StartRow),{
-//				flowLayout.nextLine
-//			},{
-//				("placing" + view).postln;
-//				view.bounds.postln;
-//				flowLayout.place(view);
-//				view.bounds.postln;
-//			})
-//		});
-//	}
-//	innerBounds { ^flowLayout.innerBounds }
-//	resizeToFit {
-//		var used,new;
-//		used = flowLayout.used;
-//		view.bounds = new = view.bounds.resizeTo(used.width,used.height);
-//		flowLayout.bounds = new;
-//		// don't reflow unless asked
-//	}
-//	bounds_ { arg b;
-//		if(b != view.bounds,{
-//			view.bounds = b;
-//			flowLayout.bounds = b;
-//			this.reflowAll;
-//		});
-//	}
-//	// to replace PageLayout
-//	layRight { arg x,y;
-//		^Rect(0,0,x,y)
-//	}
-//	startRow {
-//		// add a StartRow object
-//		this.add(StartRow.new); //won't really put a view in there yet
-//		flowLayout.nextLine
-//	}
-//	removeOnClose { arg updater;
-//		autoRemoves.add(updater);
-//	}
-//	prClose {
-//		autoRemoves.do({ arg u; u.remove });
-//		super.prClose; // close the view		
-//	}
-//	indent {
-//	
-//	}
-//	hr { arg color,height=3,borderStyle=1; // html joke
-//		this.startRow;
-//		// should fill all and still return a minimal bounds 
-//		SCStaticText(this,Rect(0,0,flowLayout.innerBounds.width - (2 * 4), height,0))
-//				.string_("").background_(color ? Color(1,1,1,0.3) ).resize_(2)
-//	}
-//}
 
 
 SCButtonAdapter : SCViewAdapter {

@@ -1,47 +1,15 @@
 
-SCViewAdapter { // SCViewHolder
-	
-	// SCView classes can't be subclassed.
-	// SCViewAdapter makes it possible to wrap more capabilities by holding, not subclassing
-	// has a  not is a
-	// alternative is for SCView to pass in the name of the c++ view to prInit primitive
-	
-	var <>view;
-	
-	action_ { arg f; view.action_(f) }
-	keyDownAction_ { arg f;
-		view.keyDownAction_(f);
-	}
-	asView { ^view }
-	bounds { ^view.bounds }
-	bounds_ { arg b; view.bounds_(b) }
-	resize_ { arg r; view.resize_(r) }
-	refresh { view.refresh }
-	background_ { arg b; view.background_(b) }
-	focus { arg flag=true; view.focus(flag) }
-	// move lower
-	font_ { arg f;
-		view.font = f;
-	}
-}
 
+SCTextField : SCNumberBox {
 
-SCTextField : SCViewAdapter {
-
-	var keyString;
+	*viewClass { ^SCNumberBox }
 	
-	*new { arg parent,bounds;
-		^super.new.init(parent,bounds)
-	}
-	init { arg parent,bounds;
-		view = SCNumberBox(parent,bounds);
-		view.keyDownAction =  { arg k,m,u; this.keyDownAction(k,m,u) };
-	}
-	keyDownAction { arg view, key, modifiers, unicode;
+	defaultKeyDownAction { arg key, modifiers, unicode;
+		if(unicode == 0,{ ^this });
 		// standard keydown
 		if ((key == 3.asAscii) || (key == $\r) || (key == $\n), { // enter key
 			if (keyString.notNil,{ // no error on repeated enter
-				view.valueAction_(keyString);
+				this.valueAction_(keyString);
 				keyString = nil;// restart editing
 			});
 			^this
@@ -53,26 +21,26 @@ SCTextField : SCViewAdapter {
 				},{
 					keyString = String.new;
 				});
-				view.string = keyString.asString;
-				view.stringColor = Color.red;
+				this.string = keyString.asString;
+				this.stringColor = Color.red;
 			},{
 				keyString = String.new;
-				view.string = keyString;
-				view.stringColor = Color.red;
+				this.string = keyString;
+				this.stringColor = Color.red;
 			});
 			^this
 		});
 		if (keyString.isNil, { 
-			keyString = view.string;
-			view.stringColor = Color.red;
+			keyString = this.string;
+			this.stringColor = Color.red;
 		});
 		keyString = keyString.add(key);
-		view.string = keyString;
+		this.string = keyString;
 	}
-	string_ { arg s; view.string = s.as(String); }
-	string { ^view.string }
+	string_ { arg s; super.string = s.as(String); }
 
 }
+
 
 /*
 
