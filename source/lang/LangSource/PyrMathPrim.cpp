@@ -737,7 +737,7 @@ int mathClipInt(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
-		a->uf = sc_clip(a->uf, lo, hi);
+		a->uf = sc_clip(a->ui, lo, hi);
 	}
 	return errNone;
 }
