@@ -26,7 +26,11 @@ Channel  {
 					j = offset + i;
 					if(wrap) { j % size } { j.min(size - 1) }
 		});
-		^Select.multiNewList([rate, which] ++ input);
+		^if(offset.isKindOf(UGen), {
+			Select.multiNewList([rate, which] ++ input)
+		}, {
+			which.collect({ arg i; input[i] })
+		})
 	
 	}
 
