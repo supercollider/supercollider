@@ -5,6 +5,129 @@
 	};
 	objectVersion = 39;
 	objects = {
+		46738FFD05C7E11A00EE082A = {
+			buildPhases = (
+				46738FFE05C7E11A00EE082A,
+				4673900105C7E11A00EE082A,
+				4673900305C7E11A00EE082A,
+				4673900505C7E11A00EE082A,
+				4673900605C7E11A00EE082A,
+			);
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				LIBRARY_STYLE = BUNDLE;
+				OPTIMIZATION_CFLAGS = "-O3";
+				OTHER_CFLAGS = "-DSC_DARWIN";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOL_FLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = PhysicalModellingUGens.scx;
+				REZ_EXECUTABLE = YES;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
+			};
+			dependencies = (
+			);
+			isa = PBXLibraryTarget;
+			name = PhysicalModellingUGens;
+			productInstallPath = /usr/local/lib;
+			productName = TriggerUGens;
+			productReference = 4673900705C7E11A00EE082A;
+		};
+		46738FFE05C7E11A00EE082A = {
+			buildActionMask = 2147483647;
+			files = (
+				46738FFF05C7E11A00EE082A,
+				4673900005C7E11A00EE082A,
+			);
+			isa = PBXHeadersBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		46738FFF05C7E11A00EE082A = {
+			fileRef = 920DAED20425A5D200A80067;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4673900005C7E11A00EE082A = {
+			fileRef = AAE924420481416E00A8010B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4673900105C7E11A00EE082A = {
+			buildActionMask = 2147483647;
+			files = (
+				4673900D05C7E23300EE082A,
+			);
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4673900305C7E11A00EE082A = {
+			buildActionMask = 2147483647;
+			files = (
+				4673900405C7E11A00EE082A,
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4673900405C7E11A00EE082A = {
+			fileRef = F5499A1103A3023A01BA7E76;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4673900505C7E11A00EE082A = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXRezBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4673900605C7E11A00EE082A = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXShellScriptBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp build/PhysicalModellingUGens.scx build/plugins";
+		};
+		4673900705C7E11A00EE082A = {
+			explicitFileType = "compiled.mach-o.dylib";
+			includeInIndex = 0;
+			isa = PBXFileReference;
+			path = PhysicalModellingUGens.scx;
+			refType = 3;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4673900C05C7E23300EE082A = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = PhysicalModelingUGens.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4673900D05C7E23300EE082A = {
+			fileRef = 4673900C05C7E23300EE082A;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4673900E05C7E4E200EE082A = {
+			containerPortal = F50D04F702E68E8201CA2799;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 46738FFD05C7E11A00EE082A;
+			remoteInfo = PhysicalModellingUGens;
+		};
+		4673900F05C7E4E200EE082A = {
+			isa = PBXTargetDependency;
+			target = 46738FFD05C7E11A00EE082A;
+			targetProxy = 4673900E05C7E4E200EE082A;
+		};
 		46964EDB05B93E5600AB268B = {
 			buildPhases = (
 				46964EDC05B93E5600AB268B,
@@ -576,6 +699,7 @@
 				F5B7408602E9455801CA2799,
 				92CCC524045B4BFD00CA2167,
 				46964EDB05B93E5600AB268B,
+				46738FFD05C7E11A00EE082A,
 			);
 		};
 		F50D04F802E68E8201CA2799 = {
@@ -846,6 +970,7 @@
 		};
 		F50D05D302E69B6B01CA2799 = {
 			children = (
+				4673900C05C7E23300EE082A,
 				46964EF505B9408A00AB268B,
 				F50D05D502E69B6B01CA2799,
 				F50D05D602E69B6B01CA2799,
@@ -1036,6 +1161,7 @@
 				F5B741FA02E9D32A01CA2799,
 				92CCC525045B4BFD00CA2167,
 				46964EE505B93E5600AB268B,
+				4673900705C7E11A00EE082A,
 			);
 			isa = PBXGroup;
 			name = Products;
@@ -1333,6 +1459,7 @@
 				F5B7420402E9D84201CA2799,
 				F5B740A602E94DC001CA2799,
 				92CCC529045B4CA700CA2167,
+				4673900F05C7E4E200EE082A,
 			);
 			isa = PBXAggregateTarget;
 			name = "All Plugins";
