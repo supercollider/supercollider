@@ -63,7 +63,7 @@ typedef SCView* (*SCViewCtor)(SCContainerView *inParent, PyrObject* inObj, SCRec
 struct SCViewMaker
 {
 	SCViewMaker(const char* inName, SCViewCtor inCtor);
-	static SCView* MakeSCView(PyrObject* inObj, SCContainerView *inParent, SCRect inBounds);
+	static SCView* MakeSCView(PyrObject* inObj, SCContainerView *inParent, SCRect inBounds, const char* classname);
 	
 	SCViewMaker *mNext;
 	SCViewCtor mCtor;
@@ -78,6 +78,8 @@ public:
 	SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
 	virtual ~SCView();
 		
+    virtual void remove();
+
 	virtual void draw(SCRect inDamage);
         virtual void drawFocus(SCRect inDamage);
 	virtual void drawDisabled(SCRect inDamage);
