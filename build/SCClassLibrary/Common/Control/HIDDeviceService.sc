@@ -71,7 +71,8 @@ HIDDeviceService{
 		devlist.do({arg dev;
 			var newdev;
 			newdev = HIDDevice(dev.at(0), dev.at(1), dev.at(2), dev.at(3), dev.at(4), dev.at(5));
-			elelist = this.prbuildElementList(newdev.locID);
+			elelist = this.prbuildElementList(newdev.locID,
+				Array.newClear(HIDDeviceService.prGetElementListSize(newdev.locID)));
 			elelist.do({arg ele;
 				newdev.prAddElement(ele.at(0), ele.at(1), ele.at(2), ele.at(3), ele.at(4));
 			});
@@ -88,6 +89,10 @@ HIDDeviceService{
 		_HIDBuildElementList
 		^this.primitiveFailed	
 	}
+	*prGetElementListSize{arg locID;
+		_HIDGetElementListSize
+		^this.primitiveFailed	
+	}	
 	*releaseDeviceList{
 		//must be called before closing the program..
 		if(initialized,{
@@ -99,7 +104,7 @@ HIDDeviceService{
 		//must be called before closing the program..
 		_HIDReleaseDeviceList
 	}
-	*runEventLoop{arg rate=0.01; //rate has no influence right now
+	*runEventLoop{arg rate=0.002; 
 		_HIDRunEventLoop
 	}
 	*stopEventLoop{
