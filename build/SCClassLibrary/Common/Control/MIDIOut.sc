@@ -143,7 +143,13 @@ MIDIIn {
 		nil.yield; // pause the thread.
 		^event
 	}
-
+	*waitProgram { arg port, chan, num;
+		var event;
+		event = MIDIEvent(\program, port, chan, num, nil, thisThread);
+		programList = programList.add(event); // add to waiting list
+		nil.yield; // pause the thread.
+		^event
+	}
 	
 	*doAction { arg src, status, a, b, c;
 		action.value(src, status, a, b, c);
