@@ -97,7 +97,7 @@ PathName { 	// AdC, cx
 	
 	folderName {
 		var indexBeforeFolder,ci;
-		ci = this.coloIndices; 
+		ci = this.colonIndices; 
 		if (ci.isEmpty, { ^"" }); 
 		
 		indexBeforeFolder = 
