@@ -7,7 +7,7 @@ Ensemble : AbstractEnsemble {
 	*new { arg  target,addAction=\addToTail, nodeMap;
 			^super.new(target,addAction).ginit(nodeMap);
 	}
-	
+	*prNew { ^super.new.ginit }
 	ginit { arg map;
 		nodeMap=map ?? { NodeMap.new };
 	}
@@ -34,12 +34,26 @@ Ensemble : AbstractEnsemble {
 	set { arg ... args;
 		nodeMap.performList(\set, args);
 		server.sendBundle(server.latency, 
-			["/n_set", nodeID]++args);
+			[15, nodeID]++args);
 	}
 	
 	unset { arg ... keys;
 		nodeMap.performList(\unset, keys);
 	}
+	
+	setn { arg controlName,  values ... args;
+		nodeMap.performList(\setn, [controlName,  values]++ args);
+		args = args.collect({ arg cnv;
+			[cnv.at(0), cnv.at(1).size, cnv.at(1)];
+		}).flat;
+		server.sendBundle(server.latency, [16, nodeID, controlName, values.size, values] ++ args);
+	}
+	
+	fill { arg controlName, numControls, value ... args;
+		this.addCommand(["/n_fill"]++[numControls, value]++args);
+		server.sendBundle(server.latency, 
+			[17, nodeID,controlName,numControls, value]++args); //"n_setn"
+	}	
 	addCommand { arg cmdArray;
 		nodeMap.addCommand(cmdArray)
 	}
