@@ -158,7 +158,7 @@ Pdfsm : ListPattern {
 				while({
 					sig = sigStream.next;
 					state = list[currState + 1];
-					if( sig.isNil || state.isNil, { false }, {
+					if( sig.isNil, { false }, {
 						if( state.includesKey(sig), {
 							#currState, stream = state[sig];
 						}, {
