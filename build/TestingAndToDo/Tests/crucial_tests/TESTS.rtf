@@ -1,7 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red0\green115\blue0;}
+\red0\green115\blue0;\red0\green0\blue0;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf2 //
@@ -41,6 +42,7 @@ p.insp\
 \
 (\
 \cf2 // gui works\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Instr\cf0 (\cf5 \\bubbles\cf0 , \{ \cf3 arg\cf0  amp=1.0;\
 	\cf3 var\cf0  f, zout;\
 	f = \cf3 LFSaw\cf0 .kr(0.4, 0, 24, \cf3 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps;\
@@ -61,7 +63,9 @@ p.gui\
 \
 		\
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // fixed arg\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Instr\cf0 ([\cf5 \\jmcExamples\cf0 ,\cf5 'moto-rev'\cf0 ],\{ \cf3 arg\cf0  lfo=0.2,freq=1000,rq=0.1;\
 	\cf3 RLPF\cf0 .ar(\cf3 LFPulse\cf0 .ar(\cf3 SinOsc\cf0 .kr(lfo, 0, 10, 21), [0,0.1], 0.1), freq, rq).clip2(0.4);\
 \});\
@@ -72,7 +76,9 @@ q.play;\
 )\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // should be filtered low\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Instr\cf0 (\cf5 \\bubbles\cf0 , \{ \cf3 arg\cf0  amp=1.0;\
 	\cf3 var\cf0  f, zout;\
 	f = \cf3 LFSaw\cf0 .kr(0.4, 0, 24, \cf3 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps;\
@@ -89,8 +95,10 @@ p.play;\
 )\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // tempo bus\cf0 \
 t = \cf3 TempoBus\cf0 .new(s);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Tempo\cf0 .bpm = 60;\
 \cf3 SynthDef\cf0 (\cf4 "help-TempoBus"\cf0 ,\{ \cf3 arg\cf0  out=0,tempoBus;\
 	\cf3 var\cf0  tempo,trig,amp;\
@@ -113,7 +121,9 @@ t = \cf3 TempoBus\cf0 .new(s);\
 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // TempoPlayer\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Instr\cf0 (\cf5 \\helpTempoPlayer\cf0 ,\{ \cf3 arg\cf0  tempo;\
 	\cf3 Impulse\cf0 .ar( tempo )\
 \});\
@@ -130,6 +140,7 @@ t = \cf3 TempoBus\cf0 .new(s);\
 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // ModalFreq\cf0 \
 m = 	\cf3 ModalFreq\cf0 .new(\
 			\cf3 StreamKrDur\cf0 .new(\cf3 Pseq\cf0 (#[ 7, 6,1,10 ], \cf3 inf\cf0 ), 1, 0.1), \
@@ -149,8 +160,8 @@ p.stop;\
 \
 p.play;\
 \
-// NOT WORKING	  \
 \
+// NOT WORKING !!\
 (\
 p = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=200;\
 	\cf3 Pulse\cf0 .ar(freq,0.3,0.3)\
@@ -161,7 +172,7 @@ p = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=200;\
 		\cf3 StreamKrDur\cf0 .new(\cf3 Pseq\cf0 (#[ 7, 6,1,10 ], \cf3 inf\cf0 ), 1, 0.1), \
 		\cf3 ArrayBuffer\cf0 ( [ 0, 2, 3, 4, 7 ]  ),\
 		6,\cf2 //StreamKrDur.new(Pseq(#[ 6, 5 ],inf), 4, 0.1), \cf0 \
-		2,\
+		4,\
 		12]\
   )\
 ]);\
@@ -188,6 +199,7 @@ p = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=200;\
 ]);\
 p.play;\
 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 thisProcess\cf0 .stop;\
 \
 p.play;\
@@ -246,6 +258,7 @@ q.play;\
 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // Sample\cf0 \
 p = \cf3 Patch\cf0 (\{ \cf3 arg\cf0  sample;\
 	\cf3 PlayBuf\cf0 .ar(sample.numChannels,\
@@ -268,6 +281,7 @@ p.play;\
 p.free;\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Instr\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\{ \cf3 arg\cf0  sample,tempo;\
 	\cf3 PlayBuf\cf0 .ar(\
 		sample.numChannels,\
@@ -295,7 +309,9 @@ p.isPlaying\
 \cf3 Tempo\cf0 .bpm = 100;\
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //PlayerMixer\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Instr\cf0 (\cf5 \\helpPlayerMixer\cf0 , \{ \cf3 arg\cf0  freq=100,amp=1.0;\
 	\cf3 SinOsc\cf0 .ar([freq,freq + 30],0,amp)\
 \});\
@@ -316,6 +332,7 @@ p= \cf3 PlayerMixer\cf0 ([\
 p.play;\
 \
 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //0.5.wait;\cf0 \
 p.stop;\
 \cf2 //0.5.wait;\cf0 \
@@ -383,6 +400,7 @@ p.play;\
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // children are started\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=100,amp=1.0;\
 		\cf3 SinOsc\cf0 .ar([freq,freq + 3],0,amp)\
 \},[\cf3 StreamKrDur\cf0 (\cf3 Pseq\cf0 ([1000,660,470,400,500,700,600,570],\cf3 inf\cf0 ), \cf3 Pseq\cf0 ([1],\cf3 inf\cf0 ),0),0.1])\
@@ -391,7 +409,9 @@ p.play;\
 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // children inside of patch inside of player mixer are started\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 PlayerMixer\cf0 ([\
 	\cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=100,amp=1.0;\
 		\cf3 SinOsc\cf0 .ar([freq,freq + 3],0,amp)\
@@ -412,6 +432,7 @@ p.play;\
 		]),\
 	1000,\
 	0.2]),\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 //	Patch(\\reverb,[\cf0 \
 		\cf3 Patch\cf0 (\{ \cf3 arg\cf0  freq=100,amp=1.0;\
 			\cf3 SinOsc\cf0 .ar([freq,freq + 3],0,amp)\
@@ -502,4 +523,39 @@ p.release;\
 \
 	 \cf3 PlayerPool\cf0 ([ p,q,r ]).gui\
 )\
+\
+//check that it releases the same busses it allocates, none twice\
+// the tempo bus stays\
+(\cf6 \
+x = 
+\f0\fs24 \cf7 ModalFreq\cf6 .new(\
+			3, \cf8 //StreamKrDur.new(SeqSliders.new('degree',#[ 2, 2, 1 ], 0, 11, 1), 1, 0.1), \cf6 \
+			\cf7 FloatArray\cf6 [ 3, 4, 7, 8, 9 ], \
+			0, \
+			3, \
+			12\
+	);\
+
+\f1\fs18 \cf6 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf7 Patch\cf6 .new(\
+	[ \cf9 'synths'\cf6 , \cf9 'PMOsc'\cf6 , \cf9 'FQenv'\cf6  ], \
+	[ \cf7 BeatClockPlayer\cf6 .new, 20, \
+		x,\
+		\
+		 5, 400, 80, 0.3, 0.8, \cf7 Env\cf6 .new(\
+		[ 0, 0.441358, 0.356481, 0 ], \
+		[ 0.01, 0.3, 1 ], \
+		-4, \
+		2, \
+		\cf7 nil\cf6 \
+	), 0.0343698, \
+	0.2 ]\
+).gui\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf6 \
+\cf0 )\
 }
