@@ -300,15 +300,10 @@
 
 + SynthDef {
 	canFreeSynth { ^children.canFreeSynth }
-	
-	canReleaseSynth {
-		^if(controlNames.isNil, { 
-			false 
-		}, {
-			//gate should be actually input to envgen, but this ist too much to check.
-			controlNames.any({ arg name; name.name == "gate" })  
-			and:
-			{ this.canFreeSynth }
-		})
+	canReleaseSynth { ^this.hasGateControl and: { this.canFreeSynth } }
+	hasGateControl {
+		^controlNames.any { arg cn; 
+			cn.notNil and: { cn.name == "gate" } and: { cn.rate !== 'scalar' } 
+		};
 	}
 }

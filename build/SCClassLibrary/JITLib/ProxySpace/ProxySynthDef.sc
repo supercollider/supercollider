@@ -13,9 +13,7 @@ ProxySynthDef : SynthDef {
 		var def, rate, numChannels, output, isScalar, envgen, canFree, hasOwnGate;
 		name = "temp__" ++ name;		
 		def = super.new(name, { 
-			var  out, outCtl, argNames;
-			argNames = func.def.argNames.asArray;
-			
+			var  out, outCtl;
 			
 			// build the controls from args
 			output = SynthDef.wrap(func, rates, prependArgs);
@@ -24,31 +22,31 @@ ProxySynthDef : SynthDef {
 			rate = output.rate;
 			isScalar = rate === 'scalar';
 			numChannels = output.numChannels;
-			
 			// check for out key. this is used by internal control.
-			if(argNames.includes(\out) && (isScalar.not), { 
+			if(isScalar.not and: { func.def.argNames.asArray.includes(\out) })
+			{ 
 				"out argument is provided internally!".error; 
 				^nil 
-			});
+			};
 			
 			//detect inner gates
 			canFree = UGen.buildSynthDef.children.canFreeSynth;
-			hasOwnGate = argNames.includes('gate');
-			makeFadeEnv = if(hasOwnGate && canFree.not, { 
+			hasOwnGate = UGen.buildSynthDef.hasGateControl;
+			makeFadeEnv = if(hasOwnGate && canFree.not) { 
 							"warning: gate does not free synth!".inform; false 
-						}, {
+						} {
 							makeFadeEnv and: { (isScalar || canFree).not };
-						});
+						};
 			
 			hasOwnGate = canFree && hasOwnGate; //only counts when it can actually free synth.
 			
 			//"gate detection:".postln;
-			//[\makeFadeEnv, makeFadeEnv, \canFree, canFree, \hasOwnGate, hasOwnGate].debug;
+			[\makeFadeEnv, makeFadeEnv, \canFree, canFree, \hasOwnGate, hasOwnGate].debug;
 			
 			// constrain the output to the right number of channels if supplied
 			// if control rate, no channel wrapping is applied
 			// and wrap it in a fade envelope
-			envgen = if(makeFadeEnv, { this.makeFadeEnv }, { 1.0 });
+			envgen = if(makeFadeEnv, { EnvGate.new }, { 1.0 });
 			if(chanConstraint.notNil  
 				and: { chanConstraint < numChannels }
 				and: { isScalar.not }, 
@@ -87,11 +85,18 @@ ProxySynthDef : SynthDef {
 		^def
 	}
 	
-	*makeFadeEnv { arg doneAction=2;
-		var synthGate, synthFadeTime;
-		synthGate = Control.names('gate').kr(1.0);
-		synthFadeTime = Control.names('fadeTime').kr(0.02);
-		^EnvGen.kr(Env.new(#[0,1,0],[1,1],'sin',1), synthGate, 1.0, 0, synthFadeTime, doneAction)	}
-		
 	
 }
+
+EnvGate {
+	*new { arg level=1, gate, fadeTime, doneAction=2;
+		var synthGate, synthFadeTime;
+		synthGate = gate ?? { Control.names('gate').kr(1.0) };
+		synthFadeTime = fadeTime ?? { Control.names('fadeTime').kr(0.02) };
+		^EnvGen.kr(
+			Env.new(#[0,1,0],#[1,1],'sin',1), 
+			synthGate, level, 0.0, synthFadeTime, doneAction
+		)
+	}
+}
+

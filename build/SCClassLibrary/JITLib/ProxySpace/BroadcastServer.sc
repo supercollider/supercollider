@@ -28,12 +28,13 @@ BroadcastServer : Server {
 			.sort({ arg a, b; (a.hostname+a.port) < (a.hostname+a.port) });
 	}
 	
-	////we don't need much here, this class wraps the messages
+	////we don't need much here, this class just forwards the messages
 	ninit { arg argName;
 		name = argName; 
 		addr = localServer.addr;
 		options = localServer.options;
 		isLocal = false;
+		serverRunning = true; //assume that.
 		named.put(name, this);
 	}
 	
@@ -43,22 +44,20 @@ BroadcastServer : Server {
 	
 	makeWindow {} //doesn't make sense, use Router for gui
 	
+	///////////////////////test this/////////////////////////////
 	newNodeWatcher {
-		nodeWatcher = NodeWatcher.new(this);
-		nodeWatcher.start;
+		 nodeWatcher = NodeWatcher.newFrom(this);
+		 nodeWatcher.start;
 		
 	}
 	boot {
-		nodeWatcher.start;
-		this.notify;
+		 nodeWatcher.start;
+		 this.notify; // do not notify by default
 		
 	}
 	quit {
-		nodeWatcher.stop;
+		 nodeWatcher.stop;
 	}
-	
-	serverRunning { ^true } //assume that.
-	waitForBoot {Êarg func; func.value }
 	
 	at { arg index;
 		^allAddr.clipAt(index)
@@ -92,7 +91,7 @@ BroadcastServer : Server {
 	}
 		
 	status {
-		allAddr.do({ arg addr; addr.sendMsg("/status") });
+		// allAddr.do({ arg addr; addr.sendMsg("/status") });
 	}
 	notify { arg flag=true;
 		notified = true;
@@ -123,8 +122,9 @@ Router : Server {
 	var <broadcast, <sharedNodeIDAllocator;
 	
 	
-	addr_ { arg list, latencies; //change this args.
+	addr_ { arg list; //change this args.
 		broadcast = BroadcastServer.for(this, list);
+		serverRunning  = true; //assume that.
 	}
 	
 	autoConfigure { arg getAnyApplication=false;
@@ -163,8 +163,7 @@ Router : Server {
 		sharedNodeIDAllocator = RingNumberAllocator(128, 800);
 		
 	}
-	serverRunning { ^true } //assume that.
-	waitForBoot {Êarg func; func.value }
+	// maybe take them in again?
 	stopAliveThread { }
 	startAliveThread { }
 

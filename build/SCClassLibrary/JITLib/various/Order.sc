@@ -1,4 +1,4 @@
-//todo: make efficient by using PriorityQueue
+// todo: write c code for optimization
 
 Order : SequenceableCollection {
 	var <>array, <>indices;
@@ -57,22 +57,10 @@ Order : SequenceableCollection {
 		})
 	}
 	
-	slotOf { arg i;
-		(i+1).do({ arg j; if(indices.at(j) === i, { ^j }) });
-		^nil
-	}
-
-	nextSlot { arg index;
-		if(indices.notEmpty and: { index <= indices.last }, {
-			indices.do({ arg item, j; if(item >= index, { ^j }) });
-		});
-		^nil
-	}
-	
 	put { arg index, obj;
 		var nextIndex, nextSlot;
-		
-		nextSlot = this.nextSlot(index);
+		index = index.asInteger;
+		nextSlot = this.findSlotFor(index);
 		if(nextSlot.isNil, {
 			array = array.add(obj);
 			indices = indices.add(index);
@@ -86,6 +74,43 @@ Order : SequenceableCollection {
 			})
 		})
 			
+	}
+	
+	slotOf { arg index;
+		var slot;
+		slot = this.findSlotFor(index);
+		^if(slot.isNil or: { index !== indices[slot] }) { nil } { slot }
+	}
+
+	findSlotFor { arg index; //including the same one.
+		var max, slot=0, j;
+		if(indices.isEmpty) { ^nil };
+		j = indices[index];
+		if(j.notNil) {
+			if(j === index) { ^j } { // most common possibility.
+				if(j < index) { slot = index }; // else start search here.
+			}
+		};
+	
+		max = indices.size;
+		while {  slot < max } {  
+			if(indices[slot] >= index)Ê{ ^slot };
+			slot = slot + 1;
+		}
+		^nil
+	}
+	
+	detect { arg function, start;
+		var slot, max, elem;
+		slot = if(start.isNil) {Ê0 } { this.findSlotFor(start) };
+		max = indices.last;
+		if(slot.isNil or: {slot > max}) { ^nil };
+		while { slot <= max } {
+			elem = array[slot];
+			if (function.value(elem, slot)) { ^elem };
+			slot = slot + 1;
+		};
+		^nil
 	}
 	
 	copy {
@@ -117,33 +142,25 @@ Order : SequenceableCollection {
 	}
 	
 	selectInPlace { arg function;
+		var count=0;
 		array = array.select({ arg elem, i; 
 			var bool;
 			bool = function.value(elem,i);
-			if(bool.not, { indices.removeAt(i) });
+			if(bool.not, { indices.removeAt(i-count); count = count + 1 });
 			bool
 		});
 	}
 	
 	rejectInPlace { arg function;
+		var count=0;
 		array = array.reject({ arg elem, i; 
 			var bool;
 			bool = function.value(elem,i);
-			if(bool, { indices.removeAt(i) });
+			if(bool, { indices.removeAt(i-count); count = count + 1  });
 			bool
 		});
 	}
 	
 
 }
-
-
-
-
-/*
-ProxyOrder - play to group
-	- keine nodemap
-	- add / replace etc..
-*/
-
 

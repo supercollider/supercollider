@@ -30,14 +30,14 @@ BusPlug : AbstractFunction {
 		2.do({ arg i; i = i + 1;
 			SynthDef("system_link_audio_" ++ i, { arg out=0, in=16, vol=1;
 				var env;
-				env = ProxySynthDef.makeFadeEnv * vol;
+				env = EnvGate.new(vol);
 				Out.ar(out, InFeedback.ar(in, i) * env) 
 			}, [\ir, \ir]).writeDefFile;
 		});
 		2.do({ arg i; i = i + 1;
 			SynthDef.writeOnce("system_link_control_" ++ i, { arg out=0, in=16;
 				var env;
-				env = ProxySynthDef.makeFadeEnv;
+				env = EnvGate.new;
 				Out.kr(out, In.kr(in, i) * env) 
 			}, [\ir, \ir]);
 		})
@@ -293,10 +293,9 @@ BusPlug : AbstractFunction {
 NodeProxy : BusPlug {
 
 
-	var <group, <objects;
-	var <parents, <nodeMap;	
+	var <group, <objects, <nodeMap;	
 	var <loaded=false, <>awake=true, <>paused=false, <task, <>clock; 	
-	classvar <>buildProxy;
+	classvar <>buildProxyControl;
 	
 	
 	*make { arg server, rate, numChannels, inputs;
@@ -309,7 +308,7 @@ NodeProxy : BusPlug {
 	
 	init {
 		nodeMap = ProxyNodeMap.new.proxy_(this); 
-		this.clearObjects;
+		objects = Order.new;
 		loaded = false;
 	}
 	
@@ -319,16 +318,6 @@ NodeProxy : BusPlug {
 		this.freeBus;	 // free the bus from the server allocator 
 		this.init;	// reset the environment
 		this.doOnClear; // if any dependants are to be freed, do it.
-	}
-	
-	clearObjects {
-		if(objects.notNil, { objects.do({ arg item; item.free }) });
-		objects = Order.new;
-		this.initParents;
-	}
-
-	initParents {
-		parents = IdentitySet.new;
 	}
 	
 	end { arg fadeTime;
@@ -373,38 +362,36 @@ NodeProxy : BusPlug {
 		this.put(-1, obj, 0) 
 	}
 	
-	// revisit 
-	removeLast { 
-		this.removeAt(objects.size - 1); 
+	removeLast { this.removeAt(objects.indices.last) }
+	removeAll { objects.size.do { this.removeLast } }
+	removeAt { arg index; 
+			var bundle, obj;
+			obj = objects.removeAt(index);
+			if(obj.notNil) {
+				bundle = MixedBundle.new; 
+				obj.stopToBundle(bundle);
+				bundle.schedSend(server); 
+			}
 	}
-	
-	removeAt { arg index;
-		objects.removeAt(index).stop //should free also. parents are the problem still
-	}
-	
-	removeAll { objects.size.do { |i| this.removeLast } }
-	
 	
 	at { arg index;  ^objects.at(index) }
 	
 	
-	put { arg index=0, obj, channelOffset = 0, extraArgs; 			var container, bundle, grandParents, freeAll;
+	put { arg index=0, obj, channelOffset = 0, extraArgs; 			var container, bundle, freeAll;
 			
-			freeAll = index.notNil and: { index < 0 };
+			freeAll = index == -1;
+			if(freeAll) { index = nil }; // revisit
 			if(obj.isNil) { 
-				^if(freeAll) { this.removeAll  } { this.removeAt(index) }
+				^if(freeAll) { this.removeAll } { this.removeAt(index) }
 			};
-			bundle = MixedBundle.new;
-			if(parents.isEmpty, { grandParents = parents }, {
-				grandParents = parents.copy;
-				if(freeAll) { this.initParents };
-			});			
 			
-			container = this.wrapObject(obj, channelOffset, index ? objects.size);
+			container = obj.makeProxyControl(channelOffset, this);
+			container.build(this, index ? objects.size); // bus allocation happens here
+			
 			if(container.readyForPlay, {
+				bundle = MixedBundle.new;
 				this.addObject(bundle, container, index, freeAll);
 			}, { 
-				parents = grandParents;
 				"failed to add to node proxy: numChannels and rate must match".inform;
 				^this 
 			});
@@ -414,7 +401,7 @@ NodeProxy : BusPlug {
 				loaded = true;
 				if(awake, {
 					this.prepareToBundle(nil, bundle);
-					this.sendObjectToBundle(bundle, container, extraArgs);
+					this.sendObjectToBundle(bundle, container, extraArgs, index);
 				});
 				bundle.schedSend(server, clock);
 			}, {
@@ -424,20 +411,8 @@ NodeProxy : BusPlug {
 	}
 	
 	
-		
-	
-	wrapObject { arg obj, channelOffset=0, index;
-		var container, ok;
-		container = obj.makeProxyControl(channelOffset,this);
-		this.class.buildProxy = this;
-		container.build(this, index); // bus allocation happens here
-		this.class.buildProxy = nil;
-		^container
-	}
-	
 	addObject { arg bundle, obj, index, freeAll;
 		var rep;
-		
 		if(freeAll, { 
 			if(this.isPlaying, { this.stopAllToBundle(bundle); }); 
 			objects.do({ arg item; item.freeToBundle(bundle);  });
@@ -447,7 +422,8 @@ NodeProxy : BusPlug {
 				objects.add(obj);
 			}, {
 				this.stopToBundleAt(bundle, index);
-				objects.at(index).freeToBundle(bundle); //, this.fadeTime
+				// objects.at(index).freeToBundle(bundle); //, this.fadeTime 
+				// for ressources in AbstractPlayers. not sure how it should behave yet.
 				objects = objects.put(index, obj);
 			})
 		})
@@ -517,7 +493,7 @@ NodeProxy : BusPlug {
 		bundle.schedSend(server, clock);
 	}
 	
-	nodeMap_ { arg map; //keep fadeTime?
+	nodeMap_ { arg map; // keep fadeTime?
 		
 		nodeMap = map;
 		this.linkNodeMap;
@@ -538,14 +514,11 @@ NodeProxy : BusPlug {
 	}
 	
 	loadToBundle { arg bundle;
-		this.initParents;
 		if(bus.notNil) { bus.realloc }; // if server was rebooted 
-		this.class.buildProxy = this;
 		objects.do { arg item, i;
 			item.build(this, i);
 			item.loadToBundle(bundle);
 		};
-		this.class.buildProxy = nil;
 		loaded = true;
 	}
 
@@ -581,7 +554,7 @@ NodeProxy : BusPlug {
 	
 	///////////////////// tasks ////////////////////////
 	
-	//sends all objects, frees the last ones first.
+	// sends all objects, frees the last ones first.
 	
 	spawner { arg beats=1, argFunc;
 		var dt;
@@ -669,7 +642,7 @@ NodeProxy : BusPlug {
 			if(obj.notNil, {
 				i = this.index;
 				bundle = this.getBundle;
-				obj.spawnToBundle(bundle, [\out, i, \i_out, i] ++ extraArgs, this);
+				obj.spawnToBundle(bundle, extraArgs, this);
 				nodeMap.setToBundle(bundle, -1);
 				nodeMap.mapToBundle(bundle, -1);
 				bundle.schedSend(server);
@@ -683,7 +656,7 @@ NodeProxy : BusPlug {
 			if(obj.notNil, {
 				bundle = this.getBundle;
 				if(freeLast, { obj.stopToBundle(bundle) });
-				this.sendObjectToBundle(bundle, obj, extraArgs);
+				this.sendObjectToBundle(bundle, obj, extraArgs, index);
 				bundle.schedSend(server);
 			})
 	}
@@ -705,9 +678,7 @@ NodeProxy : BusPlug {
 	
 	}
 	
-	
-
-	
+		
 		
 	/////// append to bundle commands
 	
@@ -724,7 +695,7 @@ NodeProxy : BusPlug {
 		}
 	}
 	
-	playTaskToBundle { arg bundle; //revisit
+	playTaskToBundle { arg bundle; // revisit
 				bundle.addSchedFunction({ 
 						if(task.isPlaying.not) { task.reset; task.play(clock); };
 						nil; 
@@ -747,12 +718,18 @@ NodeProxy : BusPlug {
 	}
 	
 	//send single object
-	sendObjectToBundle { arg bundle, object, extraArgs;
-				var synth;
-				synth = object.playToBundle(bundle, extraArgs.value, this);
-				if(synth.notNil, { nodeMap.addToBundle(bundle, synth) });
+	sendObjectToBundle { arg bundle, object, extraArgs, index;
+				var synthID, target;
+				synthID = object.playToBundle(bundle, extraArgs.value, this);
+				if(synthID.notNil) {
+					if(index.notNil) {
+						// find next running synth
+						target = objects.detect({ arg obj; obj.nodeID.notNil }, index + 1);
+						if(target.notNil) { bundle.add(["/n_before", synthID, target.nodeID]) };
+					};
+				nodeMap.addToBundle(bundle, synthID)
+				};
 	}
-
 	
 	
 	stopAllToBundle { arg bundle;
@@ -766,6 +743,7 @@ NodeProxy : BusPlug {
 				obj = objects.at(index);
 				if(obj.notNil, { obj.stopToBundle(bundle) });
 	}
+
 
 	
 	wakeUp { 	if(this.isPlaying.not) { this.deepWakeUp } }
@@ -797,16 +775,19 @@ NodeProxy : BusPlug {
 	}
 	
 	wakeUpParentsToBundle { arg bundle, checkedAlready;
-			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
+			objects.doÊ{ arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) };
 			nodeMap.wakeUpParentsToBundle(bundle, checkedAlready);
 	}
 	
-	getFamily { arg list;
-		list = list ?? { IdentitySet.new };
-		list.add(this);
-		list.addAll(parents);
-		parents.do { arg proxy; proxy.getFamily(list) };
-		^list 	
+	getFamily { arg set;
+		var parents;
+		parents = IdentitySet.new;
+		objects.do { arg obj; parents.addAll(obj.parents) };
+		parents.addAll(nodeMap.parents);
+		parents.do { arg proxy; proxy.getFamily(parents) };
+		set.add(this);
+		set.addAll(parents);
+		^set 	
 	}
 		
 	
@@ -815,14 +796,14 @@ NodeProxy : BusPlug {
 	
 	prepareOutput {
 		var parentPlaying;
-		parentPlaying = this.addToChildProxy;
+		parentPlaying = this.addToChild;
 		if(parentPlaying, { this.deepWakeUp });
 	}
 	
-	addToChildProxy {
+	addToChild {
 		var child;
-		child = this.class.buildProxy;
-		if(child.notNil and: { child !== this }, { child.parents.add(this) });
+		child = buildProxyControl;
+		if(child.notNil and: { child !== this }, { child.addParent(this) });
 		^child.isPlaying;
 	}
 	
@@ -940,15 +921,12 @@ NodeProxy : BusPlug {
 	}
 	
 	setBus { arg ... values; //does work only when no node is playing
-		if(bus.notNil && this.isPlaying, {
-			bus.performList(\set, values) 
-		},
-		{ "not playing".inform });
+		if(bus.notNil) { bus.performList(\set, values) };
 	}
 	
 	gateAt { arg key, level=1.0, dur=1.0;
 		var oldLevel;
-		oldLevel = nodeMap.at(key).value;
+		oldLevel = nodeMap.at(key).value; // revisit: maybe simply set group?
 		this.set(key, level); 
 		SystemClock.sched(dur, {
 			if(oldLevel.notNil, { this.set(key, oldLevel) }, { this.unset(key) }); 
@@ -1063,7 +1041,7 @@ SharedNodeProxy : NodeProxy {
 	generateUniqueName {
 		^asString(constantGroupID)
 	}
-	// problem: parents are lost if failed
+	
 	addObject { arg bundle, obj, index, freeAll;
 		if(obj.distributable) {
 			super.addObject(bundle, obj, index, freeAll);

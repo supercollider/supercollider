@@ -14,8 +14,9 @@ ProxySpace : EnvironmentRedirect {
 		^super.new(name).einit(server ? Server.default, name, clock)
 	}
 	
-	*push { arg server, name, clock;
-		^this.new(server, name, clock).push
+	*push { arg server, name, clock; // save user data
+		if(currentEnvironment.isKindOf(this)) { currentEnvironment.clear };
+		^this.new(server, name, clock).push;
 	}
 	
 	clock_ { arg aClock;
@@ -65,18 +66,7 @@ ProxySpace : EnvironmentRedirect {
 	}
 	
 	put { arg key, obj;
-		var proxy;
-		proxy = envir.at(key);
-		if(proxy.isNil, {
-			proxy = this.makeProxy(key);
-		}, {
-			if(obj.isNil, { 
-				proxy.clear; 
-				this.removeAt(key);  
-			});
-			
-		});
-		proxy.source = obj;
+		this.at(key).source = obj;
 	}
 		
 	
@@ -86,9 +76,9 @@ ProxySpace : EnvironmentRedirect {
 		});
 	}
 	
-	stop { arg key=\out;
+	stop { arg key=\out, fadeTime;
 		^this.use({ arg envir;
-			this.at(key).stop;
+			this.at(key).stop(fadeTime);
 		});
 	}
 	
@@ -110,8 +100,8 @@ ProxySpace : EnvironmentRedirect {
 		})
 	}
 	
-	free {
-		this.do({ arg proxy; proxy.free });
+	free { arg fadeTime;
+		this.do({ arg proxy; proxy.free(fadeTime) });
 	}
 	
 	clear {
@@ -119,16 +109,16 @@ ProxySpace : EnvironmentRedirect {
 		envir.makeEmpty;
 	}
 	
-	release {
-		this.do({ arg proxy; proxy.release });
+	release { arg fadeTime;
+		this.do({ arg proxy; proxy.release(fadeTime) });
 	}
 	
-	remove { all.remove(this) }
+	remove { ^all.remove(this) }
 	
 	wakeUp {
 		this.use({ arg envir;
 			this.do({ arg proxy;
-				proxy.wakeUp;
+				proxy.deepWakeUp;
 			});
 		});
 	}
@@ -146,7 +136,7 @@ ProxySpace : EnvironmentRedirect {
 		this.removeNeutral;
 	}
 	
-	removeNeutral { // should be in envir.select
+	removeNeutral { // rejectInPlace should be in envir.select
 		var newEnvir;
 		newEnvir = envir.copy;
 		envir.keysValuesDo { arg key, val; if(val.isNeutral) {  newEnvir.removeAt(key) } };
@@ -253,7 +243,7 @@ SharedProxySpace  : ProxySpace {
 	to do: 
 	-node map thing
 	-lazy init
-*/
+
 
 PlayerSpace : ProxySpace {
 	
@@ -292,3 +282,4 @@ PlayerSpace : ProxySpace {
 
 }
 
+*/

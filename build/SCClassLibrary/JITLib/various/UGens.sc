@@ -1,4 +1,8 @@
 TChoose {
+	*ar { arg trig, array;
+		^Select.ar(TRand.kr(0, array.size, trig), array)
+	
+	}
 	*kr { arg trig, array;
 		^Select.kr(TRand.kr(0, array.size, trig), array)
 	
