@@ -1,0 +1,181 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
+\f3\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red191\green0\blue0;\red0\green0\blue191;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs36 \cf0 networked programming
+\f1\b0\fs24 		
+\f0\b \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\i\b0 \cf0 please note any problems, I'll try to add solutions here.\
+
+\f0\i0\b \
+\
+1) using ProxySpace with more than one client, with separate bus spaces
+\f1\b0 \
+\
+		
+\f2\i Note:
+\f1\i0  	if only one client is using a remote server, only step (a) and step (d) are relevant. \
+				The clientID argument can be left out then.\
+	\
+		
+\f2\i before you start:
+\f1\i0 \
+				remember to synchronize your system clocks. This can be done by:\
+				SystemPreferences>Date&Time: set
+\f2\i  "Set Date & Time automatically"  
+\f1\i0 to true.\
+				a local time server is better than the apple time server.\
+					if you cannot sync the time, you can set the server latency to nil.\
+					This will break the pattern's functionality though.\
+					\
+		\
+		a) boot the (remote) server and create a local model\
+			(you cannot directly boot a remote server instance)\
+			\
+			
+\f3\fs18 \cf2 s = \cf3 Server\cf2 (\cf4 "serverName"\cf2 , \cf3 NetAddr\cf2 (hostname, port), clientID);
+\f1\fs24 \cf0 \
+				\
+				
+\f0\b serverName
+\f1\b0  	can be any name\
+				
+\f0\b hostname
+\f1\b0  	is an ip address, or if you have a name resolution, a network name\
+				
+\f0\b port
+\f1\b0  			the port on which the server is listening. default is 57110\
+				
+\f0\b clientID
+\f1\b0 		for each client (each sc-lang) 
+\f2\i a different integer number has to be given
+\f1\i0  \
+				see [\ul Server\ulnone ]\
+				\
+		b) from each client, initialize the default node and set notify to true:\
+			 	\
+			 
+\f3\fs18 \cf2 	s.initTree;\
+			 	s.notify;\
+			 	\
+			 	if needed, a server window can be created:\
+			 	s.makeWindow;
+\f1\fs24 \cf0 \
+		\
+		c) preallocate a range of busses in each client. \
+			If there is conflicts, increase the number of busses in the server options before booting:
+\f3\fs18  											(s.options.numAudioBusChannels = 1024;)
+\f1\fs24 \
+				\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf2 			(\
+				\cf3 var\cf2  numberOfParticipants, n;\
+				numberOfParticipants = 4;\
+				\
+				\
+				n = s.options.numAudioBusChannels / numberOfParticipants;\
+				n = n.floor.asInteger * s.clientID;\
+				s.audioBusAllocator.alloc(n);\
+				\
+				\
+				n = s.options.numControlBusChannels / numberOfParticipants;\
+				n = n.floor.asInteger * s.clientID;\
+				s.controlBusAllocator.alloc(n);\
+			)\
+		\
+		\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs24 \cf0 		d) now create a ProxySpace from the server:\
+				\
+			
+\f3\fs18 \cf2 	p = \cf3 ProxySpace\cf2 .push(s);
+\f1\fs24 \cf0  \
+				\
+				\
+
+\f0\b 2) using ProxySpace with more than one client, with a partly shared bus space\
+		\
+	
+\f1\b0 		step a, b like in (1), skip (d)\
+			\
+			c) before allocating a number of 
+\f3\fs18 buss
+\f1\fs24 es for each client, create shared busses:\
+				
+\f3\fs18 \cf2 p = \cf3 ProxySpace\cf2 .push(s);\
+				~shared1.ar(2);\
+				~shared2.ar(2);\
+				~sharedkr.kr(1); \cf5 // or other names.\
+			\
+			
+\f1\fs24 \cf0 then do (c) like in (1), just take care that the shared busses are taking number space\
+			already, so the easiest is to increase the numberOfParticipants by one, so no overrun\
+			happens.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 		\
+				
+\f1\fs24 			\
+							\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 3) using ProxySpace with more than one client/server pair, with a partly shared bus space
+\f1\b0 			\
+			
+\f2\i experimental ! more help to come.
+\f1\i0 \
+			a)	boot the (remote) server and create a local model\
+					(you cannot directly boot a remote server instance)\
+				
+\f3\fs18 s = \cf6 Router\cf0 (name, -local address (or nil)-, clientID);\
+				s.addr = [all the net addresses];
+\f1\fs24 \
+			\
+			b) like in (1), skip (d)\
+			 \
+			c) before allocating a number of busses for each client, create shared busses:\
+				
+\f3\fs18 \cf2 \
+				p = \cf3 ProxySpace\cf2 .push(s);\
+				p.addSharedKeys; \cf0 \
+				
+\f1\fs24 \
+			now all letters from ~a to ~r are 1 channel control rate proxies \
+			and from ~s to ~z 2 channel audio rate. ~a and ~s have currently 8 channels.\
+			\
+			This is just one scheme and there is more to come, changes will be noted here.\
+			now ~b = \{ SinOsc.ar(800) * 0.1 \} will silently play a sine tone for all participants.\
+			~b.play will monitor it, 
+\f2\i each client individually
+\f1\i0 . Every client can do with it what they want.\
+			Anyone who changes the function in ~b will change it for all client's servers.\
+			\
+	\
+			\
+
+\f0\b 4) using the Router\
+\
+			
+\f1\b0 help to come...\
+			\
+
+\f0\b \
+5) writing a chat
+\f1\b0 \
+	\
+			see example in
+\f0\b  [\ul Client\ulnone ]\
+	\
+	\
+	
+\f1\b0 \
+					\
+			}
