@@ -120,12 +120,32 @@ SequenceableCollection : Collection {
 		});
 		^nil
 	}
+	
 	indexOfEqual { arg item;
 		this.do({ arg elem, i;
 			if ( item == elem, { ^i })
 		});
 		^nil
 	}
+	
+	indexIn { arg val; // collection is sorted, returns closest index
+		var i, j, a, b;
+		j = this.detectIndex { |item| item > val };
+		if(j.isNil) { ^this.size - 1 };
+		if(j == 0) { ^j };
+		i = j - 1;
+		^if((val - this[i]) < (this[j] - val)) { i } { j }
+	}
+	
+	indexInBetween { arg val; // collection is sorted, returns linearly interpolated index
+		var i, a, b;
+		i = this.detectIndex { |item| item > val };
+		if(i.isNil) { ^this.size - 1 };
+		if(i == 0) { ^i };
+		a = this[i-1]; b = this[i];
+		^((val - a) / (b - a)) + i - 1
+	}
+	
 	remove { arg item;
 		var index;
 		index = this.indexOf(item);
@@ -135,6 +155,7 @@ SequenceableCollection : Collection {
 			nil
 		});
 	}
+	
 	take { arg item;
 		var index;
 		index = this.indexOf(item);
@@ -295,6 +316,12 @@ SequenceableCollection : Collection {
 			scaleDegree = scaleDegree.asInteger;
 			(stepsPerOctave * (scaleDegree div: size)) + scale.wrapAt(scaleDegree)
 		});
+	}
+	keyToDegree { arg scale, stepsPerOctave=12;
+		var key, n;
+		n = this div: stepsPerOctave * scale.size;
+		key = this % stepsPerOctave;
+		^scale.indexInBetween(key) + n
 	}
 	transposeKey { arg amount, octave=12;
 		^((this + amount) % octave).sort
