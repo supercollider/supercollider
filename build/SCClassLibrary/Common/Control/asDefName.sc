@@ -54,7 +54,7 @@
 	asSynthDef { arg rates, prependArgs, outClass=\Out, fadeTime;
 		^GraphBuilder.wrapOut(this.hash.asString, this, rates, prependArgs, outClass, fadeTime);	}
 	
-	play { arg target, outbus = 0, fadeTime=0.02, addAction=\addToTail;
+	play { arg target, outbus = 0, fadeTime=0.02, addAction=\addToHead;
 		var def, synth, server, bytes, synthMsg;
 		target = target.asTarget;
 		server = target.server;

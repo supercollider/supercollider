@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
-\red0\green115\blue0;\red0\green0\blue0;\red0\green0\blue191;}
+\red0\green0\blue0;\red0\green115\blue0;\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Function
@@ -19,8 +19,9 @@ A Function can be evaluated by using the 'value' method.\
 Because it inherits from AbstractFunction, Functions can respond to math operations by \
 creating a new Function. For example:\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 (\
+\f2\fs18 \cf0 (\
 \cf2 var\cf0  a, b, c;\
 a = \{ [100, 200, 300].choose \};	\cf3 // a Function\cf0 \
 b = \{ 10.rand + 1 \};	\cf3 // another Function\cf0 \
@@ -28,8 +29,9 @@ c = a + b; 	\cf3 // c is a Function.\cf0 \
 c.value.postln;	\cf3 // evaluate c and print the result\cf0 \
 )
 \fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 
 \f0\b\fs28 \ul Accessing
 \f1\b0\fs24 \ulnone \
@@ -50,11 +52,13 @@ Get the FunctionDef definition of the Function.\
 \f1\b0 \
 Evaluates the FunctionDef referred to by the Function. The Function is passed the args given.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 \{ \cf2 arg\cf0  a, b; (a * b).postln \}.value(3, 10);
+\f2\fs18 \cf0 \{ \cf2 arg\cf0  a, b; (a * b).postln \}.value(3, 10);
 \fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 
 \f0\b valueArray(..args..)\
 
@@ -63,20 +67,27 @@ Evaluates the FunctionDef referred to by the Function. If the last argument is a
 then it is unpacked and appended to the other arguments (if any) to the Function. \
 If the last argument is not an Array or List then this is the same as the 'value' method.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 \{ \cf2 arg\cf0  a, b, c; ((a * b) + c).postln \}.valueArray([3, 10, 7]);\
+\f2\fs18 \cf0 \{ \cf2 arg\cf0  a, b, c; ((a * b) + c).postln \}.valueArray([3, 10, 7]);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \{ \cf2 arg\cf0  a, b, c, d; [a, b, c, d].postln \}.valueArray([1, 2, 3]);\
+\f2 \cf0 \{ \cf2 arg\cf0  a, b, c, d; [a, b, c, d].postln \}.valueArray([1, 2, 3]);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \{ \cf2 arg\cf0  a, b, c, d; [a, b, c, d].postln \}.valueArray(9, [1, 2, 3]);\
+\f2 \cf0 \{ \cf2 arg\cf0  a, b, c, d; [a, b, c, d].postln \}.valueArray(9, [1, 2, 3]);\
 \
-\{ \cf2 arg\cf0  a, b, c, d; [a, b, c, d].postln \}.valueArray(9, 10, [1, 2, 3]);\
+\{ \cf2 arg\cf0  a, b, c, d; [a, b, c, d].postln \}.valueArray(9, 10, [1, 2, 3]);
+\fs20 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \
+\fs24 \cf0 \
 
 \f0\b valueEnvir(...args)\
 
@@ -85,8 +96,9 @@ As value above. Unsupplied argument names are looked up in the current
 \f0\b Environment
 \f1\b0 .\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 (\
+\f2\fs18 \cf0 (\
 \cf2 Environment\cf0 .use(\{\
 ~a = 3;\
 ~b = 10;\
@@ -94,8 +106,9 @@ As value above. Unsupplied argument names are looked up in the current
 \});\
 )
 \fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \
+\f1 \cf0 \
 
 \f0\b valueArrayEnvir(..args..)\
 
@@ -114,13 +127,15 @@ Repeat this function. Useful with
 \f0\b Task
 \f1\b0  and Clocks.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 t = \cf2 Task\cf0 (\{ \{ \cf4 "I'm loopy"\cf0 .postln; 1.wait;\}.loop \});\
+\f2\fs18 \cf0 t = \cf2 Task\cf0 (\{ \{ \cf4 "I'm loopy"\cf0 .postln; 1.wait;\}.loop \});\
 t.start;\
 t.stop;
 \f1\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \
+\f0\b \cf0 \
 defer(delta)\
 
 \f1\b0 \
@@ -130,58 +145,46 @@ Delay the evaluation of this Function by
 \f0\b AppClock
 \f1\b0 .\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs20 \{ \cf4 "2 seconds have passed."\cf0 .postln; \}.defer(2);
+\f2\fs18 \cf0 \{ \cf4 "2 seconds have passed."\cf0 .postln; \}.defer(2);
 \f1\fs24 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b dup(n)\
+\f0\b \cf0 dup(n)\
 
 \f1\b0 \
 Return an Array consisting of the results of n evaluations of this Function.\
 \
 
-\f2\fs20 x = \{ 4.rand; \}.dup(4);\
+\f2\fs18 \cf5 x = \{ 4.rand; \}.dup(4);\
 x.postln;
-\f1\fs24 \
+\f1\fs24 \cf0 \
 \
 
 \f0\b\fs28 \ul Audio Support\
 
 \f2\b0\fs24 \ulnone \
 
-\f0\b play(target, outbus, fadetime)\
+\f0\b play(target, outbus, fadetime, addAction)\
 
 \f1\b0 \
 This is probably the simplest way to get audio in SC3. It wraps the Function in a 
 \f0\b SynthDef
 \f1\b0  (adding an 
 \f0\b Out
-\f1\b0  ugen if needed), creates and starts a new 
+\f1\b0  ugen if needed and a 
+\f0\b Linen
+\f1\b0  to avoid clicks), creates and starts a new 
 \f0\b Synth
 \f1\b0  with it, and returns the Synth object. Arguments in the 
 \f0\b FunctionDef
-\f1\b0  become arguments in the resulting SynthDef.\
+\f1\b0  become arguments in the resulting SynthDef, but the first argument must be fadeTime.\
 
 \f0\b \
 target 
-\f1\b0 - a node or server. If target is:\
-			a 
-\f0\b Group
-\f1\b0 \
-				add to the tail of that group\
-			a 
-\f0\b Synth
-\f1\b0 \
-				add to the tail of that synth's group\
-			a 
-\f0\b Server
-\f1\b0 \
-				add to the tail of the 
-\f0\b RootNode
-\f1\b0  of that server\
-			nil\
-				add to the tail of the RootNode of the defaultServer\
+\f1\b0 - a Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.\
 
 \f0\b outbus 
 \f1\b0 - the output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.\
@@ -189,12 +192,33 @@ target
 \f0\b fadeTime
 \f1\b0  - a fadein time. The default is 0.02 seconds, which is just enough to avoid a click.\
 
-\f2 \
+\f0\b addAction
+\f1\b0  - see 
+\f0\b Synth
+\f1\b0  for a list of valid addActions. The default is 
+\f2\fs18 \cf6 \\addToHead
+\f0\b\fs24 \cf0 .
+\f1\b0 \
 
-\fs20 x = \{ \cf2 arg\cf0  freq = 440; \cf2 SinOsc\cf0 .ar(freq, 0, 0.3) \}.play; \cf3 // this returns a Synth object;\cf0 \
-x.set(\cf5 \\freq\cf0 , 220);\
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 x = \{ arg fadeTime, freq = 440; \cf2 SinOsc\cf0 .ar(freq, 0, 0.3) \}.play; \cf3 // this returns a Synth object;\cf0 \
+x.set(\cf6 \\freq\cf0 , 220);\
 x.defName; \cf3 // see the name of the resulting SynthDef (derived from the Functions hash value)\cf0 \
-x.free;\cf2 \
+x.free;
+\fs20 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf7 // with an explicit envelope
+\fs20 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs18 \cf0 d = \{ \cf2 arg\cf0  gate=1; \{\cf2 BrownNoise\cf0 .ar\}.dup * \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .asr, gate, doneAction:2) \}.play;\
+d.release(3);
+\fs20 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
 Many of the examples in SC3 make use of the Function.play syntax. Note that reusing such code in a 
@@ -204,17 +228,17 @@ Many of the examples in SC3 make use of the Function.play syntax. Note that reus
 \f1\b0  ugen.\
 
 \f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs20 \cf3 // the following two lines produce equivalent results\cf0 \
+\fs18 \cf3 // the following two lines produce equivalent results\cf0 \
 \{ \cf2 SinOsc\cf0 .ar(440, 0, 0.3) \}.play(fadeTime: 0.0); \
-\cf2 SynthDef\cf0 (\cf4 "help-FuncPlay"\cf0 , \{ \cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(440, 0, 0.3))\}).play;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf4 "help-FuncPlay"\cf0 , \{ \cf2 Out\cf0 .ar(0, \cf2 SinOsc\cf0 .ar(440, 0, 0.3))\}).play;
+\fs20 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 Function.play is often more convienent than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice. For further discussion see the 
-\f0\b play
-\f1\b0 , and 
-\f0\b Backwards-Compatibility
-\f1\b0  helpfiles.\
+\f1\fs24 \cf0 Function.play is often more convienent than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice. \
 \
 
 \f0\b scope(numChannels, outbus, fadeTime)\
@@ -240,7 +264,7 @@ outbus
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf6 \{ \cf7 FSinOsc\cf6 .ar(440, 0, 0.3) \}.scope(1)\cf0 \
+\f2\fs18 \cf0 \{ \cf2 FSinOsc\cf0 .ar(440, 0, 0.3) \}.scope(1)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
@@ -251,7 +275,11 @@ outbus
 asSynthDef(rates, prependArgs, outClass, fadetime)\
 
 \f1\b0 \
-Returns a SynthDef based on this Function, adding an Out ugen if needed.\
+Returns a SynthDef based on this Function, adding a 
+\f0\b Linen 
+\f1\b0 and an 
+\f0\b Out
+\f1\b0  ugen if needed.\
 
 \f0\b \
 rates 
@@ -260,7 +288,7 @@ rates
 \f1\b0  for more details).\
 
 \f0\b outClass
-\f1\b0  - The class of the output ugen as a symbol. The default is \cf5 \\Out\cf0 .\
+\f1\b0  - The class of the output ugen as a symbol. The default is \cf6 \\Out\cf0 .\
 
 \f0\b fadeTime
 \f1\b0  - a fadein time. The default is 0.\
@@ -273,11 +301,15 @@ asDefName\
 Performs asSynthDef (see above), sends the resulting def to the local server and returns the SynthDefs name. This is asynchronous.\
 
 \f2\fs20 \
-x = \{ \cf2 SinOsc\cf0 .ar(440, 0, 0.3) \}.asDefName; \cf3 // this must complete first\cf0 \
-y = \cf2 Synth\cf0 .new(x);\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 asRoutine\
+\fs18 \cf0 x = \{ \cf2 SinOsc\cf0 .ar(440, 0, 0.3) \}.asDefName; \cf3 // this must complete first\cf0 \
+y = \cf2 Synth\cf0 .new(x);
+\fs20 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 asRoutine\
 \
 
 \f1\b0 Returns a 
