@@ -99,7 +99,7 @@ struct Pitch : public Unit
 	float *m_buffer;
 	
 	float m_freq, m_minfreq, m_maxfreq, m_hasfreq, m_srate, m_ampthresh, m_peakthresh;
-	int m_maxperiod, m_execPeriod, m_index, m_readp, m_size;
+	int m_minperiod, m_maxperiod, m_execPeriod, m_index, m_readp, m_size;
 	int m_downsamp, m_maxlog2bins, m_medianSize;
 	int m_state;
 };
@@ -1384,6 +1384,7 @@ void Pitch_Ctor(Pitch *unit)
 
     unit->m_srate = unit->mWorld->mFullRate.mSampleRate / (float)unit->m_downsamp;
     
+    unit->m_minperiod = (long)(unit->m_srate / unit->m_maxfreq);
     unit->m_maxperiod = (long)(unit->m_srate / unit->m_minfreq);
 
 	unit->m_execPeriod = (int)(unit->m_srate / execfreq);
@@ -1425,7 +1426,8 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 	float hasfreq = unit->m_hasfreq;
 	//printf("> %d %d readp %d ksamps %d ds %d\n", index, size, readp, ksamps, downsamp);
 	do {
-		bufData[index++] = in[readp];
+		float z = in[readp];
+		bufData[index++] = z;
 		readp += downsamp;
 		
 		if (index >= size) {
@@ -1434,15 +1436,16 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 			
 			hasfreq = 0.f; // assume failure
 			
+			int minperiod = unit->m_minperiod;
 			int maxperiod = unit->m_maxperiod;
-			float maxamp = 0.f;
+			//float maxamp = 0.f;
 			// check for amp threshold
 			for (int j = 0; j < maxperiod; ++j) {	
 				if (fabs(bufData[j]) >= ampthresh) {
 					ampok = true;
 					break;
 				}
-				if (fabs(bufData[j]) > maxamp) maxamp = fabs(bufData[j]);
+				//if (fabs(bufData[j]) > maxamp) maxamp = fabs(bufData[j]);
 			}
 			//printf("ampok %d  maxperiod %d  maxamp %g\n", ampok, maxperiod,  maxamp);
 			
@@ -1484,19 +1487,20 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 				float maxsum = threshold;
 				foundPeak = false;
 				for (i = startperiod; i <= maxperiod; i += binstep) {
-					ampsum = 0.f;
-					for (int j = 0; j < maxperiod; ++j) {	
-						ampsum += bufData[i+j] * bufData[j];
-					}
-					if (ampsum > threshold) {
-						if (ampsum > maxsum) {
-							foundPeak = true;
-							maxsum = ampsum;
-							peakbinstep = binstep;
-							period = i;
+					if (i >= minperiod) {
+						ampsum = 0.f;
+						for (int j = 0; j < maxperiod; ++j) {	
+							ampsum += bufData[i+j] * bufData[j];
 						}
-					} else if (foundPeak) break;
-					
+						if (ampsum > threshold) {
+							if (ampsum > maxsum) {
+								foundPeak = true;
+								maxsum = ampsum;
+								peakbinstep = binstep;
+								period = i;
+							}
+						} else if (foundPeak) break;
+					}
 					octave = LOG2CEIL(i); 
 					if (octave <= maxlog2bins) {
 						binstep = 1;
@@ -1552,26 +1556,16 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 					}
 					
 					// make a fractional period
-					float fperiod = period;
-					if (prevampsum < nextampsum) {
-						fperiod += 0.5 * (nextampsum - prevampsum) / (maxsum - prevampsum);
-					} else if (nextampsum < prevampsum) {
-						fperiod -= 0.5 * (prevampsum - nextampsum) / (maxsum - nextampsum);
-					}
-/*
-					// make a fractional period
-					float fperiod = (float)period;
-					float a = 0.5 * (prevampsum + nextampsum) + maxsum;
-					float b = -2. * fperiod + a + maxsum - prevampsum;
-					fperiod = (-b * 0.5) / a;
-					printf("period %d   fperiod %g   %g %g\n", a, b);
-*/
+					float beta = 0.5 * (nextampsum - prevampsum);
+					float gamma = 2.0  * maxsum - nextampsum - prevampsum;
+					float fperiod = (float)period + (beta/gamma);
+
 					// calculate frequency
 					float tempfreq = unit->m_srate / fperiod;
 					
 					//printf("freq %g   %g / %g    %g %g  %d\n", tempfreq, unit->m_srate, fperiod,
 					//	unit->m_minfreq, unit->m_maxfreq, 
-					//	tempfreq >= unit->m_minfreq && tempfreq <= unit->m_maxfreq);
+					//  tempfreq >= unit->m_minfreq && tempfreq <= unit->m_maxfreq);
 						
 					if (tempfreq >= unit->m_minfreq && tempfreq <= unit->m_maxfreq) {
 						freq = tempfreq;
