@@ -20,6 +20,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "UserPanel.h"
+#import "SCTextView.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "GC.h"
@@ -31,7 +32,7 @@ extern PyrSymbol *s_closed;
 @interface MyDocument : NSDocument
 {
     IBOutlet NSTextView* initTextView;
-    IBOutlet NSTextView* textView;
+    IBOutlet SCTextView* textView;
     IBOutlet NSScrollView* scrollView;
     Boolean isRichText;
     struct PyrObject *mWindowObj;
@@ -40,7 +41,7 @@ extern PyrSymbol *s_closed;
 
 
 - (NSTextView*)makeTextView;
-- (NSTextView*) textView;
+- (SCTextView*) textView;
 
 - (void)windowControllerDidLoadNib:(NSWindowController*) aController;
 
@@ -63,7 +64,7 @@ extern PyrSymbol *s_closed;
 - (IBAction)wrapCurlyBrackets: (int)sender;
 
 - (IBAction) executeSelection: (id) sender;
-- (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange;
+//- (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange;
 -(void)selectRangeStart:(int)rangeStart size:(int)rangeSize;
 
 - (IBAction) showHelp: (id) sender;
@@ -100,11 +101,14 @@ extern PyrSymbol *s_closed;
 - (void)setBackgroundColor:(NSColor *)color;
 - (NSScrollView*) scrollView;
 - (NSTextView*) initTextView;
--(void)selectLine:(int)linenum;
+- (void)selectLine:(int)linenum;
 - (IBAction)selectLineWindow: (id) sender;
 - (void) callSCLangWithMethod: (PyrSymbol*) method;
--(BOOL) promptToSave;
--(void) setPromptToSave: (BOOL) flag; 
+- (BOOL) promptToSave;
+- (void) setPromptToSave: (BOOL) flag; 
+- (void) keyUp: (NSEvent*) event;
+- (void) keyDown: (NSEvent*) event;
+- (void) mouseDown: (NSEvent*) event;
 
 @end
 
