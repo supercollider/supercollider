@@ -336,12 +336,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opAtan2 : res.uf = atan2((double)a->ui, (double)b->ui); break;
 						case opHypot : res.uf = hypot((double)a->ui, (double)b->ui); break;
 						case opHypotx : res.uf = hypotx((double)a->ui, (double)b->ui); break;
-						case opPow   : 
-							if (a->ui >= 0)
-								res.uf = pow((double)a->ui, (double)b->ui); 
-							else
-								res.uf = -pow((double)-a->ui, (double)b->ui); 
-							break;
+						case opPow   : res.uf = pow((double)a->ui, (double)b->ui); break;
 						case opShiftLeft : {
 							long ia = a->ui;
 							long ib = b->ui;
@@ -493,12 +488,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opAtan2 : res.uf = atan2(a->ui, b->uf); break;
 						case opHypot : res.uf = hypot(a->ui, b->uf); break;
 						case opHypotx : res.uf = hypotx(a->ui, b->uf); break;
-						case opPow   : 
-							if (a->ui >= 0)
-								res.uf = pow((double)a->ui, b->uf); 
-							else
-								res.uf = -pow((double)-a->ui, b->uf); 
-							break;
+						case opPow   : res.uf = pow((double)a->ui, b->uf); break;
 						case opRing1 : res.uf = a->ui * b->uf + a->ui; break;
 						case opRing2 : res.uf = a->ui * b->uf + a->ui + b->uf; break;
 						case opRing3 : res.uf = a->ui * a->ui * b->uf; break;
@@ -731,12 +721,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opAtan2 : res.uf = atan2(a->uf, b->ui); break;
 						case opHypot : res.uf = hypot(a->uf, b->ui); break;
 						case opHypotx : res.uf = hypotx(a->uf, b->ui); break;
-						case opPow   : 
-							if (a->uf >= 0.)
-								res.uf = pow(a->uf, (double)b->ui); 
-							else
-								res.uf = -pow(-a->uf, (double)b->ui); 
-							break;
+						case opPow   : res.uf = pow(a->uf, (double)b->ui); break;
 						case opRing1 : res.uf = a->uf * b->ui + a->uf; break;
 						case opRing2 : res.uf = a->uf * b->ui + a->uf + b->ui; break;
 						case opRing3 : res.uf = a->uf * a->uf * b->ui; break;
@@ -850,12 +835,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opAtan2 : res.uf = atan2(a->uf, b->uf); break;
 						case opHypot : res.uf = hypot(a->uf, b->uf); break;
 						case opHypotx : res.uf = hypotx(a->uf, b->uf); break;
-						case opPow   : 
-							if (a->uf >= 0.)
-								res.uf = pow(a->uf, b->uf); 
-							else
-								res.uf = -pow(-a->uf, b->uf); 
-							break;
+						case opPow   : res.uf = pow(a->uf, b->uf); break;
 						case opRing1 : res.uf = a->uf * b->uf + a->uf; break;
 						case opRing2 : res.uf = a->uf * b->uf + a->uf + b->uf; break;
 						case opRing3 : res.uf = a->uf * a->uf * b->uf; break;
