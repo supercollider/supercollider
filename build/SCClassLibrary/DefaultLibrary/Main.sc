@@ -1,7 +1,7 @@
 Main : Process {
 	
-	startUp {
-		super.startUp;
+	startup {
+		super.startup;
 		// set the 's' interpreter variable to the default server.
 		interpreter.s = Server.local;
 		// make server window
@@ -12,10 +12,10 @@ Main : Process {
 		Server.local.options.memSize = 8192;
 	}
 	
-	shutDown { // at recompile, quit
+	shutdown { // at recompile, quit
 		Server.quitAll;
 		HIDDeviceService.releaseDeviceList;
-		super.shutDown;
+		super.shutdown;
 	}
 	
 	run { // called by command-R
