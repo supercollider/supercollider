@@ -377,7 +377,7 @@ EnvirDocument : Document {
 	var <envir, <canPlay;
 	*new { arg envir, string="", title, pushNow=true;
 		if(pushNow, { envir.push });
-		title = envir.tryPerform(\name) ? "Untitled Environment";
+		title = title ?? { envir.tryPerform(\name) ? "Untitled Environment" };
 		^super.new(string, "envir" + title.asString).envir_(envir).registerKeys
 				.background_(rgb(250, 240, 240));
 	}
