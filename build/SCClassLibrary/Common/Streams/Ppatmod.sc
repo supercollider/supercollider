@@ -12,6 +12,14 @@ Plazy : Pattern {
 	}
 }
 
+PlazyEnvir : Plazy {
+	asStream {	
+		^func.valueEnvir.asStream
+	}
+	embedInStream { arg ... args;				
+		^func.valueEnvir.embedInStream
+	}
+}
 
 Ppatmod : Pattern {
 	var <>pattern, <>func, <>repeats=1;
