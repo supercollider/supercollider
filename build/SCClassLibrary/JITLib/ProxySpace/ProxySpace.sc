@@ -74,8 +74,8 @@
 		this.at(key).play(busIndex, nChan);
 	}
 	
-	record { arg key, path, headerFormat="aif", sampleFormat="int16";
-		^this.at(key).record(path, headerFormat="aif", sampleFormat);
+	record { arg key, path, headerFormat="aiff", sampleFormat="int16";
+		^this.at(key).record(path, headerFormat="aiff", sampleFormat);
 	}
 	
 	free {

@@ -85,8 +85,8 @@ NodeProxy : AbstractFunction {
 		
 	play { arg busIndex=0, nChan;
 		var bundle, divider;
-		if(server.serverRunning, {
-			bundle = DebugBundle.new;
+		if(server.serverRunning.not, { "server not running".inform; ^nil });
+			bundle = MixedBundle.new;
 			if(playGroup.isPlaying.not, { playGroup = Group.newToBundle(bundle, server) });
 			if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
 			nChan = nChan ? this.numChannels;
@@ -102,15 +102,15 @@ NodeProxy : AbstractFunction {
 			});
 		
 			this.sendBundle(bundle);
-		}, { "server not running".inform });
-		
 		^playGroup
 	}
 	
 	record { arg path, headerFormat="aiff", sampleFormat="int16", numChannels;
 		var rec;
-		rec= RecNodeProxy.newFrom(this, numChannels);
-		rec.open(	path, headerFormat, sampleFormat);
+		if(server.serverRunning.not, { "server not running".inform; ^nil });
+		rec = RecNodeProxy.newFrom(this, numChannels);
+		rec.open(path, headerFormat, sampleFormat);
+		rec.record;
 		^rec
 	}
 	

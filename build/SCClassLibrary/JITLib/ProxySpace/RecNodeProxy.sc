@@ -16,9 +16,9 @@ RecNodeProxy : NodeProxy {
 		});
 	}
 	
-	*newFrom { arg proxy, numChannels, onCompletion;
+	*newFrom { arg proxy, numChannels;
 		^this.audio(proxy.server, numChannels ? proxy.numChannels)
-			.put({ proxy.ar(numChannels) }, 0, true, onCompletion:onCompletion);
+			.source_({ proxy.ar(numChannels) });
 	}
 	
 	
@@ -41,13 +41,14 @@ RecNodeProxy : NodeProxy {
 		if(server.serverRunning.not, { "server not running".inform; ^this  });
 		if(buffer.isNil, { "not prepared. use open to prepare a file.".inform;  ^this });
 		
-		bundle = DebugBundle.new;
+		bundle = MixedBundle.new;
 		n = this.numChannels;
 		if(this.isPlaying.not, {
 			this.wakeUpToBundle(bundle);
 		});
 		
 		recGroup = Group.newToBundle(bundle, server);
+		NodeWatcher.register(recGroup);
 		divider = if(n.even, 2, 1);
 		(n div: divider).do({ arg i;
 		bundle.add([9, "system-diskout-"++divider, 
@@ -59,6 +60,7 @@ RecNodeProxy : NodeProxy {
 		bundle.schedSend(server);
 	}
 	
+	
 	cmdPeriod {
 		CmdPeriod.remove(this);
 		this.close;
@@ -67,33 +69,29 @@ RecNodeProxy : NodeProxy {
 	pause { 
 		if(this.isPlaying && recGroup.notNil, {
 			recGroup.run(false);
-		})
+			inform("_____now paused: " ++ path);
+		}, { "not recording".inform })
 	}
 	
 	unpause { 
 		if(this.isPlaying && recGroup.notNil, {
 			recGroup.run(true);
-		})
+			inform("_____now recording: " ++ path);
+		}, { "not ready for recording".inform })
 	}
 	
 	close {
-		
-		recGroup.free;
+		if(recGroup.isPlaying, { recGroup.free });
 		recGroup = nil;
-		super.stop;
-		
 		if(buffer.notNil, {
-			inform("closed file: " ++ path);
+			inform("_____closed file: " ++ path);
 			buffer.close;
 		});
 		path = nil;
-		//buffer.free;
+		buffer.free;
+		buffer = nil;
 	}
 	
-	free {
-		super.free;
-		this.stop;
-	}
 	
 	guiClass {
 		^RecNodeProxyGui
