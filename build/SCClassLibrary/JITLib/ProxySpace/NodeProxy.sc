@@ -91,9 +91,9 @@ NodeProxy : AbstractFunction {
 					\i_busOut, busIndex+(i*divider), \i_busIn, outbus.index+(i*divider)]);
 		});
 		
-		//server.waitForBoot({
+		server.waitForBoot({
 			this.sendBundle(bundle,0);
-		//});
+		});
 		^playGroup
 	}
 	
