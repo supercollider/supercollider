@@ -50,7 +50,6 @@ int prString_System(struct VMGlobals *g, int numArgsPushed)
 void* string_popen_thread_func(void *data);
 void* string_popen_thread_func(void *data)
 {
-        printf("->popen\n");
     char *cmdline = (char*)data;
 
     FILE *stream = popen(cmdline, "r");
