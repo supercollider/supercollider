@@ -115,11 +115,8 @@ static id sharedSCVM = nil;
 	schedInit();
 	compileLibrary();
 	
-//!!!
-// Rendezvous is broken in a way that makes SC become unusable
-//	// CR ADDED
-//	[[RendezvousClient sharedClient] findOSCServices];
-//!!!
+	// CR ADDED
+	[[RendezvousClient sharedClient] findOSCServices];
 }
 
 - (void)doPeriodicTask: (NSTimer*) timer
