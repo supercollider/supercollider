@@ -111,7 +111,7 @@ Server : Model {
 	
 	var alive = false,booting = false,aliveThread,statusWatcher;
 	
-	var <window, scopeWindow, scopeBuffer;
+	var <window, scopeWindow, scopeBuffer, <scopeSynth;
 	var recordBuf, <recordNode;
 	
 	*new { arg name, addr, options, clientID=0;
