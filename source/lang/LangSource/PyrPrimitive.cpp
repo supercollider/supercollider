@@ -318,7 +318,7 @@ int prFloat_AsStringPrec(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 	
 	char fmt[8], str[32];
-	sprintf(fmt, "%%.%ldg", precision);
+	sprintf(fmt, "%%.%dg", precision);
 	sprintf(str, fmt, a->uf);
 	
 	PyrString *string = newPyrString(g->gc, str, 0, true);
@@ -3191,7 +3191,7 @@ void schedClearUnsafe();
 int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed);
 int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp;
+	//PyrSlot *a = g->sp;
 
 	schedClearUnsafe();
 
@@ -3201,7 +3201,7 @@ int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed)
 int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed);
 int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp - 2;
+	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
 
@@ -3220,7 +3220,7 @@ int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed)
 int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed);
 int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp - 2;
+	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
 

@@ -23,7 +23,7 @@ int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
 {
         if (!g->canCallOS) return errCantCallOS;
 
-        PyrSlot *receiver = g->sp - 1; // a cocoa
+        //PyrSlot *receiver = g->sp - 1; // a cocoa
         PyrSlot *array = g->sp; // an array
 
         NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
