@@ -5,8 +5,11 @@
 	loop { ^Pn(this, inf) }
 
 	repeat { arg repeats = inf; ^Pn(this, repeats) }
-	limit { arg n=1;
+	lock { arg n=1;
 		^Pfin(n.asStream, this.asStream)
+	}
+	lim { arg mindur, maxdur;
+		^Plim(this, mindur, maxdur)
 	}
 
 }
@@ -79,6 +82,31 @@
 	}
 	lag3 { arg lagTime=0.1;
 		^this.collect({ arg item; item.lag3(lagTime) })
+	}
+}
+
+
++ EventStreamPlayer {
+	
+	xplay { arg fadeTime, argClock, doReset = false, quant=1.0;
+		if (doReset, { this.reset });
+		clock = argClock ? clock ? TempoClock.default;
+		stream = PfadeIn(originalStream, fadeTime).asStream;
+		clock.play(this, quant);
+	}
+	xstop { arg fadeTime;
+		stream = PfadeOut(stream, fadeTime).asStream;
+	}
+
+
+}
++PauseStream {
+
+	xplay { arg fadeTime, argClock, doReset = false, quant=1.0;
+		this.play(argClock, doReset, quant);
+	}
+	xstop { // stop after fade?
+		this.stop;
 	}
 }
 
