@@ -776,7 +776,7 @@ extern PyrSymbol * s_didResignKey;
 	pthread_mutex_lock (&gLangMutex);
     struct PyrObject *scobj = [self getSCObject];
     if (scobj) {
-       // SetPtr(scobj->slots + 0, self);
+        SetPtr(scobj->slots + 0, self);
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
         ++g->sp;  SetObject(g->sp, scobj); // push window obj
@@ -787,11 +787,21 @@ extern PyrSymbol * s_didResignKey;
 }
 - (void)windowWillClose:(NSNotification *)aNotification
 {
-    if (textView == gPostView) gPostView = nil;
+    //for some reason some Documents created with open do not call windowWillClose
+    /*
+   
 	[self callSCLangWithMethod: s_closed];
 	[self setSCObject: nil];
+    */
 }
-
+- (void)dealloc{
+	//for some reason some Documents created with open do not call windowWillClose
+	//so that its action is called here: jan.t
+	if (textView == gPostView) gPostView = nil;
+ 	[self callSCLangWithMethod: s_closed];
+	[self setSCObject: nil];
+	[super dealloc];
+}
 - (IBAction) becomePostWindow: (id) sender
 {
     gPostView = textView;
