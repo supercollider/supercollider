@@ -181,6 +181,10 @@ Buffer {
 		server.listSendMsg(this.allocReadMsg( argpath,startFrame,completionMessage));
 	}
 	
+	printOn { arg stream; 
+		stream << this.class.name << "(" <<* [bufnum,numFrames,numChannels,path] <<")";
+	}
+
 	*loadDialog { arg server,startFrame = 0,numFrames = -1;
 		server = server ? Server.local;
 		^super.newCopyArgs(server,
