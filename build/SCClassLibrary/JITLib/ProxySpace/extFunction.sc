@@ -18,8 +18,13 @@
 				{ arg beat, sec, clock; this.value(beat, sec, clock); nil }
 			)
 	}
+	
+	schedToCurrentBeat { arg beats=0; //this might change, connects to ProxySpace
+		this.schedToBeat(currentEnvironment.tryPerform(\clock) ? TempoClock.default);
+	}
 
 }
+
 
 +Symbol {
 	play { arg outBus=0, nChan=2, server;
