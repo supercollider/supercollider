@@ -2,19 +2,19 @@
 
 AbstractNodeWatcher {
 
-	var <addr, <responders;
+	var <server, <responders;
 	var <isWatching=false;
 	
-	*new { arg addr;
-		^super.new.ninit(addr)
+	*new { arg server;
+		^super.new.ninit(server)
 	}
 	
-	ninit { arg address;
+	ninit { arg argServer;
 		var cmds;
-		addr = address;
+		server = argServer;
 		this.clear;
 		responders = [];
-		addr.asArray.do({ arg addrItem; //support for multiple addresses
+		server.addr.asArray.do({ arg addrItem; //support for multiple addresses
 			this.cmds.do({ arg cmd;
 				var method;
 				method = cmd.copyToEnd(1).asSymbol;
@@ -57,8 +57,8 @@ AbstractNodeWatcher {
 NodeIDWatcher : AbstractNodeWatcher {
 	var <>nodeAllocator;
 	
-	*new { arg addr, nodeAllocator;
-		^super.new(addr).nodeAllocator_(nodeAllocator);
+	*new { arg server;
+		^super.new(server).nodeAllocator_(server.nodeAllocator);
 	}
 	cmds {  ^#["/n_end"] }
 
@@ -117,7 +117,7 @@ NodeWatcher : BasicNodeWatcher {
 		var res;
 		res = all.at(server.name);
 		if(res.isNil, {
-			res = NodeWatcher.new(server.addr);
+			res = NodeWatcher.new(server);
 			res.start;
 			all.put(server.name, res) 
 		});
@@ -154,6 +154,7 @@ NodeWatcher : BasicNodeWatcher {
 	
 	
 	register { arg node;
+		if(server.serverRunning.not, { nodes.removeAll; ^this });
 		if(isWatching, {
 			nodes.put(node.nodeID, node);
 		});

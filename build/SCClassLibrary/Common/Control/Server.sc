@@ -107,7 +107,7 @@ Server : Model {
 		this.newNodeWatcher;
 	}
 	newNodeWatcher {
-		nodeWatcher = NodeIDWatcher.new(addr, nodeAllocator);
+		nodeWatcher = NodeIDWatcher.new(this);
 	}
 	newAllocators {
 		var nodeIdOffset;
