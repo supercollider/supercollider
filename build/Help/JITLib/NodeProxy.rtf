@@ -281,7 +281,7 @@ supported inputs
 	
 \f1\b unlag(key, key1, ...)
 \f3\b0 	\
-		remove the lag values of thise args\
+		removed: use instead: lag(\\key1, nil, key2, nil, ...)\
 	\
 	
 \f1\b setRates(key, rate1, ...)
@@ -589,7 +589,6 @@ c.env(w);\cf3 \
 a.stop; \cf3 //stop the monitor\cf0 \
 a.play; \cf3 //start the monitor\cf0 \
 a.end;	\cf3 //release the synths and stop the monitor\cf0 \
-x.free;\
 c.free;\
 \
 \
@@ -610,7 +609,7 @@ a[0] = \{ \cf4 Ringz\cf0 .ar(\cf4 Impulse\cf0 .ar(5, 0, 0.1), 1260) \};\
 a.put(1, \{ \cf4 Ringz\cf0 .ar(\cf4 Impulse\cf0 .ar(5.3, 0, 0.1), 420) \}, 1);\
 a.put(0, \{ \cf4 Ringz\cf0 .ar(\cf4 Dust\cf0 .ar([1,1]*15.3,  0.1), 720) \}, 1);\
 a.put(1, \{ \cf4 Ringz\cf0 .ar(\cf4 Impulse\cf0 .ar(5.3, 0, 0.1), 420) \}, 1);\
-a.release;\
+a.end;\
 \
 
 \f0\fs24 \ul beat accurate playing\
@@ -654,13 +653,12 @@ a.clear;\
 	\cf4 Out\cf0 .ar(out, \cf4 Pan2\cf0 .ar(\
 		\cf4 Formant\cf0 .ar(freq, ffreq, 300, \cf4 EnvGen\cf0 .kr(env, gate, doneAction:2)), \cf4 Rand\cf0 (-1.0, 1.0))\
 	)\
-\}).load(s);\
+\}).store;\
 \
 )\
 \
 \
 (\
-\cf4 SynthDescLib\cf0 .read;\
 s.boot;\
 a = \cf4 NodeProxy\cf0 .audio(s, 2);\
 a.fadeTime = 2;\
