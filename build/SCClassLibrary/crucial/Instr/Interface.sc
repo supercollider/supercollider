@@ -4,7 +4,8 @@ Interface : AbstractPlayerProxy {
 
 	var <interfaceDef,<args,environment;
 	
-	var <>onPlay,
+	var <>onPrepareToBundle,
+		<>onPlay,
 		<>onStop, // also on command-.
 		<>onFree, // not on command-.
 		
@@ -59,6 +60,10 @@ Interface : AbstractPlayerProxy {
 		});
 	}
 		
+	prepareToBundle { arg agroup,bundle,private,bus;
+		super.prepareToBundle(agroup,bundle,private,bus);
+		environment.use({ onPrepareToBundle.value(this.group,bundle,true,sharedBus); });
+	}
 	// on play
 	didSpawn {
 		super.didSpawn;
