@@ -18,6 +18,7 @@ PfadeIn : FilterPattern {
 				elapsed = elapsed + outval.delta;
 				c = elapsed / fadeTime;
 				if(c >= 1.0) {
+					inval = outval.yield;
 					stream.embedInStream(inval);
 					nil.alwaysYield;
 				
