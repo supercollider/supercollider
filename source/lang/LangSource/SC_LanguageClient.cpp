@@ -35,7 +35,7 @@ static PyrSymbol* s_tick = 0;
 
 SC_LanguageClient::SC_LanguageClient(const char* name)
 	: mName(0),
-	  mPostFile(stdout),
+	  mPostFile(0),
 	  mScratch(0),
 	  mRunning(false)
 {

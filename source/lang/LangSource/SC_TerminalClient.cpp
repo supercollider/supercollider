@@ -29,32 +29,33 @@
 #include "PyrSlot.h"
 #include "VMGlobals.h"
 
+static FILE* gPostDest = stdout;
+
 SC_TerminalClient::SC_TerminalClient(const char* name)
 	: SC_LanguageClient(name),
 	  mShouldBeRunning(false),
 	  mReturnCode(0)
 {
-	setPostFile(stdout);
 }
 
 void SC_TerminalClient::post(const char *fmt, va_list ap, bool error)
 {
-	vfprintf(getPostFile(), fmt, ap);
+	vfprintf(gPostDest, fmt, ap);
 }
 
 void SC_TerminalClient::post(char c)
 {
-	fputc(c, getPostFile());
+	fputc(c, gPostDest);
 }
 
 void SC_TerminalClient::post(const char* str, size_t len)
 {
-	fwrite(str, sizeof(char), len, getPostFile());
+	fwrite(str, sizeof(char), len, gPostDest);
 }
 
 void SC_TerminalClient::flush()
 {
-	fflush(getPostFile());
+	fflush(gPostDest);
 }
 
 void SC_TerminalClient::printUsage()
