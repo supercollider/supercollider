@@ -20,8 +20,7 @@ ControlSpec : Spec {
 				default ? minval, units ? ""
 			).init
 	}
-	// make Warps independant of spec
-	//storeArgs { ^[minval,maxval,warp,step,default,units] }
+	storeArgs { ^[minval,maxval,warp.asSpecifier,step,default,units] }
 	init { 
 		warp = warp.asWarp(this);
 	}
@@ -102,6 +101,9 @@ Warp {
 		];
 		// CurveWarp is specified by a number, not a Symbol
 	}
+	asSpecifier {
+		^warps.findKeyForValue(this.class)
+	}
 }
 
 LinearWarp : Warp {
@@ -149,6 +151,7 @@ CurveWarp : Warp {
 		// maps a value from spec range to [0..1]
 		^log((b - value) / a) / curve
 	}
+	asSpecifier { ^curve }
 }
 
 CosineWarp : LinearWarp {

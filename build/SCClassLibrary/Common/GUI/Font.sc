@@ -14,6 +14,10 @@ Font {
 		_Font_AvailableFonts
 		^this.primitiveFailed
 	}
+	*setAntiAliasing { arg boo = false;
+		_Font_SetAntiAliasing;
+		^this.primitiveFailed
+	}
 	storeArgs { ^[name,size] }
 }
 
