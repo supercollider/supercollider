@@ -139,9 +139,8 @@ Stethoscope {
 	}
 	zoom_ { arg val;
 		val = val ? 1;
-		zx = zy = val.log2;
+		zx = val.log2;
 		n.xZoom = val;
-		n.yZoom = val;
 	}
 	
 	updateColors {
