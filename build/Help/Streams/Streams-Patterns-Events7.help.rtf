@@ -1,0 +1,216 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
+\red191\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs36 \cf0 Understanding Streams, Patterns and Events - Part 7
+\fs28 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs36 \cf0 Practical Considerations\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs28 \cf0 Using your own ~instrument\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs26 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "Help-SPE4-BerlinB"\cf0 , \{ \cf2 arg\cf0  i_out=0, freq = 80, amp = 0.2, pan=0, t_trig=1;\
+	\cf2 var\cf0  out, a, b;\
+	amp = \cf2 Decay2\cf0 .kr(t_trig, 0.05, 8, amp);\
+	out = \cf2 RLPF\cf0 .ar(\
+		\cf2 LFPulse\cf0 .ar(freq, 0, \cf2 SinOsc\cf0 .kr(0.12,[0,0.5pi],0.48,0.5), amp),\
+		freq * \cf2 SinOsc\cf0 .kr(0.21,0,4,8),\
+		0.07\
+	);\
+	#a, b = out;\
+	\cf2 DetectSilence\cf0 .ar(a, 0.0001, doneAction: 2);\
+	\cf2 Out\cf0 .ar(i_out, \cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a, b], [pan, pan+1])));\
+\}).send(s);\
+\
+\cf2 SynthDef\cf0 (\cf3 "Help-SPE4-CFString1"\cf0 , \{ \cf2 arg\cf0  i_out, freq = 360, gate = 1, pan, amp=0.1;\
+	\cf2 var\cf0  out, eg, fc, osc, a, b, w;\
+	fc = \cf2 LinExp\cf0 .kr(\cf2 LFNoise1\cf0 .kr(\cf2 Rand\cf0 (0.25,0.4)), -1,1,500,2000);\
+	osc = \cf2 Mix\cf0 .fill(8, \{ \cf2 LFSaw\cf0 .ar(freq * [\cf2 Rand\cf0 (0.99,1.01),\cf2 Rand\cf0 (0.99,1.01)], 0, amp) \}).distort * 0.2;\
+	eg = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .asr(1,1,1), gate, doneAction:2);\
+	out = eg * \cf2 RLPF\cf0 .ar(osc, fc, 0.1);\
+	#a, b = out;\
+	\cf2 Out\cf0 .ar(i_out, \cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a, b], [pan, pan+0.3])));\
+\}).send(s);\
+)\
+\
+Pattern-play creates an EventStreamPlayer for you and also supplies a default\
+protoEvent. If you were using your own event model you would just pass in your own\
+protoEvent to the play method.\
+\
+(\
+\cf2 Pbind\cf0 (\
+	\cf4 \\instrument\cf0 , \cf2 Prand\cf0 ([\cf3 "Help-SPE4-BerlinB"\cf0 ,\cf3 "Help-SPE4-CFString1"\cf0 ],\cf2 inf\cf0 ),\
+	\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \
+	\cf4 \\dur\cf0 , 0.4, \
+	\cf4 \\octave\cf0 , 3,  \
+	\cf4 \\amp\cf0 , 0.03\
+).play; \cf5 // this returns an EventStreamPlayer\cf0 \
+)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs26 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs30 \cf0 Defining your own message bindings
+\f2\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2 \cf0 NotePlayer uses a message function to compile it's message for the server, and no longer\
+does a valueEnvir like in SC2, but instead calls 'use' on the event, and then fills a message with\
+bindings which you need to specify. You can't just automatically add your own bindings to a Pbind\
+and expect them to be passed on to the server. Here's an example:\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 SynthDef\cf0 (\cf3 "Help-SPE4-CFString2"\cf0 , \{ \cf2 arg\cf0  i_out, freq = 360, gate = 1, pan, amp=0.1, dorkarg=1;\
+	\cf2 var\cf0  out, eg, fc, osc, a, b, w;\
+	fc = \cf2 LinExp\cf0 .kr(\cf2 LFNoise1\cf0 .kr(\cf2 Rand\cf0 (0.25,0.4)), -1,1,500,2000);\
+	osc = \cf2 Mix\cf0 .fill(8, \{ \cf2 LFSaw\cf0 .ar(freq * [\cf2 Rand\cf0 (0.99,1.01),\cf2 Rand\cf0 (0.99,1.01)], 0, amp * dorkarg ) \}).distort * 0.2;\
+	eg = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .asr(1,1,1), gate, doneAction:2);\
+	out = eg * \cf2 RLPF\cf0 .ar(osc, fc, 0.1);\
+	#a, b = out;\
+	\cf2 Out\cf0 .ar(i_out, \cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a, b], [pan, pan+0.3])));\
+\}).send(s);\
+)\
+\
+As you can see I have added dorkarg to the arglist of the SynthDef from earlier.\
+\
+(\
+\cf2 Pbind\cf0 (\
+	\cf4 \\instrument\cf0 , \cf3 "Help-SPE4-CFString2"\cf0 ,\
+	\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \
+	\cf4 \\dur\cf0 , 0.4, \
+	\cf4 \\octave\cf0 , 3,  \
+	\cf4 \\amp\cf0 , 0.03,\
+	\cf4 \\dorkarg\cf0 , \cf2 Pseq\cf0 ([1,0,1],\cf2 inf\cf0 ) \cf5 // silence every second note - doesn't work\cf0 \
+).play;\
+)\
+\
+Surprisingly \\dorkarg has not been defined by the default \\msgFunc, so we have to\
+supply a \\msgFunc which does.\
+\
+(\
+\cf2 Pbind\cf0 (\
+	\cf4 \\instrument\cf0 , \cf3 "Help-SPE4-CFString2"\cf0 ,\
+	\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \
+	\cf4 \\dur\cf0 , 0.4, \
+	\cf4 \\octave\cf0 , 3,  \
+	\cf4 \\amp\cf0 , 0.03,\
+	\cf4 \\dorkarg\cf0 , \cf2 Pseq\cf0 ([1,0,1],\cf2 inf\cf0 ), \cf5 // silence every second note - now works\cf0 \
+	\cf4 \\msgFunc\cf0 , \{ \cf2 arg\cf0  id, freq; \
+		[[\
+			9, ~instrument, id, 0, ~group, \
+			\cf4 \\out\cf0 , ~out, \cf4 \\freq\cf0 , freq, \cf4 \\amp\cf0 , ~amp, \cf4 \\pan\cf0 , ~pan, \cf4 \\vol\cf0 , ~vol, \cf4 \\dorkarg\cf0 , ~dorkarg\
+		]];\
+	\}\
+).play;\
+)\
+\
+This is quite clumsy and with some luck (read: work) will not always be the case so keep your eyes \
+open for changes.\
+\
+The other option you have if you will be using unspecified bindings, is of course to define an event \
+with the appropriate msgFunc as default. Have a look at Event's source, it's easy, and it's cleaner than\
+passing in the msgFunc every time.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs28 \cf0 Manipulating an EventStreamPlayer in Realtime
+\f2\b0\fs22 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf0 \
+(\cf5 \
+\cf0 p = \cf2 Pbind\cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf4 	\\degree\cf0 , \cf2 Pwhite\cf0 (0,12), \
+	\cf4 \\dur\cf0 , 0.2, \
+	\cf4 \\instrument\cf0 , \cf3 "Help-SPE4-CFString1"\cf4 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 );\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // e is an EventStreamPlayer\cf0 \
+e = p.play;\
+)\
+\
+(\
+\cf5 // you can change the stream at any point in time\cf0 \
+e.stream = \cf2 Pbind\cf0 (\
+	\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \
+	\cf4 \\dur\cf0 , \cf2 Prand\cf0 ([0.2,0.4,0.8],\cf2 inf\cf0 ), \
+	\cf4 \\amp\cf0 , 0.05, \
+	\cf4 \\octave\cf0 , 5, \
+	\cf4 \\instrument\cf0 , \cf4 'Help-SPE4-BerlinB'\cf0 , \cf5 // you can also use a symbol \cf0 \
+	\cf4 \\ctranspose\cf0 , 0\
+).asStream;\
+)\
+\
+(\
+e.stream = \cf2 Pbind\cf0 (\
+	[\cf4 \\degree\cf0 , \cf4 \\dur\cf0 ], \cf2 Pseq\cf0 (\
+		[\
+			\cf2 Pseq\cf0 ([[0,0.1],[2,0.1],[3,0.1],[4,0.1],[5,0.8]],2),\
+			\cf2 Ptuple\cf0 ([\cf2 Pxrand\cf0 ([6,7,8,9],4), 0.4]),\
+			\cf2 Ptuple\cf0 ([\cf2 Pseq\cf0 ([9,8,7,6,5,4,3,2]), 0.2])\
+		], \cf2 inf\
+	\cf0 ),\
+	\cf4 \\amp\cf0 , 0.05, \
+	\cf4 \\octave\cf0 , 5, \
+	\cf4 \\instrument\cf0 , \cf3 "Help-SPE4-CFString1"\cf0 \
+).asStream;\
+)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs26 \cf0 The following methods are possible because an EventStreamPlayer is a PauseStream:
+\fs28 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+e.mute; \cf5 // keeps playing, but replaces notes with rests\cf0 \
+\
+e.unmute;\
+\
+e.reset;  \cf5 // reset the stream.\cf0 \
+\
+e.pause;  \cf5 // will resume where paused.\cf0 \
+\
+e.resume;\
+\
+e.stop;  \cf5 // will reset before resume.\cf0 \
+\
+e.resume;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 \
+\
+}
