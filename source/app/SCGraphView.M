@@ -25,6 +25,7 @@
 #include "VMGlobals.h"
 #include "PyrSched.h"
 #include "SC_BoundsMacros.h"
+#include "GC.h"
 #include <Carbon/Carbon.h>
 
 extern PyrSymbol *s_draw;
@@ -84,7 +85,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 - (id)initWithFrame: (NSRect) frame
 {
     [super initWithFrame: frame];
-    [self registerForDraggedTypes: [NSArray arrayWithObject: sSCObjType]];
+    [self registerForDraggedTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, nil]];
 	mDragStarted = NO;
 	mMenuView = 0;
 	mWindowObj = 0;
@@ -314,6 +315,26 @@ const int circDiam = 20;
 
 - (unsigned int)draggingEntered:(id)dragInfo {
 	if (!mTopView) return NSDragOperationNone;
+	NSPasteboard* pboard = [dragInfo draggingPasteboard];
+	
+	if ([[pboard types] containsObject: sSCObjType]) {
+	
+	} else if ([[pboard types] containsObject: NSStringPboardType]) {
+		NSString *nsstring = [pboard stringForType: NSStringPboardType];
+		if (!nsstring) NSDragOperationNone;
+		
+		pthread_mutex_lock (&gLangMutex);
+			VMGlobals *g = gMainVMGlobals;
+			PyrString* pstrobj = newPyrString(g->gc, [nsstring UTF8String], 0, true);
+			int classIndex = getsym("SCView")->u.classobj->classIndex.ui;
+			PyrObject *classvars = g->classvars[classIndex].uo;
+			SetObject(classvars->slots+0, pstrobj);
+			g->gc->GCWrite(classvars, pstrobj);
+		pthread_mutex_unlock (&gLangMutex);
+	} else {
+        return NSDragOperationNone;
+	}
+	
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
