@@ -1,7 +1,8 @@
 Document {
 
 	classvar <dir="", <allDocuments, thelistener, <>current;
-	
+	classvar <>globalKeyDownAction, <>initAction;
+
 	var <dataptr, path, title, visible, <background, <stringColor;
 	var <>keyDownAction, <>onClose;
 	var <isListener, <>toFrontAction, <>endFrontAction, <>mouseDownAction;
@@ -225,7 +226,8 @@ Document {
 	}
 	
 	keyDown {arg character, modifiers, keycode;
-		keyDownAction.value(character, modifiers, keycode);
+		this.class.globalKeyDownAction.value(this,character, modifiers, keycode);
+		keyDownAction.value(this,character, modifiers, keycode);
 	}
 	
 //private-----------------------------------
@@ -284,6 +286,8 @@ Document {
 	prAdd {
 		allDocuments = allDocuments.add(this);
 		this.editable = true;
+		initAction.value(this);
+	
 	}
 	
 	//this is called after recompiling the lib
@@ -422,7 +426,7 @@ EnvirDocument : Document {
 	}
 	
 	registerKeys {
-		this.keyDownAction_({ arg key, modifiers, num;
+		this.keyDownAction_({ arg doc, key, modifiers, num;
 				if(canPlay, {
 					if(modifiers == 262144, { //ctl
 						if(num == 49, { (envir.server ? Server.default).boot }); //ctl-1
