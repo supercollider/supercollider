@@ -794,17 +794,18 @@ extern PyrSymbol * s_didResignKey;
 	
 }
 - (void) callSCLangWithMethod: (PyrSymbol*) method {
-	if(!compiledOK) return;
 	pthread_mutex_lock (&gLangMutex);
-    struct PyrObject *scobj = [self getSCObject];
-    if (scobj) {
-        SetPtr(scobj->slots + 0, self);
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
-        ++g->sp;  SetObject(g->sp, scobj); // push window obj
-        runInterpreter(g, method, 1);
-        g->canCallOS = false;
-    }
+	if(compiledOK) {
+		struct PyrObject *scobj = [self getSCObject];
+		if (scobj) {
+			SetPtr(scobj->slots + 0, self);
+			VMGlobals *g = gMainVMGlobals;
+			g->canCallOS = true;
+			++g->sp;  SetObject(g->sp, scobj); // push window obj
+			runInterpreter(g, method, 1);
+			g->canCallOS = false;
+		}
+	}
     pthread_mutex_unlock (&gLangMutex);
 }
 - (void)windowWillClose:(NSNotification *)aNotification
