@@ -1,11 +1,15 @@
 
 Node {
 	
-	var <nodeID, <>group, <>prev, <>next;
-	var <server;
+	var <>nodeID, <group, <>prev, <>next;
+	var <>server;
 	var <>isPlaying = false, <>isRunning = false;
 	
-	
+	*basicNew { arg nodeID,server;
+		server = server ? Server.local;
+		^super.new.server_(server).nodeID_(nodeID ?? {server.nodeAllocator.alloc})
+	}
+
 	free { arg sendFlag=true;
 		if(sendFlag, {
 			server.sendBundle(server.latency, [11, nodeID]);  //"/n_free"
@@ -348,6 +352,9 @@ Synth : Node {
 	*prNew { arg defName, server;
 		^super.prNew(server).defName_(defName.asDefName)
 	}
+	*basicNew { arg defName,server,nodeID;
+		^super.basicNew(nodeID,server).defName_(defName)
+	}
 	
 	*newLoad { arg defName,args,target,addAction=\addToTail,dir="synthdefs/";
 		var msg, synth;
@@ -395,7 +402,7 @@ Synth : Node {
 	
 	
 	///  bundle messages  ///
-	//this adds the message to the bundle and returns the synth.
+	// this adds the message to the bundle and returns the synth.
 	// bundle should be a List
 	*newMsg { arg bundle, defName, args, target, addAction=\addToTail;
 		var synth;
@@ -405,7 +412,27 @@ Synth : Node {
 		synth.group.finishBundle(bundle, synth);
 		^synth
 	}
-	
+	// basic msg construction
+	addToHeadMsg { arg arggroup,args;
+		group = arggroup;
+		^[9, defName, nodeID, 0, group.nodeID] ++ args
+	}
+	addToTailMsg { arg arggroup,args;
+		group = arggroup; 
+		^[9, defName, nodeID, 1, group.nodeID] ++ args
+	}
+	addAfterMsg {  arg afterThisOne,args;
+		group = afterThisOne.group; 
+		^[9, defName, nodeID, 3, afterThisOne.nodeID] ++ args
+	}
+	addBeforeMsg {  arg beforeThisOne,args;
+		group = beforeThisOne.group; 
+		^[9, defName, nodeID, 2, beforeThisOne.nodeID] ++ args
+	}
+	addReplaceMsg { arg removeThisOne,args;
+		group = removeThisOne.group; 
+		^[9, defName, nodeID, 4, removeThisOne.nodeID] ++ args
+	}
 	
 }
 
@@ -454,6 +481,6 @@ RootNode : Group {
 	
 
 	*freeAll {
-		roots.do({ arg rn; rn.freeAll; });
+		roots.do({ arg rn; rn.freeAll })
 	}
 }
