@@ -892,25 +892,26 @@ int compareColDescs(const void *va, const void *vb)
 
 void buildBigMethodMatrix()
 {
-	PyrMethod **bigTable, *method, **temprow, **row;
+	PyrMethod **bigTable, **temprow, **row;
 	PyrClass *classobj, **classes;
 	int i, j, k;
 	int popSum, widthSum;
 	int rowOffset, freeIndex;
 	int rowTableSize;
 	int bigTableSize;
-	
+	int numSelectors = gNumSelectors;
+	int numClasses = gNumClasses;
 	//post("allocate arrays\n");
 	
 	// pyrmalloc: 
 	// lifetime: kill after compile
-	bigTableSize = gNumSelectors * gNumClasses;
-	//post("bigTableSize %d %d %d\n", bigTableSize, gNumSelectors, gNumClasses);
-	ColumnDescriptor *sels = (ColumnDescriptor*)pyr_pool_compile->Alloc(gNumSelectors * sizeof(ColumnDescriptor));
+	bigTableSize = numSelectors * numClasses;
+	//post("bigTableSize %d %d %d\n", bigTableSize, numSelectors, numClasses);
+	ColumnDescriptor *sels = (ColumnDescriptor*)pyr_pool_compile->Alloc(numSelectors * sizeof(ColumnDescriptor));
 	MEMFAIL(sels);
 	bigTable = (PyrMethod**)pyr_pool_compile->Alloc(bigTableSize * sizeof(PyrMethod*));
 	MEMFAIL(bigTable);
-	classes = (PyrClass**)pyr_pool_compile->Alloc(gNumClasses * sizeof(PyrClass*));
+	classes = (PyrClass**)pyr_pool_compile->Alloc(numClasses * sizeof(PyrClass*));
 	MEMFAIL(classes);
 
 	classobj = gClassList;
@@ -930,9 +931,10 @@ void buildBigMethodMatrix()
 			sels[j++].selector = sym;
 		}
 	}
+
 	// calc row stats
 	//post("calc row stats\n");
-	for (i=0; i<gNumSelectors; ++i) {
+	for (i=0; i<numSelectors; ++i) {
 		//postfl("%3d %s\n", i, sels[i].selector->name);
 		sels[i].minClassIndex = LONG_MAX;
 		sels[i].maxClassIndex = 0;
@@ -940,10 +942,13 @@ void buildBigMethodMatrix()
 		//sels[i].chunkOffset = 0;
 		sels[i].selectorIndex = i;
 		sels[i].population = 0;
+	}
 		//chunkSize = 0;
 		//chunkOffset = 0;
-		for (j=0; j<gNumClasses; ++j) {
-			method = bigTable[j * gNumSelectors + i];
+	PyrMethod** methodPtr = bigTable;
+	for (j=0; j<numClasses; ++j) {
+		for (i=0; i<numSelectors; ++i) {
+			PyrMethod* method = *methodPtr++;
 			if (method) {
 				//classobj = method->ownerclass.uoc;
 				if (j > sels[i].maxClassIndex) {
@@ -965,38 +970,40 @@ void buildBigMethodMatrix()
 				//chunkSize = 0;
 			}
 		}
+	}
+	for (i=0; i<numSelectors; ++i) {
 		//if (chunkSize > sels[i].largestChunk) {
 		//	sels[i].largestChunk = chunkSize;
 		//	sels[i].chunkOffset = chunkOffset;
 		//}
 		sels[i].rowWidth = sels[i].maxClassIndex - sels[i].minClassIndex + 1;
 	}
-	
+
 	//post("qsort\n");
 	// sort rows by largest chunk, then by width, then by chunk offset
-	//qsort(sels, gNumSelectors, sizeof(ColumnDescriptor), (std::_compare_function)compareColDescs);
-	qsort(sels, gNumSelectors, sizeof(ColumnDescriptor), compareColDescs);
+	//qsort(sels, numSelectors, sizeof(ColumnDescriptor), (std::_compare_function)compareColDescs);
+	qsort(sels, numSelectors, sizeof(ColumnDescriptor), compareColDescs);
 	// bin sort the class rows to the new ordering
 	//post("reorder rows\n");
 	// pyrmalloc: 
 	// lifetime: kill after compile
-	temprow = (PyrMethod**)pyr_pool_compile->Alloc(gNumSelectors * sizeof(PyrMethod*));
+	temprow = (PyrMethod**)pyr_pool_compile->Alloc(numSelectors * sizeof(PyrMethod*));
 	MEMFAIL(temprow);
-	for (j=0; j<gNumClasses; ++j) {
-		row = bigTable + j * gNumSelectors;
-		memcpy(temprow, row, gNumSelectors * sizeof(PyrMethod*));
-		for (i=0; i<gNumSelectors; ++i) {
+	for (j=0; j<numClasses; ++j) {
+		row = bigTable + j * numSelectors;
+		memcpy(temprow, row, numSelectors * sizeof(PyrMethod*));
+		for (i=0; i<numSelectors; ++i) {
 			row[i] = temprow[sels[i].selectorIndex];
 		}
 	}
 	pyr_pool_compile->Free(temprow);
 
-	//post("calc row offsets %d\n", gNumSelectors);
+	//post("calc row offsets %d\n", numSelectors);
 	widthSum = 0;
 	popSum = 0;
 	freeIndex = 0;
 	rowOffset = -1;
-	for (i=0; i<gNumSelectors; ++i) {
+	for (i=0; i<numSelectors; ++i) {
 		widthSum += sels[i].rowWidth;
 		popSum += sels[i].population;
 		rowOffset = sc_max(rowOffset+1, freeIndex - sels[i].minClassIndex);
@@ -1007,51 +1014,30 @@ void buildBigMethodMatrix()
 		//	sels[i].rowWidth, rowOffset, freeIndex);
 	}
 	//post("alloc row table %d\n", freeIndex);
-	rowTableSize = (freeIndex + gNumClasses)  * sizeof(PyrMethod*);
+	rowTableSize = (freeIndex + numClasses)  * sizeof(PyrMethod*);
 	gRowTable = (PyrMethod**)pyr_pool_runtime->Alloc(rowTableSize);
 	MEMFAIL(gRowTable);
-	memset(gRowTable, 0, (freeIndex + gNumClasses) * sizeof(PyrMethod*));
+	memset(gRowTable, 0, (freeIndex + numClasses) * sizeof(PyrMethod*));
 	
 	//post("fill compressed table\n");
 	//{ FILE* fp;
 	// newPyrMethod
 	//fp = fopen("meth table", "w");
-	for (i=0; i<gNumSelectors; ++i) {
+	for (i=0; i<numSelectors; ++i) {
 		int offset, maxwidth;
 		offset = sels[i].rowOffset + sels[i].minClassIndex;
 		maxwidth = offset + sels[i].rowWidth;
-		row = bigTable + sels[i].minClassIndex * gNumSelectors + i;
-		for (j=offset,k=0; j<maxwidth; ++j,k+=gNumSelectors) {
-			method = row[k];
-			gRowTable[j] = method;
+		row = bigTable + sels[i].minClassIndex * numSelectors + i;
+		PyrMethod **table = gRowTable;
+		for (j=offset,k=0; j<maxwidth; ++j, k+=numSelectors) {
+			table[j] = row[k];
 		}
 	}
-#if 0
-	// redirection patching won't work because selector will not match one being looked up
-	// so you'll always get doesNotUnderstand
-	// patch redirections
-	for (i=0; i<gNumSelectors; ++i) {
-		int offset, maxwidth, minClassIndex;
-		offset = sels[i].rowOffset;
-		minClassIndex = sels[i].minClassIndex;
-		maxwidth = offset + minClassIndex + sels[i].rowWidth;
-		row = bigTable + sels[i].minClassIndex * gNumSelectors + i;
-		for (j=offset + minClassIndex,k=0; j<maxwidth; ++j,k+=gNumSelectors) {
-			method = row[k];
-			if (method->methType == methRedirect) {
-				int redirect, classIndex;
-				classIndex = j - offset;
-				redirect = method->literals.us->u.index + classes[classIndex]->classIndex.ui;
-				gRowTable[j] = gRowTable[redirect];
-			}
-		}
-	}
-#endif
 	//fclose(fp);
 	//}
 	
 	// having the method ptr always be valid saves a branch in SendMessage()
-	for (i=0; i<freeIndex + gNumClasses; ++i) {
+	for (i=0; i<freeIndex + numClasses; ++i) {
 		if (gRowTable[i] == NULL) gRowTable[i] = gNullMethod;
 	}
 	
@@ -1069,9 +1055,9 @@ void buildBigMethodMatrix()
 	}
 #endif
 	post("\tMethod Table Size %d bytes\n", rowTableSize);
-	post("\tNumber of Method Selectors %d\n", gNumSelectors);
-	post("\tNumber of Classes %d\n", gNumClasses);
-	//post("big table size %d\n", gNumSelectors * gNumClasses * sizeof(PyrMethod*));
+	post("\tNumber of Method Selectors %d\n", numSelectors);
+	post("\tNumber of Classes %d\n", numClasses);
+	//post("big table size %d\n", numSelectors * numClasses * sizeof(PyrMethod*));
 	//postfl("%08X %08X %08X\n", classes, bigTable, sels);
 /*	
 	// not necessary since the entire pool will be freed..
