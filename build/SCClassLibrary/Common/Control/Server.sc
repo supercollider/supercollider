@@ -179,7 +179,7 @@ Server : Model {
 		condition.wait;
 	}
 	
-	sync { arg condition;
+	sync { arg condition, bundles, latency; // array of bundles that cause async action
 		var resp, id;
 		if (condition.isNil) { condition = Condition.new };
 		id = UniqueID.next;
@@ -191,7 +191,11 @@ Server : Model {
 			};
 		}).add;
 		condition.test = false;
-		addr.sendBundle(nil, ["/sync", id]);
+		if(bundles.isNil) {
+			addr.sendBundle(latency, ["/sync", id]);
+		} {
+			addr.sendBundle(latency, *(bundles ++ [["/sync", id]]));
+		};
 		condition.wait;
 	}
 	
