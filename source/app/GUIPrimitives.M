@@ -281,15 +281,13 @@ int prTextWindow_SetFont(struct VMGlobals *g, int numArgsPushed)
 		
 		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
         if (!doc) return errFailed;
-		
-		NSString* string = [[doc textView] string];
-		int length = [string length];
-		if(length < 1) return errFailed;
 		if(rangeStart < 0){
 			[[doc textView] setFont: font];
 			return errNone;
 		}
-		
+		NSString* string = [[doc textView] string];
+		int length = [string length];
+		if(length < 1) return errFailed;		
 		if(rangeStart >= length) rangeStart = length - 1 ;
 		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
 		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
