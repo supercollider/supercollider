@@ -66,7 +66,7 @@
 		^this.primitiveFailed
 	}
 	openHelpFile {
-		(this.findHelpFile ? "Help/Help.help.rtf").openTextFile
+		(this.findHelpFile ? "Help/Help.help.rtf".standardizePath).openTextFile
 	}
 }
 
