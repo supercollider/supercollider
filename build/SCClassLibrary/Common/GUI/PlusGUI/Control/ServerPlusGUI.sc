@@ -60,8 +60,7 @@
 		];
 		recorder.action = {
 			if (recorder.value == 1) {
-				"prepareForRecord".postln;
-				this.prepareForRecord(sampleFormat: "float");
+				this.prepareForRecord;
 			}{
 				if (recorder.value == 2) { this.record } { this.stopRecording };
 			};

@@ -112,7 +112,7 @@ Server : Model {
 	var <>tree;
 	
 	var <window, <>scopeWindow;
-	var recordBuf, <recordNode;
+	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float", recChannels=2;
 	
 	*new { arg name, addr, options, clientID=0;
 		^super.new.init(name, addr, options, clientID)
@@ -494,12 +494,12 @@ Server : Model {
 		{ "Not Recording".warn });
 	}
 	
-	prepareForRecord { arg path, headerFormat = "aiff", sampleFormat = "int16", numChannels = 2;
-		if (path.isNil) { path = "recordings/SC_" ++ Date.localtime.stamp ++ "." ++ headerFormat; };
-		recordBuf = Buffer.alloc(this, 65536, numChannels,
-			{arg buf; buf.writeMsg(path, headerFormat, sampleFormat, 0, 0, true);});
+	prepareForRecord { arg path;
+		if (path.isNil) { path = "recordings/SC_" ++ Date.localtime.stamp ++ "." ++ recHeaderFormat; };
+		recordBuf = Buffer.alloc(this, 65536, recChannels,
+			{arg buf; buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true);});
 		SynthDef("server-record", { arg bufnum;
-			DiskOut.ar(bufnum, In.ar(0, numChannels)) 
+			DiskOut.ar(bufnum, In.ar(0, recChannels)) 
 		}).send(this);
 		// cmdPeriod support
 		CmdPeriod.add(this);
