@@ -161,8 +161,8 @@ InstrSpawner2 : InstrSpawner {
 				});
 			});
 			
-		});
-		spawnTask.play(SystemClock)
+		}, SystemClock);
+		spawnTask.play
 	}
 	free {
 		tempoUpdater.remove;
