@@ -1,11 +1,6 @@
 {
     IBClasses = (
-        {
-            ACTIONS = {selectLine = id; }; 
-            CLASS = FirstResponder; 
-            LANGUAGE = ObjC; 
-            SUPERCLASS = NSObject; 
-        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {
                 findNext = id; 
@@ -14,9 +9,8 @@
                 replace = id; 
                 replaceAll = id; 
                 replaceAndFind = id; 
-                selectLine = id; 
             }; 
-            CLASS = GoToPanel; 
+            CLASS = TextFinder; 
             LANGUAGE = ObjC; 
             OUTLETS = {
                 findNextButton = id; 
