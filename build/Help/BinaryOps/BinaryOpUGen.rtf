@@ -31,15 +31,11 @@ BinaryOpUGens are created as the result of a binary operator applied to a UGen. 
 \f0\b *
 \f1\b0  and 
 \f0\b thresh
-\f1\b0  above each instantiate a BinaryOpUgen. Do not confuse the operators themselves (which may appear to be a method as in the case of thresh) with the resulting ugen, which is an object. Naturally the selectors of all BinaryOpUgens function as operators as well as ugens (i.e. 4.max(3)). See 
-\f0\b SimpleNumber 
-\f1\b0 for more detail.\
+\f1\b0  above each instantiate a BinaryOpUGen. Do not confuse the operators themselves (which are methods) with the resulting BinaryOpUGen, which is an object. When applied to other classes they may not return new objects, and can behave in a more straightforward manner. See for example 
+\f0\b SimpleNumber
+\f1\b0 .\
 \
-There are helpfiles for each the different operators, listed below. Please note that because of UNIX pathname conventions, the helpfile for division is named 
-\f0\b Division
-\f1\b0 , and will not open when selecting 
-\f0\b / 
-\f1\b0 and Cmd-Shift-?. \
+There are helpfiles for each the different operators, listed below.\
 \
 The operators >, >=, <, and <= are particularly useful for triggering. They should not be confused with their use in conditionals. Compare\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -77,6 +73,6 @@ The following operators have their own helpfiles:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b \cf0 \
-+ - * /(Division) ** absdif amclip atan2 clip2 difsqr excess fold2 hypot hypotApx max min ring1 ring2 ring3 ring4 round scaleneg sqrdif sqrsum sumsqr thresh trunc wrap2
++ - * / ** absdif amclip atan2 clip2 difsqr excess fold2 hypot hypotApx max min ring1 ring2 ring3 ring4 round scaleneg sqrdif sqrsum sumsqr thresh trunc wrap2
 \f2\b0 \
 }
