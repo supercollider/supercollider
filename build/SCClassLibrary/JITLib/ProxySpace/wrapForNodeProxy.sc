@@ -20,8 +20,7 @@
 	
 	
 	//any preparations that have to be done to prepare the object
-	//class Object is assumed to be some graph builder that returns 
-	//a graph of ugens when .value is called
+	//implement 'prepareForProxySynthDef' to return a ugen func
 	
 	
 	//this method is called from within the Control
@@ -245,16 +244,11 @@
 	
 }
 
-
-//use patch later
 +Instr {
-	prepareForProxySynthDef {
-		^func;
+	
+	makeProxyControl { arg channelOffset=0, proxy;
+		^Patch(this).makeProxyControl(channelOffset, proxy)
 	}
-	//see later for a player inherent scheme.
-	//makeProxyControl { arg channelOffset=0;
-	//	^Patch(this.name).makeProxyControl(channelOffset)
-	//}
 	
 }
 
