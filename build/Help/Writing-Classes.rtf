@@ -1,9 +1,9 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fnil\fcharset77 LucidaGrande-Bold;\f1\fnil\fcharset77 LucidaGrande;\f2\fswiss\fcharset77 Helvetica;
-\f3\fmodern\fcharset77 Courier;\f4\fnil\fcharset77 Monaco;\f5\fswiss\fcharset77 Helvetica-Bold;
+\f3\fnil\fcharset77 Monaco;\f4\fmodern\fcharset77 Courier;\f5\fswiss\fcharset77 Helvetica-Bold;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue255;\red0\green0\blue191;\red191\green0\blue0;
-}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue255;\red0\green0\blue191;\red0\green0\blue191;
+\red0\green0\blue0;\red191\green0\blue0;\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs42 \cf0 Writing SuperCollider Classes \
@@ -22,11 +22,14 @@
 
 \f0\b\fs32 \cf0 Inheriting \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\b0\fs28 NewClass : SomeSuperclass \{ \
+\f3\b0\fs18 \cf3 	\cf4 NewClass\cf5  : \cf4 SomeSuperclass\cf5  \{ \
 \
-\}\
-\
+	\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4\fs28 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -34,71 +37,76 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs32 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\b0\fs28 NewClass \{ // : Object is implied\
+\f3\b0\fs18 \cf4 	NewClass\cf5  \{ \cf6 // : Object is implied\cf5 \
 \
-\}\
+	\}
+\f4\fs28 \cf0 \
 \
-\
-
-\f0\b\fs32 Methods \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs24 \cf0 class methods are specified with the asterix\
+\f0\b\fs32 \cf0 Methods \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f5\fs24 \cf0 class methods
+\f2\b0  are specified with the asterix\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs28 \cf0 \
 	
-\f4\fs18 *classMethod \{ \cf3 arg\cf0  argument; \
+\f3\fs18 *classMethod \{ \cf3 arg\cf0  argument; \
 	\
 	\}
-\f3\fs28 \
+\f4\fs28 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 within the class method, the keyword \
+\f2\fs24 \cf0 	within the class method, the keyword \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs28 \cf0 	\
+\f4\fs28 \cf0 	\
 	
-\f4\fs18 \cf3 this\cf0  \
+\f3\fs18 \cf3 this\cf0  \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 \
-refers to the class.   \
+	refers to the class.   \
 \
-A class in smalltalk is itself an object.  It is an instance of Class.\
+	A class in smalltalk is itself an object.  It is an instance of Class.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs28 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 instance methods are specified :\
+\f5\b\fs24 \cf0 instance methods
+\f2\b0  are specified :\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs28 \cf0 \
 	
-\f4\fs18 instanceMethod \{ \cf3 arg\cf0  argument; \
+\f3\fs18 instanceMethod \{ \cf3 arg\cf0  argument; \
 	\
 	\}\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs28 \cf0 \
+\f4\fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 within the instance method, the keyword \
+\f2\fs24 \cf0 	within the instance method, the keyword \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs28 \cf0 	\
+\f4\fs28 \cf0 	\
 	
-\f4\fs18 \cf3 this\cf0  
-\f3\fs28 \
+\f3\fs18 \cf3 this\cf0  
+\f4\fs28 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 refers to the instance. \
+\f2\fs24 \cf0 	refers to the instance. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs28 \cf0 \
@@ -106,19 +114,21 @@ A class in smalltalk is itself an object.  It is an instance of Class.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 to return from the method use ^ (caret)\
+\f2\fs24 \cf0 to 
+\f5\b return
+\f2\b0  from the method use ^ (caret)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf0 \
-someMethod \{ \
-	^returnObject \
-\}\
+\f3\fs18 \cf0 \
+	someMethod \{ \
+		^returnObject \
+	\}\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs28 \cf0 \
+\f4\fs28 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -129,30 +139,34 @@ someMethod \{ \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf0 someMethod \{ \cf3 arg\cf0  aBoolean; \
-	if(aBoolean,\{ \
-		^someObject \
-	\},\{ \
-		^someOtherObject \
-	\}) \
-\}\
+\f3\fs18 \cf0 	someMethod \{ \cf3 arg\cf0  aBoolean; \
+		if(aBoolean,\{ \
+			^someObject \
+		\},\{ \
+			^someOtherObject \
+		\}) \
+	\}\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs28 \cf0 \
+\f4\fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 \
-if no ^ is specified, the method will return the instance. \
-(and in the case of Class methods, will return the class) \
+	if no ^ is specified, the method will return the 
+\f5\b instance
+\f2\b0 . \
+	(and in the case of Class methods, will return the class) \
 \
-There is no such thing as returning void in Smalltalk.\
+	There is no such thing as returning void in Smalltalk.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs28 \cf0 \
 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs32 \cf0 New Instance creation \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs24 \cf0 Object.new will return to you a new object. \
@@ -162,28 +176,32 @@ when overiding the class method .new you must call the superclass, which in turn
 \f1\fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf4 // this example adds no new functionality \
+\f3\fs18 \cf7 	// this example adds no new functionality \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 *new \{ \
-	^\cf3 super\cf0 .new \
-\}\
+\cf0 	*new \{ \
+		^\cf3 super\cf0 .new \
+	\}\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 // common usage \
+\cf7 	// common usage \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 new \{ \cf3 arg\cf0  arga,argb,argc; \
-	^\cf3 super\cf0 .new.init(arga,argb,argc) \
-\}\
+\cf0 	new \{ \cf3 arg\cf0  arga,argb,argc; \
+		^\cf3 super\cf0 .new.init(arga,argb,argc) \
+	\}\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs28 \cf0 \
+\f4\fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 In this case note that super.new called the method new on the superclass and returned a new object. subsequently we are calling the .init method on that object, which is an instance method. \
 \
-Warning: if the superclass also happened to call super.new.init it will have expected to call the .init method defined in that class (the superclass), but instead the message .init will find the implementation of the class that the object actually is, which is our new subclass.   So you should use a unique methodname like myclassinit if this is likely to be a problem.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f5\b \cf0 Warning: 
+\f2\b0 if the superclass also happened to call super.new.init it will have expected to call the .init method defined in that class (the superclass), but instead the message .init will find the implementation of the class that the object actually is, which is our new subclass.   So you should use a unique methodname like myclassinit if this is likely to be a problem.\
 \
-Over reliance on inheritance is usually a design flaw.  Explore "object composition" rather than trying to obtain all your powers through inheritance.  Search google for  Design Patterns.\
+\
+Over reliance on inheritance is usually a design flaw.  Explore "object composition" rather than trying to obtain all your powers through inheritance.  Do a websearch for  Design Patterns.\
 \
 Class variables are accessible within class methods and in any instance methods. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -191,16 +209,93 @@ Class variables are accessible within class methods and in any instance methods.
 \f1\fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf0 	\cf3 classvar\cf0  myClassvar;\
+\f3\fs18 \cf0 	\cf3 classvar\cf0  myClassvar;\
 \
 	\cf3 var\cf0  myInstanceVar; 
-\f3\fs28 \
-\
-\
+\f4\fs28 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs32 \cf0 Getter Setter \
+\f1 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs32 \cf0 Overriding Methods (Overloading)
+\f1\b0\fs28 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 in order to change the behaviour of the superclass, often methods are overridden.\
+note that an object looks always for the method it has defined first and then looks in the superclass.
+\f4\fs28 \
+
+\f2\fs24 here 
+\f3\fs18 \cf4 NewClass\cf5 .value(2)
+\f2\fs24 \cf0  will return
+\f3\fs18 \cf3  6
+\f2\fs24 \cf0 , not
+\f3\fs18 \cf3  4
+\f2\fs24 \cf0 : \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf4 Superclass\cf5  \{ \
+\
+	calculate \{ \cf4 arg\cf5  in; in * 2 \}\
+	value \{ \cf4 arg\cf5  in; ^\cf4 this\cf5 .calculate(in) \}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4\fs28 \cf5 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf4 NewClass\cf5  : \cf4 Superclass\cf5  \{ \
+\
+	calculate \{ \cf4 arg\cf5  in; in * 3 \}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+ \
+if the method of the superclass is needed, it can be called by 
+\f5\b super
+\f2\b0 .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf4 Superclass\cf5  \{ \
+	\cf4 var\cf5  x;\
+	\
+	init \{\
+		 x = 5;\
+	\}\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4\fs28 \cf5 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf4 NewClass\cf5  : \cf4 Superclass\cf5  \{ \
+	\cf4 var\cf5  y;\
+	init \{ \
+		\cf4 super\cf5 .init;\
+		y = 6; \
+	\}\
+\}
+\f4\fs28 \cf5 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\
+\
+\
+
+\f0\b\fs32 Getter Setter \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -211,7 +306,7 @@ Class variables are accessible within class methods and in any instance methods.
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf3 NewClass\cf0  : \cf3 Superclass\cf0  \{ \
+\f3\fs18 \cf3 NewClass\cf0  : \cf3 Superclass\cf0  \{ \
 \
 	\cf3 var\cf0  myVariable;\
 \
@@ -225,7 +320,7 @@ Class variables are accessible within class methods and in any instance methods.
 \}\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs28 \cf0 \
+\f4\fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 These are referred to as getter and setter methods. 
@@ -238,10 +333,10 @@ Class variables are accessible within class methods and in any instance methods.
 \f1\fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf0 	\cf3 var\cf0  <getMe, >setMe, <>getMeOrSetMe; \
+\f3\fs18 \cf0 	\cf3 var\cf0  <getMe, >setMe, <>getMeOrSetMe; \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs28 \cf0 \
+\f4\fs28 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -250,41 +345,51 @@ Class variables are accessible within class methods and in any instance methods.
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf0 	someObject.getMe;\
+\f3\fs18 \cf0 	someObject.getMe;\
 \
 	someObject.setMe_(value);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs28 \cf0 	\
+\f4\fs28 \cf0 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 this also allows us to say:
-\f3\fs28 \
+\f4\fs28 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf0 	someObject.setMe = value;\
+\f3\fs18 \cf0 	someObject.setMe = value;\
 \
 	someObject.getMeOrSetMe_(5);\
 	someObject.getMeOrSetMe.postln; \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs28 \cf0 \
-\
+\f4\fs28 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f4\fs28 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 a getter or setter method created in this fashion may  be overriden in a subclass by manually writing the method \
-\
+setter methods should 
+\f5\b take only one argument 
+\f2\b0 to support both ways of expression consistantly.\
 eg. 
 \f1\fs28 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf0 	variable_ \{ arg newValue;  \
+\f3\fs18 \cf0 	variable_ \{ arg newValue;  \
 		variable = newValue.clip(minval,maxval); \
 	\} \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs28 \cf0 \
+\
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f5\b \cf0 External Method Files
@@ -303,7 +408,7 @@ Methods may be added to Classes in separate files.  This is equivalent to Protoc
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\fs18 \cf0 	+ \cf3 Class\cf0  \{\
+\f3\fs18 \cf0 	+ \cf3 Class\cf0  \{\
 		newMethod \{\
 		\
 		\}\
@@ -322,11 +427,18 @@ Methods may be added to Classes in separate files.  This is equivalent to Protoc
 \f0\b\fs32 \cf0 Tricks and Traps \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs24 \cf0 "Superclass not found..."\
+\f2\b0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f5\b \cf0 "Superclass not found..."\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 \
 In one given code file, you can only put classes that inherit from each Object, each other, and one external class.   In other words, you can't inherit from two separate classes that are defined in separate files.\
 \
 If you should happen to declare a variable in a subclass and use the same name as a variable declared in a superclass, you will find that both variables exist, but only the one in the object's actual class is accessible.  You should not do that. This will at some point become an error worthy of compilation failure.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs28 \cf0 \
--felix}
+-felix, jrh\
+}
