@@ -39,7 +39,7 @@
   (interactive)
   (customize-group 'sclang))
 
-(eval-when-compile
+(eval-and-compile
   (require 'cl))
 
 (eval-and-compile
