@@ -63,11 +63,6 @@ void SC_SequencedCommand::SendDone(char *inCommandName)
 	::SendDone(&mReplyAddress, inCommandName);
 };
 
-void SC_SequencedCommand::DoCommand()
-{
-	CallNextStage();
-}
-
 void SC_SequencedCommand::CallEveryStage()
 {
 	switch (mNextStage) {
@@ -83,7 +78,7 @@ void DoSequencedCommand(FifoMsg *inMsg);
 void DoSequencedCommand(FifoMsg *inMsg)
 {
 	SC_SequencedCommand *cmd = (SC_SequencedCommand*)inMsg->mData;
-	cmd->DoCommand();
+	cmd->CallNextStage();
 }
 
 void FreeSequencedCommand(FifoMsg *inMsg);
@@ -663,8 +658,6 @@ void AudioStatusCmd::CallDestructor()
 {
 	this->~AudioStatusCmd();
 }
-
-int64 oscTimeNow();
 
 bool AudioStatusCmd::Stage2()
 {

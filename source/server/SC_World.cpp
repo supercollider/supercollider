@@ -100,7 +100,7 @@ void InterfaceTable_Init()
 	
 #if __VEC__ 
 	long response;
-	Gestalt(gestaltPowerPCProcessorFeatures, );
+	Gestalt(gestaltPowerPCProcessorFeatures, &response);
 	if (response & (1<<gestaltPowerPCHasVectorInstructions)) ft->mAltivecAvailable = true;
 	else ft->mAltivecAvailable = false;
 #else
@@ -124,7 +124,6 @@ World* World_New(WorldOptions *inOptions)
 			gLibInitted = true;
 		}
 	
-		
 		world = (World*)calloc(sizeof(World), 1);
 		
 		world->hw = (HiddenWorld*)calloc(sizeof(HiddenWorld), 1);
@@ -175,6 +174,8 @@ World* World_New(WorldOptions *inOptions)
 		GroupNodeDef_Init();
 		
 		world->mTopGroup = Group_New(world, 0);
+	
+		world->mRealTime = inOptions->mRealTime;
 		
 		world->ft = &gInterfaceTable;
 		
@@ -192,19 +193,27 @@ World* World_New(WorldOptions *inOptions)
 		hw->mMaxWireBufs = inOptions->mMaxWireBufs;
 		hw->mWireBufSpace = 0;
 	
-		hw->mAudioDriver = new SC_CoreAudioDriver(world);
-	
-		GraphDef *list = 0;
-		list = GraphDef_LoadDir(world, "synthdefs", list);
-		GraphDef_Define(world, list);
-	
-		if (!hw->mAudioDriver->Setup()) {
-			scprintf("could not initialize audio.\n");
-			return 0;
-		}
-		if (!hw->mAudioDriver->Start()) {
-			scprintf("start audio failed.\n");
-			return 0;
+		if (world->mRealTime) {
+			hw->mAudioDriver = new SC_CoreAudioDriver(world);
+		
+			GraphDef *list = 0;
+			list = GraphDef_LoadDir(world, "synthdefs", list);
+			GraphDef_Define(world, list);
+		
+			if (!hw->mAudioDriver->Setup()) {
+				scprintf("could not initialize audio.\n");
+				return 0;
+			}
+			if (!hw->mAudioDriver->Start()) {
+				scprintf("start audio failed.\n");
+				return 0;
+			}
+		} else {		
+			GraphDef *list = 0;
+			list = GraphDef_LoadDir(world, "synthdefs", list);
+			GraphDef_Define(world, list);
+
+			// batch process non real time audio
 		}
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_New: %s\n", exc.what());

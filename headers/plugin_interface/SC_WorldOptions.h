@@ -46,11 +46,13 @@ struct WorldOptions
 
 	int mNumSharedControls;
 	float *mSharedControls;
+	
+	bool mRealTime;
 };
 
 const WorldOptions kDefaultWorldOptions = 
 {
-	0,1024,64,1024,1024,64,128,2,2,4096,64,2048, 0,0,0,0
+	0,1024,64,1024,1024,64,128,2,2,4096,64,2048, 0,0,0,0, 1
 };
 
 #include "SC_Reply.h"

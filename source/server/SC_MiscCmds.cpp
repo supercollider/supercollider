@@ -580,9 +580,6 @@ SCErr meth_quit(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 	return kSCErr_None;
 }
 
-int64 oscTimeNow();
-
-
 SCErr meth_b_set(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_b_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {

@@ -79,6 +79,8 @@ struct World
 	
 	int mNumSharedControls;
 	float *mSharedControls;	
+	
+	bool mRealTime;
 };
 
 extern "C" {

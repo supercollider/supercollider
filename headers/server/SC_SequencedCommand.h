@@ -46,7 +46,8 @@
 		World_Free(inWorld, space); \
 		return err; \
 	} \
-	cmd->DoCommand(); 
+	if (inWorld->mRealTime) cmd->CallNextStage(); \
+	else cmd->CallEveryStage();
 	
 
 class SC_SequencedCommand
@@ -57,7 +58,8 @@ public:
 	
 	void Delete();
 		
-	void DoCommand();
+	void CallEveryStage();
+	void CallNextStage();
 		
 	virtual int Init(char *inData, int inSize);
 	
@@ -73,8 +75,6 @@ protected:
 	ReplyAddress mReplyAddress;
 	World *mWorld;
 	
-	void CallNextStage();
-	void CallEveryStage();
 	virtual void CallDestructor()=0;
 };
 
@@ -342,7 +342,8 @@ protected:
 	SendFailureCmd *cmd = new (space) SendFailureCmd(inWorld, inReply); \
 	if (!cmd) return kSCErr_Failed; \
 	cmd->InitSendFailureCmd(inCmdName, inErrString); \
-	cmd->DoCommand(); 
+	if (inWorld->mRealTime) cmd->CallNextStage(); \
+	else cmd->CallEveryStage();
 
 class SendFailureCmd : public SC_SequencedCommand
 {

@@ -193,12 +193,15 @@ void Node_End(Node* inNode)
 // actually does the sending.
 void Node_SendTrigger(Node* inNode, int triggerID, float value)
 {
+	World *world = inNode->mWorld;
+	if (!world->mRealTime) return;
+
 	TriggerMsg msg;
-	msg.mWorld = inNode->mWorld;
+	msg.mWorld = world;
 	msg.mNodeID = inNode->mID;
 	msg.mTriggerID = triggerID;
 	msg.mValue = value;
-	inNode->mWorld->hw->mTriggers.Write(msg);
+	world->hw->mTriggers.Write(msg);
 }
 
 // notify a client program of a node's state change.
@@ -206,13 +209,16 @@ void Node_SendTrigger(Node* inNode, int triggerID, float value)
 // actually does the sending.
 void Node_StateMsg(Node* inNode, int inState)
 {
+	World *world = inNode->mWorld;
+	if (!world->mRealTime) return;
+
 	NodeEndMsg msg;
-	msg.mWorld = inNode->mWorld;
+	msg.mWorld = world;
 	msg.mNodeID = inNode->mID;
 	msg.mGroupID = inNode->mParent ? inNode->mParent->mNode.mID : -1 ;
 	msg.mPrevNodeID = inNode->mPrev ? inNode->mPrev->mID : -1 ;
 	msg.mNextNodeID = inNode->mNext ? inNode->mNext->mID : -1 ;
 	
 	msg.mState = inState;
-	inNode->mWorld->hw->mNodeEnds.Write(msg);
+	world->hw->mNodeEnds.Write(msg);
 }
