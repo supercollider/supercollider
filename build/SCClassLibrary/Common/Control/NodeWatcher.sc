@@ -176,18 +176,18 @@ NodeWatcher : BasicNodeWatcher {
 	
 	
 	n_end { arg node;
+		
 		this.unregister(node);
-		node.group = nil;
 		node.isPlaying = false;
 		node.isRunning = false;
 	}
 
-	n_off { arg node, group;
+	n_off { arg node;
 		
 		node.isRunning = false;
 	}	
 
-	n_on { arg node, group;
+	n_on { arg node;
 		
 		node.isRunning = true;
 	}
