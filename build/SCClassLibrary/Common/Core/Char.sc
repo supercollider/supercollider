@@ -61,7 +61,8 @@ Char : Magnitude {
 	< { arg aChar;
 		^this.ascii < aChar.ascii
 	}
-	
+	== { arg aChar;  ^this.ascii == aChar.ascii }
+
 	*nl { ^$\n }
 	*ff { ^$\f }
 	*tab { ^$\t }
