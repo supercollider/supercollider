@@ -232,14 +232,7 @@ ArrayedCollection : SequenceableCollection {
 			j = j + 1;
 		})
 	}
-	reverse { 
-		var i = 0, size1, halfsize;
-		size1 = this.size - 1;
-		halfsize = this.size div: 2;
-		halfsize.do({ arg i;
-			this.swap(i, size1 - i);
-		});
-	}
+	reverse {		var i = 0, size1, halfsize, res;		res = this.copy;		size1 = res.size - 1;		halfsize = res.size div: 2;		halfsize.do({ arg i;			res.swap(i, size1 - i);		});		^res	}
 	windex {
 		_ArrayWIndex
 		^this.primitiveFailed 
@@ -264,6 +257,7 @@ ArrayedCollection : SequenceableCollection {
 		maxItem = this.maxItem;
 		^this.collect { |el| el.linlin(minItem, maxItem, min, max) };
 	}
+	
 	asciiPlot {
 		// draw the waveform down the page as asterisks
 		var lo, hi, scale, pt;
@@ -380,6 +374,24 @@ ArrayedCollection : SequenceableCollection {
 			array = array.add(array2);
 		};
 		^array
+	}
+	
+	// random distribution table
+	
+	*randomTable { arg size, func;
+		var inc, a, b, c, res, sum=0;
+		
+		c = Array.fill(size, func);
+		a = c.collect { |el| sum = sum + el }; // incrementally integrate
+		a = a / sum * size; // divide by sum (maximum value) and scale by new size
+        	b = Array.fill(size, { arg i; a.indexInBetween(i) });  // flip array
+        	b = b / size // rescale to 0..1
+        	^b
+		
+	}
+	
+	tableRand {
+		^this.blendAt((this.size - 1).asFloat.rand)
 	}
 }
 
