@@ -23,7 +23,9 @@ BroadcastServer : Server {
 	}
 	boot {
 		nodeWatcher.start;
-		this.sendMsg("/notify", true); 
+		if(notified, { 
+				SystemClock.sched(1, { this.notify; "sent notify on".inform; });
+		}); 
 	}
 	quit {
 		nodeWatcher.stop;
@@ -54,6 +56,7 @@ BroadcastServer : Server {
 		allAddr.do({ arg addr; addr.sendMsg("/status") });
 	}
 	notify { arg flag=true;
+		notified = true;
 		allAddr.do({ arg addr; addr.sendMsg("/notify", flag.binaryValue) });
 	}
 	
@@ -61,9 +64,7 @@ BroadcastServer : Server {
 		nodeWatcher.nodes.add(nodeID);
 	}
 	
-	nodeIsPlaying { arg nodeID;
-		^localServer.nodeIsPlaying(nodeID); //for simplicity
-	}
+	
 		
 	//use local allocators
 
@@ -117,8 +118,10 @@ Router : Server {
 	
 	newAllocatorsForThisClient { 
 		var startID;
-		startID = clientNumber * (options.maxNodes * 2) + options.maxNodes + 1;
-		sharedNodeIDAllocator = RingNumberAllocator(1000, options.maxNodes);
+		startID = clientNumber * (options.maxNodes * 2) + options.maxNodes + 1 + 1000;
+		//this one is same for all
+		sharedNodeIDAllocator = RingNumberAllocator(1000, 1000 + options.maxNodes);
+		
 		nodeAllocator = RingNumberAllocator(startID + 1 + options.maxNodes, 
 										startID + 1 + (2*options.maxNodes));
 		staticNodeAllocator = RingNumberAllocator(startID + 1 + (2*options.maxNodes), 
