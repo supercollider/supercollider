@@ -1,0 +1,28 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{6021F4C0-62D6-4BDA-8A89-4D7F5EB4B402}") = "Psycollider", "Psycollider.Pythonproj", "{63E76655-01E8-4D44-B65C-380846819263}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SourceCodeControl) = preSolution
+		SccNumberOfProjects = 2
+		SccLocalPath0 = .
+		CanCheckoutShared = true
+		SolutionUniqueID = {D7C1C07D-5E5C-4687-B373-21E977654464}
+		SccProjectUniqueName1 = Psycollider.Pythonproj
+		SccLocalPath1 = .
+		CanCheckoutShared = true
+	EndGlobalSection
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{63E76655-01E8-4D44-B65C-380846819263}.Debug.ActiveCfg = Debug
+		{63E76655-01E8-4D44-B65C-380846819263}.Release.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
