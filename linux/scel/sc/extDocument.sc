@@ -2,7 +2,9 @@
 	// Document class for Emacs interface.
 	// Delegates to EmacsDocument.
 
-	*initClass { }
+	*initClass {
+		allDocuments = [];
+	}
 	*open { | path, selectionStart=0, selectionLength=0 |
 		^EmacsDocument.prBasicNew.initFromPath(path, selectionStart, selectionLength)
 	}	

@@ -31,6 +31,7 @@ EmacsInterface {
 	}
 
 	*performCommand { | name, args |
+// 		[\performCommand, name, args].postln;
 		^handlers.atFail(name, { ^nil }).valueArray(args)
 	}
 
@@ -131,6 +132,7 @@ Emacs {
 	*initClass {
 		var outFileName;
 		Class.initClassTree(EmacsInterface);
+		Class.initClassTree(EmacsDocument);
 		requestHandlers = IdentityDictionary.new;
 		requestAllocator = LRUNumberAllocator(0, 1024);
 		keys = IdentityDictionary.new;

@@ -10,18 +10,18 @@ EmacsDocument : Document
 			nil
 		})
 		.put(\documentClosed, { | name |
-			this.prDocumentDo(name, { | doc |
+			this.documentDo(name, { | doc |
 				doc.closed;
 			});
 			nil
 		})
 		.put(\documentEdited, { | name, flag |
-			this.prDocumentDo(name, { | doc |
+			this.documentDo(name, { | doc |
 				doc.isEdited = (flag === true);
 			});
 		})
 		.put(\documentBecomeKey, { | name, flag |
-			this.prDocumentDo(name, { | doc |
+			this.documentDo(name, { | doc |
 				if (flag === true) {
 					doc.didBecomeKey;
 				}{
@@ -32,6 +32,24 @@ EmacsDocument : Document
 	}
 
 	*listenerName { ^"*SCLang*" }
+
+	*findDocument { | name |
+		^allDocuments.detect({ | doc | doc.dataptr == name })
+	}
+	*documentDo { | name, function |
+		var doc;
+		doc = this.findDocument(name);
+		^if (doc.notNil) {
+			function.value(doc);
+		}
+	}
+	*documentDoMsg { | name, selector ... args |
+		var doc;
+		doc = this.findDocument(name);
+		^if (doc.notNil) {
+			doc.performList(selector, args);
+		}
+	}
 
 	// lisp support
 	storeLispOn { | stream |
@@ -93,16 +111,6 @@ EmacsDocument : Document
 	}
 	
 	// PRIVATE
-	*prFindDocument { | name |
-		^allDocuments.detect({ | doc | doc.dataptr == name })
-	}
-	*prDocumentDo { | name, function |
-		var doc;
-		doc = this.prFindDocument(name);
-		^if (doc.notNil) {
-			function.value(doc);
-		}
-	}
 	*prNewFromLisp { | name, path |
 		^super.new.prInitFromLisp(name, path);
 	}
@@ -192,10 +200,13 @@ EmacsDocument : Document
 // 		this.prAdd;	
 	}
 	prinitByString { arg title, str, makeListener;
-// 		_NewTextWindow
+		if (makeListener) {
+			// there's only one post buffer
+			^this.class.listener
+		};
 	}
 	prgetTitle {
-		^dataptr
+		^dataptr ? "Untitled"
 	}
 	setBackgroundColor { arg color;
 	}	

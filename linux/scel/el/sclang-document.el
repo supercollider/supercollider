@@ -31,6 +31,10 @@
   (with-current-buffer (or buffer (current-buffer))
     (and (boundp 'sclang-document-p) sclang-document-p)))
 
+(defun sclang-get-document (name)
+  (let ((buffer (get-buffer name)))
+    (and buffer (sclang-document-p buffer) buffer)))
+
 (defun sclang-make-document (&optional buffer)
   (with-current-buffer (or buffer (current-buffer))
     (set (make-local-variable 'sclang-document-p) t)
@@ -39,24 +43,8 @@
      (sclang-document-name)
      (buffer-file-name))))
 
-(defun sclang-document-list ()
-  (remove-if-not #'sclang-document-p (buffer-list)))
-
-(defun sclang--document-library-startup-function ()
-  (dolist (buffer (sclang-document-list))
-    (sclang-make-document buffer))
-  (let ((cur-doc (current-buffer)))
-    (setq sclang--current-document
-	  (when (sclang-document-p cur-doc)
-	    (sclang-perform-command-no-result 'documentBecomeKey (sclang-document-name cur-doc) t)
-	    cur-doc))))
-
-(defun sclang--document-kill-buffer-hook-function ()
-  (when (sclang-document-p)
-    (sclang-perform-command-no-result 'documentClosed (sclang-document-name))))
-
-(defun sclang--document-post-command-hook-function ()
-  (let ((buffer (current-buffer)))
+(defun sclang-make-buffer-current (&optional buffer)
+  (let ((buffer (or buffer (current-buffer))))
     (unless (eq buffer sclang--current-document)
       (let ((prev-doc sclang--current-document)
 	    (cur-doc (and (sclang-document-p buffer) buffer)))
@@ -66,17 +54,52 @@
 	    (sclang-perform-command-no-result 'documentBecomeKey (sclang-document-name cur-doc) t))
 	(setq sclang--current-document cur-doc)))))
 
+(defun sclang-document-list ()
+  (remove-if-not #'sclang-document-p (buffer-list)))
+
+(defun sclang--document-library-startup-function ()
+  (dolist (buffer (sclang-document-list))
+    (sclang-make-document buffer))
+  (sclang-make-buffer-current (current-buffer)))
+
+(defun sclang--document-kill-buffer-hook-function ()
+  (when (sclang-document-p)
+    (sclang-perform-command-no-result 'documentClosed (sclang-document-name))))
+
+(defun sclang--document-post-command-hook-function ()
+  (sclang-make-buffer-current))
+
 ;; =====================================================================
 ;; commands
 ;; =====================================================================
 
 (sclang-set-command-handler
+ '_documentNew
+ (lambda (arg)
+   ))
+
+(sclang-set-command-handler
+ '_documentOpen
+ (lambda (arg)
+   ))
+
+(sclang-set-command-handler
  '_documentClose
  (lambda (arg)
-   (when (and (stringp arg)
-	      (get-buffer arg)
-	      (sclang-document-p arg))
-     (kill-buffer arg))))
+   (let ((doc (and (stringp arg) (sclang-get-document arg))))
+     (and doc (kill-buffer doc)))))
+
+(sclang-set-command-handler
+ '_documentSwitchTo
+ (lambda (arg)
+   (let ((doc (and (stringp arg) (sclang-get-document arg))))
+     (and doc (switch-to-buffer doc)))))
+
+(sclang-set-command-handler
+ '_documentPopTo
+ (lambda (arg)
+   (let ((doc (and (stringp arg) (sclang-get-document arg))))
+     (and doc (display-buffer doc)))))
 
 ;; =====================================================================
 ;; module setup
