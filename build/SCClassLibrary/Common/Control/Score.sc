@@ -36,9 +36,9 @@ Score {
 					var deltatime, msg;
 					osccmd = score[i];
 					deltatime = osccmd[0];
-					msg = osccmd[1];
+					msg = osccmd.copyToEnd(1);
 					(deltatime-timekeep).wait;
-					inserver.sendBundle(inserver.latency, msg);
+					inserver.listSendBundle(inserver.latency, msg);
 					timekeep = deltatime;
 				};
 				isPlaying = false;
