@@ -102,9 +102,13 @@ typedef union pyrslot {
 	obviously it polutes the namespace of identifiers beginning with 'u'.
 */
 #define utag s.tag
+//int
 #define ui s.u.i
+//PyrObject
 #define uo s.u.o
+//PyrSymbol
 #define us s.u.s
+//RGBColor8
 #define ur s.u.r
 #define uc s.u.c
 #define uoc s.u.oc
@@ -115,9 +119,12 @@ typedef union pyrslot {
 #define uop s.u.op
 #define uoi s.u.oi
 #define uod s.u.od
+//string
 #define uos s.u.os
 #define uot s.u.ot
+//method
 #define uom s.u.om
+//symbol array
 #define uosym s.u.osym
 #define uoblk s.u.oblk
 #define uopn s.u.opn
