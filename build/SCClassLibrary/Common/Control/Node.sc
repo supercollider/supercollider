@@ -148,7 +148,7 @@ Node {
 	msgToBundle { arg bundle, cmdName, argList;
 		^bundle.add([cmdName, nodeID] ++ argList)
 	}
-	newMsg { arg target, addAction=\addToTail, args;
+	newMsg { arg target, addAction=\addToHead, args;
 		var bundle, addActionNum;
 		target = target.asTarget;
 		^this.perform(addAction, target, args)
@@ -167,11 +167,10 @@ Node {
 	prMoveBefore {  arg beforeThisOne;
 		this.group = beforeThisOne.group;
 	}
-	nodeToServer { arg addAction=\addToTail, target, args;
+	nodeToServer { arg addAction=\addToHead, target, args;
 		var msg;
-		msg = [this.perform(addAction, target, args)];
-		target.asGroup.finishBundle(msg, this);
-		server.listSendBundle(nil, msg);
+		msg = this.perform(addAction, target, args);
+		server.sendBundle(nil, msg);
 	}
 	nodeToServerMsg { 
 		^this.subclassResponsibility(thisMethod)       
@@ -201,7 +200,7 @@ Node {
 Group : Node {
 	
 	/** immediately sends **/
-	*new { arg target, addAction=\addToTail;
+	*new { arg target, addAction=\addToHead;
 		var group, server;
 		target = target.asTarget;
 		server = target.server;
@@ -275,7 +274,7 @@ Group : Node {
 
 			
 	/** bundle messages **/
-	*newToBundle { arg bundle, target, addAction=\addToTail;
+	*newToBundle { arg bundle, target, addAction=\addToHead;
 		var group;
 		target = target.asTarget;
 		group = this.basicNew(target.server);
@@ -298,7 +297,7 @@ Synth : Node {
 	var <>defName;
 	
 	/** immediately sends **/
-	*new { arg defName, args, target, addAction=\addToTail;
+	*new { arg defName, args, target, addAction=\addToHead;
 		var synth, server;
 		target = target.asTarget;
 		server = target.server;
@@ -322,7 +321,7 @@ Synth : Node {
 		^this.new(defName, args, synthToReplace, \addReplace)
 	}
 	// nodeID -1 
-	*grain { arg defName, args, target, addAction=\addToTail;
+	*grain { arg defName, args, target, addAction=\addToHead;
 		var synth, server;
 		target = target.asTarget;
 		server = target.server;
@@ -330,7 +329,7 @@ Synth : Node {
 		synth.nodeToServer(addAction, target, args);
 		^synth
 	}
-	*newLoad { arg defName, args, target, addAction=\addToTail, dir="synthdefs/";
+	*newLoad { arg defName, args, target, addAction=\addToHead, dir="synthdefs/";
 		var msg, synth;
 		target = target.asTarget;
 		synth = this.basicNew(defName, target.server);
@@ -338,7 +337,7 @@ Synth : Node {
 		synth.server.sendMsg(6, dir ++synth.defName++".scsyndef", msg); //"/d_load"
 		^synth
 	}	
-	*newPaused { arg defName, args, target, addAction=\addToTail;
+	*newPaused { arg defName, args, target, addAction=\addToHead;
 		var bundle, synth;
 		bundle = List.new;
 		synth = this.newToBundle(bundle, defName,args, target, addAction);
@@ -352,7 +351,7 @@ Synth : Node {
 	*basicNew { arg defName, server, nodeID;
 		^super.basicNew(server, nodeID).defName_(defName.asDefName)
 	}
-	*newToBundle { arg bundle, defName, args, target, addAction=\addToTail;
+	*newToBundle { arg bundle, defName, args, target, addAction=\addToHead;
 		var synth;
 		target = target.asTarget;
 		synth = this.basicNew(defName, target.server);
