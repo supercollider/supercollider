@@ -49,7 +49,8 @@ public:
 private:
 	friend class PyrGC;
 	
-	void MoveWhiteToFree();
+	void MajorFlip();
+	void MinorFlip();
 	
 	PyrObjectHdr mBlack;
 	PyrObjectHdr mWhite;
@@ -69,6 +70,7 @@ public:
 	PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long poolSize);
 	
 	PyrObject* New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect);
+	PyrObject* NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool inAccount);
 						
 	static PyrObject* NewPermanent(size_t inNumBytes, 
 						long inFlags, long inFormat);
@@ -146,7 +148,9 @@ public:
 	void ToGrey(PyrObjectHdr* inObj);
 	void ToGrey2(PyrObjectHdr* inObj);
 	void ToBlack(PyrObjectHdr* inObj);
-	void ToWhite(PyrObjectHdr *obj);
+	void ToWhite(PyrObjectHdr *inObj);
+	void Free(PyrObjectHdr* inObj);
+
 
 	int32 StackDepth() { return mVMGlobals->sp - mStack->slots + 1; }
 	PyrObject* Stack() { return mStack; }
@@ -160,25 +164,30 @@ public:
 	bool SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level);
 	bool SanityClearObj(PyrObject *objA, int level);
 	void DumpInfo();
-	void DumpEverything();
+	void DumpGrey();
+	void DumpSet(int set);
 	
 	void BecomePermanent(PyrObject *inObject);
 	void BecomeImmutable(PyrObject *inObject);
 	
 private:
-	void Free(PyrObject* inObj);
 	void ScanSlots(PyrSlot *inSlots, long inNumToScan);
 	void SweepBigObjects();
 	void DoPartialScan(int32 inObjSize);
 	bool ScanOneObj();
 	void Flip();
 	void ScanStack();
+	void ScanFrames();
 	void DLRemove(PyrObjectHdr *obj);
 	void DLInsertAfter(PyrObjectHdr *after, PyrObjectHdr *obj);
 	void DLInsertBefore(PyrObjectHdr *before, PyrObjectHdr *obj);
 
 	void ClearMarks();
 	void Finalize(PyrObject *obj);
+	
+	void beginPause();
+	void endPause();
+	void reportPause();
 	
 	VMGlobals *mVMGlobals;
 	AllocPool *mPool;
@@ -195,7 +204,7 @@ private:
 	int32 mNumGrey;
 	int32 mCurSet;
 	
-	int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs;
+	int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned;
 	
 	unsigned char mBlackColor, mGreyColor, mWhiteColor, mFreeColor;
 	int8 mProcessID;
@@ -258,6 +267,23 @@ inline void PyrGC::ToWhite(PyrObjectHdr *obj)
 	DLInsertAfter(&gcs->mWhite, obj);
 
 	obj->gc_color = mWhiteColor;
+}
+
+inline void PyrGC::Free(PyrObjectHdr* obj)
+{	
+	if (IsGrey(obj)) {
+		mNumGrey--;
+		//post("ToWhite %d\n", mNumGrey);
+	}
+
+	DLRemove(obj);	
+		
+	GCSet *gcs = GetGCSet(obj);
+	DLInsertBefore(gcs->mFree, obj);
+	gcs->mFree = obj;
+	
+	obj->gc_color = mFreeColor;
+	obj->size = 0;
 }
 
 #endif

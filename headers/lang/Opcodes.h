@@ -61,7 +61,7 @@ enum {
 	opcJumpFwd,			
 	opcJumpBak,			
 	opcSpecialBinaryOpWithAdverb,				
-	opcSuperNew,		// 15
+	opcSuperSpecial,		// 15
 	
 	opcNewList,
 	
@@ -356,7 +356,9 @@ enum {
 	selOr,
 	selLoop,
 	selSuperNew,
-	
+	selQuestionMark,
+	selDoubleQuestionMark,
+
 	selNumSelectorTypes
 };
 

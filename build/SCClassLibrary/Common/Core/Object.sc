@@ -29,7 +29,8 @@ Object {
 	postcs { this.asCompileString.postln }
 	totalFree { _TotalFree }
 	largestFreeBlock { _LargestFreeBlock }
-	gcAll { _GCAll }
+	gcDumpGrey { _GCDumpGrey }
+	gcDumpSet { arg set; _GCDumpSet }
 	gcInfo { _GCInfo }
 	gcSanity { _GCSanity }
 	
@@ -177,6 +178,10 @@ Object {
 	shouldNotImplement { arg method;
 		ShouldNotImplementError(this, method, this.class).throw;
 	} 
+	outOfContextReturn { arg method, result;
+		OutOfContextReturnError(this, method, result).throw;
+	} 
+	
 	mustBeBoolean { MustBeBooleanError(nil, this).throw; }
 	notYetImplemented { NotYetImplemented(nil, this).throw; }
 	

@@ -60,7 +60,8 @@ FlowView : SCLayoutView {
 	
 	*viewClass { ^SCCompositeView }
 	init { arg parent,bounds;
-		super.init(parent = parent ?? { var w;
+		var w;
+		super.init(parent = parent ?? {
 								w = SCWindow.new("",bounds).front;
 								if(bounds.notNil,{ bounds = bounds.moveTo(0,0) });
 								w

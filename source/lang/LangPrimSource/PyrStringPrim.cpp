@@ -129,7 +129,7 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
 int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-
+	
 	char pattern[1024];
 	int err = slotStrVal(a, pattern, 1023);
 	if (err) return err;

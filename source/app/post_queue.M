@@ -71,7 +71,7 @@ static PostBuf mainPostBuf;
 #define POSTBUFLEN 131072
 #define POSTBUFMASK 131071
 
-FILE *postfile=0;
+FILE *postfile=NULL;
 
 void PostBuf::Init()
 {
@@ -96,7 +96,13 @@ void setPostFile(FILE *file)
 void vposttext(const char *str, int length);
 void vposttext(const char *str, int length)
 {
-        pthread_mutex_lock(&mainPostBuf.mutex);
+	pthread_mutex_lock(&mainPostBuf.mutex);
+
+	if (postfile) {
+		fwrite(str, length, 1, postfile);
+		fflush(postfile);
+	}
+	
 	for (int i=0; i<length && str[i]; ++i) {
 		if (((mainPostBuf.wrpos+1) & POSTBUFMASK) == mainPostBuf.rdpos) {
 			break;
@@ -117,8 +123,8 @@ int vpost(const char *fmt, va_list vargs)
 {
 	char str[512];
 	
-	vsnprintf(str, 512, fmt, vargs);
-	vposttext(str, 512);
+	int len = vsnprintf(str, 512, fmt, vargs);
+	vposttext(str, len);
 	return 0;
 }
 
@@ -204,12 +210,6 @@ void PostBuf::Flush()
 			firstpart = POSTBUFLEN - rdpos;
 			endpos -= POSTBUFLEN;
 			secondpart = endpos;
-
-			if (postfile) {
-				fwrite(buf + rdpos, firstpart, 1, postfile);
-				fwrite(buf, secondpart, 1, postfile);
-				fflush(postfile);
-			}
 					
 			if (gPostView) {
 				NSString* string;
@@ -230,10 +230,6 @@ void PostBuf::Flush()
 			}
 			rdpos = endpos;
 		} else {
-			if (postfile) {
-				fwrite(buf + rdpos, numtoread, 1, postfile);
-				fflush(postfile);
-			}
 			if (gPostView) {
 				NSString* string = [NSString stringWithCString: buf + rdpos length: numtoread];
 				NSRange range = [gPostView selectedRange];

@@ -30,14 +30,15 @@ PyrObject represents the structure of all SC Objects.
 	
 /* special gc colors */
 enum {
-	obj_permanent   = 1,		// sent to gc->New as a flag
-	obj_gcmarker	= 2			// gc treadmill marker
+	obj_permanent		= 1,		// sent to gc->New as a flag
+	obj_gcmarker		= 2		// gc treadmill marker
 };
 
 /* obj flag fields */
 enum {
-	obj_immutable   = 16,
-	obj_marked		= 128
+	obj_inaccessible	= 4,
+	obj_immutable		= 16,
+	obj_marked			= 128
 };
 
 /* format types : */
@@ -238,7 +239,7 @@ void dumpObjectSlot(PyrSlot *slot);
 bool respondsTo(PyrSlot *slot, PyrSymbol *selector);
 bool isSubclassOf(struct PyrClass *classobj, struct PyrClass *testclass);
 
-const int kFloatTagIndex = 12;
+const int kFloatTagIndex = 11;
 extern struct PyrClass* gTagClassTable[16];
 
 inline struct PyrClass* classOfSlot(PyrSlot *slot)

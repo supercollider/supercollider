@@ -13,8 +13,8 @@ InstrSpawner : Patch {
 	storeArgs { ^[instr.name,args,deltaPattern] }
 	
 	asSynthDef {
+		var initArgs;
 		^synthDef ?? {
-			var initArgs;
 			initArgs = this.args.collect({ arg a,i;
 						var spec;
 						if(a.rate == \stream,{

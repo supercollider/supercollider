@@ -22,7 +22,7 @@ Spec {
 
 ControlSpec : Spec {
 	var <minval, <maxval, <>warp, <>step, <>default, <>units;
-	var <clipLo,<clipHi;
+	var <clipLo, <clipHi;
 	
 	*new { arg minval=0.0, maxval=1.0, warp='lin', step=0.0, default, units;
 		^super.newCopyArgs(minval, maxval, warp, step, 

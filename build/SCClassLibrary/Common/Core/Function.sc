@@ -54,6 +54,19 @@ Function : AbstractFunction {
 	block {
 		this.value {|val| ^val };
 	}
+//	block {
+//		var result;
+//		try {
+//			result = this.value #{|val| Break(val).throw };
+//		}{|error|
+//			if (error.class == Break) { 
+//				^error.value
+//			}{
+//				error.throw
+//			}
+//		}
+//		^result
+//	}
 	
 	asRoutine {
 		^Routine.new(this)
@@ -83,7 +96,7 @@ Function : AbstractFunction {
 	set { arg ... args; ^this.valueArray(args) }
 	get { arg prevVal; ^prevVal }
 	
-	fork { arg clock, quant=0.0, stackSize=512;
+	fork { arg clock, quant=0.0, stackSize=64;
 		^Routine(this, stackSize).play(clock, quant);
 	}
 	

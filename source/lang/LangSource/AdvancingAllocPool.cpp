@@ -21,10 +21,10 @@
 
 #include "AdvancingAllocPool.h"
 #include "SC_AllocPool.h"
-#ifndef NDEBUG
-# define NDEBUG
-#endif
-#include <assert.h>
+//#ifndef NDEBUG
+//# define NDEBUG
+//#endif
+//#include <assert.h>
 
 
 AdvancingAllocPool::AdvancingAllocPool()
@@ -47,7 +47,7 @@ void AdvancingAllocPool::Init(AllocPool *inAllocPool, size_t initSize, size_t gr
 	mChunks = NULL;
 	AddChunk(initSize);
 	mFatties = NULL;
-	assert(SanityCheck());
+	//assert(SanityCheck());
 }
 
 void AdvancingAllocPool::AddChunk(size_t inSize)
@@ -63,8 +63,8 @@ void AdvancingAllocPool::AddChunk(size_t inSize)
 
 void* AdvancingAllocPool::Alloc(size_t reqsize)
 {
-	assert(SanityCheck());
-	assert(mAllocPool);
+	//assert(SanityCheck());
+	//assert(mAllocPool);
 	size_t size = (reqsize + 15) & ~15;  // round up to 16 byte alignment
 	if (size < mTooBig) {
 		if (!mChunks) AddChunk(mInitSize);
@@ -72,7 +72,7 @@ void* AdvancingAllocPool::Alloc(size_t reqsize)
 		char* space = mChunks->mSpace + mCurSize;
 		mCurSize += size;
 		
-		assert(SanityCheck());
+		//assert(SanityCheck());
 		return (void*)space;
 	} else {
 		size_t chunkSize = sizeof(AdvancingAllocPoolChunkHdr) + size;
@@ -82,14 +82,14 @@ void* AdvancingAllocPool::Alloc(size_t reqsize)
 		mFatties = fatty;
 		fatty->mSize = size;
 		
-		assert(SanityCheck());
+		//assert(SanityCheck());
 		return (void*)fatty->mSpace;
 	}
 }
 
 void AdvancingAllocPool::FreeAll()
 {
-	assert(SanityCheck());
+	//assert(SanityCheck());
 	AdvancingAllocPoolChunk *chunk, *next;
 	for (chunk = mChunks; chunk; chunk = next) {
 		next = chunk->mNext;
@@ -102,7 +102,7 @@ void AdvancingAllocPool::FreeAll()
 	mChunks = NULL;
 	mFatties = NULL;
 	mCurSize = 0;
-	assert(SanityCheck());
+	//assert(SanityCheck());
 }
 
 bool AdvancingAllocPool::SanityCheck()

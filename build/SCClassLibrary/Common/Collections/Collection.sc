@@ -121,7 +121,9 @@ Collection {
 	rejectAs { | function, class |
 		var i, res;
 		res = class.new(this.size);
-		this.do {|elem, i| if (function.value(elem, i).not) {res.add(elem)} }
+		this.do {|elem, i| 
+			if (function.value(elem, i).not) {res.add(elem)} 
+		}
 		^res;
 	}
 	detect { | function |

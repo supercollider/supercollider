@@ -226,8 +226,6 @@ int prFileWrite(struct VMGlobals *g, int numArgsPushed)
 			chr = b->ui;
 			fwrite(&chr, sizeof(char), 1, file);
 			break;
-		case tagHFrame :
-		case tagSFrame :
 		case tagNil :
 		case tagFalse :
 		case tagTrue :
@@ -756,6 +754,7 @@ int prFileReadRaw(struct VMGlobals *g, int numArgsPushed)
 	if (file == NULL) return errFailed;
 		
 	b->uo->size = fread(b->uos->s, gFormatElemSize[b->uo->obj_format], b->uo->size, file);
+		
 	if (b->uo->size==0) SetNil(a);
 	else a->ucopy = b->ucopy;
 	return errNone;

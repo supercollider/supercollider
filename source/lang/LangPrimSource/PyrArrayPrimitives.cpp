@@ -132,6 +132,7 @@ int basicSwap(struct VMGlobals *g, int numArgsPushed)
 }
 
 int getIndexedInt(PyrObject *obj, int index, int *value);
+void DumpBackTrace(VMGlobals *g);
 
 int basicAt(struct VMGlobals *g, int numArgsPushed)
 {
@@ -146,8 +147,9 @@ int basicAt(struct VMGlobals *g, int numArgsPushed)
 	obj = a->uo;
 	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
 		return errNotAnIndexableObject;
-		
-	if (b->utag == tagInt) {
+	
+	int err = slotIntVal(b, &index);
+	if (!err) {
 		index = b->ui;
 		if (index < 0 || index >= obj->size) {
 			a->ucopy = o_nil.ucopy;
@@ -170,7 +172,9 @@ int basicAt(struct VMGlobals *g, int numArgsPushed)
 		}
 		outArray->size = size;
 		SetObject(a, outArray);
-	} else return errIndexNotAnInteger;
+	} else {
+		return errIndexNotAnInteger;
+	}
 	return errNone;
 }
 
@@ -1999,6 +2003,8 @@ int prArrayNormalizeSum(struct VMGlobals *g, int numArgsPushed)
 }
 
 
+
+
 int prArrayWIndex(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *slots;
@@ -2026,6 +2032,7 @@ int prArrayWIndex(struct VMGlobals *g, int numArgsPushed)
 	SetInt(a, j);
 	return errNone;
 }
+
 
 enum {
 	shape_Step,
@@ -2154,7 +2161,6 @@ int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
 	
 	return errNone;
 }
-
 
 
 void initArrayPrimitives();

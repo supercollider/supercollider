@@ -43,10 +43,10 @@ template <class S>
 class PyrArchiver
 {
 public:
-	PyrArchiver(VMGlobals *inG, bool inSameAddressSpace = false)
+	PyrArchiver(VMGlobals *inG)
 		: g(inG), mObjectArray(mInitialObjectArray), mNumObjects(0), 
 			mObjectArrayCapacity( kObjectArrayInitialCapacity ),
-			mSameAddressSpace(inSameAddressSpace), mReadArchiveVersion(0)
+			mReadArchiveVersion(0)
 		{
 		}
 	
@@ -224,41 +224,37 @@ private:
 		}
 
 	void constructObjectArray(PyrObject *obj)
-			{
-				if (!obj->IsMarked()) {
-					if (isKindOf(obj, class_class)) {
-					} else if (isKindOf(obj, class_process)) {
-					} else if (isKindOf(obj, s_interpreter->u.classobj)) {
-					} else if (isKindOf(obj, class_method)) {
-						throw std::runtime_error("cannot archive Methods.\n");
-					} else if (isKindOf(obj, class_thread)) {
-						throw std::runtime_error("cannot archive Threads.\n");
-					} else if (isKindOf(obj, class_frame)) {
-						throw std::runtime_error("cannot archive Frames.\n");
-					} else if (isKindOf(obj, class_func)) {
-						if (NotNil(&((PyrClosure*)obj)->block.uoblk->context)) {
-							throw std::runtime_error("open Function can not be archived.\n");
-						}
+		{
+			if (!obj->IsMarked()) {
+				if (isKindOf(obj, class_class)) {
+				} else if (isKindOf(obj, class_process)) {
+				} else if (isKindOf(obj, s_interpreter->u.classobj)) {
+				} else if (isKindOf(obj, class_method)) {
+					throw std::runtime_error("cannot archive Methods.\n");
+				} else if (isKindOf(obj, class_thread)) {
+					throw std::runtime_error("cannot archive Threads.\n");
+				} else if (isKindOf(obj, class_frame)) {
+					throw std::runtime_error("cannot archive Frames.\n");
+				} else if (isKindOf(obj, class_func)) {
+					//if (NotNil(&((PyrClosure*)obj)->block.uoblk->context)) {
+					//	throw std::runtime_error("open Function can not be archived.\n");
+					//}
+					putObject(obj);
+					recurse(obj, obj->size);
+				} else {
+					if (isKindOf(obj, class_rawarray)) {
+						putObject(obj);
+					} else if (isKindOf(obj, class_array)) {
 						putObject(obj);
 						recurse(obj, obj->size);
+						
 					} else {
-						if (mSameAddressSpace && obj->IsPermanent()) {
-							// skip it
-						} else {
-							if (isKindOf(obj, class_rawarray)) {
-								putObject(obj);
-							} else if (isKindOf(obj, class_array)) {
-								putObject(obj);
-								recurse(obj, obj->size);
-								
-							} else {
-								putObject(obj);
-								recurse(obj, obj->size);
-							}
-						}
+						putObject(obj);
+						recurse(obj, obj->size);
 					}
 				}
 			}
+		}
 
 	int32 sizeOfElem(PyrSlot *slot)
 		{
@@ -269,15 +265,14 @@ private:
 						return slot->uoc->name.us->length + 1;
 					} else if (isKindOf(slot->uo, class_process)) {
 						return 0;
+					} else if (isKindOf(slot->uo, class_frame)) {
+						return 0;
 					} else if (isKindOf(slot->uo, s_interpreter->u.classobj)) {
 						return 0;
 					} else {
 						return sizeof(int32);
 					}
 					break;
-				case tagHFrame : 
-				case tagSFrame : 
-					return 0;
 				case tagInt : 
 					return sizeof(int32);
 				case tagSym : 
@@ -347,7 +342,13 @@ private:
 				writeRawArray(obj);
 			} else if (isKindOf(obj, class_func)) {
 				PyrClosure* closure = (PyrClosure*)obj;
-				writeSlot(&closure->block);
+				if (NotNil(&closure->block.uoblk->context)) {
+					writeSlot(&closure->block);
+					writeSlot(&closure->context);
+				} else {
+					writeSlot(&closure->block);
+					writeSlot(&o_nil);
+				}
 			} else {
 				for (int i=0; i<obj->size; ++i) {
 					writeSlot(obj->slots + i);
@@ -363,7 +364,10 @@ private:
 			} else if (isKindOf(obj, class_func)) {
 				PyrClosure* closure = (PyrClosure*)obj;
 				readSlot(&closure->block);
-				closure->context.ucopy = g->process->interpreter.uoi->context.ucopy;
+				readSlot(&closure->context);
+				if (IsNil(&closure->context)) {
+					closure->context.ucopy = g->process->interpreter.uoi->context.ucopy;
+				}
 			} else {
 				for (int i=0; i<obj->size; ++i) {
 					readSlot(obj->slots + i);
@@ -386,18 +390,9 @@ private:
 					} else if (isKindOf(obj, s_interpreter->u.classobj)) {
 						mStream.writeInt8('R');
 					} else {
-						if (mSameAddressSpace && obj->IsPermanent()) {
-							mStream.writeInt8('z');
-							mStream.writeInt32_be((int32)obj);
-						} else {
-							mStream.writeInt8('o');
-							mStream.writeInt32_be(obj->scratch1);
-						}
+						mStream.writeInt8('o');
+						mStream.writeInt32_be(obj->scratch1);
 					}
-					break;
-				case tagHFrame : 
-				case tagSFrame : 
-					mStream.writeInt8('N');
 					break;
 				case tagInt : 
 					mStream.writeInt8('i');
@@ -581,7 +576,6 @@ private:
 	int32 mObjectArrayCapacity;
 	PyrSlot mTopSlot;
 		
-	bool mSameAddressSpace;
 	SC_IOStream<S> mStream;
 	int32 mReadArchiveVersion;
 

@@ -442,9 +442,15 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 				op2, selector->name);
 			break;
 		case 143 :
-			op2 = *ip++; // get selector index
-			post(" %02X     LoopOpcode\n", op2); break;
-
+			op2 = *ip++; // get loop opcode
+			if (op2 < 22) {
+				post(" %02X     LoopOpcode\n", op2); break;
+			} else {
+				op3 = *ip++; // jump
+				op4 = *ip++; // jump
+				jmplen = ((op3 & 0xFF)<<8) | (op4 & 0xFF);
+				post(" %02X %02X %02X LoopOpcode %d  (%d)\n", op2, op3, op4, jmplen, n + jmplen + 3); break;
+			}
 			break;
 
 		//	StoreClassVar
@@ -881,10 +887,16 @@ bool detectSendSelectorIn(PyrBlock *theBlock, PyrSymbol *testSelector)
 	
 	if (theBlock->code.uob == NULL) {
 		PyrMethodRaw* methraw = METHRAW(theBlock);
-		if (methraw->methType == methRedirect || methraw->methType == methRedirect) {
-			selector = theBlock->selectors.us;
-			return selector == testSelector;
-		} else return false;
+		switch (methraw->methType) {
+			case methRedirect :
+			case methRedirectSuper :
+			case methForwardInstVar :
+			case methForwardClassVar :
+				selector = theBlock->selectors.us;
+				return selector == testSelector;
+			default : 
+				return false;
+		}
 	}
 	block = theBlock;
 	theClass = 0;

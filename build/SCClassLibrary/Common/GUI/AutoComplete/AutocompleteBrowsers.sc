@@ -467,7 +467,7 @@ ClassBrowser {
 						"supercollider/SuperCollider3/build/";
 			filename = currentClass.filenameSymbol.asString;
 			cvsAddr = cvsAddr ++ filename.drop(filename.find("SCClassLibrary"));
-			unixCmd("open \"" ++ cvsAddr ++ "\"");
+			systemCmd("open \"" ++ cvsAddr ++ "\"");
 		};
 		
 		

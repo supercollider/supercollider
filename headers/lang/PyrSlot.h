@@ -46,18 +46,16 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 /* use the high order bits of an IEEE double NaN as a tag */
 enum {
 	tagObj     = 0x7FF90001,
-	tagHFrame  = 0x7FF90002,
-	tagSFrame  = 0x7FF90003,
-	tagInt     = 0x7FF90004,
-	tagSym     = 0x7FF90005,
-	tagChar    = 0x7FF90006,
-	tagNil     = 0x7FF90007,	// nil, false, and true are indicated by the tag alone.
-	tagFalse   = 0x7FF90008,	// the lower 32 bits are zero.
-	tagTrue    = 0x7FF90009,
-	tagInf     = 0x7FF9000A,
-	tagPtr     = 0x7FF9000B,
+	tagInt     = 0x7FF90002,
+	tagSym     = 0x7FF90003,
+	tagChar    = 0x7FF90004,
+	tagNil     = 0x7FF90005,	// nil, false, and true are indicated by the tag alone.
+	tagFalse   = 0x7FF90006,	// the lower 32 bits are zero.
+	tagTrue    = 0x7FF90007,
+	tagInf     = 0x7FF90008,
+	tagPtr     = 0x7FF90009,
 	/* anything else is a double */
-	tagUnused  = 0x7FF9000E
+	tagUnused  = 0x7FF9000D
 	
 	
 #if !DOUBLESLOTS	
@@ -204,9 +202,6 @@ inline bool NotFloat(PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) == 0x7
 
 inline bool IsInf(PyrSlot* slot) { return ((slot)->utag == tagInf); }
 inline bool IsPtr(PyrSlot* slot) { return ((slot)->utag == tagPtr); }
-
-inline bool IsFrame(PyrSlot* slot) { return ((slot)->utag == tagHFrame || (slot)->utag == tagSFrame); }
-
 
 void dumpPyrSlot(PyrSlot* slot);
 void slotString(PyrSlot *slot, char *str);

@@ -51,7 +51,7 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 				case tagInt :
 					a->ui = a->ui + b->ui; 
 					break;
-				case tagChar : case tagHFrame : case tagSFrame : case tagPtr : 
+				case tagChar : case tagPtr : 
 				case tagNil : case tagFalse : case tagTrue : case tagInf :  
 					goto send_normal_2;
 				case tagSym : 
@@ -69,7 +69,7 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 					break;
 			}
 			break;
-		case tagChar : case tagHFrame : case tagSFrame : case tagPtr : 
+		case tagChar : case tagPtr : 
 		case tagNil : case tagFalse : case tagTrue : case tagInf : 
 			goto send_normal_2;
 		case tagSym : 
@@ -81,7 +81,7 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 					case tagInt :
 						a->uo = signal_add_xf(g, a->uo, b->ui); //a->utag = tagObj; 
 						break;
-					case tagChar : case tagHFrame : case tagSFrame : case tagPtr : 
+					case tagChar : case tagPtr : 
 					case tagNil : case tagFalse : case tagTrue : case tagInf : 
 						goto send_normal_2;
 					case tagSym : 
@@ -105,7 +105,7 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 				case tagInt :
 					a->uf = a->uf + b->ui; 
 					break;
-				case tagChar : case tagHFrame : case tagSFrame : case tagPtr : 
+				case tagChar : case tagPtr : 
 				case tagNil : case tagFalse : case tagTrue : case tagInf : 
 					goto send_normal_2;
 				case tagSym : 
@@ -149,7 +149,7 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 				case tagInt :
 					a->ui = a->ui * b->ui; //a->utag = tagInt; 
 					break;
-				case tagChar : case tagHFrame : case tagSFrame : case tagPtr : 
+				case tagChar : case tagPtr : 
 				case tagNil : case tagFalse : case tagTrue : case tagInf :  
 					goto send_normal_2;
 				case tagSym : 
@@ -167,7 +167,7 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 					break;
 			}
 			break;
-		case tagChar : case tagHFrame : case tagSFrame : case tagPtr : 
+		case tagChar : case tagPtr : 
 		case tagNil : case tagFalse : case tagTrue : case tagInf : 
 			goto send_normal_2;
 		case tagSym : 
@@ -179,7 +179,7 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 					case tagInt :
 						a->uo = signal_mul_xf(g, a->uo, b->ui); //a->utag = tagObj; 
 						break;
-					case tagChar : case tagHFrame : case tagSFrame : case tagPtr : 
+					case tagChar : case tagPtr : 
 					case tagNil : case tagFalse : case tagTrue : case tagInf : 
 						goto send_normal_2;
 					case tagSym : 
@@ -203,7 +203,7 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 				case tagInt :
 					a->uf = a->uf * b->ui; 
 					break;
-				case tagChar : case tagHFrame : case tagSFrame : case tagPtr : 
+				case tagChar : case tagPtr : 
 				case tagNil : case tagFalse : case tagTrue : case tagInf : 
 					goto send_normal_2;
 				case tagSym : 
@@ -247,7 +247,7 @@ int prSubNum(VMGlobals *g, int numArgsPushed)
 				case tagInt :
 					a->ui = a->ui - b->ui; //a->utag = tagInt; 
 					break;
-				case tagChar : case tagHFrame : case tagSFrame : case tagPtr : 
+				case tagChar : case tagPtr : 
 				case tagNil : case tagFalse : case tagTrue : case tagInf : 
 					goto send_normal_2;
 				case tagSym : 
@@ -265,7 +265,7 @@ int prSubNum(VMGlobals *g, int numArgsPushed)
 					break;
 			}
 			break;
-		case tagChar : case tagHFrame : case tagSFrame : case tagPtr : 
+		case tagChar : case tagPtr : 
 		case tagNil : case tagFalse : case tagTrue : case tagInf : 
 			goto send_normal_2;
 		case tagSym : 
@@ -277,7 +277,7 @@ int prSubNum(VMGlobals *g, int numArgsPushed)
 					case tagInt :
 						a->uo = signal_sub_xf(g, a->uo, b->ui); //a->utag = tagObj; 
 						break;
-					case tagChar : case tagHFrame : case tagSFrame : case tagPtr : 
+					case tagChar : case tagPtr : 
 					case tagNil : case tagFalse : case tagTrue : case tagInf : 
 						goto send_normal_2;
 					case tagSym : 
@@ -301,7 +301,7 @@ int prSubNum(VMGlobals *g, int numArgsPushed)
 				case tagInt :
 					a->uf = a->uf - b->ui; 
 					break;
-				case tagChar : case tagHFrame : case tagSFrame : case tagPtr : 
+				case tagChar : case tagPtr : 
 				case tagNil : case tagFalse : case tagTrue : case tagInf : 
 					goto send_normal_2;
 				case tagSym : 
@@ -343,7 +343,7 @@ int prAddInt(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			a->ui = a->ui + b->ui; //a->utag = tagInt; 
 			break;
-		case tagChar : case tagPtr : case tagHFrame : case tagSFrame :
+		case tagChar : case tagPtr : 
 		case tagNil : case tagFalse : case tagTrue : case tagInf : 
 			goto send_normal_2;
 		case tagSym : 
@@ -387,7 +387,7 @@ int prAddFloat(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			a->uf = a->uf + b->ui; break;
 			break;
-		case tagChar : case tagPtr : case tagHFrame : case tagSFrame :
+		case tagChar : case tagPtr : 
 		case tagNil : case tagFalse : case tagTrue : case tagInf : 
 			goto send_normal_2;
 		case tagSym : 
@@ -429,7 +429,7 @@ int prSubInt(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			a->ui = a->ui - b->ui; //a->utag = tagInt; 
 			break;
-		case tagChar : case tagPtr : case tagHFrame : case tagSFrame :
+		case tagChar : case tagPtr : 
 		case tagNil : case tagFalse : case tagTrue : case tagInf : 
 			goto send_normal_2;
 		case tagSym : 
@@ -473,7 +473,7 @@ int prSubFloat(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			a->uf = a->uf - b->ui; break;
 			break;
-		case tagChar : case tagPtr : case tagHFrame : case tagSFrame :
+		case tagChar : case tagPtr : 
 		case tagNil : case tagFalse : case tagTrue : case tagInf : 
 			goto send_normal_2;
 		case tagSym : 
@@ -515,7 +515,7 @@ int prMulInt(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			a->ui = a->ui * b->ui; //a->utag = tagInt; break;
 			break;
-		case tagChar : case tagPtr : case tagHFrame : case tagSFrame :
+		case tagChar : case tagPtr : 
 		case tagNil : case tagFalse : case tagTrue : case tagInf : 
 			goto send_normal_2;
 		case tagSym : 
@@ -559,7 +559,7 @@ int prMulFloat(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			a->uf = a->uf * b->ui; break;
 			break;
-		case tagChar : case tagPtr : case tagHFrame : case tagSFrame :
+		case tagChar : case tagPtr : 
 		case tagNil : case tagFalse : case tagTrue : case tagInf : 
 			goto send_normal_2;
 		case tagSym : 

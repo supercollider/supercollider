@@ -2899,9 +2899,9 @@
 				F50D059102E69B6B01CA2799,
 				F5889A2C0397F2F801A87B78,
 				C26BDCCC03D0B4E900A87B78,
+				9286AE9E057D30B9000EBAEB,
 				C21B4673046D847B00A87B78,
 				908DBC360507C63D00000098,
-				9286AE9E057D30B9000EBAEB,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -3050,9 +3050,10 @@
 		F50D059902E69B6B01CA2799 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
-			path = PyrArrayPrimitives.cpp;
-			refType = 4;
-			sourceTree = "<group>";
+			name = PyrArrayPrimitives.cpp;
+			path = source/lang/LangPrimSource/PyrArrayPrimitives.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		F50D059A02E69B6B01CA2799 = {
 			isa = PBXFileReference;
@@ -3446,7 +3447,7 @@
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
 				LIBRARY_SEARCH_PATHS = /usr/lib/gcc/darwin/3.3;
 				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = "-DSC_DARWIN";
+				OTHER_CFLAGS = "-DSC_DARWIN -Wstrict-aliasing";
 				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = SuperCollider;

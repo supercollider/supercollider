@@ -403,10 +403,13 @@ bool findSpecialClassName(PyrSymbol *className, int *index);
 int getIndexType(PyrClassNode *classnode);
 
 void compileIfMsg(PyrCallNode* node);
+void compileIfNilMsg(PyrCallNode* node, bool flag);
 void compileWhileMsg(PyrCallNode* node);
 void compileLoopMsg(PyrCallNode* node);
 void compileAndMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileOrMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 
 void compilePushInt(int value);
 void compileAssignVar(PyrParseNode *node, PyrSymbol* varName, bool drop);

@@ -51,19 +51,19 @@ public:
 			size_t tooBigSize = (sizeof(Hdr) + (sizeof(Elem) << (LargeObjSizeClass-1))) + 1;
 			mSmallObjPool.Init(inPool, initSize, growSize, tooBigSize);
 			Init();
-			assert(SanityCheck());
+			//assert(SanityCheck());
 		}
 	~PowerOfTwoAllocPool()
 		{
-			assert(SanityCheck());
-			assert(mNumLargeObjects == 0); // you have to free the big ones yourself
+			//assert(SanityCheck());
+			//assert(mNumLargeObjects == 0); // you have to free the big ones yourself
 			mSmallObjPool.FreeAll();
 		}
 		
 	Obj* Alloc(int32 inNumElems)
 		{
 			//mNumAlloc++;
-			assert(SanityCheck());
+			//assert(SanityCheck());
 			int sizeclass = LOG2CEIL(inNumElems);
 			if (sizeclass >= LargeObjSizeClass) {
 				mNumLargeObjects++;
@@ -83,13 +83,13 @@ public:
 				if (!obj) throw runtime_error("PowerOfTwoAllocPool out of memory");
 			}
 			//obj->mMagic = 'magk';
-			assert(SanityCheck());
+			//assert(SanityCheck());
 			return obj;
 		}
 	void Free(Obj* inObjPtr)
 		{
 			//mNumFree++;
-			assert(SanityCheck());
+			//assert(SanityCheck());
 			if (inObjPtr == 0) return;                   /* free(0) has no effect */
 			/*if (inObjPtr->mMagic != 'magk') {
 				postbuf("bad object\n");
@@ -104,11 +104,11 @@ public:
 				mFreeLists[sizeclass] = inObjPtr;
 				*(Obj**)inObjPtr = nextfree;
 			}
-			assert(SanityCheck());
+			//assert(SanityCheck());
 		}
 	void FreeAll()
 		{
-			assert(mNumLargeObjects == 0); // you have to free the big ones yourself
+			//assert(mNumLargeObjects == 0); // you have to free the big ones yourself
 			mSmallObjPool.FreeAll();
 			Init();
 		}

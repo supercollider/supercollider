@@ -333,8 +333,6 @@ char *slotSymString(PyrSlot* slot)
 {
 	switch (slot->utag) {
 		case tagObj : return slot->uo->classptr->name.us->name;
-		case tagHFrame : return "Frame";
-		case tagSFrame : return "Frame";
 		case tagInt : return "Integer";
 		case tagChar : return "Char";
 		case tagSym : return slot->us->name;
@@ -1454,16 +1452,16 @@ void initClasses()
 	
 	gTagClassTable[ 0] = NULL; 
 	gTagClassTable[ 1] = NULL;
-	gTagClassTable[ 2] = class_frame;
-	gTagClassTable[ 3] = class_frame;
-	gTagClassTable[ 4] = class_int;
-	gTagClassTable[ 5] = class_symbol;
-	gTagClassTable[ 6] = class_char;
-	gTagClassTable[ 7] = class_nil;
-	gTagClassTable[ 8] = class_false;
-	gTagClassTable[ 9] = class_true;
-	gTagClassTable[10] = class_inf;
-	gTagClassTable[11] = class_rawptr;
+	gTagClassTable[ 2] = class_int;
+	gTagClassTable[ 3] = class_symbol;
+	gTagClassTable[ 4] = class_char;
+	gTagClassTable[ 5] = class_nil;
+	gTagClassTable[ 6] = class_false;
+	gTagClassTable[ 7] = class_true;
+	gTagClassTable[ 8] = class_inf;
+	gTagClassTable[ 9] = class_rawptr;
+	gTagClassTable[10] = class_float;
+	gTagClassTable[11] = class_float;
 	gTagClassTable[12] = class_float;
 	
 	o_emptyarray.utag = tagObj;
@@ -1800,11 +1798,16 @@ void dumpObjectSlot(PyrSlot *slot)
 {
 	if (slot->utag == tagObj) {
 		dumpObject(slot->uo);
-	//} else if (slot->utag == tagHFrame) {
-	//	dumpPyrFrame(slot->uof);
 	} else {
 		dumpPyrSlot(slot);
 	}
+}
+
+void dumpSlotOneWord(const char *tagstr, PyrSlot *slot)
+{
+	char str[256];
+	slotOneWord(slot, str); 
+	post("%s %s\n", tagstr, str);
 }
 
 void CallStackSanity(VMGlobals *g, char *tagstr);
@@ -1847,18 +1850,20 @@ bool FrameSanity(PyrFrame *frame, char *tagstr)
 			postfl("class: '%s'\n", frame->method.uoblk->code.uo->classptr->name.us->name);
 		failed = true;
 	}
-	if (frame->caller.utag != tagHFrame && frame->caller.utag != tagSFrame && frame->caller.utag != tagNil) {
+	/*
+	if (frame->caller.utag != tagHFrame && frame->caller.utag != tagNil) {
 		postfl("Frame %X caller tag wrong %X\n", frame, frame->caller.utag);
 		failed = true;
 	}
-	if (frame->context.utag != tagHFrame && frame->context.utag != tagSFrame && frame->context.utag != tagNil) {
+	if (frame->context.utag != tagHFrame && frame->context.utag != tagNil) {
 		postfl("Frame %X context tag wrong %X\n", frame, frame->context.utag);
 		failed = true;
 	}
-	if (frame->homeContext.utag != tagHFrame && frame->homeContext.utag != tagSFrame && frame->homeContext.utag != tagNil) {
+	if (frame->homeContext.utag != tagHFrame && frame->homeContext.utag != tagNil) {
 		postfl("Frame %X homeContext tag wrong %X\n", frame, frame->homeContext.utag);
 		failed = true;
 	}
+	*/
 	if (frame->ip.utag != tagInt) {
 		postfl("Frame %X ip tag wrong %X\n", frame, frame->ip.utag);
 		failed = true;
@@ -1866,11 +1871,10 @@ bool FrameSanity(PyrFrame *frame, char *tagstr)
 	return failed;
 }
 
-#if 1
 void DumpFrame(PyrFrame *frame)
 {
 	char str[256];
-	int i, k, numargs;
+	int i, numargs;
 	PyrMethod *meth;
 	PyrMethodRaw *methraw;
 	
@@ -1887,11 +1891,10 @@ void DumpFrame(PyrFrame *frame)
 		post("\t%s\n", str);
 //#ifndef SC_LINUX
 // sk: crashes on linux when accessing meth->argNames.uosym->symbols[i]
-		k = methraw->numtemps - 1;
 		numargs = methraw->numargs + methraw->varargs;
-		for (i=0; i<=k; ++i) {
-			slotOneWord(frame->vars + i - k, str);
-			//slotString(frame->vars + i - k, str);
+		for (i=0; i<methraw->numtemps; ++i) {
+			slotOneWord(frame->vars + i, str);
+			//slotString(frame->vars + i, str);
 			if (i < numargs) {
 				post("\t\targ %s = %s\n", meth->argNames.uosym->symbols[i]->name, str);
 			} else {
@@ -1911,7 +1914,7 @@ void DumpDetailedFrame(PyrFrame *frame)
 {
 	char mstr[256];
 	char str[256];
-	int i, k, numargs;
+	int i, numargs;
 	PyrMethod *meth;
 	PyrMethodRaw *methraw;
 	
@@ -1927,11 +1930,10 @@ void DumpDetailedFrame(PyrFrame *frame)
 	
 	if (methraw->numtemps) {
 		post("\t%s\n", mstr);
-		k = methraw->numtemps - 1;
 		numargs = methraw->numargs + methraw->varargs;
-		for (i=0; i<=k; ++i) {
-			slotOneWord(frame->vars + i - k, str);
-			//slotString(frame->vars + i - k, str);
+		for (i=0; i<methraw->numtemps; ++i) {
+			slotOneWord(frame->vars + i, str);
+			//slotString(frame->vars + i, str);
 			if (i < numargs) {
 				post("\t\targ %s = %s\n", meth->argNames.uosym->symbols[i]->name, str);
 			} else {
@@ -1947,7 +1949,6 @@ void DumpDetailedFrame(PyrFrame *frame)
 	post("\t\tnumtemps  = %d\n", methraw->numtemps);
 	post("\t\tpopSize  = %d\n", methraw->popSize);
 	
-	slotString(&frame->myself, str);		post("\t\tmyself  = %s\n", str);
 	slotString(&frame->method, str);		post("\t\tmethod  = %s\n", str);
 	slotString(&frame->caller, str);		post("\t\tcaller  = %s\n", str);
 	slotString(&frame->context, str);		post("\t\tcontext = %s\n", str);
@@ -1960,106 +1961,6 @@ void DumpDetailedFrame(PyrFrame *frame)
 	}
 	
 }
-
-#if 0
-void DumpFrame(PyrFrame *frame)
-{
-	char str[256];
-	int i, k, numargs;
-	PyrMethod *meth;
-	PyrMethodRaw *methraw;
-	PyrSlot *vars;
-	
-	if (FrameSanity(frame)) {
-		post("FRAME CORRUPTED\n");
-		return;
-	}
-	slotOneWord(&frame->method, str);
-	//slotString(&frame->method, str);
-	post("\t%s ( ", str);
-
-	meth = frame->method.uom;
-	methraw = METHRAW(meth);
-	if (methraw->numtemps) {
-		k = methraw->numtemps - 1;
-		numargs = methraw->numargs + methraw->varargs;
-		for (i=0; i<=k; ++i) {
-			slotOneWord(frame->vars + i - k, str);
-			//slotString(frame->vars + i - k, str);
-			if (i < numargs) {
-				post("%s = %s", meth->argNames.uosym->symbols[i]->name, str);
-				if (i < numargs-1) post(", ");
-				else post(" );\n");
-			} else if (i == numargs) {
-				if (numargs < methraw->numtemps) post("\t\tvar  ");
-				goto below;
-			} else {
-				below:
-				post("%s = %s", meth->varNames.uosym->symbols[i - numargs]->name, str);
-				if (i < k) post(", ");
-				else post(" ;\n");
-			}
-		}
-	} else post(" );\n");
-}
-#endif
-#else
-void DumpFrame(PyrFrame *frame)
-{
-	char str[256];
-	int i, k;
-	PyrMethod *meth;
-	PyrMethodRaw *methraw;
-	PyrSlot *vars;
-	
-	if (FrameSanity(frame)) {
-		post("FRAME CORRUPTED\n");
-		return;
-	}
-	slotString(&frame->method, str);
-	post("FRAME:   %s\n", str);
-
-	//post("FRAME: %X\n", frame);
-	//post("   method : %s\n", str);
-
-#if 0
-	// normal users don't need to know this stuff..
-	slotString(&frame->caller, str);
-	post("   caller : %s\n", str);
-
-	slotString(&frame->context, str);
-	post("   context : %s\n", str);
-
-	slotString(&frame->homeContext, str);
-	post("   homeContext : %s\n", str);
-
-	slotString(&frame->ip, str);
-	post("   ip : %s\n", str);
-#endif	
-/*
-	meth = frame->method.uom;
-	numtemps = meth->numtemps;
-	vars = frame->vars - numtemps + 1;
-	for (i=0; i<numtemps; ++i) {
-		slotString(vars + i, str);
-		post("   var %d : %s\n", i, str);
-	}
-*/
-	meth = frame->method.uom;
-	methraw = METHRAW(meth);
-	k = methraw->numtemps - 1;
-	if (k > 64) k = 64;
-	for (i=0; i<=k; ++i) {
-		slotString(frame->vars + i - k, str);
-		if (i< methraw->numargs + methraw->varargs) {
-			post("   %2d arg %s : %s\n", i, meth->argNames.uosym->symbols[i]->name, str);
-		} else {
-			post("   %2d var %s : %s\n", i, 
-				meth->varNames.uosym->symbols[i - methraw->numargs - methraw->varargs]->name, str);
-		}
-	}
-}
-#endif	
 
 
 bool respondsTo(PyrSlot *slot, PyrSymbol *selector)
@@ -2261,11 +2162,7 @@ PyrBlock* newPyrBlock(int flags)
 	methraw = METHRAW(block);
 	methraw->specialIndex = 0;
 	methraw->methType = methBlock;
-#if USESTACKFRAMES
 	methraw->needsHeapContext = 0;
-#else
-	methraw->needsHeapContext = 1;
-#endif
 	methraw->frameSize = 0;
 	methraw->varargs = 0;
 	methraw->numargs = 0;
@@ -2300,11 +2197,7 @@ PyrMethod* initPyrMethod(PyrMethod* method)
 	
 	methraw->specialIndex = 0;
 	methraw->methType = 0;
-#if USESTACKFRAMES
 	methraw->needsHeapContext = 0;
-#else
-	methraw->needsHeapContext = 1;
-#endif
 	methraw->frameSize = 0;
 	methraw->varargs = 0;
 	methraw->numargs = 0;
@@ -2582,8 +2475,6 @@ int calcHash(PyrSlot *a)
 	int hash;
 	switch (a->utag) {
 		case tagObj : hash = Hash(a->ui); break;
-		case tagHFrame : hash = Hash(a->ui); break;
-		case tagSFrame : hash = Hash(a->ui); break;
 		case tagInt : hash = Hash(a->ui); break;
 		case tagChar : hash = Hash(a->ui & 255); break;
 		case tagSym : hash = a->us->hash; break;

@@ -1,3 +1,4 @@
+
 Error {
 	classvar <>handling = false;
 	classvar <>debug = false;
@@ -93,6 +94,17 @@ MustBeBooleanError : MethodError {
 }
 
 NotYetImplementedError : MethodError {
+}
+
+OutOfContextReturnError : MethodError {
+	var <>method, <>result;
+	*new { arg receiver, method, result;
+		^super.new(nil, receiver).method_(method).result_(result)
+	}
+	errorString {
+		^"ERROR: '" ++ method.ownerClass.name ++ "-" ++ method.name 
+			++ "' Out of context return of value: " ++ result 
+	}
 }
 
 BinaryOpFailureError : DoesNotUnderstandError {

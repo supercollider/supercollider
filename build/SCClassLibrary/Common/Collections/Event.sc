@@ -180,12 +180,12 @@ Event : Environment {
 								id = server.nextNodeID;
 								
 								//send the note on bundle
-								server.sendBundle(lag, [9, desc.name, id, addAction, group] ++ msgArgs); 
+								server.sendBundle(latency, [9, desc.name, id, addAction, group] ++ msgArgs); 
 										
 								if (desc.hasGate) {
 									// send note off bundle.
 									thisThread.clock.sched(sustain) { 
-										server.sendBundle(lag, [15, id, \gate, 0]); //15 == n_set
+										server.sendBundle(latency, [15, id, \gate, 0]); //15 == n_set
 									};
 								};
 							}

@@ -215,7 +215,7 @@ String[char] : RawArray {
 	splitext {		this.reverseDo({ arg char, i;			if (char == $\., {				^[this.copyFromStart(this.size - 2 - i), this.copyToEnd(this.size - i)]			});		});		^[this, nil]	}
 	
 	// runs a unix command and returns the result code.
-	//unixCmd { _String_System ^this.primitiveFailed }
+	systemCmd { _String_System ^this.primitiveFailed }
 	
 	// runs a unix command and sends stdout to the post window
 	unixCmd { _String_POpen ^this.primitiveFailed }

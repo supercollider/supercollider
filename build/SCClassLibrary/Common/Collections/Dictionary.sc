@@ -362,7 +362,6 @@ IdentityDictionary : Dictionary {
 				^func.functionPerformList(\value, this, selector, args);
 			};
 		};
-
 		^this.superPerformList(\doesNotUnderstand, selector, args);
 	}
 	

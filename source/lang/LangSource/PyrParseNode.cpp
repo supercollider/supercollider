@@ -254,7 +254,7 @@ void compilePushVar(PyrParseNode *node, PyrSymbol *varName)
 				compileByte(index);
 			} break;
 			case varTemp :
-				vindex = METHRAW(tempfunc)->numtemps - index - 1;
+				vindex = index;
 				if (level == 0) {
 					compileOpcode(opPushTempZeroVar, vindex);
 				} else if (level < 8) {
@@ -1065,6 +1065,8 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode *cnode, int *varIndex)
 	nameNode = (PyrPushNameNode*)actualArg;
 	if (nameNode->varName.us == s_this) {
 		special = methRedirect;
+	} else if (nameNode->varName.us == s_super) {
+		special = methRedirectSuper;
 	} else {
 		bool varFound;
 		PyrClass *classobj;
@@ -1073,9 +1075,9 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode *cnode, int *varIndex)
 		varFound = findVarName(gCompilingBlock, &classobj, nameNode->varName.us, 
 			&varType, &varLevel, varIndex, NULL);
 		if (!varFound ) return methNormal;
-
-		if (varType == varInst) special = methForward;
-		//else if (varType == varTemp) special = methTempDelegate;
+		
+		if (varType == varInst) special = methForwardInstVar;
+		else if (varType == varClass) special = methForwardClassVar;
 		else return methNormal;
 	}
 	
@@ -1108,10 +1110,21 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode *cnode, int *varIndex)
 			actualArg = actualArg->next;
 		}
 	}
-//	if (special == methForward) {
-//		postfl("methForward %s-%s\n", gCompilingClass->name.us->name, 
-//			gCompilingMethod->name.us->name);
-//	}
+	/*
+	if (special == methForwardInstVar) {
+		postfl("methForwardInstVar %s-%s  formal %d  actual %d\n", gCompilingClass->name.us->name, 
+			gCompilingMethod->name.us->name, numFormalArgs, numActualArgs);
+	}
+	if (special == methForwardClassVar) {
+		postfl("methForwardClassVar %s-%s  formal %d  actual %d\n", gCompilingClass->name.us->name, 
+			gCompilingMethod->name.us->name, numFormalArgs, numActualArgs);
+	}
+	if (special == methRedirectSuper) {
+		postfl("methRedirectSuper %s-%s  formal %d  actual %d\n", gCompilingClass->name.us->name, 
+			gCompilingMethod->name.us->name, numFormalArgs, numActualArgs);
+	}
+	*/
+	
 //	if (special == methTempDelegate) {
 //		postfl("methTempDelegate %s-%s\n", gCompilingClass->name.us->name, 
 //			gCompilingMethod->name.us->name);
@@ -1209,11 +1222,7 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 	gCompilingMethod = (PyrMethod*)method;
 	gInliningLevel = 0;
 		
-#if USESTACKFRAMES
 	methraw->needsHeapContext = 0;
-#else
-	methraw->needsHeapContext = 1;
-#endif
 
 	methraw->varargs = funcVarArgs = (node->arglist && node->arglist->rest) ? 1 : 0;
 	numArgs = node->arglist ? nodeListLength((PyrParseNode*)node->arglist->varDefs) + 1 : 1;
@@ -1852,7 +1861,24 @@ void compilePyrCallNode(PyrCallNode* node, void *result)
 				}
 				break;
 			case selIf :
-				compileIfMsg(node);
+ 				if (argnode->classno == pn_CallNode) {
+					PyrCallNode* callNode = (PyrCallNode*)argnode;
+					int numCallArgs = nodeListLength(callNode->arglist);
+					int numCallKeyArgs = nodeListLength(callNode->keyarglist);
+					if (numCallArgs == 1 && numCallKeyArgs == 0) {
+						if (callNode->selector->slot.us == gSpecialUnarySelectors[opIsNil]) {
+							compileIfNilMsg(node, true);
+						} else if (callNode->selector->slot.us == gSpecialUnarySelectors[opNotNil]) {
+							compileIfNilMsg(node, false);
+						} else {
+							compileIfMsg(node);
+						}
+					} else {
+						compileIfMsg(node);
+					}
+				} else {
+					compileIfMsg(node);
+				}
 				break;
 			case selWhile :
 				compileWhileMsg(node);
@@ -1867,6 +1893,12 @@ void compilePyrCallNode(PyrCallNode* node, void *result)
 			case selOr :
 				if (numArgs == 2) compileOrMsg(argnode, argnode->next);
 				else goto defaultCase;
+				break;
+			case selQuestionMark :
+				if (numArgs == 2) compileQMsg(argnode, argnode->next);
+				break;
+			case selDoubleQuestionMark :
+				if (numArgs == 2) compileQQMsg(argnode, argnode->next);
 				break;
 			default :
 				defaultCase:
@@ -2019,6 +2051,41 @@ void compileOrMsg(PyrParseNode* arg1, PyrParseNode* arg2)
 	}
 }
 
+void compileQMsg(PyrParseNode* arg1, PyrParseNode* arg2)
+{
+	// question mark.
+	long dummy;
+	
+	COMPILENODE(arg1, &dummy);
+	COMPILENODE(arg2, &dummy);
+	compileByte(143); // special opcodes
+	compileByte(22); // ??
+}
+
+void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2)
+{
+	// double question mark. ?? {|obj| ^if (this.notNil, this, func) }
+	long dummy;
+	
+	COMPILENODE(arg1, &dummy);
+	if (isAnInlineableBlock(arg2)) {
+		ByteCodes nilByteCodes;
+		nilByteCodes = compileSubExpression((PyrPushLitNode*)arg2);
+		
+		int jumplen = byteCodeLength(nilByteCodes);
+		compileByte(143); // special opcodes
+		compileByte(23); // ??
+		compileByte((jumplen >> 8) & 0xFF);
+		compileByte(jumplen & 0xFF);
+		compileAndFreeByteCodes(nilByteCodes);
+	} else {
+		COMPILENODE(arg2, &dummy);
+		compileOpcode(opSendSpecialMsg, 2);
+		compileByte(opmDoubleQuestionMark);
+	}
+}
+
+
 void compileIfMsg(PyrCallNode* node)
 {
 	int numArgs;
@@ -2065,6 +2132,89 @@ void compileIfMsg(PyrCallNode* node)
 				compileAndFreeByteCodes(falseByteCodes);
 			} else if (byteCodeLength(trueByteCodes)) {
 				compileJump(opcJumpIfFalsePushNil, byteCodeLength(trueByteCodes));
+				compileAndFreeByteCodes(trueByteCodes);
+			} else {
+				compileOpcode(opSpecialOpcode, opcDrop); // drop the boolean
+				compileOpcode(opPushSpecialValue, opsvNil); // push nil
+			}
+		} else {
+			COMPILENODE(arg1, &dummy);
+			COMPILENODE(arg2, &dummy);
+			COMPILENODE(arg3, &dummy);
+			compileOpcode(opSendSpecialMsg, numArgs);
+			compileByte(opmIf);
+		}
+	} else {
+		//arg1 = node->arglist;
+		for (; arg1; arg1 = arg1->next) {
+			COMPILENODE(arg1, &dummy);
+		}
+		compileOpcode(opSendSpecialMsg, numArgs);
+		compileByte(opmIf);
+	}
+}
+
+void compileIfNilMsg(PyrCallNode* node, bool flag)
+{
+	int numArgs;
+	long dummy;
+	PyrParseNode *arg1, *arg2, *arg3;
+	ByteCodes trueByteCodes, falseByteCodes;
+		
+	numArgs = nodeListLength(node->arglist);
+	arg1 = node->arglist;
+	
+	if (numArgs < 2) {
+		compileOpcode(opSendSpecialMsg, numArgs);
+		compileByte(opmIf);
+	} else if (numArgs == 2) {
+		arg2 = arg1->next;
+
+		if (isAnInlineableBlock(arg2)) {
+			PyrCallNode* callNode = (PyrCallNode*)arg1;
+			COMPILENODE(callNode->arglist, &dummy);
+			
+			trueByteCodes = compileSubExpression((PyrPushLitNode*)arg2);
+			int jumplen = byteCodeLength(trueByteCodes);
+			if (jumplen) {
+				compileByte(143); // special opcodes
+				compileByte(flag ? 26 : 27); 
+				compileByte((jumplen >> 8) & 0xFF);
+				compileByte(jumplen & 0xFF);
+				compileAndFreeByteCodes(trueByteCodes);
+			} else {
+				compileOpcode(opSpecialOpcode, opcDrop); // drop the value
+				compileOpcode(opPushSpecialValue, opsvNil); // push nil
+			}
+		} else {
+			COMPILENODE(arg1, &dummy);
+			COMPILENODE(arg2, &dummy);
+			compileOpcode(opSendSpecialMsg, numArgs);
+			compileByte(opmIf);
+		}
+	} else if (numArgs == 3) {
+		arg2 = arg1->next;
+		arg3 = arg2->next;
+		if (isAnInlineableBlock(arg2) && isAnInlineableBlock(arg3)) {
+			PyrCallNode* callNode = (PyrCallNode*)arg1;
+			COMPILENODE(callNode->arglist, &dummy);
+
+			falseByteCodes = compileSubExpression((PyrPushLitNode*)arg3);
+			int falseLen = byteCodeLength(falseByteCodes);
+			trueByteCodes = compileSubExpressionWithGoto((PyrPushLitNode*)arg2, falseLen);
+			int trueLen = byteCodeLength(trueByteCodes);
+			if (falseLen) {
+				compileByte(143); // special opcodes
+				compileByte(flag ? 24 : 25); 
+				compileByte((trueLen >> 8) & 0xFF);
+				compileByte(trueLen & 0xFF);
+				compileAndFreeByteCodes(trueByteCodes);
+				compileAndFreeByteCodes(falseByteCodes);
+			} else if (trueLen) {
+				compileByte(143); // special opcodes
+				compileByte(flag ? 26 : 27); 
+				compileByte((trueLen >> 8) & 0xFF);
+				compileByte(trueLen & 0xFF);
 				compileAndFreeByteCodes(trueByteCodes);
 			} else {
 				compileOpcode(opSpecialOpcode, opcDrop); // drop the boolean
@@ -2253,6 +2403,12 @@ void compilePyrBinopCallNode(PyrBinopCallNode* node, void *result)
 				break;
 			case selOr :
 				compileOrMsg(node->arg1, node->arg2);
+				break;
+			case selQuestionMark :
+				compileQMsg(node->arg1, node->arg2);
+				break;
+			case selDoubleQuestionMark :
+				compileQQMsg(node->arg1, node->arg2);
 				break;
 			default :
 				COMPILENODE(node->arg1, &dummy);
@@ -2691,7 +2847,6 @@ void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop)
 				}
 			} break;
 			case varTemp :
-				index = METHRAW(tempfunc)->numtemps - index - 1;
 				//compileOpcode(opStoreTempVar, level);
 				//compileByte(index);
 				if (drop) {
@@ -2994,11 +3149,7 @@ void compilePyrBlockNode(PyrBlockNode* node, void* result)
 	methraw->unused1 = 0;
 	methraw->unused2 = 0;
 
-#if USESTACKFRAMES
 	methraw->needsHeapContext = 0;
-#else
-	methraw->needsHeapContext = 1;
-#endif
 	
 	if (node->isTopLevel) {
 		SetNil(&block->context);
@@ -3240,6 +3391,12 @@ int conjureSelectorIndex(PyrParseNode *node, PyrBlock* func,
 		} else if (selector == gSpecialSelectors[opmLoop]) {
 			*selType = selLoop;
 			return opmLoop;
+		} else if (selector == gSpecialSelectors[opmQuestionMark]) {
+			*selType = selQuestionMark;
+			return opmAnd;
+		} else if (selector == gSpecialSelectors[opmDoubleQuestionMark]) {
+			*selType = selDoubleQuestionMark;
+			return opmAnd;
 		}
 		
 		for (i=0; i<opmNumSpecialSelectors; ++i) {

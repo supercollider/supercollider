@@ -75,18 +75,17 @@ inline bool isKindOfSlot(PyrSlot *slot, struct PyrClass *testclass)
 	
 */
 
-struct PyrFrame {	
-	PyrSlot vars[1];
-	PyrSlot myself;
+struct PyrFrame : public PyrObjectHdr 
+{
 	PyrSlot method;
 	PyrSlot caller;
 	PyrSlot context;
 	PyrSlot homeContext;
 	PyrSlot ip;
+	PyrSlot vars[1];
 };
 
-#define FRAMESIZE 6
-#define USESTACKFRAMES 1
+#define FRAMESIZE 5
 
 struct PyrProcess : public PyrObjectHdr 
 {
@@ -115,7 +114,7 @@ struct PyrThread : public PyrObjectHdr
 	PyrSlot exceptionHandler;
 };
 
-#define EVALSTACKDEPTH 8192
+#define EVALSTACKDEPTH 512
 
 
 
@@ -176,7 +175,9 @@ enum {
 	methReturnClassVar,
 	methAssignClassVar,
 	methRedirect,
-	methForward,
+	methRedirectSuper,
+	methForwardInstVar,
+	methForwardClassVar,
 	methPrimitive,
 	methBlock
 };
@@ -235,22 +236,5 @@ PyrDoubleArray* newPyrDoubleArray(class PyrGC *gc, int size, int flags, bool col
 
 PyrObject* copyObject(class PyrGC *gc, PyrObject *inobj, bool collect);
 PyrObject* copyObjectRange(class PyrGC *gc, PyrObject *inobj, int start, int end, bool collect);
-
-inline void SetFrame(PyrSlot* slot, PyrFrame* frame) 
-{
-	 (slot)->ui = ((int)(frame)); 
-	  (slot)->utag = tagSFrame - METHRAW((frame)->method.uoblk)->needsHeapContext; 
-}
-
-inline void SetFrameOrNil(PyrSlot* slot, PyrFrame* frame)    
-{ 
-	  if (frame) { 
-	  	 (slot)->ui = ((int)(frame)); 
-	  	 (slot)->utag = tagSFrame - METHRAW((frame)->method.uoblk)->needsHeapContext; 
-	  } else { 
-	  	 (slot)->utag = tagNil;  
-	     (slot)->ui = 0; 
-	  }
-}
 
 #endif

@@ -125,8 +125,6 @@ void addMsgSlot(scpacket *packet, PyrSlot *slot)
 		case tagChar :
 		case tagInf :
 		case tagPtr :
-		case tagHFrame :
-		case tagSFrame :
 			break;
 		default :
 			if (gUseDoubles) packet->addd(slot->uf);
@@ -182,8 +180,6 @@ void addMsgSlotWithTags(scpacket *packet, PyrSlot *slot)
 		case tagChar :
 		case tagInf :
 		case tagPtr :
-		case tagHFrame :
-		case tagSFrame :
 			packet->addtag('i');
 			packet->addi(0);
 			break;

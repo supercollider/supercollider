@@ -16,10 +16,10 @@ Thread : Stream {
 	var environment;
 	var <>exceptionHandler;
 
-	*new { arg func, stackSize=512;
+	*new { arg func, stackSize=64;
 		^super.new.init(func, stackSize)
 	}
-	init { arg argFunc, argStackSize=512;
+	init { arg argFunc, argStackSize=64;
 		_Thread_Init
 		^this.primitiveFailed
 	}
@@ -55,7 +55,7 @@ Thread : Stream {
 
 Routine : Thread {
 
-	*run { arg func, stackSize=512, clock, quant=0;
+	*run { arg func, stackSize=64, clock, quant=0;
 		var routine;
 		routine = super.new(func, stackSize);
 		^routine.play(clock ? SystemClock, quant);

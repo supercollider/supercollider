@@ -138,8 +138,6 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				default : goto send_normal_1;
 			}
 			break;
-		case tagHFrame :
-		case tagSFrame :
 		case tagPtr : 
 		case tagInf : 
 			switch (opcode) {
@@ -413,8 +411,6 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 					}
 					break;
 				case tagChar :
-				case tagHFrame :
-				case tagSFrame :
 				case tagPtr : 
 				case tagNil : 
 				case tagFalse : 
@@ -564,8 +560,6 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 				goto send_normal_2;
 			}
 		} break;
-		case tagHFrame :
-		case tagSFrame :
 		case tagPtr : 
 		case tagNil : 
 		case tagFalse : 
@@ -587,8 +581,6 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 					}
 					break;
 				case tagChar :
-				case tagHFrame :
-				case tagSFrame :
 				case tagPtr : 
 				case tagNil : 
 				case tagFalse : 
@@ -680,8 +672,6 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						}
 						break;
 					case tagChar :
-					case tagHFrame :
-					case tagSFrame :
 					case tagPtr : 
 					case tagNil : 
 					case tagFalse : 
@@ -836,8 +826,6 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 					}
 					break;
 				case tagChar :
-				case tagHFrame :
-				case tagSFrame :
 				case tagPtr : 
 				case tagNil : 
 				case tagFalse : 

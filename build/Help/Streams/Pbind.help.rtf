@@ -26,6 +26,7 @@ This uses the default event.  in the next example we will supply our own event (
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //we need to read the synth description library so that event know's what kind of arguments\cf0 \
 \cf3 //there are in each SynthDef.  This must be done AFTER any SynthDefs have been written.\cf0 \
 \cf3 //in this case we aren't using any of our own SynthDefs, but we still need to read the default one.\cf0 \
@@ -105,6 +106,7 @@ Another example with a different SynthDef:\
 
 \f2\fs18 \cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf4 \\berlinb\cf0 , \{ \cf2 arg\cf0  out=0, freq = 80, amp = 0.01, pan=0, gate=1;\
 	\cf2 var\cf0  synth, env;\
 	env = \cf2 Decay2\cf0 .kr(gate, 0.05, 8, 0.0003);\
@@ -116,9 +118,7 @@ Another example with a different SynthDef:\
 	#a, b = synth*env;\
 	\cf2 DetectSilence\cf0 .ar(a, 0.1, doneAction: 2);\
 	\cf2 Out\cf0 .ar(out, \cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a,b], [pan, pan+1])));\
-\}).load(s);\
-\
-\cf2 SynthDescLib\cf0 .global.read;\
+\}).store;\
 )\
 \
 f = \cf2 Pbind\cf0 (\cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \cf4 \\dur\cf0 , 0.5, \cf4 \\octave\cf0 , 3, \cf4 \\instrument\cf0 , \cf4 \\berlinb\cf0 ).play;\
@@ -142,6 +142,7 @@ synthdef and re-read the synthdesclib. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf5 "acid"\cf0 , \{ \cf2 arg\cf0  out, freq = 1000, gate = 1, pan = 1, cut = 4000, rez = 0.8, amp = 1;\
 	\cf2 Out\cf0 .ar(out,\
 		\cf2 Pan2\cf0 .ar(\
@@ -150,13 +151,11 @@ synthdef and re-read the synthdesclib. \
 			cut, rez),\
 		pan) * \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .linen(0.01, 1, 0.3), gate, amp, doneAction:2);\
 	) \
-	\}).send(s);\
-\
-\cf2 SynthDescLib\cf0 .global.read;\
+\}).store;\
 )\
 \
 (\
-\cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],\cf2 inf\cf0 ), \cf4 \\root\cf0 ,-24,\
+\cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],\cf2 inf\cf0 ), \cf4 \\root\cf0 ,-12,\
 	 \cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0,3,5,7,9,11,5,1],\cf2 inf\cf0 ), \cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),\
 	 \cf4 \\cut\cf0 ,\cf2 Pxrand\cf0 ([1000,500,2000,300],\cf2 inf\cf0 ), \cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}), \cf4 \\amp\cf0 ,0.2).play;\
 )\
@@ -170,6 +169,7 @@ synthdef and re-read the synthdesclib. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pseq\cf0 ([\
 	\cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],4), \cf4 \\root\cf0 ,-24,\
 		\cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0,3,5,7,9,11,5,1],\cf2 inf\cf0 ), \cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),\
@@ -189,6 +189,7 @@ synthdef and re-read the synthdesclib. \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Prand\cf0 ([\
 	\cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],4), \cf4 \\root\cf0 ,-24,\
 		\cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0,3,5,7,9,11,5,1],\cf2 inf\cf0 ),\cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),\
@@ -213,6 +214,7 @@ When we give the 'root' argument an array, we should hear a chord....\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 ,\cf4 \\acid\cf0 , \cf4 \\dur\cf0 ,\cf2 Pseq\cf0 ([0.25,0.5,0.25],\cf2 inf\cf0 ), \cf4 \\root\cf0 ,[-24,-17], \
 	\cf4 \\degree\cf0 ,\cf2 Pseq\cf0 ([0,3,5,7,9,11,5,1],\cf2 inf\cf0 ), \
 	\cf4 \\pan\cf0 ,\cf2 Pfunc\cf0 (\{1.0.rand2\}),\cf4 \\cut\cf0 ,\cf2 Pxrand\cf0 ([1000,500,2000,300],\cf2 inf\cf0 ), \cf4 \\rez\cf0 ,\cf2 Pfunc\cf0 (\{0.7.rand +0.3\}),\
@@ -255,6 +257,7 @@ efx's input bus.  The effect Synth must also be created.  Synth.new is one way o
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //efx synthdef- dig the timing on the delay and the pbind.  :-P\cf0 \
 \cf2 SynthDef\cf0 (\cf5 "pbindefx"\cf0 , \{ \cf2 arg\cf0  out, in, time1=0.25, time2=0.5;  	var audio, efx;\
 	audio = \cf2 In\cf0 .ar([20,21],2);\
@@ -262,7 +265,7 @@ efx's input bus.  The effect Synth must also be created.  Synth.new is one way o
 	\}).load(s);\
 \cf3 \
 //create efx synth\cf0 \
-\cf2 a = Synth\cf0 .new(\cf5 "pbindefx"\cf0 );\
+\cf2 a = Synth\cf0 .after(1, \cf5 "pbindefx"\cf0 );\
 \cf3 \
 //if you don't like the beats change to 0.4,0.24\cf0 \
 \cf3 //a.set(\\time1,0.4, \\time2,0.24);\cf0 \
@@ -275,7 +278,7 @@ efx's input bus.  The effect Synth must also be created.  Synth.new is one way o
 			cut, rez),\
 		pan) * \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .linen(0.02, 1, 0.3), gate, amp, doneAction:2);\
 	) \
-	\}).load(s);\
+\}).load(s);\
 \
 \cf2 SynthDescLib\cf0 .global.read;\
 \
@@ -288,8 +291,9 @@ efx's input bus.  The effect Synth must also be created.  Synth.new is one way o
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //
-\f0\b \cf3 UGens as Event values.
+\f0\b UGens as Event values.
 \f1\b0 \cf0 \
 \cf3 //The following example creates unit generators instead of scalar values for\cf0 \
 \cf3 //the values bound to the arguments. This shows that you can use patterns\cf0 \

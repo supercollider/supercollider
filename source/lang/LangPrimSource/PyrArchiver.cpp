@@ -37,13 +37,15 @@ int prAsArchive(struct VMGlobals *g, int numArgsPushed)
 
 	PyrArchiver<char*> arch(g);
 
-	arch.prepareToWriteArchive(a);
+	int err = arch.prepareToWriteArchive(a);
+	if (err) return err;
+	
 	int32 size = arch.calcArchiveSize();
 		
 	PyrInt8Array *obj = newPyrInt8Array(g->gc, size, 0, true);
 	obj->size = size;
 	arch.setStream((char*)obj->b);
-	int err = arch.writeArchive();
+	err = arch.writeArchive();
 		
 	if (err == errNone) SetObject(a, obj);
 	else SetNil(a);
@@ -81,9 +83,11 @@ int prWriteArchive(struct VMGlobals *g, int numArgsPushed)
 	FILE *file = fopen(pathname, "wb");
 	int err = errNone;
 	if (file) {
-		arch.prepareToWriteArchive(a);
-		arch.setStream(file);
-		arch.writeArchive();
+		err = arch.prepareToWriteArchive(a);
+		if (!err) {
+			arch.setStream(file);
+			err = arch.writeArchive();
+		}
 		fclose(file);
 	} else {
 		error("file open failed\n");

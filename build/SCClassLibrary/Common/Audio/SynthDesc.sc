@@ -116,12 +116,13 @@ SynthDesc {
 		
 		ugenClass = stream.getPascalString.asSymbol.asClass;
 		rateIndex = stream.getInt8;
-		rate = [\scalar,\control,\audio][rateIndex];
 		numInputs = stream.getInt16;
 		numOutputs = stream.getInt16;
 		specialIndex = stream.getInt16;
+
 		inputSpecs = Int16Array.newClear(numInputs * 2);
 		outputSpecs = Int8Array.newClear(numOutputs);
+				
 		stream.read(inputSpecs);
 		stream.read(outputSpecs);
 				
@@ -143,6 +144,8 @@ SynthDesc {
 				};
 			ugenInputs = ugenInputs.add(input);
 		};
+
+		rate = #[\scalar,\control,\audio][rateIndex];
 		ugen = ugenClass.newFromDesc(rate, numOutputs, ugenInputs, specialIndex).source;
 		ugen.addToSynth(ugen);
 		

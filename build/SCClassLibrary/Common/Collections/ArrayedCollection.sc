@@ -228,9 +228,8 @@ ArrayedCollection : SequenceableCollection {
 	}
 	do { arg function;
 		// special byte codes inserted by compiler for this method
-		var size, i=0;
-		size = this.size;
-		while ({ i < size }, {
+		var i=0;
+		while ({ i < this.size }, {
 			function.value(this.at(i), i);
 			i = i + 1;
 		})

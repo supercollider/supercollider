@@ -240,10 +240,10 @@ void slotString(PyrSlot *slot, char *str)
 {
 	switch (slot->utag) {
 		case tagInt :
-			sprintf(str, "Integer %ld", slot->ui);
+			sprintf(str, "Integer %d", slot->ui);
 			break;
 		case tagChar :
-			sprintf(str, "Character %ld '%c'", slot->ui, slot->ui);
+			sprintf(str, "Character %d '%c'", slot->ui, slot->ui);
 			break;
 		case tagSym :
 			sprintf(str, "Symbol '%s'", slot->us->name);
@@ -252,7 +252,7 @@ void slotString(PyrSlot *slot, char *str)
 			if (slot->uo) {
 				if (isKindOf(slot->uo, class_class)) {
 					sprintf(str, "class %s (%08X)", 
-						((PyrClass*)slot->uo)->name.us->name, slot->uo);
+						((PyrClass*)slot->uo)->name.us->name, (long)slot->uo);
 				} else if (slot->uo->classptr == class_string) {
 					char str2[48];
 					int len;
@@ -291,6 +291,16 @@ void slotString(PyrSlot *slot, char *str)
 					} else {
 						sprintf(str, "instance of FunctionDef - closed");
 					}
+				} else if (slot->uo->classptr == class_frame) {
+					if (!slot->uof) {
+						sprintf(str, "Frame (%0X)", slot->ui);
+					} else if (slot->uof->method.uoblk->classptr == class_method) {
+						sprintf(str, "Frame (%0X) of %s-%s", slot->ui,
+							slot->uof->method.uom->ownerclass.uoc->name.us->name,
+							slot->uof->method.uom->name.us->name);
+					} else {
+						sprintf(str, "Frame (%0X) of Function", slot->ui);
+					}
 				} else {
 					sprintf(str, "instance of %s (%08X, size=%ld, set=%02X)", 
 						slot->uo->classptr->name.us->name, 
@@ -312,23 +322,6 @@ void slotString(PyrSlot *slot, char *str)
 			break;
 		case tagInf :
 			sprintf(str, "inf");
-			break;
-		case tagHFrame :
-			if (!slot->uof) {
-				sprintf(str, "Frame (%0X)%s", slot->ui,
-					slot->utag == tagHFrame ? "H":"S");
-			} else if (slot->uof->method.uoblk->classptr == class_method) {
-				sprintf(str, "Frame (%0X)%s of %s-%s", slot->ui,
-					slot->utag == tagHFrame ? "H":"S",
-					slot->uof->method.uom->ownerclass.uoc->name.us->name,
-					slot->uof->method.uom->name.us->name);
-			} else {
-				sprintf(str, "Frame (%0X)%s of Function", slot->ui,
-					slot->utag == tagHFrame ? "H":"S");
-			}
-			break;
-		case tagSFrame :
-			sprintf(str, "Frame (%0X)S", slot->ui);
 			break;
 		case tagPtr :
 			sprintf(str, "RawPointer %X", slot->ui);
@@ -394,11 +387,23 @@ void slotOneWord(PyrSlot *slot, char *str)
 					} else {
 						sprintf(str, "< closed FunctionDef >");
 					}
+				} else if (slot->uo->classptr == class_frame) {
+					if (!slot->uof) {
+						sprintf(str, "Frame (null)");
+					} else if (!slot->uof->method.uoblk) {
+						sprintf(str, "Frame (null method)");
+					} else if (slot->uof->method.uoblk->classptr == class_method) {
+						sprintf(str, "Frame (%0X) of %s-%s", slot->ui,
+							slot->uof->method.uom->ownerclass.uoc->name.us->name,
+							slot->uof->method.uom->name.us->name);
+					} else {
+						sprintf(str, "Frame (%0X) of Function", slot->ui);
+					}
 				} else if (slot->uo->classptr == class_array) {
 					sprintf(str, "[*%d]", slot->uo->size);
 				} else {
 					sprintf(str, "<instance of %s>", slot->uo->classptr->name.us->name);
-				}
+				}				
 			} else {
 				sprintf(str, "NULL Object Pointer");
 			}
@@ -414,24 +419,6 @@ void slotOneWord(PyrSlot *slot, char *str)
 			break;
 		case tagInf :
 			sprintf(str, "inf");
-			break;
-		case tagHFrame :
-                        if (!slot->uof) {
-				sprintf(str, "Frame (null)");
-			} else if (!slot->uof->method.uoblk) {
-				sprintf(str, "Frame (null method)");
-			} else if (slot->uof->method.uoblk->classptr == class_method) {
-				sprintf(str, "Frame (%0X)%s of %s-%s", slot->ui,
-					slot->utag == tagHFrame ? "H":"S",
-					slot->uof->method.uom->ownerclass.uoc->name.us->name,
-					slot->uof->method.uom->name.us->name);
-			} else {
-				sprintf(str, "Frame (%0X)%s of Function", slot->ui,
-					slot->utag == tagHFrame ? "H":"S");
-			}
-			break;
-		case tagSFrame :
-			sprintf(str, "Frame (%0X)S", slot->ui);
 			break;
 		case tagPtr :
 			sprintf(str, "ptr%08X", slot->ui);
@@ -513,6 +500,18 @@ bool postString(PyrSlot *slot, char *str)
 					} else {
 						sprintf(str, "a FunctionDef - closed");
 					}
+				} else if (slot->uo->classptr == class_frame) {
+					if (!slot->uof) {
+						sprintf(str, "Frame (null)");
+					} else if (!slot->uof->method.uoblk) {
+						sprintf(str, "Frame (null method)");
+					} else if (slot->uof->method.uoblk->classptr == class_method) {
+						sprintf(str, "Frame (%0X) of %s-%s", slot->ui,
+							slot->uof->method.uom->ownerclass.uoc->name.us->name,
+							slot->uof->method.uom->name.us->name);
+					} else {
+						sprintf(str, "Frame (%0X) of Function", slot->ui);
+					}
 				} else {
 					res = false;
 //					sprintf(str, "instance of %s (%08X, size=%d, gcset=%02X)", 
@@ -535,22 +534,6 @@ bool postString(PyrSlot *slot, char *str)
 			break;
 		case tagInf :
 			sprintf(str, "inf");
-			break;
-		case tagHFrame :
-		case tagSFrame :
-			if (!slot->uof) {
-				sprintf(str, "Frame (null)");
-			} else if (!slot->uof->method.uoblk) {
-				sprintf(str, "Frame (null method)");
-			} else if (slot->uof->method.uoblk->classptr == class_method) {
-				sprintf(str, "Frame (%0X)%s of %s-%s", slot->ui,
-					slot->utag == tagHFrame ? "H":"S",
-					slot->uof->method.uom->ownerclass.uoc->name.us->name,
-					slot->uof->method.uom->name.us->name);
-			} else {
-				sprintf(str, "Frame (%0X)%s of Function", slot->ui,
-					slot->utag == tagHFrame ? "H":"S");
-			}
 			break;
 		case tagPtr :
 			sprintf(str, "%X", slot->ui);
@@ -590,10 +573,6 @@ int asCompileString(PyrSlot *slot, char *str)
 			break;
 		case tagInf :
 			sprintf(str, "inf");
-			break;
-		case tagHFrame :
-		case tagSFrame :
-			strcpy(str, "/*Frame*/ nil");
 			break;
 		case tagPtr :
 			strcpy(str, "/*Ptr*/ nil");
