@@ -130,6 +130,14 @@ NodeMap {
 			this.setnToBundle(inBundle, target);
 			this.mapToBundle(inBundle, target);
 	}
+	unsetArgs {
+		var res;
+		if(settings.isEmpty) { ^nil };
+		res = Array.newClear(settings.size * 2);
+		settings.keys.do { arg item, i; res.put(i * 2, item) };
+		^res
+	
+	}
 	
 	copy {
 		var res, nset;
