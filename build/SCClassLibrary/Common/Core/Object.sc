@@ -135,7 +135,7 @@ Object {
 	// stream
 	next { ^this }
 	reset { ^this }
-	embedInStream { this.yield; }
+	embedInStream { ^this.yield; }
 	asStream { ^this }
 	eventAt { ^nil }
 	finishEvent {}
