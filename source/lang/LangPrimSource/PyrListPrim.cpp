@@ -492,8 +492,6 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 	SetSymbol(&key, s_delta);
 	identDict_lookup(a->uo, &key, calcHash(&key), &delta);
 	
-	post("delta\n");
-	dumpObjectSlot(&delta);
 	if (NotNil(&delta)) {
 		a->ucopy = delta.ucopy;
 	} else {
@@ -501,8 +499,6 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 		identDict_lookup(a->uo, &key, calcHash(&key), &dur);
 		
 		err = slotDoubleVal(&dur, &fdur);
-	post("dur %d\n", err);
-	dumpObjectSlot(&dur);
 		if (err) {
 			if (NotNil(&dur)) return err;
 			SetNil(a);
@@ -513,8 +509,6 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 		identDict_lookup(a->uo, &key, calcHash(&key), &stretch);
 		
 		err = slotDoubleVal(&stretch, &fstretch);
-	post("stretch %d\n", err);
-	dumpObjectSlot(&stretch);
 		if (err) {
 			if (NotNil(&stretch)) return err;
 			SetNil(a);
