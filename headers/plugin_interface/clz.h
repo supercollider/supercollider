@@ -39,9 +39,9 @@ count leading zeroes function and those that can be derived from it
 
 #elif defined(SC_WIN32) && !defined(__GCC__)
 
-static int CLZ( int arg )
+static int32 CLZ( int32 arg )
 {
-    asm{
+    __asm{
         bsr    eax, arg
         jnz    non_zero
         mov    arg, 32
