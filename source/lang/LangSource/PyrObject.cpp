@@ -906,7 +906,7 @@ void buildBigMethodMatrix()
 	//post("bigTableSize %d %d %d\n", bigTableSize, gNumSelectors, gNumClasses);
 	ColumnDescriptor *sels = (ColumnDescriptor*)pyr_pool_compile->Alloc(gNumSelectors * sizeof(ColumnDescriptor));
 	MEMFAIL(sels);
-	bigTable = (PyrMethod**)pyr_pool_compile->Alloc(gNumSelectors * gNumClasses * sizeof(PyrMethod*));
+	bigTable = (PyrMethod**)pyr_pool_compile->Alloc(bigTableSize * sizeof(PyrMethod*));
 	MEMFAIL(bigTable);
 	classes = (PyrClass**)pyr_pool_compile->Alloc(gNumClasses * sizeof(PyrClass*));
 	MEMFAIL(classes);
