@@ -89,6 +89,24 @@ SequenceableCollection : Collection {
 		});
 		^newColl
 	}
+	keep { arg n;
+		var size;
+		if (n>=0) {
+			^this.copyRange(0, n-1)
+		}{
+			size = this.size;
+			^this.copyRange(size+n, size-1)
+		}
+	}
+	drop { arg n;
+		var size;
+		size = this.size;
+		if (n>=0) {
+			^this.copyRange(n, size-1)
+		}{
+			^this.copyRange(0, size+n-1)
+		}
+	}
 	copyToEnd { arg start;
 		^this.copyRange(start, this.size - 1)
 	}
