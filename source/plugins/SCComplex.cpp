@@ -42,7 +42,7 @@ void init_SCComplex(InterfaceTable *ft)
 {
 	gSineSize = ft->mSineSize;
 	gSine = ft->mSine;
-	gSinePhaseScale = twopi / gSineSize;
+	gSinePhaseScale = gSineSize / twopi;
 	gSineMask = gSineSize - 1;
 	
 	double rPolarLUTSize2 = 1. / kPolarLUTSize2;
