@@ -129,10 +129,10 @@ AbstractFunction {
 	thresh { arg function; ^this.composeBinaryOp('thresh', function) }
 	amclip { arg function; ^this.composeBinaryOp('amclip', function) }
 	scaleneg { arg function; ^this.composeBinaryOp('scaleneg', function) }
-	clip2 { arg function; ^this.composeBinaryOp('clip2', function) }
-	fold2 { arg function; ^this.composeBinaryOp('fold2', function) }
-	wrap2 { arg function; ^this.composeBinaryOp('wrap2', function) }
-	excess { arg function; ^this.composeBinaryOp('excess', function) }
+	clip2 { arg function=1; ^this.composeBinaryOp('clip2', function) }
+	fold2 { arg function=1; ^this.composeBinaryOp('fold2', function) }
+	wrap2 { arg function=1; ^this.composeBinaryOp('wrap2', function) }
+	excess { arg function=1; ^this.composeBinaryOp('excess', function) }
 	firstArg { arg function; ^this.composeBinaryOp('firstArg', function) }
 	rrand { arg function; ^this.composeBinaryOp('rrand', function) }
 	exprand { arg function; ^this.composeBinaryOp('exprand', function) }
