@@ -3241,6 +3241,8 @@ void DelayUnit_AllocDelayLine(DelayUnit *unit)
 
 void DelayUnit_Reset(DelayUnit *unit)
 {
+	unit->m_maxdelaytime = ZIN0(1);
+	unit->m_delaytime = ZIN0(2);
 	unit->m_dlybuf = 0;
 	
 	DelayUnit_AllocDelayLine(unit);
@@ -3268,8 +3270,6 @@ float CalcDelay(DelayUnit *unit, float delaytime)
 
 void FeedbackDelay_Reset(FeedbackDelay *unit)
 {
-	unit->m_maxdelaytime = ZIN0(1);
-	unit->m_delaytime = ZIN0(2);
 	unit->m_decaytime = ZIN0(3);
 	
 	DelayUnit_Reset(unit);
@@ -3282,8 +3282,8 @@ void FeedbackDelay_Reset(FeedbackDelay *unit)
 
 void DelayN_Ctor(DelayN *unit)
 {
-	SETCALC(DelayN_next_z);
 	DelayUnit_Reset(unit);
+	SETCALC(DelayN_next_z);
 	ZOUT0(0) = 0.f;
 }
 
