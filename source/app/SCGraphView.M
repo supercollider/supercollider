@@ -53,15 +53,19 @@ extern PyrSymbol *s_closed;
         character = [characters characterAtIndex: 0];
     }
     //control tab/escape doesn't get passed here at all ?
-    //NSLog(@"unicode %d  length:%d clength:%d",character,[characters length],[characters cStringLength]);
+    NSLog(@"unicode %d  length:%d clength:%d mTopView %08X  modifiers %d %08X",
+		character,[characters length],[characters cStringLength], mTopView, modifiers, modifiers);
     
     if (mTopView) {
-        if(character == 9 && (modifiers == 0)) {
+		// for some reason modifiers becomes 256 on my machine with no keys pressed. So need to mask against known keys.
+		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
+			| NSAlternateKeyMask | NSHelpKeyMask | NSFunctionKeyMask;
+        if(character == 9 && ((modifiers & allKnownModifiers) == 0)) {
             mTopView->tabPrevFocus();
             return;
-        } else if (character == 25 && (modifiers == NSShiftKeyMask)) {
-                mTopView->tabNextFocus();
-                return;
+        } else if (character == 25 && ((modifiers & allKnownModifiers) == NSShiftKeyMask)) {
+			mTopView->tabNextFocus();
+			return;
         } // other tab keys avail for user 
         SCView *view = mTopView->focusView();
         if (view) {
