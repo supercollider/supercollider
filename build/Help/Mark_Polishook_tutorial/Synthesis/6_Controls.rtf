@@ -1,7 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fnil\fcharset77 Monaco;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica;
 \f3\fnil\fcharset77 LucidaGrande;\f4\fnil\fcharset77 LucidaGrande-Bold;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red96\green96\blue96;
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green0\blue0;
+\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;\red96\green96\blue96;
 \red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -27,38 +28,35 @@ and examine the box that lists the controls for each synth.\
 \f0\fs18 \cf0 \
 Use controls, which most often are defined as arguments in a ugenGraphFunc, to give information to a synth, either when it is created and/or after it is running. Supply default values to the arguments to make code more readable and to protect against user error (such as forgetting to supply a value to an argument).\
 \
-(\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // 2 arguments (controls) with default values\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\
-	\cf4 "withControls"\cf0 , \
-	\{ \cf2 arg\cf0  freq = 440, beatFreq = 1, mul = 0.22;\
-	\cf2 Out\cf0 .ar(\
+(\cf4 \
+\cf5 // 3 arguments (controls) with default values\cf4 \
+\cf6 SynthDef\cf4 (\
+	\cf7 "withControls"\cf4 , \
+	\{ \cf6 arg\cf4  freq = 440, beatFreq = 1, mul = 0.22;\
+	\cf6 Out\cf4 .ar(\
 		0,\
-		\cf2 SinOsc\cf0 .ar([freq, freq+beatFreq], 0, mul)\
+		\cf6 SinOsc\cf4 .ar([freq, freq+beatFreq], 0, mul)\
 	)\
 \}).load(s);\
-)\
+\cf0 )\
+\cf4 \
+\cf5 // items in the array are passed to the controls in Synth when it's created\cf4 \
+z = \cf6 Synth\cf4 (\cf7 "withControls"\cf4 , [\cf8 \\freq\cf4 , 440, \cf8 \\beatFreq\cf4 , 1, \cf8 \\mul\cf4 , 0.1]);\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // items in the array are passed to the controls in Synth when it's created\cf0 \
-z = \cf2 Synth\cf0 (\cf4 "withControls"\cf0 , [\cf5 \\freq\cf0 , 440, \\beatFreq, 1, \cf5 \\mul\cf0 , 0.1]);\
+\cf5 // evaluate this line after the synth is running to reset its controls\cf4 \
+z.set(\cf8 \\freq\cf4 , 700, \cf8 \\beatFreq\cf4 , 2, \cf8 \\mul\cf4 , 0.2);\
 \
-\cf3 // evaluate this line after the synth is running to reset its controls\cf0 \
-z.set(\cf5 \\freq\cf0 , 700, \\beatFreq, 2, \cf5 \\mul\cf0 , 0.2);\
-\
-\
+\cf0 \
 \cf3 ////////////////////////////////////////////////////////////////////////////////////////////////////\cf0 \
 \
 Write controls names and appropriate values in the array given as an argument to a synth. Control names can be given as symbols (a unique name within the SuperCollider system).\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Synth\cf0 (\cf4 "withControls"\cf0 , [\cf5 \\freq\cf0 , 440, \\beatFreq, 0.5, \cf5 \\mul\cf0 , 0.1]);\
+\cf2 Synth\cf0 (\cf9 "withControls"\cf0 , [\cf10 \\freq\cf0 , 440, \\beatFreq, 0.5, \cf10 \\mul\cf0 , 0.1]);\
 \
 or as as strings (an array of characters)\
 \
-\cf2 Synth\cf0 (\cf4 "withControls"\cf0 , [\cf5 "freq"\cf0 , 440, "beatFreq", 0.5, \cf5 "mul"\cf0 , 0.1]);\
+\cf2 Synth\cf0 (\cf9 "withControls"\cf0 , [\cf10 "freq"\cf0 , 440, "beatFreq", 0.5, \cf10 "mul"\cf0 , 0.1]);\
 \
 Either way, the pattern is \
 \
@@ -76,7 +74,7 @@ See the
 A third way to pass controls to a synth is as\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Synth\cf0 (\cf4 "withControls"\cf0 , [0, 440, 1, 1, 2, 0.1]);\
+\cf2 Synth\cf0 (\cf9 "withControls"\cf0 , [0, 440, 1, 1, 2, 0.1]);\
 \
 In this case, the pattern is\
 \
@@ -95,7 +93,7 @@ Use the .set message to change the value of a control while a synth is running.\
 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf4 "resetMyControls"\cf0 , \{ \cf2 arg\cf0  freq = 440, mul = 0.22;\
+\cf2 SynthDef\cf0 (\cf9 "resetMyControls"\cf0 , \{ \cf2 arg\cf0  freq = 440, mul = 0.22;\
 	\cf2 Out\cf0 .ar(\
 		0,\
 		\cf2 SinOsc\cf0 .ar([freq, freq+1], 0, mul)\
@@ -103,7 +101,7 @@ Use the .set message to change the value of a control while a synth is running.\
 \}).load(s);\
 )\
 \cf2 \
-~aSynth = Synth\cf0 (\cf4 "resetMyControls"\cf0 , [\cf5 \\freq\cf0 , 440, \cf5 \\mul\cf0 , 0.06]);\
+~aSynth = Synth\cf0 (\cf9 "resetMyControls"\cf0 , [\cf10 \\freq\cf0 , 440, \cf10 \\mul\cf0 , 0.06]);\
 ~aSynth.set(\\freq, 600, \\mul, 0.25);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -135,7 +133,7 @@ Use an array of lag times to state how long it takes to glide smoothly from one 
 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf4 "controlsWithLags"\cf0 , \{ \cf2 arg\cf0  freq1 = 440, freq2 = 443, mul = 0.12;\
+\cf2 SynthDef\cf0 (\cf9 "controlsWithLags"\cf0 , \{ \cf2 arg\cf0  freq1 = 440, freq2 = 443, mul = 0.12;\
 	\cf2 Out\cf0 .ar(\
 		0,\
 		\cf2 SinOsc\cf0 .ar([freq1, freq2], 0, mul)\
@@ -143,7 +141,7 @@ Use an array of lag times to state how long it takes to glide smoothly from one 
 \}, [4, 5]).load(s);\
 )\
 \
-\cf2 ~aSynth = Synth\cf0 (\cf4 "controlsWithLags"\cf0 , [\cf5 \\freq1\cf0 , 550, \\freq2, 344, \cf5 \\mul\cf0 , 0.1]);\
+\cf2 ~aSynth = Synth\cf0 (\cf9 "controlsWithLags"\cf0 , [\cf10 \\freq1\cf0 , 550, \\freq2, 344, \cf10 \\mul\cf0 , 0.1]);\
 ~aSynth.set(\\freq1, 600, \\freq2, 701, \\mul, 0.05);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -162,19 +160,18 @@ The array of lagtimes means that the synthdef template with two components (disc
 // a template for a synthdef with two components\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\
-	\cf4 aSynth"\cf0 ,							\cf3 // 1st arsgument is a name\cf0 \
+	\cf9 aSynth"\cf0 ,							\cf3 // 1st arsgument is a name\cf0 \
 	\{ .... i am a ugenGraphFunc ... \}	\cf3 // 2nd argument is a ugenGraphFunc\cf0 \
 )\
 \
 can include three components.\cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 // a re-defined template for a synthdef _with an array of lagtimes\
 // the class definition for the lagtime array calls it 'rates'\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\
-	\cf4 "aSynth"\cf0 ,					\cf3 // name\cf0 \
+	\cf9 "aSynth"\cf0 ,					\cf3 // name\cf0 \
 	\{ .... i am a ugenGraphFunc ... \},	\cf3 // ugenGraphFunc\cf0 \
 	[ ... lagTimes ... ]				\cf3 // rates\cf0 \
 )\
