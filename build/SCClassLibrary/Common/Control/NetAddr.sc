@@ -3,8 +3,11 @@ NetAddr {
 	var <addr=0, <>port=0, <hostname, <socket = -1;
 	*new { arg hostname, port=0;
 		var addr;
-		addr = if (hostname.notNil, { hostname.gethostbyname },{0});
+		addr = if (hostname.notNil,{ hostname.gethostbyname },{ 0 });
 		^super.newCopyArgs(addr, port, hostname);
+	}
+	*fromIP { arg addr, port=0;
+		^super.newCopyArgs(addr, port, addr.asIPString)
 	}
 
 	*useDoubles_ { arg flag = false;
@@ -48,9 +51,6 @@ NetAddr {
 	} 
 
 	ip {
-	    ^(((addr >> 24) & 255).asString ++ "." ++
-	      ((addr >> 16) & 255).asString ++ "." ++
-	      ((addr >> 8) & 255).asString ++ "." ++
-	      (addr & 255).asString);
+		^addr.asIPString
 	}
 }

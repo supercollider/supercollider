@@ -122,5 +122,12 @@ Integer : SimpleNumber {
 		};
 		^string
 	}
+
+	asIPString {
+	    ^((this >> 24) & 255).asString ++ "." ++
+		((this >> 16) & 255).asString ++ "." ++
+		((this >> 8) & 255).asString ++ "." ++
+		(this & 255).asString
+	}
 }
 
