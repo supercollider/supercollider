@@ -2,12 +2,19 @@
 PatchGui : AbstractPlayerGui {
 	
 	guiBody { arg layout;
+		var bounds, maxHeight,vl;
+		bounds = layout.bounds;
+		maxHeight = bounds.height - 20 - (model.args.size * 15) / model.args.size;
+		//maxHeight.debug;
+		
 		Tile(this.model.instr,layout);
+		//vl = SCVLayoutView(layout.startRow,layout.decorator.indentedRemaining);
+		vl = layout;
 		model.args.do({ arg a,i;
 			var gui,disclosed=true,box;
 			layout.startRow;
 			//ArgNameLabel(model.instr.argNames.at(i),layout);
-			SCDragSink(layout,Rect(0,0,100,15))
+			SCDragSink(vl,Rect(0,0,100,15))
 				.background_(Color( 0.47843137254902, 0.72941176470588, 0.50196078431373 ))
 				.font_(Font("Helvetica",10))
 				.align_(\left)
@@ -22,14 +29,17 @@ PatchGui : AbstractPlayerGui {
 					if(gui.notNil,{
 						gui.remove(true);
 						// expand the box
-						box.bounds = box.bounds.resizeTo(600,600);
+						//layout.bounds = layout.bounds.resizeTo(1000,1000);
+						box.bounds = box.bounds.resizeTo(900,900);
 						gui = model.args.at(i).gui(box);
-						box.resizeToFit;
-						layout.reflowAll;
+						box.resizeToFit(true,true);
+						//layout.reflowAll;
 					});
 				});
 
-			box = layout.flow({ arg layout;
+			box = vl.flow({ arg layout;
+				//layout.asView.setProperty(\maxHeight, maxHeight);
+				
 				if(a.tryPerform('path').notNil,{
 					Tile(a,layout);
 				},{

@@ -60,7 +60,8 @@ Instr  {
 				},{
 					sp = (sp ? name).asSpec ?? {ControlSpec.new};
 				});
-				sp.copy; 
+				//sp.copy; 
+				sp
 			});
 	}
 
@@ -237,8 +238,21 @@ Instr  {
 	}
 	asString { ^"Instr " ++ this.name.asString }
 
-	guiClass { ^InstrGui }
+	//guiClass { ^InstrGui }
+	guiBody { arg layout;
+		var defs;
+		this.outSpec.gui(layout);
+		this.argNames.do({ arg a,i;
+			layout.startRow;		
+			ArgNameLabel(  a ,layout,150);
+			CXLabel(layout, " = " ++ this.defArgAt(i).asString,100);
+			this.specs.at(i).gui(layout);
+		});
 
+		layout.startRow;
+		ActionButton(layout,"edit File",{ this.path.openTextFile });
+		ActionButton(layout,"make Patch",{ Patch(this.name).topGui });
+	}
 }
 
 
@@ -251,7 +265,8 @@ InstrAt {
 	init {
 		instr = Instr.at(name);
 	}
-	valueEnvir { ^instr.valueEnvir }
+	value { arg ... args; instr.valueArray(args) }
+	valueEnvir { arg ... args; ^instr.valueEnvir(args) }
 	prepareToBundle { arg group,bundle;
 		instr.prepareToBundle(group,bundle);
 	}

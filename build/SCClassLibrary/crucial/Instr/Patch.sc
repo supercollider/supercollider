@@ -17,9 +17,6 @@ HasPatchIns : AbstractPlayer {
 	// specAt
 	// argNameAt
 
-
-
-
 	mapInputToBus { arg i,bus;
 		var patchOut;
 		bus = bus.asBus;
@@ -145,10 +142,29 @@ Patch : HasPatchIns  {
 	var synthPatchIns,<argsForSynth,<synthArgsIndices;
 	
 	var synthDef;
-	var numChannels,rate; // determined after making synthdef
+	var <numChannels,<rate; // determined after making synthdef
 	
 	*new { arg name,inputs;
 		^super.new.loadSubject(name).createArgs(loadDocument(inputs) ? [])
+	}
+	storeParamsOn { arg stream;
+		var last;
+		if(this.class === Patch,{ // an indulgence ...
+			last = args.size - 1;
+			// anything with a path gets stored as abreviated
+			stream << "(" <<< this.instr.name << ",[";
+				if(stream.isKindOf(PrettyPrintStream),{ stream.indent(1); });
+				args.do({ arg ag,i;
+					stream.nl;
+					stream <<< enpath(ag);
+					if(i != last,{ stream << "," });
+				});
+				if(stream.isKindOf(PrettyPrintStream),{ stream.indent(-1); });
+			stream.nl;
+			stream << "])";
+		},{
+			super.storeParamsOn(stream)
+		});
 	}
 	storeArgs { ^[this.instr.name,args] }
 
@@ -163,11 +179,19 @@ Patch : HasPatchIns  {
 	}
 	argNameAt { arg i; ^instr.argNameAt(i) }
 	specAt { arg i; ^instr.specs.at(i) }
-	/*defName_ { arg df;
-		// for reloading from storeModifiersOn
-		defName = df;
-	}*/
-
+	indexFromName { arg argName;
+		^instr.argNames.indexOf(argName)
+	}
+	argFromName { arg argName;
+		var index;
+		index = this.indexFromName(argName);
+		if(index.notNil,{
+			^args.at(index)
+		},{
+			^nil
+		})
+	}
+		
 	loadSubject { arg name;
 		instr = name.asInstr;
 		if(instr.isNil,{
@@ -185,24 +209,12 @@ Patch : HasPatchIns  {
 
 		args=Array.fill(argsSize,{arg i; 
 			var proto,spec,ag,patchIn,darg;
+			spec = instr.specs.at(i);
 			ag = 
 				argargs.at(i) // explictly specified
 				?? 
 				{ //  or auto-create a suitable control...
-					spec = instr.specs.at(i);
-					proto = ControlPrototypes.at(instr.argNames.at(i),spec);
-					if(proto.notNil,{ 
-						proto = proto.first; 
-					},{
-						proto = ControlPrototypes.at(spec.class,spec);
-						if(proto.notNil,{ 
-							proto = proto.first;
-						}, { 
-							proto = spec.defaultControl;
-						});
-					});								
-					proto.tryPerform('spec_',spec); // make sure it does the spec
-					
+					proto = spec.defaultControl;
 					darg = instr.initAt(i);
 					if(darg.isNumber,{
 						proto.tryPerform('value_',darg);
@@ -210,11 +222,11 @@ Patch : HasPatchIns  {
 					proto
 				};
 				
-			patchIn = PatchIn.newByRate(instr.specs.at(i).rate);
+			patchIn = PatchIn.newByRate(spec.rate);
 			patchIns = patchIns.add(patchIn);
 
 			// although input is control, arg could overide that
-			if(instr.specs.at(i).rate != \scalar
+			if(spec.rate != \scalar
 				and: {ag.rate != \scalar}
 			,{
 				argsForSynth = argsForSynth.add(ag);
@@ -237,21 +249,7 @@ Patch : HasPatchIns  {
 			synthDef
 		}
 	}
-	// compute on first demand
-	rate {
-		/*  can't have resources prepared always
-		if(rate.isNil,{
-			this.asSynthDef;
-		});
-		*/
-		^rate
-	}
-	numChannels {
-		/*if(numChannels.isNil,{
-			this.asSynthDef;
-		});*/
-		^numChannels
-	}
+	invalidateSynthDef { synthDef = nil; }
 	
 	// has inputs
 	spawnToBundle { arg bundle;
@@ -288,19 +286,8 @@ Patch : HasPatchIns  {
 	}
 	defName { ^defName } // NOT 'Patch' ever
 	
-	// HasPatchIns
-//	didSpawn {
-//		super.didSpawn;
-//		//i know of the synth, i hand out the NodeControls
-//		synthPatchIns.do({ arg synpatchIn,synthArgi;
-//			synpatchIn.nodeControl_(NodeControl(synth,synthArgi));
-//			argsForSynth.at(synthArgi).connectToPatchIn(synpatchIn,false);
-//		});
-//	}
-
 	free {
 		super.free;
-
 		// ISSUE: if you change a static non-synth input 
 		// nobody notices to rebuild the synth def
 		// so for now, wipe it out
@@ -309,8 +296,8 @@ Patch : HasPatchIns  {
 	}
 	
 	// act like a simple ugen function
-	// mostly this won't work with Samples etc.
-	ar { 	arg ... overideArgs;	^this.valueArray(overideArgs) }
+	// mostly this won't work except with simple UGens
+	ar { arg ... overideArgs;	^this.valueArray(overideArgs) }
 	value { arg ... overideArgs;  ^this.valueArray(overideArgs) }
 	valueArray { arg  overideArgs;  
 		// each arg is valued as it is passed into the instr function
@@ -318,7 +305,7 @@ Patch : HasPatchIns  {
 				args.collect({ arg a,i; (overideArgs.at(i) ? a).value; })  
 			)
 	}
-	printOn { arg s; s << "a Patch " << instr.name; }
+	printOn { arg s; s << this.class.name << instr.name; }
 	
 	/*storeModifiersOn { arg stream;
 		// this allows a known defName to be used to look up in the cache
@@ -327,19 +314,20 @@ Patch : HasPatchIns  {
 			stream << ".defName_(" <<< defName << ")";
 		})
 	}*/
+	/*defName_ { arg df;
+		// for reloading from storeModifiersOn
+		defName = df;
+	}*/
+	
 	children { ^args }
 	guiClass { ^PatchGui }
-
 }
 
-/*
 
+/*
 EfxPatch : Patch
 
-
 	one meant for efx should be a specific type
-	then it can share its bus with the primary input
-	
-	
+	then it can share its bus with the primary input	
 */
 

@@ -25,7 +25,6 @@ ControlPrototypes {
 		)	
 	}
 
-
 	*firstAt { arg argName,spec;
 		var func,proto;
 		func=registery.at(argName);
@@ -62,7 +61,20 @@ ControlPrototypes {
 					?? {this.chooseAt(spec.class,spec)}
 					?? {spec.defaultControl}
 				)	
-	}		
-}	
-			
+	}
+	*listForSpec { arg argName,spec;
+		var try,class;
+		try = this.at(argName,spec);
+		if(try.notNil,{ ^try });
+		class = spec.class;
+		while({
+			try.isNil and: {class != Object}
+		},{
+			try = this.at(class,spec);
+			class = class.superclass;
+		});
+		^try
+	}
+}
+
 

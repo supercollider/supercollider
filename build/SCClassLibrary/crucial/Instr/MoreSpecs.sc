@@ -81,7 +81,7 @@ NoLagControlSpec : ControlSpec {
 			];
 		)
 	}
-	defaultControl { arg val=0.0; 
+	defaultControl { arg val; 
 		^KrNumberEditor.new(this.constrain(val ? this.default),this).lag_(nil) 
 	}
 
@@ -92,12 +92,12 @@ StaticSpec : NoLagControlSpec {
 
 	canKr { ^false }
 	rate { ^\scalar }
-	defaultControl { arg val=0.0; 
+	defaultControl { arg val;
 		^NumberEditor.new(this.constrain(val ? this.default),this) 
 	}
 }
 StaticIntegerSpec : StaticSpec {
-	defaultControl { arg val=0;
+	defaultControl { arg val;
 		^IntegerEditor(this.constrain(val ? this.default),this)
 	}
 	*initClass {
@@ -113,10 +113,8 @@ StaticIntegerSpec : StaticSpec {
 ScalarSpec : Spec {
 	// SendTrig etc. output a 0.0
 	// this is a scalar spec.
-	// so is Env, Sample
 	canKr { ^false }
 	rate { ^\scalar }
-
 }
 
 EnvSpec : ScalarSpec {
@@ -203,7 +201,7 @@ ArraySpec : HasItemSpec {
 	*initClass {
 		specs.addAll(
 		 [
-			\array -> this.new,
+			\array -> this.new(\degree),
 			\scale -> this.new(StaticSpec(-100,100,\linear))
 		];
 		)
@@ -217,15 +215,19 @@ StreamSpec : HasItemSpec {
 	*initClass {
 		specs.addAll(
 		 [
+		 	\stream -> this.new,
 			\degreeStream -> this.new(StaticIntegerSpec(-100,100,\linear,1)),
 			\durationStream -> this.new(StaticSpec(2 ** -6, 2 ** 8))
 		];
 		)
 	}
 	defaultControl { ^itemSpec.defaultControl }
+	default { ^itemSpec.default }
+	constrain { arg value; ^itemSpec.constrain(value) }
 	canAccept { arg ting;
 		^(ting.rate == \stream or: {itemSpec.canAccept(ting) })
 	}
+	rate { ^\stream }
 }
 
 PlayerSpec : HasItemSpec {

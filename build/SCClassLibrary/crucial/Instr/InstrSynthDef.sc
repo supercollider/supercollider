@@ -1,6 +1,4 @@
 
-
-
 InstrSynthDef : SynthDef {
 	
 	classvar watchedServers;
@@ -36,7 +34,6 @@ InstrSynthDef : SynthDef {
 		
 		// OutputProxy In InTrig Float etc.		
 		outputProxies = this.buildControlsWithObjects(instr,args);
-							
 		/*
 			not all of the controls are Controls,
 			some are what the object chose to add
