@@ -5,7 +5,7 @@
 	
 	openTextFile{ arg selectionStart=0, selectionLength=0;
 		var doc;
-		doc = Document.open(this, selectionStart, selectionLength);
+		doc = Document.open(PathName(this).asAbsolutePath , selectionStart, selectionLength);
 	}
 	
 	openDocument {
@@ -45,8 +45,7 @@
 		pos.x = inRect.right - 2 - bounds.width;
 		this.drawAtPoint(pos);
 	}
-	
-	
+		
 //	bounds { ^this.prBounds(Rect.new) }
 //	getLayoutSize {
 //		arg extent;
@@ -57,7 +56,6 @@
 //		_String_GetBounds
 //		^this.primitiveFailed
 //	}
-	
 
 	/// cocoa or at least foundation dependant
 	standardizePath { _Cocoa_StandardizePath ^this.primitiveFailed }
@@ -69,4 +67,3 @@
 		(this.findHelpFile ? "Help/Help.help.rtf".standardizePath).openTextFile
 	}
 }
-
