@@ -177,7 +177,7 @@ NodeProxy : AbstractFunction {
 				if(container.notNil, {
 					objects = objects.add(container);
 					
-					container.writeDef; //so it is there on server reboot
+					AppClock.sched(0, { container.writeDef }); //so it is there on server reboot
 					if(server.serverRunning, {
 						container.sendDefToBundle(bundle); //this should go one down later
 						if(this.isPlaying, {
