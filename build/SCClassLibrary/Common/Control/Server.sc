@@ -456,10 +456,6 @@ Server : Model {
 		_AllocSharedControls
 		^this.primitiveFailed
 	}
-	allocSharedBufs { arg numScopeBufs=16, samples=1024, channels=1;
-		_AllocSharedSndBufs
-		^this.primitiveFailed
-	}
 	setSharedControl { arg num, value;
 		_SetSharedControl
 		^this.primitiveFailed
