@@ -1432,7 +1432,7 @@ case 50:
 				SetSymbol(&slot, s_new);
 				selectornode = newPyrSlotNode(&slot);
 				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)yyvsp[-1]);
-				yyval = (long)newPyrCallNode(selectornode, args, 0, yyvsp[0]); 
+				yyval = (long)newPyrCallNode(selectornode, args, 0, (PyrParseNode*)yyvsp[0]); 
 			;
     break;}
 case 51:
@@ -1445,7 +1445,7 @@ case 51:
 				SetSymbol(&slot, s_new);
 				selectornode = newPyrSlotNode(&slot);
 				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)yyvsp[-4]);
-				yyval = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)yyvsp[-2], yyvsp[0]); 
+				yyval = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); 
 			;
     break;}
 case 52:
@@ -1460,7 +1460,7 @@ case 52:
 				args = linkNextNode(
 					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)yyvsp[-5]), 
 					(PyrParseNode*)yyvsp[-3]);
-				yyval = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)yyvsp[-2], yyvsp[0]); 
+				yyval = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)yyvsp[-2], (PyrParseNode*)yyvsp[0]); 
 			;
     break;}
 case 53:

@@ -199,7 +199,7 @@ msgsend : name blocklist1
 				SetSymbol(&slot, s_new);
 				selectornode = newPyrSlotNode(&slot);
 				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1);
-				$$ = (long)newPyrCallNode(selectornode, args, 0, $2); 
+				$$ = (long)newPyrCallNode(selectornode, args, 0, (PyrParseNode*)$2); 
 			}
 		| classname '(' keyarglist1 ')' blocklist
 			{ 
@@ -210,7 +210,7 @@ msgsend : name blocklist1
 				SetSymbol(&slot, s_new);
 				selectornode = newPyrSlotNode(&slot);
 				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1);
-				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$3, $5); 
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$3, (PyrParseNode*)$5); 
 			}
 		| classname '(' arglist1 optkeyarglist ')' blocklist
 			{ 
@@ -223,7 +223,7 @@ msgsend : name blocklist1
 				args = linkNextNode(
 					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1), 
 					(PyrParseNode*)$3);
-				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$4, $6); 
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$4, (PyrParseNode*)$6); 
 			}
 		| classname '(' arglistv1 optkeyarglist ')'
 			{
