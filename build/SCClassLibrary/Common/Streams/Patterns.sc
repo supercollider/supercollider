@@ -139,7 +139,7 @@ Pevent : Pattern {
 	*new { arg pattern, event;
 		^super.newCopyArgs(pattern, event);
 	}
-	storeArgs { ^[pattern,event] }
+	storeArgs { ^[pattern, event] }
 	asStream {
 		^Sevent(pattern.asStream, event);
 	}
@@ -152,7 +152,6 @@ Sevent : Stream {
 		^super.newCopyArgs(stream, event.copy ? Event.default);
 	}
 	next { arg inEvent; 
-		event[\clock] = inEvent[\clock]; // need to copy the clock
 		^stream.next(event);
 	}
 }
