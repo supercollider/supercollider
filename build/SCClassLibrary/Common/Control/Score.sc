@@ -1,42 +1,76 @@
 Score {
-	*play { arg path, server;
-		var eventList;
-		eventList = thisProcess.interpreter.executeFile(path);
-		this.playList(eventList, server);
+	var <>score, routine, isPlaying = false;
+	
+	*new { arg list;
+		^super.new.init(list);
 	}
 	
-	*playList { arg eventList, server;
-		var size, osccmd, timekeep, inserver;
-		inserver = server ? Server.default;
-		size = eventList.size;
-		timekeep = 0;
-		Routine({
-			size.do { |i|
-				var deltatime, msg;
-				osccmd = eventList[i];
-				deltatime = osccmd[0];
-				msg = osccmd[1];
-				(deltatime-timekeep).wait;
-				inserver.sendBundle(inserver.latency, msg);
-				timekeep = deltatime;
-			}
-		}).play;
+	*newFromFile { arg path;
+		var list;
+		list = thisProcess.interpreter.executeFile(path);
+		^super.new.init(list);
+	}
+	
+	init { arg list;
+		score = list;
+	}
+	
+	*playFromFile { arg path, server;
+		var list;
+		list = thisProcess.interpreter.executeFile(path);
+		^this.new(list).play(server);
+	}
+	
+	*play { arg list, server;
+		^this.new(list).play(server);
+	}	
+	
+	play { arg server;
+		var size, osccmd, timekeep, inserver, rout;
+		isPlaying.not.if({
+			inserver = server ? Server.default;
+			size = score.size;
+			timekeep = 0;
+			routine = Routine({
+				size.do { |i|
+					var deltatime, msg;
+					osccmd = score[i];
+					deltatime = osccmd[0];
+					msg = osccmd[1];
+					(deltatime-timekeep).wait;
+					inserver.sendBundle(inserver.latency, msg);
+					timekeep = deltatime;
+				}
+			});
+			isPlaying = true;
+			routine.play;
+		}, {"Score already playing".warn;}
+		);
+	}
+	
+	stop {
+		isPlaying.if({routine.stop; isPlaying = false; routine = nil;}, {"Score not playing".warn;}
+		);
 	}
 		
-	*write { arg path, oscfile;
-		var osccmd, eventList, f;
-		eventList = thisProcess.interpreter.executeFile(path);
-		this.writeList(eventList, oscfile);
+	*writeFromFile { arg path, oscFilePath;
+		var list;
+		list = thisProcess.interpreter.executeFile(path);
+		this.write(list, oscFilePath);
 	}
 	
-	*writeList {arg eventList, oscfile;
+	*write {arg list, oscFilePath;
 		var osccmd, f;
-		f = File(oscfile, "w");
-		eventList.size.do { |i|
-			osccmd = eventList[i].asRawOSC;
+		f = File(oscFilePath, "w");
+		list.size.do { |i|
+			osccmd = list[i].asRawOSC;
 			f.write(osccmd.size).write(osccmd);
 		};
 		f.close;
 		"done".postln;
+	}
+	
+	write {arg oscFilePath;
+		this.class.write(score, oscFilePath);
 	}
 }	
