@@ -8,7 +8,6 @@ UGen : AbstractFunction {
 	var <>synthIndex = -1;
 	
 	var <>antecedents, <>descendants; // topo sorting
-	var <>topoDepth;
 	
 	// instance creation
 	*new1 { arg rate ... args;
