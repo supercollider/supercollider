@@ -53,7 +53,7 @@ Color {
 						t2 = val * (1 - (sat * fraction));
 						t3 = val * (1 - (sat * (1 - fraction)));
 						if( segment == 0, { r=val; g=t3; b=t1 });
-						if( segment == 1, { r=t2; g = val; b=t3 });
+						if( segment == 1, { r=t2; g = val; b=t1 });
 						if( segment == 2, { r=t1; g=val; b=t3 });
 						if( segment == 3, { r=t1; g=t2; b=val });
 						if( segment == 4, { r=t3; g=t1; b=val });
