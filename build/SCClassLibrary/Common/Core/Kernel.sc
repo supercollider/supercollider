@@ -410,10 +410,11 @@ Interpreter {
 		^this.compile(cmdLine).value;
 	}
 	interpretPrintCmdLine {
-		var res;
+		var res, func;
 		"\n".post;
-		res = this.compile(cmdLine).value;
-		codeDump.value(cmdLine, res);
+		func = this.compile(cmdLine);
+		res = func.value;
+		codeDump.value(cmdLine, res, func);
 		res.postln;
 	}
 	
