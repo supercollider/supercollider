@@ -196,10 +196,10 @@
 	   (with-sclang-rtf-state-output
 	    state
 	    (if image
-		(insert-image image))
-	    (sclang-rtf-state-push-face state 'italic)
-	    (insert file)
-	    (sclang-rtf-state-pop-face state 'italic))))
+		(insert-image image)
+	      (sclang-rtf-state-push-face state 'italic)
+	      (insert file)
+	      (sclang-rtf-state-pop-face state 'italic)))))
 	))
 
 (defun sclang-parse-rtf-control (state ctrl)
