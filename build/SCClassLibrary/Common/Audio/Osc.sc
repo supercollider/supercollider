@@ -41,6 +41,29 @@ OscN : UGen {
 	}
 }
 
+
+VOsc : UGen {	
+	*ar { 
+		arg bufpos, freq=440.0, phase=0.0, mul=1.0, add=0.0;
+		^this.multiNew('audio', bufpos, freq, phase).madd(mul, add)
+	}
+	*kr {
+		arg bufpos, freq=440.0, phase=0.0, mul=1.0, add=0.0;
+		^this.multiNew('control', bufpos, freq, phase).madd(mul, add)
+	}
+}
+
+VOsc3 : UGen {	
+	*ar { 
+		arg bufpos, freq1=110.0, freq2=220.0, freq3=440.0, mul=1.0, add=0.0;
+		^this.multiNew('audio', bufpos, freq1, freq2, freq3).madd(mul, add)
+	}
+	*kr {
+		arg bufpos, freq1=110.0, freq2=220.0, freq3=440.0, mul=1.0, add=0.0;
+		^this.multiNew('control', bufpos, freq1, freq2, freq3).madd(mul, add)
+	}
+}
+
 COsc : UGen {	
 	*ar { 
 		arg bufnum, freq=440.0, beats=0.5, mul=1.0, add=0.0;

@@ -145,6 +145,25 @@ struct PMOsc : public Unit
 };
 #endif
 
+
+struct VOsc : public Unit
+{
+	double m_cpstoinc, m_radtoinc;
+	int32 mTableSize;
+	int32 m_lomask;
+	int32 m_phase, m_phaseoffset;
+	float m_phasein, m_bufpos;
+};
+
+struct VOsc3 : public Unit
+{
+	double m_cpstoinc;
+	int32 mTableSize;
+	int32 m_lomask;
+	int32 m_phase1, m_phase2, m_phase3;
+	float m_bufpos;
+};
+
 struct Formant : public Unit
 {
 	int32 m_phase1, m_phase2, m_phase3;
@@ -295,6 +314,12 @@ void OscX2_Ctor(OscX2 *unit);
 void OscX2_SetTables(OscX2 *unit, int32 inSize, float* inTableA, float* inTableB);
 void OscX2_next(OscX2 *unit, int inNumSamples);
 #endif
+
+void VOsc_Ctor(VOsc *unit);
+void VOsc_next_ik(VOsc *unit, int inNumSamples);
+
+void VOsc3_Ctor(VOsc3 *unit);
+void VOsc3_next_ik(VOsc3 *unit, int inNumSamples);
 
 void Formant_Ctor(Formant *unit);
 void Formant_next(Formant *unit, int inNumSamples);
@@ -1390,8 +1415,8 @@ void SinOsc_Ctor(SinOsc *unit)
 void Osc_Ctor(Osc *unit)
 {
 	unit->m_fbufnum = -1e9f;
-	if (INRATE(0) == calc_FullRate) {
-		if (INRATE(1) == calc_FullRate) {
+	if (INRATE(1) == calc_FullRate) {
+		if (INRATE(2) == calc_FullRate) {
 			//Print("next_iaa\n");
 			SETCALC(Osc_next_iaa);
 		} else {
@@ -1399,7 +1424,7 @@ void Osc_Ctor(Osc *unit)
 			SETCALC(Osc_next_iak);
 		}
 	} else {
-		if (INRATE(1) == calc_FullRate) {
+		if (INRATE(2) == calc_FullRate) {
 			//Print("next_ika\n");
 			SETCALC(Osc_next_ika);
 		} else {
@@ -1409,9 +1434,9 @@ void Osc_Ctor(Osc *unit)
 	}
 	unit->m_buf = unit->mWorld->mSndBufs;
 	unit->mTableSize = -1;
-	unit->m_phasein = ZIN0(1);
+	unit->m_phasein = ZIN0(2);
 	unit->m_phaseoffset = (int32)(unit->m_phasein * unit->m_radtoinc);
-	if (INRATE(1) == calc_FullRate) {
+	if (INRATE(2) == calc_FullRate) {
 		unit->m_phase = 0;
 	} else {
 		unit->m_phase = unit->m_phaseoffset;
@@ -1573,8 +1598,8 @@ void OscN_Ctor(OscN *unit)
 {
 	unit->m_fbufnum = -1e9f;
 	//Print("OscN_Ctor\n");
-	if (INRATE(0) == calc_FullRate) {
-		if (INRATE(1) == calc_FullRate) {
+	if (INRATE(1) == calc_FullRate) {
+		if (INRATE(2) == calc_FullRate) {
 			//Print("next_naa\n");
 			SETCALC(OscN_next_naa);
 		} else {
@@ -1582,7 +1607,7 @@ void OscN_Ctor(OscN *unit)
 			SETCALC(OscN_next_nak);
 		}
 	} else {
-		if (INRATE(1) == calc_FullRate) {
+		if (INRATE(2) == calc_FullRate) {
 			//Print("next_nka\n");
 			SETCALC(OscN_next_nka);
 		} else {
@@ -1592,7 +1617,7 @@ void OscN_Ctor(OscN *unit)
 	}
 	unit->m_phase = 0;
 	unit->m_phasein = 0;
-	unit->m_phaseoffset = (int32)(ZIN0(1) * unit->m_radtoinc);
+	unit->m_phaseoffset = (int32)(ZIN0(2) * unit->m_radtoinc);
 	OscN_next_nkk(unit, 1);
 }
 
@@ -2168,6 +2193,328 @@ void OscX2_next(OscX2 *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void VOsc_Ctor(VOsc *unit)
+{
+	SETCALC(VOsc_next_ik);
+	
+	float nextbufpos = ZIN0(0);
+	uint32 bufnum = (uint32)floor(nextbufpos);
+	World *world = unit->mWorld;
+	if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
+	SndBuf *bufs = world->mSndBufs + bufnum;
+
+	int tableSize = bufs[0].samples;
+
+	unit->mTableSize = tableSize;
+	int tableSize2 = tableSize >> 1;
+	unit->m_lomask = (tableSize2 - 1) << 3; 
+	unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); 
+	unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.; 
+
+	unit->m_phasein = ZIN0(2);
+	unit->m_phaseoffset = (int32)(unit->m_phasein * unit->m_radtoinc);
+	unit->m_phase = unit->m_phaseoffset;
+
+	VOsc_next_ik(unit, 1);
+}
+
+void VOsc_next_ik(VOsc *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float nextbufpos = ZIN0(0);
+	float freqin = ZIN0(1);
+	float phasein = ZIN0(2);
+
+	float prevbufpos = unit->m_bufpos;
+	float bufdiff = nextbufpos - prevbufpos;
+	
+	int32 phase = unit->m_phase;
+	int32 lomask = unit->m_lomask;
+	
+	int32 freq = (int32)(unit->m_cpstoinc * freqin);
+	int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
+	unit->m_phasein = phasein;
+	int tableSize = unit->mTableSize;
+	float cur = prevbufpos;
+	World *world = unit->mWorld;
+
+	if (bufdiff == 0.f) {
+		float level = cur - floor(cur);
+
+		uint32 bufnum = (int)floor(cur);
+		if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
+		SndBuf *bufs = world->mSndBufs + bufnum;
+		float *table0  = bufs[0].data;
+		float *table2  = bufs[1].data;
+		if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
+			ClearUnitOutputs(unit, inNumSamples);
+			return;
+		}
+	
+		float *table1 = table0 + 1;
+		float *table3 = table2 + 1;
+	
+		LOOP(inNumSamples,
+			float pfrac = PhaseFrac1(phase);
+			uint32 index = ((phase >> xlobits1) & lomask);
+			float val0 = *(float*)((char*)table0 + index);
+			float val1 = *(float*)((char*)table1 + index);
+			float val2 = *(float*)((char*)table2 + index);
+			float val3 = *(float*)((char*)table3 + index);
+			float a = val0 + val1 * pfrac;
+			float b = val2 + val3 * pfrac;
+			ZXP(out) = a + level * (b - a);
+			phase += phaseinc;
+		);
+	} else {
+		int nsmps;
+		int donesmps = 0;
+		int remain = inNumSamples;
+		while (remain) {
+			float level = cur - (float)floor(cur);
+
+			float cut;
+			if (bufdiff > 0.) {
+				cut = sc_min(nextbufpos, (float)floor(cur+1.f));
+			} else {
+				cut = sc_max(nextbufpos, ceil(cur-1.f));
+			}
+
+			float sweepdiff = cut - cur;
+			if (cut == nextbufpos) nsmps = remain;
+			else {
+				float sweep = (float)inNumSamples / bufdiff;
+				nsmps = (int)floor(sweep * sweepdiff + 0.5f) - donesmps;
+				nsmps = sc_clip(nsmps, 1, remain);
+			}
+			
+			float slope = sweepdiff / (float)nsmps;
+			
+			uint32 bufnum = (int)floor(cur);
+			if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
+			SndBuf *bufs = world->mSndBufs + bufnum;
+			float *table0  = bufs[0].data;
+			float *table2  = bufs[1].data;
+			if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
+				ClearUnitOutputs(unit, inNumSamples);
+				return;
+			}
+		
+			float *table1 = table0 + 1;
+			float *table3 = table2 + 1;
+		
+			LOOP(nsmps,
+				float pfrac = PhaseFrac1(phase);
+				uint32 index = ((phase >> xlobits1) & lomask);
+				float val0 = *(float*)((char*)table0 + index);
+				float val1 = *(float*)((char*)table1 + index);
+				float val2 = *(float*)((char*)table2 + index);
+				float val3 = *(float*)((char*)table3 + index);
+				float a = val0 + val1 * pfrac;
+				float b = val2 + val3 * pfrac;
+				ZXP(out) = a + level * (b - a);
+				phase += phaseinc;
+				level += slope;
+			);
+			donesmps += nsmps;
+			remain -= nsmps;
+			cur = cut;
+		}
+	}
+	unit->m_bufpos = nextbufpos;
+	unit->m_phase = phase;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void VOsc3_Ctor(VOsc3 *unit)
+{
+	SETCALC(VOsc3_next_ik);
+	
+	float nextbufpos = ZIN0(0);
+	uint32 bufnum = (uint32)floor(nextbufpos);
+	World *world = unit->mWorld;
+	if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
+	SndBuf *bufs = world->mSndBufs + bufnum;
+
+	int tableSize = bufs[0].samples;
+
+	unit->mTableSize = tableSize;
+	int tableSize2 = tableSize >> 1;
+	unit->m_lomask = (tableSize2 - 1) << 3; 
+	unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.; 
+
+	unit->m_phase1 = 0;
+	unit->m_phase2 = 0;
+	unit->m_phase3 = 0;
+
+	VOsc3_next_ik(unit, 1);
+}
+
+void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float nextbufpos = ZIN0(0);
+	float freq1in = ZIN0(1);
+	float freq2in = ZIN0(2);
+	float freq3in = ZIN0(3);
+
+	float prevbufpos = unit->m_bufpos;
+	float bufdiff = nextbufpos - prevbufpos;
+	
+	int32 phase1 = unit->m_phase1;
+	int32 phase2 = unit->m_phase2;
+	int32 phase3 = unit->m_phase3;
+		
+	int32 freq1 = (int32)(unit->m_cpstoinc * freq1in);
+	int32 freq2 = (int32)(unit->m_cpstoinc * freq2in);
+	int32 freq3 = (int32)(unit->m_cpstoinc * freq3in);
+
+	int32 lomask = unit->m_lomask;
+	int tableSize = unit->mTableSize;
+	float cur = prevbufpos;
+	World *world = unit->mWorld;
+
+	if (bufdiff == 0.f) {
+		float level = cur - floor(cur);
+
+		uint32 bufnum = (int)floor(cur);
+		if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
+		SndBuf *bufs = world->mSndBufs + bufnum;
+		float *table0  = bufs[0].data;
+		float *table2  = bufs[1].data;
+		if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
+			ClearUnitOutputs(unit, inNumSamples);
+			return;
+		}
+	
+		float *table1 = table0 + 1;
+		float *table3 = table2 + 1;
+	
+		LOOP(inNumSamples,
+			
+			float pfrac1 = PhaseFrac1(phase1);
+			float pfrac2 = PhaseFrac1(phase2);
+			float pfrac3 = PhaseFrac1(phase3);
+			
+			int index1 = ((phase1 >> xlobits1) & lomask);
+			int index2 = ((phase2 >> xlobits1) & lomask);
+			int index3 = ((phase3 >> xlobits1) & lomask);
+
+			phase1 += freq1;
+			phase2 += freq2;
+			phase3 += freq3;
+
+			float val10 = *(float*)((char*)table0 + index1);
+			float val11 = *(float*)((char*)table1 + index1);
+			float val12 = *(float*)((char*)table2 + index1);
+			float val13 = *(float*)((char*)table3 + index1);
+			float a = val10 + val11 * pfrac1;
+			float b = val12 + val13 * pfrac1;
+
+			float val20 = *(float*)((char*)table0 + index2);
+			float val21 = *(float*)((char*)table1 + index2);
+			float val22 = *(float*)((char*)table2 + index2);
+			float val23 = *(float*)((char*)table3 + index2);
+			a += val20 + val21 * pfrac2;
+			b += val22 + val23 * pfrac2;
+
+			float val30 = *(float*)((char*)table0 + index3);
+			float val31 = *(float*)((char*)table1 + index3);
+			float val32 = *(float*)((char*)table2 + index3);
+			float val33 = *(float*)((char*)table3 + index3);
+			a += val30 + val31 * pfrac3;
+			b += val32 + val33 * pfrac3;
+
+			ZXP(out) = a + level * (b - a);
+		);
+	} else {
+		int nsmps;
+		int donesmps = 0;
+		int remain = inNumSamples;
+		while (remain) {
+			float level = cur - (float)floor(cur);
+
+			float cut;
+			if (bufdiff > 0.) {
+				cut = sc_min(nextbufpos, (float)floor(cur+1.f));
+			} else {
+				cut = sc_max(nextbufpos, ceil(cur-1.f));
+			}
+
+			float sweepdiff = cut - cur;
+			if (cut == nextbufpos) nsmps = remain;
+			else {
+				float sweep = (float)inNumSamples / bufdiff;
+				nsmps = (int)floor(sweep * sweepdiff + 0.5f) - donesmps;
+				nsmps = sc_clip(nsmps, 1, remain);
+			}
+			
+			float slope = sweepdiff / (float)nsmps;
+			
+			uint32 bufnum = (int)floor(cur);
+			if (bufnum+1 >= world->mNumSndBufs) bufnum = 0;
+			SndBuf *bufs = world->mSndBufs + bufnum;
+			float *table0  = bufs[0].data;
+			float *table2  = bufs[1].data;
+			if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
+				ClearUnitOutputs(unit, inNumSamples);
+				return;
+			}
+		
+			float *table1 = table0 + 1;
+			float *table3 = table2 + 1;
+		
+			LOOP(nsmps,
+				
+				float pfrac1 = PhaseFrac1(phase1);
+				float pfrac2 = PhaseFrac1(phase2);
+				float pfrac3 = PhaseFrac1(phase3);
+				
+				int index1 = ((phase1 >> xlobits1) & lomask);
+				int index2 = ((phase2 >> xlobits1) & lomask);
+				int index3 = ((phase3 >> xlobits1) & lomask);
+	
+				phase1 += freq1;
+				phase2 += freq2;
+				phase3 += freq3;
+
+				float val10 = *(float*)((char*)table0 + index1);
+				float val11 = *(float*)((char*)table1 + index1);
+				float val12 = *(float*)((char*)table2 + index1);
+				float val13 = *(float*)((char*)table3 + index1);
+				float a = val10 + val11 * pfrac1;
+				float b = val12 + val13 * pfrac1;
+	
+				float val20 = *(float*)((char*)table0 + index2);
+				float val21 = *(float*)((char*)table1 + index2);
+				float val22 = *(float*)((char*)table2 + index2);
+				float val23 = *(float*)((char*)table3 + index2);
+				a += val20 + val21 * pfrac2;
+				b += val22 + val23 * pfrac2;
+	
+				float val30 = *(float*)((char*)table0 + index3);
+				float val31 = *(float*)((char*)table1 + index3);
+				float val32 = *(float*)((char*)table2 + index3);
+				float val33 = *(float*)((char*)table3 + index3);
+				a += val30 + val31 * pfrac3;
+				b += val32 + val33 * pfrac3;
+	
+				ZXP(out) = a + level * (b - a);
+				level += slope;
+			);
+			donesmps += nsmps;
+			remain -= nsmps;
+			cur = cut;
+		}
+	}
+	unit->m_bufpos = nextbufpos;
+	unit->m_phase1 = phase1;
+	unit->m_phase2 = phase2;
+	unit->m_phase3 = phase3;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 
 void Formant_Ctor(Formant *unit)
 {
@@ -3287,10 +3634,14 @@ void SineFill1(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 	if (buf->channels != 1) return;
 	
 	int flags = msg->geti();
-	float *data = buf->data;
+	
 	int size = buf->samples;
+	int byteSize = size * sizeof(float);
+	float *data = (float*)malloc(byteSize);
 	
 	if (flags & flag_Clear) Fill(size, data, 0.);
+	else memcpy(data, buf->data, byteSize);
+	
 	for (int partial=1; msg->remain(); partial++) {
 		double amp = msg->getf();
 		if (flags & flag_Wavetable) add_wpartial(size, data, partial, amp, 0.);
@@ -3301,6 +3652,9 @@ void SineFill1(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 		if (flags & flag_Wavetable) normalize_wsamples(size, data, 1.);
 		else normalize_samples(size, data, 1.);
 	}
+	
+	memcpy(buf->data, data, byteSize);
+	free(data);
 }
 
 void SineFill2(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
@@ -3309,10 +3663,12 @@ void SineFill2(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 	
 	int flags = msg->geti();
 	
-	float *data = buf->data;
 	int size = buf->samples;
+	int byteSize = size * sizeof(float);
+	float *data = (float*)malloc(byteSize);
 	
 	if (flags & flag_Clear) Fill(size, data, 0.);
+	else memcpy(data, buf->data, byteSize);
 	
 	while (msg->remain()) {
 		double partial = msg->getf();
@@ -3324,6 +3680,9 @@ void SineFill2(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 		if (flags & flag_Wavetable) normalize_wsamples(size, data, 1.);
 		else normalize_samples(size, data, 1.);
 	}
+	
+	memcpy(buf->data, data, byteSize);
+	free(data);
 }
 
 void SineFill3(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
@@ -3332,10 +3691,12 @@ void SineFill3(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 	
 	int flags = msg->geti();
 	
-	float *data = buf->data;
 	int size = buf->samples;
+	int byteSize = size * sizeof(float);
+	float *data = (float*)malloc(byteSize);
 	
 	if (flags & flag_Clear) Fill(size, data, 0.);
+	else memcpy(data, buf->data, byteSize);
 	
 	while (msg->remain()) {
 		double partial = msg->getf();
@@ -3348,6 +3709,9 @@ void SineFill3(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 		if (flags & flag_Wavetable) normalize_wsamples(size, data, 1.);
 		else normalize_samples(size, data, 1.);
 	}
+	
+	memcpy(buf->data, data, byteSize);
+	free(data);
 }
 
 void NormalizeBuf(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
@@ -3411,6 +3775,8 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(SigOsc);
 	DefineSimpleUnit(FSinOsc);
 	DefineSimpleUnit(SinOsc);
+	DefineSimpleUnit(VOsc);
+	DefineSimpleUnit(VOsc3);
 	DefineSimpleUnit(Osc);
 	DefineSimpleUnit(OscN);
 	DefineSimpleUnit(COsc);
