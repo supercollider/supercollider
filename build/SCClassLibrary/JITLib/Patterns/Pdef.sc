@@ -42,9 +42,7 @@ Pdefn : Pattern {
 			this.sched { pattern = pat; nil }
 		}
 	}
-	
-	asStream { ^Routine.new({ arg inval; this.embedInStream(inval) }) }
-	
+		
 	embedInStream {Êarg inval;
 		var pat, stream, outval;
 		pat = pattern;
@@ -274,18 +272,15 @@ Pdict : Pattern {
 		^super.newCopyArgs(dict, which, repeats, default);
 	}
 	
-	asStream { ^Routine.new({ arg inval; this.embedInStream(inval) }) }	
 	embedInStream { arg inval;
-			var keyStream, key;
-			keyStream = which.asStream;
-			repeats.value.do({
-				key = keyStream.next;
-				if(key.notNil) {
-					inval = (dict.at(key) ? default).embedInStream(inval);
-				} {
-					nil.alwaysYield
-				}
-			})
+		var keyStream, key;
+		keyStream = which.asStream;
+		repeats.value.do({
+			key = keyStream.next;
+			if(key.isNil) { ^inval };
+			inval = (dict.at(key) ? default).embedInStream(inval);
+		});
+		^inval
 	}
 }
 
