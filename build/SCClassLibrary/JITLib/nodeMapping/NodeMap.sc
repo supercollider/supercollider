@@ -50,7 +50,6 @@ NodeMap {
 			this.get(args.at(i)).value_(args.at(i+1));
 		});
 		upToDate = false;
-		
 	}
 	
 	unset { arg ... keys;
@@ -200,8 +199,7 @@ ProxyNodeMap : NodeMap {
 		}
 						
 		map { arg ... args;
-			var mapArgs, playing;
-			mapArgs = [];
+			var playing;
 			playing = proxy.isPlaying;
 			(args.size div: 2).do({ arg i;
 				var key, mapProxy, bus, ok;
@@ -210,7 +208,7 @@ ProxyNodeMap : NodeMap {
 				if(mapProxy.isKindOf(BusPlug).not) { Error("map: not a node proxy").throw };
 				ok = mapProxy.initBus(\control, key.size);
 				if(ok, {
-					if(playing, { mapProxy.wakeUp;  });
+					if(playing, { mapProxy.wakeUp });
 					min(key.size, mapProxy.numChannels ? 1).do({ arg chan;
 						var theKey;
 						theKey = key.at(chan);
@@ -218,7 +216,7 @@ ProxyNodeMap : NodeMap {
 						parents = parents.put(theKey, mapProxy);
 					});
 				}, {
-					"rate / numChannels doesn't match:".inform
+					("rate / numChannels doesn't match:" + key + mapProxy).inform
 				});
 			});
 			upToDate = false;
