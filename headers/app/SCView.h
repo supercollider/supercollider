@@ -556,6 +556,8 @@ public:
 
 protected:
 	int indexFromPoint(SCPoint where);
+//	int getVisibleMax();
+
 	double valueFromPoint(SCPoint where);
 	void setValueFromPoint(SCPoint point);
 	SCRect calcThumbRect(int xIn, double valIn, float xoffset);
@@ -587,15 +589,10 @@ struct SCEnvObject {
 	int mNumConnection;
     SCPoint mDrawPoint;
 	double * mConnections; //tells to where it is connected
-	double * mConnectionOutputs; //tells to which outputs it is connected
 	int mNumInputs, mNumOutputs; 
-    double * mConnectionInputs;//means the input nr of the connected obj. the obj does not know from whom the inputs come
 	double x, y;
-	double deltax; //used for max-style connection view
-	double indeltax; //for inputs
     bool mIsSelected, mIsVisible, mIsStatic;
-	char *mString;
-	
+	char *mString;	
 };
 typedef struct SCEnvObject SCEnvObject;
 
@@ -610,36 +607,34 @@ public:
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
     
 	void setSelection(SCPoint where, bool fixed, bool checkForConnection);
-	bool setValue(int indx, double x, double y, bool send);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
-	void setVisibleSize();
 	virtual bool canReceiveDrag();
 	virtual void receiveDrag();
 
 protected:
 
 	void setValueFromPoint(SCPoint point);
-	//SCRect calcThumbRect(int xIn, double valIn, float xoffset);
+	bool setValue(SCEnvObject * envob, double x, double y, bool send);
+	int allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr);
 	bool setEnvRect(double valX, double valY, SCEnvObject * envobIn);
+
 	int mThumbSize, mThumbSizeY; // size of the rect
 	int mTabSize, mVisibleSize, mActiveSize; // size of the table
-	SCColor mFillColor, mSelectedColor;
-	SCColor mStrokeColor;
+	SCColor mFillColor, mSelectedColor, mStrokeColor;
 	SCRect mThumbRect;
 	double mCurrentY, mCurrentX, mAbsoluteX;
 	int mCurrentIndex, mStartIndex, mSelectionSize, mLastIndex;
 	double mStepSize, mStepScale;
 	SCEnvObject * mEnvObj;
 	//DrawBackground* mKnob;
-	float mXOffset ; //space between points
 	bool  mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsFilled, mIsFixedSelection, mIsEnvView;
 	int mSelectedIndex;
 	SCPoint mMousePoint;
-	int mConnectFrom, mConnectFromOutput, mConnectTo, mConnectToInput;
-	
+
+	double xGridMultiplier;
+
 	//draw string in box
-	
     char mFontName[kFontNameSize];
     float mFontSize;
     SCColor mStringColor;
