@@ -977,10 +977,11 @@ Ndef : NodeProxy {
 // the server needs to be a BroadcastServer.
 // this class takes care for a constant groupID.
 
-// to test with patterns
 
 SharedNodeProxy : NodeProxy {
 	var <constantGroupID;
+	var <>allowMultipleObjects=true; // in larger groups this is better set to false
+								// to limit node not found messages
 	
 	*new { arg server, groupID;
 		^super.newCopyArgs(server).initGroupID(groupID).init	}
@@ -988,12 +989,8 @@ SharedNodeProxy : NodeProxy {
 	shared { ^true }
 	
 	initGroupID { arg groupID;  
-		constantGroupID = groupID ?? { server.nextSharedNodeID }; 
+		constantGroupID = groupID ?? { server.nextSharedNodeID };
 		awake = true;
-	}
-	defaultGroupID { 
-				postln("started new shared group" + constantGroupID);
-				^constantGroupID;
 	}
 	
 	localServer { ^server.localServer }
@@ -1002,12 +999,18 @@ SharedNodeProxy : NodeProxy {
 		^asString(constantGroupID)
 	}
 	
-	shouldAddObject { arg obj, index; 
-			^if(obj.distributable.not) { 
-				"this type of input is not distributable in a shared node proxy".inform;
-				false
+	shouldAddObject { arg obj, index;
+	
+			^if(allowMultipleObjects.not and: {index.notNil} and: {Êindex > 0 }) { 
+				"only one object per proxy in shared node proxy possible".inform;
+				^false
 			} {
-				obj.readyForPlay 
+				if(obj.distributable.not) { 
+					"this type of input is not distributable in a shared node proxy".inform;
+					false
+				} {
+					obj.readyForPlay 
+				}
 			}
 	}
 
@@ -1030,7 +1033,9 @@ SharedNodeProxy : NodeProxy {
 				bundle.add(["/n_set", constantGroupID, \gate, 0]);
 	}
 	stopToBundleAt { arg bundle, index;
-				bundle.add(["/n_set", constantGroupID, \gate, 0]); // revisit: try indexed free later
+				if(allowMultipleObjects) 
+					{Êsuper.stopToBundleAt(bundle, index) } 
+					{ bundle.add(["/n_set", constantGroupID, \gate, 0]) }
 	}
 	group_ {}
 	bus_ {}
@@ -1043,14 +1048,12 @@ SharedNodeProxy : NodeProxy {
 		if(this.isPlaying.not) {
 				group = Group.basicNew(
 					this.localServer,   // NodeWatcher should know when local group stopped
-					this.defaultGroupID // but not care about any remote groups
+					this.constantGroupID // but not care about any remote groups
 				);
 				group.isPlaying = true;
 				NodeWatcher.register(group);
-				// this happens in sendAll and sendEach, should implement in sendObj
-				// bundle.add(group.newMsg(argGroup ? server, \addToHead));
 		};
-		bundle.add(["/g_new", this.defaultGroupID]); // duplicate sending is no problem
+		bundle.add(["/g_new", constantGroupID]); // duplicate sending is no problem
 	}
 	
 
