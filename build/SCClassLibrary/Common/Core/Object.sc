@@ -420,6 +420,13 @@ Object {
 		// blendFrac should be from zero to one
 		^this + (blendFrac * (that - this));
 	}
+	
+	blendAt { arg index;
+		var iMin;
+		iMin = index.asInteger;
+		^blend(this.at(iMin), this.clipAt(iMin+1), index - iMin);
+	}
+
 	fuzzyEqual { arg that; ^max(0.0, abs(1.0 - (this - that))) }		
 	isUGen { ^false }
 
