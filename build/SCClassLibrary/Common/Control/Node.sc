@@ -1,12 +1,12 @@
 
 Node {
 	
-	var <>nodeID, <>group, <>server;
+	var <>nodeID, <>server, <>group;
 	var <>isPlaying = false, <>isRunning = false;
 	
 	*basicNew { arg nodeID,server;
 		server = server ? Server.local;
-		^super.new.server_(server).nodeID_(nodeID ?? {server.nextNodeID})
+		^super.newCopyArgs(nodeID ?? {server.nextNodeID}, server)
 	}
 
 	free { arg sendFlag=true;
@@ -155,7 +155,7 @@ Node {
 
 	// private
 	*prNew { arg server;
-		^super.new.register(server)
+		^super.newCopyArgs(server.nextNodeID, server ? Server.local)
 	}
 	prSetNodeID { arg id;  nodeID = id ?? {server.nextNodeID}  }
 	prSetPlaying { arg flag=true; isPlaying = flag; isRunning = flag }
@@ -165,20 +165,15 @@ Node {
 	prMoveBefore {  arg beforeThisOne;
 		this.group = beforeThisOne.group;
 	}
-	nodeToServer { arg addAction,target,args;
+	nodeToServer { arg addAction=\addToTail,target,args;
 		var msg;
 		msg = [this.perform(addAction,target,args)];
 		target.asGroup.finishBundle(msg, this);
-		server.listSendBundle(nil, msg);
+		server.listSendBundle(server.latency, msg.postln);
 		//isPlaying = isRunning = true;
 	}
 	nodeToServerMsg { 
 		^this.subclassResponsibility(thisMethod)       
-	}
-
-	register { arg argServer;
-		server = argServer;
-		nodeID = server.nextNodeID;
 	}
 	remove {
 		group = nil;
@@ -215,18 +210,22 @@ Group : Node {
 	*replace { arg groupToReplace; ^this.new(groupToReplace, \addReplace) }
 	
 	moveNodeToHead { arg aNode;
+		aNode.group = this;
 		server.sendBundle(nil,
 			[22, nodeID, aNode.nodeID]); //"/g_head"
 	}
 	moveNodeToTail { arg aNode;
+		aNode.group = this;
 		server.sendBundle(nil,
 			[23, nodeID, aNode.nodeID]); //"/g_tail"
 	}
 	moveNodeBefore { arg  movedNode, aNode;
+		movedNode.group = this;
 		server.sendBundle(nil,
 			[18, movedNode.nodeID, aNode.nodeID]); //"/n_before"
 	}
 	moveNodeAfter { arg  movedNode, aNode;
+		movedNode.group = this;
 		server.sendBundle(nil,
 			[19, movedNode.nodeID, aNode.nodeID]); //"/n_after"
 	}       
@@ -376,7 +375,7 @@ RootNode : Group {
 	*new { arg server;
 		server = server ?? {Server.local};
 		^(roots.at(server.name) ?? {
-			^super.prNew(server).rninit
+			^super.basicNew(0, server).rninit
 		})
 	}
 	rninit { 
@@ -384,11 +383,7 @@ RootNode : Group {
 		isPlaying = isRunning = true;
 		group = this; // self
 	}
-	register { arg srv; 
-		server = srv;
-		nodeID = 0; 
-	}
-	*initClass {  roots = IdentityDictionary.new; }
+		*initClass {  roots = IdentityDictionary.new; }
 	
 	nodeToServer {} // already running
 	
