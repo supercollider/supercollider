@@ -239,7 +239,7 @@ ProxyNodeMap : NodeMap {
 			keys = keys ? settings.keys;
 			args = Array.new(keys.size*2);
 			keys.do({ arg key; args.add(key); args.add(currentEnvironment.at(key)) });
-			this.map(args);
+			this.map(*args);
 		}
 		
 		unmap { arg ... keys;
