@@ -34,10 +34,6 @@ The following examples can be executed line by line, usually in any order. \
 code that should be evaluated together is set in parentheses.\
 this is experimental and things change.\
 \
-known bugs:\
-nodeDef not found - repeat what you've just done.\
-this could be fixed, but then it wouldn't be possible to have \
-multiple NodeProxies created at the same time (there is no id in the '/done' message yet)\
 
 \f2\fs26 ____________________________________________________
 \f1\fs18 \
@@ -96,9 +92,7 @@ s.boot;\
 ~lfo = ~lfo3;\
 ~lfo = (~lfo3 / 50).sin * 200 + 500;\
 \
-x.free; \cf3 //free the playback synth\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs26 \cf0 waking up a network of proxies\
@@ -113,7 +107,7 @@ x.free; \cf3 //free the playback synth\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //feeding back (one buffer size delay)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 ~out = \{ \cf4 SinOsc\cf0 .ar([220, 330], ~out.ar.reverse*\cf4 LFNoise1\cf0 .kr(0.5, 2*pi), 0.4) \};\
+\cf0 ~out = \{ \cf4 SinOsc\cf0 .ar([220, 330], ~out.ar.reverse*\cf4 LFNoise2\cf0 .kr(0.5, 2*pi), 0.4) \};\
 x.free;\
 \
 \
@@ -136,8 +130,15 @@ x = ~out.play;\
 \cf0 ~out = \{ \cf4 SinOsc\cf0 .ar(600, 0, 0.1) \};\
 ~out.add(\{ \cf4 SinOsc\cf0 .ar(500, 0, 0.1) \});\
 ~out.add(\{ \cf4 SinOsc\cf0 .ar(400, 0, 0.1) \});\
-~out.free;\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 \
+//still to test:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 ~out.free; \cf3 //this frees the group, not the play synth x\
+~out.clear;\
+~out.send; \
+~out.sendAll; \
+\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs26 \cf0 execution order\
@@ -179,6 +180,7 @@ x = ~out.play;\
 \
 //argument settings and mappings are applied to every new function\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 ~out.clear; \cf3 //this resets all\
 \cf0 x = ~out.play;\cf3 \
 \cf0 ~out = \{ \cf4 arg\cf0  freq=100, ffreq=20; \cf4 SinOsc\cf0 .ar(freq*[1,1.1], \cf4 Saw\cf0 .ar(ffreq, pi), 0.1) \};\
 ~out.set(\cf2 \\freq\cf0 , 400+100.rand2);\
@@ -215,7 +217,7 @@ x = ~out.play;\
 \f1\fs18 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
-~out.fadeTime = 6;\
+~out.fadeTime = 4;\
 ~out = \{ \cf4 SinOsc\cf0 .ar(rrand(800, 300.0)*[1,1.1], 0, 0.1) \};\
 ~out = \{ \cf4 SinOsc\cf0 .ar(rrand(800, 300.0)*[1,1.1], 0, 0.1) \};\
 ~out = \{ \cf4 SinOsc\cf0 .ar(rrand(800, 300.0)*[1,1.1], 0, 0.1) \};\
@@ -233,28 +235,30 @@ playing multiple synths (much more efficient than creating new defs)\
 
 \f1\fs18 \cf0 \
 \
-(
+(\
+~out.autoRelease = \cf4 false\cf0 ; \cf3 //the envelope is now in the grain
 \f2\fs26 \
 
-\f1\fs18 ~out.setObj(\{ arg freq=800, pmf=1.0;\
+\f1\fs18 \cf0 \
+~out.setObj(\{ \cf4 arg\cf0  freq=800, pmf=1.0;\
 	\cf4 var\cf0  env;\
-	env = \cf4 EnvGen\cf0 .kr(\cf4 Env\cf0 .perc(0.01, 0.1, 0.4),doneAction:2);\
-	\cf4 SinOsc\cf0 .ar(\cf4 freq*Rand(0.9, 1.1)\cf0 , SinOsc.ar(pmf, 0, pi), env) \
+	env = \cf4 EnvGen\cf0 .kr(\cf4 Env\cf0 .perc(0.001, 0.04, 0.4),doneAction:2);\
+	\cf4 SinOsc\cf0 .ar(freq*\cf4 Rand\cf0 (0.9, 1.1), \cf4 SinOsc\cf0 .ar(pmf, 0, pi), env) \
 \});\
+\
 t = \cf4 Task\cf0 (\{\
 	loop(\{\
-		~out.send([\\pmf, rrand(1.0, 50)]); \cf3 //starts a synth with the current synthdef\
-\cf0 		[0.1, 0.3].choose.wait;\
+		~out.send([\cf2 \\pmf\cf0 , [1, 20, 300].choose]); \cf3 //starts a synth with the current synthdef\
+\cf0 		[0.1, 0.1].choose.wait;\
 	\})\
 \});\
 )\
 \
 t.start;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 t.stop;\
+t.stop;\
+t.start;\cf3 \
 \
 //set some argument\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 ~out.set(\\freq, 300);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -267,7 +271,7 @@ t.start;\
 	\cf4 Pulse\cf0 .ar(\cf4 freq*Rand(0.9, 1.1)\cf0 , 0.5, env) \
 \});\
 )\
-~out.set(\\freq, 400);\
+~out.set(\\freq, 60);\
 t.stop;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
