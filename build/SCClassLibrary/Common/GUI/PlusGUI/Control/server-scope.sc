@@ -6,8 +6,9 @@
 				numChannels = numChannels ? this.options.numOutputBusChannels;
 				scopeWindow = 
 					Stethoscope.new(this, numChannels, index, bufsize, zoom, rate, nil, 
-						this.options.numBuffers) 
+						this.options.numBuffers); 
 						// prevent buffer conflicts by using reserved bufnum
+				CmdPeriod.add(this);
 			} {
 				scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
 				scopeWindow.run;

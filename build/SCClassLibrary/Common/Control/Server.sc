@@ -572,7 +572,7 @@ Server : Model {
 		if(recordBuf.notNil) { recordBuf.close {|buf| buf.free; }; recordBuf = nil; };
 		addr = addr.recover;
 		this.changed(\cmdPeriod);
-		CmdPeriod.remove(this);
+		if(scopeWindow.notNil, { scopeWindow.run; }, { CmdPeriod.remove(this); });
 	}
 	
 	defaultGroup { ^Group.basicNew(this, 1) }
