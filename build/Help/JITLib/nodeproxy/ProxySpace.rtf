@@ -10,13 +10,13 @@
 \f1\b\fs24 an environment of references on a server 
 \f2\b0\fs18 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b\fs24 superclass: EnvironmentRedirect \
+\f1\b\fs24 \cf0 superclass: LazyEnvir \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 \
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs24 \cf0 Generally a proxy is a placeholder for something, which in this case \
@@ -44,8 +44,9 @@ if the number of channels is larger, the outputs will wrap around and mix accord
 
 \f2\fs18 \cf2 // note that the two expressions are equivalent:
 \f3\fs24 \cf2  \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 ~out = something; 
+\f2\fs18 \cf0 ~out = something; 
 \f3\fs24   \
 
 \f2\fs18 currentEnvironment.put(\cf3 \\out\cf0 , something);\
@@ -179,16 +180,17 @@ code that should be evaluated together is set in parentheses.
 \f3\b0 		set the clock of all proxies as well as the default clock.\
 	\
 	
-\f1\b free
-\f3\b0 			free all proxies (i.e. free also the groups)\
+\f1\b free(fadeTime)
+\f3\b0 		free all proxies (i.e. free also the groups)\
 	\
 	
-\f1\b release
+\f1\b release(fadeTime)
 \f3\b0 		release all proxies (i.e. keep the groups running)\
 	\
 	
-\f1\b clear
-\f3\b0 		clear the node proxy and remove it from the environment. this frees all buses.\
+\f1\b clear(fadeTime)
+\f3\b0 		clear the node proxy and remove it from the environment. \
+						this frees all buses. If a fadeTime is given, first fade out, then clear.\
 	\
 	\
 	
@@ -250,6 +252,7 @@ for more examples see: [\ul proxyspace_examples\ulnone ]  [\ul jitlib_basic_conc
 (\
 s = \cf5 Server\cf0 .local;\
 s.boot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 p = ProxySpace\cf0 .push(s);\
 )\
 \
@@ -259,11 +262,11 @@ s.boot;\
 \
 ~out = \{ \cf5 SinOsc\cf0 .ar([400, 437] * 0.9, 0, 0.2) * \cf5 LFPulse\cf0 .kr([1, 1.3]) \};\
 \
-~out = \{ \cf5 SinOsc\cf0 .ar([400, 437] * 0.9, 0, 0.2) * ~x.kr(2) \};\
+~out = \{ \cf5 SinOsc\cf0 .ar([400, 437] * 0.9, 0, 0.2) * ~x.value \};\
 \
 ~x = \{\'ca\cf5 LFPulse\cf0 .kr([1, 1.3] * MouseX.kr(1, 30, 1)) \};\
 \
-~out = \{ \cf5 SinOsc\cf0 .ar([400, 437] * Lag.kr(0.1 + ~x.kr(2), 0.3), 0, 0.2) * ~x.kr(2) \};\
+~out = \{ \cf5 SinOsc\cf0 .ar([400, 437] * Lag.kr(0.1 + ~x, 0.3), 0, 0.2) * ~x \};\
 \
 p.fadeTime = 5;\
 \
