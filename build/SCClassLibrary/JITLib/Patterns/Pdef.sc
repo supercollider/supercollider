@@ -74,7 +74,8 @@ Pdefn : Pattern {
 
 Pdef : Pdefn {
 	var <isPlaying=false;
-	var <player;
+	var <player, <>fadeTime=0.0;
+	
 	classvar <>all, <>defaultQuant=1.0;
 	
 	*initClass { 
@@ -91,10 +92,12 @@ Pdef : Pdefn {
 	}
 
 	constrainStream { arg str;
+		var dt;
 		^if(quant.notNil) {
-			Pseq([
-				Pfindur(this.timeToNextBeat, str, 0.001),
-				pattern
+			dt = this.timeToNextBeat;
+			Ppar([
+				PfadeOut(str, fadeTime, dt),
+				PfadeIn(pattern, fadeTime, dt)
 			])
 		} { pattern }.asStream
 	}
@@ -138,7 +141,7 @@ Tdef : Pdef {
 		var pattern;
 		if(func.notNil) { 
 			pattern = Prout({ arg x; 
-				protect { 			// this error handling only helps if error is not in substream
+				protect { 	// this error handling only helps if error is not in substream
 					func.value(x);
 					nil.alwaysYield; // prevent from calling handler
 				} { 
