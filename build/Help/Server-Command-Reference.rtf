@@ -3,7 +3,7 @@
 }
 {\colortbl;\red255\green255\blue255;\red255\green3\blue3;\red118\green15\blue80;\red0\green0\blue255;
 }
-\vieww12680\viewh12480\viewkind0
+\vieww13000\viewh13600\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f0\fs36 \cf0 SuperCollider Server Synth Engine Command Reference\
@@ -75,20 +75,17 @@ Replies to sender with the following message.\
 \
 
 \f1\b /cmd					plug-in defined command\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 	string - command name\
+\f0\b0 	string - command name\
 	...any arguments\
 	\
 Commands are defined by plug-ins.\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /dumpOSC				display incoming OSC messages\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /dumpOSC				display incoming OSC messages\
 
-\f0\b0 \cf0 	int - code\
+\f0\b0 	int - code\
 \
 Turns on and off printing of the contents of incoming Open Sound Control messages. This is useful when debugging your command stream.\
 The values for the code are as follows:\
@@ -156,21 +153,18 @@ Loads a directory of synth definitions files. Resident definitions with the same
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 n_free					delete a node.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b \cf0 /n_free					delete a node.\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - node ID\
 	] * N\
 	\
-Stops a node abruptly, removes it from its group, and frees its memory. A list of node IDs may be specified.\
+Stops a node abruptly, removes it from its group, and frees its memory. A list of node IDs may be specified. Using this method can cause a click if the node is not silent at the time it is freed.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_run					turn node on or off\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_run					turn node on or off\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - node ID\
 		int - run flag\
 	] * N\
@@ -179,12 +173,10 @@ If the run flag set to zero then the node will not be executed.\
 If the run flag is set back to one, then it will be executed.\
 Using this method to start and stop nodes can cause a click if the node is not silent at the time run flag is toggled. \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_set					set a node's control value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_set					set a node's control value(s)\
 
-\f0\b0 \cf0 	int - node ID\
+\f0\b0 	int - node ID\
 	[\
 		int or string - a control index or name\
 		float - a control value\
@@ -192,12 +184,10 @@ Using this method to start and stop nodes can cause a click if the node is not s
 	\
 Takes a list of pairs of control indices and values and sets the controls to those values. If the node is a group, then it sets the controls of every node in the group.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_setn					set ranges of a node's control value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_setn					set ranges of a node's control value(s)\
 
-\f0\b0 \cf0 	int - node ID\
+\f0\b0 	int - node ID\
 	[\
 		int or string - a control index or name\
 		int - number of sequential controls to change (M)\
@@ -208,12 +198,10 @@ Takes a list of pairs of control indices and values and sets the controls to tho
 	\
 Set contiguous ranges of control indices to sets of values. For each range, the starting control index is given followed by the number of controls to change, followed by the values. If the node is a group, then it sets the controls of every node in the group.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_fill					fill ranges of a node's control value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_fill					fill ranges of a node's control value(s)\
 
-\f0\b0 \cf0 	int - node ID\
+\f0\b0 	int - node ID\
 	[\
 		int or string - a control index or name\
 		int - number of values to fill (M)\
@@ -222,12 +210,10 @@ Set contiguous ranges of control indices to sets of values. For each range, the 
 	\
 Set contiguous ranges of control indices to single values. For each range, the starting control index is given followed by the number of controls to change, followed by the value to fill. If the node is a group, then it sets the controls of every node in the group.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_map					map a node's controls to read from a bus\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_map					map a node's controls to read from a bus\
 
-\f0\b0 \cf0 	int - node ID\
+\f0\b0 	int - node ID\
 	[\
 		int or string - a control index or name\
 		int - control bus index\
@@ -241,12 +227,10 @@ Takes a list of pairs of control names or indices and bus indices and causes tho
 \f1\b n_fill
 \f0\b0  commands. If the node is a group, then it maps the controls of every node in the group. If the control bus index is -1 then any current mapping is undone and control reverts to normal.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_mapn					map a node's controls to read from buses\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_mapn					map a node's controls to read from buses\
 
-\f0\b0 \cf0 	int - node ID\
+\f0\b0 	int - node ID\
 	[\
 		int or string - a control index or name\
 		int - control bus index\
@@ -255,36 +239,30 @@ Takes a list of pairs of control names or indices and bus indices and causes tho
 	\
 Takes a list of triplets of control names or indices, bus indices, and number of controls to map and causes those controls to be mapped sequentially to buses. If the node is a group, then it maps the controls of every node in the group. If the control bus index is -1 then any current mapping is undone and control reverts to normal.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_before					place a node before another\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_before					place a node before another\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - the ID of the node to place (A)\
 		int - the ID of the node before which the above is placed (B)\
 	] * N\
 \
 Places node A in the same group as node B, to execute immediately before node B.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_after					place a node after another\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_after					place a node after another\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - the ID of the node to place (A)\
 		int - the ID of the node after which the above is placed (B)\
 	] * N\
 \
 Places node A in the same group as node B, to execute immediately after node B.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_query					get info about a node\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_query					get info about a node\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - node ID\
 	] * N\
 \
@@ -305,9 +283,8 @@ The server sends an
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f1\b \cf0 /s_new						create a new synth\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 	string - synth definition name\
+\f0\b0 	string - synth definition name\
 	int - synth ID\
 	int - add action (0,1,2, 3 or 4 see below)\
 	int - add target ID\
@@ -317,9 +294,8 @@ The server sends an
 	] * N\
 	\
 Create a new synth from a synth definition, give it an ID, and add it to the tree of nodes. There are four ways to add the node to the tree as determined by the add action argument which is defined as follows:\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 add actions:
+\f1\b add actions:
 \f0\b0 \
 	0 - add the new node to the the head of the group specified by the add target ID.\
 	1 - add the new node to the the tail of the group specified by the add target ID.\
@@ -343,20 +319,17 @@ If you use a node ID of -1 for any other command, such as
 \
 
 \f1\b /s_trace						trace unit generators inputs and outputs\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - synth ID\
 	] * N\
 \
 Causes the synth to print out the values of the inputs and outputs of its unit generators for one control period.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /s_get					get control value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /s_get					get control value(s)\
 
-\f0\b0 \cf0 	int - synth ID\
+\f0\b0 	int - synth ID\
 	[\
 		int or string - a control index or name\
 	] * N\
@@ -364,13 +337,11 @@ Causes the synth to print out the values of the inputs and outputs of its unit g
 Replies to sender with the corresponding 
 \f1\b /n_set
 \f0\b0  command.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 \
+\f1\b \
 /s_getn					get ranges of control value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 	int - synth ID\
+\f0\b0 	int - synth ID\
 	[\
 		int or string - a control index or name\
 		int - number of sequential controls to get (M)\
@@ -380,12 +351,10 @@ Get contiguous ranges of controls. Replies to sender with the corresponding
 \f1\b /n_setn
 \f0\b0  command. \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /s_noid					auto-reassign synth's ID to a reserved value\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /s_noid					auto-reassign synth's ID to a reserved value\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - synth ID\
 	] * N\
 	\
@@ -398,12 +367,10 @@ Group Commands\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f0\b0\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /g_new					create a new group\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /g_new					create a new group\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - new group ID\
 		int - add action (0,1,2, 3 or 4 see below)\
 		int - add target ID\
@@ -411,48 +378,40 @@ Group Commands\
 	\
 Create a new group and add it to the tree of nodes.\
 There are four ways to add the group to the tree as determined by the add action argument which is defined as follows (the same as for "/s_new"):\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 add actions:\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b add actions:\
 
-\f0\b0 \cf0 	0 - add the new group to the the head of the group specified by the add target ID.\
+\f0\b0 	0 - add the new group to the the head of the group specified by the add target ID.\
 	1 - add the new group to the the tail of the group specified by the add target ID.\
 	2 - add the new group just before the node specified by the add target ID.\
 	3 - add the new group just after the node specified by the add target ID.\
 	4 - the new node replaces the node specified by the add target ID. The target node is freed.\
 Multiple groups may be created in one command by adding arguments.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /g_head					add node to head of group\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /g_head					add node to head of group\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - group ID\
 		int - node ID\
 	] * N\
 	\
 Adds the node to the head (first to be executed) of the group.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /g_tail					add node to tail of group\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /g_tail					add node to tail of group\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - group ID\
 		int - node ID\
 	] * N\
 	\
 Adds the node to the tail (last to be executed) of the group.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /g_freeAll					delete all nodes in a group.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /g_freeAll					delete all nodes in a group.\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - group ID\
 	] * N\
 	\
@@ -465,12 +424,10 @@ Frees all nodes in the group. A list of groups may be specified.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f0\b0\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /u_cmd					send a command to a unit generator\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /u_cmd					send a command to a unit generator\
 
-\f0\b0 \cf0 	int - node ID\
+\f0\b0 	int - node ID\
 	int - unit generator index\
 	string - command name\
 	...any arguments\
@@ -486,47 +443,41 @@ Sends all arguments following the command name to the unit generator to be perfo
 \f0\b0\fs24 \cf0 \
 Buffers are stored in a global array, indexed by integers starting at zero. \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /b_alloc					allocate buffer space.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /b_alloc					allocate buffer space.\
 
-\f0\b0 \cf0 	int - buffer number\
+\f0\b0 	int - buffer number\
 	int - number of frames\
 	int - number of channels (optional. default = 1 channel)\
 	bytes - an OSC message to execute upon completion. (optional)\
 	\
 Allocates zero filled buffer to number of channels and samples.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 Asynchronous
+\f1\b Asynchronous
 \f0\b0 . Replies to sender with 
 \f1\b /done 
 \f0\b0 when complete.\
 \
 
 \f1\b /b_allocRead				allocate buffer space and read a sound file.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 	int - buffer number\
+\f0\b0 	int - buffer number\
 	string - path name of a sound file.\
 	int - starting frame in file (optional. default = 0)\
 	int - number of frames to read (optional. default = 0, see below)\
 	bytes - an OSC message to execute upon completion. (optional)\
 	\
 Allocates buffer to number of channels of file and number of samples requested, or fewer if sound file is smaller than requested. Reads sound file data from the given starting frame in the file. If the number of frames argument is less than or equal to zero, the entire file is read. \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 Asynchronous
+\f1\b Asynchronous
 \f0\b0 . Replies to sender with 
 \f1\b /done 
 \f0\b0 when complete.\
 \
 
 \f1\b /b_read					read sound file data into an existing buffer.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 	int - buffer number\
+\f0\b0 	int - buffer number\
 	string - path name of a sound file.\
 	int - starting frame in file (optional. default = 0)\
 	int - number of frames to read (optional. default = -1, see below)\
@@ -536,18 +487,16 @@ Allocates buffer to number of channels of file and number of samples requested, 
 	\
 Reads sound file data from the given starting frame in the file and writes it to the given starting frame in the buffer. If number of frames is less than zero, the entire file is read. \
 If reading a file to be used by DiskIn ugen then you will want to set "leave file open" to one, otherwise set it to zero.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 Asynchronous
+\f1\b Asynchronous
 \f0\b0 . Replies to sender with 
 \f1\b /done 
 \f0\b0 when complete.\
 \
 
 \f1\b /b_write					write sound file data.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 	int - buffer number\
+\f0\b0 	int - buffer number\
 	string - path name of a sound file.\
 	string - header format.\
 	string - sample format.\
@@ -565,48 +514,42 @@ Not all combinations of header format and sample format are possible.\
 If number of frames is less than zero, all samples from the starting frame to the end of the buffer are written.\
 If opening a file to be used by DiskOut ugen then you will want to set "leave file open" to one, otherwise set it to zero. If "leave file open" is set to one then the file is created, but no frames are written until the DiskOut ugen does so.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 Asynchronous
+\f1\b Asynchronous
 \f0\b0 . Replies to sender with 
 \f1\b /done 
 \f0\b0 when complete.\
 \
 
 \f1\b /b_free					free buffer data.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 	int - buffer number\
+\f0\b0 	int - buffer number\
 	bytes - an OSC message to execute upon completion. (optional)\
 	\
 Frees buffer space allocated for this buffer. \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 Asynchronous
+\f1\b Asynchronous
 \f0\b0 . Replies to sender with 
 \f1\b /done 
 \f0\b0 when complete.\
 \
 
 \f1\b /b_zero					zero sample data\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 	int - buffer number\
+\f0\b0 	int - buffer number\
 	bytes - an OSC message to execute upon completion. (optional)\
 	\
 Sets all samples in the buffer to zero. \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 Asynchronous
+\f1\b Asynchronous
 \f0\b0 . Replies to sender with 
 \f1\b /done 
 \f0\b0 when complete.\
 \
 
 \f1\b /b_set					set sample value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 	int - buffer number\
+\f0\b0 	int - buffer number\
 	[\
 		int - a sample index\
 		float - a sample value\
@@ -614,12 +557,10 @@ Sets all samples in the buffer to zero. \
 	\
 Takes a list of pairs of sample indices and values and sets the samples to those values. \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /b_setn					set ranges of sample value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /b_setn					set ranges of sample value(s)\
 
-\f0\b0 \cf0 	int - buffer number\
+\f0\b0 	int - buffer number\
 	[\
 		int - sample starting index\
 		int - number of sequential samples to change (M)\
@@ -630,12 +571,10 @@ Takes a list of pairs of sample indices and values and sets the samples to those
 	\
 Set contiguous ranges of sample indices to sets of values. For each range, the starting sample index is given followed by the number of samples to change, followed by the values.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /b_fill					fill ranges of sample value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /b_fill					fill ranges of sample value(s)\
 
-\f0\b0 \cf0 	int - buffer number\
+\f0\b0 	int - buffer number\
 	[\
 		int - sample starting index\
 		int - number of samples to fill (M)\
@@ -645,32 +584,26 @@ Set contiguous ranges of sample indices to sets of values. For each range, the s
 Set contiguous ranges of sample indices to single values. For each range, the starting sample index is given followed by the number of samples to change, followed by the value to fill. This is only meant for setting a few samples, not whole buffers or large sections.\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /b_gen					call a command to fill a buffer\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /b_gen					call a command to fill a buffer\
 
-\f0\b0 \cf0 	int - buffer number\
+\f0\b0 	int - buffer number\
 	string - command name\
 	.. command arguments\
 \
 Plug-ins can define commands that operate on buffers. The arguments after the command name are defined by the command. The currently defined buffer fill commands are listed below in a separate section.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /b_close\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /b_close\
 
-\f0\b0 \cf0 	int - buffer number\
+\f0\b0 	int - buffer number\
 	\
 After using a buffer with DiskOut, close the soundfile and write header information.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /b_query\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /b_query\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - buffer number\
 	] * N\
 	\
@@ -686,12 +619,10 @@ Responds to the sender with a
 		float - sample rate\
 	] * N\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /b_get					get sample value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /b_get					get sample value(s)\
 
-\f0\b0 \cf0 	int - buffer number\
+\f0\b0 	int - buffer number\
 	[\
 		int - a sample index\
 	] * N\
@@ -699,13 +630,11 @@ Responds to the sender with a
 Replies to sender with the corresponding 
 \f1\b /b_set
 \f0\b0  command.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 \
+\f1\b \
 /b_getn					get ranges of sample value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 	int - buffer number\
+\f0\b0 	int - buffer number\
 	[\
 		int - starting sample index\
 		int - number of sequential samples to get (M)\
@@ -723,24 +652,20 @@ Get contiguous ranges of samples. Replies to sender with the corresponding
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f0\b0\fs24 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /c_set					set bus value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /c_set					set bus value(s)\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - a bus index\
 		float - a control value\
 	] * N\
 	\
 Takes a list of pairs of bus indices and values and sets the buses to those values. \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /c_setn					set ranges of bus value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /c_setn					set ranges of bus value(s)\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - starting bus index\
 		int - number of sequential buses to change (M)\
 		[\
@@ -750,12 +675,10 @@ Takes a list of pairs of bus indices and values and sets the buses to those valu
 	\
 Set contiguous ranges of buses to sets of values. For each range, the starting bus index is given followed by the number of channels to change, followed by the values.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /c_fill						fill ranges of bus value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /c_fill						fill ranges of bus value(s)\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - starting bus index\
 		int - number of buses to fill (M)\
 		float - value\
@@ -763,12 +686,10 @@ Set contiguous ranges of buses to sets of values. For each range, the starting b
 	\
 Set contiguous ranges of buses to single values. For each range, the starting sample index is given followed by the number of buses to change, followed by the value to fill.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /c_get					get bus value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /c_get					get bus value(s)\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - a bus index\
 	] * N\
 	\
@@ -776,12 +697,10 @@ Takes a list of buses and replies to sender with the corresponding
 \f1\b /c_set
 \f0\b0  command.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /c_getn					get ranges of bus value(s)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /c_getn					get ranges of bus value(s)\
 
-\f0\b0 \cf0 	[\
+\f0\b0 	[\
 		int - starting bus index\
 		int - number of sequential buses to get (M)\
 	] * N\
@@ -823,28 +742,23 @@ Replies to Commands\
 \f0\b0\fs24 \cf0 \
 These messages are sent by the server in reponse to some commands.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /done					an asynchronous message has completed.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /done					an asynchronous message has completed.\
 
-\f0\b0 \cf0 	string - the name of the command\
+\f0\b0 	string - the name of the command\
 \
 Sent in response to all asynchronous commands. Sent only to the sender of the original message.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /fail						an error occurred.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /fail						an error occurred.\
 
-\f0\b0 \cf0 	string - the name of the command\
+\f0\b0 	string - the name of the command\
 	string - the error message.\
 \
 There was a problem. Sent only to the sender of the original message.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /late						a command was received too late.\
+\f1\b /late						a command was received too late.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 \cf2 not yet implemented\cf0  \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
@@ -865,87 +779,71 @@ The command was received too late to be executed on time. Sent only to the sende
 \f0\b0\fs24 \cf0 \
 These messages are sent as notification of some event to all clients who have registered via the /notify command .\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 Node Notifications\
+\f1\b Node Notifications\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f0\b0 \cf0 All of these have the same arguments:\
+\f0\b0 All of these have the same arguments:\
 	int - node ID\
 	int - the node's parent group ID\
 	int - previous node ID, -1 if no previous node.\
 	int - next node ID, -1 if no next node.\
 	int - 1 if the node is a group, 0 if it is a synth\
-\ul 	The following two arguments are only sent if the node is a group.\
-\ulnone 	int - the ID of the head node, -1 if there is no head node.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\cf0 \ul 	The following two arguments are only sent if the node is a group.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\cf0 \ulnone 	int - the ID of the head node, -1 if there is no head node.\
 	int - the ID of the tail node, -1 if there is no tail node.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_go					a node was started\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_go					a node was started\
 
-\f0\b0 \cf0 	\
+\f0\b0 	\
 This command is sent to all registered clients when a node is created.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_end					a node ended\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_end					a node ended\
 
-\f0\b0 \cf0 	\
+\f0\b0 	\
 This command is sent to all registered clients when a node ends and is deallocated.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_off					a node was turned off\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_off					a node was turned off\
 
-\f0\b0 \cf0 	\
+\f0\b0 	\
 This command is sent to all registered clients when a node is turned off.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_on					a node was turned on\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_on					a node was turned on\
 
-\f0\b0 \cf0 	\
+\f0\b0 	\
 This command is sent to all registered clients when a node is turned on.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_move					a node was moved\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_move					a node was moved\
 
-\f0\b0 \cf0 \
+\f0\b0 \
 This command is sent to all registered clients when a node is moved.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /n_info					reply to /n_query\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /n_info					reply to /n_query\
 
-\f0\b0 \cf0 \
+\f0\b0 \
 This command is sent to all registered clients in response to an 
 \f1\b /n_query
 \f0\b0  command.\
 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 Trigger Notification\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b Trigger Notification\
 
-\f0\b0 \cf0 	\
+\f0\b0 	\
 This command is sent to all registered clients when a node is moved from one group to another.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
-\f1\b \cf0 /tr						a trigger message\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+\f1\b /tr						a trigger message\
 
-\f0\b0 \cf0 	int - node ID\
+\f0\b0 	int - node ID\
 	int - trigger ID\
 	float - trigger value\
 \
