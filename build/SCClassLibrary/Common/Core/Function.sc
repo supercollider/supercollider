@@ -171,6 +171,7 @@ Function : AbstractFunction {
 		^nil
 	}
 
+	r { ^Routine(this) }
 }
 
 
