@@ -13,7 +13,7 @@ Tempo  {
 	*initClass { default = this.new; }
 		
 	bpm { ^tempo * 60.0 }
-	bpm_ { arg bpm; tempo = bpm / 60.0; this.changed; }
+	bpm_ { arg bpm; this.tempo = bpm / 60.0; this.changed; }
 	tempo_ { arg t; 
 		tempo = t; 
 		tempor = tempo.reciprocal; 
@@ -30,8 +30,12 @@ Tempo  {
 	bars2secs { arg bars; ^tempor * (bars * beatsPerBar) }
 	secs2bars { arg secs; ^tempo * secs * beatsPerBarr }
 	// changing tempo after scheduling won't work yet
-	sched { arg delta,item; SystemClock.sched(this.beats2secs(delta),item) }
-	schedAbs { arg beat,item; SystemClock.schedAbs(this.beats2secs(beat),item) }
+	sched { arg delta,item; 
+		SystemClock.sched(this.beats2secs(delta),item) 
+	}
+	schedAbs { arg beat,item; 
+		SystemClock.schedAbs(this.beats2secs(beat),item) 
+	}
 	
 	*bpm { ^default.bpm }
 	*bpm_ { arg bpm; default.bpm_(bpm) }
@@ -51,15 +55,29 @@ Tempo  {
 
 BeatClock : Clock {
 	
+	classvar global;
 	var <>tempo;
 	
+	*initClass { global = this.new }
 	*new { arg tempo;
 		^super.new.tempo_(tempo ? Tempo.default)
 	}
 	sched { arg delta,item;
-		SystemClock.sched(tempo.beats2secs(delta),item)
+		SystemClock.sched(tempo.beats2secs(delta),
+			{ arg time;
+				var beat;
+				if((beat = item.value(time)).notNil,{
+					this.sched(beat,item)
+				})
+			})
 	}
 	schedAbs { arg time,item;
-		SystemClock.sched(tempo.beats2secs(time),item)
+		SystemClock.schedAbs(tempo.beats2secs(time),item)
+	}
+	*sched { arg delta,item;
+		global.sched(delta,item)
+	}
+	*schedAbs { arg time,item;
+		global.schedAbs(time,item)
 	}
 }
