@@ -50,8 +50,15 @@ Symbol {
 	// The compiler translates use of an Environment variable like ~myvar 
 	// to a call to one of these methods, for example:
 	// 			~myvar = 5;  translates to:  'myvar'.envirPut(5);
-	envirGet { ^currentEnvironment.at(this) }
-	envirPut { arg aValue; ^currentEnvironment.put(this, aValue) }
+	// the implementations have been replaced by primitives
+	envirGet { 
+		_Symbol_envirGet
+		//^currentEnvironment.at(this) 
+	}
+	envirPut { arg aValue;
+		_Symbol_envirPut
+		//^currentEnvironment.put(this, aValue) 
+	}
 
 	draw { 
 		_Symbol_Draw

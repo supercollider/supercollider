@@ -325,16 +325,85 @@ int prIdentDict_At(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	unsigned int index;
 	int objClassIndex;
-	PyrObject *array;
 	
 	a = g->sp - 1;  // dict
 	b = g->sp;		// key
 	
-	array = a->uo->slots[ivxIdentDict_array].uo;
-	if (!ISKINDOF(array, class_array_index, class_array_maxsubclassindex)) return errFailed;
+
+	PyrSlot *arraySlot = a->uo->slots + ivxIdentDict_array;
 	
+	if (!IsObj(arraySlot)) return errFailed;
+	
+	PyrObject *array = arraySlot->uo;
+	
+	if (!ISKINDOF(array, class_array_index, class_array_maxsubclassindex)) return errFailed;
+
 	index = arrayAtIdentityHashInPairs(array, b);
 	a->ucopy = array->slots[index + 1].ucopy;
+	
+	return errNone;
+}
+
+int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed);
+int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a;
+	unsigned int index;
+	int objClassIndex;
+	
+	a = g->sp;  // key
+	
+	PyrSlot* currentEnvironmentSlot = g->classvars[class_object->classIndex.ui].uo->slots + 1;
+	PyrObject *dict = currentEnvironmentSlot->uo;
+
+	if (!IsObj(currentEnvironmentSlot)) {
+Bail:
+		SetNil(a);
+		return errNone;
+	}
+
+	if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) goto Bail;
+
+	PyrSlot *arraySlot = dict->slots + ivxIdentDict_array;
+	
+	if (!IsObj(arraySlot)) goto Bail;
+	
+	PyrObject *array = arraySlot->uo;
+	
+	if (!ISKINDOF(array, class_array_index, class_array_maxsubclassindex)) goto Bail;
+	
+	index = arrayAtIdentityHashInPairs(array, a);
+	a->ucopy = array->slots[index + 1].ucopy;
+	
+	return errNone;
+}
+
+
+int prSymbol_envirPut(struct VMGlobals *g, int numArgsPushed);
+int prSymbol_envirPut(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b;
+	unsigned int index;
+	int objClassIndex;
+	
+	a = g->sp - 1;  // key
+	b = g->sp;  // value
+	
+	PyrSlot* currentEnvironmentSlot = g->classvars[class_object->classIndex.ui].uo->slots + 1;
+	PyrObject *dict = currentEnvironmentSlot->uo;
+
+	if (!IsObj(currentEnvironmentSlot)) {
+Bail:
+		SetNil(a);
+		return errNone;
+	}
+
+	if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) goto Bail;
+	
+	int err = identDictPut(g, dict, a, b);
+	if (err) return err;
+	
+	a->ucopy = b->ucopy;
 	
 	return errNone;
 }
@@ -635,6 +704,8 @@ void initListPrimitives()
 	definePrimitive(base, index++, "_IdentDict_Put", prIdentDict_Put, 3, 0);
 	definePrimitive(base, index++, "_IdentDict_PutGet", prIdentDict_PutGet, 3, 0);
 	definePrimitive(base, index++, "_IdentDict_At", prIdentDict_At, 2, 0);
+	definePrimitive(base, index++, "_Symbol_envirGet", prSymbol_envirGet, 1, 0);
+	definePrimitive(base, index++, "_Symbol_envirPut", prSymbol_envirPut, 2, 0);
 	definePrimitive(base, index++, "_ArrayMultiChannelExpand", prArrayMultiChanExpand, 1, 0);
 
 	definePrimitive(base, index++, "_PriorityQueueAdd", prPriorityQueueAdd, 3, 0);
