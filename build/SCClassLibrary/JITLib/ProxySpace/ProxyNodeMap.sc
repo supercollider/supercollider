@@ -32,6 +32,7 @@ ProxyNodeMap : NodeMap {
 			
 				if(ok, {
 					bus = proxy.outbus;
+					if(proxy.isPlaying.not, { proxy.wakeUp });
 					min(key.size, bus.numChannels).do({ arg chan;
 						var theKey;
 						theKey = key.at(chan);
@@ -42,7 +43,7 @@ ProxyNodeMap : NodeMap {
 					"rate / numChannels doesn't match".inform
 				});
 			});
-			this.performList(\map, mapArgs.postln);		
+			this.performList(\map, mapArgs);		
 		}
 		
 	
