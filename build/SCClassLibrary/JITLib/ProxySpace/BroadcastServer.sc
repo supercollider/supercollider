@@ -33,8 +33,10 @@ BroadcastServer : Server {
 		name = argName; 
 		addr = localServer.addr;
 		options = localServer.options;
+		isLocal = false;
 		named.put(name, this);
 	}
+	
 	init {}
 	
 	addr { ^allAddr } //support NodeWatcher.register
@@ -113,59 +115,6 @@ BroadcastServer : Server {
 }
 
 
-DispatchServer : BroadcastServer {
-	var <>latencies;
-	
-	*for { arg localServer, allAddr, latencies;
-		^super.for(localServer, allAddr).latencies_(latencies ? #[])
-	}
-	
-	sendMsg { arg ... args;
-		allAddr.do({ arg addr, i; 
-				if(latencies.clipAt(i).notNil, {
-					addr.sendBundle(nil, args) 
-				});
-		})
-	}
-	
-	sendBundle { arg time ... messages;
-		allAddr.do({ arg addr, i; 
-				var time; 
-				time = latencies.clipAt(i);
-				if(time.notNil, {
-					addr.performList(\sendBundle, time, messages);
-				});
-		})
-	}
-	sendRaw { arg rawArray;
-		allAddr.do({ arg addr, i; 
-				if(latencies.clipAt(i).notNil, {
-					 addr.sendRaw(rawArray) 
-				});
-		})
-	}
-	
-	listSendMsg { arg msg;
-		allAddr.do({ arg addr, i; 
-				if(latencies.clipAt(i).notNil, {
-					 addr.sendBundle(nil,msg)
-				});
-		})
-	}
-	
- 	listSendBundle { arg time,bundle;
- 		allAddr.do({ arg addr, i; 
-				var time; 
-				time = latencies.clipAt(i);
-				if(time.notNil, {
-					addr.performList(\sendBundle, [time] ++ bundle)
-				});
-		})
- 		
-	}
-
-
-}
 
 // handles node id allocation etc.
 
@@ -175,11 +124,7 @@ Router : Server {
 	
 	
 	addr_ { arg list, latencies; //change this args.
-		if(latencies.isNil, {
-			broadcast = BroadcastServer.for(this, list);
-		}, {
-			broadcast = DispatchServer.for(this, list, latencies);
-		});
+		broadcast = BroadcastServer.for(this, list);
 	}
 	
 	autoConfigure { arg getAnyApplication=false;
