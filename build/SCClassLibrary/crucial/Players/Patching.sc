@@ -60,7 +60,7 @@ ScalarPatchIn : ControlPatchIn {
 
 PatchOut {
 
-	var <source,<group,<>bus;
+	var <source,<>group,<bus;
 	var <connectedTo,<>patchOutsOfInputs;
 
 	*new { arg source,group,bus;
@@ -91,6 +91,12 @@ PatchOut {
 //			// then we can pause
 //		})
 //	}
+	bus_ { arg b;
+		bus = b.asBus;
+		connectedTo.do({ arg pti;
+			pti.readFromBus(bus);
+		})
+	}		
 }
 
 ControlPatchOut : PatchOut { // you are returned from a .kr play
