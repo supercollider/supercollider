@@ -35,7 +35,6 @@ SynthDesc {
 		dict = dict ?? { IdentityDictionary.new };
 		path.pathMatch.do { |filename|
 			var file, result;
-			//filename.postln;
 			file = File(filename, "r");
 			protect {
 				dict = this.readFile(file, keepDefs, dict);
@@ -209,7 +208,7 @@ SynthDesc {
 			};
 			stream << " ] }";
 		};
-		msgFunc = string.postln.interpret;
+		msgFunc = string.interpret;
 	}
 	
 }
@@ -247,6 +246,7 @@ SynthDescLib {
 	}
 	read	{ arg path = "./synthdefs/*.scsyndef";
 		synthDescs = SynthDesc.read(path, true, synthDescs);
+		Post << "SynthDescLib '" << name << "' read of '" << path << "' done.\n"
 	}
 }
 
