@@ -20,8 +20,9 @@ AM_CXXFLAGS		= $(AM_CFLAGS)
 lib_LTLIBRARIES		= libscsynth.la
 libscsynth_la_LDFLAGS	= -export-dynamic -version-info $(SC_SYNTH_SHARED_VERSION_INFO)
 libscsynth_la_LIBADD	= $(top_builddir)/source/common/libcommon.la \
-			-lm -lpthread -ldl \
 			$(SC_AUDIO_API_LIBS) $(SNDFILE_LIBS) $(DMALLOC_LIBS)
+
+#			-lm -lpthread -ldl
 
 libscsynth_la_SOURCES	=		\
 	Samp.cpp			\

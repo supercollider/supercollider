@@ -6,19 +6,42 @@
 # CVS:		$Id$
 # =====================================================================
 
-top_dir=$PWD
-bootstrap=`basename $0`
+bootstrap="${PWD}/linux/bootstrap"
 
-set -x
-
-aclocal \
-&& libtoolize --automake --force \
-&& autoheader \
-&& automake --add-missing --foreign \
-&& autoconf
-
-if [ -d source/plugins ]; then
-    cd source/plugins && $top_dir/linux/$bootstrap
+if test ! -f "$bootstrap"; then
+    echo "run ./linux/bootstrap from the top source directory"
+    exit 1
 fi
+
+do_bootstrap()
+{
+    set -x
+    aclocal \
+	&& libtoolize --automake --force \
+	&& autoheader \
+	&& automake --add-missing --foreign \
+	&& autoconf
+    set +x
+}
+
+case "$1" in
+    server|lang)
+	echo "* bootstrapping server/lang"
+	do_bootstrap
+	;;
+    plugins)
+	if test -d source/plugins; then
+	    echo "* bootstrapping plugins"
+	    cd source/plugins && do_bootstrap
+	else
+	    echo "directory source/plugins not found"
+	    exit 1
+	fi
+	;;
+    *)
+	"$bootstrap" server
+	"$bootstrap" plugins
+	;;
+esac
 
 # EOF

@@ -8,7 +8,7 @@ dnl ===================================================================
 # initialize autoconf
 AC_PREREQ(2.52)
 AC_INIT(source/server/scsynth_main.cpp)
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_HOST
 
 # initialize automake
 AM_INIT_AUTOMAKE(SuperCollider,3.0)
@@ -61,6 +61,9 @@ AC_HELP_STRING([--enable-dmalloc],[use dmalloc (http://www.dmalloc.com) when deb
 AC_ARG_WITH(audio-api,
 AC_HELP_STRING([--with-audio-api],[audio api to link against (jack, portaudio, default: jack)]))
 
+AC_ARG_WITH(portaudio-libs,
+AC_HELP_STRING([--with-portaudio-libs],[additional libraries required for libportaudio, e.g. "-ljack -lasound"]))
+
 dnl NOTE: config.h is not included by any file, so we can as well omit the
 dnl checks.
 
@@ -79,12 +82,6 @@ dnl AC_FUNC_MALLOC
 dnl AC_FUNC_MMAP
 dnl AC_CHECK_FUNCS([bzero ftruncate gettimeofday memmove memset socket strcasecmp strchr strerror ntohs ntohl htons htonl])
 
-# check for packages
-pkg_modules="sndfile >= 1.0.0"
-PKG_CHECK_MODULES(SNDFILE, [$pkg_modules])
-AC_SUBST(SNDFILE_CFLAGS)
-AC_SUBST(SNDFILE_LIBS)
-
 # check for libraries
 AC_CHECK_LIB(pthread,pthread_create,lib_pthread="-lpthread",lib_pthread="")
 if test "x$lib_pthread" = "x" ; then
@@ -95,6 +92,29 @@ AC_CHECK_LIB(dl,dlopen,lib_dl="-ldl",lib_dl="")
 if test "x$lib_dl" = "x" ; then
     AC_MSG_ERROR([libdl (dynamic link support) required])
 fi
+
+AC_CHECK_LIB(
+asound,
+snd_pcm_drop,
+[
+    HAVE_ALSA="true"
+    ALSA_LIBS="-lasound"
+],
+[
+    HAVE_ALSA="false"
+    ALSA_LIBS=""
+],
+[-lm])
+AC_SUBST(ALSA_LIBS)
+
+# libraries needed for all targets
+LIBS="$LIBS $lib_pthread $lib_dl"
+
+# check for packages
+pkg_modules="sndfile >= 1.0.0"
+PKG_CHECK_MODULES(SNDFILE, [$pkg_modules])
+AC_SUBST(SNDFILE_CFLAGS)
+AC_SUBST(SNDFILE_LIBS)
 
 # assemble compiler flags
 SC_CPPFLAGS="-Wall -DSC_LINUX -D_REENTRANT"
@@ -129,26 +149,33 @@ if test "x$with_audio_api" = "x"; then
 fi
 
 case "$with_audio_api" in
-     jack)
-     pkg_modules="jack >= 0.40"
-     PKG_CHECK_MODULES(JACK, [$pkg_modules])
+    jack)
+        pkg_modules="jack >= 0.40"
+        PKG_CHECK_MODULES(JACK, [$pkg_modules])
 
-     SC_AUDIO_API="SC_AUDIO_API_JACK"
-     SC_AUDIO_API_CFLAGS="$JACK_CFLAGS"
-     SC_AUDIO_API_LIBS="$JACK_LIBS"
-     ;;
+        SC_AUDIO_API="SC_AUDIO_API_JACK"
+        SC_AUDIO_API_CFLAGS="$JACK_CFLAGS"
+        SC_AUDIO_API_LIBS="$JACK_LIBS"
+        ;;
 
-     portaudio)
-     SC_AUDIO_API="SC_AUDIO_API_PORTAUDIO"
-     SC_AUDIO_API_CFLAGS=""
-     SC_AUDIO_API_LIBS="-lportaudio -ljack -lasound"
-     ;;
+    portaudio)
+        SC_AUDIO_API="SC_AUDIO_API_PORTAUDIO"
+        SC_AUDIO_API_CFLAGS=""
+        # TODO: actucally check for presence of libportaudio
+        SC_AUDIO_API_LIBS="-lportaudio ${with_portaudio_libs}"
+        ;;
 
-     *)
-     AC_MSG_ERROR([unknown audio api \"$with_audio_api\"])
+    *)
+        AC_MSG_ERROR([unknown audio api \"$with_audio_api\"])
 esac
 
-AC_MSG_NOTICE([audio api: $with_audio_api])
+AC_MSG_NOTICE([using $with_audio_api audio api])
+
+# alsa sequencer support
+if test "$HAVE_ALSA" = "true"; then
+    AC_MSG_NOTICE([building with alsa sequencer support])
+    AC_DEFINE([HAVE_ALSA],[1],[wether ALSA libs are available])
+fi
 
 AC_SUBST(SC_CPPFLAGS)
 AC_SUBST(SC_CFLAGS)

@@ -17,12 +17,6 @@
 
 #include "SC_TerminalClient.h"
 
-#include <PyrObject.h>
-#include <PyrKernel.h>
-#include <PyrPrimitive.h>
-#include <GC.h>
-#include <VMGlobals.h>
-
 #include <libraryConfig.h>
 
 #include <ctype.h>
@@ -31,6 +25,12 @@
 #include <sys/param.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <PyrObject.h>
+#include <PyrKernel.h>
+#include <PyrPrimitive.h>
+#include <GC.h>
+#include <VMGlobals.h>
 
 void setPostFile(FILE* file);
 extern "C" int vpost(const char *fmt, va_list vargs);
@@ -56,15 +56,8 @@ extern PyrString* newPyrStringN(class PyrGC *gc, long length, long flags, long c
 extern long compiledOK;
 extern pthread_mutex_t gLangMutex;
 
-static PyrSymbol* s_interpretCmdLine = 0;
-static PyrSymbol* s_interpretPrintCmdLine = 0;
-static PyrSymbol* s_stop = 0;
-static PyrSymbol* s_tick = 0;
-
-static char gInputInterpretDelimiter = 0x1b;			// ^[
-static char gInputInterpretPrintDelimiter = 0x0c;		// ^L
-
-static FILE* gPostFile = stdout;
+static const char kInputInterpretDelimiter = 0x1b;			// ^[
+static const char kInputInterpretPrintDelimiter = 0x0c;		// ^L
 
 // =====================================================================
 // SC_StringBuffer
@@ -350,19 +343,275 @@ void SC_LibraryConfigFile::read(const char* fileName, LibraryConfig* libConf)
 }
 
 // =====================================================================
-// SC_TerminalClient
+// SC_LanguageClient
 // =====================================================================
 
-SC_TerminalClient::SC_TerminalClient()
-	: mShouldBeRunning(false), mExitCode(0), mScratch(0)
+SC_LanguageClient* SC_LanguageClient::gInstance = 0;
+
+PyrSymbol* SC_LanguageClient::s_interpretCmdLine = 0;
+PyrSymbol* SC_LanguageClient::s_interpretPrintCmdLine = 0;
+PyrSymbol* SC_LanguageClient::s_run = 0;
+PyrSymbol* SC_LanguageClient::s_stop = 0;
+static PyrSymbol* s_tick;
+
+SC_LanguageClient::SC_LanguageClient(const char* name)
+	: mName(0), mPostFile(stdout), mScratch(0), mRunning(false)
+{
+	if (gInstance) {
+		fprintf(stderr, "sclang [internal error]: language already running. bailing out.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	mName = strdup(name);
+	gInstance = this;
+}
+
+SC_LanguageClient::~SC_LanguageClient()
+{
+	free(mName);
+	gInstance = 0;
+}
+
+void SC_LanguageClient::printUsage()
+{
+	FILE* file = mPostFile ? mPostFile : stdout;
+	fprintf(file, "Usage:\n");
+	printUsage(file);
+	fprintf(file, "\n");
+	printOptions(file);
+	fprintf(file, "\n");
+}
+
+void SC_LanguageClient::init(int& argc, char**& argv)
+{
+	Options opt;
+	parseOptions(argc, argv, opt);
+	init(opt);
+}
+
+void SC_LanguageClient::init(const Options& opt)
+{
+	mOptions = opt;
+
+	char* homeDir = getenv("HOME");
+	SC_StringBuffer tmpBuf(64);
+
+	// read library config file
+	if (!homeDir) homeDir = "";
+	
+	tmpBuf.reset();
+	tmpBuf.printf("%s/%s", homeDir, kSC_LibraryConfigFileName);
+	tmpBuf.finish();
+	
+	SC_LibraryConfigFile configFile;
+	if (configFile.open(tmpBuf.getData())) {
+		extern LibraryConfig* gLibraryConfig;
+		gLibraryConfig = new LibraryConfig();
+		configFile.read(kSC_LibraryConfigFileName, gLibraryConfig);
+	} else {
+		fprintf(stderr,
+				"sclang: could not read library configuration file.\n"
+				"sclang: you should create ~/.sclang.cfg and make it readable.\n"
+			);
+		exit(EXIT_FAILURE);
+	}
+	
+	// change to runtime directory
+	if (opt.mRuntimeDir) chdir(opt.mRuntimeDir);
+}
+
+void SC_LanguageClient::compileLibrary()
+{
+	// start virtual machine
+	if (!mRunning) {
+		mRunning = true;
+		pyr_init_mem_pools(mOptions.mMemSpace, mOptions.mMemGrow);
+		init_OSC(mOptions.mPort);
+		schedInit();
+	}
+
+    ::compileLibrary();
+
+	// execute user setup file
+	char* homeDir = getenv("HOME");
+	if (homeDir) {
+		SC_StringBuffer tmpBuf(64);
+		tmpBuf.reset();
+		tmpBuf.printf("%s/.sclang.sc", homeDir);
+		tmpBuf.finish();
+
+		struct stat stat_buf;
+		if ((stat(tmpBuf.getData(), &stat_buf) == 0)
+			&& S_ISREG(stat_buf.st_mode)
+			&& (stat_buf.st_mode & S_IRUSR)) {
+			executeFile(tmpBuf.getData());
+		}
+	}
+}
+
+extern void ::shutdownLibrary();
+void SC_LanguageClient::shutdownLibrary()
+{
+	::shutdownLibrary();
+	flush();
+}
+
+void SC_LanguageClient::recompileLibrary()
+{
+	shutdownLibrary();
+	compileLibrary();
+}
+
+void SC_LanguageClient::setCmdLine(const char* buf, size_t size)
+{
+    if (compiledOK) {
+		pthread_mutex_lock(&gLangMutex);
+		if (compiledOK) {
+			VMGlobals *g = gMainVMGlobals;
+			
+			PyrString* strobj = newPyrStringN(g->gc, size, 0, true);
+			memcpy(strobj->s, buf, size);
+
+			SetObject(&g->process->interpreter.uoi->cmdLine, strobj);
+			g->gc->GCWrite(g->process->interpreter.uo, strobj);
+		}
+		pthread_mutex_unlock(&gLangMutex);
+    }
+}
+
+void SC_LanguageClient::setCmdLine(const char* str)
+{
+	setCmdLine(str, strlen(str));
+}
+
+void SC_LanguageClient::setCmdLine(const SC_StringBuffer& strBuf)
+{
+	setCmdLine(strBuf.getData(), strBuf.getSize());
+}
+
+void SC_LanguageClient::setCmdLine(const char* fmt, ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	mScratch.reset();
+	mScratch.vprintf(fmt, ap);
+	va_end(ap);
+	setCmdLine(mScratch);
+}
+
+void SC_LanguageClient::runLibrary(PyrSymbol* symbol)
+{
+    pthread_mutex_lock(&gLangMutex);
+    ::runLibrary(symbol);
+    pthread_mutex_unlock(&gLangMutex);
+}
+
+void SC_LanguageClient::runLibrary(const char* methodName)
+{
+    pthread_mutex_lock(&gLangMutex);
+    ::runLibrary(getsym(methodName));
+    pthread_mutex_unlock(&gLangMutex);
+}
+
+void SC_LanguageClient::executeFile(const char* fileName)
+{
+	setCmdLine("thisProcess.interpreter.executeFile(\"%s\")", fileName);
+	runLibrary(s_interpretCmdLine);
+}
+
+void SC_LanguageClient::printUsage(FILE* file)
+{
+	fprintf(file, "  %s [options]\n", getName());
+}
+
+void SC_LanguageClient::printOptions(FILE* file)
+{
+	SC_LanguageClient::Options opt;
+	
+	const size_t bufSize = 128;
+	char memGrowBuf[bufSize];
+	char memSpaceBuf[bufSize];
+
+	snprintMemArg(memGrowBuf, bufSize, opt.mMemGrow);
+	snprintMemArg(memSpaceBuf, bufSize, opt.mMemSpace);
+
+	fprintf(file,
+			"Common Options:\n"
+			"   -d <path>                      Set runtime directory\n"
+			"   -g <memory-growth>[km]         Set heap growth (default %s)\n"
+			"   -h                             Display this message and exit\n"
+			"   -m <memory-space>[km]          Set initial heap size (default %s)\n"
+			"   -u <network-port-number>       Set UDP listening port (default %d)\n",
+			memGrowBuf,
+			memSpaceBuf,
+			opt.mPort
+		);
+}
+
+void SC_LanguageClient::errorOptionInvalid(const char* opt)
+{
+	fprintf(stderr, "%s: invalid option %s\n", getName(), opt);
+	exit(EXIT_FAILURE);
+}
+
+void SC_LanguageClient::errorOptionArgExpected(const char* opt)
+{
+	fprintf(stderr, "%s: missing argument for option %s\n", getName(), opt);
+	exit(EXIT_FAILURE);
+}
+
+void SC_LanguageClient::errorOptionArgInvalid(const char* opt, const char* arg)
+{
+	fprintf(stderr, "%s: invalid argument for option %s -- %s\n", getName(), opt, arg);
+	exit(EXIT_FAILURE);
+}
+
+void SC_LanguageClient::tick()
+{
+    if (pthread_mutex_trylock(&gLangMutex) == 0) {
+		if (compiledOK) {
+			::runLibrary(s_tick);
+		}
+		pthread_mutex_unlock(&gLangMutex);
+    }
+    flush();
+}
+
+void SC_LanguageClient::onLibraryStartup()
 {
 }
 
-SC_TerminalClient::~SC_TerminalClient()
+void SC_LanguageClient::onLibraryShutdown()
 {
 }
 
-static int parseMemArg(const char* arg)
+void SC_LanguageClient::onInterpStartup()
+{
+}
+
+void SC_LanguageClient::snprintMemArg(char* dst, size_t size, int arg)
+{
+	int rem = arg;
+	int mod = 0;
+	char* modstr = "";
+
+	while (((rem % 1024) == 0) && (mod < 4)) {
+		rem /= 1024;
+		mod++;
+	}
+
+	switch (mod) {
+		case 0: modstr = ""; break;
+		case 1: modstr = "k"; break;
+		case 2: modstr = "m"; break;
+		case 3: modstr = "g"; break;
+		default: rem = arg; modstr = ""; break;
+	}
+
+	snprintf(dst, size, "%d%s", rem, modstr);
+}
+
+int SC_LanguageClient::parseMemArg(const char* arg)
 {
 	long value, factor = 1;
 	char* endPtr = 0;
@@ -394,7 +643,7 @@ static int parseMemArg(const char* arg)
 	return value * factor;
 }
 
-static int parsePortArg(const char* arg)
+int SC_LanguageClient::parsePortArg(const char* arg)
 {
 	long value;
 	char* endPtr;
@@ -410,258 +659,233 @@ static int parsePortArg(const char* arg)
 	return value;
 }
 
-void printUsage()
+void SC_LanguageClient::parseOptions(int& argc, char**& argv, Options& options)
 {
-	SC_TerminalClient::Options opt;
+	char* opt;
+	char* optarg;
+	int nargs;
 
-	fprintf(stdout,
-			"usage:\n"
-			"   sclang [options] [--] [file ..] [-]\n"
-			"\n"
-			"options:\n"
-			"   -c <expression>                         execute expression\n"
-			"   -d <path>                               set sclang runtime directory\n"
-			"   -g <memory-growth>[km]                  set heap growth (default %d)\n"
-			"   -h                                      display this message and exit\n"
-			"   -m <memory-space>[km]                   set initial heap size (default %d)\n"
-			"   -r                                      call Main::run on startup\n"
-			"   -s                                      call Main::stop on exit\n"
-			"   -u <network-port-number>                set listening port (default %d)\n",
-			opt.mMemGrow,
-			opt.mMemSpace,
-			opt.mPort
-		);
-}
+	int i = 1;
+	while (i < argc) {
+		opt = argv[i];
+		optarg = i < (argc - 1) ? argv[i+1] : 0;
+		nargs = 0;
 
-static bool parseOptions(int argc, char** argv, SC_TerminalClient::Options& opt, int* exitCode)
-{
-	*exitCode = 0;
+		if (!((opt[0] == '-') && opt[1] && strchr("dghmu", opt[1]))) {
+			// not an option
+			i++;
+			continue;
+		}
 
-	while (true) {
-		int c = getopt(argc, argv, "+c:d:g:hm:rsu:");
-		if (c == -1)
-			break;
-		switch (c) {
-			case 'c':
-				if (strlen(optarg) > 0)
-					opt.mCmdLine.printf("%s ; ", optarg);
-				break;
+		// index before
+		switch (opt[1]) {
 			case 'd':
-				opt.mRuntimeDir = optarg;
+				if (optarg) {
+					nargs++;
+					options.mRuntimeDir = optarg;
+				} else {
+					goto optArgExpected;
+				}
 				break;
 			case 'g':
-				opt.mMemGrow = parseMemArg(optarg);
-				if (opt.mMemGrow < 0)
-					goto invalidOptionArg;
+				if (optarg) {
+					nargs++;
+					options.mMemGrow = parseMemArg(optarg);
+					if (options.mMemGrow < 0) {
+						goto optArgInvalid;
+					}
+				} else {
+					goto optArgExpected;
+				}
 				break;
 			case 'h':
-				printUsage();
-				return false;
+				goto help;
+				break;
 			case 'm':
-				opt.mMemSpace = parseMemArg(optarg);
-				if (opt.mMemSpace < 0)
-					goto invalidOptionArg;
-				break;
-			case 'r':
-				opt.mCallRun = true;
-				break;
-			case 's':
-				opt.mCallStop = true;
+				if (optarg) {
+					nargs++;
+					options.mMemSpace = parseMemArg(optarg);
+					if (options.mMemSpace < 0) {
+						goto optArgInvalid;
+					}
+				} else {
+					goto optArgExpected;
+				}
 				break;
 			case 'u':
-				opt.mPort = parsePortArg(optarg);
-				if (opt.mPort < 0)
-					goto invalidOptionArg;
+				if (optarg) {
+					nargs++;
+					options.mPort = parsePortArg(optarg);
+					if (options.mPort < 0) {
+						goto optArgInvalid;
+					}
+				} else {
+					goto optArgExpected;
+				}
 				break;
-			default:
-				goto invalidOption;
 		}
+
+		// shuffle options
+		int j, k;
+		for (j=i, k=i+nargs+1; k < argc; j++, k++) {
+			argv[j] = argv[k];
+		}
+		argc -= nargs+1;
 	}
 
-	opt.mArgc = argc - optind;
-	opt.mArgv = argv + optind;
+	return;
 
-	return true;
-	
- invalidOption:
+ help:
 	printUsage();
-	*exitCode = 1;
-	return false;
-	
- invalidOptionArg:
-	fprintf(stderr, "Invalid option argument -- %s\n", optarg);
-	*exitCode = 2;
-	return false;
+	exit(EXIT_SUCCESS);
+
+ optArgExpected:
+	errorOptionArgExpected(opt);
+
+ optArgInvalid:
+	errorOptionArgInvalid(opt, optarg);
+}
+
+// =====================================================================
+// SC_TerminalClient
+// =====================================================================
+
+SC_TerminalClient::SC_TerminalClient()
+	: SC_LanguageClient("sclang"),
+	  mShouldBeRunning(false)
+{
+	setPostFile(stdout);
+}
+
+void SC_TerminalClient::post(const char *fmt, va_list ap, bool error)
+{
+	vfprintf(getPostFile(), fmt, ap);
+}
+
+void SC_TerminalClient::post(char c)
+{
+	fputc(c, getPostFile());
+}
+
+void SC_TerminalClient::post(const char* str, size_t len)
+{
+	fwrite(str, sizeof(char), len, getPostFile());
+}
+
+void SC_TerminalClient::flush()
+{
+	fflush(getPostFile());
 }
 
 int SC_TerminalClient::run(int argc, char** argv)
 {
-	// Parse options
-	Options opt;
-	if (!parseOptions(argc, argv, opt, &mExitCode)) {
-		return mExitCode;
-	}
-
-	return run(opt);
-}
-
-int SC_TerminalClient::run(Options& opt)
-{
+	int i;
 	int err;
-	
-	char* homeDir = getenv("HOME");
-	SC_StringBuffer tmpBuf(64);
 
-	if (homeDir) {
-		tmpBuf.reset();
-		tmpBuf.printf("%s/%s", homeDir, kSC_LibraryConfigFileName);
-		tmpBuf.finish();
-		SC_LibraryConfigFile configFile;
-		if (configFile.open(tmpBuf.getData())) {
-			extern LibraryConfig* gLibraryConfig;
-			gLibraryConfig = new LibraryConfig();
-			configFile.read(kSC_LibraryConfigFileName, gLibraryConfig);
-		} else {
-			fprintf(stderr, "No library configuration file.\n");
-			return 1;
+	SC_StringBuffer cmdLine;
+	bool callRun = false;
+	bool callStop = false;
+
+	init(argc, argv);
+
+	for (i = 1; i < argc; i++) {
+		char* opt = argv[i];
+		char* optarg = i < (argc - 1) ? argv[i+1] : 0;
+
+		if (!((opt[0] == '-') && opt[1])) break;
+
+		switch (opt[1]) {
+			case 'c':
+				if (optarg) {
+					i++;
+					cmdLine.append(optarg);
+					cmdLine.append(";\n");
+				} else {
+					errorOptionArgExpected(opt);
+				}
+				break;
+			case 'r': callRun = true; break;
+			case 's': callStop = true; break;
+			default:
+				errorOptionInvalid(opt);
 		}
 	}
 
-	if (opt.mRuntimeDir) {
-		chdir(opt.mRuntimeDir);
-	}
-	
-    // Start virtual machine
-    pyr_init_mem_pools(opt.mMemSpace, opt.mMemGrow);
-    init_OSC(opt.mPort);
-    schedInit();
-    compileLibrary();
+	// startup library
+	compileLibrary();
 
-    // Setup tick thread
-	mShouldBeRunning = true;
-    err = pthread_create(&mTickThread, 0, tickThreadFunc, this);
-    if (err < 0) {
-		perror("sclang:");
-		return 1;
-    }
+	// call Main::run
+	if (callRun) runMain();
 
-	// Execute user setup file
-	if (homeDir) {
-		tmpBuf.reset();
-		tmpBuf.printf("%s/.sclang.sc", homeDir);
-		tmpBuf.finish();
-
-		struct stat stat_buf;
-		if ((stat(tmpBuf.getData(), &stat_buf) == 0)
-			&& S_ISREG(stat_buf.st_mode)
-			&& (stat_buf.st_mode & S_IRUSR)) {
-			executeFile(tmpBuf.getData());
-		}
+	// execute cmdline
+	if (!cmdLine.isEmpty()) {
+		setCmdLine(cmdLine);
+		interpretCmdLine();
 	}
 
-	// Call Main::run
-	if (opt.mCallRun) {
-		runLibrary(s_run);
-	}
-	
-	// Execute cmdline
-	if (!opt.mCmdLine.isEmpty()) {
-		setCmdLine(opt.mCmdLine);
-		runLibrary(s_interpretCmdLine);
-	}
-	
-	// Execute file(s) and/or read commands from stdin
-	if (opt.mArgc > 0) {
-		for (int i=0; i < opt.mArgc; i++) {
-			char* fileName = opt.mArgv[i];
+	// execute file(s) and/or read commands from stdin
+	bool enterMainLoop = false;
+	argc -= i;
+	argv += i;
+	if (argc > 0) {
+		for (int i=0; i < argc; i++) {
+			const char* fileName = argv[i];
 			if (strcmp(fileName, "-") == 0) {
-				readCommands(stdin);
+				enterMainLoop = true;
 				break;
 			} else {
 				executeFile(fileName);
 			}
 		}
 	} else {
-		if (opt.mCmdLine.isEmpty()) {
-			readCommands(stdin);
-		}
-	}
-	
-	// Call Main::stop
-	if (opt.mCallStop) {
-		runLibrary(s_stop);
+		enterMainLoop = cmdLine.isEmpty();
 	}
 
-	// Shutdown library
-	mShouldBeRunning = false;
-	extern void shutdownLibrary();
+	if (enterMainLoop) {
+		// setup tick thread
+		mShouldBeRunning = true;
+		err = pthread_create(&mTickThread, 0, tickThreadFunc, this);
+		if (err < 0) {
+			perror("sclang:");
+			return 1;
+		}
+
+		// enter main loop
+		err = readCommands(stdin);
+
+		// wait for tick thread to exit
+		mShouldBeRunning = false;
+		pthread_join(mTickThread, 0);
+		
+		return err;
+	}
+
+	// call Main::stop
+	if (callStop) stopMain();
+
+	// shutdown library
 	shutdownLibrary();
 
-	// Wait for tick thread to exit
-	pthread_join(mTickThread, 0);
-
-	flushPostBuf();
-
-    return mExitCode;
+	return 0;
 }
 
-void SC_TerminalClient::quit(int exitCode)
+void SC_TerminalClient::printUsage(FILE* file)
 {
-	mExitCode = exitCode;
-	mShouldBeRunning = false;
+	fprintf(file, "   %s [options] [file..] [-]\n", getName());
 }
 
-void SC_TerminalClient::tick()
+void SC_TerminalClient::printOptions(FILE* file)
 {
-    if (pthread_mutex_trylock(&gLangMutex) == 0) {
-		if (compiledOK) {
-			::runLibrary(s_tick);
-		}
-		pthread_mutex_unlock(&gLangMutex);
-    }
-    flushPostBuf();
+	SC_LanguageClient::printOptions(file);
+	fprintf(file,
+			"\nTerminal Options:\n"
+			"   -c <expression>                Execute expression\n"
+			"   -r                             Call Main::run on startup\n"
+			"   -s                             Call Main::stop on startup\n"
+		);
 }
 
-void SC_TerminalClient::setCmdLine(const char* src, size_t size)
-{
-    if (compiledOK) {
-		pthread_mutex_lock(&gLangMutex);
-		if (compiledOK) {
-			VMGlobals *g = gMainVMGlobals;
-			
-			PyrString* strobj = newPyrStringN(g->gc, size, 0, true);
-			memcpy(strobj->s, src, size);
-
-			SetObject(&g->process->interpreter.uoi->cmdLine, strobj);
-			g->gc->GCWrite(g->process->interpreter.uo, strobj);
-		}
-		pthread_mutex_unlock(&gLangMutex);
-    }
-}
-
-void SC_TerminalClient::setCmdLine(const SC_StringBuffer& strBuf)
-{
-	setCmdLine(strBuf.getData(), strBuf.getSize());
-}
-
-void SC_TerminalClient::setCmdLine(const char* fmt, ...)
-{
-	va_list ap;
-	va_start(ap, fmt);
-	mScratch.reset();
-	mScratch.vprintf(fmt, ap);
-	va_end(ap);
-	setCmdLine(mScratch);
-}
-
-void SC_TerminalClient::runLibrary(void* pyrSymbol)
-{
-    pthread_mutex_lock(&gLangMutex);
-    ::runLibrary((PyrSymbol*)pyrSymbol);
-    pthread_mutex_unlock(&gLangMutex);
-}
-
-void SC_TerminalClient::readCommands(FILE* inputFile)
+int SC_TerminalClient::readCommands(FILE* inputFile)
 {
     SC_StringBuffer cmdLine(128);
 
@@ -670,10 +894,10 @@ void SC_TerminalClient::readCommands(FILE* inputFile)
 
 		if (c == EOF) {
 			break;
-		} else if ((c == gInputInterpretDelimiter) ||
-				   (c == gInputInterpretPrintDelimiter)) {
+		} else if ((c == kInputInterpretDelimiter) ||
+				   (c == kInputInterpretPrintDelimiter)) {
 			setCmdLine(cmdLine);
-			runLibrary(c == gInputInterpretDelimiter
+			runLibrary(c == kInputInterpretDelimiter
 					   ? s_interpretCmdLine : s_interpretPrintCmdLine);
 			flushPostBuf();
 			cmdLine.reset();
@@ -682,13 +906,7 @@ void SC_TerminalClient::readCommands(FILE* inputFile)
 		}
 	}
 
-    mExitCode = ferror(inputFile) ? 1 : 0;
-}
-
-void SC_TerminalClient::executeFile(const char* fileName)
-{
-	setCmdLine("thisProcess.interpreter.executeFile(\"%s\")", fileName);
-	runLibrary(s_interpretCmdLine);
+    return ferror(inputFile) ? 1 : 0;
 }
 
 void* SC_TerminalClient::tickThreadFunc(void* data)
@@ -710,12 +928,12 @@ void* SC_TerminalClient::tickThreadFunc(void* data)
 
 void setPostFile(FILE* file)
 {
-	gPostFile = file;
+	SC_LanguageClient::instance()->setPostFile(file);
 }
 
 int vpost(const char *fmt, va_list ap)
 {
-    vfprintf(gPostFile, fmt, ap);
+	SC_LanguageClient::instance()->post(fmt, ap, false);
 	return 0;
 }
 
@@ -730,46 +948,50 @@ void postfl(const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt); 
-    vpost(fmt, ap);
-    flushPostBuf();
+    SC_LanguageClient::instance()->post(fmt, ap, false);
+    SC_LanguageClient::instance()->flush();
 }
 
-void postText(const char *text, long len)
+void postText(const char *str, long len)
 {
-    fwrite(text, sizeof(char), len, gPostFile);
+	SC_LanguageClient::instance()->post(str, len);
 }
 
 void postChar(char c)
 {
-    fputc(c, gPostFile);
+	SC_LanguageClient::instance()->post(c);
 }
 
 void error(const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
-    vpost(fmt, ap);
+    SC_LanguageClient::instance()->post(fmt, ap, true);
 }
 
 void flushPostBuf(void)
 {
-    fflush(gPostFile);
+	SC_LanguageClient::instance()->flush();
 }
 
 void closeAllGUIScreens()
 {
+	SC_LanguageClient::instance()->onLibraryShutdown();
 }
 
 void initGUI()
 {
+	SC_LanguageClient::instance()->onInterpStartup();
 }
 
 void initGUIPrimitives()
 {
-	s_interpretCmdLine = getsym("interpretCmdLine");
-	s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
-	s_stop = getsym("stop");
+	SC_LanguageClient::s_interpretCmdLine = getsym("interpretCmdLine");
+	SC_LanguageClient::s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
+	SC_LanguageClient::s_run = getsym("run");
+	SC_LanguageClient::s_stop = getsym("stop");
     s_tick = getsym("tick");
+	SC_LanguageClient::instance()->onLibraryStartup();
 }
 
 void initSCViewPrimitives()

@@ -21,8 +21,9 @@ lib_LTLIBRARIES		= libsclang.la
 libsclang_la_LDFLAGS	= -version-info $(SC_LANG_SHARED_VERSION_INFO)
 libsclang_la_LIBADD	= $(top_builddir)/source/common/libcommon.la \
 			$(top_builddir)/source/lang/LangPrimSource/liblangprim.la \
-			-lm -lpthread \
-			$(SNDFILE_LIBS) $(DMALLOC_LIBS)
+			$(SNDFILE_LIBS) $(ALSA_LIBS) $(DMALLOC_LIBS)
+
+#			-lm -lpthread 
 
 libsclang_la_SOURCES	=		\
 	AdvancingAllocPool.cpp		\
@@ -46,7 +47,7 @@ libsclang_la_SOURCES	=		\
 	PyrSymbolTable.cpp		\
 	SC_ComPort.cpp			\
 	SC_HID.cpp			\
-	SC_CoreMIDI.cpp			\
+	SC_AlsaMIDI.cpp			\
 	SC_TerminalClient.cpp		\
 	Samp.cpp			\
 	SimpleStack.cpp			\

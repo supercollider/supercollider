@@ -30,8 +30,8 @@
 
 int main(int argc, char** argv)
 {
-	SC_TerminalClient app;
-	return app.run(argc, argv);
+	SC_TerminalClient lang;
+	return lang.run(argc, argv);
 }
 
 #else // !USE_SC_TERMINAL_CLIENT
