@@ -1,5 +1,5 @@
 
-// : HasInputsPlayer
+// : HasInputs
 
 Patch : AbstractPlayer  {
 		
@@ -68,7 +68,7 @@ Patch : AbstractPlayer  {
 		// could be cached, must be able to invalidate it
 		// if an input changes
 		^synthDef ?? {
-			synthDef = InstrSynthDef.build(this.instr,this.args,\Out);
+			synthDef = InstrSynthDef.build(this.instr,this.args,Out);
 			defName = synthDef.name;
 			numChannels = synthDef.numChannels;
 			rate = synthDef.rate;
@@ -79,28 +79,34 @@ Patch : AbstractPlayer  {
 	spawnToBundle { arg bundle;
 		var synthArgs;
 		this.asSynthDef;// make sure it exists
+		
 		this.children.do({ arg child;
 			child.spawnToBundle(bundle);
-		});
-		synthArgs = Array(argsForSynth.size + 1 * 2);
-		this.synthDefArgs.do({ arg a,i;
-			synthArgs.add(i);
-			synthArgs.add(a);
 		});
 		synth = Synth.basicNew(this.defName,patchOut.server);
 		bundle.add(
 			synth.addToTailMsg(patchOut.group,
-				(synthArgs ++ [\outIndex,patchOut.synthArg] ++ synthDef.secretDefArgs(args))
+				this.synthDefArgs
+				++ synthDef.secretDefArgs(args)
 			)
 		);
 	}
-	defName { ^defName } // NOT 'Patch' ever
-	
 	synthDefArgs {
 		// not every arg makes it into the synth def
-		^(argsForSynth.collect({ arg ag; ag.synthArg }) )
-		// without \outIndex 
+		var args;
+		args = Array(argsForSynth.size * 2 + 2);
+		argsForSynth.do({ arg ag,i;
+			//args.add(instr.argNameAt(i)); // NO not the right name
+			args.add(i);
+			args.add(ag.synthArg);
+		});
+		args.add(\out);
+		args.add(patchOut.synthArg //?? {"patchout bus was nil!".error}
+							);
+		^args//.insp("args")
 	}
+	defName { ^defName } // NOT 'Patch' ever
+	
 	// has inputs
 	didSpawn { arg patchIn,synthArgi;
 		if(patchIn.notNil,{

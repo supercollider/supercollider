@@ -49,13 +49,13 @@ InstrSynthDef : SynthDef {
 			});
 				
 			if(rate == \audio,{
-				this.addKr(\outIndex,0);
-				result = outClass.ar(Control.names([\outIndex]).kr([0]) , result);
+				this.addKr(\out,0);
+				result = outClass.ar(Control.names([\out]).kr([0]) , result);
 				// can still add Out controls if you always use \out, not index
 			},{
 				if(rate == \control,{
-					this.addKr(\outIndex,0);
-					result = outClass.kr(Control.names([\outIndex]).kr([0]) , result);
+					this.addKr(\out,0);
+					result = outClass.kr(Control.names([\out]).kr([0]) , result);
 				},{
 					("InstrSynthDef: scalar rate ? result of your function:" + result).error;
 				})

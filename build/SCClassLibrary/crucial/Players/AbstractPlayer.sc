@@ -50,7 +50,7 @@ AbstractPlayer : AbstractFunction  {
 				if(server.serverRunning.not,{
 					"server failed to start".error;
 				},{
-					this.prepareForPlay(group,false,bus);
+					this.prepareForPlay(group);
 					// need some way to track all the preps completion
 					// also in some cases the prepare can have a completion
 					// tacked on and we can combine with the spawn message
@@ -64,11 +64,6 @@ AbstractPlayer : AbstractFunction  {
 				});
 			}).play;
 		});
-	}
-	prepareForPlay { arg group,private = false,bus;
-		group = group.asGroup;
-		super.prepareForPlay(group); // sends to server
-		//this.makePatchOut(group,false,bus);	
 	}
 	prepareToBundle { arg group,bundle;
 		readyForPlay = false;
@@ -94,6 +89,12 @@ AbstractPlayer : AbstractFunction  {
 		this.childrenMakePatchOut(group,true);
 	}
 	topMakePatchOut { arg group,private = false,bus;
+		if(patchOut.notNil // don't alloc another one
+			and: {patchOut.group == group} 
+			and: {bus.isNil or: {patchOut.bus == bus}}
+		,{
+				^patchOut
+		});
 		//Patch doesn't know its numChannels or rate until after it makes the synthDef
 		if(this.rate == \audio,{// out yr speakers
 			if(private,{
@@ -134,10 +135,6 @@ AbstractPlayer : AbstractFunction  {
 		// atTime.asDeltaTime
 		patchOut.server.listSendBundle( atTime, bundle);
 		// schedule atTime:
-		if(synth.notNil,{
-			synth.isPlaying = true;
-			synth.isRunning = true;
-		});
 		this.didSpawn;
 	}
 	spawnToBundle { arg bundle;
@@ -146,10 +143,7 @@ AbstractPlayer : AbstractFunction  {
 		});
 		synth = Synth.basicNew(this.defName,patchOut.server);
 		bundle.add(
-			synth.addToTailMsg(patchOut.group,
-				this.synthDefArgs.collect({ arg a,i; [i,a]}).flat 
-				++ ['out',patchOut.synthArg]
-			)
+			synth.addToTailMsg(patchOut.group,this.synthDefArgs)
 		);
 	}
 	spawnOnBus { arg bus,atTime;
@@ -221,9 +215,8 @@ AbstractPlayer : AbstractFunction  {
 		})
 	}
 	synthDefArgs { 
-		// if children are your args, you won't have to implement this
-		// no indices, no out index
-		^this.children.collect({ arg ag,i; ag.synthArg })	}
+		^[\out,patchOut.synthArg]		
+	}
 	defName {
 		^defName ?? {this.class.name.asString}
 	}
@@ -231,6 +224,10 @@ AbstractPlayer : AbstractFunction  {
 		if(patchIn.notNil,{
 			patchOut.connectTo(patchIn,false); // we are connected now
 			patchIn.nodeControl_(NodeControl(synth,synthArgi));
+		});
+		if(synth.notNil,{
+			synth.isPlaying = true;
+			synth.isRunning = true;
 		});
 	}
 
@@ -534,6 +531,8 @@ AbstractPlayerProxy : AbstractPlayer {
 	var source;
 
 	asSynthDef { ^source.asSynthDef }
+	synthDefArgs { ^source.synthDefArgs }
+
 	rate { ^source.rate }
 	numChannels { ^source.numChannels }
 	defName { ^source.defName }
@@ -548,7 +547,6 @@ AbstractPlayerProxy : AbstractPlayer {
 		super.didSpawn(patchIn,synthArgi);
 		source.didSpawn(patchIn,synthArgi);
 	}
-	synthDefArgs { ^source.synthDefArgs }
 	children { ^source.children }
 	instrArgFromControl { arg control;
 		^source.instrArgFromControl(control)
@@ -556,6 +554,10 @@ AbstractPlayerProxy : AbstractPlayer {
 	free {
 		source.free;
 		super.free;
+	}
+	stop {
+		source.stop;
+		super.stop;
 	}
 	
 }

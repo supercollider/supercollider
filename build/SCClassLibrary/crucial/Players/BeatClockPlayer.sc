@@ -29,7 +29,7 @@ BeatClockPlayer : KrPlayer {
 		^("BeatClockPlayer" ++ tempoFactor.asString)
 	}
 	synthDefArgs { // synthinputs collect synthArg
-		^[ tempoBus.index]
+		^[ 0, tempoBus.index,1,patchOut.synthArg]
 	}
 
 	storeParamsOn { arg stream;

@@ -32,6 +32,19 @@ BufferProxy { // blank space for delays, loopers etc.
 	
 	/* server support */
 	prepareToBundle { arg group,bundle;
+		group = group.asGroup;
+		if(buffer.notNil,{
+			if(buffer.server != group.server,{
+				// this makes me suitable for one server only
+				// which is probably always the case
+				buffer.free;
+				// make buffer
+			},{
+				// buffer is fine to use
+				^this
+			})
+		});
+		
 		buffer = Buffer.new(group.asGroup.server,this.size,numChannels);
 		buffer.numFrames = this.size;
 		buffer.numChannels = numChannels;
@@ -146,8 +159,17 @@ Sample : BufferProxy { // a small sound loaded from disk
 		this.prLoad(thing);
 		this.calculate;
 		if(buffer.notNil,{ // if already loaded, on server
-			buffer.read(this.soundFilePath,startFrame, max(endFrame - startFrame, -1))
-		})
+			// TODO check size and numChannels !!
+			if(buffer.numFrames == this.size
+				and: {buffer.numChannels == numChannels},{
+						buffer.read(this.soundFilePath,startFrame, 
+								max(endFrame - startFrame, -1))
+			},{
+				//discard
+				buffer.free;
+				buffer = Buffer.allocRead(this.soundFilePath,startFrame);
+			});
+		});// else wait till prepare
 	}
 	prLoad { arg thing;
 		var pathName;
@@ -237,6 +259,19 @@ Sample : BufferProxy { // a small sound loaded from disk
 	
 	/* server support */
 	prepareToBundle { arg group,bundle;
+		group = group.asGroup;
+		if(buffer.notNil,{
+			if(buffer.server != group.server,{
+				// this makes me suitable for one server only
+				// which is probably always the case
+				buffer.free;//.insp("discarding buffer");
+				// make buffer
+			},{
+				// buffer is fine to use
+				^this;//.insp("buffer is loaded")
+			});
+		});
+
 		buffer = Buffer.new(group.asGroup.server,this.size,numChannels);
 		if(soundFilePath.notNil,{
 			bundle.add( buffer.allocReadMsg(this.soundFilePath,startFrame) )

@@ -53,7 +53,7 @@ UGenInstr { // make a virtual Instr by reading the *ar and *kr method def
 	argNameAt { arg i; 
 		var nn;
 		nn=this.funcDef.argNames;
-		^if(nn.notNil,{nn.at(i)},{nil});
+		^if(nn.notNil,{nn.at(i + 1)},{nil});
 	}
 	defArgAt {
 		 arg i; 
