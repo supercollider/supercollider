@@ -284,6 +284,10 @@ ArrayedCollection : SequenceableCollection {
 		};
 	}
 
+	perfectShuffle {
+		^this[(0 .. this.size div: 2 - 1).stutter + [0, this.size + 1 div: 2]]
+	}
+
 	// concepts borrowed from J programming language
 	rank {
 		// rank is the number of dimensions in a multidimensional array.
