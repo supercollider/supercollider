@@ -642,7 +642,8 @@ void Interpret(VMGlobals *g)
 
 			slot = (PyrSlot*)sp - numArgsPushed + 1;
 			
-			goto key_class_lookup;
+			if (numKeyArgsPushed) goto key_class_lookup;
+			else goto class_lookup;
 
 		case 11 : // opExtended, opSendSuper
 			numArgsPushed = ip[1]; // get num args
@@ -665,7 +666,8 @@ void Interpret(VMGlobals *g)
 			selector = gSpecialSelectors[op3];
 			slot = (PyrSlot*)sp - numArgsPushed + 1;
 			
-			goto key_class_lookup;
+			if (numKeyArgsPushed) goto key_class_lookup;
+			else goto class_lookup;
 			
 		case 13 :  // opExtended, opSendSpecialUnaryArithMsg
 			op2 = ip[1]; ip++; // get selector index
