@@ -23,15 +23,21 @@
 #include <sndfile.h>
 #include "SCComplex.h"
 
+#if __VEC__
+	#include "vDSP.h"
+	FFTSetup fftsetup[32];
+	
+#else
 extern "C" {
-#include "fftlib.h"
+	#include "fftlib.h"
+	static float *cosTable[32];
 }
+#endif
 
 #include <string.h>
 
 static InterfaceTable *ft;
 
-static float *cosTable[32];
 static float *fftWindow[32];
 
 const int kNUMOVERLAPS = 2;
@@ -404,7 +410,12 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 		
 		// do fft
 		int log2n = unit->m_log2n;
-		rffts((float*)unit->m_fftbuf, log2n, 1, cosTable[log2n]);
+#if __VEC__
+		ctoz(unit->m_fftbuf, 2, outbuf, 1, 1L<<log2n);
+		
+#else
+		rffts(unit->m_fftbuf, log2n, 1, cosTable[log2n]);
+#endif
 		
 		unit->m_fftsndbuf->coord = coord_Complex;
 	}
@@ -1494,6 +1505,15 @@ float* create_fftwindow(int log2n)
 void init_ffts();
 void init_ffts()
 {
+#if __VEC__
+	
+	for (int i=0; i<32; ++i) {
+		fftsetup[i] = 0;
+	}
+	for (int i=0; i<13; ++i) {
+		fftsetup[i] = create_fftsetup(i, kFFTRadix2);
+	}
+#else
 	for (int i=0; i<32; ++i) {
 		cosTable[i] = 0;
 		fftWindow[i] = 0;
@@ -1502,6 +1522,7 @@ void init_ffts()
 		cosTable[i] = create_cosTable(i);
 		fftWindow[i] = create_fftwindow(i);
 	}
+#endif
 }
 
 void init_SCComplex(InterfaceTable *inTable);
