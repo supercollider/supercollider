@@ -40,14 +40,14 @@ InBus {
 
 XIn { 
 	*ar { arg which, n;
-		^XFade2.ar(
+		^XFade2.ar( // use equal power crossfading for audio rate
 			In.ar(which.round(2), n), 
 			In.ar(which.trunc(2) + 1, n), 
 			(which * 2 - 1).fold2(1)
 		);
 	}
 	*kr { arg which, n;
-		^XFade2.kr(
+		^LinXFade2.kr( // use linear crossfading for control rate
 			In.kr(which.round(2), n), 
 			In.kr(which.trunc(2) + 1, n), 
 			(which * 2 - 1).fold2(1)
