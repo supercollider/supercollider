@@ -42,6 +42,7 @@ ModalFreq : AbstractPlayerProxy {
 			})
 		})
 	}
+	guiClass { ^ModalFreqGui }
 }
 Midi2Freq : KrPlayer {	// players or floats will work	*new { arg note,octave=5.0;
 		^Patch(UGenInstr(Midi2FreqUGen,\kr),[ note,octave ])
@@ -49,6 +50,7 @@ ModalFreq : AbstractPlayerProxy {
 	
 	//TODO
 	//asStream
+	guiClass { ^Midi2FreqGui }
 }
 
 
