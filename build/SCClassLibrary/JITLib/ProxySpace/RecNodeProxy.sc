@@ -29,7 +29,9 @@ RecNodeProxy : NodeProxy {
 		path = argPath;
 		buffer = Buffer.alloc(server, 65536, n);
 		buffer.write(path, headerFormat, sampleFormat, 0, 0, true);
-		("initialised recording:" + path).inform;
+		("initialised recording:" + path + 
+			"(" ++ n + "channels on index" + buffer.bufnum ++ ")"
+		).inform;
 			
 		CmdPeriod.add(this);
 		
