@@ -201,6 +201,7 @@ SequenceableCollection : Collection {
 	first { if (this.size > 0, { ^this.at(0) }, { ^nil }) }
 	last { if (this.size > 0, { ^this.at(this.size - 1) }, { ^nil }) }
 	middle { if (this.size > 0, { ^this.at((this.size + 1) div: 2) }, { ^nil }) }
+	isolate { ^this.first }
 	
 	top { ^this.last }
 	putFirst { arg obj; if (this.size > 0, { ^this.put(0, obj) }) }
