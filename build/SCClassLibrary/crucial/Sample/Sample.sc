@@ -77,24 +77,32 @@ BufferProxy { // blank space for delays, loopers etc.
 	sampleRateKr {
 		^BufSampleRate.kr(this.bufnumKr)
 	}
+	sampleRateIr {
+		^BufSampleRate.ir(this.bufnumIr)
+	}
 	
-// no ir yet
-//	sampleRateIr {
-//		^BufSampleRate.ir(this.bufnumIr)
-//	}
-		
 	bufRateScaleKr {
 		^BufRateScale.kr(this.bufnumKr)
 	}
+	bufRateScaleIr {
+		^BufRateScale.ir(this.bufnumIr)
+	}
+
 	bufFramesKr {
 		^BufFrames.kr(this.bufnumKr)
 	}
+	bufFramesIr {
+		^BufFrames.ir(this.bufnumIr)
+	}
+	
 	bufSamplesKr {
 		^BufSamples.kr(this.bufnumKr)
 	}
+	
 	bufDurKr {
 		^BufDur.kr(this.bufnumKr)
 	}
+	
 	bufChannelsKr {
 		^BufChannels.kr(this.bufnumKr)
 	}
@@ -235,6 +243,7 @@ Sample : AbstractSample { // a small sound loaded from disk
 			this.tempo = t ? Tempo.tempo;
 			numChannels = 1;
 			sampleRate = 44100.0;
+			this.guessBeats;
 			^this
 		});
 
