@@ -3,6 +3,7 @@
 }
 {\colortbl;\red255\green255\blue255;\red255\green3\blue3;\red118\green15\blue80;\red0\green0\blue255;
 }
+\vieww10380\viewh12440\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs36 \cf0 SuperCollider Server Synth Engine Command Reference\
@@ -882,9 +883,8 @@ These are the currently defined fill routines for use with the
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b \cf0 Sine Wave Fill Commands\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b0\fs20 \cf0 \
+\f0\b0\fs20 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \fs24 \cf0 There are three defined fill routines for sine waves.\
@@ -927,8 +927,26 @@ These are the currently defined fill routines for use with the
 \
 	Similar to sine2 except that each partial may have a nonzero starting phase.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b \cf0 Other Commands\
 \
+	copy
+\f0\b0 \
+		int - sample position in destination\
+		int - source buffer number\
+		int - sample position in source\
+		int - number of samples to copy\
 \
+	Copy samples from the source buffer to the destination buffer specified in the 
+\f1\b b_gen
+\f0\b0  command. If the number of samples to copy is negative, the maximum number of samples possible is copied.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
+
+\f1\b \cf0 Asynchronous
+\f0\b0 . Replies to sender with 
+\f1\b /done 
+\f0\b0 when complete.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -940,12 +958,10 @@ These are the currently defined fill routines for use with the
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs20 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b\fs24 \cf0 Command Numbers\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\f1\b\fs24 Command Numbers\
 
-\f0\b0\fs20 \cf0 \
+\f0\b0\fs20 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \fs24 \cf0 These are the currently defined command numbers. More may be added to the end of the list in the future.\
