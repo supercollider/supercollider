@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 \f3\fswiss\fcharset77 Helvetica-Oblique;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green0\blue0;
-\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;\red0\green112\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green112\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 MultiPageLayout
@@ -40,74 +40,74 @@ It can be used as the specified parent for any view.  It will place the view on 
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 .window \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 returns the current window being written to.\
+\f1\b0 returns the current window being written to.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
-.view\
-the FlowView on the current window\
-\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 .view\
+
+\f1\b0 the FlowView on the current window\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 .close\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 close all windows created by the MultiPageLayout\
+\f1\b0 close all windows created by the MultiPageLayout\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 .focus( index )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 focus the view on the current window\
+\f1\b0 focus the view on the current window\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 .front\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 cascades all windows owned by MultiPageLayout to front\
+\f1\b0 cascades all windows owned by MultiPageLayout to front\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs24 \cf0 .resizeToFit\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 resizes all windows to fit their contents, brings them all to front\
+\f1\b0 resizes all windows to fit their contents, brings them all to front\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 \
 \
-(\cf4  \
-	\cf5 var\cf4  f,sliders;\
-	f= \cf5 MultiPageLayout\cf4 .new(\cf6 "a vaguely practical example"\cf4 );\
+( \
+	\cf2 var\cf0  f,sliders;\
+	f= \cf2 MultiPageLayout\cf0 .new(\cf3 "a vaguely practical example"\cf0 );\
 	\
-	sliders=\cf5 Array\cf4 .fill(rrand(16,32),\{ \cf5 arg\cf4  i;\
-		\cf5 SCSlider\cf4 ( f, 10@150 );\
+	sliders=\cf2 Array\cf0 .fill(rrand(16,32),\{ \cf2 arg\cf0  i;\
+		\cf2 SCSlider\cf0 ( f, 10@150 );\
 	\});\
 \
-	f.flow( \{ \cf5 arg\cf4  subf;\
-		\cf5 SCSlider\cf4 ( subf, 30@30 );\
-		\cf5 SCSlider\cf4 ( subf, 30@30 );\
-		\cf5 SCSlider\cf4 ( subf, 30@30 );\
-		\cf5 SCSlider\cf4 ( subf, 30@30 );\
+	f.flow(\{ \cf2 arg\cf0  subf;\
+		\cf2 SCSlider\cf0 ( subf, 30@30 );\
+		\cf2 SCSlider\cf0 ( subf, 30@30 );\
+		\cf2 SCSlider\cf0 ( subf, 30@30 );\
+		\cf2 SCSlider\cf0 ( subf, 30@30 );\
 	\}, 50@100 );\
 	\
 	f.resizeToFit;\
 	f.front;\
-\cf0 )\
+)\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf7 //\
+\cf4 //\
 //// layout within a layout\
 //(var f;\
 //	f=MultiPageLayout.new("flow");\
@@ -152,14 +152,14 @@ A nice way to work with \cf2 MultiPageLayout\cf0  is with [
 \
 \
 A \cf2 MultiPageLayout\cf0  closes all of its windows when any of its windows is closed.\
-When a \cf2 MultiPageLayout\cf0  closes, it sends the \cf8 \\didClose\cf0  notification (see NotificationCenter).\
+When a \cf2 MultiPageLayout\cf0  closes, it sends the \cf5 \\didClose\cf0  notification (see NotificationCenter).\
 \
 	You can register to receive that notification:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs18 \cf0 	\
-	\cf2 NotificationCenter\cf0 .registerOneShot( f,\cf8 \\didClose\cf0 , yourObject,\{\
-			\cf7 // stop the model from playing, clean house, \
+	\cf2 NotificationCenter\cf0 .registerOneShot( f,\cf5 \\didClose\cf0 , yourObject,\{\
+			\cf4 // stop the model from playing, clean house, \
 			// unregister a keydown etc.\
 \cf0 	\});
 \f1\fs24 \
@@ -180,9 +180,8 @@ When a \cf2 MultiPageLayout\cf0  closes, it sends the \cf8 \\didClose\cf0  notif
 \
 
 \f0\b A Note about MVC/Dependencies\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \
+\f1\b0 \
 this is some under-the-hood stuff that you don't need to know about but might be interested in.\
 \
 When a subclass of ObjectGui is added to a MultiPageLayout it adds itself as a dependant on that layout. (ObjectGui::guify).\
@@ -217,10 +216,10 @@ The Gui objects (controllers) need to know when the window closes so they can re
 	in Object::guify this happens:\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf7 	\cf0 	layout.removeOnClose(guiObject)\
+\cf4 	\cf0 	layout.removeOnClose(guiObject)\
 	\
 	\
-	\cf7 \
+	\cf4 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 	
 \f2\fs18 \
