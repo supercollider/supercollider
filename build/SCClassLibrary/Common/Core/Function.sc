@@ -4,7 +4,6 @@ Function : AbstractFunction {
 	// it consists of the function's code and the variables in its defining context
 
 	*new { ^this.shouldNotImplement(thisMethod) }
-	*newClear { ^this.shouldNotImplement(thisMethod) }
 	
 	isClosed { _FunctionIsClosed }
 	

@@ -1,6 +1,5 @@
 Nil {
 	*new { ^this.shouldNotImplement(thisMethod) }
-	*newClear { ^this.shouldNotImplement(thisMethod) }
 	
 	isNil { ^true }
 	notNil { ^false }

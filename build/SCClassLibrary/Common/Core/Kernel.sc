@@ -401,7 +401,6 @@ Interpreter {
 	var <>codeDump;
 	
 	*new { ^this.shouldNotImplement(thisMethod) }
-	*newClear { ^this.shouldNotImplement(thisMethod) }
 	
 	interpretCmdLine {
 		^this.compile(cmdLine).value;

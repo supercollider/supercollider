@@ -1,5 +1,13 @@
 
 ArrayedCollection : SequenceableCollection {
+	*newClear { arg indexedSize = 0; 
+		_BasicNewClear 
+		^this.primitiveFailed
+		// creates a new instance with indexedSize indexable slots.
+		// the slots are filled with nil, zero or something else
+		// appropriate to the type of indexable slots in the
+		// object.
+	}
 
 	// ArrayedCollections are vectors which have a 
 	// fixed maximum capacity. 

@@ -1,6 +1,5 @@
 Boolean {
 	*new { ^this.shouldNotImplement(thisMethod) }
-	*newClear { ^this.shouldNotImplement(thisMethod) }
 	xor { arg bool; ^(this === bool).not }
 	if { ^this.subclassResponsibility(thisMethod) }
 	not { ^this.subclassResponsibility(thisMethod) }

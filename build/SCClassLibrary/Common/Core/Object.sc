@@ -11,14 +11,6 @@ Object {
 		// to actually put things in the object you need to
 		// add them.
 	}
-	*newClear { arg indexedSize = 0; 
-		_BasicNewClear 
-		^this.primitiveFailed
-		// creates a new instance with indexedSize indexable slots.
-		// the slots are filled with nil, zero or something else
-		// appropriate to the type of indexable slots in the
-		// object.
-	}
 	*newCopyArgs { arg ... args; 
 		_BasicNewCopyArgsToInstVars 
 		^this.primitiveFailed

@@ -29,7 +29,6 @@ Infinitum : Magnitude {
 	hash { _ObjectHash; ^this.primitiveFailed }
 
 	*new { ^this.shouldNotImplement(thisMethod) }
-	*newClear { ^this.shouldNotImplement(thisMethod) }
 	printOn { arg stream;
 		stream.putAll(this.asString);
 	}

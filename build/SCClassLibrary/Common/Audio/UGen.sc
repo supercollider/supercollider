@@ -76,10 +76,7 @@ UGen : AbstractFunction {
 			if (input.isNumber, { synthDef.addConstant(input.asFloat)  });
 		}); 
 	}
-	
-	//*new { ^this.shouldNotImplement(thisMethod) }
-	*newClear { ^this.shouldNotImplement(thisMethod) }
-			
+				
 	isValidUGenInput { ^true }
 	numChannels { ^1 }
 	checkInputs { 

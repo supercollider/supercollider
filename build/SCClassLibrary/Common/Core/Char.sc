@@ -1,6 +1,5 @@
 Char : Magnitude {
 	*new { ^this.shouldNotImplement(thisMethod) }
-	*newClear { ^this.shouldNotImplement(thisMethod) }
 	// to create a Char use the Integer methods asAscii or asDigit
 
 	hash { _ObjectHash; ^this.primitiveFailed }
