@@ -1,6 +1,6 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl\f0\fnil\fcharset77 Futura-Medium;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
-\f3\fnil\fcharset77 LucidaGrande;\f4\fswiss\fcharset77 Helvetica-Bold;}
+{\fonttbl\f0\fnil\fcharset77 Futura-Medium;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica-Bold;
+\f3\fswiss\fcharset77 Helvetica;\f4\fnil\fcharset77 LucidaGrande;}
 {\colortbl;\red255\green255\blue255;\red163\green146\blue90;\red191\green0\blue0;\red0\green0\blue191;
 \red96\green96\blue96;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -10,27 +10,47 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs24 \cf0 \ul superclass:\ulnone  EnvironmentRedirect \
-an environment of references on a server 
-\f1\fs18 \
+\f2\b\fs24 \cf0 superclass: EnvironmentRedirect \
 \
-Generally a proxy is a placeholder for something, which in this case \
+an environment of references on a server 
+\f1\b0\fs18 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs24 \cf0 Generally a proxy is a placeholder for something, which in this case \
 is something playing on a server that writes to a limited number of busses.\
 (this can be for example a synth or an event stream)\
 \
 \
-When accessed, ProxySpace returns a [NodeProxy]. \
-The rate is determined in a lazy way from the first object\
-put into this environment. Once it is created it can only be set to a function\
-that returns the same rate and a number of channels equal to the intial one or smaller. \
+When accessed, ProxySpace returns a [
+\f2\b NodeProxy
+\f3\b0 ]. \
 \
-~out = something; is equivalent to currentEnvironment.put(\\out, something);\
+The rate is determined in a lazy way from the first object put into this environment. \
+Once it is created it can only be set to a function that returns the same rate and a number \
+of channels equal to the intial one or smaller. (see 
+\f2\b the_lazy_proxy
+\f3\b0  
+\f4 )
+\f3 \
 \
+note that the two expressions are equivalent: \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 ~out = something; 
+\f3\fs24   \
+
+\f1\fs18 currentEnvironment.put(\\out, something);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\fs24 \cf0 \
 a proxyspace can be created when its server is not running and played later.\
 \
 Note:\
 The following examples can be executed line by line, usually in any order. \
-code that should be evaluated together is set in parentheses.\
+code that should be evaluated together is set in parentheses.
+\f1\fs18 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 \
 \'a5\'a5\'a5\'a5\cf0 this is experimental and things change.\cf2 \'a5\'a5\'a5\'a5\
@@ -38,17 +58,17 @@ code that should be evaluated together is set in parentheses.\
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs24 \cf0 see also: 
-\f2 [NodeProxy]
-\f3 [the_lazy_proxy]
-\f2 [
-\f3 jitlib_efficiency]
+\f3\fs24 \cf0 see also: [
+\f2\b NodeProxy
+\f3\b0 ][
+\f2\b jitlib_efficiency
+\f3\b0 ]
 \f1\fs18 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f4\b\fs26 \cf0 *new(server, name, clock)
+\f2\b\fs26 \cf0 *new(server, name, clock)
 \f1\b0\fs18 \
 	
 \f0\fs24 server: a Server object. note that on remote computers the clock must be in sync\
@@ -57,42 +77,42 @@ code that should be evaluated together is set in parentheses.\
 \f1\fs18 \
 	\
 
-\f4\b\fs26 *push(server, name, clock)
+\f2\b\fs26 *push(server, name, clock)
 \f1\b0\fs18 \
 	
 \f0\fs24 replace the currentEnvironment with a new ProxySpace. if it is current already, it is left where it is.
 \f1\fs18 \
 	\
 
-\f4\b\fs26 *pop
+\f2\b\fs26 *pop
 \f1\b0\fs18 \
 	
 \f0\fs24 restore the previous currentEnvironment\
 \
 
-\f4\b\fs26 play(key)
+\f2\b\fs26 play(key)
 \f1\b0\fs18 \
 	
 \f0\fs24 returns a group that plays the NodeProxy at that key. default key: \\out\
 \
 
-\f4\b\fs26 record(key, path, headerFormat, sampleFormat)
+\f2\b\fs26 record(key, path, headerFormat, sampleFormat)
 \f1\b0\fs18 \
 	
 \f0\fs24 returns a RecNodeProxy that records the NodeProxy at that key
-\f2\fs26 \
+\f3\fs26 \
 \
 
-\f4\b ar(key, numChannels)\
+\f2\b ar(key, numChannels)\
 kr(key, numChannels)
 \f1\b0\fs18 \
 	
 \f0\fs24 returns a NodeProxy output that plays the NodeProxy at that key.\
 \
 
-\f4\b\fs26 wakeUp
+\f2\b\fs26 wakeUp
 \f0\b0\fs24 	
-\f2\fs26 \
+\f3\fs26 \
 	
 \f0\fs24 when the proxyspace is created without a running server this method can be used\
 	to run it (internally this is done by play(key) as well.\
@@ -102,7 +122,7 @@ kr(key, numChannels)
 \f1\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs26 \cf0 ____________________________________________________
+\f3\fs26 \cf0 ____________________________________________________
 \f1\fs18 \
 \
 \
@@ -117,6 +137,7 @@ preparation of the environment\
 \cf0 (\
 s = \cf4 Server\cf0 .local;\
 s.boot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 p = ProxySpace\cf0 .push(s);\
 )\
 \
@@ -152,7 +173,7 @@ x = ~out.play; \cf3 //returns a group, store in interpreter variable x\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //once the SynthDef is sent, it can be assigned by name:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 SynthDef\cf0 (\cf5 "\cf0 staub\cf5 "\cf0 , \{ \cf4 arg\cf0  out=0; \cf4 Out\cf0 .ar(out, \cf4 Pan2.ar(Ringz.ar(Dust.ar(15), 900, 0.01\cf0 )\cf4 ,0\cf0 )) \}).send(s);\
+\cf4 SynthDef\cf0 (\cf5 "\cf0 staub\cf5 "\cf0 , \{ \cf4 arg\cf0  out=0; \cf4 Out\cf0 .ar(out, \cf4 Ringz.ar(Dust.ar(15), 9000*[1,1], 0.001\cf0 )) \}).send(s);\
 \
 ~out = \\staub;\
 \
@@ -166,7 +187,17 @@ x = ~out.play; \cf3 //returns a group, store in interpreter variable x\cf0 \
 	\});\
 )\
 \
+\cf3 //if you supply an envelope that frees itself, no bundle is sent to free it\cf0 \
+(\
+~out = \cf4 SynthDef\cf0 (\cf5 "w"\cf0 , \{ arg out, lfo;\
+	\cf4 Out\cf0 .ar(out,\
+		\cf4 SinOsc\cf0 .ar([\cf4 Rand\cf0 (430, 800), \cf4 Rand\cf0 (430, 800)]+lfo, 0, 0.2) * \cf4 EnvGen\cf0 .kr(\cf4 Env\cf0 .perc(0.01, 0.03), doneAction:2)\
+	) \
+	\});\
+)\
 \
+~out.gspawner(0.01,[]);\
+~out.freeTask;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -218,7 +249,7 @@ currentEnvironment.free; \cf3 //free all node proxies\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul waking up a network of proxies
-\f2\fs26 \ulnone \
+\f3\fs26 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -230,7 +261,7 @@ currentEnvironment.free; \cf3 //free all node proxies\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul feeding back\ulnone  (one buffer size delay)
-\f2\fs26 \
+\f3\fs26 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -275,13 +306,16 @@ currentEnvironment.free; \cf3 //free all node proxies\cf0 \
 ~out.add(\{ \cf4 SinOsc\cf0 .ar(500, 0, 0.1) \});\
 ~out.add(\{ \cf4 SinOsc\cf0 .ar(400, 0, 0.1) \});\
 \
+\cf3 //or with direct access:\cf0 \
+~out[1] = \{ \cf4 SinOsc\cf0 .ar(500 * 1.2, 0, 0.1) \};\
+~out[2] = \{ \cf4 SinOsc\cf0 .ar(400 * 1.2, 0, 0.1) \};\
 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul restoring / erasing
-\f2\fs26 \ulnone \
+\f3\fs26 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -302,7 +336,7 @@ currentEnvironment.free; \cf3 //free all node proxies\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul execution order
-\f2\fs26 \ulnone \
+\f3\fs26 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -342,9 +376,9 @@ currentEnvironment.clear;\
 ~out.set(\cf6 \\ffreq\cf0 , 3+10.rand2, \cf6 \\freq\cf0 , 300);\
 ~out = \{ \cf4 arg\cf0  t_trig; \cf4 Decay2\cf0 .kr(t_trig, 0.01, 0.2) * \cf4 Mix\cf0 (\cf4 SinOsc\cf0 .ar(7000*[1.2, 1.3, 0.2])) \}\
 \
-~out.set(\cf6 \\t_trig\cf0 , 0.1);\
-~out.set(\cf6 \\t_trig\cf0 , 0.4);\
-~out.set(\cf6 \\t_trig\cf0 , 0.13);\
+~out.group.set(\cf6 \\t_trig\cf0 , 0.1);\
+~out.group.set(\cf6 \\t_trig\cf0 , 0.4);\
+~out.group.set(\cf6 \\t_trig\cf0 , 0.13);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 //argument settings and mappings are applied to every new function\cf0 \
@@ -393,7 +427,7 @@ currentEnvironment.clear;\
 ~out.set(\cf6 \\freq\cf0 , 5000);\
 ~out.stop;\
 \
-\
+\cf3 //problems here still: \cf0 \
 (\
 ~out = \cf4 InstrSpawner\cf0 (\{ \cf4 arg\cf0  freq=900,env,pan;\
 	\cf4 Pan2\cf0 .ar(\cf4 SinOsc\cf0 .ar(freq, 0, 0.3) * \cf4 EnvGen\cf0 .kr(env,doneAction: 2), pan)\
@@ -422,12 +456,12 @@ currentEnvironment.clear;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs26 \cf0 \
+\f3\fs26 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul spawning\ulnone  
-\f2\fs26 \
+\f3\fs26 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -451,7 +485,7 @@ currentEnvironment.clear;\
 t = \cf4 Task\cf0 (\{\
 	loop(\{\
 		~out.send([\cf6 \\pmf\cf0 , [1, 20, 300].choose]); \cf3 //starts a synth with the current synthdef\cf0 \
-		[0.1, 0.1].choose.wait;\
+		[0.1, 0.01].choose.wait;\
 	\})\
 \});\
 )\
@@ -485,14 +519,14 @@ t.stop;\
 \cf3 //free all synths in this current ProxySpace\cf0 \
 currentEnvironment.free;\
 x.free;
-\f2\fs26 \
+\f3\fs26 \
 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\fs24 \cf0 \ul granular synthesis: efficient coding
-\f2\fs26 \ulnone \
+\f3\fs26 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -500,10 +534,11 @@ x.free;
 ~out.play;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs26 \cf0 \
+\f3\fs26 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 SynthDef\cf0 (\cf5 "grain"\cf0 , \{ \cf4 arg\cf0  i_out = 0;\
 	\cf4 var\cf0  env;\
 	env = \cf4 EnvGen\cf0 .kr(\cf4 Env\cf0 .perc(0.001, 0.003),doneAction:2);\
@@ -546,7 +581,7 @@ t.stop;\
 currentEnvironment.clear;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 ProxySpace\cf0 .pop; \cf3 //restore original environment
-\f2\fs26 \cf0 \
+\f3\fs26 \cf0 \
 \
 \
 \
@@ -556,9 +591,8 @@ currentEnvironment.clear;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \ulnone note that this can be done while the server is not running: with p.wakeUp or p.play\
 the environment can be played back.\ul \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs26 \cf0 \ulnone \
+\f3\fs26 \ulnone \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -577,9 +611,10 @@ x = p.play(\cf6 \\out\cf0 ); \cf3 //play the proxy at \\out\cf0 \
 \
 (\
 q.use(\{\
+	\
 	~in = \{ \cf4 Dust\cf0 .ar(20, 0.1) \};\
-	~out = \{ \cf4 Pan2\cf0 .ar(\cf4 Ringz\cf0 .ar(~in.ar, ~freq.kr, 0.3), \cf4 LFNoise1\cf0 .kr(0.3)) \};\
-	~freq = \{ \cf4 LFNoise2\cf0 .kr(1, 100, 2000) \};\
+	~out = \{ \cf4 Resonz\cf0 .ar(~in.ar * 450, ~freq.kr, 0.005) \};\
+	~freq = \{ \cf4 LFNoise2\cf0 .kr(1, 400, 2000) \};\
 \});\
 )\
 \
@@ -613,9 +648,10 @@ r.close;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
+\
 (\
 q.use(\{\
-	~freq = p.at(\cf6 \\freq\cf0 ) + 100;\
+	~freq =  100 + p.at(\cf6 \\freq\cf0 ) / 2;\
 \})\
 )\
 \
