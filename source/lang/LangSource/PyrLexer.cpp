@@ -1937,13 +1937,28 @@ bool sc_DirectoryExists(const char *dirname)
 
 // Returns TRUE iff 'name' is to be ignored during compilation.
 
+static bool sc_IsNonHostPlatformDir(const char *name);
+static bool sc_IsNonHostPlatformDir(const char *name)
+{
+#if defined(SC_DARWIN)
+  char a[] = "linux", b[] = "windows";
+#elif defined(SC_LINUX)
+  char a[] = "osx", b[] = "windows";
+#elif defined(SC_WIN32)
+  char a[] = "osx", b[] = "linux";
+#endif
+  return ((strcmp(name, a) == 0) || 
+	  (strcmp(name, b) == 0));
+}
+
 static bool sc_SkipDirectory(const char *name);
 static bool sc_SkipDirectory(const char *name)
 {
   return ((strcmp(name, ".") == 0) || 
 	  (strcmp(name, "..") == 0) ||
 	  (strcasecmp(name, "help") == 0) ||
-	  (strcasecmp(name, "test") == 0));
+	  (strcasecmp(name, "test") == 0) ||
+	  sc_IsNonHostPlatformDir(name));
 }
 
 bool passOne_ProcessDir(char *dirname, int level);
