@@ -28,7 +28,7 @@ ControlSpec : Spec {
 	ratio { ^maxval / minval }
 	map { arg value;
 		// maps a value from [0..1] to spec range
-		^warp.map(value.clip(0.0, 1.0).round(step));
+		^warp.map(value.clip(0.0, 1.0)).round(step);
 	}
 	unmap { arg value;
 		// maps a value from spec range to [0..1]
@@ -91,7 +91,9 @@ Warp {
 			\sin -> SineWarp,
 			\cos -> CosineWarp,
 			\amp -> FaderWarp,
-			\db -> DbFaderWarp
+			\db -> DbFaderWarp,
+			\linear -> LinearWarp,
+			\exponential -> ExponentialWarp
 		];
 		// CurveWarp is specified by a number, not a Symbol
 	}
