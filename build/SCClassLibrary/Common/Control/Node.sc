@@ -104,6 +104,30 @@ Node {
 	moveToTail { arg aGroup;
 		aGroup.asGroup.moveNodeToTail(this);
 	}
+	// addAction conversion
+	
+	// return messages for bundling
+	addToHead { arg arggroup, args; 
+		group = arggroup.asGroup;
+		 ^this.nodeToServerMsg(group.nodeID, 0, args);
+	}
+	addToTail { arg arggroup, args;
+	 	group = arggroup.asGroup;
+	 	^this.nodeToServerMsg(group.nodeID, 1, args);
+	}
+	addAfter {  arg afterThisOne, args;
+	 	group = afterThisOne.group;
+	 	^this.nodeToServerMsg(afterThisOne.nodeID, 3, args);
+	}
+	addBefore {  arg beforeThisOne, args;
+	 	group = beforeThisOne.group;
+	 	^this.nodeToServerMsg(beforeThisOne.nodeID, 2, args);
+	}
+	addReplace { arg removeThisOne, args;
+	 	group = removeThisOne.group;
+	 	^this.nodeToServerMsg(removeThisOne.nodeID, 4, args);
+	}
+			
 	
 	// message creating methods
 	
