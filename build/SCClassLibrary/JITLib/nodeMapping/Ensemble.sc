@@ -4,17 +4,19 @@
 Ensemble : AbstractEnsemble {
 	var  <nodeMap;
 	
-	*new { arg  target,addAction=\addToTail, nodeMap;
+	*new { arg target, addAction=\addToTail, nodeMap;
 			^super.new(target,addAction).ginit(nodeMap);
 	}
 	
 	ginit { arg map;
 		nodeMap = map ?? { NodeMap.new };
 	}
+	
 	nodeMap_ { arg map;
 		nodeMap = map;
 		if(this.isPlaying ?? nodeMap.notNil, {nodeMap.sendToNode(this)});
 	}
+	
 	map { arg ... args;
 		nodeMap.performList(\map, args);
 		if(this.isPlaying,{
@@ -64,16 +66,18 @@ Ensemble : AbstractEnsemble {
 		nodeMap.addMsg(cmdArray)
 	}
 	
-	*newToBundle { arg msgList, target, addAction=\addToTail, nodeMap;
+	*newToBundle { arg bundle, target, addAction=\addToTail, nodeMap;
 		var res;
-		res = super.newToBundle(msgList, target, addAction);
+		res = super.newToBundle(bundle, target, addAction);
 		res.nodeMap_(nodeMap); 
-		nodeMap.updateMsg(msgList, res);
+		nodeMap.addToBundle(bundle, res);
 		^res
 	}
-	finishBundle { arg cmdList, reciever;
-		^nodeMap.updateMsg(cmdList, reciever);
+	finishBundle { arg bundle, reciever;
+		nodeMap.addToBundle(bundle, reciever);
 	}
+	
+	isPlaying { ^server.nodeIsPlaying(nodeID) }
 	
 	
 }

@@ -72,10 +72,10 @@ NodeMap {
 	}
 	
 	send { arg server, nodeID, latency;
-		var msg;
-		msg = List.new;
-		this.updateMsg(msg, nodeID);
-		server.listSendBundle(latency, msg);
+		var bundle;
+		bundle = List.new;
+		this.addToBundle(bundle, nodeID);
+		server.listSendBundle(latency, bundle);
 	}
 	
 	sendToNode { arg node, latency;
@@ -132,7 +132,7 @@ NodeMap {
 	}
 	
 	
-	updateMsg { arg msgList, target;
+	addToBundle { arg msgList, target;
 		var mapArgs, valArgs, multiValArgs;
 			target = target.asNodeID;
 				mapArgs = this.mapArgs;

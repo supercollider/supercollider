@@ -1,17 +1,20 @@
+
 OSCBundle {
 	var <server, <messages;
 	*new { arg server; ^super.new.minit(server) }
 	
 	minit { arg srv;
 		server = srv;
-		messages = LinkedList.new;
+		messages = Array.new;
 	}	
-	send { arg latency;
-		var array;
-		server.listSendBundle(latency, messages);
+	send {
+		server.listSendBundle(nil, messages);
+	}
+	schedSend { arg time, clock;
+		(clock ? SystemClock).sched(time,{ this.send });
 	}
 	add { arg msg;
-		messages.add(msg);
+		messages = messages.add(msg);
 	}
 	printOn { arg stream;
 		stream << this.class.name << ": " <<< messages;
@@ -24,25 +27,56 @@ OSCBundle {
 
 MixedBundle : OSCBundle {
 	
-	var <functions;
+	var <functions; //functions to evaluate on send 
+	var <preparationMessages; //messages to send first on schedSend
 	
 	minit { arg srv;
 		server = srv;
-		messages = LinkedList.new;
-		functions = LinkedList.new;
+		messages = Array.new;
+		functions = Array.new;
 	}
 	
-	send { arg latency;
-		var array;
+	schedSend { arg time=0, clock, useResponder=false, onCompletion;
+		var resp;
+		//use OSCScheduler later
+		if(useResponder && preparationMessages.isEmpty.not, {
+			resp = OSCresponder(server.addr, '/done', { 
+							(clock ? SystemClock).sched(time,{ 
+								this.send;
+								onCompletion.value
+							});
+							resp.remove;
+					}).add;
+			this.sendPrepare;
+		},{
+			this.sendPrepare;
+			(clock ? SystemClock).sched(time,{
+								this.send;
+								onCompletion.value 
+			});
+		});
+	}
+	
+	addFunction { arg func;
+		functions = functions.add(func);
+	}
+	
+	addPrepare { arg msg;
+		preparationMessages = preparationMessages.add(msg);
+	}
+	
+	send { 
+		var array, latency;
 		//array = asRawOSC([nil,messages]).postln;
+		latency = server.latency;
 		server.listSendBundle(latency, messages);
 		//server.sendRaw(array);
 		functions.do({ arg item; item.value(latency) });
 	}
 	
-	addFunction { arg func;
-		functions.add(func);
+	sendPrepare {
+		server.listSendBundle(nil, preparationMessages);
 	}
 
-	
+		
 }
