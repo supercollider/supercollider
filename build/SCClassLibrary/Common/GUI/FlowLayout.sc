@@ -1,7 +1,7 @@
 
 FlowLayout {
 	var <bounds, <>margin, <>gap;
-	var <left, <top, maxHeight,<maxRight; 
+	var <left, <top, <maxHeight,<maxRight; 
 	
 	*new { arg bounds, margin, gap;
 		^super.newCopyArgs(bounds, margin, gap).init
