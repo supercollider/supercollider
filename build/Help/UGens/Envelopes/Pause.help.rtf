@@ -13,7 +13,7 @@
 superclass: UGen\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 // does not work yet\
+\cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 	
@@ -22,7 +22,7 @@ superclass: UGen\
 	\
 	
 \f0\b gate		
-\f1\b0 when triggered, pauses node\
+\f1\b0 when gate is 0,  node is paused, when 1 it runs\
 	\
 	
 \f0\b nodeID
@@ -32,16 +32,19 @@ superclass: UGen\
 	\
 	\cf2 //example\cf0 \
 	\
-	\cf3 (\
-	\cf4 SynthDef\cf3 (\cf5 "pause-help"\cf3 , \{ \cf4 arg\cf3  id;\
-		\cf4 Pause\cf3 .kr(\cf4 Impulse\cf3 .kr(1, 0.5), id)\
-	\}).send(s);\
-	\cf4 SynthDef\cf3 (\cf5 "sine-help"\cf3 , \{\'ca\cf4 arg\cf3  out, freq=400;\
-		\cf4 Out\cf3 .ar(out, \cf4 SinOsc\cf3 .ar(freq,0,0.2))\
-	\}).send(s);\
-	)\
+	\cf3 s.boot;\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 	\cf4 SynthDef\cf3 (\cf5 "a"\cf3 , \{ \cf4 Out\cf3 .ar(0, \cf4 SinOsc\cf3 .ar(800, 0, 0.2)) \}).send(s);\
 	\
-	s.sendMsg(\cf5 "/s_new"\cf3 , \cf5 "sine-help"\cf3 , 1731);\
-	s.sendMsg(\cf5 "/s_new"\cf3 , \cf5 "pause-help"\cf3 , 1539, 0, 0, \cf6 \\id\cf3 , 1731);\
-	s.sendMsg(\cf5 "/n_run"\cf3 , 1731, 1);\
-	s.sendMsg(\cf5 "/n_free"\cf3 , 1539, 1731);}
+	\cf4 SynthDef\cf3 (\cf5 "b"\cf3 , \{ \cf4 arg\cf3  gate=1; \cf4 Out\cf3 .ar(1, \cf4 PinkNoise\cf3 .ar(0.3)); \cf4 Pause\cf3 .kr(gate, 1001); \}).send(s);\
+	\
+	s.sendMsg(\cf6 \\s_new\cf3 , \cf6 \\a\cf3 , 1001, 0, 0);\
+	\
+	s.sendMsg(\cf6 \\s_new\cf3 , \cf6 \\b\cf3 , 1002, 0, 0);\
+	\
+	s.sendMsg(\cf6 \\n_set\cf3 , 1002, \cf6 \\gate\cf3 , 0);\
+	\
+	s.sendMsg(\cf6 \\n_set\cf3 , 1002, \cf6 \\gate\cf3 , 1);\cf0 \
+	\
+}
