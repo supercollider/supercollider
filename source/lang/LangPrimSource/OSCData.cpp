@@ -53,7 +53,11 @@ struct InternalSynthServerGlobals
 	int mNumSharedControls;
 	float *mSharedControls;
 };
-InternalSynthServerGlobals gInternalSynthServer = { 0, 0, 0, 0, 0 };
+
+const int kNumDefaultSharedControls = 1024;
+float gDefaultSharedControls[kNumDefaultSharedControls];
+
+InternalSynthServerGlobals gInternalSynthServer = { 0, 0, 0, kNumDefaultSharedControls, gDefaultSharedControls };
 
 SC_UdpInPort* gUDPport = 0;
 
@@ -755,19 +759,21 @@ int prAllocSharedControls(VMGlobals *g, int numArgsPushed)
 		post("can't allocate while internal server is running\n");
 		return errNone;
 	}
-	if (gInternalSynthServer.mSharedControls) {
+	if (gInternalSynthServer.mSharedControls != gDefaultSharedControls) {
 		free(gInternalSynthServer.mSharedControls);
-		gInternalSynthServer.mNumSharedControls = 0;
-		gInternalSynthServer.mSharedControls = 0;
+		gInternalSynthServer.mSharedControls = gDefaultSharedControls;
 	}
 	int numSharedControls;
 	int err = slotIntVal(b, &numSharedControls);
 	if (err) return err;
-	if (numSharedControls <= 0) return errNone;
-	
-	gInternalSynthServer.mNumSharedControls = numSharedControls;
-	gInternalSynthServer.mSharedControls = (float*)calloc(numSharedControls, sizeof(float));
-	
+	if (numSharedControls <= 0) {
+		gInternalSynthServer.mNumSharedControls = 0;
+	} else if (numSharedControls < kNumDefaultSharedControls) {
+		gInternalSynthServer.mNumSharedControls = numSharedControls;
+	} else {
+		gInternalSynthServer.mNumSharedControls = numSharedControls;
+		gInternalSynthServer.mSharedControls = (float*)calloc(numSharedControls, sizeof(float));
+	}
 	return errNone;
 }
 
