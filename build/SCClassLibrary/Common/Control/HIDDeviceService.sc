@@ -43,7 +43,7 @@ HIDDeviceElement {
 
 HIDDeviceService{
 	classvar < devices, <> action;
-	var < initialized = false;
+	classvar < initialized = false;
 	
 
 	*getValue{arg locID, cookie;
