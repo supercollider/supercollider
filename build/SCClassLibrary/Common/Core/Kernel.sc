@@ -163,7 +163,6 @@ Process {
 	// A Process is a runtime environment.
 	var classVars, <interpreter;
 	var curThread, mainThread;
-	var <processID; // 0 = application, 1 = audio engine
 	var schedulerQueue;
 	
 	startup {	
