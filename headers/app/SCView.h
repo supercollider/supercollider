@@ -332,7 +332,7 @@ public:
 	virtual void draw(SCRect inDamage);
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	
-	bool setValue(double inLo, double inHi, bool send);
+	virtual bool setValue(double inLo, double inHi, bool send);
 
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
@@ -360,9 +360,13 @@ public:
 	virtual void mouseBeginTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	virtual void mouseEndTrack(SCPoint where, int modifiers,NSEvent *theEvent);
+    
+    virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+
+    virtual bool setValue(double inX, double inY,bool send);
 
 protected:	
-    virtual void setValueFromPoint(SCPoint where);
+    int mClipInBounds;
 
 };
 SCView* NewSC2DTabletSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);

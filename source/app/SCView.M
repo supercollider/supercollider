@@ -1724,15 +1724,37 @@ SCView* NewSC2DTabletSlider(SCContainerView *inParent, PyrObject* inObj, SCRect 
 	return new SC2DTabletSlider(inParent, inObj, inBounds);
 }
 SC2DTabletSlider::SC2DTabletSlider(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: SC2DSlider(inParent, inObj, inBounds)
+	: SC2DSlider(inParent, inObj, inBounds), mClipInBounds(1)
 {
 }
 
-void SC2DTabletSlider::setValueFromPoint(SCPoint where)
+int SC2DTabletSlider::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+    char *name = symbol->name;
+    if (strcmp(name, "clipInBounds")==0) {
+        slotIntVal(slot, &mClipInBounds);
+        return errNone;
+    }
+    return SC2DSlider::setProperty(symbol, slot);
+}
+
+bool SC2DTabletSlider::setValue(double inX, double inY,bool )
 {
-    double x = (where.x - mBounds.x - 1 - THUMBSIZE/2) / (mBounds.width - THUMBSIZE - 2);
-    double y = 1. - (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
-    setValue(x, y, false); // do NOT send action
+    if(mClipInBounds) {
+        inX = sc_clip(inX, 0., 1.);
+        inY = sc_clip(inY, 0., 1.);
+    }
+    if (mStepSize > 0.) {
+        inX = floor(inX * mStepScale + 0.5) * mStepSize;
+        inY = floor(inY * mStepScale + 0.5) * mStepSize;
+    }
+    bool changed = inX != mX || inY != mY;
+    if (changed) {
+        mX = inX;
+        mY = inY;
+        refresh();
+    }
+    return changed;
 }
 
 void SC2DTabletSlider::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
@@ -1740,20 +1762,16 @@ void SC2DTabletSlider::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *th
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else {
-        double x = (where.x - mBounds.x - 1 - THUMBSIZE/2) / (mBounds.width - THUMBSIZE - 2);
-        double y = 1. - (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
-        setValue(x, y, false); // do NOT send action
-        TABLETTRACK(s_mouseDown,x,y)
+        setValueFromPoint(where);
+        TABLETTRACK(s_mouseDown,mX,mY)
     }
 }
 
 void SC2DTabletSlider::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
    if (! (modifiers & NSCommandKeyMask)) {
-        double x = (where.x - mBounds.x - 1 - THUMBSIZE/2) / (mBounds.width - THUMBSIZE - 2);
-        double y = 1. - (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
-        setValue(x, y, false); // do NOT send action
-        TABLETTRACK(s_doaction,x,y)
+        setValueFromPoint(where);
+        TABLETTRACK(s_doaction,mX,mY)
     }
 }
 
@@ -1762,10 +1780,8 @@ void SC2DTabletSlider::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theE
     if (modifiers & NSCommandKeyMask) {
         receiveDrag();
     } else {
-        double x = (where.x - mBounds.x - 1 - THUMBSIZE/2) / (mBounds.width - THUMBSIZE - 2);
-        double y = 1. - (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
-        setValue(x, y, false); // do NOT send action
-        TABLETTRACK(s_mouseUp,x,y)
+        setValueFromPoint(where);
+        TABLETTRACK(s_mouseUp,mX,mY)
     }
 }
 
@@ -3871,13 +3887,12 @@ SCTabletView::~SCTabletView()
 
 int SCTabletView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {	
-	int err;
-        char *name = symbol->name;
-        if (strcmp(name, "clipToBounds")==0) {
-            slotIntVal(slot, &mClipToBounds);
-            return errNone;
-        }
-        return SCView::setProperty(symbol, slot);
+    char *name = symbol->name;
+    if (strcmp(name, "clipToBounds")==0) {
+        slotIntVal(slot, &mClipToBounds);
+        return errNone;
+    }
+    return SCView::setProperty(symbol, slot);
 }
 
 void SCTabletView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
