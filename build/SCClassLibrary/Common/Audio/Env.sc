@@ -67,6 +67,9 @@ Env {
 	
 	
 	// envelopes with sustain
+	*cutoff { arg releaseTime = 0.1, level = 1.0, curve = \lin;
+		^this.new([level, 0], [releaseTime], curve, 0)
+	}
 	*adsr { arg attackTime=0.01, decayTime=0.3, 
 			sustainLevel=0.5, releaseTime=1.0,
 				peakLevel=1.0, curve = -4.0, bias = 0.0;
