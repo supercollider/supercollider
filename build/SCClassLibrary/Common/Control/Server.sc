@@ -1,4 +1,42 @@
 
+ServerOptions
+{
+	var <>numAudioBusChannels=128;
+	var <>numControlBusChannels=4096;
+	var <>numInputBusChannels=2;
+	var <>numOutputBusChannels=2;
+	var <>numBuffers=1024;
+	var <>maxNodes=1024;
+	var <>maxSynthDefs=1024;
+
+	asString {
+		var o;
+		o = "";
+		if (numAudioBusChannels != 128, { 
+			o = o ++ " -a " ++ numAudioBusChannels;
+		});
+		if (numControlBusChannels != 4096, { 
+			o = o ++ " -c " ++ numControlBusChannels;
+		});
+		if (numInputBusChannels != 2, { 
+			o = o ++ " -i " ++ numInputBusChannels;
+		});
+		if (numOutputBusChannels != 2, { 
+			o = o ++ " -o " ++ numOutputBusChannels;
+		});
+		if (numBuffers != 1024, { 
+			o = o ++ " -b " ++ numBuffers;
+		});
+		if (maxNodes != 1024, { 
+			o = o ++ " -n " ++ maxNodes;
+		});
+		if (maxSynthDefs != 1024, { 
+			o = o ++ " -d " ++ maxSynthDefs;
+		});
+		^o
+	}
+}
+
 Server : Model {
 	classvar <>local, <>internal, <>named, <>set;
 	
@@ -7,14 +45,7 @@ Server : Model {
 	var <serverRunning = false, <alive = false;
 	var <window;
 
-	// command line options
-	var <>numAudioBusChannels=128;
-	var <>numControlBusChannels=4096;
-	var <>numInputBusChannels=2;
-	var <>numOutputBusChannels=2;
-	var <>numBuffers=1024;
-	var <>maxNodes=1024;
-	var <>maxSynthDefs=1024;
+	var <>options = "";
 	
 	*new { arg name, addr;
 		^super.new.init(name, addr)
@@ -73,32 +104,6 @@ Server : Model {
 		resp.add;
 	}
 	
-	cmdLineOptions {
-		var o;
-		o = "";
-		if (numAudioBusChannels != 128, { 
-			o = o ++ " -a " ++ numAudioBusChannels;
-		});
-		if (numControlBusChannels != 4096, { 
-			o = o ++ " -c " ++ numControlBusChannels;
-		});
-		if (numInputBusChannels != 2, { 
-			o = o ++ " -i " ++ numControlBusChannels;
-		});
-		if (numOutputBusChannels != 2, { 
-			o = o ++ " -o " ++ numControlBusChannels;
-		});
-		if (numBuffers != 1024, { 
-			o = o ++ " -b " ++ numControlBusChannels;
-		});
-		if (maxNodes != 1024, { 
-			o = o ++ " -n " ++ numControlBusChannels;
-		});
-		if (maxSynthDefs != 1024, { 
-			o = o ++ " -d " ++ numControlBusChannels;
-		});
-		^o
-	}
 	boot {
 		if (this.serverRunning, { "already running".postln; ^nil });
 		
@@ -106,8 +111,7 @@ Server : Model {
 		if (inProcess, { 
 			this.bootInProcess; 
 		},{
-			unixCmd("./scsynth -u " ++ addr.port ++ " " 
-					++ this.cmdLineOptions);
+			unixCmd("./scsynth -u " ++ addr.port ++ " " ++ options.asString);
 		});
 		
 		alive = true;
