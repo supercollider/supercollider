@@ -225,7 +225,6 @@ SynthDef {
 			if (item.name.notNil, {
 				file.putPascalString(item.name.asString);
 				file.putInt16(item.index);
-				[item.name.asString, item.index].postln;
 			});
 		});
 
