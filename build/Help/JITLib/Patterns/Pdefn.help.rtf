@@ -22,14 +22,15 @@
 \
 keeps a reference to a task that can be replaced while playing.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b Pdefn(key)
+\f0\b \cf0 Pdefn(key)
 \f2\b0  returns the instance, 
 \f0\b Pdefn(key, pat) 
 \f2\b0 defines the pattern \
 and returns the instance, like Pdef, Tdef and Ndef.\
-it is very similar to 
-\f0\b PatternProxy
+it is very similar to [
+\f0\b \ul PatternProxy\ulnone ]
 \f2\b0 \
 \
 it can be used to store value patterns globally (for event patterns, see 
@@ -73,14 +74,13 @@ it can be used to store value patterns globally (for event patterns, see
 \f0\b quant_(beats)
 \f2\b0 \
 			set the quantisation time for beat accurate scheduling\
-			can be a pair [offset, quant]\
-	\
+			can be a pair [quant, offset]\
+				\
 	*
 \f0\b defaultQuant_(beats)
 \f2\b0 \
 			set the default quantisation for new instances (default: nil)\
-			can be a pair [offset, quant]\
-\
+			can be a pair [quant, offset]\
 	\ul \
 	
 \f0\b \ulnone source_	\
@@ -98,12 +98,33 @@ it can be used to store value patterns globally (for event patterns, see
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf0 \
+\f1\fs18 \cf0 	
+\f2\fs24 \
+	
+\f0\b envir_(event)
+\f2\b0 \
+			provide a default environment for the proxy. \
+			If given,  it is used as an environment for the routine \
+			function. When set for the first time, the routine pattern is rebuilt.\
+	\
+	
+\f0\b set(key, val, key2, val2, ...)
+\f2\b0 \
+			set arguments in the environment. \
+			If there is none, it is created and the pattern is rebuilt.\
+			\
+	
+\f0\b map(key, pdefKey, key, pdefKey ...)
+\f2\b0 \
+			map one Pdefn to the other. the patterns can be accessed via the currentEnvironment
+\f1\fs18 \
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // example\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Pdefn\cf0 (\cf4 \\x\cf0 , \cf3 Pseq\cf0 ([1, 2, 3],\cf3 inf\cf0 ));\
 \
 x = \cf3 Pseq\cf0 ([0, 0, \cf3 Pdefn\cf0 (\cf4 \\x\cf0 )], \cf3 inf\cf0 ).asStream;\
@@ -116,7 +137,9 @@ x = \cf3 Pseq\cf0 ([0, 0, \cf3 Pdefn\cf0 (\cf4 \\x\cf0 )], \cf3 inf\cf0 ).asStre
 \
 t.stop;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // Pdefn can be accessed in multiple streams\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
 \cf0 (\
 \cf3 SynthDef\cf0 (\cf5 "Pdefhelp"\cf0 , \{ \cf3 arg\cf0  out, freq, sustain=1, amp=1, pan;\
@@ -146,8 +169,10 @@ s.boot;\
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // if quant is set, the update is done at the next beat or whatever is specified:\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 Pdefn\cf0 (\cf4 \\deg\cf0 ).quant = 4;\
 \cf3 Pdefn\cf0 (\cf4 \\deg\cf0 , \cf3 Pn\cf0 (\cf3 Pseries\cf0 (0, 1, 8),\cf3 inf\cf0 ));\
 \

@@ -19,8 +19,8 @@
 keeps a reference to a stream that can be replaced while playing, just like its superclass.\
 It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.\
 \
-it is very similar to 
-\f0\b EventPatternProxy, 
+it is very similar to [
+\f0\b \ul EventPatternProxy\ulnone ], 
 \f2\b0 but handles the storing of global instances:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -32,8 +32,8 @@ it is very similar to
 \
 it can be used to store event Patterns globally. Changes in this global library have effect immediately, or if quant/offset values are given, at the next time step.\
 \
-For value patterns (numerical, non event patterns) 
-\f0\b Pdefn
+For value patterns (numerical, non event patterns) [
+\f0\b \ul Pdefn\ulnone ]
 \f2\b0  is used.\
 \
 \
@@ -78,13 +78,13 @@ For value patterns (numerical, non event patterns)
 \f0\b quant_(beats)
 \f2\b0 \
 			set the quantisation time for beat accurate scheduling.\
-			can be an array [offset, quant, outset]\
+			can be an array [quant, offset, outset]\
 	\
 	*
 \f0\b defaultQuant_(beats)
 \f2\b0 \
 			set the default quantisation for new instances (default: 1.0)\
-			can be a pair [offset, quant]\
+			can be an array  [quant, offset, outset]\
 	\
 	
 \f0\b fadeTime_(beats)
@@ -92,14 +92,25 @@ For value patterns (numerical, non event patterns)
 			when the synthdefs that are used contain an \\amp control, the patterns are replaced\
 			by crossfading the previous with the new over this time (in beats)\
 			\
+	
+\f0\b envir_(event)
+\f2\b0 \
+			provide a default event for the Pdef. It is used to filter the incoming stream before it\
+			is  passed to the source pattern.  This is similar to NodeProxy-nodeMap.\
+			When set for the first time, the pattern is rebuilt.\
+	\
+	
+\f0\b set(key, val, key2, val2, ...)
+\f2\b0 \
+			set arguments in the default event. If there is none, it is created and the pattern is rebuilt.\
 \
-\
-\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f3\i\b \cf0 a) using it as stream reference
-\f2\i0\b0 \
-	\ul \
+	\
+	
+\f0\b map(key, pdefKey, key, pdefKey ...)
+\f2\b0 \
+			map Pdefn to the keys in the event.\
+			\
+	\ul \ulc0 \
 	
 \f0\b \ulnone source_	\
 			
@@ -108,13 +119,22 @@ For value patterns (numerical, non event patterns)
 \f0\b pattern_
 \f2\b0 (..) is equivalent)\
 	\
+				\
+\
+			\
+			\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f3\i\b \cf0 a) using it as stream reference
+\f2\i0\b0 \
+	\
+	\
 	
 \f0\b embedInStream(inval)\
 			
 \f2\b0 just like any pattern, embeds itself in stream\
 	\
-\
-\
 \
 \
 
@@ -172,6 +192,7 @@ a) embedding Pdef into a stream:\
 \f1\b0\fs18 \cf0 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "Pdefhelp"\cf0 , \{ \cf2 arg\cf0  out, freq, sustain=1, amp=1, pan;\
 	\cf2 var\cf0  env, u=1;\
 	env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.03, sustain), 1, doneAction:2);\
@@ -194,8 +215,10 @@ x = \cf2 Pseq\cf0 ([\cf2 Pdef\cf0 (\cf4 \\a\cf0 ), \cf2 Pdef\cf0 (\cf4 \\b\cf0 )
 \cf2 Pdef\cf0 (\cf4 \\c\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 (#[4, 3, 1, 2]*3)));\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // infinite loops are scheduled (to ths clock's next beat by default) and released:\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\a\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 0.753, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 (#[0, 5, 4, 3, 2], \cf2 inf\cf0 )));\
 \cf2 Pdef\cf0 (\cf4 \\a\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 0.125, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 (#[0, 5, 4, 3] + 1, 1)));\
 \cf2 Pdef\cf0 (\cf4 \\a\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 (#[0, 5, 4, 3] - 1, 1)));\
@@ -206,9 +229,11 @@ x = \cf2 Pseq\cf0 ([\cf2 Pdef\cf0 (\cf4 \\a\cf0 ), \cf2 Pdef\cf0 (\cf4 \\b\cf0 )
 x.stop;\
 \cf2 Pdef\cf0 (\cf4 \\metronom\cf0 ).stop;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // Pdef can be used in multiple patterns: think global, play local\cf0 \
 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 x = Ppar\cf0 ([\
 	\cf2 Pbindf\cf0 (\cf2 Pn\cf0 (\cf2 Pdef\cf0 (\cf4 \\a\cf0 ), \cf2 inf\cf0 ),\
 		\cf4 \\gtranspose\cf0 , \cf2 Pstutter\cf0 (8, \cf2 Pseq\cf0 (#[0, 2, 0, 3],\cf2 inf\cf0 ))\
@@ -233,14 +258,22 @@ x.stop;\
 \
 \cf2 Pdef\cf0 (\cf4 \\a\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 0.1, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 (#[0, 1b, 1, 2b, 2, 3, 4b, 4, 5], \cf2 inf\cf0 )));\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // using a fade time, the above changes are crossfaded\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\a\cf0 ).fadeTime = 10;\
 \
 \cf2 Pdef\cf0 (\cf4 \\a\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 0.2, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([0, 4, Prand([6, 8b],2)], \cf2 inf\cf0 )));\
 \
-\cf5 // ...\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // ...\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 Pdef\cf0 (\cf4 \\a\cf0 ).set(\cf4 \\detune\cf0 , -50); \cf5 // set environment\cf0 \
+\cf2 Pdef\cf0 (\cf4 \\a\cf0 ).set(\cf4 \\detune\cf0 , 0);\
 \
 x.stop;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -251,8 +284,10 @@ x.stop;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 		\
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // load a synthdef\cf0 \
 s.boot;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "gpdef"\cf0 , \
 	\{ \cf2 arg\cf0  out=0, freq=440, dur=0.05, amp=0.1;\
 		\cf2 var\cf0  env;\
@@ -260,25 +295,33 @@ s.boot;\
 		\cf2 Out\cf0 .ar(out, \cf2 SinOsc\cf0 .ar(freq, 0, env))\
 	\}).store;\
 )\cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 ); \cf5 // creates a Pdef with a default pattern.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 ).play; \cf5 // play it. A silent resting pattern is used.\cf0 \
 \cf2 Pdef\cf0 (\cf4 \\y\cf0 ).play; \cf5 // play a second one (automatically instantiated)\cf0 \
 \
 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // assign various patterns to it:\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 )); \
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5b, 6], \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5b, 6]+1, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
 \cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5b, 6]-1, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
 \cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5b]-2, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // using fadeTime:\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\y\cf0 ).fadeTime = 8.0;\
 \cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.125, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5b, 6]+4.rand, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
 \cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5b, 6]-2, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
@@ -302,19 +345,25 @@ s.boot;\
 \
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 ).play;\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // tempo change\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 TempoClock\cf0 .default.tempo = 1.3;\
 \cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5, 6]+1, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // drop in ending patterns\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, [7,4], 5, 6]-2), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.125, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, [7,4], 5, 4]-3), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.35, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, [7,4], 5, 4, 3]-3), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pshuf\cf0 ([3, [7,4], 5, 6]-2), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // clear all.\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 ).clear; \
 \cf2 Pdef\cf0 (\cf4 \\y\cf0 ).clear; \
 \cf2 TempoClock\cf0 .default.tempo = 1.0;\
@@ -326,9 +375,8 @@ s.boot;\
 
 \f0\b\fs24 \cf0 recursion:\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 Pdefs can be used recursively under the condition that the stream call structure allows it.\
+\f2\b0 Pdefs can be used recursively under the condition that the stream call structure allows it.\
 a structure like the following works:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -353,24 +401,25 @@ but the following would crash, because .embedInStream is called recursively with
 \
 outset\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 When quantizing to a larger number of beats, the changes become very slow if one has to wait for the next beat. Providing an outset quant value is a way to make the change so that it appears as if it had been done at the previous grid point already. The stream is fast forwarded to the current position relative to the quant grid.\
+\f2\b0 When quantizing to a larger number of beats, the changes become very slow if one has to wait for the next beat. Providing an outset quant value is a way to make the change so that it appears as if it had been done at the previous grid point already. The stream is fast forwarded to the current position relative to the quant grid.\
 Providing a number larger than zero, the next possible quant point is used as outset.\cf5 \
 \cf0 \
 For example, if quant is 32, and one has just missed the first beat when changing the pattern,\
 one has to wait for 32 beats until the change happens. Using an outset of 1, it is assumed that you had already\
 changed the pattern at the first beat, the stream is fast forwarded to the time it would be at now if you had done so. The new pattern is inserted at the next beat (outset=1).\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 quant can be: [quant, offset, outset]
+\f0\b quant can be: [quant, offset, outset]
 \f2\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // examples\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 ).quant_([8, 0, 1]);\
 \cf2 Pdef\cf0 (\cf4 \\y\cf0 ).quant_([8, 0.5, 1]); \cf5 // offset by half a beat\cf0 \
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 ).play;\
@@ -407,8 +456,10 @@ quant is very long. This is hard to avoid currently, so it simply has to be take
 
 \f1\fs18 \cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // some testing\cf0 \
 (\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  quant = #[8, 0, 1]; \cf5 // quantise to 8 beats, no offset, insert quant to 1 beat\cf0 \
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 ).quant_(quant);\
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 ).play;\
@@ -437,9 +488,8 @@ quant is very long. This is hard to avoid currently, so it simply has to be take
 
 \f0\b\fs24 \cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 \
+\f2\b0 \
 \
 \
 \

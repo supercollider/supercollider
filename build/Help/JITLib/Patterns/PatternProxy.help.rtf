@@ -20,8 +20,8 @@ keeps a reference to a stream that can be replaced while playing.\
 Multiple streams are thus handled without creating dependancies.\
 \
 related: [
-\f0\b Pdefn
-\f2\b0 ]\
+\f0\b \ul Pdefn
+\f2\b0 \ulnone ]\
 \
 	
 \f0\b *basicNew(source)
@@ -57,6 +57,7 @@ related: [
 \f2\b0 \
 		get the quantization value\
 		\
+	\
 	
 \f0\b *defaultQuant_
 \f2\b0 \
@@ -70,12 +71,26 @@ related: [
 	\
 	PatternProxy implements some methods for the benefits of its subclasses Pdefn/Pdef/Tdef which\
 	are not useful for PatternProxy, EventStreamProxy and TaskProxy.\
+	\
+	
+\f0\b envir_(event)
+\f2\b0 \
+			provide a default environment for the proxy. \
+			If given,  it is used as an environment for the routine \
+			function. When set for the first time, the routine pattern is rebuilt.\
+	\
+	
+\f0\b set(key, val, key2, val2, ...)
+\f2\b0 \
+			set arguments in the environment. \
+			If there is none, it is created and the pattern is rebuilt.\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf2 // example\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 a = PatternProxy.basicNew(Pseq\cf0 ([1, 2, 3],\cf3 inf\cf0 ));\
 \
 x = \cf3 Pseq\cf0 ([0, 0, \cf3 a\cf0 ], \cf3 inf\cf0 ).asStream;\
@@ -89,7 +104,9 @@ x = \cf3 Pseq\cf0 ([0, 0, \cf3 a\cf0 ], \cf3 inf\cf0 ).asStream;\
 t.stop;\
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // PatternProxy, like Pdefn can be accessed in multiple streams\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 \
 \cf0 (\
 \cf3 SynthDef\cf0 (\cf4 "Pdefhelp"\cf0 , \{ \cf3 arg\cf0  out, freq, sustain=1, amp=1, pan;\
@@ -120,8 +137,10 @@ x.source = \cf3 Pn\cf0 (\cf3 Pshuf\cf0 ([0, 3, 2, 7, 6],2),\cf3 inf\cf0 );\
 \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 // if quant is set, the update is done at the next beat or whatever is specified:\cf0 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 x\cf0 .quant = 4;\
 \cf3 x.source = Pn\cf0 (\cf3 Pseries\cf0 (0, 1, 8),\cf3 inf\cf0 );\
 \

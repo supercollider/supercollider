@@ -2,8 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 \f3\fswiss\fcharset77 Helvetica-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
-}
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 TaskProxy	
@@ -17,12 +16,14 @@
 \
 \
 \
-keeps a reference to a stream that can be replaced while playing.\
-Multiple streams are thus handled without creating dependancies.\
+Keeps a reference to a task (time pattern) that can be replaced while playing.\
+It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.\
+\
 \
 related: [
-\f0\b Tdef
-\f2\b0 ]\
+\f0\b \ul Tdef
+\f2\b0 \ulnone ]\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -53,7 +54,7 @@ related: [
 
 \f0\b 	quant_(beats)
 \f2\b0 \
-		set the quantization value\
+		set the quantization value. can be a pair [quant, offset]\
 	\
 
 \f0\b 	quant
@@ -64,6 +65,20 @@ related: [
 \f0\b 	*defaultQuant_(beats)
 \f2\b0 \
 		set the default quantization value for the class. (default: 1.0)\
+		can be a pair [quant, offset]\
+		\
+	
+\f0\b envir_(event)
+\f2\b0 \
+			provide a default environment for the proxy. \
+			If given,  it is used as an environment for the routine \
+			function. When set for the first time, the routine pattern is rebuilt.\
+	\
+	
+\f0\b set(key, val, key2, val2, ...)
+\f2\b0 \
+			set arguments in the environment. \
+			If there is none, it is created and the routine pattern is rebuilt.\
 	\
 	\
 		\
@@ -72,9 +87,11 @@ related: [
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 a) using it as stream reference\
+\f3\i\b \cf0 a) using it as stream reference
+\f0\i0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 	\ul \
+\f2\b0 \cf0 	\ul \
 	
 \f0\b \ulnone source_	\
 			
@@ -88,9 +105,10 @@ related: [
 	\
 	\
 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b b) using it as EventStreamPlayer
-\f2\b0 \
+\f3\i\b \cf0 b) using it as EventStreamPlayer
+\f2\i0\b0 \
 \
 	
 \f0\b play(clock, protoEvent, quant)
@@ -132,8 +150,8 @@ related: [
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 a) using as a task player
-\f1\b0\fs18 \
+\f3\i\b\fs24 \cf0 a) using it as a task player
+\f1\i0\b0\fs18 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -142,6 +160,7 @@ x = TaskProxy.basicNew;\
 x\cf0 .play; \
 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf3 x.source = \cf0  \{ loop \{ \cf4 "ggggggggggggggggg9999ggg999ggg999gg"\cf0 .scramble.postln; 0.5.wait; \} \};\
 \
 \
@@ -163,26 +182,27 @@ x.stop;\
 \
 \
 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 \
-\cf6 // sound example\cf5 \
+\cf2 // sound example\cf0 \
 \
 (\
-\cf6 // load a synthdef\cf5 \
+\cf2 // load a synthdef\cf0 \
 s.boot;\
-\cf7 SynthDef\cf5 (\cf8 "pdef_grainlet"\cf5 , \
-	\{ \cf7 arg\cf5  out=0, freq=440, dur=0.05;\
-		\cf7 var\cf5  env;\
-		env = \cf7 EnvGen\cf5 .kr(\cf7 Env\cf5 .perc(0.01, dur, 0.3), doneAction:2);\
-		\cf7 Out\cf5 .ar(out, \cf7 SinOsc\cf5 .ar(freq, 0, env))\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "pdef_grainlet"\cf0 , \
+	\{ \cf3 arg\cf0  out=0, freq=440, dur=0.05;\
+		\cf3 var\cf0  env;\
+		env = \cf3 EnvGen\cf0 .kr(\cf3 Env\cf0 .perc(0.01, dur, 0.3), doneAction:2);\
+		\cf3 Out\cf0 .ar(out, \cf3 SinOsc\cf0 .ar(freq, 0, env))\
 	\}).store;\
 )\
-\cf7 x\cf5 .play;\
+\cf3 x\cf0 .play;\
 \
 (\
 x.source = \{ \
 	loop \{\
-		s.sendMsg(\cf8 "/s_new"\cf5 , \cf8 "pdef_grainlet"\cf5 , -1,0,0, \cf9 \\freq\cf5 , rrand(600, 640));\
+		s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "pdef_grainlet"\cf0 , -1,0,0, \cf5 \\freq\cf0 , rrand(600, 640));\
 		0.1.wait;\
 	\}\
 \}\
@@ -190,10 +210,10 @@ x.source = \{ \
 \
 (\
 x.source = \{ \
-	\cf7 var\cf5  x;\
-	x = \cf7 Pseries\cf5 (300, 20, 100).loop.asStream;\
+	\cf3 var\cf0  x;\
+	x = \cf3 Pseries\cf0 (300, 20, 100).loop.asStream;\
 	loop \{\
-		s.sendMsg(\cf8 "/s_new"\cf5 , \cf8 "pdef_grainlet"\cf5 , -1,0,0, \cf9 \\freq\cf5 , x.next);\
+		s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "pdef_grainlet"\cf0 , -1,0,0, \cf5 \\freq\cf0 , x.next);\
 		0.05.wait;\
 	\}\
 \}\
@@ -201,31 +221,32 @@ x.source = \{ \
 \
 (\
 x.source = \{ \
-	\cf7 var\cf5  x;\
-	x = \cf7 Plazy\cf5  \{ \cf7 Pseries\cf5 (300 + 300.rand, 10 + 30.rand, 10 + 30.rand) \}.loop.asStream;\
+	\cf3 var\cf0  x;\
+	x = \cf3 Plazy\cf0  \{ \cf3 Pseries\cf0 (300 + 300.rand, 10 + 30.rand, 10 + 30.rand) \}.loop.asStream;\
 	loop \{\
-		s.sendMsg(\cf8 "/s_new"\cf5 , \cf8 "pdef_grainlet"\cf5 , -1,0,0, \cf9 \\freq\cf5 , x.next);\
+		s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "pdef_grainlet"\cf0 , -1,0,0, \cf5 \\freq\cf0 , x.next);\
 		0.05.wait;\
 	\}\
 \}\
 )\
 \
-\cf6 // metronome\cf5 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // metronome\cf0 \
 (\
-y = \cf7 TaskProxy\cf5 .basicNew \{ \
-	loop \{ s.sendMsg(\cf8 "/s_new"\cf5 , \cf8 "pdef_grainlet"\cf5 , -1,0,0, \cf9 \\freq\cf5 , 1500); 1.wait; \} \
+y = \cf3 TaskProxy\cf0 .basicNew \{ \
+	loop \{ s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "pdef_grainlet"\cf0 , -1,0,0, \cf5 \\freq\cf0 , 1500); 1.wait; \} \
 \};\
 y.play;\
 )\
 \
-\cf6 // play ending stream once\cf5 \
+\cf2 // play ending stream once\cf0 \
 (\
 x.source = \{ \
-	\cf7 var\cf5  x, dt;\
+	\cf3 var\cf0  x, dt;\
 	dt = [0.1, 0.125, 0.05].choose;\
-	x = \cf7 Plazy\cf5  \{ \cf7 Pseries\cf5 (1300 + 300.rand, 110 + 130.rand, 16) \}.asStream;\
-	x.do \{ \cf7 arg\cf5  item;\
-		s.sendMsg(\cf8 "/s_new"\cf5 , \cf8 "pdef_grainlet"\cf5 , -1,0,0, \cf9 \\freq\cf5 , item);\
+	x = \cf3 Plazy\cf0  \{ \cf3 Pseries\cf0 (1300 + 300.rand, 110 + 130.rand, 16) \}.asStream;\
+	x.do \{ \cf3 arg\cf0  item;\
+		s.sendMsg(\cf4 "/s_new"\cf0 , \cf4 "pdef_grainlet"\cf0 , -1,0,0, \cf5 \\freq\cf0 , item);\
 		dt.wait;\
 	\}\
 \}\
@@ -234,57 +255,57 @@ x.source = \{ \
 ... and so on ...\
 \
 x.stop;\
-y.stop;\cf0 \
+y.stop;\
 \
 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 b) embedding Tdef into other Tasks / Routines
-\f1\b0\fs18 \
+\f3\i\b\fs24 \cf0 b) embedding TaskProxy into other Tasks / Routines
+\f1\i0\b0\fs18 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 \
+\
 (\
-#a, c = \{ \cf7 TaskProxy\cf5 .basicNew \} ! 2;\
-a.source = \{\'ca\cf8 "one"\cf5 .postln; 1.wait; \cf8 "two"\cf5 .postln \};\
-c.source = \{ \cf7 var\cf5  z; z = \cf7 Synth\cf5 (\cf9 \\default\cf5 ); 0.5.wait; z.release \};\
-r = \cf7 Task\cf5  \{\
-	\cf8 "counting..."\cf5 .postln;\
+#a, c = \{ \cf3 TaskProxy\cf0 .basicNew \} ! 2;\
+a.source = \{\'ca\cf4 "one"\cf0 .postln; 1.wait; \cf4 "two"\cf0 .postln \};\
+c.source = \{ \cf3 var\cf0  z; z = \cf3 Synth\cf0 (\cf5 \\default\cf0 ); 0.5.wait; z.release \};\
+r = \cf3 Task\cf0  \{\
+	\cf4 "counting..."\cf0 .postln;\
 	2.wait;\
-	\cf7 a\cf5 .embedInStream;\
+	\cf3 a\cf0 .embedInStream;\
 	1.wait;\
-	\cf7 c\cf5 .embedInStream;\
-	\cf8 "done."\cf5 .postln;\
+	\cf3 c\cf0 .embedInStream;\
+	\cf4 "done."\cf0 .postln;\
 \};\
 )\
 \
-r.play; \cf6 // play a stream\cf5 \
+r.play; \cf2 // play a stream\cf0 \
 \
-c.source = \{ \cf7 var\cf5  z; z = \cf7 Synth\cf5 (\cf9 \\default\cf5 , [\cf9 \\freq\cf5 , 300]); 1.5.wait; z.release \}; \cf6 // change the def\cf5 \
+c.source = \{ \cf3 var\cf0  z; z = \cf3 Synth\cf0 (\cf5 \\default\cf0 , [\cf5 \\freq\cf0 , 300]); 1.5.wait; z.release \}; \cf2 // change the def\cf0 \
 \
 r.reset;\
 r.play;\
 \
-\cf6 // of course TaskProxies can be used in other Tdefs:\cf5 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 // of course TaskProxies can be used in other Tdefs:\cf0 \
 (\
-b = \cf7 TaskProxy\cf5 .basicNew;\
+b = \cf3 TaskProxy\cf0 .basicNew;\
 b.source = \{\
-	\cf8 "counting..."\cf5 .postln;\
+	\cf4 "counting..."\cf0 .postln;\
 	2.wait;\
 	a.embedInStream;\
 	1.wait;\
 	c.embedInStream;\
-	\cf8 "done."\cf5 .postln;\
+	\cf4 "done."\cf0 .postln;\
 \};\
 )\
 b.playOnce;\
 \
-\cf6 // if one wants to branch off a stream in a separate thread, asStream is used.\cf5 \
-\cf6 // also the method playOnce can be used\cf5 \
+\cf2 // if one wants to branch off a stream in a separate thread, asStream is used.\cf0 \
 (\
-\cf7 Routine\cf5  \{\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Routine\cf0  \{\
 	c.asStream.play;\
 	0.1.wait;\
 	c.asStream.play;\
@@ -293,5 +314,5 @@ b.playOnce;\
 \
 \}.play;\
 )\
-\cf0 \
+\
 }
