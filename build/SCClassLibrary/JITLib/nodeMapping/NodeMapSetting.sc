@@ -1,29 +1,39 @@
 NodeMapSetting {
-	var <>key, <>value, <>busNumChannels;
+	var <>key, <>value, <>busNumChannels, <>isMultiChannel=false, <>isMapped=false;
 	
 	*new { arg key, value, busNumChannels;
 		^super.newCopyArgs(key, value, busNumChannels)
 	}
 	
-	map { arg index, numChannels=1;
+	map { arg index;
+		value = index;
+		isMultiChannel = false;
+		isMapped = true;
+	}
+	mapn { arg index, numChannels;
 		value = index;
 		busNumChannels = numChannels;
+		isMultiChannel = true;
+		isMapped = true;
 	}
 	set { arg val;
 		value = val;
-		busNumChannels = nil;
+		isMapped = false;
+		isMultiChannel = val.isSequenceableCollection;
 	}
 		
 	updateNodeMap { arg nodeMap;
-		if(busNumChannels.notNil) {
-			if(busNumChannels > 1) {
+		if(isMapped) {
+			if(this.isNeutral) { nodeMap.upToDate = false; ^this }; // ignore setting
+			this.updateBusNumChannels;
+			if(isMultiChannel) {
 				nodeMap.mapnArgs = nodeMap.mapnArgs.addAll([key, this.index, busNumChannels]);
 			}{
 				nodeMap.mapArgs = nodeMap.mapArgs.addAll([key, this.index]);
 			}
 		} {
 			if(value.notNil) {
-				if(value.isSequenceableCollection) {
+				if(isMultiChannel) {
 					nodeMap.setnArgs = nodeMap.setnArgs.addAll([key, value.size]++value)
 				} {
 					nodeMap.setArgs = nodeMap.setArgs.addAll([key, value])
@@ -38,7 +48,8 @@ NodeMapSetting {
 	
 	isEmpty { ^value.isNil }
 	index { ^value }
-	isMapped { ^busNumChannels.notNil }
+	isNeutral { ^false }
+	updateBusNumChannels {}
 	
 	storeArgs { ^[value, busNumChannels] }
 
@@ -49,14 +60,19 @@ NodeMapSetting {
 
 
 ProxyNodeMapSetting : NodeMapSetting {
-	var <>rate; // rate is the synthDef "rate" arg, bus is a proxy
+	var <>rate; // rate is the synthDef "rate" arg, value is a proxy !
 	
 	index { ^value.index }
 	isEmpty {
 		^value.isNil and: { rate.isNil }
 	}
+	isNeutral { ^value.isNeutral }
 	storeArgs { ^[value, busNumChannels, rate] }
-
+	updateBusNumChannels { 
+		if(isMultiChannel and: { busNumChannels.isNil }) { 
+			busNumChannels = value.numChannels; 
+		};
+	}
 
 }
 

@@ -3,7 +3,7 @@
 
 NodeMap {
 	var <>settings;
-	var <upToDate, <>setArgs, <>setnArgs, <>mapArgs, <>mapnArgs; // cache args
+	var <>upToDate, <>setArgs, <>setnArgs, <>mapArgs, <>mapnArgs; // cache args
 	
 	*new {
 		^super.new.clear
@@ -110,9 +110,9 @@ NodeMap {
 		
 	updateBundle {
 			if(upToDate.not) {
+				upToDate = true;
 				setArgs = setnArgs = mapArgs = mapnArgs = nil;
 				settings.do { arg item; item.updateNodeMap(this) };
-				upToDate = true;
 			};
 	}
 
@@ -143,7 +143,7 @@ NodeMap {
 		(keys ?? { settings.keys }).do { arg key;
 			var item;
 			item = settings[key];
-			if(item.notNil and: { item.isMapped}) {
+			if(item.notNil and: { item.isMapped }) {
 					args = args ++ [key, -1, item.busNumChannels];
 			};
 		};
@@ -219,13 +219,13 @@ ProxyNodeMap : NodeMap {
 			var playing;
 			playing = proxy.isPlaying;
 			args.pairsDo { arg key, mapProxy;
-				var ok, setting;
+				var setting, numChannels;
 				if(mapProxy.isKindOf(BusPlug).not) { Error("map: not a node proxy").throw };
-				ok = mapProxy.initBus(\control);
-				if(ok) {
+				
+				if(mapProxy.rate !== \audio) {
 					if(playing, { mapProxy.wakeUp });
 					setting = this.get(key);
-					setting.map(mapProxy, if(multiChannel) { mapProxy.numChannels }{ 1 });
+					if(multiChannel) { setting.mapn(mapProxy) }{ setting.map(mapProxy) };
 					parents = parents.put(key, mapProxy);
 				}{
 					("can only map to control proxy:" + key + mapProxy).inform
