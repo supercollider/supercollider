@@ -94,15 +94,9 @@ struct RecordBuf : public Unit
 
 struct Pitch : public Unit
 {
-	float m_fbufnum;
-	SndBuf *m_buf;
-
 	float m_values[10];
 	int m_ages[10];
-	float m_dsamp;
-	float m_delaytime;
-	int m_iwrphase;
-	uint32 m_numoutput;
+	float *m_buffer;
 	
 	float m_freq, m_minfreq, m_maxfreq, m_hasfreq, m_srate, m_ampthresh, m_peakthresh;
 	int m_maxperiod, m_execPeriod, m_index, m_readp, m_size;
@@ -1298,9 +1292,6 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-float insertMedian(float* values, int* ages, int size, float value);
-void initMedian(float* values, int* ages, int size, float value);
-
 
 float insertMedian(float* values, int* ages, int size, float value);
 float insertMedian(float* values, int* ages, int size, float value)
@@ -1353,23 +1344,10 @@ void initMedian(float* values, int* ages, int size, float value)
 	}
 }
 
-#if 0
-void Pitch_AllocDelayLine(Pitch *unit);
-void Pitch_AllocDelayLine(Pitch *unit)
-{
-	int delaybufsize = (int)ceil(unit->m_maxdelaytime * SAMPLERATE * 3.f + 3.f);
-	delaybufsize = delaybufsize + BUFLENGTH;
-	delaybufsize = NEXTPOWEROFTWO(delaybufsize);  // round up to next power of two
-	unit->m_fdelaylen = unit->m_idelaylen = delaybufsize;
-	
-	RTFree(unit->mWorld, unit->m_dlybuf);
-	unit->m_dlybuf = (float*)RTAlloc(unit->mWorld, delaybufsize * sizeof(float));
-	unit->m_mask = delaybufsize - 1;
-}
-#endif
+
+
 
 enum {
-	kPitchBuffer,
 	kPitchIn,
 	kPitchInitFreq,
 	kPitchMinFreq,
@@ -1385,10 +1363,7 @@ enum {
 void Pitch_Ctor(Pitch *unit)
 {
 	SETCALC(Pitch_next);
-//	unit->m_maxdelaytime = ZIN0(1);
-//	Pitch_AllocDelayLine(unit);
-	unit->m_fbufnum = -1e9f;
-
+	
 	unit->m_freq = ZIN0(kPitchInitFreq);
 	unit->m_minfreq = ZIN0(kPitchMinFreq);
 	unit->m_maxfreq = ZIN0(kPitchMaxFreq);
@@ -1404,50 +1379,51 @@ void Pitch_Ctor(Pitch *unit)
 	unit->m_peakthresh = ZIN0(kPitchPeakThreshold);
 	
 	int downsamp = (int)ZIN0(kPitchDownsamp);
-	unit->m_downsamp = sc_clip(downsamp, 1, BUFLENGTH);
+	unit->m_downsamp = sc_clip(downsamp, 1, unit->mWorld->mFullRate.mBufLength);
 
 
-    unit->m_srate = SAMPLERATE / (float)unit->m_downsamp;
+    unit->m_srate = unit->mWorld->mFullRate.mSampleRate / (float)unit->m_downsamp;
     
     unit->m_maxperiod = (long)(unit->m_srate / unit->m_minfreq);
 
 	unit->m_execPeriod = (int)(unit->m_srate / execfreq);
-	unit->m_execPeriod = sc_max(unit->m_execPeriod, BUFLENGTH);
+	unit->m_execPeriod = sc_max(unit->m_execPeriod, unit->mWorld->mFullRate.mBufLength);
 	
 	unit->m_size = unit->m_maxperiod << 1;
-	
-	unit->m_numoutput = 0;
+
+	unit->m_buffer = (float*)RTAlloc(unit->mWorld, unit->m_size * sizeof(float));
+
 	unit->m_index = 0;
 	unit->m_readp = 0;
 	unit->m_hasfreq = 0.f;
+
+	initMedian(unit->m_values, unit->m_ages, unit->m_medianSize, unit->m_freq); 
 	
 	ZOUT0(0) = 0.f;
 	ZOUT0(1) = 0.f;
 }
 
+void Pitch_Dtor(Pitch *unit)
+{
+	RTFree(unit->mWorld, unit->m_buffer);
+}
+
 void Pitch_next(Pitch *unit, int inNumSamples)
 {
-	// force in to arate.
-	//in = ARate((UGenx_rec*)unit, 0, 0);
 	bool foundPeak;
 	
-	GET_BUF
-	CHECK_BUF
 	float* in = ZIN(kPitchIn);
 	uint32 size = unit->m_size;
 	uint32 index = unit->m_index;
 	int downsamp = unit->m_downsamp;
 	int readp = unit->m_readp;
-	int ksamps = BUFLENGTH;
-
-	if (bufSamples < size) {
-		ClearUnitOutputs(unit, 1);
-		return;
-	}
+	int ksamps = unit->mWorld->mFullRate.mBufLength;
+	
+	float *bufData = unit->m_buffer;
 	
 	float freq = unit->m_freq;
 	float hasfreq = unit->m_hasfreq;
-	//printf("> %d %d readp %d ds %d\n", index, size, readp, downsamp);
+	//printf("> %d %d readp %d ksamps %d ds %d\n", index, size, readp, ksamps, downsamp);
 	do {
 		bufData[index++] = in[readp];
 		readp += downsamp;
@@ -1459,15 +1435,16 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 			hasfreq = 0.f; // assume failure
 			
 			int maxperiod = unit->m_maxperiod;
-			// amp is always too low. not looping correctly ?
-            //printf("ampthresh %f maxperiod %d \n",ampthresh,maxperiod);
+			float maxamp = 0.f;
 			// check for amp threshold
 			for (int j = 0; j < maxperiod; ++j) {	
 				if (fabs(bufData[j]) >= ampthresh) {
 					ampok = true;
 					break;
 				}
+				if (fabs(bufData[j]) > maxamp) maxamp = fabs(bufData[j]);
 			}
+			//printf("ampok %d  maxperiod %d  maxamp %g\n", ampok, maxperiod,  maxamp);
 			
 			// if amplitude is too small then don't even look for pitch
 			float ampsum;
@@ -1482,7 +1459,7 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 				threshold *= unit->m_peakthresh;
 				
 				// skip until drop below threshold
-				int binstep;
+				int binstep, peakbinstep = 0;
 				int i;
 				for (i = 1; i <= maxperiod; i += binstep) {
 					// compute sum of one lag
@@ -1500,7 +1477,7 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 					}
 				}
 				int startperiod = i;	
-				int period;
+				int period = startperiod;
 				//printf("startperiod %d\n", startperiod);
 				
 				// find the first peak
@@ -1515,7 +1492,7 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 						if (ampsum > maxsum) {
 							foundPeak = true;
 							maxsum = ampsum;
-							//peakbinstep = binstep;
+							peakbinstep = binstep;
 							period = i;
 						}
 					} else if (foundPeak) break;
@@ -1571,30 +1548,30 @@ void Pitch_next(Pitch *unit, int inNumSamples)
 						for (int j = 0; j < maxperiod; ++j) {	
 							nextampsum += bufData[i+j] * bufData[j];
 						}
-						//postbuf("slide right %g %g %g   %d\n", prevampsum, maxsum, nextampsum, period);
+						//printf("slide right %g %g %g   %d\n", prevampsum, maxsum, nextampsum, period);
 					}
 					
 					// make a fractional period
-/*
 					float fperiod = period;
 					if (prevampsum < nextampsum) {
 						fperiod += 0.5 * (nextampsum - prevampsum) / (maxsum - prevampsum);
 					} else if (nextampsum < prevampsum) {
 						fperiod -= 0.5 * (prevampsum - nextampsum) / (maxsum - nextampsum);
 					}
-*/
+/*
 					// make a fractional period
 					float fperiod = (float)period;
 					float a = 0.5 * (prevampsum + nextampsum) + maxsum;
 					float b = -2. * fperiod + a + maxsum - prevampsum;
 					fperiod = (-b * 0.5) / a;
-					
+					printf("period %d   fperiod %g   %g %g\n", a, b);
+*/
 					// calculate frequency
 					float tempfreq = unit->m_srate / fperiod;
 					
-					printf("freq %g   %g / %g    %g %g  %d\n", tempfreq, unit->m_srate, fperiod,
-						unit->m_minfreq, unit->m_maxfreq, 
-						tempfreq >= unit->m_minfreq && tempfreq <= unit->m_maxfreq);
+					//printf("freq %g   %g / %g    %g %g  %d\n", tempfreq, unit->m_srate, fperiod,
+					//	unit->m_minfreq, unit->m_maxfreq, 
+					//	tempfreq >= unit->m_minfreq && tempfreq <= unit->m_maxfreq);
 						
 					if (tempfreq >= unit->m_minfreq && tempfreq <= unit->m_maxfreq) {
 						freq = tempfreq;
@@ -6084,7 +6061,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(RecordBuf);
 	DefineSimpleUnit(BufRd);
 	DefineSimpleUnit(BufWr);
-	DefineSimpleUnit(Pitch);
+	DefineDtorUnit(Pitch);
 	
 	DefineSimpleUnit(BufDelayN);
 	DefineSimpleUnit(BufDelayL);
