@@ -31,6 +31,7 @@
 
 - (void)drawRect: (NSRect)bounds;
 - (void) keyDown: (NSEvent*) event;
+- (void) keyUp: (NSEvent*) event;
 - (void) mouseDown: (NSEvent*) event;
 - (void)setSCObject: (struct PyrObject*)inObject;
 - (struct PyrObject*)getSCObject;
@@ -45,5 +46,7 @@
 
 - (NSMenu*) menuForEvent:(NSEvent*)event;
 - (void)startMenuTracking: (SCView*) inView;
+
+- (IBAction) toggleUIEditMode: (id) sender;
 
 @end

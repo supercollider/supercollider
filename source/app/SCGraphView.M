@@ -71,6 +71,25 @@ extern PyrSymbol *s_scview;
 */
 }
 
+
+- (void) keyUp: (NSEvent*) event
+{
+    NSString *characters = [event characters];
+    unsigned int modifiers = [event modifierFlags];
+    unichar character = [characters characterAtIndex: 0];
+    
+    if (mTopView) {
+        if (character == '\t') {
+        } else if (character == 25) {
+        } else {
+            SCView *view = mTopView->focusView();
+            if (view) {
+                view->keyUp(character, modifiers);
+            }
+        }
+    }
+}
+
 NSRect SCtoNSRect(SCRect screct)
 {
     NSRect nsrect;
@@ -681,6 +700,12 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout)
 - (void)startMenuTracking: (SCView*) inView
 {
 	mMenuView = inView;
+}
+
+- (IBAction) toggleUIEditMode: (id) sender;
+{
+	mTopView->SetConstructionMode(!mTopView->ConstructionMode());
+	[self setNeedsDisplay: YES];
 }
 
 @end

@@ -46,11 +46,11 @@
 - (IBAction) runMain: (id) sender;
 - (IBAction) stopMain: (id) sender;
 - (IBAction) compileLibrary: (id) sender;
+- (IBAction) newSCWindow: (id) sender;
 
 // deferred primitives
 
-- (void)newGuiWindowTitle:(NSString*)title bounds:(NSRect)bounds 
-            SCObject: (void*)obj styleMask: (unsigned int) mask;
+
 - (void)becomeFullScreen: (NSWindow*)window;
 - (void)endFullScreen: (NSWindow*)window;
 - (void)loadUserPanel:(NSString*)filename SCObject: (void*)scobj;

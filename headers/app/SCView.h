@@ -88,6 +88,7 @@ public:
 	virtual void mouseEndTrack(SCPoint where, int modifiers);
 	virtual void mouseOver(SCPoint where);
 	virtual void keyDown(int character, int modifiers);
+	virtual void keyUp(int character, int modifiers);
         virtual bool shouldDim();
         void beginDrag(SCPoint where);
         
@@ -234,6 +235,11 @@ public:
 		NSView* GetNSView() { return mNSView; }
 		void SetNSView(NSView* inView) { mNSView = inView; }
         
+		bool ConstructionMode() { return mConstructionMode; }
+		void SetConstructionMode(bool inFlag) { mConstructionMode = inFlag; }
+		
+        virtual void drawFocus(SCRect inDamage);
+		
 protected:
         friend class SCView;
         void focusIs(SCView *inView) { mFocusView = inView; }
@@ -244,6 +250,8 @@ protected:
         SCView *mFocusView;
         SCView *mDragView;
 		NSView *mNSView;
+		
+		bool mConstructionMode;
 };
 
 inline bool SCView::isFocus() const { return mTop->focusView() == this; }
@@ -494,6 +502,7 @@ public:
 	virtual void mouseTrack(SCPoint where, int modifiers);
 	virtual void mouseEndTrack(SCPoint where, int modifiers);
 	virtual void keyDown(int character, int modifiers);
+	virtual void keyUp(int character, int modifiers);
         
 protected:
         void mouseAction(PyrSymbol *method, SCPoint where, int modifiers);

@@ -165,6 +165,11 @@ static id sharedSCVM = nil;
     [self sendMain: "stop"];
 }
 
+- (IBAction) newSCWindow: (id) sender
+{
+	[self sendMain: "newSCWindow"];
+}
+
 extern NSTextView *gPostView;
 
 - (void)postWindowToFront:(id)sender
@@ -277,33 +282,6 @@ void setupUserPaneViews(id target, id view, int tagsum)
     // set all targets
 };
 
-/*
-- (void)newSlider:(NSRect)rect spec: ControlSpec
-{
-}
-*/
-
-- (void)newGuiWindowTitle:(NSString*)title bounds:(NSRect)bounds 
-            SCObject: (void*)obj styleMask: (unsigned int) mask
-{
-    mask |= NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask;
-    NSWindow *window = [[NSWindow alloc] 
-        initWithContentRect: bounds
-        styleMask: mask
-        backing: NSBackingStoreBuffered
-        defer: NO];
-    [window setTitle: title];
-
-    SCGraphView* view = [[SCGraphView alloc] initWithFrame: bounds];
-    [view setSCObject: (struct PyrObject*)obj];
-    [window setDelegate: self];
-    [window setContentView: view];
-    [view autorelease];
-    [window setFrameOrigin: bounds.origin];
-    [window makeKeyAndOrderFront: nil];    
-    [guiWindows addObject: window];
-    [title release];    
-}
 
 bool gIsFullScreen = false;
 
@@ -361,9 +339,7 @@ bool gIsFullScreen = false;
 void closeAllGUIScreens();
 void closeAllGUIScreens()
 {
-	//printf("->closeAllGUIScreens\n");
     [[SCVirtualMachine sharedInstance] closeAllGUIWindows];
-	//printf("<-closeAllGUIScreens\n");
 }
 
 

@@ -201,7 +201,7 @@ SlotInspector {
 			hasGetter = true;
 			hasSetter = object.mutable;
 		});
-		slotKeyView.background = Color.grey(if(hasGetter,0.95,0.85));
+		//slotKeyView.background = Color.grey(if(hasGetter,0.95,0.85));
 		
 		vbounds = Rect(122, vpos, 218, this.buttonHeight);
 		if (hasSetter, {
@@ -220,7 +220,7 @@ SlotInspector {
 		});
 		slotValueView.resize = 2;
 		slotValueView.font = Font("Helvetica", 12);
-		slotValueView.background = Color.grey(if(hasSetter,0.95,0.85));
+		//slotValueView.background = Color.grey(if(hasSetter,0.95,0.85));
 
 		inspectButton = SCButton(w, Rect(344, vpos, this.buttonHeight, this.buttonHeight));
 		inspectButton.states = [["I"]];

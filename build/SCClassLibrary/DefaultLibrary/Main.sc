@@ -34,6 +34,11 @@ Main : Process {
 		});
 	}
 	
+	newSCWindow {
+		SCWindow.viewPalette;
+		SCWindow.new.front;
+	}
+	
 }
 
 

@@ -9,6 +9,10 @@ SCView {  // abstract class
 		^super.new.init(parent, bounds);
 	}
 	
+	*paletteExample { arg parent, bounds;
+		^this.new(parent, bounds);
+	}
+	
 	init { arg argParent, argBounds;
 		parent = argParent.asView;
 		this.prInit(parent, argBounds);
@@ -119,6 +123,10 @@ SCView {  // abstract class
 			// call local keyUp action of parent view
 			this.parent.handleKeyUpBubbling(view, key, modifiers);
 		});
+	}
+
+	canReceiveDrag {
+		^false;
 	}
 
 	// get the view parent tree up to the SCTopView
@@ -280,6 +288,14 @@ SCKnob : SCSlider
 }
 
 SCRangeSlider : SCSliderBase {
+
+	*paletteExample { arg parent, bounds;
+		var v;
+		v = this.new(parent, bounds);
+		v.lo = 0.2;
+		v.hi = 0.7;
+	}
+	
 	lo {
 		^this.getProperty(\lo)
 	}
@@ -407,6 +423,16 @@ SC2DSlider : SCSliderBase {
 
 SCButton : SCControlView {
 	var <font, <states;
+
+	*paletteExample { arg parent, bounds;
+		var v;
+		v = this.new(parent, bounds);
+		v.states = [
+			["Push", Color.black, Color.red],
+			["Pop", Color.white, Color.blue]];
+		^v
+
+	}
 	
 	value {
 		^this.getProperty(\value)
@@ -450,6 +476,13 @@ SCButton : SCControlView {
 SCPopUpMenu : SCControlView {
 	var <font, <items;
 	
+	*paletteExample { arg parent, bounds;
+		var v;
+		v = this.new(parent, bounds);
+		v.items = ["linear","exponential","sine","welch","squared","cubed"];
+		^v
+	}
+		
 	value {
 		^this.getProperty(\value)
 	}
@@ -498,7 +531,7 @@ SCPopUpMenu : SCControlView {
 
 
 
-SCStaticText : SCView {
+SCStaticTextBase : SCView {
 	var <string, <font, <object;
 	
 	font_ { arg argFont;
@@ -531,9 +564,25 @@ SCStaticText : SCView {
 	}
 }
 
-SCNumberBox : SCStaticText {
+SCStaticText : SCStaticTextBase {
+	*paletteExample { arg parent, bounds;
+		var v;
+		v = this.new(parent, bounds);
+		v.string = "The lazy brown fox";
+		^v
+	}
+}
+
+SCNumberBox : SCStaticTextBase {
 	var <> keyString;
 	
+	*paletteExample { arg parent, bounds;
+		var v;
+		v = this.new(parent, bounds);
+		v.value = 123.456;
+		^v
+	}
+
 	defaultKeyDownAction { arg key, modifiers, unicode;
 		// standard keydown
 		if ((key == 3.asAscii) || (key == $\r) || (key == $\n), { // enter key
@@ -582,7 +631,14 @@ SCNumberBox : SCStaticText {
 	}
 }
 
-SCDragView : SCStaticText {
+SCDragView : SCStaticTextBase {
+	
+	*paletteExample { arg parent, bounds;
+		var v;
+		v = this.new(parent, bounds);
+		v.object = \something;
+		^v
+	}
 }
 
 SCDragSource : SCDragView {

@@ -102,4 +102,23 @@ SCWindow {
 		_SCWindow_SetBounds
 		^this.primitiveFailed
 	}
+	
+	*viewPalette {
+		var w, v, f, c;
+		w = SCWindow("View Palette", Rect(532, 64, 300, 320)).front;
+		w.view.decorator = f = FlowLayout(w.view.bounds);
+		
+		c = [SCSlider, SCRangeSlider, SC2DSlider, SCPopUpMenu, SCButton, 
+			SCNumberBox, SCMultiSliderView,
+			SCStaticText, SCDragSource, SCDragSink, SCDragBoth,
+		];
+		
+		c.do({ arg item;
+			var n;
+			n = SCDragSource(w, Rect(0, 0, 140, 24));
+			n.object = item;
+		
+			item.paletteExample(w, Rect(0,0,140,24));
+		});
+	}
 }

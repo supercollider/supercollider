@@ -260,6 +260,23 @@ void SCView::keyDown(int character, int modifiers)
     pthread_mutex_unlock (&gLangMutex);
 }
 
+void SCView::keyUp(int character, int modifiers)
+{
+    PyrSymbol *method = getsym("keyUp");
+    pthread_mutex_lock (&gLangMutex);
+    if (mObj) {
+        VMGlobals *g = gMainVMGlobals;
+        g->canCallOS = true;
+        ++g->sp;  SetObject(g->sp, mObj); 
+        ++g->sp;  SetChar(g->sp, character); 
+        ++g->sp;  SetInt(g->sp, modifiers); 
+        ++g->sp;  SetInt(g->sp, character); 
+        runInterpreter(g, method, 4);
+        g->canCallOS = false;
+    }
+    pthread_mutex_unlock (&gLangMutex);
+}
+
 NSMenu* SCView::contextMenu(SCPoint inPoint)
 {
 	return 0;
@@ -831,7 +848,7 @@ SCView* NewSCTopView(SCContainerView *inParent, PyrObject* inObj, SCRect inBound
 }
 
 SCTopView::SCTopView(PyrObject* inObj, SCRect inBounds)
-	: SCCompositeView(0, inObj, inBounds), mFocusView(0), mDragView(0)
+	: SCCompositeView(0, inObj, inBounds), mFocusView(0), mDragView(0), mConstructionMode(false)
 {
     mTop = this;
     //float ltgry = 0.8;
@@ -894,6 +911,24 @@ void SCTopView::setDragView(SCView *inView)
         if (mDragView) mDragView->setDragHilite(true);
     }
 }
+
+void SCTopView::drawFocus(SCRect inDamage)
+{
+    if (ConstructionMode()) {
+        CGRect rect = SCtoCGRect(mBounds);
+        rect.origin.x += 2;
+        rect.origin.y += 2;
+        rect.size.width -= 4;
+        rect.size.height -= 4;
+        CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+        CGContextSaveGState(cgc);
+        CGContextSetLineWidth(cgc, 4);
+        CGContextSetRGBStrokeColor(cgc, 1., 1., 0., 1.);
+        CGContextStrokeRect(cgc, rect);
+        CGContextRestoreGState(cgc);
+    }
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -2341,6 +2376,10 @@ void SCUserView::mouseEndTrack(SCPoint where, int modifiers)
 }
 
 void SCUserView::keyDown(int character, int modifiers)
+{
+}
+
+void SCUserView::keyUp(int character, int modifiers)
 {
 }
 
