@@ -179,6 +179,19 @@ Document {
 		});
 		^this.rangeText(rangestart, rangesize);
 	}
+	currentLine {
+		var start, end, str, max;
+		str = this.string;
+		max = str.size;
+		end = start = this.selectionStart;
+		while { 
+			str[start] !== Char.nl and: { start >= 0 }
+		} { start = start - 1 };
+		while { 
+			str[end] !== Char.nl and: { end < max }
+		} { end = end + 1 };
+		^str.copyRange(start + 1, end);
+	}
 	string_ {arg string, rangestart = -1, rangesize = 1;
 		this.insertTextRange(string, rangestart, rangesize);
 	}
@@ -409,7 +422,7 @@ EnvirDocument : Document {
 		this.keyDownAction_({ arg key, modifiers, num;
 				if(canPlay, {
 					if(modifiers == 262144, { //ctl
-						if(num == 49, { (envir.server ? Server.local).boot }); //ctl-1
+						if(num == 49, { (envir.server ? Server.default).boot }); //ctl-1
 						if(num == 50, { envir.at(\out).toggle }); //ctl-2
 						if(num == 51, { envir.at(\out).releaseAndStop }); //ctl-3
 						if(num == 35, { PrePro.interpret(this.selectedString) }); //ctl-#
