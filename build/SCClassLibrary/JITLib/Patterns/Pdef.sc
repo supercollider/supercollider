@@ -92,12 +92,13 @@ Pdef : Pdefn {
 	}
 
 	constrainStream { arg str;
-		var dt;
+		var dt, tfade;
 		^if(quant.notNil) {
 			dt = this.timeToNextBeat;
+			tfade = fadeTime ? 0.0; // maybe use Pseq if fadetime is nil
 			Ppar([
-				PfadeOut(str, fadeTime, dt),
-				PfadeIn(pattern, fadeTime, dt)
+				PfadeOut(str, tfade, dt),
+				PfadeIn(pattern, tfade, dt)
 			])
 		} { pattern }.asStream
 	}
