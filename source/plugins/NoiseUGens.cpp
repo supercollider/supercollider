@@ -102,7 +102,7 @@ struct ExpRand : public Unit
 {
 };
 
-struct TCoin : public Unit
+struct CoinGate : public Unit
 {
 	float m_trig;
 };
@@ -182,10 +182,10 @@ extern "C"
 	void NRand_Ctor(NRand* unit);
 	void ExpRand_Ctor(ExpRand *unit);
 
-	void TCoin_Ctor(TCoin *unit);
-	void TCoin_next_k(TCoin *unit, int inNumSamples);
-	void TCoin_next(TCoin *unit, int inNumSamples);
-	
+        void CoinGate_Ctor(CoinGate *unit);
+	void CoinGate_next_k(CoinGate *unit, int inNumSamples);
+	void CoinGate_next(CoinGate *unit, int inNumSamples);
+        
 	void TIRand_next(TIRand *unit, int inNumSamples);
 	void TIRand_Ctor(TIRand *unit);
 
@@ -612,53 +612,52 @@ void TIRand_next(TIRand* unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void TCoin_Ctor(TCoin* unit)
+void CoinGate_Ctor(CoinGate* unit)
 {	
 	if (unit->mCalcRate == calc_FullRate) {
-		SETCALC(TCoin_next);
+		SETCALC(CoinGate_next);
 	} else {
-		SETCALC(TCoin_next_k);
+		SETCALC(CoinGate_next_k);
 	}
 	unit->m_trig = ZIN0(1);
 }
 
-void TCoin_next_k(TCoin* unit, int inNumSamples)
+void CoinGate_next_k(CoinGate* unit, int inNumSamples)
 {	
 	float trig = ZIN0(1);
 	float level = 0.f;
-	RGET
+	RGen& rgen = *unit->mParent->mRGen;
 	if (trig > 0.f && unit->m_trig <= 0.f) {
 		
-		if(frand(s1,s2,s3) < ZIN0(0)) {
+		if(rgen.frand() < ZIN0(0)) {
 			level = trig;
 		}
 	}
-	
-	RPUT
+    
 	ZOUT0(0) = level;
 	unit->m_trig = trig;
 	
 }
 
-void TCoin_next(TCoin* unit, int inNumSamples)
+void CoinGate_next(CoinGate* unit, int inNumSamples)
 {	
 	float *trig = ZIN(1);
 	float *out = ZOUT(0);
 	float level = 0.f;
 	float prevtrig = unit->m_trig;
 	float probability = ZIN0(0);
-	RGET
+	RGen& rgen = *unit->mParent->mRGen;
 	LOOP(inNumSamples, 
 		float curtrig = ZXP(trig);
 		if (prevtrig <= 0.f && curtrig > 0.f) {
-			if(frand(s1,s2,s3) < probability) {
+			if(rgen.frand() < probability) {
 					level = curtrig;
 			}
 		}
 		prevtrig = curtrig;
 		ZXP(out) = level; 
 	)
-	RPUT
+	
 	unit->m_trig = prevtrig;
 	
 }
@@ -1045,7 +1044,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(NRand);
 	DefineSimpleUnit(LinRand);
 	DefineSimpleUnit(ExpRand);
-	DefineSimpleUnit(TCoin);
+	DefineSimpleUnit(CoinGate);
 	DefineSimpleUnit(RandSeed);
 	DefineSimpleUnit(RandID);
 }
