@@ -10,6 +10,7 @@ Nil {
 	// support a nil Environment
 	push { arg function; ^function.value }
 	appendStream { arg stream; ^stream }
+	pop {}
 		
 	// support a nil Plug
 	source {}
