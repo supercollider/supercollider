@@ -8,14 +8,16 @@
 	asProxySynthDef { arg proxy, channelOffset=0;
 		^ProxySynthDef(
 			proxy.generateUniqueName, 
-			this.prepareForProxySynthDef(proxy), 
+			this.prepareForProxySynthDef(proxy),
+			proxy.lags, 
+			proxy.prepend, 
 			proxy.freeSelf, 
 			channelOffset
 		); 
 	}	
-	wrapForNodeProxy { arg proxy, channelOffset=0;
+	wrapForNodeProxy { arg proxy, lags, channelOffset=0;
 		var synthDef, ok;
-		synthDef = this.asProxySynthDef(proxy, channelOffset);
+		synthDef = this.asProxySynthDef(proxy, lags, channelOffset);
 		ok = proxy.initBus(synthDef.rate, synthDef.numChannels);
 		^if(ok && synthDef.notNil, {
 			SynthDefControl.new(synthDef)
@@ -24,14 +26,24 @@
 	}
 }
 
++SynthDef {
+	wrapForNodeProxy { arg proxy, channelOffset=0;
+		//we don't know how many channels it has, user's responsibility
+		^SynthDefControl.new(this, false) //assumes there is no gate in the def.
+	}
+
+}
+
 +AbstractPlayer {
 	 
 	wrapForNodeProxy { arg proxy, channelOffset=0;
 		var synthDef, ok;
+		this.prepareForPlay(proxy.group.asGroup, true, proxy.outbus);
 		synthDef = this.asSynthDef;
 		ok = proxy.initBus(this.rate,this.numChannels);
 		^if(ok && synthDef.notNil, {
-				AbstractPlayerControl.new(synthDef)
+				//AbstractPlayerControl.new(synthDef)
+				SynthDefControl(synthDef)
 		}, nil);
 	}
 
@@ -48,6 +60,11 @@
 	}
 }
 
++Instr {
+	prepareForProxySynthDef {
+		^func.prepareForProxySynthDef;
+	}
+}
 
 +Function {
 	

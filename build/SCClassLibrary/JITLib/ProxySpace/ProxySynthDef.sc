@@ -1,37 +1,29 @@
 ProxySynthDef : SynthDef {
-	var <rate, <numChannels;
+	var <>rate, <>numChannels;
+	
 	
 	*initClass {
 		//clean up
 		unixCmd("rm synthdefs/temp_proxy_def_*");
 	}
-	
-	*new { arg name, object, makeFadeEnv=true, channelOffset=0;
-		name = "temp_proxy_def_" ++ name;
-		^super.prNew(name).build(object,makeFadeEnv,channelOffset);
-	}
-	
-	build { arg object,makeFadeEnv,channelOffset;
-		var argNames, argValues, func;
-		argNames = object.argNames;
-		argValues = object.defArgs.asArray.extend(argNames.size);
-		argValues = argValues.collect({ arg x; x ? 0.0 }); 
 		
-		func = {
-			var synthGate, synthFadeTime, envgen, output, ctl, ok, outCtl;
-				ctl = Control.names(argNames).kr(argValues);
-				output = object.valueArray(ctl).asArray;
-				rate = output.rate;
-				numChannels = output.size;
-				
-				envgen = if(makeFadeEnv, {
-					synthGate = Control.names('__synthGate__').kr(1.0);
-					synthFadeTime = Control.names('__synthFadeTime__').kr(0.02);
+	
+	*new { arg name, func, lags, prependArgs, makeFadeEnv=true, channelOffset=0;
+		var def, rate, output;
+		name = "temp_proxy_def_" ++ name;		
+		def = super.new(name, { 
+			var envgen, synthGate, synthFadeTime, out, outCtl;
+			envgen = if(makeFadeEnv, {
+					synthGate = Control.names('#gate').kr(1.0);
+					synthFadeTime = Control.names('#fadeTime').kr(0.02);
 					Linen.kr(synthGate,synthFadeTime, 1.0, synthFadeTime, 2)	
 				}, { 
 					1.0 
 				});
-				output = envgen*output;
+			prependArgs = prependArgs.collect({ arg parg; parg.value });
+			output = envgen * SynthDef.wrap(func, lags, prependArgs);
+			rate = output.rate;
+			
 				if(rate === 'scalar', {
 					output
 					}, {
@@ -40,11 +32,13 @@ ProxySynthDef : SynthDef {
 					//{ output = K2A.ar(output) }); //change in NodeProxy-initBus
 					Out.multiNewList([rate, outCtl]++output)
 				})
-		};
-		
-		super.build(func);
-	
+		});
+		def.rate = rate;
+		def.numChannels = output.numChannels;
+		^def
 	}
+	
+	
 	
 	
 }

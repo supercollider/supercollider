@@ -1,6 +1,6 @@
 
 
-//lightweight objects that insulate different ways of playing/stopping
+//lightweight objects that insulate different ways of playing/stopping.
 
 EventStreamControl  {
 	var <>pattern, <event, <eventstream; 
@@ -22,7 +22,7 @@ EventStreamControl  {
 	play { arg extraArgs, group;
 		this.stop;
 		eventstream = Pevent(pattern, event).asStream;
-		^eventstream.play(SystemClock);
+		^eventstream.play;
 	}
 	
 	stop {
@@ -33,7 +33,9 @@ EventStreamControl  {
 	stopToBundle { arg bundle;
 		bundle.addFunction({ this.stop });
 	}
-
+	
+	pause { this.stop } //clear this up.
+	unpause { this.start }
 
 	sendDefToBundle {}
 	
@@ -42,10 +44,10 @@ EventStreamControl  {
 
 
 SynthDefControl {
-	var <synthDef, <synth;
+	var <synthDef, <hasGate, <synth;
 	
-	*new { arg synthDef;
-		^super.newCopyArgs(synthDef);
+	*new { arg synthDef, hasGate=true;
+		^super.newCopyArgs(synthDef, hasGate);
 	}
 	
 	sendDefToBundle { arg bundle;
@@ -59,30 +61,56 @@ SynthDefControl {
 	}
 	
 	playToBundle { arg bundle, extraArgs, group;
-		synth = Synth.basicNew(synthDef.name,group.server,-1);
+		synth = Synth.prNew(synthDef.name,group.server);
+		synth.isPlaying = true;
 		bundle.add(synth.newMsg(group,\addToTail,extraArgs));
 		^synth 
 	}
 	
-	//these are more efficiently done by group messages
-
 	stopToBundle { arg bundle;
-		//if(synth.isPlaying,{
-		//	bundle.add([15, synth.nodeID, \synthGate, 0.0, \gate, 0.0]);
-		//});
+		if(synth.isPlaying,{
+			if(hasGate, {
+				bundle.add([15, synth.nodeID, '#gate', 0.0, \gate, 0.0]); //to be sure.
+			}, {
+				bundle.add([11, synth.nodeID]); //"/n_free"
+			})
+		});
 	}
-	stop {} 
+	
+	stop { arg latency;
+		var bundle;
+		bundle = List.new;
+		this.stopToBundle(bundle);
+		synth.server.listSendBundle(latency, bundle)
+	} 
+	
+	pause { synth.run(false) }
+	unpause { synth.run(true) }
 
 }
 
 //todo
-AbstractPlayerControl : SynthDefControl {
+AbstractPlayerControl  {
+	var <player;
+	*new { arg player;
+		^super.newCopyArgs(player)
+	}
 	
-	stop { }
+	playToBundle { arg bundle, extraArgs, group; //mixedbundle
+		
+	}
+	
+	stop { 
+		player.free
+	}
 
 	stopToBundle { arg bundle;
 		  //todo?
 	}
+	writeDef {
+		player.asSynthDef.writeDefFile
+	}
+
 }
 
 

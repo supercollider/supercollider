@@ -4,7 +4,7 @@ NodeProxy : AbstractFunction {
 	var <server, <group, <outbus; 		//server access
 	var <objects, <parents; 			//playing templates
 	
-	var <nodeMap, <>clock;				
+	var <nodeMap, <>lags=#[], <>prepend, <>clock;
 	var <>freeSelf=true, <loaded=false;		
 	classvar <>buildProxy;
 	
@@ -50,8 +50,9 @@ NodeProxy : AbstractFunction {
 	}
 	
 	fadeTime_ { arg t;
-		this.set('__synthFadeTime__', t);
+		this.set('#fadeTime', t);
 	}
+	
 	
 	// playing and access
 	
@@ -71,23 +72,19 @@ NodeProxy : AbstractFunction {
 		^if(something.rate == 'audio', {this.ar(n)}, {this.kr(n)})  
 	}
 	
-	
-	//nodeMap_ { arg map;
-//		nodeMap = map;
-//		if(this.isPlaying, {
-//			map.sendToNode(group);
-//		});
-//	}
-	
+		
 		
 	play { arg busIndex=0, nChan;
-		var playGroup, bundle, divider;
-		bundle = MixedBundle(server);
+		var playGroup, bundle, divider, checkedAlready;
+		bundle = MixedBundle.new;
 		playGroup = Group.newToBundle(bundle, server);
 		if(outbus.isNil, {this.allocBus(\audio, nChan ? 2) }); //assumes audio
 		nChan = nChan ? this.numChannels;
 		nChan = nChan.min(this.numChannels);
-		this.wakeUpParentsToBundle(bundle);
+		if(parents.notEmpty, {
+			checkedAlready = Set.new;
+			this.wakeUpParentsToBundle(bundle, checkedAlready);
+		});
 		divider = if(nChan.even, 2, 1);
 		(nChan div: divider).do({ arg i;
 		bundle.add([9, "proxyOut-linkDefAr-"++divider, 
@@ -95,7 +92,7 @@ NodeProxy : AbstractFunction {
 					\i_busOut, busIndex+(i*divider), \i_busIn, outbus.index+(i*divider)]);
 		});
 		
-		WaitForServerBoot(server, {
+		server.waitForBoot({
 			this.sendBundle(bundle,0,clock);
 		});
 		^playGroup
@@ -103,18 +100,19 @@ NodeProxy : AbstractFunction {
 	
 	send { arg extraArgs;
 			//latency is 0, def is on server
-			this.sendToServer(MixedBundle(server), false, 0.0, extraArgs);
+			this.sendToServer(MixedBundle.new, false, 0.0, extraArgs);
 	}
 	
 	sendAll { arg extraArgs;
 			//latency is 0, def is on server
-			this.sendToServer(MixedBundle(server), true, 0.0, extraArgs);
+			this.sendToServer(MixedBundle.new, true, 0.0, extraArgs);
 	}
 	
 	
 	refresh {
 		var bundle;
-		bundle = MixedBundle(server);
+		bundle = MixedBundle.new;
+		this.freeAllToBundle(bundle);
 		this.sendSynthToBundle(bundle, true);
 		this.sendBundle(bundle,0,clock);
 	}
@@ -140,12 +138,12 @@ NodeProxy : AbstractFunction {
 	index { ^outbus.tryPerform(\index) }
 	
 	isPlaying { 
-		//^(group.notNil and: {group.isPlaying})
-		^server.nodeIsPlaying(group.asNodeID)
+		^group.isPlaying
+		//^server.nodeIsPlaying(group.asNodeID)
 	}
 	
 	printOn { arg stream;
-		stream << "NodeProxy." << this.rate << "(" << server << ", " << this.numChannels <<")";
+		stream << this.class.name << "." << this.rate << "(" << server << ", " << this.numChannels <<")";
 	}
 	
 	generateUniqueName {
@@ -157,7 +155,7 @@ NodeProxy : AbstractFunction {
 	// setting the source to anything that returns a valid ugen input
 	
 	add { arg obj, channelOffset=0, send=true;
-		this.put(obj, 0, send, false)
+		this.put(obj, channelOffset, send, false)
 	}
 	
 	source_ { arg obj; 
@@ -165,7 +163,7 @@ NodeProxy : AbstractFunction {
 	}
 	
 	put { arg obj, channelOffset=0, send=false, freeAll=true, onCompletion, latency=0.3; 			var container, bundle;
-				bundle = MixedBundle(server);
+				bundle = MixedBundle.new;
 				if(freeAll, { 
 					this.freeAllToBundle(bundle);
 					objects = Array.new;
@@ -196,9 +194,9 @@ NodeProxy : AbstractFunction {
 	load {
 		var bundle;
 		if(server.serverRunning, { 
-			bundle = MixedBundle(server);
+			bundle = MixedBundle.new;
 			this.sendAllDefsToBundle(bundle);
-			bundle.send;
+			bundle.send(server);
 			loaded = true; 
 		});
 	
@@ -206,7 +204,7 @@ NodeProxy : AbstractFunction {
 		
 	loadAll {
 		var bundle;
-		bundle = MixedBundle(server);
+		bundle = MixedBundle.new;
 		if(server.serverRunning, {
 			parents.do({ arg proxy; 
 				proxy.sendAllDefsToBundle(bundle); 
@@ -220,15 +218,18 @@ NodeProxy : AbstractFunction {
 	//////////////behave like my bus/////////////
 	
 	gate { arg level=1.0, dur=0;
-		if(outbus.notNil, { outbus.gate(level, dur) });
+		if(outbus.notNil && this.isPlaying, { outbus.gate(level, dur, group) }, 
+		{ "not playing".inform });
 	}
 	
 	line { arg level=1.0, dur=1.0;
-		if(outbus.notNil, { outbus.line(level, dur) });
+		if(outbus.notNil && this.isPlaying, { outbus.line(level, dur, group) },
+		{ "not playing".inform });
 	}
 	
 	xline { arg level=1.0, dur=1.0;
-		if(outbus.notNil, { outbus.xline(level, dur) });
+		if(outbus.notNil && this.isPlaying, { outbus.xline(level, dur, group) },
+		{ "not playing".inform });
 	}
 	
 	////////////behave like my group////////////
@@ -270,10 +271,10 @@ NodeProxy : AbstractFunction {
 	
 	release {
 		var bundle;
-		bundle = MixedBundle(server);
+		bundle = MixedBundle.new;
 		if(this.isPlaying, { 
 			this.freeAllToBundle(bundle);
-			bundle.send;
+			bundle.send(server);
 		});
 	}
 	
@@ -296,21 +297,19 @@ NodeProxy : AbstractFunction {
 	
 	sendBundle { arg bundle, latency=0.3, clock, onCompletion;
 				if(latency.isNil, {
-					bundle.schedSendRespond(0, clock, onCompletion)
+					bundle.schedSendRespond(server, 0, clock, onCompletion)
 				},{
-					bundle.schedSend(latency, clock, onCompletion)
+					bundle.schedSend(server, latency, clock, onCompletion)
 				})
 	}
 			
-	//here happens the dangerous thing. if isPlaying is not assured properly, 
-	//we might crash iteratively during wakeUpParents
-	
 	prepareForPlayToBundle { arg bundle, freeAll=true;
-				//group = Group.newToBundle(bundle, server, \addToHead);
-				group = Group.basicNew(server.nextStaticNodeID, server);
+				//group = Group.basicNew(server.nextStaticNodeID, server);
+				group = Group.prNew(server);
+				NodeWatcher.register(group);
+				group.isPlaying = true; //force isPlaying.
 				//add the message to the preparation part
 				bundle.addPrepare(group.newMsg(server,\addToHead)); 
-				server.nodeWatcher.nodes.add(group.nodeID); //force isPlaying.
 	}
 	
 	sendSynthToBundle { arg bundle, sendAll=true, extraArgs;
@@ -334,11 +333,6 @@ NodeProxy : AbstractFunction {
 					objects.do({ arg item;
 						item.stopToBundle(bundle);
 					});
-					if(this.isPlaying, {
-							//if the object has its own envelope, try to free it, too.
-							group.msgToBundle(bundle, 15, [\gate, 0.0, '__synthGate__', 0.0]);
-					})
-					
 	}
 	
 	freeParentsToBundle {
@@ -385,27 +379,28 @@ NodeProxy : AbstractFunction {
 		if(parentProxy.notNil && (parentProxy !== this), { parentProxy.parents.add(this) });
 	}
 	
-	wakeUpToBundle { arg bundle; //no need to wait, def is on server
-		if(this.isPlaying.not, { 
+	wakeUpToBundle { arg bundle, checkedAlready; //no need to wait, def is on server
+		if(this.isPlaying.not && checkedAlready.includes(this).not, { 
 			this.prepareForPlayToBundle(bundle, true);
 			this.sendSynthToBundle(bundle, true, 0);
 		});
 		
 	}
 	
-	wakeUpParentsToBundle { arg bundle; //see for objects
-		if(this.isPlaying.not, {
+	wakeUpParentsToBundle { arg bundle, checkedAlready;
+		if(this.isPlaying.not && checkedAlready.includes(this).not, {
 			//if(loaded.not, { this.loadAll; });
-			this.wakeUpToBundle(bundle);
-			parents.do({ arg item; item.wakeUpParentsToBundle(bundle) });
-			nodeMap.wakeUpParentsToBundle(bundle);
+			this.wakeUpToBundle(bundle, checkedAlready);
+			parents.do({ arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) });
+			nodeMap.wakeUpParentsToBundle(bundle, checkedAlready);
 		});
 	}
 	
 	wakeUpParents { arg latency=0.0; //see for load 
-		var bundle;
-		bundle = MixedBundle(server);
-		this.wakeUpParentsToBundle(bundle);
+		var bundle, checkedAlready;
+		bundle = MixedBundle.new;
+		checkedAlready = Set.new;
+		this.wakeUpParentsToBundle(bundle, checkedAlready);
 		this.sendBundle(bundle,0,clock);
 	}
 			
@@ -451,15 +446,20 @@ SharedNodeProxy : NodeProxy {
 		^super.newCopyArgs(server).initGroupID.clear	
 	}
 		
-	initGroupID { arg id; constantGroupID = server.nextSharedNodeID } 											
+	initGroupID {   
+		constantGroupID = server.nextSharedNodeID; 
+	 } 											
 		
 	prepareForPlayToBundle { arg bundle, freeAll=true;
-				postln("started new shared group"+constantGroupID);
+				postln("started new shared group" + constantGroupID);
 				group = Group.basicNew(constantGroupID, server);
+				NodeWatcher.register(group);
 				bundle.add(["/g_new",constantGroupID,0,0]);
-				server.nodeIsPlaying_(constantGroupID); //force isPlaying.
+				//server.nodeIsPlaying_(constantGroupID); //force isPlaying.
 	}
-	
+	generateUniqueName {
+		^asString(constantGroupID) ++ objects.size
+	}
 
 }
 
