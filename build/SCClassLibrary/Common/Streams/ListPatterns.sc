@@ -139,7 +139,43 @@ Pfsm : ListPattern {
 			});
 		});
 	}
-}	
+}
+
+Pdfsm : ListPattern {
+	var >startState, >signalStream;
+	*new { arg startState=0, repeats=1, signalStream=0 ... states;
+		^super.new( states, repeats )
+			.startState_(startState).signalStream_(signalStream)
+	}
+	asStream {
+		^Routine({ arg inval;
+			var currState, sigStream;
+			var sig, state, stream;
+			repeats.do({
+				
+				currState = startState;
+				sigStream = signalStream.asStream;
+				
+				while({
+					sig = sigStream.next;
+					if( sig.isNil, { false }, {
+						state = list[currState];
+						if( state.isNil, { false }, {
+							if( state.includesKey(sig), {
+								#currState, stream = state[sig];
+							}, {
+								#currState, stream = state[\default];
+							});
+							currState.notNil;
+						})
+					})
+				}, {
+					inval = stream.embedInStream(inval);
+				})
+			});
+		})
+	}
+}
 
 	
 //Ppar : ListPattern {
