@@ -3,11 +3,14 @@
 
 TempoBusClock : TempoClock {
 	var <>serverControl;
+	classvar <>default;
 	
 	*new { arg serverControl, tempo, beats, seconds;
 		^super.new(tempo, beats, seconds).initBus(serverControl, tempo)
 	}
-	
+	*initClass {
+		default = this.new;
+	}	
 	initBus { arg ctl, tempo;
 		serverControl = ctl;
 		serverControl.source = (tempo ? 1);
