@@ -103,31 +103,12 @@ BufferProxy { // blank space for delays, loopers etc.
 }
 
 
+AbstractSample : BufferProxy {
 
-
-
-Sample : BufferProxy { // a small sound loaded from disk
-	
 	classvar <soundsDir="sounds/";
-	
-	var <soundFilePath,<>name,<>soundFile,<beats=4.0,<tempo=1.0;
 
-	var <beatsize;
+	var <soundFilePath,<>name,<>startFrame,<>endFrame= -1;
 	
-	var <end=0,// last possible Frame
-		<>startFrame=0,<>endFrame = -1;
-	
-	*new { arg soundFilePath,tempo,startFrame=0,endFrame = -1;
-		var new;
-		new = super.new;
-		new.load(soundFilePath,tempo);
-		// backassward sc2 translation
-		if(endFrame.isKindOf(Boolean), { startFrame = 0; endFrame = -1; }); 
-		new.startFrame_(startFrame).endFrame_(endFrame);
-		^new
-	}
-	storeArgs { ^[ this.class.abrevPath(soundFilePath) ,tempo, startFrame, endFrame ] }
-
 	size {
 		// actual size loaded on server, not total size of file
 		^if(endFrame == -1,{
@@ -136,7 +117,7 @@ Sample : BufferProxy { // a small sound loaded from disk
 			endFrame - startFrame + 1
 		})	
 	}
-
+	
 	*soundsDir_ { arg dir;
 		soundsDir = dir.standardizePath ++ "/";
 	}
@@ -159,9 +140,72 @@ Sample : BufferProxy { // a small sound loaded from disk
 	soundFilePath_ { arg string;
 		soundFilePath = string;
 		if(soundFilePath.notNil,{
-			name=PathName(soundFilePath).fileName.asSymbol;
+			name=PathName(soundFilePath).fileName;
 		});
 	}
+	
+	duration { ^this.size / this.sampleRate }
+	asString { ^(name ?? { super.asString }) }
+	// yeah but how many doubles ?
+	totalMemory { ^numChannels * this.size }
+
+	prepareToBundle { arg group,bundle;
+		// TODO keep used Buffers in a map, reuse when path and start/end are identical
+		// when start/end are changed, would have to reassign
+		// use reference counting
+		
+		group = group.asGroup;
+		server = group.server;
+		if(buffer.notNil,{
+			if(buffer.server != server,{
+				// this makes me suitable for one server only
+				// which is probably always the case
+				buffer.free;
+				// make buffer
+			},{
+				// buffer is fine to use
+				^this;
+			});
+		});
+
+		buffer = Buffer.new(server,this.size,numChannels);
+		if(soundFilePath.notNil,{
+			// numFrames already set above, no need for an end
+			bundle.add( buffer.allocReadMsg(this.soundFilePath,startFrame) )
+		},{
+			buffer.numFrames = this.size;
+			buffer.numChannels = numChannels;
+			bundle.add( buffer.allocMsg )
+		});
+		readyForPlay = true;
+	}
+	makePatchOut {
+		patchOut = ScalarPatchOut(this);
+	}
+	
+}
+
+
+Sample : AbstractSample { // a small sound loaded from disk
+	
+	
+	var <>soundFile,<beats=4.0,<tempo=1.0;
+
+	var <beatsize;
+	
+	var <end=0; // last possible frame for looping
+		
+	*new { arg soundFilePath,tempo,startFrame=0,endFrame = -1;
+		var new;
+		new = super.new;
+		new.load(soundFilePath,tempo);
+		// backassward sc2 translation
+		if(endFrame.isKindOf(Boolean), { startFrame = 0; endFrame = -1; }); 
+		new.startFrame_(startFrame).endFrame_(endFrame);
+		^new
+	}
+	storeArgs { ^[ this.class.abrevPath(soundFilePath) ,tempo, startFrame, endFrame ] }
+
 	load { arg thing,tempo;
 		this.prLoad(thing,tempo);
 		this.calculate;
@@ -265,10 +309,6 @@ Sample : BufferProxy { // a small sound loaded from disk
 		if(tempo < 0.5,{ this.beats_(beats * 2.0) });			if(tempo < 0.5,{ this.beats_(beats * 2.0) });
 	}
 	
-	duration { ^this.size / this.sampleRate }
-	asString { ^(name ?? { super.asString }) }
-	// yeah but how many doubles ?
-	totalMemory { ^numChannels * this.size }
 	
 	
 	pchRatioKr { arg temp;
@@ -285,38 +325,7 @@ Sample : BufferProxy { // a small sound loaded from disk
 	
 	
 	/* server support */
-	prepareToBundle { arg group,bundle;
-		// TODO keep used Buffers in a map, reuse when path and start/end are identical
-		// when start/end are changed, might have to reassign
-		
-		group = group.asGroup;
-		server = group.server;
-		if(buffer.notNil,{
-			if(buffer.server != server,{
-				// this makes me suitable for one server only
-				// which is probably always the case
-				buffer.free;
-				// make buffer
-			},{
-				// buffer is fine to use
-				^this;
-			});
-		});
 
-		buffer = Buffer.new(server,this.size,numChannels);
-		if(soundFilePath.notNil,{
-			// numFrames already set above, no need for an end
-			bundle.add( buffer.allocReadMsg(this.soundFilePath,startFrame) )
-		},{
-			buffer.numFrames = this.size;
-			buffer.numChannels = numChannels;
-			bundle.add( buffer.allocMsg )
-		});
-		readyForPlay = true;
-	}
-	makePatchOut {
-		patchOut = ScalarPatchOut(this);
-	}
 	
 	guiClass { ^SampleGui }
 

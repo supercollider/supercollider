@@ -1,5 +1,5 @@
 
-MLIDbrowser { // MultiLevelIdentityDictionary
+MLIDbrowser { // MultiLevelIdentityDictionary browser
 
 	var <>onSelect,menu,kdr;
 	

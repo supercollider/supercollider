@@ -3,13 +3,22 @@ Instr  {
 
 	classvar <dir; // set this in Main-startUp
 
-	var  <>name, <>func,<>specs,<outSpec,>path;
+	var  <>name, <>func,<>specs,<>outSpec,>path;
 	
-	*new { arg name, func,specs,outSpec;
+	*new { arg name, func,specs,outSpec=\audio;
+		var previous;
 		if(name.isString or: {name.isKindOf(Symbol)},{
 			name = [name.asSymbol];
+		},{
+			name = name.collect({ arg n; n.asSymbol });
 		});
-		// should look up first, return same instance, overwriting the func
+		previous = Library.atList([this.name,name].flatten);
+		if(previous.notNil,{
+			previous.func = func;
+			previous.init(specs,outSpec);
+			previous.changed(this);
+			^previous
+		});
 		^super.newCopyArgs(name,func).init(specs,outSpec)//.write;
 	}
 	*initClass {
@@ -20,7 +29,6 @@ Instr  {
 	*dir_ { arg p;
 		dir = p.standardizePath ++ "/";
 	}
-	//*instrDirectory_ { arg p; this.dir = p }
 	
 	init { arg specs,outsp;
 		this.makeSpecs(specs ? #[]);
@@ -80,6 +88,8 @@ Instr  {
 		var fullname,instr,path;
 		if(name.isString or: {name.isKindOf(Symbol)},{
 			name = [name.asSymbol];
+		},{
+			name = name.collect({ arg n; n.asSymbol });
 		});
 
 		^(Library.atList(fullname = [this.name,name].flatten)
@@ -192,6 +202,22 @@ Instr  {
 		^Patch(this.name,args).play
 	}
 
+	asSingleName {
+		^String.streamContents({ arg s;
+			name.do({ arg n,i;
+				if(i > 0,{ s << $~ });
+				s << n;
+			})
+		})
+	}
+	*singleNameAsNames { arg singleName;
+		^singleName.split($~).collect({ arg n; n.asSymbol })
+	}
+	
+	*loadAll {
+		(this.dir ++ "*.rtf").pathMatch.do({ arg path; path.loadPath })
+	}
+
 	*choose { arg start;
 		// todo: scan directory first
 		^if(start.isNil,{ 
@@ -202,11 +228,12 @@ Instr  {
 	}
 	*leaves { arg startAt; // address array
 		if(startAt.isNil,{
-			startAt = Library.global.at(this);
+			startAt = Library.global.at(this.name);
+			if(startAt.isNil,{ ^[] });
 		},{
 			startAt = this.at(startAt.first);
 		});
-		^Library.global.prNestedValuesFromDict(startAt)
+		^Library.global.prNestedValuesFromDict(startAt).flat
 	}
 	asString { ^"Instr " ++ this.name.asString }
 

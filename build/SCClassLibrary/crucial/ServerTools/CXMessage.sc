@@ -12,6 +12,7 @@ CXBundle {
 		functions = functions.add( Message(receiver,selector,args) )
 	}
 	send { arg server,time;
+		//messages.flat.size.debug("messages size");
 		server.listSendBundle(time,messages);
 		if(functions.notNil,{
 			if(time.notNil,{

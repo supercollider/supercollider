@@ -1,7 +1,6 @@
 
 MultiPageLayout  {
 
-	classvar <>screenWidth = 900, <>screenHeight = 700; // tibook
 	classvar <>bgcolor;
 	
 	var windows,views,margin;
@@ -19,9 +18,8 @@ MultiPageLayout  {
 		windows=windows.add
 		(	
 			w=SCWindow.new("< " ++ title.asString ++ " >",
-						bounds ?? {Rect(20,20,screenWidth,screenHeight)})
+						bounds ?? {SCWindow.screenBounds.insetAll(10,20,0,25)})
 				.onClose_({  
-					//"MultiPageLayout onClose".debug;
 					this.close; // close all windows in this layout
 				})
 		);
@@ -30,13 +28,13 @@ MultiPageLayout  {
 			w.view.background_(bgcolor);
 		});
 		isClosed = false;
-		v =  FlowView(w );
+		v =  FlowView( w );
 		margin = argmargin;
 		if(margin.notNil,{
 			v.decorator.margin_(margin);
 		});
 		views = views.add(v );
-		autoRemoves = [];//IdentitySet.new;
+		autoRemoves = [];
 	}
 	*on { arg parent,bounds,margin,metal=true;
 		^super.new.initon(parent,bounds,margin,metal)
@@ -66,7 +64,6 @@ MultiPageLayout  {
 	}
 	asPageLayout { arg name,bounds;
 		if(isClosed,{
-			//"layout was closed".debug;
 			^this.class.new(name,bounds)
 		})// else this
 	}
@@ -107,7 +104,9 @@ MultiPageLayout  {
 			NotificationCenter.notify(this,\didClose);
 		});
 	}
-
+	refresh {
+		windows.do({ arg w; w.refresh })
+	}
 	hr { arg color,height=8,borderStyle=1; // html joke
 		this.view.hr;
 	}
@@ -124,10 +123,6 @@ MultiPageLayout  {
 
 	background_ { arg c; this.view.background_(c) }
 
-	//TODO remove
-	//backColor { ^this.view.background }
-	//backColor_ { arg b; this.view.background_(b) }
-	
 	removeOnClose { arg dependant;
 		autoRemoves = autoRemoves.add(dependant);
 	}
@@ -141,7 +136,7 @@ MultiPageLayout  {
 	}
 	fullScreen {
 		windows.reverse.do({ arg w;
-			w.bounds = SCWindow.screenBounds;
+			w.bounds = SCWindow.screenBounds.insetAll(10,20,0,25);
 				// .fullScreen   issues
 		});
 	}
@@ -167,10 +162,9 @@ MultiPageLayout  {
 }
 
 Sheet {
-	*new { arg buildDialog,name="",x=100,y=100,width=600,height=600;
+	*new { arg buildDialog,name="",bounds;
 		var layout;
-		layout = MultiPageLayout(name,Rect(x,y,width,height));
-		//layout = FlowView(nil,Rect(x,y,width,height));
+		layout = MultiPageLayout(name,bounds);
 		buildDialog.value(layout);
 		layout.resizeToFit;
 		layout.front;

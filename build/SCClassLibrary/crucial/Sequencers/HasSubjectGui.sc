@@ -45,7 +45,7 @@ PlayerAmpGui : HasSubjectGui {
 StreamKrDurGui : HasSubjectGui {
 
 	guiBody { arg layout;
-		CXLabel(layout,"durs:");
+		CXLabel(layout,"delta:");
 		model.durations.smallGui(layout);
 		layout.startRow;
 		subjg = model.values.gui(layout);

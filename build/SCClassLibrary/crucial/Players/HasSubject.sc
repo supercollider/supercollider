@@ -58,7 +58,7 @@ AbstractSinglePlayerEffect : AbstractPlayerEffect {
 		server = group.server;
 		this.topMakePatchOut(effectGroup,private,bus);
 		// share my bus
-		sharedBus = SharedBus.from(patchOut.bus,this);
+		sharedBus = SharedBus.newFrom(patchOut.bus,this);
 		patchOut.bus = sharedBus;
 		subject.makePatchOut(subjectGroup,private,sharedBus);
 	}

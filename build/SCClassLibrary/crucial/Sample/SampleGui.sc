@@ -140,4 +140,52 @@ SampleGui : ObjectGui {
 	}
 }
 
+
 		
+WavetableSampleGui : SampleGui {
+	
+	guiBody { arg layout;
+		//layout.within(100,75,{arg layout;
+			//nameG = CXLabel(layout,model.name);
+			/*ActionButton(layout,">",{
+				if(Synth.isPlaying,{ Synth.stop },{
+					{
+						Osc.ar(model.wavetable,440,mul: 0.1)	
+					}.scope
+				})
+			});*/
+			ActionButton(layout,"saveAs",{this.saveAs}).background_(Color.white);
+			ActionButton(layout,"save",{this.save}).background_(Color.white);
+		//});
+			
+		//sigG=WavetableView(layout.window,layout.layRight(250,75),model.wavetable);
+		
+		//ActionButton(layout,"editAsSample",{model.editAsSample});
+//		layout.removeOnClose(Updater(this,{
+//			nameG.label_("S:" ++ name);
+//			sigG.wavetable_(signal);
+//			sigG.update;
+//		}));	
+	}
+	save {
+		if(model.wavetablePath.isNil,{ ^this.saveAs });
+		model.write;
+	}
+	saveAs {
+		GetStringDialog("wavetable name...",model.name,{ arg ok,name;
+			var newpath;
+			if(ok,{
+				newpath = Sample.standardizePath(model.class.dir ++ name);
+				model.write(newpath);
+				nameG.label = name;
+			});
+		});
+//		PutFileDialog("save wavetable...",model.name,{ arg ok,path;
+//			if(ok,{
+//				model.write(path);	
+//			})
+//		})
+	}
+
+}
+

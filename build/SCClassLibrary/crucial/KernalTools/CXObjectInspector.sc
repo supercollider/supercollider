@@ -5,9 +5,12 @@ CXObjectInspector : ObjectGui {
 		
 	writeName { arg layout;
 		ClassNameLabel.newBig(model.class,layout);
-		CXLabel(layout,model.asString,500,30)
+		//CXLabel(layout,model.asString,500,30)
+		SCDragSource(layout,Rect(0,0,500,30))
+			.object_(model)
+			.background_(Color.white)
+			.align_(\center)
 			.font_(Font("Helvetica-Bold",18));
-
 	}
 
 	guiBody { arg layout;
@@ -323,16 +326,16 @@ MethodGui : ObjectGui {
 
 }
 
-
-DictionaryGui : ObjectGui {
-
-	guiBody { arg layout;
-		model.keysValuesDo({ arg k,v,i;
-			CXLabel(layout.startRow,k,maxx: 100);
-			Tile(v,layout,200);
-		})
-	}
-
-}
-
+//
+//DictionaryGui : ObjectGui {
+//
+//	guiBody { arg layout;
+//		model.keysValuesDo({ arg k,v,i;
+//			CXLabel(layout.startRow,k,maxx: 100);
+//			Tile(v,layout,200);
+//		})
+//	}
+//
+//}
+//
 

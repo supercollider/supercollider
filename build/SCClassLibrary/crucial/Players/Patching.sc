@@ -71,6 +71,9 @@ PatchOut {
 	*scalar { arg source, group,bus;
 		^ScalarPatchOut.prNew(source, group,bus)
 	}
+	*stream { arg source,group,bus;
+		^ScalarPatchOut.prNew(source, group,bus)
+	}		
 	init {}
 	connectTo { arg patchIn,needsValueSetNow=true;
 		// am i already connected to this client ?

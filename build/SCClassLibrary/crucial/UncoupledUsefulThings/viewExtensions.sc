@@ -21,8 +21,12 @@
 + FlowLayout {
 
 	used { //round up to nearest rect
-		^Rect(bounds.left,bounds.top,maxRight + margin.x - bounds.left,
-					(top + maxHeight + margin.y) - bounds.top)
+		^Rect(bounds.left,bounds.top,maxRight 
+					+ margin.x + margin.x
+					- bounds.left,
+					(top + maxHeight 
+						+ margin.y + margin.y
+					) - bounds.top)
 	}
 	indentedRemaining {
 		var inb;
@@ -46,7 +50,9 @@
 					{ decorator.indentedRemaining });
 		func.value(f);
 		f.resizeToFit;
-		this.reflowAll;
+		this.reflowAll; // annoying and slow
+			// should only have to correct the last setting,
+			// set the FlowLayout left top maxHeight maxRight
 		^f
 	}
 

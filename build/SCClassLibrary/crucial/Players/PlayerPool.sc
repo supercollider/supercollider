@@ -3,13 +3,19 @@
 		var path;
 		player = loadDocument(player);
 		list = list.add(player);
+		if(this.isPlaying,{
+			this.preparePlayer(player);
+		});
 		this.changed(\players);	
 	}
 
 	//selectable interface	select { arg i;		selected = i;		if(this.isPlaying,{
 			this.qspawnPlayer(list.at(i));
+		},{
+			source = lastPlayer = list.at(i);
 		})
-	}	selectedItem { ^list.at(selected) }		selectedAsString {		^list.at(selected).asString	}	maxIndex { ^list.size }			choose {		this.select(list.size.rand)	}	rate { ^list.first.rate } // what else to do ?	numChannels { ^list.maxValue({ arg pl; pl.numChannels }) }	children { ^list }	
+	}	selectedItem { ^list.at(selected) }		selectedAsString {		^list.at(selected).asString	}	maxIndex { ^list.size }			choose {		this.select(list.size.rand)	}
+	rate { ^list.first.rate } // what else to do ?	numChannels { ^list.maxValue({ arg pl; pl.numChannels }) }	children { ^list }	
 	prepareToBundle { arg group,bundle;
 		group = group.asGroup;
 		list.do({ arg pl; pl.prepareToBundle(group,bundle) });
@@ -19,6 +25,16 @@
 		list.do({ arg pl;
 			pl.loadDefFileToBundle(bundle,server)
 		});
+	}
+	spawnToBundle { arg bundle;
+		if(autostart,{
+			this.setSourceToBundle(this.selectedItem,bundle);
+		},{
+			if(source.notNil,{		
+				source.spawnToBundle(bundle)
+			})
+		});
+		bundle.addAction(this,\didSpawn);
 	}
 
 	guiClass { ^PlayerPoolGui }}/**PatchSwitcher : PlayerPool {

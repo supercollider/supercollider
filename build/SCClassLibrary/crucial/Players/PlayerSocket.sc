@@ -30,7 +30,7 @@ PlayerSocket : AbstractPlayerProxy {
 	}
 	topMakePatchOut { arg group,private=false,bus;
 		super.topMakePatchOut(group,private,bus);
-		sharedBus = SharedBus.from(patchOut.bus,this);
+		sharedBus = SharedBus.newFrom(patchOut.bus,this);
 		patchOut.bus = sharedBus;
 	}
 	prepareAndSpawn { arg player,releaseTime=0.0;
@@ -179,7 +179,7 @@ PlayerEffectSocket : PlayerSocket {
 	setInputBus { arg abus;
 		// who did we get this from ?
 		//"PlayerEffectSocket-setInputBus".debug;
-		inputBus = SharedBus.from(abus.asBus,this);
+		inputBus = SharedBus.newFrom(abus.asBus,this);
 		// assume not playing yet
 	}	
 	

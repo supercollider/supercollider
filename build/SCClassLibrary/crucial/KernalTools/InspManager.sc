@@ -68,16 +68,17 @@ InspManager {
 			menu = \pleaseWait;
 			{
 				Sheet({ arg f;
-					var h;
-					h = SCHLayoutView(f,Rect(0,0,1000,1000));
+					var h,fb;
+					fb = f.view.bounds;
+					h = SCHLayoutView(f,fb.insetAll(0,0,20,20));
 					menu = CXMenu.newWith([insp.name->{this.showInsp(insp)}]);
 					menu.closeOnSelect = false;
 					menu.gui(h); 
 
-					inspView = SCCompositeView(h,Rect(180,0,800,1000));
+					inspView = SCCompositeView(h,Rect(180,0,fb.width - 200,fb.height - 20));
 					this.showInsp(insp);
 
-				},"-Insp-",width:1100,height:1100)
+				},"-Insp-",SCWindow.screenBounds.insetAll(20,10,100,100))
 				.background_(Color.red(0.2,0.15))
 				.removeOnClose(this);
 				//.window.alpha_(0.96);

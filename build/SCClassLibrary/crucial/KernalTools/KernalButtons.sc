@@ -71,6 +71,15 @@ InspectorLink : ActionButton {
 		^super.new(layout,target.asString,{target.insp},maxx,30,
 			Color.black,Color.white,Font("Helvetica-Bold",18))
 	}
+	*icon { arg target,layout;
+		^SCButton(layout,Rect(0,0,6,17))
+			.action_({ target.insp })
+			.states_([["i",Color.black,Color.white]])
+			.font_(Font("Helvetica-Bold",9));
+			
+		/*^super.new(layout,"|",{target.insp},1,nil,
+			Color.black,Color.white,Font("Helvetica-Bold",9))*/
+	}		
 }
 
 

@@ -11,26 +11,26 @@ ControlPrototypes {
 		registery.addAll(assns);
 	}
 	
-	*at { arg key; // returns a list of possibles
-		^registery.at(key).value // could/should be a function to create list of possibles
+	*at { arg key,spec; // returns a list of possibles
+		^registery.at(key).value(key,spec) // could/should be a function to create list of possibles
 	}
-	*forSpec { arg spec,argName;
+	*forSpec { arg argName,spec;
 		// by spec name
 		^(	// by instrument arg name
 			//?? {
-			this.firstAt(argName)
+			this.firstAt(argName,spec)
 			//}
 			// by the class of the spec
-			?? {this.firstAt(spec.class)}
+			?? {this.firstAt(spec.class,spec)}
 		)	
 	}
 
 
-	*firstAt { arg key;
+	*firstAt { arg argName,spec;
 		var func,proto;
-		func=registery.at(key);
+		func=registery.at(argName);
 		^if(func.notNil,{ 
-			proto=func.value.first;
+			proto=func.value(argName,spec).first;
 			// could wipe out any data we set for it
 			//proto.tryPerform('spec_',spec);
 			//proto.tryPerform('value_',spec.default);
@@ -40,26 +40,26 @@ ControlPrototypes {
 		})
 	}
 	
-	*chooseAt { arg key;
+	*chooseAt { arg argName,spec;
 		var func;
-		func=registery.at(key);
+		func=registery.at(argName);
 		^if(func.notNil,{ 
-			func.value.choose
+			func.value(argName,spec).choose
 			//proto.tryPerform('spec_',spec);
 			//proto.tryPerform('value_',spec.default);
 		},{
 			nil
 		})
 	}
-	*chooseForSpec { arg spec,argName;
+	*chooseForSpec { arg argName,spec;
 		// by spec name
 				^(	//this.firstAt(spec.name)
 					// by instrument arg name
 					//?? {
-					this.chooseAt(argName)
+					this.chooseAt(argName,spec)
 					//}
 					// by the class of the spec
-					?? {this.chooseAt(spec.class)}
+					?? {this.chooseAt(spec.class,spec)}
 					?? {spec.defaultControl}
 				)	
 	}		

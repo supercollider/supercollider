@@ -3,7 +3,7 @@ SharedBus : Bus {
 
 	var released = false,<>owner;
 	
-	*from { arg bus,owner;
+	*newFrom { arg bus,owner;
 		// only the top owner can free the bus
 		if(bus.isKindOf(SharedBus).not,{
 			^this.new(bus.rate,bus.index,bus.numChannels,bus.server).owner_(owner)

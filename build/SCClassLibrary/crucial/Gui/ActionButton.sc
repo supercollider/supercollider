@@ -32,10 +32,9 @@ SCViewAdapter { // SCViewHolder
 		if(view.notNil,{
 			view.remove;
 			view = nil;
-		},{
-			//("SCViewAdapter-remove : already removed !" + this).debug(this);
 		});
 	}
+// i'm not really in it
 //	prClose { 
 //		"SCViewAdapter-prClose".debug(this);
 //		view.prClose;
@@ -66,7 +65,7 @@ FlowView : SCLayoutView {
 								if(bounds.notNil,{ bounds = bounds.moveTo(0,0) });
 								w
 							},
-							bounds ?? {parent.asView.bounds});
+							bounds ?? {parent.asView.bounds.insetAll(2,2,2,2)});
 		decorator = FlowLayout(this.bounds,Point(2,2),Point(4,4));// after i am placed by parent
 		autoRemoves = IdentitySet.new;
 	}
@@ -105,7 +104,6 @@ FlowView : SCLayoutView {
 		^Rect(0,0,x,y)
 	}
 	startRow {
-		// add a StartRow object
 		this.add(StartRow.new); //won't really put a view in there yet
 		decorator.nextLine
 	}
@@ -113,7 +111,6 @@ FlowView : SCLayoutView {
 		autoRemoves.add(updater);
 	}
 	prClose {
-		//autoRemoves.insp("removing", this);
 		autoRemoves.do({ arg u; u.remove });
 		autoRemoves = nil;
 		super.prClose; // close the view		

@@ -4,19 +4,25 @@
 	asInstr {}
 }
 
-+ Object { // symbol, array
++ SequenceableCollection {
 	asInstr {
 		^Instr.at(this)
 	}
 }
 
-//+ String {
-//	asInstr {
-//		^Instr.at(this.asSymbol)
-//	}
-//}
++ Symbol {
+	asInstr {
+		^Instr.at(this)
+	}
+}
 
-+ Class { // eg. SinOsc the class becomes a UGenInstr
++ String {
+	asInstr {
+		^Instr.at(this.asSymbol)
+	}
+}
+
++ UGen { // eg. SinOsc the class becomes a UGenInstr
 
 	asInstr {
 		^UGenInstr(this)	

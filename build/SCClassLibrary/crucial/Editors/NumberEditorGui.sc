@@ -78,8 +78,10 @@ PopUpEditorGui : EditorGui {
 BooleanEditorGui : EditorGui {
 	var cb;
 	guiBody { arg layout;
+		var bg;
+		bg = layout.background;
 		cb = SCButton.new( layout,Rect(0,0,14,14));
-		cb.states = [[" ",Color.black,Color.white],[" ",Color.white,Color.black]];
+		cb.states = [[" ",bg,bg],["X",Color.black,bg]];
 		cb.font = Font("Helvetica",9);
 		cb.setProperty(\value,model.value.binaryValue);
 		cb.action = { model.activeValue_(cb.value != 0,this) };

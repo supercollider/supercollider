@@ -50,6 +50,7 @@ NumberEditor : Editor {
 		value = spec.constrain(value);
 		this.changed(\spec);
 	}
+	numChannels { ^1 }
 
 	addToSynthDef { arg synthDef,name;
 		synthDef.addInstrOnlyArg(name,this.synthArg)
@@ -68,7 +69,6 @@ KrNumberEditor : NumberEditor {
  	var <>lag=0.1;
  
 	rate { ^\control }
-	numChannels { ^1 }
  	canDoSpec { arg aspec; ^aspec.isKindOf(ControlSpec) }
 
 	addToSynthDef {  arg synthDef,name;
@@ -101,6 +101,15 @@ KrNumberEditor : NumberEditor {
 	
 	guiClass { ^KrNumberEditorGui }
 
+}
+
+IrNumberEditor : NumberEditor {
+	addToSynthDef {  arg synthDef,name;
+		synthDef.addIr(name,this.synthArg);
+	}
+	instrArgFromControl { arg control;
+		^control
+	}
 }
 
 

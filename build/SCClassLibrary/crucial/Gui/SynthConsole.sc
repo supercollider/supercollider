@@ -220,22 +220,20 @@ SaveConsole : AbstractConsole {
 	}
 	
 	doSave {
-		var clobber,vpath;
+		var clobber,vpath,evpath;
 		vpath = path.value;
 		if(File.exists(vpath),{
-			clobber=File.new(vpath,"r");
-			clobber.contents.write("~"++vpath);
-			clobber.close;	
+			evpath = vpath.escapeChar($ );
+			("cp " ++ evpath + evpath ++ ".bak").unixCmd;
 		});
 		object.asCompileString.write(vpath);
 	}
 	doSaveAs {
-		var clobber,vpath;
+		var clobber,vpath,evpath;
 		vpath = path.value;
 		if(File.exists(vpath),{
-			clobber=File.new(vpath,"r");
-			clobber.contents.write("~"++vpath);
-			clobber.close;	
+			evpath = vpath.escapeChar($ );
+			("cp " ++ evpath + evpath ++ ".bak").unixCmd;
 		});
 		object.asCompileString.write(vpath);
 		onSaveAs.value(vpath);

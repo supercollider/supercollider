@@ -3,12 +3,9 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 
 	var <>model;
 
-	guiBody {arg layout;
+	guiBody { arg layout;
 		// implement this in your subclass
 	}
-	
-	
-	
 		
 	*new { arg model;
 		var new;
@@ -28,15 +25,15 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		^layout
 	}
 	prClose {
-		//"ObjectGui-prClose".debug;
+		[this,model].debug("prClose");
 		this.remove(false);
 	}
-	remove { arg removeView=true;
+	remove { arg removeView=false;
 		model.removeDependant(this);
-//		if(removeView,{
-//			view.remove;
-//			view = nil;		
-//		});
+		if(removeView,{
+			view.remove;
+			view = nil;		
+		});
 	}
 	removeView {
 		var parent;
@@ -58,13 +55,22 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		//if you created it, front it
 		if(lay.isNil,{ layout.resizeToFit.front });
 	}
-	background { ^Color.yellow(0.2,0.15) }
 	topGui { arg ... args;
 		this.performList(\gui, args);
 	}
+
+	background { ^Color.yellow(0.2,0.15) }
 	
 	writeName { arg layout;
-		InspectorLink(model,layout,100)
+		var n;
+		n = model.asString;
+		InspectorLink.icon(model,layout);
+		SCDragSource(layout,Rect(0,0,(n.size * 7.5).max(70),17))
+			.stringColor_(Color.new255(70, 130, 200))
+			.background_(Color.white)
+			.align_(\center)
+			.beginDragAction_({ model })
+			.object_(n);	
 	}
 	
 	saveConsole { arg layout;
@@ -77,6 +83,21 @@ ObjectGui : SCViewAdapter { // aka AbstractController
 		Tile(model,layout);
 	}
 	
+}
+
+ModelImplementsGuiBody : ObjectGui {
+
+	gui { arg lay, bounds ... args;
+		var layout;
+		layout=this.guify(lay,bounds);
+		layout.flow({ arg layout;
+			view = layout;
+			this.writeName(layout);
+			model.performList(\guiBody,[layout] ++ args);
+		},bounds).background_(this.background);
+		//if you created it, front it
+		if(lay.isNil,{ layout.resizeToFit.front });
+	}
 }
 
 

@@ -44,21 +44,22 @@ StreamKrDur : BusDriver {
 	var <>values,<>durations;
 	var valst,durst;
 
-	*new { arg values=0.0,durations=0.25,lag=0.0;
+	*new { arg values=0.0,deltas=0.25,lag=0.0;
 		// make refs of arrays into Pseq
 		if(values.isKindOf(Ref),{
 			values = Pseq(values.value,inf);
 		});
-		if(durations.isKindOf(Ref),{
-			durations = Pseq(durations.value,inf);
+		if(deltas.isKindOf(Ref),{
+			deltas = Pseq(deltas.value,inf);
 		});
-		^super.new.values_(values).durations_(durations.loadDocument).lag_(lag).skdinit
+		^super.new.values_(values).durations_(deltas.loadDocument).lag_(lag).skdinit
 	}
 	skdinit {
 		sched = TempoClock.default;
 		routine = Routine({
 			var dur,val,server;
 			server = this.server;
+			latency = server.latency;
 			//first val already sent
 			dur = durst.next;
 			// small slippage if tempo changes during first event.
@@ -93,7 +94,10 @@ StreamKrDur : BusDriver {
 	}
 	didSpawn {
 		routine.reset;
+		//valst = values.asStream;
+		//durst = durations.asStream;
 		sched.schedAbs(sched.elapsedBeats, routine);
+		//sched.play(routine);
 		super.didSpawn;
 	}
 	storeArgs { ^[values,durations,lag] }

@@ -190,11 +190,11 @@ Patch : HasPatchIns  {
 				?? 
 				{ //  or auto-create a suitable control...
 					spec = instr.specs.at(i);
-					proto = ControlPrototypes.at(instr.argNames.at(i));
+					proto = ControlPrototypes.at(instr.argNames.at(i),spec);
 					if(proto.notNil,{ 
 						proto = proto.first; 
 					},{
-						proto = ControlPrototypes.at(spec.class);
+						proto = ControlPrototypes.at(spec.class,spec);
 						if(proto.notNil,{ 
 							proto = proto.first;
 						}, { 
@@ -239,21 +239,26 @@ Patch : HasPatchIns  {
 	}
 	// compute on first demand
 	rate {
+		/*  can't have resources prepared always
 		if(rate.isNil,{
 			this.asSynthDef;
 		});
+		*/
 		^rate
 	}
 	numChannels {
-		if(numChannels.isNil,{
+		/*if(numChannels.isNil,{
 			this.asSynthDef;
-		});
+		});*/
 		^numChannels
 	}
 	
 	// has inputs
 	spawnToBundle { arg bundle;
 		var synthArgs;
+		if(patchOut.isNil,{ 
+			"Patch-spawnToBundle : this Patch has not yet been prepared".die(this);
+		});
 		this.asSynthDef;// make sure it exists
 		
 		this.children.do({ arg child;
@@ -313,7 +318,8 @@ Patch : HasPatchIns  {
 				args.collect({ arg a,i; (overideArgs.at(i) ? a).value; })  
 			)
 	}
-
+	printOn { arg s; s << "a Patch " << instr.name; }
+	
 	/*storeModifiersOn { arg stream;
 		// this allows a known defName to be used to look up in the cache
 		// otherwise a Patch doesn't know its defName until after building

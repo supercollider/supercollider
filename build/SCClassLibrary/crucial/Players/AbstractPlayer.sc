@@ -191,7 +191,6 @@ AbstractPlayer : AbstractFunction  {
 		});
 		synth = Synth.basicNew(this.defName,server);
 		NodeWatcher.register(synth);
-		//("spawning: " + this.defName).debug;
 		bundle.add(
 			synth.addToTailMsg(this.group,this.synthDefArgs)
 		);
@@ -306,7 +305,7 @@ AbstractPlayer : AbstractFunction  {
 		if(dn.isNil or: {
 			dn = dn.asSymbol;
 			if(Library.at(SynthDef,server,dn).notNil,{
-				//("already loaded:"+dn).debug;
+				("already loaded:"+dn).debug;
 				false
 			},{
 				true
@@ -315,13 +314,13 @@ AbstractPlayer : AbstractFunction  {
 			// save it in the archive of the player
 			// or at least the name.
 			// Patches cannot know their defName until they have built
-			//( "building:" + (this.path ?? {this.name}) ).debug;
+			( "building:" + (this.path ?? {this.name}) ).debug;
 			def = this.asSynthDef;
 			bytes = def.asBytes;
 			bundle.add(["/d_recv", bytes]);
 			// even if name was nil before (Patch), its set now
 			defName = def.name;
-			// ("loading def:" + defName).debug;
+			("loading def:" + defName).debug;
 			// InstrSynthDef watches \serverRunning to clear this
 			InstrSynthDef.watchServer(server);
 			Library.put(SynthDef,server,defName.asSymbol,true);
@@ -467,13 +466,13 @@ AbstractPlayer : AbstractFunction  {
 	kr { ^this.ar }
 	value {  ^this.ar }
 	valueArray { ^this.value }
-	inAr {
-		// only works immediately in  { }.play
-		// for quick experimentation, does not encourage reuse
-		// ideally would add itself as a child to the current InstrSynthDef
-		this.play;
-		^In.ar(this.busIndex,this.numChannels)
-	}
+//	inAr {
+//		// only works immediately in  { }.play
+//		// for quick experimentation, does not encourage reuse
+//		// ideally would add itself as a child to the current InstrSynthDef
+//		this.play;
+//		^In.ar(this.busIndex,this.numChannels)
+//	}
 	// ugen style syntax
 	*ar { arg ... args;
 		^this.performList(\new,args).ar
@@ -576,7 +575,25 @@ AbstractPlayer : AbstractFunction  {
 			});
 		})
 	}
+	// using the arg passing version
+	changed { arg what ... moreArgs;
+		dependantsDictionary.at(this).do({ arg item;
+			item.performList(\update, this, what, moreArgs);
+		});
+	}
 
+	gui { arg  ... args; 
+		^this.guiClass.new(this).performList(\gui,args);
+	}
+	
+	topGui { arg ... args; 
+		^this.guiClass.new(this).performList(\topGui,args);
+	}
+	
+	smallGui { arg  ... args;
+		^this.guiClass.new(this).performList(\smallGui,args);
+	}
+	
 	guiClass { ^AbstractPlayerGui }
 
 }
@@ -667,6 +684,10 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 	instrArgFromControl { arg control;
 		^source.instrArgFromControl(control)
 	}
+	initForSynthDef { arg synthDef,argi;
+		// only used for building the synthDef
+		source.initForSynthDef(synthDef,argi)
+	}
 	connectToPatchIn { arg patchIn, needsValueSetNow=true;
 		source.connectToPatchIn(patchIn,needsValueSetNow);
 	}
@@ -688,7 +709,7 @@ AbstractPlayerProxy : AbstractPlayer { // won't play if source is nil
 	makePatchOut { arg group,private,bus;
 		super.topMakePatchOut(group,private,bus);
 		if(patchOut.bus.notNil,{ // could be a scalar out
-			sharedBus = SharedBus.from(patchOut.bus,this);
+			sharedBus = SharedBus.newFrom(patchOut.bus,this);
 			patchOut.bus = sharedBus;
 		});
 		if(source.notNil,{
