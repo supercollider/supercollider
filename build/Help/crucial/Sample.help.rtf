@@ -2,7 +2,8 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
-\red0\green115\blue0;}
+\red0\green115\blue0;\red0\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;\red96\green96\blue96;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs38 \cf0 Sample
@@ -41,6 +42,17 @@ s.listSendBundle(nil,b);\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
+\
+NOT FINISHED\
+\
+\
+sample.bufnumir\
+sample.bufnumkr\
+sample.sampleRate\
+sample.sampleRateir\
+sample.sampleRatekr\
+\
+\
 (\
 \
 Instr([\\help,\\Sample],\{ arg sample;\
@@ -62,11 +74,11 @@ Patch([\\help,\\Sample],\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
-p = Patch([\\help,\\Sample],\
+\cf6 p = \cf7 Patch\cf6 ([\cf8 \\help\cf6 ,\cf8 \\Sample\cf6 ],\
 [\
-	\cf2 Sample\cf0 (\cf3 "sounds/\cf0 a11wlk01.wav\cf3 "\cf0 )\
+	\cf7 Sample\cf6 (\cf9 "sounds/a11wlk01.wav"\cf6 )\
 ]);\
-\
+\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 can be saved, and will fully encapsulate this complete sound.\
@@ -87,6 +99,7 @@ p.topGui\
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 //beatlock\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Instr\cf0 ([\cf5 \\help\cf0 ,\cf5 \\Sample\cf0 ],\{ \cf2 arg\cf0  sample,tempo;\
 	tempo.insp("handed in to Instr function");\
 	\cf2 PlayBuf\cf0 .ar(sample.numChannels,sample.bufnum,\
@@ -176,6 +189,7 @@ sample.playBuf\
 \
 \
 ( \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // hit load and select a rhythm\
 // will stay beat locked and the beat will flow despite the cutting\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural

@@ -1,55 +1,136 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;
-\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green0\blue191;\red191\green0\blue0;\red0\green115\blue0;\red191\green0\blue0;\red0\green115\blue0;
+}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf2 Patch
 \f1\b0\fs18 \cf0 \
 \
+
+\f2\fs24 \cf2 could be known as InstrPlayer.\
+An Instr is a function with a name.\
+A Patch supplies arguments to that function.\
+
+\f1\fs18 \cf0 \
+\cf2 	\cf3 Patch\cf2 (instr,args)\
+\cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 Instr can be specified as \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 an Instr\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 	\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 	i = \cf3 Instr\cf2 (\cf4 "help-Patch"\cf2 ,\{ \cf3 arg\cf2  freq=100,amp=1.0;\
+			\cf3 SinOsc\cf2 .ar([freq,freq + 30],0,amp)\
+		\});\
+	p = \cf3 Patch\cf2 (i,[ 500,	0.3 ]);\
+	p.play\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 a Function\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 	p = \cf3 Patch\cf2 (\{ \cf3 arg\cf2  freq=100,amp=1.0;\
+		\cf3 SinOsc\cf2 .ar([freq,freq + 30],0,amp)\
+	\},[\
+		500,\
+		0.3\
+	]);\
+	p.play\cf5 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf2 or by the Instr name\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf5 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\cf6 // the Instr stores itself when created\
+\cf0 	\cf3 Instr\cf2 (\cf7 \\bubbles\cf2 , \{ \cf3 arg\cf2  amp=1.0;\
+\cf0 	\cf2 	\cf3 var\cf2  f, zout;\
+\cf0 	\cf2 	f = \cf3 LFSaw\cf2 .kr(0.4, 0, 24, \cf3 LFSaw\cf2 .kr([8,7.23], 0, 3, 80)).midicps;\
+\cf0 	\cf2 	zout = \cf3 CombN\cf2 .ar(\cf3 SinOsc\cf2 .ar(f, 0, 0.04), 0.2, 0.2, 4);\
+\cf0 	\cf2 	zout * amp\
+\cf0 	\cf2 \});\
+\cf0 	\cf2 \
+\cf0 	\cf2 p = \cf3 Patch\cf2 (\cf7 \\bubbles\cf2 ,[0.4] );\
+\cf0 	\cf2 p.play\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\
+
+\f2\fs24 \cf2 if \\bubbles is not found, Instr will automatically look for a file called 'bubbles.rtf' in the Instr directory.\
+
+\f1\fs18 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 This is the strongest power of Patch.  It can be easily saved to disk, and make use of a large library of Instr functions.  Compared to a simple SynthDef function, an Instr can produce many SynthDefs, varying in output rate or number of channels or internal structure.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf0 \
 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // write Instr as in SC2, without Out.ar\
+\cf8 // write Instr as in SC2, without Out.ar\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Instr\cf0 (\cf4 \\bubbles\cf0 , \{ \cf2 arg\cf0  amp=1.0;\
-	\cf2 var\cf0  f, zout;\
-	f = \cf2 LFSaw\cf0 .kr(0.4, 0, 24, \cf2 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps;\
-	zout = \cf2 CombN\cf0 .ar(\cf2 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4);\
+\cf5 Instr\cf0 (\cf9 \\bubbles\cf0 , \{ \cf5 arg\cf0  amp=1.0;\
+	\cf5 var\cf0  f, zout;\
+	f = \cf5 LFSaw\cf0 .kr(0.4, 0, 24, \cf5 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps;\
+	zout = \cf5 CombN\cf0 .ar(\cf5 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4);\
 	zout * amp\
 \});\
 \
-p = \cf2 Patch\cf0 (\cf4 \\bubbles\cf0 );\
+p = \cf5 Patch\cf0 (\cf9 \\bubbles\cf0 );\
 \
-\cf3 // default server will be booted, def written and loaded\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // default server will be booted, def written and loaded\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 p.play;\
+\
+)\
+\
+\
 \
 p.stop;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // command-. will also stop all sounds\
+\cf8 // command-. will also stop all sounds\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 p.play;\
 \
-p.run(\cf2 false\cf0 );\
+p.run(\cf5 false\cf0 );\
 \
-p.run(\cf2 true\cf0 );\
+p.run(\cf5 true\cf0 );\
 \
 p.insp; //inspect it\
 \
 p.topGui;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // close the window\
+\cf8 // close the window\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf3 // open it again\
+\cf8 // open it again\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 p.topGui;\
 \
@@ -58,28 +139,29 @@ p.topGui;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf5 Fixed Arguments\
+\f0\b\fs24 \cf0 Fixed Arguments\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \
+\f2\b0 \cf0 \
 Floats and other scalar values including Envelopes, are transparently dealt with by Patch.  The SynthDef that it produces does not have a separate control input for that argument.  It doesn't need one.  The value is fixed.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf4 \
+\f1\fs18 \cf9 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf5 ( \cf6 // fixing arguments\
-\cf5 \
-\cf7 Instr\cf5 ([\cf8 \\jmcExamples\cf5 ,\cf8 'moto-rev'\cf5 ],\{ \cf7 arg\cf5  lfo=0.2,freq=1000,rq=0.1;\
-	\cf7 RLPF\cf5 .ar(\cf7 LFPulse\cf5 .ar(\cf7 SinOsc\cf5 .kr(lfo, 0, 10, 21), [0,0.1], 0.1), freq, rq).clip2(0.4);\
+\cf0 ( \cf8 // fixing arguments\
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 Instr\cf0 ([\cf9 \\jmcExamples\cf0 ,\cf9 'moto-rev'\cf0 ],\{ \cf5 arg\cf0  lfo=0.2,freq=1000,rq=0.1;\
+	\cf5 RLPF\cf0 .ar(\cf5 LFPulse\cf0 .ar(\cf5 SinOsc\cf0 .kr(lfo, 0, 10, 21), [0,0.1], 0.1), freq, rq).clip2(0.4);\
 \});\
 \
-q = \cf7 Patch\cf5 ([\cf8 \\jmcExamples\cf5 ,\cf8 'moto-rev'\cf5 ],[\
+q = \cf5 Patch\cf0 ([\cf9 \\jmcExamples\cf0 ,\cf9 'moto-rev'\cf0 ],[\
 	0.2\
 ]);\
 \
 q.topGui;\
 \
 )\
-(actually for now floats will have a control input, eventually it will be optimised so they use .ir inputs)\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -87,85 +169,113 @@ q.topGui;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b0\fs18 \cf0 \
-\cf5 ( \cf6 // lets collect the cast...\
-\cf5 \
-\cf7 Instr\cf5 (\cf8 \\bubbles\cf5 , \{ \cf7 arg\cf5  amp=1.0;\
-	\cf7 var\cf5  f, zout;\
-	f = \cf7 LFSaw\cf5 .kr(0.4, 0, 24, \cf7 LFSaw\cf5 .kr([8,7.23], 0, 3, 80)).midicps;\
-	zout = \cf7 CombN\cf5 .ar(\cf7 SinOsc\cf5 .ar(f, 0, 0.04), 0.2, 0.2, 4);\
+( \cf8 // lets collect the cast...\
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 Instr\cf0 (\cf9 \\bubbles\cf0 , \{ \cf5 arg\cf0  amp=1.0;\
+	\cf5 var\cf0  f, zout;\
+	f = \cf5 LFSaw\cf0 .kr(0.4, 0, 24, \cf5 LFSaw\cf0 .kr([8,7.23], 0, 3, 80)).midicps;\
+	zout = \cf5 CombN\cf0 .ar(\cf5 SinOsc\cf0 .ar(f, 0, 0.04), 0.2, 0.2, 4);\
 	zout * amp\
 \},[\
-	\cf8 \\amp\cf5 \
-],\cf7 AudioSpec\cf5 (2)); \cf6 // stereo out\
-\cf5 \
+	\cf9 \\amp\cf0 \
+],\cf5 AudioSpec\cf0 (2)); \cf8 // stereo out\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 \
-\cf7 Instr\cf5 (\cf8 \\rlpf\cf5 ,\{ \cf7 arg\cf5  audio=0,freq=500,rq=0.1;\
-	\cf7 RLPF\cf5 .ar(audio, freq, rq)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 Instr\cf0 (\cf9 \\rlpf\cf0 ,\{ \cf5 arg\cf0  audio=0,freq=500,rq=0.1;\
+	\cf5 RLPF\cf0 .ar(audio, freq, rq)\
 \},[\
-	\cf6 // this will not multi channel expand !\
-\cf5 	\cf6 // must specify input and output specs with correct numChannels\
-\cf5 	\cf6 // or this will assume to build a mono filter\
-\cf5 	\cf8 \\stereo\cf5 ,\
-	\cf8 \\freq\cf5 ,\
-	\cf8 \\rq\cf5 \
-], \cf7 AudioSpec\cf5 (2) );\
+	\cf8 // this will not multi channel expand !\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	\cf8 // must specify input and output specs with correct numChannels\
+\cf0 	\cf8 // or this will assume to build a mono filter\
+\cf0 	\cf9 \\stereo\cf0 ,\
+	\cf9 \\freq\cf0 ,\
+	\cf9 \\rq\cf0 \
+], \cf5 AudioSpec\cf0 (2) );\
 \
 \
-\cf6 // put bubbles into the filter\
-\cf5 p = \cf7 Patch\cf5 (\cf8 \\rlpf\cf5 ,[\
-	q = \cf7 Patch\cf5 (\cf8 \\bubbles\cf5 )\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // put bubbles into the filter\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 p = \cf5 Patch\cf0 (\cf9 \\rlpf\cf0 ,[\
+	q = \cf5 Patch\cf0 (\cf9 \\bubbles\cf0 )\
 ]);\
 \
 \
 )\
 \
 \
-\cf6 // watch the ugen count in the default server window\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // watch the ugen count in the default server window\
 // and also the error window results\
-\cf5 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 p.play;\
 \
 \
 \
-\cf6 // stops the parent and the child q\
-\cf5 p.stop;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // stops the parent and the child q\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 p.stop;\
 \
 \
-\cf6 // allocates new everything\
-\cf5 p.play;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // allocates new everything\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 p.play;\
 \
-\cf6 // additional play returns the same output object,\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // additional play returns the same output object,\
 // does not start an additional process\
-\cf5 p.play;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 p.play;\
 \
 \
 \
-\cf6 // stop q, but the filter p is still reading from its old bus\
-\cf5 q.stop;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // stop q, but the filter p is still reading from its old bus\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 q.stop;\
 \
-\cf6 // should still have 5 ugens playing\
-\cf5 \
-\cf6 // sent the play message, q defaults to play out of the main outputs\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // should still have 5 ugens playing\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // sent the play message, q defaults to play out of the main outputs\
 // not through the filter p\
-\cf5 q.play;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 q.play;\
 \
-\cf6 // stopping p now still stops q because it is still a child of p\
-\cf5 p.stop;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // stopping p now still stops q because it is still a child of p\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 p.stop;\
 \
-\cf6 // replaying the whole structures\
-\cf5 p.play;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // replaying the whole structures\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 p.play;\
 \
-\cf6 // note the AudioPatchOut and the inputs: PatchIn classes\
-\cf5 p.ins;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // note the AudioPatchOut and the inputs: PatchIn classes\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 p.ins;\
 q.ins;\
 \
 \
 \
-\cf6 // and the gui all works\
-\cf5 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf8 // and the gui all works\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 p.topGui;\
 \
 \
 \
-\cf0 \
+\
 }
