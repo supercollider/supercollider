@@ -94,8 +94,8 @@ PlayerSocket : AbstractPlayerProxy {
 		NodeWatcher.register(socketGroup);
 		bundle.add( socketGroup.addToTailMsg(group) );
 
-		dee = EnvelopedPlayer(Patch(SinOsc),env,this.numChannels);
-		dum = EnvelopedPlayer(Patch(SinOsc),env,this.numChannels);
+		dee = EnvelopedPlayer(Patch({NumChannels.ar(SinOsc.ar,this.numChannels)}),env,this.numChannels);
+		dum = EnvelopedPlayer(Patch({NumChannels.ar(SinOsc.ar,this.numChannels)}),env,this.numChannels);
 		dee.prepareToBundle(socketGroup,bundle,bus: sharedBus);
 		dum.prepareToBundle(socketGroup,bundle,bus: sharedBus);
 		envdSource = dee;
