@@ -673,12 +673,21 @@ SCStaticText : SCStaticTextBase {
 
 SCNumberBox : SCStaticTextBase {
 	var <> keyString, <>step=1;
+	var	<>typingColor, <>normalColor;
 	
 	*paletteExample { arg parent, bounds;
 		var v;
 		v = this.new(parent, bounds);
 		v.value = 123.456;
 		^v
+	}
+
+	init { arg argParent, argBounds;
+		typingColor = Color.red;
+		normalColor = Color.black;
+		parent = argParent.asView; // actual view
+		this.prInit(parent, argBounds.asRect,this.class.viewClass);
+		argParent.add(this);//maybe window or viewadapter
 	}
 
 	increment { this.valueAction = this.value + step; }
@@ -699,13 +708,13 @@ SCNumberBox : SCStaticTextBase {
 		if (char == 127.asAscii, { // delete key
 			keyString = nil;
 			this.string = object.asString;
-			this.stringColor = Color.black;
+			this.stringColor = normalColor;
 			^this
 		});
 		if (char.isDecDigit || "+-.eE".includes(char), {
 			if (keyString.isNil, { 
 				keyString = String.new;
-				this.stringColor = Color.red;
+				this.stringColor = typingColor;
 			});
 			keyString = keyString.add(char);
 			this.string = keyString;
@@ -714,7 +723,7 @@ SCNumberBox : SCStaticTextBase {
 	value { ^object }
 	value_ { arg val;
 		keyString = nil;
-		this.stringColor = Color.black;
+		this.stringColor = normalColor;
 		object = val;
 		this.string = object.asString;
 	}	
