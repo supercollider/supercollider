@@ -8,6 +8,7 @@
 
 #include <libraryConfig.h>
 
+#include <ctype.h>
 #include <fcntl.h>
 #include <string.h>
 #include <sys/stat.h>
