@@ -19,6 +19,7 @@ UGen : AbstractFunction {
  	*multiNew { arg ... args;
 		^this.multiNewList(args);
 	}
+	
 	*multiNewList { arg args;
 		var size = 0, newArgs, results;	
 		args.do({ arg item; 
@@ -93,9 +94,9 @@ UGen : AbstractFunction {
 		^nil 
 	}
 	checkSameRateAsFirstInput {
- 		if (rate == 'audio' and: {inputs.at(0).rate != 'audio'}, { 
- 			^("first input is not audio rate: " + inputs.at(0) + inputs.at(0).rate);
- 		});
+ 		if (rate !== inputs.at(0).rate) { 
+ 			^("first input is not" + rate + "rate: " + inputs.at(0) + inputs.at(0).rate);
+ 		};
  		^nil
  	}
 	argNameForInputAt { arg i;
