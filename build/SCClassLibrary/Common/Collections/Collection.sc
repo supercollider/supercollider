@@ -288,21 +288,21 @@ Collection {
 		^maxValue;
 	}
 	minValue { | function |
-		var maxValue, maxElement;
+		var minValue, minElement;
 		this.do {|elem, i| 
 				var val;
-				if (maxValue.isNil) {
-					maxValue = function.value(elem, i);
-					maxElement = elem; 
+				if (minValue.isNil) {
+					minValue = function.value(elem, i);
+					minElement = elem; 
 				}{ 
 					val = function.value(elem, i);
-					if (val > maxValue) {
-						maxValue = val;
-						maxElement = elem; 
+					if (val < minValue) {
+						minValue = val;
+						minElement = elem; 
 					}
 				}	
 		};
-		^maxValue;
+		^minValue;
 	}
 	
 //	// set theory methods by Fredrik Olofsson <f@fredrikolofsson.com>
