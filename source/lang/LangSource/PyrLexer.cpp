@@ -723,22 +723,10 @@ symbol3 : {
 string1 : {	
 		int startline, endchar;
 		startline = lineno;
-		endchar = '\"';
-	
-		/*do {
-			c = input();
-		} while (c != endchar && c != 0);*/
+		endchar = '"';
+		
 		for (;yylen<MAXYYLEN;) {
 			c = input();
-/*		allow multi line strings...
-			if (c == '\n' || c == '\r') {
-				post("String open at end of line on line %d in file '%s'\n", 
-					startline, curfilename);
-				yylen = 0;
-				r = 0; 
-				goto leave;
-			}
-*/				
 			if (c == '\\') {
 				yylen--;
 				c = input();
@@ -760,8 +748,16 @@ string1 : {
 			r = 0; 
 			goto leave;
 		}
+		yylen--;
+		
+		do {
+			c = input0();
+		} while (c && isspace(c));
+		
+		if (c == '"') goto string1;
+		else if (c) unput0(c);
+		
 		yytext[yylen] = 0;
-		yytext[yylen-1] = 0;
 		r = processstring(yytext);
 		goto leave;
 	}
@@ -1109,7 +1105,8 @@ int processstring(char *s)
 #if DEBUGLEX
 	if (gDebugLexer) postfl("processstring: '%s'\n",s);
 #endif
-	string = newPyrString(NULL, s+1, obj_permanent | obj_immutable, false);
+	int flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
+	string = newPyrString(gMainVMGlobals->gc, s+1, flags, false);
 	SetObject(&slot, string);
 	node = newPyrSlotNode(&slot);
 	zzval = (int)node;

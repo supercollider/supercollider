@@ -27,6 +27,7 @@
 void *alloca(unsigned long size); 
 void bcopy(void *src, void *dst, size_t size) ;
 int yyparse();
+extern bool compilingCmdLine;
 
 %}
 
@@ -860,35 +861,8 @@ ascii		: ASCII { $$ = zzval; }
 
 symbol		: SYMBOL { $$ = zzval; }	
 		;
-
-string		: string1
-			| string string1
-				{
-					PyrSlotNode	*node1, *node2, *node3;
-					PyrSlot slot;
-					PyrString *string;
-					char *str;
-					long len1, len2, len3;
-					
-					node1 = (PyrSlotNode*)$1;
-					node2 = (PyrSlotNode*)$2;
-					len1 = node1->slot.uo->size;
-					len2 = node2->slot.uo->size;
-					len3 = len1 + len2;
-					string = newPyrStringN(NULL, len3, obj_permanent | obj_immutable, false);
-					memcpy(string->s,        node1->slot.uos->s, len1);
-					memcpy(string->s + len1, node2->slot.uos->s, len2);
-					
-					pyr_pool_runtime->Free(node1->slot.uo);
-					pyr_pool_runtime->Free(node2->slot.uo);
-					
-					SetObject(&slot, string);
-					node3 = newPyrSlotNode(&slot);
-					$$ = (long)node3;
-				}
-			;
 			
-string1		: STRING { $$ = zzval; }	
+string		: STRING { $$ = zzval; }	
 		;
 
 pseudovar	: PSEUDOVAR { $$ = zzval; }	
