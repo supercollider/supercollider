@@ -1,9 +1,8 @@
 + Server {
 
 	scope { arg numChannels, index, bufsize = 4096, zoom, rate;
-			
+			numChannels = numChannels ? 2;
 			if(scopeWindow.isNil) {
-				numChannels = numChannels ? this.options.numOutputBusChannels;
 				scopeWindow = 
 					Stethoscope.new(this, numChannels, index, bufsize, zoom, rate, nil, 
 						this.options.numBuffers); 
@@ -33,7 +32,8 @@
 		if(server.serverRunning.not) { "internal server not running!".postln; ^nil };
 		def = this.asSynthDef(fadeTime:fadeTime);
 		outUGen = def.children.detect { |ugen| ugen.class === Out };
-		numChannels = numChannels ? (outUGen.inputs.size - 1);
+		
+		numChannels = numChannels ?? { if(outUGen.notNil) { (outUGen.inputs.size - 1) } { 1 } };
 		synth = Synth.basicNew(def.name, server);
 		bytes = def.asBytes;
 		synthMsg = synth.newMsg(server, [\i_out, outbus, \out, outbus], \addToHead);
