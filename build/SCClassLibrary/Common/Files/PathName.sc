@@ -1,9 +1,10 @@
 
-PathName { 	// this class by originally by AdC 
+PathName { 	// AdC, cx
 
-	var <fullPath, <colonIndices;
+	var <fullPath, colonIndices;
 	
-	classvar <>scroot,<>secondVolume;
+	classvar <>scroot;
+	classvar <>secondVolume; //needed only for OS9 path conversions
 	
 	*new { arg path = ""; 
 		^super.new.init(path.standardizePath); 
@@ -28,15 +29,18 @@ PathName { 	// this class by originally by AdC
 		)
 	}
 	*initClass {	scroot = File.getcwd;	}
-	init { arg inPath;			// always calculate indices for all the colons,
-							// since they are always needed.
+	init { arg inPath;			
 		fullPath = inPath;	
-		colonIndices = List.new;	
-	 	fullPath.do({ arg eachChar, i; 
-			if (eachChar == $/, { colonIndices.add(i) }); 
-		});
-	} 
-	
+	}
+	colonIndices {
+		^colonIndices ?? {
+			colonIndices = List.new;	
+		 	fullPath.do({ arg eachChar, i; 
+				if (eachChar == $/, { colonIndices.add(i) }); 
+			});
+			colonIndices
+		}
+	}
 	fileName { 
 		^fullPath.copyRange((this.lastColonIndex) + 1, (fullPath.size -1).max(0));
 	} 
@@ -56,7 +60,7 @@ PathName { 	// this class by originally by AdC
 		^fullPath.copyRange(0, this.lastColonIndex);
 	}
 	
-	diskName {  ^fullPath.copyRange(0, colonIndices.first - 1) }
+	diskName {  ^fullPath.copyRange(0, this.colonIndices.first - 1) }
 	
 	isRelativePath { ^this.isAbsolutePath.not }
 	
@@ -75,8 +79,8 @@ PathName { 	// this class by originally by AdC
 		if(this.isAbsolutePath,{
 			^fullPath
 		},{
-			// this makes a big assumption
-			^scroot ++ fullPath;
+			// this assumes relative to the sc app
+			^scroot ++ "/" ++ fullPath;
 		})
 	}
 	allFolders { 	
@@ -84,7 +88,7 @@ PathName { 	// this class by originally by AdC
 		folderNames = List.new; 
 		pathCopy = fullPath;
 
-		colonIndices.doAdjacentPairs({ arg startColon, endColon; 
+		this.colonIndices.doAdjacentPairs({ arg startColon, endColon; 
 			folderNames.add( fullPath.copyRange(startColon + 1, endColon - 1) );
 		});
 
@@ -92,18 +96,21 @@ PathName { 	// this class by originally by AdC
 	}
 	
 	folderName {
-		var indexBeforeFolder; 
-		if (colonIndices.isEmpty, { ^"" }); 
+		var indexBeforeFolder,ci;
+		ci = this.coloIndices; 
+		if (ci.isEmpty, { ^"" }); 
 		
 		indexBeforeFolder = 
-		if (colonIndices.size == 1, 0, 
-			{ colonIndices.at(colonIndices.size - 2) + 1 });
+		if (ci.size == 1, 0, 
+			{ ci.at(ci.size - 2) + 1 });
 
 		^fullPath.copyRange(indexBeforeFolder, this.lastColonIndex - 1);
 	}	
 
-	lastColonIndex { 				
-		^if (colonIndices.isEmpty, { -1 }, { colonIndices.last }) ;
+	lastColonIndex {
+		var ci;
+		ci = this.colonIndices;
+		^if (ci.isEmpty, { -1 }, { ci.last }) ;
 	} 
 	
 	nextName { 
@@ -193,11 +200,11 @@ PathName { 	// this class by originally by AdC
 	streamTree { arg str, tabs=0;
 		str << this.fullPath << Char.nl;
 		this.files.do({ arg item; 
-				tabs.do({ str << Char.tab });
-				str << item.fileNameWithoutExtension  << Char.nl
+			tabs.do({ str << Char.tab });
+			str << item.fileNameWithoutExtension  << Char.nl
 		});
 		this.foldersWithoutCVS.do({ arg item; 
-						item.streamTree(str, tabs + 1);
+			item.streamTree(str, tabs + 1);
 		});
 	}
 	
@@ -217,8 +224,7 @@ PathName { 	// this class by originally by AdC
 		doc.string = str.collection;
 		^doc
 	}
-	
-	
+
 }
 
 Help : PathName {
@@ -228,5 +234,4 @@ Help : PathName {
 	}
 
 }
-
 
