@@ -23,8 +23,31 @@
 #include <pthread.h>
 
 extern bool compiledOK;
-
+//*)acceptableDragTypes
 @implementation SCTextView
+- (void) setLangClassToCall: (NSString*) stringin withKeyDownActionIndex:(int) downIndex withKeyUpActionIndex:(int) upIndex 
+{
+	langClassToCall = stringin;
+	keyDownActionIndex = downIndex;
+	keyUpActionIndex = upIndex;
+	[langClassToCall autorelease];
+}
+
+- (void) setObjectKeyDownActionIndex:(int) upindex setObjectKeyUpActionIndex:(int) downindex
+{
+	objectKeyDownActionIndex = downindex;
+	objectKeyUpActionIndex = upindex;
+}
+
+-(BOOL) acceptsFirstResponder
+{
+	return mAcceptsFirstResponder;
+}
+
+-(void) setAcceptsFirstResponder: (BOOL) flag
+{
+	 mAcceptsFirstResponder = flag;
+}
 
 - (void) autoIndent: (NSEvent*) event
 {
@@ -66,6 +89,20 @@ extern bool compiledOK;
 	}
 }
 
+- (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange
+{
+    NSString* string = [self string];
+    NSRange selectedRange = [self selectedRange];
+    if (selectedRange.length <= 0) {
+        unsigned int lineStart, lineEnd;
+        [string getLineStart: &lineStart end: &lineEnd 
+            contentsEnd: nil forRange:selectedRange];
+        selectedRange = NSMakeRange(lineStart, lineEnd - lineStart);
+    }
+	if (outRange) *outRange = selectedRange;
+    return [string substringWithRange: selectedRange];
+}
+
 - (void) keyUp: (NSEvent*) event
 {
     NSString *characters = [event characters];
@@ -77,14 +114,12 @@ extern bool compiledOK;
 		}
 		unsigned int keycode = [event keyCode];
 			
-		MyDocument * doc = [self delegate];			
-		PyrObject * pobj = [doc getSCObject];
-
+		PyrObject * pobj = [[self delegate] getSCObject];
 		if (pobj) {
 			pthread_mutex_lock (&gLangMutex);
-			PyrSymbol *documentclass = getsym("Document");
-			PyrObject *classobj = (PyrObject*) documentclass->u.classobj;			
-			if(NotNil(pobj->slots+2) || NotNil(classobj->slots+5)){
+			PyrSymbol *documentclass = getsym([langClassToCall cString]);
+			PyrObject *classobj = (PyrObject*) documentclass->u.classobj;		
+			if(NotNil(pobj->slots+objectKeyUpActionIndex) || NotNil(classobj->slots+keyUpActionIndex)){
 				if(compiledOK){
 					PyrSymbol *method = getsym("keyUp");
 					VMGlobals *g = gMainVMGlobals;
@@ -119,14 +154,13 @@ extern bool compiledOK;
 		}
 		unsigned int keycode = [event keyCode];
 			
-		MyDocument * doc = [self delegate];			
-		PyrObject * pobj = [doc getSCObject];
+		PyrObject * pobj = [[self delegate] getSCObject];
 
 		if (pobj) {
 			pthread_mutex_lock (&gLangMutex);
-			PyrSymbol *documentclass = getsym("Document");
+			PyrSymbol *documentclass = getsym([langClassToCall cString]);
 			PyrObject *classobj = (PyrObject*) documentclass->u.classobj;			
-			if(NotNil(pobj->slots+1) || NotNil(classobj->slots+4)){
+			if(NotNil(pobj->slots+objectKeyDownActionIndex) || NotNil(classobj->slots+keyDownActionIndex)){
 				if(compiledOK){
 					PyrSymbol *method = getsym("keyDown");
 					VMGlobals *g = gMainVMGlobals;
@@ -149,6 +183,7 @@ extern bool compiledOK;
         [self autoIndent: event];
     } else {
         //call lang
+		[[self delegate] keyDown: event];
 		[super keyDown: event];
     }
 }
@@ -189,6 +224,7 @@ below:
 
         [super mouseDown: event];
         [self mouseDownAction: index];
+		[[self delegate] mouseDown: event];
 
     }
 }
@@ -210,3 +246,4 @@ extern PyrSymbol * s_mouseDown;
 		pthread_mutex_unlock (&gLangMutex);
 }
 @end
+
