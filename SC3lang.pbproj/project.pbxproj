@@ -558,6 +558,7 @@
 				F50D058F02E69B6B01CA2799,
 				F50D059002E69B6B01CA2799,
 				F50D059102E69B6B01CA2799,
+				F5889A2C0397F2F801A87B78,
 			);
 			isa = PBXGroup;
 			path = app;
@@ -1376,6 +1377,7 @@
 				F59DF06A030733E901CE0C16,
 				F59DF0C6030777A201CE0C16,
 				F5285E0E0316170401CA2799,
+				F5E8B845039BD69C01A87B78,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2474,6 +2476,11 @@
 			settings = {
 			};
 		};
+		F5889A2C0397F2F801A87B78 = {
+			isa = PBXFileReference;
+			path = CocoaFilePrimitives.M;
+			refType = 4;
+		};
 		F59DF065030733E801CE0C16 = {
 			isa = PBXFileReference;
 			path = dlopen.c;
@@ -2640,6 +2647,12 @@
 		};
 		F5C7B157033D611701A80099 = {
 			fileRef = F5C7B156033D611701A80099;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5E8B845039BD69C01A87B78 = {
+			fileRef = F5889A2C0397F2F801A87B78;
 			isa = PBXBuildFile;
 			settings = {
 			};
