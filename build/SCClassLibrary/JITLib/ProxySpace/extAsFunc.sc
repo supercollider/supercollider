@@ -33,7 +33,18 @@
 		^this.func
 	}
 }
++ ProxySynthDef {
+	asProxySynthDef { arg proxy;
+		^this; 
+	}
+}
 
++ SynthDef {
+	asProxySynthDef { 
+		"cannot use a normal synthDef as input".inform;
+		^nil; 
+	}
+}
 
 
 /*

@@ -9,7 +9,7 @@ ProxySwitch : NodeProxy {
 	
 	initProxy { arg prx;
 		proxy = prx;
-		this.source_(this.outFunc).input_(prx);
+		this.setObj(this.outFunc, true, true, { this.input_(prx) });
 	}
 	
 	input_ { arg prx;
@@ -26,7 +26,7 @@ ProxySwitch : NodeProxy {
 		i = this.inputIndex;
 		^{
 			var ctl;
-			ctl = Control.names(\inputIndex).kr(i?67);
+			ctl = Control.names(\inputIndex).kr(i);
 			In.ar(ctl, proxy.numChannels ? 2)
 		}
 	}

@@ -18,8 +18,8 @@ ProxySynthDef : SynthDef {
 			synthFadeTime = Control.names(\synthFadeTime).kr(0.005);
 			env = Linen.kr(synthGate, synthFadeTime, 1.0, synthFadeTime, 2);
 			output = (env*ugenGraphFunc.valueArray(ctl)).asArray;
-			if((output.rate === 'control') && (proxy.rate === 'audio'), 
-				{ output = K2A.ar(output) });
+			//if((output.rate === 'control') && (proxy.rate === 'audio'), 
+//				{ output = K2A.ar(output) });
 			Out.multiNewList([proxy.rate, proxy.bus.index]++output)
 		};
 		

@@ -20,6 +20,15 @@
 	play { arg key=\out;
 		this.at(key).play;
 	}
+	record { arg key, path, headerFormat="aif", sampleFormat="int16";
+		var rec;
+		rec = RecNodeProxy.newFrom(this.at(key));
+		Routine({
+			1.0.wait;
+			rec.record(path, headerFormat, sampleFormat);
+		}).play;
+		^rec 
+	}
 	free {
 		this.do({ arg proxy; proxy.free });
 	}
