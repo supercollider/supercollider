@@ -63,6 +63,26 @@ Bus {
 		index = nil;
 		numChannels = nil;
 	}
+	
+	// allow reallocation
+	
+	alloc {
+		if(rate === 'audio', {
+			index = server.audioBusAllocator.alloc(numChannels);
+		}, {
+			index = server.controlBusAllocator.alloc(numChannels);
+		});
+	}
+	
+	realloc {
+		var r, n;
+		if(index.notNil, {
+			r = rate; n = numChannels;
+			this.free;
+			rate = r; numChannels = n;
+			this.alloc;
+		})
+	}
 
 	// alternate syntaxes
 	setAll { arg value;
