@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
-\red191\green0\blue0;\red0\green0\blue191;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red191\green0\blue0;
+\red0\green0\blue0;\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 networked programming
@@ -39,8 +39,8 @@
 			(you cannot directly boot a remote server instance)\
 			\
 			
-\f3\fs18 \cf2 s = \cf3 Server\cf2 (\cf4 "serverName"\cf2 , \cf3 NetAddr\cf2 (hostname, port), clientID);
-\f1\fs24 \cf0 \
+\f3\fs18 s = \cf2 Server\cf0 (\cf3 "serverName"\cf0 , \cf2 NetAddr\cf0 (hostname, port), clientID);
+\f1\fs24 \
 				\
 				
 \f0\b serverName
@@ -61,12 +61,12 @@
 		b) from each client, initialize the default node and set notify to true:\
 			 	\
 			 
-\f3\fs18 \cf2 	s.initTree;\
+\f3\fs18 	s.initTree;\
 			 	s.notify;\
 			 	\
 			 	if needed, a server window can be created:\
 			 	s.makeWindow;
-\f1\fs24 \cf0 \
+\f1\fs24 \
 		\
 		c) preallocate a range of busses in each client. \
 			If there is conflicts, increase the number of busses in the server options before booting:
@@ -75,8 +75,8 @@
 				\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs18 \cf2 			(\
-				\cf3 var\cf2  numberOfParticipants, n;\
+\f3\fs18 \cf0 			(\
+				\cf2 var\cf0  numberOfParticipants, n;\
 				numberOfParticipants = 4;\
 				\
 				\
@@ -96,8 +96,8 @@
 \f1\fs24 \cf0 		d) now create a ProxySpace from the server:\
 				\
 			
-\f3\fs18 \cf2 	p = \cf3 ProxySpace\cf2 .push(s);
-\f1\fs24 \cf0  \
+\f3\fs18 	p = \cf2 ProxySpace\cf0 .push(s);
+\f1\fs24  \
 				\
 				\
 
@@ -110,10 +110,10 @@
 \f3\fs18 buss
 \f1\fs24 es for each client, create shared busses:\
 				
-\f3\fs18 \cf2 p = \cf3 ProxySpace\cf2 .push(s);\
+\f3\fs18 p = \cf2 ProxySpace\cf0 .push(s);\
 				~shared1.ar(2);\
 				~shared2.ar(2);\
-				~sharedkr.kr(1); \cf5 // or other names.\
+				~sharedkr.kr(1); \cf4 // or other names.\
 			\
 			
 \f1\fs24 \cf0 then do (c) like in (1), just take care that the shared busses are taking number space\
@@ -122,12 +122,14 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f3\fs18 \cf0 		\
-				
-\f1\fs24 			\
-							\
+\
+\
+\cf5  \cf6 // --------the following have changed and are about to change more soon ------------- //				
+\f1\fs24 \cf6 			\cf5 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 							\
 
-\f0\b \cf0 3) using ProxySpace with more than one client/server pair, with a partly shared bus space
+\f0\b 3) using ProxySpace with more than one client/server pair, with a partly shared bus space
 \f1\b0 			\
 			
 \f2\i experimental ! more help to come.
@@ -135,7 +137,7 @@
 			a)	boot the (remote) server and create a local model\
 					(you cannot directly boot a remote server instance)\
 				
-\f3\fs18 s = \cf6 Router\cf0 (name, -local address (or nil)-, clientID);\
+\f3\fs18 s = \cf2 Router\cf0 (name, -local address (or nil)-, clientID);\
 				s.addr = [all the net addresses];
 \f1\fs24 \
 			\
@@ -143,9 +145,9 @@
 			 \
 			c) before allocating a number of busses for each client, create shared busses:\
 				
-\f3\fs18 \cf2 \
-				p = \cf3 ProxySpace\cf2 .push(s);\
-				p.addSharedKeys; \cf0 \
+\f3\fs18 \
+				p = \cf2 ProxySpace\cf0 .push(s);\
+				p.addSharedKeys; \
 				
 \f1\fs24 \
 			now all letters from ~a to ~r are 1 channel control rate proxies \
