@@ -6,7 +6,7 @@ Buffer {
 	
 	// doesn't send
 	*new { arg server,numFrames = -1,numChannels=1;
-		server = server ? Server.local;
+		server = server ? Server.default;
 		^super.newCopyArgs(server,
 						server.bufferAllocator.alloc(1),
 						numFrames,
@@ -15,7 +15,7 @@ Buffer {
 	
 
 	*alloc { arg server,numFrames,numChannels=1,completionMessage;
-		server = server ? Server.local;
+		server = server ? Server.default;
 		^super.newCopyArgs(server,
 						server.bufferAllocator.alloc(1),
 						numFrames,
@@ -31,7 +31,7 @@ Buffer {
 
 	// read whole file into memory for PlayBuf etc.
 	*read { arg server,path,startFrame = 0,numFrames = -1, completionMessage;
-		server = server ? Server.local;
+		server = server ? Server.default;
 		^super.newCopyArgs(server,
 						server.bufferAllocator.alloc(1),
 						numFrames)
@@ -251,7 +251,7 @@ Buffer {
 	}
 
 	*loadDialog { arg server,startFrame = 0,numFrames = -1;
-		server = server ? Server.local;
+		server = server ? Server.default;
 		^super.newCopyArgs(server,
 						server.bufferAllocator.alloc(1),
 						numFrames).loadDialog(startFrame)

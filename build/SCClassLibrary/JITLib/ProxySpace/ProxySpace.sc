@@ -12,7 +12,7 @@ ProxySpace : EnvironmentRedirect {
 	}
 	
 	*new { arg server, name, clock;
-		^super.new(name).einit(server ? Server.local, name, clock)
+		^super.new(name).einit(server ? Server.default, name, clock)
 	}
 	
 	*push { arg server, name, clock;

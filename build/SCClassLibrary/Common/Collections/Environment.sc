@@ -142,7 +142,7 @@ Event : Environment {
 					\out, ~out, \freq, freq, \amp, ~amp, \pan, ~pan]];
 			};
 			
-			~server = Server.local;
+			~server = Server.default;
 		});
 		
 		SynthDef(\default, { arg out=0, freq=440, amp=0.1, pan=0, gate=1;

@@ -5,7 +5,7 @@ Node {
 	var <>isPlaying = false, <>isRunning = false;
 	
 	*basicNew { arg server, nodeID;
-		server = server ? Server.local;
+		server = server ? Server.default;
 		^super.newCopyArgs(nodeID ?? {server.nextNodeID}, server)
 	}
 
@@ -157,7 +157,7 @@ Node {
 
 	// private
 	*prNew { arg server;
-		^super.newCopyArgs(server.nextNodeID, server ? Server.local)
+		^super.newCopyArgs(server.nextNodeID, server ? Server.default)
 	}
 	prSetNodeID { arg id;  nodeID = id ?? {server.nextNodeID}  }
 	prSetPlaying { arg flag=true; isPlaying = flag; isRunning = flag }
@@ -412,7 +412,7 @@ RootNode : Group {
 	classvar <roots;
 	
 	*new { arg server;
-		server = server ?? {Server.local};
+		server = server ? Server.default;
 		^(roots.at(server.name) ?? {
 			^super.basicNew(server, 0).rninit
 		})

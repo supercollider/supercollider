@@ -47,7 +47,7 @@
 	asDefName { // won't work immediately for Synth.new
 		var def;
 		def = this.asSynthDef;
-		def.send(Server.local);
+		def.send(Server.default);
 		^def.name
 	}
 	

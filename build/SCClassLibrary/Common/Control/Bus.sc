@@ -5,6 +5,7 @@ Bus {
 	
 	*control { arg server,numChannels=1;
 		var alloc;
+		server = server ? Server.default;
 		alloc = server.controlBusAllocator.alloc(numChannels);
 		if(alloc.isNil,{
 			error("Meta_Bus-control: failed to get a control bus allocated."
@@ -15,6 +16,7 @@ Bus {
 	}
 	*audio { arg server,numChannels=1;
 		var alloc;
+		server = server ? Server.default;
 		alloc = server.audioBusAllocator.alloc(numChannels);
 		if(alloc.isNil,{
 			error("Meta_Bus-audio: failed to get an audio bus allocated."
@@ -28,7 +30,7 @@ Bus {
 	}
 
 	*new { arg rate=\audio,index=0,numChannels=2,server;
-		^super.newCopyArgs(rate,index,numChannels,server ?? {Server.local})
+		^super.newCopyArgs(rate,index,numChannels,server ? Server.default)
 	}
 
 	set { arg ... values; // shouldn't be larger than this.numChannels
