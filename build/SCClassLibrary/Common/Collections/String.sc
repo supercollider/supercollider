@@ -90,7 +90,58 @@ String[char] : RawArray {
 		});
 		^string
 	}
-
+	split { arg separator="/";
+		var array,word;
+		word="";
+		array=[];
+		separator=separator.ascii;
+		
+		this.do({arg let,i;
+			if(let.ascii != separator ,{
+				word=word++let;
+			},{
+				array=array.add(word);
+				word="";
+			});
+		});
+		^array.add(word);
+	}
+	contains { arg string;
+		var completed=0,size;
+		size = string.size;
+		this.do({	arg char,i;
+			if(char == string.at(completed),{
+				completed = completed + 1;
+				if(completed == size,{
+					^true
+				})
+			},{
+				completed = 0;
+			})
+		});
+		^false
+	}
+	// case insensitive
+	containsi { arg string;
+		var completed=0;
+		
+		// could return false after end + completed - string.size
+		this.do({	arg char,i;
+			var ch;
+			if(char.toLower == (ch = string.at(completed)) or: 
+				{ char.toUpper == ch }
+			,{
+				completed = completed + 1;
+				if(completed == string.size,{
+					^true
+				})
+			},{
+				completed = 0;
+			})
+		});
+		^false
+	}
+	
 	compile { ^thisProcess.interpreter.compile(this); }
 	interpret { ^thisProcess.interpreter.interpret(this); } 
 	interpretPrint { ^thisProcess.interpreter.interpretPrint(this); }
