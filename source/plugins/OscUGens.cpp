@@ -3314,7 +3314,7 @@ void Klang_next(Klang *unit, int inNumSamples)
 
 void Klank_Dtor(Klank *unit)
 {
-	RTFree(unit->mWorld, unit->m_buf);
+	RTFree(unit->mWorld, unit->m_coefs);
 }
 
 void Klank_Ctor(Klank *unit)
@@ -3330,15 +3330,15 @@ void Klank_SetCoefs(Klank *unit)
 	int numpartials = (unit->mNumInputs - 4) / 3;
 	unit->m_numpartials = numpartials;
 	
-	int numcoefs = unit->m_numpartials * 5;
-	unit->m_buf = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
-	unit->m_coefs = unit->m_buf + unit->mWorld->mBufLength;
+	int numcoefs = ((unit->m_numpartials + 3) & ~3) * 5;
+	unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
+	unit->m_buf = unit->m_coefs + numcoefs;
 
 	float freqscale = ZIN0(1) * unit->mRate->mRadiansPerSample;
 	float freqoffset = ZIN0(2) * unit->mRate->mRadiansPerSample;
 	float decayscale = ZIN0(3);
 
-	float* coefs = unit->m_coefs - 1;
+	float* coefs = unit->m_coefs;
 
 	float sampleRate = SAMPLERATE;
 	
@@ -3352,11 +3352,12 @@ void Klank_SetCoefs(Klank *unit)
 		float R2 = R * R;
 		float cost = (twoR * cos(w)) / (1.f + R2);
 		
-		*++coefs = 0.f;					// y1
-		*++coefs = 0.f;					// y2
-		*++coefs = twoR * cost;			// b1
-		*++coefs = -R2;					// b2
-		*++coefs = level * 0.25;		// a0		
+		int k = 20 * (i>>2) + (i & 3);
+		coefs[k+0] = 0.f;					// y1
+		coefs[k+4] = 0.f;					// y2
+		coefs[k+8] = twoR * cost;			// b1
+		coefs[k+12] = -R2;					// b2
+		coefs[k+16] = level * 0.25;		// a0		
 		//Print("coefs %d  %g %g %g\n", i, twoR * cost, -R2, ampf * 0.25);
 	}
 }
@@ -3369,6 +3370,212 @@ void Klank_next(Klank *unit, int inNumSamples)
 	
 	float *in, *out;
 	float inf;
+	float y0_0, y1_0, y2_0, a0_0, b1_0, b2_0;
+	float y0_1, y1_1, y2_1, a0_1, b1_1, b2_1;
+	float y0_2, y1_2, y2_2, a0_2, b1_2, b2_2;
+	float y0_3, y1_3, y2_3, a0_3, b1_3, b2_3;
+		
+	int32 numpartials = unit->m_numpartials;
+	int32 imax = numpartials >> 2;
+
+	float* coefs = unit->m_coefs + imax * 20;
+
+	switch (numpartials & 3) {
+		case 3 :
+			y1_0 = coefs[0];	y2_0 = coefs[4];	b1_0 = coefs[8];	b2_0 = coefs[12];	a0_0 = coefs[16];
+			y1_1 = coefs[1];	y2_1 = coefs[5];	b1_1 = coefs[9];	b2_1 = coefs[13];	a0_1 = coefs[17];
+			y1_2 = coefs[2];	y2_2 = coefs[6];	b1_2 = coefs[10];	b2_2 = coefs[14];	a0_2 = coefs[18];
+			
+			in = in0;
+			out = unit->m_buf - 1;
+			LooP(unit->mRate->mFilterLoops) {
+				inf = *++in;
+				y0_0 = inf + b1_0 * y1_0 + b2_0 * y2_0; 
+				y0_1 = inf + b1_1 * y1_1 + b2_1 * y2_1; 
+				y0_2 = inf + b1_2 * y1_2 + b2_2 * y2_2; 
+				*++out = a0_0 * y0_0 + a0_1 * y0_1 + a0_2 * y0_2;
+				
+				inf = *++in;
+				y2_0 = inf + b1_0 * y0_0 + b2_0 * y1_0; 
+				y2_1 = inf + b1_1 * y0_1 + b2_1 * y1_1; 
+				y2_2 = inf + b1_2 * y0_2 + b2_2 * y1_2; 
+				*++out = a0_0 * y2_0 + a0_1 * y2_1 + a0_2 * y2_2;
+				
+				inf = *++in;
+				y1_0 = inf + b1_0 * y2_0 + b2_0 * y0_0; 
+				y1_1 = inf + b1_1 * y2_1 + b2_1 * y0_1; 
+				y1_2 = inf + b1_2 * y2_2 + b2_2 * y0_2; 
+				*++out = a0_0 * y1_0 + a0_1 * y1_1 + a0_2 * y1_2;
+			}
+			LooP(unit->mRate->mFilterRemain) {
+				inf = *++in;
+				y0_0 = inf + b1_0 * y1_0 + b2_0 * y2_0; 
+				y0_1 = inf + b1_1 * y1_1 + b2_1 * y2_1; 
+				y0_2 = inf + b1_2 * y1_2 + b2_2 * y2_2; 
+				*++out = a0_0 * y0_0 + a0_1 * y0_1 + a0_2 * y0_2;
+				y2_0 = y1_0;	y1_0 = y0_0; 
+				y2_1 = y1_1;	y1_1 = y0_1; 
+				y2_2 = y1_2;	y1_2 = y0_2; 
+			}
+			coefs[0] = y1_0;	coefs[4] = y2_0;		
+			coefs[1] = y1_1;	coefs[5] = y2_1;		
+			coefs[2] = y1_2;	coefs[6] = y2_2;		
+			break;
+		case 2 :
+			y1_0 = coefs[0];	y2_0 = coefs[4];	b1_0 = coefs[8];	b2_0 = coefs[12];	a0_0 = coefs[16];
+			y1_1 = coefs[1];	y2_1 = coefs[5];	b1_1 = coefs[9];	b2_1 = coefs[13];	a0_1 = coefs[17];
+			
+			in = in0;
+			out = unit->m_buf - 1;
+			LooP(unit->mRate->mFilterLoops) {
+				inf = *++in;
+				y0_0 = inf + b1_0 * y1_0 + b2_0 * y2_0; 
+				y0_1 = inf + b1_1 * y1_1 + b2_1 * y2_1; 
+				*++out = a0_0 * y0_0 + a0_1 * y0_1;
+				
+				inf = *++in;
+				y2_0 = inf + b1_0 * y0_0 + b2_0 * y1_0; 
+				y2_1 = inf + b1_1 * y0_1 + b2_1 * y1_1; 
+				*++out = a0_0 * y2_0 + a0_1 * y2_1;
+				
+				inf = *++in;
+				y1_0 = inf + b1_0 * y2_0 + b2_0 * y0_0; 
+				y1_1 = inf + b1_1 * y2_1 + b2_1 * y0_1; 
+				*++out = a0_0 * y1_0 + a0_1 * y1_1;
+			}
+			LooP(unit->mRate->mFilterRemain) {
+				inf = *++in;
+				y0_0 = inf + b1_0 * y1_0 + b2_0 * y2_0; 
+				y0_1 = inf + b1_1 * y1_1 + b2_1 * y2_1; 
+				*++out = a0_0 * y0_0 + a0_1 * y0_1;
+				y2_0 = y1_0;	y1_0 = y0_0; 
+				y2_1 = y1_1;	y1_1 = y0_1; 
+			}
+			coefs[0] = y1_0;	coefs[4] = y2_0;		
+			coefs[1] = y1_1;	coefs[5] = y2_1;		
+			break;
+		case 1 :
+			y1_0 = coefs[0];	y2_0 = coefs[4];	b1_0 = coefs[8];	b2_0 = coefs[12];	a0_0 = coefs[16];
+			
+			//Print("rcoefs %g %g %g %g %g\n", y1_0, y2_0, b1_0, b2_0, a0_0);
+			in = in0;
+			out = unit->m_buf - 1;
+			LooP(unit->mRate->mFilterLoops) {
+				inf = *++in;
+				y0_0 = inf + b1_0 * y1_0 + b2_0 * y2_0; 
+				*++out = a0_0 * y0_0;
+				
+				inf = *++in;
+				y2_0 = inf + b1_0 * y0_0 + b2_0 * y1_0; 
+				*++out = a0_0 * y2_0;
+				
+				inf = *++in;
+				y1_0 = inf + b1_0 * y2_0 + b2_0 * y0_0; 
+				*++out = a0_0 * y1_0;
+				//Print("out %g %g %g\n", y0_0, y2_0, y1_0);
+			}
+			LooP(unit->mRate->mFilterRemain) {
+				inf = *++in;
+				y0_0 = inf + b1_0 * y1_0 + b2_0 * y2_0; 
+				*++out = a0_0 * y0_0;
+				y2_0 = y1_0;	y1_0 = y0_0; 
+				//Print("out %g\n", y0_0);
+			}
+			coefs[0] = y1_0;	coefs[4] = y2_0;		
+			break;
+		case 0 :
+			out = unit->m_buf - 1;
+			LooP(inNumSamples) { *++out = 0.f; }
+			break;
+	}
+
+	coefs = unit->m_coefs;
+
+	for (int i=0; i<imax; ++i) {
+		y1_0 = coefs[0];	y2_0 = coefs[4];	b1_0 = coefs[8];	b2_0 = coefs[12];	a0_0 = coefs[16];
+		y1_1 = coefs[1];	y2_1 = coefs[5];	b1_1 = coefs[9];	b2_1 = coefs[13];	a0_1 = coefs[17];
+		y1_2 = coefs[2];	y2_2 = coefs[6];	b1_2 = coefs[10];	b2_2 = coefs[14];	a0_2 = coefs[18];
+		y1_3 = coefs[3];	y2_3 = coefs[7];	b1_3 = coefs[11];	b2_3 = coefs[15];	a0_3 = coefs[19];
+		
+		in = in0;
+		out = unit->m_buf - 1;
+		LooP(unit->mRate->mFilterLoops) {
+			inf = *++in;
+			y0_0 = inf + b1_0 * y1_0 + b2_0 * y2_0; 
+			y0_1 = inf + b1_1 * y1_1 + b2_1 * y2_1; 
+			y0_2 = inf + b1_2 * y1_2 + b2_2 * y2_2; 
+			y0_3 = inf + b1_3 * y1_3 + b2_3 * y2_3; 
+			*++out += a0_0 * y0_0 + a0_1 * y0_1 + a0_2 * y0_2 + a0_3 * y0_3;
+			
+			inf = *++in;
+			y2_0 = inf + b1_0 * y0_0 + b2_0 * y1_0; 
+			y2_1 = inf + b1_1 * y0_1 + b2_1 * y1_1; 
+			y2_2 = inf + b1_2 * y0_2 + b2_2 * y1_2; 
+			y2_3 = inf + b1_3 * y0_3 + b2_3 * y1_3; 
+			*++out += a0_0 * y2_0 + a0_1 * y2_1 + a0_2 * y2_2 + a0_3 * y2_3;
+			
+			inf = *++in;
+			y1_0 = inf + b1_0 * y2_0 + b2_0 * y0_0; 
+			y1_1 = inf + b1_1 * y2_1 + b2_1 * y0_1; 
+			y1_2 = inf + b1_2 * y2_2 + b2_2 * y0_2; 
+			y1_3 = inf + b1_3 * y2_3 + b2_3 * y0_3; 
+			*++out += a0_0 * y1_0 + a0_1 * y1_1 + a0_2 * y1_2 + a0_3 * y1_3;
+		}
+		LooP(unit->mRate->mFilterRemain) {
+			inf = *++in;
+			y0_0 = inf + b1_0 * y1_0 + b2_0 * y2_0; 
+			y0_1 = inf + b1_1 * y1_1 + b2_1 * y2_1; 
+			y0_2 = inf + b1_2 * y1_2 + b2_2 * y2_2; 
+			y0_3 = inf + b1_3 * y1_3 + b2_3 * y2_3; 
+			*++out += a0_0 * y0_0 + a0_1 * y0_1 + a0_2 * y0_2 + a0_3 * y0_3;
+			y2_0 = y1_0;	y1_0 = y0_0; 
+			y2_1 = y1_1;	y1_1 = y0_1; 
+			y2_2 = y1_2;	y1_2 = y0_2; 
+			y2_3 = y1_3;	y1_3 = y0_3; 
+		}
+		coefs[0] = y1_0;	coefs[4] = y2_0;		
+		coefs[1] = y1_1;	coefs[5] = y2_1;		
+		coefs[2] = y1_2;	coefs[6] = y2_2;		
+		coefs[3] = y1_3;	coefs[7] = y2_3;		
+		coefs += 20;
+	}
+		
+	float x0;
+	float x1 = unit->m_x1;
+	float x2 = unit->m_x2;
+	
+	in = unit->m_buf - 1;
+	out = out0;
+	LooP(unit->mRate->mFilterLoops) {
+		x0 = *++in;
+		*++out = x0 - x2;
+		x2 = *++in;
+		*++out = x2 - x1;
+		x1 = *++in;
+		*++out = x1 - x0;
+	}
+	LooP(unit->mRate->mFilterRemain) {
+		x0 = *++in;
+		*++out = x0 - x2;
+		x2 = x1;	
+		x1 = x0;
+	}
+	
+	unit->m_x1 = x1;
+	unit->m_x2 = x2;
+}
+
+
+#if __VEC__
+
+void vKlank_next(Klank *unit, int inNumSamples)
+{
+	float *out0 = ZOUT(0);
+	float *in0 = ZIN(0);
+	
+	float *in, *out;
+	float inf;
+	vector float vy0, vy1, vy2, va0, vb1, vb2;
 	float y0_0, y1_0, y2_0, a0_0, b1_0, b2_0;
 	float y0_1, y1_1, y2_1, a0_1, b1_1, b2_1;
 	float y0_2, y1_2, y2_2, a0_2, b1_2, b2_2;
@@ -3564,7 +3771,7 @@ void Klank_next(Klank *unit, int inNumSamples)
 	unit->m_x2 = x2;
 }
 
-
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
