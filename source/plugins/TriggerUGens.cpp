@@ -972,7 +972,7 @@ void Sweep_next_kk(Sweep *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float curin = ZIN0(0);
-	float rate = ZIN0(1);
+	float rate = ZIN0(1) * SAMPLEDUR;
 	float previn = unit->m_previn;
 	float level = unit->mLevel;
 
