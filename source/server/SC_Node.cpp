@@ -194,6 +194,9 @@ void Node_NullCalc(struct Node* /*inNode*/)
 {
 }
 
+void Graph_FirstCalc(Graph *inGraph);
+void Graph_NullFirstCalc(Graph *inGraph);
+
 // if inRun is zero then the node's calc function is set to Node_NullCalc,
 // otherwise its normal calc function is installed.
 void Node_SetRun(Node* inNode, int inRun)
@@ -209,7 +212,11 @@ void Node_SetRun(Node* inNode, int inRun)
 		}
 	} else {
 		if (inNode->mCalcFunc != &Node_NullCalc) {
-			inNode->mCalcFunc = &Node_NullCalc;
+			if (!inNode->mIsGroup && inNode->mCalcFunc == (NodeCalcFunc)&Graph_FirstCalc) {
+				inNode->mCalcFunc = (NodeCalcFunc)&Graph_NullFirstCalc;
+			} else {
+				inNode->mCalcFunc = (NodeCalcFunc)&Node_NullCalc;
+			}
 			Node_StateMsg(inNode, kNode_Off);
 		}
 	}

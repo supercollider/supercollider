@@ -266,6 +266,23 @@ void Graph_FirstCalc(Graph *inGraph)
 	Graph_Calc(inGraph);
 }
 
+void Node_NullCalc(struct Node* /*inNode*/);
+
+void Graph_NullFirstCalc(Graph *inGraph)
+{
+	//scprintf("->Graph_FirstCalc\n");
+	int numUnits = inGraph->mNumUnits;
+	Unit **units = inGraph->mUnits;
+	for (int i=0; i<numUnits; ++i) {
+		Unit *unit = units[i];
+		// call constructor
+		(*unit->mUnitDef->mUnitCtorFunc)(unit);
+	}
+	//scprintf("<-Graph_FirstCalc\n");
+	
+	inGraph->mNode.mCalcFunc = &Node_NullCalc;
+}
+
 void Graph_Calc(Graph *inGraph)
 {
 	//scprintf("->Graph_Calc\n");
