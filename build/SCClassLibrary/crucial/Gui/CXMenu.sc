@@ -10,15 +10,12 @@ CXMenu : SCViewAdapter { // multiple actions
 	*newWith { arg nameFuncs;
 		^super.new.nameFuncs_(nameFuncs)
 	}
-	gui { arg lay,windowWidth=150,height=400,argbuttonWidth=120,title="CXMenu";
-		
+	gui { arg lay,windowWidth=150,height=400,argbuttonWidth=120;
 		buttonWidth = argbuttonWidth;
-		//height = max(height,nameFuncs.size * 20);
-		//layout=lay.asPageLayout(title,windowWidth,height,metal: true);
-		//layout=lay.asFlowView(Rect(20,20,windowWidth,height));
 		layout= lay ?? {MultiPageLayout.new};
 		view = SCVLayoutView.new(layout,Rect(0,0,buttonWidth,24 * nameFuncs.size));
 		this.guiBody;
+		this.enableKeyDowns;
 		if(lay.isNil,{ layout.resizeToFit.front });
 	}
 	guiBody {
@@ -67,17 +64,25 @@ CXMenu : SCViewAdapter { // multiple actions
 	keyDownResponder {
 		var kdr;
 		kdr = KeyCodeResponder.new;
-		kdr.registerKeycode(0,126,{ 
+		kdr.registerKeycode(10485760,125,{ 
 			this.focusOn(focus + 1);
 		});
-		kdr.registerKeycode(0,125,{ 
+		kdr.registerKeycode(10485760,126,{ 
 			this.focusOn(focus - 1);
+		});
+		// enter
+		kdr.registerKeycode(0,52,{
+			this.doAction
+		});
+		// return
+		kdr.registerKeycode(0,36,{
+			this.doAction
 		});
 		^kdr
 	}
 	focusOn { arg f;
 		focus = f.clip(0,view.children.size - 1);
-		view.children.at( f ).focus;
+		view.children.at( focus ).focus;
 	}	
 }
 

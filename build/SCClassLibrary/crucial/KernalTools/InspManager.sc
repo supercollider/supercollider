@@ -69,7 +69,7 @@ InspManager {
 						insp.name -> {this.showInsp(insp) } 
 					}));
 					menu.closeOnSelect = false;
-			{ 	menu.gui(nil,200,400,180); 
+			{ 	menu.gui(nil,200,700,180); 
 				menu.layout.removeOnClose(this);
 				this.showInsp(insp);
 				nil; 

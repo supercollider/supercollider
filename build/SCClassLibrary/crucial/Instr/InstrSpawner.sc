@@ -1,9 +1,10 @@
 
 
 InstrSpawner : Patch {
+
 	var <>delta;
 	
-	var deltaStream,streams,sendArray,aintSeenNil = true;
+	var deltaStream,streams,sendArray,aintSeenNil = true,spawnTask;
 	
 	*new { arg name,args,delta = 1.0;
 		^super.new(name,args).delta_(delta)
@@ -101,7 +102,7 @@ InstrSpawner : Patch {
 	}
 
 	didSpawn {
-		Routine({
+		spawnTask = Task({
 			var aintSeenNil=true;
 			deltaStream.next.wait;
 			while({ 
@@ -112,8 +113,120 @@ InstrSpawner : Patch {
 				deltaStream.next.wait;
 				this.synthDefArgs; // make next array
 			})	
-		}).play(SystemClock)
+		});
+		spawnTask.play(SystemClock)
 	}
+	stop { spawnTask.stop }
 	guiClass { ^InstrSpawnerGui }
 	
 }
+
+
+// jt 
+InstrSpawner2 : InstrSpawner {
+
+	var <>beatsPerStep,<>tempo,tempoUpdater;
+	
+	*new { arg name,args,noteOn = 1.0, beatsPerStep = 0.25,tempo;
+		^super.new(name,args,noteOn).beatsPerStep_(beatsPerStep).tempo_(tempo ? Tempo.default)
+	}
+
+	didSpawn {
+		var beatWait;
+		beatWait = tempo.beats2secs(beatsPerStep);
+		tempoUpdater = Updater(tempo,{
+			beatWait = tempo.beats2secs(beatsPerStep);
+		});
+		spawnTask = Task({
+			var aintSeenNil=true, aNoteOn,group;
+			group = this.group;
+			beatWait.wait;
+			while({
+				aintSeenNil
+			},{
+				aNoteOn = deltaStream.next;
+				if(aNoteOn > 0,{
+					synth = Synth(defName,sendArray,group);
+					beatWait.wait;
+					this.synthDefArgs; // make next array
+				},{
+					if(aNoteOn < 0,{ // legato
+						synth.setWithArray(sendArray);
+						beatWait.wait;
+						this.synthDefArgs; // make next array
+					},{
+						// rest
+						beatWait.wait
+					});
+				});
+			});
+			
+		});
+		spawnTask.play(SystemClock)
+	}
+	free {
+		tempoUpdater.remove;
+		super.free;
+	}
+
+}
+
+
+InstrSpawner3 : InstrSpawner2 {
+
+	didSpawn {
+		var beatWait;
+		beatWait = tempo.beats2secs(beatsPerStep);
+		tempoUpdater = Updater(tempo,{
+			beatWait = tempo.beats2secs(beatsPerStep);
+		});
+		spawnTask = Task({
+			var aintSeenNil=true, aNoteOn,group,lastNoteOn=0;
+			group = this.group;
+			
+			// ISSUE first note maybe shouldn't have played
+			beatWait.wait;
+			// release first synth
+			
+			while({
+				aintSeenNil
+			},{
+				aNoteOn = deltaStream.next;
+				if(lastNoteOn != 0,{
+					if(aNoteOn.isStrictlyPostive,{ // sustain
+						beatWait.wait;
+					},{
+						if(aNoteOn.isNegative,{ // legato
+							synth.setWithArray(sendArray);
+							beatWait.wait;
+							this.synthDefArgs; // make next array
+						},{
+							// note off
+							synth.release;
+							beatWait.wait;
+							// don't send free message
+							synth.server.nodeAllocator.free(synth.nodeID);
+						});
+					});
+				},{
+					if(aNoteOn.isStrictlyPostive,{ // note on
+						synth = Synth(defName,sendArray,group);
+						beatWait.wait;
+						this.synthDefArgs; // make next array
+					},{
+						// rest
+						beatWait.wait;
+					});
+				});
+				lastNoteOn = aNoteOn;
+			});
+			
+		});
+		spawnTask.play(SystemClock)
+	}
+
+}
+
+
+
+

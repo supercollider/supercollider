@@ -1,8 +1,15 @@
 
-ObjectGui : SCViewAdapter { // Controller
+ObjectGui : SCViewAdapter { // aka AbstractController
 
 	var <>model;
+
+	guiBody {arg layout;
+		// implement this in your subclass
+	}
 	
+	
+	
+		
 	*new { arg model;
 		var new;
 		new = super.new;
@@ -10,7 +17,6 @@ ObjectGui : SCViewAdapter { // Controller
 		model.addDependant(new);
 		^new
 	}
-	
 	guify { arg layout,title,width,height;
 		layout = layout ?? {
 			//FlowView.new(nil,Rect(10,10,width,height));
@@ -21,9 +27,6 @@ ObjectGui : SCViewAdapter { // Controller
 	}
 	remove {
 		model.removeDependant(this);
-	}
-	guiBody {arg layout;
-		// implement this in your subclass
 	}
 
 	gui { arg lay ... args;
@@ -54,9 +57,5 @@ ObjectGui : SCViewAdapter { // Controller
 		Tile(model,layout);
 	}
 	
-	registerKeycode { arg modifier,keycode,function;
-		
-	
-	}
 }
 

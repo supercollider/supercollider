@@ -10,7 +10,7 @@ AbstractPlayerGui : ObjectGui {
 			this.writeName(layout);
 			this.guiBody(layout);
 		}).background_(Color.blue(0.5,0.1));
-		this.keyDowns;
+		this.enableKeyDowns;
 	}
 	topGui { arg layout;
 		layout = this.guify(layout);
@@ -23,7 +23,7 @@ AbstractPlayerGui : ObjectGui {
 			this.writeName(layout,true);
 			this.guiBody(layout);
 		}).background_(Color.blue(0.5,0.1));
-		this.keyDowns;
+		this.enableKeyDowns;
 		layout.resizeToFit.front;
 		view.focus;
 	}
@@ -55,9 +55,9 @@ AbstractPlayerGui : ObjectGui {
 			InspectorLink.new(model,layout);
 		})		
 	}
-	keyDowns {
-		view.keyDownAction = this.keyDownResponder;
-	}
+//	keyDowns {
+//		view.keyDownAction = this.keyDownResponder;
+//	}
 	keyDownResponder {
 		var k;
 		k = KeyCodeResponder.new;

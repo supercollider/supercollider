@@ -58,19 +58,19 @@ Crucial {
 		Spec.specs.putAll(			
 		  IdentityDictionary[
 			'audio'->AudioSpec.new,
-			'lofreq'->ControlSpec.new(0.1, 100, 'exp', 0, 6),
-			'rq'->ControlSpec.new(0.001, 2, 'exp', 0, 0.707),
-			'boostcut'->ControlSpec.new(-20, 20, 'lin', 0, 0),
+			//'lofreq'->ControlSpec.new(0.1, 100, 'exp', 0, 6),
+			//'rq'->ControlSpec.new(0.001, 2, 'exp', 0, 0.707),
+			//'boostcut'->ControlSpec.new(-20, 20, 'lin', 0, 0),
 			'bw'->ControlSpec.new(0, 1, 'lin', 0, 0.5),
 			'octave'->ControlSpec.new(-6, 10, 'lin', 1, 2),
 			'sampleStart'->ControlSpec.new(0, 4, 'lin', 0.25, 2),
-			'amp'->ControlSpec.new(0.001, 1, 'exp', 0, 1),
+			//'amp'->ControlSpec.new(0.001, 1, 'exp', 0, 1),
 			'degree'->ControlSpec.new(0, 11, 'lin', 1, 6),
 			'ffreq4'->ControlSpec.new(0, 1, 'lin', 0, 0.5),
 			'sdetune'->ControlSpec.new(0, 1, 'lin', 0, 0.5),
 			'slewRise'->ControlSpec.new(10, 10000, 'lin', 0, 5005),
 			'slewFall'->ControlSpec.new(10, 10000, 'lin', 0, 5005),
-			'beats'->ControlSpec.new(0, 128, 'lin', 0, 4),
+			//'beats'->ControlSpec.new(0, 128, 'lin', 0, 4),
 			'pchRatio'->ControlSpec.new(-4.0, 4.0, 'lin', 0, 2),
 			'pitch'->ControlSpec.new(-4, 4, 'lin', 0, 0),
 
@@ -80,8 +80,8 @@ Crucial {
 
 			'legato'->StaticSpec.new(0.01, 4, 'lin', 0, 2.005),
 			'release'->ControlSpec.new(0, 16, 'lin', 0, 8),
-			'db'->ControlSpec.new(-130, 12, 'lin', 0, -59),
-			'pan'->ControlSpec.new(-1, 1, 'lin', 0, 0),
+			//'db'->ControlSpec.new(-130, 12, 'lin', 0, -59),
+			//'pan'->ControlSpec.new(-1, 1, 'lin', 0, 0),
 			'bicoef'->ControlSpec.new(-1, 1, 'lin', 0, 0),
 			'freq2'->ControlSpec.new(40, 5000, 'exp', 0, 447.214),
 			'rq8'->ControlSpec.new(0.0001, 8, 'lin', 0, 4.00005),
@@ -97,12 +97,12 @@ Crucial {
 			'width'->ControlSpec.new(0, 1, 'lin', 0, 0.5),
 			'radians'->ControlSpec.new(0, 6.28319, 'lin', 0, 3.14159),
 			'numChannels'->StaticSpec.new(1, 8, 'lin', 1, 5),
-			'detune'->ControlSpec.new(-4000, 4000, 'lin', 0, 0),
+			//'detune'->ControlSpec.new(-4000, 4000, 'lin', 0, 0),
 			'freqScale'->ControlSpec.new(0.01, 10, 'lin', 0, 5.005),
 			'qnty0'->StaticIntegerSpec.new(0, 20, 'lin', 1, 10),
 			'ffreqMul'->ControlSpec.new(0.1, 16000, 'exp', 0, 40),
 			'freq'->ControlSpec.new(20, 20000, 'exp', 0, 440),
-			'phase'->ControlSpec.new(0, 6.28319, 'lin', 0, 3.14159),
+			//'phase'->ControlSpec.new(0, 6.28319, 'lin', 0, 3.14159),
 			'ffreqAdd'->ControlSpec.new(0.1, 16000, 'exp', 0, 40),
 			'ffreq'->ControlSpec.new(60, 20000, 'exp', 0, 1095.45),
 			'velocity'->ControlSpec.new(0, 127, 'lin', 0, 63.5),
@@ -147,7 +147,7 @@ Crucial {
 			'note'->ControlSpec.new(0, 11, 'lin', 1, 0),
 			'timeScale'->ControlSpec.new(0.1, 10, 'lin', 0, 5.05),
 			'pmindex'->ControlSpec.new(0, 20, 'lin', 0, 10),
-			'rate'->ControlSpec.new(0.125, 8, 'exp', 0, 1),
+			//'rate'->ControlSpec.new(0.125, 8, 'exp', 0, 1),
 			'beat'->ControlSpec.new(0.001, 1, 'lin', 0.125, 0.5),
 			'decay'->ControlSpec.new(0, 16, 'lin', 0, 8),
 			'mix'->ControlSpec.new(0, 1, 'lin', 0, 0.5),
@@ -169,7 +169,7 @@ Crucial {
 			'pre'->ControlSpec.new(0, 1, 'lin', 0, 0.5),
 			'audio2'->AudioSpec.new,
 			'midivelocity'->ControlSpec.new(1, 127, 'lin', 0, 64),
-			'delay'->ControlSpec.new(0.005, 1, 'lin', 0, 0.5025),
+			//'delay'->ControlSpec.new(0.005, 1, 'lin', 0, 0.5025),
 			\in->AudioSpec.new,
 			\k->ControlSpec(-6.0,6.0),
 			\stepsPerOctave->ControlSpec(0.5,128.0)
@@ -198,9 +198,11 @@ Crucial {
 		Library.put(\menuItems,\test,'simple audio test',{
 			{SinOsc.ar([500,550],0,0.1)}.play
 		});
+		
 		Library.put(\menuItems,\test,'run Class unit tests',{
 			TestCase.runAll;
 		});
+		
 //		
 //		Library.put(\menuItems,\test,'midiCC test',{var w;
 //			w = PageLayout.new("jlcooper",200,150);
@@ -209,31 +211,15 @@ Crucial {
 //				.prSetMIDIMapping(176, 1, 50 + i)
 //			})
 //		});
-//		
-//		Library.put(\menuItems,\post,'post keydown...',{
-//			KeyCodeResponder.tester
-//		});
-//		
-//		
-//		Library.put(\menuItems,\post,'post ascii,keyCode,modifier...',{
-//			Sheet({ arg l;
-//				ActionButton.new(l,"while focused on this button, press keys and modifiers to post a code template").focus
-//					.keyDownAction_({arg a,c,m;
-//									[a,c,m].postln;
-//								});
-//			})
-//		});
-//
-//		Library.put(\menuItems,\post,'post keyCode',{
-//			Sheet({ arg l;
-//				ActionButton.new(l,"while focused on this button, press keys and modifiers to post a code template").focus
-//					.keyDownAction_({arg a,c,m;
-//									c.post;
-//									",".post;
-//								});
-//			})
-//		});
-
+	
+		Library.put(\menuItems,\post,'post [char,unicode,modifier,keycode]...',{
+			Sheet({ arg l;
+				ActionButton.new(l,"press keys and modifiers").focus
+					.keyDownAction_({arg v,c,m,u,k;
+									[c,m,u,k].postln;
+								});
+			})
+		});
 	
 		
 //		Library.put(\menuItems,\post,'post color...',{
@@ -257,15 +243,15 @@ Crucial {
 			})
 		});
 		
-//		Library.put(\menuItems,\introspection,'gcInfo',{
-//			this.gcInfo
-//		});
-//		Library.put(\menuItems,\introspection,'Interpreter-inspect',{
-//			thisProcess.interpreter.inspect;
-//		});
-//		Library.put(\menuItems,\introspection,'Interpreter-clearAll',{
-//			thisProcess.interpreter.clearAll;
-//		});
+		Library.put(\menuItems,\introspection,'gcInfo',{
+			this.gcInfo
+		});
+		Library.put(\menuItems,\introspection,'Interpreter-inspect',{
+			thisProcess.interpreter.inspect;
+		});
+		Library.put(\menuItems,\introspection,'Interpreter-clearAll',{
+			thisProcess.interpreter.clearAll;
+		});
 
 		Library.put(\menuItems,\introspection,'find class...',{
 			GetStringDialog("Classname or partial string","",{
@@ -329,7 +315,7 @@ Crucial {
 //		});
 		
 
-/*		
+	
 		Library.put(\menuItems,\introspection,\findReferencesToClass,{
 			GetStringDialog("Class name:","",{
 				arg ok,string;
@@ -352,8 +338,72 @@ Crucial {
 				})
 			});
 		});
-*/
 
+
+	Library.put(\menuItems,\introspection,'find class-not-found',{
+
+			Class.allClasses.do({ arg class;
+				(class.methods).do({ arg method;
+					var literals;
+					literals = method.literals;
+					literals.do({ arg lit;
+						if(lit.isKindOf(Symbol) and: { lit.isClassName },{
+							if(lit.asClass.isNil,{
+								lit.post;
+								(30 - lit.asString.size).do({ " ".post; });
+								(class.name.asString ++ "-" ++ 
+									method.name.asString).postln;
+							})
+						})
+					})
+				})
+			});
+	});
+	
+	Library.put(\menuItems,\introspection,'find method-not-found',{
+		/*
+			search for potential method not found errors
+			
+			look through all methods for method selectors that
+				are not defined for any class
+				
+			this finds many false cases,
+			but i found a good 7 or 8 typos in mine and others code
+			
+			// could reject any spec names
+			// any instr names
+			// sound file types
+		*/
+		
+		var allMethodNames;
+		allMethodNames = IdentityDictionary.new;
+		
+		Class.allClasses.do({ arg class;
+			(class.methods).do({ arg method;
+				allMethodNames.put(method.name,true);
+			})
+		});
+		
+		Class.allClasses.do({ arg class;
+			(class.methods).do({ arg method;
+				var literals;
+				literals = method.literals;
+				if(literals.notNil,{
+					literals.do({ arg lit;
+						if(lit.isKindOf(Symbol) and: { lit.isClassName.not },{
+							if(allMethodNames.at(lit).isNil,{
+								lit.post;
+								(30 - lit.asString.size).do({ " ".post; });
+								(class.name.asString ++ "-" ++ method.name.asString).postln;
+							})
+						})
+					})
+				});
+			})
+		});
+
+	});
+	
 		//needs a tree browser
 		Library.put(\menuItems,\introspection,'non-nil class variables',{
 			Sheet({ arg f;
@@ -414,60 +464,52 @@ Crucial {
 			},"AudioBusses on local")
 		});
 		
-		
-		//should be a toggle button
-		/*Library.put(\menuItems,\tools,'Server dump',{
-			Server.local.dumpOSC(1);
-		});
-		Library.put(\menuItems,\tools,'Server stop dump',{
-			Server.local.dumpOSC(0);
-		});*/
-		
-//		Library.put(\menuItems,\settings,'set max PageLayout size ...',{
-//			// useful when using video projectors with small screen size
-//			Sheet({ arg f;
-//					ActionButton(f,"set and post screen size",{
-//					var b;
-//					b = f.view.bounds;
-//					PageLayout.screenWidth = b.width;
-//					PageLayout.screenHeight = b.height;
-//				
-//					("PageLayout.screenWidth = " ++ b.width.asCompileString ++ ";").postln;
-//					("PageLayout.screenHeight = " ++ b.height.asCompileString ++ ";").postln;
-//				});
-//			})
-//		})
+	
 	
 	}
 
-	*libraryMenu { arg resize=true;
+	*libraryMenu {
 		// this is just your Library(\menuItems) functions put up on a menu
 		
-		var dic,c;
-		//if(menu.notNil,{ menu.close });
+		var dic,c,w;
+		if(menu.notNil,{ menu.close });
 		
 		//menu=PageLayout("LibraryFunctions",200,800,metal: true);
-		menu = FlowView(nil,Rect(0,0,230,800));
-		dic=Library.at(\menuItems);
-		if(dic.notNil,{
-			dic.keys.asList.sort.do({arg k,ki;
-				var subdic;
-				subdic=Library.at(\menuItems,k);
-				CXLabel(menu,k.asString,maxx:200)
-					.backColor_(Color.new255(112, 128, 144))
-					.stringColor_(Color.white);
-				subdic.keys.asList.sort.do({arg k;
-					ActionButton(menu.startRow,k,{
-						subdic.at(k).value
-					},200).backColor_(Color.new255(245, 245, 245))
-				});
-			});			
-		});
+		//menu = FlowView(nil,Rect(0,0,230,800));
+		menu = MultiPageLayout.new;
+		
+		Server.local.gui(menu);
+
+		ActionButton(menu.startRow,"     MENU     ",{
+			MLIDbrowser(\menuItems)
+				.onSelect_({ arg f; f.value })
+				.browse
+		})
+		.backColor_(Color.new255(112, 128, 144))
+		.labelColor_(Color.white);
+
+//		dic=Library.at(\menuItems);
+//		if(dic.notNil,{
+//			dic.keys.asList.sort.do({arg k,ki;
+//				var subdic;
+//				subdic=Library.at(\menuItems,k);
+//				CXLabel(menu.startRow,k.asString,maxx:200)
+//					.backColor_(Color.new255(112, 128, 144))
+//					.stringColor_(Color.white);
+//				subdic.keys.asList.sort.do({arg k;
+//					ActionButton(menu.startRow,k,{
+//						subdic.at(k).value;
+//						menu.close;
+//					},200).backColor_(Color.new255(245, 245, 245))
+//				});
+//			});			
+//		});
 			
 		// if you have a wacom tablet  you could uncomment these
 		//ToggleButton(menu.startRow,"TabletTracking",{ 
 		//	TZM.tracking = true; },{ TZM.tracking = false }, 
 		//TZM.tracking ,140);
+		
 			
 		ToggleButton(menu.startRow,"Server dumpOSC",{
 			Server.local.stopAliveThread;
@@ -480,9 +522,7 @@ Crucial {
 		TempoGui.setTempoKeys;
 		Tempo.gui(menu.startRow);
 
-		if(resize,{
-			menu.resizeToFit;//.front;
-		});
+		menu.resizeToFit.front;
 	}
 	
 }

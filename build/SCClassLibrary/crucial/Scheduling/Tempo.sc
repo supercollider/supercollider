@@ -14,6 +14,7 @@ Tempo  {
 		
 	bpm { ^tempo * 60.0 }
 	bpm_ { arg bpm; this.tempo = bpm / 60.0; this.changed; }
+	next { ^tempo }
 	tempo_ { arg t; 
 		tempo = t; 
 		tempor = tempo.reciprocal; 
@@ -39,6 +40,7 @@ Tempo  {
 	
 	*bpm { ^default.bpm }
 	*bpm_ { arg bpm; default.bpm_(bpm) }
+	*next { ^default.tempo }
 	*beats2secs { arg beats; ^default.beats2secs(beats) }
 	*secs2beats { arg secs; ^default.secs2beats(secs) }
 	*tempo { ^default.tempo }

@@ -42,7 +42,7 @@ PlayerInputProxy : Silence { // audio
 
 ObjectNotFound : Silence {
 	
-	classvar <>somethingMissing = false;
+	classvar <>somethingMissing;
 	
 	var <>missing;
 	

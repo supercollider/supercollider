@@ -3,7 +3,7 @@
 SCViewAdapter { // SCViewHolder
 	
 	// SCViewAdapter makes it possible to wrap more capabilities by holding, not subclassing
-	// has a  not is a
+	// "has a"  not "is a"
 	
 	var <>view;
 	
@@ -12,6 +12,9 @@ SCViewAdapter { // SCViewHolder
 	keyDownAction_ { arg f;
 		view.keyDownAction_(f);
 	}
+	keyDownResponder { ^nil }
+	enableKeyDowns { this.keyDownAction = this.keyDownResponder }
+	
 	asView { ^view }
 	bounds { ^view.bounds }
 	bounds_ { arg b; view.bounds_(b) }
@@ -19,6 +22,8 @@ SCViewAdapter { // SCViewHolder
 	refresh { view.refresh }
 	background_ { arg b; view.background_(b) }
 	focus { arg flag=true; view.focus(flag) }
+
+
 	// move lower
 	font_ { arg f;
 		view.font = f;
@@ -237,8 +242,8 @@ ToggleButton : SCButtonAdapter {
 	init { arg layout,init,title,maxx,maxy;
 		var offc,onc;
 		this.makeViewWithStringSize(layout,title.size,maxx,maxy);
-		onc=Color.new255(154, 205, 50);
-		offc=Color.new255(245, 222, 179);
+		offc=Color.new255(154, 205, 50);
+		onc=Color.new255(245, 222, 179);
 		view.states = [
 			[title,Color.black,onc],
 			[title,Color.black,offc]
@@ -266,8 +271,21 @@ ToggleButton : SCButtonAdapter {
 		});
 	}
 }
-
-
+//
+//
+//LabelledNumericalView : SCViewAdapter {
+//	
+//	*new { arg parent,rect,name;
+//		^super.new(parent,rect).init(name)
+//	}
+//	*viewClass { ^SCSlider }
+//	init { arg name;
+//		
+//	
+//	}
+//
+//}
+//
 
 
 

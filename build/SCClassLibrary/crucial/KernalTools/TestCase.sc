@@ -3,7 +3,8 @@
 TestCase {
 	
 	var class,associations;
-
+	var routine;
+	
 	classvar <>testdir="TestingAndToDo/Tests/", <failures;
 	
 	*new { arg class ... associations;
@@ -11,12 +12,25 @@ TestCase {
 	}
 	
 	run { arg resetFailures=true,report=true;
+		var askMonkey;
 		if(resetFailures,{ this.class.resetFailures });
-		associations.do({ arg ass;
-			if(ass.value.value.not,{
-				this.failed(ass.key);
-			})
-		});
+		askMonkey = { arg message;
+			ModalDialog({ arg f;
+					CXLabel(f,message);
+				},	
+				{ true.yield },
+				"Human, can you confirm ?",
+				{ false.yield }
+			);
+			routine.stop;
+		};
+		routine = Routine.new({
+			associations.do({ arg ass;
+				if(ass.value.value(this,askMonkey).not,{
+					this.failed(ass.key);
+				})
+			});
+		}).play(AppClock);
 		if(report,{ this.class.report });
 	}
 	
@@ -31,7 +45,7 @@ TestCase {
 	}
 	
 	failed { arg name;
-		failures = failures.add([class,name]);
+		failures = failures.add([class, name]);
 	}
 	*resetFailures { failures = []; }
 	*report {
@@ -57,7 +71,6 @@ TestCase {
 	*pathForClassTest { arg class;
 		^testdir ++ class.name.asString ++ ".test.rtf"
 	}
-	
 	
 }
 
