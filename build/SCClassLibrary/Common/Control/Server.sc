@@ -72,9 +72,9 @@ ServerOptions
 Server : Model {
 	classvar <>local, <>internal, <>named, <>set;
 	
-	var <name, <addr;
+	var <name, <addr, <clientID=0;
 	var <isLocal, <inProcess;
-	var <serverRunning = false;
+	var <serverRunning = false, <serverBooting=false;
 	var <>options,<>latency = 0.2,<dumpMode=0, <notified=true;
 	var <nodeAllocator; 
 	var <staticNodeAllocator;
@@ -86,16 +86,17 @@ Server : Model {
 	var <numUGens=0,<numSynths=0,<numGroups=0,<numSynthDefs=0;
 	var <avgCPU, <peakCPU;
 	
-	var alive = false,aliveThread,statusWatcher;
+	var alive = false,booting = false,aliveThread,statusWatcher;
 	
 	var <window;
 	
-	*new { arg name, addr, options;
-		^super.new.init(name, addr, options)
+	*new { arg name, addr, options, clientID=0;
+		^super.new.init(name, addr, options, clientID)
 	}
-	init { arg argName, argAddr, argOptions;
+	init { arg argName, argAddr, argOptions, argClientID;
 		name = argName;
 		addr = argAddr;
+		clientID = argClientID;
 		options = argOptions ? ServerOptions.new;
 		if (addr.isNil, { addr = NetAddr("127.0.0.1", 57110) });
 		inProcess = addr.addr == 0;
@@ -107,12 +108,12 @@ Server : Model {
 		this.newNodeWatcher;
 	}
 	newNodeWatcher {
-		nodeWatcher = BasicNodeWatcher.new(addr);
+		nodeWatcher = NodeIDWatcher.new(addr, staticNodeAllocator);
 	}
 	newAllocators {
-		nodeAllocator = RingNumberAllocator(1000, 1000 + options.maxNodes);
-		staticNodeAllocator = RingNumberAllocator(1000 + options.maxNodes, 
-										1001 + (2*options.maxNodes));
+		var nodeIdOffset;
+		nodeIdOffset = 1000 + (clientID * options.maxNodes);
+		nodeAllocator = LRUNumberAllocator(nodeIdOffset, nodeIdOffset + options.maxNodes);
 		controlBusAllocator = PowerOfTwoAllocator(options.numControlBusChannels);
 		audioBusAllocator = PowerOfTwoAllocator(options.numAudioBusChannels, 
 		options.numInputBusChannels + options.numOutputBusChannels);
@@ -162,13 +163,7 @@ Server : Model {
 	nextNodeID {
 		^nodeAllocator.alloc
 	}
-	nextStaticNodeID {
-		^staticNodeAllocator.alloc;
-	}
-	nodeIsPlaying { arg nodeID;
-		^nodeWatcher.nodeIsPlaying(nodeID)
-	}
-		
+	
 	
 	//loadDir
 	
@@ -182,11 +177,32 @@ Server : Model {
 	wait { arg responseName;
 		var resp, routine;
 		routine = thisThread;
-		resp = OSCresponder(addr, responseName, { 
+		resp = OSCresponderNode(addr, responseName, { 
 			resp.remove; routine.resume(true); 
 		});
 		resp.add;
 	}
+	
+	waitForBoot { arg onComplete, limit=100;
+		if(serverBooting.not && serverRunning.not, { this.boot });
+		this.doWhenBooted(onComplete, limit)
+	}
+	
+	doWhenBooted { arg onComplete, limit=100;
+			^Routine({
+				while({
+					serverRunning.not 
+					and: {(limit = limit - 1) > 0}
+				},{
+					0.2.wait;	
+				});
+				
+				if(serverRunning.not,{
+					"server failed to start".error;
+				}, onComplete);
+			}).play;
+	}
+	
 	addStatusWatcher {
 		statusWatcher = 
 			OSCresponder(addr, 'status.reply', { arg time, resp, msg;
@@ -232,37 +248,51 @@ Server : Model {
 		});
 	}
 	
+	
+	
 	boot {
 		var resp;
 		if (serverRunning, { "server already running".inform; ^this });
+		if (serverBooting, { "server already booting".inform; ^this });
 		if (isLocal.not, { "can't boot a remote server".inform; ^this });
-		nodeWatcher.start;
+		
+		
+		serverBooting = true;
+		this.startAliveThread;
+		this.doWhenBooted({ 
+				if(notified, { 
+					nodeWatcher.start;
+					this.notify;
+					"notification is on".inform;
+				}, { 
+					"notification is off".inform; 
+				});
+				serverBooting = false;
+		});
+		
+		this.bootServerApp;
+		
+	}
 	
+	bootServerApp {
 		if (inProcess, { 
 			"booting internal".inform;
 			this.bootInProcess; 
 			//alive = true;
 			//this.serverRunning = true;
 		},{
-			//isBooting = true;
-			if(notified, { 
-				//assumes four seconds startup time. should be replaced by something else.
-				WaitUntilServerBoot(this, { this.notify; "sent notify on".inform; });
-			});
 			unixCmd("./scsynth" ++ options.asOptionsString(addr.port));
 			("booting " ++ addr.port.asString).inform;
 		});
-		
-		
-		
-		
 	}
+	
+	
 	
 	reboot {
 		var resp;
 		if (isLocal.not, { "can't reboot a remote server".inform; ^this });
 		if(serverRunning, {
-			resp = OSCresponder(addr, '/done', {
+			resp = OSCresponderNode(addr, '/done', {
 				this.boot;
 				resp.remove;
 			}).add;
@@ -300,6 +330,7 @@ Server : Model {
 		});
 		alive = false;
 		this.serverRunning = false;
+		serverBooting = false;
 		nodeWatcher.stop;
 		this.newAllocators;
 		RootNode(this).freeAll;
