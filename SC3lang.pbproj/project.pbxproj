@@ -148,6 +148,7 @@
 				F50D050D02E69B6B01CA2799,
 				F50D050E02E69B6B01CA2799,
 				F50D050F02E69B6B01CA2799,
+				F561BDB50335370801C816AC,
 			);
 			isa = PBXGroup;
 			path = common;
@@ -225,7 +226,6 @@
 				F50D053B02E69B6B01CA2799,
 				F50D053C02E69B6B01CA2799,
 				F50D053D02E69B6B01CA2799,
-				F50D053E02E69B6B01CA2799,
 				F50D053F02E69B6B01CA2799,
 				F50D054002E69B6B01CA2799,
 				F50D054102E69B6B01CA2799,
@@ -460,11 +460,6 @@
 		F50D053D02E69B6B01CA2799 = {
 			isa = PBXFileReference;
 			path = SC_Msg.h;
-			refType = 4;
-		};
-		F50D053E02E69B6B01CA2799 = {
-			isa = PBXFileReference;
-			path = SC_Sem.h;
 			refType = 4;
 		};
 		F50D053F02E69B6B01CA2799 = {
@@ -1061,6 +1056,24 @@
 			<key>NSDocumentClass</key>
 			<string>MyDocument</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>sc</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>rtf.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>SuperCollider document</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>RTF </string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>SuperCollider</string>
@@ -1157,7 +1170,6 @@
 				F50D064802E69D5901CA2799,
 				F50D064902E69D5901CA2799,
 				F50D064A02E69D5901CA2799,
-				F50D064B02E69D5901CA2799,
 				F50D064C02E69D5901CA2799,
 				F50D064D02E69D5901CA2799,
 				F50D064E02E69D5901CA2799,
@@ -1173,6 +1185,7 @@
 				F53D464D030B8FF501E9DD5D,
 				F53D4651030B905201E9DD5D,
 				F53D4654030B934D01E9DD5D,
+				F561BDB60335370801C816AC,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1650,12 +1663,6 @@
 		};
 		F50D064A02E69D5901CA2799 = {
 			fileRef = F50D053D02E69B6B01CA2799;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		F50D064B02E69D5901CA2799 = {
-			fileRef = F50D053E02E69B6B01CA2799;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -2449,6 +2456,17 @@
 			settings = {
 			};
 		};
+		F561BDB50335370801C816AC = {
+			isa = PBXFileReference;
+			path = SC_Sem.h;
+			refType = 4;
+		};
+		F561BDB60335370801C816AC = {
+			fileRef = F561BDB50335370801C816AC;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		F59DF065030733E801CE0C16 = {
 			isa = PBXFileReference;
 			path = dlopen.c;
@@ -2631,7 +2649,6 @@
 				F5ED522F02FBAEBE0195E057,
 				F5ED523002FBAEBE0195E057,
 				F5ED523102FBAEBE0195E057,
-				F5ED523202FBAEBE0195E057,
 				F5ED523302FBAEBE0195E057,
 				F5ED523402FBAEBE0195E057,
 				F5ED523502FBAEBE0195E057,
@@ -2988,12 +3005,6 @@
 		};
 		F5ED523102FBAEBE0195E057 = {
 			fileRef = F50D053D02E69B6B01CA2799;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		F5ED523202FBAEBE0195E057 = {
-			fileRef = F50D053E02E69B6B01CA2799;
 			isa = PBXBuildFile;
 			settings = {
 			};

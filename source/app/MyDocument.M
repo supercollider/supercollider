@@ -508,7 +508,7 @@ extern bool compiledOK;
         success = data ? [data writeToFile: path atomically: YES] : NO;
     }
     if (!success) return NO;
-/*    
+
     NSFileManager *fmgr = [NSFileManager defaultManager];
 
     {
@@ -528,19 +528,19 @@ extern bool compiledOK;
     NSNumber* creator2 = [attr2 objectForKey: NSFileHFSCreatorCode];
     int creatorval = [creator2 intValue];
     printf("creator is %d   SCjm %d\n", creatorval, 'SCjm');
-*/
+	
     return success;
 }
 
 - (BOOL)readFromFile:(NSString *)path ofType:(NSString *)aType
 {
-/*
+
     NSFileManager *fmgr = [NSFileManager defaultManager];
     NSMutableDictionary *attr2 = [fmgr fileAttributesAtPath: path traverseLink: NO];
     NSNumber* creator2 = [attr2 objectForKey: NSFileHFSCreatorCode];
     int creatorval = [creator2 intValue];
-    printf("creator is %d   SCjm %d\n", creatorval, 'SCjm');
-*/
+    printf("r creator is %d   SCjm %d\n", creatorval, 'SCjm');
+
     NSMutableDictionary *options = [NSMutableDictionary dictionary];
     NSDictionary *docAttrs;
     NSURL *url = [NSURL fileURLWithPath: path];
