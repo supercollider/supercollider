@@ -71,6 +71,10 @@ int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+#ifdef SC_WIN32
+extern void win32_ReplaceCharInString(char* string, int len, char src, char dst);
+#endif //SC_WIN32
+
 int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
@@ -95,6 +99,14 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 	memcpy(mode, c->uos->s, c->uo->size);
 	mode[c->uos->size] = 0;
 	
+#ifdef SC_WIN32
+  win32_ReplaceCharInString(filename,PATH_MAX,'/','\\');
+  if(strcmp(mode,"w") == 0)
+    strcpy(mode,"wb");
+  if(strcmp(mode,"r") == 0)
+    strcpy(mode,"rb");
+#endif
+  //SC_WIN32
 	file = fopen(filename, mode);
 	if (file) {
 		SetPtr(&pfile->fileptr, file);
