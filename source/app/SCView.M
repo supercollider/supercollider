@@ -841,8 +841,8 @@ SCCompositeView::~SCCompositeView()
 void SCCompositeView::setBounds(SCRect inBounds)
 {
     SCView *child = mChildren;
-    float right = mBounds.x + mBounds.width;
-    float bottom = mBounds.y + mBounds.height;
+//    float right = mBounds.x + mBounds.width;
+//    float bottom = mBounds.y + mBounds.height;
     while (child) {
         SCRect bounds = child->getBounds();
         Layout layout = child->getLayout();
@@ -2595,7 +2595,7 @@ SCMultiSliderView::SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj
         mDrawRectsActive = true;
         mSecYValues = NULL;
         mIsHorizontal = true;
-        setVisibleSize();
+        //setVisibleSize();
 }
 SCMultiSliderView::~SCMultiSliderView()
 {
@@ -2610,11 +2610,10 @@ void SCMultiSliderView::draw(SCRect inDamage)
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(mBounds);
     CGContextClipToRect(cgc, rect);
-    double * vals;
-    vals = mYValues;
+    double * vals = mYValues;
 	if(mLayout.mHResize == 0) resizeThumbsToFit();
-	setVisibleSize();
-    int xpixels = mVisibleSize;
+    //int xpixels = getVisibleMax();
+	int xpixels = mTabSize;
     int xstart = mStartIndex;
        
     if (mBackground) mBackground->draw(cgc, rect);
@@ -2626,26 +2625,20 @@ void SCMultiSliderView::draw(SCRect inDamage)
     CGRect drawRect;
     float yval = 0;
     float tsize = mXOffset;  
-    	//test resize behaviour
+
      //draw dots for multislider
     if(mDrawRectsActive)
     {
-        int j = 0;
-                for(int i = xstart; i < xpixels + xstart; i++, j++){
-            yval = vals[i];
-            drawRect = SCtoCGRect(calcThumbRect(j, yval, mXOffset));
-            CGContextFillRect (cgc, drawRect);
+		int j = 0;
+		for(int i = xstart; i < xpixels; i++, j++){
+            drawRect = SCtoCGRect(calcThumbRect(j, vals[i], mXOffset));
+            CGContextFillRect (cgc, SCtoCGRect(calcThumbRect(j, vals[i], mXOffset)));
             if (mThumbSize > 1)	CGContextStrokeRect(cgc,drawRect);
-        }
-        if (mSecYValues != NULL) {
-            j = 0;
-//            for(int i = xstart; i < xpixels; i++, j++){
-            for(int i = xstart; i < xpixels + xstart; i++, j++){
-                yval = mSecYValues[i];
-                drawRect = SCtoCGRect(calcThumbRect(j, yval, mXOffset));
+			if(mSecYValues){ //draw the upper part of a wave view
+				drawRect = SCtoCGRect(calcThumbRect(j, mSecYValues[i], mXOffset));
                 CGContextFillRect (cgc, drawRect);
                 if (mThumbSize > 1)	CGContextStrokeRect(cgc,drawRect);
-            }
+			}
         }
     }
     //draw lines
@@ -2653,9 +2646,8 @@ void SCMultiSliderView::draw(SCRect inDamage)
         float xadd, gcx, gcy;
         if(mThumbSize > 1) xadd =  mThumbSize * 0.5;
             else xadd = 0;
-        int j = 0;
-//		for(int i = xstart; i < xpixels; i++, j++){
-		for(int i = xstart; i < xpixels + xstart; i++, j++){
+		int j = 0;
+		for(int i = xstart; i < xpixels; i++, j++){
             yval = vals[i];
             drawRect = SCtoCGRect(calcThumbRect(j, yval, tsize));
             gcx =  drawRect.origin.x + xadd;
@@ -2665,7 +2657,7 @@ void SCMultiSliderView::draw(SCRect inDamage)
 			else
                 CGContextAddLineToPoint(cgc, gcx, gcy);
         }        
-		//these are fixed values: used for the max of soundfiles
+		//these are fixed values: used for the max of soundfiles, need to go backwards to fill
         if (mSecYValues != NULL) {
             int j = xpixels - 1 - xstart;
             for(int i = xpixels - 1; i >= xstart; i--, j--){
@@ -2871,28 +2863,6 @@ void SCMultiSliderView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEve
     }
 }
 
-void SCMultiSliderView::setVisibleSize()
-{
-    float offset;
-    float scaledsize;
-    if(mThumbSize > 0.0) {
-        if(mXOffset < 1.0) offset = 0;
-        else offset = mXOffset;
-        scaledsize = (float) (mTabSize - mStartIndex) * mThumbSize;
-		if(mIsHorizontal){
-//			if (scaledsize <= mBounds.width) mVisibleSize = mTabSize;
-			if (scaledsize <= mBounds.width) mVisibleSize = mTabSize - mStartIndex;
-			else mVisibleSize = (int) (mStartIndex + (mBounds.width / mThumbSize));
-		} else {
-		    if (scaledsize <= mBounds.height) mVisibleSize = mTabSize - mStartIndex;
-		    else mVisibleSize = (int) (mStartIndex +  (mBounds.height / mThumbSize));
-		}
-    } else {
-        mVisibleSize = 0;
-    }
-}
-
-
 int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {	
 	int err;
@@ -2908,7 +2878,7 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
     }
     if (strcmp(name, "thumbSize")==0) {
         err = slotIntVal(slot, &mThumbSize);
-        setVisibleSize();
+        //setVisibleSize();
         refresh();
         return errNone;
     } 
@@ -2920,7 +2890,7 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
     } 
     if (strcmp(name, "indexThumbSize")==0) {
         err = slotIntVal(slot, &mThumbSize);
-        setVisibleSize();
+        //setVisibleSize();
         refresh();
         return errNone;
     } 
@@ -2933,7 +2903,7 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
     if (strcmp(name, "xOffset")==0) {
         err = slotFloatVal(slot, &mXOffset);
         if(mXOffset < 1.0) mXOffset = 0.0; //mResamp = (int) 1.0 / mXOffset;
-        setVisibleSize();
+        //setVisibleSize();
         refresh();
         return errNone;
     }
@@ -2949,7 +2919,7 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
     }
     if (strcmp(name, "startIndex")==0) {
         err = slotIntVal(slot, &mStartIndex);
-	 setVisibleSize();
+	 //setVisibleSize();
         refresh();
         return errNone;
     }
@@ -3013,7 +2983,7 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			}
 			
         }
-        setVisibleSize();
+        //setVisibleSize();
         refresh();
         return errNone;
 	}
@@ -3635,21 +3605,15 @@ int allocSlot2DDoubleArrayPyrSlot(PyrSlot *slot, double **arr, int position)
     }
     return errWrongType;
 }
+int allocEnvArray (int size, SCEnvObject **arr);
+int allocEnvArray (int size, SCEnvObject **arr){
 
-int allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr);
-int allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
-{
-    if (*arr) {
-		delete [] *arr;
-		*arr = 0;
-	}
-    if (isKindOf((slot->uo->slots[0]).uo, class_array)) {
-            int size = (slot->uo->slots[0]).uo->size;
-            *arr = new SCEnvObject[size];
-            return errNone;
-    }
-    return errWrongType;
+	* arr = new SCEnvObject[size];
+
+	return errNone;
 }
+//int allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr);
+
 
 SCView* NewSCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 {
@@ -3657,10 +3621,11 @@ SCView* NewSCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect in
 }
 
 SCEnvelopeView::SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: SCView(inParent, inObj, inBounds), mThumbSize(12), mStepSize(0.),mStepScale(0.),mXOffset(1)
+	: SCView(inParent, inObj, inBounds), mThumbSize(12), mStepSize(0.),mStepScale(0.)
 {
-	mActiveSize = 1;
-	mTabSize = (int) (inBounds.width / mThumbSize);
+
+	mTabSize = 0;
+	mActiveSize = mTabSize;
 	mCurrentIndex = mStartIndex = 0;
 	mThumbSizeY = mThumbSize;
 	mSelectionSize = 1;
@@ -3668,17 +3633,15 @@ SCEnvelopeView::SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRe
 	mCurrentX = 0.0;
 	mLastIndex = 0;
 	mIsEnvView = true;
-	mEnvObj = new SCEnvObject [mTabSize];
-	mConnectFrom  = mConnectTo  = -1;
-	mConnectFromOutput = mConnectToInput = 0;
-	memset(mEnvObj, 0, mTabSize * sizeof(SCEnvObject));
 
-	mFillColor = SCMakeColor(0,0,0,1); // black
-	mStrokeColor = SCMakeColor(0,0,0,1); // black
-	mSelectedColor = SCMakeColor(0,0,0,1); // black
+
+	mEnvObj = 0;
+
+	mFillColor = mStrokeColor = mSelectedColor = SCMakeColor(0,0,0,1); // black
+
 	mIsFilled = mDrawLinesActive = false;
 	mDrawRectsActive = true;
-	setVisibleSize();
+//	setVisibleSize();
 	mSelectedIndex = -1;
 	mAbsoluteX = 0.0;
 	mIsFixedSelection = false;
@@ -3686,6 +3649,7 @@ SCEnvelopeView::SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRe
 	strcpy(mFontName, "Helvetica");
 	mFontSize = 12.;
 	mDrawCenteredConnection = true;
+	xGridMultiplier = 0.2;
 
 }
 SCEnvelopeView::~SCEnvelopeView()
@@ -3696,15 +3660,62 @@ SCEnvelopeView::~SCEnvelopeView()
 			delete [] (mEnvObj+i)->mString;
 		if((mEnvObj+i)->mConnections)
 			delete [] (mEnvObj+i)->mConnections;
-			
+		/*	
 		if((mEnvObj+i)->mConnectionOutputs)
 			delete [] (mEnvObj+i)->mConnectionOutputs;
 		if((mEnvObj+i)->mConnectionInputs)
 			delete [] (mEnvObj+i)->mConnectionInputs;
+			*/
+			
 	 }
 	 
     delete [] mEnvObj;
 
+}
+
+int SCEnvelopeView::allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
+{
+	int size = (slot->uo->slots[0]).uo->size;
+
+	SCEnvObject * scenv = 0;
+	int err = allocEnvArray(size, &scenv);
+	if(err) return err;
+    if (*arr) {
+		if(size > mTabSize){
+			memcpy(scenv, *arr, mTabSize * sizeof(SCEnvObject));
+			for(int i=mTabSize; i< size; i++){
+				(scenv+i)->mObjectColor = mFillColor;
+				(scenv+i)->mString = 0;
+				(scenv+i)->mConnections = 0;
+				(scenv+i)->mColor = mFillColor;
+                (scenv+i)->mIsStatic = false;
+                (scenv+i)->mIsSelected = false;
+				(scenv+i)->mNumConnection = 0;
+			}
+		} else { //meaning size < mTabSize
+			memcpy(scenv, *arr, size * sizeof(SCEnvObject));
+		}
+		delete [] *arr;
+		*arr = 0;
+
+	} else {
+		for(int i=0; i< size; i++){
+			(scenv+i)->mObjectColor = mFillColor;
+			(scenv+i)->mString = 0;
+			(scenv+i)->mConnections = 0;
+			(scenv+i)->mColor = mFillColor;
+			(scenv+i)->mIsStatic = false;
+			(scenv+i)->mIsSelected = false;
+			(scenv+i)->mNumConnection = 0;
+
+		}	
+	}
+	
+	err = allocEnvArray(size, arr);
+	if(err) return err;
+	memcpy(*arr, scenv, size * sizeof(SCEnvObject));		
+	delete [] scenv;
+	return errNone;
 }
 
 void SCEnvelopeView::draw(SCRect inDamage)
@@ -3733,7 +3744,7 @@ void SCEnvelopeView::draw(SCRect inDamage)
 		int numConnection, num;
 		
         for(int i = xstart; i < xpixels; i++){
-			float gcoDx;
+		//	float gcoDx;
             envobj = &mEnvObj[i];
             setEnvRect(envobj->x, envobj->y, envobj);
 			
@@ -3743,51 +3754,30 @@ void SCEnvelopeView::draw(SCRect inDamage)
                 else
                     CGContextAddLineToPoint(cgc, envobj->mDrawPoint.x,  envobj->mDrawPoint.y);
             } else {
+	
+				numConnection = envobj->mNumConnection;
 			
-			numConnection = envobj->mNumConnection;
-			gcoDx = envobj->deltax;
-			
-			for(int j = 0; j < numConnection; j++){
-				float  gcx, gcy, gcox, gcoy, nextx, innextx;
-				num = (int) (envobj->mConnections[j]);
-				SCEnvObject * conObj = (mEnvObj + num);
-				if (num >=0 ){
-					//centr
-					if(mDrawCenteredConnection){
-						gcox = envobj->mDrawPoint.x;
-						gcoy = envobj->mDrawPoint.y;
-						gcx = conObj->mDrawPoint.x;
-						gcy =  conObj->mDrawPoint.y;
+				for(int j = 0; j < numConnection; j++){
+					float  gcx, gcy, gcox, gcoy;
+					num = (int) (envobj->mConnections[j]);
+					SCEnvObject * conObj = (mEnvObj + num);
+					if (num >=0 ){
+						//centr
+						if(mDrawCenteredConnection){
+							gcox = envobj->mDrawPoint.x;
+							gcoy = envobj->mDrawPoint.y;
+							gcx = conObj->mDrawPoint.x;
+							gcy =  conObj->mDrawPoint.y;
 						
-						CGContextMoveToPoint(cgc, gcox, gcoy);
+							CGContextMoveToPoint(cgc, gcox, gcoy);
 							//CGPathCreateCopy
-						CGContextAddLineToPoint(cgc, gcox, gcoy);
-						CGContextAddLineToPoint(cgc, gcx, gcy);
-					} else {
-				//draw in/out connections for pd-style //
-						//this is the input;
-						gcox = envobj->mRect.x;
-						nextx = gcox + (envobj->mConnectionOutputs[j] * gcoDx);
-						innextx = conObj->mRect.x + (conObj->indeltax * envobj->mConnectionInputs[j]);
-						gcoy = envobj->mRect.y + envobj->mRect.height; //output
-						gcy =  conObj->mRect.y ; //input onn top
-						//gcx = conObj->mRect.x ;
-						CGContextMoveToPoint(cgc,nextx, gcoy);
-						CGContextAddLineToPoint(cgc, nextx + 3, gcoy);
-						CGContextAddLineToPoint(cgc, innextx + 3, gcy);			
+							CGContextAddLineToPoint(cgc, gcox, gcoy);
+							CGContextAddLineToPoint(cgc, gcx, gcy);
+						}
 					}
 				}
+				
 			}
-			//draw a line from output to mousepoint
-			if(mConnectFrom >= 0 && (!mDrawCenteredConnection)){
-				float nextx, gcy;
-				SCEnvObject * envobj = (mEnvObj + mConnectFrom);
-				nextx = envobj->mRect.x + (envobj->indeltax * mConnectFromOutput);
-				gcy = envobj->mRect.y + envobj->mRect.height;
-				CGContextMoveToPoint(cgc,nextx, gcy);	
-				CGContextAddLineToPoint(cgc,mMousePoint.x, mMousePoint.y);		
-			}
-		}
 		}
         
 		CGContextStrokePath(cgc);
@@ -3807,25 +3797,6 @@ void SCEnvelopeView::draw(SCRect inDamage)
 				stringDrawCenteredInRect(envobj->mString, envobj->mRect, mFontName, mFontSize, mStrokeColor);
 				//draw outputs
 			CGContextSetRGBFillColor(cgc, mStrokeColor.red, mStrokeColor.green, mStrokeColor.blue, mStrokeColor.alpha);
-
-			if( !mDrawCenteredConnection){ //if we are in pd view draw inputs and outputs
-				for(int j = 0; j < envobj->mNumOutputs; j++){
-					float  gcox, gcoy, nextx;
-					gcox = envobj->mRect.x;
-					nextx = gcox + (j * envobj->deltax);
-					gcoy = envobj->mRect.y + envobj->mRect.height; //output
-					//SCMakeRect(nextx );
-					CGContextFillRect(cgc, SCtoCGRect(SCMakeRect(nextx, gcoy - 1, 6, 3 )));//draw outputs
-				}
-			// draw the inputs :
-				for(int j = 0; j < envobj->mNumInputs; j++){
-					float  gcy,innextx;
-					innextx = envobj->mRect.x + (envobj->indeltax * j);
-					gcy =  envobj->mRect.y ; //input onn top
-					CGContextFillRect(cgc, SCtoCGRect(SCMakeRect(innextx, gcy - 1, 6, 3 )));//draw inputs
-					
-				}			
-			}
         }
     }
 
@@ -3834,27 +3805,27 @@ void SCEnvelopeView::draw(SCRect inDamage)
     
 }
 
-bool SCEnvelopeView::setValue(int indx,  double xIn, double yIn, bool send)
+bool SCEnvelopeView::setValue(SCEnvObject * envob,  double xIn, double yIn, bool send)
 {
     bool changed = true;
-    SCEnvObject * envob;
-    indx = sc_clip(indx, 0, mTabSize - 1);
+   // SCEnvObject * envob;
+    //indx = sc_clip(indx, 0, mTabSize - 1);
     xIn = sc_clip(xIn, 0., 1.);
     yIn = sc_clip(yIn, 0., 1.);
 
-    if(!(&mEnvObj[indx])->mIsStatic){
+    if(!envob->mIsStatic){
     if (mStepSize > 0.) {
         yIn = floor(yIn * mStepScale + 0.5) * mStepSize;
     }
-    mCurrentIndex = indx;
+    //mCurrentIndex = indx;
        // if (changed) {
-    envob = &mEnvObj[indx];
+    //envob = &mEnvObj[indx];
         //changed = valXIn != envob->x || valYIn != envob->y;
     setEnvRect(xIn, yIn, envob);
     mCurrentY = yIn;
     mCurrentX = xIn;
     if (send) sendMessage(s_doaction, 0, 0, 0); 
-    refresh();
+    //refresh();
     }
     return changed;
        // }
@@ -3867,8 +3838,10 @@ void SCEnvelopeView::setValueFromPoint(SCPoint where)
 	height = (mEnvObj+ mSelectedIndex)->mRect.height;
     double x = (double) (where.x - mBounds.x - 1 - width/2) / (mBounds.width - width - 2);
     double y = (double) 1.0 - (where.y - mBounds.y - 1 - height/2) / (mBounds.height - height - 2);
-    if(indx >= 0)
-    setValue(indx, x, y, true);
+    if(indx >= 0){
+		setValue(mEnvObj+ mSelectedIndex, x, y, true);
+		refresh();
+	}
 }
 
 
@@ -3885,30 +3858,14 @@ bool SCEnvelopeView::setEnvRect(double valXIn, double valYIn, SCEnvObject * envo
 	y = valYIn * (mBounds.height - thumby - 2);
 	y = mBounds.y + mBounds.height - y - 1 - thumby; 
 	x = mBounds.x + x + 1;
-	if(envob->mIsVisible){
-            envob->mRect.x = x;
-            envob->mRect.y = y;
-            envob->mDrawPoint.x = x + (envob->mRect.width * 0.5);
-            envob->mDrawPoint.y = y + (envob->mRect.height * 0.5);
-	} else {
-            envob->mRect = SCMakeRect( x, y, thumbx, thumby);
-            envob->mDrawPoint.x = x + (envob->mRect.width * 0.5);
-            envob->mDrawPoint.y = y + (envob->mRect.height * 0.5);
-			envob->mNumInputs = 4; // this should be 0.
-			envob->mNumOutputs = 4; 
-            envob->mIsVisible = true;
-			envob->mObjectColor = mFillColor;
-			envob->mColor = envob->mObjectColor;
-			envob->mString = 0;
-			envob->indeltax = envob->mRect.width/ envob->mNumInputs; 
-            envob->deltax = envob->mRect.width/ envob->mNumOutputs; 
-			envob->mNumConnection = 0;
-			envob->mConnectionOutputs = 0;
-			envob->mConnectionInputs = 0;
-			envob->mConnections = 0;
-			envob->mColor = mFillColor;
-			envob->mObjectColor = mFillColor;
-	}
+
+	envob->mRect = SCMakeRect( x, y, thumbx, thumby);
+	envob->mDrawPoint.x = x + (envob->mRect.width * 0.5);
+	envob->mDrawPoint.y = y + (envob->mRect.height * 0.5);
+	//envob->mIsVisible = true;
+//			if(! envob->mObjectColor == NULL) envob->mObjectColor = mFillColor;
+//			envob->mColor = envob->mObjectColor;
+	//}
   //  return SCMakeRect( x, y, thumbx, thumby);   
   return true;
 }
@@ -3919,8 +3876,8 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
     //single selection
 	mMousePoint = where;
     if(mSelectedIndex >= 0){
-        (&mEnvObj[mSelectedIndex])->mIsSelected = false;
-        (&mEnvObj[mSelectedIndex])->mColor =(&mEnvObj[mSelectedIndex])->mObjectColor;
+        (mEnvObj + mSelectedIndex)->mIsSelected = false;
+        (mEnvObj + mSelectedIndex)->mColor =(&mEnvObj[mSelectedIndex])->mObjectColor;
         mSelectedIndex = -1;
         if(fixed) mIsFixedSelection = false;
 
@@ -3930,41 +3887,7 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
     for(int i=0; i< mActiveSize; i++) {
         envo = &mEnvObj[i];
         sel = SCPointInRect(where, envo->mRect);
-		
-		
-
         if(sel){
-			if(!mDrawCenteredConnection && checkForConnection){ //check inputs and outputs
-				// check inputs and outputs for pd-style view
-			if(mConnectFrom < 0){
-			for(int j = 0; j < envo->mNumOutputs; j++){
-					float  gcy, innextx;
-					innextx = envo->mRect.x + (envo->deltax * j);
-					gcy =  envo->mRect.y  ; //input onn top
-					if(SCPointInRect(where,SCMakeRect(innextx, gcy - 1, 6, envo->mRect.height )))
-					//post("got output %i /n", j);//draw inputs
-					mConnectFromOutput = j;
-				}
-			mConnectFrom = i;
-			
-			}
-			else { 
-				if(mConnectFrom != i){
-				for(int j = 0; j < envo->mNumInputs; j++){
-					float  gcy, innextx;
-					innextx = envo->mRect.x + (envo->indeltax * j);
-					gcy =  envo->mRect.y ; //input onn top
-					if(SCPointInRect(where,SCMakeRect(innextx, gcy - 1, 6, envo->mRect.height )))
-					{
-					//post("got input %i /n", j);//draw inputs
-					mConnectToInput = j;
-					
-					}
-				}
-				mConnectTo = i;
-			}
-			}
-			}
             envo->mIsSelected = true;
             envo->mColor = mSelectedColor;
             mSelectedIndex = i;
@@ -3997,7 +3920,8 @@ void SCEnvelopeView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEve
 
     }
     }
-    setValueFromPoint(where);
+	if(mSelectedIndex >= 0) 
+		setValueFromPoint(where);
    // mouseTrack(where, modifiers);
 }
 void SCEnvelopeView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
@@ -4034,14 +3958,15 @@ void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
     } else {
     if(!mIsFixedSelection && mSelectedIndex < 0)
         setSelection(where, false, false);
-        setValueFromPoint(where);
+		if(mSelectedIndex >= 0) 
+			setValueFromPoint(where);
     }
 }
-
+/*
 void SCEnvelopeView::setVisibleSize()
 {
     
-    /*
+    
     float offset;
     float scaledsize;
     if(mThumbSize > 0.0) {
@@ -4053,10 +3978,10 @@ void SCEnvelopeView::setVisibleSize()
     } else {
         mVisibleSize = 0;
     }
-    */
+ 
     mVisibleSize = mActiveSize;
 }
-
+*/
 
 int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {	
@@ -4077,7 +4002,7 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             (&mEnvObj[mSelectedIndex])->mRect.width = mThumbSize;
             (&mEnvObj[mSelectedIndex])->mRect.height = mThumbSize;
             
-            setVisibleSize();
+           // setVisibleSize();
             refresh();
             return errNone;
         } 
@@ -4085,7 +4010,7 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             err = slotIntVal(slot, &mThumbSize);
             if(mSelectedIndex < 0) return errNone;
             (&mEnvObj[mSelectedIndex])->mRect.width = mThumbSize;
-            setVisibleSize();
+           // setVisibleSize();
             refresh();
             return errNone;
         }
@@ -4119,47 +4044,12 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			err = allocSlotDoubleArrayVal(slot, &envobj->mConnections);
 			//err = allocSlotIntArrayVal(slot, &(&mEnvObj[mSelectedIndex])->mConnections); //int array crashes sc
 			envobj->mNumConnection = slot->uo->size;
-			envobj->deltax = 0;
-			envobj->mConnectionInputs = 0;
-			envobj->mConnectionOutputs = 0;
+		//	envobj->deltax = 0;
+		//	envobj->mConnectionInputs = 0;
+		//	envobj->mConnectionOutputs = 0;
 			mDrawCenteredConnection = true;
 			mIsEnvView = false;
 			refresh();
-            return errNone;
-        }
-		if (strcmp(name, "connectToInputs")==0) { //this sets the pd style view
-			// input is like: [mConnections, mConnectionOutputs, mConnectionInputs]
-			//this means that the object does only know to which it is connected to
-			//it does not know about its inputs
-			SCEnvObject * envobj;
-			if (!isKindOfSlot(slot, class_array)) return errWrongType;				
-			if(mSelectedIndex < 0) return errNone;
-			envobj = (mEnvObj + mSelectedIndex);
-			int len;
-			len = (slot->uo->slots+0)->uo->size;
-			allocSlot2DDoubleArrayPyrSlot(slot, &envobj->mConnections,0);
-			allocSlot2DDoubleArrayPyrSlot(slot, &envobj->mConnectionOutputs,1);
-			allocSlot2DDoubleArrayPyrSlot(slot, &envobj->mConnectionInputs,2);
-			envobj->mNumConnection = len;
-			mDrawCenteredConnection = false;
-			mIsEnvView = false;
-			refresh();
-            return errNone;
-		}
-		if (strcmp(name, "numInputs")==0) {
-			int inp;
-            err = slotIntVal(slot, &inp);
-			if(mSelectedIndex < 0) return errNone;
-            (mEnvObj +mSelectedIndex)->mNumInputs = inp;
-            refresh();
-            return errNone;
-        }
-		if (strcmp(name, "numOutputs")==0) {
-			int inp;
-            err = slotIntVal(slot, &inp);
-			if(mSelectedIndex < 0) return errNone;
-            (mEnvObj +mSelectedIndex)->mNumOutputs = inp;
-            refresh();
             return errNone;
         }
 
@@ -4235,35 +4125,37 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
         if (symbol == s_value) {
             if (!isKindOfSlot(slot, class_array)) return errWrongType;
+            if (!isKindOfSlot(slot->uo->slots+0, class_array)) return errWrongType;
+            if (!isKindOfSlot(slot->uo->slots+1, class_array)) return errWrongType;
+
             int size = (slot->uo->slots[0]).uo->size;
-			bool wasVisible = true;
             if(size != mTabSize) {
+			//this should keep the settings of the old ones ... maybe make a  separate add action ...
                 err = allocSlotEnvObjArray(slot, &mEnvObj);
+				if(err) return err;
                 mTabSize = size;
-				wasVisible = false;
             } 
-            double x, y;
+			//move this to allocslotEnvobjArray:
+			double x, y;
             PyrDoubleArray * xarr;
             PyrDoubleArray * yarr;
             xarr = ((PyrDoubleArray*)(slot->uo->slots[0].uo));
             yarr = ((PyrDoubleArray*)(slot->uo->slots[1].uo));
             SCEnvObject * envob;
             for(int i=0; i<size; i++){
-                envob = &mEnvObj[i];
+                envob = mEnvObj+i;
                 x = xarr->d[i];
                 y = yarr->d[i];
-                envob->mIsVisible = wasVisible;
-                envob->mIsStatic = false;
-                envob->mIsSelected = false;
-				setValue(i,x,y, false);
-                setEnvRect(x, y, envob); //set init flag instead
-                    //post("set x: %f ,y:  %f \n", x, y);
+				setValue(envob,x,y, false);
+				//post("set x: %f ,y:  %f \n", x, y);
             }
             mActiveSize = size;
-            setVisibleSize();
-            //refresh();
+            //setVisibleSize();
+            refresh();
+			
             return errNone;
 	}
+	/*
 	if (strcmp(name, "connectFrom")==0) {
 			err = slotIntVal(slot, &mConnectFrom);
             return errNone;
@@ -4272,6 +4164,7 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
            err = slotIntVal(slot, &mConnectTo);
             return errNone;
         }
+	*/
 		if (strcmp(name, "setGraphView")==0) {
 			mDrawCenteredConnection = false;
 			mIsEnvView = false;
@@ -4342,6 +4235,7 @@ int SCEnvelopeView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
             SetInt(slot, (int) mAbsoluteX);
             return errNone;
         }
+		/*
 		if (strcmp(name, "connectFrom")==0) {
             SetInt(slot, (int) mConnectFrom);
             return errNone;
@@ -4350,16 +4244,7 @@ int SCEnvelopeView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
             SetInt(slot, (int) mConnectTo);
             return errNone;
         }
-		if (strcmp(name, "connectFromOutput")==0) {
-            SetInt(slot, (int) mConnectFromOutput);
-            return errNone;
-        }
-		if (strcmp(name, "connectToInput")==0) {
-            SetInt(slot, (int) mConnectToInput);
-            return errNone;
-        }
-		
-		
+		*/		
         return SCView::getProperty(symbol, slot);
 }
 
