@@ -24,6 +24,7 @@ plugin_LTLIBRARIES	= \
 	DelayUGens.la \
 	DemandUGens.la \
 	DiskIO_UGens.la \
+	DynNoiseUGens.la \
 	FFT_UGens.la \
 	FilterUGens.la \
 	GendynUGens.la \
@@ -58,6 +59,10 @@ DemandUGens_la_LDFLAGS		= -module -no-undefined -avoid-version
 # DiskIO_UGens
 DiskIO_UGens_la_SOURCES		= DiskIO_UGens.cpp
 DiskIO_UGens_la_LDFLAGS		= -module -no-undefined -avoid-version
+
+# DynNoiseUGens
+DynNoiseUGens_la_SOURCES	= DynNoiseUGens.cpp
+DynNoiseUGens_la_LDFLAGS	= -module -no-undefined -avoid-version
 
 # FFT_UGens
 FFT_UGens_la_SOURCES		= FFT_UGens.cpp FFT_UGens.h
