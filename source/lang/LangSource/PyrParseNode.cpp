@@ -2579,10 +2579,7 @@ void compileSwitchMsg(PyrCallNode* node)
 				PyrSlot *slot = array->slots + index;
 				slot->ucopy = key->ucopy;
 				SetInt(slot+1, offset); 
-				PyrGC *gc = compileGC();
-				gc->GCWrite(array, &value);
-				gc->GCWrite(array, key);
-				
+
 				if (byteCodes) {
 					offset += byteCodeLength(byteCodes);
 					compileAndFreeByteCodes(byteCodes);
