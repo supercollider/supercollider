@@ -9,7 +9,8 @@ AbstractPlayerGui : ObjectGui {
 			view = layout;
 			this.writeName(layout);
 			this.guiBody(layout);
-		}).background_(Color.blue(0.5,0.1))
+		}).background_(Color.blue(0.5,0.1));
+		this.keyDowns;
 	}
 	topGui { arg layout;
 		layout = this.guify(layout);
@@ -22,7 +23,9 @@ AbstractPlayerGui : ObjectGui {
 			this.writeName(layout,true);
 			this.guiBody(layout);
 		}).background_(Color.blue(0.5,0.1));
+		this.keyDowns;
 		layout.resizeToFit.front;
+		view.focus;
 	}
 	
 //	guify { arg layout,title,width,height;
@@ -52,7 +55,21 @@ AbstractPlayerGui : ObjectGui {
 			InspectorLink.new(model,layout);
 		})		
 	}
-
+	keyDowns {
+		view.keyDownAction = this.keyDownResponder;
+	}
+	keyDownResponder {
+		var k;
+		k = KeyCodeResponder.new;
+		k.registerKeycode(0,49,{
+			if(model.isPlaying,{
+				model.stop
+			},{
+				model.play
+			})
+		});
+		^k
+	}
 	saveConsole { arg layout;
 		^SaveConsole(model,model.path,layout).save
 			.saveAs({arg path;
@@ -64,6 +81,7 @@ AbstractPlayerGui : ObjectGui {
 	
 	synthConsole {arg layout;
 		var s;
+		Server.local.gui(layout);
 		s = //SynthConsole(model,layout).play.registerPlayKey.record.pauseableRecord.write({ model.timeDuration }).scope.stop.formats.tempo;
 		SynthConsole(model,layout).play.record.stop.formats.tempo;
 		//NotificationCenter.register(s,\didRecordOrWrite,model,{ NotificationCenter.notify(model,\didRecordOrWrite) });
