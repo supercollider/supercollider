@@ -2486,11 +2486,7 @@ int calcHash(PyrSlot *a)
 	int hash;
 	switch (a->utag) {
 		case tagObj : hash = Hash(a->ui); break;
-		case tagInt : {
-			PyrSlot f;
-			SetFloat(&f, a->ui);
-			hash = Hash(f.utag + Hash(f.ui)); break;
-		}
+		case tagInt : hash = Hash(a->ui); break;
 		case tagChar : hash = Hash(a->ui & 255); break;
 		case tagSym : hash = a->us->hash; break;
 		case tagNil : hash = 0xA5A5A5A5; break;
