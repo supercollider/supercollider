@@ -298,34 +298,73 @@ Collection {
 		^maxValue;
 	}
 	
-	// set theory methods by Fredrik Olofsson <f@fredrikolofsson.com>
-	// union - the set of all elements that are either in A or in B or in both
-	union { | aCollection | 
-		^if(aCollection.size > this.size) {
-			aCollection.reject({ | item | this.includes(item) }).addAll(this) 
-		}{
-			this.reject({ | item | 
-				aCollection.includes(item) 
-			}).addAll(aCollection) 
-		}
-	}
-	//   in both sets A and B
-	intersection { | aCollection | 
-		^this.select { | item | aCollection.includes(item) }
-	}
-	//  in A but not in B
-	difference { | aCollection | ^this.removeAll(aCollection) }
-	//  in either A or B but not in both
-	symmetricDifference { | aCollection | 
-		var c; 
-		c=this.copy; 
-		this.removeAll(aCollection); 
-		aCollection.removeAll(c); 
-		^this.addAll(aCollection) 
-	}
-	//  true if every element in A is also contained in B
-	isSubset { | aCollection | ^aCollection.includesAll(this) }
+//	// set theory methods by Fredrik Olofsson <f@fredrikolofsson.com>
+//	// union - the set of all elements that are either in A or in B or in both
+//	union { | aCollection | 
+//		^if(aCollection.size > this.size) {
+//			aCollection.reject({ | item | this.includes(item) }).addAll(this) 
+//		}{
+//			this.reject({ | item | 
+//				aCollection.includes(item) 
+//			}).addAll(aCollection) 
+//		}
+//	}
+//	//   in both sets A and B
+//	intersection { | aCollection | 
+//		^this.select { | item | aCollection.includes(item) }
+//	}
+//	//  in A but not in B
+//	difference { | aCollection | ^this.removeAll(aCollection) }
+//	//  in either A or B but not in both
+//	symmetricDifference { | aCollection | 
+//		var c; 
+//		c=this.copy; 
+//		this.removeAll(aCollection); 
+//		aCollection.removeAll(c); 
+//		^this.addAll(aCollection) 
+//	}
+//	//  true if every element in A is also contained in B
+//	isSubset { | aCollection | ^aCollection.includesAll(this) }
 
+	sect { | that |
+		var result;
+		result = this.species.new;
+		this.do { | item |
+			if (that.includes(item)) {
+				result = result.add(item);
+			}
+		};
+		^result
+	}
+	union { | that |
+		var result;
+		result = this.copy;
+		that.do { | item |
+			if (result.includes(item).not) {
+				result = result.add(item);
+			}
+		};
+		^result
+	}
+	difference { | that |
+		^this.copy.removeAll(that);
+	}
+	symmetricDifference { | that |
+		var result;
+		result = this.species.new;
+		this.do { | item |
+			if (that.includes(item).not) {
+				result = result.add(item);
+			}
+		};
+		that.do { | item |
+			if (this.includes(item).not) {
+				result = result.add(item);
+			}
+		};
+		^result;
+	}
+	isSubsetOf { | that | ^that.includesAll(this) }
 
 
 	asArray { ^Array.new(this.size).addAll(this); }

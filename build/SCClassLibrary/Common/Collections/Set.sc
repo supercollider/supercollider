@@ -81,7 +81,32 @@ Set : Collection {
 		result.addAll(that);
 		^result
 	}
+	difference { arg that;
+		^this.copy.removeAll(that);
+	}
+	symmetricDifference { arg that;
+		var result;
+		result = Set.new;
+		this.do({ arg item;
+			if (that.includes(item).not, {
+				result.add(item);
+			});
+		});
+		that.do({ arg item;
+			if (this.includes(item).not, {
+				result.add(item);
+			});
+		});
+		^result;
+	}
+	isSubsetOf { | that | ^that.includesAll(this) }
 	
+	& { arg that; ^this.sect(that) }
+	| { arg that; ^this.union(that) }
+	- { arg that; ^this.difference(that) }
+	-- { arg that; ^this.symmetricDifference(that) }
+	
+		
 	// PRIVATE IMPLEMENTATION
 	initSet { arg n; array = Array.newClear(n); size = 0; }
 	putCheck { arg index, item;
