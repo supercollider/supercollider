@@ -121,19 +121,20 @@ and depends on the characteristics of the synthdef:
 \f2\b0  or 
 \f3\b xmap
 \f2\b0 .\
-	here is an example of how already running audio rate inputs can be switched:
+	here is an example of how already running audio rate inputs can be switched.\
+	it is about as efficient as (B) - first example (setting a defname)\
+	it works only for 1 or 2 channels right now.
 \f1\fs18 \
 \
 (\
 s = \cf2 Server\cf0 .local;\
-s.boot;\
-p = \cf2 ProxySpace\cf0 .push(s);\
+p = \cf2 ProxySpace\cf0 .push(s.boot);\
 )\
 \
 ~out.play;\
 \
 ~s1 = \{ \cf2 Blip\cf0 .ar(\cf2 Rand\cf0 (32,15), 100, 0.5) \};\
-~s2 = \{ \cf2 SinOsc\cf0 .ar(240, 0, 0.1) \};\
+~s2 = \{ \cf2 SinOsc\cf0 .ar(740, 0, 0.1) \};\
 ~s3 = \{ \cf2 Pulse\cf0 .ar(140, 0.2, 0.1) \};\
 \
 \
@@ -142,6 +143,8 @@ p = \cf2 ProxySpace\cf0 .push(s);\
 ~mix.read(~s1);\
 ~mix.read(~s2);\
 ~mix.read(~s3);\
+\
+//resetting the source stops reading\
 ~mix = \\default;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -155,10 +158,12 @@ p = \cf2 ProxySpace\cf0 .push(s);\
 \cf4 //automatation:\cf0 \
 (\
 t = \cf2 Task\cf0 (\{\
+	var dt;\
 	loop(\{\
-		~mix.fadeTime = rrand(0.01, 1);\
+		dt = rrand(0.01, 0.3);\
+		~mix.fadeTime = dt;\
 		~mix.read([~s1, ~s2, ~s3].choose);\
-		[1.2, 0.5].choose.wait;\
+		dt.wait;\
 	\});\
 \});\
 )\
