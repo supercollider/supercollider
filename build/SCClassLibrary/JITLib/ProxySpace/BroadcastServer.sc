@@ -17,14 +17,15 @@ BroadcastServer : Server {
 	
 	autoConfigure { arg getAnyApplication=false;
 		var addr;
-		addr = [];
+		addr = Set.new;
 		OSCService.knownServices.do({ arg item;
 			if(getAnyApplication || (item.name == "SuperCollider"), {
 				addr = addr.add(NetAddr(item.hostname, item.port));
 				[item.name, item.hostname, item.port].postln;
 			});
 		});
-		allAddr = addr;
+		allAddr = Array.newFrom(addr)
+			.sort({ arg a, b; (a.hostname+a.port) < (a.hostname+a.port) });
 	}
 	
 	////we don't need much here, this class wraps the messages
