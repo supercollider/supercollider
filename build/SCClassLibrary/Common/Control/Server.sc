@@ -23,6 +23,8 @@ ServerOptions
 	var <>inputStreamsEnabled;
 	var <>outputStreamsEnabled;
 
+	var <>device = nil;
+
 // max logins
 // session-password
 
@@ -83,6 +85,9 @@ ServerOptions
 		});
 		if (outputStreamsEnabled.notNil, {
 			o = o ++ " -O " ++ outputStreamsEnabled ;
+		});
+		if (device.notNil, {
+			o = o ++ " -H \"" ++ device ++ "\"" ;
 		});
 		^o
 	}

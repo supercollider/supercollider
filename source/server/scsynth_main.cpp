@@ -80,6 +80,7 @@ void Usage()
 		"   -I <input-streams-enabled>\n"
 		"   -O <output-streams-enabled>\n"
         "   -M <server-mach-port-name> <reply-mach-port-name>\n"
+        "   -H <hardware-device-name>\n"
 #endif
 		"\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n",
 		kDefaultWorldOptions.mNumControlBusChannels,
@@ -136,7 +137,7 @@ int main(int argc, char* argv[])
 	WorldOptions options = kDefaultWorldOptions;
 	
 	for (int i=1; i<argc;) {
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOM", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOMH", argv[i][1]) == 0) {
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
@@ -233,6 +234,10 @@ int main(int argc, char* argv[])
 			case 'O' :
 				checkNumArgs(2);
 				options.mOutputStreamsEnabled = argv[j+1];
+				break;
+			case 'H' :
+				checkNumArgs(2);
+				options.mDeviceName = argv[j+1];
 				break;
             case 'M':
 // -M serverPortName replyPortName                

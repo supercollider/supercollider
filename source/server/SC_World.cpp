@@ -332,6 +332,7 @@ World* World_New(WorldOptions *inOptions)
 #ifdef SC_DARWIN
 		world->hw->mInputStreamsEnabled = inOptions->mInputStreamsEnabled;
 		world->hw->mOutputStreamsEnabled = inOptions->mOutputStreamsEnabled;
+		world->hw->mDeviceName = inOptions->mDeviceName;
 #endif		
 		hw->mMaxWireBufs = inOptions->mMaxWireBufs;
 		hw->mWireBufSpace = 0;

@@ -531,7 +531,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	/*{
+	{
 		err = AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &count, 0);
 
 		AudioDeviceID *devices = (AudioDeviceID*)malloc(count);
@@ -540,8 +540,9 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			fprintf(stdout, "get kAudioHardwarePropertyDevices error %4.4s\n", (char*)&err);
 			return false;
 		}
+		
 		int numdevices = count / sizeof(AudioDeviceID);
-		fprintf(stdout, "numdevices %d\n", numdevices);
+		fprintf(stdout, "Number of Devices: %d\n", numdevices);
 		for (int i = 0; i < numdevices; ++i) {
 			err = AudioDeviceGetPropertyInfo(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, 0);
 
@@ -551,51 +552,66 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 				fprintf(stdout, "get kAudioDevicePropertyDeviceName error %4.4s\n", (char*)&err);
 				return false;
 			}
-			fprintf(stdout, "DEVICE %d %u '%s'\n", i, devices[i], name);
+			fprintf(stdout, "   %d : \"%s\"\n", i, name);
 			free(name);
-			for (int b=0; b<2; ++b) { // b is first false, then true
-				fprintf(stdout, b ? "INPUT:\n" : "OUTPUT:\n");
-				Boolean writeable;
-				err = AudioDeviceGetPropertyInfo(devices[i], 0, b, kAudioDevicePropertyStreamConfiguration,
-												 &count, &writeable);
-
-				AudioBufferList *bufList = (AudioBufferList*)malloc(count);
-				err = AudioDeviceGetProperty(devices[i], 0, b, kAudioDevicePropertyStreamConfiguration,
-											 &count, bufList);
-				if (err != kAudioHardwareNoError) {
-					fprintf(stdout, "get kAudioDevicePropertyStreamConfiguration error %4.4s\n", (char*)&err);
-					return false;
-				}
-
-				fprintf(stdout, "mNumberBuffers %d\n", bufList->mNumberBuffers);
-				for (unsigned int j = 0; j < bufList->mNumberBuffers; ++j) {
-					fprintf(stdout, "buffer %d  mNumberChannels %d mDataByteSize %d\n", j,
-							bufList->mBuffers[j].mNumberChannels, bufList->mBuffers[j].mDataByteSize);
-				}
-				free(bufList);
-			}
 		}
 		free(devices);
-	}*/
+		fprintf(stdout, "\n");
+	}
+	
+	if (mWorld->hw->mDeviceName) {
+		err = AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &count, 0);
+
+		AudioDeviceID *devices = (AudioDeviceID*)malloc(count);
+		err = AudioHardwareGetProperty(kAudioHardwarePropertyDevices, &count, devices);
+		if (err != kAudioHardwareNoError) {
+			fprintf(stdout, "get kAudioHardwarePropertyDevices error %4.4s\n", (char*)&err);
+			return false;
+		}
+		
+		int numdevices = count / sizeof(AudioDeviceID);
+		for (int i = 0; i < numdevices; ++i) {
+			err = AudioDeviceGetPropertyInfo(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, 0);
+
+			char *name = (char*)malloc(count);
+			err = AudioDeviceGetProperty(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, name);
+			if (err != kAudioHardwareNoError) {
+				fprintf(stdout, "get kAudioDevicePropertyDeviceName error %4.4s\n", (char*)&err);
+				return false;
+			}
+			if (strcmp(name, mWorld->hw->mDeviceName) == 0) {
+				mOutputDevice = devices[i];
+				mInputDevice = mOutputDevice;
+				free(name);
+				break;
+			}
+			free(name);
+
+		}
+		free(devices);
+		if (mOutputDevice == kAudioDeviceUnknown) goto getDefault;
+	} else {
+		getDefault:
+
+		// get the default output device for the HAL
+		count = sizeof(mOutputDevice);		
+		//get the output device:
+		err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &count, (void *) & mOutputDevice);
+		if (err != kAudioHardwareNoError) {
+			fprintf(stdout, "get kAudioHardwarePropertyDefaultOutputDevice error %4.4s\n", (char*)&err);
+			return false;
+		}
+		
+		//get the input device
+		err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &count, (void *) & mInputDevice);
+
+		if (err != kAudioHardwareNoError) {
+			fprintf(stdout, "get kAudioHardwarePropertyDefaultInputDevice error %4.4s\n", (char*)&err);
+			return false;
+		}
+	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
-
-	// get the default output device for the HAL
-	count = sizeof(mOutputDevice);		
-	//get the output device:
-	err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &count, (void *) & mOutputDevice);
-	if (err != kAudioHardwareNoError) {
-		fprintf(stdout, "get kAudioHardwarePropertyDefaultOutputDevice error %4.4s\n", (char*)&err);
-		return false;
-	}
-
-	//get the input device
-	err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &count, (void *) & mInputDevice);
-
-	if (err != kAudioHardwareNoError) {
-		fprintf(stdout, "get kAudioHardwarePropertyDefaultInputDevice error %4.4s\n", (char*)&err);
-		return false;
-	}
 
 	AudioTimeStamp	now;
 	now.mFlags = kAudioTimeStampHostTimeValid;
@@ -641,7 +657,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 		}
 	}
 	
-	// get the buffersize that the default device uses for IO
+	// get the buffersize that the device uses for IO
 	count = sizeof(mHardwareBufferSize);	
 	err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyBufferSize, &count, &mHardwareBufferSize);
 	if (err != kAudioHardwareNoError) {
@@ -650,7 +666,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 	}
 	//fprintf(stdout, "mHardwareBufferSize = %ld\n", mHardwareBufferSize);
 	
-	// get a description of the data format used by the default output device
+	// get a description of the data format used by the output device
 	count = sizeof(AudioStreamBasicDescription);	
 	err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyStreamFormat, &count, &outputStreamDesc);
 	if (err != kAudioHardwareNoError) {
@@ -659,7 +675,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 	}
 
 	if (mInputDevice != kAudioDeviceUnknown) {
-		// get a description of the data format used by the default input device
+		// get a description of the data format used by the input device
 		count = sizeof(AudioStreamBasicDescription);	
 		err = AudioDeviceGetProperty(mInputDevice, 0, true, kAudioDevicePropertyStreamFormat, &count, &inputStreamDesc);
 		if (err != kAudioHardwareNoError) {
@@ -678,6 +694,80 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			return false;
 		}
 	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	{
+		err = AudioDeviceGetPropertyInfo(mInputDevice, 0, false, kAudioDevicePropertyDeviceName, &count, 0);
+
+		char *name = (char*)malloc(count);
+		err = AudioDeviceGetProperty(mInputDevice, 0, false, kAudioDevicePropertyDeviceName, &count, name);
+		if (err != kAudioHardwareNoError) {
+			fprintf(stdout, "get kAudioDevicePropertyDeviceName error %4.4s\n", (char*)&err);
+			return false;
+		}
+
+		fprintf(stdout, "\"%s\" Input Device\n", name);
+		free(name);
+		
+		Boolean writeable;
+		err = AudioDeviceGetPropertyInfo(mInputDevice, 0, 0, kAudioDevicePropertyStreamConfiguration,
+										 &count, &writeable);
+
+		AudioBufferList *bufList = (AudioBufferList*)malloc(count);
+		err = AudioDeviceGetProperty(mInputDevice, 0, 0, kAudioDevicePropertyStreamConfiguration,
+									 &count, bufList);
+		if (err != kAudioHardwareNoError) {
+			fprintf(stdout, "get kAudioDevicePropertyStreamConfiguration error %4.4s\n", (char*)&err);
+			return false;
+		}
+
+		fprintf(stdout, "   Streams: %d\n", bufList->mNumberBuffers);
+		for (unsigned int j = 0; j < bufList->mNumberBuffers; ++j) {
+			fprintf(stdout, "      %d  channels %d\n", j, bufList->mBuffers[j].mNumberChannels);
+		}
+		
+		free(bufList);
+		fprintf(stdout, "\n");
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	{
+		err = AudioDeviceGetPropertyInfo(mInputDevice, 0, false, kAudioDevicePropertyDeviceName, &count, 0);
+
+		char *name = (char*)malloc(count);
+		err = AudioDeviceGetProperty(mInputDevice, 0, false, kAudioDevicePropertyDeviceName, &count, name);
+		if (err != kAudioHardwareNoError) {
+			fprintf(stdout, "get kAudioDevicePropertyDeviceName error %4.4s\n", (char*)&err);
+			return false;
+		}
+
+		fprintf(stdout, "\"%s\" Output Device\n", name);
+		free(name);
+
+		Boolean writeable;
+		err = AudioDeviceGetPropertyInfo(mOutputDevice, 0, 1, kAudioDevicePropertyStreamConfiguration,
+										 &count, &writeable);
+
+		AudioBufferList *bufList = (AudioBufferList*)malloc(count);
+		err = AudioDeviceGetProperty(mOutputDevice, 0, 1, kAudioDevicePropertyStreamConfiguration,
+									 &count, bufList);
+		if (err != kAudioHardwareNoError) {
+			fprintf(stdout, "get kAudioDevicePropertyStreamConfiguration error %4.4s\n", (char*)&err);
+			return false;
+		}
+
+		fprintf(stdout, "   Streams: %d\n", bufList->mNumberBuffers);
+		for (unsigned int j = 0; j < bufList->mNumberBuffers; ++j) {
+			fprintf(stdout, "      %d  channels %d\n", j, bufList->mBuffers[j].mNumberChannels);
+		}
+		free(bufList);
+		fprintf(stdout, "\n");
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 	if (UseSeparateIO()) {
 		count = sizeof(UInt32);
