@@ -1,17 +1,17 @@
 Stethoscope {
 	var <server, <numChannels, <rate,  <index;
 	var <bufsize, buffer, <window, synth;
-	var n, c, d, sl, zx, zy, ai=0, ki=0, audiospec, controlspec;
+	var n, c, d, sl, style=0, sizeToggle=0, zx, zy, ai=0, ki=0, audiospec, controlspec;
 	
 
 	*new { arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view;
 		if(server.inProcess.not, { "scope works only with internal server".error; ^nil });		^super.newCopyArgs(server, numChannels, rate ? \audio).makeWindow(view)
 		.index_(index ? 0).zoom_(zoom).allocBuffer(bufsize).run;
 	}
+	
 	makeBounds { arg size=212; ^Rect(322, 10, size, size) }
 	
 	makeWindow { arg view;
-		var style=0, sizeToggle=0;
 		if(view.isNil) 
 		{
 			window = SCWindow("stethoscope", this.makeBounds);
@@ -24,24 +24,7 @@ Stethoscope {
 		n = SCScope(view, Rect(0,0, view.bounds.width - 10, view.bounds.height - 40));
 		n.background = Color.black;
 		n.resize = 5;
-		view.keyDownAction = 
-			{ arg view, char; 
-				if(char === $i) { this.toInputBus }; 
-				if(char === $o) { this.toOutputBus }; 
-				if(char === $ ) { this.run };
-				if(char === $s) { n.style = style = (style + 1) % 2 };
-				if(char === $S) { n.style = 2 };
-				if(char === $j or: { char.ascii === 0 }) { this.index = index - 1 };
-				if(char === $k) { this.switchRate };
-				if(char === $l or: { char.ascii === 1 }) { this.index = index + 1 };
-				if(char === $-) {  zx = zx + 0.25; n.xZoom = 2 ** zx };
-				if(char === $+) {  zx = zx - 0.25; n.xZoom = 2 ** zx };				if(char === $*) {  zy = zy + 0.25; n.yZoom = 2 ** zy };
-				if(char === $_) {  zy = zy - 0.25; n.yZoom = 2 ** zy };
-				if(char === $A) {  this.adjustBufferSize };
-				if(char === $m) { if(sizeToggle == 0) { sizeToggle = 1; this.size_(500) }
-												{ sizeToggle = 0; this.size_ }};
-				if(char === $.) {  if(synth.isPlaying) { synth.free } };
-			};
+		view.keyDownAction = { arg view, char; this.keyDown(char) };
 			
 		zx = n.xZoom.log2;
 		zy = n.yZoom.log2;
@@ -66,6 +49,23 @@ Stethoscope {
 		d.font = Font("Monaco", 9);
 		SCStaticText(view, Rect(10, 10, 20, 20)).visible_(false);
 		this.updateColors;
+	}
+	
+	keyDown { arg char;
+				if(char === $i) { this.toInputBus; ^this }; 
+				if(char === $o) { this.toOutputBus;  ^this  }; 
+				if(char === $ ) { this.run;  ^this  };
+				if(char === $s) { this.style = (style + 1) % 2; ^this  };
+				if(char === $S) { this.style = 2;  ^this  };
+				if(char === $j or: { char.ascii === 0 }) { this.index = index - 1; ^this  };
+				if(char === $k) { this.switchRate; ^this  };
+				if(char === $l or: { char.ascii === 1 }) { this.index = index + 1 };
+				if(char === $-) {  zx = zx + 0.25; this.xZoom = 2 ** zx; ^this  };
+				if(char === $+) {  zx = zx - 0.25; this.xZoom = 2 ** zx; ^this  };				if(char === $*) {  zy = zy + 0.25; this.yZoom = 2 ** zy; ^this  };
+				if(char === $_) {  zy = zy - 0.25; this.yZoom = 2 ** zy; ^this  };
+				if(char === $A) {  this.adjustBufferSize; ^this  };
+				if(char === $m) { this.toggleSize; ^this  };
+				if(char === $.) {  if(synth.isPlaying) { synth.free }; };
 	}
 	
 	spec { ^if(rate === \audio) { audiospec } {Êcontrolspec } }
@@ -153,13 +153,19 @@ Stethoscope {
 		}
 	}
 	
-	size_ { arg val=212; if(window.notNil) { window.bounds = this.makeBounds(val) } }
-	
-	zoom_ { arg val;
-		val = val ? 1;
-		zx = val.log2;
-		n.xZoom = val;
+	size_ { arg val; if(window.notNil) { window.bounds = this.makeBounds(val) } }
+	toggleSize {  if(sizeToggle == 0) 
+					{ sizeToggle = 1; this.size_(500) }
+					{ sizeToggle = 0; this.size_(212) } 
 	}
+	
+	xZoom_ { arg val; n.xZoom = val; zx = val.log2 }
+	yZoom_ { arg val; n.yZoom = val; zy = val.log2 }
+	zoom_ { arg val; this.xZoom_(val ? 1) }
+
+	style_ { arg val; n.style = style = val }
+	
+	
 	
 	updateColors {
 		n.waveColors = if(\audio === rate) { 
