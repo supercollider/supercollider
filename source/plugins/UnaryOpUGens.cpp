@@ -91,9 +91,12 @@ enum {
 	opNumUnarySelectors
 };
 
+
 struct UnaryOpUGen : public Unit
 {
 };
+
+typedef void (*UnaryOpFunc)(UnaryOpUGen *unit, int inNumSamples);
 
 extern "C"
 {
@@ -166,6 +169,19 @@ void invert_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+void vinvert_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *out = (vfloat32*)OUT(0);
+	vfloat32 *a = (vfloat32*)IN(0);
+	
+	vint32 neg = (vint32)(0x80000000);
+	
+	int len = inNumSamples << 2;
+	for (int i=0; i<len; i+=16) {
+		vec_st((vfloat32)vec_xor(neg, (vint32)vec_ld(i, a)), i, out);
+	}
+}
+
 void not_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -201,6 +217,19 @@ void abs_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+void vabs_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *out = (vfloat32*)OUT(0);
+	vfloat32 *a = (vfloat32*)IN(0);
+	
+	vint32 mask = (vint32)(0x7fffffff);
+	
+	int len = inNumSamples << 2;
+	for (int i=0; i<len; i+=16) {
+		vec_st((vfloat32)vec_and(mask, (vint32)vec_ld(i, a)), i, out);
+	}
+}
+
 void recip_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -209,6 +238,17 @@ void recip_a(UnaryOpUGen *unit, int inNumSamples)
 	LOOP(inNumSamples, 
 		ZXP(out) = 1.f / ZXP(a);
 	);
+}
+
+void vrecip_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *out = (vfloat32*)OUT(0);
+	vfloat32 *a = (vfloat32*)IN(0);
+		
+	int len = inNumSamples << 2;
+	for (int i=0; i<len; i+=16) {
+		vec_st(vec_reciprocal(vec_ld(i, a)), i, out);
+	}
 }
 
 void floor_a(UnaryOpUGen *unit, int inNumSamples)
@@ -221,6 +261,17 @@ void floor_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+void vfloor_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *out = (vfloat32*)OUT(0);
+	vfloat32 *a = (vfloat32*)IN(0);
+		
+	int len = inNumSamples << 2;
+	for (int i=0; i<len; i+=16) {
+		vec_st(vec_floor(vec_ld(i, a)), i, out);
+	}
+}
+
 void ceil_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -229,6 +280,17 @@ void ceil_a(UnaryOpUGen *unit, int inNumSamples)
 	LOOP(inNumSamples, 
 		ZXP(out) = ceil(ZXP(a));
 	);
+}
+
+void vceil_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *out = (vfloat32*)OUT(0);
+	vfloat32 *a = (vfloat32*)IN(0);
+		
+	int len = inNumSamples << 2;
+	for (int i=0; i<len; i+=16) {
+		vec_st(vec_ceil(vec_ld(i, a)), i, out);
+	}
 }
 
 void sin_a(UnaryOpUGen *unit, int inNumSamples)
@@ -462,6 +524,18 @@ void frac_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+void vfrac_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *out = (vfloat32*)OUT(0);
+	vfloat32 *a = (vfloat32*)IN(0);
+		
+	int len = inNumSamples << 2;
+	for (int i=0; i<len; i+=16) {
+		vfloat32 z = vec_ld(i, a);
+		vec_st(vec_sub(z, vec_floor(z)), i, out);
+	}
+}
+
 void squared_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -473,6 +547,19 @@ void squared_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+void vsquared_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *out = (vfloat32*)OUT(0);
+	vfloat32 *a = (vfloat32*)IN(0);
+	define_vzero;
+	
+	int len = inNumSamples << 2;
+	for (int i=0; i<len; i+=16) {
+		vfloat32 z = vec_ld(i, a);
+		vec_st(vec_mul(z, z), i, out);
+	}
+}
+
 void cubed_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -482,6 +569,19 @@ void cubed_a(UnaryOpUGen *unit, int inNumSamples)
 		float xa = ZXP(a);
 		ZXP(out) = xa * xa * xa;
 	);
+}
+
+void vcubed_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *out = (vfloat32*)OUT(0);
+	vfloat32 *a = (vfloat32*)IN(0);
+	define_vzero;
+	
+	int len = inNumSamples << 2;
+	for (int i=0; i<len; i+=16) {
+		vfloat32 z = vec_ld(i, a);
+		vec_st(vec_mul(z, vec_mul(z, z)), i, out);
+	}
 }
 
 void sign_a(UnaryOpUGen *unit, int inNumSamples)
@@ -511,6 +611,23 @@ void distort_a(UnaryOpUGen *unit, int inNumSamples)
 		ZXP(out) = z/(1.f + (float)fabs(z));
 	);
 }
+
+
+void vdistort_a(UnaryOpUGen *unit, int inNumSamples)
+{
+	vfloat32 *out = (vfloat32*)OUT(0);
+	vfloat32 *a = (vfloat32*)IN(0);
+	define_vzero;
+	define_vones;
+	vint32 mask = (vint32)(0x7fffffff);
+	
+	int len = inNumSamples << 2;
+	for (int i=0; i<len; i+=16) {
+		vfloat32 z = vec_ld(i, a);
+		vec_st(vec_div(z, vec_add(vones, (vfloat32)vec_and(mask, (vint32)z))), i, out);
+	}
+}
+
 
 void distortneg_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -611,8 +728,9 @@ void ramp_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+	
 
-void ChooseOperatorFunc(UnaryOpUGen *unit)
+UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
 {
 	void (*func)(UnaryOpUGen *unit, int inNumSamples);
 	
@@ -666,9 +784,87 @@ void ChooseOperatorFunc(UnaryOpUGen *unit)
 		
 		default : func = &thru_a; break;
 	}
-	unit->mCalcFunc = (UnitCalcFunc)func;
+	return func;
 }
 
+	
+
+UnaryOpFunc ChooseVectorFunc(UnaryOpUGen *unit)
+{
+	void (*func)(UnaryOpUGen *unit, int inNumSamples);
+	
+	switch (unit->mSpecialIndex) {
+		case opSilence : func = &zero_a; break;
+		case opThru : func = &thru_a; break;
+		case opNeg : func = &vinvert_a; break;
+		case opNot : func = &not_a; break;
+		case opAbs : func = &vabs_a; break;
+		case opCeil : func = &vceil_a; break;
+		case opFloor : func = &vfloor_a; break;
+		case opFrac : func = &vfrac_a; break;
+		case opSign : func = &sign_a; break;
+		case opSquared : func = &vsquared_a; break;
+		case opCubed : func = &vcubed_a; break;
+		case opSqrt : 		func = &sqrt_a; break;
+		case opExp : func = &exp_a; break;
+		case opRecip : func = &vrecip_a; break;
+		case opMIDICPS : func = &midicps_a; break;
+		case opCPSMIDI : func = &cpsmidi_a; break;
+
+		case opMIDIRatio : func = &midiratio_a; break;
+		case opRatioMIDI : func = &ratiomidi_a; break;	
+		case opDbAmp : func = &dbamp_a; break;
+		case opAmpDb : 	func = &ampdb_a; break;
+		case opOctCPS : func = &octcps_a; break;
+		case opCPSOct : func = &cpsoct_a; break;
+		case opLog : func = &log_a; break;
+		case opLog2 : func = &log2_a; break;
+		case opLog10 : func = &log10_a; break;
+		case opSin : func = &sin_a; break;
+		case opCos : func = &cos_a; break;
+		case opTan : func = &tan_a; break;
+		case opArcSin : func = &asin_a; break;
+		case opArcCos : func = &acos_a; break;
+		case opArcTan : func = &atan_a; break;
+		case opSinH : func = &sinh_a; break;
+		case opCosH : func = &cosh_a; break;
+		case opTanH : func = &tanh_a; break;
+
+		case opDistort : func = &vdistort_a; break;
+		case opSoftClip : func = &softclip_a; break;
+
+		case opRectWindow : func = &rectwindow_a; break;
+		case opHanWindow : func = &hanwindow_a; break;
+		case opWelchWindow : func = &welwindow_a; break;
+		case opTriWindow : func = &triwindow_a; break;
+
+		case opSCurve : func = &scurve_a; break;
+		case opRamp : func = &ramp_a; break;
+		
+		default : func = &thru_a; break;
+	}
+	return func;
+}
+
+
+void ChooseOperatorFunc(UnaryOpUGen *unit)
+{
+	//Print("->ChooseOperatorFunc %d\n", unit->mSpecialIndex);
+	UnaryOpFunc func;
+	
+	if (BUFLENGTH == 1) {
+		func = ChooseNormalFunc(unit);
+#if __VEC__
+	} else if (USEVEC) {
+		func = ChooseVectorFunc(unit);
+#endif
+	} else {
+		func = ChooseNormalFunc(unit);
+	}
+	unit->mCalcFunc = (UnitCalcFunc)func;
+	//Print("<-ChooseOperatorFunc %08X\n", func);
+	//Print("calc %d\n", unit->mCalcRate);
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
