@@ -1,5 +1,5 @@
 MIDIEndPoint {
-var <> name, <>uid, <> device;
+var <> name, <>uid;
 	*new{arg name, uid;
 		^super.newCopyArgs(name, uid)
 		}
@@ -8,8 +8,6 @@ var <> name, <>uid, <> device;
 MIDIClient {
 	classvar < sources, < destinations;
 	classvar < initialized=false;
-	classvar < numberOfSources, < numberOfDestinations;
-	classvar < sourceUID;
 	*init {arg inports=1, outports=1;
 		initialized = true;
 		this.prInit(inports,outports);
@@ -18,34 +16,18 @@ MIDIClient {
 	*list{
 		var out, arr, endp;
 		out = this.prList;
-
+		out = out.interpret;
+		arr = out.at(0);
+		arr.do({arg aval, i;
+			if(i.odd,{
+				sources = sources.add(MIDIEndPoint(arr.at(i-1), aval))
+			})});
+		arr = out.at(1);
+		arr.do({arg aval, i;
+			if(i.odd,{
+				destinations = destinations.add(MIDIEndPoint(arr.at(i-1), aval))
+			})});
 	}
-	*prSetNumberOfSources {arg anum;
-		numberOfSources = anum;
-		anum.do({ sources = sources.add(MIDIEndPoint("no", nil))});
-		}
-	*prSetNumberOfDestinations {arg anum;
-		numberOfDestinations = anum;
-		anum.do({ destinations = destinations.add(MIDIEndPoint("no", nil))});
-		}
-	*prSetSourceDeviceName{arg idx, aname;
-		sources.at(idx).device = aname;
-		}
-	*prSetSourcePortName{arg idx, aname;
-		sources.at(idx).name = aname;
-		}
-	*prSetSourceUID{arg idx, aname;
-		sources.at(idx).uid = aname;
-		}
-	*prSetDestinationDeviceName{arg idx, aname;
-		destinations.at(idx).device = aname;
-		}
-	*prSetDestinationPortName{arg idx,aname;
-		destinations.at(idx).name = aname;
-		}
-	*prSetDestinationUID{arg idx,aname;
-		destinations.at(idx).uid = aname;
-		}
 	*prInit {arg inports, outports;
 		_InitMIDI;
 	}
@@ -160,7 +142,7 @@ MIDIOut {
 	allNotesOff { arg chan;
 		this.control(chan, 123, 0);
 	}
-	send {arg outport, uid, len, stat, chan, a=0, b=0, latency= 0.01; //in ms
+	send {arg outport, uid, len, stat, chan, a=0, b=0, latency=5000.0; //in ms
 		_SendMIDIOut		
 	}
 }
