@@ -1,8 +1,8 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue0;\red191\green0\blue0;
-\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green0\blue191;\red96\green96\blue96;
+\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 \
@@ -49,25 +49,26 @@ these settings are stored in a
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 \
-\cf2 ///**doesn't work right now**////\cf3 \
 \
-\cf0 \
+\
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //start the server\
+\cf2 //start the server\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 s = \cf5 Server\cf0 .local;\
+\cf0 s = \cf3 Server\cf0 .local;\
 s.boot;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //send some synthdefs\
+\cf2 //send some synthdefs\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 (\
-\cf5 SynthDef\cf0 (\cf6 "sine2"\cf0 , \{ \cf5 arg\cf0  out=0,freq=440.0; \
-	\cf5 Out\cf0 .ar(out, \cf5 SinOsc\cf0 .ar(freq*[1,1.1], 0,0.1) ) \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "sine2"\cf0 , \{ \cf3 arg\cf0  out=0,freq=440.0; \
+	\cf3 Out\cf0 .ar(out, \cf3 SinOsc\cf0 .ar(freq*[1,1.1], 0,0.1) ) \
 \}).load(s);\
-\cf5 SynthDef\cf0 (\cf6 "lfo"\cf0 , \{ \cf5 arg\cf0  out=0,freq=440.0, rate=0.3, depth=0.2; \
-	\cf5 Out\cf0 .kr(out, \cf5 LFNoise1\cf0 .kr(rate, freq*depth, freq) ) \
+\cf3 SynthDef\cf0 (\cf4 "lfo"\cf0 , \{ \cf3 arg\cf0  out=0,freq=440.0, rate=0.3, depth=0.2; \
+	\cf3 Out\cf0 .kr(out, \cf3 LFNoise1\cf0 .kr(rate, freq*depth, freq) ) \
 \}).load(s);\
 )\
 \
@@ -77,73 +78,73 @@ s.boot;\
 \f2\b0\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //create a new ensemble group\
+\cf2 //create a new ensemble group\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 g = \cf5 Ensemble\cf0 (s);\
+\cf0 g = \cf3 Ensemble\cf0 (s);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //start a synth inside and set the group\
+\cf2 //start a synth inside and set the group\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 x = \cf5 Synth\cf0 .tail(g, \cf6 "sine2"\cf0 );\
-g.set(\cf7 \\freq\cf0 , 300);\
+\cf0 x = \cf3 Synth\cf0 .tail(g, \cf4 "sine2"\cf0 );\
+g.set(\cf5 \\freq\cf0 , 300);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //free the synth and start a new one: it has the group settings\
+\cf2 //free the synth and start a new one: it has the group settings\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 x.free;\
-x = \cf5 Synth\cf0 .tail(g, \cf6 "sine2"\cf0 );\
+x = \cf3 Synth\cf0 .tail(g, \cf4 "sine2"\cf0 );\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //remove the control setting\
+\cf2 //remove the control setting\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 g.unset(\cf7 \\freq\cf0 );\
+\cf0 g.unset(\cf5 \\freq\cf0 );\
 x.free;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //new synth is not set anymore\
+\cf2 //new synth is not set anymore\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 x = \cf5 Synth\cf0 .tail(g, \cf6 "sine2"\cf0 );\
+\cf0 x = \cf3 Synth\cf0 .tail(g, \cf4 "sine2"\cf0 );\
 x.free;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //set the control setting\
+\cf2 //set the control setting\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 g.set(\cf7 \\freq\cf0 , 300);\
+\cf0 g.set(\cf5 \\freq\cf0 , 300);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //create a synth outside of group a:\
+\cf2 //create a synth outside of group a:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 x = \cf5 Synth\cf0 (\cf6 "sine2"\cf0 );\
+\cf0 x = \cf3 Synth\cf0 (\cf4 "sine2"\cf0 );\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //move it to patched group \
+\cf2 //move it to patched group \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 g.moveNodeToTail(x);\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //create another one\
+\cf2 //create another one\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 y = \cf5 Synth\cf0 (\cf6 "sine2"\cf0 );\
+\cf0 y = \cf3 Synth\cf0 (\cf4 "sine2"\cf0 );\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //move it before the one in the group\
+\cf2 //move it before the one in the group\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 y.moveBefore(x);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //move it after the group and set freq to something different\
+\cf2 //move it after the group and set freq to something different\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 y.moveAfter(g);\
-y.set(\cf7 \\freq\cf0 , 1500);\
+y.set(\cf5 \\freq\cf0 , 1500);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //move it before the one in the group\
+\cf2 //move it before the one in the group\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 y.moveAfter(x);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //free all nodes in a\
+\cf2 //free all nodes in a\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 g.freeAll;\
 \
@@ -155,50 +156,50 @@ y.set(\cf7 \\freq\cf0 , 1500);\
 \f2\b0\fs18 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //create a new synth in the group\
+\cf2 //create a new synth in the group\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 c = \cf5 Synth\cf0 .head(g, \cf6 "sine2"\cf0 );\
+\cf0 c = \cf3 Synth\cf0 .head(g, \cf4 "sine2"\cf0 );\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //create a control synth outside (before) the group (plays to bus 0)\
+\cf2 //create a control synth outside (before) the group (plays to bus 0)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 d = \cf5 Synth\cf0 .before(g, \cf6 "lfo"\cf0 );\
+\cf0 d = \cf3 Synth\cf0 .before(g, \cf4 "lfo"\cf0 );\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //map the freq key of the group to bus 0\
+\cf2 //map the freq key of the group to bus 0\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 g.map(\cf7 \\freq\cf0 , 0);\
+\cf0 g.map(\cf5 \\freq\cf0 , 0);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //set the parameters of control synth\
+\cf2 //set the parameters of control synth\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 d.set(\cf7 \\rate\cf0 , 10);\
-d.set(\cf7 \\freq\cf0 , 500);\
+\cf0 d.set(\cf5 \\rate\cf0 , 10);\
+d.set(\cf5 \\freq\cf0 , 500);\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //free the synth\
+\cf2 //free the synth\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 c.free;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //and now....\
+\cf2 //and now....\
 //put a new synth in the group, and it is mapped automatically\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 c = \cf5 Synth\cf0 .head(g, \cf6 "sine2"\cf0 );\
+\cf0 c = \cf3 Synth\cf0 .head(g, \cf4 "sine2"\cf0 );\
 \
-d.set(\cf7 \\freq\cf0 , 10000);\
-d.set(\cf7 \\rate\cf0 , 60);\
+d.set(\cf5 \\freq\cf0 , 10000);\
+d.set(\cf5 \\rate\cf0 , 60);\
 g.freeAll;\
 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //free the group:\
+\cf2 //free the group:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 g.free;\
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //see the node map:\
+\cf2 //see the node map:\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 g.nodeMap.values;\
 g.nodeMap.mappings;\
@@ -215,15 +216,15 @@ g.nodeMap.mappings;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0\fs18 \cf0 \
-j = \cf5 Ensemble\cf0 (s);\
-k = \cf5 Ensemble\cf0 (s);\
-l = \cf5 Ensemble\cf0 (s);\
-m = \cf5 Ensemble\cf0 (s);\
+j = \cf3 Ensemble\cf0 (s);\
+k = \cf3 Ensemble\cf0 (s);\
+l = \cf3 Ensemble\cf0 (s);\
+m = \cf3 Ensemble\cf0 (s);\
 \
 \
-j.set(\cf7 \\freq\cf0 , 550, \cf7 \\rate\cf0 , 5);\
-k.set(\cf7 \\freq\cf0 , 250, \cf7 \\rate\cf0 , 50);\
-l.set(\cf7 \\freq\cf0 , 600, \cf7 \\rate\cf0 , 120);\
+j.set(\cf5 \\freq\cf0 , 550, \cf5 \\rate\cf0 , 5);\
+k.set(\cf5 \\freq\cf0 , 250, \cf5 \\rate\cf0 , 50);\
+l.set(\cf5 \\freq\cf0 , 600, \cf5 \\rate\cf0 , 120);\
 \
 \
 //prepare some control\
@@ -231,21 +232,23 @@ x = Synth.before(l, "lfo", [\\out, 16, \\rate, 2, \\freq, 6]);\
 j.map(\\rate, 16);\
 \
 //make sound\
-a = \cf5 Synth\cf0 .after(l, \cf6 "sine2"\cf0 );\
-c = \cf5 Synth\cf0 (\cf6 "lfo"\cf0 , [\cf7 \\out\cf0 , 0]);\
-a.map(\cf7 \\freq\cf0 , 0);\
+a = \cf3 Synth\cf0 .after(l, \cf4 "sine2"\cf0 );\
+c = \cf3 Synth\cf0 (\cf4 "lfo"\cf0 , [\cf5 \\out\cf0 , 0]);\
+a.map(\cf5 \\freq\cf0 , 0);\
 \
 c.moveToHead(j);\
 c.moveToHead(k);\
 c.moveToHead(l);\
-l.set(\cf7 \\freq\cf0 , 300, \cf7 \\rate\cf0 , 120);\
+l.set(\cf5 \\freq\cf0 , 300, \cf5 \\rate\cf0 , 120);\
 \
 //free the node by moving it into the group.\
 //that doesn't make too much sense, but shows the fact\
 \
 m.addMsg(["/n_free"]);\
 a.moveToHead(m); \
-\cf5 RootNode\cf0 .stop; \cf4 //end all\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 RootNode\cf0 .stop; \cf2 //end all\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
 \
@@ -257,38 +260,41 @@ a.moveToHead(m); \
 
 \f2\b0\fs18 \cf0 \
 (\
-\cf5 SynthDef\cf0 (\cf6 "env"\cf0 , \{ \cf5 arg\cf0  i_outbus=0;\
-	\cf5 var\cf0  env, envctl;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "env"\cf0 , \{ \cf3 arg\cf0  i_outbus=0;\
+	\cf3 var\cf0  env, envctl;\
 	\
-	\cf4 // make a dummy 8 segment envelope\
-\cf0 	env = \cf5 Env\cf0 .newClear(8);\
+	\cf2 // make a dummy 8 segment envelope\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 	env = \cf3 Env\cf0 .newClear(8);\
 	\
-	\cf4 // create a control argument array\
-\cf0 	envctl = \cf5 Control\cf0 .names([\cf7 \\env\cf0 ]).kr( env.asArray );\
+	\cf2 // create a control argument array\
+\cf0 	envctl = \cf3 Control\cf0 .names([\cf5 \\env\cf0 ]).kr( env.asArray );\
 	\
-	\cf5 ReplaceOut\cf0 .kr(i_outbus, \cf5 EnvGen\cf0 .kr(envctl, doneAction: 2));\
+	\cf3 ReplaceOut\cf0 .kr(i_outbus, \cf3 EnvGen\cf0 .kr(envctl, doneAction: 2));\
 \}).load(s);\
 \
-\cf5 SynthDef\cf0 (\cf6 "sine"\cf0 , \{\
-	\cf5 Out\cf0 .ar(0, \cf5 SinOsc\cf0 .ar(\cf5 In\cf0 .kr(0), 0, 0.2));\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 SynthDef\cf0 (\cf4 "sine"\cf0 , \{\
+	\cf3 Out\cf0 .ar(0, \cf3 SinOsc\cf0 .ar(\cf3 In\cf0 .kr(0), 0, 0.2));\
 \}).load(s);\
 )\
 \
 \
 \
-s.sendMsg(\cf7 \\c_set\cf0 , 0, 800);\
-a = \cf5 Synth\cf0 .new(\cf6 "sine"\cf0 );\
+s.sendMsg(\cf5 \\c_set\cf0 , 0, 800);\
+a = \cf3 Synth\cf0 .new(\cf4 "sine"\cf0 );\
 \
 g = Ensemble.after(a);\
 h = Ensemble.after(a);\
 \
-e = \cf5 Env\cf0 ([1000,1000,800,1000,900,1000], [1,1,1,1,1]*0.3, \cf7 \\step\cf0 ).asArray; \
-g.setn(\cf7 \\env\cf0 , e);\
-e = \cf5 Env\cf0 ([700,900,900,800], [1,1,1]*0.4, \cf7 \\step\cf0 ).asArray;\
-h.setn(\cf7 \\env\cf0 , e);\
+e = \cf3 Env\cf0 ([1000,1000,800,1000,900,1000], [1,1,1,1,1]*0.3, \cf5 \\step\cf0 ).asArray; \
+g.setn(\cf5 \\env\cf0 , e);\
+e = \cf3 Env\cf0 ([700,900,900,800], [1,1,1]*0.4, \cf5 \\step\cf0 ).asArray;\
+h.setn(\cf5 \\env\cf0 , e);\
 \
-\cf5 Synth\cf0 .head(g, \cf6 "env"\cf0 );\
-\cf5 Synth\cf0 .head(h, \cf6 "env"\cf0 );\
+\cf3 Synth\cf0 .head(g, \cf4 "env"\cf0 );\
+\cf3 Synth\cf0 .head(h, \cf4 "env"\cf0 );\
 \
 \
 a.free;\
