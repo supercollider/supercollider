@@ -391,6 +391,8 @@ ArrayedCollection : SequenceableCollection {
 }
 
 RawArray : ArrayedCollection {
+	archiveAsCompileString { ^true }
+	archiveAsObject { ^true }
 }
 
 Int8Array[int8] : RawArray {
