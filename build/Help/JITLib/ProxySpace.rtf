@@ -57,8 +57,9 @@ this is experimental and things change.\
 \f2\fs26 restore the previous currentEnvironment\
 	
 \f1\fs18 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs26 ____________________________________________________
+\f2\fs26 \cf0 ____________________________________________________
 \f1\fs18 \
 \
 \
@@ -280,6 +281,25 @@ currentEnvironment.clear;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
+\f2\fs26 \cf0 using within players
+\f1\fs18 \
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 Instr\cf0 (\cf5 \\filter\cf0 , \{ \cf3 arg\cf0  in, freq;\
+	\cf3 HPF\cf0 .ar(in, 8000)\
+\}, [\cf5 \\audio\cf0 ]);\
+\
+p = \cf3 Patch\cf0 (\cf5 \\filter\cf0 , [ \cf3 Patch\cf0 (\{ ~out.ar \}) ]);\
+p.play;\
+p.gui;\
+~out.set(\cf5 \\freq\cf0 , 8000);\
+\
+p.stop;\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
 \f2\fs26 \cf0 setting the xfade time
 \f1\fs18 \
 \
@@ -422,14 +442,20 @@ y = q.play; \cf2 //out is the default output\cf0 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 /////////////record output\cf0 \
-r = p.record(\cf5 \\out\cf0 , \cf4 "proxySpace.aif"\cf0 ); \cf2 //starts record after 1 sec\cf0 \
+\cf2 /////////////record output (see also: RecNodeProxy)\cf0 \
+\
+r = p.record(\cf5 \\out\cf0 , \cf4 "proxySpace.aiff"\cf0 );\
+\
+\cf2 //start recording\cf0 \
+r.unpause;\
 \
 \cf2 //pause recording\cf0 \
 r.pause;\
 \
 \cf2 //stop recording\cf0 \
-r.stop;\
+r.close;\
+\
+\
 \cf2 /////////////////////\cf0 \
 \
 \cf2 //patch two spaces together (must be on one server)\cf0 \
