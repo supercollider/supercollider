@@ -530,6 +530,7 @@ NodeProxy : BusPlug {
 	
 	read { arg proxies;
 		var n, x;
+		if(this.rate !== 'audio', { "read works only for audio rate".inform; ^this });
 		proxies = proxies.asCollection;
 		n = this.numChannels;
 		proxies.do({ arg item, i;
