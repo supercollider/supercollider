@@ -197,7 +197,7 @@ TaskProxy : PatternProxy {
 		} { pattern }.asStream
 	}
 	
-	playOnce { arg argClock, doReset = false, quant;
+	playOnce { arg argClock, doReset = (false), quant;
 		clock = argClock ? clock;
 		^PauseStream.new(this.asStream).play(clock, doReset, quant ? this.quant)
 	}
@@ -206,6 +206,11 @@ TaskProxy : PatternProxy {
 		isPlaying = true;
 		playQuant = quant;
 		if(player.isPlaying.not) { player = this.playOnce(argClock, doReset, quant) }
+	}
+	
+	fork { arg clock, quant;
+		clock = clock ? thisThread.clock;
+		^this.asStream.play(clock, quant)
 	}
 	
 	stop { player.stop; isPlaying = false }
