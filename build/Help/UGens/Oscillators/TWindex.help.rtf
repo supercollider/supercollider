@@ -8,17 +8,15 @@
 \f0\b\fs36 \cf0 TWindex				
 \fs24 triggered windex
 \f1\b0\fs18 \cf2 \
-\
-\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 	//TWindex.ar(trig,array)\
+\f0\b\fs24 \cf0 \
 	TWindex.kr(trig,array,normalize)\
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0 \cf0 When triggered, returns a random index value based on array as a list of probabilities.\
-by default the list of probabilities should sum to 1.0, when the normalize flag is set to true,\
+by default the list of probabilities should sum to 1.0, when the normalize flag is set to 1,\
 the values get normalized by the ugen (less efficient)
 \f0\b \
 \
@@ -59,8 +57,8 @@ a = \cf5 SynthDef\cf4 (\cf6 "help-TWindex"\cf4 ,\{ \cf5 arg\cf4  w1=0.0, w2=0.5;
 	index = \cf5 TWindex\cf4 .kr(\
 					trig, \
 					[w1, w2, \cf5 SinOsc\cf4 .kr(0.3, 0, 0.5, 0.5)],\cf3 //modulate probability\
-\cf4 					\cf5 true\cf4 \
-		); \
+\cf4 					1 \cf3 //do normalisation\
+\cf4 		); \
 	\
 	\cf5 Out\cf4 .ar(0,\
 		\cf5 SinOsc\cf4 .ar(\
