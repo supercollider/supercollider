@@ -36,7 +36,7 @@ A Ppar is done when all of its subpatterns are done.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Ppar\cf0 ([\
 	\cf2 Pbind\cf0 (\cf3 \\dur\cf0 , 0.2, \cf3 \\midinote\cf0 , \cf2 Pseq\cf0 ([62, 65, 69, 72], \cf2 inf\cf0 )),\
-	\cf2 Pbind\cf0 (\cf3 \\dur\cf0 , 0.4, \cf3 \\midinote\cf0 , \cf2 Pseq\cf0 ([50, 45], \cf2 inf\cf0 )\
+	\cf2 Pbind\cf0 (\cf3 \\dur\cf0 , 0.4, \cf3 \\midinote\cf0 , \cf2 Pseq\cf0 ([50, 45], \cf2 inf\cf0 ))\
 ]).play\
 )\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -171,10 +171,8 @@ The
 \f2\b0\fs24 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // modal transposition\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  pattern;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // define the basic pattern\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 pattern = \cf2 Pbind\cf0 (\
@@ -196,8 +194,9 @@ The
 \f1 \cf0 Similarly, 
 \f0\b Pmul
 \f1\b0  multiplies the current value of a property by a value.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b Pset
+\f0\b \cf0 Pset
 \f1\b0  sets the property to a value, overriding any modifications by a parent pattern.\
 
 \f0\b Pnot
@@ -210,10 +209,8 @@ The
 \f2\b0\fs24 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // beat stretching using Pmul\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  pattern;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // define the basic pattern\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 pattern = \cf2 Pbind\cf0 (\
@@ -240,8 +237,9 @@ The
 
 \f1\b0\fs24 \cf0 \
 In fact there is an even shorter version of the modal transposition example.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b Paddp
+\f0\b \cf0 Paddp
 \f1\b0  reads one pattern to get values for adding to a property and plays the second pattern\
 once through modified with each new value.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -252,10 +250,8 @@ once through modified with each new value.\
 \f2\b0\fs24 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // modal transposition\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  pattern;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // define the basic pattern\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 pattern = \cf2 Pbind\cf0 (\
@@ -282,10 +278,8 @@ once through modified with each new value.\
 \f2 \cf0 ( \cf4 // BUGGY - THIS ONE SOMEHOW DISABLES PATTERNS\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // modal transposition\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  pat1, pat2;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // define the basic pattern\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 pat1 = \cf2 Pbind\cf0 (\
@@ -356,10 +350,8 @@ chord = \cf2 Prand\cf0 ([[53, 58, 64],[53, 60, 64],[57,60,65]]);\
 \f2\b0\fs24 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // chromatic transposition\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  pattern;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // define the basic pattern\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 pattern = \cf2 Pbind\cf0 (\
@@ -384,10 +376,8 @@ chord = \cf2 Prand\cf0 ([[53, 58, 64],[53, 60, 64],[57,60,65]]);\
 \f2\b0\fs24 \cf0 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // beat time stretching\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 var\cf0  pattern;\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf4 // define the basic pattern\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 pattern = \cf2 Pbind\cf0 (\
@@ -454,8 +444,9 @@ pattern = \cf2 Pbind\cf0 ( \cf3 \\midinote\cf0 , \cf2 Pseq\cf0 (#[60, 62, 64, 65
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1 \cf0 To go to the next file, double click on the ] to select the filename and type cmd-H:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b [Streams-Patterns-Events7]\
+\f0\b \cf0 [Streams-Patterns-Events7]\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0 \cf0 \
