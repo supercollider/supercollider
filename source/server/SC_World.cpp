@@ -144,7 +144,8 @@ World* World_New(WorldOptions *inOptions)
 		world->mAudioBusTouched = (int32*)malloc(inOptions->mNumAudioBusChannels * sizeof(int32));
 		world->mControlBusTouched = (int32*)malloc(inOptions->mNumControlBusChannels * sizeof(int32));
 		
-		size_t sndbufsize = inOptions->mNumBuffers * sizeof(SndBuf);
+		world->mNumSndBufs = inOptions->mNumBuffers;
+		size_t sndbufsize = world->mNumSndBufs * sizeof(SndBuf);
 		world->mSndBufs = (SndBuf*)malloc(sndbufsize);
 		world->mSndBufsNonRealTimeMirror = (SndBuf*)malloc(sndbufsize);
 		
