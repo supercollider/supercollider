@@ -25,12 +25,16 @@ StreamPlayerReference {
 	stop {  player.stop; isPlaying = false; }
 	pause { player.stop; isPlaying = false; }
 	reset { player.reset }
+	sched { arg func; if(isPlaying,  
+					{ player.clock.play({ func.value; nil }, quant) },
+					func)
+	}
 	
 	*put { this.subclassResponsibility(thisMethod) }
 	*at { this.subclassResponsibility(thisMethod) }
-	setProperties { this.subclassResponsibility(thisMethod) }
-	initPlayer { this.subclassResponsibility(thisMethod) }
-	sched { arg func; player.clock.sched({ func.value; nil }, quant) }
+	setProperties { this.subclassResponsibility(thisMethod) } // this is called when player exists
+	initPlayer { this.subclassResponsibility(thisMethod) } // this is called on init
+	
 
 }
 
@@ -107,11 +111,15 @@ Pdef : Tdef {
 		var pat, event, stream;
 		#pat, event = argList;
 		stream = pat.asStream;
-		if(event.notNil, { player.event = event });
+		if(event.notNil, { this.sched({ this.event = event }) });
 		if(stream.notNil, { this.stream = stream });
 	}
-	
-	event_ { arg inEvent; player.event = inEvent }
+	// set inevent but keep parent. maybe find another solution later //
+	event_ { arg inEvent; 
+		var oldParent; 
+		oldParent = player.event.parent;
+		player.event = inEvent.collapse.parent_(oldParent);
+	}
 	mute { player.mute }
 	unmute { player.unmute }
 	
