@@ -121,13 +121,16 @@ SCSoundFileView::SCSoundFileView(SCContainerView *inParent, PyrObject* inObj, SC
 	memset(&mSndFile, 0, sizeof(SndBuf));
 	memset(&mSndMinMax, 0, sizeof(SndMinMaxBuf));
 	mSndMinMax.isUsable = false;
-
+	mSndBuf.frames = 0;
+	mSndBuf.data = 0;
+	mResampleFactor = 64;
 	mGridColor = SCMakeColor(0.2,0.2,1.0, 1.0);	
     mBackground = new SolidColorBackground(
                     SCMakeColor(0.,0.,0., 1.0));
 	SCColor waveColor = SCMakeColor(1.0,1.0,0.0, 1.0);	
 	mTimeCursorPosition = 0;
 	mTimeCursorColor = SCMakeColor(0.1,0.2,1.0, 1.0);
+	mElasticMode = 0;
 	
 	for (int i=0; i<kMaxSndSelections; ++i) 
 	{
