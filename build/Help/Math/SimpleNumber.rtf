@@ -554,14 +554,14 @@ Return the receiver. aNumber is ignored.\
 	stepsPerOctave is 12 by default\
 	\
 	
-\f2\fs18 (\
-		l = [0, 1, 5, 9, 11]; // pentatonic scale\
-		(60, 61..75).collect \{ |i| i.keyToDegree(l, 12) \}\
+\f2\fs18 \cf2 (\
+		l = [0, 1, 5, 9, 11]; \cf3 // pentatonic scale\cf2 \
+		(60, 61..75).collect \{ \cf4 |i|\cf2  i.keyToDegree(l, 12) \}\
 	)\
 	(\
-		l = [0, 1, 5, 9, 11]; // pentatonic scale\
-		(60, 61..75).postln.collect \{ |i| i.keyToDegree(l, 12).degreeToKey(l) \}\
-	)\
+		l = [0, 1, 5, 9, 11]; \cf3 // pentatonic scale\cf2 \
+		(60, 61..75).postln.collect \{ \cf4 |i|\cf2  i.keyToDegree(l, 12).degreeToKey(l) \}\
+	)\cf0 \
 
 \f1\fs24 \
  \
