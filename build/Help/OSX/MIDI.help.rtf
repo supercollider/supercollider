@@ -13,9 +13,12 @@ MIDIEndpoint\
 MIDIIn\
 MIDIOut\
 superclass: Object\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 \
+\f1\b0 \
+See the 
+\f0\b [UsingMIDI]
+\f1\b0  helpfile for practical considerations and techniques for using MIDI in SC.\
+\
 MIDIClient is a static class that starts up the MIDI service:\
 It initializes with a number of virtual inports and outports.\
 The default is 1. and usually not more a needed.\
@@ -29,18 +32,16 @@ example:\
 (\
 MIDIClient.init;\
 //There are three possibilities to connect for example to the first device:\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 //
+\f0\b //
 \f1\b0 MIDIIn.connect(0, MIDIClient.sources.at(0));\
 
 \f0\b //
 \f1\b0 MIDIIn.connect(0, MIDIClient.sources.at(0).uid);\
 MIDIIn.connect(0, 0);
 \f0\b \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \cf0 //set the action:\
+\f1\b0 //set the action:\
 MIDIIn.control = \{arg src, chan, num, val;\
 			val.postln;\
 			\};\
