@@ -66,23 +66,23 @@ UGen : AbstractFunction {
  	}
  	clip { arg lo,hi;
  		if(rate == \audio) {
- 			^Clip.ar(lo,hi)
+ 			^Clip.ar(this, lo, hi)
  		}{
- 			^Clip.kr(lo,hi)
+ 			^Clip.kr(this, lo, hi)
  		}
  	}
  	fold { arg lo,hi;
  		if(rate == \audio) {
- 			^Fold.ar(lo,hi)
+ 			^Fold.ar(this, lo, hi)
  		}{
- 			^Fold.kr(lo,hi)
+ 			^Fold.kr(this, lo, hi)
  		}
  	}
  	wrap { arg lo,hi;
  		if(rate == \audio) {
- 			^Wrap.ar(lo,hi)
+ 			^Wrap.ar(this, lo, hi)
  		}{
- 			^Wrap.kr(lo,hi)
+ 			^Wrap.kr(this, lo, hi)
  		}
  	}
 	signalRange { ^\bipolar }
