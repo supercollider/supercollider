@@ -302,6 +302,7 @@
 	canFreeSynth { ^children.canFreeSynth }
 	canReleaseSynth { ^this.hasGateControl and: { this.canFreeSynth } }
 	hasGateControl {
+		if(controlNames.isNil) { ^false };
 		^controlNames.any { arg cn; 
 			cn.notNil and: { cn.name == "gate" } and: { cn.rate !== 'scalar' } 
 		};
