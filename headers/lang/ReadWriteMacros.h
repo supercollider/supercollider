@@ -91,7 +91,6 @@ public:
 		uint8 c[4];
 	} u;
         u.f = inFloat;
-		printf("writeFloat_be %g  %02X %02X %02X %02X\n", u.f, u.c[0], u.c[1], u.c[2], u.c[3]);
         writeUInt8(u.c[0]);
         writeUInt8(u.c[1]);
         writeUInt8(u.c[2]);
@@ -109,7 +108,6 @@ public:
 		uint8 c[4];
 	} u;
         u.f = inFloat;
-		printf("writeFloat_le %g  %02X %02X %02X %02X\n", u.f, u.c[0], u.c[1], u.c[2], u.c[3]);
         writeUInt8(u.c[3]);
         writeUInt8(u.c[2]);
         writeUInt8(u.c[1]);

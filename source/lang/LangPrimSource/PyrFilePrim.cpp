@@ -474,7 +474,6 @@ int prFilePutFloatLE(struct VMGlobals *g, int numArgsPushed)
 	PyrFile *pfile;
 	FILE *file;
 	
-	printf("prFilePutFloatLE\n");
 	a = g->sp - 1;
 	b = g->sp;
 	
