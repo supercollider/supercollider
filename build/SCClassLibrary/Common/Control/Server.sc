@@ -126,7 +126,7 @@ Server : Model {
 	listSendMsg { arg msg;
 		addr.sendBundle(nil,msg);
 	}
- 	listSendBundle { arg bundle,time;
+ 	listSendBundle { arg time,bundle;
 		addr.performList(\sendBundle, [time ? this.latency] ++ bundle);
 	}
 	
