@@ -3054,6 +3054,11 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 	//post("thread %08X\n", thread);
 		SetObject(&thread->parent, g->thread);
 		g->gc->GCWrite(thread, g->thread);
+		
+		thread->beats.uf = g->thread->beats.uf;
+		thread->seconds.uf = g->thread->seconds.uf;
+		thread->clock.ucopy = g->thread->clock.ucopy;
+		g->gc->GCWrite(thread, &g->thread->clock);
 
 	//postfl("start into thread %08X from parent %08X\n", thread, g->thread);
 		switchToThread(g, thread, tYieldToChild, &numArgsPushed);
@@ -3069,6 +3074,11 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 
 		SetObject(&thread->parent, g->thread);
 		g->gc->GCWrite(thread, g->thread);
+		
+		thread->beats.uf = g->thread->beats.uf;
+		thread->seconds.uf = g->thread->seconds.uf;
+		thread->clock.ucopy = g->thread->clock.ucopy;
+		g->gc->GCWrite(thread, &g->thread->clock);
 
 		value.ucopy = b->ucopy;
 	//debugf("resume into thread %08X from parent %08X\n", thread, g->thread);

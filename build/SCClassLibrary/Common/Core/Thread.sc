@@ -77,10 +77,9 @@ Routine : Thread {
 		
 	// PRIVATE
 	awake { arg inBeats, inSeconds, inClock;
-		beats = inBeats;
-		seconds = inSeconds;
-		clock = inClock;
-		^this.next(beats)
+		var temp;
+		temp = inBeats; // prevent optimization
+		^this.next(inBeats)
 	}
 	prStart { arg inval;
 		func.value(inval);
