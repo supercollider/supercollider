@@ -238,6 +238,7 @@ Server : Model {
 	serverRunning_ { arg val;
 		if (val != serverRunning, {
 			serverRunning = val;
+			if (serverRunning.not) { recordNode = nil; };
 			{ this.changed(\serverRunning); }.defer;
 		});
 	}
