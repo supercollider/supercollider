@@ -32,6 +32,37 @@ BinaryOpStream : Stream {
 	reset { a.reset; b.reset }
 }
 
+
+BinaryOpXStream : Stream {	
+	var operator, a, b, vala;
+	
+	*new { arg operator, a, b;	
+		^super.newCopyArgs(operator, a, b)
+	}
+	next {  
+		var valb;
+		if (vala.isNil) { 
+			vala = a.next;
+			if (vala.isNil) { ^nil };
+			valb = b.next;
+			if (valb.isNil, { ^nil });
+		}{
+			valb = b.next;
+			if (valb.isNil) { 
+				vala = a.next;
+				if (vala.isNil) { ^nil };
+				b.reset;
+				valb = b.next;
+				if (valb.isNil) { ^nil };
+			};
+		};
+		^vala.perform(operator, valb);
+	}
+	reset { vala = nil; a.reset; b.reset }
+}
+
+
+
 NAryOpStream : Stream {
 	var >operator, >a, arglist;
 	var isNumeric;
