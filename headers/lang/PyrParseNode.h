@@ -93,6 +93,7 @@ struct PyrParseNode {
 	int mLineno;
 	int mCharno;
 	unsigned char mClassno;
+	unsigned char mParens;
 };
 
 struct PyrSlotNode : public PyrParseNode {

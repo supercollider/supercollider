@@ -167,6 +167,7 @@ PyrParseNode::PyrParseNode(int inClassNo)
 	mTail = this;
 	mCharno = ::charno;
 	mLineno = ::lineno;
+	mParens = 0;
 }
 
 void compileNodeList(PyrParseNode *node, bool onTailBranch)
@@ -1629,6 +1630,7 @@ bool PyrVarDefNode::hasExpr(PyrSlot *result)
 			//post("hasExpr A %s-%s %s %d\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name, mVarName->mSlot.us->name, mDefVal->mClassno);	
 			return true;
 	}
+	if (mDefVal->mParens) return true;
 
 	PyrPushLitNode *pushlitnode = (PyrPushLitNode*)mDefVal;
 	if (pushlitnode->mSlot.utag == tagPtr) {
@@ -3659,7 +3661,7 @@ void PyrLitDictNode::compile(PyrSlot* result)
 	PyrParseNode *inode;
 	int i, numItems, flags;
 	
-	//postfl("->compilePyrLitListNode\n");
+	//postfl("->compilePyrLitDictNode\n");
 	if (mClassname && ((PyrSlotNode*)mClassname)->mSlot.us != s_array) {
 		error("Only Array is supported as literal type.\n");
 		post("Compiling as an Array.\n");

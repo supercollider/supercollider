@@ -532,7 +532,11 @@ expr1	: pushliteral
 		| curryarg
 		| msgsend
 		| '(' exprseq ')'
-			{ $$ = $2; }
+			{ 
+				PyrParseNode* node = (PyrParseNode*)$2; 
+				node->mParens = 1;
+				$$ = $2; 
+			}
 		| '~' name
 			{ 
 				PyrParseNode* argnode;
@@ -1280,7 +1284,11 @@ slotdef		: name
 			| name optequal slotliteral
 				{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 0); }
 			| name optequal '(' exprseq ')'
-				{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, (PyrParseNode*)$4, 0); }
+				{
+					PyrParseNode* node = (PyrParseNode*)$4; 
+					node->mParens = 1;
+					$$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, node, 0);
+				}
 			;
 			
 vardeflist0 	: { $$ = 0; }
@@ -1296,6 +1304,12 @@ vardef          : name
                                 { $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, NULL, 0); }
                         | name '=' expr
                                 { $$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, (PyrParseNode*)$3, 0); }
+                        | name '(' exprseq ')'
+                                { 
+									PyrParseNode* node = (PyrParseNode*)$3; 
+									node->mParens = 1;
+									$$ = (long)newPyrVarDefNode((PyrSlotNode*)$1, node, 0); 
+								}
                         ;                              
 				
 dictslotdef	: exprseq ':' exprseq
