@@ -158,7 +158,7 @@
 		^if(ok, {
 			this.collect({ arg event;
 				event.use({ 
-					~nodeID = proxy.group.asNodeID; //in case of Pmono
+					~group = proxy.group.asNodeID;
 					~i_out = ~out = index;
 					~msgFunc = msgFunc;
 					~server = proxy.server;
