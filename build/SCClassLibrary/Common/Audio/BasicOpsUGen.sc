@@ -13,7 +13,11 @@ BasicOpUGen : UGen {
 //		file.putInt8(0);
 //		file.putString(opname);
 //	}
-	specialIndex { ^operator.specialIndex }
+	operator_ { arg op;
+		operator = op;
+		specialIndex = operator.specialIndex;
+	}
+	
 	argNamesInputsOffset { ^1 }
 
 }
@@ -25,7 +29,7 @@ UnaryOpUGen : BasicOpUGen {
 	}
 	
 	init { arg theOperator, theInput;
-		operator = theOperator;
+		this.operator = theOperator;
 		rate = theInput.rate;
 		inputs = theInput.asArray;
 	}
@@ -73,7 +77,7 @@ BinaryOpUGen : BasicOpUGen {
 	}
 	
 	init { arg theOperator, a, b;
-		operator = theOperator;
+		this.operator = theOperator;
 		rate = this.determineRate(a, b);
 		inputs = [a, b];
 	}

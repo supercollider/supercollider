@@ -1,15 +1,23 @@
 
 ControlName
 {
-	var <name, <index;
-	*new { arg name, index;
-		^super.newCopyArgs(name, index)
+	var <>name, <>index, <>rate, <>defaultValue;
+	
+	*new { arg name, index, rate, defaultValue;
+		^super.newCopyArgs(name, index, rate, defaultValue)
 	}
+
+	printOn { arg stream;
+		stream << "   P " << index.asString;
+		if (rate.notNil) { stream << " " << rate; };
+		if (defaultValue.notNil) { stream << " " << defaultValue; };
+		stream << "\n"
+	}	
 		
 }
 
 Control : MultiOutUGen {
-	var <values, <specialIndex;
+	var <values;
 	
 	*names { arg names;
 		var synthDef, index;

@@ -200,7 +200,7 @@ SynthDef {
 	}
 	writeConstants { arg file;
 		var array;
-		array = Array.newClear(constants.size);
+		array = FloatArray.newClear(constants.size);
 		constants.keysValuesDo({ arg value, index;
 			array.put(index, value);
 		});

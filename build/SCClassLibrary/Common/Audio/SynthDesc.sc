@@ -1,15 +1,4 @@
 
-ParameterDesc {
-	var <>index, <>defaultValue, <>name, <>rate;
-	
-	*new { arg index, defaultValue=0.0, name="", rate='?';
-		^super.newCopyArgs(index, defaultValue, name, rate)
-	}
-	
-	printOn { arg stream;
-		stream << "P " << index.asString << " " << name << " " << rate << " " << defaultValue << "\n"
-	}	
-}
 
 IODesc {
 	var <>rate, <>numberOfChannels, <>startingChannel;
@@ -25,8 +14,9 @@ IODesc {
 
 
 SynthDesc {
-	var <>name, <>parameters, <>inputs, <>outputs, <>constants; 
-
+	var <>name, <>parameters, <>inputs, <>outputs; 
+	var <>constants, <>def;
+	
 	printOn { arg stream;
 		stream << name << " :\n";
 		parameters.do {|param| param.printOn(stream) };
@@ -37,7 +27,7 @@ SynthDesc {
 	*read { arg path;
 		^path.pathMatch.collect { |filename|
 			var file, result;
-			filename.postln;
+			//filename.postln;
 			file = File(filename, "r");
 			result = this.readFile(file);
 			file.close;
@@ -56,24 +46,26 @@ SynthDesc {
 	}
 	readSynthDef { arg stream;
 		var numParameters, numConstants, numParamNames, numUGens;
-		var paramValues;
 		
 		inputs = [];
 		outputs = [];
 		
 		name = stream.getPascalString;
-		[\synthdef, name].postln;
+		
+		def = SynthDef.prNew(name);
+		UGen.buildSynthDef = def;
+		
 		numConstants = stream.getInt16;
 		constants = FloatArray.newClear(numConstants);
 		stream.read(constants);
-		
+				
 		numParameters = stream.getInt16;
-		paramValues = FloatArray.newClear(numParameters);
-		stream.read(paramValues);
+		def.controls = FloatArray.newClear(numParameters);
+		stream.read(def.controls);
 		
 		parameters = Array.fill(numParameters) 
 			{ |i|
-				ParameterDesc(i, paramValues[i]);
+				ControlName("?", i, '?', def.controls[i]);
 			};
 		
 		numParamNames = stream.getInt16;
@@ -90,16 +82,20 @@ SynthDesc {
 			this.readUGenSpec(stream);
 		};
 		
-		
+		def.controlNames = parameters.select {|x| x.name.notNil };
+		def.constants = Dictionary.new;
+		constants.do {|k,i| def.constants.put(k,i) };
 	}
 	
 	readUGenSpec { arg stream;
-		var ugenClass, rate, numInputs, numOutputs, specialIndex;
+		var ugenClass, rateIndex, rate, numInputs, numOutputs, specialIndex;
 		var inputSpecs, outputSpecs;
 		var bus;
+		var ugenInputs, ugen;
 		
 		ugenClass = stream.getPascalString.asSymbol.asClass;
-		rate = [\scalar,\control,\audio][stream.getInt8];
+		rateIndex = stream.getInt8;
+		rate = [\scalar,\control,\audio][rateIndex];
 		numInputs = stream.getInt16;
 		numOutputs = stream.getInt16;
 		specialIndex = stream.getInt16;
@@ -107,9 +103,27 @@ SynthDesc {
 		outputSpecs = Int8Array.newClear(numOutputs);
 		stream.read(inputSpecs);
 		stream.read(outputSpecs);
-		
-		[\ugen, ugenClass, rate, numInputs, numOutputs].postln;
-		
+				
+		ugenInputs = [];
+		forBy (0,inputSpecs.size-1,2) {|i|
+			var ugenIndex, outputIndex, input, ugen;
+			ugenIndex = inputSpecs[i];
+			outputIndex = inputSpecs[i+1];
+			input = if (ugenIndex < 0) 
+				{ 
+					constants[outputIndex] 
+				}{ 
+					ugen = def.children[ugenIndex];
+					if (ugen.isKindOf(MultiOutUGen)) {
+						ugen.channels[outputIndex]
+					}{
+						ugen
+					}
+				};
+			ugenInputs = ugenInputs.add(input);
+		};
+		ugen = ugenClass.newFromDesc(rate, numOutputs, ugenInputs, specialIndex).source;
+		ugen.addToSynth(ugen);
 		
 		if (ugenClass.isControlUGen) {
 			numOutputs.do { |i|

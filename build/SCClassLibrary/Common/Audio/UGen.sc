@@ -5,13 +5,16 @@ UGen : AbstractFunction {
 	var <>inputs;
 	var <>rate = 'audio';
 	
-	var <>synthIndex = -1;
+	var <>synthIndex = -1, <>specialIndex=0;
 	
 	var <>antecedents, <>descendants; // topo sorting
 	
 	// instance creation
 	*new1 { arg rate ... args;
 		^super.new.rate_(rate).addToSynth.performList(\init, args); 
+	}
+	*newFromDesc { arg rate, numOutputs, inputs, specialIndex;
+		^super.new.rate_(rate).inputs_(inputs).specialIndex_(specialIndex)
 	}
  	*multiNew { arg ... args;
 		^this.multiNewList(args);
@@ -109,7 +112,6 @@ UGen : AbstractFunction {
 	}
 	
 	outputIndex { ^0 }
-	specialIndex { ^0 }
 	
 	// PRIVATE
 	// function composition
@@ -177,7 +179,7 @@ UGen : AbstractFunction {
 		file.putPascalString(this.name);
 		file.putInt8(this.rateNumber);
 		file.putInt16(this.numInputs);
-		file.putInt16(this.numOutputs); 
+		file.putInt16(this.numOutputs);
 		file.putInt16(this.specialIndex);
 		// write wire spec indices.
 		inputs.do({ arg input; 
@@ -222,7 +224,11 @@ UGen : AbstractFunction {
 
 MultiOutUGen : UGen {
 	// a class for UGens with multiple outputs
-	var channels;
+	var <channels;
+
+	*newFromDesc { arg rate, numOutputs, inputs;
+		^super.new.rate_(rate).inputs_(inputs).initOutputs(numOutputs, rate)
+	}
 
 	initOutputs { arg numChannels, rate;
 		channels = Array.fill(numChannels, { arg i; 
