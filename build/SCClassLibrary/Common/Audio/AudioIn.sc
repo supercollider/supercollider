@@ -55,6 +55,8 @@ In : MultiOutUGen {
 	}
 }
 
+InFeedback : In {}
+
 InTrig : MultiOutUGen {	
 	*kr { arg bus = 0, numChannels = 1;
 		^this.multiNew('control', numChannels, bus)

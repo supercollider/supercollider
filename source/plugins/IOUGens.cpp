@@ -60,6 +60,9 @@ extern "C"
 	void In_next_a(IOUnit *unit, int inNumSamples);
 	void In_next_k(IOUnit *unit, int inNumSamples);
 
+	void InFeedback_Ctor(IOUnit *unit);
+	void InFeedback_next_a(IOUnit *unit, int inNumSamples);
+
 	void Out_Ctor(IOUnit *unit);
 	void Out_next_a(IOUnit *unit, int inNumSamples);
 	void Out_next_k(IOUnit *unit, int inNumSamples);
@@ -183,7 +186,7 @@ void In_next_k(IOUnit *unit, int inNumSamples)
 
 void In_Ctor(IOUnit* unit)
 {
-Print("->In_Ctor\n");
+//Print("->In_Ctor\n");
 	World *world = unit->mWorld;
 	unit->m_fbusChannel = -1.;
 
@@ -199,6 +202,52 @@ Print("->In_Ctor\n");
 		In_next_k(unit, 1);
 	}
 //Print("<-In_Ctor\n");
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void InFeedback_next_a(IOUnit *unit, int inNumSamples)
+{
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumOutputs;
+
+	float fbusChannel = ZIN0(0);
+	if (fbusChannel != unit->m_fbusChannel) {
+		unit->m_fbusChannel = fbusChannel;
+		int busChannel = (int)fbusChannel;
+		int lastChannel = busChannel + numChannels;
+		
+		if (!(busChannel < 0 || lastChannel > world->mNumAudioBusChannels)) {
+			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
+			unit->m_busTouched = world->mAudioBusTouched + busChannel;
+		}
+	}
+	
+	float *in = unit->m_bus;
+	int32 *touched = unit->m_busTouched;
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	
+	for (int i=0; i<numChannels; ++i, in += bufLength) {
+		float *out = OUT(i);
+		if (bufCounter - touched[i] == 1) Copy(inNumSamples, out, in);
+		else Fill(inNumSamples, out, 0.f);
+	}
+}
+
+
+void InFeedback_Ctor(IOUnit* unit)
+{
+//Print("->InFeedback_Ctor\n");
+	World *world = unit->mWorld;
+	unit->m_fbusChannel = -1.;
+
+	SETCALC(InFeedback_next_a);
+	unit->m_bus = world->mAudioBus;
+	unit->m_busTouched = world->mAudioBusTouched;
+	InFeedback_next_a(unit, 1);
+//Print("<-InFeedback_Ctor\n");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
