@@ -4,7 +4,7 @@
 Pdefn : Pattern {
 	var <key, <pattern;
 	var <>clock, <>quant, <>offset=0; 	// quant new pattern insertion
-	classvar <>all, <>defaultQuant, <>action;
+	classvar <all, <>defaultQuant, <>action;
 	
 	*initClass { 
 		all = IdentityDictionary.new;
@@ -91,7 +91,7 @@ Pdefn : Pattern {
 
 Tdef : Pdefn {
 	var <isPlaying=false, <player;
-	classvar <>all, <>defaultQuant=1.0;
+	classvar <all, <>defaultQuant=1.0;
 	
 	*initClass { 
 		all = IdentityDictionary.new;
@@ -160,13 +160,8 @@ Tdef : Pdefn {
 Pdef : Tdef {
 	var <>fadeTime;
 	
-	classvar <>all, <>defaultQuant=1.0;
-	
-	*initClass { 
-		all = IdentityDictionary.new; 
-		CmdPeriod.add(this); 
-	}
-	
+	classvar <all, <>defaultQuant=1.0;
+
 	*new { arg key, pattern; // this is a copy from Pdefn, to avoid a redirection
 		var p;
 	 	p = this.at(key);
@@ -231,7 +226,40 @@ Pdef : Tdef {
 		if(player.isPlaying.not) { player = this.playOnce(argClock, protoEvent, quant) }
 	}
 	
-
+	*initClass {
+		var phraseEvent;
+		
+		all = IdentityDictionary.new; 
+		CmdPeriod.add(this);
+		
+		Class.initClassTree(Event);
+		phraseEvent = Event.parentEvents.noteEvent.copy;
+		phraseEvent.use {
+			~library = all;
+			~prPlay = ~play;
+			~play = #{
+				var pat, event, recursionLevel;
+				pat = ~library.at(~instrument);
+				if(pat.notNil) {
+					event = Event.new.parent_(currentEnvironment.copy);
+					recursionLevel = ~recursionLevel;
+						if(recursionLevel.isNil) {
+							event.put(\instrument, \default); // avoid recursion
+						} {
+							if(recursionLevel > 0) {
+								event.put(\recursionLevel, recursionLevel - 1);
+								pat = Pset(\instrument, ~instrument, pat);						}
+					};
+					pat = Pfindur(~sustain.value, pat);
+					pat.play(thisThread.clock, event, 0.0);
+				} {
+					~prPlay.value;
+				}
+			}
+		
+		};
+		Event.parentEvents.put(\phraseEvent, phraseEvent);
+	}
 	
 }
 
@@ -244,9 +272,10 @@ Pdict : Pattern {
 	var <>dict, <>which, <>repeats, <>default;
 	*new { arg dict, which, repeats=inf, default;
 		^super.newCopyArgs(dict, which, repeats, default);
-	}	
-	asStream {
-		^Routine.new({ arg inval;
+	}
+	
+	asStream { ^Routine.new({ arg inval; this.embedInStream(inval) }) }	
+	embedInStream { arg inval;
 			var keyStream, key;
 			keyStream = which.asStream;
 			repeats.value.do({
@@ -257,7 +286,6 @@ Pdict : Pattern {
 					nil.alwaysYield
 				}
 			})
-		});
 	}
 }
 
