@@ -260,6 +260,7 @@ Server : Model {
 
 			if(serverRunning.not,{
 				"server failed to start".error;
+				serverBooting = false;
 			}, onComplete);
 		}).play(AppClock);
 	}
@@ -405,6 +406,7 @@ Server : Model {
 		RootNode(this).freeAll;
 		this.newAllocators;
 	}
+
 	*quitAll {
 		set.do({ arg server; if(server.isLocal or: {server.inProcess} ) {server.quit}; })
 	}
