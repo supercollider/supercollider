@@ -2,9 +2,12 @@ EventPlayer {
 	var <>parentEvent;
 	
 	*new { arg event;
+		var player;
 		event = event ?? { () };
 		event.parent = this.defaultParentEvent;
-		^super.newCopyArgs(event)
+		player = super.newCopyArgs(event);
+		event[\player] = player;
+		^player
 	}
 	*defaultParentEvent {
 		^this.subclassResponsibility(thisMethod)
@@ -30,8 +33,7 @@ NotePlayer : EventPlayer {
 		}, [\ir]).writeDefFile;
 		
 		defaultParentEvent = Event.make({
-			// fill prototype event with default property values			
-			~tempoclock = TempoClock.default;
+			// fill prototype event with default property value
 			~tempo = nil;
 			
 			~dur = 1.0;
@@ -102,7 +104,7 @@ NotePlayer : EventPlayer {
 				
 		if (desc.hasGate) {
 			// send note off bundle.
-			~tempoclock.sched(sustain, { 
+			thisThread.clock.sched(sustain, { 
 	//			if (thisThread.seconds <= ttseconds) {
 	//				[\ooo, ttbeats, ttseconds, thisThread.beats, thisThread.seconds, dur].postln;
 	//				TempoClock.default.prDump;
@@ -143,7 +145,6 @@ TempoEventPlayer : EventPlayer {
 	
 	*initClass {
 		defaultParentEvent = Event.make({
-			~tempoclock = TempoClock.default;
 			~tempo = nil;
 			
 			~dur = 1.0;
@@ -151,7 +152,7 @@ TempoEventPlayer : EventPlayer {
 		});
 	}
 	playEvent { arg event;
-		event[\tempoclock].tempo = event[\tempo];
+		thisThread.clock.tempo = event[\tempo];
 	}
 }
 

@@ -290,7 +290,6 @@ EventStreamPlayer : PauseStream {
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
 		clock = argClock ? clock ? TempoClock.default;
-		event[\tempoclock] = clock;
 		stream = originalStream; 
 		clock.play(this, quant);
 	}
