@@ -329,7 +329,7 @@ const int circDiam = 20;
 
 - (BOOL)prepareForDragOperation:(id)dragInfo {
     //post("prepareForDragOperation %08X\n", self);
-	if (!mTopView) return;
+	if (!mTopView) return FALSE;
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
