@@ -12,7 +12,7 @@
 //
 //	// floats only ?
 //	readyForPlay { ^true }
-//	prepareForPlay {  }
+//	prepareToBundle {  }
 //	
 //	spawnToBundle {}
 //	//spawn { ^ScalarPatchOut(this) }

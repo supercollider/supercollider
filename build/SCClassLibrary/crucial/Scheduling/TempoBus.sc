@@ -18,7 +18,7 @@ TempoBus   {
 	}
 	asBus {}
 	index { ^bus.index }
-	prepareForPlay { arg group,bundle;
+	prepareToBundle { arg group,bundle;
 		// ignores the group
 		//if(isReady.not,{ // just in case server wasn't booted before on init
 			bundle.add( bus.setMsg(tempo.tempo) );

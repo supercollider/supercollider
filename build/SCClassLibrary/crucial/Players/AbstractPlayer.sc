@@ -1,13 +1,11 @@
 
 AbstractPlayer : AbstractFunction  { 
 
-	classvar <>debug=false; // for a while, a switch
-	
 	var <path,name,<>dirty=true; 
 	
 	var <synth,<patchOut,<>readyForPlay = false,defName;
 		
-	play { arg group,atTime;
+	play { arg group,atTime,bus;
 		var server,bundle;
 		
 		if(synth.isPlaying,{
@@ -15,12 +13,25 @@ AbstractPlayer : AbstractFunction  {
 		});  // what if i'm patched to something old ?
 			// depend on stop being issued
 
-		group = group.asGroup;
-		server = group.server;
+		if(bus.notNil,{ 
+			bus = bus.asBus;
+			if(group.isNil,{ 
+				server = bus.server;
+				group = server.asGroup;
+			},{	
+				group = group.asGroup;
+				server = group.server;
+			})
+		},{
+			group = group.asGroup;
+			server = group.server;
+			// leave bus nil
+		});
+					
 		bundle = List.new;
 		
 		if(readyForPlay,{
-			this.makePatchOut(group);
+			this.makePatchOut(group,false,bus);
 			this.spawnAtTime(atTime);
 		},{
 			Routine({
@@ -42,7 +53,7 @@ AbstractPlayer : AbstractFunction  {
 					// screwy
 					//this.patchOut_(true); // keep it from making one
 					
-					this.prepareForPlay(group,bundle);
+					this.prepareToBundle(group,bundle);
 					
 					if(bundle.notEmpty,{
 						server.listSendBundle(nil,bundle);
@@ -54,14 +65,19 @@ AbstractPlayer : AbstractFunction  {
 					// need a fully fledged OSCMessage that can figure it out
 					0.3.wait;
 					
-					this.makePatchOut(group,false);// public
+					this.makePatchOut(group,false,bus);// public
 					
 					this.spawnAtTime(atTime);
 				});
 			}).play;
 		});
 	}
-	prepareForPlay { arg group,bundle;
+	prepareForPlay { arg group,private = false;
+		group = group.asGroup;
+		super.prepareForPlay(group); // sends to server
+		this.makePatchOut(group,false);	
+	}
+	prepareToBundle { arg group,bundle;
 		readyForPlay = false;
 		
 		group = group.asGroup;
@@ -71,38 +87,38 @@ AbstractPlayer : AbstractFunction  {
 		
 		// has inputs
 		this.children.do({ arg child;
-			child.prepareForPlay(group,bundle);
+			child.prepareToBundle(group,bundle);
 		});
 		
 		// not really until the last confirmation comes from server
 		readyForPlay = true;
 	}
 
-	setPatchOut { arg po; patchOut = po; }
-	makePatchOut { arg group,private = false;
-		this.topMakePatchOut(group,private);
+
+	makePatchOut { arg group,private = false,bus;
+		this.topMakePatchOut(group,private,bus);
 		this.childrenMakePatchOut(group,true);
 	}
-	topMakePatchOut { arg group,private;
+	topMakePatchOut { arg group,private = false,bus;
 		//Patch doesn't know its numChannels or rate until after it makes the synthDef
 		if(this.rate == \audio,{// out yr speakers
 			if(private,{
 				this.setPatchOut(
-					AudioPatchOut(this,group,Bus.audio(group.server,this.numChannels))
+					AudioPatchOut(this,group,bus ? Bus.audio(group.server,this.numChannels))
 					)
 			},{			
 				this.setPatchOut(
-					AudioPatchOut(this,group,Bus(\audio,0,this.numChannels,group.server))
+					AudioPatchOut(this,group,bus ? Bus(\audio,0,this.numChannels,group.server))
 							)
 			})
 		},{
 			if(this.rate == \control,{
 				this.setPatchOut(
 					ControlPatchOut(this,group,
-							Bus.control(group.server,this.numChannels))
+							bus ? Bus.control(group.server,this.numChannels))
 						)
 			},{
-				("Wrong output rate: " + this.rate + 
+				(thisMethod.asString + "Wrong output rate: " + this.rate + 
 			".  AbstractPlayer cannot prepare this object for play.").error;
 			});
 		});
@@ -113,6 +129,8 @@ AbstractPlayer : AbstractFunction  {
 			child.makePatchOut(group,private)
 		});
 	}
+	setPatchOut { arg po; patchOut = po; }
+
 	
 	spawnAtTime { arg atTime;
 		var bundle;
@@ -200,8 +218,8 @@ AbstractPlayer : AbstractFunction  {
 			})
 		})
 	}
-	// if children are your args, you won't have to implement this
 	synthDefArgs { 
+		// if children are your args, you won't have to implement this
 		// no indices
 		^this.children.collect({ arg ag,i; ag.synthArg })  
 				 ++ [patchOut.bus.index] // always goes last
@@ -221,8 +239,8 @@ AbstractPlayer : AbstractFunction  {
 	isPlaying { ^synth.isPlaying }
 
 	stop { ^this.free } // for now
-	// do we control all the children ?
-	// they need to keep track of their own connections via PatchOut
+		// do we control all the children ?
+		// they need to keep track of their own connections via PatchOut
 	run { arg flag=true;
 		if(synth.notNil,{
 			synth.run(flag);
@@ -241,8 +259,9 @@ AbstractPlayer : AbstractFunction  {
 		readyForPlay = false;
 	}
 	busIndex { ^patchOut.index }
-
-
+	bus { ^patchOut.bus }
+	group { ^patchOut.group }
+	server { ^patchOut.server }
 
 /*  RECORDING ETC.
 	scope 	{ Synth.scope({ Tempo.setTempo; this.ar }) }
@@ -452,39 +471,6 @@ AbstractPlayerProxy : AbstractPlayer {
 	var source;
 
 
-	prepareForPlay { arg group,bundle;
-		if(source.notNil,{
-			super.prepareForPlay(group,bundle)
-		})
-	}
-	makePatchOut { arg group,public;
-		if(source.notNil,{
-			super.makePatchOut(group,public)
-		})
-	}
-	childrenMakePatchOut { arg group,public;
-		if(source.notNil,{
-			super.childrenMakePatchOut(group,public)
-		})
-	}
-	spawnAtTime { arg atTime;
-		if(source.notNil,{
-			super.spawnAtTime(atTime)
-		})
-	}
-	loadDefFileToBundle { arg bundle,server;
-		if(source.notNil,{
-			super.loadDefFileToBundle(bundle,server)
-		})
-	}
-	spawnToBundle { arg bundle;
-		if(source.notNil,{
-			super.spawnToBundle(bundle)
-		})
-	}
-
-	
-	
 	
 	asSynthDef { ^source.asSynthDef }
 	rate { ^source.rate }
@@ -509,14 +495,6 @@ AbstractPlayerProxy : AbstractPlayer {
 		super.free;
 	}
 	
-	setSource { arg s,atTime;
-		// do replace, same bus
-		if(source.notNil,{
-			source.free; // atTime
-		});
-		source = s;
-		this.spawnAtTime(atTime);
-	}
 }
 
 

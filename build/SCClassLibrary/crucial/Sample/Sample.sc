@@ -31,7 +31,7 @@ BufferProxy { // blank space for delays, loopers etc.
 	}
 	
 	/* server support */
-	prepareForPlay { arg group,bundle;
+	prepareToBundle { arg group,bundle;
 		buffer = Buffer.new(group.asGroup.server,this.size,numChannels);
 		buffer.numFrames = this.size;
 		buffer.numChannels = numChannels;
@@ -236,7 +236,7 @@ Sample : BufferProxy { // a small sound loaded from disk
 	
 	
 	/* server support */
-	prepareForPlay { arg group,bundle;
+	prepareToBundle { arg group,bundle;
 		buffer = Buffer.new(group.asGroup.server,this.size,numChannels);
 		if(soundFilePath.notNil,{
 			bundle.add( buffer.allocReadMsg(this.soundFilePath,startFrame) )
@@ -271,7 +271,7 @@ ArrayBuffer : BufferProxy {
 	}
 	//this.size wrong ?
 	
-	prepareForPlay { arg group,bundle;
+	prepareToBundle { arg group,bundle;
 		buffer = Buffer.new(group.asGroup.server,array.size,numChannels);
 		buffer.numFrames = this.size;
 		buffer.numChannels = numChannels;

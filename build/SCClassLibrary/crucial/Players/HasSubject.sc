@@ -170,6 +170,7 @@ StreamKrDur : HasSubject { // Synthless, above player
 		this.spawnAtTime;
 	}
 	didSpawn {	arg patchIn,synthi;
+		//routine.insp("didSpawn krstream");
 		patchOut.connectTo(patchIn,false);
 		bus = patchOut.bus;
 		routine.reset;
@@ -199,9 +200,9 @@ StreamKrDur : HasSubject { // Synthless, above player
 	
 	/*
 	// for BufSeqDur
-	prepareForPlay { arg group,bundle;
+	prepareToBundle { arg group,bundle;
 		var values,durs,data;
-		super.prepareForPlay(group,bundle);
+		super.prepareToBundle(group,bundle);
 		values = subject.oneCycle;
 		durs = durations.oneCycle;
 		minTime = durs.minItem;
@@ -213,7 +214,7 @@ StreamKrDur : HasSubject { // Synthless, above player
 		buffer = subject.asBufferToBundle(group,bundle);
 		
 		tempoBus = TempoBus.new;
-		tempoBus.prepareForPlay(group,bundle);
+		tempoBus.prepareToBundle(group,bundle);
 	}
 
 	synthDefArgs { ^[buffer.synthArg,tempoBus.synthArg,framesPerBeat,patchOut.synthArg] }

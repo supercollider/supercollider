@@ -27,18 +27,29 @@ ModalFreq : AbstractPlayerProxy {
 		octaves = octave.asStream;
 		roots = root.asStream;
 		
-		^FuncStream({ // not optimized
-			(degstream.next.degreeToKey(scale,stepsPerOctave)
-				+ (octaves.next * stepsPerOctave	) + roots.next
-				* 12.0 / stepsPerOctave
-				).midicps
+		if(stepsPerOctave != 12.0,{
+			^FuncStream({
+				(degstream.next.degreeToKey(scale,stepsPerOctave)
+					+ (octaves.next * stepsPerOctave	) + roots.next
+					* 12.0 / stepsPerOctave
+					).midicps
+			})
+		},{
+			^FuncStream({
+				(degstream.next.degreeToKey(scale,stepsPerOctave)
+					+ (octaves.next * stepsPerOctave	) + roots.next
+					).midicps
+			})
 		})
 	}
-		
 }
 Midi2Freq : KrPlayer {	// players or floats will work	*new { arg note,octave=5.0;
 		^Patch(UGenInstr(Midi2FreqUGen,\kr),[ note,octave ])
-	}}
+	}
+	
+	//TODO
+	//asStream
+}
 
 
 

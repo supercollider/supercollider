@@ -4,21 +4,23 @@
 	
 	rate { ^\scalar }
 	
-	//writeDefFile {}
-	
 	//play { ^ScalarPatchOut(this) }
 
 	makePatchOut {}
 	patchOut { ^ScalarPatchOut(this) }
 	isPlaying { ^false }
 
-	// floats only ?
-//	readyForPlay { ^true }
-	prepareForPlay {  }
-	
+	prepareToBundle {  }
+	prepareForPlay { arg group;
+		var bundle;
+		bundle = List.new;
+		group = group.asGroup;
+		this.prepareToBundle(group,bundle);
+		group.server.listSendBundle(nil,bundle);
+	}
 	spawnToBundle {}
 	loadDefFileToBundle {}
-	//spawn { ^ScalarPatchOut(this) }
+	//writeDefFile {}
 	
 	free {}
 	didSpawn {}
@@ -31,14 +33,14 @@
 	instrArgRate { ^\scalar }
 	initForSynthDef {}
 	instrArgFromControl { arg control;
-		^this//.insp("Object returns self as instrArg")
+		^this
 	}
 	
 }
 
 + Editor {
 
-	prepareForPlay { arg group,bundle;
+	prepareToBundle { arg group,bundle;
 		if(patchOut.isNil,{ // private out
 			patchOut = ScalarPatchOut(this);
 		});

@@ -1,5 +1,5 @@
 
-UGenInstr { // make a virtual Instr by reading the class def
+UGenInstr { // make a virtual Instr by reading the *ar and *kr method def
 
 	var <ugenClass,<rate,<specs;
 	

@@ -124,6 +124,7 @@ Patch : AbstractPlayer  {
 		this.children.do({ arg child; child.free });
 		super.free;
 		// ISSUE: if you change a static, nobody notices to rebuild the synth def
+		// so for now, wipe it out
 		synthDef = nil;
 		readyForPlay = false;
 		this.setPatchOut(nil);

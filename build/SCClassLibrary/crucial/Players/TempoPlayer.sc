@@ -13,9 +13,9 @@ TempoPlayer : KrPlayer { //Synthless
 //	kr {
 //		^In.kr( tempoBus.index, 1)
 //	}
-	prepareForPlay { arg group,bundle;
+	prepareToBundle { arg group,bundle;
 		readyForPlay = true;
-		tempoBus.prepareForPlay(group,bundle);	
+		tempoBus.prepareToBundle(group,bundle);	
 	}
 	makePatchOut { arg group;
 		group = group.asGroup;
