@@ -1565,7 +1565,9 @@ void load(InterfaceTable *inTable)
 	DefinePVUnit(PV_RectComb2);
 	DefinePVUnit(PV_BrickWall);
 	DefinePVUnit(PV_BinWipe);
+	DefinePVUnit(PV_LocalMax);
 	
+	DefineDtorUnit(PV_BinScramble);
 	DefineDtorUnit(PV_MagSmear);
 	DefineDtorUnit(PV_MagShift);
 	DefineDtorUnit(PV_BinShift);
