@@ -418,7 +418,26 @@ valrangexd	: expr '.' '[' arglist1 DOTDOT ']'
 			}
 	;
 		
-valrange2	: exprseq DOTDOT exprseq
+valrange2	: DOTDOT exprseq
+			{ 
+				PyrSlotNode *selectornode;
+				PyrPushLitNode *nilnode, *zeronode;
+				PyrSlot selectorSlot, nilSlot, zeroSlot;
+				PyrParseNode* args;
+
+				SetInt(&zeroSlot, 0);
+				SetNil(&nilSlot);
+				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
+				zeronode = newPyrPushLitNode(newPyrSlotNode(&zeroSlot), NULL);
+				
+				SetSymbol(&selectorSlot, s_series);
+				selectornode = newPyrSlotNode(&selectorSlot);
+				args = linkNextNode(zeronode, nilnode);
+				args = linkNextNode(args, (PyrParseNode*)$2);
+				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
+			}
+	
+		| exprseq DOTDOT exprseq
 			{ 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode;
