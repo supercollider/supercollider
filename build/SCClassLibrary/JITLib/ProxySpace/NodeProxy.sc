@@ -868,7 +868,8 @@ NodeProxy : BusPlug {
 		args = [key,proxy]++args;
 		nodeMap.performList(\map, args);
 		if(this.isPlaying, { 
-			server.sendBundle(server.latency, [14, group.nodeID] ++ args);
+			nodeMap.updateBundle;
+			server.sendBundle(server.latency, [14, group.nodeID] ++ nodeMap.mapArgs);
 		})
 	}
 	
