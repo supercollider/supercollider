@@ -1,105 +1,114 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;\f2\fnil\fcharset77 Monaco;
 }
-{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green115\blue0;\red191\green0\blue0;
-}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red0\green115\blue0;
+\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs36 \cf0 Pbind
-\f1\b0\fs24 \
+\f0\b\fs36 \cf2 Pbind
+\f1\b0\fs24 \cf3 \
 \
 \
-The class 
-\f0\b Pbind
-\f1\b0  provides a bridge between value patterns and event patterns. It binds symbols in each event to values obtained from a pattern. Pbind takes arguments in pairs, the first of a pair being a Symbol and the second being a value Pattern. Remember that any object can act as a Pattern, so you can use constants as the pattern.\
+\cf2 The\cf3  class 
+\f0\b \cf2 Pbind
+\f1\b0 \cf3  provides a bridge between value patterns and event patterns. \cf2 It\cf3  binds symbols in each event to values obtained from a pattern. \cf2 Pbind\cf3  takes arguments in pairs, the first of a pair being a \cf2 Symbol\cf3  and the second being a value \cf2 Pattern\cf3 . \cf2 Remember\cf3  that any object can act as a \cf2 Pattern\cf3 , so you can use constants as the pattern.\
 \
-The Pbind stream returns nil whenever the first one of its streams ends.\
+\cf2 The\cf3  \cf2 Pbind\cf3  stream returns \cf2 nil\cf3  whenever the first one of its streams ends.\
 \
-An event stream is created for a Pattern by sending it the 
+\cf2 An\cf3  event stream is created for a \cf2 Pattern\cf3  by sending it the 
 \f0\b asEventStream
-\f1\b0  message. The 
+\f1\b0  message. \cf2 The\cf3  
 \f0\b asEventStream
-\f1\b0  message takes an Event as an argument. This event is copied for each call to 
+\f1\b0  message takes an \cf2 Event\cf3  as an argument. \cf2 This\cf3  event is copied for each call to 
 \f0\b next
-\f1\b0  to pass down and back up the tree of patterns so that each pattern can modify the event. What Pbind does is put the values for its symbols into the event, possibly overwriting previous bindings to those symbols.\
+\f1\b0  to pass down and back up the tree of patterns so that each pattern can modify the event. \cf2 What\cf3  \cf2 Pbind\cf3  does is put the values for its symbols into the event, possibly overwriting previous bindings to those symbols.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf0 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 SynthDef\cf0 (\cf3 \\cfstring1\cf0 .postln, \{ \cf2 arg\cf0  i_out, freq = 360, gate = 1, pan, amp=0.1;\
-	\cf2 var\cf0  out, eg, fc, osc, a, b, w;\
-	fc = \cf2 LinExp\cf0 .kr(\cf2 LFNoise1\cf0 .kr(\cf2 Rand\cf0 (0.25,0.4)), -1,1,500,2000);\
-	osc = \cf2 Mix\cf0 .fill(8, \{ \cf2 LFSaw\cf0 .ar(freq * [\cf2 Rand\cf0 (0.99,1.01),\cf2 Rand\cf0 (0.99,1.01)], 0, amp) \}).distort * 0.2;\
-	eg = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .asr(1,1,1), gate, doneAction:2);\
-	out = eg * \cf2 RLPF\cf0 .ar(osc, fc, 0.1);\
+\f2\fs18 \cf3 (\
+\cf2 SynthDef\cf3 (\cf4 \\cfstring1\cf3 .postln, \{ \cf2 arg\cf3  i_out, freq = 360, gate = 1, pan, amp=0.1;\
+	\cf2 var\cf3  out, eg, fc, osc, a, b, w;\
+	fc = \cf2 LinExp\cf3 .kr(\cf2 LFNoise1\cf3 .kr(\cf2 Rand\cf3 (0.25,0.4)), -1,1,500,2000);\
+	osc = \cf2 Mix\cf3 .fill(8, \{ \cf2 LFSaw\cf3 .ar(freq * [\cf2 Rand\cf3 (0.99,1.01),\cf2 Rand\cf3 (0.99,1.01)], 0, amp) \}).distort * 0.2;\
+	eg = \cf2 EnvGen\cf3 .kr(\cf2 Env\cf3 .asr(1,1,1), gate, doneAction:2);\
+	out = eg * \cf2 RLPF\cf3 .ar(osc, fc, 0.1);\
 	#a, b = out;\
-	\cf2 Out\cf0 .ar(i_out, \cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a, b], [pan, pan+0.3])));\
-\}).send(s);\
+	\cf2 Out\cf3 .ar(i_out, \cf2 Mix\cf3 .ar(\cf2 PanAz\cf3 .ar(4, [a, b], [pan, pan+0.3])));\
+\}).load(s);\
+\
+\cf2 SynthDescLib\cf3 .global.read;\
 )\
 \
-e = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Pwhite\cf0 (0,12), \cf3 \\dur\cf0 , 0.2, \cf3 \\instrument\cf0 , \cf3 \\cfstring1\cf0 ).play; \cf4 // returns an EventStream\cf0 \
+e = \cf2 Pbind\cf3 (\cf4 \\degree\cf3 , \cf2 Pwhite\cf3 (0,12), \cf4 \\dur\cf3 , 0.2, \cf4 \\instrument\cf3 , \cf4 \\cfstring1\cf3 ).play; \cf5 // returns an EventStream\cf3 \
 \
-e.stream = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Pseq\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \cf3 \\dur\cf0 , \cf2 Prand\cf0 ([0.2,0.4,0.8],\cf2 inf\cf0 ), \cf3 \\amp\cf0 , 0.05, \cf3 \\octave\cf0 , 5, \cf3 \\instrument\cf0 , \cf3 \\cfstring1\cf0 , \cf3 \\ctranspose\cf0 , 0).asStream;\
+e.stream = \cf2 Pbind\cf3 (\cf4 \\degree\cf3 , \cf2 Pseq\cf3 ([0,1,2,4,6,3,4,8],\cf2 inf\cf3 ), \cf4 \\dur\cf3 , \cf2 Prand\cf3 ([0.2,0.4,0.8],\cf2 inf\cf3 ), \cf4 \\amp\cf3 , 0.05, \cf4 \\octave\cf3 , 5, \cf4 \\instrument\cf3 , \cf4 \\cfstring1\cf3 , \cf4 \\ctranspose\cf3 , 0).asStream;\
 \
-e.stream = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Pseq\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \cf3 \\dur\cf0 , \cf2 Prand\cf0 ([0.2,0.4,0.8],\cf2 inf\cf0 ), \cf3 \\amp\cf0 , 0.05, \cf3 \\octave\cf0 , 5, \cf3 \\instrument\cf0 , \cf3 \\cfstring1\cf0 , \cf3 \\ctranspose\cf0 , 0).asStream;\
+e.stream = \cf2 Pbind\cf3 (\cf4 \\degree\cf3 , \cf2 Pseq\cf3 ([0,1,2,4,6,3,4,8],\cf2 inf\cf3 ), \cf4 \\dur\cf3 , \cf2 Prand\cf3 ([0.2,0.4,0.8],\cf2 inf\cf3 ), \cf4 \\amp\cf3 , 0.05, \cf4 \\octave\cf3 , 5, \cf4 \\instrument\cf3 , \cf4 \\cfstring1\cf3 , \cf4 \\ctranspose\cf3 , 0).asStream;\
 \
-e.stream = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Pxrand\cf0 ([0,1,2,4,6,3,5,7,8],\cf2 inf\cf0 ), \cf3 \\dur\cf0 , \cf2 Prand\cf0 ([0.2,0.4,0.8],\cf2 inf\cf0 ), \cf3 \\amp\cf0 , 0.05, \cf3 \\octave\cf0 , 5, \cf3 \\instrument\cf0 , \cf3 \\cfstring1\cf0 ).asStream;\
+e.stream = \cf2 Pbind\cf3 (\cf4 \\degree\cf3 , \cf2 Pxrand\cf3 ([0,1,2,4,6,3,5,7,8],\cf2 inf\cf3 ), \cf4 \\dur\cf3 , \cf2 Prand\cf3 ([0.2,0.4,0.8],\cf2 inf\cf3 ), \cf4 \\amp\cf3 , 0.05, \cf4 \\octave\cf3 , 5, \cf4 \\instrument\cf3 , \cf4 \\cfstring1\cf3 ).asStream;\
 \
-e.stream = \cf2 Pbind\cf0 (\
-	[\cf3 \\degree\cf0 , \cf3 \\dur\cf0 ], \cf2 Pseq\cf0 ([\
-			\cf2 Pseq\cf0 ([[0,0.1],[2,0.1],[3,0.1],[4,0.1],[5,0.8]],2),\
-			\cf2 Ptuple\cf0 ([\cf2 Pxrand\cf0 ([6,7,8,9],4), 0.4]),\
-			\cf2 Ptuple\cf0 ([\cf2 Pseq\cf0 ([9,8,7,6,5,4,3,2]), 0.2])\
-		],\cf2 inf\cf0 ),\
-	\cf3 \\amp\cf0 , 0.05, \cf3 \\octave\cf0 , 5, \cf3 \\instrument\cf0 , \cf3 \\cfstring1\cf0 , \cf3 \\mtranspose\cf0 , 0).asStream;\
+e.stream = \cf2 Pbind\cf3 (\
+	[\cf4 \\degree\cf3 , \cf4 \\dur\cf3 ], \cf2 Pseq\cf3 ([\
+			\cf2 Pseq\cf3 ([[0,0.1],[2,0.1],[3,0.1],[4,0.1],[5,0.8]],2),\
+			\cf2 Ptuple\cf3 ([\cf2 Pxrand\cf3 ([6,7,8,9],4), 0.4]),\
+			\cf2 Ptuple\cf3 ([\cf2 Pseq\cf3 ([9,8,7,6,5,4,3,2]), 0.2])\
+		],\cf2 inf\cf3 ),\
+	\cf4 \\amp\cf3 , 0.05, \cf4 \\octave\cf3 , 5, \cf4 \\instrument\cf3 , \cf4 \\cfstring1\cf3 , \cf4 \\mtranspose\cf3 , 0).asStream;\
 \
-e.stream = \cf2 Pbind\cf0 (\
-	[\cf3 \\degree\cf0 , \cf3 \\dur\cf0 ], \cf2 Pseq\cf0 ([\
-			\cf2 Pseq\cf0 ([[0,0.1],[2,0.1],[3,0.1],[4,0.1],[5,0.8]],2),\
-			\cf2 Ptuple\cf0 ([\cf2 Pxrand\cf0 ([6,7,8,9],4), 0.4]),\
-			\cf2 Ptuple\cf0 ([\cf2 Pseq\cf0 ([9,8,7,6,5,4,3,2]), 0.2])\
-		],\cf2 inf\cf0 ),\
-	\cf3 \\amp\cf0 , 0.05, \cf3 \\octave\cf0 , 6, \cf3 \\instrument\cf0 , \cf3 \\cpluck2\cf0 , \cf3 \\mtranspose\cf0 , 0).asStream;\
+e.stream = \cf2 Pbind\cf3 (\
+	[\cf4 \\degree\cf3 , \cf4 \\dur\cf3 ], \cf2 Pseq\cf3 ([\
+			\cf2 Pseq\cf3 ([[0,0.1],[2,0.1],[3,0.1],[4,0.1],[5,0.8]],2),\
+			\cf2 Ptuple\cf3 ([\cf2 Pxrand\cf3 ([6,7,8,9],4), 0.4]),\
+			\cf2 Ptuple\cf3 ([\cf2 Pseq\cf3 ([9,8,7,6,5,4,3,2]), 0.2])\
+		],\cf2 inf\cf3 ),\
+	\cf4 \\amp\cf3 , 0.05, \cf4 \\octave\cf3 , 6, \cf4 \\instrument\cf3 , \cf4 \\cfstring1\cf3 , \cf4 \\mtranspose\cf3 , 0).asStream;\
 \
-e.mute; \cf4 // keeps playing, but replaces notes with rests\cf0 \
+e.mute; \cf5 // keeps playing, but replaces notes with rests\cf3 \
 \
 e.unmute;\
 \
-e.reset;  \cf4 // reset the stream.\cf0 \
-e.reset;  \cf4 // reset the stream.\cf0 \
-e.reset;  \cf4 // reset the stream.\cf0 \
-e.reset;  \cf4 // reset the stream.\cf0 \
+e.reset;  \cf5 // reset the stream.\cf3 \
+e.reset;  \cf5 // reset the stream.\cf3 \
+e.reset;  \cf5 // reset the stream.\cf3 \
+e.reset;  \cf5 // reset the stream.\cf3 \
 \
-e.pause;  \cf4 // will resume where paused.\cf0 \
+e.pause;  \cf5 // will resume where paused.\cf3 \
 \
-e.resume;\
+e.play;\
 \
-e.stop;  \cf4 // will reset before resume.\cf0 \
+e.stop;  \cf5 // will reset before resume.\cf3 \
 \
-e.resume;\
+e.play;\
 \
 (\
-\cf2 SynthDef\cf0 (\cf3 \\berlinb\cf0 .postln, \{ \cf2 arg\cf0  i_out=0, freq = 80, amp = 0.2, pan=0, t_trig=1;\
-	\cf2 var\cf0  out, a, b;\
-	amp = \cf2 Decay2\cf0 .kr(t_trig, 0.05, 8, amp);\
-	out = \cf2 RLPF\cf0 .ar(\
-		\cf2 LFPulse\cf0 .ar(freq, 0, \cf2 SinOsc\cf0 .kr(0.12,[0,0.5pi],0.48,0.5), amp),\
-		freq * \cf2 SinOsc\cf0 .kr(0.21,0,4,8),\
-		0.07\
+\cf2 SynthDef\cf3 (\cf4 \\berlinb\cf3 , \{ \cf2 arg\cf3  out=0, freq = 80, amp = 0.01, pan=0, gate=1;\
+	\cf2 var\cf3  synth, env;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 	env = \cf2 Decay2\cf3 .kr(gate, 0.05, 8, 0.0003);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 	synth = \cf2 RLPF\cf3 .ar(\
+		\cf2 LFPulse\cf3 .ar(freq, 0, \cf2 SinOsc\cf3 .kr(0.12,[0,0.5pi],0.48,0.5)),\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 		freq * \cf2 SinOsc\cf3 .kr(0.21,0,18,20),\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 		0.07\
 	);\
-	#a, b = out;\
-	\cf2 DetectSilence\cf0 .ar(a, 0.0001, doneAction: 2);\
-	\cf2 Out\cf0 .ar(i_out, \cf2 Mix\cf0 .ar(\cf2 PanAz\cf0 .ar(4, [a, b], [pan, pan+1])));\
-\}).send(s);\
+	#a, b = synth*env;\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 	\cf2 DetectSilence\cf3 .ar(a, 0.1, doneAction: 2);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf3 	\cf2 Out\cf3 .ar(out, \cf2 Mix\cf3 .ar(\cf2 PanAz\cf3 .ar(4, [a,b], [pan, pan+1])));\
+\}).load(s);\
+\
+\cf2 SynthDescLib\cf3 .global.read;\
 )\
 \
-f = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Pseq\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \cf3 \\dur\cf0 , 0.8, \cf3 \\octave\cf0 , 3, \cf3 \\instrument\cf0 , \cf3 \\berlinb\cf0 , \cf3 \\amp\cf0 , 0.03).play;\
+f = \cf2 Pbind\cf3 (\cf4 \\degree\cf3 , \cf2 Pseq\cf3 ([0,1,2,4,6,3,4,8],\cf2 inf\cf3 ), \cf4 \\dur\cf3 , 0.8, \cf4 \\octave\cf3 , 3, \cf4 \\instrument\cf3 , \cf4 \\berlinb\cf3 ).play;\
 \
-f.stream = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Prand\cf0 ([0,1,2,4,6,3,4,8],\cf2 inf\cf0 ), \cf3 \\dur\cf0 , 1.6, \cf3 \\octave\cf0 , 2, \cf3 \\instrument\cf0 , \cf3 \\berlinb\cf0 , \cf3 \\amp\cf0 , 0.03, \cf3 \\pan\cf0 , rrand(-1.0,1.0)).asStream;\
+f.stream = \cf2 Pbind\cf3 (\cf4 \\degree\cf3 , \cf2 Prand\cf3 ([0,1,2,4,6,3,4,8],\cf2 inf\cf3 ), \cf4 \\dur\cf3 , 0.5, \cf4 \\octave\cf3 , 2, \cf4 \\instrument\cf3 , \cf4 \\berlinb\cf3 , \cf4 \\pan\cf3 , \cf2 Pfunc\cf3 (\{1.0.rand2\}) ).asStream;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 \
+\f1\fs24 \cf3 \
 \
 \
 \
@@ -109,145 +118,140 @@ f.stream = \cf2 Pbind\cf0 (\cf3 \\degree\cf0 , \cf2 Prand\cf0 ([0,1,2,4,6,3,4,8]
 \
 \
 \
-\
-\
-\
-// older docs that need updating...\
 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 // the theory...\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // older docs that need updating...\cf3 \
+\
+\
+\
+\cf5 // the theory...\cf3 \
 
-\f2\fs18 \cf2 Instrument\cf0 (\cf3 \\sin\cf0 ,\{ \cf2 arg\cf0  out,freq,amp;\
-	\cf2 Out\cf0 .ar(out,\
-		\cf2 SinOsc\cf0 .ar(freq,0,amp)\
+\f2\fs18 \cf2 Instrument\cf3 (\cf4 \\sin\cf3 ,\{ \cf2 arg\cf3  out,freq,amp;\
+	\cf2 Out\cf3 .ar(out,\
+		\cf2 SinOsc\cf3 .ar(freq,0,amp)\
 	)\
 \});\
 \
-\cf4 // have to write the def still...\
+\cf5 // have to write the def still...\cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 \
+\f1\fs24 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 // node def not found...\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 // node def not found...\cf3 \
 
-\f2\fs18 \cf2 Pbind\cf0 (\
-	\cf3 \\dur\cf0 ,1 ,\
-	\cf3 \\instrument\cf0  , \cf3 \\sin\cf0 \
+\f2\fs18 \cf2 Pbind\cf3 (\
+	\cf4 \\dur\cf3 ,1 ,\
+	\cf4 \\instrument\cf3  , \cf4 \\sin\cf3 \
 ).play\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs24 \cf0 \
+\f1\fs24 \cf3 \
 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //
-\f2 (
-\fs18 \cf4 \
-//var pattern, stream;\
-//\
-//	// bind Symbol xyz to values obtained from a pattern\
-//pattern = Pbind( \
-//		\\xyz, Pseq([1, 2, 3]) \
-//	);\
-//	\
-//	// create an event Stream for the Pbind pattern.\
-//	// event Streams require a prototype event as input.\
-//	// this example uses an empty Event as a prototype\
-//stream = pattern.asEventStream(Event.new);\
-//\
-//	// print the output events.\
-//4.do(\{  stream.next.postln; \});\
-//\
-//
-\fs24 \cf4 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\cf5 //
+\f2 \cf5 (
+\fs18 \cf3 \
+\cf5 //var pattern, stream;\cf3 \
+\cf5 //\cf3 \
+\cf5 //	// bind Symbol xyz to values obtained from a pattern\cf3 \
+\cf5 //pattern = Pbind( \cf3 \
+\cf5 //		\\xyz, Pseq([1, 2, 3]) \cf3 \
+\cf5 //	);\cf3 \
+\cf5 //	\cf3 \
+\cf5 //	// create an event Stream for the Pbind pattern.\cf3 \
+\cf5 //	// event Streams require a prototype event as input.\cf3 \
+\cf5 //	// this example uses an empty Event as a prototype\cf3 \
+\cf5 //stream = pattern.asEventStream(Event.new);\cf3 \
+\cf5 //\cf3 \
+\cf5 //	// print the output events.\cf3 \
+\cf5 //4.do(\{  stream.next.postln; \});\cf3 \
+\cf5 //\cf3 \
+\cf5 //
+\fs24 \cf5 )\cf3 \
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \cf0 Here is an example with more bindings.\
+\f1 \cf2 Here\cf3  is an example with more bindings.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //
-\f2 (
-\fs18 \cf4 \
-//var pattern, stream;\
-//\
-//pattern = Pbind( \
-//		\\abc, Prand([6, 7, 8, 9], 8), \
-//		\\xyz, Pseq([1, 2, 3], 2),\
-//		\\uuu, 999		// a constant represents an infinite sequence of itself\
-//	);\
-//	\
-//stream = pattern.asEventStream(Event.new);\
-//\
-//7.do(\{  stream.next.postln; \});\
-//
-\fs24 \cf4 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\cf5 //
+\f2 \cf5 (
+\fs18 \cf3 \
+\cf5 //var pattern, stream;\cf3 \
+\cf5 //\cf3 \
+\cf5 //pattern = Pbind( \cf3 \
+\cf5 //		\\abc, Prand([6, 7, 8, 9], 8), \cf3 \
+\cf5 //		\\xyz, Pseq([1, 2, 3], 2),\cf3 \
+\cf5 //		\\uuu, 999		// a constant represents an infinite sequence of itself\cf3 \
+\cf5 //	);\cf3 \
+\cf5 //	\cf3 \
+\cf5 //stream = pattern.asEventStream(Event.new);\cf3 \
+\cf5 //\cf3 \
+\cf5 //7.do(\{  stream.next.postln; \});\cf3 \
+\cf5 //
+\fs24 \cf5 )\cf3 \
+\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \cf0 The ListPatterns discussed in part 3 can be put around Event Streams to create sequences of Event Streams.\
+\f1 \cf2 The\cf3  \cf2 ListPatterns\cf3  discussed in part 3 can be put around \cf2 Event\cf3  \cf2 Streams\cf3  to create sequences of \cf2 Event\cf3  \cf2 Streams\cf3 .\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //
-\f2 (
-\fs18 \cf4 \
-//var pattern, stream;\
-//pattern = \
-//	Pseq([\
-//		Pbind( \\abc, Pseq([1, 2, 3])),\
-//		Pbind( \\def, Pseq([4, 5, 6])),\
-//		Pbind( \\xyz, Pseq([7, 8, 9]))\
-//	]);	\
-//stream = pattern.asEventStream(Event.new);\
-//10.do(\{  stream.next.postln; \});\
-//
-\fs24 \cf4 )\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f1 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //
-\f2 (\
-//var pattern, stream;\
-//pattern = \
-//	Prand([\
-//		Pbind( \\abc, Pseq([1, 2, 3])),\
-//		Pbind( \\def, Pseq([4, 5, 6])),\
-//		Pbind( \\xyz, Pseq([7, 8, 9]))\
-//	], 3);\
-//	\
-//stream = pattern.asEventStream(Event.new);\
-//10.do(\{  stream.next.postln; \});\
-//)\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\cf5 //
+\f2 \cf5 (
+\fs18 \cf3 \
+\cf5 //var pattern, stream;\cf3 \
+\cf5 //pattern = \cf3 \
+\cf5 //	Pseq([\cf3 \
+\cf5 //		Pbind( \\abc, Pseq([1, 2, 3])),\cf3 \
+\cf5 //		Pbind( \\def, Pseq([4, 5, 6])),\cf3 \
+\cf5 //		Pbind( \\xyz, Pseq([7, 8, 9]))\cf3 \
+\cf5 //	]);	\cf3 \
+\cf5 //stream = pattern.asEventStream(Event.new);\cf3 \
+\cf5 //10.do(\{  stream.next.postln; \});\cf3 \
+\cf5 //
+\fs24 \cf5 )\cf3 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 Making Sound using an Event Stream\
+\f1 \cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 //
+\f2 \cf5 (\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf5 //var pattern, stream;\cf3 \
+\cf5 //pattern = \cf3 \
+\cf5 //	Prand([\cf3 \
+\cf5 //		Pbind( \\abc, Pseq([1, 2, 3])),\cf3 \
+\cf5 //		Pbind( \\def, Pseq([4, 5, 6])),\cf3 \
+\cf5 //		Pbind( \\xyz, Pseq([7, 8, 9]))\cf3 \
+\cf5 //	], 3);\cf3 \
+\cf5 //	\cf3 \
+\cf5 //stream = pattern.asEventStream(Event.new);\cf3 \
+\cf5 //10.do(\{  stream.next.postln; \});\cf3 \
+\cf5 //)\cf3 \
+\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs24 \cf0 \
-The following example uses a Pbind event stream to generate sound events. \
-The events generated by the stream are made the current Environment via the 
+\f0\b\fs28 \cf2 Making\cf3  \cf2 Sound\cf3  using an \cf2 Event\cf3  \cf2 Stream\cf3 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b0\fs24 \cf3 \
+\cf2 The\cf3  following example uses a \cf2 Pbind\cf3  event stream to generate sound events. \
+\cf2 The\cf3  events generated by the stream are made the current \cf2 Environment\cf3  via the 
 \f0\b use
 \f1\b0  message.\
-Then the valueEnvir message is used to get the instrument's argument values from the current Environment.\
+\cf2 Then\cf3  the valueEnvir message is used to get the instrument's argument values from the current Environment.\
 Which instrument to play is also a pattern bound to the Symbol \\instr.\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs18 \cf4 //(\
+\f2\fs18 \cf3 //(\
 //var a, b, c, pattern, stream;\
 //\
 //a = \{ arg freq, amp, pan;\
@@ -283,27 +287,26 @@ Which instrument to play is also a pattern bound to the Symbol \\instr.\
 //)\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 \
+\fs24 \cf3 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs28 \cf0 UGens as Event values.\
+\f0\b\fs28 \cf3 UGens as Event values.\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0\fs24 \cf0 \
+\f2\b0\fs24 \cf3 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1 \cf0 The following example creates unit generators instead of scalar values for\
+\f1 \cf3 The following example creates unit generators instead of scalar values for\
 the values bound to the arguments. This shows that you can use patterns\
 to dynamically build your patch. Score data is not limited to scalar values.\
 This example can generate 36 different patches: 3 instruments * 3 freqs\
 * 2 amps * 2 pans\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2 \cf0 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf4 //
-\fs18 \cf4 (\
+\f2 \cf3 \
+//
+\fs18 (\
 //var a, b, c, pattern, stream;\
 //\
 //a = \{ arg freq, amp, pan;\
