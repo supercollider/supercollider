@@ -273,15 +273,15 @@ SCSlider : SCSliderBase
 		this.setPropertyWithAction(\value, val);
 	}	
 	
-	increment { ^this.value = this.value + this.bounds.width.reciprocal }
-	decrement { ^this.value = this.value - this.bounds.width.reciprocal }
+	increment { ^this.valueAction = this.value + this.bounds.width.reciprocal }
+	decrement { ^this.valueAction = this.value - this.bounds.width.reciprocal }
 	
 	defaultKeyDownAction { arg key, modifiers, unicode,keycode;
 		// standard keydown
-		if (key == $r, { this.value = 1.0.rand; });
-		if (key == $n, { this.value = 0.0; });
-		if (key == $x, { this.value = 1.0; });
-		if (key == $c, { this.value = 0.5; });
+		if (key == $r, { this.valueAction = 1.0.rand; });
+		if (key == $n, { this.valueAction = 0.0; });
+		if (key == $x, { this.valueAction = 1.0; });
+		if (key == $c, { this.valueAction = 0.5; });
 		if (key == $], { this.increment; ^this });
 		if (key == $[, { this.decrement; ^this });
 		if (unicode == 16rF700, { this.increment; ^this });
@@ -297,7 +297,7 @@ SCSlider : SCSliderBase
 		^currentDrag.isNumber;
 	}
 	receiveDrag {
-		this.value = currentDrag;
+		this.valueAction = currentDrag;
 		currentDrag = nil;
 	}
 }
@@ -464,8 +464,8 @@ SCButton : SCControlView {
 	}	
 
 	defaultKeyDownAction { arg key, modifiers, unicode;
-		if (key == $ , { this.value = this.value + 1; ^this });
-		if (key == $\r, { this.value = this.value + 1; ^this });
+		if (key == $ , { this.valueAction = this.value + 1; ^this });
+		if (key == $\r, { this.valueAction = this.value + 1; ^this });
 	}
 
 	font_ { arg argFont;
@@ -489,7 +489,7 @@ SCButton : SCControlView {
 		^currentDrag.isNumber;
 	}
 	receiveDrag {
-		this.value = currentDrag;
+		this.valueAction = currentDrag;
 		currentDrag = nil;
 	}
 }
@@ -516,12 +516,12 @@ SCPopUpMenu : SCControlView {
 	}	
 
 	defaultKeyDownAction { arg key, modifiers, unicode;
-		if (key == $ , { this.value = this.value + 1; ^this });
-		if (key == $\r, { this.value = this.value + 1; ^this });
-		if (unicode == 16rF700, { this.value = this.value + 1; ^this });
-		if (unicode == 16rF703, { this.value = this.value + 1; ^this });
-		if (unicode == 16rF701, { this.value = this.value - 1; ^this });
-		if (unicode == 16rF702, { this.value = this.value - 1; ^this });
+		if (key == $ , { this.valueAction = this.value + 1; ^this });
+		if (key == $\r, { this.valueAction = this.value + 1; ^this });
+		if (unicode == 16rF700, { this.valueAction = this.value + 1; ^this });
+		if (unicode == 16rF703, { this.valueAction = this.value + 1; ^this });
+		if (unicode == 16rF701, { this.valueAction = this.value - 1; ^this });
+		if (unicode == 16rF702, { this.valueAction = this.value - 1; ^this });
 	}
 	font_ { arg argFont;
 		font = argFont;
@@ -549,7 +549,7 @@ SCPopUpMenu : SCControlView {
 		^currentDrag.isNumber;
 	}
 	receiveDrag {
-		this.value = currentDrag;
+		this.valueAction = currentDrag;
 		currentDrag = nil;
 	}
 }
@@ -656,7 +656,7 @@ SCNumberBox : SCStaticTextBase {
 		^currentDrag.isNumber;
 	}
 	receiveDrag {
-		this.value = currentDrag;
+		this.valueAction = currentDrag;
 		
 		currentDrag = nil;
 	}
