@@ -206,25 +206,11 @@ msgsend : name blocklist1
 				$$ = (long)newPyrCallNode((PyrSlotNode*)$3, (PyrParseNode*)$1, 0, (PyrParseNode*)$4); 
 			}
 		;
-		
-expr	: msgsend
-		| pushliteral
+
+expr1	: pushliteral
 		| blockliteral
-		| name
-			{ $$ = (long)newPyrPushNameNode((PyrSlotNode*)$1); }
-		| name '[' arglist1 ']'
-			{ 
-				PyrSlotNode *selectornode;
-				PyrSlot slot;
-				PyrParseNode* args;
-				
-				SetSymbol(&slot, s_at);
-				selectornode = newPyrSlotNode(&slot);
-				args = linkNextNode(
-					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1), 
-					(PyrParseNode*)$3);
-				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
-			}
+		| pushname
+		| msgsend
 		| '(' exprseq ')'
 			{ $$ = $2; }
 		| '~' name
@@ -237,13 +223,9 @@ expr	: msgsend
 				selectornode = newPyrSlotNode(&slot);
 				$$ = (long)newPyrCallNode(selectornode, argnode, 0, 0); 
 			}
-		| '[' arglistc ']'
+		|  '[' arglistc ']'
 			{ $$ = (long)newPyrDynListNode(0, (PyrParseNode*)$2); }
-		| classname '[' arglistc ']'
-			{ $$ = (long)newPyrDynListNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
 		| pseudovar
-			{ $$ = (long)newPyrPushNameNode((PyrSlotNode*)$1); }
-		| classname
 			{ $$ = (long)newPyrPushNameNode((PyrSlotNode*)$1); }
 		| classname '(' keyarglist1 ')'
 			{ 
@@ -269,6 +251,39 @@ expr	: msgsend
 					(PyrParseNode*)$3);
 				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$4, 0); 
 			}
+		| classname '[' arglistc ']'
+			{ $$ = (long)newPyrDynListNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
+		;
+		
+expr	: expr1
+		| expr1 '[' arglist1 ']'
+			{ 
+				PyrSlotNode *selectornode;
+				PyrSlot slot;
+				PyrParseNode* args;
+				
+				SetSymbol(&slot, s_at);
+				selectornode = newPyrSlotNode(&slot);
+				args = linkNextNode(
+					(PyrParseNode*)$1, 
+					(PyrParseNode*)$3);
+				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
+			}
+		| expr '.' '[' arglist1 ']'
+			{ 
+				PyrSlotNode *selectornode;
+				PyrSlot slot;
+				PyrParseNode* args;
+				
+				SetSymbol(&slot, s_at);
+				selectornode = newPyrSlotNode(&slot);
+				args = linkNextNode(
+					(PyrParseNode*)$1, 
+					(PyrParseNode*)$4);
+				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
+			}
+		| classname
+			{ $$ = (long)newPyrPushNameNode((PyrSlotNode*)$1); }
 		| '`' expr 
 			{
 				PyrParseNode *node, *args;
@@ -328,7 +343,7 @@ expr	: msgsend
 				$$ = (long)newPyrMultiAssignNode((PyrMultiAssignVarListNode*)$2, 
 					(PyrParseNode*)$4, 0); 
 			}
-		| name '[' arglist1 ']' '=' expr
+		| expr1 '[' arglist1 ']' '=' expr
 			{ 
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -337,9 +352,23 @@ expr	: msgsend
 				SetSymbol(&slot, s_put);
 				selectornode = newPyrSlotNode(&slot);
 				args = linkNextNode(
-					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1), 
+					(PyrParseNode*)$1, 
 					(PyrParseNode*)$3);
 				args = linkNextNode( args, (PyrParseNode*)$6);
+				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
+			}
+		| expr '.' '[' arglist1 ']' '=' expr
+			{ 
+				PyrSlotNode *selectornode;
+				PyrSlot slot;
+				PyrParseNode* args;
+				
+				SetSymbol(&slot, s_put);
+				selectornode = newPyrSlotNode(&slot);
+				args = linkNextNode(
+					(PyrParseNode*)$1, 
+					(PyrParseNode*)$4);
+				args = linkNextNode( args, (PyrParseNode*)$7);
 				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
 			}
 		;
@@ -401,6 +430,9 @@ slotliteral
 		;
 
 blockliteral : block	{ $$ = (long)newPyrPushLitNode(NULL, (PyrParseNode*)$1); }
+			;
+			
+pushname	: name		{ $$ = (long)newPyrPushNameNode((PyrSlotNode*)$1); }
 			;
 			
 pushliteral	: integer	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
