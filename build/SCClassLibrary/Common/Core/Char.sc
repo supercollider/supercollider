@@ -62,7 +62,7 @@ Char : Magnitude {
 	< { arg aChar;
 		^this.ascii < aChar.ascii
 	}
-	== { arg aChar;  ^this.ascii == aChar.ascii }
+	== { arg aChar;  ^(this.class == aChar.class) and: { this.ascii == aChar.ascii } }
 	
 	++ { |that| ^this.asString ++ that }
 

@@ -232,7 +232,8 @@ SimpleKDRUnit { // exact single modifier match only
 		if((modifier & requireMask) == requireMask,{function.value(char,modifier,unicode,keycode)})
 	}
 	== { arg that;
-		^that.requireMask == requireMask and: {this.class === that.class }
+		^(this.class == that.class) and:
+			{ that.requireMask == requireMask }
 	}
 }
 

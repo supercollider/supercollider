@@ -64,7 +64,7 @@ NetAddr {
 	}
 	
 	== { arg that; 
-		^(this.port == that.port) and: { this.addr == that.addr }
+		^(this.class == that.class) and: { this.port == that.port and: (this.addr == that.addr) }
 	}
 	hash { arg that;
 		^addr.hash bitXor: port.hash
