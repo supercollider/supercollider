@@ -1,0 +1,89 @@
+-*- text -*-
+------------------------------------------------------------------------
+SCEL -- SuperCollider/Emacs interface
+------------------------------------------------------------------------
+
+installation
+-------------
+
+put all *.el files in emacs' load-path. e.g. if you put them in
+~/emacs/, add the following lines to ~/.emacs (or whatever your init
+file is called):
+
+(add-to-list 'load-path "~/emacs")
+
+and then load the library:
+
+(require 'sclang)
+
+now put all *.sc files in sclang's library path, e.g. if you put them
+in ~/SuperCollider/Emacs/, add the following to ~/.sclang.cfg:
+
++$HOME/SuperCollider/Emacs
+
+you will also want to set the server program name, so add the
+following to ~/.sclang.sc:
+
+Server.program = "scsynth"
+
+usage
+------
+
+in order to automatically start sclang when invoking emacs, use the
+following command line:
+
+$ emacs -sclang
+
+you're now ready to edit, inspect and execute sclang code!
+
+getting help
+-------------
+
+inside an sclang-mode buffer (e.g. by editing a .sc file), execute
+
+C-h m
+
+a window with key bindings in sclang-mode will pop up.
+
+customization
+--------------
+
+to fine-tune the installation from within emacs' graphical
+customization interface, type
+
+M-x sclang-customize
+
+in particular, you will have to customize `sclang-runtime-directory'
+and `sclang-help-directory'.
+
+common shortcuts
+-----------------
+
+for a complete list, see above.
+
+Tab	indent-line
+M-Tab	complete symbol before point
+M-.	find symbol definition
+M-*	pop symbol definition marker ring (goto previous mark)
+C-M-x	eval defun
+C-c C-x	eval region or line
+C-c C-b	show post buffer
+C-c C-q clear post buffer
+C-c C-h display help topic
+
+server control
+---------------
+
+in the post buffer window, right-click on the server name. you will
+get a menu with common server control operations.
+
+to select another server, step through the server list by
+left-clicking on the server name.
+
+contact
+--------
+
+please file bug reports, feature requests, patches, etc. to
+<steve@k-hornz.de>
+
+<sk>
