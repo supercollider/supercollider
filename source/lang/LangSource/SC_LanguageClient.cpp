@@ -92,7 +92,12 @@ bool SC_LanguageClient::readLibraryConfig(const char* filePath, const char* file
 {
 	SC_LibraryConfigFile file(&::post);
 	if (!fileName) fileName = filePath;
-	return file.open(filePath) && SC_LibraryConfig::readLibraryConfig(file, fileName);
+	if (file.open(filePath)) {
+		bool err = SC_LibraryConfig::readLibraryConfig(file, fileName);
+		file.close();
+		return err;
+	}
+	return false;
 }
 
 void SC_LanguageClient::compileLibrary()
