@@ -1,6 +1,6 @@
 
 // not currently used
-	
+/*
 GUIEvent {
 	var <>screen, <>mouseInView, <>cmdKey, <>optionKey, <>controlKey, <>shiftKey, <>capsLockKey;
 	*new { arg screen, mouseInView, cmdKey=false, optionKey=false, 
@@ -40,3 +40,4 @@ MouseTracker {
 		upAction.value(where, event)
 	}
 }
+*/

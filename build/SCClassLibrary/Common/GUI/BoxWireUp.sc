@@ -1,5 +1,7 @@
 // the beginnings of a graphical box wire-up language.
 
+/*
+
 BoxPort { // implements individual inlets and outlets
 	var <>wires, <>value;
 	*new {
@@ -213,3 +215,4 @@ PatchBoxView { // view of a patch.
 		^Rect.aboutPoint(this.outletPoint(box, index), size, size)
 	}
 }
+*/

@@ -1,4 +1,4 @@
-
+/*
 AnimView {
 	var <>function, <>view;
 	*new { arg function, view;
@@ -20,3 +20,4 @@ AnimView {
 		^view.getLayoutSize
 	}
 }
+*/
