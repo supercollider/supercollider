@@ -196,11 +196,11 @@ SequenceableCollection : Collection {
 	
 	// accessing
 	lastIndex { ^this.size - 1 }
-	middleIndex { ^(this.size + 1) div: 2 }
+	middleIndex { ^(this.size - 1) div: 2 }
 
 	first { if (this.size > 0, { ^this.at(0) }, { ^nil }) }
 	last { if (this.size > 0, { ^this.at(this.size - 1) }, { ^nil }) }
-	middle { if (this.size > 0, { ^this.at((this.size + 1) div: 2) }, { ^nil }) }
+	middle { if (this.size > 0, { ^this.at((this.size - 1) div: 2) }, { ^nil }) }
 	
 	top { ^this.last }
 	putFirst { arg obj; if (this.size > 0, { ^this.put(0, obj) }) }
@@ -710,7 +710,16 @@ SequenceableCollection : Collection {
 	sortBy { arg key;
 		^this.sort({| a, b | a[key] <= b[key] })
 	}
-	median { arg function;  ^this.sort(function).middle }
+	median { arg function;
+		var sorted, index;
+		sorted = this.sort(function);
+		if (this.size.odd) {
+			^sorted.middle 
+		}{
+			index = sorted.middleIndex;
+			^(sorted[index] + sorted[index+1]) / 2;
+		}
+	}
 	
 	quickSort { arg function; 
 		this.quickSortRange(0, this.size - 1, function) 
