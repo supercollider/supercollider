@@ -9,7 +9,7 @@
 
 Thread : Stream {
 	var <state=0, func, stack, stackSize=0, method, block, frame, ip=0, sp=0;
-	var top=0, numpop=0, returnLevels=0, receiver, numArgsPushed=0;
+	var numpop=0, returnLevels=0, receiver, numArgsPushed=0;
 	var parent, terminalValue;
 	var <primitiveError=0, <primitiveIndex=0, <randData=0;
 	var <beats=0.0, <seconds=0.0, <clock;
@@ -98,7 +98,6 @@ Routine : Thread {
 	}
 	prStart { arg inval;
 		func.value(inval);
-		
 		// if the user's function returns then always yield nil
 		nil.alwaysYield;
 	}

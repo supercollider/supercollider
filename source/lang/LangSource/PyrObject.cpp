@@ -1343,7 +1343,7 @@ void initClasses()
 	class_absfunc = makeIntrinsicClass(s_absfunc, s_object, 0, 0); 
 	class_stream = makeIntrinsicClass(s_stream, s_absfunc, 0, 0); 
 
-	class_thread = makeIntrinsicClass(s_thread, s_stream, 23, 0);
+	class_thread = makeIntrinsicClass(s_thread, s_stream, 22, 0);
 		addIntrinsicVar(class_thread, "state", &o_nil);
 		addIntrinsicVar(class_thread, "func", &o_nil);
 		addIntrinsicVar(class_thread, "stack", &o_nil);
@@ -1353,7 +1353,6 @@ void initClasses()
 		addIntrinsicVar(class_thread, "frame", &o_nil);
 		addIntrinsicVar(class_thread, "ip", &o_zero);
 		addIntrinsicVar(class_thread, "sp", &o_zero);
-		addIntrinsicVar(class_thread, "top", &o_zero);
 		addIntrinsicVar(class_thread, "numpop", &o_zero);
 		addIntrinsicVar(class_thread, "returnLevels", &o_zero);
 		addIntrinsicVar(class_thread, "receiver", &o_nil);
@@ -1902,6 +1901,8 @@ void DumpFrame(PyrFrame *frame)
 	}
 }
 
+void dumpByteCodes(PyrBlock *theBlock);
+
 void DumpDetailedFrame(PyrFrame *frame);
 void DumpDetailedFrame(PyrFrame *frame)
 {
@@ -1949,6 +1950,12 @@ void DumpDetailedFrame(PyrFrame *frame)
 	slotString(&frame->context, str);		post("\t\tcontext = %s\n", str);
 	slotString(&frame->homeContext, str);	post("\t\thomeCtx = %s\n", str);
 	slotString(&frame->ip, str);			post("\t\tip      = %s\n", str);
+	
+	if (IsInt(&frame->ip)) {
+		post("ipoffset = %d\n", (char*)frame->ip.ui - (char*)meth->code.uob->b);
+		dumpByteCodes(meth);
+	}
+	
 }
 
 #if 0

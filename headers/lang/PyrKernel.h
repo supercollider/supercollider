@@ -105,7 +105,7 @@ struct PyrThread : public PyrObjectHdr
 {
 		
 	PyrSlot state, func, stack, stackSize, method, block, frame, ip, sp;
-	PyrSlot top, numpop, returnLevels, receiver, numArgsPushed;
+	PyrSlot numpop, returnLevels, receiver, numArgsPushed;
 	PyrSlot parent, terminalValue;
 	PyrSlot primitiveError;
 	PyrSlot primitiveIndex;
@@ -115,8 +115,6 @@ struct PyrThread : public PyrObjectHdr
 };
 
 #define EVALSTACKDEPTH 8192
-#define SCHEDQLEN 512
-#define THREADSLEVELS 32
 
 
 

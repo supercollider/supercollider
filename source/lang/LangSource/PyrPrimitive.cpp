@@ -3077,6 +3077,12 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		SetNil(&oldthread->method);
 		SetNil(&oldthread->block);
 		SetNil(&oldthread->receiver);
+		SetNil(&oldthread->frame);
+		SetInt(&oldthread->ip, 0);
+		SetInt(&oldthread->sp, 0);
+		SetInt(&oldthread->numArgsPushed, 0);
+		SetInt(&oldthread->numpop, 0);
+		SetNil(&oldthread->parent);
 	} else if (oldstate == tInit) {
 		SetObject(&oldthread->stack, gc->Stack());
 		gc->ToWhite(gc->Stack());
@@ -3085,6 +3091,12 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		SetNil(&oldthread->method);
 		SetNil(&oldthread->block);
 		SetNil(&oldthread->receiver);
+		SetNil(&oldthread->frame);
+		SetInt(&oldthread->ip, 0);
+		SetInt(&oldthread->sp, 0);
+		SetInt(&oldthread->numArgsPushed, 0);
+		SetInt(&oldthread->numpop, 0);
+		SetNil(&oldthread->parent);
 	} else {
 		// save old thread's state
 		SetObject(&oldthread->stack, gc->Stack());
@@ -3364,55 +3376,17 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 
 	value.ucopy = g->sp->ucopy;
 
-//	post("thread %08X  mainThread %08X %d  curThread %08X %d\n",
-//		g->thread, 
-//		g->process->mainThread.uo, isKindOf(g->process->mainThread.uo, class_routine),
-//		g->process->curThread.uo, isKindOf(g->process->curThread.uo, class_routine));
-//	
-
 	if (!isKindOf((PyrObject*)g->thread, class_routine)) {
 		error ("yield was called outside of a Routine.\n");
 		return errFailed;
-/*		
-		transformMainThreadToRoutine(g);
-
-		double delta, seconds;
-		int err = slotDoubleVal(&value, &delta);
-		if (!err) {
-			err = slotDoubleVal(&g->thread->seconds, &seconds);
-			if (!err) {
-				seconds += delta;
-//				post("seconds %g  delta %g\n", seconds, delta);
-				PyrObject* inQueue = g->process->sysSchedulerQueue.uo;
-				schedAdd(g, inQueue, seconds, &g->process->curThread);
-			}
-		}
-		
-		switchToThread(g, g->process->mainThread.uot, tYieldToParent, &numArgsPushed);
-		
-		//post("MAIN THREAD\n");
-		//dumpObject(g->process->mainThread.uo);
-		
-		(++g->sp)->ucopy = value.ucopy;
-		//(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
-
-		g->returnLevels = LONG_MAX;
-		//SetNil(g->sp);
-		//hmm need to fix this to work only on main thread. //!!!
-		//g->sp = g->gc->Stack()->slots - 1;
-		
-		return errReturn;
-*/
 	}
-	/*if (!g->thread->parent.uot) {
-		error ("yield was called from a thread with no parent.\n");
-		return errFailed;
-	}*/
 
 	//debugf("yield from thread %08X to parent %08X\n", g->thread, g->thread->parent.uot);
 	switchToThread(g, g->thread->parent.uot, tYieldToParent, &numArgsPushed);
+
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
 	(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
+
 	//postfl("<-numArgsPushed %d\n", numArgsPushed);
 	//postfl("<-prRoutineYield %d\n", g->level);
 	//assert(g->gc->SanityCheck());
@@ -3432,16 +3406,12 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 		error ("alwaysYield was called outside of a Routine.\n");
 		return errFailed;
 	}
-	/*if (!g->thread->parent.uot) {
-		error ("alwaysYield was called from a thread with no parent.\n");
-		return errFailed;
-	}*/
 	
 	value.ucopy = g->sp->ucopy;
 	g->thread->terminalValue.ucopy = value.ucopy;
 	g->gc->GCWrite(g->thread, g->sp);
 	
-	//debugf("alwaysYield from thread %08X to parent %08X\n", g->thread, g->thread->parent.uot);
+	//post("alwaysYield from thread %08X to parent %08X\n", g->thread, g->thread->parent.uot);
 	switchToThread(g, g->thread->parent.uot, tDone, &numArgsPushed);
 	
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
@@ -3517,7 +3487,8 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		error("Thread in strange state: %d\n", state);
 		return errFailed;
 	}
-	//postfl("<-prRoutineResume %d %08X\n", g->level, g->thread);
+	//postfl("<-prRoutineResume\n");
+	//CallStackSanity(g);
 	return errNone;
 }
 
@@ -3535,12 +3506,30 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 	if (state == tYieldToParent || state == tYieldToChild) {
 		thread->state.ui = tInit;
 		thread->stack.uo->size = 0;
+		SetNil(&thread->method);
+		SetNil(&thread->block);
+		SetNil(&thread->receiver);
+		SetNil(&thread->frame);
+		SetInt(&thread->ip, 0);
+		SetInt(&thread->sp, 0);
+		SetInt(&thread->numArgsPushed, 0);
+		SetInt(&thread->numpop, 0);
+		SetNil(&thread->parent);
 	} else if (state == tDone) {
 		PyrObject *array;
 		thread->state.ui = tInit;
 		array = newPyrArray(g->gc, thread->stackSize.ui, 0, true);
 		SetObject(&thread->stack, array);
 		g->gc->GCWrite(thread, array);
+		SetNil(&thread->method);
+		SetNil(&thread->block);
+		SetNil(&thread->receiver);
+		SetNil(&thread->frame);
+		SetInt(&thread->ip, 0);
+		SetInt(&thread->sp, 0);
+		SetInt(&thread->numArgsPushed, 0);
+		SetInt(&thread->numpop, 0);
+		SetNil(&thread->parent);
 	} else if (state == tInit) {
 		// do nothing
 	} else if (state == tRunning) {
