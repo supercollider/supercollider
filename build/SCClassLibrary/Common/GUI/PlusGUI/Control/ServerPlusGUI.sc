@@ -4,6 +4,7 @@
 		var active, booter, killer, makeDefault, running, booting, stopped;
 		var recorder, scoper;
 		var countsViews, ctlr;
+		var dumping=false;
 		
 		if (window.notNil, { ^window.front });
 		
@@ -70,6 +71,18 @@
 		w.view.keyDownAction = { arg ascii, char;
 			if(char === $n) { this.queryAllNodes };
 			if(char === $ ) { this.boot };
+			if(char == $d) {
+				if(dumping) {
+					this.dumpOSC(0);
+					this.startAliveThread;
+					dumping = false;
+				} {
+					this.dumpOSC(1);
+					this.stopAliveThread;
+					dumping = true;
+				}
+			
+			};
 		};
 		
 		if (isLocal, {
