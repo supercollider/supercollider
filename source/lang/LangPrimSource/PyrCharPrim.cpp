@@ -185,16 +185,10 @@ int prAsAscii(struct VMGlobals *g, int numArgsPushed);
 int prAsAscii(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	int c;
 	
 	a = g->sp;
-	
-	c = a->ui;
-	if (c >= 0 && c <= 255) {
-		a->utag = tagChar;
-	} else {
-		return errFailed;
-	}
+	a->utag = tagChar;
+	a->ui = a->ui & 255;
 	
 	return errNone;
 }
