@@ -264,8 +264,7 @@ SynthDefControl : SynthControl {
 		
 		bytes = synthDef.asBytes;
 		size = bytes.size;
-		size = size + 4 - (size bitAnd: 3) + 4 + 16 + 60; // apx path lengtht size + overhead
-		
+		size = size - (size bitAnd: 3) + 84; // 4 + 4 + 16 + 16 //apx path lengtht size + overhead
 		if(server.options.protocol === \tcp or: {size < 8192}) {
 			bundle.addPrepare([5, bytes]); //"/d_recv"
 			if(writeDefs) { 
