@@ -15,7 +15,7 @@ MIDIClient {
 		this.list;
 		// might ask for 1 and get 2 if your device has it
 		if(sources.size < inports or: {destinations.size < outports},{
-			("MIDIClient init failed.  \nsources: "+sources+"destinations:"+destinations).die;
+			("MIDIClient init failed.  \nsources: "+sources+"destinations:"+destinations).warn;
 		});
 	}
 	*list {
