@@ -71,6 +71,7 @@ ArrayedCollection : SequenceableCollection {
 	atInc { arg index, inc=1; this.put(index, this.at(index)+inc); }
 	atDec { arg index, dec=1; this.put(index, this.at(index)-dec); }
 
+	isArray { ^true }
 	asArray { ^this }
 	*with { arg ... args; 
 		var newColl;

@@ -78,7 +78,6 @@ Array[slot] : ArrayedCollection {
 			this.halt;
 		});
 	}
-	isArray { ^true }
 	isValidUGenInput { ^true }
 	
 //	// 2D array support
