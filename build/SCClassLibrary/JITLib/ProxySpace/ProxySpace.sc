@@ -1,49 +1,30 @@
 
-ProxySpace : EnvironmentRedirect {
+ProxySpace : LazyEnvir {
 
-	classvar <>all; //access
+	classvar <>all;
 	
-	var <server, <clock, <fadeTime, <>awake=true, tempoProxy;
+	var <name, <server, <clock, <fadeTime;
+	var <>awake=true, tempoProxy;
 	
 	*initClass { all = IdentityDictionary.new }
 	
 	*new { arg server, name, clock;
-		^super.new(name).einit(server ? Server.default, clock)
+		^super.new.init(server ? Server.default, name, clock)
 	}
 	
 	*push { arg server, name, clock;
-		if(name.isNil and: { currentEnvironment.isKindOf(this) }) { currentEnvironment.clear.pop };
+		if(name.isNil and: { currentEnvironment.isKindOf(this) }) 
+			{ currentEnvironment.clear.pop }; // avoid nesting
 		^this.new(server, name, clock).push;
 	}
 	
-	einit { arg argServer, argClock; 
+	init { arg argServer, argName, argClock;
 		server = argServer;  
 		clock = argClock;
+		name = argName;
 		this.add;
 	}
 	
-		
-	clock_ { arg aClock;
-		clock = aClock;
-		this.do({ arg item; item.clock = aClock });
-	}
-	
-	fadeTime_ { arg dt;
-		fadeTime = dt;
-		this.do({ arg item; item.fadeTime = dt });
-	}
-	
-	makeTempoClock { arg tempo=1.0, beats, seconds;
-		var clock, proxy;
-		proxy = envir[\tempo];
-		if(proxy.isNil) { proxy = NodeProxy.control(server, 1); envir.put(\tempo, proxy); };
-		proxy.fadeTime = 0.0;
-		proxy.source = tempo;
-		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds).permanent_(true);
-	//	envir.proto.put(\tempo, proxy);
-		
-	}
-
 	
 	makeProxy {
 			var proxy;
@@ -54,31 +35,29 @@ ProxySpace : EnvironmentRedirect {
 			^proxy
 	}
 	
-	//////// redirects
 	
-	at { arg key;
-		var proxy;
-		proxy = super.at(key);
-		if(proxy.isNil) {
-			proxy = this.makeProxy(key);
-			envir.put(key, proxy);
-		};
-		^proxy
+	// access and control
 	
+	clock_ { arg aClock;
+		clock = aClock;
+		this.do { arg item; item.clock = aClock };
 	}
 	
-	put { arg key, obj;
-		this.at(key).put(nil, obj)
+	fadeTime_ { arg dt;
+		fadeTime = dt;
+		this.do { arg item; item.fadeTime = dt };
 	}
 	
-	removeAt { arg key;
-		var proxy;
-		proxy = envir.removeAt(key);
-		if(proxy.notNil) { proxy.clear };
-	}
-	
-	///////////////
+	makeTempoClock { arg tempo=1.0, beats, seconds;
+		var clock, proxy;
+		proxy = envir[\tempo];
+		if(proxy.isNil) { proxy = NodeProxy.control(server, 1); envir.put(\tempo, proxy); };
+		proxy.fadeTime = 0.0;
+		proxy.source = tempo;
+		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds).permanent_(true);
 		
+	}
+
 	
 	play { arg key=\out, busIndex=0, nChan=2;
 		^this.use({ arg envir;
@@ -126,19 +105,7 @@ ProxySpace : EnvironmentRedirect {
 		this.do({ arg proxy; proxy.release(fadeTime) });
 		tempoProxy.free;
 	}
-	
-	add {
-		if(name.notNil) { 
-			if(this.class.all[name].isNil) 
-			{ this.class.all.put(name, this) } 
-			{ "there is already an environment with this name".warn };
-		}
-	}
-	
-	remove {
-		this.class.all.removeAt(name)
-	}
-	
+		
 	wakeUp {
 		this.use({ arg envir;
 			this.do({ arg proxy;
@@ -186,7 +153,20 @@ ProxySpace : EnvironmentRedirect {
 		^monitors
 	}
 	
-	// global clearing up
+	// global access
+	
+	add {
+		if(name.notNil) { 
+			if(this.class.all[name].isNil) 
+			{ this.class.all.put(name, this) } 
+			{ "there is already an environment with this name".warn };
+		}
+	}
+	
+	remove {
+		this.class.all.removeAt(name)
+	}
+
 	
 	*clearAll {
 		this.all.do({ arg item; item.clear });

@@ -1,18 +1,37 @@
 
-//abstract class that servers as a template for any environment hacks
+
+// abstract class that dispatches assignment / reference in environments.
 
 EnvironmentRedirect {
-	var <>envir, <name;
+
+	var <>envir;
+	var <dispatch;
 	
-	*new { arg name, envir;
-		^super.newCopyArgs(nil, name).init(envir)
+	*new { arg envir;
+		^super.newCopyArgs(envir ?? { Environment.new(32, Environment.new) })
 	}
 	
-	init { arg argEnvir, size=32;
-		envir = argEnvir ?? { Environment.new(size, Environment.new) } 
+	// override in subclasses
+	
+	at { arg key;
+		^envir.at(key)
 	}
 	
-	clear { this.init }
+	put { arg key, obj;
+		envir.put(key, obj);
+		dispatch.value(key, obj);
+	}
+	
+	localPut { arg key, obj;
+     	envir.put(key, obj)
+     }
+	
+	removeAt { arg key;
+		^envir.removeAt(key)
+	}
+	
+	// behave like environment
+	
 	
 	*push { arg name;
 		^this.new(name).push;
@@ -30,21 +49,6 @@ EnvironmentRedirect {
 		Environment.push(this);
 	}
 	
-	// override in subclasses
-	
-	at { arg key;
-		^envir.at(key)
-	}
-	
-	put { arg key, obj;
-		envir.put(key, obj)
-	}
-	
-	removeAt { arg key;
-		^envir.removeAt(key)
-	}
-	
-	// emulate usual environment interface
 	
 	make { arg function;
 		// pushes the Envir, executes function, returns the Envir
@@ -97,6 +101,10 @@ EnvironmentRedirect {
         ^envir.choose
      }
      
+     clear { envir.clear }
+     
+     
+          
      //// this should maybe go in Environment
      
      makeDocument { arg title, string="";
@@ -114,8 +122,47 @@ EnvironmentRedirect {
      			.endFrontAction_({ this.pop });
      	});
      }
+     
+     // networking
+     dispatch_ { arg disp;
+     	     dispatch = disp.envir_(this);
+	}
+	
 }
 
 
 
+
+LazyEnvir : EnvironmentRedirect {
+	
+	makeProxy {
+		^FuncProxy.new
+	}
+	
+	at { arg key;
+		var proxy;
+		proxy = super.at(key);
+		if(proxy.isNil) {
+			proxy = this.makeProxy(key);
+			envir.put(key, proxy);
+		};
+		^proxy
+	
+	}
+	
+	put { arg key, obj;
+		this.at(key).source_(obj);
+		dispatch.value(key, obj); // forward to dispatch for networking
+	}
+	
+	removeAt { arg key;
+		var proxy;
+		proxy = envir.removeAt(key);
+		if(proxy.notNil) { proxy.clear };
+	}
+	
+	localPut { arg key, obj;
+     	this.at(key).source_(obj);
+     }
+}
 
