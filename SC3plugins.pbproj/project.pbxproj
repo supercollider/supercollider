@@ -259,7 +259,7 @@
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
-				OPTIMIZATION_CFLAGS = "-O3 -funroll-loops -faltivec";
+				OPTIMIZATION_CFLAGS = "-O3 -faltivec";
 			};
 			isa = PBXBuildStyle;
 			name = Deployment;
