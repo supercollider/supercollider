@@ -49,6 +49,10 @@ PatternProxy : Pattern {
 		args.pairsDo { arg key, val; envir.put(key, val) };
 	}
 	
+	get { arg key;
+		^if(envir.notNil) { envir[key] } { nil };
+	}
+	
 		
 	embedInStream { arg inval;
 		var pat, stream, outval, event;
@@ -119,7 +123,7 @@ PatternProxy : Pattern {
 			if(item.notNil and: { item.source !== this.default }) {
 				stream << item.class.name << "(" <<<* item.repositoryArgs << ")";
 				if(item.envir.notNil and: { item.envir.notEmpty }) {
-					stream << "\n.envir_(" <<< item.envir << ")"
+					stream << ".set(" <<<* item.envir.asKeyValuePairs << ")"
 				};
 				
 				stream << ";\n"
