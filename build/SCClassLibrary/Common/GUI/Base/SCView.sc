@@ -17,14 +17,6 @@ SCView {  // abstract class
 		parent = argParent.asView; // actual view
 		this.prInit(parent, argBounds.asRect,this.class.viewClass);
 		argParent.add(this);//maybe window or viewadapter
-		this.keyDownAction_({ arg view,char,modifiers,unicode,keycode;
-			this.defaultKeyDownAction(char,modifiers,unicode,keycode);
-			nil // default DOESN't consume it
-		});
-		this.keyUpAction_({ arg view,char,modifiers,unicode,keycode;
-			this.defaultKeyUpAction(char,modifiers,unicode,keycode);
-			nil
-		});
 	}
 	
 	asView { ^this }
@@ -120,11 +112,18 @@ SCView {  // abstract class
 	}
 	defaultKeyDownAction { ^nil }
 	handleKeyDownBubbling { arg view, char, modifiers, unicode, keycode;
+		var result;
 		// nil from keyDownAction --> pass it on
-		if(keyDownAction.value(view, char, modifiers, unicode, keycode).isNil,{  
+		if (keyDownAction.isNil) {
+			this.defaultKeyDownAction(char,modifiers,unicode,keycode);
+			result = nil;
+		}{
+			result = keyDownAction.value(view, char, modifiers, unicode, keycode);
+		};
+		if(result.isNil) {  
 			// call keydown action of parent view
 			parent.handleKeyDownBubbling(view, char, modifiers, unicode, keycode);
-		})
+		};
 	}
 	
 	// sc.solar addition
@@ -136,11 +135,18 @@ SCView {  // abstract class
 	}
 	defaultKeyUpAction { ^nil }
 	handleKeyUpBubbling { arg view, char, modifiers,unicode,keycode;
-		// nil from keyUpAction --> pass it on
-		if(keyUpAction.value(view, char, modifiers,unicode,keycode).isNil,{
-			// call local keyUp action of parent view
-			parent.handleKeyUpBubbling(view, char, modifiers,unicode,keycode);
-		});
+		var result;
+		// nil from keyDownAction --> pass it on
+		if (keyUpAction.isNil) {
+			this.defaultKeyUpAction(char,modifiers,unicode,keycode);
+			result = nil;
+		}{
+			result = keyUpAction.value(view, char, modifiers, unicode, keycode);
+		};
+		if(result.isNil) {  
+			// call keydown action of parent view
+			parent.handleKeyUpBubbling(view, char, modifiers, unicode, keycode);
+		};
 	}
 
 	canReceiveDrag {
@@ -645,7 +651,7 @@ SCStaticText : SCStaticTextBase {
 }
 
 SCNumberBox : SCStaticTextBase {
-	var <> keyString;
+	var <> keyString, <>step=1;
 	
 	*paletteExample { arg parent, bounds;
 		var v;
@@ -654,8 +660,15 @@ SCNumberBox : SCStaticTextBase {
 		^v
 	}
 
+	increment { this.value = this.value + step; }
+	decrement { this.value = this.value - step; }
+	
 	defaultKeyDownAction { arg char, modifiers, unicode;
 		// standard chardown
+		if (unicode == 16rF700, { this.increment; ^this });
+		if (unicode == 16rF703, { this.increment; ^this });
+		if (unicode == 16rF701, { this.decrement; ^this });
+		if (unicode == 16rF702, { this.decrement; ^this });
 		if ((char == 3.asAscii) || (char == $\r) || (char == $\n), { // enter key
 			if (keyString.notNil,{ // no error on repeated enter
 				this.valueAction_(keyString.asFloat);
