@@ -5,9 +5,9 @@
 
 	}
 	
-	asScore{|maxTime=1.0, protoEvent|
+	asScore{|duration=1.0, timeOffset=0.0, protoEvent|
 
-	^this.asScoreStreamPlayer(protoEvent).read(maxTime)
+	^this.asScoreStreamPlayer(protoEvent).read(duration, timeOffset:timeOffset)
 	}
 }
 

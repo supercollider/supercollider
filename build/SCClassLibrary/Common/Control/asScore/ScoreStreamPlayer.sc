@@ -5,12 +5,14 @@ ScoreStreamPlayer : EventStreamPlayer {
 		^super.new(stream).event_(event ? Event.default).score_(Score.new).server_(server ? Server.default);
 	}
 
-	read { arg maxTime=1.0, doReset = false;
-		var i =0;
+	read { arg duration=1.0, doReset = false, timeOffset = 0.0;
+		var i =0, maxTime=0;
 		if (stream.notNil) { "already reading".postln; ^this };
 		if (doReset) { this.reset };
+		maxTime = duration + timeOffset;
+		absTime = timeOffset;
 		stream = originalStream;
-		 
+		
 		event.put(\absTime, absTime);
 		event.put(\score, score);
 		event.put(\server, server);
