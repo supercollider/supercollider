@@ -57,8 +57,13 @@ enum {
 // easy macros, the unit variable must be named 'unit'.
 #ifndef SC_WIN32
 
+// These return float* pointers to input and output buffers.
 #define IN(index)  (unit->mInBuf[index])
 #define OUT(index) (unit->mOutBuf[index])
+
+// These return a float value. Used for control rate inputs and outputs.
+#define IN0(index)  (IN(index)[0])
+#define OUT0(index) (OUT(index)[0])
 
 #else
 
@@ -69,13 +74,21 @@ enum {
 // all headers have been included.
 #define SC_IN(index)  (unit->mInBuf[index])
 #define SC_OUT(index) (unit->mOutBuf[index])
+#define IN0(index)  (SC_IN(index)[0])
+#define OUT0(index) (SC_OUT(index)[0])
 
 #endif
 
+// get the rate of the input.
 #define INRATE(index) (unit->mInput[index]->mCalcRate)
+
+// set the calculation function
 #define SETCALC(func) (unit->mCalcFunc = (UnitCalcFunc)&func)
 
+// calculate a slope for control rate interpolation to audio rate.
 #define CALCSLOPE(next,prev) ((next - prev) * unit->mRate->mSlopeFactor)
+
+// get useful values
 #define SAMPLERATE (unit->mRate->mSampleRate)
 #define SAMPLEDUR (unit->mRate->mSampleDur)
 #define BUFLENGTH (unit->mBufLength)
