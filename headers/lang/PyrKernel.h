@@ -148,7 +148,7 @@ struct PyrBlock : public PyrObjectHdr
 	PyrSlot selectors;			// method selectors, class names, closures table
 	PyrSlot constants;			// floating point constants table (to alleviate the literal table problem)
 	PyrSlot prototypeFrame;		// prototype of an activation frame
-	PyrSlot context;			// ***defining block context
+	PyrSlot contextDef;			// ***defining block context
 	PyrSlot argNames;			// ***arguments to block
 	PyrSlot varNames;			// ***variables in block
 	PyrSlot sourceCode;			// source code if it is a closed function.

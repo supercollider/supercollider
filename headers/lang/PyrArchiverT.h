@@ -340,7 +340,7 @@ private:
 				writeRawArray(obj);
 			} else if (isKindOf(obj, class_func)) {
 				PyrClosure* closure = (PyrClosure*)obj;
-				if (NotNil(&closure->block.uoblk->context)) {
+				if (NotNil(&closure->block.uoblk->contextDef)) {
 					writeSlot(&closure->block);
 					writeSlot(&closure->context);
 				} else {

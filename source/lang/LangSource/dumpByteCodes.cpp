@@ -26,7 +26,7 @@ void numBlockTemps(PyrBlock *block, long level, long *numArgNames, long *numVarN
 {
 	long i;
 	for (i=0; i<level; ++i) {
-		block = block->context.uoblk;
+		block = block->contextDef.uoblk;
 	}
 	*numArgNames = block->argNames.uosym ? block->argNames.uosym->size : 0;
 	*numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
@@ -57,7 +57,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 				theClass = ((PyrMethod*)block)->ownerclass.uoc;
 				break;
 			}
-			block = block->context.uoblk;
+			block = block->contextDef.uoblk;
 		}
 		if (theClass == NULL) {
 			theClass = s_interpreter->u.classobj;
@@ -84,7 +84,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op2 = *ip++; // get temp var level
 			
 			block = theBlock;
-			for (i=op2; i--; block = block->context.uoblk) { /* noop */ }
+			for (i=op2; i--; block = block->contextDef.uoblk) { /* noop */ }
 			numArgNames = block->argNames.uosym ? block->argNames.uosym->size : 0;
 			numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
 			numTemps = numArgNames + numVarNames;
@@ -143,7 +143,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op2 = *ip++; // get temp var level
 
 			block = theBlock;
-			for (i=op2; i--; block = block->context.uoblk) { /* noop */ }
+			for (i=op2; i--; block = block->contextDef.uoblk) { /* noop */ }
 			numArgNames = block->argNames.uosym ? block->argNames.uosym->size : 0;
 			numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
 			numTemps = numArgNames + numVarNames;
@@ -224,7 +224,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op2 = op1 & 15; // get temp var level
 
 			block = theBlock;
-			for (i=op2; i--; block = block->context.uoblk) { /* noop */ }
+			for (i=op2; i--; block = block->contextDef.uoblk) { /* noop */ }
 			numArgNames = block->argNames.uosym ? block->argNames.uosym->size : 0;
 			numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
 			numTemps = numArgNames + numVarNames;
@@ -382,7 +382,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op2 = op1 & 15; // get temp var level
 
 			block = theBlock;
-			for (i=op2; i--; block = block->context.uoblk) { /* noop */ }
+			for (i=op2; i--; block = block->contextDef.uoblk) { /* noop */ }
 			numArgNames = block->argNames.uosym ? block->argNames.uosym->size : 0;
 			numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
 			numTemps = numArgNames + numVarNames;
@@ -588,7 +588,7 @@ bool detectSendSelector(PyrBlock *theBlock, PyrClass* theClass, unsigned char **
 				theClass = ((PyrMethod*)block)->ownerclass.uoc;
 				break;
 			}
-			block = block->context.uoblk;
+			block = block->contextDef.uoblk;
 		}
 		if (theClass == NULL) {
 			theClass = s_interpreter->u.classobj;
@@ -859,7 +859,7 @@ void dumpByteCodes(PyrBlock *theBlock)
 			theClass = ((PyrMethod*)block)->ownerclass.uoc;
 			break;
 		}
-		block = block->context.uoblk;
+		block = block->contextDef.uoblk;
 	}
 	if (theClass == NULL) {
 		theClass = s_interpreter->u.classobj;
@@ -903,7 +903,7 @@ bool detectSendSelectorIn(PyrBlock *theBlock, PyrSymbol *testSelector)
 			theClass = ((PyrMethod*)block)->ownerclass.uoc;
 			break;
 		}
-		block = block->context.uoblk;
+		block = block->contextDef.uoblk;
 	}
 	if (theClass == NULL) {
 		theClass = s_interpreter->u.classobj;

@@ -616,7 +616,7 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 bool isClosed(PyrBlock* fundef);
 bool isClosed(PyrBlock* fundef)
 {
-	return IsNil(&fundef->context) && fundef->classptr == class_fundef;
+	return IsNil(&fundef->contextDef) && fundef->classptr == class_fundef;
 }
 
 bool isWithinClosed(PyrBlock* fundef);
@@ -624,7 +624,7 @@ bool isWithinClosed(PyrBlock* fundef)
 {
 	while (fundef) {
 		if (isClosed(fundef)) return true;
-		fundef = fundef->context.uoblk;
+		fundef = fundef->contextDef.uoblk;
 	}
 	return false;
 }
@@ -657,8 +657,8 @@ int prFunctionDefDumpContexts(struct VMGlobals *g, int numArgsPushed)
 
 	int i=0;
 	while (a->uoblk) {
-		post("%2d context %s %08X\n", i++, a->uo->classptr->name.us->name, a->uoblk->context.ui);
-		a = &a->uoblk->context;
+		post("%2d context %s %08X\n", i++, a->uo->classptr->name.us->name, a->uoblk->contextDef.ui);
+		a = &a->uoblk->contextDef;
 	}
 	return errNone;
 }
@@ -2279,6 +2279,16 @@ int haltInterpreter(struct VMGlobals *g, int numArgsPushed)
 }
 
 
+int prCanCallOS(struct VMGlobals *g, int numArgsPushed);
+int prCanCallOS(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	
+	SetBool(a, g->canCallOS);
+	
+	return errNone;
+}
+
 
 int prTraceOn(struct VMGlobals *g, int numArgsPushed);
 int prTraceOn(struct VMGlobals *g, int numArgsPushed)
@@ -3764,6 +3774,7 @@ void initPrimitives()
 	definePrimitive(base, index++, "_PostLine", prPostLine, 1, 0);	
 	definePrimitive(base, index++, "_HostDebugger", prDebugger, 1, 0);	
 	definePrimitive(base, index++, "_Trace", prTraceOn, 1, 0);
+	definePrimitive(base, index++, "_CanCallOS", prCanCallOS, 1, 0);
 	definePrimitive(base, index++, "_KeywordError", prKeywordError, 1, 0);
 
 	definePrimitive(base, index++, "_PrimitiveError", prPrimitiveError, 1, 0);	

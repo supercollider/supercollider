@@ -585,7 +585,7 @@ void Interpret(VMGlobals *g)
 				closure->classptr = gSpecialClasses[op_class_func]->u.classobj;
 				closure->size = 2;
 				closure->block.ucopy = slot->ucopy;
-				if (IsNil(&slot->uoblk->context)) {
+				if (IsNil(&slot->uoblk->contextDef)) {
 					closure->context.ucopy = g->process->interpreter.uoi->context.ucopy;
 				} else {
 					SetObject(&closure->context, g->frame);

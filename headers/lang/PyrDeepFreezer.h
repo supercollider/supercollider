@@ -120,7 +120,7 @@ private:
 						putObject(obj);
 						recurse(obj, obj->size);
 					} else if (isKindOf(obj, class_func)) {
-						if (NotNil(&((PyrClosure*)obj)->block.uoblk->context)) {
+						if (NotNil(&((PyrClosure*)obj)->block.uoblk->contextDef)) {
 							throw std::runtime_error("open Function can not be frozen.\n");
 						}
 						putObject(obj);

@@ -598,7 +598,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						methraw->varargs = 0;
 						methraw->numtemps = 1;
 						methraw->popSize = 0;
-						SetNil(&method->context);
+						SetNil(&method->contextDef);
 						SetNil(&method->varNames);
 						SetObject(&method->ownerclass, classobj);
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
@@ -627,7 +627,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						methraw->varargs = 0;
 						methraw->numtemps = 2;
 						methraw->popSize = 1;
-						SetNil(&method->context);
+						SetNil(&method->contextDef);
 						SetNil(&method->varNames);
 						SetObject(&method->ownerclass, classobj);
 						SetSymbol(&method->name, setterSym);
@@ -662,7 +662,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						methraw->varargs = 0;
 						methraw->numtemps = 1;
 						methraw->popSize = 0;
-						SetNil(&method->context);
+						SetNil(&method->contextDef);
 						SetNil(&method->varNames);
 						SetObject(&method->ownerclass, metaclassobj);
 						method->name.ucopy = vardef->varName->slot.ucopy;
@@ -691,7 +691,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						methraw->varargs = 0;
 						methraw->numtemps = 2;
 						methraw->popSize = 1;
-						SetNil(&method->context);
+						SetNil(&method->contextDef);
 						SetNil(&method->varNames);
 						SetObject(&method->ownerclass, metaclassobj);
 						SetSymbol(&method->name, setterSym);
@@ -1212,7 +1212,7 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 	methraw->unused2 = 0;
 	
 	//postfl("method %08X raw %08X\n", method, methraw);
-	method->context = o_nil;
+	method->contextDef = o_nil;
 	method->name = node->methodName->slot;
 	if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
 	SetInt(&method->charPos, linestarts[node->methodName->lineno]);
@@ -3149,7 +3149,7 @@ void compilePyrBlockNode(PyrBlockNode* node, void* result)
 	methraw->needsHeapContext = 0;
 	
 	if (node->isTopLevel) {
-		SetNil(&block->context);
+		SetNil(&block->contextDef);
 		
 		int endCharNo = linestarts[node->lineno] + node->charno;
 		int stringLength = endCharNo - node->beginCharNo;
@@ -3160,7 +3160,7 @@ void compilePyrBlockNode(PyrBlockNode* node, void* result)
 		memcpy(string->s, text+node->beginCharNo, stringLength);
 		SetObject(&block->sourceCode, string);
 	} else {
-		SetObject(&block->context, prevBlock);
+		SetObject(&block->contextDef, prevBlock);
 	}
 
 	methraw->varargs = funcVarArgs = (node->arglist && node->arglist->rest) ? 1 : 0;
@@ -3568,7 +3568,7 @@ bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name,
 	// find var in enclosing blocks, instance, class
 	if (name == s_super) name = s_this;
 	if (name->name[0] >= 'A' && name->name[0] <= 'Z') return false;
-	for (j=0; func; func = func->context.uoblk, ++j) {
+	for (j=0; func; func = func->contextDef.uoblk, ++j) {
 		methraw = METHRAW(func);
 		numargs = methraw->posargs;
 		for (i=0; i<numargs; ++i) {

@@ -275,11 +275,11 @@ void slotString(PyrSlot *slot, char *str)
 				} else if (slot->uo->classptr == class_fundef) {
 					PyrSlot *context, *nextcontext;
 					// find function's method
-					nextcontext = &slot->uoblk->context;
+					nextcontext = &slot->uoblk->contextDef;
 					if (NotNil(nextcontext)) {
 						do {
 							context = nextcontext;
-							nextcontext = &context->uoblk->context;
+							nextcontext = &context->uoblk->contextDef;
 						} while (nextcontext->utag != tagNil);
 						if (isKindOf(context->uo, class_method)) {
 							sprintf(str, "instance of FunctionDef in Method %s-%s", 
@@ -368,11 +368,11 @@ void slotOneWord(PyrSlot *slot, char *str)
 				} else if (slot->uo->classptr == class_fundef) {
 					PyrSlot *context, *nextcontext;
 					// find function's method
-					nextcontext = &slot->uoblk->context;
+					nextcontext = &slot->uoblk->contextDef;
 					if (NotNil(nextcontext)) {
 						do {
 							context = nextcontext;
-							nextcontext = &context->uoblk->context;
+							nextcontext = &context->uoblk->contextDef;
 						} while (nextcontext->utag != tagNil);
 						if (isKindOf(context->uo, class_method)) {
 							sprintf(str, "< FunctionDef in Method %s-%s >", 
@@ -478,11 +478,11 @@ bool postString(PyrSlot *slot, char *str)
 				} else if (slot->uo->classptr == class_fundef) {
 					PyrSlot *context, *nextcontext;
 					// find function's method
-					nextcontext = &slot->uoblk->context;
+					nextcontext = &slot->uoblk->contextDef;
 					if (NotNil(nextcontext)) {
 						do {
 							context = nextcontext;
-							nextcontext = &context->uoblk->context;
+							nextcontext = &context->uoblk->contextDef;
 						} while (nextcontext->utag != tagNil);
 						if (isKindOf(context->uo, class_method)) {
 							sprintf(str, "a FunctionDef in Method %s-%s", 
