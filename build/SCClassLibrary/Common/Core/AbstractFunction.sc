@@ -3,16 +3,16 @@ AbstractFunction {
 	// function compositions
 	// override these in subclasses to perform different kinds of function compositions
 	composeUnaryOp { arg aSelector;
-		^{|...args| this.valueArray(args).perform(aSelector) }
+		^UnaryOpFunction.new(aSelector, this)
 	}
-	composeBinaryOp { arg aSelector, function, adverb;
-		^{|...args| this.valueArray(args).perform(aSelector, function.value, adverb) }
+	composeBinaryOp { arg aSelector, something, adverb;
+		^BinaryOpFunction.new(aSelector, this, something, adverb);
 	}
 	reverseComposeBinaryOp { arg aSelector, something, adverb;
-		^{|...args| something.value.perform(aSelector, this.valueArray(args), adverb) }
+		^BinaryOpFunction.new(aSelector, something, this, adverb);
 	}
 	composeNAryOp { arg aSelector, anArgList;
-		^{|...args| this.valueArray(args).performList(aSelector, anArgList) }
+		^NAryOpFunction.new(aSelector, this, anArgList)
 	}
 
 	// double dispatch for mixed operations
@@ -172,3 +172,90 @@ AbstractFunction {
 		^this.composeNAryOp('expexp', [inMin, inMax, outMin, outMax])
 	}
 }
+
+
+UnaryOpFunction : AbstractFunction {
+	var selector, a;
+	
+	*new { arg selector, a; 
+		^super.newCopyArgs(selector, a) 
+	}
+	value { arg ... args;
+		^a.valueArray(args).perform(selector)
+	}
+	valueArray { arg args;
+		^a.valueArray(args).perform(selector)
+	}
+	valueEnvir { arg ... args; 
+		^a.valueEnvir(*args).perform(selector)
+	}
+	valueArrayEnvir { arg ... args; 
+		^a.valueArrayEnvir(args).perform(selector)
+	}
+	functionPerformList { arg selector, arglist;
+		^this.performList(selector, arglist)
+	}
+	storeOn { arg stream;
+		stream <<< a << "." << selector;
+	}
+
+	
+}
+
+BinaryOpFunction : AbstractFunction {
+	var selector, a, b, adverb;
+	
+	*new { arg selector, a, b, adverb; 
+		^super.newCopyArgs(selector, a, b, adverb) 
+	}
+	value { arg ... args;
+		^a.valueArray(args).perform(selector, b.valueArray(args), adverb)
+	}
+	valueArray { arg args;
+		^a.valueArray(args).perform(selector, b.valueArray(args), adverb)
+	}
+	valueEnvir { arg ... args; 
+		^a.valueEnvir(*args).perform(selector, b.valueEnvir(*args), adverb)
+	}
+	valueArrayEnvir { arg ... args; 
+		^a.valueArrayEnvir(args).perform(selector, b.valueArrayEnvir(args), adverb)
+	}
+	functionPerformList { arg selector, arglist;
+		^this.performList(selector, arglist)
+	}
+	storeOn { arg stream;
+		stream << "(" <<< a << " " << selector.asBinOpString;
+		if(adverb.notNil) { stream << "." << adverb };
+		stream << " " <<< b << ")"
+	
+	}
+}
+
+NAryOpFunction : AbstractFunction {
+	var selector, a, arglist;
+	
+	*new { arg selector, a, arglist; 
+		^super.newCopyArgs(selector, a, arglist) 
+	}
+	value { arg ... args;
+		^a.valueArray(args).performList(selector, arglist.collect(_.valueArray(args)))
+	}
+	valueArray { arg args;
+		^a.valueArray(args).performList(selector, arglist.collect(_.valueArray(args)))
+	}
+	valueEnvir { arg ... args; 
+		^a.valueEnvir(*args).performList(selector, arglist.collect(_.valueEnvir(*args)))
+	}
+	valueArrayEnvir { arg ... args; 
+		^a.valueArrayEnvir(args).performList(selector, arglist.collect(_.valueArrayEnvir(args)))
+	}
+	functionPerformList { arg selector, arglist;
+		^this.performList(selector, arglist)
+	}
+	storeOn { arg stream;
+		stream <<< a << "." << selector << "(" <<<* arglist << ")"
+	
+	}
+	
+}
+
