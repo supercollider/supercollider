@@ -134,7 +134,7 @@ b.states = [[\cf4 "Start Sound"\cf0 , \cf3 Color\cf0 .red, \cf3 Color\cf0 .grey(
 \
 c = \cf3 SCDragSource\cf0 (w, \cf3 Rect\cf0 (120, 50, 80, 24));\
 c.string = \cf4 "DragSource"\cf0 ;\
-c.font = \cf3 Font\cf0 (\cf4 "Gadget"\cf0 , 12);\
+c.font = \cf3 Font\cf0 (\cf4 "Helvetica"\cf0 , 12);\
 c.beginDragAction = \{ \cf3 arg\cf0  view; [view.object,view.object]; \};\
 \cf2 //c.stringColor = Color(0.5, 0.2, 0.7);\
 \cf0 \
@@ -156,12 +156,13 @@ r.step = 1/20;\
 q = \cf3 SCRangeSlider\cf0 (z, \cf3 Rect\cf0 (220, 170, 24, 180));\
 \
 t = \cf3 SC2DSlider\cf0 (w, \cf3 Rect\cf0 (220,20, 80, 80));\
-t.action = \{ \cf3 arg\cf0  slider; c.object = slider.y.round(0.001); \};\
+t.action = \{ \cf3 arg\cf0  slider; c.object = slider.y.postln.round(0.001); \};\
+\
+p = \cf3 SCSlider\cf0 (z, \cf3 Rect\cf0 (248, 170, 24, 180));\
+p.action = \{ arg slider; slider.value.postln; \};\
 \
 w.front;\
 w.refresh;\
-\
-\
 )\
 \
 \cf2 // properties you can set in the window above.\

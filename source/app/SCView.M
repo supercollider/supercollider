@@ -222,8 +222,8 @@ Layout::Layout()
 
 SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: mNext(0), mParent(0), mTop(0), mObj(inObj), mBounds(inBounds), 
-	mVisible(true), mEnabled(true),
-        mBackground(0), mCanFocus(true), mDragHilite(false)
+		mBackground(0), mVisible(true), mEnabled(true),
+        mCanFocus(true), mDragHilite(false)
 {
 	if (inParent) inParent->add(this);
 	// store myself into sc object.
@@ -990,7 +990,7 @@ void SCSlider::setValueFromPoint(SCPoint point)
         value = (point.x - mBounds.x - 1 - THUMBSIZE/2) / moveableRange;
     } else {
         moveableRange = mBounds.height - THUMBSIZE - 2;
-        value = (point.y - mBounds.y - 1 - THUMBSIZE/2) / moveableRange;
+        value = 1. - (point.y - mBounds.y - 1 - THUMBSIZE/2) / moveableRange;
     }
     setValue(value, true);
 }
@@ -1009,7 +1009,7 @@ void SCSlider::calcThumbRect()
        mThumbRect = SCMakeRect(mBounds.x + offset + 1, mBounds.y + 1,
                      THUMBSIZE, mBounds.height - 2);   
     } else {
-       mThumbRect = SCMakeRect(mBounds.x + 1, mBounds.y + offset + 1,
+       mThumbRect = SCMakeRect(mBounds.x + 1, mBounds.y + mBounds.height - offset - 1 - THUMBSIZE,
                      mBounds.width - 2, THUMBSIZE);   
     }
 }
@@ -1148,8 +1148,8 @@ void SCRangeSlider::setValueFromPoint(SCPoint where)
         hi = (sc_max(mAnchor.x, where.x) - mBounds.x - 2) / moveableRange;
     } else {
         moveableRange = mBounds.height - 5;
-        lo = (sc_min(mAnchor.y, where.y) - mBounds.y - 2) / moveableRange;
-        hi = (sc_max(mAnchor.y, where.y) - mBounds.y - 2) / moveableRange;
+        lo = 1. - (sc_max(mAnchor.y, where.y) - mBounds.y - 2) / moveableRange;
+        hi = 1. - (sc_min(mAnchor.y, where.y) - mBounds.y - 2) / moveableRange;
     }
     setValue(lo, hi, true);
 }
@@ -1169,7 +1169,7 @@ void SCRangeSlider::calcRangeRect()
        mRangeRect = SCMakeRect(mBounds.x + lo + 2, mBounds.y + 1,
                      hi - lo, mBounds.height - 2);   
     } else {
-       mRangeRect = SCMakeRect(mBounds.x + 1, mBounds.y + lo + 2,
+       mRangeRect = SCMakeRect(mBounds.x + 1, mBounds.y + mBounds.height - hi - 2,
                      mBounds.width - 2, hi - lo);   
     }
 }
@@ -1397,7 +1397,7 @@ bool SC2DSlider::setValue(double inX, double inY, bool send)
 void SC2DSlider::setValueFromPoint(SCPoint where)
 {
     double x = (where.x - mBounds.x - 1 - THUMBSIZE/2) / (mBounds.width - THUMBSIZE - 2);
-    double y = (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
+    double y = 1. - (where.y - mBounds.y - 1 - THUMBSIZE/2) / (mBounds.height - THUMBSIZE - 2);
     setValue(x, y, true);
 }
 
@@ -1406,7 +1406,7 @@ void SC2DSlider::calcThumbRect()
     double x = mX * (mBounds.width - THUMBSIZE - 2);
     double y = mY * (mBounds.height - THUMBSIZE - 2);
 
-    mThumbRect = SCMakeRect(mBounds.x + x + 1, mBounds.y + y + 1, THUMBSIZE, THUMBSIZE);   
+    mThumbRect = SCMakeRect(mBounds.x + x + 1, mBounds.y + mBounds.height - y - 1 - THUMBSIZE, THUMBSIZE, THUMBSIZE);   
 }
 
 void SC2DSlider::mouseTrack(SCPoint where, int modifiers)
@@ -1899,7 +1899,8 @@ SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect
 }
 
 SCMultiSliderView::SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: SCView(inParent, inObj, inBounds), mStepSize(0.), mStepScale(0.), mKnob(0), mThumbSize(12), mXOffset(1)
+	: SCView(inParent, inObj, inBounds), mThumbSize(12), mStepSize(0.), 
+		mStepScale(0.), mKnob(0), mXOffset(1)
 {
         mTabSize = (int) (inBounds.width / mThumbSize);
         mCurrentIndex = mStartIndex = 0;
@@ -2132,8 +2133,8 @@ void SCMultiSliderView::setSelection(SCPoint where)
     int wx;
     int visiIn = mCurrentIndex - mStartIndex;
     int maxSize = mTabSize - mCurrentIndex;
-    if(mIsHorizontal) wx = (int) (where.x - mBounds.x - 1) /( mXOffset + mThumbSize);
-    else wx = (int) (where.y - mBounds.y - 1)/( mXOffset + mThumbSize);
+    if(mIsHorizontal) wx = (int) ((where.x - mBounds.x - 1) /( mXOffset + mThumbSize));
+    else wx = (int) ((where.y - mBounds.y - 1)/( mXOffset + mThumbSize));
     if(wx > visiIn) mSelectionSize = (int) wx - visiIn;
     else {
     setValueFromPoint(where);
