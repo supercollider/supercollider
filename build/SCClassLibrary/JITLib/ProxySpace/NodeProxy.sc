@@ -5,7 +5,7 @@ BusPlug : AbstractFunction {
 	var <server, <bus; 		
 	var <monitorGroup;
 	var <busArg = \; // cache for "/s_new" bus arg
-	
+	var <monitorVol = 1;
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
 	
 	
@@ -192,7 +192,7 @@ BusPlug : AbstractFunction {
 	///// monitoring //////////////
 	
 	//play { arg group=0, atTime, bus, multi=false;
-	play { arg busIndex=0, nChan, group, multi=false;
+	play { arg busIndex=0, nChan, group, multi=false, vol;  
 		var bundle, divider, n, localServer, ok;
 		
 		localServer = this.localServer; //multi client support
@@ -206,11 +206,12 @@ BusPlug : AbstractFunction {
 			ok = this.initBus(\audio, nChan);
 			if(ok.not, { ("can't monitor a" + bus.rate + "proxy").error });
 			this.wakeUp;
-			
+
 			n = bus.numChannels;
 			nChan = nChan ? n;
 			nChan = nChan.min(n);
-		
+			
+			monitorVol = vol ? monitorVol;
 			bundle = MixedBundle.new;
 			if(monitorGroup.isPlaying.not, { 
 				monitorGroup = Group.newToBundle(bundle, group, \addToTail);
@@ -221,13 +222,19 @@ BusPlug : AbstractFunction {
 			(nChan div: divider).do({ arg i;
 			bundle.add([9, "system_link_audio_"++divider, 
 					localServer.nextNodeID, 1, monitorGroup.nodeID,
-					\out, busIndex + (i*divider), \in, bus.index + (i*divider)
+					\out, busIndex + (i*divider), 
+					\in, bus.index + (i*divider),
+					\vol, monitorVol
 					]);
 			});
 			bundle.send(localServer, localServer.latency);
 		^monitorGroup
 	}
-	
+	vol_ { arg invol;
+		monitorVol = invol ? monitorVol;
+		monitorGroup.set(\vol, monitorVol);
+	}
+	vol { ^monitorVol }
 	
 	toggle {
 		if(monitorGroup.isPlaying, { this.stop }, { this.play });
@@ -1081,9 +1088,9 @@ SharedNodeProxy : NodeProxy {
 	
 	prepareToBundle { arg argGroup, bundle; // ignore ingroup
 		if(this.isPlaying.not) {
-				group = Group.basicNew(server, this.defaultGroupID);
+				group = Group.basicNew(this.localServer, this.defaultGroupID);
 				group.isPlaying = true;
-				NodeWatcher.newFrom(this.localServer).register(group);
+				NodeWatcher.register(group);
 				// this happens in sendAll and sendEach, should implement in sendObj
 				// bundle.add(group.newMsg(argGroup ? server, \addToHead));
 		};
