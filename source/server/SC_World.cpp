@@ -203,8 +203,9 @@ World* World_New(WorldOptions *inOptions)
 				
 		GroupNodeDef_Init();
 		
-		world->mTopGroup = Group_New(world, 0);
-	
+		int err = Group_New(world, 0, &world->mTopGroup);
+		if (err) throw err;
+		
 		world->mRealTime = inOptions->mRealTime;
 		
 		world->ft = &gInterfaceTable;

@@ -68,11 +68,15 @@ void Graph_Dtor(Graph *inGraph)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Graph* Graph_New(struct World *inWorld, struct GraphDef *inGraphDef, int32 inID, struct sc_msg_iter* args)
+int Graph_New(struct World *inWorld, struct GraphDef *inGraphDef, int32 inID, 
+			struct sc_msg_iter* args, Graph** outGraph)
 {
-	Graph* graph = (Graph*)Node_New(inWorld, &inGraphDef->mNodeDef, inID);
+	Graph* graph;
+	int err = Node_New(inWorld, &inGraphDef->mNodeDef, inID, (Node**)&graph);
+	if (err) return err;
 	Graph_Ctor(inWorld, inGraphDef, graph, args);
-	return graph;
+	*outGraph = graph;
+	return err;
 }
 
 void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter *msg)

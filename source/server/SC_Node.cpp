@@ -32,23 +32,19 @@
 void Node_StateMsg(Node* inNode, int inState);
 
 // create a new node
-Node* Node_New(World *inWorld, NodeDef *def, int32 inID)
+int Node_New(World *inWorld, NodeDef *def, int32 inID, Node** outNode)
 {
 	if (inID < 0) {
 		if (inID == -1) { // -1 means generate an id for the event
 			HiddenWorld* hw = inWorld->hw;
 			inID = hw->mHiddenID = (hw->mHiddenID - 8) | 0x80000000;
 		} else {
-			// enums are uncatchable. must throw an int.
-			int err = kSCErr_ReservedNodeID;
-			throw err;
+			return kSCErr_ReservedNodeID;
 		}
 	}
 	
 	if (World_GetNode(inWorld, inID)) {
-		// enums are uncatchable. must throw an int.
-		int err = kSCErr_DuplicateNodeID;
-		throw err;
+		return kSCErr_DuplicateNodeID;
 	}
 	
 	Node* node = (Node*)World_Alloc(inWorld, def->mAllocSize);
@@ -64,14 +60,14 @@ Node* Node_New(World *inWorld, NodeDef *def, int32 inID)
     node->mHash = Hash(inID);
     if (!World_AddNode(inWorld, node)) {
 		World_Free(inWorld, node);
-		// enums are uncatchable. must throw an int.
-		int err = kSCErr_TooManyNodes;
-		throw err;
+		return kSCErr_TooManyNodes;
     }
 	
 	inWorld->hw->mRecentID = inID;
 	
-	return node;
+	*outNode = node;
+	
+	return kSCErr_None;
 }
 
 // node destructor

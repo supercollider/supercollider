@@ -28,6 +28,7 @@
 #include "SC_Prototypes.h"
 #include "SC_Str4.h"
 #include "SC_World.h"
+#include "SC_Errors.h"
 
 NodeDef gGroupNodeDef;
 
@@ -45,15 +46,20 @@ void GroupNodeDef_Init()
 	gGroupNodeDef.mAllocSize = sizeof(Group);
 }
 
-Group* Group_New(World *inWorld, int32 inID)
+int Group_New(World *inWorld, int32 inID, Group** outGroup)
 {	
-	Group *group = (Group*)Node_New(inWorld, &gGroupNodeDef, inID);
+	Group *group;
+	int err = Node_New(inWorld, &gGroupNodeDef, inID, (Node**)&group);
+	if (err) return err;
+	
 	group->mNode.mCalcFunc = (NodeCalcFunc)&Group_Calc;
 	group->mNode.mIsGroup = true;
 	group->mHead = 0;
 	group->mTail = 0;
 	inWorld->mNumGroups++;
-	return group;
+	*outGroup = group;
+	
+	return kSCErr_None;
 }
 
 void Group_Calc(Group *inGroup)

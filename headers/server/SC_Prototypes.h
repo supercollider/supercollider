@@ -104,7 +104,7 @@ void Dimension_Init(struct SC_Dimension *inDimension, int inWidth, int inHeight)
 #define GRAPHDEF(inGraph) ((GraphDef*)((inGraph)->mNode.mDef))
 #define GRAPH_PARAM_TABLE(inGraph) (GRAPHDEF(inGraph)->mParamSpecTable)
 
-Graph* Graph_New(struct World *inWorld, struct GraphDef *def, int32 inID, struct sc_msg_iter* args);
+int Graph_New(struct World *inWorld, struct GraphDef *def, int32 inID, struct sc_msg_iter* args, struct Graph** outGraph);
 void Graph_Ctor(struct World *inWorld, struct GraphDef *inGraphDef, struct Graph *graph, struct sc_msg_iter *msg);
 void Graph_Dtor(struct Graph *inGraph);
 int  Graph_GetControl(struct Graph* inGraph, uint32 inIndex, float& outValue);
@@ -118,7 +118,7 @@ void Graph_RemoveID(World* inWorld, Graph *inGraph);
 
 ////////////////////////////////////////////////////////////////////////
 
-Node* Node_New(struct World *inWorld, struct NodeDef *def, int32 inID);
+int Node_New(struct World *inWorld, struct NodeDef *def, int32 inID, struct Node **outNode);
 void Node_Dtor(struct Node *inNode);
 void Node_Remove(struct Node* s);
 void Node_Delete(struct Node* inNode);
@@ -147,7 +147,7 @@ void Group_Calc(Group *inGroup);
 void Graph_Calc(struct Graph *inGraph);
 }
 
-Group* Group_New(World *inWorld, int32 inID);
+int Group_New(World *inWorld, int32 inID, Group** outGroup);
 void Group_Dtor(Group *inGroup);
 void Group_DeleteAll(Group *inGroup);
 void Group_DeepFreeGraphs(Group *inGroup);
