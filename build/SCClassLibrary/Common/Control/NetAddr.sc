@@ -38,7 +38,8 @@ NetAddr {
 		^this.primitiveFailed;
 	}
 	sendMsg { arg ... args;
-		this.sendBundle(nil, args);
+		_NetAddr_SendMsg
+		^this.primitiveFailed;
 	}
 	sendBundle { arg time ... args;
 		_NetAddr_SendBundle
