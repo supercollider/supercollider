@@ -26,6 +26,8 @@
 //possible to make a Goto style Detector for a given band and with history of two samples-
 //should do separately as PV_GotoBandTrack 
 
+//next perhaps Duxbury et al/ Mauri et al different conception of high frequency content with ratio of changes
+
 #include "FFT_UGens.h"
 
 struct PV_OnsetDetectionBase : public Unit
@@ -117,7 +119,7 @@ void PV_JensenAndersen_Ctor(PV_JensenAndersen *unit)
         unit->m_hfe= 0.0;
         unit->m_sf= 0.0;
         unit->m_sc= 0.0;
- 
+  
 		unit->m_fourkindex= (4000.0/(unit->mWorld->mSampleRate))*(unit->m_numbins);
  
 		SETCALC(PV_JensenAndersen_next);
@@ -160,6 +162,7 @@ void PV_JensenAndersen_next(PV_JensenAndersen *unit, int inNumSamples)
 		
 			int k4= unit->m_fourkindex; 
 			
+			//ignores dc, nyquist
 			for (i=0; i<numbins; ++i) {
 			float mag= ((p->bin[i]).mag);
 			int k= i+1;
@@ -171,22 +174,43 @@ void PV_JensenAndersen_next(PV_JensenAndersen *unit, int inNumSamples)
 			if(i>k4) hfesum+=mag;
 		}
 			
+			float binmult= 1.0/numbins;
 			//normalise
-			float sc= (magsumk/magsum)/numbins;
-			float hfe= hfesum/numbins;
-			float hfc= magsumkk/(numbins*numbins*numbins);
-			float sf= sfsum/numbins;
-		
+			float sc= (magsumk/magsum)*binmult;
+			float hfe= hfesum*binmult;
+			float hfc= magsumkk*binmult*binmult*binmult;
+			float sf= sfsum*binmult;
+			
 			//printf("sc %f hfe %f hfc %f sf %f \n",sc, hfe, hfc, sf);
+		    	
+			//if(sc<0.0) sc=0.0;
+			//if(hfe<0.0) hfe=0.0;
+			//if(hfc<0.0) hfc=0.0;
+			//if(sf<0.0) sf=0.0;
+
+			//ratio of current to previous frame perhaps better indicator than first derivative difference
+			float scdiff= sc-(unit->m_sc);
+			float hfediff= hfe-(unit->m_hfe);
+			float hfcdiff= hfc-(unit->m_hfc);
+			float sfdiff= sf-(unit->m_sf);
+		
+			//store as old frame values for taking difference
+			unit->m_sc=sc;
+			unit->m_hfe=hfe;
+			unit->m_hfc=hfc;
+			unit->m_sf=sf;
+			
+			//printf("sc %f hfe %f hfc %f sf %f \n",sc, hfe, hfc, sf);
+		    //printf("sc %f hfe %f hfc %f sf %f \n",scdiff, hfediff, hfcdiff, sfdiff);
 		  
 			//does this trigger? 
 			//may need to take derivatives across previous frames by storing old values
 			
-			float sum = (ZIN0(1)*sc)+(ZIN0(2)*hfe)+(ZIN0(3)*hfc)+(ZIN0(4)*sf);
+			float sum = (ZIN0(1)*scdiff)+(ZIN0(2)*hfediff)+(ZIN0(3)*hfcdiff)+(ZIN0(4)*sfdiff);
 			
 			//printf("sum %f thresh %f \n",sum, ZIN0(7));
 		  
-			//if over threshold, may also impose a 50mS wait here
+			//if over threshold, may also impose a wait here
 			if(sum>ZIN0(5) && (unit->m_waiting==0)) {//printf("bang! \n"); 
 			outval=1.0;
 			unit->m_waiting=1;
