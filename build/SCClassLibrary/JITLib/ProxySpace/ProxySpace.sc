@@ -1,6 +1,6 @@
 ProxySpace : EnvironmentRedirect {	classvar <>lastEdited;//undo support
 	classvar <>all; //access
-		var <group, <server, <>clock;
+		var <group, <server, <clock;
 	var <name;
 	
 	*initClass {
@@ -11,6 +11,11 @@
 	}
 			*push { arg server, name, clock;
 		^this.new(server, name, clock).push
+	}
+	
+	clock_ { arg aClock;
+		clock = aClock;
+		this.do({ arg item; item.clock = aClock });
 	}
 	
 	
@@ -91,9 +96,16 @@
 
 SharedProxySpace  : ProxySpace {
 	
-
-	einit { arg srv, argName, argClock, controlKeys, audioKeys;
-		super.einit(srv,argName, argClock); 
+	*new { arg server, name, clock, controlKeys, audioKeys;
+		^super.new(server, name, clock).addSharedKeys(controlKeys, audioKeys)
+	}
+	
+	
+	*push { arg server, name, clock, controlKeys, audioKeys;
+		^this.new(server, name, clock, controlKeys, audioKeys).push
+	}
+	
+	addSharedKeys { arg controlKeys, audioKeys;
 		//default:
 		//initialize single letters as shared busses: xyz are audio busses, the rest control
 		controlKeys = controlKeys ?? { Array.fill(25 - 3, { arg i; asSymbol(asAscii(97 + i)) }) };
@@ -102,6 +114,7 @@ SharedProxySpace  : ProxySpace {
 		controlKeys.do({ arg key; this.makeSharedProxy(key, 'control') });
 		audioKeys.do({ arg key; this.makeSharedProxy(key, 'audio') });
 	}
+	
 	
 	makeSharedProxy { arg key, rate;
 			var proxy, srv;
