@@ -31,10 +31,12 @@ Patch : AbstractPlayer  {
 				{ //  or auto-create a suitable control...
 					spec = instr.specs.at(i);
 					proto = ControlPrototypes.forSpec(spec,instr.argNames.at(i));
+					//if(proto.isNil,{ spec.insp("nil proto:",instr.argNames.at(i),i) });
 					proto.tryPerform('spec_',spec); // make sure it does the spec
 					if((darg = instr.initAt(i)).isNumber,{
 						proto.tryPerform('value_',darg);// set its value
 					});
+					proto
 				};
 				
 			patchIn = PatchIn.newByRate(instr.specs.at(i).rate);
