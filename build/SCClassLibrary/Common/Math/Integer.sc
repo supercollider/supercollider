@@ -110,5 +110,17 @@ Integer : SimpleNumber {
 	
 	// exit the program and return the result code to unix shell
 	exit { _Exit }
+
+	
+	asHexString {
+		var x, string;
+		x = this;
+		string = String.new(8);
+		8.do {
+			string.add((x & 15).asDigit);
+			x = x >> 4;
+		};
+		^string
+	}
 }
 
