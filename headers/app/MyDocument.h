@@ -63,8 +63,6 @@ extern PyrSymbol *s_closed;
 -(void)selectRangeStart:(int)rangeStart size:(int)rangeSize;
 
 - (IBAction) showHelp: (id) sender;
--(NSString*)pathOfHelpFileFor:(NSString*)selection;
--(void)showHelpFor:(NSString*)selection;
 
 - (BOOL) textView: (NSTextView *) textView
     clickedOnLink: (id) link
@@ -101,3 +99,7 @@ extern PyrSymbol *s_closed;
 - (void) callSCLangWithMethod: (PyrSymbol*) method;
 
 @end
+
+NSString* pathOfHelpFileFor(NSString* selection);
+void showHelpFor(NSString* selection);
+

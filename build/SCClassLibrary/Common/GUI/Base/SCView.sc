@@ -504,6 +504,8 @@ SCButton : SCControlView {
 	defaultKeyDownAction { arg char, modifiers, unicode;
 		if (char == $ , { this.valueAction = this.value + 1; ^this });
 		if (char == $\r, { this.valueAction = this.value + 1; ^this });
+		if (char == $\n, { this.valueAction = this.value + 1; ^this });
+		if (char == 3.asAscii, { this.valueAction = this.value + 1; ^this });
 	}
 
 	font_ { arg argFont;
@@ -556,6 +558,8 @@ SCPopUpMenu : SCControlView {
 	defaultKeyDownAction { arg char, modifiers, unicode;
 		if (char == $ , { this.valueAction = this.value + 1; ^this });
 		if (char == $\r, { this.valueAction = this.value + 1; ^this });
+		if (char == $\n, { this.valueAction = this.value + 1; ^this });
+		if (char == 3.asAscii, { this.valueAction = this.value + 1; ^this });
 		if (unicode == 16rF700, { this.valueAction = this.value + 1; ^this });
 		if (unicode == 16rF703, { this.valueAction = this.value + 1; ^this });
 		if (unicode == 16rF701, { this.valueAction = this.value - 1; ^this });
@@ -682,6 +686,12 @@ SCNumberBox : SCStaticTextBase {
 		this.value = val;
 		if (object != prev, { this.doAction });
 	}	
+	boxColor {
+		^this.getProperty(\boxColor, Color.new)
+	}
+	boxColor_ { arg color;
+		this.setProperty(\boxColor, color)
+	}
 
 	properties {
 		^super.properties ++ #[\boxColor]
@@ -703,7 +713,7 @@ SCNumberBox : SCStaticTextBase {
 
 
 SCListView : SCControlView {
-	var <font, <items;
+	var <font, <items, <>enterKeyAction;
 	
 	*paletteExample { arg parent, bounds;
 		var v;
@@ -725,7 +735,9 @@ SCListView : SCControlView {
 	defaultKeyDownAction { arg char, modifiers, unicode;
 		var index;
 		if (char == $ , { this.valueAction = this.value + 1; ^this });
-		if (char == $\r, { this.doAction; ^this });
+		if (char == $\r, { this.enterKeyAction.value(this); ^this });
+		if (char == $\n, { this.enterKeyAction.value(this); ^this });
+		if (char == 3.asAscii, { this.enterKeyAction.value(this); ^this });
 		if (unicode == 16rF700, { this.valueAction = this.value - 1; ^this });
 		if (unicode == 16rF703, { this.valueAction = this.value + 1; ^this });
 		if (unicode == 16rF701, { this.valueAction = this.value + 1; ^this });

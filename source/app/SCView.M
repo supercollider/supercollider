@@ -3279,7 +3279,7 @@ SCListView::SCListView(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 
 SCListView::~SCListView()
 {
-    CFRelease(mArray);
+    if (mArray) CFRelease(mArray);
 }
 
 NSSize nsStringSize(NSString *nsstring, char *cFontName, float fontSize, SCColor sccolor);
@@ -3287,62 +3287,61 @@ NSRect SCtoNSRect(SCRect screct);
 
 void SCListView::draw(SCRect inDamage)
 {
-    if (mArray) {
-        SCView::draw(inDamage);
-        SCRect bounds = mBounds;
-        CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-		CGContextSaveGState(cgc);
+	SCView::draw(inDamage);
+	SCRect bounds = mBounds;
+	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	CGContextSaveGState(cgc);
+	
+	CGRect bevelRect = SCtoCGRect(bounds);
+	QDDrawBevelRect(cgc, bevelRect, 1, true);
+
+	int numItems = mArray ? CFArrayGetCount(mArray) : 0;
+
+	mStrSize = nsStringSize((NSString*)CFSTR("XWYjpgy"), mFontName, mFontSize, mStringColor);
+	
+	float itemHeight = mStrSize.height + 3.f;
+	//float totalHeight = itemHeight * numItems;
+	float visibleItems = bounds.height / itemHeight;
+	float fraction = visibleItems / (float)numItems;
+
+	float totalHeight = itemHeight * numItems;
+				
+	float maxScroll = totalHeight - mBounds.height;
+	if (maxScroll < 0) maxScroll = 0;
+	mScroll = sc_clip(mScroll, 0, maxScroll);
+	
+	SCRect itemBounds = bounds;
+	itemBounds.x += 4; 
+	itemBounds.y += 2 - mScroll; 
+	itemBounds.width -= 6; itemBounds.height -= 4;
+	
+	itemBounds.height = itemHeight;
+	
+	if (fraction < 1.f) 
+	{
 		
-		CGRect bevelRect = SCtoCGRect(bounds);
+		itemBounds.width -= 16;
+		
+		// draw slider
+		SCRect sliderBounds = mBounds;
+		sliderBounds.x = mBounds.x + mBounds.width - 16;
+		sliderBounds.width = 15;
+		sliderBounds.y += 1;
+		sliderBounds.height -= 2;
+		bevelRect = SCtoCGRect(sliderBounds);
 		QDDrawBevelRect(cgc, bevelRect, 1, true);
 
-		int numItems = mArray ? CFArrayGetCount(mArray) : 0;
-
-		mStrSize = nsStringSize((NSString*)CFSTR("XWYjpgy"), mFontName, mFontSize, mStringColor);
-		
-		float itemHeight = mStrSize.height + 3.f;
-		//float totalHeight = itemHeight * numItems;
-		float visibleItems = bounds.height / itemHeight;
-		float fraction = visibleItems / (float)numItems;
-
-		float totalHeight = itemHeight * numItems;
-					
-		float maxScroll = totalHeight - mBounds.height;
-		if (maxScroll < 0) maxScroll = 0;
-		mScroll = sc_clip(mScroll, 0, maxScroll);
-		
-		SCRect itemBounds = bounds;
-		itemBounds.x += 4; 
-		itemBounds.y += 2 - mScroll; 
-		itemBounds.width -= 6; itemBounds.height -= 4;
-		
-		itemBounds.height = itemHeight;
-		
-		if (fraction < 1.f) 
-		{
-			
-			itemBounds.width -= 16;
-			
-			// draw slider
-			SCRect sliderBounds = mBounds;
-			sliderBounds.x = mBounds.x + mBounds.width - 16;
-			sliderBounds.width = 15;
-			sliderBounds.y += 1;
-			sliderBounds.height -= 2;
-			bevelRect = SCtoCGRect(sliderBounds);
-			QDDrawBevelRect(cgc, bevelRect, 1, true);
-
-			float travel = (1.f - fraction) * (mBounds.height - 4);
-			SCRect thumbBounds = sliderBounds;
-			thumbBounds.y = 1.f + sliderBounds.y + travel * (mScroll / maxScroll);
-			thumbBounds.height = (sliderBounds.height - 2) * fraction;
-			thumbBounds.x += 1;
-			thumbBounds.width -= 2;
-			bevelRect = SCtoCGRect(thumbBounds);
-			QDDrawBevelRect(cgc, bevelRect, 2, false);
-		}
-		
-		
+		float travel = (1.f - fraction) * (mBounds.height - 4);
+		SCRect thumbBounds = sliderBounds;
+		thumbBounds.y = 1.f + sliderBounds.y + travel * (mScroll / maxScroll);
+		thumbBounds.height = (sliderBounds.height - 2) * fraction;
+		thumbBounds.x += 1;
+		thumbBounds.width -= 2;
+		bevelRect = SCtoCGRect(thumbBounds);
+		QDDrawBevelRect(cgc, bevelRect, 2, false);
+	}
+	
+	if (mArray) {
 		CGRect clipRect = SCtoCGRect(bounds);
 		clipRect.origin.y += 1;
 		clipRect.size.height -= 2;
@@ -3352,7 +3351,7 @@ void SCListView::draw(SCRect inDamage)
 		int maxIndex = minIndex + 1 + (bounds.height + (int)itemHeight - 1) / (int)itemHeight;
 		if (maxIndex > numItems - 1) maxIndex = numItems - 1;
 		itemBounds.y += minIndex * itemHeight;
-		
+
 		for (int i = minIndex; i <= maxIndex; ++i) 
 		{
 			NSString* nsstring = (NSString*)CFArrayGetValueAtIndex(mArray, i);
@@ -3427,6 +3426,10 @@ int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 
 	char *name = symbol->name;
 	if (strcmp(name, "items")==0) {
+		if (IsNil(slot)) {
+			if (mArray) CFRelease(mArray);
+			return errNone;
+		}
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
 		
 		// wipe out old
@@ -3448,6 +3451,7 @@ int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			cfstr = CFStringCreateWithCString(kCFAllocatorDefault, cstr, kCFStringEncodingUTF8);
 
 			CFArrayAppendValue(mArray, cfstr);
+			CFRelease(cfstr);
 		}
 		refresh();
 		return errNone;

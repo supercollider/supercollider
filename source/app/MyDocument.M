@@ -44,6 +44,11 @@ extern bool compiledOK;
 
 bool docCreatedFromLang = false; //if this is true addDocument is not called
 
+// these were in MyDocument, but that made it impossible to call them if a GUI window was in front 
+// so that there was no current document.
+
+
+
 @implementation MyDocument
 
 - (NSTextView*)makeTextView
@@ -566,67 +571,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 - (IBAction) showHelp: (id) sender;
 {
-    [self showHelpFor:[self currentlySelectedTextOrLine: NULL]];
-}
-
--(NSString*)pathOfHelpFileFor:(NSString*)selection 
-{
-
-    NSString* helpFilePath = nil;
-
-    NSFileManager* fileManager = [NSFileManager defaultManager];
-    if (!fileManager) return helpFilePath; // == NULL
-
-    helpFilePath = helpFileWithName(fileManager, selection, @".help.rtf");
-    if (!helpFilePath) {
-		helpFilePath = helpFileWithName(fileManager, selection, @".rtf");
-		if (!helpFilePath) {
-			helpFilePath = helpFileWithName(fileManager, selection, @".help");
-			if (!helpFilePath) {
-				helpFilePath = helpFileWithName(fileManager, selection, @".sc");
-                                // special case for html files where link contains file suffix
-                                if (!helpFilePath) {
-                                        helpFilePath = helpFileWithName(fileManager, selection, @"");
-                                }
-				//if (!helpFilePath) {
-					//helpFilePath = helpFileWithName(fileManager, @"Help", @".help.rtf");
-                    // possiblly == NULL
-				//}
-			}
-		}
-    }
-    return helpFilePath; // possibly == NULL
-}
-
--(void)showHelpFor:(NSString*)selection
-{
-    NSDocumentController* docctl = [NSDocumentController sharedDocumentController];
-    if (!docctl)
-	return;
-	
-    NSString *helpFilePath = [self pathOfHelpFileFor: selection];
-    if(!helpFilePath) { // none found
-        helpFilePath = helpFileWithName([NSFileManager defaultManager], @"Help", @".help.rtf");
-        if(!helpFilePath) { // not even Help.help ?
-            post("\nCan't find help for '%s'\n", [selection cString]);
-            return;
-        }
-    }
-    
-    MyDocument *doc = (MyDocument*)[docctl documentForFileName: helpFilePath];
-    if (!doc) {
-        doc = [docctl openDocumentWithContentsOfFile: helpFilePath display: true];
-        if (!doc) {
-            post("Can't open Help File Document '%s'\n", [helpFilePath cString]);
-            return;
-        }
-    }
-    NSWindow *window = [[[doc windowControllers] objectAtIndex: 0] window];
-    if (!window) {
-        post("!! window controller returns nil ? failed to open help file window\n");
-        return;
-    }
-    [window makeKeyAndOrderFront: nil];
+	showHelpFor([self currentlySelectedTextOrLine: NULL]);
 }
 
 #endif
@@ -638,12 +583,12 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 {
     if ([link isKindOfClass: [NSString class]])
     {
-        [self showHelpFor: link];
+        showHelpFor(link);
         return YES;
         
     } else if ([link isKindOfClass: [NSURL class]])
     {
-        [self showHelpFor: [link path]];
+        showHelpFor( [link path]);
         return YES;
     }
     
@@ -964,3 +909,62 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 }
 
 @end
+
+
+NSString* pathOfHelpFileFor(NSString* selection) 
+{
+
+    NSString* helpFilePath = nil;
+
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    if (!fileManager) return helpFilePath; // == NULL
+
+    helpFilePath = helpFileWithName(fileManager, selection, @".help.rtf");
+	if (helpFilePath) return helpFilePath;
+	
+	helpFilePath = helpFileWithName(fileManager, selection, @".rtf");
+	if (helpFilePath) return helpFilePath;
+
+	helpFilePath = helpFileWithName(fileManager, selection, @".help");
+	if (helpFilePath) return helpFilePath;
+	
+	helpFilePath = helpFileWithName(fileManager, selection, @".sc");
+	if (helpFilePath) return helpFilePath;
+                                // special case for html files where link contains file suffix
+	helpFilePath = helpFileWithName(fileManager, selection, @"");
+	if (helpFilePath) return helpFilePath;
+
+    return helpFilePath; // possibly == NULL
+}
+
+void showHelpFor(NSString* selection)
+{
+    NSDocumentController* docctl = [NSDocumentController sharedDocumentController];
+    if (!docctl)
+	return;
+	
+    NSString *helpFilePath = pathOfHelpFileFor(selection);
+    if(!helpFilePath) { // none found
+        helpFilePath = helpFileWithName([NSFileManager defaultManager], @"Help", @".help.rtf");
+        if(!helpFilePath) { // not even Help.help ?
+            post("\nCan't find help for '%s'\n", [selection cString]);
+            return;
+        }
+    }
+    
+    MyDocument *doc = (MyDocument*)[docctl documentForFileName: helpFilePath];
+    if (!doc) {
+        doc = [docctl openDocumentWithContentsOfFile: helpFilePath display: true];
+        if (!doc) {
+            post("Can't open Help File Document '%s'\n", [helpFilePath cString]);
+            return;
+        }
+    }
+    NSWindow *window = [[[doc windowControllers] objectAtIndex: 0] window];
+    if (!window) {
+        post("!! window controller returns nil ? failed to open help file window\n");
+        return;
+    }
+    [window makeKeyAndOrderFront: nil];
+}
+

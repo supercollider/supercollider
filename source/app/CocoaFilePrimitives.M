@@ -359,8 +359,8 @@ int prHelpFileForString(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *receiver = g->sp;
     
     // this function should be moved out of the MyDocument instance
-    NSString *path = [[[NSDocumentController sharedDocumentController] currentDocument]
-        pathOfHelpFileFor: nsStringFromPyrSlot(receiver) ];
+    NSString *path = pathOfHelpFileFor( nsStringFromPyrSlot(receiver));
+
     if(path) {
         PyrString* pyrPathString = newPyrString(g->gc,[path cString],0,true);
         SetObject(receiver,pyrPathString);

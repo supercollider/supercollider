@@ -20,6 +20,7 @@
 
 
 #import "SCVirtualMachine.h"
+#import "MyDocument.h"
 #import "SCGraphView.h"
 #include "ChangeCounter.h"
 
@@ -371,7 +372,7 @@ bool gIsFullScreen = false;
 
 -(IBAction)showHelp:(id)sender {
     // a useless waste of a search to get the main page
-    [[[NSDocument sharedDocumentController] currentDocument] showHelpFor: @"Help"];
+    showHelpFor( @"Help");
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
