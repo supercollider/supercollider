@@ -62,6 +62,14 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\b0 \cf0 		set the password for interpreter access\
+	\
+	
+\f0\b cmdName_
+\f2\b0 \
+		set the cmdName under which the client sends (default: 
+\f0\b '/client'
+\f2\b0 )\
+		this cmdName must be the same like the LocalClient reciever cmdName\
 	
 \f0\b \
 	interpret(string)\
@@ -129,6 +137,14 @@
 	password_ (symbol)\
 		
 \f2\b0 set the password for interpreter access from outside\
+		\
+	
+\f0\b cmdName_
+\f2\b0 \
+		set the cmdName under which the client recieves (default: 
+\f0\b '/client'
+\f2\b0 )\
+		this cmdName must be the same like the Client sender cmdName\
 		
 \f0\b \
 	allowInterpret \
@@ -248,7 +264,6 @@ b = \cf3 Client\cf0 .new;\
 \cf3 ClientFunc\cf0 (\cf4 \\chat\cf0 , \{ \cf3 arg\cf0  str; \{ d.string =  d.string ++ str ++ Char.nl \}.defer \});\
 \
 e.keyDownAction_(\{\'ca\cf3 arg\cf0  doc, char;\
-	char.postln;\
 	 if(char === \cf3 Char.tab\cf0 ) \
 	 \{ \
 	 	b.send(\cf4 \\chat\cf0 , n + ":" + e.currentLine); \
