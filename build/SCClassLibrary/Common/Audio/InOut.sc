@@ -100,6 +100,19 @@ In : AbstractIn {
 	}
 }
 
+LocalIn : AbstractIn {	
+	*ar { arg numChannels = 1;
+		^this.multiNew('audio', numChannels)
+	}
+	*kr { arg numChannels = 1;
+		^this.multiNew('control', numChannels)
+	}
+	init { arg numChannels;
+		^this.initOutputs(numChannels, rate)
+	}
+}
+
+
 LagIn : AbstractIn {	
 	*kr { arg bus = 0, numChannels = 1, lag = 0.1;
 		^this.multiNew('control', numChannels, bus, lag)
@@ -187,6 +200,20 @@ Out : AbstractOut {
 ReplaceOut : Out {}
 OffsetOut : Out {}
 
+LocalOut : AbstractOut {
+	*ar { arg channelsArray;
+		channelsArray = this.replaceZeroesWithSilence(channelsArray.asArray);
+		this.multiNewList(['audio'] ++ channelsArray)
+		^0.0		// LocalOut has no output
+	}
+	*kr { arg channelsArray;
+		this.multiNewList(['control'] ++ channelsArray.asArray)
+		^0.0		// LocalOut has no output
+	}
+	*numFixedArgs { ^0 }
+}
+
+
 XOut : AbstractOut {
 	*ar { arg bus, xfade, channelsArray;
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asArray);
@@ -228,5 +255,4 @@ SharedIn : AbstractIn {
 		^this.initOutputs(numChannels, rate)
 	}
 }
-
 

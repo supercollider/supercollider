@@ -44,6 +44,9 @@ struct Graph
 
 	int mSampleOffset;
 	struct RGen* mRGen;
+	
+	struct Unit *mLocalAudioBusUnit;
+	struct Unit *mLocalControlBusUnit;
 };
 typedef struct Graph Graph;
 

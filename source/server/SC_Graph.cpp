@@ -187,6 +187,9 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	graph->mSampleOffset = inWorld->mSampleOffset;
 	graph->mRGen = inWorld->mRGen; // defaults to rgen zero.
 	
+	graph->mLocalAudioBusUnit = NULL;
+	graph->mLocalControlBusUnit = NULL;
+	
 	// initialize units
 	//scprintf("initialize units\n");
 	Unit** calcUnits = graph->mCalcUnits;

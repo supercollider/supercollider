@@ -57,6 +57,12 @@ struct LagIn : public IOUnit
 	float m_y1[kMaxLags];
 };
 
+struct LocalIn : public Unit
+{
+	float *m_bus;
+	int32 *m_busTouched;
+};
+
 extern "C"
 {
 	void load(InterfaceTable *inTable);
@@ -87,6 +93,11 @@ extern "C"
 	void InFeedback_Ctor(IOUnit *unit);
 	void InFeedback_next_a(IOUnit *unit, int inNumSamples);
 
+	void LocalIn_Ctor(LocalIn *unit);
+	void LocalIn_Dtor(LocalIn *unit);
+	void LocalIn_next_a(LocalIn *unit, int inNumSamples);
+	void LocalIn_next_k(LocalIn *unit, int inNumSamples);
+
 	void Out_Ctor(IOUnit *unit);
 	void Out_next_a(IOUnit *unit, int inNumSamples);
 	void Out_next_k(IOUnit *unit, int inNumSamples);
@@ -102,6 +113,10 @@ extern "C"
 	void OffsetOut_Ctor(OffsetOut *unit);
 	void OffsetOut_Dtor(OffsetOut* unit);
 	void OffsetOut_next_a(OffsetOut *unit, int inNumSamples);
+
+	void LocalOut_Ctor(IOUnit *unit);
+	void LocalOut_next_a(IOUnit *unit, int inNumSamples);
+	void LocalOut_next_k(IOUnit *unit, int inNumSamples);
 
 }
 
@@ -1070,18 +1085,220 @@ void SharedOut_Ctor(IOUnit* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+void LocalIn_next_a(LocalIn *unit, int inNumSamples)
+{
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumOutputs;
+	
+	float *in = unit->m_bus;
+	int32 *touched = unit->m_busTouched;
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	
+	for (int i=0; i<numChannels; ++i, in += bufLength) {
+		float *out = OUT(i);
+		int diff = bufCounter - touched[i];
+		//Print("LocalIn  %d  %d  %g\n", i, diff, in[0]);
+		if (diff == 1 || diff == 0) Copy(inNumSamples, out, in);
+		else Fill(inNumSamples, out, 0.f);
+	}
+}
+
+
+void LocalIn_next_k(LocalIn *unit, int inNumSamples)
+{
+	uint32 numChannels = unit->mNumOutputs;
+	
+	float *in = unit->m_bus;
+	for (uint32 i=0; i<numChannels; ++i, in++) {
+		float *out = OUT(i);
+		*out = *in;
+	}
+}
+
+void LocalIn_Ctor(LocalIn* unit)
+{
+//Print("->LocalIn_Ctor\n");	
+	int numChannels = unit->mNumOutputs;
+	
+	World *world = unit->mWorld;
+		
+	int busDataSize = numChannels * BUFLENGTH;
+	unit->m_bus = (float*)RTAlloc(world, busDataSize * sizeof(float) + numChannels * sizeof(int32));
+	unit->m_busTouched = (int32*)(unit->m_bus + busDataSize);
+	for (int i=0; i<numChannels; ++i)
+	{
+		unit->m_busTouched[i] = -1;
+	}
+
+	if (unit->mCalcRate == calc_FullRate) {
+		if (unit->mParent->mLocalAudioBusUnit)
+		{
+			SETCALC(ClearUnitOutputs);
+			ClearUnitOutputs(unit, 1);
+			return;
+		}
+		unit->mParent->mLocalAudioBusUnit = unit;
+		SETCALC(LocalIn_next_a);
+		LocalIn_next_a(unit, 1);
+	} else {
+		if (unit->mParent->mLocalControlBusUnit)
+		{
+			SETCALC(ClearUnitOutputs);
+			ClearUnitOutputs(unit, 1);
+			return;
+		}
+		unit->mParent->mLocalControlBusUnit = unit;
+		SETCALC(LocalIn_next_k);
+		LocalIn_next_k(unit, 1);
+	}
+//Print("<-LocalIn_Ctor\n");
+}
+
+void LocalIn_Dtor(LocalIn* unit)
+{
+	World *world = unit->mWorld;
+	RTFree(world, unit->m_bus);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void LocalOut_next_a(IOUnit *unit, int inNumSamples)
+{
+	//Print("LocalOut_next_a %d\n", unit->mNumInputs);
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumInputs;
+
+	LocalIn *localIn = (LocalIn*)unit->mParent->mLocalAudioBusUnit;
+	if (!localIn || numChannels != localIn->mNumOutputs)
+	{
+		ClearUnitOutputs(unit, inNumSamples);
+	}
+
+	float *out = localIn->m_bus;
+	int32 *touched = localIn->m_busTouched;
+	
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	for (int i=0; i<numChannels; ++i, out+=bufLength) {
+		float *in = IN(i);
+		if (touched[i] == bufCounter) Accum(inNumSamples, out, in);
+		else {
+			Copy(inNumSamples, out, in);
+			touched[i] = bufCounter;
+		}
+		//Print("LocalOut %d %g %g\n", i, in[0], out[0]);
+	}
+}
+
+#if __VEC__
+
+void vLocalOut_next_a(IOUnit *unit, int inNumSamples)
+{
+	//Print("LocalOut_next_a %d\n", unit->mNumInputs);
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumInputs;
+
+	LocalIn *localIn = (LocalIn*)unit->mParent->mLocalAudioBusUnit;
+	if (!localIn || numChannels != localIn->mNumOutputs)
+	{
+		ClearUnitOutputs(unit, inNumSamples);
+	}
+
+	float *out = localIn->m_bus;
+	int32 *touched = localIn->m_busTouched;
+	
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	for (int i=0; i<numChannels; ++i, out+=bufLength) {
+		float *in = IN(i);
+		vfloat32* vin = (vfloat32*)in;
+		vfloat32* vout = (vfloat32*)out;
+		int len = inNumSamples << 2;
+		if (touched[i] == bufCounter) {
+			for (int j=0; j<len; j+=16) {
+				vec_st(vec_add(vec_ld(j, vout), vec_ld(j, vin)), j, vout);
+			}
+		} else {
+			for (int j=0; j<len; j+=16) {
+				vec_st(vec_ld(j, vin), j, vout);
+			}
+			touched[i] = bufCounter;
+		}
+		//Print("LocalOut %d %g %g\n", i, in[0], out[0]);
+	}
+}
+
+#endif
+
+void LocalOut_next_k(IOUnit *unit, int inNumSamples)
+{
+	int numChannels = unit->mNumInputs;
+
+	LocalIn *localIn = (LocalIn*)unit->mParent->mLocalControlBusUnit;
+	if (!localIn || numChannels != localIn->mNumOutputs)
+	{
+		ClearUnitOutputs(unit, inNumSamples);
+	}
+
+	float *out = localIn->m_bus;
+	int32 *touched = localIn->m_busTouched;
+	
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	for (int i=0; i<numChannels; ++i, out++) {
+		float *in = IN(i);
+		if (touched[i] == bufCounter) *out += *in;
+		else {
+			*out = *in;
+			touched[i] = bufCounter;
+		}
+	}
+}
+
+void LocalOut_Ctor(IOUnit* unit)
+{
+	//Print("->LocalOut_Ctor\n");
+	World *world = unit->mWorld;
+	unit->m_fbusChannel = -1.;
+	
+	if (unit->mCalcRate == calc_FullRate) {
+#if __VEC__
+		if (USEVEC) {
+			SETCALC(vLocalOut_next_a);
+		} else {
+			SETCALC(LocalOut_next_a);
+		}
+#else
+		SETCALC(LocalOut_next_a);
+#endif
+		unit->m_bus = world->mAudioBus;
+		unit->m_busTouched = world->mAudioBusTouched;
+	} else {
+		SETCALC(LocalOut_next_k);
+		unit->m_bus = world->mControlBus;
+		unit->m_busTouched = world->mControlBusTouched;
+	}
+	//Print("<-LocalOut_Ctor\n");
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 void load(InterfaceTable *inTable)
 {
 	ft = inTable;
 
 	DefineDtorUnit(OffsetOut);
+	DefineDtorUnit(LocalIn);
 	DefineSimpleUnit(XOut);
 	DefineSimpleUnit(LagControl);
 	DefineUnit("Control", sizeof(Unit), (UnitCtorFunc)&Control_Ctor, 0, 0);
 	DefineUnit("TrigControl", sizeof(Unit), (UnitCtorFunc)&TrigControl_Ctor, 0, 0);
 	DefineUnit("ReplaceOut", sizeof(IOUnit), (UnitCtorFunc)&ReplaceOut_Ctor, 0, 0);
 	DefineUnit("Out", sizeof(IOUnit), (UnitCtorFunc)&Out_Ctor, 0, 0);
+	DefineUnit("LocalOut", sizeof(IOUnit), (UnitCtorFunc)&LocalOut_Ctor, 0, 0);
 	DefineUnit("In", sizeof(IOUnit), (UnitCtorFunc)&In_Ctor, 0, 0);
 	DefineUnit("LagIn", sizeof(IOUnit), (UnitCtorFunc)&LagIn_Ctor, 0, 0);
 	DefineUnit("InFeedback", sizeof(IOUnit), (UnitCtorFunc)&InFeedback_Ctor, 0, 0);
