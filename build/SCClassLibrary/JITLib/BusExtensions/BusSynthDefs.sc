@@ -38,12 +38,12 @@ BusSynthDefs {
 		
 		//////// audio rate defs ///////////
 		
-		SynthDef.writeOnce("system_gate_audio", { arg i_bus=0,  i_level=1.0, i_dur=1.0;
+		SynthDef("system_gate_audio", { arg i_bus=0,  i_level=1.0, i_dur=1.0;
 			var env, start;
 			start = InFeedback.ar(i_bus);
-			env = EnvGen.ar(Env([0, 1, 1, 0],[0, 1, 0]), 1.0, i_level-start, start, i_dur, doneAction:2);
+			env = EnvGen.ar(Env([0, 1, 1, 0],[0, 1, 0]), K2A.ar(1.0), i_level-start, start, i_dur, doneAction:2);
 			ReplaceOut.ar(i_bus, env)
-		});
+		}).writeDefFile;
 
 		SynthDef.writeOnce("system_line_audio", { arg i_bus=0,  i_level=1.0, i_dur=1.0;
 			ReplaceOut.ar(i_bus, Line.ar(InFeedback.ar(i_bus), i_level, i_dur, doneAction:2))
