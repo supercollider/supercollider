@@ -1,0 +1,551 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fnil\fcharset77 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
+\red96\green96\blue96;\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs32 \cf2 recursive instrumental phrases or granular composite sounds
+\f1\b\fs36 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0\fs18 \cf2 \
+\
+\
+\cf3 // when passing a function to Pdef it creates a PlazyEnvir internally.\cf2 \
+\cf3 // this function is then evaluated in the context of the outer environment\cf2 \
+\cf3 // (see PlazyEnvir help)\cf2 \
+\cf3 // Event.parentEvents.phraseEvent looks up in Pdef.all if it can find a definition.\cf2 \
+\cf3 // if it finds one it plays this pattern in the context of the outer pattern's event.\cf2 \
+\cf3 // if there is no definition there, it uses a synthDef with this name, if present.\cf2 \
+\
+\
+(\
+s.boot;\
+\cf4 SynthDescLib\cf2 .read;\
+\
+\cf4 SynthDef\cf2 (\cf5 "pgrain"\cf2 , \
+	\{ \cf4 arg\cf2  out = 0, freq=800, sustain=0.001, amp=0.5, pan = 0;\
+		\cf4 var\cf2  window;\
+		window = \cf4 Env\cf2 .sine(sustain, amp);\
+		\cf4 Out\cf2 .ar(out, \
+			\cf4 Pan2\cf2 .ar(\
+				\cf4 FSinOsc\cf2 .ar(freq),\
+				pan\
+			) * \cf4 EnvGen\cf2 .ar(window, doneAction:2)\
+		)\
+	\}\
+).store;\
+\
+\cf4 SynthDef\cf2 (\cf5 "noiseGrain"\cf2 , \
+	\{ \cf4 arg\cf2  out = 0, freq=800, sustain=0.001, amp=0.5, pan = 0;\
+		\cf4 var\cf2  window;\
+		window = \cf4 Env\cf2 .perc(0.002, sustain, amp);\
+		\cf4 Out\cf2 .ar(out, \
+				\cf4 Ringz\cf2 .ar(\cf4 PinkNoise\cf2 .ar(0.1 ! 2), freq, 2.6)\
+			 * \cf4 EnvGen\cf2 .ar(window, doneAction:2)\
+		)\
+	\}\
+).store;\
+\
+\
+\
+\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 , \{\'ca\cf4 arg\cf2  sustain=1, n=8, freq=440, ratio=0.1;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\instrument\cf2 , \cf6 \\pgrain\cf2 ,\
+		\cf6 \\dur\cf2 , sustain.value / n,\
+		\cf6 \\freq\cf2 , \cf4 Pseq\cf2 ((1..n))  * ratio + 1 * freq.value \cf3 // freq is a function, has to be evaluated\cf2 \
+	)\
+\});\
+\
+\cf4 Pdef\cf2 (\cf6 \\sweep2\cf2 , \{\'ca\cf4 arg\cf2  sustain=1, n=8, freq=440, ratio=0.1;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\instrument\cf2 , \cf6 \\noiseGrain\cf2 ,\
+		\cf6 \\dur\cf2 , sustain.value / n,  \cf3 // sustain is also a function, has to be evaluated \cf2 \
+		\cf6 \\freq\cf2 , \cf4 Pseq\cf2 ((1..n).scramble) * ratio + 1 * freq.value,\
+		\cf6 \\recursionLevel\cf2 , 2\
+	)\
+\});\
+\cf4 Pdef\cf2 (\cf6 \\sweep3\cf2 , \{ \cf4 arg\cf2  freq=440;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+		\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+		\cf6 \\freq\cf2 , \cf4 Pfunc\cf2 (\{ rrand(0.8, 1.3)  \})  * freq.value,\
+		\cf6 \\dur\cf2 , 0.3,\
+		\cf6 \\legato\cf2 , 1.3,\
+		\cf6 \\n\cf2 , 5\
+	)\
+\});\
+)\
+\
+\
+\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 ).trace(\cf6 \\freq\cf2 ).play; \cf3 // plays 8 grains\cf2 \
+\
+\
+\cf3 // the pattern that is found in Pdef.all (or your own defined library [1]) is truncated in time\cf2 \
+\cf3 // using the sustain provided by the outer pattern.\cf2 \
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent, \cf3 // phrase event from global library\cf2 \
+	\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+	\cf6 \\n\cf2 , 15,\
+	\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ([0, 4, 6, 3], \cf4 inf\cf2 ),\
+	\cf6 \\sustain\cf2 , \cf4 Pseq\cf2 ([1.3, 0.2, 0.4],\cf4 inf\cf2 ),\
+	\cf6 \\pan\cf2 , \cf4 Prand\cf2 ([-1,1], \cf4 inf\cf2 )\
+).play\
+)\
+\
+\cf3 // multichannel expansion is propagated into the subpatterns\cf2 \
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent, \cf3 // phrase event from global library\cf2 \
+	\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+	\cf6 \\n\cf2 , 15,\
+	\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ([0, 0, 6, 3], \cf4 inf\cf2 ) + \cf4 Prand\cf2 ([0, [0, 3], [0, 5], [0, 15]], \cf4 inf\cf2 ),\
+	\cf6 \\ratio\cf2 , \cf4 Prand\cf2 ([ 0.1, 0.1, [0.1, -0.1] ], \cf4 inf\cf2 )\
+).play\
+)\
+\
+\cf3 // various instruments and synthdefs can be used on the same level\cf2 \
+(\
+\cf4 Pbind\cf2 (\
+		\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent, \cf3 // phrase event from global library\cf2 \
+		\cf6 \\instrument\cf2 , \cf4 Pseq\cf2 ([\cf6 \\sweep\cf2 , \cf6 \\default\cf2 , \cf6 \\sweep2\cf2 , \cf6 \\sweep3\cf2 , \cf6 \\pgrain\cf2 , \cf6 \\pgrain\cf2 ], \cf4 inf\cf2 ),\
+		\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ([0, 3, 2], \cf4 inf\cf2 ),\
+		\cf6 \\dur\cf2 , \cf4 Pseq\cf2 ([1, 0.5], \cf4 inf\cf2 ) * 0.7,\
+		\cf6 \\n\cf2 , \cf4 Pseq\cf2 ([4, 6, 25, 10], \cf4 inf\cf2 ),\
+		\cf6 \\ratio\cf2 , \cf4 Prand\cf2 ([0.03, 0.1, 0.4, -0.1],\cf4 inf\cf2 ) + \cf4 Pseq\cf2 ([0, 0, [0, 0.02]], \cf4 inf\cf2 ),\
+		\cf6 \\legato\cf2 , \cf4 Pseq\cf2 (#[0.5, 1, 0.5, 0.1, 0.1],\cf4 inf\cf2 )\
+).play;\
+)\
+\
+\
+\cf3 // of course also a patten can be used directly in a Pdef\cf2 \
+\
+(\
+\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 , \
+	\cf4 Pbind\cf2 (\
+		\cf6 \\instrument\cf2 , \cf4 Pseq\cf2 ([\cf6 \\pgrain\cf2 , \cf6 \\noiseGrain\cf2 ],\cf4 inf\cf2 ),\
+		\cf6 \\dur\cf2 , \cf4 Pseq\cf2 ([1, 2, 1, 3, 1, 4, 1, 5]) * 0.05,\
+		\cf6 \\legato\cf2 , \cf4 Prand\cf2 ([0.5, 0.5, 3],\cf4 inf\cf2 )\
+	)\
+)\
+)\
+\
+\cf3 // play directly, emebdded in stream (see Pdef.help)\cf2 \
+\cf4 Pn\cf2 (\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 ), 2).play;\
+\
+\cf3 // play within a pattern\cf2 \
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+	\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+	\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ([0, 1b, 4, 2, 3, 1b], \cf4 inf\cf2 ),\
+	\cf6 \\pan\cf2 , \cf4 Pfunc\cf2 (#\{ 1.0.rand2 \})\
+).play\
+)\
+\
+\
+\
+\cf3 //////// recursion examples //////////\cf2 \
+\
+\cf3 // the given pattern can be recursively applied to itself \cf2 \
+\cf3 // resulting in selfsimilar sound structures, like lindenmeyer systems (see also Prewrite)\cf2 \
+\cf3 // special care is taken so that no infinite loops can happen.\cf2 \
+\cf3 // just like with non recursive phrasing, new values override old values, \cf2 \
+\cf3 // any values that are not provided within the pattern definition \cf2 \
+\cf3 // are passed in from the outer event.\cf2 \
+\
+\
+\
+(\
+\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 , \{\'ca\cf4 arg\cf2  dur=1, n=6, freq=440, ratio=0.3;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\instrument\cf2 , \cf6 \\pgrain\cf2 ,\
+		\cf6 \\dur\cf2 , dur.value / n,	\cf3 // now dur is dependant on outer dur, not on sustain\cf2 \
+		\cf6 \\freq\cf2 , \cf4 Pseq\cf2 ((1..n)) * ratio + 1 * freq.value\
+	)\
+\});\
+)\
+\
+\
+\cf3 // no recursion\cf2 \
+(\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+		\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+		\cf6 \\degree\cf2 , 0\
+	).play;\
+)\
+\
+\cf3 // no recursion, with legato > 1.0 and varying notes\cf2 \
+\cf3 // note how subpatterns are truncated to note length \cf2 \
+\cf3 // provided by outer pattern (in this case determined by legato)\cf2 \
+(\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+		\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+		\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ((0..5),\cf4 inf\cf2 ),\
+		\cf6 \\legato\cf2 , \cf4 Prand\cf2 ([1.2, 2.8, 0.3], \cf4 inf\cf2 )\
+	).play;\
+)\
+\
+\
+\cf3 // recursion over one level\cf2 \
+(\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+		\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+		\cf6 \\degree\cf2 , 0,\
+		\cf6 \\recursionLevel\cf2 , 1\
+	).play\
+)\
+\
+\cf3 // recursion over one level: legato is recursively applied\cf2 \
+(\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+		\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+		\cf6 \\degree\cf2 , 1,\
+		\cf6 \\legato\cf2 , \cf4 Pseq\cf2 ([0.5, 1, 2, 4, 10], \cf4 inf\cf2 ),\
+		\cf6 \\recursionLevel\cf2 , 1\
+	).play\
+)\
+\
+\
+\cf3 // to block this recursion, or modify it, assign legato explicitly:\cf2 \
+(\
+\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 , \{\'ca\cf4 arg\cf2  dur=1, n=4, ratio=0.5, freq=440;\
+	\cf4 var\cf2  legato;\
+	freq = freq.value;\
+	legato = freq % 200 / 200 * 3 + 0.2;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\instrument\cf2 , \cf6 \\pgrain\cf2 ,\
+		\cf6 \\dur\cf2 , dur.value / n,\
+		\cf6 \\legato\cf2 , legato,\
+		\cf6 \\freq\cf2 , \cf4 Pseq\cf2 ((1..n) * ratio + 1 * freq)\
+	)\
+\});\
+)\
+\
+\cf3 // recursion over one level: degree is assigned to each phrase,\cf2 \
+\cf3 // because freq is calculated internally and overrides degree on the second level\cf2 \
+(\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+		\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+		\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ((0..10),\cf4 inf\cf2 ),\
+		\cf6 \\recursionLevel\cf2 , 1\
+	).play\
+)\
+\
+\
+\
+\cf3 // recursion over two levels\cf2 \
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+	\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+	\cf6 \\degree\cf2 , 0,\
+	\cf6 \\recursionLevel\cf2 , 2\
+).play\
+)\
+\
+\cf3 // recursion over three levels with variable number of grains\cf2 \
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+	\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+	\cf6 \\degree\cf2 , -5,\
+	\cf6 \\n\cf2 , \cf4 Pseq\cf2 ([1, 2, 3],\cf4 inf\cf2 ),\
+	\cf6 \\recursionLevel\cf2 , 3\
+).play\
+)\
+\
+\
+\cf3 // "zoom" in\cf2 \
+\cf4 TempoClock\cf2 .default.tempo = 0.2;\
+\cf4 TempoClock\cf2 .default.tempo = 1.0;\
+\
+\
+\cf3 // recursion over variable levels\cf2 \
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+	\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+	\cf6 \\n\cf2 , \cf4 Prand\cf2 ([2, 7, 3], \cf4 inf\cf2 ),\
+	\cf6 \\degree\cf2 , -5,\
+	\cf6 \\recursionLevel\cf2 , \cf4 Prand\cf2 ([0, 1, 2],\cf4 inf\cf2 )\
+).play\
+)\
+\
+\
+\
+\cf3 // replace the frequency based pattern with a degree based pattern\cf2 \
+(\
+\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 , \{\'ca\cf4 arg\cf2  sustain=1, n=8, degree=0, ratio=1;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\instrument\cf2 , \cf6 \\pgrain\cf2 ,\
+		\cf6 \\dur\cf2 , sustain.value / n,\
+		\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ((1..n)) * ratio + 1 + degree.value\
+	)\
+\});\
+)\
+\
+\
+\cf3 // drunken master\cf2 \
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+	\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+	\cf6 \\n\cf2 , \cf4 Prand\cf2 ([2, 4, 3, 8], \cf4 inf\cf2 ),\
+	\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ([-5, 0, -2], \cf4 inf\cf2 ),\
+	\cf6 \\legato\cf2 , \cf4 Pseq\cf2 ([1.4, 0.5, 2], \cf4 inf\cf2 ),\
+	\cf6 \\scale\cf2 , #[0, 2, 5, 7, 10],\
+	\cf6 \\recursionLevel\cf2 , \cf4 Prand\cf2 ([0, 1, 2],\cf4 inf\cf2 )\
+).play\
+)\
+\
+\
+\
+\
+\cf3 // pass in a synthDef from the outside\cf2 \
+(\
+\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 , \{\'ca\cf4 arg\cf2  sustain=1, n=8, degree=0, ratio=1;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\dur\cf2 , sustain.value / n,\
+		\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ((1..n) * ratio + 1 + degree.value)	)\
+\});\
+)\
+\
+\
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+	\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+	\cf6 \\synthDef\cf2 , \cf4 Prand\cf2 ([\cf6 \\pgrain\cf2 , \cf6 \\default\cf2 , \cf6 \\noiseGrain\cf2 ],\cf4 inf\cf2 ),\
+	\cf6 \\n\cf2 , \cf4 Prand\cf2 ([2, 4, 3, 8], \cf4 inf\cf2 ),\
+	\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ([-5, 0, -2], \cf4 inf\cf2 ),\
+	\cf6 \\recursionLevel\cf2 , \cf4 Prand\cf2 ([0, 1],\cf4 inf\cf2 )\
+).play\
+)\
+\
+\
+\cf3 // use a different parent event in the inner pattern\cf2 \
+(\
+e = \cf4 Event\cf2 .default;\
+e.use \{ ~sustain = \{ 2.0.exprand(0.05) \} \};\
+\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 , \{\'ca\cf4 arg\cf2  sustain=1, n=8, degree=0, ratio=1;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\parent\cf2 , e, \cf3 // replace by some other event\cf2 \
+		\cf6 \\instrument\cf2 , \cf6 \\pgrain\cf2 ,\
+		\cf6 \\dur\cf2 , sustain.value / n,\
+		\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ((1..n)) * ratio + 1 + degree.value\
+	)\
+\});\
+)\
+\
+\
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+	\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+	\cf6 \\n\cf2 , \cf4 Prand\cf2 ([2, 4, 3, 8], \cf4 inf\cf2 ),\
+	\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ([-5, 0, -2], \cf4 inf\cf2 ),\
+	\cf6 \\recursionLevel\cf2 , \cf4 Prand\cf2 ([0, 1],\cf4 inf\cf2 )\
+).play\
+)\
+\
+\cf3 // modify the inner pattern's event\cf2 \
+e.use \{\'ca~sustain = 0.1 \};\
+e.use \{\'ca~ctranspose = rrand(0, 4) \};\
+\
+\cf3 // pass in a pattern from outside\cf2 \
+\
+(\
+\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 , \{\'ca\cf4 arg\cf2  sustain=1, n=8, degree=0, ratio=1;\
+	n = n.value;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\instrument\cf2 , \cf6 \\pgrain\cf2 ,\
+		\cf6 \\dur\cf2 , sustain.value / n,\
+		\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ((1..5) * ratio + 1 + degree.value)	)\
+\});\
+)\
+\
+\
+(\
+x = \cf4 Pshuf\cf2 ([2, 4, 3, 8, 16, 32], \cf4 inf\cf2 );\
+\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+	\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+	\cf6 \\n\cf2 , #\{ x \}, \cf3 //  use a function to insulate from embedInStream\cf2 \
+	\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ([-5, 0, -2], \cf4 inf\cf2 ),\
+	\cf6 \\recursionLevel\cf2 , \cf4 Prand\cf2 ([0, 1],\cf4 inf\cf2 )\
+).play\
+)\
+\
+\cf3 // change the pattern that is passed in\cf2 \
+x = 2;\
+x = \cf4 Pn\cf2 (\cf4 Pseries\cf2 (1, 1, 18)).asStream;\
+\
+\
+\cf3 // recursion inside the pattern definition\cf2 \
+\
+(\
+\cf4 Pdef\cf2 (\cf6 \\sweep2\cf2 , \{\'ca\cf4 arg\cf2  sustain=1, n=2, degree=0, ratio=1;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+		\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+		\cf6 \\dur\cf2 , sustain.value / n,\
+		\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ((1..5).scramble * ratio + 1 + degree.value),\
+		\cf6 \\recursionLevel\cf2 , 2\
+	)\
+\});\
+)\
+\
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+	\cf6 \\instrument\cf2 , \cf6 \\sweep2\cf2 ,\
+	\cf6 \\n\cf2 , 3,\
+	\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ([-5, 0, -2], \cf4 inf\cf2 )\
+).play\
+)\
+\
+\
+\cf3 // crossfading instruments while they play\cf2 \
+\
+\
+\
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+	\cf6 \\instrument\cf2 , \cf6 \\sweep\cf2 ,\
+	\cf6 \\n\cf2 , 3,\
+	\cf6 \\degree\cf2 , \cf4 Pseq\cf2 ([0, 2b, 3, 4], \cf4 inf\cf2 ),\
+	\cf6 \\dur\cf2 , 2,\
+	\cf6 \\legato\cf2 , 2\
+).play\
+)\
+\
+\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 ).fadeTime = 2;\
+\
+\cf3 // change pattern definition while playing:\cf2 \
+(\
+\cf4 Pdef\cf2 (\cf6 \\sweep\cf2 ,\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\instrument\cf2 , \cf6 \\pgrain\cf2 ,\
+		\cf6 \\dur\cf2 , exprand(0.01, 0.1),\
+		\cf6 \\legato\cf2 , rrand(0.01, 2.0),\
+		\cf6 \\octave\cf2 , rrand(5, 7)\
+	)\
+)\
+)\
+\
+\
+\cf3 // koch "snowflake"\cf2 \
+(\
+\cf4 Pdef\cf2 (\cf6 \\koch\cf2 , \{\'ca\cf4 arg\cf2  dur=1, freq=440;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\dur\cf2 , dur.value / 3,\
+		\cf6 \\freq\cf2 , freq.value + \cf4 Pseq\cf2 ([0, 500, 0])\
+	)\
+\});\
+)\
+\
+(\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+		\cf6 \\instrument\cf2 , \cf6 \\koch\cf2 ,\
+		\cf6 \\synthDef\cf2 , \cf6 \\pgrain\cf2 ,\
+		\cf6 \\dur\cf2 , 9,\
+		\cf6 \\recursionLevel\cf2 , 5,\
+		\cf6 \\legato\cf2 , 1.1\
+	).play\
+)\
+\
+(\
+\cf4 Pdef\cf2 (\cf6 \\koch\cf2 , \{\'ca\cf4 arg\cf2  dur=1, degree=0;\
+	\cf4 Pbind\cf2 (\
+		\cf6 \\dur\cf2 , dur.value / 3,\
+		\cf6 \\degree\cf2 , degree + \cf4 Pseq\cf2 ([0, 2, 0])\
+	)\
+\});\
+)\
+\
+\
+\
+\cf3 /////////// soundfile example\cf2 \
+\
+\
+(\
+\cf4 SynthDef\cf2 (\cf6 \\play_from_to\cf2 , \{ \cf4 arg\cf2  out, bufnum, from=0.0, to=1.0, sustain=1.0, pan;\
+	\cf4 var\cf2  env;\
+	env = \cf4 EnvGen\cf2 .ar(\cf4 Env\cf2 .linen(0.001, sustain, 0.1), 1, doneAction:2);\
+	\cf4 Out\cf2 .ar(out,\
+		\cf4 Pan2\cf2 .ar(\cf4 BufRd\cf2 .ar(1, bufnum, \cf4 Line\cf2 .ar(from, to, sustain) * \cf4 BufFrames\cf2 .kr(bufnum)) * env, pan)\
+	)\
+\
+\
+\}).store;\
+)\
+\
+s.sendMsg(\cf5 "/b_allocRead"\cf2 , 170, \cf5 "sounds/a11wlk01.wav"\cf2 );\
+\
+\cf3 // full playback reconstruction\cf2 \
+(\
+\cf4 Pdef\cf2 (\cf6 \\poch\cf2 , \{\'ca\cf4 arg\cf2  sustain=1.0, from=0.0, to=1.0, n=3;\
+		\cf4 var\cf2  step, p;\
+		sustain = sustain.value;\
+		step = (to - from) / n;\
+		p = \cf4 Pseries\cf2 (from, step, n);\
+		\cf4 Pbind\cf2 (\
+			\cf6 \\instrument\cf2 , \cf6 \\play_from_to\cf2 ,\
+			\cf6 \\from\cf2 , p,\
+			\cf6 \\to\cf2 , p + step,\
+			\cf6 \\legato\cf2 , 1.0,\
+			\cf6 \\dur\cf2 , sustain / n\
+		).trace(\cf6 \\to\cf2 )\
+\})\
+)\
+\
+\cf3 // play pattern\cf2 \
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\parent\cf2 , \cf4 Event\cf2 .parentEvents.phraseEvent,\
+	\cf6 \\instrument\cf2 , \cf6 \\poch\cf2 ,\
+	\cf6 \\recursionLevel\cf2 , 2,\
+	\cf6 \\from\cf2 , 0,\
+	\cf6 \\to\cf2 , 1,\
+	\cf6 \\dur\cf2 , 3,\
+	\cf6 \\bufnum\cf2 , 170,\
+	\cf6 \\n\cf2 , 5\
+).play\
+)\
+\
+\cf3 // now recursively turn round the middle part\cf2 \
+(\
+\cf4 Pdef\cf2 (\cf6 \\poch\cf2 , \{\'ca\cf4 arg\cf2  sustain=1.0, from=0.0, to=1.0, n=3;\
+		\cf4 var\cf2  step, f, t, i;\
+		sustain = sustain.value;\
+		step = (to - from) / n;\
+		f = \cf4 Array\cf2 .series(n, from, step) +.t [0.0, step];\
+		i = n div: 2;\
+		f[i] = f[i].reverse;\
+		\cf4 Pbind\cf2 (\
+			\cf6 \\instrument\cf2 , \cf6 \\play_from_to\cf2 ,\
+			[\cf6 \\from\cf2 , \cf6 \\to\cf2 ], \cf4 Pseq\cf2 (f),\
+			\cf6 \\legato\cf2 , 1.0,\
+			\cf6 \\dur\cf2 , sustain / n\
+		)\
+\})\
+)\
+\
+\
+\
+______________________\
+notes:\
+[1] you can set it to your own library: Event.parentEvents.phraseEvent.library = ...\
+	then patterns in this dictionary are used, not Pdef.all\
+}
