@@ -140,6 +140,11 @@ Node {
 		group = beforeThisOne.group; 
 		this.nodeToServer(2,beforeThisOne.nodeID,args);
 	}
+	addReplace { arg removeThisOne,args;
+		group = removeThisOne.group; 
+		this.nodeToServer(4,removeThisOne.nodeID,args);
+	}
+	
 	prMoveAfter {  arg afterThisOne;
 		this.group = afterThisOne.group;
 		prev = afterThisOne;
@@ -202,7 +207,9 @@ Group : Node {
 	*before {  arg aNode; ^this.prNew.addBefore(aNode) }
 	*head { arg aGroup; ^this.prNew.addToHead(aGroup.asGroup) }
 	*tail { arg aGroup; ^this.prNew.addToTail(aGroup.asGroup) }
-
+	*replace { arg groupToReplace;
+		^this.new(groupToReplace, \addReplace)
+	}
 	
 	moveNodeToHead { arg aNode;
 			server.sendBundle(server.latency,
@@ -291,7 +298,7 @@ Group : Node {
 		var cmd, addActionNum;
 		addActionNum = this.convertAddAction(addAction);
 		cmd = [21, nodeID, addActionNum, target.nodeID]; //"/g_new"
-		^cmdList.add(cmd);
+		cmdList.add(cmd);
 	}
 
 	moveNodeToHeadCommand { arg cmdList, aNode;
@@ -345,6 +352,9 @@ Synth : Node {
 		^synth
 	
 	} 
+	*replace { arg synthToReplace, defName, args;
+		^this.new(defName, args, synthToReplace, \addReplace)
+	}
 	
 	*newPaused {arg defName,args,target,addAction=\addToTail;
 		var cmd, synth;
@@ -413,14 +423,14 @@ Synth : Node {
 RootNode : Group {
 	
 	classvar <roots;
-	var nodeWatcher, <>connected;
+	var nodeWatcher, <connected;
 	
 	*new { arg server, connected=true;
 		server = server ?? {Server.local};
 		
 		^(roots.at(server.name) ?? {
-			^super.prNew.rninit(server).connected_(connected)
-		})
+			^super.prNew.rninit(server)
+		}).connect(connected)
 	}
 	rninit { arg s; 
 		server = s;
