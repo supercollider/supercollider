@@ -18,15 +18,32 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+/*
+changes by jan trutzschler 9/9/2002
+the midiReadProc calls doAction in the class MIDIIn.
+with the arguments: inUid, status, chan, val1, val2
+ added prDisposeMIDIClient
+ added prRestartMIDI
+*/
 
 #include <Carbon/Carbon.h>
 #include <CoreMIDI/CoreMIDI.h>
 #include "SCBase.h"
-#include "SC_BoundsMacros.h"
-#include "PyrPrimitive.h"
 #include "VMGlobals.h"
+#include "PyrSymbolTable.h"
+#include "PyrInterpreter.h"
+#include "PyrPrimitive.h"
+#include "PyrObjectProto.h"
+#include "PyrPrimitiveProto.h"
+#include "PyrKernelProto.h"
+#include "SC_InlineUnaryOp.h"
+#include "SC_InlineBinaryOp.h"
+#include "PyrSched.h"
 
-extern PyrSymbol* s_doaction;
+PyrSymbol* s_domidiaction;
+//jt
+PyrSymbol * s_midiin;
+
 
 const int kMaxMidiPorts = 16;
 MIDIClientRef gMIDIClient = 0;
@@ -38,8 +55,32 @@ void midiNotifyProc(const MIDINotification *msg, void* refCon)
 {
 }
 
-void midiProcessPacket(MIDIPacket *pkt)
+void midiProcessPacket(MIDIPacket *pkt, int srcRefCon)
 {
+ //jt
+    if(pkt) {
+     pthread_mutex_lock (&gLangMutex); //dont know if this is really needed/seems to be more stable..
+
+      VMGlobals *g = gMainVMGlobals;
+      uint8 status = pkt->data[0] & 0xF0;
+       int srcNr = (int) srcRefCon;
+        g->canCallOS = true;
+        
+        ++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the sc-coremidi-object stored in the c++ object
+        //set arguments:
+        ++g->sp;SetInt(g->sp,  srcNr); //val2
+        ++g->sp;  SetInt(g->sp, status); //status
+        ++g->sp;  SetInt(g->sp, pkt->data[0] - (status & 0xF0)); //chan
+        ++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+        ++g->sp;SetInt(g->sp,  pkt->data[2]); //val2
+        
+        //call a function in the interpreter
+        runInterpreter(g, s_domidiaction, 6);
+        g->canCallOS = false;
+    pthread_mutex_unlock (&gLangMutex); 
+    }
+//
+ /* this is handled in MIDIIn.sc
     uint8 status = pkt->data[0] & 0xF0;
     switch (status) {
         case 0x80 :
@@ -59,15 +100,21 @@ void midiProcessPacket(MIDIPacket *pkt)
         case 0xF0 :
             break;  
     }
+    */
 }
 
 void midiReadProc(const MIDIPacketList *pktlist, void* readProcRefCon, void* srcConnRefCon)
 {
     MIDIPacket *pkt = (MIDIPacket*)pktlist->packet;
+    int src;
+    PyrSlot* port;
+    port = (PyrSlot*) srcConnRefCon;
+   slotIntVal(port, &src);
     for (int i=0; i<pktlist->numPackets; ++i) {
-        midiProcessPacket(pkt);
+        midiProcessPacket(pkt, src);
         pkt = MIDIPacketNext(pkt);
     }
+    
 }
 
 void midiCleanUp();
@@ -96,7 +143,7 @@ void initMIDI(int numIn, int numOut)
         sprintf(str, "in%d\n", i);
         CFStringRef inputPortName = CFStringCreateWithCString(alloc, str, enc);
         
-        err = MIDIInputPortCreate(gMIDIClient, inputPortName, midiReadProc, nil, gMIDIInPort+i);
+        err = MIDIInputPortCreate(gMIDIClient, inputPortName, midiReadProc, &i, gMIDIInPort+i);
         if (err) {
             gNumMIDIInPorts = i;
             post("Could not create MIDI port %s. error %d\n", str, err);
@@ -212,8 +259,11 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-	
-	int err, inputIndex, uid;
+        
+        PyrSlot *o = new PyrSlot;
+        
+        
+        int err, inputIndex, uid;
 	err = slotIntVal(b, &inputIndex);
 	if (err) return err;
 	if (inputIndex < 0 || inputIndex >= gNumMIDIInPorts) return errIndexOutOfRange;
@@ -221,11 +271,15 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(c, &uid);
 	if (err) return err;
 	
-	gMIDIInPort[inputIndex];
+	//gMIDIInPort[inputIndex];
 
 	MIDIEndpointRef src = MIDIGetSourceByUID(uid);
-	if (!src) return errFailed;
-	MIDIPortConnectSource(gMIDIInPort[inputIndex], src, NULL);
+       	if (!src) return errFailed;
+       
+        //pass the uid to the midiReadProc to identify the src
+        slotCopy(o, c, 1);
+       
+        MIDIPortConnectSource(gMIDIInPort[inputIndex], src, o);
 	
 	return errNone;
 }
@@ -236,7 +290,8 @@ int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-	
+	PyrSlot *o = new PyrSlot;
+        
 	int err, numIn, numOut;
 	err = slotIntVal(b, &numIn);
 	if (err) return err;
@@ -248,6 +303,22 @@ int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
 	
 	return errNone;
 }
+int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed);
+int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot *a;
+    a = g->sp - 1;
+    OSStatus err = MIDIClientDispose(gMIDIClient);
+    if (err) post("error could not dispose MIDIClient \n");
+    return errNone;	
+
+}
+int prRestartMIDI(VMGlobals *g, int numArgsPushed);
+int prRestartMIDI(VMGlobals *g, int numArgsPushed)
+{
+    MIDIRestart();
+    return errNone;	
+}
 
 void initMIDIPrimitives()
 {
@@ -255,9 +326,14 @@ void initMIDIPrimitives()
         
 	base = nextPrimitiveIndex();
 	index = 0;
-	
-	definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
+        //jt
+	s_midiin = getsym("MIDIIn");
+        s_domidiaction = getsym("doAction");
+	//
+        definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
 	definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);	
 	definePrimitive(base, index++, "_ConnectMIDIIn", prConnectMIDIIn, 3, 0);	
-	
+	definePrimitive(base, index++, "_DisposeMIDIClient", prDisposeMIDIClient, 1, 0);
+	definePrimitive(base, index++, "_RestartMIDI", prRestartMIDI, 1, 0);
+        
 }
