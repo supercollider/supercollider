@@ -987,24 +987,7 @@ NSString* pathOfHelpFileFor(NSString* selection)
 	helpFilePath = helpFileWithName(fileManager, selection, @".rtf", nil);
 	if (helpFilePath) return helpFilePath;
 
-	helpFilePath = helpFileWithName(fileManager, selection, @".help", nil);
-	if (helpFilePath) return helpFilePath;
-	
-	helpFilePath = helpFileWithName(fileManager, selection, @".sc", nil);
-	if (helpFilePath) return helpFilePath;
-
 	helpFilePath = helpFileWithName(fileManager, selection, @".rtfd", nil);
-	if (helpFilePath) return helpFilePath;
-
-        
-        // support for html help files
-        helpFilePath = helpFileWithName(fileManager, selection, @".htm", nil);
-	if (helpFilePath) return helpFilePath;
-        
-        helpFilePath = helpFileWithName(fileManager, selection, @".html", nil);
-	if (helpFilePath) return helpFilePath;
-                                // special case for html files where link contains file suffix
-	helpFilePath = helpFileWithName(fileManager, selection, @"", nil);
 	if (helpFilePath) return helpFilePath;
 
     return helpFilePath; // possibly == NULL
