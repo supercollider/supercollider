@@ -7,7 +7,7 @@ Collection {
 	}
 	*with { | ... args |
 		var newColl;
-		// answer an array of my class of the given arguments
+		// answer a collection of my class of the given arguments
 		// the class Array has a simpler implementation
 		newColl = this.new(args.size);
 		newColl.addAll(args);
