@@ -127,9 +127,9 @@ Server : Model {
 		addr.performList(\sendBundle, time, args);
 	}
 	
-	sendCmdList { arg commands, latency;
-		//"sent to server: ".post; commands.asCompileString.postln;
-		this.performList(\sendBundle, [latency ? this.latency ] ++ commands) 
+	sendMsgList { arg msgList, latency;
+		//"sent to server: ".post; msgList.asCompileString.postln;
+		this.performList(\sendBundle, [latency ? this.latency ] ++ msgList) 
 	}
 	// 
 	sendSynthDef { arg name;
