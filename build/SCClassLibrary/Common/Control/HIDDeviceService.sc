@@ -8,7 +8,7 @@ HIDDevice {
 		elements = Array.new;
 	}
 
-	getValue{arg elementNum=0;
+	value{arg elementNum=0;
 		^HIDDeviceService.getValue(locID,elements.at(elementNum).cookie)
 	}
 	
@@ -74,7 +74,7 @@ HIDDeviceService{
 		})
 	}
 	
-	*getValue{arg locID, cookie;
+	*value{arg locID, cookie;
 		_HIDGetValue
 	}	
 	
