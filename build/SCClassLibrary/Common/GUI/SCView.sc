@@ -77,8 +77,12 @@ SCView {  // abstract class
 		^this.primitiveFailed
 	}
 	remove {
-		parent.prRemoveChild(this);
-		this.prRemove;
+		if(dataptr.notNil,{
+			parent.prRemoveChild(this);
+			this.prRemove;
+		},{
+			"SCView-remove : this view already removed".warn;
+		});
 	}
 	/*
 	resize behaviour in an SCCompositeView:
@@ -216,15 +220,12 @@ SCContainerView : SCView { // abstract class
 	
 	prRemoveChild { arg child;
 		children.remove(child);
-		// decorator replace
+		// ... decorator replace all
 	}
-	//bounds_  replace children
+	//bounds_  ... replace all
 
-	// private
 	prClose {
-		//("SCContainerView-prClose" + this).debug(this);
 		super.prClose;
-		//children.dump;
 		children.do({ arg item; item.prClose });
 	}
 }
@@ -400,7 +401,7 @@ SCRangeSlider : SCSliderBase {
 		^currentDrag.isKindOf(Point);
 	}
 	receiveDrag {
-	// changed to x,y instead of lo, hi
+		// changed to x,y instead of lo, hi
 		this.lo = currentDrag.x;
 		this.hi = currentDrag.y;
 		currentDrag = nil;
@@ -484,7 +485,6 @@ SCButton : SCControlView {
 			["Push", Color.black, Color.red],
 			["Pop", Color.white, Color.blue]];
 		^v
-
 	}
 	
 	value {
@@ -788,33 +788,33 @@ SCMultiSliderView : SCView {
 	properties {
 		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \thumbWidth, \absoluteX, \isFilled]
 	}	
-	value {//returns array
+	value { //returns array
 		^this.getProperty(\value, Array.newClear(this.size))
 	}
-	value_ {arg val;
+	value_ { arg val;
 		this.size = val.size;
 		^this.setProperty(\value, val)
 	}
-	reference {//returns array
+	reference { //returns array
 		^this.getProperty(\referenceValues, Array.newClear(this.size))
 	}
-	reference_ {arg val;
+	reference_ { arg val;
 		//this.size = val.size;
 		^this.setProperty(\referenceValues, val)
 	}
 	index { //returns selected index
 		^this.getProperty(\x)
 	}
-	index_ {arg inx;
+	index_ { arg inx;
 		this.setProperty(\x, inx)
 	}
-	isFilled_{arg abool;
+	isFilled_ { arg abool;
 		^this.setProperty(\isFilled, abool);
 	}
-	xOffset_{arg aval;
+	xOffset_ { arg aval;
 		^this.setProperty(\xOffset, aval);
 	}
-	gap_ {arg inx;
+	gap_ { arg inx;
 		gap = inx;
 		this.setProperty(\xOffset, inx)
 	}
@@ -828,44 +828,44 @@ SCMultiSliderView : SCView {
 	currentvalue { //returns value of selected index
 		^this.getProperty(\y)
 	}
-	fillColor_{arg acolor;
+	fillColor_ { arg acolor;
 		^this.setProperty(\fillColor, acolor)
 	}
-	strokeColor_{arg acolor;
+	strokeColor_ { arg acolor;
 		^this.setProperty(\strokeColor, acolor)
 	}
-	colors_{arg strokec, fillc;
+	colors_ { arg strokec, fillc;
 		this.strokeColor_(strokec);
 		this.fillColor_(fillc);
 	}
-	currentvalue_ {arg iny;
+	currentvalue_ { arg iny;
 		this.setProperty(\y, iny)
 	}
-	showIndex_{arg abool;
+	showIndex_ { arg abool;
 		this.setProperty(\showIndex, abool)
 		}
-	drawLines{arg abool;
+	drawLines { arg abool;
 		this.setProperty(\drawLines, abool)
 	}
-	drawLines_{arg abool;
+	drawLines_ { arg abool;
 		this.drawLines(abool)
 	}
-	drawRects_{arg abool;
+	drawRects_ { arg abool;
 		this.setProperty(\drawRects, abool)
 	}
-	readOnly_{arg val;
+	readOnly_ { arg val;
 		this.setProperty(\readOnly, val);
 	}
-	thumbSize_{arg val;
+	thumbSize_ { arg val;
 		this.setProperty(\thumbSize, val)
 	}
-	indexThumbSize_{arg val;
+	indexThumbSize_ { arg val;
 		this.setProperty(\indexThumbSize, val)
 	}
-	valueThumbSize_{arg val;
+	valueThumbSize_ { arg val;
 		this.setProperty(\valueThumbSize, val)
 	}
-	indexIsHorizontal_{arg val;
+	indexIsHorizontal_ { arg val;
 		this.setProperty(\isHorizontal,val);	
 	}
 	canReceiveDrag {
@@ -874,10 +874,10 @@ SCMultiSliderView : SCView {
 	receiveDrag {
 		//this.object = currentDrag;
 		if(currentDrag.at(0).isKindOf(Array), { 
-		this.value_(currentDrag.at(0));
-		this.reference_(currentDrag.at(1));
+			this.value_(currentDrag.at(0));
+			this.reference_(currentDrag.at(1));
 		},{
-		this.value_(currentDrag);
+			this.value_(currentDrag);
 		});
 		this.doAction;
 		currentDrag = nil;
@@ -966,18 +966,22 @@ SCEnvelopeView : SCMultiSliderView {
 		this.select(indx);
 		this.setProperty(\connectToInputs,aconn.asFloat);
 	}
-	value_ {arg val;
+	value_ { arg val;
+		if(val.at(1).size != val.at(0).size,{
+			// otherwise its a fatal crash
+			"SCEnvelopeView got mismatched times/levels arrays".die;
+		});
 		this.size = val.at(0).size;
 		^this.setProperty(\value, val)
 	}
-	string_{arg astring;
+	string_ { arg astring;
 		items =items.add(astring);
 		^this.setProperty(\string, astring)
 	}
-	prString_{arg astring;
+	prString_ { arg astring;
 		^this.setProperty(\string, astring)
 	}
-	strings_{arg astrings;
+	strings_ { arg astrings;
 		astrings.do({arg str,i;
 		this.select(i);
 		this.prString_(str);
@@ -991,58 +995,58 @@ SCEnvelopeView : SCMultiSliderView {
 		axy = Array.with(ax, ay);
 		^this.getProperty(\value, axy)
 	}
-	thumbHeight_{arg index, height;
+	thumbHeight_ { arg index, height;
 		this.select(index);
 		this.setProperty(\thumbWidth, height);
 		this.select(-1);
 	}
-	thumbWidth_{arg index, width;
+	thumbWidth_ { arg index, width;
 		this.select(index);
 		this.setProperty(\thumbWidth, width);
 		this.select(-1);
 	}
-	connect{arg aconnections; //draw a connection between the selected index 
+	connect { arg aconnections; //draw a connection between the selected index 
 		^this.setProperty(\connect, aconnections.asFloat);
 	}
-	select{arg index; //this means no refresh;
+	select { arg index; //this means no refresh;
 		^this.setProperty(\setIndex, index);
-		}
-	selectIndex{arg index; //this means that the view will be refreshed
+	}
+	selectIndex { arg index; //this means that the view will be refreshed
 		^this.setProperty(\selectedIndex, index);
-		}
+	}
 	x { 						//returns selected x
 		^this.getProperty(\x);
 	}
 	y {
 		^this.getProperty(\y);
 	}
-	x_{arg ax; 				
+	x_ { arg ax;
 		^this.setProperty(\x, ax);
 	}
-	y_{arg ay;
+	y_ { arg ay;
 		^this.setProperty(\y, ay);
 	}
 	index {
 		^this.getProperty(\selectedIndex)
-		}
+	}
 	lastIndex {
 		^this.getProperty(\lastIndex)
-		}
-	setStatic {arg index, abool;
+	}
+	setStatic { arg index, abool;
 		this.select(index);
 		this.setProperty(\isStatic, abool);
 		this.select(-1); //unselect
-		}
-	selectionColor_{arg acolor;
+	}
+	selectionColor_ { arg acolor;
 		^this.setProperty(\selectionColor, acolor)
-		}
+	}
 	receiveDrag {
 		if(currentDrag.isKindOf(String), {
-		this.addValue;
-		items = items.insert(this.lastIndex + 1, currentDrag);
-		this.strings_(items);		
+			this.addValue;
+			items = items.insert(this.lastIndex + 1, currentDrag);
+			this.strings_(items);		
 		},{		
-		this.value_(currentDrag);
+			this.value_(currentDrag);
 		});
 	}
 	beginDrag {
@@ -1050,28 +1054,26 @@ SCEnvelopeView : SCMultiSliderView {
 	}
 	addValue{arg xval, yval;
 		var arr, arrx, arry, aindx;
-			aindx = this.lastIndex;
-			aindx.postln;
-			if(xval.isNil && yval.isNil, {
+		aindx = this.lastIndex;
+		aindx.postln;
+		if(xval.isNil && yval.isNil, {
 			arr = this.value;
 			arrx = arr@0;
 			arry = arr@1;
 			xval = arrx.at(aindx) + 0.05;
 			yval = arry.at(aindx);
-			});
-			if(aindx < (arrx.size - 1), {
+		});
+		if(aindx < (arrx.size - 1), {
 			arrx = arrx.insert(aindx + 1 , xval);
 			arry = arry.insert(aindx + 1, yval);
-			},{
+		},{
 			arrx = arrx.add( xval );
 			arry = arry.add( yval);
-			});
-			
-			this.value_([arrx,arry]);
-	
-	}
-	
+		});		
+		this.value_([arrx,arry]);
+	}	
 }
+
 Gradient {
 	var color1, color2, direction, steps;
 	*new { arg color1, color2, direction=\h, steps=64;
