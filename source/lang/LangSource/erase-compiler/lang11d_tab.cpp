@@ -2115,16 +2115,16 @@ case 111:
 {
 					PyrParseNode* elems;
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)yyvsp[-1], NULL);
-					elems = (long)linkNextNode(key, (PyrParseNode*)yyvsp[0]); 
-					yyval = (long)linkNextNode(yyvsp[-3], elems); 
+					elems = (PyrParseNode*)linkNextNode(key, (PyrParseNode*)yyvsp[0]); 
+					yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-3], elems); 
 				;
     break;}
 case 112:
 #line 819 "lang11d"
 {
 					PyrParseNode* elems;
-					elems = (long)linkNextNode(yyvsp[-2], (PyrParseNode*)yyvsp[0]); 
-					yyval = (long)linkNextNode(yyvsp[-4], elems); 
+					elems = (PyrParseNode*)linkNextNode(yyvsp[-2], (PyrParseNode*)yyvsp[0]); 
+					yyval = (long)linkNextNode((PyrParseNode*)yyvsp[-4], elems); 
 				;
     break;}
 case 114:

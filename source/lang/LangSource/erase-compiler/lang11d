@@ -812,14 +812,14 @@ arrayelems1	: exprseq
 				{
 					PyrParseNode* elems;
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)$3, NULL);
-					elems = (long)linkNextNode(key, (PyrParseNode*)$4); 
-					$$ = (long)linkNextNode($1, elems); 
+					elems = (PyrParseNode*)linkNextNode(key, (PyrParseNode*)$4); 
+					$$ = (long)linkNextNode((PyrParseNode*)$1, elems); 
 				}
 			| arrayelems1 ',' exprseq ':' exprseq
 				{
 					PyrParseNode* elems;
-					elems = (long)linkNextNode($3, (PyrParseNode*)$5); 
-					$$ = (long)linkNextNode($1, elems); 
+					elems = (PyrParseNode*)linkNextNode($3, (PyrParseNode*)$5); 
+					$$ = (long)linkNextNode((PyrParseNode*)$1, elems); 
 				}
 			;
 								
