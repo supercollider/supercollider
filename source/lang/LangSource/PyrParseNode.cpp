@@ -1084,12 +1084,12 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode *cnode, int *varIndex)
 	
 	if (!node->arglist) {
 		numFormalArgs = 1;
-		if (numActualArgs > numFormalArgs) {
+		if (numActualArgs != numFormalArgs) {
 			return methNormal;
 		}
 	} else {
 		numFormalArgs = 1 + nodeListLength((PyrParseNode*)node->arglist->varDefs);
-		if (numActualArgs > numFormalArgs) {
+		if (numActualArgs != numFormalArgs) {
 			return methNormal;
 		}
 		
