@@ -6,7 +6,10 @@ Instr  {
 	var  <>name, <>func,<>specs,<outSpec;
 	
 	*new { arg name, func,specs,outSpec;
-		^super.newCopyArgs(name.asArray,func).init(specs,outSpec).write;
+		if(name.isKindOf(String) or: {name.isKindOf(Symbol)},{
+			name = [name.asSymbol];
+		});
+		^super.newCopyArgs(name,func).init(specs,outSpec).write;
 	}
 
 	init { arg specs,outsp;
@@ -19,7 +22,6 @@ Instr  {
 		},{
 			outSpec = outsp.asSpec;
 		});
-
 		this.class.put(this);
 	}
 	
@@ -59,7 +61,7 @@ Instr  {
 			??
 		{ 	
 			// if not previously loaded, try loading the file
-			loadPath(instrDirectory ++ [name].flat.first.asString ++ ".rtf");
+			(instrDirectory ++ [name].flat.first.asString ++ ".rtf").loadPath;
 		}
 		)
 	}

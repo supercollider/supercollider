@@ -253,8 +253,10 @@ PageLayout  {
 				margin.right + hspacer,
 				margin.bottom + vspacer,
 				(ow.bounds.left + 100).wrap(0,900),
-				(ow.bounds.top+10).wrap(0,300));
-		this.window.background_(ow.background);
+				(ow.bounds.top+10).wrap(0,300),
+				hspacer,
+				vspacer);
+		this.window.view.background_(ow.view.background);
 		tabs.do({
 			this.layRight(10,10);
 		});
