@@ -287,6 +287,11 @@ public:
 
 protected:
 	void setValueFromPoint(SCPoint point);
+// sc.solar addition
+        void moveRangeFromPoint(SCPoint point);
+        void adjustLoFromPoint(SCPoint point);
+        void adjustHiFromPoint(SCPoint point);
+// sc.solar addition end
 	void calcRangeRect();
 	
 	SCRect mRangeRect;

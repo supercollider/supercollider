@@ -1137,13 +1137,88 @@ void SCRangeSlider::calcRangeRect()
 void SCRangeSlider::mouseBeginTrack(SCPoint where, int modifiers)
 {
     mAnchor = where;
-    setValueFromPoint(where);
+    // sc.solar: allow drag
+    //setValueFromPoint(where);
+}
+
+void SCRangeSlider::moveRangeFromPoint(SCPoint where)
+{
+    double moveableRange, lo, hi, pos, range;
+    if (mBounds.width > mBounds.height) {
+        moveableRange = mBounds.width - 5;
+        pos = (where.x - mBounds.x - 2) / moveableRange;
+        range = mHi - mLo;
+        if (pos-(range/2) < 0.0) {
+            lo = 0;
+            hi = range;
+        } else if (pos+(range/2) > 1.0) {
+            hi = 1;
+            lo = 1 - range;
+        } else {
+            lo = pos-(range/2);
+            hi = pos+(range/2);
+        }
+    } else {
+        moveableRange = mBounds.height - 5;
+        pos = (where.y - mBounds.y - 2) / moveableRange;
+        range = mHi - mLo;
+        if (pos-(range/2) < 0.0) {
+            lo = 0;
+            hi = range;
+        } else if (pos+(range/2) > 1.0) {
+            hi = 1;
+            lo = 1 - range;
+        } else {
+            lo = pos-(range/2);
+            hi = pos+(range/2);
+        }
+    }
+    setValue(lo, hi, true);
+}
+
+void SCRangeSlider::adjustLoFromPoint(SCPoint where)
+{
+    double moveableRange, lo, hi, pos;
+    if (mBounds.width > mBounds.height) {
+        moveableRange = mBounds.width - 5;
+        pos = (where.x - mBounds.x - 2) / moveableRange;
+        lo = pos;
+        hi = mHi;
+    } else {
+        moveableRange = mBounds.height - 5;
+        pos = (where.y - mBounds.y - 2) / moveableRange;
+        lo = pos;
+        hi = mHi;
+    }
+    setValue(lo, hi, true);
+}
+void SCRangeSlider::adjustHiFromPoint(SCPoint where)
+{
+    double moveableRange, lo, hi, pos;
+    if (mBounds.width > mBounds.height) {
+        moveableRange = mBounds.width - 5;
+        pos = (where.x - mBounds.x - 2) / moveableRange;
+        lo = mLo;
+        hi = pos;
+    } else {
+        moveableRange = mBounds.height - 5;
+        pos = (where.y - mBounds.y - 2) / moveableRange;
+        lo = mLo;
+        hi = pos;
+    }
+    setValue(lo, hi, true);
 }
 
 void SCRangeSlider::mouseTrack(SCPoint where, int modifiers)
 {
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
+    } else if  (modifiers & NSControlKeyMask) {
+        moveRangeFromPoint(where);
+    } else if (modifiers & NSShiftKeyMask) {
+        adjustLoFromPoint(where);
+    } else if (modifiers & NSAlternateKeyMask) {
+        adjustHiFromPoint(where);
     } else {
         setValueFromPoint(where);
     }
