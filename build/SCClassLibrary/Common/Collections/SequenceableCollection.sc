@@ -522,7 +522,14 @@ SequenceableCollection : Collection {
 		^this.collect({ arg item; item.rate }).minItem; 
 		// 'scalar' > 'control' > 'audio'
 	}
+	
+	// support UGen range
 
+	range { arg lo = 0.0, hi = 1.0;
+		lo = lo.asCollection;
+		hi = hi.asCollection;
+		^this.collect({ arg ugen, i; ugen.range(lo.wrapAt(i), hi.wrapAt(i)) })
+	}
 	
 	// sorting
 	sort { arg function; 
