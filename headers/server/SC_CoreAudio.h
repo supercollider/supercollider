@@ -88,7 +88,7 @@ protected:
 	pthread_t mThread;
 	bool mRunThreadFlag;
 	uint32 mSafetyOffset;
-	PriorityQueueT<SC_ScheduledEvent, 1024> mScheduler;
+	PriorityQueueT<SC_ScheduledEvent, 2048> mScheduler;
 	SC_Lock *mProcessPacketLock;
 	int mNumSamplesPerCallback;
 	uint32 mPreferredHardwareBufferFrameSize;
