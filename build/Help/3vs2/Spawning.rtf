@@ -106,7 +106,7 @@ A simple SC2 Spawn example is shown below, followed by its translation into SC3 
 	\
 \cf2 // The same example in SC3 (will execute)\cf0 \
 \
-	s = \cf3 Server\cf0 .local;\
+	s = \cf3 Server\cf0 .default;\
 	s.boot;\
 	(\
 	\cf3 SynthDef\cf0 (\cf4 "help-EnvGen"\cf0 ,\{ \cf3 arg\cf0  out=0;\
@@ -118,7 +118,7 @@ A simple SC2 Spawn example is shown below, followed by its translation into SC3 
 	)\
 	\
 	(\
-	r = \cf3 Routine\cf0 .new(\{ \{ \cf3 Synth\cf0 .new(\cf4 "help-EnvGen"\cf0 , s); 1.yield; \}.loop \}); \cf2 // loop every one second\cf0 \
+	r = \cf3 Routine\cf0 .new(\{ \{ \cf3 Synth\cf0 .new(\cf4 "help-EnvGen"\cf0 ); 1.yield; \}.loop \}); \cf2 // loop every one second\cf0 \
 	\cf3 SystemClock\cf0 .play(r);\
 	)	\
 	\
@@ -138,7 +138,7 @@ A simple SC2 Spawn example is shown below, followed by its translation into SC3 
 
 \f2\fs18 \cf2 // SynthDefs on the fly\cf0 \
 \
-	s = \cf3 Server\cf0 .local;\
+	s = \cf3 Server\cf0 .default;\
 	s.boot;\
 	(\
 	t = \cf3 TempoClock\cf0 .new;\
@@ -235,7 +235,7 @@ TSpawn's functionality can be replicated with
 \f1\b0 . See their individual helpfiles for details on their arguments and functionality.\
 \
 	
-\f2\fs18 s = \cf3 Server\cf0 .local;\
+\f2\fs18 s = \cf3 Server\cf0 .default;\
 	s.boot;\
 	\
 	(\
