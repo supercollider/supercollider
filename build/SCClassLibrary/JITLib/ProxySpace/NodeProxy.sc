@@ -159,14 +159,14 @@ BusPlug : AbstractFunction {
 	///// monitoring //////////////
 	
 	//play { arg group=0, atTime, bus, multi=false;
-	play { arg busIndex=0, nChan, target, multi=false;
+	play { arg busIndex=0, nChan, group, multi=false;
 		var bundle, divider, n, localServer, ok;
 		
 		localServer = this.localServer; //multi client support
 		if(localServer.serverRunning.not, { "server not running".inform; ^nil });
-		target = (target ? localServer).asGroup;
+		group = (group ? localServer).asGroup;
 		if(multi.not and: { monitorGroup.isPlaying }, { //maybe should warn if not same server
-			if(monitorGroup.group !== target) { monitorGroup.moveToTail(target) };
+			if(monitorGroup.group !== group) { monitorGroup.moveToTail(group) };
 			^monitorGroup 
 		});
 			
@@ -180,7 +180,7 @@ BusPlug : AbstractFunction {
 		
 			bundle = MixedBundle.new;
 			if(monitorGroup.isPlaying.not, { 
-				monitorGroup = Group.newToBundle(bundle, target, \addToTail);
+				monitorGroup = Group.newToBundle(bundle, group, \addToTail);
 				NodeWatcher.register(monitorGroup);
 				[monitorGroup, monitorGroup.group].postln;
 			});
