@@ -33,8 +33,8 @@ Score {
 	*play { arg list, server;
 		^this.new(list).play(server);
 	}	
-	sort { // needs a revisit: messages with identical timetag are not reliable
-		score = score.quickSort({ arg a, b; a[0] < b[0] });
+	sort {
+		score = score.sort({ arg a, b; a[0] < b[0] });
 	}
 	play { arg server;
 		var size, osccmd, timekeep, inserver, rout;
