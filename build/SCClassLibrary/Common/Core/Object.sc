@@ -91,7 +91,14 @@ Object {
 		_ObjectPerformList; 
 		^this.primitiveFailed 
 	}
-	
+	tryPerform { arg selector ... args;
+		^if(this.respondsTo(selector),{
+			this.performList(selector,args)
+		},{
+			nil // you can use ?? for an else clause
+		})
+	}
+
 	// copying
 	copy { ^this.shallowCopy }
 	contentsCopy { ^this.shallowCopy }
