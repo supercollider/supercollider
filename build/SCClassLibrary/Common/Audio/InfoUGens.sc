@@ -1,22 +1,34 @@
 
-SampleRate : UGen {
+InfoUGenBase : UGen {
 	*ir { 
 		^this.multiNew('control')
 	}
 }
 
-SampleDur : SampleRate {}
-RadiansPerSample : SampleRate {}
-ControlRate : SampleRate {}
-
-BufSampleRate : UGen {
+BufInfoUGenBase : UGen {
 	*kr { arg bufnum;
 		^this.multiNew('control', bufnum)
 	}
 }
 
-BufRateScale : BufSampleRate {}
-BufFrames : BufSampleRate {}
-BufSamples : BufSampleRate {}
-BufDur : BufSampleRate {}
-BufChannels : BufSampleRate {}
+SampleRate : InfoUGenBase {}
+SampleDur : InfoUGenBase {}
+RadiansPerSample : InfoUGenBase {}
+ControlRate : InfoUGenBase {}
+
+NumOutputBuses : InfoUGenBase {}
+NumInputBuses : InfoUGenBase {}
+NumAudioBuses : InfoUGenBase {}
+NumControlBuses : InfoUGenBase {}
+NumBuffers : InfoUGenBase {}
+NumRunningSynths : InfoUGenBase {}
+
+BufSampleRate : BufInfoUGenBase {}
+BufRateScale : BufInfoUGenBase {}
+BufFrames : BufInfoUGenBase {}
+BufSamples : BufInfoUGenBase {}
+BufDur : BufInfoUGenBase {}
+BufChannels : BufInfoUGenBase {}
+
+////////////////////////////////////////////
+

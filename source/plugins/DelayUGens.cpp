@@ -205,17 +205,16 @@ extern "C"
 {
 	void load(InterfaceTable *inTable);
 
-	void SampleRate_next(Unit *unit, int inNumSamples);
 	void SampleRate_Ctor(Unit *unit, int inNumSamples);
-
-	void ControlRate_next(Unit *unit, int inNumSamples);
 	void ControlRate_Ctor(Unit *unit, int inNumSamples);
-
-	void SampleDur_next(Unit *unit, int inNumSamples);
 	void SampleDur_Ctor(Unit *unit, int inNumSamples);
-
-	void RadiansPerSample_next(Unit *unit, int inNumSamples);
 	void RadiansPerSample_Ctor(Unit *unit, int inNumSamples);
+	void NumInputBuses_Ctor(Unit *unit, int inNumSamples);
+	void NumOutputBuses_Ctor(Unit *unit, int inNumSamples);
+	void NumAudioBuses_Ctor(Unit *unit, int inNumSamples);
+	void NumControlBuses_Ctor(Unit *unit, int inNumSamples);
+	void NumBuffers_Ctor(Unit *unit, int inNumSamples);
+	void NumRunningSynths_Ctor(Unit *unit, int inNumSamples);
 
 	void BufSampleRate_next(BufInfoUnit *unit, int inNumSamples);
 	void BufSampleRate_Ctor(BufInfoUnit *unit, int inNumSamples);
@@ -370,6 +369,36 @@ void SampleDur_Ctor(Unit *unit, int inNumSamples)
 void RadiansPerSample_Ctor(Unit *unit, int inNumSamples)
 {
 	ZOUT0(0) = unit->mWorld->mFullRate.mRadiansPerSample;
+}
+
+void NumInputBuses_Ctor(Unit *unit, int inNumSamples)
+{
+	ZOUT0(0) = unit->mWorld->mNumInputs;
+}
+
+void NumOutputBuses_Ctor(Unit *unit, int inNumSamples)
+{
+	ZOUT0(0) = unit->mWorld->mNumOutputs;
+}
+
+void NumAudioBuses_Ctor(Unit *unit, int inNumSamples)
+{
+	ZOUT0(0) = unit->mWorld->mNumAudioBusChannels;
+}
+
+void NumControlBuses_Ctor(Unit *unit, int inNumSamples)
+{
+	ZOUT0(0) = unit->mWorld->mNumControlBusChannels;
+}
+
+void NumBuffers_Ctor(Unit *unit, int inNumSamples)
+{
+	ZOUT0(0) = unit->mWorld->mNumSndBufs;
+}
+
+void NumRunningSynths_Ctor(Unit *unit, int inNumSamples)
+{
+	ZOUT0(0) = unit->mWorld->mNumGraphs;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4888,6 +4917,12 @@ void load(InterfaceTable *inTable)
 	DefineInfoUnit(SampleRate);
 	DefineInfoUnit(SampleDur);
 	DefineInfoUnit(RadiansPerSample);
+	DefineInfoUnit(NumInputBuses);
+	DefineInfoUnit(NumOutputBuses);
+	DefineInfoUnit(NumAudioBuses);
+	DefineInfoUnit(NumControlBuses);
+	DefineInfoUnit(NumBuffers);
+	DefineInfoUnit(NumRunningSynths);
 
 #define DefineBufInfoUnit(name) \
 	(*ft->fDefineUnit)(#name, sizeof(BufInfoUnit), (UnitCtorFunc)&name##_Ctor, 0);
