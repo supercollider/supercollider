@@ -663,20 +663,31 @@ SCErr meth_n_before(World *inWorld, int inSize, char *inData, ReplyAddress* /*in
 	sc_msg_iter msg(inSize, inData);	
 
 	Node *prevNode = 0;
+	Node *prevTarget = 0;
 	while (msg.remain()) {
 		Node *node = Msg_GetNode(inWorld, msg);
-		Node *beforeThisOne = Msg_GetNode(inWorld, msg);
+		Node *target = Msg_GetNode(inWorld, msg);
 		
-		if (!node || !beforeThisOne) continue; // tolerate failure
-		// don't report redundant updates.
-		if (prevNode && prevNode != node) Node_StateMsg(prevNode, kNode_Move);
-				
-		Node_Remove(node);
-		Node_AddBefore(node, beforeThisOne);
+		if (!node || !target) continue; // tolerate failure
+		
+		if (prevNode && prevNode != node) 
+		{   
+			// move the last pair that succeeded
+			Node_Remove(prevNode);
+			Node_AddBefore(prevNode, prevTarget);
+			Node_StateMsg(prevNode, kNode_Move);
+		}
 	
 		prevNode = node;
+		prevTarget = target;
 	}
-	if (prevNode) Node_StateMsg(prevNode, kNode_Move);
+	if (prevNode) 
+	{   
+		// move the last pair that succeeded
+		Node_Remove(prevNode);
+		Node_AddBefore(prevNode, prevTarget);
+		Node_StateMsg(prevNode, kNode_Move);
+	}
 	else return kSCErr_NodeNotFound; // don't tolerate total failure
 
 	return kSCErr_None;
@@ -688,20 +699,31 @@ SCErr meth_n_after(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 	sc_msg_iter msg(inSize, inData);
 	
 	Node *prevNode = 0;
+	Node *prevTarget = 0;
 	while (msg.remain()) {
 		Node *node = Msg_GetNode(inWorld, msg);
-		Node *afterThisOne = Msg_GetNode(inWorld, msg);
+		Node *target = Msg_GetNode(inWorld, msg);
 		
-		if (!node || !afterThisOne) continue; // tolerate failure
-		// don't report redundant updates.
-		if (prevNode && prevNode != node) Node_StateMsg(prevNode, kNode_Move);
-			
-		Node_Remove(node);
-		Node_AddAfter(node, afterThisOne);
+		if (!node || !target) continue; // tolerate failure
+		
+		if (prevNode && prevNode != node) 
+		{   
+			// move the last pair that succeeded
+			Node_Remove(prevNode);
+			Node_AddAfter(prevNode, prevTarget);
+			Node_StateMsg(prevNode, kNode_Move);
+		}
 	
 		prevNode = node;
+		prevTarget = target;
 	}
-	if (prevNode) Node_StateMsg(prevNode, kNode_Move);
+	if (prevNode) 
+	{   
+		// move the last pair that succeeded
+		Node_Remove(prevNode);
+		Node_AddAfter(prevNode, prevTarget);
+		Node_StateMsg(prevNode, kNode_Move);
+	}
 	else return kSCErr_NodeNotFound; // don't tolerate total failure
 
 	return kSCErr_None;
