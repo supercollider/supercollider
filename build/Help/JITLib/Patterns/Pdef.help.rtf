@@ -12,7 +12,7 @@
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\fs24 \cf0 superclass: Tdef\
+\f2\fs24 \cf0 superclass: EventPatternProxy\
 \
 \
 \
@@ -69,9 +69,12 @@ it can be used to store event Patterns globally. Changes in this global library 
 \cf0 \ul \ulc0 using as stream reference\
 	\
 	
-\f0\b \ulnone pattern_	\
+\f0\b \ulnone source_	\
 			
 \f2\b0 set the pattern (internally done by *new(key, pattern)\
+			(
+\f0\b pattern_
+\f2\b0 (..) is equivalent)\
 	\ul \
 	
 \f0\b \ulnone asStream
@@ -85,15 +88,16 @@ it can be used to store event Patterns globally. Changes in this global library 
 \f2\b0 just like any pattern, embeds itself in stream\
 	\
 \ul using as EventStreamPlayer\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \ulnone \
+\ulnone \
 	
 \f0\b play(clock, protoEvent, quant)
 \f2\b0 \
 			starts the Pdef and creates a player. \
 			if you want to play multiple instances, use 
-\f0\b .playOnce(clock, protoEvent, quant)
-\f2\b0 	\
+\f0\b .playOnce(clock, protoEvent, quant)\
+			quant 
+\f2\b0 can be an array of [quant, phase]\
+			\
 	
 \f0\b stop
 \f2\b0 \
@@ -171,7 +175,7 @@ x = \cf2 Pseq\cf0 ([\cf2 Pdef\cf0 (\cf4 \\a\cf0 ), \cf2 Pdef\cf0 (\cf4 \\b\cf0 )
 \cf2 Pdef\cf0 (\cf4 \\a\cf0 , \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\Pdefhelp\cf0 , \cf4 \\dur\cf0 , 0.753, \cf4 \\degree\cf0 , \cf2 Pshuf\cf0 (#[0, 5, 4, 3, 2], \cf2 inf\cf0 )));\
 \
 x.stop;\
-\
+\cf2 Pdef\cf0 (\cf4 \\metronom\cf0 ).stop;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // Pdef can be used in multiple patterns\cf0 \
@@ -233,8 +237,8 @@ s.boot;\
 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf2 Pdef\cf0 (\cf4 \\x\cf0 ).play; \cf5 // play it. A resting pattern is used.\cf0 \
-\cf2 Pdef\cf0 (\cf4 \\y\cf0 ).play; \cf5 // play a second one (automatically instanciated)\cf0 \
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 ).play; \cf5 // play it. A silent resting pattern is used.\cf0 \
+\cf2 Pdef\cf0 (\cf4 \\y\cf0 ).play; \cf5 // play a second one (automatically instantiated)\cf0 \
 \
 \cf2 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -242,18 +246,18 @@ s.boot;\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 )); \
-\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5, 6], \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
-\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5, 6]+1, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
-\cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5, 6]-1, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
-\cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5]-2, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5b, 6], \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5b, 6]+1, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
+\cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5b, 6]-1, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
+\cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5b]-2, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // using fadeTime:\cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\y\cf0 ).fadeTime = 8.0;\
-\cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.125, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5, 6]+4.rand, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
-\cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5, 6]-2, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
+\cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.125, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5b, 6]+4.rand, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
+\cf2 Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pbind\cf0 (\cf4 \\dur\cf0 , 0.25, \cf4 \\degree\cf0 , \cf2 Pseq\cf0 ([3, 4, 5b, 6]-2, \cf2 inf\cf0 ), \cf4 \\instrument\cf0 , \cf4 \\gpdef\cf0 ));\
 \
 (\
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pbind\cf0 (\
