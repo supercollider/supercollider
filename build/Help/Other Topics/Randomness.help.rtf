@@ -1,395 +1,539 @@
-Randomness in SC
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica-Oblique;
+\f3\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red191\green0\blue0;\red0\green0\blue191;
+\red96\green96\blue96;\red0\green115\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-As in any computer program, there are no "truly random" number generators in SC. 
-They are pseudo-random, meaning they use very complex, but deterministic 
-algorithms to generate sequences of numbers that are long enough and complicated enough 
-to seem "random" for human beings. (i.e. the patterns are too complex for us to detect.)
+\f0\fs24 \cf0 \
 
-If you start a random number generator algorithm with the same "seed" number 
-several times, you get the same sequence of random numbers. 
-(See example below, randomSeed)
+\f1\b\fs36 Randomness in SC
+\f0\b0\fs24 \
+\
+As in any computer program, there are no "truly random" number generators in SC. \
+They are pseudo-random, meaning they use very complex, but deterministic \
+algorithms to generate sequences of numbers that are long enough and complicated enough \
+to seem "random" for human beings. (i.e. the patterns are too complex for us to detect.)\
+\
+If you start a random number generator algorithm with the same "seed" number \
+several times, you get the same sequence of random numbers. \
+(See example below, 
+\f2\i randomSeed
+\f0\i0 )\
+\
+\
 
+\f1\b\fs28 Create single random numbers:
+\f0\b0\fs24 
+\
+\
+\
 
-Create single random numbers:
+\f1\b 1. Between zero and <number>:
+\f0\b0 \
+\
 
-1. Between zero and <number>:
+\f3\fs18 \cf2 5.rand				\cf3 // evenly distributed.\cf2 \
+\
+1.0.linrand			\cf3 // probability decreases linearly from 0 to <number>.\cf2 \
 
-5.rand				// evenly distributed.
+\f0\fs24 \cf0 \
+\
 
-1.0.linrand			// probability decreases linearly from 0 to <number>.
+\f1\b 2. Between -<number> and <number>:
+\f0\b0 \
+\
 
+\f3\fs18 \cf2 5.0.rand2				\cf3 // evenly distributed.\cf2 \
+\
+10.bilinrand			\cf3 // probability is highest around 0, \cf2 \
+					\cf3 // decreases linearly toward +-<number>.\cf2 \
+\
+1.0.sum3rand			\cf3 // quasi-gaussian, bell-shaped distribution.
+\f0\fs24 \cf0 \
+\
 
-2. Between -<number> and <number>:
+\f1\b 3. Within a given range:
+\f0\b0 \
+\
 
-5.0.rand2				// evenly distributed.
+\f3\fs18 \cf2 rrand(24, 48)			\cf3 // linear distribution in the given range.\cf2 \
+\
+exprand(0.01, 1)		\cf3 // exponential distribution; \cf2 \
+					\cf3 // both numbers must have the same sign.\cf2 \
 
-10.bilinrand			// probability is highest around 0, 
-					// decreases linearly toward +-<number>.
+\f0\fs24 \cf0 \
+\
 
-1.0.sum3rand			// quasi-gaussian, bell-shaped distribution.
+\f1\b Test them multiple times with a do loop:
+\f0\b0 
+\
+\
+\
 
-3. Within a given range:
+\f3\fs18 \cf2 20.do(\{ 5.rand.postln; \});			\cf3 // evenly distributed\cf2 \
+\
+20.do(\{ 1.0.linrand.postln; \});		\cf3 // probability decreases linearly from 0 to 1.0\cf2 \
+\
+\
+20.do(\{ 5.0.rand2.postln; \});		\cf3 // even\cf2 \
+\
+20.do(\{ 10.bilinrand.postln; \});		\cf3 // probability is highest around 0, \cf2 \
+							\cf3 // decreases linearly toward +-<number>.\cf2 \
+							\
+20.do(\{ 1.0.sum3rand.postln; \});	\cf3 // quasi-gaussian, bell-shaped.\cf2 \
 
-rrand(24, 48)			// linear distribution in the given range.
+\f0\fs24 \cf0 \
+\
+\
 
-exprand(0.01, 1)		// exponential distribution; 
-					// both numbers must have the same sign.
+\f1\b Collect the results in an array:
+\f0\b0 \
+\
 
+\f3\fs18 \cf4 Array\cf2 .fill(10, \{ 1000.linrand \}).postln; \
+\
+\cf3 // or more compact: \cf2 \
+\
+\{ 1.0.sum3rand \}.dup(100) \
+\
+\cf3 // or:\cf2 \
+\
+(\{ 1.0.sum3rand \} ! 100)
+\f0\fs24 \cf0 \
+\
+\
+\
 
-Test them multiple times with a do loop:
-
-
-20.do({ 5.rand.postln; });			// evenly distributed
-
-20.do({ 1.0.linrand.postln; });		// probability decreases linearly from 0 to 1.0
-
-
-20.do({ 5.0.rand2.postln; });		// even
-
-20.do({ 10.bilinrand.postln; });		// probability is highest around 0, 
-							// decreases linearly toward +-<number>.
-							
-20.do({ 1.0.sum3rand.postln; });	// quasi-gaussian, bell-shaped.
-
-
-
-Collect the results in an array:
-
-Array.fill(10, { 1000.linrand }).postln; 
-
-// or more compact: 
-
-{ 1.0.sum3rand }.dup(100) 
-
-// or:
-
-({ 1.0.sum3rand } ! 100)
-
-
-
-You can seed a random generator in order to repeat 
+\f1\b You can seed a random generator in order to repeat \
 the same sequence of random numbers:
+\f0\b0 \
+\
 
-(
-5.do({ 
-	thisThread.randSeed = 4;
-	Array.fill(10, { 1000.linrand}).postln; 
-});
+\f3\fs18 \cf2 (\
+5.do(\{ \
+	\cf4 thisThread\cf2 .randSeed = 4;\
+	\cf4 Array\cf2 .fill(10, \{ 1000.linrand\}).postln; \
+\});\
+)\
+\
+\cf3 // Just to check, no seeding:\cf2 \
+\
+(\
+5.do(\{ \cf4 Array\cf2 .fill(10, \{ 1000.linrand\}).postln; \});\
 )
+\
+\
+\cf3 // see also [\ul randomSeed\ulnone ].\cf2 
+\
+\
 
-// Just to check, no seeding:
+\f0\fs24 \cf0 \
+\
 
-(
-5.do({ Array.fill(10, { 1000.linrand}).postln; });
-)
+\f1\b Demonstrate the various statistical distributions visually, with histograms:
+\f0\b0 \
 
-// see also [randomSeed].
-
-
-Demonstrate the various statistical distributions visually, 
-with histograms:
-
+\
 [plot may not work in non-Mac SC3 versions.]
+\
+\
 
-Array.fill(500, {  1.0.rand }).plot("Sequence of 500x 1.0.rand");
-
-Array.fill(500, {  1.0.linrand }).plot("Sequence of 500x 1.0.linrand");
-
-Array.fill(500, {  1.0.sum3rand }).plot("Sequence of 500x 1.0.sum3rand");
-
-// Use a histogram to display how often each (integer) 
-// occurs in a collection of random numbers, :
-(
-var randomNumbers, histogram, maxValue = 500, numVals = 10000;
-
-randomNumbers = Array.fill(numVals, { maxValue.rand; });
-
-histogram = Signal.newClear(maxValue);
-
-randomNumbers.do({ arg each; var count, histoIndex; 
-	histoIndex = each.asInteger;
-	count = histogram.at(histoIndex);
-	histogram.put(histoIndex, count + 1) 
-});
-
-histogram.plot("histogram for rand 0 - " ++ maxValue);
+\f3\fs18 \cf4 Array\cf2 .fill(500, \{  1.0.rand \}).plot(\cf5 "Sequence of 500x 1.0.rand"\cf2 );\
+\
+\cf4 Array\cf2 .fill(500, \{  1.0.linrand \}).plot(\cf5 "Sequence of 500x 1.0.linrand"\cf2 );\
+\
+\cf4 Array\cf2 .fill(500, \{  1.0.sum3rand \}).plot(\cf5 "Sequence of 500x 1.0.sum3rand"\cf2 );\
+\
+\cf3 // Use a histogram to display how often each (integer) \cf2 \
+\cf3 // occurs in a collection of random numbers, :\cf2 \
+(\
+\cf4 var\cf2  randomNumbers, histogram, maxValue = 500, numVals = 10000;\
+\
+randomNumbers = \cf4 Array\cf2 .fill(numVals, \{ maxValue.rand; \});\
+\
+histogram = \cf4 Signal\cf2 .newClear(maxValue);\
+\
+randomNumbers.do(\{ \cf4 arg\cf2  each; \cf4 var\cf2  count, histoIndex; \
+	histoIndex = each.asInteger;\
+	count = histogram.at(histoIndex);\
+	histogram.put(histoIndex, count + 1) \
+\});\
+\
+histogram.plot(\cf5 "histogram for rand 0 - "\cf2  ++ maxValue);\
 )
+\
+\
 
+\f0\fs24 \cf0 \
+\
 
+\f1\b A histogram for linrand:
+\f0\b0 
+\
+\
 
-A histogram for linrand:
+\f3\fs18 \cf2 (\
+\cf4 var\cf2  randomNumbers, histogram, maxValue = 500.0, numVals = 10000;\
+\
+randomNumbers = \cf4 Array\cf2 .fill(numVals, \{ maxValue.linrand; \});\
+\
+histogram = \cf4 Signal\cf2 .newClear(maxValue);\
+\
+randomNumbers.do(\{ \cf4 arg\cf2  each; \cf4 var\cf2  count, histoIndex; \
+	histoIndex = each.asInteger;\
+	count = histogram.at(histoIndex);\
+	histogram.put(histoIndex, count + 1) \
+\});\
+\
+histogram.plot(\cf5 "histogram for linrand 0 - "\cf2  ++ maxValue);\
+)\
 
-(
-var randomNumbers, histogram, maxValue = 500.0, numVals = 10000;
+\f0\fs24 \cf0 \
 
-randomNumbers = Array.fill(numVals, { maxValue.linrand; });
+\f1\b A histogram for bilinrand:
+\f0\b0 
+\
+\
 
-histogram = Signal.newClear(maxValue);
-
-randomNumbers.do({ arg each; var count, histoIndex; 
-	histoIndex = each.asInteger;
-	count = histogram.at(histoIndex);
-	histogram.put(histoIndex, count + 1) 
-});
-
-histogram.plot("histogram for linrand 0 - " ++ maxValue);
+\f3\fs18 \cf2 (\
+\cf4 var\cf2  randomNumbers, histogram, minValue = -250, maxValue = 250, numVals = 10000, numBins = 500;\
+\
+randomNumbers = \cf4 Array\cf2 .fill(numVals, \{ maxValue.bilinrand; \});\
+histogram = \cf4 Signal\cf2 .newClear(numBins);\
+\
+randomNumbers.do(\{ \cf4 arg\cf2  each; \cf4 var\cf2  count, histoIndex; \
+	histoIndex = ( each - minValue );\
+	count = histogram.at(histoIndex);\
+	histogram.put(histoIndex, count + 1) \
+\});\
+\
+histogram.plot(\cf5 "histogram for bilinrand"\cf2  + minValue + \cf5 "to"\cf2  + maxValue);\
 )
+\f0\fs24 \cf0 \
+\
 
-A histogram for bilinrand:
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-(
-var randomNumbers, histogram, minValue = -250, maxValue = 250, numVals = 10000, numBins = 500;
+\f1\b \cf0 A histogram for exprand:
+\f0\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
 
-randomNumbers = Array.fill(numVals, { maxValue.bilinrand; });
-histogram = Signal.newClear(numBins);
+\f3\fs18 \cf2 (\
+\cf4 var\cf2  randomNumbers, histogram, minValue = 5.0, maxValue = 500, numVals = 10000, numBins = 500;\
+\
+randomNumbers = \cf4 Array\cf2 .fill(numVals, \{ exprand(minValue, maxValue); \});\
+histogram = \cf4 Signal\cf2 .newClear(numBins);\
+\
+randomNumbers.do(\{ \cf4 arg\cf2  each; \cf4 var\cf2  count, histoIndex; \
+	histoIndex = ( each - minValue ).round(1).asInteger;\
+	count = histogram.at(histoIndex);\
+	histogram.put(histoIndex, count + 1);\
+\});\
+\
+histogram.plot(\cf5 "histogram for exprand: "\cf2  ++ minValue ++ \cf5 " to "\cf2  ++ maxValue);\
+)\
 
-randomNumbers.do({ arg each; var count, histoIndex; 
-	histoIndex = ( each - minValue );
-	count = histogram.at(histoIndex);
-	histogram.put(histoIndex, count + 1) 
-});
+\f0\fs24 \cf0 \
+\
 
-histogram.plot("histogram for bilinrand" + minValue + "to" + maxValue);
+\f1\b And for sum3rand (cheap quasi-gaussian):
+\f0\b0 \
+\
+\
+
+\f3\fs18 \cf2 (\
+\cf4 var\cf2  randomNumbers, histogram, minValue = -250, maxValue = 250, numVals = 10000, numBins = 500;\
+\
+randomNumbers = \cf4 Array\cf2 .fill(numVals, \{ maxValue.sum3rand; \});\
+histogram = \cf4 Signal\cf2 .newClear(numBins);\
+\
+randomNumbers.do(\{ \cf4 arg\cf2  each; \cf4 var\cf2  count, histoIndex; \
+	histoIndex = ( each - minValue ).round(1).asInteger;	\cf3 // catch float indices.\cf2 \
+	count = histogram.at(histoIndex);\
+	histogram.put(histoIndex, count + 1) \
+\});
+\
+\
+histogram.plot(\cf5 "histogram for sum3rand "\cf2  ++ minValue ++ \cf5 " to "\cf2  ++ maxValue);\
 )
-
-
-
-For exprand:
-
-(
-var randomNumbers, histogram, minValue = 5.0, maxValue = 500, numVals = 10000, numBins = 500;
-
-randomNumbers = Array.fill(numVals, { exprand(minValue, maxValue); });
-histogram = Signal.newClear(numBins);
-
-randomNumbers.do({ arg each; var count, histoIndex; 
-	histoIndex = ( each - minValue ).round(1).asInteger;
-	count = histogram.at(histoIndex);
-	histogram.put(histoIndex, count + 1);
-});
-
-histogram.plot("histogram for exprand: " ++ minValue ++ " to " ++ maxValue);
-)
-
-
-And for sum3rand (cheap quasi-gaussian):
-
-
-(
-var randomNumbers, histogram, minValue = -250, maxValue = 250, numVals = 10000, numBins = 500;
-
-randomNumbers = Array.fill(numVals, { maxValue.sum3rand; });
-histogram = Signal.newClear(numBins);
-
-randomNumbers.do({ arg each; var count, histoIndex; 
-	histoIndex = ( each - minValue ).round(1).asInteger;	// catch float indices.
-	count = histogram.at(histoIndex);
-	histogram.put(histoIndex, count + 1) 
-});
-
-histogram.plot("histogram for sum3rand " ++ minValue ++ " to " ++ maxValue);
-)
-
-
-
-All of the single-number methods also work for (Sequenceable)Collections, 
-simply by applying the given random message to each element of the collection:
-
-[ 1.0, 10, 100.0, \aSymbol ].rand.postln;		// note: Symbols are left as they are.
-List[ 10, -3.0, \aSymbol ].sum3rand.postln;
-
-
-
-
-
-
-
-
-
-Random decisions:
-
-
-coin 	simulates a coin toss and results in true or false. 
-		1.0 is always true, 0.0 is always false, 0.5 is 50:50 chance.
-
-20.do({ 0.5.coin.postln });
-
-
-Generating Collections of random numbers:
-
-		// size, minVal, maxVal 
-Array.rand(7, 0.0, 1.0).postln;				
-
-// is short for:
-
-Array.fill(7, { rrand(0.0, 1.0) }).postln;	
-
-
-		// size, minVal, maxVal 
-List.linrand(7, 10.0, 15.0).postln;			
-
-// is short for:
-
-List.fill(7, { 10 + 5.0.linrand }).postln;	
-
-Signal.exprand(10, 0.1, 1);
-
-Signal.rand2(10, 1.0);
-
-
-
-Random choice from Collections
-	
-choose 			equal chance for each element.
-
-10.do({ [ 1, 2, 3 ].choose.postln });			
-
-
-Weighted choice:
-
-.wchoose(weights)	An array of weights sets the chance for each element.
-
-10.do({ [ 1, 2, 3 ].wchoose([0.1, 0.2, 0.7]).postln });	
-
-
-Randomize the order of a Collection: 	
-
-.scramble
-
-List[ 1, 2, 3, 4, 5 ].scramble.postln;
-
-
-Randomly group a Collection:	
-
-curdle(probability)
-
-The probability argument sets the chance that two adjacent elements will be separated.
-
-[ 1, 2, 3, 4, 5, 6, 7, 8 ].curdle(0.2).postln;	// big groups
-
-[ 1, 2, 3, 4, 5, 6, 7, 8 ].curdle(0.75).postln;	// small groups
-
-
-
-
-
-
-Random signal generators, i.e. UGens:
-
-PinkNoise
-WhiteNoise
-GrayNoise
-BrownNoise
-PinkerNoise
-ClipNoise
-LFNoise0
-LFNoise1
-LFNoise2
-LFClipNoise
-LFDNoise0
-LFDNoise1
-LFDNoise3
-LFDClipNoise
-Dust
-Dust2
-Crackle
-LinCong
-Latoocarfian
-Rossler		[not installed yet]
+\
+
+\f0\fs24 \cf0 \
+\
+\
+All of the single-number methods also work for (Sequenceable)Collections, \
+simply by applying the given random message to each element of the collection:\
+\
+
+\f3\fs18 \cf2 [ 1.0, 10, 100.0, \cf6 \\aSymbol\cf2  ].rand.postln;		\cf3 // note: Symbols are left as they are.\cf2 \
+\cf4 List\cf2 [ 10, -3.0, \cf6 \\aSymbol\cf2  ].sum3rand.postln;\
+
+\
+
+\f0\fs24 \cf0 \
+\
+\
+\
+\
+\
+\
+\
+
+\f1\b\fs28 Random decisions:
+\f0\b0\fs24 
+\
+\
+\
+
+\f1\b coin
+\f0\b0  	simulates a coin toss and results in true or false. \
+		1.0 is always true, 0.0 is always false, 0.5 is 50:50 chance.\
+\
+
+\f3\fs18 \cf2 20.do(\{ 0.5.coin.postln \});
+\
+
+\f0\fs24 \cf0 \
+biased random decision can be simulated bygenerating a single value \
+and check against a threshhold:\
+\
+
+\f3\fs18 \cf2 20.do(\{ (1.0.linrand > 0.5).postln \});
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf2 20.do(\{ (exprand(0.05, 1.0) > 0.5).postln \});
+\f0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+
+\f1\b\fs28 Generating Collections of random numbers:
+\f0\b0\fs24 \
+\
+
+\f3\fs18 \cf2 		\cf3 // size, minVal, maxVal \cf2 \
+\cf4 Array\cf2 .rand(7, 0.0, 1.0).postln;				\
+\
+\cf3 // is short for:\cf2 \
+\
+\cf4 Array\cf2 .fill(7, \{ rrand(0.0, 1.0) \}).postln;	\
+\
+\
+		\cf3 // size, minVal, maxVal \cf2 \
+\cf4 List\cf2 .linrand(7, 10.0, 15.0).postln;			\
+\
+\cf3 // is short for:\cf2 \
+\
+\cf4 List\cf2 .fill(7, \{ 10 + 5.0.linrand \}).postln;	
+\
+\
+\cf4 Signal\cf2 .exprand(10, 0.1, 1);\
+\
+\cf4 Signal\cf2 .rand2(10, 1.0);
+\
+\
+
+\f0\fs24 \cf0 \
+\
+
+\f1\b\fs28 Random choice from Collections
+\f0\b0\fs24 \
+	\
+
+\f1\b choose 
+\f0\b0 			equal chance for each element.\
+\
+
+\f3\fs18 \cf2 10.do(\{ [ 1, 2, 3 ].choose.postln \});
+\f0\fs24 \cf0 			\
+\
+\
+
+\f1\b Weighted choice:
+\f0\b0 \
+\
+
+\f1\b wchoose(weights)
+\f0\b0 	An array of weights sets the chance for each element.\
+\
+
+\f3\fs18 \cf2 10.do(\{ [ 1, 2, 3 ].wchoose([0.1, 0.2, 0.7]).postln \});	\
+
+\f0\fs24 \cf0 
+\
+\
+\
+
+\f1\b\fs28 Randomize the order of a Collection: 
+\f0\b0\fs24 	\
+\
+
+\f1\b scramble
+\f0\b0 \
+\
+
+\f3\fs18 \cf4 List\cf2 [ 1, 2, 3, 4, 5 ].scramble.postln;\
+
+\f0\fs24 \cf0 
+\
+\
+\
+\
+
+\f1\b\fs28 Randomly group a Collection:	
+\f0\b0\fs24 \
+\
+
+\f1\b curdle(probability)
+\f0\b0 \
+\
+The probability argument sets the chance that two adjacent elements will be separated.\
+\
+
+\f3\fs18 \cf2 [ 1, 2, 3, 4, 5, 6, 7, 8 ].curdle(0.2).postln;	\cf3 // big groups\cf2 \
+\
+[ 1, 2, 3, 4, 5, 6, 7, 8 ].curdle(0.75).postln;	\cf3 // small groups\cf2 \
+
+\f0\fs24 \cf0 
+\
+\
+\
+\
+\
+\
+
+\f1\b\fs28 Random signal generators, i.e. UGens:
+\f0\b0\fs24 \
+\
+PinkNoise\
+WhiteNoise\
+GrayNoise\
+BrownNoise\
+PinkerNoise\
+ClipNoise\
+LFNoise0\
+LFNoise1\
+LFNoise2\
+LFClipNoise\
+LFDNoise0\
+LFDNoise1\
+LFDNoise3\
+LFDClipNoise\
+Dust\
+Dust2\
+Crackle\
+LinCong\
+Latoocarfian\
+Rossler		[not installed yet]\
 NoahNoise	[not installed yet]
+\
+\
+\
+\
+\
+\
+\
 
-
-
-
-
-
-UGens that generate random numbers once, or on trigger:
-
-Rand		uniform distribution of float between (lo, hi), as for numbers.
-IRand		uniform distribution of integer numbers.
-TRand		uniform distribution of float numbers, triggered
-TIRand		uniform distribution of integer numbers, triggered
-LinRand		skewed distribution of float numbers, triggered
-NRand 		sum of n uniform distributions, approximates gaussian distr. with higher n.
-ExpRand 		exponential distribution
-TExpRand	exponential distribution, triggered
-CoinGate		statistical gate for a trigger
-TWindex		triggered weighted choice between a list
-
-	Like using randSeed to set the random generatorsfor each thread in sclang,  
-	you can choose which of several random generators on the server to use,
-	and you can reset (seed) these random generators: 
-RandID
+\f1\b UGens that generate random numbers once, or on trigger:
+\f0\b0 \
+\
+Rand		uniform distribution of float between (lo, hi), as for numbers.\
+IRand		uniform distribution of integer numbers.\
+TRand		uniform distribution of float numbers, triggered\
+TIRand		uniform distribution of integer numbers, triggered\
+LinRand		skewed distribution of float numbers, triggered\
+NRand 		sum of n uniform distributions, approximates gaussian distr. with higher n.\
+ExpRand 		exponential distribution\
+TExpRand	exponential distribution, triggered\
+CoinGate		statistical gate for a trigger\
+TWindex		triggered weighted choice between a list\
+\
+	Like using randSeed to set the random generatorsfor each thread in sclang,  \
+	you can choose which of several random generators on the server to use,\
+	and you can reset (seed) these random generators: \
+RandID\
 RandSeed
+\
+\
+\
 
+\f1\b UGens that generate random numbers on demand ("Demand UGens"):
+\f0\b0 \
+\
+Dwhite\
+Dbrown\
+Diwhite\
+Dibrown\
+Drand\
+Dxrand\
+\
+see random patterns with analogous names\
+\
+\
+\
 
-UGens that generate random numbers on demand ("Demand UGens"):
+\f1\b\fs28 Random Patterns: 
+\f0\b0\fs24 
+\
+\
+\
 
-Dwhite
-Dbrown
-Diwhite
-Dibrown
-Drand
-Dxrand
-
-see random patterns with analogous names
-
-
-
-Random Patterns: 
-
-
-Prand([ 1, 2, 3 ], inf);		// choose randomly one from a list ( list, numRepeats)
-Pxrand([ 1, 2, 3 ]);			// choose one element from a list, no repeat of previous choice
-Pwhite(24, 72);				// within range [<hi>, <lo>], choose a random value.
-Pbrown(24, 72, 5)				// within range [<hi>, <lo>], do a random walk
-							// with a maximum <step> to the next value.
-						
-Pwrand([ 1, 2, 3 ], [0.1, 0.3, 0.6], 20);	// choose from a list, probabilities by weights
-
-Pshuf([ 1, 2, 3, 4 ], 2);		// scramble the list, then repeat that order <repeats> times.
-
-Pwalk( (0 .. 10), Prand([ -2,-1, 1, 2], inf));		// random walk. 
-
-Pfsm 						// random finite state machine pattern, see its help file. 
-							// see also MarkovSet on sc-swiki
-
-Pseed(seed, pattern)			// sets the random seed for that stream.
-
-
-// some basic examples
-
-(
-Pbind(\note, Prand([ 0, 2, 4 ], inf), 
-	\dur, 0.2
-).play;
-)
-
-(
-Pbind(
-	\note, Pxrand([ 0, 2, 4 ], inf),
-	\dur, 0.2
-).play;
-)
-
-(
-Pbind(
-	\note, Pwrand([ 0, 2, 4 ], [0.1, 0.3, 0.6], inf),
-	\dur, 0.2
-).play;
-)
-
-(
-Pbind(
-	\midinote, Pwhite(48, 72, inf),
-	\dur, 0.2
-).play;
-)
-
-(
-Pbind(
-	\midinote, Pbrown(48, 72, 5, inf),
-	\dur, 0.2
-).play;
-)
-
+\f3\fs18 \cf4 Prand\cf2 ([ 1, 2, 3 ], \cf4 inf\cf2 );		\cf3 // choose randomly one from a list ( list, numRepeats)\cf2 \
+\cf4 Pxrand\cf2 ([ 1, 2, 3 ]);			\cf3 // choose one element from a list, no repeat of previous choice\cf2 \
+\cf4 Pwhite\cf2 (24, 72);				\cf3 // within range [<hi>, <lo>], choose a random value.\cf2 \
+\cf4 Pbrown\cf2 (24, 72, 5)				\cf3 // within range [<hi>, <lo>], do a random walk\cf2 \
+							\cf3 // with a maximum <step> to the next value.\cf2 \
+						\
+\cf4 Pwrand\cf2 ([ 1, 2, 3 ], [0.1, 0.3, 0.6], 20);	\cf3 // choose from a list, probabilities by weights\cf2 
+\
+\
+\cf4 Pshuf\cf2 ([ 1, 2, 3, 4 ], 2);		\cf3 // scramble the list, then repeat that order <repeats> times.\cf2 \
+\
+\cf4 Pwalk\cf2 ( (0 .. 10), \cf4 Prand\cf2 ([ -2,-1, 1, 2], \cf4 inf\cf2 ));		\cf3 // random walk. \cf2 \
+\
+\cf4 Pfsm\cf2  						\cf3 // random finite state machine pattern, see its help file. \cf2 \
+							\cf3 // see also MarkovSet on sc-swiki\cf2 \
+\
+\cf4 Pseed\cf2 (seed, pattern)			\cf3 // sets the random seed for that stream.\cf2 \
+\
+\
+\cf3 // some basic examples\cf2 \
+\
+(\
+\cf4 Pbind\cf2 (\cf6 \\note\cf2 , \cf4 Prand\cf2 ([ 0, 2, 4 ], \cf4 inf\cf2 ), \
+	\cf6 \\dur\cf2 , 0.2\
+).play;\
+)\
+\
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\note\cf2 , \cf4 Pxrand\cf2 ([ 0, 2, 4 ], \cf4 inf\cf2 ),\
+	\cf6 \\dur\cf2 , 0.2\
+).play;\
+)\
+\
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\note\cf2 , \cf4 Pwrand\cf2 ([ 0, 2, 4 ], [0.1, 0.3, 0.6], \cf4 inf\cf2 ),\
+	\cf6 \\dur\cf2 , 0.2\
+).play;\
+)\
+\
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\midinote\cf2 , \cf4 Pwhite\cf2 (48, 72, \cf4 inf\cf2 ),\
+	\cf6 \\dur\cf2 , 0.2\
+).play;\
+)\
+\
+(\
+\cf4 Pbind\cf2 (\
+	\cf6 \\midinote\cf2 , \cf4 Pbrown\cf2 (48, 72, 5, \cf4 inf\cf2 ),\
+	\cf6 \\dur\cf2 , 0.2\
+).play;\
+)\
+\
+}
