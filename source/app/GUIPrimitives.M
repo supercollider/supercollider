@@ -464,10 +464,11 @@ int prTextWindow_InsertTextInRange(struct VMGlobals *g, int numArgsPushed)
 		NSRange selectedRange;
 		int length = [[[doc textView] string] length];
 		
+		if(rangeSize < 0) rangeSize = length - 1;
 		if(rangeStart >= length) rangeStart = length - 1 ;
 		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
 		
-                if(rangeStart<0) selectedRange =	NSMakeRange(0, length);
+		if(rangeStart<0) selectedRange =	NSMakeRange(0, length);
 		else selectedRange =	NSMakeRange(rangeStart, rangeSize);
 
 		
