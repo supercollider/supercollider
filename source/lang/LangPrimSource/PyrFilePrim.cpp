@@ -234,7 +234,7 @@ int prFileWrite(struct VMGlobals *g, int numArgsPushed)
 
 int prFileReadLine(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b;
+	PyrSlot *a, *b; // receiver(a File), string
 	PyrFile *pfile;
 	FILE *file;
 	
@@ -969,7 +969,7 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_FilePos", prFilePos, 1, 0);	
 	definePrimitive(base, index++, "_FileLength", prFileLength, 1, 0);	
 	definePrimitive(base, index++, "_FileWrite", prFileWrite, 2, 0);	
-	definePrimitive(base, index++, "_FileReadLine", prFileReadLine, 1, 0);	
+	definePrimitive(base, index++, "_FileReadLine", prFileReadLine, 2, 0);	
 
 	definePrimitive(base, index++, "_FilePutChar", prFilePutChar, 2, 0);	
 	definePrimitive(base, index++, "_FilePutInt8", prFilePutInt8, 2, 0);	
