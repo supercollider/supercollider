@@ -1630,17 +1630,17 @@ bool PyrVarDefNode::hasExpr(PyrSlot *result)
 			//post("hasExpr A %s-%s %s %d\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name, mVarName->mSlot.us->name, mDefVal->mClassno);	
 			return true;
 	}
-	if (mDefVal->mParens) return true;
+	PyrPushLitNode *node = (PyrPushLitNode*)mDefVal;
 
-	PyrPushLitNode *pushlitnode = (PyrPushLitNode*)mDefVal;
-	if (pushlitnode->mSlot.utag == tagPtr) {
-		PyrParseNode* literalObj = (PyrParseNode*)pushlitnode->mSlot.uo;
+	if (node->mSlot.utag == tagPtr) {
+		PyrParseNode* literalObj = (PyrParseNode*)node->mSlot.uo;
 		if (literalObj->mClassno == pn_BlockNode) {
-			//post("hasExpr B %s-%s %s %d\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name, mVarName->mSlot.us->name, mDefVal->mClassno);	
+			//post("hasExpr B %s-%s %s %d\n", gCompilingClass->name.us->name, gCompilingMethod->name.us->name, mVarName->mSlot.us->name, node->mClassno);	
 			return true;
 		}
 	}
-	if (result) *result = pushlitnode->mSlot;
+	if (result) *result = node->mSlot;
+	if (node->mParens) return true;
 	return false;
 }
 
