@@ -22,9 +22,8 @@
 \
 keeps a reference to a task that can be replaced while playing.\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 Pdefn(key)
+\f0\b Pdefn(key)
 \f2\b0  returns the instance, 
 \f0\b Pdefn(key, pat) 
 \f2\b0 defines the pattern \
@@ -33,7 +32,9 @@ it is very similar to
 \f0\b PatternProxy
 \f2\b0 \
 \
-it can be used to store value patterns globally (for event patterns, see Pdef).\
+it can be used to store value patterns globally (for event patterns, see 
+\f0\b Pdef
+\f2\b0 ).\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\fs18 \cf0 \
@@ -62,16 +63,23 @@ it can be used to store value patterns globally (for event patterns, see Pdef).\
 \f0\b *all
 \f2\b0 \
 			dict that stores all Pdefn\
+	\
+	
+\f0\b *all_(envir)
+\f2\b0 \
+			set the global environment\
 				\
 	
 \f0\b quant_(beats)
 \f2\b0 \
 			set the quantisation time for beat accurate scheduling\
+			can be a pair [offset, quant]\
 	\
-	
+	*
 \f0\b defaultQuant_(beats)
 \f2\b0 \
 			set the default quantisation for new instances (default: nil)\
+			can be a pair [offset, quant]\
 \
 	\ul \
 	

@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
-\red191\green0\blue0;\red0\green0\blue191;\red0\green0\blue0;\red0\green115\blue0;}
+\red191\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Pdef	
@@ -23,9 +23,17 @@ it is very similar to
 \f0\b EventPatternProxy
 \f2\b0 \
 \
-Pdef(key) returns the instance, Pdef(key, pat) stores the pattern and returns the instance, like Tdef and Ndef.\
+
+\f0\b Pdef(key)
+\f2\b0  returns the instance, 
+\f0\b Pdef(key, pat)
+\f2\b0  stores the pattern and returns the instance, like Tdef and Ndef.\
 \
 it can be used to store event Patterns globally. Changes in this global library have effect immediately, or if quant/offset values are given, at the next time step.\
+\
+For value patterns (numarical, non event patterns) 
+\f0\b Pdefn
+\f2\b0  is used.\
 \
 \
 \
@@ -57,17 +65,25 @@ it can be used to store event Patterns globally. Changes in this global library 
 	
 \f0\b *all
 \f2\b0 \
-			dict that stores all Pdefs\
+			environment (IdentityDictionary) that stores all Pdefs.\
+	\
+	
+\f0\b *all_(envir)
+\f2\b0 \
+			set the global environment\
+			\
 				\
 	
 \f0\b quant_(beats)
 \f2\b0 \
-			set the quantisation time for beat accurate scheduling\
+			set the quantisation time for beat accurate scheduling.\
+			can be a pair [offset, quant]\
 	\
-	
+	*
 \f0\b defaultQuant_(beats)
 \f2\b0 \
 			set the default quantisation for new instances (default: 1.0)\
+			can be a pair [offset, quant]\
 	\
 	
 \f0\b fadeTime_(beats)
@@ -76,9 +92,8 @@ it can be used to store event Patterns globally. Changes in this global library 
 			by crossfading the previous with the new over this time (in beats)\
 			\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b \cf0 a) using it as stream reference
+\f0\b a) using it as stream reference
 \f2\b0 \
 	\ul \
 	
@@ -145,11 +160,11 @@ for another use of Pdef see also [
 \f0\b\fs24 \
 a) embedding Pdef into a stream:\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \
+\f1\b0\fs18 \cf0 \
 \
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 SynthDef\cf0 (\cf3 "Pdefhelp"\cf0 , \{ \cf2 arg\cf0  out, freq, sustain=1, amp=1, pan;\
 	\cf2 var\cf0  env, u=1;\
 	env = \cf2 EnvGen\cf0 .kr(\cf2 Env\cf0 .perc(0.03, sustain), 1, doneAction:2);\
@@ -218,9 +233,9 @@ x.stop;\
 \f0\b\fs24 \cf0 b) playing Pdef
 \f1\b0\fs18 \cf5 \
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 		\
 (\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf5 // load a synthdef\cf0 \
 s.boot;\
 \cf2 SynthDef\cf0 (\cf3 "gpdef"\cf0 , \
@@ -230,15 +245,11 @@ s.boot;\
 		\cf2 Out\cf0 .ar(out, \cf2 SinOsc\cf0 .ar(freq, 0, env))\
 	\}).store;\
 )\cf2 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 ); \cf5 // creates a Pdef with a default pattern.\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 ).play; \cf5 // play it. A silent resting pattern is used.\cf0 \
 \cf2 Pdef\cf0 (\cf4 \\y\cf0 ).play; \cf5 // play a second one (automatically instantiated)\cf0 \
 \
@@ -300,16 +311,15 @@ s.boot;\
 
 \f0\b\fs24 \cf0 recursion:\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f2\b0 \cf0 Pdefs can be used recursively under the condition that the stream call structure allows it.\
+\f2\b0 Pdefs can be used recursively under the condition that the stream call structure allows it.\
 a structure like the following works:\
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\fs18 \cf6 \
-Pdef\cf7 (\cf8 \\x\cf7 , \cf6 Pseq\cf7 ([\cf6 Pbind\cf7 (\cf4 \\instrument\cf0 , \cf4 \\gpdef)\cf7 , \cf6 Pdef\cf7 (\cf8 \\x\cf7 )], \cf6 inf\cf7 )); \
-\cf6 Pdef\cf7 (\cf8 \\x\cf7 ).play;\cf0 \
+\f1\fs18 \cf2 \
+Pdef\cf0 (\cf4 \\x\cf0 , \cf2 Pseq\cf0 ([\cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\gpdef)\cf0 , \cf2 Pdef\cf0 (\cf4 \\x\cf0 )], \cf2 inf\cf0 )); \
+\cf2 Pdef\cf0 (\cf4 \\x\cf0 ).play;\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 \
