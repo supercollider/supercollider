@@ -17,10 +17,12 @@ ServerOptions
 	var <>numRGens = 64;
 	var <>numWireBufs = 64;
 
+	var <>loadDefs = true;
+
 // max logins
 // session-password
 
-	asOptionsString { arg port;
+	asOptionsString { arg port=57110;
 		var o;
 		o = if (protocol == \tcp, " -t ", " -u ");
 		o = o ++ port;
@@ -60,6 +62,9 @@ ServerOptions
 		});
 		if (numWireBufs != 64, {
 			o = o ++ " -w " ++ numWireBufs;
+		});
+		if (loadDefs.not, {
+			o = o ++ " -D 0";
 		});
 		^o
 	}
