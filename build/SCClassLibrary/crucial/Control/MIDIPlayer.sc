@@ -15,6 +15,7 @@ MIDIPlayer : SynthlessPlayer { // InterfacePlayer, Control
 	}
 	
 	didSpawn {
+		super.didSpawn;
 		this.initResponders;
 	}
 

@@ -16,7 +16,7 @@ CXMenu : SCViewAdapter { // multiple actions
 		view = SCVLayoutView.new(layout,Rect(0,0,buttonWidth,24 * nameFuncs.size));
 		this.guiBody;
 		this.enableKeyDowns;
-		if(lay.isNil,{ layout.resizeToFit.front });
+		if(lay.isNil,{ layout.front });
 	}
 	guiBody {
 		nameFuncs.do({arg nf;

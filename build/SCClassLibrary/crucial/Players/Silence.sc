@@ -20,6 +20,9 @@ PlayerInputProxy : Silence { // audio
 		if(nullBus.notNil and: {nullBus.index.notNil},{ nullBus.free });
 		inBus = bus;
 	}
+	setNodeControl { arg nc;
+		patchIn.nodeControl = nc;
+	}
 	synthArg {
 		^initValue
 	}

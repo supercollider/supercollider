@@ -165,7 +165,7 @@ Patch : HasPatchIns  {
 	}
 	defName { ^defName } // NOT 'Patch' ever
 	
-	// has inputs
+	// HasPatchIns
 	didSpawn {
 		super.didSpawn;
 		//i know of the synth, i hand out the NodeControls

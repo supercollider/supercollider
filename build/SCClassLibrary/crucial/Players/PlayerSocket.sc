@@ -160,7 +160,7 @@ PlayerEffectSocket : PlayerSocket {
 	}	
 	
 	setSource { arg aplayer;
-		aplayer.inputProxies.first.insp("inputProxy").setInputBus(bus.insp("bus"));
+		aplayer.inputProxies.first.setInputBus(bus);
 		super.setSource(aplayer);
 	}
 

@@ -22,7 +22,7 @@ Insp {
 		{	
 			if(this === InspManager.global.currentInsp, {
 				// what's the calling method ?
-				if(origin.isNil, { origin = 300@10; });
+				if(origin.isNil, { origin = 240@10; });
 				layout = Sheet({ arg layout;
 					notes.do({ arg ag;
 						ag.smallGui(layout);
@@ -69,7 +69,7 @@ InspManager {
 						insp.name -> {this.showInsp(insp) } 
 					}));
 					menu.closeOnSelect = false;
-			{ 	menu.gui(nil,200,700,180); 
+			{ 	menu.gui(nil,200,600,200); 
 				menu.layout.removeOnClose(this);
 				this.showInsp(insp);
 				nil; 

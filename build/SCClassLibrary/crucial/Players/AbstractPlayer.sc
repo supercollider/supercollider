@@ -318,23 +318,16 @@ AbstractPlayer : AbstractFunction  {
 
 	/** hot patching **/
 	connectTo { arg hasInput;
-		var playing;
-		// if my bus is public, change to private
-		playing = this.isPlaying ? false;
-		if(playing,{
-			if(this.bus.isAudioOut,{
-				this.bus = Bus.alloc(this.rate,this.server,this.numChannels);
-			});
-			patchOut.connectTo(hasInput.patchIn,playing);
-		});
+		this.connectToPatchIn(hasInput.patchIn,this.isPlaying ? false);
 	}
 	connectToInputAt { arg player,inputIndex=0;
+		this.connectToPatchIn(player.patchIns.at(inputIndex),this.isPlaying ? false)
+	}
+	connectToPatchIn { arg patchIn,needsValueSetNow = true;
+		// if my bus is public, change to private
 		if(this.isPlaying and: {this.bus.isAudioOut},{
 			this.bus = Bus.alloc(this.rate,this.server,this.numChannels);
 		});
-		patchOut.connectTo( player.patchIns.at(inputIndex), this.isPlaying )
-	}
-	connectToPatchIn { arg patchIn,needsValueSetNow = true;
 		this.patchOut.connectTo(patchIn,needsValueSetNow)
 	}
 	disconnect {
@@ -498,6 +491,9 @@ SynthlessPlayer : AbstractPlayer { // should be higher
 	stop {
 		super.stop;
 		isPlaying = false;
+	}
+	connectToPatchIn { arg patchIn,needsValueSetNow = true;
+		this.patchOut.connectTo(patchIn,needsValueSetNow)
 	}
 }
 

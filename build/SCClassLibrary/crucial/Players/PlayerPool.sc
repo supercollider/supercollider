@@ -43,12 +43,12 @@
 					if(input.key.isKindOf(Symbol),{
 						if(argName === input.key,{
 							// match
-							proxyMatches.put(pli, proxyMatches.at(pli).add( [inProxy , input.value ] ));
+							proxyMatches.put(pli, proxyMatches.at(pli).add( [inProxy , input.value, argName ] ));
 						})
 					},{
 						if(input.key.isKindOf(Spec),{
 							if(input.key == spec,{
-								proxyMatches.put(pli, proxyMatches.at(pli).add( [inProxy , input.value ]));
+								proxyMatches.put(pli, proxyMatches.at(pli).add( [inProxy , input.value, argName ]));
 							})
 						})
 					});
@@ -73,7 +73,7 @@
 			proxyMatches.at(i).do({ arg inpinp;
 				var inputProxy,input;
 				# inputProxy , input = inpinp;
-				if((input.isPlaying ? true).not,{
+				if((input.isPlaying ? false).not,{
 					input.spawnOnToBundle(inputGroup,bundle: bundle);
 				});
 				inputProxy.initValue = input.synthArg;
@@ -82,10 +82,11 @@
 			bundle.addFunction({
 				// on start, connectTo, set value
 				// matches connectTo(inProxy)
-				"connecting".postln;
 				proxyMatches.at(i).do({ arg inpinp;
-					var inputProxy,input;
-					# inputProxy , input = inpinp;
+					var inputProxy,input,argName;
+					# inputProxy , input, argName = inpinp;
+					// haven't yet set the nodeControl of patchIn of inputProxy
+					inputProxy.setNodeControl( NodeControl(input.synth,argName) );
 					input.connectTo( inputProxy )
 				});
 			});

@@ -76,7 +76,7 @@ PatchOut {
 	}
 	connectTo { arg patchIn,needsValueSetNow=true;
 		// am i already connected to this client ?
-		if(connectedTo.notNil and: {connectedTo.includes(patchIn).not},{
+		if(connectedTo.isNil or: {connectedTo.includes(patchIn).not},{
 			connectedTo = connectedTo.add(patchIn);
 		});
 		patchIn.connectedTo = this;
@@ -167,6 +167,8 @@ AudioPatchOut : ControlPatchOut {
 	}
 }
 
+//AbstractScalarPatchOut
+
 ScalarPatchOut : PatchOut { 
 
 	// floats,NumberEditors, numeric pattern players, midi, wacom
@@ -179,7 +181,7 @@ ScalarPatchOut : PatchOut {
 		^this.prNew(source)
 	}
 	// no group needed
-	*prNew {arg source,group,bus; ^super.newCopyArgs(source,group,bus).init }
+	*prNew { arg source,group,bus; ^super.newCopyArgs(source,group,bus).init }
 
 	init {}
 	rate { ^\scalar }
@@ -217,6 +219,23 @@ UpdatingScalarPatchOut : ScalarPatchOut {
 		if(enabled,{
 			source.addDependant(this)
 		})
+	}
+	audio { arg audioPatchIn,needsValueSetNow=false;
+		if(needsValueSetNow,{
+			audioPatchIn.value = source.value;
+		});
+		this.enable;
+	}
+	control { arg controlPatchIn,needsValueSetNow=false;
+		if(needsValueSetNow,{
+			controlPatchIn.value = source.value;
+		});
+		//updater moved to the object
+		this.enable;
+	}
+	scalar { arg scalarPatchIn;
+		//thisMethod.notYetImplemented;
+		this.enable;
 	}
 	enable { source.addDependant(this) }
 	update {
