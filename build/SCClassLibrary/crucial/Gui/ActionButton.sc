@@ -2,7 +2,7 @@
 ActionButton  {
 
 	classvar <>offcolor,<>defaultHeight=17;
-	var <>action,<>view;
+	var <action,<>view;
 	
 	*new { arg layout,title,function,maxx=20,maxy;
 		^this.prNew(layout,title,function,maxx,maxy)
@@ -21,7 +21,7 @@ ActionButton  {
 
 		^super.new.view_(view)
 	}
-
+	action_ { arg f; view.action_(f) }
 	backColor_ { arg color;
 		var s;
 		s = view.states;

@@ -29,6 +29,7 @@ ObjectGui {
 		layout=this.guify(layout);
 		this.writeName(layout);
 		this.performList(\guiBody,[layout] ++ args);
+		layout.front;
 	}
 	topGui { arg layout ... args;
 		layout=this.guify(layout);

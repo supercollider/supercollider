@@ -1,13 +1,33 @@
 
 
-+ Patch {
-}
+//+ Patch {
+//}
 
 + Object {
 	
-	addToSynthDef {  arg synthDef,name,argi;
-		synthDef.addFixed(name,this.synthArg,argi); // has to be an InstrSynthDef
+	
+		// sc server support
+	//writeDefFile {}
+	loadDefFileToBundle {}
+	
+//	play { ^ScalarPatchOut(this) }
+	patchOut { ^ScalarPatchOut(this) }
+	isPlaying { ^false }
+
+	// floats only ?
+	readyForPlay { ^true }
+	prepareForPlay {  }
+	
+	spawnToBundle {}
+	//spawn { ^ScalarPatchOut(this) }
+	
+	free {}
+
+
+	addToSynthDef {  arg synthDef,name;
+		synthDef.addFixed(name,this.synthArg); // has to be an InstrSynthDef
 	}
+	
 	synthArg { ^this }
 	instrArgRate { ^\scalar }
 	instrArgFromControl { arg control;
@@ -17,8 +37,8 @@
 
 + NumberEditor {
 	
-	addToSynthDef {  arg synthDef,name,argi;
-		synthDef.addKr(name,this.synthArg,argi);
+	addToSynthDef {  arg synthDef,name;
+		synthDef.addKr(name,this.synthArg);
 	}
 	synthArg { ^this.poll }
 	instrArgRate { ^\control }
@@ -29,35 +49,41 @@
 }
 
 + TempoBus { // all Busses ?
-	addToSynthDef {  arg synthDef,name,argi;
-		synthDef.addIr(name,this.synthArg,argi);
+	addToSynthDef {  arg synthDef,name;
+		synthDef.addIr(name,this.synthArg);
 	}
 	synthArg { ^this.index }
 	instrArgRate { ^\control }
 	instrArgFromControl { arg control;
 		^control
-	}	
+	}
 }
 
 + AbstractPlayer {
 
-	addToSynthDef {  arg synthDef,name,argi;
-		synthDef.addKr(name,this.synthArg,argi); // \out is a .kr bus index
+	addToSynthDef {  arg synthDef,name;
+		// properly we should make patchOut after making synth def
+		// on child, then on self.
+		//[name,this.synthArg,this].insp("addToSynthDef");
+		// value doesn't matter so much, we are going to pass in a real live one
+		synthDef.addKr(name,this.synthArg ? 0); // \out is a .kr bus index
 	}
 
 	synthArg { ^patchOut.synthArg }
 	instrArgRate { ^\audio }
 	instrArgFromControl { arg control;
-		^In.ar(control,this.numChannels)
+		// a Patch could be either
+		^if(this.rate == \audio,{
+			In.ar(control,this.numChannels,this)
+		},{
+			In.kr(control,this.numChannels,this)
+		})
 	}	
 
 }
 
 + KrPlayer {
 
-	addToSynthDef {  arg synthDef,name,argi;
-		synthDef.addKr(name,this.synthArg,argi);
-	}
 	instrArgRate { ^\control }
 	instrArgFromControl { arg control;
 		^In.kr(control,this.numChannels)
@@ -65,10 +91,16 @@
 
 }
 
++ Buffer {
+	synthArg {
+		^bufnum
+	}
+}
+
 + Sample {
 
-	instrArgFromControl { arg control,name;
-		forArgName = name; // for buffer etc. to build a control
+	instrArgFromControl { arg control,argi;
+		forArgi = argi; // for buffer etc. to build a control
 		^this
 	}
 }

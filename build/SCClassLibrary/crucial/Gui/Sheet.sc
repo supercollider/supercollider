@@ -1,9 +1,9 @@
 
 
 Sheet {
-	*new { arg buildDialog,name="",x=100,y=100;
+	*new { arg buildDialog,name="",x=100,y=100,width=600,height=600;
 		var layout;
-		layout = PageLayout(name,600,600,x,y);
+		layout = PageLayout(name,width,height,x,y);
 		buildDialog.value(layout);
 		layout.resizeWindowToFit;
 		^layout

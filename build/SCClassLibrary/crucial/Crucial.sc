@@ -205,6 +205,9 @@ Crucial {
 		Library.put(\menuItems,\test,'simple audio test',{
 			{SinOsc.ar(500,0,0.1)}.play
 		});
+		Library.put(\menuItems,\test,'run Class unit tests',{
+			TestCase.runAll;
+		});
 //		
 //		Library.put(\menuItems,\test,'midiCC test',{var w;
 //			w = PageLayout.new("jlcooper",200,150);

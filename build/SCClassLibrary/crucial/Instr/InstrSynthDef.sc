@@ -2,9 +2,18 @@
 InstrSynthDef : SynthDef {
 
 	var fixedNames,fixedValues,fixedPositions;
+
+	// secret because the function doesn't see them
+	// but they are needed to pass into the synth
+	var secretIrPairs, secretKrPairs;
 	
-	*new {
+	var <rate,<numChannels; //after build
+
+	*new { // arg name,rate,numChannels,secretIrPairs,secretKrPairs,bytes;
 		^super.prNew
+	}
+	*build { arg instr,args,outClass = \Out;
+		^super.prNew.build(instr,args,outClass)
 	}
 	build { arg instr,args,outClass= \Out;
 		this.initBuild
@@ -23,31 +32,32 @@ InstrSynthDef : SynthDef {
 							
 		/*
 			not all of the controls are Controls,
-			some are what the object chose to return
-			from addToSynthDef
+			some are what the object chose to add
+			in addToSynthDef
 		*/
 
 		result = instr.valueArray(outputProxies);
+		rate = result.rate;
+		numChannels = max(1,result.size);
 		
 		if(result != 0.0,{
 			outClass = outClass.asClass;
-			
 			if(outClass === XOut,{
 				"XOut not tested yet.".error;
 				//out = outClass.perform(if(this.rate == \audio,\ar,\kr),
 				//			inputs.at(0),xfader.value,out)
 			});
 				
-			if(result.rate == \audio,{
+			if(rate == \audio,{
 				this.addKr(\outIndex,0);
 				result = outClass.ar(Control.names([\outIndex]).kr([0]) , result);
 				// can still add Out controls if you always use \out, not index
 			},{
-				if(result.rate == \control,{
+				if(rate == \control,{
 					this.addKr(\outIndex,0);
 					result = outClass.kr(Control.names([\outIndex]).kr([0]) , result);
 				},{
-					("what is this ?" + result).error;
+					("InstrSynthDef: ? result of your function:" + result).error;
 				})
 			});
 		});
@@ -59,8 +69,11 @@ InstrSynthDef : SynthDef {
 		instr.name.do({ arg part;
 				name = name ++ part.asString.asFileSafeString;
 		});
+		if(name.size > 10,{
+			name = name.copyRange(0,9) ++ name.copyRange(10,name.size - 1).hash.asFileSafeString;
+		});
 		name = name ++ outClass.name.asString.first.toUpper;
-		// ir, kr
+		// TODO: ir, kr pattern
 		fixedValues.do({ arg fa,i;
 			if(fa.notNil,{
 				fixedID = fixedID ++ i ++ fa.asCompileString;
@@ -70,17 +83,43 @@ InstrSynthDef : SynthDef {
 		("InstrSynthDef made:" + name ).postln;
 	}
 	
-	// fixed arg, NOT addConstant (which is what the UGen will do)
+	// fixed arg : passed to Instr but not to synth
+	// like addIr addKr
 	addFixed { arg name,value;
 		fixedNames = fixedNames.add(name);
 		fixedValues = fixedValues.add(value);
 		fixedPositions = fixedPositions.add(controlsSize);
 		controlsSize = controlsSize + 1;
 	}
+	
+	// to cache this def, this info needs to be saved
+	addSecretIr { arg name,value,argi;
+		secretIrPairs = secretIrPairs.add([name,value,argi]);
+		^Control.names([name]).ir([value])
+	}
+	addSecretKr { arg name,value,argi;
+		secretKrPairs = secretKrPairs.add([name,value,argi]);
+		^Control.names([name]).kr([value])
+	}
+	secretDefArgs { arg objects;
+		var synthArgs,size;
+		size = secretIrPairs.size * 2 + (secretKrPairs.size * 2);
+		if(size == 0, { ^#[] });
+		synthArgs = Array(size);
+		secretIrPairs.do({ arg n,i;
+			synthArgs.add(n.at(0));
+			synthArgs.add(objects.at(n.at(2)));
+		});
+		secretKrPairs.do({ arg n,i;
+			synthArgs.add(n.at(0));
+			synthArgs.add(objects.at(n.at(2)));
+		});
+		^synthArgs
+	}
 
 	buildControlsWithObjects { arg instr,objects;
-		var defargs,outputProxies;
-		defargs = instr.argNames.collect({ arg name,defargi;
+		var argNames,defargs,outputProxies;
+		defargs = (argNames = instr.argNames).collect({ arg name,defargi;
 			var defarg;
 			defarg = (objects.at(defargi) ? {instr.defArgAt(defargi)});
 			defarg.addToSynthDef(this,name);
@@ -89,7 +128,7 @@ InstrSynthDef : SynthDef {
 		outputProxies = this.buildControls;
 		// wrap them in In.kr etc. if needed
 		^outputProxies.collect({ arg outp,i;
-			defargs.at(i).instrArgFromControl(outp)
+			defargs.at(i).instrArgFromControl(outp,i)
 		})
 	}
 	

@@ -37,6 +37,7 @@ CXMenu { // multiple actions
 					});
 					ab.backColor_(Color.new255(112, 128, 144));
 					ab.labelColor_(Color.white);
+					lastButton = ab;
 				});
 			},buttonWidth)
 			.backColor_(backColor ? Color.white);

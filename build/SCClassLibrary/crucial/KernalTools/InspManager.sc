@@ -12,22 +12,24 @@ Insp {
 		},{
 			name = subject.asString;
 		});
+		if(name.size > 20,{ name = name.copyRange(0,19) ++ "..."});
 		InspManager.global.watch(this)
 	}	
 	gui { arg origin;
 		// ideally this will be a proper snapshot at the time of calling
 		// keep same location as last window
+		if(layout.notNil and: {layout.isClosed.not},{ layout.front.unhide; ^this });
 		{	
 			if(this === InspManager.global.currentInsp, {
 				// what's the calling method ?
-				if(origin.isNil, { origin = 300@30; });
+				if(origin.isNil, { origin = 300@10; });
 				layout = Sheet({ arg layout;
 					notes.do({ arg ag;
 						ag.smallGui(layout);
 					});
 					layout.startRow;
 					CXObjectInspector(subject).topGui(layout);
-				},"insp:" + name,origin.x,origin.y);
+				},"insp:" + name,origin.x,origin.y,800,1000);
 			});
 			nil
 		}.defer
@@ -38,6 +40,11 @@ Insp {
 		},{
 			nil
 		}) 
+	}
+	hide {
+		if(layout.notNil,{
+			layout.hide;
+		})
 	}
 	close {
 		if(layout.notNil, { layout.close })
@@ -53,6 +60,7 @@ InspManager {
 	*initClass { global = this.new }
 	
 	watch { arg insp;
+
 		insps = insps.add(insp);	
 	
 		//if window not open, make
@@ -80,7 +88,7 @@ InspManager {
 		var origin;
 		if(currentInsp.notNil,{ 
 			//origin = currentInsp.origin;
-			currentInsp.close 
+			currentInsp.hide 
 		});			
 		currentInsp = insp;
 		insp.gui; //(origin);

@@ -59,7 +59,7 @@ PathName { 	// this class by originally by AdC
 	isRelativePath { ^this.isAbsolutePath.not }
 	
 	isAbsolutePath { 
-		^fullPath.at(0) != $/
+		^fullPath.at(0) == $/
 	}
 	
 	asRelativePath {

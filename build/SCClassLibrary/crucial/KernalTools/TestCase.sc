@@ -20,9 +20,7 @@ TestCase {
 		if(report,{ this.class.report });
 	}
 	
-
-	
-	*testAll { arg resetFailures=true,report=true;
+	*runAll { arg resetFailures=true,report=true;
 		if(resetFailures,{ this.resetFailures });
 		Class.allClasses.do({ arg sc;
 			if(sc.isMetaClass.not,{

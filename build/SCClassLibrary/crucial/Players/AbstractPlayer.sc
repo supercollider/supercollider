@@ -1,9 +1,11 @@
 
 AbstractPlayer : AbstractFunction  { 
 
-	var <path,name,<>dirty=false; 
+	classvar <>directory="";
 	
-	var <synth,<patchOut,<>readyForPlay = false, defName;
+	var <path,name,<>dirty=true; 
+	
+	var <synth,<patchOut,<>readyForPlay = false,defName,patchOutsOfChildren;
 		
 	// subclasses must implement
 	ar { ^this.subclassResponsibility(thisMethod) }
@@ -46,29 +48,14 @@ AbstractPlayer : AbstractFunction  {
 		// depend on stop being issued
 
 		group = group.asGroup;
-		if(patchOut.isNil,{
-			if(this.rate == \audio,{// out yr speakers
-				patchOut = PatchOut(this,
-								group,
-							Bus(\audio,0,this.numChannels,group.server))
-			},{
-				if(this.rate == \control,{
-					patchOut = 
-						PatchOut(this,group,
-								Bus.control(this.numChannels,group.server))
-				},{
-					("Wrong output rate: " + this.rate + 
-				".  AbstractPlayer cannot prepare this object for play.").error;
-				});
-			})
-		});
-
+		server = group.server;
+		
 		if(readyForPlay,{
+			this.makePatchOut(group);
 			this.spawnAtTime(atTime);
 		},{
 			Routine({
 				var limit = 100;
-				server = patchOut.server;
 				if(server.serverRunning.not,{
 					server.boot;
 					while({
@@ -83,11 +70,14 @@ AbstractPlayer : AbstractFunction  {
 				if(server.serverRunning.not,{
 					"server failed to start".error;
 				},{
-					// already have a patchOut
+					patchOut = true; // keep it from making one
 					this.prepareForPlay(group,bundle);
+					
 					//["-play prepared",bundle].postln;
 					if(bundle.notEmpty,{
-						server.listSendBundle(nil,bundle);
+						server.listSendBundle(nil,bundle
+												//.insp("prepare")
+												);
 					});
 					// need some way to track all the preps completion
 					// also in some cases the prepare can have a completion
@@ -96,28 +86,50 @@ AbstractPlayer : AbstractFunction  {
 					// need a fully fledged OSCMessage that can figure it out
 					0.1.wait;
 					
+					this.makePatchOut(group);
 					this.spawnAtTime(atTime);
 				});
 			}).play;
 		});
 	}
-
+	makePatchOut { arg group;
+		//patch doesn't know its numChannels until after it makes the synthDef
+		if(this.rate == \audio,{// out yr speakers
+			patchOut = PatchOut(this,
+							group,
+						Bus(\audio,0,this.numChannels,group.server))
+		},{
+			if(this.rate == \control,{
+				patchOut = 
+					PatchOut(this,group,
+							Bus.control(this.numChannels,group.server))
+			},{
+				("Wrong output rate: " + this.rate + 
+			".  AbstractPlayer cannot prepare this object for play.").error;
+			});
+		})
+	}
+	
 	prepareForPlay { arg group,bundle;
-		
+		//this.insp("prepareForPlay");
 		readyForPlay = false;
+		
+		this.loadDefFileToBundle(bundle);
+		// if made, we have secret controls now
+		// else we already had them
+		
 		// play would have already done this if we were top level object
-		if(patchOut.isNil,{
+		if(patchOut.isNil,{ // private out
 			group = group.asGroup;
 			patchOut = PatchOut(this,group,
 						Bus.alloc(this.rate,group.server,this.numChannels))
 						// private buss on this server
 		});
-		patchOut.patchOutsOfInputs = this.children.collect({ arg child;
+		patchOutsOfChildren = this.children.collect({ arg child;
 			child.prepareForPlay(group,bundle);
 			child.patchOut
 		});
 
-		this.loadDefFileToBundle(bundle);
 		
 		// not really until the last confirmation comes from server
 		readyForPlay = true;
@@ -127,13 +139,13 @@ AbstractPlayer : AbstractFunction  {
 		bundle = List.new;
 		this.spawnToBundle(bundle);
 		
-//		"spawnAtTime->".postln;
-//		bundle.do({ arg l; 
-//			l.postln; 
-//		});
+		// atTime.asDeltaTime
+		patchOut.server.listSendBundle( atTime, bundle//.insp("spawn")
+												);
+		// schedule atTime:
+		synth.isPlaying = true;
+		synth.isRunning = true;
 		
-		// atTime.asDelta
-		patchOut.server.listSendBundle( atTime, bundle);
 		this.didSpawn;
 	}
 	spawnToBundle { arg bundle;
@@ -142,31 +154,43 @@ AbstractPlayer : AbstractFunction  {
 		});
 		synth = Synth.newMsg(bundle, // newToBundle
 				this.defName,
-				this.synthDefArgs.collect({ arg a,i; [i,a]}).flat,
+				this.synthDefArgs.collect({ arg a,i; [i,a]}).flat ,
+					//++ this.secretSynthDefArgs
+					//++ this.children.collect({ arg child; child.secretSynthDefArgs }).flat,
 				patchOut.group,
 				\addToTail
 				);
 	}
+	/*
+		when player saves, save defName and secret args (name -> inputIndex)
+			that means you can quickly check, load and execute synthdef
+		defName only if not == classname
+			
+		save it all in InstrSynthDef
+	*/
 	loadDefFileToBundle { arg bundle;
 		var def,bytes;
 		if(this.defName.isNil or: {
-			Library.at(SynthDef,patchOut.server,this.defName.asSymbol).isNil
+			true
+			// Library.at(SynthDef,patchOut.server,this.defName.asSymbol).isNil
 		},{
-			//TODO check path, if a saved version is there
+			// you might need child's numChannels (Patch) to be known
+			this.children.do({ arg child;
+				child.loadDefFileToBundle(bundle);
+			});
+
 			// save it in the archive of the player
 			def = this.asSynthDef;
 			bytes = def.asBytes;
 			bundle.add(["/d_recv", bytes]);
 			defName = def.name;
-			//bundle.add(["/d_load", "synthdefs/" ++ defName ++ ".scsyndef"]);
-
+			
+			//secretArgs = def.secretArgs;
+			
 			// on server quit have to clear this
 			// but for now at least we know it was written, and therefore
 			// loaded automatically on reboot
-			//Library.put(SynthDef,patchOut.server,this.defName.asSymbol,true);
-		});
-		this.children.do({ arg child;
-			child.loadDefFileToBundle(bundle);
+			// Library.put(SynthDef,patchOut.server,this.defName.asSymbol,true);
 		});
 	}
 	
@@ -176,7 +200,6 @@ AbstractPlayer : AbstractFunction  {
 			child.writeDefFile;
 		});
 	}
-	//initDefArg { ^patchOut.initDefArg }
 	
 	
 	/** SUBCLASSES SHOULD IMPLEMENT **/
@@ -189,11 +212,13 @@ AbstractPlayer : AbstractFunction  {
 	}
 	// if children are your args, you won't have to implement this
 	synthDefArgs { 
+		// no indices
 		^this.children.collect({ arg ag,i; ag.synthArg })  
 				 ++ [patchOut.bus.index] // always goes last
 	}
+	//secretSynthDefArgs { ^#[] } // requires names
 	defName {
-		^this.class.name.asString
+		^defName ?? {this.class.name.asString}
 	}
 	didSpawn {}
 	

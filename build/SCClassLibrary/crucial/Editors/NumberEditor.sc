@@ -32,12 +32,12 @@ NumberEditor : Editor {
 		spec = aspec.asSpec;
 		value = spec.constrain(val);
 	}
-	value_ { arg val;
+	value_ { arg val,changer;
 		value = val; //spec.constrain(val);
 		// server support
 		// could also do it with a dependant
 		//if(patchIn.notNil,{ patchIn.value = value });
-		this.changed(\value);
+		this.changed(\value,changer);
 	}
 	activeValue_ { arg val;
 		this.value_(val);

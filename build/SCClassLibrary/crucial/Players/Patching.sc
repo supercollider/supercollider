@@ -176,10 +176,12 @@ ScalarPatchOut : PatchOut {
 		if(needsValueSetNow,{
 			controlPatchIn.value = source.value;
 		});
-		updater = SimpleController(source)
-					.put(\value,{
-						controlPatchIn.value = source.value;
-					});
+		//if(source.dependants.includes(updater).not,{
+			updater = SimpleController(source)
+						.put(\value,{
+							controlPatchIn.value = source.value;
+						});
+		//});
 	}
 	scalar { arg scalarPatchIn;
 		//thisMethod.notYetImplemented;

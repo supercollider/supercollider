@@ -10,6 +10,7 @@ ClassNameLabel : ActionButton {
 		^super.prNew(layout,class.name.asString,{class.gui},maxx,30)
 			.backColor_(Color( 0.52156862745098, 0.75686274509804, 0.90196078431373 ))
 			.font_(Font("Helvetica-Bold",18))
+			.labelColor_(Color.white)
 	}
 
 }

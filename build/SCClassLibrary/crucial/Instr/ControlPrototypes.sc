@@ -28,7 +28,12 @@ ControlPrototypes {
 					]},
 			SampleSpec -> {[
 						Sample.new
-						]}//,
+						]},
+			TempoSpec -> {[
+							TempoPlayer.new
+						]}
+						
+						//,
 			//StreamSpec -> {[ AsStream( NumberEditor.new ) ]}
 		);
 	}

@@ -13,8 +13,9 @@ PlayPathButton : ActionButton { // loads the object at loadPath and .plays it
 	
 	doAction { 
 		if(this.isPlaying,{
+			isPlaying = false;
 			this.backColor_(rgb(228,255,107));
-			player.stop;
+			if(player.notNil,{player.stop });
 		},{
 			this.backColor_(Color.green);
 			this.play;
@@ -22,7 +23,9 @@ PlayPathButton : ActionButton { // loads the object at loadPath and .plays it
 	}
 	
 	play { 
+		isPlaying = true;
 		player = subject.loadPath;
+		
 		^player.play 
 	}
 

@@ -39,7 +39,7 @@ MultiTrackAudioSpec : AudioSpec {
 
 TrigSpec : ControlSpec {
 	
-	default { ^0.0 } // forced ?  minval is used anyway
+	defaultControl { ^BeatClockPlayer.new(4.0) }
 	*initClass {
 		specs.putAll(
 		 IdentityDictionary[
@@ -52,7 +52,7 @@ TrigSpec : ControlSpec {
 
 
 TempoSpec : ControlSpec {
-	default { ^TempoPlayer.new }
+	defaultControl { ^TempoPlayer.new }
 	*initClass {
 		specs.putAll(
 		 IdentityDictionary[

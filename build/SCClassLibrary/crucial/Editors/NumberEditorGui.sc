@@ -31,7 +31,8 @@ NumberEditorGui : EditorGui {
 			});		
 	}
 	update {arg changed,changer; // always has a number box
-		numv.object_(model.poll)
+		//numv.setProperty(\value,model.poll)
+		numv.value_(model.poll);
 	}
 	
 	slider { arg layout, x=100,y=15;
@@ -45,7 +46,7 @@ NumberEditorGui : EditorGui {
 				
 		Updater(model,{ arg changed,changer;
 			// without triggering action
-			slv.setProperty(\value,model.spec.unmap(model.poll))
+			slv.value_(model.spec.unmap(model.poll))
 		}).removeOnClose(layout);
 	}
 }
@@ -59,7 +60,9 @@ NumberEditorGui : EditorGui {
 BooleanEditorGui : EditorGui {
 	var cb;
 	guiBody { arg layout;
-		cb = SCButton.new( layout,Rect(0,0,14,14));
+		var r;
+		r = layout.layRight(14,14);
+		cb = SCButton.new( layout.window,r);
 		cb.states = [["0",Color.black,Color.white],["1",Color.white,Color.black]];
 		cb.font = Font("Helvetica",9);
 		cb.setProperty(\value,model.value.binaryValue);
@@ -67,7 +70,7 @@ BooleanEditorGui : EditorGui {
 	}
 	update { arg changed,changer;
 		if(changer !== this,{
-			cb.value = model.poll.binaryValue
+			cb.setProperty(\value,model.value.binaryValue);
 		});
 	}
 }

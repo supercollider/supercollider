@@ -5,6 +5,8 @@ Patch : AbstractPlayer  {
 		
 	var <>args,<instr;
 	var <patchIns,synthPatchIns,argsForSynth;
+	var synthDef;
+	var <numChannels,<rate; // determined after making synthdef
 	
 	*new { arg name,args;
 		^super.new.loadSubject(name).createArgs(loadPath(args) ?? {[]})
@@ -30,10 +32,9 @@ Patch : AbstractPlayer  {
 					spec = instr.specs.at(i);
 					proto = ControlPrototypes.forSpec(spec,instr.argNames.at(i));
 					proto.tryPerform('spec_',spec); // make sure it does the spec
-					if((darg = instr.initAt(i)).notNil,{
+					if((darg = instr.initAt(i)).isNumber,{
 						proto.tryPerform('value_',darg);// set its value
 					});
-					proto
 				};
 				
 			patchIn = PatchIn.newByRate(instr.specs.at(i).rate);
@@ -51,26 +52,41 @@ Patch : AbstractPlayer  {
 		});
 	}
 	
-	numChannels { ^instr.numChannels }
-	rate { ^instr.rate }
-	
 	/* scserver support */
 	asSynthDef {
-		var is;
-		is = InstrSynthDef.new;
-		is.build(this.instr,this.args,\Out);
-		defName = is.name;
-		^is
+		// could be cached, must be able to invalidate it
+		// if an input changes
+		^synthDef ?? {
+			synthDef = InstrSynthDef.build(this.instr,this.args,\Out);
+			defName = synthDef.name;
+			numChannels = synthDef.numChannels;
+			rate = synthDef.rate;
+			synthDef
+		}
+	}
+	// has inputs
+	spawnToBundle { arg bundle;
+		var synthArgs;
+		this.children.do({ arg child;
+			child.spawnToBundle(bundle);
+		});
+		synthArgs = Array(argsForSynth.size + 1 * 2);
+		this.synthDefArgs.do({ arg a,i;
+			synthArgs.add(i);
+			synthArgs.add(a);
+		});
+		synth = Synth.newMsg(bundle, // newToBundle
+				this.defName,
+				synthArgs ++ synthDef.secretDefArgs(args),
+				patchOut.group,
+				\addToTail
+				);
 	}
 
 	synthDefArgs {
 		// not every arg makes it into the synth def
-		^argsForSynth.collect({ arg ag; ag.synthArg })
-			++ [patchOut.bus.index] // always goes last
-	}
-	defName {
-		// set only after asSynthDef !
-		^defName
+		^(argsForSynth.collect({ arg ag; ag.synthArg })
+			++ [patchOut.bus.index]) // always goes last
 	}
 	didSpawn {
 		//node control if you want it
@@ -79,10 +95,10 @@ Patch : AbstractPlayer  {
 		});
 		patchIns.do({ arg patchIn,pti;
 			// objects hook up 
-			patchOut.patchOutsOfInputs.at(pti).connectTo(patchIn,false); 
+			patchOutsOfChildren.at(pti).connectTo(patchIn,false); 
 		});
 	}
-
+	
 	/*
 	setInput { arg i,newarg;
 		var old,newargpatchOut;

@@ -2,14 +2,19 @@
 	
 	guify { arg layout,title,width,height;
 		^super.guify(layout,title,width ? 800,height ? 800)
-	}	writeName { arg layout;		ClassNameLabel.newBig(model.class,layout);		CXLabel(layout,model.asString,140,30)
+	}	writeName { arg layout;		ClassNameLabel.newBig(model.class,layout);		CXLabel(layout,model.asString,200,30)
 			.view.font_(Font("Helvetica-Bold",18));
 		ActionButton(layout,"gui...",{ model.topGui });
+		ActionButton(layout,"#",{ model.asCompileString.postln });
 
 		/*		ActionButton(layout,"-> a-z",{			GetStringDialog("assign to interpreter variable a-z","x",{ arg ok,string;				if(ok,{					thisProcess.interpreter.performList((string ++ "_").asSymbol,model);					this.newErrorWindow;					"".postln;					string.postln;				})			})		});
-		*/	}	guiBody { arg layout;		
-		this.instVarsGui(layout);				// slotAt
-		if(model.isArray,{			min(model.slotSize,300).do({arg i;				var iv;				layout.startRow;				CXLabel(layout,"@" ++ i,maxx: 40);				iv=model.slotAt(i);//				ActionButton(layout,"code->",{//					GetStringDialog("enter code to compile and insert at slot " 
+		*/	}	guiBody { arg layout;		var vert;
+		this.instVarsGui(layout);		
+		// slotAt
+		if(model.isArray,{			vert = model.slotSize < 26;
+			min(model.slotSize,300).do({arg i;				var iv;
+				if(vert or: {i % 4 == 0},{ layout.startRow; });
+								CXLabel(layout,"@" ++ i,maxx: 40);				iv=model.slotAt(i);//				ActionButton(layout,"code->",{//					GetStringDialog("enter code to compile and insert at slot " 
 //						+ i ,"",//					{ arg ok,string;//						if(ok,{//							model.slotPut(i,  string.interpret)//						})//					})//				});					//ClassNameLabel(iv.class,layout);				InspectorLink(iv,layout);			});			if(model.slotSize > 300,{ 
 				CXLabel(layout,"... slotSize is" ++ model.slotSize.asString,maxx:210).bold;
 			});

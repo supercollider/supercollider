@@ -77,7 +77,6 @@ PageLayout  {
 		curry=margin.top;
 		
 		autoRemoves = List.new;
-		this.front;
 	}
 	
 	window { ^windows.last }
@@ -129,7 +128,17 @@ PageLayout  {
 	
 	// act like a GUIWindow 
 	checkNotClosed { ^isClosed.not }
-	front { windows.reverseDo({arg w; w.front }); }
+	front {
+		//windows.reverseDo({arg w; w.front }); 
+		windows.first.front;
+	}
+	hide {
+		// for now
+		windows.do({ arg w; w.alpha = 0.0; })
+	}
+	unhide {
+		windows.do({ arg w; w.alpha = 1.0 })
+	}
 	close { // called when the GUIWindow closes
 		if(isClosed.not,{
 			isClosed = true; 

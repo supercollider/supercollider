@@ -9,14 +9,15 @@ TempoPlayer : KrPlayer { //Synthless
 		^super.newCopyArgs(tempo)
 	}
 	
-//only if already called prepare
+// add a secret arg
 //	kr {
 //		^In.kr( tempoBus.index, 1)
 //	}
 
 	prepareForPlay { arg group,bundle;
 		if(patchOut.isNil,{
-			tempoBus = TempoBus(group.asGroup.server,tempo);
+			group = group.asGroup;
+			tempoBus = TempoBus(group.server,tempo);
 			patchOut = PatchOut.control(this,group,tempoBus);
 			// may not have to do anything
 			tempoBus.prepareForPlay(group,bundle);

@@ -108,8 +108,7 @@ SynthConsole : AbstractConsole  {
 	
 	doStop { arg stopFunc;
 		stopFunc.value;
-		RootNode.new.freeAll;
-		//ugenFunc.stop;
+		ugenFunc.tryPerform(\stop) ?? {RootNode.new.freeAll};
 		NotificationCenter.notify(this,\didStop);
 	}
 		
