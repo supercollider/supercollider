@@ -36,7 +36,7 @@ struct Duty : public Unit
 {
 	float m_count;
 	float m_prevreset;
-	float m_prevout[MAXCHANNELS];
+	float m_prevout;
 };
 
 struct TDuty : public Unit
@@ -349,18 +349,20 @@ void Demand_Ctor(Demand *unit)
 
 /////////////////////////////////////////////////////////////////////////////
 
+enum {
+	duty_dur,
+	duty_reset,
+	duty_doneAction,
+	duty_level
+};
 
 void Duty_next_da(Duty *unit, int inNumSamples)
 {
 	
-	float *reset = ZIN(1);
+	float *reset = ZIN(duty_reset);
 
-	float *out[MAXCHANNELS];
-	float prevout[MAXCHANNELS];
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		out[i] = OUT(i); 
-		prevout[i] = unit->m_prevout[i];
-	}
+	float *out = OUT(0);
+	float prevout = unit->m_prevout;
 	float count = unit->m_count;
 	float prevreset = unit->m_prevreset;
 	
@@ -369,30 +371,25 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 		float zreset = ZXP(reset);
 		if (zreset > 0.f && prevreset <= 0.f) {
 			
-			for (int j=3; j<unit->mNumInputs; ++j) {
-				RESETINPUT(j);
-			}
-			RESETINPUT(0);
+			RESETINPUT(duty_level); 
+			RESETINPUT(duty_dur);
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
+			count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f + count;
 			if(sc_isnan(count)) {
-				int doneAction = (int)ZIN0(2);
+				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
 			}
-			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
-				float x = DEMANDINPUT(j);
-				//printf("in  %d %g\n", k, x);
-				if (sc_isnan(x)) x = prevout[k];
-				else prevout[k] = x;
-				out[k][i] = x;
-			}
+			float x = DEMANDINPUT(duty_level);
+			//printf("in  %d %g\n", k, x);
+			if (sc_isnan(x)) x = prevout;
+			else prevout = x;
+			out[i] = x;
+			
 		} else {
 			count--;
-			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
-				out[k][i] = prevout[k];
-			}
+			out[i] = prevout;
 		}
 		
 		prevreset = zreset;
@@ -400,22 +397,16 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 	
 	unit->m_count = count;
 	unit->m_prevreset = prevreset;
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		unit->m_prevout[i] = prevout[i];
-	}
+	unit->m_prevout = prevout;
 }
 
 void Duty_next_dk(Duty *unit, int inNumSamples)
 {
 	
-	float zreset = ZIN0(1);
+	float zreset = ZIN0(duty_reset);
 
-	float *out[MAXCHANNELS];
-	float prevout[MAXCHANNELS];
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		out[i] = OUT(i); 
-		prevout[i] = unit->m_prevout[i];
-	}
+	float *out = OUT(0);
+	float prevout = unit->m_prevout;
 	float count = unit->m_count;
 	float prevreset = unit->m_prevreset;
 	
@@ -423,30 +414,26 @@ void Duty_next_dk(Duty *unit, int inNumSamples)
 		
 		if (zreset > 0.f && prevreset <= 0.f) {
 			
-			for (int j=3; j<unit->mNumInputs; ++j) {
-				RESETINPUT(j);
-			}
-			RESETINPUT(0);
+			RESETINPUT(duty_level);
+			RESETINPUT(duty_dur);
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
+			count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f + count;
 			if(sc_isnan(count)) {
-				int doneAction = (int)ZIN0(2);
+				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
 			}
-			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
-				float x = DEMANDINPUT(j);
-				//printf("in  %d %g\n", k, x);
-				if (sc_isnan(x)) x = prevout[k];
-				else prevout[k] = x;
-				out[k][i] = x;
-			}
+		
+			float x = DEMANDINPUT(duty_level);
+			//printf("in  %d %g\n", k, x);
+			if (sc_isnan(x)) x = prevout;
+			else prevout = x;
+			out[i] = x;
+			
 		} else {
 			count--;
-			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
-				out[k][i] = prevout[k];
-			}
+			out[i] = prevout;
 		}
 		
 		prevreset = zreset;
@@ -454,89 +441,73 @@ void Duty_next_dk(Duty *unit, int inNumSamples)
 	
 	unit->m_count = count;
 	unit->m_prevreset = prevreset;
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		unit->m_prevout[i] = prevout[i];
-	}
+	unit->m_prevout = prevout;
+
 }
 
 
 void Duty_next_dd(Duty *unit, int inNumSamples)
 {
-	
-	float *out[MAXCHANNELS];
-	float prevout[MAXCHANNELS];
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		out[i] = OUT(i); 
-		prevout[i] = unit->m_prevout[i];
-	}
+	float *out = OUT(0); 	
+	float prevout = unit->m_prevout;
 	float count = unit->m_count;
 	float reset = unit->m_prevreset;
 	
 	for (int i=0; i<inNumSamples; ++i) {
 		
 		if (reset <= 0.f) {
-			for (int j=2; j<unit->mNumInputs; ++j) {
-				RESETINPUT(j);
-			}
-			RESETINPUT(0);
+			RESETINPUT(duty_level);
+			RESETINPUT(duty_dur);
 			count = 0.f;
-			reset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f + reset;
+			reset = DEMANDINPUT(duty_reset) * SAMPLERATE + .5f + reset;
 		} else { 
 			reset--; 
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
+			count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f + count;
 			if(sc_isnan(count)) {
-				int doneAction = (int)ZIN0(2);
+				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
 			}
-			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
-				float x = DEMANDINPUT(j);
-				//printf("in  %d %g\n", k, x);
-				if (sc_isnan(x)) x = prevout[k];
-				else prevout[k] = x;
-				out[k][i] = x;
-			}
+			float x = DEMANDINPUT(duty_level);
+			//printf("in  %d %g\n", k, x);
+			if (sc_isnan(x)) x = prevout;
+			else prevout = x;
+			out[i] = x;
 		} else {
 			count--;
-			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
-				out[k][i] = prevout[k];
-			}
+			out[i] = prevout;
 		}
 		
 	}
 	
 	unit->m_count = count;
 	unit->m_prevreset = reset;
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		unit->m_prevout[i] = prevout[i];
-	}
+	unit->m_prevout = prevout;
 }
 
 
 void Duty_Ctor(Duty *unit)
 {
-	if (INRATE(1) == calc_FullRate) {
+	if (INRATE(duty_reset) == calc_FullRate) {
 
 			SETCALC(Duty_next_da);
 			unit->m_prevreset = 0.f;
 		
 	} else { 
-		if(INRATE(1) == calc_DemandRate) {
+		if(INRATE(duty_reset) == calc_DemandRate) {
 			SETCALC(Duty_next_dd);
-			unit->m_prevreset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f;
+			unit->m_prevreset = DEMANDINPUT(duty_reset) * SAMPLERATE + .5f;
 		} else {
 			SETCALC(Duty_next_dk);
 			unit->m_prevreset = 0.f;
 		}
 	}
 	
-	unit->m_count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f;
+	unit->m_count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f;
+	unit->m_prevout = 0.f;
+	OUT0(0) = 0.f;
 	
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		unit->m_prevout[i] = 0.f;
-		OUT0(i) = 0.f;
-	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -544,13 +515,9 @@ void Duty_Ctor(Duty *unit)
 void TDuty_next_da(TDuty *unit, int inNumSamples)
 {
 	
-	float *reset = ZIN(1);
+	float *reset = ZIN(duty_reset);
+	float *out = OUT(0);
 
-	float *out[MAXCHANNELS];
-	
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		out[i] = OUT(i); 
-	}
 	float count = unit->m_count;
 	float prevreset = unit->m_prevreset;
 	
@@ -559,29 +526,23 @@ void TDuty_next_da(TDuty *unit, int inNumSamples)
 		float zreset = ZXP(reset);
 		if (zreset > 0.f && prevreset <= 0.f) {
 			
-			for (int j=3; j<unit->mNumInputs; ++j) {
-				RESETINPUT(j);
-			}
-			RESETINPUT(0);
+			RESETINPUT(duty_level);
+			RESETINPUT(duty_dur);
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
+			count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
 			}
-			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
-				float x = DEMANDINPUT(j);
-				//printf("in  %d %g\n", k, x);
-				if (sc_isnan(x)) x = 0.f;
-				out[k][i] = x;
-			}
+			float x = DEMANDINPUT(duty_level);
+			//printf("in  %d %g\n", k, x);
+			if (sc_isnan(x)) x = 0.f;
+			out[i] = x;
 		} else {
 			count--;
-			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
-				out[k][i] = 0.f;
-			}
+			out[i] = 0.f;
 		}
 		
 		prevreset = zreset;
@@ -595,12 +556,9 @@ void TDuty_next_da(TDuty *unit, int inNumSamples)
 void TDuty_next_dk(TDuty *unit, int inNumSamples)
 {
 	
-	float zreset = ZIN0(1);
+	float zreset = ZIN0(duty_reset);
 
-	float *out[MAXCHANNELS];
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		out[i] = OUT(i); 
-	}
+	float *out = OUT(0);
 	float count = unit->m_count;
 	float prevreset = unit->m_prevreset;
 	
@@ -608,29 +566,23 @@ void TDuty_next_dk(TDuty *unit, int inNumSamples)
 		
 		if (zreset > 0.f && prevreset <= 0.f) {
 			
-			for (int j=3; j<unit->mNumInputs; ++j) {
-				RESETINPUT(j);
-			}
-			RESETINPUT(0);
+			RESETINPUT(duty_level);
+			RESETINPUT(duty_dur);
 			count = 0.f;
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
+			count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
 			}
-			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
-				float x = DEMANDINPUT(j);
-				//printf("in  %d %g\n", k, x);
-				if (sc_isnan(x)) x = 0.f;
-				out[k][i] = x;
-			}
+			float x = DEMANDINPUT(duty_level);
+			//printf("in  %d %g\n", k, x);
+			if (sc_isnan(x)) x = 0.f;
+			out[i] = x;
 		} else {
 			count--;
-			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
-				out[k][i] = 0.f;
-			}
+			out[i] = 0.f;
 		}
 		
 		prevreset = zreset;
@@ -644,42 +596,33 @@ void TDuty_next_dk(TDuty *unit, int inNumSamples)
 void TDuty_next_dd(TDuty *unit, int inNumSamples)
 {
 	
-	float *out[MAXCHANNELS];
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		out[i] = OUT(i); 
-	}
+	float *out = OUT(0);
 	float count = unit->m_count;
 	float reset = unit->m_prevreset;
 	
 	for (int i=0; i<inNumSamples; ++i) {
 		
 		if (reset <= 0.f) {
-			for (int j=2; j<unit->mNumInputs; ++j) {
-				RESETINPUT(j);
-			}
-			RESETINPUT(0);
+			RESETINPUT(duty_level);
+			RESETINPUT(duty_dur);
 			count = 0.f;
-			reset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f + reset;
+			reset = DEMANDINPUT(duty_reset) * SAMPLERATE + .5f + reset;
 		} else { 
 			reset--; 
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
+			count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
 			}
-			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
-				float x = DEMANDINPUT(j);
-				//printf("in  %d %g\n", k, x);
-				if (sc_isnan(x)) x = 0.f;
-				out[k][i] = x;
-			}
+			float x = DEMANDINPUT(duty_level);
+			//printf("in  %d %g\n", k, x);
+			if (sc_isnan(x)) x = 0.f;
+			out[i] = x;
 		} else {
 			count--;
-			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
-				out[k][i] = 0.f;
-			}
+			out[i] = 0.f;
 		}
 		
 	}
@@ -700,18 +643,15 @@ void TDuty_Ctor(TDuty *unit)
 	} else { 
 		if(INRATE(1) == calc_DemandRate) {
 			SETCALC(TDuty_next_dd);
-			unit->m_prevreset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f;
+			unit->m_prevreset = DEMANDINPUT(1) * SAMPLERATE + .5f;
 		} else {
 			SETCALC(TDuty_next_dk);
 			unit->m_prevreset = 0.f;
 		}
 	}
 	
-	unit->m_count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f;
-	
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		OUT0(i) = 0.f;
-	}
+	unit->m_count = DEMANDINPUT(duty_dur) * SAMPLERATE + .5f;
+	OUT0(0) = 0.f;
 }
 
 

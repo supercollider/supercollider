@@ -14,7 +14,7 @@
 \f1\b0 superclass: Duty
 \f0\b \
 \
-TDuty.ar(duration, reset, [..ugens..], doneAction)
+TDuty.ar(duration, reset,  level, doneAction)
 \f2\b0\fs18 \
 \
 \
@@ -42,8 +42,9 @@ The reset input may also be a demand ugen, providing a stream of reset times.\
 \f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 [...ugens...]
-\f1\b0 	a list of demand ugens providing the output values.\
+\f0\b\fs24 \cf0 level		
+\f1\b0 	demand ugen providing the output values.\
+\
 \
 
 \f0\b doneAction
@@ -143,7 +144,20 @@ fork \{ 10.do \{ s.sendBundle(0.2, [\cf4 "/s_new"\cf0 , \cf4 "delta_demand2"\cf0
 \
 \
 \
+\cf2 // multichannel expansion\cf0 \
 \
+(\
+	\{\
+		\cf3 var\cf0  t;\
+		t = \cf3 TDuty\cf0 .ar(\
+				\cf3 Drand\cf0 ([\cf3 Dgeom\cf0 (0.1, 0.8, 20), 1, 2], \cf3 inf\cf0 ) ! 2,\
+				0, \
+				[\cf3 Drand\cf0 (\{\'ca1.0.rand \} ! 8, \cf3 inf\cf0 ), \cf3 Dseq\cf0 (\{\'ca1.0.rand \} ! 8, \cf3 inf\cf0 )] * 2\
+			); \
+		x = \cf3 Ringz\cf0 .ar(t, [400, 700], 0.1) * 0.1;\
+	\
+	\}.play;\
+)\
 \
 \
 }

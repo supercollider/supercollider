@@ -10,10 +10,10 @@
 
 \fs24 \
 
-\f1\b0 superclass: MultiOutUGen\
+\f1\b0 superclass: UGen\
 
 \f0\b \
-Duty.ar(duration, reset, [..ugens..], doneAction)
+Duty.ar(duration, reset, level, doneAction)
 \f2\b0\fs18 \
 \
 \
@@ -42,8 +42,8 @@ The reset input may also be a demand ugen, providing a stream of reset times.\
 \f2 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b\fs24 \cf0 [...ugens...]
-\f1\b0 	a list of demand ugens providing the output values.\
+\f0\b\fs24 \cf0 level		
+\f1\b0 	demand ugen providing the output values.\
 \
 
 \f0\b doneAction

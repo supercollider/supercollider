@@ -12,17 +12,13 @@ Demand : MultiOutUGen {
  	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
-Duty : MultiOutUGen {
+Duty : UGen {
 	
-	*ar { arg dur, reset, demandUGens, doneAction=0;
-		^this.multiNewList(['audio', dur, reset, doneAction] ++ demandUGens.asArray)
+	*ar { arg dur, reset, level, doneAction=0;
+		^this.multiNew('audio', dur, reset, doneAction, level)
 	}
-	*kr { arg dur, reset, demandUGens, doneAction=0;
-		^this.multiNewList(['control', dur, reset, doneAction] ++ demandUGens.asArray)
-	}
-	init { arg ... argInputs;
-		inputs = argInputs;
-		^this.initOutputs(inputs.size - 3, rate)
+	*kr { arg dur, reset, level, doneAction=0;
+		^this.multiNew('control', dur, reset, doneAction, level)
 	}
 	checkInputs {
 		^if(inputs.at(0).rate === \demand) {
@@ -84,5 +80,3 @@ Dbrown : UGen {
 }
 
 Dibrown : Dbrown {}
-
-
