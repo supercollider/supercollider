@@ -77,14 +77,15 @@ static void midiProcessPacket(MIDIPacket *pkt, int uid)
 		// it is needed  -jamesmcc
 	if (compiledOK) {
 			VMGlobals *g = gMainVMGlobals;
-			uint8 status = pkt->data[0] & 0xF0;
+			uint8 status = pkt->data[0] & 0xF0;			
+			uint8 chan = pkt->data[0] & 0x0F;
 			g->canCallOS = false; // cannot call the OS
 			
 			++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the class MIDIIn
 			//set arguments: 
 			++g->sp;SetInt(g->sp,  uid); //src
 				// ++g->sp;  SetInt(g->sp, status); //status
-			++g->sp;  SetInt(g->sp, pkt->data[0] - (status & 0xF0)); //chan
+			++g->sp;  SetInt(g->sp, chan); //chan
 			switch (status) {
 			case 0x80 : //noteOff
 				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
@@ -119,6 +120,7 @@ static void midiProcessPacket(MIDIPacket *pkt, int uid)
 				runInterpreter(g, s_midiBendAction, 4);
 				break;
 			case 0xF0 :// ?
+				g->sp -= 3; // nevermind
 				break;  
 			default :
 				++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
