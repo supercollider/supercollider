@@ -55,19 +55,6 @@ Node {
 				++ nargs)); 						// "n_setn"
 	}
 	
-	get { arg index, action;
-		OSCpathResponder(server.addr,['/n_set',nodeID,index],{ arg time, r, msg; 
-			action.value(msg.at(3)); r.remove }).add;
-		server.listSendMsg(["/s_get", nodeID, index]);
-	}
-	
-	getn { arg index, count, action;
-
-		OSCpathResponder(server.addr,['/n_setn',nodeID,index],{arg time, r, msg;
-			action.value(msg.copyToEnd(4)); r.remove } ).add; 
-		server.listSendMsg(["/s_getn", nodeID, index, count]);
-	}
-
 	fill { arg controlName, numControls, value ... args;
 		server.sendBundle(nil, 
 			[17, nodeID, controlName, numControls, value]++args); //"n_setn"
@@ -393,6 +380,19 @@ Synth : Node {
 	addReplaceMsg { arg removeThisOne, args;
 		group = removeThisOne.group; 
 		^["/s_new", defName, nodeID, 4, removeThisOne.nodeID] ++ args
+	}
+	
+	get { arg index, action;
+		OSCpathResponder(server.addr,['/n_set',nodeID,index],{ arg time, r, msg; 
+			action.value(msg.at(3)); r.remove }).add;
+		server.listSendMsg(["/s_get", nodeID, index]);
+	}
+	
+	getn { arg index, count, action;
+
+		OSCpathResponder(server.addr,['/n_setn',nodeID,index],{arg time, r, msg;
+			action.value(msg.copyToEnd(4)); r.remove } ).add; 
+		server.listSendMsg(["/s_getn", nodeID, index, count]);
 	}
 		
 	// private
