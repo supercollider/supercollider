@@ -9,8 +9,9 @@
 \fs28 \
 \
 superclass: Node\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \
+\f1\b0\fs18 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ri-620\ql\qnatural
 
 \f2\fs24 \cf0 A Group is a collection of Nodes represented as a linked list. A new Node may be added to the head or tail of the group. The Nodes within a Group may be controlled together. The Nodes in a Group may be both Synths and other Groups. At startup there is a top level group with an ID of zero that defines the root of the tree.  This is represented by a subclass of Group: RootNode.\
@@ -150,6 +151,12 @@ superclass: Node\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f2\fs24 \cf0 					add immediately before the target, \
+					in the same group,\
+					on the same server\
+				
+\f1\fs18 \cf2 \\addReplace\
+
+\f2\fs24 \cf0 					replace the target,\
 					in the same group,\
 					on the same server\
 					\
