@@ -24,6 +24,7 @@ Main : Process {
 		
 		SystemClock.clear;
 		AppClock.clear;
+		TempoClock.default.clear;
 		CmdPeriod.clear;
 		
 		Server.resumeThreads;
