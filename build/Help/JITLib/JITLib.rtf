@@ -33,12 +33,18 @@ Disclaimer: there is no time, really; punctuality is your personal responsibilit
 \cf0 \
 \
 \
-This library consists of a number of 
+Jitlib consists of a number of 
 \f2\i placeholders
 \f1\i0  (server side and client side) and 
 \f2\i schemes of access
 \f1\i0 .\
-Different contexts need different behaviour - these two aspects of space: closure and reference are differentiated according to how it is dealt with. It is attempted to keep these placeholders as "weakly typed" as possible in tems of their source objects, so that many objects can take the role of their source.\
+These two aspects of space correspond to 
+\f2\i inclusion
+\f1\i0  and 
+\f2\i reference,
+\f1\i0  depend on their context - here the placeholders are like roles which have a certain behaviour and can be fulfilled by certain objects.\
+It is useful to be aware of the three aspects of such a placeholder: a certain set of elements can be their source, they can be used in a certain set of contexts and they have a certain default source, if none is given.\
+\
 \
 \
 \'a5 One way or style of access is the 
