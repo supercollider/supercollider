@@ -1,123 +1,24 @@
 
-ControlName
-{
-	var <name, <index;
-	*new { arg name, index;
-		^super.newCopyArgs(name, index)
-	}
+
+AudioIn  {
+
+	*ar { arg channel = 1, mul=1.0, add=0.0;
+		var chanOffset;
+		chanOffset = NumOutputBuses.ir - 1;
+		if(channel.isArray.not,{
+			^In.ar(chanOffset + channel, 1).madd(mul,add)
+		});
 		
-}
-
-Control : MultiOutUGen {
-	var <values, <specialIndex;
-	*names { arg names;
-		var synthDef, index;
-		synthDef = UGen.buildSynthDef;
-		index = synthDef.controls.size;
-		names.asArray.do({ arg name, i; 
-			synthDef.controlNames = synthDef.controlNames.add(
-				ControlName(name.asString, index + i)
-			);
-		});
-	}
-	*kr { arg values;
-		^this.multiNewList(['control'] ++ values.asArray)
-	}
-	*ir { arg values;
-		^this.multiNewList(['scalar'] ++ values.asArray)
-	}
-	init { arg ... argValues;
-		values = argValues;
-		if (synthDef.notNil, { 
-			specialIndex = synthDef.controls.size;
-			synthDef.controls = synthDef.controls.addAll(values);
-		});
-		^this.initOutputs(values.size, rate)
+		// check to see if channels array is consecutive [n,n+1,n+2...]
+		if(channel.every({arg item, i; 
+				(i==0) or: {item == (channel.at(i-1)+1)}
+			}),{
+			^In.ar(chanOffset + channel.first, channel.size).madd(mul,add)
+		},{
+			// allow In to multi channel expand
+			^In.ar(chanOffset + channel).madd(mul,add)
+		})
 	}
 }
 
-ControlTrig : UGen {
-	*kr {
-		^this.multiNew('control')
-	}
-}
-
-In : MultiOutUGen {	
-	*ar { arg bus = 0, numChannels = 1;
-		^this.multiNew('audio', numChannels, bus)
-	}
-	*kr { arg bus = 0, numChannels = 1;
-		^this.multiNew('control', numChannels, bus)
-	}
-	init { arg numChannels ... argBus;
-		inputs = argBus.asArray;
-		^this.initOutputs(numChannels, rate)
-	}
-}
-
-InFeedback : MultiOutUGen {	
-	*ar { arg bus = 0, numChannels = 1;
-		^this.multiNew('audio', numChannels, bus)
-	}
-	init { arg numChannels ... argBus;
-		inputs = argBus.asArray;
-		^this.initOutputs(numChannels, rate)
-	}
-}
-
-InTrig : MultiOutUGen {	
-	*kr { arg bus = 0, numChannels = 1;
-		^this.multiNew('control', numChannels, bus)
-	}
-	init { arg numChannels ... argBus;
-		inputs = argBus.asArray;
-		^this.initOutputs(numChannels, rate)
-	}
-}
-
-Out : UGen {
-	*ar { arg bus, channelsArray;
-		this.multiNewList(['audio', bus] ++ channelsArray.asArray)
-		^0.0		// Out has no output
-	}
-	*kr { arg bus, channelsArray;
-		this.multiNewList(['control', bus] ++ channelsArray.asArray)
-		^0.0		// Out has no output
-	}
-	numOutputs { ^0 }
-	writeOutputSpecs {}
- 	checkInputs {
- 		if (rate == 'audio', {
- 			for(1, inputs.size - 1, { arg i;
- 				if (inputs.at(i).rate != 'audio', { ^false });
- 			});
- 		});
- 		^true
- 	}
-}
-
-
-ReplaceOut : Out {}
-
-
-XOut : UGen {
-	*ar { arg bus, xfade, channelsArray;
-		this.multiNewList(['audio', bus, xfade] ++ channelsArray.asArray)
-		^0.0		// Out has no output
-	}
-	*kr { arg bus, xfade, channelsArray;
-		this.multiNewList(['control', bus, xfade] ++ channelsArray.asArray)
-		^0.0		// Out has no output
-	}
-	numOutputs { ^0 }
-	writeOutputSpecs {}
- 	checkInputs {
- 		if (rate == 'audio', {
- 			for(2, inputs.size - 1, { arg i;
- 				if (inputs.at(i).rate != 'audio', { ^false });
- 			});
- 		});
- 		^true
- 	}
-}
 
