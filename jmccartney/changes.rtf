@@ -1,0 +1,24 @@
+{\rtf1\mac\ansicpg10000\cocoartf100
+{\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww12860\viewh10840\viewkind0
+\pard\tx1440\tx2880\tx4320\tx5760\tx7200\ql\qnatural
+
+\f0\b\fs28 \cf0 Changes since the first code dump.\
+
+\f1\b0\fs24 \
+This version is the first released under the GNU Public License. The previous code dump was covered under conflicting terms in various files. It was not free software as a whole and should be deleted and this version used in its place. \
+\
+Codewarrior is no longer necessary to build the server or plugins. There are three ProjectBuilder projects, one each for the language app, the server, and the server plugins. The server is built as a library and the server app is a small program that links to this library. This means that you can link the server engine into your own app (but then your app must also be released under GPL).\
+\
+The audio is always running in the server.\
+\
+The server can now deal with hardware that present input and output as separate devices and/or as noninterleaved channels.\
+\
+Server commands /g_removeAll and /n_remove were themselves removed. This prevents a node from being in no group.\
+\
+There is an /s_trace command that will print the values of all inputs and outputs of the unit generators in a synth at one a control period boundary.\
+\
+Some editing of the SC classes.\
+\
+Some bugs have been fixed.}
