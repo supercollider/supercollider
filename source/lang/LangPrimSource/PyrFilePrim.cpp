@@ -823,9 +823,10 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errNone;
 	SetPtr(&pfile->fileptr, NULL);
-	if (pclose(file)) {
+	int perr = pclose(file);
+	SetInt(a, perr);
+	if (perr == -1)
 		return errFailed;
-	}
 	return errNone;
 }
 
