@@ -608,6 +608,7 @@ NodeProxy : BusPlug {
 				if(obj.notNil) {
 					bundle = this.getBundle;
 					if(freeLast, { this.stopToBundleAt(bundle, index) });
+					
 					this.sendObjectToBundle(bundle, obj, extraArgs, index);
 					bundle.schedSend(server);
 				}
@@ -674,8 +675,10 @@ NodeProxy : BusPlug {
 					if(index.notNil) { // if nil, all are sent anyway
 					// make list of nodeIDs following the index
 					nodes = Array(8);
-					objects.doFrom({ arg obj, i; nodes = nodes ++ synthID ++ obj.nodeID }, 
-						index + 1);
+					objects.doFrom({ arg obj, i; 
+						var id; id = obj.nodeID;
+						if(id.notNil) { nodes = nodes ++ synthID ++ id };
+					}, index + 1);
 					if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes) };
 				};
 				nodeMap.addToBundle(bundle, synthID)
