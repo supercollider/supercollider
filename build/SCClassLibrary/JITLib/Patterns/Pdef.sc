@@ -1,5 +1,3 @@
-// maybe move playing features out to dedicated player class.
-
 
 // contains numerical patterns
 
@@ -57,10 +55,13 @@ Pdefn : Pattern {
 	timeToNextBeat {
 		var t;
 		t = clock.elapsedBeats;
-		^(t.roundUp(quant) - t);
+		^(t.roundUp(quant) - t); // + offset
 	}
 
 	clear { all.removeAt(key) }
+//	sched { arg task;
+//		clock.schedAbs(clock.elapsedBeats.roundUp(quant) + offset, task) }
+//	}
 	
 	*removeAll { this.initClass }
 		// posting stream usage //
@@ -84,25 +85,18 @@ Pdef : Pdefn {
 	
 	pattern_ { arg pat;
 		pattern = pat;
-		if(isPlaying and: { player.isPlaying.not }) { this.play }
+		if(isPlaying and: { player.isPlaying.not }) { this.run }
 	}
 	
 	/*
 	
 	pattern_ { arg pat;
-		if(min.notNil or: { max.notNil }) { pat = Plim(pat, min, max) };
+		if(min.notNil or: { max.notNil }) { pat = Psync(pat, min, max) };
 		pattern = pat;
-		if(isPlaying and: { this.streamIsPlaying.not }) { this.play }
+		if(isPlaying and: { this.streamIsPlaying.not }) { this.run }
 	}
 
-	min_ { arg val;
-		min = val;
-		this.pattern = pattern.pattern;
-	}
-	max_ { arg val;
-		min = val;
-		this.pattern = pattern.pattern;
-	}
+	
 	
 	*/
 
@@ -118,13 +112,15 @@ Pdef : Pdefn {
 	
 	*cmdPeriod { all.do { arg item; item.stop } }
 	
+	playOnce { arg argClock, protoEvent, quant;
+		^EventStreamPlayer(this.asStream, protoEvent)
+			.play(argClock ? clock, true, quant ? this.quant) 
+	}
+	
 	play { arg argClock, protoEvent, quant;
 		isPlaying = true;
 		CmdPeriod.add(this.class);
-		if(player.isPlaying.not) { 
-			player = EventStreamPlayer(this.asStream, protoEvent)
-				.play(argClock ? clock, true, quant ? this.quant) 
-		}
+		if(player.isPlaying.not) { player = this.playOnce(argClock, protoEvent, quant) }
 	}
 	stop { player.stop; isPlaying = false }
 	pause { if(player.notNil) { player.pause } }
@@ -162,15 +158,9 @@ Tdef : Pdef {
 	}
 	
 	play { arg argClock, doReset = false, quant;
-		isPlaying = true;
-		CmdPeriod.add(this.class);
-		if(player.isPlaying.not) { 
-			player = PauseStream.new(this.asStream)
+		^PauseStream.new(this.asStream)
 			.play(argClock ? clock, doReset, quant ? this.quant)
-		}
 	}
-	
-	
 
 }
 
@@ -229,7 +219,7 @@ RefStream : Pstr {
 		^outval
 	}
 	
-	resetPat { super.resetPat; changed = false }
+	resetPat {  stream = pattern.asStream; changed = false }
 	
 
 }
