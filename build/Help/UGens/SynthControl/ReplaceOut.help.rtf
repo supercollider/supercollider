@@ -5,11 +5,16 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf2 ReplaceOut
-\fs28 \cf0 				\
+\fs28 \cf2 				\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 \cf0 superclass: Out\
-\
+\fs24 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs28 \cf2 superclass: Out\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\fs24 \cf2 \
 send signal to a bus, overwriting previous contents\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -23,9 +28,9 @@ send signal to a bus, overwriting previous contents\
 \
 		in = \cf3 In\cf2 .ar(busNumber,2);\
 \
-		\cf5 // write to the bus, replacing previous contents		ReplaceOut.ar(busNumber, CombN.ar(in, 0.5, delay, decay, 1, in));\
-\cf2 \
+		\cf5 // write to the bus, replacing previous contents\
+\cf2 		\cf3 ReplaceOut\cf2 .ar(busNumber, \cf3 CombN\cf2 .ar(in, 0.5, delay, decay, 1, in));\
+\
 	\}).writeDefFile;\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-\cf0 \
+\
 }
