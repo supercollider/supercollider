@@ -39,6 +39,13 @@ struct SelfDemand : public Unit
 	float m_prevout[MAXCHANNELS];
 };
 
+struct TSelfDemand : public Unit
+{
+	float m_count;
+	float m_prevreset; 
+};
+
+
 struct Dseries : public Unit
 {
 	int32 m_repeats;
@@ -340,6 +347,9 @@ void Demand_Ctor(Demand *unit)
 }
 
 
+/////////////////////////////////////////////////////////////////////////////
+
+
 void SelfDemand_next_da(SelfDemand *unit, int inNumSamples)
 {
 	
@@ -365,7 +375,7 @@ void SelfDemand_next_da(SelfDemand *unit, int inNumSamples)
 			RESETINPUT(0);
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f;
+			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
@@ -418,7 +428,7 @@ void SelfDemand_next_dk(SelfDemand *unit, int inNumSamples)
 			RESETINPUT(0);
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f;
+			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
@@ -467,12 +477,12 @@ void SelfDemand_next_dd(SelfDemand *unit, int inNumSamples)
 				RESETINPUT(j);
 			}
 			RESETINPUT(0);
-			reset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f;
+			reset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f + reset;
 		} else { 
 			reset--; 
 		}
 		if (count <= 0.f) {
-			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f;
+			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
 			if(sc_isnan(count)) {
 				int doneAction = (int)ZIN0(2);
 				DoneAction(doneAction, unit);
@@ -525,6 +535,181 @@ void SelfDemand_Ctor(SelfDemand *unit)
 		OUT0(i) = 0.f;
 	}
 }
+
+/////////////////////////////////////////////////////////////////////////////
+
+void TSelfDemand_next_da(TSelfDemand *unit, int inNumSamples)
+{
+	
+	float *reset = ZIN(1);
+
+	float *out[MAXCHANNELS];
+	
+	for (int i=0; i<unit->mNumOutputs; ++i) {
+		out[i] = OUT(i); 
+	}
+	float count = unit->m_count;
+	float prevreset = unit->m_prevreset;
+	
+	for (int i=0; i<inNumSamples; ++i) {
+		
+		float zreset = ZXP(reset);
+		if (zreset > 0.f && prevreset <= 0.f) {
+			
+			for (int j=3; j<unit->mNumInputs; ++j) {
+				RESETINPUT(j);
+			}
+			RESETINPUT(0);
+		}
+		if (count <= 0.f) {
+			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
+			if(sc_isnan(count)) {
+				int doneAction = (int)ZIN0(2);
+				DoneAction(doneAction, unit);
+			}
+			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
+				float x = DEMANDINPUT(j);
+				//printf("in  %d %g\n", k, x);
+				if (sc_isnan(x)) x = 0.f;
+				out[k][i] = x;
+			}
+		} else {
+			count--;
+			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
+				out[k][i] = 0.f;
+			}
+		}
+		
+		prevreset = zreset;
+	}
+	
+	unit->m_count = count;
+	unit->m_prevreset = prevreset;
+	
+}
+
+void TSelfDemand_next_dk(TSelfDemand *unit, int inNumSamples)
+{
+	
+	float zreset = ZIN0(1);
+
+	float *out[MAXCHANNELS];
+	for (int i=0; i<unit->mNumOutputs; ++i) {
+		out[i] = OUT(i); 
+	}
+	float count = unit->m_count;
+	float prevreset = unit->m_prevreset;
+	
+	for (int i=0; i<inNumSamples; ++i) {
+		
+		if (zreset > 0.f && prevreset <= 0.f) {
+			
+			for (int j=3; j<unit->mNumInputs; ++j) {
+				RESETINPUT(j);
+			}
+			RESETINPUT(0);
+		}
+		if (count <= 0.f) {
+			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
+			if(sc_isnan(count)) {
+				int doneAction = (int)ZIN0(2);
+				DoneAction(doneAction, unit);
+			}
+			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
+				float x = DEMANDINPUT(j);
+				//printf("in  %d %g\n", k, x);
+				if (sc_isnan(x)) x = 0.f;
+				out[k][i] = x;
+			}
+		} else {
+			count--;
+			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
+				out[k][i] = 0.f;
+			}
+		}
+		
+		prevreset = zreset;
+	}
+	
+	unit->m_count = count;
+	unit->m_prevreset = prevreset;
+}
+
+
+void TSelfDemand_next_dd(TSelfDemand *unit, int inNumSamples)
+{
+	
+	float *out[MAXCHANNELS];
+	for (int i=0; i<unit->mNumOutputs; ++i) {
+		out[i] = OUT(i); 
+	}
+	float count = unit->m_count;
+	float reset = unit->m_prevreset;
+	
+	for (int i=0; i<inNumSamples; ++i) {
+		
+		if (reset <= 0.f) {
+			for (int j=2; j<unit->mNumInputs; ++j) {
+				RESETINPUT(j);
+			}
+			RESETINPUT(0);
+			reset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f + reset;
+		} else { 
+			reset--; 
+		}
+		if (count <= 0.f) {
+			count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f + count;
+			if(sc_isnan(count)) {
+				int doneAction = (int)ZIN0(2);
+				DoneAction(doneAction, unit);
+			}
+			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
+				float x = DEMANDINPUT(j);
+				//printf("in  %d %g\n", k, x);
+				if (sc_isnan(x)) x = 0.f;
+				out[k][i] = x;
+			}
+		} else {
+			count--;
+			for (int j=3, k=0; j<unit->mNumInputs; ++j, ++k) {
+				out[k][i] = 0.f;
+			}
+		}
+		
+	}
+	
+	unit->m_count = count;
+	unit->m_prevreset = reset;
+
+}
+
+
+void TSelfDemand_Ctor(TSelfDemand *unit)
+{
+	if (INRATE(1) == calc_FullRate) {
+
+			SETCALC(TSelfDemand_next_da);
+			unit->m_prevreset = 0.f;
+		
+	} else { 
+		if(INRATE(1) == calc_DemandRate) {
+			SETCALC(TSelfDemand_next_dd);
+			unit->m_prevreset = DEMANDINPUT(1) * unit->mRate->mSampleRate + .5f;
+		} else {
+			SETCALC(TSelfDemand_next_dk);
+			unit->m_prevreset = 0.f;
+		}
+	}
+	
+	unit->m_count = DEMANDINPUT(0) * unit->mRate->mSampleRate + .5f;
+	
+	for (int i=0; i<unit->mNumOutputs; ++i) {
+		OUT0(i) = 0.f;
+	}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -989,6 +1174,7 @@ void load(InterfaceTable *inTable)
 
 	DefineSimpleCantAliasUnit(Demand);
 	DefineSimpleCantAliasUnit(SelfDemand);
+	DefineSimpleCantAliasUnit(TSelfDemand);
 	DefineSimpleUnit(Dseries);
 	DefineSimpleUnit(Dgeom);
 	DefineSimpleUnit(Dwhite);
