@@ -311,6 +311,8 @@ enum {
 	opmName,
 	opmMulAdd,
 	
+	opmSeries,
+	
 	opmNumSpecialSelectors
 };
 	

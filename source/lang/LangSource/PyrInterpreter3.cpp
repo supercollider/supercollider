@@ -1589,10 +1589,19 @@ void Interpret(VMGlobals *g)
 				case 29 :
 					vars = g->frame->vars;
 					// 0 receiver, 1 step, 2 last, 3 function, 4 i, 5 j
-					if (IsInt(vars+0) && (IsInt(vars+1) || IsNil(vars+1)) && IsInt(vars+2)) {
+					if (IsInt(vars+0) && (IsInt(vars+1) || IsNil(vars+1)) && (IsInt(vars+2) || IsNil(vars+2))) {
+						if (IsNil(vars+1)) {
+							if (IsNil(vars+2)) SetInt(vars+2, 0x7FFFFFFF);
+							if (vars[0].ui < vars[2].ui) SetInt(vars+1, 1);
+							else SetInt(vars+1, -1);
+						} else {
+							if (IsNil(vars+2)) {
+								if (vars[1].ui < vars[0].ui) SetInt(vars+2, 0x80000000);
+								else SetInt(vars+2, 0x7FFFFFFF);
+							}
+							SetInt(vars+1, vars[1].ui - vars[0].ui);
+						}
 						vars[4].ucopy = vars[0].ucopy;
-						vars[1].ui = IsInt(vars+1) ? (vars[1].ui - vars[0].ui) : (vars[0].ui < vars[2].ui ? 1 : -1);
-						vars[1].utag = tagInt;
 					} else {
 						vars[4].ucopy = vars[0].ucopy;
 						if (IsInt(vars+4)) {
@@ -1608,19 +1617,23 @@ void Interpret(VMGlobals *g)
 							
 							goto class_lookup;
 						}
-						if (IsInt(vars+2)) {
-							vars[2].uf = vars[2].ui;
-						} else if (!IsFloat(vars+2)) goto bailFromNumberSeries;
-						if (IsInt(vars+1)) {
-							vars[1].uf = (double)vars[1].ui - vars[4].uf;
-						} else if (IsFloat(vars+1)) {
-							vars[1].uf -= vars[4].uf;
+
+						if (IsNil(vars+1)) {
+							if (IsNil(vars+2)) SetFloat(vars+2, 1e500);
+							else if (IsInt(vars+2)) vars[2].uf = vars[2].ui;
+							else if (!IsFloat(vars+2)) goto bailFromNumberSeries;
+							
+							if (vars[4].uf < vars[2].uf) SetFloat(vars+1, 1.);
+							else SetFloat(vars+1, -1.);
 						} else {
-							if (vars[4].uf < vars[2].uf) {
-								vars[1].uf = 1.;
-							} else {
-								vars[1].uf = 1.;
+							if (IsInt(vars+1)) vars[1].uf = vars[1].ui;
+							else if (!IsFloat(vars+1)) goto bailFromNumberSeries;
+							
+							if (IsNil(vars+2)) {
+								if (vars[1].uf < vars[4].uf) SetFloat(vars+2, -1e500);
+								else SetFloat(vars+2, 1e500);
 							}
+							SetFloat(vars+1, vars[1].uf - vars[4].uf);
 						}
 					}
 					break;

@@ -232,11 +232,11 @@ SimpleNumber : Number {
 		var step, size;
 		if (second.isNil) { 
 			last = last ? inf; 
-			second = if (this < last) { this + 1 } { this - 1 }
+			step = if (this < last, 1, -1);
 		}{
-			last ?? { last = if (second < this) { -inf } { inf } }
+			last ?? { last = if (second < this, -inf, inf) };
+			step = second - this;
 		};
-		step = second - this;
 		^if (step < 0) {
 			r {
 				var val = this;

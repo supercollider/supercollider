@@ -1802,6 +1802,16 @@ void PyrCallNodeBase::compile(PyrSlot *result)
 	}
 }
 
+bool isSeries(PyrParseNode* node, PyrParseNode** args)
+{
+	if (node->mClassno != pn_CallNode) return false;
+	PyrCallNode *callnode = (PyrCallNode*)node;
+	if (callnode->mSelector->mSlot.us != s_series) return false;
+	if (callnode->mKeyarglist) return false;
+	*args = callnode->mArglist;
+	return true;
+}
+
 void PyrCallNode::compileCall(PyrSlot *result)
 {
 	int index, selType;
@@ -1956,6 +1966,11 @@ void PyrCallNode::compileCall(PyrSlot *result)
 							compileByte(index);
 						} else goto special;
 					} else goto special;
+				} else if (index == opmDo && isSeries(argnode, &argnode)) {
+					index = opmForSeries;
+					mArglist = linkNextNode(argnode, mArglist->mNext);
+					numArgs = nodeListLength(mArglist);
+					goto special;
 				} else if (numArgs>1 && numArgs == numBlockArgs) {
 				//} else if (numArgs>1 && numArgs == numBlockArgs) {
 					// try for multiple push optimization
@@ -4553,6 +4568,8 @@ void initSpecialSelectors()
 	sel[opmYield] = getsym("yield");
 	sel[opmName] = getsym("name");
 	sel[opmMulAdd] = getsym("madd");
+	
+	sel[opmSeries] = getsym("series");
 
 	for (i=0; i<opNumUnarySelectors; ++i) {
 		gSpecialUnarySelectors[i]->specialIndex = i;

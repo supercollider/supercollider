@@ -865,7 +865,26 @@ valrangexd	: expr '.' '[' arglist1 DOTDOT ']'
 			}
 	;
 		
-valrange2	: DOTDOT exprseq
+valrange2	: exprseq DOTDOT 
+			{
+				// if this is not used in a 'do' or list comprehension, then should return an error.
+				PyrSlotNode *selectornode;
+				PyrPushLitNode *nilnode, *nilnode2;
+				PyrSlot selectorSlot, nilSlot;
+				PyrParseNode* args;
+
+				SetNil(&nilSlot);
+				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
+				nilnode2 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
+				
+				SetSymbol(&selectorSlot, s_series);
+				selectornode = newPyrSlotNode(&selectorSlot);
+				args = linkNextNode($1, nilnode);
+				args = linkNextNode(args, nilnode2);
+				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
+			}
+	
+		| DOTDOT exprseq
 			{ 
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode, *zeronode;
@@ -913,6 +932,25 @@ valrange2	: DOTDOT exprseq
 					(PyrParseNode*)$1, 
 					(PyrParseNode*)$3);
 				args = linkNextNode(args, (PyrParseNode*)$5);
+				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
+			}
+		| exprseq ',' exprseq DOTDOT
+			{ 
+				// if this is not used in a 'do' or list comprehension, then should return an error.
+				PyrSlotNode *selectornode;
+				PyrSlot selectorSlot, nilSlot;
+				PyrParseNode* args;
+				PyrPushLitNode *nilnode;
+
+				SetNil(&nilSlot);
+				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
+				
+				SetSymbol(&selectorSlot, s_series);
+				selectornode = newPyrSlotNode(&selectorSlot);
+				args = linkNextNode(
+					(PyrParseNode*)$1, 
+					(PyrParseNode*)$3);
+				args = linkNextNode(args, nilnode);
 				$$ = (long)newPyrCallNode(selectornode, args, 0, 0); 
 			}
 	;
