@@ -30,9 +30,6 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 #include "PyrObject.h"
 #include "VMGlobals.h"
 #include "AdvancingAllocPool.h"
-#if GCDEBUG
-#include <vector>
-#endif
 
 void DumpSimpleBackTrace(VMGlobals *g);
 
