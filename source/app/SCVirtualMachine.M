@@ -40,7 +40,6 @@ ChangeCounter gUIChangeCounter;
 
 extern bool compiledOK;
 extern pthread_mutex_t gLangMutex;
-extern PyrSymbol *s_closed;
 extern PyrSymbol *s_tick;
 
 PyrString* newPyrStringN(class PyrGC *gc, long length, long flags, bool collect);
@@ -361,28 +360,13 @@ bool gIsFullScreen = false;
     }
 }
 
-
 - (void)windowWillClose:(NSNotification *)aNotification
 {
     NSWindow* window = [aNotification object];
     [self endFullScreen: window];
     [guiWindows removeObject: window];
-    SCGraphView* view = (SCGraphView*)[window contentView];
     
-    pthread_mutex_lock (&gLangMutex);
-    struct PyrObject *scobj = [view getSCObject];
-    if (scobj) {
-        SetPtr(scobj->slots + 0, self);
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
-        ++g->sp;  SetObject(g->sp, scobj); // push window obj
-        runInterpreter(g, s_closed, 1);
-        g->canCallOS = false;
-        [view setSCObject: nil];
-    }
-    pthread_mutex_unlock (&gLangMutex);
-	
-	[view willClose];
+    [[window contentView] willClose];
 }
 
 -(IBAction)showHelp:(id)sender {
