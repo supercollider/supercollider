@@ -115,7 +115,7 @@ static id sharedSCVM = nil;
 
 - (void)doClockTask: (NSTimer*) timer
 {
-    if (pthread_mutex_trylock(&gLangMutex) == 1) {
+   if (pthread_mutex_trylock(&gLangMutex) == 0) {
         if (compiledOK) runLibrary(s_tick);
         pthread_mutex_unlock(&gLangMutex);
     }
