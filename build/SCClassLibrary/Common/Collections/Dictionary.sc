@@ -29,10 +29,12 @@ Dictionary : Set {
 			if (array.size < (size * 4), { this.grow });
 		});
 	}
-	putAll { arg aDictionary; 
-		aDictionary.keysValuesDo({ arg key, value; 
-			this.put(key, value) 
-		}) 
+	putAll { arg ... dictionaries; 
+		dictionaries.do {|dict| 
+			dict.keysValuesDo { arg key, value; 
+				this.put(key, value) 
+			}
+		}
 	}
 	
 	associationAt { arg key;
