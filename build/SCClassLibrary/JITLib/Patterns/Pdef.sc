@@ -16,7 +16,7 @@ StreamPlayerReference {
 		^res
 	}
 	
-	play { arg argClock, doReset = false, argQuant;
+	play { arg argClock, doReset = true, argQuant;
 		if (isPlaying, { "reference already playing".postln; ^this });
 		player.play(argClock, doReset, argQuant ? quant);
 		isPlaying = true;
