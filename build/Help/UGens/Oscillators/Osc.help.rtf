@@ -7,10 +7,12 @@
 
 \f0\b\fs36 \cf0 Osc			interpolating wavetable oscillator\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\fs24 Osc.ar(table, freq, phase, mul, add)\
+\fs24 \cf0 Osc.ar(table, freq, phase, mul, add)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0 \
+\f1\b0 \cf0 \
 Linear interpolating wavetable lookup oscillator with frequency and phase modulation inputs. \
 \
 This oscillator requires a buffer to be filled with a wavetable format signal.  This preprocesses the Signal into a form which can be used efficiently by the Oscillator.  The buffer size must be a power of 2.\
@@ -19,8 +21,9 @@ This can be acheived by creating a Buffer object and sending it one of the "b_ge
 \
 This can also be acheived by creating a Signal object and sending it the 'asWavetable' message, saving it to disk, and having the server load it from there.\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\b table
+\f0\b \cf0 table
 \f1\b0  - buffer index\
 
 \f0\b freq
@@ -47,7 +50,8 @@ b.sine1(1.0/[1,2,3,4,5,6], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \}).play(s,[\cf4 \\out\cf0 , 0, \cf4 \\bufnum\cf0 , b.bufnum]);\
 )\
 \
-(s = \cf2 Server\cf0 .local;\
+(\
+s = \cf2 Server\cf0 .local;\
 b = \cf2 Buffer\cf0 .alloc(s, 512, 1);\
 b.sine1(1.0/[1,2,3,4,5,6], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
@@ -59,7 +63,8 @@ b.sine1(1.0/[1,2,3,4,5,6], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 )\
 \
 \
-(s = \cf2 Server\cf0 .local;\
+(\
+s = \cf2 Server\cf0 .local;\
 b = \cf2 Buffer\cf0 .alloc(s, 512, 1);\
 b.sine1([1.0], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
@@ -78,7 +83,8 @@ b.sine1([1.0], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 )\
 \
 \
-(\cf5 // modulate phase\
+(\
+\cf5 // modulate phase\
 \cf0 s = \cf2 Server\cf0 .local;\
 b = \cf2 Buffer\cf0 .alloc(s, 512, 1);\
 b.sine1([1.0], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
@@ -98,7 +104,8 @@ b.sine1([1.0], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
 \
 \
 \
-(\cf5 // change the buffer while its playing\
+(\
+\cf5 // change the buffer while its playing\
 \cf0 s = \cf2 Server\cf0 .local;\
 b = \cf2 Buffer\cf0 .alloc(s, 4096, 1);\
 b.sine1(1.0/[1,2,3,4,5,6], \cf2 true\cf0 , \cf2 true\cf0 , \cf2 true\cf0 );\
