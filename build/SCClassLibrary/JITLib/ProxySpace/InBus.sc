@@ -92,7 +92,7 @@ Monitor {
 	playToBundle { arg bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels, 
 			inGroup, multi, volume, fadeTime=0.02;
 		var divider, server, numChannels;
-		toIndex = toIndex ? out;
+		toIndex = toIndex ? out ? 0;
 		vol = volume ? vol;
 		if(multi) { out = out.asCollection.add(toIndex) } { out = toIndex };
 		toNumChannels = toNumChannels ? fromNumChannels;
@@ -131,7 +131,6 @@ Monitor {
 			SystemClock.sched(fadeTime, { 
 				group.free;
 				group = nil;
-				out = nil;
 			}); 
 		}
 	}
