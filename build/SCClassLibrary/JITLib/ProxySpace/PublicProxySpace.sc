@@ -32,7 +32,6 @@ PublicProxySpace : ProxySpace {
 		if(currentEnvironment === this) {
 				this.at(key).put(nil, obj);
 		} {
-			"not current".postln;
 			this.use {
 				key.envirGet.postln;
 				this.at(key).put(nil, obj);
