@@ -32,9 +32,8 @@ or by lazy initialisation from the first source.[
 \f3\b0 ]\
 These objects  can be replaced, mapped and patched and used for calculation. \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b \cf0 ProxySpace
+\f1\b ProxySpace
 \f3\b0  returns instances of NodeProxy. all the examples below apply to ProxySpace accordingly:\
 \
 a = NodeProxy(s) 	is equivalent to  ~a;\
@@ -282,6 +281,14 @@ supported inputs
 \f1\b unlag(key, key1, ...)
 \f3\b0 	\
 		remove the lag values of thise args\
+	\
+	
+\f1\b setRates(key, rate1, ...)
+\f3\b0 \
+		set the default rate (\\tr, \\ir, numerical) for synthDef arg\
+		rate of 
+\f1\b nil
+\f3\b0  removes setting\
 \
 \
 \
@@ -323,9 +330,8 @@ supported inputs
 
 \f3\b0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b \cf0 \
+\f1\b \
 \
 	\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -429,10 +435,12 @@ supported inputs
 
 \fs26 \cf0 _________________________________________________________\
 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs24 \
+\f0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f3\fs26 \
+\f3\fs26 \cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f1\b\fs24 \cf0 for more examples see [ProxySpace]
