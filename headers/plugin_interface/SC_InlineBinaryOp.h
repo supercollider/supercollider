@@ -248,7 +248,7 @@ inline float sc_excess(float a, float b)
 
 inline float sc_round(float x, float quant)
 {
-	return quant==0. ? x : floor(x/quant + .5) * quant;
+	return quant==0. ? x : floor(x/quant + .5f) * quant;
 }
 inline double sc_round(double x, double quant)
 {
@@ -273,13 +273,13 @@ inline float sc_atan2(float a, float b)
 
 inline float sc_scaleneg(float a, float b)
 {
-	b = 0.5 * b + 0.5;
+	b = 0.5f * b + 0.5f;
 	return (fabs(a) - a) * b + a;
 }
 
 inline float sc_amclip(float a, float b)
 {
-	return a * 0.5 * (b + fabs(b));
+	return a * 0.5f * (b + fabs(b));
 }
 
 inline double sc_amclip(double a, double b)
