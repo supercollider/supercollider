@@ -316,7 +316,12 @@ void compilePyrClassExtNode(PyrClassExtNode* node, void *result)
 {
 	PyrClass *classobj = node->className->slot.us->u.classobj;
 	if (!classobj) {
-		error("Class extension for nonexisting class '%s'\n     In file:'%s'", node->className->slot.us->name,gCompilingFileSym->name);
+        char extPath[1024];
+        asRelativePath(gCompilingFileSym->name, extPath);
+		error("Class extension for nonexisting class '%s'\n     In file:'%s'", 
+            node->className->slot.us->name,
+            extPath
+        );
 		return;
 	}
 	gCurrentClass = classobj;
@@ -1152,9 +1157,16 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
 	}
 	
 	if (oldmethod) {
-		post("Extension overwriting %s-%s in file '%s'.\n  Original method in file '%s'.\n", 
+        char extPath[1024];
+        
+        asRelativePath(gCompilingFileSym->name, extPath);
+		post("Extension overwriting %s-%s\n   in file '%s'.\n", 
 			oldmethod->ownerclass.uoc->name.us->name, oldmethod->name.us->name, 
-			gCompilingFileSym->name, oldmethod->filenameSym.us->name);
+			extPath);
+            
+        asRelativePath(oldmethod->filenameSym.us->name, extPath);
+        post("   Original method in file '%s'.\n", extPath);
+
 		method = oldmethod;
 		freePyrSlot(&method->code);
 		freePyrSlot(&method->literals);

@@ -62,6 +62,7 @@ thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 
 PyrSymbol *gCompilingFileSym = 0;
 VMGlobals *gCompilingVMGlobals = 0;
+char gCompileDir[MAXPATHLEN];
 
 //#define DEBUGLEX 1
 bool gDebugLexer = false;
@@ -101,6 +102,18 @@ int radixcharpos, decptpos;
 #define CLOSPAREN ')'
 
 int rtf2txt(char* txt);
+
+extern inline void asRelativePath(char *inPath, char *outPath)
+{
+	int len = strlen(gCompileDir);
+	if (strlen(inPath) < len || memcmp(inPath, gCompileDir, len) != 0) {
+		// gCompileDir is not the prefix.
+		strcpy(outPath, inPath);
+		return;
+	}
+    strcpy(outPath, inPath +  len);
+}
+
 
 bool getFileText(char* filename, char **text, int *length);
 bool getFileText(char* filename, char **text, int *length)
@@ -334,6 +347,7 @@ void unput0(int c)
 int yylex() 
 {
 	int r, c, c2, d;
+    char extPath[MAXPATHLEN]; // for error reporting
 
 	yylen = 0;
 	// finite state machine to parse input stream into tokens
@@ -639,15 +653,16 @@ symbol3 : {
 		int startline, endchar;
 		startline = lineno;
 		endchar = '\'';
-	
+        
 		/*do {
 			c = input();
 		} while (c != endchar && c != 0);*/
 		for (;yylen<MAXYYLEN;) {
 			c = input();
 			if (c == '\n' || c == '\r') {
+                asRelativePath(curfilename,extPath);
 				post("Symbol open at end of line on line %d in file '%s'\n", 
-					startline, curfilename);
+					startline, extPath);
 				yylen = 0;
 				r = 0; 
 				goto leave;
@@ -659,8 +674,9 @@ symbol3 : {
 			if (c == 0) break;
 		}
 		if (c == 0) {
+            asRelativePath(curfilename,extPath);
 			post("Open ended symbol ... started on line %d in file '%s'\n", 
-				startline, curfilename);
+				startline, extPath);
 			yylen = 0;
 			r = 0; 
 			goto leave;
@@ -704,8 +720,9 @@ string1 : {
 			if (c == 0) break;
 		}
 		if (c == 0) {
+            asRelativePath(curfilename,extPath);
 			post("Open ended string ... started on line %d in file '%s'\n", 
-				startline, curfilename);
+				startline, extPath);
 			yylen = 0;
 			r = 0; 
 			goto leave;
@@ -738,8 +755,9 @@ comment2 : {
 		} while (c != 0);
 		yylen = 0;
 		if (c == 0) {
+            asRelativePath(curfilename,extPath);
 			post("Open ended comment ... started on line %d in file '%s'\n", 
-				startline, curfilename);
+				startline, extPath);
 			r = 0; 
 			goto leave;
 		}
@@ -750,13 +768,16 @@ comment2 : {
 error1:
 	
 	yytext[yylen] = 0;
+    
+    asRelativePath(curfilename, extPath);
 	post("illegal input string '%s' \n   at '%s' line %d char %d\n", 
-		yytext, curfilename, lineno, charno);
+		yytext, extPath, lineno, charno);
 	//postfl(" '%c' '%s'\n", c, binopchars);
 	//postfl("%d\n", strchr(binopchars, c));
 	
 error2:
-	post("  in file '%s' line %d char %d\n", curfilename, lineno, charno);
+    asRelativePath(curfilename, extPath);
+	post("  in file '%s' line %d char %d\n", extPath, lineno, charno);
 	r = BADTOKEN; 
 	goto leave;
 	
@@ -1084,7 +1105,9 @@ void postErrorLine(int linenum, int start, int charpos)
 	
 	//post("start %d\n", start);
 	//parseFailed = true;
-	post("   in file '%s'\n", curfilename);
+    char extPath[MAXPATHLEN];
+    asRelativePath(curfilename, extPath);
+	post("   in file '%s'\n", extPath);
 	post("   line %d char %d :\n", linenum, charpos);
 	// nice: postfl previous line for context
 
@@ -1265,8 +1288,10 @@ symbol3 : {
 			}
 		} while (c != endchar && c != 0);
 		if (c == 0) {
+            char extPath[MAXPATHLEN];
+            asRelativePath(curfilename, extPath);
 			post("Open ended symbol ... started on line %d in file '%s'\n", 
-				startline, curfilename);
+				startline, extPath);
 			goto error2;
 		}
 		goto start;
@@ -1284,8 +1309,10 @@ string1 : {
 			}
 		} while (c != endchar && c != 0);
 		if (c == 0) {
+            char extPath[MAXPATHLEN];
+            asRelativePath(curfilename, extPath);
 			post("Open ended string ... started on line %d in file '%s'\n", 
-				startline, curfilename);
+				startline, extPath);
 			goto error2;
 		}
 		goto start;
@@ -1310,15 +1337,19 @@ comment2 : {
 			prevc = c;
 		} while (c != 0);
 		if (c == 0) {
+            char extPath[MAXPATHLEN];
+            asRelativePath(curfilename, extPath);
 			post("Open ended comment ... started on line %d in file '%s'\n", 
-				startline, curfilename);
+				startline, extPath);
 			goto error2;
 		}
 		goto start;
 	}
 
 error1:
-	post("  in file '%s' line %d char %d\n", curfilename, lineno, charno);
+    char extPath[MAXPATHLEN];
+    asRelativePath(curfilename, extPath);
+	post("  in file '%s' line %d char %d\n", extPath, lineno, charno);
 	res = false;
 	goto leave;
 	
@@ -1470,7 +1501,9 @@ void compileFileSym(PyrSymbol *fileSym)
 				//postfl("done compiling\n");fflush(stdout);
 			} else {
 				compileErrors++;
-				error("file '%s' parse failed\n", fileSym->name);
+                char extPath[MAXPATHLEN];
+                asRelativePath(fileSym->name, extPath);
+				error("file '%s' parse failed\n", extPath);
 			}
 			finiLexer();
 		} else {
@@ -1707,7 +1740,6 @@ bool passOne_ProcessDir(char *dirname)
 #include <unistd.h>
 #include <sys/param.h>
 
-char gCompileDir[MAXPATHLEN];
 
 bool passOne()
 {
@@ -1720,7 +1752,7 @@ bool passOne()
 	getcwd(gCompileDir, MAXPATHLEN-32);
 	strcat(gCompileDir, "/SCClassLibrary");
 	post("compile dir: '%s'\n", gCompileDir);
-	
+    
 	success = passOne_ProcessDir(gCompileDir);
 	if (!success) return false;
 	finiPassOne();
@@ -1735,6 +1767,7 @@ bool isValidSourceFileName(char *filename)
 	return (len>3 && strncmp(filename+len-3, ".sc",3) == 0) 
             || (len>7 && strncmp(filename+len-7, ".sc.rtf",7) == 0);
 }
+
 
 #if 0
 bool passOne_ProcessOneFile(char *filename)
