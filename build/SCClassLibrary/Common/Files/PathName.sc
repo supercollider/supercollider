@@ -211,15 +211,22 @@ PathName { 	// this class by originally by AdC
 	
 	dumpToDoc { arg title="Untitled";
 		var str, doc;
-		doc = Document.new("", title);
+		doc = Document.new(title);
 		str = CollStream.new;
 		this.streamTree(str);
 		doc.string = str.collection;
 		^doc
 	}
 	
-	*helpIndex {
-		^this.new("Help/").dumpToDoc("HelpIndex");
+	
+}
+
+Help : PathName {
+
+	*all {
+		^this.new("Help/").dumpToDoc("all-helpfiles");
 	}
 
 }
+
+
