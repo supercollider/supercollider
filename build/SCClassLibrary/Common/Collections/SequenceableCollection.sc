@@ -495,6 +495,16 @@ SequenceableCollection : Collection {
 		^div
 	}
 	
+	// support UGen rate access
+	
+	rate { 
+		var rate, rates;
+		if(this.size == 1, { ^this.first.rate });
+		^this.collect({ arg item; item.rate }).minItem; 
+		// 'scalar' > 'control' > 'audio'
+	}
+
+	
 	// sorting
 	sort { arg function; 
 		if (function.isNil, { function = { arg a, b; a < b }; }); 
