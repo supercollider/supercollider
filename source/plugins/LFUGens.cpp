@@ -254,6 +254,18 @@ void DoneAction(int doneAction, Unit *unit)
 			Node* next = unit->mParent->mNode.mNext;
 			if (next) NodeEnd(next);
 		} break;
+		case 5 : 
+		{
+			NodeEnd(&unit->mParent->mNode);
+			Node* prev = unit->mParent->mNode.mPrev;
+			if (prev && prev->mIsGroup) GroupDeleteAll((Group*)prev);
+		} break;
+		case 6 : 
+		{
+			NodeEnd(&unit->mParent->mNode);
+			Node* next = unit->mParent->mNode.mNext;
+			if (next && next->mIsGroup) GroupDeleteAll((Group*)next);
+		} break;
 	}
 }
 

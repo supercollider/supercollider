@@ -94,6 +94,8 @@ struct InterfaceTable
 	void (*fNRTUnlock)(World *inWorld);
 	
 	bool mAltivecAvailable;
+
+	void (*fGroup_DeleteAll)(Group* group);
 	
 };
 typedef struct InterfaceTable InterfaceTable;
@@ -124,6 +126,8 @@ typedef struct InterfaceTable InterfaceTable;
 
 #define NRTLock (*ft->fNRTLock)
 #define NRTUnlock (*ft->fNRTUnlock)
+
+#define GroupDeleteAll (*ft->fGroup_DeleteAll)
 
 #define SndFileFormatInfoFromStrings (*ft->fSndFileFormatInfoFromStrings)
 

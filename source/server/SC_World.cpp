@@ -97,7 +97,7 @@ void InterfaceTable_Init()
 	
 	ft->fNRTLock = &World_NRTLock;
 	ft->fNRTUnlock = &World_NRTUnlock;
-	
+		
 #if __VEC__ 
 	long response;
 	Gestalt(gestaltPowerPCProcessorFeatures, &response);
@@ -106,6 +106,9 @@ void InterfaceTable_Init()
 #else
 	ft->mAltivecAvailable = false;
 #endif
+
+	ft->fGroup_DeleteAll = &Group_DeleteAll;
+
 }
 
 void initialize_library();
