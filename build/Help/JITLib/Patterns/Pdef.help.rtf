@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica-Bold;\f1\fnil\fcharset77 Monaco;\f2\fswiss\fcharset77 Helvetica;
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red96\green96\blue96;\red0\green115\blue0;
-\red191\green0\blue0;}
+\red191\green0\blue0;\red0\green0\blue191;\red0\green0\blue0;\red0\green115\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
 \f0\b\fs36 \cf0 Pdef	
@@ -145,9 +145,8 @@ for another use of Pdef see also [
 \f0\b\fs24 \
 a) embedding Pdef into a stream:\
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f1\b0\fs18 \cf0 \
+\f1\b0\fs18 \
 \
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -219,7 +218,6 @@ x.stop;\
 \f0\b\fs24 \cf0 b) playing Pdef
 \f1\b0\fs18 \cf5 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 \cf0 		\
 (\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -294,5 +292,35 @@ s.boot;\
 \cf2 Pdef\cf0 (\cf4 \\x\cf0 ).clear; \
 \cf2 Pdef\cf0 (\cf4 \\y\cf0 ).clear; \
 \cf2 TempoClock\cf0 .default.tempo = 1.0;\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b\fs24 \cf0 recursion:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\b0 \cf0 Pdefs can be used recursively under the condition that the stream call structure allows it.\
+a structure like the following works:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf6 \
+Pdef\cf7 (\cf8 \\x\cf7 , \cf6 Pseq\cf7 ([\cf6 Pbind\cf7 (\cf4 \\instrument\cf0 , \cf4 \\gpdef)\cf7 , \cf6 Pdef\cf7 (\cf8 \\x\cf7 )], \cf6 inf\cf7 )); \
+\cf6 Pdef\cf7 (\cf8 \\x\cf7 ).play;\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f2\fs24 \cf0 \
+but the following would crash, because .embedInStream is called recursively with no limit:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\fs18 \cf2 // Pdef\cf0 (\cf4 \\y\cf0 , \cf2 Pseq\cf0 ([\cf2 Pdef\cf0 (\cf4 \\y\cf0 ), \cf2 Pbind\cf0 (\cf4 \\instrument\cf0 , \cf4 \\gpdef)\cf0 ], \cf2 inf\cf0 ));
+\f2\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\b \cf0 \
 \
 }
