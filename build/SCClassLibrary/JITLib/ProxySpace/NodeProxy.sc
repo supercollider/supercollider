@@ -238,12 +238,20 @@ NodeProxy : AbstractFunction {
 	// server communications, updating
 	
 	sendToServer { arg freeAll=true, latency=0.3, extraArgs, onCompletion;
-		var msg;
+		var msg, resp;
 		if( synthDefs.isEmpty.not and: { server.serverRunning }, {
 				msg = List.new;
 				this.sendSynthMsg(msg, freeAll, extraArgs);
-				SystemClock.sched(latency ? 0, {
-							this.schedSendOSC(msg, onCompletion); 
+				if(latency.notNil, {
+					SystemClock.sched(latency ? 0, {
+								this.schedSendOSC(msg, onCompletion); 
+					})
+				}, {
+					resp = OSCresponder(server.addr, '/done', { 
+						this.schedSendOSC(msg, onCompletion);
+						resp.remove;
+					}).add;
+				
 				});
 		});
 	}
