@@ -238,20 +238,6 @@ void Graph_Trace(Graph *inGraph)
 	inGraph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_CalcTrace;
 }
 
-void Graph_EndCalc(Graph* inGraph);
-void Graph_EndCalc(Graph* inGraph)
-{
-	// zero outputs?
-	Node_Delete(&inGraph->mNode);
-}
-
-void Graph_End(Graph* inGraph)
-{
-	//printf("->Graph_End\n");
-	inGraph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_EndCalc;
-}
-
-
 
 void Graph_SetControl(Graph* inGraph, int inIndex, float inValue)
 {

@@ -148,11 +148,11 @@ CurveWarp : Warp {
 CosineWarp : LinearWarp {
 	map { arg value;
 		// maps a value from [0..1] to spec range
-		^super.map(cos(pi * value) * 0.5 + 0.5)
+		^super.map(0.5 - (cos(pi * value) * 0.5))
 	}
 	unmap { arg value;
 		// maps a value from spec range to [0..1]
-		acos(super.unmap(value) * 2.0 - 1.0) / pi
+		^acos(1.0 - (super.unmap(value) * 2.0)) / pi
 	}
 }
 
@@ -163,7 +163,7 @@ SineWarp : LinearWarp {
 	}
 	unmap { arg value;
 		// maps a value from spec range to [0..1]
-		asin(super.unmap(value)) / 0.5pi
+		^asin(super.unmap(value)) / 0.5pi
 	}
 }
 

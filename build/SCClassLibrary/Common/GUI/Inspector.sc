@@ -24,7 +24,8 @@ Inspector {
 	closed {
 		allInspectors.remove(this);
 	}
-	lineHeight { ^28 }
+	lineHeight { ^20 }
+	buttonHeight { ^this.lineHeight - 4 }
 	makeWindow {
 		var bounds;
 		bounds = Rect(80, 80, 376, this.lineHeight * (this.numLines + 1) + 16);
@@ -58,17 +59,17 @@ ObjectInspector : Inspector {
 	
 	makeHead {
 		var view;
-		view = SCButton(window, Rect(8, vpos, 128, 24));
+		view = SCButton(window, Rect(8, vpos, 128, this.buttonHeight));
 		view.states = [[object.class.name]];
 		view.action = Message(object.class, \inspect);
 		
 		if (object.mutable, {
-			view = SCButton(window, Rect(140, vpos, 50, 24));
+			view = SCButton(window, Rect(140, vpos, 50, this.buttonHeight));
 			view.states = [["update"]];
 			view.action = Message(this, \update);
 		});
 		
-		view = SCDragSource(window, Rect(194, vpos, 174, 24));
+		view = SCDragSource(window, Rect(194, vpos, 174, this.buttonHeight));
 		view.object = object;
 		view.resize = 2;
 		stringView = view;
@@ -101,21 +102,21 @@ StringInspector : ObjectInspector {
 ClassInspector : ObjectInspector {
 	makeHead {
 		var view;
-		view = SCButton(window, Rect(8, vpos, 128, 24));
+		view = SCButton(window, Rect(8, vpos, 128, this.buttonHeight));
 		view.states = [[object.class.name]];
 		view.action = Message(object.class, \inspect);
 		
-		view = SCButton(window, Rect(140, vpos, 50, 24));
+		view = SCButton(window, Rect(140, vpos, 50, this.buttonHeight));
 		view.states = [["edit"]];
 		view.action = Message(object, \openCodeFile);
 		
 		if (object.superclass.notNil, {
-			view = SCButton(window, Rect(194, vpos, 70, 24));
+			view = SCButton(window, Rect(194, vpos, 70, this.buttonHeight));
 			view.states = [["superclass"]];
 			view.action = Message(object.superclass, \inspect);
 		});
 		
-		view = SCDragSource(window, Rect(268, vpos, 96, 24));
+		view = SCDragSource(window, Rect(268, vpos, 96, this.buttonHeight));
 		view.object = object;
 		view.resize = 2;
 		stringView = view;
@@ -131,17 +132,17 @@ FunctionDefInspector : ObjectInspector {
 	}
 	makeHead {
 		var view;
-		view = SCButton(window, Rect(8, vpos, 128, 24));
+		view = SCButton(window, Rect(8, vpos, 128, this.buttonHeight));
 		view.states = [[object.class.name]];
 		view.action = Message(object.class, \inspect);
 				
 		if (object.code.notNil, {
-			view = SCButton(window, Rect(194, vpos, 70, 24));
+			view = SCButton(window, Rect(194, vpos, 70, this.buttonHeight));
 			view.states = [["dump code"]];
 			view.action = Message(object, \dumpByteCodes);
 		});
 		
-		view = SCDragSource(window, Rect(268, vpos, 96, 24));
+		view = SCDragSource(window, Rect(268, vpos, 96, this.buttonHeight));
 		view.object = object;
 		view.resize = 2;
 		stringView = view;
@@ -156,21 +157,21 @@ MethodInspector : ObjectInspector {
 	}
 	makeHead {
 		var view;
-		view = SCButton(window, Rect(8, vpos, 128, 24));
+		view = SCButton(window, Rect(8, vpos, 128, this.buttonHeight));
 		view.states = [[object.class.name]];
 		view.action = Message(object.class, \inspect);
 		
-		view = SCButton(window, Rect(140, vpos, 50, 24));
+		view = SCButton(window, Rect(140, vpos, 50, this.buttonHeight));
 		view.states = [["edit"]];
 		view.action = Message(object, \openCodeFile);
 		
 		if (object.code.notNil, {
-			view = SCButton(window, Rect(194, vpos, 70, 24));
+			view = SCButton(window, Rect(194, vpos, 70, this.buttonHeight));
 			view.states = [["dump code"]];
 			view.action = Message(object, \dumpByteCodes);
 		});
 		
-		view = SCDragSource(window, Rect(268, vpos, 96, 24));
+		view = SCDragSource(window, Rect(268, vpos, 96, this.buttonHeight));
 		view.object = object;
 		view.resize = 2;
 		stringView = view;
@@ -192,8 +193,10 @@ SlotInspector {
 		key = object.slotKey(index);
 		class = object.class;
 		
-		slotKeyView = SCStaticText(w, Rect(8, vpos, 110, 24));
+		slotKeyView = SCStaticText(w, Rect(8, vpos, 110, this.buttonHeight));
 		slotKeyView.align = \right;
+		slotKeyView.font = Font("Palatino", 12);
+		slotKeyView.background = Color.grey(0.85);
 		
 		if (key.isKindOf(Symbol), {
 			hasGetter = class.findMethod(key).notNil;
@@ -202,7 +205,7 @@ SlotInspector {
 			hasGetter = true;
 			hasSetter = object.mutable;
 		});
-		vbounds = Rect(122, vpos, 218, 24);
+		vbounds = Rect(122, vpos, 218, this.buttonHeight);
 		if (hasSetter, {
 			if (hasGetter, {
 				slotValueView = SCDragBoth(w, vbounds);
@@ -218,8 +221,10 @@ SlotInspector {
 			});
 		});
 		slotValueView.resize = 2;
+		slotValueView.font = Font("Palatino", 12);
+		slotValueView.background = Color.grey(0.85);
 
-		inspectButton = SCButton(w, Rect(344, vpos, 24, 24));
+		inspectButton = SCButton(w, Rect(344, vpos, this.buttonHeight, this.buttonHeight));
 		inspectButton.states = [["I"]];
 		inspectButton.action = Message(this, \inspectSlot);
 		inspectButton.resize = 3;
@@ -243,6 +248,8 @@ SlotInspector {
 		});
 		this.update;
 	}
+	lineHeight { ^20 }
+	buttonHeight { ^this.lineHeight - 4 }
 }
 
 

@@ -413,6 +413,7 @@ void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed);
 void schedStop();
 void schedStop()
 {
+	//printf("->schedStop\n");
 	pthread_mutex_lock (&gLangMutex);
 	if (gRunSched) {
 		gRunSched = false;
@@ -422,6 +423,7 @@ void schedStop()
 	} else {
 		pthread_mutex_unlock (&gLangMutex);
 	}
+	//printf("<-schedStop\n");
 }
 
 void schedClearUnsafe();

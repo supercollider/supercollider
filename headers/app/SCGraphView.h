@@ -35,7 +35,8 @@
 - (struct PyrObject*)getSCObject;
 
 - (void)setSCTopView: (SCTopView*)inView;
-- (void)dealloc;
+//- (void)dealloc;
+- (void)closeWindow;
 - (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot;
 
 @end

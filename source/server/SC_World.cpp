@@ -67,7 +67,7 @@ void InterfaceTable_Init()
 	
 	ft->fRanSeed = &timeseed;
 
-	ft->fGraphEnd = &Graph_End;
+	ft->fNodeEnd = &Node_End;
 	
 	ft->fDefineUnit = &UnitDef_Create;
 	ft->fDefineBufGen = &BufGen_Create;

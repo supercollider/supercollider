@@ -187,6 +187,13 @@ void Node_SetRun(Node* inNode, int inRun)
 	}
 }
 
+
+void Node_End(Node* inNode)
+{
+	inNode->mCalcFunc = (NodeCalcFunc)&Node_Delete;
+}
+
+
 // send a trigger from a node to a client program.
 // this function puts the trigger on a FIFO which is harvested by another thread that
 // actually does the sending.

@@ -251,31 +251,37 @@
 		};
 		F50D05D602E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = DelayUGens.cpp;
 			refType = 4;
 		};
 		F50D05D702E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = DiskIO_UGens.cpp;
 			refType = 4;
 		};
 		F50D05D802E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = FFT_UGens.cpp;
 			refType = 4;
 		};
 		F50D05D902E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = fftlib.c;
 			refType = 4;
 		};
 		F50D05DA02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = fftlib.h;
 			refType = 4;
 		};
 		F50D05DB02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = FilterUGens.cpp;
 			refType = 4;
 		};
@@ -286,6 +292,7 @@
 		};
 		F50D05DD02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = LFUGens.cpp;
 			refType = 4;
 		};
@@ -296,26 +303,31 @@
 		};
 		F50D05DF02E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = NoiseUGens.cpp;
 			refType = 4;
 		};
 		F50D05E002E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = OscUGens.cpp;
 			refType = 4;
 		};
 		F50D05E102E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = PanUGens.cpp;
 			refType = 4;
 		};
 		F50D05E202E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SCComplex.cpp;
 			refType = 4;
 		};
 		F50D05E302E69B6B01CA2799 = {
 			isa = PBXFileReference;
+			lineEnding = 0;
 			path = SCComplex.h;
 			refType = 4;
 		};

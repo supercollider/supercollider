@@ -1093,7 +1093,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 				if (doneAction == 1) {
 					NodeRun(&unit->mParent->mNode, 0);
 				} else {
-					GraphEnd(unit->mParent);
+					NodeEnd(&unit->mParent->mNode);
 				}
 			}
 		} else if (unit->m_stage == ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
@@ -1119,7 +1119,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 				// oops.
 				Print("envelope went past end of inputs.\n");
 				ClearUnitOutputs(unit, 1);
-				GraphEnd(unit->mParent);
+				NodeEnd(&unit->mParent->mNode);
 				return;
 			}
 
@@ -1302,7 +1302,7 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 					if (doneAction == 1) {
 						NodeRun(&unit->mParent->mNode, 0);
 					} else {
-						GraphEnd(unit->mParent);
+						NodeEnd(&unit->mParent->mNode);
 					}
 				}
 			} else if (unit->m_stage == ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
@@ -1324,7 +1324,7 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 					// oops.
 					Print("envelope went past end of inputs.\n");
 					ClearUnitOutputs(unit, 1);
-					GraphEnd(unit->mParent);
+					NodeEnd(&unit->mParent->mNode);
 					return;
 				}
 
@@ -1539,7 +1539,7 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 					if (doneAction == 1) {
 						NodeRun(&unit->mParent->mNode, 0);
 					} else {
-						GraphEnd(unit->mParent);
+						NodeEnd(&unit->mParent->mNode);
 					}
 				}
 			} else if (unit->m_stage == ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
@@ -1561,7 +1561,7 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 					// oops.
 					Print("envelope went past end of inputs.\n");
 					ClearUnitOutputs(unit, 1);
-					GraphEnd(unit->mParent);
+					NodeEnd(&unit->mParent->mNode);
 					return;
 				}
 
@@ -1845,7 +1845,7 @@ void BufEnvGen_next_k(BufEnvGen *unit, int inNumSamples)
 				// oops.
 				//Print("envelope went past end of buffer.\n");
 				ClearUnitOutputs(unit, 1);
-				GraphEnd(unit->mParent);
+				NodeEnd(&unit->mParent->mNode);
 				return;
 			}
 			float* table = buf->data + stageOffset;
@@ -2044,7 +2044,7 @@ void BufEnvGen_next_ak(BufEnvGen *unit, int inNumSamples)
 					// oops.
 					Print("envelope went past end of buffer.\n");
 					ClearUnitOutputs(unit, 1);
-					GraphEnd(unit->mParent);
+					NodeEnd(&unit->mParent->mNode);
 					return;
 				}
 				float* table = buf->data + stageOffset;
@@ -2274,7 +2274,7 @@ void BufEnvGen_next_aa(BufEnvGen *unit, int inNumSamples)
 					// oops.
 					Print("envelope went past end of buffer.\n");
 					ClearUnitOutputs(unit, remain);
-					GraphEnd(unit->mParent);
+					NodeEnd(&unit->mParent->mNode);
 					return;
 				}
 				float* table = buf->data + stageOffset;
@@ -2517,7 +2517,7 @@ void Linen_next_k(Linen *unit, int inNumSamples)
 				if (doneAction == 1) {
 					NodeRun(&unit->mParent->mNode, 0);
 				} else {
-					GraphEnd(unit->mParent);
+					NodeEnd(&unit->mParent->mNode);
 				}
 			}
 			} break;
@@ -2693,7 +2693,7 @@ void ADSR_next_k(ADSR *unit, int inNumSamples)
 					if (doneAction == 1) {
 						NodeRun(&unit->mParent->mNode, 0);
 					} else {
-						GraphEnd(unit->mParent);
+						NodeEnd(&unit->mParent->mNode);
 					}
 				}
 			} break;

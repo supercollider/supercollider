@@ -3457,7 +3457,7 @@ void DetectSilence_next(DetectSilence* unit, int inNumSamples)
 		if (val >= thresh) counter = 0;
 		else if (counter >= 0) {
 			if (++counter >= unit->mEndCounter) {
-				GraphEnd(unit->mParent);
+				NodeEnd(&unit->mParent->mNode);
 				SETCALC(DetectSilence_done);
 			}
 		}

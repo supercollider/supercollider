@@ -1790,6 +1790,7 @@ void compileSucceeded()
 void aboutToCompileLibrary();
 void aboutToCompileLibrary()
 {
+	//printf("->aboutToCompileLibrary\n");
 	pthread_mutex_lock (&gLangMutex);
 	if (compiledOK) {
 		++gMainVMGlobals->sp;
@@ -1797,13 +1798,15 @@ void aboutToCompileLibrary()
 		runInterpreter(gMainVMGlobals, s_shutdown, 1);
 	}
 	pthread_mutex_unlock (&gLangMutex);
+	//printf("<-aboutToCompileLibrary\n");
 }
 
 void closeAllGUIScreens();
 
 bool compileLibrary();
 bool compileLibrary() 
-{				
+{
+	//printf("->compileLibrary\n");
 	closeAllGUIScreens();
 	aboutToCompileLibrary();
 	schedStop();
@@ -1820,7 +1823,7 @@ bool compileLibrary()
 	bool res = passOne();
 	if (res) {
 		
-		postfl("pass 1 done\n"); fflush(stdout);
+		postfl("pass 1 done\n"); //fflush(stdout);
 		
 		if (!compileErrors) {
 			buildDepTree();
@@ -1840,6 +1843,7 @@ bool compileLibrary()
 		compiledOK = false;
 	}
 	pthread_mutex_unlock (&gLangMutex);
+	//printf("<-compileLibrary\n");
 	return compiledOK;
 }
 

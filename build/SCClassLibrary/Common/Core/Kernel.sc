@@ -119,6 +119,15 @@ Class {
 		subclasses.do({ arg class; list = list ++ class.allSubclasses; });
 		^list
 	}
+	superclasses {
+		var list, class;
+		class = this;
+		while ({ class = class.superclass; class.notNil },{ 
+			list = list.add(class) 
+		});
+		^list
+	}
+		
 }
 
 Process {

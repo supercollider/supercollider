@@ -1210,7 +1210,7 @@ void BufDelayN_next(BufDelayN *unit, int inNumSamples)
 			long rdspace = dlyN - dlyrd;
 			long wrspace = dlyN - dlywr;
 			long nsmps = sc_min(rdspace, wrspace);
-			if (nsmps == 0) GraphEnd(unit->mParent); // buffer not allocated.
+			if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 			nsmps = sc_min(remain, nsmps);
 			remain -= nsmps;
 			LOOP(nsmps,
@@ -1264,7 +1264,7 @@ void BufDelayN_next_z(BufDelayN *unit, int inNumSamples)
 			long rdspace = dlyN - dlyrd;
 			long wrspace = dlyN - dlywr;
 			long nsmps = sc_min(rdspace, wrspace);
-			if (nsmps == 0) GraphEnd(unit->mParent); // buffer not allocated.
+			if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 			nsmps = sc_min(remain, nsmps);
 			remain -= nsmps;
 			if (irdphase < 0) {
@@ -1654,7 +1654,7 @@ void BufCombN_next(BufCombN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) GraphEnd(unit->mParent); // buffer not allocated.
+				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 				LOOP(nsmps,
@@ -1673,7 +1673,7 @@ void BufCombN_next(BufCombN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) GraphEnd(unit->mParent); // buffer not allocated.
+				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 				
@@ -1741,7 +1741,7 @@ void BufCombN_next_z(BufCombN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) GraphEnd(unit->mParent); // buffer not allocated.
+				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 				if (irdphase < 0) {
@@ -1769,7 +1769,7 @@ void BufCombN_next_z(BufCombN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) GraphEnd(unit->mParent); // buffer not allocated.
+				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 				
@@ -2206,7 +2206,7 @@ void BufAllpassN_next(BufAllpassN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) GraphEnd(unit->mParent); // buffer not allocated.
+				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 				LOOP(nsmps,
@@ -2226,7 +2226,7 @@ void BufAllpassN_next(BufAllpassN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) GraphEnd(unit->mParent); // buffer not allocated.
+				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 				
@@ -2296,7 +2296,7 @@ void BufAllpassN_next_z(BufAllpassN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) GraphEnd(unit->mParent); // buffer not allocated.
+				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 				if (irdphase < 0) {
@@ -2328,7 +2328,7 @@ void BufAllpassN_next_z(BufAllpassN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) GraphEnd(unit->mParent); // buffer not allocated.
+				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 				

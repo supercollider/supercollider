@@ -10,7 +10,7 @@ SCView {  // abstract class
 	
 	init { arg argParent, argBounds;
 		parent = argParent.asView;
-		this.prInit(parent, argBounds);
+		this.prInit(parent, argBounds ?? {Rect(20,20,20,20)});
 		if (parent.notNil, { parent.add(this); });
 	}
 	

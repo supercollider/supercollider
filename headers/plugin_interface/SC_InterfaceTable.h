@@ -73,7 +73,7 @@ struct InterfaceTable
 	void (*fNodeRun)(struct Node* node, int run);
 	
 	// call to stop a Graph after the next buffer.
-	void (*fGraphEnd)(struct Graph* graph);
+	void (*fNodeEnd)(struct Node* graph);
 	
 	// send a trigger from a Node to clients
 	void (*fSendTrigger)(struct Node* inNode, int triggerID, float value);	
@@ -95,7 +95,7 @@ typedef struct InterfaceTable InterfaceTable;
 
 #define Print (*ft->fPrint)
 #define RanSeed (*ft->fRanSeed)
-#define GraphEnd (*ft->fGraphEnd)
+#define NodeEnd (*ft->fNodeEnd)
 #define NodeRun (*ft->fNodeRun)
 #define DefineUnit (*ft->fDefineUnit)
 #define DefinePlugInCmd (*ft->fDefinePlugInCmd)

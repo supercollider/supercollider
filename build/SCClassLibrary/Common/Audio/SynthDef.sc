@@ -31,22 +31,14 @@ SynthDef {
 		constantSet = Set.new;
 		
 		controls = this.buildControlsFromArgs(func);
-		\func.postln;
 		func.valueArray(controls);
 		
-		\checkInputs.postln;
 		if (this.checkInputs.not, { ^nil });
-		\collectConstants.postln;
 		this.collectConstants;
 		
 		// re-sort graph. reindex.
-		//this.dumpUGens;
-		\topologicalSort.postln;
 		this.topologicalSort;
-		\indexUGens.postln;
 		this.indexUGens;
-		//"\n".postln;
-		//this.dumpUGens;
 	}
 	buildControlsFromArgs { arg func;
 		var def, size, names, values, controls;

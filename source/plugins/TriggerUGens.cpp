@@ -140,6 +140,11 @@ struct Pause : public Unit
 	int m_state;
 };
 
+struct Free : public Unit
+{
+	int m_state;
+};
+
 struct FreeSelfWhenDone : public Unit
 {
 	Unit *m_src;
@@ -224,6 +229,9 @@ void PauseSelf_next(PauseSelf *unit, int inNumSamples);
 
 void Pause_Ctor(Pause *unit);
 void Pause_next(Pause *unit, int inNumSamples);
+
+void Free_Ctor(Pause *unit);
+void Free_next(Pause *unit, int inNumSamples);
 
 void PauseSelfWhenDone_Ctor(PauseSelfWhenDone *unit);
 void PauseSelfWhenDone_next(PauseSelfWhenDone *unit, int inNumSamples);
@@ -1115,7 +1123,7 @@ void FreeSelf_next(FreeSelf *unit, int inNumSamples)
 {
 	float in = ZIN0(0);
 	if (in > 0.f) {
-		GraphEnd(unit->mParent);
+		NodeEnd(&unit->mParent->mNode);
 		SETCALC(ClearUnitOutputs);
 	}
 	ZOUT0(0) = in;
@@ -1171,6 +1179,34 @@ void Pause_next(Pause *unit, int inNumSamples)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
+void Free_Ctor(Free *unit)
+{
+	SETCALC(Free_next);
+
+	unit->m_state = -99;
+	
+	ZOUT0(0) = ZIN0(0);
+}
+
+
+void Free_next(Free *unit, int inNumSamples)
+{
+	float in = ZIN0(0);
+	int state = in != 0.f;
+	if (state != unit->m_state) {
+		unit->m_state = state;
+		int id = (int)ZIN0(1);
+		Node *node = GetNode(unit->mWorld, id);
+		if (node) {
+			NodeEnd(node);
+		}
+		SETCALC(ClearUnitOutputs);
+	}
+	ZOUT0(0) = in;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
 void FreeSelfWhenDone_Ctor(FreeSelfWhenDone *unit)
 {
 	
@@ -1192,7 +1228,7 @@ void FreeSelfWhenDone_next(FreeSelfWhenDone *unit, int inNumSamples)
 	float *in = IN(0);
 	Unit *src = unit->m_src;
 	if (src->mDone) {
-		GraphEnd(unit->mParent);
+		NodeEnd(&unit->mParent->mNode);
 		SETCALC(ClearUnitOutputs);
 	}
 	*out = *in;

@@ -663,7 +663,6 @@ void AudioQuitCmd::Stage4()
 	SendDone("/quit");
 	printf("mWorld->hw->mQuitProgram->Release\n");
 	mWorld->hw->mQuitProgram->Release();
-	return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////

@@ -83,8 +83,9 @@ static NSString *sSCObjType = @"SuperCollider object address";
     BOOL keepOn = YES;
     BOOL isInside = YES;
     NSPoint mouseLoc;
-    unsigned int modifiers = [theEvent modifierFlags];
     
+	if (!mTopView) return;
+    unsigned int modifiers = [theEvent modifierFlags];
     mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
@@ -158,10 +159,17 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, void* inData)
     mTopView->setDragCallback(dragFunc);
 }
 
-- (void)dealloc
+/*- (void)dealloc
 {
     //post("******graph view dealloc**********\n");
+}
+*/
+
+- (void)closeWindow
+{
     delete mTopView;
+	mTopView = 0;
+	[[self window] close];
 }
 
 const int circDiam = 20;
@@ -278,6 +286,7 @@ const int circDiam = 20;
 }
 
 - (unsigned int)draggingEntered:(id)dragInfo {
+	if (!mTopView) return NSDragOperationNone;
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
@@ -294,6 +303,7 @@ const int circDiam = 20;
 }
 
 - (unsigned int)draggingUpdated:(id)dragInfo {
+	if (!mTopView) return NSDragOperationNone;
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
@@ -310,14 +320,16 @@ const int circDiam = 20;
 }
 
 - (void)draggingExited:(id)dragInfo {
-    NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
-    SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
+	if (!mTopView) return;
+    //NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
+    //SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     mTopView->setDragView(0);
     [self displayIfNeeded];
 }
 
 - (BOOL)prepareForDragOperation:(id)dragInfo {
     //post("prepareForDragOperation %08X\n", self);
+	if (!mTopView) return;
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
@@ -334,6 +346,7 @@ const int circDiam = 20;
 }
 
 - (BOOL)performDragOperation:(id)dragInfo {
+	if (!mTopView) return;
     //post("performDragOperation %08X\n", self);
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
@@ -362,7 +375,7 @@ const int circDiam = 20;
 }
 
 - (void)concludeDragOperation:(id)sender {
-    mTopView->setDragView(0);
+    if (mTopView) mTopView->setDragView(0);
     [self displayIfNeeded];
     //post("concludeDragOperation %08X\n", self);
 }

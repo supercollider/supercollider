@@ -1076,7 +1076,7 @@ void PSinGrain_next(PSinGrain *unit, int inNumSamples)
 				); 
 			}
 			if (counter == 0) {
-				GraphEnd(unit->mParent);
+				NodeEnd(&unit->mParent->mNode);
 			}
 		}
 	} while (remain>0);

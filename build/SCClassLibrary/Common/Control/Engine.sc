@@ -41,6 +41,41 @@ RingNumberAllocator
 	}
 }
 
+RangeAllocator
+{
+	var freeList;
+	
+	*new { arg range;
+		var freeList;
+		freeList = SortedList(32, { arg a, b; a.size < b.size });
+		freeList.add(range.copy);
+		^super.newCopyArgs(freeList)
+	}
+	alloc { arg n;
+		var index, newRange; 
+		index = freeList.indexForInserting(Range(0,n));
+		
+		for (index, freeList.size-1, {	
+			var range;
+			range = freeList.at(index);		
+			if (range.size == n, {
+				freeList.remove(range);				
+				^range;
+			});
+			if (range.size > n, {
+				freeList.remove(range);
+				newRange = range.split(n);
+				freeList.add(range);
+				^newRange;
+			});
+		});
+	}
+	free { arg range;
+		// does not do coalescing.
+		freeList.add(range);
+	}
+}
+
 //Engine
 //{
 //	var audioBusAllocator, bufAllocator, noteAllocator;

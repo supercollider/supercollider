@@ -343,7 +343,9 @@ bool gIsFullScreen = false;
 void closeAllGUIScreens();
 void closeAllGUIScreens()
 {
+	//printf("->closeAllGUIScreens\n");
     [[SCVirtualMachine sharedInstance] closeAllGUIWindows];
+	//printf("<-closeAllGUIScreens\n");
 }
 
 

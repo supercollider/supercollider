@@ -2,20 +2,27 @@
 Server : Model {
 	classvar <>local, <>internal, <>named, <>set;
 	
-	var <name, <addr, <>options;
+	var <name, <addr;
 	var <isLocal, <inProcess;
 	var <serverRunning = false, <alive = false;
 	var <window;
+
+	// command line options
+	var <>numAudioBusChannels=128;
+	var <>numControlBusChannels=4096;
+	var <>numInputBusChannels=2;
+	var <>numOutputBusChannels=2;
+	var <>numBuffers=1024;
+	var <>maxNodes=1024;
+	var <>maxSynthDefs=1024;
 	
-	*new { arg name, addr, options;
-		^super.new.init(name, addr, options)
+	*new { arg name, addr;
+		^super.new.init(name, addr)
 	}
-	init { arg n,a,o;
+	init { arg n,a;
 		name = n;
 		addr = a;
-		options = o;
 		if (addr.isNil, { addr = NetAddr("127.0.0.1", 57110) });
-		options = options ? "";
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.addr == 2130706433 };
 		serverRunning = false;
@@ -68,6 +75,32 @@ Server : Model {
 		^this.primitiveFailed
 	}
 	
+	cmdLineOptions {
+		var o;
+		o = "";
+		if (numAudioBusChannels != 128, { 
+			o = o ++ " -a " ++ numAudioBusChannels;
+		});
+		if (numControlBusChannels != 4096, { 
+			o = o ++ " -c " ++ numControlBusChannels;
+		});
+		if (numInputBusChannels != 2, { 
+			o = o ++ " -i " ++ numControlBusChannels;
+		});
+		if (numOutputBusChannels != 2, { 
+			o = o ++ " -o " ++ numControlBusChannels;
+		});
+		if (numBuffers != 1024, { 
+			o = o ++ " -b " ++ numControlBusChannels;
+		});
+		if (maxNodes != 1024, { 
+			o = o ++ " -n " ++ numControlBusChannels;
+		});
+		if (maxSynthDefs != 1024, { 
+			o = o ++ " -d " ++ numControlBusChannels;
+		});
+		^o
+	}
 	boot {
 		if (this.serverRunning, { "already running".postln; ^nil });
 		
@@ -75,7 +108,8 @@ Server : Model {
 		if (inProcess, { 
 			this.bootInProcess; 
 		},{
-			unixCmd("./scsynth -u " ++ addr.port ++ " " ++ options);
+			unixCmd("./scsynth -u " ++ addr.port ++ " " 
+					++ this.cmdLineOptions);
 		});
 		
 		alive = true;
@@ -100,6 +134,10 @@ Server : Model {
 	notify { arg flag;
 		addr.sendMsg("/notify", flag.binaryValue);
 	}	
+
+	firstPrivateBus { // after the outs and ins
+		^this.numOutputBusChannels + this.numInputBusChannels
+	}
 	
 	makeWindow {
 		var w, b0, b1, b2, b3, aliveThread;

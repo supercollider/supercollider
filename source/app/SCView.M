@@ -1628,7 +1628,9 @@ void SCStaticText::draw(SCRect inDamage)
         SCView::draw(inDamage);
         SCRect bounds = mBounds;
 
-        bounds.x += 4; bounds.y += 4; bounds.width -= 8; bounds.height -= 8;
+        //bounds.x += 4; bounds.y += 4; 
+		//bounds.width -= 8; bounds.height -= 8;
+		//bounds.width -= 4; bounds.height -= 4;
         if (mAlignment < 0) {
             stringDrawLeftInRect(mString, bounds, mFontName, mFontSize, mStringColor);
         } else if (mAlignment > 0) {

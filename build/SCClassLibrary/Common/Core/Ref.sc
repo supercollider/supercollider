@@ -17,6 +17,13 @@ Ref : AbstractFunction
 	get { ^value }
 	dereference { ^value }
 	asRef { ^this }
+
+	//behave like a stream
+	next { ^value }
+	embedInStream { arg inval;
+		^this.value.embedInStream(inval)
+	}
+
 	printOn { arg stream;
 		stream << "`(" << value << ")";
 	}

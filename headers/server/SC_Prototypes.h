@@ -90,7 +90,6 @@ void Dimension_Init(struct Dimension *inDimension, int inWidth, int inHeight);
 void Graph_Ctor(struct World *inWorld, struct GraphDef *inGraphDef, struct Graph *graph, struct sc_msg_iter *msg);
 void Graph_Dtor(struct Graph *inGraph);
 void Graph_Calc(struct Graph *inGraph);
-void Graph_End(struct Graph* inGraph);
 void Graph_SetControl(struct Graph* inGraph, int inIndex, float inValue);
 void Graph_SetControl(struct Graph* inGraph, int32 *inName, int inIndex, float inValue);
 void Graph_MapControl(Graph* inGraph, int inIndex, int inBus);
@@ -112,6 +111,7 @@ void Node_MapControl(Node* inNode, int inIndex, int inBus);
 void Node_MapControl(Node* inNode, int32 *inName, int inIndex, int inBus);
 void Node_SendTrigger(Node* inNode, int triggerID, float value);
 void Node_StateMsg(Node* inNode, int inState);
+void Node_End(struct Node* inNode);
 
 ////////////////////////////////////////////////////////////////////////
 

@@ -336,14 +336,14 @@ int prSCWindow_Close(struct VMGlobals *g, int numArgsPushed)
     if (!view) return errNone;
     //[[view window] close];
 
-    NSWindow *window = [view window];
+   // NSWindow *window = [view window];
     
-    SEL sel = @selector(close);
-    NSMethodSignature *sig = [NSWindow instanceMethodSignatureForSelector: sel];
+    SEL sel = @selector(closeWindow);
+    NSMethodSignature *sig = [SCGraphView instanceMethodSignatureForSelector: sel];
     
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
-    [anInvocation setTarget: window];
+    [anInvocation setTarget: view];
     [anInvocation setSelector: sel];
     [scvm defer: anInvocation];
 
