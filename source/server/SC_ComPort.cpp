@@ -83,7 +83,7 @@ void dumpOSCmsg(int inSize, char* inData)
 		if (msg.remain()) scprintf(",");
 	}
 leave:
-	scprintf(" ]\n");
+	scprintf(" ]");
 }
 
 void hexdump(int size, char* data)
@@ -140,11 +140,12 @@ void dumpOSC(int mode, int size, char* inData)
 				data += msgSize;
 				if (data < dataEnd) scprintf(",");
 			}
-			scprintf("]\n");
+			scprintf("\n]\n");
 		}
 		else 
 		{
 			dumpOSCmsg(size, inData);
+			scprintf("\n");
 		}
 	}
 	
