@@ -128,6 +128,10 @@ Server : Model {
 	sendBundle { arg time ... messages;
 		addr.performList(\sendBundle, time, messages);
 	}
+	sendRaw { arg rawArray;
+		addr.sendRaw(rawArray);
+	}
+	
 	listSendMsg { arg msg;
 		addr.sendBundle(nil,msg);
 	}

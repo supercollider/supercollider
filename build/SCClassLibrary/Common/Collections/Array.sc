@@ -143,4 +143,10 @@ Array[slot] : ArrayedCollection {
 	madd { arg mul = 1.0, add = 0.0;
 		^MulAdd(this, mul, add);
 	}	
+	
+	// OSC 
+	asRawOSC {
+		_Array_OSCBytes
+		^this.primitiveFailed;
+	}
 }
