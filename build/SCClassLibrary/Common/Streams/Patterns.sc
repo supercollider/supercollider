@@ -168,8 +168,7 @@ Pevent : Pattern {
 			inval = outval.yield
 		 }
 	}
-} 
-
+}
 
 
 Pbind : Pattern {
@@ -381,5 +380,19 @@ PstepNadd : PstepNfunc {
 		^super.new({ arg vals; vals.sum }, patterns)
 	}
 	storeArgs { ^patterns }
+}
+
+// returns relative time (in beats) from moment of embedding
+
+Ptime : Pattern {
+	var <>repeats;
+	*new { arg repeats=inf;
+		^super.newCopyArgs(repeats)
+	}
+	embedInStream {
+		var start;
+		start = thisThread.beats;
+		repeats.do { (thisThread.beats - start).yield }
+	}
 }
 
