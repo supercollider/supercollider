@@ -43,9 +43,18 @@ OSCresponder {
 	}
 	add { all.add(this); }
 	remove { all.remove(this) }
+	removeWhenDone {
+		var func;
+		func = action;
+		action = { arg time, msg; 
+			func.value(time, msg); 
+			this.remove;
+		}
+	}
 }
 
 
+//used to manage OSCresponderNodes. do not use directly.
 
 OSCMultiResponder : OSCresponder {
 	var <>nodes;
@@ -60,7 +69,7 @@ OSCMultiResponder : OSCresponder {
 
 OSCresponderNode {
 	var <addr, <cmdName, <>action;
-	*new { arg addr, cmdName, action;
+	*new { arg addr, cmdName, action, removeWhenDone=false;
 		^super.newCopyArgs(addr, cmdName.asSymbol, action);
 		
 	}
@@ -73,6 +82,14 @@ OSCresponderNode {
 		alreadyThere.nodes = alreadyThere.nodes.add(this);
 	}
 	
+	removeWhenDone {
+		var func;
+		func = action;
+		action = { arg time, msg; 
+			func.value(time, msg); 
+			this.remove;
+		}
+	}
 	
 	remove { 
 		var resp, alreadyThere;
