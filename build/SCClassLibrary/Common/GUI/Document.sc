@@ -240,14 +240,23 @@ Document {
 		};
 	}
 	openWikiPage {
-		var selectedText, filename;
+		var selectedText, filename, found = false;
+		var extensions = #[".rtf", ".sc", ".txt", ""];
 		selectedText = this.selectedText;
-		selectedText.asCompileString.postln;
+
 		case { selectedText[0] == $* }
 		{ 
 			// execute file
-			filename = this.class.standardizePath(selectedText.drop(1) ++ ".rtf");
-			filename.load;
+			selectedText = selectedText.drop(1);
+			extensions.do {|ext|
+				filename = this.class.standardizePath(selectedText ++ ext);
+				if (File.exists(filename)) {
+					// open existing wiki page
+					filename.load;
+					this.selectRange(this.selectionStart, 0);
+					^this
+				}
+			};
 		}
 		{ selectedText.last == $? }
 		{
@@ -261,16 +270,19 @@ Document {
 			("open " ++ selectedText).unixCmd;
 		}
 		{
-			filename = this.class.standardizePath(selectedText ++ ".rtf");
-			if (File.exists(filename)) {
-				// open existing wiki page
-				this.class.open(filename);
-			}{
-				// make a new wiki page
-				this.makeWikiPage(filename, selectedText);
+			extensions.do {|ext|
+				filename = this.class.standardizePath(selectedText ++ ext);
+				if (File.exists(filename)) {
+					// open existing wiki page
+					this.class.open(filename);
+					this.selectRange(this.selectionStart, 0);
+					^this
+				}
 			};
+			// make a new wiki page
+			filename = this.class.standardizePath(selectedText ++ ".rtf");
+			this.makeWikiPage(filename, selectedText);
 		};
-		this.selectRange(this.selectionStart, 0);
 	}
 		
 	mouseDown {		
