@@ -63,7 +63,7 @@ NoteDurPlayer : NotePlayer {
 		msg = ~msgFunc.value(id, freq);
 		
 		//send the note on bundle
-		server.sendBundle(lag, msg); 
+		server.listSendBundle(lag, msg); 
 		
 		// no note off. note assumed to have a fixed duration.
 	}
