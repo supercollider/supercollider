@@ -306,7 +306,7 @@ Server : Model {
 	}
 	freeAll {
 		this.sendMsg("/g_freeAll",0);
-		RootNode(this).freeAll;
+		nodeWatcher.clear; //to be sure
 	}
 	*freeAll {
 		set.do({ arg server;
