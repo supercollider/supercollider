@@ -10,10 +10,28 @@ BroadcastServer : Server {
 				.allAddr_(allAddr.add(localServer))
 				 
 	}
-	init { arg argName; name = argName; } //we don't need anything here
-	boot {}
 	
+	////we don't need much here, this class mainly wraps the messages
+	init { arg argName; 
+		name = argName; 
+		this.newNodeWatcher;
+		
+	} 
+	newNodeWatcher {
+		nodeWatcher = BasicNodeWatcher.new(allAddr);
+		
+	}
+	boot {
+		nodeWatcher.start;
+		this.sendMsg("/notify", true); 
+	}
+	quit {
+		nodeWatcher.stop;
+	}
 	serverRunning { ^true }
+	
+	
+	///message forwarding
 		
 	sendMsg { arg ... args;
 		allAddr.do({ arg addr; addr.sendBundle(nil, args) });
@@ -40,7 +58,7 @@ BroadcastServer : Server {
 	}
 	
 	nodeIsPlaying_ { arg nodeID;
-		localServer.nodeWatcher.nodes.add(nodeID);
+		nodeWatcher.nodes.add(nodeID);
 	}
 	
 	nodeIsPlaying { arg nodeID;
@@ -75,6 +93,14 @@ Router : Server {
 	nextSharedNodeID {
 		^sharedNodeIDAllocator.alloc
 	}
+	boot {
+		super.boot;
+		broadcast.boot;
+	}
+	quit {
+		super.quit;
+		broadcast.quit;
+	}
 	
 	//isLocal { ^false }
 	
@@ -92,10 +118,10 @@ Router : Server {
 	newAllocatorsForThisClient { 
 		var startID;
 		startID = clientNumber * (options.maxNodes * 2) + options.maxNodes + 1;
-		sharedNodeIDAllocator = RingNumberAllocator(startID, options.maxNodes);
-		nodeAllocator = RingNumberAllocator(startID + options.maxNodes, 
+		sharedNodeIDAllocator = RingNumberAllocator(1000, options.maxNodes);
+		nodeAllocator = RingNumberAllocator(startID + 1 + options.maxNodes, 
 										startID + 1 + (2*options.maxNodes));
-		staticNodeAllocator = RingNumberAllocator(startID + options.maxNodes, 
+		staticNodeAllocator = RingNumberAllocator(startID + 1 + (2*options.maxNodes), 
 										startID + 1 + (3*options.maxNodes));
 		controlBusAllocator = PowerOfTwoAllocator(options.numControlBusChannels);
 		audioBusAllocator = PowerOfTwoAllocator(options.numAudioBusChannels, 
