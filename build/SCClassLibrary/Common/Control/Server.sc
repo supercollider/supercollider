@@ -101,7 +101,8 @@ Server : Model {
 	
 	var alive = false,booting = false,aliveThread,statusWatcher;
 	
-	var <window;
+	var <window, scopeWindow, scopeBuffer;
+	var recordBuf, <recordNode;
 	
 	*new { arg name, addr, options, clientID=0;
 		^super.new.init(name, addr, options, clientID)
@@ -402,5 +403,56 @@ Server : Model {
 		_GetSharedControl
 		^this.primitiveFailed
 	}
+	
+	// recording output
+	
+	record {
+		recordBuf.isNil.if({"Please execute Server-prepareForRecord before recording".warn; }, {
+			recordNode.isNil.if({
+				recordNode = Synth.new("server-record", [\bufnum, recordBuf.bufnum], this, 
+					\addToTail);  
+			}, { recordNode.run(true) });
+			"Recording".postln;
+		});
+	}
+
+	pauseRecording {
+		recordNode.notNil.if({ recordNode.run(false); "Paused".postln }, { "Not Recording".warn });
+	}
+	
+	stopRecording {
+		recordNode.notNil.if({ 
+			recordNode.free;
+			recordNode = nil;
+			recordBuf.close({ arg buf; buf.free; });
+			recordBuf = nil; 
+			"Recording Stopped".postln }, 
+		{ "Not Recording".warn });
+	}
+	
+	prepareForRecord { arg path, headerFormat = "aiff", sampleFormat = "int16", numChannels = 2;
+		recordBuf = Buffer.alloc(this, 65536, numChannels,
+			{arg buf; buf.writeMsg(path, headerFormat, sampleFormat, 0, 0, true);});
+		SynthDef("server-record", { arg bufnum;
+			DiskOut.ar(bufnum, In.ar(0, numChannels)) 
+		}).send(this, {});
+		// cmdPeriod support
+		CmdPeriod.objects.includes(this).not.if({ CmdPeriod.add(this); });
+	}
+	
+	// CmdPeriod support for Server-scope and Server-record
+	cmdPeriod {
+		scopeWindow.notNil.if({ 
+			scopeWindow.onClose = nil;
+			scopeWindow.close; 
+			scopeBuffer.free;
+			scopeWindow = nil; 
+			scopeBuffer = nil;
+		});
+		recordNode.notNil.if({ recordNode = nil; });
+		recordBuf.notNil.if({recordBuf.close({ arg buf; buf.free; }); recordBuf = nil;});
+		CmdPeriod.objects.includes(this).if({ CmdPeriod.remove(this); });
+	}
+
 	
 }
