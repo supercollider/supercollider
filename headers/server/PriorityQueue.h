@@ -67,6 +67,7 @@ public:
 	void Flush() { Perform(kMaxInt64); }
 	void Empty() { mSize = 0; SetEmptyTime(); }
 	void SetEmptyTime() { mEvents[0].mTime = kMaxInt64; }
+	int Size() { return mSize; }
 	
 	Event Remove()
 		{
@@ -111,7 +112,7 @@ public:
 		}
 	}
 private:
-	long mSize;
+	int mSize;
 	Event mEvents[N];
 };
 
