@@ -347,23 +347,35 @@ GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inLis
 }
 #else //#ifndef SC_WIN32
 
+extern void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars);
+extern void win32_ReplaceCharInString(char* string, int len, char src, char dst);
+
 GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inList)
 {
   WIN32_FIND_DATA findData;
   HANDLE hFind;
 
-  hFind = ::FindFirstFile(pattern, &findData);
+  char patternWin[1024];
+  strncpy(patternWin,pattern,1024);
+  patternWin[1023] = 0;
+  win32_ReplaceCharInString(patternWin,1024,'/','\\');
+  char folder[1024];
+  win32_ExtractContainingFolder(folder,patternWin,1024);
+
+  hFind = ::FindFirstFile(patternWin, &findData);
 
   if (hFind == INVALID_HANDLE_VALUE) 
     return inList;
 
   do {
-		char *filename = findData.cFileName;
-		int len = strlen(filename);
-    if ((len >= 9) && (strncmp(filename+len-9, ".scsyndef", 9) == 0)) {
-			inList = GraphDef_Load(inWorld, filename, inList);
+    std::string strPath(folder);
+    strPath += std::string(findData.cFileName);
+    const char* fullPath = strPath.c_str();
+		int len = strlen(fullPath);
+    if ((len >= 9) && (strncmp(fullPath+len-9, ".scsyndef", 9) == 0)) {
+			inList = GraphDef_Load(inWorld, fullPath, inList);
 		}
-		GraphDef_Load(inWorld, filename, inList);
+		GraphDef_Load(inWorld, fullPath, inList);
   } while(FindNextFile(hFind, &findData));
 	return inList;
 }
