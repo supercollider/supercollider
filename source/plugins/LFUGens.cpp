@@ -1061,7 +1061,7 @@ void EnvGen_Ctor(EnvGen *unit)
 	// level0, numstages, releaseNode, loopNode,
 	// [level, dur, shape, curve]
 		
-	unit->m_level = ZIN0(5);
+	unit->m_endLevel = unit->m_level = ZIN0(5);
 	unit->m_counter = 0;
 	unit->m_stage = 1000000000;
 	unit->m_prevGate = 0.f;
@@ -1115,7 +1115,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 	// [level, dur, shape, curve]
 
 	if (counter <= 0) {
-		//Print("counter == 0\n");
+		//printf("stage %d rel %d\n", unit->m_stage, (int)ZIN0(kEnvGen_releaseNode));
 		int numstages = (unit->mNumInputs - 9) >> 2;
 		
 		if (unit->m_stage+1 >= numstages) { // num stages
@@ -1126,7 +1126,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 			unit->mDone = true;
 			int doneAction = (int)ZIN0(kEnvGen_doneAction);
 			DoneAction(doneAction, unit);
-		} else if (unit->m_stage == ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
+		} else if (unit->m_stage+1 == (int)ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
 			int loopNode = (int)ZIN0(kEnvGen_loopNode);
 			if (loopNode >= 0 && loopNode < numstages) {
 				unit->m_stage = loopNode;
@@ -1147,7 +1147,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 			
 			if (stageOffset + 4 > unit->mNumInputs) {
 				// oops.
-				Print("envelope went past end of inputs.\n");
+				//Print("envelope went past end of inputs.\n");
 				ClearUnitOutputs(unit, 1);
 				NodeEnd(&unit->mParent->mNode);
 				return;
@@ -1329,7 +1329,7 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 				unit->mDone = true;
 				int doneAction = (int)ZIN0(kEnvGen_doneAction);
 				DoneAction(doneAction, unit);
-			} else if (unit->m_stage == ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
+			} else if (unit->m_stage+1 == (int)ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
 				int loopNode = (int)ZIN0(kEnvGen_loopNode);
 				if (loopNode >= 0 && loopNode < numstages) {
 					unit->m_stage = loopNode;
@@ -1560,7 +1560,7 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 				unit->mDone = true;
 				int doneAction = (int)ZIN0(kEnvGen_doneAction);
 				DoneAction(doneAction, unit);
-			} else if (unit->m_stage == ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
+			} else if (unit->m_stage+1 == (int)ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
 				int loopNode = (int)ZIN0(kEnvGen_loopNode);
 				if (loopNode >= 0 && loopNode < numstages) {
 					unit->m_stage = loopNode;
@@ -1861,7 +1861,7 @@ void BufEnvGen_next_k(BufEnvGen *unit, int inNumSamples)
 			int stageOffset = (unit->m_stage << 2) + 4;
 			if (stageOffset + 4 > tableSize) {
 				// oops.
-				//Print("envelope went past end of buffer.\n");
+				Print("envelope went past end of buffer.\n");
 				ClearUnitOutputs(unit, 1);
 				NodeEnd(&unit->mParent->mNode);
 				return;
