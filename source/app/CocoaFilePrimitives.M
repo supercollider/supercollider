@@ -227,7 +227,7 @@ void setInvocationArgFromPyrSlot(NSInvocation *invocation,int i,PyrSlot* slot)
 int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed);
 int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
 {
-    //if (!g->canCallOS) return errCantCallOS;
+    if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *receiver = g->sp - 1; // CocoaDialog class
     PyrSlot *array = g->sp; // an array
@@ -242,7 +242,7 @@ int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
 int prSavePanel(struct VMGlobals *g, int numArgsPushed);
 int prSavePanel(struct VMGlobals *g, int numArgsPushed)
 {
-    //if (!g->canCallOS) return errCantCallOS;
+    if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *receiver = g->sp - 1; // CocoaDialog class
     PyrSlot *string = g->sp; // a string
@@ -273,13 +273,13 @@ int prSaveAsPlist(struct VMGlobals *g, int numArgsPushed)
 int prStandardizePath(struct VMGlobals *g, int numArgsPushed);
 int prStandardizePath(struct VMGlobals *g, int numArgsPushed)
 {
-    //if (!g->canCallOS) return errCantCallOS;
+    if (!g->canCallOS) return errCantCallOS;
     
     PyrSlot *string = g->sp;
     PyrString *pyrString;
     NSString *path = nsStringFromPyrSlot(string);
     path = [path stringByStandardizingPath];
-    pyrString = newPyrString(g->gc, [path cString], 0, true);
+    pyrString = newPyrString(g->gc, [path fileSystemRepresentation], 0, true);
     SetObject(string, pyrString);
     return errNone;
 }
@@ -307,7 +307,7 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
         while (pname = [direnum nextObject]) {
             if(i >= maxsize) return errIndexOutOfRange;
             
-            PyrString* pyrPathString = newPyrString(g->gc,[pname cString],0,true);
+            PyrString* pyrPathString = newPyrString(g->gc,[pname fileSystemRepresentation],0,true);
             
             PyrSlot slot;
             SetObject(&slot, pyrPathString);
@@ -324,7 +324,7 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
             if (![[pname pathExtension] isEqualToString:nsextension]) {
                 //[direnum skipDescendents]; don't enumerate this directory
             //} else {
-                PyrString* pyrPathString = newPyrString(g->gc,[pname cString],0,true);
+                PyrString* pyrPathString = newPyrString(g->gc,[pname fileSystemRepresentation],0,true);
                 
                 PyrSlot slot;
                 SetObject(&slot, pyrPathString);
@@ -362,7 +362,7 @@ int prHelpFileForString(struct VMGlobals *g, int numArgsPushed)
     NSString *path = pathOfHelpFileFor( nsStringFromPyrSlot(receiver));
 
     if(path) {
-        PyrString* pyrPathString = newPyrString(g->gc,[path cString],0,true);
+        PyrString* pyrPathString = newPyrString(g->gc,[path fileSystemRepresentation],0,true);
         SetObject(receiver,pyrPathString);
     } else {
         SetNil(receiver);
