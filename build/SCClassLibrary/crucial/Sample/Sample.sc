@@ -153,14 +153,14 @@ Sample {
 		// add a secret ir control
 		^bufnumControl ?? {
 			bufnumControl = UGen.buildSynthDef.addSecretIr(
-				("__bufnum__" ++ forArgi.asString).asSymbol,0,forArgi);
+				("__bufnum__" ++ forArgi.asString).asSymbol,0,forArgi,\bufnum);
 		}
 	}
 	bufnumKr {
 		// add a secret kr control
 		^bufnumControl ?? {
 			bufnumControl = UGen.buildSynthDef.addSecretKr(
-				("__bufnum__" ++ forArgi.asString).asSymbol,0,forArgi);
+				("__bufnum__" ++ forArgi.asString).asSymbol,0,forArgi,\bufnum);
 		}
 	}
 	sampleRateKr {
@@ -205,10 +205,10 @@ Sample {
 	}
 */
 	pchRatioKr { arg temp;
-		//ISSUE fixes the synthDef but doesn't let anyone know
-		// could tell the def its fixed, add an invariable (the sample)
-
-		// or keep a buffer on server with buffnums -> tempos
+		// would have to send __mytempo__ when you load buffer and recalc
+		//UGen.buildSynthDef.addSecretKr(
+		//		("__mytempo__" ++ forArgi.asString).asSymbol,tempo,forArgi,\tempo)
+		
 		^this.bufRateScaleKr * temp * tempo.reciprocal
 	}
 	storeParamsOn { arg stream;

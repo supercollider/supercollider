@@ -77,7 +77,7 @@ Patch : AbstractPlayer  {
 		});
 		synth = Synth.newMsg(bundle, // newToBundle
 				this.defName,
-				synthArgs ++ synthDef.secretDefArgs(args),
+				synthArgs ++ synthDef.secretDefArgs(args),//.insp("secretArgs"),
 				patchOut.group,
 				\addToTail
 				);

@@ -93,12 +93,15 @@ InstrSynthDef : SynthDef {
 	}
 	
 	// to cache this def, this info needs to be saved
-	addSecretIr { arg name,value,argi;
-		secretIrPairs = secretIrPairs.add([name,value,argi]);
+	// argi points to the slot in objects (as supplied to secretDefArgs)
+	// selector will be called on that object to produce the synthArg
+	// thus sample can indicate itself and ask for \tempo or \bufnum
+	addSecretIr { arg name,value,argi,selector;
+		secretIrPairs = secretIrPairs.add([name,value,argi,selector]);
 		^Control.names([name]).ir([value])
 	}
-	addSecretKr { arg name,value,argi;
-		secretKrPairs = secretKrPairs.add([name,value,argi]);
+	addSecretKr { arg name,value,argi,selector;
+		secretKrPairs = secretKrPairs.add([name,value,argi,selector]);
 		^Control.names([name]).kr([value])
 	}
 	secretDefArgs { arg objects;
@@ -108,11 +111,11 @@ InstrSynthDef : SynthDef {
 		synthArgs = Array(size);
 		secretIrPairs.do({ arg n,i;
 			synthArgs.add(n.at(0));
-			synthArgs.add(objects.at(n.at(2)));
+			synthArgs.add(objects.at(n.at(2)).perform(n.at(3)));
 		});
 		secretKrPairs.do({ arg n,i;
 			synthArgs.add(n.at(0));
-			synthArgs.add(objects.at(n.at(2)));
+			synthArgs.add(objects.at(n.at(2)).perform(n.at(3)));
 		});
 		^synthArgs
 	}
