@@ -60,7 +60,6 @@ StreamControl : AbstractPlayControl {
 		stream.stop;
 		dt = fadeTime.value;
 		if(dt < 0.3) { stream.play(clock, false, 0) } { stream.xplay(dt, clock, false, 0) };
-		CmdPeriod.add(this); // should maybe be in PauseStream
 	}
 	
 	stop { 
@@ -72,15 +71,13 @@ StreamControl : AbstractPlayControl {
 			// make sure it is stopped, in case next is never called
 			SystemClock.sched(dt, { stream.stop }) 
 		};
-		CmdPeriod.remove(this);
 	}
 	
 	pause { stream.pause; paused=true }
 	resume { arg clock, quant=1.0; stream.resume(clock, quant); paused=false }
 	
 	isPlaying { ^stream.isPlaying }
-
-	cmdPeriod { stream.stop; CmdPeriod.remove(this); }
+	readyForPlay { ^stream.notNil }
 	
 	playToBundle { arg bundle; 
 		if(paused.not and: { stream.isPlaying.not }, {
@@ -96,7 +93,7 @@ StreamControl : AbstractPlayControl {
 		paused = proxy.paused;
 		^stream.notNil;
 	}
-	readyForPlay { ^stream.notNil }
+	
 	
 }
 
