@@ -102,12 +102,13 @@ Function : AbstractFunction {
 		^{|...args| this.value(that.valueArray(args)) }
 	}
 
-	bench {
+	bench { arg print = true;
 		var t0, dt;
 		t0 = Main.elapsedTime;
 		this.value;
 		dt = Main.elapsedTime - t0;
-		Post << "time to run: " << dt << " seconds.\n";
+		if (print) { Post << "time to run: " << dt << " seconds.\n"; }
+		^dt
 	}
 	
 	protect { arg handler;
