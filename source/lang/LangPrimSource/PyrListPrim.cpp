@@ -67,7 +67,7 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 			if (slot->uo->classptr == class_array) {
 				len = slot->uo->size;
 				maxlen = len > maxlen ? len : maxlen;
-			} else if (isKindOf(slot->uo, class_sequenceable_collection)) {
+			} else if (isKindOf(slot->uo, class_sequenceable_collection) && (slot->uo->classptr != class_string)) {
 				return errFailed; // this primitive only handles Arrays.
 			}
 		}
