@@ -11,6 +11,7 @@
 	
 }
 
+
 +NodeProxy {
 	key { arg envir;
 		^(envir ? currentEnvironment).findKeyForValue(this) 
@@ -49,6 +50,7 @@
 	
 	storeOn { arg stream, keys;
 		var proxies;
+		if(clock.isKindOf(TempoBusClock)) { stream << "p.makeTempoClock;"; stream.nl.nl };
 		// find keys for all parents
 		if(keys.notNil) {
 			proxies = IdentitySet.new;
@@ -83,6 +85,11 @@
 			stream.nl;
 		// add settings to compile string
 			proxy.nodeMap.storeOn(stream, "~" ++ key, true, envir);
+		// add task to compile string
+			if(proxy.task.notNil) { 
+				stream.nl << "~" << key << ".task = " << 
+				"Task(" <<< proxy.task.originalStream.func << ")" << ";" 
+			};
 			stream.nl;
 		}
 	}

@@ -6,7 +6,7 @@
 
 AbstractPlayControl {
 	var <source, <>channelOffset;
-	var <paused=false, <>parents;
+	var <paused=false, <parents;
 	
 	*new { arg source, channelOffset=0;
 		^super.newCopyArgs(source, channelOffset);
@@ -41,28 +41,19 @@ AbstractPlayControl {
 	play { this.subclassResponsibility(thisMethod) }
 	stop { this.subclassResponsibility(thisMethod) }
 	
-	wakeUpParentsToBundle { arg bundle, checkedAlready;
-		parents.do { arg proxy; proxy.wakeUpToBundle(bundle, checkedAlready) }
-	}
-	addParent { arg proxy;
-		if(parents.isNil) { parents = IdentitySet.new };
-		parents.add(proxy);
-	}
-	
+	wakeUpParentsToBundle {}
+	addParent { "wrong object in NodeProxy.buildControl".error } // for now.
 	
 }
 
 TaskControl : AbstractPlayControl {
-	var <stream, clock;
+	var stream, clock;
 	
-	playToBundle { arg bundle, args, proxy;
+	playToBundle { arg bundle;
 		if(paused.not and: { stream.isPlaying.not }, {
 			bundle.addAction(this, \play); //no latency (latency is in stream already)
 		})
 		^nil //return a nil object instead of a synth
-	}
-	stopToBundle { arg bundle, fadeTime, stopTasks=false;
-		if(stopTasks) { bundle.addAction(this, \stop) };
 	}
 	
 	build { arg proxy;
@@ -72,61 +63,75 @@ TaskControl : AbstractPlayControl {
 		^true;
 	}
 	
-	
 	pause { stream.pause; paused=true }
 	resume { arg clock, quant=1.0; stream.resume(clock, quant); paused=false }
 	
-	isPlaying { ^stream.isPlaying }
 	readyForPlay { ^stream.notNil }
 
-	play { stream.play(clock, false) }
+	play { stream.play(clock, false, 0.0) }
 	stop { stream.stop }
 	
 }
 
 StreamControl : TaskControl {
-	var fadeTime;
+	var fadeTime, <array;
 		
-	play { 
+	playStream { arg str;
 		var dt;
-		stream.stop;
 		dt = fadeTime.value;
-		if(dt < 0.3) { stream.play(clock, false, 0) } { stream.xplay(dt, clock, false, 0) };
+		array = array.add(str);
+		if(dt <= 0.02) 
+			{ str.play(clock, true, 0.0) } 
+			{ str.xplay(dt / clock.beatDur, clock, true, 0.0) };
 	}
-	
-	stop { 
+		
+	stopStreams { arg streams;
 		var dt;
 		dt = fadeTime.value;
-		if(dt < 0.3) { stream.stop } 
-		{ 
-			stream.xstop(dt);  
+		if(dt <= 0.02) { streams.do { arg item; item.stop } } 
+		{
+			dt = dt / clock.beatDur;
+			streams.do { arg item; item.xstop(dt) };
 			// make sure it is stopped, in case next is never called
-			SystemClock.sched(dt, { stream.stop }) 
+			SystemClock.sched(dt, { streams.do { arg item; item.stop } }) 
 		};
 	}
 		
 	build { arg proxy;
 		fadeTime = { proxy.fadeTime }; // needed for pattern xfade
 		stream = source.buildForProxy(proxy, channelOffset);
-		clock = proxy.clock;
+		clock = proxy.clock ? TempoClock.default;
 		paused = proxy.paused;
 		^stream.notNil;
 	}
 	
+	stopToBundle { arg bundle;
+		var streams;
+		streams = array.copy;
+		array = nil;
+		bundle.addFunction({ this.stopStreams(streams) });
+	}
+	
+	pause { array.do { arg item; item.pause }; paused=true }
+	resume { arg clock, quant=1.0;  
+		array.do { arg item; item.resume(clock, quant) }; 
+		paused=false 
+	}
+	
+	play { this.playStream(stream.copy) }
+	stop { this.stopStreams(array.copy); array = nil; }
 	
 }
 
 SynthControl : AbstractPlayControl {
 	var <server, <nodeID;
-	var >canReleaseSynth=true, >canFreeSynth=true;
+	var canReleaseSynth=true, canFreeSynth=true;
 	
 	
 	
 	loadToBundle {} //assumes that SynthDef is loaded in the server 
 	name { ^source }
 	distributable { ^canReleaseSynth } // n_free not implemented in shared node proxy
-	isPlaying { ^nodeID.notNil }
-	canReleaseSynth { ^canReleaseSynth } // maybe get this from synthdesclib
 	
 	build { arg proxy; // assumes audio, if proxy is not initialized
 		var rate, desc;
@@ -152,14 +157,14 @@ SynthControl : AbstractPlayControl {
 	}
 	
 	stopToBundle { arg bundle;
-		if(nodeID.notNil, {
-			if(this.canReleaseSynth, {
+		if(nodeID.notNil) {
+			if(canReleaseSynth) {
 					bundle.add([15, nodeID, \gate, 0.0]); //to be sure.
-			}, {
-					if(this.canFreeSynth.not, { bundle.add([11, nodeID]) }); //"/n_free"
-			});
+			} {
+					if(canFreeSynth.not) { bundle.add([11, nodeID]) }; //"/n_free"
+			};
 			nodeID = nil;
-		});
+		};
 	}
 	
 	pause { arg clock, quant=1;
@@ -194,11 +199,10 @@ SynthControl : AbstractPlayControl {
 
 SynthDefControl : SynthControl {
 	classvar <>writeDefs=true;
-	var <synthDef;
+	var <synthDef, parents;
 	
 	readyForPlay { ^synthDef.notNil }
-	canReleaseSynth { ^synthDef.canReleaseSynth }
-	canFreeSynth { ^synthDef.canFreeSynth }
+	
 
 	build { arg proxy, index=0; 
 		var ok, rate, numChannels;
@@ -213,6 +217,8 @@ SynthDefControl : SynthControl {
 
 		if(ok && synthDef.notNil, { 
 			paused = proxy.paused;
+			canReleaseSynth = synthDef.canReleaseSynth;
+			canFreeSynth = synthDef.canFreeSynth;
 			// schedule to avoid hd sleep latency. 
 			// def writing is only for server boot.
 			if(writeDefs, {
@@ -231,6 +237,13 @@ SynthDefControl : SynthControl {
 	controlNames { ^source.def.argNames }
 	controlValues { ^source.def.prototypeFrame }
 	
+	wakeUpParentsToBundle { arg bundle, checkedAlready;
+		parents.do { arg proxy; proxy.wakeUpToBundle(bundle, checkedAlready) }
+	}
+	addParent { arg proxy;
+		if(parents.isNil) { parents = IdentitySet.new };
+		parents.add(proxy);
+	}
 	
 }
 
