@@ -1066,10 +1066,9 @@ void buildBigMethodMatrix()
 			100. * (double)numFilled/(rowTableSize/sizeof(PyrMethod*)));
 	}
 #endif
-    post("---------------------------------\n");
-	post("   Method Table Size %d bytes\n", rowTableSize);
-	post("   Number of Method Selectors %d\n", gNumSelectors);
-	post("   Number of Classes %d\n", gNumClasses);
+	post("\tMethod Table Size %d bytes\n", rowTableSize);
+	post("\tNumber of Method Selectors %d\n", gNumSelectors);
+	post("\tNumber of Classes %d\n", gNumClasses);
 	//post("big table size %d\n", gNumSelectors * gNumClasses * sizeof(PyrMethod*));
 	//postfl("%08X %08X %08X\n", classes, bigTable, sels);
 /*	

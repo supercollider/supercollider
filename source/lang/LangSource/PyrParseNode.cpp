@@ -1160,12 +1160,12 @@ void compilePyrMethodNode(PyrMethodNode* node, void *result)
         char extPath[1024];
         
         asRelativePath(gCompilingFileSym->name, extPath);
-		post("Extension overwriting %s-%s\n   in file '%s'.\n", 
+		post("\tExtension overwriting %s-%s\n\t\tin file '%s'.\n", 
 			oldmethod->ownerclass.uoc->name.us->name, oldmethod->name.us->name, 
 			extPath);
             
         asRelativePath(oldmethod->filenameSym.us->name, extPath);
-        post("   Original method in file '%s'.\n", extPath);
+        post("\t\tOriginal method in file '%s'.\n", extPath);
 
 		method = oldmethod;
 		freePyrSlot(&method->code);

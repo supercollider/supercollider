@@ -3839,7 +3839,7 @@ void initCocoaFilePrimitives();
         initCocoaFilePrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
-	post("   NumPrimitives = %d\n", nextPrimitiveIndex());
+	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());
 	
 }
 

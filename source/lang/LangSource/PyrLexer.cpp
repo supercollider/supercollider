@@ -1565,12 +1565,12 @@ void traverseFullDepTree2()
 			double elapsed;
 			buildBigMethodMatrix();
 			SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
-			post("   Number of Symbols %d\n", symbolTable->NumItems());
-			post("   Byte Code Size %d\n", totalByteCodes);
+			post("\tNumber of Symbols %d\n", symbolTable->NumItems());
+			post("\tByte Code Size %d\n", totalByteCodes);
 			//elapsed = TickCount() - compileStartTime;
 			//elapsed = 0;
                         elapsed = elapsedTime() - compileStartTime;
-                        post("   compiled %d files in %.2f seconds \n", 
+                        post("\tcompiled %d files in %.2f seconds \n", 
 				gNumCompiledFiles, elapsed );
 			post("compile done\n");
 		}
@@ -1751,7 +1751,7 @@ bool passOne()
 
 	getcwd(gCompileDir, MAXPATHLEN-32);
 	strcat(gCompileDir, "/SCClassLibrary");
-	post("compile dir: '%s'\n", gCompileDir);
+	post("\tcompile dir: '%s'\n", gCompileDir);
     
 	success = passOne_ProcessDir(gCompileDir);
 	if (!success) return false;
@@ -1892,7 +1892,7 @@ bool compileLibrary()
 	bool res = passOne();
 	if (res) {
 		
-		postfl("pass 1 done\n");
+		postfl("\tpass 1 done\n");
 		
 		if (!compileErrors) {
 			buildDepTree();
