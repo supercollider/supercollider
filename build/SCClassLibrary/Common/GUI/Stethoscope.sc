@@ -1,7 +1,7 @@
 Stethoscope {
 	var <server, <numChannels, <rate, <index;
 	var <bufsize, buffer, <window, synth;
-	var b, n, c, d, sl, zx, zy, ai=0, ki=0, audiospec, controlspec, <size=200;
+	var n, c, d, sl, zx, zy, ai=0, ki=0, audiospec, controlspec, <size=200;
 	
 
 	*new { arg server, numChannels = 2, index, bufsize = 4096, zoom, rate;
@@ -86,7 +86,6 @@ Stethoscope {
 			);
 			synth.isPlaying = true;
 			NodeWatcher.register(synth);
-			this.updateColors;
 		}
 	}
 	
