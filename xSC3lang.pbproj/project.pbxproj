@@ -1806,6 +1806,12 @@
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		92E20AB7058BBE8C004A7C6F = {
+			fileRef = F50D06C002E7F29001CA2799;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 //920
 //921
 //922
@@ -3306,7 +3312,7 @@
 			);
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /usr/lib/gcc/darwin/3.3;
 				OPTIMIZATION_CFLAGS = "-O0";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				OTHER_LDFLAGS = /usr/local/lib/libsndfile.a;
@@ -3781,9 +3787,10 @@
 				F50D06A202E6A1C601CA2799,
 				F50D06A302E6A1C601CA2799,
 				F50D06A402E6A1C601CA2799,
+				6AB6FFA20538A90A0000009F,
+				92E20AB7058BBE8C004A7C6F,
 				F50D06BF02E7F11301CA2799,
 				F5C7B14F033D595901A80099,
-				6AB6FFA20538A90A0000009F,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
