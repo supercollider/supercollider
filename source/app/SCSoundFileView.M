@@ -548,7 +548,6 @@ void SCSoundFileView::draw2(SCRect inDamage, CGContextRef cgc)
 
 void SCSoundFileView::draw(SCRect inDamage)
 {
-	post("drawing\n");
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(mBounds);
