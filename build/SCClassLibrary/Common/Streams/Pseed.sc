@@ -65,3 +65,40 @@ PdegreeToKey : FilterPattern {
 		});
 	}
 }
+
+// classical indian scale pattern. no special pakads (movements) or vakras (twists) are applied.
+// the pakad is often a natural consequence of the notes of arohana / avarohana 
+// (ascending and descending structures).ÊThis is the purpose of this pattern
+// jrh 2003
+
+
+Pavaroh : FilterPattern {
+	
+	var <>aroh, <>avaroh, <>stepsPerOctave;
+	*new { arg pattern, aroh, avaroh, stepsPerOctave=12;
+		^super.newCopyArgs(pattern, aroh, avaroh, stepsPerOctave)
+	
+	}
+	storeArgs { ^[pattern, aroh, avaroh, stepsPerOctave ] }
+	
+	asStream {
+		^Routine({
+				var mestream, me, melast, scale, size;
+				mestream = pattern.asStream;
+				melast = 0;
+				while({ 
+					(me = mestream.next).notNil
+				},{
+					me = me.asInteger;
+					scale = if(me >= melast, { aroh }, { avaroh });
+					melast = me;
+					size = scale.size;
+					((stepsPerOctave * (me div: size)) + scale.wrapAt(me)).yield
+				})
+			})
+	}
+	
+}
+
+
+
