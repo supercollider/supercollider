@@ -4,14 +4,21 @@ NodeMap {
 	*new {
 		^super.new.clear
 	}
+	
 	clear {
 		mappings = IdentityDictionary.new;
 		values = IdentityDictionary.new;
-		commands = List.new;
 	}
+	
 	addCommand { arg cmd;
+		if(commands.isNil, { this.clearCommands });
 		commands.add(cmd);
 	}
+	
+	clearCommands {
+		commands = List.new;
+	}
+	
 	map { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
 			mappings.put(args.at(i).asSymbol, args.at(i+1));
@@ -32,6 +39,11 @@ NodeMap {
 		
 	}
 	
+	setn { arg ... args;
+		this.performList(\set, args);
+		
+	}
+
 	set { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
 			values.put(args.at(i).asSymbol, args.at(i+1));
@@ -41,7 +53,8 @@ NodeMap {
 	unset { arg ... keys;
 		keys.do({ arg key;
 			values.removeAt(key);
-		})
+		});
+		
 	}
 	
 	send { arg targetNode, latency;
@@ -72,30 +85,50 @@ NodeMap {
 				var valArgs;
 				valArgs = List.new;
 				values.keysValuesDo({ arg key, value;
-								if(mappings.at(key).isNil, {
-									valArgs.add(key); 
-									valArgs.add(value);
+								if(value.isSequenceableCollection.not, {
+									if(mappings.at(key).isNil, {
+										valArgs.add(key); 
+										valArgs.add(value);
+									});
 								});
 				});
 				^valArgs
 
 	}
+	multiValArgs {
+				var valArgs;
+				valArgs = List.new;
+				values.keysValuesDo({ arg key, value;
+								if(value.isSequenceableCollection, {
+									if(mappings.at(key).isNil, {
+										valArgs.add(key); 
+										valArgs.add(value.size);
+										valArgs.addAll(value);
+									});
+								});
+				});
+				^valArgs
+	}
 	
 	updateCommand { arg cmdList, target;
-		var mapArgs, valArgs;
+		var mapArgs, valArgs, multiValArgs;
 			target = target.asTarget;
 				mapArgs = this.mapArgs;
 				valArgs = this.valArgs;
-						
+				multiValArgs = this.multiValArgs;
 										
 				if(mapArgs.isEmpty.not, {
-					target.addCommand(cmdList, "/n_map", mapArgs);
+					target.addCommand(cmdList, 14, mapArgs);
 				});
 				if(valArgs.isEmpty.not, {
-					target.addCommand(cmdList, "/n_set", valArgs);
+					target.addCommand(cmdList, 15, valArgs);
 				});
+				if(multiValArgs.isEmpty.not, {
+					target.addCommand(cmdList, 16, multiValArgs);
+				});
+				
 				commands.do({ arg item;
-					target.addCommand(cmdList, item.first,item.copyToEnd(1)) 
+					target.addCommand(cmdList, item.first, item.copyToEnd(1)) 
 				});
 	}
 
