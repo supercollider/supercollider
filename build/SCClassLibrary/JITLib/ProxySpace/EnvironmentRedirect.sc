@@ -16,17 +16,18 @@ EnvironmentRedirect {
 	*pop { 
 		var curr;
 		curr = currentEnvironment;
-		if(curr.inside, {
+		if(curr.isKindOf(this), {
 			currentEnvironment = curr.saveEnvir;
 			topEnvironment = curr.saveTopEnvir;
 		}, {
-			"not a current environment".inform;
+			"outside environment already".inform;
 		})
 	
 	}
 	
 	push { 
-		if(this.inside, { "already pushed".inform; ^this });
+		if(currentEnvironment.isKindOf(this.class),
+			{ "already pushed environment".inform; ^this });
 		this.saveEnvir = currentEnvironment;
 		this.saveTopEnvir = topEnvironment;
 		currentEnvironment = this;
@@ -49,11 +50,6 @@ EnvironmentRedirect {
 		envir.put(key, obj)
 	}
 	
-	
-	
-	inside {
-		^currentEnvironment.isKindOf(this.class);
-	}
 	
 		
 	// behave like my environment
