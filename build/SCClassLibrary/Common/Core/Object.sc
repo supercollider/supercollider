@@ -295,6 +295,16 @@ Object {
 		^[this.bubble(depth,levels-1)]
 	}
 	
+	// compatibility with sequenceable collection
+	
+	obtain { arg index, default;  ^if(index == 0) {Êthis } {Êdefault } }
+	
+	instill { arg index, item, default;
+		^if(index == 0) { item } {
+			this.asArray.instill(index, item, default)
+		}
+	}
+	
 	// osc message support
 	msgArgSize { ^4 } // float assumed, objects are interpreted as nil, which counts as 0
 	msgSize { Error("wrong bundle calculation call").throw }
