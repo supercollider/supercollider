@@ -130,16 +130,15 @@ BPF : Filter {
 
 BRF : BPF {}
 
-//exception in GrafDef_Load: UGen 'ParEQ' not installed.
-//ParEQ : Filter {
-//	
-//	*ar { arg in = 0.0, freq = 440.0, rq = 1.0, db = 0.0, mul = 1.0, add = 0.0;
-//		^this.multiNew('audio', in, freq, rq, db).madd(mul, add)
-//	}
-//	*kr { arg in = 0.0, freq = 440.0, rq = 1.0, db = 0.0, mul = 1.0, add = 0.0;
-//		^this.multiNew('control', in, freq, rq, db).madd(mul, add)
-//	}
-//}
+MidEQ : Filter {
+	
+	*ar { arg in = 0.0, freq = 440.0, rq = 1.0, db = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', in, freq, rq, db).madd(mul, add)
+	}
+	*kr { arg in = 0.0, freq = 440.0, rq = 1.0, db = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', in, freq, rq, db).madd(mul, add)
+	}
+}
 
 LPZ1 : Filter {
 	
