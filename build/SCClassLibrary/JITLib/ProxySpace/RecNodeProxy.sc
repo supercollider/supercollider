@@ -15,20 +15,21 @@ RecNodeProxy : NodeProxy {
 		}).writeDefFile;
 	}
 	
-	*newFrom { arg proxy, numChannels;
-		^this.audio(proxy.server, numChannels ? proxy.numChannels).source_({proxy.ar(numChannels) });
+	*newFrom { arg proxy, numChannels, onCompletion;
+		^this.audio(proxy.server, numChannels ? proxy.numChannels)
+			.setObj({proxy.ar(numChannels) }, onCompletion:onCompletion);
 	}
 	
 	
 	record { arg path, headerFormat="aiff", sampleFormat="int16";
-		var cmd, n;
-		cmd = List.new;
+		var msg, n;
+		
 		n = this.numChannels;
 		if(this.isPlaying && recSynth.isNil, {
 			buffer = Buffer.alloc(server, 65536, n);
 			if(n <= 2, {
 				recSynth = Synth.prNew("system-diskout"++n.asString);
-				cmd = recSynth.newMsg(group,\addAfter,
+				msg = recSynth.newMsg(group,\addAfter,
 					[\i_in, bus.index, \i_bufNum, buffer.bufnum]);
 			}, {
 				"multichannel rec doesn't work yet (no completion command bundles)".inform;
@@ -41,7 +42,7 @@ RecNodeProxy : NodeProxy {
 				})
 				*/
 			});
-			buffer.write(path, headerFormat="aiff", sampleFormat="int16", 0, 0, true, cmd);
+			buffer.write(path, headerFormat="aiff", sampleFormat="int16", 0, 0, true, msg);
 		}, { "cannot record".inform })
 	}
 	

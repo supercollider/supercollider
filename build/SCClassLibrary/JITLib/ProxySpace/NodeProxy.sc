@@ -2,8 +2,9 @@
 NodeProxy : AbstractFunction {
 
 	var <server, <group, <bus;
-	var <nodeMap, <synthDefs, <parents;
-	var <>clock;
+	var <nodeMap, <>clock;
+	var <synthDefs, <parents;
+	
 	
 	*new { arg server;
 		^super.newCopyArgs(server).ninit(server)	
