@@ -73,7 +73,7 @@ StreamControl : AbstractPlayControl {
 		stream.play(clock, false, 0); // maybe in event?
 		CmdPeriod.add(this); // should maybe be in PauseStream
 	}
-	
+	isPlaying { ^stream.isPlaying }
 	stop { stream.stop; }
 	pause { stream.pause; paused=true }
 	resume { arg clock, quant=1.0; stream.resume(clock, quant); paused=false }
@@ -164,7 +164,7 @@ SynthControl : AbstractPlayControl {
 			}, quant)
 		} { paused = flag.not; }
 	}
-	
+	isPlaying { ^nodeID.notNil }
 	canReleaseSynth { ^canReleaseSynth } // maybe get this from synthdesclib
 	synthDesc { var dict;
 		dict = SynthDescLib.global.synthDescs;
